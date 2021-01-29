@@ -2,123 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EA2E308C6C
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 19:31:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07A8A308CD4
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 19:58:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232758AbhA2SZP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jan 2021 13:25:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34526 "EHLO
+        id S232776AbhA2Szo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jan 2021 13:55:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232700AbhA2SXj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 13:23:39 -0500
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE1A9C0613D6
-        for <netdev@vger.kernel.org>; Fri, 29 Jan 2021 10:23:15 -0800 (PST)
-Received: by mail-pl1-x631.google.com with SMTP id e9so5699830plh.3
-        for <netdev@vger.kernel.org>; Fri, 29 Jan 2021 10:23:15 -0800 (PST)
+        with ESMTP id S230249AbhA2Szf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 13:55:35 -0500
+Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86428C061574
+        for <netdev@vger.kernel.org>; Fri, 29 Jan 2021 10:54:51 -0800 (PST)
+Received: by mail-qk1-x734.google.com with SMTP id x81so9770066qkb.0
+        for <netdev@vger.kernel.org>; Fri, 29 Jan 2021 10:54:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:subject:message-id:mime-version
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=++BOmUqhZF+EhwdLS4FoO6UUfmwvgumWwQrA+ZGOUe8=;
-        b=dg4nqHzR0VqxGIFyfz054pibRjE+QWkPWHjcZzbQyw2H+AHi9RaMgWkrCnNutC0cTj
-         NyHalZDU992U+/DqOQRS84RH93sBgiyhz3OzPqFhsil1QpXXEJV0WOx7rYZ02mmwYyfV
-         jd97KFE+Bxc5Ib4gbSJ1piJx7Vnly1FKJd+rgLkpw7pFbMxiT0IwugELHZfDJzoaywHy
-         P1icsWfVZC9hSbdQqbjBiY4lmrCD52ATrH0tHQ35QXPt5Jmv2U14edxugwFktOAG7EzP
-         q2sLWugABZ5jclQ5Cc01SUEHgmn65zUJWzkNMneQmBL9IbLYhjpJnBF4YKuqY9VjqdSG
-         TNSA==
+        bh=SyKp7y6hL+Fge8vJmMexyAxPwcSsu+VHAMhqiORPM9c=;
+        b=FPDcwwhKRwmpzxsfo2dR/HR/oGEsnZiKz1PyV5s+AuGXDSAeq+9kHxYLiMry8AE9B7
+         1yIiHktZxMMyE6XiJpfsBUnMlHFzr2gTKL2UJA83LbjxaOQ6jGC5JjZdt9cpnZSpAVbu
+         za693GSytvtkxCAbtUyqRVUeAOXn9aK40P2nLIKSP0gkXQdCjzPaavzwfxv4hF6hJVqM
+         vWXQ0uq2g/75aLlfoIVggBb5k0dmmrzKRjiDvzGqvBE77QZKs6acKfivoF2SaOwPwo94
+         ioZy+fsOR4sBgmiWP1gm3aoQvnDyRfULqcWLu4HMhm+fnNDjO425Szs9qRbY9AKoknfC
+         Oicw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=++BOmUqhZF+EhwdLS4FoO6UUfmwvgumWwQrA+ZGOUe8=;
-        b=YcMf58VrgX0alk9fu13Ne3OR1erj2S1gv2zEdBW0KjajDJBUOz4y5bZwFrn6XEPsGk
-         RNTxJztnpO0MOyU+3jqNw4DRcRmy3JNxhnq3WnGMnKGWCvrKLiil9oVl0aEoq+vPIAiR
-         XHR9B0seFJ7l/xIsl+l6kFYCEer4JRz+wXAKwKP5w60k6184+d6qaER7cm/mhgBMxV4t
-         PtrvRSBnMXB9WgZ8Puvh2eYwtj+OBAZopKlRr5PCrK0+b7mol7XTmIvfCsZWAHyZg7Nj
-         QZBa+mPq8qaWhdvX+os5B9tpK/k757ejvbnFTIt7AR/80raSWJ/1nEG9Pp1roFN7IfA0
-         tJ5Q==
-X-Gm-Message-State: AOAM531IXucSZR60nDKPoV/+6Kc8QzuHi9ai/pk0MmlcqDK+FBAjf+1K
-        P01g50Drpw7Q16ySfvzPza4JvlT9o1maBQ==
-X-Google-Smtp-Source: ABdhPJxqxw6t65vRPZ+zgqcv+xd4RI3xdkv14JbIZ/DgcFaObWbDVxbWw3nDOOVuP1Dyvzpwy+g9Mg==
-X-Received: by 2002:a17:902:7596:b029:da:b7a3:cdd0 with SMTP id j22-20020a1709027596b02900dab7a3cdd0mr5433668pll.14.1611944594843;
-        Fri, 29 Jan 2021 10:23:14 -0800 (PST)
-Received: from hermes.local (76-14-222-244.or.wavecable.com. [76.14.222.244])
-        by smtp.gmail.com with ESMTPSA id br21sm8789513pjb.9.2021.01.29.10.23.14
-        for <netdev@vger.kernel.org>
+        bh=SyKp7y6hL+Fge8vJmMexyAxPwcSsu+VHAMhqiORPM9c=;
+        b=s1/MBAu/+uatpPBNMZUc57/fQDU/C4S/GYWXfrGu3AR83IpgiEdIONp/fIjZFM1Utb
+         kYiDllnlUVmJsrbVxJZDUu5BA0jAqJ66l4ydPKHcUaHkxcAWVYO+z4G9uqmKkZc60xkg
+         yPDUzt9qJvz3uHR/aI2xvcdMhkCrWzss5PWvHhFWj0pxMioTZR7WKd66kWvL8wGdz5IS
+         KKfrCXYNgsaVQ9hU4RPfhRQ3ejJsndvhGbFuAm31puJcM4EWT50vNhz/PzWdxl/5lLc0
+         tSmuQyB4IxzalOkOQDoO75Z/wO560Z7MvNgD/MOrR3kUMCSVdlOIUbIB1fLYi4l+28u7
+         sjCA==
+X-Gm-Message-State: AOAM532NW8x0w9OWsMx6CAe9QKkaH30T66hd4EnbqbfsC0o5k+Whupgl
+        SdFz0Lk/VDkdlEdmUZNfKFk=
+X-Google-Smtp-Source: ABdhPJymF39V7KKWA2Okn4RO8vW/T1t9uyYwtSDNpWlltyPzQx73QilC+qJbtVwHUv33z+byTTKhDA==
+X-Received: by 2002:a37:aa09:: with SMTP id t9mr5631419qke.214.1611946490814;
+        Fri, 29 Jan 2021 10:54:50 -0800 (PST)
+Received: from soy.nyc.corp.google.com ([2620:0:1003:312:7220:84ff:fe09:3008])
+        by smtp.gmail.com with ESMTPSA id t184sm6710947qkd.100.2021.01.29.10.54.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Jan 2021 10:23:14 -0800 (PST)
-Date:   Fri, 29 Jan 2021 10:23:04 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Subject: Fw: [Bug 211375] New: Memory leak about TCP slab which have too big
- used sockets
-Message-ID: <20210129102304.7e013cf6@hermes.local>
+        Fri, 29 Jan 2021 10:54:50 -0800 (PST)
+From:   Neal Cardwell <ncardwell.kernel@gmail.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, Neal Cardwell <ncardwell@google.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: [PATCH net-next] tcp: shrink inet_connection_sock icsk_mtup enabled and probe_size
+Date:   Fri, 29 Jan 2021 13:54:38 -0500
+Message-Id: <20210129185438.1813237-1-ncardwell.kernel@gmail.com>
+X-Mailer: git-send-email 2.30.0.365.g02bc693789-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a quite old kernel version, probably already fixed...
+From: Neal Cardwell <ncardwell@google.com>
 
-Begin forwarded message:
+This commit shrinks inet_connection_sock by 4 bytes, by shrinking
+icsk_mtup.enabled from 32 bits to 1 bit, and shrinking
+icsk_mtup.probe_size from s32 to an unsuigned 31 bit field.
 
-Date: Wed, 27 Jan 2021 01:48:33 +0000
-From: bugzilla-daemon@bugzilla.kernel.org
-To: stephen@networkplumber.org
-Subject: [Bug 211375] New: Memory leak about TCP slab which have too big used sockets
+This is to save space to compensate for the recent introduction of a
+new u32 in inet_connection_sock, icsk_probes_tstamp, in the recent bug
+fix commit 9d9b1ee0b2d1 ("tcp: fix TCP_USER_TIMEOUT with zero window").
 
+This should not change functionality, since icsk_mtup.enabled is only
+ever set to 0 or 1, and icsk_mtup.probe_size can only be either 0
+or a positive MTU value returned by tcp_mss_to_mtu()
 
-https://bugzilla.kernel.org/show_bug.cgi?id=211375
+Signed-off-by: Neal Cardwell <ncardwell@google.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ include/net/inet_connection_sock.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-            Bug ID: 211375
-           Summary: Memory leak about TCP slab which have too big used
-                    sockets
-           Product: Networking
-           Version: 2.5
-    Kernel Version: 4.18.16
-          Hardware: All
-                OS: Linux
-              Tree: Mainline
-            Status: NEW
-          Severity: normal
-          Priority: P1
-         Component: IPV4
-          Assignee: stephen@networkplumber.org
-          Reporter: 390231410@qq.com
-        Regression: No
-
-Memory leak occurred in linux of 4.18.16, we use nginx as a server, I found
-some problems related to TCP as following:
-1. slabtop a:
-OBJS ACTIVE USE OBJ SIZE SLABS OBJ/SLAB CACHE SIZE NAME
-14081971 13980986 99% 2.06K 938799 15 30041568K TCP
-
-2. cat /proc/meminfo
-SUnreclaim: 31405028 kB
-
-3. cat /proc/net/sockstat
-sockets: used 13976123
-TCP: inuse 18 orphan 0 tw 44 alloc 18 mem 1
-UDP: inuse 54 mem 45
-UDPLITE: inuse 0 RAW: inuse 9
-FRAG: inuse 0 memory 0
-
-4. lsof
-there are 19000 line, it seems like ok.
-
-As above, it seems that tcp sk memory leak, "sockets: used 13976123" illustrate
-that "net->core.sock_inuse" is too big, which increase in inet_create(socket
-create) or sk_clone_lock(child socket create) and decrease in __sk_free, I kill
-almost all of application layer program, but the "sockets: used" almostly not
-reduce.
-
-Do you have any suggestions for this problem, Thanks.
-
+diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
+index c11f80f328f1..10a625760de9 100644
+--- a/include/net/inet_connection_sock.h
++++ b/include/net/inet_connection_sock.h
+@@ -120,14 +120,14 @@ struct inet_connection_sock {
+ 		__u16		  rcv_mss;	 /* MSS used for delayed ACK decisions	   */
+ 	} icsk_ack;
+ 	struct {
+-		int		  enabled;
+-
+ 		/* Range of MTUs to search */
+ 		int		  search_high;
+ 		int		  search_low;
+ 
+ 		/* Information on the current probe. */
+-		int		  probe_size;
++		u32		  probe_size:31,
++		/* Is the MTUP feature enabled for this connection? */
++				  enabled:1;
+ 
+ 		u32		  probe_timestamp;
+ 	} icsk_mtup;
 -- 
-You may reply to this email to add a comment.
+2.30.0.365.g02bc693789-goog
 
-You are receiving this mail because:
-You are the assignee for the bug.
