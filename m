@@ -2,110 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D04B308A80
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 17:45:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 06DA6308A87
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 17:46:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231620AbhA2QnQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jan 2021 11:43:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40744 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231631AbhA2Qml (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 11:42:41 -0500
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E5EBC061351
-        for <netdev@vger.kernel.org>; Fri, 29 Jan 2021 08:41:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=GDU+w1zGjd6PPToeONUlX0pM9vavNXS4q9a7+/eYzIo=; b=Q/YlOJ85qk/1rgi5hsKRWmRx3z
-        DJtDs/K8JIU4cM2zoIIcofo3JzsGR6V7PmyizuyUiO9FoqFAAUFQBdbyIOQaIKQ7brubRPu7FG+0Q
-        TlhpbJBUn4rqpqOxfKqTlWazOLmgt3rpla4p+jBQ3lVEEoniY1mn2HDATaQS49bhlRZrz7JM/iK/R
-        E6aIXNEJINgXfmsrlLeDMjY6WuiMUc08pt/pW9PQOAQsfJgZisbN5TU1lLOnTLYDNepuU6Hr2YY71
-        g0WMDPXjhnyyj3ydZwg6I0zOdKK/zs7VdE0LrMP38yoLcehXytJ4yCCedAA26F4WtiMKdoMw6BDyE
-        yhBaFihA==;
-Received: from [2601:1c0:6280:3f0::7650]
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1l5Wq0-00070B-TT; Fri, 29 Jan 2021 16:41:37 +0000
-Subject: Re: [PATCH net-next] net: dsa: hellcreek: Add missing TAPRIO
- dependency
-To:     Kurt Kanzenbach <kurt@linutronix.de>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-References: <20210128163338.22665-1-kurt@linutronix.de>
- <1a076f95-3945-c300-4fea-22d28205aef6@infradead.org> <87im7frf8p.fsf@kurt>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <a53df5e2-2c91-69e5-380f-d78982552985@infradead.org>
-Date:   Fri, 29 Jan 2021 08:41:30 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        id S231854AbhA2Qpn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jan 2021 11:45:43 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:56159 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231802AbhA2Qpc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 11:45:32 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1611938646;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=lncyBnRSwCr+gp+0N2c2Im6LydS91xklb476PalMYnA=;
+        b=b37xbmveSav1dUA+pux+80hiIgx8pxYyXgOdBc3aHkY6eFp72o1KiT9KgoaYZKy4HqborB
+        6d9hfb0n8+UNNuUI1DY/vksglSGLDvuRcXmviJRKVATP1l6AesB3E6c6rQchBhHVSVbeT7
+        6aj2lNMetK3s2QRo6j62Ktyauqeayag=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-586-aADtCFqwMhicv0DohJL8bg-1; Fri, 29 Jan 2021 11:44:04 -0500
+X-MC-Unique: aADtCFqwMhicv0DohJL8bg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D87098030A2;
+        Fri, 29 Jan 2021 16:44:02 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-115-23.rdu2.redhat.com [10.10.115.23])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E91561971B;
+        Fri, 29 Jan 2021 16:44:00 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net] rxrpc: Fix deadlock around release of dst cached on udp
+ tunnel
+From:   David Howells <dhowells@redhat.com>
+To:     vfedorenko@novek.ru
+Cc:     syzbot+df400f2f24a1677cd7e0@syzkaller.appspotmail.com,
+        netdev@vger.kernel.org, dhowells@redhat.com,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
+Date:   Fri, 29 Jan 2021 16:44:00 +0000
+Message-ID: <161193864000.3781058.7593105791689441003.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-In-Reply-To: <87im7frf8p.fsf@kurt>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/29/21 6:26 AM, Kurt Kanzenbach wrote:
-> On Thu Jan 28 2021, Randy Dunlap wrote:
->> On 1/28/21 8:33 AM, Kurt Kanzenbach wrote:
->>> Add missing dependency to TAPRIO to avoid build failures such as:
->>>
->>> |ERROR: modpost: "taprio_offload_get" [drivers/net/dsa/hirschmann/hellcreek_sw.ko] undefined!
->>> |ERROR: modpost: "taprio_offload_free" [drivers/net/dsa/hirschmann/hellcreek_sw.ko] undefined!
->>>
->>> Fixes: 24dfc6eb39b2 ("net: dsa: hellcreek: Add TAPRIO offloading support")
->>> Reported-by: Randy Dunlap <rdunlap@infradead.org>
->>> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
->>> ---
->>>  drivers/net/dsa/hirschmann/Kconfig | 1 +
->>>  1 file changed, 1 insertion(+)
->>>
->>> Note: It's not against net, because the fixed commit is not in net tree, yet.
->>>
->>> diff --git a/drivers/net/dsa/hirschmann/Kconfig b/drivers/net/dsa/hirschmann/Kconfig
->>> index e01191107a4b..9ea2c643f8f8 100644
->>> --- a/drivers/net/dsa/hirschmann/Kconfig
->>> +++ b/drivers/net/dsa/hirschmann/Kconfig
->>> @@ -5,6 +5,7 @@ config NET_DSA_HIRSCHMANN_HELLCREEK
->>>  	depends on NET_DSA
->>>  	depends on PTP_1588_CLOCK
->>>  	depends on LEDS_CLASS
->>> +	depends on NET_SCH_TAPRIO
->>>  	select NET_DSA_TAG_HELLCREEK
->>>  	help
->>>  	  This driver adds support for Hirschmann Hellcreek TSN switches.
->>>
->>
->> Thanks. This fixes the build errors.
->> Acked-by: Randy Dunlap <rdunlap@infradead.org> # build-tested
->>  
->>
->> However, I do see this in the build output when
->> NET_DSA_HIRSCHMANN_HELLCREEK is disabled:
->>
->>   AR      drivers/net/dsa/hirschmann/built-in.a
->>
->> That is an empty archive file (8 bytes), which is caused by
->> drivers/net/dsa/Makefile:
->>
->> obj-y				+= hirschmann/
->>
->>
->> Is there some reason that it's not done like this?
->> This passes my y/m/n testing.
-> 
-> Actually I cannot reproduce this. I've disabled
-> NET_DSA_HIRSCHMANN_HELLCREEK and nothing shows up in the build log.
+AF_RXRPC sockets use UDP ports in encap mode.  This causes socket and dst
+from an incoming packet to get stolen and attached to the UDP socket from
+whence it is leaked when that socket is closed.
 
-Hmph, I don't see it on a clean build either.
-Sorry for the noise.
+When a network namespace is removed, the wait for dst records to be cleaned
+up happens before the cleanup of the rxrpc and UDP socket, meaning that the
+wait never finishes.
 
--- 
-~Randy
+Fix this by moving the rxrpc (and, by dependence, the afs) private
+per-network namespace registrations to the device group rather than subsys
+group.  This allows cached rxrpc local endpoints to be cleared and their
+UDP sockets closed before we try waiting for the dst records.
+
+The symptom is that lines looking like the following:
+
+	unregister_netdevice: waiting for lo to become free
+
+get emitted at regular intervals after running something like the
+referenced syzbot test.
+
+Thanks to Vadim for tracking this down and work out the fix.
+
+Reported-by: syzbot+df400f2f24a1677cd7e0@syzkaller.appspotmail.com
+Reported-by: Vadim Fedorenko <vfedorenko@novek.ru>
+Fixes: 5271953cad31 ("rxrpc: Use the UDP encap_rcv hook")
+Signed-off-by: David Howells <dhowells@redhat.com>
+---
+
+ fs/afs/main.c        |    6 +++---
+ net/rxrpc/af_rxrpc.c |    6 +++---
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/fs/afs/main.c b/fs/afs/main.c
+index accdd8970e7c..b2975256dadb 100644
+--- a/fs/afs/main.c
++++ b/fs/afs/main.c
+@@ -193,7 +193,7 @@ static int __init afs_init(void)
+ 		goto error_cache;
+ #endif
+ 
+-	ret = register_pernet_subsys(&afs_net_ops);
++	ret = register_pernet_device(&afs_net_ops);
+ 	if (ret < 0)
+ 		goto error_net;
+ 
+@@ -213,7 +213,7 @@ static int __init afs_init(void)
+ error_proc:
+ 	afs_fs_exit();
+ error_fs:
+-	unregister_pernet_subsys(&afs_net_ops);
++	unregister_pernet_device(&afs_net_ops);
+ error_net:
+ #ifdef CONFIG_AFS_FSCACHE
+ 	fscache_unregister_netfs(&afs_cache_netfs);
+@@ -244,7 +244,7 @@ static void __exit afs_exit(void)
+ 
+ 	proc_remove(afs_proc_symlink);
+ 	afs_fs_exit();
+-	unregister_pernet_subsys(&afs_net_ops);
++	unregister_pernet_device(&afs_net_ops);
+ #ifdef CONFIG_AFS_FSCACHE
+ 	fscache_unregister_netfs(&afs_cache_netfs);
+ #endif
+diff --git a/net/rxrpc/af_rxrpc.c b/net/rxrpc/af_rxrpc.c
+index 0a2f4817ec6c..41671af6b33f 100644
+--- a/net/rxrpc/af_rxrpc.c
++++ b/net/rxrpc/af_rxrpc.c
+@@ -990,7 +990,7 @@ static int __init af_rxrpc_init(void)
+ 		goto error_security;
+ 	}
+ 
+-	ret = register_pernet_subsys(&rxrpc_net_ops);
++	ret = register_pernet_device(&rxrpc_net_ops);
+ 	if (ret)
+ 		goto error_pernet;
+ 
+@@ -1035,7 +1035,7 @@ static int __init af_rxrpc_init(void)
+ error_sock:
+ 	proto_unregister(&rxrpc_proto);
+ error_proto:
+-	unregister_pernet_subsys(&rxrpc_net_ops);
++	unregister_pernet_device(&rxrpc_net_ops);
+ error_pernet:
+ 	rxrpc_exit_security();
+ error_security:
+@@ -1057,7 +1057,7 @@ static void __exit af_rxrpc_exit(void)
+ 	unregister_key_type(&key_type_rxrpc);
+ 	sock_unregister(PF_RXRPC);
+ 	proto_unregister(&rxrpc_proto);
+-	unregister_pernet_subsys(&rxrpc_net_ops);
++	unregister_pernet_device(&rxrpc_net_ops);
+ 	ASSERTCMP(atomic_read(&rxrpc_n_tx_skbs), ==, 0);
+ 	ASSERTCMP(atomic_read(&rxrpc_n_rx_skbs), ==, 0);
+ 
+
 
