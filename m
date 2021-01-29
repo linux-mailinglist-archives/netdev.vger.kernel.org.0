@@ -2,103 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AECD308356
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 02:41:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12A4630835C
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 02:49:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231221AbhA2Bl0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 20:41:26 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50676 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229757AbhA2BlY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 Jan 2021 20:41:24 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id B512964DFB;
-        Fri, 29 Jan 2021 01:40:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611884443;
-        bh=gn0boGo0i6OhzskA+ZetZ2TKZ34mQ79bYIymS4IgZyo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=unZ0WF/3b08K6QFU3ZPAwS7mqU7uGsKgnkU58VuvRmL9bGHRYCKs/gY5kJXqJZR6N
-         PrjkjYtexWBSqRp3BxWoJlfIz70J9NZJzagCjD9CD6iv8DaF/j/9EXXYGWMw4Q0QbD
-         HkGVnk/fBfAgdTG+TXZSxqRrKFZNY4rbMptCc286/+ZSXuyU92jzAsvAeTi4vMQczP
-         GEKzTuysfxVyaB2OuSqLkBsmPuHGprUjU1Og5Ubjk9sBJIKNmb/rM9RcJ9XD/XeX8u
-         pkmzQaZFSFNskwI+fsja1t6rbRQvHCz07SZz9Mfr+O/Dfjm7RKSWM94cLPhdz4WXQq
-         sUIPzgcEHsspg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A0B9F60ABF;
-        Fri, 29 Jan 2021 01:40:43 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S231246AbhA2Brw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 20:47:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47530 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231210AbhA2Bro (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 20:47:44 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DFAAC061573;
+        Thu, 28 Jan 2021 17:47:04 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id jx18so5479209pjb.5;
+        Thu, 28 Jan 2021 17:47:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ZEwxOEWEUldbVA77DNHYazxcJ2zOigWsWKQuv/zMlHk=;
+        b=YdfDNprXozcmkHwu+BvjWK9q9U4AtkmWrX0rdyUToNJFOP7JVpV2WUuu56n56I5bDI
+         P2CNbKCKt8cIKL7Oel2DT+tp8+e6f7wJrSIbS8y4Lm9gHG7ispgPO02LLbhhlZuruAhE
+         GnkIYbOw0W77wtxVZYFIpTZSsGbb823igNLgIm7JeOo3He8MRpSPAn8LVrOw0hp/ujDi
+         hzwAQBc7Vl0jzeMOVYA+5/m4uVJZWT4Ae78dAXsmih4UJW1E4a8930x0/A84twIull5x
+         pw09mZ6Yi+p8amUAFA6xNb4+IlJTFOsR3RiUpvT61n18hqaqfB/4dMi8CSOFgs6zdO/5
+         r8Mw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ZEwxOEWEUldbVA77DNHYazxcJ2zOigWsWKQuv/zMlHk=;
+        b=gZ15r8blVr9bNjsEvNQKsrhFKKBW3TiL5Clb66r5SpiXVS9yMgm8thmQRB/X1HJ77X
+         ekciN6/hYh2hJYGwrJycJ/EIVxeQ4T3cFkT/WkL5g1ih7XYJMwo49/eA62Wnum2s984B
+         KLsxtz+HpRUoNGbBXJ/Qcvtr8UQ5pXtkVGp6Ke6+0s1pE+yKJr0cKXDyPWBGj1YFb3PO
+         icWlG/kAJGM97u+JCVxKVuTpV3Rr2u1k0RvUm5hjCXnWz4K1g5z84ZJTAguZ/G2Op5qE
+         0aFV9n1L8CQ8CkzjqtN7nBrXNYmNAGOY0e83lgWL9hEbcAOpnQu9uS5jZOJ6vweEP9NM
+         PKew==
+X-Gm-Message-State: AOAM533tCY53x06UbvXsb2Oi9jtYlevH6IQ0I8MbYl4RaLsutdBN9HVc
+        q+Ky2Xl7GSvc9h0YJxww/0A=
+X-Google-Smtp-Source: ABdhPJwjnRcDA7rrB+FiuFk4GOlWV6rtyhl9SeWcti0KcyOHW6MenKsqVDI8iMZRXKh7FkKbc9OYHQ==
+X-Received: by 2002:a17:90b:3c8:: with SMTP id go8mr2180848pjb.105.1611884823873;
+        Thu, 28 Jan 2021 17:47:03 -0800 (PST)
+Received: from Leo-laptop-t470s ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id 83sm6792991pfb.68.2021.01.28.17.46.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Jan 2021 17:47:03 -0800 (PST)
+Date:   Fri, 29 Jan 2021 09:46:50 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Subject: Re: [PATCHv17 bpf-next 6/6] selftests/bpf: add xdp_redirect_multi
+ test
+Message-ID: <20210129014650.GA2900@Leo-laptop-t470s>
+References: <20210122074652.2981711-1-liuhangbin@gmail.com>
+ <20210125124516.3098129-1-liuhangbin@gmail.com>
+ <20210125124516.3098129-7-liuhangbin@gmail.com>
+ <60134aa5cd92d_f9c120823@john-XPS-13-9370.notmuch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next V10 01/14] devlink: Prepare code to fill multiple port
- function attributes
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161188444365.28226.8858255043128755888.git-patchwork-notify@kernel.org>
-Date:   Fri, 29 Jan 2021 01:40:43 +0000
-References: <20210122193658.282884-2-saeed@kernel.org>
-In-Reply-To: <20210122193658.282884-2-saeed@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, jgg@nvidia.com,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        alexander.duyck@gmail.com, sridhar.samudrala@intel.com,
-        edwin.peer@broadcom.com, dsahern@kernel.org, kiran.patil@intel.com,
-        jacob.e.keller@intel.com, david.m.ertman@intel.com,
-        dan.j.williams@intel.com, parav@nvidia.com, jiri@nvidia.com,
-        vuhuong@nvidia.com, saeedm@nvidia.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <60134aa5cd92d_f9c120823@john-XPS-13-9370.notmuch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi John,
+On Thu, Jan 28, 2021 at 03:37:09PM -0800, John Fastabend wrote:
+> Otherwise, its not the most elegant, but testing XDP at the moment
+> doesn't fit into the normal test framework very well either.
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+Thanks a lot for your help in reviewing the patches. I will add updating
+XDP test in my todo list.
 
-On Fri, 22 Jan 2021 11:36:45 -0800 you wrote:
-> From: Parav Pandit <parav@nvidia.com>
-> 
-> Prepare code to fill zero or more port function optional attributes.
-> Subsequent patch makes use of this to fill more port function
-> attributes.
-> 
-> Signed-off-by: Parav Pandit <parav@nvidia.com>
-> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-> Reviewed-by: Vu Pham <vuhuong@nvidia.com>
-> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,V10,01/14] devlink: Prepare code to fill multiple port function attributes
-    https://git.kernel.org/netdev/net-next/c/1230d94820c9
-  - [net-next,V10,02/14] devlink: Introduce PCI SF port flavour and port attribute
-    https://git.kernel.org/netdev/net-next/c/b8288837ef6b
-  - [net-next,V10,03/14] devlink: Support add and delete devlink port
-    https://git.kernel.org/netdev/net-next/c/cd76dcd68d96
-  - [net-next,V10,04/14] devlink: Support get and set state of port function
-    https://git.kernel.org/netdev/net-next/c/a556dded9c23
-  - [net-next,V10,05/14] net/mlx5: Introduce vhca state event notifier
-    https://git.kernel.org/netdev/net-next/c/f3196bb0f14c
-  - [net-next,V10,06/14] net/mlx5: SF, Add auxiliary device support
-    https://git.kernel.org/netdev/net-next/c/90d010b8634b
-  - [net-next,V10,07/14] net/mlx5: SF, Add auxiliary device driver
-    https://git.kernel.org/netdev/net-next/c/1958fc2f0712
-  - [net-next,V10,08/14] net/mlx5: E-switch, Prepare eswitch to handle SF vport
-    https://git.kernel.org/netdev/net-next/c/d7f33a457bee
-  - [net-next,V10,09/14] net/mlx5: E-switch, Add eswitch helpers for SF vport
-    https://git.kernel.org/netdev/net-next/c/d970812b91d0
-  - [net-next,V10,10/14] net/mlx5: SF, Add port add delete functionality
-    https://git.kernel.org/netdev/net-next/c/8f0105418668
-  - [net-next,V10,11/14] net/mlx5: SF, Port function state change support
-    https://git.kernel.org/netdev/net-next/c/6a3273217469
-  - [net-next,V10,12/14] devlink: Add devlink port documentation
-    https://git.kernel.org/netdev/net-next/c/c736111cf8d5
-  - [net-next,V10,13/14] devlink: Extend devlink port documentation for subfunctions
-    https://git.kernel.org/netdev/net-next/c/6474ce7ecd80
-  - [net-next,V10,14/14] net/mlx5: Add devlink subfunction port documentation
-    https://git.kernel.org/netdev/net-next/c/142d93d12dc1
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Thanks
+hangbin
