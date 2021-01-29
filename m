@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31132308298
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 01:44:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 501B830829D
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 01:45:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231511AbhA2An4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 19:43:56 -0500
-Received: from mga02.intel.com ([134.134.136.20]:27157 "EHLO mga02.intel.com"
+        id S231620AbhA2Ao4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 19:44:56 -0500
+Received: from mga02.intel.com ([134.134.136.20]:27154 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231483AbhA2Anu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 Jan 2021 19:43:50 -0500
-IronPort-SDR: VqMOfEmtMO139uE7Pfkt34IkQydO5RFmeuHA1JonzesIB7GqLYXocx6FAmTCjeZYbR9o1725NR
- vVLx3ZxIhwMA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9878"; a="167438963"
+        id S231530AbhA2AoJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Jan 2021 19:44:09 -0500
+IronPort-SDR: oqSzOdHl7n2CKj9NYmU0awqLiWpRik84BTE6sXVN9MKc1m3pFIalqgsJIEjq2I4WiISbYPyb6F
+ 089DI7i74onw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9878"; a="167438964"
 X-IronPort-AV: E=Sophos;i="5.79,384,1602572400"; 
-   d="scan'208";a="167438963"
+   d="scan'208";a="167438964"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
   by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2021 16:42:51 -0800
-IronPort-SDR: f9CQpAM8wMKRLWDI2wFi3EIYBAKkg+El4z3MsxvYGy8SjVWzdSzUswUwbwvBzOab2QfkesNWut
- Lu9/F5V/X1Ng==
+IronPort-SDR: 6EiRRHH90bmVCvCbwcQEqiAE2g4pDPDrHPhV+4FCuc5qshZigmQYKHmyqtspLGzW3DDMyPHR7L
+ SdO3VNV/rBCQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.79,384,1602572400"; 
-   d="scan'208";a="430778688"
+   d="scan'208";a="430778691"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga001.jf.intel.com with ESMTP; 28 Jan 2021 16:42:51 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -30,9 +30,9 @@ To:     davem@davemloft.net, kuba@kernel.org
 Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
         sassmann@redhat.com, anthony.l.nguyen@intel.com,
         Tony Brelinski <tonyx.brelinski@intel.com>
-Subject: [PATCH net-next 03/15] ice: read security revision to ice_nvm_info and ice_orom_info
-Date:   Thu, 28 Jan 2021 16:43:20 -0800
-Message-Id: <20210129004332.3004826-4-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 04/15] ice: add devlink parameters to read and write minimum security revision
+Date:   Thu, 28 Jan 2021 16:43:21 -0800
+Message-Id: <20210129004332.3004826-5-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210129004332.3004826-1-anthony.l.nguyen@intel.com>
 References: <20210129004332.3004826-1-anthony.l.nguyen@intel.com>
@@ -44,349 +44,566 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jacob Keller <jacob.e.keller@intel.com>
 
-The main NVM module and the Option ROM module contain a security
-revision in their CSS header. This security revision is used to
-determine whether or not the signed module should be loaded at bootup.
-If the module security revision is lower than the associated minimum
-security revision, it will not be loaded.
+The ice NVM flash has a security revision field for the main NVM bank
+and the Option ROM bank. In addition to the revision within the module,
+the device also has a minimum security revision TLV area. This minimum
+security revision field indicates the minimum value that will be
+accepted for the associated security revision when loading the NVM bank.
 
-The CSS header does not have a module id associated with it, and thus
-requires flat NVM reads in order to access it. To do this, take
-advantage of the cached bank information. Introduce a new
-"ice_read_flash_module" function that takes the module and bank to read.
-Implement both ice_read_active_nvm_module and
-ice_read_active_orom_module. These functions will use the cached values
-to determine the active bank and calculate the appropriate offset.
+Add functions to read and update the minimum security revisions. Use
+these functions to implement devlink parameters, "fw.undi.minsrev" and
+"fw.mgmt.minsrev".
 
-Using these new access functions, extract the security revision for both
-the main NVM bank and the Option ROM into the associated info structure.
+These parameters are permanent (i.e. stored in flash), and are used to
+indicate the minimum security revision of the associated NVM bank. If
+the image in the bank has a lower security revision, then the flash
+loader will not continue loading that flash bank.
 
-Add the security revisions to the devlink info output. Report the main
-NVM bank security revision as "fw.mgmt.srev". Report the Option ROM
-security revision as "fw.undi.srev".
+The new parameters allow for opting in to update the minimum security
+revision to ensure that a flash image with a known security flaw cannot
+be loaded.
 
-A future patch will add the associated minimum security revisions as
-devlink flash parameters.
+Note that the minimum security revision cannot be reduced, only
+increased. The driver also refuses to allow an update if the currently
+active image revision is lower than the requested value. This is done to
+avoid potentially updating the value such that the device can no longer
+start.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- Documentation/networking/devlink/ice.rst     |   9 +
- drivers/net/ethernet/intel/ice/ice_devlink.c |  20 +++
- drivers/net/ethernet/intel/ice/ice_nvm.c     | 172 +++++++++++++++++++
- drivers/net/ethernet/intel/ice/ice_type.h    |   9 +
- 4 files changed, 210 insertions(+)
+ Documentation/networking/devlink/ice.rst      |  34 +++
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  17 ++
+ drivers/net/ethernet/intel/ice/ice_devlink.c  | 218 +++++++++++++++++-
+ drivers/net/ethernet/intel/ice/ice_devlink.h  |   2 +
+ drivers/net/ethernet/intel/ice/ice_main.c     |   3 +
+ drivers/net/ethernet/intel/ice/ice_nvm.c      | 112 +++++++++
+ drivers/net/ethernet/intel/ice/ice_nvm.h      |   4 +
+ drivers/net/ethernet/intel/ice/ice_type.h     |   8 +
+ 8 files changed, 397 insertions(+), 1 deletion(-)
 
 diff --git a/Documentation/networking/devlink/ice.rst b/Documentation/networking/devlink/ice.rst
-index a432dc419fa4..78707970ee62 100644
+index 78707970ee62..efa366ae633a 100644
 --- a/Documentation/networking/devlink/ice.rst
 +++ b/Documentation/networking/devlink/ice.rst
-@@ -38,6 +38,11 @@ The ``ice`` driver reports the following versions
-       - running
-       - 0x305d955f
-       - Unique identifier of the source for the management firmware.
-+    * - ``fw.mgmt.srev``
-+      - running
-+      - 2
-+      - Security revision of the management firmware and associated NVM
-+        contents.
-     * - ``fw.undi``
-       - running
-       - 1.2581.0
-@@ -48,6 +53,10 @@ The ``ice`` driver reports the following versions
-         non-breaking changes and reset to 1 when the major version is
-         incremented. The patch version is normally 0 but is incremented when
-         a fix is delivered as a patch against an older base Option ROM.
-+    * - ``fw.undi.srev``
-+      - running
-+      - 2
-+      - Security revision of the Option ROM containing the UEFI driver.
-     * - ``fw.psid.api``
-       - running
-       - 0.80
+@@ -96,6 +96,40 @@ The ``ice`` driver reports the following versions
+       - 0xee16ced7
+       - The first 4 bytes of the hash of the netlist module contents.
+ 
++Parameters
++==========
++
++The minimum security revision fields of the ice device control whether the
++associated flash section can be loaded. If the security revision field of
++the section -- ``fw.mgmt.srev`` for the main firmware section and
++``fw.undi.srev`` for the Option ROM -- is lower than the associated minimum
++security revision, then the device will not load that section of firmware.
++
++The ``ice`` driver implements driver-specific parameters for updating the
++minimum security revision fields associated those two sections of the device
++flash. Note that the device will not allow lowering a minimum security
++revision, nor will it allow increasing the security revision higher than the
++associated security revision of the active flash image.
++
++.. list-table:: Minimum security revision parameters
++      :widths: 5 5 5 85
++
++   * - Name
++     - Type
++     - Mode
++     - Description
++   * - ``fw.undi.minsrev``
++     - u32
++     - permanent
++     - The device's minimum security revision for the ``fw.undi`` section of
++       the flash.
++   * - ``fw.mgmt.minsrev``
++     - u32
++     - permanent
++     - The device's minimum security revision for the ``fw.mgmt`` section of
++       the flash.
++
++
+ Flash Update
+ ============
+ 
+diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
+index b06fbe99d8e9..40c96662458a 100644
+--- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
++++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
+@@ -1334,6 +1334,8 @@ struct ice_aqc_nvm_checksum {
+ 	u8 rsvd2[12];
+ };
+ 
++#define ICE_AQC_NVM_MINSREV_MOD_ID		0x130
++
+ /* The result of netlist NVM read comes in a TLV format. The actual data
+  * (netlist header) starts from word offset 1 (byte 2). The FW strips
+  * out the type field from the TLV header so all the netlist fields
+@@ -1361,6 +1363,21 @@ struct ice_aqc_nvm_checksum {
+ #define ICE_AQC_NVM_NETLIST_ID_BLK_SHA_HASH		0xA
+ #define ICE_AQC_NVM_NETLIST_ID_BLK_CUST_VER		0x2F
+ 
++/* Used for reading and writing MinSRev using 0x0701 and 0x0703. Note that the
++ * type field is excluded from the section when reading and writing from
++ * a module using the module_typeid field with these AQ commands.
++ */
++struct ice_aqc_nvm_minsrev {
++	__le16 length;
++	__le16 validity;
++#define ICE_AQC_NVM_MINSREV_NVM_VALID		BIT(0)
++#define ICE_AQC_NVM_MINSREV_OROM_VALID		BIT(1)
++	__le16 nvm_minsrev_l;
++	__le16 nvm_minsrev_h;
++	__le16 orom_minsrev_l;
++	__le16 orom_minsrev_h;
++};
++
+ /* Used for NVM Set Package Data command - 0x070A */
+ struct ice_aqc_nvm_pkg_data {
+ 	u8 reserved[3];
 diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
-index 44b64524b1b8..4b08bf6dd0b0 100644
+index 4b08bf6dd0b0..8af33ef70f76 100644
 --- a/drivers/net/ethernet/intel/ice/ice_devlink.c
 +++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
-@@ -56,6 +56,15 @@ static int ice_info_fw_build(struct ice_pf *pf, char *buf, size_t len)
+@@ -250,6 +250,193 @@ static int ice_devlink_info_get(struct devlink *devlink,
  	return 0;
  }
  
-+static int ice_info_fw_srev(struct ice_pf *pf, char *buf, size_t len)
-+{
-+	struct ice_nvm_info *nvm = &pf->hw.flash.nvm;
++enum ice_devlink_param_id {
++	ICE_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
++	ICE_DEVLINK_PARAM_ID_FW_MGMT_MINSREV,
++	ICE_DEVLINK_PARAM_ID_FW_UNDI_MINSREV,
++};
 +
-+	snprintf(buf, len, "%u", nvm->srev);
++/**
++ * ice_devlink_minsrev_get - Get the current minimum security revision
++ * @devlink: pointer to the devlink instance
++ * @id: the parameter ID to get
++ * @ctx: context to return the parameter value
++ *
++ * Returns: zero on success, or an error code on failure.
++ */
++static int
++ice_devlink_minsrev_get(struct devlink *devlink, u32 id, struct devlink_param_gset_ctx *ctx)
++{
++	struct ice_pf *pf = devlink_priv(devlink);
++	struct device *dev = ice_pf_to_dev(pf);
++	struct ice_minsrev_info minsrevs = {};
++	enum ice_status status;
++
++	if (id != ICE_DEVLINK_PARAM_ID_FW_MGMT_MINSREV &&
++	    id != ICE_DEVLINK_PARAM_ID_FW_UNDI_MINSREV)
++		return -EINVAL;
++
++	status = ice_get_nvm_minsrevs(&pf->hw, &minsrevs);
++	if (status) {
++		dev_warn(dev, "Failed to read minimum security revision data from flash\n");
++		return -EIO;
++	}
++
++	/* We report zero if the device has not yet had a valid minimum
++	 * security revision programmed for the associated module. This makes
++	 * sense because it is not possible to have a security revision of
++	 * less than zero. Thus, all images will be able to load if the
++	 * minimum security revision is zero, the same as the case where the
++	 * minimum value is indicated as invalid.
++	 */
++	switch (id) {
++	case ICE_DEVLINK_PARAM_ID_FW_MGMT_MINSREV:
++		if (minsrevs.nvm_valid)
++			ctx->val.vu32 = minsrevs.nvm;
++		else
++			ctx->val.vu32 = 0;
++		break;
++	case ICE_DEVLINK_PARAM_ID_FW_UNDI_MINSREV:
++		if (minsrevs.orom_valid)
++			ctx->val.vu32 = minsrevs.orom;
++		else
++			ctx->val.vu32 = 0;
++		break;
++	}
 +
 +	return 0;
 +}
 +
- static int ice_info_orom_ver(struct ice_pf *pf, char *buf, size_t len)
- {
- 	struct ice_orom_info *orom = &pf->hw.flash.orom;
-@@ -65,6 +74,15 @@ static int ice_info_orom_ver(struct ice_pf *pf, char *buf, size_t len)
- 	return 0;
- }
- 
-+static int ice_info_orom_srev(struct ice_pf *pf, char *buf, size_t len)
++/**
++ * ice_devlink_minsrev_set - Set the minimum security revision
++ * @devlink: pointer to the devlink instance
++ * @id: the parameter ID to set
++ * @ctx: context to return the parameter value
++ *
++ * Set the minimum security revision value for fw.mgmt or fw.undi. The kernel
++ * calls the validate handler before calling this, so we do not need to
++ * duplicate those checks here.
++ *
++ * Returns: zero on success, or an error code on failure.
++ */
++static int
++ice_devlink_minsrev_set(struct devlink *devlink, u32 id, struct devlink_param_gset_ctx *ctx)
 +{
-+	struct ice_orom_info *orom = &pf->hw.flash.orom;
++	struct ice_pf *pf = devlink_priv(devlink);
++	struct device *dev = ice_pf_to_dev(pf);
++	struct ice_minsrev_info minsrevs = {};
++	enum ice_status status;
 +
-+	snprintf(buf, len, "%u", orom->srev);
++	switch (id) {
++	case ICE_DEVLINK_PARAM_ID_FW_MGMT_MINSREV:
++		minsrevs.nvm_valid = true;
++		minsrevs.nvm = ctx->val.vu32;
++		break;
++	case ICE_DEVLINK_PARAM_ID_FW_UNDI_MINSREV:
++		minsrevs.orom_valid = true;
++		minsrevs.orom = ctx->val.vu32;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	status = ice_update_nvm_minsrevs(&pf->hw, &minsrevs);
++	if (status) {
++		dev_warn(dev, "Failed to update minimum security revision data\n");
++		return -EIO;
++	}
 +
 +	return 0;
 +}
 +
- static int ice_info_nvm_ver(struct ice_pf *pf, char *buf, size_t len)
++/**
++ * ice_devlink_minsrev_validate - Validate a minimum security revision update
++ * @devlink: unused pointer to devlink instance
++ * @id: the parameter ID to validate
++ * @val: value to validate
++ * @extack: netlink extended ACK structure
++ *
++ * Check that a proposed update to a minimum security revision field is valid.
++ * Each minimum security revision can only be increased, not decreased.
++ * Additionally, we verify that the value is never set higher than the
++ * security revision of the active flash component.
++ *
++ * Returns: zero if the value is valid, -ERANGE if it is out of range, and
++ * -EINVAL if this function is called with the wrong ID.
++ */
++static int
++ice_devlink_minsrev_validate(struct devlink *devlink, u32 id, union devlink_param_value val,
++			     struct netlink_ext_ack *extack)
++{
++	struct ice_pf *pf = devlink_priv(devlink);
++	struct device *dev = ice_pf_to_dev(pf);
++	struct ice_minsrev_info minsrevs = {};
++	enum ice_status status;
++
++	if (id != ICE_DEVLINK_PARAM_ID_FW_MGMT_MINSREV &&
++	    id != ICE_DEVLINK_PARAM_ID_FW_UNDI_MINSREV)
++		return -EINVAL;
++
++	status = ice_get_nvm_minsrevs(&pf->hw, &minsrevs);
++	if (status) {
++		NL_SET_ERR_MSG_MOD(extack, "Failed to read minimum security revision data from flash");
++		return -EIO;
++	}
++
++	switch (id) {
++	case ICE_DEVLINK_PARAM_ID_FW_MGMT_MINSREV:
++		if (val.vu32 > pf->hw.flash.nvm.srev) {
++			NL_SET_ERR_MSG_MOD(extack, "Cannot update fw.mgmt minimum security revision higher than the currently running firmware");
++			dev_dbg(dev, "Attempted to set fw.mgmt.minsrev to %u, but running firmware has srev %u\n",
++				val.vu32, pf->hw.flash.nvm.srev);
++			return -EPERM;
++		}
++
++		if (minsrevs.nvm_valid && val.vu32 < minsrevs.nvm) {
++			NL_SET_ERR_MSG_MOD(extack, "Cannot lower the minimum security revision for fw.mgmt flash section");
++			dev_dbg(dev, "Attempted  to set fw.mgmt.minsrev to %u, but current minsrev is %u\n",
++				val.vu32, minsrevs.nvm);
++			return -EPERM;
++		}
++		break;
++	case ICE_DEVLINK_PARAM_ID_FW_UNDI_MINSREV:
++		if (val.vu32 > pf->hw.flash.orom.srev) {
++			NL_SET_ERR_MSG_MOD(extack, "Cannot update fw.undi minimum security revision higher than the currently running firmware");
++			dev_dbg(dev, "Attempted to set fw.undi.minsrev to %u, but running firmware has srev %u\n",
++				val.vu32, pf->hw.flash.orom.srev);
++			return -EPERM;
++		}
++
++		if (minsrevs.orom_valid && val.vu32 < minsrevs.orom) {
++			NL_SET_ERR_MSG_MOD(extack, "Cannot lower the minimum security revision for fw.undi flash section");
++			dev_dbg(dev, "Attempted  to set fw.undi.minsrev to %u, but current minsrev is %u\n",
++				val.vu32, minsrevs.orom);
++			return -EPERM;
++		}
++		break;
++	}
++
++	return 0;
++}
++
++/* devlink parameters for the ice driver */
++static const struct devlink_param ice_devlink_params[] = {
++	DEVLINK_PARAM_DRIVER(ICE_DEVLINK_PARAM_ID_FW_MGMT_MINSREV,
++			     "fw.mgmt.minsrev",
++			     DEVLINK_PARAM_TYPE_U32,
++			     BIT(DEVLINK_PARAM_CMODE_PERMANENT),
++			     ice_devlink_minsrev_get,
++			     ice_devlink_minsrev_set,
++			     ice_devlink_minsrev_validate),
++	DEVLINK_PARAM_DRIVER(ICE_DEVLINK_PARAM_ID_FW_UNDI_MINSREV,
++			     "fw.undi.minsrev",
++			     DEVLINK_PARAM_TYPE_U32,
++			     BIT(DEVLINK_PARAM_CMODE_PERMANENT),
++			     ice_devlink_minsrev_get,
++			     ice_devlink_minsrev_set,
++			     ice_devlink_minsrev_validate),
++};
++
+ /**
+  * ice_devlink_flash_update - Update firmware stored in flash on the device
+  * @devlink: pointer to devlink associated with device to update
+@@ -356,6 +543,13 @@ int ice_devlink_register(struct ice_pf *pf)
+ 		return err;
+ 	}
+ 
++	err = devlink_params_register(devlink, ice_devlink_params,
++				      ARRAY_SIZE(ice_devlink_params));
++	if (err) {
++		dev_err(dev, "devlink params registration failed: %d\n", err);
++		return err;
++	}
++
+ 	return 0;
+ }
+ 
+@@ -367,7 +561,29 @@ int ice_devlink_register(struct ice_pf *pf)
+  */
+ void ice_devlink_unregister(struct ice_pf *pf)
  {
- 	struct ice_nvm_info *nvm = &pf->hw.flash.nvm;
-@@ -148,7 +166,9 @@ static const struct ice_devlink_version {
- 	running(DEVLINK_INFO_VERSION_GENERIC_FW_MGMT, ice_info_fw_mgmt),
- 	running("fw.mgmt.api", ice_info_fw_api),
- 	running("fw.mgmt.build", ice_info_fw_build),
-+	running("fw.mgmt.srev", ice_info_fw_srev),
- 	running(DEVLINK_INFO_VERSION_GENERIC_FW_UNDI, ice_info_orom_ver),
-+	running("fw.undi.srev", ice_info_orom_srev),
- 	running("fw.psid.api", ice_info_nvm_ver),
- 	running(DEVLINK_INFO_VERSION_GENERIC_FW_BUNDLE_ID, ice_info_eetrack),
- 	running("fw.app.name", ice_info_ddp_pkg_name),
+-	devlink_unregister(priv_to_devlink(pf));
++	struct devlink *devlink = priv_to_devlink(pf);
++
++	devlink_params_unregister(devlink, ice_devlink_params,
++				  ARRAY_SIZE(ice_devlink_params));
++	devlink_unregister(devlink);
++}
++
++/**
++ * ice_devlink_params_publish - Publish parameters to allow user access.
++ * @pf: the PF structure pointer
++ */
++void ice_devlink_params_publish(struct ice_pf *pf)
++{
++	devlink_params_publish(priv_to_devlink(pf));
++}
++
++/**
++ * ice_devlink_params_unpublish - Unpublish parameters to prevent user access.
++ * @pf: the PF structure pointer
++ */
++void ice_devlink_params_unpublish(struct ice_pf *pf)
++{
++	devlink_params_unpublish(priv_to_devlink(pf));
+ }
+ 
+ /**
+diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.h b/drivers/net/ethernet/intel/ice/ice_devlink.h
+index e07e74426bde..e3363ea5c7ac 100644
+--- a/drivers/net/ethernet/intel/ice/ice_devlink.h
++++ b/drivers/net/ethernet/intel/ice/ice_devlink.h
+@@ -8,6 +8,8 @@ struct ice_pf *ice_allocate_pf(struct device *dev);
+ 
+ int ice_devlink_register(struct ice_pf *pf);
+ void ice_devlink_unregister(struct ice_pf *pf);
++void ice_devlink_params_publish(struct ice_pf *pf);
++void ice_devlink_params_unpublish(struct ice_pf *pf);
+ int ice_devlink_create_port(struct ice_vsi *vsi);
+ void ice_devlink_destroy_port(struct ice_vsi *vsi);
+ 
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 6e251dfffc91..66a40dfadb6a 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -4071,6 +4071,7 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
+ 	}
+ 
+ 	ice_devlink_init_regions(pf);
++	ice_devlink_params_publish(pf);
+ 
+ 	pf->hw.udp_tunnel_nic.set_port = ice_udp_tunnel_set_port;
+ 	pf->hw.udp_tunnel_nic.unset_port = ice_udp_tunnel_unset_port;
+@@ -4259,6 +4260,7 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
+ 	devm_kfree(dev, pf->vsi);
+ err_init_pf_unroll:
+ 	ice_deinit_pf(pf);
++	ice_devlink_params_unpublish(pf);
+ 	ice_devlink_destroy_regions(pf);
+ 	ice_deinit_hw(hw);
+ err_exit_unroll:
+@@ -4371,6 +4373,7 @@ static void ice_remove(struct pci_dev *pdev)
+ 		ice_vsi_free_q_vectors(pf->vsi[i]);
+ 	}
+ 	ice_deinit_pf(pf);
++	ice_devlink_params_unpublish(pf);
+ 	ice_devlink_destroy_regions(pf);
+ 	ice_deinit_hw(&pf->hw);
+ 	ice_devlink_unregister(pf);
 diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.c b/drivers/net/ethernet/intel/ice/ice_nvm.c
-index 308344045397..21eef3d037d6 100644
+index 21eef3d037d6..ed4d6058a90d 100644
 --- a/drivers/net/ethernet/intel/ice/ice_nvm.c
 +++ b/drivers/net/ethernet/intel/ice/ice_nvm.c
-@@ -233,6 +233,105 @@ void ice_release_nvm(struct ice_hw *hw)
- 	ice_release_res(hw, ICE_NVM_RES_ID);
+@@ -1038,6 +1038,118 @@ enum ice_status ice_nvm_write_activate(struct ice_hw *hw, u8 cmd_flags)
+ 	return ice_aq_send_cmd(hw, &desc, NULL, 0, NULL);
  }
  
 +/**
-+ * ice_read_flash_module - Read a word from one of the main NVM modules
-+ * @hw: pointer to the HW structure
-+ * @bank: which bank of the module to read
-+ * @module: the module to read
-+ * @offset: the offset into the module in words
-+ * @data: storage for the word read from the flash
++ * ice_get_nvm_minsrevs - Get the Minimum Security Revision values from flash
++ * @hw: pointer to the HW struct
++ * @minsrevs: structure to store NVM and OROM minsrev values
 + *
-+ * Read a word from the specified bank of the module. The bank must be either
-+ * the 1st or 2nd bank. The word will be read using flat NVM access, and
-+ * relies on the hw->flash.banks data being setup by
-+ * ice_determine_active_flash_banks() during initialization.
++ * Read the Minimum Security Revision TLV and extract the revision values from
++ * the flash image into a readable structure for processing.
 + */
-+static enum ice_status
-+ice_read_flash_module(struct ice_hw *hw, enum ice_flash_bank bank, u16 module,
-+		      u32 offset, u16 *data)
++enum ice_status
++ice_get_nvm_minsrevs(struct ice_hw *hw, struct ice_minsrev_info *minsrevs)
 +{
-+	struct ice_bank_info *banks = &hw->flash.banks;
-+	u32 bytes = sizeof(u16);
++	struct ice_aqc_nvm_minsrev data;
 +	enum ice_status status;
-+	__le16 data_local;
-+	bool second_bank;
-+	u32 start;
-+
-+	switch (bank) {
-+	case ICE_1ST_FLASH_BANK:
-+		second_bank = false;
-+		break;
-+	case ICE_2ND_FLASH_BANK:
-+		second_bank = true;
-+		break;
-+	case ICE_INVALID_FLASH_BANK:
-+	default:
-+		ice_debug(hw, ICE_DBG_NVM, "Unexpected flash bank %u\n", bank);
-+		return ICE_ERR_PARAM;
-+	}
-+
-+	switch (module) {
-+	case ICE_SR_1ST_NVM_BANK_PTR:
-+		start = banks->nvm_ptr + (second_bank ? banks->nvm_size : 0);
-+		break;
-+	case ICE_SR_1ST_OROM_BANK_PTR:
-+		start = banks->orom_ptr + (second_bank ? banks->orom_size : 0);
-+		break;
-+	case ICE_SR_NETLIST_BANK_PTR:
-+		start = banks->netlist_ptr + (second_bank ? banks->netlist_size : 0);
-+		break;
-+	default:
-+		ice_debug(hw, ICE_DBG_NVM, "Unexpected flash module 0x%04x\n", module);
-+		return ICE_ERR_PARAM;
-+	}
++	u16 valid;
 +
 +	status = ice_acquire_nvm(hw, ICE_RES_READ);
 +	if (status)
 +		return status;
 +
-+	status = ice_read_flat_nvm(hw, start + offset * sizeof(u16), &bytes,
-+				   (__force u8 *)&data_local, false);
-+	if (!status)
-+		*data = le16_to_cpu(data_local);
++	status = ice_aq_read_nvm(hw, ICE_AQC_NVM_MINSREV_MOD_ID, 0, sizeof(data),
++				 &data, true, false, NULL);
 +
++	ice_release_nvm(hw);
++
++	if (status)
++		return status;
++
++	valid = le16_to_cpu(data.validity);
++
++	/* Extract NVM minimum security revision */
++	if (valid & ICE_AQC_NVM_MINSREV_NVM_VALID) {
++		u16 minsrev_l, minsrev_h;
++
++		minsrev_l = le16_to_cpu(data.nvm_minsrev_l);
++		minsrev_h = le16_to_cpu(data.nvm_minsrev_h);
++
++		minsrevs->nvm = minsrev_h << 16 | minsrev_l;
++		minsrevs->nvm_valid = true;
++	}
++
++	/* Extract the OROM minimum security revision */
++	if (valid & ICE_AQC_NVM_MINSREV_OROM_VALID) {
++		u16 minsrev_l, minsrev_h;
++
++		minsrev_l = le16_to_cpu(data.orom_minsrev_l);
++		minsrev_h = le16_to_cpu(data.orom_minsrev_h);
++
++		minsrevs->orom = minsrev_h << 16 | minsrev_l;
++		minsrevs->orom_valid = true;
++	}
++
++	return 0;
++}
++
++/**
++ * ice_update_nvm_minsrevs - Update minimum security revision TLV data in flash
++ * @hw: pointer to the HW struct
++ * @minsrevs: minimum security revision information
++ *
++ * Update the NVM or Option ROM minimum security revision fields in the PFA
++ * area of the flash. Reads the minsrevs->nvm_valid and minsrevs->orom_valid
++ * fields to determine what update is being requested. If the valid bit is not
++ * set for that module, then the associated minsrev will be left as is.
++ */
++enum ice_status
++ice_update_nvm_minsrevs(struct ice_hw *hw, struct ice_minsrev_info *minsrevs)
++{
++	struct ice_aqc_nvm_minsrev data;
++	enum ice_status status;
++
++	if (!minsrevs->nvm_valid && !minsrevs->orom_valid) {
++		ice_debug(hw, ICE_DBG_NVM, "At least one of NVM and OROM MinSrev must be valid");
++		return ICE_ERR_PARAM;
++	}
++
++	status = ice_acquire_nvm(hw, ICE_RES_WRITE);
++	if (status)
++		return status;
++
++	/* Get current data */
++	status = ice_aq_read_nvm(hw, ICE_AQC_NVM_MINSREV_MOD_ID, 0, sizeof(data),
++				 &data, true, false, NULL);
++	if (status)
++		goto exit_release_res;
++
++	if (minsrevs->nvm_valid) {
++		data.nvm_minsrev_l = cpu_to_le16(minsrevs->nvm & 0xFFFF);
++		data.nvm_minsrev_h = cpu_to_le16(minsrevs->nvm >> 16);
++		data.validity |= cpu_to_le16(ICE_AQC_NVM_MINSREV_NVM_VALID);
++	}
++
++	if (minsrevs->orom_valid) {
++		data.orom_minsrev_l = cpu_to_le16(minsrevs->orom & 0xFFFF);
++		data.orom_minsrev_h = cpu_to_le16(minsrevs->orom >> 16);
++		data.validity |= cpu_to_le16(ICE_AQC_NVM_MINSREV_OROM_VALID);
++	}
++
++	/* Update flash data */
++	status = ice_aq_update_nvm(hw, ICE_AQC_NVM_MINSREV_MOD_ID, 0, sizeof(data), &data,
++				   true, ICE_AQC_NVM_SPECIAL_UPDATE, NULL);
++	if (status)
++		goto exit_release_res;
++
++	/* Dump the Shadow RAM to the flash */
++	status = ice_nvm_write_activate(hw, 0);
++
++exit_release_res:
 +	ice_release_nvm(hw);
 +
 +	return status;
 +}
 +
-+/**
-+ * ice_read_active_nvm_module - Read from the active main NVM module
-+ * @hw: pointer to the HW structure
-+ * @offset: offset into the NVM module to read, in words
-+ * @data: storage for returned word value
-+ *
-+ * Read the specified word from the active NVM module. This includes the CSS
-+ * header at the start of the NVM module.
-+ */
-+static enum ice_status
-+ice_read_active_nvm_module(struct ice_hw *hw, u32 offset, u16 *data)
-+{
-+	return ice_read_flash_module(hw, hw->flash.banks.nvm_bank,
-+				     ICE_SR_1ST_NVM_BANK_PTR, offset, data);
-+}
-+
-+/**
-+ * ice_read_active_orom_module - Read from the active Option ROM module
-+ * @hw: pointer to the HW structure
-+ * @offset: offset into the OROM module to read, in words
-+ * @data: storage for returned word value
-+ *
-+ * Read the specified word from the active Option ROM module of the flash.
-+ * Note that unlike the NVM module, the CSS data is stored at the end of the
-+ * module instead of at the beginning.
-+ */
-+static enum ice_status
-+ice_read_active_orom_module(struct ice_hw *hw, u32 offset, u16 *data)
-+{
-+	return ice_read_flash_module(hw, hw->flash.banks.orom_bank,
-+				     ICE_SR_1ST_OROM_BANK_PTR, offset, data);
-+}
-+
  /**
-  * ice_read_sr_word - Reads Shadow RAM word and acquire NVM if necessary
-  * @hw: pointer to the HW structure
-@@ -379,6 +478,32 @@ ice_read_pba_string(struct ice_hw *hw, u8 *pba_num, u32 pba_num_size)
- 	return status;
- }
- 
-+/**
-+ * ice_get_nvm_srev - Read the security revision from the NVM CSS header
-+ * @hw: pointer to the HW struct
-+ * @srev: storage for security revision
-+ *
-+ * Read the security revision out of the CSS header of the active NVM module
-+ * bank.
-+ */
-+static enum ice_status ice_get_nvm_srev(struct ice_hw *hw, u32 *srev)
-+{
-+	enum ice_status status;
-+	u16 srev_l, srev_h;
-+
-+	status = ice_read_active_nvm_module(hw, ICE_NVM_CSS_SREV_L, &srev_l);
-+	if (status)
-+		return status;
-+
-+	status = ice_read_active_nvm_module(hw, ICE_NVM_CSS_SREV_H, &srev_h);
-+	if (status)
-+		return status;
-+
-+	*srev = srev_h << 16 | srev_l;
-+
-+	return 0;
-+}
-+
- /**
-  * ice_get_nvm_ver_info - Read NVM version information
+  * ice_aq_nvm_update_empr
   * @hw: pointer to the HW struct
-@@ -414,6 +539,49 @@ ice_get_nvm_ver_info(struct ice_hw *hw, struct ice_nvm_info *nvm)
- 
- 	nvm->eetrack = (eetrack_hi << 16) | eetrack_lo;
- 
-+	status = ice_get_nvm_srev(hw, &nvm->srev);
-+	if (status)
-+		ice_debug(hw, ICE_DBG_NVM, "Failed to read NVM security revision.\n");
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_get_orom_srev - Read the security revision from the OROM CSS header
-+ * @hw: pointer to the HW struct
-+ * @srev: storage for security revision
-+ *
-+ * Read the security revision out of the CSS header of the active OROM module
-+ * bank.
-+ */
-+static enum ice_status ice_get_orom_srev(struct ice_hw *hw, u32 *srev)
-+{
-+	enum ice_status status;
-+	u16 srev_l, srev_h;
-+	u32 css_start;
-+
-+	if (hw->flash.banks.orom_size < ICE_NVM_OROM_TRAILER_LENGTH) {
-+		ice_debug(hw, ICE_DBG_NVM, "Unexpected Option ROM Size of %u\n",
-+			  hw->flash.banks.orom_size);
-+		return ICE_ERR_CFG;
-+	}
-+
-+	/* calculate how far into the Option ROM the CSS header starts. Note
-+	 * that ice_read_active_orom_module takes a word offset so we need to
-+	 * divide by 2 here.
-+	 */
-+	css_start = (hw->flash.banks.orom_size - ICE_NVM_OROM_TRAILER_LENGTH) / 2;
-+
-+	status = ice_read_active_orom_module(hw, css_start + ICE_NVM_CSS_SREV_L, &srev_l);
-+	if (status)
-+		return status;
-+
-+	status = ice_read_active_orom_module(hw, css_start + ICE_NVM_CSS_SREV_H, &srev_h);
-+	if (status)
-+		return status;
-+
-+	*srev = srev_h << 16 | srev_l;
-+
- 	return 0;
- }
- 
-@@ -469,6 +637,10 @@ ice_get_orom_ver_info(struct ice_hw *hw, struct ice_orom_info *orom)
- 	orom->build = (u16)((combo_ver & ICE_OROM_VER_BUILD_MASK) >>
- 			    ICE_OROM_VER_BUILD_SHIFT);
- 
-+	status = ice_get_orom_srev(hw, &orom->srev);
-+	if (status)
-+		ice_debug(hw, ICE_DBG_NVM, "Failed to read Option ROM security revision.\n");
-+
- 	return 0;
- }
- 
+diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.h b/drivers/net/ethernet/intel/ice/ice_nvm.h
+index 8d430909f846..8cfb9b9ac638 100644
+--- a/drivers/net/ethernet/intel/ice/ice_nvm.h
++++ b/drivers/net/ethernet/intel/ice/ice_nvm.h
+@@ -14,6 +14,10 @@ enum ice_status
+ ice_get_pfa_module_tlv(struct ice_hw *hw, u16 *module_tlv, u16 *module_tlv_len,
+ 		       u16 module_type);
+ enum ice_status
++ice_get_nvm_minsrevs(struct ice_hw *hw, struct ice_minsrev_info *minsrevs);
++enum ice_status
++ice_update_nvm_minsrevs(struct ice_hw *hw, struct ice_minsrev_info *minsrevs);
++enum ice_status
+ ice_read_pba_string(struct ice_hw *hw, u8 *pba_num, u32 pba_num_size);
+ enum ice_status ice_init_nvm(struct ice_hw *hw);
+ enum ice_status ice_read_sr_word(struct ice_hw *hw, u16 offset, u16 *data);
 diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
-index bc3be64cf3d9..0e0cbf90c431 100644
+index 0e0cbf90c431..f387641195a9 100644
 --- a/drivers/net/ethernet/intel/ice/ice_type.h
 +++ b/drivers/net/ethernet/intel/ice/ice_type.h
-@@ -311,11 +311,13 @@ struct ice_orom_info {
- 	u8 major;			/* Major version of OROM */
- 	u8 patch;			/* Patch version of OROM */
- 	u16 build;			/* Build version of OROM */
-+	u32 srev;			/* Security revision */
- };
- 
- /* NVM version information */
- struct ice_nvm_info {
- 	u32 eetrack;
-+	u32 srev;
- 	u8 major;
+@@ -322,6 +322,14 @@ struct ice_nvm_info {
  	u8 minor;
  };
-@@ -820,6 +822,13 @@ struct ice_hw_port_stats {
- #define ICE_SR_NETLIST_BANK_SIZE	0x47
- #define ICE_SR_SECTOR_SIZE_IN_WORDS	0x800
  
-+/* CSS Header words */
-+#define ICE_NVM_CSS_SREV_L			0x14
-+#define ICE_NVM_CSS_SREV_H			0x15
++/* Minimum Security Revision information */
++struct ice_minsrev_info {
++	u32 nvm;
++	u32 orom;
++	u8 nvm_valid : 1;
++	u8 orom_valid : 1;
++};
 +
-+/* Size in bytes of Option ROM trailer */
-+#define ICE_NVM_OROM_TRAILER_LENGTH		660
-+
- /* Auxiliary field, mask, and shift definition for Shadow RAM and NVM Flash */
- #define ICE_SR_CTRL_WORD_1_S		0x06
- #define ICE_SR_CTRL_WORD_1_M		(0x03 << ICE_SR_CTRL_WORD_1_S)
+ /* netlist version information */
+ struct ice_netlist_info {
+ 	u32 major;			/* major high/low */
 -- 
 2.26.2
 
