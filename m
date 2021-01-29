@@ -2,118 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB79D3082AF
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 01:50:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AED933082B0
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 01:50:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231628AbhA2Atp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 19:49:45 -0500
-Received: from mga02.intel.com ([134.134.136.20]:27157 "EHLO mga02.intel.com"
+        id S231542AbhA2Aty (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 19:49:54 -0500
+Received: from mga02.intel.com ([134.134.136.20]:27154 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231671AbhA2Ar6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 Jan 2021 19:47:58 -0500
-IronPort-SDR: MNYgh+q8K+Ov7NuhCaZT2fVtXHTM3/i5x95zbAvi0d/5xIRLTfnaPjCB50K3vpxTlvWM7nvjB4
- kzhUgQgMh8yQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9878"; a="167438973"
+        id S231713AbhA2Ar7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Jan 2021 19:47:59 -0500
+IronPort-SDR: DatT17+1s+2yz0IqXAgq2Eckx1PozUfmKIsTkk/5aD0VOhMppXU3hvQtLR73YWAnDIOEblQIgv
+ Rvv7K/iGCALQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9878"; a="167438974"
 X-IronPort-AV: E=Sophos;i="5.79,384,1602572400"; 
-   d="scan'208";a="167438973"
+   d="scan'208";a="167438974"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2021 16:42:52 -0800
-IronPort-SDR: 1R5UcZ0YainoeJqCo5fNWWdXtLpg/34qC9d+6CzVgqdZHJp5jRM85to8Pu3YaHkjIKS3z98LLK
- vmoo8hn610og==
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2021 16:42:53 -0800
+IronPort-SDR: qyd7F8wvg4JDE5DYyMtOR3VQ3Uf7QF580VhMhIUH6cYTJwPxfs6V+Rp72S8b6NoRIp6RgaIzIq
+ jXZqZzbLCROQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.79,384,1602572400"; 
-   d="scan'208";a="430778718"
+   d="scan'208";a="430778721"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga001.jf.intel.com with ESMTP; 28 Jan 2021 16:42:52 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        netdev@vger.kernel.org, sassmann@redhat.com,
-        anthony.l.nguyen@intel.com, kernel test robot <lkp@intel.com>,
+Cc:     Bruce Allan <bruce.w.allan@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com, anthony.l.nguyen@intel.com,
         Tony Brelinski <tonyx.brelinski@intel.com>
-Subject: [PATCH net-next 13/15] ice: Replace one-element array with flexible-array member
-Date:   Thu, 28 Jan 2021 16:43:30 -0800
-Message-Id: <20210129004332.3004826-14-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 14/15] ice: use flex_array_size where possible
+Date:   Thu, 28 Jan 2021 16:43:31 -0800
+Message-Id: <20210129004332.3004826-15-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210129004332.3004826-1-anthony.l.nguyen@intel.com>
 References: <20210129004332.3004826-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Gustavo A. R. Silva" <gustavoars@kernel.org>
+From: Bruce Allan <bruce.w.allan@intel.com>
 
-There is a regular need in the kernel to provide a way to declare having
-a dynamically sized set of trailing elements in a structure. Kernel code
-should always use “flexible array members”[1] for these cases. The older
-style of one-element or zero-length arrays should no longer be used[2].
+Use the flex_array_size() helper with the recently added flexible array
+members in structures.
 
-Refactor the code according to the use of a flexible-array member in
-struct ice_res_tracker, instead of a one-element array and use the
-struct_size() helper to calculate the size for the allocations.
-
-Also, notice that the code below suggests that, currently, two too many
-bytes are being allocated with devm_kzalloc(), as the total number of
-entries (pf->irq_tracker->num_entries) for pf->irq_tracker->list[] is
-_vectors_ and sizeof(*pf->irq_tracker) also includes the size of the
-one-element array _list_ in struct ice_res_tracker.
-
-drivers/net/ethernet/intel/ice/ice_main.c:3511:
-3511         /* populate SW interrupts pool with number of OS granted IRQs. */
-3512         pf->num_avail_sw_msix = (u16)vectors;
-3513         pf->irq_tracker->num_entries = (u16)vectors;
-3514         pf->irq_tracker->end = pf->irq_tracker->num_entries;
-
-With this change, the right amount of dynamic memory is now allocated
-because, contrary to one-element arrays which occupy at least as much
-space as a single object of the type, flexible-array members don't
-occupy such space in the containing structure.
-
-[1] https://en.wikipedia.org/wiki/Flexible_array_member
-[2] https://www.kernel.org/doc/html/v5.9-rc1/process/deprecated.html#zero-length-and-one-element-arrays
-
-Built-tested-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Signed-off-by: Bruce Allan <bruce.w.allan@intel.com>
 Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice.h      | 2 +-
- drivers/net/ethernet/intel/ice/ice_main.c | 6 +++---
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_common.c    | 2 +-
+ drivers/net/ethernet/intel/ice/ice_flex_pipe.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index 56725356a17b..45bbae68b014 100644
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -164,7 +164,7 @@ struct ice_tc_cfg {
- struct ice_res_tracker {
- 	u16 num_entries;
- 	u16 end;
--	u16 list[1];
-+	u16 list[];
- };
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index 6d7e7dd0ebe2..607d33d05a0c 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -1653,7 +1653,7 @@ ice_aq_alloc_free_res(struct ice_hw *hw, u16 num_entries,
+ 	if (!buf)
+ 		return ICE_ERR_PARAM;
  
- struct ice_qs_cfg {
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 5219aa70b530..ff6190bffff6 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -3499,9 +3499,9 @@ static int ice_init_interrupt_scheme(struct ice_pf *pf)
- 		return vectors;
+-	if (buf_size < (num_entries * sizeof(buf->elem[0])))
++	if (buf_size < flex_array_size(buf, elem, num_entries))
+ 		return ICE_ERR_PARAM;
  
- 	/* set up vector assignment tracking */
--	pf->irq_tracker =
--		devm_kzalloc(ice_pf_to_dev(pf), sizeof(*pf->irq_tracker) +
--			     (sizeof(u16) * vectors), GFP_KERNEL);
-+	pf->irq_tracker = devm_kzalloc(ice_pf_to_dev(pf),
-+				       struct_size(pf->irq_tracker, list, vectors),
-+				       GFP_KERNEL);
- 	if (!pf->irq_tracker) {
- 		ice_dis_msix(pf);
- 		return -ENOMEM;
+ 	ice_fill_dflt_direct_cmd_desc(&desc, opc);
+diff --git a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
+index f5e81b555353..cf5b717b9293 100644
+--- a/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
++++ b/drivers/net/ethernet/intel/ice/ice_flex_pipe.c
+@@ -1525,7 +1525,7 @@ ice_pkg_buf_reserve_section(struct ice_buf_build *bld, u16 count)
+ 	bld->reserved_section_table_entries += count;
+ 
+ 	data_end = le16_to_cpu(buf->data_end) +
+-		   (count * sizeof(buf->section_entry[0]));
++		flex_array_size(buf, section_entry, count);
+ 	buf->data_end = cpu_to_le16(data_end);
+ 
+ 	return 0;
 -- 
 2.26.2
 
