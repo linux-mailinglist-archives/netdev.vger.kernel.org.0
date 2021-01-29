@@ -2,124 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E503130829A
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 01:45:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FE0D308294
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 01:44:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231577AbhA2AoY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 19:44:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33852 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231451AbhA2An6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 19:43:58 -0500
-Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 645CAC061574;
-        Thu, 28 Jan 2021 16:43:17 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4DRdqP3P6Lz9sVF;
-        Fri, 29 Jan 2021 11:43:12 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1611880993;
-        bh=l4vnBR+mEzBF2GR6eNUHnAasrn2FIlCfc5gxL8Fgj9c=;
-        h=Date:From:To:Cc:Subject:From;
-        b=DDOHeZLSSgQhmq3lnp6T/Gv+2uVKPfHvUMt+Vn8O9+sXZ4MKOf88E6ACytjsjAoq8
-         2+dTxhymvtwJMPVAIqwyve9JyOGMoBEyodCq/BO54lA5oxxFWmBISJuKBJRuA81lEO
-         SYdmLRVWbv2fvppZHp5+s8SYaHU+gtl3W+fBPsn49OEaywiipZk5up2Wrk/yzcgHZd
-         tN3cUpukEb/zu+HL9LsRo2yymetSltgo1G+0E3A6qyZccItR8SW+buYBA/KCtPB2MC
-         lTUUWCDGg5UtymY9Mhu9KbxXQ1okQu0qFSq19q/mGK0jFwWiWHS/Io98OClHD6Zjqe
-         cTwz0EYk9JL9A==
-Date:   Fri, 29 Jan 2021 11:43:09 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: linux-next: manual merge of the net-next tree with Linus' tree
-Message-ID: <20210129114309.451562f7@canb.auug.org.au>
+        id S231374AbhA2Ane (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 19:43:34 -0500
+Received: from mga02.intel.com ([134.134.136.20]:27154 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231148AbhA2Anc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Jan 2021 19:43:32 -0500
+IronPort-SDR: lQxJbMqSzByAf3dqnHNPOKTSWXvyKc1griu9qICxmooaWkFCNR+tk1W7j6ZJBT/cmHr4IT+8gK
+ n8Fl4h+U2f3A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9878"; a="167438959"
+X-IronPort-AV: E=Sophos;i="5.79,384,1602572400"; 
+   d="scan'208";a="167438959"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2021 16:42:51 -0800
+IronPort-SDR: HZtNsJkua+sXCUOxDFpqUiRVuFU+r/rWPL0SFc6DAQBhvGzoQ/Ss0hYPUDdw3uXF1r/bS5MZWi
+ PVx+bPfRaceQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.79,384,1602572400"; 
+   d="scan'208";a="430778679"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga001.jf.intel.com with ESMTP; 28 Jan 2021 16:42:50 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com
+Subject: [PATCH net-next 00/15][pull request] 100GbE Intel Wired LAN Driver Updates 2021-01-28
+Date:   Thu, 28 Jan 2021 16:43:17 -0800
+Message-Id: <20210129004332.3004826-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/LPYlfJqKMu6H8elNXBz.Rdm";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/LPYlfJqKMu6H8elNXBz.Rdm
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+This series contains updates to ice driver only.
 
-Hi all,
+Jake adds devlink reporting of security revision fields associated with
+'fw.undi' and 'fw.mgmt'. Also implements support for displaying and
+updating the minimum security revision fields for the device as
+driver-specific devlink parameters. And adds reporting of timeout length
+during devlink flash.
 
-Today's linux-next merge of the net-next tree got a conflict in:
+He also implements support to report devlink info regarding the version of
+firmware that is stored (downloaded) to the device, but is not yet active.
+This includes the UNDI Option ROM, the Netlist module, and the
+fw.bundle_id.
 
-  drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+Changes include:
+   Refactoring version reporting to allow for a context structure.
 
-between commit:
+   ice_read_flash_module is further abstracted to think in terms of
+   "active" and "inactive" banks, rather than focusing on "read from
+   the 1st or 2nd bank". Further, the function is extended to allow
+   reading arbitrary sizes beyond just one word at a time.
 
-  57ac4a31c483 ("net/mlx5e: Correctly handle changing the number of queues =
-when the interface is down")
+   Extend the version function to allow requesting the flash bank to read
+   from (active or inactive).
 
-from Linus' tree and commit:
+Gustavo A. R. Silva replaces a one-element array to flexible-array
+member.
 
-  214baf22870c ("net/mlx5e: Support HTB offload")
+Bruce utilizes flex_array_size() helper and removes dead code on a check
+for a condition that can't occur.
 
-from the net-next tree.
+The following are changes since commit 32e31b78272ba0905c751a0f6ff6ab4c275a780e:
+  Merge branch 'net-sfp-add-support-for-gpon-rtl8672-rtl9601c-and-ubiquiti-u-fiber'
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 100GbE
 
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
+Bruce Allan (2):
+  ice: use flex_array_size where possible
+  ice: remove dead code
 
---=20
-Cheers,
-Stephen Rothwell
+Gustavo A. R. Silva (1):
+  ice: Replace one-element array with flexible-array member
 
-diff --cc drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-index 302001d6661e,2e5a0696374a..000000000000
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-@@@ -447,7 -447,18 +447,18 @@@ int mlx5e_ethtool_set_channels(struct m
-  		goto out;
-  	}
- =20
-+ 	/* Don't allow changing the number of channels if HTB offload is active,
-+ 	 * because the numeration of the QoS SQs will change, while per-queue
-+ 	 * qdiscs are attached.
-+ 	 */
-+ 	if (priv->htb.maj_id) {
-+ 		err =3D -EINVAL;
-+ 		netdev_err(priv->netdev, "%s: HTB offload is active, cannot change the =
-number of channels\n",
-+ 			   __func__);
-+ 		goto out;
-+ 	}
-+=20
- -	new_channels.params =3D priv->channels.params;
- +	new_channels.params =3D *cur_params;
-  	new_channels.params.num_channels =3D count;
- =20
-  	if (!test_bit(MLX5E_STATE_OPENED, &priv->state)) {
+Jacob Keller (12):
+  ice: create flash_info structure and separate NVM version
+  ice: cache NVM module bank information
+  ice: read security revision to ice_nvm_info and ice_orom_info
+  ice: add devlink parameters to read and write minimum security
+    revision
+  ice: report timeout length for erasing during devlink flash
+  ice: introduce context struct for info report
+  ice: refactor interface for ice_read_flash_module
+  ice: allow reading inactive flash security revision
+  ice: allow reading arbitrary size data with read_flash_module
+  ice: display some stored NVM versions via devlink info
+  ice: display stored netlist versions via devlink info
+  ice: display stored UNDI firmware version via devlink info
 
---Sig_/LPYlfJqKMu6H8elNXBz.Rdm
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+ Documentation/networking/devlink/ice.rst      |  43 +
+ drivers/net/ethernet/intel/ice/ice.h          |   2 +-
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  40 +-
+ drivers/net/ethernet/intel/ice/ice_common.c   |   2 +-
+ drivers/net/ethernet/intel/ice/ice_devlink.c  | 496 +++++++++-
+ drivers/net/ethernet/intel/ice/ice_devlink.h  |   2 +
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |   8 +-
+ .../net/ethernet/intel/ice/ice_flex_pipe.c    |   2 +-
+ .../net/ethernet/intel/ice/ice_fw_update.c    |  10 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     |  19 +-
+ drivers/net/ethernet/intel/ice/ice_nvm.c      | 876 +++++++++++++++---
+ drivers/net/ethernet/intel/ice/ice_nvm.h      |  18 +
+ drivers/net/ethernet/intel/ice/ice_status.h   |   1 +
+ drivers/net/ethernet/intel/ice/ice_type.h     | 141 ++-
+ 14 files changed, 1427 insertions(+), 233 deletions(-)
 
------BEGIN PGP SIGNATURE-----
+-- 
+2.26.2
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmATWh0ACgkQAVBC80lX
-0Gy6FQf+KL/nYs4V4lNxbox255v8cOEjIMUA5cnDyrPw+NefhGi8GUfPUCozSYnV
-pDqSr3u2WEMCfufZ0Nre297nsW/TSErgh9MagQc+eaXtgugOpVW/SaEmmar/3dwV
-KTQfHOuiScV3Ip2ju5YHlW3+5t6CAXgIjK0Qlp90xNODdK9EXLOKEcOY1qOOeov2
-lCd7PM1htSLwRLD+oGNSHsYJVrcTxZaHYGu7ChMXmDM118y40ms4JBgTJgTz/+u7
-xJzqtj3IIbfOhREYGQDJ13r9MuaSXfht18froaiP/xmUOAwX6mFrYTof8fuKA4o+
-nlgUNUCAh0gj7VGZMqNADDSEIJALoQ==
-=77xB
------END PGP SIGNATURE-----
-
---Sig_/LPYlfJqKMu6H8elNXBz.Rdm--
