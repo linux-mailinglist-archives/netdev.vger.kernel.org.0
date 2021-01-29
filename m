@@ -2,86 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8851F3082BC
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 01:54:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C7583082BD
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 01:55:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231642AbhA2Axl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 19:53:41 -0500
-Received: from www62.your-server.de ([213.133.104.62]:40706 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231313AbhA2Axh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 19:53:37 -0500
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1l5I1v-0007G6-S5; Fri, 29 Jan 2021 01:52:55 +0100
-Received: from [85.7.101.30] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1l5I1v-000EGN-Mm; Fri, 29 Jan 2021 01:52:55 +0100
-Subject: Re: [PATCH bpf-next v2 4/4] bpf: enable bpf_{g,s}etsockopt in
- BPF_CGROUP_UDP{4,6}_RECVMSG
-To:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     ast@kernel.org
-References: <20210127232853.3753823-1-sdf@google.com>
- <20210127232853.3753823-5-sdf@google.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <3098d1b1-3438-6646-d466-feed27e9ba6b@iogearbox.net>
-Date:   Fri, 29 Jan 2021 01:52:46 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S231519AbhA2Ay4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 19:54:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36196 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229757AbhA2Ayx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 19:54:53 -0500
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5DAFC061573
+        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 16:54:12 -0800 (PST)
+Received: by mail-qt1-x831.google.com with SMTP id c1so5623213qtc.1
+        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 16:54:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netflix.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KO9cyGUN/VAmiWfEXbjNMDmR2Ez9fjBoN5WHJiTrZq8=;
+        b=r7IODK/W50P7Rv+5vZG1BLCtM8ucZTfKrDz37euGQDCL6iI8+911Nx+79p3f1B7e2a
+         /r/dEm5H5v7eZQ7RDAzf93NL4JuNhRCs/NZgznyL3DfmSttU0rToelhnSoqp0vJeytk8
+         zBDtu7s4JQKX3j2o90WZ5ZKQq2x85xQo++9mo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KO9cyGUN/VAmiWfEXbjNMDmR2Ez9fjBoN5WHJiTrZq8=;
+        b=JqDQT56hurY0qK2T4ZzSGAXMwFu6Thpa2q/9RnFBAJD4Jq5qZd4WeLUj+nw6Sq1RPi
+         XjHqrz9oOqMcuUf7/P8oj9Y/5Vb4XMoNGjo+Ny2cyNpS7FnfhmLUZIQoECT0vDvtmQ5V
+         TO6rpyJY+oUUMM2H4tYjjNmiPUBwaf0lMr+Gv7hv1EjaRaQE9fMUbZEuQMXy/bCRKUgn
+         QQROHZvWx59oUmJhU2dUkdnHJmfu4GTHoiGrL14GxyH0VCZaDnrvGhmzBXSj+7Qrac2L
+         EcB3EF8mxabMJxFDadm8XQr2v65QK58d7f0eH2I4S9d1bkGYPI+ByfQRpzhhl1y5fAyj
+         Qytw==
+X-Gm-Message-State: AOAM533BJcYSST9UuzF7gi6BM6Vof7oRKUC0EZqftSyg0N7WhCaNaSDr
+        +8DkQiCildZtk+jMuDxXz56pofZk0i3LldoyPpfyHA==
+X-Google-Smtp-Source: ABdhPJz1Moyzxs/7IQ/XxGZkkAJGYxlMiaxkNq2McF6z39UNOP1+BlbM0mOT0zdfph8RRvUFBnfZhSCkNyQbGGlfF9U=
+X-Received: by 2002:ac8:5156:: with SMTP id h22mr2304274qtn.176.1611881651861;
+ Thu, 28 Jan 2021 16:54:11 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210127232853.3753823-5-sdf@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26063/Thu Jan 28 13:28:06 2021)
+References: <20210129001210.344438-1-hari@netflix.com> <CAADnVQJE+nVoCsCxQDdy9SgdMRhrWePzRF__vrZSN2-wBFc+0g@mail.gmail.com>
+In-Reply-To: <CAADnVQJE+nVoCsCxQDdy9SgdMRhrWePzRF__vrZSN2-wBFc+0g@mail.gmail.com>
+From:   Brendan Gregg <bgregg@netflix.com>
+Date:   Fri, 29 Jan 2021 11:53:45 +1100
+Message-ID: <CAJN39oiqwj-mFim_L=TrxRKjJqMezHpH5u+_fQAyaXq6D1AZcg@mail.gmail.com>
+Subject: Re: [PATCH] net: tracepoint: exposing sk_family in all tcp:tracepoints
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Hariharan Ananthakrishnan <hari@netflix.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/28/21 12:28 AM, Stanislav Fomichev wrote:
-> Those hooks run as BPF_CGROUP_RUN_SA_PROG_LOCK and operate on
-> a locked socket.
-> 
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> ---
->   net/core/filter.c                                 | 4 ++++
->   tools/testing/selftests/bpf/progs/recvmsg4_prog.c | 5 +++++
->   tools/testing/selftests/bpf/progs/recvmsg6_prog.c | 5 +++++
->   3 files changed, 14 insertions(+)
-> 
-> diff --git a/net/core/filter.c b/net/core/filter.c
-> index ba436b1d70c2..e15d4741719a 100644
-> --- a/net/core/filter.c
-> +++ b/net/core/filter.c
-> @@ -7023,6 +7023,8 @@ sock_addr_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->   		case BPF_CGROUP_INET6_BIND:
->   		case BPF_CGROUP_INET4_CONNECT:
->   		case BPF_CGROUP_INET6_CONNECT:
-> +		case BPF_CGROUP_UDP4_RECVMSG:
-> +		case BPF_CGROUP_UDP6_RECVMSG:
->   		case BPF_CGROUP_UDP4_SENDMSG:
->   		case BPF_CGROUP_UDP6_SENDMSG:
->   		case BPF_CGROUP_INET4_GETPEERNAME:
-> @@ -7039,6 +7041,8 @@ sock_addr_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->   		case BPF_CGROUP_INET6_BIND:
->   		case BPF_CGROUP_INET4_CONNECT:
->   		case BPF_CGROUP_INET6_CONNECT:
-> +		case BPF_CGROUP_UDP4_RECVMSG:
-> +		case BPF_CGROUP_UDP6_RECVMSG:
->   		case BPF_CGROUP_UDP4_SENDMSG:
->   		case BPF_CGROUP_UDP6_SENDMSG:
->   		case BPF_CGROUP_INET4_GETPEERNAME:
+On Fri, Jan 29, 2021 at 11:16 AM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Thu, Jan 28, 2021 at 4:12 PM Hariharan Ananthakrishnan
+> <hari@netflix.com> wrote:
+> >
+> > Similar to sock:inet_sock_set_state tracepoint, expose sk_family to
+> > distinguish AF_INET and AF_INET6 families.
+> >
+> > The following tcp tracepoints are updated:
+> > tcp:tcp_destroy_sock
+> > tcp:tcp_rcv_space_adjust
+> > tcp:tcp_retransmit_skb
+> > tcp:tcp_send_reset
+> > tcp:tcp_receive_reset
+> > tcp:tcp_retransmit_synack
+> > tcp:tcp_probe
+> >
+> > Signed-off-by: Hariharan Ananthakrishnan <hari@netflix.com>
+> > Signed-off-by: Brendan Gregg <bgregg@netflix.com>
+> > ---
+> >  include/trace/events/tcp.h | 20 ++++++++++++++++----
+> >  1 file changed, 16 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/include/trace/events/tcp.h b/include/trace/events/tcp.h
+> > index cf97f6339acb..a319d2f86cd9 100644
+> > --- a/include/trace/events/tcp.h
+> > +++ b/include/trace/events/tcp.h
+> > @@ -59,6 +59,7 @@ DECLARE_EVENT_CLASS(tcp_event_sk_skb,
+> >                 __field(int, state)
+> >                 __field(__u16, sport)
+> >                 __field(__u16, dport)
+> > +               __field(__u16, family)
+> >                 __array(__u8, saddr, 4)
+> >                 __array(__u8, daddr, 4)
+> >                 __array(__u8, saddr_v6, 16)
+>
+> raw tracepoint can access all sk and skb fields already.
+> Why do you need this?
 
-Looks good overall, also thanks for adding the test cases! I was about to apply, but noticed one
-small nit that would be good to get resolved before that. Above you now list all the attach hooks
-for sock_addr ctx, so we should just remove the whole switch that tests on prog->expected_attach_type
-altogether in this last commit.
 
-Thanks,
-Daniel
+We (Netflix) can dig it out using raw tracepoints and BTF (once it's
+rolled out) but this was about fixing the existing tracepoints so they
+were more useful.
+
+I think tracepoints and their arguments suit a class of
+non-kernel-hacker users: SREs, operators, sysadmins, etc. People who
+run and tweak bpftrace one-liners.
+
+Brendan
+
+-- 
+Brendan Gregg, Senior Performance Architect, Netflix
