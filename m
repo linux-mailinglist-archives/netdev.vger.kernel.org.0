@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F063A30861A
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 07:55:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E1F630861D
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 08:02:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232062AbhA2GzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jan 2021 01:55:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56598 "EHLO
+        id S232147AbhA2G4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jan 2021 01:56:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232079AbhA2GzJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 01:55:09 -0500
+        with ESMTP id S232039AbhA2G4D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 01:56:03 -0500
 Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38490C061574;
-        Thu, 28 Jan 2021 22:54:29 -0800 (PST)
-Received: by mail-io1-xd2b.google.com with SMTP id z22so8233734ioh.9;
-        Thu, 28 Jan 2021 22:54:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF32C061573;
+        Thu, 28 Jan 2021 22:55:23 -0800 (PST)
+Received: by mail-io1-xd2b.google.com with SMTP id d13so8274570ioy.4;
+        Thu, 28 Jan 2021 22:55:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=w1qFvHGQrgqVJ85D0sHlcLhT5Dm3LE2q2Y+BTD7Vsv4=;
-        b=BQGARVbE3npzSq7MtlSHqM9zDHDZQcF48nYtTfdcGte4dIa3tpUr/wpvmz0RzKD8Hy
-         s0JzAeRY1tDVJzuyilq2Sf68hPvIYhtHcQKibinBJz0N8+e/SxiZ/B6F2ZVUYhzsAOHJ
-         IT+wFJR8xtbuSSnGTsKLZBffpVN76aNLc8olCNHgzOWIZb9XiHT4SnueiVT4AZWhy5Ve
-         adsWj6Rm8Nhav4ZPttqhvBO8dUG6i5G+p9c0hr96tAemwylkq/QqRYROPoc7ZjI+fGDx
-         +o0IHIyEqNZ2rXjTGuLsHtU2gnZsDWgTxQ2SdpmnXXG8PDpfJP953e4N2xSHFwzSJSaw
-         BzGg==
+        bh=//TCrMqV+EN5GZ5kO4qJoRgPAr9PfhXd/Fec/wQrWV8=;
+        b=E0IXe8Vo4/tMdLmz383Ch20F3ZtFceSFb97KDmWJjN6SFc/66yALcHdXvx8zvLb1ZE
+         GwlG9jxQyz6ZC7xph6DgVAG03vUSm0HsqMjx+4lfsz37yKXah/wu4LQwLJekDERmAVDV
+         p9V7FzPE8eJPVAF2J34PjrmfsYreut10xERVgoJZurBLTXz0RbwwQRwFnR1/4CtSiLwR
+         B4bgb2Q7iwc7YvCxnvOGJb+FQeJxpB3vSJbXvSCdAR0hD2adE0BoXMD3/meXFfxoItFU
+         bSu9mMey+y6vFBSo680uJxHZgFsb/lcxuLsBATJ5NwWMOE8WhnUUfWwnUj+tLX0oxHNE
+         mPhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
          :references:subject:mime-version:content-transfer-encoding;
-        bh=w1qFvHGQrgqVJ85D0sHlcLhT5Dm3LE2q2Y+BTD7Vsv4=;
-        b=VyAOf/WVwHY0roQShKJb91EyGiVEfiLykxWE8pF+e9i30LEiH5W7QWcDH7vsilh45H
-         Y1lGtgoGo0pQj/3qZKRHL6XbiJGJOdHFVYNEaUMQro0Kcl1Fp63EvCK4XdHrnZJKXRSD
-         2j8eRzQisYuLHZAJC3cUmy7Nzktgf7mJ2YXnsk2coXkUYBwCpWEqDzOO9ko+/SGfWrEi
-         joGZP2Gb/dmhvvmyPifUJ+88G9sfxH+fBd4d0r5SrnOw48bsNryYIzNc4K96Kxyi/SCm
-         yR2EeMmW+jgWnxlrZ5oP6kOMNRfEQfow0wvbxh+Saz1i8rkgSSTSnTnhZ+ng8xecWuus
-         7X+w==
-X-Gm-Message-State: AOAM530gUYdmozWkvx4d82PSVTYBNKdYuGYRFvR3gPE+GkA3JPO76tgu
-        2LYjuoRPCRxKZjsbzXb/Wbg=
-X-Google-Smtp-Source: ABdhPJwurA+QY6mnuFYRtTw6wlAfQDi/XHlyeQiJeSeKdDb/YsinkXj/2S+jTIjk4TL2bk6shmBjKg==
-X-Received: by 2002:a5d:89c3:: with SMTP id a3mr2858844iot.85.1611903268800;
-        Thu, 28 Jan 2021 22:54:28 -0800 (PST)
+        bh=//TCrMqV+EN5GZ5kO4qJoRgPAr9PfhXd/Fec/wQrWV8=;
+        b=eJQGtPOOW4auzdVc9EkhJBY9131r10CeRgER0GaSkxf9dCJ1+hQhxV5W4/bynVMIfF
+         6dvRDsrydZSl1MD9L/7yz9PVN//IGLv34sekSWCZHuZBSoWYfgmVKC53hmK7ujZR/40i
+         OqqLtMYOTBF+b8zrJN1eHS50SGB/rV+GAHLWs75zuWES7iatmgro/gtsm6WrIFSstluS
+         apxqKxCNMijCFxLqUo7hB4J+vpqkSLcJmE01JJ9Y12Z986qEijX06uZe1tqfEhJr3iKG
+         R7HifZ3sx+LnE5r/8D153svOxWDjKj4ZglOIzcGxyPFHRYDXSW5BHAVo55Sj4xbhI7oS
+         PKTg==
+X-Gm-Message-State: AOAM531T/ycFn5PqXO4+NukQWij+SWhD5yL+xeKo9s4EPNER/hvSp1sE
+        zykqaghOBnVu4WfxpJ4gJBM=
+X-Google-Smtp-Source: ABdhPJxV6Hx5vaAZQZFKWiMB4lZRhViJagOAK20NF6nSe97/gn6fcYx0s+R3tDt5XImQluooymd+GA==
+X-Received: by 2002:a02:9669:: with SMTP id c96mr2442919jai.47.1611903323076;
+        Thu, 28 Jan 2021 22:55:23 -0800 (PST)
 Received: from localhost ([172.243.146.206])
-        by smtp.gmail.com with ESMTPSA id z16sm4003281ilp.67.2021.01.28.22.54.27
+        by smtp.gmail.com with ESMTPSA id r7sm3965587ilo.31.2021.01.28.22.55.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jan 2021 22:54:28 -0800 (PST)
-Date:   Thu, 28 Jan 2021 22:54:21 -0800
+        Thu, 28 Jan 2021 22:55:22 -0800 (PST)
+Date:   Thu, 28 Jan 2021 22:55:15 -0800
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     Jesper Dangaard Brouer <brouer@redhat.com>, bpf@vger.kernel.org
 Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
@@ -58,12 +58,12 @@ Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
         John Fastabend <john.fastabend@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
         colrack@gmail.com
-Message-ID: <6013b11d98ad2_2683c20876@john-XPS-13-9370.notmuch>
-In-Reply-To: <161159457746.321749.16725918278187413283.stgit@firesoul>
+Message-ID: <6013b153d9e91_2683c2086c@john-XPS-13-9370.notmuch>
+In-Reply-To: <161159458253.321749.4626116952494155329.stgit@firesoul>
 References: <161159451743.321749.17528005626909164523.stgit@firesoul>
- <161159457746.321749.16725918278187413283.stgit@firesoul>
-Subject: RE: [PATCH bpf-next V13 5/7] bpf: drop MTU check when doing TC-BPF
- redirect to ingress
+ <161159458253.321749.4626116952494155329.stgit@firesoul>
+Subject: RE: [PATCH bpf-next V13 6/7] selftests/bpf: use bpf_check_mtu in
+ selftest test_cls_redirect
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
@@ -73,23 +73,14 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Jesper Dangaard Brouer wrote:
-> The use-case for dropping the MTU check when TC-BPF does redirect to
-> ingress, is described by Eyal Birger in email[0]. The summary is the
-> ability to increase packet size (e.g. with IPv6 headers for NAT64) and
-> ingress redirect packet and let normal netstack fragment packet as needed.
+> This demonstrate how bpf_check_mtu() helper can easily be used together
+> with bpf_skb_adjust_room() helper, prior to doing size adjustment, as
+> delta argument is already setup.
 > 
-> [0] https://lore.kernel.org/netdev/CAHsH6Gug-hsLGHQ6N0wtixdOa85LDZ3HNRHVd0opR=19Qo4W4Q@mail.gmail.com/
-> 
-> V9:
->  - Make net_device "up" (IFF_UP) check explicit in skb_do_redirect
-> 
-> V4:
->  - Keep net_device "up" (IFF_UP) check.
->  - Adjustment to handle bpf_redirect_peer() helper
+> Hint: This specific test can be selected like this:
+>  ./test_progs -t cls_redirect
 > 
 > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 > ---
-
-LGTM.
 
 Acked-by: John Fastabend <john.fastabend@gmail.com>
