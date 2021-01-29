@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35527308ABC
+	by mail.lfdr.de (Postfix) with ESMTP id A60D9308ABD
 	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 17:59:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231598AbhA2Q6F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jan 2021 11:58:05 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:7089 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231396AbhA2Q5b (ORCPT
+        id S231642AbhA2Q6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jan 2021 11:58:07 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:7923 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230389AbhA2Q5b (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 11:57:31 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B60143e520001>; Fri, 29 Jan 2021 08:56:50 -0800
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B60143e530000>; Fri, 29 Jan 2021 08:56:51 -0800
 Received: from sw-mtx-036.mtx.labs.mlnx (172.20.145.6) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 29 Jan
- 2021 16:56:49 +0000
+ 2021 16:56:50 +0000
 From:   Parav Pandit <parav@nvidia.com>
 To:     <dsahern@gmail.com>, <stephen@networkplumber.org>,
         <netdev@vger.kernel.org>
 CC:     Parav Pandit <parav@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
-Subject: [PATCH iproute2-next 3/5] devlink: Supporting add and delete of devlink port
-Date:   Fri, 29 Jan 2021 18:56:06 +0200
-Message-ID: <20210129165608.134965-4-parav@nvidia.com>
+Subject: [PATCH iproute2-next 4/5] devlink: Support get port function state
+Date:   Fri, 29 Jan 2021 18:56:07 +0200
+Message-ID: <20210129165608.134965-5-parav@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210129165608.134965-1-parav@nvidia.com>
 References: <20210129165608.134965-1-parav@nvidia.com>
@@ -33,354 +33,152 @@ X-Originating-IP: [172.20.145.6]
 X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
  HQMAIL107.nvidia.com (172.20.187.13)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1611939410; bh=AwR3naE4x4sJ+ex7mNMET55B0A5R8YYng16UADu3Sn8=;
+        t=1611939411; bh=tUtPGk8jRz74ATIdOu3RFyrGGheiaPs5Dibv7fjAh54=;
         h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
          References:MIME-Version:Content-Transfer-Encoding:Content-Type:
          X-Originating-IP:X-ClientProxiedBy;
-        b=EegzR05HA+dejlCQW7DAjbVAJY4Bd3D6kiRwCWaIGzutlttTlgx1unrRhvIZ+PM3a
-         37bFP/WFLLx9x16QR3s7qrCXwqL5TCUHmKNimUyNM1FJUtDaJlPwHxE7nYZvc7QPe1
-         8pAPx0m8xE93n7kZHK1hfXyAIyvs0qHVKVKyK8h6BSc+ijrvtX5l2i77lpjjBz74E7
-         XEtgYUbDoj2D+RtuYe5DCeqyQftgRv+9oEo1Qn+4JaKCrKPIUyk6ixwHBWO1Ixo55/
-         DbOvEj+Ey6XC5pz23/KbFle3cCsE3oNMo8X5C1ArPyc6xNBYVD3KYylTa0RZQS+LqF
-         G7RSvQiJvi50A==
+        b=nxtiF38EbUJmwqQ/yBKb0cIs5PWzyUwcQWu4H5a0l+E7oJLpDXY+aJTOlnPFNTEnS
+         npOCDbwBX/x3rzjwCM5OlvlQ7ScRVqS8Ko9m2035DsmLkRO7BSdT7ozdtdcOzh39Q1
+         QXNt2Gl+L/IXFEMNoQj8i8V1L9soYcgCn9c4nOduV63vn5bQrtuztRWJX4rN4Pajal
+         hWPIrn9NEz8ZuYChI71bF+xUXTlLf4ZQLmm8kefkzkSBt2xdMFGLiOQuyOZA3PcAbL
+         JLNPyX5JJgtbVaf8DufjBpehQIxKO8HyHJzBCpzQuLqMJXmmP0sh2jFD2gcLXcBYvn
+         3w1uV35IWTEKQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Enable user to add and delete the devlink port.
+Print port function state and operational state whenever reported by
+kernel.
 
-Examples for adding and deleting one SF port:
+Example of a PCI SF port function which supports the state:
 
-Examples of add, show and delete commands:
 $ devlink dev eswitch set pci/0000:06:00.0 mode switchdev
 
 $ devlink port show
 pci/0000:06:00.0/65535: type eth netdev ens2f0np0 flavour physical port 0 s=
 plittable false
 
-Add devlink port of flavour 'pcipf' for PF number 0 SF number 88:
-
 $ devlink port add pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum 88
-pci/0000:06:00.0/32768: type eth netdev eth6 flavour pcisf controller 0 pfn=
+pci/0000:08:00.0/32768: type eth netdev eth6 flavour pcisf controller 0 pfn=
 um 0 sfnum 88 splittable false
   function:
     hw_addr 00:00:00:00:00:00 state inactive opstate detached
 
-Delete newly added devlink port
-$ devlink port del pci/0000:06:00.0/32768
+$ devlink port show pci/0000:06:00.0/32768
+pci/0000:06:00.0/32768: type eth netdev ens2f0npf0sf88 flavour pcisf contro=
+ller 0 pfnum 0 sfnum 88 splittable false
+  function:
+    hw_addr 00:00:00:00:00:00 state inactive opstate detached
+
+$ devlink port function set pci/0000:06:00.0/32768 hw_addr 00:00:00:00:88:8=
+8
+
+$ devlink port show pci/0000:06:00.0/32768 -jp
+{
+    "port": {
+        "pci/0000:06:00.0/32768": {
+            "type": "eth",
+            "netdev": "ens2f0npf0sf88",
+            "flavour": "pcisf",
+            "controller": 0,
+            "pfnum": 0,
+            "sfnum": 88,
+            "splittable": false,
+            "function": {
+                "hw_addr": "00:00:00:00:88:88",
+                "state": "inactive",
+                "opstate": "detached"
+            }
+        }
+    }
+}
 
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 ---
- devlink/devlink.c       | 128 ++++++++++++++++++++++++++++++++++++++++
- man/man8/devlink-port.8 |  63 ++++++++++++++++++++
- 2 files changed, 191 insertions(+)
+ devlink/devlink.c | 55 ++++++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 47 insertions(+), 8 deletions(-)
 
 diff --git a/devlink/devlink.c b/devlink/devlink.c
-index ceafd179..515dadc8 100644
+index 515dadc8..85b9bce9 100644
 --- a/devlink/devlink.c
 +++ b/devlink/devlink.c
-@@ -306,6 +306,9 @@ static void ifname_map_free(struct ifname_map *ifname_m=
-ap)
- #define DL_OPT_FLASH_OVERWRITE		BIT(39)
- #define DL_OPT_RELOAD_ACTION		BIT(40)
- #define DL_OPT_RELOAD_LIMIT	BIT(41)
-+#define DL_OPT_PORT_FLAVOUR BIT(42)
-+#define DL_OPT_PORT_PFNUMBER BIT(43)
-+#define DL_OPT_PORT_SFNUMBER BIT(44)
-=20
- struct dl_opts {
- 	uint64_t present; /* flags of present items */
-@@ -356,6 +359,9 @@ struct dl_opts {
- 	uint32_t overwrite_mask;
- 	enum devlink_reload_action reload_action;
- 	enum devlink_reload_limit reload_limit;
-+	uint32_t port_sfnumber;
-+	uint16_t port_flavour;
-+	uint16_t port_pfnumber;
- };
-=20
- struct dl {
-@@ -1383,6 +1389,37 @@ static int reload_limit_get(struct dl *dl, const cha=
-r *limitstr,
- 	return 0;
- }
-=20
-+static int port_flavour_parse(const char *flavour, uint16_t *value)
-+{
-+	if (!flavour)
-+		return -EINVAL;
-+
-+	if (strcmp(flavour, "physical") =3D=3D 0) {
-+		*value =3D DEVLINK_PORT_FLAVOUR_PHYSICAL;
-+		return 0;
-+	} else if (strcmp(flavour, "cpu") =3D=3D 0) {
-+		*value =3D DEVLINK_PORT_FLAVOUR_CPU;
-+		return 0;
-+	} else if (strcmp(flavour, "dsa") =3D=3D 0) {
-+		*value =3D DEVLINK_PORT_FLAVOUR_DSA;
-+		return 0;
-+	} else if (strcmp(flavour, "pcipf") =3D=3D 0) {
-+		*value =3D DEVLINK_PORT_FLAVOUR_PCI_PF;
-+		return 0;
-+	} else if (strcmp(flavour, "pcivf") =3D=3D 0) {
-+		*value =3D DEVLINK_PORT_FLAVOUR_PCI_VF;
-+		return 0;
-+	} else if (strcmp(flavour, "pcisf") =3D=3D 0) {
-+		*value =3D DEVLINK_PORT_FLAVOUR_PCI_SF;
-+		return 0;
-+	} else if (strcmp(flavour, "virtual") =3D=3D 0) {
-+		*value =3D DEVLINK_PORT_FLAVOUR_VIRTUAL;
-+		return 0;
-+	} else {
-+		return -EINVAL;
-+	}
-+}
-+
- struct dl_args_metadata {
- 	uint64_t o_flag;
- 	char err_msg[DL_ARGS_REQUIRED_MAX_ERR_LEN];
-@@ -1414,6 +1451,8 @@ static const struct dl_args_metadata dl_args_required=
-[] =3D {
- 	{DL_OPT_TRAP_NAME,            "Trap's name is expected."},
- 	{DL_OPT_TRAP_GROUP_NAME,      "Trap group's name is expected."},
- 	{DL_OPT_PORT_FUNCTION_HW_ADDR, "Port function's hardware address is expec=
-ted."},
-+	{DL_OPT_PORT_FLAVOUR,          "Port flavour is expected."},
-+	{DL_OPT_PORT_PFNUMBER,         "Port PCI PF number is expected."},
- };
-=20
- static int dl_args_finding_required_validate(uint64_t o_required,
-@@ -1832,7 +1871,29 @@ static int dl_argv_parse(struct dl *dl, uint64_t o_r=
-equired,
- 			if (err)
- 				return err;
- 			o_found |=3D DL_OPT_PORT_FUNCTION_HW_ADDR;
-+		} else if (dl_argv_match(dl, "flavour") && (o_all & DL_OPT_PORT_FLAVOUR)=
-) {
-+			const char *flavourstr;
-=20
-+			dl_arg_inc(dl);
-+			err =3D dl_argv_str(dl, &flavourstr);
-+			if (err)
-+				return err;
-+			err =3D port_flavour_parse(flavourstr, &opts->port_flavour);
-+			if (err)
-+				return err;
-+			o_found |=3D DL_OPT_PORT_FLAVOUR;
-+		} else if (dl_argv_match(dl, "pfnum") && (o_all & DL_OPT_PORT_PFNUMBER))=
- {
-+			dl_arg_inc(dl);
-+			err =3D dl_argv_uint16_t(dl, &opts->port_pfnumber);
-+			if (err)
-+				return err;
-+			o_found |=3D DL_OPT_PORT_PFNUMBER;
-+		} else if (dl_argv_match(dl, "sfnum") && (o_all & DL_OPT_PORT_SFNUMBER))=
- {
-+			dl_arg_inc(dl);
-+			err =3D dl_argv_uint32_t(dl, &opts->port_sfnumber);
-+			if (err)
-+				return err;
-+			o_found |=3D DL_OPT_PORT_SFNUMBER;
- 		} else {
- 			pr_err("Unknown option \"%s\"\n", dl_argv(dl));
- 			return -EINVAL;
-@@ -2015,6 +2076,12 @@ static void dl_opts_put(struct nlmsghdr *nlh, struct=
- dl *dl)
- 				 opts->trap_policer_burst);
- 	if (opts->present & DL_OPT_PORT_FUNCTION_HW_ADDR)
- 		dl_function_attr_put(nlh, opts);
-+	if (opts->present & DL_OPT_PORT_FLAVOUR)
-+		mnl_attr_put_u16(nlh, DEVLINK_ATTR_PORT_FLAVOUR, opts->port_flavour);
-+	if (opts->present & DL_OPT_PORT_PFNUMBER)
-+		mnl_attr_put_u16(nlh, DEVLINK_ATTR_PORT_PCI_PF_NUMBER, opts->port_pfnumb=
-er);
-+	if (opts->present & DL_OPT_PORT_SFNUMBER)
-+		mnl_attr_put_u32(nlh, DEVLINK_ATTR_PORT_PCI_SF_NUMBER, opts->port_sfnumb=
-er);
- }
-=20
- static int dl_argv_parse_put(struct nlmsghdr *nlh, struct dl *dl,
-@@ -3702,6 +3769,8 @@ static void cmd_port_help(void)
- 	pr_err("       devlink port unsplit DEV/PORT_INDEX\n");
- 	pr_err("       devlink port function set DEV/PORT_INDEX [ hw_addr ADDR ]\=
-n");
- 	pr_err("       devlink port health show [ DEV/PORT_INDEX reporter REPORTE=
-R_NAME ]\n");
-+	pr_err("       devlink port add DEV/PORT_INDEX flavour FLAVOUR [ controll=
-er CNUM ] pfnum PFNUM [ sfnum SFNUM ]\n");
-+	pr_err("       devlink port del DEV/PORT_INDEX\n");
- }
-=20
- static const char *port_type_name(uint32_t type)
-@@ -3977,6 +4046,58 @@ static int cmd_port_function(struct dl *dl)
- static int cmd_health(struct dl *dl);
- static int __cmd_health_show(struct dl *dl, bool show_device, bool show_po=
-rt);
-=20
-+static void cmd_port_add_help(void)
-+{
-+	pr_err("       devlink port add { DEV | DEV/PORT_INDEX } flavour FLAVOUR =
-pfnum PFNUM [ sfnum SFNUM ]\n");
-+}
-+
-+static int cmd_port_add(struct dl *dl)
-+{
-+	struct nlmsghdr *nlh;
-+	int err;
-+
-+	if (dl_argv_match(dl, "help") || dl_no_arg(dl)) {
-+		cmd_port_add_help();
-+		return 0;
-+	}
-+
-+	nlh =3D mnlg_msg_prepare(dl->nlg, DEVLINK_CMD_PORT_NEW,
-+			       NLM_F_REQUEST | NLM_F_ACK);
-+
-+	err =3D dl_argv_parse_put(nlh, dl, DL_OPT_HANDLE | DL_OPT_HANDLEP |
-+				DL_OPT_PORT_FLAVOUR | DL_OPT_PORT_PFNUMBER,
-+				DL_OPT_PORT_SFNUMBER);
-+	if (err)
-+		return err;
-+
-+	return _mnlg_socket_sndrcv(dl->nlg, nlh, cmd_port_show_cb, dl);
-+}
-+
-+static void cmd_port_del_help(void)
-+{
-+	pr_err("       devlink port del DEV/PORT_INDEX\n");
-+}
-+
-+static int cmd_port_del(struct dl *dl)
-+{
-+	struct nlmsghdr *nlh;
-+	int err;
-+
-+	if (dl_argv_match(dl, "help") || dl_no_arg(dl)) {
-+		cmd_port_del_help();
-+		return 0;
-+	}
-+
-+	nlh =3D mnlg_msg_prepare(dl->nlg, DEVLINK_CMD_PORT_DEL,
-+			       NLM_F_REQUEST | NLM_F_ACK);
-+
-+	err =3D dl_argv_parse_put(nlh, dl, DL_OPT_HANDLEP, 0);
-+	if (err)
-+		return err;
-+
-+	return _mnlg_socket_sndrcv(dl->nlg, nlh, NULL, NULL);
-+}
-+
- static int cmd_port(struct dl *dl)
- {
- 	if (dl_argv_match(dl, "help")) {
-@@ -4007,7 +4128,14 @@ static int cmd_port(struct dl *dl)
- 		} else {
- 			return cmd_health(dl);
- 		}
-+	} else if (dl_argv_match(dl, "add")) {
-+		dl_arg_inc(dl);
-+		return cmd_port_add(dl);
-+	} else if (dl_argv_match(dl, "del")) {
-+		dl_arg_inc(dl);
-+		return cmd_port_del(dl);
+@@ -3833,6 +3833,30 @@ static void pr_out_port_pfvfsf_num(struct dl *dl, st=
+ruct nlattr **tb)
  	}
-+
- 	pr_err("Command \"%s\" not found\n", dl_argv(dl));
- 	return -ENOENT;
  }
-diff --git a/man/man8/devlink-port.8 b/man/man8/devlink-port.8
-index 966faae6..4a1d3800 100644
---- a/man/man8/devlink-port.8
-+++ b/man/man8/devlink-port.8
-@@ -43,6 +43,23 @@ devlink-port \- devlink port configuration
- .B devlink port health
- .RI "{ " show " | " recover " | " diagnose " | " dump " | " set " }"
 =20
-+.ti -8
-+.BI "devlink port add"
-+.RB "["
-+.IR "DEV | DEV/PORT_INDEX"
-+.RB "] "
-+.RB "[ " flavour
-+.IR FLAVOUR " ]"
-+.RB "[ " pcipf
-+.IR PFNUMBER " ]"
-+.RB "{ " pcisf
-+.IR SFNUMBER " }"
-+.br
++static const char *port_function_state(uint8_t state)
++{
++	switch (state) {
++	case DEVLINK_PORT_FN_STATE_INACTIVE:
++		return "inactive";
++	case DEVLINK_PORT_FN_STATE_ACTIVE:
++		return "active";
++	default:
++		return "unknown";
++	}
++}
 +
-+.ti -8
-+.B devlink port del
-+.IR DEV/PORT_INDEX
++static const char *port_function_opstate(uint8_t state)
++{
++	switch (state) {
++	case DEVLINK_PORT_FN_OPSTATE_DETACHED:
++		return "detached";
++	case DEVLINK_PORT_FN_OPSTATE_ATTACHED:
++		return "attached";
++	default:
++		return "unknown";
++	}
++}
 +
- .ti -8
- .B devlink port help
+ static void pr_out_port_function(struct dl *dl, struct nlattr **tb_port)
+ {
+ 	struct nlattr *tb[DEVLINK_PORT_FUNCTION_ATTR_MAX + 1] =3D {};
+@@ -3849,16 +3873,31 @@ static void pr_out_port_function(struct dl *dl, str=
+uct nlattr **tb_port)
+ 	if (err !=3D MNL_CB_OK)
+ 		return;
 =20
-@@ -99,6 +116,42 @@ If this argument is omitted all ports are listed.
- Is an alias for
- .BR devlink-health (8).
-=20
-+.ti -8
-+.SS devlink port add - add a devlink port
-+.PP
-+.B "DEV"
-+- specifies the devlink device to operate on. or
+-	if (!tb[DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR])
+-		return;
+-
+-	len =3D mnl_attr_get_payload_len(tb[DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR]);
+-	data =3D mnl_attr_get_payload(tb[DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR]);
+-
+ 	pr_out_object_start(dl, "function");
+ 	check_indent_newline(dl);
+-	print_string(PRINT_ANY, "hw_addr", "hw_addr %s",
+-		     ll_addr_n2a(data, len, 0, hw_addr, sizeof(hw_addr)));
 +
-+.PP
-+.B "DEV/PORT_INDEX"
-+- specifies the devlink port index to use for the requested new port.
-+This is optional. When ommited, driver allocates unique port index.
++	if (tb[DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR]) {
++		len =3D mnl_attr_get_payload_len(tb[DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR])=
+;
++		data =3D mnl_attr_get_payload(tb[DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR]);
 +
-+.TP
-+.BR flavour " { " pcipf " | " pcisf " } "
-+set port flavour
++		print_string(PRINT_ANY, "hw_addr", "hw_addr %s",
++			     ll_addr_n2a(data, len, 0, hw_addr, sizeof(hw_addr)));
++	}
++	if (tb[DEVLINK_PORT_FN_ATTR_STATE]) {
++		uint8_t state;
 +
-+.I pcipf
-+- PCI PF port
++		state =3D mnl_attr_get_u8(tb[DEVLINK_PORT_FN_ATTR_STATE]);
 +
-+.I pcisf
-+- PCI SF port
++		print_string(PRINT_ANY, "state", " state %s", port_function_state(state)=
+);
++	}
++	if (tb[DEVLINK_PORT_FN_ATTR_OPSTATE]) {
++		uint8_t state;
 +
-+.TP
-+.BR pfnum " { " pfnumber " } "
-+Specifies PCI pfnumber to use on which a SF device to create
++		state =3D mnl_attr_get_u8(tb[DEVLINK_PORT_FN_ATTR_OPSTATE]);
 +
-+.TP
-+.BR sfnum " { " sfnumber " } "
-+Specifies sfnumber to assign to the device of the SF.
-+This field is optional for those devices which supports auto assignment of=
- the SF number.
++		print_string(PRINT_ANY, "opstate", " opstate %s", port_function_opstate(=
+state));
++	}
 +
-+.ti -8
-+.SS devlink port del - delete a devlink port
-+.PP
-+.B "DEV/PORT_INDEX"
-+- specifies the devlink port to delete.
-+
- .SH "EXAMPLES"
- .PP
- devlink port show
-@@ -135,6 +188,16 @@ devlink port health show pci/0000:01:00.0/1 reporter t=
-x
- .RS 4
- Shows status and configuration of tx reporter registered on pci/0000:01:00=
-.0/1 devlink port.
- .RE
-+.PP
-+devlink port add pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum 88
-+.RS 4
-+Add a devlink port of flavour PCI SF on PCI PF having number 0 with SF num=
-ber 88.
-+.RE
-+.PP
-+devlink port del pci/0000:06:00.0/1
-+.RS 4
-+Delete previously created devlink port.
-+.RE
-=20
- .SH SEE ALSO
- .BR devlink (8),
+ 	if (!dl->json_output)
+ 		__pr_out_indent_dec();
+ 	pr_out_object_end(dl);
 --=20
 2.26.2
 
