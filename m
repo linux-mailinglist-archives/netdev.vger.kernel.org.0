@@ -2,151 +2,262 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06DA6308A87
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 17:46:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19C76308A85
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 17:46:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231854AbhA2Qpn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jan 2021 11:45:43 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:56159 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231802AbhA2Qpc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 11:45:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1611938646;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=lncyBnRSwCr+gp+0N2c2Im6LydS91xklb476PalMYnA=;
-        b=b37xbmveSav1dUA+pux+80hiIgx8pxYyXgOdBc3aHkY6eFp72o1KiT9KgoaYZKy4HqborB
-        6d9hfb0n8+UNNuUI1DY/vksglSGLDvuRcXmviJRKVATP1l6AesB3E6c6rQchBhHVSVbeT7
-        6aj2lNMetK3s2QRo6j62Ktyauqeayag=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-586-aADtCFqwMhicv0DohJL8bg-1; Fri, 29 Jan 2021 11:44:04 -0500
-X-MC-Unique: aADtCFqwMhicv0DohJL8bg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D87098030A2;
-        Fri, 29 Jan 2021 16:44:02 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-115-23.rdu2.redhat.com [10.10.115.23])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E91561971B;
-        Fri, 29 Jan 2021 16:44:00 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net] rxrpc: Fix deadlock around release of dst cached on udp
- tunnel
-From:   David Howells <dhowells@redhat.com>
-To:     vfedorenko@novek.ru
-Cc:     syzbot+df400f2f24a1677cd7e0@syzkaller.appspotmail.com,
-        netdev@vger.kernel.org, dhowells@redhat.com,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-Date:   Fri, 29 Jan 2021 16:44:00 +0000
-Message-ID: <161193864000.3781058.7593105791689441003.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/0.23
+        id S231610AbhA2QpV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jan 2021 11:45:21 -0500
+Received: from mail-ot1-f44.google.com ([209.85.210.44]:43783 "EHLO
+        mail-ot1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230249AbhA2QpR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 11:45:17 -0500
+Received: by mail-ot1-f44.google.com with SMTP id v1so9170195ott.10;
+        Fri, 29 Jan 2021 08:45:01 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wXYCYG1YS0k8rhoZPgZy+Y6qwlRnkfqKgder3/wzP7U=;
+        b=XfqxDzR/CH/5tGp1poAfxzX1wd3Ob+TJf39GIgXTses6t4Yrn5xDb7x7DrPb0vUYMW
+         1CuCH2WHJOEJndgw6ouToUesspjIBg6ZPyIwjWvNTEJVNka687RhPgsb0INz+8hFn25P
+         tmltiVW85hErCSnc4meLJMpY9Eqml3rdOQ1D4OE0xp9I8k7d5HbEaSKQqapQ/cflYb3G
+         tpsbvGZJxjX7LJH0ebyPXR2JZDYRzqLfYc0XWyesazT0ZDPwSktqd9eGFqAcECs23P1N
+         X/Njx1EJUS+kE8cuXDFvEPc46oeAGeTO6OGRa97tpfoPIbpLs7rIwY6qKy9sTB+LZx8j
+         Db4w==
+X-Gm-Message-State: AOAM533d3jzsp6+If939TJX38a39O3NHSNRMDwZ3bKuLTSJp1Uy8Apvo
+        7gqnbeaE6Z4hgMhwbN7YNK7Zg5BOamq6/6l1Vrc=
+X-Google-Smtp-Source: ABdhPJzY+YSfLSoCu3AH9eafqqe3WS6eh2UVD6gpY8mwgC0wUYlIPShJIlKtfZ5/bN3cyDCGrDrwLiwPgPWV0IBx16I=
+X-Received: by 2002:a9d:7a4a:: with SMTP id z10mr3532404otm.206.1611938675763;
+ Fri, 29 Jan 2021 08:44:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+References: <20210122154300.7628-1-calvin.johnson@oss.nxp.com>
+ <20210122154300.7628-2-calvin.johnson@oss.nxp.com> <CAJZ5v0iX3uU36448ALA20hiVk968VKTsvgwLrp8ur96MQo3Acw@mail.gmail.com>
+ <20210128112729.GA28413@lsv03152.swis.in-blr01.nxp.com> <CAJZ5v0id1i57K_=7eiK0cpOE6UtsKNfR7L7UEBcN1=G+WS+1TA@mail.gmail.com>
+ <20210128131205.GA7882@lsv03152.swis.in-blr01.nxp.com> <CAJZ5v0j1XVSyFa1q4RZ=FnSmfR5VOyX+u1uWBWdvTOVBJJ-JXw@mail.gmail.com>
+ <20210129064739.GA24267@lsv03152.swis.in-blr01.nxp.com> <CAJZ5v0hrG_-_3LLb956TdFO830DaPv6NdobKetXrc9H+u9bdgw@mail.gmail.com>
+In-Reply-To: <CAJZ5v0hrG_-_3LLb956TdFO830DaPv6NdobKetXrc9H+u9bdgw@mail.gmail.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Fri, 29 Jan 2021 17:44:24 +0100
+Message-ID: <CAJZ5v0jKuHbK0BSUR6+qU-8zVxrwKrAFRn3ssyWtwvvhQNObQg@mail.gmail.com>
+Subject: Re: [net-next PATCH v4 01/15] Documentation: ACPI: DSD: Document MDIO PHY
+To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
+Cc:     Grant Likely <grant.likely@arm.com>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
+        Jon <jon@solid-run.com>, Saravana Kannan <saravanak@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        "linux.cj" <linux.cj@gmail.com>,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Len Brown <lenb@kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-AF_RXRPC sockets use UDP ports in encap mode.  This causes socket and dst
-from an incoming packet to get stolen and attached to the UDP socket from
-whence it is leaked when that socket is closed.
+On Fri, Jan 29, 2021 at 5:37 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
+>
+> On Fri, Jan 29, 2021 at 7:48 AM Calvin Johnson
+> <calvin.johnson@oss.nxp.com> wrote:
+> >
+> > On Thu, Jan 28, 2021 at 02:27:00PM +0100, Rafael J. Wysocki wrote:
+> > > On Thu, Jan 28, 2021 at 2:12 PM Calvin Johnson
+> > > <calvin.johnson@oss.nxp.com> wrote:
+> > > >
+> > > > On Thu, Jan 28, 2021 at 01:00:40PM +0100, Rafael J. Wysocki wrote:
+> > > > > On Thu, Jan 28, 2021 at 12:27 PM Calvin Johnson
+> > > > > <calvin.johnson@oss.nxp.com> wrote:
+> > > > > >
+> > > > > > Hi Rafael,
+> > > > > >
+> > > > > > Thanks for the review. I'll work on all the comments.
+> > > > > >
+> > > > > > On Fri, Jan 22, 2021 at 08:22:21PM +0100, Rafael J. Wysocki wrote:
+> > > > > > > On Fri, Jan 22, 2021 at 4:43 PM Calvin Johnson
+> > > > > > > <calvin.johnson@oss.nxp.com> wrote:
+> > > > > > > >
+> > > > > > > > Introduce ACPI mechanism to get PHYs registered on a MDIO bus and
+> > > > > > > > provide them to be connected to MAC.
+> > > > > > > >
+> > > > > > > > Describe properties "phy-handle" and "phy-mode".
+> > > > > > > >
+> > > > > > > > Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
+> > > > > > > > ---
+> > > > > > > >
+> > > > > > > > Changes in v4:
+> > > > > > > > - More cleanup
+> > > > > > >
+> > > > > > > This looks much better that the previous versions IMV, some nits below.
+> > > > > > >
+> > > > > > > > Changes in v3: None
+> > > > > > > > Changes in v2:
+> > > > > > > > - Updated with more description in document
+> > > > > > > >
+> > > > > > > >  Documentation/firmware-guide/acpi/dsd/phy.rst | 129 ++++++++++++++++++
+> > > > > > > >  1 file changed, 129 insertions(+)
+> > > > > > > >  create mode 100644 Documentation/firmware-guide/acpi/dsd/phy.rst
+> > > > > > > >
+> > > > > > > > diff --git a/Documentation/firmware-guide/acpi/dsd/phy.rst b/Documentation/firmware-guide/acpi/dsd/phy.rst
+> > > > > > > > new file mode 100644
+> > > > > > > > index 000000000000..76fca994bc99
+> > > > > > > > --- /dev/null
+> > > > > > > > +++ b/Documentation/firmware-guide/acpi/dsd/phy.rst
+> > > > > > > > @@ -0,0 +1,129 @@
+> > > > > > > > +.. SPDX-License-Identifier: GPL-2.0
+> > > > > > > > +
+> > > > > > > > +=========================
+> > > > > > > > +MDIO bus and PHYs in ACPI
+> > > > > > > > +=========================
+> > > > > > > > +
+> > > > > > > > +The PHYs on an MDIO bus [1] are probed and registered using
+> > > > > > > > +fwnode_mdiobus_register_phy().
+> > > > > > >
+> > > > > > > Empty line here, please.
+> > > > > > >
+> > > > > > > > +Later, for connecting these PHYs to MAC, the PHYs registered on the
+> > > > > > > > +MDIO bus have to be referenced.
+> > > > > > > > +
+> > > > > > > > +The UUID given below should be used as mentioned in the "Device Properties
+> > > > > > > > +UUID For _DSD" [2] document.
+> > > > > > > > +   - UUID: daffd814-6eba-4d8c-8a91-bc9bbf4aa301
+> > > > > > >
+> > > > > > > I would drop the above paragraph.
+> > > > > > >
+> > > > > > > > +
+> > > > > > > > +This document introduces two _DSD properties that are to be used
+> > > > > > > > +for PHYs on the MDIO bus.[3]
+> > > > > > >
+> > > > > > > I'd say "for connecting PHYs on the MDIO bus [3] to the MAC layer."
+> > > > > > > above and add the following here:
+> > > > > > >
+> > > > > > > "These properties are defined in accordance with the "Device
+> > > > > > > Properties UUID For _DSD" [2] document and the
+> > > > > > > daffd814-6eba-4d8c-8a91-bc9bbf4aa301 UUID must be used in the Device
+> > > > > > > Data Descriptors containing them."
+> > > > > > >
+> > > > > > > > +
+> > > > > > > > +phy-handle
+> > > > > > > > +----------
+> > > > > > > > +For each MAC node, a device property "phy-handle" is used to reference
+> > > > > > > > +the PHY that is registered on an MDIO bus. This is mandatory for
+> > > > > > > > +network interfaces that have PHYs connected to MAC via MDIO bus.
+> > > > > > > > +
+> > > > > > > > +During the MDIO bus driver initialization, PHYs on this bus are probed
+> > > > > > > > +using the _ADR object as shown below and are registered on the MDIO bus.
+> > > > > > >
+> > > > > > > Do you want to mention the "reg" property here?  I think it would be
+> > > > > > > useful to do that.
+> > > > > >
+> > > > > > No. I think we should adhere to _ADR in MDIO case. The "reg" property for ACPI
+> > > > > > may be useful for other use cases that Andy is aware of.
+> > > > >
+> > > > > The code should reflect this, then.  I mean it sounds like you want to
+> > > > > check the "reg" property only if this is a non-ACPI node.
+> > > >
+> > > > Right. For MDIO case, that is what is required.
+> > > > "reg" for DT and "_ADR" for ACPI.
+> > > >
+> > > > However, Andy pointed out [1] that ACPI nodes can also hold reg property and
+> > > > therefore, fwnode_get_id() need to be capable to handling that situation as
+> > > > well.
+> > >
+> > > No, please don't confuse those two things.
+> > >
+> > > Yes, ACPI nodes can also hold a "reg" property, but the meaning of it
+> > > depends on the binding which is exactly my point: _ADR is not a
+> > > fallback replacement for "reg" in general and it is not so for MDIO
+> > > too.  The new function as proposed doesn't match the MDIO requirements
+> > > and so it should not be used for MDIO.
+> > >
+> > > For MDIO, the exact flow mentioned above needs to be implemented (and
+> > > if someone wants to use it for their use case too, fine).
+> > >
+> > > Otherwise the code wouldn't match the documentation.
+> >
+> > In that case, is this good?
+>
+> It would work, but I would introduce a wrapper around the _ADR
+> evaluation, something like:
+>
+> int acpi_get_local_address(acpi_handle handle, u32 *addr)
+> {
+>       unsigned long long adr;
+>       acpi_status status;
+>
+>       status = acpi_evaluate_integer(handle, METHOD_NAME__ADR, NULL, &adr);
+>       if (ACPI_FAILURE(status))
+>                 return -ENODATA;
+>
+>       *addr = (u32)adr;
+>       return 0;
+> }
+>
+> in drivers/acpi/utils.c and add a static inline stub always returning
+> -ENODEV for it for !CONFIG_ACPI.
+>
+> > /**
+> >  * fwnode_get_local_addr - Get the local address of fwnode.
+> >  * @fwnode: firmware node
+> >  * @addr: addr value contained in the fwnode
+> >  *
+> >  * For DT, retrieve the value of the "reg" property for @fwnode.
+> >  *
+> >  * In the ACPI case, evaluate the _ADR object located under the
+> >  * given node, if present, and provide its return value to the
+> >  * caller.
+> >  *
+> >  * Return 0 on success or a negative error code.
+> >  */
+> > int fwnode_get_local_addr(struct fwnode_handle *fwnode, u32 *addr)
+> > {
+> >         int ret;
+> >
+> >         if (is_of_node(fwnode))
+> >                 return of_property_read_u32(to_of_node(fwnode), "reg", addr);
+>
+> So you can write the below as
+>
+> if (is_acpi_device_node(fwnode))
+>     return acpi_get_local_address(ACPI_HANDLE_FWNODE(fwnode), addr);
+>
+> return -EINVAL;
+>
+> and this should compile just fine if CONFIG_ACPI is unset, so you can
+> avoid the whole #ifdeffery in this function.
 
-When a network namespace is removed, the wait for dst records to be cleaned
-up happens before the cleanup of the rxrpc and UDP socket, meaning that the
-wait never finishes.
+BTW, you may not need the fwnode_get_local_addr() at all then, just
+evaluate either the "reg" property for OF or acpi_get_local_address()
+for ACPI in the "caller" code directly. A common helper doing this can
+be added later.
 
-Fix this by moving the rxrpc (and, by dependence, the afs) private
-per-network namespace registrations to the device group rather than subsys
-group.  This allows cached rxrpc local endpoints to be cleared and their
-UDP sockets closed before we try waiting for the dst records.
-
-The symptom is that lines looking like the following:
-
-	unregister_netdevice: waiting for lo to become free
-
-get emitted at regular intervals after running something like the
-referenced syzbot test.
-
-Thanks to Vadim for tracking this down and work out the fix.
-
-Reported-by: syzbot+df400f2f24a1677cd7e0@syzkaller.appspotmail.com
-Reported-by: Vadim Fedorenko <vfedorenko@novek.ru>
-Fixes: 5271953cad31 ("rxrpc: Use the UDP encap_rcv hook")
-Signed-off-by: David Howells <dhowells@redhat.com>
----
-
- fs/afs/main.c        |    6 +++---
- net/rxrpc/af_rxrpc.c |    6 +++---
- 2 files changed, 6 insertions(+), 6 deletions(-)
-
-diff --git a/fs/afs/main.c b/fs/afs/main.c
-index accdd8970e7c..b2975256dadb 100644
---- a/fs/afs/main.c
-+++ b/fs/afs/main.c
-@@ -193,7 +193,7 @@ static int __init afs_init(void)
- 		goto error_cache;
- #endif
- 
--	ret = register_pernet_subsys(&afs_net_ops);
-+	ret = register_pernet_device(&afs_net_ops);
- 	if (ret < 0)
- 		goto error_net;
- 
-@@ -213,7 +213,7 @@ static int __init afs_init(void)
- error_proc:
- 	afs_fs_exit();
- error_fs:
--	unregister_pernet_subsys(&afs_net_ops);
-+	unregister_pernet_device(&afs_net_ops);
- error_net:
- #ifdef CONFIG_AFS_FSCACHE
- 	fscache_unregister_netfs(&afs_cache_netfs);
-@@ -244,7 +244,7 @@ static void __exit afs_exit(void)
- 
- 	proc_remove(afs_proc_symlink);
- 	afs_fs_exit();
--	unregister_pernet_subsys(&afs_net_ops);
-+	unregister_pernet_device(&afs_net_ops);
- #ifdef CONFIG_AFS_FSCACHE
- 	fscache_unregister_netfs(&afs_cache_netfs);
- #endif
-diff --git a/net/rxrpc/af_rxrpc.c b/net/rxrpc/af_rxrpc.c
-index 0a2f4817ec6c..41671af6b33f 100644
---- a/net/rxrpc/af_rxrpc.c
-+++ b/net/rxrpc/af_rxrpc.c
-@@ -990,7 +990,7 @@ static int __init af_rxrpc_init(void)
- 		goto error_security;
- 	}
- 
--	ret = register_pernet_subsys(&rxrpc_net_ops);
-+	ret = register_pernet_device(&rxrpc_net_ops);
- 	if (ret)
- 		goto error_pernet;
- 
-@@ -1035,7 +1035,7 @@ static int __init af_rxrpc_init(void)
- error_sock:
- 	proto_unregister(&rxrpc_proto);
- error_proto:
--	unregister_pernet_subsys(&rxrpc_net_ops);
-+	unregister_pernet_device(&rxrpc_net_ops);
- error_pernet:
- 	rxrpc_exit_security();
- error_security:
-@@ -1057,7 +1057,7 @@ static void __exit af_rxrpc_exit(void)
- 	unregister_key_type(&key_type_rxrpc);
- 	sock_unregister(PF_RXRPC);
- 	proto_unregister(&rxrpc_proto);
--	unregister_pernet_subsys(&rxrpc_net_ops);
-+	unregister_pernet_device(&rxrpc_net_ops);
- 	ASSERTCMP(atomic_read(&rxrpc_n_tx_skbs), ==, 0);
- 	ASSERTCMP(atomic_read(&rxrpc_n_rx_skbs), ==, 0);
- 
-
-
+> >
+> > #ifdef CONFIG_ACPI
+> >         if (is_acpi_node(fwnode)) {
+> >                 unsigned long long adr;
+> >                 acpi_status status;
+> >
+> >                 status = acpi_evaluate_integer(ACPI_HANDLE_FWNODE(fwnode),
+> >                                                METHOD_NAME__ADR, NULL, &adr);
+> >                 if (ACPI_FAILURE(status))
+> >                         return -ENODATA;
+> >                 *addr = (u32)adr;
+> >                 return 0;
+> >         }
+> > #endif
+> >         return -EINVAL;
+> > }
