@@ -2,119 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC6F3308458
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 04:48:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5925308462
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 04:50:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231871AbhA2Dr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 22:47:59 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:62378 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S231608AbhA2Dr4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 22:47:56 -0500
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 10T3VmSg128838
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 22:47:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=2FX03czCma/f4Vhbt++j1HugH9TgBFm92zgo0ZZHqc4=;
- b=Y64oTHY3DjJtrtWopQHNieF3VDEx+d6DM4n8wtyrCN6T30PTI3euIU+y4Z17aDtmzuMN
- FReWHxgqJt3B6mjWjWH93oi9uLsavmZ2fvNoqmkI2vNJt8A9Jty4rmtH73WZ5bYxi/JW
- qqk1JzsAWRaCXj+aIKxNcs56VVW8LvQMMPewNeUPE/UyRE8nryM5u6RrG0Jv2qvBE20p
- 3ZbALUO+4rnx5d4W9EJ7InQVPvS/jFTiVbjRdRGLzh5+Dt0xiJYS0S0DblJAaWIwVyyk
- PApuyeZa56EHQxGWqodQXbUbBMSqWwqaue5EgFWozKJsNboiviBlE5uqtXw0VWEDH/Ir sA== 
-Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 36c6kbdc8t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 22:47:15 -0500
-Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
-        by ppma05wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 10T3WqER003972
-        for <netdev@vger.kernel.org>; Fri, 29 Jan 2021 03:47:15 GMT
-Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com [9.57.198.27])
-        by ppma05wdc.us.ibm.com with ESMTP id 36a3qc9dbm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 29 Jan 2021 03:47:15 +0000
-Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
-        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 10T3lE9k30343434
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 29 Jan 2021 03:47:14 GMT
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EB5BAAE05C;
-        Fri, 29 Jan 2021 03:47:13 +0000 (GMT)
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2F7FAAE063;
-        Fri, 29 Jan 2021 03:47:13 +0000 (GMT)
-Received: from suka-w540.ibmuc.com (unknown [9.85.183.51])
-        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
-        Fri, 29 Jan 2021 03:47:13 +0000 (GMT)
-From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     Dany Madden <drt@linux.ibm.com>, Lijun Pan <ljp@linux.ibm.com>,
-        Rick Lindsley <ricklind@linux.ibm.com>, abdhalee@in.ibm.com,
-        sukadev@linux.ibm.com
-Subject: [PATCH net 2/2] ibmvnic: fix race with multiple open/close
-Date:   Thu, 28 Jan 2021 19:47:11 -0800
-Message-Id: <20210129034711.518250-2-sukadev@linux.ibm.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210129034711.518250-1-sukadev@linux.ibm.com>
-References: <20210129034711.518250-1-sukadev@linux.ibm.com>
+        id S231899AbhA2Dt7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 22:49:59 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:38588 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231517AbhA2Dt4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 22:49:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1611892108;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fzFvyTbz2UvsYBfZzFs744TP0/6WmLw0eTkB57Sb6vo=;
+        b=NXBNcHcMKicBnjUOBdQcRrxOWfBU20F7EGpgZ9QjyvEGCp9qeVukEVvrRkyx3YvttF95c+
+        FXgwE/S4MXJR8AOWujujNJPKMrm+z70f60s0UsNx5UkkvPSqqJRRqck4+3AxqFC9FukRdM
+        KassqO0RsWu9x2vBHgXSZlitGIIj/+Q=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-411-sGcZvseiNOaFYvzAPvTNQg-1; Thu, 28 Jan 2021 22:48:26 -0500
+X-MC-Unique: sGcZvseiNOaFYvzAPvTNQg-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AAACA10054FF;
+        Fri, 29 Jan 2021 03:48:25 +0000 (UTC)
+Received: from [10.72.14.10] (ovpn-14-10.pek2.redhat.com [10.72.14.10])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D91DA2B394;
+        Fri, 29 Jan 2021 03:48:20 +0000 (UTC)
+Subject: Re: [PATCH 1/2] vdpa/mlx5: Avoid unnecessary query virtqueue
+To:     Eli Cohen <elic@nvidia.com>, mst@redhat.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lulu@redhat.com
+References: <20210128134130.3051-1-elic@nvidia.com>
+ <20210128134130.3051-2-elic@nvidia.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <024560f4-51bd-af11-a9aa-48682d4e7f5f@redhat.com>
+Date:   Fri, 29 Jan 2021 11:48:19 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <20210128134130.3051-2-elic@nvidia.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-28_12:2021-01-28,2021-01-28 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
- priorityscore=1501 bulkscore=0 lowpriorityscore=0 mlxscore=0
- mlxlogscore=926 adultscore=0 malwarescore=0 spamscore=0 clxscore=1015
- impostorscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2009150000 definitions=main-2101290015
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If two or more instances of 'ip link set' commands race and first one
-already brings the interface up (or down), the subsequent instances
-can simply return without redoing the up/down operation.
 
-Fixes: ed651a10875f ("ibmvnic: Updated reset handling")
-Reported-by: Abdul Haleem <abdhalee@in.ibm.com>
-Tested-by: Abdul Haleem <abdhalee@in.ibm.com>
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
----
- drivers/net/ethernet/ibm/ibmvnic.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+On 2021/1/28 下午9:41, Eli Cohen wrote:
+> suspend_vq should only suspend the VQ on not save the current available
+> index. This is done when a change of map occurs when the driver calls
+> save_channel_info().
+>
+> Signed-off-by: Eli Cohen <elic@nvidia.com>
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index cb7ddfefb03e..84b772921f35 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -1219,6 +1219,13 @@ static int ibmvnic_open(struct net_device *netdev)
- 		goto out;
- 	}
- 
-+	/* If adapter is already open, we don't have to do anything. */
-+	if (adapter->state == VNIC_OPEN) {
-+		netdev_dbg(netdev, "[S:%d] adapter already open\n",
-+			   adapter->state);
-+		return 0;
-+	}
-+
- 	if (adapter->state != VNIC_CLOSED) {
- 		rc = ibmvnic_login(netdev);
- 		if (rc)
-@@ -1392,6 +1399,12 @@ static int ibmvnic_close(struct net_device *netdev)
- 		return 0;
- 	}
- 
-+	/* If adapter is already closed, we don't have to do anything. */
-+	if (adapter->state == VNIC_CLOSED) {
-+		netdev_dbg(netdev, "[S:%d] adapter already closed\n",
-+			   adapter->state);
-+		return 0;
-+	}
- 	rc = __ibmvnic_close(netdev);
- 	ibmvnic_cleanup(netdev);
- 
--- 
-2.26.2
+
+Acked-by: Jason Wang <jasowang@redhat.com>
+
+
+> ---
+>   drivers/vdpa/mlx5/net/mlx5_vnet.c | 8 --------
+>   1 file changed, 8 deletions(-)
+>
+> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> index 88dde3455bfd..549ded074ff3 100644
+> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> @@ -1148,8 +1148,6 @@ static int setup_vq(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq)
+>   
+>   static void suspend_vq(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq)
+>   {
+> -	struct mlx5_virtq_attr attr;
+> -
+>   	if (!mvq->initialized)
+>   		return;
+>   
+> @@ -1158,12 +1156,6 @@ static void suspend_vq(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *m
+>   
+>   	if (modify_virtqueue(ndev, mvq, MLX5_VIRTIO_NET_Q_OBJECT_STATE_SUSPEND))
+>   		mlx5_vdpa_warn(&ndev->mvdev, "modify to suspend failed\n");
+> -
+> -	if (query_virtqueue(ndev, mvq, &attr)) {
+> -		mlx5_vdpa_warn(&ndev->mvdev, "failed to query virtqueue\n");
+> -		return;
+> -	}
+> -	mvq->avail_idx = attr.available_index;
+>   }
+>   
+>   static void suspend_vqs(struct mlx5_vdpa_net *ndev)
 
