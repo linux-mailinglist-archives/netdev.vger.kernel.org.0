@@ -2,74 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D9C43083BD
+	by mail.lfdr.de (Postfix) with ESMTP id DFD4B3083BE
 	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 03:22:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231378AbhA2CVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 21:21:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58480 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229757AbhA2CVc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 Jan 2021 21:21:32 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D84EF64DF1;
-        Fri, 29 Jan 2021 02:20:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611886851;
-        bh=gr5pyKDiwCQAiOj4B3ExUDtmL0vdJyClcFIVkgI1rDY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=s9KacoRhHSBvoBgJvjSb5Ef05QLfLpcWQJe0Z+da3/hnRzxrLJMyPtcSDYq2VYulW
-         fBunyXc07kJKomsI5mIsfbOurnA0e83KtzJcwPrdvBHFjBFRW2u0qesH+myGWRCN0c
-         KJBuJiFl1llqogrmPW2Y+rwsTz4OJ59gnAXJbhZIRhjmkelpXsYMYbSwbV55dw3ENa
-         W8mtSuwqI++OB+bpxoSZFNyMeESbKj6Naf3pNB3uhaT1tQVXdnCq0pSVEQ5zu0LOB9
-         KhjFOukWWEiMnTX8ZQPgo/poTaCC7A/C3tgWNrHAtztqpDs9wlzYV294Qt6Ik78MGr
-         ALHYtfp7uM6zQ==
-Date:   Thu, 28 Jan 2021 18:20:49 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     <stefanc@marvell.com>
-Cc:     <netdev@vger.kernel.org>, <thomas.petazzoni@bootlin.com>,
-        <davem@davemloft.net>, <nadavh@marvell.com>,
-        <ymarkman@marvell.com>, <linux-kernel@vger.kernel.org>,
-        <linux@armlinux.org.uk>, <mw@semihalf.com>, <andrew@lunn.ch>,
-        <rmk+kernel@armlinux.org.uk>, <atenart@kernel.org>
-Subject: Re: [PATCH v5 net-next 00/18] net: mvpp2: Add TX Flow Control
- support
-Message-ID: <20210128182049.19123063@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1611858682-9845-1-git-send-email-stefanc@marvell.com>
-References: <1611858682-9845-1-git-send-email-stefanc@marvell.com>
+        id S231537AbhA2CWh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 21:22:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54976 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229757AbhA2CWe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 21:22:34 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8789C061573
+        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 18:21:53 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id c6so8932462ede.0
+        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 18:21:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vSzjq/CjVtCyUWsaFtjYkbyAcvgDzrIG/wbQ7+LoU9E=;
+        b=Oza5op4p5aPJKeMnu5fZOAZ3iYbLEEy+7Oa1nZMkQBcURVeccR+fIkQgU/F1RUM6us
+         /2by9B2HRlVofqXdiSiUtQf6/kCWI/Xk/vImK55vAV32l0em6rTyJuEjoHFN3nQVo4RZ
+         QBhDZG/Ksquxdeae6Yyaq7DPDdBE7lEAD5N87W1zSxCb00bnaoK1IqMP6/eq/oT+22QI
+         OXDstK4ahst+4lbWnokl9rW3tAXtTjO2Wesjr+oPayZx/+49UXkU2PdZvGNVNfkPW4Kk
+         U+n05QSY41uGHGr1dOfmbERaiyBI81uKRXs/KfhWxj8fZlSV0MPY8aOEhBS4I1583VcT
+         S+0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vSzjq/CjVtCyUWsaFtjYkbyAcvgDzrIG/wbQ7+LoU9E=;
+        b=ZjLW9keb8IFTeuUL8hzVrjsc7ZtI4qBuaQGZU4lPEaPbrcgyRYPHo6i66dmByGboIJ
+         LRgmqrXzbFVpcVh11w7G0mWygtOJrrizdjhUR2np34pE/j+AMczSM/UJ6VG3TGKUleqs
+         PUiYE8SfDXRfuZuMwWcQB2zuY2q/RsEz/SVbqHZINuim0kHYVRUT3soS4rAw0WEFAXAM
+         etGbiz/wkJ8erEkKPA/Faftyva7wUPRlSYjjXyFyhlz7j1lOgWKoh/20eSI0N2NNCVKm
+         rBA4wgTTkB6SqSanxtKy8VVq0MHRX5vMn8QmxyoC6IRUJEivO5Q5MY6zb790ejEnfmyx
+         CqEA==
+X-Gm-Message-State: AOAM533b8CZjXWuU+wbaZZvFtS++oUzAirJil3PjGX0814JAkQJUW6I6
+        WF0y+McfWDTBSuqRn5mGyklX6jyFgFcw1gpdlZU=
+X-Google-Smtp-Source: ABdhPJy1Qy4hPpn4CgDWhVCxYPjzNi+U8vVaENVKyOYTMyrEFXzxfCbMhk20kIjX5YBzBK1kejGt1ADUfu7s+X1EKwo=
+X-Received: by 2002:a50:eb81:: with SMTP id y1mr2761931edr.176.1611886912512;
+ Thu, 28 Jan 2021 18:21:52 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <1611882159-17421-1-git-send-email-vfedorenko@novek.ru>
+In-Reply-To: <1611882159-17421-1-git-send-email-vfedorenko@novek.ru>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 28 Jan 2021 21:21:16 -0500
+Message-ID: <CAF=yD-Lmk+nuUWKK+HcoALyPY_xr9rMU_+AsfgAAB0+vCOijRw@mail.gmail.com>
+Subject: Re: [net v2] net: ip_tunnel: fix mtu calculation
+To:     Vadim Fedorenko <vfedorenko@novek.ru>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "Willem de Bruijn <willemdebruijn.kernel@gmail.com>--to=Slava Bacherikov" 
+        <mail@slava.cc>, Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 28 Jan 2021 20:31:04 +0200 stefanc@marvell.com wrote:
-> From: Stefan Chulski <stefanc@marvell.com>
-> 
-> Armada hardware has a pause generation mechanism in GOP (MAC).
-> The GOP generate flow control frames based on an indication programmed in Ports Control 0 Register. There is a bit per port.
-> However assertion of the PortX Pause bits in the ports control 0 register only sends a one time pause.
-> To complement the function the GOP has a mechanism to periodically send pause control messages based on periodic counters.
-> This mechanism ensures that the pause is effective as long as the Appropriate PortX Pause is asserted.
-> 
-> Problem is that Packet Processor that actually can drop packets due to lack of resources not connected to the GOP flow control generation mechanism.
-> To solve this issue Armada has firmware running on CM3 CPU dedicated for Flow Control support.
-> Firmware monitors Packet Processor resources and asserts XON/XOFF by writing to Ports Control 0 Register.
-> 
-> MSS shared SRAM memory used to communicate between CM3 firmware and PP2 driver.
-> During init PP2 driver informs firmware about used BM pools, RXQs, congestion and depletion thresholds.
-> 
-> The pause frames are generated whenever congestion or depletion in resources is detected.
-> The back pressure is stopped when the resource reaches a sufficient level.
-> So the congestion/depletion and sufficient level implement a hysteresis that reduces the XON/XOFF toggle frequency.
-> 
-> Packet Processor v23 hardware introduces support for RX FIFO fill level monitor.
-> Patch "add PPv23 version definition" to differ between v23 and v22 hardware.
-> Patch "add TX FC firmware check" verifies that CM3 firmware supports Flow Control monitoring.
+On Thu, Jan 28, 2021 at 8:02 PM Vadim Fedorenko <vfedorenko@novek.ru> wrote:
+>
+> dev->hard_header_len for tunnel interface is set only when header_ops
+> are set too and already contains full overhead of any tunnel encapsulation.
+> That's why there is not need to use this overhead twice in mtu calc.
+>
+> Fixes: fdafed459998 ("ip_gre: set dev->hard_header_len and dev->needed_headroom properly")
+> Reported-by: Slava Bacherikov <mail@slava.cc>
+> Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
 
-Hi Stefan, looks like patchwork and lore didn't get all the emails:
+Acked-by: Willem de Bruijn <willemb@google.com>
 
-https://lore.kernel.org/r/1611858682-9845-1-git-send-email-stefanc@marvell.com
-https://patchwork.kernel.org/project/netdevbpf/list/?series=423983
+It is easy to verify that if hard_header_len is zero the calculation
+does not change. And as discussed, ip_gre is the only ip_tunnel
+user that sometimes has it non-zero (for legacy reasons that
+we cannot revert now). In that case it is equivalent to tun->hlen +
+sizeof(struct iphdr). LGTM. Thanks!
 
-Unless it fixes itself soon - please repost.
+Btw, ip6_gre might need the same after commit 832ba596494b
+("net: ip6_gre: set dev->hard_header_len when using header_ops")
