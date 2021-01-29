@@ -2,118 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42C44308489
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 05:36:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0B6B3084AE
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 05:51:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231608AbhA2EfN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 23:35:13 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:40090 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229885AbhA2EfL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 23:35:11 -0500
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 10T4VcJG016469;
-        Thu, 28 Jan 2021 23:34:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type :
- content-transfer-encoding; s=pp1;
- bh=NpvlBPIHVa5Cw0Brwc2kkYQevgXKGFwlzXiWleL2Ow8=;
- b=VuuTMWYVVxJyOYIjRFIBiqLRRCterIyvepGqr4sOjzjCTBPUQdhMaCKRtLYFfWiEImy2
- u6HH/hqZRpTibur5Bz12YWjx9aHptANkK+EisXBD3OYjN7aUSAsWT25ROZPkVqP81rLv
- jIQqzf+Xo/r1OwDHaHFI7LuLr5E6wlsHTrPC9VIbMswKlisukiL3lMujKLrxIOqXYrz5
- WImhJwspXHKCKFAv4DodGAJKmem0Vc+rRKuWIksGsIsDxnCg+SYdEF1AbfCROgVtw0tM
- V8PtYeeGHtBwKa9AWXAibOlV3QbR905f2IX4WQamKTz8ft3xdjoAC7iuTLGiU4cevUOB gw== 
-Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 36c7sqvksk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 28 Jan 2021 23:34:04 -0500
-Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
-        by ppma05wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 10T4WspN032714;
-        Fri, 29 Jan 2021 04:34:04 GMT
-Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
-        by ppma05wdc.us.ibm.com with ESMTP id 36a3qc9knb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Jan 2021 04:34:04 +0000
-Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
-        by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 10T4Y3Ww14025032
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 29 Jan 2021 04:34:03 GMT
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2F731AE05C;
-        Fri, 29 Jan 2021 04:34:03 +0000 (GMT)
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4EF4DAE05F;
-        Fri, 29 Jan 2021 04:34:02 +0000 (GMT)
-Received: from pompom.ibm.com (unknown [9.80.201.59])
-        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
-        Fri, 29 Jan 2021 04:34:02 +0000 (GMT)
-From:   Lijun Pan <ljp@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     linuxppc-dev@lists.ozlabs.org, drt@linux.ibm.com,
-        sukadev@linux.ibm.com, mpe@ellerman.id.au,
-        julietk@linux.vnet.ibm.com, benh@kernel.crashing.org,
-        paulus@samba.org, davem@davemloft.net, kuba@kernel.org,
-        gregkh@linuxfoundation.org, kernel@pengutronix.de,
-        Lijun Pan <ljp@linux.ibm.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH net v2] ibmvnic: device remove has higher precedence over reset
-Date:   Thu, 28 Jan 2021 22:34:01 -0600
-Message-Id: <20210129043402.95744-1-ljp@linux.ibm.com>
-X-Mailer: git-send-email 2.22.0
+        id S231972AbhA2EvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 23:51:13 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52832 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231947AbhA2Euz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Jan 2021 23:50:55 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 6B28964DFA;
+        Fri, 29 Jan 2021 04:50:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611895813;
+        bh=3Kv2/ZXqyVZe5YmLdXfB1UCDX0E1dUlO5HjGKKGorGo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=SZl5c643gUr2hd6eodCx1XTFhM+ALqpHgRJ8z3ZPBBXYUhj4kdfFtubqts4cQJ2ye
+         3UHiTtM+cy9YUkO0e6BZEs2fnnJc6Yq0WBPPM/ak4sjUbO8ZEmSCzPMRj41bfbNfcp
+         Q5s1Zox7y6xIWsPTI3sAqAfgL1JsFPr8aMEBfATX6PolcEzoBAbCtwy+WkFz/pGngF
+         LLudt6cd0Sb9xEsIFines4jm3kZtIDf0YV3AFt6B8Uud8eErDOorEqmkUfIt8VHDja
+         mpxwmof2LVhxGkBqy7j5Ju5g7Lk3NklO8pOz6bLjVKzYqphImMc4S5tHfg7yKjMvZT
+         +DLePvm7j25fQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5F27165326;
+        Fri, 29 Jan 2021 04:50:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-29_02:2021-01-28,2021-01-29 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- lowpriorityscore=0 bulkscore=0 mlxscore=0 clxscore=1015 impostorscore=0
- spamscore=0 priorityscore=1501 adultscore=0 mlxlogscore=999 phishscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2101290019
+Subject: Re: [PATCH net-next v2 0/6] net: ipa: hardware pipeline cleanup fixes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161189581338.32508.15067215532800740787.git-patchwork-notify@kernel.org>
+Date:   Fri, 29 Jan 2021 04:50:13 +0000
+References: <20210126185703.29087-1-elder@linaro.org>
+In-Reply-To: <20210126185703.29087-1-elder@linaro.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, elder@kernel.org,
+        evgreen@chromium.org, bjorn.andersson@linaro.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Returning -EBUSY in ibmvnic_remove() does not actually hold the
-removal procedure since driver core doesn't care for the return
-value (see __device_release_driver() in drivers/base/dd.c
-calling dev->bus->remove()) though vio_bus_remove
-(in arch/powerpc/platforms/pseries/vio.c) records the
-return value and passes it on. [1]
+Hello:
 
-During the device removal precedure, checking for resetting
-bit is dropped so that we can continue executing all the
-cleanup calls in the rest of the remove function. Otherwise,
-it can cause latent memory leaks and kernel crashes.
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-[1] https://lore.kernel.org/linuxppc-dev/20210117101242.dpwayq6wdgfdzirl@pengutronix.de/T/#m48f5befd96bc9842ece2a3ad14f4c27747206a53
-Reported-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Fixes: 7d7195a026ba ("ibmvnic: Do not process device remove during device reset")
-Signed-off-by: Lijun Pan <ljp@linux.ibm.com>
----
-v2: drop v1's deletion of REMOVING check in __ibmvnic_reset.
+On Tue, 26 Jan 2021 12:56:57 -0600 you wrote:
+> Version 2 of this series fixes a "restricted __le16 degrades to
+> integer" warning from sparse in the third patch.  The normal host
+> architecture is little-endian, so the problem did not produce
+> incorrect behavior, but the code was wrong not to perform the
+> endianness conversion.  The updated patch uses le16_get_bits() to
+> properly extract the value of the field we're interested in.
+> 
+> [...]
 
- drivers/net/ethernet/ibm/ibmvnic.c | 5 -----
- 1 file changed, 5 deletions(-)
+Here is the summary with links:
+  - [net-next,v2,1/6] net: ipa: rename "tag status" symbols
+    https://git.kernel.org/netdev/net-next/c/aa56e3e5cdb4
+  - [net-next,v2,2/6] net: ipa: minor update to handling of packet with status
+    https://git.kernel.org/netdev/net-next/c/162fbc6f4519
+  - [net-next,v2,3/6] net: ipa: drop packet if status has valid tag
+    https://git.kernel.org/netdev/net-next/c/f6aba7b5199a
+  - [net-next,v2,4/6] net: ipa: signal when tag transfer completes
+    https://git.kernel.org/netdev/net-next/c/51c48ce264f8
+  - [net-next,v2,5/6] net: ipa: don't pass tag value to ipa_cmd_ip_tag_status_add()
+    https://git.kernel.org/netdev/net-next/c/792b75b14786
+  - [net-next,v2,6/6] net: ipa: don't pass size to ipa_cmd_transfer_add()
+    https://git.kernel.org/netdev/net-next/c/070740d389aa
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 9778c83150f1..e19fa8bc763c 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -5438,11 +5438,6 @@ static int ibmvnic_remove(struct vio_dev *dev)
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&adapter->state_lock, flags);
--	if (test_bit(0, &adapter->resetting)) {
--		spin_unlock_irqrestore(&adapter->state_lock, flags);
--		return -EBUSY;
--	}
--
- 	adapter->state = VNIC_REMOVING;
- 	spin_unlock_irqrestore(&adapter->state_lock, flags);
- 
--- 
-2.23.0
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
