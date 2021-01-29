@@ -2,98 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51F66308FBE
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 23:05:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F03C0308FC4
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 23:08:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232997AbhA2WCY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jan 2021 17:02:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56262 "EHLO mail.kernel.org"
+        id S233214AbhA2WFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jan 2021 17:05:02 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56392 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232752AbhA2WCC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Jan 2021 17:02:02 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7605664D7F;
-        Fri, 29 Jan 2021 22:01:21 +0000 (UTC)
+        id S232498AbhA2WFB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 Jan 2021 17:05:01 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2938364DDB;
+        Fri, 29 Jan 2021 22:04:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611957681;
-        bh=VC+OT4kyfgmZZcdKlfJ2Gu/2uwTNCfc3tfNRXYWunFU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=m7GGZi45DfINPk8PuhRCyyE6Z18P9X8dqT08fZWZWK3xPnI/B+8xdYgDisPxUsZnh
-         VkVivp81JLTQyrzeQy9f58X1qqKrFCFXFMXsNVEYBVkQDU/8DmougJeZhQzFI5oM9b
-         dsP1WH4gnVUdd028wRMFFPeg2EXB/HVPLNUua/SaZkj//3Xtti0xU/ZX0SMLUVwP05
-         PD32lUnXwG7GPIuoyyzEy/gQWm30pnOpIUH4XY4SlfigPRB6Gv0pFvzif2dpo84c5d
-         z2t3YetPsV0qsbrDuO9MuaUVyAhOO/72F55wZ/cl+8Wg5SYnOq1B6PtkoPOdHlnfjX
-         c5kiPO0G0144Q==
-Date:   Fri, 29 Jan 2021 14:01:20 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sven Van Asbroeck <thesven73@gmail.com>
-Cc:     Bryan Whitehead <bryan.whitehead@microchip.com>,
-        UNGLinuxDriver@microchip.com, David S Miller <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Alexey Denisov <rtgbnm@gmail.com>,
-        Sergej Bauer <sbauer@blackbox.su>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Anders =?UTF-8?B?UsO4bm5pbmdlbg==?= <anders@ronningen.priv.no>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v1 1/6] lan743x: boost performance on cpu archs
- w/o dma cache snooping
-Message-ID: <20210129140120.29ae5062@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210129195240.31871-2-TheSven73@gmail.com>
-References: <20210129195240.31871-1-TheSven73@gmail.com>
-        <20210129195240.31871-2-TheSven73@gmail.com>
+        s=k20201202; t=1611957855;
+        bh=m3biG8PI/jKfwgFC5WC3EpEhJsNzvntmfxnzlkkDGns=;
+        h=From:To:Cc:Subject:Date:From;
+        b=QL/i993FejutmywW/Z35FllWk1eW0lM3O9ynbXkrZY7k3d8DC3kUgBVJlrM9e6Py8
+         w5aqcElVONUtFDdA8atrVmj8Q+Qx09q3bGw9Q2StVjh0clCcF0kl47L3Q+MaQGKZFa
+         DAhxZdikdwUJnrJqNzjrNCKB3e0NJlSl2u10LDX57nyQl07l6KFBfGhrJKSHiwAlRD
+         aWDXfYwDgFvKpTgodZczLcHPwvU3bwHm37BFFU9slfst9cDM+7XQgeW38rNRmB26Rg
+         N0Ovgk5T9gSwwSPx/oS645hNIYeTwAuQDqhYdTvym04jEcVB+9v0a4ysBKKNOunm+r
+         w2TWuWG1NwtFg==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, toshiaki.makita1@gmail.com,
+        lorenzo.bianconi@redhat.com, brouer@redhat.com, toke@redhat.com
+Subject: [PATCH v3 bpf-next] net: veth: alloc skb in bulk for ndo_xdp_xmit
+Date:   Fri, 29 Jan 2021 23:04:08 +0100
+Message-Id: <a14a30d3c06fff24e13f836c733d80efc0bd6eb5.1611957532.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 29 Jan 2021 14:52:35 -0500 Sven Van Asbroeck wrote:
-> From: Sven Van Asbroeck <thesven73@gmail.com>
-> 
-> The buffers in the lan743x driver's receive ring are always 9K,
-> even when the largest packet that can be received (the mtu) is
-> much smaller. This performs particularly badly on cpu archs
-> without dma cache snooping (such as ARM): each received packet
-> results in a 9K dma_{map|unmap} operation, which is very expensive
-> because cpu caches need to be invalidated.
-> 
-> Careful measurement of the driver rx path on armv7 reveals that
-> the cpu spends the majority of its time waiting for cache
-> invalidation.
-> 
-> Optimize as follows:
-> 
-> 1. set rx ring buffer size equal to the mtu. this limits the
->    amount of cache that needs to be invalidated per dma_map().
-> 
-> 2. when dma_unmap()ping, skip cpu sync. Sync only the packet data
->    actually received, the size of which the chip will indicate in
->    its rx ring descriptors. this limits the amount of cache that
->    needs to be invalidated per dma_unmap().
-> 
-> These optimizations double the rx performance on armv7.
-> Third parties report 3x rx speedup on armv8.
-> 
-> Performance on dma cache snooping architectures (such as x86)
-> is expected to stay the same.
-> 
-> Tested with iperf3 on a freescale imx6qp + lan7430, both sides
-> set to mtu 1500 bytes, measure rx performance:
-> 
-> Before:
-> [ ID] Interval           Transfer     Bandwidth       Retr
-> [  4]   0.00-20.00  sec   550 MBytes   231 Mbits/sec    0
-> After:
-> [ ID] Interval           Transfer     Bandwidth       Retr
-> [  4]   0.00-20.00  sec  1.33 GBytes   570 Mbits/sec    0
-> 
-> Test by Anders Roenningen (anders@ronningen.priv.no) on armv8,
->     rx iperf3:
-> Before 102 Mbits/sec
-> After  279 Mbits/sec
-> 
-> Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
+Split ndo_xdp_xmit and ndo_start_xmit use cases in veth_xdp_rcv routine
+in order to alloc skbs in bulk for XDP_PASS verdict.
+Introduce xdp_alloc_skb_bulk utility routine to alloc skb bulk list.
+The proposed approach has been tested in the following scenario:
 
-You may need to rebase to see this:
+eth (ixgbe) --> XDP_REDIRECT --> veth0 --> (remote-ns) veth1 --> XDP_PASS
 
-drivers/net/ethernet/microchip/lan743x_main.c:2123:41: warning: restricted __le32 degrades to integer
+XDP_REDIRECT: xdp_redirect_map bpf sample
+XDP_PASS: xdp_rxq_info bpf sample
+
+traffic generator: pkt_gen sending udp traffic on a remote device
+
+bpf-next master: ~3.64Mpps
+bpf-next + skb bulking allocation: ~3.79Mpps
+
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+Changes since v2:
+- use __GFP_ZERO flag instead of memset
+- move some veth_xdp_rcv_batch() logic in veth_xdp_rcv_skb()
+
+Changes since v1:
+- drop patch 2/3, squash patch 1/3 and 3/3
+- set VETH_XDP_BATCH to 16
+- rework veth_xdp_rcv to use __ptr_ring_consume
+---
+ drivers/net/veth.c | 78 ++++++++++++++++++++++++++++++++++------------
+ include/net/xdp.h  |  1 +
+ net/core/xdp.c     | 11 +++++++
+ 3 files changed, 70 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+index 6e03b619c93c..aa1a66ad2ce5 100644
+--- a/drivers/net/veth.c
++++ b/drivers/net/veth.c
+@@ -35,6 +35,7 @@
+ #define VETH_XDP_HEADROOM	(XDP_PACKET_HEADROOM + NET_IP_ALIGN)
+ 
+ #define VETH_XDP_TX_BULK_SIZE	16
++#define VETH_XDP_BATCH		16
+ 
+ struct veth_stats {
+ 	u64	rx_drops;
+@@ -562,14 +563,13 @@ static int veth_xdp_tx(struct veth_rq *rq, struct xdp_buff *xdp,
+ 	return 0;
+ }
+ 
+-static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
+-					struct xdp_frame *frame,
+-					struct veth_xdp_tx_bq *bq,
+-					struct veth_stats *stats)
++static struct xdp_frame *veth_xdp_rcv_one(struct veth_rq *rq,
++					  struct xdp_frame *frame,
++					  struct veth_xdp_tx_bq *bq,
++					  struct veth_stats *stats)
+ {
+ 	struct xdp_frame orig_frame;
+ 	struct bpf_prog *xdp_prog;
+-	struct sk_buff *skb;
+ 
+ 	rcu_read_lock();
+ 	xdp_prog = rcu_dereference(rq->xdp_prog);
+@@ -623,13 +623,7 @@ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
+ 	}
+ 	rcu_read_unlock();
+ 
+-	skb = xdp_build_skb_from_frame(frame, rq->dev);
+-	if (!skb) {
+-		xdp_return_frame(frame);
+-		stats->rx_drops++;
+-	}
+-
+-	return skb;
++	return frame;
+ err_xdp:
+ 	rcu_read_unlock();
+ 	xdp_return_frame(frame);
+@@ -637,6 +631,37 @@ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
+ 	return NULL;
+ }
+ 
++/* frames array contains VETH_XDP_BATCH at most */
++static void veth_xdp_rcv_bulk_skb(struct veth_rq *rq, void **frames,
++				  int n_xdpf, struct veth_xdp_tx_bq *bq,
++				  struct veth_stats *stats)
++{
++	void *skbs[VETH_XDP_BATCH];
++	int i;
++
++	if (xdp_alloc_skb_bulk(skbs, n_xdpf,
++			       GFP_ATOMIC | __GFP_ZERO) < 0) {
++		for (i = 0; i < n_xdpf; i++)
++			xdp_return_frame(frames[i]);
++		stats->rx_drops += n_xdpf;
++
++		return;
++	}
++
++	for (i = 0; i < n_xdpf; i++) {
++		struct sk_buff *skb = skbs[i];
++
++		skb = __xdp_build_skb_from_frame(frames[i], skb,
++						 rq->dev);
++		if (!skb) {
++			xdp_return_frame(frames[i]);
++			stats->rx_drops++;
++			continue;
++		}
++		napi_gro_receive(&rq->xdp_napi, skb);
++	}
++}
++
+ static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq,
+ 					struct sk_buff *skb,
+ 					struct veth_xdp_tx_bq *bq,
+@@ -784,32 +809,45 @@ static int veth_xdp_rcv(struct veth_rq *rq, int budget,
+ 			struct veth_xdp_tx_bq *bq,
+ 			struct veth_stats *stats)
+ {
+-	int i, done = 0;
++	int i, done = 0, n_xdpf = 0;
++	void *xdpf[VETH_XDP_BATCH];
+ 
+ 	for (i = 0; i < budget; i++) {
+ 		void *ptr = __ptr_ring_consume(&rq->xdp_ring);
+-		struct sk_buff *skb;
+ 
+ 		if (!ptr)
+ 			break;
+ 
+ 		if (veth_is_xdp_frame(ptr)) {
++			/* ndo_xdp_xmit */
+ 			struct xdp_frame *frame = veth_ptr_to_xdp(ptr);
+ 
+ 			stats->xdp_bytes += frame->len;
+-			skb = veth_xdp_rcv_one(rq, frame, bq, stats);
++			frame = veth_xdp_rcv_one(rq, frame, bq, stats);
++			if (frame) {
++				/* XDP_PASS */
++				xdpf[n_xdpf++] = frame;
++				if (n_xdpf == VETH_XDP_BATCH) {
++					veth_xdp_rcv_bulk_skb(rq, xdpf, n_xdpf,
++							      bq, stats);
++					n_xdpf = 0;
++				}
++			}
+ 		} else {
+-			skb = ptr;
++			/* ndo_start_xmit */
++			struct sk_buff *skb = ptr;
++
+ 			stats->xdp_bytes += skb->len;
+ 			skb = veth_xdp_rcv_skb(rq, skb, bq, stats);
++			if (skb)
++				napi_gro_receive(&rq->xdp_napi, skb);
+ 		}
+-
+-		if (skb)
+-			napi_gro_receive(&rq->xdp_napi, skb);
+-
+ 		done++;
+ 	}
+ 
++	if (n_xdpf)
++		veth_xdp_rcv_bulk_skb(rq, xdpf, n_xdpf, bq, stats);
++
+ 	u64_stats_update_begin(&rq->stats.syncp);
+ 	rq->stats.vs.xdp_redirect += stats->xdp_redirect;
+ 	rq->stats.vs.xdp_bytes += stats->xdp_bytes;
+diff --git a/include/net/xdp.h b/include/net/xdp.h
+index c4bfdc9a8b79..a5bc214a49d9 100644
+--- a/include/net/xdp.h
++++ b/include/net/xdp.h
+@@ -169,6 +169,7 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
+ 					   struct net_device *dev);
+ struct sk_buff *xdp_build_skb_from_frame(struct xdp_frame *xdpf,
+ 					 struct net_device *dev);
++int xdp_alloc_skb_bulk(void **skbs, int n_skb, gfp_t gfp);
+ 
+ static inline
+ void xdp_convert_frame_to_buff(struct xdp_frame *frame, struct xdp_buff *xdp)
+diff --git a/net/core/xdp.c b/net/core/xdp.c
+index 0d2630a35c3e..05354976c1fc 100644
+--- a/net/core/xdp.c
++++ b/net/core/xdp.c
+@@ -514,6 +514,17 @@ void xdp_warn(const char *msg, const char *func, const int line)
+ };
+ EXPORT_SYMBOL_GPL(xdp_warn);
+ 
++int xdp_alloc_skb_bulk(void **skbs, int n_skb, gfp_t gfp)
++{
++	n_skb = kmem_cache_alloc_bulk(skbuff_head_cache, gfp,
++				      n_skb, skbs);
++	if (unlikely(!n_skb))
++		return -ENOMEM;
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(xdp_alloc_skb_bulk);
++
+ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
+ 					   struct sk_buff *skb,
+ 					   struct net_device *dev)
+-- 
+2.29.2
+
