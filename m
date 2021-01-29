@@ -2,88 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B14E13090BD
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 00:50:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0C533090C9
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 00:56:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231671AbhA2Xs4 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 29 Jan 2021 18:48:56 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:59147 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231156AbhA2Xsx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 18:48:53 -0500
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-174-N513bYxuPoqZK1qa1Axm_A-1; Fri, 29 Jan 2021 23:47:13 +0000
-X-MC-Unique: N513bYxuPoqZK1qa1Axm_A-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Fri, 29 Jan 2021 23:47:14 +0000
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Fri, 29 Jan 2021 23:47:14 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Matthew Wilcox' <willy@infradead.org>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Shoaib Rao <rao.shoaib@oracle.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "andy.rudoff@intel.com" <andy.rudoff@intel.com>
-Subject: RE: [PATCH] af_unix: Allow Unix sockets to raise SIGURG
-Thread-Topic: [PATCH] af_unix: Allow Unix sockets to raise SIGURG
-Thread-Index: AQHW9oaDqv48RJCczk2sHQ3JiT7IG6o/Q1OQ
-Date:   Fri, 29 Jan 2021 23:47:14 +0000
-Message-ID: <ee13e83b22b7411c97a2a961015343d1@AcuMS.aculab.com>
-References: <20210122150638.210444-1-willy@infradead.org>
- <20210125153650.18c84b1a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <23fc3de2-7541-04c9-a56f-4006a7dc773f@oracle.com>
- <20210129110605.54df8409@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <a21dc26a-87dc-18c8-b8bd-24f9797afbad@oracle.com>
- <20210129120250.269c366d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <cef52fb0-43cb-9038-7e48-906b58b356b6@oracle.com>
- <20210129121837.467280fb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <e1047be3-2d53-49d3-67b4-a2a99e0c0f0f@oracle.com>
- <20210129131820.4b97fdeb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210129213217.GD308988@casper.infradead.org>
-In-Reply-To: <20210129213217.GD308988@casper.infradead.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S231489AbhA2XzY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jan 2021 18:55:24 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:46853 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231199AbhA2XzW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 18:55:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1611964435;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=q039E6qRHMWcEvS57m0H092hcBFMkfO15L+0InB6KMY=;
+        b=a6BCdsudDJeI0hSzI/hdMhA2/W9kGU0SQUO97Vtg3BsxKJY6QqAc4zHZT+oH1oUT6QAuWb
+        YbJ0GY/XBoUNmCEvEr9O+qjEmBL5Jnjp6y7Hn5B+9VhZaOGEEVDNoR+ro8PW76iJkAG7zJ
+        1MoH1a1OSUC0YP48gP/1Ny5QJii4Fhg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-353-wQPqnrndOFmV70fhnBJ3Yg-1; Fri, 29 Jan 2021 18:53:53 -0500
+X-MC-Unique: wQPqnrndOFmV70fhnBJ3Yg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5BD4D10054FF;
+        Fri, 29 Jan 2021 23:53:52 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-115-23.rdu2.redhat.com [10.10.115.23])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 34E735D71B;
+        Fri, 29 Jan 2021 23:53:50 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net] rxrpc: Fix deadlock around release of dst cached on udp
+ tunnel
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     syzbot+df400f2f24a1677cd7e0@syzkaller.appspotmail.com,
+        Vadim Fedorenko <vfedorenko@novek.ru>,
+        Vadim Fedorenko <vfedorenko@novek.ru>, vfedorenko@novek.ru,
+        dhowells@redhat.com, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Date:   Fri, 29 Jan 2021 23:53:50 +0000
+Message-ID: <161196443016.3868642.5577440140646403533.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I'd encourage anyone thinking about "using OOB" to read
-> https://tools.ietf.org/html/rfc6093 first.  Basically, TCP does not
-> actually provide an OOB mechanism, and frankly Unix sockets shouldn't
-> try either.
+AF_RXRPC sockets use UDP ports in encap mode.  This causes socket and dst
+from an incoming packet to get stolen and attached to the UDP socket from
+whence it is leaked when that socket is closed.
 
-OOB data maps much better onto ISO transport 'expedited data'
-than anything in a bytestream protocol like TCP.
-There you can send a message (it is message oriented) that isn't
-subject to normal data flow control.
-The length is limited (IIRC 32 bytes) and expedited data has
-its own credit of one, but can overtake (and is expected to
-overtake) flow control blocked normal data.
+When a network namespace is removed, the wait for dst records to be cleaned
+up happens before the cleanup of the rxrpc and UDP socket, meaning that the
+wait never finishes.
 
-All TCP provides is a byte sequence number for OOB data.
-This is just a marker in the bytestream.
-It really doesn't map onto the socket OOB data data all.
+Fix this by moving the rxrpc (and, by dependence, the afs) private
+per-network namespace registrations to the device group rather than subsys
+group.  This allows cached rxrpc local endpoints to be cleared and their
+UDP sockets closed before we try waiting for the dst records.
 
-	David
+The symptom is that lines looking like the following:
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+	unregister_netdevice: waiting for lo to become free
+
+get emitted at regular intervals after running something like the
+referenced syzbot test.
+
+Thanks to Vadim for tracking this down and work out the fix.
+
+Reported-by: syzbot+df400f2f24a1677cd7e0@syzkaller.appspotmail.com
+Reported-by: Vadim Fedorenko <vfedorenko@novek.ru>
+Fixes: 5271953cad31 ("rxrpc: Use the UDP encap_rcv hook")
+Signed-off-by: David Howells <dhowells@redhat.com>
+Acked-by: Vadim Fedorenko <vfedorenko@novek.ru>
+---
+
+ fs/afs/main.c        |    6 +++---
+ net/rxrpc/af_rxrpc.c |    6 +++---
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/fs/afs/main.c b/fs/afs/main.c
+index accdd8970e7c..b2975256dadb 100644
+--- a/fs/afs/main.c
++++ b/fs/afs/main.c
+@@ -193,7 +193,7 @@ static int __init afs_init(void)
+ 		goto error_cache;
+ #endif
+ 
+-	ret = register_pernet_subsys(&afs_net_ops);
++	ret = register_pernet_device(&afs_net_ops);
+ 	if (ret < 0)
+ 		goto error_net;
+ 
+@@ -213,7 +213,7 @@ static int __init afs_init(void)
+ error_proc:
+ 	afs_fs_exit();
+ error_fs:
+-	unregister_pernet_subsys(&afs_net_ops);
++	unregister_pernet_device(&afs_net_ops);
+ error_net:
+ #ifdef CONFIG_AFS_FSCACHE
+ 	fscache_unregister_netfs(&afs_cache_netfs);
+@@ -244,7 +244,7 @@ static void __exit afs_exit(void)
+ 
+ 	proc_remove(afs_proc_symlink);
+ 	afs_fs_exit();
+-	unregister_pernet_subsys(&afs_net_ops);
++	unregister_pernet_device(&afs_net_ops);
+ #ifdef CONFIG_AFS_FSCACHE
+ 	fscache_unregister_netfs(&afs_cache_netfs);
+ #endif
+diff --git a/net/rxrpc/af_rxrpc.c b/net/rxrpc/af_rxrpc.c
+index 0a2f4817ec6c..41671af6b33f 100644
+--- a/net/rxrpc/af_rxrpc.c
++++ b/net/rxrpc/af_rxrpc.c
+@@ -990,7 +990,7 @@ static int __init af_rxrpc_init(void)
+ 		goto error_security;
+ 	}
+ 
+-	ret = register_pernet_subsys(&rxrpc_net_ops);
++	ret = register_pernet_device(&rxrpc_net_ops);
+ 	if (ret)
+ 		goto error_pernet;
+ 
+@@ -1035,7 +1035,7 @@ static int __init af_rxrpc_init(void)
+ error_sock:
+ 	proto_unregister(&rxrpc_proto);
+ error_proto:
+-	unregister_pernet_subsys(&rxrpc_net_ops);
++	unregister_pernet_device(&rxrpc_net_ops);
+ error_pernet:
+ 	rxrpc_exit_security();
+ error_security:
+@@ -1057,7 +1057,7 @@ static void __exit af_rxrpc_exit(void)
+ 	unregister_key_type(&key_type_rxrpc);
+ 	sock_unregister(PF_RXRPC);
+ 	proto_unregister(&rxrpc_proto);
+-	unregister_pernet_subsys(&rxrpc_net_ops);
++	unregister_pernet_device(&rxrpc_net_ops);
+ 	ASSERTCMP(atomic_read(&rxrpc_n_tx_skbs), ==, 0);
+ 	ASSERTCMP(atomic_read(&rxrpc_n_rx_skbs), ==, 0);
+ 
+
 
