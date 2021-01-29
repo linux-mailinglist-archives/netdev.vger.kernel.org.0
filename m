@@ -2,239 +2,256 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E7D1308A9A
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 17:54:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F31C308A72
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 17:45:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231486AbhA2Qsm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jan 2021 11:48:42 -0500
-Received: from esa4.mentor.iphmx.com ([68.232.137.252]:8508 "EHLO
-        esa4.mentor.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232143AbhA2QrH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 11:47:07 -0500
-X-Greylist: delayed 593 seconds by postgrey-1.27 at vger.kernel.org; Fri, 29 Jan 2021 11:47:06 EST
-IronPort-SDR: b1N9/+iI/U0yIfX93OrsRz2wJnoefGqM3cqLHDmTB4bGfzWjXtd0ubMgd4dxczIOvjl3+RMsZP
- BIn7CHton15k8FN8CdRECTLweqDGKCFI4oUEd6wJKwgjgoXJ52h76YRFcNxBGp3GdtTt3Yw5qu
- N4CxUMgpQ+EYhdNnoATWmBHSvM36TORcP5ENxcOracvutkOBTiNg/npx4Ea7RiATmNhpo3rR/5
- eqAxjsrrnLQflDq0AL+mRR2Zk10UJLvTj4X2tZ8QXR6O3oSLkZFxmRnfQdWHAjVnhvJrn4w8IC
- V1E=
-X-IronPort-AV: E=Sophos;i="5.79,385,1602576000"; 
-   d="scan'208";a="57717628"
-Received: from orw-gwy-01-in.mentorg.com ([192.94.38.165])
-  by esa4.mentor.iphmx.com with ESMTP; 29 Jan 2021 08:36:14 -0800
-IronPort-SDR: wSxPxwNviM30PMwBRAiInB8Y9FV1xel6itNRiCH9ys5S9YPBjbXSnYSU0ZiXU1CTnPyA95R0LP
- Q1T7vL9oIpac2TM84Ox/A5iyCx8rwYCOJi9SN8NWtLMtAKbJNi7nPa/QWNMhX73VV186KqvWVq
- +pVVRaoPNUKEDw0fD8ydjEBzP2is+gCiFrvcoPMz8AJke48BUf8op5BTrRElO5sxt27v4aJGpK
- PfPIIbEXAjGx48gKsT2TxFxByounnTBQcn221JRXsHH0HdGw/Y4LapyziGOs3X/iP1jWbjTt8E
- qYg=
-From:   "Schmid, Carsten" <Carsten_Schmid@mentor.com>
-To:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
-        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Possible race in ipv4 routing
-Thread-Topic: Possible race in ipv4 routing
-Thread-Index: Adb2WOKDcG46MQO/TSyjQLtBUehbKg==
-Date:   Fri, 29 Jan 2021 16:36:08 +0000
-Message-ID: <3ae0c31d017148eab230576bf116b69e@SVR-IES-MBX-03.mgc.mentorg.com>
-Accept-Language: de-DE, en-IE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [137.202.0.90]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S231701AbhA2Qi7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jan 2021 11:38:59 -0500
+Received: from mail-ot1-f54.google.com ([209.85.210.54]:33549 "EHLO
+        mail-ot1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231631AbhA2Qij (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 11:38:39 -0500
+Received: by mail-ot1-f54.google.com with SMTP id 63so9183006oty.0;
+        Fri, 29 Jan 2021 08:38:23 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Yo+UnI3asEDx3wQagFoNSo48d6iNCcAeofFLaX+Rbpg=;
+        b=TxzIMabWlaXrADQOsnsptQ56TEse+jdaQyExn2LfuHtxGrwYBdVFG0vFSX7NbmR6qo
+         eLAFrQnV+soNt2EV9vI7CrdcVFr3AwglMWkU6QdImG2WN78eaFMgIJaK5SpLWEgja8O3
+         ppMtZTRj+PGZvJG8LAUv2MeufQZfsz+UJSt1+f7yh/uXM7G7OeClKzWL0DOyCbKXlZZc
+         zE+BIK4W5u+dKVnpOv9YnEsq+rnRvqKCHprOAxQnOT6bfZYov6P2lSVCR84ebwtf2gyY
+         9JPw3IFYUnfF6CbFvEv20fn9r2PE8cpvtR6J8qfNCO0f07p89wkwLzSmad82mqFXTMLQ
+         tmow==
+X-Gm-Message-State: AOAM5307MNYRayJ2MSbpjLacWLmRzA+pPtltSudW4Yt/MA2CNrjcf29s
+        Kn+LDKmhuq3WTwO5ZOIjA6NUGBOalk2l+fD1RkM=
+X-Google-Smtp-Source: ABdhPJxgf0sJ5HPAtEF+5FN4u/sSQlAPYoCyji0nqaaynjhRbquiHqVZK39cTpiMdklkj0gEm+MYVNNbWLn6eXY/Tpw=
+X-Received: by 2002:a05:6830:2313:: with SMTP id u19mr3479681ote.321.1611938276935;
+ Fri, 29 Jan 2021 08:37:56 -0800 (PST)
 MIME-Version: 1.0
+References: <20210122154300.7628-1-calvin.johnson@oss.nxp.com>
+ <20210122154300.7628-2-calvin.johnson@oss.nxp.com> <CAJZ5v0iX3uU36448ALA20hiVk968VKTsvgwLrp8ur96MQo3Acw@mail.gmail.com>
+ <20210128112729.GA28413@lsv03152.swis.in-blr01.nxp.com> <CAJZ5v0id1i57K_=7eiK0cpOE6UtsKNfR7L7UEBcN1=G+WS+1TA@mail.gmail.com>
+ <20210128131205.GA7882@lsv03152.swis.in-blr01.nxp.com> <CAJZ5v0j1XVSyFa1q4RZ=FnSmfR5VOyX+u1uWBWdvTOVBJJ-JXw@mail.gmail.com>
+ <20210129064739.GA24267@lsv03152.swis.in-blr01.nxp.com>
+In-Reply-To: <20210129064739.GA24267@lsv03152.swis.in-blr01.nxp.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Fri, 29 Jan 2021 17:37:45 +0100
+Message-ID: <CAJZ5v0hrG_-_3LLb956TdFO830DaPv6NdobKetXrc9H+u9bdgw@mail.gmail.com>
+Subject: Re: [net-next PATCH v4 01/15] Documentation: ACPI: DSD: Document MDIO PHY
+To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Grant Likely <grant.likely@arm.com>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
+        Jon <jon@solid-run.com>, Saravana Kannan <saravanak@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        "linux.cj" <linux.cj@gmail.com>,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Len Brown <lenb@kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGksDQoNCm9uIGtlcm5lbCA0LjE0KC4xNDcpIGkgaGF2ZSBzZWVuIHNvbWV0aGluZyB3ZWlyZC4g
-VGhlIHN0YWNrIHRyYWNlOg0KDQpbNjUwNjQuNDU3OTIwXSBCVUc6IHVuYWJsZSB0byBoYW5kbGUg
-a2VybmVsIE5VTEwgcG9pbnRlciBkZXJlZmVyZW5jZSBhdCAwMDAwMDAwMDAwMDAwNjA0DQpbNjUw
-NjQuNDY2Njc3XSBJUDogaXBfcm91dGVfb3V0cHV0X2tleV9oYXNoX3JjdSsweDc1NS8weDg1MA0K
-WzY1MDY0LjQ3MjU5OV0gUEdEIDAgUDREIDANCls2NTA2NC40NzU0MjJdIE9vcHM6IDAwMDAgWyMx
-XSBQUkVFTVBUIFNNUCBOT1BUSQ0KWzY1MDY0LjQ4MDI3N10gTW9kdWxlcyBsaW5rZWQgaW46IGJj
-bWRoZChPKSBubHNfY3A0MzcgbmxzX3V0ZjggZWJ0X2lwNiBlYnRfaXAgZWJ0YWJsZV9maWx0ZXIg
-ZWJ0YWJsZXMgc3F1YXNoZnMgemxpYl9pbmZsYXRlIHh6X2RlYyB2ZXRoIGx6byBsem9fY29tcHJl
-c3MgbHpvX2RlY29tcHJlc3MgbmxzX2lzbzg4NTlfMSBubHNfY3A4NTAgdmZhdCBmYXQgY2ZxX2lv
-c2NoZWQgc2RfbW9kIGFoNCBlc3A0IHhmcm00X21vZGVfdHJhbnNwb3J0IHRudGZzKFBPKSB0ZXhm
-YXQoUE8pIHVzYl9zdG9yYWdlIHhmcm1fdXNlciB4ZnJtX2FsZ28gY2xzX3UzMiBjZGNfYWNtIHNj
-aF9odGIgaW50ZWxfdGZtX2dvdmVybm9yIHNuZF9zb2NfYXBsX21ndV9odSBlY3J5cHRmcyBpbnRl
-bF94aGNpX3VzYl9yb2xlX3N3aXRjaCByb2xlcyBkd2MzIHVkY19jb3JlIGludGVsX2lwdTRfcHN5
-cyBpbnRlbF9pcHU0X3BzeXNfY3NzbGliIGFkdjcyOHggY29yZXRlbXAgc25kX3NvY19za2wgaW50
-ZWxfaXB1NF9pc3lzIHZpZGVvYnVmMl9kbWFfY29udGlnIHZpZGVvYnVmMl9tZW1vcHMgc2R3X2Nu
-bCBpcHU0X2FjcGkgc25kX3NvY19hY3BpX2ludGVsX21hdGNoIGludGVsX2lwdTRfaXN5c19jc3Ns
-aWIgdmlkZW9idWYyX3Y0bDIgc25kX3NvY19hY3BpIHZpZGVvYnVmMl9jb3JlIHNiaV9hcGwgaTJj
-X2k4MDEgc25kX3NvY19jb3JlIHNuZF9jb21wcmVzcyBzbmRfc29jX3NrbF9pcGMgc2R3X2J1cyB4
-aGNpX3BjaSBjcmM4IGFoY2kgc25kX3NvY19zc3RfaXBjIHhoY2lfaGNkIGxpYmFoY2kgc25kX3Nv
-Y19zc3RfZHNwIGNmZzgwMjExIHNuZF9oZGFfZXh0X2NvcmUNCls2NTA2NC41NTkyOTBdICBsaWJh
-dGEgc25kX2hkYV9jb3JlIGludGVsX2lwdTRfbW11IHVzYmNvcmUgcmZraWxsIHVzYl9jb21tb24g
-c25kX3BjbSBzY3NpX21vZCBkd2MzX3BjaSBzbmRfdGltZXIgbWVpX21lIHNuZCBpbnRlbF9pcHU0
-IHNvdW5kY29yZSBtZWkgaW92YSBuZnNkIGF1dGhfcnBjZ3NzIGxvY2tkIGdyYWNlIHN1bnJwYyB6
-cmFtIHpzbWFsbG9jIGxvb3AgZnVzZSA4MDIxcSBicmlkZ2Ugc3RwIGxsYyBpbmFwNTYwdChPKSBp
-OTE1IHZpZGVvIGJhY2tsaWdodCBpbnRlbF9ndHQgaTJjX2FsZ29fYml0IGRybV9rbXNfaGVscGVy
-IGRybSBmaXJtd2FyZV9jbGFzcyBpZ2JfYXZiKE8pIHB0cCBod21vbiBwcHNfY29yZSBzcGlfcHhh
-Mnh4X3BsYXRmb3JtIFtsYXN0IHVubG9hZGVkOiBiY21kaGRdDQpbNjUwNjQuNTk4MTIzXSBDUFU6
-IDAgUElEOiAyNDkgQ29tbTogNjMxMF9pbzAxIFRhaW50ZWQ6IFAgICAgIFUgICAgIE8gICAgNC4x
-NC4xNDctYXBsICMxDQpbNjUwNjQuNjA2ODYwXSB0YXNrOiBmZmZmOTZlOWYxOWEzMjAwIHRhc2su
-c3RhY2s6IGZmZmZiM2NiODA0NTAwMDANCls2NTA2NC42MTM0NjVdIFJJUDogMDAxMDppcF9yb3V0
-ZV9vdXRwdXRfa2V5X2hhc2hfcmN1KzB4NzU1LzB4ODUwDQpbNjUwNjQuNjE5ODU5XSBCbG9ja2lu
-ZyB1bmtub3duIGNvbm5lY3Rpb246IElOPSBPVVQ9d2xhbl9icmlkZ2UgU1JDPTE3Mi4xNi4yMjIu
-OTcgRFNUPTIyNC4wLjAuMjIgTEVOPTQwIFRPUz0weDAwIFBSRUM9MHhDMCBUVEw9MSBJRD0wIERG
-IFBST1RPPTIgTUFSSz0weDEwMDBkNA0KWzY1MDY0LjYxOTk3Ml0gUlNQOiAwMDE4OmZmZmZiM2Ni
-ODA0NTM5NDAgRUZMQUdTOiAwMDAxMDI0Ng0KWzY1MDY0LjY0MTQzNl0gUkFYOiBmZmZmOTZlODY2
-ZWViZjAwIFJCWDogZmZmZjk2ZTgwMGU1YTIzOCBSQ1g6IDAwMDAwMDAwMDAwMDAwMDANCls2NTA2
-NC42NDkzOTddIFJEWDogMDAwMDAwMDAwMDAwMDAwMSBSU0k6IDAwMDAwMDAwMjZjNzMwYTAgUkRJ
-OiAwMDAwMDAwMDAwMDAwMDAwDQpbNjUwNjQuNjU3MzYzXSBSQlA6IGZmZmZiM2NiODA0NTM5OTAg
-UjA4OiAwMDAwMDAwMDAwMDAwMDAwIFIwOTogZmZmZjk2ZTlmNWJkZjAwMA0KWzY1MDY0LjY2NTMy
-Nl0gUjEwOiAwMDAwMDAwMDAwMDAwMDAwIFIxMTogZmZmZjk2ZTg3NTc0MDU0MCBSMTI6IGZmZmY5
-NmU4NjZlZWJmMDANCls2NTA2NC42NzMyOTBdIFIxMzogZmZmZmIzY2I4MDQ1MzlhMCBSMTQ6IGZm
-ZmY5NmU5ZjFiYTcwMDAgUjE1OiAwMDAwMDAwMDAwMDAwMDAwDQpbNjUwNjQuNjgxMjUyXSBGUzog
-IDAwMDA3ZWZjMzI3ZmM3MDAoMDAwMCkgR1M6ZmZmZjk2ZTlmZGMwMDAwMCgwMDAwKSBrbmxHUzow
-MDAwMDAwMDAwMDAwMDAwDQpbNjUwNjQuNjkwMjg0XSBDUzogIDAwMTAgRFM6IDAwMDAgRVM6IDAw
-MDAgQ1IwOiAwMDAwMDAwMDgwMDUwMDMzDQpbNjUwNjQuNjk2Njk3XSBDUjI6IDAwMDAwMDAwMDAw
-MDA2MDQgQ1IzOiAwMDAwMDAwMWY0ZDQ0MDAwIENSNDogMDAwMDAwMDAwMDM0MDZiMA0KWzY1MDY0
-LjcwNDY1M10gQ2FsbCBUcmFjZToNCls2NTA2NC43MDczODRdICBpcF9yb3V0ZV9vdXRwdXRfa2V5
-X2hhc2grMHg4Mi8weGIwDQpbNjUwNjQuNzEyNDM4XSAgaXBfcm91dGVfb3V0cHV0X2Zsb3crMHgx
-OS8weDUwDQpbNjUwNjQuNzE3MTA0XSAgaXBfcXVldWVfeG1pdCsweDM4OS8weDNjMA0KWzY1MDY0
-LjcyMTI4Nl0gIF9fdGNwX3RyYW5zbWl0X3NrYisweDU5OC8weDlmMA0KWzY1MDY0LjcyNTk1Nl0g
-IHRjcF93cml0ZV94bWl0KzB4MWFiLzB4ZjQwDQpbNjUwNjQuNzMwMjM0XSAgX190Y3BfcHVzaF9w
-ZW5kaW5nX2ZyYW1lcysweDMwLzB4ZDANCls2NTA2NC43MzUzODddICB0Y3BfcHVzaCsweGU3LzB4
-MTEwDQpbNjUwNjQuNzM4OTg1XSAgdGNwX3NlbmRtc2dfbG9ja2VkKzB4OWEzLzB4ZTQwDQpbNjUw
-NjQuNzQzNjUyXSAgdGNwX3NlbmRtc2crMHgyNy8weDQwDQpbNjUwNjQuNzQ3NDQ0XSAgaW5ldF9z
-ZW5kbXNnKzB4MmYvMHhmMA0KWzY1MDY0Ljc1MTMzMl0gIHNvY2tfc2VuZG1zZysweDMxLzB4NDAN
-Cls2NTA2NC43NTUyMjFdICBfX19zeXNfc2VuZG1zZysweDI4ZC8weDJhMA0KWzY1MDY0Ljc1OTUw
-MF0gID8gZG9faXRlcl9yZWFkdl93cml0ZXYrMHgxMDMvMHgxNjANCls2NTA2NC43NjQ1NTddICA/
-IHRyeV90b193YWtlX3VwKzB4MjVjLzB4NDYwDQpbNjUwNjQuNzY5MDI0XSAgPyBkZWZhdWx0X3dh
-a2VfZnVuY3Rpb24rMHhkLzB4MTANCls2NTA2NC43NzM4OTNdICA/IF9fd2FrZV91cF9jb21tb24r
-MHg2ZS8weDEyMA0KWzY1MDY0Ljc3ODQ2MF0gID8gX19mZ2V0KzB4NzEvMHhhMA0KWzY1MDY0Ljc4
-MTk2Ml0gIF9fc3lzX3NlbmRtc2crMHg0Zi8weDkwDQpbNjUwNjQuNzg1OTQ2XSAgPyBfX3N5c19z
-ZW5kbXNnKzB4NGYvMHg5MA0KWzY1MDY0Ljc5MDEyNV0gIFN5U19zZW5kbXNnKzB4OS8weDEwDQpb
-NjUwNjQuNzkzODE4XSAgZG9fc3lzY2FsbF82NCsweDc5LzB4MzUwDQpbNjUwNjQuNzk3OTAwXSAg
-PyBzY2hlZHVsZSsweDJlLzB4OTANCls2NTA2NC44MDE1OTRdICA/IGV4aXRfdG9fdXNlcm1vZGVf
-bG9vcCsweDVhLzB4OTANCls2NTA2NC44MDY1NDldICBlbnRyeV9TWVNDQUxMXzY0X2FmdGVyX2h3
-ZnJhbWUrMHgzZC8weGEyDQpbNjUwNjQuODEyMTgzXSBSSVA6IDAwMzM6MHg3ZWZjM2M1NDk4MDcN
-Cls2NTA2NC44MTYxNjddIFJTUDogMDAyYjowMDAwN2VmYzMyN2Y5NTAwIEVGTEFHUzogMDAwMDAy
-OTMgT1JJR19SQVg6IDAwMDAwMDAwMDAwMDAwMmUNCls2NTA2NC44MjQ2MTZdIFJBWDogZmZmZmZm
-ZmZmZmZmZmZkYSBSQlg6IDAwMDAwMDAwMDAwMDAyMzMgUkNYOiAwMDAwN2VmYzNjNTQ5ODA3DQpb
-NjUwNjQuODMyNTc1XSBSRFg6IDAwMDAwMDAwMDAwMDQwMDAgUlNJOiAwMDAwN2VmYzMyN2Y5NTcw
-IFJESTogMDAwMDAwMDAwMDAwMDIzMw0KWzY1MDY0Ljg0MDU0M10gUkJQOiAwMDAwN2VmYzMyN2Y5
-NTcwIFIwODogMDAwMDAwMDAwMDAwMDAwMCBSMDk6IDAwMDAwMDAwMDAwMDAwMDENCls2NTA2NC44
-NDg1MDBdIFIxMDogMDAwMDdlZmMyYzA4NzU0OCBSMTE6IDAwMDAwMDAwMDAwMDAyOTMgUjEyOiAw
-MDAwMDAwMDAwMDA0MDAwDQpbNjUwNjQuODU2NDU5XSBSMTM6IDAwMDAwMDAwMDAwMDAyMzMgUjE0
-OiAwMDAwN2VmYzMyN2ZjNWMwIFIxNTogMDAwMDdlZmMyNGJmNzgxMA0KWzY1MDY0Ljg2NDQxOV0g
-Q29kZTogYjEgNzIgZTkgYmMgZmUgZmYgZmYgNGMgODkgNGQgYzggNGMgODkgNDUgZDAgZTggYTIg
-MDggYmUgZmYgNGMgOGIgNDUgZDAgNGMgOGIgNGQgYzggZTkgODggZmEgZmYgZmYgNDggOGIgMDgg
-NDggOGIgODkgOTggMDQgMDAgMDAgPDhiPiA4OSAwNCAwNiAwMCAwMCAzOSA4OCBhMCAwMCAwMCAw
-MCAwZiA4NSA5YyBmZSBmZiBmZiA4YiA4MCA4MA0KWzY1MDY0Ljg4NTUzMV0gUklQOiBpcF9yb3V0
-ZV9vdXRwdXRfa2V5X2hhc2hfcmN1KzB4NzU1LzB4ODUwIFJTUDogZmZmZmIzY2I4MDQ1Mzk0MA0K
-WzY1MDY0Ljg5MzY4OV0gQ1IyOiAwMDAwMDAwMDAwMDAwNjA0DQoNCkZvcnR1bmF0ZWx5IGkgaGF2
-ZSBhIGNvcmUgZHVtcCwgYW5kIGFuYWx5emVkIHRoYXQuDQpGaW5hbGx5IGluIHRoZSBhbmFseXNp
-cyBpIGNhbWUgdG8gdGhhdCBwb2ludDoNCihuZXQvaXB2NC9yb3V0ZS5jIGFyb3VuZCBsaW5lIDE1
-MjApOg0KDQpzdGF0aWMgYm9vbCBydF9jYWNoZV92YWxpZChjb25zdCBzdHJ1Y3QgcnRhYmxlICpy
-dCkNCnsNCnJldHVybnJ0ICYmDQpydC0+ZHN0Lm9ic29sZXRlID09IERTVF9PQlNPTEVURV9GT1JD
-RV9DSEsgJiYNCiFydF9pc19leHBpcmVkKHJ0KTsgPDw8PCBjcmFzaCBoZXJlLCBzZWUgYmVsb3cN
-Cn0NCg0KVGhlIGNvZGUgd2FzIGV4ZWN1dGluZyB0byB0aGUgY2hlY2sgIXJ0X2lzX2V4cGlyZWQo
-cnQpOyBhbmQgdGhlIGRpc2Fzc2VtYmx5IGxvb2tzIGxpa2UNCmZmZmZmZmZmODE0ZjFiYTA6NDgg
-ODUgYzAgICAgICAgICAgICAgdGVzdCAgIHJheCxyYXggLy8gKDExMjcsIGNoZWNrIGZvciBydCBu
-b3QgTlVMTCkNCmZmZmZmZmZmODE0ZjFiYTM6NzQgMGUgICAgICAgICAgICAgICAgamUgICAgIGZm
-ZmZmZmZmODE0ZjFiYjMgPGlwX3JvdXRlX291dHB1dF9rZXlfaGFzaF9yY3UrMHg2MDM+DQovdXNy
-L3NyYy9rZXJuZWwvbmV0L2lwdjQvcm91dGUuYzoxNTI0DQpmZmZmZmZmZjgxNGYxYmE1OjY2IDgz
-IDc4IDY0IGZmICAgICAgIGNtcCAgICBXT1JEIFBUUiBbcmF4KzB4NjRdLDB4ZmZmZiAvLyBydC0+
-ZHN0Lm9ic29sZXRlIGFjY2Vzc2VkDQpfX21rcm91dGVfb3V0cHV0KCk6DQoNCi91c3Ivc3JjL2tl
-cm5lbC9uZXQvaXB2NC9yb3V0ZS5jOjIyNzYNCnJ0aCA9IHJjdV9kZXJlZmVyZW5jZSgqcHJ0aCk7
-DQpmZmZmZmZmZjgxNGYxYmFhOjQ5IDg5IGM0ICAgICAgICAgICAgIG1vdiAgICByMTIscmF4IC8v
-IHIxMj0gcnQNCnJ0X2NhY2hlX3ZhbGlkKCk6DQovdXNyL3NyYy9rZXJuZWwvbmV0L2lwdjQvcm91
-dGUuYzoxNTI0DQpmZmZmZmZmZjgxNGYxYmFkOjBmIDg0IDQ4IDAxIDAwIDAwICAgIGplICAgICBm
-ZmZmZmZmZjgxNGYxY2ZiIDxpcF9yb3V0ZV9vdXRwdXRfa2V5X2hhc2hfcmN1KzB4NzRiPiBnb2Vz
-IHRvICoqKjEqKioNCg0KdGhlIG9ubHkgcmVmZXJlbmNlIHJlYWNoaW5nIHRoaXMgcG9pbnQgaXMg
-YWZ0ZXIgdGhlIERTVF9PQlNPTEVURV9GT1JDRV9DSEsgYWJvdmU6DQpyZWFkX3BuZXQoKToNCi91
-c3Ivc3JjL2tlcm5lbC9pbmNsdWRlL25ldC9uZXRfbmFtZXNwYWNlLmg6MjgyDQpmZmZmZmZmZjgx
-NGYxY2ZiOjQ4IDhiIDA4ICAgICAgICAgICAgIG1vdiAgICByY3gsUVdPUkQgUFRSIFtyYXhdICAg
-ICAgIDw8PDw8PCoqKjEqKiogbmVlZCB0byBjb21lIGluIGhlcmUgYmVjYXVzZSBwcmV2aW91cyBp
-bnN0cnVjdGlvbiBpcyBhICJqbXAiDQpmZXRjaGVzIG5ldF9kZXZpY2UgKmRldiBpbnRvIHJjeCwg
-dmFsdWUgaXMgZmZmZjk2ZTg2NmVlYjAwMA0KDQpmZmZmZmZmZjgxNGYxY2ZlOjQ4IDhiIDg5IDk4
-IDA0IDAwIDAwIG1vdiAgICByY3gsUVdPUkQgUFRSIFtyY3grMHg0OThdDQogICAgY3Jhc2g+IHJk
-IDB4ZmZmZjk2ZTg2NmVlYjQ5MCA0DQogICAgZmZmZjk2ZTg2NmVlYjQ5MDogIDAwMDAwMDAwMDAw
-MDAwMDAgMDAwMDAwMDAwMDAwMDAwMCAgIC4uLi4uLi4uLi4uLi4uLi4gdGhhdCdzIGEgTlVMTCBw
-b2ludGVyIGhlcmUNCiAgICBmZmZmOTZlODY2ZWViNGEwOiAgODAwMDAwMDAwMDAyNTI4NyAwMDAw
-MDAwMDAwMDEwMDAyICAgLlIuLi4uLi4uLi4uLi4uLg0KY3Jhc2g+X19yZWFkX29uY2Vfc2l6ZSgp
-Og0KL3Vzci9zcmMva2VybmVsL2luY2x1ZGUvbGludXgvY29tcGlsZXIuaDoxODMNCmZmZmZmZmZm
-ODE0ZjFkMDU6OGIgODkgMDQgMDYgMDAgMDAgICAgbW92ICAgIGVjeCxEV09SRCBQVFIgW3JjeCsw
-eDYwNF0gPDw8PDw8KioqKiogY3Jhc2ggaGVyZS4gcmN4ID0gTlVMTCwgb2Zmc2V0IDB4NjA0DQoN
-Ckxvb2tpbmcgYXQgdGhlIGRhdGEgaSBjYW4gc2VlIHRoYXQgZHN0Lm9ic29sZXRlPTB4MDAwMiAo
-aSBvcmRlcmVkIHRoZSBtZW1kdW1wIGludG8gdGhlIHN0cnVjdCksIHNvIHdoeSBkaWQgd2UgcmVh
-Y2ggdGhhdCBwb2ludD8NClIxMiA9IHJ0ID0gZmZmZjk2ZTg2NmVlYmYwMCA9IHN0cnVjdCBydGFi
-bGUNClNJWkU6IDIxNg0Kc3RydWN0IHJ0YWJsZSB7DQogICBbMHgwXSBzdHJ1Y3QgZHN0X2VudHJ5
-IGRzdDsNCiAgICAgICAgc3RydWN0IGRzdF9lbnRyeSB7DQogICAgICAgICAgIFsweDBdIHN0cnVj
-dCBuZXRfZGV2aWNlICpkZXY7ICAgICAgICAgICAgICAgICAgICAgICAgZmZmZjk2ZTg2NmVlYjAw
-MA0KICAgICAgICAgICBbMHg4XSBzdHJ1Y3QgY2FsbGJhY2tfaGVhZCBjYWxsYmFja19oZWFkOw0K
-ICAgICAgICAgICAgICAgIHN0cnVjdCBjYWxsYmFja19oZWFkIHsNCiAgICAgICAgICAgICAgICAg
-ICAgWzB4MF0gc3RydWN0IGNhbGxiYWNrX2hlYWQgKm5leHQ7ICAgICAgICAgICAwMDAwMDAwMDAw
-MDAwMDAwDQogICAgICAgICAgICAgICAgICAgIFsweDhdIHZvaWQgKCpmdW5jKShzdHJ1Y3QgY2Fs
-bGJhY2tfaGVhZCAqKTsgMDEwMTAwMzgwMDAwMDUwMA0KICAgICAgICB9DQogICAgICAgIFNJWkU6
-IDB4MTANCiAgICAgICAgICBbMHgxOF0gc3RydWN0IGRzdF9lbnRyeSAqY2hpbGQ7ICAgICAgICAg
-ICAgICAgICAgICAgICAwMDAwMDAwMDAwMDAwMDAwDQogICAgICAgICAgWzB4MjBdIHN0cnVjdCBk
-c3Rfb3BzICpvcHM7ICAgICAgICAgICAgICAgICAgICAgICAgICAgZmZmZmZmZmY4ZGNiMjhjMA0K
-ICAgICAgICAgIFsweDI4XSB1bnNpZ25lZCBsb25nIF9tZXRyaWNzOyAgICAgICAgICAgICAgICAg
-ICAgICAgIGZmZmZmZmZmOGRhNjZkNDENCiAgICAgICAgICBbMHgzMF0gdW5zaWduZWQgbG9uZyBl
-eHBpcmVzOyAgICAgICAgICAgICAgICAgICAgICAgICAwMDAwMDAwMDAwMDAwMDAwDQogICAgICAg
-ICAgWzB4MzhdIHN0cnVjdCBkc3RfZW50cnkgKnBhdGg7ICAgICAgICAgICAgICAgICAgICAgICAg
-ZmZmZjk2ZTg2NmVlYmYwMA0KICAgICAgICAgIFsweDQwXSBzdHJ1Y3QgZHN0X2VudHJ5ICpmcm9t
-OyAgICAgICAgICAgICAgICAgICAgICAgIDAwMDAwMDAwMDAwMDAwMDANCiAgICAgICAgICBbMHg0
-OF0gc3RydWN0IHhmcm1fc3RhdGUgKnhmcm07ICAgICAgICAgICAgICAgICAgICAgICAwMDAwMDAw
-MDAwMDAwMDAwDQogICAgICAgICAgWzB4NTBdIGludCAoKmlucHV0KShzdHJ1Y3Qgc2tfYnVmZiAq
-KTsgICAgICAgICAgICAgICAgZmZmZmZmZmY4ZDQ5ZjY0MA0KICAgICAgICAgIFsweDU4XSBpbnQg
-KCpvdXRwdXQpKHN0cnVjdCBuZXQgKiwgc3RydWN0IHNvY2sgKiwgc3RydWN0IHNrX2J1ZmYgKik7
-ZmZmZmZmZmY4ZDQ5ZjZkMA0KICAgICAgICAgIFsweDYwXSB1bnNpZ25lZCBzaG9ydCBmbGFnczsg
-ICAgICAgICAgICAgICAgICAgICAgICAgIDAwMDANCiAgICAgICAgICBbMHg2Ml0gc2hvcnQgZXJy
-b3I7ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAwMDAwDQogICAgICAgICAgWzB4
-NjRdIHNob3J0IG9ic29sZXRlOyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgMDAwMiA8
-PDw8IHdlIGhhdmUgbm90IGZmZmYgaGVyZSwgYnV0IDB4MDINCiAgICAgICAgICBbMHg2Nl0gdW5z
-aWduZWQgc2hvcnQgaGVhZGVyX2xlbjsgICAgICAgICAgICAgICAgICAgICAwMDAwDQogICAgICAg
-ICAgWzB4NjhdIHVuc2lnbmVkIHNob3J0IHRyYWlsZXJfbGVuOyAgICAgICAgICAgICAgICAgICAg
-MDAwMA0KICAgICAgICAgIFsweDZhXSB1bnNpZ25lZCBzaG9ydCBfX3BhZDM7ICAgICAgICAgICAg
-ICAgICAgICAgICAgIDAwMDANCiAgICAgICAgICBbMHg2Y10gX191MzIgX19wYWQyOyAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAwMDAwMDAwMA0KICAgICAgICAgIFsweDcwXSBsb25n
-IF9fcGFkX3RvX2FsaWduX3JlZmNudFsyXTsgICAgICAgICAgICAgICAgIDAwMDAwMDAwMDAwMDAw
-MDAgMDAwMDAwMDAwMDAwMDAwMA0KICAgICAgICAgIFsweDgwXSBhdG9taWNfdCBfX3JlZmNudDsg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgIDAwMDAwMDAwMA0KICAgICAgICAgIFsweDg0XSBp
-bnQgX191c2U7ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDAwMDAwMDAwMA0K
-ICAgICAgICAgIFsweDg4XSB1bnNpZ25lZCBsb25nIGxhc3R1c2U7ICAgICAgICAgICAgICAgICAg
-ICAgICAgIDAwMDAwMDAxMDNkYzBkMTENCiAgICAgICAgICBbMHg5MF0gc3RydWN0IGx3dHVubmVs
-X3N0YXRlICpsd3RzdGF0ZTsgICAgICAgICAgICAgICAwMDAwMDAwMDAwMDAwMDAwDQogICAgICAg
-ICAgICAgICAgIHVuaW9uIHsNCiAgICAgICAgICBbMHg5OF0gICAgIHN0cnVjdCBkc3RfZW50cnkg
-Km5leHQ7ICAgICAgICAgICAgICAgICAgICAwMDAwMDAwMDAwMDAwMDAwDQogICAgICAgICAgWzB4
-OThdICAgICBzdHJ1Y3QgcnRhYmxlICpydF9uZXh0Ow0KICAgICAgICAgIFsweDk4XSAgICAgc3Ry
-dWN0IHJ0Nl9pbmZvICpydDZfbmV4dDsNCiAgICAgICAgICBbMHg5OF0gICAgIHN0cnVjdCBkbl9y
-b3V0ZSAqZG5fbmV4dDsNCiAgICAgICAgICAgICAgICAgfTsNCiAgICAgICAgfQ0KICAgICAgICBT
-SVpFOiAweGEwDQotLS0gc25pcCAtLS0NCg0KY3Jhc2g+IHJkIDB4ZmZmZjk2ZTg2NmVlYmYwMCAz
-MiAoPXIxMj1ydCkNCmZmZmY5NmU4NjZlZWJmMDA6ICBmZmZmOTZlODY2ZWViMDAwIDAwMDAwMDAw
-MDAwMDAwMDAgICAuLi5mLi4uLi4uLi4uLi4uDQpmZmZmOTZlODY2ZWViZjEwOiAgMDEwMTAwMzgw
-MDAwMDUwMCAwMDAwMDAwMDAwMDAwMDAwICAgLi4uLjguLi4uLi4uLi4uLg0KZmZmZjk2ZTg2NmVl
-YmYyMDogIGZmZmZmZmZmOGRjYjI4YzAgZmZmZmZmZmY4ZGE2NmQ0MSAgIC4oLi4uLi4uQW0uLi4u
-Li4NCmZmZmY5NmU4NjZlZWJmMzA6ICAwMDAwMDAwMDAwMDAwMDAwIGZmZmY5NmU4NjZlZWJmMDAg
-ICAuLi4uLi4uLi4uLmYuLi4uDQpmZmZmOTZlODY2ZWViZjQwOiAgMDAwMDAwMDAwMDAwMDAwMCAw
-MDAwMDAwMDAwMDAwMDAwICAgLi4uLi4uLi4uLi4uLi4uLg0KZmZmZjk2ZTg2NmVlYmY1MDogIGZm
-ZmZmZmZmOGQ0OWY2NDAgZmZmZmZmZmY4ZDQ5ZjZkMCAgIEAuSS4uLi4uLi5JLi4uLi4NCmZmZmY5
-NmU4NjZlZWJmNjA6ICAwMDAwMDAwMjAwMDAwMDAwIDAwMDAwMDAwMDAwMDAwMDAgICAuLi4uLi4u
-Li4uLi4uLi4uIDwtLSBoZXJlIGlzIHRoZSAib2Jzb2xldGUiDQpmZmZmOTZlODY2ZWViZjcwOiAg
-MDAwMDAwMDAwMDAwMDAwMCAwMDAwMDAwMDAwMDAwMDAwICAgLi4uLi4uLi4uLi4uLi4uLg0KZmZm
-Zjk2ZTg2NmVlYmY4MDogIDAwMDAwMDAwMDAwMDAwMDAgMDAwMDAwMDEwM2RjMGQxMSAgIC4uLi4u
-Li4uLi4uLi4uLi4NCmZmZmY5NmU4NjZlZWJmOTA6ICAwMDAwMDAwMDAwMDAwMDAwIDAwMDAwMDAw
-MDAwMDAwMDAgICAuLi4uLi4uLi4uLi4uLi4uDQpmZmZmOTZlODY2ZWViZmEwOiAgMDAwMDAwMDAw
-MDAyNTI4NyAwMDAwMDAwMDAwMDAwMDAxICAgLlIuLi4uLi4uLi4uLi4uLg0KZmZmZjk2ZTg2NmVl
-YmZiMDogIDAwMDAwMDAwMDAwMDAwMDAgMDAwMDAwMDAwMDAwMDBmZSAgIC4uLi4uLi4uLi4uLi4u
-Li4NCmZmZmY5NmU4NjZlZWJmYzA6ICBmZmZmOTZlODY2ZWViZmMwIGZmZmY5NmU4NjZlZWJmYzAg
-ICAuLi5mLi4uLi4uLmYuLi4uDQpmZmZmOTZlODY2ZWViZmQwOiAgZmZmZjk2ZTgzODhkZmMwMCBm
-ZmZmOTZlODM4OGRmYzgyICAgLi4uOC4uLi4uLi44Li4uLg0KDQpMb29rcyBsaWtlIGEgcmFjZSBz
-b21ld2hlcmUsIGJ1dCBpIGFtIG5vdCBmYW1pbGlhciB3aXRoIHRoZSBUQ1BJUCBjb2RlLg0KV2hh
-dCBpIGhhdmUgZm91bmQgaXMgYSBwYXRjaCB0aGF0IHdhcyBzdWJtaXR0ZWQgZm9yIDQuMTQgYW5k
-IGNvdWxkIGhhdmUgc29tZXRoaWcgdG8gZG8gd2l0aCB0aGF0Og0KaHR0cHM6Ly93d3cuc3Bpbmlj
-cy5uZXQvbGlzdHMvc3RhYmxlLWNvbW1pdHMvbXNnMTMzMDU1Lmh0bWwNCkJ1dCB0aGlzIHBhdGNo
-IGRpZG4ndCBtYWtlIGl0IGludG8gNC4xNC4NCg0KQ2FuIHNvbWVvbmUgY2hlY2sgdGhpcyByYWNl
-IGNvbmRpdGlvbj8NCg0KQmVzdCByZWdhcmRzDQpDYXJzdGVuDQotLS0tLS0tLS0tLS0tLS0tLQ0K
-TWVudG9yIEdyYXBoaWNzIChEZXV0c2NobGFuZCkgR21iSCwgQXJudWxmc3RyYcOfZSAyMDEsIDgw
-NjM0IE3DvG5jaGVuIC8gR2VybWFueQ0KUmVnaXN0ZXJnZXJpY2h0IE3DvG5jaGVuIEhSQiAxMDY5
-NTUsIEdlc2Now6RmdHNmw7xocmVyOiBUaG9tYXMgSGV1cnVuZywgQWxleGFuZGVyIFdhbHRlcg0K
+On Fri, Jan 29, 2021 at 7:48 AM Calvin Johnson
+<calvin.johnson@oss.nxp.com> wrote:
+>
+> On Thu, Jan 28, 2021 at 02:27:00PM +0100, Rafael J. Wysocki wrote:
+> > On Thu, Jan 28, 2021 at 2:12 PM Calvin Johnson
+> > <calvin.johnson@oss.nxp.com> wrote:
+> > >
+> > > On Thu, Jan 28, 2021 at 01:00:40PM +0100, Rafael J. Wysocki wrote:
+> > > > On Thu, Jan 28, 2021 at 12:27 PM Calvin Johnson
+> > > > <calvin.johnson@oss.nxp.com> wrote:
+> > > > >
+> > > > > Hi Rafael,
+> > > > >
+> > > > > Thanks for the review. I'll work on all the comments.
+> > > > >
+> > > > > On Fri, Jan 22, 2021 at 08:22:21PM +0100, Rafael J. Wysocki wrote:
+> > > > > > On Fri, Jan 22, 2021 at 4:43 PM Calvin Johnson
+> > > > > > <calvin.johnson@oss.nxp.com> wrote:
+> > > > > > >
+> > > > > > > Introduce ACPI mechanism to get PHYs registered on a MDIO bus and
+> > > > > > > provide them to be connected to MAC.
+> > > > > > >
+> > > > > > > Describe properties "phy-handle" and "phy-mode".
+> > > > > > >
+> > > > > > > Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
+> > > > > > > ---
+> > > > > > >
+> > > > > > > Changes in v4:
+> > > > > > > - More cleanup
+> > > > > >
+> > > > > > This looks much better that the previous versions IMV, some nits below.
+> > > > > >
+> > > > > > > Changes in v3: None
+> > > > > > > Changes in v2:
+> > > > > > > - Updated with more description in document
+> > > > > > >
+> > > > > > >  Documentation/firmware-guide/acpi/dsd/phy.rst | 129 ++++++++++++++++++
+> > > > > > >  1 file changed, 129 insertions(+)
+> > > > > > >  create mode 100644 Documentation/firmware-guide/acpi/dsd/phy.rst
+> > > > > > >
+> > > > > > > diff --git a/Documentation/firmware-guide/acpi/dsd/phy.rst b/Documentation/firmware-guide/acpi/dsd/phy.rst
+> > > > > > > new file mode 100644
+> > > > > > > index 000000000000..76fca994bc99
+> > > > > > > --- /dev/null
+> > > > > > > +++ b/Documentation/firmware-guide/acpi/dsd/phy.rst
+> > > > > > > @@ -0,0 +1,129 @@
+> > > > > > > +.. SPDX-License-Identifier: GPL-2.0
+> > > > > > > +
+> > > > > > > +=========================
+> > > > > > > +MDIO bus and PHYs in ACPI
+> > > > > > > +=========================
+> > > > > > > +
+> > > > > > > +The PHYs on an MDIO bus [1] are probed and registered using
+> > > > > > > +fwnode_mdiobus_register_phy().
+> > > > > >
+> > > > > > Empty line here, please.
+> > > > > >
+> > > > > > > +Later, for connecting these PHYs to MAC, the PHYs registered on the
+> > > > > > > +MDIO bus have to be referenced.
+> > > > > > > +
+> > > > > > > +The UUID given below should be used as mentioned in the "Device Properties
+> > > > > > > +UUID For _DSD" [2] document.
+> > > > > > > +   - UUID: daffd814-6eba-4d8c-8a91-bc9bbf4aa301
+> > > > > >
+> > > > > > I would drop the above paragraph.
+> > > > > >
+> > > > > > > +
+> > > > > > > +This document introduces two _DSD properties that are to be used
+> > > > > > > +for PHYs on the MDIO bus.[3]
+> > > > > >
+> > > > > > I'd say "for connecting PHYs on the MDIO bus [3] to the MAC layer."
+> > > > > > above and add the following here:
+> > > > > >
+> > > > > > "These properties are defined in accordance with the "Device
+> > > > > > Properties UUID For _DSD" [2] document and the
+> > > > > > daffd814-6eba-4d8c-8a91-bc9bbf4aa301 UUID must be used in the Device
+> > > > > > Data Descriptors containing them."
+> > > > > >
+> > > > > > > +
+> > > > > > > +phy-handle
+> > > > > > > +----------
+> > > > > > > +For each MAC node, a device property "phy-handle" is used to reference
+> > > > > > > +the PHY that is registered on an MDIO bus. This is mandatory for
+> > > > > > > +network interfaces that have PHYs connected to MAC via MDIO bus.
+> > > > > > > +
+> > > > > > > +During the MDIO bus driver initialization, PHYs on this bus are probed
+> > > > > > > +using the _ADR object as shown below and are registered on the MDIO bus.
+> > > > > >
+> > > > > > Do you want to mention the "reg" property here?  I think it would be
+> > > > > > useful to do that.
+> > > > >
+> > > > > No. I think we should adhere to _ADR in MDIO case. The "reg" property for ACPI
+> > > > > may be useful for other use cases that Andy is aware of.
+> > > >
+> > > > The code should reflect this, then.  I mean it sounds like you want to
+> > > > check the "reg" property only if this is a non-ACPI node.
+> > >
+> > > Right. For MDIO case, that is what is required.
+> > > "reg" for DT and "_ADR" for ACPI.
+> > >
+> > > However, Andy pointed out [1] that ACPI nodes can also hold reg property and
+> > > therefore, fwnode_get_id() need to be capable to handling that situation as
+> > > well.
+> >
+> > No, please don't confuse those two things.
+> >
+> > Yes, ACPI nodes can also hold a "reg" property, but the meaning of it
+> > depends on the binding which is exactly my point: _ADR is not a
+> > fallback replacement for "reg" in general and it is not so for MDIO
+> > too.  The new function as proposed doesn't match the MDIO requirements
+> > and so it should not be used for MDIO.
+> >
+> > For MDIO, the exact flow mentioned above needs to be implemented (and
+> > if someone wants to use it for their use case too, fine).
+> >
+> > Otherwise the code wouldn't match the documentation.
+>
+> In that case, is this good?
+
+It would work, but I would introduce a wrapper around the _ADR
+evaluation, something like:
+
+int acpi_get_local_address(acpi_handle handle, u32 *addr)
+{
+      unsigned long long adr;
+      acpi_status status;
+
+      status = acpi_evaluate_integer(handle, METHOD_NAME__ADR, NULL, &adr);
+      if (ACPI_FAILURE(status))
+                return -ENODATA;
+
+      *addr = (u32)adr;
+      return 0;
+}
+
+in drivers/acpi/utils.c and add a static inline stub always returning
+-ENODEV for it for !CONFIG_ACPI.
+
+> /**
+>  * fwnode_get_local_addr - Get the local address of fwnode.
+>  * @fwnode: firmware node
+>  * @addr: addr value contained in the fwnode
+>  *
+>  * For DT, retrieve the value of the "reg" property for @fwnode.
+>  *
+>  * In the ACPI case, evaluate the _ADR object located under the
+>  * given node, if present, and provide its return value to the
+>  * caller.
+>  *
+>  * Return 0 on success or a negative error code.
+>  */
+> int fwnode_get_local_addr(struct fwnode_handle *fwnode, u32 *addr)
+> {
+>         int ret;
+>
+>         if (is_of_node(fwnode))
+>                 return of_property_read_u32(to_of_node(fwnode), "reg", addr);
+
+So you can write the below as
+
+if (is_acpi_device_node(fwnode))
+    return acpi_get_local_address(ACPI_HANDLE_FWNODE(fwnode), addr);
+
+return -EINVAL;
+
+and this should compile just fine if CONFIG_ACPI is unset, so you can
+avoid the whole #ifdeffery in this function.
+
+>
+> #ifdef CONFIG_ACPI
+>         if (is_acpi_node(fwnode)) {
+>                 unsigned long long adr;
+>                 acpi_status status;
+>
+>                 status = acpi_evaluate_integer(ACPI_HANDLE_FWNODE(fwnode),
+>                                                METHOD_NAME__ADR, NULL, &adr);
+>                 if (ACPI_FAILURE(status))
+>                         return -ENODATA;
+>                 *addr = (u32)adr;
+>                 return 0;
+>         }
+> #endif
+>         return -EINVAL;
+> }
