@@ -2,144 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1852E308F85
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 22:38:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 91364308F89
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 22:40:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233234AbhA2Vhb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jan 2021 16:37:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48022 "EHLO
+        id S233471AbhA2Vie (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jan 2021 16:38:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233106AbhA2Vha (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 16:37:30 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E529FC061573
-        for <netdev@vger.kernel.org>; Fri, 29 Jan 2021 13:36:49 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id gx5so15012694ejb.7
-        for <netdev@vger.kernel.org>; Fri, 29 Jan 2021 13:36:49 -0800 (PST)
+        with ESMTP id S233462AbhA2Vic (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 16:38:32 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4762C061756
+        for <netdev@vger.kernel.org>; Fri, 29 Jan 2021 13:37:51 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id b21so12240767edy.6
+        for <netdev@vger.kernel.org>; Fri, 29 Jan 2021 13:37:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=sNuR3hXEPY6HolODqvub5IQGhDTifhbUsM7DRSWHek8=;
-        b=GcSBsGB9p0Jkkk3E1GLegiVyPeDLcZsu4omphslhvOyaP1fbw0jEj323850H5rEjGe
-         vFet8r0yDXTvM/gT8n+na2yiYQpsd7veUR1enxnLOpCE+Ed2ikP0AjxwsX033tJ21iXI
-         Bhw3MAq8SCma0Z44cNj1+W4V/mKMu/fGDLH74Xa5PJjII7TorU9QluXtr69Bc3yOHL7v
-         WVept3C0mV/HVJevbYaGRuAuuJTMBeu8rZh/WEV5oDSMywlqS4mE5XvrbHknqbHKpgZS
-         MS7S/epsyhKOMSM2M5/l0dUEd+HZ8qki5mBwj48kKMHt7V4BVXYXJPMylUdVFRETSKl4
-         z90A==
+        bh=jTS8IRf1hEbRKBOj/p3qZ2dUXR46pYnRr+NOgzRr4w0=;
+        b=o09FLZqVo4uXZOHJybSqQfw4UCSywFlH7xY3sKExFnG0VlSk2HIcdxBa/1np6zQX3z
+         YS1t1B7bC19qpeqjsk0DCkjjlcJSjt5ZBrdjesMLOujzvFWgvBDUUNbz4Lpkhp1cr8EE
+         5bT+5UVnOmNQTcCjFEXLa0xp40wFxzqHELGxhKp/xm75HJnfyZnWvkvs35bqe9vjEY1n
+         ay5Vaj41/Ymck8Depp2r4BwfdXYWfiZWN7EvWAPTPy3hJCRJzfw0QnhH+Fpr1ra7IdH3
+         MxoxGmUo5Pcuj/Z/5JKct8tiSm+4KFpfeauXDmK0sYtzRr6zw1XHSVQBPA6FK3GH08RB
+         zeuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=sNuR3hXEPY6HolODqvub5IQGhDTifhbUsM7DRSWHek8=;
-        b=C2FE5+slJ5yA/VNu2t9nXANskX1adyMoB1dTgP0fuc9NLsO1F21WCiUXljH5/wsryW
-         /VejpF6VJCOG6UzEDjn3JptJTzzxqarfRZOdrnMjr8LO7WV/rAzL48IXveDNwQiOQjjn
-         LqnKbY8XUOBujGM7lfHcKQ/DGrUinx0ajzDzYH2XZtI9HSdX4wqwTOuSn8xUxW7AXok6
-         8Ws4jDbKVWnt36ps6p8E04P+Q6N1SYgCt6D7HNjhS1bQAiKoW1KwOfBKjoP5OtqkeNpS
-         G2ZoYOg2pl+slVkaEYKvGmWMQC35VSnJb2Q+HC+0kyTnnGfdGsW1dOAhGm0Aml3kO/DA
-         77ow==
-X-Gm-Message-State: AOAM532z5346Lc0+utFtFlXBcESL4yZwk5luVxFdHqoS0lIB3Tcw/URy
-        NHUbefVIpmH2tJ10pws/9LUa+BBbCoqadvpepss=
-X-Google-Smtp-Source: ABdhPJxKgZ7jjYI25zre7Vi5lW7b+HTiy0mSwX5drhPjDMORQ8Iwl3b+MsLhpOQgE1V7T4Qhc5qUyDsKcdKTsLitvr4=
-X-Received: by 2002:a17:906:fc5:: with SMTP id c5mr6274714ejk.538.1611956208587;
- Fri, 29 Jan 2021 13:36:48 -0800 (PST)
+        bh=jTS8IRf1hEbRKBOj/p3qZ2dUXR46pYnRr+NOgzRr4w0=;
+        b=DeOFJpUolMLm6gho0XY02ngpTeWaasedl5IuE5Z0kCkVUIjftVcrauHp/klo4h3MJX
+         N2SbcT8vR+aQZP9Jlq4ckxhZNCAXJ3Ou+EzxQTZIcc8fKuEe9OKyeKl+n09oJPrOzEWj
+         mgKRQTY2QwRgMP0yFRdL0mbg7iRkJxQGD4E1J+9RGaCFkDTxzYjSRPDIKDGyIP7N+96g
+         TGf/xdycXLA10GcOpp37YvNHN+wtXI3EUu/XOvO8HBFkDX+q6t31UmFwcEIwMF7b5ZWS
+         Do5xaSOx4Ntm/bKnIe50aKUoaDYo0w6m5GBSa8YGHBp+jz9nVPXblaeYgZzHUvMcAiQQ
+         7wmQ==
+X-Gm-Message-State: AOAM530ES8TazIWW7zqpwhpdRCT8fHB/wexBMeUKconshioEBuB8KaKC
+        frzhwtA5BjaUNlhiHgV/10lR8bkg+5T7dT4lC/Y=
+X-Google-Smtp-Source: ABdhPJxSKAfGFdG1cXK+tNCWtU1nG/1aQidC/ODzr8v+wwV5scrED+lSGL2xvd5qJlapy38FJyXyVHHvHyqWeI2aSb8=
+X-Received: by 2002:a50:eb81:: with SMTP id y1mr7294222edr.176.1611956270672;
+ Fri, 29 Jan 2021 13:37:50 -0800 (PST)
 MIME-Version: 1.0
 References: <20210129004332.3004826-1-anthony.l.nguyen@intel.com>
- <20210129004332.3004826-3-anthony.l.nguyen@intel.com> <CAF=yD-LVEWjcezKidh-JUcuON-L8GWvs34EeMNRrQK1tn0YD8w@mail.gmail.com>
- <CAF=yD-JEFCz9OK2mgC7Xpka+HxnyQyKLx-REKwmoK6fjcntmRQ@mail.gmail.com> <0ce0a270-7985-2d59-59dc-a4d7f8c9b04e@intel.com>
-In-Reply-To: <0ce0a270-7985-2d59-59dc-a4d7f8c9b04e@intel.com>
+In-Reply-To: <20210129004332.3004826-1-anthony.l.nguyen@intel.com>
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 29 Jan 2021 16:36:12 -0500
-Message-ID: <CAF=yD-Lq=NMVYBHO1RNBQSd2W2zaaJPUz2On8zmgsc-QmLx43Q@mail.gmail.com>
-Subject: Re: [PATCH net-next 02/15] ice: cache NVM module bank information
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>,
-        David Miller <davem@davemloft.net>,
+Date:   Fri, 29 Jan 2021 16:37:14 -0500
+Message-ID: <CAF=yD-JSdgTnXwVukkvHYNspWzJf0zrx2Qqfv3XHcbkvQ+Hs_g@mail.gmail.com>
+Subject: Re: [PATCH net-next 00/15][pull request] 100GbE Intel Wired LAN
+ Driver Updates 2021-01-28
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Network Development <netdev@vger.kernel.org>,
-        sassmann@redhat.com, Tony Brelinski <tonyx.brelinski@intel.com>
+        sassmann@redhat.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 29, 2021 at 4:32 PM Jacob Keller <jacob.e.keller@intel.com> wrote:
+On Thu, Jan 28, 2021 at 7:44 PM Tony Nguyen <anthony.l.nguyen@intel.com> wrote:
 >
+> This series contains updates to ice driver only.
 >
+> Jake adds devlink reporting of security revision fields associated with
+> 'fw.undi' and 'fw.mgmt'. Also implements support for displaying and
+> updating the minimum security revision fields for the device as
+> driver-specific devlink parameters. And adds reporting of timeout length
+> during devlink flash.
 >
-> On 1/29/2021 1:04 PM, Willem de Bruijn wrote:
-> > On Fri, Jan 29, 2021 at 4:01 PM Willem de Bruijn
-> > <willemdebruijn.kernel@gmail.com> wrote:
-> >>
-> >> On Thu, Jan 28, 2021 at 7:46 PM Tony Nguyen <anthony.l.nguyen@intel.com> wrote:
-> >>>
-> >>> From: Jacob Keller <jacob.e.keller@intel.com>
-> >>>
-> >>> The ice flash contains two copies of each of the NVM, Option ROM, and
-> >>> Netlist modules. Each bank has a pointer word and a size word. In order
-> >>> to correctly read from the active flash bank, the driver must calculate
-> >>> the offset manually.
-> >>>
-> >>> During NVM initialization, read the Shadow RAM control word and
-> >>> determine which bank is active for each NVM module. Additionally, cache
-> >>> the size and pointer values for use in calculating the correct offset.
-> >>>
-> >>> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-> >>> Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
-> >>> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-> >>> ---
-> >>>  drivers/net/ethernet/intel/ice/ice_nvm.c  | 151 ++++++++++++++++++++++
-> >>>  drivers/net/ethernet/intel/ice/ice_type.h |  37 ++++++
-> >>>  2 files changed, 188 insertions(+)
-> >>>
-> >>> diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.c b/drivers/net/ethernet/intel/ice/ice_nvm.c
-> >>> index b0f0b4fc266b..308344045397 100644
-> >>> --- a/drivers/net/ethernet/intel/ice/ice_nvm.c
-> >>> +++ b/drivers/net/ethernet/intel/ice/ice_nvm.c
-> >>> @@ -603,6 +603,151 @@ static enum ice_status ice_discover_flash_size(struct ice_hw *hw)
-> >>>         return status;
-> >>>  }
-> >>>
-> >>> +/**
-> >>> + * ice_read_sr_pointer - Read the value of a Shadow RAM pointer word
-> >>> + * @hw: pointer to the HW structure
-> >>> + * @offset: the word offset of the Shadow RAM word to read
-> >>> + * @pointer: pointer value read from Shadow RAM
-> >>> + *
-> >>> + * Read the given Shadow RAM word, and convert it to a pointer value specified
-> >>> + * in bytes. This function assumes the specified offset is a valid pointer
-> >>> + * word.
-> >>> + *
-> >>> + * Each pointer word specifies whether it is stored in word size or 4KB
-> >>> + * sector size by using the highest bit. The reported pointer value will be in
-> >>> + * bytes, intended for flat NVM reads.
-> >>> + */
-> >>> +static enum ice_status
-> >>> +ice_read_sr_pointer(struct ice_hw *hw, u16 offset, u32 *pointer)
-> >>> +{
-> >>> +       enum ice_status status;
-> >>> +       u16 value;
-> >>> +
-> >>> +       status = ice_read_sr_word(hw, offset, &value);
-> >>> +       if (status)
-> >>> +               return status;
-> >>> +
-> >>> +       /* Determine if the pointer is in 4KB or word units */
-> >>> +       if (value & ICE_SR_NVM_PTR_4KB_UNITS)
-> >>> +               *pointer = (value & ~ICE_SR_NVM_PTR_4KB_UNITS) * 4 * 1024;
-> >>> +       else
-> >>> +               *pointer = value * 2;
-> >>
-> >> Should this be << 2, for 4B words?
-> >
-> > Never mind, sorry. I gather from patch 3 that wordsize is 16b.
-> >
+> He also implements support to report devlink info regarding the version of
+> firmware that is stored (downloaded) to the device, but is not yet active.
+> This includes the UNDI Option ROM, the Netlist module, and the
+> fw.bundle_id.
 >
+> Changes include:
+>    Refactoring version reporting to allow for a context structure.
 >
-> Ah, yes that could have been explained a bit better. In this context, a
-> word is indeed 2 bytes.
+>    ice_read_flash_module is further abstracted to think in terms of
+>    "active" and "inactive" banks, rather than focusing on "read from
+>    the 1st or 2nd bank". Further, the function is extended to allow
+>    reading arbitrary sizes beyond just one word at a time.
 >
-> Perhaps we could have used "<< 1" and "<< 12" or similar instead of the
-> multiplication, but I felt this was a bit more clear.
+>    Extend the version function to allow requesting the flash bank to read
+>    from (active or inactive).
+>
+> Gustavo A. R. Silva replaces a one-element array to flexible-array
+> member.
+>
+> Bruce utilizes flex_array_size() helper and removes dead code on a check
+> for a condition that can't occur.
+>
+> The following are changes since commit 32e31b78272ba0905c751a0f6ff6ab4c275a780e:
+>   Merge branch 'net-sfp-add-support-for-gpon-rtl8672-rtl9601c-and-ubiquiti-u-fiber'
+> and are available in the git repository at:
+>   git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 100GbE
+>
+> Bruce Allan (2):
+>   ice: use flex_array_size where possible
+>   ice: remove dead code
+>
+> Gustavo A. R. Silva (1):
+>   ice: Replace one-element array with flexible-array member
+>
+> Jacob Keller (12):
+>   ice: create flash_info structure and separate NVM version
+>   ice: cache NVM module bank information
+>   ice: read security revision to ice_nvm_info and ice_orom_info
+>   ice: add devlink parameters to read and write minimum security
+>     revision
+>   ice: report timeout length for erasing during devlink flash
+>   ice: introduce context struct for info report
+>   ice: refactor interface for ice_read_flash_module
+>   ice: allow reading inactive flash security revision
+>   ice: allow reading arbitrary size data with read_flash_module
+>   ice: display some stored NVM versions via devlink info
+>   ice: display stored netlist versions via devlink info
+>   ice: display stored UNDI firmware version via devlink info
+>
+>  Documentation/networking/devlink/ice.rst      |  43 +
+>  drivers/net/ethernet/intel/ice/ice.h          |   2 +-
+>  .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  40 +-
+>  drivers/net/ethernet/intel/ice/ice_common.c   |   2 +-
+>  drivers/net/ethernet/intel/ice/ice_devlink.c  | 496 +++++++++-
+>  drivers/net/ethernet/intel/ice/ice_devlink.h  |   2 +
+>  drivers/net/ethernet/intel/ice/ice_ethtool.c  |   8 +-
+>  .../net/ethernet/intel/ice/ice_flex_pipe.c    |   2 +-
+>  .../net/ethernet/intel/ice/ice_fw_update.c    |  10 +-
+>  drivers/net/ethernet/intel/ice/ice_main.c     |  19 +-
+>  drivers/net/ethernet/intel/ice/ice_nvm.c      | 876 +++++++++++++++---
+>  drivers/net/ethernet/intel/ice/ice_nvm.h      |  18 +
+>  drivers/net/ethernet/intel/ice/ice_status.h   |   1 +
+>  drivers/net/ethernet/intel/ice/ice_type.h     | 141 ++-
+>  14 files changed, 1427 insertions(+), 233 deletions(-)
 
-Thanks. That doesn't matter (for me). I just wrongly assumed wordsize to be 4B.
+For netdrv
+
+Acked-by: Willem de Bruijn <willemb@google.com>
+
+Very clear code and documentation, thanks!
