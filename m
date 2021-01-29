@@ -2,56 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81DD4308E7F
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 21:32:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CBDC308E8C
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 21:40:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233102AbhA2UcD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jan 2021 15:32:03 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39334 "EHLO mail.kernel.org"
+        id S232555AbhA2UhA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jan 2021 15:37:00 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:38862 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233242AbhA2UbB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Jan 2021 15:31:01 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1D2C964DD8;
-        Fri, 29 Jan 2021 20:30:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611952210;
-        bh=866bsDa5Gwch3W1vt+K5P2ZlW4W4AoS0Pka7gwV9FYc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=MQc2UMJ3lCNAJIIZQXkVslQhC9zBWK5WpVAdnAfm4QXusYrX27uUKIGuqmtC09rZQ
-         NwqMaPlk0oBtABYmlNa/nNwpm8wE3aUWCwLyfFNR5T7KGIbHrOW62ciOEDxkKdj7wq
-         m1a82eF6Niq46M2v79kvNO7q/2L6AfDdeyVGzSXVZ0hs79QyrNsPD6ysrd3tp5++CH
-         YdPvMRVFlgFtQoHEg1Y/I379VJqa3T3UEcpI6X8gLL9zaVcZ99QP9GP900APxnN4Jk
-         8LOEz0G6MoIRLo6Jk3KZMjRdqdnn1+K/mWWaPXLr96pXnAhHKz2KuqAOhRj4uVhRk4
-         Gqyyb+KPl4aUw==
-Date:   Fri, 29 Jan 2021 12:30:09 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Chris Mi <cmi@nvidia.com>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        <jiri@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH net-next v4] net: psample: Introduce stubs to remove NIC
- driver dependency
-Message-ID: <20210129123009.3c07563d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <6c586e9a-b672-6e60-613b-4fb6e6db8c9a@nvidia.com>
-References: <20210128014543.521151-1-cmi@nvidia.com>
-        <CAM_iQpWQe1W+x_bua+OfjTR-tCgFYgj_8=eKz7VJdKHPRKuMYw@mail.gmail.com>
-        <6c586e9a-b672-6e60-613b-4fb6e6db8c9a@nvidia.com>
+        id S232887AbhA2Ug4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 Jan 2021 15:36:56 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1l5aUu-003FSA-Aa; Fri, 29 Jan 2021 21:36:04 +0100
+Date:   Fri, 29 Jan 2021 21:36:04 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Sven Van Asbroeck <thesven73@gmail.com>
+Cc:     Bryan Whitehead <bryan.whitehead@microchip.com>,
+        UNGLinuxDriver@microchip.com, David S Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexey Denisov <rtgbnm@gmail.com>,
+        Sergej Bauer <sbauer@blackbox.su>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Anders =?iso-8859-1?Q?R=F8nningen?= <anders@ronningen.priv.no>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v1 1/6] lan743x: boost performance on cpu archs
+ w/o dma cache snooping
+Message-ID: <YBRxtM/tpmegczPD@lunn.ch>
+References: <20210129195240.31871-1-TheSven73@gmail.com>
+ <20210129195240.31871-2-TheSven73@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210129195240.31871-2-TheSven73@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 29 Jan 2021 14:08:39 +0800 Chris Mi wrote:
-> Instead of discussing it several days, maybe it's better to review 
-> current patch, so that we can move forward :)
+> diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
+> index f1f6eba4ace4..f485320e5784 100644
+> --- a/drivers/net/ethernet/microchip/lan743x_main.c
+> +++ b/drivers/net/ethernet/microchip/lan743x_main.c
+> @@ -1957,11 +1957,11 @@ static int lan743x_rx_next_index(struct lan743x_rx *rx, int index)
+>  
+>  static struct sk_buff *lan743x_rx_allocate_skb(struct lan743x_rx *rx)
+>  {
+> -	int length = 0;
+> +	struct net_device *netdev = rx->adapter->netdev;
+>  
+> -	length = (LAN743X_MAX_FRAME_SIZE + ETH_HLEN + 4 + RX_HEAD_PADDING);
+> -	return __netdev_alloc_skb(rx->adapter->netdev,
+> -				  length, GFP_ATOMIC | GFP_DMA);
+> +	return __netdev_alloc_skb(netdev,
+> +				  netdev->mtu + ETH_HLEN + 4 + RX_HEAD_PADDING,
+> +				  GFP_ATOMIC | GFP_DMA);
+>  }
+>  
+>  static void lan743x_rx_update_tail(struct lan743x_rx *rx, int index)
+> @@ -1977,9 +1977,10 @@ static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index,
+>  {
+>  	struct lan743x_rx_buffer_info *buffer_info;
+>  	struct lan743x_rx_descriptor *descriptor;
+> -	int length = 0;
+> +	struct net_device *netdev = rx->adapter->netdev;
+> +	int length;
 
-It took you 4 revisions to post a patch which builds cleanly and now
-you want to hasten the review? My favorite kind of submission.
+Please keep to reverse christmass tree.
+>  
+> -	length = (LAN743X_MAX_FRAME_SIZE + ETH_HLEN + 4 + RX_HEAD_PADDING);
+> +	length = netdev->mtu + ETH_HLEN + 4 + RX_HEAD_PADDING;
+>  	descriptor = &rx->ring_cpu_ptr[index];
+>  	buffer_info = &rx->buffer_info[index];
+>  	buffer_info->skb = skb;
+> @@ -2148,11 +2149,18 @@ static int lan743x_rx_process_packet(struct lan743x_rx *rx)
+>  			descriptor = &rx->ring_cpu_ptr[first_index];
+>  
+>  			/* unmap from dma */
+> +			packet_length =	RX_DESC_DATA0_FRAME_LENGTH_GET_
+> +					(descriptor->data0);
+>  			if (buffer_info->dma_ptr) {
+> -				dma_unmap_single(&rx->adapter->pdev->dev,
+> -						 buffer_info->dma_ptr,
+> -						 buffer_info->buffer_length,
+> -						 DMA_FROM_DEVICE);
+> +				dma_sync_single_for_cpu(&rx->adapter->pdev->dev,
+> +							buffer_info->dma_ptr,
+> +							packet_length,
+> +							DMA_FROM_DEVICE);
+> +				dma_unmap_single_attrs(&rx->adapter->pdev->dev,
+> +						       buffer_info->dma_ptr,
+> +						       buffer_info->buffer_length,
+> +						       DMA_FROM_DEVICE,
+> +						       DMA_ATTR_SKIP_CPU_SYNC);
 
-The mlxsw core + spectrum drivers are 65 times the size of psample 
-on my system. Why is the dependency a problem?
+So this patch appears to contain two different changes
+1) You only allocate a receive buffer as big as the MTU plus overheads
+2) You change the cache operations to operate on the received length.
 
-What's going to make sure the module gets loaded when it's needed?
+The first change should be completely safe, and i guess, is giving
+most of the benefits. The second one is where interesting things might
+happen. So please split this patch into two.  If it does break, we can
+git bisect, and probably end up on the second patch.
+
+Thanks
+	Andrew
