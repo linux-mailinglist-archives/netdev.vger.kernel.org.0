@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06BD83082D4
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 02:03:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89E773082D3
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 02:03:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231724AbhA2BDS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 20:03:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37714 "EHLO
+        id S231483AbhA2BDK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 20:03:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231680AbhA2BB4 (ORCPT
+        with ESMTP id S231681AbhA2BB4 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 20:01:56 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9772CC061788
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 17:00:38 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id kg20so10586565ejc.4
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 17:00:38 -0800 (PST)
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C45CAC06178A
+        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 17:00:39 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id r12so10560338ejb.9
+        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 17:00:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=TM/Dzwf7ZBadPWfrvY/jc7R4USKd+K7Pa5jN+eIJ5k8=;
-        b=Mpd4sMC1+MZGfBEkdcwW2y9AS5f8E6o5Ci8hlP7cg68HO1VrBK1AYRmuERJmfgihZ5
-         C0Tg/ptAkFtY+E2DgVZNoR8CWgdNJ5tMcutUvoT2ozcF2i1/rKAGbsXzA0MQb3ID2dLc
-         ohzgLm3y0sfpf/I07LZqYM6MppeTusPdjpjwoEGvEfZ6B+4O79PoHi3XRBBggCWwBaoF
-         VPZctbkv0AxivQ0232nbZVeeR6QgYF5WSfeZB0ZykDslAs5CmSAzm9DlKTpM59ieeiOb
-         FGl7BrgR2wK0zTSrZbTz0P4YP7B6uJG3z0GpoZtOx+NvtDWyWX2TMWaIrEXIfZ2uZE17
-         z2GQ==
+        bh=GUn72YhyZLJlCljbKWf0cXF8ecR5PXWPiTADy9wGdn4=;
+        b=ljdU52N6fKXtEDz+QbuLVxmob5ckvXMy8Wx39lek+DaRBgxGJdx9pTrqE8DtZ+hIZy
+         OVYEYC7zMRuQ/IbYxBAQYoimUPtfYC8EDDXBHCuSFEAPpRcEvDOkezVgXlCi0l3x+dKw
+         hU8MhVG8GuJVXx0QVRcjKVZN1jWZEf/lq7rCTRequPlgsm26Hs8UYRpCtaxBDZcO+Xy0
+         gHxo2mN7ZK7VESSKF9P6zzv5gFFZIwqeY1uVqBCDD0AuLxKf01IoRH7wV84JpsMcXO+E
+         fZRm91FJ0WiBLnDfNJF8aFq1tzV8xnIm7J0UjBG+lXl6Tq1r5vb/7D5w0dJMZgQOwotl
+         a/wA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=TM/Dzwf7ZBadPWfrvY/jc7R4USKd+K7Pa5jN+eIJ5k8=;
-        b=mj+8HnWa/UqcZ09S5MNF/hHP8ih4ruFmwaHO1ub72HN3wJAA1klqiMFoLeRW04bMFZ
-         lsIr/FPtaGMZQ/4Q8MqcLyCYKnbx7rOkU1ivKhoa668mQJhRMVu7LS965Kc759n44XG0
-         LoMgcRkYT9lwT3/ofQ3d6RnZtG4BUgSTNEGc4NChM4B0Hi/x00cw6zzY38XFsQuda2Lc
-         /+DmeQZ9kYoGN/zvpdBgV9HjMAJTrpBkSdL9OzHkwcWEUm0o03aMYgWDc39f5W3xE0JE
-         5xQx/cHfVuzVFrkpmjI2+mSo9reP43k8gWXWzSODOnblCdH0RwtQCBWJ13N2/max7xsU
-         zqBw==
-X-Gm-Message-State: AOAM531JyiGe/dIEgnVxTDIfCD3UcVlUQZzBmMlrUXdtGARBqIyo9p6P
-        oZgLdmUXi83HyMup1ax5Fgo=
-X-Google-Smtp-Source: ABdhPJyVYMT68AuVeXWZNzZcNU5M2akxDSV8Qy3MVcyleDKk/YoUmVzVF0PbCjKoZt2fShzzaJFaFQ==
-X-Received: by 2002:a17:906:2747:: with SMTP id a7mr2251598ejd.250.1611882037307;
-        Thu, 28 Jan 2021 17:00:37 -0800 (PST)
+        bh=GUn72YhyZLJlCljbKWf0cXF8ecR5PXWPiTADy9wGdn4=;
+        b=DIG20XSlAwtxrf/p6q4qiOKvD+MKQcmOQF4lcsS9lj7nBcXEuY3Q31D5XCf5c2ud4W
+         8pWuHv1BpQLD5UPTSQJQaXIUqYoUoeG8fMpqkLA+ahITU5pZ9dJvIej7Ee5tkaZaYSHl
+         NdpP8mv1wV9BDak4qmozpok8Wn43rIfc5Q+oYhDw6AQEYz4wgl2mPp8vvmUz/N3rtW2j
+         NIEPgsrrCRUg4J48aK0mCxKzVYYgIiOQPRGsWPr6u6mtsmHgW2Dft6JGHcEAj5P/dMw7
+         hHqa1x4RUer5XcPWPmjA8Z5sswmR9ZjpEu1Xm6MDDU41wAahR4z+/73/FI5mq8wShZnM
+         a39w==
+X-Gm-Message-State: AOAM531HwrVkIBsJgWjggusgL+1YoSiABcKZukVFoBDcOlhV9UqbwSJV
+        5wWFYNJZlhPUnY998azSz/k=
+X-Google-Smtp-Source: ABdhPJwW5CllPV4l7ogvGAWJBbwYNNlvpT5EMSFT9tTAqFA29RQyED4kFQSa5AeHQy9CAY44xEkgkQ==
+X-Received: by 2002:a17:906:28d6:: with SMTP id p22mr2155398ejd.365.1611882038489;
+        Thu, 28 Jan 2021 17:00:38 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id f22sm3049256eje.34.2021.01.28.17.00.35
+        by smtp.gmail.com with ESMTPSA id f22sm3049256eje.34.2021.01.28.17.00.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jan 2021 17:00:36 -0800 (PST)
+        Thu, 28 Jan 2021 17:00:37 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -57,9 +57,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
         UNGLinuxDriver@microchip.com
-Subject: [PATCH v8 net-next 06/11] net: dsa: document the existing switch tree notifiers and add a new one
-Date:   Fri, 29 Jan 2021 03:00:04 +0200
-Message-Id: <20210129010009.3959398-7-olteanv@gmail.com>
+Subject: [PATCH v8 net-next 07/11] net: dsa: keep a copy of the tagging protocol in the DSA switch tree
+Date:   Fri, 29 Jan 2021 03:00:05 +0200
+Message-Id: <20210129010009.3959398-8-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210129010009.3959398-1-olteanv@gmail.com>
 References: <20210129010009.3959398-1-olteanv@gmail.com>
@@ -71,156 +71,162 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The existence of dsa_broadcast has generated some confusion in the past:
-https://www.mail-archive.com/netdev@vger.kernel.org/msg365042.html
+Cascading DSA switches can be done multiple ways. There is the brute
+force approach / tag stacking, where one upstream switch, located
+between leaf switches and the host Ethernet controller, will just
+happily transport the DSA header of those leaf switches as payload.
+For this kind of setups, DSA works without any special kind of treatment
+compared to a single switch - they just aren't aware of each other.
+Then there's the approach where the upstream switch understands the tags
+it transports from its leaves below, as it doesn't push a tag of its own,
+but it routes based on the source port & switch id information present
+in that tag (as opposed to DMAC & VID) and it strips the tag when
+egressing a front-facing port. Currently only Marvell implements the
+latter, and Marvell DSA trees contain only Marvell switches.
 
-So let's document the existing dsa_port_notify and dsa_broadcast
-functions and explain when each of them should be used.
+So it is safe to say that DSA trees already have a single tag protocol
+shared by all switches, and in fact this is what makes the switches able
+to understand each other. This fact is also implied by the fact that
+currently, the tagging protocol is reported as part of a sysfs installed
+on the DSA master and not per port, so it must be the same for all the
+ports connected to that DSA master regardless of the switch that they
+belong to.
 
-Also, in fact, the in-between function has always been there but was
-lacking a name, and is the main reason for this patch: dsa_tree_notify.
-Refactor dsa_broadcast to use it.
+It's time to make this official and enforce it (yes, this also means we
+won't have any "switch understands tag to some extent but is not able to
+speak it" hardware oddities that we'll support in the future).
 
-This patch also moves dsa_broadcast (a top-level function) to dsa2.c,
-where it really belonged in the first place, but had no companion so it
-stood with dsa_port_notify.
+This is needed due to the imminent introduction of the dsa_switch_ops::
+change_tag_protocol driver API. When that is introduced, we'll have
+to notify switches of the tagging protocol that they're configured to
+use. Currently the tag_ops structure pointer is held only for CPU ports.
+But there are switches which don't have CPU ports and nonetheless still
+need to be configured. These would be Marvell leaf switches whose
+upstream port is just a DSA link. How do we inform these of their
+tagging protocol setup/deletion?
+
+One answer to the above would be: iterate through the DSA switch tree's
+ports once, list the CPU ports, get their tag_ops, then iterate again
+now that we have it, and notify everybody of that tag_ops. But what to
+do if conflicts appear between one cpu_dp->tag_ops and another? There's
+no escaping the fact that conflict resolution needs to be done, so we
+can be upfront about it.
+
+Ease our work and just keep the master copy of the tag_ops inside the
+struct dsa_switch_tree. Reference counting is now moved to be per-tree
+too, instead of per-CPU port.
+
+There are many places in the data path that access master->dsa_ptr->tag_ops
+and we would introduce unnecessary performance penalty going through yet
+another indirection, so keep those right where they are.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
 Changes in v8:
-None.
+Make tagging driver module reference counting work per DSA switch tree
+instead of per CPU port, to be compatible with the tag protocol changing
+through sysfs.
 
 Changes in v7:
-None.
-
-Changes in v6:
-None.
-
-Changes in v5:
 Patch is new.
 
- net/dsa/dsa2.c     | 43 +++++++++++++++++++++++++++++++++++++++++++
- net/dsa/dsa_priv.h |  2 ++
- net/dsa/port.c     | 36 +++++++++++++-----------------------
- 3 files changed, 58 insertions(+), 23 deletions(-)
+ include/net/dsa.h |  7 ++++++-
+ net/dsa/dsa2.c    | 36 ++++++++++++++++++++++++------------
+ 2 files changed, 30 insertions(+), 13 deletions(-)
 
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index 2f5435d3d1db..b8af1d6c879a 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -140,6 +140,9 @@ struct dsa_switch_tree {
+ 	/* Has this tree been applied to the hardware? */
+ 	bool setup;
+ 
++	/* Tagging protocol operations */
++	const struct dsa_device_ops *tag_ops;
++
+ 	/*
+ 	 * Configuration data for the platform device that owns
+ 	 * this dsa switch tree instance.
+@@ -225,7 +228,9 @@ struct dsa_port {
+ 		struct net_device *slave;
+ 	};
+ 
+-	/* CPU port tagging operations used by master or slave devices */
++	/* Copy of the tagging protocol operations, for quicker access
++	 * in the data path. Valid only for the CPU ports.
++	 */
+ 	const struct dsa_device_ops *tag_ops;
+ 
+ 	/* Copies for faster access in master receive hot path */
 diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index cc13549120e5..2953d0c1c7bc 100644
+index 2953d0c1c7bc..63035a898ca8 100644
 --- a/net/dsa/dsa2.c
 +++ b/net/dsa/dsa2.c
-@@ -21,6 +21,49 @@
- static DEFINE_MUTEX(dsa2_mutex);
- LIST_HEAD(dsa_tree_list);
+@@ -179,6 +179,8 @@ static struct dsa_switch_tree *dsa_tree_alloc(int index)
  
-+/**
-+ * dsa_tree_notify - Execute code for all switches in a DSA switch tree.
-+ * @dst: collection of struct dsa_switch devices to notify.
-+ * @e: event, must be of type DSA_NOTIFIER_*
-+ * @v: event-specific value.
-+ *
-+ * Given a struct dsa_switch_tree, this can be used to run a function once for
-+ * each member DSA switch. The other alternative of traversing the tree is only
-+ * through its ports list, which does not uniquely list the switches.
-+ */
-+int dsa_tree_notify(struct dsa_switch_tree *dst, unsigned long e, void *v)
-+{
-+	struct raw_notifier_head *nh = &dst->nh;
-+	int err;
-+
-+	err = raw_notifier_call_chain(nh, e, v);
-+
-+	return notifier_to_errno(err);
-+}
-+
-+/**
-+ * dsa_broadcast - Notify all DSA trees in the system.
-+ * @e: event, must be of type DSA_NOTIFIER_*
-+ * @v: event-specific value.
-+ *
-+ * Can be used to notify the switching fabric of events such as cross-chip
-+ * bridging between disjoint trees (such as islands of tagger-compatible
-+ * switches bridged by an incompatible middle switch).
-+ */
-+int dsa_broadcast(unsigned long e, void *v)
-+{
-+	struct dsa_switch_tree *dst;
-+	int err = 0;
-+
-+	list_for_each_entry(dst, &dsa_tree_list, list) {
-+		err = dsa_tree_notify(dst, e, v);
-+		if (err)
-+			break;
-+	}
-+
-+	return err;
-+}
-+
- /**
-  * dsa_lag_map() - Map LAG netdev to a linear LAG ID
-  * @dst: Tree in which to record the mapping.
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 2ce46bb87703..3cc1e6d76e3a 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -283,6 +283,8 @@ void dsa_switch_unregister_notifier(struct dsa_switch *ds);
- /* dsa2.c */
- void dsa_lag_map(struct dsa_switch_tree *dst, struct net_device *lag);
- void dsa_lag_unmap(struct dsa_switch_tree *dst, struct net_device *lag);
-+int dsa_tree_notify(struct dsa_switch_tree *dst, unsigned long e, void *v);
-+int dsa_broadcast(unsigned long e, void *v);
- 
- extern struct list_head dsa_tree_list;
- 
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index f5b0f72ee7cd..a8886cf40160 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -13,31 +13,21 @@
- 
- #include "dsa_priv.h"
- 
--static int dsa_broadcast(unsigned long e, void *v)
--{
--	struct dsa_switch_tree *dst;
--	int err = 0;
--
--	list_for_each_entry(dst, &dsa_tree_list, list) {
--		struct raw_notifier_head *nh = &dst->nh;
--
--		err = raw_notifier_call_chain(nh, e, v);
--		err = notifier_to_errno(err);
--		if (err)
--			break;
--	}
--
--	return err;
--}
--
-+/**
-+ * dsa_port_notify - Notify the switching fabric of changes to a port
-+ * @dp: port on which change occurred
-+ * @e: event, must be of type DSA_NOTIFIER_*
-+ * @v: event-specific value.
-+ *
-+ * Notify all switches in the DSA tree that this port's switch belongs to,
-+ * including this switch itself, of an event. Allows the other switches to
-+ * reconfigure themselves for cross-chip operations. Can also be used to
-+ * reconfigure ports without net_devices (CPU ports, DSA links) whenever
-+ * a user port's state changes.
-+ */
- static int dsa_port_notify(const struct dsa_port *dp, unsigned long e, void *v)
+ static void dsa_tree_free(struct dsa_switch_tree *dst)
  {
--	struct raw_notifier_head *nh = &dp->ds->dst->nh;
--	int err;
--
--	err = raw_notifier_call_chain(nh, e, v);
--
--	return notifier_to_errno(err);
-+	return dsa_tree_notify(dp->ds->dst, e, v);
++	if (dst->tag_ops)
++		dsa_tag_driver_put(dst->tag_ops);
+ 	list_del(&dst->list);
+ 	kfree(dst);
  }
+@@ -467,7 +469,6 @@ static void dsa_port_teardown(struct dsa_port *dp)
+ 		break;
+ 	case DSA_PORT_TYPE_CPU:
+ 		dsa_port_disable(dp);
+-		dsa_tag_driver_put(dp->tag_ops);
+ 		dsa_port_link_unregister_of(dp);
+ 		break;
+ 	case DSA_PORT_TYPE_DSA:
+@@ -1011,24 +1012,35 @@ static int dsa_port_parse_cpu(struct dsa_port *dp, struct net_device *master)
+ {
+ 	struct dsa_switch *ds = dp->ds;
+ 	struct dsa_switch_tree *dst = ds->dst;
+-	const struct dsa_device_ops *tag_ops;
+ 	enum dsa_tag_protocol tag_protocol;
  
- int dsa_port_set_state(struct dsa_port *dp, u8 state)
+ 	tag_protocol = dsa_get_tag_protocol(dp, master);
+-	tag_ops = dsa_tag_driver_get(tag_protocol);
+-	if (IS_ERR(tag_ops)) {
+-		if (PTR_ERR(tag_ops) == -ENOPROTOOPT)
+-			return -EPROBE_DEFER;
+-		dev_warn(ds->dev, "No tagger for this switch\n");
+-		dp->master = NULL;
+-		return PTR_ERR(tag_ops);
++	if (dst->tag_ops) {
++		if (dst->tag_ops->proto != tag_protocol) {
++			dev_err(ds->dev,
++				"A DSA switch tree can have only one tagging protocol\n");
++			return -EINVAL;
++		}
++		/* In the case of multiple CPU ports per switch, the tagging
++		 * protocol is still reference-counted only per switch tree, so
++		 * nothing to do here.
++		 */
++	} else {
++		dst->tag_ops = dsa_tag_driver_get(tag_protocol);
++		if (IS_ERR(dst->tag_ops)) {
++			if (PTR_ERR(dst->tag_ops) == -ENOPROTOOPT)
++				return -EPROBE_DEFER;
++			dev_warn(ds->dev, "No tagger for this switch\n");
++			dp->master = NULL;
++			return PTR_ERR(dst->tag_ops);
++		}
+ 	}
+ 
+ 	dp->master = master;
+ 	dp->type = DSA_PORT_TYPE_CPU;
+-	dp->filter = tag_ops->filter;
+-	dp->rcv = tag_ops->rcv;
+-	dp->tag_ops = tag_ops;
++	dp->filter = dst->tag_ops->filter;
++	dp->rcv = dst->tag_ops->rcv;
++	dp->tag_ops = dst->tag_ops;
+ 	dp->dst = dst;
+ 
+ 	return 0;
 -- 
 2.25.1
 
