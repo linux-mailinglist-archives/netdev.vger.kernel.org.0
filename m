@@ -2,77 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BCFE308E7A
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 21:32:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81DD4308E7F
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 21:32:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233355AbhA2U0h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jan 2021 15:26:37 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:38822 "EHLO vps0.lunn.ch"
+        id S233102AbhA2UcD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jan 2021 15:32:03 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39334 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233365AbhA2UY0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Jan 2021 15:24:26 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1l5aIo-003FK8-EP; Fri, 29 Jan 2021 21:23:34 +0100
-Date:   Fri, 29 Jan 2021 21:23:34 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Mike Looijmans <mike.looijmans@topic.nl>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: mdiobus: Prevent spike on MDIO bus reset signal
-Message-ID: <YBRuxtP3CTiATzDa@lunn.ch>
-References: <20210126073337.20393-1-mike.looijmans@topic.nl>
- <YBIZyWZNoQeJ7Bt4@lunn.ch>
- <1b153bce-a66a-45ee-a5c6-963ea6fb1c82.949ef384-8293-46b8-903f-40a477c056ae.7228ddf2-6794-42a0-8b0b-3821446cdb40@emailsignatures365.codetwo.com>
- <1b153bce-a66a-45ee-a5c6-963ea6fb1c82.0d2bd5fa-15cc-4b27-b94e-83614f9e5b38.7855d092-e2c3-4ba5-a029-2a0bbce637e1@emailsignatures365.codetwo.com>
- <956acc58-6ec8-c3d5-1310-7305c3b5a471@topic.nl>
+        id S233242AbhA2UbB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 Jan 2021 15:31:01 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1D2C964DD8;
+        Fri, 29 Jan 2021 20:30:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611952210;
+        bh=866bsDa5Gwch3W1vt+K5P2ZlW4W4AoS0Pka7gwV9FYc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MQc2UMJ3lCNAJIIZQXkVslQhC9zBWK5WpVAdnAfm4QXusYrX27uUKIGuqmtC09rZQ
+         NwqMaPlk0oBtABYmlNa/nNwpm8wE3aUWCwLyfFNR5T7KGIbHrOW62ciOEDxkKdj7wq
+         m1a82eF6Niq46M2v79kvNO7q/2L6AfDdeyVGzSXVZ0hs79QyrNsPD6ysrd3tp5++CH
+         YdPvMRVFlgFtQoHEg1Y/I379VJqa3T3UEcpI6X8gLL9zaVcZ99QP9GP900APxnN4Jk
+         8LOEz0G6MoIRLo6Jk3KZMjRdqdnn1+K/mWWaPXLr96pXnAhHKz2KuqAOhRj4uVhRk4
+         Gqyyb+KPl4aUw==
+Date:   Fri, 29 Jan 2021 12:30:09 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Chris Mi <cmi@nvidia.com>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        <jiri@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH net-next v4] net: psample: Introduce stubs to remove NIC
+ driver dependency
+Message-ID: <20210129123009.3c07563d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <6c586e9a-b672-6e60-613b-4fb6e6db8c9a@nvidia.com>
+References: <20210128014543.521151-1-cmi@nvidia.com>
+        <CAM_iQpWQe1W+x_bua+OfjTR-tCgFYgj_8=eKz7VJdKHPRKuMYw@mail.gmail.com>
+        <6c586e9a-b672-6e60-613b-4fb6e6db8c9a@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <956acc58-6ec8-c3d5-1310-7305c3b5a471@topic.nl>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 28, 2021 at 09:45:41AM +0100, Mike Looijmans wrote:
-> Hi Andrew,
-> 
-> Response below...
+On Fri, 29 Jan 2021 14:08:39 +0800 Chris Mi wrote:
+> Instead of discussing it several days, maybe it's better to review 
+> current patch, so that we can move forward :)
 
-Hi Mike
+It took you 4 revisions to post a patch which builds cleanly and now
+you want to hasten the review? My favorite kind of submission.
 
-Everybody here knows that top posting is evil, we don't do it. We
-expect the replay to be inline.
+The mlxsw core + spectrum drivers are 65 times the size of psample 
+on my system. Why is the dependency a problem?
 
-> > Hi Mike
-> > 
-> > Did you look at the per PHY reset? mdiobus_register_gpiod() gets the
-> > GPIO with GPIOD_OUT_LOW. mdiobus_register_device() then immediately
-> > sets it high.
-> > 
-> > So it looks like it suffers from the same problem.
-> 
-> Well, now that I have your attention...
-> 
-> The per PHY reset was more broken
-
-It has history. It was designed to be used for PHYs which needed a
-reset after the clock was changed. It assumed the PHY would probe,
-which some do when held in reset.
-
-But the GPIO is not the only problem. Some PHYs need a regulator
-enabled, some need a clock enabled. The core has no idea what order to
-do this in. It should be the PHY driver that does this, since it
-should have knowledge of the PHY, and can do things in the correct
-order. But if the PHY does not respond, it is not discovered, and so
-the driver does not load. If that case, you can put the PHY ID into
-the compatible string, and the core will load the correct driver and
-probe it, allow it to turn on whatever it needs.
-
-This has been discussed a few times and this is what we decided on.
-Maybe we need to improve the documentation.
-
-      Andrew
+What's going to make sure the module gets loaded when it's needed?
