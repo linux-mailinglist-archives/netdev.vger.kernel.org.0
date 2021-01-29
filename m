@@ -2,133 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AED8D3082B3
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 01:51:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8851F3082BC
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 01:54:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231657AbhA2AvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 19:51:03 -0500
-Received: from ozlabs.org ([203.11.71.1]:56867 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231601AbhA2Atc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 Jan 2021 19:49:32 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4DRdxl4GwYz9sVF;
-        Fri, 29 Jan 2021 11:48:43 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1611881324;
-        bh=88acUbfYTRBOBCPuXAqi5VimIreMPtP2EqSf1zjse/w=;
-        h=Date:From:To:Cc:Subject:From;
-        b=GNDv/dtM1i45G+pPLwEZkZB5OmHLRRpDX0heUBdM7Ng2s4W4l+K+lE4gOAXZFKNhb
-         GFh+lgt0v0RPUhDkfR1uAgKeVMwCc0mh08BHQkLUdrDb0WzdTVF87t4UyPShUE0d3d
-         KA0xJk0zJsMJZG77lf6vSXKk10bUMr9hIx1fIlA90VmZcVrvVeU+7qJWh5X4QAcbTt
-         ZvHmTiWLheR4s7Ve1qfC1hoO/YWDVS9dCVoWsLGXX5QZzUPkWEDrf2g8ycMaiOGkEZ
-         qm+wOhQXFRhGekTL+if37aVI+84hkhT9Im4Xd3E7/hn+yQhXb0SO81AdzcY0Oz6Cdn
-         GzYKeveW2gyWw==
-Date:   Fri, 29 Jan 2021 11:48:42 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: linux-next: manual merge of the net-next tree with Linus' tree
-Message-ID: <20210129114842.1174a9c8@canb.auug.org.au>
+        id S231642AbhA2Axl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 19:53:41 -0500
+Received: from www62.your-server.de ([213.133.104.62]:40706 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231313AbhA2Axh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 19:53:37 -0500
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1l5I1v-0007G6-S5; Fri, 29 Jan 2021 01:52:55 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1l5I1v-000EGN-Mm; Fri, 29 Jan 2021 01:52:55 +0100
+Subject: Re: [PATCH bpf-next v2 4/4] bpf: enable bpf_{g,s}etsockopt in
+ BPF_CGROUP_UDP{4,6}_RECVMSG
+To:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     ast@kernel.org
+References: <20210127232853.3753823-1-sdf@google.com>
+ <20210127232853.3753823-5-sdf@google.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <3098d1b1-3438-6646-d466-feed27e9ba6b@iogearbox.net>
+Date:   Fri, 29 Jan 2021 01:52:46 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/Dlvl3zBc_yGdX10nioAsaxH";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <20210127232853.3753823-5-sdf@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26063/Thu Jan 28 13:28:06 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/Dlvl3zBc_yGdX10nioAsaxH
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On 1/28/21 12:28 AM, Stanislav Fomichev wrote:
+> Those hooks run as BPF_CGROUP_RUN_SA_PROG_LOCK and operate on
+> a locked socket.
+> 
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
+>   net/core/filter.c                                 | 4 ++++
+>   tools/testing/selftests/bpf/progs/recvmsg4_prog.c | 5 +++++
+>   tools/testing/selftests/bpf/progs/recvmsg6_prog.c | 5 +++++
+>   3 files changed, 14 insertions(+)
+> 
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index ba436b1d70c2..e15d4741719a 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -7023,6 +7023,8 @@ sock_addr_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>   		case BPF_CGROUP_INET6_BIND:
+>   		case BPF_CGROUP_INET4_CONNECT:
+>   		case BPF_CGROUP_INET6_CONNECT:
+> +		case BPF_CGROUP_UDP4_RECVMSG:
+> +		case BPF_CGROUP_UDP6_RECVMSG:
+>   		case BPF_CGROUP_UDP4_SENDMSG:
+>   		case BPF_CGROUP_UDP6_SENDMSG:
+>   		case BPF_CGROUP_INET4_GETPEERNAME:
+> @@ -7039,6 +7041,8 @@ sock_addr_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>   		case BPF_CGROUP_INET6_BIND:
+>   		case BPF_CGROUP_INET4_CONNECT:
+>   		case BPF_CGROUP_INET6_CONNECT:
+> +		case BPF_CGROUP_UDP4_RECVMSG:
+> +		case BPF_CGROUP_UDP6_RECVMSG:
+>   		case BPF_CGROUP_UDP4_SENDMSG:
+>   		case BPF_CGROUP_UDP6_SENDMSG:
+>   		case BPF_CGROUP_INET4_GETPEERNAME:
 
-Hi all,
+Looks good overall, also thanks for adding the test cases! I was about to apply, but noticed one
+small nit that would be good to get resolved before that. Above you now list all the attach hooks
+for sock_addr ctx, so we should just remove the whole switch that tests on prog->expected_attach_type
+altogether in this last commit.
 
-Today's linux-next merge of the net-next tree got a conflict in:
-
-  net/switchdev/switchdev.c
-
-between commit:
-
-  20776b465c0c ("net: switchdev: don't set port_obj_info->handled true when=
- -EOPNOTSUPP")
-
-from Linus' tree and commits:
-
-  ffb68fc58e96 ("net: switchdev: remove the transaction structure from port=
- object notifiers")
-  bae33f2b5afe ("net: switchdev: remove the transaction structure from port=
- attributes")
-
-from the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc net/switchdev/switchdev.c
-index 2c1ffc9ba2eb,855a10feef3d..000000000000
---- a/net/switchdev/switchdev.c
-+++ b/net/switchdev/switchdev.c
-@@@ -460,11 -388,9 +388,10 @@@ static int __switchdev_handle_port_obj_
-  	extack =3D switchdev_notifier_info_to_extack(&port_obj_info->info);
- =20
-  	if (check_cb(dev)) {
-- 		err =3D add_cb(dev, port_obj_info->obj, port_obj_info->trans,
-- 			     extack);
- -		/* This flag is only checked if the return value is success. */
- -		port_obj_info->handled =3D true;
- -		return add_cb(dev, port_obj_info->obj, extack);
-++		err =3D add_cb(dev, port_obj_info->obj, extack);
- +		if (err !=3D -EOPNOTSUPP)
- +			port_obj_info->handled =3D true;
- +		return err;
-  	}
- =20
-  	/* Switch ports might be stacked under e.g. a LAG. Ignore the
-@@@ -570,10 -493,8 +495,10 @@@ static int __switchdev_handle_port_attr
-  	int err =3D -EOPNOTSUPP;
- =20
-  	if (check_cb(dev)) {
-- 		err =3D set_cb(dev, port_attr_info->attr, port_attr_info->trans);
- -		port_attr_info->handled =3D true;
- -		return set_cb(dev, port_attr_info->attr);
-++		err =3D set_cb(dev, port_attr_info->attr);
- +		if (err !=3D -EOPNOTSUPP)
- +			port_attr_info->handled =3D true;
- +		return err;
-  	}
- =20
-  	/* Switch ports might be stacked under e.g. a LAG. Ignore the
-
---Sig_/Dlvl3zBc_yGdX10nioAsaxH
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmATW2oACgkQAVBC80lX
-0GwgrggAl2ACJCQVH2rteoxv0XN3FoaD6N4rTG7f8HOGNVK8pks8QeEEpIuj3s2H
-PWRkI+TxrCmlmwV6xBwf2/Rc+dTA2ytkuFzCwvAGkN6kME6FUd+Qba+G8KGA+klQ
-bCMAgPbakEbXFwAkIqBpAzMD1N2BMR0dJtVsnQSl4ucb8Cv8N2ESlqWscn/KQWhm
-/GUr0IaqP3w/YNvn9bvEPKCLKoHrmfjmjdJoJrjVvflj2ayW6N6o1tj2JPxeM8nv
-W0StOqsmbp6tIqmxT+segyI047W/0N5VLi3sI0+pfgJ1JOzBIVS7pbUeqwfOMJ+n
-Wyj+J0P1+uyv3wLBCnx920pYeAhe3Q==
-=k3Dn
------END PGP SIGNATURE-----
-
---Sig_/Dlvl3zBc_yGdX10nioAsaxH--
+Thanks,
+Daniel
