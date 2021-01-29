@@ -2,98 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70A5830846D
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 04:52:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED915308481
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 05:17:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231924AbhA2DwT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 22:52:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45862 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231513AbhA2DwI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 22:52:08 -0500
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B02DC061574;
-        Thu, 28 Jan 2021 19:51:27 -0800 (PST)
-Received: by mail-oi1-x232.google.com with SMTP id w8so8534693oie.2;
-        Thu, 28 Jan 2021 19:51:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=/Vw+qMwlmTzF/zojJ72bFGqMB/HdDLc9w77FVa0Qgyo=;
-        b=qNewQyw6pwfnCBUXYBN32ljHR6q5CvTG3O+QrFQHF2rPX9Km+dDFV8tyOuQx9tRs1x
-         otDvnso9xHnYOV1Or8uP/PBlEFrtkujjFQfxCvVUhDYjIm+1r+02t6oyCClm85I+8QVe
-         9TfEGd8ap5rc45rrHO3leDkGNORbQXYcSttdH9pi+mYPKV7sqiEpUSwheUa6nLj9hayb
-         hHSn0iCUZhkz16E5LpWZ2+5Tms/yznxGMBJQDVgh9xqug+l7ov2LbEgV8kehwZp1kZ14
-         SMKdQeW+BFsdvVo3rlSwDZD7pVXuJZN6zPe0GSsRBAo/1bPuyWSZLU4+/zKLyolwfjzD
-         FCsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=/Vw+qMwlmTzF/zojJ72bFGqMB/HdDLc9w77FVa0Qgyo=;
-        b=R9dzVXKpxFhsOAOYdfa2tloIQsEOKOmgEZuyZudEH8PMdUejsaR2uf452LS4Gqfhlv
-         Xb1Ue9MhL8FZ/qkIq2RJNbLCA3cEivsEaEI2bvIzPZL7JKeimRg+bfRtZmpourvVem3g
-         daYYXAfl3Ls9MX33LIam6OKoDuMNht/v51/uATCDW6fQ0nvj+8Vijyfqx3rDZgUNOGNh
-         E7AgJDUdTN73Kj7kVG9CjWJQ80k4D/jminBx/V5CR/84CoFXkOxP53kkxG42GHKPTkp7
-         0G6cQ0Vt5bx+AvYP83Hp8cP7GdbNkFBBkWk4DJYlWAmIkVENrSAeGvw4EGbMss8c+TgW
-         bGng==
-X-Gm-Message-State: AOAM530BxqGZgbqJZrYmRwaN7t0Eg0XQFeOHt4xfuHFjiy3ujTIM8duK
-        ugKGm3N+8X7eQzzpJCaIALBQc0AzElY=
-X-Google-Smtp-Source: ABdhPJze9OlH7OGwWjnArhrP3iLXF8xOP58J5JnyBl+bv3NYVqiRHHdJxrIYYNv0RBw9H+aNLFdxWQ==
-X-Received: by 2002:aca:ebd8:: with SMTP id j207mr1614762oih.11.1611892286967;
-        Thu, 28 Jan 2021 19:51:26 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.50])
-        by smtp.googlemail.com with ESMTPSA id c189sm1889528oib.53.2021.01.28.19.51.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Jan 2021 19:51:26 -0800 (PST)
-Subject: Re: [PATCH net-next V1] net: adjust net_device layout for cacheline
- usage
-To:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     bpf@vger.kernel.org, Eric Dumazet <eric.dumazet@gmail.com>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-References: <161168277983.410784.12401225493601624417.stgit@firesoul>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <2836dccc-faa9-3bb6-c4d5-dd60c75b275a@gmail.com>
-Date:   Thu, 28 Jan 2021 20:51:23 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.6.1
+        id S231593AbhA2EQ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 23:16:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50848 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229757AbhA2EQ1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Jan 2021 23:16:27 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7A2F764DFF;
+        Fri, 29 Jan 2021 04:15:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611893746;
+        bh=UBJNq5dCwXJzELkBErL86XwpABwEOrWSOp1iXnIisJQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Ev3EoplPPS+VEftOvGp+euxZMHlL1sZ2FJN0mbGfhaOuf9QybT/2SHaAIuOcjPTUQ
+         tFQU2lAgGderFiMHmquEY6NpChFESNlxyTXHDPZ+sppc0vtD9U+SQxHSRUzzWQGbBj
+         VTRxA/N9etSmWw2fx8xV3uvbWDDdT7kAyQbWy91NViN4zcIcptwIMY7cx7m2XOS0dX
+         4d8BHp57omyQsSbGWkYe/XYyqosLKTq+oM38qFPgVy1OWvCkbd5DrD5AVDk5VW0g04
+         Ji4M8Knk/7Kdt4r+2FZTLKAF3nFjpbZ/hI+FaeYHdZtnk0MHoVJXko6DHynjeK4Cld
+         tsaHyFnouMhhA==
+Date:   Thu, 28 Jan 2021 20:15:45 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, amcohen@nvidia.com, roopa@nvidia.com,
+        sharpd@nvidia.com, bpoirier@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next 05/10] net: ipv4: Emit notification when fib
+ hardware flags are changed
+Message-ID: <20210128201545.07e95057@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <aa5291c2-3bbc-c517-8804-6a0543db66db@gmail.com>
+References: <20210126132311.3061388-1-idosch@idosch.org>
+        <20210126132311.3061388-6-idosch@idosch.org>
+        <20210128190405.27d6f086@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <aa5291c2-3bbc-c517-8804-6a0543db66db@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <161168277983.410784.12401225493601624417.stgit@firesoul>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/26/21 10:39 AM, Jesper Dangaard Brouer wrote:
-> The current layout of net_device is not optimal for cacheline usage.
+On Thu, 28 Jan 2021 20:33:22 -0700 David Ahern wrote:
+> On 1/28/21 8:04 PM, Jakub Kicinski wrote:
+> > On Tue, 26 Jan 2021 15:23:06 +0200 Ido Schimmel wrote:  
+> >> Emit RTM_NEWROUTE notifications whenever RTM_F_OFFLOAD/RTM_F_TRAP flags
+> >> are changed. The aim is to provide an indication to user-space
+> >> (e.g., routing daemons) about the state of the route in hardware.  
+> > 
+> > What does the daemon in the user space do with it?  
 > 
-> The member adj_list.lower linked list is split between cacheline 2 and 3.
-> The ifindex is placed together with stats (struct net_device_stats),
-> although most modern drivers don't update this stats member.
-> 
-> The members netdev_ops, mtu and hard_header_len are placed on three
-> different cachelines. These members are accessed for XDP redirect into
-> devmap, which were noticeably with perf tool. When not using the map
-> redirect variant (like TC-BPF does), then ifindex is also used, which is
-> placed on a separate fourth cacheline. These members are also accessed
-> during forwarding with regular network stack. The members priv_flags and
-> flags are on fast-path for network stack transmit path in __dev_queue_xmit
-> (currently located together with mtu cacheline).
-> 
-> This patch creates a read mostly cacheline, with the purpose of keeping the
-> above mentioned members on the same cacheline.
-> 
-> Some netdev_features_t members also becomes part of this cacheline, which is
-> on purpose, as function netif_skb_features() is on fast-path via
-> validate_xmit_skb().
+> You don't want FRR for example to advertise a route to a peer until it
+> is really programmed in h/w. This notification gives routing daemons
+> that information.
 
-A long over due look at the organization of this struct. Do you have
-performance numbers for the XDP case?
+I see. Hm.
 
+> > The notification will only be generated for the _first_ ASIC which
+> > offloaded the object. Which may be fine for you today but as an uAPI 
+> > it feels slightly lacking.
+> > 
+> > If the user space just wants to make sure the devices are synced to
+> > notifications from certain stage, wouldn't it be more idiomatic to
+> > provide some "fence" operation?
+> > 
+> > WDYT? David?
+> 
+> This feature was first discussed I think about 2 years ago - when I was
+> still with Cumulus, so I already knew the intent and end goal.
+> 
+> I think support for multiple ASICs / NICs doing this kind of offload
+> will have a whole lot of challenges. I don't think this particular user
+> notification is going to be a big problem - e.g., you could always delay
+> the emit until all have indicated the offload.
+
+My impression from working on this problem in TC is that the definition
+of "all" becomes problematic especially if one takes into account
+drivers getting reloaded. But I think routing offload has stronger
+semantics than TC, so no objections.
+
+We need a respin for the somewhat embarrassing loop in patch 1, tho.
