@@ -2,112 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1A90308551
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 06:53:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A860308583
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 07:16:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231696AbhA2Fr6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jan 2021 00:47:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42232 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231287AbhA2Fr4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 00:47:56 -0500
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47641C061573
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 21:47:16 -0800 (PST)
-Received: by mail-pg1-x532.google.com with SMTP id o63so5910271pgo.6
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 21:47:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=auSLXYhhYbjwbYiADe8DSIg7ijrWddQQMaLMri865iI=;
-        b=m8Qd8I8KWETbo4Yd2HUZ4fu4yXkub+Z49wLTGAbM5P+yHKMHzt4ctJ8nF7h4fxirhw
-         VcOLXBePlOgoGVIVDveKaL6o9UibsrUdvZT4JaDTipbc5EAXdGYvmP9G61U0VLb2vTwr
-         SZZhxc/KqJgChqkqg/SZ8EsaJa8z+TXiNgIUKT/nSZqlnksvfDvpQlV5YmerloWzY0UG
-         sKlfFVRU4JhF+yQz1k3u42KLzmQKut2E9yN8A9wSuSJ3oeXM+VrXytAvpyV4wOURspgb
-         oe0LF9RySDLa0963vQc/cXN6HbaD0dBApTgnNXsCyCkhJbb/41U0VlytebxTs1HUvhSV
-         4/EA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=auSLXYhhYbjwbYiADe8DSIg7ijrWddQQMaLMri865iI=;
-        b=gd9EoMU0dPvfYU6EAYZyxsIwc2f5SuSxAWLsCRCdcrpY9nXbYXoFzD26H4/Y61iKqW
-         xC3QTU+Y4to1X0V6h++HVrC5zY1PIhq+9vm7KpINw9NSQAfIqGS2mX++bC+dbK5VzWQ0
-         0T5tvezSssiKDvYBwanLaf7D/M6DXYrTiJqtMa1+BmVStRRVFK4OvWmJ0gm+XyDjZ/QK
-         50jKJ6Af92v95Vin9P/t+vQdMPvwonaTAPsFlruvL+WZwLCkX15BBmNSCopuOQC1ovA5
-         ZpVGwYFoy3+dCCZ5f6qCTlRw8qv95xzoU8QHK14ETCm5qVALLWyDvdzvgsy/ocrQgYR+
-         A//g==
-X-Gm-Message-State: AOAM533RCrMR4/JKIYX2AxaVNk+uqIdgUG2Ma90T4CHwVukNOVr32sQn
-        ZdH3q+glFnobkzoLVI868BqK5EKxmqjSkFj5bR1DWEU/AklmtA==
-X-Google-Smtp-Source: ABdhPJwOZBNV8WahLaUOxVZPsVWJPuJ0iXX+Ekxs+FYArtPSSK2MfZ2TMQ5SeJ84EPPttf2RgiBfkAQcrgOJjNgR0Nk=
-X-Received: by 2002:a62:ac18:0:b029:1c0:4398:33b5 with SMTP id
- v24-20020a62ac180000b02901c0439833b5mr2940612pfe.10.1611899235713; Thu, 28
- Jan 2021 21:47:15 -0800 (PST)
-MIME-Version: 1.0
-References: <20210124013049.132571-1-xiyou.wangcong@gmail.com>
- <20210128125529.5f902a5b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAM_iQpU-jBkmf6DYtGAA78fAZdemKNT50BSoUco-XngyUPYMhg@mail.gmail.com> <20210128212130.6bda5d5a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210128212130.6bda5d5a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 28 Jan 2021 21:47:04 -0800
-Message-ID: <CAM_iQpUGR1OjeEcsFqkeZZRHDkiQ=+=OiSAB8EgzxG9Dh-5c5w@mail.gmail.com>
-Subject: Re: [Patch net] net: fix dev_ifsioc_locked() race condition
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        "Gong, Sishuai" <sishuai@purdue.edu>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S232012AbhA2GL2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jan 2021 01:11:28 -0500
+Received: from m12-14.163.com ([220.181.12.14]:56035 "EHLO m12-14.163.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230121AbhA2GL1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 Jan 2021 01:11:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=DyTPjUOQqGfQiWxuxf
+        Z3mJqKKyZRDIcPBWvisZNPE/U=; b=bAzgSzH8axssCHgTC1FTI67vQg98Yos88o
+        pCb0QxcXroUH++P+z2OhnY+XLKTHppUbJpjc3ccIAEc+vqi2o7XkXpuIvwQSdq51
+        Je8yzcysNZug90TTNZStFtQFp/ELazCfjD/XpEygBac/YynbIpgg6DOip25w/Wi1
+        zzS/dos4U=
+Received: from wengjianfeng.ccdomain.com (unknown [119.137.52.46])
+        by smtp10 (Coremail) with SMTP id DsCowAAnLhrJYhNgYLViiQ--.9590S2;
+        Fri, 29 Jan 2021 09:20:11 +0800 (CST)
+From:   samirweng1979 <samirweng1979@163.com>
+To:     Jes.Sorensen@gmail.com, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        wengjianfeng <wengjianfeng@yulong.com>
+Subject: [PATCH] rtl8xxxu: assign value when defining variables
+Date:   Fri, 29 Jan 2021 09:20:19 +0800
+Message-Id: <20210129012019.11348-1-samirweng1979@163.com>
+X-Mailer: git-send-email 2.15.0.windows.1
+X-CM-TRANSID: DsCowAAnLhrJYhNgYLViiQ--.9590S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrtrWruw48ZFyfZrWkXF4fZrb_yoWfGrb_ua
+        40qan7Zry8Jr4Fyr4Yyr47ZrWFyFZ8J3Z5Ca42grW5Ww45JrWFkwn5X343Jr4fXw4rZF98
+        G3Z7G3W0y34kXjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU5aAp5UUUUU==
+X-Originating-IP: [119.137.52.46]
+X-CM-SenderInfo: pvdpx25zhqwiqzxzqiywtou0bp/1tbiRQspsVl91ALJWgAAs3
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 28, 2021 at 9:21 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Thu, 28 Jan 2021 21:08:05 -0800 Cong Wang wrote:
-> > On Thu, Jan 28, 2021 at 12:55 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > >
-> > > On Sat, 23 Jan 2021 17:30:49 -0800 Cong Wang wrote:
-> > > > From: Cong Wang <cong.wang@bytedance.com>
-> > > >
-> > > > dev_ifsioc_locked() is called with only RCU read lock, so when
-> > > > there is a parallel writer changing the mac address, it could
-> > > > get a partially updated mac address, as shown below:
-> > > >
-> > > > Thread 1                      Thread 2
-> > > > // eth_commit_mac_addr_change()
-> > > > memcpy(dev->dev_addr, addr->sa_data, ETH_ALEN);
-> > > >                               // dev_ifsioc_locked()
-> > > >                               memcpy(ifr->ifr_hwaddr.sa_data,
-> > > >                                       dev->dev_addr,...);
-> > > >
-> > > > Close this race condition by guarding them with a RW semaphore,
-> > > > like netdev_get_name(). The writers take RTNL anyway, so this
-> > > > will not affect the slow path.
-> > > >
-> > > > Fixes: 3710becf8a58 ("net: RCU locking for simple ioctl()")
-> > > > Reported-by: "Gong, Sishuai" <sishuai@purdue.edu>
-> > > > Cc: Eric Dumazet <eric.dumazet@gmail.com>
-> > > > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> > >
-> > > The addition of the write lock scares me a little for a fix, there's a
-> > > lot of code which can potentially run under the callbacks and notifiers
-> > > there.
-> > >
-> > > What about using a seqlock?
-> >
-> > Actually I did use seqlock in my initial version (not posted), it does not
-> > allow blocking inside write_seqlock() protection, so I have to change
-> > to rwsem.
->
-> Argh, you're right. No way we can construct something that tries to
-> read once and if it fails falls back to waiting for RTNL?
+From: wengjianfeng <wengjianfeng@yulong.com>
 
-I don't think there is any way to tell whether the read fails, a partially
-updated address can not be detected without additional flags etc..
+define ret and then assign value to it, which we should do one time.
 
-And devnet_rename_sem is already there, pretty much similar to this
-one.
+Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
+---
+ drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-Thanks.
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
+index 9f1f93d..b2ee168 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
+@@ -1505,9 +1505,7 @@ static int rtl8192eu_power_on(struct rtl8xxxu_priv *priv)
+ {
+ 	u16 val16;
+ 	u32 val32;
+-	int ret;
+-
+-	ret = 0;
++	int ret = 0;
+ 
+ 	val32 = rtl8xxxu_read32(priv, REG_SYS_CFG);
+ 	if (val32 & SYS_CFG_SPS_LDO_SEL) {
+-- 
+1.9.1
+
+
