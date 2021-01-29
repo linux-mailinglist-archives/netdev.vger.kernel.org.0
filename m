@@ -2,86 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF46B3082B1
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 01:51:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AED8D3082B3
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 01:51:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231583AbhA2Auy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 19:50:54 -0500
-Received: from mga02.intel.com ([134.134.136.20]:27200 "EHLO mga02.intel.com"
+        id S231657AbhA2AvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 19:51:03 -0500
+Received: from ozlabs.org ([203.11.71.1]:56867 "EHLO ozlabs.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231593AbhA2AtW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 Jan 2021 19:49:22 -0500
-IronPort-SDR: ca+/givQbUtFYZ+Jrlk9I5dC7AGEBbmavoxehLNiySVSI0tpqp+fhGNldgChbttIrFSlqTd+OG
- GdO28CdOvfyQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9878"; a="167438976"
-X-IronPort-AV: E=Sophos;i="5.79,384,1602572400"; 
-   d="scan'208";a="167438976"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2021 16:42:53 -0800
-IronPort-SDR: P/hI9I0QpOqHn40BlFWN513f34v5N7nKWi/jXq+5Ngglb+HsLoIszvmhcxQSLImOdUax5AJBiF
- IepASHcmfulg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,384,1602572400"; 
-   d="scan'208";a="430778723"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga001.jf.intel.com with ESMTP; 28 Jan 2021 16:42:52 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Bruce Allan <bruce.w.allan@intel.com>, netdev@vger.kernel.org,
-        sassmann@redhat.com, anthony.l.nguyen@intel.com,
-        Dave Ertman <david.m.ertman@intel.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Tony Brelinski <tonyx.brelinski@intel.com>
-Subject: [PATCH net-next 15/15] ice: remove dead code
-Date:   Thu, 28 Jan 2021 16:43:32 -0800
-Message-Id: <20210129004332.3004826-16-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210129004332.3004826-1-anthony.l.nguyen@intel.com>
-References: <20210129004332.3004826-1-anthony.l.nguyen@intel.com>
+        id S231601AbhA2Atc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Jan 2021 19:49:32 -0500
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4DRdxl4GwYz9sVF;
+        Fri, 29 Jan 2021 11:48:43 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1611881324;
+        bh=88acUbfYTRBOBCPuXAqi5VimIreMPtP2EqSf1zjse/w=;
+        h=Date:From:To:Cc:Subject:From;
+        b=GNDv/dtM1i45G+pPLwEZkZB5OmHLRRpDX0heUBdM7Ng2s4W4l+K+lE4gOAXZFKNhb
+         GFh+lgt0v0RPUhDkfR1uAgKeVMwCc0mh08BHQkLUdrDb0WzdTVF87t4UyPShUE0d3d
+         KA0xJk0zJsMJZG77lf6vSXKk10bUMr9hIx1fIlA90VmZcVrvVeU+7qJWh5X4QAcbTt
+         ZvHmTiWLheR4s7Ve1qfC1hoO/YWDVS9dCVoWsLGXX5QZzUPkWEDrf2g8ycMaiOGkEZ
+         qm+wOhQXFRhGekTL+if37aVI+84hkhT9Im4Xd3E7/hn+yQhXb0SO81AdzcY0Oz6Cdn
+         GzYKeveW2gyWw==
+Date:   Fri, 29 Jan 2021 11:48:42 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: linux-next: manual merge of the net-next tree with Linus' tree
+Message-ID: <20210129114842.1174a9c8@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/Dlvl3zBc_yGdX10nioAsaxH";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bruce Allan <bruce.w.allan@intel.com>
+--Sig_/Dlvl3zBc_yGdX10nioAsaxH
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-The check for a NULL pf pointer is moot since the earlier declaration and
-assignment of struct device *dev already de-referenced the pointer.  Also,
-the only caller of ice_set_dflt_mib() already ensures pf is not NULL.
+Hi all,
 
-Cc: Dave Ertman <david.m.ertman@intel.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Bruce Allan <bruce.w.allan@intel.com>
-Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_main.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+Today's linux-next merge of the net-next tree got a conflict in:
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index ff6190bffff6..3ff4f0d2ff1b 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -785,15 +785,9 @@ static void ice_set_dflt_mib(struct ice_pf *pf)
- 	u8 mib_type, *buf, *lldpmib = NULL;
- 	u16 len, typelen, offset = 0;
- 	struct ice_lldp_org_tlv *tlv;
--	struct ice_hw *hw;
-+	struct ice_hw *hw = &pf->hw;
- 	u32 ouisubtype;
- 
--	if (!pf) {
--		dev_dbg(dev, "%s NULL pf pointer\n", __func__);
--		return;
--	}
--
--	hw = &pf->hw;
- 	mib_type = SET_LOCAL_MIB_TYPE_LOCAL_MIB;
- 	lldpmib = kzalloc(ICE_LLDPDU_SIZE, GFP_KERNEL);
- 	if (!lldpmib) {
--- 
-2.26.2
+  net/switchdev/switchdev.c
 
+between commit:
+
+  20776b465c0c ("net: switchdev: don't set port_obj_info->handled true when=
+ -EOPNOTSUPP")
+
+from Linus' tree and commits:
+
+  ffb68fc58e96 ("net: switchdev: remove the transaction structure from port=
+ object notifiers")
+  bae33f2b5afe ("net: switchdev: remove the transaction structure from port=
+ attributes")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc net/switchdev/switchdev.c
+index 2c1ffc9ba2eb,855a10feef3d..000000000000
+--- a/net/switchdev/switchdev.c
++++ b/net/switchdev/switchdev.c
+@@@ -460,11 -388,9 +388,10 @@@ static int __switchdev_handle_port_obj_
+  	extack =3D switchdev_notifier_info_to_extack(&port_obj_info->info);
+ =20
+  	if (check_cb(dev)) {
+- 		err =3D add_cb(dev, port_obj_info->obj, port_obj_info->trans,
+- 			     extack);
+ -		/* This flag is only checked if the return value is success. */
+ -		port_obj_info->handled =3D true;
+ -		return add_cb(dev, port_obj_info->obj, extack);
+++		err =3D add_cb(dev, port_obj_info->obj, extack);
+ +		if (err !=3D -EOPNOTSUPP)
+ +			port_obj_info->handled =3D true;
+ +		return err;
+  	}
+ =20
+  	/* Switch ports might be stacked under e.g. a LAG. Ignore the
+@@@ -570,10 -493,8 +495,10 @@@ static int __switchdev_handle_port_attr
+  	int err =3D -EOPNOTSUPP;
+ =20
+  	if (check_cb(dev)) {
+- 		err =3D set_cb(dev, port_attr_info->attr, port_attr_info->trans);
+ -		port_attr_info->handled =3D true;
+ -		return set_cb(dev, port_attr_info->attr);
+++		err =3D set_cb(dev, port_attr_info->attr);
+ +		if (err !=3D -EOPNOTSUPP)
+ +			port_attr_info->handled =3D true;
+ +		return err;
+  	}
+ =20
+  	/* Switch ports might be stacked under e.g. a LAG. Ignore the
+
+--Sig_/Dlvl3zBc_yGdX10nioAsaxH
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmATW2oACgkQAVBC80lX
+0GwgrggAl2ACJCQVH2rteoxv0XN3FoaD6N4rTG7f8HOGNVK8pks8QeEEpIuj3s2H
+PWRkI+TxrCmlmwV6xBwf2/Rc+dTA2ytkuFzCwvAGkN6kME6FUd+Qba+G8KGA+klQ
+bCMAgPbakEbXFwAkIqBpAzMD1N2BMR0dJtVsnQSl4ucb8Cv8N2ESlqWscn/KQWhm
+/GUr0IaqP3w/YNvn9bvEPKCLKoHrmfjmjdJoJrjVvflj2ayW6N6o1tj2JPxeM8nv
+W0StOqsmbp6tIqmxT+segyI047W/0N5VLi3sI0+pfgJ1JOzBIVS7pbUeqwfOMJ+n
+Wyj+J0P1+uyv3wLBCnx920pYeAhe3Q==
+=k3Dn
+-----END PGP SIGNATURE-----
+
+--Sig_/Dlvl3zBc_yGdX10nioAsaxH--
