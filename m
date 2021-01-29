@@ -2,87 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12A4630835C
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 02:49:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CBF69308387
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 03:01:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231246AbhA2Brw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 20:47:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47530 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231210AbhA2Bro (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 20:47:44 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DFAAC061573;
-        Thu, 28 Jan 2021 17:47:04 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id jx18so5479209pjb.5;
-        Thu, 28 Jan 2021 17:47:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ZEwxOEWEUldbVA77DNHYazxcJ2zOigWsWKQuv/zMlHk=;
-        b=YdfDNprXozcmkHwu+BvjWK9q9U4AtkmWrX0rdyUToNJFOP7JVpV2WUuu56n56I5bDI
-         P2CNbKCKt8cIKL7Oel2DT+tp8+e6f7wJrSIbS8y4Lm9gHG7ispgPO02LLbhhlZuruAhE
-         GnkIYbOw0W77wtxVZYFIpTZSsGbb823igNLgIm7JeOo3He8MRpSPAn8LVrOw0hp/ujDi
-         hzwAQBc7Vl0jzeMOVYA+5/m4uVJZWT4Ae78dAXsmih4UJW1E4a8930x0/A84twIull5x
-         pw09mZ6Yi+p8amUAFA6xNb4+IlJTFOsR3RiUpvT61n18hqaqfB/4dMi8CSOFgs6zdO/5
-         r8Mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZEwxOEWEUldbVA77DNHYazxcJ2zOigWsWKQuv/zMlHk=;
-        b=gZ15r8blVr9bNjsEvNQKsrhFKKBW3TiL5Clb66r5SpiXVS9yMgm8thmQRB/X1HJ77X
-         ekciN6/hYh2hJYGwrJycJ/EIVxeQ4T3cFkT/WkL5g1ih7XYJMwo49/eA62Wnum2s984B
-         KLsxtz+HpRUoNGbBXJ/Qcvtr8UQ5pXtkVGp6Ke6+0s1pE+yKJr0cKXDyPWBGj1YFb3PO
-         icWlG/kAJGM97u+JCVxKVuTpV3Rr2u1k0RvUm5hjCXnWz4K1g5z84ZJTAguZ/G2Op5qE
-         0aFV9n1L8CQ8CkzjqtN7nBrXNYmNAGOY0e83lgWL9hEbcAOpnQu9uS5jZOJ6vweEP9NM
-         PKew==
-X-Gm-Message-State: AOAM533tCY53x06UbvXsb2Oi9jtYlevH6IQ0I8MbYl4RaLsutdBN9HVc
-        q+Ky2Xl7GSvc9h0YJxww/0A=
-X-Google-Smtp-Source: ABdhPJwjnRcDA7rrB+FiuFk4GOlWV6rtyhl9SeWcti0KcyOHW6MenKsqVDI8iMZRXKh7FkKbc9OYHQ==
-X-Received: by 2002:a17:90b:3c8:: with SMTP id go8mr2180848pjb.105.1611884823873;
-        Thu, 28 Jan 2021 17:47:03 -0800 (PST)
-Received: from Leo-laptop-t470s ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id 83sm6792991pfb.68.2021.01.28.17.46.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jan 2021 17:47:03 -0800 (PST)
-Date:   Fri, 29 Jan 2021 09:46:50 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: Re: [PATCHv17 bpf-next 6/6] selftests/bpf: add xdp_redirect_multi
- test
-Message-ID: <20210129014650.GA2900@Leo-laptop-t470s>
-References: <20210122074652.2981711-1-liuhangbin@gmail.com>
- <20210125124516.3098129-1-liuhangbin@gmail.com>
- <20210125124516.3098129-7-liuhangbin@gmail.com>
- <60134aa5cd92d_f9c120823@john-XPS-13-9370.notmuch>
+        id S229866AbhA2CBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 21:01:42 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56106 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229627AbhA2CBk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Jan 2021 21:01:40 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4601364DD8;
+        Fri, 29 Jan 2021 02:00:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611885659;
+        bh=p0uHFwUvCH/6f8HoOpLMSnv8kygVAGKQioPwd2Bn850=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Vv79sw3oz/2XNH3HNycl0o0xiymVHSHmUYfgb9Hya162IWQmY/UwxldSg7SCNCh5+
+         aD2BWxsxRsPA7MlRxUrLvbEaRyAPH8xiUwEnfGBpem0m65J5EdarVbu3Jq4TlRHI22
+         d2MeOr1p3zLTtGiOs7JA20oLsuC/mw0krk6KT1oWL+8oZ7I6BWOmmsIrF24fAtEpU4
+         J4TK6Dnkuy3aWbMxZwjdjltpV4VNkQyiSliBgY1MG4R//hU6+CL5XiqEsjTYhaoVZK
+         r3xcOlSTqelyDZL7SDRuJFK6t8AsE3bg5zyVtlImbCEiv3X57f37ghPW6Br7AL6fUu
+         oN3fxh8QVqBdw==
+Date:   Thu, 28 Jan 2021 18:00:58 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     =?UTF-8?B?QmrDuHJu?= Mork <bjorn@mork.no>
+Cc:     Daniele Palmas <dnlplm@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        Aleksander Morgado <aleksander@aleksander.es>
+Subject: Re: [PATCH net-next 1/2] net: usb: qmi_wwan: add qmap id sysfs file
+ for qmimux interfaces
+Message-ID: <20210128180058.3224e376@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <87mtwudene.fsf@miraculix.mork.no>
+References: <20210125152235.2942-1-dnlplm@gmail.com>
+        <20210125152235.2942-2-dnlplm@gmail.com>
+        <87wnw1f0yj.fsf@miraculix.mork.no>
+        <20210126180231.75e19557@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <87mtwudene.fsf@miraculix.mork.no>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <60134aa5cd92d_f9c120823@john-XPS-13-9370.notmuch>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi John,
-On Thu, Jan 28, 2021 at 03:37:09PM -0800, John Fastabend wrote:
-> Otherwise, its not the most elegant, but testing XDP at the moment
-> doesn't fit into the normal test framework very well either.
+On Wed, 27 Jan 2021 08:26:13 +0100 Bj=C3=B8rn Mork wrote:
+> Jakub Kicinski <kuba@kernel.org> writes:
+> > We got two patches adding new sysfs files for QMI in close succession -
+> > is there a sense of how much this interface will grow over time? =20
+>=20
+> The honest answer is no.
+>=20
+> I do not expect this interface to grow at all.  But then I didn't expect
+> it to grow before the two recent additions either...  Both are results
+> of feedback from the userspace developers actually using this interface.
+>=20
+> If I try to look into the future, then I do believe the first addition,
+> the "pass_through" flag, makes further changes unnecessary.  It allows
+> the "rmnet" driver to take over all the functionality related to
+> qmap/qmimux.  The rmnet driver has a proper netlink interface for
+> management.  This is how the design should have been from the start, and
+> would have been if the "rmnet" driver had existed when we added qmap
+> support to qmi_wwan.  Or if I had been aware that someone was working on
+> such a driver.
+>=20
+> So why do we still need this last addition discussed here? Well, there
+> are users of the qmi_wwan internal qmimux interface.  They should move
+> to "rmnet", but this might take some time and we obviously can't remove
+> the old interface in any case. But there is a design flaw in that
+> interface, which makes it rather difficult to use. This last addition
+> fixes that flaw.
+>=20
+> I'll definitely accept the judgement if you want to put your foot down
+> and say that this has to stop here, and that we are better served
+> without this last fix.
+>=20
+> > It's no secret that we prefer netlink in networking land. =20
+>=20
+> Yes.  But given that we have the sysfs interface for managing this
+> qmimux feature, I don't see netlink as an alternative to this patch.
+>=20
+> The same really applies to the previous sysfs attribute, adding another
+> flag to a set which is already exposed as sysfs attributes.
+>=20
+> The good news is that it allowed further qmimux handling to be offloaded
+> to "rmnet", which does have a netlink interface.
 
-Thanks a lot for your help in reviewing the patches. I will add updating
-XDP test in my todo list.
+Thanks for the explanation. I'll trust you on this one :)
 
-Thanks
-hangbin
+I applied v2 and added the acks from v1.
