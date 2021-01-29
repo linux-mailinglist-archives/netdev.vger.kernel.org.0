@@ -2,139 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2713C308C11
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 19:04:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01B0A308C28
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 19:10:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232584AbhA2SAv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jan 2021 13:00:51 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42408 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232579AbhA2SAs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Jan 2021 13:00:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DF41164E0B;
-        Fri, 29 Jan 2021 18:00:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611943208;
-        bh=OJrK5xKfn0PlhlVhtYcslB4Wy8uob1KcYmLbp6A8SwY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SnF1fAjPsWNQeN953QL+J5dnbXQVY9MSMQlh/Ezwu0UeWF7Cnm/fZodhq2LgL96Jb
-         p2c6kWiR0v9AiLwo40pgR+xjNEij6yQO7YOAaLtNrTMj/07fN3A3+AjZJCG6/i/rOq
-         /PDrlPCnSwqQTSWth2WsP7AkcbWaLS/E6XihHvZuyDiaa2kKueXQJdb43eZ5yfQFqA
-         088KMUaqhQ5kpNCCbFnnozZSgcNJByOs36TBJY3F2Jv0bOfMCcsyNyU4yUaDnt6cQ3
-         hrSs8EObOJf+sfSM6ThZ+vzIPfC0ymdyfdeN/E0SsjJN0mIgnCeeAIXn/dx/KNesqv
-         Pqdj0CE9CEjAQ==
-Date:   Fri, 29 Jan 2021 10:00:07 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        "Gong, Sishuai" <sishuai@purdue.edu>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: Re: [Patch net] net: fix dev_ifsioc_locked() race condition
-Message-ID: <20210129100007.4dd35815@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAM_iQpUGR1OjeEcsFqkeZZRHDkiQ=+=OiSAB8EgzxG9Dh-5c5w@mail.gmail.com>
-References: <20210124013049.132571-1-xiyou.wangcong@gmail.com>
-        <20210128125529.5f902a5b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAM_iQpU-jBkmf6DYtGAA78fAZdemKNT50BSoUco-XngyUPYMhg@mail.gmail.com>
-        <20210128212130.6bda5d5a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAM_iQpUGR1OjeEcsFqkeZZRHDkiQ=+=OiSAB8EgzxG9Dh-5c5w@mail.gmail.com>
+        id S232208AbhA2SIQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jan 2021 13:08:16 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:27531 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232552AbhA2SHu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 13:07:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1611943582;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=V9wwVs7bE4eUGywhu7/y58AMJb7GSg2J1O0tKjzQHCI=;
+        b=cJkvcNrYX3NBrE5E8WQEfobIeayLBvLe2+F87OrwQQEyDiaRaHraUYfs4awamt5kh482Fr
+        e1lYvceeFlHEyPV4mJfxd5pl7opgUEEjTNlnFc+miY3UVfFQCbRJaq4TwJv/skyiJPMtyN
+        /A2eeIo2yoB7LBBQdpmoXQUMIzwVoW0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-104--BI2lw_SMW2OCKQ8iUs3KQ-1; Fri, 29 Jan 2021 13:06:18 -0500
+X-MC-Unique: -BI2lw_SMW2OCKQ8iUs3KQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5223580DDE1;
+        Fri, 29 Jan 2021 18:06:16 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.4])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 96AAA5C1B4;
+        Fri, 29 Jan 2021 18:06:09 +0000 (UTC)
+Date:   Fri, 29 Jan 2021 19:06:06 +0100
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>, maximmi@nvidia.com,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Subject: Re: [RFC PATCH bpf-next] bpf, xdp: per-map bpf_redirect_map
+ functions for XDP
+Message-ID: <20210129190606.33c697cf@carbon>
+In-Reply-To: <CAJ+HfNiFtRd-KKMB1t3Mi3MZ=C+u5TTM5YFnzJFfR4Ruzc7c9Q@mail.gmail.com>
+References: <20210129153215.190888-1-bjorn.topel@gmail.com>
+        <CAJ+HfNiFtRd-KKMB1t3Mi3MZ=C+u5TTM5YFnzJFfR4Ruzc7c9Q@mail.gmail.com>
+Organization: Red Hat Inc.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 28 Jan 2021 21:47:04 -0800 Cong Wang wrote:
-> On Thu, Jan 28, 2021 at 9:21 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > On Thu, 28 Jan 2021 21:08:05 -0800 Cong Wang wrote:  
-> > > On Thu, Jan 28, 2021 at 12:55 PM Jakub Kicinski <kuba@kernel.org> wrote:  
-> > > >
-> > > > On Sat, 23 Jan 2021 17:30:49 -0800 Cong Wang wrote:  
-> > > > > From: Cong Wang <cong.wang@bytedance.com>
-> > > > >
-> > > > > dev_ifsioc_locked() is called with only RCU read lock, so when
-> > > > > there is a parallel writer changing the mac address, it could
-> > > > > get a partially updated mac address, as shown below:
-> > > > >
-> > > > > Thread 1                      Thread 2
-> > > > > // eth_commit_mac_addr_change()
-> > > > > memcpy(dev->dev_addr, addr->sa_data, ETH_ALEN);
-> > > > >                               // dev_ifsioc_locked()
-> > > > >                               memcpy(ifr->ifr_hwaddr.sa_data,
-> > > > >                                       dev->dev_addr,...);
-> > > > >
-> > > > > Close this race condition by guarding them with a RW semaphore,
-> > > > > like netdev_get_name(). The writers take RTNL anyway, so this
-> > > > > will not affect the slow path.
-> > > > >
-> > > > > Fixes: 3710becf8a58 ("net: RCU locking for simple ioctl()")
-> > > > > Reported-by: "Gong, Sishuai" <sishuai@purdue.edu>
-> > > > > Cc: Eric Dumazet <eric.dumazet@gmail.com>
-> > > > > Signed-off-by: Cong Wang <cong.wang@bytedance.com>  
-> > > >
-> > > > The addition of the write lock scares me a little for a fix, there's a
-> > > > lot of code which can potentially run under the callbacks and notifiers
-> > > > there.
-> > > >
-> > > > What about using a seqlock?  
-> > >
-> > > Actually I did use seqlock in my initial version (not posted), it does not
-> > > allow blocking inside write_seqlock() protection, so I have to change
-> > > to rwsem.  
+On Fri, 29 Jan 2021 16:35:47 +0100
+Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> wrote:
+
+> On Fri, 29 Jan 2021 at 16:32, Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.co=
+m> wrote:
 > >
-> > Argh, you're right. No way we can construct something that tries to
-> > read once and if it fails falls back to waiting for RTNL?  
-> 
-> I don't think there is any way to tell whether the read fails, a partially
-> updated address can not be detected without additional flags etc..
+> > From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> > =20
+> [...]
+> >
+> > For AF_XDP rxdrop this yields +600Mpps. I'll do CPU/DEVMAP
+> > measurements for the patch proper.
+> > =20
+>=20
+> Kpps, not Mpps. :-P
 
-Let me pseudo code it, I can't English that well:
++600Kpps from 24Mpps to 24.6Mpps I assume.  This corresponds to approx
+1 ns ((1/24-1/24.6)*1000 =3D 1.01626 ns).
 
-void reader(obj)
-{
-	unsigned int seq;
+This also correlate with saving one function call, which is basically
+what the patch does.
 
-	seq = READ_ONCE(seqcnt);
-	if (seq & 1)
-		goto slow_path;
-	smb_rmb();
+Fresh measurement "Intel(R) Xeon(R) CPU E5-1650 v4 @ 3.60GHz" with [1]:
+ time_bench: Type:funcion_call_cost Per elem: 3 cycles(tsc) 1.053 ns
+ time_bench: Type:func_ptr_call_cost Per elem: 4 cycles(tsc) 1.317 ns
 
-	obj = read_the_thing();
+[1] https://github.com/netoptimizer/prototype-kernel/blob/master/kernel/lib=
+/time_bench_sample.c
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
-	smb_rmb();
-	if (seq == READ_ONCE(seqcnt))
-		return;
-
-slow_path:
-	rtnl_lock();
-	obj = read_the_thing();
-	rtnl_unlock();
-}
-
-void writer()
-{
-	ASSERT_RNTL();
-
-	seqcnt++;
-	smb_wmb();
-
-	modify_the_thing();
-
-	smb_wmb();
-	seqcnt++;
-}
-
-
-I think raw_seqcount helpers should do here?
-
-> And devnet_rename_sem is already there, pretty much similar to this
-> one.
-
-Ack, I don't see rename triggering cascading notifications, tho.
-I think you've seen the recent patch for locking in team, that's 
-pretty much what I'm afraid will happen here. 
-
-But if I'm missing something about the seqcount or you strongly prefer
-the rwlock, we can do that, too. Although I'd rather take this patch 
-to net-next in that case.
