@@ -2,127 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9A6E308563
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 07:01:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52F70308566
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 07:01:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231863AbhA2F6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jan 2021 00:58:09 -0500
-Received: from mxout70.expurgate.net ([194.37.255.70]:38131 "EHLO
-        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229757AbhA2F6G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 00:58:06 -0500
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.90)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1l5MlS-0007Q7-Mb; Fri, 29 Jan 2021 06:56:14 +0100
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.90)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1l5MlR-0001XU-Hr; Fri, 29 Jan 2021 06:56:13 +0100
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 8D7AC240041;
-        Fri, 29 Jan 2021 06:56:12 +0100 (CET)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id 02A5A240040;
-        Fri, 29 Jan 2021 06:56:12 +0100 (CET)
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-        by mail.dev.tdt.de (Postfix) with ESMTP id CD22B229C8;
-        Fri, 29 Jan 2021 06:56:10 +0100 (CET)
+        id S232016AbhA2F6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jan 2021 00:58:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44554 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231968AbhA2F6v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 00:58:51 -0500
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B936C061573;
+        Thu, 28 Jan 2021 21:58:11 -0800 (PST)
+Received: by mail-pg1-x529.google.com with SMTP id b21so5934741pgk.7;
+        Thu, 28 Jan 2021 21:58:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OsHed3ut7U79Mgn47q8Y22uRCmTVaBBVZk8xxt6wB7g=;
+        b=RWCGQbWnK8Yz01uebviscoaJ4CNVzqQlNGaRymHiZ1JN3CJIETrdQTvDk3Oo6VAvKy
+         weg+sl5/Wz8Skw7dE+c3BPi1BsalqaZo7So9bosy9CZhUuoQcd583qfYQX1GiMPaVPpE
+         74fYfwINU0pqWS0PGgqk4u8/Ml4gGku6+OQvbKHe4pG7+a406UF6cHZ2cK8LXJKKMxbM
+         0tIYAYKcpcw8LMferlthCH8T1VBifwcU/2PEy6Pc/Dz7U09sUKrVK5BfNGh7XSrcOwHe
+         kS6a1VGPCnmmz7srx7LEDJnpiekkx7yDwj8AS6x620VMzmuoJuoDShrYgwZXybnD21gh
+         h+VA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OsHed3ut7U79Mgn47q8Y22uRCmTVaBBVZk8xxt6wB7g=;
+        b=HU84234gwOpAbQCatULeTO/FllbJSFlIYm1UMDsmU06YjMN6vaMCrs5dpgf0vUYX7a
+         ao/0AHVldQ0aINhRLQEadOyRK9xlaNWNm+sn1FNLh5ne+fnhJJdr3vbAk3KVGu0PGE8N
+         rVM+gZJKGobWZqkuj4JROnElbPJPLSEPETI//GKm8K+PAz6Rci59aDQO1LwPLHrGmGKR
+         cmqWjwo2WfQ8Mr0PlOeUC91S/EopCLdM7jFvZjrbxD9Ss9736BdG7RFe8AC2wQaRd6Wb
+         jCnBvAYv55MxpZ7mrVD05aU9ZXiRy6QCnPsWmh40CMnpGOJRG+ld5BeNP8hhHA9cQn/2
+         u0pA==
+X-Gm-Message-State: AOAM530srRVt9OW+H9hthIf2pvIBxWMuPcbkFwVTfk7SUE4qAlaMnw5r
+        7qO0i5zT82sVuWsRsedDE499GypJ3x946emz4vE=
+X-Google-Smtp-Source: ABdhPJyfCIWSukCmMCrzd0CvBl6NiWm8Os+WaY16xuqIBiztRiWQbcJ3EWSt0n4NduNjfOzGM2kVVbgd3IxjIpMs4LA=
+X-Received: by 2002:a62:ac18:0:b029:1c0:4398:33b5 with SMTP id
+ v24-20020a62ac180000b02901c0439833b5mr2976760pfe.10.1611899890140; Thu, 28
+ Jan 2021 21:58:10 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Fri, 29 Jan 2021 06:56:10 +0100
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux X25 <linux-x25@vger.kernel.org>,
+References: <20210122205415.113822-1-xiyou.wangcong@gmail.com>
+ <20210122205415.113822-2-xiyou.wangcong@gmail.com> <d69d44ca-206c-d818-1177-c8f14d8be8d1@iogearbox.net>
+ <CAM_iQpW8aeh190G=KVA9UEZ_6+UfenQxgPXuw784oxCaMfXjng@mail.gmail.com>
+ <CAADnVQKmNiHj8qy1yqbOrf-OMyhnn8fKm87w6YMfkiDHkBpJVg@mail.gmail.com>
+ <CAM_iQpXAQ7AMz34=o5E=81RFGFsQB5jCDTCCaVdHokU6kaJQsQ@mail.gmail.com> <20210129025435.a34ydsgmwzrnwjlg@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20210129025435.a34ydsgmwzrnwjlg@ast-mbp.dhcp.thefacebook.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu, 28 Jan 2021 21:57:59 -0800
+Message-ID: <CAM_iQpU5XSgOjdkKbj01p+-QZ5vUof9eZTWR8c0O_cHkHXVkwg@mail.gmail.com>
+Subject: Re: [Patch bpf-next v5 1/3] bpf: introduce timeout hash map
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
         Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Krzysztof Halasa <khc@pm.waw.pl>
-Subject: Re: [PATCH net] net: hdlc_x25: Use qdisc to queue outgoing LAPB
- frames
-Organization: TDT AG
-In-Reply-To: <CAJht_EOSB-m--Ombr6wLMFq4mPy8UTpsBri2CPsaRTU-aks7Uw@mail.gmail.com>
-References: <20210127090747.364951-1-xie.he.0141@gmail.com>
- <20210128114659.2d81a85f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAJht_EOSB-m--Ombr6wLMFq4mPy8UTpsBri2CPsaRTU-aks7Uw@mail.gmail.com>
-Message-ID: <3f67b285671aaa4b7903733455a730e1@dev.tdt.de>
-X-Sender: ms@dev.tdt.de
-User-Agent: Roundcube Webmail/1.3.16
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
-        autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
-X-purgate-ID: 151534::1611899774-0000A9C4-665386D1/0/0
-X-purgate: clean
-X-purgate-type: clean
+        bpf <bpf@vger.kernel.org>, Jamal Hadi Salim <jhs@mojatatu.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Dongdong Wang <wangdongdong.6@bytedance.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-01-28 23:06, Xie He wrote:
-> On Thu, Jan 28, 2021 at 11:47 AM Jakub Kicinski <kuba@kernel.org> 
-> wrote:
->> 
->> Noob question - could you point at or provide a quick guide to 
->> layering
->> here? I take there is only one netdev, and something maintains an
->> internal queue which is not stopped when HW driver stops the qdisc?
-> 
-> Yes, there is only one netdev. The LAPB module (net/lapb/) (which is
-> used as a library by the netdev driver - hdlc_x25.c) is maintaining an
-> internal queue which is not stopped when the HW driver stops the
-> qdisc.
-> 
-> The queue is "write_queue" in "struct lapb_cb" in
-> "include/net/lapb.h". The code that takes skbs out of the queue and
-> feeds them to lower layers for transmission is at the "lapb_kick"
-> function in "net/lapb/lapb_out.c".
-> 
-> The layering is like this:
-> 
-> Upper layer (Layer 3) (net/x25/ or net/packet/)
-> 
-> ^
-> | L3 packets (with control info)
-> v
-> 
-> The netdev driver (hdlc_x25.c)
-> 
-> ^
-> | L3 packets
-> v
-> 
-> The LAPB Module (net/lapb/)
-> 
-> ^
-> | LAPB (L2) frames
-> v
-> 
-> The netdev driver (hdlc_x25.c)
-> 
-> ^
-> | LAPB (L2) frames
-> | (also called HDLC frames in the context of the HDLC subsystem)
-> v
-> 
-> HDLC core (hdlc.c)
-> 
-> ^
-> | HDLC frames
-> v
-> 
-> HDLC Hardware Driver
+On Thu, Jan 28, 2021 at 6:54 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> I meant it would look like:
+>
+> noinline per_elem_callback(map, key, value, ...)
+> {
+>   if (value->foo > ...)
+>     bpf_delete_map_elem(map, key);
+> }
+>
+> noinline timer_callback(timer, ctx)
+> {
+>   map = ctx->map;
+>   bpf_for_each_map_elem(map, per_elem_callback, ...);
+> }
+>
+> int main_bpf_prog(skb)
+> {
+>   bpf_timer_setup(my_timer, timer_callback, ...);
+>   bpf_mod_timer(my_timer, HZ);
+> }
+>
+> The bpf_for_each_map_elem() work is already in progress. Expect patches to hit
+> mailing list soon.
 
-@Xie: Thank you for the detailed presentation.
+We don't want a per-element timer, we want a per-map timer but that
+requires a way to iterate the whole map. If you or other can provide
+bpf_for_each_map_elem(), we can certainly build our timeout map
+on top of it.
 
-> 
->> Sounds like we're optimizing to prevent drops, and this was not
->> reported from production, rather thru code inspection. Ergo I think
->> net-next will be more appropriate here, unless Martin disagrees.
-> 
-> Yes, I have no problem in targeting net-next instead. Thanks!
+> If you can work on patches for bpf_timer_*() it would be awesome.
 
-I agree.
+Yeah, I will work on this, not only for timeout map, but also possibly for
+the ebpf qdisc I plan to add soon.
+
+Thanks.
