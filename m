@@ -2,179 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC08430918C
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 03:48:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D820309188
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 03:39:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233215AbhA3CS1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jan 2021 21:18:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51252 "EHLO
+        id S233344AbhA3CbF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jan 2021 21:31:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232836AbhA3CRA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 21:17:00 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55F63C061756;
-        Fri, 29 Jan 2021 18:02:31 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id w1so15602650ejf.11;
-        Fri, 29 Jan 2021 18:02:31 -0800 (PST)
+        with ESMTP id S233231AbhA3CWB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 21:22:01 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 351CFC0613ED
+        for <netdev@vger.kernel.org>; Fri, 29 Jan 2021 18:12:41 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id g12so15656188ejf.8
+        for <netdev@vger.kernel.org>; Fri, 29 Jan 2021 18:12:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=lWOW7Am2jw5lybt8Sbf6Grdt5LyyZ81zyiJX1cf+NHM=;
-        b=LnUDAChPDt9mSpaSfBx0iTbzwCCR2nqzECbqcY4XtvOOiwZkNcPP2cuxyP8o05XZ3X
-         fy4KmV04FDAM1G+l2nzOVrW/RHyno/FIdvKw5sAdjqyC2xac6K6FOLacOK4bb1Q3sRR8
-         mmVQgqY6sgpBKqxBROse3ZSBOGG5rYDD5SED+JbszNHSJvM8UzXD0OZO+vnMUex+6HeK
-         PORuWS3cBxSbeI8ULzT0i1eyikb2dqIzFVmeNTD0kQBKGUvggcqY6BodpJqMHlLxqPF7
-         T5t1d/RSLDXsIzkZyLxRaeNYGxypY+tcvy/hTjNvp/E93bFmKHcu4v4HxuHJfwK7VsyI
-         4coQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fL3Y1yRxa3KxBTnLvLwYPIR5U7Jn1pCiIMHmpT/r6/c=;
+        b=lH9ywQXkfLXOwhDQx3AxipoCFzPAVVJgpXTfV7ocdDzXcghtN5e/Zm02EIbltOUgLa
+         xJw68RJE2vqRUX3teMA13I78v/PdTBDfhDr5fqxjCQLl9Fi2WhLS7qagBsnR1kR/r1iy
+         Tu0HbaJVaCKp6FVNelfY/s4XrHr5N5y4nAFBb6js7Hy5o2w9l2efK/CTv9xi0maso8GJ
+         Ihe0xyF6s9vTz152SR6g5YS3cF/nAj46PMWFI3RpnCy90JTEmbRHDg2/CadcWXXlgzSm
+         tWPl3FMFSplTFf+n70kUO9zWz0bMSpzAkmc5fEfF63NmmfnLFLoWfil0lI8EHhZik8eH
+         fJnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=lWOW7Am2jw5lybt8Sbf6Grdt5LyyZ81zyiJX1cf+NHM=;
-        b=UGQKW++IQxuhpFea0R0FJtV9vL8A0yWX5CKRLy0J2ttIPFP2O8YTNIJVtWxpW/6VKY
-         hGzMPM9lKehmTrKI2lihXCQoKfB4CU0fSZvraCxluuqXyjjfcqKW9JWFfu1VLbRjt34W
-         mzhyiqPCYpZkEj1hGjeeXcu3q866mQEuITCgOqao8MLy5+brCxQJKmyb63MW/H6zUPru
-         Bxe4OK9Lip5kle7/j+4X08xoLYo4eBxb5c/Idhvtp2NZIUVNTFagWo9fWXdoC/ymKxwC
-         17N+pVHrmDAAvb0pVMNBef/iU9SwqDgzY3K18Am9+JPCzGgt7h685XhLyMsGuS2O36IT
-         HhpA==
-X-Gm-Message-State: AOAM530mFvQe4lMP81LmE8hIH5uCYwfcNZzSgH/lWm43SK4cr045F2hD
-        abSRa7hOpcQourcH77mysJ8=
-X-Google-Smtp-Source: ABdhPJzhn1Ok/ZrdJEVffsdAfcTDBUaiBkfIVk0nB5XKD2dRHM07QWNjji0MA9JaNpYm586EXE9QXg==
-X-Received: by 2002:a17:906:eb95:: with SMTP id mh21mr7306422ejb.175.1611972149962;
-        Fri, 29 Jan 2021 18:02:29 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id s13sm5556926edi.92.2021.01.29.18.02.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Jan 2021 18:02:29 -0800 (PST)
-Date:   Sat, 30 Jan 2021 04:02:27 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-Cc:     andrew@lunn.ch, netdev@vger.kernel.org, robh+dt@kernel.org,
-        kuba@kernel.org, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, UNGLinuxDriver@microchip.com,
-        Woojung.Huh@microchip.com, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next 1/8] dt-bindings: net: dsa: dt bindings for
- microchip lan937x
-Message-ID: <20210130020227.ahiee4goetpp2hb7@skbuf>
-References: <20210128064112.372883-1-prasanna.vengateshan@microchip.com>
- <20210128064112.372883-2-prasanna.vengateshan@microchip.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fL3Y1yRxa3KxBTnLvLwYPIR5U7Jn1pCiIMHmpT/r6/c=;
+        b=W6bH8/w/RLBWAgFLpy5Gfw8EozxKoMLHVKxQs0oZCJ7Ob5CSpXKDXxQKh6s6jC1PGZ
+         8Sw9Ad2eiD3Zt3/xq6Xk3qkcOVkSSo9Wa1K/00drgGcAYkhrUpqMBbD0EdWkDtzFbBHH
+         8vLnPPM2O/pFWbSXSBKcjbM8yXKyGO4bQ61EGvM7avpmYm/r5OuF+4/UigxSsb5aw8hl
+         UNHEPrDYxfOBlLCToy5/I/BYEJTh5MnKjEJp9w4Nmthpk4rwJadz1XI+I5N/MdvxhDYf
+         MJvpM+B7krR38ylJ0F/bi/4aYGssTjo/8LeyOT0Z+iSyZW/74wALm1wG9CDR9bZN7sFS
+         +9CA==
+X-Gm-Message-State: AOAM532NCrAqRso708AeBZnvSozBNc8ngQA+ja4yllYu0RvTgePzE/ET
+        RwzSZV0ZE9LAj6BNjR2qUj+izrI82zClV3NgS5M=
+X-Google-Smtp-Source: ABdhPJwrx0bXnoGaxjgA0myLvIgWqsPE8+EfHOEMOYmpoksqtM5u8io9ZeBfATca+Qa3SqzZBzGcZc5GKanX+/g7Q6w=
+X-Received: by 2002:a17:906:fc5:: with SMTP id c5mr6943603ejk.538.1611972760408;
+ Fri, 29 Jan 2021 18:12:40 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210128064112.372883-2-prasanna.vengateshan@microchip.com>
+References: <1611589557-31012-1-git-send-email-loic.poulain@linaro.org> <20210129170129.0a4a682a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210129170129.0a4a682a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 29 Jan 2021 21:12:03 -0500
+Message-ID: <CAF=yD-Lc2YPxqEccXyBjXr1_WrSZ=30KSgHg1gk3PnxmURrZRQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: mhi-net: Add de-aggeration support
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Loic Poulain <loic.poulain@linaro.org>,
+        David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 28, 2021 at 12:11:05PM +0530, Prasanna Vengateshan wrote:
-> +  spi-max-frequency:
-> +    maximum: 50000000
+On Fri, Jan 29, 2021 at 8:01 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Mon, 25 Jan 2021 16:45:57 +0100 Loic Poulain wrote:
+> > When device side MTU is larger than host side MRU, the packets
+> > (typically rmnet packets) are split over multiple MHI transfers.
+> > In that case, fragments must be re-aggregated to recover the packet
+> > before forwarding to upper layer.
+> >
+> > A fragmented packet result in -EOVERFLOW MHI transaction status for
+> > each of its fragments, except the final one. Such transfer was
+> > previoulsy considered as error and fragments were simply dropped.
+> >
+> > This patch implements the aggregation mechanism allowing to recover
+> > the initial packet. It also prints a warning (once) since this behavior
+> > usually comes from a misconfiguration of the device (modem).
+> >
+> > Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
+>
+> > +static struct sk_buff *mhi_net_skb_append(struct mhi_device *mhi_dev,
+> > +                                       struct sk_buff *skb1,
+> > +                                       struct sk_buff *skb2)
+> > +{
+> > +     struct sk_buff *new_skb;
+> > +
+> > +     /* This is the first fragment */
+> > +     if (!skb1)
+> > +             return skb2;
+> > +
+> > +     /* Expand packet */
+> > +     new_skb = skb_copy_expand(skb1, 0, skb2->len, GFP_ATOMIC);
+> > +     dev_kfree_skb_any(skb1);
+> > +     if (!new_skb)
+> > +             return skb2;
+>
+> I don't get it, if you failed to grow the skb you'll return the next
+> fragment to the caller? So the frame just lost all of its data up to
+> where skb2 started? The entire fragment "train" should probably be
+> dropped at this point.
+>
+> I think you can just hang the skbs off skb_shinfo(p)->frag_list.
+>
+> Willem - is it legal to feed frag_listed skbs into netif_rx()?
 
-And it actually works at 50 MHz? Cool.
-
-> +
-> +  reset-gpios:
-> +    description: Optional gpio specifier for a reset line
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/gpio/gpio.h>
-> +
-> +    //Ethernet switch connected via spi to the host, CPU port wired to eth1
-> +    eth1 {
-
-So if you do bother to add the DSA master in the example, can this be
-&eth1 so that we could associate with the phandle below?
-
-> +      #address-cells = <1>;
-> +      #size-cells = <0>;
-> +
-> +      fixed-link {
-> +        speed = <1000>;
-> +        full-duplex;
-> +      };
-> +    };
-> +
-> +    spi1 {
-
-Is this a label or a node name? spi1 or spi@1?
-
-> +      #address-cells = <1>;
-> +      #size-cells = <0>;
-> +      pinctrl-0 = <&pinctrl_spi_ksz>;
-> +      cs-gpios = <0>, <0>, <0>, <&pioC 28 0>;
-> +      id = <1>;
-
-I know this is the SPI controller and thus mostly irrelevant, but what
-is "id = <1>"?
-
-> +
-> +      lan9374: switch@0 {
-> +        compatible = "microchip,lan9374";
-> +        reg = <0>;
-> +
-> +        spi-max-frequency = <44000000>;
-> +
-> +        ethernet-ports {
-> +          #address-cells = <1>;
-> +          #size-cells = <0>;
-> +          port@0 {
-> +            reg = <0>;
-> +            label = "lan1";
-> +          };
-> +          port@1 {
-> +            reg = <1>;
-> +            label = "lan2";
-> +          };
-> +          port@2 {
-> +            reg = <7>;
-
-reg should match node index (port@2), here and everywhere below. As for
-the net device labels, I'm not sure if the mismatch is deliberate there.
-
-> +            label = "lan3";
-> +          };
-> +          port@3 {
-> +            reg = <2>;
-> +            label = "lan4";
-> +          };
-> +          port@4 {
-> +            reg = <6>;
-> +            label = "lan5";
-> +          };
-> +          port@5 {
-> +            reg = <3>;
-> +            label = "lan6";
-> +          };
-> +          port@6 {
-> +            reg = <4>;
-> +            label = "cpu";
-
-label for CPU port is not needed/used.
-
-> +            ethernet = <&eth1>;
-> +            fixed-link {
-> +              speed = <1000>;
-> +              full-duplex;
-> +            };
-> +          };
-> +          port@7 {
-> +            reg = <5>;
-> +            label = "lan7";
-> +            fixed-link {
-> +              speed = <1000>;
-> +              full-duplex;
-> +            };
-> +          };
-> +        };
-> +      };
-> +    };
+As far as I know. udp gro will generate frag_list packets through
+dev_gro_receive. That and netif_rx share most downstream code. I don't
+think anything between netif_rx and __netif_receive_skb_core cares
+about the skb contents.
