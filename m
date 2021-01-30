@@ -2,97 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F09E30957B
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 14:46:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A59DB30959E
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 14:56:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230518AbhA3Noc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 08:44:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56482 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229885AbhA3Noa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jan 2021 08:44:30 -0500
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33A7BC061573;
-        Sat, 30 Jan 2021 05:43:50 -0800 (PST)
-Received: by mail-pg1-x52c.google.com with SMTP id j2so6881180pgl.0;
-        Sat, 30 Jan 2021 05:43:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pXf19g1065wNWBhJVun5K/h2HFDi9av6GCTtkJcQ4oQ=;
-        b=EPP7VyKD6pGX2BXlfpgYQt/Sxl7Cpo8UUvOPjWSJt9KxinW86pRGQ6EoHoG7fJDFAR
-         W68G0/v+ENMjmLux1nD41PzcsDvRkcWNoFv5YyPotn928MUJuNHm0UDoseDFGxJ7vFXj
-         QRpV0UuQWi3MmA/jqs+/pHsId20erXNjIArr886ahpQta2VxYb8VleMo+quURkN04KEX
-         WC1EKGimnKiJkDt6GveKT4NyLMQVsUqzRm+yDoF5wmnuWr7bMVWfEu8zEtXQ2UuvO6du
-         Mzc4boKUV/VT34HwaIhKC568/IuG7fu2l203fQiq8O2tMGmcvZYqPhy43Xz8v0j92Zmp
-         lfTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pXf19g1065wNWBhJVun5K/h2HFDi9av6GCTtkJcQ4oQ=;
-        b=RHNJ5ISoHflw+qH98s8Lry+IaprNaE9wdyzrlYsugqmXYVnZv3A7UcTbyOydFIWfym
-         hxOqRFQ4hDWrrYULmYJK53MZeILlIAlV+pP62AMM/2z9pad/KjOsQ7PKfZM+VnDdDkkd
-         s4lX3tx20YyUopfeFSw3WxpUXOi5CmA0SdAu0xf9+EiHMrWh25N7JaKnq32UwZdAfAZI
-         793oJLneq0EgvFH0ITDrXXOCVhN/L6IYJzQU66B2v9Yox65OHKWYi9nXNMygqwyAr2OB
-         Kogkn5aIqrJWMvwBrgm5luFJiIJJP91SVqM/uHEkUG5adj6Wcec9eLiLOWqQwjHr0IA1
-         PNOQ==
-X-Gm-Message-State: AOAM533BJk3WQ8KBoxvZDaU2NDgY83M1+v+Fzfo4vFroznNxyo+x9YCd
-        zfKAotKlffifdRYkoZKbIl0=
-X-Google-Smtp-Source: ABdhPJyjOqOrKJn3U6OZnWdz9JlOCbFbj3wVfa56C6FQj73gwwRIj/uAKgPn9ZYZetiSC5N1yj3B0Q==
-X-Received: by 2002:a63:50a:: with SMTP id 10mr8731220pgf.273.1612014229346;
-        Sat, 30 Jan 2021 05:43:49 -0800 (PST)
-Received: from container-ubuntu.lan ([61.188.25.180])
-        by smtp.gmail.com with ESMTPSA id c3sm12171253pfj.105.2021.01.30.05.43.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Jan 2021 05:43:48 -0800 (PST)
-From:   DENG Qingfang <dqfext@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Tobias Waldekranz <tobias@waldekranz.com>
-Subject: [PATCH net] net: dsa: mv88e6xxx: override existent unicast portvec in port_fdb_add
-Date:   Sat, 30 Jan 2021 21:43:34 +0800
-Message-Id: <20210130134334.10243-1-dqfext@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S229854AbhA3Nyr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 08:54:47 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:44354 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231726AbhA3NxH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jan 2021 08:53:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612014693;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=aoCtMEaSOyMLjV1GCt7eQQvgQpEqt4qo7aMScA9Bkis=;
+        b=cbB9LUhXNFBhHvNxjz+dr0QmPHUJNSVhnf1+vqDdhVyaTrK2+CEpc4NIQWhHzHw+3Ho+ET
+        FWUqVMWsVtgm6L4VV2n/bgov+f8HJOMDP48KfoLb7gbtmV8Knb5DBq4dk9SgAYwVl17efF
+        JhDnypjSxWioO24G7c53FlTBj1E42WA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-509-b93pRTlHPZylsV1722MunA-1; Sat, 30 Jan 2021 08:51:29 -0500
+X-MC-Unique: b93pRTlHPZylsV1722MunA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DC13C801AC0;
+        Sat, 30 Jan 2021 13:51:26 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.4])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AFEE860CDF;
+        Sat, 30 Jan 2021 13:51:20 +0000 (UTC)
+Date:   Sat, 30 Jan 2021 14:51:19 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
+        colrack@gmail.com, brouer@redhat.com
+Subject: Re: [PATCH bpf-next V13 4/7] bpf: add BPF-helper for MTU checking
+Message-ID: <20210130145119.17f876c3@carbon>
+In-Reply-To: <4965401d-c461-15f6-2068-6cefb6c145ba@iogearbox.net>
+References: <161159451743.321749.17528005626909164523.stgit@firesoul>
+        <161159457239.321749.9067604476261493815.stgit@firesoul>
+        <6013b06b83ae2_2683c2085d@john-XPS-13-9370.notmuch>
+        <20210129083654.14f343fa@carbon>
+        <60142eae7cd59_11fd208f1@john-XPS-13-9370.notmuch>
+        <4965401d-c461-15f6-2068-6cefb6c145ba@iogearbox.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Having multiple destination ports for a unicast address does not make
-sense.
-Make port_db_load_purge override existent unicast portvec instead of
-adding a new port bit.
+On Sat, 30 Jan 2021 01:08:17 +0100
+Daniel Borkmann <daniel@iogearbox.net> wrote:
 
-Fixes: 884729399260 ("net: dsa: mv88e6xxx: handle multiple ports in ATU")
-Signed-off-by: DENG Qingfang <dqfext@gmail.com>
----
- drivers/net/dsa/mv88e6xxx/chip.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+> On 1/29/21 4:50 PM, John Fastabend wrote:
+> > Jesper Dangaard Brouer wrote:  
+> >> On Thu, 28 Jan 2021 22:51:23 -0800
+> >> John Fastabend <john.fastabend@gmail.com> wrote:  
+> >>> Jesper Dangaard Brouer wrote:  
+> >>>> This BPF-helper bpf_check_mtu() works for both XDP and TC-BPF programs.
+> >>>>
+> >>>> The SKB object is complex and the skb->len value (accessible from
+> >>>> BPF-prog) also include the length of any extra GRO/GSO segments, but
+> >>>> without taking into account that these GRO/GSO segments get added
+> >>>> transport (L4) and network (L3) headers before being transmitted. Thus,
+> >>>> this BPF-helper is created such that the BPF-programmer don't need to
+> >>>> handle these details in the BPF-prog.
+> >>>>
+> >>>> The API is designed to help the BPF-programmer, that want to do packet
+> >>>> context size changes, which involves other helpers. These other helpers
+> >>>> usually does a delta size adjustment. This helper also support a delta
+> >>>> size (len_diff), which allow BPF-programmer to reuse arguments needed by
+> >>>> these other helpers, and perform the MTU check prior to doing any actual
+> >>>> size adjustment of the packet context.
+> >>>>
+> >>>> It is on purpose, that we allow the len adjustment to become a negative
+> >>>> result, that will pass the MTU check. This might seem weird, but it's not
+> >>>> this helpers responsibility to "catch" wrong len_diff adjustments. Other
+> >>>> helpers will take care of these checks, if BPF-programmer chooses to do
+> >>>> actual size adjustment.  
+> >>
+> >> The nitpick below about len adjust can become negative, is on purpose
+> >> and why is described in above.  
+> > 
+> > following up on a nitpick :)
+> > 
+> > What is the use case to allow users to push a negative len_diff with
+> > abs(len_diff) > skb_diff and not throw an error. I would understand if it
+> > was a pain to catch the case, but below is fairly straightforward. Of
+> > course if user really tries to truncate the packet like this later it
+> > will also throw an error, but still missing why we don't throw an error
+> > here.
+> > 
+> > Anyways its undefined if len_diff is truely bogus. Its not really a
+> > problem I guess because garbage in (bogus len_diff) garbage out is OK I
+> > think.  
+> 
+> What's the rationale to not sanity check for it? I just double checked
+> the UAPI helper description comment ... at minimum this behavior would
+> need to be documented there to avoid confusion.
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index b99f27b8c084..ae0b490f00cd 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -1686,7 +1686,11 @@ static int mv88e6xxx_port_db_load_purge(struct mv88e6xxx_chip *chip, int port,
- 		if (!entry.portvec)
- 			entry.state = 0;
- 	} else {
--		entry.portvec |= BIT(port);
-+		if (state == MV88E6XXX_G1_ATU_DATA_STATE_UC_STATIC)
-+			entry.portvec = BIT(port);
-+		else
-+			entry.portvec |= BIT(port);
-+
- 		entry.state = state;
- 	}
- 
+The rationale is that the helper asks if the packet size adjustment
+will exceed the MTU (on the given ifindex).  It is not this helpers
+responsibility to catch if the packet becomes too small.  It the
+responsibility of the helper function that does the size change. The
+use-case for len_diff is testing prior to doing size adjustment.
+
+The code can easily choose not to do the size adjustment.  E.g. when
+parsing the header, and realizing this is not a VXLAN (50 bytes) tunnel
+packet, but instead a (small 42 bytes) ARP packet.
+
+Sure, I can spin a V14 of the patchset, where I make it more clear for
+the man page that this is the behavior.
+
 -- 
-2.25.1
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
