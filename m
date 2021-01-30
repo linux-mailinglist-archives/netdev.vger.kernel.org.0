@@ -2,80 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF68D309689
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 17:11:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B83E23096AA
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 17:22:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232285AbhA3QKG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 11:10:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57490 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232403AbhA3QBx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jan 2021 11:01:53 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A7B0C06174A
-        for <netdev@vger.kernel.org>; Sat, 30 Jan 2021 07:04:42 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id f1so13894722edr.12
-        for <netdev@vger.kernel.org>; Sat, 30 Jan 2021 07:04:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Q1DoOERep/4QagAqJxQdnlhfkqrhqIqO/ko/pInHhdc=;
-        b=Q/bO5uOzLabEAQYbZivFl0R3oVWSqmWFyZRxosIpzS6ZSLC52Rw4WszYBGqD4AI0eV
-         w03A8xTvqoBB1NPvk+kTLr8WOm1Bvm7u2lWagmKr4BcWWRSup1oKsUhIZSN21lcyOSHJ
-         L484vwlgLG5tfmo9lH6Rj4ARhzPVGBVdxWg3A3z7QeR+LlA7gBrZJfhuLtizDQeK6u5G
-         HtuZHmnAyZqlqiusmnMbuBZA9aupd3Pr3XuXrb29JQwzMqGy99gwdvWrpPC83CoKaS4T
-         TzfjVMqNvHntCX8gR7gYARcghv+ZPwSE8H68vgcknL9Ek2na8zd+p/kUNwJcFFu+/xyP
-         qURA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Q1DoOERep/4QagAqJxQdnlhfkqrhqIqO/ko/pInHhdc=;
-        b=G/G69/PDh/UuomyvWZy4NiUmRFXEv3GIA0xa/fcnF6TzTwomOCZGpvteurMzvQbcBP
-         oTbaz7TnRnRk9hgYasUhj0Dc6CXayf/sbhhlHhw3zti/FkzDW4GtT3RuLrEUX7DN9Ymw
-         JkxpcxWiZ9fiAjNdtoUR5/m+EpqAarinV4HqBmUe0O0MNmbiW3MPY36i9iboxn4zWGkB
-         PL9TgiDgZiK7Z3WxAmIYuscKB8hD3oNZTFUQFFqAiUqd3TVsg5HGjrUsibRjhWZvuZUv
-         c+MtDMCAz3EmlQbsPfroAY46O+w9FmAo4KPUYz9wHs3NuJfunk9pB3KbPjzXyaFhRIGG
-         rJbA==
-X-Gm-Message-State: AOAM533QTP14wDrs39GF25Zl6ONyCj5fjK66+N92BAS0jsgRHZ6fSj+8
-        KRG+DVq1hpAwrDfXeCUU32iqd6SA+elFILK6Uq0=
-X-Google-Smtp-Source: ABdhPJzuCzc2oddugKXxXTB5ldT5aNvegfA4+WK52EHFIwMtivkktfKuklpysTAzlRKOCRBxXZbTy1VH7Bc8elfPi5E=
-X-Received: by 2002:aa7:c9cf:: with SMTP id i15mr10255389edt.296.1612019081182;
- Sat, 30 Jan 2021 07:04:41 -0800 (PST)
+        id S232018AbhA3QWT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 11:22:19 -0500
+Received: from wout3-smtp.messagingengine.com ([64.147.123.19]:55279 "EHLO
+        wout3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232096AbhA3PhR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jan 2021 10:37:17 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id 88A1FFC9;
+        Sat, 30 Jan 2021 10:11:47 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Sat, 30 Jan 2021 10:11:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=TTz9de
+        7Aui/b0TqRdz54EZIA8mv8r3BU+/gAevThSpw=; b=Kmt99kIogQ998uedznl8vs
+        vyuLMvazFs1yIDO96RMX9Wn85y6sCIKLo75lt+ThupCc6/VmjyHyON6uVQy+OtpU
+        Z5NwjEHC79qs6HeeTyY6DiM6aGLE2kbV6eHISYgM5OnnzwFNuYOUMwQ/p2C+8eo1
+        zpMuKBwSd60BY6Pgtw7uWnlR8DZfs1hoLoHTcPHooaDeqpMefbcrg7EnYFvdXmdq
+        godvnux/i+6mAqfYNIGcUpuaFKuVsHXLjwFa+8MAwrVv3lL9pdH486EZqKm3oSiD
+        IpCf35mTzjVUfSXmpD7FK9mQDbX0d0SN1/ARHqehjLWFVaEiQGCH+plhuhc6+yIw
+        ==
+X-ME-Sender: <xms:MncVYK-FCe6siMhFy_10U3WWxFHLxtf2iQnukP6UvncB5U2UH9Wn6w>
+    <xme:MncVYKtBcy9xOhH49S38ob9OiXj29ekjgp2NE2DCmLiVs12aGZ2RMP8h_Bk3O2hQw
+    -zIS7y7Zf6xjOg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeeggdejhecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
+    necukfhppeekgedrvddvledrudehfedrgeegnecuvehluhhsthgvrhfuihiivgeptdenuc
+    frrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:MncVYADwFoypGdomtX7NA7GahAJzoHb4kWbHibWgVUpCWpO89DrYFA>
+    <xmx:MncVYCecR8ZC7TmNEtkI_2yM7azoH_-TnlRwPvSMul9ppyRzYiF97g>
+    <xmx:MncVYPNKAMUKpJ31lP_a6vwYljfT78gLr7qZu7cfcclr2wGCBBnpuA>
+    <xmx:M3cVYLC0L2L0Ivg76p4gB5ORNlIvBR2j_KG2E9KEyygeLxkJtEQ-Kg>
+Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 539DD240057;
+        Sat, 30 Jan 2021 10:11:46 -0500 (EST)
+Date:   Sat, 30 Jan 2021 17:11:43 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, amcohen@nvidia.com, roopa@nvidia.com,
+        sharpd@nvidia.com, bpoirier@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next 05/10] net: ipv4: Emit notification when fib
+ hardware flags are changed
+Message-ID: <20210130151143.GB3330615@shredder.lan>
+References: <20210126132311.3061388-1-idosch@idosch.org>
+ <20210126132311.3061388-6-idosch@idosch.org>
+ <20210128190405.27d6f086@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <aa5291c2-3bbc-c517-8804-6a0543db66db@gmail.com>
 MIME-Version: 1.0
-References: <20210129034711.518250-1-sukadev@linux.ibm.com> <20210129034711.518250-2-sukadev@linux.ibm.com>
-In-Reply-To: <20210129034711.518250-2-sukadev@linux.ibm.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Sat, 30 Jan 2021 10:04:04 -0500
-Message-ID: <CAF=yD-+0Q86iZMedrBp2wDjVaNvd2_Wy7BcsXLef_e2wJmYm=A@mail.gmail.com>
-Subject: Re: [PATCH net 2/2] ibmvnic: fix race with multiple open/close
-To:     Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Dany Madden <drt@linux.ibm.com>, Lijun Pan <ljp@linux.ibm.com>,
-        Rick Lindsley <ricklind@linux.ibm.com>, abdhalee@in.ibm.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aa5291c2-3bbc-c517-8804-6a0543db66db@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 28, 2021 at 10:51 PM Sukadev Bhattiprolu
-<sukadev@linux.ibm.com> wrote:
->
-> If two or more instances of 'ip link set' commands race and first one
-> already brings the interface up (or down), the subsequent instances
-> can simply return without redoing the up/down operation.
->
-> Fixes: ed651a10875f ("ibmvnic: Updated reset handling")
-> Reported-by: Abdul Haleem <abdhalee@in.ibm.com>
-> Tested-by: Abdul Haleem <abdhalee@in.ibm.com>
-> Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+On Thu, Jan 28, 2021 at 08:33:22PM -0700, David Ahern wrote:
+> On 1/28/21 8:04 PM, Jakub Kicinski wrote:
+> > On Tue, 26 Jan 2021 15:23:06 +0200 Ido Schimmel wrote:
+> >> Emit RTM_NEWROUTE notifications whenever RTM_F_OFFLOAD/RTM_F_TRAP flags
+> >> are changed. The aim is to provide an indication to user-space
+> >> (e.g., routing daemons) about the state of the route in hardware.
+> > 
+> > What does the daemon in the user space do with it?
+> 
+> You don't want FRR for example to advertise a route to a peer until it
+> is really programmed in h/w. This notification gives routing daemons
+> that information.
 
-Isn't this handled in the rtnetlink core based on IFF_UP?
+Correct. It is in the cover letter:
 
-        if ((old_flags ^ flags) & IFF_UP) {
-                if (old_flags & IFF_UP)
-                        __dev_close(dev);
-                else
-                        ret = __dev_open(dev, extack);
-        }
+"These flags are of interest to routing daemons since they would like to
+delay advertisement of routes until they are installed in hardware."
+
+Amit is working on follow-up to emit notifications when route offload
+fails. This request also comes from the FRR team. Currently we have a
+policy inside mlxsw to abort route offload and install a default route
+that sends all the traffic to the CPU. It obviously kills the box and
+anyway the policy is something user space should decide, not the kernel.
+
+> 
+> > 
+> > The notification will only be generated for the _first_ ASIC which
+> > offloaded the object. Which may be fine for you today but as an uAPI 
+> > it feels slightly lacking.
+> > 
+> > If the user space just wants to make sure the devices are synced to
+> > notifications from certain stage, wouldn't it be more idiomatic to
+> > provide some "fence" operation?
+> > 
+> > WDYT? David?
+> > 
+> 
+> This feature was first discussed I think about 2 years ago - when I was
+> still with Cumulus, so I already knew the intent and end goal.
+> 
+> I think support for multiple ASICs / NICs doing this kind of offload
+> will have a whole lot of challenges. I don't think this particular user
+> notification is going to be a big problem - e.g., you could always delay
+> the emit until all have indicated the offload.
+
+I do not have experience with multi-ASIC systems, but my understanding
+is that each ASIC has its own copy of the networking stack and the ASICs
+are connected via front panel or backplane ports, like distinct
+leaf/spine switches. In Linux, such a system can be supported by
+registering a devlink instance for each ASIC and reloading each instance
+to a separate namespace.
+
+Thanks for reviewing, David
