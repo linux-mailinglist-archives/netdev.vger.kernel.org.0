@@ -2,110 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2B80309930
-	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 01:03:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA001309925
+	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 01:01:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232470AbhAaABZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 19:01:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44284 "EHLO
+        id S232310AbhAaABA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 19:01:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232499AbhA3XtT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jan 2021 18:49:19 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 793BCC06178B;
-        Sat, 30 Jan 2021 15:48:01 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id c2so14752851edr.11;
-        Sat, 30 Jan 2021 15:48:01 -0800 (PST)
+        with ESMTP id S232213AbhAaAAq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jan 2021 19:00:46 -0500
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95D3AC061574;
+        Sat, 30 Jan 2021 16:00:04 -0800 (PST)
+Received: by mail-wm1-x336.google.com with SMTP id e15so10073245wme.0;
+        Sat, 30 Jan 2021 16:00:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=4ClukBPu+CYzsZoBz7wV2vFswdP1FSRh8zSK4OVbxTg=;
-        b=LR8tfNCxCknUbtdIjDpZOfe2+uThFtGib/Yfq0wcUy1mi+le6/6wPRmpJmh4Co5Ipo
-         KrGfVpsMfasytLcyfIwnUIwzmICWAqPuFuPGwm5/vr+qbkJqNTEHXy/4T3IekfaAiBtR
-         f+jjBrnLNa0VkOK5w3soXT1boKghPyAm4mPY0stUvfBU4WgHvy41CMKaM18bOLL2K/rY
-         0yipkrTtBB/3rS4JMZTcwQDOYE7HEwot0GYSTwzn/bLIsGYP0tmQGhpfXDVPsuF49GWl
-         RyaWFzhtW2eBXwRfFkCiMviK5lxQpl/U+zzuRyHWRSn2u5Xha210DVWqCVOESzi/DHR3
-         6ARw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=98fiWn69S2Pq3I8O6pRBiZncvLz9xWgYETkJN7pf/jQ=;
+        b=JqgQ16TGct0aRQPGSBnpfx/yCS3Gu3mi1F4UF5w17tDRObP2Ynbx8/I3PG8hPJlz49
+         Ed86yobCG2Y1caNo/UD/mjeVK16Q9OkvXzrqWxpIEefyG0dSV+shI5CrCKNI6tvNASJ4
+         0pd0sN6pRxMqEKiK79ystM1A6EytPT383OtxVuWsG/rOpZBIVNSHA1BTkjVYOG6Zu4sv
+         GeeAV8po7wyDh89pY3jzAUQn3O/Ad4J1bjT+v0R41TfdoomsXr63F9B1QFRQ0HaTlEnn
+         J+8gj4QO7RxyliZyyGttl/k4+buix6qoYFx0RQKYVHy8AjbdIlO5bqeDVimjyx5qU/py
+         XCew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=4ClukBPu+CYzsZoBz7wV2vFswdP1FSRh8zSK4OVbxTg=;
-        b=fI6keJQg5El1YO7mtXcQ8uCfKJWJJBaJoQh7v1o5U+hJOuv8Hq248jqVES6P2eJqaN
-         GJFaj9QTLwtANY9EaEwROH3hH8halqs3+s/VSDZw3z1zFnIf7b0ymdPA8t8kf5A5O6p1
-         YdivlIIk5CJvKiycjB8bwisw8gwdPslxXnFRfipZfYxJb59TTYn4RilMC2VoxV29vfrX
-         X/gxYRVoEtnrUdj9Hxcypd+6ModUYzV8001IC2viTiHcjUtjGmeq7YhF0lw0GLx2JG1+
-         RP1N8nXbq5UTjkF/utrkjsL5qsn3xwpp+8lFC3S4XXhtQ1cTjGqgEKlVNelE7ACHK5Bx
-         G+Qg==
-X-Gm-Message-State: AOAM5319O4Z42fFv0MCjjS8MENwuxDscPBvHXNH9g57BE1bpJgP9gmgw
-        DF+XNGIXqcWgHSJMvLletxmhh9t2JX4/J//C
-X-Google-Smtp-Source: ABdhPJwNkQ4S/Zil30PaizXC32fjiWhgKh2kcrkZDrtkS9FXIguHxJZ5gBPRq7WSBzRkLzYecjVHEQ==
-X-Received: by 2002:a05:6402:22a8:: with SMTP id cx8mr12211009edb.32.1612050480283;
-        Sat, 30 Jan 2021 15:48:00 -0800 (PST)
-Received: from stitch.. ([80.71.140.73])
-        by smtp.gmail.com with ESMTPSA id u17sm6628009edr.0.2021.01.30.15.47.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Jan 2021 15:47:59 -0800 (PST)
-Sender: Emil Renner Berthing <emil.renner.berthing@gmail.com>
-From:   Emil Renner Berthing <kernel@esmil.dk>
-To:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-ppp@vger.kernel.org
-Cc:     Emil Renner Berthing <kernel@esmil.dk>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Petko Manolov <petkan@nucleusys.com>,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        Jing Xiangfeng <jingxiangfeng@huawei.com>,
-        Oliver Neukum <oneukum@suse.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH 9/9] net: usb: rtl8150: use new tasklet API
-Date:   Sun, 31 Jan 2021 00:47:30 +0100
-Message-Id: <20210130234730.26565-10-kernel@esmil.dk>
-X-Mailer: git-send-email 2.30.0
-In-Reply-To: <20210130234730.26565-1-kernel@esmil.dk>
-References: <20210130234730.26565-1-kernel@esmil.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=98fiWn69S2Pq3I8O6pRBiZncvLz9xWgYETkJN7pf/jQ=;
+        b=CkpVpvlxJehYlo2321zW5tHGvzXI4LjCBAnJlVdbdU4MyKuyQbW+4sKDAB61LUn5ep
+         ITKgXrBebd7w6w4ZJpX2leeSZ5eTE2sQOMI8WvN5ROyse0We5TdVLOfuNbBV/YniZm8f
+         ktsyxAmjPcKxq6cCVNG46U9xEUyzdonpPTLgnufEr4Afd3JLXDHGHpzAcXUGEd7tOnWg
+         dlK0I/3xHWLmhiGhgGmODWOO/uvTGsUCxn+jEVt+Lo+h9lZRDx+QRVgvcdB+x5uUsp8I
+         miyVJIrDFbOInHvshYKjaIPxBq5NtY18pr31+Ecr6HUrk01P+Us34Gt+6Euw50xPiXGc
+         /F+g==
+X-Gm-Message-State: AOAM532SBmMjVzTem3tROY7XTdEisu/BjBMnhkx2OJ4zM6Dgnml81AqC
+        8dhiV609dnI0f1R2IhWKnvYIhVVHPrAeJQLDE6WNCLuOUAQ=
+X-Google-Smtp-Source: ABdhPJyTPpHc18Fi5SciDLsc1+bSO4w/MJ2HRIJT/LbPEw4Z/TCf5+qpNKvNrvLViokuuD1ZGSts8JbsDWOuk1cGLDk=
+X-Received: by 2002:a7b:c8c8:: with SMTP id f8mr9179408wml.11.1612051203243;
+ Sat, 30 Jan 2021 16:00:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210129195240.31871-1-TheSven73@gmail.com> <20210129195240.31871-2-TheSven73@gmail.com>
+ <MN2PR11MB3662C6C13B2D549E339D7DD1FAB89@MN2PR11MB3662.namprd11.prod.outlook.com>
+In-Reply-To: <MN2PR11MB3662C6C13B2D549E339D7DD1FAB89@MN2PR11MB3662.namprd11.prod.outlook.com>
+From:   Sven Van Asbroeck <thesven73@gmail.com>
+Date:   Sat, 30 Jan 2021 18:59:50 -0500
+Message-ID: <CAGngYiVw2mwmcFWJNid52oPPET2M6+BEgr+Eb-_-yUj6it0ifw@mail.gmail.com>
+Subject: Re: [PATCH net-next v1 1/6] lan743x: boost performance on cpu archs
+ w/o dma cache snooping
+To:     Bryan Whitehead <Bryan.Whitehead@microchip.com>
+Cc:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Alexey Denisov <rtgbnm@gmail.com>,
+        Sergej Bauer <sbauer@blackbox.su>,
+        Tim Harvey <tharvey@gateworks.com>,
+        =?UTF-8?Q?Anders_R=C3=B8nningen?= <anders@ronningen.priv.no>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This converts the driver to use the new tasklet API introduced in
-commit 12cc923f1ccc ("tasklet: Introduce new initialization API")
+Hi Bryan, thank you so much for reviewing, I really appreciate it.
 
-Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
----
- drivers/net/usb/rtl8150.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+On Sat, Jan 30, 2021 at 5:11 PM <Bryan.Whitehead@microchip.com> wrote:
+>
+> >                         /* unmap from dma */
+> > +                       packet_length = RX_DESC_DATA0_FRAME_LENGTH_GET_
+> > +                                       (descriptor->data0);
+> It appears you moved this packet_length assignment from just below the following if block, however  you left out the le32_to_cpu.See next comment
+>
 
-diff --git a/drivers/net/usb/rtl8150.c b/drivers/net/usb/rtl8150.c
-index bf8a60533f3e..7656f2a3afd9 100644
---- a/drivers/net/usb/rtl8150.c
-+++ b/drivers/net/usb/rtl8150.c
-@@ -577,9 +577,9 @@ static void free_skb_pool(rtl8150_t *dev)
- 		dev_kfree_skb(dev->rx_skb_pool[i]);
- }
- 
--static void rx_fixup(unsigned long data)
-+static void rx_fixup(struct tasklet_struct *t)
- {
--	struct rtl8150 *dev = (struct rtl8150 *)data;
-+	struct rtl8150 *dev = from_tasklet(dev, t, tl);
- 	struct sk_buff *skb;
- 	int status;
- 
-@@ -878,7 +878,7 @@ static int rtl8150_probe(struct usb_interface *intf,
- 		return -ENOMEM;
- 	}
- 
--	tasklet_init(&dev->tl, rx_fixup, (unsigned long)dev);
-+	tasklet_setup(&dev->tl, rx_fixup);
- 	spin_lock_init(&dev->rx_pool_lock);
- 
- 	dev->udev = udev;
--- 
-2.30.0
+Correct on both counts. This is a merge snafu that crept in when I
+rebased to Alexey's very recent little/big endian patch, at the last
+minute.
+My tests didn't catch it, because I'm running on a little-endian cpu,
+where le32_to_cpu() compiles to a nop.
 
+Had I had the good sense to run sparse on every patch, like Jakub has,
+I would have caught it...
