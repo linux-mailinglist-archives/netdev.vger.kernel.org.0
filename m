@@ -2,129 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 931B130942C
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 11:15:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9810B309431
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 11:16:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232363AbhA3KOo convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 30 Jan 2021 05:14:44 -0500
-Received: from mga12.intel.com ([192.55.52.136]:16730 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232622AbhA3BW7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Jan 2021 20:22:59 -0500
-IronPort-SDR: C7e6MbjEN56ATD8/A6EL5vfAcHITlQ1Ctz65atc2WJRaeK5x7qO/x5LeS/meMppjF5XOcV49Q6
- kNr2aXpotdcQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9879"; a="159672452"
-X-IronPort-AV: E=Sophos;i="5.79,387,1602572400"; 
-   d="scan'208";a="159672452"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2021 17:18:57 -0800
-IronPort-SDR: 2bVc/EPAEP5aWhCAvZEU5RXXpaxtPSS018yJ/t9sRq+IqT7gWcYVFzM0aPKTzM8BxDzp2HZ2hR
- s6LUpcjpJaJA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,387,1602572400"; 
-   d="scan'208";a="365563249"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmsmga008.fm.intel.com with ESMTP; 29 Jan 2021 17:18:57 -0800
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Fri, 29 Jan 2021 17:18:56 -0800
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Fri, 29 Jan 2021 17:18:56 -0800
-Received: from fmsmsx612.amr.corp.intel.com ([10.18.126.92]) by
- fmsmsx612.amr.corp.intel.com ([10.18.126.92]) with mapi id 15.01.2106.002;
- Fri, 29 Jan 2021 17:18:56 -0800
-From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-CC:     "dledford@redhat.com" <dledford@redhat.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>
-Subject: RE: [PATCH 09/22] RDMA/irdma: Implement HW Admin Queue OPs
-Thread-Topic: [PATCH 09/22] RDMA/irdma: Implement HW Admin Queue OPs
-Thread-Index: AQHW8RlWIRUHfz8eR0uS2oJ96sRUVao5QvyAgAD4k+CAARQWgIAEGDeQ
-Date:   Sat, 30 Jan 2021 01:18:56 +0000
-Message-ID: <610ec40cfc71437dadc802da3e8d3b35@intel.com>
-References: <20210122234827.1353-1-shiraz.saleem@intel.com>
- <20210122234827.1353-10-shiraz.saleem@intel.com>
- <20210125192319.GW4147@nvidia.com>
- <5c36451841f64f90ac2be6d23ffa9578@intel.com>
- <20210127024109.GK4147@nvidia.com>
-In-Reply-To: <20210127024109.GK4147@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-x-originating-ip: [10.1.200.100]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S232213AbhA3KP0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 05:15:26 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:61612 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S232847AbhA3BUT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 20:20:19 -0500
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 10U112RK087474
+        for <netdev@vger.kernel.org>; Fri, 29 Jan 2021 20:19:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=9YED22CWtFd+6cT8x7MBowUup7yRKMdr4ncsqv/Lvt0=;
+ b=CoZZSIOvTsVVauVCPezKMfdk0WGge/2qehFeplzGgYO3bpYYQiYT/g7V6iha28x7s82O
+ zWAFQ6jqey49ghOrI7WxH9C3PudT2QdTUSZ2i+tGl3y3XP21CWihvO4nsjhgyjOtPfBb
+ GH4O5y8aPT0SR6iAyUlizmfkdo+WauUmujy7tca1EkDqcTTh3m0sreYhoI5feHDGj1eK
+ VD8gC3GqFua546bKF3semmD4Qr//PnCZN3XxeORufcrtfehr66Zsa+uJ39YsoaMeX1pc
+ 8LJ/0gyHMVg2DPd7OndpUgXlXZp0UsWb+0hOdgupsZ0wN2DW7unC+L2iQ6y4j0vguY+W IQ== 
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 36cwct09um-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 29 Jan 2021 20:19:10 -0500
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+        by ppma01dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 10U1D0R7016405
+        for <netdev@vger.kernel.org>; Sat, 30 Jan 2021 01:19:10 GMT
+Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
+        by ppma01dal.us.ibm.com with ESMTP id 36adtum0y1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Sat, 30 Jan 2021 01:19:10 +0000
+Received: from b03ledav005.gho.boulder.ibm.com (b03ledav005.gho.boulder.ibm.com [9.17.130.236])
+        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 10U1J78h27984134
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 30 Jan 2021 01:19:07 GMT
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4D2FEBE056;
+        Sat, 30 Jan 2021 01:19:07 +0000 (GMT)
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3D6D4BE04F;
+        Sat, 30 Jan 2021 01:19:06 +0000 (GMT)
+Received: from pompom.ibm.com (unknown [9.85.192.149])
+        by b03ledav005.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Sat, 30 Jan 2021 01:19:06 +0000 (GMT)
+From:   Lijun Pan <ljp@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     sukadev@linux.ibm.com, drt@linux.ibm.com,
+        brking@linux.vnet.ibm.com, dnbanerg@us.ibm.com,
+        tlfalcon@linux.ibm.com, Lijun Pan <ljp@linux.ibm.com>
+Subject: [PATCH net-next v2 0/2] rework the memory barrier for SCRQ entry 
+Date:   Fri, 29 Jan 2021 19:19:03 -0600
+Message-Id: <20210130011905.1485-1-ljp@linux.ibm.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
+ definitions=2021-01-29_11:2021-01-29,2021-01-29 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ spamscore=0 adultscore=0 clxscore=1015 malwarescore=0 phishscore=0
+ mlxscore=0 bulkscore=0 suspectscore=0 lowpriorityscore=0 mlxlogscore=725
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2101300000
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: [PATCH 09/22] RDMA/irdma: Implement HW Admin Queue OPs
-> 
-> On Wed, Jan 27, 2021 at 12:41:59AM +0000, Saleem, Shiraz wrote:
-> > > Subject: Re: [PATCH 09/22] RDMA/irdma: Implement HW Admin Queue OPs
-> > >
-> > > On Fri, Jan 22, 2021 at 05:48:14PM -0600, Shiraz Saleem wrote:
-> > > > +#define LS_64_1(val, bits)	((u64)(uintptr_t)(val) << (bits))
-> > > > +#define RS_64_1(val, bits)	((u64)(uintptr_t)(val) >> (bits))
-> > > > +#define LS_32_1(val, bits)	((u32)((val) << (bits)))
-> > > > +#define RS_32_1(val, bits)	((u32)((val) >> (bits)))
-> > > > +#define LS_64(val, field)	(((u64)(val) << field ## _S) & (field ## _M))
-> > > > +#define RS_64(val, field)	((u64)((val) & field ## _M) >> field ## _S)
-> > > > +#define LS_32(val, field)	(((val) << field ## _S) & (field ## _M))
-> > > > +#define RS_32(val, field)	(((val) & field ## _M) >> field ## _S)
-> > >
-> > > Yikes, why can't this use the normal GENMASK/FIELD_PREP
-> > > infrastructure like the other new drivers are now doing?
-> > >
-> > > EFA is not a perfect example, but EFA_GET/EFA_SET are the macros I
-> > > would expect to see, just without the _MASK thing.
-> > >
-> > > IBA_GET/SET shows how to do that pattern
-> > >
-> > > > +#define FLD_LS_64(dev, val, field)	\
-> > > > +	(((u64)(val) << (dev)->hw_shifts[field ## _S]) &
-> > > > +(dev)->hw_masks[field ##
-> > > _M])
-> > > > +#define FLD_RS_64(dev, val, field)	\
-> > > > +	((u64)((val) & (dev)->hw_masks[field ## _M]) >>
-> > > > +(dev)->hw_shifts[field ##
-> > > _S])
-> > > > +#define FLD_LS_32(dev, val, field)	\
-> > > > +	(((val) << (dev)->hw_shifts[field ## _S]) & (dev)->hw_masks[field ## _M])
-> > > > +#define FLD_RS_32(dev, val, field)	\
-> > > > +	((u64)((val) & (dev)->hw_masks[field ## _M]) >>
-> > > > +(dev)->hw_shifts[field ## _S])
-> > >
-> > > Is it because the register access is programmable? That shouldn't be
-> > > a significant problem.
-> > >
-> >
-> > Yes. How do we solve that?
-> >
-> > https://lore.kernel.org/linux-rdma/20200602232903.GD65026@mellanox.com
-> > /
-> 
-> Ooh, I'm remarkably consistent after all this time
-> 
-> I think the answer hasn't changed the point is to make the macros the same.
-> 
-> And the LS/RS stuff isn't using the indirection, so why isn't it using normal
-> GENMASK stuff?
-> 
-It can. And we will use FIELD_PREP / GENMASK on those that don't use the indirection.
-FLD_LS/RS will be left alone.
+This series rework the memory barrier for SCRQ (Sub-Command-Response
+Queue) entry.
+
+v2: send to net-next.
+
+Lijun Pan (2):
+  ibmvnic: rework to ensure SCRQ entry reads are properly ordered
+  ibmvnic: remove unnecessary rmb() inside ibmvnic_poll
+
+ drivers/net/ethernet/ibm/ibmvnic.c | 31 +++++++++++-------------------
+ 1 file changed, 11 insertions(+), 20 deletions(-)
+
+-- 
+2.23.0
+
