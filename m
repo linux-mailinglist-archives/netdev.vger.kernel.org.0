@@ -2,50 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AA0130938B
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 10:40:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B5BA3093D8
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 10:59:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231848AbhA3Jjl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 04:39:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43682 "EHLO mail.kernel.org"
+        id S231962AbhA3J70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 04:59:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46616 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231986AbhA3Jiy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 30 Jan 2021 04:38:54 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 62F7B64E19;
-        Sat, 30 Jan 2021 06:59:19 +0000 (UTC)
+        id S232023AbhA3J7D (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 30 Jan 2021 04:59:03 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 5032164E1F;
+        Sat, 30 Jan 2021 07:40:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611989959;
-        bh=YunYa7fNzr8/qZLICf6mNKbmtJwg3nHJ9EJ4vUZ7YAk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=f6j0X/VN0DN4qnU5IWgau8a1slEwoESWkW/xoY2IKlcJijBKqzz0zd8f+XbJP9ewn
-         iS6DMeixyMZcS3FiZMEuA82DD9u/Nw26cy1vxtxL6i3qvPgnWJ36AXs8lx+wEYxQuO
-         o25mYiDYWmew4tslTQiT/WuXXJ7tW3PEt2mevYQ4oi55uQMIqrC0d4LcKpu7MpdV8G
-         MZdYyGl1N4aV9o2HNdMm9ev1dPwOCFG6bbkmUySnSdyZMcNufHnSQPavEu1l3Y9R2e
-         w3neW8HNoILZ4yn27nWsqZBSoig9pphohN/9OltGPnk2ZYTv0tMB4vHQNXdisz99Mt
-         vDx1sgHStTFQw==
-Date:   Fri, 29 Jan 2021 22:59:18 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Chris Mi <cmi@nvidia.com>
-Cc:     netdev@vger.kernel.org, jiri@nvidia.com, saeedm@nvidia.com,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH net-next v5] net: psample: Introduce stubs to remove NIC
- driver dependency
-Message-ID: <20210129225918.0b621ed7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210130023319.32560-1-cmi@nvidia.com>
-References: <20210130023319.32560-1-cmi@nvidia.com>
+        s=k20201202; t=1611992406;
+        bh=LZLvLOH1OqajmsgdyXWMzDhsmcrobdTECgChF56o8P8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=jhjSQvKUeBnR+O6bD6/spxeQnE7wwO+TF8oqPsNjOjZ1lj1qMlzLyy7ZouGNHQk59
+         RoLX58i7pdaD6MaVMDK4Z4KIfcl21heqTIIjSTLfPmYMqevnrrU/N2DihTDY0FtUBI
+         9oRjr+vcRVoH3mOVRQF7Lf43nnxRIOsDLnMzpb2J3YxhAX3YUTvQ88SMASWfNsQAzN
+         dyzF93h7Z6YvprsHKfZ3FYilJNopVvqk4qd0GycHJCEGGxSjanaP2cZtsQHxpbI5JQ
+         ZNjBAQMkDGwLvZ/Ftgevf4olrDHU/j1Z/KRrHxAaax2ohALSed4Zx3rOeK/oAAgMPo
+         g9+tCglbtlF8Q==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 43CD36095D;
+        Sat, 30 Jan 2021 07:40:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] tcp: shrink inet_connection_sock icsk_mtup enabled
+ and probe_size
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161199240627.6969.14160359917809425150.git-patchwork-notify@kernel.org>
+Date:   Sat, 30 Jan 2021 07:40:06 +0000
+References: <20210129185438.1813237-1-ncardwell.kernel@gmail.com>
+In-Reply-To: <20210129185438.1813237-1-ncardwell.kernel@gmail.com>
+To:     Neal Cardwell <ncardwell.kernel@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, ncardwell@google.com,
+        edumazet@google.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 30 Jan 2021 10:33:19 +0800 Chris Mi wrote:
-> +// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-> +/* Copyright (c) 2021 Mellanox Technologies. */
-> +
-> +const struct psample_ops __rcu *psample_ops __read_mostly;
-> +EXPORT_SYMBOL_GPL(psample_ops);
+Hello:
 
-Please explain to me how you could possibly have compile tested this
-and not caught that it doesn't build.
+This patch was applied to netdev/net-next.git (refs/heads/master):
+
+On Fri, 29 Jan 2021 13:54:38 -0500 you wrote:
+> From: Neal Cardwell <ncardwell@google.com>
+> 
+> This commit shrinks inet_connection_sock by 4 bytes, by shrinking
+> icsk_mtup.enabled from 32 bits to 1 bit, and shrinking
+> icsk_mtup.probe_size from s32 to an unsuigned 31 bit field.
+> 
+> This is to save space to compensate for the recent introduction of a
+> new u32 in inet_connection_sock, icsk_probes_tstamp, in the recent bug
+> fix commit 9d9b1ee0b2d1 ("tcp: fix TCP_USER_TIMEOUT with zero window").
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next] tcp: shrink inet_connection_sock icsk_mtup enabled and probe_size
+    https://git.kernel.org/netdev/net-next/c/14e8e0f60088
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
