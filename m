@@ -2,69 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34612309538
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 14:04:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F09E30957B
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 14:46:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231740AbhA3ND1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 08:03:27 -0500
-Received: from m12-11.163.com ([220.181.12.11]:39610 "EHLO m12-11.163.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229620AbhA3NDZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 30 Jan 2021 08:03:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=brTi98KYrf7biHo0Yw
-        HGNh8Yu8nQX0FxJDmIDrvdGxA=; b=fCRf3YEfQosarwTRLGiP4P9OnEuija+7nX
-        Y/GcOP11eB6++Esc+zmmn4XzaL2XDRreLCPvb4JfxF46vDLg8TSzQVt+yRCWFNbO
-        YNTv7lBLKRO3hTFCMGos2+dbgHooFoZmYqT/PATlXSs5JdIhwJc0Ddk7FMH9WDHq
-        m0Tbu6XR4=
-Received: from wengjianfeng.ccdomain.com (unknown [119.137.55.243])
-        by smtp7 (Coremail) with SMTP id C8CowACHsqxTCRVgZyo8LQ--.30869S2;
-        Sat, 30 Jan 2021 15:23:00 +0800 (CST)
-From:   samirweng1979 <samirweng1979@163.com>
-To:     Jes.Sorensen@gmail.com, kvalo@codeaurora.org, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        wengjianfeng <wengjianfeng@yulong.com>
-Subject: [PATCH v2] rtl8xxxu: remove unused assignment value
-Date:   Sat, 30 Jan 2021 15:23:10 +0800
-Message-Id: <20210130072310.17252-1-samirweng1979@163.com>
-X-Mailer: git-send-email 2.15.0.windows.1
-X-CM-TRANSID: C8CowACHsqxTCRVgZyo8LQ--.30869S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtrWrtw4DXF4rGr4fJrWxCrg_yoWfuwb_uw
-        1Iv3ZrZry8Jr1Fyr43KrsrArWFyFWDJ3Z5Cay29FW3Ww43JayFvwnYv343Gr4fWw4ruryU
-        WwnrGa48trW8XjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU5ku4UUUUUU==
-X-Originating-IP: [119.137.55.243]
-X-CM-SenderInfo: pvdpx25zhqwiqzxzqiywtou0bp/1tbiHRQqsVSIpMzD7AAAsJ
+        id S230518AbhA3Noc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 08:44:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56482 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229885AbhA3Noa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jan 2021 08:44:30 -0500
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33A7BC061573;
+        Sat, 30 Jan 2021 05:43:50 -0800 (PST)
+Received: by mail-pg1-x52c.google.com with SMTP id j2so6881180pgl.0;
+        Sat, 30 Jan 2021 05:43:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pXf19g1065wNWBhJVun5K/h2HFDi9av6GCTtkJcQ4oQ=;
+        b=EPP7VyKD6pGX2BXlfpgYQt/Sxl7Cpo8UUvOPjWSJt9KxinW86pRGQ6EoHoG7fJDFAR
+         W68G0/v+ENMjmLux1nD41PzcsDvRkcWNoFv5YyPotn928MUJuNHm0UDoseDFGxJ7vFXj
+         QRpV0UuQWi3MmA/jqs+/pHsId20erXNjIArr886ahpQta2VxYb8VleMo+quURkN04KEX
+         WC1EKGimnKiJkDt6GveKT4NyLMQVsUqzRm+yDoF5wmnuWr7bMVWfEu8zEtXQ2UuvO6du
+         Mzc4boKUV/VT34HwaIhKC568/IuG7fu2l203fQiq8O2tMGmcvZYqPhy43Xz8v0j92Zmp
+         lfTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pXf19g1065wNWBhJVun5K/h2HFDi9av6GCTtkJcQ4oQ=;
+        b=RHNJ5ISoHflw+qH98s8Lry+IaprNaE9wdyzrlYsugqmXYVnZv3A7UcTbyOydFIWfym
+         hxOqRFQ4hDWrrYULmYJK53MZeILlIAlV+pP62AMM/2z9pad/KjOsQ7PKfZM+VnDdDkkd
+         s4lX3tx20YyUopfeFSw3WxpUXOi5CmA0SdAu0xf9+EiHMrWh25N7JaKnq32UwZdAfAZI
+         793oJLneq0EgvFH0ITDrXXOCVhN/L6IYJzQU66B2v9Yox65OHKWYi9nXNMygqwyAr2OB
+         Kogkn5aIqrJWMvwBrgm5luFJiIJJP91SVqM/uHEkUG5adj6Wcec9eLiLOWqQwjHr0IA1
+         PNOQ==
+X-Gm-Message-State: AOAM533BJk3WQ8KBoxvZDaU2NDgY83M1+v+Fzfo4vFroznNxyo+x9YCd
+        zfKAotKlffifdRYkoZKbIl0=
+X-Google-Smtp-Source: ABdhPJyjOqOrKJn3U6OZnWdz9JlOCbFbj3wVfa56C6FQj73gwwRIj/uAKgPn9ZYZetiSC5N1yj3B0Q==
+X-Received: by 2002:a63:50a:: with SMTP id 10mr8731220pgf.273.1612014229346;
+        Sat, 30 Jan 2021 05:43:49 -0800 (PST)
+Received: from container-ubuntu.lan ([61.188.25.180])
+        by smtp.gmail.com with ESMTPSA id c3sm12171253pfj.105.2021.01.30.05.43.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 30 Jan 2021 05:43:48 -0800 (PST)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Tobias Waldekranz <tobias@waldekranz.com>
+Subject: [PATCH net] net: dsa: mv88e6xxx: override existent unicast portvec in port_fdb_add
+Date:   Sat, 30 Jan 2021 21:43:34 +0800
+Message-Id: <20210130134334.10243-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wengjianfeng <wengjianfeng@yulong.com>
+Having multiple destination ports for a unicast address does not make
+sense.
+Make port_db_load_purge override existent unicast portvec instead of
+adding a new port bit.
 
-at first, ret was assigned to zero, but later assigned to
-a funciton,so the assignment to zero is no use, which can
-simple be removed instead.
-
-Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
+Fixes: 884729399260 ("net: dsa: mv88e6xxx: handle multiple ports in ATU")
+Signed-off-by: DENG Qingfang <dqfext@gmail.com>
 ---
- drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
-index 9f1f93d..cfe2dfd 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192e.c
-@@ -1507,8 +1507,6 @@ static int rtl8192eu_power_on(struct rtl8xxxu_priv *priv)
- 	u32 val32;
- 	int ret;
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index b99f27b8c084..ae0b490f00cd 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -1686,7 +1686,11 @@ static int mv88e6xxx_port_db_load_purge(struct mv88e6xxx_chip *chip, int port,
+ 		if (!entry.portvec)
+ 			entry.state = 0;
+ 	} else {
+-		entry.portvec |= BIT(port);
++		if (state == MV88E6XXX_G1_ATU_DATA_STATE_UC_STATIC)
++			entry.portvec = BIT(port);
++		else
++			entry.portvec |= BIT(port);
++
+ 		entry.state = state;
+ 	}
  
--	ret = 0;
--
- 	val32 = rtl8xxxu_read32(priv, REG_SYS_CFG);
- 	if (val32 & SYS_CFG_SPS_LDO_SEL) {
- 		rtl8xxxu_write8(priv, REG_LDO_SW_CTRL, 0xc3);
 -- 
-1.9.1
-
+2.25.1
