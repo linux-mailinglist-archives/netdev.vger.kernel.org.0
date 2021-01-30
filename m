@@ -2,147 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD6EF309132
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 02:15:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 334D1309138
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 02:22:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232760AbhA3BOt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jan 2021 20:14:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50016 "EHLO mail.kernel.org"
+        id S231614AbhA3BVr convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 29 Jan 2021 20:21:47 -0500
+Received: from mga04.intel.com ([192.55.52.120]:24653 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233101AbhA3BCL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Jan 2021 20:02:11 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6FC5564DD9;
-        Sat, 30 Jan 2021 01:01:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611968490;
-        bh=1lkQFTPKWiGJMf5OSr3Wu804WMTim4ZTfLxreJ4E9RI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ljA4dk5/6OGc5lVjs26m1lQHh2Q9wNoB7vUu7FaUVcd1m/EZdu6rO0i2FUwGT/EtG
-         NGOjXXe0KH/D9391kbJyHV3Ko7A6dSxeL+037+/BTHvI5G+S8orlzTizHPcNMeTP5r
-         1YJ8iZB2m8It5YmSd47Q/I+Uk7fFJL3uuqaGaxfmxEOJnpwkYCPAZlsnvfva8xf7vt
-         Kmo7c8QXavTUB2wqJ29d9FiRbrYRQtmlhqBlDdqsV7BsTOjNro+ey6SUlHsa+tpIkp
-         TNNuTLfv9ANihmK4mQmUYf08v1kFSlv/rrsFijQ3ZklxyjPK9G1kiHbBqsIEzHEuA5
-         Qez4R3nF6xHPw==
-Date:   Fri, 29 Jan 2021 17:01:29 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Subject: Re: [PATCH net-next] net: mhi-net: Add de-aggeration support
-Message-ID: <20210129170129.0a4a682a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1611589557-31012-1-git-send-email-loic.poulain@linaro.org>
-References: <1611589557-31012-1-git-send-email-loic.poulain@linaro.org>
+        id S233066AbhA3BTg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 Jan 2021 20:19:36 -0500
+IronPort-SDR: V+AjJQUEkUti5N0YWfgqkssKVhQMw1k4Rsdn43BQwZ/HtFc3Qxf3IN7pG99uUuHfa8SXffoEXc
+ CxVXgZaGoZxw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9879"; a="177942138"
+X-IronPort-AV: E=Sophos;i="5.79,387,1602572400"; 
+   d="scan'208";a="177942138"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2021 17:18:38 -0800
+IronPort-SDR: 8gT7A+DUAM5lnwTEX+gzLtmSyRTvcxwj6dNwz6ICzTkFNtS7PQnr+zAUrLh0BUs8xb+LYe9LCI
+ 9A2HrbwuFxrw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.79,387,1602572400"; 
+   d="scan'208";a="365563152"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmsmga008.fm.intel.com with ESMTP; 29 Jan 2021 17:18:38 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Fri, 29 Jan 2021 17:18:37 -0800
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Fri, 29 Jan 2021 17:18:37 -0800
+Received: from fmsmsx612.amr.corp.intel.com ([10.18.126.92]) by
+ fmsmsx612.amr.corp.intel.com ([10.18.126.92]) with mapi id 15.01.2106.002;
+ Fri, 29 Jan 2021 17:18:37 -0800
+From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+CC:     "dledford@redhat.com" <dledford@redhat.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>
+Subject: RE: [PATCH 20/22] RDMA/irdma: Add ABI definitions
+Thread-Topic: [PATCH 20/22] RDMA/irdma: Add ABI definitions
+Thread-Index: AQHW8RlkdRkNgNRDEUiQqAbZnBRzCao5SR2AgAWJrnA=
+Date:   Sat, 30 Jan 2021 01:18:36 +0000
+Message-ID: <04dcd32fcecd4492900f0bde0e45e5dc@intel.com>
+References: <20210122234827.1353-1-shiraz.saleem@intel.com>
+ <20210122234827.1353-21-shiraz.saleem@intel.com>
+ <20210125194515.GY4147@nvidia.com>
+In-Reply-To: <20210125194515.GY4147@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+x-originating-ip: [10.1.200.100]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 25 Jan 2021 16:45:57 +0100 Loic Poulain wrote:
-> When device side MTU is larger than host side MRU, the packets
-> (typically rmnet packets) are split over multiple MHI transfers.
-> In that case, fragments must be re-aggregated to recover the packet
-> before forwarding to upper layer.
+> Subject: Re: [PATCH 20/22] RDMA/irdma: Add ABI definitions
 > 
-> A fragmented packet result in -EOVERFLOW MHI transaction status for
-> each of its fragments, except the final one. Such transfer was
-> previoulsy considered as error and fragments were simply dropped.
+> On Fri, Jan 22, 2021 at 05:48:25PM -0600, Shiraz Saleem wrote:
+> > From: Mustafa Ismail <mustafa.ismail@intel.com>
+> >
+> > Add ABI definitions for irdma.
+> >
+> > Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
+> > Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
+> > include/uapi/rdma/irdma-abi.h | 140
+> > ++++++++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 140 insertions(+)
+> >  create mode 100644 include/uapi/rdma/irdma-abi.h
+> >
+> > diff --git a/include/uapi/rdma/irdma-abi.h
+> > b/include/uapi/rdma/irdma-abi.h new file mode 100644 index
+> > 0000000..d9c8ce1
+> > +++ b/include/uapi/rdma/irdma-abi.h
+> > @@ -0,0 +1,140 @@
+> > +/* SPDX-License-Identifier: (GPL-2.0 WITH Linux-syscall-note) OR
+> > +Linux-OpenIB) */
+> > +/*
+> > + * Copyright (c) 2006 - 2021 Intel Corporation.  All rights reserved.
+> > + * Copyright (c) 2005 Topspin Communications.  All rights reserved.
+> > + * Copyright (c) 2005 Cisco Systems.  All rights reserved.
+> > + * Copyright (c) 2005 Open Grid Computing, Inc. All rights reserved.
+> > + */
+> > +
+> > +#ifndef IRDMA_ABI_H
+> > +#define IRDMA_ABI_H
+> > +
+> > +#include <linux/types.h>
+> > +
+> > +/* irdma must support legacy GEN_1 i40iw kernel
+> > + * and user-space whose last ABI ver is 5  */ #define IRDMA_ABI_VER 6
 > 
-> This patch implements the aggregation mechanism allowing to recover
-> the initial packet. It also prints a warning (once) since this behavior
-> usually comes from a misconfiguration of the device (modem).
+> I don't want to see this value increase, either this is ABI compatible with i40iw or it
+> is not and should be a new driver_id.
+
+I am not sure I understand how it's possible without a ver. bump.
+We support user-space libirdma with this driver as well as libi40iw. 
+
+libi40iw - legacy support which is ABIv 4 & 5. GEN_1 devices only
+libirdma - replaces libi40iw; supports i40iw (GEN1) driver and irdma
+
 > 
-> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
-
-> +static struct sk_buff *mhi_net_skb_append(struct mhi_device *mhi_dev,
-> +					  struct sk_buff *skb1,
-> +					  struct sk_buff *skb2)
-> +{
-> +	struct sk_buff *new_skb;
-> +
-> +	/* This is the first fragment */
-> +	if (!skb1)
-> +		return skb2;
-> +
-> +	/* Expand packet */
-> +	new_skb = skb_copy_expand(skb1, 0, skb2->len, GFP_ATOMIC);
-> +	dev_kfree_skb_any(skb1);
-> +	if (!new_skb)
-> +		return skb2;
-
-I don't get it, if you failed to grow the skb you'll return the next
-fragment to the caller? So the frame just lost all of its data up to
-where skb2 started? The entire fragment "train" should probably be
-dropped at this point.
-
-I think you can just hang the skbs off skb_shinfo(p)->frag_list.
-
-Willem - is it legal to feed frag_listed skbs into netif_rx()?
-
-> +	/* Append to expanded packet */
-> +	memcpy(skb_put(new_skb, skb2->len), skb2->data, skb2->len);
-> +
-> +	/* free appended skb */
-> +	dev_kfree_skb_any(skb2);
-> +
-> +	return new_skb;
-> +}
-> +
->  static void mhi_net_dl_callback(struct mhi_device *mhi_dev,
->  				struct mhi_result *mhi_res)
->  {
-> @@ -143,19 +169,44 @@ static void mhi_net_dl_callback(struct mhi_device *mhi_dev,
->  	remaining = atomic_dec_return(&mhi_netdev->stats.rx_queued);
->  
->  	if (unlikely(mhi_res->transaction_status)) {
-> -		dev_kfree_skb_any(skb);
-> -
-> -		/* MHI layer stopping/resetting the DL channel */
-> -		if (mhi_res->transaction_status == -ENOTCONN)
-> +		switch (mhi_res->transaction_status) {
-> +		case -EOVERFLOW:
-> +			/* Packet can not fit in one MHI buffer and has been
-> +			 * split over multiple MHI transfers, do re-aggregation.
-> +			 * That usually means the device side MTU is larger than
-> +			 * the host side MTU/MRU. Since this is not optimal,
-> +			 * print a warning (once).
-> +			 */
-> +			netdev_warn_once(mhi_netdev->ndev,
-> +					 "Fragmented packets received, fix MTU?\n");
-> +			skb_put(skb, mhi_res->bytes_xferd);
-> +			mhi_netdev->skbagg = mhi_net_skb_append(mhi_dev,
-> +								mhi_netdev->skbagg,
-> +								skb);
-> +			break;
-> +		case -ENOTCONN:
-> +			/* MHI layer stopping/resetting the DL channel */
-> +			dev_kfree_skb_any(skb);
->  			return;
-> -
-> -		u64_stats_update_begin(&mhi_netdev->stats.rx_syncp);
-> -		u64_stats_inc(&mhi_netdev->stats.rx_errors);
-> -		u64_stats_update_end(&mhi_netdev->stats.rx_syncp);
-> +		default:
-> +			/* Unknown error, simply drop */
-> +			dev_kfree_skb_any(skb);
-> +			u64_stats_update_begin(&mhi_netdev->stats.rx_syncp);
-> +			u64_stats_inc(&mhi_netdev->stats.rx_errors);
-> +			u64_stats_update_end(&mhi_netdev->stats.rx_syncp);
-> +		}
->  	} else {
-> +		skb_put(skb, mhi_res->bytes_xferd);
-> +
-> +		if (mhi_netdev->skbagg) {
-> +			/* Aggregate the final fragment */
-> +			skb = mhi_net_skb_append(mhi_dev, mhi_netdev->skbagg, skb);
-> +			mhi_netdev->skbagg = NULL;
-> +		}
-> +
->  		u64_stats_update_begin(&mhi_netdev->stats.rx_syncp);
->  		u64_stats_inc(&mhi_netdev->stats.rx_packets);
-> -		u64_stats_add(&mhi_netdev->stats.rx_bytes, mhi_res->bytes_xferd);
-> +		u64_stats_add(&mhi_netdev->stats.rx_bytes, skb->len);
->  		u64_stats_update_end(&mhi_netdev->stats.rx_syncp);
->  
->  		switch (skb->data[0] & 0xf0) {
+> This should have a small diff against include/uapi/rdma/i40iw-abi.h that is
+> obviously compatible
+> 
+> > +struct irdma_create_qp_resp {
+> > +	__u32 qp_id;
+> > +	__u32 actual_sq_size;
+> > +	__u32 actual_rq_size;
+> > +	__u32 irdma_drv_opt;
+> > +	__u32 qp_caps;
+> > +	__u16 rsvd1;
+> > +	__u8 lsmm;
+> > +	__u8 rsvd2;
+> > +};
+> 
+> > +struct i40iw_create_qp_resp {
+> > +	__u32 qp_id;
+> > +	__u32 actual_sq_size;
+> > +	__u32 actual_rq_size;
+> > +	__u32 i40iw_drv_opt;
+> > +	__u16 push_idx;
+> > +	__u8 lsmm;
+> > +	__u8 rsvd;
+> > +};
+> 
+> For instance these are almost the same, why put qp_caps in the middle?
+> Add it to the end so the whole thing is properly compatible with a single structure.
+> 
+> Jason
