@@ -2,169 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 193F830948F
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 11:48:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 394B93094F9
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 12:48:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230111AbhA3Kra (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 05:47:30 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:57619 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S230009AbhA3Kr3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jan 2021 05:47:29 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from cmi@nvidia.com)
-        with SMTP; 30 Jan 2021 04:33:34 +0200
-Received: from dev-r630-03.mtbc.labs.mlnx (dev-r630-03.mtbc.labs.mlnx [10.75.205.13])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 10U2XWO3005357;
-        Sat, 30 Jan 2021 04:33:33 +0200
-From:   Chris Mi <cmi@nvidia.com>
-To:     netdev@vger.kernel.org
-Cc:     kuba@kernel.org, jiri@nvidia.com, saeedm@nvidia.com,
-        Chris Mi <cmi@nvidia.com>, kernel test robot <lkp@intel.com>
-Subject: [PATCH net-next v5] net: psample: Introduce stubs to remove NIC driver dependency
-Date:   Sat, 30 Jan 2021 10:33:19 +0800
-Message-Id: <20210130023319.32560-1-cmi@nvidia.com>
-X-Mailer: git-send-email 2.26.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S231252AbhA3LrT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 06:47:19 -0500
+Received: from m12-14.163.com ([220.181.12.14]:56124 "EHLO m12-14.163.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229854AbhA3LrR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 30 Jan 2021 06:47:17 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=3HDPhqmHgPvzBuo5bl
+        I2uMvrIMia8BZyw9nwfQ+vqKI=; b=qSO5dwxKRPS+O7ue1pZWMtRYe4apzK0OHk
+        4+KscBzTNAtxPfEbDPakqPZuWZ98v00Jin2ChKzGumdscgJAKqoV0JRVQ/MQH6ss
+        rjoAMEtv1h5/uY9gmBSbyXWNEk4F60p6g4ukie6hiPTBd4Z6T5c1vssLulMLHRsy
+        JdBnWfBgs=
+Received: from wengjianfeng.ccdomain.com (unknown [119.137.55.243])
+        by smtp10 (Coremail) with SMTP id DsCowAAXHSHjAhVgHN0oig--.12311S2;
+        Sat, 30 Jan 2021 14:55:33 +0800 (CST)
+From:   samirweng1979 <samirweng1979@163.com>
+To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        wengjianfeng <wengjianfeng@yulong.com>
+Subject: [PATCH] wl1251: cmd: remove redundant assignment
+Date:   Sat, 30 Jan 2021 14:55:42 +0800
+Message-Id: <20210130065542.20252-1-samirweng1979@163.com>
+X-Mailer: git-send-email 2.15.0.windows.1
+X-CM-TRANSID: DsCowAAXHSHjAhVgHN0oig--.12311S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxJF45uw15ArW5AFW8tF1DKFg_yoW5Jw13pF
+        93u347tr98tr1UXrWrZw4kZa9ag3W8JrW7GrWDu34qqF1ayr4FkrZ0gFy09F98ua9YyrW3
+        tFZ0gF4rWF1DCFUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jNUUUUUUUU=
+X-Originating-IP: [119.137.55.243]
+X-CM-SenderInfo: pvdpx25zhqwiqzxzqiywtou0bp/1tbiRQUqsVl91BTTQAAAss
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to send sampled packets to userspace, NIC driver calls
-psample api directly. But it creates a hard dependency on module
-psample. Introduce psample_ops to remove the hard dependency.
-It is initialized when psample module is loaded and set to NULL
-when the module is unloaded.
+From: wengjianfeng <wengjianfeng@yulong.com>
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Chris Mi <cmi@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+-ENOMEM has been used as a return value,it is not necessary to
+assign it, and if kzalloc fail,not need free it,so just return
+-ENOMEM when kzalloc fail.
+
+Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
 ---
-v1->v2:
- - fix sparse errors
-v2->v3:
- - remove inline
-v3->v4:
- - add inline back
-v4->v5:
- - address Jakub's comments
+ drivers/net/wireless/ti/wl1251/cmd.c | 36 ++++++++++++------------------------
+ 1 file changed, 12 insertions(+), 24 deletions(-)
 
- include/net/psample.h    | 26 ++++++++++++++++++++++++++
- net/psample/psample.c    | 14 +++++++++++++-
- net/sched/Makefile       |  2 +-
- net/sched/psample_stub.c |  5 +++++
- 4 files changed, 45 insertions(+), 2 deletions(-)
- create mode 100644 net/sched/psample_stub.c
-
-diff --git a/include/net/psample.h b/include/net/psample.h
-index 68ae16bb0a4a..d0f1cfc56f6f 100644
---- a/include/net/psample.h
-+++ b/include/net/psample.h
-@@ -14,6 +14,15 @@ struct psample_group {
- 	struct rcu_head rcu;
- };
+diff --git a/drivers/net/wireless/ti/wl1251/cmd.c b/drivers/net/wireless/ti/wl1251/cmd.c
+index e1095b8..498c8db 100644
+--- a/drivers/net/wireless/ti/wl1251/cmd.c
++++ b/drivers/net/wireless/ti/wl1251/cmd.c
+@@ -175,10 +175,8 @@ int wl1251_cmd_vbm(struct wl1251 *wl, u8 identity,
+ 	wl1251_debug(DEBUG_CMD, "cmd vbm");
  
-+struct psample_ops {
-+	void (*sample_packet)(struct psample_group *group, struct sk_buff *skb,
-+			      u32 trunc_size, int in_ifindex, int out_ifindex,
-+			      u32 sample_rate);
-+
-+};
-+
-+extern const struct psample_ops __rcu *psample_ops __read_mostly;
-+
- struct psample_group *psample_group_get(struct net *net, u32 group_num);
- void psample_group_take(struct psample_group *group);
- void psample_group_put(struct psample_group *group);
-@@ -35,4 +44,21 @@ static inline void psample_sample_packet(struct psample_group *group,
+ 	vbm = kzalloc(sizeof(*vbm), GFP_KERNEL);
+-	if (!vbm) {
+-		ret = -ENOMEM;
+-		goto out;
+-	}
++	if (!vbm)
++		return -ENOMEM;
  
- #endif
+ 	/* Count and period will be filled by the target */
+ 	vbm->tim.bitmap_ctrl = bitmap_control;
+@@ -213,10 +211,8 @@ int wl1251_cmd_data_path_rx(struct wl1251 *wl, u8 channel, bool enable)
+ 	wl1251_debug(DEBUG_CMD, "cmd data path");
  
-+static inline void
-+psample_nic_sample_packet(struct psample_group *group,
-+			  struct sk_buff *skb, u32 trunc_size,
-+			  int in_ifindex, int out_ifindex,
-+			  u32 sample_rate)
-+{
-+	const struct psample_ops *ops;
-+
-+	rcu_read_lock();
-+	ops = rcu_dereference(psample_ops);
-+	if (ops)
-+		ops->sample_packet(group, skb, trunc_size,
-+				   in_ifindex, out_ifindex,
-+				   sample_rate);
-+	rcu_read_unlock();
-+}
-+
- #endif /* __NET_PSAMPLE_H */
-diff --git a/net/psample/psample.c b/net/psample/psample.c
-index 33e238c965bd..983ca5b698fe 100644
---- a/net/psample/psample.c
-+++ b/net/psample/psample.c
-@@ -8,6 +8,7 @@
- #include <linux/kernel.h>
- #include <linux/skbuff.h>
- #include <linux/module.h>
-+#include <linux/rcupdate.h>
- #include <net/net_namespace.h>
- #include <net/sock.h>
- #include <net/netlink.h>
-@@ -35,6 +36,10 @@ static const struct genl_multicast_group psample_nl_mcgrps[] = {
+ 	cmd = kzalloc(sizeof(*cmd), GFP_KERNEL);
+-	if (!cmd) {
+-		ret = -ENOMEM;
+-		goto out;
+-	}
++	if (!cmd)
++		return -ENOMEM;
  
- static struct genl_family psample_nl_family __ro_after_init;
+ 	cmd->channel = channel;
  
-+static const struct psample_ops psample_sample_ops = {
-+	.sample_packet	= psample_sample_packet,
-+};
-+
- static int psample_group_nl_fill(struct sk_buff *msg,
- 				 struct psample_group *group,
- 				 enum psample_command cmd, u32 portid, u32 seq,
-@@ -456,11 +461,18 @@ EXPORT_SYMBOL_GPL(psample_sample_packet);
+@@ -279,10 +275,8 @@ int wl1251_cmd_join(struct wl1251 *wl, u8 bss_type, u8 channel,
+ 	u8 *bssid;
  
- static int __init psample_module_init(void)
- {
--	return genl_register_family(&psample_nl_family);
-+	int ret;
-+
-+	ret = genl_register_family(&psample_nl_family);
-+	if (!ret)
-+		RCU_INIT_POINTER(psample_ops, &psample_sample_ops);
-+	return ret;
- }
+ 	join = kzalloc(sizeof(*join), GFP_KERNEL);
+-	if (!join) {
+-		ret = -ENOMEM;
+-		goto out;
+-	}
++	if (!join)
++		return -ENOMEM;
  
- static void __exit psample_module_exit(void)
- {
-+	rcu_assign_pointer(psample_ops, NULL);
-+	synchronize_rcu();
- 	genl_unregister_family(&psample_nl_family);
- }
+ 	wl1251_debug(DEBUG_CMD, "cmd join%s ch %d %d/%d",
+ 		     bss_type == BSS_TYPE_IBSS ? " ibss" : "",
+@@ -324,10 +318,8 @@ int wl1251_cmd_ps_mode(struct wl1251 *wl, u8 ps_mode)
+ 	wl1251_debug(DEBUG_CMD, "cmd set ps mode");
  
-diff --git a/net/sched/Makefile b/net/sched/Makefile
-index dd14ef413fda..0d92bb98bb26 100644
---- a/net/sched/Makefile
-+++ b/net/sched/Makefile
-@@ -3,7 +3,7 @@
- # Makefile for the Linux Traffic Control Unit.
- #
+ 	ps_params = kzalloc(sizeof(*ps_params), GFP_KERNEL);
+-	if (!ps_params) {
+-		ret = -ENOMEM;
+-		goto out;
+-	}
++	if (!ps_params)
++		return -ENOMEM;
  
--obj-y	:= sch_generic.o sch_mq.o
-+obj-y	:= sch_generic.o sch_mq.o psample_stub.o
+ 	ps_params->ps_mode = ps_mode;
+ 	ps_params->send_null_data = 1;
+@@ -356,10 +348,8 @@ int wl1251_cmd_read_memory(struct wl1251 *wl, u32 addr, void *answer,
+ 	wl1251_debug(DEBUG_CMD, "cmd read memory");
  
- obj-$(CONFIG_INET)		+= sch_frag.o
- obj-$(CONFIG_NET_SCHED)		+= sch_api.o sch_blackhole.o
-diff --git a/net/sched/psample_stub.c b/net/sched/psample_stub.c
-new file mode 100644
-index 000000000000..0541b8c5100d
---- /dev/null
-+++ b/net/sched/psample_stub.c
-@@ -0,0 +1,5 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+/* Copyright (c) 2021 Mellanox Technologies. */
-+
-+const struct psample_ops __rcu *psample_ops __read_mostly;
-+EXPORT_SYMBOL_GPL(psample_ops);
+ 	cmd = kzalloc(sizeof(*cmd), GFP_KERNEL);
+-	if (!cmd) {
+-		ret = -ENOMEM;
+-		goto out;
+-	}
++	if (!cmd)
++		return -ENOMEM;
+ 
+ 	WARN_ON(len > MAX_READ_SIZE);
+ 	len = min_t(size_t, len, MAX_READ_SIZE);
+@@ -401,10 +391,8 @@ int wl1251_cmd_template_set(struct wl1251 *wl, u16 cmd_id,
+ 	cmd_len = ALIGN(sizeof(*cmd) + buf_len, 4);
+ 
+ 	cmd = kzalloc(cmd_len, GFP_KERNEL);
+-	if (!cmd) {
+-		ret = -ENOMEM;
+-		goto out;
+-	}
++	if (!cmd)
++		return -ENOMEM;
+ 
+ 	cmd->size = cpu_to_le16(buf_len);
+ 
 -- 
-2.26.2
+1.9.1
+
 
