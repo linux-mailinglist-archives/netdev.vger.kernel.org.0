@@ -2,801 +2,1252 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 378FB309707
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 18:06:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77D51309720
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 18:11:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232054AbhA3RE2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 12:04:28 -0500
+        id S231565AbhA3RKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 12:10:07 -0500
 Received: from [1.6.215.26] ([1.6.215.26]:38272 "EHLO hyd1soter2"
         rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230360AbhA3REB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 30 Jan 2021 12:04:01 -0500
+        id S231820AbhA3RJ7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 30 Jan 2021 12:09:59 -0500
 X-Greylist: delayed 575 seconds by postgrey-1.27 at vger.kernel.org; Sat, 30 Jan 2021 12:02:22 EST
 Received: from hyd1soter2.caveonetworks.com (localhost [127.0.0.1])
-        by hyd1soter2 (8.15.2/8.15.2/Debian-3) with ESMTP id 10UGrkAi092106;
-        Sat, 30 Jan 2021 22:23:46 +0530
+        by hyd1soter2 (8.15.2/8.15.2/Debian-3) with ESMTP id 10UGrwwV092155;
+        Sat, 30 Jan 2021 22:23:58 +0530
 Received: (from geetha@localhost)
-        by hyd1soter2.caveonetworks.com (8.15.2/8.15.2/Submit) id 10UGrkPV092105;
-        Sat, 30 Jan 2021 22:23:46 +0530
+        by hyd1soter2.caveonetworks.com (8.15.2/8.15.2/Submit) id 10UGrwBW092154;
+        Sat, 30 Jan 2021 22:23:58 +0530
 From:   Geetha sowjanya <gakula@marvell.com>
 To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     sgoutham@marvell.com, davem@davemloft.net, kuba@kernel.org,
+        Hariprasad Kelam <hkelam@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
         Geetha sowjanya <gakula@marvell.com>
-Subject: [net-next 07/14] octeontx2-pf: cn10k: Use LMTST lines for NPA/NIX operations
-Date:   Sat, 30 Jan 2021 22:23:42 +0530
-Message-Id: <1612025622-92065-1-git-send-email-gakula@marvell.com>
+Subject: [net-next 08/14] octeontx2-af: cn10k: Add RPM MAC support
+Date:   Sat, 30 Jan 2021 22:23:57 +0530
+Message-Id: <1612025637-92114-1-git-send-email-gakula@marvell.com>
 X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support to use new LMTST lines for NPA batch free
-and burst SQE flush. Adds new dev_hw_ops structure to hold platform
-specific functions and create new files cn10k.c and cn10k.h.
+From: Hariprasad Kelam <hkelam@marvell.com>
 
+OcteonTx2's next gen platform the CN10K has RPM MAC which has a
+different serdes when compared to CGX MAC. Though the underlying
+HW is different, the CSR interface has been designed largely inline
+with CGX MAC, with few exceptions though. So we are using the same
+CGX driver for RPM MAC as well and will have a different set of APIs
+for RPM where ever necessary.
+
+This patch adds initial support for CN10K's RPM MAC i.e. the driver
+registration, communication with firmware etc. For communication with
+firmware, RPM provides a different IRQ when compared to CGX.
+The CGX and RPM blocks support different features. Currently few
+features like ptp, flowcontrol and higig are not supported by RPM. This
+patch adds new mailbox message "CGX_FEATURES_GET" to get the list of
+features supported by underlying MAC.
+
+RPM has different implementations for RX/TX stats. Unlike CGX,
+bar offset of stat registers are different. This patch adds
+support to access the same and dump the values in debugfs.
+
+Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
 Signed-off-by: Geetha sowjanya <gakula@marvell.com>
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 ---
- .../net/ethernet/marvell/octeontx2/nic/Makefile    |   2 +-
- drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c | 182 +++++++++++++++++++++
- drivers/net/ethernet/marvell/octeontx2/nic/cn10k.h |  17 ++
- .../ethernet/marvell/octeontx2/nic/otx2_common.c   |  81 ++++-----
- .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  61 ++++++-
- .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   |  36 +---
- .../net/ethernet/marvell/octeontx2/nic/otx2_reg.h  |   1 +
- .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c |  38 ++---
- .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.h |   7 +
- .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c   |  28 +---
- include/linux/soc/marvell/octeontx2/asm.h          |   8 +
- 11 files changed, 330 insertions(+), 131 deletions(-)
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/cn10k.h
+ drivers/net/ethernet/marvell/octeontx2/af/Makefile |   2 +-
+ drivers/net/ethernet/marvell/octeontx2/af/cgx.c    | 271 +++++++++++++++------
+ drivers/net/ethernet/marvell/octeontx2/af/cgx.h    |  16 +-
+ .../ethernet/marvell/octeontx2/af/lmac_common.h    |  94 +++++++
+ drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  15 +-
+ drivers/net/ethernet/marvell/octeontx2/af/rpm.c    |  44 ++++
+ drivers/net/ethernet/marvell/octeontx2/af/rpm.h    |  23 ++
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |   1 +
+ .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    |  60 ++++-
+ .../ethernet/marvell/octeontx2/af/rvu_debugfs.c    |  54 +++-
+ .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    |   6 +-
+ 11 files changed, 480 insertions(+), 106 deletions(-)
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rpm.c
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rpm.h
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/Makefile b/drivers/net/ethernet/marvell/octeontx2/nic/Makefile
-index 4193ae3..282f8cf 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/Makefile
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/Makefile
-@@ -7,7 +7,7 @@ obj-$(CONFIG_OCTEONTX2_PF) += octeontx2_nicpf.o
- obj-$(CONFIG_OCTEONTX2_VF) += octeontx2_nicvf.o
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/Makefile b/drivers/net/ethernet/marvell/octeontx2/af/Makefile
+index eb535c9..a6afbde 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/Makefile
++++ b/drivers/net/ethernet/marvell/octeontx2/af/Makefile
+@@ -10,4 +10,4 @@ obj-$(CONFIG_OCTEONTX2_AF) += octeontx2_af.o
+ octeontx2_mbox-y := mbox.o rvu_trace.o
+ octeontx2_af-y := cgx.o rvu.o rvu_cgx.o rvu_npa.o rvu_nix.o \
+ 		  rvu_reg.o rvu_npc.o rvu_debugfs.o ptp.o rvu_npc_fs.o \
+-		  rvu_cpt.o rvu_devlink.o
++		  rvu_cpt.o rvu_devlink.o rpm.o
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+index 84a9123..29b3705c 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+@@ -20,47 +20,11 @@
+ #include <linux/of_net.h>
  
- octeontx2_nicpf-y := otx2_pf.o otx2_common.o otx2_txrx.o otx2_ethtool.o \
--		     otx2_ptp.o otx2_flows.o
-+		     otx2_ptp.o otx2_flows.o cn10k.o
- octeontx2_nicvf-y := otx2_vf.o
+ #include "cgx.h"
++#include "rvu.h"
++#include "lmac_common.h"
  
- ccflags-y += -I$(srctree)/drivers/net/ethernet/marvell/octeontx2/af
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c
+-#define DRV_NAME	"octeontx2-cgx"
+-#define DRV_STRING      "Marvell OcteonTX2 CGX/MAC Driver"
+-
+-/**
+- * struct lmac
+- * @wq_cmd_cmplt:	waitq to keep the process blocked until cmd completion
+- * @cmd_lock:		Lock to serialize the command interface
+- * @resp:		command response
+- * @link_info:		link related information
+- * @event_cb:		callback for linkchange events
+- * @event_cb_lock:	lock for serializing callback with unregister
+- * @cmd_pend:		flag set before new command is started
+- *			flag cleared after command response is received
+- * @cgx:		parent cgx port
+- * @lmac_id:		lmac port id
+- * @name:		lmac port name
+- */
+-struct lmac {
+-	wait_queue_head_t wq_cmd_cmplt;
+-	struct mutex cmd_lock;
+-	u64 resp;
+-	struct cgx_link_user_info link_info;
+-	struct cgx_event_cb event_cb;
+-	spinlock_t event_cb_lock;
+-	bool cmd_pend;
+-	struct cgx *cgx;
+-	u8 lmac_id;
+-	char *name;
+-};
+-
+-struct cgx {
+-	void __iomem		*reg_base;
+-	struct pci_dev		*pdev;
+-	u8			cgx_id;
+-	u8			lmac_count;
+-	struct lmac		*lmac_idmap[MAX_LMAC_PER_CGX];
+-	struct			work_struct cgx_cmd_work;
+-	struct			workqueue_struct *cgx_cmd_workq;
+-	struct list_head	cgx_list;
+-};
++#define DRV_NAME	"Marvell-CGX/RPM"
++#define DRV_STRING      "Marvell CGX/RPM Driver"
+ 
+ static LIST_HEAD(cgx_list);
+ 
+@@ -76,22 +40,45 @@ static int cgx_fwi_link_change(struct cgx *cgx, int lmac_id, bool en);
+ /* Supported devices */
+ static const struct pci_device_id cgx_id_table[] = {
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, PCI_DEVID_OCTEONTX2_CGX) },
++	{ PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, PCI_DEVID_CN10K_RPM) },
+ 	{ 0, }  /* end of table */
+ };
+ 
+ MODULE_DEVICE_TABLE(pci, cgx_id_table);
+ 
+-static void cgx_write(struct cgx *cgx, u64 lmac, u64 offset, u64 val)
++static bool is_dev_rpm(void *cgxd)
++{
++	struct cgx *cgx = cgxd;
++
++	return (cgx->pdev->device == PCI_DEVID_CN10K_RPM);
++}
++
++bool is_lmac_valid(struct cgx *cgx, int lmac_id)
++{
++	return cgx && test_bit(lmac_id, &cgx->lmac_bmap);
++}
++
++struct mac_ops *get_mac_ops(void *cgxd)
++{
++	if (!cgxd)
++		return cgxd;
++
++	return ((struct cgx *)cgxd)->mac_ops;
++}
++
++void cgx_write(struct cgx *cgx, u64 lmac, u64 offset, u64 val)
+ {
+-	writeq(val, cgx->reg_base + (lmac << 18) + offset);
++	writeq(val, cgx->reg_base + (lmac << cgx->mac_ops->lmac_offset) +
++	       offset);
+ }
+ 
+-static u64 cgx_read(struct cgx *cgx, u64 lmac, u64 offset)
++u64 cgx_read(struct cgx *cgx, u64 lmac, u64 offset)
+ {
+-	return readq(cgx->reg_base + (lmac << 18) + offset);
++	return readq(cgx->reg_base + (lmac << cgx->mac_ops->lmac_offset) +
++		     offset);
+ }
+ 
+-static inline struct lmac *lmac_pdata(u8 lmac_id, struct cgx *cgx)
++struct lmac *lmac_pdata(u8 lmac_id, struct cgx *cgx)
+ {
+ 	if (!cgx || lmac_id >= MAX_LMAC_PER_CGX)
+ 		return NULL;
+@@ -185,8 +172,10 @@ static u64 mac2u64 (u8 *mac_addr)
+ int cgx_lmac_addr_set(u8 cgx_id, u8 lmac_id, u8 *mac_addr)
+ {
+ 	struct cgx *cgx_dev = cgx_get_pdata(cgx_id);
++	struct mac_ops *mac_ops;
+ 	u64 cfg;
+ 
++	mac_ops = cgx_dev->mac_ops;
+ 	/* copy 6bytes from macaddr */
+ 	/* memcpy(&cfg, mac_addr, 6); */
+ 
+@@ -205,8 +194,11 @@ int cgx_lmac_addr_set(u8 cgx_id, u8 lmac_id, u8 *mac_addr)
+ u64 cgx_lmac_addr_get(u8 cgx_id, u8 lmac_id)
+ {
+ 	struct cgx *cgx_dev = cgx_get_pdata(cgx_id);
++	struct mac_ops *mac_ops;
+ 	u64 cfg;
+ 
++	mac_ops = cgx_dev->mac_ops;
++
+ 	cfg = cgx_read(cgx_dev, 0, CGXX_CMRX_RX_DMAC_CAM0 + lmac_id * 0x8);
+ 	return cfg & CGX_RX_DMAC_ADR_MASK;
+ }
+@@ -215,7 +207,7 @@ int cgx_set_pkind(void *cgxd, u8 lmac_id, int pkind)
+ {
+ 	struct cgx *cgx = cgxd;
+ 
+-	if (!cgx || lmac_id >= cgx->lmac_count)
++	if (!is_lmac_valid(cgx, lmac_id))
+ 		return -ENODEV;
+ 
+ 	cgx_write(cgx, lmac_id, CGXX_CMRX_RX_ID_MAP, (pkind & 0x3F));
+@@ -237,7 +229,7 @@ int cgx_lmac_internal_loopback(void *cgxd, int lmac_id, bool enable)
+ 	u8 lmac_type;
+ 	u64 cfg;
+ 
+-	if (!cgx || lmac_id >= cgx->lmac_count)
++	if (!is_lmac_valid(cgx, lmac_id))
+ 		return -ENODEV;
+ 
+ 	lmac_type = cgx_get_lmac_type(cgx, lmac_id);
+@@ -262,11 +254,13 @@ int cgx_lmac_internal_loopback(void *cgxd, int lmac_id, bool enable)
+ void cgx_lmac_promisc_config(int cgx_id, int lmac_id, bool enable)
+ {
+ 	struct cgx *cgx = cgx_get_pdata(cgx_id);
++	struct mac_ops *mac_ops;
+ 	u64 cfg = 0;
+ 
+ 	if (!cgx)
+ 		return;
+ 
++	mac_ops = cgx->mac_ops;
+ 	if (enable) {
+ 		/* Enable promiscuous mode on LMAC */
+ 		cfg = cgx_read(cgx, lmac_id, CGXX_CMRX_RX_DMAC_CTL0);
+@@ -298,6 +292,9 @@ void cgx_lmac_enadis_rx_pause_fwding(void *cgxd, int lmac_id, bool enable)
+ 	struct cgx *cgx = cgxd;
+ 	u64 cfg;
+ 
++	if (is_dev_rpm(cgx))
++		return;
++
+ 	if (!cgx)
+ 		return;
+ 
+@@ -322,9 +319,11 @@ void cgx_lmac_enadis_rx_pause_fwding(void *cgxd, int lmac_id, bool enable)
+ 
+ int cgx_get_rx_stats(void *cgxd, int lmac_id, int idx, u64 *rx_stat)
+ {
++	struct mac_ops *mac_ops;
+ 	struct cgx *cgx = cgxd;
+ 
+-	if (!cgx || lmac_id >= cgx->lmac_count)
++	mac_ops = cgx->mac_ops;
++	if (!is_lmac_valid(cgx, lmac_id))
+ 		return -ENODEV;
+ 	*rx_stat =  cgx_read(cgx, lmac_id, CGXX_CMRX_RX_STAT0 + (idx * 8));
+ 	return 0;
+@@ -332,20 +331,27 @@ int cgx_get_rx_stats(void *cgxd, int lmac_id, int idx, u64 *rx_stat)
+ 
+ int cgx_get_tx_stats(void *cgxd, int lmac_id, int idx, u64 *tx_stat)
+ {
++	struct mac_ops *mac_ops;
+ 	struct cgx *cgx = cgxd;
+ 
+-	if (!cgx || lmac_id >= cgx->lmac_count)
++	mac_ops = cgx->mac_ops;
++	if (!is_lmac_valid(cgx, lmac_id))
+ 		return -ENODEV;
+ 	*tx_stat = cgx_read(cgx, lmac_id, CGXX_CMRX_TX_STAT0 + (idx * 8));
+ 	return 0;
+ }
+ 
++u64 cgx_features_get(void *cgxd)
++{
++	return ((struct cgx *)cgxd)->hw_features;
++}
++
+ int cgx_lmac_rx_tx_enable(void *cgxd, int lmac_id, bool enable)
+ {
+ 	struct cgx *cgx = cgxd;
+ 	u64 cfg;
+ 
+-	if (!cgx || lmac_id >= cgx->lmac_count)
++	if (!is_lmac_valid(cgx, lmac_id))
+ 		return -ENODEV;
+ 
+ 	cfg = cgx_read(cgx, lmac_id, CGXX_CMRX_CFG);
+@@ -362,7 +368,7 @@ int cgx_lmac_tx_enable(void *cgxd, int lmac_id, bool enable)
+ 	struct cgx *cgx = cgxd;
+ 	u64 cfg, last;
+ 
+-	if (!cgx || lmac_id >= cgx->lmac_count)
++	if (!is_lmac_valid(cgx, lmac_id))
+ 		return -ENODEV;
+ 
+ 	cfg = cgx_read(cgx, lmac_id, CGXX_CMRX_CFG);
+@@ -383,7 +389,10 @@ int cgx_lmac_get_pause_frm(void *cgxd, int lmac_id,
+ 	struct cgx *cgx = cgxd;
+ 	u64 cfg;
+ 
+-	if (!cgx || lmac_id >= cgx->lmac_count)
++	if (is_dev_rpm(cgx))
++		return 0;
++
++	if (!is_lmac_valid(cgx, lmac_id))
+ 		return -ENODEV;
+ 
+ 	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL);
+@@ -400,7 +409,10 @@ int cgx_lmac_set_pause_frm(void *cgxd, int lmac_id,
+ 	struct cgx *cgx = cgxd;
+ 	u64 cfg;
+ 
+-	if (!cgx || lmac_id >= cgx->lmac_count)
++	if (is_dev_rpm(cgx))
++		return 0;
++
++	if (!is_lmac_valid(cgx, lmac_id))
+ 		return -ENODEV;
+ 
+ 	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_RX_FRM_CTL);
+@@ -428,7 +440,10 @@ static void cgx_lmac_pause_frm_config(struct cgx *cgx, int lmac_id, bool enable)
+ {
+ 	u64 cfg;
+ 
+-	if (!cgx || lmac_id >= cgx->lmac_count)
++	if (is_dev_rpm(cgx))
++		return;
++
++	if (!is_lmac_valid(cgx, lmac_id))
+ 		return;
+ 	if (enable) {
+ 		/* Enable receive pause frames */
+@@ -486,6 +501,9 @@ void cgx_lmac_ptp_config(void *cgxd, int lmac_id, bool enable)
+ 	if (!cgx)
+ 		return;
+ 
++	if (is_dev_rpm(cgx))
++		return;
++
+ 	if (enable) {
+ 		/* Enable inbound PTP timestamping */
+ 		cfg = cgx_read(cgx, lmac_id, CGXX_GMP_GMI_RXX_FRM_CTL);
+@@ -508,7 +526,7 @@ void cgx_lmac_ptp_config(void *cgxd, int lmac_id, bool enable)
+ }
+ 
+ /* CGX Firmware interface low level support */
+-static int cgx_fwi_cmd_send(u64 req, u64 *resp, struct lmac *lmac)
++int cgx_fwi_cmd_send(u64 req, u64 *resp, struct lmac *lmac)
+ {
+ 	struct cgx *cgx = lmac->cgx;
+ 	struct device *dev;
+@@ -556,8 +574,7 @@ static int cgx_fwi_cmd_send(u64 req, u64 *resp, struct lmac *lmac)
+ 	return err;
+ }
+ 
+-static inline int cgx_fwi_cmd_generic(u64 req, u64 *resp,
+-				      struct cgx *cgx, int lmac_id)
++int cgx_fwi_cmd_generic(u64 req, u64 *resp, struct cgx *cgx, int lmac_id)
+ {
+ 	struct lmac *lmac;
+ 	int err;
+@@ -686,12 +703,16 @@ static inline bool cgx_event_is_linkevent(u64 event)
+ 
+ static irqreturn_t cgx_fwi_event_handler(int irq, void *data)
+ {
++	u64 event, offset, clear_bit;
+ 	struct lmac *lmac = data;
+ 	struct cgx *cgx;
+-	u64 event;
+ 
+ 	cgx = lmac->cgx;
+ 
++	/* Clear SW_INT for RPM and CMR_INT for CGX */
++	offset     = cgx->mac_ops->int_register;
++	clear_bit  = cgx->mac_ops->int_ena_bit;
++
+ 	event = cgx_read(cgx, lmac->lmac_id, CGX_EVENT_REG);
+ 
+ 	if (!FIELD_GET(EVTREG_ACK, event))
+@@ -727,7 +748,7 @@ static irqreturn_t cgx_fwi_event_handler(int irq, void *data)
+ 	 * Ack the interrupt register as well.
+ 	 */
+ 	cgx_write(lmac->cgx, lmac->lmac_id, CGX_EVENT_REG, 0);
+-	cgx_write(lmac->cgx, lmac->lmac_id, CGXX_CMRX_INT, FW_CGX_INT);
++	cgx_write(lmac->cgx, lmac->lmac_id, offset, clear_bit);
+ 
+ 	return IRQ_HANDLED;
+ }
+@@ -771,14 +792,16 @@ int cgx_get_fwdata_base(u64 *base)
+ {
+ 	u64 req = 0, resp;
+ 	struct cgx *cgx;
++	int first_lmac;
+ 	int err;
+ 
+ 	cgx = list_first_entry_or_null(&cgx_list, struct cgx, cgx_list);
+ 	if (!cgx)
+ 		return -ENXIO;
+ 
++	first_lmac = find_first_bit(&cgx->lmac_bmap, MAX_LMAC_PER_CGX);
+ 	req = FIELD_SET(CMDREG_ID, CGX_CMD_GET_FWD_BASE, req);
+-	err = cgx_fwi_cmd_generic(req, &resp, cgx, 0);
++	err = cgx_fwi_cmd_generic(req, &resp, cgx, first_lmac);
+ 	if (!err)
+ 		*base = FIELD_GET(RESP_FWD_BASE, resp);
+ 
+@@ -800,10 +823,11 @@ static int cgx_fwi_link_change(struct cgx *cgx, int lmac_id, bool enable)
+ 
+ static inline int cgx_fwi_read_version(u64 *resp, struct cgx *cgx)
+ {
++	int first_lmac = find_first_bit(&cgx->lmac_bmap, MAX_LMAC_PER_CGX);
+ 	u64 req = 0;
+ 
+ 	req = FIELD_SET(CMDREG_ID, CGX_CMD_GET_FW_VER, req);
+-	return cgx_fwi_cmd_generic(req, resp, cgx, 0);
++	return cgx_fwi_cmd_generic(req, resp, cgx, first_lmac);
+ }
+ 
+ static int cgx_lmac_verify_fwi_version(struct cgx *cgx)
+@@ -836,8 +860,8 @@ static void cgx_lmac_linkup_work(struct work_struct *work)
+ 	struct device *dev = &cgx->pdev->dev;
+ 	int i, err;
+ 
+-	/* Do Link up for all the lmacs */
+-	for (i = 0; i < cgx->lmac_count; i++) {
++	/* Do Link up for all the enabled lmacs */
++	for_each_set_bit(i, &cgx->lmac_bmap, MAX_LMAC_PER_CGX) {
+ 		err = cgx_fwi_link_change(cgx, i, true);
+ 		if (err)
+ 			dev_info(dev, "cgx port %d:%d Link up command failed\n",
+@@ -857,12 +881,67 @@ int cgx_lmac_linkup_start(void *cgxd)
+ 	return 0;
+ }
+ 
++static int cgx_configure_interrupt(struct cgx *cgx, struct lmac *lmac,
++				   int cnt, bool req_free)
++{
++	struct mac_ops *mac_ops = cgx->mac_ops;
++	u64 offset, ena_bit;
++	unsigned int irq;
++	int err;
++
++	irq      = pci_irq_vector(cgx->pdev, mac_ops->lmac_fwi +
++				  cnt * mac_ops->irq_offset);
++	offset   = mac_ops->int_set_reg;
++	ena_bit  = mac_ops->int_ena_bit;
++
++	if (req_free) {
++		free_irq(irq, lmac);
++		return 0;
++	}
++
++	err = request_irq(irq, cgx_fwi_event_handler, 0, lmac->name, lmac);
++	if (err)
++		return err;
++
++	/* Enable interrupt */
++	cgx_write(cgx, lmac->lmac_id, offset, ena_bit);
++	return 0;
++}
++
++int cgx_get_nr_lmacs(void *cgxd)
++{
++	struct cgx *cgx = cgxd;
++
++	return cgx_read(cgx, 0, CGXX_CMRX_RX_LMACS) & 0x7ULL;
++}
++
++u8 cgx_get_lmacid(void *cgxd, u8 lmac_index)
++{
++	struct cgx *cgx = cgxd;
++
++	return cgx->lmac_idmap[lmac_index]->lmac_id;
++}
++
++unsigned long cgx_get_lmac_bmap(void *cgxd)
++{
++	struct cgx *cgx = cgxd;
++
++	return cgx->lmac_bmap;
++}
++
+ static int cgx_lmac_init(struct cgx *cgx)
+ {
+ 	struct lmac *lmac;
++	u64 lmac_list;
+ 	int i, err;
+ 
+-	cgx->lmac_count = cgx_read(cgx, 0, CGXX_CMRX_RX_LMACS) & 0x7;
++	cgx->lmac_count = cgx->mac_ops->get_nr_lmacs(cgx);
++	/* lmac_list specifies which lmacs are enabled
++	 * when bit n is set to 1, LMAC[n] is enabled
++	 */
++	if (cgx->mac_ops->non_contiguous_serdes_lane)
++		lmac_list = cgx_read(cgx, 0, CGXX_CMRX_RX_LMACS) & 0xFULL;
++
+ 	if (cgx->lmac_count > MAX_LMAC_PER_CGX)
+ 		cgx->lmac_count = MAX_LMAC_PER_CGX;
+ 
+@@ -876,24 +955,25 @@ static int cgx_lmac_init(struct cgx *cgx)
+ 			goto err_lmac_free;
+ 		}
+ 		sprintf(lmac->name, "cgx_fwi_%d_%d", cgx->cgx_id, i);
+-		lmac->lmac_id = i;
++		if (cgx->mac_ops->non_contiguous_serdes_lane) {
++			lmac->lmac_id = __ffs64(lmac_list);
++			lmac_list   &= ~BIT_ULL(lmac->lmac_id);
++		} else {
++			lmac->lmac_id = i;
++		}
++
+ 		lmac->cgx = cgx;
+ 		init_waitqueue_head(&lmac->wq_cmd_cmplt);
+ 		mutex_init(&lmac->cmd_lock);
+ 		spin_lock_init(&lmac->event_cb_lock);
+-		err = request_irq(pci_irq_vector(cgx->pdev,
+-						 CGX_LMAC_FWI + i * 9),
+-				   cgx_fwi_event_handler, 0, lmac->name, lmac);
++		err = cgx_configure_interrupt(cgx, lmac, lmac->lmac_id, false);
+ 		if (err)
+ 			goto err_irq;
+ 
+-		/* Enable interrupt */
+-		cgx_write(cgx, lmac->lmac_id, CGXX_CMRX_INT_ENA_W1S,
+-			  FW_CGX_INT);
+-
+ 		/* Add reference */
+-		cgx->lmac_idmap[i] = lmac;
+-		cgx_lmac_pause_frm_config(cgx, i, true);
++		cgx->lmac_idmap[lmac->lmac_id] = lmac;
++		cgx_lmac_pause_frm_config(cgx, lmac->lmac_id, true);
++		set_bit(lmac->lmac_id, &cgx->lmac_bmap);
+ 	}
+ 
+ 	return cgx_lmac_verify_fwi_version(cgx);
+@@ -917,12 +997,12 @@ static int cgx_lmac_exit(struct cgx *cgx)
+ 	}
+ 
+ 	/* Free all lmac related resources */
+-	for (i = 0; i < cgx->lmac_count; i++) {
+-		cgx_lmac_pause_frm_config(cgx, i, false);
++	for_each_set_bit(i, &cgx->lmac_bmap, MAX_LMAC_PER_CGX) {
+ 		lmac = cgx->lmac_idmap[i];
+ 		if (!lmac)
+ 			continue;
+-		free_irq(pci_irq_vector(cgx->pdev, CGX_LMAC_FWI + i * 9), lmac);
++		cgx_lmac_pause_frm_config(cgx, lmac->lmac_id, false);
++		cgx_configure_interrupt(cgx, lmac, lmac->lmac_id, true);
+ 		kfree(lmac->name);
+ 		kfree(lmac);
+ 	}
+@@ -930,6 +1010,27 @@ static int cgx_lmac_exit(struct cgx *cgx)
+ 	return 0;
+ }
+ 
++static void cgx_populate_features(struct cgx *cgx)
++{
++	if (is_dev_rpm(cgx))
++		cgx->hw_features =  RVU_MAC_RPM;
++	else
++		cgx->hw_features = (RVU_LMAC_FEAT_FC | RVU_LMAC_FEAT_PTP);
++}
++
++struct mac_ops	cgx_mac_ops    = {
++	.name		=       "cgx",
++	.csr_offset	=       0,
++	.lmac_offset    =       18,
++	.int_register	=       CGXX_CMRX_INT,
++	.int_set_reg	=       CGXX_CMRX_INT_ENA_W1S,
++	.irq_offset	=       9,
++	.int_ena_bit    =       FW_CGX_INT,
++	.lmac_fwi	=	CGX_LMAC_FWI,
++	.non_contiguous_serdes_lane = false,
++	.get_nr_lmacs	=	cgx_get_nr_lmacs,
++};
++
+ static int cgx_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ {
+ 	struct device *dev = &pdev->dev;
+@@ -943,6 +1044,12 @@ static int cgx_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ 	pci_set_drvdata(pdev, cgx);
+ 
++	/* Use mac_ops to get MAC specific features */
++	if (pdev->device == PCI_DEVID_CN10K_RPM)
++		cgx->mac_ops = rpm_get_mac_ops();
++	else
++		cgx->mac_ops = &cgx_mac_ops;
++
+ 	err = pci_enable_device(pdev);
+ 	if (err) {
+ 		dev_err(dev, "Failed to enable PCI device\n");
+@@ -964,7 +1071,7 @@ static int cgx_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 		goto err_release_regions;
+ 	}
+ 
+-	nvec = CGX_NVEC;
++	nvec = pci_msix_vec_count(cgx->pdev);
+ 	err = pci_alloc_irq_vectors(pdev, nvec, nvec, PCI_IRQ_MSIX);
+ 	if (err < 0 || err != nvec) {
+ 		dev_err(dev, "Request for %d msix vectors failed, err %d\n",
+@@ -988,6 +1095,8 @@ static int cgx_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ 	cgx_link_usertable_init();
+ 
++	cgx_populate_features(cgx);
++
+ 	err = cgx_lmac_init(cgx);
+ 	if (err)
+ 		goto err_release_lmac;
+@@ -1011,8 +1120,10 @@ static void cgx_remove(struct pci_dev *pdev)
+ {
+ 	struct cgx *cgx = pci_get_drvdata(pdev);
+ 
+-	cgx_lmac_exit(cgx);
+-	list_del(&cgx->cgx_list);
++	if (cgx) {
++		cgx_lmac_exit(cgx);
++		list_del(&cgx->cgx_list);
++	}
+ 	pci_free_irq_vectors(pdev);
+ 	pci_release_regions(pdev);
+ 	pci_disable_device(pdev);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.h b/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
+index bcfc3e5..7c76fd0 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
+@@ -13,6 +13,7 @@
+ 
+ #include "mbox.h"
+ #include "cgx_fw_if.h"
++#include "rpm.h"
+ 
+  /* PCI device IDs */
+ #define	PCI_DEVID_OCTEONTX2_CGX		0xA059
+@@ -40,18 +41,18 @@
+ #define FW_CGX_INT			BIT_ULL(1)
+ #define CGXX_CMRX_INT_ENA_W1S		0x058
+ #define CGXX_CMRX_RX_ID_MAP		0x060
+-#define CGXX_CMRX_RX_STAT0		0x070
++#define CGXX_CMRX_RX_STAT0		(0x070 + mac_ops->csr_offset)
+ #define CGXX_CMRX_RX_LMACS		0x128
+-#define CGXX_CMRX_RX_DMAC_CTL0		0x1F8
++#define CGXX_CMRX_RX_DMAC_CTL0		(0x1F8 + mac_ops->csr_offset)
+ #define CGX_DMAC_CTL0_CAM_ENABLE	BIT_ULL(3)
+ #define CGX_DMAC_CAM_ACCEPT		BIT_ULL(3)
+ #define CGX_DMAC_MCAST_MODE		BIT_ULL(1)
+ #define CGX_DMAC_BCAST_MODE		BIT_ULL(0)
+-#define CGXX_CMRX_RX_DMAC_CAM0		0x200
++#define CGXX_CMRX_RX_DMAC_CAM0		(0x200 + mac_ops->csr_offset)
+ #define CGX_DMAC_CAM_ADDR_ENABLE	BIT_ULL(48)
+ #define CGXX_CMRX_RX_DMAC_CAM1		0x400
+ #define CGX_RX_DMAC_ADR_MASK		GENMASK_ULL(47, 0)
+-#define CGXX_CMRX_TX_STAT0		0x700
++#define CGXX_CMRX_TX_STAT0		(0x700 + mac_ops->csr_offset)
+ #define CGXX_SCRATCH0_REG		0x1050
+ #define CGXX_SCRATCH1_REG		0x1058
+ #define CGX_CONST			0x2000
+@@ -81,7 +82,6 @@
+ #define CGX_CMD_TIMEOUT			2200 /* msecs */
+ #define DEFAULT_PAUSE_TIME		0x7FF
+ 
+-#define CGX_NVEC			37
+ #define CGX_LMAC_FWI			0
+ 
+ enum  cgx_nix_stat_type {
+@@ -147,5 +147,9 @@ int cgx_lmac_set_pause_frm(void *cgxd, int lmac_id,
+ 			   u8 tx_pause, u8 rx_pause);
+ void cgx_lmac_ptp_config(void *cgxd, int lmac_id, bool enable);
+ u8 cgx_lmac_get_p2x(int cgx_id, int lmac_id);
+-
++u64 cgx_features_get(void *cgxd);
++struct mac_ops *get_mac_ops(void *cgxd);
++int cgx_get_nr_lmacs(void *cgxd);
++u8 cgx_get_lmacid(void *cgxd, u8 lmac_index);
++unsigned long cgx_get_lmac_bmap(void *cgxd);
+ #endif /* CGX_H */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h b/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
 new file mode 100644
-index 0000000..1c7d478
+index 0000000..bb6368b2
 --- /dev/null
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c
-@@ -0,0 +1,182 @@
++++ b/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
+@@ -0,0 +1,94 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*  Marvell OcteonTx2 RPM driver
++ *
++ * Copyright (C) 2020 Marvell.
++ */
++
++#ifndef LMAC_COMMON_H
++#define LMAC_COMMON_H
++
++#include "rvu.h"
++#include "cgx.h"
++/**
++ * struct lmac
++ * @wq_cmd_cmplt:	waitq to keep the process blocked until cmd completion
++ * @cmd_lock:		Lock to serialize the command interface
++ * @resp:		command response
++ * @link_info:		link related information
++ * @event_cb:		callback for linkchange events
++ * @event_cb_lock:	lock for serializing callback with unregister
++ * @cmd_pend:		flag set before new command is started
++ *			flag cleared after command response is received
++ * @cgx:		parent cgx port
++ * @lmac_id:		lmac port id
++ * @name:		lmac port name
++ */
++struct lmac {
++	wait_queue_head_t wq_cmd_cmplt;
++	struct mutex cmd_lock;
++	u64 resp;
++	struct cgx_link_user_info link_info;
++	struct cgx_event_cb event_cb;
++	spinlock_t event_cb_lock;
++	bool cmd_pend;
++	struct cgx *cgx;
++	u8 lmac_id;
++	char *name;
++};
++
++/* CGX & RPM has different feature set
++ * update the structure fields with different one
++ */
++struct mac_ops {
++	char		       *name;
++	/* Features like RXSTAT, TXSTAT, DMAC FILTER csrs differs by fixed
++	 * bar offset for example
++	 * CGX DMAC_CTL0  0x1f8
++	 * RPM DMAC_CTL0  0x4ff8
++	 */
++	u64			csr_offset;
++	/* For ATF to send events to kernel, there is no dedicated interrupt
++	 * defined hence CGX uses OVERFLOW bit in CMR_INT. RPM block supports
++	 * SW_INT so that ATF triggers this interrupt after processing of
++	 * requested command
++	 */
++	u64			int_register;
++	u64			int_set_reg;
++	/* lmac offset is different is RPM */
++	u8			lmac_offset;
++	u8			irq_offset;
++	u8			int_ena_bit;
++	u8			lmac_fwi;
++	bool			non_contiguous_serdes_lane;
++	/* Incase of RPM get number of lmacs from RPMX_CMR_RX_LMACS[LMAC_EXIST]
++	 * number of setbits in lmac_exist tells number of lmacs
++	 */
++	int			(*get_nr_lmacs)(void *cgx);
++};
++
++struct cgx {
++	void __iomem		*reg_base;
++	struct pci_dev		*pdev;
++	u8			cgx_id;
++	u8			lmac_count;
++	struct lmac		*lmac_idmap[MAX_LMAC_PER_CGX];
++	struct			work_struct cgx_cmd_work;
++	struct			workqueue_struct *cgx_cmd_workq;
++	struct list_head	cgx_list;
++	u64			hw_features;
++	struct mac_ops		*mac_ops;
++	unsigned long		lmac_bmap; /* bitmap of enabled lmacs */
++};
++
++typedef struct cgx rpm_t;
++
++/* Function Declarations */
++void cgx_write(struct cgx *cgx, u64 lmac, u64 offset, u64 val);
++u64 cgx_read(struct cgx *cgx, u64 lmac, u64 offset);
++struct lmac *lmac_pdata(u8 lmac_id, struct cgx *cgx);
++int cgx_fwi_cmd_send(u64 req, u64 *resp, struct lmac *lmac);
++int cgx_fwi_cmd_generic(u64 req, u64 *resp, struct cgx *cgx, int lmac_id);
++bool is_lmac_valid(struct cgx *cgx, int lmac_id);
++struct mac_ops *rpm_get_mac_ops(void);
++
++#endif /* LMAC_COMMON_H */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+index bff81e3..38692c8 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+@@ -153,6 +153,8 @@ M(CGX_PTP_RX_ENABLE,	0x20C, cgx_ptp_rx_enable, msg_req, msg_rsp)	\
+ M(CGX_PTP_RX_DISABLE,	0x20D, cgx_ptp_rx_disable, msg_req, msg_rsp)	\
+ M(CGX_CFG_PAUSE_FRM,	0x20E, cgx_cfg_pause_frm, cgx_pause_frm_cfg,	\
+ 			       cgx_pause_frm_cfg)			\
++M(CGX_FEATURES_GET,	0x20F, cgx_features_get, msg_req,		\
++			       cgx_features_info_msg)			\
+ /* NPA mbox IDs (range 0x400 - 0x5FF) */				\
+ M(NPA_LF_ALLOC,		0x400, npa_lf_alloc,				\
+ 				npa_lf_alloc_req, npa_lf_alloc_rsp)	\
+@@ -360,7 +362,7 @@ struct get_hw_cap_rsp {
+ 
+ struct cgx_stats_rsp {
+ 	struct mbox_msghdr hdr;
+-#define CGX_RX_STATS_COUNT	13
++#define CGX_RX_STATS_COUNT	9
+ #define CGX_TX_STATS_COUNT	18
+ 	u64 rx_stats[CGX_RX_STATS_COUNT];
+ 	u64 tx_stats[CGX_TX_STATS_COUNT];
+@@ -397,6 +399,17 @@ struct cgx_pause_frm_cfg {
+ 	u8 tx_pause;
+ };
+ 
++#define RVU_LMAC_FEAT_FC		BIT_ULL(0) /* pause frames */
++#define RVU_LMAC_FEAT_PTP		BIT_ULL(1) /* precison time protocol */
++#define RVU_MAC_VERSION			BIT_ULL(2)
++#define RVU_MAC_CGX			0
++#define RVU_MAC_RPM			1
++
++struct cgx_features_info_msg {
++	struct mbox_msghdr hdr;
++	u64    lmac_features;
++};
++
+ /* NPA mbox message formats */
+ 
+ /* NPA mailbox error codes
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
+new file mode 100644
+index 0000000..8accc44
+--- /dev/null
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
+@@ -0,0 +1,44 @@
 +// SPDX-License-Identifier: GPL-2.0
-+/* Marvell OcteonTx2 RVU Physcial Function ethernet driver
++/*  Marvell OcteonTx2 RPM driver
 + *
 + * Copyright (C) 2020 Marvell.
++ *
 + */
 +
-+#include "cn10k.h"
-+#include "otx2_reg.h"
-+#include "otx2_struct.h"
++#include "cgx.h"
++#include "lmac_common.h"
 +
-+static struct dev_hw_ops	otx2_hw_ops = {
-+	.sq_aq_init = otx2_sq_aq_init,
-+	.sqe_flush = otx2_sqe_flush,
-+	.aura_freeptr = otx2_aura_freeptr,
-+	.refill_pool_ptrs = otx2_refill_pool_ptrs,
++static struct mac_ops	rpm_mac_ops   = {
++	.name		=       "rpm",
++	.csr_offset     =       0x4e00,
++	.lmac_offset    =       20,
++	.int_register	=       RPMX_CMRX_SW_INT,
++	.int_set_reg    =       RPMX_CMRX_SW_INT_ENA_W1S,
++	.irq_offset     =       1,
++	.int_ena_bit    =       BIT_ULL(0),
++	.lmac_fwi	=	RPM_LMAC_FWI,
++	.non_contiguous_serdes_lane = true,
++	.get_nr_lmacs	=	rpm_get_nr_lmacs,
 +};
 +
-+static struct dev_hw_ops cn10k_hw_ops = {
-+	.sq_aq_init = cn10k_sq_aq_init,
-+	.sqe_flush = cn10k_sqe_flush,
-+	.aura_freeptr = cn10k_aura_freeptr,
-+	.refill_pool_ptrs = cn10k_refill_pool_ptrs,
-+};
-+
-+int cn10k_pf_lmtst_init(struct otx2_nic *pf)
++struct mac_ops *rpm_get_mac_ops(void)
 +{
-+	int size, num_lines;
-+	u64 base;
-+
-+	if (!test_bit(CN10K_LMTST, &pf->hw.cap_flag)) {
-+		pf->hw_ops = &otx2_hw_ops;
-+		return 0;
-+	}
-+
-+	pf->hw_ops = &cn10k_hw_ops;
-+	base = pci_resource_start(pf->pdev, PCI_MBOX_BAR_NUM) +
-+		       (MBOX_SIZE * (pf->total_vfs + 1));
-+
-+	size = pci_resource_len(pf->pdev, PCI_MBOX_BAR_NUM) -
-+	       (MBOX_SIZE * (pf->total_vfs + 1));
-+
-+	pf->hw.lmt_base = ioremap(base, size);
-+
-+	if (!pf->hw.lmt_base) {
-+		dev_err(pf->dev, "Unable to map PF LMTST region\n");
-+		return -ENOMEM;
-+	}
-+
-+	/* FIXME: Get the num of LMTST lines from LMT table */
-+	pf->tot_lmt_lines = size / LMT_LINE_SIZE;
-+	num_lines = (pf->tot_lmt_lines - NIX_LMTID_BASE) /
-+			    pf->hw.tx_queues;
-+	/* Number of LMT lines per SQ queues */
-+	pf->nix_lmt_lines = num_lines > 32 ? 32 : num_lines;
-+
-+	pf->nix_lmt_size = pf->nix_lmt_lines * LMT_LINE_SIZE;
-+	return 0;
++	return &rpm_mac_ops;
 +}
 +
-+int cn10k_vf_lmtst_init(struct otx2_nic *vf)
++static void rpm_write(rpm_t *rpm, u64 lmac, u64 offset, u64 val)
 +{
-+	int size, num_lines;
-+
-+	if (!test_bit(CN10K_LMTST, &vf->hw.cap_flag)) {
-+		vf->hw_ops = &otx2_hw_ops;
-+		return 0;
-+	}
-+
-+	vf->hw_ops = &cn10k_hw_ops;
-+	size = pci_resource_len(vf->pdev, PCI_MBOX_BAR_NUM);
-+	vf->hw.lmt_base = ioremap_wc(pci_resource_start(vf->pdev,
-+							PCI_MBOX_BAR_NUM),
-+				     size);
-+	if (!vf->hw.lmt_base) {
-+		dev_err(vf->dev, "Unable to map VF LMTST region\n");
-+		return -ENOMEM;
-+	}
-+
-+	vf->tot_lmt_lines = size / LMT_LINE_SIZE;
-+	/* LMTST lines per per SQ */
-+	num_lines = (vf->tot_lmt_lines - NIX_LMTID_BASE) /
-+			    vf->hw.tx_queues;
-+	vf->nix_lmt_lines = num_lines > 32 ? 32 : num_lines;
-+	vf->nix_lmt_size = vf->nix_lmt_lines * LMT_LINE_SIZE;
-+	return 0;
-+}
-+EXPORT_SYMBOL(cn10k_vf_lmtst_init);
-+
-+int cn10k_sq_aq_init(void *dev, u16 qidx, u16 sqb_aura)
-+{
-+	struct nix_cn10k_aq_enq_req *aq;
-+	struct otx2_nic *pfvf = dev;
-+	struct otx2_snd_queue *sq;
-+
-+	sq = &pfvf->qset.sq[qidx];
-+	sq->lmt_addr = (__force u64 *)((u64)pfvf->hw.nix_lmt_base +
-+			       (qidx * pfvf->nix_lmt_size));
-+
-+	/* Get memory to put this msg */
-+	aq = otx2_mbox_alloc_msg_nix_cn10k_aq_enq(&pfvf->mbox);
-+	if (!aq)
-+		return -ENOMEM;
-+
-+	aq->sq.cq = pfvf->hw.rx_queues + qidx;
-+	aq->sq.max_sqe_size = NIX_MAXSQESZ_W16; /* 128 byte */
-+	aq->sq.cq_ena = 1;
-+	aq->sq.ena = 1;
-+	/* Only one SMQ is allocated, map all SQ's to that SMQ  */
-+	aq->sq.smq = pfvf->hw.txschq_list[NIX_TXSCH_LVL_SMQ][0];
-+	/* FIXME: set based on NIX_AF_DWRR_RPM_MTU*/
-+	aq->sq.smq_rr_weight = OTX2_MAX_MTU;
-+	aq->sq.default_chan = pfvf->hw.tx_chan_base;
-+	aq->sq.sqe_stype = NIX_STYPE_STF; /* Cache SQB */
-+	aq->sq.sqb_aura = sqb_aura;
-+	aq->sq.sq_int_ena = NIX_SQINT_BITS;
-+	aq->sq.qint_idx = 0;
-+	/* Due pipelining impact minimum 2000 unused SQ CQE's
-+	 * need to maintain to avoid CQ overflow.
-+	 */
-+	aq->sq.cq_limit = ((SEND_CQ_SKID * 256) / (pfvf->qset.sqe_cnt));
-+
-+	/* Fill AQ info */
-+	aq->qidx = qidx;
-+	aq->ctype = NIX_AQ_CTYPE_SQ;
-+	aq->op = NIX_AQ_INSTOP_INIT;
-+
-+	return otx2_sync_mbox_msg(&pfvf->mbox);
++	cgx_write(rpm, lmac, offset, val);
 +}
 +
-+#define NPA_MAX_BURST 16
-+void cn10k_refill_pool_ptrs(void *dev, struct otx2_cq_queue *cq)
++static u64 rpm_read(rpm_t *rpm, u64 lmac, u64 offset)
 +{
-+	struct otx2_nic *pfvf = dev;
-+	u64 ptrs[NPA_MAX_BURST];
-+	int num_ptrs = 1;
-+	s64 bufptr;
-+
-+	/* Refill pool with new buffers */
-+	while (cq->pool_ptrs) {
-+		bufptr = otx2_alloc_buffer(pfvf, cq);
-+		if (unlikely(bufptr <= 0)) {
-+			if (num_ptrs--)
-+				__cn10k_aura_freeptr(pfvf, cq->cq_idx, ptrs,
-+						     num_ptrs,
-+						     cq->rbpool->lmt_addr);
-+			break;
-+		}
-+		cq->pool_ptrs--;
-+		ptrs[num_ptrs] = (u64)bufptr + OTX2_HEAD_ROOM;
-+		num_ptrs++;
-+		if (num_ptrs == NPA_MAX_BURST || cq->pool_ptrs == 0) {
-+			__cn10k_aura_freeptr(pfvf, cq->cq_idx, ptrs,
-+					     num_ptrs,
-+					     cq->rbpool->lmt_addr);
-+			num_ptrs = 1;
-+		}
-+	}
++	return	cgx_read(rpm, lmac, offset);
 +}
 +
-+void cn10k_sqe_flush(void *dev, struct otx2_snd_queue *sq, int size, int qidx)
++int rpm_get_nr_lmacs(void *rpmd)
 +{
-+	struct otx2_nic *pfvf = dev;
-+	int lmt_id = NIX_LMTID_BASE + (qidx * pfvf->nix_lmt_lines);
-+	u64 val = 0, tar_addr = 0;
++	rpm_t *rpm = rpmd;
 +
-+	/* FIXME: val[0:10] LMT_ID.
-+	 * [12:15] no of LMTST - 1 in the burst.
-+	 * [19:63] data size of each LMTST in the burst except first.
-+	 */
-+	val = (lmt_id & 0x7FF);
-+	/* Target address for LMTST flush tells HW how many 128bit
-+	 * words are present.
-+	 * tar_addr[6:4] size of first LMTST - 1 in units of 128b.
-+	 */
-+	tar_addr |= sq->io_addr | (((size / 16) - 1) & 0x7) << 4;
-+	dma_wmb();
-+	memcpy(sq->lmt_addr, sq->sqe_base, size);
-+	cn10k_lmt_flush(val, tar_addr);
-+
-+	sq->head++;
-+	sq->head &= (sq->sqe_cnt - 1);
++	return hweight8(rpm_read(rpm, 0, CGXX_CMRX_RX_LMACS) & 0xFULL);
 +}
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.h b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.h
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
 new file mode 100644
-index 0000000..e0bc595
+index 0000000..7f45c1c
 --- /dev/null
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.h
-@@ -0,0 +1,17 @@
-+/* SPDX-License-Identifier: GPL-2.0
-+ * Marvell OcteonTx2 RVU Ethernet driver
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
+@@ -0,0 +1,23 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*  Marvell OcteonTx2 RPM driver
 + *
 + * Copyright (C) 2020 Marvell.
++ *
 + */
 +
-+#ifndef CN10K_H
-+#define CN10K_H
++#ifndef RPM_H
++#define RPM_H
 +
-+#include "otx2_common.h"
++/* PCI device IDs */
++#define PCI_DEVID_CN10K_RPM		0xA060
 +
-+void cn10k_refill_pool_ptrs(void *dev, struct otx2_cq_queue *cq);
-+void cn10k_sqe_flush(void *dev, struct otx2_snd_queue *sq, int size, int qidx);
-+int cn10k_sq_aq_init(void *dev, u16 qidx, u16 sqb_aura);
-+int cn10k_pf_lmtst_init(struct otx2_nic *pf);
-+int cn10k_vf_lmtst_init(struct otx2_nic *vf);
-+#endif /* CN10K_H */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-index 4ad259c..2accdc7 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-@@ -15,6 +15,7 @@
- #include "otx2_reg.h"
- #include "otx2_common.h"
- #include "otx2_struct.h"
-+#include "cn10k.h"
++/* Registers */
++#define RPMX_CMRX_SW_INT                0x180
++#define RPMX_CMRX_SW_INT_W1S            0x188
++#define RPMX_CMRX_SW_INT_ENA_W1S        0x198
++
++#define RPM_LMAC_FWI			0xa
++
++/* Function Declarations */
++int rpm_get_nr_lmacs(void *cgxd);
++#endif /* RPM_H */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+index e553d8f..39bfb3b 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+@@ -624,6 +624,7 @@ void npc_enable_mcam_entry(struct rvu *rvu, struct npc_mcam *mcam,
+ void npc_read_mcam_entry(struct rvu *rvu, struct npc_mcam *mcam,
+ 			 int blkaddr, u16 src, struct mcam_entry *entry,
+ 			 u8 *intf, u8 *ena);
++bool is_mac_feature_supported(struct rvu *rvu, int pf, int feature);
  
- static void otx2_nix_rq_op_stats(struct queue_stats *stats,
- 				 struct otx2_nic *pfvf, int qidx)
-@@ -512,6 +513,25 @@ static dma_addr_t otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool)
- 	return addr;
- }
+ #ifdef CONFIG_DEBUG_FS
+ void rvu_dbg_init(struct rvu *rvu);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
+index 6c6b411..8ec9b04 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
+@@ -42,6 +42,20 @@ static struct _req_type __maybe_unused					\
+ MBOX_UP_CGX_MESSAGES
+ #undef M
  
-+s64 otx2_alloc_buffer(struct otx2_nic *pfvf, struct otx2_cq_queue *cq)
++bool is_mac_feature_supported(struct rvu *rvu, int pf, int feature)
 +{
-+	s64 bufptr;
++	u8 cgx_id, lmac_id;
++	void *cgxd;
 +
-+	bufptr = __otx2_alloc_rbuf(pfvf, cq->rbpool);
-+	if (unlikely(bufptr <= 0)) {
-+		struct refill_work *work;
-+		struct delayed_work *dwork;
++	if (!is_pf_cgxmapped(rvu, pf))
++		return 0;
 +
-+		work = &pfvf->refill_wrk[cq->cq_idx];
-+		dwork = &work->pool_refill_work;
-+		/* Schedule a task if no other task is running */
-+		if (!cq->refill_task_sched) {
-+			cq->refill_task_sched = true;
-+			schedule_delayed_work(dwork, msecs_to_jiffies(100));
-+		}
-+	}
-+	return bufptr;
-+}
- void otx2_tx_timeout(struct net_device *netdev, unsigned int txq)
- {
- 	struct otx2_nic *pfvf = netdev_priv(netdev);
-@@ -714,9 +734,6 @@ void otx2_sqb_flush(struct otx2_nic *pfvf)
- #define RQ_PASS_LVL_AURA (255 - ((95 * 256) / 100)) /* RED when 95% is full */
- #define RQ_DROP_LVL_AURA (255 - ((99 * 256) / 100)) /* Drop when 99% is full */
- 
--/* Send skid of 2000 packets required for CQ size of 4K CQEs. */
--#define SEND_CQ_SKID	2000
--
- static int otx2_rq_init(struct otx2_nic *pfvf, u16 qidx, u16 lpb_aura)
- {
- 	struct otx2_qset *qset = &pfvf->qset;
-@@ -750,45 +767,14 @@ static int otx2_rq_init(struct otx2_nic *pfvf, u16 qidx, u16 lpb_aura)
- 	return otx2_sync_mbox_msg(&pfvf->mbox);
- }
- 
--static int cn10k_sq_aq_init(struct otx2_nic *pfvf, u16 qidx, u16 sqb_aura)
--{
--	struct nix_cn10k_aq_enq_req *aq;
--
--	/* Get memory to put this msg */
--	aq = otx2_mbox_alloc_msg_nix_cn10k_aq_enq(&pfvf->mbox);
--	if (!aq)
--		return -ENOMEM;
--
--	aq->sq.cq = pfvf->hw.rx_queues + qidx;
--	aq->sq.max_sqe_size = NIX_MAXSQESZ_W16; /* 128 byte */
--	aq->sq.cq_ena = 1;
--	aq->sq.ena = 1;
--	/* Only one SMQ is allocated, map all SQ's to that SMQ  */
--	aq->sq.smq = pfvf->hw.txschq_list[NIX_TXSCH_LVL_SMQ][0];
--	/* FIXME: set based on NIX_AF_DWRR_RPM_MTU*/
--	aq->sq.smq_rr_weight = OTX2_MAX_MTU;
--	aq->sq.default_chan = pfvf->hw.tx_chan_base;
--	aq->sq.sqe_stype = NIX_STYPE_STF; /* Cache SQB */
--	aq->sq.sqb_aura = sqb_aura;
--	aq->sq.sq_int_ena = NIX_SQINT_BITS;
--	aq->sq.qint_idx = 0;
--	/* Due pipelining impact minimum 2000 unused SQ CQE's
--	 * need to maintain to avoid CQ overflow.
--	 */
--	aq->sq.cq_limit = ((SEND_CQ_SKID * 256) / (pfvf->qset.sqe_cnt));
--
--	/* Fill AQ info */
--	aq->qidx = qidx;
--	aq->ctype = NIX_AQ_CTYPE_SQ;
--	aq->op = NIX_AQ_INSTOP_INIT;
--
--	return otx2_sync_mbox_msg(&pfvf->mbox);
--}
--
--static int otx2_sq_aq_init(struct otx2_nic *pfvf, u16 qidx, u16 sqb_aura)
-+int otx2_sq_aq_init(void *dev, u16 qidx, u16 sqb_aura)
- {
-+	struct otx2_nic *pfvf = dev;
-+	struct otx2_snd_queue *sq;
- 	struct nix_aq_enq_req *aq;
- 
-+	sq = &pfvf->qset.sq[qidx];
-+	sq->lmt_addr = (__force u64 *)(pfvf->reg_base + LMT_LF_LMTLINEX(qidx));
- 	/* Get memory to put this msg */
- 	aq = otx2_mbox_alloc_msg_nix_aq_enq(&pfvf->mbox);
- 	if (!aq)
-@@ -859,16 +845,12 @@ static int otx2_sq_init(struct otx2_nic *pfvf, u16 qidx, u16 sqb_aura)
- 	sq->sqe_thresh = ((sq->num_sqbs * sq->sqe_per_sqb) * 10) / 100;
- 	sq->aura_id = sqb_aura;
- 	sq->aura_fc_addr = pool->fc_addr->base;
--	sq->lmt_addr = (__force u64 *)(pfvf->reg_base + LMT_LF_LMTLINEX(qidx));
- 	sq->io_addr = (__force u64)otx2_get_regaddr(pfvf, NIX_LF_OP_SENDX(0));
- 
- 	sq->stats.bytes = 0;
- 	sq->stats.pkts = 0;
- 
--	if (is_dev_otx2(pfvf->pdev))
--		return otx2_sq_aq_init(pfvf, qidx, sqb_aura);
--	else
--		return cn10k_sq_aq_init(pfvf, qidx, sqb_aura);
-+	return pfvf->hw_ops->sq_aq_init(pfvf, qidx, sqb_aura);
- 
- }
- 
-@@ -1218,6 +1200,11 @@ static int otx2_pool_init(struct otx2_nic *pfvf, u16 pool_id,
- 
- 	pool->rbsize = buf_size;
- 
-+	/* Set LMTST addr for NPA batch free */
-+	if (test_bit(CN10K_LMTST, &pfvf->hw.cap_flag))
-+		pool->lmt_addr = (__force u64 *)((u64)pfvf->hw.npa_lmt_base +
-+						 (pool_id * LMT_LINE_SIZE));
++	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
++	cgxd = rvu_cgx_pdata(cgx_id, rvu);
 +
- 	/* Initialize this pool's context via AF */
- 	aq = otx2_mbox_alloc_msg_npa_aq_enq(&pfvf->mbox);
- 	if (!aq) {
-@@ -1307,7 +1294,7 @@ int otx2_sq_aura_pool_init(struct otx2_nic *pfvf)
- 			bufptr = otx2_alloc_rbuf(pfvf, pool);
- 			if (bufptr <= 0)
- 				return bufptr;
--			otx2_aura_freeptr(pfvf, pool_id, bufptr);
-+			pfvf->hw_ops->aura_freeptr(pfvf, pool_id, bufptr);
- 			sq->sqb_ptrs[sq->sqb_count++] = (u64)bufptr;
- 		}
- 	}
-@@ -1358,8 +1345,8 @@ int otx2_rq_aura_pool_init(struct otx2_nic *pfvf)
- 			bufptr = otx2_alloc_rbuf(pfvf, pool);
- 			if (bufptr <= 0)
- 				return bufptr;
--			otx2_aura_freeptr(pfvf, pool_id,
--					  bufptr + OTX2_HEAD_ROOM);
-+			pfvf->hw_ops->aura_freeptr(pfvf, pool_id,
-+						   bufptr + OTX2_HEAD_ROOM);
- 		}
- 	}
- 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index 80f892f..b6bdc6f 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -50,6 +50,9 @@ enum arua_mapped_qtypes {
- #define NIX_LF_ERR_VEC				0x81
- #define NIX_LF_POISON_VEC			0x82
- 
-+/* Send skid of 2000 packets required for CQ size of 4K CQEs. */
-+#define SEND_CQ_SKID	2000
-+
- /* RSS configuration */
- struct otx2_rss_ctx {
- 	u8  ind_tbl[MAX_RSS_INDIR_TBL_SIZE];
-@@ -273,9 +276,18 @@ struct otx2_flow_config {
- 	struct list_head	flow_list;
- };
- 
-+struct dev_hw_ops {
-+	int	(*sq_aq_init)(void *dev, u16 qidx, u16 sqb_aura);
-+	void	(*sqe_flush)(void *dev, struct otx2_snd_queue *sq,
-+			     int size, int qidx);
-+	void	(*refill_pool_ptrs)(void *dev, struct otx2_cq_queue *cq);
-+	void	(*aura_freeptr)(void *dev, int aura, s64 buf);
-+};
-+
- struct otx2_nic {
- 	void __iomem		*reg_base;
- 	struct net_device	*netdev;
-+	struct dev_hw_ops	*hw_ops;
- 	void			*iommu_domain;
- 	u16			max_frs;
- 	u16			rbsize; /* Receive buffer size */
-@@ -509,6 +521,47 @@ static inline u64 otx2_atomic64_add(u64 incr, u64 *ptr)
- #define otx2_atomic64_add(incr, ptr)		({ *ptr += incr; })
- #endif
- 
-+static inline void __cn10k_aura_freeptr(struct otx2_nic *pfvf, u64 aura,
-+					u64 *ptrs, u64 num_ptrs,
-+					u64 *lmt_addr)
-+{
-+	u64 size = 0, count_eot = 0;
-+	u64 tar_addr, val = 0;
-+
-+	tar_addr = (__force u64)otx2_get_regaddr(pfvf, NPA_LF_AURA_BATCH_FREE0);
-+	/* LMTID is same as AURA Id */
-+	val = (aura & 0x7FF) | BIT_ULL(63);
-+	/* Set if [127:64] of last 128bit word has a valid pointer */
-+	count_eot = (num_ptrs % 2) ? 0ULL : 1ULL;
-+	/* Set AURA ID to free pointer */
-+	ptrs[0] = (count_eot << 32) | (aura & 0xFFFFF);
-+	/* Target address for LMTST flush tells HW how many 128bit
-+	 * words are valid from NPA_LF_AURA_BATCH_FREE0.
-+	 *
-+	 * tar_addr[6:4] is LMTST size-1 in units of 128b.
-+	 */
-+	if (num_ptrs > 2) {
-+		size = (sizeof(u64) * num_ptrs) / 16;
-+		if (!count_eot)
-+			size++;
-+		tar_addr |=  ((size - 1) & 0x7) << 4;
-+	}
-+	memcpy(lmt_addr, ptrs, sizeof(u64) * num_ptrs);
-+	/* Perform LMTST flush */
-+	cn10k_lmt_flush(val, tar_addr);
++	return  (cgx_features_get(cgxd) & feature);
 +}
 +
-+static inline void cn10k_aura_freeptr(void *dev, int aura, s64 buf)
-+{
-+	struct otx2_nic *pfvf = dev;
-+	struct otx2_pool *pool;
-+	u64 ptrs[2];
-+
-+	pool = &pfvf->qset.pool[aura];
-+	ptrs[1] = (u64)buf;
-+	__cn10k_aura_freeptr(pfvf, aura, ptrs, 2, pool->lmt_addr);
-+}
-+
- /* Alloc pointer from pool/aura */
- static inline u64 otx2_aura_allocptr(struct otx2_nic *pfvf, int aura)
+ /* Returns bitmap of mapped PFs */
+ static u16 cgxlmac_to_pfmap(struct rvu *rvu, u8 cgx_id, u8 lmac_id)
  {
-@@ -520,9 +573,10 @@ static inline u64 otx2_aura_allocptr(struct otx2_nic *pfvf, int aura)
- }
- 
- /* Free pointer to a pool/aura */
--static inline void otx2_aura_freeptr(struct otx2_nic *pfvf,
--				     int aura, s64 buf)
-+static inline void otx2_aura_freeptr(void *dev, int aura, s64 buf)
+@@ -92,9 +106,10 @@ static int rvu_map_cgx_lmac_pf(struct rvu *rvu)
  {
-+	struct otx2_nic *pfvf = dev;
-+
- 	otx2_write128((u64)buf, (u64)aura | BIT_ULL(63),
- 		      otx2_get_regaddr(pfvf, NPA_LF_AURA_OP_FREE0));
- }
-@@ -678,6 +732,9 @@ void otx2_ctx_disable(struct mbox *mbox, int type, bool npa);
- int otx2_nix_config_bp(struct otx2_nic *pfvf, bool enable);
- void otx2_cleanup_rx_cqes(struct otx2_nic *pfvf, struct otx2_cq_queue *cq);
- void otx2_cleanup_tx_cqes(struct otx2_nic *pfvf, struct otx2_cq_queue *cq);
-+int otx2_sq_aq_init(void *dev, u16 qidx, u16 sqb_aura);
-+int cn10k_sq_aq_init(void *dev, u16 qidx, u16 sqb_aura);
-+s64 otx2_alloc_buffer(struct otx2_nic *pfvf, struct otx2_cq_queue *cq);
+ 	struct npc_pkind *pkind = &rvu->hw->pkind;
+ 	int cgx_cnt_max = rvu->cgx_cnt_max;
+-	int cgx, lmac_cnt, lmac;
+ 	int pf = PF_CGXMAP_BASE;
++	unsigned long lmac_bmap;
+ 	int size, free_pkind;
++	int cgx, lmac, iter;
  
- /* RSS configuration APIs*/
- int otx2_rss_init(struct otx2_nic *pfvf);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index 4097559..7ad1ddc 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -22,6 +22,7 @@
- #include "otx2_txrx.h"
- #include "otx2_struct.h"
- #include "otx2_ptp.h"
-+#include "cn10k.h"
- #include <rvu_trace.h>
- 
- #define DRV_NAME	"RVU-nicpf"
-@@ -46,39 +47,6 @@ enum {
- static int otx2_config_hw_tx_tstamp(struct otx2_nic *pfvf, bool enable);
- static int otx2_config_hw_rx_tstamp(struct otx2_nic *pfvf, bool enable);
- 
--static int cn10k_lmtst_init(struct otx2_nic *pf)
--{
--	int size, num_lines;
--	u64 base;
--
--	if (!test_bit(CN10K_LMTST, &pf->hw.cap_flag))
--		return 0;
--
--	base = pci_resource_start(pf->pdev, PCI_MBOX_BAR_NUM) +
--		       (MBOX_SIZE * (pf->total_vfs + 1));
--
--	size = pci_resource_len(pf->pdev, PCI_MBOX_BAR_NUM) -
--	       (MBOX_SIZE * (pf->total_vfs + 1));
--
--	pf->hw.lmt_base = ioremap(base, size);
--
--	if (!pf->hw.lmt_base) {
--		dev_err(pf->dev, "Unable to map PF LMTST region\n");
--		return -ENOMEM;
--	}
--
--	/* FIXME: Get the num of LMTST lines from LMT table */
--	pf->tot_lmt_lines = size / LMT_LINE_SIZE;
--	num_lines = (pf->tot_lmt_lines - NIX_LMTID_BASE) /
--			    pf->hw.tx_queues;
--	/* Number of LMT lines per SQ queues */
--	pf->nix_lmt_lines = num_lines > 32 ? 32 : num_lines;
--
--	pf->nix_lmt_size = pf->nix_lmt_lines * LMT_LINE_SIZE;
--
--	return 0;
--}
--
- static int otx2_change_mtu(struct net_device *netdev, int new_mtu)
- {
- 	bool if_up = netif_running(netdev);
-@@ -2401,7 +2369,7 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	if (err)
- 		goto err_detach_rsrc;
- 
--	err = cn10k_lmtst_init(pf);
-+	err = cn10k_pf_lmtst_init(pf);
- 	if (err)
- 		goto err_detach_rsrc;
- 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h
-index 1e052d7..21b811c 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h
-@@ -94,6 +94,7 @@
- #define NPA_LF_QINTX_INT_W1S(a)         (NPA_LFBASE | 0x318 | (a) << 12)
- #define NPA_LF_QINTX_ENA_W1S(a)         (NPA_LFBASE | 0x320 | (a) << 12)
- #define NPA_LF_QINTX_ENA_W1C(a)         (NPA_LFBASE | 0x330 | (a) << 12)
-+#define NPA_LF_AURA_BATCH_FREE0         (NPA_LFBASE | 0x400)
- 
- /* NIX LF registers */
- #define	NIX_LFBASE			(BLKTYPE_NIX << RVU_FUNC_BLKADDR_SHIFT)
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-index a7eb5ea..cdae83c 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-@@ -17,6 +17,7 @@
- #include "otx2_struct.h"
- #include "otx2_txrx.h"
- #include "otx2_ptp.h"
-+#include "cn10k.h"
- 
- #define CQE_ADDR(CQ, idx) ((CQ)->cqe_base + ((CQ)->cqe_size * (idx)))
- 
-@@ -199,7 +200,7 @@ static void otx2_free_rcv_seg(struct otx2_nic *pfvf, struct nix_cqe_rx_s *cqe,
- 		sg = (struct nix_rx_sg_s *)start;
- 		seg_addr = &sg->seg_addr;
- 		for (seg = 0; seg < sg->segs; seg++, seg_addr++)
--			otx2_aura_freeptr(pfvf, qidx, *seg_addr & ~0x07ULL);
-+			pfvf->hw_ops->aura_freeptr(pfvf, qidx, *seg_addr & ~0x07ULL);
- 		start += sizeof(*sg);
- 	}
- }
-@@ -304,7 +305,6 @@ static int otx2_rx_napi_handler(struct otx2_nic *pfvf,
- {
- 	struct nix_cqe_rx_s *cqe;
- 	int processed_cqe = 0;
--	s64 bufptr;
- 
- 	while (likely(processed_cqe < budget)) {
- 		cqe = (struct nix_cqe_rx_s *)CQE_ADDR(cq, cq->cq_head);
-@@ -330,29 +330,24 @@ static int otx2_rx_napi_handler(struct otx2_nic *pfvf,
- 
- 	if (unlikely(!cq->pool_ptrs))
+ 	if (!cgx_cnt_max)
  		return 0;
-+	pfvf->hw_ops->refill_pool_ptrs(pfvf, cq);
+@@ -125,14 +140,17 @@ static int rvu_map_cgx_lmac_pf(struct rvu *rvu)
+ 	for (cgx = 0; cgx < cgx_cnt_max; cgx++) {
+ 		if (!rvu_cgx_pdata(cgx, rvu))
+ 			continue;
+-		lmac_cnt = cgx_get_lmac_cnt(rvu_cgx_pdata(cgx, rvu));
+-		for (lmac = 0; lmac < lmac_cnt; lmac++, pf++) {
++		lmac_bmap = cgx_get_lmac_bmap(rvu_cgx_pdata(cgx, rvu));
++		for_each_set_bit(iter, &lmac_bmap, MAX_LMAC_PER_CGX) {
++			lmac = cgx_get_lmacid(rvu_cgx_pdata(cgx, rvu),
++					      iter);
+ 			rvu->pf2cgxlmac_map[pf] = cgxlmac_id_to_bmap(cgx, lmac);
+ 			rvu->cgxlmac2pf_map[CGX_OFFSET(cgx) + lmac] = 1 << pf;
+ 			free_pkind = rvu_alloc_rsrc(&pkind->rsrc);
+ 			pkind->pfchan_map[free_pkind] = ((pf) & 0x3F) << 16;
+ 			rvu_map_cgx_nix_block(rvu, pf, cgx, lmac);
+ 			rvu->cgx_mapped_pfs++;
++			pf++;
+ 		}
+ 	}
+ 	return 0;
+@@ -154,8 +172,10 @@ static int rvu_cgx_send_link_info(int cgx_id, int lmac_id, struct rvu *rvu)
+ 				&qentry->link_event.link_uinfo);
+ 	qentry->link_event.cgx_id = cgx_id;
+ 	qentry->link_event.lmac_id = lmac_id;
+-	if (err)
++	if (err) {
++		kfree(qentry);
+ 		goto skip_add;
++	}
+ 	list_add_tail(&qentry->evq_node, &rvu->cgx_evq_head);
+ skip_add:
+ 	spin_unlock_irqrestore(&rvu->cgx_evq_lock, flags);
+@@ -251,6 +271,7 @@ static void cgx_evhandler_task(struct work_struct *work)
+ 
+ static int cgx_lmac_event_handler_init(struct rvu *rvu)
+ {
++	unsigned long lmac_bmap;
+ 	struct cgx_event_cb cb;
+ 	int cgx, lmac, err;
+ 	void *cgxd;
+@@ -271,7 +292,8 @@ static int cgx_lmac_event_handler_init(struct rvu *rvu)
+ 		cgxd = rvu_cgx_pdata(cgx, rvu);
+ 		if (!cgxd)
+ 			continue;
+-		for (lmac = 0; lmac < cgx_get_lmac_cnt(cgxd); lmac++) {
++		lmac_bmap = cgx_get_lmac_bmap(cgxd);
++		for_each_set_bit(lmac, &lmac_bmap, MAX_LMAC_PER_CGX) {
+ 			err = cgx_lmac_evh_register(&cb, cgxd, lmac);
+ 			if (err)
+ 				dev_err(rvu->dev,
+@@ -349,6 +371,7 @@ int rvu_cgx_init(struct rvu *rvu)
+ 
+ int rvu_cgx_exit(struct rvu *rvu)
+ {
++	unsigned long lmac_bmap;
+ 	int cgx, lmac;
+ 	void *cgxd;
+ 
+@@ -356,7 +379,8 @@ int rvu_cgx_exit(struct rvu *rvu)
+ 		cgxd = rvu_cgx_pdata(cgx, rvu);
+ 		if (!cgxd)
+ 			continue;
+-		for (lmac = 0; lmac < cgx_get_lmac_cnt(cgxd); lmac++)
++		lmac_bmap = cgx_get_lmac_bmap(cgxd);
++		for_each_set_bit(lmac, &lmac_bmap, MAX_LMAC_PER_CGX)
+ 			cgx_lmac_evh_unregister(cgxd, lmac);
+ 	}
+ 
+@@ -538,6 +562,9 @@ static int rvu_cgx_ptp_rx_cfg(struct rvu *rvu, u16 pcifunc, bool enable)
+ 	u8 cgx_id, lmac_id;
+ 	void *cgxd;
+ 
++	if (!is_mac_feature_supported(rvu, pf, RVU_LMAC_FEAT_PTP))
++		return 0;
 +
-+	return processed_cqe;
+ 	/* This msg is expected only from PFs that are mapped to CGX LMACs,
+ 	 * if received from other PF/VF simply ACK, nothing to do.
+ 	 */
+@@ -624,6 +651,24 @@ int rvu_mbox_handler_cgx_get_linkinfo(struct rvu *rvu, struct msg_req *req,
+ 	return err;
+ }
+ 
++int rvu_mbox_handler_cgx_features_get(struct rvu *rvu,
++				      struct msg_req *req,
++				      struct cgx_features_info_msg *rsp)
++{
++	int pf = rvu_get_pf(req->hdr.pcifunc);
++	u8 cgx_idx, lmac;
++	void *cgxd;
++
++	if (!is_pf_cgxmapped(rvu, pf))
++		return 0;
++
++	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_idx, &lmac);
++	cgxd = rvu_cgx_pdata(cgx_idx, rvu);
++	rsp->lmac_features = cgx_features_get(cgxd);
++
++	return 0;
 +}
 +
-+void otx2_refill_pool_ptrs(void *dev, struct otx2_cq_queue *cq)
-+{
-+	struct otx2_nic *pfvf = dev;
-+	s64 bufptr;
- 
- 	/* Refill pool with new buffers */
- 	while (cq->pool_ptrs) {
--		bufptr = __otx2_alloc_rbuf(pfvf, cq->rbpool);
--		if (unlikely(bufptr <= 0)) {
--			struct refill_work *work;
--			struct delayed_work *dwork;
--
--			work = &pfvf->refill_wrk[cq->cq_idx];
--			dwork = &work->pool_refill_work;
--			/* Schedule a task if no other task is running */
--			if (!cq->refill_task_sched) {
--				cq->refill_task_sched = true;
--				schedule_delayed_work(dwork,
--						      msecs_to_jiffies(100));
--			}
-+		bufptr = otx2_alloc_buffer(pfvf, cq);
-+		if (unlikely(bufptr <= 0))
- 			break;
--		}
- 		otx2_aura_freeptr(pfvf, cq->cq_idx, bufptr + OTX2_HEAD_ROOM);
- 		cq->pool_ptrs--;
- 	}
--
--	return processed_cqe;
- }
- 
- static int otx2_tx_napi_handler(struct otx2_nic *pfvf,
-@@ -439,7 +434,8 @@ int otx2_napi_handler(struct napi_struct *napi, int budget)
- 	return workdone;
- }
- 
--static void otx2_sqe_flush(struct otx2_snd_queue *sq, int size)
-+void otx2_sqe_flush(void *dev, struct otx2_snd_queue *sq,
-+		    int size, int qidx)
+ static int rvu_cgx_config_intlbk(struct rvu *rvu, u16 pcifunc, bool en)
  {
- 	u64 status;
+ 	int pf = rvu_get_pf(pcifunc);
+@@ -659,6 +704,9 @@ int rvu_mbox_handler_cgx_cfg_pause_frm(struct rvu *rvu,
+ 	int pf = rvu_get_pf(req->hdr.pcifunc);
+ 	u8 cgx_id, lmac_id;
  
-@@ -797,7 +793,7 @@ static void otx2_sq_append_tso(struct otx2_nic *pfvf, struct otx2_snd_queue *sq,
- 		sqe_hdr->sizem1 = (offset / 16) - 1;
++	if (!is_mac_feature_supported(rvu, pf, RVU_LMAC_FEAT_FC))
++		return 0;
++
+ 	/* This msg is expected only from PF/VFs that are mapped to CGX LMACs,
+ 	 * if received from other PF/VF simply ACK, nothing to do.
+ 	 */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+index b621744..bc155b4 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+@@ -19,6 +19,7 @@
+ #include "rvu_reg.h"
+ #include "rvu.h"
+ #include "cgx.h"
++#include "lmac_common.h"
+ #include "npc.h"
  
- 		/* Flush SQE to HW */
--		otx2_sqe_flush(sq, offset);
-+		pfvf->hw_ops->sqe_flush(pfvf, sq, offset, qidx);
- 	}
- }
- 
-@@ -916,7 +912,7 @@ bool otx2_sq_append_skb(struct net_device *netdev, struct otx2_snd_queue *sq,
- 	netdev_tx_sent_queue(txq, skb->len);
- 
- 	/* Flush SQE to HW */
--	otx2_sqe_flush(sq, offset);
-+	pfvf->hw_ops->sqe_flush(pfvf, sq, offset, qidx);
- 
- 	return true;
- }
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
-index 73af156..d2b26b3 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
-@@ -114,6 +114,7 @@ struct otx2_cq_poll {
- struct otx2_pool {
- 	struct qmem		*stack;
- 	struct qmem		*fc_addr;
-+	u64			*lmt_addr;
- 	u16			rbsize;
- };
- 
-@@ -156,4 +157,10 @@ static inline u64 otx2_iova_to_phys(void *iommu_domain, dma_addr_t dma_addr)
- int otx2_napi_handler(struct napi_struct *napi, int budget);
- bool otx2_sq_append_skb(struct net_device *netdev, struct otx2_snd_queue *sq,
- 			struct sk_buff *skb, u16 qidx);
-+void cn10k_sqe_flush(void *dev, struct otx2_snd_queue *sq,
-+		     int size, int qidx);
-+void otx2_sqe_flush(void *dev, struct otx2_snd_queue *sq,
-+		    int size, int qidx);
-+void otx2_refill_pool_ptrs(void *dev, struct otx2_cq_queue *cq);
-+void cn10k_refill_pool_ptrs(void *dev, struct otx2_cq_queue *cq);
- #endif /* OTX2_TXRX_H */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-index 0ab7cf8..3dd20e5 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-@@ -7,6 +7,7 @@
- 
- #include "otx2_common.h"
- #include "otx2_reg.h"
-+#include "cn10k.h"
- 
- #define DRV_NAME	"RVU-nicvf"
- #define DRV_STRING	"Marvell RVU NIC Virtual Function Driver"
-@@ -27,31 +28,6 @@ enum {
- 	RVU_VF_INT_VEC_MBOX = 0x0,
- };
- 
--static int cn10k_lmtst_init(struct otx2_nic *vf)
--{
--	int size, num_lines;
--
--	if (!test_bit(CN10K_LMTST, &vf->hw.cap_flag))
--		return 0;
--
--	size = pci_resource_len(vf->pdev, PCI_MBOX_BAR_NUM);
--	vf->hw.lmt_base = ioremap_wc(pci_resource_start(vf->pdev,
--							PCI_MBOX_BAR_NUM),
--				     size);
--	if (!vf->hw.lmt_base) {
--		dev_err(vf->dev, "Unable to map VF LMTST region\n");
--		return -ENOMEM;
--	}
--
--	vf->tot_lmt_lines = size / LMT_LINE_SIZE;
--	/* LMTST lines per SQ */
--	num_lines = (vf->tot_lmt_lines - NIX_LMTID_BASE) /
--			    vf->hw.tx_queues;
--	vf->nix_lmt_lines = num_lines > 32 ? 32 : num_lines;
--	vf->nix_lmt_size = vf->nix_lmt_lines * LMT_LINE_SIZE;
--	return 0;
--}
--
- static void otx2vf_process_vfaf_mbox_msg(struct otx2_nic *vf,
- 					 struct mbox_msghdr *msg)
+ #define DEBUGFS_DIR_NAME "octeontx2"
+@@ -234,6 +235,8 @@ static int rvu_dbg_rvu_pf_cgx_map_display(struct seq_file *filp, void *unused)
  {
-@@ -585,7 +561,7 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	struct rvu *rvu = filp->private;
+ 	struct pci_dev *pdev = NULL;
++	struct mac_ops *mac_ops;
++	int rvu_def_cgx_id = 0;
+ 	char cgx[10], lmac[10];
+ 	struct rvu_pfvf *pfvf;
+ 	int pf, domain, blkid;
+@@ -241,7 +244,9 @@ static int rvu_dbg_rvu_pf_cgx_map_display(struct seq_file *filp, void *unused)
+ 	u16 pcifunc;
+ 
+ 	domain = 2;
+-	seq_puts(filp, "PCI dev\t\tRVU PF Func\tNIX block\tCGX\tLMAC\n");
++	mac_ops = get_mac_ops(rvu_cgx_pdata(rvu_def_cgx_id, rvu));
++	seq_printf(filp, "PCI dev\t\tRVU PF Func\tNIX block\t%s\tLMAC\n",
++		   mac_ops->name);
+ 	for (pf = 0; pf < rvu->hw->total_pfs; pf++) {
+ 		if (!is_pf_cgxmapped(rvu, pf))
+ 			continue;
+@@ -262,7 +267,7 @@ static int rvu_dbg_rvu_pf_cgx_map_display(struct seq_file *filp, void *unused)
+ 
+ 		rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id,
+ 				    &lmac_id);
+-		sprintf(cgx, "CGX%d", cgx_id);
++		sprintf(cgx, "%s%d", mac_ops->name, cgx_id);
+ 		sprintf(lmac, "LMAC%d", lmac_id);
+ 		seq_printf(filp, "%s\t0x%x\t\tNIX%d\t\t%s\t%s\n",
+ 			   dev_name(&pdev->dev), pcifunc, blkid, cgx, lmac);
+@@ -1601,6 +1606,7 @@ static void rvu_dbg_npa_init(struct rvu *rvu)
+ static int cgx_print_stats(struct seq_file *s, int lmac_id)
+ {
+ 	struct cgx_link_user_info linfo;
++	struct mac_ops *mac_ops;
+ 	void *cgxd = s->private;
+ 	u64 ucast, mcast, bcast;
+ 	int stat = 0, err = 0;
+@@ -1612,6 +1618,11 @@ static int cgx_print_stats(struct seq_file *s, int lmac_id)
+ 	if (!rvu)
+ 		return -ENODEV;
+ 
++	mac_ops = get_mac_ops(cgxd);
++
++	if (!mac_ops)
++		return 0;
++
+ 	/* Link status */
+ 	seq_puts(s, "\n=======Link Status======\n\n");
+ 	err = cgx_get_link_info(cgxd, lmac_id, &linfo);
+@@ -1621,7 +1632,8 @@ static int cgx_print_stats(struct seq_file *s, int lmac_id)
+ 		   linfo.link_up ? "UP" : "DOWN", linfo.speed);
+ 
+ 	/* Rx stats */
+-	seq_puts(s, "\n=======NIX RX_STATS(CGX port level)======\n\n");
++	seq_printf(s, "\n=======NIX RX_STATS(%s port level)======\n\n",
++		   mac_ops->name);
+ 	ucast = PRINT_CGX_CUML_NIXRX_STATUS(RX_UCAST, "rx_ucast_frames");
  	if (err)
- 		goto err_detach_rsrc;
+ 		return err;
+@@ -1643,7 +1655,8 @@ static int cgx_print_stats(struct seq_file *s, int lmac_id)
+ 		return err;
  
--	err = cn10k_lmtst_init(vf);
-+	err = cn10k_vf_lmtst_init(vf);
+ 	/* Tx stats */
+-	seq_puts(s, "\n=======NIX TX_STATS(CGX port level)======\n\n");
++	seq_printf(s, "\n=======NIX TX_STATS(%s port level)======\n\n",
++		   mac_ops->name);
+ 	ucast = PRINT_CGX_CUML_NIXTX_STATUS(TX_UCAST, "tx_ucast_frames");
  	if (err)
- 		goto err_detach_rsrc;
+ 		return err;
+@@ -1662,7 +1675,7 @@ static int cgx_print_stats(struct seq_file *s, int lmac_id)
+ 		return err;
  
-diff --git a/include/linux/soc/marvell/octeontx2/asm.h b/include/linux/soc/marvell/octeontx2/asm.h
-index ae2279f..56ebd16 100644
---- a/include/linux/soc/marvell/octeontx2/asm.h
-+++ b/include/linux/soc/marvell/octeontx2/asm.h
-@@ -22,8 +22,16 @@
- 			 : [rs]"r" (ioaddr));           \
- 	(result);                                       \
- })
-+#define cn10k_lmt_flush(val, addr)			\
-+({							\
-+	__asm__ volatile(".cpu  generic+lse\n"		\
-+			 "steor %x[rf],[%[rs]]"		\
-+			 : [rf]"+r"(val)		\
-+			 : [rs]"r"(addr));		\
-+})
- #else
- #define otx2_lmt_flush(ioaddr)          ({ 0; })
-+#define cn10k_lmt_flush(val, addr)	({ 0; })
- #endif
+ 	/* Rx stats */
+-	seq_puts(s, "\n=======CGX RX_STATS======\n\n");
++	seq_printf(s, "\n=======%s RX_STATS======\n\n", mac_ops->name);
+ 	while (stat < CGX_RX_STATS_COUNT) {
+ 		err = cgx_get_rx_stats(cgxd, lmac_id, stat, &rx_stat);
+ 		if (err)
+@@ -1673,7 +1686,7 @@ static int cgx_print_stats(struct seq_file *s, int lmac_id)
  
- #endif /* __SOC_OTX2_ASM_H */
+ 	/* Tx stats */
+ 	stat = 0;
+-	seq_puts(s, "\n=======CGX TX_STATS======\n\n");
++	seq_printf(s, "\n=======%s TX_STATS======\n\n", mac_ops->name);
+ 	while (stat < CGX_TX_STATS_COUNT) {
+ 		err = cgx_get_tx_stats(cgxd, lmac_id, stat, &tx_stat);
+ 		if (err)
+@@ -1709,6 +1722,9 @@ RVU_DEBUG_SEQ_FOPS(cgx_stat, cgx_stat_display, NULL);
+ 
+ static void rvu_dbg_cgx_init(struct rvu *rvu)
+ {
++	struct mac_ops *mac_ops;
++	unsigned long lmac_bmap;
++	int rvu_def_cgx_id = 0;
+ 	int i, lmac_id;
+ 	char dname[20];
+ 	void *cgx;
+@@ -1716,17 +1732,24 @@ static void rvu_dbg_cgx_init(struct rvu *rvu)
+ 	if (!cgx_get_cgxcnt_max())
+ 		return;
+ 
+-	rvu->rvu_dbg.cgx_root = debugfs_create_dir("cgx", rvu->rvu_dbg.root);
++	mac_ops = get_mac_ops(rvu_cgx_pdata(rvu_def_cgx_id, rvu));
++	if (!mac_ops)
++		return;
++
++	rvu->rvu_dbg.cgx_root = debugfs_create_dir(mac_ops->name,
++						   rvu->rvu_dbg.root);
+ 
+ 	for (i = 0; i < cgx_get_cgxcnt_max(); i++) {
+ 		cgx = rvu_cgx_pdata(i, rvu);
+ 		if (!cgx)
+ 			continue;
++		lmac_bmap = cgx_get_lmac_bmap(cgx);
+ 		/* cgx debugfs dir */
+-		sprintf(dname, "cgx%d", i);
++		sprintf(dname, "%s%d", mac_ops->name, i);
+ 		rvu->rvu_dbg.cgx = debugfs_create_dir(dname,
+ 						      rvu->rvu_dbg.cgx_root);
+-		for (lmac_id = 0; lmac_id < cgx_get_lmac_cnt(cgx); lmac_id++) {
++
++		for_each_set_bit(lmac_id, &lmac_bmap, MAX_LMAC_PER_CGX) {
+ 			/* lmac debugfs dir */
+ 			sprintf(dname, "lmac%d", lmac_id);
+ 			rvu->rvu_dbg.lmac =
+@@ -2310,9 +2333,18 @@ void rvu_dbg_init(struct rvu *rvu)
+ 
+ 	debugfs_create_file("rsrc_alloc", 0444, rvu->rvu_dbg.root, rvu,
+ 			    &rvu_dbg_rsrc_status_fops);
+-	debugfs_create_file("rvu_pf_cgx_map", 0444, rvu->rvu_dbg.root, rvu,
+-			    &rvu_dbg_rvu_pf_cgx_map_fops);
+ 
++	if (!cgx_get_cgxcnt_max())
++		goto create;
++
++	if (is_rvu_otx2(rvu))
++		debugfs_create_file("rvu_pf_cgx_map", 0444, rvu->rvu_dbg.root, rvu,
++				    &rvu_dbg_rvu_pf_cgx_map_fops);
++	else
++		debugfs_create_file("rvu_pf_cgx_map", 0444, rvu->rvu_dbg.root, rvu,
++				    &rvu_dbg_rvu_pf_cgx_map_fops);
++
++create:
+ 	rvu_dbg_npa_init(rvu);
+ 	rvu_dbg_nix_init(rvu, BLKADDR_NIX0);
+ 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+index 46da18d..0c9b1c3 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+@@ -3631,10 +3631,14 @@ static int rvu_nix_lf_ptp_tx_cfg(struct rvu *rvu, u16 pcifunc, bool enable)
+ {
+ 	struct rvu_hwinfo *hw = rvu->hw;
+ 	struct rvu_block *block;
+-	int blkaddr;
++	int blkaddr, pf;
+ 	int nixlf;
+ 	u64 cfg;
+ 
++	pf = rvu_get_pf(pcifunc);
++	if (!is_mac_feature_supported(rvu, pf, RVU_LMAC_FEAT_PTP))
++		return 0;
++
+ 	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, pcifunc);
+ 	if (blkaddr < 0)
+ 		return NIX_AF_ERR_AF_LF_INVALID;
 -- 
 2.7.4
 
