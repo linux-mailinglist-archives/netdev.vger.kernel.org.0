@@ -2,69 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E3B5309379
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 10:36:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3345C309368
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 10:33:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231668AbhA3Jfq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 04:35:46 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34540 "EHLO mail.kernel.org"
+        id S231383AbhA3JbU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 04:31:20 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35150 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233373AbhA3DUz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Jan 2021 22:20:55 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 7E03864E22;
-        Sat, 30 Jan 2021 03:20:06 +0000 (UTC)
+        id S233553AbhA3DbX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 Jan 2021 22:31:23 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6F65664DE3;
+        Sat, 30 Jan 2021 03:30:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611976806;
-        bh=/YzEjJ3vLm3JJ5CvEbdJEIX/iI6KlCDFzfJmG1KKEzo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=EDrYClNf1ed55cdfyEKix8O5byuaWsgh7OxapLf2g7b60CzxTYKTcWjYx46kQ0haR
-         g7gv+vGcB+qwa9tOv9NPJ2kvVkFZ1kdHkYEMud7tp1H/ru6q4k0fFYNBVlY0FNfCGr
-         CEz93sv+uPld+5pe/kNK7q5+rFPFaX9SY8UbJ79tJVFEz/xcZ4pVLv3ZUw1RwIvVib
-         NG/GmlPuTDu0PRlRSTJoy5tVOgljD8n0/x9g2o0lIgagrWQ6orKGvGYZfKNs4Wc2gn
-         lyJJjBlfId9o0DdXqHkedHfAC1F4FusyxzsGOUc1/0ha394HRAOJbRh9FZ2g8wrcHF
-         dpelVhM1I7Wgw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6CD0E60984;
-        Sat, 30 Jan 2021 03:20:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1611977431;
+        bh=9+uUvSjBWlB9+9VCQWxaQCXbsoEgWmRNsgIGNRHjCSw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=g/CwsceJN6lHg7LS0LUocgufGGFWpmkRvvV8NEsSeKNKyZhJoUmxHZpld0/88sqYp
+         +ZzzG629hwjsqyo3Z+jU2V7XUIBRD7u2ZPiDQPUSihMbfRiw6VNmrWXf1XflOZkiXn
+         87oezuuJ+ZyGNRKr1nPPKSppDID02s5nmztJgJgbXwcWJ/WbbuPlIZsAdd3FDhkY3O
+         6WsY8hhd6b8TvX2qkCNnkImQZLuKNZ+CliwoSOMtC2OIGyD/TO1aKpyEBTMMvPYEHO
+         xK4Wimp1ASbNhf9h6TCDiXxEzK88Eoj3sL9R6poCWyREzgshXcIQyKXHD4WV/dZurT
+         txLFuKn2mfqSw==
+Date:   Fri, 29 Jan 2021 19:30:30 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Robert Hancock <hancockrwd@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: Patch for stable: iwlwifi: provide gso_type to GSO packets
+Message-ID: <20210129193030.46ef3b17@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CADLC3L0vBXwLLdqKxox9E-K4dSH07ZhHZ5u_kaANb=16jon0zg@mail.gmail.com>
+References: <CADLC3L0vBXwLLdqKxox9E-K4dSH07ZhHZ5u_kaANb=16jon0zg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net/ethernet: convert to use module_platform_driver in
- octeon_mgmt.c
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161197680644.13531.1325619394328700404.git-patchwork-notify@kernel.org>
-Date:   Sat, 30 Jan 2021 03:20:06 +0000
-References: <20210128035330.17676-1-dingsenjie@163.com>
-In-Reply-To: <20210128035330.17676-1-dingsenjie@163.com>
-To:     None <dingsenjie@163.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        leon@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dingsenjie@yulong.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Fri, 29 Jan 2021 20:41:11 -0600 Robert Hancock wrote:
+> Figured I would poke someone to add this patch to the stable queue - I
+> don't see it in
+> https://patchwork.kernel.org/bundle/netdev/stable/?state=* right now.
+> This patch is reported to fix a severe upload speed regression in many
+> Intel wireless adapters existing since kernel 5.9, as described in
+> https://bugzilla.kernel.org/show_bug.cgi?id=209913
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+We're actually experimenting with letting Greg take networking patches
+into stable like he does for every other tree. If the patch doesn't
+appear in the next stable release please poke stable@ directly.
 
-On Thu, 28 Jan 2021 11:53:30 +0800 you wrote:
-> From: dingsenjie <dingsenjie@yulong.com>
+> commit 81a86e1bd8e7060ebba1718b284d54f1238e9bf9
+> Author: Eric Dumazet <edumazet@google.com>
+> Date:   Mon Jan 25 07:09:49 2021 -0800
 > 
-> Simplify the code by using module_platform_driver macro
-> for octeon_mgmt.
+>     iwlwifi: provide gso_type to GSO packets
 > 
-> Signed-off-by: dingsenjie <dingsenjie@yulong.com>
+>     net/core/tso.c got recent support for USO, and this broke iwlfifi
+>     because the driver implemented a limited form of GSO.
 > 
-> [...]
-
-Here is the summary with links:
-  - net/ethernet: convert to use module_platform_driver in octeon_mgmt.c
-    https://git.kernel.org/netdev/net-next/c/afa4f675aa62
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+>     Providing ->gso_type allows for skb_is_gso_tcp() to provide
+>     a correct result.
+> 
+>     Fixes: 3d5b459ba0e3 ("net: tso: add UDP segmentation support")
+>     Signed-off-by: Eric Dumazet <edumazet@google.com>
+>     Reported-by: Ben Greear <greearb@candelatech.com>
+>     Tested-by: Ben Greear <greearb@candelatech.com>
+>     Cc: Luca Coelho <luciano.coelho@intel.com>
+>     Cc: Johannes Berg <johannes@sipsolutions.net>
+>     Link: https://bugzilla.kernel.org/show_bug.cgi?id=209913
+>     Link: https://lore.kernel.org/r/20210125150949.619309-1-eric.dumazet@gmail.com
+>     Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
