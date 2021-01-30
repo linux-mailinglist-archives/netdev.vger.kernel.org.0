@@ -2,233 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33E1930970B
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 18:06:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12CA53096FB
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 18:01:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232170AbhA3RFh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 12:05:37 -0500
-Received: from [1.6.215.26] ([1.6.215.26]:38272 "EHLO hyd1soter2"
-        rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231569AbhA3RFV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 30 Jan 2021 12:05:21 -0500
-X-Greylist: delayed 575 seconds by postgrey-1.27 at vger.kernel.org; Sat, 30 Jan 2021 12:02:22 EST
-Received: from hyd1soter2.caveonetworks.com (localhost [127.0.0.1])
-        by hyd1soter2 (8.15.2/8.15.2/Debian-3) with ESMTP id 10UGt8ZE092473;
-        Sat, 30 Jan 2021 22:25:08 +0530
-Received: (from geetha@localhost)
-        by hyd1soter2.caveonetworks.com (8.15.2/8.15.2/Submit) id 10UGt8sf092472;
-        Sat, 30 Jan 2021 22:25:08 +0530
-From:   Geetha sowjanya <gakula@marvell.com>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     sgoutham@marvell.com, davem@davemloft.net, kuba@kernel.org,
-        Hariprasad Kelam <hkelam@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>
-Subject: [net-next 14/14] octeontx2-af: cn10k: MAC internal loopback support
-Date:   Sat, 30 Jan 2021 22:25:06 +0530
-Message-Id: <1612025706-92432-1-git-send-email-gakula@marvell.com>
-X-Mailer: git-send-email 2.7.4
+        id S231614AbhA3Q72 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 11:59:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41576 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231308AbhA3Q7X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jan 2021 11:59:23 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CB16C061574;
+        Sat, 30 Jan 2021 08:58:43 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id kg20so17716711ejc.4;
+        Sat, 30 Jan 2021 08:58:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MfMoVHfO0rKFbhfuJqWumZvD8HUvpL3L63SSmxfbwGE=;
+        b=flwI+HsFKGSV5iuOD0P8U87awp5SFYN2AIddH3KhseiIuQ2ZEy5fphqGzUlAgbxM2T
+         UGDy+uAZDBze0HxWviIXWsDJFJGkTHB9oliiJxyuOo/8lrDb1lqbWhGa4EB8rlVWUBsf
+         tRcNaVEbsf0ROlZ5frgnMhN0bsDmgokhg+tPmvixnut9ImWdBDz1KkJpOQqWprzEv7ND
+         OXQLY/amon8mzpJKlub8n2C3DESvuBHA7rYDGPnwGABwylqIBQtgomaKO6LnOZA+OLjo
+         dwGHMwpKBzDNAAPpYFbP0+B6P3iiRivz5mO9lN45lXb786c0DM1ojYe3GnZb9z+FA5wF
+         Xbog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MfMoVHfO0rKFbhfuJqWumZvD8HUvpL3L63SSmxfbwGE=;
+        b=qEFDKgtmkW2t9mUu8HrTAUZwE4QKZyW/hFdUeRLlaGx2P06bejg9R+3CRLtDYX76WS
+         +qsQG8wwu45UcWTfcsUICs9Jff8sYSk5HAtQCI54qLrXPpm9vsj7ifWHsegrVncuRhdM
+         sHBcZuaOCHE+H9X0VxJKJgXjVpziH7aVbt1N5He7jjCndIql264hLu/rOGHTuFD+PAMI
+         PPW4TctUqkwX40PSTZIN5YXBl9SwSaRYjH8SFQEU0HtoOqVDxTYnGlCUFouOVgDxaSS9
+         XX5iQswKJnJtgLivQdU+riuUheUglo+qV5HE541+epR6muCij4jXJxQh4kY1VS5zTMxY
+         /5BA==
+X-Gm-Message-State: AOAM5321gSZY8oXZIi0jieicv2oEDbJHPiNcvgmXF2F+Q3wlaGhn7zHV
+        ocxpaGXB9AG/Y45JbQ5yCTLxrMa64mG7v6PLP5Y=
+X-Google-Smtp-Source: ABdhPJy9J/183fvbfFId3I+LBl0H16qDITdUI/9L8kRbTPDNNgl0r10bGcSujpaiA0OMYph1PkRcqpBD9oXafNPV0Bw=
+X-Received: by 2002:a17:906:7698:: with SMTP id o24mr2170840ejm.504.1612025921810;
+ Sat, 30 Jan 2021 08:58:41 -0800 (PST)
+MIME-Version: 1.0
+References: <cover.1611304190.git.lukas@wunner.de> <012e6863d0103d8dda1932d56427d1b5ba2b9619.1611304190.git.lukas@wunner.de>
+ <CA+FuTSfuLfh3H45HnvtJPocxj+E7maGwzkgYsfktna2+cJi9zQ@mail.gmail.com>
+ <20210124111432.GC1056@wunner.de> <CAF=yD-+BXKynYaYgg8n_R1gEtEbkRWm-8WdtrXOjdjyOj-unfg@mail.gmail.com>
+ <20210130162629.GB1959@wunner.de>
+In-Reply-To: <20210130162629.GB1959@wunner.de>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Sat, 30 Jan 2021 11:58:06 -0500
+Message-ID: <CAF=yD-+W_RxnmLvYugL0TkgwYM4S3392wNu_=FddujeYx7+gUA@mail.gmail.com>
+Subject: Re: [PATCH nf-next v4 5/5] af_packet: Introduce egress hook
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel <netfilter-devel@vger.kernel.org>,
+        coreteam@netfilter.org,
+        Network Development <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Thomas Graf <tgraf@suug.ch>,
+        Laura Garcia Liebana <nevola@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hariprasad Kelam <hkelam@marvell.com>
+On Sat, Jan 30, 2021 at 11:26 AM Lukas Wunner <lukas@wunner.de> wrote:
+>
+> On Sun, Jan 24, 2021 at 11:18:00AM -0500, Willem de Bruijn wrote:
+> > On Sun, Jan 24, 2021 at 6:14 AM Lukas Wunner <lukas@wunner.de> wrote:
+> > > On Fri, Jan 22, 2021 at 11:13:19AM -0500, Willem de Bruijn wrote:
+> > > > On Fri, Jan 22, 2021 at 4:44 AM Lukas Wunner <lukas@wunner.de> wrote:
+> > > > > Add egress hook for AF_PACKET sockets that have the PACKET_QDISC_BYPASS
+> > > > > socket option set to on, which allows packets to escape without being
+> > > > > filtered in the egress path.
+> > > > >
+> > > > > This patch only updates the AF_PACKET path, it does not update
+> > > > > dev_direct_xmit() so the XDP infrastructure has a chance to bypass
+> > > > > Netfilter.
+> > > >
+> > > > Isn't the point of PACKET_QDISC_BYPASS to skip steps like this?
+> > >
+> > > I suppose PACKET_QDISC_BYPASS "was introduced to bypass qdisc,
+> > > not to bypass everything."
+> > >
+> > > (The quote is taken from this message by Eric Dumazet:
+> > > https://lore.kernel.org/netfilter-devel/a9006cf7-f4ba-81b1-fca1-fd2e97939fdc@gmail.com/
+> > > )
+> >
+> > I see. I don't understand the value of a short-cut fast path if we
+> > start chipping away at its characteristic feature.
+>
+> The point is to filter traffic coming in through af_packet.
+> Exempting PACKET_QDISC_BYPASS from filtering would open up a
+> trivial security hole.
 
-MAC on CN10K silicon support loopback for selftest or debug purposes.
-This patch does necessary configuration to loopback packets upon receiving
-request from LMAC mapped RVU PF's netdev via mailbox.
+Sure. But that argument is no different for TC_EGRESS.
 
-Also MAC (CGX) on OcteonTx2 silicon variants and MAC (RPM) on
-OcteonTx3 CN10K are different and loopback needs to be configured
-differently. Upper layer interface between RVU AF and PF netdev is
-kept same. Based on silicon variant appropriate fn() pointer is
-called to config the MAC.
-
-Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
-Signed-off-by: Geetha sowjanya <gakula@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
----
- drivers/net/ethernet/marvell/octeontx2/af/cgx.c    |  9 +++--
- .../net/ethernet/marvell/octeontx2/af/cgx_fw_if.h  |  1 +
- .../ethernet/marvell/octeontx2/af/lmac_common.h    |  4 +-
- drivers/net/ethernet/marvell/octeontx2/af/rpm.c    | 44 ++++++++++++++++++++++
- drivers/net/ethernet/marvell/octeontx2/af/rpm.h    |  5 +++
- .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    |  6 +--
- 6 files changed, 62 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-index cf2358b..066023c 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-@@ -228,8 +228,9 @@ int cgx_set_pkind(void *cgxd, u8 lmac_id, int pkind)
- 	return 0;
- }
- 
--static inline u8 cgx_get_lmac_type(struct cgx *cgx, int lmac_id)
-+static u8 cgx_get_lmac_type(void *cgxd, int lmac_id)
- {
-+	struct cgx *cgx = cgxd;
- 	u64 cfg;
- 
- 	cfg = cgx_read(cgx, lmac_id, CGXX_CMRX_CFG);
-@@ -246,7 +247,7 @@ int cgx_lmac_internal_loopback(void *cgxd, int lmac_id, bool enable)
- 	if (!is_lmac_valid(cgx, lmac_id))
- 		return -ENODEV;
- 
--	lmac_type = cgx_get_lmac_type(cgx, lmac_id);
-+	lmac_type = cgx->mac_ops->get_lmac_type(cgx, lmac_id);
- 	if (lmac_type == LMAC_MODE_SGMII || lmac_type == LMAC_MODE_QSGMII) {
- 		cfg = cgx_read(cgx, lmac_id, CGXX_GMP_PCS_MRX_CTL);
- 		if (enable)
-@@ -637,7 +638,7 @@ static inline void link_status_user_format(u64 lstat,
- 	linfo->link_up = FIELD_GET(RESP_LINKSTAT_UP, lstat);
- 	linfo->full_duplex = FIELD_GET(RESP_LINKSTAT_FDUPLEX, lstat);
- 	linfo->speed = cgx_speed_mbps[FIELD_GET(RESP_LINKSTAT_SPEED, lstat)];
--	linfo->lmac_type_id = cgx_get_lmac_type(cgx, lmac_id);
-+	linfo->lmac_type_id = FIELD_GET(RESP_LINKSTAT_LMAC_TYPE, lstat);
- 	lmac_string = cgx_lmactype_string[linfo->lmac_type_id];
- 	strncpy(linfo->lmac_type, lmac_string, LMACTYPE_STR_LEN - 1);
- }
-@@ -1046,6 +1047,8 @@ struct mac_ops	cgx_mac_ops    = {
- 	.rx_stats_cnt   =       9,
- 	.tx_stats_cnt   =       18,
- 	.get_nr_lmacs	=	cgx_get_nr_lmacs,
-+	.get_lmac_type  =       cgx_get_lmac_type,
-+	.mac_lmac_intl_lbk =    cgx_lmac_internal_loopback,
- 	.mac_get_rx_stats  =	cgx_get_rx_stats,
- 	.mac_get_tx_stats  =	cgx_get_tx_stats,
- 	.mac_enadis_rx_pause_fwding =	cgx_lmac_enadis_rx_pause_fwding,
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx_fw_if.h b/drivers/net/ethernet/marvell/octeontx2/af/cgx_fw_if.h
-index c3702fa..c07a96e 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/cgx_fw_if.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx_fw_if.h
-@@ -154,6 +154,7 @@ enum cgx_cmd_own {
-  * CGX_STAT_SUCCESS
-  */
- #define RESP_FWD_BASE		GENMASK_ULL(56, 9)
-+#define RESP_LINKSTAT_LMAC_TYPE                GENMASK_ULL(35, 28)
- 
- /* Response to cmd ID - CGX_CMD_LINK_BRING_UP/DOWN, event ID CGX_EVT_LINK_CHANGE
-  * status can be either CGX_STAT_FAIL or CGX_STAT_SUCCESS
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h b/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
-index 7116322..ef6ca06 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
-@@ -68,7 +68,9 @@ struct mac_ops {
- 	 * number of setbits in lmac_exist tells number of lmacs
- 	 */
- 	int			(*get_nr_lmacs)(void *cgx);
--
-+	u8                      (*get_lmac_type)(void *cgx, int lmac_id);
-+	int                     (*mac_lmac_intl_lbk)(void *cgx, int lmac_id,
-+						     bool enable);
- 	/* Register Stats related functions */
- 	int			(*mac_get_rx_stats)(void *cgx, int lmac_id,
- 						    int idx, u64 *rx_stat);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-index 3870cd4..a91ccdc 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-@@ -21,6 +21,8 @@ static struct mac_ops	rpm_mac_ops   = {
- 	.rx_stats_cnt   =       43,
- 	.tx_stats_cnt   =       34,
- 	.get_nr_lmacs	=	rpm_get_nr_lmacs,
-+	.get_lmac_type  =       rpm_get_lmac_type,
-+	.mac_lmac_intl_lbk =    rpm_lmac_internal_loopback,
- 	.mac_get_rx_stats  =	rpm_get_rx_stats,
- 	.mac_get_tx_stats  =	rpm_get_tx_stats,
- 	.mac_enadis_rx_pause_fwding =	rpm_lmac_enadis_rx_pause_fwding,
-@@ -226,3 +228,45 @@ int rpm_get_tx_stats(void *rpmd, int lmac_id, int idx, u64 *tx_stat)
- 	mutex_unlock(&rpm->lock);
- 	return 0;
- }
-+
-+u8 rpm_get_lmac_type(void *rpmd, int lmac_id)
-+{
-+	rpm_t *rpm = rpmd;
-+	u64 req = 0, resp;
-+	int err;
-+
-+	req = FIELD_SET(CMDREG_ID, CGX_CMD_GET_LINK_STS, req);
-+	err = cgx_fwi_cmd_generic(req, &resp, rpm, 0);
-+	if (!err)
-+		return FIELD_GET(RESP_LINKSTAT_LMAC_TYPE, resp);
-+	return err;
-+}
-+
-+int rpm_lmac_internal_loopback(void *rpmd, int lmac_id, bool enable)
-+{
-+	rpm_t *rpm = rpmd;
-+	u8 lmac_type;
-+	u64 cfg;
-+
-+	if (!rpm || lmac_id >= rpm->lmac_count)
-+		return -ENODEV;
-+	lmac_type = rpm->mac_ops->get_lmac_type(rpm, lmac_id);
-+	if (lmac_type == LMAC_MODE_100G_R) {
-+		cfg = rpm_read(rpm, lmac_id, RPMX_MTI_PCS100X_CONTROL1);
-+
-+		if (enable)
-+			cfg |= RPMX_MTI_PCS_LBK;
-+		else
-+			cfg &= ~RPMX_MTI_PCS_LBK;
-+		rpm_write(rpm, lmac_id, RPMX_MTI_PCS100X_CONTROL1, cfg);
-+	} else {
-+		cfg = rpm_read(rpm, lmac_id, RPMX_MTI_LPCSX_CONTROL1);
-+		if (enable)
-+			cfg |= RPMX_MTI_PCS_LBK;
-+		else
-+			cfg &= ~RPMX_MTI_PCS_LBK;
-+		rpm_write(rpm, lmac_id, RPMX_MTI_LPCSX_CONTROL1, cfg);
-+	}
-+
-+	return 0;
-+}
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-index c939302..d32e74b 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-@@ -18,6 +18,9 @@
- #define RPMX_CMRX_SW_INT_W1S            0x188
- #define RPMX_CMRX_SW_INT_ENA_W1S        0x198
- #define RPMX_CMRX_LINK_CFG		0x1070
-+#define RPMX_MTI_PCS100X_CONTROL1       0x20000
-+#define RPMX_MTI_LPCSX_CONTROL1         0x30000
-+#define RPMX_MTI_PCS_LBK                BIT_ULL(14)
- #define RPMX_MTI_LPCSX_CONTROL(id)     (0x30000 | ((id) * 0x100))
- 
- #define RPMX_CMRX_LINK_RANGE_MASK	GENMASK_ULL(19, 16)
-@@ -41,6 +44,8 @@
- 
- /* Function Declarations */
- int rpm_get_nr_lmacs(void *rpmd);
-+u8 rpm_get_lmac_type(void *rpmd, int lmac_id);
-+int rpm_lmac_internal_loopback(void *rpmd, int lmac_id, bool enable);
- void rpm_lmac_enadis_rx_pause_fwding(void *rpmd, int lmac_id, bool enable);
- int rpm_lmac_get_pause_frm_status(void *cgxd, int lmac_id, u8 *tx_pause,
- 				  u8 *rx_pause);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-index 28af2d3..919f8f8 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-@@ -705,15 +705,15 @@ u32 rvu_cgx_get_fifolen(struct rvu *rvu)
- 
- static int rvu_cgx_config_intlbk(struct rvu *rvu, u16 pcifunc, bool en)
- {
--	int pf = rvu_get_pf(pcifunc);
-+	struct mac_ops *mac_ops;
- 	u8 cgx_id, lmac_id;
- 
- 	if (!is_cgx_config_permitted(rvu, pcifunc))
- 		return -EPERM;
- 
--	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
-+	mac_ops = get_mac_ops(rvu_cgx_pdata(cgx_id, rvu));
- 
--	return cgx_lmac_internal_loopback(rvu_cgx_pdata(cgx_id, rvu),
-+	return mac_ops->mac_lmac_intl_lbk(rvu_cgx_pdata(cgx_id, rvu),
- 					  lmac_id, en);
- }
- 
--- 
-2.7.4
-
+That's why packet sockets require CAP_NET_RAW. It is perhaps
+unfortunately that it is ns_capable instead of capable. But there is
+nothing netfilter specific about this.
