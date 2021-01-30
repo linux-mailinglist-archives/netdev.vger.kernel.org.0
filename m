@@ -2,109 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05F59309681
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 17:08:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7078B3096B9
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 17:28:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230095AbhA3QGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 11:06:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58432 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232136AbhA3QGK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jan 2021 11:06:10 -0500
-Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82672C061573
-        for <netdev@vger.kernel.org>; Sat, 30 Jan 2021 08:05:30 -0800 (PST)
-Received: by mail-ot1-x334.google.com with SMTP id 63so11802570oty.0
-        for <netdev@vger.kernel.org>; Sat, 30 Jan 2021 08:05:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=LEAkpo8Q71pMS5p/jd+4AnTM/010NmIKwzEftzJdxKw=;
-        b=QwwYDtXp3R3LmjYu8Qze+8BLq++dmkl8EkHDdegRNQQ3ovlG9sduyuPGi+1Fl58Q6t
-         ZNpiISOnm6C1o8/zZPx/Yj4PO8qLM6hDPk8dX15BTNeFwKd8bwifJN8pD/fzmkZMk6E3
-         51Tgu+GiSpBMdnYeRVFpYPu+F4M3nK3Q1tbczP+ATAlqUPKynu3DdgzC/nPOwxYK7sJj
-         C/3k1otPyhELTDKEnRKPrBkIHoEIsD7OAJzwNQxnzAdRNjo27SXEt0m/nhDq2W/m6LWN
-         cmorhq1z7tuqzRQrQyMGoaMb7xGDPVuur4bpoyvfBagVRXNpbimPQmd/WXx5LwTFQpES
-         3W8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=LEAkpo8Q71pMS5p/jd+4AnTM/010NmIKwzEftzJdxKw=;
-        b=d9Jc/Pe3+U5/UzYQG74gAumSLGENerjBItvbcvaTKO2ut41SkbvTzXAU6aU2Pw62Yo
-         w7YQMoWOTFq4oIdsDkBwhUb6wyVk/vtQi5E9ySmfKU9MBJ5z69evSZrQv0fmEW1lQzXQ
-         prXJlOBGeWOehtj+VaYfrYLgh7KELpvf/KQNhZHb2qf4RDcFXGQUOhtyA9PlqtGXxVwF
-         x0hZ8YFpLhBCUqQzTokjHmqQ8FGCFJPMNE7IdAPe1F549DnJTYVf1s7+tzfRgZeCKZG1
-         3nEtnpj5ZjWJm+IIxr3nBAwBQTKVHPXXTl2FKBBADYFA+4NjlPimgiW4BM5qt+A2QI9i
-         n9Iw==
-X-Gm-Message-State: AOAM532u9ptd0eNWbeSnlqJ1s1UsGXo66Pbu2MDvu06m/v1GfTGepy0u
-        0o85q1rXmEJZhfWWnKPiF94=
-X-Google-Smtp-Source: ABdhPJx0/vTnrq9b4gULGDR9WLcu/mjZ4k1BbDi5vvmnKKT0wKL9cBh1bGYdC0LW5BwrP+98RaTEjw==
-X-Received: by 2002:a9d:53c5:: with SMTP id i5mr3212892oth.159.1612022729326;
-        Sat, 30 Jan 2021 08:05:29 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:f5e8:905e:fd16:57ad])
-        by smtp.googlemail.com with ESMTPSA id q20sm2814570otf.2.2021.01.30.08.05.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 30 Jan 2021 08:05:28 -0800 (PST)
-Subject: Re: [PATCH] neighbour: Prevent a dead entry from updating gc_list
-To:     Chinmay Agarwal <chinagar@codeaurora.org>,
-        xiyou.wangcong@gmail.com, Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        sharathv@codeaurora.org
-References: <20210127165453.GA20514@chinagar-linux.qualcomm.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <58b836cd-108d-2248-5206-1aade48153dd@gmail.com>
-Date:   Sat, 30 Jan 2021 09:05:27 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.7.0
+        id S231968AbhA3Q1f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 11:27:35 -0500
+Received: from bmailout1.hostsharing.net ([83.223.95.100]:44735 "EHLO
+        bmailout1.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230095AbhA3Q1L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jan 2021 11:27:11 -0500
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout1.hostsharing.net (Postfix) with ESMTPS id C1B82300371FF;
+        Sat, 30 Jan 2021 17:26:29 +0100 (CET)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id B71AA15646A; Sat, 30 Jan 2021 17:26:29 +0100 (CET)
+Date:   Sat, 30 Jan 2021 17:26:29 +0100
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel <netfilter-devel@vger.kernel.org>,
+        coreteam@netfilter.org,
+        Network Development <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Thomas Graf <tgraf@suug.ch>,
+        Laura Garcia Liebana <nevola@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: Re: [PATCH nf-next v4 5/5] af_packet: Introduce egress hook
+Message-ID: <20210130162629.GB1959@wunner.de>
+References: <cover.1611304190.git.lukas@wunner.de>
+ <012e6863d0103d8dda1932d56427d1b5ba2b9619.1611304190.git.lukas@wunner.de>
+ <CA+FuTSfuLfh3H45HnvtJPocxj+E7maGwzkgYsfktna2+cJi9zQ@mail.gmail.com>
+ <20210124111432.GC1056@wunner.de>
+ <CAF=yD-+BXKynYaYgg8n_R1gEtEbkRWm-8WdtrXOjdjyOj-unfg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210127165453.GA20514@chinagar-linux.qualcomm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAF=yD-+BXKynYaYgg8n_R1gEtEbkRWm-8WdtrXOjdjyOj-unfg@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/27/21 9:54 AM, Chinmay Agarwal wrote:
-> Following race condition was detected:
-> <CPU A, t0> - neigh_flush_dev() is under execution and calls
-> neigh_mark_dead(n) marking the neighbour entry 'n' as dead.
+On Sun, Jan 24, 2021 at 11:18:00AM -0500, Willem de Bruijn wrote:
+> On Sun, Jan 24, 2021 at 6:14 AM Lukas Wunner <lukas@wunner.de> wrote:
+> > On Fri, Jan 22, 2021 at 11:13:19AM -0500, Willem de Bruijn wrote:
+> > > On Fri, Jan 22, 2021 at 4:44 AM Lukas Wunner <lukas@wunner.de> wrote:
+> > > > Add egress hook for AF_PACKET sockets that have the PACKET_QDISC_BYPASS
+> > > > socket option set to on, which allows packets to escape without being
+> > > > filtered in the egress path.
+> > > >
+> > > > This patch only updates the AF_PACKET path, it does not update
+> > > > dev_direct_xmit() so the XDP infrastructure has a chance to bypass
+> > > > Netfilter.
+> > >
+> > > Isn't the point of PACKET_QDISC_BYPASS to skip steps like this?
+> >
+> > I suppose PACKET_QDISC_BYPASS "was introduced to bypass qdisc,
+> > not to bypass everything."
+> >
+> > (The quote is taken from this message by Eric Dumazet:
+> > https://lore.kernel.org/netfilter-devel/a9006cf7-f4ba-81b1-fca1-fd2e97939fdc@gmail.com/
+> > )
 > 
-> <CPU B, t1> - Executing: __netif_receive_skb() ->
-> __netif_receive_skb_core() -> arp_rcv() -> arp_process().arp_process()
-> calls __neigh_lookup() which takes a reference on neighbour entry 'n'.
-> 
-> <CPU A, t2> - Moves further along neigh_flush_dev() and calls
-> neigh_cleanup_and_release(n), but since reference count increased in t2,
-> 'n' couldn't be destroyed.
-> 
-> <CPU B, t3> - Moves further along, arp_process() and calls
-> neigh_update()-> __neigh_update() -> neigh_update_gc_list(), which adds
-> the neighbour entry back in gc_list(neigh_mark_dead(), removed it
-> earlier in t0 from gc_list)
-> 
-> <CPU B, t4> - arp_process() finally calls neigh_release(n), destroying
-> the neighbour entry.
-> 
-> This leads to 'n' still being part of gc_list, but the actual
-> neighbour structure has been freed.
-> 
-> The situation can be prevented from happening if we disallow a dead
-> entry to have any possibility of updating gc_list. This is what the
-> patch intends to achieve.
-> 
-> Fixes: 9c29a2f55ec0 ("neighbor: Fix locking order for gc_list changes")
+> I see. I don't understand the value of a short-cut fast path if we
+> start chipping away at its characteristic feature.
 
-always Cc the author(s) of commits in Fixes tag.
+The point is to filter traffic coming in through af_packet.
+Exempting PACKET_QDISC_BYPASS from filtering would open up a
+trivial security hole.
 
-> Signed-off-by: Chinmay Agarwal <chinagar@codeaurora.org>
-> ---
->  net/core/neighbour.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
-> 
+Thanks,
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
-
+Lukas
