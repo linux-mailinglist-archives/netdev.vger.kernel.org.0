@@ -2,95 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A2553096CA
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 17:35:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFD563096FF
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 18:03:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231894AbhA3Qfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 11:35:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37938 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231614AbhA3OaM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jan 2021 09:30:12 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD172C06174A;
-        Sat, 30 Jan 2021 06:29:31 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id s24so7278173pjp.5;
-        Sat, 30 Jan 2021 06:29:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Nkx9uFScRqctjDlwBC992ocBDlhUqlgA/eQzRKO6pEo=;
-        b=np49WVh5Hdtn/4dlc9UfL4hMeh3AM37lFA867olQjLMMGUr9rc1YHeMvq2H2c6mvnb
-         X/oFZtkBP7PwcirZHNoYsNtTJnjTFVevA7XXtu4arT6BAc+viA38faGtljoyKWO8XUPs
-         K2CSYrR64K9hr2lIgeRER7Uu+wicIstBS5JqCucyoFx5jqrJro267wNL6fKJokDKTOEx
-         vAXfHTBpgvPuwoZi/cbeie3nwhXMtDY9F9pLHIS2y0R0ve927dWvR8wNiHcjI8Ism+ek
-         9ntuImRyQgg6Xpur8TntWnIpbsqSNOnl92DP8FOKzQ4lzhSBn9q46P+QeNabTFoGrOKZ
-         ZzCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Nkx9uFScRqctjDlwBC992ocBDlhUqlgA/eQzRKO6pEo=;
-        b=XLd3hj8HQ/QGvTjFv2Lc7y+UHO7YvJJmjSCkWe8GmleypEYHft1vKdn966olXraYtq
-         aKesohP6xCJuusF0qjZpkM6BMzwXZLr/58mXLoiBD+GKlrSoMqvJp3z7oHtV8Nx+9o9n
-         xKM4iY08AAw4qyi5nXDarB+Yqtjh90aCQJr3AMRnFtLcPYf3dcQtdHTN3SR6zct6rE5c
-         RPYEfoCpQXox+SvQgBphDpnrgUu4wGrXh8qCVBwXiVAryR2jsRnzk3Zz3f+U8JSI6eGS
-         ufae+WusALU2khhAVObL+Rrr5b143USoEs4gswX+uzoc8cEXsJplKeddGddprRIwCYM5
-         xVkA==
-X-Gm-Message-State: AOAM531CRiRVFKXZQyxE6/MmPVZTOpIghxr2H81r1wiP9zbKTSHQbRi6
-        k5s22LktWMeqWICE9dS+CTjisIsMwznroNEFWgw=
-X-Google-Smtp-Source: ABdhPJxlDZZVEyCnDCGicthJ0wFieV9xlRfczDlr4w8KAG+ZMB2oBh8RlCToOF3Wo8NIhR3yyxFONCet4rbUR+SrJbE=
-X-Received: by 2002:a17:902:9a4a:b029:dc:435c:70ad with SMTP id
- x10-20020a1709029a4ab02900dc435c70admr10068737plv.77.1612016971407; Sat, 30
- Jan 2021 06:29:31 -0800 (PST)
-MIME-Version: 1.0
-References: <20210127090747.364951-1-xie.he.0141@gmail.com>
- <20210128114659.2d81a85f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAJht_EOSB-m--Ombr6wLMFq4mPy8UTpsBri2CPsaRTU-aks7Uw@mail.gmail.com>
- <3f67b285671aaa4b7903733455a730e1@dev.tdt.de> <20210129173650.7c0b7cda@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210129173650.7c0b7cda@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Sat, 30 Jan 2021 06:29:20 -0800
-Message-ID: <CAJht_EPMtn5E-Y312vPQfH2AwDAi+j1OP4zzpg+AUKf46XE1Yw@mail.gmail.com>
-Subject: Re: [PATCH net] net: hdlc_x25: Use qdisc to queue outgoing LAPB frames
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Martin Schiller <ms@dev.tdt.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Krzysztof Halasa <khc@pm.waw.pl>
-Content-Type: text/plain; charset="UTF-8"
+        id S231645AbhA3RCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 12:02:25 -0500
+Received: from [1.6.215.26] ([1.6.215.26]:38272 "EHLO hyd1soter2"
+        rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229468AbhA3RCY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 30 Jan 2021 12:02:24 -0500
+X-Greylist: delayed 575 seconds by postgrey-1.27 at vger.kernel.org; Sat, 30 Jan 2021 12:02:22 EST
+Received: from hyd1soter2.caveonetworks.com (localhost [127.0.0.1])
+        by hyd1soter2 (8.15.2/8.15.2/Debian-3) with ESMTP id 10UGppDN091753;
+        Sat, 30 Jan 2021 22:21:51 +0530
+Received: (from geetha@localhost)
+        by hyd1soter2.caveonetworks.com (8.15.2/8.15.2/Submit) id 10UGpoj1091752;
+        Sat, 30 Jan 2021 22:21:50 +0530
+From:   Geetha sowjanya <gakula@marvell.com>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     sgoutham@marvell.com, davem@davemloft.net, kuba@kernel.org,
+        Geetha sowjanya <gakula@marvell.com>
+Subject: [net-next 00/14] Add Marvell CN10K support
+Date:   Sat, 30 Jan 2021 22:21:41 +0530
+Message-Id: <1612025501-91712-1-git-send-email-gakula@marvell.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 29, 2021 at 5:36 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> I'm still struggling to wrap my head around this.
->
-> Did you test your code with lockdep enabled? Which Qdisc are you using?
-> You're queuing the frames back to the interface they came from - won't
-> that cause locking issues?
+The current admin function (AF) driver and the netdev driver supports
+OcteonTx2 silicon variants. The same OcteonTx2's Resource Virtualization Unit (RVU)
+is carried forward to the next-gen silicon ie OcteonTx3, with some changes
+and feature enhancements.
 
-Hmm... Thanks for bringing this to my attention. I indeed find issues
-when the "noqueue" qdisc is used.
+This patch set adds support for OcteonTx3 (CN10K) silicon and gets the drivers
+to the same level as OcteonTx2. No new OcteonTx3 specific features are added.
+Changes cover below HW level differences
+- PCIe BAR address changes wrt shared mailbox memory region
+- Receive buffer freeing to HW
+- Transmit packet's descriptor submission to HW
+- Programmable HW interface identifiers (channels)
+- Increased MTU support
+- A Serdes MAC block (RPM) configuration  
 
-When using a qdisc other than "noqueue", when sending an skb:
-"__dev_queue_xmit" will call "__dev_xmit_skb";
-"__dev_xmit_skb" will call "qdisc_run_begin" to mark the beginning of
-a qdisc run, and if the qdisc is already running, "qdisc_run_begin"
-will fail, then "__dev_xmit_skb" will just enqueue this skb without
-starting qdisc. There is no problem.
+Geetha sowjanya (6):
+  octeontx2-af: cn10k: Update NIX/NPA context structure
+  octeontx2-af: cn10k: Update NIX and NPA context in debugfs
+  octeontx2-pf: cn10k: Initialise NIX context
+  octeontx2-pf: cn10k: Map LMTST region
+  octeontx2-pf: cn10k: Use LMTST lines for NPA/NIX operations
 
-When using "noqueue" as the qdisc, when sending an skb:
-"__dev_queue_xmit" will try to send this skb directly. Before it does
-that, it will first check "txq->xmit_lock_owner" and will find that
-the current cpu already owns the xmit lock, it will then print a
-warning message "Dead loop on virtual device ..." and drop the skb.
+Hariprasad Kelam (5):
+  octeontx2-af: cn10k: Add RPM MAC support
+  octeontx2-af: cn10K: Add MTU configuration
+  octeontx2-pf: cn10k: Get max mtu supported from admin function
+  octeontx2-af: cn10k: Add RPM Rx/Tx stats support
+  octeontx2-af: cn10k: MAC internal loopback support
 
-A solution can be queuing the outgoing L2 frames in this driver first,
-and then using a tasklet to send them to the qdisc TX queue.
+Rakesh Babu (1):
+  octeontx2-af: cn10k: Add RPM LMAC pause frame support
 
-Thanks! I'll make changes to fix this.
+Subbaraya Sundeep (2):
+  octeontx2-af: cn10k: Add mbox support for CN10K platform
+  octeontx2-pf: cn10k: Add mbox support for CN10K
+  octeontx2-af: cn10k: Add support for programmable channels
+
+ drivers/net/ethernet/marvell/octeontx2/af/Makefile |   2 +-
+ drivers/net/ethernet/marvell/octeontx2/af/cgx.c    | 315 ++++++++---
+ drivers/net/ethernet/marvell/octeontx2/af/cgx.h    |  15 +-
+ .../net/ethernet/marvell/octeontx2/af/cgx_fw_if.h  |   1 +
+ drivers/net/ethernet/marvell/octeontx2/af/common.h |   5 +
+ .../ethernet/marvell/octeontx2/af/lmac_common.h    | 129 +++++
+ drivers/net/ethernet/marvell/octeontx2/af/mbox.c   |  59 +-
+ drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  70 ++-
+ drivers/net/ethernet/marvell/octeontx2/af/rpm.c    | 272 ++++++++++
+ drivers/net/ethernet/marvell/octeontx2/af/rpm.h    |  57 ++
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.c    | 157 +++++-
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |  70 +++
+ .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    | 135 ++++-
+ .../net/ethernet/marvell/octeontx2/af/rvu_cn10k.c  | 261 +++++++++
+ .../ethernet/marvell/octeontx2/af/rvu_debugfs.c    | 339 +++++++++++-
+ .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    | 112 +++-
+ .../net/ethernet/marvell/octeontx2/af/rvu_npc.c    |   4 +-
+ .../net/ethernet/marvell/octeontx2/af/rvu_reg.h    |  24 +
+ .../net/ethernet/marvell/octeontx2/af/rvu_struct.h | 604 ++++++---------------
+ .../net/ethernet/marvell/octeontx2/nic/Makefile    |   2 +-
+ drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c | 182 +++++++
+ drivers/net/ethernet/marvell/octeontx2/nic/cn10k.h |  17 +
+ .../ethernet/marvell/octeontx2/nic/otx2_common.c   | 144 +++--
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   | 105 +++-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   |  67 ++-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_reg.h  |   4 +
+ .../ethernet/marvell/octeontx2/nic/otx2_struct.h   |  10 +-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c |  70 ++-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.h |   8 +-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c   |  52 +-
+ include/linux/soc/marvell/octeontx2/asm.h          |   8 +
+ 31 files changed, 2573 insertions(+), 727 deletions(-)
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rpm.c
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rpm.h
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_cn10k.c
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/cn10k.h
+
+-- 
+2.7.4
+
