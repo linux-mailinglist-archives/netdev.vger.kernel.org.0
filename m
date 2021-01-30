@@ -2,47 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D42830938C
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 10:40:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A1CD73093A2
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 10:46:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231783AbhA3JkL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 04:40:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43684 "EHLO mail.kernel.org"
+        id S232006AbhA3JpU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 04:45:20 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44330 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231991AbhA3Jiy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 30 Jan 2021 04:38:54 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1049C64E08;
-        Sat, 30 Jan 2021 06:18:52 +0000 (UTC)
+        id S231904AbhA3Jn4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 30 Jan 2021 04:43:56 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DA55664E09;
+        Sat, 30 Jan 2021 06:22:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611987532;
-        bh=PTM14fyQlmSONY48Q+6aEkz7OoTm/p0gWxZKzFhbARA=;
+        s=k20201202; t=1611987777;
+        bh=fD0zqLA4rxCeHjN+YspWd9sPj+WUaZ3o7DTmA2KRtMo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LhICLphgd4S541Si8aViiwvBakUo36Vl5acJHjNaH3ZOfGmV80SwnpJM1fymLJT1Z
-         inozrYAtzgN0j6NZzrbHSid9k+1FNRxFKsuqURCBrrOLNcZf7HcCM1g8WByqjebeRT
-         2T9WcK466GBLf8EpSH+zGY9m6eXnAtuTVp0kB8PkXvVprxZNEKpExIeIhcAewRJ/jX
-         Cp6zbQl2FLMVp67hyqAKHMBjUN/mmkxBMPy59+UTFB9RDUJD7OeQ6JZbcXdDOFtCPC
-         pQKT0kfRgQytme2hkqkdpUjZTj2tB4FV4+74lmgJdDzv4va5WWCcFaiRjbs8dmQG7K
-         wKDqoChpbEhLg==
-Date:   Fri, 29 Jan 2021 22:18:51 -0800
+        b=rP/6uKNPvOO1xQgHSIiJENxCItDl2a+v/+PxZRFwzBxqZBTny4pMzQlh5cxoZdOu+
+         lXfQYG3V8ohRgy34AJebsVPiIrWWyH7b5h6qWODvTu7gi3Aan1S1qXIw6jlUZ4M/Kb
+         WsNycumtMbQBHaRz2Lf1J0RgUepWbCd+p03F6OSeANT0uTNjRl6UK3WdpA/Nh2S1wg
+         5uQ4iC8tLbYyExiFUaIECOhywy+tRsCzNgapf3aAZjTy+zpaFRLvG7fRCBfJcTntnp
+         TiiGqVN9mpk2x52Jwy2UCMxm5gIeA2aYM3ZfQtBe4FlG6ZupWT9oy4q3FebGepUudS
+         Dk02B9FcldY9A==
+Date:   Fri, 29 Jan 2021 22:22:55 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Jacob Keller <jacob.e.keller@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        David Miller <davem@davemloft.net>,
-        Aleksandr Loktionov <aleksandr.loktionov@intel.com>,
-        Network Development <netdev@vger.kernel.org>,
-        sassmann@redhat.com,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: Re: [PATCH net 4/4] i40e: Revert "i40e: don't report link up for a
- VF who hasn't enabled queues"
-Message-ID: <20210129221851.20f6df9b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAF=yD-+XoonTb5yYzDqLGmVyGcT0Jo6=5KoN4okKAkQL5dJ2YA@mail.gmail.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        netdev@vger.kernel.org, sassmann@redhat.com,
+        Sasha Neftin <sasha.neftin@intel.com>
+Subject: Re: [PATCH net 1/4] igc: Report speed and duplex as unknown when
+ device is runtime suspended
+Message-ID: <20210129222255.5e7115bd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210128213851.2499012-2-anthony.l.nguyen@intel.com>
 References: <20210128213851.2499012-1-anthony.l.nguyen@intel.com>
-        <20210128213851.2499012-5-anthony.l.nguyen@intel.com>
-        <CA+FuTScbEK+1NBUNCbHNnwOoSB0JtsEv3wEisYAbm082P+K0Rw@mail.gmail.com>
-        <e27cb35b-a413-ccdd-fa42-d65e7162747f@intel.com>
-        <CAF=yD-+XoonTb5yYzDqLGmVyGcT0Jo6=5KoN4okKAkQL5dJ2YA@mail.gmail.com>
+        <20210128213851.2499012-2-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -50,34 +42,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 29 Jan 2021 21:00:02 -0500 Willem de Bruijn wrote:
-> On Fri, Jan 29, 2021 at 7:09 PM Jacob Keller <jacob.e.keller@intel.com> wrote:
-> > Yea this might re-introduce the issue described in that commit. However
-> > I believe the bug in question was due to very old versions of VF
-> > drivers, (including an ancient version of FreeBSD if I recall).
-> >
-> > Perhaps there is some better mechanism for handling this, but I think
-> > reverting this is ok given that it causes problems in certain situations
-> > where the link status wasn't reported properly.
-> >
-> > Maybe there is a solution for both cases? but I would worry less about
-> > an issue with the incredibly old VFs because we know that the issue is
-> > fixed in newer VF code and the real problem is that the VF driver is
-> > incorrectly assuming link up means it is ready to send.
-> >
-> > Thus, I am comfortable with this revert: It simplifies the state for
-> > both the PF and VF.
-> >
-> > I would be open to alternatives as long as the issue described here is
-> > also fixed.
-> >
-> > Caveat: I was not involved in the decision to revert this and wasn't
-> > aware of it until now, so I almost certainly have out of date information.  
+On Thu, 28 Jan 2021 13:38:48 -0800 Tony Nguyen wrote:
+> From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 > 
-> That's reasonable. The original patch is over three years old.
-> 
-> If it is considered safe to revert now, I would just articulate that
-> point in the commit.
+> Similar to commit 165ae7a8feb5 ("igb: Report speed and duplex as unknown
+> when device is runtime suspended"), if we try to read speed and duplex
+> sysfs while the device is runtime suspended, igc will complain and
+> stops working:
 
-Agreed. I'd call out that the original fix was a work around for
-clearly buggy client drivers, and they had enough time to be fixed.
+> The more generic approach will be wrap get_link_ksettings() with begin()
+> and complete() callbacks, and calls runtime resume and runtime suspend
+> routine respectively. However, igc is like igb, runtime resume routine
+> uses rtnl_lock() which upper ethtool layer also uses.
+> 
+> So to prevent a deadlock on rtnl, take a different approach, use
+> pm_runtime_suspended() to avoid reading register while device is runtime
+> suspended.
+
+Is someone working on the full fix to how PM operates?
+
+There is another rd32(IGC_STATUS) in this file which I don't think 
+is protected either. 
