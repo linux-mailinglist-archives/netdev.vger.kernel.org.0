@@ -2,128 +2,338 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AF8F3092D9
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 10:07:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D6603092FB
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 10:14:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232633AbhA3JFT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 04:05:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57050 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233806AbhA3E5I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 23:57:08 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F1A5C061788
-        for <netdev@vger.kernel.org>; Fri, 29 Jan 2021 18:00:41 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id hs11so15658892ejc.1
-        for <netdev@vger.kernel.org>; Fri, 29 Jan 2021 18:00:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Cjb1S8yxTaBB/fVXC8WDs/FjomNiJfpzbUqKk+aM37U=;
-        b=TECGYmsL/Lax7DccAyXrLjsdnUlxiMlJ+rk4K7pUY7Q+LzdaBzx8AFDzkEgiRKTXQE
-         /4iIQuGcVGfPSuDJgr1amA/UwMmyVnbXNi2+wT4TwCi8kMNeWcerStmabwOs11x1zsxy
-         jGHJovbMOevGQUUCfRU0reWJdvWNXSUG4baOL1IAcVSJvIOIJGeEU1J7f/R7kiaPmLTA
-         XEEKuKz+yCfhOovarJ3rEbml1824HjvqcVVyA16PAcZtqj/74+wCox3uFpvZCHEjbuND
-         lOwGGx/CKegAlHk8RidGIZQrKD0UE18Ji/oQY9nkV/nJEjAqyA07K9yLTcXjUX8kxL0n
-         3YbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Cjb1S8yxTaBB/fVXC8WDs/FjomNiJfpzbUqKk+aM37U=;
-        b=cHLtXCdY897i8zD7+iyhH9bNmtM9XrJU7074TAbnkQPsOgNd+QTp2It2jqwXvRkuE+
-         MIJ4YGzkb3vt3Widv5bUUvSUZHcbn1JpOvST/40ecDrrP7HC9tAMZncadf1jshop67Tq
-         aWs1xya01uY/cbIkFcyiZv5wW8qN0hgNgrZFlq5mqeHMpiCCJQLwGO6jhqA/vA+H8uE3
-         wjSorzRZQ5hGfv+X2o/xan+zJ0EbhtXKlK1eQAyJ5wAayiRVKJj9xE/HcrvBDOdNLVQS
-         Sai3e8Ix8oWuJyPZCEQqTyqLnxOL5WEOYiI7qnCsrLolOslpSMhEbnzVUv5hpO+0A7uu
-         8NtQ==
-X-Gm-Message-State: AOAM5308mX+4sro2lnzpMG4dOWr6tMfY3f7P/VeMo4gLh3qfR4l4b2/7
-        EzqJo0TO4yajNf1jAu3UGUBbJMHId4bT3SHhgRqXruyo
-X-Google-Smtp-Source: ABdhPJx5ERFO6WjhK+97QrHkjsKQgUo5rs2i9SB7PAoJUmaKv9tdmXuuiSVoOu7GWfS7Wk3CKKjEQWqwG5LRPO4LuoY=
-X-Received: by 2002:a17:906:3b16:: with SMTP id g22mr7036713ejf.504.1611972040303;
- Fri, 29 Jan 2021 18:00:40 -0800 (PST)
+        id S233653AbhA3EV3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jan 2021 23:21:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36302 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233646AbhA3DtD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 Jan 2021 22:49:03 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1344564E06;
+        Sat, 30 Jan 2021 02:26:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611973588;
+        bh=kCCwPK8iN8tmNo/+x76rXjiNaPvgT4je+uh7bZxFD4A=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=c85mj9LMPVCHr8AoIINpbPDACm0oA/xgJjq7oHpuaeLX0TWPKHnjwY4NQ4ARIvfoE
+         0FbAr9SnHFTbrlBeOHVJhjxpdhHtuxiuUuXsPY9clLUOb3PBaY+tTrdU9TWN4Z5oZS
+         k6T9/1Ju1ruOZj+mv+IVXfuOmL+JNcqvOF1N6DjnnJXuTdV8k4t2GkhmDrUW6JQgRY
+         nsuueha3bUm6dU4P/ipYUa2Ly2hqtTowQz4UiyD7zxj2ysxWu1ZilCKJrvg/wQ9mB3
+         WnyHXUgt9VOpmxX3bFSgQmhCGZfkP1ih/mbrMkl+MOg2I5h6CluKKFYKfnLckPujbS
+         WbRWblWbrsgYw==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, Leon Romanovsky <leonro@nvidia.com>,
+        Yevgeny Kliteynik <kliteyn@nvidia.com>,
+        Alex Vesker <valex@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net-next 02/11] net/mlx5: DR, Add match STEv1 structs to ifc
+Date:   Fri, 29 Jan 2021 18:26:09 -0800
+Message-Id: <20210130022618.317351-3-saeed@kernel.org>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210130022618.317351-1-saeed@kernel.org>
+References: <20210130022618.317351-1-saeed@kernel.org>
 MIME-Version: 1.0
-References: <20210128213851.2499012-1-anthony.l.nguyen@intel.com>
- <20210128213851.2499012-5-anthony.l.nguyen@intel.com> <CA+FuTScbEK+1NBUNCbHNnwOoSB0JtsEv3wEisYAbm082P+K0Rw@mail.gmail.com>
- <e27cb35b-a413-ccdd-fa42-d65e7162747f@intel.com>
-In-Reply-To: <e27cb35b-a413-ccdd-fa42-d65e7162747f@intel.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 29 Jan 2021 21:00:02 -0500
-Message-ID: <CAF=yD-+XoonTb5yYzDqLGmVyGcT0Jo6=5KoN4okKAkQL5dJ2YA@mail.gmail.com>
-Subject: Re: [PATCH net 4/4] i40e: Revert "i40e: don't report link up for a VF
- who hasn't enabled queues"
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Aleksandr Loktionov <aleksandr.loktionov@intel.com>,
-        Network Development <netdev@vger.kernel.org>,
-        sassmann@redhat.com,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 29, 2021 at 7:09 PM Jacob Keller <jacob.e.keller@intel.com> wrote:
->
->
->
-> On 1/29/2021 12:23 PM, Willem de Bruijn wrote:
-> > On Thu, Jan 28, 2021 at 4:45 PM Tony Nguyen <anthony.l.nguyen@intel.com> wrote:
-> >>
-> >> From: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
-> >>
-> >> This reverts commit 2ad1274fa35ace5c6360762ba48d33b63da2396c
-> >>
-> >> VF queues were not brought up when PF was brought up after being
-> >> downed if the VF driver disabled VFs queues during PF down.
-> >> This could happen in some older or external VF driver implementations.
-> >> The problem was that PF driver used vf->queues_enabled as a condition
-> >> to decide what link-state it would send out which caused the issue.
-> >>
-> >> Remove the check for vf->queues_enabled in the VF link notify.
-> >> Now VF will always be notified of the current link status.
-> >> Also remove the queues_enabled member from i40e_vf structure as it is
-> >> not used anymore. Otherwise VNF implementation was broken and caused
-> >> a link flap.
-> >>
-> >> Fixes: 2ad1274fa35a ("i40e: don't report link up for a VF who hasn't enabled")
-> >> Signed-off-by: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
-> >> Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
-> >> Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-> >> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-> >
-> > Doesn't this reintroduce the bug that the original patch aimed to solve?
-> >
-> > Commit 2ad1274fa35a itself was also a fix.
-> >
->
-> Yea this might re-introduce the issue described in that commit. However
-> I believe the bug in question was due to very old versions of VF
-> drivers, (including an ancient version of FreeBSD if I recall).
->
-> Perhaps there is some better mechanism for handling this, but I think
-> reverting this is ok given that it causes problems in certain situations
-> where the link status wasn't reported properly.
->
-> Maybe there is a solution for both cases? but I would worry less about
-> an issue with the incredibly old VFs because we know that the issue is
-> fixed in newer VF code and the real problem is that the VF driver is
-> incorrectly assuming link up means it is ready to send.
->
-> Thus, I am comfortable with this revert: It simplifies the state for
-> both the PF and VF.
->
-> I would be open to alternatives as long as the issue described here is
-> also fixed.
->
-> Caveat: I was not involved in the decision to revert this and wasn't
-> aware of it until now, so I almost certainly have out of date information.
+From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-That's reasonable. The original patch is over three years old.
+Add mlx5_ifc_dr_ste_v1.h - a new header with HW specific
+STE structs for version 1.
 
-If it is considered safe to revert now, I would just articulate that
-point in the commit.
+Signed-off-by: Alex Vesker <valex@nvidia.com>
+Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+ .../mlx5/core/steering/mlx5_ifc_dr_ste_v1.h   | 273 ++++++++++++++++++
+ 1 file changed, 273 insertions(+)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5_ifc_dr_ste_v1.h
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5_ifc_dr_ste_v1.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5_ifc_dr_ste_v1.h
+new file mode 100644
+index 000000000000..6db7b8493fd9
+--- /dev/null
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5_ifc_dr_ste_v1.h
+@@ -0,0 +1,273 @@
++/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
++/* Copyright (c) 2020 NVIDIA CORPORATION. All rights reserved. */
++
++#ifndef MLX5_IFC_DR_STE_V1_H
++#define MLX5_IFC_DR_STE_V1_H
++
++struct mlx5_ifc_ste_eth_l2_src_v1_bits {
++	u8         reserved_at_0[0x1];
++	u8         sx_sniffer[0x1];
++	u8         functional_loopback[0x1];
++	u8         ip_fragmented[0x1];
++	u8         qp_type[0x2];
++	u8         encapsulation_type[0x2];
++	u8         port[0x2];
++	u8         l3_type[0x2];
++	u8         l4_type[0x2];
++	u8         first_vlan_qualifier[0x2];
++	u8         first_priority[0x3];
++	u8         first_cfi[0x1];
++	u8         first_vlan_id[0xc];
++
++	u8         smac_47_16[0x20];
++
++	u8         smac_15_0[0x10];
++	u8         l3_ethertype[0x10];
++
++	u8         reserved_at_60[0x6];
++	u8         tcp_syn[0x1];
++	u8         reserved_at_67[0x3];
++	u8         force_loopback[0x1];
++	u8         l2_ok[0x1];
++	u8         l3_ok[0x1];
++	u8         l4_ok[0x1];
++	u8         second_vlan_qualifier[0x2];
++
++	u8         second_priority[0x3];
++	u8         second_cfi[0x1];
++	u8         second_vlan_id[0xc];
++};
++
++struct mlx5_ifc_ste_eth_l2_dst_v1_bits {
++	u8         reserved_at_0[0x1];
++	u8         sx_sniffer[0x1];
++	u8         functional_lb[0x1];
++	u8         ip_fragmented[0x1];
++	u8         qp_type[0x2];
++	u8         encapsulation_type[0x2];
++	u8         port[0x2];
++	u8         l3_type[0x2];
++	u8         l4_type[0x2];
++	u8         first_vlan_qualifier[0x2];
++	u8         first_priority[0x3];
++	u8         first_cfi[0x1];
++	u8         first_vlan_id[0xc];
++
++	u8         dmac_47_16[0x20];
++
++	u8         dmac_15_0[0x10];
++	u8         l3_ethertype[0x10];
++
++	u8         reserved_at_60[0x6];
++	u8         tcp_syn[0x1];
++	u8         reserved_at_67[0x3];
++	u8         force_lb[0x1];
++	u8         l2_ok[0x1];
++	u8         l3_ok[0x1];
++	u8         l4_ok[0x1];
++	u8         second_vlan_qualifier[0x2];
++	u8         second_priority[0x3];
++	u8         second_cfi[0x1];
++	u8         second_vlan_id[0xc];
++};
++
++struct mlx5_ifc_ste_eth_l2_src_dst_v1_bits {
++	u8         dmac_47_16[0x20];
++
++	u8         smac_47_16[0x20];
++
++	u8         dmac_15_0[0x10];
++	u8         reserved_at_50[0x2];
++	u8         functional_lb[0x1];
++	u8         reserved_at_53[0x5];
++	u8         port[0x2];
++	u8         l3_type[0x2];
++	u8         reserved_at_5c[0x2];
++	u8         first_vlan_qualifier[0x2];
++
++	u8         first_priority[0x3];
++	u8         first_cfi[0x1];
++	u8         first_vlan_id[0xc];
++	u8         smac_15_0[0x10];
++};
++
++struct mlx5_ifc_ste_eth_l3_ipv4_5_tuple_v1_bits {
++	u8         source_address[0x20];
++
++	u8         destination_address[0x20];
++
++	u8         source_port[0x10];
++	u8         destination_port[0x10];
++
++	u8         reserved_at_60[0x4];
++	u8         l4_ok[0x1];
++	u8         l3_ok[0x1];
++	u8         fragmented[0x1];
++	u8         tcp_ns[0x1];
++	u8         tcp_cwr[0x1];
++	u8         tcp_ece[0x1];
++	u8         tcp_urg[0x1];
++	u8         tcp_ack[0x1];
++	u8         tcp_psh[0x1];
++	u8         tcp_rst[0x1];
++	u8         tcp_syn[0x1];
++	u8         tcp_fin[0x1];
++	u8         dscp[0x6];
++	u8         ecn[0x2];
++	u8         protocol[0x8];
++};
++
++struct mlx5_ifc_ste_eth_l2_tnl_v1_bits {
++	u8         l2_tunneling_network_id[0x20];
++
++	u8         dmac_47_16[0x20];
++
++	u8         dmac_15_0[0x10];
++	u8         l3_ethertype[0x10];
++
++	u8         reserved_at_60[0x3];
++	u8         ip_fragmented[0x1];
++	u8         reserved_at_64[0x2];
++	u8         encp_type[0x2];
++	u8         reserved_at_68[0x2];
++	u8         l3_type[0x2];
++	u8         l4_type[0x2];
++	u8         first_vlan_qualifier[0x2];
++	u8         first_priority[0x3];
++	u8         first_cfi[0x1];
++	u8         first_vlan_id[0xc];
++};
++
++struct mlx5_ifc_ste_eth_l3_ipv4_misc_v1_bits {
++	u8         identification[0x10];
++	u8         flags[0x3];
++	u8         fragment_offset[0xd];
++
++	u8         total_length[0x10];
++	u8         checksum[0x10];
++
++	u8         version[0x4];
++	u8         ihl[0x4];
++	u8         time_to_live[0x8];
++	u8         reserved_at_50[0x10];
++
++	u8         reserved_at_60[0x1c];
++	u8         voq_internal_prio[0x4];
++};
++
++struct mlx5_ifc_ste_eth_l4_v1_bits {
++	u8         ipv6_version[0x4];
++	u8         reserved_at_4[0x4];
++	u8         dscp[0x6];
++	u8         ecn[0x2];
++	u8         ipv6_hop_limit[0x8];
++	u8         protocol[0x8];
++
++	u8         src_port[0x10];
++	u8         dst_port[0x10];
++
++	u8         first_fragment[0x1];
++	u8         reserved_at_41[0xb];
++	u8         flow_label[0x14];
++
++	u8         tcp_data_offset[0x4];
++	u8         l4_ok[0x1];
++	u8         l3_ok[0x1];
++	u8         fragmented[0x1];
++	u8         tcp_ns[0x1];
++	u8         tcp_cwr[0x1];
++	u8         tcp_ece[0x1];
++	u8         tcp_urg[0x1];
++	u8         tcp_ack[0x1];
++	u8         tcp_psh[0x1];
++	u8         tcp_rst[0x1];
++	u8         tcp_syn[0x1];
++	u8         tcp_fin[0x1];
++	u8         ipv6_paylen[0x10];
++};
++
++struct mlx5_ifc_ste_eth_l4_misc_v1_bits {
++	u8         window_size[0x10];
++	u8         urgent_pointer[0x10];
++
++	u8         ack_num[0x20];
++
++	u8         seq_num[0x20];
++
++	u8         length[0x10];
++	u8         checksum[0x10];
++};
++
++struct mlx5_ifc_ste_mpls_v1_bits {
++	u8         reserved_at_0[0x15];
++	u8         mpls_ok[0x1];
++	u8         mpls4_s_bit[0x1];
++	u8         mpls4_qualifier[0x1];
++	u8         mpls3_s_bit[0x1];
++	u8         mpls3_qualifier[0x1];
++	u8         mpls2_s_bit[0x1];
++	u8         mpls2_qualifier[0x1];
++	u8         mpls1_s_bit[0x1];
++	u8         mpls1_qualifier[0x1];
++	u8         mpls0_s_bit[0x1];
++	u8         mpls0_qualifier[0x1];
++
++	u8         mpls0_label[0x14];
++	u8         mpls0_exp[0x3];
++	u8         mpls0_s_bos[0x1];
++	u8         mpls0_ttl[0x8];
++
++	u8         mpls1_label[0x20];
++
++	u8         mpls2_label[0x20];
++};
++
++struct mlx5_ifc_ste_gre_v1_bits {
++	u8         gre_c_present[0x1];
++	u8         reserved_at_1[0x1];
++	u8         gre_k_present[0x1];
++	u8         gre_s_present[0x1];
++	u8         strict_src_route[0x1];
++	u8         recur[0x3];
++	u8         flags[0x5];
++	u8         version[0x3];
++	u8         gre_protocol[0x10];
++
++	u8         reserved_at_20[0x20];
++
++	u8         gre_key_h[0x18];
++	u8         gre_key_l[0x8];
++
++	u8         reserved_at_60[0x20];
++};
++
++struct mlx5_ifc_ste_src_gvmi_qp_v1_bits {
++	u8         loopback_synd[0x8];
++	u8         reserved_at_8[0x7];
++	u8         functional_lb[0x1];
++	u8         source_gvmi[0x10];
++
++	u8         force_lb[0x1];
++	u8         reserved_at_21[0x1];
++	u8         source_is_requestor[0x1];
++	u8         reserved_at_23[0x5];
++	u8         source_qp[0x18];
++
++	u8         reserved_at_40[0x20];
++
++	u8         reserved_at_60[0x20];
++};
++
++struct mlx5_ifc_ste_icmp_v1_bits {
++	u8         icmp_payload_data[0x20];
++
++	u8         icmp_header_data[0x20];
++
++	u8         icmp_type[0x8];
++	u8         icmp_code[0x8];
++	u8         reserved_at_50[0x10];
++
++	u8         reserved_at_60[0x20];
++};
++
++#endif /* MLX5_IFC_DR_STE_V1_H */
+-- 
+2.29.2
+
