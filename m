@@ -2,169 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B8C73092F5
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 10:12:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA192309364
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 10:30:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230110AbhA3JMF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 04:12:05 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:43579 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S233651AbhA3EVg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 23:21:36 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from cmi@nvidia.com)
-        with SMTP; 30 Jan 2021 04:33:34 +0200
-Received: from dev-r630-03.mtbc.labs.mlnx (dev-r630-03.mtbc.labs.mlnx [10.75.205.13])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 10U2XWO3005357;
-        Sat, 30 Jan 2021 04:33:33 +0200
-From:   Chris Mi <cmi@nvidia.com>
-To:     netdev@vger.kernel.org
-Cc:     kuba@kernel.org, jiri@nvidia.com, saeedm@nvidia.com,
-        Chris Mi <cmi@nvidia.com>, kernel test robot <lkp@intel.com>
-Subject: [PATCH net-next v5] net: psample: Introduce stubs to remove NIC driver dependency
-Date:   Sat, 30 Jan 2021 10:33:19 +0800
-Message-Id: <20210130023319.32560-1-cmi@nvidia.com>
-X-Mailer: git-send-email 2.26.2
+        id S229814AbhA3J3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 04:29:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42112 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233620AbhA3Dru (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 22:47:50 -0500
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAB65C061797;
+        Fri, 29 Jan 2021 19:15:11 -0800 (PST)
+Received: by mail-lj1-x22c.google.com with SMTP id y14so139588ljn.8;
+        Fri, 29 Jan 2021 19:15:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=doa+5fNckm+U+JQAFdQrZFzGNQq/v41AFTpeJoWLi58=;
+        b=l1B8afdMhvcQfT0XO12ZQnuIcRf/Ys56m0I3+UzFbuEZBdn+uH60ycI9X8eHmi0N8i
+         g/DUg1mw9LCllSHkeio8L1rkBdkefkP90RlZN+Rlh214a2hs7QY4ii8x3pxwikAygKtD
+         DivEXWu0Bx3KZWnbc2QD/HemWCv5RRzB2fibsXUNxZc8eNFPdGdwsTpdw22e6T/HJHt3
+         92uh/2P5ZRKiXqGC2Iq7b4oy3g0L7Wus3fufDo2srA1v6EpJWw4Q0p17OmGjwjqJYC++
+         qV+Z3AFGhnrT/Klgjjk88OpzkDC1yW1pvbW34FGhi5iUQ2KIZfQ+DGB2ehLa6zxdUcrS
+         +b/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=doa+5fNckm+U+JQAFdQrZFzGNQq/v41AFTpeJoWLi58=;
+        b=VP6HFigOooTwM+AKP/qPfxgWI/ebQq3ymkEl6WfFSsTS7k5bNiZnlc6IdfZhIpTsUL
+         /Y5BdfZYbOD2V2824MxibLOu0nyqDwTQFvKuPZWTt9HnK0+yOUFurXzIODlW/4pDcRLa
+         U1RlgoRioT+ya3csdNlE46o5dGy0ceLTfCmjU+a2TBvRVc9koVEOMK0O0wAH22Bz/nxe
+         YY1FmoUxQJJDQZbc1Pj3OderPT79HwdQj3eh5nYb47IIJSnIpuCU5sfnvIlvROp7cYpd
+         i+lONTuK9dsnhNLxr7xU//adww3Oq4EeS7llypS/jj3XH/UwGH0wfZ83VzND5RB5EuQ/
+         UxtA==
+X-Gm-Message-State: AOAM532Bpq536z+EOyV6REg6oKBR7slVQCMrJAAKNLT5UHERcE7bAgUC
+        r9rS8oqhMxIVtPJehFVgiqhaZQdPhs57D5avicc=
+X-Google-Smtp-Source: ABdhPJzbxQ5cN++AtpzAqmD2OePxAlYunYl08IQrwOnRAjlBnqDHd6JRv1cfB7SuatsZUJdpy7K3RVuivCO29rFBzyU=
+X-Received: by 2002:a2e:54d:: with SMTP id 74mr3833166ljf.44.1611976510480;
+ Fri, 29 Jan 2021 19:15:10 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210122205415.113822-1-xiyou.wangcong@gmail.com>
+ <20210122205415.113822-2-xiyou.wangcong@gmail.com> <d69d44ca-206c-d818-1177-c8f14d8be8d1@iogearbox.net>
+ <CAM_iQpW8aeh190G=KVA9UEZ_6+UfenQxgPXuw784oxCaMfXjng@mail.gmail.com>
+ <CAADnVQKmNiHj8qy1yqbOrf-OMyhnn8fKm87w6YMfkiDHkBpJVg@mail.gmail.com>
+ <CAM_iQpXAQ7AMz34=o5E=81RFGFsQB5jCDTCCaVdHokU6kaJQsQ@mail.gmail.com>
+ <20210129025435.a34ydsgmwzrnwjlg@ast-mbp.dhcp.thefacebook.com>
+ <f7bc5873-7722-e359-b450-4db7dc3656d6@mojatatu.com> <dc5ddf32-2d65-15a9-9448-5f2d3a10d227@mojatatu.com>
+In-Reply-To: <dc5ddf32-2d65-15a9-9448-5f2d3a10d227@mojatatu.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 29 Jan 2021 19:14:59 -0800
+Message-ID: <CAADnVQJafr__W+oPvBjqisvh2vCRye8QkT9TQTFXH=wsDGtKqA@mail.gmail.com>
+Subject: Re: [Patch bpf-next v5 1/3] bpf: introduce timeout hash map
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Dongdong Wang <wangdongdong.6@bytedance.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to send sampled packets to userspace, NIC driver calls
-psample api directly. But it creates a hard dependency on module
-psample. Introduce psample_ops to remove the hard dependency.
-It is initialized when psample module is loaded and set to NULL
-when the module is unloaded.
+On Fri, Jan 29, 2021 at 6:14 AM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+>
+> On 2021-01-29 9:06 a.m., Jamal Hadi Salim wrote:
+>
+> > Which leads to:
+> > Why not extend the general feature so one can register for optional
+> > callbacks not just for expire but also add/del/update on specific
+> > entries or table?
+> > add/del/update could be sourced from other kernel programs or user space
+> > and the callback would be invoked before an entry is added/deleted etc.
+> > (just like it is here for expiry).
+>
+> Sorry - shouldve read the rest of the thread:
+> Agree with Cong that you want per-map but there are use cases where you
+> want it per entry (eg the add/del/update case).
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Chris Mi <cmi@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
----
-v1->v2:
- - fix sparse errors
-v2->v3:
- - remove inline
-v3->v4:
- - add inline back
-v4->v5:
- - address Jakub's comments
-
- include/net/psample.h    | 26 ++++++++++++++++++++++++++
- net/psample/psample.c    | 14 +++++++++++++-
- net/sched/Makefile       |  2 +-
- net/sched/psample_stub.c |  5 +++++
- 4 files changed, 45 insertions(+), 2 deletions(-)
- create mode 100644 net/sched/psample_stub.c
-
-diff --git a/include/net/psample.h b/include/net/psample.h
-index 68ae16bb0a4a..d0f1cfc56f6f 100644
---- a/include/net/psample.h
-+++ b/include/net/psample.h
-@@ -14,6 +14,15 @@ struct psample_group {
- 	struct rcu_head rcu;
- };
- 
-+struct psample_ops {
-+	void (*sample_packet)(struct psample_group *group, struct sk_buff *skb,
-+			      u32 trunc_size, int in_ifindex, int out_ifindex,
-+			      u32 sample_rate);
-+
-+};
-+
-+extern const struct psample_ops __rcu *psample_ops __read_mostly;
-+
- struct psample_group *psample_group_get(struct net *net, u32 group_num);
- void psample_group_take(struct psample_group *group);
- void psample_group_put(struct psample_group *group);
-@@ -35,4 +44,21 @@ static inline void psample_sample_packet(struct psample_group *group,
- 
- #endif
- 
-+static inline void
-+psample_nic_sample_packet(struct psample_group *group,
-+			  struct sk_buff *skb, u32 trunc_size,
-+			  int in_ifindex, int out_ifindex,
-+			  u32 sample_rate)
-+{
-+	const struct psample_ops *ops;
-+
-+	rcu_read_lock();
-+	ops = rcu_dereference(psample_ops);
-+	if (ops)
-+		ops->sample_packet(group, skb, trunc_size,
-+				   in_ifindex, out_ifindex,
-+				   sample_rate);
-+	rcu_read_unlock();
-+}
-+
- #endif /* __NET_PSAMPLE_H */
-diff --git a/net/psample/psample.c b/net/psample/psample.c
-index 33e238c965bd..983ca5b698fe 100644
---- a/net/psample/psample.c
-+++ b/net/psample/psample.c
-@@ -8,6 +8,7 @@
- #include <linux/kernel.h>
- #include <linux/skbuff.h>
- #include <linux/module.h>
-+#include <linux/rcupdate.h>
- #include <net/net_namespace.h>
- #include <net/sock.h>
- #include <net/netlink.h>
-@@ -35,6 +36,10 @@ static const struct genl_multicast_group psample_nl_mcgrps[] = {
- 
- static struct genl_family psample_nl_family __ro_after_init;
- 
-+static const struct psample_ops psample_sample_ops = {
-+	.sample_packet	= psample_sample_packet,
-+};
-+
- static int psample_group_nl_fill(struct sk_buff *msg,
- 				 struct psample_group *group,
- 				 enum psample_command cmd, u32 portid, u32 seq,
-@@ -456,11 +461,18 @@ EXPORT_SYMBOL_GPL(psample_sample_packet);
- 
- static int __init psample_module_init(void)
- {
--	return genl_register_family(&psample_nl_family);
-+	int ret;
-+
-+	ret = genl_register_family(&psample_nl_family);
-+	if (!ret)
-+		RCU_INIT_POINTER(psample_ops, &psample_sample_ops);
-+	return ret;
- }
- 
- static void __exit psample_module_exit(void)
- {
-+	rcu_assign_pointer(psample_ops, NULL);
-+	synchronize_rcu();
- 	genl_unregister_family(&psample_nl_family);
- }
- 
-diff --git a/net/sched/Makefile b/net/sched/Makefile
-index dd14ef413fda..0d92bb98bb26 100644
---- a/net/sched/Makefile
-+++ b/net/sched/Makefile
-@@ -3,7 +3,7 @@
- # Makefile for the Linux Traffic Control Unit.
- #
- 
--obj-y	:= sch_generic.o sch_mq.o
-+obj-y	:= sch_generic.o sch_mq.o psample_stub.o
- 
- obj-$(CONFIG_INET)		+= sch_frag.o
- obj-$(CONFIG_NET_SCHED)		+= sch_api.o sch_blackhole.o
-diff --git a/net/sched/psample_stub.c b/net/sched/psample_stub.c
-new file mode 100644
-index 000000000000..0541b8c5100d
---- /dev/null
-+++ b/net/sched/psample_stub.c
-@@ -0,0 +1,5 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+/* Copyright (c) 2021 Mellanox Technologies. */
-+
-+const struct psample_ops __rcu *psample_ops __read_mostly;
-+EXPORT_SYMBOL_GPL(psample_ops);
--- 
-2.26.2
-
+That was my point as well.
+bpf_timer api should be generic, so that users can do both.
+The program could use bpf_timer one for each flow and bpf_timer for each map.
+And timers without maps.
