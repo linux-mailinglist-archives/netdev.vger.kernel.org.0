@@ -2,169 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E058230922F
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 06:26:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 050683091F3
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 06:10:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233820AbhA3F0Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 00:26:24 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:45687 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S233807AbhA3FVr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jan 2021 00:21:47 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from cmi@nvidia.com)
-        with SMTP; 30 Jan 2021 04:33:34 +0200
-Received: from dev-r630-03.mtbc.labs.mlnx (dev-r630-03.mtbc.labs.mlnx [10.75.205.13])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 10U2XWO3005357;
-        Sat, 30 Jan 2021 04:33:33 +0200
-From:   Chris Mi <cmi@nvidia.com>
-To:     netdev@vger.kernel.org
-Cc:     kuba@kernel.org, jiri@nvidia.com, saeedm@nvidia.com,
-        Chris Mi <cmi@nvidia.com>, kernel test robot <lkp@intel.com>
-Subject: [PATCH net-next v5] net: psample: Introduce stubs to remove NIC driver dependency
-Date:   Sat, 30 Jan 2021 10:33:19 +0800
-Message-Id: <20210130023319.32560-1-cmi@nvidia.com>
-X-Mailer: git-send-email 2.26.2
+        id S230298AbhA3FJn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 00:09:43 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39860 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230114AbhA3FEs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 30 Jan 2021 00:04:48 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1DA5664DE7;
+        Sat, 30 Jan 2021 05:04:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611983048;
+        bh=+X/wqwC7kCIF1CPdD2uqsSbru5GobPbkF1Vf93d6khY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Lloam9rllbJwXoXarPW1BINgOQnvJ8uvlF4IJV67DyLItit1Hzng28gUIwdatrmfk
+         Spp4plYLZvgUON93gxHd7HFvBNTUCVYrIoiXkYbK9mTt4esEzmxHPRAKPze+AsmOdw
+         2yILD6uBdK7gOx1/Bstty774cNrCQ9KPxgM+lnf8P+pOB3Vh7DKcFnJmdkqFLQUrh1
+         9JeRfbmjIKKlh3HjFNtUTnehylca26R5dv9GJpKrG3J+7TRuBKqON/WX68LhFKCYu9
+         t3LpKFpqowsxg1qt9KxNO8pWnPpibXRiaQcYNPMq5vnMr68zzeRtN2yPz9Tg38QhYV
+         496e5VpLWPq7Q==
+Date:   Fri, 29 Jan 2021 21:04:07 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Kurt Kanzenbach <kurt@linutronix.de>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: dsa: hellcreek: Add missing TAPRIO
+ dependency
+Message-ID: <20210129210407.674bc187@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1a076f95-3945-c300-4fea-22d28205aef6@infradead.org>
+References: <20210128163338.22665-1-kurt@linutronix.de>
+        <1a076f95-3945-c300-4fea-22d28205aef6@infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to send sampled packets to userspace, NIC driver calls
-psample api directly. But it creates a hard dependency on module
-psample. Introduce psample_ops to remove the hard dependency.
-It is initialized when psample module is loaded and set to NULL
-when the module is unloaded.
+On Thu, 28 Jan 2021 12:00:38 -0800 Randy Dunlap wrote:
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Chris Mi <cmi@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
----
-v1->v2:
- - fix sparse errors
-v2->v3:
- - remove inline
-v3->v4:
- - add inline back
-v4->v5:
- - address Jakub's comments
-
- include/net/psample.h    | 26 ++++++++++++++++++++++++++
- net/psample/psample.c    | 14 +++++++++++++-
- net/sched/Makefile       |  2 +-
- net/sched/psample_stub.c |  5 +++++
- 4 files changed, 45 insertions(+), 2 deletions(-)
- create mode 100644 net/sched/psample_stub.c
-
-diff --git a/include/net/psample.h b/include/net/psample.h
-index 68ae16bb0a4a..d0f1cfc56f6f 100644
---- a/include/net/psample.h
-+++ b/include/net/psample.h
-@@ -14,6 +14,15 @@ struct psample_group {
- 	struct rcu_head rcu;
- };
- 
-+struct psample_ops {
-+	void (*sample_packet)(struct psample_group *group, struct sk_buff *skb,
-+			      u32 trunc_size, int in_ifindex, int out_ifindex,
-+			      u32 sample_rate);
-+
-+};
-+
-+extern const struct psample_ops __rcu *psample_ops __read_mostly;
-+
- struct psample_group *psample_group_get(struct net *net, u32 group_num);
- void psample_group_take(struct psample_group *group);
- void psample_group_put(struct psample_group *group);
-@@ -35,4 +44,21 @@ static inline void psample_sample_packet(struct psample_group *group,
- 
- #endif
- 
-+static inline void
-+psample_nic_sample_packet(struct psample_group *group,
-+			  struct sk_buff *skb, u32 trunc_size,
-+			  int in_ifindex, int out_ifindex,
-+			  u32 sample_rate)
-+{
-+	const struct psample_ops *ops;
-+
-+	rcu_read_lock();
-+	ops = rcu_dereference(psample_ops);
-+	if (ops)
-+		ops->sample_packet(group, skb, trunc_size,
-+				   in_ifindex, out_ifindex,
-+				   sample_rate);
-+	rcu_read_unlock();
-+}
-+
- #endif /* __NET_PSAMPLE_H */
-diff --git a/net/psample/psample.c b/net/psample/psample.c
-index 33e238c965bd..983ca5b698fe 100644
---- a/net/psample/psample.c
-+++ b/net/psample/psample.c
-@@ -8,6 +8,7 @@
- #include <linux/kernel.h>
- #include <linux/skbuff.h>
- #include <linux/module.h>
-+#include <linux/rcupdate.h>
- #include <net/net_namespace.h>
- #include <net/sock.h>
- #include <net/netlink.h>
-@@ -35,6 +36,10 @@ static const struct genl_multicast_group psample_nl_mcgrps[] = {
- 
- static struct genl_family psample_nl_family __ro_after_init;
- 
-+static const struct psample_ops psample_sample_ops = {
-+	.sample_packet	= psample_sample_packet,
-+};
-+
- static int psample_group_nl_fill(struct sk_buff *msg,
- 				 struct psample_group *group,
- 				 enum psample_command cmd, u32 portid, u32 seq,
-@@ -456,11 +461,18 @@ EXPORT_SYMBOL_GPL(psample_sample_packet);
- 
- static int __init psample_module_init(void)
- {
--	return genl_register_family(&psample_nl_family);
-+	int ret;
-+
-+	ret = genl_register_family(&psample_nl_family);
-+	if (!ret)
-+		RCU_INIT_POINTER(psample_ops, &psample_sample_ops);
-+	return ret;
- }
- 
- static void __exit psample_module_exit(void)
- {
-+	rcu_assign_pointer(psample_ops, NULL);
-+	synchronize_rcu();
- 	genl_unregister_family(&psample_nl_family);
- }
- 
-diff --git a/net/sched/Makefile b/net/sched/Makefile
-index dd14ef413fda..0d92bb98bb26 100644
---- a/net/sched/Makefile
-+++ b/net/sched/Makefile
-@@ -3,7 +3,7 @@
- # Makefile for the Linux Traffic Control Unit.
- #
- 
--obj-y	:= sch_generic.o sch_mq.o
-+obj-y	:= sch_generic.o sch_mq.o psample_stub.o
- 
- obj-$(CONFIG_INET)		+= sch_frag.o
- obj-$(CONFIG_NET_SCHED)		+= sch_api.o sch_blackhole.o
-diff --git a/net/sched/psample_stub.c b/net/sched/psample_stub.c
-new file mode 100644
-index 000000000000..0541b8c5100d
---- /dev/null
-+++ b/net/sched/psample_stub.c
-@@ -0,0 +1,5 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+/* Copyright (c) 2021 Mellanox Technologies. */
-+
-+const struct psample_ops __rcu *psample_ops __read_mostly;
-+EXPORT_SYMBOL_GPL(psample_ops);
--- 
-2.26.2
-
+nit: careful with the tags in replies to patches, patchwork will add
+     them onto the patch you're replying to
