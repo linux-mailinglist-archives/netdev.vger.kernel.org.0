@@ -2,70 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABC833091C6
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 05:03:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 490AA3091D5
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 05:26:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233679AbhA3EBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jan 2021 23:01:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36120 "EHLO mail.kernel.org"
+        id S233730AbhA3EZZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jan 2021 23:25:25 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36496 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233617AbhA3DpT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Jan 2021 22:45:19 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 71DD764E16;
-        Sat, 30 Jan 2021 02:30:08 +0000 (UTC)
+        id S233627AbhA3DyL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 Jan 2021 22:54:11 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1382E64DE1;
+        Sat, 30 Jan 2021 03:43:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611973808;
-        bh=vrCIt7R7uNXxIi8c+2LGfRaxNjJnE/LLfVnOulXfObE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=X+rQVa71nes7FNmmHKGq0O9XyzneFoK222UZm681DaeKjwYPONCG65aOxewz2eBsz
-         4awHMkR9y0K+pLKRsxiX0X2g3C/6vuv5+n1SkC396Q7zMeBQ/iVPBrW1B4jt7fZHl0
-         jmWMZ3MuqmKco50R+HP9C2efO3d3B6bqyhlRKlS7Fnp5gxIFB+nVBgDI0oqqUHrxzs
-         oRffSaPetWRTWd3nc73UBHi8PthMZppRNvSPioORBhSQuc6u8Km9F7PPhcsm3NwWaU
-         kg1KVLMwhMdY+ziA5QC9jnd9LfgLOYZZJL4STg8LlCHsB6E9Cacth/UE7GnuCCH5y1
-         Pdemd74kbPKHg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 63B6F6095D;
-        Sat, 30 Jan 2021 02:30:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1611978185;
+        bh=qzCNFiTq8DIekJW5FCO6FZm/KDjaFQtSH/g8t1Lfke8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XerFZvzRMhV5SuRTKaaP5WdVnLYKKOuoStvOfuJwQmlUIocyRKxcOrHWXv40D7LHC
+         esmH1xp/NWhStIw9g6bc0fOAHuJz+/UQpElLwcbAEBYLNNYqC21JMDseX/jAcVAgnb
+         i3TypKTGLImjOhDY5SeG9h/VJWL64JVk3bTOYgRUNbyEE94nFzWx2ELD4ZO3oN0Utp
+         zZkBNMuWOxWR746/L4Wc0dMEgtM3DHoedcPJqXbYV4J/emgrx1bD7+8XLDVH7v2Suy
+         mD88Y1XEpIO7fF9KGyykm/3ZyAtAXazmgcoMHKEXCMUSE91J+DDfNaMVR9hss519d5
+         k3TRWdmLxYhNA==
+Date:   Fri, 29 Jan 2021 19:43:04 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Loic Poulain <loic.poulain@linaro.org>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        David Miller <davem@davemloft.net>
+Subject: Re: pull-request: mhi-net changes for net-next
+Message-ID: <20210129194304.6a1987c1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAMZdPi_xQYooy9cDdf1Snen3A4OUbDt-6JScSuhWh5obv0E9iA@mail.gmail.com>
+References: <CAMZdPi_xQYooy9cDdf1Snen3A4OUbDt-6JScSuhWh5obv0E9iA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 1/2] net: atm: pppoatm: use tasklet_init to initialize wakeup
- tasklet
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161197380840.28728.8716479368308672118.git-patchwork-notify@kernel.org>
-Date:   Sat, 30 Jan 2021 02:30:08 +0000
-References: <20210127173256.13954-1-kernel@esmil.dk>
-In-Reply-To: <20210127173256.13954-1-kernel@esmil.dk>
-To:     Emil Renner Berthing <kernel@esmil.dk>
-Cc:     netdev@vger.kernel.org, mitch@sfgoth.com, davem@davemloft.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Wed, 27 Jan 2021 18:32:55 +0100 you wrote:
-> Previously a temporary tasklet structure was initialized on the stack
-> using DECLARE_TASKLET_OLD() and then copied over and modified. Nothing
-> else in the kernel seems to use this pattern, so let's just call
-> tasklet_init() like everyone else.
+On Thu, 28 Jan 2021 15:19:12 +0100 Loic Poulain wrote:
+> Hi Jakub,
 > 
-> Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
-> 
-> [...]
+> As requested, here is the pull-request based on mhi-net-immutable +
+> mhi-net patches.
 
-Here is the summary with links:
-  - [1/2] net: atm: pppoatm: use tasklet_init to initialize wakeup tasklet
-    https://git.kernel.org/netdev/net-next/c/a5b88632fc96
-  - [2/2] net: atm: pppoatm: use new API for wakeup tasklet
-    https://git.kernel.org/netdev/net-next/c/a58745979cdd
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Pulled, thanks!
