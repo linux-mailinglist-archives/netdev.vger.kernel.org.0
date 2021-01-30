@@ -2,198 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFD48309387
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 10:39:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48B573093BB
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 10:53:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231897AbhA3JiT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 04:38:19 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33958 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233409AbhA3DKA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Jan 2021 22:10:00 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B082164E14;
-        Sat, 30 Jan 2021 02:26:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611973595;
-        bh=nrejU/eD18V1WMdom+AhGx0A4MoJFPtNst8MSkzg8Yk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XQZsxTKUqT4LK2ezpohSy/uLROEQbKeWdHGqp4hs3L6c/sYm14b0Q4PtzrRaRM638
-         VR3zi4apNCCqVTZI1iVVbx/O0Ja4/X4HoJc0c5slzxN/Yt97+72pmCGEcrWxhdQEot
-         48PZvzwphnhbU31Bx1uVk2oyY4tyXj8LC9zU0L3ZIVtbFPSrElzcJQH+/oLNiE8f2M
-         EeMeeopNx8HWyX8WtiTZliifEZsoTjWpPAp8xoDsVogH/p276A1PcMfNcUZqX2z2ha
-         spHU59L/Af4M+mHVFM2St2EnSO7QKmFU0F9FM/1oMy4dUTsCwBukoN3yscF3W7Owfq
-         hUA6njdJEjYFQ==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, Leon Romanovsky <leonro@nvidia.com>,
-        Yevgeny Kliteynik <kliteyn@nvidia.com>,
-        Alex Vesker <valex@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 11/11] net/mlx5: DR, Allow SW steering for sw_owner_v2 devices
-Date:   Fri, 29 Jan 2021 18:26:18 -0800
-Message-Id: <20210130022618.317351-12-saeed@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210130022618.317351-1-saeed@kernel.org>
-References: <20210130022618.317351-1-saeed@kernel.org>
+        id S231967AbhA3Jva (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 04:51:30 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:41026 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S233266AbhA3DBM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 22:01:12 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from cmi@nvidia.com)
+        with SMTP; 30 Jan 2021 04:33:34 +0200
+Received: from dev-r630-03.mtbc.labs.mlnx (dev-r630-03.mtbc.labs.mlnx [10.75.205.13])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 10U2XWO3005357;
+        Sat, 30 Jan 2021 04:33:33 +0200
+From:   Chris Mi <cmi@nvidia.com>
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, jiri@nvidia.com, saeedm@nvidia.com,
+        Chris Mi <cmi@nvidia.com>, kernel test robot <lkp@intel.com>
+Subject: [PATCH net-next v5] net: psample: Introduce stubs to remove NIC driver dependency
+Date:   Sat, 30 Jan 2021 10:33:19 +0800
+Message-Id: <20210130023319.32560-1-cmi@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yevgeny Kliteynik <kliteyn@nvidia.com>
+In order to send sampled packets to userspace, NIC driver calls
+psample api directly. But it creates a hard dependency on module
+psample. Introduce psample_ops to remove the hard dependency.
+It is initialized when psample module is loaded and set to NULL
+when the module is unloaded.
 
-Allow sw_owner_v2 based on sw_format_version.
-
-Signed-off-by: Alex Vesker <valex@nvidia.com>
-Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Chris Mi <cmi@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 ---
- .../mellanox/mlx5/core/steering/dr_cmd.c        | 17 +++++++++++------
- .../mellanox/mlx5/core/steering/dr_domain.c     | 17 +++++++++--------
- .../mellanox/mlx5/core/steering/dr_types.h      |  6 +++++-
- .../mellanox/mlx5/core/steering/mlx5dr.h        |  5 ++++-
- 4 files changed, 29 insertions(+), 16 deletions(-)
+v1->v2:
+ - fix sparse errors
+v2->v3:
+ - remove inline
+v3->v4:
+ - add inline back
+v4->v5:
+ - address Jakub's comments
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
-index ba65ec406cfa..30b0136b5bc7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_cmd.c
-@@ -78,9 +78,9 @@ int mlx5dr_cmd_query_esw_caps(struct mlx5_core_dev *mdev,
- 	caps->uplink_icm_address_tx =
- 		MLX5_CAP64_ESW_FLOWTABLE(mdev,
- 					 sw_steering_uplink_icm_address_tx);
--	caps->sw_owner =
--		MLX5_CAP_ESW_FLOWTABLE_FDB(mdev,
--					   sw_owner);
-+	caps->sw_owner_v2 = MLX5_CAP_ESW_FLOWTABLE_FDB(mdev, sw_owner_v2);
-+	if (!caps->sw_owner_v2)
-+		caps->sw_owner = MLX5_CAP_ESW_FLOWTABLE_FDB(mdev, sw_owner);
- 
- 	return 0;
- }
-@@ -113,10 +113,15 @@ int mlx5dr_cmd_query_device(struct mlx5_core_dev *mdev,
- 	caps->nic_tx_allow_address =
- 		MLX5_CAP64_FLOWTABLE(mdev, sw_steering_nic_tx_action_allow_icm_address);
- 
--	caps->rx_sw_owner = MLX5_CAP_FLOWTABLE_NIC_RX(mdev, sw_owner);
--	caps->max_ft_level = MLX5_CAP_FLOWTABLE_NIC_RX(mdev, max_ft_level);
-+	caps->rx_sw_owner_v2 = MLX5_CAP_FLOWTABLE_NIC_RX(mdev, sw_owner_v2);
-+	caps->tx_sw_owner_v2 = MLX5_CAP_FLOWTABLE_NIC_TX(mdev, sw_owner_v2);
-+
-+	if (!caps->rx_sw_owner_v2)
-+		caps->rx_sw_owner = MLX5_CAP_FLOWTABLE_NIC_RX(mdev, sw_owner);
-+	if (!caps->tx_sw_owner_v2)
-+		caps->tx_sw_owner = MLX5_CAP_FLOWTABLE_NIC_TX(mdev, sw_owner);
- 
--	caps->tx_sw_owner = MLX5_CAP_FLOWTABLE_NIC_TX(mdev, sw_owner);
-+	caps->max_ft_level = MLX5_CAP_FLOWTABLE_NIC_RX(mdev, max_ft_level);
- 
- 	caps->log_icm_size = MLX5_CAP_DEV_MEM(mdev, log_steering_sw_icm_size);
- 	caps->hdr_modify_icm_addr =
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c
-index 47ec88964bf3..7091b1be84ef 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_domain.c
-@@ -4,6 +4,11 @@
- #include <linux/mlx5/eswitch.h>
- #include "dr_types.h"
- 
-+#define DR_DOMAIN_SW_STEERING_SUPPORTED(dmn, dmn_type)	\
-+	((dmn)->info.caps.dmn_type##_sw_owner ||	\
-+	 ((dmn)->info.caps.dmn_type##_sw_owner_v2 &&	\
-+	  (dmn)->info.caps.sw_format_ver <= MLX5_STEERING_FORMAT_CONNECTX_6DX))
-+
- static int dr_domain_init_cache(struct mlx5dr_domain *dmn)
- {
- 	/* Per vport cached FW FT for checksum recalculation, this
-@@ -187,6 +192,7 @@ static int dr_domain_query_fdb_caps(struct mlx5_core_dev *mdev,
- 		return ret;
- 
- 	dmn->info.caps.fdb_sw_owner = dmn->info.caps.esw_caps.sw_owner;
-+	dmn->info.caps.fdb_sw_owner_v2 = dmn->info.caps.esw_caps.sw_owner_v2;
- 	dmn->info.caps.esw_rx_drop_address = dmn->info.caps.esw_caps.drop_icm_address_rx;
- 	dmn->info.caps.esw_tx_drop_address = dmn->info.caps.esw_caps.drop_icm_address_tx;
- 
-@@ -229,18 +235,13 @@ static int dr_domain_caps_init(struct mlx5_core_dev *mdev,
- 	if (ret)
- 		return ret;
- 
--	if (dmn->info.caps.sw_format_ver != MLX5_STEERING_FORMAT_CONNECTX_5) {
--		mlx5dr_err(dmn, "SW steering is not supported on this device\n");
--		return -EOPNOTSUPP;
--	}
--
- 	ret = dr_domain_query_fdb_caps(mdev, dmn);
- 	if (ret)
- 		return ret;
- 
- 	switch (dmn->type) {
- 	case MLX5DR_DOMAIN_TYPE_NIC_RX:
--		if (!dmn->info.caps.rx_sw_owner)
-+		if (!DR_DOMAIN_SW_STEERING_SUPPORTED(dmn, rx))
- 			return -ENOTSUPP;
- 
- 		dmn->info.supp_sw_steering = true;
-@@ -249,7 +250,7 @@ static int dr_domain_caps_init(struct mlx5_core_dev *mdev,
- 		dmn->info.rx.drop_icm_addr = dmn->info.caps.nic_rx_drop_address;
- 		break;
- 	case MLX5DR_DOMAIN_TYPE_NIC_TX:
--		if (!dmn->info.caps.tx_sw_owner)
-+		if (!DR_DOMAIN_SW_STEERING_SUPPORTED(dmn, tx))
- 			return -ENOTSUPP;
- 
- 		dmn->info.supp_sw_steering = true;
-@@ -261,7 +262,7 @@ static int dr_domain_caps_init(struct mlx5_core_dev *mdev,
- 		if (!dmn->info.caps.eswitch_manager)
- 			return -ENOTSUPP;
- 
--		if (!dmn->info.caps.fdb_sw_owner)
-+		if (!DR_DOMAIN_SW_STEERING_SUPPORTED(dmn, fdb))
- 			return -ENOTSUPP;
- 
- 		dmn->info.rx.ste_type = MLX5DR_STE_TYPE_RX;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-index 3b76142218d1..a8b497cbb844 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-@@ -666,7 +666,8 @@ struct mlx5dr_esw_caps {
- 	u64 drop_icm_address_tx;
- 	u64 uplink_icm_address_rx;
- 	u64 uplink_icm_address_tx;
--	bool sw_owner;
-+	u8 sw_owner:1;
-+	u8 sw_owner_v2:1;
+ include/net/psample.h    | 26 ++++++++++++++++++++++++++
+ net/psample/psample.c    | 14 +++++++++++++-
+ net/sched/Makefile       |  2 +-
+ net/sched/psample_stub.c |  5 +++++
+ 4 files changed, 45 insertions(+), 2 deletions(-)
+ create mode 100644 net/sched/psample_stub.c
+
+diff --git a/include/net/psample.h b/include/net/psample.h
+index 68ae16bb0a4a..d0f1cfc56f6f 100644
+--- a/include/net/psample.h
++++ b/include/net/psample.h
+@@ -14,6 +14,15 @@ struct psample_group {
+ 	struct rcu_head rcu;
  };
  
- struct mlx5dr_cmd_vport_cap {
-@@ -699,6 +700,9 @@ struct mlx5dr_cmd_caps {
- 	bool rx_sw_owner;
- 	bool tx_sw_owner;
- 	bool fdb_sw_owner;
-+	u8 rx_sw_owner_v2:1;
-+	u8 tx_sw_owner_v2:1;
-+	u8 fdb_sw_owner_v2:1;
- 	u32 num_vports;
- 	struct mlx5dr_esw_caps esw_caps;
- 	struct mlx5dr_cmd_vport_cap *vports_caps;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
-index 4177786b8eaf..612b0ac31db2 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
-@@ -124,7 +124,10 @@ int mlx5dr_action_destroy(struct mlx5dr_action *action);
- static inline bool
- mlx5dr_is_supported(struct mlx5_core_dev *dev)
++struct psample_ops {
++	void (*sample_packet)(struct psample_group *group, struct sk_buff *skb,
++			      u32 trunc_size, int in_ifindex, int out_ifindex,
++			      u32 sample_rate);
++
++};
++
++extern const struct psample_ops __rcu *psample_ops __read_mostly;
++
+ struct psample_group *psample_group_get(struct net *net, u32 group_num);
+ void psample_group_take(struct psample_group *group);
+ void psample_group_put(struct psample_group *group);
+@@ -35,4 +44,21 @@ static inline void psample_sample_packet(struct psample_group *group,
+ 
+ #endif
+ 
++static inline void
++psample_nic_sample_packet(struct psample_group *group,
++			  struct sk_buff *skb, u32 trunc_size,
++			  int in_ifindex, int out_ifindex,
++			  u32 sample_rate)
++{
++	const struct psample_ops *ops;
++
++	rcu_read_lock();
++	ops = rcu_dereference(psample_ops);
++	if (ops)
++		ops->sample_packet(group, skb, trunc_size,
++				   in_ifindex, out_ifindex,
++				   sample_rate);
++	rcu_read_unlock();
++}
++
+ #endif /* __NET_PSAMPLE_H */
+diff --git a/net/psample/psample.c b/net/psample/psample.c
+index 33e238c965bd..983ca5b698fe 100644
+--- a/net/psample/psample.c
++++ b/net/psample/psample.c
+@@ -8,6 +8,7 @@
+ #include <linux/kernel.h>
+ #include <linux/skbuff.h>
+ #include <linux/module.h>
++#include <linux/rcupdate.h>
+ #include <net/net_namespace.h>
+ #include <net/sock.h>
+ #include <net/netlink.h>
+@@ -35,6 +36,10 @@ static const struct genl_multicast_group psample_nl_mcgrps[] = {
+ 
+ static struct genl_family psample_nl_family __ro_after_init;
+ 
++static const struct psample_ops psample_sample_ops = {
++	.sample_packet	= psample_sample_packet,
++};
++
+ static int psample_group_nl_fill(struct sk_buff *msg,
+ 				 struct psample_group *group,
+ 				 enum psample_command cmd, u32 portid, u32 seq,
+@@ -456,11 +461,18 @@ EXPORT_SYMBOL_GPL(psample_sample_packet);
+ 
+ static int __init psample_module_init(void)
  {
--	return MLX5_CAP_ESW_FLOWTABLE_FDB(dev, sw_owner);
-+	return MLX5_CAP_ESW_FLOWTABLE_FDB(dev, sw_owner) ||
-+	       (MLX5_CAP_ESW_FLOWTABLE_FDB(dev, sw_owner_v2) &&
-+		(MLX5_CAP_GEN(dev, steering_format_version) <=
-+		 MLX5_STEERING_FORMAT_CONNECTX_6DX));
+-	return genl_register_family(&psample_nl_family);
++	int ret;
++
++	ret = genl_register_family(&psample_nl_family);
++	if (!ret)
++		RCU_INIT_POINTER(psample_ops, &psample_sample_ops);
++	return ret;
  }
  
- /* buddy functions & structure */
+ static void __exit psample_module_exit(void)
+ {
++	rcu_assign_pointer(psample_ops, NULL);
++	synchronize_rcu();
+ 	genl_unregister_family(&psample_nl_family);
+ }
+ 
+diff --git a/net/sched/Makefile b/net/sched/Makefile
+index dd14ef413fda..0d92bb98bb26 100644
+--- a/net/sched/Makefile
++++ b/net/sched/Makefile
+@@ -3,7 +3,7 @@
+ # Makefile for the Linux Traffic Control Unit.
+ #
+ 
+-obj-y	:= sch_generic.o sch_mq.o
++obj-y	:= sch_generic.o sch_mq.o psample_stub.o
+ 
+ obj-$(CONFIG_INET)		+= sch_frag.o
+ obj-$(CONFIG_NET_SCHED)		+= sch_api.o sch_blackhole.o
+diff --git a/net/sched/psample_stub.c b/net/sched/psample_stub.c
+new file mode 100644
+index 000000000000..0541b8c5100d
+--- /dev/null
++++ b/net/sched/psample_stub.c
+@@ -0,0 +1,5 @@
++// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
++/* Copyright (c) 2021 Mellanox Technologies. */
++
++const struct psample_ops __rcu *psample_ops __read_mostly;
++EXPORT_SYMBOL_GPL(psample_ops);
 -- 
-2.29.2
+2.26.2
 
