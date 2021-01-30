@@ -2,104 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E715A30964E
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 16:41:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F12F0309658
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 16:47:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231752AbhA3PlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 10:41:00 -0500
-Received: from wout3-smtp.messagingengine.com ([64.147.123.19]:56555 "EHLO
-        wout3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232160AbhA3PiC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jan 2021 10:38:02 -0500
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailout.west.internal (Postfix) with ESMTP id B68961290;
-        Sat, 30 Jan 2021 10:36:55 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Sat, 30 Jan 2021 10:36:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=aZ8MU9
-        Dz8Im+VeJzpTopYS+G2PObraHK3x03ZH0V+Vc=; b=or45A2hElzMlTmEdiH19Nw
-        9A587SgpDeOErFC4Q/Nr5bQ2ScFSVD8APJd+n+q1pS+haQoxHfTcdKXkuAWmd+L+
-        fHFxTNYgrAUv9T+zH4E6XQ1EmOYupTFIoBvXB+WxgIds+T3lxEnHYE+Yd3G3s/GV
-        FTjR/zWVwJXmNY/D2DzWVp/fqAb80hnOhwqC9jgcJp+WGzJL+M6pUlc5yDS118rR
-        NhEwDG1cLhFv+nbAyL9b7sIh0yNiemJgrsSKrZZC4V13kKYunVl8x9ghGGiKsXhh
-        cL95l59dElMBqQ080uVh4sgYZtPPhGDA/ml+xuWqTfqjPJwewzxNNDaIxAFhFxRg
-        ==
-X-ME-Sender: <xms:F30VYJ5J4UIqswjQ35A30nV0Zd0ql2N3RbLlPbLhhFvKoCi0tZU2gA>
-    <xme:F30VYBdaojF7FoQ7vbMWRk87pEM-a3P-ts4GQFV3ym4S8vouMuI9UWoh0Ib0HJ-lk
-    e0jiuukokzbBKM>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeeggdektdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
-    necukfhppeekgedrvddvledrudehfedrgeegnecuvehluhhsthgvrhfuihiivgeptdenuc
-    frrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:F30VYNATZddvBj9ziGJZq1I7EuyHOPk4vxCpwC1Qpi9QMREvcjnQRg>
-    <xmx:F30VYE-F19ZVI8N24f22sgRlaG0PSHmyp3h4lxza91tZRdZZKoUCwQ>
-    <xmx:F30VYIIK89DJVLxQknN5vNjLhOE7dw-Rnu4DAi5batKVMx0xc69OQg>
-    <xmx:F30VYPjCTbMpr-Qz_YuNvDQ5yiGTYxbbM3b1gv2pfduMnhvZrGAiJg>
-Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 9878F1080066;
-        Sat, 30 Jan 2021 10:36:54 -0500 (EST)
-Date:   Sat, 30 Jan 2021 17:36:51 +0200
-From:   Ido Schimmel <idosch@idosch.org>
+        id S232246AbhA3Pqu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 10:46:50 -0500
+Received: from mail1.protonmail.ch ([185.70.40.18]:50990 "EHLO
+        mail1.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230440AbhA3Poe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jan 2021 10:44:34 -0500
+Date:   Sat, 30 Jan 2021 15:42:29 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1612021352; bh=SqOOfzeH0noXKgcwnW/E6N5QTvdiF5329lwzLQGnSBA=;
+        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
+        b=QNesXZCqMsxg9WWq30zTsSxoLyYfcPmwRs7aX304JT8WeHNT2iGeKEibhU43V9vgT
+         OcUNJmqqlVZvquPt6J7MLkmBaKhnUDCH23CFKrtXuP8CIQAzp8bYEWC7Ml27/Xc8Kv
+         f1C/khyFadsGNsXhEO1dzJJ1HgqXdA5r7yJfx+tsRajwQc82BlDqw5ZjlanwRvD1p/
+         Z6/yyOW9dpxawki7sSDlRjQ8u8VXcF1HC/BOx5w/k5QhQxYz3scGwOIxNqXL+3s/5C
+         rCuWxQuQ5OT/DcRqoNddGAAnHcb6UjvmotgX1eW2NpSx7FLK/lnTTT8mb84wIIyEYx
+         YpUaky0ym1igA==
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, amcohen@nvidia.com, roopa@nvidia.com,
-        sharpd@nvidia.com, bpoirier@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [PATCH net-next 05/10] net: ipv4: Emit notification when fib
- hardware flags are changed
-Message-ID: <20210130153651.GC3330615@shredder.lan>
-References: <20210126132311.3061388-1-idosch@idosch.org>
- <20210126132311.3061388-6-idosch@idosch.org>
- <20210128190405.27d6f086@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <aa5291c2-3bbc-c517-8804-6a0543db66db@gmail.com>
- <20210128201545.07e95057@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
+        "David S. Miller" <davem@davemloft.net>,
+        David Rientjes <rientjes@google.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        linux-rdma@vger.kernel.org, linux-mm@kvack.org
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: Re: [PATCH v2 net-next 3/4] net: introduce common dev_page_is_reserved()
+Message-ID: <20210130154149.8107-1-alobakin@pm.me>
+In-Reply-To: <20210129183907.2ae5ca3d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20210127201031.98544-1-alobakin@pm.me> <20210127201031.98544-4-alobakin@pm.me> <20210129183907.2ae5ca3d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210128201545.07e95057@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 28, 2021 at 08:15:45PM -0800, Jakub Kicinski wrote:
-> My impression from working on this problem in TC is that the definition
-> of "all" becomes problematic especially if one takes into account
-> drivers getting reloaded. But I think routing offload has stronger
-> semantics than TC, so no objections.
+From: Jakub Kicinski <kuba@kernel.org>
+Date: Fri, 29 Jan 2021 18:39:07 -0800
 
-During the teardown phase of the reload, all the routes using the
-driver's netdevs (or their uppers) will be deleted by the kernel because
-the netdevs will disappear. During the init phase of the reload, the
-driver will re-register its FIB notifier and ask for a dump of all the
-existing routes (usually only host routes). With this patchset, user
-space will receive a notification that these routes are now in hardware.
+> On Wed, 27 Jan 2021 20:11:23 +0000 Alexander Lobakin wrote:
+> > + * dev_page_is_reserved - check whether a page can be reused for netwo=
+rk Rx
+> > + * @page: the page to test
+> > + *
+> > + * A page shouldn't be considered for reusing/recycling if it was allo=
+cated
+> > + * under memory pressure or at a distant memory node.
+> > + *
+> > + * Returns true if this page should be returned to page allocator, fal=
+se
+> > + * otherwise.
+> > + */
+> > +static inline bool dev_page_is_reserved(const struct page *page)
+>=20
+> Am I the only one who feels like "reusable" is a better term than
+> "reserved".
 
-# ip monitor route
-broadcast 127.255.255.255 dev lo table local proto kernel scope link src 127.0.0.1 
-local 127.0.0.1 dev lo table local proto kernel scope host src 127.0.0.1 
-local 127.0.0.0/8 dev lo table local proto kernel scope host src 127.0.0.1 
-broadcast 127.0.0.0 dev lo table local proto kernel scope link src 127.0.0.1 
-broadcast 10.209.1.255 dev eth0 table local proto kernel scope link src 10.209.0.191 
-local 10.209.0.191 dev eth0 table local proto kernel scope host src 10.209.0.191 
-broadcast 10.209.0.0 dev eth0 table local proto kernel scope link src 10.209.0.191 
-10.209.0.1 dev eth0 proto dhcp scope link src 10.209.0.191 metric 1024 
-10.209.0.0/23 dev eth0 proto kernel scope link src 10.209.0.191 
-default via 10.209.0.1 dev eth0 proto dhcp src 10.209.0.191 metric 1024 
-<< init phase starts here >>
-default via 10.209.0.1 dev eth0 proto dhcp src 10.209.0.191 metric 1024 rt_trap 
-10.209.0.0/23 dev eth0 proto kernel scope link src 10.209.0.191 rt_trap 
-10.209.0.1 dev eth0 proto dhcp scope link src 10.209.0.191 metric 1024 rt_trap 
-broadcast 10.209.0.0 dev eth0 table local proto kernel scope link src 10.209.0.191 rt_trap 
-local 10.209.0.191 dev eth0 table local proto kernel scope host src 10.209.0.191 rt_trap 
-broadcast 10.209.1.255 dev eth0 table local proto kernel scope link src 10.209.0.191 rt_trap 
-broadcast 127.0.0.0 dev lo table local proto kernel scope link src 127.0.0.1 rt_trap 
-local 127.0.0.0/8 dev lo table local proto kernel scope host src 127.0.0.1 rt_trap 
-local 127.0.0.1 dev lo table local proto kernel scope host src 127.0.0.1 rt_trap 
-broadcast 127.255.255.255 dev lo table local proto kernel scope link src 127.0.0.1 rt_trap 
+I thought about it, but this will need to inverse the conditions in
+most of the drivers. I decided to keep it as it is.
+I can redo if "reusable" is preferred.
+
+Regarding "no objectives to take patch 1 through net-next": patches
+2-3 depend on it, so I can't put it in a separate series.
+
+Thanks,
+Al
+
