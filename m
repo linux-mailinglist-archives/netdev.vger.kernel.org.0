@@ -2,92 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69A5C3097C8
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 20:07:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 072173097D0
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 20:08:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232199AbhA3TGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 14:06:38 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:57923 "EHLO
-        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229990AbhA3TGh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jan 2021 14:06:37 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 37AB55C0136;
-        Sat, 30 Jan 2021 14:05:31 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sat, 30 Jan 2021 14:05:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bernat.ch; h=
-        from:to:cc:subject:date:message-id:mime-version
-        :content-transfer-encoding; s=fm2; bh=p5QLBBi0PqJEVMh4blUcldzbA0
-        CV0zuQArtJpoYs/MU=; b=RT+X4LIvjVslThD4KMgf+j3VKAllgBKT6aMBKeGTy+
-        KiLA6WLDVPRz6NbQHCUNQVLkLJSROuIseCN/APXV/FI04ruxhxpQ0HYLeSpJUe8b
-        N7jZSC8ad6lrYjGY+JJ+O1EldldIRuDebrU8mSqJtkR8hnQt3HIpEByt52gT+VjT
-        9jezYsKLVKZ847C78IBsQ3aDkQ1YVnTLl8o6bd4jUkb+gjUqSBph+M69ytQIlefn
-        PJpSEr1uuCwFL5KQBzt8Ht3xpZ+Z9tDATX6UgRA/zRnOpfDvGqxVgiHgnFpWB2sg
-        sax8PWCQyxDsiAxlYcwQF68ZthA2zJT2iEphMK+FInXQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=p5QLBBi0PqJEVMh4b
-        lUcldzbA0CV0zuQArtJpoYs/MU=; b=ZNhdQ8kHLmA0B2FUoSybFxooE9PJXU5A1
-        KnyF3UeFf4MzdTobRzpcMIq45ekr+whN6EUkHZAKd880gRpZ7CSgrG9Zc5CWhskt
-        nu7MH2wWrnopRi4aTZ13Cw/hWdK5ti5eKrT8MwNcVf+PCENyIPYIXcgKZhqnTkhT
-        JjFOU1kND78odx2kSSdGnBfwJkSdiyMomsZ5nNdwyf4EjIH3VGFLY/r0uSKJ0Gus
-        d+sRL4weQyvmnPtiLGo9nSfOyO49x1hGUt1KyjM4+V6iJsSgPfZA3pB8TsbKeQxD
-        rOjTRHg/UFkCaC3cSSYh/XnOexADQ84qSqByunX1YnBAMJIF4w01A==
-X-ME-Sender: <xms:-q0VYGrGqz5vTuW7C63Ou_geOSJf090r8Cs9oVbTxRU6MfW4z5HWZQ>
-    <xme:-q0VYErTFCEruRijrvsTSXGRrTPIta5MxCp5VXp5dtUU27IS0Tdln51_el5WFJco6
-    B41KQspMTiPTqRpOdA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeeggdduvddvucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpeggihhntggvnhht
-    uceuvghrnhgrthcuoehvihhntggvnhhtsegsvghrnhgrthdrtghhqeenucggtffrrghtth
-    gvrhhnpedvieffteeukedtleevfffhvdefgfdtffehtddukeetveffgfevtdefheevffeh
-    gfenucfkphepledtrdejledrudelledruddtudenucevlhhushhtvghrufhiiigvpedtne
-    curfgrrhgrmhepmhgrihhlfhhrohhmpegsvghrnhgrtheslhhufhhfhidrtgig
-X-ME-Proxy: <xmx:-q0VYLPKSrcrFxJdsb5fGjKnK-6IuO0tH5WliJSvLhkHsVFiQlrBJA>
-    <xmx:-q0VYF6M3Jhh_HaTiXXwGo9YHE8Y9IPiLFBADEZkULV4OsDVKKndjQ>
-    <xmx:-q0VYF7872LBx1sOa7a7vxXcQFgOc5IkqjaIg5gHZTmucsVRnMhiHQ>
-    <xmx:-60VYFH3DmfrtlV8wbx1c01slRTcu07vpU3f5YF1Flw80JHxtcLsUA>
-Received: from neo.luffy.cx (lfbn-idf1-1-1264-101.w90-79.abo.wanadoo.fr [90.79.199.101])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 34D0124005A;
-        Sat, 30 Jan 2021 14:05:30 -0500 (EST)
-Received: by neo.luffy.cx (Postfix, from userid 500)
-        id CBAE4D5E; Sat, 30 Jan 2021 20:05:28 +0100 (CET)
-From:   Vincent Bernat <vincent@bernat.ch>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Cc:     Vincent Bernat <vincent@bernat.ch>
-Subject: [PATCH net] docs: networking: swap words in icmp_errors_use_inbound_ifaddr doc
-Date:   Sat, 30 Jan 2021 20:05:18 +0100
-Message-Id: <20210130190518.854806-1-vincent@bernat.ch>
-X-Mailer: git-send-email 2.30.0
+        id S232274AbhA3TH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 14:07:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36770 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229990AbhA3THu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 30 Jan 2021 14:07:50 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9DB3064E11;
+        Sat, 30 Jan 2021 19:07:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612033629;
+        bh=Fzdh9rDGCBTjOe6wgkL8Ejbzqqmt3AuErhjUnt6GaB4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=FXcv7/nFC2W4/QcK5la7BT3W/pfJcY5sCGsMxVhMJ5ofFjavYdoxnkh7WgdYLMg/P
+         Bw+3YQis90jZ8Gr1RfBojb2mY8Ba/yuDF/oJklJcFuD2UCFB9pWc0KyyLWeG5HEB3D
+         gftGmLwwhh4oqoQm0zQxYg7pzL0lb2Os0VNZrgDWpb+5ekH1lTfvAvtkBtnZrO+g91
+         VMjzUCX5XsH1pAvau9oVXTt9C1UZuHW4cjHP53tcNK/FpouEYPYm04CmGMaV+ryo4A
+         21gNW6N50sxVx68cJmnY7Klqw2Rq4XcrJOS7R7LlqtunuAI3ffT/n0d0Rh5C9LBJW/
+         TLJlgdBjQUqfw==
+Date:   Sat, 30 Jan 2021 11:07:07 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Alexander Lobakin <alobakin@pm.me>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        David Rientjes <rientjes@google.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        linux-rdma@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH v2 net-next 3/4] net: introduce common
+ dev_page_is_reserved()
+Message-ID: <20210130110707.3122a360@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210130154149.8107-1-alobakin@pm.me>
+References: <20210127201031.98544-1-alobakin@pm.me>
+        <20210127201031.98544-4-alobakin@pm.me>
+        <20210129183907.2ae5ca3d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20210130154149.8107-1-alobakin@pm.me>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Vincent Bernat <vincent@bernat.ch>
----
- Documentation/networking/ip-sysctl.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Sat, 30 Jan 2021 15:42:29 +0000 Alexander Lobakin wrote:
+> > On Wed, 27 Jan 2021 20:11:23 +0000 Alexander Lobakin wrote:  
+> > > + * dev_page_is_reserved - check whether a page can be reused for network Rx
+> > > + * @page: the page to test
+> > > + *
+> > > + * A page shouldn't be considered for reusing/recycling if it was allocated
+> > > + * under memory pressure or at a distant memory node.
+> > > + *
+> > > + * Returns true if this page should be returned to page allocator, false
+> > > + * otherwise.
+> > > + */
+> > > +static inline bool dev_page_is_reserved(const struct page *page)  
+> > 
+> > Am I the only one who feels like "reusable" is a better term than
+> > "reserved".  
+> 
+> I thought about it, but this will need to inverse the conditions in
+> most of the drivers. I decided to keep it as it is.
+> I can redo if "reusable" is preferred.
 
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index dd2b12a32b73..48d9db9151ac 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -1196,7 +1196,7 @@ icmp_errors_use_inbound_ifaddr - BOOLEAN
- 
- 	If non-zero, the message will be sent with the primary address of
- 	the interface that received the packet that caused the icmp error.
--	This is the behaviour network many administrators will expect from
-+	This is the behaviour many network administrators will expect from
- 	a router. And it can make debugging complicated network layouts
- 	much easier.
- 
--- 
-2.30.0
+Naming is hard. As long as the condition is not a double negative it
+reads fine to me, but that's probably personal preference.
+The thing that doesn't sit well is the fact that there is nothing
+"reserved" about a page from another NUMA node.. But again, if nobody
++1s this it's whatever...
 
+That said can we move the likely()/unlikely() into the helper itself?
+People on the internet may say otherwise but according to my tests 
+using __builtin_expect() on a return value of a static inline helper
+works just fine.
