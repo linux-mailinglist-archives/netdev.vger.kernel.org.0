@@ -2,166 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B3C7309506
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 12:57:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B6A130950C
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 13:02:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231519AbhA3L4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 06:56:17 -0500
-Received: from bgl-iport-1.cisco.com ([72.163.197.25]:55933 "EHLO
-        bgl-iport-1.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229636AbhA3L4P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jan 2021 06:56:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=cisco.com; i=@cisco.com; l=3911; q=dns/txt; s=iport;
-  t=1612007774; x=1613217374;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=8T6xhh/+97MYL69HOZHijmar/RuLTo27yNHNS+EKjJA=;
-  b=ZowTdEvZq9ACt1BsaRUOFIfmJTV0qidqZR3h9cUHdaSPshv9eG6lf1L3
-   OhDMyEaAfeKrm3tXRe92nr0HLss8tRLbkFIDJ/KLbzLPfgh3h1ZtwwY3J
-   tgZi2MyylQCeCffMCAnBB8tOXa9hwjFFkCmztMY7hf1evykrwQkxCV2qJ
-   4=;
-X-IronPort-AV: E=Sophos;i="5.79,388,1602547200"; 
-   d="scan'208";a="164142947"
-Received: from vla196-nat.cisco.com (HELO bgl-core-1.cisco.com) ([72.163.197.24])
-  by bgl-iport-1.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 30 Jan 2021 11:55:29 +0000
-Received: from bgl-ads-1848.cisco.com (bgl-ads-1848.cisco.com [173.39.51.250])
-        by bgl-core-1.cisco.com (8.15.2/8.15.2) with ESMTPS id 10UBtTHh006232
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Sat, 30 Jan 2021 11:55:29 GMT
-Received: by bgl-ads-1848.cisco.com (Postfix, from userid 838444)
-        id DF9E3CC1251; Sat, 30 Jan 2021 17:25:28 +0530 (IST)
-From:   Aviraj CJ <acj@cisco.com>
-To:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        gregkh@linuxfoundation.org, xe-linux-external@cisco.com,
-        acj@cisco.com
-Cc:     Hangbin Liu <liuhangbin@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH stable v5.4 2/2] IPv6: reply ICMP error if the first fragment don't include all headers
-Date:   Sat, 30 Jan 2021 17:24:52 +0530
-Message-Id: <20210130115452.19192-2-acj@cisco.com>
-X-Mailer: git-send-email 2.26.2.Cisco
-In-Reply-To: <20210130115452.19192-1-acj@cisco.com>
-References: <20210130115452.19192-1-acj@cisco.com>
+        id S230114AbhA3MB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 07:01:59 -0500
+Received: from correo.us.es ([193.147.175.20]:50110 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229498AbhA3MB7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 30 Jan 2021 07:01:59 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id F3A6DDA7F1
+        for <netdev@vger.kernel.org>; Sat, 30 Jan 2021 13:01:16 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id E30ECDA792
+        for <netdev@vger.kernel.org>; Sat, 30 Jan 2021 13:01:16 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id D8A9BDA73F; Sat, 30 Jan 2021 13:01:16 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
+        autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 9B979DA78C;
+        Sat, 30 Jan 2021 13:01:14 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Sat, 30 Jan 2021 13:01:14 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 7BDDC426CC84;
+        Sat, 30 Jan 2021 13:01:14 +0100 (CET)
+Date:   Sat, 30 Jan 2021 13:01:14 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Roi Dayan <roid@nvidia.com>
+Cc:     netdev@vger.kernel.org, Paul Blakey <paulb@nvidia.com>,
+        Oz Shlomo <ozsh@nvidia.com>
+Subject: Re: [PATCH net 1/1] netfilter: conntrack: Check offload bit on table
+ dump
+Message-ID: <20210130120114.GA7846@salvia>
+References: <20210128074052.777999-1-roid@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Auto-Response-Suppress: DR, OOF, AutoReply
-X-Outbound-SMTP-Client: 173.39.51.250, bgl-ads-1848.cisco.com
-X-Outbound-Node: bgl-core-1.cisco.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20210128074052.777999-1-roid@nvidia.com>
+User-Agent: Alpine 2.23 (DEB 453 2020-06-18)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hangbin Liu <liuhangbin@gmail.com>
+Hi Roi,
 
-commit 2efdaaaf883a143061296467913c01aa1ff4b3ce upstream.
+On Thu, Jan 28, 2021 at 09:40:52AM +0200, Roi Dayan wrote:
+> Currently, offloaded flows might be deleted when executing conntrack -L
+> or cat /proc/net/nf_conntrack while rules being offloaded.
+> Ct timeout is not maintained for offloaded flows as aging
+> of offloaded flows are managed by the flow table offload infrastructure.
+> 
+> Don't do garbage collection for offloaded flows when dumping the
+> entries.
+> 
+> Fixes: 90964016e5d3 ("netfilter: nf_conntrack: add IPS_OFFLOAD status bit")
+> Signed-off-by: Roi Dayan <roid@nvidia.com>
+> Reviewed-by: Oz Shlomo <ozsh@nvidia.com>
+> ---
+>  include/net/netfilter/nf_conntrack.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/include/net/netfilter/nf_conntrack.h b/include/net/netfilter/nf_conntrack.h
+> index 439379ca9ffa..87c85109946a 100644
+> --- a/include/net/netfilter/nf_conntrack.h
+> +++ b/include/net/netfilter/nf_conntrack.h
+> @@ -276,7 +276,7 @@ static inline bool nf_ct_is_expired(const struct nf_conn *ct)
+>  static inline bool nf_ct_should_gc(const struct nf_conn *ct)
+>  {
+>  	return nf_ct_is_expired(ct) && nf_ct_is_confirmed(ct) &&
+> -	       !nf_ct_is_dying(ct);
+> +	       !nf_ct_is_dying(ct) && !test_bit(IPS_OFFLOAD_BIT, &ct->status);
 
-Based on RFC 8200, Section 4.5 Fragment Header:
+The gc_worker() calls nf_ct_offload_timeout() if the flow if
+offloaded, so it extends the timeout to skip the garbage collection.
 
-  -  If the first fragment does not include all headers through an
-     Upper-Layer header, then that fragment should be discarded and
-     an ICMP Parameter Problem, Code 3, message should be sent to
-     the source of the fragment, with the Pointer field set to zero.
+Could you update ctnetlink_dump_table() and ct_seq_show() to extend
+the timeout if the flow is offloaded?
 
-Checking each packet header in IPv6 fast path will have performance impact,
-so I put the checking in ipv6_frag_rcv().
-
-As the packet may be any kind of L4 protocol, I only checked some common
-protocols' header length and handle others by (offset + 1) > skb->len.
-Also use !(frag_off & htons(IP6_OFFSET)) to catch atomic fragments
-(fragmented packet with only one fragment).
-
-When send ICMP error message, if the 1st truncated fragment is ICMP message,
-icmp6_send() will break as is_ineligible() return true. So I added a check
-in is_ineligible() to let fragment packet with nexthdr ICMP but no ICMP header
-return false.
-
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Aviraj CJ <acj@cisco.com>
----
- net/ipv6/icmp.c       |  8 +++++++-
- net/ipv6/reassembly.c | 33 ++++++++++++++++++++++++++++++++-
- 2 files changed, 39 insertions(+), 2 deletions(-)
-
-diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
-index 7d3a3894f785..e9bb89131e02 100644
---- a/net/ipv6/icmp.c
-+++ b/net/ipv6/icmp.c
-@@ -158,7 +158,13 @@ static bool is_ineligible(const struct sk_buff *skb)
- 		tp = skb_header_pointer(skb,
- 			ptr+offsetof(struct icmp6hdr, icmp6_type),
- 			sizeof(_type), &_type);
--		if (!tp || !(*tp & ICMPV6_INFOMSG_MASK))
-+
-+		/* Based on RFC 8200, Section 4.5 Fragment Header, return
-+		 * false if this is a fragment packet with no icmp header info.
-+		 */
-+		if (!tp && frag_off != 0)
-+			return false;
-+		else if (!tp || !(*tp & ICMPV6_INFOMSG_MASK))
- 			return true;
- 	}
- 	return false;
-diff --git a/net/ipv6/reassembly.c b/net/ipv6/reassembly.c
-index 1f5d4d196dcc..c8cf1bbad74a 100644
---- a/net/ipv6/reassembly.c
-+++ b/net/ipv6/reassembly.c
-@@ -42,6 +42,8 @@
- #include <linux/skbuff.h>
- #include <linux/slab.h>
- #include <linux/export.h>
-+#include <linux/tcp.h>
-+#include <linux/udp.h>
- 
- #include <net/sock.h>
- #include <net/snmp.h>
-@@ -322,7 +324,9 @@ static int ipv6_frag_rcv(struct sk_buff *skb)
- 	struct frag_queue *fq;
- 	const struct ipv6hdr *hdr = ipv6_hdr(skb);
- 	struct net *net = dev_net(skb_dst(skb)->dev);
--	int iif;
-+	__be16 frag_off;
-+	int iif, offset;
-+	u8 nexthdr;
- 
- 	if (IP6CB(skb)->flags & IP6SKB_FRAGMENTED)
- 		goto fail_hdr;
-@@ -351,6 +355,33 @@ static int ipv6_frag_rcv(struct sk_buff *skb)
- 		return 1;
- 	}
- 
-+	/* RFC 8200, Section 4.5 Fragment Header:
-+	 * If the first fragment does not include all headers through an
-+	 * Upper-Layer header, then that fragment should be discarded and
-+	 * an ICMP Parameter Problem, Code 3, message should be sent to
-+	 * the source of the fragment, with the Pointer field set to zero.
-+	 */
-+	nexthdr = hdr->nexthdr;
-+	offset = ipv6_skip_exthdr(skb, skb_transport_offset(skb), &nexthdr, &frag_off);
-+	if (offset >= 0) {
-+		/* Check some common protocols' header */
-+		if (nexthdr == IPPROTO_TCP)
-+			offset += sizeof(struct tcphdr);
-+		else if (nexthdr == IPPROTO_UDP)
-+			offset += sizeof(struct udphdr);
-+		else if (nexthdr == IPPROTO_ICMPV6)
-+			offset += sizeof(struct icmp6hdr);
-+		else
-+			offset += 1;
-+
-+		if (!(frag_off & htons(IP6_OFFSET)) && offset > skb->len) {
-+			__IP6_INC_STATS(net, __in6_dev_get_safely(skb->dev),
-+					IPSTATS_MIB_INHDRERRORS);
-+			icmpv6_param_prob(skb, ICMPV6_HDR_INCOMP, 0);
-+			return -1;
-+		}
-+	}
-+
- 	iif = skb->dev ? skb->dev->ifindex : 0;
- 	fq = fq_find(net, fhdr->identification, hdr, iif);
- 	if (fq) {
--- 
-2.26.2.Cisco
-
+Thanks.
