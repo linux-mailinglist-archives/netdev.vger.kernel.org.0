@@ -2,77 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A473030961D
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 16:09:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D9D8309621
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 16:09:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232246AbhA3O4I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 09:56:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44240 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232210AbhA3Oxx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 30 Jan 2021 09:53:53 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CFA3E64E13;
-        Sat, 30 Jan 2021 14:53:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1612018393;
-        bh=gHTDus04sfWIV+ckJJfv1Wnagbt5NnNUQdQB3S2RuaE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=2mb0ugb3EJKoSNfar/DePivI7YQa5ZsSkCMRfX4eX6cn7Owh8vbS1z/rbgGHzFRGG
-         AF3o8lhVoK3Xy9bEraqpbqDJG9Mrzl7bM7cQkQcvgzSYIDAD0IGX1lUU8Up9yBhm2D
-         c3EE0QPjby7rGBSV27IxWEkVO1XnRJVUU0BPXGV0=
-Date:   Sat, 30 Jan 2021 15:53:10 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Aviraj CJ <acj@cisco.com>
-Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xe-linux-external@cisco.com, Hangbin Liu <liuhangbin@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH stable v5.4 2/2] IPv6: reply ICMP error if the first
- fragment don't include all headers
-Message-ID: <YBVy1kNl5joCU2Xb@kroah.com>
-References: <20210130115452.19192-1-acj@cisco.com>
- <20210130115452.19192-2-acj@cisco.com>
+        id S231981AbhA3PHx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 10:07:53 -0500
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:38911 "EHLO
+        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232142AbhA3O7J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jan 2021 09:59:09 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 8587C5C0132;
+        Sat, 30 Jan 2021 09:57:42 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Sat, 30 Jan 2021 09:57:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=2ksLkb
+        NGzWSsvmPHHU85P4JWIjMyu1DHKhI60yx0KXI=; b=Mr+lPT9Ptyn8MmGpxeIVRC
+        6tMgQMZRszRkA76/26KtCN5suJ+yMcVQHu3qaVVtYRb2+Y9nokXrjz5qEK+9injn
+        7kQXM//LOcn5gtKm9BnZYAFZ0iico1tKF5kLJriYwg9FAqgVqgS0BjJPDjZOvdAb
+        a8kJ4+kCblQFsl33ThNTx0RtiR+FIdnHIZXxJT/MF8TAdje5r4Y/f7hwZTKGCHl8
+        1jq/LnD9HRzQ9GffXOCaSuTUTw3yJk0wJO2o91CexxDUFCnFgp+kfRcnsBlSwYXE
+        THDN2yq80KOG4gYWZwJzZECBONQ3zWi4e67Krim0eXbstgTgEusaCEwTHYAZjbSw
+        ==
+X-ME-Sender: <xms:5nMVYBZlLTXP6G_bRP0psq7TPzqY9wrWiAAyb7Nz_umZudZp4VU0-Q>
+    <xme:5nMVYIbqY_mbwwoqyu6ruJ5kxMA2UuMERDdlz3UfLKNHqycEWo8XWI_3ClUFUP9AA
+    XSG-2VLUoLbS20>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeeggdejvdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnhepgfevgfevueduueffieffheeifffgjeelvedtteeuteeuffekvefggfdtudfgkeev
+    necuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucfkphepkeegrddvvdelrdduheefrd
+    eggeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehi
+    ughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:5nMVYD-XJ1Mek-3lTnkU4S-Skhk-AZ8qO63DKMvNHmeGQgdRuAzItA>
+    <xmx:5nMVYPprtU7VvGYApr8TTRsXyYzfxU7HEtHZtwIf2jYaz_aj5xHPhQ>
+    <xmx:5nMVYMpZ_RTCAEdBi-XeCIv1PX_6WEtRFopdae7fmNQBKT_BUBbwkA>
+    <xmx:5nMVYBA8vMBk5a1ZSgHHC62wxhyWxs-sKNn6BK17lEtWr5N9qfl2Yw>
+Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 9B30824005B;
+        Sat, 30 Jan 2021 09:57:41 -0500 (EST)
+Date:   Sat, 30 Jan 2021 16:57:38 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Cong Wang <xiyou.wangcong@gmail.com>, simon.horman@netronome.com
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        oss-drivers@netronome.com, Baowen Zheng <baowen.zheng@corigine.com>
+Subject: Re: [PATCH net-next v2] net/sched: act_police: add support for
+ packet-per-second policing
+Message-ID: <20210130145738.GA3330615@shredder.lan>
+References: <20210129102856.6225-1-simon.horman@netronome.com>
+ <CAM_iQpVnd9s6rpNOSNLTBHzLH7BtKvdZmWMhZdFps8udfCyikQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210130115452.19192-2-acj@cisco.com>
+In-Reply-To: <CAM_iQpVnd9s6rpNOSNLTBHzLH7BtKvdZmWMhZdFps8udfCyikQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 30, 2021 at 05:24:52PM +0530, Aviraj CJ wrote:
-> From: Hangbin Liu <liuhangbin@gmail.com>
-> 
-> commit 2efdaaaf883a143061296467913c01aa1ff4b3ce upstream.
-> 
-> Based on RFC 8200, Section 4.5 Fragment Header:
-> 
->   -  If the first fragment does not include all headers through an
->      Upper-Layer header, then that fragment should be discarded and
->      an ICMP Parameter Problem, Code 3, message should be sent to
->      the source of the fragment, with the Pointer field set to zero.
-> 
-> Checking each packet header in IPv6 fast path will have performance impact,
-> so I put the checking in ipv6_frag_rcv().
-> 
-> As the packet may be any kind of L4 protocol, I only checked some common
-> protocols' header length and handle others by (offset + 1) > skb->len.
-> Also use !(frag_off & htons(IP6_OFFSET)) to catch atomic fragments
-> (fragmented packet with only one fragment).
-> 
-> When send ICMP error message, if the 1st truncated fragment is ICMP message,
-> icmp6_send() will break as is_ineligible() return true. So I added a check
-> in is_ineligible() to let fragment packet with nexthdr ICMP but no ICMP header
-> return false.
-> 
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> Signed-off-by: Aviraj CJ <acj@cisco.com>
-> ---
->  net/ipv6/icmp.c       |  8 +++++++-
->  net/ipv6/reassembly.c | 33 ++++++++++++++++++++++++++++++++-
->  2 files changed, 39 insertions(+), 2 deletions(-)
+On Fri, Jan 29, 2021 at 03:04:51PM -0800, Cong Wang wrote:
+> On Fri, Jan 29, 2021 at 2:29 AM Simon Horman <simon.horman@netronome.com> wrote:
 
-Both now queued up, thanks.
+I didn't get v2 (didn't made it to the list), but I did leave feedback
+on v1 [1]. Not sure if you got it or not given the recent issues.
 
-greg k-h
+[1] https://lore.kernel.org/netdev/20210128161933.GA3285394@shredder.lan/#t
