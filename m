@@ -2,146 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 334D1309138
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 02:22:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 767A630913F
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 02:25:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231614AbhA3BVr convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 29 Jan 2021 20:21:47 -0500
-Received: from mga04.intel.com ([192.55.52.120]:24653 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233066AbhA3BTg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Jan 2021 20:19:36 -0500
-IronPort-SDR: V+AjJQUEkUti5N0YWfgqkssKVhQMw1k4Rsdn43BQwZ/HtFc3Qxf3IN7pG99uUuHfa8SXffoEXc
- CxVXgZaGoZxw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9879"; a="177942138"
-X-IronPort-AV: E=Sophos;i="5.79,387,1602572400"; 
-   d="scan'208";a="177942138"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2021 17:18:38 -0800
-IronPort-SDR: 8gT7A+DUAM5lnwTEX+gzLtmSyRTvcxwj6dNwz6ICzTkFNtS7PQnr+zAUrLh0BUs8xb+LYe9LCI
- 9A2HrbwuFxrw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,387,1602572400"; 
-   d="scan'208";a="365563152"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by fmsmga008.fm.intel.com with ESMTP; 29 Jan 2021 17:18:38 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Fri, 29 Jan 2021 17:18:37 -0800
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Fri, 29 Jan 2021 17:18:37 -0800
-Received: from fmsmsx612.amr.corp.intel.com ([10.18.126.92]) by
- fmsmsx612.amr.corp.intel.com ([10.18.126.92]) with mapi id 15.01.2106.002;
- Fri, 29 Jan 2021 17:18:37 -0800
-From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-CC:     "dledford@redhat.com" <dledford@redhat.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>
-Subject: RE: [PATCH 20/22] RDMA/irdma: Add ABI definitions
-Thread-Topic: [PATCH 20/22] RDMA/irdma: Add ABI definitions
-Thread-Index: AQHW8RlkdRkNgNRDEUiQqAbZnBRzCao5SR2AgAWJrnA=
-Date:   Sat, 30 Jan 2021 01:18:36 +0000
-Message-ID: <04dcd32fcecd4492900f0bde0e45e5dc@intel.com>
-References: <20210122234827.1353-1-shiraz.saleem@intel.com>
- <20210122234827.1353-21-shiraz.saleem@intel.com>
- <20210125194515.GY4147@nvidia.com>
-In-Reply-To: <20210125194515.GY4147@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-x-originating-ip: [10.1.200.100]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S233135AbhA3BX6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jan 2021 20:23:58 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:39216 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S233067AbhA3BUY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 20:20:24 -0500
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 10U1GYJK168072
+        for <netdev@vger.kernel.org>; Fri, 29 Jan 2021 20:19:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=g1GjSV9W64x1/kbE7nM1b3jXSxPHNbzais7TI9ZM180=;
+ b=OFi2dAxBciFXdJIJQ8A2r4SsW9I02GEatsFrwtYt8iRkZnzZJBBafJn4a5yLw150PlR3
+ ZpN/roeXZdXbjJbkFpp29ng81oTgyWTBogdVhmxiljPowXaJwavOgPdRVwMrtK8FQj9G
+ l/3MmP3sCJ7iPFsWrXHy0LCpSMqDbGovINgBiv6SFwIkxTpH+6A7Qv8yaczy+V0fAQHk
+ auIuiHSUEklkRoY+Xwi6Ap7HmDFR70VUgUJxTvyEtKyvyqO04jLxFSp0LHzw5zo+rYQQ
+ u4Y5J5x3paGxnDwGzJ0y0/15iHvrmfZSqdM0+CsQwAn4f2VMeQWqNT7zHzr1FTLxzrf+ sw== 
+Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 36cwnar0q2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 29 Jan 2021 20:19:12 -0500
+Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
+        by ppma01wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 10U1GBkT029726
+        for <netdev@vger.kernel.org>; Sat, 30 Jan 2021 01:19:11 GMT
+Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
+        by ppma01wdc.us.ibm.com with ESMTP id 36a8uhx868-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Sat, 30 Jan 2021 01:19:11 +0000
+Received: from b03ledav005.gho.boulder.ibm.com (b03ledav005.gho.boulder.ibm.com [9.17.130.236])
+        by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 10U1J8JB25690570
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 30 Jan 2021 01:19:08 GMT
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9BFA0BE04F;
+        Sat, 30 Jan 2021 01:19:08 +0000 (GMT)
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 98EF3BE051;
+        Sat, 30 Jan 2021 01:19:07 +0000 (GMT)
+Received: from pompom.ibm.com (unknown [9.85.192.149])
+        by b03ledav005.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Sat, 30 Jan 2021 01:19:07 +0000 (GMT)
+From:   Lijun Pan <ljp@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     sukadev@linux.ibm.com, drt@linux.ibm.com,
+        brking@linux.vnet.ibm.com, dnbanerg@us.ibm.com,
+        tlfalcon@linux.ibm.com, Lijun Pan <ljp@linux.ibm.com>
+Subject: [PATCH net-next v2 1/2] ibmvnic: rework to ensure SCRQ entry reads are properly ordered
+Date:   Fri, 29 Jan 2021 19:19:04 -0600
+Message-Id: <20210130011905.1485-2-ljp@linux.ibm.com>
+X-Mailer: git-send-email 2.22.0
+In-Reply-To: <20210130011905.1485-1-ljp@linux.ibm.com>
+References: <20210130011905.1485-1-ljp@linux.ibm.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
+ definitions=2021-01-29_12:2021-01-29,2021-01-29 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 bulkscore=0
+ spamscore=0 lowpriorityscore=0 malwarescore=0 suspectscore=0 clxscore=1015
+ mlxscore=0 priorityscore=1501 adultscore=0 mlxlogscore=999 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2101300000
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: [PATCH 20/22] RDMA/irdma: Add ABI definitions
-> 
-> On Fri, Jan 22, 2021 at 05:48:25PM -0600, Shiraz Saleem wrote:
-> > From: Mustafa Ismail <mustafa.ismail@intel.com>
-> >
-> > Add ABI definitions for irdma.
-> >
-> > Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
-> > Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-> > include/uapi/rdma/irdma-abi.h | 140
-> > ++++++++++++++++++++++++++++++++++++++++++
-> >  1 file changed, 140 insertions(+)
-> >  create mode 100644 include/uapi/rdma/irdma-abi.h
-> >
-> > diff --git a/include/uapi/rdma/irdma-abi.h
-> > b/include/uapi/rdma/irdma-abi.h new file mode 100644 index
-> > 0000000..d9c8ce1
-> > +++ b/include/uapi/rdma/irdma-abi.h
-> > @@ -0,0 +1,140 @@
-> > +/* SPDX-License-Identifier: (GPL-2.0 WITH Linux-syscall-note) OR
-> > +Linux-OpenIB) */
-> > +/*
-> > + * Copyright (c) 2006 - 2021 Intel Corporation.  All rights reserved.
-> > + * Copyright (c) 2005 Topspin Communications.  All rights reserved.
-> > + * Copyright (c) 2005 Cisco Systems.  All rights reserved.
-> > + * Copyright (c) 2005 Open Grid Computing, Inc. All rights reserved.
-> > + */
-> > +
-> > +#ifndef IRDMA_ABI_H
-> > +#define IRDMA_ABI_H
-> > +
-> > +#include <linux/types.h>
-> > +
-> > +/* irdma must support legacy GEN_1 i40iw kernel
-> > + * and user-space whose last ABI ver is 5  */ #define IRDMA_ABI_VER 6
-> 
-> I don't want to see this value increase, either this is ABI compatible with i40iw or it
-> is not and should be a new driver_id.
+Move the dma_rmb() between pending_scrq() and ibmvnic_next_scrq()
+into the end of pending_scrq() to save the duplicated code since
+this dma_rmb will be used 3 times.
 
-I am not sure I understand how it's possible without a ver. bump.
-We support user-space libirdma with this driver as well as libi40iw. 
+Signed-off-by: Lijun Pan <ljp@linux.ibm.com>
+Acked-by: Thomas Falcon <tlfalcon@linux.ibm.com>
+---
+ drivers/net/ethernet/ibm/ibmvnic.c | 30 +++++++++++-------------------
+ 1 file changed, 11 insertions(+), 19 deletions(-)
 
-libi40iw - legacy support which is ABIv 4 & 5. GEN_1 devices only
-libirdma - replaces libi40iw; supports i40iw (GEN1) driver and irdma
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index a40af510018a..331ebca2f57a 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -2444,12 +2444,6 @@ static int ibmvnic_poll(struct napi_struct *napi, int budget)
+ 
+ 		if (!pending_scrq(adapter, rx_scrq))
+ 			break;
+-		/* The queue entry at the current index is peeked at above
+-		 * to determine that there is a valid descriptor awaiting
+-		 * processing. We want to be sure that the current slot
+-		 * holds a valid descriptor before reading its contents.
+-		 */
+-		dma_rmb();
+ 		next = ibmvnic_next_scrq(adapter, rx_scrq);
+ 		rx_buff =
+ 		    (struct ibmvnic_rx_buff *)be64_to_cpu(next->
+@@ -3189,13 +3183,6 @@ static int ibmvnic_complete_tx(struct ibmvnic_adapter *adapter,
+ 		int total_bytes = 0;
+ 		int num_packets = 0;
+ 
+-		/* The queue entry at the current index is peeked at above
+-		 * to determine that there is a valid descriptor awaiting
+-		 * processing. We want to be sure that the current slot
+-		 * holds a valid descriptor before reading its contents.
+-		 */
+-		dma_rmb();
+-
+ 		next = ibmvnic_next_scrq(adapter, scrq);
+ 		for (i = 0; i < next->tx_comp.num_comps; i++) {
+ 			if (next->tx_comp.rcs[i])
+@@ -3569,11 +3556,16 @@ static int pending_scrq(struct ibmvnic_adapter *adapter,
+ 			struct ibmvnic_sub_crq_queue *scrq)
+ {
+ 	union sub_crq *entry = &scrq->msgs[scrq->cur];
++	int rc;
+ 
+-	if (entry->generic.first & IBMVNIC_CRQ_CMD_RSP)
+-		return 1;
+-	else
+-		return 0;
++	rc = !!(entry->generic.first & IBMVNIC_CRQ_CMD_RSP);
++
++	/* Ensure that the SCRQ valid flag is loaded prior to loading the
++	 * contents of the SCRQ descriptor
++	 */
++	dma_rmb();
++
++	return rc;
+ }
+ 
+ static union sub_crq *ibmvnic_next_scrq(struct ibmvnic_adapter *adapter,
+@@ -3592,8 +3584,8 @@ static union sub_crq *ibmvnic_next_scrq(struct ibmvnic_adapter *adapter,
+ 	}
+ 	spin_unlock_irqrestore(&scrq->lock, flags);
+ 
+-	/* Ensure that the entire buffer descriptor has been
+-	 * loaded before reading its contents
++	/* Ensure that the SCRQ valid flag is loaded prior to loading the
++	 * contents of the SCRQ descriptor
+ 	 */
+ 	dma_rmb();
+ 
+-- 
+2.23.0
 
-> 
-> This should have a small diff against include/uapi/rdma/i40iw-abi.h that is
-> obviously compatible
-> 
-> > +struct irdma_create_qp_resp {
-> > +	__u32 qp_id;
-> > +	__u32 actual_sq_size;
-> > +	__u32 actual_rq_size;
-> > +	__u32 irdma_drv_opt;
-> > +	__u32 qp_caps;
-> > +	__u16 rsvd1;
-> > +	__u8 lsmm;
-> > +	__u8 rsvd2;
-> > +};
-> 
-> > +struct i40iw_create_qp_resp {
-> > +	__u32 qp_id;
-> > +	__u32 actual_sq_size;
-> > +	__u32 actual_rq_size;
-> > +	__u32 i40iw_drv_opt;
-> > +	__u16 push_idx;
-> > +	__u8 lsmm;
-> > +	__u8 rsvd;
-> > +};
-> 
-> For instance these are almost the same, why put qp_caps in the middle?
-> Add it to the end so the whole thing is properly compatible with a single structure.
-> 
-> Jason
