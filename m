@@ -2,89 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2696E3093F3
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 11:05:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3E94309400
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 11:07:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229885AbhA3KEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 05:04:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60814 "EHLO mail.kernel.org"
+        id S232123AbhA3KGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 05:06:50 -0500
+Received: from m12-11.163.com ([220.181.12.11]:58896 "EHLO m12-11.163.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233240AbhA3Crl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Jan 2021 21:47:41 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 5FB1B64E17;
-        Sat, 30 Jan 2021 02:30:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611973808;
-        bh=Xbb7K2Whr/O6pjP/NOiETYUVAbM8QLWnNs8zvXZX7cM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=HFXZ7N8BfZawNHRKgv6ihthx5Y7acTONT53xjw5uF3onxHOvaaCB4NADZog4I+NtP
-         93pn3DOykFkuS167YSMGL0ZPXJsHqXnCbRqTK3I4k4XVQSCSJid1/ZJ9JG4KKUiovm
-         V8pQlKTwuIY/gvKELk4SwHZQr+xPiE5uoI8b/2a5rnWFMlAvVIyE2fJuUFe0wlH+ga
-         leFHtiDitO5Jnemxosxrq7oSKAabQgCVrTzBfn2GxUOdHMYp5R8oUNW6V8fituNVtD
-         /KK1ZHcXQ/71Fu5xbNQQHrHjA+fiFJhgM5lp93K7857nnjsIss4VQLWHaAF9AQ81g8
-         WZKpVUC8Ld50A==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 547AF6095B;
-        Sat, 30 Jan 2021 02:30:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v4 0/2] Add nci suit and virtual nci device driver
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161197380834.28728.3903121798375057144.git-patchwork-notify@kernel.org>
-Date:   Sat, 30 Jan 2021 02:30:08 +0000
-References: <20210127130829.4026-1-bongsu.jeon@samsung.com>
-In-Reply-To: <20210127130829.4026-1-bongsu.jeon@samsung.com>
-To:     Bongsu Jeon <bongsu.jeon2@gmail.com>
-Cc:     kuba@kernel.org, shuah@kernel.org, krzk@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-nfc@lists.01.org, linux-kselftest@vger.kernel.org,
-        bongsu.jeon@samsung.com
+        id S232138AbhA3KGG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 30 Jan 2021 05:06:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=xiuAmuPFP+fXOtCnvS
+        Laeyxr7GySFEfy9hd9zq0av8g=; b=IwFIzbbVr3kwmRREuFvbtvx5o3T8VgLA4E
+        pCqTHp8EW8FclPxe8GBPP8yfTbhCpSlFWBs2iWfhkeferURW+owzrCIbAK6diskm
+        rpvUa/yemmyNBDA0AX2Mea4ruc7oKhbt5ClZFeffMl/FC4bzmyOiSXbf1GP86NSu
+        3HPZjUdfw=
+Received: from wengjianfeng.ccdomain.com (unknown [119.137.55.243])
+        by smtp7 (Coremail) with SMTP id C8CowAC3rpZCChVgH7E8LQ--.28897S2;
+        Sat, 30 Jan 2021 15:26:59 +0800 (CST)
+From:   samirweng1979 <samirweng1979@163.com>
+To:     buytenh@wantstofly.org, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        wengjianfeng <wengjianfeng@yulong.com>
+Subject: [PATCH] mwl8k: assign value when defining variables
+Date:   Sat, 30 Jan 2021 15:27:08 +0800
+Message-Id: <20210130072708.12592-1-samirweng1979@163.com>
+X-Mailer: git-send-email 2.15.0.windows.1
+X-CM-TRANSID: C8CowAC3rpZCChVgH7E8LQ--.28897S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrtrW7KF48tr1rJrWUXw1fWFg_yoWfGrgE9r
+        1IvF1agryxJr1jyr4jka13Z3sYyF15XF1ruwsFqrZxGry8Ja90v3ZYkF1ftrZrCF1IvF9r
+        Wrs8J3WYy3W3XjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU5yGQDUUUUU==
+X-Originating-IP: [119.137.55.243]
+X-CM-SenderInfo: pvdpx25zhqwiqzxzqiywtou0bp/1tbiLwMqsVUMW-1YogAAsy
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: wengjianfeng <wengjianfeng@yulong.com>
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+define refilled and then assign value to it, which should do
+at the same time.
 
-On Wed, 27 Jan 2021 22:08:27 +0900 you wrote:
-> From: Bongsu Jeon <bongsu.jeon@samsung.com>
-> 
-> 1/2 is the Virtual NCI device driver.
-> 2/2 is the NCI selftest suite
-> 
-> v4:
->  1/2
->  - flip the condition for the ioctl.
->  - refactor some code.
->  - remove the unused function after refactoring.
-> v3:
->  1/2
->  - change the Kconfig help comment.
->  - remove the mutex init code.
->  - remove the unnecessary mutex(nci_send_mutex).
->  - remove the full_txbuff.
->  - add the code to release skb at error case.
->  - refactor some code.
-> v2:
->  1/2
->  - change the permission of the Virtual NCI device.
->  - add the ioctl to find the nci device index.
->  2/2
->  - add the NCI selftest suite.
-> 
-> [...]
+Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
+---
+ drivers/net/wireless/marvell/mwl8k.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Here is the summary with links:
-  - [net-next,v4,1/2] nfc: Add a virtual nci device driver
-    https://git.kernel.org/netdev/net-next/c/e624e6c3e777
-  - [net-next,v4,2/2] selftests: Add nci suite
-    https://git.kernel.org/netdev/net-next/c/f595cf1242f3
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+diff --git a/drivers/net/wireless/marvell/mwl8k.c b/drivers/net/wireless/marvell/mwl8k.c
+index abf3b02..435ef77 100644
+--- a/drivers/net/wireless/marvell/mwl8k.c
++++ b/drivers/net/wireless/marvell/mwl8k.c
+@@ -1208,9 +1208,8 @@ static int rxq_refill(struct ieee80211_hw *hw, int index, int limit)
+ {
+ 	struct mwl8k_priv *priv = hw->priv;
+ 	struct mwl8k_rx_queue *rxq = priv->rxq + index;
+-	int refilled;
++	int refilled = 0;
+ 
+-	refilled = 0;
+ 	while (rxq->rxd_count < MWL8K_RX_DESCS && limit--) {
+ 		struct sk_buff *skb;
+ 		dma_addr_t addr;
+-- 
+1.9.1
 
