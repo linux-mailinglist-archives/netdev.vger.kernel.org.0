@@ -2,95 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FAB830979B
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 19:45:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69A5C3097C8
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 20:07:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231715AbhA3Spd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 13:45:33 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34708 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229468AbhA3Spd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 30 Jan 2021 13:45:33 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C227264DDE;
-        Sat, 30 Jan 2021 18:44:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612032292;
-        bh=0jgnQkC84KHs6u8jpWz9JTOXLddp2uoNoPY/ozcODMY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=du6n+gRodsJ8JUVePUBo3AGnoOwkht95TJelnKbEUjDc/BUO4ILII8/ActgohvCwT
-         fTdwpolTa2foZg+UgPfAHPFFn6dxNRiacHAIbaTA/ejz+R59LYaZfk0cWFn/kaTzVS
-         l8432as5C86q3v2PJUVLUMpYw+TrN6bgA09NRH+bYXKiilsbdBLHhwrObZ7AZsBq2D
-         ZKFWqLZU8iW52j4qqPi+YWNxQ2I/g8DNPFnTjWg322R4MC8DJZVo3HNimnv8hzfLia
-         Mwns/PWV3tKJ4NwVy9o2jFpVTG3NAgj462QcZsuXydG1LLCUeQ4e9qVDruCXSRivYw
-         FFGsQHE3ZSbMA==
-Date:   Sat, 30 Jan 2021 10:44:50 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Pravin Shelar <pravin.ovn@gmail.com>
-Cc:     Jonas Bonn <jonas@norrbonn.se>,
-        Harald Welte <laforge@gnumonks.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Pravin B Shelar <pbshelar@fb.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: Re: [RFC PATCH 15/16] gtp: add ability to send GTP controls headers
-Message-ID: <20210130104450.00b7ab7d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAOrHB_Cyx9Xf6s63wVFo1mYF7-ULbQD7eZy-_dTCKAUkO0iViw@mail.gmail.com>
-References: <20210123195916.2765481-1-jonas@norrbonn.se>
-        <20210123195916.2765481-16-jonas@norrbonn.se>
-        <bf6de363-8e32-aca0-1803-a041c0f55650@norrbonn.se>
-        <CAOrHB_DFv8_5CJ7GjUHT4qpyJUkgeWyX0KefYaZ-iZkz0UgaAQ@mail.gmail.com>
-        <9b9476d2-186f-e749-f17d-d191c30347e4@norrbonn.se>
-        <CAOrHB_Cyx9Xf6s63wVFo1mYF7-ULbQD7eZy-_dTCKAUkO0iViw@mail.gmail.com>
+        id S232199AbhA3TGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 14:06:38 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:57923 "EHLO
+        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229990AbhA3TGh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jan 2021 14:06:37 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 37AB55C0136;
+        Sat, 30 Jan 2021 14:05:31 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Sat, 30 Jan 2021 14:05:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bernat.ch; h=
+        from:to:cc:subject:date:message-id:mime-version
+        :content-transfer-encoding; s=fm2; bh=p5QLBBi0PqJEVMh4blUcldzbA0
+        CV0zuQArtJpoYs/MU=; b=RT+X4LIvjVslThD4KMgf+j3VKAllgBKT6aMBKeGTy+
+        KiLA6WLDVPRz6NbQHCUNQVLkLJSROuIseCN/APXV/FI04ruxhxpQ0HYLeSpJUe8b
+        N7jZSC8ad6lrYjGY+JJ+O1EldldIRuDebrU8mSqJtkR8hnQt3HIpEByt52gT+VjT
+        9jezYsKLVKZ847C78IBsQ3aDkQ1YVnTLl8o6bd4jUkb+gjUqSBph+M69ytQIlefn
+        PJpSEr1uuCwFL5KQBzt8Ht3xpZ+Z9tDATX6UgRA/zRnOpfDvGqxVgiHgnFpWB2sg
+        sax8PWCQyxDsiAxlYcwQF68ZthA2zJT2iEphMK+FInXQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=p5QLBBi0PqJEVMh4b
+        lUcldzbA0CV0zuQArtJpoYs/MU=; b=ZNhdQ8kHLmA0B2FUoSybFxooE9PJXU5A1
+        KnyF3UeFf4MzdTobRzpcMIq45ekr+whN6EUkHZAKd880gRpZ7CSgrG9Zc5CWhskt
+        nu7MH2wWrnopRi4aTZ13Cw/hWdK5ti5eKrT8MwNcVf+PCENyIPYIXcgKZhqnTkhT
+        JjFOU1kND78odx2kSSdGnBfwJkSdiyMomsZ5nNdwyf4EjIH3VGFLY/r0uSKJ0Gus
+        d+sRL4weQyvmnPtiLGo9nSfOyO49x1hGUt1KyjM4+V6iJsSgPfZA3pB8TsbKeQxD
+        rOjTRHg/UFkCaC3cSSYh/XnOexADQ84qSqByunX1YnBAMJIF4w01A==
+X-ME-Sender: <xms:-q0VYGrGqz5vTuW7C63Ou_geOSJf090r8Cs9oVbTxRU6MfW4z5HWZQ>
+    <xme:-q0VYErTFCEruRijrvsTSXGRrTPIta5MxCp5VXp5dtUU27IS0Tdln51_el5WFJco6
+    B41KQspMTiPTqRpOdA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeeggdduvddvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpeggihhntggvnhht
+    uceuvghrnhgrthcuoehvihhntggvnhhtsegsvghrnhgrthdrtghhqeenucggtffrrghtth
+    gvrhhnpedvieffteeukedtleevfffhvdefgfdtffehtddukeetveffgfevtdefheevffeh
+    gfenucfkphepledtrdejledrudelledruddtudenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpegsvghrnhgrtheslhhufhhfhidrtgig
+X-ME-Proxy: <xmx:-q0VYLPKSrcrFxJdsb5fGjKnK-6IuO0tH5WliJSvLhkHsVFiQlrBJA>
+    <xmx:-q0VYF6M3Jhh_HaTiXXwGo9YHE8Y9IPiLFBADEZkULV4OsDVKKndjQ>
+    <xmx:-q0VYF7872LBx1sOa7a7vxXcQFgOc5IkqjaIg5gHZTmucsVRnMhiHQ>
+    <xmx:-60VYFH3DmfrtlV8wbx1c01slRTcu07vpU3f5YF1Flw80JHxtcLsUA>
+Received: from neo.luffy.cx (lfbn-idf1-1-1264-101.w90-79.abo.wanadoo.fr [90.79.199.101])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 34D0124005A;
+        Sat, 30 Jan 2021 14:05:30 -0500 (EST)
+Received: by neo.luffy.cx (Postfix, from userid 500)
+        id CBAE4D5E; Sat, 30 Jan 2021 20:05:28 +0100 (CET)
+From:   Vincent Bernat <vincent@bernat.ch>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Cc:     Vincent Bernat <vincent@bernat.ch>
+Subject: [PATCH net] docs: networking: swap words in icmp_errors_use_inbound_ifaddr doc
+Date:   Sat, 30 Jan 2021 20:05:18 +0100
+Message-Id: <20210130190518.854806-1-vincent@bernat.ch>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 29 Jan 2021 22:59:06 -0800 Pravin Shelar wrote:
-> On Fri, Jan 29, 2021 at 6:08 AM Jonas Bonn <jonas@norrbonn.se> wrote:
-> > On 28/01/2021 22:29, Pravin Shelar wrote:  
-> > > Receive path: LWT extracts tunnel metadata into tunnel-metadata
-> > > struct. This object has 5-tuple info from outer header and tunnel key.
-> > > When there is presence of extension header there is no way to store
-> > > the info standard tunnel-metadata object. That is when the optional
-> > > section of tunnel-metadata comes in the play.
-> > > As you can see the packet data from GTP header onwards is still pushed
-> > > to the device, so consumers of LWT can look at tunnel-metadata and
-> > > make sense of the inner packet that is received on the device.
-> > > OVS does exactly the same. When it receives a GTP packet with optional
-> > > metadata, it looks at flags and parses the inner packet and extension
-> > > header accordingly.  
-> >
-> > Ah, ok, I see.  So you are pulling _half_ of the GTP header off the
-> > packet but leaving the optional GTP extension headers in place if they
-> > exist.  So what OVS receives is a packet with metadata indicating
-> > whether or not it begins with these extension headers or whether it
-> > begins with an IP header.
-> >
-> > So OVS might need to begin by pulling parts of the packet in order to
-> > get to the inner IP packet.  In that case, why don't you just leave the
-> > _entire_ GTP header in place and let OVS work from that?  The header
-> > contains exactly the data you've copied to the metadata struct PLUS it
-> > has the incoming TEID value that you really should be validating inner
-> > IP against.
-> >  
-> 
-> Following are the reasons for extracting the header and populating metadata.
-> 1. That is the design used by other tunneling protocols
-> implementations for handling optional headers. We need to have a
-> consistent model across all tunnel devices for upper layers.
+Signed-off-by: Vincent Bernat <vincent@bernat.ch>
+---
+ Documentation/networking/ip-sysctl.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Could you clarify with some examples? This does not match intuition, 
-I must be missing something.
-
-> 2. GTP module is parsing the UDP and GTP header. It would be wasteful
-> to repeat the same process in upper layers.
-> 3. TIED is part of tunnel metadata, it is already used to validating
-> inner packets. But TIED is not alone to handle packets with extended
-> header.
-> 
-> I am fine with processing the entire header in GTP but in case of 'end
-> marker' there is no data left after pulling entire GTP header. Thats
-> why I took this path.
+diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+index dd2b12a32b73..48d9db9151ac 100644
+--- a/Documentation/networking/ip-sysctl.rst
++++ b/Documentation/networking/ip-sysctl.rst
+@@ -1196,7 +1196,7 @@ icmp_errors_use_inbound_ifaddr - BOOLEAN
+ 
+ 	If non-zero, the message will be sent with the primary address of
+ 	the interface that received the packet that caused the icmp error.
+-	This is the behaviour network many administrators will expect from
++	This is the behaviour many network administrators will expect from
+ 	a router. And it can make debugging complicated network layouts
+ 	much easier.
+ 
+-- 
+2.30.0
 
