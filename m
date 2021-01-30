@@ -2,57 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BC2130937A
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 10:36:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FB2E3093B8
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 10:51:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231754AbhA3JgC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 04:36:02 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34392 "EHLO mail.kernel.org"
+        id S231228AbhA3Juo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 04:50:44 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33692 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233510AbhA3DUm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Jan 2021 22:20:42 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E6A9464E0E;
-        Sat, 30 Jan 2021 02:39:07 +0000 (UTC)
+        id S233305AbhA3DCH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 Jan 2021 22:02:07 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1F3E764D9F;
+        Sat, 30 Jan 2021 03:01:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611974348;
-        bh=Xa3aXdkH6VcjkQv2mRzeHTVU3FePrWxYumhPtvDn8zo=;
+        s=k20201202; t=1611975675;
+        bh=1g7TFqM32r+X2G4XFMePCA3nPEQwqjwlXbzXGKcz2Fg=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CuA7saw/NDT+jltBVLbBOTtilmjJ0UnnOPSNhIp0vShR5tTLtelQ/Ci1Y9jrcJzjk
-         3FDxe+ykvXfRDbwSZtUYnXtiMKt7H4HVivJJqrTYJLfVxJhJmmk9QLMSNTtOVqUTDb
-         dZyybRVqcd4QDuNd46UIFCQs37Gnk5Wg+w4OCZp/BECSGKKr2Rsk1VOvwYaiqlQywb
-         VzKklQrRbxLRmDiDCPqKf/0JADwvBNgIVZ5Q1Jh2qc26DZyViIudB0FLkI9srNwS0N
-         JVXIyfhG944QWXOaymGasP3yjFfN1BYSqkbDq7WrhqUa8KGo01/23gOQAkgrkSry62
-         RWTV4TxpCVpcg==
-Date:   Fri, 29 Jan 2021 18:39:07 -0800
+        b=Fpstn8GumhB9aN2VYNzcfMHIETojhLD/lUsuuTb3UIhzrbqwoZIrnh14s4eqaFjZG
+         oh3ragFnct6W0/owoHZBHl8UMx1haRVPyMSNWuV3w7bTkGJseMGTsipAS1lexGeY3z
+         9j+AywEh1D2VFpQJdZSVTN7TctmGm379C7fb5Tq+0rZmIH0wGnw8nxX9BkbfTWkqw2
+         E/2JsptAfTpqBqUD+Xiq1PEOKT/HEPNoIHZR8CvJZHEXuSuSTyW9q8hH4qzBbS3fpb
+         t/dYSZwccpHCfjvzpxFaYikdcJpv5Gm6bvfR8AirRmvFJkZwJB0xnhnMVa+ZM+nyhf
+         PPzTkGlGp4hPw==
+Date:   Fri, 29 Jan 2021 19:01:14 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alexander Lobakin <alobakin@pm.me>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        David Rientjes <rientjes@google.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        linux-rdma@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH v2 net-next 3/4] net: introduce common
- dev_page_is_reserved()
-Message-ID: <20210129183907.2ae5ca3d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210127201031.98544-4-alobakin@pm.me>
-References: <20210127201031.98544-1-alobakin@pm.me>
-        <20210127201031.98544-4-alobakin@pm.me>
+To:     <rasmus.villemoes@prevas.dk>, <andrew@lunn.ch>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>, <jiri@resnulli.us>,
+        <ivecera@redhat.com>, <davem@davemloft.net>, <roopa@nvidia.com>,
+        <nikolay@nvidia.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <bridge@lists.linux-foundation.org>
+Subject: Re: [PATCH net-next v2 0/4] bridge: mrp: Extend br_mrp_switchdev_*
+Message-ID: <20210129190114.3f5b6b44@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210127205241.2864728-1-horatiu.vultur@microchip.com>
+References: <20210127205241.2864728-1-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -60,17 +42,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 27 Jan 2021 20:11:23 +0000 Alexander Lobakin wrote:
-> + * dev_page_is_reserved - check whether a page can be reused for network Rx
-> + * @page: the page to test
-> + *
-> + * A page shouldn't be considered for reusing/recycling if it was allocated
-> + * under memory pressure or at a distant memory node.
-> + *
-> + * Returns true if this page should be returned to page allocator, false
-> + * otherwise.
-> + */
-> +static inline bool dev_page_is_reserved(const struct page *page)
+On Wed, 27 Jan 2021 21:52:37 +0100 Horatiu Vultur wrote:
+> This patch series extends MRP switchdev to allow the SW to have a better
+> understanding if the HW can implement the MRP functionality or it needs
+> to help the HW to run it. There are 3 cases:
+> - when HW can't implement at all the functionality.
+> - when HW can implement a part of the functionality but needs the SW
+>   implement the rest. For example if it can't detect when it stops
+>   receiving MRP Test frames but it can copy the MRP frames to CPU to
+>   allow the SW to determine this.  Another example is generating the MRP
+>   Test frames. If HW can't do that then the SW is used as backup.
+> - when HW can implement completely the functionality.
+> 
+> So, initially the SW tries to offload the entire functionality in HW, if
+> that fails it tries offload parts of the functionality in HW and use the
+> SW as helper and if also this fails then MRP can't run on this HW.
+> 
+> v2:
+>  - fix typos in comments and in commit messages
+>  - remove some of the comments
+>  - move repeated code in helper function
+>  - fix issue when deleting a node when sw_backup was true
 
-Am I the only one who feels like "reusable" is a better term than
-"reserved".
+Folks who were involved in previous MRP conversations - does this look
+good to you? Anyone planning to test?
