@@ -2,39 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 192063092E3
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 10:10:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40DAC3092E7
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 10:10:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230248AbhA3JI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 04:08:26 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38732 "EHLO mail.kernel.org"
+        id S230368AbhA3JJX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 04:09:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39218 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233876AbhA3JIA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 30 Jan 2021 04:08:00 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3BD7864E0B;
-        Sat, 30 Jan 2021 06:44:08 +0000 (UTC)
+        id S233233AbhA3JI5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 30 Jan 2021 04:08:57 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 55FE564E15;
+        Sat, 30 Jan 2021 06:48:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611989048;
-        bh=h3a5XHf6SXv8Y7XYccpcBRPS4MT74tUYZNdF8Z39wq4=;
+        s=k20201202; t=1611989285;
+        bh=SQJjNA79+nqIdvoNyhPXB2HwtA3pYRZWMBc9MZuXOEo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LuuTbv4bm7BG2uahPpTcjUMQtPZO5pAgc9ddsOsOXlGUlWUEYPhyCx9EOnbRwepiR
-         WDwaF4zxxXElvuYqU/LBaL96Wlf+Tz+XHcHSXs/neU2KW6uXX5g6dbFH5JvCgvlr9K
-         DZf5EzU4rQ/2b0l+C5Vbx37o1HC5Xf6OWl8ggy+VuG5p78OgQBMkdg+As0ZQqeY2FH
-         Z3QeozUYH1LHowxvqt1W9dbHjneP54T0qjaaiphFQBk/iRs5R6/wjge6BDgKkGlqTp
-         nwz+gRgBinshjoZkz1v5wU4N2XrKylZX0kMX77B1bPlBBoZxMl7xmlcTetpFpMMSy0
-         9iDSy1LpIzTmA==
-Date:   Fri, 29 Jan 2021 22:44:07 -0800
+        b=TceFGD34ivYu81kcMQyrhKFfRf8wLXKQdHV07aH5NyHZoyJzuHE7BNHWROAVYyi4u
+         Eh5BBvGJK4Ty8KgT08FWaMnIW0Nzhp6mU2ysZzPSBhKcdUzlsH9BtElhsV3owxh2gs
+         tfYHk3bNC2U+RRcMaGH/86T3MUN9PG9u69YRiQui32kRiU1KvdapDO/2OBPY1UEnDW
+         yslJJa6JLmrHKzq7iXCCfy/MqRUY8HhMQDkIa8/07NZftPy0xJWS7WfiSNWzJWP/ul
+         OCkiBxBAqs0HxNA1plLJlc1cZ+hD2j4viqgYi2wkq4AqOckw59Bel5yZbmgBorxClm
+         oHnmOo3kyziRQ==
+Date:   Fri, 29 Jan 2021 22:48:04 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, Jacob Keller <jacob.e.keller@intel.com>,
-        netdev@vger.kernel.org, sassmann@redhat.com,
-        Tony Brelinski <tonyx.brelinski@intel.com>
-Subject: Re: [PATCH net-next 03/15] ice: read security revision to
- ice_nvm_info and ice_orom_info
-Message-ID: <20210129224407.0529a802@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210129004332.3004826-4-anthony.l.nguyen@intel.com>
-References: <20210129004332.3004826-1-anthony.l.nguyen@intel.com>
-        <20210129004332.3004826-4-anthony.l.nguyen@intel.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next] net: proc: speedup /proc/net/netstat
+Message-ID: <20210129224804.6cb4e348@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210128162145.1703601-1-eric.dumazet@gmail.com>
+References: <20210128162145.1703601-1-eric.dumazet@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -42,42 +40,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 28 Jan 2021 16:43:20 -0800 Tony Nguyen wrote:
-> From: Jacob Keller <jacob.e.keller@intel.com>
+On Thu, 28 Jan 2021 08:21:45 -0800 Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
 > 
-> The main NVM module and the Option ROM module contain a security
-> revision in their CSS header. This security revision is used to
-> determine whether or not the signed module should be loaded at bootup.
-> If the module security revision is lower than the associated minimum
-> security revision, it will not be loaded.
+> Use cache friendly helpers to better use cpu caches
+> while reading /proc/net/netstat
 > 
-> The CSS header does not have a module id associated with it, and thus
-> requires flat NVM reads in order to access it. To do this, take
-> advantage of the cached bank information. Introduce a new
-> "ice_read_flash_module" function that takes the module and bank to read.
-> Implement both ice_read_active_nvm_module and
-> ice_read_active_orom_module. These functions will use the cached values
-> to determine the active bank and calculate the appropriate offset.
+> Tested on a platform with 256 threads (AMD Rome)
 > 
-> Using these new access functions, extract the security revision for both
-> the main NVM bank and the Option ROM into the associated info structure.
+> Before: 305 usec spent in netstat_seq_show()
+> After: 130 usec spent in netstat_seq_show()
 > 
-> Add the security revisions to the devlink info output. Report the main
-> NVM bank security revision as "fw.mgmt.srev". Report the Option ROM
-> security revision as "fw.undi.srev".
-> 
-> A future patch will add the associated minimum security revisions as
-> devlink flash parameters.
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
 
-This needs a wider discussion. Hopefully we can agree on a reasonably
-uniform way of handling this across vendors. Having to fish out
-_particular_ version keys out and then target _particular_ parameters
-for each vendor is not great.
+The bot just doesn't like to reply to you :) If it happens
+again I'll poke Konstantin. Maybe third time is the charm.
 
-First off - is there a standard around the version management that we
-can base the interface on? What about key management? There's gotta be
-a way of revoking keys too, right?
-
-
-I'd recommend separating the srev patches out of the series so the
-other ones can land.
+Anyway, applied a few hours ago, thank you!
