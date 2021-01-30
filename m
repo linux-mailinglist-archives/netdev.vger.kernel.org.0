@@ -2,81 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE54B3091A9
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 04:24:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F0213091AF
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 04:31:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233254AbhA3DXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jan 2021 22:23:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34696 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231716AbhA3DLf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 22:11:35 -0500
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C259C061793
-        for <netdev@vger.kernel.org>; Fri, 29 Jan 2021 18:41:23 -0800 (PST)
-Received: by mail-oi1-x231.google.com with SMTP id p5so12145051oif.7
-        for <netdev@vger.kernel.org>; Fri, 29 Jan 2021 18:41:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=EerNCF/ZN+3JAZY/8jvdgN5YvG+O6/RrznIcMvrR7X0=;
-        b=tpRB6ziKPPAaZWk+8H7Q2tGDeAXL2vF8UT1oe6x0Ku0nBKxMLzXmNVBe0MMMu4JniN
-         VJcC/LPGMs2qJ7qSCsHZPe9EhXbcKptWmfCS2t4mabaMwvKZYeJ34uoT0QzTvU7Ke3J5
-         J3vy9EPk5ht95tv8gDkR5J+1f526DvxP7Nti6QjABuvK09VppE2msTYvm8C7jPIqIwiX
-         EvdKMiZtrafPR1jJ8Um1M+7njXXnScK2Seh92uc7I3fAhhn7MQfQXTX8pxq/uiwD5nvv
-         UaCt9HTx10Fvyu9lcuHLnHrk0ZvbNhm8Zvd4hcPNZqAv7M0EXSsAc8yXPq+SEEKpGnLf
-         V3Ew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=EerNCF/ZN+3JAZY/8jvdgN5YvG+O6/RrznIcMvrR7X0=;
-        b=GiL7lrGeFcYKiy0lMVbC1spAgaMzHdiT6pzc7UxIeiOJ1fQ7tePOQZRXd83+ODLsLo
-         J1JhYeKziBPX4cckvogNzpZu2ffBYHJgsn4ZVhBmDS4DUd/frFMngYnr3LOUVtFKn7+v
-         22OdseoKAz2B015V8/11TTOcjOfw0zCU0WkOf0xe/2Ih5G2JEe6XQ4/hblI8DKJqIqEq
-         JGVd46LSI0C49RLvlC85XcV0jsb/0LK8zqGipwyBYDpbI2pHdm48oV42er3UP1zOXMAl
-         AKnifdQDXzCsWSAUkEuRBHcJnoW7HNgyWTXKyhjwJRiEGSqIx0gr0L+EsMz1WRsFEupC
-         tmpg==
-X-Gm-Message-State: AOAM531miomzmfvkV4R3pc1yk9ZJHPCTDLN4ZOc6hvgRR02Gr4+4j3Gj
-        HaTc5W/9LLQxgVIXfDb0lJ9zOsesYdPzvZo0tZuDhveChusWOw==
-X-Google-Smtp-Source: ABdhPJyZZGpC7LanJHA9q3W5fCyNCnhvg+Wk5uieh5yIISW77SyQFO5iKXYUmcPakQLww/Dcd6Ig4Nh1GKVVLqsdo+w=
-X-Received: by 2002:aca:3150:: with SMTP id x77mr4426385oix.52.1611974482350;
- Fri, 29 Jan 2021 18:41:22 -0800 (PST)
+        id S233500AbhA3Dbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jan 2021 22:31:31 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34970 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233318AbhA3D3E (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 Jan 2021 22:29:04 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0694F64DDC;
+        Sat, 30 Jan 2021 03:27:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611977271;
+        bh=+T+HEriJ5zyZvGjDbX0DF9md9wN7rBRcxsaD5KqWobs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Xt0Fn3FOiBKbdQjW5aB1hpt+L8qi7xj55fCXQQWTNHol5zsHPLzpOkMsSK8KlAC5v
+         ENPasNAifBPrBtwNOsFkbFvsMiSAjiVHzrU+IhNi66jf2+MtPbtNRtjs/tBRDY0O12
+         q1SUatZ2bk8QGfdtZPi/btFav2hlJZxeU3qUm0YHuhST50pOpTYYf5fjCbS4kPy7Z0
+         RusJZirVdibxLJ1eHoOrqYUd0mJsnbWDbvZqVmEihTUzk+VpufI4RevSLLxNA7M05d
+         DdE97iu1eqqrIX16Y/o0+6/FI70+soWh+vlFofry7Kls6BPaYYou4V37F5A0/WncCd
+         Ub1QlX46L0YJA==
+Date:   Fri, 29 Jan 2021 19:27:50 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Pierre Cheynier <p.cheynier@criteo.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        intel-wired-lan@lists.osuosl.org
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [5.10] i40e/udp_tunnel: RTNL: assertion failed at
+ net/ipv4/udp_tunnel_nic.c
+Message-ID: <20210129192750.7b2d8b25@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <DB8PR04MB6460F61AE67E17CC9189D067EAB99@DB8PR04MB6460.eurprd04.prod.outlook.com>
+References: <DB8PR04MB6460F61AE67E17CC9189D067EAB99@DB8PR04MB6460.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-From:   Robert Hancock <hancockrwd@gmail.com>
-Date:   Fri, 29 Jan 2021 20:41:11 -0600
-Message-ID: <CADLC3L0vBXwLLdqKxox9E-K4dSH07ZhHZ5u_kaANb=16jon0zg@mail.gmail.com>
-Subject: Patch for stable: iwlwifi: provide gso_type to GSO packets
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Figured I would poke someone to add this patch to the stable queue - I
-don't see it in
-https://patchwork.kernel.org/bundle/netdev/stable/?state=* right now.
-This patch is reported to fix a severe upload speed regression in many
-Intel wireless adapters existing since kernel 5.9, as described in
-https://bugzilla.kernel.org/show_bug.cgi?id=209913
+On Fri, 29 Jan 2021 17:44:12 +0000 Pierre Cheynier wrote:
+> Dear list,
+> 
+> I noticed this assertion error recently after upgrading to 5.10.x (latest trial being 5.10.11).
+> Coming indirectly with my usage of the vxlan module, the assertion output will probably give you the information required to guess my hardware context (i40e).
+> 
+> [    8.842462] ------------[ cut here ]------------
+> [    8.847081] RTNL: assertion failed at net/ipv4/udp_tunnel_nic.c (557)
+> [    8.853541] WARNING: CPU: 0 PID: 15 at net/ipv4/udp_tunnel_nic.c:557 __udp_tunnel_nic_reset_ntf+0xde/0xf0 [udp_tunnel]
 
-commit 81a86e1bd8e7060ebba1718b284d54f1238e9bf9
-Author: Eric Dumazet <edumazet@google.com>
-Date:   Mon Jan 25 07:09:49 2021 -0800
+> [    8.910283] RIP: 0010:__udp_tunnel_nic_reset_ntf+0xde/0xf0 [udp_tunnel]
 
-    iwlwifi: provide gso_type to GSO packets
+> [    9.014499] Call Trace:
+> [    9.016968]  i40e_setup_pf_switch+0x3e8/0x5e0 [i40e]
+> [    9.021949]  i40e_probe.part.0.cold+0x87a/0x11f2 [i40e]
+> [    9.065385]  local_pci_probe+0x42/0x80
 
-    net/core/tso.c got recent support for USO, and this broke iwlfifi
-    because the driver implemented a limited form of GSO.
+Thanks for the report!
 
-    Providing ->gso_type allows for skb_is_gso_tcp() to provide
-    a correct result.
+I must have missed that i40e_setup_pf_switch() is called from the probe
+path.
 
-    Fixes: 3d5b459ba0e3 ("net: tso: add UDP segmentation support")
-    Signed-off-by: Eric Dumazet <edumazet@google.com>
-    Reported-by: Ben Greear <greearb@candelatech.com>
-    Tested-by: Ben Greear <greearb@candelatech.com>
-    Cc: Luca Coelho <luciano.coelho@intel.com>
-    Cc: Johannes Berg <johannes@sipsolutions.net>
-    Link: https://bugzilla.kernel.org/show_bug.cgi?id=209913
-    Link: https://lore.kernel.org/r/20210125150949.619309-1-eric.dumazet@gmail.com
-    Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Intel folks, does the UDP port table get reset only when reinit is true?
+So can this be the fix?
+
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index 521ea9df38d5..4f3e7201ec1e 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -14269,7 +14269,8 @@ static int i40e_setup_pf_switch(struct i40e_pf *pf, bool reinit)
+        i40e_ptp_init(pf);
+ 
+        /* repopulate tunnel port filters */
+-       udp_tunnel_nic_reset_ntf(pf->vsi[pf->lan_vsi]->netdev);
++       if (!reinit)
++               udp_tunnel_nic_reset_ntf(pf->vsi[pf->lan_vsi]->netdev);
+ 
+        return ret;
+ }
+
+Or do we need to exclude the first call like this?
+
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index 521ea9df38d5..823c054f4c23 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -14269,7 +14269,8 @@ static int i40e_setup_pf_switch(struct i40e_pf *pf, bool reinit)
+        i40e_ptp_init(pf);
+ 
+        /* repopulate tunnel port filters */
+-       udp_tunnel_nic_reset_ntf(pf->vsi[pf->lan_vsi]->netdev);
++       if (pf->lan_vsi != I40E_NO_VSI)
++               udp_tunnel_nic_reset_ntf(pf->vsi[pf->lan_vsi]->netdev);
+ 
+        return ret;
+ }
