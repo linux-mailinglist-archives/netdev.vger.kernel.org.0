@@ -2,97 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FE31309F38
-	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 23:27:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07D4430A1E5
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 07:25:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229607AbhAaW12 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Jan 2021 17:27:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47242 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229502AbhAaWVi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jan 2021 17:21:38 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF265C06174A;
-        Sun, 31 Jan 2021 14:20:56 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id df22so784039edb.1;
-        Sun, 31 Jan 2021 14:20:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=DHUUmMepH2teJF00B27CJvMsSr8ShoqZntH4j9eDohk=;
-        b=SPtZ0mXppVAiASgxZ9VPs22urbjqMruMKM6c7WVxL4w7U44C2hRHzsPqx1Td8iOxDT
-         1up/tUYCFxZVnY9qnyKxZzoHeI6SpegEmHD0e+DY0Ts8O0K5vD3cuNm8Q9Efd5D/YhNW
-         hDc4yUrNGjYqYoeigXYeEznVn/snNZAM54PYuEyTNn6harTYZEPsg+wwss9YK0XKDSUM
-         NYUWrN4mu+G8bVzTPu9f3152D/FRT0oyx11V/IsaLwQpyYYnwjgEZdBSUN5GWpRzIyJK
-         CDtqR/h7J70Gh8+AEQf6Hr0tbBS63gG9Qp723SKWuOTqRJZ71pART65LkzdxmAtzvKtF
-         6ZuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DHUUmMepH2teJF00B27CJvMsSr8ShoqZntH4j9eDohk=;
-        b=baRvqL3ncgtBH4gEUKf2cMxmo8lGje2va0DR5d+wPfiif4vYkJONTnuE5Prszvc4wK
-         GDD3ZKRuYvR6RCrEt9oeetW/bjT4trcoI5t92jqiSr81rjevjqMGsWm0dSDHx9UBhwi/
-         9Qlgg/Hh/eDwoQT2YYVePcJlbyZDJuNTVmsKWUyejV9qsGKcFKm7fysDI7FTG6yxA//4
-         AeVzBvwazXZsBDqNlN3nJEdBufKHWg9i4KikulE6BwxaV+HrxLiWJWD/YNg8Xv9mip1J
-         Lxlr/k07p+A3hh2ZRzsKCRe5Sa7WtKerQstH12RCSZtbYTlnMlDeqp7iUDiEJYOEFBDR
-         ADOQ==
-X-Gm-Message-State: AOAM533MVr+HV7sYG5MVMoDEttPgWsUFPeLs3lc2KPSt/4zAtJjx7QrP
-        LsKYEJ2jK58LSnDqnCksX+o=
-X-Google-Smtp-Source: ABdhPJxf7CLPIJBZSBEiHhiSxVCyrbX3/bOBnveY8+nIRQUt/LoweLkjmk/GEAS3+MbrqUbpZICfzA==
-X-Received: by 2002:aa7:d399:: with SMTP id x25mr2179324edq.237.1612131655585;
-        Sun, 31 Jan 2021 14:20:55 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id z2sm7072566ejd.44.2021.01.31.14.20.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 31 Jan 2021 14:20:54 -0800 (PST)
-Date:   Mon, 1 Feb 2021 00:20:53 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Tobias Waldekranz <tobias@waldekranz.com>
-Subject: Re: [PATCH net] net: dsa: mv88e6xxx: override existent unicast
- portvec in port_fdb_add
-Message-ID: <CA+h21hrn6q8NAdma3Djov82sNzHTz_tF480Nqpw-A+JLv_TYcQ@mail.gmail.com>
-X-TUID: ujGFqEzNl8hx
-References: <20210130134334.10243-1-dqfext@gmail.com>
- <20210131003929.2rlr6pv5fu7vfldd@skbuf>
- <CALW65jYF5jpm+wQQ9yPZPa_gCSwr4gWiPZ35rBXiACmzCbABLA@mail.gmail.com>
+        id S231817AbhBAGUc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 01:20:32 -0500
+Received: from [20.39.40.203] ([20.39.40.203]:50377 "EHLO optinix.in"
+        rhost-flags-FAIL-FAIL-OK-OK) by vger.kernel.org with ESMTP
+        id S231779AbhBAGF2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Feb 2021 01:05:28 -0500
+dkim-signature: v=1; a=rsa-sha256; d=digitalsol.in; s=dkim;
+        c=relaxed/relaxed; q=dns/txt; h=From:Reply-To:Subject:Date:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding;
+        bh=wK2neTcOXNiSQ+RBxrnFed+mRrGUU/ndLGEgvo8IMCc=;
+        b=EVXY7Emkj77Ml73WwgHKj6FRSsvpdu+N32P3aAtU9vobJiJ1nIiO4iER3hFlfKkf7JXchtT5QiVBo7vPhBQoxVdxwy1blNyEuSRLQCqFv29IWawnQd6kTBdX44eww6pl4Kbj6FfLtJ/2Z/+qJMzPeK8IFebk9l+1c7rcQ6LW6+0Tp8r21YX+z8mUYJVLMYK34liBibLnUEzDkkb2n6JPurHbfXAHjGYzIgZOw72AhqTvIWfsFt/d/krbJj
+        ttanJPzrfEzkTJX1rinrbUU8Kr8R3QMEgomRGlWlVPCwq2oT/UR0tsfIOAKyNK4mB1pifFTaUZhtEch3hz5+c9Nf/ChQ==
+Received: from User (Unknown [52.231.31.5])
+        by optinix.in with ESMTP
+        ; Sat, 30 Jan 2021 09:12:40 +0000
+Message-ID: <3FE7D898-3786-406C-B792-9BBDD0B5C026@optinix.in>
+Reply-To: <ms.reem@yandex.com>
+From:   "Ms. Reem" <support@digitalsol.in>
+Subject: Re:read
+Date:   Sat, 30 Jan 2021 09:12:38 -0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALW65jYF5jpm+wQQ9yPZPa_gCSwr4gWiPZ35rBXiACmzCbABLA@mail.gmail.com>
+Content-Type: text/plain;
+        charset="Windows-1251"
+Content-Transfer-Encoding: 7bit
+X-Priority: 3
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook Express 6.00.2600.0000
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2600.0000
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 31, 2021 at 09:13:15AM +0800, DENG Qingfang wrote:
-> This bug is exposed when I try your patch series on kernel 5.4
-> https://lore.kernel.org/netdev/20210106095136.224739-1-olteanv@gmail.com/
-> https://lore.kernel.org/netdev/20210116012515.3152-1-tobias@waldekranz.com/
->
-> Without this patch, DSA will add a new port bit to the existing
-> portvec when a client moves to the software part of a bridge. When it
-> moves away, DSA will clear the port bit but the existing one will
-> remain static. This results in connection issues when the client moves
-> to a different port of the switch, and the kernel log below.
->
-> mv88e6085 f1072004.mdio-mii:00: ATU member violation for
-> xx:xx:xx:xx:xx:xx portvec dc00 spid 0
+Hello,
 
-Ah, ok, DSA adds an FDB entry behind the user's back and it relies upon
-the driver behavior being 'override'. A bit subtle, though it gives one
-good reason against someone suggesting "why don't you just refuse adding
-the new entry instead of overriding, like the software bridge does".
-Probably the refusal of overwriting an entry is what needs to be handled
-at upper layers, we do need to be able to override from DSA.
-I had a quick look through our other drivers and it seems that all of
-them are happy to override an existing FDB entry (or at least the
-software part is).
+My name is Ms. Reem Ebrahim Al-Hashimi, I am the "Minister of state
+and Petroleum" also "Minister of State for International Cooperation"
+in UAE. I write to you on behalf of my other "three (3) colleagues"
+who has approved me to solicit for your "partnership in claiming of
+{us$47=Million}" from a Financial Home in Cambodia on their behalf and
+for our "Mutual Benefits".
+
+The Fund {us$47=Million} is our share from the (over-invoiced) Oil/Gas
+deal with Cambodian/Vietnam Government within 2013/2014, however, we
+don't want our government to know about the fund. If this proposal
+interests you, let me know, by sending me an email and I will send to
+you detailed information on how this business would be successfully
+transacted. Be informed that nobody knows about the secret of this
+fund except us, and we know how to carry out the entire transaction.
+So I am compelled to ask, that you will stand on our behalf and
+receive this fund into any account that is solely controlled by you.
+
+We will compensate you with 15% of the total amount involved as
+gratification for being our partner in this transaction. Reply to:
+ms.reem@yandex.com
+
+Regards,
+Ms. Reem.
+
