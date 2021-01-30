@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DD883091FC
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 06:21:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2A49309249
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 06:45:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233466AbhA3FMp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 00:12:45 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40058 "EHLO mail.kernel.org"
+        id S233844AbhA3Fl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 00:41:57 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41930 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230114AbhA3FJs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 30 Jan 2021 00:09:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0F93764DED;
-        Sat, 30 Jan 2021 05:09:03 +0000 (UTC)
+        id S233826AbhA3FiY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 30 Jan 2021 00:38:24 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 98D0164DDE;
+        Sat, 30 Jan 2021 05:37:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611983343;
-        bh=KrBnHhCv6L/Z/737pxkxpEHCIgmma3tV2kFZnfox+pU=;
+        s=k20201202; t=1611985063;
+        bh=O7gUiLmThPz3xqnmNCVRJznYl1bUntj77i5W4NKUpg0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SXQVs/KhvBVCTdZz3yT31Oda1q4LIhQpHAt8kXuD2wrzt+zOEzkzL8UIkKIOHnBcf
-         pkc8yTJmuhH74iTenprSwSLCEx9kdJFAo5oEXAeRJHJZiL2suQjelqJ3XnrbUGXM5H
-         sbUhoo8ojQ+6CumD9qVfQEx1wHfHT3rBh8UUNl1OpNCGEjH9ddQ+xB9DwXiqz1CP/B
-         sS132kyac9dMQgFk/mz2Onp/Dt9VZHj4lWBDNgdNGSMRUNu2Qaw3SXNjZzhUiTxyYs
-         V9e4p900u5ZtS2tSWD6FF30w8/Yzk0Ekm0q9bFHaGiKJiHfaR9NwjQrZjpgeLwEz8Z
-         NiIgwcVzuXsIQ==
-Date:   Fri, 29 Jan 2021 21:09:02 -0800
+        b=H+WWnduVgWEoI/Y94mLSkT9rzX342RY/50HH5Hpc7idI1m+eOeynVjQNWFddUHtwt
+         Nun1L3YBvUelcBUKJ2GhvRGtnkgAL+bWK4WeFUrNkVuKapJRM7JlzJo8AhwT17j/SN
+         h41lzk2KRqrxz2YgONx3xYiJyRl2T8tUAlWTLMQ910f+72unp3ZEuLJXQkgdJKPZwP
+         Z8SN7y0AypGI/WX7cX9Ehe1x/Pdqu8wBu3OIsFsceYlA9weuzQOwZHo0gLin/uZy0g
+         77ctOhwKzGgZ5Mi/nMSW8oSVDX8N2AYRsebjSNCjzhKu+yp0Y7BW+bhdUaURFnRomp
+         SidOnHWo/yXfw==
+Date:   Fri, 29 Jan 2021 21:37:42 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ronak Doshi <doshir@vmware.com>
-Cc:     <netdev@vger.kernel.org>, Petr Vandrovec <petr@vmware.com>,
-        "maintainer:VMWARE VMXNET3 ETHERNET DRIVER" <pv-drivers@vmware.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v6 net-next] vmxnet3: Remove buf_info from device
- accessible structures
-Message-ID: <20210129210902.254a8e83@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210128193835.1201-1-doshir@vmware.com>
-References: <20210128193835.1201-1-doshir@vmware.com>
+To:     Nikolay Aleksandrov <nikolay@nvidia.com>
+Cc:     Nikolay Aleksandrov <razor@blackwall.org>,
+        <netdev@vger.kernel.org>, <roopa@nvidia.com>,
+        <bridge@lists.linux-foundation.org>, <davem@davemloft.net>
+Subject: Re: [PATCH net-next 0/2] net: bridge: drop hosts limit sysfs and
+ add a comment
+Message-ID: <20210129213742.7da125ee@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <e0c38c2a-3e72-2ee0-c48d-900e63227528@nvidia.com>
+References: <20210129115142.188455-1-razor@blackwall.org>
+        <e0c38c2a-3e72-2ee0-c48d-900e63227528@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -42,22 +42,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 28 Jan 2021 11:38:34 -0800 Ronak Doshi wrote:
-> buf_info structures in RX & TX queues are private driver data that
-> do not need to be visible to the device.  Although there is physical
-> address and length in the queue descriptor that points to these
-> structures, their layout is not standardized, and device never looks
-> at them.
+On Fri, 29 Jan 2021 13:55:24 +0200 Nikolay Aleksandrov wrote:
+> On 29/01/2021 13:51, Nikolay Aleksandrov wrote:
+> > From: Nikolay Aleksandrov <nikolay@nvidia.com>
+> > 
+> > Hi,
+> > As recently discussed[1] we should stop extending the bridge sysfs
+> > support for new options and move to using netlink only, so patch 01
+> > drops the recently added hosts limit sysfs support which is still in
+> > net-next only and patch 02 adds comments in br_sysfs_br/if.c to warn
+> > against adding new sysfs options.
+> > 
+> > Thanks,
+> >  Nik
+> > 
+> > Nikolay Aleksandrov (2):
+> >   net: bridge: mcast: drop hosts limit sysfs support
+> >   net: bridge: add warning comments to avoid extending sysfs
+> > 
+> >  net/bridge/br_sysfs_br.c |  4 ++++
+> >  net/bridge/br_sysfs_if.c | 30 ++++--------------------------
+> >  2 files changed, 8 insertions(+), 26 deletions(-)
+> >   
 > 
-> So lets allocate these structures in non-DMA-able memory, and fill
-> physical address as all-ones and length as zero in the queue
-> descriptor.
+> Oops :) the [1] addendum should be:
 > 
-> That should alleviate worries brought by Martin Radev in
-> https://lists.osuosl.org/pipermail/intel-wired-lan/Week-of-Mon-20210104/022829.html
-> that malicious vmxnet3 device could subvert SVM/TDX guarantees.
+> [1] https://lore.kernel.org/netdev/20210128105201.7c6bed82@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/T/#mda7265b2e57b52bdab863f286efa85291cf83822
 > 
-> Signed-off-by: Petr Vandrovec <petr@vmware.com>
-> Signed-off-by: Ronak Doshi <doshir@vmware.com>
+> Since this is in the cover letter I don't think v2 is needed.
+> Please let me know if you'd like me to resend.
+
+Seems that vger ate the cover letter completely, but not the patches,
+so I was putting the merge commit message together by hand, anyway :)
 
 Applied, thanks!
