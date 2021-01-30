@@ -2,38 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0D9F309711
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 18:08:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F8A130970D
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 18:06:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231969AbhA3RHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 12:07:09 -0500
+        id S231641AbhA3RGN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 12:06:13 -0500
 Received: from [1.6.215.26] ([1.6.215.26]:38272 "EHLO hyd1soter2"
         rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231386AbhA3RHF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 30 Jan 2021 12:07:05 -0500
+        id S231569AbhA3RGA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 30 Jan 2021 12:06:00 -0500
 X-Greylist: delayed 575 seconds by postgrey-1.27 at vger.kernel.org; Sat, 30 Jan 2021 12:02:22 EST
 Received: from hyd1soter2.caveonetworks.com (localhost [127.0.0.1])
-        by hyd1soter2 (8.15.2/8.15.2/Debian-3) with ESMTP id 10UGq63U091802;
-        Sat, 30 Jan 2021 22:22:06 +0530
+        by hyd1soter2 (8.15.2/8.15.2/Debian-3) with ESMTP id 10UGqM5t091860;
+        Sat, 30 Jan 2021 22:22:22 +0530
 Received: (from geetha@localhost)
-        by hyd1soter2.caveonetworks.com (8.15.2/8.15.2/Submit) id 10UGq6wu091801;
-        Sat, 30 Jan 2021 22:22:06 +0530
+        by hyd1soter2.caveonetworks.com (8.15.2/8.15.2/Submit) id 10UGqMQJ091859;
+        Sat, 30 Jan 2021 22:22:22 +0530
 From:   Geetha sowjanya <gakula@marvell.com>
 To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     sgoutham@marvell.com, davem@davemloft.net, kuba@kernel.org,
-        Geetha sowjanya <gakula@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>
-Subject: [net-next 01/14] octeontx2-af: cn10k: Add mbox support for CN10K platform
-Date:   Sat, 30 Jan 2021 22:22:02 +0530
-Message-Id: <1612025522-91761-1-git-send-email-gakula@marvell.com>
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>
+Subject: [net-next 02/14] octeontx2-pf: cn10k: Add mbox support for CN10K
+Date:   Sat, 30 Jan 2021 22:22:20 +0530
+Message-Id: <1612025540-91810-1-git-send-email-gakula@marvell.com>
 X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Subbaraya Sundeep <sbhatta@marvell.com>
+
 Firmware allocates memory regions for PFs and VFs in DRAM.
 The PFs memory region is used for AF-PF and PF-VF mailbox.
-This mbox facilitates communication between AF-PF and PF-VF.
+This mbox facilitate communication between AF-PF and PF-VF.
 
 On CN10K platform:
 The DRAM region allocated to PF is enumerated as PF BAR4 memory.
@@ -59,374 +61,45 @@ mbox region via BAR4.
 
 This patch changes mbox initialization to support both CN9XX and CN10K
 platform.
+The patch also adds new hw_cap flag to setting hw features like TSO etc
+and removes platform specific name from the PF/VF driver name to make it
+appropriate for all supported platforms
 
 Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
 Signed-off-by: Geetha sowjanya <gakula@marvell.com>
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/mbox.c   |  59 ++++++++--
- drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |   4 +
- drivers/net/ethernet/marvell/octeontx2/af/rvu.c    | 122 ++++++++++++++++-----
- drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |  23 ++++
- .../net/ethernet/marvell/octeontx2/af/rvu_reg.h    |   7 ++
- 5 files changed, 179 insertions(+), 36 deletions(-)
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   | 29 +++++++++++++++--
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   | 18 ++++++++---
+ .../net/ethernet/marvell/octeontx2/nic/otx2_reg.h  |  3 ++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c |  5 +--
+ .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c   | 37 ++++++++++++++--------
+ 5 files changed, 69 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.c b/drivers/net/ethernet/marvell/octeontx2/af/mbox.c
-index bbabb8e6..0a37ca9 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.c
-@@ -20,9 +20,9 @@ static const u16 msgs_offset = ALIGN(sizeof(struct mbox_hdr), MBOX_MSG_ALIGN);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+index 143ae04..e05a5d5 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+@@ -190,7 +190,6 @@ struct otx2_hw {
+ 	u8			lso_tsov6_idx;
+ 	u8			lso_udpv4_idx;
+ 	u8			lso_udpv6_idx;
+-	u8			hw_tso;
  
- void __otx2_mbox_reset(struct otx2_mbox *mbox, int devid)
- {
--	void *hw_mbase = mbox->hwbase + (devid * MBOX_SIZE);
- 	struct otx2_mbox_dev *mdev = &mbox->dev[devid];
- 	struct mbox_hdr *tx_hdr, *rx_hdr;
-+	void *hw_mbase = mdev->hwbase;
- 
- 	tx_hdr = hw_mbase + mbox->tx_start;
- 	rx_hdr = hw_mbase + mbox->rx_start;
-@@ -56,12 +56,9 @@ void otx2_mbox_destroy(struct otx2_mbox *mbox)
- }
- EXPORT_SYMBOL(otx2_mbox_destroy);
- 
--int otx2_mbox_init(struct otx2_mbox *mbox, void *hwbase, struct pci_dev *pdev,
--		   void *reg_base, int direction, int ndevs)
-+static int otx2_mbox_setup(struct otx2_mbox *mbox, struct pci_dev *pdev,
-+			   void *reg_base, int direction, int ndevs)
- {
--	struct otx2_mbox_dev *mdev;
--	int devid;
--
- 	switch (direction) {
- 	case MBOX_DIR_AFPF:
- 	case MBOX_DIR_PFVF:
-@@ -121,7 +118,6 @@ int otx2_mbox_init(struct otx2_mbox *mbox, void *hwbase, struct pci_dev *pdev,
- 	}
- 
- 	mbox->reg_base = reg_base;
--	mbox->hwbase = hwbase;
- 	mbox->pdev = pdev;
- 
- 	mbox->dev = kcalloc(ndevs, sizeof(struct otx2_mbox_dev), GFP_KERNEL);
-@@ -129,11 +125,27 @@ int otx2_mbox_init(struct otx2_mbox *mbox, void *hwbase, struct pci_dev *pdev,
- 		otx2_mbox_destroy(mbox);
- 		return -ENOMEM;
- 	}
--
- 	mbox->ndevs = ndevs;
-+
-+	return 0;
-+}
-+
-+int otx2_mbox_init(struct otx2_mbox *mbox, void *hwbase, struct pci_dev *pdev,
-+		   void *reg_base, int direction, int ndevs)
-+{
-+	struct otx2_mbox_dev *mdev;
-+	int devid, err;
-+
-+	err = otx2_mbox_setup(mbox, pdev, reg_base, direction, ndevs);
-+	if (err)
-+		return err;
-+
-+	mbox->hwbase = hwbase;
-+
- 	for (devid = 0; devid < ndevs; devid++) {
- 		mdev = &mbox->dev[devid];
- 		mdev->mbase = mbox->hwbase + (devid * MBOX_SIZE);
-+		mdev->hwbase = mdev->mbase;
- 		spin_lock_init(&mdev->mbox_lock);
- 		/* Init header to reset value */
- 		otx2_mbox_reset(mbox, devid);
-@@ -143,6 +155,35 @@ int otx2_mbox_init(struct otx2_mbox *mbox, void *hwbase, struct pci_dev *pdev,
- }
- EXPORT_SYMBOL(otx2_mbox_init);
- 
-+/* Initialize mailbox with the set of mailbox region addresses
-+ * in the array hwbase.
-+ */
-+int otx2_mbox_regions_init(struct otx2_mbox *mbox, void **hwbase,
-+			   struct pci_dev *pdev, void *reg_base,
-+			   int direction, int ndevs)
-+{
-+	struct otx2_mbox_dev *mdev;
-+	int devid, err;
-+
-+	err = otx2_mbox_setup(mbox, pdev, reg_base, direction, ndevs);
-+	if (err)
-+		return err;
-+
-+	mbox->hwbase = hwbase[0];
-+
-+	for (devid = 0; devid < ndevs; devid++) {
-+		mdev = &mbox->dev[devid];
-+		mdev->mbase = hwbase[devid];
-+		mdev->hwbase = hwbase[devid];
-+		spin_lock_init(&mdev->mbox_lock);
-+		/* Init header to reset value */
-+		otx2_mbox_reset(mbox, devid);
-+	}
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(otx2_mbox_regions_init);
-+
- int otx2_mbox_wait_for_rsp(struct otx2_mbox *mbox, int devid)
- {
- 	unsigned long timeout = jiffies + msecs_to_jiffies(MBOX_RSP_TIMEOUT);
-@@ -175,9 +216,9 @@ EXPORT_SYMBOL(otx2_mbox_busy_poll_for_rsp);
- 
- void otx2_mbox_msg_send(struct otx2_mbox *mbox, int devid)
- {
--	void *hw_mbase = mbox->hwbase + (devid * MBOX_SIZE);
- 	struct otx2_mbox_dev *mdev = &mbox->dev[devid];
- 	struct mbox_hdr *tx_hdr, *rx_hdr;
-+	void *hw_mbase = mdev->hwbase;
- 
- 	tx_hdr = hw_mbase + mbox->tx_start;
- 	rx_hdr = hw_mbase + mbox->rx_start;
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-index 89e93eb..20779a1 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-@@ -52,6 +52,7 @@
- 
- struct otx2_mbox_dev {
- 	void	    *mbase;   /* This dev's mbox region */
-+	void	    *hwbase;
- 	spinlock_t  mbox_lock;
- 	u16         msg_size; /* Total msg size to be sent */
- 	u16         rsp_size; /* Total rsp size to be sure the reply is ok */
-@@ -98,6 +99,9 @@ void otx2_mbox_destroy(struct otx2_mbox *mbox);
- int otx2_mbox_init(struct otx2_mbox *mbox, void __force *hwbase,
- 		   struct pci_dev *pdev, void __force *reg_base,
- 		   int direction, int ndevs);
-+int otx2_mbox_regions_init(struct otx2_mbox *mbox, void __force **hwbase,
-+			   struct pci_dev *pdev, void __force *reg_base,
-+			   int direction, int ndevs);
- void otx2_mbox_msg_send(struct otx2_mbox *mbox, int devid);
- int otx2_mbox_wait_for_rsp(struct otx2_mbox *mbox, int devid);
- int otx2_mbox_busy_poll_for_rsp(struct otx2_mbox *mbox, int devid);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-index 0b6bf9f..587caa1 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-@@ -78,6 +78,9 @@ static void rvu_setup_hw_capabilities(struct rvu *rvu)
- 		if (is_rvu_96xx_A0(rvu))
- 			hw->cap.nix_rx_multicast = false;
- 	}
-+
-+	if (!is_rvu_otx2(rvu))
-+		hw->cap.per_pf_mbox_regs = true;
- }
- 
- /* Poll a RVU block's register 'offset', for a 'zero'
-@@ -1936,41 +1939,105 @@ static inline void rvu_afvf_mbox_up_handler(struct work_struct *work)
- 	__rvu_mbox_up_handler(mwork, TYPE_AFVF);
- }
- 
-+static int rvu_get_mbox_regions(struct rvu *rvu, void **mbox_addr,
-+				int num, int type)
-+{
-+	struct rvu_hwinfo *hw = rvu->hw;
-+	int region;
-+	u64 bar4;
-+
-+	/* For cn10k platform VF mailbox regions of a PF follows after the
-+	 * PF <-> AF mailbox region. Whereas for Octeontx2 it is read from
-+	 * RVU_PF_VF_BAR4_ADDR register.
-+	 */
-+	if (type == TYPE_AFVF) {
-+		for (region = 0; region < num; region++) {
-+			if (hw->cap.per_pf_mbox_regs) {
-+				bar4 = rvu_read64(rvu, BLKADDR_RVUM,
-+						  RVU_AF_PFX_BAR4_ADDR(0)) +
-+						  MBOX_SIZE;
-+				bar4 += region * MBOX_SIZE;
-+			} else {
-+				bar4 = rvupf_read64(rvu, RVU_PF_VF_BAR4_ADDR);
-+				bar4 += region * MBOX_SIZE;
-+			}
-+			mbox_addr[region] = ioremap_wc(bar4, MBOX_SIZE);
-+			if (!mbox_addr[region])
-+				goto error;
-+		}
-+		return 0;
-+	}
-+
-+	/* For cn10k platform AF <-> PF mailbox region of a PF is read from per
-+	 * PF registers. Whereas for Octeontx2 it is read from
-+	 * RVU_AF_PF_BAR4_ADDR register.
-+	 */
-+	for (region = 0; region < num; region++) {
-+		if (hw->cap.per_pf_mbox_regs) {
-+			bar4 = rvu_read64(rvu, BLKADDR_RVUM,
-+					  RVU_AF_PFX_BAR4_ADDR(region));
-+		} else {
-+			bar4 = rvu_read64(rvu, BLKADDR_RVUM,
-+					  RVU_AF_PF_BAR4_ADDR);
-+			bar4 += region * MBOX_SIZE;
-+		}
-+		mbox_addr[region] = ioremap_wc(bar4, MBOX_SIZE);
-+		if (!mbox_addr[region])
-+			goto error;
-+	}
-+	return 0;
-+
-+error:
-+	while (region--)
-+		iounmap(mbox_addr[region]);
-+	return -ENOMEM;
-+}
-+
- static int rvu_mbox_init(struct rvu *rvu, struct mbox_wq_info *mw,
- 			 int type, int num,
- 			 void (mbox_handler)(struct work_struct *),
- 			 void (mbox_up_handler)(struct work_struct *))
- {
--	void __iomem *hwbase = NULL, *reg_base;
--	int err, i, dir, dir_up;
-+	int err = -EINVAL, i, dir, dir_up;
-+	void __iomem *reg_base;
- 	struct rvu_work *mwork;
-+	void **mbox_regions;
- 	const char *name;
--	u64 bar4_addr;
-+
-+	mbox_regions = kcalloc(num, sizeof(void *), GFP_KERNEL);
-+	if (!mbox_regions)
-+		return -ENOMEM;
- 
- 	switch (type) {
- 	case TYPE_AFPF:
- 		name = "rvu_afpf_mailbox";
--		bar4_addr = rvu_read64(rvu, BLKADDR_RVUM, RVU_AF_PF_BAR4_ADDR);
- 		dir = MBOX_DIR_AFPF;
- 		dir_up = MBOX_DIR_AFPF_UP;
- 		reg_base = rvu->afreg_base;
-+		err = rvu_get_mbox_regions(rvu, mbox_regions, num, TYPE_AFPF);
-+		if (err)
-+			goto free_regions;
- 		break;
- 	case TYPE_AFVF:
- 		name = "rvu_afvf_mailbox";
--		bar4_addr = rvupf_read64(rvu, RVU_PF_VF_BAR4_ADDR);
- 		dir = MBOX_DIR_PFVF;
- 		dir_up = MBOX_DIR_PFVF_UP;
- 		reg_base = rvu->pfreg_base;
-+		err = rvu_get_mbox_regions(rvu, mbox_regions, num, TYPE_AFVF);
-+		if (err)
-+			goto free_regions;
- 		break;
- 	default:
--		return -EINVAL;
-+		return err;
- 	}
- 
- 	mw->mbox_wq = alloc_workqueue(name,
- 				      WQ_UNBOUND | WQ_HIGHPRI | WQ_MEM_RECLAIM,
- 				      num);
--	if (!mw->mbox_wq)
--		return -ENOMEM;
-+	if (!mw->mbox_wq) {
-+		err = -ENOMEM;
-+		goto unmap_regions;
-+	}
- 
- 	mw->mbox_wrk = devm_kcalloc(rvu->dev, num,
- 				    sizeof(struct rvu_work), GFP_KERNEL);
-@@ -1986,23 +2053,13 @@ static int rvu_mbox_init(struct rvu *rvu, struct mbox_wq_info *mw,
- 		goto exit;
- 	}
- 
--	/* Mailbox is a reserved memory (in RAM) region shared between
--	 * RVU devices, shouldn't be mapped as device memory to allow
--	 * unaligned accesses.
--	 */
--	hwbase = ioremap_wc(bar4_addr, MBOX_SIZE * num);
--	if (!hwbase) {
--		dev_err(rvu->dev, "Unable to map mailbox region\n");
--		err = -ENOMEM;
--		goto exit;
--	}
--
--	err = otx2_mbox_init(&mw->mbox, hwbase, rvu->pdev, reg_base, dir, num);
-+	err = otx2_mbox_regions_init(&mw->mbox, mbox_regions, rvu->pdev,
-+				     reg_base, dir, num);
- 	if (err)
- 		goto exit;
- 
--	err = otx2_mbox_init(&mw->mbox_up, hwbase, rvu->pdev,
--			     reg_base, dir_up, num);
-+	err = otx2_mbox_regions_init(&mw->mbox_up, mbox_regions, rvu->pdev,
-+				     reg_base, dir_up, num);
- 	if (err)
- 		goto exit;
- 
-@@ -2015,25 +2072,36 @@ static int rvu_mbox_init(struct rvu *rvu, struct mbox_wq_info *mw,
- 		mwork->rvu = rvu;
- 		INIT_WORK(&mwork->work, mbox_up_handler);
- 	}
--
-+	kfree(mbox_regions);
- 	return 0;
-+
- exit:
--	if (hwbase)
--		iounmap((void __iomem *)hwbase);
- 	destroy_workqueue(mw->mbox_wq);
-+unmap_regions:
-+	while (num--)
-+		iounmap(mbox_regions[num]);
-+free_regions:
-+	kfree(mbox_regions);
- 	return err;
- }
- 
- static void rvu_mbox_destroy(struct mbox_wq_info *mw)
- {
-+	struct otx2_mbox *mbox = &mw->mbox;
-+	struct otx2_mbox_dev *mdev;
-+	int devid;
-+
- 	if (mw->mbox_wq) {
- 		flush_workqueue(mw->mbox_wq);
- 		destroy_workqueue(mw->mbox_wq);
- 		mw->mbox_wq = NULL;
- 	}
- 
--	if (mw->mbox.hwbase)
--		iounmap((void __iomem *)mw->mbox.hwbase);
-+	for (devid = 0; devid < mbox->ndevs; devid++) {
-+		mdev = &mbox->dev[devid];
-+		if (mdev->hwbase)
-+			iounmap((void __iomem *)mdev->hwbase);
-+	}
- 
- 	otx2_mbox_destroy(&mw->mbox);
- 	otx2_mbox_destroy(&mw->mbox_up);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-index b1a6ecf..e553d8f 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-@@ -25,6 +25,7 @@
- 
- /* Subsystem Device ID */
- #define PCI_SUBSYS_DEVID_96XX                  0xB200
-+#define PCI_SUBSYS_DEVID_CN10K_A	       0xB900
- 
- /* PCI BAR nos */
- #define	PCI_AF_REG_BAR_NUM			0
-@@ -296,6 +297,7 @@ struct hw_cap {
- 	bool	nix_shaping;		 /* Is shaping and coloring supported */
- 	bool	nix_tx_link_bp;		 /* Can link backpressure TL queues ? */
- 	bool	nix_rx_multicast;	 /* Rx packet replication support */
-+	bool	per_pf_mbox_regs; /* PF mbox specified in per PF registers ? */
+ 	/* MSI-X */
+ 	u8			cint_cnt; /* CQ interrupt count */
+@@ -206,6 +205,9 @@ struct otx2_hw {
+ 	u64			cgx_tx_stats[CGX_TX_STATS_COUNT];
+ 	u8			cgx_links;  /* No. of CGX links present in HW */
+ 	u8			lbk_links;  /* No. of LBK links present in HW */
++#define HW_TSO			BIT_ULL(0)
++#define CN10K_MBOX		BIT_ULL(1)
++	unsigned long		cap_flag;
  };
  
- struct rvu_hwinfo {
-@@ -465,6 +467,27 @@ static inline bool is_rvu_96xx_B0(struct rvu *rvu)
- 		(pdev->subsystem_device == PCI_SUBSYS_DEVID_96XX);
+ struct otx2_vf_config {
+@@ -339,6 +341,25 @@ static inline bool is_96xx_B0(struct pci_dev *pdev)
+ 		(pdev->subsystem_device == PCI_SUBSYS_DEVID_96XX_RVU_PFVF);
  }
  
 +/* REVID for PCIe devices.
@@ -439,10 +112,8 @@ index b1a6ecf..e553d8f 100644
 +#define PCI_REVISION_ID_98XX		0x30
 +#define PCI_REVISION_ID_95XXMM		0x40
 +
-+static inline bool is_rvu_otx2(struct rvu *rvu)
++static inline bool is_dev_otx2(struct pci_dev *pdev)
 +{
-+	struct pci_dev *pdev = rvu->pdev;
-+
 +	u8 midr = pdev->revision & 0xF0;
 +
 +	return (midr == PCI_REVISION_ID_96XX || midr == PCI_REVISION_ID_95XX ||
@@ -450,26 +121,80 @@ index b1a6ecf..e553d8f 100644
 +		midr == PCI_REVISION_ID_95XXMM);
 +}
 +
- /* Function Prototypes
-  * RVU
-  */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
-index 0fb2aa9..a07d12a 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
-@@ -44,6 +44,11 @@
- #define RVU_AF_PFME_INT_W1S                 (0x28c8)
- #define RVU_AF_PFME_INT_ENA_W1S             (0x28d0)
- #define RVU_AF_PFME_INT_ENA_W1C             (0x28d8)
-+#define RVU_AF_PFX_BAR4_ADDR(a)             (0x5000 | (a) << 4)
-+#define RVU_AF_PFX_BAR4_CFG                 (0x5200 | (a) << 4)
-+#define RVU_AF_PFX_VF_BAR4_ADDR             (0x5400 | (a) << 4)
-+#define RVU_AF_PFX_VF_BAR4_CFG              (0x5600 | (a) << 4)
-+#define RVU_AF_PFX_LMTLINE_ADDR             (0x5800 | (a) << 4)
+ static inline void otx2_setup_dev_hw_settings(struct otx2_nic *pfvf)
+ {
+ 	struct otx2_hw *hw = &pfvf->hw;
+@@ -347,10 +368,10 @@ static inline void otx2_setup_dev_hw_settings(struct otx2_nic *pfvf)
+ 	pfvf->hw.cq_ecount_wait = CQ_CQE_THRESH_DEFAULT;
+ 	pfvf->hw.cq_qcount_wait = CQ_QCOUNT_DEFAULT;
  
- /* Admin function's privileged PF/VF registers */
- #define RVU_PRIV_CONST                      (0x8000000)
-@@ -100,6 +105,8 @@
+-	hw->hw_tso = true;
++	__set_bit(HW_TSO, &hw->cap_flag);
+ 
+ 	if (is_96xx_A0(pfvf->pdev)) {
+-		hw->hw_tso = false;
++		__clear_bit(HW_TSO, &hw->cap_flag);
+ 
+ 		/* Time based irq coalescing is not supported */
+ 		pfvf->hw.cq_qcount_wait = 0x0;
+@@ -361,6 +382,8 @@ static inline void otx2_setup_dev_hw_settings(struct otx2_nic *pfvf)
+ 		pfvf->hw.rq_skid = 600;
+ 		pfvf->qset.rqe_cnt = Q_COUNT(Q_SIZE_1K);
+ 	}
++	if (!is_dev_otx2(pfvf->pdev))
++		__set_bit(CN10K_MBOX, &hw->cap_flag);
+ }
+ 
+ /* Register read/write APIs */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+index 634d606..011a56d 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+@@ -24,8 +24,8 @@
+ #include "otx2_ptp.h"
+ #include <rvu_trace.h>
+ 
+-#define DRV_NAME	"octeontx2-nicpf"
+-#define DRV_STRING	"Marvell OcteonTX2 NIC Physical Function Driver"
++#define DRV_NAME	"RVU-nicpf"
++#define DRV_STRING	"Marvell RVU NIC Physical Function Driver"
+ 
+ /* Supported devices */
+ static const struct pci_device_id otx2_pf_id_table[] = {
+@@ -585,9 +585,17 @@ static int otx2_pfvf_mbox_init(struct otx2_nic *pf, int numvfs)
+ 	if (!pf->mbox_pfvf_wq)
+ 		return -ENOMEM;
+ 
+-	base = readq((void __iomem *)((u64)pf->reg_base + RVU_PF_VF_BAR4_ADDR));
+-	hwbase = ioremap_wc(base, MBOX_SIZE * pf->total_vfs);
++	/* On CN10K platform, PF <-> VF mailbox region follows after
++	 * PF <-> AF mailbox region.
++	 */
++	if (test_bit(CN10K_MBOX, &pf->hw.cap_flag))
++		base = pci_resource_start(pf->pdev, PCI_MBOX_BAR_NUM) +
++		       MBOX_SIZE;
++	else
++		base = readq((void __iomem *)((u64)pf->reg_base +
++					      RVU_PF_VF_BAR4_ADDR));
+ 
++	hwbase = ioremap_wc(base, MBOX_SIZE * pf->total_vfs);
+ 	if (!hwbase) {
+ 		err = -ENOMEM;
+ 		goto free_wq;
+@@ -1039,7 +1047,7 @@ static int otx2_pfaf_mbox_init(struct otx2_nic *pf)
+ 	 * device memory to allow unaligned accesses.
+ 	 */
+ 	hwbase = ioremap_wc(pci_resource_start(pf->pdev, PCI_MBOX_BAR_NUM),
+-			    pci_resource_len(pf->pdev, PCI_MBOX_BAR_NUM));
++			    MBOX_SIZE);
+ 	if (!hwbase) {
+ 		dev_err(pf->dev, "Unable to map PFAF mailbox region\n");
+ 		err = -ENOMEM;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h
+index 867f646..1e052d7 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h
+@@ -44,6 +44,8 @@
  #define RVU_PF_MSIX_VECX_ADDR(a)            (0x000 | (a) << 4)
  #define RVU_PF_MSIX_VECX_CTL(a)             (0x008 | (a) << 4)
  #define RVU_PF_MSIX_PBAX(a)                 (0xF0000 | (a) << 3)
@@ -478,6 +203,106 @@ index 0fb2aa9..a07d12a 100644
  
  /* RVU VF registers */
  #define	RVU_VF_VFPF_MBOX0		    (0x00000)
+@@ -57,6 +59,7 @@
+ #define	RVU_VF_MSIX_VECX_ADDR(a)	    (0x000 | (a) << 4)
+ #define	RVU_VF_MSIX_VECX_CTL(a)		    (0x008 | (a) << 4)
+ #define	RVU_VF_MSIX_PBAX(a)		    (0xF0000 | (a) << 3)
++#define RVU_VF_MBOX_REGION                  (0xC0000)
+ 
+ #define RVU_FUNC_BLKADDR_SHIFT		20
+ #define RVU_FUNC_BLKADDR_MASK		0x1FULL
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+index d0e2541..a7eb5ea 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+@@ -806,8 +806,6 @@ static bool is_hw_tso_supported(struct otx2_nic *pfvf,
+ {
+ 	int payload_len, last_seg_size;
+ 
+-	if (!pfvf->hw.hw_tso)
+-		return false;
+ 
+ 	/* HW has an issue due to which when the payload of the last LSO
+ 	 * segment is shorter than 16 bytes, some header fields may not
+@@ -821,6 +819,9 @@ static bool is_hw_tso_supported(struct otx2_nic *pfvf,
+ 	if (last_seg_size && last_seg_size < 16)
+ 		return false;
+ 
++	if (!test_bit(HW_TSO, &pfvf->hw.cap_flag))
++		return false;
++
+ 	return true;
+ }
+ 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+index d3e4cfd..6a2dde2 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+@@ -8,8 +8,8 @@
+ #include "otx2_common.h"
+ #include "otx2_reg.h"
+ 
+-#define DRV_NAME	"octeontx2-nicvf"
+-#define DRV_STRING	"Marvell OcteonTX2 NIC Virtual Function Driver"
++#define DRV_NAME	"RVU-nicvf"
++#define DRV_STRING	"Marvell RVU NIC Virtual Function Driver"
+ 
+ static const struct pci_device_id otx2_vf_id_table[] = {
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, PCI_DEVID_OCTEONTX2_RVU_AFVF) },
+@@ -277,7 +277,7 @@ static void otx2vf_vfaf_mbox_destroy(struct otx2_nic *vf)
+ 		vf->mbox_wq = NULL;
+ 	}
+ 
+-	if (mbox->mbox.hwbase)
++	if (mbox->mbox.hwbase && !test_bit(CN10K_MBOX, &vf->hw.cap_flag))
+ 		iounmap((void __iomem *)mbox->mbox.hwbase);
+ 
+ 	otx2_mbox_destroy(&mbox->mbox);
+@@ -297,16 +297,25 @@ static int otx2vf_vfaf_mbox_init(struct otx2_nic *vf)
+ 	if (!vf->mbox_wq)
+ 		return -ENOMEM;
+ 
+-	/* Mailbox is a reserved memory (in RAM) region shared between
+-	 * admin function (i.e PF0) and this VF, shouldn't be mapped as
+-	 * device memory to allow unaligned accesses.
+-	 */
+-	hwbase = ioremap_wc(pci_resource_start(vf->pdev, PCI_MBOX_BAR_NUM),
+-			    pci_resource_len(vf->pdev, PCI_MBOX_BAR_NUM));
+-	if (!hwbase) {
+-		dev_err(vf->dev, "Unable to map VFAF mailbox region\n");
+-		err = -ENOMEM;
+-		goto exit;
++	if (test_bit(CN10K_MBOX, &vf->hw.cap_flag)) {
++		/* For cn10k platform, VF mailbox region is in its BAR2
++		 * register space
++		 */
++		hwbase = vf->reg_base + RVU_VF_MBOX_REGION;
++	} else {
++		/* Mailbox is a reserved memory (in RAM) region shared between
++		 * admin function (i.e PF0) and this VF, shouldn't be mapped as
++		 * device memory to allow unaligned accesses.
++		 */
++		hwbase = ioremap_wc(pci_resource_start(vf->pdev,
++						       PCI_MBOX_BAR_NUM),
++				    pci_resource_len(vf->pdev,
++						     PCI_MBOX_BAR_NUM));
++		if (!hwbase) {
++			dev_err(vf->dev, "Unable to map VFAF mailbox region\n");
++			err = -ENOMEM;
++			goto exit;
++		}
+ 	}
+ 
+ 	err = otx2_mbox_init(&mbox->mbox, hwbase, vf->pdev, vf->reg_base,
+@@ -329,6 +338,8 @@ static int otx2vf_vfaf_mbox_init(struct otx2_nic *vf)
+ 
+ 	return 0;
+ exit:
++	if (hwbase && !test_bit(CN10K_MBOX, &vf->hw.cap_flag))
++		iounmap(hwbase);
+ 	destroy_workqueue(vf->mbox_wq);
+ 	return err;
+ }
 -- 
 2.7.4
 
