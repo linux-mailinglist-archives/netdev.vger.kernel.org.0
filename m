@@ -2,76 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D9D8309621
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 16:09:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87E87309646
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 16:36:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231981AbhA3PHx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 10:07:53 -0500
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:38911 "EHLO
-        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232142AbhA3O7J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jan 2021 09:59:09 -0500
+        id S229990AbhA3Pe5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 10:34:57 -0500
+Received: from wout3-smtp.messagingengine.com ([64.147.123.19]:52337 "EHLO
+        wout3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232144AbhA3OwV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jan 2021 09:52:21 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 8587C5C0132;
-        Sat, 30 Jan 2021 09:57:42 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sat, 30 Jan 2021 09:57:42 -0500
+        by mailout.west.internal (Postfix) with ESMTP id 692CF10A5;
+        Sat, 30 Jan 2021 09:42:36 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Sat, 30 Jan 2021 09:42:36 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-type:date:from:in-reply-to
         :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=2ksLkb
-        NGzWSsvmPHHU85P4JWIjMyu1DHKhI60yx0KXI=; b=Mr+lPT9Ptyn8MmGpxeIVRC
-        6tMgQMZRszRkA76/26KtCN5suJ+yMcVQHu3qaVVtYRb2+Y9nokXrjz5qEK+9injn
-        7kQXM//LOcn5gtKm9BnZYAFZ0iico1tKF5kLJriYwg9FAqgVqgS0BjJPDjZOvdAb
-        a8kJ4+kCblQFsl33ThNTx0RtiR+FIdnHIZXxJT/MF8TAdje5r4Y/f7hwZTKGCHl8
-        1jq/LnD9HRzQ9GffXOCaSuTUTw3yJk0wJO2o91CexxDUFCnFgp+kfRcnsBlSwYXE
-        THDN2yq80KOG4gYWZwJzZECBONQ3zWi4e67Krim0eXbstgTgEusaCEwTHYAZjbSw
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=v/1yXp
+        U423VY9oBhdOW3MxCKKDbjDbYvqrwa5UXE6wA=; b=JvMprF4hWJPg3dJtD0At8O
+        YLYVLoEaasi2pG+l4TCFnQtyAXPH6EskUDC9lj9yXILmA4bs2lMxhMvrM3dRVOun
+        kXhilD1dus8cQg3QsnskTjecDlQOmSTSdlnyqZ9fXy0ALhfANKzKVV1KFKztxNEI
+        4g/qURZ/FQ4Ccl9j+eyVRbEXX7ihETmoJgoL04faZs2ruMlUAVZTo/5+AXZ1ktqa
+        kWo5O46EU17NXSWOtBYsOAHBlRjG7nYN3+VTh5ver9i4fW4Bud5H5J77cpmQLkdE
+        pS/zAIPxfOgrmwWhDOKWFXR71khfoqeSdtK6EsC61FwW80T2jyiOrWknPAwQ7jRw
         ==
-X-ME-Sender: <xms:5nMVYBZlLTXP6G_bRP0psq7TPzqY9wrWiAAyb7Nz_umZudZp4VU0-Q>
-    <xme:5nMVYIbqY_mbwwoqyu6ruJ5kxMA2UuMERDdlz3UfLKNHqycEWo8XWI_3ClUFUP9AA
-    XSG-2VLUoLbS20>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeeggdejvdcutefuodetggdotefrodftvf
+X-ME-Sender: <xms:W3AVYHmcDbrjnNON1bW9NiJY5Xnrrna2Mt9B6jNW11pwLItKQSP29g>
+    <xme:W3AVYK1x4udn4FzcKZoDTzgiK8PYlvWfe8kfUVoFv9TmLT4xgJOuZBJi4UUS7HBCh
+    X5YpjfJPt5zN1Y>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeeggdeilecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
     fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
     hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnhepgfevgfevueduueffieffheeifffgjeelvedtteeuteeuffekvefggfdtudfgkeev
-    necuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucfkphepkeegrddvvdelrdduheefrd
-    eggeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehi
-    ughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:5nMVYD-XJ1Mek-3lTnkU4S-Skhk-AZ8qO63DKMvNHmeGQgdRuAzItA>
-    <xmx:5nMVYPprtU7VvGYApr8TTRsXyYzfxU7HEtHZtwIf2jYaz_aj5xHPhQ>
-    <xmx:5nMVYMpZ_RTCAEdBi-XeCIv1PX_6WEtRFopdae7fmNQBKT_BUBbwkA>
-    <xmx:5nMVYBA8vMBk5a1ZSgHHC62wxhyWxs-sKNn6BK17lEtWr5N9qfl2Yw>
+    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
+    necukfhppeekgedrvddvledrudehfedrgeegnecuvehluhhsthgvrhfuihiivgeptdenuc
+    frrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:W3AVYNosaPbyypHrZqLP-ZmJZPhWRfj-ZpZ0WN9bYeXPdR5-sC44NQ>
+    <xmx:W3AVYPlggixbzQAviHHaetDEQjknq1mKz_GspP6bVz8pewqbrpYOYA>
+    <xmx:W3AVYF3Ecqax6NnAkSl8FgrU48aFfz4ZkrigoYflXV_CJshcSYeG9Q>
+    <xmx:XHAVYOzd8AreOmie7biZpytsT_T6hoL74SbxYE_yALtyDPUFozDBjg>
 Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 9B30824005B;
-        Sat, 30 Jan 2021 09:57:41 -0500 (EST)
-Date:   Sat, 30 Jan 2021 16:57:38 +0200
+        by mail.messagingengine.com (Postfix) with ESMTPA id 2C29F1080059;
+        Sat, 30 Jan 2021 09:42:34 -0500 (EST)
+Date:   Sat, 30 Jan 2021 16:42:31 +0200
 From:   Ido Schimmel <idosch@idosch.org>
-To:     Cong Wang <xiyou.wangcong@gmail.com>, simon.horman@netronome.com
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@mellanox.com>,
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Chris Mi <cmi@nvidia.com>, Cong Wang <xiyou.wangcong@gmail.com>,
         Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        oss-drivers@netronome.com, Baowen Zheng <baowen.zheng@corigine.com>
-Subject: Re: [PATCH net-next v2] net/sched: act_police: add support for
- packet-per-second policing
-Message-ID: <20210130145738.GA3330615@shredder.lan>
-References: <20210129102856.6225-1-simon.horman@netronome.com>
- <CAM_iQpVnd9s6rpNOSNLTBHzLH7BtKvdZmWMhZdFps8udfCyikQ@mail.gmail.com>
+        jiri@nvidia.com, Saeed Mahameed <saeedm@nvidia.com>,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH net-next v4] net: psample: Introduce stubs to remove NIC
+ driver dependency
+Message-ID: <20210130144231.GA3329243@shredder.lan>
+References: <20210128014543.521151-1-cmi@nvidia.com>
+ <CAM_iQpWQe1W+x_bua+OfjTR-tCgFYgj_8=eKz7VJdKHPRKuMYw@mail.gmail.com>
+ <6c586e9a-b672-6e60-613b-4fb6e6db8c9a@nvidia.com>
+ <20210129123009.3c07563d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAM_iQpVnd9s6rpNOSNLTBHzLH7BtKvdZmWMhZdFps8udfCyikQ@mail.gmail.com>
+In-Reply-To: <20210129123009.3c07563d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 29, 2021 at 03:04:51PM -0800, Cong Wang wrote:
-> On Fri, Jan 29, 2021 at 2:29 AM Simon Horman <simon.horman@netronome.com> wrote:
+On Fri, Jan 29, 2021 at 12:30:09PM -0800, Jakub Kicinski wrote:
+> On Fri, 29 Jan 2021 14:08:39 +0800 Chris Mi wrote:
+> > Instead of discussing it several days, maybe it's better to review 
+> > current patch, so that we can move forward :)
+> 
+> It took you 4 revisions to post a patch which builds cleanly and now
+> you want to hasten the review? My favorite kind of submission.
+> 
+> The mlxsw core + spectrum drivers are 65 times the size of psample 
+> on my system. Why is the dependency a problem?
 
-I didn't get v2 (didn't made it to the list), but I did leave feedback
-on v1 [1]. Not sure if you got it or not given the recent issues.
-
-[1] https://lore.kernel.org/netdev/20210128161933.GA3285394@shredder.lan/#t
+mlxsw has been using psample for ~4 years and I don't remember seeing a
+single complaint about the dependency. I don't understand why this patch
+is needed.
