@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6B2430993B
-	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 01:06:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6F19309935
+	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 01:06:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232455AbhA3XtA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 18:49:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44108 "EHLO
+        id S232480AbhAaAE7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 19:04:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230517AbhA3Xsd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jan 2021 18:48:33 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67945C061574;
-        Sat, 30 Jan 2021 15:47:53 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id d2so14809514edz.3;
-        Sat, 30 Jan 2021 15:47:53 -0800 (PST)
+        with ESMTP id S232490AbhA3XtP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jan 2021 18:49:15 -0500
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 733DAC0613ED;
+        Sat, 30 Jan 2021 15:47:57 -0800 (PST)
+Received: by mail-ej1-x629.google.com with SMTP id i8so2120557ejc.7;
+        Sat, 30 Jan 2021 15:47:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=5opFbc9GXOiDzoGX7Mdpij1lxqzsIU+iWus0/IPai1Y=;
-        b=gnPSiUQ7XA1pmo8A9e8MOqyvDfgsVhA9FXF2FnSVF17ljc6WUH8ZRJi8oo4aOGKid+
-         2VLyXXyu0jGAjnfFBj643k5+p5oaeEilaluaze+QZEzYGW7nxMNBmzW7fGG8x6GpA9dO
-         GOUgL81i7pDNxC6id1xoPVpD0RBL5puGy3pr/Z/JxpOR3zwd5TZH98Y2R90qiohx5FlI
-         XOaM0hj1Uy2h5sAAiDIN2b5T0rsXPDw/NgbVFsiwElELsrxx8usEv0rc1ZPfdh6r3t+X
-         xN/erEoOold2UaIaR9fks+Owd5sKmO8eMPGrqIwXF8Qovd2t+5t/QBRdIYsrrPTCSXJr
-         hMXA==
+        bh=l1vBwvopkVoZW1LdSHZ0VntQhbz1e+J1ify4RkFAUDg=;
+        b=nCgfM79Cv1gKTkdnZi+iTVkIXmdJIhRtPl2up6JysfrtdUsAtapHTnrBj9JOzzuP3y
+         6jteTY5b+UbXw3j3hUYB0UsRYQbJzqONVhX2mEeHFMnuiSRKLtg9UfO5TWsSzR5XQeAi
+         txdjfDP8I8CcLFDTptZLCUIZAiwBVOllsCEAG5kGLHEflBrhPzQzOfymbJDMD9V1fCD9
+         xqLAQwFQZ11O0Qr7g1JkwsQ8mKpZY10Im3F4b9TrZvGcDR7zKOfbTYwppG4/4JNCtjHl
+         mBNpEdQKCA6jVqbUitSl8lMMrRGieegva9AxUhmKRze8N4SMPWCh4gaKPhrj4r6MjpUu
+         L66Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
          :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=5opFbc9GXOiDzoGX7Mdpij1lxqzsIU+iWus0/IPai1Y=;
-        b=BAuWxPBaWjnzrRMRJQD7DNWJn5Sj+n/TL+ae9/CIPMNC9Fl++s/lB/FhbVgEaQAue0
-         YTGP5qSNXim707sEDOpJI7X7KkPcQm/Yd61HkwX1lrbI8ZC4L/p344HHCDkceA1NvHGl
-         0LHWgfWn22Y+GJmt4MUTb6ULbGY2v3RNJcq704XXyjhGGk5cCzUtlSMS7YvWjZMqWTIM
-         kHHbzU81FtdyQc4RRgzK28tNBsq4ixDTCWJSpWc9qq9dhEC6vbzytUb8CDCYS/kb3/Z1
-         EvQfnr+8kZxIbi6Bg56ch6Z8/DFDBG3feJFr/MbX7yVvN0Bp5kdPRkNyK1cE434RHSdz
-         KoIQ==
-X-Gm-Message-State: AOAM532gzjDG440Q6LhsX+cHa17FKlivS5OsYzXamaHfMHACYyIHIb/K
-        KTUZCqKcA1w4jT8UP7G5w8pSxZkqF6h9mkWe
-X-Google-Smtp-Source: ABdhPJxT/xoRO4n8PBEt6uAecRXvTXhIeTVTpJIiLGUmKwacac7MDFi4UBTQmzHef6Rfg4Gu6hkjqQ==
-X-Received: by 2002:aa7:c7d8:: with SMTP id o24mr12230542eds.328.1612050472199;
-        Sat, 30 Jan 2021 15:47:52 -0800 (PST)
+        bh=l1vBwvopkVoZW1LdSHZ0VntQhbz1e+J1ify4RkFAUDg=;
+        b=loi/M1nfOXXN3wLawYi1oakN50JIQQGnUUvoj9udLsjIHGPtnKO0/6Vkl9I8E+f0FH
+         3T3jijMME4fdCUUlxNW4RTb1cv6OkISAQpuugKHhb/FxR7MEOAPgTsc1BoSebXgNMIMt
+         63ZSfTHvqlc7nS5mqebPFptmnTLC/xcGArdI+5QFyrr3AFokSr+VRlQClCQT628fj5CM
+         9kKY7ikmtle22XP8qgNBbzBNFpbOEWxqoojBTho6xxz3XHXd/ip/0m9r8MJopXfcoV0R
+         mF5E4O7nBuMLG1spwdAeTG5xcp27ystQjDwFPKBPcDPbfQEQ537usRWE8KXsNs9miKyg
+         bL0g==
+X-Gm-Message-State: AOAM530ZP88MTke1MddPD7c1LIXoMT1H9A6+e62IIw2IRniNS7sAeEuL
+        f7QmYnTb2TN6Edf6mV/FKlORb6vCTI7g4aHw
+X-Google-Smtp-Source: ABdhPJzpHTsZkK8Pa94gAzrIL7rzOqlHSImWy/F8RfwN3spTn1VbC9nzYNpa8S+xYB+ItKRu4NxBaQ==
+X-Received: by 2002:a17:906:bc5a:: with SMTP id s26mr10653887ejv.327.1612050476291;
+        Sat, 30 Jan 2021 15:47:56 -0800 (PST)
 Received: from stitch.. ([80.71.140.73])
-        by smtp.gmail.com with ESMTPSA id u17sm6628009edr.0.2021.01.30.15.47.51
+        by smtp.gmail.com with ESMTPSA id u17sm6628009edr.0.2021.01.30.15.47.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Jan 2021 15:47:51 -0800 (PST)
+        Sat, 30 Jan 2021 15:47:55 -0800 (PST)
 Sender: Emil Renner Berthing <emil.renner.berthing@gmail.com>
 From:   Emil Renner Berthing <kernel@esmil.dk>
 To:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
@@ -61,9 +61,9 @@ Cc:     Emil Renner Berthing <kernel@esmil.dk>,
         Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
         Jing Xiangfeng <jingxiangfeng@huawei.com>,
         Oliver Neukum <oneukum@suse.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/9] arcnet: use new tasklet API
-Date:   Sun, 31 Jan 2021 00:47:22 +0100
-Message-Id: <20210130234730.26565-2-kernel@esmil.dk>
+Subject: [PATCH 5/9] net: usb: hso: use new tasklet API
+Date:   Sun, 31 Jan 2021 00:47:26 +0100
+Message-Id: <20210130234730.26565-6-kernel@esmil.dk>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210130234730.26565-1-kernel@esmil.dk>
 References: <20210130234730.26565-1-kernel@esmil.dk>
@@ -78,35 +78,38 @@ commit 12cc923f1ccc ("tasklet: Introduce new initialization API")
 
 Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
 ---
- drivers/net/arcnet/arcnet.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/net/usb/hso.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/arcnet/arcnet.c b/drivers/net/arcnet/arcnet.c
-index e04efc0a5c97..69d8920e394b 100644
---- a/drivers/net/arcnet/arcnet.c
-+++ b/drivers/net/arcnet/arcnet.c
-@@ -393,9 +393,9 @@ static void arcnet_timer(struct timer_list *t)
- 	}
- }
- 
--static void arcnet_reply_tasklet(unsigned long data)
-+static void arcnet_reply_tasklet(struct tasklet_struct *t)
+diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
+index ef6dd012b8c4..31d51346786a 100644
+--- a/drivers/net/usb/hso.c
++++ b/drivers/net/usb/hso.c
+@@ -1213,9 +1213,10 @@ static void hso_std_serial_read_bulk_callback(struct urb *urb)
+  * This needs to be a tasklet otherwise we will
+  * end up recursively calling this function.
+  */
+-static void hso_unthrottle_tasklet(unsigned long data)
++static void hso_unthrottle_tasklet(struct tasklet_struct *t)
  {
--	struct arcnet_local *lp = (struct arcnet_local *)data;
-+	struct arcnet_local *lp = from_tasklet(lp, t, reply_tasklet);
+-	struct hso_serial *serial = (struct hso_serial *)data;
++	struct hso_serial *serial = from_tasklet(serial, t,
++						 unthrottle_tasklet);
+ 	unsigned long flags;
  
- 	struct sk_buff *ackskb, *skb;
- 	struct sock_exterr_skb *serr;
-@@ -483,8 +483,7 @@ int arcnet_open(struct net_device *dev)
- 		arc_cont(D_PROTO, "\n");
- 	}
- 
--	tasklet_init(&lp->reply_tasklet, arcnet_reply_tasklet,
--		     (unsigned long)lp);
-+	tasklet_setup(&lp->reply_tasklet, arcnet_reply_tasklet);
- 
- 	arc_printk(D_INIT, dev, "arcnet_open: resetting card.\n");
- 
+ 	spin_lock_irqsave(&serial->serial_lock, flags);
+@@ -1264,9 +1265,8 @@ static int hso_serial_open(struct tty_struct *tty, struct file *filp)
+ 		serial->rx_state = RX_IDLE;
+ 		/* Force default termio settings */
+ 		_hso_serial_set_termios(tty, NULL);
+-		tasklet_init(&serial->unthrottle_tasklet,
+-			     hso_unthrottle_tasklet,
+-			     (unsigned long)serial);
++		tasklet_setup(&serial->unthrottle_tasklet,
++			      hso_unthrottle_tasklet);
+ 		result = hso_start_serial_device(serial->parent, GFP_KERNEL);
+ 		if (result) {
+ 			hso_stop_serial_device(serial->parent);
 -- 
 2.30.0
 
