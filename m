@@ -2,244 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7A10309397
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 10:44:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6064630939C
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 10:44:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231490AbhA3Jm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 30 Jan 2021 04:42:57 -0500
-Received: from szxga05-in.huawei.com ([45.249.212.191]:12054 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229953AbhA3Jmg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jan 2021 04:42:36 -0500
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4DSThd2LwkzMS0x;
-        Sat, 30 Jan 2021 17:40:17 +0800 (CST)
-Received: from [10.67.103.6] (10.67.103.6) by DGGEMS403-HUB.china.huawei.com
- (10.3.19.203) with Microsoft SMTP Server id 14.3.498.0; Sat, 30 Jan 2021
- 17:41:42 +0800
-Subject: Re: question about bonding mode 4
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-References: <20201218193033.6138-1-jarod@redhat.com>
- <20201228101145.GC3565223@nanopsycho.orion>
- <20210107235813.GB29828@redhat.com>
- <20210108131256.GG3565223@nanopsycho.orion>
- <ef692814-fdea-ea59-6b52-93630b5b5570@huawei.com>
- <52630cba-cc60-a024-8dd0-8319e5245044@huawei.com> <10374.1611947473@famine>
-CC:     Jiri Pirko <jiri@resnulli.us>, "lipeng (Y)" <lipeng321@huawei.com>,
-        <linux-kernel@vger.kernel.org>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        "Andy Gospodarek" <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Davis <tadavis@lbl.gov>, <netdev@vger.kernel.org>,
-        <linuxarm@openeuler.org>, Salil Mehta <salil.mehta@huawei.com>
-From:   moyufeng <moyufeng@huawei.com>
-Message-ID: <06edc913-a632-6c49-4bcc-30e793d184a0@huawei.com>
-Date:   Sat, 30 Jan 2021 17:41:35 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+        id S231397AbhA3Jnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 30 Jan 2021 04:43:51 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:49872 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231886AbhA3Jnl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 30 Jan 2021 04:43:41 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10U9Ulbe009215;
+        Sat, 30 Jan 2021 01:42:56 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : content-type : content-transfer-encoding :
+ mime-version; s=pfpt0220; bh=z9RA7C1O3sPq/cPVtu4bxmI5Wzq9JBAvHrxfhQTOL7c=;
+ b=fuutvMEwn3ilfueh3rSuMerewB/Gu1q8xg3SkxMFulWTQqggddq0wFTLCGJB6ofmYp18
+ +mX07QvM80xk2lTwCDXui6l1BkMvBxcV7SXuoIooX3y7yDIJBb07kCGz45LfbYgk2qK+
+ OL8YEbLY4LLONFYXqfPaNXo3mP/rEsRnPHCk0F9547djiaaIZhNns+yeaAuGswUPeMZS
+ JnXUv7jsK9cTuTQUDz/6DQDTZBpXdiei2KQZFju5VgDD+hZwN1TZIUvc9mtAwwWgUThw
+ k1qQ+LXXCkgc/1b9H3EKBj7odcSN1mm9gskIVfji/4Qqdc24kkV+mn86ZCyUQPmvThOY qw== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 36d0kd8bgb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Sat, 30 Jan 2021 01:42:56 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sat, 30 Jan
+ 2021 01:42:54 -0800
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.171)
+ by DC5-EXCH01.marvell.com (10.69.176.38) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2 via Frontend Transport; Sat, 30 Jan 2021 01:42:53 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Zph2aSWjPjoN/M3eQ+HcvU7Zm+hfbtQdSi3uRA8ZSSZyo3JXIIsX18DRzG9s3lmsNMUmTdEJg3x/5pF/ZuTDMQqCzu+kS/ExxmOGoG24/xxiVht3ISbse0mZTzJTlOHzT4TVkoiaKlSeo23AOUzxkImS3ZtYMLwfqc3KWHYteOHPY6kgHLqnWeOehE0oL5RgVoSTHe5XqyC+62xZ02dEFIX3GZmLTp+HsgJdkd1JmEN6ZYMXX0dwaaap79oQ/l7Z3++ZumHGnYhMacoLt8kNRiV7wxaINUWWs5+dYJWqAENoYdpfK42PgmGQ6dDE0uRAgin2vSdHdia2r0bZRWZl6g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=z9RA7C1O3sPq/cPVtu4bxmI5Wzq9JBAvHrxfhQTOL7c=;
+ b=lxCs5Ta0u9dariAsp7nuLZEwztHamcdLMr8P3+tVoVdjlvFUtWVJGyM9hukESdBfwUbFZmuOyXvm+RK9ZBe7MNzubRUij+8ye0Q5hRMz33oiDPss7/Ok4h8/4IigkciwOng9CLHWrwXu7gbKPvQrpr8Z+JNYE930dxPLmj4ZPOnQJlSdf6f1eb7K3/MFpAYsyW2++7WkCYTUBcMU5SWz+NPh6fRw23wV0v9EO9QJmcxCAWp1jTyvnCwFLDWDVywKNs78l1i73jIcZSVwMTTd9LcsPasYsYyIsQ8zOy64SXR2X+4p8/m6vjh+ruXwkHMltqjNrMPMR2zGBPpL/OU91w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=z9RA7C1O3sPq/cPVtu4bxmI5Wzq9JBAvHrxfhQTOL7c=;
+ b=ZQJooqQFJ59a2zSDvJC6cubK097SrRdRnDu3WW53f2dgP5dMQZxn3+jFDW7gGFl7y1C3j4f03aCBYAbEWsL3DKCnsuXhqjwZNjW7Sh6sc2091nPpnc+HuSQedPe/h5FzeLU/5amwbyXY1ADDvezqp5QjC8OZREKd/IcH3o8Sw48=
+Received: from MWHPR18MB1421.namprd18.prod.outlook.com (2603:10b6:320:2a::23)
+ by MW3PR18MB3481.namprd18.prod.outlook.com (2603:10b6:303:2d::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.17; Sat, 30 Jan
+ 2021 09:42:52 +0000
+Received: from MWHPR18MB1421.namprd18.prod.outlook.com
+ ([fe80::25eb:fce2:fba7:327d]) by MWHPR18MB1421.namprd18.prod.outlook.com
+ ([fe80::25eb:fce2:fba7:327d%4]) with mapi id 15.20.3805.022; Sat, 30 Jan 2021
+ 09:42:52 +0000
+From:   Hariprasad Kelam <hkelam@marvell.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+CC:     Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        Geethasowjanya Akula <gakula@marvell.com>,
+        Jerin Jacob Kollanukkaran <jerinj@marvell.com>,
+        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>,
+        Christina Jacob <cjacob@marvell.com>
+Subject: Re: [Patch v2 net-next 1/7] octeontx2-af: forward error correction
+ configuration
+Thread-Topic: [Patch v2 net-next 1/7] octeontx2-af: forward error correction
+ configuration
+Thread-Index: Adb27Arlo7Q8sqIFQnWYAldRpK+MAw==
+Date:   Sat, 30 Jan 2021 09:42:52 +0000
+Message-ID: <MWHPR18MB14217664A28BDBF32A31233BDEB89@MWHPR18MB1421.namprd18.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=marvell.com;
+x-originating-ip: [117.201.216.226]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 205bf909-ba39-4418-3f6f-08d8c50369f0
+x-ms-traffictypediagnostic: MW3PR18MB3481:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MW3PR18MB3481B908569C7F0158F99095DEB89@MW3PR18MB3481.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:121;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: prWNy2UeoFxHdQSqpga3n5ltOI/vV3XS9O1CNXXRVh4xoHRNHRLnNZDV/aH8Pb4OSIjVWIPm95avkM7+KDnocg67MlFYRjJDV+ZkWjKWp7fKE5ne8ah47gsK5CAhBGZZWfauLJ4o/rjpJrw9g7FHSvWLUc4qP0VxzpnXCC4TwHt55ApTCayJsADv7j3fC8i0dGQdX6FYYAZr8A5ngwGHH8rAqRCHx5Gaxr6vIFVncz6/Al7sRAzbmP2NPPJUEWYCoeu8nUu6We4iQbLvqZbCr4jeqnP+L1Kt/P8H79NcDy+S9Odj+1WTwMhahnedpXN72aMil4VoPrnNLGB4xA77C2drydy8RTflBMKh+D56YPuc+hNwY7rbsSK8t+W/eh/8MoxmSJr6+sPqzS58JOjGFQ0mgkJHP5607EXifm5p6hHqFJMTxoQywviT+gh/dtTTmmQTj4JxiqZ51LQyBzXefytgcPwhMEHuwxZ1GW0Ooq+bcCblN8Lpt7JqFiOpqWdHY8hV2fHqE5HovRGKSjke4A==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR18MB1421.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(346002)(396003)(366004)(376002)(136003)(33656002)(52536014)(26005)(71200400001)(8936002)(86362001)(478600001)(6916009)(53546011)(6506007)(5660300002)(66476007)(66556008)(4326008)(55016002)(9686003)(66446008)(64756008)(54906003)(76116006)(66946007)(2906002)(316002)(186003)(83380400001)(55236004)(8676002)(107886003)(7696005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?utf-8?B?c044eSs3dEtSeEQ0SFZhdlZHT01MVm9DUGRITnVXK1JQbTZEZ3hPdWJMek1k?=
+ =?utf-8?B?dEtRdWZWY2orMjhkODgwbnkwdmtHdGtnZW15Z2VGdVd3d3IvcmlPblFQVWdM?=
+ =?utf-8?B?NTJkSVpjV2tFT3JRN0E3ME42NVFBZWJEZjhQNExLTGd1cjgySUFGMUJEMlph?=
+ =?utf-8?B?L0F1U3hUdFBMMUFsWmp4M255UkJ0S2YzSU5WZTRKMjBLdVo4ZlQrUHhRWlVn?=
+ =?utf-8?B?MTJrREFJVVoxTE9LNGpxTUR4TmZhZkdta3lCY0xJd1czM0x1U2tTTW1ONlRD?=
+ =?utf-8?B?YXE5L3YwNlcvdkdVdWE3S3J6ZElhN3hHRi9XRWlEZEJpelczS1FYUzBDV0JG?=
+ =?utf-8?B?dXRuSkR0blVGTEQ1ajczd2RBT0hraWxVRTZVUXZVYjN5R1pPV2ZYM05xTXZF?=
+ =?utf-8?B?eVZyV0NUSTluK0VuYTBCZm5XeDRDVGNUMGYvRlFjSnp5VDlmcUc3T0NqNGlV?=
+ =?utf-8?B?Vk56WHloRzZkaTl5eHNwSVZlM2dNS1l0WllkYTRJeTZHZkY2NFhRajhLQk9s?=
+ =?utf-8?B?UXZmZCs2a2NaM2g0aHhESlgyNVIzclN4WldwU0x5N1RnMlRIS3hJNFFrNHRa?=
+ =?utf-8?B?Q01SV2RlaVpWRExEbHJEMTUxRENtdVNscnJ4SVpqbFowRUZNQ0UwTFFOQ00z?=
+ =?utf-8?B?amt3NmNJZVdTTkk0KzJhVlpEdW5xY2VCb25qZkRMREJOQmFnN0tUS0t2bmZa?=
+ =?utf-8?B?bk10aEZGUHJ0dkFueXRCcFhKWWpsRzlEWlg4MDlwZVkydWJBU3ZaL3RmOHY4?=
+ =?utf-8?B?c1VmVWdNQU5jZ0NTYXRDYlpFOEJ3SGt6bjNQSjVRbkJFa0dOOWNZQzB6UWNy?=
+ =?utf-8?B?eHlQVGVQeDJER0tUZm5aQVU2SWU4Q2NqZlZIcnByVTdDNzl0cHR6N1FWU2ZG?=
+ =?utf-8?B?Z3NyTzdHYmVVWml0bzZFaW1zRjdweHhtUlQ5cWZLRmJXcWZieCtIUWxxNXMr?=
+ =?utf-8?B?endUMTlzaFgyTGxPNE5RL2VWaVlBVm85SHNFbGVFSUtxcXJHOGFMZmxnSEpz?=
+ =?utf-8?B?bzEvYU1TUlltWFJVVjFFN0FSenJaajRJZ0ozOVQyK24zdXd4c3lCSDZ4bytP?=
+ =?utf-8?B?S2V0TTVOWFk0b1lNUmx3STBCWWlOWmN6azAwL000WVRrYklNakRzU1dOYVJX?=
+ =?utf-8?B?R2RnTnk2UHNNelJpWS9IZlduQzQ4S2VQbkIvQkYxMFFIaEQyTmVDejVyMTho?=
+ =?utf-8?B?RDJCd2ZodFRRYjY5b0ZkL0ZHMlBLTjNTWVRMK1ZZcCs3YkFxY2hSSkNZbWhk?=
+ =?utf-8?B?cDA5UUMzQXFIY09WMXVPSGFQSVU0dm15U3U3THJRdnc0aDN5S1Q1SW9OS1NV?=
+ =?utf-8?B?amhtYlh3Q0U1cjhVdWtmZWcrenFTNzZ5M0F0Vk9kS2hnaGNQM0NEWkQ2eGpG?=
+ =?utf-8?B?a0dvdzYxKytyTUExQVY3cktHdHNyZ2JBUEFOUmRiV1lBWXZYMjM1blZRdHh1?=
+ =?utf-8?Q?Cv2JAIhm?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <10374.1611947473@famine>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.103.6]
-X-CFilter-Loop: Reflected
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR18MB1421.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 205bf909-ba39-4418-3f6f-08d8c50369f0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Jan 2021 09:42:52.4312
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: SA5u7v8U+cvjm05FlqkOSVc1tyJVCzJwx6pLIIUCxIKKb+k571aX9G6qJQnUOPkIvJQ15jYiII1ths5875E7XA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR18MB3481
+X-OriginatorOrg: marvell.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
+ definitions=2021-01-30_06:2021-01-29,2021-01-30 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2021/1/30 3:11, Jay Vosburgh wrote:
-> moyufeng <moyufeng@huawei.com> wrote:
-> 
->> Ping...
->> Any comments? Thanks!
->>
->> On 2021/1/15 10:02, moyufeng wrote:
->>> Hi Team,
->>>
->>> I have a question about bonding. During testing bonding mode 4
->>> scenarios, I find that there is a very low probability that
->>> the pointer is null. The following information is displayed:
->>>
->>> [99359.795934] bond0: (slave eth13.2001): Port 2 did not find a suitable aggregator
->>> [99359.796960] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000020
->>> [99359.798127] Mem abort info:
->>> [99359.798526]   ESR = 0x96000004
->>> [99359.798938]   EC = 0x25: DABT (current EL), IL = 32 bits
->>> [99359.799673]   SET = 0, FnV = 0
->>> [99359.800106]   EA = 0, S1PTW = 0
->>> [99359.800554] Data abort info:
->>> [99359.800952]   ISV = 0, ISS = 0x00000004
->>> [99359.801522]   CM = 0, WnR = 0
->>> [99359.801970] user pgtable: 4k pages, 48-bit VAs, pgdp=00000000c64e6000
->>> [99359.802876] [0000000000000020] pgd=0000000000000000
->>> [99359.803555] Internal error: Oops: 96000004 [#1] PREEMPT SMP
->>> [99359.804369] Modules linked in: bonding hns3(-) hclgevf hnae3 [last unloaded: bonding]
->>> [99359.805494] CPU: 1 PID: 951 Comm: kworker/u10:2 Not tainted 5.7.0-rc4+ #1
->>> [99359.806455] Hardware name: linux,dummy-virt (DT)
->>> [99359.807107] Workqueue: bond0 bond_3ad_state_machine_handler [bonding]
->>> [99359.808056] pstate: 60c00005 (nZCv daif +PAN +UAO)
->>> [99359.808722] pc : bond_3ad_state_machine_handler+0x7fc/0xdb8 [bonding]
->>> [99359.809652] lr : bond_3ad_state_machine_handler+0x7f4/0xdb8 [bonding]
->>> [99359.810535] sp : ffff80001882bd20
->>> [99359.811012] x29: ffff80001882bd20 x28: ffff000085939a38
->>> [99359.811791] x27: ffff00008649bb68 x26: 00000000aaaaaaab
->>> [99359.812871] x25: ffff800009401000 x24: ffff800009408de4
->>> [99359.814049] x23: ffff80001882bd98 x22: ffff00008649b880
->>> [99359.815210] x21: 0000000000000000 x20: ffff000085939a00
->>> [99359.816401] x19: ffff00008649b880 x18: ffff800012572988
->>> [99359.817637] x17: 0000000000000000 x16: 0000000000000000
->>> [99359.818870] x15: ffff80009882b987 x14: 726f746167657267
->>> [99359.820090] x13: 676120656c626174 x12: 697573206120646e
->>> [99359.821374] x11: 696620746f6e2064 x10: 696420322074726f
->>> [99359.822659] x9 : 50203a2931303032 x8 : 0000000000081391
->>> [99359.823891] x7 : ffff8000108e3ad0 x6 : ffff8000128858bb
->>> [99359.825109] x5 : 0000000000000000 x4 : 0000000000000000
->>> [99359.826262] x3 : 00000000ffffffff x2 : 906b329bb5362a00
->>> [99359.827394] x1 : 906b329bb5362a00 x0 : 0000000000000000
->>> [99359.828540] Call trace:
->>> [99359.829071]  bond_3ad_state_machine_handler+0x7fc/0xdb8 [bonding]
->>> [99359.830367]  process_one_work+0x15c/0x4a0
->>> [99359.831216]  worker_thread+0x50/0x478
->>> [99359.832022]  kthread+0x130/0x160
->>> [99359.832716]  ret_from_fork+0x10/0x18
->>> [99359.833487] Code: 910c0021 95f704bb f9403f80 b5ffe300 (f9401000)
->>> [99359.834742] ---[ end trace c7a8e02914afc4e0 ]---
->>> [99359.835817] Kernel panic - not syncing: Fatal exception in interrupt
->>> [99359.837334] SMP: stopping secondary CPUs
->>> [99359.838277] Kernel Offset: disabled
->>> [99359.839086] CPU features: 0x080002,22208218
->>> [99359.840053] Memory Limit: none
->>> [99359.840783] ---[ end Kernel panic - not syncing: Fatal exception in interrupt ]---
->>>
->>> The test procedure is as follows:
->>> 1. Configure bonding and set it to mode 4.
->>>     echo "4" > /sys/class/net/bond0/bonding/mode
->>>     ifconfig bond0 up
->>>
->>> 2. Configure two VLANs and add them to the bonding in step 1.
->>>     vconfig add eth0 2001
->>>     vconfig add eth1 2001
->>>     ifenslave bond0 eth0.2001 eth1.2001
->>>
->>> 3. Unload the network device driver and bonding driver.
->>>     rmmod hns3
->>>     rmmod hclge
->>>     rmmod hnae3
->>>     rmmod bonding.ko
-> 
-> 	Are you running the above in a script, and can you share the
-> entire thing?
-
-Thanks for your reply.
-
-Yes, it's a script, as below. However, the recurrence probability is
-very low. So far, this problem occurs only once :(
-
-#start
-#!/bin/bash
-Version=$(uname -r)
-KoPath=/lib/modules/"${Version}"
-while [ 1 ];do
-	insmod ${KoPath}/hnae3.ko
-	insmod ${KoPath}/hclgevf.ko
-	insmod ${KoPath}/hns3.ko
-	insmod ${KoPath}/bonding.ko
-
-	ifconfig eth0 up
-	ifconfig eth1 up
-
-	echo "4" > /sys/class/net/bond0/bonding/mode
-	ifconfig bond0 192.168.1.101
-	echo 100 > "/sys/class/net/bond0/bonding/miimon"
-	sleep 8
-
-	vconfig add eth0 2001
-	vconfig add eth1 2001
-	ifconfig eth0.2001 192.168.2.101 up
-	ifconfig eth1.2001 192.168.3.101 up
-	sleep 8
-
-	ifenslave bond0 eth0.2001 eth13.2001
-	sleep 8
-
-	rmmod hns3
-	rmmod hclge
-	rmmod hclgevf
-	rmmod hnae3
-	rmmod bonding.ko
-	sleep 5
-done
-#end
-
-> 
-> 	Does the issue occur with the current net-next?
-> 
-Yes
-
->>> 4. Repeat the preceding steps for a long time.
-> 
-> 	When you run this test, what are the network interfaces eth0 and
-> eth1 connected to, and are those ports configured for VLAN 2001 and
-> LACP?
-> 
-Yes, the configurations at both ends are the same.
-
->>> By checking the logic in ad_port_selection_logic(), I find that
->>> if enter the branch "Port %d did not find a suitable aggregator",
->>> the value of port->aggregator will be NULL, causing the problem.
->>>
->>> So I'd like to ask what circumstances will be involved in this
->>> branch, and what should be done in this case?
-> 
-> 	Well, in principle, this shouldn't ever happen.  Every port
-> structure contains an aggregator structure, so there should always be
-> one available somewhere.  I'm going to speculate that there's a race
-> condition somewhere in the teardown processing vs the LACP state machine
-> that invalidates this presumption.
-> 
-I agree with your inference. But I don't have a better way to prove it,
-since the recurrence probability is too low.
-
->>> The detailed code analysis is as follows:
-> 
-> [...]
-> 
->>> 	/* if all aggregator's ports are READY_N == TRUE, set ready=TRUE
->>> 	 * in all aggregator's ports, else set ready=FALSE in all
->>> 	 * aggregator's ports
->>> 	 */
->>> 	__set_agg_ports_ready(port->aggregator,
->>> 			      __agg_ports_are_ready(port->aggregator));
->>>
->>> ----analysis: port->aggregator is still NULL, which causes problem.
->>>
->>> 	aggregator = __get_first_agg(port);
->>> 	ad_agg_selection_logic(aggregator, update_slave_arr);
->>>
->>> 	if (!port->aggregator->is_active)
->>> 		port->actor_oper_port_state &= ~LACP_STATE_SYNCHRONIZATION;
-> 
-> 	Correct, if the "did not find a suitable aggregator" path is
-> taken, port->aggregator is NULL and bad things happen in the above
-> block.
-> 
-> 	This is something that needs to be fixed, but I'm also concerned
-> that there are other issues lurking, so I'd like to be able to reproduce
-> this.
-> 
-> 	-J
-> 
-I will continue to reproduce the problem and try to find ways to improve
-the reproducibility probability.
-
-Since this path is incorrect, could you help to fix it?
-
-Thank you! :)
-
-> ---
-> 	-Jay Vosburgh, jay.vosburgh@canonical.com
-> .
-> 
+SGkgV2lsbGVtLA0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IFdpbGxl
+bSBkZSBCcnVpam4gPHdpbGxlbWRlYnJ1aWpuLmtlcm5lbEBnbWFpbC5jb20+DQo+IFNlbnQ6IFRo
+dXJzZGF5LCBKYW51YXJ5IDI4LCAyMDIxIDE6NDUgQU0NCj4gVG86IEhhcmlwcmFzYWQgS2VsYW0g
+PGhrZWxhbUBtYXJ2ZWxsLmNvbT4NCj4gQ2M6IE5ldHdvcmsgRGV2ZWxvcG1lbnQgPG5ldGRldkB2
+Z2VyLmtlcm5lbC5vcmc+OyBMS01MIDxsaW51eC0NCj4ga2VybmVsQHZnZXIua2VybmVsLm9yZz47
+IERhdmlkIE1pbGxlciA8ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldD47IEpha3ViDQo+IEtpY2luc2tpIDxr
+dWJhQGtlcm5lbC5vcmc+OyBTdW5pbCBLb3Z2dXJpIEdvdXRoYW0NCj4gPHNnb3V0aGFtQG1hcnZl
+bGwuY29tPjsgTGludSBDaGVyaWFuIDxsY2hlcmlhbkBtYXJ2ZWxsLmNvbT47DQo+IEdlZXRoYXNv
+d2phbnlhIEFrdWxhIDxnYWt1bGFAbWFydmVsbC5jb20+OyBKZXJpbiBKYWNvYiBLb2xsYW51a2th
+cmFuDQo+IDxqZXJpbmpAbWFydmVsbC5jb20+OyBTdWJiYXJheWEgU3VuZGVlcCBCaGF0dGEgPHNi
+aGF0dGFAbWFydmVsbC5jb20+Ow0KPiBDaHJpc3RpbmEgSmFjb2IgPGNqYWNvYkBtYXJ2ZWxsLmNv
+bT4NCj4gU3ViamVjdDogW0VYVF0gUmU6IFtQYXRjaCB2MiBuZXQtbmV4dCAxLzddIG9jdGVvbnR4
+Mi1hZjogZm9yd2FyZCBlcnJvcg0KPiBjb3JyZWN0aW9uIGNvbmZpZ3VyYXRpb24NCj4gDQo+IEV4
+dGVybmFsIEVtYWlsDQo+IA0KPiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+IE9uIFdlZCwgSmFuIDI3LCAyMDIx
+IGF0IDQ6MDUgQU0gSGFyaXByYXNhZCBLZWxhbSA8aGtlbGFtQG1hcnZlbGwuY29tPg0KPiB3cm90
+ZToNCj4gPg0KPiA+IEZyb206IENocmlzdGluYSBKYWNvYiA8Y2phY29iQG1hcnZlbGwuY29tPg0K
+PiA+DQo+ID4gQ0dYIGJsb2NrIHN1cHBvcnRzIGZvcndhcmQgZXJyb3IgY29ycmVjdGlvbiBtb2Rl
+cyBiYXNlUiBhbmQgUlMuIFRoaXMNCj4gPiBwYXRjaCBhZGRzIHN1cHBvcnQgdG8gc2V0IGVuY29k
+aW5nIG1vZGUgYW5kIHRvIHJlYWQNCj4gPiBjb3JyZWN0ZWQvdW5jb3JyZWN0ZWQgYmxvY2sgY291
+bnRlcnMNCj4gPg0KPiA+IEFkZHMgbmV3IG1haWxib3ggaGFuZGxlcnMgc2V0X2ZlYyB0byBjb25m
+aWd1cmUgZW5jb2RpbmcgbW9kZXMgYW5kDQo+ID4gZmVjX3N0YXRzIHRvIHJlYWQgY291bnRlcnMg
+YW5kIGFsc28gaW5jcmVhc2UgbWJveCB0aW1lb3V0IHRvIGFjY29tZGF0ZQ0KPiA+IGZpcm13YXJl
+IGNvbW1hbmQgcmVzcG9uc2UgdGltZW91dC4NCj4gPg0KPiA+IEFsb25nIHdpdGggbmV3IENHWF9D
+TURfU0VUX0ZFQyBjb21tYW5kIGFkZCBvdGhlciBjb21tYW5kcyB0bw0KPiBzeW5jIHdpdGgNCj4g
+PiBrZXJuZWwgZW51bSBsaXN0IHdpdGggZmlybXdhcmUuDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5
+OiBDaHJpc3RpbmEgSmFjb2IgPGNqYWNvYkBtYXJ2ZWxsLmNvbT4NCj4gPiBTaWduZWQtb2ZmLWJ5
+OiBTdW5pbCBHb3V0aGFtIDxzZ291dGhhbUBtYXJ2ZWxsLmNvbT4NCj4gPiBTaWduZWQtb2ZmLWJ5
+OiBIYXJpcHJhc2FkIEtlbGFtIDxoa2VsYW1AbWFydmVsbC5jb20+DQo+ID4gLS0tDQo+ID4gIGRy
+aXZlcnMvbmV0L2V0aGVybmV0L21hcnZlbGwvb2N0ZW9udHgyL2FmL2NneC5jICAgIHwgNzQNCj4g
+KysrKysrKysrKysrKysrKysrKysrKw0KPiA+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9tYXJ2ZWxs
+L29jdGVvbnR4Mi9hZi9jZ3guaCAgICB8ICA3ICsrDQo+ID4gIC4uLi9uZXQvZXRoZXJuZXQvbWFy
+dmVsbC9vY3Rlb250eDIvYWYvY2d4X2Z3X2lmLmggIHwgMTcgKysrKy0NCj4gPiAgZHJpdmVycy9u
+ZXQvZXRoZXJuZXQvbWFydmVsbC9vY3Rlb250eDIvYWYvbWJveC5oICAgfCAyMiArKysrKystDQo+
+ID4gIC4uLi9uZXQvZXRoZXJuZXQvbWFydmVsbC9vY3Rlb250eDIvYWYvcnZ1X2NneC5jICAgIHwg
+MzMgKysrKysrKysrKw0KPiA+ICA1IGZpbGVzIGNoYW5nZWQsIDE1MSBpbnNlcnRpb25zKCspLCAy
+IGRlbGV0aW9ucygtKQ0KPiA+DQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0
+L21hcnZlbGwvb2N0ZW9udHgyL2FmL2NneC5jDQo+ID4gYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9t
+YXJ2ZWxsL29jdGVvbnR4Mi9hZi9jZ3guYw0KPiA+IGluZGV4IDg0YTkxMjMuLjU0ODlkYWIgMTAw
+NjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWFydmVsbC9vY3Rlb250eDIvYWYv
+Y2d4LmMNCj4gPiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9tYXJ2ZWxsL29jdGVvbnR4Mi9h
+Zi9jZ3guYw0KPiA+IEBAIC0zNDAsNiArMzQwLDU4IEBAIGludCBjZ3hfZ2V0X3R4X3N0YXRzKHZv
+aWQgKmNneGQsIGludCBsbWFjX2lkLCBpbnQNCj4gaWR4LCB1NjQgKnR4X3N0YXQpDQo+ID4gICAg
+ICAgICByZXR1cm4gMDsNCj4gPiAgfQ0KPiA+DQo+ID4gK3N0YXRpYyBpbnQgY2d4X3NldF9mZWNf
+c3RhdHNfY291bnQoc3RydWN0IGNneF9saW5rX3VzZXJfaW5mbyAqbGluZm8pDQo+ID4gK3sNCj4g
+PiArICAgICAgIGlmIChsaW5mby0+ZmVjKSB7DQo+ID4gKyAgICAgICAgICAgICAgIHN3aXRjaCAo
+bGluZm8tPmxtYWNfdHlwZV9pZCkgew0KPiA+ICsgICAgICAgICAgICAgICBjYXNlIExNQUNfTU9E
+RV9TR01JSToNCj4gPiArICAgICAgICAgICAgICAgY2FzZSBMTUFDX01PREVfWEFVSToNCj4gPiAr
+ICAgICAgICAgICAgICAgY2FzZSBMTUFDX01PREVfUlhBVUk6DQo+ID4gKyAgICAgICAgICAgICAg
+IGNhc2UgTE1BQ19NT0RFX1FTR01JSToNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICByZXR1
+cm4gMDsNCj4gPiArICAgICAgICAgICAgICAgY2FzZSBMTUFDX01PREVfMTBHX1I6DQo+ID4gKyAg
+ICAgICAgICAgICAgIGNhc2UgTE1BQ19NT0RFXzI1R19SOg0KPiA+ICsgICAgICAgICAgICAgICBj
+YXNlIExNQUNfTU9ERV8xMDBHX1I6DQo+ID4gKyAgICAgICAgICAgICAgIGNhc2UgTE1BQ19NT0RF
+X1VTWEdNSUk6DQo+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgcmV0dXJuIDE7DQo+ID4gKyAg
+ICAgICAgICAgICAgIGNhc2UgTE1BQ19NT0RFXzQwR19SOg0KPiA+ICsgICAgICAgICAgICAgICAg
+ICAgICAgIHJldHVybiA0Ow0KPiA+ICsgICAgICAgICAgICAgICBjYXNlIExNQUNfTU9ERV81MEdf
+UjoNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICBpZiAobGluZm8tPmZlYyA9PSBPVFgyX0ZF
+Q19CQVNFUikNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHJldHVybiAyOw0K
+PiA+ICsgICAgICAgICAgICAgICAgICAgICAgIGVsc2UNCj4gPiArICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgIHJldHVybiAxOw0KPiA+ICsgICAgICAgICAgICAgICB9DQo+ID4gKyAgICAg
+ICB9DQo+ID4gKyAgICAgICByZXR1cm4gMDsNCj4gDQo+IG1heSBjb25zaWRlciBpbnZlcnRpbmcg
+dGhlIGNvbmRpdGlvbiwgdG8gcmVtb3ZlIG9uZSBsZXZlbCBvZiBpbmRlbnRhdGlvbi4NCj4gDQpB
+Z3JlZWQuIFdpbGwgZml4IGluIG5leHQgdmVyc2lvbi4NCg0KPiA+ICtpbnQgY2d4X3NldF9mZWMo
+dTY0IGZlYywgaW50IGNneF9pZCwgaW50IGxtYWNfaWQpIHsNCj4gPiArICAgICAgIHU2NCByZXEg
+PSAwLCByZXNwOw0KPiA+ICsgICAgICAgc3RydWN0IGNneCAqY2d4Ow0KPiA+ICsgICAgICAgaW50
+IGVyciA9IDA7DQo+ID4gKw0KPiA+ICsgICAgICAgY2d4ID0gY2d4X2dldF9wZGF0YShjZ3hfaWQp
+Ow0KPiA+ICsgICAgICAgaWYgKCFjZ3gpDQo+ID4gKyAgICAgICAgICAgICAgIHJldHVybiAtRU5Y
+SU87DQo+ID4gKw0KPiA+ICsgICAgICAgcmVxID0gRklFTERfU0VUKENNRFJFR19JRCwgQ0dYX0NN
+RF9TRVRfRkVDLCByZXEpOw0KPiA+ICsgICAgICAgcmVxID0gRklFTERfU0VUKENNRFNFVEZFQywg
+ZmVjLCByZXEpOw0KPiA+ICsgICAgICAgZXJyID0gY2d4X2Z3aV9jbWRfZ2VuZXJpYyhyZXEsICZy
+ZXNwLCBjZ3gsIGxtYWNfaWQpOw0KPiA+ICsgICAgICAgaWYgKCFlcnIpIHsNCj4gPiArICAgICAg
+ICAgICAgICAgY2d4LT5sbWFjX2lkbWFwW2xtYWNfaWRdLT5saW5rX2luZm8uZmVjID0NCj4gPiAr
+ICAgICAgICAgICAgICAgICAgICAgICBGSUVMRF9HRVQoUkVTUF9MSU5LU1RBVF9GRUMsIHJlc3Ap
+Ow0KPiA+ICsgICAgICAgICAgICAgICByZXR1cm4gY2d4LT5sbWFjX2lkbWFwW2xtYWNfaWRdLT5s
+aW5rX2luZm8uZmVjOw0KPiA+ICsgICAgICAgfQ0KPiA+ICsgICAgICAgcmV0dXJuIGVycjsNCj4g
+DQo+IFByZWZlciBrZWVwaW5nIHRoZSBzdWNjZXNzIHBhdGggbGluZWFyIGFuZCByZXR1cm4gZWFy
+bHkgaWYgKGVycikgaW4gZXhwbGljaXQNCj4gYnJhbmNoLiBUaGlzIGFsc28gYWlkcyBicmFuY2gg
+cHJlZGljdGlvbi4NCj4NCkFncmVlZC4gV2lsbCBmaXggdGhpcyBpbiBuZXh0IHZlcnNpb24uDQog
+DQo+ID4gK2ludCBydnVfbWJveF9oYW5kbGVyX2NneF9mZWNfc3RhdHMoc3RydWN0IHJ2dSAqcnZ1
+LA0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc3RydWN0IG1zZ19yZXEg
+KnJlcSwNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHN0cnVjdCBjZ3hf
+ZmVjX3N0YXRzX3JzcCAqcnNwKSB7DQo+ID4gKyAgICAgICBpbnQgcGYgPSBydnVfZ2V0X3BmKHJl
+cS0+aGRyLnBjaWZ1bmMpOw0KPiA+ICsgICAgICAgdTggY2d4X2lkeCwgbG1hYzsNCj4gPiArICAg
+ICAgIGludCBlcnIgPSAwOw0KPiA+ICsgICAgICAgdm9pZCAqY2d4ZDsNCj4gPiArDQo+ID4gKyAg
+ICAgICBpZiAoIWlzX2NneF9jb25maWdfcGVybWl0dGVkKHJ2dSwgcmVxLT5oZHIucGNpZnVuYykp
+DQo+ID4gKyAgICAgICAgICAgICAgIHJldHVybiAtRVBFUk07DQo+ID4gKyAgICAgICBydnVfZ2V0
+X2NneF9sbWFjX2lkKHJ2dS0+cGYyY2d4bG1hY19tYXBbcGZdLCAmY2d4X2lkeCwgJmxtYWMpOw0K
+PiA+ICsNCj4gPiArICAgICAgIGNneGQgPSBydnVfY2d4X3BkYXRhKGNneF9pZHgsIHJ2dSk7DQo+
+ID4gKyAgICAgICBlcnIgPSBjZ3hfZ2V0X2ZlY19zdGF0cyhjZ3hkLCBsbWFjLCByc3ApOw0KPiA+
+ICsgICAgICAgcmV0dXJuIGVycjsNCj4gDQo+IG5vIG5lZWQgZm9yIHZhcmlhYmxlIGVycg0KQWdy
+ZWVkIHdpbGwgZml4IHRoaXMgaW4gbmV4dCB2ZXJzaW9uLg0KDQpUaGFua3MsDQpIYXJpcHJhc2Fk
+IGsNCg==
