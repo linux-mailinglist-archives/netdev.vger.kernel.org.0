@@ -2,169 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CF6530919D
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 04:08:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE54B3091A9
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 04:24:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233358AbhA3DIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jan 2021 22:08:00 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:41061 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S233310AbhA3DCJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 22:02:09 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from cmi@nvidia.com)
-        with SMTP; 30 Jan 2021 04:33:34 +0200
-Received: from dev-r630-03.mtbc.labs.mlnx (dev-r630-03.mtbc.labs.mlnx [10.75.205.13])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 10U2XWO3005357;
-        Sat, 30 Jan 2021 04:33:33 +0200
-From:   Chris Mi <cmi@nvidia.com>
-To:     netdev@vger.kernel.org
-Cc:     kuba@kernel.org, jiri@nvidia.com, saeedm@nvidia.com,
-        Chris Mi <cmi@nvidia.com>, kernel test robot <lkp@intel.com>
-Subject: [PATCH net-next v5] net: psample: Introduce stubs to remove NIC driver dependency
-Date:   Sat, 30 Jan 2021 10:33:19 +0800
-Message-Id: <20210130023319.32560-1-cmi@nvidia.com>
-X-Mailer: git-send-email 2.26.2
+        id S233254AbhA3DXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jan 2021 22:23:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34696 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231716AbhA3DLf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 22:11:35 -0500
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C259C061793
+        for <netdev@vger.kernel.org>; Fri, 29 Jan 2021 18:41:23 -0800 (PST)
+Received: by mail-oi1-x231.google.com with SMTP id p5so12145051oif.7
+        for <netdev@vger.kernel.org>; Fri, 29 Jan 2021 18:41:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=EerNCF/ZN+3JAZY/8jvdgN5YvG+O6/RrznIcMvrR7X0=;
+        b=tpRB6ziKPPAaZWk+8H7Q2tGDeAXL2vF8UT1oe6x0Ku0nBKxMLzXmNVBe0MMMu4JniN
+         VJcC/LPGMs2qJ7qSCsHZPe9EhXbcKptWmfCS2t4mabaMwvKZYeJ34uoT0QzTvU7Ke3J5
+         J3vy9EPk5ht95tv8gDkR5J+1f526DvxP7Nti6QjABuvK09VppE2msTYvm8C7jPIqIwiX
+         EvdKMiZtrafPR1jJ8Um1M+7njXXnScK2Seh92uc7I3fAhhn7MQfQXTX8pxq/uiwD5nvv
+         UaCt9HTx10Fvyu9lcuHLnHrk0ZvbNhm8Zvd4hcPNZqAv7M0EXSsAc8yXPq+SEEKpGnLf
+         V3Ew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=EerNCF/ZN+3JAZY/8jvdgN5YvG+O6/RrznIcMvrR7X0=;
+        b=GiL7lrGeFcYKiy0lMVbC1spAgaMzHdiT6pzc7UxIeiOJ1fQ7tePOQZRXd83+ODLsLo
+         J1JhYeKziBPX4cckvogNzpZu2ffBYHJgsn4ZVhBmDS4DUd/frFMngYnr3LOUVtFKn7+v
+         22OdseoKAz2B015V8/11TTOcjOfw0zCU0WkOf0xe/2Ih5G2JEe6XQ4/hblI8DKJqIqEq
+         JGVd46LSI0C49RLvlC85XcV0jsb/0LK8zqGipwyBYDpbI2pHdm48oV42er3UP1zOXMAl
+         AKnifdQDXzCsWSAUkEuRBHcJnoW7HNgyWTXKyhjwJRiEGSqIx0gr0L+EsMz1WRsFEupC
+         tmpg==
+X-Gm-Message-State: AOAM531miomzmfvkV4R3pc1yk9ZJHPCTDLN4ZOc6hvgRR02Gr4+4j3Gj
+        HaTc5W/9LLQxgVIXfDb0lJ9zOsesYdPzvZo0tZuDhveChusWOw==
+X-Google-Smtp-Source: ABdhPJyZZGpC7LanJHA9q3W5fCyNCnhvg+Wk5uieh5yIISW77SyQFO5iKXYUmcPakQLww/Dcd6Ig4Nh1GKVVLqsdo+w=
+X-Received: by 2002:aca:3150:: with SMTP id x77mr4426385oix.52.1611974482350;
+ Fri, 29 Jan 2021 18:41:22 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From:   Robert Hancock <hancockrwd@gmail.com>
+Date:   Fri, 29 Jan 2021 20:41:11 -0600
+Message-ID: <CADLC3L0vBXwLLdqKxox9E-K4dSH07ZhHZ5u_kaANb=16jon0zg@mail.gmail.com>
+Subject: Patch for stable: iwlwifi: provide gso_type to GSO packets
+To:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to send sampled packets to userspace, NIC driver calls
-psample api directly. But it creates a hard dependency on module
-psample. Introduce psample_ops to remove the hard dependency.
-It is initialized when psample module is loaded and set to NULL
-when the module is unloaded.
+Figured I would poke someone to add this patch to the stable queue - I
+don't see it in
+https://patchwork.kernel.org/bundle/netdev/stable/?state=* right now.
+This patch is reported to fix a severe upload speed regression in many
+Intel wireless adapters existing since kernel 5.9, as described in
+https://bugzilla.kernel.org/show_bug.cgi?id=209913
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Chris Mi <cmi@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
----
-v1->v2:
- - fix sparse errors
-v2->v3:
- - remove inline
-v3->v4:
- - add inline back
-v4->v5:
- - address Jakub's comments
+commit 81a86e1bd8e7060ebba1718b284d54f1238e9bf9
+Author: Eric Dumazet <edumazet@google.com>
+Date:   Mon Jan 25 07:09:49 2021 -0800
 
- include/net/psample.h    | 26 ++++++++++++++++++++++++++
- net/psample/psample.c    | 14 +++++++++++++-
- net/sched/Makefile       |  2 +-
- net/sched/psample_stub.c |  5 +++++
- 4 files changed, 45 insertions(+), 2 deletions(-)
- create mode 100644 net/sched/psample_stub.c
+    iwlwifi: provide gso_type to GSO packets
 
-diff --git a/include/net/psample.h b/include/net/psample.h
-index 68ae16bb0a4a..d0f1cfc56f6f 100644
---- a/include/net/psample.h
-+++ b/include/net/psample.h
-@@ -14,6 +14,15 @@ struct psample_group {
- 	struct rcu_head rcu;
- };
- 
-+struct psample_ops {
-+	void (*sample_packet)(struct psample_group *group, struct sk_buff *skb,
-+			      u32 trunc_size, int in_ifindex, int out_ifindex,
-+			      u32 sample_rate);
-+
-+};
-+
-+extern const struct psample_ops __rcu *psample_ops __read_mostly;
-+
- struct psample_group *psample_group_get(struct net *net, u32 group_num);
- void psample_group_take(struct psample_group *group);
- void psample_group_put(struct psample_group *group);
-@@ -35,4 +44,21 @@ static inline void psample_sample_packet(struct psample_group *group,
- 
- #endif
- 
-+static inline void
-+psample_nic_sample_packet(struct psample_group *group,
-+			  struct sk_buff *skb, u32 trunc_size,
-+			  int in_ifindex, int out_ifindex,
-+			  u32 sample_rate)
-+{
-+	const struct psample_ops *ops;
-+
-+	rcu_read_lock();
-+	ops = rcu_dereference(psample_ops);
-+	if (ops)
-+		ops->sample_packet(group, skb, trunc_size,
-+				   in_ifindex, out_ifindex,
-+				   sample_rate);
-+	rcu_read_unlock();
-+}
-+
- #endif /* __NET_PSAMPLE_H */
-diff --git a/net/psample/psample.c b/net/psample/psample.c
-index 33e238c965bd..983ca5b698fe 100644
---- a/net/psample/psample.c
-+++ b/net/psample/psample.c
-@@ -8,6 +8,7 @@
- #include <linux/kernel.h>
- #include <linux/skbuff.h>
- #include <linux/module.h>
-+#include <linux/rcupdate.h>
- #include <net/net_namespace.h>
- #include <net/sock.h>
- #include <net/netlink.h>
-@@ -35,6 +36,10 @@ static const struct genl_multicast_group psample_nl_mcgrps[] = {
- 
- static struct genl_family psample_nl_family __ro_after_init;
- 
-+static const struct psample_ops psample_sample_ops = {
-+	.sample_packet	= psample_sample_packet,
-+};
-+
- static int psample_group_nl_fill(struct sk_buff *msg,
- 				 struct psample_group *group,
- 				 enum psample_command cmd, u32 portid, u32 seq,
-@@ -456,11 +461,18 @@ EXPORT_SYMBOL_GPL(psample_sample_packet);
- 
- static int __init psample_module_init(void)
- {
--	return genl_register_family(&psample_nl_family);
-+	int ret;
-+
-+	ret = genl_register_family(&psample_nl_family);
-+	if (!ret)
-+		RCU_INIT_POINTER(psample_ops, &psample_sample_ops);
-+	return ret;
- }
- 
- static void __exit psample_module_exit(void)
- {
-+	rcu_assign_pointer(psample_ops, NULL);
-+	synchronize_rcu();
- 	genl_unregister_family(&psample_nl_family);
- }
- 
-diff --git a/net/sched/Makefile b/net/sched/Makefile
-index dd14ef413fda..0d92bb98bb26 100644
---- a/net/sched/Makefile
-+++ b/net/sched/Makefile
-@@ -3,7 +3,7 @@
- # Makefile for the Linux Traffic Control Unit.
- #
- 
--obj-y	:= sch_generic.o sch_mq.o
-+obj-y	:= sch_generic.o sch_mq.o psample_stub.o
- 
- obj-$(CONFIG_INET)		+= sch_frag.o
- obj-$(CONFIG_NET_SCHED)		+= sch_api.o sch_blackhole.o
-diff --git a/net/sched/psample_stub.c b/net/sched/psample_stub.c
-new file mode 100644
-index 000000000000..0541b8c5100d
---- /dev/null
-+++ b/net/sched/psample_stub.c
-@@ -0,0 +1,5 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+/* Copyright (c) 2021 Mellanox Technologies. */
-+
-+const struct psample_ops __rcu *psample_ops __read_mostly;
-+EXPORT_SYMBOL_GPL(psample_ops);
--- 
-2.26.2
+    net/core/tso.c got recent support for USO, and this broke iwlfifi
+    because the driver implemented a limited form of GSO.
 
+    Providing ->gso_type allows for skb_is_gso_tcp() to provide
+    a correct result.
+
+    Fixes: 3d5b459ba0e3 ("net: tso: add UDP segmentation support")
+    Signed-off-by: Eric Dumazet <edumazet@google.com>
+    Reported-by: Ben Greear <greearb@candelatech.com>
+    Tested-by: Ben Greear <greearb@candelatech.com>
+    Cc: Luca Coelho <luciano.coelho@intel.com>
+    Cc: Johannes Berg <johannes@sipsolutions.net>
+    Link: https://bugzilla.kernel.org/show_bug.cgi?id=209913
+    Link: https://lore.kernel.org/r/20210125150949.619309-1-eric.dumazet@gmail.com
+    Signed-off-by: Jakub Kicinski <kuba@kernel.org>
