@@ -2,164 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB7CC309CBC
-	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 15:26:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FFA4309C9B
+	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 15:14:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231948AbhAaOQF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Jan 2021 09:16:05 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:39192 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S231785AbhAaN36 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jan 2021 08:29:58 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10VD6m0x022112;
-        Sun, 31 Jan 2021 05:11:39 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=k2W0HGdS52YxBqxCw5+glP2NLyQW59WceMVWV8sZtaE=;
- b=KVLR15JsvWLPpr+O+O0eJmXmUJS5kZxHeIoVIXfmAnapCVRl98EXKduG0PD84LkOIsF4
- ApSrEAHArlBM96wAAvSBuXioxf23NwU5RTa31+hT4redpF4YCeM2DdL7AKh5KeLNDhGv
- FQzHbX5o/IM39SHUCoW45Vun6We7DaAIT9EAmjgjySuartTNBwjHUMyv4FS9TK6W3x2k
- wYdqpbJW6u8XIeuIeEYcxDmqYyWrM/Z3SYz4x2bLF4U62asjH1NXIcKpbDjsuIqdrLyq
- dMsA0PbUnn/v5zoyvSsM6NswBvYJfVq4WFpFY53dyJJvGiz9PGccOuStY6EWvqKouOGN FA== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 36d5psss6c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 31 Jan 2021 05:11:38 -0800
-Received: from SC-EXCH04.marvell.com (10.93.176.84) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 31 Jan
- 2021 05:11:37 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 31 Jan
- 2021 05:11:37 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sun, 31 Jan 2021 05:11:37 -0800
-Received: from hyd1soter2.marvell.com (unknown [10.29.37.45])
-        by maili.marvell.com (Postfix) with ESMTP id AB3CE3F703F;
-        Sun, 31 Jan 2021 05:11:33 -0800 (PST)
-From:   Hariprasad Kelam <hkelam@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <kuba@kernel.org>, <davem@davemloft.net>,
-        <willemdebruijn.kernel@gmail.com>, <andrew@lunn.ch>,
-        <sgoutham@marvell.com>, <lcherian@marvell.com>,
-        <gakula@marvell.com>, <jerinj@marvell.com>, <sbhatta@marvell.com>,
-        <hkelam@marvell.com>
-Subject: [Patch v3 net-next 7/7] octeontx2-pf: ethtool physical link configuration
-Date:   Sun, 31 Jan 2021 18:41:05 +0530
-Message-ID: <1612098665-187767-8-git-send-email-hkelam@marvell.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1612098665-187767-1-git-send-email-hkelam@marvell.com>
-References: <1612098665-187767-1-git-send-email-hkelam@marvell.com>
+        id S231459AbhAaOOU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 Jan 2021 09:14:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48654 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231879AbhAaN3I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jan 2021 08:29:08 -0500
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED66CC06174A
+        for <netdev@vger.kernel.org>; Sun, 31 Jan 2021 05:11:56 -0800 (PST)
+Received: by mail-il1-x136.google.com with SMTP id g7so11911705iln.2
+        for <netdev@vger.kernel.org>; Sun, 31 Jan 2021 05:11:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ot6vWHnfPIpcpEIXnX1FR6G/0Gh4xATqpaqCaCqtjpo=;
+        b=oxoTGE0uwxn3yJRPJSVn0kxvT/nDLqRwZ5QvfdJJr4H/zOUch+MHHxITm6Rj4eCdWG
+         fC+C3HN8deQQP+vMVZvjLWc9iSzSImYi0IjIMGU7mICF6N9Dza1cPGmlUhtg59jSHS3G
+         /GqFz6JjLJT/8M1J2PddTW4ua0GMrIsUqbpegRDN+Igob/HbQAKXK81JiVlVGK6vA1eB
+         jCygXTWD9qwOFVQd0qEgby55OMRWG+X8Tw2cYxaGlaXH1Pm03a7ibUQ3YSNL7NSHeMoZ
+         8XSjTfqZDSBw6Uty/Il9H7qJ0UHFTxSSvENc4Nv6TjDXLCLPR1Nm1KcMDKWHeUWKl3hn
+         EeXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ot6vWHnfPIpcpEIXnX1FR6G/0Gh4xATqpaqCaCqtjpo=;
+        b=fxYDORT0R12iFkU66C73hE/zuhMND7flkM31Do8dLcYwESjuGV7H5Qbj+Bg+jEQJkS
+         udOmifG3QJVWJBtn6obM6MmjZbrixT7on38lJk8KJi2d/e9U9nM4dQkaeKGUh/viO8x2
+         LDpVzuPLFg6ROcv4KDQoK663o2NqWlQHT9LFNTc01VaxeqicFyKOuWwxbM2sU5MWr4vE
+         TE1hO/J0veVfOmY89J4SeI31JMR53MOTSTqJaoNKlUVfcThIVx/gRJJXqym68oPIuszB
+         fM+Gszw36N2cVqD96zkfGfiNsyyCYiPxexd1BdVUFPrIhZvfDTo5aN05AapVDQ5V17ix
+         vxsw==
+X-Gm-Message-State: AOAM533ffzQah7m15Rkeo9esDERGNzLCxZkQpNECaOcnZ73IG+tRwklQ
+        5+yMNW8zIkPwW4JeM23rZSuHuA==
+X-Google-Smtp-Source: ABdhPJyHXBRh3MAL4W8QH8UMHsKZBBg/6pH5WvtfRcNfPYOBlqOaRQ2gqahIklV2ka7G5NEWFIg60Q==
+X-Received: by 2002:a92:ca81:: with SMTP id t1mr10124757ilo.139.1612098716231;
+        Sun, 31 Jan 2021 05:11:56 -0800 (PST)
+Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id u3sm7758797ilg.48.2021.01.31.05.11.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 31 Jan 2021 05:11:55 -0800 (PST)
+Subject: Re: [PATCH net-next 9/9] net: ipa: don't disable NAPI in suspend
+From:   Alex Elder <elder@linaro.org>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, elder@kernel.org,
+        evgreen@chromium.org, bjorn.andersson@linaro.org,
+        cpratapa@codeaurora.org,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20210129202019.2099259-1-elder@linaro.org>
+ <20210129202019.2099259-10-elder@linaro.org>
+ <CAF=yD-L1SKzu+gsma7KN4VjGnma-_w+amXx=Y_0e78rQiUCu7Q@mail.gmail.com>
+ <e27f5c10-7b77-1f12-fe36-e9261f01bca1@linaro.org>
+Message-ID: <b135f936-e51c-a6a8-511a-ccc316f2dab6@linaro.org>
+Date:   Sun, 31 Jan 2021 07:11:54 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
- definitions=2021-01-31_04:2021-01-29,2021-01-31 signatures=0
+In-Reply-To: <e27f5c10-7b77-1f12-fe36-e9261f01bca1@linaro.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christina Jacob <cjacob@marvell.com>
+On 1/30/21 10:29 PM, Alex Elder wrote:
+> On 1/30/21 9:25 AM, Willem de Bruijn wrote:
+>> On Fri, Jan 29, 2021 at 3:29 PM Alex Elder <elder@linaro.org> wrote:
+>>>
+>>> The channel stop and suspend paths both call __gsi_channel_stop(),
+>>> which quiesces channel activity, disables NAPI, and (on other than
+>>> SDM845) stops the channel.  Similarly, the start and resume paths
+>>> share __gsi_channel_start(), which starts the channel and re-enables
+>>> NAPI again.
+>>>
+>>> Disabling NAPI should be done when stopping a channel, but this
+>>> should *not* be done when suspending.  It's not necessary in the
+>>> suspend path anyway, because the stopped channel (or suspended
+>>> endpoint on SDM845) will not cause interrupts to schedule NAPI,
+>>> and gsi_channel_trans_quiesce() won't return until there are no
+>>> more transactions to process in the NAPI polling loop.
+>>
+>> But why is it incorrect to do so?
+> 
+> Maybe it's not; I also thought it was fine before, but...
+> 
+> Someone at Qualcomm asked me why I thought NAPI needed
+> to be disabled on suspend.  My response was basically
+> that it was a lightweight operation, and it shouldn't
+> really be a problem to do so.
+> 
+> Then, when I posted two patches last month, Jakub's
+> response told me he didn't understand why I was doing
+> what I was doing, and I stepped back to reconsider
+> the details of what was happening at suspend time.
+> 
+> https://lore.kernel.org/netdev/20210107183803.47308e23@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/
 
-Register set_link_ksetting callback with driver such that
-link configurations parameters like advertised mode,speed, duplex
-and autoneg can be configured.
+I should have mentioned that *this* response from Jakub
+to a question I had also led to my conclusion that NAPI
+should not be disabled on suspend--at least for IPA.
+  https://lore.kernel.org/netdev/20210105122328.3e5569a4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/
 
-below command
-ethtool -s eth0 advertise 0x1 speed 10 duplex full autoneg on
+The channel is *not* reset on suspend for IPA.
 
-Signed-off-by: Christina Jacob <cjacob@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
----
- .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  | 67 ++++++++++++++++++++++
- 1 file changed, 67 insertions(+)
+					-Alex
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-index d637815..74a62de 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-@@ -1170,6 +1170,72 @@ static int otx2_get_link_ksettings(struct net_device *netdev,
- 	return 0;
- }
- 
-+static void otx2_get_advertised_mode(const struct ethtool_link_ksettings *cmd,
-+				     u64 *mode)
-+{
-+	u32 bit_pos;
-+
-+	/* Firmware does not support requesting multiple advertised modes
-+	 * return first set bit
-+	 */
-+	bit_pos = find_first_bit(cmd->link_modes.advertising,
-+				 __ETHTOOL_LINK_MODE_MASK_NBITS);
-+	if (bit_pos != __ETHTOOL_LINK_MODE_MASK_NBITS)
-+		*mode = bit_pos;
-+}
-+
-+static int otx2_set_link_ksettings(struct net_device *netdev,
-+				   const struct ethtool_link_ksettings *cmd)
-+{
-+	struct otx2_nic *pf = netdev_priv(netdev);
-+	struct ethtool_link_ksettings req_ks;
-+	struct ethtool_link_ksettings cur_ks;
-+	struct cgx_set_link_mode_req *req;
-+	struct mbox *mbox = &pf->mbox;
-+	int err = 0;
-+
-+	/* save requested link settings */
-+	memcpy(&req_ks, cmd, sizeof(struct ethtool_link_ksettings));
-+
-+	memset(&cur_ks, 0, sizeof(struct ethtool_link_ksettings));
-+
-+	if (!ethtool_validate_speed(cmd->base.speed) ||
-+	    !ethtool_validate_duplex(cmd->base.duplex))
-+		return -EINVAL;
-+
-+	if (cmd->base.autoneg != AUTONEG_ENABLE &&
-+	    cmd->base.autoneg != AUTONEG_DISABLE)
-+		return -EINVAL;
-+
-+	otx2_get_link_ksettings(netdev, &cur_ks);
-+
-+	/* Check requested modes against supported modes by hardware */
-+	if (!bitmap_subset(req_ks.link_modes.advertising,
-+			   cur_ks.link_modes.supported,
-+			   __ETHTOOL_LINK_MODE_MASK_NBITS))
-+		return -EINVAL;
-+
-+	mutex_lock(&mbox->lock);
-+	req = otx2_mbox_alloc_msg_cgx_set_link_mode(&pf->mbox);
-+	if (!req) {
-+		err = -ENOMEM;
-+		goto end;
-+	}
-+
-+	req->args.speed = req_ks.base.speed;
-+	/* firmware expects 1 for half duplex and 0 for full duplex
-+	 * hence inverting
-+	 */
-+	req->args.duplex = req_ks.base.duplex ^ 0x1;
-+	req->args.an = req_ks.base.autoneg;
-+	otx2_get_advertised_mode(&req_ks, &req->args.mode);
-+
-+	err = otx2_sync_mbox_msg(&pf->mbox);
-+end:
-+	mutex_unlock(&mbox->lock);
-+	return err;
-+}
-+
- static const struct ethtool_ops otx2_ethtool_ops = {
- 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
- 				     ETHTOOL_COALESCE_MAX_FRAMES,
-@@ -1200,6 +1266,7 @@ static const struct ethtool_ops otx2_ethtool_ops = {
- 	.get_fecparam		= otx2_get_fecparam,
- 	.set_fecparam		= otx2_set_fecparam,
- 	.get_link_ksettings     = otx2_get_link_ksettings,
-+	.set_link_ksettings     = otx2_set_link_ksettings,
- };
- 
- void otx2_set_ethtool_ops(struct net_device *netdev)
--- 
-2.7.4
+> Four things were happening to suspend a channel:
+> quiesce activity; disable interrupt; disable NAPI;
+> and stop the channel.  It occurred to me that a
+> stopped channel would not generate interrupts, so if
+> the channel was stopped earlier there would be no need
+> to disable the interrupt.  Similarly there would be
+> (essentially) no need to disable NAPI once a channel
+> was stopped.
+> 
+> Underlying all of this is that I started chasing a
+> hang that was occurring on suspend over a month ago.
+> It was hard to reproduce (hundreds or thousands of
+> suspend/resume cycles without hitting it), and one
+> of the few times I actually hit the problem it was
+> stuck in napi_disable(), apparently waiting for
+> NAPI_STATE_SCHED to get cleared by napi_complete().
+> 
+> My best guess about how this could occur was if there
+> were a race of some kind between the interrupt handler
+> (scheduling NAPI) and the poll function (completing
+> it).  I found a number of problems while looking
+> at this, and in the past few weeks I've posted some
+> fixes to improve things.  Still, even with some of
+> these fixes in place we have seen a hang (but now
+> even more rarely).
+> 
+> So this grand rework of suspending/stopping channels
+> is an attempt to resolve this hang on suspend.
+> 
+> The channel is now stopped early, and once stopped,
+> everything that completed prior to the channel being
+> stopped is polled before considering the suspend
+> function done.  A stopped channel won't interrupt,
+> so we don't bother disabling the completion interrupt,
+> with no interrupts, NAPI won't be scheduled, so there's
+> no need to disable NAPI either.
+> 
+> The net result is simpler, and seems logical, and
+> should preclude any possible race between the interrupt
+> handler and poll function.  I'm trying to solve the
+> hang problem analytically, because it takes *so* long
+> to reproduce.
+> 
+> I'm open to other suggestions.
+> 
+>                     -Alex
+> 
+>>  From a quick look, virtio-net disables on both remove and freeze, for instance.
+>>
+>>> Instead, enable NAPI in gsi_channel_start(), when the completion
+>>> interrupt is first enabled.  Disable it again in gsi_channel_stop(),
+>>> when finally disabling the interrupt.
+>>>
+>>> Add a call to napi_synchronize() to __gsi_channel_stop(), to ensure
+>>> NAPI polling is done before moving on.
+>>>
+>>> Signed-off-by: Alex Elder <elder@linaro.org>
+>>> ---
+>> =
+>>> @@ -894,12 +894,16 @@ int gsi_channel_start(struct gsi *gsi, u32 channel_id)
+>>>          struct gsi_channel *channel = &gsi->channel[channel_id];
+>>>          int ret;
+>>>
+>>> -       /* Enable the completion interrupt */
+>>> +       /* Enable NAPI and the completion interrupt */
+>>> +       napi_enable(&channel->napi);
+>>>          gsi_irq_ieob_enable_one(gsi, channel->evt_ring_id);
+>>>
+>>>          ret = __gsi_channel_start(channel, true);
+>>> -       if (ret)
+>>> -               gsi_irq_ieob_disable_one(gsi, channel->evt_ring_id);
+>>> +       if (!ret)
+>>> +               return 0;
+>>> +
+>>> +       gsi_irq_ieob_disable_one(gsi, channel->evt_ring_id);
+>>> +       napi_disable(&channel->napi);
+>>>
+>>>          return ret;
+>>>   }
+>>
+>> subjective, but easier to parse when the normal control flow is linear
+>> and the error path takes a branch (or goto, if reused).
+>>
+> 
 
