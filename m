@@ -2,39 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C030F309BFC
-	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 13:37:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D047309BFD
+	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 13:37:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229959AbhAaKdk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Jan 2021 05:33:40 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:35062 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S230284AbhAaJxx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jan 2021 04:53:53 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10V9aDGf019453;
-        Sun, 31 Jan 2021 01:51:16 -0800
+        id S230281AbhAaKd7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 Jan 2021 05:33:59 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:62410 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229900AbhAaJx6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jan 2021 04:53:58 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10V9ZYDJ024843;
+        Sun, 31 Jan 2021 01:51:27 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=FeHCmERGHE5hTDNGpq5fcAHtpp6fODNypGGZLMjLTRs=;
- b=Nmo0EqKi04rWdXtgMz7Vngt8gIF3dMB/vwRZAp0QzLzmuqv38frePZ3mG6Vs7Pf9C4Eh
- U0RhYAo5wZTvpXnF0v/+6JtKIq5DzU1BwfAaBIKEkEDvZYoreoFgutC/XL1ZWzwrUuKq
- KEry9eskozp1Ps8z3mQtEVzchDYy60Jc4f9osS1ew7FBPTulg8lN/JzOUBOAI/N7foSN
- Y2+/b0MF0t92CCVHxKtSXAWzE+tUv8qjYy090jJyq/rpQe73+bD7a5iw3IPlITp6CGvE
- BlEbgA+3JFyKfhVMb+wENt/ebRMW7JCC845evVYtmgZ+fwJO8RBGR+Kj8WdVmf+ZB3D3 fA== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 36d5psshj3-1
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=pfpt0220; bh=PPmcOfrTjcHieQsKkMyjlYmkCVVcOE4m2YdaN546gCA=;
+ b=UscqH7XBSoHxKLN0G6u+8AuE8Sdt9ppp7zUGPW6lZUoW6huDBT7yL5U3Z6XXVtEvpZ9D
+ xi/Ae2i334RiIQzRSb8J9t1F23DfhXou+cqfjItTfO9wbeD/pSwrvjwVaAQTRY2uhalH
+ Y5VTcYzEj7KOg8wHotT6B3wJr28p0feoqH1VVgpkq/iE4aO0xC53Be6RKBOv6SvNrXnV
+ XwmVE4GgwzNqvOGQZgA2sgD0IsMxPbz7FobTQqxDs3pF0hROGGNBPE/WpAkaK5/dvsoW
+ 27VCmSorjBjEsrvkduVQS/Hjck+OpmS3c/dq++ZecLqtS9R36ncsVRiA1duMsMFX83tD lg== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 36d7uq1bkr-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 31 Jan 2021 01:51:16 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 31 Jan
- 2021 01:51:14 -0800
+        Sun, 31 Jan 2021 01:51:27 -0800
+Received: from SC-EXCH02.marvell.com (10.93.176.82) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 31 Jan
+ 2021 01:51:25 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 31 Jan
+ 2021 01:51:25 -0800
 Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sun, 31 Jan 2021 01:51:14 -0800
+ Transport; Sun, 31 Jan 2021 01:51:25 -0800
 Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id 8F8063F703F;
-        Sun, 31 Jan 2021 01:51:11 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id D9A703F703F;
+        Sun, 31 Jan 2021 01:51:21 -0800 (PST)
 From:   <stefanc@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
@@ -43,10 +46,12 @@ CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
         <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
         <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
         <atenart@kernel.org>
-Subject: [PATCH v6 net-next 00/18] net: mvpp2: Add TX Flow Control support
-Date:   Sun, 31 Jan 2021 11:50:46 +0200
-Message-ID: <1612086664-23972-1-git-send-email-stefanc@marvell.com>
+Subject: [PATCH v6 net-next 03/18] net: mvpp2: add CM3 SRAM memory map
+Date:   Sun, 31 Jan 2021 11:50:49 +0200
+Message-ID: <1612086664-23972-4-git-send-email-stefanc@marvell.com>
 X-Mailer: git-send-email 1.9.1
+In-Reply-To: <1612086664-23972-1-git-send-email-stefanc@marvell.com>
+References: <1612086664-23972-1-git-send-email-stefanc@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
@@ -57,83 +62,158 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Stefan Chulski <stefanc@marvell.com>
 
-Armada hardware has a pause generation mechanism in GOP (MAC).
-The GOP generate flow control frames based on an indication programmed in Ports Control 0 Register. There is a bit per port.
-However assertion of the PortX Pause bits in the ports control 0 register only sends a one time pause.
-To complement the function the GOP has a mechanism to periodically send pause control messages based on periodic counters.
-This mechanism ensures that the pause is effective as long as the Appropriate PortX Pause is asserted.
+This patch adds CM3 memory map and CM3 read/write callbacks.
+No functionality changes.
 
-Problem is that Packet Processor that actually can drop packets due to lack of resources not connected to the GOP flow control generation mechanism.
-To solve this issue Armada has firmware running on CM3 CPU dedicated for Flow Control support.
-Firmware monitors Packet Processor resources and asserts XON/XOFF by writing to Ports Control 0 Register.
+Signed-off-by: Stefan Chulski <stefanc@marvell.com>
+---
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h      |  7 +++
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 63 +++++++++++++++++++-
+ 2 files changed, 67 insertions(+), 3 deletions(-)
 
-MSS shared SRAM memory used to communicate between CM3 firmware and PP2 driver.
-During init PP2 driver informs firmware about used BM pools, RXQs, congestion and depletion thresholds.
-
-The pause frames are generated whenever congestion or depletion in resources is detected.
-The back pressure is stopped when the resource reaches a sufficient level.
-So the congestion/depletion and sufficient level implement a hysteresis that reduces the XON/XOFF toggle frequency.
-
-Packet Processor v23 hardware introduces support for RX FIFO fill level monitor.
-Patch "add PPv23 version definition" to differ between v23 and v22 hardware.
-Patch "add TX FC firmware check" verifies that CM3 firmware supports Flow Control monitoring.
-
-v5 --> v6
-- No change
-
-v4 --> v5
-- Add missed Signed-off
-- Fix warnings in patches 3 and 12
-- Add revision requirement to warning message
-- Move mss_spinlock into RXQ flow control configurations patch
-- Improve FCA RXQ non occupied descriptor threshold commit message
-
-v3 --> v4
-- Remove RFC tag
-
-v2 --> v3
-- Remove inline functions
-- Add PPv2.3 description into marvell-pp2.txt
-- Improve mvpp2_interrupts_mask/unmask procedure
-- Improve FC enable/disable procedure
-- Add priv->sram_pool check
-- Remove gen_pool_destroy call
-- Reduce Flow Control timer to x100 faster
-
-v1 --> v2
-- Add memory requirements information
-- Add EPROBE_DEFER if of_gen_pool_get return NULL
-- Move Flow control configuration to mvpp2_mac_link_up callback
-- Add firmware version info with Flow control support
-
-Konstantin Porotchkin (1):
-  dts: marvell: add CM3 SRAM memory to cp115 ethernet device tree
-
-Stefan Chulski (17):
-  doc: marvell: add cm3-mem device tree bindings description
-  net: mvpp2: add CM3 SRAM memory map
-  doc: marvell: add PPv2.3 description to marvell-pp2.txt
-  net: mvpp2: add PPv23 version definition
-  net: mvpp2: always compare hw-version vs MVPP21
-  net: mvpp2: increase BM pool size to 2048 buffers
-  net: mvpp2: increase RXQ size to 1024 descriptors
-  net: mvpp2: add FCA periodic timer configurations
-  net: mvpp2: add FCA RXQ non occupied descriptor threshold
-  net: mvpp2: enable global flow control
-  net: mvpp2: add RXQ flow control configurations
-  net: mvpp2: add ethtool flow control configuration support
-  net: mvpp2: add BM protection underrun feature support
-  net: mvpp2: add PPv23 RX FIFO flow control
-  net: mvpp2: set 802.3x GoP Flow Control mode
-  net: mvpp2: limit minimum ring size to 1024 descriptors
-  net: mvpp2: add TX FC firmware check
-
- Documentation/devicetree/bindings/net/marvell-pp2.txt |   4 +-
- arch/arm64/boot/dts/marvell/armada-cp11x.dtsi         |  10 +
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h            | 128 ++++-
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c       | 563 ++++++++++++++++++--
- 4 files changed, 655 insertions(+), 50 deletions(-)
-
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+index 6bd7e40..aec9179 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+@@ -748,6 +748,9 @@
+ #define MVPP2_TX_FIFO_THRESHOLD(kb)	\
+ 		((kb) * 1024 - MVPP2_TX_FIFO_THRESHOLD_MIN)
+ 
++/* MSS Flow control */
++#define MSS_SRAM_SIZE	0x800
++
+ /* RX buffer constants */
+ #define MVPP2_SKB_SHINFO_SIZE \
+ 	SKB_DATA_ALIGN(sizeof(struct skb_shared_info))
+@@ -925,6 +928,7 @@ struct mvpp2 {
+ 	/* Shared registers' base addresses */
+ 	void __iomem *lms_base;
+ 	void __iomem *iface_base;
++	void __iomem *cm3_base;
+ 
+ 	/* On PPv2.2, each "software thread" can access the base
+ 	 * register through a separate address space, each 64 KB apart
+@@ -996,6 +1000,9 @@ struct mvpp2 {
+ 
+ 	/* page_pool allocator */
+ 	struct page_pool *page_pool[MVPP2_PORT_MAX_RXQ];
++
++	/* CM3 SRAM pool */
++	struct gen_pool *sram_pool;
+ };
+ 
+ struct mvpp2_pcpu_stats {
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index a07cf60..307f9fd 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -25,6 +25,7 @@
+ #include <linux/of_net.h>
+ #include <linux/of_address.h>
+ #include <linux/of_device.h>
++#include <linux/genalloc.h>
+ #include <linux/phy.h>
+ #include <linux/phylink.h>
+ #include <linux/phy/phy.h>
+@@ -6846,6 +6847,44 @@ static int mvpp2_init(struct platform_device *pdev, struct mvpp2 *priv)
+ 	return 0;
+ }
+ 
++static int mvpp2_get_sram(struct platform_device *pdev,
++			  struct mvpp2 *priv)
++{
++	struct device_node *dn = pdev->dev.of_node;
++	static bool defer_once;
++	struct resource *res;
++
++	if (has_acpi_companion(&pdev->dev)) {
++		res = platform_get_resource(pdev, IORESOURCE_MEM, 2);
++		if (!res) {
++			dev_warn(&pdev->dev, "ACPI is too old, Flow control not supported\n");
++			return 0;
++		}
++		priv->cm3_base = devm_ioremap_resource(&pdev->dev, res);
++		if (IS_ERR(priv->cm3_base))
++			return PTR_ERR(priv->cm3_base);
++	} else {
++		priv->sram_pool = of_gen_pool_get(dn, "cm3-mem", 0);
++		if (!priv->sram_pool) {
++			if (!defer_once) {
++				defer_once = true;
++				/* Try defer once */
++				return -EPROBE_DEFER;
++			}
++			dev_warn(&pdev->dev, "DT is too old, Flow control not supported\n");
++			return -ENOMEM;
++		}
++		/* cm3_base allocated with offset zero into the SRAM since mapping size
++		 * is equal to requested size.
++		 */
++		priv->cm3_base = (void __iomem *)gen_pool_alloc(priv->sram_pool,
++								MSS_SRAM_SIZE);
++		if (!priv->cm3_base)
++			return -ENOMEM;
++	}
++	return 0;
++}
++
+ static int mvpp2_probe(struct platform_device *pdev)
+ {
+ 	const struct acpi_device_id *acpi_id;
+@@ -6902,6 +6941,13 @@ static int mvpp2_probe(struct platform_device *pdev)
+ 		priv->iface_base = devm_ioremap_resource(&pdev->dev, res);
+ 		if (IS_ERR(priv->iface_base))
+ 			return PTR_ERR(priv->iface_base);
++
++		/* Map CM3 SRAM */
++		err = mvpp2_get_sram(pdev, priv);
++		if (err == -EPROBE_DEFER)
++			return err;
++		else if (err)
++			dev_warn(&pdev->dev, "Fail to alloc CM3 SRAM\n");
+ 	}
+ 
+ 	if (priv->hw_version == MVPP22 && dev_of_node(&pdev->dev)) {
+@@ -6947,11 +6993,13 @@ static int mvpp2_probe(struct platform_device *pdev)
+ 
+ 	if (dev_of_node(&pdev->dev)) {
+ 		priv->pp_clk = devm_clk_get(&pdev->dev, "pp_clk");
+-		if (IS_ERR(priv->pp_clk))
+-			return PTR_ERR(priv->pp_clk);
++		if (IS_ERR(priv->pp_clk)) {
++			err = PTR_ERR(priv->pp_clk);
++			goto err_cm3;
++		}
+ 		err = clk_prepare_enable(priv->pp_clk);
+ 		if (err < 0)
+-			return err;
++			goto err_cm3;
+ 
+ 		priv->gop_clk = devm_clk_get(&pdev->dev, "gop_clk");
+ 		if (IS_ERR(priv->gop_clk)) {
+@@ -7087,6 +7135,11 @@ static int mvpp2_probe(struct platform_device *pdev)
+ 	clk_disable_unprepare(priv->gop_clk);
+ err_pp_clk:
+ 	clk_disable_unprepare(priv->pp_clk);
++err_cm3:
++	if (priv->sram_pool && priv->cm3_base)
++		gen_pool_free(priv->sram_pool, (unsigned long)priv->cm3_base,
++			      MSS_SRAM_SIZE);
++
+ 	return err;
+ }
+ 
+@@ -7127,6 +7180,10 @@ static int mvpp2_remove(struct platform_device *pdev)
+ 				  aggr_txq->descs_dma);
+ 	}
+ 
++	if (priv->sram_pool && priv->cm3_base)
++		gen_pool_free(priv->sram_pool, (unsigned long)priv->cm3_base,
++			      MSS_SRAM_SIZE);
++
+ 	if (is_acpi_node(port_fwnode))
+ 		return 0;
+ 
 -- 
 1.9.1
 
