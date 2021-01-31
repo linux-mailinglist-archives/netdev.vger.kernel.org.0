@@ -2,61 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B3AC309B0C
-	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 08:59:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C592309B0B
+	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 08:59:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229962AbhAaH7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Jan 2021 02:59:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34754 "EHLO
+        id S229941AbhAaH7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 Jan 2021 02:59:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229471AbhAaHz4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jan 2021 02:55:56 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88656C0613D6
-        for <netdev@vger.kernel.org>; Sat, 30 Jan 2021 23:55:12 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id md11so8496379pjb.0
-        for <netdev@vger.kernel.org>; Sat, 30 Jan 2021 23:55:12 -0800 (PST)
+        with ESMTP id S229834AbhAaH4I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jan 2021 02:56:08 -0500
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9234EC061573
+        for <netdev@vger.kernel.org>; Sat, 30 Jan 2021 23:55:21 -0800 (PST)
+Received: by mail-pf1-x42f.google.com with SMTP id j12so9417685pfj.12
+        for <netdev@vger.kernel.org>; Sat, 30 Jan 2021 23:55:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=s8BZjK3yyKd70r8rMjExXPdv17zezvJcgaVaU9wbfEs=;
-        b=jsXPb6nzV+mCgEeEKCe1zY7l7PnTSQfJ/9DIpbLoOns7+tr5uQN0P8Vnj7162vwsnL
-         VMfAM8p7nu+8byKGt98jxB0rrsi9bKvku3WRtVcpfscDg6Pr6++K+xdnCC5yY0X72j/x
-         JYLNWIhk25ZlnZkX2ruYW7KBE54y+G2/Mrp5BsR0emuCaitd8UOHAWouhwJZJUhJtWNI
-         ig7WE5VWzGYc4SaQoabbg9erCi/DxW2BhXkedGaVlZwGdQvYKM8qZ/bSsBjLNgjahrgo
-         UDBYaFD7eoAQMQkK9PH/OQMHvkE8GixQ/pEYL9jqwNTLbSV8icjON5r7gnKbD1n6l/81
-         Hvrg==
+        bh=7uaxEmHwj7AQ7ZFWM2mecUlQzLzTculEaiCDusTlzfA=;
+        b=HvxK2tws2puLxYPGhLTbJtYGsfNhPXEx1aCT0bUEZ/7D7T/Z0cHvCi9go24Fd8XXT+
+         ps64m3GUINCLWJF4krjqsjdUGiQnxMEfAdVWUwUrxvqd3PBLgewN9B4eit4Bn7t18Aeq
+         mDcpH7GEA0fwkZ6glLLtsCh2e8JJQh/CSnm4iZTkEIJbNuDcRnc8UA6hMDQIEExQjaET
+         mcuVqSEjP1amd2VtRx4xX4dp80O8nCMBErh2F96XYCkiqa4Os8lNH2bxscMKnID6pMWD
+         aPVG/Y98oKk+H7M05sjzCIEHayETcY5aATGK9BXJeI7Ld/ntGtAtQXTCW9N7oKu9XBRF
+         Voqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=s8BZjK3yyKd70r8rMjExXPdv17zezvJcgaVaU9wbfEs=;
-        b=Z5Gh7qv0d0oZZuoKayXpyMVLBff3trKO+cTN+eiA5klAWrJQzz4N84qWDDv8ZwnFUp
-         5IicHPlLjNvO8ldUOBap7O1O+Csqvs/41hwI7OJi38PEf5bovm6OFixYxx7h4E1oux6v
-         7GPngqopHWp9WG+ds7TzPU0wTsk9fD1n6usqYf9vM+rJY2FWymyqbOJSDs1VZ5xLjQl2
-         baD+trghhXVtB2cmd+DJHnbaXJWd34qmoXN94h5ytdUQC4eOM+51azF36B2Ar0q+qZvS
-         ULGXcdZpn+ArDj1dEn9B3LLZPe6SEdiW509Wog1f3hmwp5PT7Kxae9U9tUVEETM9qDCS
-         aVTw==
-X-Gm-Message-State: AOAM532wYGzOCRgdEuIfQuxZh/RqgCkbrN2p27UjutR7RAdvrwyY+nX6
-        /1e/qvUcwl99lYefZM3a6oY=
-X-Google-Smtp-Source: ABdhPJzsER2j3ut5nyKv8clJ7ZChhAVNALxWHV70uV2V/iXGaStkHHMpcqUtmXREpq2ld2X819HLfw==
-X-Received: by 2002:a17:90a:5403:: with SMTP id z3mr12096249pjh.198.1612079712116;
-        Sat, 30 Jan 2021 23:55:12 -0800 (PST)
+        bh=7uaxEmHwj7AQ7ZFWM2mecUlQzLzTculEaiCDusTlzfA=;
+        b=uP7JJAvxSZui4wS9pkXteqA8R3rcCREYZqZsTt6kMPirKa2S/1kMqRLTWOn1LfdokL
+         uAeHB0/sHs5Y7tbIgru5r4fBfeWqNKS6L9QCu7ISQd6xRPRbDwtUolZ1GkZlWvX6FBev
+         ZBrTqdkjjlXP37yMij7QmN9yOogTc7jc8va6brTzqUqo0F+D1YZO4RcdW7QshJJuXcl2
+         PxYFCyiDdUWo+SdAP5OMY7EZKJ7wRyOtOSI0hHqIepfI3BhMaaYjLIg9lKP922o5O9Un
+         yW/8SWmMeZz4JdXanIdt1YSUZf1x6H87qoi3UnkgqgGzLRHRK6+ZU+UfEWyLVl4HjA4G
+         Taug==
+X-Gm-Message-State: AOAM5338G8VoD0kBBBegKRDmTVt71/x+EdA5tBC6D5vsLYitVxwEhACb
+        56BO2r7N1AkgmAKyKLyb5V4=
+X-Google-Smtp-Source: ABdhPJwH/9TkW305yU9gVnOPFQI9Yrk2JECGQSO0Lry4AdJ38YBcdqaphPMsSKknjXan5l18QIVO0w==
+X-Received: by 2002:aa7:9f5d:0:b029:1c5:b700:a59c with SMTP id h29-20020aa79f5d0000b02901c5b700a59cmr11628910pfr.74.1612079721209;
+        Sat, 30 Jan 2021 23:55:21 -0800 (PST)
 Received: from pek-lpggp6.wrs.com (unknown-105-123.windriver.com. [147.11.105.123])
-        by smtp.gmail.com with ESMTPSA id h23sm13931290pgh.64.2021.01.30.23.55.05
+        by smtp.gmail.com with ESMTPSA id h23sm13931290pgh.64.2021.01.30.23.55.15
         (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 30 Jan 2021 23:55:11 -0800 (PST)
+        Sat, 30 Jan 2021 23:55:20 -0800 (PST)
 From:   Kevin Hao <haokexin@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Sunil Goutham <sgoutham@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        hariprasad <hkelam@marvell.com>
-Subject: [PATCH net-next v2 3/4] net: octeontx2: Use napi_alloc_frag_align() to avoid the memory waste
-Date:   Sun, 31 Jan 2021 15:44:25 +0800
-Message-Id: <20210131074426.44154-4-haokexin@gmail.com>
+Cc:     netdev@vger.kernel.org, Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ioana Radulescu <ruxandra.radulescu@nxp.com>
+Subject: [PATCH net-next v2 4/4] net: dpaa2: Use napi_alloc_frag_align() to avoid the memory waste
+Date:   Sun, 31 Jan 2021 15:44:26 +0800
+Message-Id: <20210131074426.44154-5-haokexin@gmail.com>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210131074426.44154-1-haokexin@gmail.com>
 References: <20210131074426.44154-1-haokexin@gmail.com>
@@ -74,26 +72,27 @@ Signed-off-by: Kevin Hao <haokexin@gmail.com>
 ---
 v2: No change.
 
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c | 3 +--
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 3 +--
  1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-index 5ddedc3b754d..cbd68fa9f1d6 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-@@ -488,11 +488,10 @@ dma_addr_t __otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool)
- 	dma_addr_t iova;
- 	u8 *buf;
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+index 41e225baf571..882b32a04f5e 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+@@ -764,12 +764,11 @@ static int dpaa2_eth_build_sg_fd(struct dpaa2_eth_priv *priv,
+ 	/* Prepare the HW SGT structure */
+ 	sgt_buf_size = priv->tx_data_offset +
+ 		       sizeof(struct dpaa2_sg_entry) *  num_dma_bufs;
+-	sgt_buf = napi_alloc_frag(sgt_buf_size + DPAA2_ETH_TX_BUF_ALIGN);
++	sgt_buf = napi_alloc_frag_align(sgt_buf_size, DPAA2_ETH_TX_BUF_ALIGN);
+ 	if (unlikely(!sgt_buf)) {
+ 		err = -ENOMEM;
+ 		goto sgt_buf_alloc_failed;
+ 	}
+-	sgt_buf = PTR_ALIGN(sgt_buf, DPAA2_ETH_TX_BUF_ALIGN);
+ 	memset(sgt_buf, 0, sgt_buf_size);
  
--	buf = napi_alloc_frag(pool->rbsize + OTX2_ALIGN);
-+	buf = napi_alloc_frag_align(pool->rbsize, OTX2_ALIGN);
- 	if (unlikely(!buf))
- 		return -ENOMEM;
- 
--	buf = PTR_ALIGN(buf, OTX2_ALIGN);
- 	iova = dma_map_single_attrs(pfvf->dev, buf, pool->rbsize,
- 				    DMA_FROM_DEVICE, DMA_ATTR_SKIP_CPU_SYNC);
- 	if (unlikely(dma_mapping_error(pfvf->dev, iova))) {
+ 	sgt = (struct dpaa2_sg_entry *)(sgt_buf + priv->tx_data_offset);
 -- 
 2.29.2
 
