@@ -2,121 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A037D309DA5
-	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 16:38:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCF75309D8B
+	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 16:32:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232378AbhAaPhG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Jan 2021 10:37:06 -0500
-Received: from mail1.protonmail.ch ([185.70.40.18]:62432 "EHLO
-        mail1.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232252AbhAaM6Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jan 2021 07:58:16 -0500
-Date:   Sun, 31 Jan 2021 12:57:29 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1612097850; bh=hy3HTU1Gr4SJ412CK0eDCO6whxGXOGwlEZQ/bHzh0IY=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=gOF3DQLDOPbnITXBUL2KPwaqec06jg7hgwxBrpixduvxzEnKNGsfv8ItuXKrxv9Ng
-         JiqbWegAiSb0RANpw00MRZt5dHVkVaU/4aT5yLL76tDfJs1aAdwYldD7IWkRc5kxbh
-         1BAJMWanlZQ2JqPkXy6HSIYWPNKbrH0EQAF1HDdchGDHYnALdR6ajs+2btoq67GU9f
-         f5YZ1517Lx6mBTrwwu58TBCcS9IuiaspQ6k7jtFh66w62CLwSumleX42KAPMkjKfzH
-         bHZna372czPrByZznTmm5VyRMiP9VCQ0UQEj/5CLGRQO8Ef03IeNcCrs59678BmNjl
-         NGoTfgARWpgvw==
-To:     Matthew Wilcox <willy@infradead.org>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Hubbard <jhubbard@nvidia.com>,
-        David Rientjes <rientjes@google.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        linux-rdma@vger.kernel.org, linux-mm@kvack.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: Re: [PATCH v3 net-next 3/5] net: introduce common dev_page_is_reusable()
-Message-ID: <20210131125713.8710-1-alobakin@pm.me>
-In-Reply-To: <20210131122205.GL308988@casper.infradead.org>
-References: <20210131120844.7529-1-alobakin@pm.me> <20210131120844.7529-4-alobakin@pm.me> <20210131122205.GL308988@casper.infradead.org>
+        id S232724AbhAaP0h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 Jan 2021 10:26:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45880 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231270AbhAaP0U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jan 2021 10:26:20 -0500
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACDE8C061574;
+        Sun, 31 Jan 2021 07:25:39 -0800 (PST)
+Received: by mail-wr1-x430.google.com with SMTP id q7so13836958wre.13;
+        Sun, 31 Jan 2021 07:25:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GhEHGUi/3x7MT7H9Mn5ltAw8hDBUJl2hwLBKiqP3I+0=;
+        b=ewu+JpRJrihfRy3GqoS/jsRKyfq/31+fXXGZJy/U8ueFvzqtjaj116hn1nnyF9DylQ
+         +6kWKcR7Girjy1sd69DBaFzCIsI1KdlDVIKbpK23ZY9avVs1XWH6rhSyZUU3uygM5t/7
+         V9TOVQqZHcj+8ayfAdOWk6ues1fwuM3JapCXgEeGj5FxjDy5NUiIPjg1meJRQnvTCR0y
+         +b8oJurs1zRHe18W1CNUytflx6Tbsr9zvd4XpDiVEyTZGYdnTzdmT5yARWY30UTqRrQi
+         EmnP9AmwyAG/g86YTUToyzs7xx4eOCoeqPE0Q5i2sHLNFP6hm+L5Kr2LnWk9/pCaBEGa
+         6p3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GhEHGUi/3x7MT7H9Mn5ltAw8hDBUJl2hwLBKiqP3I+0=;
+        b=IBwoZVXXgOL0yUj4/kf98vmQiOJ/1+XypZVov3hnSt4zlHvIbb9NxCvXiDBxRxmzTC
+         /mUhDZi964QYVP8ZZVNiadz9zMyAWUVSMgtDDLMZ6BmW+WJ1a8w+qwuP4ivrTY0yTVka
+         dFNZGfPhQouu8a/Lt+HmDL0KyWLGlhX3oElIvAXqXvZMXXjGWb/+GHwgmy+K8x8jPzx+
+         0EMxvEAu1lps0gLzUylgP+0iv7ulUSFqQmfS/PT792+dHF1OzJxVnVXKEptSstuVDiIS
+         uhcJ0s7lVw3iRPvW+BMyCqf/DvFXnrSdevddAJIx1TC+dorlN8uM/KEaETLX7h92aBX1
+         HDaA==
+X-Gm-Message-State: AOAM533U4SLKzM+Yw+DwDR2GAltbjnpmkSuu9pyTb9aGrJLXo9GJBVNd
+        nJSvLT/BI4ZOpdbNm6cpQN3OO/G3K6mG7ntOso/V3TAFqrQ=
+X-Google-Smtp-Source: ABdhPJzhLyDDHAozPJChY+HCFGKTS0PVBcXBZPEBQiFl356hneSOMPCqnYEBjUp2TG6ckqHgKPgu+XX0Z/LusxmqK8g=
+X-Received: by 2002:adf:ed02:: with SMTP id a2mr2806786wro.197.1612106738119;
+ Sun, 31 Jan 2021 07:25:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+References: <20210129195240.31871-1-TheSven73@gmail.com> <20210129195240.31871-3-TheSven73@gmail.com>
+ <MN2PR11MB3662C081B6CDB8BC1143380FFAB79@MN2PR11MB3662.namprd11.prod.outlook.com>
+In-Reply-To: <MN2PR11MB3662C081B6CDB8BC1143380FFAB79@MN2PR11MB3662.namprd11.prod.outlook.com>
+From:   Sven Van Asbroeck <thesven73@gmail.com>
+Date:   Sun, 31 Jan 2021 10:25:27 -0500
+Message-ID: <CAGngYiVvuNYC4WPCRfPOfjr98S_BGBNGjPze11AiHY9Pq1eJsA@mail.gmail.com>
+Subject: Re: [PATCH net-next v1 2/6] lan743x: support rx multi-buffer packets
+To:     Bryan Whitehead <Bryan.Whitehead@microchip.com>
+Cc:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Alexey Denisov <rtgbnm@gmail.com>,
+        Sergej Bauer <sbauer@blackbox.su>,
+        Tim Harvey <tharvey@gateworks.com>,
+        =?UTF-8?Q?Anders_R=C3=B8nningen?= <anders@ronningen.priv.no>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matthew Wilcox <willy@infradead.org>
-Date: Sun, 31 Jan 2021 12:22:05 +0000
+On Sun, Jan 31, 2021 at 2:06 AM <Bryan.Whitehead@microchip.com> wrote:
+>
+> >  static int lan743x_rx_process_packet(struct lan743x_rx *rx)  {
+> It looks like this function no longer processes a packet, but rather only processes a single buffer.
+> So perhaps it should be renamed to lan743x_rx_process_buffer, so it is not misleading.
 
-> On Sun, Jan 31, 2021 at 12:11:52PM +0000, Alexander Lobakin wrote:
-> > A bunch of drivers test the page before reusing/recycling for two
-> > common conditions:
-> >  - if a page was allocated under memory pressure (pfmemalloc page);
-> >  - if a page was allocated at a distant memory node (to exclude
-> >    slowdowns).
-> >
-> > Introduce a new common inline for doing this, with likely() already
-> > folded inside to make driver code a bit simpler.
->=20
-> I don't see the need for the 'dev_' prefix.  That actually confuses me
-> because it makes me think this is tied to ZONE_DEVICE or some such.
+Agreed, will do.
 
-Several functions right above this one also use 'dev_' prefix. It's
-a rather old mark that it's about network devices.
+>
+> If lan743x_rx_init_ring_element fails to allocate an skb,
+> Then lan743x_rx_reuse_ring_element will be called.
+> But that function expects the skb is already allocated and dma mapped.
+> But the dma was unmapped above.
 
-> So how about calling it just 'page_is_reusable' and putting it in mm.h
-> with page_is_pfmemalloc() and making the comment a little less network-ce=
-ntric?
+Good catch. I think you're right, the skb allocation always has to come before
+the unmap. Because if we unmap, and then the skb allocation fails, there is no
+guarantee that we can remap the old skb we've just unmapped (it could fail).
+And then we'd end up with a broken driver.
 
-This pair of conditions (!pfmemalloc + local memory node) is really
-specific to network drivers. I didn't see any other instances of such
-tests, so I don't see a reason to place it in a more common mm.h.
+BUT I actually joined skb alloc and init_ring_element, because of a very subtle
+synchronization bug I was seeing: if someone changes the mtu _in_between_
+skb alloc and init_ring_element, things will go haywire, because the skb and
+mapping lengths would be different !
 
-> Or call it something like skb_page_is_recyclable() since it's only used
-> by networking today.  But I bet it could/should be used more widely.
+We could fix that by using a spinlock I guess, but synchronization primitives
+in "hot paths" like these are far from ideal... Would be nice if we could
+avoid that.
 
-There's nothing about skb. Tested page is just a memory chunk for DMA
-transaction. It can be used as skb head/frag, for XDP buffer/frame or
-for XSK umem.
+Here's an idea: what if we fold "unmap from dma" into init_ring_element()?
+That way, we get the best of both worlds: length cannot change in the middle,
+and the function can always "back out" without touching the ring element
+in case an allocation or mapping fails.
 
-> > +/**
-> > + * dev_page_is_reusable - check whether a page can be reused for netwo=
-rk Rx
-> > + * @page: the page to test
-> > + *
-> > + * A page shouldn't be considered for reusing/recycling if it was allo=
-cated
-> > + * under memory pressure or at a distant memory node.
-> > + *
-> > + * Returns false if this page should be returned to page allocator, tr=
-ue
-> > + * otherwise.
-> > + */
-> > +static inline bool dev_page_is_reusable(const struct page *page)
-> > +{
-> > +=09return likely(page_to_nid(page) =3D=3D numa_mem_id() &&
-> > +=09=09      !page_is_pfmemalloc(page));
-> > +}
-> > +
+Pseudo-code:
 
-Al
+init_ring_element() {
+    /* single "sampling" of mtu, so no synchronization required */
+    length = netdev->mtu + ETH_HLEN + 4 + RX_HEAD_PADDING;
 
+    skb = alloc(length);
+    if (!skb) return FAIL;
+    dma_ptr = dma_map(skb, length);
+    if (!dma_ptr) {
+        free(skb);
+        return FAIL;
+    }
+    if (buffer_info->dma_ptr)
+        dma_unmap(buffer_info->dma_ptr, buffer_info->buffer_length);
+    buffer_info->skb = skb;
+    buffer_info->dma_ptr = dma_ptr;
+    buffer_info->buffer_length = length;
+
+    return SUCCESS;
+}
+
+What do you think?
+
+>
+> Also if lan743x_rx_init_ring_element fails to allocate an skb.
+> Then control will jump to process_extension and therefor
+> the currently received skb will not be added to the skb list.
+> I assume that would corrupt the packet? Or am I missing something?
+>
+
+Yes if an skb alloc failure in the middle of a multi-buffer frame, will corrupt
+the packet inside the frame. A chunk will be missing. I had assumed that this
+would be caught by an upper network layer, some checksum would be incorrect?
+
+Are there current networking devices that would send a corrupted packet to
+Linux if there is a corruption on the physical link? Especially if they don't
+support checksumming?
+
+Maybe my assumption is naive.
+I'll fix this up if you believe that it could be an issue.
+
+> ...
+> > -               if (!skb) {
+> > -                       result = RX_PROCESS_RESULT_PACKET_DROPPED;
+> It looks like this return value is no longer used.
+> If there is no longer a case where a packet will be dropped
+> then maybe this return value should be deleted from the header file.
+
+Agreed, will do.
+
+>
+> ...
+> >  move_forward:
+> > -               /* push tail and head forward */
+> > -               rx->last_tail = real_last_index;
+> > -               rx->last_head = lan743x_rx_next_index(rx, real_last_index);
+> > -       }
+> > +       /* push tail and head forward */
+> > +       rx->last_tail = rx->last_head;
+> > +       rx->last_head = lan743x_rx_next_index(rx, rx->last_head);
+> > +       result = RX_PROCESS_RESULT_PACKET_RECEIVED;
+>
+> Since this function handles one buffer at a time,
+>   The return value RX_PROCESS_RESULT_PACKET_RECEIVED is now misleading.
+>   Can you change it to RX_PROCESS_RESULT_BUFFER_RECEIVED.
+
+Agreed, will do.
+
+RX_PROCESS_RESULT_XXX can now only take two values (RECEIVED and NOTHING_TO_DO),
+so in theory it could be replaced by a bool. But perhaps we should keep the
+current names, because they are clearer to the reader?
+
+>
+>
