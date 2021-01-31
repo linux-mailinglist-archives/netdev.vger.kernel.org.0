@@ -2,42 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E1D2309C05
-	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 13:37:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FE99309C03
+	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 13:37:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231289AbhAaKof (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Jan 2021 05:44:35 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:57182 "EHLO
+        id S229651AbhAaKhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 Jan 2021 05:37:21 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:57770 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S230342AbhAaJzn (ORCPT
+        by vger.kernel.org with ESMTP id S230316AbhAaJzn (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 31 Jan 2021 04:55:43 -0500
 Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10V9cNJd023389;
-        Sun, 31 Jan 2021 01:51:36 -0800
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10V9bRbg020297;
+        Sun, 31 Jan 2021 01:51:46 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=O9ezWnA0EfeypSAUzLJDWAxGJHbt13Ief+fvNhEsLf0=;
- b=IyduOx1FyTMYpVptVDnJwN6Bw7lSqu65kTFXM9cA35+iteuHUz8iUnEt0gHrBt1qlAeI
- l/m3aMIZMxbxJpWVHXCBLmgc7NEnvNZMGBo+hRR12DjNdRVhmQM8VuaLctho6NKel7fE
- Us94ieqZCo2LFpeaQcSM3JBHaYIcOFklBjVoLpn1IxwyxwsZoovRroQSyqN8h5vQauaQ
- aplQQMXPYMN3R+RiaF+/rPc3dcnwtLfixJPK7KBjO4ay4I4I1M9gIT3cbQFD2OI8bHwq
- V+7LK10gHkrzglRsHRPl9WHmEKnhPs5DJrZMqlUSdUKN4YJCH+p6m5S8ZGn0Xxd//gXW +Q== 
+ content-type; s=pfpt0220; bh=6pDdBO4FiW4J3ZSh6Q2cfqQ4yvjsrELQlYlAuzrXKH0=;
+ b=Yl7hssTEmZHLSL+cEVcWzFpbFqPnXrG30x0KyOfnpEb8u51ECjNWjv6BeoBfEKoYfT67
+ HYldGlNJxzjTSh/M6Ivpd7PsPHfZJy5mEqL/GoU+RzS/cvkJNKTtUNxk9r5n7SSWijxw
+ ++Xn6GBMAUHSjj/TN9u1nusXQHNFjtIyH4YFHltedQkPVr9cLi1ybQqdCTS976Q3Yx0V
+ 4DQbYTks5djm0ri6PSyiCC5AukE5vYIPDg2u3jsLXiQHQOpWxeGQUTEG4k0578pczMp1
+ SqXPKgCJAB8AfC8+fycATHdjpKHKwJcWhnWCfD+7IOjd4LjkByNi17J8cVTB2ZbWQ1wb DQ== 
 Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 36d5psshjc-1
+        by mx0a-0016f401.pphosted.com with ESMTP id 36d5psshjp-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 31 Jan 2021 01:51:36 -0800
-Received: from SC-EXCH02.marvell.com (10.93.176.82) by DC5-EXCH01.marvell.com
+        Sun, 31 Jan 2021 01:51:46 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
  (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 31 Jan
- 2021 01:51:35 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 31 Jan
- 2021 01:51:35 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sun, 31 Jan 2021 01:51:34 -0800
+ 2021 01:51:45 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sun, 31 Jan 2021 01:51:45 -0800
 Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id 0D4E13F7040;
-        Sun, 31 Jan 2021 01:51:31 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id 2989E3F703F;
+        Sun, 31 Jan 2021 01:51:41 -0800 (PST)
 From:   <stefanc@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
@@ -46,9 +43,9 @@ CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
         <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
         <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
         <atenart@kernel.org>
-Subject: [PATCH v6 net-next 06/18] net: mvpp2: always compare hw-version vs MVPP21
-Date:   Sun, 31 Jan 2021 11:50:52 +0200
-Message-ID: <1612086664-23972-7-git-send-email-stefanc@marvell.com>
+Subject: [PATCH v6 net-next 09/18] net: mvpp2: add FCA periodic timer configurations
+Date:   Sun, 31 Jan 2021 11:50:55 +0200
+Message-ID: <1612086664-23972-10-git-send-email-stefanc@marvell.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1612086664-23972-1-git-send-email-stefanc@marvell.com>
 References: <1612086664-23972-1-git-send-email-stefanc@marvell.com>
@@ -62,183 +59,109 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Stefan Chulski <stefanc@marvell.com>
 
-Currently we have PP2v1 and PP2v2 hw-versions, with some different
-handlers depending upon condition hw_version = MVPP21/MVPP22.
-In a future there will be also PP2v3. Let's use now the generic
-"if equal/notEqual MVPP21" for all cases instead of "if MVPP22".
-
-This patch does not change any functionality.
-It is not intended to introduce PP2v3.
-It just modifies MVPP21/MVPP22 check-condition
-bringing it to generic and unified form correct for new-code
-introducing and PP2v3 net-next generation.
+Flow Control periodic timer would be used if port in
+XOFF to transmit periodic XOFF frames.
 
 Signed-off-by: Stefan Chulski <stefanc@marvell.com>
 ---
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 36 ++++++++++----------
- 1 file changed, 18 insertions(+), 18 deletions(-)
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h      | 13 +++++-
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 45 ++++++++++++++++++++
+ 2 files changed, 57 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+index cac9885..73f087c 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+@@ -596,6 +596,15 @@
+ #define     MVPP22_MPCS_CLK_RESET_DIV_RATIO(n)	((n) << 4)
+ #define     MVPP22_MPCS_CLK_RESET_DIV_SET	BIT(11)
+ 
++/* FCA registers. PPv2.2 and PPv2.3 */
++#define MVPP22_FCA_BASE(port)			(0x7600 + (port) * 0x1000)
++#define MVPP22_FCA_REG_SIZE			16
++#define MVPP22_FCA_REG_MASK			0xFFFF
++#define MVPP22_FCA_CONTROL_REG			0x0
++#define MVPP22_FCA_ENABLE_PERIODIC		BIT(11)
++#define MVPP22_PERIODIC_COUNTER_LSB_REG		(0x110)
++#define MVPP22_PERIODIC_COUNTER_MSB_REG		(0x114)
++
+ /* XPCS registers. PPv2.2 and PPv2.3 */
+ #define MVPP22_XPCS_BASE(port)			(0x7400 + (port) * 0x1000)
+ #define MVPP22_XPCS_CFG0			0x0
+@@ -752,7 +761,9 @@
+ 		((kb) * 1024 - MVPP2_TX_FIFO_THRESHOLD_MIN)
+ 
+ /* MSS Flow control */
+-#define MSS_SRAM_SIZE	0x800
++#define MSS_SRAM_SIZE		0x800
++#define FC_QUANTA		0xFFFF
++#define FC_CLK_DIVIDER		100
+ 
+ /* RX buffer constants */
+ #define MVPP2_SKB_SHINFO_SIZE \
 diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 11c56d2..d80947a 100644
+index d80947a..6e59d07 100644
 --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
 +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -320,7 +320,7 @@ static int mvpp2_get_nrxqs(struct mvpp2 *priv)
- {
- 	unsigned int nrxqs;
- 
--	if (priv->hw_version == MVPP22 && queue_mode == MVPP2_QDIST_SINGLE_MODE)
-+	if (priv->hw_version != MVPP21 && queue_mode == MVPP2_QDIST_SINGLE_MODE)
- 		return 1;
- 
- 	/* According to the PPv2.2 datasheet and our experiments on
-@@ -447,7 +447,7 @@ static void mvpp2_bm_bufs_get_addrs(struct device *dev, struct mvpp2 *priv,
- 				      MVPP2_BM_PHY_ALLOC_REG(bm_pool->id));
- 	*phys_addr = mvpp2_thread_read(priv, thread, MVPP2_BM_VIRT_ALLOC_REG);
- 
--	if (priv->hw_version == MVPP22) {
-+	if (priv->hw_version != MVPP21) {
- 		u32 val;
- 		u32 dma_addr_highbits, phys_addr_highbits;
- 
-@@ -743,7 +743,7 @@ static inline void mvpp2_bm_pool_put(struct mvpp2_port *port, int pool,
- 	if (test_bit(thread, &port->priv->lock_map))
- 		spin_lock_irqsave(&port->bm_lock[thread], flags);
- 
--	if (port->priv->hw_version == MVPP22) {
-+	if (port->priv->hw_version != MVPP21) {
- 		u32 val = 0;
- 
- 		if (sizeof(dma_addr_t) == 8)
-@@ -1200,7 +1200,7 @@ static bool mvpp2_port_supports_xlg(struct mvpp2_port *port)
- 
- static bool mvpp2_port_supports_rgmii(struct mvpp2_port *port)
- {
--	return !(port->priv->hw_version == MVPP22 && port->gop_id == 0);
-+	return !(port->priv->hw_version != MVPP21 && port->gop_id == 0);
+@@ -1281,6 +1281,49 @@ static void mvpp22_gop_init_10gkr(struct mvpp2_port *port)
+ 	writel(val, mpcs + MVPP22_MPCS_CLK_RESET);
  }
  
- /* Port configuration routines */
-@@ -1818,7 +1818,7 @@ static void mvpp2_mac_reset_assert(struct mvpp2_port *port)
- 	      MVPP2_GMAC_PORT_RESET_MASK;
- 	writel(val, port->base + MVPP2_GMAC_CTRL_2_REG);
- 
--	if (port->priv->hw_version == MVPP22 && port->gop_id == 0) {
-+	if (port->priv->hw_version != MVPP21 && port->gop_id == 0) {
- 		val = readl(port->base + MVPP22_XLG_CTRL0_REG) &
- 		      ~MVPP22_XLG_CTRL0_MAC_RESET_DIS;
- 		writel(val, port->base + MVPP22_XLG_CTRL0_REG);
-@@ -1831,7 +1831,7 @@ static void mvpp22_pcs_reset_assert(struct mvpp2_port *port)
- 	void __iomem *mpcs, *xpcs;
- 	u32 val;
- 
--	if (port->priv->hw_version != MVPP22 || port->gop_id != 0)
-+	if (port->priv->hw_version == MVPP21 || port->gop_id != 0)
- 		return;
- 
- 	mpcs = priv->iface_base + MVPP22_MPCS_BASE(port->gop_id);
-@@ -1852,7 +1852,7 @@ static void mvpp22_pcs_reset_deassert(struct mvpp2_port *port)
- 	void __iomem *mpcs, *xpcs;
- 	u32 val;
- 
--	if (port->priv->hw_version != MVPP22 || port->gop_id != 0)
-+	if (port->priv->hw_version == MVPP21 || port->gop_id != 0)
- 		return;
- 
- 	mpcs = priv->iface_base + MVPP22_MPCS_BASE(port->gop_id);
-@@ -4189,7 +4189,7 @@ static void mvpp2_start_dev(struct mvpp2_port *port)
- 	/* Enable interrupts on all threads */
- 	mvpp2_interrupts_enable(port);
- 
--	if (port->priv->hw_version == MVPP22)
-+	if (port->priv->hw_version != MVPP21)
- 		mvpp22_mode_reconfigure(port);
- 
- 	if (port->phylink) {
-@@ -4405,7 +4405,7 @@ static int mvpp2_open(struct net_device *dev)
- 		valid = true;
- 	}
- 
--	if (priv->hw_version == MVPP22 && port->port_irq) {
-+	if (priv->hw_version != MVPP21 && port->port_irq) {
- 		err = request_irq(port->port_irq, mvpp2_port_isr, 0,
- 				  dev->name, port);
- 		if (err) {
-@@ -6053,7 +6053,7 @@ static int mvpp2__mac_prepare(struct phylink_config *config, unsigned int mode,
- 			     MVPP2_GMAC_PORT_RESET_MASK,
- 			     MVPP2_GMAC_PORT_RESET_MASK);
- 
--		if (port->priv->hw_version == MVPP22) {
-+		if (port->priv->hw_version != MVPP21) {
- 			mvpp22_gop_mask_irq(port);
- 
- 			phy_power_off(port->comphy);
-@@ -6107,7 +6107,7 @@ static int mvpp2_mac_finish(struct phylink_config *config, unsigned int mode,
++static void mvpp22_gop_fca_enable_periodic(struct mvpp2_port *port, bool en)
++{
++	struct mvpp2 *priv = port->priv;
++	void __iomem *fca = priv->iface_base + MVPP22_FCA_BASE(port->gop_id);
++	u32 val;
++
++	val = readl(fca + MVPP22_FCA_CONTROL_REG);
++	val &= ~MVPP22_FCA_ENABLE_PERIODIC;
++	if (en)
++		val |= MVPP22_FCA_ENABLE_PERIODIC;
++	writel(val, fca + MVPP22_FCA_CONTROL_REG);
++}
++
++static void mvpp22_gop_fca_set_timer(struct mvpp2_port *port, u32 timer)
++{
++	struct mvpp2 *priv = port->priv;
++	void __iomem *fca = priv->iface_base + MVPP22_FCA_BASE(port->gop_id);
++	u32 lsb, msb;
++
++	lsb = timer & MVPP22_FCA_REG_MASK;
++	msb = timer >> MVPP22_FCA_REG_SIZE;
++
++	writel(lsb, fca + MVPP22_PERIODIC_COUNTER_LSB_REG);
++	writel(msb, fca + MVPP22_PERIODIC_COUNTER_MSB_REG);
++}
++
++/* Set Flow Control timer x100 faster than pause quanta to ensure that link
++ * partner won't send traffic if port is in XOFF mode.
++ */
++static void mvpp22_gop_fca_set_periodic_timer(struct mvpp2_port *port)
++{
++	u32 timer;
++
++	timer = (port->priv->tclk / (USEC_PER_SEC * FC_CLK_DIVIDER))
++		* FC_QUANTA;
++
++	mvpp22_gop_fca_enable_periodic(port, false);
++
++	mvpp22_gop_fca_set_timer(port, timer);
++
++	mvpp22_gop_fca_enable_periodic(port, true);
++}
++
+ static int mvpp22_gop_init(struct mvpp2_port *port)
  {
- 	struct mvpp2_port *port = mvpp2_phylink_to_port(config);
+ 	struct mvpp2 *priv = port->priv;
+@@ -1325,6 +1368,8 @@ static int mvpp22_gop_init(struct mvpp2_port *port)
+ 	val |= GENCONF_SOFT_RESET1_GOP;
+ 	regmap_write(priv->sysctrl_base, GENCONF_SOFT_RESET1, val);
  
--	if (port->priv->hw_version == MVPP22 &&
-+	if (port->priv->hw_version != MVPP21 &&
- 	    port->phy_interface != interface) {
- 		port->phy_interface = interface;
++	mvpp22_gop_fca_set_periodic_timer(port);
++
+ unsupported_conf:
+ 	return 0;
  
-@@ -6787,7 +6787,7 @@ static int mvpp2_init(struct platform_device *pdev, struct mvpp2 *priv)
- 	if (dram_target_info)
- 		mvpp2_conf_mbus_windows(dram_target_info, priv);
- 
--	if (priv->hw_version == MVPP22)
-+	if (priv->hw_version != MVPP21)
- 		mvpp2_axi_init(priv);
- 
- 	/* Disable HW PHY polling */
-@@ -6950,7 +6950,7 @@ static int mvpp2_probe(struct platform_device *pdev)
- 			dev_warn(&pdev->dev, "Fail to alloc CM3 SRAM\n");
- 	}
- 
--	if (priv->hw_version == MVPP22 && dev_of_node(&pdev->dev)) {
-+	if (priv->hw_version != MVPP21 && dev_of_node(&pdev->dev)) {
- 		priv->sysctrl_base =
- 			syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
- 							"marvell,system-controller");
-@@ -6963,7 +6963,7 @@ static int mvpp2_probe(struct platform_device *pdev)
- 			priv->sysctrl_base = NULL;
- 	}
- 
--	if (priv->hw_version == MVPP22 &&
-+	if (priv->hw_version != MVPP21 &&
- 	    mvpp2_get_nrxqs(priv) * 2 <= MVPP2_BM_MAX_POOLS)
- 		priv->percpu_pools = 1;
- 
-@@ -7010,7 +7010,7 @@ static int mvpp2_probe(struct platform_device *pdev)
- 		if (err < 0)
- 			goto err_pp_clk;
- 
--		if (priv->hw_version == MVPP22) {
-+		if (priv->hw_version != MVPP21) {
- 			priv->mg_clk = devm_clk_get(&pdev->dev, "mg_clk");
- 			if (IS_ERR(priv->mg_clk)) {
- 				err = PTR_ERR(priv->mg_clk);
-@@ -7051,7 +7051,7 @@ static int mvpp2_probe(struct platform_device *pdev)
- 		return -EINVAL;
- 	}
- 
--	if (priv->hw_version == MVPP22) {
-+	if (priv->hw_version != MVPP21) {
- 		err = dma_set_mask(&pdev->dev, MVPP2_DESC_DMA_MASK);
- 		if (err)
- 			goto err_axi_clk;
-@@ -7131,10 +7131,10 @@ static int mvpp2_probe(struct platform_device *pdev)
- 	clk_disable_unprepare(priv->axi_clk);
- 
- err_mg_core_clk:
--	if (priv->hw_version == MVPP22)
-+	if (priv->hw_version != MVPP21)
- 		clk_disable_unprepare(priv->mg_core_clk);
- err_mg_clk:
--	if (priv->hw_version == MVPP22)
-+	if (priv->hw_version != MVPP21)
- 		clk_disable_unprepare(priv->mg_clk);
- err_gop_clk:
- 	clk_disable_unprepare(priv->gop_clk);
 -- 
 1.9.1
 
