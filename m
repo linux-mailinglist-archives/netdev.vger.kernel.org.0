@@ -2,133 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B49B309CC6
-	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 15:27:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08737309CC1
+	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 15:26:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232291AbhAaOSx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Jan 2021 09:18:53 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:17648 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231261AbhAaNno (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jan 2021 08:43:44 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B6016ae2f0000>; Sun, 31 Jan 2021 05:18:39 -0800
-Received: from [172.27.13.84] (172.20.145.6) by HQMAIL107.nvidia.com
+        id S232050AbhAaORb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 Jan 2021 09:17:31 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:18865 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230153AbhAaNdJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jan 2021 08:33:09 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B6016afa70001>; Sun, 31 Jan 2021 05:24:55 -0800
+Received: from [172.27.1.148] (172.20.145.6) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Sun, 31 Jan
- 2021 13:18:37 +0000
-Subject: Re: [PATCH net 1/1] netfilter: conntrack: Check offload bit on table
- dump
-From:   Roi Dayan <roid@nvidia.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-CC:     <netdev@vger.kernel.org>, Paul Blakey <paulb@nvidia.com>,
-        Oz Shlomo <ozsh@nvidia.com>
-References: <20210128074052.777999-1-roid@nvidia.com>
- <20210130120114.GA7846@salvia>
- <3a29e9b5-7bf8-5c00-3ede-738f9b4725bf@nvidia.com>
-Message-ID: <997cbda4-acd1-a000-1408-269bc5c3abf3@nvidia.com>
-Date:   Sun, 31 Jan 2021 15:18:34 +0200
+ 2021 13:24:53 +0000
+Subject: Re: [PATCH mlx5-next v1] RDMA/mlx5: Cleanup the synchronize_srcu()
+ from the ODP flow
+To:     Saeed Mahameed <saeed@kernel.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        "Doug Ledford" <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+CC:     Jakub Kicinski <kuba@kernel.org>, <linux-rdma@vger.kernel.org>,
+        <netdev@vger.kernel.org>, Yishai Hadas <yishaih@nvidia.com>
+References: <20210128064812.1921519-1-leon@kernel.org>
+ <c79124a204f2207f5f1fae69cc34fb08d91d3535.camel@kernel.org>
+From:   Yishai Hadas <yishaih@nvidia.com>
+Message-ID: <549b337b-b51e-c984-a4d8-72f9f738be9c@nvidia.com>
+Date:   Sun, 31 Jan 2021 15:24:50 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-In-Reply-To: <3a29e9b5-7bf8-5c00-3ede-738f9b4725bf@nvidia.com>
+In-Reply-To: <c79124a204f2207f5f1fae69cc34fb08d91d3535.camel@kernel.org>
 Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
 X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
  HQMAIL107.nvidia.com (172.20.187.13)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1612099119; bh=dK1aqpGJLeOrE1XPMeDANKVbsDKsO3U12kdExPfIjPQ=;
-        h=Subject:From:To:CC:References:Message-ID:Date:User-Agent:
-         MIME-Version:In-Reply-To:Content-Type:Content-Language:
-         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
-        b=ip7mEdoNYnhWaVYXsy2w5ADQhT5aJ66uZ1n0xJAiVsarlGtGR4i4gS84a9S0hn6bW
-         ABzFXqNdtuMaAnqcT8O0lKOz60SpD+8krJgMXyto5YNEYygjnehHEafJQHCXmKUK6z
-         Y8HiTRvYjK8fU7E8qk5QhYxTC/wmyWBuo35KIa9l4CHVm9cbl+8BmfrhzD4QKIlN0K
-         Rt2upzzxgoD6lO2PM4z7e0RUTyKoKud8Bd3CHbru7R6IR/fT9f/mKY24uAHlKSMN+v
-         B5dJEJcdgxBA1OIkb/5vbTkpj5UewmayZJzviCtdHN50FYW8myI2+mywlCdZLr4NKm
-         uME3HTijo+LQg==
+        t=1612099495; bh=IkmO/L8zoqUnS9ldzzHqjxMoRQXbJUVj07wmo4M28rg=;
+        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
+         MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding:
+         Content-Language:X-Originating-IP:X-ClientProxiedBy;
+        b=SiSRWx1vhttL/xwwhI4rbg9fJiVB1qzxkgVBvoNt5uwcY0uPpWHZxUNIShJWvtqdY
+         ACqX0VjgTMmjkNZJjbO9LHFcypHfcJmpYig9C4IlcJDauZ5ZMrS5XWKHI5cVpvMfUD
+         BN3xoeex2uAA7kFaduuHVDJ4Rc71eEtfO9tK19mNyFUTLNP++a7eOttvEsNxHWJeIj
+         X+/BLQGYmffqkcGBD6qJ3Pety5ky8bIrG4NzIAA/xB7cPPgZ+EdsxxnW4HuizFL9Sx
+         4foAH49E5JGtcwbMdMlbx/QcvegwySwf4LxQvyU9By7pNZdSTcYn1Sa9/T1q+tn0TS
+         LV5tfdiEettKA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2021-01-31 12:01 PM, Roi Dayan wrote:
->=20
->=20
-> On 2021-01-30 2:01 PM, Pablo Neira Ayuso wrote:
->> Hi Roi,
+On 1/29/2021 2:23 PM, Saeed Mahameed wrote:
+>> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mr.c
+>> b/drivers/net/ethernet/mellanox/mlx5/core/mr.c
+>> index 9eb51f06d3ae..50af84e76fb6 100644
+>> --- a/drivers/net/ethernet/mellanox/mlx5/core/mr.c
+>> +++ b/drivers/net/ethernet/mellanox/mlx5/core/mr.c
+>> @@ -56,6 +56,7 @@ int mlx5_core_create_mkey(struct mlx5_core_dev
+>> *dev,
+>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0mkey->size =3D MLX5_GET=
+64(mkc, mkc, len);
+>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0mkey->key |=3D mlx5_idx=
+_to_mkey(mkey_index);
+>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0mkey->pd =3D MLX5_GET(m=
+kc, mkc, pd);
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0init_waitqueue_head(&mkey->wa=
+it);
 >>
->> On Thu, Jan 28, 2021 at 09:40:52AM +0200, Roi Dayan wrote:
->>> Currently, offloaded flows might be deleted when executing conntrack -L
->>> or cat /proc/net/nf_conntrack while rules being offloaded.
->>> Ct timeout is not maintained for offloaded flows as aging
->>> of offloaded flows are managed by the flow table offload infrastructure=
-.
->>>
->>> Don't do garbage collection for offloaded flows when dumping the
->>> entries.
->>>
->>> Fixes: 90964016e5d3 ("netfilter: nf_conntrack: add IPS_OFFLOAD status=20
->>> bit")
->>> Signed-off-by: Roi Dayan <roid@nvidia.com>
->>> Reviewed-by: Oz Shlomo <ozsh@nvidia.com>
->>> ---
->>> =C2=A0 include/net/netfilter/nf_conntrack.h | 2 +-
->>> =C2=A0 1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/include/net/netfilter/nf_conntrack.h=20
->>> b/include/net/netfilter/nf_conntrack.h
->>> index 439379ca9ffa..87c85109946a 100644
->>> --- a/include/net/netfilter/nf_conntrack.h
->>> +++ b/include/net/netfilter/nf_conntrack.h
->>> @@ -276,7 +276,7 @@ static inline bool nf_ct_is_expired(const struct=20
->>> nf_conn *ct)
->>> =C2=A0 static inline bool nf_ct_should_gc(const struct nf_conn *ct)
->>> =C2=A0 {
->>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return nf_ct_is_expired(ct) && nf_ct_is_=
-confirmed(ct) &&
->>> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 !nf_ct_is=
-_dying(ct);
->>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 !nf_ct_is=
-_dying(ct) && !test_bit(IPS_OFFLOAD_BIT,=20
->>> &ct->status);
->>
->> The gc_worker() calls nf_ct_offload_timeout() if the flow if
->> offloaded, so it extends the timeout to skip the garbage collection.
->>
->> Could you update ctnetlink_dump_table() and ct_seq_show() to extend
->> the timeout if the flow is offloaded?
->>
->> Thanks.
->>
->=20
-> sure. i'll submit v2.
-> thanks
+>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0mlx5_core_dbg(dev, "out=
+ 0x%x, mkey 0x%x\n", mkey_index, mkey-
+>>> key);
+>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0return 0;
+>> diff --git a/include/linux/mlx5/driver.h
+>> b/include/linux/mlx5/driver.h
+>> index 4901b4fadabb..f9e7036ae5a5 100644
+>> --- a/include/linux/mlx5/driver.h
+>> +++ b/include/linux/mlx5/driver.h
+>> @@ -373,6 +373,8 @@ struct mlx5_core_mkey {
+>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u32=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0key;
+>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u32=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0pd;
+>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u32=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0type;
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct wait_queue_head wait;
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0refcount_t usecount;
+> mlx5_core_mkey is used everywhere in mlx5_core and we don't care about
+> odp complexity, i would like to keep the core simple and primitive as
+> it is today.
+> please keep the layer separation and find a way to manage refcount and
+> wait queue in mlx5_ib driver..
+>
+The alternative could really be to come with some wrapped mlx5_ib=20
+structure that will hold 'mlx5_core_mkey' and will add those two fields.
 
+However,
 
-Hi Pablo,
+As ODP is a data path flow we need to minimize any locking scope and=20
+reduce branches, having the above stuff on 'mlx5_core_mkey' allows=20
+direct access from any type of mlx5_ib object that uses it.
+Having it per object (e.g. mlx5_ib_mr, mlx5_ib_mw, mlx5_ib_devx_mr)=20
+increasing locking scope and branches on data path to find the refcount=20
+field per its 'type'.=C2=A0 (see mlx5_core_mkey->type).
 
-We did more tests with just updating the timeout in the 2 callers
-and it's not enough. We reproduce the issue of rules being timed
-out just now frim different place.
-There is a 3rd caller nf_ct_gc_expired() which being called by 3
-other callers:
-____nf_conntrack_find()
-nf_conntrack_tuple_taken()
-early_drop_list()
+Specifically talking, see pagefault_single_data_segment() [1], its mkey=20
+can be from type MR, MW or DEVX, with current patch having the refcount=20
+on the core we increase it immediacy and free the lock rather than do=20
+some lookup based on type and only then increase refcount and=C2=A0 free th=
+e=20
+lock.
 
-only early_drop_list() has a check to skip conns with offload bit
-but without extending the timeout.
-I didnt do a dump but the issue could be from the other 2 calls.
+In addition,
 
-With current commit as is I didn't need to check more callers as I made
-sure all callers will skip the non-offload gc.
-Instead of updating more callers and there might be more callers
-later why current commit is not enough?
-We skip offloaded flows and soon gc_worker() will hit and will update
-the timeout anyway.
+Wrapping 'mlx5_core_mkey' for this might hit other data path flows as of=20
+UMR, this may require extra memory access to get the=20
+'mlx5_core_mkey->key' field upon building the WR, we prefer to avoid it.
+See mlx5_ib_create_xlt_wr [2].
 
-Thanks,
-Roi
+So, it seems reasonable to have those properties on the raw mkey=20
+structure, usage of the refcount / wait is done in mlx5 ib, so no impact=20
+should be for other users as of that.
+
+[1]=20
+https://elixir.bootlin.com/linux/v5.11-rc5/source/drivers/infiniband/hw/mlx=
+5/odp.c#L893
+
+[2]=20
+https://elixir.bootlin.com/linux/v5.11-rc5/source/drivers/infiniband/hw/mlx=
+5/mr.c#L1092
+
+Yishai
+
