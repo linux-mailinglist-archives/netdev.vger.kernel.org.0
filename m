@@ -2,440 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A6F2309DB8
-	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 16:41:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0774A309DB9
+	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 16:41:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232068AbhAaMt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Jan 2021 07:49:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41466 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231268AbhAaKl2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jan 2021 05:41:28 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5E67C06174A
-        for <netdev@vger.kernel.org>; Sun, 31 Jan 2021 02:40:13 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id r12so19633033ejb.9
-        for <netdev@vger.kernel.org>; Sun, 31 Jan 2021 02:40:13 -0800 (PST)
+        id S232072AbhAaMt2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 Jan 2021 07:49:28 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:49364 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S230424AbhAaKw4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jan 2021 05:52:56 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10VAoJTV016695;
+        Sun, 31 Jan 2021 02:51:51 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pfpt0220;
+ bh=gj6wGXMHpP4Rhll+g6zA8GpeuAn/aj8Ar1Ny5Ez/WGc=;
+ b=Q59UXNBiWWxwqKGWZtWhSs4MM5kcOh/aCy8rFDx6YrqYcTVaWFvxUut7LWB3sb6OAPTd
+ uNCpvtyI1GwxXhkDcRKuqnclTIWt8GcSwxwFHGaiUEv++EqX7/JLbvQ4qqG/KXg7D26c
+ 8SxOtKzkvZeHsYcPkGSJx6ytupv7+fQNor0p4aJ/DIw/54MfvAJPEEdCI8h6svLVZORO
+ l+WFFSGrX5kPjffmDx6O7oDx9bmQfXgwJFAhzBnbSFX3HRhhu513daURjbJZFSnHqFSb
+ jAODtQB36jA35d2DBpDJR/KUVFt+dzRE+CKRFLHG1MWC9FjjjxpOAalGwdxFUZtJhgHp /g== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 36d5psskug-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Sun, 31 Jan 2021 02:51:51 -0800
+Received: from SC-EXCH01.marvell.com (10.93.176.81) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 31 Jan
+ 2021 02:51:50 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 31 Jan
+ 2021 02:51:49 -0800
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.171)
+ by DC5-EXCH01.marvell.com (10.69.176.38) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2 via Frontend Transport; Sun, 31 Jan 2021 02:51:49 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lNYb3TJa/+/fyZpIPSYdjQBFVIEota9+PseNfpZpp/3ZGP6NdFye18hpYThFItOOviZtptaapp/B+SIk8IBv9FRBx+WNXiReE6IiwR6jFCY5d3Lqi6rDfEV6Lf5rSO5OUe7JHn06qT6q27Q+Tllii3Ng4+efqWqEhoHMdecoI0ETHJf6i6770Kzhd5CQCxCwnFgMEwQDhi7XrZXZtByDShd6pTfyj0EGRTDN1++01lLfh4D80TzKdCZOk7LxcyBxCoLQjN5CPy61wWBv6L53VQF4pGZtEA+9ok+ZamveYWv/hSNTRbxJYhvUGmnRwDX40OEvfsOvWNqU/fxiEcZ0zQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gj6wGXMHpP4Rhll+g6zA8GpeuAn/aj8Ar1Ny5Ez/WGc=;
+ b=O4K5hitMOQ+UOSU5AiQJ1L7oquFc84STa9G/l2kv+EUGdhk2LD/hFx+76c2oV6xPFWYKlnoFR9bhv0ZCbsVLMqP61v1PKbJTW5W4K+oXnAw7xLQVW6tRpr53ThlSje78mMy+rLKug/2+lOSDTng4jTru9aTp3DgVWC2UYRy81Jut3RcTBZe1IY3wJZk4wLZyvq1ICJhZPMN0Tajb3Y2U81U0PoOKPHrvyL03nogkM2GnLOKLAzfmXyaXsX3wMM6o8Ij4dPO7lqtSiv4XI0l4gR2Z5oZko/Boo9ItNHeXpGIF5mqztmWZrmpbzpWuQpdyzyEvjtsIRXj5JHObXi5NrA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Ab+D6VKE8Tn13kki+NRjL4c+WxoJNRVtEDDim1YOq9Y=;
-        b=Rlq/oYLugWrcwwzEkGBv7p0jzl9kLDQMAC4TmaQccxKrlluipMS1TXL1sf6vbaxOgG
-         uDOWHZQGiaFTB8U8MhzxT35Oqo1la6c2gXyl6sW2duFi8S/wsVAxwFW5TVDnrhKIEf2A
-         hMUxI2L1232pI5qwrBecgyYejggwRjCSfOEBUSu9bYzG7KOmYNYwfgZLt2Z3GacOJ5jW
-         m+5yEURh6/kMWmrGrM4sYmXrMXcWE6F2N+xT2cacmkNc0qXVbNBvklnLfuJf8W9DYeBA
-         hjY2IX9DO8CiWMyaij0zLcNqkodMUO4aC5zPORxLlbTeEF9vgNsFA8Yx19KLNNspIHmY
-         Hz8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Ab+D6VKE8Tn13kki+NRjL4c+WxoJNRVtEDDim1YOq9Y=;
-        b=F18M04QVU1Z3tVFxss8s3lmjK+JxIPKMEBsSTWu/i5z6V6DK2qt1qckNZEGt8WWH7O
-         6wsh8CTAWNHqW2AZxdalh6jTPdZCbwoVMHt1fe5WG4KyW+t9W5TOA+MeiilQhtNyw6V1
-         T2TiedlC4N7qzNdgdAVbHp+pm5hEwITxA0UTOYYXyOYIyMRiJHmYwdv1+72JrV3OMVW5
-         o8zpD21+Wxu50NfXT6ts/PfkOxvxHEUn+qDZ3sdrCQyOpTTROkIKJOrt+AewHP+HZzV+
-         Qw9H/m7bM8k+QocsGQerD/mNj+ikf5jn9miJg444nbQv5G8BnLph44bJ8BJW58OZ/b3O
-         2uMg==
-X-Gm-Message-State: AOAM533ZURNu9PAkETdPEWzhI7D8amBxylWgnPWiTw6jU+Xnpmfi12T6
-        bwwZ3mMyRz+Co6kp9lINIXs=
-X-Google-Smtp-Source: ABdhPJzxk65SsJpJfhoZ20qrn0wS60mF0T23Cpj1SLjNIXKEcsGZCvjAuExb/EwyBBRBCFWDn2e23Q==
-X-Received: by 2002:a17:906:f195:: with SMTP id gs21mr771305ejb.225.1612089612590;
-        Sun, 31 Jan 2021 02:40:12 -0800 (PST)
-Received: from [132.68.43.126] ([132.68.43.126])
-        by smtp.gmail.com with ESMTPSA id y8sm6893717edd.97.2021.01.31.02.40.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 31 Jan 2021 02:40:11 -0800 (PST)
-Subject: Re: [PATCH v2 net-next 02/21] net: Introduce direct data placement
- tcp offload
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Boris Pismenny <borisp@mellanox.com>,
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gj6wGXMHpP4Rhll+g6zA8GpeuAn/aj8Ar1Ny5Ez/WGc=;
+ b=GXSsETUpsXCehin4SrkX/Bjrqf5NOo4GbJgiRdZ6TdYSv4gelPCwIRpYj7OUDbbvTk9gmPBWz4/2HllO7cFhvNC5UaETt9WM+ZUZ1pcONkWRIdylyvWWJRloH/SL8fYjYwvbOBibBcCyQK0CJQTbNoVyz3KNA0Er3fZzLVOZVUA=
+Received: from CO6PR18MB3873.namprd18.prod.outlook.com (2603:10b6:5:350::23)
+ by MWHPR18MB1613.namprd18.prod.outlook.com (2603:10b6:300:cb::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.24; Sun, 31 Jan
+ 2021 10:51:47 +0000
+Received: from CO6PR18MB3873.namprd18.prod.outlook.com
+ ([fe80::c041:1c61:e57:349a]) by CO6PR18MB3873.namprd18.prod.outlook.com
+ ([fe80::c041:1c61:e57:349a%3]) with mapi id 15.20.3805.024; Sun, 31 Jan 2021
+ 10:51:47 +0000
+From:   Stefan Chulski <stefanc@marvell.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Christoph Hellwig <hch@lst.de>, sagi@grimberg.me, axboe@fb.com,
-        kbusch@kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
-        David Ahern <dsahern@gmail.com>, smalin@marvell.com,
-        boris.pismenny@gmail.com, linux-nvme@lists.infradead.org,
-        netdev <netdev@vger.kernel.org>, benishay@nvidia.com,
-        ogerlitz@nvidia.com, yorayz@nvidia.com,
-        Ben Ben-Ishay <benishay@mellanox.com>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Yoray Zack <yorayz@mellanox.com>
-References: <20210114151033.13020-1-borisp@mellanox.com>
- <20210114151033.13020-3-borisp@mellanox.com>
- <CANn89iJaFRFxVe-eV7hcwC_5Zp+HtWHxTQt+BNYcKOwZUriSDg@mail.gmail.com>
- <62d4606a-0a41-2b12-cf16-3523d0b73573@gmail.com>
- <CANn89i+7HNP6o5TkR9WKW3QkuH0cCArETfGTis8PWPR64BTFEQ@mail.gmail.com>
-From:   Boris Pismenny <borispismenny@gmail.com>
-Message-ID: <8e4cd169-f1b7-0f39-eaad-8cf441077f84@gmail.com>
-Date:   Sun, 31 Jan 2021 12:40:09 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
-MIME-Version: 1.0
-In-Reply-To: <CANn89i+7HNP6o5TkR9WKW3QkuH0cCArETfGTis8PWPR64BTFEQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Marcin Wojtas (mw@semihalf.com)" <mw@semihalf.com>,
+        Nadav Haklai <nadavh@marvell.com>,
+        "Yan Markman" <ymarkman@marvell.com>
+Subject: RE: [EXT] Re: Phylink flow control support on ports with
+  MLO_AN_FIXED auto negotiation
+Thread-Topic: [EXT] Re: Phylink flow control support on ports with
+  MLO_AN_FIXED auto negotiation
+Thread-Index: Adb3t9G4usyHCBibTMyL4NZ1O9ab5gABQV2AAABBZWA=
+Date:   Sun, 31 Jan 2021 10:51:46 +0000
+Message-ID: <CO6PR18MB3873D6F519D1B4112AA77671B0B79@CO6PR18MB3873.namprd18.prod.outlook.com>
+References: <CO6PR18MB38732F56EF08FA2C949326F9B0B79@CO6PR18MB3873.namprd18.prod.outlook.com>
+ <20210131103549.GA1463@shell.armlinux.org.uk>
+In-Reply-To: <20210131103549.GA1463@shell.armlinux.org.uk>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: armlinux.org.uk; dkim=none (message not signed)
+ header.d=none;armlinux.org.uk; dmarc=none action=none
+ header.from=marvell.com;
+x-originating-ip: [62.67.24.210]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 71175d8e-4bd0-404a-8c3d-08d8c5d634b5
+x-ms-traffictypediagnostic: MWHPR18MB1613:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MWHPR18MB1613A569F128FAAD96961944B0B79@MWHPR18MB1613.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: lYipunPB6/U77P55c+xiNa13rNqXVj9Z1B7eohZeOxlBtEghoIvwx9COn3RKWl00w3PLFUdKS/V8myX0bxvX9Ib9WiPrJfy0kbj0EqeFJrI7hnBOEYlwp3zfIasIzHq5eR+v14lwpOXu6MyVW9dNNtxubiBr+fdCLURdXI1op4VACAhgzzvtWFXhYZWgEuS1+6vSa2NJRk1YDRwu/5QoiTvxKKbjvjotUpOsJeOG7qCT7XoGPSKqQNYQyi3HoBYBZh5vQkDgpRRcLpXOTUsv5YH6KwMmXkHReR6AbicdMt3faREfqZYinuOWSw8j8CoXQpW95CNrNSaBfXILeVkTuVWSFk+Fyt40dfEwTCvdcpvJgBiW00tZOZBPqwIQnP9vmIuGQJOr/2P2fQefoUUqdhfa8JgtFE5EcXhvwpJYTU0P87sSL/e71YKbdvr0px3ed9mkEgGUdKob/5tzAoPvxx8y8Cy810hiOu34YCCnImA9U2TlRNlb2t8QVvw70ITF54H+KmZLCm2HtN04e5JECQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR18MB3873.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(39850400004)(136003)(366004)(396003)(346002)(26005)(4744005)(186003)(83380400001)(5660300002)(8676002)(478600001)(8936002)(6916009)(52536014)(33656002)(66476007)(54906003)(64756008)(66556008)(76116006)(66446008)(6506007)(4326008)(71200400001)(316002)(107886003)(55016002)(9686003)(86362001)(2906002)(7696005)(66946007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?LX/KQQ7x0VPKeOHKAlDxvABdRYD6/DWjcxz0QWyBWvJbUNeS32Ak7k6NoREA?=
+ =?us-ascii?Q?+Mlr5VV6vRT5WQqda9EK3Q+lSQPmJ8cdYcbK/+liDJ3JFGuVwjudmfjxkEEs?=
+ =?us-ascii?Q?ZX2mA/0hgV0Y0MdW+vIGnVK/BNvqdHO0xyzwSQ7qYFmELuFr7aJibAc2nA2I?=
+ =?us-ascii?Q?dIRS5WsmkUMH7jSvtf/YLHtyVASfsBlT37hGA6Ek+BZ4HStR5vE3w5l90j6T?=
+ =?us-ascii?Q?N0cpRGGkd7lzsfRCyRDUlvK3FRhibvKWpGN156Zg2/vdzC+2J8xVqFwH3jF+?=
+ =?us-ascii?Q?3wCgT2gRx1gLS9aN2ZYoXlO2illoGjyfVpVjz1iF2rxmqOZls4O8TrhVX9sk?=
+ =?us-ascii?Q?w/PgQzFaz37+8mUjw47COwxzFyKuJGsqz6vNSsp9R3m2FM6oR1g1OHFMhp4w?=
+ =?us-ascii?Q?w0rrLUgcUfD0G62JmPv+N/aPNWBLu1sGtzPvaXJwCYFRTLgbKUXYy73DMqme?=
+ =?us-ascii?Q?hHaRhNyA6D1/LjsZppdAkzypsbDgYgQSmmYNt4LHaZwq4kfaiKtLI3z4jA1z?=
+ =?us-ascii?Q?OeBgqvC/pcucBVSqZLUhFtR1PLgxsAA0VdwwyaReFDKDzKRgkPGyaJMM6eh1?=
+ =?us-ascii?Q?cDwOVGmuNj6xI8rJff4RueZaDsk9WUIBm9+meYvmmGgTh1jFmVstvjdnIZCV?=
+ =?us-ascii?Q?zKqizPmMxF1WRuQXdRrPjNSjeO+dyX4fzROilXylq8FMrvldY3LS/AhiVxda?=
+ =?us-ascii?Q?xiZBIjiOMl6S9uA4Wd8Sr61xvQBPs9QFPUD3p5ugQ9TwkduHZc90M7Jt3yyM?=
+ =?us-ascii?Q?BRG/uriA/0gkWC6T7hrDddlYUHa2Osl1KlgnbMPRc27K/xyHaijiMOUqsKOU?=
+ =?us-ascii?Q?0dov5G/SDcnOJjQOHNHEk5FZb0wx9cRf0I3MSHEDw5HT9CJSPIoBwcsOgBb0?=
+ =?us-ascii?Q?6pV/RpTWHSXv1ZJ/5n1CWxmIocAi7boy8ETegzgPQ7INiKTzlub/Z4smFQbY?=
+ =?us-ascii?Q?elOZ9QksVicPw8VDGE2kaGqo5snpczE7w5q8DLAx/EANRNwyFyQt9fEW/uPK?=
+ =?us-ascii?Q?H6USsYicCvpAfyIDDt8DC3APM7x4qnE80Gu/6uykGPuZ/jnrSOV4ojz/tUKU?=
+ =?us-ascii?Q?OE0O4HVF?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR18MB3873.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 71175d8e-4bd0-404a-8c3d-08d8c5d634b5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Jan 2021 10:51:47.0065
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: /S79SBCyBbOSeinued89iNiCRvxy5Vzx2hwTsUrasFvV/4ub+zc+loP0GNLo59bJKX8NGcyskv1uYwueqpa0ig==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR18MB1613
+X-OriginatorOrg: marvell.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
+ definitions=2021-01-31_03:2021-01-29,2021-01-31 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+> > Hi,
+> >
+> > Armada has options for 1G/10G ports without PHY's(for example
+> community board Macchiato single shot).
+> > This port doesn't have PHY's and cannot negotiate Flow Control support,
+> but we can for example connect two ports without PHY's and manually(by
+> ethtool) configure FC.
+>=20
+> On the Macchiatobin single shot, you use the existing SFP support rather
+> than forcing them to fixed link.
+>=20
+> > Current phylink return error if I do this on ports with
+> MLO_AN_FIXED(callback phylink_ethtool_set_pauseparam):
+> > if (pl->cur_link_an_mode =3D=3D MLO_AN_FIXED)
+> >                 return -EOPNOTSUPP;
+> >
+> > How can we enable FC configurations for these ports? Do you have any
+> suggestions or should I post my proposal as an RFC patch?
+>=20
+> If you really must use fixed-link, you specify the pause modes via firmwa=
+re,
+> just as you specify the speed and duplex - you specify the link partner's=
+ flow
+> control abilities.
 
-On 14/01/2021 22:43, Eric Dumazet wrote:
-> On Thu, Jan 14, 2021 at 9:19 PM Boris Pismenny <borispismenny@gmail.com> wrote:
->>
->>
->>
->> On 14/01/2021 17:57, Eric Dumazet wrote:
->>> On Thu, Jan 14, 2021 at 4:10 PM Boris Pismenny <borisp@mellanox.com> wrote:
->>>>
->>>> This commit introduces direct data placement offload for TCP.
->>>> This capability is accompanied by new net_device operations that
->>>> configure hardware contexts. There is a context per socket, and a context per DDP
->>>> opreation. Additionally, a resynchronization routine is used to assist
->>>> hardware handle TCP OOO, and continue the offload.
->>>> Furthermore, we let the offloading driver advertise what is the max hw
->>>> sectors/segments.
->>>>
->>>> Using this interface, the NIC hardware will scatter TCP payload directly
->>>> to the BIO pages according to the command_id.
->>>> To maintain the correctness of the network stack, the driver is expected
->>>> to construct SKBs that point to the BIO pages.
->>>>
->>>> This, the SKB represents the data on the wire, while it is pointing
->>>> to data that is already placed in the destination buffer.
->>>> As a result, data from page frags should not be copied out to
->>>> the linear part.
->>>>
->>>> As SKBs that use DDP are already very memory efficient, we modify
->>>> skb_condence to avoid copying data from fragments to the linear
->>>> part of SKBs that belong to a socket that uses DDP offload.
->>>>
->>>> A follow-up patch will use this interface for DDP in NVMe-TCP.
->>>>
->>>> Signed-off-by: Boris Pismenny <borisp@mellanox.com>
->>>> Signed-off-by: Ben Ben-Ishay <benishay@mellanox.com>
->>>> Signed-off-by: Or Gerlitz <ogerlitz@mellanox.com>
->>>> Signed-off-by: Yoray Zack <yorayz@mellanox.com>
->>>> ---
->>>>  include/linux/netdev_features.h    |   2 +
->>>>  include/linux/netdevice.h          |   5 ++
->>>>  include/net/inet_connection_sock.h |   4 +
->>>>  include/net/tcp_ddp.h              | 136 +++++++++++++++++++++++++++++
->>>>  net/Kconfig                        |   9 ++
->>>>  net/core/skbuff.c                  |   9 +-
->>>>  net/ethtool/common.c               |   1 +
->>>>  7 files changed, 165 insertions(+), 1 deletion(-)
->>>>  create mode 100644 include/net/tcp_ddp.h
->>>>
->>>> diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
->>>> index 934de56644e7..fb35dcac03d2 100644
->>>> --- a/include/linux/netdev_features.h
->>>> +++ b/include/linux/netdev_features.h
->>>> @@ -84,6 +84,7 @@ enum {
->>>>         NETIF_F_GRO_FRAGLIST_BIT,       /* Fraglist GRO */
->>>>
->>>>         NETIF_F_HW_MACSEC_BIT,          /* Offload MACsec operations */
->>>> +       NETIF_F_HW_TCP_DDP_BIT,         /* TCP direct data placement offload */
->>>>
->>>>         /*
->>>>          * Add your fresh new feature above and remember to update
->>>> @@ -157,6 +158,7 @@ enum {
->>>>  #define NETIF_F_GRO_FRAGLIST   __NETIF_F(GRO_FRAGLIST)
->>>>  #define NETIF_F_GSO_FRAGLIST   __NETIF_F(GSO_FRAGLIST)
->>>>  #define NETIF_F_HW_MACSEC      __NETIF_F(HW_MACSEC)
->>>> +#define NETIF_F_HW_TCP_DDP     __NETIF_F(HW_TCP_DDP)
->>>>
->>>>  /* Finds the next feature with the highest number of the range of start till 0.
->>>>   */
->>>> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
->>>> index 259be67644e3..3dd3cdf5dec3 100644
->>>> --- a/include/linux/netdevice.h
->>>> +++ b/include/linux/netdevice.h
->>>> @@ -941,6 +941,7 @@ struct dev_ifalias {
->>>>
->>>>  struct devlink;
->>>>  struct tlsdev_ops;
->>>> +struct tcp_ddp_dev_ops;
->>>>
->>>>  struct netdev_name_node {
->>>>         struct hlist_node hlist;
->>>> @@ -1937,6 +1938,10 @@ struct net_device {
->>>>         const struct tlsdev_ops *tlsdev_ops;
->>>>  #endif
->>>>
->>>> +#ifdef CONFIG_TCP_DDP
->>>> +       const struct tcp_ddp_dev_ops *tcp_ddp_ops;
->>>> +#endif
->>>> +
->>>>         const struct header_ops *header_ops;
->>>>
->>>>         unsigned int            flags;
->>>> diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
->>>> index 7338b3865a2a..a08b85b53aa8 100644
->>>> --- a/include/net/inet_connection_sock.h
->>>> +++ b/include/net/inet_connection_sock.h
->>>> @@ -66,6 +66,8 @@ struct inet_connection_sock_af_ops {
->>>>   * @icsk_ulp_ops          Pluggable ULP control hook
->>>>   * @icsk_ulp_data         ULP private data
->>>>   * @icsk_clean_acked      Clean acked data hook
->>>> + * @icsk_ulp_ddp_ops      Pluggable ULP direct data placement control hook
->>>> + * @icsk_ulp_ddp_data     ULP direct data placement private data
->>>>   * @icsk_listen_portaddr_node  hash to the portaddr listener hashtable
->>>>   * @icsk_ca_state:        Congestion control state
->>>>   * @icsk_retransmits:     Number of unrecovered [RTO] timeouts
->>>> @@ -94,6 +96,8 @@ struct inet_connection_sock {
->>>>         const struct tcp_ulp_ops  *icsk_ulp_ops;
->>>>         void __rcu                *icsk_ulp_data;
->>>>         void (*icsk_clean_acked)(struct sock *sk, u32 acked_seq);
->>>
->>> #ifdef CONFIG_TCP_DDP ?
->>>
->>>> +       const struct tcp_ddp_ulp_ops  *icsk_ulp_ddp_ops;
->>>> +       void __rcu                *icsk_ulp_ddp_data;
->>>>         struct hlist_node         icsk_listen_portaddr_node;
->>>>         unsigned int              (*icsk_sync_mss)(struct sock *sk, u32 pmtu);
->>>>         __u8                      icsk_ca_state:5,
->>>> diff --git a/include/net/tcp_ddp.h b/include/net/tcp_ddp.h
->>>> new file mode 100644
->>>> index 000000000000..31e5b1a16d0f
->>>> --- /dev/null
->>>> +++ b/include/net/tcp_ddp.h
->>>> @@ -0,0 +1,136 @@
->>>> +/* SPDX-License-Identifier: GPL-2.0
->>>> + *
->>>> + * tcp_ddp.h
->>>> + *     Author: Boris Pismenny <borisp@mellanox.com>
->>>> + *     Copyright (C) 2021 Mellanox Technologies.
->>>> + */
->>>> +#ifndef _TCP_DDP_H
->>>> +#define _TCP_DDP_H
->>>> +
->>>> +#include <linux/netdevice.h>
->>>> +#include <net/inet_connection_sock.h>
->>>> +#include <net/sock.h>
->>>> +
->>>> +/* limits returned by the offload driver, zero means don't care */
->>>> +struct tcp_ddp_limits {
->>>> +       int      max_ddp_sgl_len;
->>>> +};
->>>> +
->>>> +enum tcp_ddp_type {
->>>> +       TCP_DDP_NVME = 1,
->>>> +};
->>>> +
->>>> +/**
->>>> + * struct tcp_ddp_config - Generic tcp ddp configuration: tcp ddp IO queue
->>>> + * config implementations must use this as the first member.
->>>> + * Add new instances of tcp_ddp_config below (nvme-tcp, etc.).
->>>> + */
->>>> +struct tcp_ddp_config {
->>>> +       enum tcp_ddp_type    type;
->>>> +       unsigned char        buf[];
->>>> +};
->>>> +
->>>> +/**
->>>> + * struct nvme_tcp_ddp_config - nvme tcp ddp configuration for an IO queue
->>>> + *
->>>> + * @pfv:        pdu version (e.g., NVME_TCP_PFV_1_0)
->>>> + * @cpda:       controller pdu data alignmend (dwords, 0's based)
->>>> + * @dgst:       digest types enabled.
->>>> + *              The netdev will offload crc if ddp_crc is supported.
->>>> + * @queue_size: number of nvme-tcp IO queue elements
->>>> + * @queue_id:   queue identifier
->>>> + * @cpu_io:     cpu core running the IO thread for this queue
->>>> + */
->>>> +struct nvme_tcp_ddp_config {
->>>> +       struct tcp_ddp_config   cfg;
->>>> +
->>>> +       u16                     pfv;
->>>> +       u8                      cpda;
->>>> +       u8                      dgst;
->>>> +       int                     queue_size;
->>>> +       int                     queue_id;
->>>> +       int                     io_cpu;
->>>> +};
->>>> +
->>>> +/**
->>>> + * struct tcp_ddp_io - tcp ddp configuration for an IO request.
->>>> + *
->>>> + * @command_id:  identifier on the wire associated with these buffers
->>>> + * @nents:       number of entries in the sg_table
->>>> + * @sg_table:    describing the buffers for this IO request
->>>> + * @first_sgl:   first SGL in sg_table
->>>> + */
->>>> +struct tcp_ddp_io {
->>>> +       u32                     command_id;
->>>> +       int                     nents;
->>>> +       struct sg_table         sg_table;
->>>> +       struct scatterlist      first_sgl[SG_CHUNK_SIZE];
->>>> +};
->>>> +
->>>> +/* struct tcp_ddp_dev_ops - operations used by an upper layer protocol to configure ddp offload
->>>> + *
->>>> + * @tcp_ddp_limits:    limit the number of scatter gather entries per IO.
->>>> + *                     the device driver can use this to limit the resources allocated per queue.
->>>> + * @tcp_ddp_sk_add:    add offload for the queue represennted by the socket+config pair.
->>>> + *                     this function is used to configure either copy, crc or both offloads.
->>>> + * @tcp_ddp_sk_del:    remove offload from the socket, and release any device related resources.
->>>> + * @tcp_ddp_setup:     request copy offload for buffers associated with a command_id in tcp_ddp_io.
->>>> + * @tcp_ddp_teardown:  release offload resources association between buffers and command_id in
->>>> + *                     tcp_ddp_io.
->>>> + * @tcp_ddp_resync:    respond to the driver's resync_request. Called only if resync is successful.
->>>> + */
->>>> +struct tcp_ddp_dev_ops {
->>>> +       int (*tcp_ddp_limits)(struct net_device *netdev,
->>>> +                             struct tcp_ddp_limits *limits);
->>>> +       int (*tcp_ddp_sk_add)(struct net_device *netdev,
->>>> +                             struct sock *sk,
->>>> +                             struct tcp_ddp_config *config);
->>>> +       void (*tcp_ddp_sk_del)(struct net_device *netdev,
->>>> +                              struct sock *sk);
->>>> +       int (*tcp_ddp_setup)(struct net_device *netdev,
->>>> +                            struct sock *sk,
->>>> +                            struct tcp_ddp_io *io);
->>>> +       int (*tcp_ddp_teardown)(struct net_device *netdev,
->>>> +                               struct sock *sk,
->>>> +                               struct tcp_ddp_io *io,
->>>> +                               void *ddp_ctx);
->>>> +       void (*tcp_ddp_resync)(struct net_device *netdev,
->>>> +                              struct sock *sk, u32 seq);
->>>> +};
->>>> +
->>>> +#define TCP_DDP_RESYNC_REQ BIT(0)
->>>> +
->>>> +/**
->>>> + * struct tcp_ddp_ulp_ops - Interface to register uppper layer Direct Data Placement (DDP) TCP offload
->>>> + */
->>>> +struct tcp_ddp_ulp_ops {
->>>> +       /* NIC requests ulp to indicate if @seq is the start of a message */
->>>> +       bool (*resync_request)(struct sock *sk, u32 seq, u32 flags);
->>>> +       /* NIC driver informs the ulp that ddp teardown is done - used for async completions*/
->>>> +       void (*ddp_teardown_done)(void *ddp_ctx);
->>>> +};
->>>> +
->>>> +/**
->>>> + * struct tcp_ddp_ctx - Generic tcp ddp context: device driver per queue contexts must
->>>> + * use this as the first member.
->>>> + */
->>>> +struct tcp_ddp_ctx {
->>>> +       enum tcp_ddp_type    type;
->>>> +       unsigned char        buf[];
->>>> +};
->>>> +
->>>> +static inline struct tcp_ddp_ctx *tcp_ddp_get_ctx(const struct sock *sk)
->>>> +{
->>>> +       struct inet_connection_sock *icsk = inet_csk(sk);
->>>> +
->>>> +       return (__force struct tcp_ddp_ctx *)icsk->icsk_ulp_ddp_data;
->>>> +}
->>>> +
->>>> +static inline void tcp_ddp_set_ctx(struct sock *sk, void *ctx)
->>>> +{
->>>> +       struct inet_connection_sock *icsk = inet_csk(sk);
->>>> +
->>>> +       rcu_assign_pointer(icsk->icsk_ulp_ddp_data, ctx);
->>>> +}
->>>> +
->>>> +#endif //_TCP_DDP_H
->>>> diff --git a/net/Kconfig b/net/Kconfig
->>>> index f4c32d982af6..3876861cdc90 100644
->>>> --- a/net/Kconfig
->>>> +++ b/net/Kconfig
->>>> @@ -457,6 +457,15 @@ config ETHTOOL_NETLINK
->>>>           netlink. It provides better extensibility and some new features,
->>>>           e.g. notification messages.
->>>>
->>>> +config TCP_DDP
->>>> +       bool "TCP direct data placement offload"
->>>> +       default n
->>>> +       help
->>>> +         Direct Data Placement (DDP) offload for TCP enables ULP, such as
->>>> +         NVMe-TCP/iSCSI, to request the NIC to place TCP payload data
->>>> +         of a command response directly into kernel pages.
->>>> +
->>>> +
->>>>  endif   # if NET
->>>>
->>>>  # Used by archs to tell that they support BPF JIT compiler plus which flavour.
->>>> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
->>>> index f62cae3f75d8..791c1b6bc067 100644
->>>> --- a/net/core/skbuff.c
->>>> +++ b/net/core/skbuff.c
->>>> @@ -69,6 +69,7 @@
->>>>  #include <net/xfrm.h>
->>>>  #include <net/mpls.h>
->>>>  #include <net/mptcp.h>
->>>> +#include <net/tcp_ddp.h>
->>>>
->>>>  #include <linux/uaccess.h>
->>>>  #include <trace/events/skb.h>
->>>> @@ -6140,9 +6141,15 @@ EXPORT_SYMBOL(pskb_extract);
->>>>   */
->>>>  void skb_condense(struct sk_buff *skb)
->>>>  {
->>>> +       bool is_ddp = false;
->>>> +
->>>> +#ifdef CONFIG_TCP_DDP
->>>
->>> This looks strange to me : TCP should call this helper while skb->sk is NULL
->>>
->>> Are you sure this is not dead code ?
->>>
->>
->> Will verify again on Sunday. AFAICT, early demux sets skb->sk before this code
->> is called.
-> 
-> 
-> First, early demux is optional.
-> 
-> Secondly, skb->sk is stolen in skb_steal_sock() if early demux was performed.
-> 
-> 
-> Just to clarify, the purpose of this code is to avoid skb condensing
->> data that is already placed into destination buffers.
-> 
-> Then this has not been tested. This suggests this code could be
-> removed, I doubt that your target traffic would ever be 'condensed'.
-> 
+In this case we cannot change this by ethtool during runtime?
 
-Thanks for the feedback!
-
-Some retrospective about this:
-We originally used the skb->ddp_crc bit for this check, but later we
-tried to avoid it so as to reduce our dependence on said skb bit.
-Unfortunately, that later change wasn't tested thoroughly.
-
-We'll post v3 patches that will use the skb->ddp_crc bit for this check.
-After re-testing with the new v3 patch I'm confident it will work.
-
->>
->>>> +       is_ddp = skb->sk && inet_csk(skb->sk) &&
->>>> +                inet_csk(skb->sk)->icsk_ulp_ddp_data;
->>>> +#endif
->>>>         if (skb->data_len) {
->>>>                 if (skb->data_len > skb->end - skb->tail ||
->>>> -                   skb_cloned(skb))
->>>> +                   skb_cloned(skb) || is_ddp)
->>>>                         return;
->>>>
->>>>                 /* Nice, we can free page frag(s) right now */
->>>> diff --git a/net/ethtool/common.c b/net/ethtool/common.c
->>>> index 24036e3055a1..a2ff7a4a6bbf 100644
->>>> --- a/net/ethtool/common.c
->>>> +++ b/net/ethtool/common.c
->>>> @@ -68,6 +68,7 @@ const char netdev_features_strings[NETDEV_FEATURE_COUNT][ETH_GSTRING_LEN] = {
->>>>         [NETIF_F_HW_TLS_RX_BIT] =        "tls-hw-rx-offload",
->>>>         [NETIF_F_GRO_FRAGLIST_BIT] =     "rx-gro-list",
->>>>         [NETIF_F_HW_MACSEC_BIT] =        "macsec-hw-offload",
->>>> +       [NETIF_F_HW_TCP_DDP_BIT] =       "tcp-ddp-offload",
->>>>  };
->>>>
->>>>  const char
->>>> --
->>>> 2.24.1
->>>>
+Regards,
+Stefan.
