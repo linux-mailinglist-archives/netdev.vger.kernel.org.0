@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A249309D10
-	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 15:45:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99F97309D19
+	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 15:45:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230267AbhAaOkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Jan 2021 09:40:24 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:49960 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S232774AbhAaOiY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jan 2021 09:38:24 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10VEaYOL018216;
-        Sun, 31 Jan 2021 06:37:34 -0800
+        id S231949AbhAaOmi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 Jan 2021 09:42:38 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:22280 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231542AbhAaOjr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jan 2021 09:39:47 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10VEZZMg024147;
+        Sun, 31 Jan 2021 06:38:47 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=rjBdecuOfRqCWmng2kaVg+9HCHUiq/inEk1h/EaHoeY=;
- b=aDv4YC6N4eMf4XGiou+Qxi5Xpp+VvAGewnOH3TwVuMyhc/UfVpVrTtThgE0qBPpHaC7Z
- jodkJaGAMOgH+dSXqCGdnldVI9P8TAUOj8GMqhbMTA9sUZv7b1IFngHGIA7Jzl+IZ/Xa
- yD3SkNgAkEmjvGxFS7S66zwsn5Aemzh6NiRZdM8B7JVPNehLmD2FqOu5o1eAyRJyBMtJ
- zK7hjX850i/1D7hJGAyJIHb9Sczidt0otbF0y872Z1A4X9vs1sBSrQWqf9aIfNwk0/i9
- 1WGXPVbPHH77//XjC9aLokxzlNSvGuCoElKXo62+k5+8E2KoJNZ1abcmH7PbL9814eca mA== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 36d5pssw3g-1
+ content-type; s=pfpt0220; bh=SRLhafxH7m0EXcn9LD9A/iymLjgYq6hroCdpLysTs5M=;
+ b=NNqmtyGUk62ijEbYqC86IP6SOkeDwRgn08IT1HhAOoGBXC2pnCBYV2N0r4UZ3PkT6Vfa
+ u4JNv0dJCUy+HRQw1ufbyeO36iSgqW50ockKQ2Hl0qgUHNkbvyH3cCKHDlslB4ubdjCP
+ JKnU7CHPbt67cmDvVNIZJKM6qZbx88Lg8PX4Wpw0g16d/6z1BOm78Oee6vq7+fhi/T1d
+ diAF9WfHn5MSwta+k+H9RJGQu5gyJY2wkLYf2sOYpAUou7yvWrq26SsVtZK+FTvbyNPm
+ 5YPaw8prn9arQerMpxqYVpalY8PK9vqqguyXo9zpyQ6/NnusaydNee7ifUCHisxusOMn dQ== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 36d7uq1q44-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 31 Jan 2021 06:37:34 -0800
-Received: from SC-EXCH01.marvell.com (10.93.176.81) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 31 Jan
- 2021 06:37:33 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 31 Jan
- 2021 06:37:32 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sun, 31 Jan 2021 06:37:32 -0800
+        Sun, 31 Jan 2021 06:38:47 -0800
+Received: from SC-EXCH03.marvell.com (10.93.176.83) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 31 Jan
+ 2021 06:38:45 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 31 Jan
+ 2021 06:38:44 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sun, 31 Jan 2021 06:38:45 -0800
 Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id 92C523F703F;
-        Sun, 31 Jan 2021 06:37:29 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id 0FDC13F703F;
+        Sun, 31 Jan 2021 06:38:41 -0800 (PST)
 From:   <stefanc@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
@@ -46,9 +46,9 @@ CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
         <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
         <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
         <atenart@kernel.org>
-Subject: [PATCH v7 net-next 09/15] net: mvpp2: enable global flow control
-Date:   Sun, 31 Jan 2021 16:33:52 +0200
-Message-ID: <1612103638-16108-10-git-send-email-stefanc@marvell.com>
+Subject: [PATCH v7 net-next 13/15] net: mvpp2: add PPv23 RX FIFO flow control
+Date:   Sun, 31 Jan 2021 16:33:56 +0200
+Message-ID: <1612103638-16108-14-git-send-email-stefanc@marvell.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1612103638-16108-1-git-send-email-stefanc@marvell.com>
 References: <1612103638-16108-1-git-send-email-stefanc@marvell.com>
@@ -62,114 +62,138 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Stefan Chulski <stefanc@marvell.com>
 
-This patch enables global flow control in FW and in the phylink validate mask.
+New FIFO flow control feature were added in PPv23.
+PPv2 FIFO polled by HW and trigger pause frame if FIFO
+fill level is below threshold.
+FIFO HW flow control enabled with CM3 RXQ&BM flow
+control with ethtool.
+Current  FIFO thresholds is:
+9KB for port with maximum speed 10Gb/s port
+4KB for port with maximum speed 5Gb/s port
+2KB for port with maximum speed 1Gb/s port
 
 Signed-off-by: Stefan Chulski <stefanc@marvell.com>
 ---
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h      | 13 ++++++---
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 30 +++++++++++++++++++-
- 2 files changed, 38 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h      | 15 ++++++
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 53 ++++++++++++++++++++
+ 2 files changed, 68 insertions(+)
 
 diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-index ca84995..e010410 100644
+index 1967493..9947385 100644
 --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
 +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-@@ -763,10 +763,12 @@
+@@ -770,6 +770,18 @@
+ #define MVPP2_TX_FIFO_THRESHOLD(kb)	\
  		((kb) * 1024 - MVPP2_TX_FIFO_THRESHOLD_MIN)
  
- /* MSS Flow control */
--#define MSS_SRAM_SIZE		0x800
--#define FC_QUANTA		0xFFFF
--#define FC_CLK_DIVIDER		100
--#define MSS_THRESHOLD_STOP	768
-+#define MSS_SRAM_SIZE			0x800
-+#define MSS_FC_COM_REG			0
-+#define FLOW_CONTROL_ENABLE_BIT		BIT(0)
-+#define FC_QUANTA			0xFFFF
-+#define FC_CLK_DIVIDER			100
-+#define MSS_THRESHOLD_STOP		768
- 
- /* RX buffer constants */
- #define MVPP2_SKB_SHINFO_SIZE \
-@@ -1021,6 +1023,9 @@ struct mvpp2 {
- 
- 	/* CM3 SRAM pool */
- 	struct gen_pool *sram_pool;
++/* RX FIFO threshold in 1KB granularity */
++#define MVPP23_PORT0_FIFO_TRSH	(9 * 1024)
++#define MVPP23_PORT1_FIFO_TRSH	(4 * 1024)
++#define MVPP23_PORT2_FIFO_TRSH	(2 * 1024)
 +
-+	/* Global TX Flow Control config */
-+	bool global_tx_fc;
- };
++/* RX Flow Control Registers */
++#define MVPP2_RX_FC_REG(port)		(0x150 + 4 * (port))
++#define     MVPP2_RX_FC_EN		BIT(24)
++#define     MVPP2_RX_FC_TRSH_OFFS	16
++#define     MVPP2_RX_FC_TRSH_MASK	(0xFF << MVPP2_RX_FC_TRSH_OFFS)
++#define     MVPP2_RX_FC_TRSH_UNIT	256
++
+ /* MSS Flow control */
+ #define MSS_SRAM_SIZE			0x800
+ #define MSS_FC_COM_REG			0
+@@ -1502,6 +1514,8 @@ struct mvpp2_bm_pool {
  
- struct mvpp2_pcpu_stats {
+ void mvpp2_dbgfs_cleanup(struct mvpp2 *priv);
+ 
++void mvpp23_rx_fifo_fc_en(struct mvpp2 *priv, int port, bool en);
++
+ #ifdef CONFIG_MVPP2_PTP
+ int mvpp22_tai_probe(struct device *dev, struct mvpp2 *priv);
+ void mvpp22_tai_tstamp(struct mvpp2_tai *tai, u32 tstamp,
+@@ -1534,4 +1548,5 @@ static inline bool mvpp22_rx_hwtstamping(struct mvpp2_port *port)
+ {
+ 	return IS_ENABLED(CONFIG_MVPP2_PTP) && port->rx_hwtstamp;
+ }
++
+ #endif
 diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 19a3f38..770f45a 100644
+index f153060..06d3239 100644
 --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
 +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -92,6 +92,16 @@ static inline u32 mvpp2_cpu_to_thread(struct mvpp2 *priv, int cpu)
- 	return cpu % priv->nthreads;
+@@ -6537,6 +6537,8 @@ static void mvpp2_mac_link_up(struct phylink_config *config,
+ 			mvpp2_bm_pool_update_fc(port, port->pool_long, tx_pause);
+ 			mvpp2_bm_pool_update_fc(port, port->pool_short, tx_pause);
+ 		}
++		if (port->priv->hw_version == MVPP23)
++			mvpp23_rx_fifo_fc_en(port->priv, port->id, tx_pause);
+ 	}
+ 
+ 	mvpp2_port_enable(port);
+@@ -7005,6 +7007,55 @@ static void mvpp22_rx_fifo_init(struct mvpp2 *priv)
+ 	mvpp2_write(priv, MVPP2_RX_FIFO_INIT_REG, 0x1);
  }
  
-+static void mvpp2_cm3_write(struct mvpp2 *priv, u32 offset, u32 data)
++/* Configure Rx FIFO Flow control thresholds */
++static void mvpp23_rx_fifo_fc_set_tresh(struct mvpp2 *priv)
 +{
-+	writel(data, priv->cm3_base + offset);
-+}
++	int port, val;
 +
-+static u32 mvpp2_cm3_read(struct mvpp2 *priv, u32 offset)
-+{
-+	return readl(priv->cm3_base + offset);
-+}
-+
- static struct page_pool *
- mvpp2_create_page_pool(struct device *dev, int num, int len,
- 		       enum dma_data_direction dma_dir)
-@@ -5951,6 +5961,11 @@ static void mvpp2_phylink_validate(struct phylink_config *config,
- 	phylink_set(mask, Autoneg);
- 	phylink_set_port_modes(mask);
- 
-+	if (port->priv->global_tx_fc) {
-+		phylink_set(mask, Pause);
-+		phylink_set(mask, Asym_Pause);
-+	}
-+
- 	switch (state->interface) {
- 	case PHY_INTERFACE_MODE_10GBASER:
- 	case PHY_INTERFACE_MODE_XAUI:
-@@ -6969,7 +6984,7 @@ static int mvpp2_probe(struct platform_device *pdev)
- 	struct resource *res;
- 	void __iomem *base;
- 	int i, shared;
--	int err;
-+	int err, val;
- 
- 	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
- 	if (!priv)
-@@ -7023,6 +7038,10 @@ static int mvpp2_probe(struct platform_device *pdev)
- 			return err;
- 		else if (err)
- 			dev_warn(&pdev->dev, "Fail to alloc CM3 SRAM\n");
-+
-+		/* Enable global Flow Control only if handler to SRAM not NULL */
-+		if (priv->cm3_base)
-+			priv->global_tx_fc = true;
- 	}
- 
- 	if (priv->hw_version != MVPP21 && dev_of_node(&pdev->dev)) {
-@@ -7190,6 +7209,15 @@ static int mvpp2_probe(struct platform_device *pdev)
- 		goto err_port_probe;
- 	}
- 
-+	/* Enable global flow control. In this stage global
-+	 * flow control enabled, but still disabled per port.
++	/* Port 0: maximum speed -10Gb/s port
++	 *	   required by spec RX FIFO threshold 9KB
++	 * Port 1: maximum speed -5Gb/s port
++	 *	   required by spec RX FIFO threshold 4KB
++	 * Port 2: maximum speed -1Gb/s port
++	 *	   required by spec RX FIFO threshold 2KB
 +	 */
-+	if (priv->global_tx_fc && priv->hw_version != MVPP21) {
-+		val = mvpp2_cm3_read(priv, MSS_FC_COM_REG);
-+		val |= FLOW_CONTROL_ENABLE_BIT;
-+		mvpp2_cm3_write(priv, MSS_FC_COM_REG, val);
-+	}
 +
- 	mvpp2_dbgfs_init(priv, pdev->name);
++	/* Without loopback port */
++	for (port = 0; port < (MVPP2_MAX_PORTS - 1); port++) {
++		if (port == 0) {
++			val = (MVPP23_PORT0_FIFO_TRSH / MVPP2_RX_FC_TRSH_UNIT)
++				<< MVPP2_RX_FC_TRSH_OFFS;
++			val &= MVPP2_RX_FC_TRSH_MASK;
++			mvpp2_write(priv, MVPP2_RX_FC_REG(port), val);
++		} else if (port == 1) {
++			val = (MVPP23_PORT1_FIFO_TRSH / MVPP2_RX_FC_TRSH_UNIT)
++				<< MVPP2_RX_FC_TRSH_OFFS;
++			val &= MVPP2_RX_FC_TRSH_MASK;
++			mvpp2_write(priv, MVPP2_RX_FC_REG(port), val);
++		} else {
++			val = (MVPP23_PORT2_FIFO_TRSH / MVPP2_RX_FC_TRSH_UNIT)
++				<< MVPP2_RX_FC_TRSH_OFFS;
++			val &= MVPP2_RX_FC_TRSH_MASK;
++			mvpp2_write(priv, MVPP2_RX_FC_REG(port), val);
++		}
++	}
++}
++
++/* Configure Rx FIFO Flow control thresholds */
++void mvpp23_rx_fifo_fc_en(struct mvpp2 *priv, int port, bool en)
++{
++	int val;
++
++	val = mvpp2_read(priv, MVPP2_RX_FC_REG(port));
++
++	if (en)
++		val |= MVPP2_RX_FC_EN;
++	else
++		val &= ~MVPP2_RX_FC_EN;
++
++	mvpp2_write(priv, MVPP2_RX_FC_REG(port), val);
++}
++
+ static void mvpp22_tx_fifo_set_hw(struct mvpp2 *priv, int port, int size)
+ {
+ 	int threshold = MVPP2_TX_FIFO_THRESHOLD(size);
+@@ -7156,6 +7207,8 @@ static int mvpp2_init(struct platform_device *pdev, struct mvpp2 *priv)
+ 	} else {
+ 		mvpp22_rx_fifo_init(priv);
+ 		mvpp22_tx_fifo_init(priv);
++		if (priv->hw_version == MVPP23)
++			mvpp23_rx_fifo_fc_set_tresh(priv);
+ 	}
  
- 	platform_set_drvdata(pdev, priv);
+ 	if (priv->hw_version == MVPP21)
 -- 
 1.9.1
 
