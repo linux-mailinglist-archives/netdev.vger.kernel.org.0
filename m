@@ -2,89 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5AB6309F6E
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 00:23:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31882309F93
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 00:51:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229696AbhAaXVs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Jan 2021 18:21:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60006 "EHLO
+        id S229849AbhAaXuG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 Jan 2021 18:50:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229474AbhAaXVi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jan 2021 18:21:38 -0500
-X-Greylist: delayed 176 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 31 Jan 2021 15:20:57 PST
-Received: from mail.as397444.net (mail.as397444.net [IPv6:2620:6e:a000:dead:beef:15:bad:f00d])
-        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 521E6C061573
-        for <netdev@vger.kernel.org>; Sun, 31 Jan 2021 15:20:57 -0800 (PST)
-Received: by mail.as397444.net (Postfix) with UTF8SMTPSA id 18EB6479E60;
-        Sun, 31 Jan 2021 23:17:12 +0000 (UTC)
-X-DKIM-Note: Keys used to sign are likely public at https://as397444.net/dkim/
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bluematt.me;
-        s=1612132862; t=1612135032;
-        bh=Z7r1nofAiJwgxKw5SKF1EGrZeU5YYebX8UBzH8odMd8=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=Ls7jW3UVjYa3fPW7fja1BcyTLzrwnWo1Ldd0l11Ao/2APKMv98saUw7U/ZFsbOZNC
-         oW9I/0UoRKPMUIdPLzlY9lZ2xiw/diN18F8dPY0J+8MOUJoyt9ytDDgCKQNDl3SRBa
-         RxhLN/8ZlzSnafRu6VYn7aGIf3IaZVOMrRyYRe7tru5DxGOOXXiwWDCGRKt7ZqIb5u
-         1MypMcy0IMo0dsv0BNYB0zk3sPZW7vJnReWJH1nhIfn24pU1emioxCXMW8XHNmPj58
-         FTL+jTaJKnfn9cgaj60t28gFxd0QREa8X8IVXlkyB2N+FGhklGVqu+VlGLBHtjRNOt
-         DcoRFTJmPX5zw==
-Subject: Re: [PATCH net] igb: Enable RSS for Intel I211 Ethernet Controller
-To:     Nick Lowe <nick.lowe@gmail.com>, netdev@vger.kernel.org
-Cc:     anthony.l.nguyen@intel.com, kuba@kernel.org,
-        jesse.brandeburg@intel.com, intel-wired-lan@lists.osuosl.org,
-        davem@davemloft.net
-References: <20201221222502.1706-1-nick.lowe@gmail.com>
-From:   Matt Corallo <linux-wired-list@bluematt.me>
-Message-ID: <379d4ef3-02e5-f08a-1b04-21848e11a365@bluematt.me>
-Date:   Sun, 31 Jan 2021 18:17:11 -0500
+        with ESMTP id S229481AbhAaXt7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jan 2021 18:49:59 -0500
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0A6FC061573;
+        Sun, 31 Jan 2021 15:49:18 -0800 (PST)
+Received: by mail-ej1-x631.google.com with SMTP id b9so1939463ejy.12;
+        Sun, 31 Jan 2021 15:49:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9u3VCjKt2Gr/6kZ0CP5Tw8UvLHGncCvwPN4iJBZKcMs=;
+        b=lYDqHCRo+aURxVzwc0ShiB0TDCkw81kvah8NjpQA9dbUFCMT1Dd03epfx6q70+glXw
+         2LGTb8uyczLF6ppYBD871890IcglCtlTzC0pBp1M1Lz6qi32juE0X5+Hs8IOvbpiXlso
+         y9LPhycws8rhldlN0BimRCFi3A0m8v1zyOiS8w99gvDs7a+9QkAUXsCRUOIlj08yoON0
+         PsKGcLhjUqffG6QPANrYzp5tVJPjXvFeMEGYT5NL6WNRuBs+zL2uZSN56PYIVX9jXJUe
+         poiFa3DV2cKlQnmJgsd8wp3jQZCmG35uiRDDFgTmgVf4YUW5GrjLCCujxA4q8GH+Nsyd
+         8RiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9u3VCjKt2Gr/6kZ0CP5Tw8UvLHGncCvwPN4iJBZKcMs=;
+        b=hN4vepziVgLdotNyy19uTFiJRXVLN1clxx0PI3MOe1NisUR3D7fknhPtlFJqDM4alk
+         LNHWAMOCdMv0P0Qw4AJwhqjPkckArI5hYv0OO+WsUDfwrgc8v6+aIzOkvIdKQG/YCDYF
+         ojkOqi5AMYNjt5gMvOOCMH/Csy+w5dtzrFlea1QY1T0Zx1Bd0/kABtV/xZJ6EmZec3yM
+         rdI/NObCFUqB1krEK9c0Vorx5gGRSsNNSef9C2y/n8eEq1fojq3NloPc7KztPgCCBYHF
+         JuIM6+URBXRaRrkuHCaQrto4tv7ksrwt4tPFWhXW28oDPBfvH73dFKpxdDohUS0RJbrb
+         8RrA==
+X-Gm-Message-State: AOAM530clNzl56e2vc4CpkIcK3VAGTAw+1Zxl8P3nKGImzDjf9jBRPCR
+        AujS3y8L3XeYOJr38XrPxMfx87ic7zzsOusM768=
+X-Google-Smtp-Source: ABdhPJwZImVgHQQZzAZ2rZGzt+0YVdpvb6DQzxoVfp65auAlz+i9HwSCDEJs84CDYWvK0k9gbyI6q/lJ+5K62Jp12hc=
+X-Received: by 2002:a17:906:3f8d:: with SMTP id b13mr14801915ejj.464.1612136957300;
+ Sun, 31 Jan 2021 15:49:17 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20201221222502.1706-1-nick.lowe@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <1612025501-91712-1-git-send-email-gakula@marvell.com>
+In-Reply-To: <1612025501-91712-1-git-send-email-gakula@marvell.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Sun, 31 Jan 2021 18:48:41 -0500
+Message-ID: <CAF=yD-J=+opJmqGwCimGm1PnncDDcf1gzTFLuqHrFjZFxSbOeA@mail.gmail.com>
+Subject: Re: [net-next 00/14] Add Marvell CN10K support
+To:     Geetha sowjanya <gakula@marvell.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Given this fixes a major (albeit ancient) performance regression, is it not a candidate for backport? It landed on 
-Tony's dev-queue branch with a Fixes tag but no stable CC.
+On Sat, Jan 30, 2021 at 12:04 PM Geetha sowjanya <gakula@marvell.com> wrote:
+>
+> The current admin function (AF) driver and the netdev driver supports
+> OcteonTx2 silicon variants. The same OcteonTx2's Resource Virtualization Unit (RVU)
+> is carried forward to the next-gen silicon ie OcteonTx3, with some changes
+> and feature enhancements.
+>
+> This patch set adds support for OcteonTx3 (CN10K) silicon and gets the drivers
+> to the same level as OcteonTx2. No new OcteonTx3 specific features are added.
+> Changes cover below HW level differences
+> - PCIe BAR address changes wrt shared mailbox memory region
+> - Receive buffer freeing to HW
+> - Transmit packet's descriptor submission to HW
+> - Programmable HW interface identifiers (channels)
+> - Increased MTU support
+> - A Serdes MAC block (RPM) configuration
+>
+> Geetha sowjanya (6):
+>   octeontx2-af: cn10k: Update NIX/NPA context structure
+>   octeontx2-af: cn10k: Update NIX and NPA context in debugfs
+>   octeontx2-pf: cn10k: Initialise NIX context
+>   octeontx2-pf: cn10k: Map LMTST region
+>   octeontx2-pf: cn10k: Use LMTST lines for NPA/NIX operations
+>
+> Hariprasad Kelam (5):
+>   octeontx2-af: cn10k: Add RPM MAC support
+>   octeontx2-af: cn10K: Add MTU configuration
+>   octeontx2-pf: cn10k: Get max mtu supported from admin function
+>   octeontx2-af: cn10k: Add RPM Rx/Tx stats support
+>   octeontx2-af: cn10k: MAC internal loopback support
+>
+> Rakesh Babu (1):
+>   octeontx2-af: cn10k: Add RPM LMAC pause frame support
+>
+> Subbaraya Sundeep (2):
+>   octeontx2-af: cn10k: Add mbox support for CN10K platform
+>   octeontx2-pf: cn10k: Add mbox support for CN10K
+>   octeontx2-af: cn10k: Add support for programmable channels
+>
+>  drivers/net/ethernet/marvell/octeontx2/af/Makefile |   2 +-
+>  drivers/net/ethernet/marvell/octeontx2/af/cgx.c    | 315 ++++++++---
+>  drivers/net/ethernet/marvell/octeontx2/af/cgx.h    |  15 +-
+>  .../net/ethernet/marvell/octeontx2/af/cgx_fw_if.h  |   1 +
+>  drivers/net/ethernet/marvell/octeontx2/af/common.h |   5 +
+>  .../ethernet/marvell/octeontx2/af/lmac_common.h    | 129 +++++
+>  drivers/net/ethernet/marvell/octeontx2/af/mbox.c   |  59 +-
+>  drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  70 ++-
+>  drivers/net/ethernet/marvell/octeontx2/af/rpm.c    | 272 ++++++++++
+>  drivers/net/ethernet/marvell/octeontx2/af/rpm.h    |  57 ++
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu.c    | 157 +++++-
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |  70 +++
+>  .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    | 135 ++++-
+>  .../net/ethernet/marvell/octeontx2/af/rvu_cn10k.c  | 261 +++++++++
+>  .../ethernet/marvell/octeontx2/af/rvu_debugfs.c    | 339 +++++++++++-
+>  .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    | 112 +++-
+>  .../net/ethernet/marvell/octeontx2/af/rvu_npc.c    |   4 +-
+>  .../net/ethernet/marvell/octeontx2/af/rvu_reg.h    |  24 +
+>  .../net/ethernet/marvell/octeontx2/af/rvu_struct.h | 604 ++++++---------------
+>  .../net/ethernet/marvell/octeontx2/nic/Makefile    |   2 +-
+>  drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c | 182 +++++++
+>  drivers/net/ethernet/marvell/octeontx2/nic/cn10k.h |  17 +
+>  .../ethernet/marvell/octeontx2/nic/otx2_common.c   | 144 +++--
+>  .../ethernet/marvell/octeontx2/nic/otx2_common.h   | 105 +++-
+>  .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   |  67 ++-
+>  .../net/ethernet/marvell/octeontx2/nic/otx2_reg.h  |   4 +
+>  .../ethernet/marvell/octeontx2/nic/otx2_struct.h   |  10 +-
+>  .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c |  70 ++-
+>  .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.h |   8 +-
+>  .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c   |  52 +-
+>  include/linux/soc/marvell/octeontx2/asm.h          |   8 +
+>  31 files changed, 2573 insertions(+), 727 deletions(-)
+>  create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
+>  create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rpm.c
+>  create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rpm.h
+>  create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_cn10k.c
+>  create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c
+>  create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/cn10k.h
+>
 
-Thanks,
-Matt
+FYI, patchwork shows a number of checkpatch and build warnings to fix up
 
-On 12/21/20 5:25 PM, Nick Lowe wrote:
-> The Intel I211 Ethernet Controller supports 2 Receive Side Scaling (RSS) queues.
-> It should not be excluded from having this feature enabled.
-> 
-> Via commit c883de9fd787b6f49bf825f3de3601aeb78a7114
-> E1000_MRQC_ENABLE_RSS_4Q was renamed to E1000_MRQC_ENABLE_RSS_MQ to
-> indicate that this is a generic bit flag to enable queues and not
-> a flag that is specific to devices that support 4 queues
-> 
-> The bit flag enables 2, 4 or 8 queues appropriately depending on the part.
-> 
-> Tested with a multicore CPU and frames were then distributed as expected.
-> 
-> This issue appears to have been introduced because of confusion caused
-> by the prior name.
-> 
-> Signed-off-by: Nick Lowe <nick.lowe@gmail.com>
-> ---
->   drivers/net/ethernet/intel/igb/igb_main.c | 3 +--
->   1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-> index 03f78fdb0dcd..87ac1d3e25cb 100644
-> --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> @@ -4482,8 +4482,7 @@ static void igb_setup_mrqc(struct igb_adapter *adapter)
->   		else
->   			mrqc |= E1000_MRQC_ENABLE_VMDQ;
->   	} else {
-> -		if (hw->mac.type != e1000_i211)
-> -			mrqc |= E1000_MRQC_ENABLE_RSS_MQ;
-> +		mrqc |= E1000_MRQC_ENABLE_RSS_MQ;
->   	}
->   	igb_vmm_control(adapter);
->   
-> 
+https://patchwork.kernel.org/project/netdevbpf/list/?series=424847
