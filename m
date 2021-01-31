@@ -2,42 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F14B6309B57
-	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 11:38:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A588A309B69
+	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 11:49:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230257AbhAaKdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Jan 2021 05:33:46 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:27600 "EHLO
+        id S230151AbhAaKtI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 Jan 2021 05:49:08 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:58396 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S230281AbhAaJxx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jan 2021 04:53:53 -0500
+        by vger.kernel.org with ESMTP id S230358AbhAaJ4a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jan 2021 04:56:30 -0500
 Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10V9mH5J009006;
-        Sun, 31 Jan 2021 01:51:19 -0800
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10V9bOwV020287;
+        Sun, 31 Jan 2021 01:51:22 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=Ve3lx0NYRS8hskaMsrlh4Bg04eUBEDqkOqO5VY0l3QQ=;
- b=NQRfKM+k0083ztXZ0JBV5VuMPQ4ft/iSHQQ55IcUDyIKyXRb22gsV7a7+Gw77p/e45xc
- ym8LX3HyiNFpF/T/gdzGAan1WwDTHu1VHROzqbdm2C4MA8Y60AY+Uo09s8+ZjA3ZqIMB
- V7jtHw7m3FRNEYWckan4O62PIjkF4FRaqRnU8GQ7hxBS8j+CACkifixJiBjOOj2DWgid
- swf+kcKYWIInEXo03wVsTkoedHLQQEMAf2IFfpAUm5KdnCAXMav0F93Dy+zyNmt+3eaD
- FMHySWbw022ian0wUVqoF8Bn+sGmQDMAp1I8ecCAXqv9i5eT45F4x6O5WAindiK6hUkH kA== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 36d5psshj6-1
+ content-type; s=pfpt0220; bh=5lKn6Ecz4xGgCyyvpqKHZ0HmmgVVSCgpayo06pbd8FA=;
+ b=Zg0w+d5SaYV1JJp9EAsy6TZpW4dBIuyJOguXMg+td4VQZLJjoAGkytpfWepvUk/ytuAX
+ tPT+ZVYcT+wDVipxDsZh8vRj93bARfsOwob5fWH6Wogg1+7ReK7+CmQ1HcB499AfrVky
+ 8CNNM4EX+RTPW+hXp69vi9F3F+qUnmWU9FTb/s71J2ygxfWvwmWv4FieVQJ+NfStraQd
+ I8njC/6RiFmRjAVhimJxmtDj4Db2HqdlV0NZ4dbJzEgbucYE6+/er8IP1tYV8zGTLXCk
+ AM3QnXPxEfklW5HFH6M+/Jzx2V0ST857ycoXtr4wOMJNI/IhFqZUijotnWoMbZ6IwPCQ iQ== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 36d5psshj8-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 31 Jan 2021 01:51:19 -0800
-Received: from SC-EXCH04.marvell.com (10.93.176.84) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 31 Jan
- 2021 01:51:18 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 31 Jan
- 2021 01:51:17 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sun, 31 Jan 2021 01:51:17 -0800
+        Sun, 31 Jan 2021 01:51:22 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 31 Jan
+ 2021 01:51:21 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sun, 31 Jan 2021 01:51:21 -0800
 Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id E96A33F7044;
-        Sun, 31 Jan 2021 01:51:14 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id 4FBB53F7041;
+        Sun, 31 Jan 2021 01:51:18 -0800 (PST)
 From:   <stefanc@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
@@ -45,10 +42,10 @@ CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
         <linux-kernel@vger.kernel.org>, <stefanc@marvell.com>,
         <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
         <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
-        <atenart@kernel.org>
-Subject: [PATCH v6 net-next 01/18] doc: marvell: add cm3-mem device tree bindings description
-Date:   Sun, 31 Jan 2021 11:50:47 +0200
-Message-ID: <1612086664-23972-2-git-send-email-stefanc@marvell.com>
+        <atenart@kernel.org>, Konstantin Porotchkin <kostap@marvell.com>
+Subject: [PATCH v6 net-next 02/18] dts: marvell: add CM3 SRAM memory to cp115 ethernet device tree
+Date:   Sun, 31 Jan 2021 11:50:48 +0200
+Message-ID: <1612086664-23972-3-git-send-email-stefanc@marvell.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1612086664-23972-1-git-send-email-stefanc@marvell.com>
 References: <1612086664-23972-1-git-send-email-stefanc@marvell.com>
@@ -60,25 +57,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefan Chulski <stefanc@marvell.com>
+From: Konstantin Porotchkin <kostap@marvell.com>
+
+CM3 SRAM address space would be used for Flow Control configuration.
 
 Signed-off-by: Stefan Chulski <stefanc@marvell.com>
+Signed-off-by: Konstantin Porotchkin <kostap@marvell.com>
 ---
- Documentation/devicetree/bindings/net/marvell-pp2.txt | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/boot/dts/marvell/armada-cp11x.dtsi | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/marvell-pp2.txt b/Documentation/devicetree/bindings/net/marvell-pp2.txt
-index b783976..f9f8cc6 100644
---- a/Documentation/devicetree/bindings/net/marvell-pp2.txt
-+++ b/Documentation/devicetree/bindings/net/marvell-pp2.txt
-@@ -37,6 +37,7 @@ Required properties (port):
-   GOP (Group Of Ports) point of view. This ID is used to index the
-   per-port registers in the second register area.
- - phy-mode: See ethernet.txt file in the same directory
-+- cm3-mem: phandle to CM3 SRAM definitions
+diff --git a/arch/arm64/boot/dts/marvell/armada-cp11x.dtsi b/arch/arm64/boot/dts/marvell/armada-cp11x.dtsi
+index 9dcf16b..359cf42 100644
+--- a/arch/arm64/boot/dts/marvell/armada-cp11x.dtsi
++++ b/arch/arm64/boot/dts/marvell/armada-cp11x.dtsi
+@@ -69,6 +69,8 @@
+ 			status = "disabled";
+ 			dma-coherent;
  
- Optional properties (port):
++			cm3-mem = <&CP11X_LABEL(cm3_sram)>;
++
+ 			CP11X_LABEL(eth0): eth0 {
+ 				interrupts = <39 IRQ_TYPE_LEVEL_HIGH>,
+ 					<43 IRQ_TYPE_LEVEL_HIGH>,
+@@ -211,6 +213,14 @@
+ 			};
+ 		};
  
++		CP11X_LABEL(cm3_sram): cm3@220000 {
++			compatible = "mmio-sram";
++			reg = <0x220000 0x800>;
++			#address-cells = <1>;
++			#size-cells = <1>;
++			ranges = <0 0x220000 0x800>;
++		};
++
+ 		CP11X_LABEL(rtc): rtc@284000 {
+ 			compatible = "marvell,armada-8k-rtc";
+ 			reg = <0x284000 0x20>, <0x284080 0x24>;
 -- 
 1.9.1
 
