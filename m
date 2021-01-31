@@ -2,80 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08D7B309D29
-	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 15:51:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9672D309D7C
+	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 16:24:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232454AbhAaOri (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Jan 2021 09:47:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37316 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232401AbhAaOqZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jan 2021 09:46:25 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7282FC061574;
-        Sun, 31 Jan 2021 06:45:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=9b9yo1n9sRlMWrUad542cT8LS7C9jEYFRJcs1ywwN+k=; b=ME3XEEgB3H78Cw6yK3MtBjMo0
-        h45DCW5TrMU1iDK7CyGfXIId7VTaCBoDu6+YR9z8UIDJx8ldfIpWwvdck+bYuWAIEbTvi4Hgkn78z
-        kIrRzZWatEUeHQKAmXpKgJtL84dvA2A8uSbOp5zpOucmZXODQjzhm2og4cjL8urLc/N8boa0ptfZz
-        SNCFUCIhirdgNFXxJScJiky1p8PH19O1RPjFLl0+LIuYab9o8zXTE/JpCsVDs6YLy5KqP9kbTTxEw
-        DJ5AUNygV6lUjwXa1UOfvXGZKhbQTFBRLM3GgM3H6zHMy3ews4qR550a2G5zdPnNVGF/yuYXQeO9Y
-        hyU/WVkEw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:37374)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1l6Dyg-0002YG-Ld; Sun, 31 Jan 2021 14:45:26 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1l6Dye-00016J-Qv; Sun, 31 Jan 2021 14:45:24 +0000
-Date:   Sun, 31 Jan 2021 14:45:24 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Stefan Chulski <stefanc@marvell.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Nadav Haklai <nadavh@marvell.com>,
-        Yan Markman <ymarkman@marvell.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "mw@semihalf.com" <mw@semihalf.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "atenart@kernel.org" <atenart@kernel.org>
-Subject: Re: [EXT] Re: [PATCH v5 net-next 00/18] net: mvpp2: Add TX Flow
- Control support
-Message-ID: <20210131144524.GD1463@shell.armlinux.org.uk>
-References: <1611858682-9845-1-git-send-email-stefanc@marvell.com>
- <20210128182049.19123063@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CO6PR18MB38736602343EEDFB934ACE3EB0B79@CO6PR18MB3873.namprd18.prod.outlook.com>
- <CO6PR18MB3873FF66600BCD9E7E5A4FEDB0B79@CO6PR18MB3873.namprd18.prod.outlook.com>
+        id S231668AbhAaOPC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 Jan 2021 09:15:02 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:37622 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231872AbhAaN3I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jan 2021 08:29:08 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10VD7Nxd023047;
+        Sun, 31 Jan 2021 05:11:11 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=M607Xx7ODJ4SslAPfQywdejQPMsoVMNdNbBPDkA7ImQ=;
+ b=beBm/yp7UnvSWQ0IEQXaI7Hr/cUKrb5uJfu3WEUd2XHjt9KEWpUznZajtgmKYO6Wa/5E
+ Wniifv/rajFw3XN4m8rIgcwSnUw8ikJ5lA2SytjrhBI/NaLetBzrTOjoOfxcvXKLtrIN
+ qgUmp8Xfqre3uhAEQF7IzKpPXUFCjf2PIoL/xk4xrB3fCFc1oEs2PvJcwa1hwQGB84ox
+ YPrehbyR88/U15j1z5p/YR2WZ4IcfLtzJc6/zadHETiZnM84NQQkLvIw/2Zzyo6p5w03
+ dKpb9mMJQMQkXJYwzsPeKjSvAeWOoaPBnyRBMD8/3bkKxgPBo5iY2Rm2dfb9y4/CJ0Kc Eg== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 36d5psss5s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Sun, 31 Jan 2021 05:11:11 -0800
+Received: from SC-EXCH03.marvell.com (10.93.176.83) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 31 Jan
+ 2021 05:11:10 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 31 Jan
+ 2021 05:11:09 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sun, 31 Jan 2021 05:11:09 -0800
+Received: from hyd1soter2.marvell.com (unknown [10.29.37.45])
+        by maili.marvell.com (Postfix) with ESMTP id 35CA83F7041;
+        Sun, 31 Jan 2021 05:11:05 -0800 (PST)
+From:   Hariprasad Kelam <hkelam@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <kuba@kernel.org>, <davem@davemloft.net>,
+        <willemdebruijn.kernel@gmail.com>, <andrew@lunn.ch>,
+        <sgoutham@marvell.com>, <lcherian@marvell.com>,
+        <gakula@marvell.com>, <jerinj@marvell.com>, <sbhatta@marvell.com>,
+        <hkelam@marvell.com>
+Subject: [Patch v3 net-next 0/7] ethtool support for fec and link configuration
+Date:   Sun, 31 Jan 2021 18:40:58 +0530
+Message-ID: <1612098665-187767-1-git-send-email-hkelam@marvell.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CO6PR18MB3873FF66600BCD9E7E5A4FEDB0B79@CO6PR18MB3873.namprd18.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
+ definitions=2021-01-31_04:2021-01-29,2021-01-31 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 31, 2021 at 02:23:20PM +0000, Stefan Chulski wrote:
-> I still don't see all patches in https://patchwork.kernel.org/project/netdevbpf/list/?series=424949
-> I would reduce patch series to 15 patches and repost again.
+This series of patches add support for forward error correction(fec) and
+physical link configuration. Patches 1&2 adds necessary mbox handlers for fec
+mode configuration request and to fetch stats. Patch 3 registers driver
+callbacks for fec mode configuration and display. Patch 4&5 adds support of mbox
+handlers for configuring link parameters like speed/duplex and autoneg etc.
+Patche 6&7 registers driver callbacks for physical link configuration.
 
-kernel.org email is currently broken for everyone due to the
-spamcop.net RBL domain having expired. Please don't resend until
-this has been resolved. The problem has been reported to a
-kernel.org admin (John Hawley) and others via IRC.
+Change-log:
+v2:
+	- Fixed review comments
+	- Corrected indentation issues
+        - Return -ENOMEM incase of mbox allocation failure
+	- added validation for input fecparams bitmask values
+        - added more comments
 
-If you didn't get bounce messages from the attempt to send to
-kernel.org email addresses, your email server is broken.
+V3:
+	- Removed inline functions
+        - Make use of ethtool helpers APIs to display supported
+          advertised modes
+        - corrected indentation issues
+        - code changes such that return early in case of failure
+          to aid branch prediction
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+
+Christina Jacob (6):
+  octeontx2-af: forward error correction configuration
+  octeontx2-pf: ethtool fec mode support
+  octeontx2-af: Physical link configuration support
+  octeontx2-af: advertised link modes support on cgx
+  octeontx2-pf: ethtool physical link status
+  octeontx2-pf: ethtool physical link configuration
+
+Felix Manlunas (1):
+  octeontx2-af: Add new CGX_CMD to get PHY FEC statistics
+
+ drivers/net/ethernet/marvell/octeontx2/af/cgx.c    | 258 ++++++++++++-
+ drivers/net/ethernet/marvell/octeontx2/af/cgx.h    |  10 +
+ .../net/ethernet/marvell/octeontx2/af/cgx_fw_if.h  |  70 +++-
+ drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  87 ++++-
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |   4 +
+ .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    |  80 +++++
+ .../ethernet/marvell/octeontx2/nic/otx2_common.c   |  20 ++
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   |   6 +
+ .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  | 399 ++++++++++++++++++++-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   |   3 +
+ 10 files changed, 930 insertions(+), 7 deletions(-)
+
+--
+2.7.4
