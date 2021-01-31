@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17277309D39
-	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 16:01:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A322309D3B
+	for <lists+netdev@lfdr.de>; Sun, 31 Jan 2021 16:01:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232053AbhAaOvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 31 Jan 2021 09:51:43 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:65486 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231468AbhAaOjW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jan 2021 09:39:22 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10VEZFiA024105;
-        Sun, 31 Jan 2021 06:38:32 -0800
+        id S231230AbhAaOw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 31 Jan 2021 09:52:27 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:30492 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S232118AbhAaOki (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 31 Jan 2021 09:40:38 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10VEb7Jd018776;
+        Sun, 31 Jan 2021 06:39:48 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=OnyvNebsrvLs18OsLbUT8BlwbETcNh+NdvPVTkP4+fg=;
- b=dPISMXySdypSkOZFI3ye3IjpmILzfOWYEDgz5GuW2TyytdTf4AlVfybQtQEpaW3SzUfR
- u3GX7hVrrpvqTlctTM5ZoVUeQ9LUTN1H5SBzzmped2+gXTBEKxaA0IXsC3Fyuh0DfSUX
- jYdUJmtDi9PIJAkDpyWUU7ENRfj3eL+x1Tlw69jo7F34F5jMUF5Nfgcj6zKMCqRNBnkj
- 49G8v7wpt8hHKM1bj5mz9FJvI4u+8cjUuPozeg5aJDoKUQyE//5ytRyZh35o+pVHhzT0
- 8nIuSixr9sCtgZjQeDSecXsOGJplZ/GqajjR1vLjkpgzVbFW2I1XnuK+eEr5mY8TBHik ZA== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com with ESMTP id 36d7uq1q40-2
+ content-type; s=pfpt0220; bh=j22/ZAu4GK9SN9CeTElYsiNAq9wT2DsGj8hayZpNdaI=;
+ b=WbBHaz71L8f7GBop6cwJ5CrJoe5rJ/zHdfsQKE+aNH8hpUG+cIJvdI2J5bLPDh47FsyI
+ zjizfUByELEUHXnt7A6ssc/jswgDm2s2ggieLpCtIln+qfCVTwk2OiHgcAprbS3L+uxW
+ aR7WEvP5v5xcAObeJvnCop/H8RuHu/bQRSXHLnmG4QE1dtxgToD/aDR9icJYhNs0JejO
+ 4rHZ52PrX4id8ztOcSvdZhLfsb3ZQNFE8JCnfu0iVroBPC3ipctnjXgcQdcH2t0e8uwP
+ 5VwBbhC/AIrZrhf82IumkJYeBFhfiJqIOepd+JJ7LODTu6WIIkOq02k9ill6/wUunjb6 aQ== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 36d5pssw65-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 31 Jan 2021 06:38:32 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 31 Jan
- 2021 06:38:29 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sun, 31 Jan 2021 06:38:29 -0800
+        Sun, 31 Jan 2021 06:39:48 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 31 Jan
+ 2021 06:39:47 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sun, 31 Jan 2021 06:39:46 -0800
 Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id D70D73F703F;
-        Sun, 31 Jan 2021 06:38:26 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id 237713F703F;
+        Sun, 31 Jan 2021 06:39:43 -0800 (PST)
 From:   <stefanc@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
@@ -43,9 +43,9 @@ CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
         <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
         <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
         <atenart@kernel.org>
-Subject: [PATCH v7 net-next 12/15] net: mvpp2: add BM protection underrun feature support
-Date:   Sun, 31 Jan 2021 16:33:55 +0200
-Message-ID: <1612103638-16108-13-git-send-email-stefanc@marvell.com>
+Subject: [PATCH v7 net-next 15/15] net: mvpp2: add TX FC firmware check
+Date:   Sun, 31 Jan 2021 16:33:58 +0200
+Message-ID: <1612103638-16108-16-git-send-email-stefanc@marvell.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1612103638-16108-1-git-send-email-stefanc@marvell.com>
 References: <1612103638-16108-1-git-send-email-stefanc@marvell.com>
@@ -59,121 +59,95 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Stefan Chulski <stefanc@marvell.com>
 
-Feature double size of BPPI by decreasing number of pools from 16 to 8.
-Increasing of BPPI size protect BM drop from BPPI underrun.
-Underrun could occurred due to stress on DDR and as result slow buffer
-transition from BPPE to BPPI.
-New BPPI threshold recommended by spec is:
-BPPI low threshold - 640 buffers
-BPPI high threshold - 832 buffers
-Supported only in PPv23.
+Patch check that TX FC firmware is running in CM3.
+If not, global TX FC would be disabled.
 
 Signed-off-by: Stefan Chulski <stefanc@marvell.com>
 ---
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h      |  8 +++++
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 35 +++++++++++++++++++-
- 2 files changed, 42 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h      |  1 +
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 42 ++++++++++++++++----
+ 2 files changed, 36 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-index 9071ab6..1967493 100644
+index 9947385..25013a4 100644
 --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
 +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-@@ -324,6 +324,10 @@
- #define     MVPP2_BM_HIGH_THRESH_MASK		0x7f0000
- #define     MVPP2_BM_HIGH_THRESH_VALUE(val)	((val) << \
- 						MVPP2_BM_HIGH_THRESH_OFFS)
-+#define     MVPP2_BM_BPPI_HIGH_THRESH		0x1E
-+#define     MVPP2_BM_BPPI_LOW_THRESH		0x1C
-+#define     MVPP23_BM_BPPI_HIGH_THRESH		0x34
-+#define     MVPP23_BM_BPPI_LOW_THRESH		0x28
- #define MVPP2_BM_INTR_CAUSE_REG(pool)		(0x6240 + ((pool) * 4))
- #define     MVPP2_BM_RELEASED_DELAY_MASK	BIT(0)
- #define     MVPP2_BM_ALLOC_FAILED_MASK		BIT(1)
-@@ -352,6 +356,10 @@
- #define MVPP2_OVERRUN_ETH_DROP			0x7000
- #define MVPP2_CLS_ETH_DROP			0x7020
+@@ -829,6 +829,7 @@
  
-+#define MVPP22_BM_POOL_BASE_ADDR_HIGH_REG	0x6310
-+#define     MVPP22_BM_POOL_BASE_ADDR_HIGH_MASK	0xff
-+#define     MVPP23_BM_8POOL_MODE		BIT(8)
-+
- /* Hit counters registers */
- #define MVPP2_CTRS_IDX				0x7040
- #define     MVPP22_CTRS_TX_CTR(port, txq)	((txq) | ((port) << 3) | BIT(7))
+ #define MSS_THRESHOLD_STOP	768
+ #define MSS_THRESHOLD_START	1024
++#define MSS_FC_MAX_TIMEOUT	5000
+ 
+ /* RX buffer constants */
+ #define MVPP2_SKB_SHINFO_SIZE \
 diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index bbefc7e..f153060 100644
+index 98849b0..0273134 100644
 --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
 +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -70,6 +70,11 @@ enum mvpp2_bm_pool_log_num {
- module_param(queue_mode, int, 0444);
- MODULE_PARM_DESC(queue_mode, "Set queue_mode (single=0, multi=1)");
- 
-+static int bm_underrun_protect = 1;
-+
-+module_param(bm_underrun_protect, int, 0444);
-+MODULE_PARM_DESC(bm_underrun_protect, "Set BM underrun protect feature (0-1), def=1");
-+
- /* Utility/helper methods */
- 
- void mvpp2_write(struct mvpp2 *priv, u32 offset, u32 data)
-@@ -424,6 +429,21 @@ static int mvpp2_bm_pool_create(struct device *dev, struct mvpp2 *priv,
- 
- 	val = mvpp2_read(priv, MVPP2_BM_POOL_CTRL_REG(bm_pool->id));
- 	val |= MVPP2_BM_START_MASK;
-+
-+	val &= ~MVPP2_BM_LOW_THRESH_MASK;
-+	val &= ~MVPP2_BM_HIGH_THRESH_MASK;
-+
-+	/* Set 8 Pools BPPI threshold if BM underrun protection feature
-+	 * were enabled
-+	 */
-+	if (priv->hw_version == MVPP23 && bm_underrun_protect) {
-+		val |= MVPP2_BM_LOW_THRESH_VALUE(MVPP23_BM_BPPI_LOW_THRESH);
-+		val |= MVPP2_BM_HIGH_THRESH_VALUE(MVPP23_BM_BPPI_HIGH_THRESH);
-+	} else {
-+		val |= MVPP2_BM_LOW_THRESH_VALUE(MVPP2_BM_BPPI_LOW_THRESH);
-+		val |= MVPP2_BM_HIGH_THRESH_VALUE(MVPP2_BM_BPPI_HIGH_THRESH);
-+	}
-+
- 	mvpp2_write(priv, MVPP2_BM_POOL_CTRL_REG(bm_pool->id), val);
- 
- 	bm_pool->size = size;
-@@ -592,6 +612,16 @@ static int mvpp2_bm_pools_init(struct device *dev, struct mvpp2 *priv)
- 	return err;
+@@ -932,6 +932,34 @@ static void mvpp2_bm_pool_update_fc(struct mvpp2_port *port,
+ 	spin_unlock_irqrestore(&port->priv->mss_spinlock, flags);
  }
  
-+/* Routine enable PPv23 8 pool mode */
-+static void mvpp23_bm_set_8pool_mode(struct mvpp2 *priv)
++static int mvpp2_enable_global_fc(struct mvpp2 *priv)
 +{
-+	int val;
++	int val, timeout = 0;
 +
-+	val = mvpp2_read(priv, MVPP22_BM_POOL_BASE_ADDR_HIGH_REG);
-+	val |= MVPP23_BM_8POOL_MODE;
-+	mvpp2_write(priv, MVPP22_BM_POOL_BASE_ADDR_HIGH_REG, val);
++	/* Enable global flow control. In this stage global
++	 * flow control enabled, but still disabled per port.
++	 */
++	val = mvpp2_cm3_read(priv, MSS_FC_COM_REG);
++	val |= FLOW_CONTROL_ENABLE_BIT;
++	mvpp2_cm3_write(priv, MSS_FC_COM_REG, val);
++
++	/* Check if Firmware running and disable FC if not*/
++	val |= FLOW_CONTROL_UPDATE_COMMAND_BIT;
++	mvpp2_cm3_write(priv, MSS_FC_COM_REG, val);
++
++	while (timeout < MSS_FC_MAX_TIMEOUT) {
++		val = mvpp2_cm3_read(priv, MSS_FC_COM_REG);
++
++		if (!(val & FLOW_CONTROL_UPDATE_COMMAND_BIT))
++			return 0;
++		usleep_range(10, 20);
++		timeout++;
++	}
++
++	priv->global_tx_fc = false;
++	return -EOPNOTSUPP;
 +}
 +
- static int mvpp2_bm_init(struct device *dev, struct mvpp2 *priv)
- {
- 	enum dma_data_direction dma_dir = DMA_FROM_DEVICE;
-@@ -645,6 +675,9 @@ static int mvpp2_bm_init(struct device *dev, struct mvpp2 *priv)
- 	if (!priv->bm_pools)
- 		return -ENOMEM;
+ /* Release buffer to BM */
+ static inline void mvpp2_bm_pool_put(struct mvpp2_port *port, int pool,
+ 				     dma_addr_t buf_dma_addr,
+@@ -7281,7 +7309,7 @@ static int mvpp2_probe(struct platform_device *pdev)
+ 	struct resource *res;
+ 	void __iomem *base;
+ 	int i, shared;
+-	int err, val;
++	int err;
  
-+	if (priv->hw_version == MVPP23 && bm_underrun_protect)
-+		mvpp23_bm_set_8pool_mode(priv);
-+
- 	err = mvpp2_bm_pools_init(dev, priv);
- 	if (err < 0)
- 		return err;
-@@ -6491,7 +6524,7 @@ static void mvpp2_mac_link_up(struct phylink_config *config,
- 			     val);
+ 	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+ 	if (!priv)
+@@ -7509,13 +7537,13 @@ static int mvpp2_probe(struct platform_device *pdev)
+ 		goto err_port_probe;
  	}
  
--	if (port->priv->global_tx_fc) {
-+	if (port->priv->global_tx_fc && bm_underrun_protect) {
- 		port->tx_fc = tx_pause;
- 		if (tx_pause)
- 			mvpp2_rxq_enable_fc(port);
+-	/* Enable global flow control. In this stage global
+-	 * flow control enabled, but still disabled per port.
+-	 */
+ 	if (priv->global_tx_fc && priv->hw_version != MVPP21) {
+-		val = mvpp2_cm3_read(priv, MSS_FC_COM_REG);
+-		val |= FLOW_CONTROL_ENABLE_BIT;
+-		mvpp2_cm3_write(priv, MSS_FC_COM_REG, val);
++		err = mvpp2_enable_global_fc(priv);
++		if (err) {
++			dev_warn(&pdev->dev, "CM3 firmware not running, version should be higher than 18.09 ");
++			dev_warn(&pdev->dev, "and chip revision B0\n");
++			dev_warn(&pdev->dev, "Flow control not supported\n");
++		}
+ 	}
+ 
+ 	mvpp2_dbgfs_init(priv, pdev->name);
 -- 
 1.9.1
 
