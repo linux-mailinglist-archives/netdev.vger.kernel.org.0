@@ -2,82 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2D6430B194
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 21:30:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC04330B19E
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 21:33:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229748AbhBAUaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 15:30:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38244 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229646AbhBAUaV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Feb 2021 15:30:21 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5292764E9E;
-        Mon,  1 Feb 2021 20:29:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612211380;
-        bh=JxIcDfor9jP7Fad9DG/ZI3rtmesf9j4WlqIJAzvyISA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=V1jaGcuJ+Lg/qXVL6Ebwe10DWb+ow90fJuhWHg2ogEF7AH5qUp8hKFYQucdpsOmdr
-         DNo6TAjb3lmcUQ7096f8GQ0hvJ/W6tApBYZCBsq7Lvn7ISOTvt56zGyT0RYQ/59iYK
-         TWPodjDud/JneWiPSXkirgnN5BmkokTHdJLg589EbNlQm1O+QCVqe/ic+8PRmBy+4v
-         u65o1mOWslzxq8dAo1YtT+0LzdX8Tqa8ooXHGogT+DRo4PHvHEHPmupGKjetqkKteT
-         T9CVi8pd90gXaQMXfLk/u9KIopm6+fpzC7C/RJeg3eVBDpUiZjqcNw8+s90rJl1GGJ
-         88g5UwpVNitKA==
-Date:   Mon, 1 Feb 2021 12:29:39 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Edwin Peer <edwin.peer@broadcom.com>
-Cc:     Danielle Ratson <danieller@nvidia.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        netdev <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@nvidia.com>, Andrew Lunn <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        mlxsw <mlxsw@nvidia.com>, Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [PATCH net-next v3 2/7] ethtool: Get link mode in use instead
- of speed and duplex parameters
-Message-ID: <20210201122939.09c18efa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAKOOJTw2Z_SdPNsDeTanSatBLZ7=vh2FGjn_NASVUK2hbK7Q3Q@mail.gmail.com>
-References: <20210120093713.4000363-1-danieller@nvidia.com>
-        <20210120093713.4000363-3-danieller@nvidia.com>
-        <CAKOOJTzSSqGFzyL0jndK_y_S64C_imxORhACqp6RePDvtno6kA@mail.gmail.com>
-        <DM6PR12MB4516E98950B9F79812CAB522D8BE9@DM6PR12MB4516.namprd12.prod.outlook.com>
-        <CAKOOJTx_JHcaL9Wh2ROkpXVSF3jZVsnGHTSndB42xp61PzP9Vg@mail.gmail.com>
-        <DM6PR12MB4516DD64A5C46B80848D3645D8BC9@DM6PR12MB4516.namprd12.prod.outlook.com>
-        <CAKOOJTyRyz+KTZvQ8XAZ+kehjbTtqeA3qv+r9DJmS-f9eC6qWg@mail.gmail.com>
-        <DM6PR12MB45161FF65D43867C9ED96B6ED8BB9@DM6PR12MB4516.namprd12.prod.outlook.com>
-        <20210128202632.iqixlvdfey6sh7fe@lion.mk-sys.cz>
-        <DM6PR12MB4516868A5BD4C2EED7EF818BD8B79@DM6PR12MB4516.namprd12.prod.outlook.com>
-        <CAKOOJTy2wSmBjRnbhmD6xQgy1GAdiXAxoRX7APNto4gDYUWNRw@mail.gmail.com>
-        <DM6PR12MB45168B7B3516A37854812767D8B69@DM6PR12MB4516.namprd12.prod.outlook.com>
-        <CAKOOJTw2Z_SdPNsDeTanSatBLZ7=vh2FGjn_NASVUK2hbK7Q3Q@mail.gmail.com>
+        id S232021AbhBAUdW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 15:33:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50638 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229680AbhBAUdT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 15:33:19 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F821C061573;
+        Mon,  1 Feb 2021 12:32:39 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id f1so24681435lfu.3;
+        Mon, 01 Feb 2021 12:32:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Mm+gqPPtT3ykIJnjiqZUK3SQ00bT+N0nYZsq8iy0pto=;
+        b=RaPkDX1gPwnslbiiJ17EhK4oGFZW+7DAvlkpmVxv4/2ekpMzFg+l44JlbFhSJimi4K
+         a6ZfeVPYoALr9Ahhd61n47BUNkne2fPX161E4ub1KCylUgREwh3TxmWaeOByzY+Dar+S
+         bADm2s8w0eb79/ldgNES0LagfWgxA1upSZ+RcHr0NmP7WgWWu28GjgNT6LTXfSpBqq1g
+         s757eWXXgfYE62ojzGATr2uVoQcF3dxQF4En/J1ArGLYuTjiH4PcfBSvhKShknwFODeK
+         z2S1FW0DFPFs/3rSKTCafzk/AY1D4mSf/LuGYFIaj1u6C4Wa4kdtbgowdcxdfyS61XZs
+         JQdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Mm+gqPPtT3ykIJnjiqZUK3SQ00bT+N0nYZsq8iy0pto=;
+        b=J08zRBzSYtXdLr2SpyTFE6v76GKJvMKZLzw4H5nUtB9EDDWHDKLHIrWI1UJofX8BXO
+         myOpVobf6Ebq2wsvA9bPwdh65MZ2zkWDDEObg+3snMWeR3n53yWjNnqLes8x+JlWnPoC
+         tSRmsZ5Gc5yuidddHn8VZuTRrGJY08sjthcYM/gYdY5vYyy3abeA0gePTcROHJo09fhn
+         fkAWybU8+N7QLizB8zPKk1k3LsCY840h2Q7Ju92PKWi1B3bN9b7c+ag2Ftz+wzVaVKy+
+         v/0BLiu1d2n42o6hz3YlmoEAyVKCETCg9C0lkc8+9jbNFf3yMGPhkqzr+CJK+tW39VDX
+         evTg==
+X-Gm-Message-State: AOAM531u0d/ZstGFYC+7Rp4QD+agZpDv3D+JTIEekVYooY1L7ebIAidp
+        xpQes959ftk7MIEZRiC6H9DxhlgksKGqiIQs
+X-Google-Smtp-Source: ABdhPJzglxpP8utAXB9egMWGzs+nYcPmfwE4HOvoD5SxSq1ynspf7hhnPKPUoPJR0quypq4e8qXdog==
+X-Received: by 2002:a05:6512:1181:: with SMTP id g1mr5796396lfr.351.1612211557539;
+        Mon, 01 Feb 2021 12:32:37 -0800 (PST)
+Received: from localhost.localdomain ([37.151.209.186])
+        by smtp.googlemail.com with ESMTPSA id u17sm4055497ljj.2.2021.02.01.12.32.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Feb 2021 12:32:35 -0800 (PST)
+From:   Sabyrzhan Tasbolatov <snovitoll@gmail.com>
+To:     santosh.shilimkar@oracle.com, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org,
+        syzbot+1bd2b07f93745fa38425@syzkaller.appspotmail.com
+Subject: [PATCH] net/rds: restrict iovecs length for RDS_CMSG_RDMA_ARGS
+Date:   Tue,  2 Feb 2021 02:32:33 +0600
+Message-Id: <20210201203233.1324704-1-snovitoll@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 1 Feb 2021 10:14:35 -0800 Edwin Peer wrote:
-> On Mon, Feb 1, 2021 at 5:49 AM Danielle Ratson <danieller@nvidia.com> wrote:
-> > Ok, ill send another version with the symmetrical side. Ethtool
-> > will try to compose a supported link_mode from the parameters from
-> > user space and will choose randomly between the supported ones.
-> > Sounds ok?  
-> 
-> I think it should be deterministic. It should be possible to select
-> the appropriate mode either based on the current media type or the
-> current link mode (which implies a media type). Alternatively, if the
-> user space request only specifies a subset, such as speed, fall back
-> to the existing behaviour and don't supply the request to the driver
-> in the form of a compound link mode in those cases (perhaps indicating
-> this by not setting the capability bit). The former approach has the
-> potential to tidy up drivers if we decide that drivers providing the
-> capability can ignore the other fields and rely solely on link mode,
-> the latter is no worse than what we have today.
+syzbot found WARNING in rds_rdma_extra_size [1] when RDS_CMSG_RDMA_ARGS
+control message is passed with user-controlled
+0x40001 bytes of args->nr_local, causing order >= MAX_ORDER condition.
 
-The media part is beginning to sound concerning. Every time we
-under-specify an interface we end up with #vendors different
-interpretations. And since HW is programmed by FW in most high 
-speed devices we can't even review the right thing is done.
+The exact value 0x40001 can be checked with UIO_MAXIOV which is 0x400.
+So for kcalloc() 0x400 iovecs with sizeof(struct rds_iovec) = 0x10
+is the closest limit, with 0x10 leftover.
 
-At least it's clear what setting a number of lanes means.
+Same condition is currently done in rds_cmsg_rdma_args().
+
+[1] WARNING: mm/page_alloc.c:5011
+[..]
+Call Trace:
+ alloc_pages_current+0x18c/0x2a0 mm/mempolicy.c:2267
+ alloc_pages include/linux/gfp.h:547 [inline]
+ kmalloc_order+0x2e/0xb0 mm/slab_common.c:837
+ kmalloc_order_trace+0x14/0x120 mm/slab_common.c:853
+ kmalloc_array include/linux/slab.h:592 [inline]
+ kcalloc include/linux/slab.h:621 [inline]
+ rds_rdma_extra_size+0xb2/0x3b0 net/rds/rdma.c:568
+ rds_rm_size net/rds/send.c:928 [inline]
+
+Reported-by: syzbot+1bd2b07f93745fa38425@syzkaller.appspotmail.com
+Signed-off-by: Sabyrzhan Tasbolatov <snovitoll@gmail.com>
+---
+ net/rds/rdma.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/net/rds/rdma.c b/net/rds/rdma.c
+index 1d0afb1dd77b..6f1a50d50d06 100644
+--- a/net/rds/rdma.c
++++ b/net/rds/rdma.c
+@@ -565,6 +565,9 @@ int rds_rdma_extra_size(struct rds_rdma_args *args,
+ 	if (args->nr_local == 0)
+ 		return -EINVAL;
+ 
++	if (args->nr_local > UIO_MAXIOV)
++		return -EMSGSIZE;
++
+ 	iov->iov = kcalloc(args->nr_local,
+ 			   sizeof(struct rds_iovec),
+ 			   GFP_KERNEL);
+-- 
+2.25.1
+
