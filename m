@@ -2,272 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C8EC30A9EF
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 15:37:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9010B30A9EB
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 15:37:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231255AbhBAOgw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 09:36:52 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:59941 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231181AbhBAOgZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 09:36:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1612190098;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=iGH0ZSLBAZ/lXbnG+6O2ml/2vbQGE/imbivvvvyRaT4=;
-        b=bqo6jcrCKloYNHoK7Znwdxu7j7EEmz/kygW1LDoP1h5qS6pEKa1rKNzLOIawBjHV+HdPr3
-        vPyBi88E9ppkUOTU1g7dn1y4jU3FFNY+pVHYkkEtTg7k48ny3IKhKvf1Qf8JcYhV91mfaq
-        z6S2FiBsX+jca3cKtsqd2t1qmC+eY60=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-347-uhNpJH7bMHKVUc-8wdNTMg-1; Mon, 01 Feb 2021 09:34:56 -0500
-X-MC-Unique: uhNpJH7bMHKVUc-8wdNTMg-1
-Received: by mail-wr1-f69.google.com with SMTP id j8so10443115wrx.17
-        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 06:34:56 -0800 (PST)
+        id S230518AbhBAOf5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 09:35:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58218 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231137AbhBAOfq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 09:35:46 -0500
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49E41C06174A
+        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 06:35:05 -0800 (PST)
+Received: by mail-io1-xd36.google.com with SMTP id n14so3720171iog.3
+        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 06:35:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=tpFKdqtau4ahR4UB5yONo7WPW5JC6DPpzSRX9ZY8yyc=;
+        b=ZSzDNpp7HahNsuesQxdYvqONbkURXzbxiZs9QtLeEoM6iT0FQrrq7Q/+juqbOJai2g
+         t+g1DEC8SnkBLt22FU5EY0WYK7RANuFdf4WKzJOc0PXwQ8+Y2vfIgnW/XiI161xwb1Gi
+         GrFfuz8th0262M9Sg21GvnxDWUUCajZ1vfEtoGx0E00VqVyKxRM3euGg/aqww2Xktipg
+         /ITc6k0VQSlieoyoxdL/AJRvRyirSy7/W7mPgju0wXxbmdlBDkDooFc9LjZVAbSMSeLQ
+         0dUtX6sqcOboJDuCmn1EIcclQjX+UsPLWNqH3mt126ENMoXGfYTEXw0sEYj3ySa7ZvfN
+         Im+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=iGH0ZSLBAZ/lXbnG+6O2ml/2vbQGE/imbivvvvyRaT4=;
-        b=i61VeB4allC5jbATFFyGDnviWNKuM0iWgy2xdfUSLw/BG+nwbgFJV9OuKfEQ7u8zOC
-         WH36KV2Qg0iHNdMrj2T2mWMkdtSwKdxKtoGefg1NdS6A3vd2by6vd4+aJJZxDLb8+UFp
-         sovmz6Sbb4ohg42GW/pHwe1zN5f/a1WyUy+kop5hYzhXp94IXpJF9cSWf3HZsxvONNcP
-         EkRgG32j7HuPXW5Sh/6I1x0yQXpW4U2aJG9+OmC8/W8Bp9yFvTA48WUR/TNXRLb/g/ko
-         RwRGJlruBxiZU7i51C0ZJOUST4sdUGL1kOdE7xhOeATXYdE31ocJfZCAw3bcD9tppYK1
-         XS3w==
-X-Gm-Message-State: AOAM531NtrzmAh9552DD27tYgxwq8YcueUIRHc+MsvN58qnlIC2TpBcD
-        foQRJYo0NUSSVctuoluzH0sVcEXZq8d+JhoiNYQ4jIiQyRN//JU4rcv+UYcKdDkQrDqXB8kQ8ay
-        pZZxSTgtIgziMcw13
-X-Received: by 2002:adf:e4c4:: with SMTP id v4mr17503514wrm.376.1612190095172;
-        Mon, 01 Feb 2021 06:34:55 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyBsgItRHswu5hBiL2QT2YHSQdpQb0FbvdxTnwiMJFgAMcNcvTM6ctxK1RJZn0uU74nZoqHvA==
-X-Received: by 2002:adf:e4c4:: with SMTP id v4mr17503482wrm.376.1612190094843;
-        Mon, 01 Feb 2021 06:34:54 -0800 (PST)
-Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
-        by smtp.gmail.com with ESMTPSA id h23sm3270334wmb.41.2021.02.01.06.34.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Feb 2021 06:34:54 -0800 (PST)
-Date:   Mon, 1 Feb 2021 15:34:51 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Colin Ian King <colin.king@canonical.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Jeff Vander Stoep <jeffv@google.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stsp2@yandex.ru" <stsp2@yandex.ru>,
-        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
-Subject: Re: [RFC PATCH v3 00/13] virtio/vsock: introduce SOCK_SEQPACKET
- support
-Message-ID: <20210201143451.njs3fzbg3exguayx@steredhat>
-References: <20210125110903.597155-1-arseny.krasnov@kaspersky.com>
- <20210128171923.esyna5ccv5s27jyu@steredhat>
- <63459bb3-da22-b2a4-71ee-e67660fd2e12@kaspersky.com>
- <20210129092604.mgaw3ipiyv6xra3b@steredhat>
- <cb6d5a9c-fd49-a9dd-33b3-52027ae2f71c@kaspersky.com>
- <20210201110258.7ze7a7izl7gesv4w@steredhat>
- <1b80eb27-4818-50d7-7454-ff6cc398422e@kaspersky.com>
- <20210201142333.7zcgoqq432y7kktb@steredhat>
- <a8ff5600-c166-ee75-1e62-06ae127e2352@kaspersky.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=tpFKdqtau4ahR4UB5yONo7WPW5JC6DPpzSRX9ZY8yyc=;
+        b=n1u0NZNUpzkVP3rqG8jWW2AdIDgFbATyAT7PPqE+l3aEYBfFlFd2o1NecvA4aurDq/
+         3XXMklm7g2fqB4czUItdRqoKoI3u3+SNnaaWBx2De0BpNuduIAT1TkpC5xHCCVLxtGbu
+         X9OpqKSPhja+0aW4k1BcrdiJG0O3dypgvMFw261Gr0wh1T/3FvhivXMW9+NUYzhW5bbY
+         RphAs7GC/GzNBTuJxlUbLvE+Bmwd6AaJS0YapzcBd2nN2b/H+M4cJpZhEGuAN0UAU+L2
+         nFSikZxs2asfsS9XAp6qLPfIxI1tHfIegV5zVZBD9fk+H28rgnMX3eVrCuPBZeIHvDpb
+         jG5A==
+X-Gm-Message-State: AOAM532TcBUc8x+lxZl2cT+sComxhX/C6xU30v9YoS4oTfyLMR9Bnd9c
+        RRukXQd/+txaAGU63xDmgkWCDA==
+X-Google-Smtp-Source: ABdhPJyGPN+kannRgCzKXIBe7BwBhRNMuqsZb2Iq1lYaAezIWWFHTHWMOwHfB3NKoZp2EYBGH0/sgA==
+X-Received: by 2002:a02:5dc9:: with SMTP id w192mr5712063jaa.44.1612190104645;
+        Mon, 01 Feb 2021 06:35:04 -0800 (PST)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id v14sm9505407ilm.18.2021.02.01.06.35.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 01 Feb 2021 06:35:03 -0800 (PST)
+Subject: Re: [PATCH net-next 9/9] net: ipa: don't disable NAPI in suspend
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, elder@kernel.org,
+        evgreen@chromium.org, bjorn.andersson@linaro.org,
+        cpratapa@codeaurora.org,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20210129202019.2099259-1-elder@linaro.org>
+ <20210129202019.2099259-10-elder@linaro.org>
+ <CAF=yD-L1SKzu+gsma7KN4VjGnma-_w+amXx=Y_0e78rQiUCu7Q@mail.gmail.com>
+ <e27f5c10-7b77-1f12-fe36-e9261f01bca1@linaro.org>
+ <CAF=yD-+4xNjgkWQw8tMz0uvK45ysL6vnx86ZgEud+kCW9zw9_A@mail.gmail.com>
+ <67f4aa5a-4a60-41e6-a049-0ff93fb87b66@linaro.org>
+ <CAF=yD-+ABnhRmcHq=1T7PVz8VUVjqC073bjTa89GUt1rA3KVUw@mail.gmail.com>
+From:   Alex Elder <elder@linaro.org>
+Message-ID: <a1b12c17-5d65-ce29-3d4f-e09de4fdcf3f@linaro.org>
+Date:   Mon, 1 Feb 2021 08:35:03 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <a8ff5600-c166-ee75-1e62-06ae127e2352@kaspersky.com>
+In-Reply-To: <CAF=yD-+ABnhRmcHq=1T7PVz8VUVjqC073bjTa89GUt1rA3KVUw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 01, 2021 at 05:32:00PM +0300, Arseny Krasnov wrote:
->
->On 01.02.2021 17:23, Stefano Garzarella wrote:
->> On Mon, Feb 01, 2021 at 04:57:18PM +0300, Arseny Krasnov wrote:
->>> On 01.02.2021 14:02, Stefano Garzarella wrote:
->>>> On Fri, Jan 29, 2021 at 06:52:23PM +0300, Arseny Krasnov wrote:
->>>>> On 29.01.2021 12:26, Stefano Garzarella wrote:
->>>>>> On Fri, Jan 29, 2021 at 09:41:50AM +0300, Arseny Krasnov wrote:
->>>>>>> On 28.01.2021 20:19, Stefano Garzarella wrote:
->>>>>>>> Hi Arseny,
->>>>>>>> I reviewed a part, tomorrow I hope to finish the other patches.
->>>>>>>>
->>>>>>>> Just a couple of comments in the TODOs below.
->>>>>>>>
->>>>>>>> On Mon, Jan 25, 2021 at 02:09:00PM +0300, Arseny Krasnov wrote:
->>>>>>>>> 	This patchset impelements support of SOCK_SEQPACKET for virtio
->>>>>>>>> transport.
->>>>>>>>> 	As SOCK_SEQPACKET guarantees to save record boundaries, so to
->>>>>>>>> do it, new packet operation was added: it marks start of record (with
->>>>>>>>> record length in header), such packet doesn't carry any data.  To send
->>>>>>>>> record, packet with start marker is sent first, then all data is sent
->>>>>>>>> as usual 'RW' packets. On receiver's side, length of record is known
->>>>>>>> >from packet with start record marker. Now as  packets of one socket
->>>>>>>>> are not reordered neither on vsock nor on vhost transport layers, such
->>>>>>>>> marker allows to restore original record on receiver's side. If user's
->>>>>>>>> buffer is smaller that record length, when all out of size data is
->>>>>>>>> dropped.
->>>>>>>>> 	Maximum length of datagram is not limited as in stream socket,
->>>>>>>>> because same credit logic is used. Difference with stream socket is
->>>>>>>>> that user is not woken up until whole record is received or error
->>>>>>>>> occurred. Implementation also supports 'MSG_EOR' and 'MSG_TRUNC' flags.
->>>>>>>>> 	Tests also implemented.
->>>>>>>>>
->>>>>>>>> Arseny Krasnov (13):
->>>>>>>>>  af_vsock: prepare for SOCK_SEQPACKET support
->>>>>>>>>  af_vsock: prepare 'vsock_connectible_recvmsg()'
->>>>>>>>>  af_vsock: implement SEQPACKET rx loop
->>>>>>>>>  af_vsock: implement send logic for SOCK_SEQPACKET
->>>>>>>>>  af_vsock: rest of SEQPACKET support
->>>>>>>>>  af_vsock: update comments for stream sockets
->>>>>>>>>  virtio/vsock: dequeue callback for SOCK_SEQPACKET
->>>>>>>>>  virtio/vsock: fetch length for SEQPACKET record
->>>>>>>>>  virtio/vsock: add SEQPACKET receive logic
->>>>>>>>>  virtio/vsock: rest of SOCK_SEQPACKET support
->>>>>>>>>  virtio/vsock: setup SEQPACKET ops for transport
->>>>>>>>>  vhost/vsock: setup SEQPACKET ops for transport
->>>>>>>>>  vsock_test: add SOCK_SEQPACKET tests
->>>>>>>>>
->>>>>>>>> drivers/vhost/vsock.c                   |   7 +-
->>>>>>>>> include/linux/virtio_vsock.h            |  12 +
->>>>>>>>> include/net/af_vsock.h                  |   6 +
->>>>>>>>> include/uapi/linux/virtio_vsock.h       |   9 +
->>>>>>>>> net/vmw_vsock/af_vsock.c                | 543 ++++++++++++++++------
->>>>>>>>> net/vmw_vsock/virtio_transport.c        |   4 +
->>>>>>>>> net/vmw_vsock/virtio_transport_common.c | 295 ++++++++++--
->>>>>>>>> tools/testing/vsock/util.c              |  32 +-
->>>>>>>>> tools/testing/vsock/util.h              |   3 +
->>>>>>>>> tools/testing/vsock/vsock_test.c        | 126 +++++
->>>>>>>>> 10 files changed, 862 insertions(+), 175 deletions(-)
->>>>>>>>>
->>>>>>>>> TODO:
->>>>>>>>> - Support for record integrity control. As transport could drop some
->>>>>>>>>   packets, something like "record-id" and record end marker need to
->>>>>>>>>   be implemented. Idea is that SEQ_BEGIN packet carries both record
->>>>>>>>>   length and record id, end marker(let it be SEQ_END) carries only
->>>>>>>>>   record id. To be sure that no one packet was lost, receiver checks
->>>>>>>>>   length of data between SEQ_BEGIN and SEQ_END(it must be same with
->>>>>>>>>   value in SEQ_BEGIN) and record ids of SEQ_BEGIN and SEQ_END(this
->>>>>>>>>   means that both markers were not dropped. I think that easiest way
->>>>>>>>>   to implement record id for SEQ_BEGIN is to reuse another field of
->>>>>>>>>   packet header(SEQ_BEGIN already uses 'flags' as record length).For
->>>>>>>>>   SEQ_END record id could be stored in 'flags'.
->>>>>>>> I don't really like the idea of reusing the 'flags' field for this
->>>>>>>> purpose.
->>>>>>>>
->>>>>>>>>     Another way to implement it, is to move metadata of both SEQ_END
->>>>>>>>>   and SEQ_BEGIN to payload. But this approach has problem, because
->>>>>>>>>   if we move something to payload, such payload is accounted by
->>>>>>>>>   credit logic, which fragments payload, while payload with record
->>>>>>>>>   length and id couldn't be fragmented. One way to overcome it is to
->>>>>>>>>   ignore credit update for SEQ_BEGIN/SEQ_END packet.Another solution
->>>>>>>>>   is to update 'stream_has_space()' function: current implementation
->>>>>>>>>   return non-zero when at least 1 byte is allowed to use,but updated
->>>>>>>>>   version will have extra argument, which is needed length. For 'RW'
->>>>>>>>>   packet this argument is 1, for SEQ_BEGIN it is sizeof(record len +
->>>>>>>>>   record id) and for SEQ_END it is sizeof(record id).
->>>>>>>> Is the payload accounted by credit logic also if hdr.op is not
->>>>>>>> VIRTIO_VSOCK_OP_RW?
->>>>>>> Yes, on send any packet with payload could be fragmented if
->>>>>>>
->>>>>>> there is not enough space at receiver. On receive 'fwd_cnt' and
->>>>>>>
->>>>>>> 'buf_alloc' are updated with header of every packet. Of course,
->>>>>>>
->>>>>>> to every such case i've described i can add check for 'RW'
->>>>>>>
->>>>>>> packet, to exclude payload from credit accounting, but this is
->>>>>>>
->>>>>>> bunch of dumb checks.
->>>>>>>
->>>>>>>> I think that we can define a specific header to put after the
->>>>>>>> virtio_vsock_hdr when hdr.op is SEQ_BEGIN or SEQ_END, and in this header
->>>>>>>> we can store the id and the length of the message.
->>>>>>> I think it is better than use payload and touch credit logic
->>>>>>>
->>>>>> Cool, so let's try this option, hoping there aren't a lot of issues.
->>>>> If i understand, current implementation has 'struct
->>>>> virtio_vsock_hdr',
->>>>>
->>>>> then i'll add 'struct virtio_vsock_hdr_seq' with message length and id.
->>>>>
->>>>> After that, in 'struct virtio_vsock_pkt' which describes packet, field for
->>>>>
->>>>> header(which is 'struct virtio_vsock_hdr') must be replaced with new
->>>>>
->>>>> structure which  contains both 'struct virtio_vsock_hdr' and 'struct
->>>>>
->>>>> virtio_vsock_hdr_seq', because header field of 'struct virtio_vsock_pkt'
->>>>>
->>>>> is buffer for virtio layer. After it all accesses to header(for example to
->>>>>
->>>>> 'buf_alloc' field will go accross new  structure with both headers:
->>>>>
->>>>> pkt->hdr.buf_alloc   ->   pkt->extended_hdr.classic_hdr.buf_alloc
->>>>>
->>>>> May be to avoid this, packet's header could be allocated dynamically
->>>>>
->>>>> in the same manner as packet's buffer? Size of allocation is always
->>>>>
->>>>> sizeof(classic header) + sizeof(seq header). In 'struct virtio_vsock_pkt'
->>>>>
->>>>> such header will be implemented as union of two pointers: class header
->>>>>
->>>>> and extended header containing classic and seq header. Which pointer
->>>>>
->>>>> to use is depends on packet's op.
->>>> I think that the 'classic header' can stay as is, and the extended
->>>> header can be dynamically allocated, as we do for the payload.
+On 1/31/21 7:36 PM, Willem de Bruijn wrote:
+> On Sun, Jan 31, 2021 at 10:32 AM Alex Elder <elder@linaro.org> wrote:
+>>
+>> On 1/31/21 8:52 AM, Willem de Bruijn wrote:
+>>> On Sat, Jan 30, 2021 at 11:29 PM Alex Elder <elder@linaro.org> wrote:
 >>>>
->>>> But we have to be careful what happens if the other peer doesn't support
->>>> SEQPACKET and if it counts this extra header as a payload for the credit
->>>> mechanism.
->>> You mean put extra header to payload(buffer of second virtio desc),
->>>
->>> in this way on send/receive auxiliary 'if's are needed to avoid credit
->>>
->>> logic(or set length field in header of such packets to 0). But what
->>>
->>> about placing extra header after classic header in buffer of first virtio
->>>
->>> desc? In this case extra header is not payload and credit works as is.
->>>
->>> Or it is critical, that size of first buffer will be not same as size of
->>>
->>> classic header?
->> We need to think about compatibility with old drivers.
->Yes, compatibility seems to be a trouble.
->>
->> What would happen in this case?
->>
->> I think it's easier to use the second buffer, usually used for the
->> payload, to carry the extra header. Also, we can leave hdr.len = 0, so
->> we are sure that it is not counted in credit mechanism.
->
->Ok, that one of possible solutions. I just wanted to inform you,
->
->that way i'll use in v4
->
->> If the driver supports SEQPACKET, it knows it must fetch extra header
->> when it must handle SEQ_BEGIN/SEQ_END.
->>
->> If it is not clear, I'll try to provide a simple PoC of a patch.
->
->No, it is clear for me, i'll implement it in v4 also take care of
->
->review comments.
+>>>> On 1/30/21 9:25 AM, Willem de Bruijn wrote:
+>>>>> On Fri, Jan 29, 2021 at 3:29 PM Alex Elder <elder@linaro.org> wrote:
+>>>>>>
+>>>>>> The channel stop and suspend paths both call __gsi_channel_stop(),
+>>>>>> which quiesces channel activity, disables NAPI, and (on other than
+>>>>>> SDM845) stops the channel.  Similarly, the start and resume paths
+>>>>>> share __gsi_channel_start(), which starts the channel and re-enables
+>>>>>> NAPI again.
+>>>>>>
+>>>>>> Disabling NAPI should be done when stopping a channel, but this
+>>>>>> should *not* be done when suspending.  It's not necessary in the
+>>>>>> suspend path anyway, because the stopped channel (or suspended
+>>>>>> endpoint on SDM845) will not cause interrupts to schedule NAPI,
+>>>>>> and gsi_channel_trans_quiesce() won't return until there are no
+>>>>>> more transactions to process in the NAPI polling loop.
+>>>>>
+>>>>> But why is it incorrect to do so?
+>>>>
+>>>> Maybe it's not; I also thought it was fine before, but...
 
-Great! Let me know if any issues we haven't considered come up.
+. . .
 
-Stefano
+>> The "hang" occurs on an RX endpoint, and in particular it
+>> occurs on an endpoint that we *know* will be receiving a
+>> packet as part of the suspend process (when clearing the
+>> hardware pipeline).  I can go into that further but won't'
+>> unless asked.
+>>
+>>>> A stopped channel won't interrupt,
+>>>> so we don't bother disabling the completion interrupt,
+>>>> with no interrupts, NAPI won't be scheduled, so there's
+>>>> no need to disable NAPI either.
+>>>
+>>> That sounds plausible. But it doesn't explain why napi_disable "should
+>>> *not* be done when suspending" as the commit states.
+>>>
+>>> Arguably, leaving that won't have much effect either way, and is in
+>>> line with other drivers.
+>>
+>> Understood and agreed.  In fact, if the hang occurrs in
+>> napi_disable() when waiting for NAPI_STATE_SCHED to clear,
+>> it would occur in napi_synchronize() as well.
+> 
+> Agreed.
+> 
+> So you have an environment to test a patch in, it might be worthwhile
+> to test essentially the same logic reordering as in this patch set,
+> but while still disabling napi.
 
+What is the purpose of this test?  Just to guarantee
+that the NAPI hang goes away?  Because you agree that
+the napi_schedule() call would *also* hang if that
+problem exists, right?
+
+Anyway, what you're suggesting is to simply test with
+this last patch removed.  I can do that but I really
+don't expect it to change anything.  I will start that
+test later today when I'm turning my attention to
+something else for a while.
+
+> The disappearing race may be due to another change rather than
+> napi_disable vs napi_synchronize. A smaller, more targeted patch could
+> also be a net (instead of net-next) candidate.
+
+I am certain it is.
+
+I can tell you that we have seen a hang (after I think 2500+
+suspend/resume cycles) with the IPA code that is currently
+upstream.
+
+But with this latest series of 9, there is no hang after
+10,000+ cycles.  That gives me a bisect window, but I really
+don't want to go through a full bisect of even those 9,
+because it's 4 tests, each of which takes days to complete.
+
+Looking at the 9 patches, I think this one is the most
+likely culprit:
+   net: ipa: disable IEOB interrupt after channel stop
+
+I think the race involves the I/O completion handler
+interacting with NAPI in an unwanted way, but I have
+not come up with the exact sequence that would lead
+to getting stuck in napi_disable().
+
+Here are some possible events that could occur on an
+RX channel in *some* order, prior to that patch.  And
+in the order I show there's at least a problem of a
+receive not being processed immediately.
+
+		. . . (suspend initiated)
+
+	replenish_stop()
+	quiesce()
+			IRQ fires (receive ready)
+	napi_disable()
+			napi_schedule() (ignored)
+	irq_disable()
+			IRQ condition; pending
+	channel_stop()
+
+		. . . (resume triggered)
+
+	channel_start()
+	irq_enable()
+			pending IRQ fires
+			napi_schedule() (ignored)
+	napi_enable()
+
+		. . . (suspend initiated)
+
+>> At this point
+>> it's more about the whole set of rework here, and keeping
+>> NAPI enabled during suspend seems a little cleaner.
+> 
+> I'm not sure. I haven't looked if there is a common behavior across
+> devices. That might be informative. igb, for one, releases all
+> resources.
+
+I tried to do a survey of that too and did not see a
+consistent pattern.  I didn't look *that* hard because
+doing so would be more involved than I wanted to get.
+
+So in summary:
+- I'm putting together version 2 of this series now
+- Testing this past week seems to show that this series
+   makes the hang in napi_disable() (or synchronize)
+   go away.
+- I think the most likely patch in this series that
+   fixes the problem is the IRQ ordering one I mention
+   above, but right now I can't cite a specific sequence
+   of events that would prove it.
+- I will begin some long testing later today without
+   this last patch applied
+     --> But I think testing without the IRQ ordering
+	patch would be more promising, and I'd like
+	to hear your opinion on that
+
+Thanks again for your input and help on this.
+
+					-Alex
+
+. . .
