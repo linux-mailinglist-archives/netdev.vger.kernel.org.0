@@ -2,132 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B8B930A504
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 11:09:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5C8C30A527
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 11:15:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233179AbhBAKI4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 05:08:56 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:28305 "EHLO
+        id S233135AbhBAKOP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 05:14:15 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:59744 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233141AbhBAKIV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 05:08:21 -0500
+        by vger.kernel.org with ESMTP id S232943AbhBAKOH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 05:14:07 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1612174013;
+        s=mimecast20190719; t=1612174361;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=/QAkk6owe21Xxeh5fDlvcKKIXTJvkH9DBGu0Ux0QV3Y=;
-        b=VAzmozJR8XvPYChz2UWUdzCrp6oxXmhH/wY/TRNhjMh/NfPXzx4gFAl6F+k0dKWGwOyU5O
-        xy2Ey5dJNneiQLdK2m5ygUkn+/1NYeL8RKILSRdeuZCFH2aYqJISlmQCDhFFFhvcwzUYWI
-        FNAUue5IzZowwZXK8jcryuj4LZAviHI=
+        bh=JzU/btitmBexa+6BHnO0UL9EhKJmr7ZPhN0nWZC0+oY=;
+        b=KopkFXOrTxka/iEOUZg0EDR7RGOxSRMAdl4LGiT9PoUcX8OZKKpkEl8PMZbnmGe7d8xJJ0
+        X+t1NsOXO3+Hp3JWwe2ONvcY0OSS3UNc2E+OkG6IvzOMVr5hUjGHRoBNF4fHNwbLUY5iJU
+        zaRhrAc/KEgiZjKxeuvbZPxJ9mQDFAU=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-111-WnXa72axNVaZW8MKHKz7Jw-1; Mon, 01 Feb 2021 05:06:49 -0500
-X-MC-Unique: WnXa72axNVaZW8MKHKz7Jw-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+ us-mta-562-A1uj297bOYCiXNEDgPOeKQ-1; Mon, 01 Feb 2021 05:12:40 -0500
+X-MC-Unique: A1uj297bOYCiXNEDgPOeKQ-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 27878107ACF6;
-        Mon,  1 Feb 2021 10:06:48 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.47])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E3D5D10016F4;
-        Mon,  1 Feb 2021 10:06:35 +0000 (UTC)
-Date:   Mon, 1 Feb 2021 11:06:34 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
-        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        toshiaki.makita1@gmail.com, lorenzo.bianconi@redhat.com,
-        toke@redhat.com, Stefano Brivio <sbrivio@redhat.com>,
-        brouer@redhat.com
-Subject: Re: [PATCH v2 bpf-next] net: veth: alloc skb in bulk for
- ndo_xdp_xmit
-Message-ID: <20210201110634.70be00ba@carbon>
-In-Reply-To: <20210129214927.GC20729@lore-desk>
-References: <415937741661ac331be09c0e59b4ff1eacfee782.1611861943.git.lorenzo@kernel.org>
-        <20210129170216.6a879619@carbon>
-        <20210129201728.4322bab0@carbon>
-        <20210129214640.GB20729@lore-desk>
-        <20210129214927.GC20729@lore-desk>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BC835800D53;
+        Mon,  1 Feb 2021 10:12:38 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-115-23.rdu2.redhat.com [10.10.115.23])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3B51562461;
+        Mon,  1 Feb 2021 10:12:37 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20210201094403.1979-1-hdanton@sina.com>
+References: <20210201094403.1979-1-hdanton@sina.com> <0000000000007b460105ba41c908@google.com>
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     dhowells@redhat.com,
+        syzbot <syzbot+174de899852504e4a74a@syzkaller.appspotmail.com>,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        syzbot+3d1c772efafd3c38d007@syzkaller.appspotmail.com
+Subject: Re: KASAN: use-after-free Read in rxrpc_send_data_packet
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <4107617.1612174356.1@warthog.procyon.org.uk>
+Date:   Mon, 01 Feb 2021 10:12:36 +0000
+Message-ID: <4107618.1612174356@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 29 Jan 2021 22:49:27 +0100
-Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+Hillf Danton <hdanton@sina.com> wrote:
 
-> On Jan 29, Lorenzo Bianconi wrote:
-> > On Jan 29, Jesper Dangaard Brouer wrote: =20
-> > > On Fri, 29 Jan 2021 17:02:16 +0100
-> > > Jesper Dangaard Brouer <brouer@redhat.com> wrote:
-> > >  =20
-> > > > > +	for (i =3D 0; i < n_skb; i++) {
-> > > > > +		struct sk_buff *skb =3D skbs[i];
-> > > > > +
-> > > > > +		memset(skb, 0, offsetof(struct sk_buff, tail));   =20
-> > > >=20
-> > > > It is very subtle, but the memset operation on Intel CPU translates
-> > > > into a "rep stos" (repeated store) operation.  This operation need =
-to
-> > > > save CPU-flags (to support being interrupted) thus it is actually
-> > > > expensive (and in my experience cause side effects on pipeline
-> > > > efficiency).  I have a kernel module for testing memset here[1].
-> > > >=20
-> > > > In CPUMAP I have moved the clearing outside this loop. But via aski=
-ng
-> > > > the MM system to clear the memory via gfp_t flag __GFP_ZERO.  This
-> > > > cause us to clear more memory 256 bytes, but it is aligned.  Above
-> > > > offsetof(struct sk_buff, tail) is 188 bytes, which is unaligned mak=
-ing
-> > > > the rep-stos more expensive in setup time.  It is below 3-cacheline=
-s,
-> > > > which is actually interesting and an improvement since last I check=
-ed.
-> > > > I actually have to re-test with time_bench_memset[1], to know that =
-is
-> > > > better now. =20
-> > >=20
-> > > After much testing (with [1]), yes please use gfp_t flag __GFP_ZERO. =
-=20
-> >=20
-> > I run some comparison tests using memset and __GFP_ZERO and with VETH_X=
-DP_BATCH
-> > set to 8 and 16. Results are pretty close so not completely sure the de=
-lta is
-> > just a noise:
-> >=20
-> > - VETH_XDP_BATCH=3D 8 + __GFP_ZERO: ~3.737Mpps
-> > - VETH_XDP_BATCH=3D 16 + __GFP_ZERO: ~3.79Mpps
-> > - VETH_XDP_BATCH=3D 8 + memset: ~3.766Mpps
-> > - VETH_XDP_BATCH=3D 16 + __GFP_ZERO: ~3.765Mpps =20
->=20
-> Sorry last line is:
->   - VETH_XDP_BATCH=3D 16 + memset: ~3.765Mpps
+> --- a/net/rxrpc/call_object.c
+> +++ b/net/rxrpc/call_object.c
+> @@ -549,6 +549,7 @@ void rxrpc_release_call(struct rxrpc_soc
+>  	if (call->security)
+>  		call->security->free_call_crypto(call);
+>  
+> +	cancel_work_sync(&call->processor);
+>  	rxrpc_cleanup_ring(call);
+>  	_leave("");
+>  }
 
-Thanks for doing these benchmarks.
+It's probably better to do the cancellation before we call
+->free_call_crypto().
 
-=46rom my memset benchmarks we are looking for a 1.66 ns difference(10.463-8.=
-803),
-which is VERY hard to measure accurately (anything below 2 ns is
-extremely hard due to OS noise).
+Two other alternatives would be to lock in rxrpc_cleanup_ring() or just remove
+that call of rxrpc_cleanup_ring() and leave it to rxrpc_cleanup_call() (which
+calls it anyway).  The latter might be the best option as the work function
+holds a ref on the call.
 
-VETH_XDP_BATCH=3D8 __GFP_ZERO (3.737Mpps) -> memset (3.766Mpps)
- - __GFP_ZERO loosing 0.029Mpps and 2.06 ns slower
+Clearing the ring in rxrpc_release_call() is more of an optimisation, meant to
+recycle skbuffs sooner, but I would hope that the call would be destroyed
+quickly after this point anyway.
 
-VETH_XDP_BATCH=3D16 __GFP_ZERO (3.79Mpps) -> memset (3.765Mpps)
- - __GFP_ZERO gaining 0.025Mpps and 1.75 ns faster
-
-I would say this is noise in the measurements.  Even-though batch=3D16
-match the expected improvement, batch=3D8 goes in the other direction.
-
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+David
 
