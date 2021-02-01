@@ -2,144 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21F9C30B0F1
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 20:58:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 24B1530B0D0
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 20:52:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231603AbhBAT5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 14:57:08 -0500
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:48965 "EHLO
+        id S232768AbhBATvl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 14:51:41 -0500
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:55215 "EHLO
         new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229663AbhBATt2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 14:49:28 -0500
+        by vger.kernel.org with ESMTP id S231868AbhBATtr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 14:49:47 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 27F5E580503;
-        Mon,  1 Feb 2021 14:48:39 -0500 (EST)
+        by mailnew.nyi.internal (Postfix) with ESMTP id 363A8580436;
+        Mon,  1 Feb 2021 14:48:41 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 01 Feb 2021 14:48:39 -0500
+  by compute3.internal (MEProxy); Mon, 01 Feb 2021 14:48:41 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=M9tu9lxb1+yYZxxul
-        3MtH+kx9ub4kfRcReMkZAt84II=; b=T70Znt1thjQpvcnI8gK3YX0N3wz05wiTk
-        nHoI683SAFApDSZJjW0HfQ1GmCLEseVOkZ9thaXv7PDI9/rOi2ygL0CmpSN571bz
-        8YVTwkSouy3aFtHLPeWOSOeIe0fOc38CohJxbF+oukdHODQVFOqJSBEMzMIJ1b9T
-        9bkmbNQawSobr3iBHLL8rWtVnV+vDK1kvKeFuAXwmZnpQZvRFjDyJ5Y5ol5yiIyi
-        977JW+U367TJDdPDaJIXffgFYTkfstSs9s9ScNtDCRGvOYDi+ADuFeN+cb9bSzo1
-        EaiQJVockASKdrBYhu8DysciGyi3CrS0AdQ9KUA1r6xRUgLEQ61gg==
-X-ME-Sender: <xms:FlsYYA3m1iShNUnnRLkBCN1kPBwgwaKQKuKKeDpTSLUObhkAx0vd9A>
-    <xme:FlsYYLG9IWQAQkjKtYcOTgP3g8IuMOoXVcjuFQK3xNdJRpzTO9VLnr7dfjC-V5BOJ
-    i8TNhRjyL7Io2I>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; bh=Fnl4B91G1tjsob2Ju8/a/wq2zj1vfaoTlf0/Nw3FNL8=; b=rLS7RMjt
+        dKBrTjkHUfAbfqHGCZjBZmNtQGO1ncgInDewtV3l01zdEWO6HupiRiT/0YUQZVeU
+        0daAtBLtrrXZynBsfu2GiQPv2c/2XAPM663qSa4JTQ88XxCVuZ0AilP9rXhVIQYU
+        P5lrJOUna+a70xwz1eypFXRsfT/RxeVVBTQsxfg16cVVDAE7QuYvU7kqL145GdEz
+        WjpQOL1C/anFddsvYeO0gFr9/evBU4+4fNIKur/xuxe3IpYHls7v6FSCIuI5Kl61
+        GgryZUmkalmnhgtJDNRNrmcm3ejvQvHtmNgau/yo5+BzNhKrlkJOj80zVdXfMOAM
+        JwT6Ci5tbxBLNw==
+X-ME-Sender: <xms:GVsYYKb3Ecy5RD22dlJhY-25X15cSwd_dzPR-nAoTYEAI6w4p8gyoQ>
+    <xme:GVsYYNaxI5Gyh_ITGkLcuGuyp0P46ty85ipKA8rme8hC5mzW2P7QfrPNQvZKK8RgE
+    A6wzrJg7JMe7nY>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeekgddufedtucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
-    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
-    etffeikeegheevfedvgeelvdffudfhnecukfhppeekgedrvddvledrudehfedrgeegnecu
-    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
-    hhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:FlsYYI4iV0f-SVFP_lF2SCCYrd6i3Jafl5ij0igiJNww5wf2XtSl1Q>
-    <xmx:FlsYYJ228Oz7_ZpQ-L5hRnndOdHVg5cahzeiWa4L0c4dq2Texik_sQ>
-    <xmx:FlsYYDGTjuHeaH1nSaBkeWkIHTeaK6OdNqTTuP0ONr7sTa901bVULQ>
-    <xmx:F1sYYJbKa-tvYuO86NYiXV-yOCSq_3QJ_ntswJc4qy369ixp_RNUKA>
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
+    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
+    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
+    ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrgeeg
+    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
+    hstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:GVsYYE9UoVoyG8ekOu6pHMbUEmrMkr01DrNK-ZUXA3RWjl80Z9P9Ag>
+    <xmx:GVsYYMpLJwhscmLQQtLb7Kshc94nUHuhVxEQdfSUOrHme5lT1PpYlw>
+    <xmx:GVsYYFqFTg1jo5V_wqQrBJclqYOXPz4zHwcVYzZx8Icw0-GCa1NO5g>
+    <xmx:GVsYYJfuGVG16jjScxuGNKwuGxkpMPKQ_ST3KCRtwDZrB-MrF2PQyA>
 Received: from shredder.mellanox.com (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 71EB724005E;
-        Mon,  1 Feb 2021 14:48:35 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 5882924005C;
+        Mon,  1 Feb 2021 14:48:38 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@gmail.com,
         yoshfuji@linux-ipv6.org, jiri@nvidia.com, amcohen@nvidia.com,
         roopa@nvidia.com, bpoirier@nvidia.com, sharpd@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next v2 00/10] Add notifications when route hardware flags change
-Date:   Mon,  1 Feb 2021 21:47:47 +0200
-Message-Id: <20210201194757.3463461-1-idosch@idosch.org>
+Subject: [PATCH net-next v2 01/10] netdevsim: fib: Convert the current occupancy to an atomic variable
+Date:   Mon,  1 Feb 2021 21:47:48 +0200
+Message-Id: <20210201194757.3463461-2-idosch@idosch.org>
 X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210201194757.3463461-1-idosch@idosch.org>
+References: <20210201194757.3463461-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+From: Amit Cohen <amcohen@nvidia.com>
 
-Routes installed to the kernel can be programmed to capable devices, in
-which case they are marked with one of two flags. RTM_F_OFFLOAD for
-routes that offload traffic from the kernel and RTM_F_TRAP for routes
-that trap packets to the kernel for processing (e.g., host routes).
+When route is added/deleted, the appropriate counter is increased/decreased
+to maintain number of routes.
 
-These flags are of interest to routing daemons since they would like to
-delay advertisement of routes until they are installed in hardware. This
-allows them to avoid packet loss or misrouted packets. Currently,
-routing daemons do not receive any notifications when these flags are
-changed, requiring them to poll the kernel tables for changes which is
-inefficient.
+User can limit the number of routes and then according to the appropriate
+counter, adding more routes than the limitation is forbidden.
 
-This series addresses the issue by having the kernel emit RTM_NEWROUTE
-notifications whenever these flags change. The behavior is controlled by
-two sysctls (net.ipv4.fib_notify_on_flag_change and
-net.ipv6.fib_notify_on_flag_change) that default to 0 (no
-notifications).
+Currently, there is one lock which protects hashtable, list and accounting.
 
-Note that even if route installation in hardware is improved to be more
-synchronous, these notifications are still of interest. For example, a
-multipath route can change from RTM_F_OFFLOAD to RTM_F_TRAP if its
-neighbours become invalid. A routing daemon can choose to withdraw /
-replace the route in that case. In addition, the deletion of a route
-from the kernel can prompt the installation of an identical route
-(already in kernel, with an higher metric) to hardware.
+Handling the counters will be performed from both atomic context and
+non-atomic context, while the hashtable and the list will be used only from
+non-atomic context and therefore will be protected by a separate lock.
 
-For testing purposes, netdevsim is aligned to simulate a "real" driver
-that programs routes to hardware.
-
-Series overview:
-
-Patches #1-#2 align netdevsim to perform route programming in a
-non-atomic context
-
-Patches #3-#5 add sysctl to control IPv4 notifications
-
-Patches #6-#8 add sysctl to control IPv6 notifications
-
-Patch #9 extends existing fib tests to set sysctls before running tests
-
-Patch #10 adds test for fib notifications over netdevsim
+Protect accounting by using an atomic variable, so lock is not needed.
 
 v2:
-* Patch #1: Use atomic64_sub() in nsim_nexthop_account()'s error path
+* Use atomic64_sub() in nsim_nexthop_account()'s error path
 
-Amit Cohen (10):
-  netdevsim: fib: Convert the current occupancy to an atomic variable
-  netdevsim: fib: Perform the route programming in a non-atomic context
-  net: ipv4: Pass fib_rt_info as const to fib_dump_info()
-  net: ipv4: Publish fib_nlmsg_size()
-  net: ipv4: Emit notification when fib hardware flags are changed
-  net: Pass 'net' struct as first argument to fib6_info_hw_flags_set()
-  net: Do not call fib6_info_hw_flags_set() when IPv6 is disabled
-  net: ipv6: Emit notification when fib hardware flags are changed
-  selftests: Extend fib tests to run with and without flags
-    notifications
-  selftests: netdevsim: Add fib_notifications test
+Signed-off-by: Amit Cohen <amcohen@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+---
+ drivers/net/netdevsim/fib.c | 55 ++++++++++++++++++-------------------
+ 1 file changed, 27 insertions(+), 28 deletions(-)
 
- Documentation/networking/ip-sysctl.rst        |  40 ++
- .../ethernet/mellanox/mlxsw/spectrum_router.c |  23 +-
- drivers/net/netdevsim/fib.c                   | 534 ++++++++++++------
- include/net/ip6_fib.h                         |   9 +-
- include/net/netns/ipv4.h                      |   2 +
- include/net/netns/ipv6.h                      |   1 +
- net/ipv4/af_inet.c                            |   2 +
- net/ipv4/fib_lookup.h                         |   3 +-
- net/ipv4/fib_semantics.c                      |   4 +-
- net/ipv4/fib_trie.c                           |  27 +
- net/ipv4/sysctl_net_ipv4.c                    |   9 +
- net/ipv6/af_inet6.c                           |   1 +
- net/ipv6/route.c                              |  44 ++
- net/ipv6/sysctl_net_ipv6.c                    |   9 +
- .../selftests/drivers/net/mlxsw/fib.sh        |  14 +
- .../selftests/drivers/net/netdevsim/fib.sh    |  14 +
- .../net/netdevsim/fib_notifications.sh        | 300 ++++++++++
- 17 files changed, 854 insertions(+), 182 deletions(-)
- create mode 100755 tools/testing/selftests/drivers/net/netdevsim/fib_notifications.sh
-
+diff --git a/drivers/net/netdevsim/fib.c b/drivers/net/netdevsim/fib.c
+index f140bbca98c5..7be603e06769 100644
+--- a/drivers/net/netdevsim/fib.c
++++ b/drivers/net/netdevsim/fib.c
+@@ -31,7 +31,7 @@
+ 
+ struct nsim_fib_entry {
+ 	u64 max;
+-	u64 num;
++	atomic64_t num;
+ };
+ 
+ struct nsim_per_fib_data {
+@@ -46,7 +46,7 @@ struct nsim_fib_data {
+ 	struct nsim_fib_entry nexthops;
+ 	struct rhashtable fib_rt_ht;
+ 	struct list_head fib_rt_list;
+-	spinlock_t fib_lock;	/* Protects hashtable, list and accounting */
++	spinlock_t fib_lock;	/* Protects hashtable and list */
+ 	struct notifier_block nexthop_nb;
+ 	struct rhashtable nexthop_ht;
+ 	struct devlink *devlink;
+@@ -128,7 +128,7 @@ u64 nsim_fib_get_val(struct nsim_fib_data *fib_data,
+ 		return 0;
+ 	}
+ 
+-	return max ? entry->max : entry->num;
++	return max ? entry->max : atomic64_read(&entry->num);
+ }
+ 
+ static void nsim_fib_set_max(struct nsim_fib_data *fib_data,
+@@ -165,14 +165,12 @@ static int nsim_fib_rule_account(struct nsim_fib_entry *entry, bool add,
+ 	int err = 0;
+ 
+ 	if (add) {
+-		if (entry->num < entry->max) {
+-			entry->num++;
+-		} else {
++		if (!atomic64_add_unless(&entry->num, 1, entry->max)) {
+ 			err = -ENOSPC;
+ 			NL_SET_ERR_MSG_MOD(extack, "Exceeded number of supported fib rule entries");
+ 		}
+ 	} else {
+-		entry->num--;
++		atomic64_dec_if_positive(&entry->num);
+ 	}
+ 
+ 	return err;
+@@ -202,14 +200,12 @@ static int nsim_fib_account(struct nsim_fib_entry *entry, bool add,
+ 	int err = 0;
+ 
+ 	if (add) {
+-		if (entry->num < entry->max) {
+-			entry->num++;
+-		} else {
++		if (!atomic64_add_unless(&entry->num, 1, entry->max)) {
+ 			err = -ENOSPC;
+ 			NL_SET_ERR_MSG_MOD(extack, "Exceeded number of supported fib entries");
+ 		}
+ 	} else {
+-		entry->num--;
++		atomic64_dec_if_positive(&entry->num);
+ 	}
+ 
+ 	return err;
+@@ -769,25 +765,22 @@ static int nsim_fib_event_nb(struct notifier_block *nb, unsigned long event,
+ 	struct fib_notifier_info *info = ptr;
+ 	int err = 0;
+ 
+-	/* IPv6 routes can be added via RAs from softIRQ. */
+-	spin_lock_bh(&data->fib_lock);
+-
+ 	switch (event) {
+ 	case FIB_EVENT_RULE_ADD:
+ 	case FIB_EVENT_RULE_DEL:
+ 		err = nsim_fib_rule_event(data, info,
+ 					  event == FIB_EVENT_RULE_ADD);
+ 		break;
+-
+ 	case FIB_EVENT_ENTRY_REPLACE:
+ 	case FIB_EVENT_ENTRY_APPEND:
+ 	case FIB_EVENT_ENTRY_DEL:
++		/* IPv6 routes can be added via RAs from softIRQ. */
++		spin_lock_bh(&data->fib_lock);
+ 		err = nsim_fib_event(data, info, event);
++		spin_unlock_bh(&data->fib_lock);
+ 		break;
+ 	}
+ 
+-	spin_unlock_bh(&data->fib_lock);
+-
+ 	return notifier_from_errno(err);
+ }
+ 
+@@ -847,8 +840,8 @@ static void nsim_fib_dump_inconsistent(struct notifier_block *nb)
+ 		nsim_fib_rt_free(fib_rt, data);
+ 	}
+ 
+-	data->ipv4.rules.num = 0ULL;
+-	data->ipv6.rules.num = 0ULL;
++	atomic64_set(&data->ipv4.rules.num, 0ULL);
++	atomic64_set(&data->ipv6.rules.num, 0ULL);
+ }
+ 
+ static struct nsim_nexthop *nsim_nexthop_create(struct nsim_fib_data *data,
+@@ -894,22 +887,28 @@ static void nsim_nexthop_destroy(struct nsim_nexthop *nexthop)
+ static int nsim_nexthop_account(struct nsim_fib_data *data, u64 occ,
+ 				bool add, struct netlink_ext_ack *extack)
+ {
+-	int err = 0;
++	int i, err = 0;
+ 
+ 	if (add) {
+-		if (data->nexthops.num + occ <= data->nexthops.max) {
+-			data->nexthops.num += occ;
+-		} else {
+-			err = -ENOSPC;
+-			NL_SET_ERR_MSG_MOD(extack, "Exceeded number of supported nexthops");
+-		}
++		for (i = 0; i < occ; i++)
++			if (!atomic64_add_unless(&data->nexthops.num, 1,
++						 data->nexthops.max)) {
++				err = -ENOSPC;
++				NL_SET_ERR_MSG_MOD(extack, "Exceeded number of supported nexthops");
++				goto err_num_decrease;
++			}
+ 	} else {
+-		if (WARN_ON(occ > data->nexthops.num))
++		if (WARN_ON(occ > atomic64_read(&data->nexthops.num)))
+ 			return -EINVAL;
+-		data->nexthops.num -= occ;
++		atomic64_sub(occ, &data->nexthops.num);
+ 	}
+ 
+ 	return err;
++
++err_num_decrease:
++	atomic64_sub(i, &data->nexthops.num);
++	return err;
++
+ }
+ 
+ static int nsim_nexthop_add(struct nsim_fib_data *data,
 -- 
 2.29.2
 
