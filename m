@@ -2,121 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90A7630B210
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 22:27:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DA6F30B211
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 22:27:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232284AbhBAV0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 16:26:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33714 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229680AbhBAV0M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 16:26:12 -0500
-Received: from mail-oo1-xc33.google.com (mail-oo1-xc33.google.com [IPv6:2607:f8b0:4864:20::c33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE5E9C061573
-        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 13:25:31 -0800 (PST)
-Received: by mail-oo1-xc33.google.com with SMTP id x19so2424565ooj.10
-        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 13:25:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=UkzplcoaLhtHyb2dvY1rgTTegbOFHFwEFuM2jiWnrw0=;
-        b=CBLbZEiBALVJYdNkkGU5m7be7y3ikUymoEQCMdrBHW6iwBCs/MX0tt9xPRuaWjc+5x
-         nBV/Q/a5uvGAtSjpvZUbXklnZgzn/JnkRZxH2dSCwSqTIOhG34ZyrYu9mO31JI6z9b8j
-         uQbrzp905mU70bP4awugu+7IYhO1ZicRXnaqsurAv8llBHoJ9rpsZXiSSEaVgm9RMAwB
-         kcLozXO4sHxRmz9XERVNGLRhSBRb3uBynofhxOxhR28HRd47Fb4kuaOWe4gRPw4MzIHN
-         vFBgfC//Vim086/P0Nv9mDJ6GNRm9tPhkyObKL6vGErKnmoTlQkEPNbGYL9lHHaMI9Z8
-         a6tw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=UkzplcoaLhtHyb2dvY1rgTTegbOFHFwEFuM2jiWnrw0=;
-        b=UqCcuEILkxEUVr3dIk/BDycE1o7x5FiAWIl0gS+tY5oME91XmZ3bP+vZvh0H/KZ211
-         eDcv6yBihgJqokq0dXi9QBLcZtTigiIkl5NcYKtlW2jBqUu0N2+VXJ6+Vr09pyVUUJPQ
-         2d4HyFX/GaHFoqISoJjtvp7Bfgl6ZNKlRntI4xQ6hRtUdi5/n38QVlMP9+DFbD51DHtS
-         t+vuK0cJsHp8uxshTd6Mu3dKDEyvm0JIuLEngvoeeD7CBeovJe/oyciPKC2/wHHA7sha
-         pNY0FqSN+OuAkzyc1n84iMHnvpsBt7ilMz5+G/MGzujMX3zIbXR/ekgECCRyAKK0nebE
-         7Ztw==
-X-Gm-Message-State: AOAM5334nkcm8H9N7R+131vWpeS0zA9hQa419/FqDNcxn92IBX/CSUNc
-        n9XkgRXCCjbDRWn61zZO4F3i3Ersy2SvIue+xg==
-X-Google-Smtp-Source: ABdhPJxDRcWL6S8UgYOx3hS1MGjqJM3QyCV7d96LCLYWzMCjDzNNKu70c0J/fqCj4T0QRLiybHfKxs4jiyQt6sMDzBg=
-X-Received: by 2002:a4a:450b:: with SMTP id y11mr13152895ooa.36.1612214731256;
- Mon, 01 Feb 2021 13:25:31 -0800 (PST)
+        id S232215AbhBAV0m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 16:26:42 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52642 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229680AbhBAV0k (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Feb 2021 16:26:40 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 46CFF64E31;
+        Mon,  1 Feb 2021 21:25:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612214760;
+        bh=J5TM4R41MpNe4ISkH09rg9a3/MJ/JCeNIH6/Zf2mVgA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RevoFLoIgzXWiMDgS59EBjCTkp7kONnISazwtrVcgTbHVQwx/FuU2jRsdRvHvtuOf
+         VCHwxijhoy0nZ2QV5BNsXVUg7wlGdpjQQDLQ/1D/R93iGah7ipevlXi+vSBIxVgqxf
+         rD3daeDjL/NKp/5XgFTASUG6+wA+5D1ez1bMjDp8XmnrxfASsMbrprD4aZdV/qaXnY
+         ACuKiQWK0MWhxTweepePzdVGvbNp7CiM5yC7Mdz3S+IrJ1s3Yxprs48PC9KV5j8H05
+         HZQ0piTBR7qaD6ayj+Hkpzjao7wjXzwBJXuDukOapp2hvh+jFZ+/HFzOp9HtSy3cW5
+         vxgiVtLV7k3+Q==
+Date:   Mon, 1 Feb 2021 14:25:57 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Huazhong Tan <tanhuazhong@huawei.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        salil.mehta@huawei.com, yisen.zhuang@huawei.com, kuba@kernel.org,
+        huangdaode@huawei.com, linuxarm@openeuler.org,
+        Guangbin Huang <huangguangbin2@huawei.com>
+Subject: Re: [PATCH V2 net-next 2/2] net: hns3: add debugfs support for tm
+ nodes, priority and qset info
+Message-ID: <20210201212557.GA3126741@localhost>
+References: <1611834696-56207-1-git-send-email-tanhuazhong@huawei.com>
+ <1611834696-56207-3-git-send-email-tanhuazhong@huawei.com>
 MIME-Version: 1.0
-References: <20210201140503.130625-1-george.mccollister@gmail.com>
- <20210201140503.130625-5-george.mccollister@gmail.com> <20210201152913.khrvofpnkghrsba2@skbuf>
-In-Reply-To: <20210201152913.khrvofpnkghrsba2@skbuf>
-From:   George McCollister <george.mccollister@gmail.com>
-Date:   Mon, 1 Feb 2021 15:25:19 -0600
-Message-ID: <CAFSKS=PKnhfTVb6Wv+bP-Gs6fNq6EVOXo6Ws9sh-bqaG=8sCxg@mail.gmail.com>
-Subject: Re: [RESEND PATCH net-next 4/4] net: dsa: xrs700x: add HSR offloading support
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1611834696-56207-3-git-send-email-tanhuazhong@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 1, 2021 at 9:29 AM Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> On Mon, Feb 01, 2021 at 08:05:03AM -0600, George McCollister wrote:
-> > Add offloading for HSR/PRP (IEC 62439-3) tag insertion, tag removal
-> > forwarding and duplication supported by the xrs7000 series switches.
-> >
-> > Only HSR v1 and PRP v1 are supported by the xrs7000 series switches (HS=
-R
-> > v0 is not).
-> >
-> > Signed-off-by: George McCollister <george.mccollister@gmail.com>
-> > ---
->
-> Does this switch discard duplicates or does it not? If it does, what
-> algorithm does it use? Does it not need some sort of runtime
-> communication with the hsr master, like for the nodes table?
-> How many streams can it keep track of? What happens when the ring is
-> larger than the switch can keep track of in its internal Link Redundancy
-> Entity?
+On Thu, Jan 28, 2021 at 07:51:36PM +0800, Huazhong Tan wrote:
+> From: Guangbin Huang <huangguangbin2@huawei.com>
+> 
+> In order to query tm info of nodes, priority and qset
+> for debugging, adds three debugfs files tm_nodes,
+> tm_priority and tm_qset in newly created tm directory.
+> 
+> Unlike previous debugfs commands, these three files
+> just support read ops, so they only support to use cat
+> command to dump their info.
+> 
+> The new tm file style is acccording to suggestion from
+> Jakub Kicinski's opinion as link https://lkml.org/lkml/2020/9/29/2101.
+> 
+> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+> ---
+>  drivers/net/ethernet/hisilicon/hns3/hnae3.h        |   8 ++
+>  drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c |  55 +++++++-
+>  .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c | 153 +++++++++++++++++++++
+>  .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    |   1 +
+>  .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |   2 +
+>  5 files changed, 218 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+> index a7daf6d..fe09cf6 100644
+> --- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+> +++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+> @@ -465,6 +465,8 @@ struct hnae3_ae_dev {
+>   *   Delete clsflower rule
+>   * cls_flower_active
+>   *   Check if any cls flower rule exist
+> + * dbg_read_cmd
+> + *   Execute debugfs read command.
+>   */
+>  struct hnae3_ae_ops {
+>  	int (*init_ae_dev)(struct hnae3_ae_dev *ae_dev);
+> @@ -620,6 +622,8 @@ struct hnae3_ae_ops {
+>  	int (*add_arfs_entry)(struct hnae3_handle *handle, u16 queue_id,
+>  			      u16 flow_id, struct flow_keys *fkeys);
+>  	int (*dbg_run_cmd)(struct hnae3_handle *handle, const char *cmd_buf);
+> +	int (*dbg_read_cmd)(struct hnae3_handle *handle, const char *cmd_buf,
+> +			    char *buf, int len);
+>  	pci_ers_result_t (*handle_hw_ras_error)(struct hnae3_ae_dev *ae_dev);
+>  	bool (*get_hw_reset_stat)(struct hnae3_handle *handle);
+>  	bool (*ae_dev_resetting)(struct hnae3_handle *handle);
+> @@ -777,6 +781,10 @@ struct hnae3_handle {
+>  #define hnae3_get_bit(origin, shift) \
+>  	hnae3_get_field((origin), (0x1 << (shift)), (shift))
+>  
+> +#define HNAE3_DBG_TM_NODES		"tm_nodes"
+> +#define HNAE3_DBG_TM_PRI		"tm_priority"
+> +#define HNAE3_DBG_TM_QSET		"tm_qset"
+> +
+>  int hnae3_register_ae_dev(struct hnae3_ae_dev *ae_dev);
+>  void hnae3_unregister_ae_dev(struct hnae3_ae_dev *ae_dev);
+>  
+> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
+> index 9d4e9c0..6978304 100644
+> --- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
+> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
+> @@ -7,7 +7,7 @@
+>  #include "hnae3.h"
+>  #include "hns3_enet.h"
+>  
+> -#define HNS3_DBG_READ_LEN 256
+> +#define HNS3_DBG_READ_LEN 65536
+>  #define HNS3_DBG_WRITE_LEN 1024
+>  
+>  static struct dentry *hns3_dbgfs_root;
+> @@ -484,6 +484,42 @@ static ssize_t hns3_dbg_cmd_write(struct file *filp, const char __user *buffer,
+>  	return count;
+>  }
+>  
+> +static ssize_t hns3_dbg_read(struct file *filp, char __user *buffer,
+> +			     size_t count, loff_t *ppos)
+> +{
+> +	struct hnae3_handle *handle = filp->private_data;
+> +	const struct hnae3_ae_ops *ops = handle->ae_algo->ops;
+> +	struct hns3_nic_priv *priv = handle->priv;
+> +	char *cmd_buf, *read_buf;
+> +	ssize_t size = 0;
+> +	int ret = 0;
+> +
+> +	if (!filp->f_path.dentry->d_iname)
+> +		return -EINVAL;
 
-It does discard duplicates.
+Clang warns this check is pointless:
 
-The datasheet says:
-"For HSR frames received from a HSR port, it is first checked if the
-source MAC address exists in the MAC address table and if the source
-node is located in non-HSR/PRP port. The duplicate detection is then
-done by first looking at the stored HSR sequence numbers for the other
-HSR redundant port: if one matches with the incoming frame=E2=80=99s HSR Ta=
-g=E2=80=99s
-sequence number, we have a duplicate. Additionally, it is checked
-whether a frame with this same sequence number and source MAC address,
-that in from this same port has already been forwarded, in which case
-the frame is circulating in the ring/network and has to be deleted. If
-the frame is neither duplicate nor circulating, it is forwarded
-towards its destination(s)."
+drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c:497:28: warning:
+address of array 'filp->f_path.dentry->d_iname' will always evaluate to
+'true' [-Wpointer-bool-conversion]
+        if (!filp->f_path.dentry->d_iname)
+            ~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+1 warning generated.
 
-The datasheet is publicly available here:
-https://www.flexibilis.com/downloads/xrs/SpeedChip_XRS7000_3000_User_Manual=
-.pdf
+Was it intended to be something else or can it just be removed?
 
-The IEC 62439-3:2016 spec makes it sound like it's the responsibility
-of the network designer to make sure it's not possible :
-"The maximum time t skewMax between two copies is a network property,
-estimated by the
-network designer based on the number of bridges and the traffic for a
-particular application, e.g. 12 ms."
+> +	read_buf = kzalloc(HNS3_DBG_READ_LEN, GFP_KERNEL);
+> +	if (!read_buf)
+> +		return -ENOMEM;
+> +
+> +	cmd_buf = filp->f_path.dentry->d_iname;
+> +
+> +	if (ops->dbg_read_cmd)
+> +		ret = ops->dbg_read_cmd(handle, cmd_buf, read_buf,
+> +					HNS3_DBG_READ_LEN);
+> +
+> +	if (ret) {
+> +		dev_info(priv->dev, "unknown command\n");
+> +		goto out;
+> +	}
+> +
+> +	size = simple_read_from_buffer(buffer, count, ppos, read_buf,
+> +				       strlen(read_buf));
+> +
+> +out:
+> +	kfree(read_buf);
+> +	return size;
+> +}
 
-I don't see how large the table is in the switch. It shows a per model
-"HSR proxy node table size" in the datasheet but I think that is just
-the table used for the RedBox use case. It also says "Recommended HSR
-network size" is up to 512 hops.
-
-The switch does let you change ProxyNodeTableForgetTime (RedBox use
-case only I think) and EntryForgetTime in the ADDRESS_AGING register.
-The Linux software HSR implementation currently has all of this sort
-of thing hardcoded and doesn't implement EntryForgetTime according to
-the spec. In the future I can see adding support for this in software
-HSR and then later in hardware as well.
+Cheers,
+Nathan
