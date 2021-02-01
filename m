@@ -2,83 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA92D30A8D1
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 14:35:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1CF230A8F6
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 14:42:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231909AbhBANe5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 08:34:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45134 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231575AbhBANev (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 08:34:51 -0500
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FAB9C06174A;
-        Mon,  1 Feb 2021 05:34:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=eu7VX8JvvszySJwHZVTokupuwHECVWP055L+vUMCliY=; b=kqNV/MnPMGMuePTDqne9Tb7qUx
-        22kFtr3q5TR4oQmDl0ZZCik4Fj0OTwXfR7Qspzv8IOCAruTq8HYub/ibswiukXiTXYCBeDS6Bfqf0
-        LfUvM3DtejdPryUgo+MSS1kt57QBIuXVFjyWM5D/zGTSzGRwfUgnbqsIpOAbTV0YRzqyow2tG1gQr
-        C+AUDpwFDFDkT4WXcAruB3h76YZmIjS1uu2pLracRfrR55pvzTo4gFOpJLbxTMljKXkjW5iB6RgOJ
-        naL8Mtm2Eg7pEMFnuqeZfbc3tCSJPcG6V4Npt3FNWXsSPYYYZyBUxauMeP9F+Uj4teK28TaYq8Nit
-        SvfuAAig==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1l6ZKv-00017P-Mk; Mon, 01 Feb 2021 13:33:49 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 15B943011FE;
-        Mon,  1 Feb 2021 14:33:46 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id BA97E2B802295; Mon,  1 Feb 2021 14:33:46 +0100 (CET)
-Date:   Mon, 1 Feb 2021 14:33:46 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, andrii@kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@davemloft.net>, kpsingh@kernel.org,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: extended bpf_send_signal_thread with argument
-Message-ID: <YBgDOnhrYjByjdIb@hirez.programming.kicks-ass.net>
-References: <CACT4Y+a7UBQpAY4vwT8Od0JhwbwcDrbJXZ_ULpPfJZ42Ew-yCQ@mail.gmail.com>
- <YBfIUwtK+QqVlfRt@hirez.programming.kicks-ass.net>
- <CACT4Y+Yq69nvj2KZUQrYqtyu+Low+jCCcH++U_vuiHkhezQHGw@mail.gmail.com>
+        id S231575AbhBANl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 08:41:56 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:41384 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231259AbhBANlz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Feb 2021 08:41:55 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1l6ZRz-003dWk-9a; Mon, 01 Feb 2021 14:41:07 +0100
+Date:   Mon, 1 Feb 2021 14:41:07 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     David Ahern <dsahern@gmail.com>,
+        Vadim Pasternak <vadimp@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "jacob.e.keller@intel.com" <jacob.e.keller@intel.com>,
+        Roopa Prabhu <roopa@nvidia.com>, mlxsw <mlxsw@nvidia.com>
+Subject: Re: [patch net-next RFC 00/10] introduce line card support for
+ modular switch
+Message-ID: <YBgE84Qguek7r27t@lunn.ch>
+References: <YBF1SmecdzLOgSIl@lunn.ch>
+ <20210128081434.GV3565223@nanopsycho.orion>
+ <YBLHaagSmqqUVap+@lunn.ch>
+ <20210129072015.GA4652@nanopsycho.orion>
+ <YBQujIdnFtEhWqTF@lunn.ch>
+ <DM6PR12MB389878422F910221DB296DC2AFB99@DM6PR12MB3898.namprd12.prod.outlook.com>
+ <YBRGj5Shy+qpUUgS@lunn.ch>
+ <20210130141952.GB4652@nanopsycho.orion>
+ <251d1e12-1d61-0922-31f8-a8313f18f194@gmail.com>
+ <20210201081641.GC4652@nanopsycho.orion>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CACT4Y+Yq69nvj2KZUQrYqtyu+Low+jCCcH++U_vuiHkhezQHGw@mail.gmail.com>
+In-Reply-To: <20210201081641.GC4652@nanopsycho.orion>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 01, 2021 at 10:42:47AM +0100, Dmitry Vyukov wrote:
-> On Mon, Feb 1, 2021 at 10:22 AM Peter Zijlstra <peterz@infradead.org> wrote:
+On Mon, Feb 01, 2021 at 09:16:41AM +0100, Jiri Pirko wrote:
+> Sun, Jan 31, 2021 at 06:09:24PM CET, dsahern@gmail.com wrote:
+> >On 1/30/21 7:19 AM, Jiri Pirko wrote:
+> >> Fri, Jan 29, 2021 at 06:31:59PM CET, andrew@lunn.ch wrote:
+> >>>> Platform line card driver is aware of line card I2C topology, its
+> >>>> responsibility is to detect line card basic hardware type, create I2C
+> >>>> topology (mux), connect all the necessary I2C devices, like hotswap
+> >>>> devices, voltage and power regulators devices, iio/a2d devices and line
+> >>>> card EEPROMs, creates LED instances for LED located on a line card, exposes
+> >>>> line card related attributes, like CPLD and FPGA versions, reset causes,
+> >>>> required powered through line card hwmon interface.
+> >>>
+> >>> So this driver, and the switch driver need to talk to each other, so
+> >>> the switch driver actually knows what, if anything, is in the slot.
+> >> 
+> >> Not possible in case the BMC is a different host, which is common
+> >> scenario.
+> >> 
 > >
-> > On Sun, Jan 31, 2021 at 12:14:02PM +0100, Dmitry Vyukov wrote:
-> > > Hi,
-> > >
-> > > I would like to send a signal from a bpf program invoked from a
-> > > perf_event. There is:
+> >User provisions a 4 port card, but a 2 port card is inserted. How is
+> >this detected and the user told the wrong card is inserted?
+> 
+> The card won't get activated.
+> The user won't see the type of inserted linecard. Again, it is not
+> possible for ASIC to access the linecard eeprom. See Vadim's reply.
+> 
+> 
 > >
-> > You can't. Sending signals requires sighand lock, and you're not allowed
-> > to take locks from perf_event context.
+> >If it is not detected that's a serious problem, no?
+> 
+> That is how it is, unfortunatelly.
 > 
 > 
-> Then we just found a vulnerability because there is
-> bpf_send_signal_thread which can be attached to perf and it passes the
-> verifier :)
-> https://elixir.bootlin.com/linux/v5.11-rc5/source/kernel/trace/bpf_trace.c#L1145
+> >
+> >If it is detected why can't the same mechanism be used for auto
+> >provisioning?
 > 
-> It can defer sending the signal to the exit of irq context:
-> https://elixir.bootlin.com/linux/v5.11-rc5/source/kernel/trace/bpf_trace.c#L1108
-> Perhaps this is what makes it work?
+> Again, not possible to detect.
 
-Yes.
+If the platform line card driver is running in the host, you can
+detect it. From your wording, it sounds like some systems do have this
+driver in the host. So please add the needed code.
+
+When the platform line card driver is on the BMC, you need a proxy in
+between. Isn't this what IPMI and Redfish is all about? The proxy
+driver can offer the same interface as the platform line card driver.
+
+    Andrew
