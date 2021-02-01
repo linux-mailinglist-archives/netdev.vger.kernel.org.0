@@ -2,104 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7215430A177
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 06:35:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57D2D30A1BB
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 06:59:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229963AbhBAFfb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 00:35:31 -0500
-Received: from mail-il1-f199.google.com ([209.85.166.199]:34293 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229966AbhBAF1D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 00:27:03 -0500
-Received: by mail-il1-f199.google.com with SMTP id c16so12745040ile.1
-        for <netdev@vger.kernel.org>; Sun, 31 Jan 2021 21:26:48 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=mOuteIF8UAPooau0D/cZWl4oFDJw4SLqefC73M8pDiU=;
-        b=nqtGHY1bpP2qAyfmMuFCQPtmebvaxUKd4pK5N54CJmpmNhfIkK9JOTKfxlL/E/aW/F
-         3fcHf7yD95IBGebs2cOsenQRQwrfB3RhbqAhi32Wkq8NmuXL9gnqG38aJl1Ikqr/I7kx
-         1GAC/1DM6TFB/sNIZ8MENWCgMMObGY+Q+HnJx062Rs5fpLzDQcVgaYYaG2AJDweMbUYJ
-         Cfm6742vE5drev4ohty5S3Zg5EacU1mXDcBqqX/4YcWGUfNKJCQ5cLvxOX8aXYamj4uL
-         fc4oZ+yFJciAA8PCAZP0ZgWdErrv2eJCDnD2jthgBbd54cnRC0BubLoiEMt0qhWUjkVM
-         MImw==
-X-Gm-Message-State: AOAM531TIwhIFazGADyneBDkIGeS7Z7wNlwBvq//CbjgG7t749XHMJHt
-        xkMbOYAxXgWW2KGzp81HQHW2KkIDumfT5Am/szUJw/TEWUz5
-X-Google-Smtp-Source: ABdhPJwk6jyJ1h9tBbtnwk+FTCU6d5MxIKAPn2mwnsIFBSnobEXOxL0CfEPiBRKPR7+Ql7b/WSh0ZSF81ahIGyPXN+HSSjs5FhII
+        id S231700AbhBAF55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 00:57:57 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:14724 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231472AbhBAFyO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 00:54:14 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B601797350000>; Sun, 31 Jan 2021 21:52:53 -0800
+Received: from mtl-vdi-166.wap.labs.mlnx (172.20.145.6) by
+ HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3; Mon, 1 Feb 2021 05:52:50 +0000
+Date:   Mon, 1 Feb 2021 07:52:47 +0200
+From:   Eli Cohen <elic@nvidia.com>
+To:     Jason Wang <jasowang@redhat.com>
+CC:     <mst@redhat.com>, <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lulu@redhat.com>
+Subject: Re: [PATCH 2/2] vdpa/mlx5: Restore the hardware used index after
+ change map
+Message-ID: <20210201055247.GA184807@mtl-vdi-166.wap.labs.mlnx>
+References: <20210128134130.3051-1-elic@nvidia.com>
+ <20210128134130.3051-3-elic@nvidia.com>
+ <54239b51-918c-3475-dc88-4da1a4548da8@redhat.com>
+ <20210131185536.GA164217@mtl-vdi-166.wap.labs.mlnx>
+ <0c99f35c-7644-7201-cd11-7d486389a182@redhat.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1564:: with SMTP id k4mr11437262ilu.282.1612157183044;
- Sun, 31 Jan 2021 21:26:23 -0800 (PST)
-Date:   Sun, 31 Jan 2021 21:26:23 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000037b29b05ba3f9859@google.com>
-Subject: WARNING in sta_info_insert_check
-From:   syzbot <syzbot+8dcc087eb24227ded47e@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <0c99f35c-7644-7201-cd11-7d486389a182@redhat.com>
+User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1612158773; bh=ijV1+J/HjyKekY+4y2l/rGz/ZdAGBrtBHYp4Z3GYf1E=;
+        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+         Content-Type:Content-Disposition:Content-Transfer-Encoding:
+         In-Reply-To:User-Agent:X-Originating-IP:X-ClientProxiedBy;
+        b=rIC8iABWLhFhNHONLDYLu1WQeDPjXN6bNk5j9b+zcwcheLN96pYtt3TqG/SBJqyF5
+         RcfyrUFdcpNyQgaEb0UBy+rr8Hgc8jVObcH1q0Io+qql+Mixgv3iOzGX9X+NI/oFzT
+         wKD+sS/GY/eAsraYYW2DY0S4jXq8pKJS+95NxEDLvL/h9Dg5CUDL6g66JAwq8qqfC8
+         3kB6yz/Cu2s7FazQ7hoPqoAxlaH3WB/AbHRWT3w4Gx8Yw5HgdnWqQTow86Z9+CIvMw
+         a/SdNijDgGEQS9eA1kWWJuVUqJcJgQgcb1qumphFsSlWn0m7ux4F0ltSpg/xJYCtj/
+         CizfCrVJMWmWA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Mon, Feb 01, 2021 at 11:36:23AM +0800, Jason Wang wrote:
+>=20
+> On 2021/2/1 =E4=B8=8A=E5=8D=882:55, Eli Cohen wrote:
+> > On Fri, Jan 29, 2021 at 11:49:45AM +0800, Jason Wang wrote:
+> > > On 2021/1/28 =E4=B8=8B=E5=8D=889:41, Eli Cohen wrote:
+> > > > When a change of memory map occurs, the hardware resources are dest=
+royed
+> > > > and then re-created again with the new memory map. In such case, we=
+ need
+> > > > to restore the hardware available and used indices. The driver fail=
+ed to
+> > > > restore the used index which is added here.
+> > > >=20
+> > > > Fixes 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 =
+devices")
+> > > > Signed-off-by: Eli Cohen <elic@nvidia.com>
+> > >=20
+> > > A question. Does this mean after a vq is suspended, the hw used index=
+ is not
+> > > equal to vq used index?
+> > Surely there is just one "Used index" for a VQ. What I was trying to sa=
+y
+> > is that after the VQ is suspended, I read the used index by querying th=
+e
+> > hardware. The read result is the used index that the hardware wrote to
+> > memory.
+>=20
+>=20
+> Just to make sure I understand here. So it looks to me we had two index. =
+The
+> first is the used index which is stored in the memory/virtqueue, the seco=
+nd
+> is the one that is stored by the device.
+>=20
 
-syzbot found the following issue on:
+It is the structures defined in the virtio spec in 2.6.6 for the
+available ring and 2.6.8 for the used ring. As you know these the
+available ring is written to by the driver and read by the device. The
+opposite happens for the used index.
+The reason I need to restore the last known indices is for the new
+hardware objects to sync on the last state and take over from there.
 
-HEAD commit:    bec4c296 Merge tag 'ecryptfs-5.11-rc6-setxattr-fix' of git..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=11991778d00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=f75d66d6d359ef2f
-dashboard link: https://syzkaller.appspot.com/bug?extid=8dcc087eb24227ded47e
-userspace arch: arm64
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+8dcc087eb24227ded47e@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 118 at net/mac80211/sta_info.c:547 sta_info_insert_check+0x48/0xc4 net/mac80211/sta_info.c:547
-Modules linked in:
-CPU: 0 PID: 118 Comm: kworker/u4:3 Not tainted 5.11.0-rc5-syzkaller-00239-gbec4c2968fce #0
-Hardware name: linux,dummy-virt (DT)
-Workqueue: phy6 ieee80211_iface_work
-pstate: 40400009 (nZcv daif +PAN -UAO -TCO BTYPE=--)
-pc : sta_info_insert_check+0x48/0xc4 net/mac80211/sta_info.c:547
-lr : sta_info_insert_rcu+0x34/0x90 net/mac80211/sta_info.c:725
-sp : ffff800013f3bbf0
-x29: ffff800013f3bbf0 x28: ffff8000132e4538 
-x27: f6ff00002070c998 x26: dead000000000100 
-x25: dead000000000122 x24: f6ff00002070d340 
-x23: f6ff00002070d280 x22: faff000020710800 
-x21: faff000020710df0 x20: f6ff00002070c940 
-x19: f7ff000020784000 x18: 0000000000000000 
-x17: 0000000000000000 x16: 0000000000000000 
-x15: 0000ad1062c19046 x14: f7ff000020796098 
-x13: 000000000000044b x12: f6ff00002070c940 
-x11: 000000000000000c x10: 0000000000000000 
-x9 : faff000020713b90 x8 : 0000000000000fff 
-x7 : 0000000000000000 x6 : f6ff00002070c940 
-x5 : 0000000000000fff x4 : 0000000000000000 
-x3 : 0000000000000100 x2 : 00000000ffeeffff 
-x1 : 00000000ffffffff x0 : 00000000ffeefdf7 
-Call trace:
- sta_info_insert_check+0x48/0xc4 net/mac80211/sta_info.c:547
- sta_info_insert_rcu+0x34/0x90 net/mac80211/sta_info.c:725
- ieee80211_ibss_finish_sta+0x84/0x140 net/mac80211/ibss.c:592
- ieee80211_ibss_work+0xe4/0x560 net/mac80211/ibss.c:1700
- ieee80211_iface_work+0x2b8/0x33c net/mac80211/iface.c:1445
- process_one_work+0x1d8/0x360 kernel/workqueue.c:2275
- worker_thread+0x74/0x440 kernel/workqueue.c:2421
- kthread+0x178/0x180 kernel/kthread.c:292
- ret_from_fork+0x10/0x30 arch/arm64/kernel/entry.S:958
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+>=20
+> >   After the I create the new hardware object, I need to tell it
+> > what is the used index (and the available index) as a way to sync it
+> > with the existing VQ.
+>=20
+>=20
+> For avail index I understand that the hardware index is not synced with t=
+he
+> avail index stored in the memory/virtqueue. The question is used index, i=
+f
+> the hardware one is not synced with the one in the virtqueue. It means af=
+ter
+> vq is suspended,=C2=A0 some requests is not completed by the hardware (e.=
+g the
+> buffer were not put to used ring).
+>=20
+> This may have implications to live migration, it means those unaccomplish=
+ed
+> requests needs to be migrated to the destination and resubmitted to the
+> device. This looks not easy.
+>=20
+> Thanks
+>=20
+>=20
+> >=20
+> > This sync is especially important when a change of map occurs while the
+> > VQ was already used (hence the indices are likely to be non zero). This
+> > can be triggered by hot adding memory after the VQs have been used.
+> >=20
+> > > Thanks
+> > >=20
+> > >=20
+> > > > ---
+> > > >    drivers/vdpa/mlx5/net/mlx5_vnet.c | 7 +++++++
+> > > >    1 file changed, 7 insertions(+)
+> > > >=20
+> > > > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/=
+net/mlx5_vnet.c
+> > > > index 549ded074ff3..3fc8588cecae 100644
+> > > > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > @@ -87,6 +87,7 @@ struct mlx5_vq_restore_info {
+> > > >    	u64 device_addr;
+> > > >    	u64 driver_addr;
+> > > >    	u16 avail_index;
+> > > > +	u16 used_index;
+> > > >    	bool ready;
+> > > >    	struct vdpa_callback cb;
+> > > >    	bool restore;
+> > > > @@ -121,6 +122,7 @@ struct mlx5_vdpa_virtqueue {
+> > > >    	u32 virtq_id;
+> > > >    	struct mlx5_vdpa_net *ndev;
+> > > >    	u16 avail_idx;
+> > > > +	u16 used_idx;
+> > > >    	int fw_state;
+> > > >    	/* keep last in the struct */
+> > > > @@ -804,6 +806,7 @@ static int create_virtqueue(struct mlx5_vdpa_ne=
+t *ndev, struct mlx5_vdpa_virtque
+> > > >    	obj_context =3D MLX5_ADDR_OF(create_virtio_net_q_in, in, obj_co=
+ntext);
+> > > >    	MLX5_SET(virtio_net_q_object, obj_context, hw_available_index, =
+mvq->avail_idx);
+> > > > +	MLX5_SET(virtio_net_q_object, obj_context, hw_used_index, mvq->us=
+ed_idx);
+> > > >    	MLX5_SET(virtio_net_q_object, obj_context, queue_feature_bit_ma=
+sk_12_3,
+> > > >    		 get_features_12_3(ndev->mvdev.actual_features));
+> > > >    	vq_ctx =3D MLX5_ADDR_OF(virtio_net_q_object, obj_context, virti=
+o_q_context);
+> > > > @@ -1022,6 +1025,7 @@ static int connect_qps(struct mlx5_vdpa_net *=
+ndev, struct mlx5_vdpa_virtqueue *m
+> > > >    struct mlx5_virtq_attr {
+> > > >    	u8 state;
+> > > >    	u16 available_index;
+> > > > +	u16 used_index;
+> > > >    };
+> > > >    static int query_virtqueue(struct mlx5_vdpa_net *ndev, struct ml=
+x5_vdpa_virtqueue *mvq,
+> > > > @@ -1052,6 +1056,7 @@ static int query_virtqueue(struct mlx5_vdpa_n=
+et *ndev, struct mlx5_vdpa_virtqueu
+> > > >    	memset(attr, 0, sizeof(*attr));
+> > > >    	attr->state =3D MLX5_GET(virtio_net_q_object, obj_context, stat=
+e);
+> > > >    	attr->available_index =3D MLX5_GET(virtio_net_q_object, obj_con=
+text, hw_available_index);
+> > > > +	attr->used_index =3D MLX5_GET(virtio_net_q_object, obj_context, h=
+w_used_index);
+> > > >    	kfree(out);
+> > > >    	return 0;
+> > > > @@ -1602,6 +1607,7 @@ static int save_channel_info(struct mlx5_vdpa=
+_net *ndev, struct mlx5_vdpa_virtqu
+> > > >    		return err;
+> > > >    	ri->avail_index =3D attr.available_index;
+> > > > +	ri->used_index =3D attr.used_index;
+> > > >    	ri->ready =3D mvq->ready;
+> > > >    	ri->num_ent =3D mvq->num_ent;
+> > > >    	ri->desc_addr =3D mvq->desc_addr;
+> > > > @@ -1646,6 +1652,7 @@ static void restore_channels_info(struct mlx5=
+_vdpa_net *ndev)
+> > > >    			continue;
+> > > >    		mvq->avail_idx =3D ri->avail_index;
+> > > > +		mvq->used_idx =3D ri->used_index;
+> > > >    		mvq->ready =3D ri->ready;
+> > > >    		mvq->num_ent =3D ri->num_ent;
+> > > >    		mvq->desc_addr =3D ri->desc_addr;
+>=20
