@@ -2,93 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CDC530A653
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 12:17:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FE0E30A671
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 12:24:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233403AbhBALQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 06:16:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45818 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233338AbhBALQe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Feb 2021 06:16:34 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 95EE964D7F;
-        Mon,  1 Feb 2021 11:15:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1612178154;
-        bh=NqfSKLyeP6vCC7FfsygaVBCG73kVJRObo8V8nDcpzdQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=s43J2fRi+fvPdHVUFvu2h8tmKi/g1xWSdlWOpKYUeKtgF8yfQR5El1/3KaPJc7Q4J
-         fcO+9VYTx6Z8adBcU65vPQBjcSlN+Fl4DW3A8TBT/jOH1KVdxQjrPDtScslfPdqYJH
-         YGz2xqXv+z3aO6vL7+eRQp8rPVTsfqWl4TnMIi/Y=
-Date:   Mon, 1 Feb 2021 12:15:51 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jhugo@codeaurora.org, bbhatt@codeaurora.org,
-        loic.poulain@linaro.org, netdev@vger.kernel.org
-Subject: Re: [RESEND PATCH v18 0/3] userspace MHI client interface driver
-Message-ID: <YBfi573Bdfxy0GBt@kroah.com>
-References: <1609958656-15064-1-git-send-email-hemantk@codeaurora.org>
- <20210113152625.GB30246@work>
- <YBGDng3VhE1Yw6zt@kroah.com>
- <20210201105549.GB108653@thinkpad>
+        id S233591AbhBALYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 06:24:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45360 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233542AbhBALYc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 06:24:32 -0500
+Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25B92C061573;
+        Mon,  1 Feb 2021 03:23:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=BjxzCjyvE86hv4IVx4QuIbHwWzdS3+eGyttOKbxAB1s=; b=1UZSHSE/zTgS5jW4wzsPVCDL60
+        8VH/s7SxOrxeCDJunG8y0vlAez0DHYRzD2dS1/WLjLRfOxUBT+6DYQ0dRSsPEdvQX5g4BMTuHbyPG
+        Ztj21/eGMwfD91RRyEEfwiZBhgDfD+V4jcwLLcKAZTKRFetfuV/qE0xrAqNAyhmZPou9ShTe/8dbh
+        2T1go5K2FcC/Jyf+xWf1cMriDQQLhsBg0vBqLc37igYiglgkfe+o3ZH7NFAknT1O9QErYdUgWFYMz
+        f1gT+GxD/VoY6ijmbVkYWzbQuYmsfpqk9CBYFT0BZWDPupcMYYWw0bvqUoVwVrlGhf09t+KdBqj5i
+        BCK5OPag==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1l6XIz-0000G3-Ni; Mon, 01 Feb 2021 11:23:41 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 5AF083011FE;
+        Mon,  1 Feb 2021 12:23:39 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 4884221A2F1EA; Mon,  1 Feb 2021 12:23:39 +0100 (CET)
+Date:   Mon, 1 Feb 2021 12:23:39 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, andrii@kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>, kpsingh@kernel.org,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@redhat.com>
+Subject: Re: corrupted pvqspinlock in htab_map_update_elem
+Message-ID: <YBfkuyIfB1+VRxXP@hirez.programming.kicks-ass.net>
+References: <CACT4Y+YJp0t0HA3+wDsAVxgTK4J+Pvht-J4-ENkOtS=C=Fhtzg@mail.gmail.com>
+ <YBfPAvBa8bbSU2nZ@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210201105549.GB108653@thinkpad>
+In-Reply-To: <YBfPAvBa8bbSU2nZ@hirez.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 01, 2021 at 04:25:49PM +0530, Manivannan Sadhasivam wrote:
-> Hi Greg,
+On Mon, Feb 01, 2021 at 10:50:58AM +0100, Peter Zijlstra wrote:
+
+> >  queued_spin_unlock arch/x86/include/asm/qspinlock.h:56 [inline]
+> >  lockdep_unlock+0x10e/0x290 kernel/locking/lockdep.c:124
+> >  debug_locks_off_graph_unlock kernel/locking/lockdep.c:165 [inline]
+> >  print_usage_bug kernel/locking/lockdep.c:3710 [inline]
 > 
-> On Wed, Jan 27, 2021 at 04:15:42PM +0100, Greg KH wrote:
-> > On Wed, Jan 13, 2021 at 08:56:25PM +0530, Manivannan Sadhasivam wrote:
-> > > Hi Greg,
-> > > 
-> > > On Wed, Jan 06, 2021 at 10:44:13AM -0800, Hemant Kumar wrote:
-> > > > This patch series adds support for UCI driver. UCI driver enables userspace
-> > > > clients to communicate to external MHI devices like modem. UCI driver probe
-> > > > creates standard character device file nodes for userspace clients to
-> > > > perform open, read, write, poll and release file operations. These file
-> > > > operations call MHI core layer APIs to perform data transfer using MHI bus
-> > > > to communicate with MHI device. 
-> > > > 
-> > > > This interface allows exposing modem control channel(s) such as QMI, MBIM,
-> > > > or AT commands to userspace which can be used to configure the modem using
-> > > > tools such as libqmi, ModemManager, minicom (for AT), etc over MHI. This is
-> > > > required as there are no kernel APIs to access modem control path for device
-> > > > configuration. Data path transporting the network payload (IP), however, is
-> > > > routed to the Linux network via the mhi-net driver. Currently driver supports
-> > > > QMI channel. libqmi is userspace MHI client which communicates to a QMI
-> > > > service using QMI channel. Please refer to
-> > > > https://www.freedesktop.org/wiki/Software/libqmi/ for additional information
-> > > > on libqmi.
-> > > > 
-> > > > Patch is tested using arm64 and x86 based platform.
-> > > > 
-> > > 
-> > > This series looks good to me and I'd like to merge it into mhi-next. You
-> > > shared your reviews on the previous revisions, so I'd like to get your
-> > > opinion first.
-> > 
-> > If you get the networking people to give you an ack on this, it's fine
-> > with me.
-> > 
-> 
-> As discussed in previous iteration, this series is not belonging to networking
-> subsystem. The functionality provided by this series allows us to configure the
-> modem over MHI bus and the rest of the networking stuff happens over the
-> networking subsystem as usual.
+> Ha, I think you hit a bug in lockdep.
 
-Great, then it should be easy to get their acceptance :)
+Something like so I suppose.
 
-> This holds the same with USB and serial modems which we are having over decades
-> in mainline.
+---
+Subject: locking/lockdep: Avoid unmatched unlock
+From: Peter Zijlstra <peterz@infradead.org>
+Date: Mon Feb 1 11:55:38 CET 2021
 
-I don't see the connection here, sorry.
+Commit f6f48e180404 ("lockdep: Teach lockdep about "USED" <- "IN-NMI"
+inversions") overlooked that print_usage_bug() releases the graph_lock
+and called it without the graph lock held.
 
-thanks,
+Fixes: f6f48e180404 ("lockdep: Teach lockdep about "USED" <- "IN-NMI" inversions")
+Reported-by: Dmitry Vyukov <dvyukov@google.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+---
+ kernel/locking/lockdep.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-greg k-h
+--- a/kernel/locking/lockdep.c
++++ b/kernel/locking/lockdep.c
+@@ -3773,7 +3773,7 @@ static void
+ print_usage_bug(struct task_struct *curr, struct held_lock *this,
+ 		enum lock_usage_bit prev_bit, enum lock_usage_bit new_bit)
+ {
+-	if (!debug_locks_off_graph_unlock() || debug_locks_silent)
++	if (!debug_locks_off() || debug_locks_silent)
+ 		return;
+ 
+ 	pr_warn("\n");
+@@ -3814,6 +3814,7 @@ valid_state(struct task_struct *curr, st
+ 	    enum lock_usage_bit new_bit, enum lock_usage_bit bad_bit)
+ {
+ 	if (unlikely(hlock_class(this)->usage_mask & (1 << bad_bit))) {
++		graph_unlock()
+ 		print_usage_bug(curr, this, bad_bit, new_bit);
+ 		return 0;
+ 	}
