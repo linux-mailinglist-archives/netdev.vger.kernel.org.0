@@ -2,166 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D87F30A2F9
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 09:05:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F16B30A308
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 09:09:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232336AbhBAIEH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 03:04:07 -0500
-Received: from mail-io1-f72.google.com ([209.85.166.72]:52936 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229557AbhBAIEB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 03:04:01 -0500
-Received: by mail-io1-f72.google.com with SMTP id x17so11112972iov.19
-        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 00:03:44 -0800 (PST)
+        id S232276AbhBAIJH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 03:09:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59318 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229967AbhBAIJF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 03:09:05 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89002C061573
+        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 00:08:25 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id s5so4895164edw.8
+        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 00:08:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=D48ue510EZyqc3drPgLg8sCHAvLn0JXfiNYm43dUTmA=;
+        b=smGTlZZ651B7iKw7AuyGLRSKAIlsyVWZOXpBGAR4FNmRz5l9UH0mEvEb4SVIc6hT6w
+         27LbL8QeHjy/ACLqMcvAWZnVdbMLt/j8s02JhpGYyxr/UX4LfW6TPC0ZmpPkCkOlOCsy
+         HwEGRp5uEFQA8pSkflf2z//5DqIbtnz32q/1Ym8Z5rJpFSzNrT5oiQinmViBnWHY4OKM
+         jJL4d0BuZddFm9sofeitGB9S2c6+MQmyWWTh56Ln6CgVtdyLo4oKDiPd4bDWFRcC80VW
+         8h9L1LW5xvagPrVjnYstTQGYyrHGn8eimCp2ToMdjith1QffYxordoLik+Fufj7Ysl0a
+         CIzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=Me0FEEtUvCdz7PmiWrSa9iRahpVN0X5XCbv9pa6JIqY=;
-        b=P1pg1JYO2uXZ4O/hIB3JAHhSq8tdjXHIpsLnG8K99wARKvdORQU5XB7+8UNVHcwL66
-         zYfyKT03m/XU5uqSEG7+Fxf8FjH9oEHK0sQ+9T6YCVGQNWqD22D3TBV9v437bzsyVdVZ
-         XKj6Itss4RZbcG6G5hthHloKcBSiU2KdIIVwMxkOUTbE4nVfdLJbdJvRjn1Pg18hfDWf
-         +5neqgJc/81wemMVaMsQlOZ2MJAEeyrlkKdQfsNahPlFrm18WSzXws/nSGE62LTIwuO+
-         c/Zet3nHZXMdalilNSPjNZMGJ/IY0YG2OFpNKgmRgFM1EaistvCLqUKKwgg2cIZWJTmu
-         D2yg==
-X-Gm-Message-State: AOAM533j+hMEuHN+oWxgduUTCYs5MmJNPHshRnXpg2E+BKuoZ3Izs6Ll
-        NWFRGn8CnCdm5K8luwjVH7Ebn0cjB8aGYB9p28nsGssym8sP
-X-Google-Smtp-Source: ABdhPJzgy5L3t7e7+IP9H4Zy+PtTDlgQTaGdx1RYU/xiGUwUXD8d/J//QoQ5rsXSnzqsMN8Rg3NqbtgGmwRPBDG/K8ZDiilCqTmj
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=D48ue510EZyqc3drPgLg8sCHAvLn0JXfiNYm43dUTmA=;
+        b=o6XJ9Tort1gF35X3se6ygBeG5PX32dDGKpNpmYBcvVuhw+aOxYhBt8/+sxTV635sNB
+         pZZTlTjnn1rj3JnK9+6sxNA4Xvug/x1B/NJP+IYKA465iXJxpWqc/rPAJNnF6f+fnYSn
+         C4SlIFbwv2h/wQZ77rdGHJwGETtCxF11v1IYpm/ch3KKqqqrZ71H2/nCQPRF+OTqyKzm
+         dWFdRZUBB7vvRQ1UdSbNz4g10SF+l+enj2QA9xc59rHY3rSQQSHEwBZoyqkioCsgjQS3
+         S1KdcpC1IBHFHXjWM+e/5yleUw2IemfMsdyFH70a7xoBpl8GaPRxELdvYXM+F3i7tBF+
+         aiDQ==
+X-Gm-Message-State: AOAM5328P4IJ9conHP7cxi060PuqyrIHgssTTuh26U9IDMw3Sa8WQtq3
+        R02hsbEoDT/MfTjAKpccIR6a7UKXs+24xkRCmnVxUtsomAQ=
+X-Google-Smtp-Source: ABdhPJyi8hSjDVLKjQSOaeU0CuZ2ICJQv2pXcmitNgIyJFHQcm18afnfN7wZsU8VLPWjtpWidkM1mfEvfFUStJCwTtw=
+X-Received: by 2002:aa7:c895:: with SMTP id p21mr17527205eds.165.1612166903735;
+ Mon, 01 Feb 2021 00:08:23 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a02:634b:: with SMTP id j72mr14300352jac.106.1612166599492;
- Mon, 01 Feb 2021 00:03:19 -0800 (PST)
-Date:   Mon, 01 Feb 2021 00:03:19 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000007b460105ba41c908@google.com>
-Subject: KASAN: use-after-free Read in rxrpc_send_data_packet
-From:   syzbot <syzbot+174de899852504e4a74a@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, dhowells@redhat.com, kuba@kernel.org,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+References: <1611589557-31012-1-git-send-email-loic.poulain@linaro.org> <20210129170129.0a4a682a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210129170129.0a4a682a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Mon, 1 Feb 2021 09:15:32 +0100
+Message-ID: <CAMZdPi_6tBkdQn+wakUmeMC+p8N3HStEja5ZfA3K-+x4DcM68g@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: mhi-net: Add de-aggeration support
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi Jakub, Willem,
 
-syzbot found the following issue on:
+On Sat, 30 Jan 2021 at 02:01, Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Mon, 25 Jan 2021 16:45:57 +0100 Loic Poulain wrote:
+> > When device side MTU is larger than host side MRU, the packets
+> > (typically rmnet packets) are split over multiple MHI transfers.
+> > In that case, fragments must be re-aggregated to recover the packet
+> > before forwarding to upper layer.
+> >
+> > A fragmented packet result in -EOVERFLOW MHI transaction status for
+> > each of its fragments, except the final one. Such transfer was
+> > previoulsy considered as error and fragments were simply dropped.
+> >
+> > This patch implements the aggregation mechanism allowing to recover
+> > the initial packet. It also prints a warning (once) since this behavior
+> > usually comes from a misconfiguration of the device (modem).
+> >
+> > Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
+>
+> > +static struct sk_buff *mhi_net_skb_append(struct mhi_device *mhi_dev,
+> > +                                       struct sk_buff *skb1,
+> > +                                       struct sk_buff *skb2)
+> > +{
+> > +     struct sk_buff *new_skb;
+> > +
+> > +     /* This is the first fragment */
+> > +     if (!skb1)
+> > +             return skb2;
+> > +
+> > +     /* Expand packet */
+> > +     new_skb = skb_copy_expand(skb1, 0, skb2->len, GFP_ATOMIC);
+> > +     dev_kfree_skb_any(skb1);
+> > +     if (!new_skb)
+> > +             return skb2;
+>
+> I don't get it, if you failed to grow the skb you'll return the next
+> fragment to the caller? So the frame just lost all of its data up to
+> where skb2 started? The entire fragment "train" should probably be
+> dropped at this point.
 
-HEAD commit:    78031381 bpf: Drop disabled LSM hooks from the sleepable set
-git tree:       bpf
-console output: https://syzkaller.appspot.com/x/log.txt?x=11274530d00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=be33d8015c9de024
-dashboard link: https://syzkaller.appspot.com/bug?extid=174de899852504e4a74a
-compiler:       gcc (GCC) 10.1.0-syz 20200507
+Right, there is no point in keeping the partial packet in that case.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+>
+> I think you can just hang the skbs off skb_shinfo(p)->frag_list.
+>
+> Willem - is it legal to feed frag_listed skbs into netif_rx()?
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+174de899852504e4a74a@syzkaller.appspotmail.com
+In QMAP case, the packets will be forwarded to rmnet link, which works
+with linear skb (no NETIF_F_SG), does the linearization will be
+properly performed by the net core, in the same way as for xmit path?
 
-==================================================================
-BUG: KASAN: use-after-free in rxrpc_send_data_packet+0x19b4/0x1e70 net/rxrpc/output.c:372
-Read of size 4 at addr ffff888011606e04 by task kworker/0:0/5
-
-CPU: 0 PID: 5 Comm: kworker/0:0 Not tainted 5.11.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: krxrpcd rxrpc_process_call
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x107/0x163 lib/dump_stack.c:120
- print_address_description.constprop.0.cold+0x5b/0x2f8 mm/kasan/report.c:230
- __kasan_report mm/kasan/report.c:396 [inline]
- kasan_report.cold+0x79/0xd5 mm/kasan/report.c:413
- rxrpc_send_data_packet+0x19b4/0x1e70 net/rxrpc/output.c:372
- rxrpc_resend net/rxrpc/call_event.c:266 [inline]
- rxrpc_process_call+0x1634/0x1f60 net/rxrpc/call_event.c:412
- process_one_work+0x98d/0x15f0 kernel/workqueue.c:2275
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2421
- kthread+0x3b1/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-
-Allocated by task 2318:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
- kasan_set_track mm/kasan/common.c:46 [inline]
- set_alloc_info mm/kasan/common.c:401 [inline]
- ____kasan_kmalloc.constprop.0+0x82/0xa0 mm/kasan/common.c:429
- kasan_slab_alloc include/linux/kasan.h:209 [inline]
- slab_post_alloc_hook mm/slab.h:512 [inline]
- slab_alloc_node mm/slub.c:2891 [inline]
- kmem_cache_alloc_node+0x1e0/0x470 mm/slub.c:2927
- __alloc_skb+0x71/0x5a0 net/core/skbuff.c:198
- alloc_skb include/linux/skbuff.h:1099 [inline]
- alloc_skb_with_frags+0x93/0x5d0 net/core/skbuff.c:5894
- sock_alloc_send_pskb+0x793/0x920 net/core/sock.c:2348
- rxrpc_send_data+0xb51/0x2bf0 net/rxrpc/sendmsg.c:358
- rxrpc_do_sendmsg+0xc03/0x1350 net/rxrpc/sendmsg.c:744
- rxrpc_sendmsg+0x420/0x630 net/rxrpc/af_rxrpc.c:560
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2345
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2399
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2432
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Freed by task 2318:
- kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
- kasan_set_track+0x1c/0x30 mm/kasan/common.c:46
- kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:356
- ____kasan_slab_free+0xe1/0x110 mm/kasan/common.c:362
- kasan_slab_free include/linux/kasan.h:192 [inline]
- slab_free_hook mm/slub.c:1547 [inline]
- slab_free_freelist_hook+0x5d/0x150 mm/slub.c:1580
- slab_free mm/slub.c:3142 [inline]
- kmem_cache_free+0x82/0x350 mm/slub.c:3158
- kfree_skbmem+0xef/0x1b0 net/core/skbuff.c:636
- __kfree_skb net/core/skbuff.c:693 [inline]
- kfree_skb net/core/skbuff.c:710 [inline]
- kfree_skb+0x140/0x3f0 net/core/skbuff.c:704
- rxrpc_free_skb+0x11d/0x150 net/rxrpc/skbuff.c:78
- rxrpc_cleanup_ring net/rxrpc/call_object.c:485 [inline]
- rxrpc_release_call+0x5dd/0x860 net/rxrpc/call_object.c:552
- rxrpc_release_calls_on_socket+0x21c/0x300 net/rxrpc/call_object.c:579
- rxrpc_release_sock net/rxrpc/af_rxrpc.c:885 [inline]
- rxrpc_release+0x263/0x5a0 net/rxrpc/af_rxrpc.c:916
- __sock_release+0xcd/0x280 net/socket.c:597
- sock_close+0x18/0x20 net/socket.c:1256
- __fput+0x283/0x920 fs/file_table.c:280
- task_work_run+0xdd/0x190 kernel/task_work.c:140
- get_signal+0x1c7f/0x20f0 kernel/signal.c:2554
- arch_do_signal_or_restart+0x2a8/0x1eb0 arch/x86/kernel/signal.c:811
- handle_signal_work kernel/entry/common.c:147 [inline]
- exit_to_user_mode_loop kernel/entry/common.c:171 [inline]
- exit_to_user_mode_prepare+0x148/0x250 kernel/entry/common.c:201
- __syscall_exit_to_user_mode_work kernel/entry/common.c:291 [inline]
- syscall_exit_to_user_mode+0x19/0x50 kernel/entry/common.c:302
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-The buggy address belongs to the object at ffff888011606dc0
- which belongs to the cache skbuff_head_cache of size 232
-The buggy address is located 68 bytes inside of
- 232-byte region [ffff888011606dc0, ffff888011606ea8)
-The buggy address belongs to the page:
-page:0000000003512b7c refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x11606
-flags: 0xfff00000000200(slab)
-raw: 00fff00000000200 ffffea00008b6e00 0000000b0000000b ffff888010cbbc80
-raw: 0000000000000000 00000000000c000c 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff888011606d00: fb fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc
- ffff888011606d80: fc fc fc fc fc fc fc fc fa fb fb fb fb fb fb fb
->ffff888011606e00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                   ^
- ffff888011606e80: fb fb fb fb fb fc fc fc fc fc fc fc fc fc fc fc
- ffff888011606f00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-==================================================================
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Regards,
+Loic
