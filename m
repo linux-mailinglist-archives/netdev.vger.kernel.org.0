@@ -2,124 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84B1930AF2D
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 19:27:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 728B130AF3F
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 19:29:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232599AbhBASQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 13:16:57 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:47919 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232447AbhBASQP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 13:16:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1612203288;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ya219FEouxc4ey9Bi9QzBAa/NZQvOAmPCVPDKerIZso=;
-        b=iIZtqWz/qJNacYfIb3nU6UIphsbxeQiZTrNTghI4W2s4CsnEUh4KQmZmrl7dX8Ue2Gb6Fl
-        MNAlp9yD3peuWklY0Fa/d2O/KDRGOFc3Wy8qdCSt/jyBomi+qJaxqcOUouvVHOQpzfNxF2
-        NkyHTfFyI6O+x9OKV4gvjKP1lrJSXZo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-587-SpHaUQK0P_mfjJSgm04W6g-1; Mon, 01 Feb 2021 13:14:46 -0500
-X-MC-Unique: SpHaUQK0P_mfjJSgm04W6g-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 26B3259;
-        Mon,  1 Feb 2021 18:14:44 +0000 (UTC)
-Received: from llong.remote.csb (ovpn-118-89.rdu2.redhat.com [10.10.118.89])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7B82860C05;
-        Mon,  1 Feb 2021 18:14:42 +0000 (UTC)
-Subject: Re: corrupted pvqspinlock in htab_map_update_elem
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, andrii@kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>, kpsingh@kernel.org,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@redhat.com>
-References: <CACT4Y+YJp0t0HA3+wDsAVxgTK4J+Pvht-J4-ENkOtS=C=Fhtzg@mail.gmail.com>
- <YBfPAvBa8bbSU2nZ@hirez.programming.kicks-ass.net>
- <YBfkuyIfB1+VRxXP@hirez.programming.kicks-ass.net>
- <5936f4a4-f150-e56e-f07d-1efee06eba16@redhat.com>
- <CACT4Y+ZEPG0keEM5BzeqxnqOETyjPsa+7_cvGk=VDH+ErhyF-Q@mail.gmail.com>
-From:   Waiman Long <longman@redhat.com>
-Organization: Red Hat
-Message-ID: <19ca1c9f-090b-e97f-d9c7-827fa2f9fee5@redhat.com>
-Date:   Mon, 1 Feb 2021 13:14:41 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
-MIME-Version: 1.0
-In-Reply-To: <CACT4Y+ZEPG0keEM5BzeqxnqOETyjPsa+7_cvGk=VDH+ErhyF-Q@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        id S232644AbhBAS3G convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 1 Feb 2021 13:29:06 -0500
+Received: from mga03.intel.com ([134.134.136.65]:21701 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232405AbhBASQE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Feb 2021 13:16:04 -0500
+IronPort-SDR: NSvZ0lHb0Q15AdRYePe8TGp1FPPRIcDi4fHX8dKlA9OGIjIYTAaP8KBA/AbTPvaa85qmXdGBxY
+ vW4MUfLciwjA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9882"; a="180805829"
+X-IronPort-AV: E=Sophos;i="5.79,393,1602572400"; 
+   d="scan'208";a="180805829"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2021 10:15:20 -0800
+IronPort-SDR: XRqBZRBHKGB/1WagHC57l6VQtmWwDCpCO0l6DTeVrX+jOZtx2rKkeyIK4/FbHnikbH9Hll2+Wp
+ 1cLFSZhxMMTQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.79,393,1602572400"; 
+   d="scan'208";a="432461821"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by orsmga001.jf.intel.com with ESMTP; 01 Feb 2021 10:15:20 -0800
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Mon, 1 Feb 2021 10:15:20 -0800
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Mon, 1 Feb 2021 10:15:19 -0800
+Received: from orsmsx610.amr.corp.intel.com ([10.22.229.23]) by
+ ORSMSX610.amr.corp.intel.com ([10.22.229.23]) with mapi id 15.01.2106.002;
+ Mon, 1 Feb 2021 10:15:19 -0800
+From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "Brelinski, TonyX" <tonyx.brelinski@intel.com>
+Subject: RE: [PATCH net-next 03/15] ice: read security revision to
+ ice_nvm_info and ice_orom_info
+Thread-Topic: [PATCH net-next 03/15] ice: read security revision to
+ ice_nvm_info and ice_orom_info
+Thread-Index: AQHW9detDO34SHTlSEeGIOn6G2DRAKpAQQmAgANZA6A=
+Date:   Mon, 1 Feb 2021 18:15:19 +0000
+Message-ID: <339cfa644eec45a7bc7b1b24dfe8b04e@intel.com>
+References: <20210129004332.3004826-1-anthony.l.nguyen@intel.com>
+        <20210129004332.3004826-4-anthony.l.nguyen@intel.com>
+ <20210129224407.0529a802@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210129224407.0529a802@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+x-originating-ip: [10.1.200.100]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/1/21 1:09 PM, Dmitry Vyukov wrote:
-> On Mon, Feb 1, 2021 at 6:54 PM Waiman Long <longman@redhat.com> wrote:
->> On 2/1/21 6:23 AM, Peter Zijlstra wrote:
->>> On Mon, Feb 01, 2021 at 10:50:58AM +0100, Peter Zijlstra wrote:
->>>
->>>>>    queued_spin_unlock arch/x86/include/asm/qspinlock.h:56 [inline]
->>>>>    lockdep_unlock+0x10e/0x290 kernel/locking/lockdep.c:124
->>>>>    debug_locks_off_graph_unlock kernel/locking/lockdep.c:165 [inline]
->>>>>    print_usage_bug kernel/locking/lockdep.c:3710 [inline]
->>>> Ha, I think you hit a bug in lockdep.
->>> Something like so I suppose.
->>>
->>> ---
->>> Subject: locking/lockdep: Avoid unmatched unlock
->>> From: Peter Zijlstra <peterz@infradead.org>
->>> Date: Mon Feb 1 11:55:38 CET 2021
->>>
->>> Commit f6f48e180404 ("lockdep: Teach lockdep about "USED" <- "IN-NMI"
->>> inversions") overlooked that print_usage_bug() releases the graph_lock
->>> and called it without the graph lock held.
->>>
->>> Fixes: f6f48e180404 ("lockdep: Teach lockdep about "USED" <- "IN-NMI" inversions")
->>> Reported-by: Dmitry Vyukov <dvyukov@google.com>
->>> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
->>> ---
->>>    kernel/locking/lockdep.c |    3 ++-
->>>    1 file changed, 2 insertions(+), 1 deletion(-)
->>>
->>> --- a/kernel/locking/lockdep.c
->>> +++ b/kernel/locking/lockdep.c
->>> @@ -3773,7 +3773,7 @@ static void
->>>    print_usage_bug(struct task_struct *curr, struct held_lock *this,
->>>                enum lock_usage_bit prev_bit, enum lock_usage_bit new_bit)
->>>    {
->>> -     if (!debug_locks_off_graph_unlock() || debug_locks_silent)
->>> +     if (!debug_locks_off() || debug_locks_silent)
->>>                return;
->>>
->>>        pr_warn("\n");
->>> @@ -3814,6 +3814,7 @@ valid_state(struct task_struct *curr, st
->>>            enum lock_usage_bit new_bit, enum lock_usage_bit bad_bit)
->>>    {
->>>        if (unlikely(hlock_class(this)->usage_mask & (1 << bad_bit))) {
->>> +             graph_unlock()
->>>                print_usage_bug(curr, this, bad_bit, new_bit);
->>>                return 0;
->>>        }
->> I have also suspected doing unlock without a corresponding lock. This
->> patch looks good to me.
->>
->> Acked-by: Waiman Long <longman@redhat.com>
-> Just so that it's not lost: there is still a bug related to bpf map lock, right?
->
-That is right. This patch just fixes the bug in lockdep.
 
-Cheers,
-Longman
 
+> -----Original Message-----
+> From: Jakub Kicinski <kuba@kernel.org>
+> Sent: Friday, January 29, 2021 10:44 PM
+> To: Nguyen, Anthony L <anthony.l.nguyen@intel.com>
+> Cc: davem@davemloft.net; Keller, Jacob E <jacob.e.keller@intel.com>;
+> netdev@vger.kernel.org; sassmann@redhat.com; Brelinski, TonyX
+> <tonyx.brelinski@intel.com>
+> Subject: Re: [PATCH net-next 03/15] ice: read security revision to ice_nvm_info
+> and ice_orom_info
+> 
+> On Thu, 28 Jan 2021 16:43:20 -0800 Tony Nguyen wrote:
+> > From: Jacob Keller <jacob.e.keller@intel.com>
+> >
+> > The main NVM module and the Option ROM module contain a security
+> > revision in their CSS header. This security revision is used to
+> > determine whether or not the signed module should be loaded at bootup.
+> > If the module security revision is lower than the associated minimum
+> > security revision, it will not be loaded.
+> >
+> > The CSS header does not have a module id associated with it, and thus
+> > requires flat NVM reads in order to access it. To do this, take
+> > advantage of the cached bank information. Introduce a new
+> > "ice_read_flash_module" function that takes the module and bank to read.
+> > Implement both ice_read_active_nvm_module and
+> > ice_read_active_orom_module. These functions will use the cached values
+> > to determine the active bank and calculate the appropriate offset.
+> >
+> > Using these new access functions, extract the security revision for both
+> > the main NVM bank and the Option ROM into the associated info structure.
+> >
+> > Add the security revisions to the devlink info output. Report the main
+> > NVM bank security revision as "fw.mgmt.srev". Report the Option ROM
+> > security revision as "fw.undi.srev".
+> >
+> > A future patch will add the associated minimum security revisions as
+> > devlink flash parameters.
+> 
+> This needs a wider discussion. Hopefully we can agree on a reasonably
+> uniform way of handling this across vendors. Having to fish out
+> _particular_ version keys out and then target _particular_ parameters
+> for each vendor is not great.
+> 
+
+Yea, I can see how that would be problematic. It does seem like some sort of tied interface would make sense.
+
+> First off - is there a standard around the version management that we
+> can base the interface on? What about key management? There's gotta be
+> a way of revoking keys too, right?
+> 
+
+I am not sure. None of the implementation I've written deals with key management and it wasn't an ask.
+
+> 
+> I'd recommend separating the srev patches out of the series so the
+> other ones can land.
+
+Sure, We can do that.
