@@ -2,76 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D24330AB39
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 16:27:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE17030AB5D
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 16:32:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231405AbhBAP06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 10:26:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40868 "EHLO
+        id S231233AbhBAPa1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 10:30:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231158AbhBAP0Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 10:26:16 -0500
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB84EC061573
-        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 07:25:35 -0800 (PST)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1l6b54-0002Rc-DY; Mon, 01 Feb 2021 16:25:34 +0100
-Date:   Mon, 1 Feb 2021 16:25:34 +0100
-From:   Florian Westphal <fw@strlen.de>
-To:     Roi Dayan <roid@nvidia.com>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        netdev@vger.kernel.org, Paul Blakey <paulb@nvidia.com>,
-        Oz Shlomo <ozsh@nvidia.com>
-Subject: Re: [PATCH net 1/1] netfilter: conntrack: Check offload bit on table
- dump
-Message-ID: <20210201152534.GJ12443@breakpoint.cc>
-References: <20210128074052.777999-1-roid@nvidia.com>
- <20210130120114.GA7846@salvia>
- <3a29e9b5-7bf8-5c00-3ede-738f9b4725bf@nvidia.com>
- <997cbda4-acd1-a000-1408-269bc5c3abf3@nvidia.com>
- <20210201030853.GA19878@salvia>
- <1229b966-7772-44bd-6e91-fbde213ceb2d@nvidia.com>
- <20210201115036.GB12443@breakpoint.cc>
- <edb8da93-d859-e7ae-53dd-cae09dff2eba@nvidia.com>
+        with ESMTP id S231721AbhBAP35 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 10:29:57 -0500
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 911C4C061573
+        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 07:29:16 -0800 (PST)
+Received: by mail-ej1-x629.google.com with SMTP id r12so24979707ejb.9
+        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 07:29:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=lu8g1x2tQJNXeBvQhLMN6lczEu/N28R4nfZBjk9q/v8=;
+        b=sQILmOEqLwgSy8Y0fjb0Cp9ZCuGdM+JhFuEDgMqy3CTCv5/EYhtCLPLs/8SEEBvulh
+         MZGD/VPaabymZkmOEASMKCo9L7xIL6y9raVp55vCpqp4ad9zOSmbQMuWZMRKZyuHy6Gm
+         rHWu4FvI7uW+h8VngpGeLvqzZTW0XGuTGW8oofQUTKf92esp743vGqx9Rspf/WFFOZ30
+         Nh8aNjlUUs0NUZJwNJiEG9aqTF5v8SWraEVlUJ07u7ZrFjhJIrQVQ4PdcHLMO6YzB04X
+         CnOIk2qryqUMBbfgzAr7fk21rVqSQfTa97KTNgpF0Y5ySZN4R6wEbeu/btwfYK7pdtoL
+         UOIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=lu8g1x2tQJNXeBvQhLMN6lczEu/N28R4nfZBjk9q/v8=;
+        b=rZ0BRStihNGtZ9fZl97QeJR7MwNbyf0RoL2AM1LcV/FbrfaZPv2st49u11Us6cQZ9C
+         1lqw4oTd4YxWQR7PwpXSzPuJEPpoHZu0Y1vFvIbnWYlrhktq2epdJlKJGL5nLYJ8I4zQ
+         PWHkFXdzcx6wkrzsAv0+ipEUkksK0LQIrzHn7DK5E3wzVcVvEb0GUS9GsAs2sm/1KPBP
+         LRJFo2dOuqwGHFbYQQ1767uS4SXhHVnlxZy0T/XCBvRee/Cl45d0EoXKqiZYhxI4IUCV
+         iMW1qo25ysA4q/Rgf2mV4afFRxIhrSIPTKEjiLMyxbL+EDQQmWxoP0gmQcTI4AHknBJg
+         5+MA==
+X-Gm-Message-State: AOAM533cTjGFDn30oHwHqrXT53F7ZaNd/I+8XLq/U1HoDfEuofQyHedT
+        8Sk+PgbccAr1GvrMXT2JgVk=
+X-Google-Smtp-Source: ABdhPJzz6b8vo20BhE5jvb6Rm80VDC4v5Iw8sKnic2/X8jf9NtwVAw1hNIeC2Dgl8+1LEwpTrxH3Kg==
+X-Received: by 2002:a17:906:8690:: with SMTP id g16mr3590512ejx.113.1612193355351;
+        Mon, 01 Feb 2021 07:29:15 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id x5sm546641ejw.9.2021.02.01.07.29.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Feb 2021 07:29:14 -0800 (PST)
+Date:   Mon, 1 Feb 2021 17:29:13 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     George McCollister <george.mccollister@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org
+Subject: Re: [RESEND PATCH net-next 4/4] net: dsa: xrs700x: add HSR
+ offloading support
+Message-ID: <20210201152913.khrvofpnkghrsba2@skbuf>
+References: <20210201140503.130625-1-george.mccollister@gmail.com>
+ <20210201140503.130625-5-george.mccollister@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <edb8da93-d859-e7ae-53dd-cae09dff2eba@nvidia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20210201140503.130625-5-george.mccollister@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Roi Dayan <roid@nvidia.com> wrote:
-> > TCP initial timeout is one minute, UDP 30 seconds.
-> > That should surely be enough to do flow_offload_add (which extends
-> > the timeout)?
+On Mon, Feb 01, 2021 at 08:05:03AM -0600, George McCollister wrote:
+> Add offloading for HSR/PRP (IEC 62439-3) tag insertion, tag removal
+> forwarding and duplication supported by the xrs7000 series switches.
 > 
-> Yes, flow_offload_add() extends the timeout. but it needs to finish.
+> Only HSR v1 and PRP v1 are supported by the xrs7000 series switches (HSR
+> v0 is not).
 > 
-> > 
-> > Maybe something is doing flow_offload_add() for unconfirmed conntrack?
-> > 
-> > In unconfirmed conntrack case, ct->timeout is absolute timeout value, e.g. for
-> > tcp it will be set to 60 * HZ.
-> 
-> When I hit the issue I printed jiffies and ct->timeout and saw they are
-> the same or very close but not an absolute number.
+> Signed-off-by: George McCollister <george.mccollister@gmail.com>
+> ---
 
-Thats strange, for new flows they should not be close at all.
-UDP sets a 30 second timeout, TCP sets a 60 second initial timeout.
-
-Do you think rhashtable_insert_fast() in flow_offload_add() blocks for
-dozens of seconds?
-
-Thats about the only thing I can see between 'offload bit gets set'
-and 'timeout is extended' in flow_offload_add() that could at least
-spend *some* time.
-
-> We hit this issue before more easily and pushed this fix
->
-> 4203b19c2796 netfilter: flowtable: Set offload timeout when adding flow
-
-This fix makes sense to me.
+Does this switch discard duplicates or does it not? If it does, what
+algorithm does it use? Does it not need some sort of runtime
+communication with the hsr master, like for the nodes table?
+How many streams can it keep track of? What happens when the ring is
+larger than the switch can keep track of in its internal Link Redundancy
+Entity?
