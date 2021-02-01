@@ -2,133 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8D4F30B03B
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 20:20:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2385A30B03E
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 20:20:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231406AbhBATSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 14:18:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34534 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229599AbhBATSb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 14:18:31 -0500
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BABEAC061573;
-        Mon,  1 Feb 2021 11:17:50 -0800 (PST)
-Received: by mail-wr1-x442.google.com with SMTP id c4so15157205wru.9;
-        Mon, 01 Feb 2021 11:17:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3fBmlBfS57862/YF+WQQY5rkDHUDDCvuVnlROpTuekI=;
-        b=IDfadfEQtEXbBVg8PJZHUS2k1gwUj6j9QMA+njtCOluyx1dBGMnU+YdHFzlk2OIDTY
-         +Xn+ldfDwNlKnoujIH6HvFrKqN7S27WAODtJntIfNHcvFS5AI6SIppsXe56nJ3iMdY/E
-         OG5F6I4eXHVUmupcy17+fx6MN3YCQPs+Uet+QT02WQWsIdkzPugzg83YWLslWl2l0/it
-         wSG7iOa0jVJ/CyW2xDYFDVJ39ct2lqHO7Lh5bleQlxr17K8GZCA/24GJqWWomnPd87YB
-         R2aW4s3ntLCLRbU9ODlfDYl6tgZbOKz2B8p9ALEZvHQUMmjKMpXZvRJlXcA5ia8N7B12
-         +wgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3fBmlBfS57862/YF+WQQY5rkDHUDDCvuVnlROpTuekI=;
-        b=PW+ySHOz0Bl5QTLxnlute8A2WIyb6uTLn4MRrQx7s2XJnkIFF9fEDI8vACcrM/J4wA
-         NrotrC2rpGk1FD2HCPNBEtaRIcJYRAKxVFsfbDNFXQSEtRxW2d3imIJWwTGDkz7UYfGW
-         MVH8SAaI2MMkDmIiNM2maAO6HV52M0WMAJMwBT6qMkVZtLohMnnRim2qCnHQRcyExJkN
-         9yGMuZH2xZztzM/ntxKZtBGuWx8sfMexZ6ae+e4AHAq7IwmtNIP8F9oDSm9R8LKjbzd5
-         8P/359S8feHQDagB3yyPr9HkmqSEuFcQahL/PnvytSPTyDQwv3M3z8v9honcvW59gNAY
-         /lbw==
-X-Gm-Message-State: AOAM531FQMgcd56VOE6jIvaZhNtw1hEkhnzT/Vhsz+UPw1ZdPdJzhXUP
-        HV1qb3Rexs6/TSo/07imERXxM9juauqK2ytNT00=
-X-Google-Smtp-Source: ABdhPJwV6pESr8EYeKLJgtMN2DoSyEP+Jpyj0mBOWD5+7I+/szpICR184OQKmrO1jZuiUHSUq/pxmEaGi56efk6QcSM=
-X-Received: by 2002:adf:f182:: with SMTP id h2mr19764072wro.355.1612207069428;
- Mon, 01 Feb 2021 11:17:49 -0800 (PST)
+        id S230273AbhBATTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 14:19:50 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:1817 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229599AbhBATTr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 14:19:47 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B6018542a0000>; Mon, 01 Feb 2021 11:19:06 -0800
+Received: from HKMAIL104.nvidia.com (10.18.16.13) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 1 Feb
+ 2021 19:19:03 +0000
+Received: from HKMAIL102.nvidia.com (10.18.16.11) by HKMAIL104.nvidia.com
+ (10.18.16.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 1 Feb
+ 2021 19:18:10 +0000
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.43) by
+ HKMAIL102.nvidia.com (10.18.16.11) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Mon, 1 Feb 2021 19:18:09 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NLOu8/hOFdiUG1llR3FKkuA1TM/4V58Z7jPeo26HKlf6fI3xYewwoYhmOa+ZMfBCxJJPkKFbfJDtKCU1lxKEx61p6IRngcEaD0IuVgHKl8j11nacbZSINRfxcjymtKYO8Avj2DsgP/TtuBWc/yE9MBoGXgpNwHo8Ye4mlfTP/pcvr+691EywzpkTOYioy0jVUZgU51SX3bieysVVci9oaaEdy0KJEfA2gedcmCfPkrvu+HXLcGTloMRVDeytsXeJFR3ArgS4sLzOw47Z+eBXXNR5QRxQ3TM2Btmqgkvf0WpGLu4yrK6MU4pjpQBQuggv6tfiYa9Ald7WYrpJga7csA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=L52XxPg9GOO+gFKhaEBrJSXExjP2SyvmaMR8UrDwGvQ=;
+ b=GvuxdDcuUPQoa7Ap9HkvEd/fX6U7ZxWKJVr0Z88GjScAQX3syHHDEufdo0nDiMMp5l9LKkxe/5lAEgy54uRSmM+RUO8uU6nJxMhDfcMi2SC7LNjFluLkQMEkOHvKbCfONnTLeY15kEN5pyg6sv3FLERITMR71KuRBeekpRJEqhmBbcf/deULnFhgkEXwLKyyTztsDwE/uH8iy1hXEYd09cPYNHzoZm2kaon3TBKCidsQQjHGMd8J7OaJBHRTPSobg+aiAZFT1QyNsXNkCKO2qF+3d7KPswtyPWcK3EfggFX2jZqNnXNg9YD3lSUPBvaI9eSh8DfIgweD73KmhiuPMA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM6PR12MB4388.namprd12.prod.outlook.com (2603:10b6:5:2a9::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.25; Mon, 1 Feb
+ 2021 19:18:07 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::d6b:736:fa28:5e4]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::d6b:736:fa28:5e4%7]) with mapi id 15.20.3805.025; Mon, 1 Feb 2021
+ 19:18:07 +0000
+Date:   Mon, 1 Feb 2021 15:18:05 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>
+CC:     Leon Romanovsky <leon@kernel.org>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>
+Subject: Re: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
+ implement private channel OPs
+Message-ID: <20210201191805.GO4247@nvidia.com>
+References: <20210122234827.1353-8-shiraz.saleem@intel.com>
+ <20210125184248.GS4147@nvidia.com>
+ <99895f7c10a2473c84a105f46c7ef498@intel.com>
+ <20210126005928.GF4147@nvidia.com>
+ <031c2675aff248bd9c78fada059b5c02@intel.com>
+ <20210127121847.GK1053290@unreal>
+ <ea62658f01664a6ea9438631c9ddcb6e@intel.com>
+ <20210127231641.GS4147@nvidia.com> <20210128054133.GA1877006@unreal>
+ <d58f341898834170af1bfb6719e17956@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <d58f341898834170af1bfb6719e17956@intel.com>
+X-ClientProxiedBy: MN2PR20CA0051.namprd20.prod.outlook.com
+ (2603:10b6:208:235::20) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
 MIME-Version: 1.0
-References: <20210128134130.3051-1-elic@nvidia.com> <20210128134130.3051-2-elic@nvidia.com>
- <CAPWQSg0XtEQ1U5N3a767Ak_naoyPdVF1CeE4r3hmN11a-aoBxg@mail.gmail.com>
-In-Reply-To: <CAPWQSg0XtEQ1U5N3a767Ak_naoyPdVF1CeE4r3hmN11a-aoBxg@mail.gmail.com>
-From:   Si-Wei Liu <siwliu.kernel@gmail.com>
-Date:   Mon, 1 Feb 2021 11:17:37 -0800
-Message-ID: <CAPWQSg3U9DCSK_01Kzuea5B1X+Ef9JB23wBY82A3ss-UXGek_Q@mail.gmail.com>
-Subject: Re: [PATCH 1/2] vdpa/mlx5: Avoid unnecessary query virtqueue
-To:     Eli Cohen <elic@nvidia.com>
-Cc:     mst@redhat.com, jasowang@redhat.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lulu@redhat.com,
-        Si-Wei Liu <si-wei.liu@oracle.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.162.115.133) by MN2PR20CA0051.namprd20.prod.outlook.com (2603:10b6:208:235::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.17 via Frontend Transport; Mon, 1 Feb 2021 19:18:06 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1l6ei5-002IjC-Ow; Mon, 01 Feb 2021 15:18:05 -0400
+X-Header: ProcessedBy-CMR-outbound
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1612207146; bh=L52XxPg9GOO+gFKhaEBrJSXExjP2SyvmaMR8UrDwGvQ=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+         From:To:CC:Subject:Message-ID:References:Content-Type:
+         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+         X-MS-Exchange-MessageSentRepresentingType:X-Header;
+        b=okEMjmoaEBr83aDn5i9yObKN2A/zDTPjW7rDUFqfskXiPHaI5IQaKIDVOdZ9b2qwI
+         LGcNOW16PCLu7SDUO517SeME6LEvsTfL3MNH69LNrf/NRIrY7aA7AwP2OWplp+tN6R
+         XPCvJRHojBzSPSv+wMkqQRXFhmYFro2TxQ+75m4ZN0kbPhbQZQUTcvQMjJ15nnjLVw
+         cLQiBUqwxi3YPOfaxIIl2D2XY1an6Lz1CFXJvhj2A+9vX7++eMffh7rmnEhZReTdCw
+         qr0yg7aD0NkkdZr/2pw1fkxpZa5O96+Y0nrq1/GadK8gvi57796P/cdDHrAT39+mqI
+         cGnkvoaDLY4WQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 1, 2021 at 10:51 AM Si-Wei Liu <siwliu.kernel@gmail.com> wrote:
->
-> On Thu, Jan 28, 2021 at 5:46 AM Eli Cohen <elic@nvidia.com> wrote:
-> >
-> > suspend_vq should only suspend the VQ on not save the current available
-> > index. This is done when a change of map occurs when the driver calls
-> > save_channel_info().
->
-> Hmmm, suspend_vq() is also called by teardown_vq(), the latter of
-> which doesn't save the available index as save_channel_info() doesn't
-> get called in that path at all. How does it handle the case that
-> aget_vq_state() is called from userspace (e.g. QEMU) while the
-> hardware VQ object was torn down, but userspace still wants to access
-> the queue index?
->
-> Refer to https://lore.kernel.org/netdev/1601583511-15138-1-git-send-email-si-wei.liu@oracle.com/
->
-> vhost VQ 0 ring restore failed: -1: Resource temporarily unavailable (11)
-> vhost VQ 1 ring restore failed: -1: Resource temporarily unavailable (11)
->
-> QEMU will complain with the above warning while VM is being rebooted
-> or shut down.
->
-> Looks to me either the kernel driver should cover this requirement, or
-> the userspace has to bear the burden in saving the index and not call
-> into kernel if VQ is destroyed.
+On Sat, Jan 30, 2021 at 01:19:36AM +0000, Saleem, Shiraz wrote:
+> > Subject: Re: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
+> > implement private channel OPs
+> > 
+> > On Wed, Jan 27, 2021 at 07:16:41PM -0400, Jason Gunthorpe wrote:
+> > > On Wed, Jan 27, 2021 at 10:17:56PM +0000, Saleem, Shiraz wrote:
+> > >
+> > > > Even with another core PCI driver, there still needs to be private
+> > > > communication channel between the aux rdma driver and this PCI
+> > > > driver to pass things like QoS updates.
+> > >
+> > > Data pushed from the core driver to its aux drivers should either be
+> > > done through new callbacks in a struct device_driver or by having a
+> > > notifier chain scheme from the core driver.
+> > 
+> > Right, and internal to driver/core device_lock will protect from parallel
+> > probe/remove and PCI flows.
+> > 
+> 
+> OK. We will hold the device_lock while issuing the .ops callbacks from core driver.
+> This should solve our synchronization issue.
+> 
+> There have been a few discussions in this thread. And I would like to be clear on what
+> to do.
+> 
+> So we will,
+> 
+> 1. Remove .open/.close, .peer_register/.peer_unregister
+> 2. Protect ops callbacks issued from core driver to the aux driver
+> with device_lock
 
-Actually, the userspace doesn't have the insights whether virt queue
-will be destroyed if just changing the device status via set_status().
-Looking at other vdpa driver in tree i.e. ifcvf it doesn't behave like
-so. Hence this still looks to me to be Mellanox specifics and
-mlx5_vdpa implementation detail that shouldn't expose to userspace.
->
-> -Siwei
->
->
-> >
-> > Signed-off-by: Eli Cohen <elic@nvidia.com>
-> > ---
-> >  drivers/vdpa/mlx5/net/mlx5_vnet.c | 8 --------
-> >  1 file changed, 8 deletions(-)
-> >
-> > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > index 88dde3455bfd..549ded074ff3 100644
-> > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > @@ -1148,8 +1148,6 @@ static int setup_vq(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq)
-> >
-> >  static void suspend_vq(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq)
-> >  {
-> > -       struct mlx5_virtq_attr attr;
-> > -
-> >         if (!mvq->initialized)
-> >                 return;
-> >
-> > @@ -1158,12 +1156,6 @@ static void suspend_vq(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *m
-> >
-> >         if (modify_virtqueue(ndev, mvq, MLX5_VIRTIO_NET_Q_OBJECT_STATE_SUSPEND))
-> >                 mlx5_vdpa_warn(&ndev->mvdev, "modify to suspend failed\n");
-> > -
-> > -       if (query_virtqueue(ndev, mvq, &attr)) {
-> > -               mlx5_vdpa_warn(&ndev->mvdev, "failed to query virtqueue\n");
-> > -               return;
-> > -       }
-> > -       mvq->avail_idx = attr.available_index;
-> >  }
-> >
-> >  static void suspend_vqs(struct mlx5_vdpa_net *ndev)
-> > --
-> > 2.29.2
-> >
+A notifier chain is probably better, honestly.
+
+Especially since you don't want to split the netdev side, a notifier
+chain can be used by both cases equally.
+
+Jason
