@@ -2,150 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CD4930A4FE
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 11:09:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B8B930A504
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 11:09:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233121AbhBAKIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 05:08:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56988 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233105AbhBAKHP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 05:07:15 -0500
-Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01C9BC061574
-        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 02:06:28 -0800 (PST)
-Received: by mail-qk1-x733.google.com with SMTP id d85so15623654qkg.5
-        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 02:06:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Sjt/JjpcscfEvtBP7EMVUaDK8j1N22A9/cE7A8z1fNQ=;
-        b=RWGlo0LF/xf0B6XMXJt4uEKHEI1PMWjoAzhk2jM1knlpTyoxZlXjsTGiphTN2+gWRQ
-         CfcfBynFycq6HShZmXTMtsL32rhWghYM7wEOPYcBCLQqoX5/zLN0JVOmCedt7+b4ylhV
-         aYFI0MlGniLS4Po7+bLxc0k6dfeNVZnjJPY6VSHXW4a7QEzI3yLS2JAx1S8qUgnCeySe
-         JTUGK5hONej427H1zqtvZoVMKjdHLNMYwJ/I/43/3VsWsjpQS09AuRuBojFy4GWeDPCu
-         EzNru2aRUgwTxsodEFirvxS0kN93jAd+IeehH1fEA8oXWAG0Z5bJIz9k6KsOAB4c/ayt
-         +QGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Sjt/JjpcscfEvtBP7EMVUaDK8j1N22A9/cE7A8z1fNQ=;
-        b=qRPrtXP6fEAFt7UC0utOxdGuDq99hR964nUAS4dkY+DvK0NIzii/U5O2SALr0nfWmm
-         qdpdJDTDff/v6BkIDPCLyScCdAT/JveIcxSMpsW0skVlR7KuatMxic77OFDrkkmCILpK
-         /o0qUy1Lp813NDrMggOAsyxFVfLGm6pGGH/BRxLh1rt6ggcI/qozrxt9ciRPshJD+oLX
-         jT4GLe7WEfuLYiFb9qLAeCWKwz14nWwjdPteS/LEXUNUCRusc9KUgeJeka8RnZlzk0s1
-         0hJUYg3UWJw2zx/eBM21QjqJNntaUHdpxwId+/CwiufBM6oydSlrw+tYtn37LHWXKQ4E
-         Vlbg==
-X-Gm-Message-State: AOAM5338XVIVXZuqs2kjfR0yjvEpEwN0L4oxnrpkuxPpYDu6of6sPOYo
-        cQ4AbbdMxR/6+OOyj41ujXKo8arC5SM0lYpCYBJGUg==
-X-Google-Smtp-Source: ABdhPJz1neDI6y2opCjejp39+RFPmdlUHPXrFefxOn9wklgPLmQPMf8ui0W8o2qIpXB9V8ohhvWgsAt8x04qGTAFxyU=
-X-Received: by 2002:a05:620a:918:: with SMTP id v24mr15329179qkv.350.1612173987508;
- Mon, 01 Feb 2021 02:06:27 -0800 (PST)
+        id S233179AbhBAKI4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 05:08:56 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:28305 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233141AbhBAKIV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 05:08:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612174013;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/QAkk6owe21Xxeh5fDlvcKKIXTJvkH9DBGu0Ux0QV3Y=;
+        b=VAzmozJR8XvPYChz2UWUdzCrp6oxXmhH/wY/TRNhjMh/NfPXzx4gFAl6F+k0dKWGwOyU5O
+        xy2Ey5dJNneiQLdK2m5ygUkn+/1NYeL8RKILSRdeuZCFH2aYqJISlmQCDhFFFhvcwzUYWI
+        FNAUue5IzZowwZXK8jcryuj4LZAviHI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-111-WnXa72axNVaZW8MKHKz7Jw-1; Mon, 01 Feb 2021 05:06:49 -0500
+X-MC-Unique: WnXa72axNVaZW8MKHKz7Jw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 27878107ACF6;
+        Mon,  1 Feb 2021 10:06:48 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.47])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E3D5D10016F4;
+        Mon,  1 Feb 2021 10:06:35 +0000 (UTC)
+Date:   Mon, 1 Feb 2021 11:06:34 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
+        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        toshiaki.makita1@gmail.com, lorenzo.bianconi@redhat.com,
+        toke@redhat.com, Stefano Brivio <sbrivio@redhat.com>,
+        brouer@redhat.com
+Subject: Re: [PATCH v2 bpf-next] net: veth: alloc skb in bulk for
+ ndo_xdp_xmit
+Message-ID: <20210201110634.70be00ba@carbon>
+In-Reply-To: <20210129214927.GC20729@lore-desk>
+References: <415937741661ac331be09c0e59b4ff1eacfee782.1611861943.git.lorenzo@kernel.org>
+        <20210129170216.6a879619@carbon>
+        <20210129201728.4322bab0@carbon>
+        <20210129214640.GB20729@lore-desk>
+        <20210129214927.GC20729@lore-desk>
 MIME-Version: 1.0
-References: <CACT4Y+YJp0t0HA3+wDsAVxgTK4J+Pvht-J4-ENkOtS=C=Fhtzg@mail.gmail.com>
- <YBfPAvBa8bbSU2nZ@hirez.programming.kicks-ass.net>
-In-Reply-To: <YBfPAvBa8bbSU2nZ@hirez.programming.kicks-ass.net>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Mon, 1 Feb 2021 11:06:16 +0100
-Message-ID: <CACT4Y+YGY+fanogUFYXxpGZsCp53gjUi7Xua4Bmvs6gAvSfLoA@mail.gmail.com>
-Subject: Re: corrupted pvqspinlock in htab_map_update_elem
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, andrii@kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>, kpsingh@kernel.org,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 1, 2021 at 10:51 AM Peter Zijlstra <peterz@infradead.org> wrote:
->
-> On Sun, Jan 31, 2021 at 09:42:53AM +0100, Dmitry Vyukov wrote:
-> > Hi,
-> >
-> > I am testing the following the program:
-> > https://gist.github.com/dvyukov/e5c0a8ef220ef856363c1080b0936a9e
-> > on the latest upstream 6642d600b541b81931fb1ab0c041b0d68f77be7e and
-> > getting the following crash. Config is:
-> > https://gist.github.com/dvyukov/16d9905e5ef35e44285451f1d330ddbc
-> >
-> > The program updates a bpf map from a program called on hw breakpoint
-> > hit. Not sure if it's a bpf issue or a perf issue. This time it is not
-> > a fuzzer workload, I am trying to do something useful :)
->
-> Something useful and BPF don't go together as far as I'm concerned.
->
-> > ------------[ cut here ]------------
-> > pvqspinlock: lock 0xffffffff8f371d80 has corrupted value 0x0!
-> > WARNING: CPU: 3 PID: 8771 at kernel/locking/qspinlock_paravirt.h:498
-> > __pv_queued_spin_unlock_slowpath+0x22e/0x2b0
-> > kernel/locking/qspinlock_paravirt.h:498
-> > Modules linked in:
-> > CPU: 3 PID: 8771 Comm: a.out Not tainted 5.11.0-rc5+ #71
-> > Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS
-> > rel-1.13.0-44-g88ab0c15525c-prebuilt.qemu.org 04/01/2014
-> > RIP: 0010:__pv_queued_spin_unlock_slowpath+0x22e/0x2b0
-> > kernel/locking/qspinlock_paravirt.h:498
-> > Code: ea 03 0f b6 14 02 4c 89 e8 83 e0 07 83 c0 03 38 d0 7c 04 84 d2
-> > 75 62 41 8b 55 00 4c 89 ee 48 c7 c7 20 6b 4c 89 e8 72 d3 5f 07 <0f> 0b
-> > e9 6cc
-> > RSP: 0018:fffffe00000c17b0 EFLAGS: 00010086
-> > RAX: 0000000000000000 RBX: ffffffff8f3b5660 RCX: 0000000000000000
-> > RDX: ffff8880150222c0 RSI: ffffffff815b624d RDI: fffffbc0000182e8
-> > RBP: 0000000000000001 R08: 0000000000000001 R09: 0000000000000000
-> > R10: ffffffff817de94f R11: 0000000000000000 R12: ffff8880150222c0
-> > R13: ffffffff8f371d80 R14: ffff8880181fead8 R15: 0000000000000000
-> > FS:  00007fa5b51f0700(0000) GS:ffff88802cf80000(0000) knlGS:0000000000000000
-> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > CR2: 0000000002286908 CR3: 0000000015b24000 CR4: 0000000000750ee0
-> > DR0: 00000000004cb3d4 DR1: 0000000000000000 DR2: 0000000000000000
-> > DR3: 0000000000000000 DR6: 00000000ffff0ff0 DR7: 0000000000000400
-> > PKRU: 55555554
-> > Call Trace:
-> >  <#DB>
-> >  __raw_callee_save___pv_queued_spin_unlock_slowpath+0x11/0x20
-> >  .slowpath+0x9/0xe
-> >  pv_queued_spin_unlock arch/x86/include/asm/paravirt.h:559 [inline]
-> >  queued_spin_unlock arch/x86/include/asm/qspinlock.h:56 [inline]
-> >  lockdep_unlock+0x10e/0x290 kernel/locking/lockdep.c:124
-> >  debug_locks_off_graph_unlock kernel/locking/lockdep.c:165 [inline]
-> >  print_usage_bug kernel/locking/lockdep.c:3710 [inline]
->
-> Ha, I think you hit a bug in lockdep. But it was about to tell you you
-> can't go take locks from NMI context that are also used outside of it.
+On Fri, 29 Jan 2021 22:49:27 +0100
+Lorenzo Bianconi <lorenzo@kernel.org> wrote:
 
-Mkay. Perf calls a BPF program from NMI context. Should that program
-type be significantly restricted? But even if maps can't be used, is
-there anything useful a program invoked from such context can do at
-all?
+> On Jan 29, Lorenzo Bianconi wrote:
+> > On Jan 29, Jesper Dangaard Brouer wrote: =20
+> > > On Fri, 29 Jan 2021 17:02:16 +0100
+> > > Jesper Dangaard Brouer <brouer@redhat.com> wrote:
+> > >  =20
+> > > > > +	for (i =3D 0; i < n_skb; i++) {
+> > > > > +		struct sk_buff *skb =3D skbs[i];
+> > > > > +
+> > > > > +		memset(skb, 0, offsetof(struct sk_buff, tail));   =20
+> > > >=20
+> > > > It is very subtle, but the memset operation on Intel CPU translates
+> > > > into a "rep stos" (repeated store) operation.  This operation need =
+to
+> > > > save CPU-flags (to support being interrupted) thus it is actually
+> > > > expensive (and in my experience cause side effects on pipeline
+> > > > efficiency).  I have a kernel module for testing memset here[1].
+> > > >=20
+> > > > In CPUMAP I have moved the clearing outside this loop. But via aski=
+ng
+> > > > the MM system to clear the memory via gfp_t flag __GFP_ZERO.  This
+> > > > cause us to clear more memory 256 bytes, but it is aligned.  Above
+> > > > offsetof(struct sk_buff, tail) is 188 bytes, which is unaligned mak=
+ing
+> > > > the rep-stos more expensive in setup time.  It is below 3-cacheline=
+s,
+> > > > which is actually interesting and an improvement since last I check=
+ed.
+> > > > I actually have to re-test with time_bench_memset[1], to know that =
+is
+> > > > better now. =20
+> > >=20
+> > > After much testing (with [1]), yes please use gfp_t flag __GFP_ZERO. =
+=20
+> >=20
+> > I run some comparison tests using memset and __GFP_ZERO and with VETH_X=
+DP_BATCH
+> > set to 8 and 16. Results are pretty close so not completely sure the de=
+lta is
+> > just a noise:
+> >=20
+> > - VETH_XDP_BATCH=3D 8 + __GFP_ZERO: ~3.737Mpps
+> > - VETH_XDP_BATCH=3D 16 + __GFP_ZERO: ~3.79Mpps
+> > - VETH_XDP_BATCH=3D 8 + memset: ~3.766Mpps
+> > - VETH_XDP_BATCH=3D 16 + __GFP_ZERO: ~3.765Mpps =20
+>=20
+> Sorry last line is:
+>   - VETH_XDP_BATCH=3D 16 + memset: ~3.765Mpps
 
-> >  verify_lock_unused kernel/locking/lockdep.c:5374 [inline]
-> >  lock_acquire kernel/locking/lockdep.c:5433 [inline]
-> >  lock_acquire+0x471/0x720 kernel/locking/lockdep.c:5407
-> >  __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
-> >  _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:159
-> >  htab_lock_bucket kernel/bpf/hashtab.c:175 [inline]
-> >  htab_map_update_elem+0x1f0/0x790 kernel/bpf/hashtab.c:1023
-> >  bpf_prog_60236c52b8017ad1+0x8e/0xab4
-> >  bpf_dispatcher_nop_func include/linux/bpf.h:651 [inline]
-> >  bpf_overflow_handler+0x192/0x5b0 kernel/events/core.c:9755
-> >  __perf_event_overflow+0x13c/0x370 kernel/events/core.c:8979
-> >  perf_swevent_overflow kernel/events/core.c:9055 [inline]
-> >  perf_swevent_event+0x347/0x550 kernel/events/core.c:9083
-> >  perf_bp_event+0x1a2/0x1c0 kernel/events/core.c:9932
-> >  hw_breakpoint_handler arch/x86/kernel/hw_breakpoint.c:535 [inline]
-> >  hw_breakpoint_exceptions_notify+0x18a/0x3b0 arch/x86/kernel/hw_breakpoint.c:567
-> >  notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
-> >  atomic_notifier_call_chain+0x8d/0x170 kernel/notifier.c:217
-> >  notify_die+0xda/0x170 kernel/notifier.c:548
-> >  notify_debug+0x20/0x30 arch/x86/kernel/traps.c:842
-> >  exc_debug_kernel arch/x86/kernel/traps.c:902 [inline]
-> >  exc_debug+0x103/0x140 arch/x86/kernel/traps.c:998
-> >  asm_exc_debug+0x19/0x30 arch/x86/include/asm/idtentry.h:598
+Thanks for doing these benchmarks.
+
+=46rom my memset benchmarks we are looking for a 1.66 ns difference(10.463-8.=
+803),
+which is VERY hard to measure accurately (anything below 2 ns is
+extremely hard due to OS noise).
+
+VETH_XDP_BATCH=3D8 __GFP_ZERO (3.737Mpps) -> memset (3.766Mpps)
+ - __GFP_ZERO loosing 0.029Mpps and 2.06 ns slower
+
+VETH_XDP_BATCH=3D16 __GFP_ZERO (3.79Mpps) -> memset (3.765Mpps)
+ - __GFP_ZERO gaining 0.025Mpps and 1.75 ns faster
+
+I would say this is noise in the measurements.  Even-though batch=3D16
+match the expected improvement, batch=3D8 goes in the other direction.
+
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
