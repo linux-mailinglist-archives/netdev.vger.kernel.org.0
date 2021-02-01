@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7B6E30B333
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 00:15:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14F6A30B338
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 00:15:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230304AbhBAXOZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 18:14:25 -0500
-Received: from mga12.intel.com ([192.55.52.136]:52029 "EHLO mga12.intel.com"
+        id S230439AbhBAXPQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 18:15:16 -0500
+Received: from mga12.intel.com ([192.55.52.136]:51849 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229525AbhBAXOT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Feb 2021 18:14:19 -0500
-IronPort-SDR: eyXm11KQ4YLsuwLaz4XR9GcAF/nuIXgAeBLfVLbPVyUIJMtMxSwMv804Oq8I9RQ2i1Ysa5ZYMC
- 4vRKf/wRwI4g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9882"; a="159934341"
+        id S229557AbhBAXPP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Feb 2021 18:15:15 -0500
+IronPort-SDR: xK7KWCrevEbyAsGISElkClFUBn8cRdlIE3Mbe5+Uacw3SrBFaNeZCEBtMSOLkCPFv+CJYCcu0+
+ 3nAiX1EBpH7g==
+X-IronPort-AV: E=McAfee;i="6000,8403,9882"; a="159934342"
 X-IronPort-AV: E=Sophos;i="5.79,393,1602572400"; 
-   d="scan'208";a="159934341"
+   d="scan'208";a="159934342"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
   by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2021 15:09:27 -0800
-IronPort-SDR: KIyyiLXnf2oC6Ew/yGEUJOnjKggyQNgbO5LqNwQTTZaraAJSE/yUV88OJTuPnxd0981ig8N8MC
- wVesNapnehkQ==
+IronPort-SDR: Oy9rvc61/AiP+Lsx1AcqopgAVeZfpL7iWg6c7LLK2G5S40s7WZaZoh/+kZD0ihOKZ+yEC1z/YM
+ Y+nX7hHhGTqg==
 X-IronPort-AV: E=Sophos;i="5.79,393,1602572400"; 
-   d="scan'208";a="391188471"
+   d="scan'208";a="391188472"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.251.7.131])
   by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2021 15:09:27 -0800
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
@@ -29,9 +29,9 @@ To:     netdev@vger.kernel.org
 Cc:     Geliang Tang <geliangtang@gmail.com>, davem@davemloft.net,
         kuba@kernel.org, mptcp@lists.01.org,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next v2 07/15] mptcp: create the listening socket for new port
-Date:   Mon,  1 Feb 2021 15:09:12 -0800
-Message-Id: <20210201230920.66027-8-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next v2 08/15] mptcp: drop unused skb in subflow_token_join_request
+Date:   Mon,  1 Feb 2021 15:09:13 -0800
+Message-Id: <20210201230920.66027-9-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210201230920.66027-1-mathew.j.martineau@linux.intel.com>
 References: <20210201230920.66027-1-mathew.j.martineau@linux.intel.com>
@@ -43,224 +43,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Geliang Tang <geliangtang@gmail.com>
 
-This patch creates a listening socket when an address with a port-number
-is added by PM netlink. Then binds the new port to the socket, and
-listens for new connections.
-
-When the address is removed or the addresses are flushed by PM netlink,
-release the listening socket.
+This patch drops the unused parameter skb in subflow_token_join_request.
 
 Signed-off-by: Geliang Tang <geliangtang@gmail.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- net/mptcp/pm_netlink.c | 96 +++++++++++++++++++++++++++++++++++++++++-
- net/mptcp/protocol.c   |  2 +-
- net/mptcp/protocol.h   |  4 ++
- net/mptcp/subflow.c    |  6 +--
- 4 files changed, 102 insertions(+), 6 deletions(-)
+ net/mptcp/subflow.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index 5d87e475c751..b71701a743a4 100644
---- a/net/mptcp/pm_netlink.c
-+++ b/net/mptcp/pm_netlink.c
-@@ -26,6 +26,7 @@ struct mptcp_pm_addr_entry {
- 	struct list_head	list;
- 	struct mptcp_addr_info	addr;
- 	struct rcu_head		rcu;
-+	struct socket		*lsk;
- };
- 
- struct mptcp_pm_add_entry {
-@@ -678,6 +679,53 @@ static int mptcp_pm_nl_append_new_local_addr(struct pm_nl_pernet *pernet,
- 	return ret;
- }
- 
-+static int mptcp_pm_nl_create_listen_socket(struct sock *sk,
-+					    struct mptcp_pm_addr_entry *entry)
-+{
-+	struct sockaddr_storage addr;
-+	struct mptcp_sock *msk;
-+	struct socket *ssock;
-+	int backlog = 1024;
-+	int err;
-+
-+	err = sock_create_kern(sock_net(sk), entry->addr.family,
-+			       SOCK_STREAM, IPPROTO_MPTCP, &entry->lsk);
-+	if (err)
-+		return err;
-+
-+	msk = mptcp_sk(entry->lsk->sk);
-+	if (!msk) {
-+		err = -EINVAL;
-+		goto out;
-+	}
-+
-+	ssock = __mptcp_nmpc_socket(msk);
-+	if (!ssock) {
-+		err = -EINVAL;
-+		goto out;
-+	}
-+
-+	mptcp_info2sockaddr(&entry->addr, &addr, entry->addr.family);
-+	err = kernel_bind(ssock, (struct sockaddr *)&addr,
-+			  sizeof(struct sockaddr_in));
-+	if (err) {
-+		pr_warn("kernel_bind error, err=%d", err);
-+		goto out;
-+	}
-+
-+	err = kernel_listen(ssock, backlog);
-+	if (err) {
-+		pr_warn("kernel_listen error, err=%d", err);
-+		goto out;
-+	}
-+
-+	return 0;
-+
-+out:
-+	sock_release(entry->lsk);
-+	return err;
-+}
-+
- int mptcp_pm_nl_get_local_id(struct mptcp_sock *msk, struct sock_common *skc)
- {
- 	struct mptcp_pm_addr_entry *entry;
-@@ -722,6 +770,8 @@ int mptcp_pm_nl_get_local_id(struct mptcp_sock *msk, struct sock_common *skc)
- 	entry->addr.ifindex = 0;
- 	entry->addr.flags = 0;
- 	entry->addr.id = 0;
-+	entry->addr.port = 0;
-+	entry->lsk = NULL;
- 	ret = mptcp_pm_nl_append_new_local_addr(pernet, entry);
- 	if (ret < 0)
- 		kfree(entry);
-@@ -891,9 +941,19 @@ static int mptcp_nl_cmd_add_addr(struct sk_buff *skb, struct genl_info *info)
- 	}
- 
- 	*entry = addr;
-+	if (entry->addr.port) {
-+		ret = mptcp_pm_nl_create_listen_socket(skb->sk, entry);
-+		if (ret) {
-+			GENL_SET_ERR_MSG(info, "create listen socket error");
-+			kfree(entry);
-+			return ret;
-+		}
-+	}
- 	ret = mptcp_pm_nl_append_new_local_addr(pernet, entry);
- 	if (ret < 0) {
- 		GENL_SET_ERR_MSG(info, "too many addresses or duplicate one");
-+		if (entry->lsk)
-+			sock_release(entry->lsk);
- 		kfree(entry);
- 		return ret;
- 	}
-@@ -977,6 +1037,38 @@ static int mptcp_nl_remove_subflow_and_signal_addr(struct net *net,
- 	return 0;
- }
- 
-+struct addr_entry_release_work {
-+	struct rcu_work	rwork;
-+	struct mptcp_pm_addr_entry *entry;
-+};
-+
-+static void mptcp_pm_release_addr_entry(struct work_struct *work)
-+{
-+	struct addr_entry_release_work *w;
-+	struct mptcp_pm_addr_entry *entry;
-+
-+	w = container_of(to_rcu_work(work), struct addr_entry_release_work, rwork);
-+	entry = w->entry;
-+	if (entry) {
-+		if (entry->lsk)
-+			sock_release(entry->lsk);
-+		kfree(entry);
-+	}
-+	kfree(w);
-+}
-+
-+static void mptcp_pm_free_addr_entry(struct mptcp_pm_addr_entry *entry)
-+{
-+	struct addr_entry_release_work *w;
-+
-+	w = kmalloc(sizeof(*w), GFP_ATOMIC);
-+	if (w) {
-+		INIT_RCU_WORK(&w->rwork, mptcp_pm_release_addr_entry);
-+		w->entry = entry;
-+		queue_rcu_work(system_wq, &w->rwork);
-+	}
-+}
-+
- static int mptcp_nl_cmd_del_addr(struct sk_buff *skb, struct genl_info *info)
- {
- 	struct nlattr *attr = info->attrs[MPTCP_PM_ATTR_ADDR];
-@@ -1011,7 +1103,7 @@ static int mptcp_nl_cmd_del_addr(struct sk_buff *skb, struct genl_info *info)
- 	spin_unlock_bh(&pernet->lock);
- 
- 	mptcp_nl_remove_subflow_and_signal_addr(sock_net(skb->sk), &entry->addr);
--	kfree_rcu(entry, rcu);
-+	mptcp_pm_free_addr_entry(entry);
- 
- 	return ret;
- }
-@@ -1025,7 +1117,7 @@ static void __flush_addrs(struct net *net, struct list_head *list)
- 				 struct mptcp_pm_addr_entry, list);
- 		mptcp_nl_remove_subflow_and_signal_addr(net, &cur->addr);
- 		list_del_rcu(&cur->list);
--		kfree_rcu(cur, rcu);
-+		mptcp_pm_free_addr_entry(cur);
- 	}
- }
- 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index a033bf9c26ee..1405e146dd7c 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -52,7 +52,7 @@ static struct net_device mptcp_napi_dev;
-  * completed yet or has failed, return the subflow socket.
-  * Otherwise return NULL.
-  */
--static struct socket *__mptcp_nmpc_socket(const struct mptcp_sock *msk)
-+struct socket *__mptcp_nmpc_socket(const struct mptcp_sock *msk)
- {
- 	if (!msk->subflow || READ_ONCE(msk->can_ack))
- 		return NULL;
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index fcab3784e4fa..7e0d8774c673 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -537,11 +537,15 @@ void __mptcp_close_ssk(struct sock *sk, struct sock *ssk,
- 		       struct mptcp_subflow_context *subflow);
- void mptcp_subflow_reset(struct sock *ssk);
- void mptcp_sock_graft(struct sock *sk, struct socket *parent);
-+struct socket *__mptcp_nmpc_socket(const struct mptcp_sock *msk);
- 
- /* called with sk socket lock held */
- int __mptcp_subflow_connect(struct sock *sk, const struct mptcp_addr_info *loc,
- 			    const struct mptcp_addr_info *remote);
- int mptcp_subflow_create_socket(struct sock *sk, struct socket **new_sock);
-+void mptcp_info2sockaddr(const struct mptcp_addr_info *info,
-+			 struct sockaddr_storage *addr,
-+			 unsigned short family);
- 
- static inline void mptcp_subflow_tcp_fallback(struct sock *sk,
- 					      struct mptcp_subflow_context *ctx)
 diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 586156281e5a..50a01546ac34 100644
+index 50a01546ac34..2dcc0fb5a69e 100644
 --- a/net/mptcp/subflow.c
 +++ b/net/mptcp/subflow.c
-@@ -1084,9 +1084,9 @@ void mptcpv6_handle_mapped(struct sock *sk, bool mapped)
+@@ -64,8 +64,7 @@ static bool mptcp_can_accept_new_subflow(const struct mptcp_sock *msk)
  }
- #endif
  
--static void mptcp_info2sockaddr(const struct mptcp_addr_info *info,
--				struct sockaddr_storage *addr,
--				unsigned short family)
-+void mptcp_info2sockaddr(const struct mptcp_addr_info *info,
-+			 struct sockaddr_storage *addr,
-+			 unsigned short family)
+ /* validate received token and create truncated hmac and nonce for SYN-ACK */
+-static struct mptcp_sock *subflow_token_join_request(struct request_sock *req,
+-						     const struct sk_buff *skb)
++static struct mptcp_sock *subflow_token_join_request(struct request_sock *req)
  {
- 	memset(addr, 0, sizeof(*addr));
- 	addr->ss_family = family;
+ 	struct mptcp_subflow_request_sock *subflow_req = mptcp_subflow_rsk(req);
+ 	u8 hmac[SHA256_DIGEST_SIZE];
+@@ -181,7 +180,7 @@ static int subflow_init_req(struct request_sock *req,
+ 		subflow_req->remote_id = mp_opt.join_id;
+ 		subflow_req->token = mp_opt.token;
+ 		subflow_req->remote_nonce = mp_opt.nonce;
+-		subflow_req->msk = subflow_token_join_request(req, skb);
++		subflow_req->msk = subflow_token_join_request(req);
+ 
+ 		/* Can't fall back to TCP in this case. */
+ 		if (!subflow_req->msk)
 -- 
 2.30.0
 
