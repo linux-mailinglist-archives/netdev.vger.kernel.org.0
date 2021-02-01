@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27C8F30B341
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 00:17:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5DD230B344
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 00:19:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231143AbhBAXRJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 18:17:09 -0500
-Received: from mga12.intel.com ([192.55.52.136]:52029 "EHLO mga12.intel.com"
+        id S230430AbhBAXSA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 18:18:00 -0500
+Received: from mga12.intel.com ([192.55.52.136]:51849 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231131AbhBAXRE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Feb 2021 18:17:04 -0500
-IronPort-SDR: 1CQfgCRJYBUrv9zS/yQQPrHuCvCaeSWfEkWu3ql6RRpHj6W3F7ImAvfSVKDYncuHXs4Hbxixm8
- dmf75cmPMotw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9882"; a="159934349"
+        id S230054AbhBAXR7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Feb 2021 18:17:59 -0500
+IronPort-SDR: Ch2kReqYYY0A1+Y2nIGn+9iFqHYhsKzTphWDyPygASQ8mHaeh3E8dbiNPjSMBAYG2EFwriylLw
+ pZEbrHuCJO9g==
+X-IronPort-AV: E=McAfee;i="6000,8403,9882"; a="159934350"
 X-IronPort-AV: E=Sophos;i="5.79,393,1602572400"; 
-   d="scan'208";a="159934349"
+   d="scan'208";a="159934350"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
   by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2021 15:09:28 -0800
-IronPort-SDR: FB7q6BqZRBnaXeWATNLtsV1/qXLRzovIg4r98OYoWSzw7+slLNZH88VPuaDnHkcB5MhO0irFtl
- 0zk48k7Uv9+Q==
+IronPort-SDR: tkA4IcTl2R4edi6Rw64cVNv5c3S14bR9YScekM9sRkZ5D3X6mN+iaU6pkPBgROebVmnmZ4U4LE
+ /yjkk1KuLXbw==
 X-IronPort-AV: E=Sophos;i="5.79,393,1602572400"; 
-   d="scan'208";a="391188479"
+   d="scan'208";a="391188480"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.251.7.131])
   by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2021 15:09:28 -0800
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
@@ -29,9 +29,9 @@ To:     netdev@vger.kernel.org
 Cc:     Geliang Tang <geliangtang@gmail.com>, davem@davemloft.net,
         kuba@kernel.org, mptcp@lists.01.org,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next v2 13/15] selftests: mptcp: add port argument for pm_nl_ctl
-Date:   Mon,  1 Feb 2021 15:09:18 -0800
-Message-Id: <20210201230920.66027-14-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next v2 14/15] mptcp: add the mibs for ADD_ADDR with port
+Date:   Mon,  1 Feb 2021 15:09:19 -0800
+Message-Id: <20210201230920.66027-15-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210201230920.66027-1-mathew.j.martineau@linux.intel.com>
 References: <20210201230920.66027-1-mathew.j.martineau@linux.intel.com>
@@ -43,96 +43,111 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Geliang Tang <geliangtang@gmail.com>
 
-This patch adds a new argument for pm_nl_ctl tool. We can use it like
-this:
+This patch adds the mibs for ADD_ADDR with port:
 
- # pm_nl_ctl add 10.0.2.1 flags signal port 10100
- # pm_nl_ctl dump
- id 1 flags signal 10.0.2.1 10100
+MPTCP_MIB_PORTADD for received ADD_ADDR suboption with a port number.
+
+MPTCP_MIB_PORTSYNRX, MPTCP_MIB_PORTSYNACKRX, MPTCP_MIB_PORTACKRX, for
+received MP_JOIN's SYN or SYN/ACK or ACK with a port number which is
+different from the msk's port number.
+
+MPTCP_MIB_MISMATCHPORTSYNRX and MPTCP_MIB_MISMATCHPORTACKRX, for
+received SYN or ACK MP_JOIN with a mismatched port-number.
 
 Signed-off-by: Geliang Tang <geliangtang@gmail.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- tools/testing/selftests/net/mptcp/pm_nl_ctl.c | 24 +++++++++++++++++--
- 1 file changed, 22 insertions(+), 2 deletions(-)
+ net/mptcp/mib.c     | 6 ++++++
+ net/mptcp/mib.h     | 6 ++++++
+ net/mptcp/options.c | 4 ++++
+ net/mptcp/subflow.c | 8 +++++++-
+ 4 files changed, 23 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/net/mptcp/pm_nl_ctl.c b/tools/testing/selftests/net/mptcp/pm_nl_ctl.c
-index abc269e96a07..7b4167f3f9a2 100644
---- a/tools/testing/selftests/net/mptcp/pm_nl_ctl.c
-+++ b/tools/testing/selftests/net/mptcp/pm_nl_ctl.c
-@@ -177,8 +177,8 @@ int add_addr(int fd, int pm_family, int argc, char *argv[])
- 		  1024];
- 	struct rtattr *rta, *nest;
- 	struct nlmsghdr *nh;
-+	u_int32_t flags = 0;
- 	u_int16_t family;
--	u_int32_t flags;
- 	int nest_start;
- 	u_int8_t id;
- 	int off = 0;
-@@ -224,7 +224,6 @@ int add_addr(int fd, int pm_family, int argc, char *argv[])
- 			char *tok, *str;
- 
- 			/* flags */
--			flags = 0;
- 			if (++arg >= argc)
- 				error(1, 0, " missing flags value");
- 
-@@ -272,6 +271,20 @@ int add_addr(int fd, int pm_family, int argc, char *argv[])
- 			rta->rta_len = RTA_LENGTH(4);
- 			memcpy(RTA_DATA(rta), &ifindex, 4);
- 			off += NLMSG_ALIGN(rta->rta_len);
-+		} else if (!strcmp(argv[arg], "port")) {
-+			u_int16_t port;
+diff --git a/net/mptcp/mib.c b/net/mptcp/mib.c
+index 8ca196489893..3780c29c321d 100644
+--- a/net/mptcp/mib.c
++++ b/net/mptcp/mib.c
+@@ -29,6 +29,12 @@ static const struct snmp_mib mptcp_snmp_list[] = {
+ 	SNMP_MIB_ITEM("DuplicateData", MPTCP_MIB_DUPDATA),
+ 	SNMP_MIB_ITEM("AddAddr", MPTCP_MIB_ADDADDR),
+ 	SNMP_MIB_ITEM("EchoAdd", MPTCP_MIB_ECHOADD),
++	SNMP_MIB_ITEM("PortAdd", MPTCP_MIB_PORTADD),
++	SNMP_MIB_ITEM("MPJoinPortSynRx", MPTCP_MIB_JOINPORTSYNRX),
++	SNMP_MIB_ITEM("MPJoinPortSynAckRx", MPTCP_MIB_JOINPORTSYNACKRX),
++	SNMP_MIB_ITEM("MPJoinPortAckRx", MPTCP_MIB_JOINPORTACKRX),
++	SNMP_MIB_ITEM("MismatchPortSynRx", MPTCP_MIB_MISMATCHPORTSYNRX),
++	SNMP_MIB_ITEM("MismatchPortAckRx", MPTCP_MIB_MISMATCHPORTACKRX),
+ 	SNMP_MIB_ITEM("RmAddr", MPTCP_MIB_RMADDR),
+ 	SNMP_MIB_ITEM("RmSubflow", MPTCP_MIB_RMSUBFLOW),
+ 	SNMP_MIB_ITEM("MPPrioTx", MPTCP_MIB_MPPRIOTX),
+diff --git a/net/mptcp/mib.h b/net/mptcp/mib.h
+index 63914a5ef6a5..72afbc135f8e 100644
+--- a/net/mptcp/mib.h
++++ b/net/mptcp/mib.h
+@@ -22,6 +22,12 @@ enum linux_mptcp_mib_field {
+ 	MPTCP_MIB_DUPDATA,		/* Segments discarded due to duplicate DSS */
+ 	MPTCP_MIB_ADDADDR,		/* Received ADD_ADDR with echo-flag=0 */
+ 	MPTCP_MIB_ECHOADD,		/* Received ADD_ADDR with echo-flag=1 */
++	MPTCP_MIB_PORTADD,		/* Received ADD_ADDR with a port-number */
++	MPTCP_MIB_JOINPORTSYNRX,	/* Received a SYN MP_JOIN with a different port-number */
++	MPTCP_MIB_JOINPORTSYNACKRX,	/* Received a SYNACK MP_JOIN with a different port-number */
++	MPTCP_MIB_JOINPORTACKRX,	/* Received an ACK MP_JOIN with a different port-number */
++	MPTCP_MIB_MISMATCHPORTSYNRX,	/* Received a SYN MP_JOIN with a mismatched port-number */
++	MPTCP_MIB_MISMATCHPORTACKRX,	/* Received an ACK MP_JOIN with a mismatched port-number */
+ 	MPTCP_MIB_RMADDR,		/* Received RM_ADDR */
+ 	MPTCP_MIB_RMSUBFLOW,		/* Remove a subflow */
+ 	MPTCP_MIB_MPPRIOTX,		/* Transmit a MP_PRIO */
+diff --git a/net/mptcp/options.c b/net/mptcp/options.c
+index c9643344a8d7..331d460d82fa 100644
+--- a/net/mptcp/options.c
++++ b/net/mptcp/options.c
+@@ -1024,6 +1024,10 @@ void mptcp_incoming_options(struct sock *sk, struct sk_buff *skb)
+ 			mptcp_pm_del_add_timer(msk, &addr);
+ 			MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_ECHOADD);
+ 		}
 +
-+			if (++arg >= argc)
-+				error(1, 0, " missing port value");
-+			if (!(flags & MPTCP_PM_ADDR_FLAG_SIGNAL))
-+				error(1, 0, " flags must be signal when using port");
++		if (mp_opt.port)
++			MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_PORTADD);
 +
-+			port = atoi(argv[arg]);
-+			rta = (void *)(data + off);
-+			rta->rta_type = MPTCP_PM_ADDR_ATTR_PORT;
-+			rta->rta_len = RTA_LENGTH(2);
-+			memcpy(RTA_DATA(rta), &port, 2);
-+			off += NLMSG_ALIGN(rta->rta_len);
- 		} else
- 			error(1, 0, "unknown keyword %s", argv[arg]);
+ 		mp_opt.add_addr = 0;
  	}
-@@ -324,6 +337,7 @@ int del_addr(int fd, int pm_family, int argc, char *argv[])
- static void print_addr(struct rtattr *attrs, int len)
- {
- 	uint16_t family = 0;
-+	uint16_t port = 0;
- 	char str[1024];
- 	uint32_t flags;
- 	uint8_t id;
-@@ -331,12 +345,16 @@ static void print_addr(struct rtattr *attrs, int len)
- 	while (RTA_OK(attrs, len)) {
- 		if (attrs->rta_type == MPTCP_PM_ADDR_ATTR_FAMILY)
- 			memcpy(&family, RTA_DATA(attrs), 2);
-+		if (attrs->rta_type == MPTCP_PM_ADDR_ATTR_PORT)
-+			memcpy(&port, RTA_DATA(attrs), 2);
- 		if (attrs->rta_type == MPTCP_PM_ADDR_ATTR_ADDR4) {
- 			if (family != AF_INET)
- 				error(1, errno, "wrong IP (v4) for family %d",
- 				      family);
- 			inet_ntop(AF_INET, RTA_DATA(attrs), str, sizeof(str));
- 			printf("%s", str);
-+			if (port)
-+				printf(" %d", port);
+ 
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index ebfbf6a9b669..280da418d60b 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -207,8 +207,10 @@ static int subflow_init_req(struct request_sock *req,
+ 				tcp_request_sock_ops.destructor(req);
+ 				subflow_req->msk = NULL;
+ 				subflow_req->mp_join = 0;
++				SUBFLOW_REQ_INC_STATS(req, MPTCP_MIB_MISMATCHPORTSYNRX);
+ 				return -EPERM;
+ 			}
++			SUBFLOW_REQ_INC_STATS(req, MPTCP_MIB_JOINPORTSYNRX);
  		}
- 		if (attrs->rta_type == MPTCP_PM_ADDR_ATTR_ADDR6) {
- 			if (family != AF_INET6)
-@@ -344,6 +362,8 @@ static void print_addr(struct rtattr *attrs, int len)
- 				      family);
- 			inet_ntop(AF_INET6, RTA_DATA(attrs), str, sizeof(str));
- 			printf("%s", str);
-+			if (port)
-+				printf(" %d", port);
+ 
+ 		subflow_req_create_thmac(subflow_req);
+@@ -431,6 +433,7 @@ static void subflow_finish_connect(struct sock *sk, const struct sk_buff *skb)
+ 			pr_debug("synack inet_dport=%d %d",
+ 				 ntohs(inet_sk(sk)->inet_dport),
+ 				 ntohs(inet_sk(parent)->inet_dport));
++			MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_JOINPORTSYNACKRX);
  		}
- 		if (attrs->rta_type == MPTCP_PM_ADDR_ATTR_ID) {
- 			memcpy(&id, RTA_DATA(attrs), 1);
+ 	} else if (mptcp_check_fallback(sk)) {
+ fallback:
+@@ -702,8 +705,11 @@ static struct sock *subflow_syn_recv_sock(const struct sock *sk,
+ 				pr_debug("ack inet_sport=%d %d",
+ 					 ntohs(inet_sk(sk)->inet_sport),
+ 					 ntohs(inet_sk((struct sock *)owner)->inet_sport));
+-				if (!mptcp_pm_sport_in_anno_list(owner, sk))
++				if (!mptcp_pm_sport_in_anno_list(owner, sk)) {
++					SUBFLOW_REQ_INC_STATS(req, MPTCP_MIB_MISMATCHPORTACKRX);
+ 					goto out;
++				}
++				SUBFLOW_REQ_INC_STATS(req, MPTCP_MIB_JOINPORTACKRX);
+ 			}
+ 		}
+ 	}
 -- 
 2.30.0
 
