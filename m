@@ -2,124 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54F8830A84E
+	by mail.lfdr.de (Postfix) with ESMTP id F163A30A84F
 	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 14:09:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231873AbhBANHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 08:07:44 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:32970 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231489AbhBANHh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 08:07:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1612184768;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=6DDFlumTehUaRYr4O1LIVMwqMGra9RibhaImhvBuKNU=;
-        b=aHDCLN400zDMOyWthv+nvFGZMnqKN0XSE9KhjGTq3+Q/mqrEhQQB0Rv+gfyNkpou0A2+q7
-        zn8SL6+eQviDnEtd25vpTWKsWgSx7PJ0gabCkxk/zIGq/myh1hioluQDhD9ybkkbHCbqJi
-        x50+fEKVooXGqZwQl/I2ilZGXV98Isk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-223-mJDahxL7NEGPHDoNjZ2wEw-1; Mon, 01 Feb 2021 08:06:04 -0500
-X-MC-Unique: mJDahxL7NEGPHDoNjZ2wEw-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2356B801817;
-        Mon,  1 Feb 2021 13:06:03 +0000 (UTC)
-Received: from computer-6.station (unknown [10.40.192.43])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 64DCA10016DB;
-        Mon,  1 Feb 2021 13:06:01 +0000 (UTC)
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S231528AbhBANIg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 08:08:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39476 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229545AbhBANId (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 08:08:33 -0500
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB0EFC061573
+        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 05:07:52 -0800 (PST)
+Received: by mail-ej1-x631.google.com with SMTP id sa23so7956767ejb.0
+        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 05:07:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=rooP/GJW/1+QAotMX4S4zetYHn9fYomgwLs+Slrvsg8=;
+        b=xmO8dlQ8C7JLhGvMpmANuaONLy+V94k0dDmvSQ602wlKkXlRjoRJNEbIezTcrvZd1x
+         wYkKp6yUE+AhyGHoqPSTFTSpRdvlZjjE6UN1sIgMi6Bd6iCNVPC9vjqyTRyIyR9slmQf
+         JurXqNXAf5sMvyMrwQHpODWXVeK1Qci0zCANQ+54AyIunmkAX9Ekug4wv51mU44Kun8C
+         C/QZipQQQwia8mjOCm5X9ZnslVEdrRNR6i7JOj64m9I7dKMu23ZKb/WcEpWsgd+LZDXF
+         9SIa4MjAvkE9ZgHlTTLIxU8CtOHAqoOSC2fKSz2BKRJDASj1AxiOmL5dyaZB4wsDy6nL
+         6Fog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=rooP/GJW/1+QAotMX4S4zetYHn9fYomgwLs+Slrvsg8=;
+        b=M94MYrwdI/ATIwal2ctomvM++OlX7f3VIVTPbIj1QTHpPuArmacbMKsD4otqqQHc6D
+         CUDWl8Upm+cQdtdKw5vtJ+GnpBAU/jq7rJ8Qsoh9ntAQrM5Zcn7t/PiEyZqGisr9+v8+
+         YpskHc/9FumTL/xTSnKjh4zIgztWU5HRgeMJpVZLSRpishmCKPYAWx7pJMBM+q8ujSJ2
+         NLYg+s5GulShiJgPtulFGU1A8vTe+O9EcI/WXOHROoOZ4qOgh+lKi3nyIuAPbeiXGPwL
+         hAX7sGIQqN7cgQ8OCOB6r86voJkK0+zHm9VUTAH/S/8P87sjTMOOZfeHDcwu34k7YJZT
+         rcfg==
+X-Gm-Message-State: AOAM5317yumjidTl+PMZ9q/qX5+afUAjiTfkdiKKr/eDhru1/H78Egni
+        hZIDws6GzJajB/V1TUi5iKeLVw==
+X-Google-Smtp-Source: ABdhPJx44AOeFxSy6H8Yad6nAtmmEPQbmVgty80WRJhEKl06knQnFXHTJ8XjHCF8O9E2k2SUrh4rTg==
+X-Received: by 2002:a17:906:6b02:: with SMTP id q2mr18066232ejr.122.1612184871534;
+        Mon, 01 Feb 2021 05:07:51 -0800 (PST)
+Received: from netronome.com ([2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a])
+        by smtp.gmail.com with ESMTPSA id u17sm627304ejr.59.2021.02.01.05.07.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Feb 2021 05:07:50 -0800 (PST)
+Date:   Mon, 1 Feb 2021 14:07:50 +0100
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Geliang Tang <geliangtang@gmail.com>, netdev@vger.kernel.org
-Subject: [PATCH net-next v3] mptcp: fix length of MP_PRIO suboption
-Date:   Mon,  1 Feb 2021 14:05:26 +0100
-Message-Id: <846cdd41e6ad6ec88ef23fee1552ab39c2f5a3d1.1612184361.git.dcaratti@redhat.com>
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        oss-drivers@netronome.com, Baowen Zheng <baowen.zheng@corigine.com>
+Subject: Re: [PATCH net-next v2] net/sched: act_police: add support for
+ packet-per-second policing
+Message-ID: <20210201130749.GA31077@netronome.com>
+References: <20210129102856.6225-1-simon.horman@netronome.com>
+ <CAM_iQpVnd9s6rpNOSNLTBHzLH7BtKvdZmWMhZdFps8udfCyikQ@mail.gmail.com>
+ <20210130145738.GA3330615@shredder.lan>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210130145738.GA3330615@shredder.lan>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With version 0 of the protocol it was legal to encode the 'Subflow Id' in
-the MP_PRIO suboption, to specify which subflow would change its 'Backup'
-flag. This has been removed from v1 specification: thus, according to RFC
-8684 §3.3.8, the resulting 'Length' for MP_PRIO changed from 4 to 3 byte.
+On Sat, Jan 30, 2021 at 04:57:38PM +0200, Ido Schimmel wrote:
+> On Fri, Jan 29, 2021 at 03:04:51PM -0800, Cong Wang wrote:
+> > On Fri, Jan 29, 2021 at 2:29 AM Simon Horman <simon.horman@netronome.com> wrote:
+> 
+> I didn't get v2 (didn't made it to the list), but I did leave feedback
+> on v1 [1]. Not sure if you got it or not given the recent issues.
+> 
+> [1] https://lore.kernel.org/netdev/20210128161933.GA3285394@shredder.lan/#t
 
-Current Linux generates / parses MP_PRIO according to the old spec, using
-'Length' equal to 4, and hardcoding 1 as 'Subflow Id'; RFC compliance can
-improve if we change 'Length' in other to become 3, leaving a 'Nop' after
-the MP_PRIO suboption. In this way the kernel will emit and accept *only*
-MP_PRIO suboptions that are compliant to version 1 of the MPTCP protocol.
-
- unpatched 5.11-rc kernel:
- [root@bottarga ~]# tcpdump -tnnr unpatched.pcap | grep prio
- reading from file unpatched.pcap, link-type LINUX_SLL (Linux cooked v1)
- dropped privs to tcpdump
- IP 10.0.3.2.48433 > 10.0.1.1.10006: Flags [.], ack 1, win 502, options [nop,nop,TS val 4032325513 ecr 1876514270,mptcp prio non-backup id 1,mptcp dss ack 14084896651682217737], length 0
-
- patched 5.11-rc kernel:
- [root@bottarga ~]# tcpdump -tnnr patched.pcap | grep prio
- reading from file patched.pcap, link-type LINUX_SLL (Linux cooked v1)
- dropped privs to tcpdump
- IP 10.0.3.2.49735 > 10.0.1.1.10006: Flags [.], ack 1, win 502, options [nop,nop,TS val 1276737699 ecr 2686399734,mptcp prio non-backup,nop,mptcp dss ack 18433038869082491686], length 0
-
-Changes since v2:
- - when accounting for option space, don't increment 'TCPOLEN_MPTCP_PRIO'
-   and use 'TCPOLEN_MPTCP_PRIO_ALIGN' instead, thanks to Matthieu Baerts.
-Changes since v1:
- - refactor patch to avoid using 'TCPOLEN_MPTCP_PRIO' with its old value,
-   thanks to Geliang Tang.
-
-Fixes: 067065422fcd ("mptcp: add the outgoing MP_PRIO support")
-Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
----
- net/mptcp/options.c  | 5 +++--
- net/mptcp/protocol.h | 3 ++-
- 2 files changed, 5 insertions(+), 3 deletions(-)
-
-diff --git a/net/mptcp/options.c b/net/mptcp/options.c
-index c9643344a8d7..17ad42c65087 100644
---- a/net/mptcp/options.c
-+++ b/net/mptcp/options.c
-@@ -699,10 +699,11 @@ static bool mptcp_established_options_mp_prio(struct sock *sk,
- 	if (!subflow->send_mp_prio)
- 		return false;
- 
--	if (remaining < TCPOLEN_MPTCP_PRIO)
-+	/* account for the trailing 'nop' option */
-+	if (remaining < TCPOLEN_MPTCP_PRIO_ALIGN)
- 		return false;
- 
--	*size = TCPOLEN_MPTCP_PRIO;
-+	*size = TCPOLEN_MPTCP_PRIO_ALIGN;
- 	opts->suboptions |= OPTION_MPTCP_PRIO;
- 	opts->backup = subflow->request_bkup;
- 
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index 1460705aaad0..07ee319f7847 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -60,7 +60,8 @@
- #define TCPOLEN_MPTCP_ADD_ADDR6_BASE_PORT	24
- #define TCPOLEN_MPTCP_PORT_LEN		4
- #define TCPOLEN_MPTCP_RM_ADDR_BASE	4
--#define TCPOLEN_MPTCP_PRIO		4
-+#define TCPOLEN_MPTCP_PRIO		3
-+#define TCPOLEN_MPTCP_PRIO_ALIGN	4
- #define TCPOLEN_MPTCP_FASTCLOSE		12
- 
- /* MPTCP MP_JOIN flags */
--- 
-2.29.2
-
+Sorry, I had missed that.
+I have now responded in-thread.
