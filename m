@@ -2,127 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59B4A30B237
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 22:42:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 95CE630B23A
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 22:43:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229704AbhBAVlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 16:41:12 -0500
-Received: from mga05.intel.com ([192.55.52.43]:50421 "EHLO mga05.intel.com"
+        id S229821AbhBAVms (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 16:42:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54244 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229495AbhBAVlL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Feb 2021 16:41:11 -0500
-IronPort-SDR: 5a5/VOEsjs4bFcXZ7ASbMNDKwoaN5O4I1Vkcbu6RT2K1kmB+Ruz8pLbodRlW7YMvFgUY0h/HLv
- hSpup3+SP7ag==
-X-IronPort-AV: E=McAfee;i="6000,8403,9882"; a="265589042"
-X-IronPort-AV: E=Sophos;i="5.79,393,1602572400"; 
-   d="scan'208";a="265589042"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2021 13:40:30 -0800
-IronPort-SDR: 5PwmU5+u65UknpqFhyNRMJdUHiHWwOn5zmVNz7LetRYDtRqy/XjGFrybM7509KGCb/8xPtFA2+
- 3hDTvhRX5aNQ==
-X-IronPort-AV: E=Sophos;i="5.79,393,1602572400"; 
-   d="scan'208";a="412917486"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.212.75.41]) ([10.212.75.41])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2021 13:40:30 -0800
-Subject: Re: [PATCH net-next 10/15] ice: display some stored NVM versions via
- devlink info
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, sassmann@redhat.com,
-        Tony Brelinski <tonyx.brelinski@intel.com>
-References: <20210129004332.3004826-1-anthony.l.nguyen@intel.com>
- <20210129004332.3004826-11-anthony.l.nguyen@intel.com>
- <20210129223754.0376285e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <977ae41c-c547-bc44-9857-24c88c228412@intel.com>
-Date:   Mon, 1 Feb 2021 13:40:27 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+        id S229683AbhBAVmj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Feb 2021 16:42:39 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5E88464DE3;
+        Mon,  1 Feb 2021 21:41:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612215718;
+        bh=WeEhAiIO49E6tfzCHZwvepg087uTE85UhzC1F6ugnUQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hCt3ON6+lYJ4LSYNgILzyK6e5Jw726NvUw8o8Q/jspzLX4N8znCrjmEaeLRO68B4/
+         7tyRhVlsYWJW+sFW65KScWjhgfBZQHhpWMXWzxIL2zQAowUiRqaTMGnDWH1T+/1OcP
+         Xx/jfZCYfavMC9j2q42tPoIFxhN+N5ZByQDF3tOdMZyFJnNyBtkNqpjxZIMKwnqAh3
+         z8jMlEylLxZ8c+Z+UuUuZOixzuqHpi4MY3DBQabgISFlF6sUg391E+FK1EAq4t+e0n
+         m26qLdtKKlj4KErnU9XyuV4omhwdhtZqoPr5ktLqdnha0ofF3DIbbwQ+RS6EUaJguE
+         3nTuJA3mBp1CQ==
+Date:   Mon, 1 Feb 2021 13:41:56 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Edwin Peer <edwin.peer@broadcom.com>
+Cc:     Danielle Ratson <danieller@nvidia.com>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        netdev <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@nvidia.com>, Andrew Lunn <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        mlxsw <mlxsw@nvidia.com>, Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next v3 2/7] ethtool: Get link mode in use instead
+ of speed and duplex parameters
+Message-ID: <20210201134156.14693076@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAKOOJTw75uLVPpzV1a85SFsO7Gz9bcfS9M1CWHQONCfMLC4H6g@mail.gmail.com>
+References: <20210120093713.4000363-1-danieller@nvidia.com>
+        <DM6PR12MB4516E98950B9F79812CAB522D8BE9@DM6PR12MB4516.namprd12.prod.outlook.com>
+        <CAKOOJTx_JHcaL9Wh2ROkpXVSF3jZVsnGHTSndB42xp61PzP9Vg@mail.gmail.com>
+        <DM6PR12MB4516DD64A5C46B80848D3645D8BC9@DM6PR12MB4516.namprd12.prod.outlook.com>
+        <CAKOOJTyRyz+KTZvQ8XAZ+kehjbTtqeA3qv+r9DJmS-f9eC6qWg@mail.gmail.com>
+        <DM6PR12MB45161FF65D43867C9ED96B6ED8BB9@DM6PR12MB4516.namprd12.prod.outlook.com>
+        <20210128202632.iqixlvdfey6sh7fe@lion.mk-sys.cz>
+        <DM6PR12MB4516868A5BD4C2EED7EF818BD8B79@DM6PR12MB4516.namprd12.prod.outlook.com>
+        <CAKOOJTy2wSmBjRnbhmD6xQgy1GAdiXAxoRX7APNto4gDYUWNRw@mail.gmail.com>
+        <DM6PR12MB45168B7B3516A37854812767D8B69@DM6PR12MB4516.namprd12.prod.outlook.com>
+        <CAKOOJTw2Z_SdPNsDeTanSatBLZ7=vh2FGjn_NASVUK2hbK7Q3Q@mail.gmail.com>
+        <20210201122939.09c18efa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAKOOJTw75uLVPpzV1a85SFsO7Gz9bcfS9M1CWHQONCfMLC4H6g@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210129223754.0376285e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 1/29/2021 10:37 PM, Jakub Kicinski wrote:
-> On Thu, 28 Jan 2021 16:43:27 -0800 Tony Nguyen wrote:
->> When reporting the versions via devlink info, first read the device
->> capabilities. If there is a pending flash update, use this new function
->> to extract the inactive flash versions. Add the stored fields to the
->> flash version map structure so that they will be displayed when
->> available.
+On Mon, 1 Feb 2021 13:05:10 -0800 Edwin Peer wrote:
+> On Mon, Feb 1, 2021 at 12:29 PM Jakub Kicinski <kuba@kernel.org> wrote:
 > 
-> Why only report them when there is an update pending?
+> > > I think it should be deterministic. It should be possible to select
+> > > the appropriate mode either based on the current media type or the
+> > > current link mode (which implies a media type). Alternatively, if the
+> > > user space request only specifies a subset, such as speed, fall back
+> > > to the existing behaviour and don't supply the request to the driver
+> > > in the form of a compound link mode in those cases (perhaps indicating
+> > > this by not setting the capability bit). The former approach has the
+> > > potential to tidy up drivers if we decide that drivers providing the
+> > > capability can ignore the other fields and rely solely on link mode,
+> > > the latter is no worse than what we have today.  
+> >
+> > The media part is beginning to sound concerning. Every time we
+> > under-specify an interface we end up with #vendors different
+> > interpretations. And since HW is programmed by FW in most high
+> > speed devices we can't even review the right thing is done.  
 > 
-> The expectation was that you'd always report what you can and user 
-> can tell the update is pending by comparing the fields.
-> 
+> Each link mode implies a very specific media type, the kernel can
+> reject illegal combinations based on the supported bitmask before
+> calling upon the driver to select it.
 
-If there is no pending update, what is the expected behavior? We report
-the currently active image version as both stored and running?
+Are you talking about validation against a driver-supplied list of
+HW-supported modes, or SFP-supported modes for a currently plugged 
+in module?
 
-In our case, the device has 2 copies of each of the 3 modules: NVM,
-Netlist, and UNDI/OptionROM.
+If I'm reading prior responses right it is the former.
 
-For each module, the device has a bit that indicates whether it will
-boot from the first or second bank of the image. When we update,
-whichever bank is not active is erased, and then populated with the new
-image contents. The bit indicating which bank to load is flipped. Once
-the device is rebooted (EMP reset), then the new bank is loaded, and the
-firmware performs some onetime initialization.
-
-So for us, in theory we have up to 2 versions within the device for each
-bank: the version in the currently active bank, and a version in the
-inactive bank. In the inactive case, it may or may not be valid
-depending on if that banks contents were ever a valid image. On a fresh
-card, this might be empty or filled with garbage.
-
-Presumably we do not want to report that we have "stored" a version
-which is not going to be activated next time that we boot?
-
-The documentation indicated that stored should be the version which
-*will* be activated.
-
-If I just blindly always reported what was inactive, then the following
-scenarios exist:
-
-# Brand new card:
-
-running:
-  fw.bundle_id: Version
-stored
-  fw.bundle_id: <zero or garbage>
-
-# Do an update:
-
-running:
-  fw.bundle_id: Version
-stored
-  fw.bundle_id: NewVersion
-
-# reset/reboot
-
-running:
-  fw.bundle_id: NewVersion
-stored:
-  fw.bundle_id: Version
-
-
-I could get behind that if we do not have a pending update we report the
-stored value as the same as the running value (i.e. from the active
-bank), where as if we have a pending update that will be triggered we
-would report the inactive bank. I didn't see the value in that before
-because it seemed like "if you don't have a pending update, you don't
-have a stored value, so just report the active version in the running
-category")
-
-It's also plausibly useful to report the stored but not pending value in
-some cases, but I really don't want to report zeros or garbage data on
-accident. This would almost certainly lead to confusing support
-conversations.
+The concern is around "what happens if user selected nnG-SR4 but user
+plugged in nnG-CR4". The MAC/PHY/serdes settings will be identical.
