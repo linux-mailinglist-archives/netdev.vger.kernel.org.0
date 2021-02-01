@@ -2,601 +2,339 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2E2B30B0E9
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 20:56:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC06230B0B1
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 20:46:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232879AbhBATzq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 14:55:46 -0500
-Received: from mail.pr-group.ru ([178.18.215.3]:50666 "EHLO mail.pr-group.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231219AbhBATzM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Feb 2021 14:55:12 -0500
-X-Greylist: delayed 1869 seconds by postgrey-1.27 at vger.kernel.org; Mon, 01 Feb 2021 14:55:10 EST
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-type;
-        bh=myK6cQQzMxgYoV2hhs7cdtiAdqh9UIoSjDmPzAgRz00=;
-        b=RC4n4a+WdolHbC72rjD7eDe/xvDpIgBA0gaMrqZIiywHPVzOXut/6IH8pCXkVlWADYnj22AxvDv0v
-         jWm9EptnDZNN66uF5+pGyTj2dP7nTWKonQW1SXP5NkZBIjHThDnAnfRuxZETUnfyxoIJncj3WfGafM
-         xz6syyL06WF02wb7BT6hGBq0e2b2qJlu9WOIudXoia86LZQC1us1HAOuu5cTTnl6q9nxMN2uoQfob1
-         59OAmjeXC0qIiEA0Tu+HLjvAq4nkQ6ByZChhuuYh5zn5c4nA9wPn/dGqhUbT7s/0YzUybpi11RAomw
-         BYskFG7T31iTm49PQIefONz++6gXbKQ==
-X-Spam-Status: No, hits=0.0 required=3.4
-        tests=BAYES_00: -1.665, CUSTOM_RULE_FROM: ALLOW, TOTAL_SCORE: -1.665,autolearn=ham
-X-Spam-Level: 
-X-Footer: bWV0cm90ZWsucnU=
-Received: from dhcp-179.ddg ([85.143.252.66])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Mon, 1 Feb 2021 22:23:01 +0300
-Date:   Mon, 1 Feb 2021 22:22:51 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-To:     netdev@vger.kernel.org
-Cc:     i.bornyakov@metrotek.ru, system@metrotek.ru, andrew@lunn.ch,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: phy: add Marvell 88X2222 transceiver support
-Message-ID: <20210201192250.gclztkomtsihczz6@dhcp-179.ddg>
+        id S231603AbhBATpn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 14:45:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40302 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229996AbhBATpX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 14:45:23 -0500
+Received: from mail-oo1-xc2c.google.com (mail-oo1-xc2c.google.com [IPv6:2607:f8b0:4864:20::c2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42836C06178B
+        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 11:43:56 -0800 (PST)
+Received: by mail-oo1-xc2c.google.com with SMTP id u7so4582547ooq.0
+        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 11:43:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GWJ+o1LW+u/gVa/qUfLZCig8y4n1+AmqQVve/uTR1bg=;
+        b=cBtyPh5Dv05j12LVwDbvpTEbPP48jrZ3NwuRyzsufBEBwwCcNd1RgbiAXSUHVppXoc
+         w7w8JYFtZMrvwH129KuTfThQbND2+EzxTbidOT4CwqCE8BDdCYSaAz5kTWO/eQS4Qcya
+         M1QDyxT4gbmRS7uLiBH71VXNIj5AUKNHkwikn6vuAZKP0nzve6/bQruKcd1O0jnKViB4
+         RoJPgCTtl12+Z4p5yZSl/tis6xSrghJkcJ1DJtahkxoMeVIlOhPlzdLudHmrXpmy6zy+
+         QlFkJaUp0WusroJVpj2BDuM5tXWyvdzVnFhyS0naGX8QXiAGesl4h9nLZ/dmv/a6cx7N
+         AF8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GWJ+o1LW+u/gVa/qUfLZCig8y4n1+AmqQVve/uTR1bg=;
+        b=bNTL0PhS0t9wk2e5vJnUA864llIgJt3CYMkXxWFQ4TG60oAni0Ik65ijNW8mPmr5H6
+         NASe0NvDS3Nxb/kgVYY42XSjvITeyfmqUkFxz20Y+DJzZQxJciShzFOGH9t607jT5sM0
+         dvI7WN2Oz3zqE5CijRQXeWtVY2X7NkLjElNpQnmGGPYK7qeo6E5BeizOG7cWNxjpaQ7A
+         hNwUoRWhAioxxysfMn9bP4qEy0DjGxSb082otZVetDmEYATTrqoMZN/rzXaIDYmbgx4x
+         ulyeGu95l8p03RdQd3nQd8S5UGdgmsrNUrmtqKGwZ3OAK77DB6ofCVbjN+Vk+2Nc22f9
+         0kBw==
+X-Gm-Message-State: AOAM532uDx7x+3i2lWAjyonznsv/o4r9X2v+n24w/vzfoA7A/FlLrEeq
+        Lpys3eu2bGL5UtgWNMcxt/QTVBwnC1oXBIRl8w==
+X-Google-Smtp-Source: ABdhPJzuWsBofkY0MP1ZWY9i9TQxja4+97NXNNH0A12yWG/hToQz2yKuN3EqHL9KPTWL9ml+aBuXKlV8XhMUoM46bLk=
+X-Received: by 2002:a4a:8555:: with SMTP id l21mr13211078ooh.27.1612208635322;
+ Mon, 01 Feb 2021 11:43:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: NeoMutt/20180716
+References: <20210201140503.130625-1-george.mccollister@gmail.com>
+ <20210201140503.130625-2-george.mccollister@gmail.com> <20210201145943.ajxecwnhsjslr2uf@skbuf>
+In-Reply-To: <20210201145943.ajxecwnhsjslr2uf@skbuf>
+From:   George McCollister <george.mccollister@gmail.com>
+Date:   Mon, 1 Feb 2021 13:43:43 -0600
+Message-ID: <CAFSKS=OR6dXWXdRTmYToH7NAnf6EiXsVbV_CpNkVr-z69vUz-g@mail.gmail.com>
+Subject: Re: [RESEND PATCH net-next 1/4] net: hsr: generate supervision frame
+ without HSR tag
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add basic support for the Marvell 88X2222 multi-speed ethernet
-transceiver.
+On Mon, Feb 1, 2021 at 8:59 AM Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> On Mon, Feb 01, 2021 at 08:05:00AM -0600, George McCollister wrote:
+> > Generate supervision frame without HSR/PRP tag and rely on existing
+> > code which inserts it later.
+> > This will allow HSR/PRP tag insertions to be offloaded in the future.
+> >
+> > Signed-off-by: George McCollister <george.mccollister@gmail.com>
+> > ---
+>
+> I'm not sure I understand why this change is correct, you'll have to
+> write a more convincing commit message, and if that takes up too much
+> space (I hope it will), you'll have to break this up into multiple
+> trivial changes.
 
-This PHY provides data transmission over fiber-optic as well as Twinax
-copper links. The 88X2222 supports 2 ports of 10GBase-R and 1000Base-X
-on the line-side interface. The host-side interface supports 4 ports of
-10GBase-R, RXAUI, 1000Base-X and 2 ports of XAUI.
+Okay, I'll work on this. Not sure if this can be broken up into
+trivial changes if we want it to remain working after each commit.
 
-This driver, however, supports only XAUI on the host-side and
-1000Base-X/10GBase-R on the line-side, for now. Interrupts are not
-supported also.
+>
+> Just so we're on the same page, here is the call path:
+>
+> hsr_announce
+> -> hsr->proto_ops->send_sv_frame
+>    -> hsr_init_skb
+>    -> hsr_forward_skb
+>       -> fill_frame_info
+>          -> hsr->proto_ops->fill_frame_info
+>       -> hsr_forward_do
+>          -> hsr_handle_sup_frame
+>          -> hsr->proto_ops->create_tagged_frame
+>          -> hsr_xmit
+>
+> >  net/hsr/hsr_device.c  | 32 ++++----------------------------
+> >  net/hsr/hsr_forward.c | 10 +++++++---
+> >  2 files changed, 11 insertions(+), 31 deletions(-)
+> >
+> > diff --git a/net/hsr/hsr_device.c b/net/hsr/hsr_device.c
+> > index ab953a1a0d6c..161b8da6a21d 100644
+> > --- a/net/hsr/hsr_device.c
+> > +++ b/net/hsr/hsr_device.c
+> > @@ -242,8 +242,7 @@ static struct sk_buff *hsr_init_skb(struct hsr_port *master, u16 proto)
+> >        * being, for PRP it is a trailer and for HSR it is a
+> >        * header
+> >        */
+> > -     skb = dev_alloc_skb(sizeof(struct hsr_tag) +
+> > -                         sizeof(struct hsr_sup_tag) +
+> > +     skb = dev_alloc_skb(sizeof(struct hsr_sup_tag) +
+> >                           sizeof(struct hsr_sup_payload) + hlen + tlen);
+>
+> Question 1: why are you no longer allocating struct hsr_tag (or struct prp_rct,
+> which has the same size)?
 
-Internal registers access compliant with the Clause 45 specification.
+Because the tag is no longer being included in the supervisory frame
+here. If I understand correctly hsr_create_tagged_frame and
+prp_create_tagged_frame will create a new skb with HSR_HLEN added
+later.
 
-Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
----
- drivers/net/phy/Kconfig           |   6 +
- drivers/net/phy/Makefile          |   1 +
- drivers/net/phy/marvell-88x2222.c | 480 ++++++++++++++++++++++++++++++
- include/linux/marvell_phy.h       |   1 +
- 4 files changed, 488 insertions(+)
- create mode 100644 drivers/net/phy/marvell-88x2222.c
+>
+> In hsr->proto_ops->fill_frame_info in the call path above, the skb is
+> still put either into frame->skb_hsr or into frame->skb_prp, but not
+> into frame->skb_std, even if it does not contain a struct hsr_tag.
 
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index 698bea312adc..a615b3660b05 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -201,6 +201,12 @@ config MARVELL_10G_PHY
- 	help
- 	  Support for the Marvell Alaska MV88X3310 and compatible PHYs.
- 
-+config MARVELL_88X2222_PHY
-+	tristate "Marvell 88X2222 PHY"
-+	help
-+	  Support for the Marvell 88X2222 Dual-port Multi-speed Ethernet
-+	  Transceiver.
-+
- config MICREL_PHY
- 	tristate "Micrel PHYs"
- 	help
-diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
-index a13e402074cf..de683e3abe63 100644
---- a/drivers/net/phy/Makefile
-+++ b/drivers/net/phy/Makefile
-@@ -63,6 +63,7 @@ obj-$(CONFIG_LSI_ET1011C_PHY)	+= et1011c.o
- obj-$(CONFIG_LXT_PHY)		+= lxt.o
- obj-$(CONFIG_MARVELL_10G_PHY)	+= marvell10g.o
- obj-$(CONFIG_MARVELL_PHY)	+= marvell.o
-+obj-$(CONFIG_MARVELL_88X2222_PHY)	+= marvell-88x2222.o
- obj-$(CONFIG_MESON_GXL_PHY)	+= meson-gxl.o
- obj-$(CONFIG_MICREL_KS8995MA)	+= spi_ks8995.o
- obj-$(CONFIG_MICREL_PHY)	+= micrel.o
-diff --git a/drivers/net/phy/marvell-88x2222.c b/drivers/net/phy/marvell-88x2222.c
-new file mode 100644
-index 000000000000..e2c55db4769f
---- /dev/null
-+++ b/drivers/net/phy/marvell-88x2222.c
-@@ -0,0 +1,480 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * Marvell 88x2222 dual-port multi-speed ethernet transceiver.
-+ *
-+ * Supports:
-+ *	XAUI on the host side.
-+ *	1000Base-X or 10GBase-R on the line side.
-+ */
-+#include <linux/module.h>
-+#include <linux/phy.h>
-+#include <linux/gpio.h>
-+#include <linux/delay.h>
-+#include <linux/mdio.h>
-+#include <linux/marvell_phy.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/of_gpio.h>
-+#include <linux/sfp.h>
-+#include <linux/netdevice.h>
-+
-+/* Port PCS Configuration */
-+#define	MV_PCS_CONFIG		0xF002
-+#define	MV_PCS_HOST_XAUI	0x73
-+#define	MV_PCS_LINE_10GBR	(0x71 << 8)
-+#define	MV_PCS_LINE_1GBX_AN	(0x7B << 8)
-+
-+/* Port Reset and Power Down */
-+#define	MV_PORT_RST	0xF003
-+#define	MV_LINE_RST_SW	BIT(15)
-+#define	MV_HOST_RST_SW	BIT(7)
-+#define	MV_PORT_RST_SW	(MV_LINE_RST_SW | MV_HOST_RST_SW)
-+
-+/* LED0 Control */
-+#define	MV_LED0_CTRL		0xF020
-+#define	MV_LED0_SOLID_MASK	(0xf << 4)
-+#define	MV_LED0_SOLID_OFF	(0x0 << 4)
-+#define	MV_LED0_SOLID_ON	(0x7 << 4)
-+
-+/* PMD Transmit Disable */
-+#define	MV_TX_DISABLE		0x0009
-+#define	MV_TX_DISABLE_GLOBAL	BIT(0)
-+
-+/* 10GBASE-R PCS Status 1 */
-+#define	MV_10GBR_STAT		MDIO_STAT1
-+
-+/* 10GBASE-R PCS Real Time Status Register */
-+#define	MV_10GBR_STAT_RT	0x8002
-+
-+/* 1000Base-X/SGMII Control Register */
-+#define	MV_1GBX_CTRL		0x2000
-+
-+/* 1000BASE-X/SGMII Status Register */
-+#define	MV_1GBX_STAT		0x2001
-+
-+/* 1000Base-X Auto-Negotiation Advertisement Register */
-+#define	MV_1GBX_ADVERTISE	0x2004
-+
-+/* 1000Base-X PHY Specific Status Register */
-+#define	MV_1GBX_PHY_STAT		0xA003
-+#define	MV_1GBX_PHY_STAT_LSTATUS_RT	BIT(10)
-+#define	MV_1GBX_PHY_STAT_AN_RESOLVED	BIT(11)
-+#define	MV_1GBX_PHY_STAT_DUPLEX		BIT(13)
-+#define	MV_1GBX_PHY_STAT_SPEED100	BIT(14)
-+#define	MV_1GBX_PHY_STAT_SPEED1000	BIT(15)
-+
-+struct mv2222_data {
-+	bool sfp_inserted;
-+	bool net_up;
-+};
-+
-+/* SFI PMA transmit enable */
-+static void mv2222_tx_enable(struct phy_device *phydev)
-+{
-+	phy_clear_bits_mmd(phydev, MDIO_MMD_PMAPMD, MV_TX_DISABLE,
-+			   MV_TX_DISABLE_GLOBAL);
-+}
-+
-+/* SFI PMA transmit disable */
-+static void mv2222_tx_disable(struct phy_device *phydev)
-+{
-+	phy_set_bits_mmd(phydev, MDIO_MMD_PMAPMD, MV_TX_DISABLE,
-+			 MV_TX_DISABLE_GLOBAL);
-+}
-+
-+static void mv2222_link_led_on(struct phy_device *phydev)
-+{
-+	phy_modify_mmd(phydev, MDIO_MMD_VEND2, MV_LED0_CTRL, MV_LED0_SOLID_MASK,
-+		       MV_LED0_SOLID_ON);
-+}
-+
-+static void mv2222_link_led_off(struct phy_device *phydev)
-+{
-+	phy_modify_mmd(phydev, MDIO_MMD_VEND2, MV_LED0_CTRL, MV_LED0_SOLID_MASK,
-+		       MV_LED0_SOLID_OFF);
-+}
-+
-+static int mv2222_soft_reset(struct phy_device *phydev)
-+{
-+	int ret = phy_write_mmd(phydev, MDIO_MMD_VEND2, MV_PORT_RST, MV_PORT_RST_SW);
-+
-+	msleep(2000);
-+
-+	return ret;
-+}
-+
-+static int sfp_module_insert(void *_priv, const struct sfp_eeprom_id *id)
-+{
-+	struct phy_device *phydev = _priv;
-+	struct device *dev = &phydev->mdio.dev;
-+	struct mv2222_data *priv = phydev->priv;
-+	phy_interface_t interface;
-+
-+	__ETHTOOL_DECLARE_LINK_MODE_MASK(supported) = { 0, };
-+
-+	sfp_parse_support(phydev->sfp_bus, id, supported);
-+	interface = sfp_select_interface(phydev->sfp_bus, supported);
-+
-+	dev_info(dev, "%s SFP module inserted", phy_modes(interface));
-+
-+	switch (interface) {
-+	case PHY_INTERFACE_MODE_10GBASER:
-+		phydev->speed = SPEED_10000;
-+		phydev->interface = PHY_INTERFACE_MODE_10GBASER;
-+		linkmode_set_bit(ETHTOOL_LINK_MODE_10000baseKR_Full_BIT,
-+				 phydev->supported);
-+
-+		phy_write_mmd(phydev, MDIO_MMD_VEND2, MV_PCS_CONFIG,
-+			      MV_PCS_HOST_XAUI | MV_PCS_LINE_10GBR);
-+		mv2222_soft_reset(phydev);
-+		break;
-+	case PHY_INTERFACE_MODE_1000BASEX:
-+	default:
-+		phydev->speed = SPEED_1000;
-+		phydev->interface = PHY_INTERFACE_MODE_1000BASEX;
-+		linkmode_clear_bit(ETHTOOL_LINK_MODE_10000baseKR_Full_BIT,
-+				   phydev->supported);
-+
-+		phy_write_mmd(phydev, MDIO_MMD_VEND2, MV_PCS_CONFIG,
-+			      MV_PCS_HOST_XAUI | MV_PCS_LINE_1GBX_AN);
-+		mv2222_soft_reset(phydev);
-+	}
-+
-+	priv->sfp_inserted = true;
-+
-+	if (priv->net_up)
-+		mv2222_tx_enable(phydev);
-+
-+	return 0;
-+}
-+
-+static void sfp_module_remove(void *_priv)
-+{
-+	struct phy_device *phydev = _priv;
-+	struct mv2222_data *priv = phydev->priv;
-+
-+	priv->sfp_inserted = false;
-+	mv2222_tx_disable(phydev);
-+}
-+
-+static const struct sfp_upstream_ops sfp_phy_ops = {
-+	.module_insert = sfp_module_insert,
-+	.module_remove = sfp_module_remove,
-+	.attach = phy_sfp_attach,
-+	.detach = phy_sfp_detach,
-+};
-+
-+static int mv2222_config_init(struct phy_device *phydev)
-+{
-+	linkmode_zero(phydev->supported);
-+	linkmode_set_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, phydev->supported);
-+	linkmode_set_bit(ETHTOOL_LINK_MODE_FIBRE_BIT, phydev->supported);
-+	linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseX_Full_BIT, phydev->supported);
-+	linkmode_set_bit(ETHTOOL_LINK_MODE_10000baseKR_Full_BIT, phydev->supported);
-+
-+	phydev->pause = 0;
-+	phydev->asym_pause = 0;
-+	phydev->duplex = DUPLEX_FULL;
-+	phydev->autoneg = AUTONEG_DISABLE;
-+
-+	return 0;
-+}
-+
-+static void mv2222_update_interface(struct phy_device *phydev)
-+{
-+	if ((phydev->speed == SPEED_1000 ||
-+	     phydev->speed == SPEED_100 ||
-+	     phydev->speed == SPEED_10) &&
-+	    phydev->interface != PHY_INTERFACE_MODE_1000BASEX) {
-+		phydev->interface = PHY_INTERFACE_MODE_1000BASEX;
-+
-+		phy_write_mmd(phydev, MDIO_MMD_VEND2, MV_PCS_CONFIG,
-+			      MV_PCS_HOST_XAUI | MV_PCS_LINE_1GBX_AN);
-+		mv2222_soft_reset(phydev);
-+	} else if (phydev->speed == SPEED_10000 &&
-+		   phydev->interface != PHY_INTERFACE_MODE_10GBASER) {
-+		phydev->interface = PHY_INTERFACE_MODE_10GBASER;
-+
-+		phy_write_mmd(phydev, MDIO_MMD_VEND2, MV_PCS_CONFIG,
-+			      MV_PCS_HOST_XAUI | MV_PCS_LINE_10GBR);
-+		mv2222_soft_reset(phydev);
-+	}
-+}
-+
-+/* Returns negative on error, 0 if link is down, 1 if link is up */
-+static int mv2222_read_status_10g(struct phy_device *phydev)
-+{
-+	int val, link = 0;
-+
-+	val = phy_read_mmd(phydev, MDIO_MMD_PCS, MV_10GBR_STAT);
-+	if (val < 0)
-+		return val;
-+
-+	if (val & MDIO_STAT1_LSTATUS) {
-+		link = 1;
-+
-+		/* 10GBASE-R do not support auto-negotiation */
-+		phydev->autoneg = AUTONEG_DISABLE;
-+		phydev->speed = SPEED_10000;
-+		phydev->duplex = DUPLEX_FULL;
-+	}
-+
-+	return link;
-+}
-+
-+/* Returns negative on error, 0 if link is down, 1 if link is up */
-+static int mv2222_read_status_1g(struct phy_device *phydev)
-+{
-+	int val, link = 0;
-+
-+	val = phy_read_mmd(phydev, MDIO_MMD_PCS, MV_1GBX_STAT);
-+	if (val < 0)
-+		return val;
-+
-+	if (!(val & MDIO_STAT1_LSTATUS) ||
-+	    (phydev->autoneg == AUTONEG_ENABLE && !(val & MDIO_AN_STAT1_COMPLETE)))
-+		return 0;
-+
-+	link = 1;
-+
-+	if (phydev->autoneg == AUTONEG_DISABLE) {
-+		phydev->speed = SPEED_1000;
-+		phydev->duplex = DUPLEX_FULL;
-+
-+		return link;
-+	}
-+
-+	val = phy_read_mmd(phydev, MDIO_MMD_PCS, MV_1GBX_PHY_STAT);
-+	if (val < 0)
-+		return val;
-+
-+	if (val & MV_1GBX_PHY_STAT_AN_RESOLVED) {
-+		if (val & MV_1GBX_PHY_STAT_DUPLEX)
-+			phydev->duplex = DUPLEX_FULL;
-+		else
-+			phydev->duplex = DUPLEX_HALF;
-+
-+		if (val & MV_1GBX_PHY_STAT_SPEED1000)
-+			phydev->speed = SPEED_1000;
-+		else if (val & MV_1GBX_PHY_STAT_SPEED100)
-+			phydev->speed = SPEED_100;
-+		else
-+			phydev->speed = SPEED_10;
-+	} else {
-+		phydev->duplex = DUPLEX_UNKNOWN;
-+		phydev->speed = SPEED_UNKNOWN;
-+	}
-+
-+	return link;
-+}
-+
-+static int mv2222_read_status(struct phy_device *phydev)
-+{
-+	int link;
-+
-+	linkmode_zero(phydev->lp_advertising);
-+	phydev->pause = 0;
-+	phydev->asym_pause = 0;
-+
-+	switch (phydev->interface) {
-+	case PHY_INTERFACE_MODE_10GBASER:
-+		link = mv2222_read_status_10g(phydev);
-+		break;
-+	case PHY_INTERFACE_MODE_1000BASEX:
-+	default:
-+		link = mv2222_read_status_1g(phydev);
-+		break;
-+	}
-+
-+	if (link < 0)
-+		return link;
-+
-+	phydev->link = link;
-+
-+	if (phydev->link)
-+		mv2222_link_led_on(phydev);
-+	else
-+		mv2222_link_led_off(phydev);
-+
-+	return 0;
-+}
-+
-+static int mv2222_disable_aneg(struct phy_device *phydev)
-+{
-+	return phy_clear_bits_mmd(phydev, MDIO_MMD_PCS, MV_1GBX_CTRL,
-+				  MDIO_AN_CTRL1_ENABLE | MDIO_AN_CTRL1_RESTART);
-+}
-+
-+static int mv2222_enable_aneg(struct phy_device *phydev)
-+{
-+	return phy_set_bits_mmd(phydev, MDIO_MMD_PCS, MV_1GBX_CTRL,
-+				MDIO_AN_CTRL1_ENABLE | MDIO_CTRL1_RESET);
-+}
-+
-+static int mv2222_config_aneg(struct phy_device *phydev)
-+{
-+	int ret, adv;
-+
-+	if (phydev->autoneg == AUTONEG_DISABLE ||
-+	    phydev->speed == SPEED_10000) {
-+		if (phydev->speed == SPEED_10000 &&
-+		    !linkmode_test_bit(ETHTOOL_LINK_MODE_10000baseKR_Full_BIT,
-+				      phydev->supported))
-+			return -EINVAL;
-+
-+		/* Link partner advertising modes */
-+		linkmode_copy(phydev->advertising, phydev->supported);
-+
-+		mv2222_update_interface(phydev);
-+
-+		return mv2222_disable_aneg(phydev);
-+	}
-+
-+	/* Try 10G first */
-+	if (linkmode_test_bit(ETHTOOL_LINK_MODE_10000baseKR_Full_BIT,
-+			      phydev->supported)) {
-+		phydev->speed = SPEED_10000;
-+		mv2222_update_interface(phydev);
-+
-+		ret = phy_read_mmd(phydev, MDIO_MMD_PCS, MV_10GBR_STAT_RT);
-+		if (ret < 0)
-+			return ret;
-+
-+		if (ret & MDIO_STAT1_LSTATUS) {
-+			phydev->autoneg = AUTONEG_DISABLE;
-+			linkmode_copy(phydev->advertising, phydev->supported);
-+
-+			return mv2222_disable_aneg(phydev);
-+		} else {
-+			phydev->speed = SPEED_1000;
-+			mv2222_update_interface(phydev);
-+		}
-+	}
-+
-+	adv = 0;
-+	linkmode_zero(phydev->advertising);
-+
-+	if (linkmode_test_bit(ETHTOOL_LINK_MODE_1000baseX_Full_BIT,
-+			      phydev->supported)) {
-+		adv |= ADVERTISE_1000XFULL;
-+		linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseX_Full_BIT,
-+				 phydev->advertising);
-+	}
-+
-+	if (linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
-+			      phydev->supported)) {
-+		adv |= ADVERTISE_1000XPAUSE;
-+		linkmode_set_bit(ETHTOOL_LINK_MODE_Pause_BIT,
-+				 phydev->advertising);
-+	}
-+
-+	if (linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
-+			      phydev->supported)) {
-+		adv |= ADVERTISE_1000XPSE_ASYM;
-+		linkmode_set_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
-+				 phydev->advertising);
-+	}
-+
-+	ret = phy_modify_mmd(phydev, MDIO_MMD_PCS, MV_1GBX_ADVERTISE,
-+			     ADVERTISE_1000XFULL |
-+			     ADVERTISE_1000XPAUSE | ADVERTISE_1000XPSE_ASYM,
-+			     adv);
-+	if (ret < 0)
-+		return ret;
-+
-+	return mv2222_enable_aneg(phydev);
-+}
-+
-+static int mv2222_aneg_done(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	if (linkmode_test_bit(ETHTOOL_LINK_MODE_10000baseKR_Full_BIT,
-+			      phydev->supported)) {
-+		ret = phy_read_mmd(phydev, MDIO_MMD_PCS, MV_10GBR_STAT);
-+		if (ret < 0)
-+			return ret;
-+
-+		if (ret & MDIO_STAT1_LSTATUS)
-+			return 1;
-+	}
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_PCS, MV_1GBX_STAT);
-+	if (ret < 0)
-+		return ret;
-+
-+	return (ret & MDIO_AN_STAT1_COMPLETE);
-+}
-+
-+static int mv2222_resume(struct phy_device *phydev)
-+{
-+	struct mv2222_data *priv = phydev->priv;
-+
-+	priv->net_up = true;
-+
-+	if (priv->sfp_inserted)
-+		mv2222_tx_enable(phydev);
-+
-+	return 0;
-+}
-+
-+static int mv2222_suspend(struct phy_device *phydev)
-+{
-+	struct mv2222_data *priv = phydev->priv;
-+
-+	priv->net_up = false;
-+	mv2222_tx_disable(phydev);
-+	mv2222_link_led_off(phydev);
-+
-+	return 0;
-+}
-+
-+static int mv2222_probe(struct phy_device *phydev)
-+{
-+	struct device *dev = &phydev->mdio.dev;
-+	struct mv2222_data *priv = NULL;
-+
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	phydev->priv = priv;
-+
-+	return phy_sfp_probe(phydev, &sfp_phy_ops);
-+}
-+
-+static void mv2222_remove(struct phy_device *phydev)
-+{
-+	struct device *dev = &phydev->mdio.dev;
-+	struct mv2222_data *priv = phydev->priv;
-+
-+	if (priv)
-+		devm_kfree(dev, priv);
-+}
-+
-+static struct phy_driver mv2222_drivers[] = {
-+	{
-+		.phy_id = MARVELL_PHY_ID_88X2222,
-+		.phy_id_mask = MARVELL_PHY_ID_MASK,
-+		.name = "Marvell 88X2222",
-+		.soft_reset = mv2222_soft_reset,
-+		.config_init = mv2222_config_init,
-+		.config_aneg = mv2222_config_aneg,
-+		.aneg_done = mv2222_aneg_done,
-+		.probe = mv2222_probe,
-+		.remove = mv2222_remove,
-+		.suspend = mv2222_suspend,
-+		.resume = mv2222_resume,
-+		.read_status = mv2222_read_status,
-+	},
-+};
-+module_phy_driver(mv2222_drivers);
-+
-+static struct mdio_device_id __maybe_unused mv2222_tbl[] = {
-+	{ MARVELL_PHY_ID_88X2222, MARVELL_PHY_ID_MASK },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(mdio, mv2222_tbl);
-+
-+MODULE_DESCRIPTION("Marvell 88x2222 ethernet transceiver driver");
-+MODULE_LICENSE("GPL");
-diff --git a/include/linux/marvell_phy.h b/include/linux/marvell_phy.h
-index 52b1610eae68..274abd5fbac3 100644
---- a/include/linux/marvell_phy.h
-+++ b/include/linux/marvell_phy.h
-@@ -24,6 +24,7 @@
- #define MARVELL_PHY_ID_88E3016		0x01410e60
- #define MARVELL_PHY_ID_88X3310		0x002b09a0
- #define MARVELL_PHY_ID_88E2110		0x002b09b0
-+#define MARVELL_PHY_ID_88X2222		0x01410f10
- 
- /* Marvel 88E1111 in Finisar SFP module with modified PHY ID */
- #define MARVELL_PHY_ID_88E1111_FINISAR	0x01ff0cc0
--- 
-2.20.1
+Are you sure? My patch changes hsr_fill_frame_info and
+prp_fill_frame_info not to do that if port->type is HSR_PT_MASTER
+which I'm pretty certain it always is when sending supervisory frames
+like this. If I've overlooked something let me know.
 
+>
+> Also, which code exactly will insert the hsr_tag later? I assume
+> hsr_fill_tag via hsr->proto_ops->create_tagged_frame?
 
+Correct.
+
+>
+> But I don't think that's how it works, unless I'm misunderstanding
+> something.. The code path in hsr_create_tagged_frame is:
+>
+>         if (frame->skb_hsr) {   <- it will take this branch
+
+it shouldn't be taking this branch because skb_hsr and skb_prp
+shouldn't be getting filled out. Let's resolve that part of the
+discussion above.
+
+>                 struct hsr_ethhdr *hsr_ethhdr =
+>                         (struct hsr_ethhdr *)skb_mac_header(frame->skb_hsr);
+>
+>                 /* set the lane id properly */
+>                 hsr_set_path_id(hsr_ethhdr, port);
+>                 return skb_clone(frame->skb_hsr, GFP_ATOMIC);
+>         }
+>
+>         not this one
+>         |
+>         v
+>
+>         /* Create the new skb with enough headroom to fit the HSR tag */
+>         skb = __pskb_copy(frame->skb_std,
+>                           skb_headroom(frame->skb_std) + HSR_HLEN, GFP_ATOMIC);
+>         if (!skb)
+>                 return NULL;
+>         skb_reset_mac_header(skb);
+>
+>         if (skb->ip_summed == CHECKSUM_PARTIAL)
+>                 skb->csum_start += HSR_HLEN;
+>
+>         movelen = ETH_HLEN;
+>         if (frame->is_vlan)
+>                 movelen += VLAN_HLEN;
+>
+>         src = skb_mac_header(skb);
+>         dst = skb_push(skb, HSR_HLEN);
+>         memmove(dst, src, movelen);
+>         skb_reset_mac_header(skb);
+>
+>         /* skb_put_padto free skb on error and hsr_fill_tag returns NULL in
+>          * that case
+>          */
+>         return hsr_fill_tag(skb, frame, port, port->hsr->prot_version);
+>
+> Otherwise said, it assumes that a frame->skb_hsr already has a struct
+> hsr_tag, no? Where does hsr_set_path_id() write?
+>
+> >
+> >       if (!skb)
+> > @@ -275,12 +274,10 @@ static void send_hsr_supervision_frame(struct hsr_port *master,
+> >  {
+> >       struct hsr_priv *hsr = master->hsr;
+> >       __u8 type = HSR_TLV_LIFE_CHECK;
+> > -     struct hsr_tag *hsr_tag = NULL;
+> >       struct hsr_sup_payload *hsr_sp;
+> >       struct hsr_sup_tag *hsr_stag;
+> >       unsigned long irqflags;
+> >       struct sk_buff *skb;
+> > -     u16 proto;
+> >
+> >       *interval = msecs_to_jiffies(HSR_LIFE_CHECK_INTERVAL);
+> >       if (hsr->announce_count < 3 && hsr->prot_version == 0) {
+> > @@ -289,23 +286,12 @@ static void send_hsr_supervision_frame(struct hsr_port *master,
+> >               hsr->announce_count++;
+> >       }
+> >
+> > -     if (!hsr->prot_version)
+> > -             proto = ETH_P_PRP;
+> > -     else
+> > -             proto = ETH_P_HSR;
+> > -
+> > -     skb = hsr_init_skb(master, proto);
+> > +     skb = hsr_init_skb(master, ETH_P_PRP);
+>
+> Question 2: why is this correct, setting skb->protocol to ETH_P_PRP
+> (HSR v0) regardless of prot_version? Also, why is the change necessary?
+
+This part is not intuitive and I don't have a copy of the documents
+where v0 was defined. It's unfortunate this code even supports v0
+because AFAIK no one else uses it; but it's in here so we have to keep
+supporting it I guess.
+In v1 the tag has an eth type of 0x892f and the encapsulated
+supervisory frame has a type of 0x88fb. In v0 0x88fb is used for the
+eth type and there is no encapsulation type. So... this is correct
+however I compared supervisory frame generation before and after this
+patch for v0 and I found a problem. My changes make it add 0x88fb
+again later for v0 which it's not supposed to do. I'll have to fix
+that part somehow.
+
+>
+> Why is it such a big deal if supervision frames have HSR/PRP tag or not?
+
+Because if the switch does automatic HSR/PRP tag insertion it will end
+up in there twice. You simply can't send anything with an HSR/PRP tag
+if this is offloaded.
+
+>
+> >       if (!skb) {
+> >               WARN_ONCE(1, "HSR: Could not send supervision frame\n");
+> >               return;
+> >       }
+> >
+> > -     if (hsr->prot_version > 0) {
+> > -             hsr_tag = skb_put(skb, sizeof(struct hsr_tag));
+> > -             hsr_tag->encap_proto = htons(ETH_P_PRP);
+> > -             set_hsr_tag_LSDU_size(hsr_tag, HSR_V1_SUP_LSDUSIZE);
+> > -     }
+> > -
+> >       hsr_stag = skb_put(skb, sizeof(struct hsr_sup_tag));
+> >       set_hsr_stag_path(hsr_stag, (hsr->prot_version ? 0x0 : 0xf));
+> >       set_hsr_stag_HSR_ver(hsr_stag, hsr->prot_version);
+> > @@ -315,8 +301,6 @@ static void send_hsr_supervision_frame(struct hsr_port *master,
+> >       if (hsr->prot_version > 0) {
+> >               hsr_stag->sequence_nr = htons(hsr->sup_sequence_nr);
+> >               hsr->sup_sequence_nr++;
+> > -             hsr_tag->sequence_nr = htons(hsr->sequence_nr);
+> > -             hsr->sequence_nr++;
+> >       } else {
+> >               hsr_stag->sequence_nr = htons(hsr->sequence_nr);
+> >               hsr->sequence_nr++;
+> > @@ -332,7 +316,7 @@ static void send_hsr_supervision_frame(struct hsr_port *master,
+> >       hsr_sp = skb_put(skb, sizeof(struct hsr_sup_payload));
+> >       ether_addr_copy(hsr_sp->macaddress_A, master->dev->dev_addr);
+> >
+> > -     if (skb_put_padto(skb, ETH_ZLEN + HSR_HLEN))
+> > +     if (skb_put_padto(skb, ETH_ZLEN))
+> >               return;
+> >
+> >       hsr_forward_skb(skb, master);
+> > @@ -348,8 +332,6 @@ static void send_prp_supervision_frame(struct hsr_port *master,
+> >       struct hsr_sup_tag *hsr_stag;
+> >       unsigned long irqflags;
+> >       struct sk_buff *skb;
+> > -     struct prp_rct *rct;
+> > -     u8 *tail;
+> >
+> >       skb = hsr_init_skb(master, ETH_P_PRP);
+> >       if (!skb) {
+> > @@ -373,17 +355,11 @@ static void send_prp_supervision_frame(struct hsr_port *master,
+> >       hsr_sp = skb_put(skb, sizeof(struct hsr_sup_payload));
+> >       ether_addr_copy(hsr_sp->macaddress_A, master->dev->dev_addr);
+> >
+> > -     if (skb_put_padto(skb, ETH_ZLEN + HSR_HLEN)) {
+> > +     if (skb_put_padto(skb, ETH_ZLEN)) {
+> >               spin_unlock_irqrestore(&master->hsr->seqnr_lock, irqflags);
+> >               return;
+> >       }
+> >
+> > -     tail = skb_tail_pointer(skb) - HSR_HLEN;
+> > -     rct = (struct prp_rct *)tail;
+> > -     rct->PRP_suffix = htons(ETH_P_PRP);
+> > -     set_prp_LSDU_size(rct, HSR_V1_SUP_LSDUSIZE);
+> > -     rct->sequence_nr = htons(hsr->sequence_nr);
+> > -     hsr->sequence_nr++;
+> >       spin_unlock_irqrestore(&master->hsr->seqnr_lock, irqflags);
+> >
+> >       hsr_forward_skb(skb, master);
+> > diff --git a/net/hsr/hsr_forward.c b/net/hsr/hsr_forward.c
+> > index cadfccd7876e..a5566b2245a0 100644
+> > --- a/net/hsr/hsr_forward.c
+> > +++ b/net/hsr/hsr_forward.c
+> > @@ -454,8 +454,10 @@ static void handle_std_frame(struct sk_buff *skb,
+> >  void hsr_fill_frame_info(__be16 proto, struct sk_buff *skb,
+> >                        struct hsr_frame_info *frame)
+> >  {
+> > -     if (proto == htons(ETH_P_PRP) ||
+> > -         proto == htons(ETH_P_HSR)) {
+> > +     struct hsr_port *port = frame->port_rcv;
+> > +
+> > +     if (port->type != HSR_PT_MASTER &&
+> > +         (proto == htons(ETH_P_PRP) || proto == htons(ETH_P_HSR))) {
+>
+> Why is this change necessary? Are you trying to force fill_frame_info to
+> call handle_std_frame for supervision frames, which will fix up the
+> kludge I asked about earlier? And why does checking for HSR_PT_MASTER
+> fixing it?
+
+The eth type for the tag in v0 is the same type used for supervisory
+frames in v1 so if we generate supervisory frames without a tag the
+existing check wasn't sufficient. Anyway, no point in talking about it
+now since I might have to change the way this works to fix v0.
+
+>
+> >               /* HSR tagged frame :- Data or Supervision */
+> >               frame->skb_std = NULL;
+> >               frame->skb_prp = NULL;
+> > @@ -473,8 +475,10 @@ void prp_fill_frame_info(__be16 proto, struct sk_buff *skb,
+> >  {
+> >       /* Supervision frame */
+> >       struct prp_rct *rct = skb_get_PRP_rct(skb);
+> > +     struct hsr_port *port = frame->port_rcv;
+> >
+> > -     if (rct &&
+> > +     if (port->type != HSR_PT_MASTER &&
+> > +         rct &&
+> >           prp_check_lsdu_size(skb, rct, frame->is_supervision)) {
+> >               frame->skb_hsr = NULL;
+> >               frame->skb_std = NULL;
+> > --
+> > 2.11.0
+> >
