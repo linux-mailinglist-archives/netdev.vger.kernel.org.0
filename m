@@ -2,167 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DA6F30B211
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 22:27:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A307730B225
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 22:37:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232215AbhBAV0m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 16:26:42 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52642 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229680AbhBAV0k (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Feb 2021 16:26:40 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 46CFF64E31;
-        Mon,  1 Feb 2021 21:25:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612214760;
-        bh=J5TM4R41MpNe4ISkH09rg9a3/MJ/JCeNIH6/Zf2mVgA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RevoFLoIgzXWiMDgS59EBjCTkp7kONnISazwtrVcgTbHVQwx/FuU2jRsdRvHvtuOf
-         VCHwxijhoy0nZ2QV5BNsXVUg7wlGdpjQQDLQ/1D/R93iGah7ipevlXi+vSBIxVgqxf
-         rD3daeDjL/NKp/5XgFTASUG6+wA+5D1ez1bMjDp8XmnrxfASsMbrprD4aZdV/qaXnY
-         ACuKiQWK0MWhxTweepePzdVGvbNp7CiM5yC7Mdz3S+IrJ1s3Yxprs48PC9KV5j8H05
-         HZQ0piTBR7qaD6ayj+Hkpzjao7wjXzwBJXuDukOapp2hvh+jFZ+/HFzOp9HtSy3cW5
-         vxgiVtLV7k3+Q==
-Date:   Mon, 1 Feb 2021 14:25:57 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Huazhong Tan <tanhuazhong@huawei.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        salil.mehta@huawei.com, yisen.zhuang@huawei.com, kuba@kernel.org,
-        huangdaode@huawei.com, linuxarm@openeuler.org,
-        Guangbin Huang <huangguangbin2@huawei.com>
-Subject: Re: [PATCH V2 net-next 2/2] net: hns3: add debugfs support for tm
- nodes, priority and qset info
-Message-ID: <20210201212557.GA3126741@localhost>
-References: <1611834696-56207-1-git-send-email-tanhuazhong@huawei.com>
- <1611834696-56207-3-git-send-email-tanhuazhong@huawei.com>
+        id S229959AbhBAVgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 16:36:51 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:4873 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229567AbhBAVgu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 16:36:50 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B6018744a0000>; Mon, 01 Feb 2021 13:36:10 -0800
+Received: from sw-mtx-036.mtx.labs.mlnx (172.20.145.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 1 Feb
+ 2021 21:36:09 +0000
+From:   Parav Pandit <parav@nvidia.com>
+To:     <dsahern@gmail.com>, <stephen@networkplumber.org>,
+        <netdev@vger.kernel.org>
+CC:     Parav Pandit <parav@nvidia.com>
+Subject: [PATCH iproute2-next v2 0/6] Support devlink port add delete
+Date:   Mon, 1 Feb 2021 23:35:45 +0200
+Message-ID: <20210201213551.8503-1-parav@nvidia.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210129165608.134965-1-parav@nvidia.com>
+References: <20210129165608.134965-1-parav@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1611834696-56207-3-git-send-email-tanhuazhong@huawei.com>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1612215370; bh=P9zszs5TZirFxZ9JKx6knJ2dGHzYiEETHJB41nwZdnA=;
+        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
+         References:MIME-Version:Content-Transfer-Encoding:Content-Type:
+         X-Originating-IP:X-ClientProxiedBy;
+        b=K8jS5vKgAagnDWqMayTqER1ntDx8u4dCNVcliAOyV4o2+XdW/lWBOqXkVdpFccK6G
+         mAlE0aw9pXScTnKhCWk6pmHs7rY/9+TF/PXRO5gIRztg7xKITauKW1856cC3R6yTWO
+         jHqDzzfxWYgJ6xJ7VntDSq6QGEKEEHp+B+mmodtMZIbVu9+WL3P3TT7d/RU4nt97Kt
+         IciELyvCVwxB9Qnqst6t6+rtCnc3gYDGnilo5EpKAI3bA5zbaVsOM7XhjrqBJ+O+FE
+         7ymuLhEv8Zrc0erdihhJUj+L0gEPSW/+oh8dOEhRo3dt2aCXiwRE4yjKGjaaa3vgBs
+         4ktfu0xS1tU1g==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 28, 2021 at 07:51:36PM +0800, Huazhong Tan wrote:
-> From: Guangbin Huang <huangguangbin2@huawei.com>
-> 
-> In order to query tm info of nodes, priority and qset
-> for debugging, adds three debugfs files tm_nodes,
-> tm_priority and tm_qset in newly created tm directory.
-> 
-> Unlike previous debugfs commands, these three files
-> just support read ops, so they only support to use cat
-> command to dump their info.
-> 
-> The new tm file style is acccording to suggestion from
-> Jakub Kicinski's opinion as link https://lkml.org/lkml/2020/9/29/2101.
-> 
-> Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
-> ---
->  drivers/net/ethernet/hisilicon/hns3/hnae3.h        |   8 ++
->  drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c |  55 +++++++-
->  .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c | 153 +++++++++++++++++++++
->  .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    |   1 +
->  .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |   2 +
->  5 files changed, 218 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-> index a7daf6d..fe09cf6 100644
-> --- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-> +++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-> @@ -465,6 +465,8 @@ struct hnae3_ae_dev {
->   *   Delete clsflower rule
->   * cls_flower_active
->   *   Check if any cls flower rule exist
-> + * dbg_read_cmd
-> + *   Execute debugfs read command.
->   */
->  struct hnae3_ae_ops {
->  	int (*init_ae_dev)(struct hnae3_ae_dev *ae_dev);
-> @@ -620,6 +622,8 @@ struct hnae3_ae_ops {
->  	int (*add_arfs_entry)(struct hnae3_handle *handle, u16 queue_id,
->  			      u16 flow_id, struct flow_keys *fkeys);
->  	int (*dbg_run_cmd)(struct hnae3_handle *handle, const char *cmd_buf);
-> +	int (*dbg_read_cmd)(struct hnae3_handle *handle, const char *cmd_buf,
-> +			    char *buf, int len);
->  	pci_ers_result_t (*handle_hw_ras_error)(struct hnae3_ae_dev *ae_dev);
->  	bool (*get_hw_reset_stat)(struct hnae3_handle *handle);
->  	bool (*ae_dev_resetting)(struct hnae3_handle *handle);
-> @@ -777,6 +781,10 @@ struct hnae3_handle {
->  #define hnae3_get_bit(origin, shift) \
->  	hnae3_get_field((origin), (0x1 << (shift)), (shift))
->  
-> +#define HNAE3_DBG_TM_NODES		"tm_nodes"
-> +#define HNAE3_DBG_TM_PRI		"tm_priority"
-> +#define HNAE3_DBG_TM_QSET		"tm_qset"
-> +
->  int hnae3_register_ae_dev(struct hnae3_ae_dev *ae_dev);
->  void hnae3_unregister_ae_dev(struct hnae3_ae_dev *ae_dev);
->  
-> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-> index 9d4e9c0..6978304 100644
-> --- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-> @@ -7,7 +7,7 @@
->  #include "hnae3.h"
->  #include "hns3_enet.h"
->  
-> -#define HNS3_DBG_READ_LEN 256
-> +#define HNS3_DBG_READ_LEN 65536
->  #define HNS3_DBG_WRITE_LEN 1024
->  
->  static struct dentry *hns3_dbgfs_root;
-> @@ -484,6 +484,42 @@ static ssize_t hns3_dbg_cmd_write(struct file *filp, const char __user *buffer,
->  	return count;
->  }
->  
-> +static ssize_t hns3_dbg_read(struct file *filp, char __user *buffer,
-> +			     size_t count, loff_t *ppos)
-> +{
-> +	struct hnae3_handle *handle = filp->private_data;
-> +	const struct hnae3_ae_ops *ops = handle->ae_algo->ops;
-> +	struct hns3_nic_priv *priv = handle->priv;
-> +	char *cmd_buf, *read_buf;
-> +	ssize_t size = 0;
-> +	int ret = 0;
-> +
-> +	if (!filp->f_path.dentry->d_iname)
-> +		return -EINVAL;
+This patchset implements devlink port add, delete and function state
+management commands.
 
-Clang warns this check is pointless:
+An example sequence for a PCI SF:
 
-drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c:497:28: warning:
-address of array 'filp->f_path.dentry->d_iname' will always evaluate to
-'true' [-Wpointer-bool-conversion]
-        if (!filp->f_path.dentry->d_iname)
-            ~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
-1 warning generated.
+Set the device in switchdev mode:
+$ devlink dev eswitch set pci/0000:06:00.0 mode switchdev
 
-Was it intended to be something else or can it just be removed?
+View ports in switchdev mode:
+$ devlink port show
+pci/0000:06:00.0/65535: type eth netdev ens2f0np0 flavour physical port 0 s=
+plittable false
 
-> +	read_buf = kzalloc(HNS3_DBG_READ_LEN, GFP_KERNEL);
-> +	if (!read_buf)
-> +		return -ENOMEM;
-> +
-> +	cmd_buf = filp->f_path.dentry->d_iname;
-> +
-> +	if (ops->dbg_read_cmd)
-> +		ret = ops->dbg_read_cmd(handle, cmd_buf, read_buf,
-> +					HNS3_DBG_READ_LEN);
-> +
-> +	if (ret) {
-> +		dev_info(priv->dev, "unknown command\n");
-> +		goto out;
-> +	}
-> +
-> +	size = simple_read_from_buffer(buffer, count, ppos, read_buf,
-> +				       strlen(read_buf));
-> +
-> +out:
-> +	kfree(read_buf);
-> +	return size;
-> +}
+Add a subfunction port for PCI PF 0 with sfnumber 88:
+$ devlink port add pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum 88
+pci/0000:08:00.0/32768: type eth netdev eth6 flavour pcisf controller 0 pfn=
+um 0 sfnum 88 splittable false
+  function:
+    hw_addr 00:00:00:00:00:00 state inactive opstate detached
 
-Cheers,
-Nathan
+Show a newly added port:
+$ devlink port show pci/0000:06:00.0/32768
+pci/0000:06:00.0/32768: type eth netdev ens2f0npf0sf88 flavour pcisf contro=
+ller 0 pfnum 0 sfnum 88 splittable false
+  function:
+    hw_addr 00:00:00:00:00:00 state inactive opstate detached
+
+Set the function state to active:
+$ devlink port function set pci/0000:06:00.0/32768 hw_addr 00:00:00:00:88:8=
+8 state active
+
+Show the port in JSON format:
+$ devlink port show pci/0000:06:00.0/32768 -jp
+{
+    "port": {
+        "pci/0000:06:00.0/32768": {
+            "type": "eth",
+            "netdev": "ens2f0npf0sf88",
+            "flavour": "pcisf",
+            "controller": 0,
+            "pfnum": 0,
+            "sfnum": 88,
+            "splittable": false,
+            "function": {
+                "hw_addr": "00:00:00:00:88:88",
+                "state": "active",
+                "opstate": "attached"
+            }
+        }
+    }
+}
+
+Set the function state to active:
+$ devlink port function set pci/0000:06:00.0/32768 state inactive
+
+Delete the port after use:
+$ devlink port del pci/0000:06:00.0/32768
+
+Patch summary:
+Patch-1 updates kernel headers
+Patch-2 introduces string to number map helper and uses it for port
+flavour
+Patch-3 shows PCI SF port attributes
+Patch-4 adds devlink commands to add and delete a port along with man
+page
+Patch-5 shows function state and operational state to user
+Patch-6 enables user to set function state and adds man page
+documentation
+
+
+Parav Pandit (6):
+  devlink: Update kernel headers
+  devlink: Introduce and use string to number mapper
+  devlink: Introduce PCI SF port flavour and attribute
+  devlink: Supporting add and delete of devlink port
+  devlink: Support get port function state
+  devlink: Support set of port function state
+
+ devlink/devlink.c            | 260 ++++++++++++++++++++++++++++++-----
+ include/uapi/linux/devlink.h |  25 ++++
+ include/utils.h              |   9 ++
+ lib/utils.c                  |  41 ++++++
+ man/man8/devlink-port.8      | 127 +++++++++++++++++
+ 5 files changed, 429 insertions(+), 33 deletions(-)
+
+--=20
+2.26.2
+
