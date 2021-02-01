@@ -2,84 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F163A30A84F
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 14:09:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4053830A86C
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 14:16:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231528AbhBANIg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 08:08:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39476 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229545AbhBANId (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 08:08:33 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB0EFC061573
-        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 05:07:52 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id sa23so7956767ejb.0
-        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 05:07:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=rooP/GJW/1+QAotMX4S4zetYHn9fYomgwLs+Slrvsg8=;
-        b=xmO8dlQ8C7JLhGvMpmANuaONLy+V94k0dDmvSQ602wlKkXlRjoRJNEbIezTcrvZd1x
-         wYkKp6yUE+AhyGHoqPSTFTSpRdvlZjjE6UN1sIgMi6Bd6iCNVPC9vjqyTRyIyR9slmQf
-         JurXqNXAf5sMvyMrwQHpODWXVeK1Qci0zCANQ+54AyIunmkAX9Ekug4wv51mU44Kun8C
-         C/QZipQQQwia8mjOCm5X9ZnslVEdrRNR6i7JOj64m9I7dKMu23ZKb/WcEpWsgd+LZDXF
-         9SIa4MjAvkE9ZgHlTTLIxU8CtOHAqoOSC2fKSz2BKRJDASj1AxiOmL5dyaZB4wsDy6nL
-         6Fog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=rooP/GJW/1+QAotMX4S4zetYHn9fYomgwLs+Slrvsg8=;
-        b=M94MYrwdI/ATIwal2ctomvM++OlX7f3VIVTPbIj1QTHpPuArmacbMKsD4otqqQHc6D
-         CUDWl8Upm+cQdtdKw5vtJ+GnpBAU/jq7rJ8Qsoh9ntAQrM5Zcn7t/PiEyZqGisr9+v8+
-         YpskHc/9FumTL/xTSnKjh4zIgztWU5HRgeMJpVZLSRpishmCKPYAWx7pJMBM+q8ujSJ2
-         NLYg+s5GulShiJgPtulFGU1A8vTe+O9EcI/WXOHROoOZ4qOgh+lKi3nyIuAPbeiXGPwL
-         hAX7sGIQqN7cgQ8OCOB6r86voJkK0+zHm9VUTAH/S/8P87sjTMOOZfeHDcwu34k7YJZT
-         rcfg==
-X-Gm-Message-State: AOAM5317yumjidTl+PMZ9q/qX5+afUAjiTfkdiKKr/eDhru1/H78Egni
-        hZIDws6GzJajB/V1TUi5iKeLVw==
-X-Google-Smtp-Source: ABdhPJx44AOeFxSy6H8Yad6nAtmmEPQbmVgty80WRJhEKl06knQnFXHTJ8XjHCF8O9E2k2SUrh4rTg==
-X-Received: by 2002:a17:906:6b02:: with SMTP id q2mr18066232ejr.122.1612184871534;
-        Mon, 01 Feb 2021 05:07:51 -0800 (PST)
-Received: from netronome.com ([2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a])
-        by smtp.gmail.com with ESMTPSA id u17sm627304ejr.59.2021.02.01.05.07.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Feb 2021 05:07:50 -0800 (PST)
-Date:   Mon, 1 Feb 2021 14:07:50 +0100
-From:   Simon Horman <simon.horman@netronome.com>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        oss-drivers@netronome.com, Baowen Zheng <baowen.zheng@corigine.com>
-Subject: Re: [PATCH net-next v2] net/sched: act_police: add support for
- packet-per-second policing
-Message-ID: <20210201130749.GA31077@netronome.com>
-References: <20210129102856.6225-1-simon.horman@netronome.com>
- <CAM_iQpVnd9s6rpNOSNLTBHzLH7BtKvdZmWMhZdFps8udfCyikQ@mail.gmail.com>
- <20210130145738.GA3330615@shredder.lan>
+        id S231488AbhBANQn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 08:16:43 -0500
+Received: from mxout70.expurgate.net ([194.37.255.70]:56701 "EHLO
+        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229500AbhBANQg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 08:16:36 -0500
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.90)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1l6Z2S-0000U7-4Z; Mon, 01 Feb 2021 14:14:44 +0100
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.90)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1l6Z2R-00031v-0B; Mon, 01 Feb 2021 14:14:43 +0100
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id 49359240041;
+        Mon,  1 Feb 2021 14:14:42 +0100 (CET)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id BA7C2240040;
+        Mon,  1 Feb 2021 14:14:41 +0100 (CET)
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+        by mail.dev.tdt.de (Postfix) with ESMTP id 38CF32007C;
+        Mon,  1 Feb 2021 14:14:41 +0100 (CET)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210130145738.GA3330615@shredder.lan>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 01 Feb 2021 14:14:41 +0100
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux X25 <linux-x25@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Krzysztof Halasa <khc@pm.waw.pl>
+Subject: Re: [PATCH net] net: hdlc_x25: Use qdisc to queue outgoing LAPB
+ frames
+Organization: TDT AG
+In-Reply-To: <CAJht_ENs1Rnf=2iX8M1ufF=StWHKTei3zuKv-xBtkhDsY-xBOA@mail.gmail.com>
+References: <20210127090747.364951-1-xie.he.0141@gmail.com>
+ <20210128114659.2d81a85f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAJht_EOSB-m--Ombr6wLMFq4mPy8UTpsBri2CPsaRTU-aks7Uw@mail.gmail.com>
+ <3f67b285671aaa4b7903733455a730e1@dev.tdt.de>
+ <20210129173650.7c0b7cda@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAJht_EPMtn5E-Y312vPQfH2AwDAi+j1OP4zzpg+AUKf46XE1Yw@mail.gmail.com>
+ <20210130111618.335b6945@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAJht_EMQVaKFx7Wjj75F2xVBTCdpmho64wP0bfX6RhFnzNXAZA@mail.gmail.com>
+ <36a6c0769c57cd6835d32cc0fb95bca6@dev.tdt.de>
+ <CAJht_ENs1Rnf=2iX8M1ufF=StWHKTei3zuKv-xBtkhDsY-xBOA@mail.gmail.com>
+Message-ID: <1628f9442ccf18f9c08c98f122053fc0@dev.tdt.de>
+X-Sender: ms@dev.tdt.de
+User-Agent: Roundcube Webmail/1.3.16
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
+        autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
+X-purgate-ID: 151534::1612185283-0000A9C4-9D737842/0/0
+X-purgate-type: clean
+X-purgate: clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 30, 2021 at 04:57:38PM +0200, Ido Schimmel wrote:
-> On Fri, Jan 29, 2021 at 03:04:51PM -0800, Cong Wang wrote:
-> > On Fri, Jan 29, 2021 at 2:29 AM Simon Horman <simon.horman@netronome.com> wrote:
+On 2021-02-01 12:38, Xie He wrote:
+> On Mon, Feb 1, 2021 at 1:18 AM Martin Schiller <ms@dev.tdt.de> wrote:
+>> 
+>> I have thought about this issue again.
+>> 
+>> I also have to say that I have never noticed any problems in this area
+>> before.
+>> 
+>> So again for (my) understanding:
+>> When a hardware driver calls netif_stop_queue, the frames sent from
+>> layer 3 (X.25) with dev_queue_xmit are queued and not passed 
+>> "directly"
+>> to x25_xmit of the hdlc_x25 driver.
+>> 
+>> So nothing is added to the write_queue anymore (except possibly
+>> un-acked-frames by lapb_requeue_frames).
 > 
-> I didn't get v2 (didn't made it to the list), but I did leave feedback
-> on v1 [1]. Not sure if you got it or not given the recent issues.
+> If the LAPB module only emits an L2 frame when an L3 packet comes from
+> the upper layer, then yes, there would be no problem because the L3
+> packet is already controlled by the qdisc and there is no need to
+> control the corresponding L2 frame again.
 > 
-> [1] https://lore.kernel.org/netdev/20210128161933.GA3285394@shredder.lan/#t
+> However, the LAPB module can emits L2 frames when there's no L3 packet
+> coming, when 1) there are some packets queued in the LAPB module's
+> internal queue; and 2) the LAPB decides to send some control frame
+> (e.g. by the timers).
 
-Sorry, I had missed that.
-I have now responded in-thread.
+But control frames are currently sent past the lapb write_queue.
+So another queue would have to be created.
+
+And wouldn't it be better to have it in the hdlc_x25 driver, leaving
+LAPB unaffected?
+
+> 
+>> Shouldn't it actually be sufficient to check for netif_queue_stopped 
+>> in
+>> lapb_kick and then do "nothing" if necessary?
+> 
+> We can consider this situation: When the upper layer has nothing to
+> send, but there are some packets in the LAPB module's internal queue
+> waiting to be sent. The LAPB module will try to send the packets, but
+> after it has sent out the first packet, it will meet the "queue
+> stopped" situation. In this situation, it'd be preferable to
+> immediately start sending the second packet after the queue is started
+> again. "Doing nothing" in this situation would mean waiting until some
+> other events occur, such as receiving responses from the other side,
+> or receiving more outgoing packets from L3.
+> 
+>> As soon as the hardware driver calls netif_wake_queue, the whole thing
+>> should just continue running.
+> 
+> This relies on the fact that the upper layer has something to send. If
+> the upper layer has nothing to send, lapb_kick would not be
+> automatically called again until some other events occur (such as
+> receiving responses from the other side). I think it'd be better if we
+> do not rely on the assumption that L3 is going to send more packets to
+> us, as L3 itself would assume us to provide it a reliable link service
+> and we should fulfill its expectation.
