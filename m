@@ -2,97 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 409B530A1E8
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 07:27:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5526530A212
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 07:39:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231600AbhBAGZp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 01:25:45 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59230 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232120AbhBAGK1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Feb 2021 01:10:27 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EBF6764E06;
-        Mon,  1 Feb 2021 06:09:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612159766;
-        bh=UBwxXkczigCj0i40nmBHADQZEPwvhb5D9gS621AOJuE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=q7KGuLOKW/tqERGqDdAsWebkkpBhdhtWmsCos1s6732i3mXaHt3ZjvdWbAVqIOidp
-         96EOQThz4u0kURNAEiFjnll6t7OxoqdeISxBWTvocTmPJHOR7P6jnOJcLHs8DoDbAu
-         JtaXZ+NsL53Yx9qiOz77OYIq4GQTLg6FvKvUGFe09IuclCqMuYe2bFKdS+iT1m7rLI
-         Itg35zRUa1rFJoMqYspr2FItdnJOtLnHNr+mJKFjqfDbts8EkJ6TREUQl8iDr95ePI
-         NmpdHMxTZP54wDwkW5rZSP8oDKGk3SFMRa71cUcIJPXtiSvvg2NNziPp9+bXA0neoY
-         +WQ4w7HHGS9Vw==
-Date:   Mon, 1 Feb 2021 08:09:22 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>
-Cc:     Jason Gunthorpe <jgg@nvidia.com>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>
-Subject: Re: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
- implement private channel OPs
-Message-ID: <20210201060922.GB4593@unreal>
-References: <20210122234827.1353-8-shiraz.saleem@intel.com>
- <20210125184248.GS4147@nvidia.com>
- <99895f7c10a2473c84a105f46c7ef498@intel.com>
- <20210126005928.GF4147@nvidia.com>
- <031c2675aff248bd9c78fada059b5c02@intel.com>
- <20210127121847.GK1053290@unreal>
- <ea62658f01664a6ea9438631c9ddcb6e@intel.com>
- <20210127231641.GS4147@nvidia.com>
- <20210128054133.GA1877006@unreal>
- <d58f341898834170af1bfb6719e17956@intel.com>
+        id S232139AbhBAGit (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 01:38:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37192 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231759AbhBAGZq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 01:25:46 -0500
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADB53C061573
+        for <netdev@vger.kernel.org>; Sun, 31 Jan 2021 22:24:51 -0800 (PST)
+Received: by mail-pf1-x435.google.com with SMTP id i63so10890651pfg.7
+        for <netdev@vger.kernel.org>; Sun, 31 Jan 2021 22:24:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=NOdBCHpPzgArsZVnKI5l1t4Q78kDQCrwxd6+9upvr40=;
+        b=F6x8RvSrR4xG5oCcyeyswuugL18g1/5Ddn0OD5tO86zVRs7IL6eLDi3Q7Oq54yENBr
+         JkVACLF5d2avGBMY7xrlWU1PxO1gZgib6MHJFp0xNeotpDQAlIrnuymBgIMgmJw8wpNw
+         q8vJyI8leg9WV0ll9Oe66qgSLvPaG6tw/sScRPUtQ4wzhnjrVOT9GXJnOisr22gP4exY
+         SsyMJmHbYaIfj4mocXRhshdcTVpwBdVAPls3XD9DZv9fPuQH66o/2GChZPw/MAzjntqD
+         mTn1t8Gbt6zL70t1A1IZPVyQDNnPTFJOL1VSC0QHcGOkGI5jTSp9isZnJ9lyjLnaPnAH
+         5JKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=NOdBCHpPzgArsZVnKI5l1t4Q78kDQCrwxd6+9upvr40=;
+        b=Xf1tx9MkOHb7ssGkWVhS1FAaAheZ0MSR8W7eUZnt1MaoQmjztm3G+wA898js9qWbr+
+         afRJ/tAY7lDqOIAfrFTV5xR9T8L/FTqnzmar4XdtqIcByiRADIkzgC8nJvilQBm2dXvp
+         3WIF/go5rOW9goYwfQZKGlzKrYw1xOwM+wp6OgkjPJhDnNgFo8DUFOz6PoWN85KNY6LD
+         iMvalmXEpsWRi4YoOMMr1ldjJNPdtF377i3vJQNeIDnevrFCkR1oDnfAwzzwpZPSQbS1
+         A5MovpOegojslkrnmzTCUrEPfe9zuXAhysIYjkXdAXtleCliAMgkLiOYRX74dJ66KxZG
+         VCnQ==
+X-Gm-Message-State: AOAM530R3Z2ozTiUdQCngq0bRfOm52POl542SCUT/gYrYLCYJEJg6W9q
+        F+mFPTZ8/rLjugjDX8Uoitc=
+X-Google-Smtp-Source: ABdhPJwiNdT6d87Pa0U1+LWB9zj/DIwifiR1cosdb57aiRLUZTiTaeoTjfbnJ+CacMybquu8iBp+RA==
+X-Received: by 2002:a63:150b:: with SMTP id v11mr16165636pgl.183.1612160691299;
+        Sun, 31 Jan 2021 22:24:51 -0800 (PST)
+Received: from container-ubuntu.lan ([61.188.25.180])
+        by smtp.gmail.com with ESMTPSA id br21sm14961198pjb.9.2021.01.31.22.24.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 31 Jan 2021 22:24:50 -0800 (PST)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        netdev@vger.kernel.org
+Subject: Re: [RFC net-next 7/7] net: dsa: mv88e6xxx: Request assisted learning on CPU port
+Date:   Mon,  1 Feb 2021 14:24:39 +0800
+Message-Id: <20210201062439.15244-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210116012515.3152-1-tobias@waldekranz.com>
+References: <20210116012515.3152-1-tobias@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d58f341898834170af1bfb6719e17956@intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 30, 2021 at 01:19:36AM +0000, Saleem, Shiraz wrote:
-> > Subject: Re: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
-> > implement private channel OPs
-> >
-> > On Wed, Jan 27, 2021 at 07:16:41PM -0400, Jason Gunthorpe wrote:
-> > > On Wed, Jan 27, 2021 at 10:17:56PM +0000, Saleem, Shiraz wrote:
-> > >
-> > > > Even with another core PCI driver, there still needs to be private
-> > > > communication channel between the aux rdma driver and this PCI
-> > > > driver to pass things like QoS updates.
-> > >
-> > > Data pushed from the core driver to its aux drivers should either be
-> > > done through new callbacks in a struct device_driver or by having a
-> > > notifier chain scheme from the core driver.
-> >
-> > Right, and internal to driver/core device_lock will protect from parallel
-> > probe/remove and PCI flows.
-> >
->
-> OK. We will hold the device_lock while issuing the .ops callbacks from core driver.
-> This should solve our synchronization issue.
->
-> There have been a few discussions in this thread. And I would like to be clear on what
-> to do.
->
-> So we will,
->
-> 1. Remove .open/.close, .peer_register/.peer_unregister
-> 2. Protect ops callbacks issued from core driver to the aux driver with device_lock
-> 3. Move the custom iidc_peer_op callbacks to an irdma driver struct that encapsulates the auxiliary driver struct. For core driver to use.
-> 4. Remove ice FSM around open, close etc...
-> 5. RDMA aux driver probe will allocate ib_device and register it at the end of probe.
->
-> Does this sound acceptable?
+Hi Tobias,
 
-I think that it will be good start, it just hard to say in advance
-without seeing the end result.
+I've tested your patch series on kernel 5.4 and found that it only works
+when VLAN filtering is enabled.
+After some debugging, I noticed DSA will add static entries to ATU 0 if
+VLAN filtering is disabled, regardless of default_pvid of the bridge,
+which is also the ATU# used by the bridge.
 
-Thanks
+Currently I use the hack below to rewrite ATU# to 1, but it obviously
+does not solve the root cause.
+
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index b99f27b8c084..9c897c03896f 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -2106,6 +2106,7 @@ static int mv88e6xxx_port_fdb_add(struct dsa_switch *ds, int port,
+ 	struct mv88e6xxx_chip *chip = ds->priv;
+ 	int err;
+ 
++	vid = vid ? : 1;
+ 	mv88e6xxx_reg_lock(chip);
+ 	err = mv88e6xxx_port_db_load_purge(chip, port, addr, vid,
+ 					   MV88E6XXX_G1_ATU_DATA_STATE_UC_STATIC);
+@@ -2120,6 +2121,7 @@ static int mv88e6xxx_port_fdb_del(struct dsa_switch *ds, int port,
+ 	struct mv88e6xxx_chip *chip = ds->priv;
+ 	int err;
+ 
++	vid = vid ? : 1;
+ 	mv88e6xxx_reg_lock(chip);
+ 	err = mv88e6xxx_port_db_load_purge(chip, port, addr, vid, 0);
+ 	mv88e6xxx_reg_unlock(chip);
+-- 
+
+Any ideas?
