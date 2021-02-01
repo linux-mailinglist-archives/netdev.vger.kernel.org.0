@@ -2,71 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E52E030B189
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 21:25:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2D6430B194
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 21:30:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231209AbhBAUYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 15:24:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48818 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229599AbhBAUYs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 15:24:48 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75F73C061573
-        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 12:24:08 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id z6so17994973wrq.10
-        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 12:24:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=j3SmGzx/9EOdlhzvPKiWPdfm2YAx1SRM88AT7v6eGFI=;
-        b=tIZC5w0K4df/LksSV4uLtqigvjIeYt9PEg+bH1NBawWjUvCNvbDpMdY57j2gx0Yzcz
-         JuAYf1/Rwi7q3TfwRptRbSc8iKdsdoSNsw2uyWIr4SQMRqzYGsNrn6OugwD99siJ9AFV
-         trLAHgugKP1Xjt8uNP95T6uH6ofEyuf+KYmyzDoz4dHkZpWfphTZuxEF5rXbpHCCwxKP
-         3KzmYdXTy8pl8PEgnyyQmsxQUimIZdyUriJdDoj11HbHL8kMVWSh/IPrsKB0bX0XAnOM
-         0a3qlc9ir/cIPy7LKYBRzGWe59Ws5Q+iDA7Ui3Ir8aaZ5Rms2A9rMyyl7zNI0OkzD+jI
-         hPeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=j3SmGzx/9EOdlhzvPKiWPdfm2YAx1SRM88AT7v6eGFI=;
-        b=tUcUSXHJh4+oWO0HGLwtXW/8kFEnnPVuT3v2dqX7epQFYz0JmMarB7qNqkLhQniiTZ
-         5JGGZqHDpCfffQbOFnQN93c4qHEjl/G2jTveYhMNEqDQ9wnpI3E1facOMFcDXlhLl4Zp
-         PM4jwXY1EN/52AM6d3q+5F/n/8Zku2coCkWNaB4Bx3hxyeqQE9/LJbYBb1jwo5Z5Aehn
-         QdT0ZQdb8beMtLERA9+9dqI5VQfDt3+1r5Bg+LjOqidz7coE1hgWxEZbyt/176mG3u26
-         sZzQXeHx1OdqPL9r180oZmlQ9rD5VOSI+IvD9CLqfam/8S1rA+s7WYP42k5ihsLoKWry
-         p7jw==
-X-Gm-Message-State: AOAM5319Smh3Cs8+DyX+opVP0mKKKLEYIXXRy3GcNFmRDJ5uRiQAonjN
-        TJcEnJM0QtarOb0Vc0+6oU+LTYjU/25u7tt/OMY=
-X-Google-Smtp-Source: ABdhPJwQg+E1wuuuvQ9Kvzxw1kNzwIoDrzPD3DdBkXoXdzjB1cZ9P3/NWsWi66oIdCnvW5sHO6mgmfs2BYOi5k6z4z4=
-X-Received: by 2002:adf:ce89:: with SMTP id r9mr20332352wrn.345.1612211046952;
- Mon, 01 Feb 2021 12:24:06 -0800 (PST)
+        id S229748AbhBAUaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 15:30:24 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38244 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229646AbhBAUaV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Feb 2021 15:30:21 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5292764E9E;
+        Mon,  1 Feb 2021 20:29:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612211380;
+        bh=JxIcDfor9jP7Fad9DG/ZI3rtmesf9j4WlqIJAzvyISA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=V1jaGcuJ+Lg/qXVL6Ebwe10DWb+ow90fJuhWHg2ogEF7AH5qUp8hKFYQucdpsOmdr
+         DNo6TAjb3lmcUQ7096f8GQ0hvJ/W6tApBYZCBsq7Lvn7ISOTvt56zGyT0RYQ/59iYK
+         TWPodjDud/JneWiPSXkirgnN5BmkokTHdJLg589EbNlQm1O+QCVqe/ic+8PRmBy+4v
+         u65o1mOWslzxq8dAo1YtT+0LzdX8Tqa8ooXHGogT+DRo4PHvHEHPmupGKjetqkKteT
+         T9CVi8pd90gXaQMXfLk/u9KIopm6+fpzC7C/RJeg3eVBDpUiZjqcNw8+s90rJl1GGJ
+         88g5UwpVNitKA==
+Date:   Mon, 1 Feb 2021 12:29:39 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Edwin Peer <edwin.peer@broadcom.com>
+Cc:     Danielle Ratson <danieller@nvidia.com>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        netdev <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@nvidia.com>, Andrew Lunn <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        mlxsw <mlxsw@nvidia.com>, Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next v3 2/7] ethtool: Get link mode in use instead
+ of speed and duplex parameters
+Message-ID: <20210201122939.09c18efa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAKOOJTw2Z_SdPNsDeTanSatBLZ7=vh2FGjn_NASVUK2hbK7Q3Q@mail.gmail.com>
+References: <20210120093713.4000363-1-danieller@nvidia.com>
+        <20210120093713.4000363-3-danieller@nvidia.com>
+        <CAKOOJTzSSqGFzyL0jndK_y_S64C_imxORhACqp6RePDvtno6kA@mail.gmail.com>
+        <DM6PR12MB4516E98950B9F79812CAB522D8BE9@DM6PR12MB4516.namprd12.prod.outlook.com>
+        <CAKOOJTx_JHcaL9Wh2ROkpXVSF3jZVsnGHTSndB42xp61PzP9Vg@mail.gmail.com>
+        <DM6PR12MB4516DD64A5C46B80848D3645D8BC9@DM6PR12MB4516.namprd12.prod.outlook.com>
+        <CAKOOJTyRyz+KTZvQ8XAZ+kehjbTtqeA3qv+r9DJmS-f9eC6qWg@mail.gmail.com>
+        <DM6PR12MB45161FF65D43867C9ED96B6ED8BB9@DM6PR12MB4516.namprd12.prod.outlook.com>
+        <20210128202632.iqixlvdfey6sh7fe@lion.mk-sys.cz>
+        <DM6PR12MB4516868A5BD4C2EED7EF818BD8B79@DM6PR12MB4516.namprd12.prod.outlook.com>
+        <CAKOOJTy2wSmBjRnbhmD6xQgy1GAdiXAxoRX7APNto4gDYUWNRw@mail.gmail.com>
+        <DM6PR12MB45168B7B3516A37854812767D8B69@DM6PR12MB4516.namprd12.prod.outlook.com>
+        <CAKOOJTw2Z_SdPNsDeTanSatBLZ7=vh2FGjn_NASVUK2hbK7Q3Q@mail.gmail.com>
 MIME-Version: 1.0
-References: <20201221222502.1706-1-nick.lowe@gmail.com> <379d4ef3-02e5-f08a-1b04-21848e11a365@bluematt.me>
- <20210201084747.2cb64c3f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <a7a89e90bf6c3f383fa236b1128db8d012223da0.camel@intel.com>
- <20210201114545.6278ae5c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <69e92a09-d597-2385-2391-fee100464c59@bluematt.me>
-In-Reply-To: <69e92a09-d597-2385-2391-fee100464c59@bluematt.me>
-From:   Nick Lowe <nick.lowe@gmail.com>
-Date:   Mon, 1 Feb 2021 20:23:51 +0000
-Message-ID: <CADSoG1vn-T3ZL0uZSR-=TnGDdcqYDXjuAxqPaHb0HjKYSuQwXg@mail.gmail.com>
-Subject: Re: [PATCH net] igb: Enable RSS for Intel I211 Ethernet Controller
-To:     Matt Corallo <linux-wired-list@bluematt.me>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I personally tested with mainline and 5.10, but not 5.4
+On Mon, 1 Feb 2021 10:14:35 -0800 Edwin Peer wrote:
+> On Mon, Feb 1, 2021 at 5:49 AM Danielle Ratson <danieller@nvidia.com> wrote:
+> > Ok, ill send another version with the symmetrical side. Ethtool
+> > will try to compose a supported link_mode from the parameters from
+> > user space and will choose randomly between the supported ones.
+> > Sounds ok?  
+> 
+> I think it should be deterministic. It should be possible to select
+> the appropriate mode either based on the current media type or the
+> current link mode (which implies a media type). Alternatively, if the
+> user space request only specifies a subset, such as speed, fall back
+> to the existing behaviour and don't supply the request to the driver
+> in the form of a compound link mode in those cases (perhaps indicating
+> this by not setting the capability bit). The former approach has the
+> potential to tidy up drivers if we decide that drivers providing the
+> capability can ignore the other fields and rely solely on link mode,
+> the latter is no worse than what we have today.
 
-Best,
+The media part is beginning to sound concerning. Every time we
+under-specify an interface we end up with #vendors different
+interpretations. And since HW is programmed by FW in most high 
+speed devices we can't even review the right thing is done.
 
-Nick
+At least it's clear what setting a number of lanes means.
