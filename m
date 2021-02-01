@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4B3830A4F4
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 11:09:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9B0130A50F
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 11:12:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233077AbhBAKGv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 05:06:51 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:60069 "EHLO
+        id S233159AbhBAKKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 05:10:19 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:59957 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S233029AbhBAKGL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 05:06:11 -0500
+        with ESMTP id S233011AbhBAKGJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 05:06:09 -0500
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from borisp@mellanox.com)
         with SMTP; 1 Feb 2021 12:05:14 +0200
 Received: from gen-l-vrt-133.mtl.labs.mlnx. (gen-l-vrt-133.mtl.labs.mlnx [10.237.11.160])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 111A5C0D029353;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 111A5C0E029353;
         Mon, 1 Feb 2021 12:05:14 +0200
 From:   Boris Pismenny <borisp@mellanox.com>
 To:     dsahern@gmail.com, kuba@kernel.org, davem@davemloft.net,
@@ -23,11 +23,12 @@ To:     dsahern@gmail.com, kuba@kernel.org, davem@davemloft.net,
         smalin@marvell.com
 Cc:     boris.pismenny@gmail.com, linux-nvme@lists.infradead.org,
         netdev@vger.kernel.org, benishay@nvidia.com, ogerlitz@nvidia.com,
-        yorayz@nvidia.com, Or Gerlitz <ogerlitz@mellanox.com>,
+        yorayz@nvidia.com, Ben Ben-Ishay <benishay@mellanox.com>,
+        Or Gerlitz <ogerlitz@mellanox.com>,
         Yoray Zack <yorayz@mellanox.com>
-Subject: [PATCH v3 net-next  20/21] net/mlx5e: NVMEoTCP statistics
-Date:   Mon,  1 Feb 2021 12:05:08 +0200
-Message-Id: <20210201100509.27351-21-borisp@mellanox.com>
+Subject: [PATCH v3 net-next  21/21] Documentation: add TCP DDP offload documentation
+Date:   Mon,  1 Feb 2021 12:05:09 +0200
+Message-Id: <20210201100509.27351-22-borisp@mellanox.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20210201100509.27351-1-borisp@mellanox.com>
 References: <20210201100509.27351-1-borisp@mellanox.com>
@@ -37,311 +38,330 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ben Ben-Ishay <benishay@nvidia.com>
-
-NVMEoTCP offload statistics includes both control and data path
-statistic: counters for ndo, offloaded packets/bytes, dropped packets
-and resync operation.
-
 Signed-off-by: Boris Pismenny <borisp@mellanox.com>
-Signed-off-by: Ben Ben-Ishay <benishay@nvidia.com>
+Signed-off-by: Ben Ben-Ishay <benishay@mellanox.com>
 Signed-off-by: Or Gerlitz <ogerlitz@mellanox.com>
 Signed-off-by: Yoray Zack <yorayz@mellanox.com>
 ---
- .../mellanox/mlx5/core/en_accel/nvmeotcp.c    | 23 +++++++++++-
- .../mlx5/core/en_accel/nvmeotcp_rxtx.c        | 16 ++++++++
- .../ethernet/mellanox/mlx5/core/en_stats.c    | 37 +++++++++++++++++++
- .../ethernet/mellanox/mlx5/core/en_stats.h    | 24 ++++++++++++
- 4 files changed, 98 insertions(+), 2 deletions(-)
+ Documentation/networking/index.rst           |   1 +
+ Documentation/networking/tcp-ddp-offload.rst | 296 +++++++++++++++++++
+ 2 files changed, 297 insertions(+)
+ create mode 100644 Documentation/networking/tcp-ddp-offload.rst
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.c
-index 4cbd86b9ed42..c42eb14ee081 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.c
-@@ -659,6 +659,11 @@ mlx5e_nvmeotcp_queue_init(struct net_device *netdev,
- 	struct mlx5_core_dev *mdev = priv->mdev;
- 	struct mlx5e_nvmeotcp_queue *queue;
- 	int max_wqe_sz_cap, queue_id, err;
-+	struct mlx5e_rq_stats *stats;
-+	u32 channel_ix;
+diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
+index b8a29997d433..99644159a0cc 100644
+--- a/Documentation/networking/index.rst
++++ b/Documentation/networking/index.rst
+@@ -99,6 +99,7 @@ Contents:
+    sysfs-tagging
+    tc-actions-env-rules
+    tcp-thin
++   tcp-ddp-offload
+    team
+    timestamping
+    tipc
+diff --git a/Documentation/networking/tcp-ddp-offload.rst b/Documentation/networking/tcp-ddp-offload.rst
+new file mode 100644
+index 000000000000..1607e8210968
+--- /dev/null
++++ b/Documentation/networking/tcp-ddp-offload.rst
+@@ -0,0 +1,296 @@
++.. SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 +
-+	channel_ix = mlx5e_get_channel_ix_from_io_cpu(priv, config->io_cpu);
-+	stats = &priv->channel_stats[channel_ix].rq;
- 
- 	if (tconfig->type != TCP_DDP_NVME) {
- 		err = -EOPNOTSUPP;
-@@ -686,8 +691,7 @@ mlx5e_nvmeotcp_queue_init(struct net_device *netdev,
- 	queue->id = queue_id;
- 	queue->dgst = config->dgst;
- 	queue->pda = config->cpda;
--	queue->channel_ix = mlx5e_get_channel_ix_from_io_cpu(priv,
--							     config->io_cpu);
-+	queue->channel_ix = channel_ix;
- 	queue->size = config->queue_size;
- 	max_wqe_sz_cap  = min_t(int, MAX_DS_VALUE * MLX5_SEND_WQE_DS,
- 				MLX5_CAP_GEN(mdev, max_wqe_sz_sq) << OCTWORD_SHIFT);
-@@ -707,6 +711,7 @@ mlx5e_nvmeotcp_queue_init(struct net_device *netdev,
- 	if (err)
- 		goto destroy_rx;
- 
-+	stats->nvmeotcp_queue_init++;
- 	write_lock_bh(&sk->sk_callback_lock);
- 	tcp_ddp_set_ctx(sk, queue);
- 	write_unlock_bh(&sk->sk_callback_lock);
-@@ -721,6 +726,7 @@ mlx5e_nvmeotcp_queue_init(struct net_device *netdev,
- free_queue:
- 	kfree(queue);
- out:
-+	stats->nvmeotcp_queue_init_fail++;
- 	return err;
- }
- 
-@@ -731,11 +737,15 @@ mlx5e_nvmeotcp_queue_teardown(struct net_device *netdev,
- 	struct mlx5e_priv *priv = netdev_priv(netdev);
- 	struct mlx5_core_dev *mdev = priv->mdev;
- 	struct mlx5e_nvmeotcp_queue *queue;
-+	struct mlx5e_rq_stats *stats;
- 
- 	queue = container_of(tcp_ddp_get_ctx(sk), struct mlx5e_nvmeotcp_queue, tcp_ddp_ctx);
- 
- 	napi_synchronize(&priv->channels.c[queue->channel_ix]->napi);
- 
-+	stats = &priv->channel_stats[queue->channel_ix].rq;
-+	stats->nvmeotcp_queue_teardown++;
++=================================
++TCP direct data placement offload
++=================================
 +
- 	WARN_ON(refcount_read(&queue->ref_count) != 1);
- 	if (queue->zerocopy | queue->crc_rx)
- 		mlx5e_nvmeotcp_destroy_rx(queue, mdev, queue->zerocopy);
-@@ -757,6 +767,7 @@ mlx5e_nvmeotcp_ddp_setup(struct net_device *netdev,
- 	struct mlx5e_priv *priv = netdev_priv(netdev);
- 	struct scatterlist *sg = ddp->sg_table.sgl;
- 	struct mlx5e_nvmeotcp_queue *queue;
-+	struct mlx5e_rq_stats *stats;
- 	struct mlx5_core_dev *mdev;
- 	int i, size = 0, count = 0;
- 
-@@ -778,6 +789,11 @@ mlx5e_nvmeotcp_ddp_setup(struct net_device *netdev,
- 	queue->ccid_table[ddp->command_id].ccid_gen++;
- 	queue->ccid_table[ddp->command_id].sgl_length = count;
- 
-+	stats = &priv->channel_stats[queue->channel_ix].rq;
-+	stats->nvmeotcp_ddp_setup++;
-+	if (unlikely(mlx5e_nvmeotcp_post_klm_wqe(queue, KLM_UMR, ddp->command_id, count)))
-+		stats->nvmeotcp_ddp_setup_fail++;
++Overview
++========
 +
- 	return 0;
- }
- 
-@@ -818,6 +834,7 @@ mlx5e_nvmeotcp_ddp_teardown(struct net_device *netdev,
- 	struct mlx5e_nvmeotcp_queue *queue;
- 	struct mlx5e_priv *priv = netdev_priv(netdev);
- 	struct nvmeotcp_queue_entry *q_entry;
-+	struct mlx5e_rq_stats *stats;
- 
- 	queue = container_of(tcp_ddp_get_ctx(sk), struct mlx5e_nvmeotcp_queue, tcp_ddp_ctx);
- 	q_entry  = &queue->ccid_table[ddp->command_id];
-@@ -827,6 +844,8 @@ mlx5e_nvmeotcp_ddp_teardown(struct net_device *netdev,
- 	q_entry->queue = queue;
- 
- 	mlx5e_nvmeotcp_post_klm_wqe(queue, KLM_UMR, ddp->command_id, 0);
-+	stats = &priv->channel_stats[queue->channel_ix].rq;
-+	stats->nvmeotcp_ddp_teardown++;
- 
- 	return 0;
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_rxtx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_rxtx.c
-index b16fcf051665..158f3798bf0c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_rxtx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_rxtx.c
-@@ -10,12 +10,16 @@ static void nvmeotcp_update_resync(struct mlx5e_nvmeotcp_queue *queue,
- 				   struct mlx5e_cqe128 *cqe128)
- {
- 	const struct tcp_ddp_ulp_ops *ulp_ops;
-+	struct mlx5e_rq_stats *stats;
- 	u32 seq;
- 
- 	seq = be32_to_cpu(cqe128->resync_tcp_sn);
- 	ulp_ops = inet_csk(queue->sk)->icsk_ulp_ddp_ops;
- 	if (ulp_ops && ulp_ops->resync_request)
- 		ulp_ops->resync_request(queue->sk, seq, TCP_DDP_RESYNC_REQ);
++The Linux kernel TCP direct data placement (DDP) offload infrastructure
++provides tagged request-response protocols, such as NVMe-TCP, the ability to
++place response data directly in pre-registered buffers according to header
++tags. DDP is particularly useful for data-intensive pipelined protocols whose
++responses may be reordered.
 +
-+	stats = queue->priv->channels.c[queue->channel_ix]->rq.stats;
-+	stats->nvmeotcp_resync++;
- }
- 
- static void mlx5e_nvmeotcp_advance_sgl_iter(struct mlx5e_nvmeotcp_queue *queue)
-@@ -50,10 +54,13 @@ mlx5_nvmeotcp_add_tail_nonlinear(struct mlx5e_nvmeotcp_queue *queue,
- 				 int org_nr_frags, int frag_index)
- {
- 	struct mlx5e_priv *priv = queue->priv;
-+	struct mlx5e_rq_stats *stats;
- 
- 	while (org_nr_frags != frag_index) {
- 		if (skb_shinfo(skb)->nr_frags >= MAX_SKB_FRAGS) {
- 			dev_kfree_skb_any(skb);
-+			stats = priv->channels.c[queue->channel_ix]->rq.stats;
-+			stats->nvmeotcp_drop++;
- 			return NULL;
- 		}
- 		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
-@@ -72,9 +79,12 @@ mlx5_nvmeotcp_add_tail(struct mlx5e_nvmeotcp_queue *queue, struct sk_buff *skb,
- 		       int offset, int len)
- {
- 	struct mlx5e_priv *priv = queue->priv;
-+	struct mlx5e_rq_stats *stats;
- 
- 	if (skb_shinfo(skb)->nr_frags >= MAX_SKB_FRAGS) {
- 		dev_kfree_skb_any(skb);
-+		stats = priv->channels.c[queue->channel_ix]->rq.stats;
-+		stats->nvmeotcp_drop++;
- 		return NULL;
- 	}
- 	skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
-@@ -135,6 +145,7 @@ mlx5e_nvmeotcp_handle_rx_skb(struct net_device *netdev, struct sk_buff *skb,
- 	skb_frag_t org_frags[MAX_SKB_FRAGS];
- 	struct mlx5e_nvmeotcp_queue *queue;
- 	struct nvmeotcp_queue_entry *nqe;
-+	struct mlx5e_rq_stats *stats;
- 	int org_nr_frags, frag_index;
- 	struct mlx5e_cqe128 *cqe128;
- 	u32 queue_id;
-@@ -172,6 +183,8 @@ mlx5e_nvmeotcp_handle_rx_skb(struct net_device *netdev, struct sk_buff *skb,
- 		return skb;
- 	}
- 
-+	stats = priv->channels.c[queue->channel_ix]->rq.stats;
++For example, in NVMe-TCP numerous read requests are sent together and each
++request is tagged using the PDU header CID field. Receiving servers process
++requests as fast as possible and sometimes responses for smaller requests
++bypasses responses to larger requests, i.e., read 4KB bypasses read 1GB.
++Thereafter, clients corrleate responses to requests using PDU header CID tags.
++The processing of each response requires copying data from SKBs to read
++request destination buffers; The offload avoids this copy. The offload is
++oblivious to destination buffers which can reside either in userspace
++(O_DIRECT) or in kernel pagecache.
 +
- 	/* cc ddp from cqe */
- 	ccid = be16_to_cpu(cqe128->ccid);
- 	ccoff = be32_to_cpu(cqe128->ccoff);
-@@ -214,6 +227,7 @@ mlx5e_nvmeotcp_handle_rx_skb(struct net_device *netdev, struct sk_buff *skb,
- 	while (to_copy < cclen) {
- 		if (skb_shinfo(skb)->nr_frags >= MAX_SKB_FRAGS) {
- 			dev_kfree_skb_any(skb);
-+			stats->nvmeotcp_drop++;
- 			mlx5e_nvmeotcp_put_queue(queue);
- 			return NULL;
- 		}
-@@ -243,6 +257,8 @@ mlx5e_nvmeotcp_handle_rx_skb(struct net_device *netdev, struct sk_buff *skb,
- 							       frag_index);
- 	}
- 
-+	stats->nvmeotcp_offload_packets++;
-+	stats->nvmeotcp_offload_bytes += cclen;
- 	mlx5e_nvmeotcp_put_queue(queue);
- 	return skb;
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-index 92c5b81427b9..353662f3fc5f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-@@ -34,6 +34,7 @@
- #include "en.h"
- #include "en_accel/tls.h"
- #include "en_accel/en_accel.h"
-+#include "en_accel/nvmeotcp.h"
- 
- static unsigned int stats_grps_num(struct mlx5e_priv *priv)
- {
-@@ -189,6 +190,18 @@ static const struct counter_desc sw_stats_desc[] = {
- 	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_tls_resync_res_ok) },
- 	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_tls_resync_res_skip) },
- 	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_tls_err) },
-+#endif
-+#ifdef CONFIG_MLX5_EN_NVMEOTCP
-+	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_nvmeotcp_queue_init) },
-+	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_nvmeotcp_queue_init_fail) },
-+	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_nvmeotcp_queue_teardown) },
-+	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_nvmeotcp_ddp_setup) },
-+	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_nvmeotcp_ddp_setup_fail) },
-+	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_nvmeotcp_ddp_teardown) },
-+	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_nvmeotcp_drop) },
-+	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_nvmeotcp_resync) },
-+	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_nvmeotcp_offload_packets) },
-+	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, rx_nvmeotcp_offload_bytes) },
- #endif
- 	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, ch_events) },
- 	{ MLX5E_DECLARE_STAT(struct mlx5e_sw_stats, ch_poll) },
-@@ -352,6 +365,18 @@ static void mlx5e_stats_grp_sw_update_stats_rq_stats(struct mlx5e_sw_stats *s,
- 	s->rx_tls_resync_res_skip     += rq_stats->tls_resync_res_skip;
- 	s->rx_tls_err                 += rq_stats->tls_err;
- #endif
-+#ifdef CONFIG_MLX5_EN_NVMEOTCP
-+	s->rx_nvmeotcp_queue_init      += rq_stats->nvmeotcp_queue_init;
-+	s->rx_nvmeotcp_queue_init_fail += rq_stats->nvmeotcp_queue_init_fail;
-+	s->rx_nvmeotcp_queue_teardown  += rq_stats->nvmeotcp_queue_teardown;
-+	s->rx_nvmeotcp_ddp_setup       += rq_stats->nvmeotcp_ddp_setup;
-+	s->rx_nvmeotcp_ddp_setup_fail  += rq_stats->nvmeotcp_ddp_setup_fail;
-+	s->rx_nvmeotcp_ddp_teardown    += rq_stats->nvmeotcp_ddp_teardown;
-+	s->rx_nvmeotcp_drop            += rq_stats->nvmeotcp_drop;
-+	s->rx_nvmeotcp_resync          += rq_stats->nvmeotcp_resync;
-+	s->rx_nvmeotcp_offload_packets += rq_stats->nvmeotcp_offload_packets;
-+	s->rx_nvmeotcp_offload_bytes   += rq_stats->nvmeotcp_offload_bytes;
-+#endif
- }
- 
- static void mlx5e_stats_grp_sw_update_stats_ch_stats(struct mlx5e_sw_stats *s,
-@@ -1632,6 +1657,18 @@ static const struct counter_desc rq_stats_desc[] = {
- 	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, tls_resync_res_skip) },
- 	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, tls_err) },
- #endif
-+#ifdef CONFIG_MLX5_EN_NVMEOTCP
-+	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, nvmeotcp_queue_init) },
-+	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, nvmeotcp_queue_init_fail) },
-+	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, nvmeotcp_queue_teardown) },
-+	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, nvmeotcp_ddp_setup) },
-+	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, nvmeotcp_ddp_setup_fail) },
-+	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, nvmeotcp_ddp_teardown) },
-+	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, nvmeotcp_drop) },
-+	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, nvmeotcp_resync) },
-+	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, nvmeotcp_offload_packets) },
-+	{ MLX5E_DECLARE_RX_STAT(struct mlx5e_rq_stats, nvmeotcp_offload_bytes) },
-+#endif
- };
- 
- static const struct counter_desc sq_stats_desc[] = {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
-index 93c41312fb03..674cee2a884d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.h
-@@ -181,6 +181,18 @@ struct mlx5e_sw_stats {
- 	u64 rx_congst_umr;
- 	u64 rx_arfs_err;
- 	u64 rx_recover;
-+#ifdef CONFIG_MLX5_EN_NVMEOTCP
-+	u64 rx_nvmeotcp_queue_init;
-+	u64 rx_nvmeotcp_queue_init_fail;
-+	u64 rx_nvmeotcp_queue_teardown;
-+	u64 rx_nvmeotcp_ddp_setup;
-+	u64 rx_nvmeotcp_ddp_setup_fail;
-+	u64 rx_nvmeotcp_ddp_teardown;
-+	u64 rx_nvmeotcp_drop;
-+	u64 rx_nvmeotcp_resync;
-+	u64 rx_nvmeotcp_offload_packets;
-+	u64 rx_nvmeotcp_offload_bytes;
-+#endif
- 	u64 ch_events;
- 	u64 ch_poll;
- 	u64 ch_arm;
-@@ -344,6 +356,18 @@ struct mlx5e_rq_stats {
- 	u64 tls_resync_res_skip;
- 	u64 tls_err;
- #endif
-+#ifdef CONFIG_MLX5_EN_NVMEOTCP
-+	u64 nvmeotcp_queue_init;
-+	u64 nvmeotcp_queue_init_fail;
-+	u64 nvmeotcp_queue_teardown;
-+	u64 nvmeotcp_ddp_setup;
-+	u64 nvmeotcp_ddp_setup_fail;
-+	u64 nvmeotcp_ddp_teardown;
-+	u64 nvmeotcp_drop;
-+	u64 nvmeotcp_resync;
-+	u64 nvmeotcp_offload_packets;
-+	u64 nvmeotcp_offload_bytes;
-+#endif
- };
- 
- struct mlx5e_sq_stats {
++Request TCP byte-stream:
++
++.. parsed-literal::
++
++ +---------------+-------+---------------+-------+---------------+-------+
++ | PDU hdr CID=1 | Req 1 | PDU hdr CID=2 | Req 2 | PDU hdr CID=3 | Req 3 |
++ +---------------+-------+---------------+-------+---------------+-------+
++
++Response TCP byte-stream:
++
++.. parsed-literal::
++
++ +---------------+--------+---------------+--------+---------------+--------+
++ | PDU hdr CID=2 | Resp 2 | PDU hdr CID=3 | Resp 3 | PDU hdr CID=1 | Resp 1 |
++ +---------------+--------+---------------+--------+---------------+--------+
++
++Offloading requires no new SKB bits. Instead, the driver builds SKB page
++fragments that point destination buffers. Consequently, SKBs represent the
++original data on the wire, which enables *transparent* inter-operation with the
++network stack.  To avoid copies between SKBs and destination buffers, the
++layer-5 protocol (L5P) will check ``if (src == dst)`` for SKB page fragments,
++success indicates that data is already placed there by NIC hardware and copy
++should be skipped.
++
++Offloading does require NIC hardware to track L5P procotol framing, similarly
++to RX TLS offload (see documentation at
++:ref:`Documentation/networking/tls-offload.rst <tls_offload>`).  NIC hardware
++will parse PDU headers extract fields such as operation type, length, ,tag
++identifier, etc. and offload only segments that correspond to tags registered
++with the NIC, see the :ref:`buf_reg` section.
++
++Device configuration
++====================
++
++During driver initialization the device sets the ``NETIF_F_HW_TCP_DDP`` and
++feature and installs its
++:c:type:`struct tcp_ddp_ops <tcp_ddp_ops>`
++pointer in the :c:member:`tcp_ddp_ops` member of the
++:c:type:`struct net_device <net_device>`.
++
++Later, after the L5P completes its handshake offload is installed on the socket.
++If offload installation fails, then the connection is handled by software as if
++offload was not attempted. Offload installation should configure 
++
++To request offload for a socket `sk`, the L5P calls :c:member:`tcp_ddp_sk_add`:
++
++.. code-block:: c
++
++ int (*tcp_ddp_sk_add)(struct net_device *netdev,
++ 		      struct sock *sk,
++ 		      struct tcp_ddp_config *config);
++
++The function return 0 for success. In case of failure, L5P software should
++fallback to normal non-offloaded operation.  The `config` parameter indicates
++the L5P type and any metadata relevant for that protocol. For example, in
++NVMe-TCP the following config is used:
++
++.. code-block:: c
++
++ /**
++  * struct nvme_tcp_ddp_config - nvme tcp ddp configuration for an IO queue
++  *
++  * @pfv:        pdu version (e.g., NVME_TCP_PFV_1_0)
++  * @cpda:       controller pdu data alignmend (dwords, 0's based)
++  * @dgst:       digest types enabled.
++  *              The netdev will offload crc if ddp_crc is supported.
++  * @queue_size: number of nvme-tcp IO queue elements
++  * @queue_id:   queue identifier
++  * @cpu_io:     cpu core running the IO thread for this queue
++  */
++ struct nvme_tcp_ddp_config {
++ 	struct tcp_ddp_config   cfg;
++ 
++ 	u16			pfv;
++ 	u8			cpda;
++ 	u8			dgst;
++ 	int			queue_size;
++ 	int			queue_id;
++ 	int			io_cpu;
++ };
++
++When offload is not needed anymore, e.g., the socket is being released, the L5P
++calls :c:member:`tcp_ddp_sk_del` to release device contexts:
++
++.. code-block:: c
++
++ void (*tcp_ddp_sk_del)(struct net_device *netdev,
++  		        struct sock *sk);
++
++Normal operation
++================
++
++At the very least, the device maintains the following state for each connection:
++
++ * 5-tuple
++ * expected TCP sequence number
++ * mapping between tags and corresponding buffers
++ * current offset within PDU, PDU length, current PDU tag
++
++NICs should not assume any correleation between PDUs and TCP packets.  Assuming
++that TCP packets arrive in-order, offload will place PDU payload directly
++inside corresponding registered buffers. No packets are to be delayed by NIC
++offload. If offload is not possible, than the packet is to be passed as-is to
++software. To perform offload on incoming packets without buffering packets in
++the NIC, the NIC stores some inter-packet state, such as partial PDU headers.
++
++RX data-path
++------------
++
++After the device validates TCP checksums, it can perform DDP offload.  The
++packet is steered to the DDP offload context according to the 5-tuple.
++Thereafter, the expected TCP sequence number is checked against the packet's
++TCP sequence number. If there's a match, then offload is performed: PDU payload
++is DMA written to corresponding destination buffer according to the PDU header
++tag.  The data should be DMAed only once, and the NIC receive ring will only
++store the remaining TCP and PDU headers.
++
++We remark that a single TCP packet may have numerous PDUs embedded inside. NICs
++can choose to offload one or more of these PDUs according to various
++trade-offs. Possibly, offloading such small PDUs is of little value, and it is
++better to leave it to software.
++
++Upon receiving a DDP offloaded packet, the driver reconstructs the original SKB
++using page frags, while pointing to the destination buffers whenever possible.
++This method enables seemless integration with the network stack, which can
++inspect and modify packet fields transperently to the offload.
++
++.. _buf_reg:
++
++Destination buffer registration
++-------------------------------
++
++To register the mapping betwteen tags and destination buffers for a socket
++`sk`, the L5P calls :c:member:`tcp_ddp_setup` of :c:type:`struct tcp_ddp_ops
++<tcp_ddp_ops>`:
++
++.. code-block:: c
++  
++ int (*tcp_ddp_setup)(struct net_device *netdev,
++ 		     struct sock *sk,
++ 		     struct tcp_ddp_io *io);
++
++
++The `io` provides the buffer via scatter-gather list (`sg_table`) and
++corresponding tag (`command_id`):
++
++.. code-block:: c
++ /**
++  * struct tcp_ddp_io - tcp ddp configuration for an IO request.
++  *
++  * @command_id:  identifier on the wire associated with these buffers
++  * @nents:       number of entries in the sg_table
++  * @sg_table:    describing the buffers for this IO request
++  * @first_sgl:   first SGL in sg_table
++  */
++ struct tcp_ddp_io {
++ 	u32			command_id;
++ 	int			nents;
++ 	struct sg_table		sg_table;
++ 	struct scatterlist	first_sgl[SG_CHUNK_SIZE];
++ };
++
++After the buffers have been consumed by the L5P, to release the NIC mapping of
++buffers the L5P calls :c:member:`tcp_ddp_teardown` of :c:type:`struct
++tcp_ddp_ops <tcp_ddp_ops>`: 
++
++.. code-block:: c
++  
++ int (*tcp_ddp_teardown)(struct net_device *netdev,
++ 			struct sock *sk,
++ 			struct tcp_ddp_io *io,
++ 			void *ddp_ctx);
++
++`tcp_ddp_teardown` receives the same `io` context and an additional opaque
++`ddp_ctx` that is used for asynchronous teardown, see the :ref:`async_release`
++section.
++
++.. _async_release:
++
++Asynchronous teardown
++---------------------
++
++To teardown the association between tags and buffers and allow tag reuse NIC HW
++is called by the NIC driver during `tcp_ddp_teardown`. This operation may be
++performed either synchronously or asynchronously. In asynchronous teardown,
++`tcp_ddp_teardown` returns immediately without unmapping NIC HW buffers. Later,
++when the unmapping completes by NIC HW, the NIC driver will call up to L5P
++using :c:member:`ddp_teardown_done` of :c:type:`struct tcp_ddp_ulp_ops`:
++
++.. code-block:: c
++
++ void (*ddp_teardown_done)(void *ddp_ctx);
++
++The `ddp_ctx` parameter passed in `ddp_teardown_done` is the same on provided
++in `tcp_ddp_teardown` and it is used to carry some context about the buffers
++and tags that are released.
++
++Resync handling
++===============
++
++In presence of packet drops or network packet reordering, the device may lose
++synchronization between the TCP stream and the L5P framing, and require a
++resync with the kernel's TCP stack. When the device is out of sync, no offload
++takes place, and packets are passed as-is to software. (resync is very similar
++to TLS offload (see documentation at
++:ref:`Documentation/networking/tls-offload.rst <tls_offload>`)
++
++If only packets with L5P data are lost or reordered, then resynchronization may
++be avoided by NIC HW that keeps tracking PDU headers. If, however, PDU headers
++are reordered, then resynchronization is necessary.
++
++To resynchronize hardware during traffic, we use a handshake between hardware
++and software. The NIC HW searches for a sequence of bytes that identifies L5P
++headers (i.e., magic pattern).  For example, in NVMe-TCP, the PDU operation
++type can be used for this purpose.  Using the PDU header length field, the NIC
++HW will continue to find and match magic patterns in subsequent PDU headers. If
++the pattern is missing in an expected position, then searching for the pattern
++starts anew.
++
++The NIC will not resume offload when the magic pattern is first identified.
++Instead, it will request L5P software to confirm that indeed this is a PDU
++header. To request confirmation the NIC driver calls up to L5P using
++:c:member:`*resync_request` of :c:type:`struct tcp_ddp_ulp_ops`:
++
++.. code-block:: c
++
++  bool (*resync_request)(struct sock *sk, u32 seq, u32 flags);
++
++The `seq` field contains the TCP sequence of the last byte in the PDU header.
++L5P software will respond to this request after observing the packet containing
++TCP sequence `seq` in-order. If the PDU header is indeed there, then L5P
++software calls the NIC driver using the :c:member:`tcp_ddp_resync` function of
++the :c:type:`struct tcp_ddp_ops <tcp_ddp_ops>` inside the :c:type:`struct
++net_device <net_device>` while passing the same `seq` to confirm it is a PDU
++header.
++
++.. code-block:: c
++
++ void (*tcp_ddp_resync)(struct net_device *netdev,
++ 		       struct sock *sk, u32 seq);
++
++Statistics
++==========
++
++Per L5P protocol, the following NIC driver must report statistics for the above
++netdevice operations and packets processed by offload. For example, NVMe-TCP
++offload reports:
++
++ * ``rx_nvmeotcp_queue_init`` - number of NVMe-TCP offload contexts created.
++ * ``rx_nvmeotcp_queue_teardown`` - number of NVMe-TCP offload contexts
++   destroyed.
++ * ``rx_nvmeotcp_ddp_setup`` - number of DDP buffers mapped.
++ * ``rx_nvmeotcp_ddp_setup_fail`` - number of DDP buffers mapping that failed.
++ * ``rx_nvmeotcp_ddp_teardown`` - number of DDP buffers unmapped.
++ * ``rx_nvmeotcp_drop`` - number of packets dropped in the driver due to fatal
++   errors.
++ * ``rx_nvmeotcp_resync`` - number of packets with resync requests.
++ * ``rx_nvmeotcp_offload_packets`` - number of packets that used offload.
++ * ``rx_nvmeotcp_offload_bytes`` - number of bytes placed in DDP buffers.
++
++NIC requirements
++================
++
++NIC hardware should meet the following requirements to provide this offload:
++
++ * Offload must never buffer TCP packets.
++ * Offload must never modify TCP packet headers.
++ * Offload must never reorder TCP packets within a flow.
++ * Offload must never drop TCP packets.
++ * Offload must not depend on any TCP fields beyond the
++   5-tuple and TCP sequence number.
 -- 
 2.24.1
 
