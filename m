@@ -2,164 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D272530A182
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 06:40:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7215430A177
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 06:35:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230091AbhBAFjt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 00:39:49 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:33452 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231484AbhBAF0G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 00:26:06 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1115L9p0004725;
-        Sun, 31 Jan 2021 21:25:19 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=k2W0HGdS52YxBqxCw5+glP2NLyQW59WceMVWV8sZtaE=;
- b=k3CWw1bq/lgCXL/XGznwDsLc68bSCyXX51ikyOxLU+gShYaqHBovtmRkdtR8e6mPVx9t
- 3O5GedaOh2RCysVB0OPqVe5LR+0+ZfNe1+NHBT2uhSCpBI9NOs/MUiYTOD2RefeUwyWN
- 9FsfCAma5OanXpBuDZ57+/gO++Tt8Vjab55dKo8jP5qUb2d1WALS5yCf1k0DXerGM3xL
- 1jXi7PWVN25+yseoBWcSPTi94VxaeAKMRUqx19hkI5xbIzVWesbPP7yZCSUuGvhqypLD
- GQJL4GbsDbTN1iJO+FOSYz5gckP0tMDHAwEw/+rzTb/p29QKQjUXmnZDa4n0/SgBZxFO Eg== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com with ESMTP id 36d7uq2s4x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 31 Jan 2021 21:25:19 -0800
-Received: from SC-EXCH04.marvell.com (10.93.176.84) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 31 Jan
- 2021 21:25:17 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 31 Jan
- 2021 21:25:17 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sun, 31 Jan 2021 21:25:16 -0800
-Received: from hyd1soter2.marvell.com (unknown [10.29.37.45])
-        by maili.marvell.com (Postfix) with ESMTP id 8EDE13F7040;
-        Sun, 31 Jan 2021 21:25:13 -0800 (PST)
-From:   Hariprasad Kelam <hkelam@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <kuba@kernel.org>, <davem@davemloft.net>,
-        <willemdebruijn.kernel@gmail.com>, <andrew@lunn.ch>,
-        <sgoutham@marvell.com>, <lcherian@marvell.com>,
-        <gakula@marvell.com>, <jerinj@marvell.com>, <sbhatta@marvell.com>,
-        <hkelam@marvell.com>
-Subject: [Patch v3 net-next 7/7] octeontx2-pf: ethtool physical link configuration
-Date:   Mon, 1 Feb 2021 10:54:44 +0530
-Message-ID: <1612157084-101715-8-git-send-email-hkelam@marvell.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1612157084-101715-1-git-send-email-hkelam@marvell.com>
-References: <1612157084-101715-1-git-send-email-hkelam@marvell.com>
+        id S229963AbhBAFfb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 00:35:31 -0500
+Received: from mail-il1-f199.google.com ([209.85.166.199]:34293 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229966AbhBAF1D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 00:27:03 -0500
+Received: by mail-il1-f199.google.com with SMTP id c16so12745040ile.1
+        for <netdev@vger.kernel.org>; Sun, 31 Jan 2021 21:26:48 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=mOuteIF8UAPooau0D/cZWl4oFDJw4SLqefC73M8pDiU=;
+        b=nqtGHY1bpP2qAyfmMuFCQPtmebvaxUKd4pK5N54CJmpmNhfIkK9JOTKfxlL/E/aW/F
+         3fcHf7yD95IBGebs2cOsenQRQwrfB3RhbqAhi32Wkq8NmuXL9gnqG38aJl1Ikqr/I7kx
+         1GAC/1DM6TFB/sNIZ8MENWCgMMObGY+Q+HnJx062Rs5fpLzDQcVgaYYaG2AJDweMbUYJ
+         Cfm6742vE5drev4ohty5S3Zg5EacU1mXDcBqqX/4YcWGUfNKJCQ5cLvxOX8aXYamj4uL
+         fc4oZ+yFJciAA8PCAZP0ZgWdErrv2eJCDnD2jthgBbd54cnRC0BubLoiEMt0qhWUjkVM
+         MImw==
+X-Gm-Message-State: AOAM531TIwhIFazGADyneBDkIGeS7Z7wNlwBvq//CbjgG7t749XHMJHt
+        xkMbOYAxXgWW2KGzp81HQHW2KkIDumfT5Am/szUJw/TEWUz5
+X-Google-Smtp-Source: ABdhPJwk6jyJ1h9tBbtnwk+FTCU6d5MxIKAPn2mwnsIFBSnobEXOxL0CfEPiBRKPR7+Ql7b/WSh0ZSF81ahIGyPXN+HSSjs5FhII
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
- definitions=2021-02-01_02:2021-01-29,2021-02-01 signatures=0
+X-Received: by 2002:a05:6e02:1564:: with SMTP id k4mr11437262ilu.282.1612157183044;
+ Sun, 31 Jan 2021 21:26:23 -0800 (PST)
+Date:   Sun, 31 Jan 2021 21:26:23 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000037b29b05ba3f9859@google.com>
+Subject: WARNING in sta_info_insert_check
+From:   syzbot <syzbot+8dcc087eb24227ded47e@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christina Jacob <cjacob@marvell.com>
+Hello,
 
-Register set_link_ksetting callback with driver such that
-link configurations parameters like advertised mode,speed, duplex
-and autoneg can be configured.
+syzbot found the following issue on:
 
-below command
-ethtool -s eth0 advertise 0x1 speed 10 duplex full autoneg on
+HEAD commit:    bec4c296 Merge tag 'ecryptfs-5.11-rc6-setxattr-fix' of git..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=11991778d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=f75d66d6d359ef2f
+dashboard link: https://syzkaller.appspot.com/bug?extid=8dcc087eb24227ded47e
+userspace arch: arm64
 
-Signed-off-by: Christina Jacob <cjacob@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+8dcc087eb24227ded47e@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 118 at net/mac80211/sta_info.c:547 sta_info_insert_check+0x48/0xc4 net/mac80211/sta_info.c:547
+Modules linked in:
+CPU: 0 PID: 118 Comm: kworker/u4:3 Not tainted 5.11.0-rc5-syzkaller-00239-gbec4c2968fce #0
+Hardware name: linux,dummy-virt (DT)
+Workqueue: phy6 ieee80211_iface_work
+pstate: 40400009 (nZcv daif +PAN -UAO -TCO BTYPE=--)
+pc : sta_info_insert_check+0x48/0xc4 net/mac80211/sta_info.c:547
+lr : sta_info_insert_rcu+0x34/0x90 net/mac80211/sta_info.c:725
+sp : ffff800013f3bbf0
+x29: ffff800013f3bbf0 x28: ffff8000132e4538 
+x27: f6ff00002070c998 x26: dead000000000100 
+x25: dead000000000122 x24: f6ff00002070d340 
+x23: f6ff00002070d280 x22: faff000020710800 
+x21: faff000020710df0 x20: f6ff00002070c940 
+x19: f7ff000020784000 x18: 0000000000000000 
+x17: 0000000000000000 x16: 0000000000000000 
+x15: 0000ad1062c19046 x14: f7ff000020796098 
+x13: 000000000000044b x12: f6ff00002070c940 
+x11: 000000000000000c x10: 0000000000000000 
+x9 : faff000020713b90 x8 : 0000000000000fff 
+x7 : 0000000000000000 x6 : f6ff00002070c940 
+x5 : 0000000000000fff x4 : 0000000000000000 
+x3 : 0000000000000100 x2 : 00000000ffeeffff 
+x1 : 00000000ffffffff x0 : 00000000ffeefdf7 
+Call trace:
+ sta_info_insert_check+0x48/0xc4 net/mac80211/sta_info.c:547
+ sta_info_insert_rcu+0x34/0x90 net/mac80211/sta_info.c:725
+ ieee80211_ibss_finish_sta+0x84/0x140 net/mac80211/ibss.c:592
+ ieee80211_ibss_work+0xe4/0x560 net/mac80211/ibss.c:1700
+ ieee80211_iface_work+0x2b8/0x33c net/mac80211/iface.c:1445
+ process_one_work+0x1d8/0x360 kernel/workqueue.c:2275
+ worker_thread+0x74/0x440 kernel/workqueue.c:2421
+ kthread+0x178/0x180 kernel/kthread.c:292
+ ret_from_fork+0x10/0x30 arch/arm64/kernel/entry.S:958
+
+
 ---
- .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  | 67 ++++++++++++++++++++++
- 1 file changed, 67 insertions(+)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-index d637815..74a62de 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-@@ -1170,6 +1170,72 @@ static int otx2_get_link_ksettings(struct net_device *netdev,
- 	return 0;
- }
- 
-+static void otx2_get_advertised_mode(const struct ethtool_link_ksettings *cmd,
-+				     u64 *mode)
-+{
-+	u32 bit_pos;
-+
-+	/* Firmware does not support requesting multiple advertised modes
-+	 * return first set bit
-+	 */
-+	bit_pos = find_first_bit(cmd->link_modes.advertising,
-+				 __ETHTOOL_LINK_MODE_MASK_NBITS);
-+	if (bit_pos != __ETHTOOL_LINK_MODE_MASK_NBITS)
-+		*mode = bit_pos;
-+}
-+
-+static int otx2_set_link_ksettings(struct net_device *netdev,
-+				   const struct ethtool_link_ksettings *cmd)
-+{
-+	struct otx2_nic *pf = netdev_priv(netdev);
-+	struct ethtool_link_ksettings req_ks;
-+	struct ethtool_link_ksettings cur_ks;
-+	struct cgx_set_link_mode_req *req;
-+	struct mbox *mbox = &pf->mbox;
-+	int err = 0;
-+
-+	/* save requested link settings */
-+	memcpy(&req_ks, cmd, sizeof(struct ethtool_link_ksettings));
-+
-+	memset(&cur_ks, 0, sizeof(struct ethtool_link_ksettings));
-+
-+	if (!ethtool_validate_speed(cmd->base.speed) ||
-+	    !ethtool_validate_duplex(cmd->base.duplex))
-+		return -EINVAL;
-+
-+	if (cmd->base.autoneg != AUTONEG_ENABLE &&
-+	    cmd->base.autoneg != AUTONEG_DISABLE)
-+		return -EINVAL;
-+
-+	otx2_get_link_ksettings(netdev, &cur_ks);
-+
-+	/* Check requested modes against supported modes by hardware */
-+	if (!bitmap_subset(req_ks.link_modes.advertising,
-+			   cur_ks.link_modes.supported,
-+			   __ETHTOOL_LINK_MODE_MASK_NBITS))
-+		return -EINVAL;
-+
-+	mutex_lock(&mbox->lock);
-+	req = otx2_mbox_alloc_msg_cgx_set_link_mode(&pf->mbox);
-+	if (!req) {
-+		err = -ENOMEM;
-+		goto end;
-+	}
-+
-+	req->args.speed = req_ks.base.speed;
-+	/* firmware expects 1 for half duplex and 0 for full duplex
-+	 * hence inverting
-+	 */
-+	req->args.duplex = req_ks.base.duplex ^ 0x1;
-+	req->args.an = req_ks.base.autoneg;
-+	otx2_get_advertised_mode(&req_ks, &req->args.mode);
-+
-+	err = otx2_sync_mbox_msg(&pf->mbox);
-+end:
-+	mutex_unlock(&mbox->lock);
-+	return err;
-+}
-+
- static const struct ethtool_ops otx2_ethtool_ops = {
- 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
- 				     ETHTOOL_COALESCE_MAX_FRAMES,
-@@ -1200,6 +1266,7 @@ static const struct ethtool_ops otx2_ethtool_ops = {
- 	.get_fecparam		= otx2_get_fecparam,
- 	.set_fecparam		= otx2_set_fecparam,
- 	.get_link_ksettings     = otx2_get_link_ksettings,
-+	.set_link_ksettings     = otx2_set_link_ksettings,
- };
- 
- void otx2_set_ethtool_ops(struct net_device *netdev)
--- 
-2.7.4
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
