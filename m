@@ -2,103 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7744F30A1C3
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 07:01:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DA1D30A1D1
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 07:04:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231755AbhBAGA5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 01:00:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59654 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231835AbhBAF6g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 00:58:36 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6D8EC0613ED;
-        Sun, 31 Jan 2021 21:57:18 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id z9so1698767pjl.5;
-        Sun, 31 Jan 2021 21:57:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=u9WcgY/7dzWX3O9rNeZQ45WY9vESYPTTGXpSkl0YUkI=;
-        b=Ih0G2mIOJJKmBb2ZACWolGcOpStbwLKcyk6kFoADEB0DP5RFHVEQumuS4q1QL6gRhx
-         XymbM/t3dKVkAO2sV6yIHPRjw93zfHa/7CSinrC2hfs9k0QVVs5hJ8g8APHdfTjetOtk
-         yKHRMGH37CXPXbVtEgNJSPQ9s5dHSs7HprVGRGLZHFR7i7UMz3NO2acZuKmAHVqlUcQp
-         q4z627DeuguOgMLczPFgl5UeNWiVCe1dPCmCEf2VosjvxwZs9qHAW927MooWjH0hbFF2
-         4cIngYZIjDY/Pa2MflMjZSp1hHe1eHHaFX/koE6Ag5nd/4yQ/aVtpBOKd0HXf798WSU7
-         vHpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=u9WcgY/7dzWX3O9rNeZQ45WY9vESYPTTGXpSkl0YUkI=;
-        b=fIaTjOlvpVtSW+RfMEYgkl6GeK2zw4OaMkHMPaj9Oz2dYAfE23C9N4ZrhQtMRnPz/5
-         /DfFUIcJ8Btb3TDmoXMK1uE1/bE8puSbDQePBafskkwgIcsJgvL41kz5TsAlHGqo1KDe
-         glOMnwiXDlLJ4TV5ukYj2VJNoqO5YVPym+E8EJzl90mfdB/uKDqksJyEStnYUvw3aGp/
-         yrHKadep4tm6f99k1F4hQYJj7V0n+Hll9P+ML0npDvp9ENO8cN+gNsoN1qNEjjBVaOKM
-         hxqvaqPpC9dBsD2w+INpcOJ5S+Lm0CFcJU6ydH/K1a/J4OfEJdrVrz90KEMRy1nF14eO
-         xR5g==
-X-Gm-Message-State: AOAM531aeT4JlUEiC6MwHkUmVZ3X9YqxMCrz9JrBeCCstAvZ5s10qWCw
-        4mH5wIrckPCZXgyQJMYRzEM=
-X-Google-Smtp-Source: ABdhPJxl+cgcAoXEBEpC1VwLLcuK8i3ig1a4dYX68teiMTM77/zkxVELptriuY7MljTxLwmUrn+BUg==
-X-Received: by 2002:a17:902:e812:b029:de:5af2:3d09 with SMTP id u18-20020a170902e812b02900de5af23d09mr16457146plg.33.1612159038341;
-        Sun, 31 Jan 2021 21:57:18 -0800 (PST)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:f50:a17:3dc5:18ab])
-        by smtp.gmail.com with ESMTPSA id x63sm16992608pfc.145.2021.01.31.21.57.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 31 Jan 2021 21:57:17 -0800 (PST)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-x25@vger.kernel.org,
+        id S232067AbhBAGE0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 01:04:26 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:58117 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231861AbhBAGCT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 01:02:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612159249;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RdybqpikUstylFnotQy48gGt+VsHUqQDR1hNUpuuxFI=;
+        b=cso1UdoPDaebNbLQ/LWWCuUfHEGGzLPeoiaLGrYF5F0Di5u3GSEXBzIsPHcQXEE5emTX0u
+        89Pj98AaTwLekwZc051B/67YFjb7jIbpQ79mQWjif+56UkZZISLnGprvmu6JLkytA/QyWS
+        kdoSKUrkFfb7VUOJ5zN9wPzMZmPhfic=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-241-fAEQBVTOOKuxJMlZzKKzzQ-1; Mon, 01 Feb 2021 01:00:46 -0500
+X-MC-Unique: fAEQBVTOOKuxJMlZzKKzzQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id ED10D800D62;
+        Mon,  1 Feb 2021 06:00:44 +0000 (UTC)
+Received: from [10.72.13.120] (ovpn-13-120.pek2.redhat.com [10.72.13.120])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A339A1001281;
+        Mon,  1 Feb 2021 06:00:37 +0000 (UTC)
+Subject: Re: [PATCH 2/2] vdpa/mlx5: Restore the hardware used index after
+ change map
+To:     Eli Cohen <elic@nvidia.com>
+Cc:     mst@redhat.com, virtualization@lists.linux-foundation.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Martin Schiller <ms@dev.tdt.de>
-Cc:     Xie He <xie.he.0141@gmail.com>
-Subject: [PATCH net] net: lapb: Copy the skb before sending a packet
-Date:   Sun, 31 Jan 2021 21:57:06 -0800
-Message-Id: <20210201055706.415842-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        lulu@redhat.com
+References: <20210128134130.3051-1-elic@nvidia.com>
+ <20210128134130.3051-3-elic@nvidia.com>
+ <54239b51-918c-3475-dc88-4da1a4548da8@redhat.com>
+ <20210131185536.GA164217@mtl-vdi-166.wap.labs.mlnx>
+ <0c99f35c-7644-7201-cd11-7d486389a182@redhat.com>
+ <20210201055247.GA184807@mtl-vdi-166.wap.labs.mlnx>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <c013407d-7a6a-adaa-efd1-24a8a48dc6fa@redhat.com>
+Date:   Mon, 1 Feb 2021 14:00:35 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <20210201055247.GA184807@mtl-vdi-166.wap.labs.mlnx>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When sending a packet, we will prepend it with an LAPB header.
-This modifies the shared parts of a cloned skb, so we should copy the
-skb rather than just clone it, before we prepend the header.
 
-In "Documentation/networking/driver.rst" (the 2nd point), it states
-that drivers shouldn't modify the shared parts of a cloned skb when
-transmitting.
+On 2021/2/1 下午1:52, Eli Cohen wrote:
+> On Mon, Feb 01, 2021 at 11:36:23AM +0800, Jason Wang wrote:
+>> On 2021/2/1 上午2:55, Eli Cohen wrote:
+>>> On Fri, Jan 29, 2021 at 11:49:45AM +0800, Jason Wang wrote:
+>>>> On 2021/1/28 下午9:41, Eli Cohen wrote:
+>>>>> When a change of memory map occurs, the hardware resources are destroyed
+>>>>> and then re-created again with the new memory map. In such case, we need
+>>>>> to restore the hardware available and used indices. The driver failed to
+>>>>> restore the used index which is added here.
+>>>>>
+>>>>> Fixes 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
+>>>>> Signed-off-by: Eli Cohen <elic@nvidia.com>
+>>>> A question. Does this mean after a vq is suspended, the hw used index is not
+>>>> equal to vq used index?
+>>> Surely there is just one "Used index" for a VQ. What I was trying to say
+>>> is that after the VQ is suspended, I read the used index by querying the
+>>> hardware. The read result is the used index that the hardware wrote to
+>>> memory.
+>>
+>> Just to make sure I understand here. So it looks to me we had two index. The
+>> first is the used index which is stored in the memory/virtqueue, the second
+>> is the one that is stored by the device.
+>>
+> It is the structures defined in the virtio spec in 2.6.6 for the
+> available ring and 2.6.8 for the used ring. As you know these the
+> available ring is written to by the driver and read by the device. The
+> opposite happens for the used index.
 
-The "dev_queue_xmit_nit" function in "net/core/dev.c", which is called
-when an skb is being sent, clones the skb and sents the clone to
-AF_PACKET sockets. Because the LAPB drivers first remove a 1-byte
-pseudo-header before handing over the skb to us, if we don't copy the
-skb before prepending the LAPB header, the first byte of the packets
-received on AF_PACKET sockets can be corrupted.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Cc: Martin Schiller <ms@dev.tdt.de>
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
----
- net/lapb/lapb_out.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Right, so for used index it was wrote by device. And the device should 
+have an internal used index value that is used to write to the used 
+ring. And the code is used to sync the device internal used index if I 
+understand this correctly.
 
-diff --git a/net/lapb/lapb_out.c b/net/lapb/lapb_out.c
-index 7a4d0715d1c3..a966d29c772d 100644
---- a/net/lapb/lapb_out.c
-+++ b/net/lapb/lapb_out.c
-@@ -82,7 +82,8 @@ void lapb_kick(struct lapb_cb *lapb)
- 		skb = skb_dequeue(&lapb->write_queue);
- 
- 		do {
--			if ((skbn = skb_clone(skb, GFP_ATOMIC)) == NULL) {
-+			skbn = skb_copy(skb, GFP_ATOMIC);
-+			if (!skbn) {
- 				skb_queue_head(&lapb->write_queue, skb);
- 				break;
- 			}
--- 
-2.27.0
+
+> The reason I need to restore the last known indices is for the new
+> hardware objects to sync on the last state and take over from there.
+
+
+Right, after the vq suspending, the questions are:
+
+1) is hardware internal used index might not be the same with the used 
+index in the virtqueue?
+
+or
+
+2) can we simply sync the virtqueue's used index to the hardware's used 
+index?
+
+Thanks
+
+
+>
+>>>    After the I create the new hardware object, I need to tell it
+>>> what is the used index (and the available index) as a way to sync it
+>>> with the existing VQ.
+>>
+>> For avail index I understand that the hardware index is not synced with the
+>> avail index stored in the memory/virtqueue. The question is used index, if
+>> the hardware one is not synced with the one in the virtqueue. It means after
+>> vq is suspended,  some requests is not completed by the hardware (e.g the
+>> buffer were not put to used ring).
+>>
+>> This may have implications to live migration, it means those unaccomplished
+>> requests needs to be migrated to the destination and resubmitted to the
+>> device. This looks not easy.
+>>
+>> Thanks
+>>
+>>
+>>> This sync is especially important when a change of map occurs while the
+>>> VQ was already used (hence the indices are likely to be non zero). This
+>>> can be triggered by hot adding memory after the VQs have been used.
+>>>
+>>>> Thanks
+>>>>
+>>>>
+>>>>> ---
+>>>>>     drivers/vdpa/mlx5/net/mlx5_vnet.c | 7 +++++++
+>>>>>     1 file changed, 7 insertions(+)
+>>>>>
+>>>>> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+>>>>> index 549ded074ff3..3fc8588cecae 100644
+>>>>> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+>>>>> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+>>>>> @@ -87,6 +87,7 @@ struct mlx5_vq_restore_info {
+>>>>>     	u64 device_addr;
+>>>>>     	u64 driver_addr;
+>>>>>     	u16 avail_index;
+>>>>> +	u16 used_index;
+>>>>>     	bool ready;
+>>>>>     	struct vdpa_callback cb;
+>>>>>     	bool restore;
+>>>>> @@ -121,6 +122,7 @@ struct mlx5_vdpa_virtqueue {
+>>>>>     	u32 virtq_id;
+>>>>>     	struct mlx5_vdpa_net *ndev;
+>>>>>     	u16 avail_idx;
+>>>>> +	u16 used_idx;
+>>>>>     	int fw_state;
+>>>>>     	/* keep last in the struct */
+>>>>> @@ -804,6 +806,7 @@ static int create_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtque
+>>>>>     	obj_context = MLX5_ADDR_OF(create_virtio_net_q_in, in, obj_context);
+>>>>>     	MLX5_SET(virtio_net_q_object, obj_context, hw_available_index, mvq->avail_idx);
+>>>>> +	MLX5_SET(virtio_net_q_object, obj_context, hw_used_index, mvq->used_idx);
+>>>>>     	MLX5_SET(virtio_net_q_object, obj_context, queue_feature_bit_mask_12_3,
+>>>>>     		 get_features_12_3(ndev->mvdev.actual_features));
+>>>>>     	vq_ctx = MLX5_ADDR_OF(virtio_net_q_object, obj_context, virtio_q_context);
+>>>>> @@ -1022,6 +1025,7 @@ static int connect_qps(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *m
+>>>>>     struct mlx5_virtq_attr {
+>>>>>     	u8 state;
+>>>>>     	u16 available_index;
+>>>>> +	u16 used_index;
+>>>>>     };
+>>>>>     static int query_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq,
+>>>>> @@ -1052,6 +1056,7 @@ static int query_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueu
+>>>>>     	memset(attr, 0, sizeof(*attr));
+>>>>>     	attr->state = MLX5_GET(virtio_net_q_object, obj_context, state);
+>>>>>     	attr->available_index = MLX5_GET(virtio_net_q_object, obj_context, hw_available_index);
+>>>>> +	attr->used_index = MLX5_GET(virtio_net_q_object, obj_context, hw_used_index);
+>>>>>     	kfree(out);
+>>>>>     	return 0;
+>>>>> @@ -1602,6 +1607,7 @@ static int save_channel_info(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqu
+>>>>>     		return err;
+>>>>>     	ri->avail_index = attr.available_index;
+>>>>> +	ri->used_index = attr.used_index;
+>>>>>     	ri->ready = mvq->ready;
+>>>>>     	ri->num_ent = mvq->num_ent;
+>>>>>     	ri->desc_addr = mvq->desc_addr;
+>>>>> @@ -1646,6 +1652,7 @@ static void restore_channels_info(struct mlx5_vdpa_net *ndev)
+>>>>>     			continue;
+>>>>>     		mvq->avail_idx = ri->avail_index;
+>>>>> +		mvq->used_idx = ri->used_index;
+>>>>>     		mvq->ready = ri->ready;
+>>>>>     		mvq->num_ent = ri->num_ent;
+>>>>>     		mvq->desc_addr = ri->desc_addr;
 
