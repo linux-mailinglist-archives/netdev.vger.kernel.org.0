@@ -2,251 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8791030A956
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 15:07:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 158DF30A964
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 15:12:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231320AbhBAOGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 09:06:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51910 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232157AbhBAOGO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 09:06:14 -0500
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC286C0613ED
-        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 06:05:33 -0800 (PST)
-Received: by mail-ot1-x32d.google.com with SMTP id h14so16338439otr.4
-        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 06:05:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=mFLtE3g0EjsOTeRVCEtooiFyBxJeQBA83vZYyjzIIkU=;
-        b=XEKZcJmDAUBmk+MqoDtGxBd4pfDEibLiJlvwDHU99qZuDJcdfDOwHRpzj9fI8wChuH
-         XP8c456F4zJQzhqn1hQ85jnT1ecuGvx8gvumPxuI7i+kaIKCeZdTcSy0HJWG45YHx30g
-         Hn/EV4BcdghRi/HfDEl9yi7IL1h+2lXZ/RiY6Y8xbb8lmpduv/0UDvwS4Ue5MmWkuKZi
-         SQHMTUS6+lksScavXb3Yb2tBjfY2hVSFl5Fypd5AVLsL70dPuSNq7rEQGTJrid2IAJcc
-         V8P2zEyysyVHNRAtjd9hLISwdCBwSBChxyPhgbWy0elr/ao9H4AJL0EWO0F5EEW1GJ3Z
-         k3fQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=mFLtE3g0EjsOTeRVCEtooiFyBxJeQBA83vZYyjzIIkU=;
-        b=B6MBmyu5G15rKxjOe+27hRMWhOieOdq9++e0mgBZQOqB7E/BaAPnEHC1IXMhPnQabh
-         2ncKmo+ChxVQy8chg/Z8WiCeTpW162sfQt5tDzQOauX5UdCUNyG/GCHJdriNSqTI+juE
-         GdE7rtP+/tBrSz8CFdfZEs+WRMNv4ebBLdlx/UwsKKnKmR1t6jpzhcx9zO/lDlt7bYao
-         VTdj4HEjJO5z7HZbea9r74zGP8XkXqy8HqvngjxkUEeRrTS3cPzK8DV4FKv5N5IP3Zwh
-         8RJE2dBNv+FlNBolFRP53N45FiEgzv1tjQWUH1zh2FcNxA3Nn/GvYvrotGx+v0h679fn
-         0m7A==
-X-Gm-Message-State: AOAM531PzMNnwTZGQrdlqyAz3gb7UwbE7LLKK9x0REpWAylranVV/hLG
-        qBnWBr/O9ta3Ck5kP3SkoQ==
-X-Google-Smtp-Source: ABdhPJw+jMQbbvpl8wdipjdgQq5BXGEmjXcLCzQJD+M5p6lGRet67S4xpQtzZUjjX0P0z5gg9zw18A==
-X-Received: by 2002:a9d:4544:: with SMTP id p4mr11319502oti.368.1612188333096;
-        Mon, 01 Feb 2021 06:05:33 -0800 (PST)
-Received: from threadripper.novatech-llc.local ([216.21.169.52])
-        by smtp.gmail.com with ESMTPSA id q6sm3967972otm.68.2021.02.01.06.05.29
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 01 Feb 2021 06:05:31 -0800 (PST)
-From:   George McCollister <george.mccollister@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
-        George McCollister <george.mccollister@gmail.com>
-Subject: [RESEND PATCH net-next 4/4] net: dsa: xrs700x: add HSR offloading support
-Date:   Mon,  1 Feb 2021 08:05:03 -0600
-Message-Id: <20210201140503.130625-5-george.mccollister@gmail.com>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20210201140503.130625-1-george.mccollister@gmail.com>
-References: <20210201140503.130625-1-george.mccollister@gmail.com>
+        id S231444AbhBAOLk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 09:11:40 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:7522 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229500AbhBAOLi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 09:11:38 -0500
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 111E33rv088288;
+        Mon, 1 Feb 2021 09:10:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=kFfdiVRSosOPGBsI44S5SiAq787FhllDr5Y5F5u5cYQ=;
+ b=cs8rpuv8dySai1YarWb142wHJt556SoyMPcuFzcwp/hyMhhz9qnOko+MBSlIlr4LGGBx
+ qdh79pg3YjpLZv3J76TZF/TOkFBKnJK+yUWPkJ5DsaiaL+aUwPTrHb38b4LPazQrKvwB
+ GascykC2BjdBQuHzxWOfyV3o54rGpoEx3fXR7x6YV8XT/TZUQGmi7MU0yN0JsYWF66oJ
+ U67TsnkaZV5ced82dUM2xDXPz30M/FnOi9iQuTuaBA2KZGCsKPbWbVCSq5N7ut2V7o3k
+ sD4oKDZ5P/dNvk+vGhWRYQPj2USdEq6nqcNdHe+q6RlXUdfKToIUm6w74LlTLyEr3r6J NA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 36ejj0sjs3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 01 Feb 2021 09:10:53 -0500
+Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 111E39Iq088662;
+        Mon, 1 Feb 2021 09:10:51 -0500
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 36ejj0sjq1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 01 Feb 2021 09:10:51 -0500
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 111E4DIf021029;
+        Mon, 1 Feb 2021 14:10:48 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma02fra.de.ibm.com with ESMTP id 36cy38904p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 01 Feb 2021 14:10:47 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 111EAbMX32440762
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 1 Feb 2021 14:10:37 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BB97011C052;
+        Mon,  1 Feb 2021 14:10:45 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 73DBB11C04C;
+        Mon,  1 Feb 2021 14:10:45 +0000 (GMT)
+Received: from [9.145.70.87] (unknown [9.145.70.87])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon,  1 Feb 2021 14:10:45 +0000 (GMT)
+Subject: Re: [PATCH net] net: lapb: Copy the skb before sending a packet
+To:     Xie He <xie.he.0141@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-x25@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Martin Schiller <ms@dev.tdt.de>
+References: <20210201055706.415842-1-xie.he.0141@gmail.com>
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+Message-ID: <4d1988d9-6439-ae37-697c-d2b970450498@linux.ibm.com>
+Date:   Mon, 1 Feb 2021 15:10:45 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
+MIME-Version: 1.0
+In-Reply-To: <20210201055706.415842-1-xie.he.0141@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
+ definitions=2021-02-01_05:2021-01-29,2021-02-01 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
+ priorityscore=1501 lowpriorityscore=0 mlxlogscore=999 malwarescore=0
+ mlxscore=0 bulkscore=0 suspectscore=0 adultscore=0 impostorscore=0
+ phishscore=0 clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2102010068
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add offloading for HSR/PRP (IEC 62439-3) tag insertion, tag removal
-forwarding and duplication supported by the xrs7000 series switches.
+On 01.02.21 06:57, Xie He wrote:
+> When sending a packet, we will prepend it with an LAPB header.
+> This modifies the shared parts of a cloned skb, so we should copy the
+> skb rather than just clone it, before we prepend the header.
+> 
+> In "Documentation/networking/driver.rst" (the 2nd point), it states
+> that drivers shouldn't modify the shared parts of a cloned skb when
+> transmitting.
+> 
 
-Only HSR v1 and PRP v1 are supported by the xrs7000 series switches (HSR
-v0 is not).
+This sounds a bit like you want skb_cow_head() ... ?
 
-Signed-off-by: George McCollister <george.mccollister@gmail.com>
----
- drivers/net/dsa/xrs700x/xrs700x.c     | 106 ++++++++++++++++++++++++++++++++++
- drivers/net/dsa/xrs700x/xrs700x_reg.h |   5 ++
- net/dsa/tag_xrs700x.c                 |   7 ++-
- 3 files changed, 117 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/dsa/xrs700x/xrs700x.c b/drivers/net/dsa/xrs700x/xrs700x.c
-index 259f5e657c46..566ce9330903 100644
---- a/drivers/net/dsa/xrs700x/xrs700x.c
-+++ b/drivers/net/dsa/xrs700x/xrs700x.c
-@@ -7,6 +7,8 @@
- #include <net/dsa.h>
- #include <linux/if_bridge.h>
- #include <linux/of_device.h>
-+#include <linux/netdev_features.h>
-+#include <linux/if_hsr.h>
- #include "xrs700x.h"
- #include "xrs700x_reg.h"
- 
-@@ -496,6 +498,108 @@ static void xrs700x_bridge_leave(struct dsa_switch *ds, int port,
- 	xrs700x_bridge_common(ds, port, bridge, false);
- }
- 
-+static int xrs700x_hsr_join(struct dsa_switch *ds, int port,
-+			    struct net_device *hsr)
-+{
-+	unsigned int val = XRS_HSR_CFG_HSR_PRP;
-+	struct dsa_port *partner = NULL, *dp;
-+	struct xrs700x *priv = ds->priv;
-+	struct net_device *slave;
-+	enum hsr_version ver;
-+	int ret;
-+
-+	ret = hsr_get_version(hsr, &ver);
-+	if (ret)
-+		return ret;
-+
-+	if (ver == HSR_V1)
-+		val |= XRS_HSR_CFG_HSR;
-+	else if (ver == PRP_V1)
-+		val |= XRS_HSR_CFG_PRP;
-+	else
-+		return -EOPNOTSUPP;
-+
-+	dsa_hsr_foreach_port(dp, ds, hsr) {
-+		partner = dp;
-+	}
-+
-+	/* We can't enable redundancy on the switch until both
-+	 * redundant ports have signed up.
-+	 */
-+	if (!partner)
-+		return 0;
-+
-+	regmap_fields_write(priv->ps_forward, partner->index,
-+			    XRS_PORT_DISABLED);
-+	regmap_fields_write(priv->ps_forward, port, XRS_PORT_DISABLED);
-+
-+	regmap_write(priv->regmap, XRS_HSR_CFG(partner->index),
-+		     val | XRS_HSR_CFG_LANID_A);
-+	regmap_write(priv->regmap, XRS_HSR_CFG(port),
-+		     val | XRS_HSR_CFG_LANID_B);
-+
-+	/* Clear bits for both redundant ports (HSR only) and the CPU port to
-+	 * enable forwarding.
-+	 */
-+	val = GENMASK(ds->num_ports - 1, 0);
-+	if (ver == HSR_V1) {
-+		val &= ~BIT(partner->index);
-+		val &= ~BIT(port);
-+	}
-+	val &= ~BIT(dsa_upstream_port(ds, port));
-+	regmap_write(priv->regmap, XRS_PORT_FWD_MASK(partner->index), val);
-+	regmap_write(priv->regmap, XRS_PORT_FWD_MASK(port), val);
-+
-+	regmap_fields_write(priv->ps_forward, partner->index,
-+			    XRS_PORT_FORWARDING);
-+	regmap_fields_write(priv->ps_forward, port, XRS_PORT_FORWARDING);
-+
-+	slave = dsa_to_port(ds, port)->slave;
-+
-+	slave->features |= NETIF_F_HW_HSR_TAG_INS | NETIF_F_HW_HSR_TAG_RM |
-+			   NETIF_F_HW_HSR_FWD | NETIF_F_HW_HSR_DUP;
-+
-+	return 0;
-+}
-+
-+static void xrs700x_hsr_leave(struct dsa_switch *ds, int port,
-+			      struct net_device *hsr)
-+{
-+	struct dsa_port *partner = NULL, *dp;
-+	struct xrs700x *priv = ds->priv;
-+	struct net_device *slave;
-+	unsigned int val;
-+
-+	dsa_hsr_foreach_port(dp, ds, hsr) {
-+		partner = dp;
-+	}
-+
-+	if (!partner)
-+		return;
-+
-+	regmap_fields_write(priv->ps_forward, partner->index,
-+			    XRS_PORT_DISABLED);
-+	regmap_fields_write(priv->ps_forward, port, XRS_PORT_DISABLED);
-+
-+	regmap_write(priv->regmap, XRS_HSR_CFG(partner->index), 0);
-+	regmap_write(priv->regmap, XRS_HSR_CFG(port), 0);
-+
-+	/* Clear bit for the CPU port to enable forwarding. */
-+	val = GENMASK(ds->num_ports - 1, 0);
-+	val &= ~BIT(dsa_upstream_port(ds, port));
-+	regmap_write(priv->regmap, XRS_PORT_FWD_MASK(partner->index), val);
-+	regmap_write(priv->regmap, XRS_PORT_FWD_MASK(port), val);
-+
-+	regmap_fields_write(priv->ps_forward, partner->index,
-+			    XRS_PORT_FORWARDING);
-+	regmap_fields_write(priv->ps_forward, port, XRS_PORT_FORWARDING);
-+
-+	slave = dsa_to_port(ds, port)->slave;
-+
-+	slave->features &= ~(NETIF_F_HW_HSR_TAG_INS | NETIF_F_HW_HSR_TAG_RM |
-+			   NETIF_F_HW_HSR_FWD | NETIF_F_HW_HSR_DUP);
-+}
-+
- static const struct dsa_switch_ops xrs700x_ops = {
- 	.get_tag_protocol	= xrs700x_get_tag_protocol,
- 	.setup			= xrs700x_setup,
-@@ -509,6 +613,8 @@ static const struct dsa_switch_ops xrs700x_ops = {
- 	.get_stats64		= xrs700x_get_stats64,
- 	.port_bridge_join	= xrs700x_bridge_join,
- 	.port_bridge_leave	= xrs700x_bridge_leave,
-+	.port_hsr_join		= xrs700x_hsr_join,
-+	.port_hsr_leave		= xrs700x_hsr_leave,
- };
- 
- static int xrs700x_detect(struct xrs700x *priv)
-diff --git a/drivers/net/dsa/xrs700x/xrs700x_reg.h b/drivers/net/dsa/xrs700x/xrs700x_reg.h
-index a135d4d92b6d..470d00e07f15 100644
---- a/drivers/net/dsa/xrs700x/xrs700x_reg.h
-+++ b/drivers/net/dsa/xrs700x/xrs700x_reg.h
-@@ -49,6 +49,11 @@
- 
- /* Port Configuration Registers - HSR/PRP */
- #define XRS_HSR_CFG(x)			(XRS_PORT_HSR_BASE(x) + 0x0)
-+#define XRS_HSR_CFG_HSR_PRP		BIT(0)
-+#define XRS_HSR_CFG_HSR			0
-+#define XRS_HSR_CFG_PRP			BIT(8)
-+#define XRS_HSR_CFG_LANID_A		0
-+#define XRS_HSR_CFG_LANID_B		BIT(10)
- 
- /* Port Configuration Registers - PTP */
- #define XRS_PTP_RX_SYNC_DELAY_NS_LO(x)	(XRS_PORT_PTP_BASE(x) + 0x2)
-diff --git a/net/dsa/tag_xrs700x.c b/net/dsa/tag_xrs700x.c
-index db0ed1a5fcb7..858cdf9d2913 100644
---- a/net/dsa/tag_xrs700x.c
-+++ b/net/dsa/tag_xrs700x.c
-@@ -11,12 +11,17 @@
- 
- static struct sk_buff *xrs700x_xmit(struct sk_buff *skb, struct net_device *dev)
- {
--	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	struct dsa_port *partner, *dp = dsa_slave_to_port(dev);
- 	u8 *trailer;
- 
- 	trailer = skb_put(skb, 1);
- 	trailer[0] = BIT(dp->index);
- 
-+	if (dp->hsr_dev)
-+		dsa_hsr_foreach_port(partner, dp->ds, dp->hsr_dev)
-+			if (partner != dp)
-+				trailer[0] |= BIT(partner->index);
-+
- 	return skb;
- }
- 
--- 
-2.11.0
+> The "dev_queue_xmit_nit" function in "net/core/dev.c", which is called
+> when an skb is being sent, clones the skb and sents the clone to
+> AF_PACKET sockets. Because the LAPB drivers first remove a 1-byte
+> pseudo-header before handing over the skb to us, if we don't copy the
+> skb before prepending the LAPB header, the first byte of the packets
+> received on AF_PACKET sockets can be corrupted.
+> 
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Cc: Martin Schiller <ms@dev.tdt.de>
+> Signed-off-by: Xie He <xie.he.0141@gmail.com>
+> ---
+>  net/lapb/lapb_out.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/lapb/lapb_out.c b/net/lapb/lapb_out.c
+> index 7a4d0715d1c3..a966d29c772d 100644
+> --- a/net/lapb/lapb_out.c
+> +++ b/net/lapb/lapb_out.c
+> @@ -82,7 +82,8 @@ void lapb_kick(struct lapb_cb *lapb)
+>  		skb = skb_dequeue(&lapb->write_queue);
+>  
+>  		do {
+> -			if ((skbn = skb_clone(skb, GFP_ATOMIC)) == NULL) {
+> +			skbn = skb_copy(skb, GFP_ATOMIC);
+> +			if (!skbn) {
+>  				skb_queue_head(&lapb->write_queue, skb);
+>  				break;
+>  			}
+> 
 
