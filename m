@@ -2,104 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FE0E30A671
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 12:24:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 577FC30A6B4
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 12:39:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233591AbhBALYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 06:24:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45360 "EHLO
+        id S229822AbhBALjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 06:39:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233542AbhBALYc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 06:24:32 -0500
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25B92C061573;
-        Mon,  1 Feb 2021 03:23:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=BjxzCjyvE86hv4IVx4QuIbHwWzdS3+eGyttOKbxAB1s=; b=1UZSHSE/zTgS5jW4wzsPVCDL60
-        8VH/s7SxOrxeCDJunG8y0vlAez0DHYRzD2dS1/WLjLRfOxUBT+6DYQ0dRSsPEdvQX5g4BMTuHbyPG
-        Ztj21/eGMwfD91RRyEEfwiZBhgDfD+V4jcwLLcKAZTKRFetfuV/qE0xrAqNAyhmZPou9ShTe/8dbh
-        2T1go5K2FcC/Jyf+xWf1cMriDQQLhsBg0vBqLc37igYiglgkfe+o3ZH7NFAknT1O9QErYdUgWFYMz
-        f1gT+GxD/VoY6ijmbVkYWzbQuYmsfpqk9CBYFT0BZWDPupcMYYWw0bvqUoVwVrlGhf09t+KdBqj5i
-        BCK5OPag==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1l6XIz-0000G3-Ni; Mon, 01 Feb 2021 11:23:41 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 5AF083011FE;
-        Mon,  1 Feb 2021 12:23:39 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 4884221A2F1EA; Mon,  1 Feb 2021 12:23:39 +0100 (CET)
-Date:   Mon, 1 Feb 2021 12:23:39 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, andrii@kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>, kpsingh@kernel.org,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@redhat.com>
-Subject: Re: corrupted pvqspinlock in htab_map_update_elem
-Message-ID: <YBfkuyIfB1+VRxXP@hirez.programming.kicks-ass.net>
-References: <CACT4Y+YJp0t0HA3+wDsAVxgTK4J+Pvht-J4-ENkOtS=C=Fhtzg@mail.gmail.com>
- <YBfPAvBa8bbSU2nZ@hirez.programming.kicks-ass.net>
+        with ESMTP id S229495AbhBALja (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 06:39:30 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CEABC061573;
+        Mon,  1 Feb 2021 03:38:50 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id b17so9817345plz.6;
+        Mon, 01 Feb 2021 03:38:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9Q95PqvGkUzp3INwmIRdQ7b1iYJiecOxAb6O0DpOr0g=;
+        b=JGHk/DRuXxYOJY1bsikB5G3a4n25Rwz1TgpAclgFiYFbK+HZW2xwO9iTVy+izSSLAw
+         +pLPpS4HE2iOzv5QSPBrfWS7Ow/dtZ1zzH5JFSHMgesI21P0aZnnIA0mBqRiJdetKdJ5
+         ITeljf/RRurnq3IZnn0i4x3j5cbM5cNVpHP2rqCWnsSH2rUxA1eaGN+F3juti0aMZ3VH
+         ZifR6x1yUt3M5zaW4dkQpIhDuGm972Z+B/JYQN0peDPbuMl6v0MvtiziwxG4f6GjWtlK
+         cX2JjCXoWHNQKvvCADwrKmtfLCw56vhRSrSpModUUrKi8bRTAmbUsgCGR4/M5t8LI8vP
+         GUjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9Q95PqvGkUzp3INwmIRdQ7b1iYJiecOxAb6O0DpOr0g=;
+        b=i3UjXmISuWNQvfhsTRY32GhXWjNHU2G5JE9grpRAxIpRjw6e/85LeNiu2qQAWORHkV
+         5ByVOYxbXEYTeNLkOhUVGzXHgoEMAppA1KQ/mcnwV2vMtmCr0ehqbH3TYil/uzD89U/W
+         FXUrP4hoidRIvb7ZC6Fp1lg4HGuJnp8T4eiHy8K4OuGUHP0QiPCSot2zT1fSk/NFSawY
+         Nl8vREq80TVFA86jpGbBrlvAFTEQeDhq22UpBeeCq+T4kleAWWOAaZ61DHlB8VG89RRc
+         +MJHEjjCIh4RqwtvA2ruyU3xEtsPIG+EEcytDr/YpGkbqqhjVt47i2Cfs01t1dCWPCkS
+         7Jug==
+X-Gm-Message-State: AOAM533IJA8iealfKW/WWlEUtCfTeGVg59DGgOQizxaNsOhZlmmtehbv
+        kw8XcDfmgw/mk6u4MfFjeJFr2sg266kwWK0Zxzwhmz4I
+X-Google-Smtp-Source: ABdhPJxRlhN1OyRA2lmec2j7rnkmGQNZ9fdTym4x2U4fromKrodYjARBmTZl1YQb3oFlmdCqRPKgr7GR+kQnXX5TNBQ=
+X-Received: by 2002:a17:90a:5403:: with SMTP id z3mr17099299pjh.198.1612179529883;
+ Mon, 01 Feb 2021 03:38:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YBfPAvBa8bbSU2nZ@hirez.programming.kicks-ass.net>
+References: <20210127090747.364951-1-xie.he.0141@gmail.com>
+ <20210128114659.2d81a85f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAJht_EOSB-m--Ombr6wLMFq4mPy8UTpsBri2CPsaRTU-aks7Uw@mail.gmail.com>
+ <3f67b285671aaa4b7903733455a730e1@dev.tdt.de> <20210129173650.7c0b7cda@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAJht_EPMtn5E-Y312vPQfH2AwDAi+j1OP4zzpg+AUKf46XE1Yw@mail.gmail.com>
+ <20210130111618.335b6945@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAJht_EMQVaKFx7Wjj75F2xVBTCdpmho64wP0bfX6RhFnzNXAZA@mail.gmail.com> <36a6c0769c57cd6835d32cc0fb95bca6@dev.tdt.de>
+In-Reply-To: <36a6c0769c57cd6835d32cc0fb95bca6@dev.tdt.de>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Mon, 1 Feb 2021 03:38:39 -0800
+Message-ID: <CAJht_ENs1Rnf=2iX8M1ufF=StWHKTei3zuKv-xBtkhDsY-xBOA@mail.gmail.com>
+Subject: Re: [PATCH net] net: hdlc_x25: Use qdisc to queue outgoing LAPB frames
+To:     Martin Schiller <ms@dev.tdt.de>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux X25 <linux-x25@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Krzysztof Halasa <khc@pm.waw.pl>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 01, 2021 at 10:50:58AM +0100, Peter Zijlstra wrote:
+On Mon, Feb 1, 2021 at 1:18 AM Martin Schiller <ms@dev.tdt.de> wrote:
+>
+> I have thought about this issue again.
+>
+> I also have to say that I have never noticed any problems in this area
+> before.
+>
+> So again for (my) understanding:
+> When a hardware driver calls netif_stop_queue, the frames sent from
+> layer 3 (X.25) with dev_queue_xmit are queued and not passed "directly"
+> to x25_xmit of the hdlc_x25 driver.
+>
+> So nothing is added to the write_queue anymore (except possibly
+> un-acked-frames by lapb_requeue_frames).
 
-> >  queued_spin_unlock arch/x86/include/asm/qspinlock.h:56 [inline]
-> >  lockdep_unlock+0x10e/0x290 kernel/locking/lockdep.c:124
-> >  debug_locks_off_graph_unlock kernel/locking/lockdep.c:165 [inline]
-> >  print_usage_bug kernel/locking/lockdep.c:3710 [inline]
-> 
-> Ha, I think you hit a bug in lockdep.
+If the LAPB module only emits an L2 frame when an L3 packet comes from
+the upper layer, then yes, there would be no problem because the L3
+packet is already controlled by the qdisc and there is no need to
+control the corresponding L2 frame again.
 
-Something like so I suppose.
+However, the LAPB module can emits L2 frames when there's no L3 packet
+coming, when 1) there are some packets queued in the LAPB module's
+internal queue; and 2) the LAPB decides to send some control frame
+(e.g. by the timers).
 
----
-Subject: locking/lockdep: Avoid unmatched unlock
-From: Peter Zijlstra <peterz@infradead.org>
-Date: Mon Feb 1 11:55:38 CET 2021
+> Shouldn't it actually be sufficient to check for netif_queue_stopped in
+> lapb_kick and then do "nothing" if necessary?
 
-Commit f6f48e180404 ("lockdep: Teach lockdep about "USED" <- "IN-NMI"
-inversions") overlooked that print_usage_bug() releases the graph_lock
-and called it without the graph lock held.
+We can consider this situation: When the upper layer has nothing to
+send, but there are some packets in the LAPB module's internal queue
+waiting to be sent. The LAPB module will try to send the packets, but
+after it has sent out the first packet, it will meet the "queue
+stopped" situation. In this situation, it'd be preferable to
+immediately start sending the second packet after the queue is started
+again. "Doing nothing" in this situation would mean waiting until some
+other events occur, such as receiving responses from the other side,
+or receiving more outgoing packets from L3.
 
-Fixes: f6f48e180404 ("lockdep: Teach lockdep about "USED" <- "IN-NMI" inversions")
-Reported-by: Dmitry Vyukov <dvyukov@google.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
----
- kernel/locking/lockdep.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+> As soon as the hardware driver calls netif_wake_queue, the whole thing
+> should just continue running.
 
---- a/kernel/locking/lockdep.c
-+++ b/kernel/locking/lockdep.c
-@@ -3773,7 +3773,7 @@ static void
- print_usage_bug(struct task_struct *curr, struct held_lock *this,
- 		enum lock_usage_bit prev_bit, enum lock_usage_bit new_bit)
- {
--	if (!debug_locks_off_graph_unlock() || debug_locks_silent)
-+	if (!debug_locks_off() || debug_locks_silent)
- 		return;
- 
- 	pr_warn("\n");
-@@ -3814,6 +3814,7 @@ valid_state(struct task_struct *curr, st
- 	    enum lock_usage_bit new_bit, enum lock_usage_bit bad_bit)
- {
- 	if (unlikely(hlock_class(this)->usage_mask & (1 << bad_bit))) {
-+		graph_unlock()
- 		print_usage_bug(curr, this, bad_bit, new_bit);
- 		return 0;
- 	}
+This relies on the fact that the upper layer has something to send. If
+the upper layer has nothing to send, lapb_kick would not be
+automatically called again until some other events occur (such as
+receiving responses from the other side). I think it'd be better if we
+do not rely on the assumption that L3 is going to send more packets to
+us, as L3 itself would assume us to provide it a reliable link service
+and we should fulfill its expectation.
