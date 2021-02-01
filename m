@@ -2,196 +2,268 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7750E30A912
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 14:51:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29D1230A931
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 14:59:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232191AbhBANuc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 08:50:32 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:6919 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231478AbhBANua (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 08:50:30 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B601806fd0001>; Mon, 01 Feb 2021 05:49:49 -0800
-Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 1 Feb
- 2021 13:49:47 +0000
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.171)
- by HQMAIL111.nvidia.com (172.20.187.18) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Mon, 1 Feb 2021 13:49:47 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IYU5u0IM2AgSfsWljeXqjjFr96vawyNOvdkRDa3WGBUkWtsIbmz8w30glnlRCO5H6eDp+rWwrI8YW0lSKA7P2s74DJ+xV2rRFe0ldf/F5bGf+843/STBeBk/b8COyyXrIe9NkjzFaXZ+QUVWSSY3QXBlcoHBwzMsi7KZbZMs2xsQguOz03BZWdRWJmR847EBjpL9VEnmj1l8GNbuV+5RDQXuo6ya3ESJXKhBntZV7/M4d0OWn6QTCoqzm/vdYhdMSOfesd32JQ0kQr/sbNu9c/X6eRfTmO0P26eb+2vU3jrk1FQ+3PYXmLuzogQURbe5uRyOXQmNXjlfF54h+ZWvdw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yej9Dr0gkqAu/RMqgEOaGDgNDCWLpKE7MaKXurPrk+g=;
- b=QhcAcH/8YDVf7EjQm6rWrPL5jIc31Af99Aj5Qt5okfHsyLtI24YHTczfIUlmkVI6LVnDLIZoYBDdtPFJYhGQpRrlzYJFmZiEdNREcH7f0gSh17275YmB8280MHXqqBI21LRRAmEz7gtw+fie6RfpMXxEI/bedqU5AkgCrdB+RUcclLsGqYDYR5S84/cuKBuRP7m8GuleMe/orpBkGK/xRRaL6zS+j3aDXbIOpwSSYXrs82DCIeK85FeRKMh7x6cHYe1Ewc0Lrob5aV1bUlQGcFHqvakzKOgOgEbtETib4x1DtVvHecrztjhvx1nEmwd5BkcMx53s9yWnp32lAvf+Ww==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from DM6PR12MB4516.namprd12.prod.outlook.com (2603:10b6:5:2ac::20)
- by DM6PR12MB3081.namprd12.prod.outlook.com (2603:10b6:5:38::27) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3742.9; Mon, 1 Feb
- 2021 13:49:43 +0000
-Received: from DM6PR12MB4516.namprd12.prod.outlook.com
- ([fe80::4103:b38b:a27c:c7e8]) by DM6PR12MB4516.namprd12.prod.outlook.com
- ([fe80::4103:b38b:a27c:c7e8%7]) with mapi id 15.20.3805.027; Mon, 1 Feb 2021
- 13:49:43 +0000
-From:   Danielle Ratson <danieller@nvidia.com>
-To:     Edwin Peer <edwin.peer@broadcom.com>
-CC:     Michal Kubecek <mkubecek@suse.cz>, netdev <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S232381AbhBAN6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 08:58:12 -0500
+Received: from mx13.kaspersky-labs.com ([91.103.66.164]:56770 "EHLO
+        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232031AbhBAN6I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 08:58:08 -0500
+Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 249D552169F;
+        Mon,  1 Feb 2021 16:57:21 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
+        s=mail; t=1612187841;
+        bh=JIQhZmGiqsZDGRJKmrSOh3/yj72rPSfycuCmzuhNXdw=;
+        h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
+        b=Z3EYJT30tqW9tcbOABrUW1UacH+6PtLGa7HEfQ8LMr8YmPCPOM5p+omlfcn8MmWbK
+         u7gxnfMNS2L3yA71ZtWl54aTNfUsikw/ZnZnYCqfxfihJZZhvolBcqBKOaMSeohrYo
+         zrXd0FC0F4GW8KCGAnhOTdlsaBROGmH42gTKghaI=
+Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
+        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id 266A15216CB;
+        Mon,  1 Feb 2021 16:57:20 +0300 (MSK)
+Received: from [10.16.171.77] (10.64.68.129) by hqmailmbx3.avp.ru
+ (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2044.4; Mon, 1 Feb
+ 2021 16:57:19 +0300
+Subject: Re: [RFC PATCH v3 00/13] virtio/vsock: introduce SOCK_SEQPACKET
+ support
+To:     Stefano Garzarella <sgarzare@redhat.com>
+CC:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "Jiri Pirko" <jiri@nvidia.com>, Andrew Lunn <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        mlxsw <mlxsw@nvidia.com>, "Ido Schimmel" <idosch@nvidia.com>
-Subject: RE: [PATCH net-next v3 2/7] ethtool: Get link mode in use instead of
- speed and duplex parameters
-Thread-Topic: [PATCH net-next v3 2/7] ethtool: Get link mode in use instead of
- speed and duplex parameters
-Thread-Index: AQHW7w/mnu6I7KMocku/Ks1pUflayqoxLNcAgAVHQjCAAjatgIABgM1wgAADnoCAAT7X8IACG5MAgAPpn6CAAJ6fAIABBzFQ
-Date:   Mon, 1 Feb 2021 13:49:43 +0000
-Message-ID: <DM6PR12MB45168B7B3516A37854812767D8B69@DM6PR12MB4516.namprd12.prod.outlook.com>
-References: <20210120093713.4000363-1-danieller@nvidia.com>
- <20210120093713.4000363-3-danieller@nvidia.com>
- <CAKOOJTzSSqGFzyL0jndK_y_S64C_imxORhACqp6RePDvtno6kA@mail.gmail.com>
- <DM6PR12MB4516E98950B9F79812CAB522D8BE9@DM6PR12MB4516.namprd12.prod.outlook.com>
- <CAKOOJTx_JHcaL9Wh2ROkpXVSF3jZVsnGHTSndB42xp61PzP9Vg@mail.gmail.com>
- <DM6PR12MB4516DD64A5C46B80848D3645D8BC9@DM6PR12MB4516.namprd12.prod.outlook.com>
- <CAKOOJTyRyz+KTZvQ8XAZ+kehjbTtqeA3qv+r9DJmS-f9eC6qWg@mail.gmail.com>
- <DM6PR12MB45161FF65D43867C9ED96B6ED8BB9@DM6PR12MB4516.namprd12.prod.outlook.com>
- <20210128202632.iqixlvdfey6sh7fe@lion.mk-sys.cz>
- <DM6PR12MB4516868A5BD4C2EED7EF818BD8B79@DM6PR12MB4516.namprd12.prod.outlook.com>
- <CAKOOJTy2wSmBjRnbhmD6xQgy1GAdiXAxoRX7APNto4gDYUWNRw@mail.gmail.com>
-In-Reply-To: <CAKOOJTy2wSmBjRnbhmD6xQgy1GAdiXAxoRX7APNto4gDYUWNRw@mail.gmail.com>
-Accept-Language: he-IL, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: broadcom.com; dkim=none (message not signed)
- header.d=none;broadcom.com; dmarc=none action=none header.from=nvidia.com;
-x-originating-ip: [93.173.23.32]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 15886d47-d0d0-4762-76b2-08d8c6b83ad5
-x-ms-traffictypediagnostic: DM6PR12MB3081:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM6PR12MB30811F57AB72AEC49977A84BD8B69@DM6PR12MB3081.namprd12.prod.outlook.com>
-x-header: ProcessedBy-CMR-outbound
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: mHl8QjB37FsJbLQESktb45oopMQ/SrCMp87SmnW5UDhSoFKe+4YqNbfze9iwHV2RRE0zpwuGeIcx54YpaIyBhRqW7z+qmab1EkCiZ0T4pH41slo9vWhoRqHb8fttxcxsTekO9iTi6IGmvFvm5ZW7jkOrwKjHzjNH7k8UBjJJ57dY1bzC0N8OjRLe5XEQp+/MAEtW+0S1cydyCrJSTE8h1rFsG93jSynwQxvQUbh6R1zn+Sp8sRLVNyZMkuFBUJEAtkVudD/KewK4iNH2h9V0iHiC2VQDDoE1q24W/CXVvPNCzOt1kahWALhHytxH9qQSRXX94NM4mVqQ6nF6MfO52nLD9a6OK2Iu+9hYqXB/TTHn1SK4FlLOE/E8Lk9/L8ZQo8iVGBV42UfedM5LFdBjBjq8IlQ+q/l+tV3FsPvferfZR9LqvHoUc0ZSpkmPLRcJge4OzNVMGXDwUWR7a0dOrr0SMoDMj49pzhP3TsxGkpndJnBvD3JqT6D2KShRSNU1+Qe5G1yDxDTlAQPRl8QquQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4516.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(366004)(136003)(396003)(346002)(376002)(2906002)(26005)(6916009)(107886003)(54906003)(9686003)(4326008)(55016002)(66556008)(66946007)(8676002)(66446008)(66476007)(5660300002)(7696005)(53546011)(6506007)(186003)(64756008)(86362001)(33656002)(478600001)(52536014)(316002)(71200400001)(83380400001)(8936002)(76116006);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?utf-8?B?NnJqS2IyajFNbi9NZHpnWUpUaWk5NG8wTEJGbXNmVDdzeHBSK09DWDBBL0pS?=
- =?utf-8?B?NmRocktEWFllUWRkSDQyWTNTYjlvWnJDN1F0L0VwQnU3cnhqOFprMVRXK1FK?=
- =?utf-8?B?RUdMVVEwejhYZEhNVUhLRllJRjc2S21mVlBIbFFwU2Z4T3NRMmsxVEhtSEh3?=
- =?utf-8?B?bVJ4RFREamVRY2d2dG56cVlsUVFCZmpIcml6cmh6U044OG5Ua2M2QThNdGpn?=
- =?utf-8?B?NjV1ekNUZUNnNUFEWGF0aTJkWHV4NTQyTDJtN0pUdkMzcXNsNHpXVzlEeVl1?=
- =?utf-8?B?VjB2b3ZGanBwVXgzaFRZYmU0UzBUdlBqQTBEbmNpYWcxbVNpRGhOVzMxT1RG?=
- =?utf-8?B?STMzNHJyTXVEMjlCemtXendBcU42WDJoMXR5aUxxb3U2cUNhUklKWlZZdzNG?=
- =?utf-8?B?b05yaW9IZXk2dVFwQnVPQ3FCWnI5NE1DaEdIeVIzMVo3cVB6bndrVlVqcE14?=
- =?utf-8?B?ZlRHQkkzR1ZWRDdHME5RYlRTVUdVQTJRaG1iTXdZUGhPOVVaLzl2L0lKZXVG?=
- =?utf-8?B?bTZwbVZ3eElSS0lYOHI2dUNWYlowUE9YWjFRSHJ1cDQ2UmdjMnhDSU5lQWc2?=
- =?utf-8?B?Y2Y3Q21ycG9XNTRpcU5hQjd5SFNua05zRzd1c2E3MGRjR0xVeHQ3cWc3VXh3?=
- =?utf-8?B?T29qTUQ3Wkh1K25jMVVNWW94MW53cm9CZWNBSW5wZUxjSmVzUXQrWUZYYklD?=
- =?utf-8?B?WHkwcWkwYTArQStJbysvVUVYUTN6SER0U1gyWXFTRWtRQjZJMjhKVUlZQnhP?=
- =?utf-8?B?SHZadGR6OFZ5UjUxUE41dmxLYTBtemVaVXVvdFZKbW9QSEZESktJTXRJK3RW?=
- =?utf-8?B?NXB3b0lzL0Zld285ZTNlYlQvQVhmRmd4MWg5am9GQ050ZCtwNGtTNFE3U1lQ?=
- =?utf-8?B?Ujc2SkR5cFlSUkw0NUEzK3hZME1IeWxFTlFVeHRtbDNlc2NkdENCVlNUazV0?=
- =?utf-8?B?d0orNytuaWE5cWhCMWRhYnFZR0lVTlp5cU5FRGdoeWsrUytyckZsend3bkZ0?=
- =?utf-8?B?WU9SdUs2RnBzUGhtalIvVVdjT3I2YlBvOVEvMHNTQllEU1VYQXJsMjRMTGRq?=
- =?utf-8?B?N205dyt5UU9JZkhSVmdhN1M4dmQzQ0I5SGxmWHd3alBZeXFwTGhzc3FxRW9T?=
- =?utf-8?B?SVlPQVFmdXNlMkhYTHhVejdKZW5SZkJnNjZ0WTBqYkViaUtQTThWRWMyM283?=
- =?utf-8?B?VUhoVHZrWjAxTlM0S3Bac0UrZjR5OVNUTzNSZDJmd2IrUzV1UVdFVG5KWGYx?=
- =?utf-8?B?OGNjQnFNczhrQkUwNWphVWlVdHhBbUxvRG0rQTBoS3hmaHdpdkpOZFYvNTBZ?=
- =?utf-8?B?T3plRXk0OUlHRExaYTZvT3J1eDhjVERaU0VDWkNVVUVmdmE0STRMUTFob1I5?=
- =?utf-8?B?SkZ0ZmZpL0s5TWhNRXpaSFk5cG9qOU1uR1lkdDM3TFZ1bFJiTXZIMkFFRGpS?=
- =?utf-8?Q?mwjoVV7i?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Colin Ian King <colin.king@canonical.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Jeff Vander Stoep <jeffv@google.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "stsp2@yandex.ru" <stsp2@yandex.ru>,
+        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
+References: <20210125110903.597155-1-arseny.krasnov@kaspersky.com>
+ <20210128171923.esyna5ccv5s27jyu@steredhat>
+ <63459bb3-da22-b2a4-71ee-e67660fd2e12@kaspersky.com>
+ <20210129092604.mgaw3ipiyv6xra3b@steredhat>
+ <cb6d5a9c-fd49-a9dd-33b3-52027ae2f71c@kaspersky.com>
+ <20210201110258.7ze7a7izl7gesv4w@steredhat>
+From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Message-ID: <1b80eb27-4818-50d7-7454-ff6cc398422e@kaspersky.com>
+Date:   Mon, 1 Feb 2021 16:57:18 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4516.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 15886d47-d0d0-4762-76b2-08d8c6b83ad5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Feb 2021 13:49:43.4503
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: I5gPbFQYUxpknKdUC2NSfEnvelbM62WzuOf3Bqh5FcvOfFJFvJXG0dxkvHuDsx50/42K7igDJWHGBxoIS5r2JA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3081
-X-OriginatorOrg: Nvidia.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1612187389; bh=yej9Dr0gkqAu/RMqgEOaGDgNDCWLpKE7MaKXurPrk+g=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:From:To:
-         CC:Subject:Thread-Topic:Thread-Index:Date:Message-ID:References:
-         In-Reply-To:Accept-Language:Content-Language:X-MS-Has-Attach:
-         X-MS-TNEF-Correlator:authentication-results:x-originating-ip:
-         x-ms-publictraffictype:x-ms-office365-filtering-correlation-id:
-         x-ms-traffictypediagnostic:x-ms-exchange-transport-forked:
-         x-microsoft-antispam-prvs:x-header:x-ms-oob-tlc-oobclassifiers:
-         x-ms-exchange-senderadcheck:x-microsoft-antispam:
-         x-microsoft-antispam-message-info:x-forefront-antispam-report:
-         x-ms-exchange-antispam-messagedata:Content-Type:
-         Content-Transfer-Encoding:MIME-Version:
-         X-MS-Exchange-CrossTenant-AuthAs:
-         X-MS-Exchange-CrossTenant-AuthSource:
-         X-MS-Exchange-CrossTenant-Network-Message-Id:
-         X-MS-Exchange-CrossTenant-originalarrivaltime:
-         X-MS-Exchange-CrossTenant-fromentityheader:
-         X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
-         X-MS-Exchange-CrossTenant-userprincipalname:
-         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
-        b=kGHCQ1wWZiRTYXZyAclkROj85B/iyuQ8SYmFd/0bFWyaTSIQr9y3vIjABqLlo80Pg
-         yt7QVXsIxVILQCLD2OQVbPYxfd3ymrJFu7yxtU8ih5fCJ24m1y1HKDWsyrtMFU5DUF
-         aKIdkHW/d/YoHtUJTw4L4fJcontxlpjEr42PNJaL9X6TYg58ACpo9E3NV3KD0MXQTU
-         IpMxW6K5Aj8iqwloiDlRyggsNLmOKonC9SC7ZCKnpUTDMkCSrVeivlmj0D9I4X3AkK
-         XCfXWcsUJ9T4Ke/EoejhpIdnVF9ZtDsZB137EwaKAvUgAaRved2PwxsHbEoOFFMwqW
-         T6QUPRmdleIRg==
+In-Reply-To: <20210201110258.7ze7a7izl7gesv4w@steredhat>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Originating-IP: [10.64.68.129]
+X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
+ (10.64.67.243)
+X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.16, Database issued on: 02/01/2021 13:23:40
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 161565 [Feb 01 2021]
+X-KSE-AntiSpam-Info: LuaCore: 421 421 33a18ad4049b4a5e5420c907b38d332fafd06b09
+X-KSE-AntiSpam-Info: Version: 5.9.16.0
+X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
+X-KSE-AntiSpam-Info: {Tracking_content_type, plain}
+X-KSE-AntiSpam-Info: {Tracking_date, moscow}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: 127.0.0.199:7.1.2;kaspersky.com:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 02/01/2021 13:25:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 2/1/2021 12:14:00 PM
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KLMS-Rule-ID: 52
+X-KLMS-Message-Action: clean
+X-KLMS-AntiSpam-Status: not scanned, disabled by settings
+X-KLMS-AntiSpam-Interceptor-Info: not scanned
+X-KLMS-AntiPhishing: Clean, bases: 2021/02/01 10:58:00
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/02/01 10:06:00 #16068838
+X-KLMS-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogRWR3aW4gUGVlciA8ZWR3
-aW4ucGVlckBicm9hZGNvbS5jb20+DQo+IFNlbnQ6IFN1bmRheSwgSmFudWFyeSAzMSwgMjAyMSA3
-OjM5IFBNDQo+IFRvOiBEYW5pZWxsZSBSYXRzb24gPGRhbmllbGxlckBudmlkaWEuY29tPg0KPiBD
-YzogTWljaGFsIEt1YmVjZWsgPG1rdWJlY2VrQHN1c2UuY3o+OyBuZXRkZXYgPG5ldGRldkB2Z2Vy
-Lmtlcm5lbC5vcmc+OyBEYXZpZCBTIC4gTWlsbGVyIDxkYXZlbUBkYXZlbWxvZnQubmV0PjsgSmFr
-dWINCj4gS2ljaW5za2kgPGt1YmFAa2VybmVsLm9yZz47IEppcmkgUGlya28gPGppcmlAbnZpZGlh
-LmNvbT47IEFuZHJldyBMdW5uIDxhbmRyZXdAbHVubi5jaD47IGYuZmFpbmVsbGlAZ21haWwuY29t
-OyBtbHhzdw0KPiA8bWx4c3dAbnZpZGlhLmNvbT47IElkbyBTY2hpbW1lbCA8aWRvc2NoQG52aWRp
-YS5jb20+DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggbmV0LW5leHQgdjMgMi83XSBldGh0b29sOiBH
-ZXQgbGluayBtb2RlIGluIHVzZSBpbnN0ZWFkIG9mIHNwZWVkIGFuZCBkdXBsZXggcGFyYW1ldGVy
-cw0KPiANCj4gT24gU3VuLCBKYW4gMzEsIDIwMjEgYXQgNzozMyBBTSBEYW5pZWxsZSBSYXRzb24g
-PGRhbmllbGxlckBudmlkaWEuY29tPiB3cm90ZToNCj4gDQo+ID4gRWR3aW4sIGFkZGluZyB0aGUg
-YSBuZXcgcGFyYW1ldGVyIHJlcXVpcmVzIGEgbmV3IHBhdGNoc2V0IGluIG15IG9waW5pb24uDQo+
-ID4gSW1wbGVtZW50aW5nIHRoZSBzeW1tZXRyaWNhbCBzaWRlIG9mIHRoZSBsaW5rX21vZGUgZ2V0
-LCBob3dldmVyIGNhbiBiZSBhDQo+ID4gcGFydCBvZiB0aGlzIHNldC4gQnV0LCB0aGUgcHJvYmxl
-bSB3aXRoIHRoYXQgd291bGQgYmUgdGhhdCwgYXMgTWljaGFsIHNhaWQsDQo+ID4gc3BlZWQgbGFu
-ZXMgYW5kIGR1cGxleCBjYW4ndCBwcm92aWRlIHVzIGEgc2luZ2xlIGxpbmtfbW9kZSBiZWNhdXNl
-IG9mIHRoZQ0KPiA+IG1lZGlhLiBBbmQgc2luY2UgbGlua19tb2RlIGlzIG9uZSBiaXQgcGFyYW1l
-dGVyLCBwYXNzaW5nIGl0IHRvIHRoZSBkcml2ZXINCj4gPiB3aGlsZSByYW5kb21seSBjaG9vc2lu
-ZyB0aGUgbWVkaWEsIG1heSBjYXVzZSBlaXRoZXIgaW5mb3JtYXRpb24gbG9zcywgb3INCj4gPiBl
-dmVuIGZhaWwgdG8gc3luYyBvbiBhIGxpbmsgbW9kZSBpZiB0aGUgY2hvc2VuIG1lZGlhIGlzIHNw
-ZWNpZmljYWxseSBub3QNCj4gPiBzdXBwb3J0ZWQgaW4gdGhlIGxvd2VyIGxldmVscy4gU28sIGlu
-IG15IG9waW5pb24gaXQgaXMgcmVsYXRlZCB0byBhZGRpbmcgdGhlDQo+ID4gbmV3IHBhcmFtZXRl
-ciB3ZSBkaXNjdXNzZWQsIGFuZCBzaG91bGQgYmUgZG9uZSBpbiBhIHNlcGFyYXRlIHNldC4NCj4g
-DQo+IE1lZGlhIGlzIGEgbGl0dGxlIHNwZWNpYWwgaW4gdGhlIHNlbnNlIHRoYXQgaXQgcGh5c2lj
-YWxseSBkZXBlbmRzIG9uDQo+IHdoYXQncyBwbHVnZ2VkIGluLiBJbiB0aGF0IHNlbnNlLCBtZWRp
-YSBpcyB0cnVseSByZWFkIG9ubHkuIFNldHRpbmcgaXQNCj4gd29uJ3QgY2hhbmdlIHdoYXQncyBw
-bHVnZ2VkIGluLCBzbyBub3QgaGF2aW5nIGEgc2VwYXJhdGUga25vYiBmb3IgaXQNCj4gaXMgcHJv
-YmFibHkgb2theSwgYXMgaXQgY2FuIGJlIGluZmVycmVkIGZyb20gdGhlIGFjdGl2ZSBsaW5rIG1v
-ZGUgb24NCj4gdGhlIHF1ZXJ5IHNpZGUuDQo+IA0KPiBJIGRvbid0IHNlZSB3aHkgdGhlIGRyaXZl
-ciBjYW4ndCBlcnJvciBpZiBhc2tlZCB0byBzZXQgYSBsaW5rIG1vZGUNCj4gaGF2aW5nIGFuIGlu
-Y29tcGF0aWJsZSBtZWRpYT8gVGhlIGxpbmsgbW9kZXMgY29ycmVzcG9uZGluZyB0byBtZWRpYQ0K
-PiB0aGF0J3Mgbm90IHBsdWdnZWQgaW4gd291bGRuJ3QgYmUgbGlzdGVkIGluIHRoZSBzdXBwb3J0
-ZWQgc2V0LCBzbw0KPiB0aGVyZSdzIG5vIHJlYXNvbiB0aGUgdXNlciBzaG91bGQgZXhwZWN0IHRv
-IGJlIGFibGUgdG8gc2V0IHRob3NlLg0KPiBUaGVyZSdzIG5vIGFtYmlndWl0eSBvciBpbmZvcm1h
-dGlvbiBsb3NzIGlmIHlvdSByZWZ1c2UgdG8gc2V0IG1vZGVzDQo+IHRoYXQgZG9uJ3QgaGF2ZSB0
-aGUgbWF0Y2hpbmcgbWVkaWEgYXR0YWNoZWQuDQo+IA0KPiBSZWdhcmRzLA0KPiBFZHdpbiBQZWVy
-DQoNCk9rLCBpbGwgc2VuZCBhbm90aGVyIHZlcnNpb24gd2l0aCB0aGUgc3ltbWV0cmljYWwgc2lk
-ZS4gRXRodG9vbCB3aWxsIHRyeSB0byBjb21wb3NlDQphIHN1cHBvcnRlZCBsaW5rX21vZGUgZnJv
-bSB0aGUgcGFyYW1ldGVycyBmcm9tIHVzZXIgc3BhY2UgYW5kIHdpbGwgY2hvb3NlDQpyYW5kb21s
-eSBiZXR3ZWVuIHRoZSBzdXBwb3J0ZWQgb25lcy4gU291bmRzIG9rPw0KDQpUaGFua3MsDQpEYW5p
-ZWxsZQ0K
+
+On 01.02.2021 14:02, Stefano Garzarella wrote:
+> On Fri, Jan 29, 2021 at 06:52:23PM +0300, Arseny Krasnov wrote:
+>> On 29.01.2021 12:26, Stefano Garzarella wrote:
+>>> On Fri, Jan 29, 2021 at 09:41:50AM +0300, Arseny Krasnov wrote:
+>>>> On 28.01.2021 20:19, Stefano Garzarella wrote:
+>>>>> Hi Arseny,
+>>>>> I reviewed a part, tomorrow I hope to finish the other patches.
+>>>>>
+>>>>> Just a couple of comments in the TODOs below.
+>>>>>
+>>>>> On Mon, Jan 25, 2021 at 02:09:00PM +0300, Arseny Krasnov wrote:
+>>>>>> 	This patchset impelements support of SOCK_SEQPACKET for virtio
+>>>>>> transport.
+>>>>>> 	As SOCK_SEQPACKET guarantees to save record boundaries, so to
+>>>>>> do it, new packet operation was added: it marks start of record (with
+>>>>>> record length in header), such packet doesn't carry any data.  To send
+>>>>>> record, packet with start marker is sent first, then all data is sent
+>>>>>> as usual 'RW' packets. On receiver's side, length of record is known
+>>>>> >from packet with start record marker. Now as  packets of one socket
+>>>>>> are not reordered neither on vsock nor on vhost transport layers, such
+>>>>>> marker allows to restore original record on receiver's side. If user's
+>>>>>> buffer is smaller that record length, when all out of size data is
+>>>>>> dropped.
+>>>>>> 	Maximum length of datagram is not limited as in stream socket,
+>>>>>> because same credit logic is used. Difference with stream socket is
+>>>>>> that user is not woken up until whole record is received or error
+>>>>>> occurred. Implementation also supports 'MSG_EOR' and 'MSG_TRUNC' flags.
+>>>>>> 	Tests also implemented.
+>>>>>>
+>>>>>> Arseny Krasnov (13):
+>>>>>>  af_vsock: prepare for SOCK_SEQPACKET support
+>>>>>>  af_vsock: prepare 'vsock_connectible_recvmsg()'
+>>>>>>  af_vsock: implement SEQPACKET rx loop
+>>>>>>  af_vsock: implement send logic for SOCK_SEQPACKET
+>>>>>>  af_vsock: rest of SEQPACKET support
+>>>>>>  af_vsock: update comments for stream sockets
+>>>>>>  virtio/vsock: dequeue callback for SOCK_SEQPACKET
+>>>>>>  virtio/vsock: fetch length for SEQPACKET record
+>>>>>>  virtio/vsock: add SEQPACKET receive logic
+>>>>>>  virtio/vsock: rest of SOCK_SEQPACKET support
+>>>>>>  virtio/vsock: setup SEQPACKET ops for transport
+>>>>>>  vhost/vsock: setup SEQPACKET ops for transport
+>>>>>>  vsock_test: add SOCK_SEQPACKET tests
+>>>>>>
+>>>>>> drivers/vhost/vsock.c                   |   7 +-
+>>>>>> include/linux/virtio_vsock.h            |  12 +
+>>>>>> include/net/af_vsock.h                  |   6 +
+>>>>>> include/uapi/linux/virtio_vsock.h       |   9 +
+>>>>>> net/vmw_vsock/af_vsock.c                | 543 ++++++++++++++++------
+>>>>>> net/vmw_vsock/virtio_transport.c        |   4 +
+>>>>>> net/vmw_vsock/virtio_transport_common.c | 295 ++++++++++--
+>>>>>> tools/testing/vsock/util.c              |  32 +-
+>>>>>> tools/testing/vsock/util.h              |   3 +
+>>>>>> tools/testing/vsock/vsock_test.c        | 126 +++++
+>>>>>> 10 files changed, 862 insertions(+), 175 deletions(-)
+>>>>>>
+>>>>>> TODO:
+>>>>>> - Support for record integrity control. As transport could drop some
+>>>>>>   packets, something like "record-id" and record end marker need to
+>>>>>>   be implemented. Idea is that SEQ_BEGIN packet carries both record
+>>>>>>   length and record id, end marker(let it be SEQ_END) carries only
+>>>>>>   record id. To be sure that no one packet was lost, receiver checks
+>>>>>>   length of data between SEQ_BEGIN and SEQ_END(it must be same with
+>>>>>>   value in SEQ_BEGIN) and record ids of SEQ_BEGIN and SEQ_END(this
+>>>>>>   means that both markers were not dropped. I think that easiest way
+>>>>>>   to implement record id for SEQ_BEGIN is to reuse another field of
+>>>>>>   packet header(SEQ_BEGIN already uses 'flags' as record length).For
+>>>>>>   SEQ_END record id could be stored in 'flags'.
+>>>>> I don't really like the idea of reusing the 'flags' field for this
+>>>>> purpose.
+>>>>>
+>>>>>>     Another way to implement it, is to move metadata of both SEQ_END
+>>>>>>   and SEQ_BEGIN to payload. But this approach has problem, because
+>>>>>>   if we move something to payload, such payload is accounted by
+>>>>>>   credit logic, which fragments payload, while payload with record
+>>>>>>   length and id couldn't be fragmented. One way to overcome it is to
+>>>>>>   ignore credit update for SEQ_BEGIN/SEQ_END packet.Another solution
+>>>>>>   is to update 'stream_has_space()' function: current implementation
+>>>>>>   return non-zero when at least 1 byte is allowed to use,but updated
+>>>>>>   version will have extra argument, which is needed length. For 'RW'
+>>>>>>   packet this argument is 1, for SEQ_BEGIN it is sizeof(record len +
+>>>>>>   record id) and for SEQ_END it is sizeof(record id).
+>>>>> Is the payload accounted by credit logic also if hdr.op is not
+>>>>> VIRTIO_VSOCK_OP_RW?
+>>>> Yes, on send any packet with payload could be fragmented if
+>>>>
+>>>> there is not enough space at receiver. On receive 'fwd_cnt' and
+>>>>
+>>>> 'buf_alloc' are updated with header of every packet. Of course,
+>>>>
+>>>> to every such case i've described i can add check for 'RW'
+>>>>
+>>>> packet, to exclude payload from credit accounting, but this is
+>>>>
+>>>> bunch of dumb checks.
+>>>>
+>>>>> I think that we can define a specific header to put after the
+>>>>> virtio_vsock_hdr when hdr.op is SEQ_BEGIN or SEQ_END, and in this header
+>>>>> we can store the id and the length of the message.
+>>>> I think it is better than use payload and touch credit logic
+>>>>
+>>> Cool, so let's try this option, hoping there aren't a lot of issues.
+>> If i understand, current implementation has 'struct virtio_vsock_hdr',
+>>
+>> then i'll add 'struct virtio_vsock_hdr_seq' with message length and id.
+>>
+>> After that, in 'struct virtio_vsock_pkt' which describes packet, field for
+>>
+>> header(which is 'struct virtio_vsock_hdr') must be replaced with new
+>>
+>> structure which  contains both 'struct virtio_vsock_hdr' and 'struct
+>>
+>> virtio_vsock_hdr_seq', because header field of 'struct virtio_vsock_pkt'
+>>
+>> is buffer for virtio layer. After it all accesses to header(for example to
+>>
+>> 'buf_alloc' field will go accross new  structure with both headers:
+>>
+>> pkt->hdr.buf_alloc   ->   pkt->extended_hdr.classic_hdr.buf_alloc
+>>
+>> May be to avoid this, packet's header could be allocated dynamically
+>>
+>> in the same manner as packet's buffer? Size of allocation is always
+>>
+>> sizeof(classic header) + sizeof(seq header). In 'struct virtio_vsock_pkt'
+>>
+>> such header will be implemented as union of two pointers: class header
+>>
+>> and extended header containing classic and seq header. Which pointer
+>>
+>> to use is depends on packet's op.
+> I think that the 'classic header' can stay as is, and the extended 
+> header can be dynamically allocated, as we do for the payload.
+>
+> But we have to be careful what happens if the other peer doesn't support 
+> SEQPACKET and if it counts this extra header as a payload for the credit 
+> mechanism.
+
+You mean put extra header to payload(buffer of second virtio desc),
+
+in this way on send/receive auxiliary 'if's are needed to avoid credit
+
+logic(or set length field in header of such packets to 0). But what
+
+about placing extra header after classic header in buffer of first virtio
+
+desc? In this case extra header is not payload and credit works as is.
+
+Or it is critical, that size of first buffer will be not same as size of
+
+classic header?
+
+>
+> I'll try to take a closer look in the next few days.
+>
+> Thanks,
+> Stefano
+>
+>
