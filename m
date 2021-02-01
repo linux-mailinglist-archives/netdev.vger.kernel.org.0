@@ -2,85 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E63D030A800
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 13:52:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1387F30A72F
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 13:07:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231705AbhBAMuk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 07:50:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35540 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231636AbhBAMuO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 07:50:14 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DC65C0613D6;
-        Mon,  1 Feb 2021 04:49:33 -0800 (PST)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1l6Yds-00EQVZ-PU; Mon, 01 Feb 2021 13:49:20 +0100
-Message-ID: <0a982b705b37e7bd3f47cd437b37d8f62dce15e4.camel@sipsolutions.net>
-Subject: Re: possible deadlock in cfg80211_netdev_notifier_call
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Mike Rapoport <rppt@linux.ibm.com>,
-        syzbot <syzbot+2ae0ca9d7737ad1a62b7@syzkaller.appspotmail.com>
-Cc:     akpm@linux-foundation.org, davem@davemloft.net, hagen@jauu.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        sfr@canb.auug.org.au, syzkaller-bugs@googlegroups.com
-Date:   Mon, 01 Feb 2021 13:49:18 +0100
-In-Reply-To: <20210201123728.GF299309@linux.ibm.com>
-References: <000000000000c3a1b705ba42d1ca@google.com>
-         <20210201123728.GF299309@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        id S231302AbhBAMGL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 07:06:11 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:11665 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231226AbhBAMFo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 07:05:44 -0500
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4DTmmn3R03zlF16;
+        Mon,  1 Feb 2021 20:03:21 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by DGGEMS401-HUB.china.huawei.com
+ (10.3.19.201) with Microsoft SMTP Server id 14.3.498.0; Mon, 1 Feb 2021
+ 20:04:56 +0800
+From:   wanghongzhe <wanghongzhe@huawei.com>
+To:     <keescook@chromium.org>, <luto@amacapital.net>, <wad@chromium.org>,
+        <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
+        <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>
+Subject: [PATCH] seccomp: Improve performance by optimizing memory barrier
+Date:   Mon, 1 Feb 2021 20:49:41 +0800
+Message-ID: <1612183781-15469-1-git-send-email-wanghongzhe@huawei.com>
+X-Mailer: git-send-email 1.7.12.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-malware-bazaar: not-scanned
+Content-Type: text/plain
+X-Originating-IP: [10.175.124.27]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2021-02-01 at 14:37 +0200, Mike Rapoport wrote:
-> On Mon, Feb 01, 2021 at 01:17:13AM -0800, syzbot wrote:
-> > Hello,
-> > 
-> > syzbot found the following issue on:
-> > 
-> > HEAD commit:    b01f250d Add linux-next specific files for 20210129
-> > git tree:       linux-next
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=14daa408d00000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=725bc96dc234fda7
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=2ae0ca9d7737ad1a62b7
-> > compiler:       gcc (GCC) 10.1.0-syz 20200507
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1757f2a0d00000
-> > 
-> > The issue was bisected to:
-> > 
-> > commit cc9327f3b085ba5be5639a5ec3ce5b08a0f14a7c
-> > Author: Mike Rapoport <rppt@linux.ibm.com>
-> > Date:   Thu Jan 28 07:42:40 2021 +0000
-> > 
-> >     mm: introduce memfd_secret system call to create "secret" memory areas
-> > 
-> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1505d28cd00000
-> > final oops:     https://syzkaller.appspot.com/x/report.txt?x=1705d28cd00000
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=1305d28cd00000
-> 
-> Sounds really weird to me. At this point the memfd_secret syscall is not
-> even wired to arch syscall handlers. I cannot see how it can be a reason of
-> deadlock in wireless...
+If a thread(A)'s TSYNC flag is set from seccomp(), then it will
+synchronize its seccomp filter to other threads(B) in same thread
+group. To avoid race condition, seccomp puts rmb() between
+reading the mode and filter in seccomp check patch(in B thread).
+As a result, every syscall's seccomp check is slowed down by the
+memory barrier.
 
-Yeah, forget about it. Usually this is a consequence of the way syzbot
-creates tests - it might have created something like
+However, we can optimize it by calling rmb() only when filter is
+NULL and reading it again after the barrier, which means the rmb()
+is called only once in thread lifetime.
 
-  if (!create_secret_memfd())
-    return;
-  try_something_on_wireless()
+The 'filter is NULL' conditon means that it is the first time
+attaching filter and is by other thread(A) using TSYNC flag.
+In this case, thread B may read the filter first and mode later
+in CPU out-of-order exection. After this time, the thread B's
+mode is always be set, and there will no race condition with the
+filter/bitmap.
 
-and then of course without your patch it cannot get to the wireless
-bits.
+In addtion, we should puts a write memory barrier between writing
+the filter and mode in smp_mb__before_atomic(), to avoid
+the race condition in TSYNC case.
 
-Pretty sure I know what's going on here, I'll take a closer look later.
+Signed-off-by: wanghongzhe <wanghongzhe@huawei.com>
+---
+ kernel/seccomp.c | 31 ++++++++++++++++++++++---------
+ 1 file changed, 22 insertions(+), 9 deletions(-)
 
-johannes
+diff --git a/kernel/seccomp.c b/kernel/seccomp.c
+index 952dc1c90229..b944cb2b6b94 100644
+--- a/kernel/seccomp.c
++++ b/kernel/seccomp.c
+@@ -397,8 +397,20 @@ static u32 seccomp_run_filters(const struct seccomp_data *sd,
+ 			READ_ONCE(current->seccomp.filter);
+ 
+ 	/* Ensure unexpected behavior doesn't result in failing open. */
+-	if (WARN_ON(f == NULL))
+-		return SECCOMP_RET_KILL_PROCESS;
++	if (WARN_ON(f == NULL)) {
++		/*
++		 * Make sure the first filter addtion (from another
++		 * thread using TSYNC flag) are seen.
++		 */
++		rmb();
++		
++		/* Read again */
++		f = READ_ONCE(current->seccomp.filter);
++
++		/* Ensure unexpected behavior doesn't result in failing open. */
++		if (WARN_ON(f == NULL))
++			return SECCOMP_RET_KILL_PROCESS;
++	}
+ 
+ 	if (seccomp_cache_check_allow(f, sd))
+ 		return SECCOMP_RET_ALLOW;
+@@ -614,9 +626,16 @@ static inline void seccomp_sync_threads(unsigned long flags)
+ 		 * equivalent (see ptrace_may_access), it is safe to
+ 		 * allow one thread to transition the other.
+ 		 */
+-		if (thread->seccomp.mode == SECCOMP_MODE_DISABLED)
++		if (thread->seccomp.mode == SECCOMP_MODE_DISABLED) {
++			/*
++			 * Make sure mode cannot be set before the filter
++			 * are set.
++			 */
++			smp_mb__before_atomic();
++
+ 			seccomp_assign_mode(thread, SECCOMP_MODE_FILTER,
+ 					    flags);
++		}
+ 	}
+ }
+ 
+@@ -1160,12 +1179,6 @@ static int __seccomp_filter(int this_syscall, const struct seccomp_data *sd,
+ 	int data;
+ 	struct seccomp_data sd_local;
+ 
+-	/*
+-	 * Make sure that any changes to mode from another thread have
+-	 * been seen after SYSCALL_WORK_SECCOMP was seen.
+-	 */
+-	rmb();
+-
+ 	if (!sd) {
+ 		populate_seccomp_data(&sd_local);
+ 		sd = &sd_local;
+-- 
+2.19.1
 
