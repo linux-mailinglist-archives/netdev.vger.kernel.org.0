@@ -2,167 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17E5330AAF5
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 16:20:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AA7930AAD6
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 16:16:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231406AbhBAPTb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 10:19:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33136 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231438AbhBAOuP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 09:50:15 -0500
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94668C061788
-        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 06:49:29 -0800 (PST)
-Received: by mail-wm1-x32a.google.com with SMTP id e15so13414626wme.0
-        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 06:49:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=EGmzCB5chSwq9pe2qQDXhGstL/uSMglbti4AeZbvc9M=;
-        b=T0u0mZ+Z3spqI5csq8199vdWw2F0HEI5De5S85KRWxCdxr+4jQR5HF/ESPI+khBobI
-         0kID6zY387C7nAXsNhluEAdeknIbOqrsZ2D0JaogcRsYEATDQywghJ/9qSSQ5q5A55FI
-         yWsOBfzIjs33oPqk4PuKrYwi8nfXeV5MoJxBo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=EGmzCB5chSwq9pe2qQDXhGstL/uSMglbti4AeZbvc9M=;
-        b=mB6nagCOnLJLNLG8JQdGZKKUWnBbaXWvTvaNQMwraUEvcXlW/srVE3EG6NooW2yq7g
-         Wf6RNGkmzNxqInoEh+5DXkFy4yr+g81ayGW3F9KRLafCzBWrCPYHMRJkZGpkBK7RaXjQ
-         QY1N1DsmUbQuJQgTb6Jdh8rD0oxYFkCWB1DohTUM8xgJu6SZ9SF1qSrBTd0m5FQRfgSU
-         u1T7NfVGCC4V4yPGFhdZXj/CN/Pi4U8Zj51GQfjjMm+EFVF3nKkQHZCuR51RND/rXk59
-         jVXZKAZOjegTEsaAkB9HazEvgpiikGtb/t3cuMPiHePoqM9gI4OYm/laObBFd0Vf+A3P
-         /H8g==
-X-Gm-Message-State: AOAM530JmK6zVZ+TEXJfuItznHRpN2/pCTzb2g6uaIcmZGZJFx1KCHGx
-        hnwo369LjPITpjXFgvdmCSbL0A==
-X-Google-Smtp-Source: ABdhPJzB4Q25SCm85fnRZK3Sfm9L/kEowDZQU6EzC3QxehecRfUoCDENb9bS5nw1au+0MSHzKsed+A==
-X-Received: by 2002:a7b:cd97:: with SMTP id y23mr15626961wmj.0.1612190968210;
-        Mon, 01 Feb 2021 06:49:28 -0800 (PST)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id z18sm26511725wro.91.2021.02.01.06.49.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Feb 2021 06:49:27 -0800 (PST)
-Date:   Mon, 1 Feb 2021 15:49:25 +0100
-From:   Daniel Vetter <daniel@ffwll.ch>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Dave Airlie <airlied@gmail.com>
-Cc:     Kenny Ho <y2kenny@gmail.com>, Kenny Ho <Kenny.Ho@amd.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Linux-Fsdevel <linux-fsdevel@vger.kernel.org>,
-        "open list:CONTROL GROUP (CGROUP)" <cgroups@vger.kernel.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Brian Welty <brian.welty@intel.com>
-Subject: Re: [RFC] Add BPF_PROG_TYPE_CGROUP_IOCTL
-Message-ID: <YBgU9Vu0BGV8kCxD@phenom.ffwll.local>
-References: <20201007152355.2446741-1-Kenny.Ho@amd.com>
- <CAOWid-d=a1Q3R92s7GrzxWhXx7_dc8NQvQg7i7RYTVv3+jHxkQ@mail.gmail.com>
- <20201103053244.khibmr66p7lhv7ge@ast-mbp.dhcp.thefacebook.com>
- <CAOWid-eQSPru0nm8+Xo3r6C0pJGq+5r8mzM8BL2dgNn2c9mt2Q@mail.gmail.com>
- <CAADnVQKuoZDB-Xga5STHdGSxvSP=B6jQ40kLdpL1u+J98bv65A@mail.gmail.com>
- <CAOWid-czZphRz6Y-H3OcObKCH=bLLC3=bOZaSB-6YBE56+Qzrg@mail.gmail.com>
- <20201103210418.q7hddyl7rvdplike@ast-mbp.dhcp.thefacebook.com>
- <CAOWid-djQ_NRfCbOTnZQ-A8Pr7jMP7KuZEJDSsvzWkdw7qc=yA@mail.gmail.com>
- <20201103232805.6uq4zg3gdvw2iiki@ast-mbp.dhcp.thefacebook.com>
+        id S231437AbhBAPQE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 10:16:04 -0500
+Received: from mail-eopbgr70110.outbound.protection.outlook.com ([40.107.7.110]:62944
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230110AbhBAO5N (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Feb 2021 09:57:13 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=S+OHQ+l4tUfI8jSrRfHmu+kByZRAtrX2vI88KBdNkmyYFiCCRrpIhdYGxIG2mMTfJF43Blf3R/Vift06wwyjp7+PRRc59d551q1Ji4fX8daZtEKPrLI8wQMR3OHcJGNN8uiqBoxZ9PBIdONLHsc8QiitUw+StSYflMK9UToAz7lug5lheTQ8/ABypxTW9dqsYC6oMxiP9pDbZsTEIqLgNT+3McEAlHJPHAV264vH4Z9FaNQde5kzXzqOafcQIdl3I6zgTulKhtRLWdp+5PHVLXZcVByUrb/vGVCueS1jqIQUGrNj72YCmL/QvXCsg7ByIYqtgwcp/Q74AIgX3JqWgA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kddF4h8VgPR1/onoiaxBv5aGABmn14IopA3qUc0EsPU=;
+ b=SbszN1RGfTNFWBGjCQZ6Y2q523ZdCMDbAjXk9y2TjJXpAHuI/+knGpKvIOs9xQ+Cwwa9HqReA0lJTZ74bBc+lRudIhbsUjQiI8LK6eWY4/0ri/JSWtD0z4SfzF6/rqvYsuV6Wi0w/CTs5rntqYH5YuCOTOnoYFfP8foE3fejkWw2W3HnmPbyYEEAzjNy0a5mLatQUGYhT/SXOekreM6IrebXV3wyaQwPK0RO6Tz77Uo0lB6zJ0ZgvKXDeLNwiRLGPBSC9hB9HHrfynhSi2nUvBLdnSGT485qm9lsjREw1FMitRWjj50mzi9HiCgPhtXCiB9IJzTHzodh+dQJuRPwiw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
+ dkim=pass header.d=plvision.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kddF4h8VgPR1/onoiaxBv5aGABmn14IopA3qUc0EsPU=;
+ b=F3XNetrjEBmanFutA531XK50pd++83o8C3rtCtiyHoLNzk38SyE2yKCy8uu2mqpQN3YJVRFX9YarMm8GAYiVrZTB3mJyA3tsJ/wmGen3PtoCiETbnw9mFrT5WfdKzWA6fDrW8dlLYFuPri49EKs9HYLkr78EaX5A5A0MAhap+nE=
+Received: from AM0P190MB0738.EURP190.PROD.OUTLOOK.COM (2603:10a6:208:19b::9)
+ by AM9P190MB1154.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:271::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.19; Mon, 1 Feb
+ 2021 14:54:55 +0000
+Received: from AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
+ ([fe80::3011:87e8:b505:d066]) by AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
+ ([fe80::3011:87e8:b505:d066%9]) with mapi id 15.20.3805.027; Mon, 1 Feb 2021
+ 14:54:55 +0000
+From:   Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jiri@nvidia.com" <jiri@nvidia.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC v3 net-next] net: core: devlink: add 'dropped' stats field
+ for DROP trap action
+Thread-Topic: [RFC v3 net-next] net: core: devlink: add 'dropped' stats field
+ for DROP trap action
+Thread-Index: AQHW8xcXY5euT+iepUq2JFXYOtkL6Ko42mmAgAWdF96AAImvgIAEbH7J
+Date:   Mon, 1 Feb 2021 14:54:55 +0000
+Message-ID: <AM0P190MB07389749FDC9EE63F1F8435CE4B69@AM0P190MB0738.EURP190.PROD.OUTLOOK.COM>
+References: <20210125123856.1746-1-oleksandr.mazur@plvision.eu>
+        <20210125132317.418a4e35@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <AM0P190MB0738FC4657CCB0E435C40B24E4B99@AM0P190MB0738.EURP190.PROD.OUTLOOK.COM>,<20210129111937.4e7e17d0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210129111937.4e7e17d0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=plvision.eu;
+x-originating-ip: [213.174.16.178]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 7c4ff9c4-8ab0-4d45-e8cf-08d8c6c15649
+x-ms-traffictypediagnostic: AM9P190MB1154:
+x-microsoft-antispam-prvs: <AM9P190MB11540AEB65B5B4FCAA6FB19DE4B69@AM9P190MB1154.EURP190.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: jJS9n3HQzCZkYA1pFogkXAEnNLQ3c7eVixkYNiXAT68xRCtZqwSW6ky1pw18TZzY2vRjsxCvlKcLIJnqjVL/J/xXz0ozOAXt2UXwhcLk6qq3zGgC72H3RNzUrHp/NbI9+yIgi70LUB9xcM4/eAHR0+dFUOkQ0bJbOJd3oO3Fbj4UD3kqBV/EUmvnAq3OT8hEBTArORLvExrYIG0y+GrcXHz0KWJjrA97n9kQ4RkD1DYGk13hkUjgo5K9y5bdXaX5wf1mepOpC7HUd7LVnZjW+ft3uMGlgYOQhgJqkJR54INpYPjY0I5YJgtf/MMEf63MV4SPVr5XFuT15DQ5xMS1yJVlmwUoF/j/4j0L2LCrN+HGD/ksxq43BiBDg/C/jSVOSIV7k/PAoaMNNLGyY8E3yEwWfci3JcAcUtYx5g0nwD7t6Csa/ylpEIx189n+nwdDIVlrW8kujEAsmAZw0ninYnglkSc6L2gX8KgCfvc5AkZhc52c9Z+S0O43g24MgYZlk7/0tJP54ecxjd1wEXfYRg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0P190MB0738.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(366004)(136003)(376002)(346002)(396003)(39830400003)(4744005)(44832011)(54906003)(6916009)(4326008)(26005)(71200400001)(6506007)(8676002)(2906002)(7696005)(33656002)(186003)(8936002)(55016002)(9686003)(52536014)(5660300002)(91956017)(316002)(76116006)(66476007)(66556008)(66446008)(86362001)(478600001)(66946007)(83380400001)(64756008);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?iso-8859-1?Q?2Wa53tGPEuaxx0LFrUyfF7GOMC8cQUbaqjGc6BOiiyZWs0aC4eWxs0iaqF?=
+ =?iso-8859-1?Q?0m9jD2QaAaTYKZEqGIjBBisNclJ7diBo2tBoM2u10O+KSQY9pQITXStMrr?=
+ =?iso-8859-1?Q?pJBiLPEKOh3TGi8KBf8Ajhf6dUpXJ5g7QKoxfeiJLXfkMTqUx0PSne7e74?=
+ =?iso-8859-1?Q?ilwhEZ899tzLu1FtNcJPoPQvFzJ6ly85CAALMuILw7GxjC/oE9llw7D3jU?=
+ =?iso-8859-1?Q?D+IPzxFdE7kYGlTKvr3NsFjc116ydT12S00a6v0Mdj3sNBrlNLTEWBp+/c?=
+ =?iso-8859-1?Q?q8EeSnKVYPJ60moW4cr0sCwUZ3qGqnQZ8iKIYf+vTLti3uWKUQdPREx2cn?=
+ =?iso-8859-1?Q?O1Hu1RPnl06T3I4194rpUzGd6+8pKqs9kDNdEikYyuApIxzQRO6ncU4xp0?=
+ =?iso-8859-1?Q?R33sNUepTztj4INysug3Bczk3JXxlrIbciHJNcMBtaU8JOI/4I/YWZZgsk?=
+ =?iso-8859-1?Q?+hbpL8W57VF+gOAN1XKY2d+b3wZV74zoSdITzD21fU38nI0HoCX2FRP2V2?=
+ =?iso-8859-1?Q?J/yLxtqaKQ/70w9Gi+ROqfOeb8QEktUODzwF5fxG721EsaiY2D66uCdMGD?=
+ =?iso-8859-1?Q?pY/Xq1WlJQ14a11xIkS/9os2UWqbGdxJOtSNu2/MhiJMXT9LSvEd0Db7VJ?=
+ =?iso-8859-1?Q?9ND38SDmZW/2UZbz+wCXLjyNG8Leq+B69bdPV1LMdMLdHc6Am8eApO2c7y?=
+ =?iso-8859-1?Q?6kcG3/7KsMF6y/q4QWnvyXGtmEAtyxCDUP1w8WItL1X3LLhuaM2JVwfcuL?=
+ =?iso-8859-1?Q?Bh8Ivnak2oRQeSnMq8Xa3iyeCvJdi+VkD1b6io/UaGu6H0GYAys9D/tt9h?=
+ =?iso-8859-1?Q?BskdpyzKilLHfaVZLk2NeMcV6Y51UnyWHsGHq3qmVN0fmJjk5qGuDvbljk?=
+ =?iso-8859-1?Q?/c26fkHnIdOXk7sTXQk3sG7TNlmbWMbVV0MMsSdF0iJbSlpjd52JSs15Yw?=
+ =?iso-8859-1?Q?OVd9Mx6DyJnuODhdKB47zcfgVaqb7pPV1Tt11RhwahRKIrhdm4T/KbApTM?=
+ =?iso-8859-1?Q?nXEL9czG7lIT8FU4RU2QDaxyKy1WKHXmFBQrk9b09xEQ5iHWyTdUgFLh2/?=
+ =?iso-8859-1?Q?SCoh+lkBZqyL5y+zUNMCSpd0HH/GFULtf/TWjoSVmQeD?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201103232805.6uq4zg3gdvw2iiki@ast-mbp.dhcp.thefacebook.com>
-X-Operating-System: Linux phenom 5.7.0-1-amd64 
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7c4ff9c4-8ab0-4d45-e8cf-08d8c6c15649
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Feb 2021 14:54:55.0123
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: nUwZovZFnxGWTliR0DfJbemsxonZkO3yssb61+kr4hzKhvqRYUq2uOrNIy/acCS7KcM9gdb4Fs6jblFvvSTOAtGsc75RoULz5c0erCO89qw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9P190MB1154
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding gpu folks.
-
-On Tue, Nov 03, 2020 at 03:28:05PM -0800, Alexei Starovoitov wrote:
-> On Tue, Nov 03, 2020 at 05:57:47PM -0500, Kenny Ho wrote:
-> > On Tue, Nov 3, 2020 at 4:04 PM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > On Tue, Nov 03, 2020 at 02:19:22PM -0500, Kenny Ho wrote:
-> > > > On Tue, Nov 3, 2020 at 12:43 AM Alexei Starovoitov
-> > > > <alexei.starovoitov@gmail.com> wrote:
-> > > > > On Mon, Nov 2, 2020 at 9:39 PM Kenny Ho <y2kenny@gmail.com> wrote:
-> > >
-> > > Sounds like either bpf_lsm needs to be made aware of cgv2 (which would
-> > > be a great thing to have regardless) or cgroup-bpf needs a drm/gpu specific hook.
-> > > I think generic ioctl hook is too broad for this use case.
-> > > I suspect drm/gpu internal state would be easier to access inside
-> > > bpf program if the hook is next to gpu/drm. At ioctl level there is 'file'.
-> > > It's probably too abstract for the things you want to do.
-> > > Like how VRAM/shader/etc can be accessed through file?
-> > > Probably possible through a bunch of lookups and dereferences, but
-> > > if the hook is custom to GPU that info is likely readily available.
-> > > Then such cgroup-bpf check would be suitable in execution paths where
-> > > ioctl-based hook would be too slow.
-> > Just to clarify, when you say drm specific hook, did you mean just a
-> > unique attach_type or a unique prog_type+attach_type combination?  (I
-> > am still a bit fuzzy on when a new prog type is needed vs a new attach
-> > type.  I think prog type is associated with a unique type of context
-> > that the bpf prog will get but I could be missing some nuances.)
-> > 
-> > When I was thinking of doing an ioctl wide hook, the file would be the
-> > device file and the thinking was to have a helper function provided by
-> > device drivers to further disambiguate.  For our (AMD's) driver, we
-> > have a bunch of ioctls for set/get/create/destroy
-> > (https://elixir.bootlin.com/linux/latest/source/drivers/gpu/drm/amd/amdkfd/kfd_chardev.c#L1763)
-> > so the bpf prog can make the decision after the disambiguation.  For
-> > example, we have an ioctl called "kfd_ioctl_set_cu_mask."  You can
-> 
-> Thanks for the pointer.
-> That's one monster ioctl. So much copy_from_user.
-> BPF prog would need to be sleepable to able to examine the args in such depth.
-> After quick glance at the code I would put a new hook into
-> kfd_ioctl() right before
-> retcode = func(filep, process, kdata);
-> At this point kdata is already copied from user space 
-> and usize, that is cmd specific, is known.
-> So bpf prog wouldn't need to copy that data again.
-> That will save one copy.
-> To drill into details of kfd_ioctl_set_cu_mask() the prog would
-> need to be sleepable to do second copy_from_user of cu_mask.
-> At least it's not that big.
-> Yes, the attachment point will be amd driver specific,
-> but the program doesn't need to be.
-> It can be generic tracing prog that is agumented to use BTF.
-> Something like writeable tracepoint with BTF support would do.
-> So on the bpf side there will be minimal amount of changes.
-> And in the driver you'll add one or few writeable tracepoints
-> and the result of the tracepoint will gate
-> retcode = func(filep, process, kdata);
-> call in kfd_ioctl().
-> The writeable tracepoint would need to be cgroup-bpf based.
-> So that's the only tricky part. BPF infra doesn't have
-> cgroup+tracepoint scheme. It's probably going to be useful
-> in other cases like this. See trace_nbd_send_request.
-
-
-Yeah I think this proposal doesn't work:
-
-- inspecting ioctl arguments that need copying outside of the
-  driver/subsystem doing that copying is fundamentally racy
-
-- there's been a pile of cgroups proposal to manage gpus at the drm
-  subsystem level, some by Kenny, and frankly this at least looks a bit
-  like a quick hack to sidestep the consensus process for that.
-
-So once we push this into drivers it's not going to be a bpf hook anymore
-I think.
-
-Cheers, Daniel
--- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+=0A=
+On Fri, 29 Jan 2021 11:15:43 +0000 Oleksandr Mazur wrote:=0A=
+> > >Thinking about it again - if the action can be changed wouldn't it =0A=
+> > >be best for the user to actually get a "HW condition hit" counter,=0A=
+> >> which would increment regardless of SW config (incl. policers)?=A0 =0A=
+> >=0A=
+> > >Otherwise if admin logs onto the box and temporarily enables a trap =
+=0A=
+> >> for debug this count would disappear.=A0 =0A=
+>> =0A=
+>> But still this counter makes sense only for 'drop' action.=0A=
+=0A=
+>Okay, well, "dropped while trap was disabled" seems a lot less useful=0A=
+>of a definition than "number of times this trap would trigger" but if=0A=
+>that's all the HW can provide then it is what it is.=0A=
+=0A=
+>Does the HW also count packets dropped because of overload / overflow=0A=
+>or some other event, or purely dropped because disabled?=0A=
+=0A=
+Hw starts counting traffic (hw drops) only when action has been explicitly =
+set to be 'DROP';=
