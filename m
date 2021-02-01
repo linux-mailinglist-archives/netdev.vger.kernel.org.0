@@ -2,97 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC69D30A94D
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 15:04:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BC6F30A952
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 15:06:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232490AbhBAODi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 09:03:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51308 "EHLO
+        id S232495AbhBAOGA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 09:06:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231308AbhBAODg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 09:03:36 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC084C061756;
-        Mon,  1 Feb 2021 06:02:56 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id kx7so10367975pjb.2;
-        Mon, 01 Feb 2021 06:02:56 -0800 (PST)
+        with ESMTP id S232324AbhBAOF5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 09:05:57 -0500
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D49C061573
+        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 06:05:16 -0800 (PST)
+Received: by mail-oi1-x232.google.com with SMTP id d18so18890598oic.3
+        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 06:05:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uBdiP9H9SlNL4alzj1It88DmnB+e5Qmtpx4oL95Is3k=;
-        b=SXoeBbQT5lJYINofg0/xkVOTIolowtnIDEP9fr2GtQ9A5duj3KLOXGPVbMddAjVfmH
-         5ZmlZC48QLqZXb9NQ6SKrrvtRr41J+2L0X1BYERIQ0hM9h7J+VoYH+W04wq9wJlfxRxm
-         T8MEeQP3KfzTdTgEBuwFrCdGVZHVTDVbdaFiiSzCQpfjN7pmFXFlHm3s4MVqiSm8Q1QP
-         jCPt9JZNwH4Dx73Teh0uihHD+LhCQfVA2HkwWH9y5y4+ewkX/J1tAsMNugSHOaaTfGyP
-         1gzTmkLRiK2YlmCvCOZD5vLvdhrt/iJNImrdLu3XJ9//FyGNrVEizVJOfx04oYH9T0l5
-         iOhQ==
+        h=from:to:cc:subject:date:message-id;
+        bh=AOOjf5mf1DQlXkdUw4GWpmEWWn2gbfTXlxrpwqDRdco=;
+        b=sXr+2bi7W9poXqPMuRIU28MW5F9AU13Zp0vnZYCn8LEwtkPHtBKZXlxfMSaWIVIJPV
+         huzp+V8H9ZZ4mhg9sC4Tk9F1J77C9IWhMic+Y6KW5N0I3kmrfHAk7ACT8Th2zP33llmK
+         3rEC6HO30q3LiFU+WJ9PpJzcM115DS5eHRB6lLNRXE9VdsNwozbOd6BFDb5eHZ42F8eL
+         ItMVZqvTw3vbJcPy7KlsV9a+sSjMymzKb/E+fbnuf37u+M4PZ1WlI316HlVk4sBEch1t
+         iFcOH3C1RuEfSyaeb4hBDFUZnL+efWyLpaYJPHgS9kg7N7l01f8WXUoTAw9m8Tswl12u
+         Ra0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uBdiP9H9SlNL4alzj1It88DmnB+e5Qmtpx4oL95Is3k=;
-        b=QPBf/bUt4Crmq0AV05YsGXPSCg56teOv1IdrIaClV3Qvqi2gfEEUUb3/SmKpTPlivk
-         dM22Y2PMl1CL60pwl+FhZrmudDdJ+WVX08OETQXZOaBdKODvh/8d4Y7pPDOUaFMT9Aag
-         +JVFI2nopNpCaKYOv4dZdDTWNKy21UftWfSoXAbXvIVx+OR/AxLl48LhnmRS8Qqjg7q4
-         POF+JHIo8j9xCkCP8zQ0INMlYu4RqTC4JuBadtw8blEDaJ2oMVaxPvvTLhJFqQMvoInE
-         ymZ9tA/MLynfKmxFCUs38HzPQq8YErektfwxy6eczytmuQKx3FSUuaPpbBqYCwasEDzh
-         a32g==
-X-Gm-Message-State: AOAM5333JBNkeB6wNnXY47oTrdVhuXJ0a3DVq5tcZiyaGNceYvx+ccZu
-        EwFFIbiRkFnEiwHH1qBU0sy5ROgUQi5YsLuUm/t7vFQdeeo=
-X-Google-Smtp-Source: ABdhPJwQSB62FIthokjS5lj7pFf9ZNQ3B9jY138f68ls9gEsUmUUJlTFIcfvdqA0Im1k7/rEaR1nibA3RF7jmd7agK4=
-X-Received: by 2002:a17:90a:ee8a:: with SMTP id i10mr3192755pjz.210.1612188176329;
- Mon, 01 Feb 2021 06:02:56 -0800 (PST)
-MIME-Version: 1.0
-References: <20210127090747.364951-1-xie.he.0141@gmail.com>
- <20210128114659.2d81a85f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAJht_EOSB-m--Ombr6wLMFq4mPy8UTpsBri2CPsaRTU-aks7Uw@mail.gmail.com>
- <3f67b285671aaa4b7903733455a730e1@dev.tdt.de> <20210129173650.7c0b7cda@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAJht_EPMtn5E-Y312vPQfH2AwDAi+j1OP4zzpg+AUKf46XE1Yw@mail.gmail.com>
- <20210130111618.335b6945@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAJht_EMQVaKFx7Wjj75F2xVBTCdpmho64wP0bfX6RhFnzNXAZA@mail.gmail.com>
- <36a6c0769c57cd6835d32cc0fb95bca6@dev.tdt.de> <CAJht_ENs1Rnf=2iX8M1ufF=StWHKTei3zuKv-xBtkhDsY-xBOA@mail.gmail.com>
- <1628f9442ccf18f9c08c98f122053fc0@dev.tdt.de>
-In-Reply-To: <1628f9442ccf18f9c08c98f122053fc0@dev.tdt.de>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Mon, 1 Feb 2021 06:02:44 -0800
-Message-ID: <CAJht_EOs1HOcRRpVo_RZEQPECVPrKpu5vk0Pe-XmRe4htmEuOw@mail.gmail.com>
-Subject: Re: [PATCH net] net: hdlc_x25: Use qdisc to queue outgoing LAPB frames
-To:     Martin Schiller <ms@dev.tdt.de>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Krzysztof Halasa <khc@pm.waw.pl>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=AOOjf5mf1DQlXkdUw4GWpmEWWn2gbfTXlxrpwqDRdco=;
+        b=Skd32o4amsc8pYvyj92+b4IYojM8i3jEwoA13ry/acIsH2T3GlnGqVNIzeHfOrTfd7
+         RgwsieCstzvgHz7TwYlEK7fNvOxMSjYDKCUAi18JIfF1b8VXNx5KRUotdMPe7HPhUj6W
+         kChSk9+jsD0pjZpO0To4Ejg/rb5sEs767zmXBODSZjzfMDbsuFCHmuH92Vy2YjZGKI1w
+         Trapl6Gkcw5G3FXI57+Jg1dCEJWAd/XOtZldECrutT+5o/uEEQWx32g4uOzJWCUHDSWx
+         qvQcBmPZ0PcKom0chk3epUbOxpxTG5WXtily2/zBNAHRFZNYtYGWE2e5EdITWg5n+I5g
+         bxzg==
+X-Gm-Message-State: AOAM530oknmzzTMVzg59AEOwWn3qnBsmcorOYVwPUt9D3bD2wYalxfbE
+        T2vquMJKBl37+WjqmtuZig==
+X-Google-Smtp-Source: ABdhPJxZ0G8n/esUkk8Gtanlj5kxrfsztZCWJTkTLYgGJcyZwytfbGolMXzdXDW75yXRdbvMwmMCeQ==
+X-Received: by 2002:a05:6808:8a:: with SMTP id s10mr11486937oic.152.1612188316159;
+        Mon, 01 Feb 2021 06:05:16 -0800 (PST)
+Received: from threadripper.novatech-llc.local ([216.21.169.52])
+        by smtp.gmail.com with ESMTPSA id q6sm3967972otm.68.2021.02.01.06.05.13
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 01 Feb 2021 06:05:13 -0800 (PST)
+From:   George McCollister <george.mccollister@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
+        George McCollister <george.mccollister@gmail.com>
+Subject: [RESEND PATCH net-next 0/4] add HSR offloading support for DSA switches
+Date:   Mon,  1 Feb 2021 08:04:59 -0600
+Message-Id: <20210201140503.130625-1-george.mccollister@gmail.com>
+X-Mailer: git-send-email 2.11.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 1, 2021 at 5:14 AM Martin Schiller <ms@dev.tdt.de> wrote:
->
-> But control frames are currently sent past the lapb write_queue.
-> So another queue would have to be created.
->
-> And wouldn't it be better to have it in the hdlc_x25 driver, leaving
-> LAPB unaffected?
+Add support for offloading HSR/PRP (IEC 62439-3) tag insertion, tag
+removal, forwarding and duplication on DSA switches.
+This series adds offloading to the xrs700x DSA driver.
 
-Hmm.. Indeed. I agree.
+Resent. Jakub says "looks like this is not showing up in patchwork
+probably because of the ML server issue - please repost"
 
-I also think the queue needs to be the qdisc queue, so that it'll be
-able to respond immediately to hardware drivers' netif_wake_queue
-call.
+Changes since RFC:
+ * Split hsr and dsa patches. (Florian Fainelli)
 
-Initially I was considering using the qdisc of the HDLC device to
-queue the outgoing L2 frames again (after their corresponding L3
-packets having already gone through the queue). But Jakub didn't like
-the idea of queuing the same data twice. I also found that if an L3
-packet was sent through the qdisc without being queued, and LAPB
-didn't queue it either, then the emitted L2 frame must be queued in
-the qdisc. This is both not optimal and causing problems when using
-the "noqueue" qdisc.
+George McCollister (4):
+  net: hsr: generate supervision frame without HSR tag
+  net: hsr: add offloading support
+  net: dsa: add support for offloading HSR
+  net: dsa: xrs700x: add HSR offloading support
 
-Maybe the only way is to create a virtual device on top of the HDLC
-device, using the virtual device to queue L3 packets and using the
-actual HDLC device to queue L2 frames.
+ Documentation/networking/netdev-features.rst |  20 +++++
+ drivers/net/dsa/xrs700x/xrs700x.c            | 106 +++++++++++++++++++++++++++
+ drivers/net/dsa/xrs700x/xrs700x_reg.h        |   5 ++
+ include/linux/if_hsr.h                       |  22 ++++++
+ include/linux/netdev_features.h              |   9 +++
+ include/linux/netdevice.h                    |  13 ++++
+ include/net/dsa.h                            |  13 ++++
+ net/dsa/dsa_priv.h                           |  11 +++
+ net/dsa/port.c                               |  34 +++++++++
+ net/dsa/slave.c                              |  13 ++++
+ net/dsa/switch.c                             |  24 ++++++
+ net/dsa/tag_xrs700x.c                        |   7 +-
+ net/ethtool/common.c                         |   4 +
+ net/hsr/hsr_device.c                         |  44 ++---------
+ net/hsr/hsr_forward.c                        |  37 ++++++++--
+ net/hsr/hsr_forward.h                        |   1 +
+ net/hsr/hsr_main.c                           |  14 ++++
+ net/hsr/hsr_main.h                           |   8 +-
+ net/hsr/hsr_slave.c                          |  13 +++-
+ 19 files changed, 343 insertions(+), 55 deletions(-)
+ create mode 100644 include/linux/if_hsr.h
+
+-- 
+2.11.0
+
