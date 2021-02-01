@@ -2,155 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B557130AE47
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 18:46:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB83530AE4B
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 18:46:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232313AbhBARp2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 12:45:28 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:36299 "EHLO
-        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229607AbhBARnI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 12:43:08 -0500
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailout.nyi.internal (Postfix) with ESMTP id 7BE0E5C014E;
-        Mon,  1 Feb 2021 12:41:59 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Mon, 01 Feb 2021 12:41:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=MTDcHQ
-        TsWuXtmV8ysfUn2XU/N9exN9G1OmWTIXEMS1w=; b=lwdf0Qi4seOd20llfWyW7K
-        Vv1f63hY7mkBrrB4RYuWEjjn+EjHhg3Fyp1XR48A3WPCLTGnpMuzhO7S8v+T/2u0
-        oE/GJ4fZCO2OeYTwmJj8Al0EBYw133OkGPz3jznvJ+LX9o4+0ze51pSkC7UOoL3L
-        Fi+sp8LX1fd5jpJcpK+2lx/KNn+/qgm6cbwR/kNWTW3KfchUpMdl04mT6okHX/P7
-        5nCP2QKU7QaXQvE/NPoBKPiGFQm73qMQsJ/qKpTKrvw8ePaCOEkp95KWLbGEH5GI
-        f3yfrF7tDZ95T1thbVoH/rqjCG0BUeV9jOzOMDGbPdY/JaBmKld+7arrJ75W1TAA
-        ==
-X-ME-Sender: <xms:Zz0YYMM2MYupSqGVxcoCxp-VieuAWqC2BPVrZHgYkOGbar6RklGDrg>
-    <xme:Zz0YYHRug66fOZGwOXrC4PozIu0HO67p_wvI3njNtSjofm7O3SMBVrTb_dpn7Xno7
-    iTOFHcq3eYWH_w>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeekgddutdegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucfkphepkeegrddvvdelrdduheefrdeggeenucevlhhushhtvghrufhiiigvpedtne
-    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:Zz0YYCbytqkzmKHPYF9nrvCRHzX6tPsnd4ksDh2lUS_pGhxnUBpS9A>
-    <xmx:Zz0YYM01TYH6Ftww-Z_bVWWv5eQz9fCc22IzrRJScDdAbyfPIX3A-g>
-    <xmx:Zz0YYKUesP9SZFYIu_F_7V5uFkPSiGjdbbgVdjBbp67mJqpbemzr-Q>
-    <xmx:Zz0YYFlBqbIVyUVXvJacd7RUSiShpOyfpYBxx3VRO2OY_4brGOd-2w>
-Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id AEC39108005B;
-        Mon,  1 Feb 2021 12:41:58 -0500 (EST)
-Date:   Mon, 1 Feb 2021 19:41:55 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Simon Horman <simon.horman@netronome.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
-        oss-drivers@netronome.com,
-        Baowen Zheng <baowen.zheng@corigine.com>,
-        Louis Peens <louis.peens@netronome.com>
-Subject: Re: [PATCH RFC net-next] net/sched: act_police: add support for
- packet-per-second policing
-Message-ID: <20210201174155.GA3454089@shredder.lan>
-References: <20210125151819.8313-1-simon.horman@netronome.com>
- <20210128161933.GA3285394@shredder.lan>
- <20210201123116.GA25935@netronome.com>
+        id S231134AbhBARqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 12:46:00 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:38834 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231280AbhBARpl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 12:45:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612201454;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=5CQouvwXL1+OlI6kilnJbl1lJaKIxU/jbazBDfnUguU=;
+        b=Z8/CW5uONrZs6YZCYgTMCM3b1regm+GyN416Q/nQ8H2sV0vZmroKJFn/h0OFfBQIBzlwCF
+        8TMX12h/9+a7EOHfwzHzrjaq1yBQsEzS7J4gZaXu8878ocwjD4F/gxhzsh7IsaOXli+cSW
+        sX+Pjo+2T5pq/+LlRNbzQzEHzavAmpM=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-473-Zv5nYTy_NMmlp6e6VYbBOw-1; Mon, 01 Feb 2021 12:44:12 -0500
+X-MC-Unique: Zv5nYTy_NMmlp6e6VYbBOw-1
+Received: by mail-wr1-f71.google.com with SMTP id l10so10827078wry.16
+        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 09:44:12 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=5CQouvwXL1+OlI6kilnJbl1lJaKIxU/jbazBDfnUguU=;
+        b=MHWrfdflHW663yqiMhlzvTmAuwlNZnowFcxuYOhj3Bm4nsI2rkVZQfpvj677fPgtFT
+         Rqo323Bdape+ZqpspzVMSCMU3ZvRkZYFuWy1fp4BItxzCJ87Qf3k+LMofkd60+LkLGYx
+         HrHx1sFgNv5AQcKyztGFeCfFAfR7MRTrDqOpNy2WZMOxtNlLDQEozpxcgRwhg4jdykoz
+         D35vLWVf9bnKwOROi6/ifbDctLYefVr1m9X2XyWaOceR1/gfv+IB/CvOzyUiRuFMP6h1
+         meQwpI9MPbykTQaW/Hk/tJjJbjQHM6811jlblQRZ4nGol2YSXxO4bPYLqRrpxOlM4pBf
+         Lj1A==
+X-Gm-Message-State: AOAM530WtPGTmcqsqFUb0MeKumg+BQcAlrZVdGUKrLFe9Q4dB26gvn4Q
+        UO56Kb+osHxzmtnVki5E+ls0os+ZsiNIfflRRxNpjZUqutAxwjOLXom/EyJiEX1hqRmEMPQXgrD
+        pxkEgZSxzZ67dv3JH
+X-Received: by 2002:a1c:f417:: with SMTP id z23mr2220wma.29.1612201451384;
+        Mon, 01 Feb 2021 09:44:11 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx9m8F9p+sGqZ6Fxzga331GqDdam9wnXqb5JnV6x7MMM1Ychyl2FYb/5LRsVHLfM5eYf30V7A==
+X-Received: by 2002:a1c:f417:: with SMTP id z23mr2201wma.29.1612201451180;
+        Mon, 01 Feb 2021 09:44:11 -0800 (PST)
+Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id l14sm27353603wrq.87.2021.02.01.09.44.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Feb 2021 09:44:10 -0800 (PST)
+Date:   Mon, 1 Feb 2021 18:44:07 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH v2 iproute2] iplink_bareudp: cleanup help message and man page
+Message-ID: <f03210e3683cf99c58ed847a6abbe48eb021479d.1612201006.git.gnault@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210201123116.GA25935@netronome.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 01, 2021 at 01:31:17PM +0100, Simon Horman wrote:
-> On Thu, Jan 28, 2021 at 06:19:33PM +0200, Ido Schimmel wrote:
-> > On Mon, Jan 25, 2021 at 04:18:19PM +0100, Simon Horman wrote:
-> > > From: Baowen Zheng <baowen.zheng@corigine.com>
-> > > 
-> > > Allow a policer action to enforce a rate-limit based on packets-per-second,
-> > > configurable using a packet-per-second rate and burst parameters. This may
-> > > be used in conjunction with existing byte-per-second rate limiting in the
-> > > same policer action.
-> > 
-> > Hi Simon,
-> > 
-> > Any reason to allow metering based on both packets and bytes at the same
-> > action versus adding a mode (packets / bytes) parameter? You can then
-> > chain two policers if you need to rate limit based on both. Something
-> > like:
-> > 
-> > # tc filter add dev tap1 ingress pref 1 matchall \
-> > 	action police rate 1000Mbit burst 128k conform-exceed drop/pipe \
-> > 	action police pkts_rate 3000 pkts_burst 1000
-> > 
-> > I'm asking because the policers in the Spectrum ASIC are built that way
-> > and I also don't remember seeing such a mixed mode online.
-> 
-> Hi Ido,
-> 
-> sorry for missing this email until you pointed it out to me in another
-> thread.
+ * Fix PROTO description in help message (mpls isn't a valid argument).
 
-Hi,
+ * Remove SRCPORTMIN description from help message since it doesn't
+   appear in the syntax string.
 
-No problem. There were (are?) some issues with netdev mails lately.
+ * Use same keywords in help message and in man page.
 
-> 
-> We did consider this question during development and our conclusion was
-> that it was useful as we do have use-cases which call for both to be used
-> and it seems nice to allow lower layers to determine the order in which the
-> actions are applied to satisfied the user's more general request for both -
+ * Use the "ethertype" option name (.B ethertype) rather than the
+   option value (.I ETHERTYPE) in the man page description of
+   [no]multiproto.
 
-The lower layer need to respect whatever is implemented in the software
-data path, but with this approach it is not clear which limit is imposed
-first. One needs to check act_police's code for that. With the more
-discrete approach (two actions), user is in complete control.
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
+---
+No changes since v1.
+Reposting since v1 appears neither in lore.kernel.org nor in patchwork.
 
-There is also an issue of visibility into how many packets were dropped
-due to which limit. With this approach both drops are squashed to the
-same counter. In the hardware offload case, I assume this would entail
-reading the drop counters of two different policers which might not be
-atomic (at least on Spectrum).
+ ip/iplink_bareudp.c   |  8 +++++---
+ man/man8/ip-link.8.in | 15 +++++++++------
+ 2 files changed, 14 insertions(+), 9 deletions(-)
 
-> it should be no surprise that we plan to provide a hardware offload of this
-> feature. 
+diff --git a/ip/iplink_bareudp.c b/ip/iplink_bareudp.c
+index 860ec699..aa311106 100644
+--- a/ip/iplink_bareudp.c
++++ b/ip/iplink_bareudp.c
+@@ -22,9 +22,11 @@ static void print_explain(FILE *f)
+ 		"		[ srcportmin PORT ]\n"
+ 		"		[ [no]multiproto ]\n"
+ 		"\n"
+-		"Where:	PORT       := 0-65535\n"
+-		"	PROTO      := NUMBER | ip | mpls\n"
+-		"	SRCPORTMIN := 0-65535\n"
++		"Where:	PORT  := UDP_PORT\n"
++		"	PROTO := ETHERTYPE\n"
++		"\n"
++		"Note: ETHERTYPE can be given as number or as protocol name (\"ipv4\", \"ipv6\",\n"
++		"      \"mpls_uc\", etc.).\n"
+ 	);
+ }
+ 
+diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
+index 3516765a..fd67e611 100644
+--- a/man/man8/ip-link.8.in
++++ b/man/man8/ip-link.8.in
+@@ -1307,9 +1307,9 @@ For a link of type
+ the following additional arguments are supported:
+ 
+ .BI "ip link add " DEVICE
+-.BI type " bareudp " dstport " PORT " ethertype " ETHERTYPE"
++.BI type " bareudp " dstport " PORT " ethertype " PROTO"
+ [
+-.BI srcportmin " SRCPORTMIN "
++.BI srcportmin " PORT "
+ ] [
+ .RB [ no ] multiproto
+ ]
+@@ -1320,11 +1320,14 @@ the following additional arguments are supported:
+ - specifies the destination port for the UDP tunnel.
+ 
+ .sp
+-.BI ethertype " ETHERTYPE"
++.BI ethertype " PROTO"
+ - specifies the ethertype of the L3 protocol being tunnelled.
++.B ethertype
++can be given as plain Ethernet protocol number or using the protocol name
++("ipv4", "ipv6", "mpls_uc", etc.).
+ 
+ .sp
+-.BI srcportmin " SRCPORTMIN"
++.BI srcportmin " PORT"
+ - selects the lowest value of the UDP tunnel source port range.
+ 
+ .sp
+@@ -1332,11 +1335,11 @@ the following additional arguments are supported:
+ - activates support for protocols similar to the one
+ .RB "specified by " ethertype .
+ When
+-.I ETHERTYPE
++.B ethertype
+ is "mpls_uc" (that is, unicast MPLS), this allows the tunnel to also handle
+ multicast MPLS.
+ When
+-.I ETHERTYPE
++.B ethertype
+ is "ipv4", this allows the tunnel to also handle IPv6. This option is disabled
+ by default.
+ 
+-- 
+2.21.3
 
-Sure. I assumed this was the intention. With Netronome hardware, would
-such an action be translated into two actions / two policers?
-
-> It also seems to offer nice code re-use.
-
-Yes, the diff is nice, but I do not think it would be much worse if rate
-and bandwidth limiting were made to be mutually exclusive.
-
-> We did also try to examine the performance impact of this change on
-> existing use-cases and it appeared to be negligible/within noise of
-> our measurements.
-> 
-> > > e.g.
-> > > tc filter add dev tap1 parent ffff: u32 match \
-> > >               u32 0 0 police pkts_rate 3000 pkts_burst 1000
-> > > 
-> > > Testing was unable to uncover a performance impact of this change on
-> > > existing features.
-> > > 
-> > > Signed-off-by: Baowen Zheng <baowen.zheng@corigine.com>
-> > > Signed-off-by: Simon Horman <simon.horman@netronome.com>
-> > > Signed-off-by: Louis Peens <louis.peens@netronome.com>
-> > > ---
-> > >  include/net/sch_generic.h      | 15 ++++++++++++++
-> > >  include/net/tc_act/tc_police.h |  4 ++++
-> > >  include/uapi/linux/pkt_cls.h   |  2 ++
-> > >  net/sched/act_police.c         | 37 +++++++++++++++++++++++++++++++---
-> > >  net/sched/sch_generic.c        | 32 +++++++++++++++++++++++++++++
-> > >  5 files changed, 87 insertions(+), 3 deletions(-)
-> > 
-> > The intermediate representation in include/net/flow_offload.h needs to
-> > carry the new configuration so that drivers will be able to veto
-> > unsupported configuration.
