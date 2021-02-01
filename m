@@ -2,139 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9D6430A756
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 13:15:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C8B830A7AA
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 13:32:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231158AbhBAMON (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 07:14:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56008 "EHLO
+        id S230159AbhBAMcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 07:32:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229787AbhBAMOI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 07:14:08 -0500
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DAF6C061756
-        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 04:13:27 -0800 (PST)
-Received: by mail-pf1-x42f.google.com with SMTP id w18so11435943pfu.9
-        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 04:13:27 -0800 (PST)
+        with ESMTP id S229593AbhBAMcB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 07:32:01 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8104FC061573
+        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 04:31:20 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id g12so24051307ejf.8
+        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 04:31:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=PQKa0QbKtMZtWsNJ8J3oY3JodpMQf8nMPv8lfKSosC4=;
-        b=J47QIGJX20a07kPVr7Jg8VvUq0WIyppcjnP2ZYodc8HJYVgLkzSXzScnPznMicPfOF
-         OzhTG+Xy2QZHZFlLJFY4I9CH7CdvNF/A93wbScWxz6FB25bx5eHB25gwx5w+tPMZskpk
-         vy8UaCidgCrwRqNwAViM+BJOvT61sTaCBPZ1BH6nhj2n7SkfrWuQLzZgVEfwM8deXQyF
-         wh6nO56FTLtU84uxjZbojFCN7T7NPrBVDPbTerDzqgb7KPqDHYZlHE0T1OBV7eVkILSA
-         7ftjV8JAo+Y57GjeJn56ss3MuDITY8xwbINnJzDd/AhKWWFtDVJ1mgxm/Ybbmr+qKpiV
-         Tiiw==
+         :content-disposition:in-reply-to:user-agent;
+        bh=XaQZNkSnrsxsruJLRbm9NeF04EAs0Hz6d0OqkUptI9Y=;
+        b=NJhvx4ouB2bJq5rhpaffirU0K4K5N0rG0XM3SxzQxpu92A3g0lF6kFkMTXtm24w15o
+         RyYgwr4Oj/1Bm/YQaH6dl1Oka3YXu/yrPR2fJGex2hocaF1TjAEMoHM4OdeJ1C4Wti+a
+         URPgyDtxw7oZ+FJ8PFK63jEX6mgSRezNqYYAH/kG12ih2Zr9q5yMxyVaMej3CgOsGm7t
+         UCF+fL0yyXcPvLVO2mXE9uDgMgPLpFmQMMc0Tl1Jex/l4ftIYvDJScZpe3xuGiTKA+l0
+         Vaxw0rQlFLxJ17yUnxTbAW8sxxNHxHTcN4ug0K4Fn5oIdvU78YeaiJQhtuZ2A7PiZAjK
+         zOUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=PQKa0QbKtMZtWsNJ8J3oY3JodpMQf8nMPv8lfKSosC4=;
-        b=rGx+J7T5Vf14jWALFzfv6aM05JQRVgMn1QghTjfGy3o849PULrtf17WsuidRLDL/pd
-         Bez1I3DLNDSQE5TxNM7itw+WyKjgb7o9+URsoM0HCIzdCQmnjvzKC/hTdRhHIpX1RDjd
-         Yib+AfTt/h5IVLFfC+U6hf1m0TBIErGLAeleue46sJlNA0uUD6AbQ95pVQctia1OJGJ+
-         CVPFnwOPglAP8jg76ISiBoG5CZNO/2OpuJMnYinOP5fdy4F2tBx4qoebguqRsMplxkPJ
-         r+ir0c/x3KQSfrLxvIUo0FzxopXjiksCPwMrDyjVX7yOx/ljrb2zqdBgq5+ivOeg7Itx
-         TAow==
-X-Gm-Message-State: AOAM5321raen5DnFgmZXEMg9I0SG96rXlWuojFq+Jj0Y7X3qZZ2wsNfs
-        u70Ulh9NHw5FN+Ai32ZAqsAo
-X-Google-Smtp-Source: ABdhPJxvXtXtPNdQJBehzz4G4bByyyDTAZPIGymO4yZngY1PB57ITVWg6TzyGTycWLB0XmWgwwHCuQ==
-X-Received: by 2002:a62:7541:0:b029:1b9:c47e:7c14 with SMTP id q62-20020a6275410000b02901b9c47e7c14mr16865949pfc.30.1612181606880;
-        Mon, 01 Feb 2021 04:13:26 -0800 (PST)
-Received: from thinkpad ([103.77.37.179])
-        by smtp.gmail.com with ESMTPSA id c204sm17329883pfc.152.2021.02.01.04.13.24
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=XaQZNkSnrsxsruJLRbm9NeF04EAs0Hz6d0OqkUptI9Y=;
+        b=eDZXJMqrQ3nfit+TGUj3ef7nTA9OJbTmKMlAWM2O33O6CoMir0WVXqzZQHIE/RS2zU
+         vNiPOfDf2vPQzN8d0FLCfonssaH1z+kHQAYgLAmf4EWXOwICjAX2nxtacpvP0QZeiRbl
+         kzKuUAFh7M0DWADrgC9tNe98FtmauDLgLgbFHWmf9OeIHZslxltbVN9GGNFRqjYyAWYk
+         t0MGWFppoh9Gkw4W34WNocaEqfH8ccloQ6kDhr8mYMXBqf2Mftf8OwKtXjj7KKKSwwJl
+         /qMTCKWPGgMYHzXJmMusrWjuG4Aj3GKykKK2PZzY1tcZIBi7Th7Lu4DHzPaUX8CZUly2
+         eh6g==
+X-Gm-Message-State: AOAM5302DmFt/gPsYGCJRvVaALx2bBRUCacu9ts5AQAVp2RLrbhmIwnO
+        /OZolJFQn9Kx6kz7JmGDD944zw==
+X-Google-Smtp-Source: ABdhPJw+GcDCmDnqNKYvypgkVajiXdCmm/3kaWe3uTbzMY4RkWQd4BD2eEjlQpTz8tObcVqdz9c34g==
+X-Received: by 2002:a17:906:c410:: with SMTP id u16mr16939708ejz.159.1612182679202;
+        Mon, 01 Feb 2021 04:31:19 -0800 (PST)
+Received: from netronome.com ([2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a])
+        by smtp.gmail.com with ESMTPSA id n27sm8055238eje.29.2021.02.01.04.31.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Feb 2021 04:13:26 -0800 (PST)
-Date:   Mon, 1 Feb 2021 17:43:22 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jhugo@codeaurora.org, bbhatt@codeaurora.org,
-        loic.poulain@linaro.org, netdev@vger.kernel.org
-Subject: Re: [RESEND PATCH v18 0/3] userspace MHI client interface driver
-Message-ID: <20210201121322.GC108653@thinkpad>
-References: <1609958656-15064-1-git-send-email-hemantk@codeaurora.org>
- <20210113152625.GB30246@work>
- <YBGDng3VhE1Yw6zt@kroah.com>
- <20210201105549.GB108653@thinkpad>
- <YBfi573Bdfxy0GBt@kroah.com>
+        Mon, 01 Feb 2021 04:31:18 -0800 (PST)
+Date:   Mon, 1 Feb 2021 13:31:17 +0100
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
+        oss-drivers@netronome.com,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        Louis Peens <louis.peens@netronome.com>
+Subject: Re: [PATCH RFC net-next] net/sched: act_police: add support for
+ packet-per-second policing
+Message-ID: <20210201123116.GA25935@netronome.com>
+References: <20210125151819.8313-1-simon.horman@netronome.com>
+ <20210128161933.GA3285394@shredder.lan>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YBfi573Bdfxy0GBt@kroah.com>
+In-Reply-To: <20210128161933.GA3285394@shredder.lan>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 01, 2021 at 12:15:51PM +0100, Greg KH wrote:
-> On Mon, Feb 01, 2021 at 04:25:49PM +0530, Manivannan Sadhasivam wrote:
-> > Hi Greg,
+On Thu, Jan 28, 2021 at 06:19:33PM +0200, Ido Schimmel wrote:
+> On Mon, Jan 25, 2021 at 04:18:19PM +0100, Simon Horman wrote:
+> > From: Baowen Zheng <baowen.zheng@corigine.com>
 > > 
-> > On Wed, Jan 27, 2021 at 04:15:42PM +0100, Greg KH wrote:
-> > > On Wed, Jan 13, 2021 at 08:56:25PM +0530, Manivannan Sadhasivam wrote:
-> > > > Hi Greg,
-> > > > 
-> > > > On Wed, Jan 06, 2021 at 10:44:13AM -0800, Hemant Kumar wrote:
-> > > > > This patch series adds support for UCI driver. UCI driver enables userspace
-> > > > > clients to communicate to external MHI devices like modem. UCI driver probe
-> > > > > creates standard character device file nodes for userspace clients to
-> > > > > perform open, read, write, poll and release file operations. These file
-> > > > > operations call MHI core layer APIs to perform data transfer using MHI bus
-> > > > > to communicate with MHI device. 
-> > > > > 
-> > > > > This interface allows exposing modem control channel(s) such as QMI, MBIM,
-> > > > > or AT commands to userspace which can be used to configure the modem using
-> > > > > tools such as libqmi, ModemManager, minicom (for AT), etc over MHI. This is
-> > > > > required as there are no kernel APIs to access modem control path for device
-> > > > > configuration. Data path transporting the network payload (IP), however, is
-> > > > > routed to the Linux network via the mhi-net driver. Currently driver supports
-> > > > > QMI channel. libqmi is userspace MHI client which communicates to a QMI
-> > > > > service using QMI channel. Please refer to
-> > > > > https://www.freedesktop.org/wiki/Software/libqmi/ for additional information
-> > > > > on libqmi.
-> > > > > 
-> > > > > Patch is tested using arm64 and x86 based platform.
-> > > > > 
-> > > > 
-> > > > This series looks good to me and I'd like to merge it into mhi-next. You
-> > > > shared your reviews on the previous revisions, so I'd like to get your
-> > > > opinion first.
-> > > 
-> > > If you get the networking people to give you an ack on this, it's fine
-> > > with me.
-> > > 
+> > Allow a policer action to enforce a rate-limit based on packets-per-second,
+> > configurable using a packet-per-second rate and burst parameters. This may
+> > be used in conjunction with existing byte-per-second rate limiting in the
+> > same policer action.
+> 
+> Hi Simon,
+> 
+> Any reason to allow metering based on both packets and bytes at the same
+> action versus adding a mode (packets / bytes) parameter? You can then
+> chain two policers if you need to rate limit based on both. Something
+> like:
+> 
+> # tc filter add dev tap1 ingress pref 1 matchall \
+> 	action police rate 1000Mbit burst 128k conform-exceed drop/pipe \
+> 	action police pkts_rate 3000 pkts_burst 1000
+> 
+> I'm asking because the policers in the Spectrum ASIC are built that way
+> and I also don't remember seeing such a mixed mode online.
+
+Hi Ido,
+
+sorry for missing this email until you pointed it out to me in another
+thread.
+
+We did consider this question during development and our conclusion was
+that it was useful as we do have use-cases which call for both to be used
+and it seems nice to allow lower layers to determine the order in which the
+actions are applied to satisfied the user's more general request for both -
+it should be no surprise that we plan to provide a hardware offload of this
+feature. It also seems to offer nice code re-use. We did also try to
+examine the performance impact of this change on existing use-cases and it
+appeared to be negligible/within noise of our measurements.
+
+> > e.g.
+> > tc filter add dev tap1 parent ffff: u32 match \
+> >               u32 0 0 police pkts_rate 3000 pkts_burst 1000
 > > 
-> > As discussed in previous iteration, this series is not belonging to networking
-> > subsystem. The functionality provided by this series allows us to configure the
-> > modem over MHI bus and the rest of the networking stuff happens over the
-> > networking subsystem as usual.
+> > Testing was unable to uncover a performance impact of this change on
+> > existing features.
+> > 
+> > Signed-off-by: Baowen Zheng <baowen.zheng@corigine.com>
+> > Signed-off-by: Simon Horman <simon.horman@netronome.com>
+> > Signed-off-by: Louis Peens <louis.peens@netronome.com>
+> > ---
+> >  include/net/sch_generic.h      | 15 ++++++++++++++
+> >  include/net/tc_act/tc_police.h |  4 ++++
+> >  include/uapi/linux/pkt_cls.h   |  2 ++
+> >  net/sched/act_police.c         | 37 +++++++++++++++++++++++++++++++---
+> >  net/sched/sch_generic.c        | 32 +++++++++++++++++++++++++++++
+> >  5 files changed, 87 insertions(+), 3 deletions(-)
 > 
-> Great, then it should be easy to get their acceptance :)
-> 
-> > This holds the same with USB and serial modems which we are having over decades
-> > in mainline.
-> 
-> I don't see the connection here, sorry.
-> 
-
-For instance USB_NET_CDC_MBIM driver creates the /dev/cdc-wdmX chardev node for
-configuring the modems which supports MBIM protocol over USB. Like that, this
-driver creates /dev/mhiX_MBIM chardev node for configuring the modem over MHI
-bus instead of USB. The question arised why we are creating a chardev node for
-each supported configuration (channels in the case of MHI) and why can't we use
-the existing /dev/cdc-wdmZ interfaces? The anwser is there is no standard
-subsystem for WWAN and all the drivers represent a chardev which gets used by
-the userspace tools such a Network manager for establishing connection.
-
-And /dev/cdc-wdmX is restricted to the USB CDC devices.
-
-Hope this clarifies!
-
-Thanks,
-Mani
-
-> thanks,
-> 
-> greg k-h
+> The intermediate representation in include/net/flow_offload.h needs to
+> carry the new configuration so that drivers will be able to veto
+> unsupported configuration.
