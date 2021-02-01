@@ -2,404 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA14E30B0E5
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 20:56:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7A8A30B0E7
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 20:56:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232439AbhBATzU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 14:55:20 -0500
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:47619 "EHLO
-        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232842AbhBATwD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 14:52:03 -0500
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 081B858050F;
-        Mon,  1 Feb 2021 14:49:05 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Mon, 01 Feb 2021 14:49:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=DTAro0Iq7h1cN1i5oc1r8aEXcJoMDGIT1BJIVT2juF8=; b=gRr6slEc
-        IKmNsM5+YmCKN64RktILg9imRpFzvhiTpqk9epjttwZ/Vy3nZ0lUD2pPRJ8Voznx
-        uxPYVmMTvDxuhqAMkMjz3pk+Kv+U1E4oQcIb7RfqGtB4gkKYXgE6iVRvh7r86OGZ
-        HBoIUChRgjHLfCNWuiHzX1gAaUrBjMvs0sYJjTS6bYODBrUqMa97qvL52S7oXplU
-        uugvXTqNRFslfWUQg26Kf2erh1L8j5JuA068my/BJ6ZZmFv5pgfjeXpODI3SyXiv
-        jFldl+rBCQvhPwRJoP8x9BVxb3ic6GKTSQfkE+adp/NwSUyGTRc0m1SFtk0ThPOA
-        hgwBg58mdecWpw==
-X-ME-Sender: <xms:MFsYYIVsjfSzH3R1Jc7uB3w6V_DLHsdCxpHCrW7OHztpnA6g6ZXCxQ>
-    <xme:MFsYYMyom8TSkfLHeu_L5kKkxGqhYP7CJZ4h1pcnQh9Bi6ourg6ZQVRCc-VPV3npZ
-    S2fUngJBHbFFm4>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeekgddufedtucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
-    ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrgeeg
-    necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
-    hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:MFsYYONv2Dv7AnJsqsyHlGEYVNmblUuvzlsz9EosXWzzNMUxMrypxw>
-    <xmx:MFsYYF4TuNhiWwNxdfAA0nUh6GSsOnDwLRMQmxGQMAWLKqXbD27LRA>
-    <xmx:MFsYYHOeBqSm6ajxCdEbqjalOocMsjKWPX5RDZveZMK0VvuYRiOY_g>
-    <xmx:MVsYYGIRoJ5fwIlUeb2-pZEw17qQxyzmaqSlMBv0ylRhS9SDjjX53Q>
-Received: from shredder.mellanox.com (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 8FD2624005B;
-        Mon,  1 Feb 2021 14:49:02 -0500 (EST)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@gmail.com,
-        yoshfuji@linux-ipv6.org, jiri@nvidia.com, amcohen@nvidia.com,
-        roopa@nvidia.com, bpoirier@nvidia.com, sharpd@nvidia.com,
-        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next v2 10/10] selftests: netdevsim: Add fib_notifications test
-Date:   Mon,  1 Feb 2021 21:47:57 +0200
-Message-Id: <20210201194757.3463461-11-idosch@idosch.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210201194757.3463461-1-idosch@idosch.org>
-References: <20210201194757.3463461-1-idosch@idosch.org>
+        id S232866AbhBATzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 14:55:42 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:5115 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229831AbhBATuj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 14:50:39 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B60185b670000>; Mon, 01 Feb 2021 11:49:59 -0800
+Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 1 Feb
+ 2021 19:49:59 +0000
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.172)
+ by HQMAIL101.nvidia.com (172.20.187.10) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Mon, 1 Feb 2021 19:49:59 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lTjhGzp8v6vud95ndbG7nuAy/WZFyfKrVOsl7DuZukcG79yzr/mSBJyPRjlCRcG/7ExhWbEtTweXprdA3EELe3DVtwAneEumPD6e6dcubiVdeaqL8uUUH1LFzMxAfg/d/YKQaGMvUeQBJPozV6IlKY9J/0jF6S4XFvy5+f8D8ZrtFVSut96gIyYUK9QiwL/jNzlqhMRodqXIzpbnzEglLBmcbBVykJ139Ee+J+2OVczKMHKbYI31Xp9n+HW1a4wd/jqeftbfzOVRJEbQ5WnQbJvTQYsmTDQH3dDJ83IZaoYghHR3HtXv7vsxN5XvWwapkV8nTsUstC3QwmWNuexVEw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HBxjH5neZr6v8x3G/aQ1+fw1xLMh9ixsDSfRPtAU7iA=;
+ b=MxW8cEieimVSbIwHqmVtz5o8bx93JFaii6H/LDxqoJbANjiaI9hn7esHtsdc1M714TVQD/vzzZDqyBKFNJ9Xn8StH3w/vP+KBNSNMvh21ofDdIAR0Vhke8X8ZVl8L18W0QQpKte4XCUw6qjCImAhfsD0A+ucjmYIUEeONYPriHzwQPirM6ah85oPNt85k9dRAhUcqfbexbBpW9SycSXsWNhePi/3WGIi5bDESjUUgSB0PSGeujiqcWkIIyUsf1Gv3JOPuth9gk2DHCxcgeRWPyIjbPwBMYU8pe+jnENEEvD7yfmNJSisHllVdF6ulGG06gKyDMJNZ6E78YQNz5LTvg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM6PR12MB3211.namprd12.prod.outlook.com (2603:10b6:5:15c::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.17; Mon, 1 Feb
+ 2021 19:49:54 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::d6b:736:fa28:5e4]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::d6b:736:fa28:5e4%7]) with mapi id 15.20.3805.025; Mon, 1 Feb 2021
+ 19:49:54 +0000
+Date:   Mon, 1 Feb 2021 15:49:52 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Yishai Hadas <yishaih@nvidia.com>
+CC:     Saeed Mahameed <saeed@kernel.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        Doug Ledford <dledford@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>, <linux-rdma@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH mlx5-next v1] RDMA/mlx5: Cleanup the synchronize_srcu()
+ from the ODP flow
+Message-ID: <20210201194952.GS4247@nvidia.com>
+References: <20210128064812.1921519-1-leon@kernel.org>
+ <c79124a204f2207f5f1fae69cc34fb08d91d3535.camel@kernel.org>
+ <549b337b-b51e-c984-a4d8-72f9f738be9c@nvidia.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <549b337b-b51e-c984-a4d8-72f9f738be9c@nvidia.com>
+X-ClientProxiedBy: BL1PR13CA0125.namprd13.prod.outlook.com
+ (2603:10b6:208:2bb::10) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.162.115.133) by BL1PR13CA0125.namprd13.prod.outlook.com (2603:10b6:208:2bb::10) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.13 via Frontend Transport; Mon, 1 Feb 2021 19:49:54 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1l6fCq-002JGk-KY; Mon, 01 Feb 2021 15:49:52 -0400
+X-Header: ProcessedBy-CMR-outbound
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1612208999; bh=kEtrRsuido8TLUti8q11CoXcBe5X0kjjn+lrzfxfvYQ=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+         From:To:CC:Subject:Message-ID:References:Content-Type:
+         Content-Disposition:Content-Transfer-Encoding:In-Reply-To:
+         X-ClientProxiedBy:MIME-Version:
+         X-MS-Exchange-MessageSentRepresentingType:X-Header;
+        b=g0yMjO4wBPTLgSC6Ze/Lnx01bC5NtVy9J6D6WdixHJZtIW7/z/vyMbi7G1H4HpaMM
+         d5CuWjRIDlQg8fOrEuZcV0FY2NNjFIF9476ndfc47u0ew33sQSVU7LAfaZw3Zf1eSN
+         2lNmghMOf2iB0hbWbsLU1e6j9vJPVlCE9Yy4tolr2Mo2Ddv6MxKH8xxcc8ABfDVKwn
+         HGbk5DXhNKGMraGOVS7c6NL7A5nvI/l1kmt5+R3q8X+JVdS2sWDC+DEGxNheBOsJuQ
+         yqcbw1qpoyVhtWnuztDFJBsJ4Psb/k8AjUZni0sCgaGzXKOWrX+CyGEbaD0UNSIsZd
+         GVqU1+q6ClaHA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Amit Cohen <amcohen@nvidia.com>
+On Sun, Jan 31, 2021 at 03:24:50PM +0200, Yishai Hadas wrote:
+> On 1/29/2021 2:23 PM, Saeed Mahameed wrote:
+> > > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mr.c
+> > > b/drivers/net/ethernet/mellanox/mlx5/core/mr.c
+> > > index 9eb51f06d3ae..50af84e76fb6 100644
+> > > +++ b/drivers/net/ethernet/mellanox/mlx5/core/mr.c
+> > > @@ -56,6 +56,7 @@ int mlx5_core_create_mkey(struct mlx5_core_dev
+> > > *dev,
+> > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0mkey->size =3D MLX5_=
+GET64(mkc, mkc, len);
+> > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0mkey->key |=3D mlx5_=
+idx_to_mkey(mkey_index);
+> > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0mkey->pd =3D MLX5_GE=
+T(mkc, mkc, pd);
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0init_waitqueue_head(&mkey-=
+>wait);
+> > >=20
+> > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0mlx5_core_dbg(dev, "=
+out 0x%x, mkey 0x%x\n", mkey_index, mkey-
+> > > > key);
+> > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0return 0;
+> > > diff --git a/include/linux/mlx5/driver.h
+> > > b/include/linux/mlx5/driver.h
+> > > index 4901b4fadabb..f9e7036ae5a5 100644
+> > > +++ b/include/linux/mlx5/driver.h
+> > > @@ -373,6 +373,8 @@ struct mlx5_core_mkey {
+> > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u32=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0key;
+> > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u32=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0pd;
+> > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u32=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0type;
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct wait_queue_head wai=
+t;
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0refcount_t usecount;
+> > mlx5_core_mkey is used everywhere in mlx5_core and we don't care about
+> > odp complexity, i would like to keep the core simple and primitive as
+> > it is today.
+> > please keep the layer separation and find a way to manage refcount and
+> > wait queue in mlx5_ib driver..
+> >=20
+> The alternative could really be to come with some wrapped mlx5_ib structu=
+re
+> that will hold 'mlx5_core_mkey' and will add those two fields.
 
-Add test to check fib notifications behavior.
+Yes
 
-The test checks route addition, route deletion and route replacement for
-both IPv4 and IPv6.
+struct mlx5_ib_mkey
+{
+   struct mlx5_core_mkey mkey;
+   struct wait_queue_head wait;
+   refcount_t usecount;
+}
 
-When fib_notify_on_flag_change=0, expect single notification for route
-addition/deletion/replacement.
+struct mlx5_ib_mr/mw/devx
+{
+    struct mlx5_ib_mkey mkey;
+}
 
-When fib_notify_on_flag_change=1, expect:
-- two notification for route addition/replacement, first without RTM_F_TRAP
-  and second with RTM_F_TRAP.
-- single notification for route deletion.
+The odp_mkeys XA will store pointers to mlx5_ib_mkey (not core_mkey)
+and container_of() to go back to the MW, devx or MR.
 
-$ ./fib_notifications.sh
-TEST: IPv4 route addition                                           [ OK ]
-TEST: IPv4 route deletion                                           [ OK ]
-TEST: IPv4 route replacement                                        [ OK ]
-TEST: IPv6 route addition                                           [ OK ]
-TEST: IPv6 route deletion                                           [ OK ]
-TEST: IPv6 route replacement                                        [ OK ]
+> Having it per object (e.g. mlx5_ib_mr, mlx5_ib_mw, mlx5_ib_devx_mr)
+> increasing locking scope and branches on data path to find the refcount
+> field per its 'type'.=C2=A0 (see mlx5_core_mkey->type).
 
-Signed-off-by: Amit Cohen <amcohen@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
----
- .../net/netdevsim/fib_notifications.sh        | 300 ++++++++++++++++++
- 1 file changed, 300 insertions(+)
- create mode 100755 tools/testing/selftests/drivers/net/netdevsim/fib_notifications.sh
+It is free, just use container_of, no change to locking/etc
 
-diff --git a/tools/testing/selftests/drivers/net/netdevsim/fib_notifications.sh b/tools/testing/selftests/drivers/net/netdevsim/fib_notifications.sh
-new file mode 100755
-index 000000000000..16a9dd43aefc
---- /dev/null
-+++ b/tools/testing/selftests/drivers/net/netdevsim/fib_notifications.sh
-@@ -0,0 +1,300 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+
-+lib_dir=$(dirname $0)/../../../net/forwarding
-+
-+ALL_TESTS="
-+	ipv4_route_addition_test
-+	ipv4_route_deletion_test
-+	ipv4_route_replacement_test
-+	ipv6_route_addition_test
-+	ipv6_route_deletion_test
-+	ipv6_route_replacement_test
-+"
-+
-+NETDEVSIM_PATH=/sys/bus/netdevsim/
-+DEV_ADDR=1337
-+DEV=netdevsim${DEV_ADDR}
-+DEVLINK_DEV=netdevsim/${DEV}
-+SYSFS_NET_DIR=/sys/bus/netdevsim/devices/$DEV/net/
-+NUM_NETIFS=0
-+source $lib_dir/lib.sh
-+
-+check_rt_trap()
-+{
-+	local outfile=$1; shift
-+	local line
-+
-+	# Make sure that the first notification was emitted without RTM_F_TRAP
-+	# flag and the second with RTM_F_TRAP flag
-+	head -n 1 $outfile | grep -q "rt_trap"
-+	if [[ $? -eq 0 ]]; then
-+		return 1
-+	fi
-+
-+	head -n 2 $outfile | tail -n 1 | grep -q "rt_trap"
-+}
-+
-+route_notify_check()
-+{
-+	local outfile=$1; shift
-+	local expected_num_lines=$1; shift
-+
-+	# check the monitor results
-+	lines=`wc -l $outfile | cut "-d " -f1`
-+	test $lines -eq $expected_num_lines
-+	check_err $? "$expected_num_lines notifications were expected but $lines were received"
-+
-+	if [[ $expected_num_lines -eq 2 ]]; then
-+		check_rt_trap $outfile
-+		check_err $? "Wrong RTM_F_TRAP flags in notifications"
-+	fi
-+}
-+
-+route_addition_check()
-+{
-+	local ip=$1; shift
-+	local notify=$1; shift
-+	local route=$1; shift
-+	local expected_num_notifications=$1; shift
-+
-+	ip netns exec testns1 sysctl -qw net.$ip.fib_notify_on_flag_change=$notify
-+
-+	local outfile=$(mktemp)
-+
-+	$IP monitor route &> $outfile &
-+	sleep 1
-+	$IP route add $route dev dummy1
-+	sleep 1
-+	kill %% && wait %% &> /dev/null
-+
-+	route_notify_check $outfile $expected_num_notifications
-+	rm -f $outfile
-+
-+	$IP route del $route dev dummy1
-+}
-+
-+ipv4_route_addition_test()
-+{
-+	RET=0
-+
-+	local ip="ipv4"
-+	local route=192.0.2.0/24
-+
-+	# Make sure a single notification will be emitted for the programmed
-+	# route.
-+	local notify=0
-+	local expected_num_notifications=1
-+	# route_addition_check will assign value to RET.
-+	route_addition_check $ip $notify $route $expected_num_notifications
-+
-+	# Make sure two notifications will be emitted for the programmed route.
-+	notify=1
-+	expected_num_notifications=2
-+	route_addition_check $ip $notify $route $expected_num_notifications
-+
-+	log_test "IPv4 route addition"
-+}
-+
-+route_deletion_check()
-+{
-+	local ip=$1; shift
-+	local notify=$1; shift
-+	local route=$1; shift
-+	local expected_num_notifications=$1; shift
-+
-+	ip netns exec testns1 sysctl -qw net.$ip.fib_notify_on_flag_change=$notify
-+	$IP route add $route dev dummy1
-+	sleep 1
-+
-+	local outfile=$(mktemp)
-+
-+	$IP monitor route &> $outfile &
-+	sleep 1
-+	$IP route del $route dev dummy1
-+	sleep 1
-+	kill %% && wait %% &> /dev/null
-+
-+	route_notify_check $outfile $expected_num_notifications
-+	rm -f $outfile
-+}
-+
-+ipv4_route_deletion_test()
-+{
-+	RET=0
-+
-+	local ip="ipv4"
-+	local route=192.0.2.0/24
-+	local expected_num_notifications=1
-+
-+	# Make sure a single notification will be emitted for the deleted route,
-+	# regardless of fib_notify_on_flag_change value.
-+	local notify=0
-+	# route_deletion_check will assign value to RET.
-+	route_deletion_check $ip $notify $route $expected_num_notifications
-+
-+	notify=1
-+	route_deletion_check $ip $notify $route $expected_num_notifications
-+
-+	log_test "IPv4 route deletion"
-+}
-+
-+route_replacement_check()
-+{
-+	local ip=$1; shift
-+	local notify=$1; shift
-+	local route=$1; shift
-+	local expected_num_notifications=$1; shift
-+
-+	ip netns exec testns1 sysctl -qw net.$ip.fib_notify_on_flag_change=$notify
-+	$IP route add $route dev dummy1
-+	sleep 1
-+
-+	local outfile=$(mktemp)
-+
-+	$IP monitor route &> $outfile &
-+	sleep 1
-+	$IP route replace $route dev dummy2
-+	sleep 1
-+	kill %% && wait %% &> /dev/null
-+
-+	route_notify_check $outfile $expected_num_notifications
-+	rm -f $outfile
-+
-+	$IP route del $route dev dummy2
-+}
-+
-+ipv4_route_replacement_test()
-+{
-+	RET=0
-+
-+	local ip="ipv4"
-+	local route=192.0.2.0/24
-+
-+	$IP link add name dummy2 type dummy
-+	$IP link set dev dummy2 up
-+
-+	# Make sure a single notification will be emitted for the new route.
-+	local notify=0
-+	local expected_num_notifications=1
-+	# route_replacement_check will assign value to RET.
-+	route_replacement_check $ip $notify $route $expected_num_notifications
-+
-+	# Make sure two notifications will be emitted for the new route.
-+	notify=1
-+	expected_num_notifications=2
-+	route_replacement_check $ip $notify $route $expected_num_notifications
-+
-+	$IP link del name dummy2
-+
-+	log_test "IPv4 route replacement"
-+}
-+
-+ipv6_route_addition_test()
-+{
-+	RET=0
-+
-+	local ip="ipv6"
-+	local route=2001:db8:1::/64
-+
-+	# Make sure a single notification will be emitted for the programmed
-+	# route.
-+	local notify=0
-+	local expected_num_notifications=1
-+	route_addition_check $ip $notify $route $expected_num_notifications
-+
-+	# Make sure two notifications will be emitted for the programmed route.
-+	notify=1
-+	expected_num_notifications=2
-+	route_addition_check $ip $notify $route $expected_num_notifications
-+
-+	log_test "IPv6 route addition"
-+}
-+
-+ipv6_route_deletion_test()
-+{
-+	RET=0
-+
-+	local ip="ipv6"
-+	local route=2001:db8:1::/64
-+	local expected_num_notifications=1
-+
-+	# Make sure a single notification will be emitted for the deleted route,
-+	# regardless of fib_notify_on_flag_change value.
-+	local notify=0
-+	route_deletion_check $ip $notify $route $expected_num_notifications
-+
-+	notify=1
-+	route_deletion_check $ip $notify $route $expected_num_notifications
-+
-+	log_test "IPv6 route deletion"
-+}
-+
-+ipv6_route_replacement_test()
-+{
-+	RET=0
-+
-+	local ip="ipv6"
-+	local route=2001:db8:1::/64
-+
-+	$IP link add name dummy2 type dummy
-+	$IP link set dev dummy2 up
-+
-+	# Make sure a single notification will be emitted for the new route.
-+	local notify=0
-+	local expected_num_notifications=1
-+	route_replacement_check $ip $notify $route $expected_num_notifications
-+
-+	# Make sure two notifications will be emitted for the new route.
-+	notify=1
-+	expected_num_notifications=2
-+	route_replacement_check $ip $notify $route $expected_num_notifications
-+
-+	$IP link del name dummy2
-+
-+	log_test "IPv6 route replacement"
-+}
-+
-+setup_prepare()
-+{
-+	modprobe netdevsim &> /dev/null
-+	echo "$DEV_ADDR 1" > ${NETDEVSIM_PATH}/new_device
-+	while [ ! -d $SYSFS_NET_DIR ] ; do :; done
-+
-+	ip netns add testns1
-+
-+	if [ $? -ne 0 ]; then
-+		echo "Failed to add netns \"testns1\""
-+		exit 1
-+	fi
-+
-+	devlink dev reload $DEVLINK_DEV netns testns1
-+
-+	if [ $? -ne 0 ]; then
-+		echo "Failed to reload into netns \"testns1\""
-+		exit 1
-+	fi
-+
-+	IP="ip -n testns1"
-+
-+	$IP link add name dummy1 type dummy
-+	$IP link set dev dummy1 up
-+}
-+
-+cleanup()
-+{
-+	pre_cleanup
-+
-+	$IP link del name dummy1
-+	ip netns del testns1
-+	echo "$DEV_ADDR" > ${NETDEVSIM_PATH}/del_device
-+	modprobe -r netdevsim &> /dev/null
-+}
-+
-+trap cleanup EXIT
-+
-+setup_prepare
-+
-+tests_run
-+
-+exit $EXIT_STATUS
--- 
-2.29.2
-
+Jason
