@@ -2,97 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7AFC30B389
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 00:28:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7247330B39F
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 00:36:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231376AbhBAX1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 18:27:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59924 "EHLO
+        id S231195AbhBAXfw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 18:35:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231341AbhBAX1f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 18:27:35 -0500
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0670C06178C
-        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 15:26:17 -0800 (PST)
-Received: by mail-io1-xd2d.google.com with SMTP id s24so7786409iob.6
-        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 15:26:17 -0800 (PST)
+        with ESMTP id S230411AbhBAXft (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 18:35:49 -0500
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DA2FC061573
+        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 15:35:09 -0800 (PST)
+Received: by mail-pf1-x42e.google.com with SMTP id m6so12915280pfk.1
+        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 15:35:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Zd7FyycW3KcctLd6KYXPpMsa8mRy7OXVhvVd96yduhE=;
-        b=x6Zx5mmOYLrYqyolEVeWMSSoYaHG8qWQD7O50XB1xDGSL2PrfJEyowmL6U6r+cgUKq
-         lDYmDHt6c9ReVyZeuBO9n7AaUpr5FE3ZOX22gCjqC2yeiS/cYPPfabOqg6L7+FbGpMaJ
-         CtTVONvHCKzHsjLYtY/z6//NHB62Kv4LhoppEUR4543w2/Dtd5CFkHNFSq1ezrfLizqn
-         IX9YlmtntIZXVM6ZDll+7wQEMasn1VA3ZTLfSIYx9XGfpyW7rfy3VctuLQ8WAe7RRKXm
-         GCx8AKZ4fFQb3DLsw4dVNzp7LBFYGL2xk68PKiC7HCBLjVpRIo3/5jdrffbvkf1v54kt
-         bsdQ==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rqXxYXQ/zWZSYlP6IO3+Z7IUKTvxTdHGQXvUh88+tWw=;
+        b=UT0I4/bxd7MoCOwIEwxKgekWkHmTu7KboUN8nZcho+FCKVUf9wItGat0C3pWp0y9/a
+         yZw8+F2LJCB4+kTbNiNdn0OuSHsLSctc4+w8t/VK+sEGf7/uBIqt85XLvjcjBFWNVOuA
+         s2bMMKAc0j94MiEggNGyLBBRNRBgZ7TQLazVhxPb+DpCBx0Mj+dvZISxILlXXDOPnVD7
+         ogUF/XtxZ1T2351E6vQthsfBWYs0IF9ixUExqnxSARzk/fNmghWJ8KgVuyXl8vSAbx7V
+         iweN5kret0dVoXSdgHw3oi5SK0/+Ru6Th+2rwA3k63B1M7yOP+ofRmoDUrus6GfbiCWJ
+         gCoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Zd7FyycW3KcctLd6KYXPpMsa8mRy7OXVhvVd96yduhE=;
-        b=VGdLjOAKCJzbp+B1P/TQsZVlIjGQqlGJf2hf71oTUIXgNjB27st6CAxzpygl4vseNP
-         ObyqyXYcrVg18cCVa+anRz5W26OJn23NNC6JX60QZBgyrO+AjT3GQiZq0GMQJnEE8e4Z
-         ficSbrR28hee91CSuXSGSHahAL6zGSJj2ahhZQEmx1Y5jUzp6VRci4OfzVDKhQ7tnPEe
-         V0vOlLkjDW74jvUOMplUziD2s7uO/YDj5el9zi1/gs3IM5f8nfjIwM0BphCInAbfjFPo
-         QLldPuDcQxbuLycnBDdEDpa1Jrw1DY7+0wzTJQkjb+bJSPazVkjdNzQMmxrAAkKvR9om
-         8JaQ==
-X-Gm-Message-State: AOAM532vULClq1a0TDG8fCMuMVGDdPEhSttk7Loonq2Tae3ktJ16vNjv
-        cKw0ecHfK+ng9xz3oyeTD0KwfQ==
-X-Google-Smtp-Source: ABdhPJyaO9e8s9+LRsKruGS69fzHUr6vWkVzpKTYn9TM2WjIlalWUeX5YFy76SzfWy9kkBO320BpVQ==
-X-Received: by 2002:a5d:9041:: with SMTP id v1mr14086354ioq.155.1612221977473;
-        Mon, 01 Feb 2021 15:26:17 -0800 (PST)
-Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id v18sm10359588ila.29.2021.02.01.15.26.16
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rqXxYXQ/zWZSYlP6IO3+Z7IUKTvxTdHGQXvUh88+tWw=;
+        b=j+OPWJ2N0qnzidgyBo4ptt0M0C6EIW3vsL414bNqKFT52Chi9zRQtkos48vFIe1ns7
+         oHGIFCkeLyysktZNt9ci+bqw0v7GFptZSN+UdYIFkLnjtIiukFrLLFhKu3RrmYiUOr3u
+         PZ2YUKX3DtgsVvNCLHFm6JYhl2dfYW9wqfep+fbJWCyl+8JCf6HFweY/VCkx878hzdBe
+         /9O5BzLYOUleiSgq7G9ck8bm9ICXB8iJYSve03GJqjkY8VoOs7IMPZM50d3NbI/UiZWM
+         EdWMCy/k5lzvr8UizGhVvErtCP4iB9c/s7BmRPO+qiAc2cz3WyBkm6SHte3VeXZFRXmo
+         xPTg==
+X-Gm-Message-State: AOAM531N8zoFJnU9jBbSqMlZVj47+hONpstOxzJuwmrgrc5ylZVrJ1gY
+        OPUYWgGKZSlbdRZ8XP0IHmX4yMwgm1E=
+X-Google-Smtp-Source: ABdhPJzOQ3WKXKASpxWBt31pDNT/oky/+G9+o10CwduKkIJ884wvBidWPpwe7RNzbZUmC3OAq8bpLA==
+X-Received: by 2002:a63:4d1:: with SMTP id 200mr18521123pge.362.1612222508912;
+        Mon, 01 Feb 2021 15:35:08 -0800 (PST)
+Received: from jian-dev.svl.corp.google.com ([2620:15c:2c4:201:f693:9fff:fef8:759])
+        by smtp.gmail.com with ESMTPSA id j18sm20520939pfc.99.2021.02.01.15.35.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Feb 2021 15:26:16 -0800 (PST)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     elder@kernel.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
-        cpratapa@codeaurora.org, subashab@codeaurora.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net 4/4] net: ipa: fix two format specifier errors
-Date:   Mon,  1 Feb 2021 17:26:09 -0600
-Message-Id: <20210201232609.3524451-5-elder@linaro.org>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210201232609.3524451-1-elder@linaro.org>
-References: <20210201232609.3524451-1-elder@linaro.org>
+        Mon, 01 Feb 2021 15:35:08 -0800 (PST)
+From:   Jian Yang <jianyang.kernel@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Cc:     Mahesh Bandewar <maheshb@google.com>,
+        Jian Yang <jianyang@google.com>
+Subject: [PATCH net-next v3] net-loopback: set lo dev initial state to UP
+Date:   Mon,  1 Feb 2021 15:34:45 -0800
+Message-Id: <20210201233445.2044327-1-jianyang.kernel@gmail.com>
+X-Mailer: git-send-email 2.30.0.365.g02bc693789-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix two format specifiers that used %lu for a size_t in "ipa_mem.c".
+From: Jian Yang <jianyang@google.com>
 
-Signed-off-by: Alex Elder <elder@linaro.org>
+Traditionally loopback devices come up with initial state as DOWN for
+any new network-namespace. This would mean that anyone needing this
+device would have to bring this UP by issuing something like 'ip link
+set lo up'. This can be avoided if the initial state is set as UP.
+
+Signed-off-by: Mahesh Bandewar <maheshb@google.com>
+Signed-off-by: Jian Yang <jianyang@google.com>
 ---
- drivers/net/ipa/ipa_mem.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+v3:
+  * Addressed Jakub's comment to remove the sysctl knob
 
-diff --git a/drivers/net/ipa/ipa_mem.c b/drivers/net/ipa/ipa_mem.c
-index 0cc3a3374caa2..f25029b9ec857 100644
---- a/drivers/net/ipa/ipa_mem.c
-+++ b/drivers/net/ipa/ipa_mem.c
-@@ -336,7 +336,7 @@ static void ipa_imem_exit(struct ipa *ipa)
+v2:
+  * Updated sysctl name from `netdev_loopback_state` to `loopback_init_state`
+  * Fixed the linking error when CONFIG_SYSCTL is not defined
+
+ drivers/net/loopback.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/net/loopback.c b/drivers/net/loopback.c
+index a1c77cc00416..24487ec17f8b 100644
+--- a/drivers/net/loopback.c
++++ b/drivers/net/loopback.c
+@@ -219,6 +219,12 @@ static __net_init int loopback_net_init(struct net *net)
  
- 		size = iommu_unmap(domain, ipa->imem_iova, ipa->imem_size);
- 		if (size != ipa->imem_size)
--			dev_warn(dev, "unmapped %zu IMEM bytes, expected %lu\n",
-+			dev_warn(dev, "unmapped %zu IMEM bytes, expected %zu\n",
- 				 size, ipa->imem_size);
- 	} else {
- 		dev_err(dev, "couldn't get IPA IOMMU domain for IMEM\n");
-@@ -440,7 +440,7 @@ static void ipa_smem_exit(struct ipa *ipa)
+ 	BUG_ON(dev->ifindex != LOOPBACK_IFINDEX);
+ 	net->loopback_dev = dev;
++
++	/* bring loopback device UP */
++	rtnl_lock();
++	dev_open(dev, NULL);
++	rtnl_unlock();
++
+ 	return 0;
  
- 		size = iommu_unmap(domain, ipa->smem_iova, ipa->smem_size);
- 		if (size != ipa->smem_size)
--			dev_warn(dev, "unmapped %zu SMEM bytes, expected %lu\n",
-+			dev_warn(dev, "unmapped %zu SMEM bytes, expected %zu\n",
- 				 size, ipa->smem_size);
- 
- 	} else {
+ out_free_netdev:
 -- 
-2.27.0
+2.30.0.365.g02bc693789-goog
 
