@@ -2,99 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1763C30A475
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 10:38:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92AD030A48F
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 10:44:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232681AbhBAJgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 04:36:54 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:34068 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S232573AbhBAJgw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 04:36:52 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1119UgHd027655;
-        Mon, 1 Feb 2021 01:35:50 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=LxnivVJL/AEhOWt0BG5ZwWtBGuWRf2DakQvWD2rbrwQ=;
- b=UEXlRPNbmv5brIWuIGqarCyENVyOlYa33Cdi3TshCPe/GWHTr5mpPBNvvhc+lNiFNHbt
- pAXuOkDUEDBMKlu/SM010ZEscMAu4zlgPBkBR1QpNN8pBtwDXUCRPqJHPNTI/2NutUQl
- bajoXcxCpSjVIz2Dmhav5CJ9ZYjhm8fQ6qlzyrsiMigOx4JeHhJribnxBR7jnrKQzVfz
- juDKZm9NU8nKSLc7ZWUbFzo9lBqhaCKAT2iMmHjB7k1KIautPQMAa0I2vBHH71bSKo6I
- E8MVfvCCBZYxTfNVC2YM9YNsLivE6xaSqqPFSOjhWA521zd6lAc6EgVKPPO0xucMBIS6 DQ== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 36d5psudvg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 01 Feb 2021 01:35:50 -0800
-Received: from SC-EXCH04.marvell.com (10.93.176.84) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 1 Feb
- 2021 01:35:49 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 1 Feb
- 2021 01:35:48 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 1 Feb 2021 01:35:48 -0800
-Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id CAE5E3F703F;
-        Mon,  1 Feb 2021 01:35:45 -0800 (PST)
-From:   <stefanc@marvell.com>
-To:     <netdev@vger.kernel.org>
-CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
-        <nadavh@marvell.com>, <ymarkman@marvell.com>,
-        <linux-kernel@vger.kernel.org>, <stefanc@marvell.com>,
-        <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
-        <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
-        <atenart@kernel.org>
-Subject: [PATCH net] net: mvpp2: TCAM entry enable should be written after SRAM data
-Date:   Mon, 1 Feb 2021 11:35:39 +0200
-Message-ID: <1612172139-28343-1-git-send-email-stefanc@marvell.com>
-X-Mailer: git-send-email 1.9.1
+        id S232878AbhBAJnn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 04:43:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51930 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232701AbhBAJnk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 04:43:40 -0500
+Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EE42C061574
+        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 01:43:00 -0800 (PST)
+Received: by mail-qt1-x830.google.com with SMTP id t17so11765514qtq.2
+        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 01:43:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2sHxy9y8qkhEHifIfAe0m1ot0K1d3d52OFzD+qlpuBU=;
+        b=NeM9ON292bcd64Kcp1z5gL6seKO2huIT0uTkbIjuDyCv8g/B7hwOeO2OAamF9B2PEc
+         ZbN3rq15lpmLJV5JUh3CfnQHd9b+YxMq+YDouvd5MsK+lD7L2Ow3FVdaW+XRHlDYD6/H
+         WZVypjR7q4M6jZJbuSPLfv9fUnKjSsyRt/TTmDaYdWR/7zYJd72RrYEMvq0o33pqO4K5
+         lbJBbkeRyO6N0No28SuLusfI0yy55S87qcE434y+K2PqoQt/6gIeyePbUOOuP/aymnBk
+         7oPVPDckhy2fDc1Q/7+/etMpeJc8jE+vtf1E7T6slmA1BWrTkBsk9g0LTJujxL+N2liU
+         63PQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2sHxy9y8qkhEHifIfAe0m1ot0K1d3d52OFzD+qlpuBU=;
+        b=tf9F3rrnjtAAYVmNzCPYrzkTDQe+FNDkk69fmaszNLpQ6NwmwLBhwfBrVi9MdHQffy
+         UcB+c08E+/rZOcwOqcENiag17Syr1G2fYQsV+FXYRvck2svMH8KuQAI5l3m9Y70CbDoD
+         nj9+4nrypKkISoSeYu1AZ1HeHvNky6YWRkwoYqBJZmWbrtqOJMybYWOZThItKHM0KNt1
+         kep6KkjsLd4+Qtngm3uHAFzrz3qqf3elYIbbU2sFFTUvbULK4dCeBDEuPAKMAWgBJrRk
+         A06+dscLOF6Llo142SFJcZJ7lavhSVrTtUUY7nMXBa+ndhQZV3vz9G6nHvUP4l7AzXhN
+         3SuQ==
+X-Gm-Message-State: AOAM532hOdyJdez5KjJqv9C0bwvIG3OMj5c+Bus1rVOd5lEqVdjM3paE
+        QOfhjsgZ0eMdNfUfI2tLRUq/xB5Oqixi5yo9IoufxQ==
+X-Google-Smtp-Source: ABdhPJw/FU0ujXSBV1WzoDZvLs4yUz4Di0PBTFwg18+sWEkhAxDhgDVoLq4LU6FoT1MyO3nDH65GPEApRc4rxfiidFA=
+X-Received: by 2002:ac8:480b:: with SMTP id g11mr14124931qtq.290.1612172579083;
+ Mon, 01 Feb 2021 01:42:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
- definitions=2021-02-01_04:2021-01-29,2021-02-01 signatures=0
+References: <CACT4Y+a7UBQpAY4vwT8Od0JhwbwcDrbJXZ_ULpPfJZ42Ew-yCQ@mail.gmail.com>
+ <YBfIUwtK+QqVlfRt@hirez.programming.kicks-ass.net>
+In-Reply-To: <YBfIUwtK+QqVlfRt@hirez.programming.kicks-ass.net>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Mon, 1 Feb 2021 10:42:47 +0100
+Message-ID: <CACT4Y+Yq69nvj2KZUQrYqtyu+Low+jCCcH++U_vuiHkhezQHGw@mail.gmail.com>
+Subject: Re: extended bpf_send_signal_thread with argument
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, andrii@kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@davemloft.net>, kpsingh@kernel.org,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefan Chulski <stefanc@marvell.com>
+On Mon, Feb 1, 2021 at 10:22 AM Peter Zijlstra <peterz@infradead.org> wrote:
+>
+> On Sun, Jan 31, 2021 at 12:14:02PM +0100, Dmitry Vyukov wrote:
+> > Hi,
+> >
+> > I would like to send a signal from a bpf program invoked from a
+> > perf_event. There is:
+>
+> You can't. Sending signals requires sighand lock, and you're not allowed
+> to take locks from perf_event context.
 
-Last TCAM data contains TCAM enable bit.
-It should be written after SRAM data before entry enabled.
 
-Fixes: 3f518509dedc ("ethernet: Add new driver for Marvell Armada 375 network unit")
-Signed-off-by: Stefan Chulski <stefanc@marvell.com>
----
- drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+Then we just found a vulnerability because there is
+bpf_send_signal_thread which can be attached to perf and it passes the
+verifier :)
+https://elixir.bootlin.com/linux/v5.11-rc5/source/kernel/trace/bpf_trace.c#L1145
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c
-index 0b2ff08..f4a905f 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_prs.c
-@@ -29,16 +29,16 @@ static int mvpp2_prs_hw_write(struct mvpp2 *priv, struct mvpp2_prs_entry *pe)
- 	/* Clear entry invalidation bit */
- 	pe->tcam[MVPP2_PRS_TCAM_INV_WORD] &= ~MVPP2_PRS_TCAM_INV_MASK;
- 
--	/* Write tcam index - indirect access */
--	mvpp2_write(priv, MVPP2_PRS_TCAM_IDX_REG, pe->index);
--	for (i = 0; i < MVPP2_PRS_TCAM_WORDS; i++)
--		mvpp2_write(priv, MVPP2_PRS_TCAM_DATA_REG(i), pe->tcam[i]);
--
- 	/* Write sram index - indirect access */
- 	mvpp2_write(priv, MVPP2_PRS_SRAM_IDX_REG, pe->index);
- 	for (i = 0; i < MVPP2_PRS_SRAM_WORDS; i++)
- 		mvpp2_write(priv, MVPP2_PRS_SRAM_DATA_REG(i), pe->sram[i]);
- 
-+	/* Write tcam index - indirect access */
-+	mvpp2_write(priv, MVPP2_PRS_TCAM_IDX_REG, pe->index);
-+	for (i = 0; i < MVPP2_PRS_TCAM_WORDS; i++)
-+		mvpp2_write(priv, MVPP2_PRS_TCAM_DATA_REG(i), pe->tcam[i]);
-+
- 	return 0;
- }
- 
--- 
-1.9.1
-
+It can defer sending the signal to the exit of irq context:
+https://elixir.bootlin.com/linux/v5.11-rc5/source/kernel/trace/bpf_trace.c#L1108
+Perhaps this is what makes it work?
