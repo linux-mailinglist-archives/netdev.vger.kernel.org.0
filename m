@@ -2,137 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D06D830AF76
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 19:35:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE26B30AF91
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 19:39:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233059AbhBASe5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 13:34:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53284 "EHLO
+        id S233024AbhBASi6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 13:38:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233050AbhBASeX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 13:34:23 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12660C06174A
-        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 10:33:42 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id rv9so25906335ejb.13
-        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 10:33:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GxDX9DaVMoGHl1jPDqPxW58NMOCXx4OQ18M6TRTNqRM=;
-        b=LHcNf05PZLU06HZIiNVsMtgldW5EFPxbqVpeM39ftXg9uRCF8dASJSJK8beAr4tCb9
-         C12xk+gc+96F3bWikbYAv/cfpRgEJLOk0M4GmfVbhjHzyEXGKFld6ospapS1h6gEwqll
-         c9UUYVl+EbLWU2DWMW7Tghe3sCzgB2NYkNvXoFr5PloKDXz9SlclIbDWiHLDuA4WiyDG
-         lHRn9QBC55l2vtiXeaDiw1af3AVgHoeujdjCcDuXwl/mYOYUmScSkFKgQ3FoDMGUlwYL
-         R74TIuEITlKP7E9FRBiE1zye2E0W/luU3mP7TCW4aYcTVC8HmbMsRPw36SOi/US9ZMvH
-         yfLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GxDX9DaVMoGHl1jPDqPxW58NMOCXx4OQ18M6TRTNqRM=;
-        b=JTVz9n663+VibAXhPp0VKwKV/gr3vhHhHVsTJYmBFIFUazgWCNFDL/AU9vys6x/heV
-         LfJjTBjiF5HRgPVSSLwHtjBKvIrbNECh5vikjGp49GKFhBmvPa91bBOXyvG5l4x7hIQN
-         i0mQgRAxG1Sg96gzO8NaNAAN/CKdkl63B38Rg2+Ino/bjuxWj0pp1Gi5B2ddvjig7eDo
-         mnjO7+FegnKV5AVo3K9a+ThgBD6F/jGKJlbnuZXMdUuPDvnKhfX66V2mtC+1kFL/edi5
-         LXDPyv248QADSWxaWTQXOy/fCrF/lgXZNFJ7EK6E7lBX/E5CS/VKQvm/WNy+nzhakBLW
-         8SFw==
-X-Gm-Message-State: AOAM531YQnt+FPZt2KuZR5NTsnpNenq4n3IiFVRPZsBpcGSLuWd1mq6q
-        iHV2jEshNN7z/C5751Dbf95sPNmtChDOxjJe0qo=
-X-Google-Smtp-Source: ABdhPJwbxSQYSzPj6LIAMjvWqa+J+AqwMAJFuzKshdipuSw5+MZBo29LvWMjkB1hu+YyFpb3c0bdwAF6yKO5Du9Kl4U=
-X-Received: by 2002:a17:906:158c:: with SMTP id k12mr19268005ejd.119.1612204420825;
- Mon, 01 Feb 2021 10:33:40 -0800 (PST)
+        with ESMTP id S232935AbhBASip (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 13:38:45 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AACE8C0613D6
+        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 10:38:04 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mgr@pengutronix.de>)
+        id 1l6e5K-0002eC-Is; Mon, 01 Feb 2021 19:38:02 +0100
+Received: from mgr by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <mgr@pengutronix.de>)
+        id 1l6e5F-0002Bb-KG; Mon, 01 Feb 2021 19:37:57 +0100
+Date:   Mon, 1 Feb 2021 19:37:57 +0100
+From:   Michael Grzeschik <mgr@pengutronix.de>
+To:     Tristram.Ha@microchip.com
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, davem@davemloft.net,
+        kernel@pengutronix.de, netdev@vger.kernel.org,
+        matthias.schiffer@ew.tq-group.com, Woojung.Huh@microchip.com,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH v5 4/6] net: dsa: microchip: ksz8795: add support for
+ ksz88xx chips
+Message-ID: <20210201183757.GA6935@pengutronix.de>
+References: <20201207125627.30843-5-m.grzeschik@pengutronix.de>
+ <BYAPR11MB35585C642A2073D0CBC85E44ECC50@BYAPR11MB3558.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-References: <1611589557-31012-1-git-send-email-loic.poulain@linaro.org>
- <20210129170129.0a4a682a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAMZdPi_6tBkdQn+wakUmeMC+p8N3HStEja5ZfA3K-+x4DcM68g@mail.gmail.com>
- <CAF=yD-+UFHO8nKsB3Z7n-xhoFtXwge2GEZj-2+-7=EETLjYXFA@mail.gmail.com> <CAMZdPi_dMBDafAVoHbqwR9RDbtZSJpGd48oCMmL1qAgR+PCFGQ@mail.gmail.com>
-In-Reply-To: <CAMZdPi_dMBDafAVoHbqwR9RDbtZSJpGd48oCMmL1qAgR+PCFGQ@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 1 Feb 2021 13:33:05 -0500
-Message-ID: <CAF=yD-KT0nPEV4CphRH3xVJhXqpK=FQHM-3TkK+88ZqA9afeFw@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: mhi-net: Add de-aggeration support
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="VS++wcV0S1rZb1Fb"
+Content-Disposition: inline
+In-Reply-To: <BYAPR11MB35585C642A2073D0CBC85E44ECC50@BYAPR11MB3558.namprd11.prod.outlook.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 19:32:45 up 61 days,  6:59, 90 users,  load average: 0.58, 0.37,
+ 0.22
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: mgr@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 1, 2021 at 11:41 AM Loic Poulain <loic.poulain@linaro.org> wrote:
->
-> On Mon, 1 Feb 2021 at 15:24, Willem de Bruijn
-> <willemdebruijn.kernel@gmail.com> wrote:
-> >
-> > On Mon, Feb 1, 2021 at 3:08 AM Loic Poulain <loic.poulain@linaro.org> wrote:
-> > >
-> > > Hi Jakub, Willem,
-> > >
-> > > On Sat, 30 Jan 2021 at 02:01, Jakub Kicinski <kuba@kernel.org> wrote:
-> > > >
-> > > > On Mon, 25 Jan 2021 16:45:57 +0100 Loic Poulain wrote:
-> > > > > When device side MTU is larger than host side MRU, the packets
-> > > > > (typically rmnet packets) are split over multiple MHI transfers.
-> > > > > In that case, fragments must be re-aggregated to recover the packet
-> > > > > before forwarding to upper layer.
-> > > > >
-> > > > > A fragmented packet result in -EOVERFLOW MHI transaction status for
-> > > > > each of its fragments, except the final one. Such transfer was
-> > > > > previoulsy considered as error and fragments were simply dropped.
-> > > > >
-> > > > > This patch implements the aggregation mechanism allowing to recover
-> > > > > the initial packet. It also prints a warning (once) since this behavior
-> > > > > usually comes from a misconfiguration of the device (modem).
-> > > > >
-> > > > > Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
-> > > >
-> > > > > +static struct sk_buff *mhi_net_skb_append(struct mhi_device *mhi_dev,
-> > > > > +                                       struct sk_buff *skb1,
-> > > > > +                                       struct sk_buff *skb2)
-> > > > > +{
-> > > > > +     struct sk_buff *new_skb;
-> > > > > +
-> > > > > +     /* This is the first fragment */
-> > > > > +     if (!skb1)
-> > > > > +             return skb2;
-> > > > > +
-> > > > > +     /* Expand packet */
-> > > > > +     new_skb = skb_copy_expand(skb1, 0, skb2->len, GFP_ATOMIC);
-> > > > > +     dev_kfree_skb_any(skb1);
-> > > > > +     if (!new_skb)
-> > > > > +             return skb2;
-> > > >
-> > > > I don't get it, if you failed to grow the skb you'll return the next
-> > > > fragment to the caller? So the frame just lost all of its data up to
-> > > > where skb2 started? The entire fragment "train" should probably be
-> > > > dropped at this point.
-> > >
-> > > Right, there is no point in keeping the partial packet in that case.
-> > >
-> > > >
-> > > > I think you can just hang the skbs off skb_shinfo(p)->frag_list.
-> > > >
-> > > > Willem - is it legal to feed frag_listed skbs into netif_rx()?
-> > >
-> > > In QMAP case, the packets will be forwarded to rmnet link, which works
-> > > with linear skb (no NETIF_F_SG), does the linearization will be
-> > > properly performed by the net core, in the same way as for xmit path?
-> >
-> > What is this path to rmnet, if not the usual xmit path / validate_xmit_skb?
->
-> I mean, not sure what to do exactly here, instead of using
-> skb_copy_expand to re-aggregate data from the different skbs, Jakub
-> suggests chaining the skbs instead (via 'frag_list' and 'next' pointer
-> I assume), and to push this chained skb to net core via netif_rx. In
-> that case, I assume the de-fragmentation/linearization will happen in
-> the net core, right? If the transported protocol is rmnet, the packet
-> is supposed to reach the rmnet_rx_handler at some point, but rmnet
-> only works with standard/linear skbs.
 
-If it has that limitation, the rx_handler should have a check and linearize.
+--VS++wcV0S1rZb1Fb
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-That is simpler than this skb_copy_expand, and as far as I can see no
-more expensive.
+Hi Tristam!
+
+On Wed, Dec 16, 2020 at 06:33:06AM +0000, Tristram.Ha@microchip.com wrote:
+>>  static void ksz8_r_vlan_table(struct ksz_device *dev, u16 vid, u32 *vla=
+n)
+>>  {
+>> -       int index;
+>> -       u16 *data;
+>> -       u16 addr;
+>> +       u16 addr =3D vid / dev->phy_port_cnt;
+>>         u64 buf;
+>>
+>> -       data =3D (u16 *)&buf;
+>> -       addr =3D vid / dev->phy_port_cnt;
+>> -       index =3D vid & 3;
+>>         ksz8_r_table(dev, TABLE_VLAN, addr, &buf);
+>> -       *vlan =3D data[index];
+>> +       if (dev->features & IS_88X3) {
+>> +               *vlan =3D (u32)buf;
+>> +       } else {
+>> +               u16 *data =3D (u16 *)&buf;
+>> +
+>> +               *vlan =3D data[vid & 3];
+>> +       }
+>>  }
+>>
+>>  static void ksz8_w_vlan_table(struct ksz_device *dev, u16 vid, u32 vlan)
+>>  {
+>> -       int index;
+>> -       u16 *data;
+>> -       u16 addr;
+>> +       u16 addr =3D vid / dev->phy_port_cnt;
+>>         u64 buf;
+>>
+>> -       data =3D (u16 *)&buf;
+>> -       addr =3D vid / dev->phy_port_cnt;
+>> -       index =3D vid & 3;
+>>         ksz8_r_table(dev, TABLE_VLAN, addr, &buf);
+>> -       data[index] =3D vlan;
+>> +
+>> +       if (dev->features & IS_88X3) {
+>> +               buf =3D vlan;
+>> +       } else {
+>> +               u16 *data =3D (u16 *)&buf;
+>> +
+>> +               data[vid & 3] =3D vlan;
+>> +       }
+>> +
+>>         dev->vlan_cache[vid].table[0] =3D vlan;
+>>         ksz8_w_table(dev, TABLE_VLAN, addr, buf);
+>>  }
+>
+>I am confused about how the addr is derived.
+>
+>In KSZ8795 vid is in range of 0-4095.  The addr is just (vid / 4) as there
+>are 4 entries in one access.  The data are lined up in 16-bit boundary
+>so that the VLAN information can be accessed using the array.
+>
+>For KSZ8895 the VLAN data are not lined up so the 64-bit variable
+>needs to be shifted accordingly and masked.
+>
+>For KSZ8863 the addr is a hard value from 0 to 15.  The data buffer is just
+>32-bit.  The vid value is contained in the entry.  You need to match that =
+vid
+>with the input vid to return the right information.
+>
+>You need a different VLAN read function to check if the VLAN is already
+>programmed in the VLAN table by searching all 16 entries.
+>
+>For the VLAN write function you need to check if there is available space
+>to add a new entry.  The VID range is still 0-4095, but the FID range is 0=
+-15.
+
+Thanks for the clarification. Its possible that I missed that when
+porting this from your first RFC.
+
+Regarding the drivers for ksz88{6,7}3, did you also plan to mainline
+some work? Do you have some code that could be shared? If so I would
+not need to implement everything again. In case you have some work
+pending, please let me know. Than we could colaborate to get this
+chips finaly mainline.
+
+Thanks,
+Michael
+
+--=20
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
+--VS++wcV0S1rZb1Fb
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEElXvEUs6VPX6mDPT8C+njFXoeLGQFAmAYSoEACgkQC+njFXoe
+LGSivhAAxOUqf07SGl3hAH/MDxvOHkNyWWvjkQ9gEQetcGCspfE5HuoXwpqf2jQH
+Ho9dLdF9FYWYL+UuY1EodrLsDtdcfX5tWZVRdpIneA/UgkhvmfPVyUF14PHIzUaO
+PlGN9O2ier+ScKNrgEPGyFB+nV+t16fAorXQUxYACnjITObtdzPugR6RHZ1cKdZi
+GyOQOU2cA1GoaHes6qCZcUVQqfMOWcHI/pnFj+8VGo6BzPBT9F65TtBN9vTPbwdo
+8gg5dhRcsRf/8RSHmiM+CBpDSzP7JX38Y78LLr2HmwSVmXUl3H7XZUIwdZPMR4IG
+iojGHwqisJ1UpaGCSTQhYyQxLfZbWeNG+IDYcz2wIJ61mqfvgXkKgkiClM6V58/r
+FSROJ0DDzurj+2Wc5qgXaOEURBfh+6Z1p6crMz8OhSKglomoC1wNRDGiyM1Yox+M
+4WlnUlLz5Bobn74Ygs0k0R59l41iGJBKeYtmtk4TpxDgKoqqwdd58zyVIfr6x1Xy
+dn+gSREOi/V2kj17L247gY8W0zPOaHCCm242MkpAkLtwXuO8lMbv7alxL9RXgxeJ
+niBrRcLgTFzEqDl4p3uk8RQtaIhYjR2jKt4DX2ZrAESBnlpZ14K2NWwHo5fKlxar
+yU2gvH7wle20YdKnA8GzM8IMPl+n1ja5qXTh05qilGPj6h1EKFs=
+=Ge1z
+-----END PGP SIGNATURE-----
+
+--VS++wcV0S1rZb1Fb--
