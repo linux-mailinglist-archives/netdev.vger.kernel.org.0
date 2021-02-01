@@ -2,96 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0E5430AF3E
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 19:29:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0A9F30AEFD
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 19:21:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232432AbhBAS3A convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 1 Feb 2021 13:29:00 -0500
-Received: from mga04.intel.com ([192.55.52.120]:64944 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232415AbhBASQF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Feb 2021 13:16:05 -0500
-IronPort-SDR: B3p4QzppAx4kfC3sj6vCSm4kIAJ9hh2YEr0imo+lsVy49T+oQDhqQt5jzYfLODqr2fqUjK/VOM
- cvDHZe95+WSA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9882"; a="178166436"
-X-IronPort-AV: E=Sophos;i="5.79,393,1602572400"; 
-   d="scan'208";a="178166436"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2021 10:15:22 -0800
-IronPort-SDR: dvCjgyKhYcL47WefTYb6YfXh9uNQbwUSlH0b/gL9WzIxSoQ3ZJt6bcpJzKm6KKNNhOmvKgTpIJ
- 8+g8/rWf3xzA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,393,1602572400"; 
-   d="scan'208";a="479181864"
-Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
-  by fmsmga001.fm.intel.com with ESMTP; 01 Feb 2021 10:15:21 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Mon, 1 Feb 2021 10:15:20 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Mon, 1 Feb 2021 10:15:20 -0800
-Received: from orsmsx610.amr.corp.intel.com ([10.22.229.23]) by
- ORSMSX610.amr.corp.intel.com ([10.22.229.23]) with mapi id 15.01.2106.002;
- Mon, 1 Feb 2021 10:15:20 -0800
-From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
+        id S232723AbhBASTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 13:19:12 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:59334 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232010AbhBASTG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 13:19:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612203459;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=66k9peyaIQBNvXIRJ4afMoEvhj7V9N4+8L1wpIbMuJ0=;
+        b=eA81QNcWWoUYs9X5WBeUpk2ef5JzFwnXSQT/JM/V2/Sbjv3ftDnvxj239SRTat5Mq4sawQ
+        iHAOD1pFeUVOo51XQqHMFJ17wNr/W6ufvG/INtCib//ovV9vloIIqTRATj2fQsJ2FhQ5fg
+        AKN9tOdHF0SrZOYRCfaqtXZhXoeWeDU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-298-0HH5QySRPPeUhfObDTKFmQ-1; Mon, 01 Feb 2021 13:17:22 -0500
+X-MC-Unique: 0HH5QySRPPeUhfObDTKFmQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2326A802B48;
+        Mon,  1 Feb 2021 18:17:20 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.10.110.45])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8F8F41975E;
+        Mon,  1 Feb 2021 18:17:18 +0000 (UTC)
+Message-ID: <0bd01c51c592aa24c2dabc8e3afcbdbe9aa23bdc.camel@redhat.com>
+Subject: Re: [PATCH net-next 3/3] net: mhi: Add mbim proto
+From:   Dan Williams <dcbw@redhat.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "Brelinski, TonyX" <tonyx.brelinski@intel.com>
-Subject: RE: [PATCH net-next 10/15] ice: display some stored NVM versions via
- devlink info
-Thread-Topic: [PATCH net-next 10/15] ice: display some stored NVM versions via
- devlink info
-Thread-Index: AQHW9deu/kIAhBaH902yWvZefJUQeapAP00AgANaZrA=
-Date:   Mon, 1 Feb 2021 18:15:20 +0000
-Message-ID: <8403365008c14c959ad9ca63f29891a4@intel.com>
-References: <20210129004332.3004826-1-anthony.l.nguyen@intel.com>
-        <20210129004332.3004826-11-anthony.l.nguyen@intel.com>
- <20210129223754.0376285e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210129223754.0376285e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-x-originating-ip: [10.1.200.100]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        Loic Poulain <loic.poulain@linaro.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, carl.yin@quectel.com,
+        =?ISO-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
+Date:   Mon, 01 Feb 2021 12:17:17 -0600
+In-Reply-To: <20210129182108.771dc2fe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <1611766877-16787-1-git-send-email-loic.poulain@linaro.org>
+         <1611766877-16787-3-git-send-email-loic.poulain@linaro.org>
+         <20210129182108.771dc2fe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, 2021-01-29 at 18:21 -0800, Jakub Kicinski wrote:
+> On Wed, 27 Jan 2021 18:01:17 +0100 Loic Poulain wrote:
+> > MBIM has initially been specified by USB-IF for transporting data
+> > (IP)
+> > between a modem and a host over USB. However some modern modems
+> > also
+> > support MBIM over PCIe (via MHI). In the same way as QMAP(rmnet),
+> > it
+> > allows to aggregate IP packets and to perform context multiplexing.
+> > 
+> > This change adds minimal MBIM support to MHI, allowing to support
+> > MBIM
+> > only modems. MBIM being based on USB NCM, it reuses some helpers
+> > from
+> > the USB stack, but the cdc-mbim driver is too USB coupled to be
+> > reused.
+> > 
+> > At some point it would be interesting to move on a factorized
+> > solution,
+> > having a generic MBIM network lib or dedicated MBIM netlink virtual
+> > interface support.
 
+What would a kernel-side MBIM netlink interface do?  Just data-plane
+stuff (like channel setup to create new netdevs), or are you thinking
+about control-plane stuff like APN definition, radio scans, etc?
 
-> -----Original Message-----
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Friday, January 29, 2021 10:38 PM
-> To: Nguyen, Anthony L <anthony.l.nguyen@intel.com>
-> Cc: davem@davemloft.net; Keller, Jacob E <jacob.e.keller@intel.com>;
-> netdev@vger.kernel.org; sassmann@redhat.com; Brelinski, TonyX
-> <tonyx.brelinski@intel.com>
-> Subject: Re: [PATCH net-next 10/15] ice: display some stored NVM versions via
-> devlink info
-> 
-> On Thu, 28 Jan 2021 16:43:27 -0800 Tony Nguyen wrote:
-> > When reporting the versions via devlink info, first read the device
-> > capabilities. If there is a pending flash update, use this new function
-> > to extract the inactive flash versions. Add the stored fields to the
-> > flash version map structure so that they will be displayed when
-> > available.
-> 
-> Why only report them when there is an update pending?
-> 
-> The expectation was that you'd always report what you can and user
-> can tell the update is pending by comparing the fields.
+Dan
 
-The data in the inactive bank might not be a valid image. There's no straightforward way to verify this except by detecting that we're about to switch banks on the next reboot. If we report this information all the time, in some cases it would be reporting numbers which are meaningless and not actually valid version information. I had assumed this would lead to more confusion than only reporting the data when the bank has data we know is going to be activated soon
+> > This code has been highly inspired from the mhi_mbim downstream
+> > driver
+> > (Carl Yin <carl.yin@quectel.com>).
+> > 
+> > Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
+> 
+> Does the existing MBIM over USB NCM also show up as a netdev?
+> 
+> Let's CC Dan and Bjorn on MBIM-related code, they may have opinions.
+> 
 
