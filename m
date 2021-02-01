@@ -2,46 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2385A30B03E
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 20:20:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9013D30B044
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 20:22:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230273AbhBATTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 14:19:50 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:1817 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229599AbhBATTr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 14:19:47 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B6018542a0000>; Mon, 01 Feb 2021 11:19:06 -0800
-Received: from HKMAIL104.nvidia.com (10.18.16.13) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 1 Feb
- 2021 19:19:03 +0000
-Received: from HKMAIL102.nvidia.com (10.18.16.11) by HKMAIL104.nvidia.com
- (10.18.16.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 1 Feb
- 2021 19:18:10 +0000
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.43) by
- HKMAIL102.nvidia.com (10.18.16.11) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Mon, 1 Feb 2021 19:18:09 +0000
+        id S231561AbhBATUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 14:20:41 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:19397 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229849AbhBATUi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 14:20:38 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B6018545d0001>; Mon, 01 Feb 2021 11:19:57 -0800
+Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL105.nvidia.com
+ (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 1 Feb
+ 2021 19:19:55 +0000
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.175)
+ by HQMAIL111.nvidia.com (172.20.187.18) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Mon, 1 Feb 2021 19:19:55 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NLOu8/hOFdiUG1llR3FKkuA1TM/4V58Z7jPeo26HKlf6fI3xYewwoYhmOa+ZMfBCxJJPkKFbfJDtKCU1lxKEx61p6IRngcEaD0IuVgHKl8j11nacbZSINRfxcjymtKYO8Avj2DsgP/TtuBWc/yE9MBoGXgpNwHo8Ye4mlfTP/pcvr+691EywzpkTOYioy0jVUZgU51SX3bieysVVci9oaaEdy0KJEfA2gedcmCfPkrvu+HXLcGTloMRVDeytsXeJFR3ArgS4sLzOw47Z+eBXXNR5QRxQ3TM2Btmqgkvf0WpGLu4yrK6MU4pjpQBQuggv6tfiYa9Ald7WYrpJga7csA==
+ b=HfSWX8VCVBBTSq49X5/5/DvmXTIFEsur9UUOmgDfrlJ6gFZuUvgWn4UVxgp7WilxmOQaWXaGC838Qv4M+o0+xHxSnnMhXWt0ZbNjQd800P4D5YCYAAz5inSOdj0ozFZMNYKkoLr0lXhfyRzh5GhwvGLp9+jGM65G1v5PWs7Fv72pIW3QKOyXQiI7cpDmnU6b0cn+B8nTXwkh3WhI6gMOuXgkAYADATdj2A1bxisopzeYAH18GG08qYnA2dFnV0jMxLEmDBHs72QZbweAEwZl8BXxxJkk5aWCAF7fivN3KPndyExTN5QFKMttwQ9iW3I3jfGe1Ivnv9ToIc6Tbca2xw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=L52XxPg9GOO+gFKhaEBrJSXExjP2SyvmaMR8UrDwGvQ=;
- b=GvuxdDcuUPQoa7Ap9HkvEd/fX6U7ZxWKJVr0Z88GjScAQX3syHHDEufdo0nDiMMp5l9LKkxe/5lAEgy54uRSmM+RUO8uU6nJxMhDfcMi2SC7LNjFluLkQMEkOHvKbCfONnTLeY15kEN5pyg6sv3FLERITMR71KuRBeekpRJEqhmBbcf/deULnFhgkEXwLKyyTztsDwE/uH8iy1hXEYd09cPYNHzoZm2kaon3TBKCidsQQjHGMd8J7OaJBHRTPSobg+aiAZFT1QyNsXNkCKO2qF+3d7KPswtyPWcK3EfggFX2jZqNnXNg9YD3lSUPBvaI9eSh8DfIgweD73KmhiuPMA==
+ bh=v+O2AjQKmqE4s3Q4qxTi7yuTt13VMC75CskpMpZhq2w=;
+ b=KPo4t/pO393UcyNL1huFy9YMT7M03Vwm0FabkQ8ljqE4X3Pp7ZdONNF3h0oR7+M2H1xr1M+LDUECVHNShPjDcMAPtExBpJlfCb8k93XkJRbsHfIsMadLQ5SeTeC6gZZa1ZHy+injfaUU98SXU9HEV3US7bMIv08aNg2kCz6jla6/07+LtT8BCxX0vaVeQiYiu9RCR7qAVIBrdtJLkOJj5ICKvQGl2JoAuY82OeIvxCNRqgzGZJNMMKtiB1ebTBTSP4UocPySy3kL1iY01lNMOhwLY7kKtSOKMVgCykpLyxkKVmnoKaD7vS3eE9gj2JqehcM74P3CPrSDu9SI9eLt0g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB4388.namprd12.prod.outlook.com (2603:10b6:5:2a9::10) with
+ by DM6PR12MB4778.namprd12.prod.outlook.com (2603:10b6:5:167::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.25; Mon, 1 Feb
- 2021 19:18:07 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.17; Mon, 1 Feb
+ 2021 19:19:53 +0000
 Received: from DM6PR12MB3834.namprd12.prod.outlook.com
  ([fe80::d6b:736:fa28:5e4]) by DM6PR12MB3834.namprd12.prod.outlook.com
  ([fe80::d6b:736:fa28:5e4%7]) with mapi id 15.20.3805.025; Mon, 1 Feb 2021
- 19:18:07 +0000
-Date:   Mon, 1 Feb 2021 15:18:05 -0400
+ 19:19:53 +0000
+Date:   Mon, 1 Feb 2021 15:19:52 -0400
 From:   Jason Gunthorpe <jgg@nvidia.com>
 To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>
 CC:     Leon Romanovsky <leon@kernel.org>,
@@ -56,77 +53,51 @@ CC:     Leon Romanovsky <leon@kernel.org>,
         "Ismail, Mustafa" <mustafa.ismail@intel.com>
 Subject: Re: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
  implement private channel OPs
-Message-ID: <20210201191805.GO4247@nvidia.com>
-References: <20210122234827.1353-8-shiraz.saleem@intel.com>
- <20210125184248.GS4147@nvidia.com>
- <99895f7c10a2473c84a105f46c7ef498@intel.com>
- <20210126005928.GF4147@nvidia.com>
- <031c2675aff248bd9c78fada059b5c02@intel.com>
- <20210127121847.GK1053290@unreal>
- <ea62658f01664a6ea9438631c9ddcb6e@intel.com>
- <20210127231641.GS4147@nvidia.com> <20210128054133.GA1877006@unreal>
- <d58f341898834170af1bfb6719e17956@intel.com>
+Message-ID: <20210201191952.GP4247@nvidia.com>
+References: <20210122234827.1353-1-shiraz.saleem@intel.com>
+ <20210122234827.1353-8-shiraz.saleem@intel.com>
+ <20210125184248.GS4147@nvidia.com> <20210126053740.GO579511@unreal>
+ <ccf8895d9ac545e1a9f9f73ca1d291bf@intel.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <d58f341898834170af1bfb6719e17956@intel.com>
-X-ClientProxiedBy: MN2PR20CA0051.namprd20.prod.outlook.com
- (2603:10b6:208:235::20) To DM6PR12MB3834.namprd12.prod.outlook.com
+In-Reply-To: <ccf8895d9ac545e1a9f9f73ca1d291bf@intel.com>
+X-ClientProxiedBy: BL1PR13CA0229.namprd13.prod.outlook.com
+ (2603:10b6:208:2bf::24) To DM6PR12MB3834.namprd12.prod.outlook.com
  (2603:10b6:5:14a::12)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (142.162.115.133) by MN2PR20CA0051.namprd20.prod.outlook.com (2603:10b6:208:235::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.17 via Frontend Transport; Mon, 1 Feb 2021 19:18:06 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1l6ei5-002IjC-Ow; Mon, 01 Feb 2021 15:18:05 -0400
+Received: from mlx.ziepe.ca (142.162.115.133) by BL1PR13CA0229.namprd13.prod.outlook.com (2603:10b6:208:2bf::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.13 via Frontend Transport; Mon, 1 Feb 2021 19:19:53 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1l6ejo-002Il3-45; Mon, 01 Feb 2021 15:19:52 -0400
 X-Header: ProcessedBy-CMR-outbound
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1612207146; bh=L52XxPg9GOO+gFKhaEBrJSXExjP2SyvmaMR8UrDwGvQ=;
+        t=1612207197; bh=v+O2AjQKmqE4s3Q4qxTi7yuTt13VMC75CskpMpZhq2w=;
         h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
          From:To:CC:Subject:Message-ID:References:Content-Type:
          Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
          X-MS-Exchange-MessageSentRepresentingType:X-Header;
-        b=okEMjmoaEBr83aDn5i9yObKN2A/zDTPjW7rDUFqfskXiPHaI5IQaKIDVOdZ9b2qwI
-         LGcNOW16PCLu7SDUO517SeME6LEvsTfL3MNH69LNrf/NRIrY7aA7AwP2OWplp+tN6R
-         XPCvJRHojBzSPSv+wMkqQRXFhmYFro2TxQ+75m4ZN0kbPhbQZQUTcvQMjJ15nnjLVw
-         cLQiBUqwxi3YPOfaxIIl2D2XY1an6Lz1CFXJvhj2A+9vX7++eMffh7rmnEhZReTdCw
-         qr0yg7aD0NkkdZr/2pw1fkxpZa5O96+Y0nrq1/GadK8gvi57796P/cdDHrAT39+mqI
-         cGnkvoaDLY4WQ==
+        b=kkHdGQriVlnkNKlepTHirm+Gj6q+qt295T+p01jSMdup+LDrIY5fKvsVMdORSYQip
+         uxCcuV0xZ//s/xfkCWJZ2IB8TXX+tEK4U+5ryamRuOMbF4UQzMK0kDMjCtNcw9u6gT
+         cRSqyAVJ4/PdgosmW5uFfs2igk/0WLAqciJC3bEGtRlhJKitNlpFQbvk8NSzKSq/Oc
+         zdh9bPcq02s1RSCXIrBE2LDQAvoWL+GNmik2Lq3ofQKheDDin2Nk4f4quWnCFqUXfU
+         RIWMCiZgwmC1cPOPJUuzhjiGh+Pqy6FdyN9VguDHN30NiGqC8PZ78pQYNyXi2IwS4s
+         7WL1m3CItRzPQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 30, 2021 at 01:19:36AM +0000, Saleem, Shiraz wrote:
-> > Subject: Re: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
-> > implement private channel OPs
-> > 
-> > On Wed, Jan 27, 2021 at 07:16:41PM -0400, Jason Gunthorpe wrote:
-> > > On Wed, Jan 27, 2021 at 10:17:56PM +0000, Saleem, Shiraz wrote:
-> > >
-> > > > Even with another core PCI driver, there still needs to be private
-> > > > communication channel between the aux rdma driver and this PCI
-> > > > driver to pass things like QoS updates.
-> > >
-> > > Data pushed from the core driver to its aux drivers should either be
-> > > done through new callbacks in a struct device_driver or by having a
-> > > notifier chain scheme from the core driver.
-> > 
-> > Right, and internal to driver/core device_lock will protect from parallel
-> > probe/remove and PCI flows.
-> > 
-> 
-> OK. We will hold the device_lock while issuing the .ops callbacks from core driver.
-> This should solve our synchronization issue.
-> 
-> There have been a few discussions in this thread. And I would like to be clear on what
-> to do.
-> 
-> So we will,
-> 
-> 1. Remove .open/.close, .peer_register/.peer_unregister
-> 2. Protect ops callbacks issued from core driver to the aux driver
-> with device_lock
+On Sat, Jan 30, 2021 at 01:19:22AM +0000, Saleem, Shiraz wrote:
 
-A notifier chain is probably better, honestly.
+> Do you mean 2 different auxiliary device names - one for RoCE and
+> iWARP?  The drv.probe() and other callbacks will be very similar for
+> gen2, so one gen2 aux driver which can bind to iW and RoCE aux
+> device should suffice.
 
-Especially since you don't want to split the netdev side, a notifier
-chain can be used by both cases equally.
+You probably end up with three aux device names, gen 1, gen 2 roce and
+gen 2 iwarp
+
+Certainly flipping modes should change the device name. This helps
+keep everything synchronized, since you delete a device and wait for
+all drivers to unbind then create a new device with a different
+name.
 
 Jason
