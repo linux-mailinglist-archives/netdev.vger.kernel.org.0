@@ -2,134 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D1C030AA6E
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 16:06:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF60C30AB18
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 16:24:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230360AbhBAPFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 10:05:25 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:10357 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229883AbhBAPFI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 10:05:08 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B601818830000>; Mon, 01 Feb 2021 07:04:35 -0800
-Received: from [172.27.14.151] (172.20.145.6) by HQMAIL101.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 1 Feb
- 2021 15:04:33 +0000
-Subject: Re: [PATCH net 1/1] netfilter: conntrack: Check offload bit on table
- dump
-To:     Florian Westphal <fw@strlen.de>
-CC:     Pablo Neira Ayuso <pablo@netfilter.org>, <netdev@vger.kernel.org>,
-        "Paul Blakey" <paulb@nvidia.com>, Oz Shlomo <ozsh@nvidia.com>
-References: <20210128074052.777999-1-roid@nvidia.com>
- <20210130120114.GA7846@salvia>
- <3a29e9b5-7bf8-5c00-3ede-738f9b4725bf@nvidia.com>
- <997cbda4-acd1-a000-1408-269bc5c3abf3@nvidia.com>
- <20210201030853.GA19878@salvia>
- <1229b966-7772-44bd-6e91-fbde213ceb2d@nvidia.com>
- <20210201115036.GB12443@breakpoint.cc>
-From:   Roi Dayan <roid@nvidia.com>
-Message-ID: <edb8da93-d859-e7ae-53dd-cae09dff2eba@nvidia.com>
-Date:   Mon, 1 Feb 2021 17:04:28 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+        id S231402AbhBAPXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 10:23:10 -0500
+Received: from mail-yb1-f169.google.com ([209.85.219.169]:38983 "EHLO
+        mail-yb1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230256AbhBAPWP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 10:22:15 -0500
+Received: by mail-yb1-f169.google.com with SMTP id k4so17206522ybp.6;
+        Mon, 01 Feb 2021 07:22:00 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dsxwO7hWzLBNBcxb5oAX/WrRy6edgK73m5vgz2nVH7Q=;
+        b=jua+dTqmXbEX85xGAg+cPYPLbnY+yfw7xhyJavOO42LaavNpH5zixaSfHZTeAsJ8BN
+         Lzi4qIrdwusUb0W1xAsQbEffQ726BRItX7AU00lNK0ZB/gBedzp8OkrrkAZMF34kQWzk
+         GGmoh4LMH4rH0p7qQv8Myaioc3dDjiqHDxiIVqGBfaw3WFfuQ8Fh66EAGgELgmAPfZ4M
+         +I4dqpANQvnT7kRX3MjWmXVgAzy+Ie3SeQH4+wecPTPIBhDjrczS8Uvhz/jttlp3f5fG
+         WjsfbqFTqm8lFqjPwKxGp4Dg7ORm15Msetl+ZbrR0w8/cmiPnGaImtFqnby0iIdiZ/+B
+         VEZA==
+X-Gm-Message-State: AOAM531zVP5lRqm2HVps3UIfFl5VTT0kJSyB5ldfAZbT3r6M+iJEoa44
+        gqLGTmPa2hoNeXHv0muA7oBiYIw4U2fcs+lc/N6iYE18ycTjM5+b
+X-Google-Smtp-Source: ABdhPJwnE27Wk0UI8BZqnbJwsTwAI0TzEdeQheHNeNLfkQnPyHM9Ix5xSG/me6TxuPLoo+O9WHeKxVml6/8tmbokDPs=
+X-Received: by 2002:a25:84cc:: with SMTP id x12mr8729588ybm.487.1612192894792;
+ Mon, 01 Feb 2021 07:21:34 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210201115036.GB12443@breakpoint.cc>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL101.nvidia.com (172.20.187.10)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1612191875; bh=OKk8Wm1Nl876VozeMcsIPd2bPWbPqu6Qu8VEGR6jDOE=;
-        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
-         MIME-Version:In-Reply-To:Content-Type:Content-Language:
-         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
-        b=CqTIckptOaNH1xRTTrz7MGzaUjUiy+mQNYrKSe40crESlGQlBeCDrI9xvJ4+G+pPL
-         6sE+1RmAfxguSnWJN5xs+UZRHsAs93p4hLGfi1rxAMZfus7+VnkqyfRclYeQDkFkbM
-         XVYFBJCUgWZYI260QhHWtYQ2N9I1n2T4QG2L0VbYghKyMT2zV5R9heWHu8s8hzs/do
-         uJOTdCmcxxe0SospkwS9KqepsN4Jgk+55n10bkXoKi8hN4/yqVoEE+p7A7JB8qBpHh
-         XdSdmIPI8P/PJX7V6BJAwpJx81gfkX69qPskMnkzJjYh4fq17O0Czjo+PAGCsTH7ZY
-         5wGOyw0RnGZxw==
+References: <20210125104055.79882-1-socketcan@hartkopp.net>
+In-Reply-To: <20210125104055.79882-1-socketcan@hartkopp.net>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Tue, 2 Feb 2021 00:21:23 +0900
+Message-ID: <CAMZ6Rq+WvuGMrR2sQykt727ZZPvb2v-6hb0nvVpsUwWCco7bFg@mail.gmail.com>
+Subject: Re: [PATCH RESEND iproute2 5.11] iplink_can: add Classical CAN frame
+ LEN8_DLC support
+To:     Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-can <linux-can@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon. 25 Jan 2021 at 19:40, Oliver Hartkopp <socketcan@hartkopp.net> wrote:
+> The len8_dlc element is filled by the CAN interface driver and used for CAN
+> frame creation by the CAN driver when the CAN_CTRLMODE_CC_LEN8_DLC flag is
+> supported by the driver and enabled via netlink configuration interface.
+>
+> Add the command line support for cc-len8-dlc for Linux 5.11+
+>
+> Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+> ---
+>  ip/iplink_can.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+>
+> diff --git a/ip/iplink_can.c b/ip/iplink_can.c
+> index 735ab941..6a26f3ff 100644
+> --- a/ip/iplink_can.c
+> +++ b/ip/iplink_can.c
+> @@ -35,10 +35,11 @@ static void print_usage(FILE *f)
+>                 "\t[ one-shot { on | off } ]\n"
+>                 "\t[ berr-reporting { on | off } ]\n"
+>                 "\t[ fd { on | off } ]\n"
+>                 "\t[ fd-non-iso { on | off } ]\n"
+>                 "\t[ presume-ack { on | off } ]\n"
+> +               "\t[ cc-len8-dlc { on | off } ]\n"
+>                 "\n"
+>                 "\t[ restart-ms TIME-MS ]\n"
+>                 "\t[ restart ]\n"
+>                 "\n"
+>                 "\t[ termination { 0..65535 } ]\n"
+> @@ -101,10 +102,11 @@ static void print_ctrlmode(FILE *f, __u32 cm)
+>         _PF(CAN_CTRLMODE_ONE_SHOT, "ONE-SHOT");
+>         _PF(CAN_CTRLMODE_BERR_REPORTING, "BERR-REPORTING");
+>         _PF(CAN_CTRLMODE_FD, "FD");
+>         _PF(CAN_CTRLMODE_FD_NON_ISO, "FD-NON-ISO");
+>         _PF(CAN_CTRLMODE_PRESUME_ACK, "PRESUME-ACK");
+> +       _PF(CAN_CTRLMODE_CC_LEN8_DLC, "CC-LEN8-DLC");
+>  #undef _PF
+>         if (cm)
+>                 print_hex(PRINT_ANY, NULL, "%x", cm);
+>         close_json_array(PRINT_ANY, "> ");
+>  }
+> @@ -209,10 +211,14 @@ static int can_parse_opt(struct link_util *lu, int argc, char **argv,
+>                                      CAN_CTRLMODE_FD_NON_ISO);
+>                 } else if (matches(*argv, "presume-ack") == 0) {
+>                         NEXT_ARG();
+>                         set_ctrlmode("presume-ack", *argv, &cm,
+>                                      CAN_CTRLMODE_PRESUME_ACK);
+> +               } else if (matches(*argv, "cc-len8-dlc") == 0) {
+> +                       NEXT_ARG();
+> +                       set_ctrlmode("cc-len8-dlc", *argv, &cm,
+> +                                    CAN_CTRLMODE_CC_LEN8_DLC);
+>                 } else if (matches(*argv, "restart") == 0) {
+>                         __u32 val = 1;
+>
+>                         addattr32(n, 1024, IFLA_CAN_RESTART, val);
+>                 } else if (matches(*argv, "restart-ms") == 0) {
+> --
+> 2.29.2
 
+Reviewed-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-On 2021-02-01 1:50 PM, Florian Westphal wrote:
-> Roi Dayan <roid@nvidia.com> wrote:
->>>> There is a 3rd caller nf_ct_gc_expired() which being called by 3
->>>> other callers:
->>>> ____nf_conntrack_find()
->>>> nf_conntrack_tuple_taken()
->>>> early_drop_list()
->>>
->>> Hm. I'm not sure yet what path is triggering this bug.
->>>
->>> Florian came up with the idea of setting a very large timeout for
->>> offloaded flows (that are refreshed by the garbage collector) to avoid
->>> the extra check from the packet path, so those 3 functions above never
->>> hit the garbage collection path. This also applies for the ctnetlink
->>> (conntrack -L) and the /proc/net/nf_conntrack sysctl paths that the
->>> patch describes, those should not ever see an offloaded flow with a
->>> small timeout.
->>>
->>> nf_ct_offload_timeout() is called from:
->>>
->>> #1 flow_offload_add() to set a very large timer.
->>> #2 the garbage collector path, to refresh the timeout the very large
->>>      offload timer.
->>>
->>> Probably there is a race between setting the IPS_OFFLOAD and when
->>> flow_offload_add() is called? Garbage collector gets in between and
->>> zaps the connection. Is a newly offloaded connection that you observed
->>> that is being removed?
->>>
->>
->> yes. the flows being removed are newly offloaded connections.
-> 
-> If they are new, how can they be timed out already?
-> 
-> TCP initial timeout is one minute, UDP 30 seconds.
-> That should surely be enough to do flow_offload_add (which extends
-> the timeout)?
-
-Yes, flow_offload_add() extends the timeout. but it needs to finish.
-
-> 
-> Maybe something is doing flow_offload_add() for unconfirmed conntrack?
-> 
-> In unconfirmed conntrack case, ct->timeout is absolute timeout value, e.g. for
-> tcp it will be set to 60 * HZ.
-
-When I hit the issue I printed jiffies and ct->timeout and saw they are
-the same or very close but not an absolute number.
-
-> 
-> conntrack confirmation adds jiffies32 to it to make it relative
-> to current time (this is before insertion into the conntrack table,
-> so GC isn't supposed to happen before this).
-> 
-
-We hit this issue before more easily and pushed this fix
-
-4203b19c2796 netfilter: flowtable: Set offload timeout when adding flow
-
-That commit changed flow_offload_add() to extend ct timeout because on
-we noticed on busy systems GC didn't finish a full iteration on all
-conns and conns were cleaned.
-I think we might have the same issue.
-
-tcf_ct_flow_table_add() set the offload bit and calls flow_offload_add()
-
-We do know the offload bit is set when conn it deleted, so we hit the
-issue where timeout being tested after tcf_ct_flow_table_add() was 
-called but before ct timeout was fixed. so flow_offload_add() didn't
-finish and GC didn't start, or did start but did not finish full
-iteration.
-
-> In any case adding test for the offload bit seems to be papering over
-> invalid/broken ct->timeout value.
-> 
+Reviewed and tested the patch, everything is OK for me.
+Thanks Oliver!
