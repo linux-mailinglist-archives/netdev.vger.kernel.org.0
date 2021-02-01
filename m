@@ -2,110 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE91A30B14C
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 21:06:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CE4730B157
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 21:08:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232983AbhBAUFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 15:05:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59292 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232959AbhBAUEJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Feb 2021 15:04:09 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4C01164D9D;
-        Mon,  1 Feb 2021 20:03:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612209796;
-        bh=SPGIH21uIeoPxOc8dBO4zMKLz9H1qPq0rzCK55Pex0g=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=gdwkOKXXKPe4Erfglhl27sEJkbouCQKchoKf5LiR8aXGzdIw2GarFbD4TfgM29wjA
-         Jgb6/zYdjMXMk8lBLEEea5bxqJ7Qotl5fY6R/1wurY80DX6xIQ/KmhFEC+6KKMlw3x
-         1KYckGXghEVQLgKmbA+9TjPgyiiZLdwOplX6YDwebAuXqIXew1HOdseUn5prONKZgv
-         +rvYoPqmJGpsmkW5/2dY45VwUNjrRhsaYcHN86jy6KX0eEFbgUQD82gIYdH0l8CSoX
-         JwoXWSQ3gShzRPUmNxNDbuPv3nJCjW2bUFmAPPJlYgXf+jzeRDqLYZ2nDrf3omAVo9
-         Hl6np6l0SIX7w==
-Message-ID: <b6dc9fc1532a17efd7fdc33d65641626d9760183.camel@kernel.org>
-Subject: Re: [PATCH mlx5-next v1] RDMA/mlx5: Cleanup the synchronize_srcu()
- from the ODP flow
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>, Yishai Hadas <yishaih@nvidia.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Doug Ledford <dledford@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org
-Date:   Mon, 01 Feb 2021 12:03:15 -0800
-In-Reply-To: <20210201194952.GS4247@nvidia.com>
-References: <20210128064812.1921519-1-leon@kernel.org>
-         <c79124a204f2207f5f1fae69cc34fb08d91d3535.camel@kernel.org>
-         <549b337b-b51e-c984-a4d8-72f9f738be9c@nvidia.com>
-         <20210201194952.GS4247@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3 (3.38.3-1.fc33) 
+        id S232879AbhBAUHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 15:07:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45044 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232991AbhBAUHO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 15:07:14 -0500
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 045A8C061573
+        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 12:06:34 -0800 (PST)
+Received: by mail-wm1-x32c.google.com with SMTP id j18so389593wmi.3
+        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 12:06:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aVXNNvrQzhSCART1M9uQi1RCKhtrDut9W9JE2BmbicA=;
+        b=SQUrrOl6aYrucTEeDYRip0SpaEMVxaoPrzgQCfN8+xlOuFmO9awYM8CafY24fTHmxz
+         F1aB2F6oLElqoAuoac3Adk7VSPHQs2kOdzTQokFHGuAijFUUoQusf6CZ9dnNgG9JVs0/
+         AG0H8U5YCR25g4lWlIpw0Tfu+O7/HHGQjLhz7g91hBoLmOPUqH2k1sF/6iB20m5/dWx5
+         h6DGbykdcCC7DgTN+f3kNVqk8R3VBDFP7WzdGBX11B/xlWvr1pPwfJgLPqHDGza+7Dry
+         8SHc6VLjga9Qm7iiwR2DqYNIaYr+6hu0GSjHGfScCXJuy6TGN3A2T+UXyJevVGtMYb0T
+         YnUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aVXNNvrQzhSCART1M9uQi1RCKhtrDut9W9JE2BmbicA=;
+        b=KMZPboO0fVyTiZDBgjsZ4d5ZPPoVE3styf+us+VVKFCmNQvcnqxO4IHAxdPZk+iYRM
+         1o0KvuA1AzYTZpTi6F1m989anU/saULnIwtijw7fDi2odu5DiDVDbXYEk+TbyKcsD2/b
+         3yqf2y6iBoPt35zbDYUOI2VlI5jqEV17UXGRjSpLOBo2xckRSMq8HFax0jQhs4XXGShV
+         TotZ0L/lBB57c0bnL1ku6pA4rOjdCZNR06bddsweJCP9x4uOMT+kEXmkxbXs9MbayA8U
+         0OhAfbmyhm8ZYSiNbDDuJLRLO0osgrfax9Q8vRjUf3d9JMndFx3Nptjpz1mmtiXq5E9X
+         7BgA==
+X-Gm-Message-State: AOAM5310v2hz8YxABEjpp8gPDjD6l1kCk1Z/38+wnmWMJJVVizapoeXe
+        RAFSkH0hTeQT51RLGaJq5uOqJN4d1PgxUCOKWm4=
+X-Google-Smtp-Source: ABdhPJzeCzBgpOeIK1CgeDUKpMODp/l1qgQvJ4yWK7uxXrPvMpDojV1Qhm5z0da3ffUjmDA6GKGd76KmVzf27aNIG3A=
+X-Received: by 2002:a1c:dc83:: with SMTP id t125mr479745wmg.154.1612209992707;
+ Mon, 01 Feb 2021 12:06:32 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20201221222502.1706-1-nick.lowe@gmail.com> <379d4ef3-02e5-f08a-1b04-21848e11a365@bluematt.me>
+ <20210201084747.2cb64c3f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <a7a89e90bf6c3f383fa236b1128db8d012223da0.camel@intel.com> <20210201114545.6278ae5c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210201114545.6278ae5c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Nick Lowe <nick.lowe@gmail.com>
+Date:   Mon, 1 Feb 2021 20:06:16 +0000
+Message-ID: <CADSoG1uRKexjQJ7Oxqyspzbpx=Qyq2dTbOMp-dEjTSMMySmkFg@mail.gmail.com>
+Subject: Re: [PATCH net] igb: Enable RSS for Intel I211 Ethernet Controller
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "linux-wired-list@bluematt.me" <linux-wired-list@bluematt.me>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2021-02-01 at 15:49 -0400, Jason Gunthorpe wrote:
-> On Sun, Jan 31, 2021 at 03:24:50PM +0200, Yishai Hadas wrote:
-> > On 1/29/2021 2:23 PM, Saeed Mahameed wrote:
-> > > > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mr.c
-> > > > b/drivers/net/ethernet/mellanox/mlx5/core/mr.c
-> > > > index 9eb51f06d3ae..50af84e76fb6 100644
-> > > > +++ b/drivers/net/ethernet/mellanox/mlx5/core/mr.c
-> > > > @@ -56,6 +56,7 @@ int mlx5_core_create_mkey(struct
-> > > > mlx5_core_dev
-> > > > *dev,
-> > > >          mkey->size = MLX5_GET64(mkc, mkc, len);
-> > > >          mkey->key |= mlx5_idx_to_mkey(mkey_index);
-> > > >          mkey->pd = MLX5_GET(mkc, mkc, pd);
-> > > > +       init_waitqueue_head(&mkey->wait);
-> > > > 
-> > > >          mlx5_core_dbg(dev, "out 0x%x, mkey 0x%x\n",
-> > > > mkey_index, mkey-
-> > > > > key);
-> > > >          return 0;
-> > > > diff --git a/include/linux/mlx5/driver.h
-> > > > b/include/linux/mlx5/driver.h
-> > > > index 4901b4fadabb..f9e7036ae5a5 100644
-> > > > +++ b/include/linux/mlx5/driver.h
-> > > > @@ -373,6 +373,8 @@ struct mlx5_core_mkey {
-> > > >          u32                     key;
-> > > >          u32                     pd;
-> > > >          u32                     type;
-> > > > +       struct wait_queue_head wait;
-> > > > +       refcount_t usecount;
-> > > mlx5_core_mkey is used everywhere in mlx5_core and we don't care
-> > > about
-> > > odp complexity, i would like to keep the core simple and
-> > > primitive as
-> > > it is today.
-> > > please keep the layer separation and find a way to manage
-> > > refcount and
-> > > wait queue in mlx5_ib driver..
-> > > 
-> > The alternative could really be to come with some wrapped mlx5_ib
-> > structure
-> > that will hold 'mlx5_core_mkey' and will add those two fields.
-> 
-> Yes
-> 
-> struct mlx5_ib_mkey
-> {
->    struct mlx5_core_mkey mkey;
->    struct wait_queue_head wait;
->    refcount_t usecount;
-> }
-> 
-> struct mlx5_ib_mr/mw/devx
-> {
->     struct mlx5_ib_mkey mkey;
-> }
-> 
+Hi all,
 
-Yep, also i have a series internally that moves mlx5_core_mkey to
-mlx5_ib, in mlx5_core we don't need it we only need the u32 key :)
+It is correct that this is not a regression, it instead has never worked.
 
-I will send you this series internally.
+My suggestion would be to merge it during the 5.11 cycle rather than
+5.12 where possible because the patch is non-invasive and should be
+lower risk.
 
+There are significant and tangible real-world benefits to RSS
+functioning with the i211 so I do not personally think, on balance,
+that it is proportionate and worth waiting for 5.12 to conclude here.
+Any thoughts?
 
+More importantly though, after this does release in a stable kernel
+(regardless of whether that is 5.11 or 5.12) and this change has had
+some time to soak in the field, I do suggest consideration to then
+backport this to the 5.4 and 5.10 LTS kernels so that RSS starts to
+function there. 5.4 and 5.10 are the release branches that will, of
+course, get far more use for the next couple of years.
+
+Best,
+
+Nick
