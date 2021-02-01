@@ -2,114 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F16B30A308
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 09:09:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9DEC30A325
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 09:17:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232276AbhBAIJH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 03:09:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59318 "EHLO
+        id S232447AbhBAIR0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 03:17:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229967AbhBAIJF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 03:09:05 -0500
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89002C061573
-        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 00:08:25 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id s5so4895164edw.8
-        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 00:08:25 -0800 (PST)
+        with ESMTP id S229967AbhBAIRZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 03:17:25 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2AFFC061574
+        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 00:16:44 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id 6so15520774wri.3
+        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 00:16:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=D48ue510EZyqc3drPgLg8sCHAvLn0JXfiNYm43dUTmA=;
-        b=smGTlZZ651B7iKw7AuyGLRSKAIlsyVWZOXpBGAR4FNmRz5l9UH0mEvEb4SVIc6hT6w
-         27LbL8QeHjy/ACLqMcvAWZnVdbMLt/j8s02JhpGYyxr/UX4LfW6TPC0ZmpPkCkOlOCsy
-         HwEGRp5uEFQA8pSkflf2z//5DqIbtnz32q/1Ym8Z5rJpFSzNrT5oiQinmViBnWHY4OKM
-         jJL4d0BuZddFm9sofeitGB9S2c6+MQmyWWTh56Ln6CgVtdyLo4oKDiPd4bDWFRcC80VW
-         8h9L1LW5xvagPrVjnYstTQGYyrHGn8eimCp2ToMdjith1QffYxordoLik+Fufj7Ysl0a
-         CIzQ==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=1QFS3MQ6yzipVrP55TDom1gqcJTlU6RdEkGsOYHHxuQ=;
+        b=JYHpUBMxj9QoTY75GibNY0q6a98B60ZrSvunNFe4HD9uk6jKhh6pra0ifwJqLiIHZp
+         M4YwvG11GzLaHIfAfobqWWPGGDtKKiIGOAKBz87ma2BcceqeqqipPBY/FbxpM3yHrQ7F
+         6cd5HKPm4OZFW2jev0ev4VyAgtqt1mKnqJiPLbWMvERQmFwQ75s13gRTY2mYwoOjeDah
+         0neKkgd5cDFoBnnhlNiGE1CAumQ65GJiG+NPJ4HMQ4W5Tsev+ag4ad6wWi62OdPHgrfu
+         hu4yIujQUx4tQ7gGU524ALKWVC0LlgQsBPgmZBFVsDr6Am66eN9ns6y8rPoMgx7s6en0
+         t0mw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=D48ue510EZyqc3drPgLg8sCHAvLn0JXfiNYm43dUTmA=;
-        b=o6XJ9Tort1gF35X3se6ygBeG5PX32dDGKpNpmYBcvVuhw+aOxYhBt8/+sxTV635sNB
-         pZZTlTjnn1rj3JnK9+6sxNA4Xvug/x1B/NJP+IYKA465iXJxpWqc/rPAJNnF6f+fnYSn
-         C4SlIFbwv2h/wQZ77rdGHJwGETtCxF11v1IYpm/ch3KKqqqrZ71H2/nCQPRF+OTqyKzm
-         dWFdRZUBB7vvRQ1UdSbNz4g10SF+l+enj2QA9xc59rHY3rSQQSHEwBZoyqkioCsgjQS3
-         S1KdcpC1IBHFHXjWM+e/5yleUw2IemfMsdyFH70a7xoBpl8GaPRxELdvYXM+F3i7tBF+
-         aiDQ==
-X-Gm-Message-State: AOAM5328P4IJ9conHP7cxi060PuqyrIHgssTTuh26U9IDMw3Sa8WQtq3
-        R02hsbEoDT/MfTjAKpccIR6a7UKXs+24xkRCmnVxUtsomAQ=
-X-Google-Smtp-Source: ABdhPJyi8hSjDVLKjQSOaeU0CuZ2ICJQv2pXcmitNgIyJFHQcm18afnfN7wZsU8VLPWjtpWidkM1mfEvfFUStJCwTtw=
-X-Received: by 2002:aa7:c895:: with SMTP id p21mr17527205eds.165.1612166903735;
- Mon, 01 Feb 2021 00:08:23 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1QFS3MQ6yzipVrP55TDom1gqcJTlU6RdEkGsOYHHxuQ=;
+        b=aa2cq8VjiN+UyCgxnW6IURTf9QmUArY/tt0zAT8w13UKyRqfFTxAbI9fKc1GYQy+9y
+         q6lb8rkCT/ulz8yByUbz+xwWmaRQxgMAqTm+/xDoqjYBehTF4Npbm9uGHRFDx03m1fSE
+         O/hWQbxE+kjQ62oHOnZa1bE6LTPlrf+zpTpb3cjbwuioXrw/ivvPj+VCs32jVe5AOdJT
+         +BOjVIzsoApKk27avNW9USxC8L+S95WmC5osiRy7HGkmj0YEDBD7FNYjNwiFpusOYCXk
+         RMngYK3N+wxppTRb6YJtd6Hv/zODZtXEJXd38pzp4iPjy9Ox+TZMyp14c/xabT6VvKHp
+         9yWA==
+X-Gm-Message-State: AOAM531uQhahPeDg5RX4Xzvn3mGb4rk/wyuwVEZDxcRtNNXezX7eh+M2
+        oarDbrsNMVv4GsxL0c1eKbjRDA==
+X-Google-Smtp-Source: ABdhPJyRDUIOPtQuYklE5mjXKXJmUK1KHkpVw2h9zad2iQJVNcP8xWjm6J92yUuDYM/P9FfagvrALw==
+X-Received: by 2002:adf:a554:: with SMTP id j20mr7985262wrb.148.1612167403645;
+        Mon, 01 Feb 2021 00:16:43 -0800 (PST)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id c62sm5698699wme.16.2021.02.01.00.16.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Feb 2021 00:16:42 -0800 (PST)
+Date:   Mon, 1 Feb 2021 09:16:41 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Vadim Pasternak <vadimp@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "jacob.e.keller@intel.com" <jacob.e.keller@intel.com>,
+        Roopa Prabhu <roopa@nvidia.com>, mlxsw <mlxsw@nvidia.com>
+Subject: Re: [patch net-next RFC 00/10] introduce line card support for
+ modular switch
+Message-ID: <20210201081641.GC4652@nanopsycho.orion>
+References: <20210127075753.GP3565223@nanopsycho.orion>
+ <YBF1SmecdzLOgSIl@lunn.ch>
+ <20210128081434.GV3565223@nanopsycho.orion>
+ <YBLHaagSmqqUVap+@lunn.ch>
+ <20210129072015.GA4652@nanopsycho.orion>
+ <YBQujIdnFtEhWqTF@lunn.ch>
+ <DM6PR12MB389878422F910221DB296DC2AFB99@DM6PR12MB3898.namprd12.prod.outlook.com>
+ <YBRGj5Shy+qpUUgS@lunn.ch>
+ <20210130141952.GB4652@nanopsycho.orion>
+ <251d1e12-1d61-0922-31f8-a8313f18f194@gmail.com>
 MIME-Version: 1.0
-References: <1611589557-31012-1-git-send-email-loic.poulain@linaro.org> <20210129170129.0a4a682a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210129170129.0a4a682a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Mon, 1 Feb 2021 09:15:32 +0100
-Message-ID: <CAMZdPi_6tBkdQn+wakUmeMC+p8N3HStEja5ZfA3K-+x4DcM68g@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: mhi-net: Add de-aggeration support
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <251d1e12-1d61-0922-31f8-a8313f18f194@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub, Willem,
+Sun, Jan 31, 2021 at 06:09:24PM CET, dsahern@gmail.com wrote:
+>On 1/30/21 7:19 AM, Jiri Pirko wrote:
+>> Fri, Jan 29, 2021 at 06:31:59PM CET, andrew@lunn.ch wrote:
+>>>> Platform line card driver is aware of line card I2C topology, its
+>>>> responsibility is to detect line card basic hardware type, create I2C
+>>>> topology (mux), connect all the necessary I2C devices, like hotswap
+>>>> devices, voltage and power regulators devices, iio/a2d devices and line
+>>>> card EEPROMs, creates LED instances for LED located on a line card, exposes
+>>>> line card related attributes, like CPLD and FPGA versions, reset causes,
+>>>> required powered through line card hwmon interface.
+>>>
+>>> So this driver, and the switch driver need to talk to each other, so
+>>> the switch driver actually knows what, if anything, is in the slot.
+>> 
+>> Not possible in case the BMC is a different host, which is common
+>> scenario.
+>> 
+>
+>User provisions a 4 port card, but a 2 port card is inserted. How is
+>this detected and the user told the wrong card is inserted?
 
-On Sat, 30 Jan 2021 at 02:01, Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Mon, 25 Jan 2021 16:45:57 +0100 Loic Poulain wrote:
-> > When device side MTU is larger than host side MRU, the packets
-> > (typically rmnet packets) are split over multiple MHI transfers.
-> > In that case, fragments must be re-aggregated to recover the packet
-> > before forwarding to upper layer.
-> >
-> > A fragmented packet result in -EOVERFLOW MHI transaction status for
-> > each of its fragments, except the final one. Such transfer was
-> > previoulsy considered as error and fragments were simply dropped.
-> >
-> > This patch implements the aggregation mechanism allowing to recover
-> > the initial packet. It also prints a warning (once) since this behavior
-> > usually comes from a misconfiguration of the device (modem).
-> >
-> > Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
->
-> > +static struct sk_buff *mhi_net_skb_append(struct mhi_device *mhi_dev,
-> > +                                       struct sk_buff *skb1,
-> > +                                       struct sk_buff *skb2)
-> > +{
-> > +     struct sk_buff *new_skb;
-> > +
-> > +     /* This is the first fragment */
-> > +     if (!skb1)
-> > +             return skb2;
-> > +
-> > +     /* Expand packet */
-> > +     new_skb = skb_copy_expand(skb1, 0, skb2->len, GFP_ATOMIC);
-> > +     dev_kfree_skb_any(skb1);
-> > +     if (!new_skb)
-> > +             return skb2;
->
-> I don't get it, if you failed to grow the skb you'll return the next
-> fragment to the caller? So the frame just lost all of its data up to
-> where skb2 started? The entire fragment "train" should probably be
-> dropped at this point.
+The card won't get activated.
+The user won't see the type of inserted linecard. Again, it is not
+possible for ASIC to access the linecard eeprom. See Vadim's reply.
 
-Right, there is no point in keeping the partial packet in that case.
 
 >
-> I think you can just hang the skbs off skb_shinfo(p)->frag_list.
+>If it is not detected that's a serious problem, no?
+
+That is how it is, unfortunatelly.
+
+
 >
-> Willem - is it legal to feed frag_listed skbs into netif_rx()?
+>If it is detected why can't the same mechanism be used for auto
+>provisioning?
 
-In QMAP case, the packets will be forwarded to rmnet link, which works
-with linear skb (no NETIF_F_SG), does the linearization will be
-properly performed by the net core, in the same way as for xmit path?
-
-Regards,
-Loic
+Again, not possible to detect.
