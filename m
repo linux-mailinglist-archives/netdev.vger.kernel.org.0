@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1387F30A72F
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 13:07:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0FB130A733
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 13:07:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231302AbhBAMGL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 07:06:11 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:11665 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231226AbhBAMFo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 07:05:44 -0500
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4DTmmn3R03zlF16;
-        Mon,  1 Feb 2021 20:03:21 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by DGGEMS401-HUB.china.huawei.com
- (10.3.19.201) with Microsoft SMTP Server id 14.3.498.0; Mon, 1 Feb 2021
- 20:04:56 +0800
+        id S231377AbhBAMGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 07:06:49 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:11997 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231322AbhBAMGd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 07:06:33 -0500
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4DTmpB4Pl5zjHSs;
+        Mon,  1 Feb 2021 20:04:34 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by DGGEMS412-HUB.china.huawei.com
+ (10.3.19.212) with Microsoft SMTP Server id 14.3.498.0; Mon, 1 Feb 2021
+ 20:05:44 +0800
 From:   wanghongzhe <wanghongzhe@huawei.com>
 To:     <keescook@chromium.org>, <luto@amacapital.net>, <wad@chromium.org>,
         <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
@@ -24,9 +24,10 @@ To:     <keescook@chromium.org>, <luto@amacapital.net>, <wad@chromium.org>,
         <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
         <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
         <bpf@vger.kernel.org>
+CC:     <wanghongzhe@huawei.com>
 Subject: [PATCH] seccomp: Improve performance by optimizing memory barrier
-Date:   Mon, 1 Feb 2021 20:49:41 +0800
-Message-ID: <1612183781-15469-1-git-send-email-wanghongzhe@huawei.com>
+Date:   Mon, 1 Feb 2021 20:50:30 +0800
+Message-ID: <1612183830-15506-1-git-send-email-wanghongzhe@huawei.com>
 X-Mailer: git-send-email 1.7.12.4
 MIME-Version: 1.0
 Content-Type: text/plain
