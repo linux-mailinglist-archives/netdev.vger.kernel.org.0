@@ -2,167 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFF6830A283
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 08:09:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8091830A29F
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 08:26:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232122AbhBAHI7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 02:08:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45870 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232382AbhBAHHc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 02:07:32 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B4F8C0613D6
-        for <netdev@vger.kernel.org>; Sun, 31 Jan 2021 23:07:17 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id nm1so1426726pjb.3
-        for <netdev@vger.kernel.org>; Sun, 31 Jan 2021 23:07:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yEAXr+uYT47arw+BgtSxxjuiMvD2994EjnVkSqzNVfY=;
-        b=W57OCjk6JbbEC4TjR83KofLCibS8dcJom3IZSNhSRjw5CSmPK6uBlvGID5M8peSK1g
-         qbg2aSsCsVu9ARLEz506EijrXcJ5cuXfR7bEvPEGoLV1lckL1uC9baxQJI3Vvx2z3tj0
-         cyXH9yc3PwbWbOlLXj4Lhsj8YujMnzZQTFyj8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yEAXr+uYT47arw+BgtSxxjuiMvD2994EjnVkSqzNVfY=;
-        b=dsevo/uxdOMZXbWoHcRtrgPFzr1L7Sko4sKGNasLg1IJX3VHUfL6T3PWnAob9YH2OI
-         XRymvs3kXlOY2u3NK1jaqA5x9RB+cMVyAw+lmY14dd1VJd+nNGpDoj035hcCNehZdz2R
-         V7aEAD9fqvSbOQKp1XHv3X/wH+oqlVB5j+FLsFh15LoQYo/nqr8cO23W1QP92yetI7GH
-         Dw4vhFGsFKppjR6ppvr1L2pcWuLdVjr7QtPdthR6iKDD84sopODMovAPFAsXOqoXj/UU
-         Jp9Kb4ZblkeykmczrtIJod1EATf9mFa9Udn3RcbsXdE7WaePB5z0ZLq0nOsNzQXEspn7
-         sZ5w==
-X-Gm-Message-State: AOAM5324Fv/+EVh2zKnR/bXX4QdcMpvOWfPqhqaGRAujM/XTSOi7bj+y
-        Xf0smy5BKW+v3WcjJl6ILWOiVQ==
-X-Google-Smtp-Source: ABdhPJzYlktOhXkvTLg/xc7MCjc/pyZp0lyHg6HFBKuSA4R/WhR/9EXFwjDKeLhZBARJQLstYAGF8Q==
-X-Received: by 2002:a17:90a:b282:: with SMTP id c2mr16030435pjr.54.1612163236914;
-        Sun, 31 Jan 2021 23:07:16 -0800 (PST)
-Received: from localhost ([2401:fa00:1:b:158e:ed37:38d6:db19])
-        by smtp.gmail.com with ESMTPSA id a22sm14306240pjh.5.2021.01.31.23.07.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 31 Jan 2021 23:07:16 -0800 (PST)
-From:   Yen-lin Lai <yenlinlai@chromium.org>
-To:     linux-wireless@vger.kernel.org
-Cc:     Brian Norris <briannorris@chromium.org>,
-        Yen-lin Lai <yenlinlai@chromium.org>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Xinming Hu <huxinming820@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH] mwifiex: Report connected BSS with cfg80211_connect_bss()
-Date:   Mon,  1 Feb 2021 15:06:49 +0800
-Message-Id: <20210201070649.1667209-1-yenlinlai@chromium.org>
-X-Mailer: git-send-email 2.30.0.365.g02bc693789-goog
+        id S231760AbhBAHZD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 02:25:03 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:53268 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231540AbhBAHYi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 02:24:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612164190;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KlyzdQzXl3aPikAn68T+MmyWRqw+d/cvL92qDQmx7IA=;
+        b=UZEJIo+486TRV7L87+hiZYC8D5/nXckB2PDs0dOpwd7eyoJDAZX0iu5vzO+08++Aor9kUh
+        mjtG5Q768TOY+BtGbnktMnUVpGz+ChxisoSP37fhUFffv9nOOrbJu6zVAkoMbIYwugqp9z
+        FXnZf5Egd4ZEmm8ENtrOWv8TzTixeFw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-234-i0x7hE8ZM4yi-n9XoYSA0A-1; Mon, 01 Feb 2021 02:23:08 -0500
+X-MC-Unique: i0x7hE8ZM4yi-n9XoYSA0A-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C6FD3800D55;
+        Mon,  1 Feb 2021 07:23:07 +0000 (UTC)
+Received: from [10.72.13.120] (ovpn-13-120.pek2.redhat.com [10.72.13.120])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D94226F44F;
+        Mon,  1 Feb 2021 07:23:02 +0000 (UTC)
+Subject: Re: [PATCH 2/2] vdpa/mlx5: Restore the hardware used index after
+ change map
+To:     Eli Cohen <elic@nvidia.com>
+Cc:     mst@redhat.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lulu@redhat.com
+References: <20210128134130.3051-1-elic@nvidia.com>
+ <20210128134130.3051-3-elic@nvidia.com>
+ <54239b51-918c-3475-dc88-4da1a4548da8@redhat.com>
+ <20210131185536.GA164217@mtl-vdi-166.wap.labs.mlnx>
+ <0c99f35c-7644-7201-cd11-7d486389a182@redhat.com>
+ <20210201055247.GA184807@mtl-vdi-166.wap.labs.mlnx>
+ <c013407d-7a6a-adaa-efd1-24a8a48dc6fa@redhat.com>
+ <20210201063835.GA185985@mtl-vdi-166.wap.labs.mlnx>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <fb9407a9-224a-d8be-ef1d-8bdf9b316953@redhat.com>
+Date:   Mon, 1 Feb 2021 15:23:01 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <20210201063835.GA185985@mtl-vdi-166.wap.labs.mlnx>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a network is moved or reconfigured on the different channel, there
-can be multiple BSSes with the same BSSID and SSID in scan result
-before the old one expires. Then, it can cause cfg80211_connect_result
-to map current_bss to a bss with the wrong channel.
 
-Let mwifiex_cfg80211_assoc return the selected BSS and then the caller
-can report it cfg80211_connect_bss.
+On 2021/2/1 下午2:38, Eli Cohen wrote:
+> On Mon, Feb 01, 2021 at 02:00:35PM +0800, Jason Wang wrote:
+>> On 2021/2/1 下午1:52, Eli Cohen wrote:
+>>> On Mon, Feb 01, 2021 at 11:36:23AM +0800, Jason Wang wrote:
+>>>> On 2021/2/1 上午2:55, Eli Cohen wrote:
+>>>>> On Fri, Jan 29, 2021 at 11:49:45AM +0800, Jason Wang wrote:
+>>>>>> On 2021/1/28 下午9:41, Eli Cohen wrote:
+>>>>>>> When a change of memory map occurs, the hardware resources are destroyed
+>>>>>>> and then re-created again with the new memory map. In such case, we need
+>>>>>>> to restore the hardware available and used indices. The driver failed to
+>>>>>>> restore the used index which is added here.
+>>>>>>>
+>>>>>>> Fixes 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
+>>>>>>> Signed-off-by: Eli Cohen <elic@nvidia.com>
+>>>>>> A question. Does this mean after a vq is suspended, the hw used index is not
+>>>>>> equal to vq used index?
+>>>>> Surely there is just one "Used index" for a VQ. What I was trying to say
+>>>>> is that after the VQ is suspended, I read the used index by querying the
+>>>>> hardware. The read result is the used index that the hardware wrote to
+>>>>> memory.
+>>>> Just to make sure I understand here. So it looks to me we had two index. The
+>>>> first is the used index which is stored in the memory/virtqueue, the second
+>>>> is the one that is stored by the device.
+>>>>
+>>> It is the structures defined in the virtio spec in 2.6.6 for the
+>>> available ring and 2.6.8 for the used ring. As you know these the
+>>> available ring is written to by the driver and read by the device. The
+>>> opposite happens for the used index.
+>>
+>> Right, so for used index it was wrote by device. And the device should have
+>> an internal used index value that is used to write to the used ring. And the
+>> code is used to sync the device internal used index if I understand this
+>> correctly.
+>>
+>>
+>>> The reason I need to restore the last known indices is for the new
+>>> hardware objects to sync on the last state and take over from there.
+>>
+>> Right, after the vq suspending, the questions are:
+>>
+>> 1) is hardware internal used index might not be the same with the used index
+>> in the virtqueue?
+>>
+> Generally the answer is no because the hardware is the only one writing
+> it. New objects start up with the initial value configured to them upon
+> creation. This value was zero before this change.
+> You could argue that since the hardware has access to virtqueue memory,
+> it could just read the value from there but it does not.
 
-Signed-off-by: Yen-lin Lai <yenlinlai@chromium.org>
 
----
+I see.
 
- .../net/wireless/marvell/mwifiex/cfg80211.c   | 35 ++++++++++++++-----
- 1 file changed, 26 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/cfg80211.c b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-index a6b9dc6700b1..4bae83e47e9e 100644
---- a/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-+++ b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-@@ -2173,7 +2173,8 @@ static int
- mwifiex_cfg80211_assoc(struct mwifiex_private *priv, size_t ssid_len,
- 		       const u8 *ssid, const u8 *bssid, int mode,
- 		       struct ieee80211_channel *channel,
--		       struct cfg80211_connect_params *sme, bool privacy)
-+		       struct cfg80211_connect_params *sme, bool privacy,
-+		       struct cfg80211_bss **sel_bss)
- {
- 	struct cfg80211_ssid req_ssid;
- 	int ret, auth_type = 0;
-@@ -2307,17 +2308,31 @@ mwifiex_cfg80211_assoc(struct mwifiex_private *priv, size_t ssid_len,
- 		}
- 	}
- 
-+	if (bss)
-+		cfg80211_ref_bss(priv->adapter->wiphy, bss);
-+
- 	ret = mwifiex_bss_start(priv, bss, &req_ssid);
- 	if (ret)
--		return ret;
-+		goto cleanup;
- 
- 	if (mode == NL80211_IFTYPE_ADHOC) {
- 		/* Inform the BSS information to kernel, otherwise
- 		 * kernel will give a panic after successful assoc */
--		if (mwifiex_cfg80211_inform_ibss_bss(priv))
--			return -EFAULT;
-+		if (mwifiex_cfg80211_inform_ibss_bss(priv)) {
-+			ret = -EFAULT;
-+			goto cleanup;
-+		}
- 	}
- 
-+	/* Pass the selected BSS entry to caller. */
-+	if (sel_bss) {
-+		*sel_bss = bss;
-+		bss = NULL;
-+	}
-+
-+cleanup:
-+	if (bss)
-+		cfg80211_put_bss(priv->adapter->wiphy, bss);
- 	return ret;
- }
- 
-@@ -2334,6 +2349,7 @@ mwifiex_cfg80211_connect(struct wiphy *wiphy, struct net_device *dev,
- {
- 	struct mwifiex_private *priv = mwifiex_netdev_get_priv(dev);
- 	struct mwifiex_adapter *adapter = priv->adapter;
-+	struct cfg80211_bss *bss = NULL;
- 	int ret;
- 
- 	if (GET_BSS_ROLE(priv) != MWIFIEX_BSS_ROLE_STA) {
-@@ -2369,11 +2385,12 @@ mwifiex_cfg80211_connect(struct wiphy *wiphy, struct net_device *dev,
- 		cfg80211_sched_scan_stopped_rtnl(priv->wdev.wiphy, 0);
- 
- 	ret = mwifiex_cfg80211_assoc(priv, sme->ssid_len, sme->ssid, sme->bssid,
--				     priv->bss_mode, sme->channel, sme, 0);
-+				     priv->bss_mode, sme->channel, sme, 0,
-+				     &bss);
- 	if (!ret) {
--		cfg80211_connect_result(priv->netdev, priv->cfg_bssid, NULL, 0,
--					NULL, 0, WLAN_STATUS_SUCCESS,
--					GFP_KERNEL);
-+		cfg80211_connect_bss(priv->netdev, priv->cfg_bssid, bss, NULL,
-+				     0, NULL, 0, WLAN_STATUS_SUCCESS,
-+				     GFP_KERNEL, NL80211_TIMEOUT_UNSPECIFIED);
- 		mwifiex_dbg(priv->adapter, MSG,
- 			    "info: associated to bssid %pM successfully\n",
- 			    priv->cfg_bssid);
-@@ -2504,7 +2521,7 @@ mwifiex_cfg80211_join_ibss(struct wiphy *wiphy, struct net_device *dev,
- 	ret = mwifiex_cfg80211_assoc(priv, params->ssid_len, params->ssid,
- 				     params->bssid, priv->bss_mode,
- 				     params->chandef.chan, NULL,
--				     params->privacy);
-+				     params->privacy, NULL);
- done:
- 	if (!ret) {
- 		cfg80211_ibss_joined(priv->netdev, priv->cfg_bssid,
--- 
-2.30.0.365.g02bc693789-goog
+>
+>> or
+>>
+>> 2) can we simply sync the virtqueue's used index to the hardware's used
+>> index?
+>>
+> Theoretically it could be done but that's not how the hardware works.
+> One reason is that is not supposed to read from that area. But it is
+> really hardware implementation detail.
+
+
+I get you now.
+
+So
+
+Acked-by: Jason Wang <jasowang@redhat.com>
+
+Thanks
+
+
+>>>>>     After the I create the new hardware object, I need to tell it
+>>>>> what is the used index (and the available index) as a way to sync it
+>>>>> with the existing VQ.
+>>>> For avail index I understand that the hardware index is not synced with the
+>>>> avail index stored in the memory/virtqueue. The question is used index, if
+>>>> the hardware one is not synced with the one in the virtqueue. It means after
+>>>> vq is suspended,  some requests is not completed by the hardware (e.g the
+>>>> buffer were not put to used ring).
+>>>>
+>>>> This may have implications to live migration, it means those unaccomplished
+>>>> requests needs to be migrated to the destination and resubmitted to the
+>>>> device. This looks not easy.
+>>>>
+>>>> Thanks
+>>>>
+>>>>
+>>>>> This sync is especially important when a change of map occurs while the
+>>>>> VQ was already used (hence the indices are likely to be non zero). This
+>>>>> can be triggered by hot adding memory after the VQs have been used.
+>>>>>
+>>>>>> Thanks
+>>>>>>
+>>>>>>
+>>>>>>> ---
+>>>>>>>      drivers/vdpa/mlx5/net/mlx5_vnet.c | 7 +++++++
+>>>>>>>      1 file changed, 7 insertions(+)
+>>>>>>>
+>>>>>>> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+>>>>>>> index 549ded074ff3..3fc8588cecae 100644
+>>>>>>> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+>>>>>>> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+>>>>>>> @@ -87,6 +87,7 @@ struct mlx5_vq_restore_info {
+>>>>>>>      	u64 device_addr;
+>>>>>>>      	u64 driver_addr;
+>>>>>>>      	u16 avail_index;
+>>>>>>> +	u16 used_index;
+>>>>>>>      	bool ready;
+>>>>>>>      	struct vdpa_callback cb;
+>>>>>>>      	bool restore;
+>>>>>>> @@ -121,6 +122,7 @@ struct mlx5_vdpa_virtqueue {
+>>>>>>>      	u32 virtq_id;
+>>>>>>>      	struct mlx5_vdpa_net *ndev;
+>>>>>>>      	u16 avail_idx;
+>>>>>>> +	u16 used_idx;
+>>>>>>>      	int fw_state;
+>>>>>>>      	/* keep last in the struct */
+>>>>>>> @@ -804,6 +806,7 @@ static int create_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtque
+>>>>>>>      	obj_context = MLX5_ADDR_OF(create_virtio_net_q_in, in, obj_context);
+>>>>>>>      	MLX5_SET(virtio_net_q_object, obj_context, hw_available_index, mvq->avail_idx);
+>>>>>>> +	MLX5_SET(virtio_net_q_object, obj_context, hw_used_index, mvq->used_idx);
+>>>>>>>      	MLX5_SET(virtio_net_q_object, obj_context, queue_feature_bit_mask_12_3,
+>>>>>>>      		 get_features_12_3(ndev->mvdev.actual_features));
+>>>>>>>      	vq_ctx = MLX5_ADDR_OF(virtio_net_q_object, obj_context, virtio_q_context);
+>>>>>>> @@ -1022,6 +1025,7 @@ static int connect_qps(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *m
+>>>>>>>      struct mlx5_virtq_attr {
+>>>>>>>      	u8 state;
+>>>>>>>      	u16 available_index;
+>>>>>>> +	u16 used_index;
+>>>>>>>      };
+>>>>>>>      static int query_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq,
+>>>>>>> @@ -1052,6 +1056,7 @@ static int query_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueu
+>>>>>>>      	memset(attr, 0, sizeof(*attr));
+>>>>>>>      	attr->state = MLX5_GET(virtio_net_q_object, obj_context, state);
+>>>>>>>      	attr->available_index = MLX5_GET(virtio_net_q_object, obj_context, hw_available_index);
+>>>>>>> +	attr->used_index = MLX5_GET(virtio_net_q_object, obj_context, hw_used_index);
+>>>>>>>      	kfree(out);
+>>>>>>>      	return 0;
+>>>>>>> @@ -1602,6 +1607,7 @@ static int save_channel_info(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqu
+>>>>>>>      		return err;
+>>>>>>>      	ri->avail_index = attr.available_index;
+>>>>>>> +	ri->used_index = attr.used_index;
+>>>>>>>      	ri->ready = mvq->ready;
+>>>>>>>      	ri->num_ent = mvq->num_ent;
+>>>>>>>      	ri->desc_addr = mvq->desc_addr;
+>>>>>>> @@ -1646,6 +1652,7 @@ static void restore_channels_info(struct mlx5_vdpa_net *ndev)
+>>>>>>>      			continue;
+>>>>>>>      		mvq->avail_idx = ri->avail_index;
+>>>>>>> +		mvq->used_idx = ri->used_index;
+>>>>>>>      		mvq->ready = ri->ready;
+>>>>>>>      		mvq->num_ent = ri->num_ent;
+>>>>>>>      		mvq->desc_addr = ri->desc_addr;
 
