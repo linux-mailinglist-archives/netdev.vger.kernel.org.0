@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 393D230A43A
-	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 10:20:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 267D130A43D
+	for <lists+netdev@lfdr.de>; Mon,  1 Feb 2021 10:20:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232847AbhBAJSi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 04:18:38 -0500
-Received: from mail-io1-f72.google.com ([209.85.166.72]:36323 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232728AbhBAJQz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 04:16:55 -0500
-Received: by mail-io1-f72.google.com with SMTP id f7so11332339ioz.3
-        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 01:16:38 -0800 (PST)
+        id S232854AbhBAJTO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 04:19:14 -0500
+Received: from mail-il1-f199.google.com ([209.85.166.199]:35322 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232804AbhBAJSB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 04:18:01 -0500
+Received: by mail-il1-f199.google.com with SMTP id i7so13112311ilu.2
+        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 01:17:39 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=J7T7XJfE9UhBh5HjcgKJFv0+xMfDR6bs3Go2l1l2OgQ=;
-        b=SEWweGGX+UxJEMR+d/zNO4EpxQ7ENGahqxo41eRjnOl4MTpD6z4MsR/TG6IbwhNh2c
-         9fol4ssvNffedbV+GpWtGrjzpQbbUPKmkD+AYBPEb06XXOi/qHWsa1SIcxdK5uiFOr6H
-         NQWVWWEgvGf6ER9xHgxmBtWKY9SBxnidd3YqTF53AjxK2+9eZ8Szwc7lmInGadcYQows
-         OpkgIvuY2KsymlvD51VQpkNHbGo+IQ33iEOWRKB2ARVJ6CDJAyNWDYVvSdojabj+JS+1
-         Qly85KSC0mZSdof2GCXpdKSy16aet71bCi10Dtdt55sbdRWo2fW2aQTojR0C3qcdW+bF
-         i8Nw==
-X-Gm-Message-State: AOAM532UQFSncril/J4WED3n64LJGwrhYlc87x7K0Q0r6XW2QXXvLGl+
-        zs8BOs8w1bKvP1PBl9IFeCXs2iHO3wAulK2I09KFbo3WQ8Wa
-X-Google-Smtp-Source: ABdhPJwOtYqkHVZOuKX4W39+s199i7sNBidMCy8p8WqfNYPw8rSn9n/6wgiClhy40G7Fw0T9Py3xf9YtDJJJmnAg9seyhgNBaDRr
+        bh=SrNfZXHxsIEgxk3N2yFbbCHE4Z9hx44sWpRifIxl/so=;
+        b=NtoobhJ9RExhBQ/iC8SsSKAWZm5h1rWqYY/K+lHDtelNn6fmL40GNobBuJtHr3PKUa
+         48gbGV9oIxBhsFoZK/8phi+apd/cT2MKJqsUfFO0qEmTtoxCuzoMWRfiErxzCXK5IqIV
+         qtB7IxLVo73U9vXIHKGKl6J4/39G1HiGenDEmN5TA+jvfC+qX2BdvMH/E+Q3vk2p8+t/
+         sxqXIPSHzNN1zCS5QuNsnHZy9LpVBequ2unI2bonzuoXDiBcWEXTreMA62BVXg6D5ZwZ
+         0BvXlww7w8TPPQ5kr+k+duGWxrmzUykivKmEJIboUrkAQheygRoY6pt0t16xqsGN6Wz2
+         FOzQ==
+X-Gm-Message-State: AOAM530028wK2OtDiCrIY7AOT4nKaQB2PjxcsmGzZC+yCHWgZrAVVj2M
+        gMnidJBZxKb+71gypIfG/teoTJyNVlRHv/c/6VpuiNAddMbz
+X-Google-Smtp-Source: ABdhPJzBp6bDTAA6yS8c2s7Pg2gEY+OmftfyIdFfbItyeJrPDcy6KQvwArKvZf3Kbhql7In6wo+xVCq6yd3rSEUmqd3fmXO3XxMd
 MIME-Version: 1.0
-X-Received: by 2002:a6b:f107:: with SMTP id e7mr11870848iog.191.1612170972094;
- Mon, 01 Feb 2021 01:16:12 -0800 (PST)
-Date:   Mon, 01 Feb 2021 01:16:12 -0800
+X-Received: by 2002:a92:c5c5:: with SMTP id s5mr10130389ilt.111.1612171033418;
+ Mon, 01 Feb 2021 01:17:13 -0800 (PST)
+Date:   Mon, 01 Feb 2021 01:17:13 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000001be3ac05ba42cef9@google.com>
-Subject: INFO: task hung in rsvp_delete_filter_work
-From:   syzbot <syzbot+a2ec7a7fb2331091aecf@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, dsahern@kernel.org, johannes@sipsolutions.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com,
-        yoshfuji@linux-ipv6.org
+Message-ID: <000000000000c3a1b705ba42d1ca@google.com>
+Subject: possible deadlock in cfg80211_netdev_notifier_call
+From:   syzbot <syzbot+2ae0ca9d7737ad1a62b7@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, davem@davemloft.net, hagen@jauu.net,
+        johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, rppt@linux.ibm.com, sfr@canb.auug.org.au,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -49,155 +49,111 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    14e8e0f6 tcp: shrink inet_connection_sock icsk_mtup enable..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=114362c4d00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=ac6e76902c1abb76
-dashboard link: https://syzkaller.appspot.com/bug?extid=a2ec7a7fb2331091aecf
+HEAD commit:    b01f250d Add linux-next specific files for 20210129
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=14daa408d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=725bc96dc234fda7
+dashboard link: https://syzkaller.appspot.com/bug?extid=2ae0ca9d7737ad1a62b7
 compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=114d33d8d00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12610ac4d00000
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1757f2a0d00000
 
 The issue was bisected to:
 
-commit 0fedc63fadf0404a729e73a35349481c8009c02f
-Author: Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed Sep 23 03:56:24 2020 +0000
+commit cc9327f3b085ba5be5639a5ec3ce5b08a0f14a7c
+Author: Mike Rapoport <rppt@linux.ibm.com>
+Date:   Thu Jan 28 07:42:40 2021 +0000
 
-    net_sched: commit action insertions together
+    mm: introduce memfd_secret system call to create "secret" memory areas
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1065c1d8d00000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=1265c1d8d00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=1465c1d8d00000
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1505d28cd00000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=1705d28cd00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1305d28cd00000
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+a2ec7a7fb2331091aecf@syzkaller.appspotmail.com
-Fixes: 0fedc63fadf0 ("net_sched: commit action insertions together")
+Reported-by: syzbot+2ae0ca9d7737ad1a62b7@syzkaller.appspotmail.com
+Fixes: cc9327f3b085 ("mm: introduce memfd_secret system call to create "secret" memory areas")
 
-INFO: task kworker/u4:0:8 blocked for more than 143 seconds.
-      Not tainted 5.11.0-rc5-syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:kworker/u4:0    state:D stack:23440 pid:    8 ppid:     2 flags:0x00004000
-Workqueue: tc_filter_workqueue rsvp_delete_filter_work
-Call Trace:
- context_switch kernel/sched/core.c:4327 [inline]
- __schedule+0x90c/0x21a0 kernel/sched/core.c:5078
- schedule+0xcf/0x270 kernel/sched/core.c:5157
- schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:5216
- __mutex_lock_common kernel/locking/mutex.c:1033 [inline]
- __mutex_lock+0x81a/0x1110 kernel/locking/mutex.c:1103
- rsvp_delete_filter_work+0xe/0x20 net/sched/cls_rsvp.h:293
- process_one_work+0x98d/0x15f0 kernel/workqueue.c:2275
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2421
- kthread+0x3b1/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-INFO: task kworker/0:3:3217 blocked for more than 143 seconds.
-      Not tainted 5.11.0-rc5-syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:kworker/0:3     state:D stack:26720 pid: 3217 ppid:     2 flags:0x00004000
-Workqueue: ipv6_addrconf addrconf_verify_work
-Call Trace:
- context_switch kernel/sched/core.c:4327 [inline]
- __schedule+0x90c/0x21a0 kernel/sched/core.c:5078
- schedule+0xcf/0x270 kernel/sched/core.c:5157
- schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:5216
- __mutex_lock_common kernel/locking/mutex.c:1033 [inline]
- __mutex_lock+0x81a/0x1110 kernel/locking/mutex.c:1103
- addrconf_verify_work+0xa/0x20 net/ipv6/addrconf.c:4572
- process_one_work+0x98d/0x15f0 kernel/workqueue.c:2275
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2421
- kthread+0x3b1/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+============================================
+WARNING: possible recursive locking detected
+5.11.0-rc5-next-20210129-syzkaller #0 Not tainted
+--------------------------------------------
+syz-executor.1/27924 is trying to acquire lock:
+ffff88801c7305e8 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: wiphy_lock include/net/cfg80211.h:5267 [inline]
+ffff88801c7305e8 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: cfg80211_netdev_notifier_call+0x68c/0x1180 net/wireless/core.c:1407
 
-Showing all locks held in the system:
-3 locks held by kworker/u4:0/8:
- #0: ffff88814156a938 ((wq_completion)tc_filter_workqueue){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff88814156a938 ((wq_completion)tc_filter_workqueue){+.+.}-{0:0}, at: atomic64_set include/asm-generic/atomic-instrumented.h:856 [inline]
- #0: ffff88814156a938 ((wq_completion)tc_filter_workqueue){+.+.}-{0:0}, at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
- #0: ffff88814156a938 ((wq_completion)tc_filter_workqueue){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:616 [inline]
- #0: ffff88814156a938 ((wq_completion)tc_filter_workqueue){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:643 [inline]
- #0: ffff88814156a938 ((wq_completion)tc_filter_workqueue){+.+.}-{0:0}, at: process_one_work+0x871/0x15f0 kernel/workqueue.c:2246
- #1: ffffc90000cd7da8 ((work_completion)(&(rwork)->work)){+.+.}-{0:0}, at: process_one_work+0x8a5/0x15f0 kernel/workqueue.c:2250
- #2: ffffffff8ca5a488 (rtnl_mutex){+.+.}-{3:3}, at: rsvp_delete_filter_work+0xe/0x20 net/sched/cls_rsvp.h:293
-1 lock held by khungtaskd/1659:
- #0: ffffffff8b373d20 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x53/0x260 kernel/locking/lockdep.c:6259
-3 locks held by kworker/0:3/3217:
- #0: ffff8881472c5138 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff8881472c5138 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: atomic64_set include/asm-generic/atomic-instrumented.h:856 [inline]
- #0: ffff8881472c5138 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
- #0: ffff8881472c5138 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:616 [inline]
- #0: ffff8881472c5138 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:643 [inline]
- #0: ffff8881472c5138 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: process_one_work+0x871/0x15f0 kernel/workqueue.c:2246
- #1: ffffc90001e1fda8 ((addr_chk_work).work){+.+.}-{0:0}, at: process_one_work+0x8a5/0x15f0 kernel/workqueue.c:2250
- #2: ffffffff8ca5a488 (rtnl_mutex){+.+.}-{3:3}, at: addrconf_verify_work+0xa/0x20 net/ipv6/addrconf.c:4572
-1 lock held by in:imklog/8196:
- #0: ffff888012330370 (&f->f_pos_lock){+.+.}-{3:3}, at: __fdget_pos+0xe9/0x100 fs/file.c:947
-1 lock held by syz-executor200/8491:
+but task is already holding lock:
+ffff88801c7305e8 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: wiphy_lock include/net/cfg80211.h:5267 [inline]
+ffff88801c7305e8 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: nl80211_pre_doit+0x347/0x5a0 net/wireless/nl80211.c:14837
 
-=============================================
+other info that might help us debug this:
+ Possible unsafe locking scenario:
 
-NMI backtrace for cpu 1
-CPU: 1 PID: 1659 Comm: khungtaskd Not tainted 5.11.0-rc5-syzkaller #0
+       CPU0
+       ----
+  lock(&rdev->wiphy.mtx);
+  lock(&rdev->wiphy.mtx);
+
+ *** DEADLOCK ***
+
+ May be due to missing lock nesting notation
+
+3 locks held by syz-executor.1/27924:
+ #0: ffffffff8cd04eb0 (cb_lock){++++}-{3:3}, at: genl_rcv+0x15/0x40 net/netlink/genetlink.c:810
+ #1: ffffffff8cc75248 (rtnl_mutex){+.+.}-{3:3}, at: nl80211_pre_doit+0x22/0x5a0 net/wireless/nl80211.c:14793
+ #2: ffff88801c7305e8 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: wiphy_lock include/net/cfg80211.h:5267 [inline]
+ #2: ffff88801c7305e8 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: nl80211_pre_doit+0x347/0x5a0 net/wireless/nl80211.c:14837
+
+stack backtrace:
+CPU: 1 PID: 27924 Comm: syz-executor.1 Not tainted 5.11.0-rc5-next-20210129-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
 Call Trace:
  __dump_stack lib/dump_stack.c:79 [inline]
  dump_stack+0x107/0x163 lib/dump_stack.c:120
- nmi_cpu_backtrace.cold+0x44/0xd7 lib/nmi_backtrace.c:105
- nmi_trigger_cpumask_backtrace+0x1b3/0x230 lib/nmi_backtrace.c:62
- trigger_all_cpu_backtrace include/linux/nmi.h:146 [inline]
- check_hung_uninterruptible_tasks kernel/hung_task.c:209 [inline]
- watchdog+0xd43/0xfa0 kernel/hung_task.c:294
- kthread+0x3b1/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-Sending NMI from CPU 1 to CPUs 0:
-NMI backtrace for cpu 0
-CPU: 0 PID: 8491 Comm: syz-executor200 Not tainted 5.11.0-rc5-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:match_held_lock+0x0/0x150 kernel/locking/lockdep.c:4891
-Code: cc cc cc cc cc cc cc cc cc cc 0f 1f 44 00 00 48 8b 34 24 48 c7 c7 c0 25 4a 89 e8 b8 2a bf ff cc cc cc cc cc cc cc cc cc cc cc <48> 39 77 10 0f 84 97 00 00 00 66 f7 47 22 f0 ff 74 4b 48 83 ec 08
-RSP: 0018:ffffc9000197ecd8 EFLAGS: 00000002
-RAX: 0000000000000005 RBX: 0000000000000002 RCX: ffffc9000197ed68
-RDX: 0000000000000002 RSI: ffff8880212a6c68 RDI: ffff888022122570
-RBP: 1ffff9200032fda5 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000000 R12: ffff888022122570
-R13: ffff8880212a6c68 R14: ffffc9000197ed68 R15: 0000000000000001
-FS:  0000000001643880(0000) GS:ffff8880b9e00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000080 CR3: 0000000020ad5000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- find_held_lock+0x2d/0x110 kernel/locking/lockdep.c:4935
- __lock_release kernel/locking/lockdep.c:5119 [inline]
- lock_release+0x1f2/0x710 kernel/locking/lockdep.c:5462
- __mutex_unlock_slowpath+0x81/0x610 kernel/locking/mutex.c:1228
- tcf_idr_check_alloc+0x29e/0x3b0 net/sched/act_api.c:556
- tcf_police_init+0x34f/0x1460 net/sched/act_police.c:81
- tcf_action_init_1+0x103/0x640 net/sched/act_api.c:1026
- tcf_exts_validate+0x1d7/0x540 net/sched/cls_api.c:3051
- rsvp_change+0x291/0x2990 net/sched/cls_rsvp.h:502
- tc_new_tfilter+0x1394/0x2120 net/sched/cls_api.c:2127
- rtnetlink_rcv_msg+0x80e/0xad0 net/core/rtnetlink.c:5544
+ print_deadlock_bug kernel/locking/lockdep.c:2829 [inline]
+ check_deadlock kernel/locking/lockdep.c:2872 [inline]
+ validate_chain kernel/locking/lockdep.c:3661 [inline]
+ __lock_acquire.cold+0x14c/0x3b4 kernel/locking/lockdep.c:4899
+ lock_acquire kernel/locking/lockdep.c:5509 [inline]
+ lock_acquire+0x1a8/0x720 kernel/locking/lockdep.c:5474
+ __mutex_lock_common kernel/locking/mutex.c:956 [inline]
+ __mutex_lock+0x134/0x1110 kernel/locking/mutex.c:1103
+ wiphy_lock include/net/cfg80211.h:5267 [inline]
+ cfg80211_netdev_notifier_call+0x68c/0x1180 net/wireless/core.c:1407
+ notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
+ call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2040
+ call_netdevice_notifiers_extack net/core/dev.c:2052 [inline]
+ call_netdevice_notifiers net/core/dev.c:2066 [inline]
+ unregister_netdevice_many+0x943/0x1750 net/core/dev.c:10704
+ unregister_netdevice_queue+0x2dd/0x3c0 net/core/dev.c:10638
+ register_netdevice+0x109f/0x14a0 net/core/dev.c:10013
+ cfg80211_register_netdevice+0x11d/0x2a0 net/wireless/core.c:1349
+ ieee80211_if_add+0xfb8/0x18f0 net/mac80211/iface.c:1990
+ ieee80211_add_iface+0x99/0x160 net/mac80211/cfg.c:125
+ rdev_add_virtual_intf net/wireless/rdev-ops.h:45 [inline]
+ nl80211_new_interface+0x541/0x1100 net/wireless/nl80211.c:3977
+ genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:739
+ genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
+ genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:800
  netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
+ genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
  netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
  netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
  netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2345
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2399
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2432
+ sock_sendmsg_nosec net/socket.c:654 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:674
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2350
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2404
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2437
  do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x4417b9
-Code: e8 fc ab 02 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 1b 09 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffd5ed328c8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00000000004417b9
-RDX: 0000000000000000 RSI: 0000000020000000 RDI: 0000000000000006
-RBP: 0000000000076ec0 R08: 00000000004002c8 R09: 00000000004002c8
-R10: 00000000004002c8 R11: 0000000000000246 R12: 0000000000402560
-R13: 00000000004025f0 R14: 0000000000000000 R15: 0000000000000000
-INFO: NMI handler (nmi_cpu_backtrace_handler) took too long to run: 1.607 msecs
+RIP: 0033:0x45e219
+Code: 0d b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b3 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007f5dce348c68 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 000000000045e219
+RDX: 0000000000000000 RSI: 0000000020000400 RDI: 0000000000000004
+RBP: 000000000119c110 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000119c0dc
+R13: 00007ffdf00f97ff R14: 00007f5dce3499c0 R15: 000000000119c0dc
 
 
 ---
