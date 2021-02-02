@@ -2,71 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 642DB30BD63
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 12:49:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43B9330BD7C
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 12:55:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230518AbhBBLtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 06:49:20 -0500
-Received: from mx2.suse.de ([195.135.220.15]:52250 "EHLO mx2.suse.de"
+        id S229724AbhBBLyW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 06:54:22 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41308 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230058AbhBBLtK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 06:49:10 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 184F1AD6A;
-        Tue,  2 Feb 2021 11:48:29 +0000 (UTC)
-Subject: Re: [PATCH net-next v2 1/4] mm: page_frag: Introduce
- page_frag_alloc_align()
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Kevin Hao <haokexin@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        Eric Dumazet <edumazet@google.com>
-References: <20210131074426.44154-1-haokexin@gmail.com>
- <20210131074426.44154-2-haokexin@gmail.com>
- <20210202113618.s4tz2q7ysbnecgsl@skbuf>
-From:   Vlastimil Babka <vbabka@suse.cz>
-Message-ID: <2d406568-5b1d-d941-5503-68ba2ed49f34@suse.cz>
-Date:   Tue, 2 Feb 2021 12:48:28 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+        id S229441AbhBBLyS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 06:54:18 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B443D64ED7;
+        Tue,  2 Feb 2021 11:53:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1612266817;
+        bh=yUKKgAc95dVxUp/h48LLTDDmisyVTlZHaXblkD8Tt8M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Z1LeUBJ2Rkv8PEH/Y4eVKpxfVPrA6cTA7N2Q5kA4U9fJ5XPuaiDJVhd/F5TpQCNqF
+         KOv/8qZahVIyPbCGOnkAYBuaJQ002ivyvWwyIablm57uAIFWXtRu17uN4zuJNB5vwn
+         uTkhCj8fzt5DMiRqvlARnqeO8yhyWY8+vCBkxlV8=
+Date:   Tue, 2 Feb 2021 12:53:32 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     wanghongzhe <wanghongzhe@huawei.com>
+Cc:     luto@amacapital.net, andrii@kernel.org, ast@kernel.org,
+        bpf@vger.kernel.org, daniel@iogearbox.net,
+        john.fastabend@gmail.com, kafai@fb.com, keescook@chromium.org,
+        kpsingh@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com, wad@chromium.org,
+        yhs@fb.com
+Subject: Re: [PATCH v1 1/1] Firstly, as Andy mentioned, this should be
+ smp_rmb() instead of rmb(). considering that TSYNC is a cross-thread
+ situation, and rmb() is a mandatory barrier which should not be used to
+ control SMP effects, since mandatory barriers impose unnecessary overhead on
+ both SMP and UP systems, as kernel Documentation said.
+Message-ID: <YBk9PLpjGybg9W03@kroah.com>
+References: <B1DC6A42-15AF-4804-B20E-FC6E2BDD1C8E@amacapital.net>
+ <1612260787-28015-1-git-send-email-wanghongzhe@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <20210202113618.s4tz2q7ysbnecgsl@skbuf>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1612260787-28015-1-git-send-email-wanghongzhe@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/2/21 12:36 PM, Ioana Ciornei wrote:
-> On Sun, Jan 31, 2021 at 03:44:23PM +0800, Kevin Hao wrote:
->> In the current implementation of page_frag_alloc(), it doesn't have
->> any align guarantee for the returned buffer address. But for some
->> hardwares they do require the DMA buffer to be aligned correctly,
->> so we would have to use some workarounds like below if the buffers
->> allocated by the page_frag_alloc() are used by these hardwares for
->> DMA.
->>     buf = page_frag_alloc(really_needed_size + align);
->>     buf = PTR_ALIGN(buf, align);
->> 
->> These codes seems ugly and would waste a lot of memories if the buffers
->> are used in a network driver for the TX/RX.
-> 
-> Isn't the memory wasted even with this change?
+On Tue, Feb 02, 2021 at 06:13:07PM +0800, wanghongzhe wrote:
+> Secondly, the smp_rmb() should be put between reading SYSCALL_WORK_SECCOMP and reading
 
-Yes, but less of it. Not always full amount of align, but up to it. Perhaps even
-zero.
+<snip>
 
-> I am not familiar with the frag allocator so I might be missing
-> something, but from what I understood each page_frag_cache keeps only
-> the offset inside the current page being allocated, offset which you
-> ALIGN_DOWN() to match the alignment requirement. I don't see how that
-> memory between the non-aligned and aligned offset is going to be used
-> again before the entire page is freed.
+Your subject line of the patch is a bit odd :)
 
-True, thath's how page_frag is designed. The align amounts would be most likely
-too small to be usable anyway.
