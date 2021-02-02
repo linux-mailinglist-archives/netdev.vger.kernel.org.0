@@ -2,109 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5F1F30BBF7
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 11:20:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F32230BC23
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 11:37:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229683AbhBBKUP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 05:20:15 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:46021 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229483AbhBBKUL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 05:20:11 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1612261124;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RmJ/G6EA66t96nbY9N8Io7dTd26aYtR+D4uaVhjBc7w=;
-        b=LvPn43p8rRVgN3e+4ZNk9J7DL789VuskfiJyWCK1mJlowVY4xeFnEcTjtm/kFfD//cxef2
-        /xg9JfYaPEk5zRr8pCsRHYKR4/oiDDU+G/vGncvV/QJSBLP/Rndmxv50v1o2g9PCDjDwD6
-        Cqw0SQrhDvOxMu9AkcKaXQRWjiq4ojM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-556-kAaaqFZUNLK9Uk1JMI6LSA-1; Tue, 02 Feb 2021 05:18:41 -0500
-X-MC-Unique: kAaaqFZUNLK9Uk1JMI6LSA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9ADAA801B12;
-        Tue,  2 Feb 2021 10:18:40 +0000 (UTC)
-Received: from ovpn-115-101.ams2.redhat.com (ovpn-115-101.ams2.redhat.com [10.36.115.101])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 742F060BE5;
-        Tue,  2 Feb 2021 10:18:39 +0000 (UTC)
-Message-ID: <a24db624cb6b2df98e95b18bbcd55eca53c116ae.camel@redhat.com>
-Subject: Re: make sendmsg/recvmsg process multiple messages at once
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Menglong Dong <menglong8.dong@gmail.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>
-Date:   Tue, 02 Feb 2021 11:18:38 +0100
-In-Reply-To: <20210201200733.4309ef71@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <CADxym3ba8R6fN3O5zLAw-e7q0gjFxBd_WUKjq0hTP+JpAbJEKg@mail.gmail.com>
-         <20210201200733.4309ef71@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        id S229783AbhBBKgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 05:36:21 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:7185 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229441AbhBBKgP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 05:36:15 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B60192af70000>; Tue, 02 Feb 2021 02:35:35 -0800
+Received: from sw-mtx-036.mtx.labs.mlnx (172.20.145.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 2 Feb
+ 2021 10:35:33 +0000
+From:   Parav Pandit <parav@nvidia.com>
+To:     <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <dsahern@gmail.com>,
+        <stephen@networkplumber.org>, <mst@redhat.com>,
+        <jasowang@redhat.com>
+CC:     Parav Pandit <parav@nvidia.com>
+Subject: [PATCH iproute2-next v3 0/5] Add vdpa device management tool
+Date:   Tue, 2 Feb 2021 12:35:13 +0200
+Message-ID: <20210202103518.3858-1-parav@nvidia.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210122112654.9593-3-parav@nvidia.com>
+References: <20210122112654.9593-3-parav@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1612262135; bh=1HIC4SA7rNq3aFrDXNqk5dum/56SF6d83BkKlVr7vX4=;
+        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
+         References:MIME-Version:Content-Transfer-Encoding:Content-Type:
+         X-Originating-IP:X-ClientProxiedBy;
+        b=nwk90/KAe82eO98Z8rooOavbR64FhzELvYALJ5/BoSy9SS7LJXtg4kVexEcI51F0z
+         cRSPjwXlswU/Ovp0Sh/Gqs4OaWBhZLUpyngbcW0vDqFPpexhzVKcZfgmVBED6yNjvK
+         Wsq/JcNueWOdM04UncI/V22lnTLsC7QkGBt4KrWmmsm0aYIBTD2yc7jumAUlvyI8Jx
+         FVhPAD0KG/K0t/Gcvd1kGxwBQo8aoRtYnvX5JA0KrV93U/WAu5NVUK5IQk26mMWdd4
+         i0XIEL63kssD/reLSeTSK6G2PlKNj83gqwkYiR3+KQOv7XexaNiejp+mjDkzdCJlRP
+         W+NCARt5b3lNw==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2021-02-01 at 20:07 -0800, Jakub Kicinski wrote:
-> On Mon, 1 Feb 2021 20:41:45 +0800 Menglong Dong wrote:
-> > I am thinking about making sendmsg/recvmsg process multiple messages
-> > at once, which is possible to reduce the number of system calls.
-> > 
-> > Take the receiving of udp as an example, we can copy multiple skbs to
-> > msg_iov and make sure that every iovec contains a udp package.
-> > 
-> > Is this a good idea? This idea seems clumsy compared to the incoming
-> > 'io-uring' based zerocopy, but maybe it can help...
+Linux vdpa interface allows vdpa device management functionality.
+This includes adding, removing, querying vdpa devices.
 
-Indeed since the introduction of some security vulnerability
-mitigation, syscall overhead is relevant and amortizing it with bulk
-operations gives very measurable performances gain.
+vdpa interface also includes showing supported management devices
+which support such operations.
 
-Potentially bulk operation also reduce RETPOLINE overhead, but AFAICS
-all the indirect calls in the relevant code path has been already
-mitigated with the indirect call wrappers.
+This patchset includes kernel uapi headers and a vdpa tool.
 
-Note that you can already process several packets with a single syscall
-using sendmmsg/recvmmsg. Both have issues with error reporting and
-timeout and IIRC still don't amortize the overhead introduced e.g. by
-CONFIG_HARDENED_USERCOPY.
+examples:
 
-Additionally, recvmmsg/sendmmsg are not cache-friendly. As noted by
-Eric long time ago:
+$ vdpa mgmtdev show
+vdpasim:
+  supported_classes net
 
-https://marc.info/?l=linux-netdev&m=148010858826712&w=2
+$ vdpa mgmtdev show -jp
+{
+    "show": {
+        "vdpasim": {
+            "supported_classes": [ "net" ]
+        }
+    }
+}
 
-perf tests in lab with recvmmsg/sendmmsg could be great, but
-performance with real workload much less. You could try fine-tuning the
-bulk size (mmsg nr) for your workload and H/W. Likely a burst size
-above 8 is a no go.
+Create a vdpa device of type networking named as "foo2" from
+the management device vdpasim_net:
 
-For the TX path there is already a better option - for some specific
-workload - using UDP_SEGMENT.
+$ vdpa dev add mgmtdev vdpasim_net name foo2
 
-In the RX path, for bulk transfer, you could try enabling UDP_GRO.
+Show the newly created vdpa device by its name:
+$ vdpa dev show foo2
+foo2: type network mgmtdev vdpasim_net vendor_id 0 max_vqs 2 max_vq_size 25=
+6
 
-As far as I can see, the idea you are proposing will be quite
-alike recvmmsg(), with the possible additional benefit of bulk dequeue
-from the UDP receive queue. Note that this latter optimization, since
-commmit 2276f58ac5890, will give very little perfomance gain.
+$ vdpa dev show foo2 -jp
+{
+    "dev": {
+        "foo2": {
+            "type": "network",
+            "mgmtdev": "vdpasim_net",
+            "vendor_id": 0,
+            "max_vqs": 2,
+            "max_vq_size": 256
+        }
+    }
+}
 
-In the TX path there is no lock at all for the uncorking case, so the
-performance gain should come only from the bulk syscall.
+Delete the vdpa device after its use:
+$ vdpa dev del foo2
 
-You will probably also need to cope with cmsg and msgname, so overall I
-don't see much differences from recvmmsg()/sendmmsg(), did I misread
-something?
+Patch summary:
+Patch-1 adds kernel headers for vdpa subsystem
+Patch-2 adds library routines for indent handling
+Patch-3 adds library routines for generic socket communication
+PAtch-4 adds library routine for number to string mapping
+Patch-5 adds vdpa tool
 
-Thanks!
+Kernel headers are from the vhost kernel tree [1] from branch linux-next.
 
-Paolo
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git
+
+---
+changelog:
+v2->v3:
+ - addressed David's comment to split patch for utils and other parts
+ - rebased
+ - using newly added helper routine for number to string mapping
+v1->v2:
+ - addressed below comments from David
+ - added and used library helpers for socket communication
+ - added and used library functions for string processing helpers
+ - added and used library functions indent processing helpers
+
+Parav Pandit (5):
+  Add kernel headers
+  utils: Add helper routines for indent handling
+  utils: Add generic socket helpers
+  utils: Add helper to map string to unsigned int
+  vdpa: Add vdpa tool
+
+ Makefile                        |   2 +-
+ include/mnl_utils.h             |  16 +
+ include/uapi/linux/vdpa.h       |  40 ++
+ include/uapi/linux/virtio_ids.h |  58 +++
+ include/utils.h                 |  20 +-
+ lib/mnl_utils.c                 | 121 ++++++
+ lib/utils.c                     |  83 +++-
+ man/man8/vdpa-dev.8             |  96 +++++
+ man/man8/vdpa-mgmtdev.8         |  53 +++
+ man/man8/vdpa.8                 |  76 ++++
+ vdpa/Makefile                   |  24 ++
+ vdpa/vdpa.c                     | 675 ++++++++++++++++++++++++++++++++
+ 12 files changed, 1260 insertions(+), 4 deletions(-)
+ create mode 100644 include/uapi/linux/vdpa.h
+ create mode 100644 include/uapi/linux/virtio_ids.h
+ create mode 100644 man/man8/vdpa-dev.8
+ create mode 100644 man/man8/vdpa-mgmtdev.8
+ create mode 100644 man/man8/vdpa.8
+ create mode 100644 vdpa/Makefile
+ create mode 100644 vdpa/vdpa.c
+
+--=20
+2.26.2
 
