@@ -2,116 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3601C30B831
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 08:03:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47F2A30B82B
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 08:03:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232017AbhBBG6h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 01:58:37 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50156 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232294AbhBBG4f (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 01:56:35 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 66DE864EF2;
-        Tue,  2 Feb 2021 06:55:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612248923;
-        bh=7I/pV+m4etHdswYEDoAmwjoQdtteTXqZGldance8j28=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YIcF7gm024V/WEH2n+/sWkROCXpRZTJCCEjPHi63dn3g9IHXjshwByrDpj9VnrzUJ
-         bmfEVgWu40MDhoGyroYjscq2zVDrhQgAi8m11+HWSPik86YiVESwPlpHpJ3Jalr0Ap
-         ZwDacjceEAumfscptHngbMb8J168WaiNBqrntpGzWCYC6FPNwfptbBN0Ke058oOtHG
-         mSO9Muz/jBsl/zITIwjdgCG2Eu31obmlGrGxxl6aUsHj92J9ovU7SyXP/wrTz+G0Vf
-         JR3zANshhUljnXP8ey70sHlnIG6jfbgZ0YyldBtgwZaYl6Fol03iUNxQqN7dCMVfu0
-         gzSA62pvB80xw==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Yevgeny Kliteynik <kliteyn@nvidia.com>,
-        Alex Vesker <valex@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 14/14] net/mlx5: DR, Avoid unnecessary csum recalculation on supporting devices
-Date:   Mon,  1 Feb 2021 22:54:57 -0800
-Message-Id: <20210202065457.613312-15-saeed@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210202065457.613312-1-saeed@kernel.org>
-References: <20210202065457.613312-1-saeed@kernel.org>
+        id S232303AbhBBG5Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 01:57:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43196 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232312AbhBBG5D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 01:57:03 -0500
+Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C12B2C061573
+        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 22:56:23 -0800 (PST)
+Received: by mail-qv1-xf2b.google.com with SMTP id ew18so9444949qvb.4
+        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 22:56:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UOkJp4TyDm6k5mGRDEPNldOm6QTwM5DZytsoHH4gU28=;
+        b=rzBdOlVAUAnkiL85YEOga79QFLq80X6BDD0ogoJ4PfUpE09gtAlg5Va7JQSe5Mye9b
+         bY8CHhj+UxewHbMJcicqwll9E1gJuBw5mPv4UsiRSj+s1tBcix0GxXkoxNNMFpBZNTFP
+         Y2DVj2XEdN76XSu3EUBdPYRrl0MK3qZPs92UHmDbMmk0Ooyky33VfPcSC3y17HjH9u9K
+         ouzEp3sWVBKgdafbzYHc33eXJxQ8p8+k/+lVrwArX+W9rwtwUHueIpToGQgUdqjeCK02
+         H7gBfwYgvPpnh7f0RXxDpV9OjTAzOearlCpECGX9oCclj6zJFTTIs6f4PY8FRHJWybHs
+         hanw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UOkJp4TyDm6k5mGRDEPNldOm6QTwM5DZytsoHH4gU28=;
+        b=GeutL4gjogdnkvoLKA2T9kdIN5wlV96OgQIIdhhJbl+hk1Cx9xdkGJroAOYu54cnEw
+         VOYfsYD4gMnsIt0sV0vcCu9llBLoO+jXPGRP2i3CfpFBBp1+NL2OvfZ4+i5stRH7sXZu
+         L4eGjQUEAJhFvtFY3Z8UiNwrn23qqVEppofQ5xudKzjImsP5eaxStIRkBD+4gZ2NPDnY
+         supDsql+ejWLFBkKwUp4VlGBC9iiNsRYEWRpRbq+zkGC9O2Hgf76eHFCvvyfbLOnlfNa
+         IKqB8KtJe3O33NAnzP7EpBdxnXkvi9OzfYXSYgX0u0RMJ7Knx/THRnlIycASkmMk47iR
+         Yi3g==
+X-Gm-Message-State: AOAM531ZMhEdTCtgS3oX7xSG3WRvEg+RrKhV55rEy72f+ZC/00wqKHQp
+        e9+I2OpVqYkc/YxxC66h02MvFCzeXQ1a9B29Y9Uckgxyzahxhg==
+X-Google-Smtp-Source: ABdhPJwT+Lpz3zeKASMiOlTTqw3ZkGygmmngk0Adu/Et6s9tugnsczSLTXYA/zrofcXSEZY7G6COP51e7EhKejlbic0=
+X-Received: by 2002:a05:6214:118e:: with SMTP id t14mr18757905qvv.50.1612248983034;
+ Mon, 01 Feb 2021 22:56:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210123195916.2765481-1-jonas@norrbonn.se> <20210123195916.2765481-16-jonas@norrbonn.se>
+ <bf6de363-8e32-aca0-1803-a041c0f55650@norrbonn.se> <CAOrHB_DFv8_5CJ7GjUHT4qpyJUkgeWyX0KefYaZ-iZkz0UgaAQ@mail.gmail.com>
+ <9b9476d2-186f-e749-f17d-d191c30347e4@norrbonn.se> <CAOrHB_Cyx9Xf6s63wVFo1mYF7-ULbQD7eZy-_dTCKAUkO0iViw@mail.gmail.com>
+ <20210130104450.00b7ab7d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAOrHB_DQTsEPEWpPVEcpSnbkLLz8eWPFvvzzO8wjuYsP4=9-QQ@mail.gmail.com>
+ <20210201124414.21466bff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <03621476-ed9b-a186-3b9a-774c703c207a@norrbonn.se>
+In-Reply-To: <03621476-ed9b-a186-3b9a-774c703c207a@norrbonn.se>
+From:   Pravin Shelar <pravin.ovn@gmail.com>
+Date:   Mon, 1 Feb 2021 22:56:12 -0800
+Message-ID: <CAOrHB_D101x6H3U1e0gUZZd5-VqmPMbaczPwJY1GA=6LXGafDw@mail.gmail.com>
+Subject: Re: [RFC PATCH 15/16] gtp: add ability to send GTP controls headers
+To:     Jonas Bonn <jonas@norrbonn.se>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Harald Welte <laforge@gnumonks.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Pravin B Shelar <pbshelar@fb.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yevgeny Kliteynik <kliteyn@nvidia.com>
+On Mon, Feb 1, 2021 at 9:24 PM Jonas Bonn <jonas@norrbonn.se> wrote:
+>
+> Hi Jakub,
+>
+> On 01/02/2021 21:44, Jakub Kicinski wrote:
+> > On Sat, 30 Jan 2021 12:05:40 -0800 Pravin Shelar wrote:
+> >> On Sat, Jan 30, 2021 at 10:44 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> >>> On Fri, 29 Jan 2021 22:59:06 -0800 Pravin Shelar wrote:
+> >>>> On Fri, Jan 29, 2021 at 6:08 AM Jonas Bonn <jonas@norrbonn.se> wrote:
+> >>>> Following are the reasons for extracting the header and populating metadata.
+> >>>> 1. That is the design used by other tunneling protocols
+> >>>> implementations for handling optional headers. We need to have a
+> >>>> consistent model across all tunnel devices for upper layers.
+> >>>
+> >>> Could you clarify with some examples? This does not match intuition,
+> >>> I must be missing something.
+> >>
+> >> You can look at geneve_rx() or vxlan_rcv() that extracts optional
+> >> headers in ip_tunnel_info opts.
+> >
+> > Okay, I got confused what Jonas was inquiring about. I thought that the
+> > extension headers were not pulled, rather than not parsed. Copying them
+> > as-is to info->opts is right, thanks!
+> >
+>
+> No, you're not confused.  The extension headers are not being pulled in
+> the current patchset.
+>
+> Incoming packet:
+>
+> ---------------------------------------------------------------------
+> | flags | type | len | TEID | N-PDU | SEQ | Ext | EXT.Hdr | IP | ...
+> ---------------------------------------------------------------------
+> <--------- GTP header ------<<Optional GTP elements>>-----><- Pkt --->
+>
+> The "collect metadata" path of the patchset copies 'flags' and 'type' to
+> info->opts, but leaves the following:
+>
+> -----------------------------------------
+> | N-PDU | SEQ | Ext | EXT.Hdr | IP | ...
+> -----------------------------------------
+> <--------- GTP header -------><- Pkt --->
+>
+> So it's leaving _half_ the header and making it a requirement that there
+> be further intelligence down the line that can handle this.  This is far
+> from intuitive.
+>
 
-If as part of the actions the TTL of the packet is modified, the packet's
-checksum needs to be recalculated. Connect-X6DX can handle this csum
-recalculation natively. Older devices require this additional recalculation.
+The patch supports Echo, Echo response and End marker packet.
+Issue with pulling the entire extension header is that it would result
+in zero length skb, such packets can not be passed on to the upper
+layer. That is the reason I kept the extension header in skb and added
+indication in tunnel metadata that it is not a IP packet. so that
+upper layer can process the packet.
+IP packet without an extension header would be handled in a fast path
+without any special handling.
 
-Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
-Reviewed-by: Alex Vesker <valex@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- .../net/ethernet/mellanox/mlx5/core/steering/dr_action.c | 9 +++++----
- .../net/ethernet/mellanox/mlx5/core/steering/dr_ste.c    | 5 +++++
- .../net/ethernet/mellanox/mlx5/core/steering/dr_types.h  | 2 ++
- 3 files changed, 12 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-index 27c2b8416d02..28a7971cac6a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c
-@@ -447,7 +447,8 @@ int mlx5dr_actions_build_ste_arr(struct mlx5dr_matcher *matcher,
- 		case DR_ACTION_TYP_MODIFY_HDR:
- 			attr.modify_index = action->rewrite.index;
- 			attr.modify_actions = action->rewrite.num_of_actions;
--			recalc_cs_required = action->rewrite.modify_ttl;
-+			recalc_cs_required = action->rewrite.modify_ttl &&
-+					     !mlx5dr_ste_supp_ttl_cs_recalc(&dmn->info.caps);
- 			break;
- 		case DR_ACTION_TYP_L2_TO_TNL_L2:
- 		case DR_ACTION_TYP_L2_TO_TNL_L3:
-@@ -501,9 +502,9 @@ int mlx5dr_actions_build_ste_arr(struct mlx5dr_matcher *matcher,
- 	*new_hw_ste_arr_sz = nic_matcher->num_of_builders;
- 	last_ste = ste_arr + DR_STE_SIZE * (nic_matcher->num_of_builders - 1);
- 
--	/* Due to a HW bug, modifying TTL on RX flows will cause an incorrect
--	 * checksum calculation. In this case we will use a FW table to
--	 * recalculate.
-+	/* Due to a HW bug in some devices, modifying TTL on RX flows will
-+	 * cause an incorrect checksum calculation. In this case we will
-+	 * use a FW table to recalculate.
- 	 */
- 	if (dmn->type == MLX5DR_DOMAIN_TYPE_FDB &&
- 	    rx_rule && recalc_cs_required && dest_action) {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
-index 9cd5c50c5d42..f49abc7a4b9b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
-@@ -18,6 +18,11 @@ static u32 dr_ste_crc32_calc(const void *input_data, size_t length)
- 	return (__force u32)htonl(crc);
- }
- 
-+bool mlx5dr_ste_supp_ttl_cs_recalc(struct mlx5dr_cmd_caps *caps)
-+{
-+	return caps->sw_format_ver > MLX5_STEERING_FORMAT_CONNECTX_5;
-+}
-+
- u32 mlx5dr_ste_calc_hash_index(u8 *hw_ste_p, struct mlx5dr_ste_htbl *htbl)
- {
- 	struct dr_hw_ste_format *hw_ste = (struct dr_hw_ste_format *)hw_ste_p;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-index a8b497cbb844..4af0e4e6a13c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-@@ -1211,6 +1211,8 @@ int mlx5dr_cmd_set_fte(struct mlx5_core_dev *dev,
- 		       u32 group_id,
- 		       struct mlx5dr_cmd_fte_info *fte);
- 
-+bool mlx5dr_ste_supp_ttl_cs_recalc(struct mlx5dr_cmd_caps *caps);
-+
- struct mlx5dr_fw_recalc_cs_ft {
- 	u64 rx_icm_addr;
- 	u32 table_id;
--- 
-2.29.2
-
+Obviously In case of PDU session container extension header GTP driver
+would need to process the entire extension header in the module. This
+way we can handle these user data packets in fastpath.
+I can make changes to use the same method for all extension headers if needed.
