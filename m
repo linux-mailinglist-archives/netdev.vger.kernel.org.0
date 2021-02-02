@@ -2,253 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5511830C21A
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 15:42:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 158EC30C21D
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 15:42:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234647AbhBBOlN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 09:41:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57722 "EHLO
+        id S234754AbhBBOmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 09:42:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234431AbhBBOjO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 09:39:14 -0500
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76CE3C061788
-        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 06:38:25 -0800 (PST)
-Received: by mail-ej1-x62f.google.com with SMTP id f14so6053174ejc.8
-        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 06:38:25 -0800 (PST)
+        with ESMTP id S234761AbhBBOkA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 09:40:00 -0500
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2ABBC061794
+        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 06:39:19 -0800 (PST)
+Received: by mail-qt1-x834.google.com with SMTP id t17so15047398qtq.2
+        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 06:39:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=sJBLZtGoam24iH2FvzLjuKUNzi7tkEBGkd3QuKnfqzM=;
-        b=nTpvMjoaKg7z31XgCm+eqDiAo1l3Yh1WP+BjxPxK8f2kk9sZmuD0sNs0AQKV9louDI
-         OTc1XZEJfAIY5g8f46ylTRIgtOr1yUKSxNDoIr9BiqEAXt4grBAykEvbu20d9nl23yld
-         eV2jP0APc50wwBzUnFRVOqsKuO1Bq4vSNjDqvyD9jVRdejRtaO8qkJFG6bSKk0TYqP4D
-         62XeHumgJjmFL9rNMSvFeehQ7PGA0w2kKuK9eEPDXd0qhLtCENLB0fmSLEWbOHbO4oGj
-         sfZaCuxSqyL10A5F7PG8vs7FZOy+0PUuy7n4AU9KGWFSVUz2aAkCExSvdkOhYE8M/ix/
-         bA+w==
+        d=linaro.org; s=google;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=QCXMgL/NI1An1LEuzQQXQxYWJvRlCAB2+iZ1nwK6XiQ=;
+        b=ULAy3lrC+Y0gxtv4jTTV7PD/Td0PbcRkc4YE+9Hi3dFkV+t9mTfO9aMUL7CIcE3xOA
+         Zpe4Vnb5mMcVlEEB1Ec/6UP5f8aFoPImSSbtaN8u0/zDd4pYtQnfQ3EGa8MNPSQPOUzT
+         50wMf3T6pyetpDGFy95MLWydP3buumdz0ajV2WuU2pTHf71E47asOmVVsB8Ob5VjjTf/
+         E4kZCVH4Bl04sp6IxTLggpfr933rMVat90qKNBRotLUsN8plYyuBqYLhpah4Fo8J6tWs
+         C1gcolij6Ilb2szY4wfPnkmccGjYjmfBpqhjYHWs7XATcvjqWKElghKGRVIcu/i30R8F
+         94zQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=sJBLZtGoam24iH2FvzLjuKUNzi7tkEBGkd3QuKnfqzM=;
-        b=jl9TYw5iTJF05BhGIR4gqbkXBSfrteaaO7eVCvcdv2/5tY8hyu0wapbljRGfZOwQa7
-         EQUoj0TBQFeKAPZBZ2SV06wdiqGyNvFmRYWC0rtkpGs2y/KYuxRCJHO6lB+Z0GZ4DgdO
-         ylzSiv53I260cDlaY7rIaazuDoPTocnvOuWB2Eu72ye9SC+ktV32MYKDPW7cdex5mE6C
-         QtCnfp1yippHNN/P0Hw3AjshcIbUWo6tINbulRg3fXWJh0DsppknS0KXxiMDx1nFKXWh
-         ioz73i6PXz4ho8qhScfjeJNewWOVKiwmGyslJ+j6X333KgLrCL7OeS21cjaI0SrkIO4E
-         W2Ug==
-X-Gm-Message-State: AOAM531ulL66vKIAE3YTR56vFpzbVOprbUUeRYIG8uZl6t+TMcXJr7ip
-        ASkUYaEyIhX+I50Lem6QyBkdZH1SQZYegb1EkOY=
-X-Google-Smtp-Source: ABdhPJz7Wkol/Clz5Me9ulCgBXb4UGPaU7Uh1nT5QODx6s1RWG7NxLiq5yPvsaPsLBOaJ6Jv+lOfvqON2cJRkpWN6Ig=
-X-Received: by 2002:a17:906:4dc5:: with SMTP id f5mr10797619ejw.11.1612276704131;
- Tue, 02 Feb 2021 06:38:24 -0800 (PST)
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=QCXMgL/NI1An1LEuzQQXQxYWJvRlCAB2+iZ1nwK6XiQ=;
+        b=lZ3nj1IgSLhU0w4vapOYhqufPoqx36CfR12G/xU1V5N6Ji6MECZV3glRMkjMU738PS
+         9LnMkaoaQ4pyRaqbPqi/pXuYhojbyZvsLpaYGDtur66TexarbH102iIzD+DqtdZ+FayP
+         MT3SRcNIDXXF8LkEx2rW8oBBRT9vYwadbprLLyos0BufO3Of03gj7CzOJdgVKOv2d9tZ
+         Vo1xaQ68vuAAM2S+hveCGhcy5/zosAxClz/hxhG6L6r31lV2dw/9Jx9uPb1fhNDYUkB3
+         6R4WMbMWGxPd2T79qCeniDKaTdRRIlVyKuunjMry2DwSL4PKq8jrrcYXYEn4gAbfx1Ze
+         MNLQ==
+X-Gm-Message-State: AOAM532jG7EYdt4xsuSnoq3rMrZAyp+SwkZRUvJP459hDv3931RLP4fE
+        XDgIWns1knkwhoxcIzW+kvi/Kg==
+X-Google-Smtp-Source: ABdhPJyaPn4UvgA8IzkPLrlMtsyMEsa4VmMlWLOK/4Ie2EIEzaTQlKojJWvWZ3ZxxHcPy50aHzKsSA==
+X-Received: by 2002:ac8:4886:: with SMTP id i6mr21015723qtq.334.1612276758902;
+        Tue, 02 Feb 2021 06:39:18 -0800 (PST)
+Received: from [192.168.1.93] (pool-71-163-245-5.washdc.fios.verizon.net. [71.163.245.5])
+        by smtp.gmail.com with ESMTPSA id h6sm16225138qtx.39.2021.02.02.06.39.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Feb 2021 06:39:17 -0800 (PST)
+Subject: Re: [PATCH v2 0/3] thermal: Replace thermal_notify_framework with
+ thermal_zone_device_update
+From:   Thara Gopinath <thara.gopinath@linaro.org>
+To:     rui.zhang@intel.com, daniel.lezcano@linaro.org,
+        davem@davemloft.net, kuba@kernel.org, luciano.coelho@intel.com
+Cc:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-pm@vger.kernel.org, amitk@kernel.org,
+        nathan.errera@intel.com
+References: <20210122023406.3500424-1-thara.gopinath@linaro.org>
+Message-ID: <73dccbcd-b4c3-64f5-1b7a-805c68ab7aa9@linaro.org>
+Date:   Tue, 2 Feb 2021 09:39:16 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20210129002136.70865-1-weiwan@google.com> <a0b2cb8d-eb8f-30fb-2a22-678e6dd2f58f@redhat.com>
-In-Reply-To: <a0b2cb8d-eb8f-30fb-2a22-678e6dd2f58f@redhat.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 2 Feb 2021 09:37:46 -0500
-Message-ID: <CAF=yD-+aPBF2RaCR8L5orTM37bf7Z4Z8Qko2D2LZjOz0khHTUg@mail.gmail.com>
-Subject: Re: [PATCH net] virtio-net: suppress bad irq warning for tx napi
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Wei Wang <weiwan@google.com>, David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        virtualization@lists.linux-foundation.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20210122023406.3500424-1-thara.gopinath@linaro.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 1, 2021 at 10:09 PM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> On 2021/1/29 =E4=B8=8A=E5=8D=888:21, Wei Wang wrote:
-> > With the implementation of napi-tx in virtio driver, we clean tx
-> > descriptors from rx napi handler, for the purpose of reducing tx
-> > complete interrupts. But this could introduce a race where tx complete
-> > interrupt has been raised, but the handler found there is no work to do
-> > because we have done the work in the previous rx interrupt handler.
-> > This could lead to the following warning msg:
-> > [ 3588.010778] irq 38: nobody cared (try booting with the
-> > "irqpoll" option)
-> > [ 3588.017938] CPU: 4 PID: 0 Comm: swapper/4 Not tainted
-> > 5.3.0-19-generic #20~18.04.2-Ubuntu
-> > [ 3588.017940] Call Trace:
-> > [ 3588.017942]  <IRQ>
-> > [ 3588.017951]  dump_stack+0x63/0x85
-> > [ 3588.017953]  __report_bad_irq+0x35/0xc0
-> > [ 3588.017955]  note_interrupt+0x24b/0x2a0
-> > [ 3588.017956]  handle_irq_event_percpu+0x54/0x80
-> > [ 3588.017957]  handle_irq_event+0x3b/0x60
-> > [ 3588.017958]  handle_edge_irq+0x83/0x1a0
-> > [ 3588.017961]  handle_irq+0x20/0x30
-> > [ 3588.017964]  do_IRQ+0x50/0xe0
-> > [ 3588.017966]  common_interrupt+0xf/0xf
-> > [ 3588.017966]  </IRQ>
-> > [ 3588.017989] handlers:
-> > [ 3588.020374] [<000000001b9f1da8>] vring_interrupt
-> > [ 3588.025099] Disabling IRQ #38
-> >
-> > This patch adds a new param to struct vring_virtqueue, and we set it fo=
-r
-> > tx virtqueues if napi-tx is enabled, to suppress the warning in such
-> > case.
-> >
-> > Fixes: 7b0411ef4aa6 ("virtio-net: clean tx descriptors from rx napi")
-> > Reported-by: Rick Jones <jonesrick@google.com>
-> > Signed-off-by: Wei Wang <weiwan@google.com>
-> > Signed-off-by: Willem de Bruijn <willemb@google.com>
->
->
-> Please use get_maintainer.pl to make sure Michael and me were cced.
 
-Will do. Sorry about that. I suggested just the virtualization list, my bad=
-.
 
->
-> > ---
-> >   drivers/net/virtio_net.c     | 19 ++++++++++++++-----
-> >   drivers/virtio/virtio_ring.c | 16 ++++++++++++++++
-> >   include/linux/virtio.h       |  2 ++
-> >   3 files changed, 32 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > index 508408fbe78f..e9a3f30864e8 100644
-> > --- a/drivers/net/virtio_net.c
-> > +++ b/drivers/net/virtio_net.c
-> > @@ -1303,13 +1303,22 @@ static void virtnet_napi_tx_enable(struct virtn=
-et_info *vi,
-> >               return;
-> >       }
-> >
-> > +     /* With napi_tx enabled, free_old_xmit_skbs() could be called fro=
-m
-> > +      * rx napi handler. Set work_steal to suppress bad irq warning fo=
-r
-> > +      * IRQ_NONE case from tx complete interrupt handler.
-> > +      */
-> > +     virtqueue_set_work_steal(vq, true);
-> > +
-> >       return virtnet_napi_enable(vq, napi);
->
->
-> Do we need to force the ordering between steal set and napi enable?
+On 1/21/21 9:34 PM, Thara Gopinath wrote:
+> thermal_notify_framework just updates for a single trip point where as
+> thermal_zone_device_update does other bookkeeping like updating the
+> temperature of the thermal zone, running through the list of trip points
+> and setting the next trip point etc. Since  the later is a more thorough
+> version of former, replace thermal_notify_framework with
+> thermal_zone_device_update.
 
-The warning only occurs after one hundred spurious interrupts, so not
-really.
+Hi!
 
->
-> >   }
-> >
-> > -static void virtnet_napi_tx_disable(struct napi_struct *napi)
-> > +static void virtnet_napi_tx_disable(struct virtqueue *vq,
-> > +                                 struct napi_struct *napi)
-> >   {
-> > -     if (napi->weight)
-> > +     if (napi->weight) {
-> >               napi_disable(napi);
-> > +             virtqueue_set_work_steal(vq, false);
-> > +     }
-> >   }
-> >
-> >   static void refill_work(struct work_struct *work)
-> > @@ -1835,7 +1844,7 @@ static int virtnet_close(struct net_device *dev)
-> >       for (i =3D 0; i < vi->max_queue_pairs; i++) {
-> >               xdp_rxq_info_unreg(&vi->rq[i].xdp_rxq);
-> >               napi_disable(&vi->rq[i].napi);
-> > -             virtnet_napi_tx_disable(&vi->sq[i].napi);
-> > +             virtnet_napi_tx_disable(vi->sq[i].vq, &vi->sq[i].napi);
-> >       }
-> >
-> >       return 0;
-> > @@ -2315,7 +2324,7 @@ static void virtnet_freeze_down(struct virtio_dev=
-ice *vdev)
-> >       if (netif_running(vi->dev)) {
-> >               for (i =3D 0; i < vi->max_queue_pairs; i++) {
-> >                       napi_disable(&vi->rq[i].napi);
-> > -                     virtnet_napi_tx_disable(&vi->sq[i].napi);
-> > +                     virtnet_napi_tx_disable(vi->sq[i].vq, &vi->sq[i].=
-napi);
-> >               }
-> >       }
-> >   }
-> > @@ -2440,7 +2449,7 @@ static int virtnet_xdp_set(struct net_device *dev=
-, struct bpf_prog *prog,
-> >       if (netif_running(dev)) {
-> >               for (i =3D 0; i < vi->max_queue_pairs; i++) {
-> >                       napi_disable(&vi->rq[i].napi);
-> > -                     virtnet_napi_tx_disable(&vi->sq[i].napi);
-> > +                     virtnet_napi_tx_disable(vi->sq[i].vq, &vi->sq[i].=
-napi);
-> >               }
-> >       }
-> >
-> > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.=
-c
-> > index 71e16b53e9c1..f7c5d697c302 100644
-> > --- a/drivers/virtio/virtio_ring.c
-> > +++ b/drivers/virtio/virtio_ring.c
-> > @@ -105,6 +105,9 @@ struct vring_virtqueue {
-> >       /* Host publishes avail event idx */
-> >       bool event;
-> >
-> > +     /* Tx side napi work could be done from rx side. */
-> > +     bool work_steal;
->
->
-> So vring_vritqueue is a general structure, let's avoid mentioning
-> network specific stuffs here. And we need a better name like
-> "no_interrupt_check"?
->
-> And we need a separate patch for virtio core changes.
+Any more comments for this series? Can this be merged, please ?
 
-Ack. Will change.
 
->
-> > +
-> >       /* Head of free buffer list. */
-> >       unsigned int free_head;
-> >       /* Number we've added since last sync. */
-> > @@ -1604,6 +1607,7 @@ static struct virtqueue *vring_create_virtqueue_p=
-acked(
-> >       vq->notify =3D notify;
-> >       vq->weak_barriers =3D weak_barriers;
-> >       vq->broken =3D false;
-> > +     vq->work_steal =3D false;
-> >       vq->last_used_idx =3D 0;
-> >       vq->num_added =3D 0;
-> >       vq->packed_ring =3D true;
-> > @@ -2038,6 +2042,9 @@ irqreturn_t vring_interrupt(int irq, void *_vq)
-> >
-> >       if (!more_used(vq)) {
-> >               pr_debug("virtqueue interrupt with no work for %p\n", vq)=
-;
->
->
-> Do we still need to keep this warning?
+Warm Regards
+Thara
+> 
+> v1->v2:
+> 	- Removed net: wireless: intel: from subject header of Patch 1
+> 	  in the series as per Kalle Valo and added his Acked-by.
+> 	- Introduced Patch 3 removing thermal_notify_framework from
+> 	  thermal documentation.
+> 
+> Thara Gopinath (3):
+>    net: wireless: intel: iwlwifi: mvm: tt: Replace
+>      thermal_notify_framework
+>    drivers: thermal: Remove thermal_notify_framework
+>    Documentation: driver-api: thermal: Remove thermal_notify_framework
+>      from documentation
+> 
+>   Documentation/driver-api/thermal/sysfs-api.rst | 12 +-----------
+>   drivers/net/wireless/intel/iwlwifi/mvm/tt.c    |  4 ++--
+>   drivers/thermal/thermal_core.c                 | 18 ------------------
+>   include/linux/thermal.h                        |  4 ----
+>   4 files changed, 3 insertions(+), 35 deletions(-)
+> 
 
-Come to think of it, I would say no, in this case.
-
->
->
-> > +             if (vq->work_steal)
-> > +                     return IRQ_HANDLED;
->
->
-> So I wonder instead of doing trick like this, maybe it's time to unify
-> TX/RX NAPI with the help of[1] (virtio-net use queue pairs).
->
-> Thanks
->
-> [1] https://lkml.org/lkml/2014/12/25/169
-
-Interesting idea. It does sound like a good fit for this model. The
-patch in the Fixes line proved effective at suppressing unnecessary TX
-interrupts when processing in RX interrupt handler. So not sure how
-much will help in practice. Might be a nice project to evaluate
-separate for net-next at some point.
-
-Thanks for the review!
