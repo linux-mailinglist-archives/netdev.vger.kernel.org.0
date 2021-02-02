@@ -2,179 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 414A730CB12
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 20:14:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C31230CB2D
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 20:18:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239439AbhBBTM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 14:12:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59074 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239513AbhBBTGc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 14:06:32 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A58CBC0617AA
-        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 11:03:00 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id d2so2997836pjs.4
-        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 11:03:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=NUfGs35qGoHpDrRDAnP7qHs518RtK2f1VxTBTJHOdq8=;
-        b=Lu0lr25MFrLnP/clSRYOXtWC7Q8dAP91qw6JExkrMq6K/N5IUH1M+yneUaTO/87SKo
-         0oDtFVZMjMRPiN/AgKAbVmQ1DdXRHDc7/GBmXh3tDVUyES0KftfDTW/X+31xMqK0XyJb
-         yCgnZ2dvF4RQR7PjTbBURRJzxatmGxcOOjXyI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=NUfGs35qGoHpDrRDAnP7qHs518RtK2f1VxTBTJHOdq8=;
-        b=kxfytRKEc8tILhjZNt/Z/TTDmTB1VebuCYnlGfH6L7P5dlW61WGfwECVxpYl87sKpA
-         Be2N4/V9WO5U3H+W/pN1kvYX5uo8GW+R4VCCxMdZ/se8p8jLIavGK3ZJF1GMpvQ9H6RQ
-         RCYtsSVTDSZuD0c1r1zZE3vvPcTrLRe35Tgqo8CpbFoV1XD49fTS/Dzc5iQqeut8M5Z3
-         DcknQVfyMNrDAzs7higZUXR5GIV1Qs4+stWGwma+mIn7Dl65kXKote0tY/Y4wSU7ClmX
-         BFQbhZHEKPIwy01DyWrb+Hxq8kb7OJcNzRW8c+zDMLUysErb3S43bEB1qt3G+qXHzQNq
-         70GA==
-X-Gm-Message-State: AOAM532ItytVI4OWO//VKm4AMi4N609ziGOnQZEL0MH0QdQLjgZj3Q20
-        VjmEzRUutTcrBLLcQ7RIYjprUw==
-X-Google-Smtp-Source: ABdhPJwxV+dAKCoa7ZePhj8UecxcgkmmpYe2KqbJ7EyJNZC2OGvKclsFqpV5//1We6WqJR0rXo0hEw==
-X-Received: by 2002:a17:90a:5317:: with SMTP id x23mr5762106pjh.154.1612292580130;
-        Tue, 02 Feb 2021 11:03:00 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id x3sm23534698pfp.98.2021.02.02.11.02.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Feb 2021 11:02:59 -0800 (PST)
-Date:   Tue, 2 Feb 2021 11:02:58 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     wanghongzhe <wanghongzhe@huawei.com>
-Cc:     luto@amacapital.net, andrii@kernel.org, ast@kernel.org,
-        bpf@vger.kernel.org, daniel@iogearbox.net,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        songliubraving@fb.com, wad@chromium.org, yhs@fb.com
-Subject: Re: [PATCH v1 1/1] Firstly, as Andy mentioned, this should be
- smp_rmb() instead of rmb(). considering that TSYNC is a cross-thread
- situation, and rmb() is a mandatory barrier which should not be used to
- control SMP effects, since mandatory barriers impose unnecessary overhead on
- both SMP and UP systems, as kernel Documentation said.
-Message-ID: <202102021100.DB383A44@keescook>
-References: <B1DC6A42-15AF-4804-B20E-FC6E2BDD1C8E@amacapital.net>
- <1612260787-28015-1-git-send-email-wanghongzhe@huawei.com>
+        id S239366AbhBBTPH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 14:15:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45964 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239455AbhBBTMB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 14:12:01 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4458864E3D;
+        Tue,  2 Feb 2021 19:11:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612293080;
+        bh=5CMHvq2AZyfB5l1to1DKLhb6cV7jVUYUbIBHJWolr84=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pBk9uZzmgkrbPfmKasC2lGDUS/LJYganPhoiX0LkYnVXoiO9VLBeuNmPB0CaKBeCN
+         +oWCjtSO9LsLXjWoMOZnfaanMMalSH6oe2H+Z648vYdTNBNiVPihwCP3/VK+DeBNE5
+         4CVosx7M/9uEvIVeyNw+nF8IDE/3Pp8l+AlscnfHT3BvXmICr4fr9RkpPB8yH46Abv
+         8HskldQxY+P+GZWi/KUdRJW/K0W3VvxYXBEpY9DeVzXhkPKDOZ8QiDmylJxVvd38Fy
+         FvzSu0nLoKpAWTAF6tSXu/6Su5Umnm+LZqT6wY6F1WtO2PPVYsIa9iwBEfZ0bdk8VK
+         xXar1smSr7YTA==
+Date:   Tue, 2 Feb 2021 21:11:16 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH mlx5-next v5 3/4] net/mlx5: Dynamically assign MSI-X
+ vectors count
+Message-ID: <20210202191116.GG3264866@unreal>
+References: <20210126085730.1165673-4-leon@kernel.org>
+ <20210202172508.GA113855@bjorn-Precision-5520>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1612260787-28015-1-git-send-email-wanghongzhe@huawei.com>
+In-Reply-To: <20210202172508.GA113855@bjorn-Precision-5520>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 02, 2021 at 06:13:07PM +0800, wanghongzhe wrote:
-> Secondly, the smp_rmb() should be put between reading SYSCALL_WORK_SECCOMP and reading
-> seccomp.mode, not between reading seccomp.mode and seccomp->filter, to make
-> sure that any changes to mode from another thread have been seen after
-> SYSCALL_WORK_SECCOMP was seen, as the original comment shown. This issue seems to be
-> misintroduced at 13aa72f0fd0a9f98a41cefb662487269e2f1ad65 which aims to
-> refactor the filter callback and the API. So the intuitive solution is to put
-> it back like:
-> 
-> Thirdly, however, we can go further to improve the performace of checking
-> syscall, considering that smp_rmb is always executed on the syscall-check
-> path at each time for both FILTER and STRICT check while the TSYNC case
-> which may lead to race condition is just a rare situation, and that in
-> some arch like Arm64 smp_rmb is dsb(ishld) not a cheap barrier() in x86-64.
-> 
-> As a result, smp_rmb() should only be executed when necessary, e.g, it is
-> only necessary when current thread's mode is SECCOMP_MODE_DISABLED at the
-> first TYSNCed time, because after that the current thread's mode will always
-> be SECCOMP_MODE_FILTER (and SYSCALL_WORK_SECCOMP will always be set) and can not be
-> changed anymore by anyone. In other words, after that, any thread can not
-> change the mode (and SYSCALL_WORK_SECCOMP), so the race condition disappeared, and
-> no more smb_rmb() needed ever.
-> 
-> So the solution is to read mode again behind smp_rmb() after the mode is seen
-> as SECCOMP_MODE_DISABLED by current thread at the first TSYNCed time, and if
-> the new mode don't equals to SECCOMP_MODE_FILTER, do BUG(), go to FILTER path
-> otherwise.
-> 
-> RFC -> v1:
->  - replace rmb() with smp_rmb()
->  - move the smp_rmb() logic to the middle between SYSCALL_WORK_SECCOMP and mode
-> 
-> Signed-off-by: wanghongzhe <wanghongzhe@huawei.com>
-> Reviewed-by: Andy Lutomirski <luto@amacapital.net>
-> ---
->  kernel/seccomp.c | 25 +++++++++++++++++--------
->  1 file changed, 17 insertions(+), 8 deletions(-)
-> 
-> diff --git a/kernel/seccomp.c b/kernel/seccomp.c
-> index 952dc1c90229..a621fb913ec6 100644
-> --- a/kernel/seccomp.c
-> +++ b/kernel/seccomp.c
-> @@ -1160,12 +1160,6 @@ static int __seccomp_filter(int this_syscall, const struct seccomp_data *sd,
->  	int data;
->  	struct seccomp_data sd_local;
->  
-> -	/*
-> -	 * Make sure that any changes to mode from another thread have
-> -	 * been seen after SYSCALL_WORK_SECCOMP was seen.
-> -	 */
-> -	rmb();
-> -
->  	if (!sd) {
->  		populate_seccomp_data(&sd_local);
->  		sd = &sd_local;
-> @@ -1289,7 +1283,6 @@ static int __seccomp_filter(int this_syscall, const struct seccomp_data *sd,
->  
->  int __secure_computing(const struct seccomp_data *sd)
->  {
-> -	int mode = current->seccomp.mode;
->  	int this_syscall;
->  
->  	if (IS_ENABLED(CONFIG_CHECKPOINT_RESTORE) &&
-> @@ -1299,10 +1292,26 @@ int __secure_computing(const struct seccomp_data *sd)
->  	this_syscall = sd ? sd->nr :
->  		syscall_get_nr(current, current_pt_regs());
->  
-> -	switch (mode) {
-> +	/*
-> +	 * Make sure that any changes to mode from another thread have
-> +	 * been seen after SYSCALL_WORK_SECCOMP was seen.
-> +	 */
-> +	smp_rmb();
+On Tue, Feb 02, 2021 at 11:25:08AM -0600, Bjorn Helgaas wrote:
+> On Tue, Jan 26, 2021 at 10:57:29AM +0200, Leon Romanovsky wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> >
+> > The number of MSI-X vectors is PCI property visible through lspci, that
+> > field is read-only and configured by the device. The static assignment
+> > of an amount of MSI-X vectors doesn't allow utilize the newly created
+> > VF because it is not known to the device the future load and configuration
+> > where that VF will be used.
+> >
+> > To overcome the inefficiency in the spread of such MSI-X vectors, we
+> > allow the kernel to instruct the device with the needed number of such
+> > vectors.
+> >
+> > Such change immediately increases the amount of MSI-X vectors for the
+> > system with @ VFs from 12 vectors per-VF, to be 32 vectors per-VF.
+>
+> Not knowing anything about mlx5, it looks like maybe this gets some
+> parameters from firmware on the device, then changes the way MSI-X
+> vectors are distributed among VFs?
 
-Let's start with a patch that just replaces rmb() with smp_rmb() and
-then work on optimizing. Can you provide performance numbers that show
-rmb() (and soon smp_rmb()) is causing actual problems here?
+The mlx5 devices can operate in one of two modes: static MSI-X vector
+table size and dynamic.
 
-> +
-> +	switch (current->seccomp.mode) {
->  	case SECCOMP_MODE_STRICT:
->  		__secure_computing_strict(this_syscall);  /* may call do_exit */
->  		return 0;
-> +	/*
-> +	 * Make sure that change to mode (from SECCOMP_MODE_DISABLED to
-> +	 * SECCOMP_MODE_FILTER) from another thread using TSYNC ability
-> +	 * have been seen after SYSCALL_WORK_SECCOMP was seen. Read mode again behind
-> +	 * smp_rmb(), if it equals SECCOMP_MODE_FILTER, go to the right path.
-> +	 */
-> +	case SECCOMP_MODE_DISABLED:
-> +		smp_rmb();
-> +		if (unlikely(current->seccomp.mode != SECCOMP_MODE_FILTER))
-> +			BUG();
+For the same number of VFs, the device will get 12 vectors per-VF in static
+mode. In dynamic, the total number is higher and we will be able to distribute
+new amount better.
 
-BUG() should never be used[1]. This is a recoverable situation, I think, and
-should be handled as such.
+>
+> I don't understand the implications above about "static assignment"
+> and "inefficiency in the spread."  I guess maybe this takes advantage
+> of the fact that you know how many VFs are enabled, so if NumVFs is
+> less that TotalVFs, you can assign more vectors to each VF?
 
--Kees
+Internally, in the FW, we are using different pool and configuration scheme
+for such distribution. In static mode, the amount is pre-configured through
+our FW configuration tool (nvconfig), in dynamic, the driver is fully
+responsible. And yes. NumVFs helps to utilize it is better.
 
-[1] https://www.kernel.org/doc/html/latest/process/deprecated.html#bug-and-bug-on
+>
+> If that's the case, spell it out a little bit.  The current text makes
+> it sound like you discovered brand new MSI-X vectors somewhere,
+> regardless of how many VFs are enabled, which doesn't sound right.
 
->  	case SECCOMP_MODE_FILTER:
->  		return __seccomp_filter(this_syscall, sd, false);
->  	default:
-> -- 
-> 2.19.1
-> 
+I will do.
 
--- 
-Kees Cook
+>
+> > Before this patch:
+> > [root@server ~]# lspci -vs 0000:08:00.2
+> > 08:00.2 Ethernet controller: Mellanox Technologies MT27800 Family [ConnectX-5 Virtual Function]
+> > ....
+> > 	Capabilities: [9c] MSI-X: Enable- Count=12 Masked-
+> >
+> > After this patch:
+> > [root@server ~]# lspci -vs 0000:08:00.2
+> > 08:00.2 Ethernet controller: Mellanox Technologies MT27800 Family [ConnectX-5 Virtual Function]
+> > ....
+> > 	Capabilities: [9c] MSI-X: Enable- Count=32 Masked-
+> >
+> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > ---
+> >  .../net/ethernet/mellanox/mlx5/core/main.c    |  4 ++
+> >  .../ethernet/mellanox/mlx5/core/mlx5_core.h   |  5 ++
+> >  .../net/ethernet/mellanox/mlx5/core/pci_irq.c | 72 +++++++++++++++++++
+> >  .../net/ethernet/mellanox/mlx5/core/sriov.c   | 13 +++-
+> >  4 files changed, 92 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+> > index ca6f2fc39ea0..79cfcc844156 100644
+> > --- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
+> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+> > @@ -567,6 +567,10 @@ static int handle_hca_cap(struct mlx5_core_dev *dev, void *set_ctx)
+> >  	if (MLX5_CAP_GEN_MAX(dev, mkey_by_name))
+> >  		MLX5_SET(cmd_hca_cap, set_hca_cap, mkey_by_name, 1);
+> >
+> > +	if (MLX5_CAP_GEN_MAX(dev, num_total_dynamic_vf_msix))
+> > +		MLX5_SET(cmd_hca_cap, set_hca_cap, num_total_dynamic_vf_msix,
+> > +			 MLX5_CAP_GEN_MAX(dev, num_total_dynamic_vf_msix));
+> > +
+> >  	return set_caps(dev, set_ctx, MLX5_SET_HCA_CAP_OP_MOD_GENERAL_DEVICE);
+> >  }
+> >
+> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
+> > index 0a0302ce7144..5babb4434a87 100644
+> > --- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
+> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
+> > @@ -172,6 +172,11 @@ int mlx5_irq_attach_nb(struct mlx5_irq_table *irq_table, int vecidx,
+> >  		       struct notifier_block *nb);
+> >  int mlx5_irq_detach_nb(struct mlx5_irq_table *irq_table, int vecidx,
+> >  		       struct notifier_block *nb);
+> > +
+> > +int mlx5_set_msix_vec_count(struct mlx5_core_dev *dev, int devfn,
+> > +			    int msix_vec_count);
+> > +int mlx5_get_default_msix_vec_count(struct mlx5_core_dev *dev, int num_vfs);
+> > +
+> >  struct cpumask *
+> >  mlx5_irq_get_affinity_mask(struct mlx5_irq_table *irq_table, int vecidx);
+> >  struct cpu_rmap *mlx5_irq_get_rmap(struct mlx5_irq_table *table);
+> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
+> > index 6fd974920394..2a35888fcff0 100644
+> > --- a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
+> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
+> > @@ -55,6 +55,78 @@ static struct mlx5_irq *mlx5_irq_get(struct mlx5_core_dev *dev, int vecidx)
+> >  	return &irq_table->irq[vecidx];
+> >  }
+> >
+> > +/**
+> > + * mlx5_get_default_msix_vec_count() - Get defaults of number of MSI-X vectors
+> > + * to be set
+>
+> s/defaults of number of/default number of/
+> s/to be set/to be assigned to each VF/ ?
+>
+> > + * @dev: PF to work on
+> > + * @num_vfs: Number of VFs was asked when SR-IOV was enabled
+>
+> s/Number of VFs was asked when SR-IOV was enabled/Number of enabled VFs/ ?
+>
+> > + **/
+>
+> Documentation/doc-guide/kernel-doc.rst says kernel-doc comments end
+> with just "*/" (not "**/").
+
+The netdev uses this style all other the place. Also it is internal API
+call, the kdoc is not needed here, so I followed existing format.
+
+I'll fix all comments and resubmit.
+
+Thanks
