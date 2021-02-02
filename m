@@ -2,76 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FDAE30B69C
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 05:41:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58FE330B6A3
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 05:45:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231696AbhBBEku (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 23:40:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33934 "EHLO mail.kernel.org"
+        id S231834AbhBBEnL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 23:43:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34348 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231156AbhBBEkr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Feb 2021 23:40:47 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 8582064EC3;
-        Tue,  2 Feb 2021 04:40:07 +0000 (UTC)
+        id S231758AbhBBEnG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Feb 2021 23:43:06 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5092864ED3;
+        Tue,  2 Feb 2021 04:42:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612240807;
-        bh=py0U03aCtVHni9MJzUi+Z5xtAy7zH/Fw5FyZzwxecGs=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=DpFv4AfeXZSn2f75OHXU7lurZbj6utvv2gpbXXh6OLExNwC+PU1ZRcn/A/fp4Unda
-         lJpS/ryAho91gS3OpX6di67EGuos9+MRtHp9FSIzJXG+to26M6mEO4WM0ZQA3B4JNf
-         n7ofoMdKTyXL5n/LU9bmtwHcUB1JGdlywAguZ3Jj6BEOFx6tbUTZ8aIjfox0ohxsqk
-         CPIeQ5cyevOwhPyV1UB1DAvpZVAqbAdniMHeI2r+oUUMFYRax9jKQj6aZQO+8IE62/
-         3lPwMF6Vqjwr7VJB7QiEZlyNfhoJlHCFc0EG3PRLGKDAek22bGz8dBlgdjwOG/7ivH
-         sRVxDbhBC3sVQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 7617A60987;
-        Tue,  2 Feb 2021 04:40:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1612240945;
+        bh=tYCsOmxa9vAOxS56RR54t3aluwDqJ5tlt5Hhdw54r8k=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=fOdk9Y5SuX9ktsk46981mYflp1qJKiAokcln8Q/J3wVTJnutGlKVsy1EnDPRJlUBP
+         X3o3M6Iv3wKxVgi5crlhoLWj8OuCLg0XieRBmSYOgyuvG8X/oMKZMM02DE4oyH382Z
+         yeGJcKqcmcf9/IkeM+cgkPJoMeEQwDltqkV56JgFocaCdAn1CK63SaOlxtIn1XFPW/
+         NFIyibw9DbmGrOci2/mKRjZLg8WmY+GZVE7u69C5o/Ad7lLirYGRkKMQnH1m3tpVXj
+         0UHVuh19Yb5t3LIFQ2ZSJukhafQKV3CBfAWbnN06DNwsBMxPk2AFoe4kqBi/ZWHnDw
+         idPLMeS3faKsg==
+Date:   Mon, 1 Feb 2021 20:42:24 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     Julian Wiedmann <jwi@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux X25 <linux-x25@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Martin Schiller <ms@dev.tdt.de>
+Subject: Re: [PATCH net] net: lapb: Copy the skb before sending a packet
+Message-ID: <20210201204224.4872ce23@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAJht_EOw4d9h7LqOsXpucADV5=gAGws-fKj5q7BdH2+h0Yv9Vg@mail.gmail.com>
+References: <20210201055706.415842-1-xie.he.0141@gmail.com>
+        <4d1988d9-6439-ae37-697c-d2b970450498@linux.ibm.com>
+        <CAJht_EOw4d9h7LqOsXpucADV5=gAGws-fKj5q7BdH2+h0Yv9Vg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2 0/4][pull request] Intel Wired LAN Driver Updates
- 2021-02-01
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161224080747.13099.11355150294613048878.git-patchwork-notify@kernel.org>
-Date:   Tue, 02 Feb 2021 04:40:07 +0000
-References: <20210201214618.852831-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20210201214618.852831-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        sassmann@redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net.git (refs/heads/master):
-
-On Mon,  1 Feb 2021 13:46:14 -0800 you wrote:
-> This series contains updates to igc and i40e drivers.
+On Mon, 1 Feb 2021 08:14:31 -0800 Xie He wrote:
+> On Mon, Feb 1, 2021 at 6:10 AM Julian Wiedmann <jwi@linux.ibm.com> wrote:
+> > This sounds a bit like you want skb_cow_head() ... ?  
 > 
-> Kai-Heng Feng fixes igc to report unknown speed and duplex during suspend
-> as an attempted read will cause errors.
-> 
-> Kevin Lo sets the default value to -IGC_ERR_NVM instead of success for
-> writing shadow RAM as this could miss a timeout. Also propagates the return
-> value for Flow Control configuration to properly pass on errors for igc.
-> 
-> [...]
+> Calling "skb_cow_head" before we call "skb_clone" would indeed solve
+> the problem of writes to our clones affecting clones in other parts of
+> the system. But since we are still writing to the skb after
+> "skb_clone", it'd still be better to replace "skb_clone" with
+> "skb_copy" to avoid interference between our own clones.
 
-Here is the summary with links:
-  - [net,v2,1/4] igc: Report speed and duplex as unknown when device is runtime suspended
-    https://git.kernel.org/netdev/net/c/2e99dedc73f0
-  - [net,v2,2/4] igc: set the default return value to -IGC_ERR_NVM in igc_write_nvm_srwr
-    https://git.kernel.org/netdev/net/c/ebc8d125062e
-  - [net,v2,3/4] igc: check return value of ret_val in igc_config_fc_after_link_up
-    https://git.kernel.org/netdev/net/c/b881145642ce
-  - [net,v2,4/4] i40e: Revert "i40e: don't report link up for a VF who hasn't enabled queues"
-    https://git.kernel.org/netdev/net/c/f559a356043a
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Why call skb_cow_head() before skb_clone()? skb_cow_head should be
+called before the data in skb head is modified. I'm assuming you're only
+modifying "front" of the frame, right? skb_cow_head() should do nicely
+in that case.
