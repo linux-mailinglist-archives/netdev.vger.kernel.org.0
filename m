@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E9F430C931
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 19:13:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB78930C921
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 19:13:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238108AbhBBSMo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 13:12:44 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:7574 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238276AbhBBSHV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 13:07:21 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B601994af0001>; Tue, 02 Feb 2021 10:06:39 -0800
+        id S238013AbhBBSKl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 13:10:41 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:2808 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237346AbhBBSIZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 13:08:25 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B601994b20000>; Tue, 02 Feb 2021 10:06:42 -0800
 Received: from dev-r-vrt-156.mtr.labs.mlnx (172.20.145.6) by
  HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3; Tue, 2 Feb 2021 18:06:37 +0000
+ 15.0.1473.3; Tue, 2 Feb 2021 18:06:39 +0000
 From:   Danielle Ratson <danieller@nvidia.com>
 To:     <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <jiri@nvidia.com>,
         <andrew@lunn.ch>, <f.fainelli@gmail.com>, <mkubecek@suse.cz>,
         <mlxsw@nvidia.com>, <idosch@nvidia.com>,
         Danielle Ratson <danieller@nvidia.com>
-Subject: [PATCH net-next v4 4/8] ethtool: Expose the number of lanes in use
-Date:   Tue, 2 Feb 2021 20:06:08 +0200
-Message-ID: <20210202180612.325099-5-danieller@nvidia.com>
+Subject: [PATCH net-next v4 5/8] mlxsw: ethtool: Remove max lanes filtering
+Date:   Tue, 2 Feb 2021 20:06:09 +0200
+Message-ID: <20210202180612.325099-6-danieller@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210202180612.325099-1-danieller@nvidia.com>
 References: <20210202180612.325099-1-danieller@nvidia.com>
@@ -35,178 +35,195 @@ X-Originating-IP: [172.20.145.6]
 X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
  HQMAIL107.nvidia.com (172.20.187.13)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1612289199; bh=LcvHIWudnZ7o4SlWt5ZEk4I98bvwca/lxP3uZBZKA3w=;
+        t=1612289202; bh=L57M6JieDqsPW1h6jc90uuqXy7tgZ6ZwimGLR5QYdi8=;
         h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
          References:MIME-Version:Content-Transfer-Encoding:Content-Type:
          X-Originating-IP:X-ClientProxiedBy;
-        b=OHNOcIDxd8iB94ulELhnAbmiYsFG7drdDILTsToXbiYtBlzeyMSSww+XHkANozXXF
-         hho0oq/onjez3rZJu2/doaDYjUqRNkFz69ZoC2MUzYN5I3Eb7VUXRa6C0u8VNBU5xs
-         wVbwS88q6FDipiYFjvmjssD00H9cazqr3XRfT/NTUPxwUpCu/9fCX74ra8ih2UgMzk
-         WFeiRTk6ks/gqXgCtZtTQJkA/fp4hZbWDbGwnGCHA48WODy755joOpWIGZ/2GNbg03
-         URRyBP7ykznh5M1shBa4R7Xpq/uul3u3OaOTPItCoBTpYm/BC0vUTi8hQJH5QKdwbE
-         MUSurLmCzQ5zw==
+        b=aVx2x3WZrKg4ee0AFziDUieq1LpPwo3gH9HgLsahnt7WYreTPzL7++ED9yHHcpJgV
+         3pshdEGh9YeGlN3kjMcGBvTj4UzZg8iiZrWDnfzfk/Omc0Jvcl4D2tBp/Kr33hddGy
+         9GbziY23KBPmrCqmyrC8vuYOHehS397OY3AZrpNHaGzPpE62FlgUq/HnxF4wgj0V/8
+         VX4uYHpcCki20HtTWwe0BQcNb2ETwyF9wW8eFEyCapOHrn4Pr1AvxbmyfpxUXOKJiT
+         y2vzM0lQdNfdMzwksKd6s5+OAsMcSJLfBDBJP5NZH6zHVtlQHaBAHW3E2gVaPE7OcF
+         BzwbBTsZ927Aw==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, ethtool does not expose how many lanes are used when the
-link is up.
+Currently, when a speed can be supported by different number of lanes,
+the supported link modes bitmask contains only link modes with a single
+number of lanes.
 
-After adding a possibility to advertise or force a specific number of
-lanes, the lanes in use value can be either the maximum width of the port
-or below.
+This was done in order to prevent auto negotiation on number of
+lanes after 50G-1-lane and 100G-2-lanes link modes were introduced.
 
-Extend ethtool to expose the number of lanes currently in use for
-drivers that support it.
+For example, if a port's max width is 4, only link modes with 4 lanes
+will be presented as supported by that port, so 100G is always achieved by
+4 lanes of 25G.
 
-For example:
+After the previous patches that allow selection of the number of lanes,
+auto negotiation on number of lanes becomes practical.
 
-$ ethtool -s swp1 speed 100000 lanes 4
-$ ethtool -s swp2 speed 100000 lanes 4
-$ ip link set swp1 up
-$ ip link set swp2 up
-$ ethtool swp1
-Settings for swp1:
-        Supported ports: [ FIBRE         Backplane ]
-        Supported link modes:   1000baseT/Full
-                                10000baseT/Full
-                                1000baseKX/Full
-                                10000baseKR/Full
-                                10000baseR_FEC
-                                40000baseKR4/Full
-                                40000baseCR4/Full
-                                40000baseSR4/Full
-                                40000baseLR4/Full
-                                25000baseCR/Full
-                                25000baseKR/Full
-                                25000baseSR/Full
-                                50000baseCR2/Full
-                                50000baseKR2/Full
-                                100000baseKR4/Full
-                                100000baseSR4/Full
-                                100000baseCR4/Full
-                                100000baseLR4_ER4/Full
-                                50000baseSR2/Full
-                                10000baseCR/Full
-                                10000baseSR/Full
-                                10000baseLR/Full
-                                10000baseER/Full
-                                50000baseKR/Full
-                                50000baseSR/Full
-                                50000baseCR/Full
-                                50000baseLR_ER_FR/Full
-                                50000baseDR/Full
-                                100000baseKR2/Full
-                                100000baseSR2/Full
-                                100000baseCR2/Full
-                                100000baseLR2_ER2_FR2/Full
-                                100000baseDR2/Full
-                                200000baseKR4/Full
-                                200000baseSR4/Full
-                                200000baseLR4_ER4_FR4/Full
-                                200000baseDR4/Full
-                                200000baseCR4/Full
-        Supported pause frame use: Symmetric Receive-only
-        Supports auto-negotiation: Yes
-        Supported FEC modes: Not reported
-        Advertised link modes:  1000baseT/Full
-                                10000baseT/Full
-                                1000baseKX/Full
-                                1000baseKX/Full
-                                10000baseKR/Full
-                                10000baseR_FEC
-                                40000baseKR4/Full
-                                40000baseCR4/Full
-                                40000baseSR4/Full
-                                40000baseLR4/Full
-                                25000baseCR/Full
-                                25000baseKR/Full
-                                25000baseSR/Full
-                                50000baseCR2/Full
-                                50000baseKR2/Full
-                                100000baseKR4/Full
-                                100000baseSR4/Full
-                                100000baseCR4/Full
-                                100000baseLR4_ER4/Full
-                                50000baseSR2/Full
-                                10000baseCR/Full
-                                10000baseSR/Full
-                                10000baseLR/Full
-                                10000baseER/Full
-                                200000baseKR4/Full
-                                200000baseSR4/Full
-                                200000baseLR4_ER4_FR4/Full
-                                200000baseDR4/Full
-                                200000baseCR4/Full
-        Advertised pause frame use: No
-        Advertised auto-negotiation: Yes
-        Advertised FEC modes: Not reported
-        Advertised link modes:  100000baseKR4/Full
-                                100000baseSR4/Full
-                                100000baseCR4/Full
-                                100000baseLR4_ER4/Full
-	Advertised pause frame use: No
-	Advertised auto-negotiation: Yes
-	Advertised FEC modes: Not reported
-	Speed: 100000Mb/s
-	Lanes: 4
-	Duplex: Full
-	Auto-negotiation: on
-	Port: Direct Attach Copper
-	PHYAD: 0
-	Transceiver: internal
-	Link detected: yes
+Remove that filtering of the maximum number of lanes supported link modes,
+so indeed all the supported and advertised link modes will be shown.
 
 Signed-off-by: Danielle Ratson <danieller@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |  4 +--
+ .../mellanox/mlxsw/spectrum_ethtool.c         | 33 ++++++++-----------
+ 2 files changed, 15 insertions(+), 22 deletions(-)
 
-Notes:
-    v3:
-    	* Change the condition for supporting the lanes parameter.
-   =20
-    v2:
-    	* Reword commit message.
-    	* Since now we get a link mode from driver, instead of each
-    	  parameter separately, simply derive lanes from it.
-
- net/ethtool/linkmodes.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/net/ethtool/linkmodes.c b/net/ethtool/linkmodes.c
-index fc986d035b01..f9eda596f301 100644
---- a/net/ethtool/linkmodes.c
-+++ b/net/ethtool/linkmodes.c
-@@ -45,6 +45,9 @@ static int linkmodes_prepare_data(const struct ethnl_req_=
-info *req_base,
- 		goto out;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/e=
+thernet/mellanox/mlxsw/spectrum.h
+index b1b593076a76..cc4aeb3cdd10 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+@@ -329,13 +329,13 @@ struct mlxsw_sp_port_type_speed_ops {
+ 					 u32 ptys_eth_proto,
+ 					 struct ethtool_link_ksettings *cmd);
+ 	void (*from_ptys_link)(struct mlxsw_sp *mlxsw_sp, u32 ptys_eth_proto,
+-			       u8 width, unsigned long *mode);
++			       unsigned long *mode);
+ 	u32 (*from_ptys_speed)(struct mlxsw_sp *mlxsw_sp, u32 ptys_eth_proto);
+ 	void (*from_ptys_speed_duplex)(struct mlxsw_sp *mlxsw_sp,
+ 				       bool carrier_ok, u32 ptys_eth_proto,
+ 				       struct ethtool_link_ksettings *cmd);
+ 	int (*ptys_max_speed)(struct mlxsw_sp_port *mlxsw_sp_port, u32 *p_max_spe=
+ed);
+-	u32 (*to_ptys_advert_link)(struct mlxsw_sp *mlxsw_sp, u8 width,
++	u32 (*to_ptys_advert_link)(struct mlxsw_sp *mlxsw_sp,
+ 				   const struct ethtool_link_ksettings *cmd);
+ 	u32 (*to_ptys_speed)(struct mlxsw_sp *mlxsw_sp, u8 width, u32 speed);
+ 	void (*reg_ptys_eth_pack)(struct mlxsw_sp *mlxsw_sp, char *payload,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c b/drive=
+rs/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
+index 41288144852d..aa13af0f33f0 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
+@@ -858,7 +858,7 @@ static int mlxsw_sp_port_get_sset_count(struct net_devi=
+ce *dev, int sset)
+=20
+ static void
+ mlxsw_sp_port_get_link_supported(struct mlxsw_sp *mlxsw_sp, u32 eth_proto_=
+cap,
+-				 u8 width, struct ethtool_link_ksettings *cmd)
++				 struct ethtool_link_ksettings *cmd)
+ {
+ 	const struct mlxsw_sp_port_type_speed_ops *ops;
+=20
+@@ -869,13 +869,13 @@ mlxsw_sp_port_get_link_supported(struct mlxsw_sp *mlx=
+sw_sp, u32 eth_proto_cap,
+ 	ethtool_link_ksettings_add_link_mode(cmd, supported, Pause);
+=20
+ 	ops->from_ptys_supported_port(mlxsw_sp, eth_proto_cap, cmd);
+-	ops->from_ptys_link(mlxsw_sp, eth_proto_cap, width,
++	ops->from_ptys_link(mlxsw_sp, eth_proto_cap,
+ 			    cmd->link_modes.supported);
+ }
+=20
+ static void
+ mlxsw_sp_port_get_link_advertise(struct mlxsw_sp *mlxsw_sp,
+-				 u32 eth_proto_admin, bool autoneg, u8 width,
++				 u32 eth_proto_admin, bool autoneg,
+ 				 struct ethtool_link_ksettings *cmd)
+ {
+ 	const struct mlxsw_sp_port_type_speed_ops *ops;
+@@ -886,7 +886,7 @@ mlxsw_sp_port_get_link_advertise(struct mlxsw_sp *mlxsw=
+_sp,
+ 		return;
+=20
+ 	ethtool_link_ksettings_add_link_mode(cmd, advertising, Autoneg);
+-	ops->from_ptys_link(mlxsw_sp, eth_proto_admin, width,
++	ops->from_ptys_link(mlxsw_sp, eth_proto_admin,
+ 			    cmd->link_modes.advertising);
+ }
+=20
+@@ -960,11 +960,9 @@ static int mlxsw_sp_port_get_link_ksettings(struct net=
+_device *dev,
+ 	ops =3D mlxsw_sp->port_type_speed_ops;
+ 	autoneg =3D mlxsw_sp_port->link.autoneg;
+=20
+-	mlxsw_sp_port_get_link_supported(mlxsw_sp, eth_proto_cap,
+-					 mlxsw_sp_port->mapping.width, cmd);
++	mlxsw_sp_port_get_link_supported(mlxsw_sp, eth_proto_cap, cmd);
+=20
+-	mlxsw_sp_port_get_link_advertise(mlxsw_sp, eth_proto_admin, autoneg,
+-					 mlxsw_sp_port->mapping.width, cmd);
++	mlxsw_sp_port_get_link_advertise(mlxsw_sp, eth_proto_admin, autoneg, cmd)=
+;
+=20
+ 	cmd->base.autoneg =3D autoneg ? AUTONEG_ENABLE : AUTONEG_DISABLE;
+ 	cmd->base.port =3D mlxsw_sp_port_connector_port(connector_type);
+@@ -997,8 +995,7 @@ mlxsw_sp_port_set_link_ksettings(struct net_device *dev=
+,
+=20
+ 	autoneg =3D cmd->base.autoneg =3D=3D AUTONEG_ENABLE;
+ 	eth_proto_new =3D autoneg ?
+-		ops->to_ptys_advert_link(mlxsw_sp, mlxsw_sp_port->mapping.width,
+-					 cmd) :
++		ops->to_ptys_advert_link(mlxsw_sp, cmd) :
+ 		ops->to_ptys_speed(mlxsw_sp, mlxsw_sp_port->mapping.width,
+ 				   cmd->base.speed);
+=20
+@@ -1200,7 +1197,7 @@ mlxsw_sp1_from_ptys_supported_port(struct mlxsw_sp *m=
+lxsw_sp,
+=20
+ static void
+ mlxsw_sp1_from_ptys_link(struct mlxsw_sp *mlxsw_sp, u32 ptys_eth_proto,
+-			 u8 width, unsigned long *mode)
++			 unsigned long *mode)
+ {
+ 	int i;
+=20
+@@ -1262,7 +1259,7 @@ static int mlxsw_sp1_ptys_max_speed(struct mlxsw_sp_p=
+ort *mlxsw_sp_port, u32 *p_
+ }
+=20
+ static u32
+-mlxsw_sp1_to_ptys_advert_link(struct mlxsw_sp *mlxsw_sp, u8 width,
++mlxsw_sp1_to_ptys_advert_link(struct mlxsw_sp *mlxsw_sp,
+ 			      const struct ethtool_link_ksettings *cmd)
+ {
+ 	u32 ptys_proto =3D 0;
+@@ -1621,14 +1618,12 @@ mlxsw_sp2_set_bit_ethtool(const struct mlxsw_sp2_po=
+rt_link_mode *link_mode,
+=20
+ static void
+ mlxsw_sp2_from_ptys_link(struct mlxsw_sp *mlxsw_sp, u32 ptys_eth_proto,
+-			 u8 width, unsigned long *mode)
++			 unsigned long *mode)
+ {
+-	u8 mask_width =3D mlxsw_sp_port_mask_width_get(width);
+ 	int i;
+=20
+ 	for (i =3D 0; i < MLXSW_SP2_PORT_LINK_MODE_LEN; i++) {
+-		if ((ptys_eth_proto & mlxsw_sp2_port_link_mode[i].mask) &&
+-		    (mask_width & mlxsw_sp2_port_link_mode[i].mask_width))
++		if (ptys_eth_proto & mlxsw_sp2_port_link_mode[i].mask)
+ 			mlxsw_sp2_set_bit_ethtool(&mlxsw_sp2_port_link_mode[i],
+ 						  mode);
  	}
+@@ -1700,16 +1695,14 @@ mlxsw_sp2_test_bit_ethtool(const struct mlxsw_sp2_p=
+ort_link_mode *link_mode,
+ }
 =20
-+	if (!dev->ethtool_ops->cap_link_lanes_supported)
-+		data->ksettings.lanes =3D 0;
-+
- 	data->peer_empty =3D
- 		bitmap_empty(data->ksettings.link_modes.lp_advertising,
- 			     __ETHTOOL_LINK_MODE_MASK_NBITS);
-@@ -65,6 +68,7 @@ static int linkmodes_reply_size(const struct ethnl_req_in=
-fo *req_base,
+ static u32
+-mlxsw_sp2_to_ptys_advert_link(struct mlxsw_sp *mlxsw_sp, u8 width,
++mlxsw_sp2_to_ptys_advert_link(struct mlxsw_sp *mlxsw_sp,
+ 			      const struct ethtool_link_ksettings *cmd)
+ {
+-	u8 mask_width =3D mlxsw_sp_port_mask_width_get(width);
+ 	u32 ptys_proto =3D 0;
+ 	int i;
 =20
- 	len =3D nla_total_size(sizeof(u8)) /* LINKMODES_AUTONEG */
- 		+ nla_total_size(sizeof(u32)) /* LINKMODES_SPEED */
-+		+ nla_total_size(sizeof(u32)) /* LINKMODES_LANES */
- 		+ nla_total_size(sizeof(u8)) /* LINKMODES_DUPLEX */
- 		+ 0;
- 	ret =3D ethnl_bitset_size(ksettings->link_modes.advertising,
-@@ -125,6 +129,10 @@ static int linkmodes_fill_reply(struct sk_buff *skb,
- 	    nla_put_u8(skb, ETHTOOL_A_LINKMODES_DUPLEX, lsettings->duplex))
- 		return -EMSGSIZE;
-=20
-+	if (ksettings->lanes &&
-+	    nla_put_u32(skb, ETHTOOL_A_LINKMODES_LANES, ksettings->lanes))
-+		return -EMSGSIZE;
-+
- 	if (lsettings->master_slave_cfg !=3D MASTER_SLAVE_CFG_UNSUPPORTED &&
- 	    nla_put_u8(skb, ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG,
- 		       lsettings->master_slave_cfg))
+ 	for (i =3D 0; i < MLXSW_SP2_PORT_LINK_MODE_LEN; i++) {
+-		if ((mask_width & mlxsw_sp2_port_link_mode[i].mask_width) &&
+-		    mlxsw_sp2_test_bit_ethtool(&mlxsw_sp2_port_link_mode[i],
++		if (mlxsw_sp2_test_bit_ethtool(&mlxsw_sp2_port_link_mode[i],
+ 					       cmd->link_modes.advertising))
+ 			ptys_proto |=3D mlxsw_sp2_port_link_mode[i].mask;
+ 	}
 --=20
 2.26.2
 
