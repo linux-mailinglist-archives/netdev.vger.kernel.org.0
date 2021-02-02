@@ -2,107 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5BF530B53A
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 03:26:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 037C130B545
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 03:31:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231344AbhBBCZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 21:25:34 -0500
-Received: from mga09.intel.com ([134.134.136.24]:11679 "EHLO mga09.intel.com"
+        id S229822AbhBBCav (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 21:30:51 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58708 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231128AbhBBCZ0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Feb 2021 21:25:26 -0500
-IronPort-SDR: WtGidEPe52GAS8K7qAlY9F0CE7b387Q1OXgUNAIucktdYikZu6ZcoivDiD9HJ1NDc6rvnm6K5a
- ALHUuiBgeDBg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9882"; a="180929272"
-X-IronPort-AV: E=Sophos;i="5.79,393,1602572400"; 
-   d="scan'208";a="180929272"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2021 18:23:40 -0800
-IronPort-SDR: qIAJuSV0FgCqFATnuenuxbpURWRXkPB/8PJAkzG3pxjn+UWDo8R/negCpTRa1MTgDIDf82mGz9
- LMas1nSpqekw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,393,1602572400"; 
-   d="scan'208";a="581782148"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga005.fm.intel.com with ESMTP; 01 Feb 2021 18:23:40 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Eryk Rybak <eryk.roch.rybak@intel.com>, netdev@vger.kernel.org,
-        sassmann@redhat.com, anthony.l.nguyen@intel.com,
-        bjorn.topel@intel.com, maciej.fijalkowski@intel.com,
-        magnus.karlsson@intel.com,
-        Aleksandr Loktionov <aleksandr.loktionov@intel.com>,
-        Kiran Bhandare <kiranx.bhandare@intel.com>
-Subject: [PATCH net-next 6/6] i40e: Log error for oversized MTU on device
-Date:   Mon,  1 Feb 2021 18:24:20 -0800
-Message-Id: <20210202022420.1328397-7-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210202022420.1328397-1-anthony.l.nguyen@intel.com>
-References: <20210202022420.1328397-1-anthony.l.nguyen@intel.com>
+        id S229554AbhBBCas (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Feb 2021 21:30:48 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 7E4D964D90;
+        Tue,  2 Feb 2021 02:30:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612233007;
+        bh=S9eefTnxyXaS1Z+79gPMrINisvL97D1w0vXTUYDDt40=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=VEgx+gdY4A6rHQwhiepDg//xzXsKKGTJuKfQwwNbwOBkX77oOEeyW6lifRMMvE6/1
+         ntHKKxLer0R9Gqn1t+kS/JkvmekX7SPmoDIjgMMR2bv9Uq0ITLqTVxAmU4GX5fYzRv
+         I3AzmFcKtwd94cOUPPaC5IyKq3+lcscOaC79WQF+TVanH5Br+OGiHW5/KnjpZ9sb1r
+         4VFpVa5QjcoOhU2WetcwbDttgM/KtNxJglJ0NUbuHgFlKW0x1kxTRZK6V5kCN4gSZx
+         LNN3WsrLM/EZZp3NQEl/mGaEQKlQlx6ZZqA4S2XU5alE1N/PyFudQfXRqFKBbCjK5h
+         /hFuUX2Xvtjmg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6864B609D0;
+        Tue,  2 Feb 2021 02:30:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: dsa: mv88e6xxx: override existent unicast portvec in
+ port_fdb_add
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161223300742.24699.17040696529894361005.git-patchwork-notify@kernel.org>
+Date:   Tue, 02 Feb 2021 02:30:07 +0000
+References: <20210130134334.10243-1-dqfext@gmail.com>
+In-Reply-To: <20210130134334.10243-1-dqfext@gmail.com>
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tobias@waldekranz.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eryk Rybak <eryk.roch.rybak@intel.com>
+Hello:
 
-When attempting to link XDP prog with MTU larger than supported,
-user is not informed why XDP linking fails. Adding proper
-error message: "MTU too large to enable XDP".
-Due to the lack of support for non-static variables in netlinks
-extended ACK feature, additional information has been added to dmesg
-to better inform about invalid MTU setting.
+This patch was applied to netdev/net.git (refs/heads/master):
 
-Signed-off-by: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
-Signed-off-by: Eryk Rybak <eryk.roch.rybak@intel.com>
-Tested-by: Kiran Bhandare <kiranx.bhandare@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/i40e/i40e_main.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+On Sat, 30 Jan 2021 21:43:34 +0800 you wrote:
+> Having multiple destination ports for a unicast address does not make
+> sense.
+> Make port_db_load_purge override existent unicast portvec instead of
+> adding a new port bit.
+> 
+> Fixes: 884729399260 ("net: dsa: mv88e6xxx: handle multiple ports in ATU")
+> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+> 
+> [...]
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index f35bd9164106..b52a324a9f28 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -12448,9 +12448,10 @@ static netdev_features_t i40e_features_check(struct sk_buff *skb,
-  * i40e_xdp_setup - add/remove an XDP program
-  * @vsi: VSI to changed
-  * @prog: XDP program
-+ * @extack: netlink extended ack
-  **/
--static int i40e_xdp_setup(struct i40e_vsi *vsi,
--			  struct bpf_prog *prog)
-+static int i40e_xdp_setup(struct i40e_vsi *vsi, struct bpf_prog *prog,
-+			  struct netlink_ext_ack *extack)
- {
- 	int frame_size = vsi->netdev->mtu + ETH_HLEN + ETH_FCS_LEN + VLAN_HLEN;
- 	struct i40e_pf *pf = vsi->back;
-@@ -12459,8 +12460,13 @@ static int i40e_xdp_setup(struct i40e_vsi *vsi,
- 	int i;
- 
- 	/* Don't allow frames that span over multiple buffers */
--	if (frame_size > vsi->rx_buf_len)
-+	if (frame_size > vsi->rx_buf_len) {
-+		NL_SET_ERR_MSG_MOD(extack, "MTU too large to enable XDP");
-+		dev_info(&pf->pdev->dev,
-+			 "MTU of %u bytes is too large to enable XDP (maximum: %u bytes)\n",
-+			 vsi->netdev->mtu, vsi->rx_buf_len);
- 		return -EINVAL;
-+	}
- 
- 	if (!i40e_enabled_xdp_vsi(vsi) && !prog)
- 		return 0;
-@@ -12772,7 +12778,7 @@ static int i40e_xdp(struct net_device *dev,
- 
- 	switch (xdp->command) {
- 	case XDP_SETUP_PROG:
--		return i40e_xdp_setup(vsi, xdp->prog);
-+		return i40e_xdp_setup(vsi, xdp->prog, xdp->extack);
- 	case XDP_SETUP_XSK_POOL:
- 		return i40e_xsk_pool_setup(vsi, xdp->xsk.pool,
- 					   xdp->xsk.queue_id);
--- 
-2.26.2
+Here is the summary with links:
+  - [net] net: dsa: mv88e6xxx: override existent unicast portvec in port_fdb_add
+    https://git.kernel.org/netdev/net/c/f72f2fb8fb6b
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
