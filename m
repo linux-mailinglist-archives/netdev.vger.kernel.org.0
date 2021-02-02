@@ -2,174 +2,383 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C98C530C820
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 18:44:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12A2C30BFC3
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 14:43:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233732AbhBBRl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 12:41:56 -0500
-Received: from mga06.intel.com ([134.134.136.31]:52438 "EHLO mga06.intel.com"
+        id S232716AbhBBNkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 08:40:40 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34408 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233880AbhBBOM0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 09:12:26 -0500
-IronPort-SDR: 8LvM1ex68N9XoMMpq1w7JCgcE3fEEBvx/Xc/IjV8o9IuZFNrz+L1OhsSbawV6KosoXRjgrN5Rr
- 1G0nERVyLbXw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9882"; a="242371388"
-X-IronPort-AV: E=Sophos;i="5.79,395,1602572400"; 
-   d="scan'208";a="242371388"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2021 06:06:53 -0800
-IronPort-SDR: 66qVfS3XKkcWrGwy2+nBdfGzhTnQzjSn9K7uZYKHuSHGUh0Hp2ZMYjFAQGvU5529vAH8lmlzIz
- Y7wQuuohin6A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,395,1602572400"; 
-   d="scan'208";a="479775064"
-Received: from silpixa00399839.ir.intel.com (HELO localhost.localdomain) ([10.237.222.142])
-  by fmsmga001.fm.intel.com with ESMTP; 02 Feb 2021 06:06:51 -0800
-From:   Ciara Loftus <ciara.loftus@intel.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        magnus.karlsson@intel.com, bjorn@kernel.org,
-        weqaar.a.janjua@intel.com
-Cc:     daniel@iogearbox.net, Ciara Loftus <ciara.loftus@intel.com>
-Subject: [PATCH bpf-next v3 6/6] selftests/bpf: XSK_TRACE_INVALID_DESC_TX test
-Date:   Tue,  2 Feb 2021 13:36:42 +0000
-Message-Id: <20210202133642.8562-7-ciara.loftus@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210202133642.8562-1-ciara.loftus@intel.com>
-References: <20210202133642.8562-1-ciara.loftus@intel.com>
+        id S232566AbhBBNiM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 08:38:12 -0500
+Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 15CB864DDA;
+        Tue,  2 Feb 2021 13:37:31 +0000 (UTC)
+Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94)
+        (envelope-from <maz@kernel.org>)
+        id 1l6vs0-00BVCV-8p; Tue, 02 Feb 2021 13:37:29 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Tue, 02 Feb 2021 13:37:28 +0000
+From:   Marc Zyngier <maz@kernel.org>
+To:     Jianyong Wu <jianyong.wu@arm.com>
+Cc:     netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org,
+        tglx@linutronix.de, pbonzini@redhat.com,
+        sean.j.christopherson@intel.com, richardcochran@gmail.com,
+        Mark.Rutland@arm.com, will@kernel.org, suzuki.poulose@arm.com,
+        Andre.Przywara@arm.com, steven.price@arm.com,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
+        Steve.Capper@arm.com, justin.he@arm.com, nd@arm.com
+Subject: Re: [PATCH v16 7/9] ptp: arm/arm64: Enable ptp_kvm for arm/arm64
+In-Reply-To: <20201209060932.212364-8-jianyong.wu@arm.com>
+References: <20201209060932.212364-1-jianyong.wu@arm.com>
+ <20201209060932.212364-8-jianyong.wu@arm.com>
+User-Agent: Roundcube Webmail/1.4.10
+Message-ID: <b79a3502c215a1d2182c53e4b71f370c@kernel.org>
+X-Sender: maz@kernel.org
+X-SA-Exim-Connect-IP: 51.254.78.96
+X-SA-Exim-Rcpt-To: jianyong.wu@arm.com, netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org, tglx@linutronix.de, pbonzini@redhat.com, sean.j.christopherson@intel.com, richardcochran@gmail.com, Mark.Rutland@arm.com, will@kernel.org, suzuki.poulose@arm.com, Andre.Przywara@arm.com, steven.price@arm.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org, Steve.Capper@arm.com, justin.he@arm.com, nd@arm.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This test sets the length of tx descriptors to an invalid
-value. When the kernel tries to transmit these descriptors,
-error traces are expected which look like so:
+On 2020-12-09 06:09, Jianyong Wu wrote:
+> Currently, there is no mechanism to keep time sync between guest and 
+> host
+> in arm/arm64 virtualization environment. Time in guest will drift 
+> compared
+> with host after boot up as they may both use third party time sources
+> to correct their time respectively. The time deviation will be in order
+> of milliseconds. But in some scenarios,like in cloud environment, we 
+> ask
+> for higher time precision.
+> 
+> kvm ptp clock, which chooses the host clock source as a reference
+> clock to sync time between guest and host, has been adopted by x86
+> which takes the time sync order from milliseconds to nanoseconds.
+> 
+> This patch enables kvm ptp clock for arm/arm64 and improves clock sync 
+> precision
+> significantly.
+> 
+> Test result comparisons between with kvm ptp clock and without it in 
+> arm/arm64
+> are as follows. This test derived from the result of command 'chronyc
+> sources'. we should take more care of the last sample column which 
+> shows
+> the offset between the local clock and the source at the last 
+> measurement.
+> 
+> no kvm ptp in guest:
+> MS Name/IP address   Stratum Poll Reach LastRx Last sample
+> ========================================================================
+> ^* dns1.synet.edu.cn      2   6   377    13  +1040us[+1581us] +/-   
+> 21ms
+> ^* dns1.synet.edu.cn      2   6   377    21  +1040us[+1581us] +/-   
+> 21ms
+> ^* dns1.synet.edu.cn      2   6   377    29  +1040us[+1581us] +/-   
+> 21ms
+> ^* dns1.synet.edu.cn      2   6   377    37  +1040us[+1581us] +/-   
+> 21ms
+> ^* dns1.synet.edu.cn      2   6   377    45  +1040us[+1581us] +/-   
+> 21ms
+> ^* dns1.synet.edu.cn      2   6   377    53  +1040us[+1581us] +/-   
+> 21ms
+> ^* dns1.synet.edu.cn      2   6   377    61  +1040us[+1581us] +/-   
+> 21ms
+> ^* dns1.synet.edu.cn      2   6   377     4   -130us[ +796us] +/-   
+> 21ms
+> ^* dns1.synet.edu.cn      2   6   377    12   -130us[ +796us] +/-   
+> 21ms
+> ^* dns1.synet.edu.cn      2   6   377    20   -130us[ +796us] +/-   
+> 21ms
+> 
+> in host:
+> MS Name/IP address   Stratum Poll Reach LastRx Last sample
+> ========================================================================
+> ^* 120.25.115.20          2   7   377    72   -470us[ -603us] +/-   
+> 18ms
+> ^* 120.25.115.20          2   7   377    92   -470us[ -603us] +/-   
+> 18ms
+> ^* 120.25.115.20          2   7   377   112   -470us[ -603us] +/-   
+> 18ms
+> ^* 120.25.115.20          2   7   377     2   +872ns[-6808ns] +/-   
+> 17ms
+> ^* 120.25.115.20          2   7   377    22   +872ns[-6808ns] +/-   
+> 17ms
+> ^* 120.25.115.20          2   7   377    43   +872ns[-6808ns] +/-   
+> 17ms
+> ^* 120.25.115.20          2   7   377    63   +872ns[-6808ns] +/-   
+> 17ms
+> ^* 120.25.115.20          2   7   377    83   +872ns[-6808ns] +/-   
+> 17ms
+> ^* 120.25.115.20          2   7   377   103   +872ns[-6808ns] +/-   
+> 17ms
+> ^* 120.25.115.20          2   7   377   123   +872ns[-6808ns] +/-   
+> 17ms
+> 
+> The dns1.synet.edu.cn is the network reference clock for guest and
+> 120.25.115.20 is the network reference clock for host. we can't get the
+> clock error between guest and host directly, but a roughly estimated 
+> value
+> will be in order of hundreds of us to ms.
+> 
+> with kvm ptp in guest:
+> chrony has been disabled in host to remove the disturb by network 
+> clock.
+> 
+> MS Name/IP address         Stratum Poll Reach LastRx Last sample
+> ========================================================================
+> * PHC0                    0   3   377     8     -7ns[   +1ns] +/-    
+> 3ns
+> * PHC0                    0   3   377     8     +1ns[  +16ns] +/-    
+> 3ns
+> * PHC0                    0   3   377     6     -4ns[   -0ns] +/-    
+> 6ns
+> * PHC0                    0   3   377     6     -8ns[  -12ns] +/-    
+> 5ns
+> * PHC0                    0   3   377     5     +2ns[   +4ns] +/-    
+> 4ns
+> * PHC0                    0   3   377    13     +2ns[   +4ns] +/-    
+> 4ns
+> * PHC0                    0   3   377    12     -4ns[   -6ns] +/-    
+> 4ns
+> * PHC0                    0   3   377    11     -8ns[  -11ns] +/-    
+> 6ns
+> * PHC0                    0   3   377    10    -14ns[  -20ns] +/-    
+> 4ns
+> * PHC0                    0   3   377     8     +4ns[   +5ns] +/-    
+> 4ns
+> 
+> The PHC0 is the ptp clock which choose the host clock as its source
+> clock. So we can see that the clock difference between host and guest
+> is in order of ns.
+> 
+> Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
+> ---
+>  drivers/clocksource/arm_arch_timer.c | 29 ++++++++++++++++++
+>  drivers/ptp/Kconfig                  |  2 +-
+>  drivers/ptp/Makefile                 |  1 +
+>  drivers/ptp/ptp_kvm_arm.c            | 45 ++++++++++++++++++++++++++++
+>  4 files changed, 76 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/ptp/ptp_kvm_arm.c
+> 
+> diff --git a/drivers/clocksource/arm_arch_timer.c
+> b/drivers/clocksource/arm_arch_timer.c
+> index d55acffb0b90..16cd0a663587 100644
+> --- a/drivers/clocksource/arm_arch_timer.c
+> +++ b/drivers/clocksource/arm_arch_timer.c
+> @@ -25,6 +25,8 @@
+>  #include <linux/sched/clock.h>
+>  #include <linux/sched_clock.h>
+>  #include <linux/acpi.h>
+> +#include <linux/arm-smccc.h>
+> +#include <linux/ptp_kvm.h>
+> 
+>  #include <asm/arch_timer.h>
+>  #include <asm/virt.h>
+> @@ -1650,3 +1652,30 @@ static int __init arch_timer_acpi_init(struct
+> acpi_table_header *table)
+>  }
+>  TIMER_ACPI_DECLARE(arch_timer, ACPI_SIG_GTDT, arch_timer_acpi_init);
+>  #endif
+> +
+> +int kvm_arch_ptp_get_crosststamp(u64 *cycle, struct timespec64 *ts,
+> +			      struct clocksource **cs)
+> +{
+> +	struct arm_smccc_res hvc_res;
+> +	ktime_t ktime;
+> +	u32 ptp_counter;
+> +
+> +	if (arch_timer_uses_ppi == ARCH_TIMER_VIRT_PPI)
+> +		ptp_counter = ARM_PTP_VIRT_COUNTER;
+> +	else
+> +		ptp_counter = ARM_PTP_PHY_COUNTER;
+> +
+> +	arm_smccc_1_1_invoke(ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID,
+> +			     ptp_counter, &hvc_res);
+> +
+> +	if ((int)(hvc_res.a0) < 0)
+> +		return -EOPNOTSUPP;
+> +
+> +	ktime = (u64)hvc_res.a0 << 32 | hvc_res.a1;
+> +	*ts = ktime_to_timespec64(ktime);
+> +	*cycle = (u64)hvc_res.a2 << 32 | hvc_res.a3;
+> +	*cs = &clocksource_counter;
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(kvm_arch_ptp_get_crosststamp);
+> diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
+> index 942f72d8151d..677c7f696b70 100644
+> --- a/drivers/ptp/Kconfig
+> +++ b/drivers/ptp/Kconfig
+> @@ -106,7 +106,7 @@ config PTP_1588_CLOCK_PCH
+>  config PTP_1588_CLOCK_KVM
+>  	tristate "KVM virtual PTP clock"
+>  	depends on PTP_1588_CLOCK
+> -	depends on KVM_GUEST && X86
+> +	depends on KVM_GUEST && X86 || (HAVE_ARM_SMCCC_DISCOVERY && 
+> ARM_ARCH_TIMER)
+>  	default y
+>  	help
+>  	  This driver adds support for using kvm infrastructure as a PTP
+> diff --git a/drivers/ptp/Makefile b/drivers/ptp/Makefile
+> index 699a4e4d19c2..9fa5ede44b2b 100644
+> --- a/drivers/ptp/Makefile
+> +++ b/drivers/ptp/Makefile
+> @@ -5,6 +5,7 @@
+> 
+>  ptp-y					:= ptp_clock.o ptp_chardev.o ptp_sysfs.o
+>  ptp_kvm-$(CONFIG_X86)			:= ptp_kvm_x86.o ptp_kvm_common.o
+> +ptp_kvm-$(CONFIG_HAVE_ARM_SMCCC)	:= ptp_kvm_arm.o ptp_kvm_common.o
+>  obj-$(CONFIG_PTP_1588_CLOCK)		+= ptp.o
+>  obj-$(CONFIG_PTP_1588_CLOCK_DTE)	+= ptp_dte.o
+>  obj-$(CONFIG_PTP_1588_CLOCK_INES)	+= ptp_ines.o
+> diff --git a/drivers/ptp/ptp_kvm_arm.c b/drivers/ptp/ptp_kvm_arm.c
+> new file mode 100644
+> index 000000000000..ecb5ef273be5
+> --- /dev/null
+> +++ b/drivers/ptp/ptp_kvm_arm.c
+> @@ -0,0 +1,45 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + *  Virtual PTP 1588 clock for use with KVM guests
+> + *  Copyright (C) 2019 ARM Ltd.
+> + *  All Rights Reserved
+> + */
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/err.h>
+> +#include <asm/hypervisor.h>
+> +#include <linux/module.h>
+> +#include <linux/psci.h>
+> +#include <linux/arm-smccc.h>
+> +#include <linux/timecounter.h>
+> +#include <linux/ptp_kvm.h>
+> +#include <linux/sched/clock.h>
+> +#include <asm/arch_timer.h>
+> +#include <asm/hypervisor.h>
+> +
+> +int kvm_arch_ptp_init(void)
+> +{
+> +	int ret;
+> +
+> +	ret = kvm_arm_hyp_service_available(ARM_SMCCC_KVM_FUNC_PTP);
+> +	if (ret <= 0)
+> +		return -EOPNOTSUPP;
+> +
+> +	return 0;
+> +}
+> +
+> +int kvm_arch_ptp_get_clock(struct timespec64 *ts)
+> +{
+> +	ktime_t ktime;
+> +	struct arm_smccc_res hvc_res;
+> +
+> +	arm_smccc_1_1_invoke(ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID,
+> +			     ARM_PTP_VIRT_COUNTER, &hvc_res);
+> +	if ((int)(hvc_res.a0) < 0)
+> +		return -EOPNOTSUPP;
+> +
+> +	ktime = (u64)hvc_res.a0 << 32 | hvc_res.a1;
+> +	*ts = ktime_to_timespec64(ktime);
 
-xsk_packet_drop: netdev: ve9266 qid 0 reason: invalid tx desc: \
-  addr 258048 len 4097 options 0
+This whole function can be trivially replaced with a call to
+kvm_arch_ptp_get_crosststamp with minimal changes to that function:
 
-The test validates that these traces were successfully generated.
+diff --git a/drivers/clocksource/arm_arch_timer.c 
+b/drivers/clocksource/arm_arch_timer.c
+index e3a5ebbfb3d0..e7b07166e771 100644
+--- a/drivers/clocksource/arm_arch_timer.c
++++ b/drivers/clocksource/arm_arch_timer.c
+@@ -1663,16 +1663,16 @@ TIMER_ACPI_DECLARE(arch_timer, ACPI_SIG_GTDT, 
+arch_timer_acpi_init);
+  #endif
 
-Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
----
- tools/testing/selftests/bpf/test_xsk.sh  | 24 ++++++++++++++++++++++++
- tools/testing/selftests/bpf/xdpxceiver.c | 22 ++++++++++++++++++----
- 2 files changed, 42 insertions(+), 4 deletions(-)
+  int kvm_arch_ptp_get_crosststamp(u64 *cycle, struct timespec64 *ts,
+-			      struct clocksource **cs)
++				 struct clocksource **cs)
+  {
+  	struct arm_smccc_res hvc_res;
+-	ktime_t ktime;
+  	u32 ptp_counter;
++	ktime_t ktime;
 
-diff --git a/tools/testing/selftests/bpf/test_xsk.sh b/tools/testing/selftests/bpf/test_xsk.sh
-index bc026da25d54..4e654eb0a595 100755
---- a/tools/testing/selftests/bpf/test_xsk.sh
-+++ b/tools/testing/selftests/bpf/test_xsk.sh
-@@ -295,6 +295,30 @@ retval=$?
- test_status $retval "${TEST_NAME}"
- statusList+=($retval)
- 
-+### TEST 14
-+TEST_NAME="SKB TRACE INVALID_DESC_TX"
+  	if (arch_timer_uses_ppi == ARCH_TIMER_VIRT_PPI)
+-		ptp_counter = ARM_PTP_VIRT_COUNTER;
++		ptp_counter = KVM_PTP_VIRT_COUNTER;
+  	else
+-		ptp_counter = ARM_PTP_PHY_COUNTER;
++		ptp_counter = KVM_PTP_PHYS_COUNTER;
+
+  	arm_smccc_1_1_invoke(ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID,
+  			     ptp_counter, &hvc_res);
+@@ -1682,8 +1682,10 @@ int kvm_arch_ptp_get_crosststamp(u64 *cycle, 
+struct timespec64 *ts,
+
+  	ktime = (u64)hvc_res.a0 << 32 | hvc_res.a1;
+  	*ts = ktime_to_timespec64(ktime);
+-	*cycle = (u64)hvc_res.a2 << 32 | hvc_res.a3;
+-	*cs = &clocksource_counter;
++	if (cycle)
++		*cycle = (u64)hvc_res.a2 << 32 | hvc_res.a3;
++	if (cs)
++		*cs = &clocksource_counter;
+
+  	return 0;
+  }
+diff --git a/drivers/ptp/ptp_kvm_arm.c b/drivers/ptp/ptp_kvm_arm.c
+index ecb5ef273be5..b7d28c8dfb84 100644
+--- a/drivers/ptp/ptp_kvm_arm.c
++++ b/drivers/ptp/ptp_kvm_arm.c
+@@ -5,15 +5,9 @@
+   *  All Rights Reserved
+   */
+
+-#include <linux/kernel.h>
+-#include <linux/err.h>
+-#include <asm/hypervisor.h>
+-#include <linux/module.h>
+-#include <linux/psci.h>
+  #include <linux/arm-smccc.h>
+-#include <linux/timecounter.h>
+  #include <linux/ptp_kvm.h>
+-#include <linux/sched/clock.h>
 +
-+vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
-+
-+params=("-S" "-t" "2" "-C" "${TRACEPKTS}")
-+execxdpxceiver params
-+
-+retval=$?
-+test_status $retval "${TEST_NAME}"
-+statusList+=($retval)
-+
-+### TEST 15
-+TEST_NAME="DRV TRACE INVALID_DESC_TX"
-+
-+vethXDPnative ${VETH0} ${VETH1} ${NS1}
-+
-+params=("-N" "-t" "2" "-C" "${TRACEPKTS}")
-+execxdpxceiver params
-+
-+retval=$?
-+test_status $retval "${TEST_NAME}"
-+statusList+=($retval)
-+
- ## END TESTS
- 
- cleanup_exit ${VETH0} ${VETH1} ${NS1}
-diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-index e63dc1c228ed..6cf824a33fdc 100644
---- a/tools/testing/selftests/bpf/xdpxceiver.c
-+++ b/tools/testing/selftests/bpf/xdpxceiver.c
-@@ -37,6 +37,8 @@
-  *       Increase the headroom size and send packets. Validate traces.
-  *    f. Tracing - XSK_TRACE_DROP_INVALID_FILLADDR
-  *       Populate the fill queue with invalid addresses. Validate traces.
-+ *    g. Tracing - XSK_TRACE_DROP_INVALID_TXD
-+ *       Populate the tx descriptors with invalid addresses. Validate traces.
-  *
-  * 2. AF_XDP DRV/Native mode
-  *    Works on any netdevice with XDP_REDIRECT support, driver dependent. Processes
-@@ -50,8 +52,9 @@
-  *      zero-copy mode
-  *    e. Tracing - XSK_TRACE_DROP_PKT_TOO_BIG
-  *    f. Tracing - XSK_TRACE_DROP_INVALID_FILLADDR
-+ *    g. Tracing - XSK_TRACE_DROP_INVALID_TXD
-  *
-- * Total tests: 12
-+ * Total tests: 14
-  *
-  * Flow:
-  * -----
-@@ -560,8 +563,11 @@ static inline void complete_tx_only(struct xsk_socket_info *xsk, int batch_size)
- 	if (!xsk->outstanding_tx)
- 		return;
- 
--	if (!NEED_WAKEUP || xsk_ring_prod__needs_wakeup(&xsk->tx))
-+	if (!NEED_WAKEUP || xsk_ring_prod__needs_wakeup(&xsk->tx)) {
- 		kick_tx(xsk);
-+		if (opt_trace_code == XSK_TRACE_DROP_INVALID_TXD)
-+			xsk->outstanding_tx = 0;
-+	}
- 
- 	rcvd = xsk_ring_cons__peek(&xsk->umem->cq, batch_size, &idx);
- 	if (rcvd) {
-@@ -632,6 +638,7 @@ static void tx_only(struct xsk_socket_info *xsk, u32 *frameptr, int batch_size)
- {
- 	u32 idx;
- 	unsigned int i;
-+	bool invalid_tx_test = opt_trace_code == XSK_TRACE_DROP_INVALID_TXD;
- 
- 	while (xsk_ring_prod__reserve(&xsk->tx, batch_size, &idx) < batch_size)
- 		complete_tx_only(xsk, batch_size);
-@@ -640,7 +647,8 @@ static void tx_only(struct xsk_socket_info *xsk, u32 *frameptr, int batch_size)
- 		struct xdp_desc *tx_desc = xsk_ring_prod__tx_desc(&xsk->tx, idx + i);
- 
- 		tx_desc->addr = (*frameptr + i) << XSK_UMEM__DEFAULT_FRAME_SHIFT;
--		tx_desc->len = PKT_SIZE;
-+		tx_desc->len = invalid_tx_test ? XSK_UMEM__DEFAULT_FRAME_SIZE + 1 : PKT_SIZE;
-+
- 	}
- 
- 	xsk_ring_prod__submit(&xsk->tx, batch_size);
-@@ -1014,7 +1022,10 @@ static void *worker_testapp_validate(void *arg)
- 				rx_pkt(ifobject->xsk, fds);
- 				worker_pkt_validate();
- 			} else {
--				worker_trace_validate(tr_fp, ifobject->ifname);
-+				worker_trace_validate(tr_fp,
-+					opt_trace_code == XSK_TRACE_DROP_INVALID_TXD ?
-+					ifdict[!ifobject->ifdict_index]->ifname :
-+					ifobject->ifname);
- 			}
- 
- 			if (sigvar)
-@@ -1187,6 +1198,9 @@ int main(int argc, char **argv)
- 		case XSK_TRACE_DROP_INVALID_FILLADDR:
- 			reason_str = "invalid fill addr";
- 			break;
-+		case XSK_TRACE_DROP_INVALID_TXD:
-+			reason_str = "invalid tx desc";
-+			break;
- 		default:
- 			ksft_test_result_fail("ERROR: unsupported trace %i\n",
- 						opt_trace_code);
+  #include <asm/arch_timer.h>
+  #include <asm/hypervisor.h>
+
+@@ -30,16 +24,5 @@ int kvm_arch_ptp_init(void)
+
+  int kvm_arch_ptp_get_clock(struct timespec64 *ts)
+  {
+-	ktime_t ktime;
+-	struct arm_smccc_res hvc_res;
+-
+-	arm_smccc_1_1_invoke(ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID,
+-			     ARM_PTP_VIRT_COUNTER, &hvc_res);
+-	if ((int)(hvc_res.a0) < 0)
+-		return -EOPNOTSUPP;
+-
+-	ktime = (u64)hvc_res.a0 << 32 | hvc_res.a1;
+-	*ts = ktime_to_timespec64(ktime);
+-
+-	return 0;
++	return kvm_arch_ptp_get_crosststamp(NULL, ts, NULL);
+  }
+
+Thanks,
+
+         M.
 -- 
-2.17.1
-
+Jazz is not dead. It just smells funny...
