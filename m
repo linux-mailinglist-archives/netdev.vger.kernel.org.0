@@ -2,395 +2,374 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E20B30C916
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 19:10:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40C2830C940
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 19:16:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238044AbhBBSKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 13:10:02 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:7651 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238215AbhBBSHc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 13:07:32 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B601994ba0005>; Tue, 02 Feb 2021 10:06:50 -0800
-Received: from dev-r-vrt-156.mtr.labs.mlnx (172.20.145.6) by
- HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3; Tue, 2 Feb 2021 18:06:48 +0000
+        id S233869AbhBBSMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 13:12:38 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:2944 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238348AbhBBSJu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 13:09:50 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B6019952d0000>; Tue, 02 Feb 2021 10:08:45 -0800
+Received: from HKMAIL104.nvidia.com (10.18.16.13) by HQMAIL111.nvidia.com
+ (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 2 Feb
+ 2021 18:08:43 +0000
+Received: from HKMAIL103.nvidia.com (10.18.16.12) by HKMAIL104.nvidia.com
+ (10.18.16.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 2 Feb
+ 2021 18:08:38 +0000
+Received: from NAM02-CY1-obe.outbound.protection.outlook.com (104.47.37.50) by
+ HKMAIL103.nvidia.com (10.18.16.12) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Tue, 2 Feb 2021 18:08:37 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UxZFXRd3rkQ/hFYulzAuUkg3mILvie1jvN2IuKcqkriWvuDrs2LsUtkJcrseZmIiu5SWkQWiD40crYf7/b/Hl+6l0vxoQWiPqzs6+myPKfEo4U2lq4hXciGa4SuEaZFFJ5PzRY7AOVrScC9nWKdiARsaKML72oG6O+dJ/OWQiA9tyL+Ymhyeb1QUKQdOsViIX+YfVoRmbQXlAcDAeJLiwI8BIG64TrVzPwC8ZPe98XzYI7kjzjDpObiKZQDYQsjQuC0gwqTE6cGjFEjp3qKf/2nlOPn+/jAKKTICRx2dm3E0Al0/AQ+k2hioHoNjptqAspNIlKea6Vhtu/BH01+bZQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VDb4vNIQ90kd13I9V6b172TibQdPASvYgSvVDD+PaE8=;
+ b=gsPPt0cZ4EjGXcOb1goXlRv3yzmu5SFYUj17ppORLEeuhhSpgW+21WKIUEhMHiyBWuYoA1tEla/NDHGlU4DXzFREUVb72sli1Fo/EMwrxU00wMVZtYTnUApd5aKSJ5hR3h1CCoXriKEmu9uTb+NvG+RK3BR//QUjUGOthVuIRMVopXT+VJGB6JjO9DXIQf624mqK0WN8HoURos/lJyCSUlKeAdlmt37JdqezgDjERBvuqiTjp3+W43uMX6FhBMZU7HsAh7eBsz7ayiOhV8LaxgkPZoOQZOt9/Cib9tYjAMJMbXgjE1WXmUQbHoko9SKpwEyZmEYOpGd0+SzGTie25w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM6PR12MB4516.namprd12.prod.outlook.com (2603:10b6:5:2ac::20)
+ by DM5PR1201MB0122.namprd12.prod.outlook.com (2603:10b6:4:57::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.17; Tue, 2 Feb
+ 2021 18:08:35 +0000
+Received: from DM6PR12MB4516.namprd12.prod.outlook.com
+ ([fe80::4103:b38b:a27c:c7e8]) by DM6PR12MB4516.namprd12.prod.outlook.com
+ ([fe80::4103:b38b:a27c:c7e8%7]) with mapi id 15.20.3805.027; Tue, 2 Feb 2021
+ 18:08:35 +0000
 From:   Danielle Ratson <danieller@nvidia.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <jiri@nvidia.com>,
-        <andrew@lunn.ch>, <f.fainelli@gmail.com>, <mkubecek@suse.cz>,
-        <mlxsw@nvidia.com>, <idosch@nvidia.com>,
-        Danielle Ratson <danieller@nvidia.com>
-Subject: [PATCH net-next v4 8/8] net: selftests: Add lanes setting test
-Date:   Tue, 2 Feb 2021 20:06:12 +0200
-Message-ID: <20210202180612.325099-9-danieller@nvidia.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210202180612.325099-1-danieller@nvidia.com>
-References: <20210202180612.325099-1-danieller@nvidia.com>
+To:     Edwin Peer <edwin.peer@broadcom.com>
+CC:     netdev <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "Michal Kubecek" <mkubecek@suse.cz>, mlxsw <mlxsw@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: RE: [PATCH net-next v3 1/7] ethtool: Extend link modes settings uAPI
+ with lanes
+Thread-Topic: [PATCH net-next v3 1/7] ethtool: Extend link modes settings uAPI
+ with lanes
+Thread-Index: AQHW7w/k9y6sUOLEbk6cSTfGh0CjPKoxGweAgBQhGeA=
+Date:   Tue, 2 Feb 2021 18:08:34 +0000
+Message-ID: <DM6PR12MB4516A65A5F8E42089D7D3AACD8B59@DM6PR12MB4516.namprd12.prod.outlook.com>
+References: <20210120093713.4000363-1-danieller@nvidia.com>
+ <20210120093713.4000363-2-danieller@nvidia.com>
+ <CAKOOJTxG2_fV3kSuTpeVLOwSXBug==zaEzQVnn6O3Tsy=Hh9AQ@mail.gmail.com>
+In-Reply-To: <CAKOOJTxG2_fV3kSuTpeVLOwSXBug==zaEzQVnn6O3Tsy=Hh9AQ@mail.gmail.com>
+Accept-Language: he-IL, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: broadcom.com; dkim=none (message not signed)
+ header.d=none;broadcom.com; dmarc=none action=none header.from=nvidia.com;
+x-originating-ip: [193.47.165.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 28a7a454-c15f-4643-2da5-08d8c7a58ec1
+x-ms-traffictypediagnostic: DM5PR1201MB0122:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM5PR1201MB0122C5B1813862B81F143898D8B59@DM5PR1201MB0122.namprd12.prod.outlook.com>
+x-header: ProcessedBy-CMR-outbound
+x-ms-oob-tlc-oobclassifiers: OLM:3383;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: KroqBMDw9db44gXbiCb5H6Ti7567N4u+eYZdeLvSd7hi5KvqkqKA3rmoLb3Ju3Pe30QOBV6BFt8lcEi+js3QcnqtLmV6IhWr5yl6vIl2uxCNLzC9+iNHOA/itq+WK8iCKsg+g13zCYp0phB8niper721ltoHd5O6nKPgi9hh7gbJn8O9RgQEZg/IGU9cUDomVVMPVu1TUQNevE3TxImz/dd8KoI85TERn1u6xkRQ5mmLUcVhHzoHecRehslwJ9vY8aDK4uVXgyW0ardAQN5Cx0HeTIi/GeiSgz87c4He/KMfQLI3R6EiKv/kXyB8gt6p7Ta+SMXkFdMrTlPKWOGTO1noa3JA3RJZ6PWO1SfjgM0FetsLa77DjdiKpP/EQx7W9TuL1kyFTM2xk5OAOf50NndAsgLIzwIsKPSO478ASkztI2ACH1KBqnDin9vKSIwcvCaK3G/UGk93D5aqTBW95wk/SbeMtmAJ5EpMZGua9MYO1FOmkkJd8GekgKHIy26TfuwPhDzXAkYpXnqvCyooZA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4516.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(396003)(136003)(376002)(346002)(39860400002)(53546011)(316002)(6506007)(8936002)(4326008)(52536014)(71200400001)(186003)(26005)(83380400001)(6916009)(55016002)(9686003)(30864003)(107886003)(54906003)(66556008)(7696005)(86362001)(5660300002)(478600001)(2906002)(8676002)(64756008)(66446008)(66476007)(33656002)(76116006)(66946007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?utf-8?B?WlR0NnRGdTdLUDdLSjVORkFKN3RmUE94Rzk4TkFZekhBRnR6MzNTOXhjWlRh?=
+ =?utf-8?B?RkMyM0RuRXdSVHdWalNlWms2aWR6dmdPNnlhWElpY00wL0VIT21MRnJKS0g4?=
+ =?utf-8?B?SGdvb3U0YTRGNENEVEVlNGp4OHJ1ZXdZNlM3YnJ1RGc3THBxN1RnUVJZTGJG?=
+ =?utf-8?B?TGRCUUphbTJjUXd3OWgyRzlaN004ekUyT0ZnYjZZbGtwM3FvaTlpWjFtellO?=
+ =?utf-8?B?VU8yTFBDRjVlTFdrS3pMMjJyZE1EdmFwVzlNWVg5bFhFbzVYZmhFZUJUdnZK?=
+ =?utf-8?B?RjQyK3pHYzJ0S01Sa2Nlb2JwZ1o5WDhUUnNUcEdzUlJMY0lvSE9jdmF5c1Qw?=
+ =?utf-8?B?YXZFQ3BuZzBsdlpEakh5TDR2TnpLTUxxZUNpdlJsekhqejNqTWl1L0FCejdt?=
+ =?utf-8?B?UW1YdzBPclhsRngwNmhySStIQ1dpNWMvVlZ5c09mWk5zdWZuaEROZVF4clBI?=
+ =?utf-8?B?VXg5Q3dySWJxeWJra3N6c3VSRHdhb0VpYjZ4N2lnamFOYVd3Q1dUWFhxVTA2?=
+ =?utf-8?B?akdBTDhDVWJvWGNHQkJ5UFNFWTZSemEzQ2pIVlQ2TW04anZISWdWKytVVlJF?=
+ =?utf-8?B?VGVSRk5aV1ZHWlpOY0xibStTWjZVL3lHY2xkSFNwQ3F1N2xTcFNZa0lFOWlS?=
+ =?utf-8?B?NlF0UXJnWlZPVEkyaDFlN005R1F3cVAyRXhjSklXZU1EaGxNK3hLRExpc0NM?=
+ =?utf-8?B?TFdNd2xpVjcxL0Qwb3pZTXZ3UklORk0vYVh2NHpzekEyc3phZEhzc0FQNmlD?=
+ =?utf-8?B?VjRiTW5pbCt2a281RHhMSVBvbUZldE0xVzUwcGVPVnZnQXloR09FdTZoSEZl?=
+ =?utf-8?B?UzhGa05BbUVnODZqZ3piaXZrd1l5dzVuR3h0SnllQ1dLRnVsZ3Zmcm05elFl?=
+ =?utf-8?B?bWNPc2J1MVlSeXVMaldqL1JoUnB4MG1aN3pDdkoxY0psM0doUGRUbC9JblBI?=
+ =?utf-8?B?SkZSVGtHVC9qTmpSUTY3b2U5WkJqQjNjV25TSFl5eEhUc21PclpUVVJZMEhp?=
+ =?utf-8?B?ZEFyaGIrTkt5aVRRYzJ3aEhlZFMrcHBzOWtaT280bXZRemhqeGRlcXdFZnFF?=
+ =?utf-8?B?ZTUvMG1FQUdTbThnWVh5amthR2VqRi9WV3g5VWNvZkdST01IOWdQZXlNcmt2?=
+ =?utf-8?B?R3ZlZHpBK0tVeGdHZmlXdEdXSkdkZWxQR1FwWEtlbVdNOUtuN0FabHZUVnhw?=
+ =?utf-8?B?MDM5K3lZK3F4MFNqcnVvTW45bEVFRlN0Qm5tMmpnL2xnS1hKMFF6cURlTm43?=
+ =?utf-8?B?cEh3bzdNZ0poYW1VdDJCU0h4UC9SV1QrZzZhalRqY3BKOXBOUW5kQ3ozZW9Q?=
+ =?utf-8?B?Ly9Wa29xNGdIWGtIdlhrNXN2Q3BVM2lsN25oQ0hnV0dMeFc0b2MrVmhSWDEw?=
+ =?utf-8?B?czVPb044bExNYjVvR2RhYWRYVkdBSmxVZXF5bVlvOHZoeFdVcm5UK21RKys2?=
+ =?utf-8?Q?k6D8Hs98?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4516.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 28a7a454-c15f-4643-2da5-08d8c7a58ec1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Feb 2021 18:08:35.0615
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 848hEl25LSDEcETY8rWfkoBuXezHRRshp4iscM/AFJOWMYao/GJmqVVPpgkMVu6okPrzM96rkD8CDlcpLbnagQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1201MB0122
+X-OriginatorOrg: Nvidia.com
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1612289211; bh=4wl74DmLlV6YxmKF2RHNLatqHdn+ugGRed0UbRVqqVI=;
-        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
-         References:MIME-Version:Content-Transfer-Encoding:Content-Type:
-         X-Originating-IP:X-ClientProxiedBy;
-        b=oDMGiiDhokzQ1qode+6lhKC8SAhPXCXcp+Geuv6+9UHDyj3pVysk0kp4A2Ti4DlpK
-         Hdn9EBzwOK7UWqCiU2tXQouC8YT0RaBbo4jLlgx/Ajt69S0ZuX9DjXAuAWm1F7lUIf
-         AI7SVEozz6iWmx7N1bEmjq8JJ5zCt/JNfZBIv+hp4pcBvwJ3SzPmAnOCe+92dGYJAd
-         SIhIbHmnoCswZx4+A/mEHWyeatoI1aulGQl8gbBktV4/Ha1FJ93/6zwDlzDHfsp7LD
-         IEVcE5SlMivjThyCyuH94xMWXuYA85uNSKbYGIDwBgZK8xJipiGqaNtGKk0SiJ1/Bz
-         xzxVWpgnRmjWw==
+        t=1612289325; bh=VDb4vNIQ90kd13I9V6b172TibQdPASvYgSvVDD+PaE8=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:From:To:
+         CC:Subject:Thread-Topic:Thread-Index:Date:Message-ID:References:
+         In-Reply-To:Accept-Language:Content-Language:X-MS-Has-Attach:
+         X-MS-TNEF-Correlator:authentication-results:x-originating-ip:
+         x-ms-publictraffictype:x-ms-office365-filtering-correlation-id:
+         x-ms-traffictypediagnostic:x-ms-exchange-transport-forked:
+         x-microsoft-antispam-prvs:x-header:x-ms-oob-tlc-oobclassifiers:
+         x-ms-exchange-senderadcheck:x-microsoft-antispam:
+         x-microsoft-antispam-message-info:x-forefront-antispam-report:
+         x-ms-exchange-antispam-messagedata:Content-Type:
+         Content-Transfer-Encoding:MIME-Version:
+         X-MS-Exchange-CrossTenant-AuthAs:
+         X-MS-Exchange-CrossTenant-AuthSource:
+         X-MS-Exchange-CrossTenant-Network-Message-Id:
+         X-MS-Exchange-CrossTenant-originalarrivaltime:
+         X-MS-Exchange-CrossTenant-fromentityheader:
+         X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
+         X-MS-Exchange-CrossTenant-userprincipalname:
+         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
+        b=f7YjVapOp3XikMoJ3UZvOP5Hd8meHGC2d/dIsm+3+VLc2avHjxEzadS2hvTVVnOr5
+         TiNS4IsFqj9LrQ/fvF/A0qST4IewAYkDGZa7b3rlQ9tjal7DKSyd6mDKiDLCrGqM9w
+         wcPu/lbt7FoIPHVU2q1FU6ZvaZddHRu18tltE7ghCFoSpf2Yljj2pyEq8T/nKl5YGK
+         mDPVs20UXL+0WX69ckYFFAoZPNfy8xpFyUVerxkByA+CF5BZTYsj09nxQx6ur5jk+T
+         Gu7gnzFGeGc3jLpgPxWN84RemYzh7x/MZ9VGuhlc2bcV0cd+RAqzmhhDKKNeL7ISvZ
+         xzL6fWMfI9bJA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test that setting lanes parameter is working.
-
-Set max speed and max lanes in the list of advertised link modes,
-and then try to set max speed with the lanes below max lanes if exists
-in the list.
-
-And then, test that setting number of lanes larger than max lanes fails.
-
-Do the above for both autoneg on and off.
-
-$ ./ethtool_lanes.sh
-
-TEST: 4 lanes is autonegotiated                                     [ OK ]
-TEST: Lanes number larger than max width is not set                 [ OK ]
-TEST: Autoneg off, 4 lanes detected during force mode               [ OK ]
-TEST: Lanes number larger than max width is not set                 [ OK ]
-
-Signed-off-by: Danielle Ratson <danieller@nvidia.com>
----
-
-Notes:
-    v4:
-    	* Change the check for lanes unsupported, to not having "Lanes"
-    	  line at all.
-   =20
-    v3:
-    	* Move the test to drivers/net/mlxsw.
-   =20
-    v2:
-    	* Fix "then" to "than".
-    	* Remove the test for recieving max_width when lanes is not set by
-    	  user. When not setting lanes, we don't promise anything regarding
-    	  what number of lanes will be chosen.
-    	* Reword commit message.
-    	* Reword the skip print when ethtool is old.
-
- .../drivers/net/mlxsw/ethtool_lanes.sh        | 187 ++++++++++++++++++
- .../selftests/net/forwarding/ethtool_lib.sh   |  34 ++++
- tools/testing/selftests/net/forwarding/lib.sh |  28 +++
- 3 files changed, 249 insertions(+)
- create mode 100755 tools/testing/selftests/drivers/net/mlxsw/ethtool_lanes=
-.sh
-
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/ethtool_lanes.sh b/t=
-ools/testing/selftests/drivers/net/mlxsw/ethtool_lanes.sh
-new file mode 100755
-index 000000000000..91891b9418d7
---- /dev/null
-+++ b/tools/testing/selftests/drivers/net/mlxsw/ethtool_lanes.sh
-@@ -0,0 +1,187 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+
-+lib_dir=3D$(dirname $0)/../../../net/forwarding
-+
-+ALL_TESTS=3D"
-+	autoneg
-+	autoneg_force_mode
-+"
-+
-+NUM_NETIFS=3D2
-+: ${TIMEOUT:=3D30000} # ms
-+source $lib_dir/lib.sh
-+source $lib_dir/ethtool_lib.sh
-+
-+setup_prepare()
-+{
-+	swp1=3D${NETIFS[p1]}
-+	swp2=3D${NETIFS[p2]}
-+
-+	ip link set dev $swp1 up
-+	ip link set dev $swp2 up
-+
-+	busywait "$TIMEOUT" wait_for_port_up ethtool $swp2
-+	check_err $? "ports did not come up"
-+
-+	local lanes_exist=3D$(ethtool $swp1 | grep 'Lanes:')
-+	if [[ -z $lanes_exist ]]; then
-+		log_test "SKIP: driver does not support lanes setting"
-+		exit 1
-+	fi
-+
-+	ip link set dev $swp2 down
-+	ip link set dev $swp1 down
-+}
-+
-+check_lanes()
-+{
-+	local dev=3D$1; shift
-+	local lanes=3D$1; shift
-+	local max_speed=3D$1; shift
-+	local chosen_lanes
-+
-+	chosen_lanes=3D$(ethtool $dev | grep 'Lanes:')
-+	chosen_lanes=3D${chosen_lanes#*"Lanes: "}
-+
-+	((chosen_lanes =3D=3D lanes))
-+	check_err $? "swp1 advertise $max_speed and $lanes, devs sync to $chosen_=
-lanes"
-+}
-+
-+check_unsupported_lanes()
-+{
-+	local dev=3D$1; shift
-+	local max_speed=3D$1; shift
-+	local max_lanes=3D$1; shift
-+	local autoneg=3D$1; shift
-+	local autoneg_str=3D""
-+
-+	local unsupported_lanes=3D$((max_lanes *=3D 2))
-+
-+	if [[ $autoneg -eq 0 ]]; then
-+		autoneg_str=3D"autoneg off"
-+	fi
-+
-+	ethtool -s $swp1 speed $max_speed lanes $unsupported_lanes $autoneg_str &=
-> /dev/null
-+	check_fail $? "Unsuccessful $unsupported_lanes lanes setting was expected=
-"
-+}
-+
-+max_speed_and_lanes_get()
-+{
-+	local dev=3D$1; shift
-+	local arr=3D("$@")
-+	local max_lanes
-+	local max_speed
-+	local -a lanes_arr
-+	local -a speeds_arr
-+	local -a max_values
-+
-+	for ((i=3D0; i<${#arr[@]}; i+=3D2)); do
-+		speeds_arr+=3D("${arr[$i]}")
-+		lanes_arr+=3D("${arr[i+1]}")
-+	done
-+
-+	max_values+=3D($(get_max "${speeds_arr[@]}"))
-+	max_values+=3D($(get_max "${lanes_arr[@]}"))
-+
-+	echo ${max_values[@]}
-+}
-+
-+search_linkmode()
-+{
-+	local speed=3D$1; shift
-+	local lanes=3D$1; shift
-+	local arr=3D("$@")
-+
-+	for ((i=3D0; i<${#arr[@]}; i+=3D2)); do
-+		if [[ $speed -eq ${arr[$i]} && $lanes -eq ${arr[i+1]} ]]; then
-+			return 1
-+		fi
-+	done
-+	return 0
-+}
-+
-+autoneg()
-+{
-+	RET=3D0
-+
-+	local lanes
-+	local max_speed
-+	local max_lanes
-+
-+	local -a linkmodes_params=3D($(dev_linkmodes_params_get $swp1 1))
-+	local -a max_values=3D($(max_speed_and_lanes_get $swp1 "${linkmodes_param=
-s[@]}"))
-+	max_speed=3D${max_values[0]}
-+	max_lanes=3D${max_values[1]}
-+
-+	lanes=3D$max_lanes
-+
-+	while [[ $lanes -ge 1 ]]; do
-+		search_linkmode $max_speed $lanes "${linkmodes_params[@]}"
-+		if [[ $? -eq 1 ]]; then
-+			ethtool_set $swp1 speed $max_speed lanes $lanes
-+			ip link set dev $swp1 up
-+			ip link set dev $swp2 up
-+			busywait "$TIMEOUT" wait_for_port_up ethtool $swp2
-+			check_err $? "ports did not come up"
-+
-+			check_lanes $swp1 $lanes $max_speed
-+			log_test "$lanes lanes is autonegotiated"
-+		fi
-+		let $((lanes /=3D 2))
-+	done
-+
-+	check_unsupported_lanes $swp1 $max_speed $max_lanes 1
-+	log_test "Lanes number larger than max width is not set"
-+
-+	ip link set dev $swp2 down
-+	ip link set dev $swp1 down
-+}
-+
-+autoneg_force_mode()
-+{
-+	RET=3D0
-+
-+	local lanes
-+	local max_speed
-+	local max_lanes
-+
-+	local -a linkmodes_params=3D($(dev_linkmodes_params_get $swp1 1))
-+	local -a max_values=3D($(max_speed_and_lanes_get $swp1 "${linkmodes_param=
-s[@]}"))
-+	max_speed=3D${max_values[0]}
-+	max_lanes=3D${max_values[1]}
-+
-+	lanes=3D$max_lanes
-+
-+	while [[ $lanes -ge 1 ]]; do
-+		search_linkmode $max_speed $lanes "${linkmodes_params[@]}"
-+		if [[ $? -eq 1 ]]; then
-+			ethtool_set $swp1 speed $max_speed lanes $lanes autoneg off
-+			ethtool_set $swp2 speed $max_speed lanes $lanes autoneg off
-+			ip link set dev $swp1 up
-+			ip link set dev $swp2 up
-+			busywait "$TIMEOUT" wait_for_port_up ethtool $swp2
-+			check_err $? "ports did not come up"
-+
-+			check_lanes $swp1 $lanes $max_speed
-+			log_test "Autoneg off, $lanes lanes detected during force mode"
-+		fi
-+		let $((lanes /=3D 2))
-+	done
-+
-+	check_unsupported_lanes $swp1 $max_speed $max_lanes 0
-+	log_test "Lanes number larger than max width is not set"
-+
-+	ip link set dev $swp2 down
-+	ip link set dev $swp1 down
-+
-+	ethtool -s $swp2 autoneg on
-+	ethtool -s $swp1 autoneg on
-+}
-+
-+check_ethtool_lanes_support
-+setup_prepare
-+
-+tests_run
-+
-+exit $EXIT_STATUS
-diff --git a/tools/testing/selftests/net/forwarding/ethtool_lib.sh b/tools/=
-testing/selftests/net/forwarding/ethtool_lib.sh
-index 9188e624dec0..b9bfb45085af 100644
---- a/tools/testing/selftests/net/forwarding/ethtool_lib.sh
-+++ b/tools/testing/selftests/net/forwarding/ethtool_lib.sh
-@@ -22,6 +22,40 @@ ethtool_set()
- 	check_err $out "error in configuration. $cmd"
- }
-=20
-+dev_linkmodes_params_get()
-+{
-+	local dev=3D$1; shift
-+	local adver=3D$1; shift
-+	local -a linkmodes_params
-+	local param_count
-+	local arr
-+
-+	if (($adver)); then
-+		mode=3D"Advertised link modes"
-+	else
-+		mode=3D"Supported link modes"
-+	fi
-+
-+	local -a dev_linkmodes=3D($(dev_speeds_get $dev 1 $adver))
-+	for ((i=3D0; i<${#dev_linkmodes[@]}; i++)); do
-+		linkmodes_params[$i]=3D$(echo -e "${dev_linkmodes[$i]}" | \
-+			# Replaces all non numbers with spaces
-+			sed -e 's/[^0-9]/ /g' | \
-+			# Squeeze spaces in sequence to 1 space
-+			tr -s ' ')
-+		# Count how many numbers were found in the linkmode
-+		param_count=3D$(echo "${linkmodes_params[$i]}" | wc -w)
-+		if [[ $param_count -eq 1 ]]; then
-+			linkmodes_params[$i]=3D"${linkmodes_params[$i]} 1"
-+		elif [[ $param_count -ge 3 ]]; then
-+			arr=3D(${linkmodes_params[$i]})
-+			# Take only first two params
-+			linkmodes_params[$i]=3D$(echo "${arr[@]:0:2}")
-+		fi
-+	done
-+	echo ${linkmodes_params[@]}
-+}
-+
- dev_speeds_get()
- {
- 	local dev=3D$1; shift
-diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/=
-selftests/net/forwarding/lib.sh
-index 31ce478686cb..26cfc778ff26 100644
---- a/tools/testing/selftests/net/forwarding/lib.sh
-+++ b/tools/testing/selftests/net/forwarding/lib.sh
-@@ -69,6 +69,15 @@ check_tc_action_hw_stats_support()
- 	fi
- }
-=20
-+check_ethtool_lanes_support()
-+{
-+	ethtool --help 2>&1| grep lanes &> /dev/null
-+	if [[ $? -ne 0 ]]; then
-+		echo "SKIP: ethtool too old; it is missing lanes support"
-+		exit 1
-+	fi
-+}
-+
- if [[ "$(id -u)" -ne 0 ]]; then
- 	echo "SKIP: need root privileges"
- 	exit 0
-@@ -263,6 +272,20 @@ not()
- 	[[ $? !=3D 0 ]]
- }
-=20
-+get_max()
-+{
-+	local arr=3D("$@")
-+
-+	max=3D${arr[0]}
-+	for cur in ${arr[@]}; do
-+		if [[ $cur -gt $max ]]; then
-+			max=3D$cur
-+		fi
-+	done
-+
-+	echo $max
-+}
-+
- grep_bridge_fdb()
- {
- 	local addr=3D$1; shift
-@@ -279,6 +302,11 @@ grep_bridge_fdb()
- 	$@ | grep $addr | grep $flag "$word"
- }
-=20
-+wait_for_port_up()
-+{
-+	"$@" | grep -q "Link detected: yes"
-+}
-+
- wait_for_offload()
- {
- 	"$@" | grep -q offload
---=20
-2.26.2
-
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogRWR3aW4gUGVlciA8ZWR3
+aW4ucGVlckBicm9hZGNvbS5jb20+DQo+IFNlbnQ6IFRodXJzZGF5LCBKYW51YXJ5IDIxLCAyMDIx
+IDEyOjM2IEFNDQo+IFRvOiBEYW5pZWxsZSBSYXRzb24gPGRhbmllbGxlckBudmlkaWEuY29tPg0K
+PiBDYzogbmV0ZGV2IDxuZXRkZXZAdmdlci5rZXJuZWwub3JnPjsgRGF2aWQgUyAuIE1pbGxlciA8
+ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldD47IEpha3ViIEtpY2luc2tpIDxrdWJhQGtlcm5lbC5vcmc+OyBK
+aXJpIFBpcmtvDQo+IDxqaXJpQG52aWRpYS5jb20+OyBBbmRyZXcgTHVubiA8YW5kcmV3QGx1bm4u
+Y2g+OyBmLmZhaW5lbGxpQGdtYWlsLmNvbTsgTWljaGFsIEt1YmVjZWsgPG1rdWJlY2VrQHN1c2Uu
+Y3o+OyBtbHhzdw0KPiA8bWx4c3dAbnZpZGlhLmNvbT47IElkbyBTY2hpbW1lbCA8aWRvc2NoQG52
+aWRpYS5jb20+DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggbmV0LW5leHQgdjMgMS83XSBldGh0b29s
+OiBFeHRlbmQgbGluayBtb2RlcyBzZXR0aW5ncyB1QVBJIHdpdGggbGFuZXMNCj4gDQo+IE9uIFdl
+ZCwgSmFuIDIwLCAyMDIxIGF0IDM6MjEgQU0gRGFuaWVsbGUgUmF0c29uIDxkYW5pZWxsZXJAbnZp
+ZGlhLmNvbT4gd3JvdGU6DQo+IA0KPiA+IC0jZGVmaW5lIF9fREVGSU5FX0xJTktfTU9ERV9QQVJB
+TVMoX3NwZWVkLCBfdHlwZSwgX2R1cGxleCkgXA0KPiA+ICsjZGVmaW5lIF9fREVGSU5FX0xJTktf
+TU9ERV9QQVJBTVMoX3NwZWVkLCBfdHlwZSwgX2xhbmVzLCBfZHVwbGV4KSBcDQo+ID4gICAgICAg
+ICBbRVRIVE9PTF9MSU5LX01PREUoX3NwZWVkLCBfdHlwZSwgX2R1cGxleCldID0geyBcDQo+ID4g
+ICAgICAgICAgICAgICAgIC5zcGVlZCAgPSBTUEVFRF8gIyMgX3NwZWVkLCBcDQo+ID4gKyAgICAg
+ICAgICAgICAgIC5sYW5lcyAgPSBfbGFuZXMsIFwNCj4gPiAgICAgICAgICAgICAgICAgLmR1cGxl
+eCA9IF9fRFVQTEVYXyAjIyBfZHVwbGV4IFwNCj4gPiAgICAgICAgIH0NCj4gDQo+IFdoYXQgYWJv
+dXQ6DQo+IA0KPiAjZGVmaW5lIF9fREVDTEFSRV9MSU5LX01PREVfTEFORVMoX3R5cGUsIF9sYW5l
+cykgICAgICAgIFwNCj4gc3RhdGljIGNvbnN0IHUzMiBfX0xJTktfTU9ERV9MQU5FU18gIyMgX3R5
+cGUgPSBfbGFuZXM7DQo+IA0KPiAjZGVmaW5lIF9fREVDTEFSRV9MSU5LX01PREVfTEFORVNfQUxM
+KF90eXBlKSAgICAgICAgICAgIFwNCj4gX19ERUNMQVJFX0xJTktfTU9ERV9MQU5FUyhfdHlwZSwg
+MSkgICAgICAgICAgICAgXA0KPiBfX0RFQ0xBUkVfTElOS19NT0RFX0xBTkVTKF90eXBlICMjIDIs
+IDIpICAgICAgICBcDQo+IF9fREVDTEFSRV9MSU5LX01PREVfTEFORVMoX3R5cGUgIyMgNCwgNCkg
+ICAgICAgIFwNCj4gX19ERUNMQVJFX0xJTktfTU9ERV9MQU5FUyhfdHlwZSAjIyA4LCA4KQ0KPiAN
+Cj4gX19ERUNMQVJFX0xJTktfTU9ERV9MQU5FU19BTEwoQ1IpDQo+IF9fREVDTEFSRV9MSU5LX01P
+REVfTEFORVNfQUxMKERSKQ0KPiBfX0RFQ0xBUkVfTElOS19NT0RFX0xBTkVTX0FMTChFUikNCj4g
+X19ERUNMQVJFX0xJTktfTU9ERV9MQU5FU19BTEwoS1IpDQo+IF9fREVDTEFSRV9MSU5LX01PREVf
+TEFORVMoS1gsIDEpDQo+IF9fREVDTEFSRV9MSU5LX01PREVfTEFORVMoS1g0LCA0KQ0KPiBfX0RF
+Q0xBUkVfTElOS19NT0RFX0xBTkVTX0FMTChMUikNCj4gX19ERUNMQVJFX0xJTktfTU9ERV9MQU5F
+UyhMUl9FUl9GUiwgMSkNCj4gX19ERUNMQVJFX0xJTktfTU9ERV9MQU5FUyhMUjJfRVIyX0ZSMiwg
+MikNCj4gX19ERUNMQVJFX0xJTktfTU9ERV9MQU5FUyhMUjRfRVI0X0ZSNCwgNCkNCj4gX19ERUNM
+QVJFX0xJTktfTU9ERV9MQU5FUyhMUjhfRVI4X0ZSOCwgOCkNCj4gX19ERUNMQVJFX0xJTktfTU9E
+RV9MQU5FUyhMUk0sIDEpDQo+IF9fREVDTEFSRV9MSU5LX01PREVfTEFORVMoTUxEMiwgMik7DQo+
+IF9fREVDTEFSRV9MSU5LX01PREVfTEFORVNfQUxMKFNSKTsNCj4gX19ERUNMQVJFX0xJTktfTU9E
+RV9MQU5FUyhULCAxKQ0KPiBfX0RFQ0xBUkVfTElOS19NT0RFX0xBTkVTKFgsIDEpDQo+IA0KPiAj
+ZGVmaW5lIF9fREVGSU5FX0xJTktfTU9ERV9QQVJBTVMoX3NwZWVkLCBfdHlwZSwgX2R1cGxleCkN
+Cj4gICAgICAgICAgW0VUSFRPT0xfTElOS19NT0RFKF9zcGVlZCwgX3R5cGUsIF9kdXBsZXgpXSA9
+IHsgXA0KPiAgICAgICAgICAgICAgICAgIC5zcGVlZCAgPSBTUEVFRF8gIyMgX3NwZWVkLCBcDQo+
+ICAgICAgICAgICAgICAgICAgLmxhbmVzICA9IF9fTElOS19NT0RFX0xBTkVTICMjIF90eXBlLCBc
+DQo+IA0KPiBpbnN0ZWFkIG9mIHNwZWNpZnlpbmcgbGFuZXMgZm9yIGVhY2ggbGluayBtb2RlIGRl
+ZmluZWQgYmVsb3c/DQo+IA0KPiBSZWdhcmRzLA0KPiBFZHdpbiBQZWVyDQoNClRoYW5rcyBmb3Ig
+dGhlIGFkdmljZSwgZHVlIHRvIHNvbWUgY2hlY2twYXRjaCBpc3N1ZXMsIEkgdXNlZCB5b3VyIHN1
+Z2dlc3Rpb24gd2l0aCBhIHNtYWxsIGNoYW5nZS4NCkRhbmllbGxlDQoNCj4gDQo+ID4gIHN0YXRp
+YyBjb25zdCBzdHJ1Y3QgbGlua19tb2RlX2luZm8gbGlua19tb2RlX3BhcmFtc1tdID0gew0KPiA+
+IC0gICAgICAgX19ERUZJTkVfTElOS19NT0RFX1BBUkFNUygxMCwgVCwgSGFsZiksDQo+ID4gLSAg
+ICAgICBfX0RFRklORV9MSU5LX01PREVfUEFSQU1TKDEwLCBULCBGdWxsKSwNCj4gPiAtICAgICAg
+IF9fREVGSU5FX0xJTktfTU9ERV9QQVJBTVMoMTAwLCBULCBIYWxmKSwNCj4gPiAtICAgICAgIF9f
+REVGSU5FX0xJTktfTU9ERV9QQVJBTVMoMTAwLCBULCBGdWxsKSwNCj4gPiAtICAgICAgIF9fREVG
+SU5FX0xJTktfTU9ERV9QQVJBTVMoMTAwMCwgVCwgSGFsZiksDQo+ID4gLSAgICAgICBfX0RFRklO
+RV9MSU5LX01PREVfUEFSQU1TKDEwMDAsIFQsIEZ1bGwpLA0KPiA+ICsgICAgICAgX19ERUZJTkVf
+TElOS19NT0RFX1BBUkFNUygxMCwgVCwgMSwgSGFsZiksDQo+ID4gKyAgICAgICBfX0RFRklORV9M
+SU5LX01PREVfUEFSQU1TKDEwLCBULCAxLCBGdWxsKSwNCj4gPiArICAgICAgIF9fREVGSU5FX0xJ
+TktfTU9ERV9QQVJBTVMoMTAwLCBULCAxLCBIYWxmKSwNCj4gPiArICAgICAgIF9fREVGSU5FX0xJ
+TktfTU9ERV9QQVJBTVMoMTAwLCBULCAxLCBGdWxsKSwNCj4gPiArICAgICAgIF9fREVGSU5FX0xJ
+TktfTU9ERV9QQVJBTVMoMTAwMCwgVCwgMSwgSGFsZiksDQo+ID4gKyAgICAgICBfX0RFRklORV9M
+SU5LX01PREVfUEFSQU1TKDEwMDAsIFQsIDEsIEZ1bGwpLA0KPiA+ICAgICAgICAgX19ERUZJTkVf
+U1BFQ0lBTF9NT0RFX1BBUkFNUyhBdXRvbmVnKSwNCj4gPiAgICAgICAgIF9fREVGSU5FX1NQRUNJ
+QUxfTU9ERV9QQVJBTVMoVFApLA0KPiA+ICAgICAgICAgX19ERUZJTkVfU1BFQ0lBTF9NT0RFX1BB
+UkFNUyhBVUkpLA0KPiA+ICAgICAgICAgX19ERUZJTkVfU1BFQ0lBTF9NT0RFX1BBUkFNUyhNSUkp
+LA0KPiA+ICAgICAgICAgX19ERUZJTkVfU1BFQ0lBTF9NT0RFX1BBUkFNUyhGSUJSRSksDQo+ID4g
+ICAgICAgICBfX0RFRklORV9TUEVDSUFMX01PREVfUEFSQU1TKEJOQyksDQo+ID4gLSAgICAgICBf
+X0RFRklORV9MSU5LX01PREVfUEFSQU1TKDEwMDAwLCBULCBGdWxsKSwNCj4gPiArICAgICAgIF9f
+REVGSU5FX0xJTktfTU9ERV9QQVJBTVMoMTAwMDAsIFQsIDEsIEZ1bGwpLA0KPiA+ICAgICAgICAg
+X19ERUZJTkVfU1BFQ0lBTF9NT0RFX1BBUkFNUyhQYXVzZSksDQo+ID4gICAgICAgICBfX0RFRklO
+RV9TUEVDSUFMX01PREVfUEFSQU1TKEFzeW1fUGF1c2UpLA0KPiA+IC0gICAgICAgX19ERUZJTkVf
+TElOS19NT0RFX1BBUkFNUygyNTAwLCBYLCBGdWxsKSwNCj4gPiArICAgICAgIF9fREVGSU5FX0xJ
+TktfTU9ERV9QQVJBTVMoMjUwMCwgWCwgMSwgRnVsbCksDQo+ID4gICAgICAgICBfX0RFRklORV9T
+UEVDSUFMX01PREVfUEFSQU1TKEJhY2twbGFuZSksDQo+ID4gLSAgICAgICBfX0RFRklORV9MSU5L
+X01PREVfUEFSQU1TKDEwMDAsIEtYLCBGdWxsKSwNCj4gPiAtICAgICAgIF9fREVGSU5FX0xJTktf
+TU9ERV9QQVJBTVMoMTAwMDAsIEtYNCwgRnVsbCksDQo+ID4gLSAgICAgICBfX0RFRklORV9MSU5L
+X01PREVfUEFSQU1TKDEwMDAwLCBLUiwgRnVsbCksDQo+ID4gKyAgICAgICBfX0RFRklORV9MSU5L
+X01PREVfUEFSQU1TKDEwMDAsIEtYLCAxLCBGdWxsKSwNCj4gPiArICAgICAgIF9fREVGSU5FX0xJ
+TktfTU9ERV9QQVJBTVMoMTAwMDAsIEtYNCwgNCwgRnVsbCksDQo+ID4gKyAgICAgICBfX0RFRklO
+RV9MSU5LX01PREVfUEFSQU1TKDEwMDAwLCBLUiwgMSwgRnVsbCksDQo+ID4gICAgICAgICBbRVRI
+VE9PTF9MSU5LX01PREVfMTAwMDBiYXNlUl9GRUNfQklUXSA9IHsNCj4gPiAgICAgICAgICAgICAg
+ICAgLnNwZWVkICA9IFNQRUVEXzEwMDAwLA0KPiA+ICAgICAgICAgICAgICAgICAuZHVwbGV4ID0g
+RFVQTEVYX0ZVTEwsDQo+ID4gICAgICAgICB9LA0KPiA+IC0gICAgICAgX19ERUZJTkVfTElOS19N
+T0RFX1BBUkFNUygyMDAwMCwgTUxEMiwgRnVsbCksDQo+ID4gLSAgICAgICBfX0RFRklORV9MSU5L
+X01PREVfUEFSQU1TKDIwMDAwLCBLUjIsIEZ1bGwpLA0KPiA+IC0gICAgICAgX19ERUZJTkVfTElO
+S19NT0RFX1BBUkFNUyg0MDAwMCwgS1I0LCBGdWxsKSwNCj4gPiAtICAgICAgIF9fREVGSU5FX0xJ
+TktfTU9ERV9QQVJBTVMoNDAwMDAsIENSNCwgRnVsbCksDQo+ID4gLSAgICAgICBfX0RFRklORV9M
+SU5LX01PREVfUEFSQU1TKDQwMDAwLCBTUjQsIEZ1bGwpLA0KPiA+IC0gICAgICAgX19ERUZJTkVf
+TElOS19NT0RFX1BBUkFNUyg0MDAwMCwgTFI0LCBGdWxsKSwNCj4gPiAtICAgICAgIF9fREVGSU5F
+X0xJTktfTU9ERV9QQVJBTVMoNTYwMDAsIEtSNCwgRnVsbCksDQo+ID4gLSAgICAgICBfX0RFRklO
+RV9MSU5LX01PREVfUEFSQU1TKDU2MDAwLCBDUjQsIEZ1bGwpLA0KPiA+IC0gICAgICAgX19ERUZJ
+TkVfTElOS19NT0RFX1BBUkFNUyg1NjAwMCwgU1I0LCBGdWxsKSwNCj4gPiAtICAgICAgIF9fREVG
+SU5FX0xJTktfTU9ERV9QQVJBTVMoNTYwMDAsIExSNCwgRnVsbCksDQo+ID4gLSAgICAgICBfX0RF
+RklORV9MSU5LX01PREVfUEFSQU1TKDI1MDAwLCBDUiwgRnVsbCksDQo+ID4gLSAgICAgICBfX0RF
+RklORV9MSU5LX01PREVfUEFSQU1TKDI1MDAwLCBLUiwgRnVsbCksDQo+ID4gLSAgICAgICBfX0RF
+RklORV9MSU5LX01PREVfUEFSQU1TKDI1MDAwLCBTUiwgRnVsbCksDQo+ID4gLSAgICAgICBfX0RF
+RklORV9MSU5LX01PREVfUEFSQU1TKDUwMDAwLCBDUjIsIEZ1bGwpLA0KPiA+IC0gICAgICAgX19E
+RUZJTkVfTElOS19NT0RFX1BBUkFNUyg1MDAwMCwgS1IyLCBGdWxsKSwNCj4gPiAtICAgICAgIF9f
+REVGSU5FX0xJTktfTU9ERV9QQVJBTVMoMTAwMDAwLCBLUjQsIEZ1bGwpLA0KPiA+IC0gICAgICAg
+X19ERUZJTkVfTElOS19NT0RFX1BBUkFNUygxMDAwMDAsIFNSNCwgRnVsbCksDQo+ID4gLSAgICAg
+ICBfX0RFRklORV9MSU5LX01PREVfUEFSQU1TKDEwMDAwMCwgQ1I0LCBGdWxsKSwNCj4gPiAtICAg
+ICAgIF9fREVGSU5FX0xJTktfTU9ERV9QQVJBTVMoMTAwMDAwLCBMUjRfRVI0LCBGdWxsKSwNCj4g
+PiAtICAgICAgIF9fREVGSU5FX0xJTktfTU9ERV9QQVJBTVMoNTAwMDAsIFNSMiwgRnVsbCksDQo+
+ID4gLSAgICAgICBfX0RFRklORV9MSU5LX01PREVfUEFSQU1TKDEwMDAsIFgsIEZ1bGwpLA0KPiA+
+IC0gICAgICAgX19ERUZJTkVfTElOS19NT0RFX1BBUkFNUygxMDAwMCwgQ1IsIEZ1bGwpLA0KPiA+
+IC0gICAgICAgX19ERUZJTkVfTElOS19NT0RFX1BBUkFNUygxMDAwMCwgU1IsIEZ1bGwpLA0KPiA+
+IC0gICAgICAgX19ERUZJTkVfTElOS19NT0RFX1BBUkFNUygxMDAwMCwgTFIsIEZ1bGwpLA0KPiA+
+IC0gICAgICAgX19ERUZJTkVfTElOS19NT0RFX1BBUkFNUygxMDAwMCwgTFJNLCBGdWxsKSwNCj4g
+PiAtICAgICAgIF9fREVGSU5FX0xJTktfTU9ERV9QQVJBTVMoMTAwMDAsIEVSLCBGdWxsKSwNCj4g
+PiAtICAgICAgIF9fREVGSU5FX0xJTktfTU9ERV9QQVJBTVMoMjUwMCwgVCwgRnVsbCksDQo+ID4g
+LSAgICAgICBfX0RFRklORV9MSU5LX01PREVfUEFSQU1TKDUwMDAsIFQsIEZ1bGwpLA0KPiA+ICsg
+ICAgICAgX19ERUZJTkVfTElOS19NT0RFX1BBUkFNUygyMDAwMCwgTUxEMiwgMiwgRnVsbCksDQo+
+ID4gKyAgICAgICBfX0RFRklORV9MSU5LX01PREVfUEFSQU1TKDIwMDAwLCBLUjIsIDIsIEZ1bGwp
+LA0KPiA+ICsgICAgICAgX19ERUZJTkVfTElOS19NT0RFX1BBUkFNUyg0MDAwMCwgS1I0LCA0LCBG
+dWxsKSwNCj4gPiArICAgICAgIF9fREVGSU5FX0xJTktfTU9ERV9QQVJBTVMoNDAwMDAsIENSNCwg
+NCwgRnVsbCksDQo+ID4gKyAgICAgICBfX0RFRklORV9MSU5LX01PREVfUEFSQU1TKDQwMDAwLCBT
+UjQsIDQsIEZ1bGwpLA0KPiA+ICsgICAgICAgX19ERUZJTkVfTElOS19NT0RFX1BBUkFNUyg0MDAw
+MCwgTFI0LCA0LCBGdWxsKSwNCj4gPiArICAgICAgIF9fREVGSU5FX0xJTktfTU9ERV9QQVJBTVMo
+NTYwMDAsIEtSNCwgNCwgRnVsbCksDQo+ID4gKyAgICAgICBfX0RFRklORV9MSU5LX01PREVfUEFS
+QU1TKDU2MDAwLCBDUjQsIDQsIEZ1bGwpLA0KPiA+ICsgICAgICAgX19ERUZJTkVfTElOS19NT0RF
+X1BBUkFNUyg1NjAwMCwgU1I0LCA0LCBGdWxsKSwNCj4gPiArICAgICAgIF9fREVGSU5FX0xJTktf
+TU9ERV9QQVJBTVMoNTYwMDAsIExSNCwgNCwgRnVsbCksDQo+ID4gKyAgICAgICBfX0RFRklORV9M
+SU5LX01PREVfUEFSQU1TKDI1MDAwLCBDUiwgMSwgRnVsbCksDQo+ID4gKyAgICAgICBfX0RFRklO
+RV9MSU5LX01PREVfUEFSQU1TKDI1MDAwLCBLUiwgMSwgRnVsbCksDQo+ID4gKyAgICAgICBfX0RF
+RklORV9MSU5LX01PREVfUEFSQU1TKDI1MDAwLCBTUiwgMSwgRnVsbCksDQo+ID4gKyAgICAgICBf
+X0RFRklORV9MSU5LX01PREVfUEFSQU1TKDUwMDAwLCBDUjIsIDIsIEZ1bGwpLA0KPiA+ICsgICAg
+ICAgX19ERUZJTkVfTElOS19NT0RFX1BBUkFNUyg1MDAwMCwgS1IyLCAyLCBGdWxsKSwNCj4gPiAr
+ICAgICAgIF9fREVGSU5FX0xJTktfTU9ERV9QQVJBTVMoMTAwMDAwLCBLUjQsIDQsIEZ1bGwpLA0K
+PiA+ICsgICAgICAgX19ERUZJTkVfTElOS19NT0RFX1BBUkFNUygxMDAwMDAsIFNSNCwgNCwgRnVs
+bCksDQo+ID4gKyAgICAgICBfX0RFRklORV9MSU5LX01PREVfUEFSQU1TKDEwMDAwMCwgQ1I0LCA0
+LCBGdWxsKSwNCj4gPiArICAgICAgIF9fREVGSU5FX0xJTktfTU9ERV9QQVJBTVMoMTAwMDAwLCBM
+UjRfRVI0LCA0LCBGdWxsKSwNCj4gPiArICAgICAgIF9fREVGSU5FX0xJTktfTU9ERV9QQVJBTVMo
+NTAwMDAsIFNSMiwgMiwgRnVsbCksDQo+ID4gKyAgICAgICBfX0RFRklORV9MSU5LX01PREVfUEFS
+QU1TKDEwMDAsIFgsIDEsIEZ1bGwpLA0KPiA+ICsgICAgICAgX19ERUZJTkVfTElOS19NT0RFX1BB
+UkFNUygxMDAwMCwgQ1IsIDEsIEZ1bGwpLA0KPiA+ICsgICAgICAgX19ERUZJTkVfTElOS19NT0RF
+X1BBUkFNUygxMDAwMCwgU1IsIDEsIEZ1bGwpLA0KPiA+ICsgICAgICAgX19ERUZJTkVfTElOS19N
+T0RFX1BBUkFNUygxMDAwMCwgTFIsIDEsIEZ1bGwpLA0KPiA+ICsgICAgICAgX19ERUZJTkVfTElO
+S19NT0RFX1BBUkFNUygxMDAwMCwgTFJNLCAxLCBGdWxsKSwNCj4gPiArICAgICAgIF9fREVGSU5F
+X0xJTktfTU9ERV9QQVJBTVMoMTAwMDAsIEVSLCAxLCBGdWxsKSwNCj4gPiArICAgICAgIF9fREVG
+SU5FX0xJTktfTU9ERV9QQVJBTVMoMjUwMCwgVCwgMSwgRnVsbCksDQo+ID4gKyAgICAgICBfX0RF
+RklORV9MSU5LX01PREVfUEFSQU1TKDUwMDAsIFQsIDEsIEZ1bGwpLA0KPiA+ICAgICAgICAgX19E
+RUZJTkVfU1BFQ0lBTF9NT0RFX1BBUkFNUyhGRUNfTk9ORSksDQo+ID4gICAgICAgICBfX0RFRklO
+RV9TUEVDSUFMX01PREVfUEFSQU1TKEZFQ19SUyksDQo+ID4gICAgICAgICBfX0RFRklORV9TUEVD
+SUFMX01PREVfUEFSQU1TKEZFQ19CQVNFUiksDQo+ID4gLSAgICAgICBfX0RFRklORV9MSU5LX01P
+REVfUEFSQU1TKDUwMDAwLCBLUiwgRnVsbCksDQo+ID4gLSAgICAgICBfX0RFRklORV9MSU5LX01P
+REVfUEFSQU1TKDUwMDAwLCBTUiwgRnVsbCksDQo+ID4gLSAgICAgICBfX0RFRklORV9MSU5LX01P
+REVfUEFSQU1TKDUwMDAwLCBDUiwgRnVsbCksDQo+ID4gLSAgICAgICBfX0RFRklORV9MSU5LX01P
+REVfUEFSQU1TKDUwMDAwLCBMUl9FUl9GUiwgRnVsbCksDQo+ID4gLSAgICAgICBfX0RFRklORV9M
+SU5LX01PREVfUEFSQU1TKDUwMDAwLCBEUiwgRnVsbCksDQo+ID4gLSAgICAgICBfX0RFRklORV9M
+SU5LX01PREVfUEFSQU1TKDEwMDAwMCwgS1IyLCBGdWxsKSwNCj4gPiAtICAgICAgIF9fREVGSU5F
+X0xJTktfTU9ERV9QQVJBTVMoMTAwMDAwLCBTUjIsIEZ1bGwpLA0KPiA+IC0gICAgICAgX19ERUZJ
+TkVfTElOS19NT0RFX1BBUkFNUygxMDAwMDAsIENSMiwgRnVsbCksDQo+ID4gLSAgICAgICBfX0RF
+RklORV9MSU5LX01PREVfUEFSQU1TKDEwMDAwMCwgTFIyX0VSMl9GUjIsIEZ1bGwpLA0KPiA+IC0g
+ICAgICAgX19ERUZJTkVfTElOS19NT0RFX1BBUkFNUygxMDAwMDAsIERSMiwgRnVsbCksDQo+ID4g
+LSAgICAgICBfX0RFRklORV9MSU5LX01PREVfUEFSQU1TKDIwMDAwMCwgS1I0LCBGdWxsKSwNCj4g
+PiAtICAgICAgIF9fREVGSU5FX0xJTktfTU9ERV9QQVJBTVMoMjAwMDAwLCBTUjQsIEZ1bGwpLA0K
+PiA+IC0gICAgICAgX19ERUZJTkVfTElOS19NT0RFX1BBUkFNUygyMDAwMDAsIExSNF9FUjRfRlI0
+LCBGdWxsKSwNCj4gPiAtICAgICAgIF9fREVGSU5FX0xJTktfTU9ERV9QQVJBTVMoMjAwMDAwLCBE
+UjQsIEZ1bGwpLA0KPiA+IC0gICAgICAgX19ERUZJTkVfTElOS19NT0RFX1BBUkFNUygyMDAwMDAs
+IENSNCwgRnVsbCksDQo+ID4gLSAgICAgICBfX0RFRklORV9MSU5LX01PREVfUEFSQU1TKDEwMCwg
+VDEsIEZ1bGwpLA0KPiA+IC0gICAgICAgX19ERUZJTkVfTElOS19NT0RFX1BBUkFNUygxMDAwLCBU
+MSwgRnVsbCksDQo+ID4gLSAgICAgICBfX0RFRklORV9MSU5LX01PREVfUEFSQU1TKDQwMDAwMCwg
+S1I4LCBGdWxsKSwNCj4gPiAtICAgICAgIF9fREVGSU5FX0xJTktfTU9ERV9QQVJBTVMoNDAwMDAw
+LCBTUjgsIEZ1bGwpLA0KPiA+IC0gICAgICAgX19ERUZJTkVfTElOS19NT0RFX1BBUkFNUyg0MDAw
+MDAsIExSOF9FUjhfRlI4LCBGdWxsKSwNCj4gPiAtICAgICAgIF9fREVGSU5FX0xJTktfTU9ERV9Q
+QVJBTVMoNDAwMDAwLCBEUjgsIEZ1bGwpLA0KPiA+IC0gICAgICAgX19ERUZJTkVfTElOS19NT0RF
+X1BBUkFNUyg0MDAwMDAsIENSOCwgRnVsbCksDQo+ID4gKyAgICAgICBfX0RFRklORV9MSU5LX01P
+REVfUEFSQU1TKDUwMDAwLCBLUiwgMSwgRnVsbCksDQo+ID4gKyAgICAgICBfX0RFRklORV9MSU5L
+X01PREVfUEFSQU1TKDUwMDAwLCBTUiwgMSwgRnVsbCksDQo+ID4gKyAgICAgICBfX0RFRklORV9M
+SU5LX01PREVfUEFSQU1TKDUwMDAwLCBDUiwgMSwgRnVsbCksDQo+ID4gKyAgICAgICBfX0RFRklO
+RV9MSU5LX01PREVfUEFSQU1TKDUwMDAwLCBMUl9FUl9GUiwgMSwgRnVsbCksDQo+ID4gKyAgICAg
+ICBfX0RFRklORV9MSU5LX01PREVfUEFSQU1TKDUwMDAwLCBEUiwgMSwgRnVsbCksDQo+ID4gKyAg
+ICAgICBfX0RFRklORV9MSU5LX01PREVfUEFSQU1TKDEwMDAwMCwgS1IyLCAyLCBGdWxsKSwNCj4g
+PiArICAgICAgIF9fREVGSU5FX0xJTktfTU9ERV9QQVJBTVMoMTAwMDAwLCBTUjIsIDIsIEZ1bGwp
+LA0KPiA+ICsgICAgICAgX19ERUZJTkVfTElOS19NT0RFX1BBUkFNUygxMDAwMDAsIENSMiwgMiwg
+RnVsbCksDQo+ID4gKyAgICAgICBfX0RFRklORV9MSU5LX01PREVfUEFSQU1TKDEwMDAwMCwgTFIy
+X0VSMl9GUjIsIDIsIEZ1bGwpLA0KPiA+ICsgICAgICAgX19ERUZJTkVfTElOS19NT0RFX1BBUkFN
+UygxMDAwMDAsIERSMiwgMiwgRnVsbCksDQo+ID4gKyAgICAgICBfX0RFRklORV9MSU5LX01PREVf
+UEFSQU1TKDIwMDAwMCwgS1I0LCA0LCBGdWxsKSwNCj4gPiArICAgICAgIF9fREVGSU5FX0xJTktf
+TU9ERV9QQVJBTVMoMjAwMDAwLCBTUjQsIDQsIEZ1bGwpLA0KPiA+ICsgICAgICAgX19ERUZJTkVf
+TElOS19NT0RFX1BBUkFNUygyMDAwMDAsIExSNF9FUjRfRlI0LCA0LCBGdWxsKSwNCj4gPiArICAg
+ICAgIF9fREVGSU5FX0xJTktfTU9ERV9QQVJBTVMoMjAwMDAwLCBEUjQsIDQsIEZ1bGwpLA0KPiA+
+ICsgICAgICAgX19ERUZJTkVfTElOS19NT0RFX1BBUkFNUygyMDAwMDAsIENSNCwgNCwgRnVsbCks
+DQo+ID4gKyAgICAgICBfX0RFRklORV9MSU5LX01PREVfUEFSQU1TKDEwMCwgVDEsIDEsIEZ1bGwp
+LA0KPiA+ICsgICAgICAgX19ERUZJTkVfTElOS19NT0RFX1BBUkFNUygxMDAwLCBUMSwgMSwgRnVs
+bCksDQo+ID4gKyAgICAgICBfX0RFRklORV9MSU5LX01PREVfUEFSQU1TKDQwMDAwMCwgS1I4LCA4
+LCBGdWxsKSwNCj4gPiArICAgICAgIF9fREVGSU5FX0xJTktfTU9ERV9QQVJBTVMoNDAwMDAwLCBT
+UjgsIDgsIEZ1bGwpLA0KPiA+ICsgICAgICAgX19ERUZJTkVfTElOS19NT0RFX1BBUkFNUyg0MDAw
+MDAsIExSOF9FUjhfRlI4LCA4LCBGdWxsKSwNCj4gPiArICAgICAgIF9fREVGSU5FX0xJTktfTU9E
+RV9QQVJBTVMoNDAwMDAwLCBEUjgsIDgsIEZ1bGwpLA0KPiA+ICsgICAgICAgX19ERUZJTkVfTElO
+S19NT0RFX1BBUkFNUyg0MDAwMDAsIENSOCwgOCwgRnVsbCksDQo+ID4gICAgICAgICBfX0RFRklO
+RV9TUEVDSUFMX01PREVfUEFSQU1TKEZFQ19MTFJTKSwNCj4gPiAtICAgICAgIF9fREVGSU5FX0xJ
+TktfTU9ERV9QQVJBTVMoMTAwMDAwLCBLUiwgRnVsbCksDQo+ID4gLSAgICAgICBfX0RFRklORV9M
+SU5LX01PREVfUEFSQU1TKDEwMDAwMCwgU1IsIEZ1bGwpLA0KPiA+IC0gICAgICAgX19ERUZJTkVf
+TElOS19NT0RFX1BBUkFNUygxMDAwMDAsIExSX0VSX0ZSLCBGdWxsKSwNCj4gPiAtICAgICAgIF9f
+REVGSU5FX0xJTktfTU9ERV9QQVJBTVMoMTAwMDAwLCBEUiwgRnVsbCksDQo+ID4gLSAgICAgICBf
+X0RFRklORV9MSU5LX01PREVfUEFSQU1TKDEwMDAwMCwgQ1IsIEZ1bGwpLA0KPiA+IC0gICAgICAg
+X19ERUZJTkVfTElOS19NT0RFX1BBUkFNUygyMDAwMDAsIEtSMiwgRnVsbCksDQo+ID4gLSAgICAg
+ICBfX0RFRklORV9MSU5LX01PREVfUEFSQU1TKDIwMDAwMCwgU1IyLCBGdWxsKSwNCj4gPiAtICAg
+ICAgIF9fREVGSU5FX0xJTktfTU9ERV9QQVJBTVMoMjAwMDAwLCBMUjJfRVIyX0ZSMiwgRnVsbCks
+DQo+ID4gLSAgICAgICBfX0RFRklORV9MSU5LX01PREVfUEFSQU1TKDIwMDAwMCwgRFIyLCBGdWxs
+KSwNCj4gPiAtICAgICAgIF9fREVGSU5FX0xJTktfTU9ERV9QQVJBTVMoMjAwMDAwLCBDUjIsIEZ1
+bGwpLA0KPiA+IC0gICAgICAgX19ERUZJTkVfTElOS19NT0RFX1BBUkFNUyg0MDAwMDAsIEtSNCwg
+RnVsbCksDQo+ID4gLSAgICAgICBfX0RFRklORV9MSU5LX01PREVfUEFSQU1TKDQwMDAwMCwgU1I0
+LCBGdWxsKSwNCj4gPiAtICAgICAgIF9fREVGSU5FX0xJTktfTU9ERV9QQVJBTVMoNDAwMDAwLCBM
+UjRfRVI0X0ZSNCwgRnVsbCksDQo+ID4gLSAgICAgICBfX0RFRklORV9MSU5LX01PREVfUEFSQU1T
+KDQwMDAwMCwgRFI0LCBGdWxsKSwNCj4gPiAtICAgICAgIF9fREVGSU5FX0xJTktfTU9ERV9QQVJB
+TVMoNDAwMDAwLCBDUjQsIEZ1bGwpLA0KPiA+IC0gICAgICAgX19ERUZJTkVfTElOS19NT0RFX1BB
+UkFNUygxMDAsIEZYLCBIYWxmKSwNCj4gPiAtICAgICAgIF9fREVGSU5FX0xJTktfTU9ERV9QQVJB
+TVMoMTAwLCBGWCwgRnVsbCksDQo+ID4gKyAgICAgICBfX0RFRklORV9MSU5LX01PREVfUEFSQU1T
+KDEwMDAwMCwgS1IsIDEsIEZ1bGwpLA0KPiA+ICsgICAgICAgX19ERUZJTkVfTElOS19NT0RFX1BB
+UkFNUygxMDAwMDAsIFNSLCAxLCBGdWxsKSwNCj4gPiArICAgICAgIF9fREVGSU5FX0xJTktfTU9E
+RV9QQVJBTVMoMTAwMDAwLCBMUl9FUl9GUiwgMSwgRnVsbCksDQo+ID4gKyAgICAgICBfX0RFRklO
+RV9MSU5LX01PREVfUEFSQU1TKDEwMDAwMCwgRFIsIDEsIEZ1bGwpLA0KPiA+ICsgICAgICAgX19E
+RUZJTkVfTElOS19NT0RFX1BBUkFNUygxMDAwMDAsIENSLCAxLCBGdWxsKSwNCj4gPiArICAgICAg
+IF9fREVGSU5FX0xJTktfTU9ERV9QQVJBTVMoMjAwMDAwLCBLUjIsIDIsIEZ1bGwpLA0KPiA+ICsg
+ICAgICAgX19ERUZJTkVfTElOS19NT0RFX1BBUkFNUygyMDAwMDAsIFNSMiwgMiwgRnVsbCksDQo+
+ID4gKyAgICAgICBfX0RFRklORV9MSU5LX01PREVfUEFSQU1TKDIwMDAwMCwgTFIyX0VSMl9GUjIs
+IDIsIEZ1bGwpLA0KPiA+ICsgICAgICAgX19ERUZJTkVfTElOS19NT0RFX1BBUkFNUygyMDAwMDAs
+IERSMiwgMiwgRnVsbCksDQo+ID4gKyAgICAgICBfX0RFRklORV9MSU5LX01PREVfUEFSQU1TKDIw
+MDAwMCwgQ1IyLCAyLCBGdWxsKSwNCj4gPiArICAgICAgIF9fREVGSU5FX0xJTktfTU9ERV9QQVJB
+TVMoNDAwMDAwLCBLUjQsIDQsIEZ1bGwpLA0KPiA+ICsgICAgICAgX19ERUZJTkVfTElOS19NT0RF
+X1BBUkFNUyg0MDAwMDAsIFNSNCwgNCwgRnVsbCksDQo+ID4gKyAgICAgICBfX0RFRklORV9MSU5L
+X01PREVfUEFSQU1TKDQwMDAwMCwgTFI0X0VSNF9GUjQsIDQsIEZ1bGwpLA0KPiA+ICsgICAgICAg
+X19ERUZJTkVfTElOS19NT0RFX1BBUkFNUyg0MDAwMDAsIERSNCwgNCwgRnVsbCksDQo+ID4gKyAg
+ICAgICBfX0RFRklORV9MSU5LX01PREVfUEFSQU1TKDQwMDAwMCwgQ1I0LCA0LCBGdWxsKSwNCj4g
+PiArICAgICAgIF9fREVGSU5FX0xJTktfTU9ERV9QQVJBTVMoMTAwLCBGWCwgMSwgSGFsZiksDQo+
+ID4gKyAgICAgICBfX0RFRklORV9MSU5LX01PREVfUEFSQU1TKDEwMCwgRlgsIDEsIEZ1bGwpLA0K
+PiA+ICB9Ow0K
