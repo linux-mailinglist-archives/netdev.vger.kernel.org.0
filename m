@@ -2,270 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BC4A30C7B0
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 18:29:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7D3830C804
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 18:40:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237456AbhBBR16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 12:27:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45110 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233758AbhBBRZu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 12:25:50 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 525F464F86;
-        Tue,  2 Feb 2021 17:25:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612286710;
-        bh=WQY5AvDumycq/ElML3+ROe/hqNmEzEwK8b3q6Dbry9k=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=fYcazlak18I761FxGJzqUtfmUf+KiFIKU/JkEU+oOKEKxaK8RkKjKLXxb7JwdobpM
-         NEC4q0d69E7ZIG3YIwDon/dNbdbxbcPj8VxjyT6eNi2KQGBfIhBJjyuFIASXX3zjgB
-         v6FuBy5/ogyiuuyKh5Q94LECgwLZL8XeZiOc3xXMPNnN0JyuaGuCBMcUIRcKZZDDTS
-         ai5j50f1vO6pGSB9xsAVxp5ScPGqpH+re2MtDluvKgRzKi+x0SBJh7pVPGANCl6c5s
-         GTl5sGkHKVQss9JDgIjpTFBjblHUX3CUelFdZSqRVX8cKIP5SrqZsI7m75kuCsV13l
-         o+ALF4cGwk+PA==
-Date:   Tue, 2 Feb 2021 11:25:08 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Don Dutile <ddutile@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH mlx5-next v5 3/4] net/mlx5: Dynamically assign MSI-X
- vectors count
-Message-ID: <20210202172508.GA113855@bjorn-Precision-5520>
+        id S237573AbhBBRiO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 12:38:14 -0500
+Received: from mo4-p00-ob.smtp.rzone.de ([85.215.255.24]:31365 "EHLO
+        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237182AbhBBRey (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 12:34:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1612287059;
+        s=strato-dkim-0002; d=hartkopp.net;
+        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
+        From:Subject:Sender;
+        bh=d6c9JvZ+ULTnF0wVQPp9B2N8i/b5AB3i6LLcChZtVrg=;
+        b=ikN5N6c1pbjCxVBx0jlO26IOvUsfie7lCbYukAoGojCuRdLbAQKyj8aQHh6FbGJZeC
+        4Z8eTz2RwOF6XLd7gHfjEIy1kheTRkokj9mVTSgA8FO07zQe2yZTB7W2WXmVFw1hS/Hr
+        MZBvbJEPBOqG6Q83uBoMDr2oRTuTE2DXtMc1e63yWLCnRT5gDzsJLA+drBToZrkgE/64
+        DDutcNK8EyggjJU+AQX4OKRJJA5l6UNUPicqg+RjsvNIPln+m2CDwKDcgy/yrVTjJOa8
+        IuOZ6/w9BplVHO1Ug0lrR20U2yR17bSsS+WPYByZrG7fhrBhvj19lrDQxdq4GDH2ZAsl
+        Mnrw==
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3PMaViOoLMJV8h6kk/I"
+X-RZG-CLASS-ID: mo00
+Received: from [192.168.50.177]
+        by smtp.strato.de (RZmta 47.16.0 DYNA|AUTH)
+        with ESMTPSA id w076a1x12HUvI3B
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+        Tue, 2 Feb 2021 18:30:57 +0100 (CET)
+Subject: Re: [PATCH RESEND iproute2 5.11] iplink_can: add Classical CAN frame
+ LEN8_DLC support
+To:     David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, linux-can@vger.kernel.org
+References: <20210125104055.79882-1-socketcan@hartkopp.net>
+ <b835a46c-f950-6c58-f50f-9b2f4fd66b46@gmail.com>
+ <d8ba08c4-a1c2-78b8-1b09-36c522b07a8c@hartkopp.net>
+ <586c2310-17ee-328e-189c-f03aae1735e9@gmail.com>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <fe697032-88f2-c1f1-8afc-f4469a5f3bd5@hartkopp.net>
+Date:   Tue, 2 Feb 2021 18:30:52 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210126085730.1165673-4-leon@kernel.org>
+In-Reply-To: <586c2310-17ee-328e-189c-f03aae1735e9@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 26, 2021 at 10:57:29AM +0200, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
+
+
+On 02.02.21 16:35, David Ahern wrote:
+> On 2/2/21 3:48 AM, Oliver Hartkopp wrote:
+>>
+>> Are you sure this patch is correctly assigned to iproute2-next?
+>>
+>> IMO it has to be applied to iproute2 as the functionality is already in
+>> v5.11 which is in rc6 right now.
+>>
 > 
-> The number of MSI-X vectors is PCI property visible through lspci, that
-> field is read-only and configured by the device. The static assignment
-> of an amount of MSI-X vectors doesn't allow utilize the newly created
-> VF because it is not known to the device the future load and configuration
-> where that VF will be used.
+> new features land in iproute2-next just as they do for the kernel with
+> net-next.
 > 
-> To overcome the inefficiency in the spread of such MSI-X vectors, we
-> allow the kernel to instruct the device with the needed number of such
-> vectors.
+> Patches adding support for kernel features should be sent in the same
+> development window if you want the iproute2 support to match kernel version.
 > 
-> Such change immediately increases the amount of MSI-X vectors for the
-> system with @ VFs from 12 vectors per-VF, to be 32 vectors per-VF.
 
-Not knowing anything about mlx5, it looks like maybe this gets some
-parameters from firmware on the device, then changes the way MSI-X
-vectors are distributed among VFs?
+Oh, I followed the commits from iproute2 until the new include files 
+from (in this case) 5.11 pre rc1 had been updated (on 2020-12-24):
 
-I don't understand the implications above about "static assignment"
-and "inefficiency in the spread."  I guess maybe this takes advantage
-of the fact that you know how many VFs are enabled, so if NumVFs is
-less that TotalVFs, you can assign more vectors to each VF?
+https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=2953235e61eb672bbdd2de84eb5b91c388f9a9b5
 
-If that's the case, spell it out a little bit.  The current text makes
-it sound like you discovered brand new MSI-X vectors somewhere,
-regardless of how many VFs are enabled, which doesn't sound right.
+I thought the uapi updates in iproute2 are *always* pulled from the 
+kernel and not from iprout2-next which was new to me.
 
-> Before this patch:
-> [root@server ~]# lspci -vs 0000:08:00.2
-> 08:00.2 Ethernet controller: Mellanox Technologies MT27800 Family [ConnectX-5 Virtual Function]
-> ....
-> 	Capabilities: [9c] MSI-X: Enable- Count=12 Masked-
-> 
-> After this patch:
-> [root@server ~]# lspci -vs 0000:08:00.2
-> 08:00.2 Ethernet controller: Mellanox Technologies MT27800 Family [ConnectX-5 Virtual Function]
-> ....
-> 	Capabilities: [9c] MSI-X: Enable- Count=32 Masked-
-> 
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> ---
->  .../net/ethernet/mellanox/mlx5/core/main.c    |  4 ++
->  .../ethernet/mellanox/mlx5/core/mlx5_core.h   |  5 ++
->  .../net/ethernet/mellanox/mlx5/core/pci_irq.c | 72 +++++++++++++++++++
->  .../net/ethernet/mellanox/mlx5/core/sriov.c   | 13 +++-
->  4 files changed, 92 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-> index ca6f2fc39ea0..79cfcc844156 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-> @@ -567,6 +567,10 @@ static int handle_hca_cap(struct mlx5_core_dev *dev, void *set_ctx)
->  	if (MLX5_CAP_GEN_MAX(dev, mkey_by_name))
->  		MLX5_SET(cmd_hca_cap, set_hca_cap, mkey_by_name, 1);
->  
-> +	if (MLX5_CAP_GEN_MAX(dev, num_total_dynamic_vf_msix))
-> +		MLX5_SET(cmd_hca_cap, set_hca_cap, num_total_dynamic_vf_msix,
-> +			 MLX5_CAP_GEN_MAX(dev, num_total_dynamic_vf_msix));
-> +
->  	return set_caps(dev, set_ctx, MLX5_SET_HCA_CAP_OP_MOD_GENERAL_DEVICE);
->  }
->  
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-> index 0a0302ce7144..5babb4434a87 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-> @@ -172,6 +172,11 @@ int mlx5_irq_attach_nb(struct mlx5_irq_table *irq_table, int vecidx,
->  		       struct notifier_block *nb);
->  int mlx5_irq_detach_nb(struct mlx5_irq_table *irq_table, int vecidx,
->  		       struct notifier_block *nb);
-> +
-> +int mlx5_set_msix_vec_count(struct mlx5_core_dev *dev, int devfn,
-> +			    int msix_vec_count);
-> +int mlx5_get_default_msix_vec_count(struct mlx5_core_dev *dev, int num_vfs);
-> +
->  struct cpumask *
->  mlx5_irq_get_affinity_mask(struct mlx5_irq_table *irq_table, int vecidx);
->  struct cpu_rmap *mlx5_irq_get_rmap(struct mlx5_irq_table *table);
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-> index 6fd974920394..2a35888fcff0 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-> @@ -55,6 +55,78 @@ static struct mlx5_irq *mlx5_irq_get(struct mlx5_core_dev *dev, int vecidx)
->  	return &irq_table->irq[vecidx];
->  }
->  
-> +/**
-> + * mlx5_get_default_msix_vec_count() - Get defaults of number of MSI-X vectors
-> + * to be set
+Do you expect patches for iproute2-next when the relevant changes become 
+available in linux-next then?
 
-s/defaults of number of/default number of/
-s/to be set/to be assigned to each VF/ ?
+Even though I did not know about iproute2-next the patch is needed for 
+the 5.11 kernel (as written in the subject).
 
-> + * @dev: PF to work on
-> + * @num_vfs: Number of VFs was asked when SR-IOV was enabled
+Regards,
+Oliver
 
-s/Number of VFs was asked when SR-IOV was enabled/Number of enabled VFs/ ?
-
-> + **/
-
-Documentation/doc-guide/kernel-doc.rst says kernel-doc comments end
-with just "*/" (not "**/").
-
-> +int mlx5_get_default_msix_vec_count(struct mlx5_core_dev *dev, int num_vfs)
-> +{
-> +	int num_vf_msix, min_msix, max_msix;
-> +
-> +	num_vf_msix = MLX5_CAP_GEN_MAX(dev, num_total_dynamic_vf_msix);
-> +	if (!num_vf_msix)
-> +		return 0;
-> +
-> +	min_msix = MLX5_CAP_GEN(dev, min_dynamic_vf_msix_table_size);
-> +	max_msix = MLX5_CAP_GEN(dev, max_dynamic_vf_msix_table_size);
-> +
-> +	/* Limit maximum number of MSI-X to leave some of them free in the
-> +	 * pool and ready to be assigned by the users without need to resize
-> +	 * other Vfs.
-
-s/number of MSI-X/number of MSI-X vectors/
-s/Vfs/VFs/
-
-> +	 */
-> +	return max(min(num_vf_msix / num_vfs, max_msix / 2), min_msix);
-> +}
-> +
-> +/**
-> + * mlx5_set_msix_vec_count() - Set dynamically allocated MSI-X to the VF
-> + * @dev: PF to work on
-> + * @function_id: Internal PCI VF function id
-> + * @msix_vec_count: Number of MSI-X to set
-
-s/id/ID/
-s/Number of MSI-X/Number of MSI-X vectors/
-
-> + **/
-> +int mlx5_set_msix_vec_count(struct mlx5_core_dev *dev, int function_id,
-> +			    int msix_vec_count)
-> +{
-> +	int sz = MLX5_ST_SZ_BYTES(set_hca_cap_in);
-> +	int num_vf_msix, min_msix, max_msix;
-> +	void *hca_cap, *cap;
-> +	int ret;
-> +
-> +	num_vf_msix = MLX5_CAP_GEN_MAX(dev, num_total_dynamic_vf_msix);
-> +	if (!num_vf_msix)
-> +		return 0;
-> +
-> +	if (!MLX5_CAP_GEN(dev, vport_group_manager) || !mlx5_core_is_pf(dev))
-> +		return -EOPNOTSUPP;
-> +
-> +	min_msix = MLX5_CAP_GEN(dev, min_dynamic_vf_msix_table_size);
-> +	max_msix = MLX5_CAP_GEN(dev, max_dynamic_vf_msix_table_size);
-> +
-> +	if (msix_vec_count < min_msix)
-> +		return -EINVAL;
-> +
-> +	if (msix_vec_count > max_msix)
-> +		return -EOVERFLOW;
-> +
-> +	hca_cap = kzalloc(sz, GFP_KERNEL);
-> +	if (!hca_cap)
-> +		return -ENOMEM;
-> +
-> +	cap = MLX5_ADDR_OF(set_hca_cap_in, hca_cap, capability);
-> +	MLX5_SET(cmd_hca_cap, cap, dynamic_msix_table_size, msix_vec_count);
-> +
-> +	MLX5_SET(set_hca_cap_in, hca_cap, opcode, MLX5_CMD_OP_SET_HCA_CAP);
-> +	MLX5_SET(set_hca_cap_in, hca_cap, other_function, 1);
-> +	MLX5_SET(set_hca_cap_in, hca_cap, function_id, function_id);
-> +
-> +	MLX5_SET(set_hca_cap_in, hca_cap, op_mod,
-> +		 MLX5_SET_HCA_CAP_OP_MOD_GENERAL_DEVICE << 1);
-> +	ret = mlx5_cmd_exec_in(dev, set_hca_cap, hca_cap);
-> +	kfree(hca_cap);
-> +	return ret;
-> +}
-> +
->  int mlx5_irq_attach_nb(struct mlx5_irq_table *irq_table, int vecidx,
->  		       struct notifier_block *nb)
->  {
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sriov.c b/drivers/net/ethernet/mellanox/mlx5/core/sriov.c
-> index 3094d20297a9..f0ec86a1c8a6 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/sriov.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/sriov.c
-> @@ -71,8 +71,7 @@ static int sriov_restore_guids(struct mlx5_core_dev *dev, int vf)
->  static int mlx5_device_enable_sriov(struct mlx5_core_dev *dev, int num_vfs)
->  {
->  	struct mlx5_core_sriov *sriov = &dev->priv.sriov;
-> -	int err;
-> -	int vf;
-> +	int err, vf, num_msix_count;
->  
->  	if (!MLX5_ESWITCH_MANAGER(dev))
->  		goto enable_vfs_hca;
-> @@ -85,12 +84,22 @@ static int mlx5_device_enable_sriov(struct mlx5_core_dev *dev, int num_vfs)
->  	}
->  
->  enable_vfs_hca:
-> +	num_msix_count = mlx5_get_default_msix_vec_count(dev, num_vfs);
->  	for (vf = 0; vf < num_vfs; vf++) {
->  		err = mlx5_core_enable_hca(dev, vf + 1);
->  		if (err) {
->  			mlx5_core_warn(dev, "failed to enable VF %d (%d)\n", vf, err);
->  			continue;
->  		}
-> +
-> +		err = mlx5_set_msix_vec_count(dev, vf + 1, num_msix_count);
-> +		if (err) {
-> +			mlx5_core_warn(dev,
-> +				       "failed to set MSI-X vector counts VF %d, err %d\n",
-> +				       vf, err);
-> +			continue;
-> +		}
-> +
->  		sriov->vfs_ctx[vf].enabled = 1;
->  		if (MLX5_CAP_GEN(dev, port_type) == MLX5_CAP_PORT_TYPE_IB) {
->  			err = sriov_restore_guids(dev, vf);
-> -- 
-> 2.29.2
-> 
