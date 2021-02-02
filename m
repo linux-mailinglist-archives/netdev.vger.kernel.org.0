@@ -2,133 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BA7330B5B6
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 04:16:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFBE530B5C5
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 04:23:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231248AbhBBDOg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 22:14:36 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:23560 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231158AbhBBDOf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 22:14:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1612235584;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kUWFN4ekNdpi4WxcUqZD8X9JUjgbpEhAfA6K+mxCnDM=;
-        b=RLyef//RASzBIdUap2YcepjW5QNuNC+p7cB0W47Y69as0hrnS4yU8lCeo5Q8lKKI0EMxo5
-        22ib9AB5V+Ezdebz1ljnAQ8DzpGgHV0DblXKmqroOY9Vfj3p7L9YbUQkoZGbtYNhRmTfoe
-        n4dbVVZj6qWK2hSbC5VkFJLM5i1bb5g=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-328-Xm7YpHbfPKGCCPIAwAzINg-1; Mon, 01 Feb 2021 22:13:01 -0500
-X-MC-Unique: Xm7YpHbfPKGCCPIAwAzINg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C5B4C800D53;
-        Tue,  2 Feb 2021 03:12:59 +0000 (UTC)
-Received: from [10.72.13.250] (ovpn-13-250.pek2.redhat.com [10.72.13.250])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 80C2360BE5;
-        Tue,  2 Feb 2021 03:12:54 +0000 (UTC)
-Subject: Re: [PATCH 1/2] vdpa/mlx5: Avoid unnecessary query virtqueue
-To:     Si-Wei Liu <siwliu.kernel@gmail.com>, Eli Cohen <elic@nvidia.com>
-Cc:     mst@redhat.com, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lulu@redhat.com, Si-Wei Liu <si-wei.liu@oracle.com>
-References: <20210128134130.3051-1-elic@nvidia.com>
- <20210128134130.3051-2-elic@nvidia.com>
- <CAPWQSg0XtEQ1U5N3a767Ak_naoyPdVF1CeE4r3hmN11a-aoBxg@mail.gmail.com>
- <CAPWQSg3U9DCSK_01Kzuea5B1X+Ef9JB23wBY82A3ss-UXGek_Q@mail.gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <9d6058d6-5ce1-0442-8fd9-5a6fe6a0bc6b@redhat.com>
-Date:   Tue, 2 Feb 2021 11:12:51 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S230157AbhBBDUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 22:20:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53360 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229975AbhBBDUu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 22:20:50 -0500
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB31FC06174A
+        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 19:20:10 -0800 (PST)
+Received: by mail-ot1-x333.google.com with SMTP id f6so18483041ots.9
+        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 19:20:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=qnVo4gynOx1Kz0nwhyIoVdeS41bHGw9/XhPKalG9nQg=;
+        b=es5ojrxvQKPZf9Q2Vqnl5lvFctHsIPdwIF6TqGo19qiHZtAXjdNdje3brCmUjQg12W
+         4vrcGuTbsAge4nHv/EIZK5RMdqYtJWzfPSUd1Wi63UUS9nNswOhNTvu0TgZOi8i0Uflg
+         Xom4hERe5jOkAumgRIzEx7qDEg8ik+ASZLkkfU3t+n9dQLu5KeUFd5L8BW24iyZ4qpWU
+         VxIZI04SUJlaW8MRV93qG8XW966qMBRg42EoiAXhL0nUpl+qS9t2hTSF+YtdopYpW29E
+         EmgabqgrcbzYjuAzdG6Bna+4CqNfqhao4hw7iokHO+r1hznqc4yLdmeorlfYdY2IHfd/
+         2jUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=qnVo4gynOx1Kz0nwhyIoVdeS41bHGw9/XhPKalG9nQg=;
+        b=dxKP6V1SfWcbzwsHnGnpEbjz6TKpeBnJlOnbuSW3M8d3K+l2sC2uAS6eATTf14GanO
+         lg+RJGqniWgAjWjdDjlcUsjrnZwXG1asAzkg+aG/+Q9ORmMXsUIlOkWdeblvxwoZfpuG
+         xBmrn1ZiiUAJDw/3v1vh/jjPqlvUeFKUva3RvH+bnvYcI2swuryq8YI0Sn6VIHdhVrZM
+         rq3ughYk00tQQrxZ+JcjozZ4/bC0g29EJQ0xBhtBJUlEAPJqHDsiw5soeK1S7qR8vbuy
+         i2B54JvjYqGrHIg8mJhLZDFJeOjXUfXJQHlbb1k03F1x6RHdA6XMTjzprKLxzUVi5mEh
+         QPZQ==
+X-Gm-Message-State: AOAM5301rS2khi0izi8Ow9zRIOUTVQz1WrYbug2FwAcr6u/bUyb5Rs/B
+        PCGo2l9uYPrLyvRyYHuoDrsjGzlLA7U=
+X-Google-Smtp-Source: ABdhPJw9A14miodRGJojkXVSIg0dz3ro4KIrjdMIatap8PvrTaiAC8N1mHajacfQRhUYCsYhZJiAnQ==
+X-Received: by 2002:a05:6830:1041:: with SMTP id b1mr13643044otp.335.1612236009970;
+        Mon, 01 Feb 2021 19:20:09 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.50])
+        by smtp.googlemail.com with ESMTPSA id p23sm4423473otk.51.2021.02.01.19.20.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 01 Feb 2021 19:20:09 -0800 (PST)
+Subject: Re: [PATCH iproute2-next v2 0/6] Support devlink port add delete
+To:     Parav Pandit <parav@nvidia.com>, stephen@networkplumber.org,
+        netdev@vger.kernel.org
+References: <20210129165608.134965-1-parav@nvidia.com>
+ <20210201213551.8503-1-parav@nvidia.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <2cfa07ec-9997-6286-5352-f723b6ad03c8@gmail.com>
+Date:   Mon, 1 Feb 2021 20:20:08 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.7.0
 MIME-Version: 1.0
-In-Reply-To: <CAPWQSg3U9DCSK_01Kzuea5B1X+Ef9JB23wBY82A3ss-UXGek_Q@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210201213551.8503-1-parav@nvidia.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 2/1/21 2:35 PM, Parav Pandit wrote:
+> This patchset implements devlink port add, delete and function state
+> management commands.
+> 
+> An example sequence for a PCI SF:
+> 
+> Set the device in switchdev mode:
+> $ devlink dev eswitch set pci/0000:06:00.0 mode switchdev
+> 
+> View ports in switchdev mode:
+> $ devlink port show
+> pci/0000:06:00.0/65535: type eth netdev ens2f0np0 flavour physical port 0 splittable false
+> 
+> Add a subfunction port for PCI PF 0 with sfnumber 88:
+> $ devlink port add pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum 88
+> pci/0000:08:00.0/32768: type eth netdev eth6 flavour pcisf controller 0 pfnum 0 sfnum 88 splittable false
+>   function:
+>     hw_addr 00:00:00:00:00:00 state inactive opstate detached
+> 
+> Show a newly added port:
+> $ devlink port show pci/0000:06:00.0/32768
+> pci/0000:06:00.0/32768: type eth netdev ens2f0npf0sf88 flavour pcisf controller 0 pfnum 0 sfnum 88 splittable false
+>   function:
+>     hw_addr 00:00:00:00:00:00 state inactive opstate detached
+> 
+> Set the function state to active:
+> $ devlink port function set pci/0000:06:00.0/32768 hw_addr 00:00:00:00:88:88 state active
+> 
+> Show the port in JSON format:
+> $ devlink port show pci/0000:06:00.0/32768 -jp
+> {
+>     "port": {
+>         "pci/0000:06:00.0/32768": {
+>             "type": "eth",
+>             "netdev": "ens2f0npf0sf88",
+>             "flavour": "pcisf",
+>             "controller": 0,
+>             "pfnum": 0,
+>             "sfnum": 88,
+>             "splittable": false,
+>             "function": {
+>                 "hw_addr": "00:00:00:00:88:88",
+>                 "state": "active",
+>                 "opstate": "attached"
+>             }
+>         }
+>     }
+> }
+> 
+> Set the function state to active:
+> $ devlink port function set pci/0000:06:00.0/32768 state inactive
+> 
+> Delete the port after use:
+> $ devlink port del pci/0000:06:00.0/32768
+> 
 
-On 2021/2/2 上午3:17, Si-Wei Liu wrote:
-> On Mon, Feb 1, 2021 at 10:51 AM Si-Wei Liu <siwliu.kernel@gmail.com> wrote:
->> On Thu, Jan 28, 2021 at 5:46 AM Eli Cohen <elic@nvidia.com> wrote:
->>> suspend_vq should only suspend the VQ on not save the current available
->>> index. This is done when a change of map occurs when the driver calls
->>> save_channel_info().
->> Hmmm, suspend_vq() is also called by teardown_vq(), the latter of
->> which doesn't save the available index as save_channel_info() doesn't
->> get called in that path at all. How does it handle the case that
->> aget_vq_state() is called from userspace (e.g. QEMU) while the
->> hardware VQ object was torn down, but userspace still wants to access
->> the queue index?
->>
->> Refer to https://lore.kernel.org/netdev/1601583511-15138-1-git-send-email-si-wei.liu@oracle.com/
->>
->> vhost VQ 0 ring restore failed: -1: Resource temporarily unavailable (11)
->> vhost VQ 1 ring restore failed: -1: Resource temporarily unavailable (11)
->>
->> QEMU will complain with the above warning while VM is being rebooted
->> or shut down.
->>
->> Looks to me either the kernel driver should cover this requirement, or
->> the userspace has to bear the burden in saving the index and not call
->> into kernel if VQ is destroyed.
-> Actually, the userspace doesn't have the insights whether virt queue
-> will be destroyed if just changing the device status via set_status().
-> Looking at other vdpa driver in tree i.e. ifcvf it doesn't behave like
-> so. Hence this still looks to me to be Mellanox specifics and
-> mlx5_vdpa implementation detail that shouldn't expose to userspace.
+applied to iproute2-next.
 
-
-So I think we can simply drop this patch?
-
-Thanks
-
-
->> -Siwei
->>
->>
->>> Signed-off-by: Eli Cohen <elic@nvidia.com>
->>> ---
->>>   drivers/vdpa/mlx5/net/mlx5_vnet.c | 8 --------
->>>   1 file changed, 8 deletions(-)
->>>
->>> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
->>> index 88dde3455bfd..549ded074ff3 100644
->>> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
->>> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
->>> @@ -1148,8 +1148,6 @@ static int setup_vq(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq)
->>>
->>>   static void suspend_vq(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq)
->>>   {
->>> -       struct mlx5_virtq_attr attr;
->>> -
->>>          if (!mvq->initialized)
->>>                  return;
->>>
->>> @@ -1158,12 +1156,6 @@ static void suspend_vq(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *m
->>>
->>>          if (modify_virtqueue(ndev, mvq, MLX5_VIRTIO_NET_Q_OBJECT_STATE_SUSPEND))
->>>                  mlx5_vdpa_warn(&ndev->mvdev, "modify to suspend failed\n");
->>> -
->>> -       if (query_virtqueue(ndev, mvq, &attr)) {
->>> -               mlx5_vdpa_warn(&ndev->mvdev, "failed to query virtqueue\n");
->>> -               return;
->>> -       }
->>> -       mvq->avail_idx = attr.available_index;
->>>   }
->>>
->>>   static void suspend_vqs(struct mlx5_vdpa_net *ndev)
->>> --
->>> 2.29.2
->>>
-
+In the future, please split additions and changes to utility functions
+into a separate standalone patch.
