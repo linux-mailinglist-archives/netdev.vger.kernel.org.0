@@ -2,151 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11A3A30BE39
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 13:33:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0D2E30BE41
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 13:35:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231211AbhBBMcq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 07:32:46 -0500
-Received: from mail-db8eur05on2052.outbound.protection.outlook.com ([40.107.20.52]:2912
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        id S231526AbhBBMdf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 07:33:35 -0500
+Received: from mail-eopbgr140057.outbound.protection.outlook.com ([40.107.14.57]:7341
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229894AbhBBMcn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 07:32:43 -0500
+        id S229590AbhBBMda (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 07:33:30 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ef4+ST9Bzy+3RBGq39IX/oVwah/HcKkTj9B1FwkNuIqLGaV/YL01FV0KWjOEN7cCSQ0W5s8ahXBXWZbw8rpKi3KmagNuvAQYMGgrQDwsDgdNdBvvui+29UsddsmWAqs7Si6SfYA0H3MqFpUUi1Q2BAMo1Ihy7DEjS3wFJ3qJOLLpf6OugrP531DakkrqtG0LkXAKlF/hG2XI2WMucALyHkS0Gp359g15BDyEI3K6Cxe6nTYg4eIgO//bOx+Fw3TdeMtjxF1DXSxTy/MS5JzyXrT8EyEM0+Ogwq9tmRsJUTjEHMmNWK/uqAbAkyOeALNVE+H49F8LOyRJT87YTPbyJA==
+ b=fiRnTiZvAE8ju2VBZKZV+0vtVweQ5i2oI4zQ3itmAqEFHnGOD/GNrs/XXd/hXkjNPPCjQJfTsL6HK6tfDVnYU4SMzz/zuzIkEATRH0ka7fWGhFuA6pe+HTO0vMkJdxvKEKhelC7pweVWf4M6ekt48eA3piU3pAfsblS7FNpMV5HPPqX/P8olC5gMW29qPI5DY4gVgzo3bvwmiU55WdBEitPuJRI2UNDdltYpkgZaFLt9TXK15nkSUm+/+FXnJBAASJl01mP2+F2T09bvksNvlu1fF101SPcZOVibzlq0VV9d0H/y4BGMHjnJoSGjMSZmNpBHVH+OWXfJ++aRIGSbBg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dfJ1YpuVD5pmkPR6PxSbM9s3EcTgtYJTjRwyQnopxV4=;
- b=gRpy28GOITqT23uodss14fnjEnqtVcBiEd2NzW4eH+4EEkU1Lga79QugTC0iLNUBKqi0eTvTQtyu8TvI6sD1IGo+9HGZhZOjs4stnYFp3f+hCyjInjAzCTrugYqAwwGKhrI602yELCNvpeD9DFaPUn4VPz/UK3ET9EttgROud1U/8fp4hw5+Oz/qzO4gjXtMYJ3k8DvtE1xtc39YKMLUl2dm4IBj5pfKVpfJL8oJEU9NER00YH0PURqBMWuVAFkn8FpZQg9S661y3G4GteStk6ZqWg4AWMBjpkyTVzQOhFig82TVgTYOCV5btl3d96kAbobfr3MZTYn6BX9/R7Xtzg==
+ bh=8JiWQ++WYG8p7zn2MRjt2jOhBDkUWwoyerKSZhfqnTI=;
+ b=HaZ5xGCj27gcF1GSstRLTwwX6+7TbnxIo+7jyyp02Jc2Zlo3e8wTuRCx8SWdkat5Yq9SbZy6MwYpIcUyMtJVt0dyH4TrDA/i43yS4z4qE/cmPnm1M4auk2J6j6zs+XwqAIHQf115bdk4KdgF78/BwHBToC1Sn4Z5o/LYHiHlGk0PuK0ApnB4fox2EgMQ/3cpCDR49aF7TlWnT8lAPL+nxPyZwNQH2rvjyQr4a6culhEJLEXBHladOoiNEf8ac4FELKfktFH/e39Mk4x7dp+tIlXIm4XPDLZmMjOc44UXvnc5k/wfuh+aZGpE2MfoDoTu4hxyNZYGeGt6qV0r19PVCA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dfJ1YpuVD5pmkPR6PxSbM9s3EcTgtYJTjRwyQnopxV4=;
- b=l0Z5jHlBs6C7V3QrtMLcks+YhecHgBCPcHF9a6c0/La0u/OGlOL6MMViuflGuo/U04tTJnbPE1MFMNRcpLLPYsfJxAdOIcawuxDx26pvUKaopQL7iVzbf4nKk3llRmL8cjm84B8xyN3+Hu0ZQIWtc5IpZ8ScbIOXV9jXQ1iaegA=
+ bh=8JiWQ++WYG8p7zn2MRjt2jOhBDkUWwoyerKSZhfqnTI=;
+ b=QndMugf1WemSEgu2mqDvFI5il7h97F2h/zvaTWYwj5x8PO6Hpw5wEbXI4sOhEpOpWsx4P0XufDAsdbwQ43dsrT8U9QmSYs5LOl50LORpbItwW29MgCJK2Ivhjgw9bSV579N/x1IA4maxjyfis4XZNAECfGZYJEgQyeHOnUFtb4Y=
 Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
- (2603:10a6:803:16::14) by VE1PR04MB6446.eurprd04.prod.outlook.com
- (2603:10a6:803:11f::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.17; Tue, 2 Feb
- 2021 12:31:54 +0000
+ (2603:10a6:803:16::14) by VE1PR04MB6445.eurprd04.prod.outlook.com
+ (2603:10a6:803:11c::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.19; Tue, 2 Feb
+ 2021 12:32:41 +0000
 Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
  ([fe80::b0d0:3a81:c999:e88]) by VI1PR0402MB3871.eurprd04.prod.outlook.com
  ([fe80::b0d0:3a81:c999:e88%3]) with mapi id 15.20.3805.028; Tue, 2 Feb 2021
- 12:31:54 +0000
+ 12:32:41 +0000
 From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Vlastimil Babka <vbabka@suse.cz>
-CC:     Kevin Hao <haokexin@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+To:     Kevin Hao <haokexin@gmail.com>
+CC:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH net-next v2 1/4] mm: page_frag: Introduce
- page_frag_alloc_align()
-Thread-Topic: [PATCH net-next v2 1/4] mm: page_frag: Introduce
- page_frag_alloc_align()
-Thread-Index: AQHW96aigj98D9qGVUCzC1fhplt6KapEv/AAgAADZwCAAAwhgA==
-Date:   Tue, 2 Feb 2021 12:31:54 +0000
-Message-ID: <20210202123153.tt7c6icrysrbpluc@skbuf>
+        Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>
+Subject: Re: [PATCH net-next v2 4/4] net: dpaa2: Use napi_alloc_frag_align()
+ to avoid the memory waste
+Thread-Topic: [PATCH net-next v2 4/4] net: dpaa2: Use napi_alloc_frag_align()
+ to avoid the memory waste
+Thread-Index: AQHW96ZuDf172hJVTUufbJCeWoSfn6pEz7AA
+Date:   Tue, 2 Feb 2021 12:32:41 +0000
+Message-ID: <20210202123240.rfgbky3mzhefbamz@skbuf>
 References: <20210131074426.44154-1-haokexin@gmail.com>
- <20210131074426.44154-2-haokexin@gmail.com>
- <20210202113618.s4tz2q7ysbnecgsl@skbuf>
- <2d406568-5b1d-d941-5503-68ba2ed49f34@suse.cz>
-In-Reply-To: <2d406568-5b1d-d941-5503-68ba2ed49f34@suse.cz>
+ <20210131074426.44154-5-haokexin@gmail.com>
+In-Reply-To: <20210131074426.44154-5-haokexin@gmail.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-authentication-results: suse.cz; dkim=none (message not signed)
- header.d=none;suse.cz; dmarc=none action=none header.from=nxp.com;
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
 x-originating-ip: [5.12.227.87]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 83cbea54-3903-44c2-59de-08d8c7768653
-x-ms-traffictypediagnostic: VE1PR04MB6446:
-x-microsoft-antispam-prvs: <VE1PR04MB6446AE8336FCFE3BE602D212E0B59@VE1PR04MB6446.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-ms-office365-filtering-correlation-id: 29807636-2db2-4bda-9163-08d8c776a233
+x-ms-traffictypediagnostic: VE1PR04MB6445:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VE1PR04MB64459DA92A6E580DECD73305E0B59@VE1PR04MB6445.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2582;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: uKRU8KjYDsBHMO8eKRJ+6sTZAMVOs+f4zRcxYtGv6Y9hgwJLQCOdnpYVNq39wyQM3RgoP0qAm2wOpa2xop0/loplxG/04iV9tEWp2DpXbgHppjdOBe38fB8f/vl8w7hfuI/inCc+tsRHBX1ttFBlmIMbkAo6gHFHnMIDHSK8BTglp9B4N49Yx4J+zCsO3BfjAr3c7wALvd2CtQyYiGqnb32pBkybxpisgJdJLd6pY0k9WLeg+MyxmCcfci46oXhGKTZGWdlYJBoV/iTWPBUkj7yj2r1r/LjOXmFWZJ1jEU197GX1lCnk4Eoj9Deg5n3gcITS8ZJl4iViiTZUOWKYqbE5VjpJ+rq70EjdcvY9Hwj1U2lDWPFUZMpQRllaiY9mTW/jSQw0zGQUcaNkk+XOAGed0rCBsBTh3fxclMswSmeWT3snl4aNUAUtyIOQQfdCNq5hOddebh1Z2TajM9LugL4B7MPVjPV5+bXMdpHlOcp2IdGtV0X6VNGD4kvuYPyUeVUETD6Q3eN7G8rgQt5mkw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3871.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(346002)(39860400002)(366004)(136003)(396003)(376002)(478600001)(4326008)(186003)(53546011)(8676002)(9686003)(316002)(26005)(5660300002)(76116006)(66446008)(66946007)(91956017)(54906003)(6506007)(44832011)(1076003)(64756008)(66476007)(66556008)(8936002)(33716001)(71200400001)(6916009)(2906002)(6486002)(86362001)(6512007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?qz+1sE7T7HLUUwPBZHUUaaW1p+7EaerV2PiIzAIL6niTO2XhKk5abgxxDTwP?=
- =?us-ascii?Q?NJwFtNH1g8iqF3u6M3/0wO6A0J/Q2vlnh4WCu8t3u+GuXw2XI0t+sGHAjuJG?=
- =?us-ascii?Q?gldwogpzANbnAz9v2o5QxQMqqrzw9JGiU97lmXaoB9rqY8IwtQjAQpNqLYbJ?=
- =?us-ascii?Q?wvsM2iXTQixkwx/R+8N67TMh1V7ilJvrlKMIZNQdUowjtQKxkta0RXgGGzdQ?=
- =?us-ascii?Q?wECuyvG+tP2OGdDBapiiFMYQh5IiYTP5lrMCi1yIaWVitTqM9i2nBakS82lg?=
- =?us-ascii?Q?qUpzBwOvhxU4r8d6YT7MbVqpS5pvttEw1h6uLoz3qv8mfMU0PhQup+HvwpC9?=
- =?us-ascii?Q?2i0WvBegSIXOoyyuFppSb2LedfMjltxMKEfrTGJx1WJ0VE6bO9wQ5sMCLNGh?=
- =?us-ascii?Q?Il+DWE3w47TtmkxGzxnH1oP6tGAkfFzTUEgp+i1gVSy0WrlxIgk2v4/hJF01?=
- =?us-ascii?Q?qY+3t3bBi/5uWVXQLavkXESWq760HP15hRfuzMJO/czMTptile8QIGmM/q5o?=
- =?us-ascii?Q?E1g5FLG8+3gt+HyKZTofZlR7fpwbo+mokRjtV3ITbsg/4a9KJa1yqQ9lg6oD?=
- =?us-ascii?Q?KCn6EeAwqtmFDhKRtwtp4VqOBSpqs0xAdcejCY03i2FCJqprTG6J/OsqNre6?=
- =?us-ascii?Q?Wb96e4qFqhmFvYz3DyW8tOacnLX5ZMZfdAQTAUGbHZMwjS0BZy6geg6tDuJ0?=
- =?us-ascii?Q?qD19tpOMow/2VhtuqFeETwReJnvhk2y9AZySbDnthKJrqg8bl4zFyPpMBPF2?=
- =?us-ascii?Q?O0G9aYNi7Pjcv/0nVGWL4Lc49+sRiSffq4j7ic4K27FvHbOGNGqyAmTJc6bh?=
- =?us-ascii?Q?+vLLKjlGP6ogRbCzyDvFWXUzZ+5nZlf88z2xyKbSbAZRzY5uVfXA4XUTViOt?=
- =?us-ascii?Q?y0nMPCQquSfOCJTI4v22YNU0GP4qQ32erhpEB293JDzt42ZaE0sVQOfH6frm?=
- =?us-ascii?Q?wkBu/f77KMZs+m3jLjGdB7n/DJKHTVvTzHihkIcUQEPM/z1Fry8IOAoWqfHM?=
- =?us-ascii?Q?eyzeh4e0GO0mmPEU8CzlmmY/5ahc5vcrr9svdg9mUVg9sRkHIp132Yxz9Hng?=
- =?us-ascii?Q?O/RGkz0W?=
-x-ms-exchange-transport-forked: True
+x-microsoft-antispam-message-info: z5qNhUfMnMAyaYldREaeWJbYCOyPT3Po5ul2YNKQSDwSSu4YpjXLSf7x4bbhM33NAPf5tMi0tNYPQlKhzlizv6iIr0qsIjtzW3jSfsv+O7ChvtQTWk0KSdE1N5dQTUCypQjItNqBFJrzxYo/TIqRdvf/IqxW7mP3ujSmBexF3wBWjJrKtHgCPUyw1Qzti41lsD/koUw4ebMQhtDM7xFBsccOmZedYTejhRJEGhMgpQVVh6Fok9PM3eUum/HVBaayKLzgQSGVZZJavUTVRDRIgx3zUsvgCHoAep0fif7++z0fM61D1btteXrwfZ9RgE8D1ZX+5AGxH6GjVzbWldIi0SGV2jZR50SF3NEU4ccBV2HJHM0/m2R7rt4rLSBFkqpDBmyQLdG5IUURcgotWHtkKs9y6X5HZ0OGFeCqlsPfns0UFLYip75oeHNqNdJvUKeSbF2a70GhBnSglLj4d4fSRh4oLzwQrUVJamCb34HEHPb8uGrgGHEnEWytm5hes/7sFS7D/6JMoFozfuAlhdNNrg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3871.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(396003)(39860400002)(136003)(376002)(366004)(346002)(6506007)(8936002)(6512007)(9686003)(2906002)(1076003)(91956017)(316002)(6486002)(76116006)(26005)(8676002)(54906003)(44832011)(86362001)(478600001)(186003)(33716001)(6916009)(66556008)(66476007)(66446008)(64756008)(83380400001)(5660300002)(66946007)(71200400001)(4326008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?C6TLFPttAD8C6UXcoydpBqcatSsF+JvchzuGWXLDGEMEiha6WjVtL0QyFPiB?=
+ =?us-ascii?Q?HX2zxcze9r2G2OPm6Y3L23AvzKTKhzgNKCjXEN2siRvw9sHec0HBEc+1pW5W?=
+ =?us-ascii?Q?w30riwHxwCOQBa4Cdqhf03dQPZcBZsZ5aukdmd3w3ZL3phpYoZaIU0K9HH5Q?=
+ =?us-ascii?Q?NkZ6CAcV7KuEFitajjv5pN9Xie/2iMTVsdXRj2ggrd/6UqT2FNNCBirCZkfZ?=
+ =?us-ascii?Q?mV78IGpxMWxLFq1dgLt4lcEgnGkEB5E3wIgktDCEiaSjRx7zMorlsDC15umI?=
+ =?us-ascii?Q?DP1mibq05/n+PsdacnTCeEV62ogxyKh/HZT0FjB/wkp7PUKCwKciicAbaA+y?=
+ =?us-ascii?Q?si5mr2KznaM4X1+aoJHBeMyw3xb3O8OYBNOhkIZjJW/YcNbcOsWfJo2Vg3he?=
+ =?us-ascii?Q?3KZvP2nt25ApdhppPzgfuzsyEl/wica4vPDXjWo1uGi8EJ55rAes+48v8HH6?=
+ =?us-ascii?Q?Xk61+4yv+e1n9R/7jb1gkvSAL6JQ+5mErxFvyArSyDK/pkG0Q7Vlf4NmliwX?=
+ =?us-ascii?Q?CbrAY14IHrG/tCD1yW/Nq7eRDQ+j/I4wPv4UMGOaT7xV0GFkwIdNYGFGhC/A?=
+ =?us-ascii?Q?MOcJZIT9/vogxzlhDjxWDJVSSBkb63GwKZgr4uJRiugmMHHJUM78BD6IVGOB?=
+ =?us-ascii?Q?iqBXwXg0Yb74WdoIPYdJrDqPuW592sfHOXFDkS+wi+CnvLGZ1rG6IubO5/hf?=
+ =?us-ascii?Q?B4FJdNu6SOA1Am1K/R6GfTk8xbtmTIdriYYaaVxcPBGG4BYUt7+sMN/B8mvz?=
+ =?us-ascii?Q?EqvlbxMohXwS/Jm+svhk0oj1jM/yI+CgSOgtlq/k6FYMcnVpD8uXe7QUcMKC?=
+ =?us-ascii?Q?pTjidukzpQh6WnhMDQOl74hzaKkkFVNypWcjzPlQe5dB2uy6c6Y/i9R14rLV?=
+ =?us-ascii?Q?H6UcbkA1LCTpqdx5u5DkYnpMhe0jD2ry+e+gMLJQ7vjAo3Gw72GuNgZkPgIf?=
+ =?us-ascii?Q?YvbdOIcesIW1hnSCt2EEVG7VVWyXtYSq9tSBns1RxuTPyw1gNIfKnpTR/yD/?=
+ =?us-ascii?Q?IlL0YGqM8WvyMWaq2M13mFBKNqeekvAC14p52jVv2JIZRRPm17wrUTOt2ayQ?=
+ =?us-ascii?Q?9Il4JAVH?=
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <5678FE9487C6314199EA5D0110B8AC43@eurprd04.prod.outlook.com>
+Content-ID: <9C13E44D1BCEDF4EBE2738E026414E89@eurprd04.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3871.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 83cbea54-3903-44c2-59de-08d8c7768653
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Feb 2021 12:31:54.1575
+X-MS-Exchange-CrossTenant-Network-Message-Id: 29807636-2db2-4bda-9163-08d8c776a233
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Feb 2021 12:32:41.2802
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: UbrBIKzchWtn5gFfVm2d0aOsfJe4+FqOyrluK+4iRisv3U0vDUTuCcZbfze1CaA02k+9eZBrxdRPJMtaPhsxJQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6446
+X-MS-Exchange-CrossTenant-userprincipalname: ByftM4ni0siKIDiOuaJFrfOn57/apTiU+fTODoXtbC18fxex7E5+p0Fsax+I4cwQnTK+McjOptZFUQW0MAF22w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6445
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 02, 2021 at 12:48:28PM +0100, Vlastimil Babka wrote:
-> On 2/2/21 12:36 PM, Ioana Ciornei wrote:
-> > On Sun, Jan 31, 2021 at 03:44:23PM +0800, Kevin Hao wrote:
-> >> In the current implementation of page_frag_alloc(), it doesn't have
-> >> any align guarantee for the returned buffer address. But for some
-> >> hardwares they do require the DMA buffer to be aligned correctly,
-> >> so we would have to use some workarounds like below if the buffers
-> >> allocated by the page_frag_alloc() are used by these hardwares for
-> >> DMA.
-> >>     buf =3D page_frag_alloc(really_needed_size + align);
-> >>     buf =3D PTR_ALIGN(buf, align);
-> >>=20
-> >> These codes seems ugly and would waste a lot of memories if the buffer=
-s
-> >> are used in a network driver for the TX/RX.
-> >=20
-> > Isn't the memory wasted even with this change?
+On Sun, Jan 31, 2021 at 03:44:26PM +0800, Kevin Hao wrote:
+> The napi_alloc_frag_align() will guarantee that a correctly align
+> buffer address is returned. So use this function to simplify the buffer
+> alloc and avoid the unnecessary memory waste.
 >=20
-> Yes, but less of it. Not always full amount of align, but up to it. Perha=
-ps even
-> zero.
+> Signed-off-by: Kevin Hao <haokexin@gmail.com>
+Reviewed-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-Indeed, the worst case is still there but we gain by not allocating the
-full 'size + align' all the time.
-
-Thanks.
-
+> ---
+> v2: No change.
 >=20
-> > I am not familiar with the frag allocator so I might be missing
-> > something, but from what I understood each page_frag_cache keeps only
-> > the offset inside the current page being allocated, offset which you
-> > ALIGN_DOWN() to match the alignment requirement. I don't see how that
-> > memory between the non-aligned and aligned offset is going to be used
-> > again before the entire page is freed.
+>  drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 >=20
-> True, thath's how page_frag is designed. The align amounts would be most =
-likely
-> too small to be usable anyway.
+> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/n=
+et/ethernet/freescale/dpaa2/dpaa2-eth.c
+> index 41e225baf571..882b32a04f5e 100644
+> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> @@ -764,12 +764,11 @@ static int dpaa2_eth_build_sg_fd(struct dpaa2_eth_p=
+riv *priv,
+>  	/* Prepare the HW SGT structure */
+>  	sgt_buf_size =3D priv->tx_data_offset +
+>  		       sizeof(struct dpaa2_sg_entry) *  num_dma_bufs;
+> -	sgt_buf =3D napi_alloc_frag(sgt_buf_size + DPAA2_ETH_TX_BUF_ALIGN);
+> +	sgt_buf =3D napi_alloc_frag_align(sgt_buf_size, DPAA2_ETH_TX_BUF_ALIGN)=
+;
+>  	if (unlikely(!sgt_buf)) {
+>  		err =3D -ENOMEM;
+>  		goto sgt_buf_alloc_failed;
+>  	}
+> -	sgt_buf =3D PTR_ALIGN(sgt_buf, DPAA2_ETH_TX_BUF_ALIGN);
+>  	memset(sgt_buf, 0, sgt_buf_size);
+> =20
+>  	sgt =3D (struct dpaa2_sg_entry *)(sgt_buf + priv->tx_data_offset);
+> --=20
+> 2.29.2
+> =
