@@ -2,129 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AF9E30B8CC
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 08:41:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D76930B8FA
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 08:54:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231533AbhBBHk7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 02:40:59 -0500
-Received: from mail-db8eur05on2111.outbound.protection.outlook.com ([40.107.20.111]:28608
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229976AbhBBHk5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 02:40:57 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZcQ4U8NXwkO9uB7HgKlIw6zQ2wctUB0mKIUMZnGai5zF80gnHy2YrQ20bQB7WwF4x061FOavVspRrmH12ywUfsgA265Q0ftYaRI0PGma8UJ7QPJ99cm6SfuYhvcTaSsVckgbWhgwTg9osMm2tR8/HrUgeXu2LbaLpEVPja4ZnVCkdQRFOr6o+NIi9cfIfSD3w6Ml3yao/NJ4tzKOfVeDzFUrhxk0/48/WoGaBfDFXHnrqrXh5JON7f7hxAZ43wQzlMuMQS4oy5cgh1FkicpU0W+DWR4oL9djm685YHCKY+AR6cEPIQ/c+pODA/TJIjl417pnV33gP8rukSG/CRFt9A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wxzfDAmNd1X5DohUgnI04lTuJPE++e2zEAcq1ZOVBKw=;
- b=FZ1vmUp++2a93dH1jVQolu0eRgNOFJkQCwbkTsnaPTbGUWIfcmjLZ3hHSCA6arpcd9zWIP2TuCPhvPjTWY1770O60mIum2VMpEBCKpCepTsN1JGyTcOCGeopIaUgkLt4ImePtQWkegQU+cks6X/AcD7uppUitdVcHgofwggWHL/mhTNdlbGORscK7nI7VdQdI+2vviEAxljmV+x1qTCUIjd+6wHyX0LhK0/COemXQdR4WpWWGB8df26TJmahv2z74yrYvLc6IgGBzxUwATPPssdMu5X3+rBZBiUhyzzvGAd5gs2tcAS6w78wV2jd+VofiQLaWr4RXiMiuBdAEemHag==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=prevas.dk; dmarc=pass action=none header.from=prevas.dk;
- dkim=pass header.d=prevas.dk; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.dk;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wxzfDAmNd1X5DohUgnI04lTuJPE++e2zEAcq1ZOVBKw=;
- b=c+DLeSCmMU5nRe5/hBfWC+wv4nQRRMCBT0HkRM2MMwv6ngMa/GjNjSye2ENUEP+7Pm7FTT3BEEGBSiYNLXnJaaMdRlbaidUGo9FfNpWwGW1igVXVfJNay+LrzWgEIGChsDxSqKt10guLYMpni+Ryc7ZD1M5282uN8aQjrdt9yPw=
-Authentication-Results: lists.linux-foundation.org; dkim=none (message not
- signed) header.d=none;lists.linux-foundation.org; dmarc=none action=none
- header.from=prevas.dk;
-Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:3f::10)
- by AM0PR10MB2241.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:dd::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.22; Tue, 2 Feb
- 2021 07:40:08 +0000
-Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::58b2:6a2a:b8f9:bc1a]) by AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::58b2:6a2a:b8f9:bc1a%3]) with mapi id 15.20.3805.027; Tue, 2 Feb 2021
- 07:40:08 +0000
-Subject: Re: [PATCH net-next v2 0/4] bridge: mrp: Extend br_mrp_switchdev_*
-To:     Jakub Kicinski <kuba@kernel.org>, andrew@lunn.ch,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>, jiri@resnulli.us,
-        ivecera@redhat.com, davem@davemloft.net, roopa@nvidia.com,
-        nikolay@nvidia.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org
-References: <20210127205241.2864728-1-horatiu.vultur@microchip.com>
- <20210129190114.3f5b6b44@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Message-ID: <9143d15f-c41d-f0ab-7be0-32d797820384@prevas.dk>
-Date:   Tue, 2 Feb 2021 08:40:02 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-In-Reply-To: <20210129190114.3f5b6b44@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [5.186.115.188]
-X-ClientProxiedBy: AM6P194CA0098.EURP194.PROD.OUTLOOK.COM
- (2603:10a6:209:8f::39) To AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:208:3f::10)
+        id S230055AbhBBHw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 02:52:26 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:52484 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229466AbhBBHwY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 02:52:24 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 1127mtrS081670;
+        Tue, 2 Feb 2021 07:51:32 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=3Y7HNwr7hwVxzByk5cPGCIUfvrvL9EP75VZLXwMVsuk=;
+ b=LlgwXwLcbzusCXs8ZaG6C0m6COk/TjIEJfgUvT21/VWyqG+zw18xoBGHNbpEu+snI19V
+ 8Qp6j8dtqpkwa4bhbPKRRspvYQx3wnpJuXl82kAbx4Ik0Nu4ivZQb/W48p3Le7aBj2ir
+ McQ4CadLbk4Fl7zdOlwQ2VzeKfRXzHJplBSie8fOm0IUsSuM9hgW5jMEwsc5FM7Nrwz7
+ E9InRP+EJPbVbtyGlvZZY1A3B4z2DvaQAoL2n78utgO7a5ZWTb1+wu1NGTkYK/Z3w4qK
+ e/HgnMx2nfJ1T2wTITGtjK0Rq3QG4ymKO9NKjUrT5xg3hmUbtIBO0EfuioB6O/YIBgDN aQ== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2120.oracle.com with ESMTP id 36cydksa06-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 02 Feb 2021 07:51:32 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 1127pSK4174056;
+        Tue, 2 Feb 2021 07:51:30 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by aserp3030.oracle.com with ESMTP id 36dh1nkrwr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 02 Feb 2021 07:51:29 +0000
+Received: from abhmp0017.oracle.com (abhmp0017.oracle.com [141.146.116.23])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 1127pKPn022650;
+        Tue, 2 Feb 2021 07:51:20 GMT
+Received: from kadam (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 01 Feb 2021 23:51:19 -0800
+Date:   Tue, 2 Feb 2021 10:51:11 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Hillf Danton <hdanton@sina.com>, Sasha Levin <sashal@kernel.org>,
+        Archie Pusaka <apusaka@chromium.org>
+Cc:     syzbot <syzbot+3ed6361bf59830ca9138@syzkaller.appspotmail.com>,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Miao-chen Chou <mcchou@chromium.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@intel.com>,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: KASAN: slab-out-of-bounds Read in add_adv_patterns_monitor
+Message-ID: <20210202075110.GR2696@kadam>
+References: <00000000000076ecf305b9f8efb1@google.com>
+ <20210131100154.14452-1-hdanton@sina.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.1.149] (5.186.115.188) by AM6P194CA0098.EURP194.PROD.OUTLOOK.COM (2603:10a6:209:8f::39) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.16 via Frontend Transport; Tue, 2 Feb 2021 07:40:04 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 23df1b40-0b46-47e8-e6be-08d8c74dc163
-X-MS-TrafficTypeDiagnostic: AM0PR10MB2241:
-X-Microsoft-Antispam-PRVS: <AM0PR10MB22412718D1DBEF78DCA149DC93B59@AM0PR10MB2241.EURPRD10.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1728;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: n1xL1Nzzelkgb4FD/BIUWGjxlqd2rAjTISumqMt7lO2nn6a40Nekhd8qFGAL+swQ1BOu4q8q/zMC3ADjy9V/uxqpZLtzfGUNvZXuzunZ3Csm40bGiHHWGprK4FwY0CkSH0P9RivcMu8D5kFisop7QaXPg6OUGg6BDtNaiq1Z14tkdQBEviDfxjRZWfkgK1rKd1bzUDXLcUlczNPWgMLgjuhVub7KwiH0qsuKIuJPzP4bMU42Dg++xM7yptnz6Os9iS0WluRbYNvURcUILhf1J6KqdLbF0T1V/xj1qU1/TX42sYcgWzQ0ua/5qIEbSNLOHvd1Qxh18eJKbrlqcNzCArIbSHDMpIwuOZCzvU5raiNsnujr2c9woKt+MASSOHDdHYjz0DAmRjzbqEAsOy0czkgqAUmgZhV6aQy3Y8k5sqp2r311Svr2gB8nUBwKwHWBJpKuTfW4GTZDslVJirSU5kLk71BnfqpL6UKMbaoexKDzmrihghuYbYOYaROVJkw7NXGPMvCQgY8DpxwA61RByagvu/VkXkYikoTR3AvWcydoypNSOMLuKI5rPdCL3ZY/ygoOw/rgpwSg+c9paL21fokCqHtHB8FGzIi0DpYtjKw=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(396003)(366004)(376002)(136003)(346002)(39840400004)(36756003)(31696002)(44832011)(26005)(66946007)(956004)(6486002)(66476007)(66556008)(186003)(16576012)(4326008)(52116002)(478600001)(2616005)(8976002)(8936002)(110136005)(31686004)(5660300002)(4744005)(316002)(86362001)(7416002)(83380400001)(8676002)(16526019)(2906002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?Windows-1252?Q?2dQWzn1QACPc9U6hSNBOf8E6Mq3kGXS8hlz4+Ogq3OukjF9rclU43ack?=
- =?Windows-1252?Q?2KLRLEDoP1gzDfebgmmELIX/YMrWjqFZ1Pz1Nodo9GYN6kmCQXiod6F2?=
- =?Windows-1252?Q?YjaGoEKjYKsG8Qh5tJgHYNzLjjAHPdvGNYORexeJ+m7RyzQBIJmC6Qoa?=
- =?Windows-1252?Q?l2xAc78STJIGb1Xxyo4oc0dh5zKqGGj7Nu5WMIMclBkCzcZ2PSvAjs98?=
- =?Windows-1252?Q?8KlcErNpDlnLXsyV2twzPGJcl4cFgbdI1KzP03UEB/vA7sxJUjI0RX2/?=
- =?Windows-1252?Q?XUNBzyziOhCbi1MdzvFrGcTWQw/qYasd+Z8cAKb7PWbglX59zW1MMfCX?=
- =?Windows-1252?Q?RlAY+rRasHJrKmJWM+dIRqXJxBLlmWR3fYrfIrEwbFi3RPUElp8GlWCg?=
- =?Windows-1252?Q?bqOsYJaXpvG6uEkdgEdWwLxftusPdmOY4H4YLiBZax9BgsVhC14d2tmX?=
- =?Windows-1252?Q?+pQOFfjrJmnvtI9v5xDT0K1VAhSLM1Epk3ta6+kPPfYOy5FRBOFu8ASK?=
- =?Windows-1252?Q?Q5FiD2PuGJlox5F4dLPgsHF5rJc2KOO5EdSpcpUca9woHmL+2HWnPN/L?=
- =?Windows-1252?Q?wqU9RiJwR22FvJ05Oa6SrpJQS9yOARkYsb9h/DXpy7dclNWBiUuGSftx?=
- =?Windows-1252?Q?KuSZ1LuWhPSG+NnxgWSAza8aep84JGcO8N0DeytGOzLisnBh5hs4BJyv?=
- =?Windows-1252?Q?JfY/z7FXbOwsWT2mZg9VTLZNqtvIJvRQ/lXnbK7JlapuTBWXqk4Lmjew?=
- =?Windows-1252?Q?MHiVL5FfK8WHFUBT390YiPRUJl4s30+tyV/8XYelFT7l0p7lYDW2VWQn?=
- =?Windows-1252?Q?v3WdaH3043n6ig3plfzukXsqsmiIm+pnyJozFp1ZbWCvL9Hva51Hsw2X?=
- =?Windows-1252?Q?qgv6swfgibbdibeJN/i4hGLm0IFdy4ga+UF3sm+z9/2njoY1Ysox4tZL?=
- =?Windows-1252?Q?rlsfdH9G7hV9mXrfCDvIHa+aj20PMLBwvBz/Xys/3wxBGRnMj2aGGMQu?=
- =?Windows-1252?Q?5EHz5y1LJI+n6TX36cUvC9jls6mu5V75zfCmE62T7pT79Hn7mlQFEwOW?=
- =?Windows-1252?Q?IvjHZNoj2X0jUIZEoXBSFFqAZYSfnD3IBIxdZlJTYRl+4wkfvaut4nfx?=
- =?Windows-1252?Q?Eyvbf8OBjxpD/9th9Zc4xTP/?=
-X-OriginatorOrg: prevas.dk
-X-MS-Exchange-CrossTenant-Network-Message-Id: 23df1b40-0b46-47e8-e6be-08d8c74dc163
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2021 07:40:08.2132
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: d350cf71-778d-4780-88f5-071a4cb1ed61
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: m51jHrw0LUL6ZCgNoDRju398P1xsBrQb2bqUyF9ebl66T0bUIp8ZeSMSg10rspKBXtDdy1E6uVe6P7LVM0gDUKYtdLJwwORg0W1zjt/H0zs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR10MB2241
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210131100154.14452-1-hdanton@sina.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-IMR: 1
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9882 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 spamscore=0 phishscore=0
+ suspectscore=0 mlxlogscore=999 bulkscore=0 mlxscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2102020053
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9882 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 adultscore=0
+ priorityscore=1501 impostorscore=0 malwarescore=0 clxscore=1011
+ spamscore=0 lowpriorityscore=0 phishscore=0 mlxlogscore=999 mlxscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2102020053
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30/01/2021 04.01, Jakub Kicinski wrote:
-> On Wed, 27 Jan 2021 21:52:37 +0100 Horatiu Vultur wrote:
->> This patch series extends MRP switchdev to allow the SW to have a better
->> understanding if the HW can implement the MRP functionality or it needs
->> to help the HW to run it. There are 3 cases:
+Sasha, do your stable patch picker scripts look at syzbot fix commands
+to select patches to back port?  In this case a bug was fixed while
+adding a new feature.  No one noticed the bug fix and there was no Fixes
+tag.
 
->> v2:
->>  - fix typos in comments and in commit messages
->>  - remove some of the comments
->>  - move repeated code in helper function
->>  - fix issue when deleting a node when sw_backup was true
+On Sun, Jan 31, 2021 at 06:01:54PM +0800, Hillf Danton wrote:
+> On Thu, 28 Jan 2021 09:08:24 -0800
+> > syzbot found the following issue on:
+> > 
+> > HEAD commit:    b491e6a7 net: lapb: Add locking to the lapb module
+> > git tree:       net
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=17ba0f2cd00000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=be33d8015c9de024
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=3ed6361bf59830ca9138
+> > compiler:       gcc (GCC) 10.1.0-syz 20200507
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10628ae8d00000
+> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12964b80d00000
+> > 
+> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > Reported-by: syzbot+3ed6361bf59830ca9138@syzkaller.appspotmail.com
+> > 
+> > IPVS: ftp: loaded support on port[0] = 21
+> > ==================================================================
+> > BUG: KASAN: slab-out-of-bounds in add_adv_patterns_monitor+0x91f/0xa90 net/bluetooth/mgmt.c:4266
+> > Read of size 1 at addr ffff888013251b29 by task syz-executor387/8480
+> > 
+> > CPU: 1 PID: 8480 Comm: syz-executor387 Not tainted 5.11.0-rc4-syzkaller #0
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > Call Trace:
+> >  __dump_stack lib/dump_stack.c:79 [inline]
+> >  dump_stack+0x107/0x163 lib/dump_stack.c:120
+> >  print_address_description.constprop.0.cold+0x5b/0x2f8 mm/kasan/report.c:230
+> >  __kasan_report mm/kasan/report.c:396 [inline]
+> >  kasan_report.cold+0x79/0xd5 mm/kasan/report.c:413
+> >  add_adv_patterns_monitor+0x91f/0xa90 net/bluetooth/mgmt.c:4266
+> >  hci_mgmt_cmd net/bluetooth/hci_sock.c:1603 [inline]
+> >  hci_sock_sendmsg+0x1b98/0x21d0 net/bluetooth/hci_sock.c:1738
+> >  sock_sendmsg_nosec net/socket.c:652 [inline]
+> >  sock_sendmsg+0xcf/0x120 net/socket.c:672
+> >  sock_write_iter+0x289/0x3c0 net/socket.c:999
+> >  call_write_iter include/linux/fs.h:1901 [inline]
+> >  new_sync_write+0x426/0x650 fs/read_write.c:518
+> >  vfs_write+0x791/0xa30 fs/read_write.c:605
+> >  ksys_write+0x1ee/0x250 fs/read_write.c:658
+> >  do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+> >  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> > RIP: 0033:0x447579
+> > Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 3b 0e fc ff c3 66 2e 0f 1f 84 00 00 00 00
+> > RSP: 002b:00007ffe0f4194b8 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+> > RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000447579
+> > RDX: 0000000000000009 RSI: 0000000020000000 RDI: 0000000000000004
+> > RBP: 00000000018e1914 R08: 00000000018e1914 R09: 00007ffe0f4194a0
+> > R10: 00007ffe0f4194c0 R11: 0000000000000246 R12: 0000000000000004
+> > R13: 0000000000000072 R14: 00000000018e1914 R15: 0000000000000000
+> > 
+> > Allocated by task 8480:
+> >  kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
+> >  kasan_set_track mm/kasan/common.c:46 [inline]
+> >  set_alloc_info mm/kasan/common.c:401 [inline]
+> >  ____kasan_kmalloc.constprop.0+0x82/0xa0 mm/kasan/common.c:429
+> >  kmalloc include/linux/slab.h:557 [inline]
+> >  hci_mgmt_cmd net/bluetooth/hci_sock.c:1508 [inline]
+> >  hci_sock_sendmsg+0x9b8/0x21d0 net/bluetooth/hci_sock.c:1738
+> >  sock_sendmsg_nosec net/socket.c:652 [inline]
+> >  sock_sendmsg+0xcf/0x120 net/socket.c:672
+> >  sock_write_iter+0x289/0x3c0 net/socket.c:999
+> >  call_write_iter include/linux/fs.h:1901 [inline]
+> >  new_sync_write+0x426/0x650 fs/read_write.c:518
+> >  vfs_write+0x791/0xa30 fs/read_write.c:605
+> >  ksys_write+0x1ee/0x250 fs/read_write.c:658
+> >  do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+> >  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> > 
+> > The buggy address belongs to the object at ffff888013251b20
+> >  which belongs to the cache kmalloc-16 of size 16
+> > The buggy address is located 9 bytes inside of
+> >  16-byte region [ffff888013251b20, ffff888013251b30)
+> > The buggy address belongs to the page:
+> > page:00000000a4467645 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x13251
+> > flags: 0xfff00000000200(slab)
+> > raw: 00fff00000000200 ffffea00004ed440 0000000300000003 ffff888010041b40
+> > raw: 0000000000000000 0000000080800080 00000001ffffffff 0000000000000000
+> > page dumped because: kasan: bad access detected
+> > 
+> > Memory state around the buggy address:
+> >  ffff888013251a00: fb fb fc fc fb fb fc fc 00 00 fc fc fb fb fc fc
+> >  ffff888013251a80: 00 00 fc fc 00 00 fc fc fb fb fc fc 00 00 fc fc
+> > >ffff888013251b00: 00 00 fc fc 00 01 fc fc fb fb fc fc fa fb fc fc
+> >                                   ^
+> >  ffff888013251b80: 00 00 fc fc fa fb fc fc fa fb fc fc 00 00 fc fc
+> >  ffff888013251c00: fa fb fc fc fa fb fc fc 00 00 fc fc fa fb fc fc
+> > ==================================================================
 > 
-> Folks who were involved in previous MRP conversations - does this look
-> good to you? Anyone planning to test?
+> Fix b139553db5cd ("Bluetooth: Add handler of MGMT_OP_ADD_ADV_PATTERNS_MONITOR")  
+> by adding the right-hand buffer boundary check.
+> 
+> --- a/net/bluetooth/mgmt.c
+> +++ b/net/bluetooth/mgmt.c
+> @@ -4238,7 +4238,9 @@ static int add_adv_patterns_monitor(stru
+>  
+>  	BT_DBG("request for %s", hdev->name);
+>  
+> -	if (len <= sizeof(*cp) || cp->pattern_count == 0) {
+> +	if (len <= sizeof(*cp) || cp->pattern_count == 0 ||
+> +	    len < sizeof(*cp) + cp->pattern_count *
+> +		    			sizeof(struct mgmt_adv_pattern)) {
+>  		err = mgmt_cmd_status(sk, hdev->id,
+>  				      MGMT_OP_ADD_ADV_PATTERNS_MONITOR,
+>  				      MGMT_STATUS_INVALID_PARAMS);
 > 
 
-I am planning to test these, but it's unlikely I'll get around to it
-this week unfortunately.
+I think this was already fixed on Jan 22 commit b4a221ea8a1f ("Bluetooth:
+advmon offload MSFT add rssi support").
 
-Rasmus
+	expected_size += cp->pattern_count * sizeof(struct mgmt_adv_pattern);
+	if (len != expected_size) {
+
+Now someone needs to backport it to stable.
+
+regards,
+dan carpenter
+
