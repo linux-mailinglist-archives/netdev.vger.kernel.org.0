@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 120B630C34E
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 16:15:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CBBD730C34B
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 16:15:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235230AbhBBPOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 10:14:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39220 "EHLO mail.kernel.org"
+        id S235224AbhBBPNq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 10:13:46 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38140 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235185AbhBBPL4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 10:11:56 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 69B3064F6F;
-        Tue,  2 Feb 2021 15:06:40 +0000 (UTC)
+        id S235191AbhBBPL6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 10:11:58 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AFCF064F6C;
+        Tue,  2 Feb 2021 15:06:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612278401;
-        bh=4Be4D8RHPbYDxfx9vGtIsxWrZ/BotuY5XFCfmyr6muc=;
+        s=k20201202; t=1612278402;
+        bh=cLcsa51PyK+Y+1DrJUenXnA+a2UDeaAi47p99Do7Sq8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cvwe/3t9lNqg2HOfFfzJh/kAAS4sqjx6iFa1oOWW14ZfZUlPrVc2KhLVUmMp8Z6Qs
-         gN6CowkA2VwUWafZs99BrHXpz5aMtzSL77J1xR5EopZjHv2lU4fYHm8sLRDN88zRgH
-         Hme/RBvuYXE2ffuf0PzYf7QP/tRxKbJANuy5ILuBs1pQ9qdvnRvj4YhHgcBd5KsFQr
-         /aJdEWr2g5nFgTCcG8SuzOmNJH4X1ksRaqH2XOUVQpA/jDcfobIu8S9EK7y3MMy3eH
-         FJ0jEJd3JRM7gnh1RC/GHZc2/FB/SSeDJlOHybiFfU5X0xVjZ3QnQ4YRr8IGn+zhDL
-         pSIIJ6Pbh5TOg==
+        b=MuDJOEI1oR/CrOjRkTX5Yuh7wmPYFIewi6nbm0zGlYUA+9+SWgonNChgaTGnoAge/
+         wR+0UJbYODjzih3rW3zVVpTZZmCzpCAG5sTY/F2zeXeB0vSN1AtkSg9iLW8RfKduKP
+         CF8zxxy+8e3cBv5rQpX0eJ57jyyyjeprwQkJtCFPjYOBzrosk0n5ZtnHkGZ7AXXUPe
+         Pv6t1gMt6JkYxlwe0TrP5F13ns6SgoCLoex/NgoRgjRtBaGuEIlJd2LO+DotaYa8Vu
+         937ehMSk+rLsKxBjyC7kLnGKUd/f2UdBiAxw6ew3gPllh6/UhtmniuWmeW5lum8i0q
+         MpCyZ53lKDZ1w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Johannes Berg <johannes.berg@intel.com>,
@@ -30,9 +30,9 @@ Cc:     Johannes Berg <johannes.berg@intel.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 19/25] iwlwifi: mvm: guard against device removal in reprobe
-Date:   Tue,  2 Feb 2021 10:06:09 -0500
-Message-Id: <20210202150615.1864175-19-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 20/25] iwlwifi: queue: bail out on invalid freeing
+Date:   Tue,  2 Feb 2021 10:06:10 -0500
+Message-Id: <20210202150615.1864175-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210202150615.1864175-1-sashal@kernel.org>
 References: <20210202150615.1864175-1-sashal@kernel.org>
@@ -46,45 +46,39 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 7a21b1d4a728a483f07c638ccd8610d4b4f12684 ]
+[ Upstream commit 0bed6a2a14afaae240cc431e49c260568488b51c ]
 
-If we get into a problem severe enough to attempt a reprobe,
-we schedule a worker to do that. However, if the problem gets
-more severe and the device is actually destroyed before this
-worker has a chance to run, we use a free device. Bump up the
-reference count of the device until the worker runs to avoid
-this situation.
+If we find an entry without an SKB, we currently continue, but
+that will just result in an infinite loop since we won't increment
+the read pointer, and will try the same thing over and over again.
+Fix this.
 
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/iwlwifi.20210122144849.871f0892e4b2.I94819e11afd68d875f3e242b98bef724b8236f1e@changeid
+Link: https://lore.kernel.org/r/iwlwifi.20210122144849.abe2dedcc3ac.Ia6b03f9eeb617fd819e56dd5376f4bb8edc7b98a@changeid
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/ops.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/wireless/intel/iwlwifi/queue/tx.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/ops.c b/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
-index cea8e397fe0f2..cb83490f1016f 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
-@@ -1249,6 +1249,7 @@ static void iwl_mvm_reprobe_wk(struct work_struct *wk)
- 	reprobe = container_of(wk, struct iwl_mvm_reprobe, work);
- 	if (device_reprobe(reprobe->dev))
- 		dev_err(reprobe->dev, "reprobe failed!\n");
-+	put_device(reprobe->dev);
- 	kfree(reprobe);
- 	module_put(THIS_MODULE);
- }
-@@ -1299,7 +1300,7 @@ void iwl_mvm_nic_restart(struct iwl_mvm *mvm, bool fw_error)
- 			module_put(THIS_MODULE);
- 			return;
+diff --git a/drivers/net/wireless/intel/iwlwifi/queue/tx.c b/drivers/net/wireless/intel/iwlwifi/queue/tx.c
+index af0b27a68d84d..9181221a2434d 100644
+--- a/drivers/net/wireless/intel/iwlwifi/queue/tx.c
++++ b/drivers/net/wireless/intel/iwlwifi/queue/tx.c
+@@ -887,10 +887,8 @@ void iwl_txq_gen2_unmap(struct iwl_trans *trans, int txq_id)
+ 			int idx = iwl_txq_get_cmd_index(txq, txq->read_ptr);
+ 			struct sk_buff *skb = txq->entries[idx].skb;
+ 
+-			if (WARN_ON_ONCE(!skb))
+-				continue;
+-
+-			iwl_txq_free_tso_page(trans, skb);
++			if (!WARN_ON_ONCE(!skb))
++				iwl_txq_free_tso_page(trans, skb);
  		}
--		reprobe->dev = mvm->trans->dev;
-+		reprobe->dev = get_device(mvm->trans->dev);
- 		INIT_WORK(&reprobe->work, iwl_mvm_reprobe_wk);
- 		schedule_work(&reprobe->work);
- 	} else if (test_bit(IWL_MVM_STATUS_HW_RESTART_REQUESTED,
+ 		iwl_txq_gen2_free_tfd(trans, txq);
+ 		txq->read_ptr = iwl_txq_inc_wrap(trans, txq->read_ptr);
 -- 
 2.27.0
 
