@@ -2,39 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3B0D30B9DA
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 09:28:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46CE530B9D7
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 09:28:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232690AbhBBI11 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 03:27:27 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:28864 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231612AbhBBISW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 03:18:22 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1128BJ4P009906;
-        Tue, 2 Feb 2021 00:17:33 -0800
+        id S232562AbhBBI04 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 03:26:56 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:40680 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231781AbhBBISa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 03:18:30 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1128AYtj016723;
+        Tue, 2 Feb 2021 00:17:38 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=PPmcOfrTjcHieQsKkMyjlYmkCVVcOE4m2YdaN546gCA=;
- b=GNiGfGm3g0hROr84X+RD1icvZOM0MvoTHGHxS4PYviapGcwFDtGkQPYlnBTA0gXl7iD6
- KZVd+uuzF8UACc2yb9dDeWLHveiRIUvwZKc9dQn0JmqZ9kP4n+bjXgtnnh+hsc+GwWHw
- UegQqCVZ2/D9TtNijXToPJGbhoxXYOCC5W3FoXh8WaaAR7PuaydRpUBaGHWjhyYo+v+M
- 2aH1YsETJVkNn5vKI3rYipNjEi1K6YeGDLiEv3YYABGwNi93tSy5wyESN7c8dWHXQB9N
- +iXpKgLDeZoebsPJ+WLSHUzGBarYC0WJCtvzbVlYMA95CgC06UF/zVfCh7Ur0GKMhIQw +Q== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 36d7uq6e7b-1
+ content-type; s=pfpt0220; bh=I3v9TAujTOvZT7lwu8kqSzAcqckl4gp4wF4gypLo92c=;
+ b=eur1OsAdTEC0gS+PP/fEU7IjynA+MtuKgJ+ZINfGlI0AY/3zI6CwQMTeV5jmCeqlqKCo
+ TOR8O6Hab77r9FPF+9Vtwko6WhZ4F2b38Z/7HDKFXxjw59XftwpxAbyNLiRtusBdxxtt
+ ryMa6uCMKgsZ1XK8+Op5vKPuBBOjvOozMLCS8q8fSw1JOa9I22YF81oqGZ8Hyk9PJIVh
+ 1r5AgBGi7tcK3tpYIwrPYoliZN3/H7L0R0nccN8k7xapXmCCtHbYfpJeq/RLXE87B801
+ hJhB+VjQW5gJ7LZ4Lffaua/UZRSUQEL8o5EP8Qa+Ydi8hQKH5vT9E23d2rifBMTVtqYL WQ== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0a-0016f401.pphosted.com with ESMTP id 36d5psxp1n-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 02 Feb 2021 00:17:33 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 2 Feb
- 2021 00:17:31 -0800
+        Tue, 02 Feb 2021 00:17:38 -0800
+Received: from SC-EXCH01.marvell.com (10.93.176.81) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 2 Feb
+ 2021 00:17:36 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 2 Feb
+ 2021 00:17:35 -0800
 Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 2 Feb 2021 00:17:31 -0800
+ Transport; Tue, 2 Feb 2021 00:17:36 -0800
 Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id 532323F7040;
-        Tue,  2 Feb 2021 00:17:28 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id 0EBE03F7041;
+        Tue,  2 Feb 2021 00:17:32 -0800 (PST)
 From:   <stefanc@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
@@ -43,9 +46,9 @@ CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
         <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
         <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
         <atenart@kernel.org>
-Subject: [PATCH v7 net-next 03/15] net: mvpp2: add CM3 SRAM memory map
-Date:   Tue, 2 Feb 2021 10:16:49 +0200
-Message-ID: <1612253821-1148-4-git-send-email-stefanc@marvell.com>
+Subject: [PATCH v7 net-next 04/15] net: mvpp2: add PPv23 version definition
+Date:   Tue, 2 Feb 2021 10:16:50 +0200
+Message-ID: <1612253821-1148-5-git-send-email-stefanc@marvell.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1612253821-1148-1-git-send-email-stefanc@marvell.com>
 References: <1612253821-1148-1-git-send-email-stefanc@marvell.com>
@@ -59,158 +62,184 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Stefan Chulski <stefanc@marvell.com>
 
-This patch adds CM3 memory map and CM3 read/write callbacks.
-No functionality changes.
+This patch add PPv23 version definition.
+PPv23 is new packet processor in CP115.
+Everything that supported by PPv22, also supported by PPv23.
+No functional changes in this stage.
 
 Signed-off-by: Stefan Chulski <stefanc@marvell.com>
 ---
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h      |  7 +++
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 63 +++++++++++++++++++-
- 2 files changed, 67 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h      | 24 ++++++++++++--------
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 17 +++++++++-----
+ 2 files changed, 25 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-index 6bd7e40..aec9179 100644
+index aec9179..89b3ede 100644
 --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
 +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-@@ -748,6 +748,9 @@
- #define MVPP2_TX_FIFO_THRESHOLD(kb)	\
- 		((kb) * 1024 - MVPP2_TX_FIFO_THRESHOLD_MIN)
+@@ -60,6 +60,9 @@
+ /* Top Registers */
+ #define MVPP2_MH_REG(port)			(0x5040 + 4 * (port))
+ #define MVPP2_DSA_EXTENDED			BIT(5)
++#define MVPP2_VER_ID_REG			0x50b0
++#define MVPP2_VER_PP22				0x10
++#define MVPP2_VER_PP23				0x11
  
-+/* MSS Flow control */
-+#define MSS_SRAM_SIZE	0x800
-+
- /* RX buffer constants */
- #define MVPP2_SKB_SHINFO_SIZE \
- 	SKB_DATA_ALIGN(sizeof(struct skb_shared_info))
-@@ -925,6 +928,7 @@ struct mvpp2 {
- 	/* Shared registers' base addresses */
- 	void __iomem *lms_base;
+ /* Parser Registers */
+ #define MVPP2_PRS_INIT_LOOKUP_REG		0x1000
+@@ -469,7 +472,7 @@
+ #define     MVPP22_GMAC_INT_SUM_MASK_LINK_STAT	BIT(1)
+ #define	    MVPP22_GMAC_INT_SUM_MASK_PTP	BIT(2)
+ 
+-/* Per-port XGMAC registers. PPv2.2 only, only for GOP port 0,
++/* Per-port XGMAC registers. PPv2.2 and PPv2.3, only for GOP port 0,
+  * relative to port->base.
+  */
+ #define MVPP22_XLG_CTRL0_REG			0x100
+@@ -506,7 +509,7 @@
+ #define     MVPP22_XLG_CTRL4_MACMODSELECT_GMAC	BIT(12)
+ #define     MVPP22_XLG_CTRL4_EN_IDLE_CHECK	BIT(14)
+ 
+-/* SMI registers. PPv2.2 only, relative to priv->iface_base. */
++/* SMI registers. PPv2.2 and PPv2.3, relative to priv->iface_base. */
+ #define MVPP22_SMI_MISC_CFG_REG			0x1204
+ #define     MVPP22_SMI_POLLING_EN		BIT(10)
+ 
+@@ -582,7 +585,7 @@
+ #define MVPP2_QUEUE_NEXT_DESC(q, index) \
+ 	(((index) < (q)->last_desc) ? ((index) + 1) : 0)
+ 
+-/* XPCS registers. PPv2.2 only */
++/* XPCS registers.PPv2.2 and PPv2.3 */
+ #define MVPP22_MPCS_BASE(port)			(0x7000 + (port) * 0x1000)
+ #define MVPP22_MPCS_CTRL			0x14
+ #define     MVPP22_MPCS_CTRL_FWD_ERR_CONN	BIT(10)
+@@ -593,7 +596,7 @@
+ #define     MVPP22_MPCS_CLK_RESET_DIV_RATIO(n)	((n) << 4)
+ #define     MVPP22_MPCS_CLK_RESET_DIV_SET	BIT(11)
+ 
+-/* XPCS registers. PPv2.2 only */
++/* XPCS registers. PPv2.2 and PPv2.3 */
+ #define MVPP22_XPCS_BASE(port)			(0x7400 + (port) * 0x1000)
+ #define MVPP22_XPCS_CFG0			0x0
+ #define     MVPP22_XPCS_CFG0_RESET_DIS		BIT(0)
+@@ -930,15 +933,16 @@ struct mvpp2 {
  	void __iomem *iface_base;
-+	void __iomem *cm3_base;
+ 	void __iomem *cm3_base;
  
- 	/* On PPv2.2, each "software thread" can access the base
+-	/* On PPv2.2, each "software thread" can access the base
++	/* On PPv2.2 and PPv2.3, each "software thread" can access the base
  	 * register through a separate address space, each 64 KB apart
-@@ -996,6 +1000,9 @@ struct mvpp2 {
+ 	 * from each other. Typically, such address spaces will be
+ 	 * used per CPU.
+ 	 */
+ 	void __iomem *swth_base[MVPP2_MAX_THREADS];
  
- 	/* page_pool allocator */
- 	struct page_pool *page_pool[MVPP2_PORT_MAX_RXQ];
-+
-+	/* CM3 SRAM pool */
-+	struct gen_pool *sram_pool;
+-	/* On PPv2.2, some port control registers are located into the system
+-	 * controller space. These registers are accessible through a regmap.
++	/* On PPv2.2 and PPv2.3, some port control registers are located into
++	 * the system controller space. These registers are accessible
++	 * through a regmap.
+ 	 */
+ 	struct regmap *sysctrl_base;
+ 
+@@ -980,7 +984,7 @@ struct mvpp2 {
+ 	u32 tclk;
+ 
+ 	/* HW version */
+-	enum { MVPP21, MVPP22 } hw_version;
++	enum { MVPP21, MVPP22, MVPP23 } hw_version;
+ 
+ 	/* Maximum number of RXQs per port */
+ 	unsigned int max_port_rxqs;
+@@ -1227,7 +1231,7 @@ struct mvpp21_rx_desc {
+ 	__le32 reserved8;
  };
  
- struct mvpp2_pcpu_stats {
+-/* HW TX descriptor for PPv2.2 */
++/* HW TX descriptor for PPv2.2 and PPv2.3 */
+ struct mvpp22_tx_desc {
+ 	__le32 command;
+ 	u8  packet_offset;
+@@ -1239,7 +1243,7 @@ struct mvpp22_tx_desc {
+ 	__le64 buf_cookie_misc;
+ };
+ 
+-/* HW RX descriptor for PPv2.2 */
++/* HW RX descriptor for PPv2.2 and PPv2.3 */
+ struct mvpp22_rx_desc {
+ 	__le32 status;
+ 	__le16 reserved1;
 diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index a07cf60..307f9fd 100644
+index 307f9fd..11c56d2 100644
 --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
 +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -25,6 +25,7 @@
- #include <linux/of_net.h>
- #include <linux/of_address.h>
- #include <linux/of_device.h>
-+#include <linux/genalloc.h>
- #include <linux/phy.h>
- #include <linux/phylink.h>
- #include <linux/phy/phy.h>
-@@ -6846,6 +6847,44 @@ static int mvpp2_init(struct platform_device *pdev, struct mvpp2 *priv)
- 	return 0;
+@@ -385,7 +385,7 @@ static int mvpp2_bm_pool_create(struct device *dev, struct mvpp2 *priv,
+ 	if (!IS_ALIGNED(size, 16))
+ 		return -EINVAL;
+ 
+-	/* PPv2.1 needs 8 bytes per buffer pointer, PPv2.2 needs 16
++	/* PPv2.1 needs 8 bytes per buffer pointer, PPv2.2 and PPv2.3 needs 16
+ 	 * bytes per buffer pointer
+ 	 */
+ 	if (priv->hw_version == MVPP21)
+@@ -1173,7 +1173,7 @@ static void mvpp2_interrupts_unmask(void *arg)
+ 	u32 val;
+ 	int i;
+ 
+-	if (port->priv->hw_version != MVPP22)
++	if (port->priv->hw_version == MVPP21)
+ 		return;
+ 
+ 	if (mask)
+@@ -5457,7 +5457,7 @@ static void mvpp2_rx_irqs_setup(struct mvpp2_port *port)
+ 		return;
+ 	}
+ 
+-	/* Handle the more complicated PPv2.2 case */
++	/* Handle the more complicated PPv2.2 and PPv2.3 case */
+ 	for (i = 0; i < port->nqvecs; i++) {
+ 		struct mvpp2_queue_vector *qv = port->qvecs + i;
+ 
+@@ -5634,7 +5634,7 @@ static bool mvpp22_port_has_legacy_tx_irqs(struct device_node *port_node,
+ 
+ /* Checks if the port dt description has the required Tx interrupts:
+  * - PPv2.1: there are no such interrupts.
+- * - PPv2.2:
++ * - PPv2.2 and PPv2.3:
+  *   - The old DTs have: "rx-shared", "tx-cpuX" with X in [0...3]
+  *   - The new ones have: "hifX" with X in [0..8]
+  *
+@@ -6622,7 +6622,7 @@ static void mvpp22_rx_fifo_set_hw(struct mvpp2 *priv, int port, int data_size)
+ 	mvpp2_write(priv, MVPP2_RX_ATTR_FIFO_SIZE_REG(port), attr_size);
  }
  
-+static int mvpp2_get_sram(struct platform_device *pdev,
-+			  struct mvpp2 *priv)
-+{
-+	struct device_node *dn = pdev->dev.of_node;
-+	static bool defer_once;
-+	struct resource *res;
-+
-+	if (has_acpi_companion(&pdev->dev)) {
-+		res = platform_get_resource(pdev, IORESOURCE_MEM, 2);
-+		if (!res) {
-+			dev_warn(&pdev->dev, "ACPI is too old, Flow control not supported\n");
-+			return 0;
-+		}
-+		priv->cm3_base = devm_ioremap_resource(&pdev->dev, res);
-+		if (IS_ERR(priv->cm3_base))
-+			return PTR_ERR(priv->cm3_base);
-+	} else {
-+		priv->sram_pool = of_gen_pool_get(dn, "cm3-mem", 0);
-+		if (!priv->sram_pool) {
-+			if (!defer_once) {
-+				defer_once = true;
-+				/* Try defer once */
-+				return -EPROBE_DEFER;
-+			}
-+			dev_warn(&pdev->dev, "DT is too old, Flow control not supported\n");
-+			return -ENOMEM;
-+		}
-+		/* cm3_base allocated with offset zero into the SRAM since mapping size
-+		 * is equal to requested size.
-+		 */
-+		priv->cm3_base = (void __iomem *)gen_pool_alloc(priv->sram_pool,
-+								MSS_SRAM_SIZE);
-+		if (!priv->cm3_base)
-+			return -ENOMEM;
+-/* Initialize TX FIFO's: the total FIFO size is 48kB on PPv2.2.
++/* Initialize TX FIFO's: the total FIFO size is 48kB on PPv2.2 and PPv2.3.
+  * 4kB fixed space must be assigned for the loopback port.
+  * Redistribute remaining avialable 44kB space among all active ports.
+  * Guarantee minimum 32kB for 10G port and 8kB for port 1, capable of 2.5G
+@@ -6679,7 +6679,7 @@ static void mvpp22_tx_fifo_set_hw(struct mvpp2 *priv, int port, int size)
+ 	mvpp2_write(priv, MVPP22_TX_FIFO_THRESH_REG(port), threshold);
+ }
+ 
+-/* Initialize TX FIFO's: the total FIFO size is 19kB on PPv2.2.
++/* Initialize TX FIFO's: the total FIFO size is 19kB on PPv2.2 and PPv2.3.
+  * 3kB fixed space must be assigned for the loopback port.
+  * Redistribute remaining avialable 16kB space among all active ports.
+  * The 10G interface should use 10kB (which is maximum possible size
+@@ -7071,6 +7071,11 @@ static int mvpp2_probe(struct platform_device *pdev)
+ 			priv->port_map |= BIT(i);
+ 	}
+ 
++	if (priv->hw_version != MVPP21) {
++		if (mvpp2_read(priv, MVPP2_VER_ID_REG) == MVPP2_VER_PP23)
++			priv->hw_version = MVPP23;
 +	}
-+	return 0;
-+}
 +
- static int mvpp2_probe(struct platform_device *pdev)
- {
- 	const struct acpi_device_id *acpi_id;
-@@ -6902,6 +6941,13 @@ static int mvpp2_probe(struct platform_device *pdev)
- 		priv->iface_base = devm_ioremap_resource(&pdev->dev, res);
- 		if (IS_ERR(priv->iface_base))
- 			return PTR_ERR(priv->iface_base);
-+
-+		/* Map CM3 SRAM */
-+		err = mvpp2_get_sram(pdev, priv);
-+		if (err == -EPROBE_DEFER)
-+			return err;
-+		else if (err)
-+			dev_warn(&pdev->dev, "Fail to alloc CM3 SRAM\n");
- 	}
- 
- 	if (priv->hw_version == MVPP22 && dev_of_node(&pdev->dev)) {
-@@ -6947,11 +6993,13 @@ static int mvpp2_probe(struct platform_device *pdev)
- 
- 	if (dev_of_node(&pdev->dev)) {
- 		priv->pp_clk = devm_clk_get(&pdev->dev, "pp_clk");
--		if (IS_ERR(priv->pp_clk))
--			return PTR_ERR(priv->pp_clk);
-+		if (IS_ERR(priv->pp_clk)) {
-+			err = PTR_ERR(priv->pp_clk);
-+			goto err_cm3;
-+		}
- 		err = clk_prepare_enable(priv->pp_clk);
- 		if (err < 0)
--			return err;
-+			goto err_cm3;
- 
- 		priv->gop_clk = devm_clk_get(&pdev->dev, "gop_clk");
- 		if (IS_ERR(priv->gop_clk)) {
-@@ -7087,6 +7135,11 @@ static int mvpp2_probe(struct platform_device *pdev)
- 	clk_disable_unprepare(priv->gop_clk);
- err_pp_clk:
- 	clk_disable_unprepare(priv->pp_clk);
-+err_cm3:
-+	if (priv->sram_pool && priv->cm3_base)
-+		gen_pool_free(priv->sram_pool, (unsigned long)priv->cm3_base,
-+			      MSS_SRAM_SIZE);
-+
- 	return err;
- }
- 
-@@ -7127,6 +7180,10 @@ static int mvpp2_remove(struct platform_device *pdev)
- 				  aggr_txq->descs_dma);
- 	}
- 
-+	if (priv->sram_pool && priv->cm3_base)
-+		gen_pool_free(priv->sram_pool, (unsigned long)priv->cm3_base,
-+			      MSS_SRAM_SIZE);
-+
- 	if (is_acpi_node(port_fwnode))
- 		return 0;
- 
+ 	/* Initialize network controller */
+ 	err = mvpp2_init(pdev, priv);
+ 	if (err < 0) {
 -- 
 1.9.1
 
