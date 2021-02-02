@@ -2,53 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06A2430CD33
+	by mail.lfdr.de (Postfix) with ESMTP id E761D30CD35
 	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 21:43:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232964AbhBBUk5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 15:40:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51210 "EHLO
+        id S233370AbhBBUlI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 15:41:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232223AbhBBUku (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 15:40:50 -0500
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5642BC06174A;
-        Tue,  2 Feb 2021 12:40:10 -0800 (PST)
-Received: by mail-wm1-x330.google.com with SMTP id f16so3639407wmq.5;
-        Tue, 02 Feb 2021 12:40:10 -0800 (PST)
+        with ESMTP id S232860AbhBBUky (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 15:40:54 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF08FC0613D6;
+        Tue,  2 Feb 2021 12:40:13 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id l12so21881744wry.2;
+        Tue, 02 Feb 2021 12:40:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=qbvG1/4AK/H5qBhZoBN+xgCAiYBIeTeEr9eZF1c6zWg=;
-        b=YV/cKDH4aEhl1g3iXkwK5cZuBr+bQ5s+IWFv6/g0n9+E5/28BimmXFisB4ooh4wzN2
-         Ae5eFqhgX9NO8vZDv4x5Vf/xn5GhtwteCbG9yWrWfgQ8HWUtrfxXQVpzhKqkSPOtyU7n
-         Tg60WjY239bNTjcrhuWBFglphDKJAHGWbhw/tdH6ZZadCj2wNEvsNWIGmesX85Nt2U8Z
-         SPvkoYFbD+e1/r90qvm7HT14jRWmxjmry1sHwhn8KjwMlxAg3uHHwLZps8XS72KnJknP
-         NKoUfyLg9+hNnxfRBUn9PXENn8G/q5dOxWpbwM3cnbgWLx8klAW3KYIIVGd7q1TFTWak
-         hIYQ==
+        bh=ORPezsdgKuM/UizLE6LMgwfCKfuf7GSRSsDWm72yA2k=;
+        b=XXjimafFVrRwYXC3f4KzfMEMIgZK+AgRXNUhzTmlFs/9Rwf9hMktTDmyx0Of3R4Rhw
+         B0fsFZqZ13gFc+umECAm4WtaLkFZRg3IvzbGq075P3wuaCAE5/8XWs1orrkBI8+WPNBN
+         BvWTv4s6Cwf+l72RlHC74vy2ghmgijRPRpueDn3JVELfUyw74kn0HDXl9icacL1OUSfA
+         JtV59ph8bxnzX0Ipf7X4tT8BnyqrjefbupLw0RCMbCwISJCs4V7QDR9FW5XYnQ44p5/E
+         lh/NkNdP7zKuSEeP32Q/t+H0cZy5ZQnzOdH66oy98JSiQhkwmEJj71KDoHFab+Tjf8XY
+         4tNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=qbvG1/4AK/H5qBhZoBN+xgCAiYBIeTeEr9eZF1c6zWg=;
-        b=bgXcaAVwRQ2IkooK+/auX+AeW8E1zDFpmjP4/018OdAOHr4KWqP/Jb3gxDYoZwUBKt
-         g0RjnyGvT7Zt9p8yOG/Jn3FYCBJGubSsnNFIf5Ii8ofCw6ioI3a6dIT9jXXYhAmT56FL
-         hdkE+eqZlfrwnJAvAah796r5UUtXmSkdgWVwSOqM8jr849UlDw95vod6sdwOpgNwkO4I
-         OvoBXsPvSoyQ6hLIgBij+vUZpOAw6dQkiFBTzpzL6ddUqKBt8O5DEr3SjuBRZEY4MT8A
-         Ns/0gHOc+G8t9Ex244D0rx4hXxHIEeEQ0ovKD60OIjDPnJJ26WtuTginY9RiVcd7gFg2
-         hjXA==
-X-Gm-Message-State: AOAM530jvx9BE1/tFwhpjFC1haPaFrkW7zqNCI+8A5evoM7ipEloTxMn
-        RR/UwEjPFntUcztrGAx4WDG2/6LWfWg=
-X-Google-Smtp-Source: ABdhPJyvWJYIp3jVW12fLvgFwZ7xaSWFVX3MmrIK4+jPc2QmMabau6IvZCs3aPi0b2iWQgV+gd2YKg==
-X-Received: by 2002:a1c:40d4:: with SMTP id n203mr5188782wma.46.1612298408872;
-        Tue, 02 Feb 2021 12:40:08 -0800 (PST)
+        bh=ORPezsdgKuM/UizLE6LMgwfCKfuf7GSRSsDWm72yA2k=;
+        b=jocRlfnGqPFhHT8YAtd00bY1cJ1HRsxAiP1DhJauBlr4H/Wc7MelDv4W2qThdPJYjH
+         6zsj42pd/738LfOQyOVQvrMhFLEnKhgJWEj6coubIC69qobyFDfD0GgvKxzMM1BVb2Bi
+         FHCjqzADYS6QNcvAowjRgY/n2PoAkQfX3l2xgv0nw4Rr5EUrxWjZKVJDfPJYkgaZjbYj
+         6pdd/bcE7MGE5ee5dQ4wpLnFd5VNgN1ON0lYKgXGqhtToyB9FKgs0uf8RbnFvziq5adP
+         9SqBvYPSOI13DM5ZePY0mMEV+MAmz0vDKvDJbY3e1Zo45zUx7EZAyrxZH5n6u4O+JZj9
+         cGSA==
+X-Gm-Message-State: AOAM532cbMiVfL2UoEcOIo2anp3hcvrk+lHgzssTrjkZZfSOY5y9L4sY
+        ahmHPaMITlgHPY3K6qaKQh3ETuduEso=
+X-Google-Smtp-Source: ABdhPJxp9DC7uhjPrkUTMD6bKCFlKP7wDtWxA5rjqx4JSXwKU54DXdkpkMG7K/iedVAxe4/B/ZDDuw==
+X-Received: by 2002:a5d:6912:: with SMTP id t18mr25891517wru.268.1612298412322;
+        Tue, 02 Feb 2021 12:40:12 -0800 (PST)
 Received: from ?IPv6:2003:ea:8f1f:ad00:e887:ce1a:5d1d:a96e? (p200300ea8f1fad00e887ce1a5d1da96e.dip0.t-ipconnect.de. [2003:ea:8f1f:ad00:e887:ce1a:5d1d:a96e])
-        by smtp.googlemail.com with ESMTPSA id m24sm3809900wmi.24.2021.02.02.12.40.05
+        by smtp.googlemail.com with ESMTPSA id i59sm36440916wri.3.2021.02.02.12.40.09
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 02 Feb 2021 12:40:08 -0800 (PST)
-Subject: [PATCH net-next 2/4] cxgb4: remove unused vpd_cap_addr
+        Tue, 02 Feb 2021 12:40:11 -0800 (PST)
+Subject: [PATCH net-next 3/4] PCI/VPD: Change Chelsio T4 quirk to provide
+ access to full virtual EEPROM address space
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Raju Rangoju <rajur@chelsio.com>, Jakub Kicinski <kuba@kernel.org>,
         David Miller <davem@davemloft.net>,
@@ -56,8 +57,8 @@ To:     Raju Rangoju <rajur@chelsio.com>, Jakub Kicinski <kuba@kernel.org>,
 Cc:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 References: <b07dc99d-7fd0-48c0-3fc4-89cda90ee5d7@gmail.com>
-Message-ID: <19159db1-abe9-d265-c4f7-7e8db75ee5e5@gmail.com>
-Date:   Tue, 2 Feb 2021 21:37:35 +0100
+Message-ID: <3db0112d-8767-fd9a-4e65-ad97a284a866@gmail.com>
+Date:   Tue, 2 Feb 2021 21:38:41 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.7.0
 MIME-Version: 1.0
@@ -69,40 +70,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Presumably this is a leftover from T3 driver heritage. cxgb4 uses the
-PCI core VPD access code that handles detection of VPD capabilities.
+cxgb4 uses the full VPD address space for accessing its EEPROM (with some
+mapping, see t4_eeprom_ptov()). In cudbg_collect_vpd_data() it sets the
+VPD len to 32K (PCI_VPD_MAX_SIZE), and then back to 2K (CUDBG_VPD_PF_SIZE).
+Having official (structured) and unofficial (unstructured) VPD data
+violates the PCI spec, let's set VPD len according to all data that can be
+accessed via PCI VPD access, no matter of its structure.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/ethernet/chelsio/cxgb4/cxgb4.h      | 1 -
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c | 2 --
- 2 files changed, 3 deletions(-)
+ drivers/pci/vpd.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-index 8e681ce72..314f8d806 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-@@ -414,7 +414,6 @@ struct pf_resources {
- };
+diff --git a/drivers/pci/vpd.c b/drivers/pci/vpd.c
+index db86fe226..90f17f3b7 100644
+--- a/drivers/pci/vpd.c
++++ b/drivers/pci/vpd.c
+@@ -630,16 +630,11 @@ static void quirk_chelsio_extend_vpd(struct pci_dev *dev)
+ 	int func = (dev->device & 0x0f00) >>  8;
  
- struct pci_params {
--	unsigned int vpd_cap_addr;
- 	unsigned char speed;
- 	unsigned char width;
- };
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-index 9f1965c80..6264bc66a 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-@@ -3201,8 +3201,6 @@ static void cxgb4_mgmt_fill_vf_station_mac_addr(struct adapter *adap)
- 	int err;
- 	u8 *na;
+ 	/*
+-	 * If this is a T4 or later based adapter, the special VPD is at offset
+-	 * 0x400 for the Physical Functions (the SR-IOV Virtual Functions have
+-	 * no VPD Capabilities). The PCI VPD Access core routines will normally
+-	 * compute the size of the VPD by parsing the VPD Data Structure at
+-	 * offset 0x000.  This will result in silent failures when attempting
+-	 * to accesses these other VPD areas which are beyond those computed
+-	 * limits.
++	 * If this is a T4 or later based adapter, provide access to the full
++	 * virtual EEPROM address space.
+ 	 */
+ 	if (chip >= 0x4 && func < 0x8)
+-		pci_set_vpd_size(dev, 2048);
++		pci_set_vpd_size(dev, PCI_VPD_MAX_SIZE);
+ }
  
--	adap->params.pci.vpd_cap_addr = pci_find_capability(adap->pdev,
--							    PCI_CAP_ID_VPD);
- 	err = t4_get_raw_vpd_params(adap, &adap->params.vpd);
- 	if (err)
- 		return;
+ DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_CHELSIO, PCI_ANY_ID,
 -- 
 2.30.0
 
