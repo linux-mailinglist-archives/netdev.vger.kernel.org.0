@@ -2,93 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7753E30B7F9
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 07:45:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F7D830B7FD
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 07:45:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232142AbhBBGn5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 01:43:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40372 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231538AbhBBGnx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 01:43:53 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0DD0C061573;
-        Mon,  1 Feb 2021 22:43:12 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id i8so11754364ejc.7;
-        Mon, 01 Feb 2021 22:43:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=FTh/W3OROSEf6Q+1HA8WlPBCNi0WlLCmWMpf4ClFrLA=;
-        b=LFvwY8NZqzRB9hrNvznrbE+oIv592vdSG6olL1IDsVh6V3K6scsuRsSszmg7ZWJzP3
-         mTZ2WYEb6GbXJai12bdzeDd0sXPC9Nh0gJstG16KDdt8dR26Tf6qRuKoOq8mUjPLH/hm
-         hdq6A0noWJbjIjCEqS/pak8OlzTB7KId/Cyi4H3Lawy9TumBrAIMrnTjMXj3PdpCcxPm
-         jLVlQbTQLeQAz3MclAQtYVk/7v0XO1+G55mnHUgtDqZJ4+PYZF/8oQzQC1FgRPRieHg8
-         V4gYj1bXZDfdmqHMWNvnOa0h9lPLpZt6zQxtYFXnfBIXdyWwBNyF+1h4EakH5qpEr2Iw
-         glGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=FTh/W3OROSEf6Q+1HA8WlPBCNi0WlLCmWMpf4ClFrLA=;
-        b=e6p5S8TtAIoPK691hPvvSbk/PU/N/SrFnJa4tP1vprGdEnX0+9sZKlmVElJsQ3Jsr9
-         j3kqOpg5FauoWYgE1T+3UvQJDsSEEn8Xp0o6Gbm5QHhdQMlp/PPIkCP60v+daJ+YYziZ
-         fReuh1URjvoOa6P8nsNi1n3IiXX+Q2SWBdUYMzxObrCqwO1kYVENz8Jvrr5b9bXkPpVn
-         iMJH06RVKGc7xjd/8JKtQki1RC6TsIT9YjQ+r3Zhq6pUYMIok4tegdqjwT7qBGzzmnAC
-         lsJZFSHe4G20wx4ZEuxwwEGmRgDiV9aYRuAzsrzBTwtpoqdY9W2aXkgdph1e8n2lNv2E
-         EFbw==
-X-Gm-Message-State: AOAM5308tUm4S5e8d7SBovKvIn55CNWrZA6pkr2m5gAMLxk2e7xvNQaQ
-        722J0sZUzIoTPfIfnM3B0zgZjStV+P4=
-X-Google-Smtp-Source: ABdhPJzfsQ1sutNJVimmWdW506GbTcNIkDkZMfCTi9Tn5tVgObn4cMyzGZzKdZcT0LvH+6p5P7PjaA==
-X-Received: by 2002:a17:906:c0d7:: with SMTP id bn23mr13621140ejb.94.1612248190243;
-        Mon, 01 Feb 2021 22:43:10 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f1f:ad00:4da7:c31c:5e0d:9c73? (p200300ea8f1fad004da7c31c5e0d9c73.dip0.t-ipconnect.de. [2003:ea:8f1f:ad00:4da7:c31c:5e0d:9c73])
-        by smtp.googlemail.com with ESMTPSA id lz12sm8894476ejb.71.2021.02.01.22.43.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 01 Feb 2021 22:43:09 -0800 (PST)
-Subject: Re: [PATCH v2] r8169: Add support for another RTL8168FP
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     "maintainer:8169 10/100/1000 GIGABIT ETHERNET DRIVER" 
-        <nic_swsd@realtek.com>, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:8169 10/100/1000 GIGABIT ETHERNET DRIVER" 
-        <netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-References: <20210202044813.1304266-1-kai.heng.feng@canonical.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <81e965d2-63bf-ae6b-abf1-a683b4459254@gmail.com>
-Date:   Tue, 2 Feb 2021 07:43:02 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+        id S231987AbhBBGok (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 01:44:40 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48860 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231879AbhBBGof (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 01:44:35 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A8D3E64ED5;
+        Tue,  2 Feb 2021 06:43:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612248233;
+        bh=BGjvFLNh/0WDV2j379ELhhUuvu24KWUBOZP63EXJua4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=o7yIcGNvfUJfqAGaZYs7QE92ztkbBHODXqNac6LA7+YlIRFIQwIF5du4Q1o7OPM9B
+         X2W+zx2qeYcmLIV0RCVoXJD1hdb6MFQ5UrgTeArfvbrnHHEifYyhEkWL1k2icqrrb4
+         +JZ0009zUBI7zCUeVYZCp0+wQXpSYH7frAO9xEXFj0wJbj2MzRUCKoHSeuoP+aGxWm
+         rtwCXKT3xVhAPRAcyKL1136mIy78tJcJCt/8Hy++tZ5jv2Phph1g31qykMo6+btekg
+         Z8IzIC24Kr/66F24o4RL8qN20NaKyEkwW3wrc+Sv6KKfFya/V96UdWmZVmJp6rXQuI
+         ukkMjUSYrSn/w==
+Date:   Tue, 2 Feb 2021 08:43:49 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Doug Ledford <dledford@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH mlx5-next v1] RDMA/mlx5: Cleanup the synchronize_srcu()
+ from the ODP flow
+Message-ID: <20210202064349.GA1945456@unreal>
+References: <20210128064812.1921519-1-leon@kernel.org>
+ <c79124a204f2207f5f1fae69cc34fb08d91d3535.camel@kernel.org>
+ <549b337b-b51e-c984-a4d8-72f9f738be9c@nvidia.com>
+ <20210201194952.GS4247@nvidia.com>
+ <b6dc9fc1532a17efd7fdc33d65641626d9760183.camel@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20210202044813.1304266-1-kai.heng.feng@canonical.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <b6dc9fc1532a17efd7fdc33d65641626d9760183.camel@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02.02.2021 05:48, Kai-Heng Feng wrote:
-> According to the vendor driver, the new chip with XID 0x54b is
-> essentially the same as the one with XID 0x54a, but it doesn't need the
-> firmware.
-> 
-> So add support accordingly.
-> 
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> ---
-> v2:
->  - Add phy support.
->  - Rebase on net-next.
-> 
->  drivers/net/ethernet/realtek/r8169.h            |  1 +
->  drivers/net/ethernet/realtek/r8169_main.c       | 17 +++++++++++------
->  drivers/net/ethernet/realtek/r8169_phy_config.c |  1 +
->  3 files changed, 13 insertions(+), 6 deletions(-)
-> 
+On Mon, Feb 01, 2021 at 12:03:15PM -0800, Saeed Mahameed wrote:
+> On Mon, 2021-02-01 at 15:49 -0400, Jason Gunthorpe wrote:
+> > On Sun, Jan 31, 2021 at 03:24:50PM +0200, Yishai Hadas wrote:
+> > > On 1/29/2021 2:23 PM, Saeed Mahameed wrote:
+> > > > > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mr.c
+> > > > > b/drivers/net/ethernet/mellanox/mlx5/core/mr.c
+> > > > > index 9eb51f06d3ae..50af84e76fb6 100644
+> > > > > +++ b/drivers/net/ethernet/mellanox/mlx5/core/mr.c
+> > > > > @@ -56,6 +56,7 @@ int mlx5_core_create_mkey(struct
+> > > > > mlx5_core_dev
+> > > > > *dev,
+> > > > >          mkey->size = MLX5_GET64(mkc, mkc, len);
+> > > > >          mkey->key |= mlx5_idx_to_mkey(mkey_index);
+> > > > >          mkey->pd = MLX5_GET(mkc, mkc, pd);
+> > > > > +       init_waitqueue_head(&mkey->wait);
+> > > > >
+> > > > >          mlx5_core_dbg(dev, "out 0x%x, mkey 0x%x\n",
+> > > > > mkey_index, mkey-
+> > > > > > key);
+> > > > >          return 0;
+> > > > > diff --git a/include/linux/mlx5/driver.h
+> > > > > b/include/linux/mlx5/driver.h
+> > > > > index 4901b4fadabb..f9e7036ae5a5 100644
+> > > > > +++ b/include/linux/mlx5/driver.h
+> > > > > @@ -373,6 +373,8 @@ struct mlx5_core_mkey {
+> > > > >          u32                     key;
+> > > > >          u32                     pd;
+> > > > >          u32                     type;
+> > > > > +       struct wait_queue_head wait;
+> > > > > +       refcount_t usecount;
+> > > > mlx5_core_mkey is used everywhere in mlx5_core and we don't care
+> > > > about
+> > > > odp complexity, i would like to keep the core simple and
+> > > > primitive as
+> > > > it is today.
+> > > > please keep the layer separation and find a way to manage
+> > > > refcount and
+> > > > wait queue in mlx5_ib driver..
+> > > >
+> > > The alternative could really be to come with some wrapped mlx5_ib
+> > > structure
+> > > that will hold 'mlx5_core_mkey' and will add those two fields.
+> >
+> > Yes
+> >
+> > struct mlx5_ib_mkey
+> > {
+> >    struct mlx5_core_mkey mkey;
+> >    struct wait_queue_head wait;
+> >    refcount_t usecount;
+> > }
+> >
+> > struct mlx5_ib_mr/mw/devx
+> > {
+> >     struct mlx5_ib_mkey mkey;
+> > }
+> >
+>
+> Yep, also i have a series internally that moves mlx5_core_mkey to
+> mlx5_ib, in mlx5_core we don't need it we only need the u32 key :)
+>
+> I will send you this series internally.
 
-for net-next
+Let's first finish this patch and perform "moving" later.
 
-Reviewed-by: Heiner Kallweit <hkallweit1@gmail.com>
+Thanks
+
+>
+>
