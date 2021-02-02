@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4766430BE7C
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 13:44:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 669A130BE7B
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 13:44:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231991AbhBBMnS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 07:43:18 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:12109 "EHLO
+        id S231497AbhBBMnF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 07:43:05 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:12108 "EHLO
         szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231797AbhBBMmH (ORCPT
+        with ESMTP id S231807AbhBBMmH (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 07:42:07 -0500
 Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4DVPWk3kpSz162jl;
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4DVPWk3ybvz162k0;
         Tue,  2 Feb 2021 20:39:14 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS412-HUB.china.huawei.com (10.3.19.212) with Microsoft SMTP Server id
- 14.3.498.0; Tue, 2 Feb 2021 20:40:22 +0800
+ 14.3.498.0; Tue, 2 Feb 2021 20:40:23 +0800
 From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <salil.mehta@huawei.com>,
         <yisen.zhuang@huawei.com>, <kuba@kernel.org>,
         <huangdaode@huawei.com>, <linuxarm@openeuler.org>,
-        GuoJia Liao <liaoguojia@huawei.com>,
+        Yufeng Mo <moyufeng@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 3/7] net: hns3: optimize the code when update the tc info
-Date:   Tue, 2 Feb 2021 20:39:49 +0800
-Message-ID: <1612269593-18691-4-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 4/7] net: hns3: add support for obtaining the maximum frame length
+Date:   Tue, 2 Feb 2021 20:39:50 +0800
+Message-ID: <1612269593-18691-5-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1612269593-18691-1-git-send-email-tanhuazhong@huawei.com>
 References: <1612269593-18691-1-git-send-email-tanhuazhong@huawei.com>
@@ -38,75 +38,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: GuoJia Liao <liaoguojia@huawei.com>
+From: Yufeng Mo <moyufeng@huawei.com>
 
-When update the TC info for NIC, there some differences
-between PF and VF. Currently, four "vport->vport_id" are
-used to distinguish PF or VF. So merge them into one to
-improve readability and maintainability of code.
+Since the newer hardware may supports different frame size,
+so add support to obtain the capability from the firmware
+instead of the fixed value.
 
-Signed-off-by: GuoJia Liao <liaoguojia@huawei.com>
+Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c |  2 --
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h |  2 ++
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c   | 15 ++++++++++-----
- 3 files changed, 12 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h             | 1 +
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h  | 3 ++-
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 6 +++++-
+ 3 files changed, 8 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+index f4c8d72..f27504e 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+@@ -284,6 +284,7 @@ struct hnae3_dev_specs {
+ 	u16 int_ql_max; /* max value of interrupt coalesce based on INT_QL */
+ 	u16 max_int_gl; /* max value of interrupt coalesce based on INT_GL */
+ 	u8 max_non_tso_bd_num; /* max BD number of one non-TSO packet */
++	u16 max_pkt_len;
+ };
+ 
+ struct hnae3_client_ops {
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
+index 9ceb059..0c8ac68 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
+@@ -1131,7 +1131,8 @@ struct hclge_dev_specs_0_cmd {
+ #define HCLGE_DEF_MAX_INT_GL		0x1FE0U
+ 
+ struct hclge_dev_specs_1_cmd {
+-	__le32 rsv0;
++	__le16 max_pkt_len;
++	__le16 rsv0;
+ 	__le16 max_int_gl;
+ 	u8 rsv1[18];
+ };
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index a8aa388..fcf1bca 100644
+index fcf1bca..dd205c0 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -55,8 +55,6 @@
+@@ -1371,6 +1371,7 @@ static void hclge_set_default_dev_specs(struct hclge_dev *hdev)
+ 	ae_dev->dev_specs.rss_key_size = HCLGE_RSS_KEY_SIZE;
+ 	ae_dev->dev_specs.max_tm_rate = HCLGE_ETHER_MAX_RATE;
+ 	ae_dev->dev_specs.max_int_gl = HCLGE_DEF_MAX_INT_GL;
++	ae_dev->dev_specs.max_pkt_len = HCLGE_MAC_MAX_FRAME;
+ }
  
- #define HCLGE_LINK_STATUS_MS	10
+ static void hclge_parse_dev_specs(struct hclge_dev *hdev,
+@@ -1390,6 +1391,7 @@ static void hclge_parse_dev_specs(struct hclge_dev *hdev,
+ 	ae_dev->dev_specs.rss_key_size = le16_to_cpu(req0->rss_key_size);
+ 	ae_dev->dev_specs.max_tm_rate = le32_to_cpu(req0->max_tm_rate);
+ 	ae_dev->dev_specs.max_int_gl = le16_to_cpu(req1->max_int_gl);
++	ae_dev->dev_specs.max_pkt_len = le16_to_cpu(req1->max_pkt_len);
+ }
  
--#define HCLGE_VF_VPORT_START_NUM	1
--
- static int hclge_set_mac_mtu(struct hclge_dev *hdev, int new_mps);
- static int hclge_init_vlan_config(struct hclge_dev *hdev);
- static void hclge_sync_vlan_filter(struct hclge_dev *hdev);
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-index 2bb1dd4..e615ebf 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-@@ -17,6 +17,8 @@
+ static void hclge_check_dev_specs(struct hclge_dev *hdev)
+@@ -1406,6 +1408,8 @@ static void hclge_check_dev_specs(struct hclge_dev *hdev)
+ 		dev_specs->max_tm_rate = HCLGE_ETHER_MAX_RATE;
+ 	if (!dev_specs->max_int_gl)
+ 		dev_specs->max_int_gl = HCLGE_DEF_MAX_INT_GL;
++	if (!dev_specs->max_pkt_len)
++		dev_specs->max_pkt_len = HCLGE_MAC_MAX_FRAME;
+ }
  
- #define HCLGE_MAX_PF_NUM		8
+ static int hclge_query_dev_specs(struct hclge_dev *hdev)
+@@ -9659,7 +9663,7 @@ int hclge_set_vport_mtu(struct hclge_vport *vport, int new_mtu)
+ 	/* HW supprt 2 layer vlan */
+ 	max_frm_size = new_mtu + ETH_HLEN + ETH_FCS_LEN + 2 * VLAN_HLEN;
+ 	if (max_frm_size < HCLGE_MAC_MIN_FRAME ||
+-	    max_frm_size > HCLGE_MAC_MAX_FRAME)
++	    max_frm_size > hdev->ae_dev->dev_specs.max_pkt_len)
+ 		return -EINVAL;
  
-+#define HCLGE_VF_VPORT_START_NUM	1
-+
- #define HCLGE_RD_FIRST_STATS_NUM        2
- #define HCLGE_RD_OTHER_STATS_NUM        4
- 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-index 216ab1e..906d98e 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-@@ -640,13 +640,18 @@ static void hclge_tm_vport_tc_info_update(struct hclge_vport *vport)
- 	/* TC configuration is shared by PF/VF in one port, only allow
- 	 * one tc for VF for simplicity. VF's vport_id is non zero.
- 	 */
--	kinfo->tc_info.num_tc = vport->vport_id ? 1 :
-+	if (vport->vport_id) {
-+		kinfo->tc_info.num_tc = 1;
-+		vport->qs_offset = HNAE3_MAX_TC +
-+				   vport->vport_id - HCLGE_VF_VPORT_START_NUM;
-+		vport_max_rss_size = hdev->vf_rss_size_max;
-+	} else {
-+		kinfo->tc_info.num_tc =
- 			min_t(u16, vport->alloc_tqps, hdev->tm_info.num_tc);
--	vport->qs_offset = (vport->vport_id ? HNAE3_MAX_TC : 0) +
--				(vport->vport_id ? (vport->vport_id - 1) : 0);
-+		vport->qs_offset = 0;
-+		vport_max_rss_size = hdev->pf_rss_size_max;
-+	}
- 
--	vport_max_rss_size = vport->vport_id ? hdev->vf_rss_size_max :
--				hdev->pf_rss_size_max;
- 	max_rss_size = min_t(u16, vport_max_rss_size,
- 			     hclge_vport_get_max_rss_size(vport));
- 
+ 	max_frm_size = max(max_frm_size, HCLGE_MAC_DEFAULT_FRAME);
 -- 
 2.7.4
 
