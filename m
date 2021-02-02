@@ -2,105 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0053A30C2DB
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 16:04:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BB0C30C316
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 16:11:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234887AbhBBPBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 10:01:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34092 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234985AbhBBPAb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 10:00:31 -0500
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D157EC061786
-        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 06:59:50 -0800 (PST)
-Received: by mail-il1-x12b.google.com with SMTP id m20so11796436ilj.13
-        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 06:59:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cKDGkdAH6hnP9LDv3OSd/rUwsKO2Hnsk5XLdUyUcTiA=;
-        b=ZTxCza8R+qKMO5AULHOV6aqYudyKoCq1ldvPSstkJUe++vlUm6kwA0NSIjetUWvwOr
-         hIFujVH9L2DNpz8drDLj/rv4R4u7/hc79IUf6YfKXT6oZXygc3b2U9r28iB6aIcPKEjU
-         PILiKxbjOVyXEJwzZKbfzJfSBRqk0rHMk6V4WuCLHeuzEPuLwDeEHN/zVlefRb0vETXR
-         hW8Uu2zuCqz/lC+Q8toxwcmf3CL8x+lwD9JbTbxDiMoadqfik9UFDkpZy21GupRbKIe+
-         iNCoDj7W3qVQOFdsx9vI9u+OjevzmoDAl7NZHeeCimBgM3KOBcgEhJEXekuXfSA5WJvC
-         EY3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cKDGkdAH6hnP9LDv3OSd/rUwsKO2Hnsk5XLdUyUcTiA=;
-        b=sfzBg9gfTyy5TWTVXRXm9knypSeKdRmkzr4/l4JlGPlEZIXa0cQ3NGFasgpq0ISvwh
-         QzFBZhImcRT4Sj9v08I/AbjC+0dD6hWx4TBbZ0I1zt91LbhJSkwtW2URN2ZA/1fsoWNF
-         diV9B/q6cr4VwgUxEAB6wkXtVWPUZSqrlvEbSj1uGbZDDPry1jnsqXdXp8JaA4iCvShq
-         SLXAMit58LDIdNIQa2PNgi/bkJ+dNW19QAIma2eJC2JKPFVVlASRf7StwU6VnzrM2enc
-         GK/YiTd1qYDZ5ea9ETU7E32sOIlRgIM9fyV0GOeFHVbEAW5ECw1h5RkWcyIcvVjG2S6l
-         22zA==
-X-Gm-Message-State: AOAM531+OT2WDdiEcnJFgaOGzt0hBojr/YKAPd4j/bedQpfAGaD1d4Kz
-        cD+ntTema9CYj/1WKIs3XwfCuBLcD8a512uwr2uPyQ==
-X-Google-Smtp-Source: ABdhPJwlgQNiDbpOt8/s7/PtFHiU3OsbyGtG9ixXUuXmc8Hbf0GbL6accU63MRrf6/lEOgiXrCFgbvKRS3t/0TSABik=
-X-Received: by 2002:a05:6e02:1a89:: with SMTP id k9mr17243624ilv.68.1612277990062;
- Tue, 02 Feb 2021 06:59:50 -0800 (PST)
+        id S235059AbhBBPI7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 10:08:59 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34948 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235010AbhBBPG6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 10:06:58 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0EBD660235;
+        Tue,  2 Feb 2021 15:06:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612278377;
+        bh=TCV7KUcTSr1en8/CCzAjSD+7rg3xTxSgUfFS669nnVU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ei8sWPvglVblNEvu3XfhxWHpv27UZvMFr0tSIA9t6qD1Dy2EY/hYcmsxcWeYMqmZY
+         yOuD7NIL1cZUsKu5j1gqQY5sYy3AyZ6K1OoSYQDcVPbpowYV6OHUwhOBXs+xTCs6ys
+         3mePl/R6oDf8V7XtPngtZcVJlagIyA6cnpmBaDJXKFrCazedbrCmF6Bo9Bwma0MMXK
+         iNyGxavqbl50leZP+e3Nev2E803MvOG4Y0leFvBneUkpxs1cU1CwbVuewfCra6YHcM
+         oqZwEwK8DQRkFJq0fcM8QahPWUpCHF+Op7FjE5mtoRaaPrs27S95Ab7AgIzA7c1xb8
+         yxBf5zXacLg/w==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Cong Wang <cong.wang@bytedance.com>,
+        syzbot+b2bf2652983d23734c5c@syzkaller.appspotmail.com,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 01/25] af_key: relax availability checks for skb size calculation
+Date:   Tue,  2 Feb 2021 10:05:51 -0500
+Message-Id: <20210202150615.1864175-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <20210202135544.3262383-1-leon@kernel.org> <CANn89iL4jGbr_6rr11nsHxmdh7uz=kqXuMhRb0nakWO3rBZwsQ@mail.gmail.com>
- <20210202145724.GA3264866@unreal>
-In-Reply-To: <20210202145724.GA3264866@unreal>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 2 Feb 2021 15:59:38 +0100
-Message-ID: <CANn89iJ1WYEfS-Pgzvec+54+3JQHCPSNdCfYaFkGYAEk3sGwmA@mail.gmail.com>
-Subject: Re: [PATCH net 0/4] Fix W=1 compilation warnings in net/* folder
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        coreteam@netfilter.org, Florian Westphal <fw@strlen.de>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Julian Anastasov <ja@ssi.bg>,
-        LKML <linux-kernel@vger.kernel.org>, lvs-devel@vger.kernel.org,
-        Matteo Croce <mcroce@redhat.com>,
-        netdev <netdev@vger.kernel.org>, netfilter-devel@vger.kernel.org,
-        Simon Horman <horms@verge.net.au>
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 2, 2021 at 3:57 PM Leon Romanovsky <leon@kernel.org> wrote:
->
-> On Tue, Feb 02, 2021 at 03:34:37PM +0100, Eric Dumazet wrote:
-> > On Tue, Feb 2, 2021 at 2:55 PM Leon Romanovsky <leon@kernel.org> wrote:
-> > >
-> > > From: Leon Romanovsky <leonro@nvidia.com>
-> > >
-> > > Hi,
-> > >
-> > > This short series fixes W=1 compilation warnings which I experienced
-> > > when tried to compile net/* folder.
-> > >
-> >
-> > Ok, but we never had a strong requirement about W=1, so adding Fixes:
-> > tag is adding
->
-> I added because Jakub has checker that looks for Fixes lines in "net"
-> patches.
+From: Cong Wang <cong.wang@bytedance.com>
 
-Send this to net-next
+[ Upstream commit afbc293add6466f8f3f0c3d944d85f53709c170f ]
 
-As I stated, we never enforce W=1 compilation rule.
+xfrm_probe_algs() probes kernel crypto modules and changes the
+availability of struct xfrm_algo_desc. But there is a small window
+where ealg->available and aalg->available get changed between
+count_ah_combs()/count_esp_combs() and dump_ah_combs()/dump_esp_combs(),
+in this case we may allocate a smaller skb but later put a larger
+amount of data and trigger the panic in skb_put().
 
-I understand we might want that for _future_ kernels.
+Fix this by relaxing the checks when counting the size, that is,
+skipping the test of ->available. We may waste some memory for a few
+of sizeof(struct sadb_comb), but it is still much better than a panic.
 
->
-> > unnecessary burden to stable teams all around the world.
->
-> It is automatic.
+Reported-by: syzbot+b2bf2652983d23734c5c@syzkaller.appspotmail.com
+Cc: Steffen Klassert <steffen.klassert@secunet.com>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/key/af_key.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-I do receive a copy of all backports in my mailbox, whenever I am tagged.
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index c12dbc51ef5fe..ef9b4ac03e7b7 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -2902,7 +2902,7 @@ static int count_ah_combs(const struct xfrm_tmpl *t)
+ 			break;
+ 		if (!aalg->pfkey_supported)
+ 			continue;
+-		if (aalg_tmpl_set(t, aalg) && aalg->available)
++		if (aalg_tmpl_set(t, aalg))
+ 			sz += sizeof(struct sadb_comb);
+ 	}
+ 	return sz + sizeof(struct sadb_prop);
+@@ -2920,7 +2920,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
+ 		if (!ealg->pfkey_supported)
+ 			continue;
+ 
+-		if (!(ealg_tmpl_set(t, ealg) && ealg->available))
++		if (!(ealg_tmpl_set(t, ealg)))
+ 			continue;
+ 
+ 		for (k = 1; ; k++) {
+@@ -2931,7 +2931,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
+ 			if (!aalg->pfkey_supported)
+ 				continue;
+ 
+-			if (aalg_tmpl_set(t, aalg) && aalg->available)
++			if (aalg_tmpl_set(t, aalg))
+ 				sz += sizeof(struct sadb_comb);
+ 		}
+ 	}
+-- 
+2.27.0
 
-I can tell you there is a lot of pollution.
-
->
-> Thanks
