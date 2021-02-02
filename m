@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 325D930B80C
+	by mail.lfdr.de (Postfix) with ESMTP id A3EF930B80D
 	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 07:55:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232180AbhBBGxB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 01:53:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42288 "EHLO
+        id S232190AbhBBGxC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 01:53:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232139AbhBBGww (ORCPT
+        with ESMTP id S232142AbhBBGww (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 01:52:52 -0500
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3B23C061756
-        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 22:52:11 -0800 (PST)
-Received: by mail-lf1-x130.google.com with SMTP id e15so6224577lft.13
-        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 22:52:11 -0800 (PST)
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D28DC0613D6
+        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 22:52:12 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id a8so26386308lfi.8
+        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 22:52:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=norrbonn-se.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Axi2g6I6F47I8bzDu1p5LN7RII40A/s6odd4OB1z8JY=;
-        b=K7eMwPBghHXhnZXrn2zY/9oXlI5gHNgURdQ1efvzDP6ZMp/02hbpT7zXc2ymtKliAI
-         7HiaA04pk1Z/X+61mDwKDByrEE814VuRDWy/4T6IEbMVjreXd6hRpy6gSXLb2PyjX/lN
-         TIi83iCL5ZJBBbToPZeXm8Wl6O0yql8UXHOW18cFIm6Y2jHsTdmMfSZUZv22jiToIQow
-         WlAXppchsE65jjRsfw0ddvG6KEDnJwGzQUSwvut5m2tLeLeoKPagalcN1ayFB2ugE0wV
-         u9WJs1FG3iyNhUIf7JekIsl9U4SRh8xBlLtvteVCxJ5vFwLapDPjI4/4uuU5jzTO/2O1
-         439Q==
+        bh=BGpaEg0j3hIwyT8YaseDu5lYmdNhnyii6Jj6H/mUeXo=;
+        b=rJJpb6Gr/wnUyH7/l9E0f1w3TZ0gsreY+z4vzVPMoCcH6TLss83WLIOSh+/BCzTH3d
+         xo8YpOS2P6R/dmJSUmxBcrzoge0ZqcGxT539X4x+Okq2wJAICq4cEDTjm6SEme1EcKYB
+         gAVLXcW+OVun4xJE0GnJXfsHWuFmMPgEz7P3GQVx1awJlfFqQ6QPG1n9JZUtd3h9aLMj
+         jTvCjer7Mar7bdKm3ydrYhpuQ6vHbAHM+K+vU1OHM0/8gGqTGfrzgGNZ0I0UVOgwJH6k
+         UhIHuvKKEXqyBNinGr2BovDxMfch5UMbpe9H7XCkUwP/5H0Seg2/2hiPIUs67SVAPYlZ
+         h7jA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Axi2g6I6F47I8bzDu1p5LN7RII40A/s6odd4OB1z8JY=;
-        b=djQMNKlGY+TCy8BYbpK5NtWic5K2/G1nrVAcllv0r136h7i41wneopunC6Pz650hYZ
-         5G4wwJBU38TEEN+10FaQwkO+sj9MkWb1FRJTPY934iu831V+hnEopBHzY+geVgKZcVcd
-         nMzCpaNbLwSacz7h7b4UD67WY0qe9s2UU50tqR30HvvktohRJYZwzVw1BilN/yhFbIct
-         0RY6lVNYL3lAUmAkMUkk5JysJBgpyNXqHkFCMBCSEQ8p3xK9SuPFJGIBsetgdvU3Mfut
-         f7UWlW+zL/0aes3vF/um9XldlZNmxZuTk8QiJyxjP/Jink3Doru3DV0N1FEdTBw4fq0X
-         eFhw==
-X-Gm-Message-State: AOAM532pOd0NUJNhho0d8Tq5Ea7i+Ek5H4pfppVggnh3A5nyvhTGzSlm
-        nlEtX6Hc89ckuejetKkPwC8Hvg==
-X-Google-Smtp-Source: ABdhPJx9rpXfHupM7Abg7g/1uqf08dU9PqtSYUJuN2sBS7ozN3qsSFg4mm9IJ+JV6WV7uehx/hdvsw==
-X-Received: by 2002:a05:6512:488:: with SMTP id v8mr9815487lfq.457.1612248730211;
+        bh=BGpaEg0j3hIwyT8YaseDu5lYmdNhnyii6Jj6H/mUeXo=;
+        b=Ib8bUri4Dy4UIiq9vqPqlWFbcJxFpVWxHDVOATRiaao3EnDw4lE0OhSWA7OsRqprv7
+         1oaSCoRkt+C8z30AstiN3LIryZM5vIjGK8dvwn0vqi6bU34Z/YU3pFieWN5LkFQnTSq0
+         cuWhpGKCMt0BHpeiJgxbFLUjYuP/4CXhakurq3i7mHt/jmB/2Wq79FnoxWkSpDKP7E1m
+         RWyFKBMSF5TRTOM6TpuCnm3sx9/i05n8H9julO1LtRXBq2BGSoyYpzBHHvDWFQcKC/sw
+         l67ffYKOS8/Ppy5jt8tGkjOXmgFQ/7Mvoe0CmGJ+E5ML7CjLUqGQgi4YZhvG3fY3iZ0+
+         +7qQ==
+X-Gm-Message-State: AOAM533encV6Y0cGE4G8/A8imPK5yDCM7xxa2gqlyXlb30R7ftzrQaeB
+        kG2zZBYlf8U71u4LsSoVqBNdLQ==
+X-Google-Smtp-Source: ABdhPJzxDgIH6xvZssFqhJ70L5O3+M32RAUmTRU4ws850VIr8Sv9UHUrcU5Bw7nSxoypq0DL4+/Z+w==
+X-Received: by 2002:a05:6512:ad3:: with SMTP id n19mr10506229lfu.328.1612248730949;
         Mon, 01 Feb 2021 22:52:10 -0800 (PST)
 Received: from mimer.emblasoft.lan (h-137-65.A159.priv.bahnhof.se. [81.170.137.65])
-        by smtp.gmail.com with ESMTPSA id b26sm2535171lff.162.2021.02.01.22.52.09
+        by smtp.gmail.com with ESMTPSA id b26sm2535171lff.162.2021.02.01.22.52.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Feb 2021 22:52:09 -0800 (PST)
+        Mon, 01 Feb 2021 22:52:10 -0800 (PST)
 From:   Jonas Bonn <jonas@norrbonn.se>
 To:     laforge@gnumonks.org, kuba@kernel.org, netdev@vger.kernel.org,
         pablo@netfilter.org
 Cc:     Jonas Bonn <jonas@norrbonn.se>
-Subject: [PATCH net-next 2/7] gtp: set initial MTU
-Date:   Tue,  2 Feb 2021 07:51:54 +0100
-Message-Id: <20210202065159.227049-3-jonas@norrbonn.se>
+Subject: [PATCH net-next 3/7] gtp: include role in link info
+Date:   Tue,  2 Feb 2021 07:51:55 +0100
+Message-Id: <20210202065159.227049-4-jonas@norrbonn.se>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210202065159.227049-1-jonas@norrbonn.se>
 References: <20210202065159.227049-1-jonas@norrbonn.se>
@@ -63,53 +63,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The GTP link is brought up with a default MTU of zero.  This can lead to
-some rather unexpected behaviour for users who are more accustomed to
-interfaces coming online with reasonable defaults.
-
-This patch sets an initial MTU for the GTP link of 1500 less worst-case
-tunnel overhead.
+Querying link info for the GTP interface doesn't reveal in which "role" the
+device is set to operate.  Include this information in the info query
+result.
 
 Signed-off-by: Jonas Bonn <jonas@norrbonn.se>
 Acked-by: Harald Welte <laforge@gnumonks.org>
 ---
- drivers/net/gtp.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/net/gtp.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
-index 4c04e271f184..5a048f050a9c 100644
+index 5a048f050a9c..5682d3ba7aa5 100644
 --- a/drivers/net/gtp.c
 +++ b/drivers/net/gtp.c
-@@ -612,11 +612,16 @@ static const struct net_device_ops gtp_netdev_ops = {
+@@ -728,7 +728,8 @@ static int gtp_validate(struct nlattr *tb[], struct nlattr *data[],
  
- static void gtp_link_setup(struct net_device *dev)
+ static size_t gtp_get_size(const struct net_device *dev)
  {
-+	unsigned int max_gtp_header_len = sizeof(struct iphdr) +
-+					  sizeof(struct udphdr) +
-+					  sizeof(struct gtp0_header);
-+
- 	dev->netdev_ops		= &gtp_netdev_ops;
- 	dev->needs_free_netdev	= true;
- 
- 	dev->hard_header_len = 0;
- 	dev->addr_len = 0;
-+	dev->mtu = ETH_DATA_LEN - max_gtp_header_len;
- 
- 	/* Zero header length. */
- 	dev->type = ARPHRD_NONE;
-@@ -626,11 +631,7 @@ static void gtp_link_setup(struct net_device *dev)
- 	dev->features	|= NETIF_F_LLTX;
- 	netif_keep_dst(dev);
- 
--	/* Assume largest header, ie. GTPv0. */
--	dev->needed_headroom	= LL_MAX_HEADER +
--				  sizeof(struct iphdr) +
--				  sizeof(struct udphdr) +
--				  sizeof(struct gtp0_header);
-+	dev->needed_headroom	= LL_MAX_HEADER + max_gtp_header_len;
+-	return nla_total_size(sizeof(__u32));	/* IFLA_GTP_PDP_HASHSIZE */
++	return nla_total_size(sizeof(__u32)) + /* IFLA_GTP_PDP_HASHSIZE */
++		nla_total_size(sizeof(__u32)); /* IFLA_GTP_ROLE */
  }
  
- static int gtp_hashtable_new(struct gtp_dev *gtp, int hsize);
+ static int gtp_fill_info(struct sk_buff *skb, const struct net_device *dev)
+@@ -737,6 +738,8 @@ static int gtp_fill_info(struct sk_buff *skb, const struct net_device *dev)
+ 
+ 	if (nla_put_u32(skb, IFLA_GTP_PDP_HASHSIZE, gtp->hash_size))
+ 		goto nla_put_failure;
++	if (nla_put_u32(skb, IFLA_GTP_ROLE, gtp->role))
++		goto nla_put_failure;
+ 
+ 	return 0;
+ 
 -- 
 2.27.0
 
