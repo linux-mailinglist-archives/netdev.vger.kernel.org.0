@@ -2,102 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A001B30B4D7
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 02:50:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4C4830B4DC
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 02:52:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230178AbhBBBuG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 20:50:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33852 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229852AbhBBBuB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 20:50:01 -0500
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32765C061573
-        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 17:49:21 -0800 (PST)
-Received: by mail-oi1-x22f.google.com with SMTP id j25so21155893oii.0
-        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 17:49:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=RGKproBEA7VT58cEHKM/tL0SEKFZzt6zt0E3Yp9HmSY=;
-        b=ZhdZTZdeWygzKLSRHsjIvWhcSks44tg0kS8gOTY5zowD7/Z2hpiQWEpxCOmixYg8F5
-         ZU7AoVPGdqvTdr0BUsW78KNLEZajldWw9gY5Wy53jE8lrR/sfP1/fmhM6Uzxcd1SBsjt
-         W+0Gy24Ltgig0KPsVvdnGAQ+XxWV3rJsCtGKsQqzj3fM9V+EozNYICgtioLr7XEkYNqm
-         sx2xiNdpZjeOAU0hbQsd4jpIuVdmI6NOku/rAPWSnkXeqOLSMee4CWQdv3MUWXm1hOhL
-         JBe6vcrQettNlMs7OdW4sUNXAsRTOCtboeR/Z5PDSyNfd7SIkwnEZu2eZeo5ujLm8CU8
-         vP2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=RGKproBEA7VT58cEHKM/tL0SEKFZzt6zt0E3Yp9HmSY=;
-        b=YCqiwfvcicOI7xIPuXv4gg/KCGmSCVC/xTMqN2x97EOBu5crkkpEbDPo87xTLvSE/7
-         NYAnlr0fVmIhpmRSLnXTK2hDPHwECx1fU1MYt9cZGtFnXMN9qfo5rK1ZDoDRts0dDab/
-         Dkpk0GlYwAHeaAELjjuA9gp7Jpl+GksGn+m+u4jrPzl4Q27yjuFkehhMsL/dkBrv1j84
-         jOyR0fQbuRIqN6Hs8urYM30BrBbY3QjenROgYUJTsZBtJejeULwsZ0mzFKw5q/OhepB8
-         goz771kGWbBvri2bkV7N/GkOSIKH0A2bl1DjxfiK32RUgt715f9Ihzg6rAVFdqvB4D1w
-         wvCg==
-X-Gm-Message-State: AOAM533237pNmlUsYgQ4Pi2YwzjB6o9uEZkj1VnPujcSPwyl4GAFM9hb
-        IeIhTaS3vUztZOnIksLmqlc=
-X-Google-Smtp-Source: ABdhPJzQkV4ucJyT62F5+k/xeLj2yUv407L4WHmNU/kiGaNnCzzb4RiLbjNmq6ox/OaVnmQq63BWlw==
-X-Received: by 2002:aca:a894:: with SMTP id r142mr1112153oie.62.1612230560654;
-        Mon, 01 Feb 2021 17:49:20 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.50])
-        by smtp.googlemail.com with ESMTPSA id h18sm4263503otr.66.2021.02.01.17.49.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 01 Feb 2021 17:49:19 -0800 (PST)
-Subject: Re: [PATCH net-next v2 01/10] netdevsim: fib: Convert the current
- occupancy to an atomic variable
-To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        jiri@nvidia.com, amcohen@nvidia.com, roopa@nvidia.com,
-        bpoirier@nvidia.com, sharpd@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-References: <20210201194757.3463461-1-idosch@idosch.org>
- <20210201194757.3463461-2-idosch@idosch.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <3a86a371-b4d5-325a-1557-ea7a8c25ff23@gmail.com>
-Date:   Mon, 1 Feb 2021 18:49:17 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.7.0
+        id S231345AbhBBBvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 20:51:06 -0500
+Received: from szxga01-in.huawei.com ([45.249.212.187]:2574 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229633AbhBBBvD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 20:51:03 -0500
+Received: from dggeme708-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4DV74Y4XV4zW3WX;
+        Tue,  2 Feb 2021 09:48:13 +0800 (CST)
+Received: from dggeme758-chm.china.huawei.com (10.3.19.104) by
+ dggeme708-chm.china.huawei.com (10.1.199.104) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2106.2; Tue, 2 Feb 2021 09:50:18 +0800
+Received: from dggeme758-chm.china.huawei.com ([10.6.80.69]) by
+ dggeme758-chm.china.huawei.com ([10.6.80.69]) with mapi id 15.01.2106.006;
+ Tue, 2 Feb 2021 09:50:18 +0800
+From:   "Wanghongzhe (Hongzhe, EulerOS)" <wanghongzhe@huawei.com>
+To:     Andy Lutomirski <luto@amacapital.net>
+CC:     "keescook@chromium.org" <keescook@chromium.org>,
+        "wad@chromium.org" <wad@chromium.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "yhs@fb.com" <yhs@fb.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
+Subject: RE: [PATCH] seccomp: Improve performance by optimizing memory barrier
+Thread-Topic: [PATCH] seccomp: Improve performance by optimizing memory
+ barrier
+Thread-Index: AQHW+JKVO2If6N9YNUuKsZSbR9a9o6pC6YoAgAEvrUA=
+Date:   Tue, 2 Feb 2021 01:50:18 +0000
+Message-ID: <003c156cf88c4ccd82d50e450c4696ed@huawei.com>
+References: <1612183830-15506-1-git-send-email-wanghongzhe@huawei.com>
+ <B1DC6A42-15AF-4804-B20E-FC6E2BDD1C8E@amacapital.net>
+In-Reply-To: <B1DC6A42-15AF-4804-B20E-FC6E2BDD1C8E@amacapital.net>
+Accept-Language: en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.177.164]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <20210201194757.3463461-2-idosch@idosch.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/1/21 12:47 PM, Ido Schimmel wrote:
-> From: Amit Cohen <amcohen@nvidia.com>
-> 
-> When route is added/deleted, the appropriate counter is increased/decreased
-> to maintain number of routes.
-> 
-> User can limit the number of routes and then according to the appropriate
-> counter, adding more routes than the limitation is forbidden.
-> 
-> Currently, there is one lock which protects hashtable, list and accounting.
-> 
-> Handling the counters will be performed from both atomic context and
-> non-atomic context, while the hashtable and the list will be used only from
-> non-atomic context and therefore will be protected by a separate lock.
-> 
-> Protect accounting by using an atomic variable, so lock is not needed.
-> 
-> v2:
-> * Use atomic64_sub() in nsim_nexthop_account()'s error path
-> 
-> Signed-off-by: Amit Cohen <amcohen@nvidia.com>
-> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-> ---
->  drivers/net/netdevsim/fib.c | 55 ++++++++++++++++++-------------------
->  1 file changed, 27 insertions(+), 28 deletions(-)
-> 
-
-Reviewed-by: David Ahern <dsahern@kernel.org>
-
-
+DQo+PiBPbiBGZWIgMSwgMjAyMSwgYXQgNDowNiBBTSwgd2FuZ2hvbmd6aGUgPHdhbmdob25nemhl
+QGh1YXdlaS5jb20+IHdyb3RlOg0KPj4gDQo+PiDvu79JZiBhIHRocmVhZChBKSdzIFRTWU5DIGZs
+YWcgaXMgc2V0IGZyb20gc2VjY29tcCgpLCB0aGVuIGl0IHdpbGwgDQo+PiBzeW5jaHJvbml6ZSBp
+dHMgc2VjY29tcCBmaWx0ZXIgdG8gb3RoZXIgdGhyZWFkcyhCKSBpbiBzYW1lIHRocmVhZCANCj4+
+IGdyb3VwLiBUbyBhdm9pZCByYWNlIGNvbmRpdGlvbiwgc2VjY29tcCBwdXRzIHJtYigpIGJldHdl
+ZW4gcmVhZGluZyB0aGUgDQo+PiBtb2RlIGFuZCBmaWx0ZXIgaW4gc2VjY29tcCBjaGVjayBwYXRj
+aChpbiBCIHRocmVhZCkuDQo+PiBBcyBhIHJlc3VsdCwgZXZlcnkgc3lzY2FsbCdzIHNlY2NvbXAg
+Y2hlY2sgaXMgc2xvd2VkIGRvd24gYnkgdGhlIA0KPj4gbWVtb3J5IGJhcnJpZXIuDQo+PiANCj4+
+IEhvd2V2ZXIsIHdlIGNhbiBvcHRpbWl6ZSBpdCBieSBjYWxsaW5nIHJtYigpIG9ubHkgd2hlbiBm
+aWx0ZXIgaXMgTlVMTCANCj4+IGFuZCByZWFkaW5nIGl0IGFnYWluIGFmdGVyIHRoZSBiYXJyaWVy
+LCB3aGljaCBtZWFucyB0aGUgcm1iKCkgaXMgDQo+PiBjYWxsZWQgb25seSBvbmNlIGluIHRocmVh
+ZCBsaWZldGltZS4NCj4+IA0KPj4gVGhlICdmaWx0ZXIgaXMgTlVMTCcgY29uZGl0b24gbWVhbnMg
+dGhhdCBpdCBpcyB0aGUgZmlyc3QgdGltZSANCj4+IGF0dGFjaGluZyBmaWx0ZXIgYW5kIGlzIGJ5
+IG90aGVyIHRocmVhZChBKSB1c2luZyBUU1lOQyBmbGFnLg0KPj4gSW4gdGhpcyBjYXNlLCB0aHJl
+YWQgQiBtYXkgcmVhZCB0aGUgZmlsdGVyIGZpcnN0IGFuZCBtb2RlIGxhdGVyIGluIENQVSANCj4+
+IG91dC1vZi1vcmRlciBleGVjdGlvbi4gQWZ0ZXIgdGhpcyB0aW1lLCB0aGUgdGhyZWFkIEIncyBt
+b2RlIGlzIGFsd2F5cyANCj4+IGJlIHNldCwgYW5kIHRoZXJlIHdpbGwgbm8gcmFjZSBjb25kaXRp
+b24gd2l0aCB0aGUgZmlsdGVyL2JpdG1hcC4NCj4+IA0KPj4gSW4gYWRkdGlvbiwgd2Ugc2hvdWxk
+IHB1dHMgYSB3cml0ZSBtZW1vcnkgYmFycmllciBiZXR3ZWVuIHdyaXRpbmcgdGhlIA0KPj4gZmls
+dGVyIGFuZCBtb2RlIGluIHNtcF9tYl9fYmVmb3JlX2F0b21pYygpLCB0byBhdm9pZCB0aGUgcmFj
+ZSANCj4+IGNvbmRpdGlvbiBpbiBUU1lOQyBjYXNlLg0KPg0KPiBJIGhhdmVu4oCZdCBmdWxseSB3
+b3JrZWQgdGhpcyBvdXQsIGJ1dCBybWIoKSBpcyBib2d1cy4gVGhpcyBzaG91bGQgYmUgc21wX3Jt
+YigpLg0KDQpZZXMsIEkgdGhpbmsgeW91IGFyZSByaWdodC5JIHdpbGwgZml4IGl0IGFuZCBzZW5k
+IGFub3RoZXIgcGF0Y2guDQo+PiANCj4+IFNpZ25lZC1vZmYtYnk6IHdhbmdob25nemhlIDx3YW5n
+aG9uZ3poZUBodWF3ZWkuY29tPg0KPj4gLS0tDQo+PiBrZXJuZWwvc2VjY29tcC5jIHwgMzEgKysr
+KysrKysrKysrKysrKysrKysrKy0tLS0tLS0tLQ0KPj4gMSBmaWxlIGNoYW5nZWQsIDIyIGluc2Vy
+dGlvbnMoKyksIDkgZGVsZXRpb25zKC0pDQo+PiANCj4+IGRpZmYgLS1naXQgYS9rZXJuZWwvc2Vj
+Y29tcC5jIGIva2VybmVsL3NlY2NvbXAuYyBpbmRleCANCj4+IDk1MmRjMWM5MDIyOS4uYjk0NGNi
+MmI2Yjk0IDEwMDY0NA0KPj4gLS0tIGEva2VybmVsL3NlY2NvbXAuYw0KPj4gKysrIGIva2VybmVs
+L3NlY2NvbXAuYw0KPj4gQEAgLTM5Nyw4ICszOTcsMjAgQEAgc3RhdGljIHUzMiBzZWNjb21wX3J1
+bl9maWx0ZXJzKGNvbnN0IHN0cnVjdCBzZWNjb21wX2RhdGEgKnNkLA0KPj4gICAgICAgICAgICBS
+RUFEX09OQ0UoY3VycmVudC0+c2VjY29tcC5maWx0ZXIpOw0KPj4gDQo+PiAgICAvKiBFbnN1cmUg
+dW5leHBlY3RlZCBiZWhhdmlvciBkb2Vzbid0IHJlc3VsdCBpbiBmYWlsaW5nIG9wZW4uICovDQo+
+PiAtICAgIGlmIChXQVJOX09OKGYgPT0gTlVMTCkpDQo+PiAtICAgICAgICByZXR1cm4gU0VDQ09N
+UF9SRVRfS0lMTF9QUk9DRVNTOw0KPj4gKyAgICBpZiAoV0FSTl9PTihmID09IE5VTEwpKSB7DQo+
+PiArICAgICAgICAvKg0KPj4gKyAgICAgICAgICogTWFrZSBzdXJlIHRoZSBmaXJzdCBmaWx0ZXIg
+YWRkdGlvbiAoZnJvbSBhbm90aGVyDQo+PiArICAgICAgICAgKiB0aHJlYWQgdXNpbmcgVFNZTkMg
+ZmxhZykgYXJlIHNlZW4uDQo+PiArICAgICAgICAgKi8NCj4+ICsgICAgICAgIHJtYigpOw0KPj4g
+KyAgICAgICAgDQo+PiArICAgICAgICAvKiBSZWFkIGFnYWluICovDQo+PiArICAgICAgICBmID0g
+UkVBRF9PTkNFKGN1cnJlbnQtPnNlY2NvbXAuZmlsdGVyKTsNCj4+ICsNCj4+ICsgICAgICAgIC8q
+IEVuc3VyZSB1bmV4cGVjdGVkIGJlaGF2aW9yIGRvZXNuJ3QgcmVzdWx0IGluIGZhaWxpbmcgb3Bl
+bi4gKi8NCj4+ICsgICAgICAgIGlmIChXQVJOX09OKGYgPT0gTlVMTCkpDQo+PiArICAgICAgICAg
+ICAgcmV0dXJuIFNFQ0NPTVBfUkVUX0tJTExfUFJPQ0VTUzsNCj4+ICsgICAgfQ0KPj4gDQo+PiAg
+ICBpZiAoc2VjY29tcF9jYWNoZV9jaGVja19hbGxvdyhmLCBzZCkpDQo+PiAgICAgICAgcmV0dXJu
+IFNFQ0NPTVBfUkVUX0FMTE9XOw0KPj4gQEAgLTYxNCw5ICs2MjYsMTYgQEAgc3RhdGljIGlubGlu
+ZSB2b2lkIHNlY2NvbXBfc3luY190aHJlYWRzKHVuc2lnbmVkIGxvbmcgZmxhZ3MpDQo+PiAgICAg
+ICAgICogZXF1aXZhbGVudCAoc2VlIHB0cmFjZV9tYXlfYWNjZXNzKSwgaXQgaXMgc2FmZSB0bw0K
+Pj4gICAgICAgICAqIGFsbG93IG9uZSB0aHJlYWQgdG8gdHJhbnNpdGlvbiB0aGUgb3RoZXIuDQo+
+PiAgICAgICAgICovDQo+PiAtICAgICAgICBpZiAodGhyZWFkLT5zZWNjb21wLm1vZGUgPT0gU0VD
+Q09NUF9NT0RFX0RJU0FCTEVEKQ0KPj4gKyAgICAgICAgaWYgKHRocmVhZC0+c2VjY29tcC5tb2Rl
+ID09IFNFQ0NPTVBfTU9ERV9ESVNBQkxFRCkgew0KPj4gKyAgICAgICAgICAgIC8qDQo+PiArICAg
+ICAgICAgICAgICogTWFrZSBzdXJlIG1vZGUgY2Fubm90IGJlIHNldCBiZWZvcmUgdGhlIGZpbHRl
+cg0KPj4gKyAgICAgICAgICAgICAqIGFyZSBzZXQuDQo+PiArICAgICAgICAgICAgICovDQo+PiAr
+ICAgICAgICAgICAgc21wX21iX19iZWZvcmVfYXRvbWljKCk7DQo+PiArDQo+PiAgICAgICAgICAg
+IHNlY2NvbXBfYXNzaWduX21vZGUodGhyZWFkLCBTRUNDT01QX01PREVfRklMVEVSLA0KPj4gICAg
+ICAgICAgICAgICAgICAgICAgICBmbGFncyk7DQo+PiArICAgICAgICB9DQo+PiAgICB9DQo+PiB9
+DQo+PiANCj4+IEBAIC0xMTYwLDEyICsxMTc5LDYgQEAgc3RhdGljIGludCBfX3NlY2NvbXBfZmls
+dGVyKGludCB0aGlzX3N5c2NhbGwsIGNvbnN0IHN0cnVjdCBzZWNjb21wX2RhdGEgKnNkLA0KPj4g
+ICAgaW50IGRhdGE7DQo+PiAgICBzdHJ1Y3Qgc2VjY29tcF9kYXRhIHNkX2xvY2FsOw0KPj4gDQo+
+PiAtICAgIC8qDQo+PiAtICAgICAqIE1ha2Ugc3VyZSB0aGF0IGFueSBjaGFuZ2VzIHRvIG1vZGUg
+ZnJvbSBhbm90aGVyIHRocmVhZCBoYXZlDQo+PiAtICAgICAqIGJlZW4gc2VlbiBhZnRlciBTWVND
+QUxMX1dPUktfU0VDQ09NUCB3YXMgc2Vlbi4NCj4+IC0gICAgICovDQo+PiAtICAgIHJtYigpOw0K
+Pj4gLQ0KPj4gICAgaWYgKCFzZCkgew0KPj4gICAgICAgIHBvcHVsYXRlX3NlY2NvbXBfZGF0YSgm
+c2RfbG9jYWwpOw0KPj4gICAgICAgIHNkID0gJnNkX2xvY2FsOw0KPj4gLS0NCj4+IDIuMTkuMQ0K
+Pj4gDQo=
