@@ -2,111 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64A2530C2AB
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 15:59:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12E4B30C2D0
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 16:04:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234874AbhBBO5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 09:57:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33362 "EHLO
+        id S233004AbhBBO7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 09:59:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234851AbhBBO5K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 09:57:10 -0500
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A575C0613D6;
-        Tue,  2 Feb 2021 06:56:30 -0800 (PST)
-Received: by mail-io1-xd33.google.com with SMTP id u20so7458881iot.9;
-        Tue, 02 Feb 2021 06:56:30 -0800 (PST)
+        with ESMTP id S234912AbhBBO6A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 09:58:00 -0500
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5407EC0613D6
+        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 06:57:20 -0800 (PST)
+Received: by mail-il1-x136.google.com with SMTP id y5so19295389ilg.4
+        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 06:57:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ywprqr49p03+cfZRBeKphtdcDQnuW/e8IgxGcaB3r4c=;
-        b=aEtV76fg9VVzGVjBp+L1dWv21UvqsLkrrN5OBin8JGqK5fZDNxkbjBMIparpAb+YAe
-         mMllGtQWZ0d38a2tLIG0BWqY0V21UYnSeSoBfNHdlliTjH8YSXhV46UaY+SFHSOMA5BB
-         iC/rQCvlRADxb7oWsUeA/5fH4j3Br28Apcai3NOOzYVEHkI2KLdC/BKl8iMqPLHDqKP5
-         F8yn1LI3YXvCMB6mcSUQ/JffxA2QmDHkF3Bfgr56U3XVEv3F+RYsm++yi2hfR1UMMfHg
-         yxy851+gExujpCZ4SIdSch4LPEsCNXxiydoqS03Ok5fTkvhTf5wg7jR1BhiSJEUQXE/n
-         c6Mg==
+         :cc:content-transfer-encoding;
+        bh=pSWchO0DJsey7S4ccftOYU9IqSpIddUZ0NEQ4JfYbkI=;
+        b=nJ1ShaVKCsHxZx01uF61qyG31gHmhGVjrrV6uP9bW+zJwowf6M4VHULyDy30dKA08J
+         aTkufV+ts5lwAcQRHmJgBnCq+ne0+hrtvzuGSRmqgsqTsXfDPKwzF8yaoGoZhIbSBB3u
+         PWu7BGXMf53G/Ssf6fy7z0haENutZ28wzhnfjEpFxNnG2heAuYiDAhHtsOAGyYbEpKKg
+         6dYIR+en+rIwTGktb+NjPqBkoBMlqF837SkbFlfUDWXX8VghYkyPCDc/wgOXTAU0WzLI
+         19JF9T0gb+88iFQJaX3a1RAErxvaZPMmXK1y5mGrtDsmb4XTo/Tq2vLJNkQjoaU/w1YC
+         jxKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ywprqr49p03+cfZRBeKphtdcDQnuW/e8IgxGcaB3r4c=;
-        b=KS3Zme5tqdKpVUYEOchm84dGpXpjXWsGQNMGv70RyYluZTXHFUBhXpkp217UGcvE5H
-         ZM0OCL/cZ8C1RIa2yWnuNEsePtQtbaTy+GDZuKRvgxmIaLIZN/eXG6A+eQSCOsjHbjB6
-         p/VC3T58Fo05B65nNkUlK15tLMvSRF3GBK+qK1lrlpCK8i6q3NzU0xPmYzI34/Q02caT
-         IyZmwRzwIK6gtiWYrhpWfvCeg/uKziJKrLF1uoyIQ0+bifvreYW0RRcoSEUwl0bpwtQ/
-         Qhac5Q2m/NC8VSWy5pSdiQKGA1gRdAIlDXzB31rLmSpgdGM4scFPmMnp/AdsOnjp22wx
-         Z0AQ==
-X-Gm-Message-State: AOAM532CS/MWY4gAHr7LjAj20cZc5s6dxGmy4eteDFOwSY1hKvok2+vw
-        LSV/pf8JUuEOgUSpdiMwxr9ZWVsrXYg1r/2uIpxZXC59O2Q=
-X-Google-Smtp-Source: ABdhPJxGVSF7gydx/xTnSJqhcdjUGh74ybjOaf6NWa0d6BxL4acTeJ5ohj306r/o/62agcvieNAmcXGajs5Bkm3rzeg=
-X-Received: by 2002:a5e:8903:: with SMTP id k3mr17233798ioj.36.1612277789491;
- Tue, 02 Feb 2021 06:56:29 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=pSWchO0DJsey7S4ccftOYU9IqSpIddUZ0NEQ4JfYbkI=;
+        b=j3MGcmUQAokPBllWhR0UKjWE6x1BAf4IazIYFVrgMu3r+BHWrE1zEGy4dat+KVzKmD
+         0O8OBHiVByE25jK1ZIV2tCa8AlEvOsFocE3mgJhqAMQMIzzoBYCuZrswlSXMfOPgn4bP
+         kqI6Sd/0sHgTw3kwt9DYgyWS+NCiEIYJrYxg+TKFd0WV8L8ClRBLKeZzI6qDU0a6AZa4
+         HtzeWrsO7/Fd+CNyTJCxJGUStBPLI3BIa0Ch+VUStdLXyxPtRcJIZCyi2Rz+Yw2hM/W8
+         4Q1WaTs3FagAmN0NHTgpodkK5jMBpYhZd4bzXqzO65mPaCP6aco8a5Rh6VjI226K8xlc
+         REyQ==
+X-Gm-Message-State: AOAM533EDb6co62epG2Io/xNI7z7stHsoqAvzJ+uxlV6ck1g+4Xiun9O
+        NCxf9Xx+dW35avfjcc6TQC7cd6+e+I+NDa+eSU8mWA==
+X-Google-Smtp-Source: ABdhPJyXuydOC2WSUTfYLBzJUg4fP8lVe9sZD7IomEQVb9j/He2UeZGUy39u121q1slOGD9FH7dIQqTqslU9rFwDJxU=
+X-Received: by 2002:a05:6e02:1251:: with SMTP id j17mr4153271ilq.216.1612277839358;
+ Tue, 02 Feb 2021 06:57:19 -0800 (PST)
 MIME-Version: 1.0
-References: <20210123080853.4214-1-dongli.zhang@oracle.com>
-In-Reply-To: <20210123080853.4214-1-dongli.zhang@oracle.com>
-From:   Pankaj Gupta <pankaj.gupta.linux@gmail.com>
-Date:   Tue, 2 Feb 2021 15:56:18 +0100
-Message-ID: <CAM9Jb+hWqZbS_bT+K32M33vW0WmfR=JWxogH+FciHPx0SYKrvQ@mail.gmail.com>
-Subject: Re: [PATCH v2 1/1] vhost scsi: alloc vhost_scsi with kvzalloc() to
- avoid delay
-To:     Dongli Zhang <dongli.zhang@oracle.com>
-Cc:     virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>, joe.jin@oracle.com,
-        aruna.ramakrishna@oracle.com
+References: <20210202135544.3262383-1-leon@kernel.org> <20210202135544.3262383-4-leon@kernel.org>
+In-Reply-To: <20210202135544.3262383-4-leon@kernel.org>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 2 Feb 2021 15:57:07 +0100
+Message-ID: <CANn89iLeC8YLt2Spq4P+JA+XBf=GDjF4UT5N68-E08JdS5iPJA@mail.gmail.com>
+Subject: Re: [PATCH net 3/4] net/core: move ipv6 gro function declarations to net/ipv6
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Leon Romanovsky <leonro@nvidia.com>, coreteam@netfilter.org,
+        Florian Westphal <fw@strlen.de>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Julian Anastasov <ja@ssi.bg>,
+        LKML <linux-kernel@vger.kernel.org>, lvs-devel@vger.kernel.org,
+        Matteo Croce <mcroce@redhat.com>,
+        netdev <netdev@vger.kernel.org>, netfilter-devel@vger.kernel.org,
+        Simon Horman <horms@verge.net.au>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> The size of 'struct vhost_scsi' is order-10 (~2.3MB). It may take long time
-> delay by kzalloc() to compact memory pages by retrying multiple times when
-> there is a lack of high-order pages. As a result, there is latency to
-> create a VM (with vhost-scsi) or to hotadd vhost-scsi-based storage.
+On Tue, Feb 2, 2021 at 2:56 PM Leon Romanovsky <leon@kernel.org> wrote:
 >
-> The prior commit 595cb754983d ("vhost/scsi: use vmalloc for order-10
-> allocation") prefers to fallback only when really needed, while this patch
-> allocates with kvzalloc() with __GFP_NORETRY implicitly set to avoid
-> retrying memory pages compact for multiple times.
+> From: Leon Romanovsky <leonro@nvidia.com>
 >
-> The __GFP_NORETRY is implicitly set if the size to allocate is more than
-> PAGE_SZIE and when __GFP_RETRY_MAYFAIL is not explicitly set.
+> Fir the following compilation warnings:
+>  1031 | INDIRECT_CALLABLE_SCOPE void udp_v6_early_demux(struct sk_buff *s=
+kb)
 >
-> Cc: Aruna Ramakrishna <aruna.ramakrishna@oracle.com>
-> Cc: Joe Jin <joe.jin@oracle.com>
-> Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
+> net/ipv6/ip6_offload.c:182:41: warning: no previous prototype for =E2=80=
+=98ipv6_gro_receive=E2=80=99 [-Wmissing-prototypes]
+>   182 | INDIRECT_CALLABLE_SCOPE struct sk_buff *ipv6_gro_receive(struct l=
+ist_head *head,
+>       |                                         ^~~~~~~~~~~~~~~~
+> net/ipv6/ip6_offload.c:320:29: warning: no previous prototype for =E2=80=
+=98ipv6_gro_complete=E2=80=99 [-Wmissing-prototypes]
+>   320 | INDIRECT_CALLABLE_SCOPE int ipv6_gro_complete(struct sk_buff *skb=
+, int nhoff)
+>       |                             ^~~~~~~~~~~~~~~~~
+> net/ipv6/ip6_offload.c:182:41: warning: no previous prototype for =E2=80=
+=98ipv6_gro_receive=E2=80=99 [-Wmissing-prototypes]
+>   182 | INDIRECT_CALLABLE_SCOPE struct sk_buff *ipv6_gro_receive(struct l=
+ist_head *head,
+>       |                                         ^~~~~~~~~~~~~~~~
+> net/ipv6/ip6_offload.c:320:29: warning: no previous prototype for =E2=80=
+=98ipv6_gro_complete=E2=80=99 [-Wmissing-prototypes]
+>   320 | INDIRECT_CALLABLE_SCOPE int ipv6_gro_complete(struct sk_buff *skb=
+, int nhoff)
+>
+> Fixes: aaa5d90b395a ("net: use indirect call wrappers at GRO network laye=
+r")
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 > ---
-> Changed since v1:
->   - To combine kzalloc() and vzalloc() as kvzalloc()
->     (suggested by Jason Wang)
+>  include/net/ipv6.h | 3 +++
+>  net/core/dev.c     | 4 +---
+>  2 files changed, 4 insertions(+), 3 deletions(-)
 >
->  drivers/vhost/scsi.c | 9 +++------
->  1 file changed, 3 insertions(+), 6 deletions(-)
+> diff --git a/include/net/ipv6.h b/include/net/ipv6.h
+> index bd1f396cc9c7..68676e6bd4b1 100644
+> --- a/include/net/ipv6.h
+> +++ b/include/net/ipv6.h
+> @@ -1265,4 +1265,7 @@ static inline void ip6_sock_set_recvpktinfo(struct =
+sock *sk)
+>         release_sock(sk);
+>  }
 >
-> diff --git a/drivers/vhost/scsi.c b/drivers/vhost/scsi.c
-> index 4ce9f00ae10e..5de21ad4bd05 100644
-> --- a/drivers/vhost/scsi.c
-> +++ b/drivers/vhost/scsi.c
-> @@ -1814,12 +1814,9 @@ static int vhost_scsi_open(struct inode *inode, struct file *f)
->         struct vhost_virtqueue **vqs;
->         int r = -ENOMEM, i;
->
-> -       vs = kzalloc(sizeof(*vs), GFP_KERNEL | __GFP_NOWARN | __GFP_RETRY_MAYFAIL);
-> -       if (!vs) {
-> -               vs = vzalloc(sizeof(*vs));
-> -               if (!vs)
-> -                       goto err_vs;
-> -       }
-> +       vs = kvzalloc(sizeof(*vs), GFP_KERNEL);
-> +       if (!vs)
-> +               goto err_vs;
->
->         vqs = kmalloc_array(VHOST_SCSI_MAX_VQ, sizeof(*vqs), GFP_KERNEL);
->         if (!vqs)
+> +INDIRECT_CALLABLE_DECLARE(struct sk_buff *ipv6_gro_receive(struct list_h=
+ead *,
+> +                                                          struct sk_buff=
+ *));
+> +INDIRECT_CALLABLE_DECLARE(int ipv6_gro_complete(struct sk_buff *, int));
 
- Acked-by: Pankaj Gupta <pankaj.gupta@cloud.ionos.com>
+
+I think we should move this to a new include file.
+
+These declarations were static, and had to be made public only because
+of DIRECT call stuff,
+which is an implementation detail.
+
+Polluting include/net/ipv6.h seems not appropriate.
+
+
+>  #endif /* _NET_IPV6_H */
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index c360bb5367e2..9a3d8768524b 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -101,6 +101,7 @@
+>  #include <net/dsa.h>
+>  #include <net/dst.h>
+>  #include <net/dst_metadata.h>
+> +#include <net/ipv6.h>
+>  #include <net/pkt_sched.h>
+>  #include <net/pkt_cls.h>
+>  #include <net/checksum.h>
+> @@ -5743,7 +5744,6 @@ static void gro_normal_one(struct napi_struct *napi=
+, struct sk_buff *skb)
+>  }
+>
+>  INDIRECT_CALLABLE_DECLARE(int inet_gro_complete(struct sk_buff *, int));
+
+This is odd.
+
+You move ipv6_gro_complete() but not inet_gro_complete()
+
+I think we should be consistent.
+
+> -INDIRECT_CALLABLE_DECLARE(int ipv6_gro_complete(struct sk_buff *, int));
+>  static int napi_gro_complete(struct napi_struct *napi, struct sk_buff *s=
+kb)
+>  {
+>         struct packet_offload *ptype;
+> @@ -5914,8 +5914,6 @@ static void gro_flush_oldest(struct napi_struct *na=
+pi, struct list_head *head)
+>
+>  INDIRECT_CALLABLE_DECLARE(struct sk_buff *inet_gro_receive(struct list_h=
+ead *,
+>                                                            struct sk_buff=
+ *));
+> -INDIRECT_CALLABLE_DECLARE(struct sk_buff *ipv6_gro_receive(struct list_h=
+ead *,
+> -                                                          struct sk_buff=
+ *));
+>  static enum gro_result dev_gro_receive(struct napi_struct *napi, struct =
+sk_buff *skb)
+>  {
+>         u32 hash =3D skb_get_hash_raw(skb) & (GRO_HASH_BUCKETS - 1);
+> --
+> 2.29.2
+>
