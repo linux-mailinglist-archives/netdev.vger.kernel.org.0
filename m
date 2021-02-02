@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F6E730BF7D
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 14:33:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 061D130BFB4
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 14:40:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232467AbhBBNck (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 08:32:40 -0500
-Received: from mail1.protonmail.ch ([185.70.40.18]:50744 "EHLO
-        mail1.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232359AbhBBNbc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 08:31:32 -0500
-Date:   Tue, 02 Feb 2021 13:30:43 +0000
+        id S232711AbhBBNjt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 08:39:49 -0500
+Received: from mail-40133.protonmail.ch ([185.70.40.133]:45999 "EHLO
+        mail-40133.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232178AbhBBNbn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 08:31:43 -0500
+Date:   Tue, 02 Feb 2021 13:30:54 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1612272649; bh=ZfF+yk2N+NpRKErjKX/1hJfnJ9+R0QZ7qi8wGDkxhLc=;
-        h=Date:To:From:Cc:Reply-To:Subject:From;
-        b=JC6ZE9YeQdNvI/FWAl8VlGARKHDd6WNRQLAfnfL4TVLDkLkoYE9K8UqDc4M7jBs9N
-         g4khZmUyNszCOHZYqaHjaU1RqnX9uCCZF0Y3556PymK+l2H37MIhyhkEFs7WCZtAvf
-         /Hl5Sa4CK7Wbq+vm2zPcTsYQ/N14xJc0SU2u3qE0h50tEDFvF3J9/2nvuOz0JBKGz6
-         xZAC2RaD1jhAkA2NyOJen4GjnhAl8X5d59limqowBlkzBLf50L8+Mf1dC1+8tMB+uu
-         4uMest71b8Svz4XnAVl5nW2/qzGmvnntUkLJptBBRNzv+DKBcOK9Yi+qsDxeW8DiCK
-         l/UcY02ewA5Bg==
+        t=1612272656; bh=NakdAHBTDBfMpPGylkZuE67yNEL45d0nvbHsNhM+ASQ=;
+        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
+        b=hTkyc/xJhSWuLvTkbdhPeXxd8CVlFW2dw0ecszzPmiYDS+I0+PQH+xqCTDMo/z/Ob
+         wM0XDKrep+r1NuokS1sVHFS9rOzr9IA0lKi0kTFRN4Wf/2LkS/lY+USTE4XVV9iuhU
+         e0y/X7KVuxOZ2kqI2sU6enEWI+u//whBo7kgYu6KmxX6pRIuhmyXqVv3Fh+TfcfvZ+
+         k3ExwydIsux8ua7DwfqLQYvr9FgX5+oUbIfWiVpsT4ujrWzxKIy2RA8Woo9UnD+MrK
+         Xa9OWKH6/dilD6rTqVWdc2VLfReoTIzXDcuucrLhPCyrfnIshcm11l9uSJZyFbQpYE
+         JMTN8TOSVY6gA==
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 From:   Alexander Lobakin <alobakin@pm.me>
@@ -47,8 +47,10 @@ Cc:     John Hubbard <jhubbard@nvidia.com>,
         linux-kernel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
         linux-rdma@vger.kernel.org, linux-mm@kvack.org
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH RESEND v3 net-next 0/5] net: consolidate page_is_pfmemalloc() usage
-Message-ID: <20210202133030.5760-1-alobakin@pm.me>
+Subject: [PATCH RESEND v3 net-next 1/5] mm: constify page_is_pfmemalloc() argument
+Message-ID: <20210202133030.5760-2-alobakin@pm.me>
+In-Reply-To: <20210202133030.5760-1-alobakin@pm.me>
+References: <20210202133030.5760-1-alobakin@pm.me>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
@@ -61,60 +63,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-page_is_pfmemalloc() is used mostly by networking drivers to test
-if a page can be considered for reusing/recycling.
-It doesn't write anything to the struct page itself, so its sole
-argument can be constified, as well as the first argument of
-skb_propagate_pfmemalloc().
-In Page Pool core code, it can be simply inlined instead.
-Most of the callers from NIC drivers were just doppelgangers of
-the same condition tests. Derive them into a new common function
-do deduplicate the code.
+The function only tests for page->index, so its argument should be
+const.
 
-Resend of v3 [2]:
- - it missed Patchwork and Netdev archives, probably due to server-side
-   issues.
+Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Acked-by: David Rientjes <rientjes@google.com>
+---
+ include/linux/mm.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Since v2 [1]:
- - use more intuitive name for the new inline function since there's
-   nothing "reserved" in remote pages (Jakub Kicinski, John Hubbard);
- - fold likely() inside the helper itself to make driver code a bit
-   fancier (Jakub Kicinski);
- - split function introduction and using into two separate commits;
- - collect some more tags (Jesse Brandeburg, David Rientjes).
-
-Since v1 [0]:
- - new: reduce code duplication by introducing a new common function
-   to test if a page can be reused/recycled (David Rientjes);
- - collect autographs for Page Pool bits (Jesper Dangaard Brouer,
-   Ilias Apalodimas).
-
-[0] https://lore.kernel.org/netdev/20210125164612.243838-1-alobakin@pm.me
-[1] https://lore.kernel.org/netdev/20210127201031.98544-1-alobakin@pm.me
-[2] https://lore.kernel.org/lkml/20210131120844.7529-1-alobakin@pm.me
-
-Alexander Lobakin (5):
-  mm: constify page_is_pfmemalloc() argument
-  skbuff: constify skb_propagate_pfmemalloc() "page" argument
-  net: introduce common dev_page_is_reusable()
-  net: use the new dev_page_is_reusable() instead of private versions
-  net: page_pool: simplify page recycling condition tests
-
- .../net/ethernet/hisilicon/hns3/hns3_enet.c   | 17 ++++++----------
- drivers/net/ethernet/intel/fm10k/fm10k_main.c | 13 ++++--------
- drivers/net/ethernet/intel/i40e/i40e_txrx.c   | 15 +-------------
- drivers/net/ethernet/intel/iavf/iavf_txrx.c   | 15 +-------------
- drivers/net/ethernet/intel/ice/ice_txrx.c     | 13 ++----------
- drivers/net/ethernet/intel/igb/igb_main.c     |  9 ++-------
- drivers/net/ethernet/intel/igc/igc_main.c     |  9 ++-------
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |  9 ++-------
- .../net/ethernet/intel/ixgbevf/ixgbevf_main.c |  9 ++-------
- .../net/ethernet/mellanox/mlx5/core/en_rx.c   |  7 +------
- include/linux/mm.h                            |  2 +-
- include/linux/skbuff.h                        | 20 +++++++++++++++++--
- net/core/page_pool.c                          | 14 ++++---------
- 13 files changed, 46 insertions(+), 106 deletions(-)
-
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index ecdf8a8cd6ae..078633d43af9 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -1584,7 +1584,7 @@ struct address_space *page_mapping_file(struct page *=
+page);
+  * ALLOC_NO_WATERMARKS and the low watermark was not
+  * met implying that the system is under some pressure.
+  */
+-static inline bool page_is_pfmemalloc(struct page *page)
++static inline bool page_is_pfmemalloc(const struct page *page)
+ {
+ =09/*
+ =09 * Page index cannot be this large so this must be
 --=20
 2.30.0
 
