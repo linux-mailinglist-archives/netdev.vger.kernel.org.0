@@ -2,127 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF18E30B46B
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 02:08:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D77A030B472
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 02:10:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229732AbhBBBHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 20:07:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53070 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229633AbhBBBHm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 20:07:42 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B24FC06174A
-        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 17:07:02 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id z22so21057784edb.9
-        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 17:07:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9O3/Y02mZhKbj+wuFTkx7iygdgd0EBlMv/0Y8SwCYcM=;
-        b=yDEZAxy5uZU3Zn2/yTYJIzBltBGwFyapg1Gz12Fc4WVPuvg3uAOSOgj8oJFIiE7TOq
-         dd8paqsGCEg7UO2JImRphebQPayU1P16KtMOfiDiWGNwCtYqKoiL/1yqUCdzX8bdCDFk
-         8j3Rab9h3njVuuTVlKDqAFO2jIrt4obtbLvVF6fsUjarUkWvugFT+fwUJVrsEGVi4YOV
-         1DWXIb2O33MM8PXZvdny4Q3hr9njQFUWkO5KGWeobOwrr5EfnK8jBcw5NhXaZ1L5LPi3
-         IyAazrzWz6X1n4dYwbRsXWISl5zgTVUUwXEBuCAOcuNMPikvIQ0Fz7Q/IqxMtNXInftz
-         ItlA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9O3/Y02mZhKbj+wuFTkx7iygdgd0EBlMv/0Y8SwCYcM=;
-        b=M3rLuGxuJJjeUnYKcdVJj/J0MoA3Wc2pCTjspHunVfD8T27OLs098yiI3yBu3QJEpH
-         n7SNnL4Om/aRvbyzOOUEXXQundwprn5vblF0vkXGahu02YUXnvAt4JYlPmrxjZDdOAOf
-         xma9Z2Z3ItBYwGSqqojzZaEjQz+sE7oQBD9hAuthAq7P/mBeht97+4ZWI6kbOUl2Srfk
-         rSt4FK6YBPMbZtXi6z889vtvhE1Htf0pnwtnm6lXMOE7tnAIQzG1Ai9Yqbb2uVopS38v
-         a0Hd/Ge156a7uoBIq/DL0MOu6PjRbSw31YfxeTXelFpBFJGg+sDkiAc/RyAkuKZ4dcvW
-         auAw==
-X-Gm-Message-State: AOAM533HhGg1nq6wIjEgYjQybWA8ZqL4CxIIdtYUUZKKKTQktirpA4sK
-        XbEsOuX1dpYFLzFun9Ev/UjQzFqpqilFRxpF78WNWQ==
-X-Google-Smtp-Source: ABdhPJxQEhSxdterZAsPu/4VOXgqxXAypFKYksNZcfO4OSdKFmAh67tkWxtNCMGghWQ3GZkeiHpDAcUlqttirzai6Z8=
-X-Received: by 2002:aa7:cd87:: with SMTP id x7mr22380537edv.210.1612228020945;
- Mon, 01 Feb 2021 17:07:00 -0800 (PST)
+        id S229852AbhBBBIu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 20:08:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49512 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229537AbhBBBIt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Feb 2021 20:08:49 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E8D7164ED5;
+        Tue,  2 Feb 2021 01:08:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612228089;
+        bh=HfTcAnfQ4iAzb7u15VeHndW50x4z6oxpZsDgOo9+EFw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=QJBV4DsrK9C/1XWMcVnH4bUYUs9Ajo9+pgdMv/WXxW1iqNeSAZVY7g0EqENbpG2sn
+         RsaZOljtTP4CopKZMhPiD93dZpm0xOmVe18UX8VL9m6uyDNrsqrO0x1SEgCYpW3oMr
+         /0LoOXujelFJHeqZom4fu1Y2snvYy/VDWEUS1qfDseSncOut7o372FVw28pB1c7l8H
+         2286RQf0S1RhaJUf2HLOowjubyVmO9f7gQvxxso9x0TMO8pFxuofXgGsdMCzr4Nw8f
+         37lxAfblyDknCv0vccwwXXVv5brGduFwVsA/u2L9sC42JjVyQYWih5F3o1vnsJVMpG
+         A4gnc2JrEZAjg==
+Date:   Mon, 1 Feb 2021 17:08:06 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Edwin Peer <edwin.peer@broadcom.com>
+Cc:     Danielle Ratson <danieller@nvidia.com>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        netdev <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@nvidia.com>, Andrew Lunn <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        mlxsw <mlxsw@nvidia.com>, Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next v3 2/7] ethtool: Get link mode in use instead
+ of speed and duplex parameters
+Message-ID: <20210201170806.1861e49a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAKOOJTzRs5xLwGHFDvCAhK8v88stoPhzrbg-hPBte9c+ia0yxg@mail.gmail.com>
+References: <20210120093713.4000363-1-danieller@nvidia.com>
+        <CAKOOJTyRyz+KTZvQ8XAZ+kehjbTtqeA3qv+r9DJmS-f9eC6qWg@mail.gmail.com>
+        <DM6PR12MB45161FF65D43867C9ED96B6ED8BB9@DM6PR12MB4516.namprd12.prod.outlook.com>
+        <20210128202632.iqixlvdfey6sh7fe@lion.mk-sys.cz>
+        <DM6PR12MB4516868A5BD4C2EED7EF818BD8B79@DM6PR12MB4516.namprd12.prod.outlook.com>
+        <CAKOOJTy2wSmBjRnbhmD6xQgy1GAdiXAxoRX7APNto4gDYUWNRw@mail.gmail.com>
+        <DM6PR12MB45168B7B3516A37854812767D8B69@DM6PR12MB4516.namprd12.prod.outlook.com>
+        <CAKOOJTw2Z_SdPNsDeTanSatBLZ7=vh2FGjn_NASVUK2hbK7Q3Q@mail.gmail.com>
+        <20210201122939.09c18efa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAKOOJTw75uLVPpzV1a85SFsO7Gz9bcfS9M1CWHQONCfMLC4H6g@mail.gmail.com>
+        <20210201134156.14693076@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAKOOJTzcEPXmU=mu8PMvzkhv1CxWbL9pnmjYeYGgJHXnFW5W_g@mail.gmail.com>
+        <20210201142029.4b7bd903@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAKOOJTzRs5xLwGHFDvCAhK8v88stoPhzrbg-hPBte9c+ia0yxg@mail.gmail.com>
 MIME-Version: 1.0
-References: <20210122234827.1353-8-shiraz.saleem@intel.com>
- <20210125184248.GS4147@nvidia.com> <99895f7c10a2473c84a105f46c7ef498@intel.com>
- <20210126005928.GF4147@nvidia.com> <031c2675aff248bd9c78fada059b5c02@intel.com>
- <20210127121847.GK1053290@unreal> <ea62658f01664a6ea9438631c9ddcb6e@intel.com>
- <20210127231641.GS4147@nvidia.com> <20210128054133.GA1877006@unreal>
- <d58f341898834170af1bfb6719e17956@intel.com> <20210201191805.GO4247@nvidia.com>
- <925c33a0b174464898c9fc5651b981ee@intel.com>
-In-Reply-To: <925c33a0b174464898c9fc5651b981ee@intel.com>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Mon, 1 Feb 2021 17:06:58 -0800
-Message-ID: <CAPcyv4gbW-27ySTmxf97zzcoVA_myM8uLV=ziscMuSKGBz7dqg@mail.gmail.com>
-Subject: Re: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
- implement private channel OPs
-To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>
-Cc:     Jason Gunthorpe <jgg@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
-        "Patil, Kiran" <kiran.patil@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 1, 2021 at 4:40 PM Saleem, Shiraz <shiraz.saleem@intel.com> wrote:
->
-> > Subject: Re: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
-> > implement private channel OPs
+On Mon, 1 Feb 2021 16:14:05 -0800 Edwin Peer wrote:
+> > > Yes, there would be multiple link modes that map to the same speed and
+> > > lane combination, but that doesn't mean you need to accept them if the
+> > > media doesn't match what's plugged in also. In the above scenario, the
+> > > supported mask should not list SR because CR is physically plugged in.
+> > > That way, the user knows what options are legal and the kernel knows
+> > > what it can reject.  
 > >
-> > On Sat, Jan 30, 2021 at 01:19:36AM +0000, Saleem, Shiraz wrote:
-> > > > Subject: Re: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver
-> > > > and implement private channel OPs
-> > > >
-> > > > On Wed, Jan 27, 2021 at 07:16:41PM -0400, Jason Gunthorpe wrote:
-> > > > > On Wed, Jan 27, 2021 at 10:17:56PM +0000, Saleem, Shiraz wrote:
-> > > > >
-> > > > > > Even with another core PCI driver, there still needs to be
-> > > > > > private communication channel between the aux rdma driver and
-> > > > > > this PCI driver to pass things like QoS updates.
-> > > > >
-> > > > > Data pushed from the core driver to its aux drivers should either
-> > > > > be done through new callbacks in a struct device_driver or by
-> > > > > having a notifier chain scheme from the core driver.
-> > > >
-> > > > Right, and internal to driver/core device_lock will protect from
-> > > > parallel probe/remove and PCI flows.
-> > > >
-> > >
-> > > OK. We will hold the device_lock while issuing the .ops callbacks from core
-> > driver.
-> > > This should solve our synchronization issue.
-> > >
-> > > There have been a few discussions in this thread. And I would like to
-> > > be clear on what to do.
-> > >
-> > > So we will,
-> > >
-> > > 1. Remove .open/.close, .peer_register/.peer_unregister 2. Protect ops
-> > > callbacks issued from core driver to the aux driver with device_lock
-> >
-> > A notifier chain is probably better, honestly.
-> >
-> > Especially since you don't want to split the netdev side, a notifier chain can be
-> > used by both cases equally.
-> >
->
-> The device_lock seems to be a simple solution to this synchronization problem.
-> May I ask what makes the notifier scheme better to solve this?
->
+> > If the modes depend on what's plugged in - what happens if cable gets
+> > removed? We (you, Danielle, I) can agree what we think is best, but
+> > history teaches us that doesn't matter in long run. We had a similar
+> > conversation when it comes to FEC. There simply is no way for upstream
+> > developers to review the behavior is correct.  
+> 
+> Given that supported is only defined in the context of autoneg today,
+> once could still specify. But again, you raise a fair concern.
+> 
+> The asymmetry in interface is still ugly though, you get to decide
+> which ugly is worse. :P
 
-Only loosely following the arguments here, but one of the requirements
-of the driver-op scheme is that the notifying agent needs to know the
-target device. With the notifier-chain approach the target device
-becomes anonymous to the notifier agent.
+Let's move with this series as is. We can see how prevalent the use of
+link_mode is on get side first.
