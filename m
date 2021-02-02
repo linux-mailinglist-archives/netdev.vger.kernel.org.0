@@ -2,38 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B56B830C8AD
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 18:59:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1657F30C8B3
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 18:59:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238004AbhBBR5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 12:57:25 -0500
-Received: from mga06.intel.com ([134.134.136.31]:52438 "EHLO mga06.intel.com"
+        id S238063AbhBBR5e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 12:57:34 -0500
+Received: from mga06.intel.com ([134.134.136.31]:52445 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233617AbhBBOIi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 09:08:38 -0500
-IronPort-SDR: uuWQrAJv6HznOcPUXDmNRhQCMNFLNjmmGAcRFuP5brHlwg1etL7X+ZjP1eeFbCd+AhbTIEEWAM
- YiNGxwvkW0MA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9882"; a="242371356"
+        id S233675AbhBBOIv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 09:08:51 -0500
+IronPort-SDR: /JGeFuokv4KwsUWxe2yKIsmm3y5P9yVD6h9r+NZqZInAMXGBECW2KuM4T1h9lUobJEowqO3HJq
+ i+Vd+D+eVcNw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9882"; a="242371363"
 X-IronPort-AV: E=Sophos;i="5.79,395,1602572400"; 
-   d="scan'208";a="242371356"
+   d="scan'208";a="242371363"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2021 06:06:41 -0800
-IronPort-SDR: ps3hgjD1G3sVoi9k7wIiBWgO8svlPpNyykoQuHcZDvUISEXCSHeBtCqr4/cFV4tZBPNcgYwHfX
- KJ87Ng6khMFw==
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2021 06:06:43 -0800
+IronPort-SDR: RpYyiJkRarA/yatYhjV/cPc857C1uLV3ReHe9wDbMVXzzzDFiFWAk1KvkRtkxR5knkEt8FYXxE
+ LTVsIuedXHXg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.79,395,1602572400"; 
-   d="scan'208";a="479774614"
+   d="scan'208";a="479774668"
 Received: from silpixa00399839.ir.intel.com (HELO localhost.localdomain) ([10.237.222.142])
-  by fmsmga001.fm.intel.com with ESMTP; 02 Feb 2021 06:06:39 -0800
+  by fmsmga001.fm.intel.com with ESMTP; 02 Feb 2021 06:06:41 -0800
 From:   Ciara Loftus <ciara.loftus@intel.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         magnus.karlsson@intel.com, bjorn@kernel.org,
         weqaar.a.janjua@intel.com
 Cc:     daniel@iogearbox.net, Ciara Loftus <ciara.loftus@intel.com>
-Subject: [PATCH bpf-next v3 0/6] AF_XDP Packet Drop Tracing
-Date:   Tue,  2 Feb 2021 13:36:36 +0000
-Message-Id: <20210202133642.8562-1-ciara.loftus@intel.com>
+Subject: [PATCH bpf-next v3 1/6] xsk: add tracepoints for packet drops
+Date:   Tue,  2 Feb 2021 13:36:37 +0000
+Message-Id: <20210202133642.8562-2-ciara.loftus@intel.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210202133642.8562-1-ciara.loftus@intel.com>
+References: <20210202133642.8562-1-ciara.loftus@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -41,71 +43,247 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series introduces tracing infrastructure for AF_XDP sockets (xsk).
-A trace event 'xsk_packet_drop' is created which can be enabled by toggling
+This commit introduces tracing infrastructure for AF_XDP sockets
+(xsks) and a new trace event called 'xsk_packet_drop'. This trace
+event is triggered when a packet cannot be processed by the socket
+due to one of the following issues:
+(1) packet exceeds the maximum permitted size.
+(2) invalid fill descriptor address.
+(3) invalid tx descriptor field.
 
+The trace provides information about the error to the user. For
+example the size vs permitted size is provided for (1). For (2)
+and (3) the relevant descriptor fields are printed. This information
+should help a user troubleshoot packet drops by providing this extra
+level of detail which is not available through use of simple counters.
+
+The tracepoint can be enabled/disabled by toggling
 /sys/kernel/debug/tracing/events/xsk/xsk_packet_drop/enable
 
-When enabled and packets or empty packet buffers are dropped in the kernel,
-traces are generated which describe the reason for the packet drop, the netdev
-and qid information of the xsk which encountered the drop, and some more
-information depending on what type of drop was encountered that will tell
-the user why the packet was dropped.  This information should help a user
-troubleshoot packet drops by providing an extra level of detail which is not
-available through use of simple counters
-
-Example traces:
-xsk_packet_drop: netdev: ve3213 qid 0 reason: packet too big: len 3000 max 2048 not_used 0
-xsk_packet_drop: netdev: ve3213 qid 0 reason: invalid fill addr: addr 520192 not_used 0 not_used 0
-xsk_packet_drop: netdev: ve9266 qid 0 reason: invalid tx desc: addr 0 len 4097 options 0
-
-It was decided to use a single event 'xsk_packet_drop' to capture these three
-drop types. This means that for some of them, there is some redundant information
-in the trace marked as 'not_used'. An alternative to this would be to introduce 3
-separate event types under xsk, each with their own appropriate trace format.
-Suggestions are welcome on which approach would be better to take.
-
-The event can be monitored using perf:
-perf stat -a -e xsk:xsk_packet_drop
-
-A selftest is added for each drop type. These tests provide the conditions to
-trigger the traces and ensure that the appropriate traces are generated.
-
-v2->v3:
-* Removed some traces which traced events which were not technically drops eg.
-when the rxq is full.
-* Introduced traces for descriptor validation on RX and TX and selftests for both
-
-v1->v2:
-* Rebase on top of Björn's cleanup series.
-* Fixed packet count for trace tests which don't need EOT frame.
-
-This series applies on commit 61ca36c8c4eb3bae35a285b1ae18c514cde65439
-
-Ciara Loftus (6):
-  xsk: add tracepoints for packet drops
-  selftests/bpf: restructure setting the packet count
-  selftests/bpf: add framework for xsk selftests
-  selftests/bpf: XSK_TRACE_DROP_PKT_TOO_BIG test
-  selftests/bpf: XSK_TRACE_INVALID_FILLADDR test
-  selftests/bpf: XSK_TRACE_INVALID_DESC_TX test
-
- MAINTAINERS                                |   1 +
- include/linux/bpf_trace.h                  |   1 +
- include/trace/events/xsk.h                 |  73 ++++++++
- include/uapi/linux/if_xdp.h                |   6 +
- kernel/bpf/core.c                          |   1 +
- net/xdp/xsk.c                              |   7 +-
- net/xdp/xsk_buff_pool.c                    |   3 +
- net/xdp/xsk_queue.h                        |   4 +
- tools/include/uapi/linux/if_xdp.h          |   6 +
- tools/testing/selftests/bpf/test_xsk.sh    |  90 ++++++++-
- tools/testing/selftests/bpf/xdpxceiver.c   | 206 +++++++++++++++++++--
- tools/testing/selftests/bpf/xdpxceiver.h   |   9 +
- tools/testing/selftests/bpf/xsk_prereqs.sh |   3 +-
- 13 files changed, 381 insertions(+), 29 deletions(-)
+Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
+---
+ MAINTAINERS                       |  1 +
+ include/linux/bpf_trace.h         |  1 +
+ include/trace/events/xsk.h        | 73 +++++++++++++++++++++++++++++++
+ include/uapi/linux/if_xdp.h       |  6 +++
+ kernel/bpf/core.c                 |  1 +
+ net/xdp/xsk.c                     |  7 ++-
+ net/xdp/xsk_buff_pool.c           |  3 ++
+ net/xdp/xsk_queue.h               |  4 ++
+ tools/include/uapi/linux/if_xdp.h |  6 +++
+ 9 files changed, 101 insertions(+), 1 deletion(-)
  create mode 100644 include/trace/events/xsk.h
 
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 1df56a32d2df..efe6662d4198 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -19440,6 +19440,7 @@ S:	Maintained
+ F:	Documentation/networking/af_xdp.rst
+ F:	include/net/xdp_sock*
+ F:	include/net/xsk_buff_pool.h
++F:	include/trace/events/xsk.h
+ F:	include/uapi/linux/if_xdp.h
+ F:	include/uapi/linux/xdp_diag.h
+ F:	include/net/netns/xdp.h
+diff --git a/include/linux/bpf_trace.h b/include/linux/bpf_trace.h
+index ddf896abcfb6..477d29b6c2c1 100644
+--- a/include/linux/bpf_trace.h
++++ b/include/linux/bpf_trace.h
+@@ -3,5 +3,6 @@
+ #define __LINUX_BPF_TRACE_H__
+ 
+ #include <trace/events/xdp.h>
++#include <trace/events/xsk.h>
+ 
+ #endif /* __LINUX_BPF_TRACE_H__ */
+diff --git a/include/trace/events/xsk.h b/include/trace/events/xsk.h
+new file mode 100644
+index 000000000000..74b53b10c40b
+--- /dev/null
++++ b/include/trace/events/xsk.h
+@@ -0,0 +1,73 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Copyright(c) 2021 Intel Corporation. */
++
++#undef TRACE_SYSTEM
++#define TRACE_SYSTEM xsk
++
++#if !defined(_TRACE_XSK_H) || defined(TRACE_HEADER_MULTI_READ)
++#define _TRACE_XSK_H
++
++#include <linux/if_xdp.h>
++#include <linux/tracepoint.h>
++
++#define print_reason(reason) \
++	__print_symbolic(reason, \
++			{ XSK_TRACE_DROP_PKT_TOO_BIG, "packet too big" }, \
++			{ XSK_TRACE_DROP_INVALID_FILLADDR, "invalid fill addr" }, \
++			{ XSK_TRACE_DROP_INVALID_TXD, "invalid tx desc" })
++
++#define print_val1(reason) \
++	__print_symbolic(reason, \
++			{ XSK_TRACE_DROP_PKT_TOO_BIG, "len" }, \
++			{ XSK_TRACE_DROP_INVALID_FILLADDR, "addr" }, \
++			{ XSK_TRACE_DROP_INVALID_TXD, "addr" })
++
++#define print_val2(reason) \
++	__print_symbolic(reason, \
++			{ XSK_TRACE_DROP_PKT_TOO_BIG, "max" }, \
++			{ XSK_TRACE_DROP_INVALID_FILLADDR, "not_used" }, \
++			{ XSK_TRACE_DROP_INVALID_TXD, "len" })
++
++#define print_val3(reason) \
++	__print_symbolic(reason, \
++			{ XSK_TRACE_DROP_PKT_TOO_BIG, "not_used" }, \
++			{ XSK_TRACE_DROP_INVALID_FILLADDR, "not_used" }, \
++			{ XSK_TRACE_DROP_INVALID_TXD, "options" })
++
++
++
++TRACE_EVENT(xsk_packet_drop,
++
++	TP_PROTO(char *name, u16 queue_id, u32 reason, u64 val1, u64 val2, u64 val3),
++
++	TP_ARGS(name, queue_id, reason, val1, val2, val3),
++
++	TP_STRUCT__entry(
++		__field(char *, name)
++		__field(u16, queue_id)
++		__field(u32, reason)
++		__field(u64, val1)
++		__field(u64, val2)
++		__field(u64, val3)
++	),
++
++	TP_fast_assign(
++		__entry->name = name;
++		__entry->queue_id = queue_id;
++		__entry->reason = reason;
++		__entry->val1 = val1;
++		__entry->val2 = val2;
++		__entry->val3 = val3;
++	),
++
++	TP_printk("netdev: %s qid %u reason: %s: %s %lu %s %lu %s %lu",
++		  __entry->name, __entry->queue_id, print_reason(__entry->reason),
++		  print_val1(__entry->reason), __entry->val1,
++		  print_val2(__entry->reason), __entry->val2,
++		  print_val3(__entry->reason), __entry->val3
++	)
++);
++
++#endif /* _TRACE_XSK_H */
++
++#include <trace/define_trace.h>
+diff --git a/include/uapi/linux/if_xdp.h b/include/uapi/linux/if_xdp.h
+index a78a8096f4ce..d7eb031d2465 100644
+--- a/include/uapi/linux/if_xdp.h
++++ b/include/uapi/linux/if_xdp.h
+@@ -108,4 +108,10 @@ struct xdp_desc {
+ 
+ /* UMEM descriptor is __u64 */
+ 
++enum xdp_trace_reasons {
++	XSK_TRACE_DROP_PKT_TOO_BIG,
++	XSK_TRACE_DROP_INVALID_FILLADDR,
++	XSK_TRACE_DROP_INVALID_TXD,
++};
++
+ #endif /* _LINUX_IF_XDP_H */
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 5bbd4884ff7a..442b0d7f9bf8 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -2362,3 +2362,4 @@ EXPORT_SYMBOL(bpf_stats_enabled_key);
+ 
+ EXPORT_TRACEPOINT_SYMBOL_GPL(xdp_exception);
+ EXPORT_TRACEPOINT_SYMBOL_GPL(xdp_bulk_tx);
++EXPORT_TRACEPOINT_SYMBOL_GPL(xsk_packet_drop);
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index 4faabd1ecfd1..689da22c8e4f 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -11,6 +11,7 @@
+ 
+ #define pr_fmt(fmt) "AF_XDP: %s: " fmt, __func__
+ 
++#include <linux/bpf_trace.h>
+ #include <linux/if_xdp.h>
+ #include <linux/init.h>
+ #include <linux/sched/mm.h>
+@@ -189,9 +190,13 @@ static int __xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
+ 	struct xdp_buff *xsk_xdp;
+ 	int err;
+ 	u32 len;
++	u32 max = xsk_pool_get_rx_frame_size(xs->pool);
+ 
+ 	len = xdp->data_end - xdp->data;
+-	if (len > xsk_pool_get_rx_frame_size(xs->pool)) {
++	if (len > max) {
++		trace_xsk_packet_drop(xs->dev->name, xs->queue_id,
++				      XSK_TRACE_DROP_PKT_TOO_BIG,
++				      len, max, 0);
+ 		xs->rx_dropped++;
+ 		return -ENOSPC;
+ 	}
+diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+index 8de01aaac4a0..e0bd1bfd4324 100644
+--- a/net/xdp/xsk_buff_pool.c
++++ b/net/xdp/xsk_buff_pool.c
+@@ -1,5 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0
+ 
++#include <linux/bpf_trace.h>
+ #include <net/xsk_buff_pool.h>
+ #include <net/xdp_sock.h>
+ #include <net/xdp_sock_drv.h>
+@@ -460,6 +461,8 @@ static struct xdp_buff_xsk *__xp_alloc(struct xsk_buff_pool *pool)
+ 		ok = pool->unaligned ? xp_check_unaligned(pool, &addr) :
+ 		     xp_check_aligned(pool, &addr);
+ 		if (!ok) {
++			trace_xsk_packet_drop(pool->netdev->name, pool->queue_id,
++					       XSK_TRACE_DROP_INVALID_FILLADDR, addr, 0, 0);
+ 			pool->fq->invalid_descs++;
+ 			xskq_cons_release(pool->fq);
+ 			continue;
+diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
+index 2823b7c3302d..8e9ba3cfe286 100644
+--- a/net/xdp/xsk_queue.h
++++ b/net/xdp/xsk_queue.h
+@@ -6,6 +6,7 @@
+ #ifndef _LINUX_XSK_QUEUE_H
+ #define _LINUX_XSK_QUEUE_H
+ 
++#include <linux/bpf_trace.h>
+ #include <linux/types.h>
+ #include <linux/if_xdp.h>
+ #include <net/xdp_sock.h>
+@@ -175,6 +176,9 @@ static inline bool xskq_cons_is_valid_desc(struct xsk_queue *q,
+ 					   struct xsk_buff_pool *pool)
+ {
+ 	if (!xp_validate_desc(pool, d)) {
++		trace_xsk_packet_drop(pool->netdev->name, pool->queue_id,
++				       XSK_TRACE_DROP_INVALID_TXD, d->addr,
++				       d->len, d->options);
+ 		q->invalid_descs++;
+ 		return false;
+ 	}
+diff --git a/tools/include/uapi/linux/if_xdp.h b/tools/include/uapi/linux/if_xdp.h
+index a78a8096f4ce..d7eb031d2465 100644
+--- a/tools/include/uapi/linux/if_xdp.h
++++ b/tools/include/uapi/linux/if_xdp.h
+@@ -108,4 +108,10 @@ struct xdp_desc {
+ 
+ /* UMEM descriptor is __u64 */
+ 
++enum xdp_trace_reasons {
++	XSK_TRACE_DROP_PKT_TOO_BIG,
++	XSK_TRACE_DROP_INVALID_FILLADDR,
++	XSK_TRACE_DROP_INVALID_TXD,
++};
++
+ #endif /* _LINUX_IF_XDP_H */
 -- 
 2.17.1
 
