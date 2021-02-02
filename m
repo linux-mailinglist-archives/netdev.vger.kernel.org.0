@@ -2,48 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58C2F30C80C
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 18:40:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC75F30C80B
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 18:40:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237733AbhBBRjn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 12:39:43 -0500
-Received: from mail-eopbgr70088.outbound.protection.outlook.com ([40.107.7.88]:57602
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234011AbhBBRhO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 12:37:14 -0500
+        id S237727AbhBBRjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 12:39:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39646 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237715AbhBBRhQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 12:37:16 -0500
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on061b.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe0d::61b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE231C06178C
+        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 09:36:30 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RZBUtPuVPaTeZ1JUA1eZ4OOMgg7xF8AM81NqGvdeBcAM5duNzwPdJw9jQogDjysZZIfAYLKaJBiHDsR4o3hErzcglzOGaJCgUvXGYaF+UtrZtMbB1uwwbOojXsrWOj5CT+SepvqJCvpjoYWpq8+MXS3DAtxFrF/DXkyvPQc/vEEKCxyU4RYB+aZxrPNQnKnTRdbDEULl1vzvAFthwGHG2EGBtV0wA/ICsamDYcEsDtUCjpMePIySMjyKteqpvid9WUjr8vnPLdY+JWOo1gLt7ZMfd3EqG5YAM33hp9Iy4iHoLKrL/X6yrJeWyNdcGtJl61sASD8LlTLYcojmLBmtAQ==
+ b=J2FbxM2GxST4BenYEy/eK0U6emW/n52sQVspIWPMLEt+E+TwngDfbr5yTZCnKPbmaXABzFCPn66xGqmAf5IHHLtEdpDvk2r9dryGBC1HiGb7BqY420F/hoIZ2pt+9Czusyo2EGB19S4WRetSLuN/hQzZ8xxfTcYsKXlQxpKkNJNX9Zq34RO/YfSb1wSKs/zUQKW0Iiic0gPNPW2JkXTBJepI9X16u+2Esyfnh/g6UYm5etzBlcehPlLVB4bNl9hKYGUDz3Uo7r/PxvT4wKEc+rFxOv59dLlQWGwkZyrNIwcnYun8ELKucBnbXfP1E9gADVh3XitDFbuyz+cIxB4sEw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=H62vxHvJ6GZBK5bLU/N9mBnjJJ4lA9+/vOTxuhxvbHs=;
- b=BPl0OPDz32QUTWzMH5q3VF8s4aHll0WW4dF9PqcEV9Gp8eZFSRObM0NN5fwhNWvYKa1MLgUXLpcGkv0cJtDarx9OgYQhEpcp1Tr2/5CEIY59GcVU6W5xBSH3FkA3G6e5Pjnx3aClBWHbVcIuNcu0O0o0h/Uvt3W3Lrab1iBsx7v5OmSROg/QSNflssXepIi84op6RspwSZBGOXJqYiZ50USwfvUKqjXRdX8of6xi/6X2AnoqacEoeXWjecb1iJrJgBXlGOkR6YTgBIDLTQZihos+1vL4l/qiM2aqnHDhvwwlkgsUgK3nvD9lQ33CXlsazwgpKdE+Rs6pbRm7Aj3+/A==
+ bh=cdFHDv+Xoa+V5ZJUbX3xwPbAII33gY4jTVC4ctosGK0=;
+ b=BO1HjOOGKA8G6pejv3gLSn7HGUrPV3tRyIh4CPrs10TZwML6QS+9NbfeGStg1932HY7FVzyRCRj3XLBQ92PYDv3kSnITrVX/OWkcYKniJwviUi0DUCFUVXQJS8r09HYJ0d/WZ9CltO2ZYiqfMvKVhYvWNqAN0w61G8mH7lrwA6Qo+VxAMnsZ9IIjB00+6kxg3d4Q0T2jyS0W9i8gCkYIlrRSNA080i0gTEyneua3gAISaTwb05bra4h7xRm2goPYL8iIbrwEbxXtFBmQh8TwVlji8NlEx5Ah0NUZP6FODwAbO3GDE3dpb14mlFajlX43wJziRW48ukVtzXkw4PnSsg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=H62vxHvJ6GZBK5bLU/N9mBnjJJ4lA9+/vOTxuhxvbHs=;
- b=VrqEfswE2EasD87d2NDswm/bcYqWdNOyKQjDW421jdQZ5DRbUQQH42rTerbcDw6cFC7eVrHv/gru9T+mJsAsCq4U261+iKjEnH7drn+uaXACfMhiSNvB5T1mDEi08nhKC5ulwAk/qv7z9e0btM4FQWSklvcr23auvbBdr7nv4Ss=
+ bh=cdFHDv+Xoa+V5ZJUbX3xwPbAII33gY4jTVC4ctosGK0=;
+ b=rDzGznWtNzw5Rh0V616fC6i4BKlw7J0d9pbaQiF5QUlMTZDb+8SpE/1FnVicB8pPa6C8LvCnIPEgzaZNOiIjPDqUhkBU1wTjzqw18mtcMJTF/cjZPqH68Js+RziCXn630rraRzf8tii6GPA2oP5ch33zgZ9/RS1cQiiInLnG6rc=
 Authentication-Results: kernel.org; dkim=none (message not signed)
  header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5807.eurprd04.prod.outlook.com (2603:10a6:803:ec::21)
  by VE1PR04MB6462.eurprd04.prod.outlook.com (2603:10a6:803:11c::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.16; Tue, 2 Feb
- 2021 17:35:36 +0000
+ 2021 17:35:38 +0000
 Received: from VI1PR04MB5807.eurprd04.prod.outlook.com
  ([fe80::6ccd:7fa9:bada:4]) by VI1PR04MB5807.eurprd04.prod.outlook.com
  ([fe80::6ccd:7fa9:bada:4%7]) with mapi id 15.20.3805.027; Tue, 2 Feb 2021
- 17:35:36 +0000
+ 17:35:38 +0000
 From:   Camelia Groza <camelia.groza@nxp.com>
 To:     kuba@kernel.org, davem@davemloft.net, maciej.fijalkowski@intel.com
 Cc:     madalin.bucur@oss.nxp.com, netdev@vger.kernel.org,
         Camelia Groza <camelia.groza@nxp.com>
-Subject: [PATCH net 2/3] dpaa_eth: reduce data alignment requirements for the A050385 erratum
-Date:   Tue,  2 Feb 2021 19:34:43 +0200
-Message-Id: <6e534e4b2da14bb57331446e950a49f237f979c0.1612275417.git.camelia.groza@nxp.com>
+Subject: [PATCH net 3/3] dpaa_eth: try to move the data in place for the A050385 erratum
+Date:   Tue,  2 Feb 2021 19:34:44 +0200
+Message-Id: <387f3f2efeab12a7cb2b6933e3be10704dac48bf.1612275417.git.camelia.groza@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <cover.1612275417.git.camelia.groza@nxp.com>
 References: <cover.1612275417.git.camelia.groza@nxp.com>
@@ -54,83 +56,107 @@ X-ClientProxiedBy: AM3PR07CA0093.eurprd07.prod.outlook.com
  (2603:10a6:803:ec::21)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from lsv15136.swis.ro-buh01.nxp.com (83.217.231.2) by AM3PR07CA0093.eurprd07.prod.outlook.com (2603:10a6:207:6::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.8 via Frontend Transport; Tue, 2 Feb 2021 17:35:35 +0000
+Received: from lsv15136.swis.ro-buh01.nxp.com (83.217.231.2) by AM3PR07CA0093.eurprd07.prod.outlook.com (2603:10a6:207:6::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.8 via Frontend Transport; Tue, 2 Feb 2021 17:35:38 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: c37a2247-0447-4a15-ddc4-08d8c7a0f358
+X-MS-Office365-Filtering-Correlation-Id: dd271cf6-2ba1-4cca-2c34-08d8c7a0f4a5
 X-MS-TrafficTypeDiagnostic: VE1PR04MB6462:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VE1PR04MB6462F8EB943E7D966696F262F2B59@VE1PR04MB6462.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-Microsoft-Antispam-PRVS: <VE1PR04MB64628C3F4E94F0E3B9E38A5AF2B59@VE1PR04MB6462.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gho7gDza694r4co8U2zHCJjqrYUsFZxu+fT+HP3luEdfewEHNg7kZfd4rKcDihUPQckQ3NuN1wytQlwVJ7nm/5w4/fm6EmQNdgqYtM75BTpMwIfRSm8S0YVX6KX6DPP9qGUEdKg19YKd9Kc5GKd1SWeoAhsVGYIpe/ooiVFWfbjMT6fxMVVh5FnYET3LSbo0hL+PK0gX33amsZR+1ov5q63rXhTl5Px7FUudOp1cXW1GIZMyqK0j3gzWxQc9JrTY6y5F4O8uW9H5RkWyvzVTH32z4QdkumABOwvD7dyq0LX+QOWaDYfGzq9e9/yXvBmVgf2OS5NAoXsYU+q11qKJi5xjErLva4F0ikp4ioNstzcW91sj/reAsQlKOh+wNjXS9b7G92IJxguMkKCXlKu59PPKav5OJdSRqW5Sis6eBo9+cOOAS3hes1ZbD4rkB9HhxL93QMgJw90RCi/MW4Qi+tSVds9U0UWeMS+MKMRC2wEqiSs/iN80+UMVL+k8dl7gW9kL8zI/afj7fIxjGO4uOA==
+X-Microsoft-Antispam-Message-Info: z0s5fUg2i0fDM95L62e8DmRsLrGY6EgntuyCGQ15hasRlckBOCr6KaOiBHxmDvvNTRrfChWuU0L9cFgZI8f6fe/iGh3Mkgigi189voJ1X0tCniSrJs7WYz6Cnot+XPOD+9hZp3g5pZUe8apQftbpHKOvezq4p8FJOL/AE6d2Wo8Wv19SxC6rD8VdMnxvFx+DS2lFmCnntc1e3nio9s72yef2O5ofugNEnvNj5DovKXBvxBushsn3QyKZMpH6Yv3kxMy0PY+/ZmurF9O5VtlMerx0MUn65ALAvYuso+TjVExvHPk23usOl9P4BpB1+kWnJJqBjTxlCu0KQN+shHtiNdwC7WkJLJCpI37FXuTSO6wFOXP/hdheSgTSZoVaFqNumx0JVsRkRNOf3RSqcgcX/A7M+EX9Lfs1WSwHvbgdAuNSfQjUcQxBGoBm9cUenDCcIFW/PjXz0hRNZ/WLO2N8iIhdwacVw4T0lbpEr1BEceHsKue+UOyxLi2GvEqE9ZUR4IRbNYmWWtm8eP9kkabgpw==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5807.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(136003)(396003)(376002)(346002)(39860400002)(5660300002)(26005)(6486002)(52116002)(86362001)(186003)(44832011)(316002)(36756003)(478600001)(8936002)(16526019)(8676002)(66946007)(2906002)(956004)(6666004)(2616005)(83380400001)(7696005)(4326008)(66476007)(66556008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?hpkuuUw4nfbe/Apk2OHwSRDJTt73qdOYFtxcGF9QLv3D+gy/r9cdpjP6axoN?=
- =?us-ascii?Q?nYO4AyV2nCOovPa8hx2emTtqyfABKYYX1CEXgSB4eRHl248CgPXPtrgV6KzE?=
- =?us-ascii?Q?hYfmrDq73DlPfDi8Cby6sLMbcW0eOP2oCzXw9f/DCOcN7XmNpKLT26Kpx+kp?=
- =?us-ascii?Q?g0ABXDv6o0Ytbg8Iqpc8Hy5YsnngnqNsHMbYMoNNLYc0KkEVUAAplTAwymbz?=
- =?us-ascii?Q?LN4AZQGnd5W2VRLRHd+gt7ncS497ArOjpCOn4sm40ve9Mgy3D5jxk3ynZq8L?=
- =?us-ascii?Q?aecbSyuJOtvCk7pLZEPvnmrlY5qs1BaLS+FmBReG/ijCQ9MnTvwHYh8azJbG?=
- =?us-ascii?Q?KC6S6C/SrmHh01zsyrE0AgPpl6MprIlgUW7FfJ2HDTIyLmMvCkg33IQUcHpP?=
- =?us-ascii?Q?gv4Y1WGZIsEvQ1w9xJnessVV9Jplt11sZgSMtrqPlXBNLiWSq+RSpkAX9t8B?=
- =?us-ascii?Q?JO91jklgZeTNRW2VLIpkUGRGhk6LL6pexb+PEn1H2GpxRnCBZL0f+2SpaO5o?=
- =?us-ascii?Q?+dkgPQyn5JUjDZ9EX+WZZJGrrE6rCH7Vkbs90U49grOMRgEuDJ1cVrBdMdbH?=
- =?us-ascii?Q?lOL4buKhO90VZEhLjH6p16G13QU4gYrhKLYkfp/LN9yVvUXkKgs9xqI3M07o?=
- =?us-ascii?Q?2zKDf3s0QqAx/etkx3D2rS2rc7G4OYh0iHxm8BmXvovxfQRGacdelpYPH/tP?=
- =?us-ascii?Q?LcAEhrht39uVhy6VfFhWGQrMoqdxKXEUDENfo9phcB39YtRzdHTef359nl5w?=
- =?us-ascii?Q?B/fkuzDgbdvgd0lEZenPu891lwrDgIe8kBmiuQ/R4hLipBXbqob+wG4nZBaE?=
- =?us-ascii?Q?/9+z41LY5DKtLc1Bx2J7SE9q89kY16XWnVZgTAnAqec0srxURJ/ae9nyYeD/?=
- =?us-ascii?Q?FIkg9TfDDr0X/SOCYvUWe/JeR5Fyhskzp5ZxMoT4fvSiwr/IRuWcK4e48kY8?=
- =?us-ascii?Q?IDEEOb5gGD6lMw/SORhOLz7Qff76gGm1agvEJLmgSX1yD2Qm9X8+gvkBUROw?=
- =?us-ascii?Q?jv/DKw25XS68Fjfq1rWkKtbiEbwKekvv8L4jGX2SSSqd4Q/dGe/HnBPQN/FU?=
- =?us-ascii?Q?9K1jt9N7k3bMObZrB1K8dAaj4i0/5JHB9soy10k7Xx/+IEQVvM3sGE0T3Y8o?=
- =?us-ascii?Q?vBJlX7YmC98qWuXQ3JFEp2E77u3ZQ97zFMn1ZqZUAG0VR/jlLr4Ej9rnRruL?=
- =?us-ascii?Q?nTou1bsu2sGRoq6JxTAeD+u6F7BqrAfFGRIMQuSeEOCxlHzns+I/sWDA8nBV?=
- =?us-ascii?Q?xFXeWYR9wvx4SMsScibHutz56on9ZqSgqCzmMY47JF8x+mWAOOQNV79BQen5?=
- =?us-ascii?Q?ofisDouXW0TgdnhLlUnMP63V?=
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?0jgoDni4UfW6cFwtKIDvq9eEAD+Lum8K0LPkBf7H4Wqxuc0Zg+Jq28GDTjuJ?=
+ =?us-ascii?Q?HisPyio5WV4L0uC6FdtzOuQtk+XCt9+ypCNZVxFSjrGFTck8K7oNZmaNlQu/?=
+ =?us-ascii?Q?sHjFki/PedsHkFziyhJQefm/ZrVArA/huwls03kNtGqzgD0ahIeIQ7H6vziE?=
+ =?us-ascii?Q?TBDoF38vuIZu258B3sNFmhUenEXq88oo4qr7wp2mhCRk5+Dx1EOs7UoStwCS?=
+ =?us-ascii?Q?tUtUMpNpWwoD6rG05BlCytD0DKg3Pxf2LDZmjRoArEUdwCX/Kk2EBpvUIh8g?=
+ =?us-ascii?Q?2W/8zPkCtzy7Nd3pLsMek/RvVzq1wmgp+LBhbkexpMPzqOTfzoOsLeKDIEoP?=
+ =?us-ascii?Q?kwYfoVphtbcsDGldiE+Z50sgNSdNh5uDQD/um2Zf641fZGHLmD5qUrxreIwZ?=
+ =?us-ascii?Q?bEr1SfpUPjGUtAHwzXWqal4SwBEB2ove5m/tdWlZbYmH2tgyKUXev0YLQNgD?=
+ =?us-ascii?Q?VrqDapg2UDTb05+NcKf6DNLmQi1FCAZJ8ZqFdUsjS3JsREffcg27zl9oSVLU?=
+ =?us-ascii?Q?xPu+Nn79W4zN2n7yQJCBk2iufOiI25B7G+Wdtp06NNZEkIhrYEtL8aGzOcv1?=
+ =?us-ascii?Q?48eMIrgcEa8y9BIyqWwiy2RNhOTxdoHP11uy6Mmj31mJYTdv+CsBDazOy8h7?=
+ =?us-ascii?Q?6zDxTfGt2KWNcaHA5BEH5a4HnO9pORk7EOTqGiwvJE/ErD2DQrtTv6pMHGLJ?=
+ =?us-ascii?Q?Qyr18dwACDUvyGuWWKVONYvJew4OaPUMsawvS1Oz/bQyzBBjCpZz2fDlYsxG?=
+ =?us-ascii?Q?sPp/taJ0PR5VuAcAdIxe+856FVHIsyoa6dKMb0LbNvIzZEShGHqM6qZIzf7E?=
+ =?us-ascii?Q?lm+J1m73rGlRK4q5AjHZeVQYsYkdCr5Pro4t8kAKVQpcwds4JjEnnjbJAUH4?=
+ =?us-ascii?Q?ou8qtLci++YcdxvWrxHUWnSMBucS9PL9GuRV8uL3PHdWCLGd72GRt3Fcoei2?=
+ =?us-ascii?Q?4nFGcfl0xCG+vd7hOIU1d0wFfhLhlLDx5pHiyP2cVR2jDUgyvdEXkDKzkJyR?=
+ =?us-ascii?Q?6D3XkUR2yoHwZrXInU0LXBJnpV4PtU2pdh9qm/36Oz/GJE09iO/PHpVY5aD2?=
+ =?us-ascii?Q?Ds7E9AtMfG5OhShaqF6yfueSfJyF1AhhHqQcJ0cz2jOOHaaXQJpYBjbIkYyE?=
+ =?us-ascii?Q?BqEnfxZjFRYV4jBIqhh/mzIApOIyqOxaz8fWjX+rYtkzuYON9w5I/Veh4VVR?=
+ =?us-ascii?Q?Io0NlAT6WGqu6hCNRlfOt8SZWoXVRN7/nqumlikKpwK1RT86DmyzSJu/kEon?=
+ =?us-ascii?Q?85EDuqyuehiThlbi+MeeL2VKj4XrKIXvKaw97UtZWzD/Gb4NEsX3x/NIGCrg?=
+ =?us-ascii?Q?t3bOTrBRv/rNTi3rDOrCzW1K?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c37a2247-0447-4a15-ddc4-08d8c7a0f358
+X-MS-Exchange-CrossTenant-Network-Message-Id: dd271cf6-2ba1-4cca-2c34-08d8c7a0f4a5
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5807.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2021 17:35:36.6086
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2021 17:35:38.7954
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: iiv9IcLwl95TqXNdvH+1XeXbErubRHIrCek0jO5opDj1g2lgiklbIKGouFk4KF2YICcP+zgYiLpLnwtLGE9Urg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7uD3cO8jmCaUI21LAu5/kC9pBX3YUdIEZe0pom79peWnYmyOk7upeAzq8hhvE787ELng4cCCHcLIeE/HQNe12Q==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6462
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 256 byte data alignment is required for preventing DMA transaction
-splits when crossing 4K page boundaries. Since XDP deals only with page
-sized buffers or less, this restriction isn't needed. Instead, the data
-only needs to be aligned to 64 bytes to prevent DMA transaction splits.
+The XDP frame's headroom might be large enough to accommodate the
+xdpf backpointer as well as shifting the data to an aligned address.
 
-These lessened restrictions can increase performance by widening the pool
-of permitted data alignments and preventing unnecessary realignments.
+Try this first before resorting to allocating a new buffer and copying
+the data.
 
-Fixes: ae680bcbd06a ("dpaa_eth: implement the A050385 erratum workaround for XDP")
+Suggested-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 Signed-off-by: Camelia Groza <camelia.groza@nxp.com>
 ---
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../net/ethernet/freescale/dpaa/dpaa_eth.c    | 20 ++++++++++++++++++-
+ 1 file changed, 19 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-index e1d041c35ad9..78dfa05f6d55 100644
+index 78dfa05f6d55..d093b56dc30f 100644
 --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
 +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-@@ -2192,7 +2192,7 @@ static int dpaa_a050385_wa_xdpf(struct dpaa_priv *priv,
- 	 * byte frame headroom. If the XDP program uses all of it, copy the
- 	 * data to a new buffer and make room for storing the backpointer.
- 	 */
--	if (PTR_IS_ALIGNED(xdpf->data, DPAA_A050385_ALIGN) &&
-+	if (PTR_IS_ALIGNED(xdpf->data, DPAA_FD_DATA_ALIGNMENT) &&
- 	    xdpf->headroom >= priv->tx_headroom) {
- 		xdpf->headroom = priv->tx_headroom;
+@@ -2180,8 +2180,9 @@ static int dpaa_a050385_wa_xdpf(struct dpaa_priv *priv,
+ 				struct xdp_frame **init_xdpf)
+ {
+ 	struct xdp_frame *new_xdpf, *xdpf = *init_xdpf;
+-	void *new_buff;
++	void *new_buff, *aligned_data;
+ 	struct page *p;
++	u32 data_shift;
+ 	int headroom;
+ 
+ 	/* Check the data alignment and make sure the headroom is large
+@@ -2198,6 +2199,23 @@ static int dpaa_a050385_wa_xdpf(struct dpaa_priv *priv,
  		return 0;
+ 	}
+ 
++	/* Try to move the data inside the buffer just enough to align it and
++	 * store the xdpf backpointer. If the available headroom isn't large
++	 * enough, resort to allocating a new buffer and copying the data.
++	 */
++	aligned_data = PTR_ALIGN_DOWN(xdpf->data, DPAA_FD_DATA_ALIGNMENT);
++	data_shift = xdpf->data - aligned_data;
++
++	/* The XDP frame's headroom needs to be large enough to accommodate
++	 * shifting the data as well as storing the xdpf backpointer.
++	 */
++	if (xdpf->headroom  >= data_shift + priv->tx_headroom) {
++		memmove(aligned_data, xdpf->data, xdpf->len);
++		xdpf->data = aligned_data;
++		xdpf->headroom = priv->tx_headroom;
++		return 0;
++	}
++
+ 	/* The new xdp_frame is stored in the new buffer. Reserve enough space
+ 	 * in the headroom for storing it along with the driver's private
+ 	 * info. The headroom needs to be aligned to DPAA_FD_DATA_ALIGNMENT to
 -- 
 2.17.1
 
