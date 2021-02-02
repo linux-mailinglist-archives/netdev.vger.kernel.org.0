@@ -2,163 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 409D930B6B6
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 05:53:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BD5930B701
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 06:27:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231874AbhBBEvd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 23:51:33 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:34301 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231566AbhBBEtJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 23:49:09 -0500
-Received: from 36-229-239-87.dynamic-ip.hinet.net ([36.229.239.87] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <kai.heng.feng@canonical.com>)
-        id 1l6nbu-0003Ag-GN; Tue, 02 Feb 2021 04:48:19 +0000
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     hkallweit1@gmail.com
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        nic_swsd@realtek.com (maintainer:8169 10/100/1000 GIGABIT ETHERNET
-        DRIVER), "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev@vger.kernel.org (open list:8169 10/100/1000 GIGABIT ETHERNET
-        DRIVER), linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v2] r8169: Add support for another RTL8168FP
-Date:   Tue,  2 Feb 2021 12:48:12 +0800
-Message-Id: <20210202044813.1304266-1-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.29.2
+        id S230084AbhBBFZf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 00:25:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51816 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229466AbhBBFZd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 00:25:33 -0500
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C7B5C061573
+        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 21:24:53 -0800 (PST)
+Received: by mail-lf1-x133.google.com with SMTP id m22so26153243lfg.5
+        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 21:24:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=norrbonn-se.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=L4IE20MJnl8eHsd4GaQUa85dUNOruSYWVFEX90IoX2I=;
+        b=w06eCpr5wtFrtMcHBvMb91J/tq8T7BxmPGzAOToWyQhZd14DAnyXal6Mdail3HPzIO
+         fxFVCYhYAB6899Bb5o7L0dX1wSCrjGqP9jPHfCs48VxSBkm+KfLLOayVPUsDFq4CaMQ/
+         q5AIjpmVRwke66otu+1KRoxeQgQf4s1ptihy77QWTYGujKL+MWNEee4xJPYS0sb241BN
+         Mn8mX7cKvmGU0ykEkgG41vV11inm8EBcnYxwYIX3pTTAl856dm8pps1ikZjueZneKeSy
+         QOUV08ZfGaozFn4w0ZXEj1cHDGOMZAvw4EPcSxgHCme3HiyymxEd+9kQ6K1aCX8ffcnE
+         v0qw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=L4IE20MJnl8eHsd4GaQUa85dUNOruSYWVFEX90IoX2I=;
+        b=nF+7CS4twg09vRre83uGgM8MV6nwH4DWvf9Bu0n3cVzJWANSi76oA1qp1oaJZCncN/
+         Zmn1wMllPi3Ej6ulFbhIF5IucNtqWf0r1th/jrWs+jeT4ZSS5zGZAUTpflrx2d97OfOA
+         7l97COrFKappWKtAaupW+esf2zdyZ9LB4dguzIEEzxpLHtCO5qiejjMhwJwJNzopsitE
+         Fee1DmtuzupyxuR5q4W+sNNiY2l3OaRgtNWkl+DUxkjldcdpzCtnEa2A0yhOtxWHJLMy
+         dLsBPl4XInHamhDfMuIIDegZVLqa8nXRMKOCmtIxipIiprdPtWs0JmT8Ny1ZVH0n1W60
+         HFhw==
+X-Gm-Message-State: AOAM530NQf7rZQH8qmEZg0NxcE1nTfGEyyLsqe4KzXjVQc4Wvzk4ZFcJ
+        bLptrMKiIIHESLqCE6AL4YspJQ==
+X-Google-Smtp-Source: ABdhPJyl0vts+5/Uhb/qaf+yxm3P6Ji+42b2yBLYtj2nfuodcYjjKjPlEu6Y/nmtIrWWjRB+spSSmg==
+X-Received: by 2002:a19:7019:: with SMTP id h25mr10546140lfc.627.1612243490484;
+        Mon, 01 Feb 2021 21:24:50 -0800 (PST)
+Received: from [192.168.1.157] (h-137-65.A159.priv.bahnhof.se. [81.170.137.65])
+        by smtp.gmail.com with ESMTPSA id d9sm3167550lfm.293.2021.02.01.21.24.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 01 Feb 2021 21:24:49 -0800 (PST)
+Subject: Re: [RFC PATCH 15/16] gtp: add ability to send GTP controls headers
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Pravin Shelar <pravin.ovn@gmail.com>
+Cc:     Harald Welte <laforge@gnumonks.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Pravin B Shelar <pbshelar@fb.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+References: <20210123195916.2765481-1-jonas@norrbonn.se>
+ <20210123195916.2765481-16-jonas@norrbonn.se>
+ <bf6de363-8e32-aca0-1803-a041c0f55650@norrbonn.se>
+ <CAOrHB_DFv8_5CJ7GjUHT4qpyJUkgeWyX0KefYaZ-iZkz0UgaAQ@mail.gmail.com>
+ <9b9476d2-186f-e749-f17d-d191c30347e4@norrbonn.se>
+ <CAOrHB_Cyx9Xf6s63wVFo1mYF7-ULbQD7eZy-_dTCKAUkO0iViw@mail.gmail.com>
+ <20210130104450.00b7ab7d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAOrHB_DQTsEPEWpPVEcpSnbkLLz8eWPFvvzzO8wjuYsP4=9-QQ@mail.gmail.com>
+ <20210201124414.21466bff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Jonas Bonn <jonas@norrbonn.se>
+Message-ID: <03621476-ed9b-a186-3b9a-774c703c207a@norrbonn.se>
+Date:   Tue, 2 Feb 2021 06:24:49 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210201124414.21466bff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-According to the vendor driver, the new chip with XID 0x54b is
-essentially the same as the one with XID 0x54a, but it doesn't need the
-firmware.
+Hi Jakub,
 
-So add support accordingly.
+On 01/02/2021 21:44, Jakub Kicinski wrote:
+> On Sat, 30 Jan 2021 12:05:40 -0800 Pravin Shelar wrote:
+>> On Sat, Jan 30, 2021 at 10:44 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>>> On Fri, 29 Jan 2021 22:59:06 -0800 Pravin Shelar wrote:
+>>>> On Fri, Jan 29, 2021 at 6:08 AM Jonas Bonn <jonas@norrbonn.se> wrote:
+>>>> Following are the reasons for extracting the header and populating metadata.
+>>>> 1. That is the design used by other tunneling protocols
+>>>> implementations for handling optional headers. We need to have a
+>>>> consistent model across all tunnel devices for upper layers.
+>>>
+>>> Could you clarify with some examples? This does not match intuition,
+>>> I must be missing something.
+>>
+>> You can look at geneve_rx() or vxlan_rcv() that extracts optional
+>> headers in ip_tunnel_info opts.
+> 
+> Okay, I got confused what Jonas was inquiring about. I thought that the
+> extension headers were not pulled, rather than not parsed. Copying them
+> as-is to info->opts is right, thanks!
+> 
 
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
----
-v2:
- - Add phy support.
- - Rebase on net-next.
+No, you're not confused.  The extension headers are not being pulled in 
+the current patchset.
 
- drivers/net/ethernet/realtek/r8169.h            |  1 +
- drivers/net/ethernet/realtek/r8169_main.c       | 17 +++++++++++------
- drivers/net/ethernet/realtek/r8169_phy_config.c |  1 +
- 3 files changed, 13 insertions(+), 6 deletions(-)
+Incoming packet:
 
-diff --git a/drivers/net/ethernet/realtek/r8169.h b/drivers/net/ethernet/realtek/r8169.h
-index 7be86ef5a584..2728df46ec41 100644
---- a/drivers/net/ethernet/realtek/r8169.h
-+++ b/drivers/net/ethernet/realtek/r8169.h
-@@ -63,6 +63,7 @@ enum mac_version {
- 	RTL_GIGA_MAC_VER_50,
- 	RTL_GIGA_MAC_VER_51,
- 	RTL_GIGA_MAC_VER_52,
-+	RTL_GIGA_MAC_VER_53,
- 	RTL_GIGA_MAC_VER_60,
- 	RTL_GIGA_MAC_VER_61,
- 	RTL_GIGA_MAC_VER_63,
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 475e6f01ea10..48697ec36e55 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -146,6 +146,7 @@ static const struct {
- 	[RTL_GIGA_MAC_VER_50] = {"RTL8168ep/8111ep"			},
- 	[RTL_GIGA_MAC_VER_51] = {"RTL8168ep/8111ep"			},
- 	[RTL_GIGA_MAC_VER_52] = {"RTL8168fp/RTL8117",  FIRMWARE_8168FP_3},
-+	[RTL_GIGA_MAC_VER_53] = {"RTL8168fp/RTL8117",			},
- 	[RTL_GIGA_MAC_VER_60] = {"RTL8125A"				},
- 	[RTL_GIGA_MAC_VER_61] = {"RTL8125A",		FIRMWARE_8125A_3},
- 	/* reserve 62 for CFG_METHOD_4 in the vendor driver */
-@@ -696,7 +697,7 @@ static bool rtl_is_8168evl_up(struct rtl8169_private *tp)
- {
- 	return tp->mac_version >= RTL_GIGA_MAC_VER_34 &&
- 	       tp->mac_version != RTL_GIGA_MAC_VER_39 &&
--	       tp->mac_version <= RTL_GIGA_MAC_VER_52;
-+	       tp->mac_version <= RTL_GIGA_MAC_VER_53;
- }
- 
- static bool rtl_supports_eee(struct rtl8169_private *tp)
-@@ -763,7 +764,9 @@ static bool name ## _check(struct rtl8169_private *tp)
- static void r8168fp_adjust_ocp_cmd(struct rtl8169_private *tp, u32 *cmd, int type)
- {
- 	/* based on RTL8168FP_OOBMAC_BASE in vendor driver */
--	if (tp->mac_version == RTL_GIGA_MAC_VER_52 && type == ERIAR_OOB)
-+	if (type == ERIAR_OOB &&
-+	    (tp->mac_version == RTL_GIGA_MAC_VER_52 ||
-+	     tp->mac_version == RTL_GIGA_MAC_VER_53))
- 		*cmd |= 0x7f0 << 18;
- }
- 
-@@ -1238,7 +1241,7 @@ static enum rtl_dash_type rtl_check_dash(struct rtl8169_private *tp)
- 	case RTL_GIGA_MAC_VER_28:
- 	case RTL_GIGA_MAC_VER_31:
- 		return r8168dp_check_dash(tp) ? RTL_DASH_DP : RTL_DASH_NONE;
--	case RTL_GIGA_MAC_VER_49 ... RTL_GIGA_MAC_VER_52:
-+	case RTL_GIGA_MAC_VER_49 ... RTL_GIGA_MAC_VER_53:
- 		return r8168ep_check_dash(tp) ? RTL_DASH_EP : RTL_DASH_NONE;
- 	default:
- 		return RTL_DASH_NONE;
-@@ -1962,6 +1965,7 @@ static enum mac_version rtl8169_get_mac_version(u16 xid, bool gmii)
- 		{ 0x7c8, 0x608,	RTL_GIGA_MAC_VER_61 },
- 
- 		/* RTL8117 */
-+		{ 0x7cf, 0x54b,	RTL_GIGA_MAC_VER_53 },
- 		{ 0x7cf, 0x54a,	RTL_GIGA_MAC_VER_52 },
- 
- 		/* 8168EP family. */
-@@ -2236,7 +2240,7 @@ static void rtl_init_rxcfg(struct rtl8169_private *tp)
- 	case RTL_GIGA_MAC_VER_38:
- 		RTL_W32(tp, RxConfig, RX128_INT_EN | RX_MULTI_EN | RX_DMA_BURST);
- 		break;
--	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_52:
-+	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_53:
- 		RTL_W32(tp, RxConfig, RX128_INT_EN | RX_MULTI_EN | RX_DMA_BURST | RX_EARLY_OFF);
- 		break;
- 	case RTL_GIGA_MAC_VER_60 ... RTL_GIGA_MAC_VER_63:
-@@ -2410,7 +2414,7 @@ DECLARE_RTL_COND(rtl_rxtx_empty_cond_2)
- static void rtl_wait_txrx_fifo_empty(struct rtl8169_private *tp)
- {
- 	switch (tp->mac_version) {
--	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_52:
-+	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_53:
- 		rtl_loop_wait_high(tp, &rtl_txcfg_empty_cond, 100, 42);
- 		rtl_loop_wait_high(tp, &rtl_rxtx_empty_cond, 100, 42);
- 		break;
-@@ -3669,6 +3673,7 @@ static void rtl_hw_config(struct rtl8169_private *tp)
- 		[RTL_GIGA_MAC_VER_50] = rtl_hw_start_8168ep_2,
- 		[RTL_GIGA_MAC_VER_51] = rtl_hw_start_8168ep_3,
- 		[RTL_GIGA_MAC_VER_52] = rtl_hw_start_8117,
-+		[RTL_GIGA_MAC_VER_53] = rtl_hw_start_8117,
- 		[RTL_GIGA_MAC_VER_60] = rtl_hw_start_8125a_1,
- 		[RTL_GIGA_MAC_VER_61] = rtl_hw_start_8125a_2,
- 		[RTL_GIGA_MAC_VER_63] = rtl_hw_start_8125b,
-@@ -5055,7 +5060,7 @@ static void rtl_hw_init_8125(struct rtl8169_private *tp)
- static void rtl_hw_initialize(struct rtl8169_private *tp)
- {
- 	switch (tp->mac_version) {
--	case RTL_GIGA_MAC_VER_49 ... RTL_GIGA_MAC_VER_52:
-+	case RTL_GIGA_MAC_VER_49 ... RTL_GIGA_MAC_VER_53:
- 		rtl8168ep_stop_cmac(tp);
- 		fallthrough;
- 	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_48:
-diff --git a/drivers/net/ethernet/realtek/r8169_phy_config.c b/drivers/net/ethernet/realtek/r8169_phy_config.c
-index 913d030d73eb..50f0f621b1aa 100644
---- a/drivers/net/ethernet/realtek/r8169_phy_config.c
-+++ b/drivers/net/ethernet/realtek/r8169_phy_config.c
-@@ -1358,6 +1358,7 @@ void r8169_hw_phy_config(struct rtl8169_private *tp, struct phy_device *phydev,
- 		[RTL_GIGA_MAC_VER_50] = rtl8168ep_2_hw_phy_config,
- 		[RTL_GIGA_MAC_VER_51] = rtl8168ep_2_hw_phy_config,
- 		[RTL_GIGA_MAC_VER_52] = rtl8117_hw_phy_config,
-+		[RTL_GIGA_MAC_VER_53] = rtl8117_hw_phy_config,
- 		[RTL_GIGA_MAC_VER_60] = rtl8125a_1_hw_phy_config,
- 		[RTL_GIGA_MAC_VER_61] = rtl8125a_2_hw_phy_config,
- 		[RTL_GIGA_MAC_VER_63] = rtl8125b_hw_phy_config,
--- 
-2.29.2
+---------------------------------------------------------------------
+| flags | type | len | TEID | N-PDU | SEQ | Ext | EXT.Hdr | IP | ...
+---------------------------------------------------------------------
+<--------- GTP header ------<<Optional GTP elements>>-----><- Pkt --->
 
+The "collect metadata" path of the patchset copies 'flags' and 'type' to 
+info->opts, but leaves the following:
+
+-----------------------------------------
+| N-PDU | SEQ | Ext | EXT.Hdr | IP | ...
+-----------------------------------------
+<--------- GTP header -------><- Pkt --->
+
+So it's leaving _half_ the header and making it a requirement that there 
+be further intelligence down the line that can handle this.  This is far 
+from intuitive.
+
+/Jonas
