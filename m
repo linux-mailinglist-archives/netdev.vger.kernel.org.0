@@ -2,112 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98A5C30C1F0
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 15:38:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1305830CB6E
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 20:24:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234516AbhBBOh7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 09:37:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51384 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231499AbhBBORr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 09:17:47 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0966264FCD;
-        Tue,  2 Feb 2021 13:55:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612274159;
-        bh=uqEQxgxP/Gh6jkafzcZMwsNruCxCCpY2QrRHAchjz/o=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AJZKCAkxo4iNw6GvoaohZFZ6alAc19sFBqoWDRu0qkz7f0ZiSqji/3BwP2DQizckW
-         fRCRjI2NTiTh4HFtW09AF6rjvmTdGcbbCFqEdIZ0kAJYrmdiCtMrPEuD4IN5B0NoHN
-         WQ7J+ebZG6SJdlu1w8kHoaIB0H2kINRmq+k14SML6PRIIMoJCf/mwHEc8g6Sn6uuPB
-         9ztrCNZy9RseBE9g48WJ1yyI4PSypSHvbw6W7/XfdLfgT+1RiaEuTyEzr1DmCXFzvR
-         +67DFBd9dAd0Yd7JEfyZgxSstDlupg0aeJVm+Fad5uyt/lyxFU43SDI3UNHASfsRej
-         9xDdTDpTFlGOA==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Leon Romanovsky <leonro@nvidia.com>, coreteam@netfilter.org,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Westphal <fw@strlen.de>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Julian Anastasov <ja@ssi.bg>, linux-kernel@vger.kernel.org,
-        lvs-devel@vger.kernel.org, Matteo Croce <mcroce@redhat.com>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        Simon Horman <horms@verge.net.au>
-Subject: [PATCH net 4/4] netfilter: move handlers to net/ip_vs.h
-Date:   Tue,  2 Feb 2021 15:55:44 +0200
-Message-Id: <20210202135544.3262383-5-leon@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210202135544.3262383-1-leon@kernel.org>
-References: <20210202135544.3262383-1-leon@kernel.org>
+        id S239738AbhBBTYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 14:24:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49256 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233583AbhBBOAC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 09:00:02 -0500
+Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F4EDC06178B
+        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 05:59:21 -0800 (PST)
+Received: by mail-qt1-x829.google.com with SMTP id v3so14942938qtw.4
+        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 05:59:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=kPXwFAu2mSrtvutDiYBx8OuUL9CmPDdbnQK2i+UmkYk=;
+        b=zuFV28T2I7xVe0xPTYjyDCvA7+35EDesPy8rWCBqQyf6aEFplyp5zuFnargCMAtCA0
+         DWK/Kz+MKadzGb0gtir9bQOeWapuVvcN893nQc1K4Dk2LnlF7m1E6+l+AyZqSA69qO/v
+         mxP329wd8qQp8Y9tqoCtTQ4rpm/2yU2Bn/NubsnCH8cWyGABy1yHittB///MXGPy7Kgw
+         miB12Jgbr448vdVrJZqGOCiEutGLsOI7nuZHey9S8RPenIxKAl9WvhlXFGQyRL3lKV8r
+         cLq3qu7/yFX4vpI0du4YELYrQuEgwPhkPHhxxbBVdew3P07I4HV26zAEP+qlBMff1l6s
+         BRpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=kPXwFAu2mSrtvutDiYBx8OuUL9CmPDdbnQK2i+UmkYk=;
+        b=sGTB8S11DnsqNmRtFia7YVw2yLwq7tBhcGQiLP87aXl8pcGIWc+rnA7kMjd8k8U71k
+         MNjN7Fs6vZTIZNZeSUz7/49INCNV4lNE7Z/70AGO5HuVIvB7BLpTZhpThi8vh/ZtnOrI
+         hoKWLdKsT3XOZdZAe4zV3v6qOeAfLhiwX8DfcT9KKw7wbZ6/YrWoI+VqytkgOkXpadry
+         5M/XR/6YQ0/vNE5WcYz8psoqSJCJnVhT5sYjZW10JPdAVV8Xuk7LVtdEsoGuNPdX9bxU
+         3UB5j8L/fekMQ++WVmNpFyg7dkpgP7qq630lREN0NhB+GWCrBXx+ZFQYLxKG0lxlnUfh
+         s9aA==
+X-Gm-Message-State: AOAM530jq+yjnRMlmLAu/bqMDdNxZfEzL/QTQYCYeP0eJb3cFDfsAmKb
+        +FNI/vC5ADUzKFx7gqGZQB+Ozg==
+X-Google-Smtp-Source: ABdhPJzuL3KeTmHqfNLEvV/OLT1sw00uMgsDQbBfC5NLtnuYPfROPxun6kO98Bz0BBTwloNtVwIaNA==
+X-Received: by 2002:ac8:7453:: with SMTP id h19mr12075052qtr.354.1612274360324;
+        Tue, 02 Feb 2021 05:59:20 -0800 (PST)
+Received: from [192.168.2.48] (bras-base-kntaon1617w-grc-10-184-147-165-106.dsl.bell.ca. [184.147.165.106])
+        by smtp.googlemail.com with ESMTPSA id c22sm3453828qtp.19.2021.02.02.05.59.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Feb 2021 05:59:19 -0800 (PST)
+Subject: Re: [PATCH net-next v2] net/sched: act_police: add support for
+ packet-per-second policing
+To:     Simon Horman <simon.horman@netronome.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
+        oss-drivers@netronome.com, Baowen Zheng <baowen.zheng@corigine.com>
+References: <20210129102856.6225-1-simon.horman@netronome.com>
+ <0c47b7d7-dc2b-3422-62ff-92fea8300036@mojatatu.com>
+ <20210201123352.GB25935@netronome.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <35f88b4d-4505-a80d-f76c-f131919fa86a@mojatatu.com>
+Date:   Tue, 2 Feb 2021 08:59:18 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210201123352.GB25935@netronome.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+On 2021-02-01 7:33 a.m., Simon Horman wrote:
+> On Fri, Jan 29, 2021 at 09:30:00AM -0500, Jamal Hadi Salim wrote:
 
-Fix the following compilation warnings:
-net/netfilter/ipvs/ip_vs_proto_tcp.c:147:1: warning: no previous prototype for 'tcp_snat_handler' [-Wmissing-prototypes]
-  147 | tcp_snat_handler(struct sk_buff *skb, struct ip_vs_protocol *pp,
-      | ^~~~~~~~~~~~~~~~
-net/netfilter/ipvs/ip_vs_proto_udp.c:136:1: warning: no previous prototype for 'udp_snat_handler' [-Wmissing-prototypes]
-  136 | udp_snat_handler(struct sk_buff *skb, struct ip_vs_protocol *pp,
-      | ^~~~~~~~~~~~~~~~
+>> Ido's comment is important: Why not make packet rate vs byte rate
+>> mutually exclusive? If someone uses packet rate then you make sure
+>> they dont interleave with attributes for byte rate and vice-versa.
+>>
+> 
+> Sorry, I somehow missed Ido's email until you and he pointed it out
+> in this thread.
+>
 
-Fixes: 6ecd754883da ("ipvs: use indirect call wrappers")
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- include/net/ip_vs.h             | 11 +++++++++++
- net/netfilter/ipvs/ip_vs_core.c | 12 ------------
- 2 files changed, 11 insertions(+), 12 deletions(-)
+This one i think is still important. Potential for misconfig
+exists with both on.
+The check for exclusivity is rather simple in init().
+Also please see if you can add a test in the policer tests in tdc.
 
-diff --git a/include/net/ip_vs.h b/include/net/ip_vs.h
-index d609e957a3ec..7cb5a1aace40 100644
---- a/include/net/ip_vs.h
-+++ b/include/net/ip_vs.h
-@@ -1712,4 +1712,15 @@ ip_vs_dest_conn_overhead(struct ip_vs_dest *dest)
- 		atomic_read(&dest->inactconns);
- }
 
-+#ifdef CONFIG_IP_VS_PROTO_TCP
-+INDIRECT_CALLABLE_DECLARE(int
-+	tcp_snat_handler(struct sk_buff *skb, struct ip_vs_protocol *pp,
-+			 struct ip_vs_conn *cp, struct ip_vs_iphdr *iph));
-+#endif
-+
-+#ifdef CONFIG_IP_VS_PROTO_UDP
-+INDIRECT_CALLABLE_DECLARE(int
-+	udp_snat_handler(struct sk_buff *skb, struct ip_vs_protocol *pp,
-+			 struct ip_vs_conn *cp, struct ip_vs_iphdr *iph));
-+#endif
- #endif	/* _NET_IP_VS_H */
-diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
-index 54e086c65721..0c132ff9b446 100644
---- a/net/netfilter/ipvs/ip_vs_core.c
-+++ b/net/netfilter/ipvs/ip_vs_core.c
-@@ -68,18 +68,6 @@ EXPORT_SYMBOL(ip_vs_get_debug_level);
- #endif
- EXPORT_SYMBOL(ip_vs_new_conn_out);
+> Regarding splitting up the policer action. I think there is some value to
+> the current setup in terms of code re-use and allowing combinations of
+> features. But I do agree it would be a conversation worth having at some
+> point.
 
--#ifdef CONFIG_IP_VS_PROTO_TCP
--INDIRECT_CALLABLE_DECLARE(int
--	tcp_snat_handler(struct sk_buff *skb, struct ip_vs_protocol *pp,
--			 struct ip_vs_conn *cp, struct ip_vs_iphdr *iph));
--#endif
--
--#ifdef CONFIG_IP_VS_PROTO_UDP
--INDIRECT_CALLABLE_DECLARE(int
--	udp_snat_handler(struct sk_buff *skb, struct ip_vs_protocol *pp,
--			 struct ip_vs_conn *cp, struct ip_vs_iphdr *iph));
--#endif
--
- #if defined(CONFIG_IP_VS_PROTO_TCP) && defined(CONFIG_IP_VS_PROTO_UDP)
- #define SNAT_CALL(f, ...) \
- 	INDIRECT_CALL_2(f, tcp_snat_handler, udp_snat_handler, __VA_ARGS__)
---
-2.29.2
+Sounds reasonable.
 
+cheers,
+jamal
