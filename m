@@ -2,174 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E578D30B924
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 09:03:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B64E030B92F
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 09:06:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231902AbhBBIDn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 03:03:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57390 "EHLO
+        id S229685AbhBBIEc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 03:04:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231447AbhBBIDg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 03:03:36 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ED5BC061756
-        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 00:02:56 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1l6qeD-0008NT-DB; Tue, 02 Feb 2021 09:02:53 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:162d:e977:d9c4:7fc2] (unknown [IPv6:2a03:f580:87bc:d400:162d:e977:d9c4:7fc2])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 7D5105D45F9;
-        Tue,  2 Feb 2021 08:02:51 +0000 (UTC)
-Subject: Re: [PATCH linux-can] can: flexcan: enable RX FIFO after FRZ/HALT
- valid
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>
-References: <20210202062350.7258-1-qiangqing.zhang@nxp.com>
- <c6bc1c1b-b86e-63c2-2dba-eb9fe108516e@pengutronix.de>
- <DB8PR04MB67953020297534342367BD76E6B59@DB8PR04MB6795.eurprd04.prod.outlook.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <e410aa58-cd00-576e-2134-b3751a3b32ec@pengutronix.de>
-Date:   Tue, 2 Feb 2021 09:02:48 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        with ESMTP id S230377AbhBBIEQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 03:04:16 -0500
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DEECC061573
+        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 00:03:36 -0800 (PST)
+Received: by mail-lj1-x22b.google.com with SMTP id e18so22858878lja.12
+        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 00:03:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=norrbonn-se.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=1DmTUhYyRw1sPWNcRsynKKhC37FeKaREjN5Ap8/YwMc=;
+        b=Bn9cry7JvZMNFSPv+uHKkt2IDsHbgZ6YzN0tJIhL5Xa+SehemsM5tLSWdL8bCl1BKw
+         1AvT13fArkdVwOdXQhR0xrLQvPeqfLO3C1vS2C8avSqrj2yIO6lj71YWkqblm55r7Qyh
+         Tx+nHeORt7OjnVHHOKhcFNnuWJziG1fYdeQQw7grTLtCHXtOq7XJbqm/SBJ4gBouNkdC
+         9gfDuu09JJMobdVlFncwBpBenmzMOLtT7YIQJEsOAQXF2KdMQhT+WrFLLDD4fO4T5Iy6
+         Wc9dgMR5X/9VxazJo3YATHiho9NPN6qfKIh8i/U9Xtj1RHVdkigz0NdYHl1Zept3kMOc
+         DF+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=1DmTUhYyRw1sPWNcRsynKKhC37FeKaREjN5Ap8/YwMc=;
+        b=EvOLcFGGUN5A8mMEL77wtVXWlbYy/I/vCbnWRjcBPFnKKqjsd++b3VPrW2tbfwXICz
+         uw22h2lqoCUsRLHdYu7kQCBMiGHT371Ei9K2be+a6jvUncqSrpSzoe3cM9y1lSEv7HUJ
+         gfPR0NXoL/9+zgEMBM35uLbpHBrsYqycbXV/MHRWOQOu+A9YCp+TUCrm1SObLnl4h3IC
+         G5aURKa4mUWF6bUzK9UTa7teeTO2uoAC+neSusBNRfoSuPyDumO4xh9vYRVDzonyJ+OL
+         7YW4GwPJulxc4OuXgJgMCepAyZI2J8MVSYobYMyjoBytqEQfnJWnRsNgINgWvBRYb+kL
+         UFOw==
+X-Gm-Message-State: AOAM530i5MeTawgSZ/MKBQdMsYWIYqQR8GPJiOwHzeRK2S1O7MNwPBT+
+        kRJdpEUAlJYQyBhm1szHfFD9RQ==
+X-Google-Smtp-Source: ABdhPJzzyc1p6weWxbwJIJkGAyMPTVurqSicshozW3cJEVy6bVuCUCXtAeU+/4C7rsy4m62ig1Xbgg==
+X-Received: by 2002:a2e:7819:: with SMTP id t25mr12096358ljc.300.1612253014548;
+        Tue, 02 Feb 2021 00:03:34 -0800 (PST)
+Received: from [192.168.1.157] (h-137-65.A159.priv.bahnhof.se. [81.170.137.65])
+        by smtp.gmail.com with ESMTPSA id f20sm3223822lfm.71.2021.02.02.00.03.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 02 Feb 2021 00:03:34 -0800 (PST)
+Subject: Re: [RFC PATCH 15/16] gtp: add ability to send GTP controls headers
+To:     Pravin Shelar <pravin.ovn@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Harald Welte <laforge@gnumonks.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Pravin B Shelar <pbshelar@fb.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+References: <20210123195916.2765481-1-jonas@norrbonn.se>
+ <20210123195916.2765481-16-jonas@norrbonn.se>
+ <bf6de363-8e32-aca0-1803-a041c0f55650@norrbonn.se>
+ <CAOrHB_DFv8_5CJ7GjUHT4qpyJUkgeWyX0KefYaZ-iZkz0UgaAQ@mail.gmail.com>
+ <9b9476d2-186f-e749-f17d-d191c30347e4@norrbonn.se>
+ <CAOrHB_Cyx9Xf6s63wVFo1mYF7-ULbQD7eZy-_dTCKAUkO0iViw@mail.gmail.com>
+ <20210130104450.00b7ab7d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAOrHB_DQTsEPEWpPVEcpSnbkLLz8eWPFvvzzO8wjuYsP4=9-QQ@mail.gmail.com>
+ <20210201124414.21466bff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <03621476-ed9b-a186-3b9a-774c703c207a@norrbonn.se>
+ <CAOrHB_D101x6H3U1e0gUZZd5-VqmPMbaczPwJY1GA=6LXGafDw@mail.gmail.com>
+From:   Jonas Bonn <jonas@norrbonn.se>
+Message-ID: <6abf8cac-becf-de6c-acf2-1c8e0c7376ca@norrbonn.se>
+Date:   Tue, 2 Feb 2021 09:03:33 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-In-Reply-To: <DB8PR04MB67953020297534342367BD76E6B59@DB8PR04MB6795.eurprd04.prod.outlook.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="EUbO98gidNizR511TIaTSzwowklINSqDq"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <CAOrHB_D101x6H3U1e0gUZZd5-VqmPMbaczPwJY1GA=6LXGafDw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---EUbO98gidNizR511TIaTSzwowklINSqDq
-Content-Type: multipart/mixed; boundary="dTKlxS3m13pL1CRxp9jRVjNjzAnLaPzGu";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Joakim Zhang <qiangqing.zhang@nxp.com>,
- "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-Cc: "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- dl-linux-imx <linux-imx@nxp.com>
-Message-ID: <e410aa58-cd00-576e-2134-b3751a3b32ec@pengutronix.de>
-Subject: Re: [PATCH linux-can] can: flexcan: enable RX FIFO after FRZ/HALT
- valid
-References: <20210202062350.7258-1-qiangqing.zhang@nxp.com>
- <c6bc1c1b-b86e-63c2-2dba-eb9fe108516e@pengutronix.de>
- <DB8PR04MB67953020297534342367BD76E6B59@DB8PR04MB6795.eurprd04.prod.outlook.com>
-In-Reply-To: <DB8PR04MB67953020297534342367BD76E6B59@DB8PR04MB6795.eurprd04.prod.outlook.com>
-
---dTKlxS3m13pL1CRxp9jRVjNjzAnLaPzGu
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
-
-On 2/2/21 9:02 AM, Joakim Zhang wrote:
->> Please make use of existing functions like flexcan_chip_freeze().
->=20
-> OK, will improve it. Marc, I notice this issue also exist in
-> flexcan_chip_start(), should I fix it together?
-
-Make it two seperate patches.
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
---dTKlxS3m13pL1CRxp9jRVjNjzAnLaPzGu--
+On 02/02/2021 07:56, Pravin Shelar wrote:
+> On Mon, Feb 1, 2021 at 9:24 PM Jonas Bonn <jonas@norrbonn.se> wrote:
+>>
+>> Hi Jakub,
+>>
+>> On 01/02/2021 21:44, Jakub Kicinski wrote:
+>>> On Sat, 30 Jan 2021 12:05:40 -0800 Pravin Shelar wrote:
+>>>> On Sat, Jan 30, 2021 at 10:44 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>>>>> On Fri, 29 Jan 2021 22:59:06 -0800 Pravin Shelar wrote:
+>>>>>> On Fri, Jan 29, 2021 at 6:08 AM Jonas Bonn <jonas@norrbonn.se> wrote:
+>>>>>> Following are the reasons for extracting the header and populating metadata.
+>>>>>> 1. That is the design used by other tunneling protocols
+>>>>>> implementations for handling optional headers. We need to have a
+>>>>>> consistent model across all tunnel devices for upper layers.
+>>>>>
+>>>>> Could you clarify with some examples? This does not match intuition,
+>>>>> I must be missing something.
+>>>>
+>>>> You can look at geneve_rx() or vxlan_rcv() that extracts optional
+>>>> headers in ip_tunnel_info opts.
+>>>
+>>> Okay, I got confused what Jonas was inquiring about. I thought that the
+>>> extension headers were not pulled, rather than not parsed. Copying them
+>>> as-is to info->opts is right, thanks!
+>>>
+>>
+>> No, you're not confused.  The extension headers are not being pulled in
+>> the current patchset.
+>>
+>> Incoming packet:
+>>
+>> ---------------------------------------------------------------------
+>> | flags | type | len | TEID | N-PDU | SEQ | Ext | EXT.Hdr | IP | ...
+>> ---------------------------------------------------------------------
+>> <--------- GTP header ------<<Optional GTP elements>>-----><- Pkt --->
+>>
+>> The "collect metadata" path of the patchset copies 'flags' and 'type' to
+>> info->opts, but leaves the following:
+>>
+>> -----------------------------------------
+>> | N-PDU | SEQ | Ext | EXT.Hdr | IP | ...
+>> -----------------------------------------
+>> <--------- GTP header -------><- Pkt --->
+>>
+>> So it's leaving _half_ the header and making it a requirement that there
+>> be further intelligence down the line that can handle this.  This is far
+>> from intuitive.
+>>
+> 
+> The patch supports Echo, Echo response and End marker packet.
+> Issue with pulling the entire extension header is that it would result
+> in zero length skb, such packets can not be passed on to the upper
+> layer. That is the reason I kept the extension header in skb and added
+> indication in tunnel metadata that it is not a IP packet. so that
+> upper layer can process the packet.
+> IP packet without an extension header would be handled in a fast path
+> without any special handling.
+> 
+> Obviously In case of PDU session container extension header GTP driver
+> would need to process the entire extension header in the module. This
+> way we can handle these user data packets in fastpath.
+> I can make changes to use the same method for all extension headers if needed.
+> 
 
---EUbO98gidNizR511TIaTSzwowklINSqDq
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+The most disturbing bit is the fact that the upper layer needs to 
+understand that part of the header info is in info->opts whereas the 
+remainder is on the SKB itself.  If it is going to access the SKB 
+anyway, why not just leave the entire GTP header in place and let the 
+upper layer just get all the information from there?  What's the 
+advantage of info->opts in this case?
 
------BEGIN PGP SIGNATURE-----
+Normally, the gtp module extracts T-PDU's from the GTP packet and passes 
+them on (after validating their IP address) to the network stack.  For 
+_everything else_, it just passes them along the socket for handling 
+elsewhere.
 
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmAZBygACgkQqclaivrt
-76lOYggAl/UVm4PsB9wZsR7I5eA0ncOkvgwcQ0ljhie/eRdQimoXVX4bAK8d58eM
-GlcVpk0qwzxsSKBRXSqf4WCYH+3rtwTZCbhfcYkXBGgtC4qI0kaTDx4aQG92mkuD
-6uYIQHcI0svVzYG6tEgOWB5HmZYFXBzNKy3f6tqwu33eZe4cspzfsrm7HyfuqYKY
-jjsqjRcNKEA1Zu37jqqaAxAc0fQOz9DzjbaNTmCrnn+rxYRR4Yoqc4GdFzyByG1v
-Q38IMPaoI3i08EdVLZNjPzbYCHatPANAsI4G9DtDpL/M5CFNjdAm9eTWOPdM2Nsg
-zO7cvoFrm0G/LWy5ctrqa1MHAQ9ndA==
-=R+fW
------END PGP SIGNATURE-----
+It sounds like you are trying to do exactly the same thing:  extract 
+T-PDU and inject into network stack for T-PDU's, and pass everything
+else to another handler.
 
---EUbO98gidNizR511TIaTSzwowklINSqDq--
+So what is different in your case from the normal case?
+- there's metadata on the packet... can't we detect this and set the 
+tunnel ID from the TEID in that case?  Or can't we just always have 
+metadata on the packet?
+- the upper layer handler is in kernel space instead of userspace; but 
+they are doing pretty much the same thing, right?  why does the kernel 
+space variant need something (info->opts) that userspace can get by without?
+
+It would be seriously good to see a _real_ example of how you intend to 
+use this.  Isn't the PDP context mechanism already sufficient to do all 
+of the above?  What's missing?
+
+ip route 192.168.99.0/24 encap gtp id 100 dst 172.99.0.2 dev gtp1
+
+is roughly equivalent to:
+
+gtp-tunnel add gtp1 v1 [LOCAL_TEID] 100 172.99.0.2 [UE_IP]
+
+/Jonas
+
+
