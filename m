@@ -2,32 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F32230BC23
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 11:37:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFC3530BC25
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 11:37:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229783AbhBBKgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 05:36:21 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:7185 "EHLO
+        id S229850AbhBBKgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 05:36:25 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:7188 "EHLO
         hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbhBBKgP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 05:36:15 -0500
+        with ESMTP id S229633AbhBBKgQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 05:36:16 -0500
 Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B60192af70000>; Tue, 02 Feb 2021 02:35:35 -0800
+        id <B60192af80000>; Tue, 02 Feb 2021 02:35:36 -0800
 Received: from sw-mtx-036.mtx.labs.mlnx (172.20.145.6) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 2 Feb
- 2021 10:35:33 +0000
+ 2021 10:35:35 +0000
 From:   Parav Pandit <parav@nvidia.com>
 To:     <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <dsahern@gmail.com>,
         <stephen@networkplumber.org>, <mst@redhat.com>,
         <jasowang@redhat.com>
 CC:     Parav Pandit <parav@nvidia.com>
-Subject: [PATCH iproute2-next v3 0/5] Add vdpa device management tool
-Date:   Tue, 2 Feb 2021 12:35:13 +0200
-Message-ID: <20210202103518.3858-1-parav@nvidia.com>
+Subject: [PATCH iproute2-next v3 1/5] Add kernel headers
+Date:   Tue, 2 Feb 2021 12:35:14 +0200
+Message-ID: <20210202103518.3858-2-parav@nvidia.com>
 X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210122112654.9593-3-parav@nvidia.com>
+In-Reply-To: <20210202103518.3858-1-parav@nvidia.com>
 References: <20210122112654.9593-3-parav@nvidia.com>
+ <20210202103518.3858-1-parav@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain
@@ -35,120 +36,153 @@ X-Originating-IP: [172.20.145.6]
 X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
  HQMAIL107.nvidia.com (172.20.187.13)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1612262135; bh=1HIC4SA7rNq3aFrDXNqk5dum/56SF6d83BkKlVr7vX4=;
+        t=1612262136; bh=Zx7Y+EElvznYsinOctSzijr05C7rIpbbJtcqWI5Cu0w=;
         h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
          References:MIME-Version:Content-Transfer-Encoding:Content-Type:
          X-Originating-IP:X-ClientProxiedBy;
-        b=nwk90/KAe82eO98Z8rooOavbR64FhzELvYALJ5/BoSy9SS7LJXtg4kVexEcI51F0z
-         cRSPjwXlswU/Ovp0Sh/Gqs4OaWBhZLUpyngbcW0vDqFPpexhzVKcZfgmVBED6yNjvK
-         Wsq/JcNueWOdM04UncI/V22lnTLsC7QkGBt4KrWmmsm0aYIBTD2yc7jumAUlvyI8Jx
-         FVhPAD0KG/K0t/Gcvd1kGxwBQo8aoRtYnvX5JA0KrV93U/WAu5NVUK5IQk26mMWdd4
-         i0XIEL63kssD/reLSeTSK6G2PlKNj83gqwkYiR3+KQOv7XexaNiejp+mjDkzdCJlRP
-         W+NCARt5b3lNw==
+        b=HNyQ1qychsYEuJ5VGRJHtmCAF/hGUBjytRmNIYszWiRpM8GStR8Zv97CI3pl2fd7b
+         NAdM31JvbhhJYGwvC8Fn+y2jtWySPfHzHnQcKxbNxCkpw3bc40u2yLO9guM265eUT6
+         xUl1a8uWzcTWYw+yG7YeAtALXlTlh4AnYau08j0bhaBU9WjxVdc5MI9OZvoGwYq3X6
+         V4Y/AE1z54WYbqfEvgf29A+gd9kemml4KRsb0lzxIgiBBKcmgDlvB2j11orOVCaP1v
+         u2SOrUFAH3iHzdNGh6gJT7ojskB64TsHDXNi4sfaHUjbSQUaxxWba+52ZyNciDMNj4
+         qgQyo+mKBFK3Q==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Linux vdpa interface allows vdpa device management functionality.
-This includes adding, removing, querying vdpa devices.
+Add kernel headers to commit from kernel tree [1].
+   79991caf5202c7 ("vdpa_sim_net: Add support for user supported devices")
 
-vdpa interface also includes showing supported management devices
-which support such operations.
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git branch: l=
+inux-next
 
-This patchset includes kernel uapi headers and a vdpa tool.
-
-examples:
-
-$ vdpa mgmtdev show
-vdpasim:
-  supported_classes net
-
-$ vdpa mgmtdev show -jp
-{
-    "show": {
-        "vdpasim": {
-            "supported_classes": [ "net" ]
-        }
-    }
-}
-
-Create a vdpa device of type networking named as "foo2" from
-the management device vdpasim_net:
-
-$ vdpa dev add mgmtdev vdpasim_net name foo2
-
-Show the newly created vdpa device by its name:
-$ vdpa dev show foo2
-foo2: type network mgmtdev vdpasim_net vendor_id 0 max_vqs 2 max_vq_size 25=
-6
-
-$ vdpa dev show foo2 -jp
-{
-    "dev": {
-        "foo2": {
-            "type": "network",
-            "mgmtdev": "vdpasim_net",
-            "vendor_id": 0,
-            "max_vqs": 2,
-            "max_vq_size": 256
-        }
-    }
-}
-
-Delete the vdpa device after its use:
-$ vdpa dev del foo2
-
-Patch summary:
-Patch-1 adds kernel headers for vdpa subsystem
-Patch-2 adds library routines for indent handling
-Patch-3 adds library routines for generic socket communication
-PAtch-4 adds library routine for number to string mapping
-Patch-5 adds vdpa tool
-
-Kernel headers are from the vhost kernel tree [1] from branch linux-next.
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git
-
+Signed-off-by: Parav Pandit <parav@nvidia.com>
 ---
-changelog:
-v2->v3:
- - addressed David's comment to split patch for utils and other parts
- - rebased
- - using newly added helper routine for number to string mapping
-v1->v2:
- - addressed below comments from David
- - added and used library helpers for socket communication
- - added and used library functions for string processing helpers
- - added and used library functions indent processing helpers
-
-Parav Pandit (5):
-  Add kernel headers
-  utils: Add helper routines for indent handling
-  utils: Add generic socket helpers
-  utils: Add helper to map string to unsigned int
-  vdpa: Add vdpa tool
-
- Makefile                        |   2 +-
- include/mnl_utils.h             |  16 +
- include/uapi/linux/vdpa.h       |  40 ++
- include/uapi/linux/virtio_ids.h |  58 +++
- include/utils.h                 |  20 +-
- lib/mnl_utils.c                 | 121 ++++++
- lib/utils.c                     |  83 +++-
- man/man8/vdpa-dev.8             |  96 +++++
- man/man8/vdpa-mgmtdev.8         |  53 +++
- man/man8/vdpa.8                 |  76 ++++
- vdpa/Makefile                   |  24 ++
- vdpa/vdpa.c                     | 675 ++++++++++++++++++++++++++++++++
- 12 files changed, 1260 insertions(+), 4 deletions(-)
+ include/uapi/linux/vdpa.h       | 40 +++++++++++++++++++++++
+ include/uapi/linux/virtio_ids.h | 58 +++++++++++++++++++++++++++++++++
+ 2 files changed, 98 insertions(+)
  create mode 100644 include/uapi/linux/vdpa.h
  create mode 100644 include/uapi/linux/virtio_ids.h
- create mode 100644 man/man8/vdpa-dev.8
- create mode 100644 man/man8/vdpa-mgmtdev.8
- create mode 100644 man/man8/vdpa.8
- create mode 100644 vdpa/Makefile
- create mode 100644 vdpa/vdpa.c
 
+diff --git a/include/uapi/linux/vdpa.h b/include/uapi/linux/vdpa.h
+new file mode 100644
+index 00000000..66a41e4e
+--- /dev/null
++++ b/include/uapi/linux/vdpa.h
+@@ -0,0 +1,40 @@
++/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
++/*
++ * vdpa device management interface
++ * Copyright (c) 2020 Mellanox Technologies Ltd. All rights reserved.
++ */
++
++#ifndef _UAPI_LINUX_VDPA_H_
++#define _UAPI_LINUX_VDPA_H_
++
++#define VDPA_GENL_NAME "vdpa"
++#define VDPA_GENL_VERSION 0x1
++
++enum vdpa_command {
++	VDPA_CMD_UNSPEC,
++	VDPA_CMD_MGMTDEV_NEW,
++	VDPA_CMD_MGMTDEV_GET,		/* can dump */
++	VDPA_CMD_DEV_NEW,
++	VDPA_CMD_DEV_DEL,
++	VDPA_CMD_DEV_GET,		/* can dump */
++};
++
++enum vdpa_attr {
++	VDPA_ATTR_UNSPEC,
++
++	/* bus name (optional) + dev name together make the parent device handle =
+*/
++	VDPA_ATTR_MGMTDEV_BUS_NAME,		/* string */
++	VDPA_ATTR_MGMTDEV_DEV_NAME,		/* string */
++	VDPA_ATTR_MGMTDEV_SUPPORTED_CLASSES,	/* u64 */
++
++	VDPA_ATTR_DEV_NAME,			/* string */
++	VDPA_ATTR_DEV_ID,			/* u32 */
++	VDPA_ATTR_DEV_VENDOR_ID,		/* u32 */
++	VDPA_ATTR_DEV_MAX_VQS,			/* u32 */
++	VDPA_ATTR_DEV_MAX_VQ_SIZE,		/* u16 */
++
++	/* new attributes must be added above here */
++	VDPA_ATTR_MAX,
++};
++
++#endif
+diff --git a/include/uapi/linux/virtio_ids.h b/include/uapi/linux/virtio_id=
+s.h
+new file mode 100644
+index 00000000..bc1c0621
+--- /dev/null
++++ b/include/uapi/linux/virtio_ids.h
+@@ -0,0 +1,58 @@
++#ifndef _LINUX_VIRTIO_IDS_H
++#define _LINUX_VIRTIO_IDS_H
++/*
++ * Virtio IDs
++ *
++ * This header is BSD licensed so anyone can use the definitions to implem=
+ent
++ * compatible drivers/servers.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ * 1. Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ * 2. Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in the
++ *    documentation and/or other materials provided with the distribution.
++ * 3. Neither the name of IBM nor the names of its contributors
++ *    may be used to endorse or promote products derived from this softwar=
+e
++ *    without specific prior written permission.
++ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``A=
+S IS'' AND
++ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURP=
+OSE
++ * ARE DISCLAIMED.  IN NO EVENT SHALL IBM OR CONTRIBUTORS BE LIABLE
++ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENT=
+IAL
++ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
++ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
++ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STR=
+ICT
++ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY W=
+AY
++ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
++ * SUCH DAMAGE. */
++
++#define VIRTIO_ID_NET			1 /* virtio net */
++#define VIRTIO_ID_BLOCK			2 /* virtio block */
++#define VIRTIO_ID_CONSOLE		3 /* virtio console */
++#define VIRTIO_ID_RNG			4 /* virtio rng */
++#define VIRTIO_ID_BALLOON		5 /* virtio balloon */
++#define VIRTIO_ID_IOMEM			6 /* virtio ioMemory */
++#define VIRTIO_ID_RPMSG			7 /* virtio remote processor messaging */
++#define VIRTIO_ID_SCSI			8 /* virtio scsi */
++#define VIRTIO_ID_9P			9 /* 9p virtio console */
++#define VIRTIO_ID_MAC80211_WLAN		10 /* virtio WLAN MAC */
++#define VIRTIO_ID_RPROC_SERIAL		11 /* virtio remoteproc serial link */
++#define VIRTIO_ID_CAIF			12 /* Virtio caif */
++#define VIRTIO_ID_MEMORY_BALLOON	13 /* virtio memory balloon */
++#define VIRTIO_ID_GPU			16 /* virtio GPU */
++#define VIRTIO_ID_CLOCK			17 /* virtio clock/timer */
++#define VIRTIO_ID_INPUT			18 /* virtio input */
++#define VIRTIO_ID_VSOCK			19 /* virtio vsock transport */
++#define VIRTIO_ID_CRYPTO		20 /* virtio crypto */
++#define VIRTIO_ID_SIGNAL_DIST		21 /* virtio signal distribution device */
++#define VIRTIO_ID_PSTORE		22 /* virtio pstore device */
++#define VIRTIO_ID_IOMMU			23 /* virtio IOMMU */
++#define VIRTIO_ID_MEM			24 /* virtio mem */
++#define VIRTIO_ID_FS			26 /* virtio filesystem */
++#define VIRTIO_ID_PMEM			27 /* virtio pmem */
++#define VIRTIO_ID_MAC80211_HWSIM	29 /* virtio mac80211-hwsim */
++
++#endif /* _LINUX_VIRTIO_IDS_H */
 --=20
 2.26.2
 
