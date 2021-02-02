@@ -2,113 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0CFE30C429
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 16:43:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70BBF30C49E
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 16:58:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235713AbhBBPnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 10:43:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43072 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233306AbhBBPma (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 10:42:30 -0500
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D204C061573
-        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 07:41:50 -0800 (PST)
-Received: by mail-pl1-x635.google.com with SMTP id e12so3483143pls.4
-        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 07:41:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2O6kF5iiw0UfOuyh1anKkeNVJ9BrmHgvUSBLx0dgbao=;
-        b=NehVQB1EpbqvPonREgLUw2J1paC3wejVoaFez6ovLp1ZfnFvwHPa1tsk6hXTQJrVOp
-         M56AZf4i38DpaiYyFKmy5XEVkkFTkmOYVbCXZEh/MTq0fxMEwtS07Q5I7tAYUELgYHgE
-         ASsX0CqvCGOMp2bSL4uizhXKwxpZxEXnOzzclayRktgvVIETdXBtF7zowwOJZubFk03q
-         ZvaX9cYq+qGJSP6S0lfhAdSMFdVUi9Nf5lW0phQx+xnutnED4xfzCY/Ehi7oKUcs8n0V
-         zJnzNLTPgP6cpE8iJhbO+f9ffaCv1xDas8l5O9ipvgOkLGKB+G5RJIf8nVIlhX/oJVUe
-         CYBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2O6kF5iiw0UfOuyh1anKkeNVJ9BrmHgvUSBLx0dgbao=;
-        b=f9yFzw7oz5Bc/zlc0UC1e/S9xAy/NMKNu04kbmBubGaUbs7VeHA3lSm+wLTCSMnaJA
-         7tP9Db7s3QKZm02cSneAzeNICAQxtbAQzCtDFpHshPr8nrpMuSq7mKNItQmqgk/Yrr2a
-         mT7AtJ+xFF8K6PuaZXjWxvn3JdBP7tvSdVgLQwAVDjv07X6UPRuoMDoQ1ZO9WsWFtSpV
-         pQ35vr2ZWKrgztB7IarkjIKw+VbtYOB39q2L14JjmDEdaUzxOdDukg7p0j/EY2onlhCK
-         HyAvKFe2S1MkGvY2vWTAouDXgSPXKRyXqi/FVyi21QbQRSVkGGaUxyfmM0UWQEVEDf+A
-         DiWw==
-X-Gm-Message-State: AOAM533P8To21S1aQ2Nh/GR0PN9JgaMEMSnaIDCMQAowJuok4zYjxotW
-        /ZypDkDPtXpYiWdcFPPPI7c=
-X-Google-Smtp-Source: ABdhPJxGzVcthPyccJ1JVjEhxZdT44yeQ4+XL1xq0/+LUOI3VtuDiMuBZN7Jmc+Vg0g4n4ZB+MQNmQ==
-X-Received: by 2002:a17:90a:67ca:: with SMTP id g10mr5080904pjm.28.1612280509693;
-        Tue, 02 Feb 2021 07:41:49 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:4dda:fb1a:cb1f:eea5])
-        by smtp.gmail.com with ESMTPSA id v1sm22991175pga.63.2021.02.02.07.41.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Feb 2021 07:41:48 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Leon Romanovsky <leonro@nvidia.com>
-Subject: [PATCH net-next] inet: do not export inet_gro_{receive|complete}
-Date:   Tue,  2 Feb 2021 07:41:45 -0800
-Message-Id: <20210202154145.1568451-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.30.0.365.g02bc693789-goog
+        id S235828AbhBBP46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 10:56:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48824 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235818AbhBBPzB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 10:55:01 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D557B64F5E;
+        Tue,  2 Feb 2021 15:54:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612281253;
+        bh=tTSJ6G+PI+xlH2RyCUwOWa9GfU59ob6JOGgyGyJE9sw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=o5BVmYjm39/e/jNOOkOycCC7U3mmvdIGvFgpAQbXVOb3+fxRR2qxg1DszNJ+v4845
+         FHzTHCJRSz2GukZKc2iGH9X+ifok5xqA/yaQYpV/IX+gkHEKRGTWLo/uSZJgWM6/Ff
+         SiPm4vECoGC79qEmse7uAeR/aHNNeWuSUcRG5RFDbf9AmmOVIkb/kOcQ+WTMJm9rYU
+         loq+oVF5QDBjexBJepGPQkjrm8Oj16fXm5KUtgQBS4x/2RktW88S57zI1UEJ0V1hPX
+         RKDfhi7Kx4mO1KwNqz+Fmd+9A4kX2xN3ruQFm0ZnYUxIwg1VOEVQkOPRS0xevZzQbZ
+         Aw0g2YBRC17eg==
+Date:   Tue, 2 Feb 2021 17:54:09 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        coreteam@netfilter.org, Florian Westphal <fw@strlen.de>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Julian Anastasov <ja@ssi.bg>,
+        LKML <linux-kernel@vger.kernel.org>, lvs-devel@vger.kernel.org,
+        Matteo Croce <mcroce@redhat.com>,
+        netdev <netdev@vger.kernel.org>, netfilter-devel@vger.kernel.org,
+        Simon Horman <horms@verge.net.au>
+Subject: Re: [PATCH net 0/4] Fix W=1 compilation warnings in net/* folder
+Message-ID: <20210202155409.GB3264866@unreal>
+References: <20210202135544.3262383-1-leon@kernel.org>
+ <CANn89iL4jGbr_6rr11nsHxmdh7uz=kqXuMhRb0nakWO3rBZwsQ@mail.gmail.com>
+ <20210202145724.GA3264866@unreal>
+ <CANn89iJ1WYEfS-Pgzvec+54+3JQHCPSNdCfYaFkGYAEk3sGwmA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANn89iJ1WYEfS-Pgzvec+54+3JQHCPSNdCfYaFkGYAEk3sGwmA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Tue, Feb 02, 2021 at 03:59:38PM +0100, Eric Dumazet wrote:
+> On Tue, Feb 2, 2021 at 3:57 PM Leon Romanovsky <leon@kernel.org> wrote:
+> >
+> > On Tue, Feb 02, 2021 at 03:34:37PM +0100, Eric Dumazet wrote:
+> > > On Tue, Feb 2, 2021 at 2:55 PM Leon Romanovsky <leon@kernel.org> wrote:
+> > > >
+> > > > From: Leon Romanovsky <leonro@nvidia.com>
+> > > >
+> > > > Hi,
+> > > >
+> > > > This short series fixes W=1 compilation warnings which I experienced
+> > > > when tried to compile net/* folder.
+> > > >
+> > >
+> > > Ok, but we never had a strong requirement about W=1, so adding Fixes:
+> > > tag is adding
+> >
+> > I added because Jakub has checker that looks for Fixes lines in "net"
+> > patches.
+>
+> Send this to net-next
 
-inet_gro_receive() and inet_gro_complete() are part
-of GRO engine which can not be modular.
+No problem.
 
-Similarly, inet_gso_segment() does not need to be exported,
-being part of GSO stack.
+>
+> As I stated, we never enforce W=1 compilation rule.
+>
+> I understand we might want that for _future_ kernels.
+>
+> >
+> > > unnecessary burden to stable teams all around the world.
+> >
+> > It is automatic.
+>
+> I do receive a copy of all backports in my mailbox, whenever I am tagged.
+>
+> I can tell you there is a lot of pollution.
 
-In other words, net/ipv6/ip6_offload.o is part of vmlinux,
-regardless of CONFIG_IPV6.
+I'm receiving them either.
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Leon Romanovsky <leonro@nvidia.com>
----
- net/ipv4/af_inet.c | 3 ---
- 1 file changed, 3 deletions(-)
-
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index b94fa8eb831bf3b18917529ef6a9263edb968592..be43c8d95af56624c4deee30e5f737eacdb884c1 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -1419,7 +1419,6 @@ struct sk_buff *inet_gso_segment(struct sk_buff *skb,
- out:
- 	return segs;
- }
--EXPORT_SYMBOL(inet_gso_segment);
- 
- static struct sk_buff *ipip_gso_segment(struct sk_buff *skb,
- 					netdev_features_t features)
-@@ -1550,7 +1549,6 @@ struct sk_buff *inet_gro_receive(struct list_head *head, struct sk_buff *skb)
- 
- 	return pp;
- }
--EXPORT_SYMBOL(inet_gro_receive);
- 
- static struct sk_buff *ipip_gro_receive(struct list_head *head,
- 					struct sk_buff *skb)
-@@ -1636,7 +1634,6 @@ int inet_gro_complete(struct sk_buff *skb, int nhoff)
- 
- 	return err;
- }
--EXPORT_SYMBOL(inet_gro_complete);
- 
- static int ipip_gro_complete(struct sk_buff *skb, int nhoff)
- {
--- 
-2.30.0.365.g02bc693789-goog
-
+>
+> >
+> > Thanks
