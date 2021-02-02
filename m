@@ -2,77 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21C8F30C98D
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 19:22:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FB2A30C9BF
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 19:30:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233670AbhBBSWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 13:22:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47934 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233691AbhBBSPX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 13:15:23 -0500
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23F3AC0613D6
-        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 10:14:42 -0800 (PST)
-Received: by mail-yb1-xb2c.google.com with SMTP id k4so21348763ybp.6
-        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 10:14:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Q4Yet8/ICUuecxx3G8n77Q2xsvxpIESRvJ/T6154iuQ=;
-        b=NhN8vrvP2eO34zTWQNC5MdOiqQA8HXgPZY/h5EGUpkHwzEZ2go5Mfq49nEITvGje9w
-         s5eF/Gi4b8T3YprD3BsTD1jGWr4EZJca4IA8kt9WckVCsZL+dxPSpWUrYkhLsWvcVeUU
-         cUL1g0NWyFF7cFZoxWKqj8kzbdWcmCPJyxK/+NCq/E50xQ7hdSBDFxpT31b1QcrPof1i
-         QeeLXomoBFPeNZPV4CAgRgIM9TZujLSsxmvgIjoYsawAO5fKEYx/S21t7raOSfKQ5lON
-         R8zT5gXg3TXPjBHebvRkQkJuYadIYReCo5QjOLaB+E3JgwTKtdT5sESsQrKvzZ4Gk/Pd
-         Lxog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Q4Yet8/ICUuecxx3G8n77Q2xsvxpIESRvJ/T6154iuQ=;
-        b=HLgLDw35lDDkGBptPEbGaMXOxjtH1FcICrvCN8BnukspCwLguzc4ifJvijxkPDxppq
-         fb2WsqH7aAsH1OdxLkLYAy16ArvP08n9OmTPf5j36wDyFszySmhidGqZTyoX6y0kwcWC
-         jRzEKv+DJDtRaHgS05Le6o9PwWc24xlHGjlDJ7+UU3iYWhAx8JVc2/cutx+608Q8viHe
-         IxT+FZWgZduVD/fH1L7l+N0tW0ysxA82idHPl3/KeNeFCXZGnUGmhIHw8KZHqlo91e2o
-         FFvLjoNHYx30qcQzeXeEPNTb21dEr+gpksBr9Vs0GZhUO7ahEkAnFQIdqteb3QgNMFvj
-         Ok0w==
-X-Gm-Message-State: AOAM533mIVhOEuiVEm+YUQcaObhHeLuI30x1g4VA4TwGA2LEB4DlGSTu
-        Ar80Y2n2FDXIus3YwGbAaEE1Tk/cpYDjvu03b9k=
-X-Google-Smtp-Source: ABdhPJwuULxnYDOw9vRvGPNO1pzxjIRiQYMajRXjd92soZGhut9VeX5yjyuWhRPpS/rAlGuSs3I5CJ702h6r3k4J7y4=
-X-Received: by 2002:a25:76ce:: with SMTP id r197mr13366975ybc.11.1612289681486;
- Tue, 02 Feb 2021 10:14:41 -0800 (PST)
+        id S238636AbhBBS1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 13:27:33 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:10985 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238556AbhBBS0J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 13:26:09 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B601999190001>; Tue, 02 Feb 2021 10:25:29 -0800
+Received: from dev-r-vrt-156.mtr.labs.mlnx (172.20.145.6) by
+ HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3; Tue, 2 Feb 2021 18:25:27 +0000
+From:   Danielle Ratson <danieller@nvidia.com>
+To:     <netdev@vger.kernel.org>
+CC:     <mkubecek@suse.cz>, <f.fainelli@gmail.com>, <kuba@kernel.org>,
+        <andrew@lunn.ch>, <mlxsw@nvidia.com>,
+        Danielle Ratson <danieller@nvidia.com>
+Subject: [PATCH ethtool v2 0/5] Extend uAPI with lanes parameter
+Date:   Tue, 2 Feb 2021 20:25:08 +0200
+Message-ID: <20210202182513.325864-1-danieller@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <20210201100509.27351-1-borisp@mellanox.com> <20210201100509.27351-8-borisp@mellanox.com>
- <20210201173744.GC12960@lst.de>
-In-Reply-To: <20210201173744.GC12960@lst.de>
-From:   Or Gerlitz <gerlitz.or@gmail.com>
-Date:   Tue, 2 Feb 2021 20:14:30 +0200
-Message-ID: <CAJ3xEMhninJE5zw7=QFL4gBVkH=1tAmQHyq7tKMqcSJ_KkDsWQ@mail.gmail.com>
-Subject: Re: [PATCH v3 net-next 07/21] nvme-tcp: Add DDP data-path
-To:     Christoph Hellwig <hch@lst.de>, Keith Busch <kbusch@kernel.org>,
-        Sagi Grimberg <sagi@grimberg.me>, axboe@fb.com
-Cc:     Boris Pismenny <borisp@mellanox.com>, smalin@marvell.com,
-        yorayz@nvidia.com, boris.pismenny@gmail.com,
-        Ben Ben-Ishay <benishay@mellanox.com>,
-        Yoray Zack <yorayz@mellanox.com>,
-        linux-nvme@lists.infradead.org, David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Or Gerlitz <ogerlitz@mellanox.com>, benishay@nvidia.com,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Or Gerlitz <ogerlitz@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1612290329; bh=heNa+sT75JX7QZQ8tWtenmOAquBuWtQyjDID4fSnQds=;
+        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+         Content-Transfer-Encoding:Content-Type:X-Originating-IP:
+         X-ClientProxiedBy;
+        b=NHJDLS04CeF95y08B+q/0FKOtsvAFAyp6NQ3ei+5OGd7/lrSqi2cJmhKumiNAZuPY
+         AlesmXR0cXasElnOshv/x7BShawJMUaj8bpFBZdrKxKGkI7AAcPbC1WrAkGPUKmVIX
+         yQvGeRo2K2YeNpEPhTS4r49rwQcPyJORabLCBBZKQWAoPXaAl1feYftu6ZS0LU0lxh
+         StOpxiFFibeuZlkHdfIIHlVP1U7QqlCXNQExvQEx3Oj3fnTPQM+F3yCmkKrXX8WZvp
+         pSoQVIWDUEJh4bGWIL18kse9c6rYSUc+YB+hg5t3qo0MKbC5yLcPqXqb+kfawEy8SW
+         Ytz/A6puIlz6w==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 1, 2021 at 7:40 PM Christoph Hellwig <hch@lst.de> wrote:
-> Given how much ddp code there is can you split it into a separate file?
+Currently, there is no way of knowing how many lanes will be use to
+achieve a wanted speed.
+For example, 100G speed can be achieved using: 2X50 or 4X25.
 
-mmm, do we need to check the preferences or get to a consensus among
-the maintainers for that one?
+In order to solve that, extend ethtool uAPI with lanes as a new link
+mode setting so the command below, for example, will be supported:
+$ ethtool -s swp5 lanes N
+
+Patch #1: Update headers with the new parameter.
+Patch #2: Support lanes in netlink.
+Patch #3: Expose the number of lanes in use.
+Patch #4: Add auto-completion for lanes.
+Patch #5: Add lanes to man page.
+
+Danielle Ratson (5):
+  ethtool: Extend ethtool link modes settings uAPI with lanes
+  netlink: settings: Add netlink support for lanes parameter
+  netlink: settings: Expose the number of lanes in use
+  shell-completion: Add completion for lanes
+  man: Add man page for setting lanes parameter
+
+ ethtool.8.in                  |  4 ++++
+ ethtool.c                     |  1 +
+ netlink/desc-ethtool.c        |  1 +
+ netlink/settings.c            | 14 ++++++++++++++
+ shell-completion/bash/ethtool |  4 ++++
+ uapi/linux/ethtool_netlink.h  |  1 +
+ 6 files changed, 25 insertions(+)
+
+--=20
+2.26.2
+
