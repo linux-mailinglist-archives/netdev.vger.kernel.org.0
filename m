@@ -2,101 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1305830CB6E
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 20:24:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3F8330C0E5
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 15:10:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239738AbhBBTYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 14:24:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49256 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233583AbhBBOAC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 09:00:02 -0500
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F4EDC06178B
-        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 05:59:21 -0800 (PST)
-Received: by mail-qt1-x829.google.com with SMTP id v3so14942938qtw.4
-        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 05:59:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=kPXwFAu2mSrtvutDiYBx8OuUL9CmPDdbnQK2i+UmkYk=;
-        b=zuFV28T2I7xVe0xPTYjyDCvA7+35EDesPy8rWCBqQyf6aEFplyp5zuFnargCMAtCA0
-         DWK/Kz+MKadzGb0gtir9bQOeWapuVvcN893nQc1K4Dk2LnlF7m1E6+l+AyZqSA69qO/v
-         mxP329wd8qQp8Y9tqoCtTQ4rpm/2yU2Bn/NubsnCH8cWyGABy1yHittB///MXGPy7Kgw
-         miB12Jgbr448vdVrJZqGOCiEutGLsOI7nuZHey9S8RPenIxKAl9WvhlXFGQyRL3lKV8r
-         cLq3qu7/yFX4vpI0du4YELYrQuEgwPhkPHhxxbBVdew3P07I4HV26zAEP+qlBMff1l6s
-         BRpQ==
+        id S233994AbhBBOKD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 09:10:03 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:28652 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233926AbhBBOHw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 09:07:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612274784;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HoV6WmzOM8JYFHRnbfZo8tVfL3dwzU/hINcFi1knTHc=;
+        b=XdOENgkvd8cmfnUccX7rF6hlKCiuqTtBIxsmDjpZ2YR26jORetIwvgAU7qJnzJ3V2B+arW
+        Gnad8E++TJ1An6rtvQIyGM+6Ms32KHnZYeGicV6u07zYVv7zRD3wLBYNJanERucDxmiafM
+        hWPZrp+pK2ruN4EzDJEIAyMcdL870Po=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-311-C7YumxPCOh2Qpi0okMiF0A-1; Tue, 02 Feb 2021 09:06:22 -0500
+X-MC-Unique: C7YumxPCOh2Qpi0okMiF0A-1
+Received: by mail-wm1-f71.google.com with SMTP id j204so1490404wmj.4
+        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 06:06:22 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=kPXwFAu2mSrtvutDiYBx8OuUL9CmPDdbnQK2i+UmkYk=;
-        b=sGTB8S11DnsqNmRtFia7YVw2yLwq7tBhcGQiLP87aXl8pcGIWc+rnA7kMjd8k8U71k
-         MNjN7Fs6vZTIZNZeSUz7/49INCNV4lNE7Z/70AGO5HuVIvB7BLpTZhpThi8vh/ZtnOrI
-         hoKWLdKsT3XOZdZAe4zV3v6qOeAfLhiwX8DfcT9KKw7wbZ6/YrWoI+VqytkgOkXpadry
-         5M/XR/6YQ0/vNE5WcYz8psoqSJCJnVhT5sYjZW10JPdAVV8Xuk7LVtdEsoGuNPdX9bxU
-         3UB5j8L/fekMQ++WVmNpFyg7dkpgP7qq630lREN0NhB+GWCrBXx+ZFQYLxKG0lxlnUfh
-         s9aA==
-X-Gm-Message-State: AOAM530jq+yjnRMlmLAu/bqMDdNxZfEzL/QTQYCYeP0eJb3cFDfsAmKb
-        +FNI/vC5ADUzKFx7gqGZQB+Ozg==
-X-Google-Smtp-Source: ABdhPJzuL3KeTmHqfNLEvV/OLT1sw00uMgsDQbBfC5NLtnuYPfROPxun6kO98Bz0BBTwloNtVwIaNA==
-X-Received: by 2002:ac8:7453:: with SMTP id h19mr12075052qtr.354.1612274360324;
-        Tue, 02 Feb 2021 05:59:20 -0800 (PST)
-Received: from [192.168.2.48] (bras-base-kntaon1617w-grc-10-184-147-165-106.dsl.bell.ca. [184.147.165.106])
-        by smtp.googlemail.com with ESMTPSA id c22sm3453828qtp.19.2021.02.02.05.59.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 02 Feb 2021 05:59:19 -0800 (PST)
-Subject: Re: [PATCH net-next v2] net/sched: act_police: add support for
- packet-per-second policing
-To:     Simon Horman <simon.horman@netronome.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
-        oss-drivers@netronome.com, Baowen Zheng <baowen.zheng@corigine.com>
-References: <20210129102856.6225-1-simon.horman@netronome.com>
- <0c47b7d7-dc2b-3422-62ff-92fea8300036@mojatatu.com>
- <20210201123352.GB25935@netronome.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <35f88b4d-4505-a80d-f76c-f131919fa86a@mojatatu.com>
-Date:   Tue, 2 Feb 2021 08:59:18 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=HoV6WmzOM8JYFHRnbfZo8tVfL3dwzU/hINcFi1knTHc=;
+        b=NsHSQGm54jQrZCtekMT/GkSI8zkt4xvxfv3yr1XSZAqjomA+DX/wGK+qdAr47T7ARG
+         LBWUV6IXwCbPAUEFsdU4GXIJkT30mzsaynr0lrJcHmlKRnXZ5qjLIYH/zumK0BvE9PEz
+         wn4ZFrvYcJ9hkwCoVJzuYlYj2nzfWbz8WIS/A/mVjnWb+pzePbIU6pdNS/DaL4QHfAof
+         S2pbyGG27NqC2JUhOyaQodlVI6pbu41FdaAybcWyjiZlKxKFeo8aJ0lpOmoxQXgmQjzN
+         ZLwagZ2QWc9FvpPsKNHnktKCR1C4Ycpd60mdXZqgqAp4D5yjqtrlu7JpQB61i/oJfZSy
+         wMTg==
+X-Gm-Message-State: AOAM531RbJy92bZyOBRCan1kO+yoWsG+w1q+gtDfa3UBtMI0guARizIg
+        UyPn5r+5vR4SC1znxTh1YPGpRa/5zLojxwoTLDz/8Xc5WmO5ViPlDSUH980uOg7jABd/7sSI+c+
+        nMDjQQ4Vbl3cZn8fB
+X-Received: by 2002:a1c:2d0b:: with SMTP id t11mr3742612wmt.109.1612274781424;
+        Tue, 02 Feb 2021 06:06:21 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwLuu9HSbHaNq2JSTJGYoIuanz10/6LwyOztA42Q7LIGokzZlY2asGRgWOD0wv1yz3mEZn6wA==
+X-Received: by 2002:a1c:2d0b:: with SMTP id t11mr3742583wmt.109.1612274781204;
+        Tue, 02 Feb 2021 06:06:21 -0800 (PST)
+Received: from redhat.com (bzq-79-177-39-148.red.bezeqint.net. [79.177.39.148])
+        by smtp.gmail.com with ESMTPSA id o124sm3431503wmb.5.2021.02.02.06.06.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Feb 2021 06:06:20 -0800 (PST)
+Date:   Tue, 2 Feb 2021 09:06:17 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Eli Cohen <elic@nvidia.com>
+Cc:     Si-Wei Liu <siwliu.kernel@gmail.com>,
+        Jason Wang <jasowang@redhat.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lulu@redhat.com,
+        Si-Wei Liu <si-wei.liu@oracle.com>
+Subject: Re: [PATCH 1/2] vdpa/mlx5: Avoid unnecessary query virtqueue
+Message-ID: <20210202090558-mutt-send-email-mst@kernel.org>
+References: <20210128134130.3051-1-elic@nvidia.com>
+ <20210128134130.3051-2-elic@nvidia.com>
+ <CAPWQSg0XtEQ1U5N3a767Ak_naoyPdVF1CeE4r3hmN11a-aoBxg@mail.gmail.com>
+ <CAPWQSg3U9DCSK_01Kzuea5B1X+Ef9JB23wBY82A3ss-UXGek_Q@mail.gmail.com>
+ <9d6058d6-5ce1-0442-8fd9-5a6fe6a0bc6b@redhat.com>
+ <CAPWQSg3KOAypcrs9krW8cGE7EDLTehCUCYFZMUYYNaYPH1oBZQ@mail.gmail.com>
+ <20210202070055.GB232587@mtl-vdi-166.wap.labs.mlnx>
 MIME-Version: 1.0
-In-Reply-To: <20210201123352.GB25935@netronome.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210202070055.GB232587@mtl-vdi-166.wap.labs.mlnx>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-02-01 7:33 a.m., Simon Horman wrote:
-> On Fri, Jan 29, 2021 at 09:30:00AM -0500, Jamal Hadi Salim wrote:
-
->> Ido's comment is important: Why not make packet rate vs byte rate
->> mutually exclusive? If someone uses packet rate then you make sure
->> they dont interleave with attributes for byte rate and vice-versa.
->>
+On Tue, Feb 02, 2021 at 09:00:55AM +0200, Eli Cohen wrote:
+> On Mon, Feb 01, 2021 at 08:15:29PM -0800, Si-Wei Liu wrote:
+> > On Mon, Feb 1, 2021 at 7:13 PM Jason Wang <jasowang@redhat.com> wrote:
+> > >
+> > >
+> > > On 2021/2/2 上午3:17, Si-Wei Liu wrote:
+> > > > On Mon, Feb 1, 2021 at 10:51 AM Si-Wei Liu <siwliu.kernel@gmail.com> wrote:
+> > > >> On Thu, Jan 28, 2021 at 5:46 AM Eli Cohen <elic@nvidia.com> wrote:
+> > > >>> suspend_vq should only suspend the VQ on not save the current available
+> > > >>> index. This is done when a change of map occurs when the driver calls
+> > > >>> save_channel_info().
+> > > >> Hmmm, suspend_vq() is also called by teardown_vq(), the latter of
+> > > >> which doesn't save the available index as save_channel_info() doesn't
+> > > >> get called in that path at all. How does it handle the case that
+> > > >> aget_vq_state() is called from userspace (e.g. QEMU) while the
+> > > >> hardware VQ object was torn down, but userspace still wants to access
+> > > >> the queue index?
+> > > >>
+> > > >> Refer to https://lore.kernel.org/netdev/1601583511-15138-1-git-send-email-si-wei.liu@oracle.com/
+> > > >>
+> > > >> vhost VQ 0 ring restore failed: -1: Resource temporarily unavailable (11)
+> > > >> vhost VQ 1 ring restore failed: -1: Resource temporarily unavailable (11)
+> > > >>
+> > > >> QEMU will complain with the above warning while VM is being rebooted
+> > > >> or shut down.
+> > > >>
+> > > >> Looks to me either the kernel driver should cover this requirement, or
+> > > >> the userspace has to bear the burden in saving the index and not call
+> > > >> into kernel if VQ is destroyed.
+> > > > Actually, the userspace doesn't have the insights whether virt queue
+> > > > will be destroyed if just changing the device status via set_status().
+> > > > Looking at other vdpa driver in tree i.e. ifcvf it doesn't behave like
+> > > > so. Hence this still looks to me to be Mellanox specifics and
+> > > > mlx5_vdpa implementation detail that shouldn't expose to userspace.
+> > >
+> > >
+> > > So I think we can simply drop this patch?
+> > 
+> > Yep, I think so. To be honest I don't know why it has anything to do
+> > with the memory hotplug issue.
 > 
-> Sorry, I somehow missed Ido's email until you and he pointed it out
-> in this thread.
->
+> No relation. That's why I put them in two different patches. Only the
+> second one is the fix as I stated in the cover letter.
+> 
+> Anyway, let's just take the second patch.
+> 
+> Michael, do you need me to send PATCH 2 again as a single patch or can
+> you just take it?
 
-This one i think is still important. Potential for misconfig
-exists with both on.
-The check for exclusivity is rather simple in init().
-Also please see if you can add a test in the policer tests in tdc.
+Pls post fixes separately. Thanks!
 
+> 
+> > 
+> > -Siwei
+> > 
+> > >
+> > > Thanks
+> > >
+> > >
+> > > >> -Siwei
+> > > >>
+> > > >>
+> > > >>> Signed-off-by: Eli Cohen <elic@nvidia.com>
+> > > >>> ---
+> > > >>>   drivers/vdpa/mlx5/net/mlx5_vnet.c | 8 --------
+> > > >>>   1 file changed, 8 deletions(-)
+> > > >>>
+> > > >>> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > >>> index 88dde3455bfd..549ded074ff3 100644
+> > > >>> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > >>> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > >>> @@ -1148,8 +1148,6 @@ static int setup_vq(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq)
+> > > >>>
+> > > >>>   static void suspend_vq(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq)
+> > > >>>   {
+> > > >>> -       struct mlx5_virtq_attr attr;
+> > > >>> -
+> > > >>>          if (!mvq->initialized)
+> > > >>>                  return;
+> > > >>>
+> > > >>> @@ -1158,12 +1156,6 @@ static void suspend_vq(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *m
+> > > >>>
+> > > >>>          if (modify_virtqueue(ndev, mvq, MLX5_VIRTIO_NET_Q_OBJECT_STATE_SUSPEND))
+> > > >>>                  mlx5_vdpa_warn(&ndev->mvdev, "modify to suspend failed\n");
+> > > >>> -
+> > > >>> -       if (query_virtqueue(ndev, mvq, &attr)) {
+> > > >>> -               mlx5_vdpa_warn(&ndev->mvdev, "failed to query virtqueue\n");
+> > > >>> -               return;
+> > > >>> -       }
+> > > >>> -       mvq->avail_idx = attr.available_index;
+> > > >>>   }
+> > > >>>
+> > > >>>   static void suspend_vqs(struct mlx5_vdpa_net *ndev)
+> > > >>> --
+> > > >>> 2.29.2
+> > > >>>
+> > >
 
-> Regarding splitting up the policer action. I think there is some value to
-> the current setup in terms of code re-use and allowing combinations of
-> features. But I do agree it would be a conversation worth having at some
-> point.
-
-Sounds reasonable.
-
-cheers,
-jamal
