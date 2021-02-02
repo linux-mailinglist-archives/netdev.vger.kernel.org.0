@@ -2,224 +2,262 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 267E930CFF5
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 00:45:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F091330CFF7
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 00:51:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229783AbhBBXpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 18:45:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34660 "EHLO
+        id S229864AbhBBXsY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 18:48:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229534AbhBBXpV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 18:45:21 -0500
-Received: from mail-vs1-xe2e.google.com (mail-vs1-xe2e.google.com [IPv6:2607:f8b0:4864:20::e2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F69EC061573
-        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 15:44:41 -0800 (PST)
-Received: by mail-vs1-xe2e.google.com with SMTP id l192so4662307vsd.5
-        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 15:44:41 -0800 (PST)
+        with ESMTP id S229534AbhBBXsY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 18:48:24 -0500
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23466C061573
+        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 15:47:44 -0800 (PST)
+Received: by mail-yb1-xb2d.google.com with SMTP id s61so18939144ybi.4
+        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 15:47:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=HV6jn1Mj+6Q0GVXqO0XZPb8NAVpZ2ZPSr94NS/JzLes=;
-        b=hgl0BfteTIjSdaDHtoRThNG0Lmysvudip/dcs8yV5lA53PBUx4otbyLr6lSBZHS7+a
-         DG5UJI20ccOenJmrtIDhJr2RBOEXmcgif0f83ms0H4uf1eOzRUARnZV6kpUBaGBr95WM
-         jcDj/guJ8bnj5ROQAqlMB2uFzQzRHh8y4Md12s6fW8Vt4lfwnJEufIFX2a2fHTbkEVMa
-         6Cz7RIne8kfb02OaEJsoqaFeko9TR/9oiIEjqss2/vS27M/IgLcBCA6KCHEHDp+E1lLS
-         oMgWRiT3DYq7hPNfuK6F/qm3ViNEvr4usbtkJJI3yYUp3edp7eXl2bIe/5TWO0rMSz+0
-         3Kag==
+        bh=pq/uxB02TdTmL5a2aEfv4RNVQr6KfO20BH65KlUzpuE=;
+        b=nmj+Rtn67w2c3OzA9HoloEhf4iP6KAIWq0KcMFI7Bh/k4kt8EPsSrHpXQ/7LvWAt3d
+         7Rynrg9a4Ql0MuBNP8jsnt2z0zfeNkqwUYFnLtk8UgxDS4c3Ywh1iukJx7G3YqIAf3EW
+         Gf9I70XluXswXSaAWCwWP4cnGiOAJ9aboEyvE8zfnBkSnozcgO2Pg8G1hUffyfDC8W7J
+         i/yd1sndtTe/0eGMyL5RmLb5dORfDes6EowWyPSy9VKeWGkH3CxkxSgBbdw9ss9Ho5VZ
+         YanefYVoKpjFOEMSgcmI3jRKhq3PLSFsh+ZhFMOlJDDH3vRcY1D9u0Xe/v8vwCKFFVkS
+         Vtjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=HV6jn1Mj+6Q0GVXqO0XZPb8NAVpZ2ZPSr94NS/JzLes=;
-        b=H/ZGKUOWsbaveTXAVuHfcCcAfgRH6v5uoyn9mHF97XKaH3Pz64/cJHt2PHrx82MiiI
-         kDvcNdQL/BJ93LiQqP3kAAi7c9Z5hRpetGlMqcOF0l84A5aXb0Gyr8xGM6IPzSBtvt8b
-         S0J1JX6f1eGq9v7oqQprC06pk1Gdo+66hHpgSwT0od0R+g4HinFgLjT8AewVwLAPJyJ3
-         vAp0akI6b1edEq8ZfgYATR7/mfk9bBeXrgzh5i9njOBE9J5eReX8X/4qfD8ayT9tc/U2
-         3GUQbOXdcTV+gO469vuO1i6SMmk5euvWhtfEUgbgrs/E72NBolKFEgTHmsynZviODF1p
-         sdyg==
-X-Gm-Message-State: AOAM533wT0J6IEPZ75ThEzCOcJvDCLc7b+uV9m0+cuNQiYCNrQjjmp6o
-        eOumJ9n5mNwX/DYe+4+a0jlSajLPIFQ=
-X-Google-Smtp-Source: ABdhPJyrmmUUpuPb5tpRGXPrLDVzjFBq7ivYMeMwPEZFtahIB+cu1YuU6v2ulRz8guNQydpFZkj5hw==
-X-Received: by 2002:a67:d60f:: with SMTP id n15mr372269vsj.37.1612309478921;
-        Tue, 02 Feb 2021 15:44:38 -0800 (PST)
-Received: from mail-vs1-f48.google.com (mail-vs1-f48.google.com. [209.85.217.48])
-        by smtp.gmail.com with ESMTPSA id n186sm39406vkn.19.2021.02.02.15.44.37
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 02 Feb 2021 15:44:38 -0800 (PST)
-Received: by mail-vs1-f48.google.com with SMTP id 186so12145575vsz.13
-        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 15:44:37 -0800 (PST)
-X-Received: by 2002:a67:cb1a:: with SMTP id b26mr225567vsl.22.1612309476560;
- Tue, 02 Feb 2021 15:44:36 -0800 (PST)
+        bh=pq/uxB02TdTmL5a2aEfv4RNVQr6KfO20BH65KlUzpuE=;
+        b=i51PMLZkQK9XYu4wj3PvCIHgTWcfLJr+tqg1mmOrT9DMlTJ5zXIDIEI0dcOiAEyp4H
+         V/WW2wQX5wsRVLLJnjQstihBgwYBYEOWMnRi90Hqoxeq4pzKr7uuWktbdOAMlx1IWDaF
+         +5ALqiEdUyUsxfXRf2EoEP2czf5CR3egXnkON4HPaqAf3sIP0T2tW42dyzHUEC735jjs
+         MSeFuYpLHWdv0rVinmJQNvM1BBGt0TUTBQth5VphBy0iJUorXZAcYzKvAMey66456j+t
+         I4CONKKvLlBBLOKPXQnd8/R1MdJdQqjqnqCNVku+Klp6mQ/2ai29Vd8FzbmOpPyYjM6S
+         jtaQ==
+X-Gm-Message-State: AOAM531fpT1xiHdaim13hcAzcHv7jUlSCPSzuo0kLucP4umspooD1KP0
+        3eIqqHre2ooIUwLraYk6UBIXtfnRJ5n67bmnRmEnGg==
+X-Google-Smtp-Source: ABdhPJzYmr8iRSqwdCbNuEkhDB4zvtbopX9Pj4vlDYr0eGC/dcOXA784xxy9GElSYJDVJvI/7pZa/3BLbe3C0Mlyhn0=
+X-Received: by 2002:a25:10c3:: with SMTP id 186mr481197ybq.195.1612309663101;
+ Tue, 02 Feb 2021 15:47:43 -0800 (PST)
 MIME-Version: 1.0
-References: <20201228162233.2032571-1-willemdebruijn.kernel@gmail.com>
- <20201228162233.2032571-3-willemdebruijn.kernel@gmail.com>
- <20210202090724-mutt-send-email-mst@kernel.org> <CA+FuTSeEVvtmmQ2HioTUrA6nX9s6yLEvNXfg=fLKw6X+E9wWow@mail.gmail.com>
- <20210202175934-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20210202175934-mutt-send-email-mst@kernel.org>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 2 Feb 2021 18:43:59 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSfRHMDd-Q4UB4vVsdbs=YpP-WzUMtNGiKwLpEQaAR2Xdg@mail.gmail.com>
-Message-ID: <CA+FuTSfRHMDd-Q4UB4vVsdbs=YpP-WzUMtNGiKwLpEQaAR2Xdg@mail.gmail.com>
-Subject: Re: [PATCH rfc 2/3] virtio-net: support receive timestamp
+References: <20210129002136.70865-1-weiwan@google.com> <20210202180807-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20210202180807-mutt-send-email-mst@kernel.org>
+From:   Wei Wang <weiwan@google.com>
+Date:   Tue, 2 Feb 2021 15:47:31 -0800
+Message-ID: <CAEA6p_Arqm2cgjc7rKibautqeVyxPkkMV7y20DU1sDaoCnLvzQ@mail.gmail.com>
+Subject: Re: [PATCH net] virtio-net: suppress bad irq warning for tx napi
 To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        virtualization@lists.linux-foundation.org,
-        Network Development <netdev@vger.kernel.org>,
-        Jason Wang <jasowang@redhat.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        virtualization@lists.linux-foundation.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 2, 2021 at 6:06 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+On Tue, Feb 2, 2021 at 3:12 PM Michael S. Tsirkin <mst@redhat.com> wrote:
 >
-> On Tue, Feb 02, 2021 at 05:17:13PM -0500, Willem de Bruijn wrote:
-> > On Tue, Feb 2, 2021 at 9:08 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > >
-> > > On Mon, Dec 28, 2020 at 11:22:32AM -0500, Willem de Bruijn wrote:
-> > > > From: Willem de Bruijn <willemb@google.com>
-> > > >
-> > > > Add optional PTP hardware timestamp offload for virtio-net.
-> > > >
-> > > > Accurate RTT measurement requires timestamps close to the wire.
-> > > > Introduce virtio feature VIRTIO_NET_F_RX_TSTAMP. If negotiated, the
-> > > > virtio-net header is expanded with room for a timestamp. A host may
-> > > > pass receive timestamps for all or some packets. A timestamp is valid
-> > > > if non-zero.
-> > > >
-> > > > The timestamp straddles (virtual) hardware domains. Like PTP, use
-> > > > international atomic time (CLOCK_TAI) as global clock base. It is
-> > > > guest responsibility to sync with host, e.g., through kvm-clock.
-> > > >
-> > > > Signed-off-by: Willem de Bruijn <willemb@google.com>
-> > > > ---
-> > > >  drivers/net/virtio_net.c        | 20 +++++++++++++++++++-
-> > > >  include/uapi/linux/virtio_net.h | 12 ++++++++++++
-> > > >  2 files changed, 31 insertions(+), 1 deletion(-)
-> > > >
-> > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > > index b917b7333928..57744bb6a141 100644
-> > > > --- a/drivers/net/virtio_net.c
-> > > > +++ b/drivers/net/virtio_net.c
-> > > > @@ -204,6 +204,9 @@ struct virtnet_info {
-> > > >       /* Guest will pass tx path info to the host */
-> > > >       bool has_tx_hash;
-> > > >
-> > > > +     /* Host will pass CLOCK_TAI receive time to the guest */
-> > > > +     bool has_rx_tstamp;
-> > > > +
-> > > >       /* Has control virtqueue */
-> > > >       bool has_cvq;
-> > > >
-> > > > @@ -292,6 +295,13 @@ static inline struct virtio_net_hdr_mrg_rxbuf *skb_vnet_hdr(struct sk_buff *skb)
-> > > >       return (struct virtio_net_hdr_mrg_rxbuf *)skb->cb;
-> > > >  }
-> > > >
-> > > > +static inline struct virtio_net_hdr_v12 *skb_vnet_hdr_12(struct sk_buff *skb)
-> > > > +{
-> > > > +     BUILD_BUG_ON(sizeof(struct virtio_net_hdr_v12) > sizeof(skb->cb));
-> > > > +
-> > > > +     return (void *)skb->cb;
-> > > > +}
-> > > > +
-> > > >  /*
-> > > >   * private is used to chain pages for big packets, put the whole
-> > > >   * most recent used list in the beginning for reuse
-> > > > @@ -1082,6 +1092,9 @@ static void receive_buf(struct virtnet_info *vi, struct receive_queue *rq,
-> > > >               goto frame_err;
-> > > >       }
-> > > >
-> > > > +     if (vi->has_rx_tstamp)
-> > > > +             skb_hwtstamps(skb)->hwtstamp = ns_to_ktime(skb_vnet_hdr_12(skb)->tstamp);
-> > > > +
-> > > >       skb_record_rx_queue(skb, vq2rxq(rq->vq));
-> > > >       skb->protocol = eth_type_trans(skb, dev);
-> > > >       pr_debug("Receiving skb proto 0x%04x len %i type %i\n",
-> > > > @@ -3071,6 +3084,11 @@ static int virtnet_probe(struct virtio_device *vdev)
-> > > >               vi->hdr_len = sizeof(struct virtio_net_hdr_v1_hash);
-> > > >       }
-> > > >
-> > > > +     if (virtio_has_feature(vdev, VIRTIO_NET_F_RX_TSTAMP)) {
-> > > > +             vi->has_rx_tstamp = true;
-> > > > +             vi->hdr_len = sizeof(struct virtio_net_hdr_v12);
-> > > > +     }
-> > > > +
-> > > >       if (virtio_has_feature(vdev, VIRTIO_F_ANY_LAYOUT) ||
-> > > >           virtio_has_feature(vdev, VIRTIO_F_VERSION_1))
-> > > >               vi->any_header_sg = true;
-> > > > @@ -3261,7 +3279,7 @@ static struct virtio_device_id id_table[] = {
-> > > >       VIRTIO_NET_F_CTRL_MAC_ADDR, \
-> > > >       VIRTIO_NET_F_MTU, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS, \
-> > > >       VIRTIO_NET_F_SPEED_DUPLEX, VIRTIO_NET_F_STANDBY, \
-> > > > -     VIRTIO_NET_F_TX_HASH
-> > > > +     VIRTIO_NET_F_TX_HASH, VIRTIO_NET_F_RX_TSTAMP
-> > > >
-> > > >  static unsigned int features[] = {
-> > > >       VIRTNET_FEATURES,
-> > > > diff --git a/include/uapi/linux/virtio_net.h b/include/uapi/linux/virtio_net.h
-> > > > index f6881b5b77ee..0ffe2eeebd4a 100644
-> > > > --- a/include/uapi/linux/virtio_net.h
-> > > > +++ b/include/uapi/linux/virtio_net.h
-> > > > @@ -57,6 +57,7 @@
-> > > >                                        * Steering */
-> > > >  #define VIRTIO_NET_F_CTRL_MAC_ADDR 23        /* Set MAC address */
-> > > >
-> > > > +#define VIRTIO_NET_F_RX_TSTAMP         55    /* Host sends TAI receive time */
-> > > >  #define VIRTIO_NET_F_TX_HASH   56    /* Guest sends hash report */
-> > > >  #define VIRTIO_NET_F_HASH_REPORT  57 /* Supports hash report */
-> > > >  #define VIRTIO_NET_F_RSS       60    /* Supports RSS RX steering */
-> > > > @@ -182,6 +183,17 @@ struct virtio_net_hdr_v1_hash {
-> > > >       };
-> > > >  };
-> > > >
-> > > > +struct virtio_net_hdr_v12 {
-> > > > +     struct virtio_net_hdr_v1 hdr;
-> > > > +     struct {
-> > > > +             __le32 value;
-> > > > +             __le16 report;
-> > > > +             __le16 flow_state;
-> > > > +     } hash;
-> > > > +     __virtio32 reserved;
-> > >
-> > >
-> > > Does endian-ness matter? If not - just u32?
+> On Thu, Jan 28, 2021 at 04:21:36PM -0800, Wei Wang wrote:
+> > With the implementation of napi-tx in virtio driver, we clean tx
+> > descriptors from rx napi handler, for the purpose of reducing tx
+> > complete interrupts. But this could introduce a race where tx complete
+> > interrupt has been raised, but the handler found there is no work to do
+> > because we have done the work in the previous rx interrupt handler.
+> > This could lead to the following warning msg:
+> > [ 3588.010778] irq 38: nobody cared (try booting with the
+> > "irqpoll" option)
+> > [ 3588.017938] CPU: 4 PID: 0 Comm: swapper/4 Not tainted
+> > 5.3.0-19-generic #20~18.04.2-Ubuntu
+> > [ 3588.017940] Call Trace:
+> > [ 3588.017942]  <IRQ>
+> > [ 3588.017951]  dump_stack+0x63/0x85
+> > [ 3588.017953]  __report_bad_irq+0x35/0xc0
+> > [ 3588.017955]  note_interrupt+0x24b/0x2a0
+> > [ 3588.017956]  handle_irq_event_percpu+0x54/0x80
+> > [ 3588.017957]  handle_irq_event+0x3b/0x60
+> > [ 3588.017958]  handle_edge_irq+0x83/0x1a0
+> > [ 3588.017961]  handle_irq+0x20/0x30
+> > [ 3588.017964]  do_IRQ+0x50/0xe0
+> > [ 3588.017966]  common_interrupt+0xf/0xf
+> > [ 3588.017966]  </IRQ>
+> > [ 3588.017989] handlers:
+> > [ 3588.020374] [<000000001b9f1da8>] vring_interrupt
+> > [ 3588.025099] Disabling IRQ #38
 > >
-> > I suppose it does not matter as long as this is reserved. Should it be
-> > __le32, at least?
->
-> One can safely assign 0 to any value.
-
-Ack.
-
->
-> > > > +     __virtio64 tstamp;
-> > > > +};
-> > > > +
-> > >
-> > > Given it's only available in modern devices, I think we
-> > > can make this __le64 tstamp.
+> > This patch adds a new param to struct vring_virtqueue, and we set it for
+> > tx virtqueues if napi-tx is enabled, to suppress the warning in such
+> > case.
 > >
-> > Actually, would it be possible to make new features available on
-> > legacy devices? There is nothing in the features bits precluding it.
+> > Fixes: 7b0411ef4aa6 ("virtio-net: clean tx descriptors from rx napi")
+> > Reported-by: Rick Jones <jonesrick@google.com>
+> > Signed-off-by: Wei Wang <weiwan@google.com>
+> > Signed-off-by: Willem de Bruijn <willemb@google.com>
 >
-> I think it won't be possible: you are using feature bit 55,
-> legacy devices have up to 32 feature bits. And of course the
-> header looks a bit differently for legacy, you would have to add special
-> code to handle that when mergeable buffers are off.
+>
+> This description does not make sense to me.
+>
+> irq X: nobody cared
+> only triggers after an interrupt is unhandled repeatedly.
+>
+> So something causes a storm of useless tx interrupts here.
+>
+> Let's find out what it was please. What you are doing is
+> just preventing linux from complaining.
 
-I think I can make the latter work. I did start without a dependency
-on the v1 header initially.
+The traffic that causes this warning is a netperf tcp_stream with at
+least 128 flows between 2 hosts. And the warning gets triggered on the
+receiving host, which has a lot of rx interrupts firing on all queues,
+and a few tx interrupts.
+And I think the scenario is: when the tx interrupt gets fired, it gets
+coalesced with the rx interrupt. Basically, the rx and tx interrupts
+get triggered very close to each other, and gets handled in one round
+of do_IRQ(). And the rx irq handler gets called first, which calls
+virtnet_poll(). However, virtnet_poll() calls virtnet_poll_cleantx()
+to try to do the work on the corresponding tx queue as well. That's
+why when tx interrupt handler gets called, it sees no work to do.
+And the reason for the rx handler to handle the tx work is here:
+https://lists.linuxfoundation.org/pipermail/virtualization/2017-April/034740.html
 
-Feature bit array length I had not considered. Good point. Need to
-think about that. It would be very appealing if in particular the
-tx-hash feature could work in legacy mode.
-
+>
+>
+>
+> > ---
+> >  drivers/net/virtio_net.c     | 19 ++++++++++++++-----
+> >  drivers/virtio/virtio_ring.c | 16 ++++++++++++++++
+> >  include/linux/virtio.h       |  2 ++
+> >  3 files changed, 32 insertions(+), 5 deletions(-)
 > >
-> > I have a revised patchset almost ready. I suppose I should send it as
-> > RFC again, and simultaneously file an OASIS ballot for each feature?
+> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > index 508408fbe78f..e9a3f30864e8 100644
+> > --- a/drivers/net/virtio_net.c
+> > +++ b/drivers/net/virtio_net.c
+> > @@ -1303,13 +1303,22 @@ static void virtnet_napi_tx_enable(struct virtnet_info *vi,
+> >               return;
+> >       }
+> >
+> > +     /* With napi_tx enabled, free_old_xmit_skbs() could be called from
+> > +      * rx napi handler. Set work_steal to suppress bad irq warning for
+> > +      * IRQ_NONE case from tx complete interrupt handler.
+> > +      */
+> > +     virtqueue_set_work_steal(vq, true);
+> > +
+> >       return virtnet_napi_enable(vq, napi);
+> >  }
+> >
+> > -static void virtnet_napi_tx_disable(struct napi_struct *napi)
+> > +static void virtnet_napi_tx_disable(struct virtqueue *vq,
+> > +                                 struct napi_struct *napi)
+> >  {
+> > -     if (napi->weight)
+> > +     if (napi->weight) {
+> >               napi_disable(napi);
+> > +             virtqueue_set_work_steal(vq, false);
+> > +     }
+> >  }
+> >
+> >  static void refill_work(struct work_struct *work)
+> > @@ -1835,7 +1844,7 @@ static int virtnet_close(struct net_device *dev)
+> >       for (i = 0; i < vi->max_queue_pairs; i++) {
+> >               xdp_rxq_info_unreg(&vi->rq[i].xdp_rxq);
+> >               napi_disable(&vi->rq[i].napi);
+> > -             virtnet_napi_tx_disable(&vi->sq[i].napi);
+> > +             virtnet_napi_tx_disable(vi->sq[i].vq, &vi->sq[i].napi);
+> >       }
+> >
+> >       return 0;
+> > @@ -2315,7 +2324,7 @@ static void virtnet_freeze_down(struct virtio_device *vdev)
+> >       if (netif_running(vi->dev)) {
+> >               for (i = 0; i < vi->max_queue_pairs; i++) {
+> >                       napi_disable(&vi->rq[i].napi);
+> > -                     virtnet_napi_tx_disable(&vi->sq[i].napi);
+> > +                     virtnet_napi_tx_disable(vi->sq[i].vq, &vi->sq[i].napi);
+> >               }
+> >       }
+> >  }
+> > @@ -2440,7 +2449,7 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+> >       if (netif_running(dev)) {
+> >               for (i = 0; i < vi->max_queue_pairs; i++) {
+> >                       napi_disable(&vi->rq[i].napi);
+> > -                     virtnet_napi_tx_disable(&vi->sq[i].napi);
+> > +                     virtnet_napi_tx_disable(vi->sq[i].vq, &vi->sq[i].napi);
+> >               }
+> >       }
+> >
+> > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+> > index 71e16b53e9c1..f7c5d697c302 100644
+> > --- a/drivers/virtio/virtio_ring.c
+> > +++ b/drivers/virtio/virtio_ring.c
+> > @@ -105,6 +105,9 @@ struct vring_virtqueue {
+> >       /* Host publishes avail event idx */
+> >       bool event;
+> >
+> > +     /* Tx side napi work could be done from rx side. */
+> > +     bool work_steal;
+> > +
+> >       /* Head of free buffer list. */
+> >       unsigned int free_head;
+> >       /* Number we've added since last sync. */
+> > @@ -1604,6 +1607,7 @@ static struct virtqueue *vring_create_virtqueue_packed(
+> >       vq->notify = notify;
+> >       vq->weak_barriers = weak_barriers;
+> >       vq->broken = false;
+> > +     vq->work_steal = false;
+> >       vq->last_used_idx = 0;
+> >       vq->num_added = 0;
+> >       vq->packed_ring = true;
+> > @@ -2038,6 +2042,9 @@ irqreturn_t vring_interrupt(int irq, void *_vq)
+> >
+> >       if (!more_used(vq)) {
+> >               pr_debug("virtqueue interrupt with no work for %p\n", vq);
+> > +             if (vq->work_steal)
+> > +                     return IRQ_HANDLED;
+> > +
+> >               return IRQ_NONE;
+> >       }
+> >
+> > @@ -2082,6 +2089,7 @@ struct virtqueue *__vring_new_virtqueue(unsigned int index,
+> >       vq->notify = notify;
+> >       vq->weak_barriers = weak_barriers;
+> >       vq->broken = false;
+> > +     vq->work_steal = false;
+> >       vq->last_used_idx = 0;
+> >       vq->num_added = 0;
+> >       vq->use_dma_api = vring_use_dma_api(vdev);
+> > @@ -2266,6 +2274,14 @@ bool virtqueue_is_broken(struct virtqueue *_vq)
+> >  }
+> >  EXPORT_SYMBOL_GPL(virtqueue_is_broken);
+> >
+> > +void virtqueue_set_work_steal(struct virtqueue *_vq, bool val)
+> > +{
+> > +     struct vring_virtqueue *vq = to_vvq(_vq);
+> > +
+> > +     vq->work_steal = val;
+> > +}
+> > +EXPORT_SYMBOL_GPL(virtqueue_set_work_steal);
+> > +
+> >  /*
+> >   * This should prevent the device from being used, allowing drivers to
+> >   * recover.  You may need to grab appropriate locks to flush.
+> > diff --git a/include/linux/virtio.h b/include/linux/virtio.h
+> > index 55ea329fe72a..091c30f21ff9 100644
+> > --- a/include/linux/virtio.h
+> > +++ b/include/linux/virtio.h
+> > @@ -84,6 +84,8 @@ unsigned int virtqueue_get_vring_size(struct virtqueue *vq);
+> >
+> >  bool virtqueue_is_broken(struct virtqueue *vq);
+> >
+> > +void virtqueue_set_work_steal(struct virtqueue *vq, bool val);
+> > +
+> >  const struct vring *virtqueue_get_vring(struct virtqueue *vq);
+> >  dma_addr_t virtqueue_get_desc_addr(struct virtqueue *vq);
+> >  dma_addr_t virtqueue_get_avail_addr(struct virtqueue *vq);
+> > --
+> > 2.30.0.365.g02bc693789-goog
+> >
 >
-> that would be great.
-
-Will do, thanks.
