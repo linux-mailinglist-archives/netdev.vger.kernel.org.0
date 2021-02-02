@@ -2,118 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F7D830B7FD
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 07:45:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6475D30B808
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 07:52:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231987AbhBBGok (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 01:44:40 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48860 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231879AbhBBGof (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 01:44:35 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A8D3E64ED5;
-        Tue,  2 Feb 2021 06:43:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612248233;
-        bh=BGjvFLNh/0WDV2j379ELhhUuvu24KWUBOZP63EXJua4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=o7yIcGNvfUJfqAGaZYs7QE92ztkbBHODXqNac6LA7+YlIRFIQwIF5du4Q1o7OPM9B
-         X2W+zx2qeYcmLIV0RCVoXJD1hdb6MFQ5UrgTeArfvbrnHHEifYyhEkWL1k2icqrrb4
-         +JZ0009zUBI7zCUeVYZCp0+wQXpSYH7frAO9xEXFj0wJbj2MzRUCKoHSeuoP+aGxWm
-         rtwCXKT3xVhAPRAcyKL1136mIy78tJcJCt/8Hy++tZ5jv2Phph1g31qykMo6+btekg
-         Z8IzIC24Kr/66F24o4RL8qN20NaKyEkwW3wrc+Sv6KKfFya/V96UdWmZVmJp6rXQuI
-         ukkMjUSYrSn/w==
-Date:   Tue, 2 Feb 2021 08:43:49 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     Jason Gunthorpe <jgg@nvidia.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        Doug Ledford <dledford@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH mlx5-next v1] RDMA/mlx5: Cleanup the synchronize_srcu()
- from the ODP flow
-Message-ID: <20210202064349.GA1945456@unreal>
-References: <20210128064812.1921519-1-leon@kernel.org>
- <c79124a204f2207f5f1fae69cc34fb08d91d3535.camel@kernel.org>
- <549b337b-b51e-c984-a4d8-72f9f738be9c@nvidia.com>
- <20210201194952.GS4247@nvidia.com>
- <b6dc9fc1532a17efd7fdc33d65641626d9760183.camel@kernel.org>
+        id S232137AbhBBGwv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 01:52:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42284 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232019AbhBBGwu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 01:52:50 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A4A4C061573
+        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 22:52:10 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id h12so26375142lfp.9
+        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 22:52:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=norrbonn-se.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UF8MefmUKkOn4gwoLIo0ZF9Fo4V3ogtg1CNeHK5x9WA=;
+        b=Xx/fIjxZmldVGa+qMj3IU14T872spDjl2XNr+qPeZSoqE4emx633EpSjbnrOBwHbfC
+         y128Jy8u6d/K5dTukIx+P0Hp4I9YT8MEwfC0J1pRwUlvXGSOafeS0iTIVZPk5GDtvZUK
+         u3We4PqhfsyXdEKMFqPV9tO359Y1GtrP0ByYGuZ2K+AIhsbYeRlOwlQZmONXNDdnAwaA
+         aLcth0aSM/+narrt3qvt0uhpiaI9mWRpen6MRbCc00clY26sOL67eWzNOnfK2VOZFQgh
+         Jw1VMYZLGeaDBsPtsWrbTckkut1MoLLTA4WkbnrIu7l+I9+S9r9MmBWWPEB4nbHDMQTz
+         VBfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UF8MefmUKkOn4gwoLIo0ZF9Fo4V3ogtg1CNeHK5x9WA=;
+        b=OyY3Wh6/rB8IwD4dRjVMDuYf3BOt9FJLmcj3Gv9quLmNoBveEO9wgZdG54XqvvTt9v
+         EhNei1bvCgvOGqiAV/5+gu8L08FPcrwLhDn1yeh01ZGZRHtRQT4Y3oS3qU/exv03Xv1Z
+         63qtqtWotZTZ4ND2kHYu9r6m4zqhEAPILWbNvpyaGo+QF/AY+09A0DvtnRdMXCN5a+gT
+         MAs6sOv8JkZ0qVf2GB0g6xFbEXoablMe1MQILQ5ep41EcYnkjGBb8vGc9XmiCoSHvzrO
+         vAewJtmL1kqNgTqQ0I8G84zKOryfJ1lhdWYPuQcxTUdgrabhVfwKo/wZVpmL2CvPka/D
+         zlew==
+X-Gm-Message-State: AOAM530zGMqkueE4X0RSW+LdsFBm0A9/1CKewTbef3/BsTZGprfqQGeR
+        c89+yHQYF4mIKwKjcNF5llyJdw==
+X-Google-Smtp-Source: ABdhPJwvzgeSdJcrtxTGMJHdnVV6X0IUmVnL7VA3YCvWPP2b5bFtHiUuZeTmlJ7vO7VCqt9hvQY3Jg==
+X-Received: by 2002:a19:f619:: with SMTP id x25mr3379468lfe.469.1612248728577;
+        Mon, 01 Feb 2021 22:52:08 -0800 (PST)
+Received: from mimer.emblasoft.lan (h-137-65.A159.priv.bahnhof.se. [81.170.137.65])
+        by smtp.gmail.com with ESMTPSA id b26sm2535171lff.162.2021.02.01.22.52.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Feb 2021 22:52:08 -0800 (PST)
+From:   Jonas Bonn <jonas@norrbonn.se>
+To:     laforge@gnumonks.org, kuba@kernel.org, netdev@vger.kernel.org,
+        pablo@netfilter.org
+Cc:     Jonas Bonn <jonas@norrbonn.se>
+Subject: [PATCH net-next 0/7] GTP
+Date:   Tue,  2 Feb 2021 07:51:52 +0100
+Message-Id: <20210202065159.227049-1-jonas@norrbonn.se>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <b6dc9fc1532a17efd7fdc33d65641626d9760183.camel@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 01, 2021 at 12:03:15PM -0800, Saeed Mahameed wrote:
-> On Mon, 2021-02-01 at 15:49 -0400, Jason Gunthorpe wrote:
-> > On Sun, Jan 31, 2021 at 03:24:50PM +0200, Yishai Hadas wrote:
-> > > On 1/29/2021 2:23 PM, Saeed Mahameed wrote:
-> > > > > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mr.c
-> > > > > b/drivers/net/ethernet/mellanox/mlx5/core/mr.c
-> > > > > index 9eb51f06d3ae..50af84e76fb6 100644
-> > > > > +++ b/drivers/net/ethernet/mellanox/mlx5/core/mr.c
-> > > > > @@ -56,6 +56,7 @@ int mlx5_core_create_mkey(struct
-> > > > > mlx5_core_dev
-> > > > > *dev,
-> > > > >          mkey->size = MLX5_GET64(mkc, mkc, len);
-> > > > >          mkey->key |= mlx5_idx_to_mkey(mkey_index);
-> > > > >          mkey->pd = MLX5_GET(mkc, mkc, pd);
-> > > > > +       init_waitqueue_head(&mkey->wait);
-> > > > >
-> > > > >          mlx5_core_dbg(dev, "out 0x%x, mkey 0x%x\n",
-> > > > > mkey_index, mkey-
-> > > > > > key);
-> > > > >          return 0;
-> > > > > diff --git a/include/linux/mlx5/driver.h
-> > > > > b/include/linux/mlx5/driver.h
-> > > > > index 4901b4fadabb..f9e7036ae5a5 100644
-> > > > > +++ b/include/linux/mlx5/driver.h
-> > > > > @@ -373,6 +373,8 @@ struct mlx5_core_mkey {
-> > > > >          u32                     key;
-> > > > >          u32                     pd;
-> > > > >          u32                     type;
-> > > > > +       struct wait_queue_head wait;
-> > > > > +       refcount_t usecount;
-> > > > mlx5_core_mkey is used everywhere in mlx5_core and we don't care
-> > > > about
-> > > > odp complexity, i would like to keep the core simple and
-> > > > primitive as
-> > > > it is today.
-> > > > please keep the layer separation and find a way to manage
-> > > > refcount and
-> > > > wait queue in mlx5_ib driver..
-> > > >
-> > > The alternative could really be to come with some wrapped mlx5_ib
-> > > structure
-> > > that will hold 'mlx5_core_mkey' and will add those two fields.
-> >
-> > Yes
-> >
-> > struct mlx5_ib_mkey
-> > {
-> >    struct mlx5_core_mkey mkey;
-> >    struct wait_queue_head wait;
-> >    refcount_t usecount;
-> > }
-> >
-> > struct mlx5_ib_mr/mw/devx
-> > {
-> >     struct mlx5_ib_mkey mkey;
-> > }
-> >
->
-> Yep, also i have a series internally that moves mlx5_core_mkey to
-> mlx5_ib, in mlx5_core we don't need it we only need the u32 key :)
->
-> I will send you this series internally.
+There's ongoing work in this driver to provide support for IPv6, GRO,
+GSO, and "collect metadata" mode operation.  In order to facilitate this
+work going forward, this short series accumulates already ACK:ed patches
+that are ready for the next merge window.
 
-Let's first finish this patch and perform "moving" later.
+All of these patches should be uncontroversial at this point, including
+the first one in the series that reverts a recently added change to
+introduce "collect metadata" mode.  As that patch produces 'broken'
+packets when common GTP headers are in place, it seems better to revert
+it and rethink things a bit before inclusion.
 
-Thanks
+/Jonas
 
->
->
+Jonas Bonn (7):
+  Revert "GTP: add support for flow based tunneling API"
+  gtp: set initial MTU
+  gtp: include role in link info
+  gtp: really check namespaces before xmit
+  gtp: drop unnecessary call to skb_dst_drop
+  gtp: set device type
+  gtp: update rx_length_errors for abnormally short packets
+
+ drivers/net/gtp.c                  | 540 +++++++++--------------------
+ include/uapi/linux/gtp.h           |  12 -
+ include/uapi/linux/if_link.h       |   1 -
+ include/uapi/linux/if_tunnel.h     |   1 -
+ tools/include/uapi/linux/if_link.h |   1 -
+ 5 files changed, 158 insertions(+), 397 deletions(-)
+
+-- 
+2.27.0
+
