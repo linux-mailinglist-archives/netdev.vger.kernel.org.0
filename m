@@ -2,102 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7247330B39F
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 00:36:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4587830B3C6
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 01:03:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231195AbhBAXfw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 18:35:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33454 "EHLO
+        id S230517AbhBBAC5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 19:02:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230411AbhBAXft (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 18:35:49 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DA2FC061573
-        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 15:35:09 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id m6so12915280pfk.1
-        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 15:35:09 -0800 (PST)
+        with ESMTP id S229530AbhBBAC4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 19:02:56 -0500
+Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C1F3C061573;
+        Mon,  1 Feb 2021 16:02:16 -0800 (PST)
+Received: by mail-ot1-x331.google.com with SMTP id e70so18135024ote.11;
+        Mon, 01 Feb 2021 16:02:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rqXxYXQ/zWZSYlP6IO3+Z7IUKTvxTdHGQXvUh88+tWw=;
-        b=UT0I4/bxd7MoCOwIEwxKgekWkHmTu7KboUN8nZcho+FCKVUf9wItGat0C3pWp0y9/a
-         yZw8+F2LJCB4+kTbNiNdn0OuSHsLSctc4+w8t/VK+sEGf7/uBIqt85XLvjcjBFWNVOuA
-         s2bMMKAc0j94MiEggNGyLBBRNRBgZ7TQLazVhxPb+DpCBx0Mj+dvZISxILlXXDOPnVD7
-         ogUF/XtxZ1T2351E6vQthsfBWYs0IF9ixUExqnxSARzk/fNmghWJ8KgVuyXl8vSAbx7V
-         iweN5kret0dVoXSdgHw3oi5SK0/+Ru6Th+2rwA3k63B1M7yOP+ofRmoDUrus6GfbiCWJ
-         gCoA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bT/iz9WYALSgsBz7kzhDYk3Z2OUTHTWobQFwOvLm2X8=;
+        b=Sxt4XIvz5xz1jQyL9tuPtzcShPQ/1C4MuJEseRX8xHIBU36RotMXYpNYxcWHciykqZ
+         EC6snIoS5Bsl3R/BAceAnp8E1kcF/COMXR/DNSaSCm46PCRZ0BE+ZxqU9N9U0kX1zuJp
+         MhtUDQidtLxqsG/f8+nV4QWXcIILG77O5T9EbSkJS0t9Pt7MnOXGSMN49lLtWbvqMye3
+         5oX8bbOC4bRXVg6b4/+6YSbqY+zYA7scEbqfB+9+dG4JGomlXA2l3Adh3hJlMMJdMr5T
+         orvUVJSS2IwlVUK08UrR6VNQQ0mHcTSme7jLRsDIKEZp6u+gu8kdkZX1Mojox+KARnLZ
+         Z4wQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rqXxYXQ/zWZSYlP6IO3+Z7IUKTvxTdHGQXvUh88+tWw=;
-        b=j+OPWJ2N0qnzidgyBo4ptt0M0C6EIW3vsL414bNqKFT52Chi9zRQtkos48vFIe1ns7
-         oHGIFCkeLyysktZNt9ci+bqw0v7GFptZSN+UdYIFkLnjtIiukFrLLFhKu3RrmYiUOr3u
-         PZ2YUKX3DtgsVvNCLHFm6JYhl2dfYW9wqfep+fbJWCyl+8JCf6HFweY/VCkx878hzdBe
-         /9O5BzLYOUleiSgq7G9ck8bm9ICXB8iJYSve03GJqjkY8VoOs7IMPZM50d3NbI/UiZWM
-         EdWMCy/k5lzvr8UizGhVvErtCP4iB9c/s7BmRPO+qiAc2cz3WyBkm6SHte3VeXZFRXmo
-         xPTg==
-X-Gm-Message-State: AOAM531N8zoFJnU9jBbSqMlZVj47+hONpstOxzJuwmrgrc5ylZVrJ1gY
-        OPUYWgGKZSlbdRZ8XP0IHmX4yMwgm1E=
-X-Google-Smtp-Source: ABdhPJzOQ3WKXKASpxWBt31pDNT/oky/+G9+o10CwduKkIJ884wvBidWPpwe7RNzbZUmC3OAq8bpLA==
-X-Received: by 2002:a63:4d1:: with SMTP id 200mr18521123pge.362.1612222508912;
-        Mon, 01 Feb 2021 15:35:08 -0800 (PST)
-Received: from jian-dev.svl.corp.google.com ([2620:15c:2c4:201:f693:9fff:fef8:759])
-        by smtp.gmail.com with ESMTPSA id j18sm20520939pfc.99.2021.02.01.15.35.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Feb 2021 15:35:08 -0800 (PST)
-From:   Jian Yang <jianyang.kernel@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     Mahesh Bandewar <maheshb@google.com>,
-        Jian Yang <jianyang@google.com>
-Subject: [PATCH net-next v3] net-loopback: set lo dev initial state to UP
-Date:   Mon,  1 Feb 2021 15:34:45 -0800
-Message-Id: <20210201233445.2044327-1-jianyang.kernel@gmail.com>
-X-Mailer: git-send-email 2.30.0.365.g02bc693789-goog
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bT/iz9WYALSgsBz7kzhDYk3Z2OUTHTWobQFwOvLm2X8=;
+        b=mHQxdBUCoKkHiL21OZPlI8eiqbc2rO7TFEKHHQ/Lp+E3+lTo32GrFQvI3wys0orCIC
+         S9GOQgk1sRHh4pxb41/wuY6cxtjsaezB+hRvjcerMEbS9tsIbA116yv97vTS9XcObTUX
+         DsPSFBl88IJx+yey3bm/+MPugPy8Xqne0k/0ed10+O02t1Sm6YGYduusxBd33DaaDkxr
+         8fXBoVQAv3pNFqT5QagKH1OJrVRhuirPL0TfhT8Ewfwn3iGN2fi0MQ5R4Y1O65LeGD2/
+         aZXz9xzosGQRSz4ncIQ+Zwqm2KcozWEHnRccKE7ooax4n15xaXRUTsj/Ajb77LbpXkPx
+         +rtw==
+X-Gm-Message-State: AOAM530H/yl54EtBLxTvSVbmilA22ZTSVRSUBKHzoMPps/iSlOGcJgP1
+        eLzAHAOnK43s/biEB3xC6qp1oDkEUAvoo5sKh7Q=
+X-Google-Smtp-Source: ABdhPJxcCt2KTdc++jkg/9PxQIP/fRRRB3kAXlvPaaWbHFKNhCQeyTC3IblzI5iNm9dcBIlR9YophVl93L+wY6NA8i4=
+X-Received: by 2002:a05:6830:1b6b:: with SMTP id d11mr13279728ote.254.1612224135565;
+ Mon, 01 Feb 2021 16:02:15 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210201232609.3524451-1-elder@linaro.org> <20210201232609.3524451-4-elder@linaro.org>
+In-Reply-To: <20210201232609.3524451-4-elder@linaro.org>
+From:   Amy Parker <enbyamy@gmail.com>
+Date:   Mon, 1 Feb 2021 16:02:04 -0800
+Message-ID: <CAE1WUT6VOx=sS1K1PaJG+Ks06CMpoz_efCyNhFQhD83_YNLk5A@mail.gmail.com>
+Subject: Re: [PATCH net 3/4] net: ipa: use the right accessor in ipa_endpoint_status_skip()
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, elder@kernel.org,
+        evgreen@chromium.org, bjorn.andersson@linaro.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jian Yang <jianyang@google.com>
+On Mon, Feb 1, 2021 at 3:32 PM Alex Elder <elder@linaro.org> wrote:
+>
+> When extracting the destination endpoint ID from the status in
+> ipa_endpoint_status_skip(), u32_get_bits() is used.  This happens to
+> work, but it's wrong: the structure field is only 8 bits wide
+> instead of 32.
+>
+> Fix this by using u8_get_bits() to get the destination endpoint ID.
 
-Traditionally loopback devices come up with initial state as DOWN for
-any new network-namespace. This would mean that anyone needing this
-device would have to bring this UP by issuing something like 'ip link
-set lo up'. This can be avoided if the initial state is set as UP.
+Isn't
 
-Signed-off-by: Mahesh Bandewar <maheshb@google.com>
-Signed-off-by: Jian Yang <jianyang@google.com>
----
-v3:
-  * Addressed Jakub's comment to remove the sysctl knob
+>
+> Signed-off-by: Alex Elder <elder@linaro.org>
+> ---
+>  drivers/net/ipa/ipa_endpoint.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
+> index 448d89da1e456..612afece303f3 100644
+> --- a/drivers/net/ipa/ipa_endpoint.c
+> +++ b/drivers/net/ipa/ipa_endpoint.c
+> @@ -1164,8 +1164,8 @@ static bool ipa_endpoint_status_skip(struct ipa_endpoint *endpoint,
+>                 return true;
 
-v2:
-  * Updated sysctl name from `netdev_loopback_state` to `loopback_init_state`
-  * Fixed the linking error when CONFIG_SYSCTL is not defined
+A few lines above this, endpoint_id is initialized as u32. If we're
+going for "correctness", endpoint_id should be a u8. But of course,
+this would contrast with ipa_endpoint having it as a u32.
 
- drivers/net/loopback.c | 6 ++++++
- 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/loopback.c b/drivers/net/loopback.c
-index a1c77cc00416..24487ec17f8b 100644
---- a/drivers/net/loopback.c
-+++ b/drivers/net/loopback.c
-@@ -219,6 +219,12 @@ static __net_init int loopback_net_init(struct net *net)
- 
- 	BUG_ON(dev->ifindex != LOOPBACK_IFINDEX);
- 	net->loopback_dev = dev;
-+
-+	/* bring loopback device UP */
-+	rtnl_lock();
-+	dev_open(dev, NULL);
-+	rtnl_unlock();
-+
- 	return 0;
- 
- out_free_netdev:
--- 
-2.30.0.365.g02bc693789-goog
+>         if (!status->pkt_len)
+>                 return true;
+> -       endpoint_id = u32_get_bits(status->endp_dst_idx,
+> -                                  IPA_STATUS_DST_IDX_FMASK);
+> +       endpoint_id = u8_get_bits(status->endp_dst_idx,
+> +                                 IPA_STATUS_DST_IDX_FMASK);
+>         if (endpoint_id != endpoint->endpoint_id)
+>                 return true;
+>
+> --
+> 2.27.0
+>
 
+As far as I see it, using u32_get_bits instead of u8_get_bits simply
+eliminates confusion about the type of endpoint_id. Perhaps instead of
+this patch, send a patch with a comment that while u32_get_bits is
+used, the field is only 8 bits?
+
+Best regards,
+Amy Parker
+(she/her/hers)
