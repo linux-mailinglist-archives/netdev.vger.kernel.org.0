@@ -2,38 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A13E30C37A
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 16:21:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14D7430C378
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 16:21:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235451AbhBBPS7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 10:18:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40726 "EHLO mail.kernel.org"
+        id S232532AbhBBPSn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 10:18:43 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40744 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235337AbhBBPQZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 10:16:25 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6A3BC64FA8;
-        Tue,  2 Feb 2021 15:07:51 +0000 (UTC)
+        id S235345AbhBBPQ0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 10:16:26 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A1BB664FAE;
+        Tue,  2 Feb 2021 15:07:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612278472;
-        bh=CSDtcm7Chek2zItAiay6rE4CewmzYjWKNDWvgu9UV+Y=;
-        h=From:To:Cc:Subject:Date:From;
-        b=qPiRGEorYgdGBQCsW/Nt7pkpDEup4gfaYEsNk3BK4gz+7Aq0h9HhuOpcmmlI/ETLL
-         BwymuW+Lb2Tn+GA9CxtvpfqLh8dRRiy0YlsqDRH+26v4Xhvi9w0LTWLAcZBKaRBwnV
-         iPhfLSSoCF3aITqULR47c2tk7GOdlgMMNLX06YBOjunNVM5KPfYZCvzHpPtZrcnuHR
-         dno8AcOkF9ev/RP8VQNGG75Xbdr8hBuPiSE3HLhko0qjlyeGfW010kbQRvlwX0skBx
-         CBj8qGi3LHdm0GE8DN2eMgPnJnFyCdnrSaCqEFAOPsIshqunsKvIzzSEozpc/nYsoY
-         kARPUK+aXiviA==
+        s=k20201202; t=1612278473;
+        bh=Hz+J5UmtDXGaKbBwf4cbi2y0bPeNszPDZvo/Tzji9R4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=UEJPgFMRhVRSmMiQz8EQzcUg85vIsTBIap3DC7F9wLZB66ldSvXHJxRwKqtvIgHAz
+         jXeQl9SCQiv0SB7YA6yq/+RvWouk2fOjWvy7nQe4ElCIZf2sSMuXphn7Gtf2oHsBK2
+         BEV4yVLc6O/q9HkLAn4pTmVl6vX2idATLNxDgwfQ9gOxlBrFva64DnMcvlMImZbE7M
+         i0VaPddEc1qt9SqUi3i1PYWILiUiD10gC5dAEPji9v8oq8d4rLsjeX59Q0sjud2qzF
+         MosQvrExa7yb1jvxWsFDZJyD8QMjxRiFoPzopUXI4LlZNA+/DmbbqgtaCkpu0shL0P
+         vrp3doja4QjVw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Cong Wang <cong.wang@bytedance.com>,
-        syzbot+b2bf2652983d23734c5c@syzkaller.appspotmail.com,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 1/5] af_key: relax availability checks for skb size calculation
-Date:   Tue,  2 Feb 2021 10:07:46 -0500
-Message-Id: <20210202150750.1864953-1-sashal@kernel.org>
+Cc:     Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 2/5] iwlwifi: pcie: add a NULL check in iwl_pcie_txq_unmap
+Date:   Tue,  2 Feb 2021 10:07:47 -0500
+Message-Id: <20210202150750.1864953-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20210202150750.1864953-1-sashal@kernel.org>
+References: <20210202150750.1864953-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -42,62 +44,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <cong.wang@bytedance.com>
+From: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
 
-[ Upstream commit afbc293add6466f8f3f0c3d944d85f53709c170f ]
+[ Upstream commit 98c7d21f957b10d9c07a3a60a3a5a8f326a197e5 ]
 
-xfrm_probe_algs() probes kernel crypto modules and changes the
-availability of struct xfrm_algo_desc. But there is a small window
-where ealg->available and aalg->available get changed between
-count_ah_combs()/count_esp_combs() and dump_ah_combs()/dump_esp_combs(),
-in this case we may allocate a smaller skb but later put a larger
-amount of data and trigger the panic in skb_put().
+I hit a NULL pointer exception in this function when the
+init flow went really bad.
 
-Fix this by relaxing the checks when counting the size, that is,
-skipping the test of ->available. We may waste some memory for a few
-of sizeof(struct sadb_comb), but it is still much better than a panic.
-
-Reported-by: syzbot+b2bf2652983d23734c5c@syzkaller.appspotmail.com
-Cc: Steffen Klassert <steffen.klassert@secunet.com>
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/iwlwifi.20210115130252.2e8da9f2c132.I0234d4b8ddaf70aaa5028a20c863255e05bc1f84@changeid
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/key/af_key.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/wireless/iwlwifi/pcie/tx.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index 76a008b1cbe5f..adc93329e6aac 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -2933,7 +2933,7 @@ static int count_ah_combs(const struct xfrm_tmpl *t)
- 			break;
- 		if (!aalg->pfkey_supported)
- 			continue;
--		if (aalg_tmpl_set(t, aalg) && aalg->available)
-+		if (aalg_tmpl_set(t, aalg))
- 			sz += sizeof(struct sadb_comb);
- 	}
- 	return sz + sizeof(struct sadb_prop);
-@@ -2951,7 +2951,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
- 		if (!ealg->pfkey_supported)
- 			continue;
+diff --git a/drivers/net/wireless/iwlwifi/pcie/tx.c b/drivers/net/wireless/iwlwifi/pcie/tx.c
+index 8dfe6b2bc7031..cb03c2855019b 100644
+--- a/drivers/net/wireless/iwlwifi/pcie/tx.c
++++ b/drivers/net/wireless/iwlwifi/pcie/tx.c
+@@ -585,6 +585,11 @@ static void iwl_pcie_txq_unmap(struct iwl_trans *trans, int txq_id)
+ 	struct iwl_txq *txq = &trans_pcie->txq[txq_id];
+ 	struct iwl_queue *q = &txq->q;
  
--		if (!(ealg_tmpl_set(t, ealg) && ealg->available))
-+		if (!(ealg_tmpl_set(t, ealg)))
- 			continue;
- 
- 		for (k = 1; ; k++) {
-@@ -2962,7 +2962,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
- 			if (!aalg->pfkey_supported)
- 				continue;
- 
--			if (aalg_tmpl_set(t, aalg) && aalg->available)
-+			if (aalg_tmpl_set(t, aalg))
- 				sz += sizeof(struct sadb_comb);
- 		}
- 	}
++	if (!txq) {
++		IWL_ERR(trans, "Trying to free a queue that wasn't allocated?\n");
++		return;
++	}
++
+ 	spin_lock_bh(&txq->lock);
+ 	while (q->write_ptr != q->read_ptr) {
+ 		IWL_DEBUG_TX_REPLY(trans, "Q %d Free %d\n",
 -- 
 2.27.0
 
