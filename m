@@ -2,37 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 846A930C53C
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 17:18:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE41E30C323
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 16:11:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236155AbhBBQQO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 11:16:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35006 "EHLO mail.kernel.org"
+        id S235175AbhBBPLl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 10:11:41 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37238 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235023AbhBBPHE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 10:07:04 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 656AF64ED7;
-        Tue,  2 Feb 2021 15:06:22 +0000 (UTC)
+        id S235130AbhBBPJO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 10:09:14 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 269F964E4C;
+        Tue,  2 Feb 2021 15:06:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612278383;
-        bh=AY0jQNyvDyQq9Y0URkEU5m67QyTIMYz4QpKVrUqnIKs=;
+        s=k20201202; t=1612278385;
+        bh=ECBiNusZ6x2h9HYHwiSqB6jmDGduRAqvrEGM7641/rk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bqAJuRwNsdvjftYUMuYOvlPK1ePuZgD0+5LrZdM5B0NlwfdIFdTC+V8mZi0HKkAvn
-         9fRWyO1p+/RHFRy62QwS1zviwVqAjkeABATliQzU4PeYXFbots2ztxN8oufI7Y+WLV
-         Oa0YTitFEFvcWbKOo1hVScJV+IjaZH2jEerv98hPispXlObqogy/dRQY5uxRVzYPEX
-         NPDW8k6vFnBIcFP5wpsf67wPRGG2hiSX+GrxNmKYebjQb8RlEiOJ6ZHj/raUCl0tsq
-         G6smR5VBtQMRmi9KRvB0dNjDoWCwy/kqXEEQBopTtgOuzTuVr0NnmYNwBrjZQIVoqx
-         pyp9n/umLhPGw==
+        b=h80po7JxSndRpujdyCB5QUr68jGAYZtd6BUeYSswrZ8/qfkD+sGrUXL/QhQbJuRtz
+         bIgEwweELolO18JPyIB5zyuiVMqFER0JcAqF16jZnZ5d0ws8+JmVlaZ7gr8bQFTIvc
+         CjBW1GPYEpH194qUo7H7V+Agnry1kkMbetlrKJTf288JegtDBfGNA5uyH0FvxlQeIl
+         TC3Qb/wUNPia2IXBPbKL3R3hRdWPM9BxNIk8m0hrtBsAyXN+a1r/glxGYrQXvig2OW
+         dLzbGNj1njokV02G7LTPaHtC2Vi996yevrol1U4T6ZJMAbFu4sBHJ8FyK41NSzHS/M
+         1sXMh/tkG1vnw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shay Bar <shay.bar@celeno.com>,
-        Aviad Brikman <aviad.brikman@celeno.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 05/25] mac80211: 160MHz with extended NSS BW in CSA
-Date:   Tue,  2 Feb 2021 10:05:55 -0500
-Message-Id: <20210202150615.1864175-5-sashal@kernel.org>
+Cc:     Pan Bian <bianpan2016@163.com>, Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 07/25] chtls: Fix potential resource leak
+Date:   Tue,  2 Feb 2021 10:05:57 -0500
+Message-Id: <20210202150615.1864175-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210202150615.1864175-1-sashal@kernel.org>
 References: <20210202150615.1864175-1-sashal@kernel.org>
@@ -44,51 +41,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shay Bar <shay.bar@celeno.com>
+From: Pan Bian <bianpan2016@163.com>
 
-[ Upstream commit dcf3c8fb32ddbfa3b8227db38aa6746405bd4527 ]
+[ Upstream commit b6011966ac6f402847eb5326beee8da3a80405c7 ]
 
-Upon receiving CSA with 160MHz extended NSS BW from associated AP,
-STA should set the HT operation_mode based on new_center_freq_seg1
-because it is later used as ccfs2 in ieee80211_chandef_vht_oper().
+The dst entry should be released if no neighbour is found. Goto label
+free_dst to fix the issue. Besides, the check of ndev against NULL is
+redundant.
 
-Signed-off-by: Aviad Brikman <aviad.brikman@celeno.com>
-Signed-off-by: Shay Bar <shay.bar@celeno.com>
-Link: https://lore.kernel.org/r/20201222064714.24888-1-shay.bar@celeno.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Pan Bian <bianpan2016@163.com>
+Link: https://lore.kernel.org/r/20210121145738.51091-1-bianpan2016@163.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/spectmgmt.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ .../net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c    | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/net/mac80211/spectmgmt.c b/net/mac80211/spectmgmt.c
-index ae1cb2c687224..76747bfdaddd0 100644
---- a/net/mac80211/spectmgmt.c
-+++ b/net/mac80211/spectmgmt.c
-@@ -133,16 +133,20 @@ int ieee80211_parse_ch_switch_ie(struct ieee80211_sub_if_data *sdata,
+diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
+index 5beec901713fb..a262c949ed76b 100644
+--- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
++++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
+@@ -1158,11 +1158,9 @@ static struct sock *chtls_recv_sock(struct sock *lsk,
+ #endif
  	}
+ 	if (!n || !n->dev)
+-		goto free_sk;
++		goto free_dst;
  
- 	if (wide_bw_chansw_ie) {
-+		u8 new_seg1 = wide_bw_chansw_ie->new_center_freq_seg1;
- 		struct ieee80211_vht_operation vht_oper = {
- 			.chan_width =
- 				wide_bw_chansw_ie->new_channel_width,
- 			.center_freq_seg0_idx =
- 				wide_bw_chansw_ie->new_center_freq_seg0,
--			.center_freq_seg1_idx =
--				wide_bw_chansw_ie->new_center_freq_seg1,
-+			.center_freq_seg1_idx = new_seg1,
- 			/* .basic_mcs_set doesn't matter */
- 		};
--		struct ieee80211_ht_operation ht_oper = {};
-+		struct ieee80211_ht_operation ht_oper = {
-+			.operation_mode =
-+				cpu_to_le16(new_seg1 <<
-+					    IEEE80211_HT_OP_MODE_CCFS2_SHIFT),
-+		};
+ 	ndev = n->dev;
+-	if (!ndev)
+-		goto free_dst;
+ 	if (is_vlan_dev(ndev))
+ 		ndev = vlan_dev_real_dev(ndev);
  
- 		/* default, for the case of IEEE80211_VHT_CHANWIDTH_USE_HT,
- 		 * to the previously parsed chandef
+@@ -1249,7 +1247,8 @@ static struct sock *chtls_recv_sock(struct sock *lsk,
+ free_csk:
+ 	chtls_sock_release(&csk->kref);
+ free_dst:
+-	neigh_release(n);
++	if (n)
++		neigh_release(n);
+ 	dst_release(dst);
+ free_sk:
+ 	inet_csk_prepare_forced_close(newsk);
 -- 
 2.27.0
 
