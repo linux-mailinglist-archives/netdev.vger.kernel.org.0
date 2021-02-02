@@ -2,99 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D12930B80F
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 07:55:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 447DC30B820
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 07:57:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231985AbhBBGxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 01:53:16 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49654 "EHLO mail.kernel.org"
+        id S232290AbhBBG4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 01:56:35 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49990 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231924AbhBBGxG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 01:53:06 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 08B8E64EDF;
-        Tue,  2 Feb 2021 06:52:24 +0000 (UTC)
+        id S232079AbhBBGzv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 01:55:51 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3FE4B64EDF;
+        Tue,  2 Feb 2021 06:55:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612248745;
-        bh=M9h+Sf6s4y4nrlOy7Khp1BodHMub+78frC6raSv/AEk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qzAVyjOARC//Y73h3S5T3iy/aHUHbPzuqpWUk+8JFC5103rdrwMGo750NoAJcUY7Z
-         q/nLfIm72c3DxbhKW1vNrHle9ivdtKAasGWQpx7uqAYtNQVvfM2g85BFncw/OdsJ6A
-         R6vNY/p6cfXt2n32kUnDbHb01ouQ6hqeT50VrHh8Fr4ISxmZ/c5I+IISsSLkM39gcz
-         KpCMO3YQiWO4wW2bqn9JotgF/hxpfZg1KzV3b70xaB2X94YNchRkHQyWJm3/ZxP9yV
-         ghF2G5lYuHR16rK2jppfiZ4dsG7FhjsIm1smN9Yj9vBJ6yTs0J86skFEs2/a4jBaYf
-         h80t2Cno8xiHQ==
-Date:   Tue, 2 Feb 2021 08:52:21 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Arjun Roy <arjunroy@google.com>
-Cc:     David Ahern <dsahern@gmail.com>, Jakub Kicinski <kuba@kernel.org>,
-        Arjun Roy <arjunroy.kdev@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
-Subject: Re: [net-next v2 2/2] tcp: Add receive timestamp support for receive
- zerocopy.
-Message-ID: <20210202065221.GB1945456@unreal>
-References: <20210121004148.2340206-1-arjunroy.kdev@gmail.com>
- <20210121004148.2340206-3-arjunroy.kdev@gmail.com>
- <20210122200723.50e4afe6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <a18cbf73-1720-dec0-fbc6-2e357fee6bd8@gmail.com>
- <20210125061508.GC579511@unreal>
- <ad3d4a29-b6c1-c6d2-3c0f-fff212f23311@gmail.com>
- <CAOFY-A2y20N9mUDgknbqM=tR0SA6aS6aTjyybggWNa8uY2=U_Q@mail.gmail.com>
+        s=k20201202; t=1612248910;
+        bh=/prsh9z8VMXmPloEnLATNq1fRh81ogHJozhpUOCDVWc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=SiRewS7yqcGeeg0OumQnzWbD/r66af7eJkRgnPF/DU0VzBDJXLullxYGdD0YmxJb5
+         8KoOUhJNPHb73N+RJ0wBJLNSy8LEXvsZECobZEHQOwqvFAxTyr/xZjNWJi9i+H8vib
+         wJnOmVhLK7hZ5UTUxLVjRsPb4IdjV1/jg0baJiAEZtj6phH0EZbEt3B5U+xUvw7f3d
+         eA3w4ZT2Ub+U+7W6hnY0PZaQhFGPF8qRDu3W0/41LBu/TmOsA5N8QOhB6ReHONhhR+
+         BFThJK/Z0x/NnshGckLkPG2LMAt+IA9bd2FZWLnImvhk/C70CYbuKIKc1z9hmrmuHQ
+         C1llnDjoFCVVg==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net-next 00/14] mlx5 updates 2021-02-01
+Date:   Mon,  1 Feb 2021 22:54:43 -0800
+Message-Id: <20210202065457.613312-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOFY-A2y20N9mUDgknbqM=tR0SA6aS6aTjyybggWNa8uY2=U_Q@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 01, 2021 at 06:20:23PM -0800, Arjun Roy wrote:
-> On Mon, Feb 1, 2021 at 6:06 PM David Ahern <dsahern@gmail.com> wrote:
-> >
-> > On 1/24/21 11:15 PM, Leon Romanovsky wrote:
-> > > On Fri, Jan 22, 2021 at 10:55:45PM -0700, David Ahern wrote:
-> > >> On 1/22/21 9:07 PM, Jakub Kicinski wrote:
-> > >>> On Wed, 20 Jan 2021 16:41:48 -0800 Arjun Roy wrote:
-> > >>>> diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
-> > >>>> index 768e93bd5b51..b216270105af 100644
-> > >>>> --- a/include/uapi/linux/tcp.h
-> > >>>> +++ b/include/uapi/linux/tcp.h
-> > >>>> @@ -353,5 +353,9 @@ struct tcp_zerocopy_receive {
-> > >>>>    __u64 copybuf_address;  /* in: copybuf address (small reads) */
-> > >>>>    __s32 copybuf_len; /* in/out: copybuf bytes avail/used or error */
-> > >>>>    __u32 flags; /* in: flags */
-> > >>>> +  __u64 msg_control; /* ancillary data */
-> > >>>> +  __u64 msg_controllen;
-> > >>>> +  __u32 msg_flags;
-> > >>>> +  /* __u32 hole;  Next we must add >1 u32 otherwise length checks fail. */
-> > >>>
-> > >>> Well, let's hope nobody steps on this landmine.. :)
-> > >>>
-> > >>
-> > >> Past suggestions were made to use anonymous declarations - e.g., __u32
-> > >> :32; - as a way of reserving the space for future use. That or declare
-> > >> '__u32 resvd', check that it must be 0 and makes it available for later
-> > >> (either directly or with a union).
-> > >
-> > > This is the schema (reserved field without union) used by the RDMA UAPIs from
-> > > the beginning (>20 years already) and it works like a charm.
-> > >
-> > > Highly recommend :).
-> > >
-> >
-> > agreed.
-> >
-> > Arjun: would you mind following up with a patch to make this hole
-> > explicit and usable for the next extension? Thanks,
->
-> Will do.
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-Please pay attention that all "in" and "out" fields that marked as reserved
-should be zeroed and kernel must check "in" field to ensure future compatibility.
+Hi Jakub, Dave,
 
-Thanks
+This series adds misc updates to mlx5 driver.
+For more information please see tag log below.
 
->
-> -Arjun
+Please pull and let me know if there is any problem.
+
+Thanks,
+Saeed.
+
+---
+The following changes since commit 9ae4bdc6e4c1281ddf8d6335bea35864d086cbf9:
+
+  Merge branch 'rework-the-memory-barrier-for-scrq-entry' (2021-02-01 20:21:14 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2021-02-01
+
+for you to fetch changes up to a283ea1b97163d21e0f1a3df387b71787042b990:
+
+  net/mlx5: DR, Avoid unnecessary csum recalculation on supporting devices (2021-02-01 22:52:36 -0800)
+
+----------------------------------------------------------------
+mlx5-updates-2021-02-01
+
+mlx5 netdev updates:
+
+1) Trivial refactoring ahead of the upcoming uplink representor series.
+2) Increased RSS table size to 256, for better results
+3) Misc. Cleanup and very trivial improvements
+
+----------------------------------------------------------------
+Noam Stolero (1):
+      net/mlx5e: Increase indirection RQ table size to 256
+
+Roi Dayan (5):
+      net/mlx5e: Refactor mlx5e_netdev_init/cleanup to mlx5e_priv_init/cleanup
+      net/mlx5e: Move netif_carrier_off() out of mlx5e_priv_init()
+      net/mlx5e: Move set vxlan nic info to profile init
+      net/mlx5e: Avoid false lock depenency warning on tc_ht
+      net/mlx5e: Move representor neigh init into profile enable
+
+Saeed Mahameed (4):
+      net/mlx5e: Separate between netdev objects and mlx5e profiles initialization
+      net/mxl5e: Add change profile method
+      net/mlx5e: accel, remove redundant space
+      net/mlx5e: CT: remove useless conversion to PTR_ERR then ERR_PTR
+
+Tariq Toukan (2):
+      net/mlx5e: Enable napi in channel's activation stage
+      net/mlx5e: kTLS, Improve TLS RX workqueue scope
+
+Tom Rix (1):
+      net/mlx5e: remove h from printk format specifier
+
+Yevgeny Kliteynik (1):
+      net/mlx5: DR, Avoid unnecessary csum recalculation on supporting devices
+
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |  36 ++--
+ .../net/ethernet/mellanox/mlx5/core/en/params.c    |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c   |  12 +-
+ .../net/ethernet/mellanox/mlx5/core/en/rep/neigh.c |  18 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c |   7 +-
+ .../mellanox/mlx5/core/en_accel/en_accel.h         |   2 +-
+ .../ethernet/mellanox/mlx5/core/en_accel/ktls.c    |  24 ++-
+ .../net/ethernet/mellanox/mlx5/core/en_accel/tls.c |   7 -
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 226 ++++++++++++++-------
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |  90 ++++----
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  12 ++
+ .../net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c  |  26 +--
+ .../net/ethernet/mellanox/mlx5/core/ipoib/ipoib.h  |   5 +-
+ .../ethernet/mellanox/mlx5/core/ipoib/ipoib_vlan.c |   6 +-
+ .../mellanox/mlx5/core/steering/dr_action.c        |   9 +-
+ .../ethernet/mellanox/mlx5/core/steering/dr_ste.c  |   5 +
+ .../mellanox/mlx5/core/steering/dr_types.h         |   2 +
+ 17 files changed, 304 insertions(+), 185 deletions(-)
