@@ -2,287 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCFD830CB08
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 20:11:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 414A730CB12
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 20:14:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239467AbhBBTKc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 14:10:32 -0500
-Received: from smtp.uniroma2.it ([160.80.6.16]:60991 "EHLO smtp.uniroma2.it"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239414AbhBBTIE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 14:08:04 -0500
-X-Greylist: delayed 537 seconds by postgrey-1.27 at vger.kernel.org; Tue, 02 Feb 2021 14:07:59 EST
-Received: from localhost.localdomain ([160.80.103.126])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 112IvMQa000423
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 2 Feb 2021 19:57:23 +0100
-From:   Andrea Mayer <andrea.mayer@uniroma2.it>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Colin Ian King <colin.king@canonical.com>,
-        Stefano Salsano <stefano.salsano@uniroma2.it>,
-        Paolo Lungaroni <paolo.lungaroni@cnit.it>,
-        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
-        Andrea Mayer <andrea.mayer@uniroma2.it>
-Subject: [PATCH net-next] seg6: fool-proof the processing of SRv6 behavior attributes
-Date:   Tue,  2 Feb 2021 19:56:48 +0100
-Message-Id: <20210202185648.11654-1-andrea.mayer@uniroma2.it>
-X-Mailer: git-send-email 2.20.1
+        id S239439AbhBBTM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 14:12:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59074 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239513AbhBBTGc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 14:06:32 -0500
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A58CBC0617AA
+        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 11:03:00 -0800 (PST)
+Received: by mail-pj1-x102a.google.com with SMTP id d2so2997836pjs.4
+        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 11:03:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=NUfGs35qGoHpDrRDAnP7qHs518RtK2f1VxTBTJHOdq8=;
+        b=Lu0lr25MFrLnP/clSRYOXtWC7Q8dAP91qw6JExkrMq6K/N5IUH1M+yneUaTO/87SKo
+         0oDtFVZMjMRPiN/AgKAbVmQ1DdXRHDc7/GBmXh3tDVUyES0KftfDTW/X+31xMqK0XyJb
+         yCgnZ2dvF4RQR7PjTbBURRJzxatmGxcOOjXyI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=NUfGs35qGoHpDrRDAnP7qHs518RtK2f1VxTBTJHOdq8=;
+        b=kxfytRKEc8tILhjZNt/Z/TTDmTB1VebuCYnlGfH6L7P5dlW61WGfwECVxpYl87sKpA
+         Be2N4/V9WO5U3H+W/pN1kvYX5uo8GW+R4VCCxMdZ/se8p8jLIavGK3ZJF1GMpvQ9H6RQ
+         RCYtsSVTDSZuD0c1r1zZE3vvPcTrLRe35Tgqo8CpbFoV1XD49fTS/Dzc5iQqeut8M5Z3
+         DcknQVfyMNrDAzs7higZUXR5GIV1Qs4+stWGwma+mIn7Dl65kXKote0tY/Y4wSU7ClmX
+         BFQbhZHEKPIwy01DyWrb+Hxq8kb7OJcNzRW8c+zDMLUysErb3S43bEB1qt3G+qXHzQNq
+         70GA==
+X-Gm-Message-State: AOAM532ItytVI4OWO//VKm4AMi4N609ziGOnQZEL0MH0QdQLjgZj3Q20
+        VjmEzRUutTcrBLLcQ7RIYjprUw==
+X-Google-Smtp-Source: ABdhPJwxV+dAKCoa7ZePhj8UecxcgkmmpYe2KqbJ7EyJNZC2OGvKclsFqpV5//1We6WqJR0rXo0hEw==
+X-Received: by 2002:a17:90a:5317:: with SMTP id x23mr5762106pjh.154.1612292580130;
+        Tue, 02 Feb 2021 11:03:00 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id x3sm23534698pfp.98.2021.02.02.11.02.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Feb 2021 11:02:59 -0800 (PST)
+Date:   Tue, 2 Feb 2021 11:02:58 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     wanghongzhe <wanghongzhe@huawei.com>
+Cc:     luto@amacapital.net, andrii@kernel.org, ast@kernel.org,
+        bpf@vger.kernel.org, daniel@iogearbox.net,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        songliubraving@fb.com, wad@chromium.org, yhs@fb.com
+Subject: Re: [PATCH v1 1/1] Firstly, as Andy mentioned, this should be
+ smp_rmb() instead of rmb(). considering that TSYNC is a cross-thread
+ situation, and rmb() is a mandatory barrier which should not be used to
+ control SMP effects, since mandatory barriers impose unnecessary overhead on
+ both SMP and UP systems, as kernel Documentation said.
+Message-ID: <202102021100.DB383A44@keescook>
+References: <B1DC6A42-15AF-4804-B20E-FC6E2BDD1C8E@amacapital.net>
+ <1612260787-28015-1-git-send-email-wanghongzhe@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
-X-Virus-Status: Clean
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1612260787-28015-1-git-send-email-wanghongzhe@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The set of required attributes for a given SRv6 behavior is identified
-using a bitmap stored in an unsigned long, since the initial design of SRv6
-networking in Linux. Recently the same approach has been used for
-identifying the optional attributes.
+On Tue, Feb 02, 2021 at 06:13:07PM +0800, wanghongzhe wrote:
+> Secondly, the smp_rmb() should be put between reading SYSCALL_WORK_SECCOMP and reading
+> seccomp.mode, not between reading seccomp.mode and seccomp->filter, to make
+> sure that any changes to mode from another thread have been seen after
+> SYSCALL_WORK_SECCOMP was seen, as the original comment shown. This issue seems to be
+> misintroduced at 13aa72f0fd0a9f98a41cefb662487269e2f1ad65 which aims to
+> refactor the filter callback and the API. So the intuitive solution is to put
+> it back like:
+> 
+> Thirdly, however, we can go further to improve the performace of checking
+> syscall, considering that smp_rmb is always executed on the syscall-check
+> path at each time for both FILTER and STRICT check while the TSYNC case
+> which may lead to race condition is just a rare situation, and that in
+> some arch like Arm64 smp_rmb is dsb(ishld) not a cheap barrier() in x86-64.
+> 
+> As a result, smp_rmb() should only be executed when necessary, e.g, it is
+> only necessary when current thread's mode is SECCOMP_MODE_DISABLED at the
+> first TYSNCed time, because after that the current thread's mode will always
+> be SECCOMP_MODE_FILTER (and SYSCALL_WORK_SECCOMP will always be set) and can not be
+> changed anymore by anyone. In other words, after that, any thread can not
+> change the mode (and SYSCALL_WORK_SECCOMP), so the race condition disappeared, and
+> no more smb_rmb() needed ever.
+> 
+> So the solution is to read mode again behind smp_rmb() after the mode is seen
+> as SECCOMP_MODE_DISABLED by current thread at the first TSYNCed time, and if
+> the new mode don't equals to SECCOMP_MODE_FILTER, do BUG(), go to FILTER path
+> otherwise.
+> 
+> RFC -> v1:
+>  - replace rmb() with smp_rmb()
+>  - move the smp_rmb() logic to the middle between SYSCALL_WORK_SECCOMP and mode
+> 
+> Signed-off-by: wanghongzhe <wanghongzhe@huawei.com>
+> Reviewed-by: Andy Lutomirski <luto@amacapital.net>
+> ---
+>  kernel/seccomp.c | 25 +++++++++++++++++--------
+>  1 file changed, 17 insertions(+), 8 deletions(-)
+> 
+> diff --git a/kernel/seccomp.c b/kernel/seccomp.c
+> index 952dc1c90229..a621fb913ec6 100644
+> --- a/kernel/seccomp.c
+> +++ b/kernel/seccomp.c
+> @@ -1160,12 +1160,6 @@ static int __seccomp_filter(int this_syscall, const struct seccomp_data *sd,
+>  	int data;
+>  	struct seccomp_data sd_local;
+>  
+> -	/*
+> -	 * Make sure that any changes to mode from another thread have
+> -	 * been seen after SYSCALL_WORK_SECCOMP was seen.
+> -	 */
+> -	rmb();
+> -
+>  	if (!sd) {
+>  		populate_seccomp_data(&sd_local);
+>  		sd = &sd_local;
+> @@ -1289,7 +1283,6 @@ static int __seccomp_filter(int this_syscall, const struct seccomp_data *sd,
+>  
+>  int __secure_computing(const struct seccomp_data *sd)
+>  {
+> -	int mode = current->seccomp.mode;
+>  	int this_syscall;
+>  
+>  	if (IS_ENABLED(CONFIG_CHECKPOINT_RESTORE) &&
+> @@ -1299,10 +1292,26 @@ int __secure_computing(const struct seccomp_data *sd)
+>  	this_syscall = sd ? sd->nr :
+>  		syscall_get_nr(current, current_pt_regs());
+>  
+> -	switch (mode) {
+> +	/*
+> +	 * Make sure that any changes to mode from another thread have
+> +	 * been seen after SYSCALL_WORK_SECCOMP was seen.
+> +	 */
+> +	smp_rmb();
 
-However, the number of attributes supported by SRv6 behaviors depends on
-the size of the unsigned long type which changes with the architecture.
-Indeed, on a 64-bit architecture, an SRv6 behavior can support up to 64
-attributes while on a 32-bit architecture it can support at most 32
-attributes.
+Let's start with a patch that just replaces rmb() with smp_rmb() and
+then work on optimizing. Can you provide performance numbers that show
+rmb() (and soon smp_rmb()) is causing actual problems here?
 
-To fool-proof the processing of SRv6 behaviors we will support at most 32
-attributes independently from the reference architecture.
+> +
+> +	switch (current->seccomp.mode) {
+>  	case SECCOMP_MODE_STRICT:
+>  		__secure_computing_strict(this_syscall);  /* may call do_exit */
+>  		return 0;
+> +	/*
+> +	 * Make sure that change to mode (from SECCOMP_MODE_DISABLED to
+> +	 * SECCOMP_MODE_FILTER) from another thread using TSYNC ability
+> +	 * have been seen after SYSCALL_WORK_SECCOMP was seen. Read mode again behind
+> +	 * smp_rmb(), if it equals SECCOMP_MODE_FILTER, go to the right path.
+> +	 */
+> +	case SECCOMP_MODE_DISABLED:
+> +		smp_rmb();
+> +		if (unlikely(current->seccomp.mode != SECCOMP_MODE_FILTER))
+> +			BUG();
 
-Consequently, this patch aims to:
+BUG() should never be used[1]. This is a recoverable situation, I think, and
+should be handled as such.
 
- - verify, at compile time, that the total number of attributes does not
-   exceed the fixed value of 32. Otherwise, kernel build fails forcing
-   developers to reconsider adding a new attribute or extend the total
-   number of supported attributes by the SRv6 behaviors.
+-Kees
 
- - replace all patterns (1 << i) with the macro SEG6_F_ATTR(i) in order to
-   address potential overflow issues caused by 32-bit signed arithmetic.
+[1] https://www.kernel.org/doc/html/latest/process/deprecated.html#bug-and-bug-on
 
-Thanks to Colin Ian King for catching the overflow problem, providing a
-solution and inspiring this patch.
-Thanks to Jakub Kicinski for his useful suggestions during the design of
-this patch.
+>  	case SECCOMP_MODE_FILTER:
+>  		return __seccomp_filter(this_syscall, sd, false);
+>  	default:
+> -- 
+> 2.19.1
+> 
 
-Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
----
- net/ipv6/seg6_local.c | 68 +++++++++++++++++++++++++------------------
- 1 file changed, 40 insertions(+), 28 deletions(-)
-
-diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
-index b07f7c1c82a4..7cc50d506902 100644
---- a/net/ipv6/seg6_local.c
-+++ b/net/ipv6/seg6_local.c
-@@ -31,6 +31,9 @@
- #include <linux/etherdevice.h>
- #include <linux/bpf.h>
- 
-+#define SEG6_F_ATTR(i)		BIT(i)
-+#define SEG6_LOCAL_MAX_SUPP	32
-+
- struct seg6_local_lwt;
- 
- /* callbacks used for customizing the creation and destruction of a behavior */
-@@ -660,8 +663,8 @@ seg6_end_dt_mode seg6_end_dt6_parse_mode(struct seg6_local_lwt *slwt)
- 	unsigned long parsed_optattrs = slwt->parsed_optattrs;
- 	bool legacy, vrfmode;
- 
--	legacy	= !!(parsed_optattrs & (1 << SEG6_LOCAL_TABLE));
--	vrfmode	= !!(parsed_optattrs & (1 << SEG6_LOCAL_VRFTABLE));
-+	legacy	= !!(parsed_optattrs & SEG6_F_ATTR(SEG6_LOCAL_TABLE));
-+	vrfmode	= !!(parsed_optattrs & SEG6_F_ATTR(SEG6_LOCAL_VRFTABLE));
- 
- 	if (!(legacy ^ vrfmode))
- 		/* both are absent or present: invalid DT6 mode */
-@@ -883,32 +886,32 @@ static struct seg6_action_desc seg6_action_table[] = {
- 	},
- 	{
- 		.action		= SEG6_LOCAL_ACTION_END_X,
--		.attrs		= (1 << SEG6_LOCAL_NH6),
-+		.attrs		= SEG6_F_ATTR(SEG6_LOCAL_NH6),
- 		.input		= input_action_end_x,
- 	},
- 	{
- 		.action		= SEG6_LOCAL_ACTION_END_T,
--		.attrs		= (1 << SEG6_LOCAL_TABLE),
-+		.attrs		= SEG6_F_ATTR(SEG6_LOCAL_TABLE),
- 		.input		= input_action_end_t,
- 	},
- 	{
- 		.action		= SEG6_LOCAL_ACTION_END_DX2,
--		.attrs		= (1 << SEG6_LOCAL_OIF),
-+		.attrs		= SEG6_F_ATTR(SEG6_LOCAL_OIF),
- 		.input		= input_action_end_dx2,
- 	},
- 	{
- 		.action		= SEG6_LOCAL_ACTION_END_DX6,
--		.attrs		= (1 << SEG6_LOCAL_NH6),
-+		.attrs		= SEG6_F_ATTR(SEG6_LOCAL_NH6),
- 		.input		= input_action_end_dx6,
- 	},
- 	{
- 		.action		= SEG6_LOCAL_ACTION_END_DX4,
--		.attrs		= (1 << SEG6_LOCAL_NH4),
-+		.attrs		= SEG6_F_ATTR(SEG6_LOCAL_NH4),
- 		.input		= input_action_end_dx4,
- 	},
- 	{
- 		.action		= SEG6_LOCAL_ACTION_END_DT4,
--		.attrs		= (1 << SEG6_LOCAL_VRFTABLE),
-+		.attrs		= SEG6_F_ATTR(SEG6_LOCAL_VRFTABLE),
- #ifdef CONFIG_NET_L3_MASTER_DEV
- 		.input		= input_action_end_dt4,
- 		.slwt_ops	= {
-@@ -920,30 +923,30 @@ static struct seg6_action_desc seg6_action_table[] = {
- 		.action		= SEG6_LOCAL_ACTION_END_DT6,
- #ifdef CONFIG_NET_L3_MASTER_DEV
- 		.attrs		= 0,
--		.optattrs	= (1 << SEG6_LOCAL_TABLE) |
--				  (1 << SEG6_LOCAL_VRFTABLE),
-+		.optattrs	= SEG6_F_ATTR(SEG6_LOCAL_TABLE) |
-+				  SEG6_F_ATTR(SEG6_LOCAL_VRFTABLE),
- 		.slwt_ops	= {
- 					.build_state = seg6_end_dt6_build,
- 				  },
- #else
--		.attrs		= (1 << SEG6_LOCAL_TABLE),
-+		.attrs		= SEG6_F_ATTR(SEG6_LOCAL_TABLE),
- #endif
- 		.input		= input_action_end_dt6,
- 	},
- 	{
- 		.action		= SEG6_LOCAL_ACTION_END_B6,
--		.attrs		= (1 << SEG6_LOCAL_SRH),
-+		.attrs		= SEG6_F_ATTR(SEG6_LOCAL_SRH),
- 		.input		= input_action_end_b6,
- 	},
- 	{
- 		.action		= SEG6_LOCAL_ACTION_END_B6_ENCAP,
--		.attrs		= (1 << SEG6_LOCAL_SRH),
-+		.attrs		= SEG6_F_ATTR(SEG6_LOCAL_SRH),
- 		.input		= input_action_end_b6_encap,
- 		.static_headroom	= sizeof(struct ipv6hdr),
- 	},
- 	{
- 		.action		= SEG6_LOCAL_ACTION_END_BPF,
--		.attrs		= (1 << SEG6_LOCAL_BPF),
-+		.attrs		= SEG6_F_ATTR(SEG6_LOCAL_BPF),
- 		.input		= input_action_end_bpf,
- 	},
- 
-@@ -1366,7 +1369,7 @@ static void __destroy_attrs(unsigned long parsed_attrs, int max_parsed,
- 	 * attribute; otherwise, we call the destroy() callback.
- 	 */
- 	for (i = 0; i < max_parsed; ++i) {
--		if (!(parsed_attrs & (1 << i)))
-+		if (!(parsed_attrs & SEG6_F_ATTR(i)))
- 			continue;
- 
- 		param = &seg6_action_params[i];
-@@ -1395,7 +1398,7 @@ static int parse_nla_optional_attrs(struct nlattr **attrs,
- 	int err, i;
- 
- 	for (i = 0; i < SEG6_LOCAL_MAX + 1; ++i) {
--		if (!(desc->optattrs & (1 << i)) || !attrs[i])
-+		if (!(desc->optattrs & SEG6_F_ATTR(i)) || !attrs[i])
- 			continue;
- 
- 		/* once here, the i-th attribute is provided by the
-@@ -1408,7 +1411,7 @@ static int parse_nla_optional_attrs(struct nlattr **attrs,
- 			goto parse_optattrs_err;
- 
- 		/* current attribute has been correctly parsed */
--		parsed_optattrs |= (1 << i);
-+		parsed_optattrs |= SEG6_F_ATTR(i);
- 	}
- 
- 	/* store in the tunnel state all the optional attributed successfully
-@@ -1494,7 +1497,7 @@ static int parse_nla_action(struct nlattr **attrs, struct seg6_local_lwt *slwt)
- 
- 	/* parse the required attributes */
- 	for (i = 0; i < SEG6_LOCAL_MAX + 1; i++) {
--		if (desc->attrs & (1 << i)) {
-+		if (desc->attrs & SEG6_F_ATTR(i)) {
- 			if (!attrs[i])
- 				return -EINVAL;
- 
-@@ -1599,7 +1602,7 @@ static int seg6_local_fill_encap(struct sk_buff *skb,
- 	attrs = slwt->desc->attrs | slwt->parsed_optattrs;
- 
- 	for (i = 0; i < SEG6_LOCAL_MAX + 1; i++) {
--		if (attrs & (1 << i)) {
-+		if (attrs & SEG6_F_ATTR(i)) {
- 			param = &seg6_action_params[i];
- 			err = param->put(skb, slwt);
- 			if (err < 0)
-@@ -1620,30 +1623,30 @@ static int seg6_local_get_encap_size(struct lwtunnel_state *lwt)
- 
- 	attrs = slwt->desc->attrs | slwt->parsed_optattrs;
- 
--	if (attrs & (1 << SEG6_LOCAL_SRH))
-+	if (attrs & SEG6_F_ATTR(SEG6_LOCAL_SRH))
- 		nlsize += nla_total_size((slwt->srh->hdrlen + 1) << 3);
- 
--	if (attrs & (1 << SEG6_LOCAL_TABLE))
-+	if (attrs & SEG6_F_ATTR(SEG6_LOCAL_TABLE))
- 		nlsize += nla_total_size(4);
- 
--	if (attrs & (1 << SEG6_LOCAL_NH4))
-+	if (attrs & SEG6_F_ATTR(SEG6_LOCAL_NH4))
- 		nlsize += nla_total_size(4);
- 
--	if (attrs & (1 << SEG6_LOCAL_NH6))
-+	if (attrs & SEG6_F_ATTR(SEG6_LOCAL_NH6))
- 		nlsize += nla_total_size(16);
- 
--	if (attrs & (1 << SEG6_LOCAL_IIF))
-+	if (attrs & SEG6_F_ATTR(SEG6_LOCAL_IIF))
- 		nlsize += nla_total_size(4);
- 
--	if (attrs & (1 << SEG6_LOCAL_OIF))
-+	if (attrs & SEG6_F_ATTR(SEG6_LOCAL_OIF))
- 		nlsize += nla_total_size(4);
- 
--	if (attrs & (1 << SEG6_LOCAL_BPF))
-+	if (attrs & SEG6_F_ATTR(SEG6_LOCAL_BPF))
- 		nlsize += nla_total_size(sizeof(struct nlattr)) +
- 		       nla_total_size(MAX_PROG_NAME) +
- 		       nla_total_size(4);
- 
--	if (attrs & (1 << SEG6_LOCAL_VRFTABLE))
-+	if (attrs & SEG6_F_ATTR(SEG6_LOCAL_VRFTABLE))
- 		nlsize += nla_total_size(4);
- 
- 	return nlsize;
-@@ -1670,7 +1673,7 @@ static int seg6_local_cmp_encap(struct lwtunnel_state *a,
- 		return 1;
- 
- 	for (i = 0; i < SEG6_LOCAL_MAX + 1; i++) {
--		if (attrs_a & (1 << i)) {
-+		if (attrs_a & SEG6_F_ATTR(i)) {
- 			param = &seg6_action_params[i];
- 			if (param->cmp(slwt_a, slwt_b))
- 				return 1;
-@@ -1692,6 +1695,15 @@ static const struct lwtunnel_encap_ops seg6_local_ops = {
- 
- int __init seg6_local_init(void)
- {
-+	/* If the max total number of defined attributes is reached, then your
-+	 * kernel build stops here.
-+	 *
-+	 * This check is required to avoid arithmetic overflows when processing
-+	 * behavior attributes and the maximum number of defined attributes
-+	 * exceeds the allowed value.
-+	 */
-+	BUILD_BUG_ON(SEG6_LOCAL_MAX + 1 > SEG6_LOCAL_MAX_SUPP);
-+
- 	return lwtunnel_encap_add_ops(&seg6_local_ops,
- 				      LWTUNNEL_ENCAP_SEG6_LOCAL);
- }
 -- 
-2.20.1
-
+Kees Cook
