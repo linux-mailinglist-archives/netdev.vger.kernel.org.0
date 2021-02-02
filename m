@@ -2,65 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD55230B4BD
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 02:35:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D77F30B4CC
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 02:43:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231144AbhBBBex (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 20:34:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52374 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229607AbhBBBem (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Feb 2021 20:34:42 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 92F9764DD6;
-        Tue,  2 Feb 2021 01:34:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612229641;
-        bh=+r3UHx4Axi9AfKPNOu8Fb0UI++fCJmLsxFMaqsmyWis=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UxO26D1RH44SMnNhGXeZ567han+1Nc4a/UwX1i8qshHzGFgaCVIoPYnoCLkL0w7z9
-         RrZqYqKA529+a9P42lMAXPjzHzWZ1EAbjjnOYjROKozQYUNazUHJ1yYTCx/l3MZlZt
-         6/ogSGlrnfgTFehoRHePNIL1mHLvId/lFdymx5KXz9SNi1RIST8D7e6Ds4+clQE4k0
-         Ld9/ZevUwOCo1B6Lu2gxx5u0mzs0e+gBccp/LxKHbkhThcjW+9Dvd6MLnsQh6RNwxd
-         2uTlJSFftOCmcp5YKtJ0Q3DdL63J3Cen05Qx4zke8nCvm1rifrvlDOVqNmzFbbMNdp
-         Ja41INryPG6Zg==
-Date:   Mon, 1 Feb 2021 17:34:00 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH RESEND net-next] netlink: add tracepoint at
- NL_SET_ERR_MSG
-Message-ID: <20210201173400.19f452d4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <fb6e25a4833e6a0e055633092b05bae3c6e1c0d3.1611934253.git.marcelo.leitner@gmail.com>
-References: <fb6e25a4833e6a0e055633092b05bae3c6e1c0d3.1611934253.git.marcelo.leitner@gmail.com>
+        id S230388AbhBBBnT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 20:43:19 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:1243 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229612AbhBBBnS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 20:43:18 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B6018ae0e0000>; Mon, 01 Feb 2021 17:42:38 -0800
+Received: from [172.27.8.91] (172.20.145.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 2 Feb
+ 2021 01:42:35 +0000
+Subject: Re: [PATCH net-next v5] net: psample: Introduce stubs to remove NIC
+ driver dependency
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <jiri@nvidia.com>, <saeedm@nvidia.com>,
+        "kernel test robot" <lkp@intel.com>
+References: <20210130023319.32560-1-cmi@nvidia.com>
+ <20210129225918.0b621ed7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <6ba2203c-919f-7baa-da7e-5c389187ef2a@nvidia.com>
+ <20210201131051.4937f0ff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Chris Mi <cmi@nvidia.com>
+Message-ID: <6cf86e79-f6ed-5736-2ead-456d4f296a19@nvidia.com>
+Date:   Tue, 2 Feb 2021 09:42:32 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210201131051.4937f0ff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1612230158; bh=Xv4JNXbrCz5P6Oz/dXRiUMLebiXPxlQ0SrcAQ2MKn60=;
+        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
+         MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding:
+         Content-Language:X-Originating-IP:X-ClientProxiedBy;
+        b=bV1Pj9ptz1nSAdpNfjc5ji6Xv52128yq12zd+5XlDDIhmibZq7mfgnBbWIy/L7aGZ
+         S8QZDssyURio3DdZeuOOsXflwyKcEu3oolY+rLlFYrbdyT5uB6+HWWpqI/YOSBw4xa
+         68+/+Jx+AgDIfdLk4SvV1gwQMxmZ6KFUYDKr1hGVqI3aSBYKcO5UfD7eE2LDOpCj9T
+         Skp05B9Dx6FWti/DmTa8Xwax0SpcjC1rPJy0FHWVZagy0xdZt5lbdp7Q+auMapJZqb
+         gkTyVA2oo6GAckgm3bMNo412O4CAkbpuiqHvnMLo8Hdv71X3z0mAX1avbSAH430cRQ
+         BeCZSYTz1Nf9w==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  1 Feb 2021 15:12:19 -0300 Marcelo Ricardo Leitner wrote:
-> Often userspace won't request the extack information, or they don't log it
-> because of log level or so, and even when they do, sometimes it's not
-> enough to know exactly what caused the error.
-> 
-> Netlink extack is the standard way of reporting erros with descriptive
-> error messages. With a trace point on it, we then can know exactly where
-> the error happened, regardless of userspace app. Also, we can even see if
-> the err msg was overwritten.
-> 
-> The wrapper do_trace_netlink_extack() is because trace points shouldn't be
-> called from .h files, as trace points are not that small, and the function
-> call to do_trace_netlink_extack() on the macros is not protected by
-> tracepoint_enabled() because the macros are called from modules, and this
-> would require exporting some trace structs. As this is error path, it's
-> better to export just the wrapper instead.
-> 
-> Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+On 2/2/2021 5:10 AM, Jakub Kicinski wrote:
+> On Mon, 1 Feb 2021 09:32:15 +0800 Chris Mi wrote:
+>> On 1/30/2021 2:59 PM, Jakub Kicinski wrote:
+>>> On Sat, 30 Jan 2021 10:33:19 +0800 Chris Mi wrote:
+>>>> +// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
+>>>> +/* Copyright (c) 2021 Mellanox Technologies. */
+>>>> +
+>>>> +const struct psample_ops __rcu *psample_ops __read_mostly;
+>>>> +EXPORT_SYMBOL_GPL(psample_ops);
+>>> Please explain to me how you could possibly have compile tested this
+>>> and not caught that it doesn't build.
+>> Sorry, I don't understand which issue you are talking about. Do you mean
+>> the issue sparse found before or new issues in v5?
+> There is no include here now, and it uses EXPORT_SYMBOL_GPL()
+> and a bunch of decorators.
+>
+But there is no errors in 'checks' section of this page:
+https://patchwork.kernel.org/project/netdevbpf/patch/20210128014543.521151-1-cmi@nvidia.com/
 
-Did you measure the allyesconfig bloat from this?
+And I followed kernel test robot guide, I reproduced the errors in v1, 
+but I fixed it in v2.
 
-How valuable is it to have the tracepoint in at the time it's set?
-IIRC extack is passed in to the callbacks from the netlink core, it's
-just not reported to user space if not requested. So we could capture
-the message in af_netlink.c, no?
+reproduce:
+
+         wgethttps://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross  -O ~/bin/make.cross
+         chmod +x ~/bin/make.cross
+         # apt-get install sparse
+         # sparse version: v0.6.3-212-g56dbccf5-dirty
+         #https://github.com/0day-ci/linux/commit/f2df98afc1a1f1809d9e8a178b2d4766cbca8bf7
+         git remote add linux-reviewhttps://github.com/0day-ci/linux
+         git fetch --no-tags linux-review Chris-Mi/net-psample-Introduce-stubs-to-remove-NIC-driver-dependency/20210127-082451
+         git checkout f2df98afc1a1f1809d9e8a178b2d4766cbca8bf7
+         # save the attached .config to linux build tree
+         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' ARCH=s390
+
+I didn't see errors even if there is no include.
+
