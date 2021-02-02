@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66C1230C4ED
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 17:08:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFC0430C33B
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 16:15:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235960AbhBBQGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 11:06:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38282 "EHLO mail.kernel.org"
+        id S235078AbhBBPMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 10:12:39 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37236 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235156AbhBBPJp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 10:09:45 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 39D4264F65;
-        Tue,  2 Feb 2021 15:06:35 +0000 (UTC)
+        id S234060AbhBBPLb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 10:11:31 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6F22E64F6A;
+        Tue,  2 Feb 2021 15:06:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612278396;
-        bh=Mntyyw9pDo73Mx8hzXtsDcqsj83PlObc6cNFP+pQy/A=;
+        s=k20201202; t=1612278397;
+        bh=PZkgaS6zU3kWPQvzWpKAbL1NUiXHw96lH5K6n34oUpg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TsWY0Gl21G85gdRx1av0D/erLGQJQWy4GbMpKZLZAiegZITdmg09DtZUGBRtpg7dp
-         cOFq1LvjL7V0Wihk7jZKey/pCsyBY0fQovm22wX+E8RuzkKoQ986scgxVDCz4diJzG
-         +nryLltoMbwgmNpItCh5k4eYBcSScURI10H724qJoPz9mrv4gaJ2zZSwSOyQIvZjiQ
-         +k9wBMzjlzGnO33QiWuywHnV6Y44U5Cna02BL3SHJb08QjlJCyucl/fsPliVFDV0/Y
-         NDyfqantD402gIPlCompk7pC+ux45QOOdzRZcyCKVZoF4BELBX6NIpmWesUc8urF/G
-         Qs9ry5i0LnDfA==
+        b=C9r0HRlMOcNe9bTOpmS3/83MgMJ+WCCL0HE6DvPr3CctuodtD4HLobQVJoH9GDAeX
+         btQ3dPZjmjbiiHpsyA+SzuYvGYJIHFyXsVvbz2Do/sE8oRWhQL5sP2aMBdntP4UlZE
+         5oFQLgLZc+B85gsfOG/fDRVpl+a/yahqj+lQroUAc8hm0eXe1S3LPq8ksnAHUIoHp7
+         BCes0qkzZdO7UPW5Yr2mqT+qnOmiNtoTbgGEnnMY1uW6OHvq75vqRfctaI+17geoKs
+         CDoZ78JdZpfI7972MHEjt16x7uKdxMzt5Micg735LC3ACDd97Cztz/LFBhVrP1+1jx
+         9SfRxCoJs/4+A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+Cc:     Johannes Berg <johannes.berg@intel.com>,
         Luca Coelho <luciano.coelho@intel.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 15/25] iwlwifi: pcie: add a NULL check in iwl_pcie_txq_unmap
-Date:   Tue,  2 Feb 2021 10:06:05 -0500
-Message-Id: <20210202150615.1864175-15-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 16/25] iwlwifi: pcie: fix context info memory leak
+Date:   Tue,  2 Feb 2021 10:06:06 -0500
+Message-Id: <20210202150615.1864175-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210202150615.1864175-1-sashal@kernel.org>
 References: <20210202150615.1864175-1-sashal@kernel.org>
@@ -44,38 +44,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 98c7d21f957b10d9c07a3a60a3a5a8f326a197e5 ]
+[ Upstream commit 2d6bc752cc2806366d9a4fd577b3f6c1f7a7e04e ]
 
-I hit a NULL pointer exception in this function when the
-init flow went really bad.
+If the image loader allocation fails, we leak all the previously
+allocated memory. Fix this.
 
-Signed-off-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/iwlwifi.20210115130252.2e8da9f2c132.I0234d4b8ddaf70aaa5028a20c863255e05bc1f84@changeid
+Link: https://lore.kernel.org/r/iwlwifi.20210115130252.97172cbaa67c.I3473233d0ad01a71aa9400832fb2b9f494d88a11@changeid
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/pcie/tx.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ .../net/wireless/intel/iwlwifi/pcie/ctxt-info-gen3.c  | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/tx.c b/drivers/net/wireless/intel/iwlwifi/pcie/tx.c
-index 966be5689d63a..ed54d04e43964 100644
---- a/drivers/net/wireless/intel/iwlwifi/pcie/tx.c
-+++ b/drivers/net/wireless/intel/iwlwifi/pcie/tx.c
-@@ -299,6 +299,11 @@ static void iwl_pcie_txq_unmap(struct iwl_trans *trans, int txq_id)
- 	struct iwl_trans_pcie *trans_pcie = IWL_TRANS_GET_PCIE_TRANS(trans);
- 	struct iwl_txq *txq = trans->txqs.txq[txq_id];
- 
-+	if (!txq) {
-+		IWL_ERR(trans, "Trying to free a queue that wasn't allocated?\n");
-+		return;
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/ctxt-info-gen3.c b/drivers/net/wireless/intel/iwlwifi/pcie/ctxt-info-gen3.c
+index 5512e3c630c31..2078b7b0bb7f6 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/ctxt-info-gen3.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/ctxt-info-gen3.c
+@@ -236,8 +236,10 @@ int iwl_pcie_ctxt_info_gen3_init(struct iwl_trans *trans,
+ 	/* Allocate IML */
+ 	iml_img = dma_alloc_coherent(trans->dev, trans->iml_len,
+ 				     &trans_pcie->iml_dma_addr, GFP_KERNEL);
+-	if (!iml_img)
+-		return -ENOMEM;
++	if (!iml_img) {
++		ret = -ENOMEM;
++		goto err_free_ctxt_info;
 +	}
-+
- 	spin_lock_bh(&txq->lock);
- 	while (txq->write_ptr != txq->read_ptr) {
- 		IWL_DEBUG_TX_REPLY(trans, "Q %d Free %d\n",
+ 
+ 	memcpy(iml_img, trans->iml, trans->iml_len);
+ 
+@@ -279,6 +281,11 @@ int iwl_pcie_ctxt_info_gen3_init(struct iwl_trans *trans,
+ 
+ 	return 0;
+ 
++err_free_ctxt_info:
++	dma_free_coherent(trans->dev, sizeof(*trans_pcie->ctxt_info_gen3),
++			  trans_pcie->ctxt_info_gen3,
++			  trans_pcie->ctxt_info_dma_addr);
++	trans_pcie->ctxt_info_gen3 = NULL;
+ err_free_prph_info:
+ 	dma_free_coherent(trans->dev,
+ 			  sizeof(*prph_info),
 -- 
 2.27.0
 
