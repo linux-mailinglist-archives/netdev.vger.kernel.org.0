@@ -2,130 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9903830B43B
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 01:42:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 424E430B44C
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 01:50:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231264AbhBBAlO convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 1 Feb 2021 19:41:14 -0500
-Received: from mga11.intel.com ([192.55.52.93]:39095 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229556AbhBBAlM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Feb 2021 19:41:12 -0500
-IronPort-SDR: dir/nj/ziTEwW3GGs0aszbdyqaSQvA7geeqYcJk7x8r+RxytLXJrX9l8EG2dsp4qeNO4kXrFmZ
- Rwtgrwch56/A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9882"; a="177266964"
-X-IronPort-AV: E=Sophos;i="5.79,393,1602572400"; 
-   d="scan'208";a="177266964"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2021 16:40:30 -0800
-IronPort-SDR: 0COdYcDysD1QylPd9RlOA30cCzpcZe6xgGNTwUyHtZii8rdX0J/5JH7gHO/Aw02VdUvo3M4Zki
- CPcmbSS9PaOg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,393,1602572400"; 
-   d="scan'208";a="412766336"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by fmsmga002.fm.intel.com with ESMTP; 01 Feb 2021 16:40:30 -0800
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Mon, 1 Feb 2021 16:40:29 -0800
-Received: from fmsmsx612.amr.corp.intel.com ([10.18.126.92]) by
- fmsmsx612.amr.corp.intel.com ([10.18.126.92]) with mapi id 15.01.2106.002;
- Mon, 1 Feb 2021 16:40:29 -0800
-From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-CC:     Leon Romanovsky <leon@kernel.org>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
-        "Patil, Kiran" <kiran.patil@intel.com>
-Subject: RE: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
- implement private channel OPs
-Thread-Topic: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
- implement private channel OPs
-Thread-Index: AQHW8RlTrNE3qjtLukSnj7NcX24DDao5N6oA//+n/DCAAMFCAIAAeSAAgAHXAYD//6CioIABFy+AgABrh4CAAjZjEIAE9xSA///EJCA=
-Date:   Tue, 2 Feb 2021 00:40:28 +0000
-Message-ID: <925c33a0b174464898c9fc5651b981ee@intel.com>
-References: <20210122234827.1353-8-shiraz.saleem@intel.com>
- <20210125184248.GS4147@nvidia.com>
- <99895f7c10a2473c84a105f46c7ef498@intel.com>
- <20210126005928.GF4147@nvidia.com>
- <031c2675aff248bd9c78fada059b5c02@intel.com>
- <20210127121847.GK1053290@unreal>
- <ea62658f01664a6ea9438631c9ddcb6e@intel.com>
- <20210127231641.GS4147@nvidia.com> <20210128054133.GA1877006@unreal>
- <d58f341898834170af1bfb6719e17956@intel.com>
- <20210201191805.GO4247@nvidia.com>
-In-Reply-To: <20210201191805.GO4247@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-x-originating-ip: [10.22.254.132]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S230157AbhBBAu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 19:50:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49358 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229527AbhBBAuZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 19:50:25 -0500
+Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09DC7C061573;
+        Mon,  1 Feb 2021 16:49:45 -0800 (PST)
+Received: by mail-oi1-x234.google.com with SMTP id h192so21006599oib.1;
+        Mon, 01 Feb 2021 16:49:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KZ3KGl0h1neaojkBgg4SZbESMR55ZNhc/UsqdvzAY2o=;
+        b=ND4SR2LkIHuqIOZ4WzjpzLdlT/v69Qr6LzJ+vCOXf8nQlxqZFcMnc+19h7XRphwcTT
+         dCJLHlU7rzjwV7y3RndGmKXY6rS3THLVJOKI0FDD1JwsyUKeRupec8eL3NA4RGzV475O
+         CfSgTqAWKXmXSRfu/k+ggbIlEKae2suKJcT9PAt/b+WpwCLA9eAvIupn3JcrYyeQ6vhk
+         O+Z9EgaZv3faqnowLWK9BL6aauZ+yutDyatwv587UvGulANdW18Wxk/gjJCg8yEyQhj8
+         DXxaiPAbuwAG5joes055zItBl8D1KXTaCisBeMtUhDvYh/ldZs8WYBS6czaFzSaybVvR
+         1fIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KZ3KGl0h1neaojkBgg4SZbESMR55ZNhc/UsqdvzAY2o=;
+        b=KGnKuSOJCvhAgoS5Ww5NxSsUG0syBuWs5brxDxVoKQ/qPNGQEiaglKilWgl2NDZbFu
+         Gh43It3STvPYhrso9hPuJ5k1XpdFvnEAJp8pCTBMk7+/1Xb+jvZl8RBcS18WFh0ixPud
+         hMObMMRmYsItfMR6rsP9mIMZTIqCgGN90q6uPBsw8v8NumyUhMK+Gf6AhU8/PUeF9J1M
+         sBVQnDEtizP8lHQYtA42In187vZ5iRZDHDUUx6t/b2720iJ4RrLV3OeqYmP8MTv51+zZ
+         nYVwbDnX3G2Z3tk9NDtSYYI5gSNlaALND9yLpdh+rj1TWk8WD6qAuu5wRT31hqBCnoTf
+         4p1w==
+X-Gm-Message-State: AOAM533K3u/PQdySQjpQAblA5uFeV2XYNt23FY/sedE+DAP4aPnfy5Yf
+        s9IJFyVNkLr8woBvF1hiV2lqeY8yzKg67+/LpkI=
+X-Google-Smtp-Source: ABdhPJwoIdYkGn6frhtqu3acbFk7/QCamM09W36YbaetbA7rzgrbBvmCH3/GTny6FBt0cJr/7g+3mw13g+2lUj1ifLg=
+X-Received: by 2002:a05:6808:1290:: with SMTP id a16mr989423oiw.161.1612226984490;
+ Mon, 01 Feb 2021 16:49:44 -0800 (PST)
 MIME-Version: 1.0
+References: <20210201232609.3524451-1-elder@linaro.org> <20210201232609.3524451-4-elder@linaro.org>
+ <CAE1WUT6VOx=sS1K1PaJG+Ks06CMpoz_efCyNhFQhD83_YNLk5A@mail.gmail.com> <5a415ba4-9d69-5479-3be0-c5e6167b0f8a@linaro.org>
+In-Reply-To: <5a415ba4-9d69-5479-3be0-c5e6167b0f8a@linaro.org>
+From:   Amy Parker <enbyamy@gmail.com>
+Date:   Mon, 1 Feb 2021 16:49:33 -0800
+Message-ID: <CAE1WUT4nGrNXEOFNRygFHie6dZVCQTXAgFvVDzW7hgf6W-UVkw@mail.gmail.com>
+Subject: Re: [PATCH net 3/4] net: ipa: use the right accessor in ipa_endpoint_status_skip()
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, elder@kernel.org,
+        evgreen@chromium.org, bjorn.andersson@linaro.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
-> implement private channel OPs
-> 
-> On Sat, Jan 30, 2021 at 01:19:36AM +0000, Saleem, Shiraz wrote:
-> > > Subject: Re: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver
-> > > and implement private channel OPs
-> > >
-> > > On Wed, Jan 27, 2021 at 07:16:41PM -0400, Jason Gunthorpe wrote:
-> > > > On Wed, Jan 27, 2021 at 10:17:56PM +0000, Saleem, Shiraz wrote:
-> > > >
-> > > > > Even with another core PCI driver, there still needs to be
-> > > > > private communication channel between the aux rdma driver and
-> > > > > this PCI driver to pass things like QoS updates.
-> > > >
-> > > > Data pushed from the core driver to its aux drivers should either
-> > > > be done through new callbacks in a struct device_driver or by
-> > > > having a notifier chain scheme from the core driver.
-> > >
-> > > Right, and internal to driver/core device_lock will protect from
-> > > parallel probe/remove and PCI flows.
-> > >
+On Mon, Feb 1, 2021 at 4:15 PM Alex Elder <elder@linaro.org> wrote:
+>
+> On 2/1/21 6:02 PM, Amy Parker wrote:
+> > On Mon, Feb 1, 2021 at 3:32 PM Alex Elder <elder@linaro.org> wrote:
+> >>
+> >> When extracting the destination endpoint ID from the status in
+> >> ipa_endpoint_status_skip(), u32_get_bits() is used.  This happens to
+> >> work, but it's wrong: the structure field is only 8 bits wide
+> >> instead of 32.
+> >>
+> >> Fix this by using u8_get_bits() to get the destination endpoint ID.
 > >
-> > OK. We will hold the device_lock while issuing the .ops callbacks from core
-> driver.
-> > This should solve our synchronization issue.
+> > Isn't
+>
+> (I saw your second message.)
+>
+> >> Signed-off-by: Alex Elder <elder@linaro.org>
+> >> ---
+> >>   drivers/net/ipa/ipa_endpoint.c | 4 ++--
+> >>   1 file changed, 2 insertions(+), 2 deletions(-)
+> >>
+> >> diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
+> >> index 448d89da1e456..612afece303f3 100644
+> >> --- a/drivers/net/ipa/ipa_endpoint.c
+> >> +++ b/drivers/net/ipa/ipa_endpoint.c
+> >> @@ -1164,8 +1164,8 @@ static bool ipa_endpoint_status_skip(struct ipa_endpoint *endpoint,
+> >>                  return true;
 > >
-> > There have been a few discussions in this thread. And I would like to
-> > be clear on what to do.
-> >
-> > So we will,
-> >
-> > 1. Remove .open/.close, .peer_register/.peer_unregister 2. Protect ops
-> > callbacks issued from core driver to the aux driver with device_lock
-> 
-> A notifier chain is probably better, honestly.
-> 
-> Especially since you don't want to split the netdev side, a notifier chain can be
-> used by both cases equally.
-> 
+> > A few lines above this, endpoint_id is initialized as u32. If we're
+> > going for "correctness", endpoint_id should be a u8. But of course,
+> > this would contrast with ipa_endpoint having it as a u32.
+>
+> You are correct, endpoint_id is *defined* as type u32.
+>
+> But the issue here is that the field status->endp_dst_idx
+> has type u8.  u32_get_bits() assumes the field it is
+> passed has type u32; while u8_get_bits() takes a u8.
 
-The device_lock seems to be a simple solution to this synchronization problem.
-May I ask what makes the notifier scheme better to solve this?
+Ah, missed that bit. Thanks for clarifying.
 
-Also, are you suggesting we rid all the iidc_peer_op callbacks used for 'ice' to 'irdma' driver
-communication and replace with events generated by ice driver which will be received
-by subscriber irdma? Or just some specific events to solve this synchronization problem?
-Sorry I am confused.
+>
+> The return value of u8_get_bits() is u8, as you might
+> suspect.  The C standard guarantees that the u8 value
+> will be promoted to the u32 target type here.
 
-Shiraz
+Yes, it does, and so it wouldn't be a theoretical issue - just an
+issue of developer confusion at first when working with it. But the
+above outlined point of the types taken is more important.
+
+>
+> >>          if (!status->pkt_len)
+> >>                  return true;
+> >> -       endpoint_id = u32_get_bits(status->endp_dst_idx,
+> >> -                                  IPA_STATUS_DST_IDX_FMASK);
+> >> +       endpoint_id = u8_get_bits(status->endp_dst_idx,
+> >> +                                 IPA_STATUS_DST_IDX_FMASK);
+> >>          if (endpoint_id != endpoint->endpoint_id)
+> >>                  return true;
+> >>
+> >> --
+> >> 2.27.0
+> >>
+> >
+> > As far as I see it, using u32_get_bits instead of u8_get_bits simply
+> > eliminates confusion about the type of endpoint_id. Perhaps instead of
+> > this patch, send a patch with a comment that while u32_get_bits is
+> > used, the field is only 8 bits?
+>
+> No.  We really want to extract a sub-field from the u8
+> value passed to u8_get_bits() (not u32_get_bits()).
+>
+> Does that make sense?
+>
+>                                         -Alex
+
+Yes, it does. Thank you.
+
+Best regards,
+Amy Parker
+(she/her/hers)
