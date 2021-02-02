@@ -2,232 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6441B30B7A2
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 07:08:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AEF530B7C9
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 07:26:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232011AbhBBGGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 01:06:21 -0500
-Received: from [1.6.215.26] ([1.6.215.26]:40157 "EHLO hyd1soter2"
-        rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231420AbhBBGGM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 01:06:12 -0500
-Received: from hyd1soter2.caveonetworks.com (localhost [127.0.0.1])
-        by hyd1soter2 (8.15.2/8.15.2/Debian-3) with ESMTP id 11265GTg027773;
-        Tue, 2 Feb 2021 11:35:16 +0530
-Received: (from geetha@localhost)
-        by hyd1soter2.caveonetworks.com (8.15.2/8.15.2/Submit) id 11265GDL027772;
-        Tue, 2 Feb 2021 11:35:16 +0530
-From:   Geetha sowjanya <gakula@marvell.com>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     sgoutham@marvell.com, davem@davemloft.net, kuba@kernel.org,
-        sbhatta@marvell.com, hkelam@marvell.com, jerinj@marvell.com,
-        lcherian@marvell.com, Geetha sowjanya <gakula@marvell.com>
-Subject: [net-next v2 14/14] octeontx2-af: cn10k: MAC internal loopback support
-Date:   Tue,  2 Feb 2021 11:35:14 +0530
-Message-Id: <1612245914-27732-1-git-send-email-gakula@marvell.com>
-X-Mailer: git-send-email 2.7.4
+        id S231678AbhBBGZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 01:25:34 -0500
+Received: from mail-eopbgr130072.outbound.protection.outlook.com ([40.107.13.72]:25344
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231605AbhBBGZd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 01:25:33 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KnGSR+UF3rOEw1Lnal8Air6724ed5whpybXcW1xD6tCB+F+w0ju4fZXHbEEpgniJn9WSdzfJsYmkZdWifOlGl5tcUtWs+ajj5UW2qm88wk0Ki1mutMZ/NsN9AY68+mKE3x4KX5+IYwQb75RHFxBDg3xgigkAp/H9HGcX5Be3zPooXo4GiZTpvS7EBmi48tfroko5u12hB1U4Ql+lO0YhQDnNOuQPnlO1xGKKJ7CTe8tNVRhapP4V9LEOTfWDe/l6CAz+h74zHUPhCoCukG2wHYxWxt+XF4NGpvWO0KTSsFrkAQtdXWHD8SBQLPuwI5RqdXW1hDiZ4+jiStgrmY9dHQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=aVmsgc4cuhK3MV3tcIx8i39LgFgrCfmFXMzTafyf5OA=;
+ b=Z0ff6Sr6GaqHHu75oeHu8+FLJGLkkG91Ri1xbh576sGuF4Hzy8/6lTX7ROc80tcgybscVliC7/cGJPdcooy9eQ5MmQ+8jtcHTndjq6qRk9co0a74MsysgyMmwGgeXUhku5jtOGYCgn1uS0EpNOcRcWe23LNwFIxAwURK92yONklbzxmMxhXMD3E/sYw1zBIfZIS0isxEId8S+BGnRZ+dVZbsABqCFvbLdTCP7ay4YiIklzMf5ts/OuTi1f83oHltvGXqXQzxA2sC8LVD3ggOGUrtiDDHAuo3AY7Gl5AZqOlLaA3ujeoHGyUiqTXw04MhZZk2sRPM2F8YP669HCKHKA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=aVmsgc4cuhK3MV3tcIx8i39LgFgrCfmFXMzTafyf5OA=;
+ b=CWc6EjR765WgcDDCme1mxXkM+XeWfXu1NP+/xUivT5iYj57wHlnPR/DvTXUBhoRCQCTYkDOfVItpHIl8DyXZR8j7/AFX+iuF2roZRRxQOC2uHQqptjy7C6VTX1hWDV6wdApWatKKFIlkOSd2F41Eb7z1dRXZglrwxUb2FjLyaKY=
+Authentication-Results: pengutronix.de; dkim=none (message not signed)
+ header.d=none;pengutronix.de; dmarc=none action=none header.from=nxp.com;
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+ by DB7PR04MB5307.eurprd04.prod.outlook.com (2603:10a6:10:1e::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.22; Tue, 2 Feb
+ 2021 06:24:43 +0000
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::9d2b:182e:ba3b:5920]) by DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::9d2b:182e:ba3b:5920%3]) with mapi id 15.20.3805.027; Tue, 2 Feb 2021
+ 06:24:43 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     mkl@pengutronix.de, linux-can@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-imx@nxp.com
+Subject: [PATCH linux-can] can: flexcan: enable RX FIFO after FRZ/HALT valid
+Date:   Tue,  2 Feb 2021 14:23:50 +0800
+Message-Id: <20210202062350.7258-1-qiangqing.zhang@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-Originating-IP: [119.31.174.71]
+X-ClientProxiedBy: SG2PR03CA0108.apcprd03.prod.outlook.com
+ (2603:1096:4:7c::36) To DB8PR04MB6795.eurprd04.prod.outlook.com
+ (2603:10a6:10:fa::15)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (119.31.174.71) by SG2PR03CA0108.apcprd03.prod.outlook.com (2603:1096:4:7c::36) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.12 via Frontend Transport; Tue, 2 Feb 2021 06:24:41 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 08d49ced-8ee9-4b69-076e-08d8c7433aa3
+X-MS-TrafficTypeDiagnostic: DB7PR04MB5307:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DB7PR04MB530766C4BF13E298A24F74AAE6B59@DB7PR04MB5307.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: uyCXqlnF/hBj4Sm8GN64/b6FUdBiEmfBzoA3LDmpP5ukeqmEmTdwqTzRX8dXY/PBepQtf83N0guij2GjkiOWTYfpH8dNza1mNHqUA+YXr6WpUunfIP6e2Dl2OSA0asKDa3WGEuAdZUOXdKHvhIsEBNR7l4F5abiKLVfpjgBHzdkXPj+RCxnrRvQGq69OM990e0W2armvAOgy1+aYNLnngP+lAaMjkEtHtElIQ4Zx2Hv49ZIQTrdwwV7YwOuMKA7S1SkU5zvw+nO+OnT7dTQf2Zi/g/k6CJU05hpP+JiG0FdU7uFQusq+5MyB4nPeOsU7QxFC2uDvnIOX4Uw8NvNcv+wslBUZPEFqBhhg4UP2wtmjkzTecMmPKAbCMqijw8xxVtuEFTbMp8Ab6nfr2wdNIgAbCnmbNJtWPrysq/UPAGDkO9kRJ0Ua9kEU1XoA7VQOU5Vm6Bh1JwUMX0z+snsuJr13oNFjuzH9crOVe6daIGC4RUA7lkYY5+rgkUqg2AxQkv61Kbd/05CU3o8Fn5xmVEoRpYF8JUBV6WJkGAmYp5RX+AAIjiXHOiXYeLpO6BkOzHGsm9LTsJ7qe+EIcklVAg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(396003)(346002)(376002)(366004)(136003)(6666004)(26005)(1076003)(186003)(69590400011)(6506007)(6512007)(86362001)(16526019)(6486002)(316002)(52116002)(2906002)(4326008)(478600001)(2616005)(83380400001)(5660300002)(36756003)(66946007)(8676002)(956004)(66556008)(8936002)(66476007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?oPT+03Dl4FhbsIURWaNDZstBHUNDmT2diDvkzko7k8yJHHKvcAUpKIHC2ddi?=
+ =?us-ascii?Q?uTgGOB21nGrHKfy07ICBEgQFDIQd5RIToPK9TxwLQniN21bxPwjrG18K/bZ3?=
+ =?us-ascii?Q?9wsC9K11YRjyfqy5VtAIbt2jKkKQc4ZwBnhj8GzVApgO8D9/asRc/XYGCVt3?=
+ =?us-ascii?Q?hXOjhq0HSVIf1PsoqlXUkzG9e5+6KwNFt3XO9B/iszkVqojOxWRpgqfnXqrQ?=
+ =?us-ascii?Q?bqdQSoKl66t9YLh83C3PlPZPTzePEP/RGzBlXD78AziUucgQEVzIUH5XNEQA?=
+ =?us-ascii?Q?X1qH36aFwzbK5090MDUO0UutPr5hC44CWXUumA1gbKO+Gudm3G+wmVmYAHkI?=
+ =?us-ascii?Q?j7wA6yAgGnbiVbBq8s6jijz5/pPETpTIc7UzVfmuTzaziRqvoH8ahiPoEj2Q?=
+ =?us-ascii?Q?DxNzLq4Zw8FvifzLyCjKDwh25N/M48H+id8OkYk+7PFOLKh3STeeT1XB3595?=
+ =?us-ascii?Q?BBdnP+1akt+VxBEeLfjKVBrR/ImKGp0E9/96FS/ksWtcke8U+wug3MYuLfC7?=
+ =?us-ascii?Q?QfE774cjqUSJlw3/cRuDbgSbrwEW4kjWn/atrAnamSny853ZVmdPomKS9kub?=
+ =?us-ascii?Q?pVKR1MNHGzgrbNx10B39mSPNWxmZC3cmEGJvNDad1m9oBFNu4VM0i204TjH9?=
+ =?us-ascii?Q?uhCsIprWRVceGo6KAd3uV8bWjzLFlhfs8TY2XbG/4ALx3NRG8YXjFz0olojn?=
+ =?us-ascii?Q?eMSggT5jW1GCfSDcfgs/lT3YyynjSUVEHJIplEN656tH6n9otWWbq0VZq+Ov?=
+ =?us-ascii?Q?W0QeHsY4iod9tGGaXtQAtcTPm4KeJy2OjuK4A/5hnkMe5BDdnelNWztOixYM?=
+ =?us-ascii?Q?0/kOav1OdSmGlFMN6suHHA56U019om0YaAbd1bDtacsD+c+zXCN72avXoRpJ?=
+ =?us-ascii?Q?p7Gf58fEmd3YnVKHqn661g0JMD+X3UlThTB6VZwPgj0uoGEzVAbK0YG09ys5?=
+ =?us-ascii?Q?Y1odBNcJ6pKINjUp//J5g0R8CWq/YDHvphE9rR1KH0IlZ9JJ6fSZ4FLcWHkK?=
+ =?us-ascii?Q?eXO6llqo4J0krrQEwrlVg8OnwoDfhNTGuh12Yp5ZpR2i2ec6FGzbVk9q1L0N?=
+ =?us-ascii?Q?W6TRmdU1?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 08d49ced-8ee9-4b69-076e-08d8c7433aa3
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2021 06:24:43.6391
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6l/VMBll3o5d2PRCi8kHvO2SBYQ81//z9RSt7x2ZIJ16z9Y9s2BF36GoldMddwcF8xIHdb20D9P1/EcPcULBcw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5307
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hariprasad Kelam <hkelam@marvell.com>
+RX FIFO enable failed could happen when do system reboot stress test,
+one customer reports failure rate is about 50%.
 
-MAC on CN10K silicon support loopback for selftest or debug purposes.
-This patch does necessary configuration to loopback packets upon receiving
-request from LMAC mapped RVU PF's netdev via mailbox.
+[    0.303958] flexcan 5a8d0000.can: 5a8d0000.can supply xceiver not found, using dummy regulator
+[    0.304281] flexcan 5a8d0000.can (unnamed net_device) (uninitialized): Could not enable RX FIFO, unsupported core
+[    0.314640] flexcan 5a8d0000.can: registering netdev failed
+[    0.320728] flexcan 5a8e0000.can: 5a8e0000.can supply xceiver not found, using dummy regulator
+[    0.320991] flexcan 5a8e0000.can (unnamed net_device) (uninitialized): Could not enable RX FIFO, unsupported core
+[    0.331360] flexcan 5a8e0000.can: registering netdev failed
+[    0.337444] flexcan 5a8f0000.can: 5a8f0000.can supply xceiver not found, using dummy regulator
+[    0.337716] flexcan 5a8f0000.can (unnamed net_device) (uninitialized): Could not enable RX FIFO, unsupported core
+[    0.348117] flexcan 5a8f0000.can: registering netdev failed
 
-Also MAC (CGX) on OcteonTx2 silicon variants and MAC (RPM) on
-OcteonTx3 CN10K are different and loopback needs to be configured
-differently. Upper layer interface between RVU AF and PF netdev is
-kept same. Based on silicon variant appropriate fn() pointer is
-called to config the MAC.
+RX FIFO should be enabled after the FRZ/HALT are valid. But the current
+code set RX FIFO enable and FRZ/HALT at the same time.
 
-Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
-Signed-off-by: Geetha sowjanya <gakula@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+Fixes: e955cead03117 ("CAN: Add Flexcan CAN controller driver")
+Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/cgx.c    |  9 +++--
- .../net/ethernet/marvell/octeontx2/af/cgx_fw_if.h  |  1 +
- .../ethernet/marvell/octeontx2/af/lmac_common.h    |  4 +-
- drivers/net/ethernet/marvell/octeontx2/af/rpm.c    | 44 ++++++++++++++++++++++
- drivers/net/ethernet/marvell/octeontx2/af/rpm.h    |  5 +++
- .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    |  6 +--
- 6 files changed, 62 insertions(+), 7 deletions(-)
+ drivers/net/can/flexcan.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-index cf2358b..066023c 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-@@ -228,8 +228,9 @@ int cgx_set_pkind(void *cgxd, u8 lmac_id, int pkind)
- 	return 0;
- }
- 
--static inline u8 cgx_get_lmac_type(struct cgx *cgx, int lmac_id)
-+static u8 cgx_get_lmac_type(void *cgxd, int lmac_id)
+diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+index 038fe1036df2..8ee9fa2f4161 100644
+--- a/drivers/net/can/flexcan.c
++++ b/drivers/net/can/flexcan.c
+@@ -1803,6 +1803,7 @@ static int register_flexcandev(struct net_device *dev)
  {
-+	struct cgx *cgx = cgxd;
- 	u64 cfg;
+ 	struct flexcan_priv *priv = netdev_priv(dev);
+ 	struct flexcan_regs __iomem *regs = priv->regs;
++	unsigned int timeout = FLEXCAN_TIMEOUT_US / 10;
+ 	u32 reg, err;
  
- 	cfg = cgx_read(cgx, lmac_id, CGXX_CMRX_CFG);
-@@ -246,7 +247,7 @@ int cgx_lmac_internal_loopback(void *cgxd, int lmac_id, bool enable)
- 	if (!is_lmac_valid(cgx, lmac_id))
- 		return -ENODEV;
+ 	err = flexcan_clks_enable(priv);
+@@ -1825,10 +1826,19 @@ static int register_flexcandev(struct net_device *dev)
+ 	if (err)
+ 		goto out_chip_disable;
  
--	lmac_type = cgx_get_lmac_type(cgx, lmac_id);
-+	lmac_type = cgx->mac_ops->get_lmac_type(cgx, lmac_id);
- 	if (lmac_type == LMAC_MODE_SGMII || lmac_type == LMAC_MODE_QSGMII) {
- 		cfg = cgx_read(cgx, lmac_id, CGXX_GMP_PCS_MRX_CTL);
- 		if (enable)
-@@ -637,7 +638,7 @@ static inline void link_status_user_format(u64 lstat,
- 	linfo->link_up = FIELD_GET(RESP_LINKSTAT_UP, lstat);
- 	linfo->full_duplex = FIELD_GET(RESP_LINKSTAT_FDUPLEX, lstat);
- 	linfo->speed = cgx_speed_mbps[FIELD_GET(RESP_LINKSTAT_SPEED, lstat)];
--	linfo->lmac_type_id = cgx_get_lmac_type(cgx, lmac_id);
-+	linfo->lmac_type_id = FIELD_GET(RESP_LINKSTAT_LMAC_TYPE, lstat);
- 	lmac_string = cgx_lmactype_string[linfo->lmac_type_id];
- 	strncpy(linfo->lmac_type, lmac_string, LMACTYPE_STR_LEN - 1);
- }
-@@ -1046,6 +1047,8 @@ struct mac_ops	cgx_mac_ops    = {
- 	.rx_stats_cnt   =       9,
- 	.tx_stats_cnt   =       18,
- 	.get_nr_lmacs	=	cgx_get_nr_lmacs,
-+	.get_lmac_type  =       cgx_get_lmac_type,
-+	.mac_lmac_intl_lbk =    cgx_lmac_internal_loopback,
- 	.mac_get_rx_stats  =	cgx_get_rx_stats,
- 	.mac_get_tx_stats  =	cgx_get_tx_stats,
- 	.mac_enadis_rx_pause_fwding =	cgx_lmac_enadis_rx_pause_fwding,
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx_fw_if.h b/drivers/net/ethernet/marvell/octeontx2/af/cgx_fw_if.h
-index c3702fa..c07a96e 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/cgx_fw_if.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx_fw_if.h
-@@ -154,6 +154,7 @@ enum cgx_cmd_own {
-  * CGX_STAT_SUCCESS
-  */
- #define RESP_FWD_BASE		GENMASK_ULL(56, 9)
-+#define RESP_LINKSTAT_LMAC_TYPE                GENMASK_ULL(35, 28)
- 
- /* Response to cmd ID - CGX_CMD_LINK_BRING_UP/DOWN, event ID CGX_EVT_LINK_CHANGE
-  * status can be either CGX_STAT_FAIL or CGX_STAT_SUCCESS
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h b/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
-index fea2303..45706fd 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
-@@ -70,7 +70,9 @@ struct mac_ops {
- 	 * number of setbits in lmac_exist tells number of lmacs
- 	 */
- 	int			(*get_nr_lmacs)(void *cgx);
--
-+	u8                      (*get_lmac_type)(void *cgx, int lmac_id);
-+	int                     (*mac_lmac_intl_lbk)(void *cgx, int lmac_id,
-+						     bool enable);
- 	/* Register Stats related functions */
- 	int			(*mac_get_rx_stats)(void *cgx, int lmac_id,
- 						    int idx, u64 *rx_stat);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-index 3870cd4..a91ccdc 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-@@ -21,6 +21,8 @@ static struct mac_ops	rpm_mac_ops   = {
- 	.rx_stats_cnt   =       43,
- 	.tx_stats_cnt   =       34,
- 	.get_nr_lmacs	=	rpm_get_nr_lmacs,
-+	.get_lmac_type  =       rpm_get_lmac_type,
-+	.mac_lmac_intl_lbk =    rpm_lmac_internal_loopback,
- 	.mac_get_rx_stats  =	rpm_get_rx_stats,
- 	.mac_get_tx_stats  =	rpm_get_tx_stats,
- 	.mac_enadis_rx_pause_fwding =	rpm_lmac_enadis_rx_pause_fwding,
-@@ -226,3 +228,45 @@ int rpm_get_tx_stats(void *rpmd, int lmac_id, int idx, u64 *tx_stat)
- 	mutex_unlock(&rpm->lock);
- 	return 0;
- }
+-	/* set freeze, halt and activate FIFO, restrict register access */
++	/* set freeze, halt and polling the freeze ack */
+ 	reg = priv->read(&regs->mcr);
+-	reg |= FLEXCAN_MCR_FRZ | FLEXCAN_MCR_HALT |
+-		FLEXCAN_MCR_FEN | FLEXCAN_MCR_SUPV;
++	reg |= FLEXCAN_MCR_FRZ | FLEXCAN_MCR_HALT;
++	priv->write(reg, &regs->mcr);
 +
-+u8 rpm_get_lmac_type(void *rpmd, int lmac_id)
-+{
-+	rpm_t *rpm = rpmd;
-+	u64 req = 0, resp;
-+	int err;
++	while (timeout-- && !(priv->read(&regs->mcr) & FLEXCAN_MCR_FRZ_ACK))
++		udelay(100);
 +
-+	req = FIELD_SET(CMDREG_ID, CGX_CMD_GET_LINK_STS, req);
-+	err = cgx_fwi_cmd_generic(req, &resp, rpm, 0);
-+	if (!err)
-+		return FIELD_GET(RESP_LINKSTAT_LMAC_TYPE, resp);
-+	return err;
-+}
++	if (!(priv->read(&regs->mcr) & FLEXCAN_MCR_FRZ_ACK))
++		return -ETIMEDOUT;
 +
-+int rpm_lmac_internal_loopback(void *rpmd, int lmac_id, bool enable)
-+{
-+	rpm_t *rpm = rpmd;
-+	u8 lmac_type;
-+	u64 cfg;
-+
-+	if (!rpm || lmac_id >= rpm->lmac_count)
-+		return -ENODEV;
-+	lmac_type = rpm->mac_ops->get_lmac_type(rpm, lmac_id);
-+	if (lmac_type == LMAC_MODE_100G_R) {
-+		cfg = rpm_read(rpm, lmac_id, RPMX_MTI_PCS100X_CONTROL1);
-+
-+		if (enable)
-+			cfg |= RPMX_MTI_PCS_LBK;
-+		else
-+			cfg &= ~RPMX_MTI_PCS_LBK;
-+		rpm_write(rpm, lmac_id, RPMX_MTI_PCS100X_CONTROL1, cfg);
-+	} else {
-+		cfg = rpm_read(rpm, lmac_id, RPMX_MTI_LPCSX_CONTROL1);
-+		if (enable)
-+			cfg |= RPMX_MTI_PCS_LBK;
-+		else
-+			cfg &= ~RPMX_MTI_PCS_LBK;
-+		rpm_write(rpm, lmac_id, RPMX_MTI_LPCSX_CONTROL1, cfg);
-+	}
-+
-+	return 0;
-+}
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-index c939302..d32e74b 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-@@ -18,6 +18,9 @@
- #define RPMX_CMRX_SW_INT_W1S            0x188
- #define RPMX_CMRX_SW_INT_ENA_W1S        0x198
- #define RPMX_CMRX_LINK_CFG		0x1070
-+#define RPMX_MTI_PCS100X_CONTROL1       0x20000
-+#define RPMX_MTI_LPCSX_CONTROL1         0x30000
-+#define RPMX_MTI_PCS_LBK                BIT_ULL(14)
- #define RPMX_MTI_LPCSX_CONTROL(id)     (0x30000 | ((id) * 0x100))
++	/* Activate FIFO, restrict register access */
++	reg |=  FLEXCAN_MCR_FEN | FLEXCAN_MCR_SUPV;
+ 	priv->write(reg, &regs->mcr);
  
- #define RPMX_CMRX_LINK_RANGE_MASK	GENMASK_ULL(19, 16)
-@@ -41,6 +44,8 @@
- 
- /* Function Declarations */
- int rpm_get_nr_lmacs(void *rpmd);
-+u8 rpm_get_lmac_type(void *rpmd, int lmac_id);
-+int rpm_lmac_internal_loopback(void *rpmd, int lmac_id, bool enable);
- void rpm_lmac_enadis_rx_pause_fwding(void *rpmd, int lmac_id, bool enable);
- int rpm_lmac_get_pause_frm_status(void *cgxd, int lmac_id, u8 *tx_pause,
- 				  u8 *rx_pause);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-index 8dc982d..050fdf0 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-@@ -705,15 +705,15 @@ u32 rvu_cgx_get_fifolen(struct rvu *rvu)
- 
- static int rvu_cgx_config_intlbk(struct rvu *rvu, u16 pcifunc, bool en)
- {
--	int pf = rvu_get_pf(pcifunc);
-+	struct mac_ops *mac_ops;
- 	u8 cgx_id, lmac_id;
- 
- 	if (!is_cgx_config_permitted(rvu, pcifunc))
- 		return -EPERM;
- 
--	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
-+	mac_ops = get_mac_ops(rvu_cgx_pdata(cgx_id, rvu));
- 
--	return cgx_lmac_internal_loopback(rvu_cgx_pdata(cgx_id, rvu),
-+	return mac_ops->mac_lmac_intl_lbk(rvu_cgx_pdata(cgx_id, rvu),
- 					  lmac_id, en);
- }
- 
+ 	/* Currently we only support newer versions of this core
 -- 
-2.7.4
+2.17.1
 
