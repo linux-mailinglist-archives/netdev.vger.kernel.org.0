@@ -2,84 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FC1730BE59
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 13:39:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3F5A30BE68
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 13:42:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231672AbhBBMhq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 07:37:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59888 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231526AbhBBMhn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 07:37:43 -0500
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4802AC061573
-        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 04:37:03 -0800 (PST)
-Received: by mail-qk1-x729.google.com with SMTP id t63so19569156qkc.1
-        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 04:37:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=m+8umcHYCahgU78eNYPd/exZ1t0XPvpy0AAn4cpQgIs=;
-        b=tGJMvCerFcUO8PcZfTpWr23mf9nzFXPOSfNXsWAorCDvosaeiSRnwWrZ5H7iAfFFSA
-         DaG2z+Nx4l9TC8+FuRql+dh17KjtYYuZ7ejRXFK+0WL0Ziv6BUfgR7LdkT2PV7Q26VSZ
-         cjqy1q7bMre9rXbq80frdh+NV8GRn2OqCKxwTHm0wBr10/yRHT4pVuyOuG/RuMwApTZk
-         y+fCHRCCk5l4MTNi6dELJ/ePGnkDEsV8TOePS3ZSM5BC4Ps5a+bVBw/PH44s5NLQm/qy
-         o18MdLNfuLAMysFPFaoHu2UoltHVm69BI8yRqxljNxBArxfohq6B30r3xYOKLZX3v1Aj
-         T79w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=m+8umcHYCahgU78eNYPd/exZ1t0XPvpy0AAn4cpQgIs=;
-        b=OqPK0VgA63ShHRGqsWVwMBabxkMSpPXv8Vp2XTIm/KLa3xZaqWDEpMQP+yQkNeZQXv
-         oSujb2vHmR6GeT6Ja2MBx4dFEfILAO6kix9JKkpyA+2LYDmVgA2qxiGKTmq2K73w5wc2
-         gGgGRF4jHO/4FL4RiY8tkv3tIPU1EQDPyZGE11Ck/SfPvVJENboT5IdHstduRu9BUrEz
-         e1gl5vdPM3bGCmq9hDhw3obu211CoTPHPnDY2n8SukUdyquJsXwDPIVsvDm2IGHikeWk
-         BdX3cOhArTgnvDiKff5Smzz2szifveZ1R6b0EPUZlZpcRT5XDzo3H0WKcgEu/F2kMbnK
-         IlaQ==
-X-Gm-Message-State: AOAM530IpMpQFUej3QJDAuONeogu1fjz4EjG/09UNILgrinEShJhH/m9
-        LSjzYc15eMl94Wyuq/zDeoulDfHxyGf87wpd
-X-Google-Smtp-Source: ABdhPJzGelnWhjNQoLFrmctFMwp+Sq2MYI9dGGkrTygiWrQC/HfLBdi8jO1c2bLlvrYurH37TwRHLw==
-X-Received: by 2002:a37:8b46:: with SMTP id n67mr20566506qkd.167.1612269422487;
-        Tue, 02 Feb 2021 04:37:02 -0800 (PST)
-Received: from horizon.localdomain ([2001:1284:f013:89ca:fde2:42b9:c0d1:d526])
-        by smtp.gmail.com with ESMTPSA id f14sm11958353qkl.76.2021.02.02.04.37.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Feb 2021 04:37:01 -0800 (PST)
-Received: by horizon.localdomain (Postfix, from userid 1000)
-        id 8C5BCC02BD; Tue,  2 Feb 2021 09:36:59 -0300 (-03)
-Date:   Tue, 2 Feb 2021 09:36:59 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Paul Blakey <paulb@nvidia.com>
-Cc:     netdev@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Vlad Buslov <vladbu@nvidia.com>, Oz Shlomo <ozsh@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [PATCH net-next 3/3] net/mlx5: CT: Add support for matching on
- ct_state reply flag
-Message-ID: <20210202123659.GA3405@horizon.localdomain>
-References: <1611757967-18236-1-git-send-email-paulb@nvidia.com>
- <1611757967-18236-4-git-send-email-paulb@nvidia.com>
+        id S231724AbhBBMlc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 07:41:32 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:12103 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231738AbhBBMlO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 07:41:14 -0500
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4DVPWk333Qz162Zt;
+        Tue,  2 Feb 2021 20:39:14 +0800 (CST)
+Received: from localhost.localdomain (10.69.192.56) by
+ DGGEMS412-HUB.china.huawei.com (10.3.19.212) with Microsoft SMTP Server id
+ 14.3.498.0; Tue, 2 Feb 2021 20:40:22 +0800
+From:   Huazhong Tan <tanhuazhong@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <salil.mehta@huawei.com>,
+        <yisen.zhuang@huawei.com>, <kuba@kernel.org>,
+        <huangdaode@huawei.com>, <linuxarm@openeuler.org>,
+        Huazhong Tan <tanhuazhong@huawei.com>
+Subject: [PATCH net-next 0/7] net: hns3: updates for -next
+Date:   Tue, 2 Feb 2021 20:39:46 +0800
+Message-ID: <1612269593-18691-1-git-send-email-tanhuazhong@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1611757967-18236-4-git-send-email-paulb@nvidia.com>
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.56]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 27, 2021 at 04:32:47PM +0200, Paul Blakey wrote:
-> Add support for matching on ct_state reply flag.
+This series includes some updates for the HNS3 ethernet driver.
 
-Sorry for the late reply, missed the patchset here. (just noticed
-because of the iproute2 patch, thanks for the Cc in there)
+#1~#6 add some code optimizations and compatibility handlings.
+#7 fixes a clang warning.
 
-Only one question though. Is it safe to assume that this will require
-a firmware update as well?
+Guangbin Huang (3):
+  net: hns3: RSS indirection table and key use device specifications
+  net: hns3: debugfs add max tm rate specification print
+  net: hns3: replace macro of max qset number with specification
 
-Thanks,
-Marcelo
+GuoJia Liao (1):
+  net: hns3: optimize the code when update the tc info
+
+Huazhong Tan (1):
+  net: hns3: remove unnecessary check in hns3_dbg_read()
+
+Jian Shen (1):
+  net: hns3: add api capability bits for firmware
+
+Yufeng Mo (1):
+  net: hns3: add support for obtaining the maximum frame length
+
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  8 +---
+ drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c |  5 +-
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 12 ++---
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c | 10 ++++
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |  9 +++-
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c |  8 ++--
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 53 ++++++++++++----------
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    | 14 ++++--
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c  | 15 ++++--
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c   | 10 ++++
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h   |  6 ++-
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  | 44 ++++++++----------
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h  | 11 +++--
+ 13 files changed, 115 insertions(+), 90 deletions(-)
+
+-- 
+2.7.4
+
