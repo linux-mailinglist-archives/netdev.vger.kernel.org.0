@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5F6D30C3D2
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 16:31:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29E7630C3BD
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 16:28:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235493AbhBBPaS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 10:30:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40700 "EHLO mail.kernel.org"
+        id S235533AbhBBP1S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 10:27:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40702 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235045AbhBBPQH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 10:16:07 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 88BEA64FAC;
-        Tue,  2 Feb 2021 15:07:44 +0000 (UTC)
+        id S233086AbhBBPQO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 10:16:14 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D8DC064FAD;
+        Tue,  2 Feb 2021 15:07:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612278465;
-        bh=SoteQDSMWgUNiOX4z7Aq5Z9QkB1yzcEbMGEVBDYbOiY=;
+        s=k20201202; t=1612278466;
+        bh=B0VgdNSrgJ22491qWfCcOkmKYCUq+dZ7n2Imoclvofc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u07YUDI3f1QiF1fd5d4APh8+cMbA81gi9PLXBD9PnWx5ah05b1lKoNmT6F9tU2CKb
-         cyA8CxCTH5WHY55NzfE+VDILEGSbCGCfLL28mnbJ0HHFJUx4D+6lSKMMRnuuxhn8bL
-         TxsaIXlVMAL9jV70aJk+BpXcUzECxgrolFtW6N1qQPuxR2uVHpJvzyqcT2ak3J0/kc
-         J11TL+g6fihiTU1K1GVmAMWS3k6tkVh8d3MH14Bbjaw/RUP0D5Iv30lGQhBVyTgOyR
-         Adht3/pRpJUIpDufg0MQLvwVYSZETCmm5+jvv/xkaN9KgvdXxJobCkaKsuMZHPrYOB
-         +gMdckoC5TzxQ==
+        b=g7aL4jTSN+manuT2n1S1eN7QDYYmDnIOM/5FBu4woMk5QBCiU1oUgU61sL7TnoZQj
+         ZVXYSe8sqIgA+4suidHc57GHxnT1D1v5dB+UmnUjqLvy0SBEtNaxwbXhyR5CBOPjZm
+         nBcju7Y1FA5yl/7EIriwM47E+DZxcPoxvpy+HSakuyjaiSsYRiOoBwujkmlX5Q4cUP
+         psBwJ1nrPutqGTfZ9Vf1ky2KZSKVgufeZw/dg+3O/h9vfxrhSG47qXNVnjEgXq1OtH
+         Vn7AWMRZMc0aFTeqboXdxb/mf2UB8wPbyAyPCWlFPx5YN02bv2XBcfFlGTxlI2ECGE
+         gEN2vW3rwukuQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+Cc:     Johannes Berg <johannes.berg@intel.com>,
         Luca Coelho <luciano.coelho@intel.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 3/6] iwlwifi: pcie: add a NULL check in iwl_pcie_txq_unmap
-Date:   Tue,  2 Feb 2021 10:07:37 -0500
-Message-Id: <20210202150740.1864854-3-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 4/6] iwlwifi: mvm: guard against device removal in reprobe
+Date:   Tue,  2 Feb 2021 10:07:38 -0500
+Message-Id: <20210202150740.1864854-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210202150740.1864854-1-sashal@kernel.org>
 References: <20210202150740.1864854-1-sashal@kernel.org>
@@ -44,38 +44,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 98c7d21f957b10d9c07a3a60a3a5a8f326a197e5 ]
+[ Upstream commit 7a21b1d4a728a483f07c638ccd8610d4b4f12684 ]
 
-I hit a NULL pointer exception in this function when the
-init flow went really bad.
+If we get into a problem severe enough to attempt a reprobe,
+we schedule a worker to do that. However, if the problem gets
+more severe and the device is actually destroyed before this
+worker has a chance to run, we use a free device. Bump up the
+reference count of the device until the worker runs to avoid
+this situation.
 
-Signed-off-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/iwlwifi.20210115130252.2e8da9f2c132.I0234d4b8ddaf70aaa5028a20c863255e05bc1f84@changeid
+Link: https://lore.kernel.org/r/iwlwifi.20210122144849.871f0892e4b2.I94819e11afd68d875f3e242b98bef724b8236f1e@changeid
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/pcie/tx.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/wireless/intel/iwlwifi/mvm/ops.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/tx.c b/drivers/net/wireless/intel/iwlwifi/pcie/tx.c
-index 174e45d78c46a..ff564198d2cef 100644
---- a/drivers/net/wireless/intel/iwlwifi/pcie/tx.c
-+++ b/drivers/net/wireless/intel/iwlwifi/pcie/tx.c
-@@ -676,6 +676,11 @@ static void iwl_pcie_txq_unmap(struct iwl_trans *trans, int txq_id)
- 	struct iwl_trans_pcie *trans_pcie = IWL_TRANS_GET_PCIE_TRANS(trans);
- 	struct iwl_txq *txq = &trans_pcie->txq[txq_id];
- 
-+	if (!txq) {
-+		IWL_ERR(trans, "Trying to free a queue that wasn't allocated?\n");
-+		return;
-+	}
-+
- 	spin_lock_bh(&txq->lock);
- 	while (txq->write_ptr != txq->read_ptr) {
- 		IWL_DEBUG_TX_REPLY(trans, "Q %d Free %d\n",
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/ops.c b/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
+index 6d38eec3f9d3c..a78aaf17116e9 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
+@@ -1104,6 +1104,7 @@ static void iwl_mvm_reprobe_wk(struct work_struct *wk)
+ 	reprobe = container_of(wk, struct iwl_mvm_reprobe, work);
+ 	if (device_reprobe(reprobe->dev))
+ 		dev_err(reprobe->dev, "reprobe failed!\n");
++	put_device(reprobe->dev);
+ 	kfree(reprobe);
+ 	module_put(THIS_MODULE);
+ }
+@@ -1202,7 +1203,7 @@ void iwl_mvm_nic_restart(struct iwl_mvm *mvm, bool fw_error)
+ 			module_put(THIS_MODULE);
+ 			return;
+ 		}
+-		reprobe->dev = mvm->trans->dev;
++		reprobe->dev = get_device(mvm->trans->dev);
+ 		INIT_WORK(&reprobe->work, iwl_mvm_reprobe_wk);
+ 		schedule_work(&reprobe->work);
+ 	} else if (mvm->cur_ucode == IWL_UCODE_REGULAR) {
 -- 
 2.27.0
 
