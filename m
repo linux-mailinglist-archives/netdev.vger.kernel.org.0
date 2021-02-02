@@ -2,107 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C556730B7DD
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 07:31:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7753E30B7F9
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 07:45:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232106AbhBBGaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 01:30:22 -0500
-Received: from mail29.static.mailgun.info ([104.130.122.29]:12549 "EHLO
-        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231888AbhBBGaS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 01:30:18 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1612247394; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=4KlQGFrN5Le7PICSqsAOoAQBLupf944xN1JaRxy8alw=; b=lN8MxApJ13Q0xYXzJ8Ru9S9RKcSNq2Op7rn3jIK87tjVNMTInR/FNDy7NnBMTOD9Z36W9A8N
- 8NQSb03YAaLVRr/sKEEg9Dl0R9Nq/ZLYrsdx98pVS6AwzynmG0LAgI7pR8Gm1xTRt5Y0a3To
- At/UpQ/nS/7G6NN4Zec9zoNHROE=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
- 6018f159ab96aecb9fcdb019 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 02 Feb 2021 06:29:45
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 8A1BBC433C6; Tue,  2 Feb 2021 06:29:45 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 984D5C433ED;
-        Tue,  2 Feb 2021 06:29:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 984D5C433ED
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
+        id S232142AbhBBGn5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 01:43:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40372 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231538AbhBBGnx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 01:43:53 -0500
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0DD0C061573;
+        Mon,  1 Feb 2021 22:43:12 -0800 (PST)
+Received: by mail-ej1-x629.google.com with SMTP id i8so11754364ejc.7;
+        Mon, 01 Feb 2021 22:43:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=FTh/W3OROSEf6Q+1HA8WlPBCNi0WlLCmWMpf4ClFrLA=;
+        b=LFvwY8NZqzRB9hrNvznrbE+oIv592vdSG6olL1IDsVh6V3K6scsuRsSszmg7ZWJzP3
+         mTZ2WYEb6GbXJai12bdzeDd0sXPC9Nh0gJstG16KDdt8dR26Tf6qRuKoOq8mUjPLH/hm
+         hdq6A0noWJbjIjCEqS/pak8OlzTB7KId/Cyi4H3Lawy9TumBrAIMrnTjMXj3PdpCcxPm
+         jLVlQbTQLeQAz3MclAQtYVk/7v0XO1+G55mnHUgtDqZJ4+PYZF/8oQzQC1FgRPRieHg8
+         V4gYj1bXZDfdmqHMWNvnOa0h9lPLpZt6zQxtYFXnfBIXdyWwBNyF+1h4EakH5qpEr2Iw
+         glGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=FTh/W3OROSEf6Q+1HA8WlPBCNi0WlLCmWMpf4ClFrLA=;
+        b=e6p5S8TtAIoPK691hPvvSbk/PU/N/SrFnJa4tP1vprGdEnX0+9sZKlmVElJsQ3Jsr9
+         j3kqOpg5FauoWYgE1T+3UvQJDsSEEn8Xp0o6Gbm5QHhdQMlp/PPIkCP60v+daJ+YYziZ
+         fReuh1URjvoOa6P8nsNi1n3IiXX+Q2SWBdUYMzxObrCqwO1kYVENz8Jvrr5b9bXkPpVn
+         iMJH06RVKGc7xjd/8JKtQki1RC6TsIT9YjQ+r3Zhq6pUYMIok4tegdqjwT7qBGzzmnAC
+         lsJZFSHe4G20wx4ZEuxwwEGmRgDiV9aYRuAzsrzBTwtpoqdY9W2aXkgdph1e8n2lNv2E
+         EFbw==
+X-Gm-Message-State: AOAM5308tUm4S5e8d7SBovKvIn55CNWrZA6pkr2m5gAMLxk2e7xvNQaQ
+        722J0sZUzIoTPfIfnM3B0zgZjStV+P4=
+X-Google-Smtp-Source: ABdhPJzfsQ1sutNJVimmWdW506GbTcNIkDkZMfCTi9Tn5tVgObn4cMyzGZzKdZcT0LvH+6p5P7PjaA==
+X-Received: by 2002:a17:906:c0d7:: with SMTP id bn23mr13621140ejb.94.1612248190243;
+        Mon, 01 Feb 2021 22:43:10 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f1f:ad00:4da7:c31c:5e0d:9c73? (p200300ea8f1fad004da7c31c5e0d9c73.dip0.t-ipconnect.de. [2003:ea:8f1f:ad00:4da7:c31c:5e0d:9c73])
+        by smtp.googlemail.com with ESMTPSA id lz12sm8894476ejb.71.2021.02.01.22.43.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 01 Feb 2021 22:43:09 -0800 (PST)
+Subject: Re: [PATCH v2] r8169: Add support for another RTL8168FP
 To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     Tony Chuang <yhchuang@realtek.com>,
-        "David S. Miller" <davem@davemloft.net>,
+Cc:     "maintainer:8169 10/100/1000 GIGABIT ETHERNET DRIVER" 
+        <nic_swsd@realtek.com>, "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "open list\:REALTEK WIRELESS DRIVER \(rtw88\)" 
-        <linux-wireless@vger.kernel.org>,
-        "open list\:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Andy Huang <tehuang@realtek.com>
-Subject: Re: [PATCH] rtw88: 8821c: Add RFE 2 support
-References: <20200805084559.30092-1-kai.heng.feng@canonical.com>
-        <c0c336d806584361992d4b52665fbb82@realtek.com>
-        <9330BBA5-158B-49F1-8B7C-C2733F358AC1@canonical.com>
-        <CAAd53p6SA5gG8V27eD1Kh1ik932Kt8KzmYjLy33pOkw=QPKgpA@mail.gmail.com>
-Date:   Tue, 02 Feb 2021 08:29:40 +0200
-In-Reply-To: <CAAd53p6SA5gG8V27eD1Kh1ik932Kt8KzmYjLy33pOkw=QPKgpA@mail.gmail.com>
-        (Kai-Heng Feng's message of "Thu, 7 Jan 2021 14:38:42 +0800")
-Message-ID: <871rdz7zjf.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        "open list:8169 10/100/1000 GIGABIT ETHERNET DRIVER" 
+        <netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+References: <20210202044813.1304266-1-kai.heng.feng@canonical.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <81e965d2-63bf-ae6b-abf1-a683b4459254@gmail.com>
+Date:   Tue, 2 Feb 2021 07:43:02 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20210202044813.1304266-1-kai.heng.feng@canonical.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kai-Heng Feng <kai.heng.feng@canonical.com> writes:
+On 02.02.2021 05:48, Kai-Heng Feng wrote:
+> According to the vendor driver, the new chip with XID 0x54b is
+> essentially the same as the one with XID 0x54a, but it doesn't need the
+> firmware.
+> 
+> So add support accordingly.
+> 
+> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> ---
+> v2:
+>  - Add phy support.
+>  - Rebase on net-next.
+> 
+>  drivers/net/ethernet/realtek/r8169.h            |  1 +
+>  drivers/net/ethernet/realtek/r8169_main.c       | 17 +++++++++++------
+>  drivers/net/ethernet/realtek/r8169_phy_config.c |  1 +
+>  3 files changed, 13 insertions(+), 6 deletions(-)
+> 
 
-> On Wed, Aug 5, 2020 at 7:24 PM Kai-Heng Feng
-> <kai.heng.feng@canonical.com> wrote:
->>
->> Hi Tony,
->>
->> > On Aug 5, 2020, at 19:18, Tony Chuang <yhchuang@realtek.com> wrote:
->> >
->> >> 8821CE with RFE 2 isn't supported:
->> >> [   12.404834] rtw_8821ce 0000:02:00.0: rfe 2 isn't supported
->> >> [   12.404937] rtw_8821ce 0000:02:00.0: failed to setup chip efuse info
->> >> [   12.404939] rtw_8821ce 0000:02:00.0: failed to setup chip information
->> >>
->> >
->> > NACK
->> >
->> > The RFE type 2 should be working with some additional fixes.
->> > Did you tested connecting to AP with BT paired?
->>
->> No, I only tested WiFi.
->>
->> > The antenna configuration is different with RFE type 0.
->> > I will ask someone else to fix them.
->> > Then the RFE type 2 modules can be supported.
->>
->> Good to know that, I'll be patient and wait for a real fix.
->
-> It's been quite some time, is support for RFE type 2 ready now?
+for net-next
 
-It looks like this patch should add it:
-
-https://patchwork.kernel.org/project/linux-wireless/patch/20210202055012.8296-4-pkshih@realtek.com/
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Reviewed-by: Heiner Kallweit <hkallweit1@gmail.com>
