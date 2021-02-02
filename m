@@ -2,71 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 037C130B545
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 03:31:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C054730B555
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 03:39:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229822AbhBBCav (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 21:30:51 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58708 "EHLO mail.kernel.org"
+        id S229872AbhBBCjG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 21:39:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59404 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229554AbhBBCas (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Feb 2021 21:30:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 7E4D964D90;
-        Tue,  2 Feb 2021 02:30:07 +0000 (UTC)
+        id S229543AbhBBCjF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Feb 2021 21:39:05 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2E9BB64DC3;
+        Tue,  2 Feb 2021 02:38:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612233007;
-        bh=S9eefTnxyXaS1Z+79gPMrINisvL97D1w0vXTUYDDt40=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=VEgx+gdY4A6rHQwhiepDg//xzXsKKGTJuKfQwwNbwOBkX77oOEeyW6lifRMMvE6/1
-         ntHKKxLer0R9Gqn1t+kS/JkvmekX7SPmoDIjgMMR2bv9Uq0ITLqTVxAmU4GX5fYzRv
-         I3AzmFcKtwd94cOUPPaC5IyKq3+lcscOaC79WQF+TVanH5Br+OGiHW5/KnjpZ9sb1r
-         4VFpVa5QjcoOhU2WetcwbDttgM/KtNxJglJ0NUbuHgFlKW0x1kxTRZK6V5kCN4gSZx
-         LNN3WsrLM/EZZp3NQEl/mGaEQKlQlx6ZZqA4S2XU5alE1N/PyFudQfXRqFKBbCjK5h
-         /hFuUX2Xvtjmg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6864B609D0;
-        Tue,  2 Feb 2021 02:30:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1612233505;
+        bh=mMAIztr++POk3Bhs6Tm0NjNUttlK2ac3uegOiEQ4YAw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=FO/nU52Fq5hiXKJdjZ9aqLMieaXfduPsD+PWjWDUuLzE/km48teKumYMODLQDhvx6
+         cTUBXkQPavCBi2epKhmbU08/7uolmWlM9HVZSGKc25kD59zpIF4rK5K6rrWKV9tBFK
+         4SXkm1HvlUg8cx380CvSc6y7tnL3vWUWxEB6JH4bn//gEUbgaX39KrPdTJMdspZir/
+         jQpn6P4FCSsLPsoXwNW7VwPeOx46e/xjuA7ZQ4UU3ZXoMyY2Jlij+Pk828HMpzjgzh
+         LXZRtI9NNep58NkxU70APsKBVkFL4zsBOYL+SRlEd8La2L4fO15F1O5tijR7iyCxZq
+         t53PKTJha6saw==
+Date:   Mon, 1 Feb 2021 18:38:24 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, Dany Madden <drt@linux.ibm.com>,
+        Lijun Pan <ljp@linux.ibm.com>,
+        Rick Lindsley <ricklind@linux.ibm.com>, abdhalee@in.ibm.com
+Subject: Re: [PATCH net 1/2] ibmvnic: fix a race between open and reset
+Message-ID: <20210201183824.21fcb74b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210129034711.518250-1-sukadev@linux.ibm.com>
+References: <20210129034711.518250-1-sukadev@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: dsa: mv88e6xxx: override existent unicast portvec in
- port_fdb_add
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161223300742.24699.17040696529894361005.git-patchwork-notify@kernel.org>
-Date:   Tue, 02 Feb 2021 02:30:07 +0000
-References: <20210130134334.10243-1-dqfext@gmail.com>
-In-Reply-To: <20210130134334.10243-1-dqfext@gmail.com>
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tobias@waldekranz.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Thu, 28 Jan 2021 19:47:10 -0800 Sukadev Bhattiprolu wrote:
+> +	WARN_ON_ONCE(!rtnl_is_locked());
 
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Sat, 30 Jan 2021 21:43:34 +0800 you wrote:
-> Having multiple destination ports for a unicast address does not make
-> sense.
-> Make port_db_load_purge override existent unicast portvec instead of
-> adding a new port bit.
-> 
-> Fixes: 884729399260 ("net: dsa: mv88e6xxx: handle multiple ports in ATU")
-> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
-> 
-> [...]
-
-Here is the summary with links:
-  - [net] net: dsa: mv88e6xxx: override existent unicast portvec in port_fdb_add
-    https://git.kernel.org/netdev/net/c/f72f2fb8fb6b
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+ASSERT_RTNL() should do nicely here
