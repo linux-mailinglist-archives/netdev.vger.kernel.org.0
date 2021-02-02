@@ -2,51 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5662530C3D9
+	by mail.lfdr.de (Postfix) with ESMTP id C935E30C3DA
 	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 16:31:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235586AbhBBPa5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 10:30:57 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:52939 "EHLO
+        id S235598AbhBBPbV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 10:31:21 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:57824 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235325AbhBBP2t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 10:28:49 -0500
+        by vger.kernel.org with ESMTP id S232554AbhBBP2y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 10:28:54 -0500
 Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 112FPtY4001023;
-        Tue, 2 Feb 2021 07:28:05 -0800
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 112FPbOw000974;
+        Tue, 2 Feb 2021 07:28:11 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=pfpt0220;
- bh=B21l1B4y0vIMCV0/DHevsU3CQs/AgX0wKYiZ/Y21VQ4=;
- b=hnaKBV6l2QdJR3KdmtOu2h9Q4+bzyr/z6fZbdhhXepOXmmsej+ukR4yah9FjVaYLFDLf
- EZhHbF8XEA4T6heBPq51viwNswYTSiJEVkvDLpsZiUG+SH05zXqFOGPPDF5pCQuUD8Ha
- uMhrm/wYNFcZmAFoo3hyrWgAiLyKmOvW9LbQQVmMp2N/FV/V/wPt+/wyCwmhTCGDh6Zs
- PslXeFaSHG2ACHJFkA5nsBDSm2FNsppLFSx/9oBGP1gzEbh9Uj8mys6R0oJ1vieOdqRE
- ICWmn6PtdNiHdupTj0+r6xHu6T43t6BVscjyik5fFa/ZwIt/9GT9omvlHSnNhzP9hmdS DQ== 
+ bh=77udfHydF5b4ageGCEPBplqTtNg0qQhTfRVrQDn5kps=;
+ b=MYDkxVaeYK9tanKc58fG9fZIb5T4CcukQbSYsJk0nXF/Xd0gmrmqC5eYChAtw2ZgDFJU
+ q+JtKKFgdNDySI+EfICZ7IbRvxgxQx5NMRiBeinggrEW48oiU4z2l1GN4viWRyIUz2ZF
+ /o6m53cyps1Pm4n9xYhSQJsATlgrhFum241n/ilLHvNrvqjnfH4do1maPQEEJK/Rwamr
+ KRsB1bOr9yIw4h6kHU05RlNZ3mpCBASWpBPQQzC/RDjFhCanvv1qOo1NcwdAdtsCMm3A
+ rMKNfkFTB9y2CmbiuunTKNSjDNc+z5bSE71BsmEdo3ipoJeX1Xu3QSBCepIimCMGUO8I Uw== 
 Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 36d7uq7hpx-1
+        by mx0b-0016f401.pphosted.com with ESMTP id 36d7uq7hqq-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 02 Feb 2021 07:28:05 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+        Tue, 02 Feb 2021 07:28:10 -0800
+Received: from SC-EXCH01.marvell.com (10.93.176.81) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 2 Feb
- 2021 07:28:03 -0800
+ 2021 07:28:08 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 2 Feb
+ 2021 07:28:07 -0800
 Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 2 Feb 2021 07:28:03 -0800
+ Transport; Tue, 2 Feb 2021 07:28:07 -0800
 Received: from hyd1schalla-dt.caveonetworks.com.com (unknown [10.29.8.39])
-        by maili.marvell.com (Postfix) with ESMTP id AA1563F703F;
-        Tue,  2 Feb 2021 07:27:59 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id 805223F7043;
+        Tue,  2 Feb 2021 07:28:04 -0800 (PST)
 From:   Srujana Challa <schalla@marvell.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <kuba@kernel.org>,
         <sgoutham@marvell.com>, <gakula@marvell.com>,
         <sbhatta@marvell.com>, <schandran@marvell.com>,
         <pathreya@marvell.com>, <jerinj@marvell.com>,
-        Srujana Challa <schalla@marvell.com>,
-        Mahipal Challa <mchalla@marvell.com>
-Subject: [PATCH v2,net-next,2/3] octeontx2-af: Add support for CPT1 in debugfs
-Date:   Tue, 2 Feb 2021 20:57:08 +0530
-Message-ID: <20210202152709.20450-3-schalla@marvell.com>
+        Srujana Challa <schalla@marvell.com>
+Subject: [PATCH v2,net-next,3/3] octeontx2-af: Handle CPT function level reset
+Date:   Tue, 2 Feb 2021 20:57:09 +0530
+Message-ID: <20210202152709.20450-4-schalla@marvell.com>
 X-Mailer: git-send-email 2.29.0
 In-Reply-To: <20210202152709.20450-1-schalla@marvell.com>
 References: <20210202152709.20450-1-schalla@marvell.com>
@@ -59,215 +61,169 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds support to display block CPT1 stats at
-"/sys/kernel/debug/octeontx2/cpt1".
+When FLR is initiated for a VF (PCI function level reset),
+the parent PF gets a interrupt. PF then sends a message to
+admin function (AF), which then cleans up all resources
+attached to that VF. This patch adds support to handle
+CPT FLR.
 
-Signed-off-by: Mahipal Challa <mchalla@marvell.com>
+Signed-off-by: Narayana Prasad Raju Atherya <pathreya@marvell.com>
+Signed-off-by: Suheil Chandran <schandran@marvell.com>
+Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
 Signed-off-by: Srujana Challa <schalla@marvell.com>
 ---
- .../net/ethernet/marvell/octeontx2/af/rvu.h   |  7 ++
- .../marvell/octeontx2/af/rvu_debugfs.c        | 86 +++++++++----------
- 2 files changed, 49 insertions(+), 44 deletions(-)
+ .../net/ethernet/marvell/octeontx2/af/rvu.c   |  3 +
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |  2 +
+ .../ethernet/marvell/octeontx2/af/rvu_cpt.c   | 89 +++++++++++++++++++
+ .../ethernet/marvell/octeontx2/af/rvu_reg.h   |  8 ++
+ 4 files changed, 102 insertions(+)
 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
+index 4ef7fc8bbb19..50c2a1d800f4 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
+@@ -2150,6 +2150,9 @@ static void rvu_blklf_teardown(struct rvu *rvu, u16 pcifunc, u8 blkaddr)
+ 			rvu_nix_lf_teardown(rvu, pcifunc, block->addr, lf);
+ 		else if (block->addr == BLKADDR_NPA)
+ 			rvu_npa_lf_teardown(rvu, pcifunc, lf);
++		else if ((block->addr == BLKADDR_CPT0) ||
++			 (block->addr == BLKADDR_CPT1))
++			rvu_cpt_lf_teardown(rvu, pcifunc, lf, slot);
+ 
+ 		err = rvu_lf_reset(rvu, block, lf);
+ 		if (err) {
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-index b1a6ecfd563e..aabf6d5ee020 100644
+index aabf6d5ee020..ce931d86600b 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-@@ -33,6 +33,7 @@
+@@ -608,6 +608,8 @@ void npc_enable_mcam_entry(struct rvu *rvu, struct npc_mcam *mcam,
+ void npc_read_mcam_entry(struct rvu *rvu, struct npc_mcam *mcam,
+ 			 int blkaddr, u16 src, struct mcam_entry *entry,
+ 			 u8 *intf, u8 *ena);
++/* CPT APIs */
++int rvu_cpt_lf_teardown(struct rvu *rvu, u16 pcifunc, int lf, int slot);
  
- #define NAME_SIZE				32
- #define MAX_NIX_BLKS				2
-+#define MAX_CPT_BLKS				2
+ #ifdef CONFIG_DEBUG_FS
+ void rvu_dbg_init(struct rvu *rvu);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
+index b6de4b95a72a..0945c3a3b180 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
+@@ -240,3 +240,92 @@ int rvu_mbox_handler_cpt_rd_wr_register(struct rvu *rvu,
  
- /* PF_FUNC */
- #define RVU_PFVF_PF_SHIFT	10
-@@ -47,6 +48,11 @@ struct dump_ctx {
- 	bool	all;
- };
- 
-+struct cpt_ctx {
+ 	return 0;
+ }
++
++#define INPROG_INFLIGHT(reg)    ((reg) & 0x1FF)
++#define INPROG_GRB_PARTIAL(reg) ((reg) & BIT_ULL(31))
++#define INPROG_GRB(reg)         (((reg) >> 32) & 0xFF)
++#define INPROG_GWB(reg)         (((reg) >> 40) & 0xFF)
++
++static void cpt_lf_disable_iqueue(struct rvu *rvu, int blkaddr, int slot)
++{
++	int i = 0, hard_lp_ctr = 100000;
++	u64 inprog, grp_ptr;
++	u16 nq_ptr, dq_ptr;
++
++	/* Disable instructions enqueuing */
++	rvu_write64(rvu, blkaddr, CPT_AF_BAR2_ALIASX(slot, CPT_LF_CTL), 0x0);
++
++	/* Disable executions in the LF's queue */
++	inprog = rvu_read64(rvu, blkaddr,
++			    CPT_AF_BAR2_ALIASX(slot, CPT_LF_INPROG));
++	inprog &= ~BIT_ULL(16);
++	rvu_write64(rvu, blkaddr,
++		    CPT_AF_BAR2_ALIASX(slot, CPT_LF_INPROG), inprog);
++
++	/* Wait for CPT queue to become execution-quiescent */
++	do {
++		inprog = rvu_read64(rvu, blkaddr,
++				    CPT_AF_BAR2_ALIASX(slot, CPT_LF_INPROG));
++		if (INPROG_GRB_PARTIAL(inprog)) {
++			i = 0;
++			hard_lp_ctr--;
++		} else {
++			i++;
++		}
++
++		grp_ptr = rvu_read64(rvu, blkaddr,
++				     CPT_AF_BAR2_ALIASX(slot,
++							CPT_LF_Q_GRP_PTR));
++		nq_ptr = (grp_ptr >> 32) & 0x7FFF;
++		dq_ptr = grp_ptr & 0x7FFF;
++
++	} while (hard_lp_ctr && (i < 10) && (nq_ptr != dq_ptr));
++
++	if (hard_lp_ctr == 0)
++		dev_warn(rvu->dev, "CPT FLR hits hard loop counter\n");
++
++	i = 0;
++	hard_lp_ctr = 100000;
++	do {
++		inprog = rvu_read64(rvu, blkaddr,
++				    CPT_AF_BAR2_ALIASX(slot, CPT_LF_INPROG));
++
++		if ((INPROG_INFLIGHT(inprog) == 0) &&
++		    (INPROG_GWB(inprog) < 40) &&
++		    ((INPROG_GRB(inprog) == 0) ||
++		     (INPROG_GRB((inprog)) == 40))) {
++			i++;
++		} else {
++			i = 0;
++			hard_lp_ctr--;
++		}
++	} while (hard_lp_ctr && (i < 10));
++
++	if (hard_lp_ctr == 0)
++		dev_warn(rvu->dev, "CPT FLR hits hard loop counter\n");
++}
++
++int rvu_cpt_lf_teardown(struct rvu *rvu, u16 pcifunc, int lf, int slot)
++{
 +	int blkaddr;
-+	struct rvu *rvu;
-+};
++	u64 reg;
 +
- struct rvu_debugfs {
- 	struct dentry *root;
- 	struct dentry *cgx_root;
-@@ -61,6 +67,7 @@ struct rvu_debugfs {
- 	struct dump_ctx nix_cq_ctx;
- 	struct dump_ctx nix_rq_ctx;
- 	struct dump_ctx nix_sq_ctx;
-+	struct cpt_ctx cpt_ctx[MAX_CPT_BLKS];
- 	int npa_qsize_id;
- 	int nix_qsize_id;
- };
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-index f60499562d2e..80e964330de3 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-@@ -1904,20 +1904,16 @@ static void rvu_dbg_npc_init(struct rvu *rvu)
- 			    &rvu_dbg_npc_rx_miss_act_fops);
- }
- 
--/* CPT debugfs APIs */
- static int cpt_eng_sts_display(struct seq_file *filp, u8 eng_type)
- {
--	struct rvu *rvu = filp->private;
-+	struct cpt_ctx *ctx = filp->private;
- 	u64 busy_sts = 0, free_sts = 0;
- 	u32 e_min = 0, e_max = 0, e, i;
- 	u16 max_ses, max_ies, max_aes;
--	int blkaddr;
-+	struct rvu *rvu = ctx->rvu;
-+	int blkaddr = ctx->blkaddr;
- 	u64 reg;
- 
--	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_CPT, 0);
--	if (blkaddr < 0)
--		return -ENODEV;
--
- 	reg = rvu_read64(rvu, blkaddr, CPT_AF_CONSTANTS1);
- 	max_ses = reg & 0xffff;
- 	max_ies = (reg >> 16) & 0xffff;
-@@ -1977,16 +1973,13 @@ RVU_DEBUG_SEQ_FOPS(cpt_ie_sts, cpt_ie_sts_display, NULL);
- 
- static int rvu_dbg_cpt_engines_info_display(struct seq_file *filp, void *unused)
- {
--	struct rvu *rvu = filp->private;
-+	struct cpt_ctx *ctx = filp->private;
- 	u16 max_ses, max_ies, max_aes;
-+	struct rvu *rvu = ctx->rvu;
-+	int blkaddr = ctx->blkaddr;
- 	u32 e_max, e;
--	int blkaddr;
- 	u64 reg;
- 
--	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_CPT, 0);
--	if (blkaddr < 0)
--		return -ENODEV;
--
- 	reg = rvu_read64(rvu, blkaddr, CPT_AF_CONSTANTS1);
- 	max_ses = reg & 0xffff;
- 	max_ies = (reg >> 16) & 0xffff;
-@@ -2014,17 +2007,15 @@ RVU_DEBUG_SEQ_FOPS(cpt_engines_info, cpt_engines_info_display, NULL);
- 
- static int rvu_dbg_cpt_lfs_info_display(struct seq_file *filp, void *unused)
- {
--	struct rvu *rvu = filp->private;
--	struct rvu_hwinfo *hw = rvu->hw;
-+	struct cpt_ctx *ctx = filp->private;
-+	int blkaddr = ctx->blkaddr;
-+	struct rvu *rvu = ctx->rvu;
- 	struct rvu_block *block;
--	int blkaddr;
-+	struct rvu_hwinfo *hw;
- 	u64 reg;
- 	u32 lf;
- 
--	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_CPT, 0);
--	if (blkaddr < 0)
--		return -ENODEV;
--
-+	hw = rvu->hw;
- 	block = &hw->block[blkaddr];
- 	if (!block->lf.bmap)
- 		return -ENODEV;
-@@ -2049,13 +2040,10 @@ RVU_DEBUG_SEQ_FOPS(cpt_lfs_info, cpt_lfs_info_display, NULL);
- 
- static int rvu_dbg_cpt_err_info_display(struct seq_file *filp, void *unused)
- {
--	struct rvu *rvu = filp->private;
-+	struct cpt_ctx *ctx = filp->private;
-+	struct rvu *rvu = ctx->rvu;
-+	int blkaddr = ctx->blkaddr;
- 	u64 reg0, reg1;
--	int blkaddr;
--
--	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_CPT, 0);
--	if (blkaddr < 0)
--		return -ENODEV;
- 
- 	reg0 = rvu_read64(rvu, blkaddr, CPT_AF_FLTX_INT(0));
- 	reg1 = rvu_read64(rvu, blkaddr, CPT_AF_FLTX_INT(1));
-@@ -2079,15 +2067,11 @@ RVU_DEBUG_SEQ_FOPS(cpt_err_info, cpt_err_info_display, NULL);
- 
- static int rvu_dbg_cpt_pc_display(struct seq_file *filp, void *unused)
- {
--	struct rvu *rvu;
--	int blkaddr;
-+	struct cpt_ctx *ctx = filp->private;
-+	struct rvu *rvu = ctx->rvu;
-+	int blkaddr = ctx->blkaddr;
- 	u64 reg;
- 
--	rvu = filp->private;
--	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_CPT, 0);
--	if (blkaddr < 0)
--		return -ENODEV;
--
- 	reg = rvu_read64(rvu, blkaddr, CPT_AF_INST_REQ_PC);
- 	seq_printf(filp, "CPT instruction requests   %llu\n", reg);
- 	reg = rvu_read64(rvu, blkaddr, CPT_AF_INST_LATENCY_PC);
-@@ -2108,26 +2092,39 @@ static int rvu_dbg_cpt_pc_display(struct seq_file *filp, void *unused)
- 
- RVU_DEBUG_SEQ_FOPS(cpt_pc, cpt_pc_display, NULL);
- 
--static void rvu_dbg_cpt_init(struct rvu *rvu)
-+static void rvu_dbg_cpt_init(struct rvu *rvu, int blkaddr)
- {
--	if (!is_block_implemented(rvu->hw, BLKADDR_CPT0))
-+	struct cpt_ctx *ctx;
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_CPT, pcifunc);
++	if (blkaddr != BLKADDR_CPT0 && blkaddr != BLKADDR_CPT1)
++		return -EINVAL;
 +
-+	if (!is_block_implemented(rvu->hw, blkaddr))
- 		return;
++	/* Enable BAR2 ALIAS for this pcifunc. */
++	reg = BIT_ULL(16) | pcifunc;
++	rvu_write64(rvu, blkaddr, CPT_AF_BAR2_SEL, reg);
++
++	cpt_lf_disable_iqueue(rvu, blkaddr, slot);
++
++	/* Set group drop to help clear out hardware */
++	reg = rvu_read64(rvu, blkaddr, CPT_AF_BAR2_ALIASX(slot, CPT_LF_INPROG));
++	reg |= BIT_ULL(17);
++	rvu_write64(rvu, blkaddr, CPT_AF_BAR2_ALIASX(slot, CPT_LF_INPROG), reg);
++
++	rvu_write64(rvu, blkaddr, CPT_AF_BAR2_SEL, 0);
++
++	return 0;
++}
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
+index 0fb2aa909a23..79a6dcf0e3c0 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
+@@ -484,9 +484,17 @@
+ #define CPT_AF_RAS_INT_ENA_W1S          (0x47030)
+ #define CPT_AF_RAS_INT_ENA_W1C          (0x47038)
  
--	rvu->rvu_dbg.cpt = debugfs_create_dir("cpt", rvu->rvu_dbg.root);
-+	if (blkaddr == BLKADDR_CPT0) {
-+		rvu->rvu_dbg.cpt = debugfs_create_dir("cpt", rvu->rvu_dbg.root);
-+		ctx = &rvu->rvu_dbg.cpt_ctx[0];
-+		ctx->blkaddr = BLKADDR_CPT0;
-+		ctx->rvu = rvu;
-+	} else {
-+		rvu->rvu_dbg.cpt = debugfs_create_dir("cpt1",
-+						      rvu->rvu_dbg.root);
-+		ctx = &rvu->rvu_dbg.cpt_ctx[1];
-+		ctx->blkaddr = BLKADDR_CPT1;
-+		ctx->rvu = rvu;
-+	}
++#define AF_BAR2_ALIASX(a, b)            (0x9100000ull | (a) << 12 | (b))
++#define CPT_AF_BAR2_SEL                 0x9000000
++#define CPT_AF_BAR2_ALIASX(a, b)        AF_BAR2_ALIASX(a, b)
++
+ #define CPT_AF_LF_CTL2_SHIFT 3
+ #define CPT_AF_LF_SSO_PF_FUNC_SHIFT 32
  
--	debugfs_create_file("cpt_pc", 0600, rvu->rvu_dbg.cpt, rvu,
-+	debugfs_create_file("cpt_pc", 0600, rvu->rvu_dbg.cpt, ctx,
- 			    &rvu_dbg_cpt_pc_fops);
--	debugfs_create_file("cpt_ae_sts", 0600, rvu->rvu_dbg.cpt, rvu,
-+	debugfs_create_file("cpt_ae_sts", 0600, rvu->rvu_dbg.cpt, ctx,
- 			    &rvu_dbg_cpt_ae_sts_fops);
--	debugfs_create_file("cpt_se_sts", 0600, rvu->rvu_dbg.cpt, rvu,
-+	debugfs_create_file("cpt_se_sts", 0600, rvu->rvu_dbg.cpt, ctx,
- 			    &rvu_dbg_cpt_se_sts_fops);
--	debugfs_create_file("cpt_ie_sts", 0600, rvu->rvu_dbg.cpt, rvu,
-+	debugfs_create_file("cpt_ie_sts", 0600, rvu->rvu_dbg.cpt, ctx,
- 			    &rvu_dbg_cpt_ie_sts_fops);
--	debugfs_create_file("cpt_engines_info", 0600, rvu->rvu_dbg.cpt, rvu,
-+	debugfs_create_file("cpt_engines_info", 0600, rvu->rvu_dbg.cpt, ctx,
- 			    &rvu_dbg_cpt_engines_info_fops);
--	debugfs_create_file("cpt_lfs_info", 0600, rvu->rvu_dbg.cpt, rvu,
-+	debugfs_create_file("cpt_lfs_info", 0600, rvu->rvu_dbg.cpt, ctx,
- 			    &rvu_dbg_cpt_lfs_info_fops);
--	debugfs_create_file("cpt_err_info", 0600, rvu->rvu_dbg.cpt, rvu,
-+	debugfs_create_file("cpt_err_info", 0600, rvu->rvu_dbg.cpt, ctx,
- 			    &rvu_dbg_cpt_err_info_fops);
- }
++#define CPT_LF_CTL                      0x10
++#define CPT_LF_INPROG                   0x40
++#define CPT_LF_Q_GRP_PTR                0x120
++
+ #define NPC_AF_BLK_RST                  (0x00040)
  
-@@ -2146,7 +2143,8 @@ void rvu_dbg_init(struct rvu *rvu)
- 	rvu_dbg_nix_init(rvu, BLKADDR_NIX1);
- 	rvu_dbg_cgx_init(rvu);
- 	rvu_dbg_npc_init(rvu);
--	rvu_dbg_cpt_init(rvu);
-+	rvu_dbg_cpt_init(rvu, BLKADDR_CPT0);
-+	rvu_dbg_cpt_init(rvu, BLKADDR_CPT1);
- }
- 
- void rvu_dbg_exit(struct rvu *rvu)
+ /* NPC */
 -- 
 2.29.0
 
