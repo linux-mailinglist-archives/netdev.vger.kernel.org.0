@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1552D30C46C
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 16:52:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 805E030C35D
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 16:18:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235737AbhBBPvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 10:51:15 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39220 "EHLO mail.kernel.org"
+        id S235306AbhBBPPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 10:15:36 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39218 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235091AbhBBPNK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 10:13:10 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A295664F8B;
-        Tue,  2 Feb 2021 15:07:07 +0000 (UTC)
+        id S235102AbhBBPNN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 10:13:13 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 419DF64F86;
+        Tue,  2 Feb 2021 15:07:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612278428;
-        bh=wx1VjmK1ZRT05MnfSOG3AXi4r5wT1JE27/vFg66holI=;
+        s=k20201202; t=1612278430;
+        bh=m6i17RICMcagB3fjBK0ektXxTsN0a4iiNGXmiZNNTos=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aCQCmnRuvofayL5FdFLCkb/e75RFcy95jWj5OVDbdKKT/TFE6dThKIH8xDI1B+ePK
-         12+e5iW+iU7Vq6W9bFNa7iLCKVD9UqwKyh7CHiEoej/LuRspyKv2yGydZv+Zig9joU
-         DD3Qrx2LPVPs6ZLfeiM7wdnlGk4KN5KpUAJ8hXag8RLzF0fx9vp/eJsTesnNdoM6U9
-         XfrnfbAjuym8E56AqBwBkZ9+fl027cD56na9/yfcBGFOuBzJx0mjj+pn3G/q5CBpGQ
-         gkoRneXggqu6zalEROcfW/7FZHqVaKmM4QpTortojTJZjkKvvtvtlnZOC394wL7cst
-         gwRtxEONz63pQ==
+        b=fz7zwml8HurzIafjNuFovltQo7VAiOaPBzEKyf/1DyQ7yRkN3Bz7j8ju7eSzfPbUh
+         rgq8LXnNSg2GCwdIqfcXWcpbdc3hTfN7qEWwX8pTnMX+2xOV/khJy6hthpooF8FuZu
+         v9P+SNQncwhf5wemXdN3c1ydp+8LwQf1+YeOJdhBY8zdRY1jRrC1KO4vkGMHaP1RzK
+         s4WLS3uR+wCMe4IH5xKztbKHvx174JHAAQl5AAMCOQOMLvlyIS0gEoruOcCWbIPzWS
+         IMsLgPMuo3Dt0Jy2QBbs7C0jbZhYkxVhwbquD3CjslcZThRFeuzeTJFdF9vy9vpXuE
+         VHtkSrkOVDkbw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 13/17] iwlwifi: mvm: guard against device removal in reprobe
-Date:   Tue,  2 Feb 2021 10:06:47 -0500
-Message-Id: <20210202150651.1864426-13-sashal@kernel.org>
+Cc:     Dave Wysochanski <dwysocha@redhat.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 14/17] SUNRPC: Move simple_get_bytes and simple_get_netobj into private header
+Date:   Tue,  2 Feb 2021 10:06:48 -0500
+Message-Id: <20210202150651.1864426-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210202150651.1864426-1-sashal@kernel.org>
 References: <20210202150651.1864426-1-sashal@kernel.org>
@@ -44,47 +43,187 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Dave Wysochanski <dwysocha@redhat.com>
 
-[ Upstream commit 7a21b1d4a728a483f07c638ccd8610d4b4f12684 ]
+[ Upstream commit ba6dfce47c4d002d96cd02a304132fca76981172 ]
 
-If we get into a problem severe enough to attempt a reprobe,
-we schedule a worker to do that. However, if the problem gets
-more severe and the device is actually destroyed before this
-worker has a chance to run, we use a free device. Bump up the
-reference count of the device until the worker runs to avoid
-this situation.
+Remove duplicated helper functions to parse opaque XDR objects
+and place inside new file net/sunrpc/auth_gss/auth_gss_internal.h.
+In the new file carry the license and copyright from the source file
+net/sunrpc/auth_gss/auth_gss.c.  Finally, update the comment inside
+include/linux/sunrpc/xdr.h since lockd is not the only user of
+struct xdr_netobj.
 
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/iwlwifi.20210122144849.871f0892e4b2.I94819e11afd68d875f3e242b98bef724b8236f1e@changeid
+Signed-off-by: Dave Wysochanski <dwysocha@redhat.com>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/ops.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ include/linux/sunrpc/xdr.h              |  3 +-
+ net/sunrpc/auth_gss/auth_gss.c          | 30 +-----------------
+ net/sunrpc/auth_gss/auth_gss_internal.h | 42 +++++++++++++++++++++++++
+ net/sunrpc/auth_gss/gss_krb5_mech.c     | 31 ++----------------
+ 4 files changed, 46 insertions(+), 60 deletions(-)
+ create mode 100644 net/sunrpc/auth_gss/auth_gss_internal.h
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/ops.c b/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
-index bc25a59807c34..8b0576cde797e 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
-@@ -1242,6 +1242,7 @@ static void iwl_mvm_reprobe_wk(struct work_struct *wk)
- 	reprobe = container_of(wk, struct iwl_mvm_reprobe, work);
- 	if (device_reprobe(reprobe->dev))
- 		dev_err(reprobe->dev, "reprobe failed!\n");
-+	put_device(reprobe->dev);
- 	kfree(reprobe);
- 	module_put(THIS_MODULE);
+diff --git a/include/linux/sunrpc/xdr.h b/include/linux/sunrpc/xdr.h
+index 9db6097c22c5d..a8d68c5a4ca61 100644
+--- a/include/linux/sunrpc/xdr.h
++++ b/include/linux/sunrpc/xdr.h
+@@ -27,8 +27,7 @@ struct rpc_rqst;
+ #define XDR_QUADLEN(l)		(((l) + 3) >> 2)
+ 
+ /*
+- * Generic opaque `network object.' At the kernel level, this type
+- * is used only by lockd.
++ * Generic opaque `network object.'
+  */
+ #define XDR_MAX_NETOBJ		1024
+ struct xdr_netobj {
+diff --git a/net/sunrpc/auth_gss/auth_gss.c b/net/sunrpc/auth_gss/auth_gss.c
+index 5fc6c028f89c0..b7a71578bd986 100644
+--- a/net/sunrpc/auth_gss/auth_gss.c
++++ b/net/sunrpc/auth_gss/auth_gss.c
+@@ -29,6 +29,7 @@
+ #include <linux/uaccess.h>
+ #include <linux/hashtable.h>
+ 
++#include "auth_gss_internal.h"
+ #include "../netns.h"
+ 
+ #include <trace/events/rpcgss.h>
+@@ -125,35 +126,6 @@ gss_cred_set_ctx(struct rpc_cred *cred, struct gss_cl_ctx *ctx)
+ 	clear_bit(RPCAUTH_CRED_NEW, &cred->cr_flags);
  }
-@@ -1292,7 +1293,7 @@ void iwl_mvm_nic_restart(struct iwl_mvm *mvm, bool fw_error)
- 			module_put(THIS_MODULE);
- 			return;
- 		}
--		reprobe->dev = mvm->trans->dev;
-+		reprobe->dev = get_device(mvm->trans->dev);
- 		INIT_WORK(&reprobe->work, iwl_mvm_reprobe_wk);
- 		schedule_work(&reprobe->work);
- 	} else if (test_bit(IWL_MVM_STATUS_HW_RESTART_REQUESTED,
+ 
+-static const void *
+-simple_get_bytes(const void *p, const void *end, void *res, size_t len)
+-{
+-	const void *q = (const void *)((const char *)p + len);
+-	if (unlikely(q > end || q < p))
+-		return ERR_PTR(-EFAULT);
+-	memcpy(res, p, len);
+-	return q;
+-}
+-
+-static inline const void *
+-simple_get_netobj(const void *p, const void *end, struct xdr_netobj *dest)
+-{
+-	const void *q;
+-	unsigned int len;
+-
+-	p = simple_get_bytes(p, end, &len, sizeof(len));
+-	if (IS_ERR(p))
+-		return p;
+-	q = (const void *)((const char *)p + len);
+-	if (unlikely(q > end || q < p))
+-		return ERR_PTR(-EFAULT);
+-	dest->data = kmemdup(p, len, GFP_NOFS);
+-	if (unlikely(dest->data == NULL))
+-		return ERR_PTR(-ENOMEM);
+-	dest->len = len;
+-	return q;
+-}
+-
+ static struct gss_cl_ctx *
+ gss_cred_get_ctx(struct rpc_cred *cred)
+ {
+diff --git a/net/sunrpc/auth_gss/auth_gss_internal.h b/net/sunrpc/auth_gss/auth_gss_internal.h
+new file mode 100644
+index 0000000000000..c5603242b54bf
+--- /dev/null
++++ b/net/sunrpc/auth_gss/auth_gss_internal.h
+@@ -0,0 +1,42 @@
++// SPDX-License-Identifier: BSD-3-Clause
++/*
++ * linux/net/sunrpc/auth_gss/auth_gss_internal.h
++ *
++ * Internal definitions for RPCSEC_GSS client authentication
++ *
++ * Copyright (c) 2000 The Regents of the University of Michigan.
++ * All rights reserved.
++ *
++ */
++#include <linux/err.h>
++#include <linux/string.h>
++#include <linux/sunrpc/xdr.h>
++
++static inline const void *
++simple_get_bytes(const void *p, const void *end, void *res, size_t len)
++{
++	const void *q = (const void *)((const char *)p + len);
++	if (unlikely(q > end || q < p))
++		return ERR_PTR(-EFAULT);
++	memcpy(res, p, len);
++	return q;
++}
++
++static inline const void *
++simple_get_netobj(const void *p, const void *end, struct xdr_netobj *dest)
++{
++	const void *q;
++	unsigned int len;
++
++	p = simple_get_bytes(p, end, &len, sizeof(len));
++	if (IS_ERR(p))
++		return p;
++	q = (const void *)((const char *)p + len);
++	if (unlikely(q > end || q < p))
++		return ERR_PTR(-EFAULT);
++	dest->data = kmemdup(p, len, GFP_NOFS);
++	if (unlikely(dest->data == NULL))
++		return ERR_PTR(-ENOMEM);
++	dest->len = len;
++	return q;
++}
+diff --git a/net/sunrpc/auth_gss/gss_krb5_mech.c b/net/sunrpc/auth_gss/gss_krb5_mech.c
+index 6e5d6d2402158..b552dd4f32f80 100644
+--- a/net/sunrpc/auth_gss/gss_krb5_mech.c
++++ b/net/sunrpc/auth_gss/gss_krb5_mech.c
+@@ -21,6 +21,8 @@
+ #include <linux/sunrpc/xdr.h>
+ #include <linux/sunrpc/gss_krb5_enctypes.h>
+ 
++#include "auth_gss_internal.h"
++
+ #if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+ # define RPCDBG_FACILITY	RPCDBG_AUTH
+ #endif
+@@ -164,35 +166,6 @@ get_gss_krb5_enctype(int etype)
+ 	return NULL;
+ }
+ 
+-static const void *
+-simple_get_bytes(const void *p, const void *end, void *res, int len)
+-{
+-	const void *q = (const void *)((const char *)p + len);
+-	if (unlikely(q > end || q < p))
+-		return ERR_PTR(-EFAULT);
+-	memcpy(res, p, len);
+-	return q;
+-}
+-
+-static const void *
+-simple_get_netobj(const void *p, const void *end, struct xdr_netobj *res)
+-{
+-	const void *q;
+-	unsigned int len;
+-
+-	p = simple_get_bytes(p, end, &len, sizeof(len));
+-	if (IS_ERR(p))
+-		return p;
+-	q = (const void *)((const char *)p + len);
+-	if (unlikely(q > end || q < p))
+-		return ERR_PTR(-EFAULT);
+-	res->data = kmemdup(p, len, GFP_NOFS);
+-	if (unlikely(res->data == NULL))
+-		return ERR_PTR(-ENOMEM);
+-	res->len = len;
+-	return q;
+-}
+-
+ static inline const void *
+ get_key(const void *p, const void *end,
+ 	struct krb5_ctx *ctx, struct crypto_sync_skcipher **res)
 -- 
 2.27.0
 
