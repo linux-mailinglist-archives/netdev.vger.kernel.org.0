@@ -2,198 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D76930B8FA
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 08:54:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F53A30B921
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 09:03:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230055AbhBBHw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 02:52:26 -0500
-Received: from aserp2120.oracle.com ([141.146.126.78]:52484 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229466AbhBBHwY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 02:52:24 -0500
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 1127mtrS081670;
-        Tue, 2 Feb 2021 07:51:32 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=3Y7HNwr7hwVxzByk5cPGCIUfvrvL9EP75VZLXwMVsuk=;
- b=LlgwXwLcbzusCXs8ZaG6C0m6COk/TjIEJfgUvT21/VWyqG+zw18xoBGHNbpEu+snI19V
- 8Qp6j8dtqpkwa4bhbPKRRspvYQx3wnpJuXl82kAbx4Ik0Nu4ivZQb/W48p3Le7aBj2ir
- McQ4CadLbk4Fl7zdOlwQ2VzeKfRXzHJplBSie8fOm0IUsSuM9hgW5jMEwsc5FM7Nrwz7
- E9InRP+EJPbVbtyGlvZZY1A3B4z2DvaQAoL2n78utgO7a5ZWTb1+wu1NGTkYK/Z3w4qK
- e/HgnMx2nfJ1T2wTITGtjK0Rq3QG4ymKO9NKjUrT5xg3hmUbtIBO0EfuioB6O/YIBgDN aQ== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by aserp2120.oracle.com with ESMTP id 36cydksa06-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 02 Feb 2021 07:51:32 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 1127pSK4174056;
-        Tue, 2 Feb 2021 07:51:30 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by aserp3030.oracle.com with ESMTP id 36dh1nkrwr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 02 Feb 2021 07:51:29 +0000
-Received: from abhmp0017.oracle.com (abhmp0017.oracle.com [141.146.116.23])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 1127pKPn022650;
-        Tue, 2 Feb 2021 07:51:20 GMT
-Received: from kadam (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 01 Feb 2021 23:51:19 -0800
-Date:   Tue, 2 Feb 2021 10:51:11 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Hillf Danton <hdanton@sina.com>, Sasha Levin <sashal@kernel.org>,
-        Archie Pusaka <apusaka@chromium.org>
-Cc:     syzbot <syzbot+3ed6361bf59830ca9138@syzkaller.appspotmail.com>,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Miao-chen Chou <mcchou@chromium.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@intel.com>,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: KASAN: slab-out-of-bounds Read in add_adv_patterns_monitor
-Message-ID: <20210202075110.GR2696@kadam>
-References: <00000000000076ecf305b9f8efb1@google.com>
- <20210131100154.14452-1-hdanton@sina.com>
+        id S231806AbhBBIDJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 03:03:09 -0500
+Received: from mail-am6eur05on2046.outbound.protection.outlook.com ([40.107.22.46]:20353
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231225AbhBBIDD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 03:03:03 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CgSCCLaPXmqoGcv0oa3unpHR/hxTUES1zJiOh73Kk+YD2W0b8hyW4VtOuaeCEEy/SJAtcUcDC72/tuz8NmFYRgYPbB5MattNZK5ZdNXhgcc13wGZCAUPJzHeOSpq+Tco2aP85Ovtg68H5rCu7gJXSbT0ceL/qdoUQFnrrc5NtoehOc7Mp7aYCKsMrq4hwABjforFb+yYQxFS4WL7UMNXNjzL3CGusHVRwMXlxClVON7HUV7RYs9bm/ZB9ZAg3YCoQ5yFnIGpfaCS5wadjiRbEoVPXcsAirPN5qscnvDZVFgFBrtNK/zojukuqlT+Byikd0IEt7347JTs8uZtpZquag==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=q56apVJqAomX4Z9U72N0o/uTZMRXGPw8J56bVpZ1QDM=;
+ b=ZkhFUfEA7Y0OIPPZm16s4CZcdPLrgVvN+2W0bwMdDtfjWEtPLOK/DrBNBmamq8GOsDSwqE7vRsn1npU6I3kNEhuspWdCMMJ6YNVWalcaevmii9BBVbo4RX8N/LwaXRubCYKZzyuqHk9gGzmA/zmnmo3aLbtAz7c/GlMnIZTX2kQ6etcVgWTAV2C0SZeZcr2NbEvoyqtYvr0IQVHi+m97Gh/Y8uW8j0GeJn/W843Vz3juQ1fTJCCz88lwXOJvcATwhxb9+k/vjEo+5OpXaHV3cO6yfxjJt/fJd1QWjvRmsdB+Zn5RSXgQuwjgS2jAaGuy3W9n6f5QmzzzrskEYlz/FQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=q56apVJqAomX4Z9U72N0o/uTZMRXGPw8J56bVpZ1QDM=;
+ b=L5ZZ2kVt2NhnuT6ktEYQKTdkKiP7E9ocplrZwPODz2JeJ+HOT87Wg95ObPIzZ3pqDgLxkkdOW2tF6kkXAdm7p7hgkQRHTYP00XQJzJ/tnyqOEEr+skjcSFaNOJVzP89ET1b4sNr1WIrS3B3TjEQ5HHEZ1lrgM7CzK1Ge4DxNmp4=
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+ by DB6PR0401MB2325.eurprd04.prod.outlook.com (2603:10a6:4:49::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.28; Tue, 2 Feb
+ 2021 08:02:11 +0000
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::9d2b:182e:ba3b:5920]) by DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::9d2b:182e:ba3b:5920%3]) with mapi id 15.20.3805.027; Tue, 2 Feb 2021
+ 08:02:11 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>
+Subject: RE: [PATCH linux-can] can: flexcan: enable RX FIFO after FRZ/HALT
+ valid
+Thread-Topic: [PATCH linux-can] can: flexcan: enable RX FIFO after FRZ/HALT
+ valid
+Thread-Index: AQHW+SwY0VdFQlRMB0yIQBn1zWjHfapEeieAgAAGc3A=
+Date:   Tue, 2 Feb 2021 08:02:10 +0000
+Message-ID: <DB8PR04MB67953020297534342367BD76E6B59@DB8PR04MB6795.eurprd04.prod.outlook.com>
+References: <20210202062350.7258-1-qiangqing.zhang@nxp.com>
+ <c6bc1c1b-b86e-63c2-2dba-eb9fe108516e@pengutronix.de>
+In-Reply-To: <c6bc1c1b-b86e-63c2-2dba-eb9fe108516e@pengutronix.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: pengutronix.de; dkim=none (message not signed)
+ header.d=none;pengutronix.de; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 33a54d48-738e-497a-427e-08d8c750d837
+x-ms-traffictypediagnostic: DB6PR0401MB2325:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DB6PR0401MB2325E18F44CFABBAAD6F77D2E6B59@DB6PR0401MB2325.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5236;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: RPKaoaa7eHNUZ3zxNsmy1MUzgPvm0x/xtwn0KR+XVGMLRRQ4stRwTu5qalDdJa9qXMlVDhj7OiKn6j2XKC5XRJG6KviRLfhJhlU2CmVKND05EX/mPcc8dlw1mqmp0KSSkiXTr5rVlaD6Mr/mvPC52T5JuNPZMJFNxe6TFC0m2PN9a26PrPhe4iuG0jpg85GlvQt8vhmzfqJAsc9029lpdXpFuaCHB3zr07TBllXLqctN+eneIiNC4jlhl7DvQYFVYGFxuCAMGrrK+nw0HXQQMZ+EzNj7XBQB+u9sXoZgyuQ2UK62Q3rvmxE9E90CcS5wk7IshNXog4E7jewgZ5IeMU4f+QdpD2t8+ZuzxISyUNVqX2ZJCFdYPtBHNFwnqYb32yupj9Ov32zqwXaQh0MYNb/fJi7KJf+5P2Ywlc76oVn2MjCzFVI+KiMwBXbPunBqbkiG+HUcBfDBrVxXbtAFZFxbNwcTx2n0iseof3E/Og7guu9UUn9EUn6bah6OvgA4uSKhriG07i2lpmW83p85oEUWwC10Mzqdy3zKn3JGNlEzsktleOG27DUCFItpmUrdM1kf/MLwta0bWVgsLcbSlm6gF3UJ3rg6l7t9b/P0hDG3P+I7QcaIYMmmCSLdE9kKGXZ2b3s4oizC2Ws79LZZhZcdB3TYckj+2V+p5YUoNMc=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39860400002)(376002)(136003)(366004)(396003)(26005)(186003)(71200400001)(4326008)(9686003)(86362001)(76116006)(33656002)(55016002)(53546011)(6506007)(8676002)(66446008)(64756008)(66556008)(66476007)(2906002)(66946007)(83380400001)(52536014)(54906003)(7696005)(83080400002)(110136005)(966005)(8936002)(5660300002)(478600001)(316002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?utf-8?B?eUNmQzdkU3NKVk9QamZPZGJTR0RPS29ncmN5dzQwZENlUy9iV3p5eHhRL2xo?=
+ =?utf-8?B?YWFENVZ3S0dnVEVXZmJNR0VJT0tzMjZpM2d2SzEvcUZsWHMzRCtaSkJyYU9u?=
+ =?utf-8?B?aW5VMEQ5b2NXcU52cUptRHg3Q0FicFlpcEJNSVdvbUFSWVVPR3JGK1lmOUhU?=
+ =?utf-8?B?K1ZkcTJPcUtLRy9WSnY4VXd2bmppUE5lZy8xOGFJYWNOMHZRa1BZdGFNZ09K?=
+ =?utf-8?B?cFhrY090Ym4rMEpRYVJUems3VHpCNVhVc09qL0NENUsvc25iL093cXZSWGgy?=
+ =?utf-8?B?VlEzZWNvc3pIV2t5aVpEbWp0WTVLMkFCNmxaenc2WGJkN0dQNWF6cnpLa1p1?=
+ =?utf-8?B?Mk43d3RXZ2FiM1o3cmk1SVNVMlIyV3FyVEJMOUtyQ1hNWEFvM3NTQ1F3YVZ1?=
+ =?utf-8?B?ZTJQMmxVamJBTTlpa3ZRMlI5NXdwVTBFaEZuVVV4NCtscURYTHAvb0ZhV1lS?=
+ =?utf-8?B?TG5hVWthZGNmSEU5cEtTSnQ0VGhBNTI3NDJpMFRGdXQ2cWZHL1EwdktjOHJ4?=
+ =?utf-8?B?b1JCRjZVK20wd3pibXdUbDBQVWFXeFVvUWFTZEZGdTVneFR0eGgveTRFdWdN?=
+ =?utf-8?B?VGtZdUMvdVRzaDlWeHRQTi84VDFyTlF6cEVhckIvZVMrcHRsUG5MR2pTVVJU?=
+ =?utf-8?B?d3NpUEMyMDRZY1J0YWJjVTJCckpFaGV6VUNjU1BLbVdPSkN0UG1rR1Zna2lp?=
+ =?utf-8?B?c2FDeXBpTlJkaC94OTVMM0NEc0Q2bzBvNnZKc0c1OWVlcHVxUTF4MlQvUmtj?=
+ =?utf-8?B?WkJ1aGpwSTdQUm9zcTNKN2dhendKbkdHNmJkKzJGM1RnbllyUUkrb3pmaWpn?=
+ =?utf-8?B?REM2L2hFaEZuN0c4eFBZZDRNcGR1OERtRHdwbkhNaGd0UzRZMGZ0NWdCSUZZ?=
+ =?utf-8?B?T3luaUc1QnpwNGJKNDgzSWNpZHZwdjgya2FTRHFIWU8yQm9iNjlFMzlXZWZS?=
+ =?utf-8?B?OFZqVElXRW1na3I1YXF5eXVuSkZwQzltUklDRHlnQUpJTHY3YTUvZVJRRXQx?=
+ =?utf-8?B?YktKUzJ2M0FPNThLMElsQk1hc05venVJV3NCQ2hsNUMvcjkwdXdqdU5hMG9X?=
+ =?utf-8?B?ZDdhZ082cjh6cnFTZmhkemNHU2VubDh4N2hIdkY0S3RkaWVsVEQrTk1ka0Fv?=
+ =?utf-8?B?aGUwMjhWVEZyL0U2WDNEQ2puTXpUemdEUE5MeHJiVlVxSk94YjZTV01vOUo4?=
+ =?utf-8?B?b2MrQjJnMlhtQlVHZEViZEJvaWNDSmsxdSsyUWMxMWVvTUFOTDYraFJuK0tW?=
+ =?utf-8?B?SHhZc1I4bElXSmJScHFLQm9ZeldrS3QxV2RVMWhOTFE1YTk3SGltQjdnR0VB?=
+ =?utf-8?B?U3VkV0w3SHErQ0gyYVc0SHU1b0ptNXZsTFpmLzVpcVl4a29JcEQrMGtwR3VJ?=
+ =?utf-8?B?RnR2TEZ5UndGRVFIbzlwMVk0NUFiMVp2YW5DWlFDNHRGOGZNckcrL3NXZWlp?=
+ =?utf-8?Q?y2IfMl2I?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210131100154.14452-1-hdanton@sina.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-IMR: 1
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9882 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 spamscore=0 phishscore=0
- suspectscore=0 mlxlogscore=999 bulkscore=0 mlxscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2102020053
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9882 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 adultscore=0
- priorityscore=1501 impostorscore=0 malwarescore=0 clxscore=1011
- spamscore=0 lowpriorityscore=0 phishscore=0 mlxlogscore=999 mlxscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102020053
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 33a54d48-738e-497a-427e-08d8c750d837
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Feb 2021 08:02:11.1168
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: yDlDmKJg3rpdrLWnJqFlqfu9YHqkifDgm17pl/T+GSe2NirL2xSsDhj6N37nK3OsffnnE9DZu9bXArLkDvCaWw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0401MB2325
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sasha, do your stable patch picker scripts look at syzbot fix commands
-to select patches to back port?  In this case a bug was fixed while
-adding a new feature.  No one noticed the bug fix and there was no Fixes
-tag.
-
-On Sun, Jan 31, 2021 at 06:01:54PM +0800, Hillf Danton wrote:
-> On Thu, 28 Jan 2021 09:08:24 -0800
-> > syzbot found the following issue on:
-> > 
-> > HEAD commit:    b491e6a7 net: lapb: Add locking to the lapb module
-> > git tree:       net
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=17ba0f2cd00000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=be33d8015c9de024
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=3ed6361bf59830ca9138
-> > compiler:       gcc (GCC) 10.1.0-syz 20200507
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10628ae8d00000
-> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12964b80d00000
-> > 
-> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > Reported-by: syzbot+3ed6361bf59830ca9138@syzkaller.appspotmail.com
-> > 
-> > IPVS: ftp: loaded support on port[0] = 21
-> > ==================================================================
-> > BUG: KASAN: slab-out-of-bounds in add_adv_patterns_monitor+0x91f/0xa90 net/bluetooth/mgmt.c:4266
-> > Read of size 1 at addr ffff888013251b29 by task syz-executor387/8480
-> > 
-> > CPU: 1 PID: 8480 Comm: syz-executor387 Not tainted 5.11.0-rc4-syzkaller #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> > Call Trace:
-> >  __dump_stack lib/dump_stack.c:79 [inline]
-> >  dump_stack+0x107/0x163 lib/dump_stack.c:120
-> >  print_address_description.constprop.0.cold+0x5b/0x2f8 mm/kasan/report.c:230
-> >  __kasan_report mm/kasan/report.c:396 [inline]
-> >  kasan_report.cold+0x79/0xd5 mm/kasan/report.c:413
-> >  add_adv_patterns_monitor+0x91f/0xa90 net/bluetooth/mgmt.c:4266
-> >  hci_mgmt_cmd net/bluetooth/hci_sock.c:1603 [inline]
-> >  hci_sock_sendmsg+0x1b98/0x21d0 net/bluetooth/hci_sock.c:1738
-> >  sock_sendmsg_nosec net/socket.c:652 [inline]
-> >  sock_sendmsg+0xcf/0x120 net/socket.c:672
-> >  sock_write_iter+0x289/0x3c0 net/socket.c:999
-> >  call_write_iter include/linux/fs.h:1901 [inline]
-> >  new_sync_write+0x426/0x650 fs/read_write.c:518
-> >  vfs_write+0x791/0xa30 fs/read_write.c:605
-> >  ksys_write+0x1ee/0x250 fs/read_write.c:658
-> >  do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
-> >  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> > RIP: 0033:0x447579
-> > Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 3b 0e fc ff c3 66 2e 0f 1f 84 00 00 00 00
-> > RSP: 002b:00007ffe0f4194b8 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-> > RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000447579
-> > RDX: 0000000000000009 RSI: 0000000020000000 RDI: 0000000000000004
-> > RBP: 00000000018e1914 R08: 00000000018e1914 R09: 00007ffe0f4194a0
-> > R10: 00007ffe0f4194c0 R11: 0000000000000246 R12: 0000000000000004
-> > R13: 0000000000000072 R14: 00000000018e1914 R15: 0000000000000000
-> > 
-> > Allocated by task 8480:
-> >  kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
-> >  kasan_set_track mm/kasan/common.c:46 [inline]
-> >  set_alloc_info mm/kasan/common.c:401 [inline]
-> >  ____kasan_kmalloc.constprop.0+0x82/0xa0 mm/kasan/common.c:429
-> >  kmalloc include/linux/slab.h:557 [inline]
-> >  hci_mgmt_cmd net/bluetooth/hci_sock.c:1508 [inline]
-> >  hci_sock_sendmsg+0x9b8/0x21d0 net/bluetooth/hci_sock.c:1738
-> >  sock_sendmsg_nosec net/socket.c:652 [inline]
-> >  sock_sendmsg+0xcf/0x120 net/socket.c:672
-> >  sock_write_iter+0x289/0x3c0 net/socket.c:999
-> >  call_write_iter include/linux/fs.h:1901 [inline]
-> >  new_sync_write+0x426/0x650 fs/read_write.c:518
-> >  vfs_write+0x791/0xa30 fs/read_write.c:605
-> >  ksys_write+0x1ee/0x250 fs/read_write.c:658
-> >  do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
-> >  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> > 
-> > The buggy address belongs to the object at ffff888013251b20
-> >  which belongs to the cache kmalloc-16 of size 16
-> > The buggy address is located 9 bytes inside of
-> >  16-byte region [ffff888013251b20, ffff888013251b30)
-> > The buggy address belongs to the page:
-> > page:00000000a4467645 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x13251
-> > flags: 0xfff00000000200(slab)
-> > raw: 00fff00000000200 ffffea00004ed440 0000000300000003 ffff888010041b40
-> > raw: 0000000000000000 0000000080800080 00000001ffffffff 0000000000000000
-> > page dumped because: kasan: bad access detected
-> > 
-> > Memory state around the buggy address:
-> >  ffff888013251a00: fb fb fc fc fb fb fc fc 00 00 fc fc fb fb fc fc
-> >  ffff888013251a80: 00 00 fc fc 00 00 fc fc fb fb fc fc 00 00 fc fc
-> > >ffff888013251b00: 00 00 fc fc 00 01 fc fc fb fb fc fc fa fb fc fc
-> >                                   ^
-> >  ffff888013251b80: 00 00 fc fc fa fb fc fc fa fb fc fc 00 00 fc fc
-> >  ffff888013251c00: fa fb fc fc fa fb fc fc 00 00 fc fc fa fb fc fc
-> > ==================================================================
-> 
-> Fix b139553db5cd ("Bluetooth: Add handler of MGMT_OP_ADD_ADV_PATTERNS_MONITOR")  
-> by adding the right-hand buffer boundary check.
-> 
-> --- a/net/bluetooth/mgmt.c
-> +++ b/net/bluetooth/mgmt.c
-> @@ -4238,7 +4238,9 @@ static int add_adv_patterns_monitor(stru
->  
->  	BT_DBG("request for %s", hdev->name);
->  
-> -	if (len <= sizeof(*cp) || cp->pattern_count == 0) {
-> +	if (len <= sizeof(*cp) || cp->pattern_count == 0 ||
-> +	    len < sizeof(*cp) + cp->pattern_count *
-> +		    			sizeof(struct mgmt_adv_pattern)) {
->  		err = mgmt_cmd_status(sk, hdev->id,
->  				      MGMT_OP_ADD_ADV_PATTERNS_MONITOR,
->  				      MGMT_STATUS_INVALID_PARAMS);
-> 
-
-I think this was already fixed on Jan 22 commit b4a221ea8a1f ("Bluetooth:
-advmon offload MSFT add rssi support").
-
-	expected_size += cp->pattern_count * sizeof(struct mgmt_adv_pattern);
-	if (len != expected_size) {
-
-Now someone needs to backport it to stable.
-
-regards,
-dan carpenter
-
+DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IE1hcmMgS2xlaW5lLUJ1ZGRl
+IDxta2xAcGVuZ3V0cm9uaXguZGU+DQo+IFNlbnQ6IDIwMjHlubQy5pyIMuaXpSAxNTozNw0KPiBU
+bzogSm9ha2ltIFpoYW5nIDxxaWFuZ3FpbmcuemhhbmdAbnhwLmNvbT47IGxpbnV4LWNhbkB2Z2Vy
+Lmtlcm5lbC5vcmcNCj4gQ2M6IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IGRsLWxpbnV4LWlteCA8
+bGludXgtaW14QG54cC5jb20+DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggbGludXgtY2FuXSBjYW46
+IGZsZXhjYW46IGVuYWJsZSBSWCBGSUZPIGFmdGVyIEZSWi9IQUxUDQo+IHZhbGlkDQo+IA0KPiBP
+biAyLzIvMjEgNzoyMyBBTSwgSm9ha2ltIFpoYW5nIHdyb3RlOg0KPiA+IFJYIEZJRk8gZW5hYmxl
+IGZhaWxlZCBjb3VsZCBoYXBwZW4gd2hlbiBkbyBzeXN0ZW0gcmVib290IHN0cmVzcyB0ZXN0LA0K
+PiA+IG9uZSBjdXN0b21lciByZXBvcnRzIGZhaWx1cmUgcmF0ZSBpcyBhYm91dCA1MCUuDQo+ID4N
+Cj4gPiBbICAgIDAuMzAzOTU4XSBmbGV4Y2FuIDVhOGQwMDAwLmNhbjogNWE4ZDAwMDAuY2FuIHN1
+cHBseSB4Y2VpdmVyIG5vdA0KPiBmb3VuZCwgdXNpbmcgZHVtbXkgcmVndWxhdG9yDQo+ID4gWyAg
+ICAwLjMwNDI4MV0gZmxleGNhbiA1YThkMDAwMC5jYW4gKHVubmFtZWQgbmV0X2RldmljZSkgKHVu
+aW5pdGlhbGl6ZWQpOg0KPiBDb3VsZCBub3QgZW5hYmxlIFJYIEZJRk8sIHVuc3VwcG9ydGVkIGNv
+cmUNCj4gPiBbICAgIDAuMzE0NjQwXSBmbGV4Y2FuIDVhOGQwMDAwLmNhbjogcmVnaXN0ZXJpbmcg
+bmV0ZGV2IGZhaWxlZA0KPiA+IFsgICAgMC4zMjA3MjhdIGZsZXhjYW4gNWE4ZTAwMDAuY2FuOiA1
+YThlMDAwMC5jYW4gc3VwcGx5IHhjZWl2ZXIgbm90DQo+IGZvdW5kLCB1c2luZyBkdW1teSByZWd1
+bGF0b3INCj4gPiBbICAgIDAuMzIwOTkxXSBmbGV4Y2FuIDVhOGUwMDAwLmNhbiAodW5uYW1lZCBu
+ZXRfZGV2aWNlKSAodW5pbml0aWFsaXplZCk6DQo+IENvdWxkIG5vdCBlbmFibGUgUlggRklGTywg
+dW5zdXBwb3J0ZWQgY29yZQ0KPiA+IFsgICAgMC4zMzEzNjBdIGZsZXhjYW4gNWE4ZTAwMDAuY2Fu
+OiByZWdpc3RlcmluZyBuZXRkZXYgZmFpbGVkDQo+ID4gWyAgICAwLjMzNzQ0NF0gZmxleGNhbiA1
+YThmMDAwMC5jYW46IDVhOGYwMDAwLmNhbiBzdXBwbHkgeGNlaXZlciBub3QgZm91bmQsDQo+IHVz
+aW5nIGR1bW15IHJlZ3VsYXRvcg0KPiA+IFsgICAgMC4zMzc3MTZdIGZsZXhjYW4gNWE4ZjAwMDAu
+Y2FuICh1bm5hbWVkIG5ldF9kZXZpY2UpICh1bmluaXRpYWxpemVkKToNCj4gQ291bGQgbm90IGVu
+YWJsZSBSWCBGSUZPLCB1bnN1cHBvcnRlZCBjb3JlDQo+ID4gWyAgICAwLjM0ODExN10gZmxleGNh
+biA1YThmMDAwMC5jYW46IHJlZ2lzdGVyaW5nIG5ldGRldiBmYWlsZWQNCj4gPg0KPiA+IFJYIEZJ
+Rk8gc2hvdWxkIGJlIGVuYWJsZWQgYWZ0ZXIgdGhlIEZSWi9IQUxUIGFyZSB2YWxpZC4gQnV0IHRo
+ZQ0KPiA+IGN1cnJlbnQgY29kZSBzZXQgUlggRklGTyBlbmFibGUgYW5kIEZSWi9IQUxUIGF0IHRo
+ZSBzYW1lIHRpbWUuDQo+ID4NCj4gPiBGaXhlczogZTk1NWNlYWQwMzExNyAoIkNBTjogQWRkIEZs
+ZXhjYW4gQ0FOIGNvbnRyb2xsZXIgZHJpdmVyIikNCj4gPiBTaWduZWQtb2ZmLWJ5OiBKb2FraW0g
+WmhhbmcgPHFpYW5ncWluZy56aGFuZ0BueHAuY29tPg0KPiA+IC0tLQ0KPiA+ICBkcml2ZXJzL25l
+dC9jYW4vZmxleGNhbi5jIHwgMTYgKysrKysrKysrKysrKy0tLQ0KPiA+ICAxIGZpbGUgY2hhbmdl
+ZCwgMTMgaW5zZXJ0aW9ucygrKSwgMyBkZWxldGlvbnMoLSkNCj4gPg0KPiA+IGRpZmYgLS1naXQg
+YS9kcml2ZXJzL25ldC9jYW4vZmxleGNhbi5jIGIvZHJpdmVycy9uZXQvY2FuL2ZsZXhjYW4uYw0K
+PiA+IGluZGV4IDAzOGZlMTAzNmRmMi4uOGVlOWZhMmY0MTYxIDEwMDY0NA0KPiA+IC0tLSBhL2Ry
+aXZlcnMvbmV0L2Nhbi9mbGV4Y2FuLmMNCj4gPiArKysgYi9kcml2ZXJzL25ldC9jYW4vZmxleGNh
+bi5jDQo+ID4gQEAgLTE4MDMsNiArMTgwMyw3IEBAIHN0YXRpYyBpbnQgcmVnaXN0ZXJfZmxleGNh
+bmRldihzdHJ1Y3QgbmV0X2RldmljZQ0KPiA+ICpkZXYpICB7DQo+ID4gIAlzdHJ1Y3QgZmxleGNh
+bl9wcml2ICpwcml2ID0gbmV0ZGV2X3ByaXYoZGV2KTsNCj4gPiAgCXN0cnVjdCBmbGV4Y2FuX3Jl
+Z3MgX19pb21lbSAqcmVncyA9IHByaXYtPnJlZ3M7DQo+ID4gKwl1bnNpZ25lZCBpbnQgdGltZW91
+dCA9IEZMRVhDQU5fVElNRU9VVF9VUyAvIDEwOw0KPiA+ICAJdTMyIHJlZywgZXJyOw0KPiA+DQo+
+ID4gIAllcnIgPSBmbGV4Y2FuX2Nsa3NfZW5hYmxlKHByaXYpOw0KPiA+IEBAIC0xODI1LDEwICsx
+ODI2LDE5IEBAIHN0YXRpYyBpbnQgcmVnaXN0ZXJfZmxleGNhbmRldihzdHJ1Y3QgbmV0X2Rldmlj
+ZQ0KPiAqZGV2KQ0KPiA+ICAJaWYgKGVycikNCj4gPiAgCQlnb3RvIG91dF9jaGlwX2Rpc2FibGU7
+DQo+ID4NCj4gPiAtCS8qIHNldCBmcmVlemUsIGhhbHQgYW5kIGFjdGl2YXRlIEZJRk8sIHJlc3Ry
+aWN0IHJlZ2lzdGVyIGFjY2VzcyAqLw0KPiA+ICsJLyogc2V0IGZyZWV6ZSwgaGFsdCBhbmQgcG9s
+bGluZyB0aGUgZnJlZXplIGFjayAqLw0KPiA+ICAJcmVnID0gcHJpdi0+cmVhZCgmcmVncy0+bWNy
+KTsNCj4gPiAtCXJlZyB8PSBGTEVYQ0FOX01DUl9GUlogfCBGTEVYQ0FOX01DUl9IQUxUIHwNCj4g
+PiAtCQlGTEVYQ0FOX01DUl9GRU4gfCBGTEVYQ0FOX01DUl9TVVBWOw0KPiA+ICsJcmVnIHw9IEZM
+RVhDQU5fTUNSX0ZSWiB8IEZMRVhDQU5fTUNSX0hBTFQ7DQo+ID4gKwlwcml2LT53cml0ZShyZWcs
+ICZyZWdzLT5tY3IpOw0KPiA+ICsNCj4gPiArCXdoaWxlICh0aW1lb3V0LS0gJiYgIShwcml2LT5y
+ZWFkKCZyZWdzLT5tY3IpICYNCj4gRkxFWENBTl9NQ1JfRlJaX0FDSykpDQo+ID4gKwkJdWRlbGF5
+KDEwMCk7DQo+IA0KPiBQbGVhc2UgbWFrZSB1c2Ugb2YgZXhpc3RpbmcgZnVuY3Rpb25zIGxpa2Ug
+ZmxleGNhbl9jaGlwX2ZyZWV6ZSgpLg0KDQpPSywgd2lsbCBpbXByb3ZlIGl0LiBNYXJjLCBJIG5v
+dGljZSB0aGlzIGlzc3VlIGFsc28gZXhpc3QgaW4gZmxleGNhbl9jaGlwX3N0YXJ0KCksIHNob3Vs
+ZCBJIGZpeCBpdCB0b2dldGhlcj8gDQoNCkJlc3QgUmVnYXJkcywNCkpvYWtpbSBaaGFuZw0KPiBy
+ZWdhcmRzLA0KPiBNYXJjDQo+IA0KPiAtLQ0KPiBQZW5ndXRyb25peCBlLksuICAgICAgICAgICAg
+ICAgICB8IE1hcmMgS2xlaW5lLUJ1ZGRlICAgICAgICAgICB8DQo+IEVtYmVkZGVkIExpbnV4ICAg
+ICAgICAgICAgICAgICAgIHwgaHR0cHM6Ly93d3cucGVuZ3V0cm9uaXguZGUgIHwNCj4gVmVydHJl
+dHVuZyBXZXN0L0RvcnRtdW5kICAgICAgICAgfCBQaG9uZTogKzQ5LTIzMS0yODI2LTkyNCAgICAg
+fA0KPiBBbXRzZ2VyaWNodCBIaWxkZXNoZWltLCBIUkEgMjY4NiB8IEZheDogICArNDktNTEyMS0y
+MDY5MTctNTU1NSB8DQoNCg==
