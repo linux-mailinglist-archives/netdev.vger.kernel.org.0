@@ -2,114 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B3C830C1E7
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 15:38:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E4D630C244
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 15:49:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234626AbhBBOfi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 09:35:38 -0500
-Received: from atl4mhfb01.myregisteredsite.com ([209.17.115.55]:56480 "EHLO
-        atl4mhfb01.myregisteredsite.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234624AbhBBOed (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 09:34:33 -0500
-Received: from jax4mhob08.registeredsite.com (jax4mhob08.myregisteredsite.com [64.69.218.88])
-        by atl4mhfb01.myregisteredsite.com (8.14.4/8.14.4) with ESMTP id 112EXhdA013145
-        for <netdev@vger.kernel.org>; Tue, 2 Feb 2021 09:33:44 -0500
-Received: from mailpod.hostingplatform.com ([10.30.71.204])
-        by jax4mhob08.registeredsite.com (8.14.4/8.14.4) with ESMTP id 112EWkri002309
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL)
-        for <netdev@vger.kernel.org>; Tue, 2 Feb 2021 09:32:46 -0500
-Received: (qmail 12776 invoked by uid 0); 2 Feb 2021 14:32:45 -0000
-X-TCPREMOTEIP: 83.128.90.119
-X-Authenticated-UID: mike@milosoftware.com
-Received: from unknown (HELO phenom.domain?not?set.invalid) (mike@milosoftware.com@83.128.90.119)
-  by 0 with ESMTPA; 2 Feb 2021 14:32:45 -0000
-From:   Mike Looijmans <mike.looijmans@topic.nl>
-To:     netdev@vger.kernel.org
-Cc:     Mike Looijmans <mike.looijmans@topic.nl>,
-        Andrew Lunn <andrew@lunn.ch>,
+        id S234780AbhBBOpl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 09:45:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57138 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234576AbhBBOgd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 09:36:33 -0500
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 256B2C061793
+        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 06:34:50 -0800 (PST)
+Received: by mail-il1-x133.google.com with SMTP id g7so18146285iln.2
+        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 06:34:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bxl73venaa9cWERoVp0VscHZS3/IH5lSgUJLT8Av3Oc=;
+        b=d5yDUwK8kbyroVDcNrW9Bed9kahFje2ZIU0BDehuW5DzhPmTw6AKATlvIgrv3J4sup
+         aIo/FiNf8JoT4Hc5Hak+mLJocFm+sU/u992MZHifR/Vk1Vy162sQeLOaHALCaNiJbGRo
+         OML/GI0PIO+UdFLcZ8smRhAhPEB81uhDI1ArrGScpj4MY6sy6aHAFWoy7FYSsBM4zZ8y
+         BasAXhEgwWcGYwtGMAoiGGjfmc51b8AlNJGIgeBrkF+i00WuUU55rrkEzAbaCoaooN1y
+         L9wDlcTrJVC2mJ9uCebXrUMygqRdWMyoY4OOn+vTf+7KKYGSCcbjpUs1+bjIJQtN65xg
+         Nfyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bxl73venaa9cWERoVp0VscHZS3/IH5lSgUJLT8Av3Oc=;
+        b=Sv5qkmMSKXm/M4TcbtcNgwQT6IEidE0mHtf82MfT29RhtCd6ZDRnvki8fcP/mDySaP
+         kv24SLBwRJFyrapL64GWi8382Kp54Biz4LCUcBz2/Xoo/zH4RKoSMt791wCDic7p1MAs
+         zcE4qav8aK5hEHjE+HAplBGJLKS/gW5QIQABqoJUVQr0qM+odMU/dbk02v6qHK5ww2f7
+         fLk6CHdtYY9CcCd+n+oeO4x3Zf/eu/jvv1vw4zGav3nijSu7uWmaLYZ+Yi598jZgxge1
+         l+ZUlsv0JZjwhfLpvXEYboTLWjNKilequ6vjUnJpOjxeCa32NNnxMNLJHU6BhNM++wIs
+         C1hw==
+X-Gm-Message-State: AOAM530yeuzcCSlq5PegJQVh9XJL2vo0gPDMsaCJoioN/84mcbwFOaVx
+        FTh58grO24ds4boNH0x+4DI7K2lNvXHqh9tK4lvfUg==
+X-Google-Smtp-Source: ABdhPJwdCq6fIqid1NDIwXhIUsFuZbRVI0mELuQ6Hg5XtSZnefbtVLLxDzRUbY6f1swYl+qnJ9omvJfA21H0KTmRU6M=
+X-Received: by 2002:a05:6e02:1251:: with SMTP id j17mr3978433ilq.216.1612276489189;
+ Tue, 02 Feb 2021 06:34:49 -0800 (PST)
+MIME-Version: 1.0
+References: <20210202135544.3262383-1-leon@kernel.org>
+In-Reply-To: <20210202135544.3262383-1-leon@kernel.org>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 2 Feb 2021 15:34:37 +0100
+Message-ID: <CANn89iL4jGbr_6rr11nsHxmdh7uz=kqXuMhRb0nakWO3rBZwsQ@mail.gmail.com>
+Subject: Re: [PATCH net 0/4] Fix W=1 compilation warnings in net/* folder
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] net: mdiobus: Prevent spike on MDIO bus reset signal
-Date:   Tue,  2 Feb 2021 15:32:39 +0100
-Message-Id: <20210202143239.10714-1-mike.looijmans@topic.nl>
-X-Mailer: git-send-email 2.17.1
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Leon Romanovsky <leonro@nvidia.com>, coreteam@netfilter.org,
+        Florian Westphal <fw@strlen.de>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Julian Anastasov <ja@ssi.bg>,
+        LKML <linux-kernel@vger.kernel.org>, lvs-devel@vger.kernel.org,
+        Matteo Croce <mcroce@redhat.com>,
+        netdev <netdev@vger.kernel.org>, netfilter-devel@vger.kernel.org,
+        Simon Horman <horms@verge.net.au>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The mdio_bus reset code first de-asserted the reset by allocating with
-GPIOD_OUT_LOW, then asserted and de-asserted again. In other words, if
-the reset signal defaulted to asserted, there'd be a short "spike"
-before the reset.
+On Tue, Feb 2, 2021 at 2:55 PM Leon Romanovsky <leon@kernel.org> wrote:
+>
+> From: Leon Romanovsky <leonro@nvidia.com>
+>
+> Hi,
+>
+> This short series fixes W=1 compilation warnings which I experienced
+> when tried to compile net/* folder.
+>
 
-Here is what happens depending on the pre-existing state of the reset
-signal:
-Reset (previously asserted):   ~~~|_|~~~~|_______
-Reset (previously deasserted): _____|~~~~|_______
-                                  ^ ^    ^
-                                  A B    C
-
-At point A, the low going transition is because the reset line is
-requested using GPIOD_OUT_LOW. If the line is successfully requested,
-the first thing we do is set it high _without_ any delay. This is
-point B. So, a glitch occurs between A and B.
-
-We then fsleep() and finally set the GPIO low at point C.
-
-Requesting the line using GPIOD_OUT_HIGH eliminates the A and B
-transitions. Instead we get:
-
-Reset (previously asserted)  : ~~~~~~~~~~|______
-Reset (previously deasserted): ____|~~~~~|______
-                                   ^     ^
-                                   A     C
-
-Where A and C are the points described above in the code. Point B
-has been eliminated.
-
-The issue was found when we pulled down the reset signal for the
-Marvell 88E1512P PHY (because it requires at least 50ms after POR with
-an active clock). Looking at the reset signal with a scope revealed a
-short spike, point B in the artwork above.
-
-Signed-off-by: Mike Looijmans <mike.looijmans@topic.nl>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
----
-
-Changes in v2:
-Put more explanation into the commit text, and the artwork from Russell King
-
- drivers/net/phy/mdio_bus.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-index 2b42e46066b4..34e98ae75110 100644
---- a/drivers/net/phy/mdio_bus.c
-+++ b/drivers/net/phy/mdio_bus.c
-@@ -543,8 +543,8 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
- 	mutex_init(&bus->mdio_lock);
- 	mutex_init(&bus->shared_lock);
- 
--	/* de-assert bus level PHY GPIO reset */
--	gpiod = devm_gpiod_get_optional(&bus->dev, "reset", GPIOD_OUT_LOW);
-+	/* assert bus level PHY GPIO reset */
-+	gpiod = devm_gpiod_get_optional(&bus->dev, "reset", GPIOD_OUT_HIGH);
- 	if (IS_ERR(gpiod)) {
- 		err = dev_err_probe(&bus->dev, PTR_ERR(gpiod),
- 				    "mii_bus %s couldn't get reset GPIO\n",
-@@ -553,8 +553,6 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
- 		return err;
- 	} else	if (gpiod) {
- 		bus->reset_gpiod = gpiod;
--
--		gpiod_set_value_cansleep(gpiod, 1);
- 		fsleep(bus->reset_delay_us);
- 		gpiod_set_value_cansleep(gpiod, 0);
- 		if (bus->reset_post_delay_us > 0)
--- 
-2.17.1
-
+Ok, but we never had a strong requirement about W=1, so adding Fixes:
+tag is adding
+unnecessary burden to stable teams all around the world.
