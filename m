@@ -2,155 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F18430CCCC
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 21:11:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D14F430CCCE
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 21:11:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240329AbhBBUHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 15:07:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43750 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240395AbhBBUGN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 15:06:13 -0500
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AB77C061573
-        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 12:05:33 -0800 (PST)
-Received: by mail-oi1-x235.google.com with SMTP id h6so24146188oie.5
-        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 12:05:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Gw2eTzz0jnb4l2Tcl9s3jI86Fbz/O5lkdjkH6fdGJns=;
-        b=OUZUuboZXGiy8rQcRmfTungE1+hP9lnqC/iuNbP/2tjtnZPBWHZXpKoet6uykgHuSp
-         Zpc5teZRth50cPTT/+wuk5l12f7S1+oVuZTCNZjhkYCPgwekkgR60w1oQKY3tQhh2XFc
-         J+U9uG/mBfuxQ5VQmvgxbiFPMVehMnKBynna+jL3p4On4GbRR5KePul5mOkyRjYgBJDj
-         axgoIv/8rUTnzMjb3VEndN4Y6y7jCxk9CxH3M5DJ84g1llYqhCZjr79upHBEHO5p6sE1
-         3+BMzb3hHdy8VAlcfqyG2s7cYbyNH6D9cp6vG4/Zik8RKYF1MxABhaX2cDQ6TW+78EqD
-         azsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Gw2eTzz0jnb4l2Tcl9s3jI86Fbz/O5lkdjkH6fdGJns=;
-        b=g9suR8tsOtoVPxQmzwmZzQKdG0PrQExVCtre578UUH/Qa6VKF/cx32dJsfsMXgmalI
-         AztJVd/oPxLya9An1RBNgnNBhItJCNSJNt8srjAhfAF1M/wkrkIvtRJgF+/J0VjohF5U
-         EeOzmbS62ALWC6qodxgsl//gWzOb9mQdomfZro7/0U8lt2bl8MsC2mKsYvM3wBhcDyCM
-         sZ3aKDphZgFJ6MILGFJJKy1NAI2hPf3u0X9JE8gwLAE6KI3BflM/AhhAWH9SrSxjclO8
-         rTEV6/6/SrOhDeSjAZ14Cy17ORc1GyUQ5lBphcxWLrZZYj6cXiBz9AJOh5y9RkIftCcV
-         O1Ag==
-X-Gm-Message-State: AOAM533ZxB2Y5IeWTCCD/NjfRNxt6SuTtoMVFJwRKkFzSsOdjFcMI1Vf
-        gW2cGn84z38rrdyGu5ZyPLknjj2/75eyMp4vyhAcJjQ12+nv
-X-Google-Smtp-Source: ABdhPJwP0buJ2vIlz1bWVEesg+Za0GIgD9TcWSZ+55co0Sr4OpLbxvJc7x01lVbT3al2rOmgGRbdqPU/RQwOOzIk0rE=
-X-Received: by 2002:a05:6808:f09:: with SMTP id m9mr4021140oiw.92.1612296332631;
- Tue, 02 Feb 2021 12:05:32 -0800 (PST)
+        id S240477AbhBBUIv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 15:08:51 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:41367 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240471AbhBBUIG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 15:08:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1612296485; x=1643832485;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=RKeIouPfYkF0dzBJ5Fr1sj32s0c2UpAxGehgP0ipTIk=;
+  b=uJ99v+zInCceXDFxcWbQb53kxFD3o7OUp1wBaEoRo4An+CpVgE0G1iGc
+   MrD01HMfmbRuizuzlZTCMYEq2LAek5MbivyKWHYtXKPdI/INoIIiOHtDg
+   bEPqSA0ZTLoPb0WqBBmpNef9dvonUIiURHoEWPR/Wvbo/aCWBbTy23ZZ8
+   p4Y5LB+6n/UwUFYeMV/6rv7CQzFF5Ioj3H605813QJ9uslmkuwY8YJpA1
+   MMqV0UBHoqSwHC/kMjFpX1sXGcAm85r7sdBPc/tmU1eS/lmRPnl/7X2ET
+   hisqglL8ZsJHwAAiQL+3WVTAs04JbyC5Zg3OIx7XWpYVelTz0WwslGKca
+   g==;
+IronPort-SDR: 2xhiryMspxkpjTx8/URWFWFtt5AZqaoYtryTyoFruivUi+L6BjodWopkvomUtuzFv0TRs7RFLJ
+ QCtdHBGyisQAQwHMJiKa4eZ9F2993pp8dvvqpQwH1WeGHCflqUfh8K9g15UFxbMl5tH2r87rBe
+ ICS9IG3ZfSQsw3qIRPgwacdAuxk1ks5sunoGYO2waIcA5km5vo/VjojVsFKDJswHK4iSy91mc2
+ Unq7G1oi5SU6sM1n/9Pa9qYk/hWSAYFb598US+0JC9hnbv9lZF/d3utjCizc4eXDgIaTbTQs9r
+ glQ=
+X-IronPort-AV: E=Sophos;i="5.79,396,1602572400"; 
+   d="scan'208";a="42661970"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 Feb 2021 13:06:50 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 2 Feb 2021 13:06:50 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Tue, 2 Feb 2021 13:06:49 -0700
+Date:   Tue, 2 Feb 2021 21:06:49 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>, <andrew@lunn.ch>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>, <jiri@resnulli.us>,
+        <ivecera@redhat.com>, <davem@davemloft.net>, <roopa@nvidia.com>,
+        <nikolay@nvidia.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <bridge@lists.linux-foundation.org>
+Subject: Re: [PATCH net-next v2 0/4] bridge: mrp: Extend br_mrp_switchdev_*
+Message-ID: <20210202200649.mc7vpgltoqxf2oni@soft-dev3.localdomain>
+References: <20210127205241.2864728-1-horatiu.vultur@microchip.com>
+ <20210129190114.3f5b6b44@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <9143d15f-c41d-f0ab-7be0-32d797820384@prevas.dk>
+ <20210202115032.6affffdc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <20210202191645.439-1-tobias@waldekranz.com>
-In-Reply-To: <20210202191645.439-1-tobias@waldekranz.com>
-From:   George McCollister <george.mccollister@gmail.com>
-Date:   Tue, 2 Feb 2021 14:05:20 -0600
-Message-ID: <CAFSKS=OtcuJRF=8rK-3dUU0=G-k=JciLsdrhS5B9t9oWz1Y2Gw@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: dsa: xrs700x: Correctly address device over I2C
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20210202115032.6affffdc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 2, 2021 at 1:17 PM Tobias Waldekranz <tobias@waldekranz.com> wrote:
-[snip]
->
-> George, have you used the chip in I2C mode with the code that is on
-> net-next now? I was not able to get the driver to even read the ID
-> register correctly.
+The 02/02/2021 11:50, Jakub Kicinski wrote:
+> 
+> On Tue, 2 Feb 2021 08:40:02 +0100 Rasmus Villemoes wrote:
+> > On 30/01/2021 04.01, Jakub Kicinski wrote:
+> > > On Wed, 27 Jan 2021 21:52:37 +0100 Horatiu Vultur wrote:
+> > >> This patch series extends MRP switchdev to allow the SW to have a better
+> > >> understanding if the HW can implement the MRP functionality or it needs
+> > >> to help the HW to run it. There are 3 cases:
+> >
+> > >> v2:
+> > >>  - fix typos in comments and in commit messages
+> > >>  - remove some of the comments
+> > >>  - move repeated code in helper function
+> > >>  - fix issue when deleting a node when sw_backup was true
+> > >
+> > > Folks who were involved in previous MRP conversations - does this look
+> > > good to you? Anyone planning to test?
+> >
+> > I am planning to test these, but it's unlikely I'll get around to it
+> > this week unfortunately.
+> 
+> Horatiu are you okay with deferring the series until Rasmus validates?
+> Given none of this HW is upstream now (AFAIU) this is an awkward set
+> to handle. Having a confirmation from Rasmus would make us a little bit
+> more comfortable.
 
-I wrote the i2c driver before I had any hardware in hand thinking I
-was going to get a board with the switch connected via i2c. When the
-board arrived it turned out it was connected via mdio so I wrote that
-driver as well. I looked it over quite carefully but I guess the
-documentation was wrong and I had the register addresses shifted off
-by one. I never ended up with hardware to test the i2c.
+It is perfectly fine for me to wait for Rasmus to validate this series.
+Also I have started to have a look how to implement the switchdev calls
+for Ocelot driver. I might have something by the end of the week, but
+lets see.
 
->
->  drivers/net/dsa/xrs700x/xrs700x_i2c.c | 31 ++++++++++++---------------
->  1 file changed, 14 insertions(+), 17 deletions(-)
->
-> diff --git a/drivers/net/dsa/xrs700x/xrs700x_i2c.c b/drivers/net/dsa/xrs700x/xrs700x_i2c.c
-> index a5f8883af829..16a46a78a037 100644
-> --- a/drivers/net/dsa/xrs700x/xrs700x_i2c.c
-> +++ b/drivers/net/dsa/xrs700x/xrs700x_i2c.c
-> @@ -10,33 +10,34 @@
->  #include "xrs700x.h"
->  #include "xrs700x_reg.h"
->
-> +struct xrs700x_i2c_cmd {
-> +       __be32 reg;
-> +       __be16 val;
-> +} __packed;
-> +
->  static int xrs700x_i2c_reg_read(void *context, unsigned int reg,
->                                 unsigned int *val)
->  {
->         struct device *dev = context;
->         struct i2c_client *i2c = to_i2c_client(dev);
-> -       unsigned char buf[4];
-> +       struct xrs700x_i2c_cmd cmd;
->         int ret;
->
-> -       buf[0] = reg >> 23 & 0xff;
-> -       buf[1] = reg >> 15 & 0xff;
-> -       buf[2] = reg >> 7 & 0xff;
-> -       buf[3] = (reg & 0x7f) << 1;
-> +       cmd.reg = cpu_to_be32(reg | 1);
->
-> -       ret = i2c_master_send(i2c, buf, sizeof(buf));
-> +       ret = i2c_master_send(i2c, (char *)&cmd.reg, sizeof(cmd.reg));
->         if (ret < 0) {
->                 dev_err(dev, "xrs i2c_master_send returned %d\n", ret);
->                 return ret;
->         }
->
-> -       ret = i2c_master_recv(i2c, buf, 2);
-> +       ret = i2c_master_recv(i2c, (char *)&cmd.val, sizeof(cmd.val));
->         if (ret < 0) {
->                 dev_err(dev, "xrs i2c_master_recv returned %d\n", ret);
->                 return ret;
->         }
->
-> -       *val = buf[0] << 8 | buf[1];
-> -
-> +       *val = be16_to_cpu(cmd.val);
->         return 0;
->  }
->
-> @@ -45,17 +46,13 @@ static int xrs700x_i2c_reg_write(void *context, unsigned int reg,
->  {
->         struct device *dev = context;
->         struct i2c_client *i2c = to_i2c_client(dev);
-> -       unsigned char buf[6];
-> +       struct xrs700x_i2c_cmd cmd;
->         int ret;
->
-> -       buf[0] = reg >> 23 & 0xff;
-> -       buf[1] = reg >> 15 & 0xff;
-> -       buf[2] = reg >> 7 & 0xff;
-> -       buf[3] = (reg & 0x7f) << 1 | 1;
-> -       buf[4] = val >> 8 & 0xff;
-> -       buf[5] = val & 0xff;
-> +       cmd.reg = cpu_to_be32(reg);
-> +       cmd.val = cpu_to_be16(val);
->
-> -       ret = i2c_master_send(i2c, buf, sizeof(buf));
-> +       ret = i2c_master_send(i2c, (char *)&cmd, sizeof(cmd));
->         if (ret < 0) {
->                 dev_err(dev, "xrs i2c_master_send returned %d\n", ret);
->                 return ret;
-> --
-> 2.17.1
->
-
-Reviewed-by: George McCollister <george.mccollister@gmail.com>
+-- 
+/Horatiu
