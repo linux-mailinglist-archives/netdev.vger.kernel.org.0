@@ -2,408 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B560E30B941
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 09:09:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 977C330B94C
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 09:14:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232295AbhBBIH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 03:07:58 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:2303 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229632AbhBBIH1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 03:07:27 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B601908150000>; Tue, 02 Feb 2021 00:06:45 -0800
-Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 2 Feb
- 2021 08:06:44 +0000
-Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server id 15.0.1473.3 via Frontend
- Transport; Tue, 2 Feb 2021 08:06:42 +0000
-From:   Yishai Hadas <yishaih@nvidia.com>
-To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <jgg@nvidia.com>, <dledford@redhat.com>,
-        <linux-rdma@vger.kernel.org>, <parav@nvidia.com>,
-        <saeedm@nvidia.com>, Yishai Hadas <yishaih@nvidia.com>
-Subject: [PATCH net-next RESEND 2/2] net/mlx5: E-Switch, Implement devlink port function cmds to control roce
-Date:   Tue, 2 Feb 2021 10:06:14 +0200
-Message-ID: <20210202080614.37903-3-yishaih@nvidia.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20210202080614.37903-1-yishaih@nvidia.com>
-References: <20210202080614.37903-1-yishaih@nvidia.com>
+        id S231420AbhBBIN0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 03:13:26 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:40704 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229462AbhBBINU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 03:13:20 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 1128551F176778;
+        Tue, 2 Feb 2021 08:12:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=EkFId3LnqSUIZCRZEfLsq8g/NEaDT5HxkdBh5mNoFA0=;
+ b=KvIReKLgixr1tRSxPZfvw4ofwH9EhJFRerXsWKHh7AMhB7MnvWUg16j9CWvDT8+f9BbM
+ kwYjXX6ne+nFCl76OCh9DKNdq+APyJH4hJkAsygyQMgABiix1vd439Vna6MEQGT6q8Nh
+ 3/I/64MXROgC6SZQFah9pfIpnIbDoGEgp7SWSGRm8Pz5kF3qfW0dFhyXXRd9fVoh2B9x
+ 86AhJBaCTmmRRr72sSF0x7iFFatPugm7VsjtMC14Csfxla9d4puti9eDxzeoJbPRiMAV
+ fTPpdA6Izn7EyNkrQs7ZsplxrjmTfvJr5HgIJjIt4SNkAFKoRWMinUltLGdOMOCN41hJ 2A== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2120.oracle.com with ESMTP id 36cydkscf5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 02 Feb 2021 08:12:26 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11285Shx032944;
+        Tue, 2 Feb 2021 08:10:23 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by aserp3030.oracle.com with ESMTP id 36dh1nmd2w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 02 Feb 2021 08:10:23 +0000
+Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 1128AJjs006525;
+        Tue, 2 Feb 2021 08:10:19 GMT
+Received: from kadam (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 02 Feb 2021 00:10:18 -0800
+Date:   Tue, 2 Feb 2021 11:10:10 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Hillf Danton <hdanton@sina.com>, Sasha Levin <sashal@kernel.org>,
+        Archie Pusaka <apusaka@chromium.org>
+Cc:     syzbot <syzbot+3ed6361bf59830ca9138@syzkaller.appspotmail.com>,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Miao-chen Chou <mcchou@chromium.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@intel.com>,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: KASAN: slab-out-of-bounds Read in add_adv_patterns_monitor
+Message-ID: <20210202081010.GZ20820@kadam>
+References: <00000000000076ecf305b9f8efb1@google.com>
+ <20210131100154.14452-1-hdanton@sina.com>
+ <20210202075110.GR2696@kadam>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1612253205; bh=x9xB3jMbhJCyXhHe4EhSaxFM8rLICFH/zbu0dH4wXww=;
-        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
-         References:MIME-Version:Content-Transfer-Encoding:Content-Type;
-        b=Qy/6I/PTlmRLnV6kDnN9s4gG+MkrpFIv3YMfokcg9EkUT7GIF72dJllO5F5d1/H+o
-         Sw+LY4AxA7e8RX7JkrPQvJB25Zy1AXZVw7SVSknSGcjB14FVxBfkztMoKmuwkr7w2M
-         qdkK1R6VaCes3ZwBxokW6Tk9XWbdvzvMYSeUrwxHJUhiURH5lcY2Ad5sIXvLf65SVH
-         t2r+PMyaW2sNYrbI6kByR5JMuMp+OJdnPvZx462UAoIpJ6vL+UiVO/o7FfgHKP+GDf
-         a5J2k1+d8EKCk1rIUtpvskbhs0GBedt2Qo6vHemHDuP6yZIUJ34Vy3iqQJ86JKNk4X
-         zwSvWCbPQSDOQ==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210202075110.GR2696@kadam>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-IMR: 1
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9882 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 spamscore=0 phishscore=0
+ suspectscore=0 mlxlogscore=999 bulkscore=0 mlxscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2102020055
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9882 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 adultscore=0
+ priorityscore=1501 impostorscore=0 malwarescore=0 clxscore=1015
+ spamscore=0 lowpriorityscore=0 phishscore=0 mlxlogscore=999 mlxscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2102020055
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement devlink port function commands to enable / disable roce.
-This is used to control the roce device capabilities.
+Commit 36211f7fc1e7 ("Bluetooth: Pause service discovery for suspend")
+seems like a bugfix as well but there is no Fixes tag there either.  The
+commit message should be more clear what the effect of the bug looks
+like to the user.  I like to write something like this:
 
-Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
-Reviewed-by: Parav Pandit <parav@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- .../device_drivers/ethernet/mellanox/mlx5.rst |  32 ++++
- .../net/ethernet/mellanox/mlx5/core/devlink.c |   3 +
- .../net/ethernet/mellanox/mlx5/core/eswitch.c | 138 ++++++++++++++++++
- .../net/ethernet/mellanox/mlx5/core/eswitch.h |  10 +-
- .../ethernet/mellanox/mlx5/core/mlx5_core.h   |   2 +
- .../net/ethernet/mellanox/mlx5/core/vport.c   |  35 +++++
- 6 files changed, 217 insertions(+), 3 deletions(-)
+[PATCH] Bluetooth: Pause service discovery for suspend
 
-diff --git a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5=
-.rst b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-index a1b32fcd0d76..3245b6a6dd39 100644
---- a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-+++ b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-@@ -322,6 +322,38 @@ device created for the PCI VF/SF.
-       function:
-         hw_addr 00:00:00:00:88:88
-=20
-+RoCE capability setup
-+---------------------
-+Not all mlx5 PCI VFs/SFs require RoCE capability.
-+
-+When RoCE capability is disabled, it saves 1 Mbytes worth of system memory=
- per
-+PCI VF/SF.
-+
-+mlx5 driver provides mechanism to setup RoCE capability.
-+
-+When user disables RoCE capability for a VF/SF, user application cannot se=
-nd or
-+receive any RoCE packets through this VF/SF and RoCE GID table for this PC=
-I
-+will be empty.
-+
-+When RoCE capability is disabled in the device using port function attribu=
-te,
-+VF/SF driver cannot override it.
-+
-+- Get RoCE capability of the VF device::
-+
-+    $ devlink port show pci/0000:06:00.0/2
-+    pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0=
- vfnum 1
-+        function:
-+            hw_addr 00:00:00:00:00:00 roce on
-+
-+- Set RoCE capability of the VF device::
-+
-+    $ devlink port function set pci/0000:06:00.0/2 roce off
-+
-+    $ devlink port show pci/0000:06:00.0/2
-+    pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0=
- vfnum 1
-+        function:
-+            hw_addr 00:00:00:00:00:00 roce off
-+
- SF state setup
- --------------
- To use the SF, the user must active the SF using the SF function state
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/ne=
-t/ethernet/mellanox/mlx5/core/devlink.c
-index aa76a6e0dae8..b8b6e8a1a436 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-@@ -276,6 +276,9 @@ static const struct devlink_ops mlx5_devlink_ops =3D {
- 	.eswitch_encap_mode_get =3D mlx5_devlink_eswitch_encap_mode_get,
- 	.port_function_hw_addr_get =3D mlx5_devlink_port_function_hw_addr_get,
- 	.port_function_hw_addr_set =3D mlx5_devlink_port_function_hw_addr_set,
-+	.port_fn_roce_get =3D mlx5_devlink_port_function_roce_get,
-+	.port_fn_roce_set =3D mlx5_devlink_port_function_roce_set,
-+
- #endif
- #ifdef CONFIG_MLX5_SF_MANAGER
- 	.port_new =3D mlx5_devlink_sf_port_new,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/ne=
-t/ethernet/mellanox/mlx5/core/eswitch.c
-index 820305b1664e..349a6fd21ff2 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-@@ -1220,6 +1220,32 @@ static void esw_vport_cleanup_acl(struct mlx5_eswitc=
-h *esw,
- 		esw_vport_destroy_offloads_acl_tables(esw, vport);
- }
-=20
-+static int mlx5_esw_vport_roce_cap_get(struct mlx5_eswitch *esw, struct ml=
-x5_vport *vport)
-+{
-+	int query_out_sz =3D MLX5_ST_SZ_BYTES(query_hca_cap_out);
-+	void *query_ctx;
-+	void *hca_caps;
-+	int err;
-+
-+	if (!MLX5_CAP_GEN(esw->dev, vhca_resource_manager))
-+		return 0;
-+
-+	query_ctx =3D kzalloc(query_out_sz, GFP_KERNEL);
-+	if (!query_ctx)
-+		return -ENOMEM;
-+
-+	err =3D mlx5_vport_get_other_func_cap(esw->dev, vport->vport, query_ctx);
-+	if (err)
-+		goto out_free;
-+
-+	hca_caps =3D MLX5_ADDR_OF(query_hca_cap_out, query_ctx, capability);
-+	vport->info.roce_enabled =3D MLX5_GET(cmd_hca_cap, hca_caps, roce);
-+
-+out_free:
-+	kfree(query_ctx);
-+	return err;
-+}
-+
- static int esw_vport_setup(struct mlx5_eswitch *esw, struct mlx5_vport *vp=
-ort)
- {
- 	u16 vport_num =3D vport->vport;
-@@ -1236,6 +1262,10 @@ static int esw_vport_setup(struct mlx5_eswitch *esw,=
- struct mlx5_vport *vport)
- 	if (mlx5_esw_is_manager_vport(esw, vport_num))
- 		return 0;
-=20
-+	err =3D mlx5_esw_vport_roce_cap_get(esw, vport);
-+	if (err)
-+		goto err_roce;
-+
- 	mlx5_modify_vport_admin_state(esw->dev,
- 				      MLX5_VPORT_STATE_OP_MOD_ESW_VPORT,
- 				      vport_num, 1,
-@@ -1255,6 +1285,11 @@ static int esw_vport_setup(struct mlx5_eswitch *esw,=
- struct mlx5_vport *vport)
- 			       vport->info.qos, flags);
-=20
- 	return 0;
-+
-+err_roce:
-+	esw_vport_disable_qos(esw, vport);
-+	esw_vport_cleanup_acl(esw, vport);
-+	return err;
- }
-=20
- /* Don't cleanup vport->info, it's needed to restore vport configuration *=
-/
-@@ -1995,6 +2030,109 @@ int mlx5_devlink_port_function_hw_addr_set(struct d=
-evlink *devlink,
- 	return err;
- }
-=20
-+int mlx5_devlink_port_function_roce_get(struct devlink *devlink, struct de=
-vlink_port *port,
-+					bool *is_enabled, struct netlink_ext_ack *extack)
-+{
-+	struct mlx5_eswitch *esw;
-+	struct mlx5_vport *vport;
-+	int err =3D -EOPNOTSUPP;
-+	u16 vport_num;
-+
-+	esw =3D mlx5_devlink_eswitch_get(devlink);
-+	if (IS_ERR(esw))
-+		return PTR_ERR(esw);
-+
-+	if (!MLX5_CAP_GEN(esw->dev, vhca_resource_manager))
-+		return -EOPNOTSUPP;
-+
-+	vport_num =3D mlx5_esw_devlink_port_index_to_vport_num(port->index);
-+	if (!is_port_function_supported(esw, vport_num))
-+		return -EOPNOTSUPP;
-+
-+	vport =3D mlx5_eswitch_get_vport(esw, vport_num);
-+	if (IS_ERR(vport)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Invalid port");
-+		return PTR_ERR(vport);
-+	}
-+
-+	mutex_lock(&esw->state_lock);
-+	if (vport->enabled) {
-+		*is_enabled =3D vport->info.roce_enabled;
-+		err =3D 0;
-+	}
-+	mutex_unlock(&esw->state_lock);
-+	return err;
-+}
-+
-+int mlx5_devlink_port_function_roce_set(struct devlink *devlink, struct de=
-vlink_port *port,
-+					bool enable, struct netlink_ext_ack *extack)
-+{
-+	int query_out_sz =3D MLX5_ST_SZ_BYTES(query_hca_cap_out);
-+	struct mlx5_eswitch *esw;
-+	struct mlx5_vport *vport;
-+	int err =3D -EOPNOTSUPP;
-+	void *query_ctx;
-+	void *hca_caps;
-+	u16 vport_num;
-+
-+	esw =3D mlx5_devlink_eswitch_get(devlink);
-+	if (IS_ERR(esw))
-+		return PTR_ERR(esw);
-+
-+	if (!MLX5_CAP_GEN(esw->dev, vhca_resource_manager))
-+		return -EOPNOTSUPP;
-+
-+	vport_num =3D mlx5_esw_devlink_port_index_to_vport_num(port->index);
-+	if (!is_port_function_supported(esw, vport_num))
-+		return -EOPNOTSUPP;
-+
-+	vport =3D mlx5_eswitch_get_vport(esw, vport_num);
-+	if (IS_ERR(vport)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Invalid port");
-+		return PTR_ERR(vport);
-+	}
-+
-+	mutex_lock(&esw->state_lock);
-+	if (!vport->enabled) {
-+		NL_SET_ERR_MSG_MOD(extack, "Eswitch vport is disabled");
-+		goto out;
-+	}
-+
-+	if (vport->info.roce_enabled =3D=3D enable) {
-+		err =3D 0;
-+		goto out;
-+	}
-+
-+	query_ctx =3D kzalloc(query_out_sz, GFP_KERNEL);
-+	if (!query_ctx) {
-+		err =3D -ENOMEM;
-+		goto out;
-+	}
-+
-+	err =3D mlx5_vport_get_other_func_cap(esw->dev, vport_num, query_ctx);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed getting HCA caps");
-+		goto out_free;
-+	}
-+
-+	hca_caps =3D MLX5_ADDR_OF(query_hca_cap_out, query_ctx, capability);
-+	MLX5_SET(cmd_hca_cap, hca_caps, roce, enable);
-+
-+	err =3D mlx5_vport_set_other_func_cap(esw->dev, hca_caps, vport_num);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed setting HCA roce cap");
-+		goto out_free;
-+	}
-+
-+	vport->info.roce_enabled =3D enable;
-+
-+out_free:
-+	kfree(query_ctx);
-+out:
-+	mutex_unlock(&esw->state_lock);
-+	return err;
-+}
-+
- int mlx5_eswitch_set_vport_state(struct mlx5_eswitch *esw,
- 				 u16 vport, int link_state)
- {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/ne=
-t/ethernet/mellanox/mlx5/core/eswitch.h
-index 479d2ac2cd85..0e7ad84e7b45 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-@@ -122,8 +122,9 @@ struct mlx5_vport_info {
- 	int                     link_state;
- 	u32                     min_rate;
- 	u32                     max_rate;
--	bool                    spoofchk;
--	bool                    trusted;
-+	u8                      spoofchk: 1;
-+	u8                      trusted: 1;
-+	u8                      roce_enabled: 1;
- };
-=20
- /* Vport context events */
-@@ -436,7 +437,10 @@ int mlx5_devlink_port_function_hw_addr_set(struct devl=
-ink *devlink,
- 					   struct devlink_port *port,
- 					   const u8 *hw_addr, int hw_addr_len,
- 					   struct netlink_ext_ack *extack);
--
-+int mlx5_devlink_port_function_roce_get(struct devlink *devlink, struct de=
-vlink_port *port,
-+					bool *is_enabled, struct netlink_ext_ack *extack);
-+int mlx5_devlink_port_function_roce_set(struct devlink *devlink, struct de=
-vlink_port *port,
-+					bool enable, struct netlink_ext_ack *extack);
- void *mlx5_eswitch_get_uplink_priv(struct mlx5_eswitch *esw, u8 rep_type);
-=20
- int mlx5_eswitch_add_vlan_action(struct mlx5_eswitch *esw,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h b/drivers/=
-net/ethernet/mellanox/mlx5/core/mlx5_core.h
-index 3754ef98554f..de45a4b54934 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-@@ -259,6 +259,8 @@ enum {
-=20
- u8 mlx5_get_nic_state(struct mlx5_core_dev *dev);
- void mlx5_set_nic_state(struct mlx5_core_dev *dev, u8 state);
-+int mlx5_vport_get_other_func_cap(struct mlx5_core_dev *dev, u16 function_=
-id, void *out);
-+int mlx5_vport_set_other_func_cap(struct mlx5_core_dev *dev, const void *h=
-ca_cap, u16 function_id);
-=20
- static inline bool mlx5_core_is_sf(const struct mlx5_core_dev *dev)
- {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/vport.c b/drivers/net/=
-ethernet/mellanox/mlx5/core/vport.c
-index ba78e0660523..a822a25b18af 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/vport.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/vport.c
-@@ -1164,3 +1164,38 @@ u16 mlx5_eswitch_get_total_vports(const struct mlx5_=
-core_dev *dev)
- 	return MLX5_SPECIAL_VPORTS(dev) + mlx5_core_max_vfs(dev) + mlx5_sf_max_fu=
-nctions(dev);
- }
- EXPORT_SYMBOL_GPL(mlx5_eswitch_get_total_vports);
-+
-+int mlx5_vport_get_other_func_cap(struct mlx5_core_dev *dev, u16 function_=
-id, void *out)
-+{
-+	u16 opmod =3D (MLX5_CAP_GENERAL << 1) | (HCA_CAP_OPMOD_GET_MAX & 0x01);
-+	u8 in[MLX5_ST_SZ_BYTES(query_hca_cap_in)] =3D {};
-+
-+	MLX5_SET(query_hca_cap_in, in, opcode, MLX5_CMD_OP_QUERY_HCA_CAP);
-+	MLX5_SET(query_hca_cap_in, in, op_mod, opmod);
-+	MLX5_SET(query_hca_cap_in, in, function_id, function_id);
-+	MLX5_SET(query_hca_cap_in, in, other_function, true);
-+	return mlx5_cmd_exec_inout(dev, query_hca_cap, in, out);
-+}
-+
-+int mlx5_vport_set_other_func_cap(struct mlx5_core_dev *dev, const void *h=
-ca_cap, u16 function_id)
-+{
-+	int set_sz =3D MLX5_ST_SZ_BYTES(set_hca_cap_in);
-+	void *set_hca_cap;
-+	void *set_ctx;
-+	int ret;
-+
-+	set_ctx =3D kzalloc(set_sz, GFP_KERNEL);
-+	if (!set_ctx)
-+		return -ENOMEM;
-+
-+	MLX5_SET(set_hca_cap_in, set_ctx, opcode, MLX5_CMD_OP_SET_HCA_CAP);
-+	MLX5_SET(set_hca_cap_in, set_ctx, op_mod, MLX5_SET_HCA_CAP_OP_MOD_GENERAL=
-_DEVICE << 1);
-+	set_hca_cap =3D MLX5_ADDR_OF(set_hca_cap_in, set_ctx, capability);
-+	memcpy(set_hca_cap, hca_cap, MLX5_ST_SZ_BYTES(cmd_hca_cap));
-+	MLX5_SET(set_hca_cap_in, set_ctx, function_id, function_id);
-+	MLX5_SET(set_hca_cap_in, set_ctx, other_function, true);
-+	ret =3D mlx5_cmd_exec_in(dev, set_hca_cap, set_ctx);
-+
-+	kfree(set_ctx);
-+	return ret;
-+}
---=20
-2.18.1
+Just like MGMT_OP_START_DISCOVERY, we should reject
+MGMT_OP_START_SERVICE_DISCOVERY with MGMT_STATUS_BUSY when we are paused
+for suspend.  This bug was discovered by auditing the software and no
+one has complained about it, but presumably it leads to a hanged process
+because the cmd cannot complete.
+
+Sometimes it's hard to know what the affect of a bug is, but since
+you're working in the subsystem then you probably have a better guess
+than the rest of us so even a guess is useful.
+
+regards,
+dan carpenter
 
