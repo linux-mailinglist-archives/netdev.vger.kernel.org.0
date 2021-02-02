@@ -2,42 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AECE30CC3A
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 20:50:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9602A30CC5E
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 20:55:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240094AbhBBTrj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 14:47:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55052 "EHLO mail.kernel.org"
+        id S240195AbhBBTxw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 14:53:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56318 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233339AbhBBTqb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 14:46:31 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2E51464E56;
-        Tue,  2 Feb 2021 19:45:50 +0000 (UTC)
+        id S240007AbhBBTvQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 14:51:16 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 76CB464E43;
+        Tue,  2 Feb 2021 19:50:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612295150;
-        bh=poFuQwQsU2PME8YffAn0GP6z1ZRy04N6vTW56FmDWAU=;
+        s=k20201202; t=1612295433;
+        bh=/jebZP6tgM1BgzsuzazAlaJBzv6xqKN0Lbg6lsAaKDY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BeRk3ub+hI1w020CryLS6G2Q3R3dRZhe4CB9UcCOCBq8LdPnE45tf70c54dG2Yq60
-         51fv3tKH6juszMErCfKrglbb7Tgq+DsaUEf/ueLbpm7uaEIdui2pnqR6/YsIy/1saV
-         PrTnqpr2jFrHerKTT0Mopvxz+9UTIZj0CbguvUIxRHo0HDKi29xN93GSz4Toa5hxKw
-         jkEq8RDEV7Pvz0pooEdQ6mgcnQ9h8UmAF3uwX/Gw3Ge2lGFde+nazKvaWSat9r/Loy
-         h1a6NCxCU1sGsEgkVMao43aNfULFK1GoTyCcm+539fwvDSj+l2+0BEO1CcVavtQ3Zi
-         jVNuYpgXyPd0A==
-Date:   Tue, 2 Feb 2021 11:45:49 -0800
+        b=Cs7ihMFc3JyRXVrrWtZZ/cVFGe+sXlhMDew6LwyD1Es1XRUwG2s6Syeb3aZ47biL0
+         zbP+0dV1DBD5eOkfQZSSGIUck/5einjE8A2kPnHuWWOchPVy/DZ9G4OckfI7ZcW5N1
+         Ft2st+jNHIo5UDS2zqqOzCihkv3Q3fghbsz0JIAq0sArKl+v4aSEpCiM4AvWw5e3bE
+         7IIJ7YsYpn2NNurd9dT2rgz5rX89l93qyNoauUW0sIRXxPaMUAAJJPipNPWoSAKfUV
+         BarBSVsVQGqXnMwjqNHuvkdW+9ooOivsYPlKGsyMkSKeOOozK0OIOPztvh+aZ24+7R
+         UmjmkFbyELzAw==
+Date:   Tue, 2 Feb 2021 11:50:32 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrea Parri <parri.andrea@gmail.com>
-Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, mikelley@microsoft.com,
-        linux-hyperv@vger.kernel.org, skarade@microsoft.com,
-        juvazq@microsoft.com, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 net-next] hv_netvsc: Copy packets sent by Hyper-V out
- of the receive buffer
-Message-ID: <20210202114549.7488f5bd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210202081843.GA3923@anparri>
-References: <20210126162907.21056-1-parri.andrea@gmail.com>
-        <161196780649.27852.15602248378687946476.git-patchwork-notify@kernel.org>
-        <20210202081843.GA3923@anparri>
+To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Cc:     andrew@lunn.ch, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        jiri@resnulli.us, ivecera@redhat.com, davem@davemloft.net,
+        roopa@nvidia.com, nikolay@nvidia.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org
+Subject: Re: [PATCH net-next v2 0/4] bridge: mrp: Extend br_mrp_switchdev_*
+Message-ID: <20210202115032.6affffdc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <9143d15f-c41d-f0ab-7be0-32d797820384@prevas.dk>
+References: <20210127205241.2864728-1-horatiu.vultur@microchip.com>
+        <20210129190114.3f5b6b44@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <9143d15f-c41d-f0ab-7be0-32d797820384@prevas.dk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -45,39 +44,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2 Feb 2021 09:18:43 +0100 Andrea Parri wrote:
-> Hi net maintainers,
+On Tue, 2 Feb 2021 08:40:02 +0100 Rasmus Villemoes wrote:
+> On 30/01/2021 04.01, Jakub Kicinski wrote:
+> > On Wed, 27 Jan 2021 21:52:37 +0100 Horatiu Vultur wrote:  
+> >> This patch series extends MRP switchdev to allow the SW to have a better
+> >> understanding if the HW can implement the MRP functionality or it needs
+> >> to help the HW to run it. There are 3 cases:  
 > 
+> >> v2:
+> >>  - fix typos in comments and in commit messages
+> >>  - remove some of the comments
+> >>  - move repeated code in helper function
+> >>  - fix issue when deleting a node when sw_backup was true  
+> > 
+> > Folks who were involved in previous MRP conversations - does this look
+> > good to you? Anyone planning to test?
 > 
-> On Sat, Jan 30, 2021 at 12:50:06AM +0000, patchwork-bot+netdevbpf@kernel.org wrote:
-> > Hello:
-> > 
-> > This patch was applied to netdev/net-next.git (refs/heads/master):
-> > 
-> > On Tue, 26 Jan 2021 17:29:07 +0100 you wrote:  
-> > > Pointers to receive-buffer packets sent by Hyper-V are used within the
-> > > guest VM.  Hyper-V can send packets with erroneous values or modify
-> > > packet fields after they are processed by the guest.  To defend against
-> > > these scenarios, copy (sections of) the incoming packet after validating
-> > > their length and offset fields in netvsc_filter_receive().  In this way,
-> > > the packet can no longer be modified by the host.
-> > > 
-> > > [...]  
-> > 
-> > Here is the summary with links:
-> >   - [v2,net-next] hv_netvsc: Copy packets sent by Hyper-V out of the receive buffer
-> >     https://git.kernel.org/netdev/net-next/c/0ba35fe91ce3  
-> 
-> I'd have some fixes on top of this and I'm wondering about the process: would
-> you consider fixes/patches on top of this commit now? 
+> I am planning to test these, but it's unlikely I'll get around to it
+> this week unfortunately.
 
-Fixes for bugs present in Linus's tree?
-
-You need to target the net tree, and give us instructions on how to
-resolve the conflict which will arise from merging net into net-next.
-
-> would you rather prefer me to squash these fixes into a v3? other?
-
-Networking trees are immutable, and v2 was already applied. We could
-do a revert, apply fix, apply v3, but we prefer to just handle the 
-merge conflict.
+Horatiu are you okay with deferring the series until Rasmus validates?
+Given none of this HW is upstream now (AFAIU) this is an awkward set 
+to handle. Having a confirmation from Rasmus would make us a little bit
+more comfortable.
