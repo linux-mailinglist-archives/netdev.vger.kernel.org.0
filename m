@@ -2,105 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A837930BAC4
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 10:18:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C7F630BABE
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 10:18:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232959AbhBBJRc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 04:17:32 -0500
-Received: from aserp2120.oracle.com ([141.146.126.78]:35682 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231688AbhBBJQt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 04:16:49 -0500
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 1129ExLs039270;
-        Tue, 2 Feb 2021 09:15:58 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type : in-reply-to;
- s=corp-2020-01-29; bh=XeW5vxg1oljfl4NXPYOgql+RYM8k8nJCK9uJMauzFyQ=;
- b=iFSps5hvLXTkb1IpbQtL4B+9QdQaiKeCoS6sZnAMrma4suhj/OQqd8hItpALHuAkaD+L
- KBf2c4Z+fTIBvnLxRXCfDFKhd492Mu60m8dhyzDq2vpVwuSAb60jbu5l52bdPECKtqU8
- 0T3/UHRgQIAQSa1YCuUN+aakiE5DU58bu1N6JjfWmzThHRdxEH4V1SNyz3xk34inkY72
- dUWgAyE1G6fn3KQ5eKT1dbLAj0rdCLcAfpxSvp18KNF4n0ZHUXeL+KW5YdUzzuChLAWt
- STyT715+iN75/vVRF1ySKgZOZkQ9XHNRAclG03wC0DRj2wJmDYbCAUA5rpDulqDs0fSC pw== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by aserp2120.oracle.com with ESMTP id 36cydksmf6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 02 Feb 2021 09:15:58 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11299Trh073369;
-        Tue, 2 Feb 2021 09:13:55 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by aserp3030.oracle.com with ESMTP id 36dh1npd0v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 02 Feb 2021 09:13:55 +0000
-Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 1129DqdL032702;
-        Tue, 2 Feb 2021 09:13:53 GMT
-Received: from mwanda (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 02 Feb 2021 01:13:52 -0800
-Date:   Tue, 2 Feb 2021 12:13:44 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH v3 2/2 net-next] net: mscc: ocelot: fix error code in
- mscc_ocelot_probe()
-Message-ID: <YBkXyFIl4V9hgxYM@mwanda>
+        id S232934AbhBBJQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 04:16:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44450 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232865AbhBBJOj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 04:14:39 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF486C06174A
+        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 01:13:58 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id p20so9439919ejb.6
+        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 01:13:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=l766AWiQAnfrwWGGPS2NYbzoWAuQuGBLqlv7J+ZF8qM=;
+        b=OLkHd63qgXIXWxm+XhoCpx9tkpyu+5ZZzKVuQ+QophlQcbU6tvTvKH5XiQK/JqOqSR
+         6WszBk5oD37JjbhXYyatgoyT8TTt45eY+Qwc/ZekwZVjoTMPm/WiuEvMufbdogHVuumW
+         cbT4WunYZ6t8xO09efmqvOgYt92gUjWiBxH474CbuxKPC3AG/f9klUH8Gqo8JMjaMdiD
+         fyojPkdM2Nz6cy+JgO74OpkUWK/cyHLhMajsx2/j/8bvJWEgH4qg32Za5HBHngoYQvlk
+         pyJ0rqMM3IAGX+rPmCIBVldqAv27Rh8smpilyEGsicem+qmox9cBMEYM9omClTxNoTuB
+         qedg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=l766AWiQAnfrwWGGPS2NYbzoWAuQuGBLqlv7J+ZF8qM=;
+        b=SMtFRuU4HtOXGbtqPXcEp6lDJ2D275bJDudt/Si66AYo0aBLFXqY3fpF0Xe66EN1Tk
+         bZ5wLslVXTJWzK5MRwseGjqeYth7sfGAtTPdEO/+fGhjf4JnF+kN9/Nuja4408cZo8mP
+         fjpbiVUiKgPpos/8fl2CejKWhzJtqJ30A7Ln+QaoD/Od5i7aYSsbB2tAsGF6N0go4tZj
+         F1diqAukJWPX+Hzjd/A6aYWQXOfi2dbfUnyAhkIdHyCdX3+RsmvsH/CiGbkmi7KHosQL
+         gtgQG6KmadIO/uOcGuDvGcVM/pnlgD4DDlioe2IxXTzouWQLYifBtbmBtQgREoFbRS02
+         XuwA==
+X-Gm-Message-State: AOAM533Uicwx0X51yARivnFq6uBsmggNYeCLR4mA8sqka5LauyUXVDKm
+        0LjMEfyI+epeDA==
+X-Google-Smtp-Source: ABdhPJyjUs2PHzKYpzuBXQOk748o35wKkXxKq/+lGfei4HbAQ/Gu1yoS+qOBflN9loO14UXrJE22bg==
+X-Received: by 2002:a17:906:f0d0:: with SMTP id dk16mr6119306ejb.533.1612257237538;
+        Tue, 02 Feb 2021 01:13:57 -0800 (PST)
+Received: from md2k7s8c.ad001.siemens.net ([2a02:810d:9040:4c1f:e0b6:d0e7:64d2:f3a0])
+        by smtp.gmail.com with ESMTPSA id u20sm1211770ejx.22.2021.02.02.01.13.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Feb 2021 01:13:56 -0800 (PST)
+From:   Andreas Oetken <ennoerlangen@googlemail.com>
+X-Google-Original-From: Andreas Oetken <ennoerlangen@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Andreas Oetken <ennoerlangen@gmail.com>,
+        Andreas Oetken <andreas.oetken@siemens.com>
+Subject: [PATCH v1] net: hsr: align sup_multicast_addr in struct hsr_priv to u16 boundary
+Date:   Tue,  2 Feb 2021 10:13:54 +0100
+Message-Id: <20210202091354.2743445-1-ennoerlangen@gmail.com>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YBkXhqRxHtRGzSnJ@mwanda>
-X-Mailer: git-send-email haha only kidding
-X-Proofpoint-IMR: 1
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9882 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 spamscore=0 phishscore=0
- suspectscore=0 mlxlogscore=999 bulkscore=0 mlxscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2102020064
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9882 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 adultscore=0
- priorityscore=1501 impostorscore=0 malwarescore=0 clxscore=1015
- spamscore=0 lowpriorityscore=0 phishscore=0 mlxlogscore=999 mlxscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102020065
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Probe should return an error code if platform_get_irq_byname() fails
-but it returns success instead.
+From: Andreas Oetken <andreas.oetken@siemens.com>
 
-Fixes: 6c30384eb1de ("net: mscc: ocelot: register devlink ports")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+sup_multicast_addr is passed to ether_addr_equal for address comparison
+which casts the address inputs to u16 leading to an unaligned access.
+Aligning the sup_multicast_addr to u16 boundary fixes the issue.
+
+Signed-off-by: Andreas Oetken <andreas.oetken@siemens.com>
 ---
-v3: rebase
+ net/hsr/hsr_main.h | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
- drivers/net/ethernet/mscc/ocelot_vsc7514.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-index b52e24826b10..6b6eb92149ba 100644
---- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-+++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-@@ -1300,8 +1300,10 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
- 		goto out_free_devlink;
- 
- 	irq_xtr = platform_get_irq_byname(pdev, "xtr");
--	if (irq_xtr < 0)
-+	if (irq_xtr < 0) {
-+		err = irq_xtr;
- 		goto out_free_devlink;
-+	}
- 
- 	err = devm_request_threaded_irq(&pdev->dev, irq_xtr, NULL,
- 					ocelot_xtr_irq_handler, IRQF_ONESHOT,
+diff --git a/net/hsr/hsr_main.h b/net/hsr/hsr_main.h
+index 7dc92ce5a134..a9c30a608e35 100644
+--- a/net/hsr/hsr_main.h
++++ b/net/hsr/hsr_main.h
+@@ -217,7 +217,10 @@ struct hsr_priv {
+ 	u8 net_id;		/* for PRP, it occupies most significant 3 bits
+ 				 * of lan_id
+ 				 */
+-	unsigned char		sup_multicast_addr[ETH_ALEN];
++	unsigned char		sup_multicast_addr[ETH_ALEN] __aligned(sizeof(u16));
++				/* Align to u16 boundary to avoid unaligned access
++				 * in ether_addr_equal
++				 */
+ #ifdef	CONFIG_DEBUG_FS
+ 	struct dentry *node_tbl_root;
+ #endif
 -- 
 2.30.0
 
