@@ -2,96 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1154F30BCB6
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 12:13:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5D3430BD0D
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 12:30:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230022AbhBBLMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 06:12:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41640 "EHLO
+        id S231443AbhBBL2V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 06:28:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229735AbhBBLMg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 06:12:36 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F390EC0613D6
-        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 03:11:55 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id k4so20035077ybp.6
-        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 03:11:55 -0800 (PST)
+        with ESMTP id S231194AbhBBL1Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 06:27:24 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D1BEC061573;
+        Tue,  2 Feb 2021 03:26:44 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id 8so6962549plc.10;
+        Tue, 02 Feb 2021 03:26:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=x/bHfvCMAqb1V7v7A4IFiandeTfZNu+bcanftQaRqOs=;
-        b=C38eO2uux41TbI58aglk3idPPs7gQLHEvTYJmZb8yC4zQ/IwysV7nuPPPHd3anr7W5
-         Okg1fS/8QhuDv2Z85twPmvBxyGaI3l7iJmOOtrAkxyswGEojsOFHtOgJ69dD9J1nbTSW
-         N9FZtNLlVEYvsZAj8ECfLofgy/nUbaQdQ8owKp554KAysP9NV2Bc8wzEFrI/Ne3agsmz
-         09t/mr5EAcSsAi5SFaUSSbOpCIls3rowEgQoah6ysP9RxBL0vFwAPiXDT2UwS0WsounG
-         mMRRNpmAYaprRlnJ5Sgkyg4yOgL5rMJu8BHhHNGOkRAGW9YSG1/6fh2b5Ihdb2s+NsnB
-         Ax3A==
+         :cc:content-transfer-encoding;
+        bh=YQTLhZR3hDf/41Do9Wuvt9T1ewGnoc9cSUmCkbXo2v4=;
+        b=QMbZAzTLylWpjRpuDOf7MOcTUsDSZ4g61Vu+tL8Vlb+zyCPrEPOw3Lr5G7vPtsZC06
+         WGQC4t+KMz6odoGASegp3HmEMasvbRYGu0e1vsJixEIrDR93B6yqL3mTV6B35T+bxI96
+         /230yhbqa5y5Y0XSLMcFU6oWnbRmgaSIbEZv+UWdkVbOILGXpwiYyIVhEamToGW4ZM+D
+         rpecn+hjffYEB8pxDtd4MwWXH3VSpI5iIM498LV2lyHF5yN9a4ayg4lSwDwVZ4ayscFz
+         x71JscBMiC6gZJpb1MCuDBDUbkQmyBgrk+AI0CBss/SnSJLR9QZCTUmJIp3IhkJtulhC
+         +/0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=x/bHfvCMAqb1V7v7A4IFiandeTfZNu+bcanftQaRqOs=;
-        b=b7KbmvGcYWOUNQA6oFxt7n+p5+81yXwuQnzM0VnDkHwkHA9DKGzWmmEHGtc0olboGe
-         AM09zX8ZcVoRWouccDwVdxUbnKc1xuGDG1elqFn9RMgyFWO4n958m5ResK/c2eHA4aFI
-         i2bIt/SvOPFfuXcLDCLHlFbQmjHWHF2jPtL4jBWsWpHf0g9CW7Qi5E3MNg7hn6c9RUBF
-         BCEWn9ffLwrll9YrpZuZsg32aRtC/6gqPuW4d6w+7A0WImLTtM71qcazlhhoWuTtaHAr
-         NQssddXaTY5/ikqItT0WikpbHWJyPPsHi6c3IHreHFlWRQswNzxnhDTO/+hBBXMia0UA
-         jKyA==
-X-Gm-Message-State: AOAM532wFW88YL7b/CHjWmP1OBU6E6QzJeg7SFr4+UkdcU+S04VcJp+/
-        dpQq9AKfjKRhck6IvlfGqfugZhIqHmnGpVNLwRGdMQ==
-X-Google-Smtp-Source: ABdhPJyUoRohpUuiZdZg6GMhYw0kD23x1MnP6h4YqY8QzzNrKMDZjxYkcKrbZvY8iZx3OoRsJW5EKu4EHY4mgHG524k=
-X-Received: by 2002:a25:da41:: with SMTP id n62mr29665321ybf.155.1612264315156;
- Tue, 02 Feb 2021 03:11:55 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=YQTLhZR3hDf/41Do9Wuvt9T1ewGnoc9cSUmCkbXo2v4=;
+        b=kamWir1PqDzFg0oPiYt/HYO9LqGqNToMCnO8GgBi+Yilx+pqWdBOX8exjYElhNvism
+         8PlL3DjyTbkKjZBxiY1xOds9Zsa/JE+tGZZhEXVUgjRkqJpLIix9fVzmwxL2gQ9s2xge
+         mMD6vV0HHGmtUprb31PXiZ2d5qVjLCGyxfHzJAjmDetkSADQ/j6g8fX5SbCTY/x4Hmux
+         BH6BMhBD26ddXmfVfZLn1t6QJ5PUY8I7f2gP+Sptjp1Db0fE20abCjPi+ECQcbsLlNYY
+         Icec2Bu2REQ+0Q9NHkiMqZ/0Uzf4T6k6PmIMb1IMqzNYhS8om7GsT72vxuzYhiM1BMRR
+         Uenw==
+X-Gm-Message-State: AOAM531d5qinC4MjdvpTSpah/kRSv3BYwCeI1MzWMNlEK9EvIeDkad0o
+        p/cAeB4myUqr3FFZeVz0iNSL5lSYvBiQCoabjYACt3294smsvw==
+X-Google-Smtp-Source: ABdhPJwakZ1GnIoxdbhWs9AnFYxkfFUhHiGw0yRpMlAGmAPk6odqH0k51T9mGKOI0yhL1mZsfDwMb4mCvPVYIt/KU6g=
+X-Received: by 2002:a17:902:7b89:b029:e1:1b46:bcec with SMTP id
+ w9-20020a1709027b89b02900e11b46bcecmr21704504pll.5.1612265203527; Tue, 02 Feb
+ 2021 03:26:43 -0800 (PST)
 MIME-Version: 1.0
-References: <1601058581-19461-1-git-send-email-amit.pundir@linaro.org>
- <20200929190817.GA968845@bogus> <20201029134017.GA807@yoga>
- <CAMi1Hd20UpNhZm6z5t5Kcy8eTABiAj7X_Gm66QnJspZWSio0Ew@mail.gmail.com>
- <20201124175146.GG185852@builder.lan> <87sg8heeta.fsf@codeaurora.org>
-In-Reply-To: <87sg8heeta.fsf@codeaurora.org>
-From:   Amit Pundir <amit.pundir@linaro.org>
-Date:   Tue, 2 Feb 2021 16:41:19 +0530
-Message-ID: <CAMi1Hd2FN6QQzbKHooVyqQfH1NFTNLt4RwxyVXRf+5DwTc9ojg@mail.gmail.com>
-Subject: Re: [PATCH] ath10k: Introduce a devicetree quirk to skip host cap QMI requests
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh@kernel.org>, dt <devicetree@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        Konrad Dybcio <konradybcio@gmail.com>,
-        ath10k <ath10k@lists.infradead.org>,
-        David S Miller <davem@davemloft.net>,
-        John Stultz <john.stultz@linaro.org>,
+References: <20201204102901.109709-1-marekx.majtyka@intel.com>
+ <20201204102901.109709-2-marekx.majtyka@intel.com> <878sad933c.fsf@toke.dk>
+ <20201204124618.GA23696@ranger.igk.intel.com> <048bd986-2e05-ee5b-2c03-cd8c473f6636@iogearbox.net>
+ <20201207135433.41172202@carbon> <5fce960682c41_5a96208e4@john-XPS-13-9370.notmuch>
+ <20201207230755.GB27205@ranger.igk.intel.com> <5fd068c75b92d_50ce20814@john-XPS-13-9370.notmuch>
+ <20201209095454.GA36812@ranger.igk.intel.com> <20201209125223.49096d50@carbon>
+ <e1573338-17c0-48f4-b4cd-28eeb7ce699a@gmail.com> <1e5e044c8382a68a8a547a1892b48fb21d53dbb9.camel@kernel.org>
+ <cb6b6f50-7cf1-6519-a87a-6b0750c24029@gmail.com> <f4eb614ac91ee7623d13ea77ff3c005f678c512b.camel@kernel.org>
+ <d5be0627-6a11-9c1f-8507-cc1a1421dade@gmail.com> <6f8c23d4ac60525830399754b4891c12943b63ac.camel@kernel.org>
+ <CAAOQfrHN1-oHmbOksDv-BKWv4gDF2zHZ5dTew6R_QTh6s_1abg@mail.gmail.com> <87h7mvsr0e.fsf@toke.dk>
+In-Reply-To: <87h7mvsr0e.fsf@toke.dk>
+From:   Marek Majtyka <alardam@gmail.com>
+Date:   Tue, 2 Feb 2021 12:26:32 +0100
+Message-ID: <CAAOQfrHA+-BsikeQzXYcK_32BZMbm54x5p5YhAiBj==uaZvG1w@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf 1/5] net: ethtool: add xdp properties flag set
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Saeed Mahameed <saeed@kernel.org>, David Ahern <dsahern@gmail.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, hawk@kernel.org,
+        bpf <bpf@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        jeffrey.t.kirsher@intel.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Kalle,
+Thanks Toke,
 
-On Mon, 7 Dec 2020 at 22:25, Kalle Valo <kvalo@codeaurora.org> wrote:
+In fact, I was waiting for a single confirmation, disagreement or
+comment. I have it now. As there are no more comments, I am getting
+down to work right away.
+
+Marek
+
+
+
+
+On Mon, Feb 1, 2021 at 5:16 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
+t.com> wrote:
 >
-> This is firmware version specific, right? There's also enum
-> ath10k_fw_features which is embedded within firmware-N.bin, we could add
-> a new flag there. But that means that a correct firmware-N.bin is needed
-> for each firmware version, not sure if that would work out. Just
-> throwing out ideas here.
-
-Apologies for this late reply. I was out for a while.
-
-If by that (the firmware version) you mean "QC_IMAGE_VERSION_STRING",
-then that may be a bit tricky. Pocophone F1 use the same firmware
-family version (WLAN.HL.2.0.XXX), used by Dragonboard 845c (which has
-Wi-Fi working upstream).
-
-Regards,
-Amit Pundir
-
+> Marek Majtyka <alardam@gmail.com> writes:
 >
-> --
-> https://patchwork.kernel.org/project/linux-wireless/list/
+> > I would like to thank you for your time, comments, nitpicking as well
+> > as encouraging.
+> >
+> > One thing needs clarification I think, that is, that those flags
+> > describe driver static feature sets - which are read-only. They have
+> > nothing in common with driver runtime configuration change yet.
+> > Runtime change of this state can be added but it needs a new variable
+> > and it can be done later on if someone needs it.
+> >
+> > Obviously, it is not possible to make everybody happy, especially with
+> > XDP_BASE flags set. To be honest, this XDP_BASE definition is a
+> > syntactic sugar for me and I can live without it. We can either remove
+> > it completely, from
+> > which IMO we all and other developers will suffer later on, or maybe
+> > we can agree on these two helper set of flags: XDP_BASE (TX, ABORTED,
+> > PASS, DROP) and XDP_LIMITED_BASE(ABORTED,PASS_DROP).
+> > What do you think?
+> >
+> > I am also going to add a new XDP_REDIRECT_TARGET flag and retrieving
+> > XDP flags over rtnelink interface.
+> >
+> > I also think that for completeness, ethtool implementation should be
+> > kept  together with rtnelink part in order to cover both ip and
+> > ethtool tools. Do I have your approval or disagreement? Please let me
+> > know.
 >
-> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+> Hi Marek
+>
+> I just realised that it seems no one actually replied to your email. On
+> my part at least that was because I didn't have any objections, so I'm
+> hoping you didn't feel the lack of response was discouraging (and that
+> you're still working on a revision of this series)? :)
+>
+> -Toke
+>
