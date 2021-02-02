@@ -2,71 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4830830C391
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 16:24:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F304E30C3EE
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 16:37:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235220AbhBBPWo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 10:22:44 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:51059 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235416AbhBBPVI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 10:21:08 -0500
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-185-Gu_RDKmbMaKWldRhyZC_cQ-1; Tue, 02 Feb 2021 15:19:20 +0000
-X-MC-Unique: Gu_RDKmbMaKWldRhyZC_cQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Tue, 2 Feb 2021 15:19:21 +0000
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Tue, 2 Feb 2021 15:19:21 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Paolo Abeni' <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Menglong Dong <menglong8.dong@gmail.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-CC:     netdev <netdev@vger.kernel.org>
-Subject: RE: make sendmsg/recvmsg process multiple messages at once
-Thread-Topic: make sendmsg/recvmsg process multiple messages at once
-Thread-Index: AQHW+U0LTmhlXCbr9EiCQm7LoPnH7qpE+APA
-Date:   Tue, 2 Feb 2021 15:19:21 +0000
-Message-ID: <977e9d41cb8d4285a3f75195ccb9e3b2@AcuMS.aculab.com>
-References: <CADxym3ba8R6fN3O5zLAw-e7q0gjFxBd_WUKjq0hTP+JpAbJEKg@mail.gmail.com>
-         <20210201200733.4309ef71@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <a24db624cb6b2df98e95b18bbcd55eca53c116ae.camel@redhat.com>
-In-Reply-To: <a24db624cb6b2df98e95b18bbcd55eca53c116ae.camel@redhat.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S235631AbhBBPf0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 10:35:26 -0500
+Received: from esa6.hc3370-68.iphmx.com ([216.71.155.175]:22447 "EHLO
+        esa6.hc3370-68.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234995AbhBBPcq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 10:32:46 -0500
+X-Greylist: delayed 323 seconds by postgrey-1.27 at vger.kernel.org; Tue, 02 Feb 2021 10:32:43 EST
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=citrix.com; s=securemail; t=1612279966;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=Ff0ODS3QBH1c9Z92pXmSGi2ISsoawY8OQVKLEOisOdI=;
+  b=AlIWjYGiPo/Ba/sCiDaBeEurUVa29SgQFaEW5LDX6VQ7gkpLjKaPA/bA
+   +MbDNhxXarP6uwEkeAck9sLAdhyuME8sE8uEEk0sQhXY71S3JgcspXDmI
+   nvnBvhiMv3KoXU+odPjFoYw+batTOQnR7dcjC4Gf0XJWwDj4KTVy5Xme6
+   U=;
+Authentication-Results: esa6.hc3370-68.iphmx.com; dkim=none (message not signed) header.i=none
+IronPort-SDR: 3AsF6jWq0gMIIKS1cdsb7GcLWobd5iEgdpRkCEPFI/T0bE6dBMaAKwJkpHPCPlXUy/8L47yPoS
+ Ir3YOcLKU9ZljJFLU9/qevKmpLia6n5Sxb07p+ObyagjNGHumtyIZpHjAB0tR0r07ONc+/1ISv
+ Y/yNHDRdozIUNz423FFx0RtDiWaEYE7Z+3VKZeSybNrBBmiYxvZ+3HsAZ4L4yRPYIRHnnTsW/6
+ cTW7rS0ki5wDxJAo3EjtAadZ0L0c7NDOMnO0zRsJkKSOCADBCbV1BvOZQjU+vQUfMDL/QbE5Y6
+ NdU=
+X-SBRS: 5.1
+X-MesageID: 36576887
+X-Ironport-Server: esa6.hc3370-68.iphmx.com
+X-Remote-IP: 162.221.158.21
+X-Policy: $RELAYED
+X-IronPort-AV: E=Sophos;i="5.79,395,1602561600"; 
+   d="scan'208";a="36576887"
+Subject: Re: [PATCH] xen/netback: avoid race in
+ xenvif_rx_ring_slots_available()
+To:     Juergen Gross <jgross@suse.com>, <xen-devel@lists.xenproject.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Wei Liu <wei.liu@kernel.org>, Paul Durrant <paul@xen.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <stable@vger.kernel.org>
+References: <20210202070938.7863-1-jgross@suse.com>
+From:   Igor Druzhinin <igor.druzhinin@citrix.com>
+Message-ID: <c17d4e45-cad1-510d-0e7b-9d95af89ff01@citrix.com>
+Date:   Tue, 2 Feb 2021 15:26:03 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
+In-Reply-To: <20210202070938.7863-1-jgross@suse.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogUGFvbG8gQWJlbmkNCj4gU2VudDogMDIgRmVicnVhcnkgMjAyMSAxMDoxOQ0KLi4uDQo+
-IE5vdGUgdGhhdCB5b3UgY2FuIGFscmVhZHkgcHJvY2VzcyBzZXZlcmFsIHBhY2tldHMgd2l0aCBh
-IHNpbmdsZSBzeXNjYWxsDQo+IHVzaW5nIHNlbmRtbXNnL3JlY3ZtbXNnLiBCb3RoIGhhdmUgaXNz
-dWVzIHdpdGggZXJyb3IgcmVwb3J0aW5nIGFuZA0KPiB0aW1lb3V0IGFuZCBJSVJDIHN0aWxsIGRv
-bid0IGFtb3J0aXplIHRoZSBvdmVyaGVhZCBpbnRyb2R1Y2VkIGUuZy4gYnkNCj4gQ09ORklHX0hB
-UkRFTkVEX1VTRVJDT1BZLg0KDQpCb3RoIENPTkZJR19IQVJERU5FRF9VU0VSQ09QWSBhbmQgdGhl
-IGV4dHJhIHVzZXIgY29waWVzIG5lZWRlZA0KZXZlbiBmb3Igc2VuZG1zZygpIG92ZXIgc2VuZCgp
-IGFyZSBkZWZpbml0ZWx5IG1lYXN1cmFibGUuDQpJJ3ZlIHJ1biB0ZXN0cyB1c2luZyBfY29weV9m
-cm9tX3VzZXIoKSBmb3IgbWFueSBvZiB0aGUgY29waWVzLg0KRXZlbiB0aGUgY29zdCBvZiByZWFk
-aW5nIGluIGEgc2luZ2xlIGlvdltdIGZvciB0aGUgYnVmZmVyDQphZmZlY3RzIHRoaW5ncy4NCg0K
-TXkgbGFzdCBhdHRlbXB0IGF0IHNwZWVkaW5nIHVwIHdyaXRldigiL2Rldi9udWxsIiwgaW92LCAx
-MCkNCmZlbGwgaW50byB0aGUgcmFiYml0IGhvbGUgb2YgaW9fdXJpbmcgKGFnYWluKS4NCkJ1dCB0
-aGUgcGFydGlhbCBjaGFuZ2VzIGdhdmUgYSBmZXcgJSBpbXByb3ZlbWVudC4NCg0KCURhdmlkDQoN
-Ci0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJt
-LCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChX
-YWxlcykNCg==
+On 02/02/2021 07:09, Juergen Gross wrote:
+> Since commit 23025393dbeb3b8b3 ("xen/netback: use lateeoi irq binding")
+> xenvif_rx_ring_slots_available() is no longer called only from the rx
+> queue kernel thread, so it needs to access the rx queue with the
+> associated queue held.
+> 
+> Reported-by: Igor Druzhinin <igor.druzhinin@citrix.com>
+> Fixes: 23025393dbeb3b8b3 ("xen/netback: use lateeoi irq binding")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Juergen Gross <jgross@suse.com>
 
+Appreciate a quick fix! Is this the only place that sort of race could
+happen now?
+
+Igor
