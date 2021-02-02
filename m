@@ -2,142 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 424E430B44C
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 01:50:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EACD930B454
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 01:55:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230157AbhBBAu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 19:50:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49358 "EHLO
+        id S231169AbhBBAxv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 19:53:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229527AbhBBAuZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 19:50:25 -0500
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09DC7C061573;
-        Mon,  1 Feb 2021 16:49:45 -0800 (PST)
-Received: by mail-oi1-x234.google.com with SMTP id h192so21006599oib.1;
-        Mon, 01 Feb 2021 16:49:45 -0800 (PST)
+        with ESMTP id S229527AbhBBAxu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 19:53:50 -0500
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91227C061573
+        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 16:53:09 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id hs11so27314010ejc.1
+        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 16:53:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KZ3KGl0h1neaojkBgg4SZbESMR55ZNhc/UsqdvzAY2o=;
-        b=ND4SR2LkIHuqIOZ4WzjpzLdlT/v69Qr6LzJ+vCOXf8nQlxqZFcMnc+19h7XRphwcTT
-         dCJLHlU7rzjwV7y3RndGmKXY6rS3THLVJOKI0FDD1JwsyUKeRupec8eL3NA4RGzV475O
-         CfSgTqAWKXmXSRfu/k+ggbIlEKae2suKJcT9PAt/b+WpwCLA9eAvIupn3JcrYyeQ6vhk
-         O+Z9EgaZv3faqnowLWK9BL6aauZ+yutDyatwv587UvGulANdW18Wxk/gjJCg8yEyQhj8
-         DXxaiPAbuwAG5joes055zItBl8D1KXTaCisBeMtUhDvYh/ldZs8WYBS6czaFzSaybVvR
-         1fIA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=d/iAS7QB8gFJSHPCF/AJnAOZucDFyXJceXXzY89Q0Fo=;
+        b=MVxdf1E9RSje8y16Z0+/OcAfRh/JnQP92Okb8BQ8rFxOn8cTFsu8SVudGRdlJYE0Jr
+         CnHY2wNOBPlDBNITb02zGaulCv2llcNA/Nw3J+ztcR1do9/JxekKNa2J7r3P/ssj1Qzu
+         528o/DBbw3tlykB1Hq7x2J+K9n3hnqP05mpn6oGC1m5TD9bt7TYJQchRbkiB7X6Cm3z+
+         LLFMvU/94u+0lVaZm9PMkFHbfzeKbzqDdVcbmQqHgxwnNrM68DSCNQdoMI9p1ck90GON
+         vYvSN93mmUpnOSfAiVEfkUFfdKQ61bo+AtjQA9jKIF/vmnTjFymvJMKjcf20k3pKlU/Y
+         UrEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KZ3KGl0h1neaojkBgg4SZbESMR55ZNhc/UsqdvzAY2o=;
-        b=KGnKuSOJCvhAgoS5Ww5NxSsUG0syBuWs5brxDxVoKQ/qPNGQEiaglKilWgl2NDZbFu
-         Gh43It3STvPYhrso9hPuJ5k1XpdFvnEAJp8pCTBMk7+/1Xb+jvZl8RBcS18WFh0ixPud
-         hMObMMRmYsItfMR6rsP9mIMZTIqCgGN90q6uPBsw8v8NumyUhMK+Gf6AhU8/PUeF9J1M
-         sBVQnDEtizP8lHQYtA42In187vZ5iRZDHDUUx6t/b2720iJ4RrLV3OeqYmP8MTv51+zZ
-         nYVwbDnX3G2Z3tk9NDtSYYI5gSNlaALND9yLpdh+rj1TWk8WD6qAuu5wRT31hqBCnoTf
-         4p1w==
-X-Gm-Message-State: AOAM533K3u/PQdySQjpQAblA5uFeV2XYNt23FY/sedE+DAP4aPnfy5Yf
-        s9IJFyVNkLr8woBvF1hiV2lqeY8yzKg67+/LpkI=
-X-Google-Smtp-Source: ABdhPJwoIdYkGn6frhtqu3acbFk7/QCamM09W36YbaetbA7rzgrbBvmCH3/GTny6FBt0cJr/7g+3mw13g+2lUj1ifLg=
-X-Received: by 2002:a05:6808:1290:: with SMTP id a16mr989423oiw.161.1612226984490;
- Mon, 01 Feb 2021 16:49:44 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=d/iAS7QB8gFJSHPCF/AJnAOZucDFyXJceXXzY89Q0Fo=;
+        b=kpWTIoYgL+G6kudZltfLeesmG5Z/hV7tyQUfPXSVlb0+6eEG5u4I8BOhlEACI5EUke
+         8T/MH/g0oywZgN6MRi44c/X9Dupbi2b1elJZnsyUorlWI2Qj9c0RuiNuFm8sW6NUGtyQ
+         9/8ztpYyXUrXKzwCXD5dIQWPL67Mp7blf++jVsQahq9dwpJKx8+Y5zvGpXtV2lfXhpyM
+         EBSi1zCWRfeyz6a+52/socqkRYWZolgr23a3zFBAvdxA05RyeHdDpPwLWEE8yiUYPaSy
+         5cL66drSWXzwgDDtcfLYNchknWarrV+izzTWGg1y+Q1Kalhd/Py/21B3g4sT6UHqYIkS
+         ae8w==
+X-Gm-Message-State: AOAM531t3w4rZW07ogdEa67e2Gh5Mv2G0LGrtbL3xueZnoREGFiRAqPN
+        QWqjd16BGfFI8KHiZSFNox5p1MyO8qs=
+X-Google-Smtp-Source: ABdhPJwzR45NBpOi8D8VT3gsverGPAVMqs+D5doCVJsGC2gFjgWiAzTMwwYYf5JdneQK3DKLxsC1jg==
+X-Received: by 2002:a17:906:fa18:: with SMTP id lo24mr7849154ejb.221.1612227188221;
+        Mon, 01 Feb 2021 16:53:08 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id m10sm9326396edi.54.2021.02.01.16.53.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Feb 2021 16:53:07 -0800 (PST)
+Date:   Tue, 2 Feb 2021 02:53:06 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>
+Subject: Re: About PHY_INTERFACE_MODE_REVMII
+Message-ID: <20210202005306.k7fhc4hhwbjxqbsr@skbuf>
+References: <20210201214515.cx6ivvme2tlquge2@skbuf>
+ <5a4d7b45-b50c-f735-b414-140eb68bc745@gmail.com>
 MIME-Version: 1.0
-References: <20210201232609.3524451-1-elder@linaro.org> <20210201232609.3524451-4-elder@linaro.org>
- <CAE1WUT6VOx=sS1K1PaJG+Ks06CMpoz_efCyNhFQhD83_YNLk5A@mail.gmail.com> <5a415ba4-9d69-5479-3be0-c5e6167b0f8a@linaro.org>
-In-Reply-To: <5a415ba4-9d69-5479-3be0-c5e6167b0f8a@linaro.org>
-From:   Amy Parker <enbyamy@gmail.com>
-Date:   Mon, 1 Feb 2021 16:49:33 -0800
-Message-ID: <CAE1WUT4nGrNXEOFNRygFHie6dZVCQTXAgFvVDzW7hgf6W-UVkw@mail.gmail.com>
-Subject: Re: [PATCH net 3/4] net: ipa: use the right accessor in ipa_endpoint_status_skip()
-To:     Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, elder@kernel.org,
-        evgreen@chromium.org, bjorn.andersson@linaro.org,
-        cpratapa@codeaurora.org, subashab@codeaurora.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5a4d7b45-b50c-f735-b414-140eb68bc745@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 1, 2021 at 4:15 PM Alex Elder <elder@linaro.org> wrote:
->
-> On 2/1/21 6:02 PM, Amy Parker wrote:
-> > On Mon, Feb 1, 2021 at 3:32 PM Alex Elder <elder@linaro.org> wrote:
-> >>
-> >> When extracting the destination endpoint ID from the status in
-> >> ipa_endpoint_status_skip(), u32_get_bits() is used.  This happens to
-> >> work, but it's wrong: the structure field is only 8 bits wide
-> >> instead of 32.
-> >>
-> >> Fix this by using u8_get_bits() to get the destination endpoint ID.
-> >
-> > Isn't
->
-> (I saw your second message.)
->
-> >> Signed-off-by: Alex Elder <elder@linaro.org>
-> >> ---
-> >>   drivers/net/ipa/ipa_endpoint.c | 4 ++--
-> >>   1 file changed, 2 insertions(+), 2 deletions(-)
-> >>
-> >> diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-> >> index 448d89da1e456..612afece303f3 100644
-> >> --- a/drivers/net/ipa/ipa_endpoint.c
-> >> +++ b/drivers/net/ipa/ipa_endpoint.c
-> >> @@ -1164,8 +1164,8 @@ static bool ipa_endpoint_status_skip(struct ipa_endpoint *endpoint,
-> >>                  return true;
-> >
-> > A few lines above this, endpoint_id is initialized as u32. If we're
-> > going for "correctness", endpoint_id should be a u8. But of course,
-> > this would contrast with ipa_endpoint having it as a u32.
->
-> You are correct, endpoint_id is *defined* as type u32.
->
-> But the issue here is that the field status->endp_dst_idx
-> has type u8.  u32_get_bits() assumes the field it is
-> passed has type u32; while u8_get_bits() takes a u8.
+Hi Florian,
 
-Ah, missed that bit. Thanks for clarifying.
+Thanks for the quick answer!
 
->
-> The return value of u8_get_bits() is u8, as you might
-> suspect.  The C standard guarantees that the u8 value
-> will be promoted to the u32 target type here.
+On Mon, Feb 01, 2021 at 04:26:36PM -0800, Florian Fainelli wrote:
+> It depends on the level of control that you have and expect more on that
+> below.
 
-Yes, it does, and so it wouldn't be a theoretical issue - just an
-issue of developer confusion at first when working with it. But the
-above outlined point of the types taken is more important.
+> That is true if we consider that you can use an electrical connection
+> other than MII, which was the flaw in the reasoning leading to introduce
+> the above commit. If you took the name reverse MII literally like I did,
+> you would not think it would apply to anything but MII and maybe reduced
+> MII, but not GMII or RGMII. More on that below.
 
+> I don't believe I ever saw a system that used reverse MII and yet did
+> not use either plain MII as far as the electrical connections went. That
+> does not mean you could not electrically connect these two systems using
+> RMII, GMII or something else. With RGMII, I don't see the point in using
+> a RevMII block especially as far as clocking goes, both link partners
+> can have their own local clock and just do clock recovery upon receive.
 >
-> >>          if (!status->pkt_len)
-> >>                  return true;
-> >> -       endpoint_id = u32_get_bits(status->endp_dst_idx,
-> >> -                                  IPA_STATUS_DST_IDX_FMASK);
-> >> +       endpoint_id = u8_get_bits(status->endp_dst_idx,
-> >> +                                 IPA_STATUS_DST_IDX_FMASK);
-> >>          if (endpoint_id != endpoint->endpoint_id)
-> >>                  return true;
-> >>
-> >> --
-> >> 2.27.0
-> >>
-> >
-> > As far as I see it, using u32_get_bits instead of u8_get_bits simply
-> > eliminates confusion about the type of endpoint_id. Perhaps instead of
-> > this patch, send a patch with a comment that while u32_get_bits is
-> > used, the field is only 8 bits?
+> When this commit was done, the only use case that had to be supported
+> was the case of two Ethernet MACs (one a video decoder, the other a
+> cable modem) connected over a MII electrical connection and we could not
+> change the cable modem side, so we act to make ourselves "look like" a
+> PHY which the hardware supported. Back then the GENET driver was just
+> getting a facelift to use PHYLIB and so it still used a fixed-link plus
+> phy-mode = "rev-mii" to get that mode to work which was probably too big
+> of a shortcut in addition to the flaw in the reasoning about what RevMII
+> really was.
 >
-> No.  We really want to extract a sub-field from the u8
-> value passed to u8_get_bits() (not u32_get_bits()).
->
-> Does that make sense?
->
->                                         -Alex
+> If you would like to deprecate/warn when using PHY_INTERFACE_MODE_REVMII
+> value and come up with a better way to represent such links, no issues
+> with me, it looks like we have a few in tree users to convert.
 
-Yes, it does. Thank you.
+Well, everything depends on whether a formal specification of RevMII
+exists or not. If you're sure that all users of PHY_INTERFACE_MODE_REVMII
+actually use the 8-bit wide parallel data interface that runs at 25 MHz
+and 100 Mbps ("that" MII), just that they operate in MII PHY mode instead
+of MII MAC, then I can work with that, no reason to deprecate it.
 
-Best regards,
-Amy Parker
-(she/her/hers)
+The problem is that I saw no online reference of RevMII + RMII = RevRMII,
+which would make just as much sense as RevMII. And as I said, RGMII does
+support in-band signaling, it's just probably too obscure to see it in
+the wild or rely on it. RGMII without in-band signaling has no reason to
+differentiate between MAC and PHY role, but taking the inband signaling
+into account it does. So RevRGMII might be a thing too.
+
+For example, the sja1105 supports MII MAC, MII PHY, RMII MAC, RMII PHY
+modes. But it doesn't export a clause 22 virtual PHY register map to
+neither end of the link - it doesn't have any MDIO connection at all.
+Does the sja1105 support RevMII or does it not? If RevMII means MII PHY
+and the clause 22 interface is just optional (like it is for normal MII,
+RMII, RGMII which can operate in fixed-link too), then I'd say yes,
+sja1105 supports RevMII. But if RevMII is _defined_ by that standardized
+clause 22 interface, then no it doesn't.
+
+In the DSA driver, I created some custom device tree bindings to solve
+the situation where you'd have two sja1105 devices connected MAC to MAC
+using RMII or MII: sja1105,role-mac and sja1105,role-phy. There are no
+in-tree users of these DT properties, so depending on how this
+conversation goes, I might just go ahead and do the other thing: say
+that RevRMII exists and the clause 22 PHY registers are optional, add
+PHY_INTERFACE_MODE_REVRMII, and declare that sja1105 supports
+PHY_INTERFACE_MODE_REVMII which is the equivalent of what is currently
+done with PHY_INTERFACE_MODE_MII + sja1105,role-phy, and
+PHY_INTERFACE_MODE_REVRMII.
+
+Having a separate PHY interface mode for RevRMII would solve the situation
+where you have two instances of the same driver at the two ends of the
+same link, seeing the same PHY registers, but nonetheless needing to
+configure themselves in different modes and not having what to base that
+decision on. What do you think?
