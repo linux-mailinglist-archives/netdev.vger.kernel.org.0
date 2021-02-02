@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5BA330C4E4
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 17:08:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ABA430C349
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 16:15:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236052AbhBBQFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 11:05:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37238 "EHLO mail.kernel.org"
+        id S235214AbhBBPN2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 10:13:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39218 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234983AbhBBPLb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 10:11:31 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C862464F6E;
-        Tue,  2 Feb 2021 15:06:37 +0000 (UTC)
+        id S235184AbhBBPL4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 10:11:56 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2F8D364F6D;
+        Tue,  2 Feb 2021 15:06:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612278398;
-        bh=L3B6ZScRpTteiAHfJ25ES5UssYuyHCpMGNOYLXRSOmg=;
+        s=k20201202; t=1612278400;
+        bh=4bRU53ZaSAJGof+8oWQuQkJLZDarDJ1g+PAbUUX5Tz4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uHbLj5qhaScCt9dJ4CKkB2Gn3Y71BKtzlIJQcaxAKvb2p6VpcYGE7ey278zxkizhB
-         i6gHJR6mIIDCe+mk9TIIzMc9AH1VrfewUH5aF+6rONq/UERccMzHMuzoOw7/Ih9Q+B
-         NMxSmBmJII6hnB/+7QtGS5QwGBKxkyr5jO/r5N3t+xuVKmNq/4sZaDm74CVB+HX6lN
-         CuBF0FdoGMG98y81x8TtVJlqXkP6awmEX2ORAbR4QB4+kC2eIv2ourH2fqA3ZD3wp2
-         vmkiJ2v1Jioc81tvW847z4VyF44PVed05BpiLuWSdV36hsfhbbPv6syrU0wWzR+xcz
-         8QnBqKrSepovw==
+        b=R1tNoUUnV9hUpNWzsFMHn54qp+0iOgQZl93Z46i+/CBr93ihJaCF4p7NhNvjcx0NL
+         ooew9jMGv9cRGKAbjGBM6PfmI8ZG8sb513bwXA4AXOj742mfDK2DIEp3wdwrUxkfsp
+         0LBwsv8VbCqQrECGaKhPw4DhlIGuncxTnLK4RO3MLwoxJ/n/Iz3CJS5UwLD1WMvOSX
+         NzEEGxcCMaPXRAnECGxNZl30IFgnj+CPFKmeOLULPfJZyUYV+WPnZe4uQ4KQzQvk9l
+         70etFK32gkhPKZ8hZGx6GYFeZPqom/foCa6Xn/wYx9FVW7Cw75dl2ryCk04DbC+pfp
+         Th0SWp0H+kfjQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Gregory Greenman <gregory.greenman@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
+Cc:     Luca Coelho <luciano.coelho@intel.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 17/25] iwlwifi: mvm: invalidate IDs of internal stations at mvm start
-Date:   Tue,  2 Feb 2021 10:06:07 -0500
-Message-Id: <20210202150615.1864175-17-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 18/25] iwlwifi: pcie: add rules to match Qu with Hr2
+Date:   Tue,  2 Feb 2021 10:06:08 -0500
+Message-Id: <20210202150615.1864175-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210202150615.1864175-1-sashal@kernel.org>
 References: <20210202150615.1864175-1-sashal@kernel.org>
@@ -44,68 +43,124 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Gregory Greenman <gregory.greenman@intel.com>
+From: Luca Coelho <luciano.coelho@intel.com>
 
-[ Upstream commit e223e42aac30bf81f9302c676cdf58cf2bf36950 ]
+[ Upstream commit 16062c12edb8ed2dfb15e6a914ff4edf858ab9e0 ]
 
-Having sta_id not set for aux_sta and snif_sta can potentially lead to a
-hard to debug issue in case remove station is called without an add. In
-this case sta_id 0, an unrelated regular station, will be removed.
+Until now we have been relying on matching the PCI ID and subsystem
+device ID in order to recognize Qu devices with Hr2.  Add rules to
+match these devices, so that we don't have to add a new rule for every
+new ID we get.
 
-In fact, we do have a FW assert that occures rarely and from the debug
-data analysis it looks like sta_id 0 is removed by mistake, though it's
-hard to pinpoint the exact flow. The WARN_ON in this patch should help
-to find it.
-
-Signed-off-by: Gregory Greenman <gregory.greenman@intel.com>
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/iwlwifi.20210122144849.5dc6dd9b22d5.I2add1b5ad24d0d0a221de79d439c09f88fcaf15d@changeid
+Link: https://lore.kernel.org/r/iwlwifi.20210122144849.591ce253ddd8.Ia4b9cc2c535625890c6d6b560db97ee9f2d5ca3b@changeid
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/ops.c | 4 ++++
- drivers/net/wireless/intel/iwlwifi/mvm/sta.c | 6 ++++++
- 2 files changed, 10 insertions(+)
+ .../net/wireless/intel/iwlwifi/cfg/22000.c    | 25 +++++++++++++++++++
+ .../net/wireless/intel/iwlwifi/iwl-config.h   |  3 +++
+ drivers/net/wireless/intel/iwlwifi/pcie/drv.c | 10 ++++++++
+ 3 files changed, 38 insertions(+)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/ops.c b/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
-index 0d1118f66f0d5..cea8e397fe0f2 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/ops.c
-@@ -845,6 +845,10 @@ iwl_op_mode_mvm_start(struct iwl_trans *trans, const struct iwl_cfg *cfg,
- 	if (!mvm->scan_cmd)
- 		goto out_free;
+diff --git a/drivers/net/wireless/intel/iwlwifi/cfg/22000.c b/drivers/net/wireless/intel/iwlwifi/cfg/22000.c
+index d2bbe6a735142..92c50efd48fc3 100644
+--- a/drivers/net/wireless/intel/iwlwifi/cfg/22000.c
++++ b/drivers/net/wireless/intel/iwlwifi/cfg/22000.c
+@@ -358,6 +358,7 @@ const struct iwl_cfg_trans_params iwl_ma_trans_cfg = {
+ const char iwl_ax101_name[] = "Intel(R) Wi-Fi 6 AX101";
+ const char iwl_ax200_name[] = "Intel(R) Wi-Fi 6 AX200 160MHz";
+ const char iwl_ax201_name[] = "Intel(R) Wi-Fi 6 AX201 160MHz";
++const char iwl_ax203_name[] = "Intel(R) Wi-Fi 6 AX203";
+ const char iwl_ax211_name[] = "Intel(R) Wi-Fi 6 AX211 160MHz";
+ const char iwl_ax411_name[] = "Intel(R) Wi-Fi 6 AX411 160MHz";
+ const char iwl_ma_name[] = "Intel(R) Wi-Fi 6";
+@@ -384,6 +385,18 @@ const struct iwl_cfg iwl_qu_b0_hr1_b0 = {
+ 	.num_rbds = IWL_NUM_RBDS_22000_HE,
+ };
  
-+	/* invalidate ids to prevent accidental removal of sta_id 0 */
-+	mvm->aux_sta.sta_id = IWL_MVM_INVALID_STA;
-+	mvm->snif_sta.sta_id = IWL_MVM_INVALID_STA;
++const struct iwl_cfg iwl_qu_b0_hr_b0 = {
++	.fw_name_pre = IWL_QU_B_HR_B_FW_PRE,
++	IWL_DEVICE_22500,
++	/*
++	 * This device doesn't support receiving BlockAck with a large bitmap
++	 * so we need to restrict the size of transmitted aggregation to the
++	 * HT size; mac80211 would otherwise pick the HE max (256) by default.
++	 */
++	.max_tx_agg_size = IEEE80211_MAX_AMPDU_BUF_HT,
++	.num_rbds = IWL_NUM_RBDS_22000_HE,
++};
 +
- 	/* Set EBS as successful as long as not stated otherwise by the FW. */
- 	mvm->last_ebs_successful = true;
+ const struct iwl_cfg iwl_ax201_cfg_qu_hr = {
+ 	.name = "Intel(R) Wi-Fi 6 AX201 160MHz",
+ 	.fw_name_pre = IWL_QU_B_HR_B_FW_PRE,
+@@ -410,6 +423,18 @@ const struct iwl_cfg iwl_qu_c0_hr1_b0 = {
+ 	.num_rbds = IWL_NUM_RBDS_22000_HE,
+ };
  
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/sta.c b/drivers/net/wireless/intel/iwlwifi/mvm/sta.c
-index 799d8219463cb..a66a5c19474a9 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/sta.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/sta.c
-@@ -2103,6 +2103,9 @@ int iwl_mvm_rm_snif_sta(struct iwl_mvm *mvm, struct ieee80211_vif *vif)
- 
- 	lockdep_assert_held(&mvm->mutex);
- 
-+	if (WARN_ON_ONCE(mvm->snif_sta.sta_id == IWL_MVM_INVALID_STA))
-+		return -EINVAL;
++const struct iwl_cfg iwl_qu_c0_hr_b0 = {
++	.fw_name_pre = IWL_QU_C_HR_B_FW_PRE,
++	IWL_DEVICE_22500,
++	/*
++	 * This device doesn't support receiving BlockAck with a large bitmap
++	 * so we need to restrict the size of transmitted aggregation to the
++	 * HT size; mac80211 would otherwise pick the HE max (256) by default.
++	 */
++	.max_tx_agg_size = IEEE80211_MAX_AMPDU_BUF_HT,
++	.num_rbds = IWL_NUM_RBDS_22000_HE,
++};
 +
- 	iwl_mvm_disable_txq(mvm, NULL, mvm->snif_queue, IWL_MAX_TID_COUNT, 0);
- 	ret = iwl_mvm_rm_sta_common(mvm, mvm->snif_sta.sta_id);
- 	if (ret)
-@@ -2117,6 +2120,9 @@ int iwl_mvm_rm_aux_sta(struct iwl_mvm *mvm)
+ const struct iwl_cfg iwl_ax201_cfg_qu_c0_hr_b0 = {
+ 	.name = "Intel(R) Wi-Fi 6 AX201 160MHz",
+ 	.fw_name_pre = IWL_QU_C_HR_B_FW_PRE,
+diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-config.h b/drivers/net/wireless/intel/iwlwifi/iwl-config.h
+index 580b07a43856d..52fb9963d7cf8 100644
+--- a/drivers/net/wireless/intel/iwlwifi/iwl-config.h
++++ b/drivers/net/wireless/intel/iwlwifi/iwl-config.h
+@@ -544,6 +544,7 @@ extern const char iwl9260_killer_1550_name[];
+ extern const char iwl9560_killer_1550i_name[];
+ extern const char iwl9560_killer_1550s_name[];
+ extern const char iwl_ax200_name[];
++extern const char iwl_ax203_name[];
+ extern const char iwl_ax201_name[];
+ extern const char iwl_ax101_name[];
+ extern const char iwl_ax200_killer_1650w_name[];
+@@ -627,6 +628,8 @@ extern const struct iwl_cfg iwl9560_2ac_cfg_soc;
+ extern const struct iwl_cfg iwl_qu_b0_hr1_b0;
+ extern const struct iwl_cfg iwl_qu_c0_hr1_b0;
+ extern const struct iwl_cfg iwl_quz_a0_hr1_b0;
++extern const struct iwl_cfg iwl_qu_b0_hr_b0;
++extern const struct iwl_cfg iwl_qu_c0_hr_b0;
+ extern const struct iwl_cfg iwl_ax200_cfg_cc;
+ extern const struct iwl_cfg iwl_ax201_cfg_qu_hr;
+ extern const struct iwl_cfg iwl_ax201_cfg_qu_hr;
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+index 7b5ece380fbfb..2823a1e81656d 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+@@ -966,6 +966,11 @@ static const struct iwl_dev_info iwl_dev_info_table[] = {
+ 		      IWL_CFG_RF_TYPE_HR1, IWL_CFG_ANY,
+ 		      IWL_CFG_ANY, IWL_CFG_ANY,
+ 		      iwl_qu_b0_hr1_b0, iwl_ax101_name),
++	_IWL_DEV_INFO(IWL_CFG_ANY, IWL_CFG_ANY,
++		      IWL_CFG_MAC_TYPE_QU, SILICON_C_STEP,
++		      IWL_CFG_RF_TYPE_HR2, IWL_CFG_ANY,
++		      IWL_CFG_ANY, IWL_CFG_ANY,
++		      iwl_qu_b0_hr_b0, iwl_ax203_name),
  
- 	lockdep_assert_held(&mvm->mutex);
+ 	/* Qu C step */
+ 	_IWL_DEV_INFO(IWL_CFG_ANY, IWL_CFG_ANY,
+@@ -973,6 +978,11 @@ static const struct iwl_dev_info iwl_dev_info_table[] = {
+ 		      IWL_CFG_RF_TYPE_HR1, IWL_CFG_ANY,
+ 		      IWL_CFG_ANY, IWL_CFG_ANY,
+ 		      iwl_qu_c0_hr1_b0, iwl_ax101_name),
++	_IWL_DEV_INFO(IWL_CFG_ANY, IWL_CFG_ANY,
++		      IWL_CFG_MAC_TYPE_QU, SILICON_C_STEP,
++		      IWL_CFG_RF_TYPE_HR2, IWL_CFG_ANY,
++		      IWL_CFG_ANY, IWL_CFG_ANY,
++		      iwl_qu_c0_hr_b0, iwl_ax203_name),
  
-+	if (WARN_ON_ONCE(mvm->aux_sta.sta_id == IWL_MVM_INVALID_STA))
-+		return -EINVAL;
-+
- 	iwl_mvm_disable_txq(mvm, NULL, mvm->aux_queue, IWL_MAX_TID_COUNT, 0);
- 	ret = iwl_mvm_rm_sta_common(mvm, mvm->aux_sta.sta_id);
- 	if (ret)
+ 	/* QuZ */
+ 	_IWL_DEV_INFO(IWL_CFG_ANY, IWL_CFG_ANY,
 -- 
 2.27.0
 
