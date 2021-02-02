@@ -2,44 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA85730C730
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 18:16:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B249630C69A
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 17:54:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236997AbhBBRMw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 12:12:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35580 "EHLO mail.kernel.org"
+        id S236833AbhBBQxA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 11:53:00 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35496 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236891AbhBBQvA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 11:51:00 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 8C0A964F95;
+        id S236879AbhBBQut (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 11:50:49 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 6680C64F8C;
         Tue,  2 Feb 2021 16:50:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1612284607;
-        bh=YazcG+BE+q7PioHb/BdTLj8HKtycWtsJz+EN2jWSj8Q=;
+        bh=1pyS1O/tfQWwIdEuctiuv1WSn/cICDq2gO6ZI5MLyZA=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=lrcNopUwcij1KTBBtaOTQRKS60NKrNuGrxvsNqwxqPgPIyEJpxbwhIUOwaXgQIZkH
-         gmHlNw+GXHLp7gE/V+IvUydtgngbMceoY/jPgq0xPR7PGH28e2B6b43/WLTu9i5C//
-         S2z9VT8i8Gpk/Ba4YxfN7vLO36gC+DhvRM1hvL3NuenrGgJQmP5ZGwtmif2s0EV6JG
-         DhW6jrXBv61XkAvySiP/2nHBlMUDDWZfSFpff1PW83coYiLnjlRfMNch4E5WGzjWcp
-         78NbvZHvv2HqpcGIKl/0qnIy6tF2ynE40mETWn8wJxWprppFCe9B2Mbv5t6hvIj+MJ
-         5vo2Vj1CzOZAA==
+        b=qt+bYOoaif+OB/INxcPDne0PeMVbxxORuDpNI16pbNOCCU4a5tZO5vvLS03z5jveX
+         G+Bafubjefm+jxrIXV/LLBvJJ1dlbTE/zFrmH+gWJFNTYiOvPr2acASlyDvPfizQdx
+         ozHjlJ/igtTdoamKzZ7Zap5VGKntlfdpGdyx3jpH/uesYIftYG3HEx+LYDWtOkx+1E
+         MRLqH2573UW9iEKCNpmiUdHQlggyORBwu29gY6WZNCpqMWmJ4Av/0ghsw2pSGkdq1y
+         W3tkKlIEWlxIT5dxLb3T2AjEN8vvJ9Kr5EZ7dksAAzxzMZ70lGVHX311Lna1tmYlK8
+         euCa+Je5VO2Uw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 83D1960987;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5ECD3609D9;
         Tue,  2 Feb 2021 16:50:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net/rds: restrict iovecs length for RDS_CMSG_RDMA_ARGS
+Subject: Re: [PATCH net] net: lapb: Copy the skb before sending a packet
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161228460753.23213.15174614823787574149.git-patchwork-notify@kernel.org>
+Message-Id: <161228460738.23213.13014448307375459803.git-patchwork-notify@kernel.org>
 Date:   Tue, 02 Feb 2021 16:50:07 +0000
-References: <20210201203233.1324704-1-snovitoll@gmail.com>
-In-Reply-To: <20210201203233.1324704-1-snovitoll@gmail.com>
-To:     Sabyrzhan Tasbolatov <snovitoll@gmail.com>
-Cc:     santosh.shilimkar@oracle.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org,
-        syzbot+1bd2b07f93745fa38425@syzkaller.appspotmail.com
+References: <20210201055706.415842-1-xie.he.0141@gmail.com>
+In-Reply-To: <20210201055706.415842-1-xie.he.0141@gmail.com>
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-x25@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org, ms@dev.tdt.de
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,20 +46,20 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Tue,  2 Feb 2021 02:32:33 +0600 you wrote:
-> syzbot found WARNING in rds_rdma_extra_size [1] when RDS_CMSG_RDMA_ARGS
-> control message is passed with user-controlled
-> 0x40001 bytes of args->nr_local, causing order >= MAX_ORDER condition.
+On Sun, 31 Jan 2021 21:57:06 -0800 you wrote:
+> When sending a packet, we will prepend it with an LAPB header.
+> This modifies the shared parts of a cloned skb, so we should copy the
+> skb rather than just clone it, before we prepend the header.
 > 
-> The exact value 0x40001 can be checked with UIO_MAXIOV which is 0x400.
-> So for kcalloc() 0x400 iovecs with sizeof(struct rds_iovec) = 0x10
-> is the closest limit, with 0x10 leftover.
+> In "Documentation/networking/driver.rst" (the 2nd point), it states
+> that drivers shouldn't modify the shared parts of a cloned skb when
+> transmitting.
 > 
 > [...]
 
 Here is the summary with links:
-  - net/rds: restrict iovecs length for RDS_CMSG_RDMA_ARGS
-    https://git.kernel.org/netdev/net/c/a11148e6fcce
+  - [net] net: lapb: Copy the skb before sending a packet
+    https://git.kernel.org/netdev/net/c/88c7a9fd9bdd
 
 You are awesome, thank you!
 --
