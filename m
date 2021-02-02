@@ -2,38 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D93C30C427
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 16:43:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4899E30C413
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 16:43:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235662AbhBBPlj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 10:41:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39434 "EHLO mail.kernel.org"
+        id S235562AbhBBPka (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 10:40:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39462 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235258AbhBBPOk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 10:14:40 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3D18664F9D;
-        Tue,  2 Feb 2021 15:07:31 +0000 (UTC)
+        id S235269AbhBBPOv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 10:14:51 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A397364FA2;
+        Tue,  2 Feb 2021 15:07:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612278452;
-        bh=91G44idT22nHLpyzhPSx7iPam8mPe8MI1jM14ONeA9k=;
-        h=From:To:Cc:Subject:Date:From;
-        b=qKrXUIxUrE9bqNw453UsaILDzLThYT8Bhtc1AYIeyPWTXVrYM07d6PR+FfbvTyqce
-         mtB644yd4rfAf7D2hkrDzVkFxybgZ7js+WK0tLfz2+nO+QnTz8evYqBypQQYZ6Dc7S
-         bwxX0rXiCakaj6xFzCfoQYOoCUXUuiAMmatawOSoaPHElZtZmtZal8FFyM6pIVhilA
-         n6og7hIARN4d04Yo7cpiqsYQI7iLKvQP+U6ADAzP5NKSbL1hbyZYUVQAFI6fxTY0ig
-         S4mMVx6HHpfziBge4jUSWCnKUQAor+ciNegm9ZV63w/vziGghaZTZzaSRkAshKO1u6
-         BQCSLjP5Prp2A==
+        s=k20201202; t=1612278454;
+        bh=joKYNFrfxTJaTY/td3Bgwgy7/4s/D9KzIQu/cAYX05w=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Wry5aANPidZILEhKoxb2BIurX7TtgC+mXKW0UBJEuTXcX2Zx2AqEhM9+GsN64mxbt
+         oll8KCqE/aRc/j7QPpzreOJThoLjntpeepHDplBUTnObzBQ55RzVpszFfAh3xTYY4S
+         2TxVlR9hFG5dKL7Vp91cKD1EypE7oEPckbFs2EEBhqTe0PkKfdO4ssWLiB2yzpG2x8
+         GAusHBc52E8qFHVmgigVkExB5UG4wHHpXeiAbRFKqDN8rdTp5HdfvbbAwfv4PtUQI3
+         t5F8CJiWe3kQDiZ12WIU/g0beY4egL0zu8zEHCpjJG1eh7I6EtEdfN2iDG8kH1u51s
+         DsxxhvCYxz/fg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Cong Wang <cong.wang@bytedance.com>,
-        syzbot+b2bf2652983d23734c5c@syzkaller.appspotmail.com,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 1/7] af_key: relax availability checks for skb size calculation
-Date:   Tue,  2 Feb 2021 10:07:23 -0500
-Message-Id: <20210202150730.1864745-1-sashal@kernel.org>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 3/7] iwlwifi: mvm: take mutex for calling iwl_mvm_get_sync_time()
+Date:   Tue,  2 Feb 2021 10:07:25 -0500
+Message-Id: <20210202150730.1864745-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20210202150730.1864745-1-sashal@kernel.org>
+References: <20210202150730.1864745-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -42,62 +44,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <cong.wang@bytedance.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit afbc293add6466f8f3f0c3d944d85f53709c170f ]
+[ Upstream commit 5c56d862c749669d45c256f581eac4244be00d4d ]
 
-xfrm_probe_algs() probes kernel crypto modules and changes the
-availability of struct xfrm_algo_desc. But there is a small window
-where ealg->available and aalg->available get changed between
-count_ah_combs()/count_esp_combs() and dump_ah_combs()/dump_esp_combs(),
-in this case we may allocate a smaller skb but later put a larger
-amount of data and trigger the panic in skb_put().
+We need to take the mutex to call iwl_mvm_get_sync_time(), do it.
 
-Fix this by relaxing the checks when counting the size, that is,
-skipping the test of ->available. We may waste some memory for a few
-of sizeof(struct sadb_comb), but it is still much better than a panic.
-
-Reported-by: syzbot+b2bf2652983d23734c5c@syzkaller.appspotmail.com
-Cc: Steffen Klassert <steffen.klassert@secunet.com>
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/iwlwifi.20210115130252.4bb5ccf881a6.I62973cbb081e80aa5b0447a5c3b9c3251a65cf6b@changeid
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/key/af_key.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/debugfs-vif.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index 0747747fffe58..a10336cd7f974 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -2906,7 +2906,7 @@ static int count_ah_combs(const struct xfrm_tmpl *t)
- 			break;
- 		if (!aalg->pfkey_supported)
- 			continue;
--		if (aalg_tmpl_set(t, aalg) && aalg->available)
-+		if (aalg_tmpl_set(t, aalg))
- 			sz += sizeof(struct sadb_comb);
- 	}
- 	return sz + sizeof(struct sadb_prop);
-@@ -2924,7 +2924,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
- 		if (!ealg->pfkey_supported)
- 			continue;
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/debugfs-vif.c b/drivers/net/wireless/intel/iwlwifi/mvm/debugfs-vif.c
+index 71a01df96f8b0..6db51abb8f4a3 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/debugfs-vif.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/debugfs-vif.c
+@@ -518,7 +518,10 @@ static ssize_t iwl_dbgfs_os_device_timediff_read(struct file *file,
+ 	const size_t bufsz = sizeof(buf);
+ 	int pos = 0;
  
--		if (!(ealg_tmpl_set(t, ealg) && ealg->available))
-+		if (!(ealg_tmpl_set(t, ealg)))
- 			continue;
- 
- 		for (k = 1; ; k++) {
-@@ -2935,7 +2935,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
- 			if (!aalg->pfkey_supported)
- 				continue;
- 
--			if (aalg_tmpl_set(t, aalg) && aalg->available)
-+			if (aalg_tmpl_set(t, aalg))
- 				sz += sizeof(struct sadb_comb);
- 		}
- 	}
++	mutex_lock(&mvm->mutex);
+ 	iwl_mvm_get_sync_time(mvm, &curr_gp2, &curr_os);
++	mutex_unlock(&mvm->mutex);
++
+ 	do_div(curr_os, NSEC_PER_USEC);
+ 	diff = curr_os - curr_gp2;
+ 	pos += scnprintf(buf + pos, bufsz - pos, "diff=%lld\n", diff);
 -- 
 2.27.0
 
