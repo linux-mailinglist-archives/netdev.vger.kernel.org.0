@@ -2,103 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D31130B5A0
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 04:05:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B174D30B5A1
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 04:06:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231312AbhBBDFA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 22:05:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49958 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231262AbhBBDE6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 22:04:58 -0500
-Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2337C061573
-        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 19:04:12 -0800 (PST)
-Received: by mail-ot1-x32f.google.com with SMTP id h14so18513301otr.4
-        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 19:04:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=G/8LuigCOcSzsNTzP+VLtRoRvLUJt0dw+QisHs4scbM=;
-        b=D+mI8aqPmLBG823cvYlscjeihOShGN+6Z8S9JukfyIzodLrfxz7nq81/M+RoivZQaU
-         dlgDX7zn/HQDkQ5MO4NL8JSq6VcTAJVzv2ZV+0E6cuiq4ImeqgO4NYtFByWBxcEsa9xX
-         WINYC3kd4QEi2nw+3tTX/WG5hrg3+K/jDCfgWhvKtaKnhipN5yGlvILp5DkI9ALbDTxZ
-         gfyzS/0bdNzwkYxMdy4IzHbr6GONxUJ5Wu/f5x/fyzRLJvSiaccOULNGL2rM1mLpIlkL
-         /Y6UkqY+tedUE+yItNL5vFSbRrJTxpLXCLHHtUZdWWedjiqnxz5ld8bb9TnM/MyNR2Us
-         KyNw==
+        id S231288AbhBBDF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 22:05:29 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:58501 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229822AbhBBDFW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 22:05:22 -0500
+Received: from mail-lf1-f70.google.com ([209.85.167.70])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <kai.heng.feng@canonical.com>)
+        id 1l6lzb-0007Ae-4p
+        for netdev@vger.kernel.org; Tue, 02 Feb 2021 03:04:39 +0000
+Received: by mail-lf1-f70.google.com with SMTP id 2so1953112lfe.15
+        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 19:04:39 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=G/8LuigCOcSzsNTzP+VLtRoRvLUJt0dw+QisHs4scbM=;
-        b=DSBuKptg5Djm2BkIxFNVPnju2E0ent1VivdQnvXqeY/zdnOhIAsuN8S5QRNq1VhS6g
-         EoHPJzsVW6Zdv9STSoYfvt9fC4JQrqz25BA0Mz8vBq8eS4fku5Bam3AcIKvBrBNRMxN+
-         LaLJKs8NKNArMV8qTV/EbFWj1e6SXNrj1DulDe/DIcGIdpjkcoYBovA44HHkrxhvIOtd
-         fwTD3m3nAX+8/auEtIDoeTZCc4jY9XKeJkkndZRIdl8WanmgxTPN+8BzMuu3uEHcZZnu
-         2wuaRiEP8l+RvDFD4IbwKKLUAxKmbYCc1iEqORmbAjg8h7V3ZjsHxw9XBUByRa3UXwXY
-         5auA==
-X-Gm-Message-State: AOAM533IyQ7s4UzQ3QMb55wIIg8Qq2T3iB9Ne/1MR9S3RMudpOMRq4De
-        CFpRugzvm4ZsB1rr0cIcXVjclDJ2qZw=
-X-Google-Smtp-Source: ABdhPJzFlz0wJRvlLtX1QL1cOHUvJ1BSjoJa+llkuwOGoetlBBI4CGA54tQ2162LXWJh8a764Ed80g==
-X-Received: by 2002:a9d:12e9:: with SMTP id g96mr8418932otg.158.1612235052053;
-        Mon, 01 Feb 2021 19:04:12 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.50])
-        by smtp.googlemail.com with ESMTPSA id c18sm4615673oov.20.2021.02.01.19.04.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 01 Feb 2021 19:04:11 -0800 (PST)
-Subject: Re: [PATCH iproute2-next] ss: always prefer family as part of host
- condition to default family
-To:     Thayne McCombs <astrothayne@gmail.com>, netdev@vger.kernel.org
-References: <20210131081728.29476-1-astrothayne@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <6d0eff35-b982-7d8d-d3c7-742411e93046@gmail.com>
-Date:   Mon, 1 Feb 2021 20:04:10 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.7.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YgW55MgxWBiZGt05gocnc5NtGJCSSQJah5poStOqLN8=;
+        b=sGPz5cWv5dwHQBxtNCJwaTiAE3u0egQ69bwyR70KWzXDy05I8MZJhH2tcItXReaj9y
+         kePeCmM8zWCvhTK9peAwtXOlEV7eJ4svGpk5IduEcaoo4za1neiLTNt5u4yWsgOnfXjZ
+         jobJoC/DIvJKBMkXGtChFuGxEkRHYbbenEO8E9BrVlDDO+pL2kGl1N3MvUMpIoGNRjQm
+         IPV1dzhNR4eMnb13pfb/v4GASWBsztoCgtmLFp8QNa0Jk2eli0xwxqh0ulfrz9ATreKO
+         yiQg7JIlmKDRdtAIKloIb0jufy3eprFzsGmQxsrPpSyTU6y4Yt5c7slBKKkKV6AVUa0i
+         PiPw==
+X-Gm-Message-State: AOAM53167+XIj3T6AK9DkYtpXdYMcxvo4y8OR8k6Q04zv2NJ3ygGbno6
+        vwiflz6R/Il6Q31XPgYIUI9VKjZGF0KMfgX9ZfS/yFXvdLqM0awj2FtnV5OCWMWCvCRpsVvwqoX
+        0fhCQLIKBd6MPV0mtdSbwh3eEZjdfofS5PZkafjm0ZGPzthJ8hg==
+X-Received: by 2002:a19:7001:: with SMTP id h1mr9862129lfc.513.1612235078590;
+        Mon, 01 Feb 2021 19:04:38 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwvwGpjFEieUxDOs22xx93Z+Y1uD/7ps2RcSqJbrcHjYUlKQt6jFcciAnMszy0+liorMTAkBUn/mZZk3/GBMWM=
+X-Received: by 2002:a19:7001:: with SMTP id h1mr9862116lfc.513.1612235078251;
+ Mon, 01 Feb 2021 19:04:38 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210131081728.29476-1-astrothayne@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210201164735.1268796-1-kai.heng.feng@canonical.com> <e3a01903-1b3b-4f7c-4458-179fbbd27615@gmail.com>
+In-Reply-To: <e3a01903-1b3b-4f7c-4458-179fbbd27615@gmail.com>
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+Date:   Tue, 2 Feb 2021 11:04:26 +0800
+Message-ID: <CAAd53p4MwieS-a_f_rTUvjX3ejjWy=sTCK+A7+bw22vrHNuwOw@mail.gmail.com>
+Subject: Re: [PATCH] r8169: Add support for another RTL8168FP
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "maintainer:8169 10/100/1000 GIGABIT ETHERNET DRIVER" 
+        <nic_swsd@realtek.com>, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:8169 10/100/1000 GIGABIT ETHERNET DRIVER" 
+        <netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/31/21 1:17 AM, Thayne McCombs wrote:
-> diff --git a/misc/ss.c b/misc/ss.c
-> index 0593627b..2a5e056a 100644
-> --- a/misc/ss.c
-> +++ b/misc/ss.c
-> @@ -2119,24 +2119,39 @@ void *parse_hostcond(char *addr, bool is_port)
->  	int fam = preferred_family;
->  	struct filter *f = &current_filter;
->  
-> -	if (fam == AF_UNIX || strncmp(addr, "unix:", 5) == 0) {
-> +    if (strncmp(addr, "unix:", 5) == 0) {
-> +        fam = AF_UNIX;
-> +        addr += 5;
-> +    } else if (strncmp(addr, "link:", 5) == 0) {
-> +        fam = AF_PACKET;
-> +        addr += 5;
-> +    } else if (strncmp(addr, "netlink:", 8) == 0) {
-> +        fam = AF_NETLINK;
-> +        addr += 8;
-> +    } else if (strncmp(addr, "vsock:", 6) == 0) {
-> +        fam = AF_VSOCK;
-> +        addr += 6;
-> +    } else if (strncmp(addr, "inet:", 5) == 0) {
-> +        fam = AF_INET;
-> +        addr += 5;
-> +    } else if (strncmp(addr, "inet6:", 6) == 0) {
-> +        fam = AF_INET6;
-> +        addr += 6;
-> +    }
-> +
-> +	if (fam == AF_UNIX) {
->  		char *p;
->  
+On Tue, Feb 2, 2021 at 2:54 AM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+>
+> On 01.02.2021 17:47, Kai-Heng Feng wrote:
+> > According to the vendor driver, the new chip with XID 0x54b is
+> > essentially the same as the one with XID 0x54a, but it doesn't need the
+> > firmware.
+> >
+> > So add support accordingly.
+> >
+> > Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> > ---
+> >  drivers/net/ethernet/realtek/r8169.h      |  1 +
+> >  drivers/net/ethernet/realtek/r8169_main.c | 21 +++++++++++++--------
+> >  2 files changed, 14 insertions(+), 8 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/realtek/r8169.h b/drivers/net/ethernet/realtek/r8169.h
+> > index 7be86ef5a584..2728df46ec41 100644
+> > --- a/drivers/net/ethernet/realtek/r8169.h
+> > +++ b/drivers/net/ethernet/realtek/r8169.h
+> > @@ -63,6 +63,7 @@ enum mac_version {
+> >       RTL_GIGA_MAC_VER_50,
+> >       RTL_GIGA_MAC_VER_51,
+> >       RTL_GIGA_MAC_VER_52,
+> > +     RTL_GIGA_MAC_VER_53,
+> >       RTL_GIGA_MAC_VER_60,
+> >       RTL_GIGA_MAC_VER_61,
+> >       RTL_GIGA_MAC_VER_63,
+> > diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+> > index a569abe7f5ef..ee1f72a9d453 100644
+> > --- a/drivers/net/ethernet/realtek/r8169_main.c
+> > +++ b/drivers/net/ethernet/realtek/r8169_main.c
+> > @@ -145,6 +145,7 @@ static const struct {
+> >       [RTL_GIGA_MAC_VER_50] = {"RTL8168ep/8111ep"                     },
+> >       [RTL_GIGA_MAC_VER_51] = {"RTL8168ep/8111ep"                     },
+> >       [RTL_GIGA_MAC_VER_52] = {"RTL8168fp/RTL8117",  FIRMWARE_8168FP_3},
+> > +     [RTL_GIGA_MAC_VER_53] = {"RTL8168fp/RTL8117",                   },
+> >       [RTL_GIGA_MAC_VER_60] = {"RTL8125A"                             },
+> >       [RTL_GIGA_MAC_VER_61] = {"RTL8125A",            FIRMWARE_8125A_3},
+> >       /* reserve 62 for CFG_METHOD_4 in the vendor driver */
+> > @@ -682,7 +683,7 @@ static bool rtl_is_8168evl_up(struct rtl8169_private *tp)
+> >  {
+> >       return tp->mac_version >= RTL_GIGA_MAC_VER_34 &&
+> >              tp->mac_version != RTL_GIGA_MAC_VER_39 &&
+> > -            tp->mac_version <= RTL_GIGA_MAC_VER_52;
+> > +            tp->mac_version <= RTL_GIGA_MAC_VER_53;
+> >  }
+> >
+> >  static bool rtl_supports_eee(struct rtl8169_private *tp)
+> > @@ -1012,7 +1013,9 @@ static u16 rtl_ephy_read(struct rtl8169_private *tp, int reg_addr)
+> >  static void r8168fp_adjust_ocp_cmd(struct rtl8169_private *tp, u32 *cmd, int type)
+> >  {
+> >       /* based on RTL8168FP_OOBMAC_BASE in vendor driver */
+> > -     if (tp->mac_version == RTL_GIGA_MAC_VER_52 && type == ERIAR_OOB)
+> > +     if (type == ERIAR_OOB &&
+> > +         (tp->mac_version == RTL_GIGA_MAC_VER_52 ||
+> > +          tp->mac_version == RTL_GIGA_MAC_VER_53))
+> >               *cmd |= 0x7f0 << 18;
+> >  }
+> >
+> > @@ -1164,7 +1167,7 @@ static void rtl8168_driver_start(struct rtl8169_private *tp)
+> >       case RTL_GIGA_MAC_VER_31:
+> >               rtl8168dp_driver_start(tp);
+> >               break;
+> > -     case RTL_GIGA_MAC_VER_49 ... RTL_GIGA_MAC_VER_52:
+> > +     case RTL_GIGA_MAC_VER_49 ... RTL_GIGA_MAC_VER_53:
+> >               rtl8168ep_driver_start(tp);
+> >               break;
+> >       default:
+> > @@ -1195,7 +1198,7 @@ static void rtl8168_driver_stop(struct rtl8169_private *tp)
+> >       case RTL_GIGA_MAC_VER_31:
+> >               rtl8168dp_driver_stop(tp);
+> >               break;
+> > -     case RTL_GIGA_MAC_VER_49 ... RTL_GIGA_MAC_VER_52:
+> > +     case RTL_GIGA_MAC_VER_49 ... RTL_GIGA_MAC_VER_53:
+> >               rtl8168ep_driver_stop(tp);
+> >               break;
+> >       default:
+> > @@ -1223,7 +1226,7 @@ static bool r8168_check_dash(struct rtl8169_private *tp)
+> >       case RTL_GIGA_MAC_VER_28:
+> >       case RTL_GIGA_MAC_VER_31:
+> >               return r8168dp_check_dash(tp);
+> > -     case RTL_GIGA_MAC_VER_49 ... RTL_GIGA_MAC_VER_52:
+> > +     case RTL_GIGA_MAC_VER_49 ... RTL_GIGA_MAC_VER_53:
+> >               return r8168ep_check_dash(tp);
+> >       default:
+> >               return false;
+> > @@ -1930,6 +1933,7 @@ static enum mac_version rtl8169_get_mac_version(u16 xid, bool gmii)
+> >               { 0x7c8, 0x608, RTL_GIGA_MAC_VER_61 },
+> >
+> >               /* RTL8117 */
+> > +             { 0x7cf, 0x54b, RTL_GIGA_MAC_VER_53 },
+> >               { 0x7cf, 0x54a, RTL_GIGA_MAC_VER_52 },
+> >
+> >               /* 8168EP family. */
+> > @@ -2274,7 +2278,7 @@ static void rtl_init_rxcfg(struct rtl8169_private *tp)
+> >       case RTL_GIGA_MAC_VER_38:
+> >               RTL_W32(tp, RxConfig, RX128_INT_EN | RX_MULTI_EN | RX_DMA_BURST);
+> >               break;
+> > -     case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_52:
+> > +     case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_53:
+> >               RTL_W32(tp, RxConfig, RX128_INT_EN | RX_MULTI_EN | RX_DMA_BURST | RX_EARLY_OFF);
+> >               break;
+> >       case RTL_GIGA_MAC_VER_60 ... RTL_GIGA_MAC_VER_63:
+> > @@ -2449,7 +2453,7 @@ DECLARE_RTL_COND(rtl_rxtx_empty_cond_2)
+> >  static void rtl_wait_txrx_fifo_empty(struct rtl8169_private *tp)
+> >  {
+> >       switch (tp->mac_version) {
+> > -     case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_52:
+> > +     case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_53:
+> >               rtl_loop_wait_high(tp, &rtl_txcfg_empty_cond, 100, 42);
+> >               rtl_loop_wait_high(tp, &rtl_rxtx_empty_cond, 100, 42);
+> >               break;
+> > @@ -3708,6 +3712,7 @@ static void rtl_hw_config(struct rtl8169_private *tp)
+> >               [RTL_GIGA_MAC_VER_50] = rtl_hw_start_8168ep_2,
+> >               [RTL_GIGA_MAC_VER_51] = rtl_hw_start_8168ep_3,
+> >               [RTL_GIGA_MAC_VER_52] = rtl_hw_start_8117,
+> > +             [RTL_GIGA_MAC_VER_53] = rtl_hw_start_8117,
+> >               [RTL_GIGA_MAC_VER_60] = rtl_hw_start_8125a_1,
+> >               [RTL_GIGA_MAC_VER_61] = rtl_hw_start_8125a_2,
+> >               [RTL_GIGA_MAC_VER_63] = rtl_hw_start_8125b,
+> > @@ -5101,7 +5106,7 @@ static void rtl_hw_init_8125(struct rtl8169_private *tp)
+> >  static void rtl_hw_initialize(struct rtl8169_private *tp)
+> >  {
+> >       switch (tp->mac_version) {
+> > -     case RTL_GIGA_MAC_VER_49 ... RTL_GIGA_MAC_VER_52:
+> > +     case RTL_GIGA_MAC_VER_49 ... RTL_GIGA_MAC_VER_53:
+> >               rtl8168ep_stop_cmac(tp);
+> >               fallthrough;
+> >       case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_48:
+> >
+>
+> I think you have to add the following in r8169_phy_config.c
+> [RTL_GIGA_MAC_VER_53] = rtl8117_hw_phy_config,
+> Or doesn't VER_53 need this?
 
-Looks fine to me, but you need to fix the coding style -- tabs, not spaces.
+Hmm, it works great with or without rtl8117_hw_phy_config.
+But yes, it should need this, let me send a V2 on top of net-next.
 
+Kai-Heng
