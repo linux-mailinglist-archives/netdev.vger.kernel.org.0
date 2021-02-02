@@ -2,67 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E9D930B55E
+	by mail.lfdr.de (Postfix) with ESMTP id 0B12830B55D
 	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 03:42:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230388AbhBBCkt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 21:40:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59510 "EHLO mail.kernel.org"
+        id S231301AbhBBCks (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 21:40:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59482 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231156AbhBBCkr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Feb 2021 21:40:47 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id C7C0764ED9;
+        id S229537AbhBBCkq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Feb 2021 21:40:46 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 610C964DDD;
         Tue,  2 Feb 2021 02:40:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1612233606;
-        bh=C9Rk8M1v+1F9LiLYhT4qN1OaOU4OLLwTsAevDdKIzlE=;
+        bh=yfntcXcoqe1wusH7Htycob0bwFGVAVcT1tMwYbfHg9c=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=HS/mfsQhz1tRbPKYll6mM35TNwiLn9y7Vhtobfe0CLEczcfhxmHQ4/hvp7Zg1Crn6
-         EymqUAUtYVwrcPwW4E151I0RrL4vbR3j9H18UKIbCzpePFXlp0vCrk3GKgfZupxlNu
-         skVSMl7KwH7tPSWMChsMkF5jcgcmqXgl0neKoCa+dGXcHS7b/6KZWkzvsFnmUdS0hh
-         sXPNL4xROaTjsjcBxUohIDXQ/JVE5E19iHKHcm1UWnu7AYJLdVNDXIOiQYon/X6yTO
-         qcA3589oV/euj9JYyz++wgvJVuUdyejvLBeAL6qVn+NcEKurmoasFvt6FwiuBWSKVa
-         36MDQt1z8gfMA==
+        b=hQ65JZUalJB0jfM5k5T9biYh7Et52VefVKV34QjHDQcj+ldO8D3N2Tjdv8YW/AFkd
+         aCrAcxLe+zyJhz9Hp4iqalfYH3sypFQ7445Ldb2nIfSkGhrk9vPDvLnmDaaBh+AynS
+         t2CG8IwZpRYlVKnMsRqbiFLbOQXNGfcsJcwL2slchSfWZenLv9GRk+UhIrVtx5jxyM
+         +/JID5c6afjzdZsr3jaR3T7vCc8NkSXDELofChNboYy+/nYYZjrjJgd9MUvFjud3uh
+         VXPrIOsL7GTMoFrfnmIDatZo+xD4FYGNnhnsIwb76xF7be3lYDG+/mizELMXe3t6xp
+         BUbrmkX183iwg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C178E609D0;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5170A609D7;
         Tue,  2 Feb 2021 02:40:06 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/2] net: dsa: hellcreek: Report tables sizes
+Subject: Re: [PATCH net v2] ibmvnic: device remove has higher precedence over
+ reset
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161223360678.28374.6348724450041467252.git-patchwork-notify@kernel.org>
+Message-Id: <161223360632.28374.6957431077646560509.git-patchwork-notify@kernel.org>
 Date:   Tue, 02 Feb 2021 02:40:06 +0000
-References: <20210130135934.22870-1-kurt@kmk-computers.de>
-In-Reply-To: <20210130135934.22870-1-kurt@kmk-computers.de>
-To:     Kurt Kanzenbach <kurt@kmk-computers.de>
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org
+References: <20210129043402.95744-1-ljp@linux.ibm.com>
+In-Reply-To: <20210129043402.95744-1-ljp@linux.ibm.com>
+To:     Lijun Pan <ljp@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        drt@linux.ibm.com, sukadev@linux.ibm.com, mpe@ellerman.id.au,
+        julietk@linux.vnet.ibm.com, benh@kernel.crashing.org,
+        paulus@samba.org, davem@davemloft.net, kuba@kernel.org,
+        gregkh@linuxfoundation.org, kernel@pengutronix.de,
+        u.kleine-koenig@pengutronix.de
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Sat, 30 Jan 2021 14:59:32 +0100 you wrote:
-> Hi,
-> 
-> Florian, Andrew and Vladimir suggested at some point to use devlink for
-> reporting tables, features and debugging counters instead of using debugfs and
-> printk.
-> 
-> So, start by reporting the VLAN and FDB table sizes.
+On Thu, 28 Jan 2021 22:34:01 -0600 you wrote:
+> Returning -EBUSY in ibmvnic_remove() does not actually hold the
+> removal procedure since driver core doesn't care for the return
+> value (see __device_release_driver() in drivers/base/dd.c
+> calling dev->bus->remove()) though vio_bus_remove
+> (in arch/powerpc/platforms/pseries/vio.c) records the
+> return value and passes it on. [1]
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/2] net: dsa: hellcreek: Report VLAN table occupancy
-    https://git.kernel.org/netdev/net-next/c/7f976d5cf16d
-  - [net-next,2/2] net: dsa: hellcreek: Report FDB table occupancy
-    https://git.kernel.org/netdev/net-next/c/8486e83fe1d8
+  - [net,v2] ibmvnic: device remove has higher precedence over reset
+    https://git.kernel.org/netdev/net/c/5e9eff5dfa46
 
 You are awesome, thank you!
 --
