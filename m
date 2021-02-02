@@ -2,75 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 184E330B3D1
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 01:05:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63B8E30B3E0
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 01:10:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231169AbhBBAEe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 19:04:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39520 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231278AbhBBAEU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 19:04:20 -0500
-Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 116EAC061573;
-        Mon,  1 Feb 2021 16:03:40 -0800 (PST)
-Received: by mail-ot1-x329.google.com with SMTP id k8so18171134otr.8;
-        Mon, 01 Feb 2021 16:03:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=37pynsMAQx3bXMKrumdsATxdXJWb85qmhwgI2jnrHk4=;
-        b=DIRtUvIpx08YmXkbFBlMWDnbLx6noy+35F+dgPKt0nG69KPoOolr0APkj/vLZebqyM
-         CfEi1QS8f0cUnOHnQTaOMqn/UGjDa6onie/06TAHgxv+LWdfWv9lOSs7rUZbvgcelmE7
-         3xMQdvY1203NKQrIqzpdhHioMUqIvZTN4x0cqigbGyw1vjb9EFkX2oqTgpZDBwmFs4Li
-         u/w/eRx+ZxLASeDbsrYqdliRW43g0U3TTKFME4cPczQ5B4CazVg+bMmlrYN+D+oxWfnN
-         2LDpFKRMtBB6Zr43NehXsb9EEWyR3yT2XIPPLNgFAdHO2HAnJ2PQnbFeFJFj8G/kGqWE
-         MNeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=37pynsMAQx3bXMKrumdsATxdXJWb85qmhwgI2jnrHk4=;
-        b=CNULjUnijdn59D4PkLq5ng/cquR7vxS7pdx91DCxjpwiIpKjcgfiz4MXHX3P8zDzr/
-         BW6FiVrKfyX1xrKWzk4gdWV7ij7hIdgH0ZMMJUPseSKMx7kDS1+DxzKM0AfO3ysXhzAk
-         qnKKgPlr3vJ6JjNkvztHt5OAxzYOWl/SaTPpDY8ZmQjeC3nRetpzN9u0u4iHgIkyBl/i
-         CNgXNOnmtySGlgL8rUYVWWbqrUEr1WekBwOc0hhOZyu679A/61v8qIwi4FkHonvCBgYo
-         CNO4xOEuOrHhlYMhBSglqYGOenrZn4BOh2RUVPqpbY245icBgXTuG/tvTrAdkl+CyU4y
-         3uhQ==
-X-Gm-Message-State: AOAM532Iwm/aZeotB1S5zo8Ll88F9Cxfzls6IFiEMMyj1CN8WFhAAihd
-        rR9ynHQEWdL6A/eeU58KhG+xpRmkXeCSf3EXpsc=
-X-Google-Smtp-Source: ABdhPJxVf/uxXcihOHt+fv9aodaCiGp1tWIfZ1FIbvwctTZzHCizFsnO1ZnOSQzbkanBGzy+nxOxM+kX77eexYFrGfQ=
-X-Received: by 2002:a9d:1421:: with SMTP id h30mr13793728oth.45.1612224219576;
- Mon, 01 Feb 2021 16:03:39 -0800 (PST)
+        id S231265AbhBBAIw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 19:08:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43616 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229556AbhBBAIv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Feb 2021 19:08:51 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D3A0960238;
+        Tue,  2 Feb 2021 00:08:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612224491;
+        bh=B6ktC2EpfC8DsDU+3U0w4wjPr5UjBgv2/i6cLe27up4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lAi6cpa5ztYvSMz3OoFqxAnj7fe/+K6x5wPTGB8nESOXijyz+RaltO+3b7K+YOdu+
+         BWV+wCXW6VemalVU09iXawcSJb05F0rH3N5BUiVIdz7JCcSKbFHXHAR7dGPOi1w0Al
+         3/eBIF+15eLRhIuVWhgFyIvhtPq/AhKP9kRfuCv57+nSV5Gi0TdaGOJ23Ga8uYh4gR
+         fEaflGFQL2/hYREN4DeKKJKAmNMKBoW+wFzQCBsVmF0RbCVC7gij3Qv3pBw+s2ltiS
+         yWCxplA1XdKOUJeYWVmNqRyhjXrDM94rOkGcIHBm4CS69cNvjVZGbsBVgYvLSZQp0H
+         K1rVGy57lxtbw==
+Date:   Mon, 1 Feb 2021 16:08:09 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Chris Mi <cmi@nvidia.com>, netdev@vger.kernel.org, jiri@nvidia.com,
+        saeedm@nvidia.com, kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH net-next v5] net: psample: Introduce stubs to remove NIC
+ driver dependency
+Message-ID: <20210201160809.071bdfcb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210201180606.GA3456040@shredder.lan>
+References: <20210130023319.32560-1-cmi@nvidia.com>
+        <20210130145227.GB3329243@shredder.lan>
+        <c62ee575-49e0-c5d6-f855-ead5775af141@nvidia.com>
+        <20210201180606.GA3456040@shredder.lan>
 MIME-Version: 1.0
-References: <20210201232609.3524451-1-elder@linaro.org> <20210201232609.3524451-4-elder@linaro.org>
- <CAE1WUT6VOx=sS1K1PaJG+Ks06CMpoz_efCyNhFQhD83_YNLk5A@mail.gmail.com>
-In-Reply-To: <CAE1WUT6VOx=sS1K1PaJG+Ks06CMpoz_efCyNhFQhD83_YNLk5A@mail.gmail.com>
-From:   Amy Parker <enbyamy@gmail.com>
-Date:   Mon, 1 Feb 2021 16:03:28 -0800
-Message-ID: <CAE1WUT7Q5NGSYbhwidmfV3bjTg0pme9y6vMbFsN4UtvgnGrDhg@mail.gmail.com>
-Subject: Re: [PATCH net 3/4] net: ipa: use the right accessor in ipa_endpoint_status_skip()
-To:     Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, elder@kernel.org,
-        evgreen@chromium.org, bjorn.andersson@linaro.org,
-        cpratapa@codeaurora.org, subashab@codeaurora.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 1, 2021 at 4:02 PM Amy Parker <enbyamy@gmail.com> wrote:
+On Mon, 1 Feb 2021 20:06:06 +0200 Ido Schimmel wrote:
+> On Mon, Feb 01, 2021 at 10:00:48AM +0800, Chris Mi wrote:
+> > On 1/30/2021 10:52 PM, Ido Schimmel wrote:  
+> > > This belongs in the changelog (that should be part of the commit
+> > > message). Something like "Fix xxx reported by kernel test robot".  
+> > But I see existing commits have it.  
+> 
+> It is used by commits whose sole purpose is to fix an issue that was
+> reported by the kernel test robot. In this case the robot merely
+> reported an issue with your v1. If you want to give credit, use the form
+> I suggested above. It is misleading otherwise.
 
-> > Fix this by using u8_get_bits() to get the destination endpoint ID.
->
-> Isn't
->
-
-Apologies about this - premature email sending. This was simply going
-to be "Isn't endpoint_id u32?", which was addressed later anyways.
-
-Best regards,
-Amy Parker
-(she/her/hers)
+Personally I fully agree. But some people pushed back on this in 
+the past saying buildbot should be credited for early detection, 
+too - otherwise the funding may dry up. So I don't care either 
+way now :)
