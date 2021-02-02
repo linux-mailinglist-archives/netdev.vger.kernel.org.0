@@ -2,98 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9E9B30BA37
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 09:48:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E679430BBA7
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 11:02:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232685AbhBBIqX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 03:46:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38338 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229975AbhBBIqU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 03:46:20 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B995C061573;
-        Tue,  2 Feb 2021 00:45:39 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id z22so21948010edb.9;
-        Tue, 02 Feb 2021 00:45:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2ox99HVhgfkKQy0YFujzXMK6SWexfPe2JQZv9y+VkcQ=;
-        b=KQqLLQ5D9PDuj7IMWXFPJw+E5m8aYBX8Lxr9FdeNTJu+pa+Vq5B0ourfQE7E3lPMhN
-         K5qk9cVGTkFvLrJWXuUpRd9j2IC0lLG4/lkfncm6xTRmjd4tp5Ymbmtv5s2AFXxHcHl9
-         mUQ+e1AmMynwhmTjOtcrPuq45eOGaFwXa1orqVkrnFa/dZsS8GAGb+ZM/ujhsezbQww2
-         K/M/EaNImksbZXS5P+4F+7vfqVUuELd/DtH70rhZmBqYpi41R73x70b3w1ZQ9e15UIne
-         /y7MbheEZ+BgDPeKQ3iH2l9nTkbaT4WW30K6F52zlolPph4a2zFEzWz07enU8ppK32t7
-         lE3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2ox99HVhgfkKQy0YFujzXMK6SWexfPe2JQZv9y+VkcQ=;
-        b=KDnnHCCUU+oJ/uXQ08Suxxzw6KOdeYlTvHM5WF+l/lIaINmufRRLyDxTIYsCIhzLBP
-         4E58mSxhGlXFCOZYTqoM5fcf8swXVrN7fg0zaAUBmxjQYIbwvmRcxEzHlHeSZWFex3x7
-         ecCG85w7F61xFkVTlfY7lnboQWlo9hk3/T5H85OexBONwG6rt+1QLPIJtp+Ywr59P9f2
-         O0kMEbXTPb2PY3/eIVijTcF0n/XTQMraUqPmIPDBEwdJn+FobTwOUlw82B2Y+iQ2rpXP
-         vk4s+Tmeq3YnFhA3Qw/0/1H8XrxQZ/b6rVpLrt5KpyeDfX/LgrWg/pKB6ZnaMBdkRcNq
-         duXA==
-X-Gm-Message-State: AOAM532JzficvF49uUX2cy8jqPXKpf8m+mWs8LjXnw2Y82rY0xQw6HE3
-        Qcqmqfu8MmyeYStQozMLQSRNoCdP2NjYQg==
-X-Google-Smtp-Source: ABdhPJwy1hOut8xmhbJYwdSaY8cB723WFUy9Ci9dGMt9By8iU7bWfhtUVzU1A/HpRwRDN07RR+XR/w==
-X-Received: by 2002:a05:6402:3122:: with SMTP id dd2mr22702869edb.262.1612255538290;
-        Tue, 02 Feb 2021 00:45:38 -0800 (PST)
-Received: from cinterion-pc.localdomain (dynamic-077-011-076-043.77.11.pool.telefonica.de. [77.11.76.43])
-        by smtp.googlemail.com with ESMTPSA id k3sm3683517ejv.121.2021.02.02.00.45.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Feb 2021 00:45:37 -0800 (PST)
-From:   Christoph Schemmel <christoph.schemmel@gmail.com>
-To:     bjorn@mork.no, avem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        hans-christoph.schemmel@thalesgroup.com,
-        Christoph Schemmel <christoph.schemmel@gmail.com>
-Subject: [PATCH] NET: usb: qmi_wwan: Adding support for Cinterion MV31
-Date:   Tue,  2 Feb 2021 09:45:23 +0100
-Message-Id: <20210202084523.4371-1-christoph.schemmel@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S229731AbhBBKAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 05:00:47 -0500
+Received: from goliath.siemens.de ([192.35.17.28]:55171 "EHLO
+        goliath.siemens.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229651AbhBBKAn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 05:00:43 -0500
+X-Greylist: delayed 3382 seconds by postgrey-1.27 at vger.kernel.org; Tue, 02 Feb 2021 05:00:42 EST
+Received: from mail2.siemens.de (mail2.siemens.de [139.25.208.11])
+        by goliath.siemens.de (8.15.2/8.15.2) with ESMTPS id 11293VAn025591
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 2 Feb 2021 10:03:31 +0100
+Received: from md2k7s8c.ad001.siemens.net ([10.220.72.69])
+        by mail2.siemens.de (8.15.2/8.15.2) with ESMTP id 11293UBe011169;
+        Tue, 2 Feb 2021 10:03:31 +0100
+From:   Andreas Oetken <ennoerlangen@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Andreas Oetken <ennoerlangen@gmail.com>,
+        Andreas Oetken <andreas.oetken@siemens.com>
+Subject: [PATCH v1] net: hsr: align sup_multicast_addr in struct hsr_priv to u16 boundary
+Date:   Tue,  2 Feb 2021 10:03:04 +0100
+Message-Id: <20210202090304.2740471-1-ennoerlangen@gmail.com>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding support for Cinterion MV31 with PID 0x00B7.
+From: Andreas Oetken <andreas.oetken@siemens.com>
 
-T:  Bus=04 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#= 11 Spd=5000 MxCh= 0
-D:  Ver= 3.20 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
-P:  Vendor=1e2d ProdID=00b7 Rev=04.14
-S:  Manufacturer=Cinterion
-S:  Product=Cinterion USB Mobile Broadband
-S:  SerialNumber=b3246eed
-C:  #Ifs= 4 Cfg#= 1 Atr=a0 MxPwr=896mA
-I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
-I:  If#=0x1 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30 Driver=option
+sup_multicast_addr is passed to ether_addr_equal for address comparison
+which casts the address inputs to u16 leading to an unaligned access.
+Aligning the sup_multicast_addr to u16 boundary fixes the issue.
 
-Signed-off-by: Christoph Schemmel <christoph.schemmel@gmail.com>
+Signed-off-by: Andreas Oetken <andreas.oetken@siemens.com>
 ---
- drivers/net/usb/qmi_wwan.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/hsr/hsr_main.h | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index cc4819282820..4edf94f1e880 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -1309,6 +1309,7 @@ static const struct usb_device_id products[] = {
- 	{QMI_FIXED_INTF(0x1e2d, 0x0082, 5)},	/* Cinterion PHxx,PXxx (2 RmNet) */
- 	{QMI_FIXED_INTF(0x1e2d, 0x0083, 4)},	/* Cinterion PHxx,PXxx (1 RmNet + USB Audio)*/
- 	{QMI_QUIRK_SET_DTR(0x1e2d, 0x00b0, 4)},	/* Cinterion CLS8 */
-+	{QMI_FIXED_INTF(0x1e2d, 0x00b7, 0)},	/* Cinterion MV31 RmNet */
- 	{QMI_FIXED_INTF(0x413c, 0x81a2, 8)},	/* Dell Wireless 5806 Gobi(TM) 4G LTE Mobile Broadband Card */
- 	{QMI_FIXED_INTF(0x413c, 0x81a3, 8)},	/* Dell Wireless 5570 HSPA+ (42Mbps) Mobile Broadband Card */
- 	{QMI_FIXED_INTF(0x413c, 0x81a4, 8)},	/* Dell Wireless 5570e HSPA+ (42Mbps) Mobile Broadband Card */
+diff --git a/net/hsr/hsr_main.h b/net/hsr/hsr_main.h
+index 7dc92ce5a134..a9c30a608e35 100644
+--- a/net/hsr/hsr_main.h
++++ b/net/hsr/hsr_main.h
+@@ -217,7 +217,10 @@ struct hsr_priv {
+ 	u8 net_id;		/* for PRP, it occupies most significant 3 bits
+ 				 * of lan_id
+ 				 */
+-	unsigned char		sup_multicast_addr[ETH_ALEN];
++	unsigned char		sup_multicast_addr[ETH_ALEN] __aligned(sizeof(u16));
++				/* Align to u16 boundary to avoid unaligned access
++				 * in ether_addr_equal
++				 */
+ #ifdef	CONFIG_DEBUG_FS
+ 	struct dentry *node_tbl_root;
+ #endif
 -- 
-2.25.1
+2.30.0
 
