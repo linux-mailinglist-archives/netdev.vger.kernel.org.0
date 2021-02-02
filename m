@@ -2,34 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE41E30C323
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 16:11:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3B9530C4F3
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 17:08:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235175AbhBBPLl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 10:11:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37238 "EHLO mail.kernel.org"
+        id S236089AbhBBQHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 11:07:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38256 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235130AbhBBPJO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 10:09:14 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 269F964E4C;
-        Tue,  2 Feb 2021 15:06:25 +0000 (UTC)
+        id S235152AbhBBPJo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 10:09:44 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A5D6A64F61;
+        Tue,  2 Feb 2021 15:06:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612278385;
-        bh=ECBiNusZ6x2h9HYHwiSqB6jmDGduRAqvrEGM7641/rk=;
+        s=k20201202; t=1612278393;
+        bh=H+McNijkMR/bhxDtYibNQd0KYp1YtnL9gfDDcwOMDNk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h80po7JxSndRpujdyCB5QUr68jGAYZtd6BUeYSswrZ8/qfkD+sGrUXL/QhQbJuRtz
-         bIgEwweELolO18JPyIB5zyuiVMqFER0JcAqF16jZnZ5d0ws8+JmVlaZ7gr8bQFTIvc
-         CjBW1GPYEpH194qUo7H7V+Agnry1kkMbetlrKJTf288JegtDBfGNA5uyH0FvxlQeIl
-         TC3Qb/wUNPia2IXBPbKL3R3hRdWPM9BxNIk8m0hrtBsAyXN+a1r/glxGYrQXvig2OW
-         dLzbGNj1njokV02G7LTPaHtC2Vi996yevrol1U4T6ZJMAbFu4sBHJ8FyK41NSzHS/M
-         1sXMh/tkG1vnw==
+        b=WxYJg3fFDFV/+TGYoFDMc20aXJ8PbBcDtOST75fNlQ+z5EhqNVJSxoM1meTbRG5qZ
+         BKVYmhxW2ZBrLgA/M/YxGQPP1Fr5R0cydvlv1+EfZe1n7FLQ+xp7N5vgqARXRunUEI
+         eMZexZgzW02JxmXaY28LNAvyC3iE2wm3xg9qHQKVVaG2rhT2/zLGkANhUFDc/zSsXG
+         9UiQxZfNbmW86nDd+KM1Gn+OKsGVu44EWEzSGy8isVuscyzHfoXE9vra/eY5Wvc/bV
+         uF388cFNxOOh5VVY65Dah1eOgQDzMRHKvFDiO3Y82jex1sSRMkoHEBswANSeKcYXxJ
+         /OoNSzF42nkaQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pan Bian <bianpan2016@163.com>, Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 07/25] chtls: Fix potential resource leak
-Date:   Tue,  2 Feb 2021 10:05:57 -0500
-Message-Id: <20210202150615.1864175-7-sashal@kernel.org>
+Cc:     Sara Sharon <sara.sharon@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 13/25] iwlwifi: mvm: skip power command when unbinding vif during CSA
+Date:   Tue,  2 Feb 2021 10:06:03 -0500
+Message-Id: <20210202150615.1864175-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210202150615.1864175-1-sashal@kernel.org>
 References: <20210202150615.1864175-1-sashal@kernel.org>
@@ -41,49 +44,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pan Bian <bianpan2016@163.com>
+From: Sara Sharon <sara.sharon@intel.com>
 
-[ Upstream commit b6011966ac6f402847eb5326beee8da3a80405c7 ]
+[ Upstream commit bf544e9aa570034e094a8a40d5f9e1e2c4916d18 ]
 
-The dst entry should be released if no neighbour is found. Goto label
-free_dst to fix the issue. Besides, the check of ndev against NULL is
-redundant.
+In the new CSA flow, we remain associated during CSA, but
+still do a unbind-bind to the vif. However, sending the power
+command right after when vif is unbound but still associated
+causes FW to assert (0x3400) since it cannot tell the LMAC id.
 
-Signed-off-by: Pan Bian <bianpan2016@163.com>
-Link: https://lore.kernel.org/r/20210121145738.51091-1-bianpan2016@163.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Just skip this command, we will send it again in a bit, when
+assigning the new context.
+
+Signed-off-by: Sara Sharon <sara.sharon@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/iwlwifi.20210115130252.64a2254ac5c3.Iaa3a9050bf3d7c9cd5beaf561e932e6defc12ec3@changeid
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c    | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
-index 5beec901713fb..a262c949ed76b 100644
---- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
-+++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
-@@ -1158,11 +1158,9 @@ static struct sock *chtls_recv_sock(struct sock *lsk,
- #endif
- 	}
- 	if (!n || !n->dev)
--		goto free_sk;
-+		goto free_dst;
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+index b627e7da7ac9d..d42165559df6e 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+@@ -4249,6 +4249,9 @@ static void __iwl_mvm_unassign_vif_chanctx(struct iwl_mvm *mvm,
+ 	iwl_mvm_binding_remove_vif(mvm, vif);
  
- 	ndev = n->dev;
--	if (!ndev)
--		goto free_dst;
- 	if (is_vlan_dev(ndev))
- 		ndev = vlan_dev_real_dev(ndev);
- 
-@@ -1249,7 +1247,8 @@ static struct sock *chtls_recv_sock(struct sock *lsk,
- free_csk:
- 	chtls_sock_release(&csk->kref);
- free_dst:
--	neigh_release(n);
-+	if (n)
-+		neigh_release(n);
- 	dst_release(dst);
- free_sk:
- 	inet_csk_prepare_forced_close(newsk);
+ out:
++	if (fw_has_capa(&mvm->fw->ucode_capa, IWL_UCODE_TLV_CAPA_CHANNEL_SWITCH_CMD) &&
++	    switching_chanctx)
++		return;
+ 	mvmvif->phy_ctxt = NULL;
+ 	iwl_mvm_power_update_mac(mvm);
+ }
 -- 
 2.27.0
 
