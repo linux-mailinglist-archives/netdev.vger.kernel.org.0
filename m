@@ -2,167 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D89F730B436
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 01:38:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9903830B43B
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 01:42:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229593AbhBBAiO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 19:38:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46760 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229527AbhBBAiN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 19:38:13 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1FD6C061573
-        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 16:37:32 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id s3so7298977edi.7
-        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 16:37:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=jbYe5W7KGj+nAdDQNB6u8Akoy51s4bVc1vI8xnhdOX4=;
-        b=KkYldV8r9iACcYXCFL3rienD/lhfcAODv6bMNa2hawvvXad2LrwmeIO01Zo9or16Dj
-         cbOsxSzEpmjVY+EkwecIfcugKrhH6S0jqiSilPzvXEx6kTHW3TjPKq39LuDVB1A4xFxW
-         8pbxs/qbDCOAnl/wG2Mua9WUimF07niZjb9n0FAKt6UDEhtUOoShj+YZ+BWKwGzBdokC
-         Qh4sUCM21V0u+DRqV2cCSeyka4hW3Z4ZfN4ejrsvR9nl2d+vDZx4uU4oKYc0dg4A9GiA
-         Fumi9DcNr+NJAJURIou6XduXFtxezzxGQ2hwdgU3b6TXxWmE0TxAhJkJwBU8AYWH1wds
-         U32Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jbYe5W7KGj+nAdDQNB6u8Akoy51s4bVc1vI8xnhdOX4=;
-        b=pRhNTwwIlf9rw3yef2hNNaJF6hF2Ptbwgh31cpVDTGoCrFXJ/TCNw/4U+nCsmtLBrd
-         jmSNmKJYv9s+latB6hZ7o6xGy/zz8mCFWHVlXtHRPtVL/a6uaFGIoLmaztM3qmkVyMTz
-         L6GcKvxHWrdYhr0lKYw1Zn4vq/qlpNx1AXZfbH/fkXJjm1ktdNSTjXeenmc8ZBSTK07F
-         /vi8mZm95KvKAyQjd2mjwjaHWgWVAgEjOuC767ldm8WKox7a2eFGUK4zHVLrvZGeiV17
-         O07dcf3FV2cVfiK2T2woyCiFbqthMormEL+i4/7tSBZpws5Nea81VBdeJ6TzdNSjabOC
-         6Fzg==
-X-Gm-Message-State: AOAM530iyAjyV8iQnIRyMkxGiKI8XUCxmmdNSyc7Ymu4fb0O1oNMIb/n
-        pFpJr11JEf4GQyZONwUS+14=
-X-Google-Smtp-Source: ABdhPJxIaxzn6KEW2UMFW/2zTTqiXnP1my/aQ+0NtFa8xvlVCmjsrYjT1ct0/UoBlwQRODJphZPbiw==
-X-Received: by 2002:a50:9fae:: with SMTP id c43mr7617494edf.269.1612226251421;
-        Mon, 01 Feb 2021 16:37:31 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id u5sm1518956edc.29.2021.02.01.16.37.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Feb 2021 16:37:30 -0800 (PST)
-Date:   Tue, 2 Feb 2021 02:37:29 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     George McCollister <george.mccollister@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org
-Subject: Re: [RESEND PATCH net-next 1/4] net: hsr: generate supervision frame
- without HSR tag
-Message-ID: <20210202003729.oh224wtpqm6bcse3@skbuf>
-References: <20210201140503.130625-1-george.mccollister@gmail.com>
- <20210201140503.130625-2-george.mccollister@gmail.com>
- <20210201145943.ajxecwnhsjslr2uf@skbuf>
- <CAFSKS=OR6dXWXdRTmYToH7NAnf6EiXsVbV_CpNkVr-z69vUz-g@mail.gmail.com>
+        id S231264AbhBBAlO convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 1 Feb 2021 19:41:14 -0500
+Received: from mga11.intel.com ([192.55.52.93]:39095 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229556AbhBBAlM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Feb 2021 19:41:12 -0500
+IronPort-SDR: dir/nj/ziTEwW3GGs0aszbdyqaSQvA7geeqYcJk7x8r+RxytLXJrX9l8EG2dsp4qeNO4kXrFmZ
+ Rwtgrwch56/A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9882"; a="177266964"
+X-IronPort-AV: E=Sophos;i="5.79,393,1602572400"; 
+   d="scan'208";a="177266964"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2021 16:40:30 -0800
+IronPort-SDR: 0COdYcDysD1QylPd9RlOA30cCzpcZe6xgGNTwUyHtZii8rdX0J/5JH7gHO/Aw02VdUvo3M4Zki
+ CPcmbSS9PaOg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.79,393,1602572400"; 
+   d="scan'208";a="412766336"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by fmsmga002.fm.intel.com with ESMTP; 01 Feb 2021 16:40:30 -0800
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Mon, 1 Feb 2021 16:40:29 -0800
+Received: from fmsmsx612.amr.corp.intel.com ([10.18.126.92]) by
+ fmsmsx612.amr.corp.intel.com ([10.18.126.92]) with mapi id 15.01.2106.002;
+ Mon, 1 Feb 2021 16:40:29 -0800
+From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+CC:     Leon Romanovsky <leon@kernel.org>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
+        "Williams, Dan J" <dan.j.williams@intel.com>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
+        "Patil, Kiran" <kiran.patil@intel.com>
+Subject: RE: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
+ implement private channel OPs
+Thread-Topic: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
+ implement private channel OPs
+Thread-Index: AQHW8RlTrNE3qjtLukSnj7NcX24DDao5N6oA//+n/DCAAMFCAIAAeSAAgAHXAYD//6CioIABFy+AgABrh4CAAjZjEIAE9xSA///EJCA=
+Date:   Tue, 2 Feb 2021 00:40:28 +0000
+Message-ID: <925c33a0b174464898c9fc5651b981ee@intel.com>
+References: <20210122234827.1353-8-shiraz.saleem@intel.com>
+ <20210125184248.GS4147@nvidia.com>
+ <99895f7c10a2473c84a105f46c7ef498@intel.com>
+ <20210126005928.GF4147@nvidia.com>
+ <031c2675aff248bd9c78fada059b5c02@intel.com>
+ <20210127121847.GK1053290@unreal>
+ <ea62658f01664a6ea9438631c9ddcb6e@intel.com>
+ <20210127231641.GS4147@nvidia.com> <20210128054133.GA1877006@unreal>
+ <d58f341898834170af1bfb6719e17956@intel.com>
+ <20210201191805.GO4247@nvidia.com>
+In-Reply-To: <20210201191805.GO4247@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+x-originating-ip: [10.22.254.132]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFSKS=OR6dXWXdRTmYToH7NAnf6EiXsVbV_CpNkVr-z69vUz-g@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 01, 2021 at 01:43:43PM -0600, George McCollister wrote:
-> > > diff --git a/net/hsr/hsr_device.c b/net/hsr/hsr_device.c
-> > > index ab953a1a0d6c..161b8da6a21d 100644
-> > > --- a/net/hsr/hsr_device.c
-> > > +++ b/net/hsr/hsr_device.c
-> > > @@ -242,8 +242,7 @@ static struct sk_buff *hsr_init_skb(struct hsr_port *master, u16 proto)
-> > >        * being, for PRP it is a trailer and for HSR it is a
-> > >        * header
-> > >        */
-> > > -     skb = dev_alloc_skb(sizeof(struct hsr_tag) +
-> > > -                         sizeof(struct hsr_sup_tag) +
-> > > +     skb = dev_alloc_skb(sizeof(struct hsr_sup_tag) +
-> > >                           sizeof(struct hsr_sup_payload) + hlen + tlen);
+> Subject: Re: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
+> implement private channel OPs
+> 
+> On Sat, Jan 30, 2021 at 01:19:36AM +0000, Saleem, Shiraz wrote:
+> > > Subject: Re: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver
+> > > and implement private channel OPs
+> > >
+> > > On Wed, Jan 27, 2021 at 07:16:41PM -0400, Jason Gunthorpe wrote:
+> > > > On Wed, Jan 27, 2021 at 10:17:56PM +0000, Saleem, Shiraz wrote:
+> > > >
+> > > > > Even with another core PCI driver, there still needs to be
+> > > > > private communication channel between the aux rdma driver and
+> > > > > this PCI driver to pass things like QoS updates.
+> > > >
+> > > > Data pushed from the core driver to its aux drivers should either
+> > > > be done through new callbacks in a struct device_driver or by
+> > > > having a notifier chain scheme from the core driver.
+> > >
+> > > Right, and internal to driver/core device_lock will protect from
+> > > parallel probe/remove and PCI flows.
+> > >
 > >
-> > Question 1: why are you no longer allocating struct hsr_tag (or struct prp_rct,
-> > which has the same size)?
-> 
-> Because the tag is no longer being included in the supervisory frame
-> here. If I understand correctly hsr_create_tagged_frame and
-> prp_create_tagged_frame will create a new skb with HSR_HLEN added
-> later.
-
-I'm mostly doing static analysis of the code, which makes everything
-more difficult and also my review more inaccurate. I'll try to give your
-patches more testing when reviewing further, but I just got stuck into
-trying to understand them first.
-
-So your change makes fill_frame_info classify supervision frames as
-skb_std instead of skb_hsr or skb_prp. The tag is added only in
-hsr_create_tagged_frame right before dispatch to the egress port.
-
-But that means that there are places like for example
-hsr_handle_sup_frame which clearly don't like that: it checks whether
-there's a tagged skb in either frame->skb_hsr or frame->skb_prp, but not
-in frame->skb_std, so it now does basically nothing.
-
-Don't we need hsr_handle_sup_frame?
-
-> > In hsr->proto_ops->fill_frame_info in the call path above, the skb is
-> > still put either into frame->skb_hsr or into frame->skb_prp, but not
-> > into frame->skb_std, even if it does not contain a struct hsr_tag.
-> 
-> Are you sure? My patch changes hsr_fill_frame_info and
-> prp_fill_frame_info not to do that if port->type is HSR_PT_MASTER
-> which I'm pretty certain it always is when sending supervisory frames
-> like this. If I've overlooked something let me know.
-
-You're right, I had figured it out myself in the comment below where I
-called it a kludge.
-
+> > OK. We will hold the device_lock while issuing the .ops callbacks from core
+> driver.
+> > This should solve our synchronization issue.
 > >
-> > Also, which code exactly will insert the hsr_tag later? I assume
-> > hsr_fill_tag via hsr->proto_ops->create_tagged_frame?
-> 
-> Correct.
-
-I think it's too late, see above.
-
-> > > -     if (!hsr->prot_version)
-> > > -             proto = ETH_P_PRP;
-> > > -     else
-> > > -             proto = ETH_P_HSR;
-> > > -
-> > > -     skb = hsr_init_skb(master, proto);
-> > > +     skb = hsr_init_skb(master, ETH_P_PRP);
+> > There have been a few discussions in this thread. And I would like to
+> > be clear on what to do.
 > >
-> > Question 2: why is this correct, setting skb->protocol to ETH_P_PRP
-> > (HSR v0) regardless of prot_version? Also, why is the change necessary?
-> 
-> This part is not intuitive and I don't have a copy of the documents
-> where v0 was defined. It's unfortunate this code even supports v0
-> because AFAIK no one else uses it; but it's in here so we have to keep
-> supporting it I guess.
-> In v1 the tag has an eth type of 0x892f and the encapsulated
-> supervisory frame has a type of 0x88fb. In v0 0x88fb is used for the
-> eth type and there is no encapsulation type. So... this is correct
-> however I compared supervisory frame generation before and after this
-> patch for v0 and I found a problem. My changes make it add 0x88fb
-> again later for v0 which it's not supposed to do. I'll have to fix
-> that part somehow.
-
-Step 1: Sign up for HSR maintainership, it's currently orphan
-Step 2: Delete HSRv0 support
-Step 3: See if anyone shouts, probably not
-Step 4: Profit.
-
+> > So we will,
 > >
-> > Why is it such a big deal if supervision frames have HSR/PRP tag or not?
+> > 1. Remove .open/.close, .peer_register/.peer_unregister 2. Protect ops
+> > callbacks issued from core driver to the aux driver with device_lock
 > 
-> Because if the switch does automatic HSR/PRP tag insertion it will end
-> up in there twice. You simply can't send anything with an HSR/PRP tag
-> if this is offloaded.
+> A notifier chain is probably better, honestly.
+> 
+> Especially since you don't want to split the netdev side, a notifier chain can be
+> used by both cases equally.
+> 
 
-When exactly will your hardware push a second HSR tag when the incoming
-packet already contains one? Obviously for tagged packets coming from
-the ring it should not do that. It must be treating the CPU port special
-somehow, but I don't understand how.
+The device_lock seems to be a simple solution to this synchronization problem.
+May I ask what makes the notifier scheme better to solve this?
+
+Also, are you suggesting we rid all the iidc_peer_op callbacks used for 'ice' to 'irdma' driver
+communication and replace with events generated by ice driver which will be received
+by subscriber irdma? Or just some specific events to solve this synchronization problem?
+Sorry I am confused.
+
+Shiraz
