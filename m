@@ -2,54 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D32530B632
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 05:10:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2903530B636
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 05:13:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231439AbhBBEIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 23:08:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53192 "EHLO mail.kernel.org"
+        id S231491AbhBBEKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 23:10:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55696 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229872AbhBBEIP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Feb 2021 23:08:15 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9C35264D9F;
-        Tue,  2 Feb 2021 04:07:34 +0000 (UTC)
+        id S229872AbhBBEKr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Feb 2021 23:10:47 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id A96E064E88;
+        Tue,  2 Feb 2021 04:10:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612238854;
-        bh=LaeD5DPvFdSktOmKKZgyECD+giBegBebD6UQTrQ6sAY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dbcnpMHMWhiFUgUtO9oSDqCiMMJiR1n2fJ1YUcWz73DlsaZiYHAQauDSnP2P5UYjz
-         O9ZA8azXd7v8R308Q0xYYhvLCC2Ld2A1GDk+rlwz5imghZ23TakjppcX4Md+FquDfq
-         SdXudIxO16n+6VUDMNhGQpNXyo/c9SJsFtA/cXqz7aGCldaMrtlwgtVod7CeAI70qS
-         KZbt2+jZ1phR125TpDCghqWMQTdNXUpDhwh1fsWVrCDfMKt5x38aBkBmr8z38M+Aoe
-         ul6+2/P2a7TtVkn8f4et4g98w1eux0J+hOh/aAtBbvbW5db9kGK3JJL3I4VBY15NYv
-         tY47uoXpHfECA==
-Date:   Mon, 1 Feb 2021 20:07:33 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Menglong Dong <menglong8.dong@gmail.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>
-Subject: Re: make sendmsg/recvmsg process multiple messages at once
-Message-ID: <20210201200733.4309ef71@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CADxym3ba8R6fN3O5zLAw-e7q0gjFxBd_WUKjq0hTP+JpAbJEKg@mail.gmail.com>
-References: <CADxym3ba8R6fN3O5zLAw-e7q0gjFxBd_WUKjq0hTP+JpAbJEKg@mail.gmail.com>
+        s=k20201202; t=1612239006;
+        bh=jA+B1fRAhIqXgs5fIl3glpTBv5J2E0gKuYmLcplUSdc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=q7tXAOSpvFDKcaxwUcQ5UOQnF/7ApTUJ/w8JQD2GXNM0OOUX1NJFvFxD61N99g7b5
+         xHmsr8WSi7cZWEGv56UrB5J9Nk6vwdg9VlUE/fh2GbO8CyGF6qk21MxK4d+Q8H/0j2
+         YCAbRFhW6VQUaYZDtYJR3TDKhQc7v6g8aMlt4ZZjzE+NsupFBLPnGu9LRZ/QvQ+6HH
+         Zcf9/K9idnbwf8RFd50TJBRJuVReMF3/VwPgwjmyZ1iNuBP8x3452e+522/Gyxo8wJ
+         CAY9hSVmFPqvvrHahiKhv8abg5bomrIXCufOhHUQJD2PA9LvsE03kXKM3NDvlKEJke
+         2CtvuWx9cFKMA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8E7D260987;
+        Tue,  2 Feb 2021 04:10:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [RESEND net v3] net: ip_tunnel: fix mtu calculation
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161223900657.412.2704990087865304272.git-patchwork-notify@kernel.org>
+Date:   Tue, 02 Feb 2021 04:10:06 +0000
+References: <1611959267-20536-1-git-send-email-vfedorenko@novek.ru>
+In-Reply-To: <1611959267-20536-1-git-send-email-vfedorenko@novek.ru>
+To:     Vadim Fedorenko <vfedorenko@novek.ru>
+Cc:     kuba@kernel.org, willemdebruijn.kernel@gmail.com, mail@slava.cc,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 1 Feb 2021 20:41:45 +0800 Menglong Dong wrote:
-> Hello, guys!
-> 
-> I am thinking about making sendmsg/recvmsg process multiple messages
-> at once, which is possible to reduce the number of system calls.
-> 
-> Take the receiving of udp as an example, we can copy multiple skbs to
-> msg_iov and make sure that every iovec contains a udp package.
-> 
-> Is this a good idea? This idea seems clumsy compared to the incoming
-> 'io-uring' based zerocopy, but maybe it can help...
+Hello:
 
-Let me refer you to Willem and Paolo :)
+This patch was applied to netdev/net.git (refs/heads/master):
+
+On Sat, 30 Jan 2021 01:27:47 +0300 you wrote:
+> dev->hard_header_len for tunnel interface is set only when header_ops
+> are set too and already contains full overhead of any tunnel encapsulation.
+> That's why there is not need to use this overhead twice in mtu calc.
+> 
+> Fixes: fdafed459998 ("ip_gre: set dev->hard_header_len and dev->needed_headroom properly")
+> Reported-by: Slava Bacherikov <mail@slava.cc>
+> Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
+> 
+> [...]
+
+Here is the summary with links:
+  - [RESEND,net,v3] net: ip_tunnel: fix mtu calculation
+    https://git.kernel.org/netdev/net/c/28e104d00281
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
