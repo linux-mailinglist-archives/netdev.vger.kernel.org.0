@@ -2,44 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EBF630C6E4
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 18:06:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85FE130C6DF
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 18:03:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237149AbhBBRDH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 12:03:07 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38286 "EHLO mail.kernel.org"
+        id S237098AbhBBRCp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 12:02:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38292 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237057AbhBBRAv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S237114AbhBBRAv (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 2 Feb 2021 12:00:51 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 425B664E9A;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 3E39264F7E;
         Tue,  2 Feb 2021 17:00:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1612285208;
-        bh=a4SpeF1zNUPFma/TE5v/+Qm8Q3g8jfxU8nzdmkBK4RU=;
+        bh=PrlgP6jamvPpgaGb0Lg9zd0Oy51mM6KYUjN/ocHpe8E=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=tklw4NcWQ3PD2jwsw+9u0o0PRminp8pbYmkN7eYaOhxAPZ36TSKlg1XxpCn64zbSf
-         gclu0ghPO5U5KNiM0ZhDiwnLXvwwSp26qvx8gjUXbi2jLG8yQi5JJo9H7jH9aT6Paq
-         g50fjktMn4PnIoP3ObwBYC6bSEABAtTNJv68IExFHWASzPN8jSZxIgZkAj7980IbB7
-         MeXFin8EMLt5bUfgLaZDcoWxTpbow3mC+1ZW219ltRV+szJ8V+aNlpbjQWBl76ZMwf
-         tC8HX+EfhIusoNSfHToItthhnI2dLzbALdnys4rweLoRwJ0mIvlrfXb6wYIfrEC2Ul
-         ZnEVibwNA/vYA==
+        b=GdrZmcnmBmg7W8hhwPZ5TbPrCGnFlteMUZxfQA8q9c7mM4BeuKUflmHfgx+Mt5piM
+         Xd6OPBP/6VBxHQj8GxJ4zf2FTP+pyNm+7rLPHFJlPW1mbWrP/d37YtntD8MibDVSbq
+         UWs9DbOqEURrtkL7AqtlmHEEDPQWUcDNN7IZxGFafKDMoGQakp97T6cCU4aHfBn6Iw
+         uf3SenWIFmxT+iTxxkLXjRN4Z2N5aZWy4hUH2aHsYpvUu8u7wHFrT06Yf5QuIQMe89
+         gh6DztL1+H8KgueI8ZFD07v7tx+q7EhLin3zLNLTpPEIILW52WAyeoyLn0oRCY55Ap
+         nFJMKH4bxl1Mg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3295A609E1;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2A6A8609CE;
         Tue,  2 Feb 2021 17:00:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/4] net: ipa: a few bug fixes
+Subject: Re: [net 1/4] net/mlx5: Fix function calculation for page trees
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161228520820.27951.3321264627733368250.git-patchwork-notify@kernel.org>
+Message-Id: <161228520816.27951.1106879366069546828.git-patchwork-notify@kernel.org>
 Date:   Tue, 02 Feb 2021 17:00:08 +0000
-References: <20210201232609.3524451-1-elder@linaro.org>
-In-Reply-To: <20210201232609.3524451-1-elder@linaro.org>
-To:     Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, elder@kernel.org,
-        evgreen@chromium.org, bjorn.andersson@linaro.org,
-        cpratapa@codeaurora.org, subashab@codeaurora.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210202070703.617251-2-saeed@kernel.org>
+In-Reply-To: <20210202070703.617251-2-saeed@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        danielj@nvidia.com, colin.king@canonical.com, saeedm@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -48,30 +46,29 @@ Hello:
 
 This series was applied to netdev/net.git (refs/heads/master):
 
-On Mon,  1 Feb 2021 17:26:05 -0600 you wrote:
-> This series fixes four minor bugs.  The first two are things that
-> sparse points out.  All four are very simple and each patch should
-> explain itself pretty well.
+On Mon,  1 Feb 2021 23:07:00 -0800 you wrote:
+> From: Daniel Jurgens <danielj@nvidia.com>
 > 
-> 					-Alex
+> The function calculation always results in a value of 0. This works
+> generally, but when the release all pages feature is enabled it will
+> result in crashes.
 > 
-> Alex Elder (4):
->   net: ipa: add a missing __iomem attribute
->   net: ipa: be explicit about endianness
->   net: ipa: use the right accessor in ipa_endpoint_status_skip()
->   net: ipa: fix two format specifier errors
+> Fixes: 0aa128475d33 ("net/mlx5: Maintain separate page trees for ECPF and PF functions")
+> Signed-off-by: Daniel Jurgens <danielj@nvidia.com>
+> Reported-by: Colin Ian King <colin.king@canonical.com>
+> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/4] net: ipa: add a missing __iomem attribute
-    https://git.kernel.org/netdev/net/c/e6cdd6d80bae
-  - [net,2/4] net: ipa: be explicit about endianness
-    https://git.kernel.org/netdev/net/c/088f8a2396d8
-  - [net,3/4] net: ipa: use the right accessor in ipa_endpoint_status_skip()
-    https://git.kernel.org/netdev/net/c/c13899f18728
-  - [net,4/4] net: ipa: fix two format specifier errors
-    https://git.kernel.org/netdev/net/c/113b6ea09ccd
+  - [net,1/4] net/mlx5: Fix function calculation for page trees
+    https://git.kernel.org/netdev/net/c/ed5e83a3c029
+  - [net,2/4] net/mlx5: Fix leak upon failure of rule creation
+    https://git.kernel.org/netdev/net/c/a5bfe6b4675e
+  - [net,3/4] net/mlx5e: Update max_opened_tc also when channels are closed
+    https://git.kernel.org/netdev/net/c/5a2ba25a55c4
+  - [net,4/4] net/mlx5e: Release skb in case of failure in tc update skb
+    https://git.kernel.org/netdev/net/c/a34ffec8af8f
 
 You are awesome, thank you!
 --
