@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ADD630B539
+	by mail.lfdr.de (Postfix) with ESMTP id A5BF530B53A
 	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 03:26:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231285AbhBBCZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 21:25:26 -0500
-Received: from mga09.intel.com ([134.134.136.24]:11689 "EHLO mga09.intel.com"
+        id S231344AbhBBCZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 21:25:34 -0500
+Received: from mga09.intel.com ([134.134.136.24]:11679 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230122AbhBBCZZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 1 Feb 2021 21:25:25 -0500
-IronPort-SDR: O2+WR2+27qk3Odp9ldkZbtgVioWiR6kktFkP/yUiUFQlUlx/2eD+BzSJkKX47AqTlFi8TRgXI6
- LV0YQOnG9LEw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9882"; a="180929271"
+        id S231128AbhBBCZ0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 1 Feb 2021 21:25:26 -0500
+IronPort-SDR: WtGidEPe52GAS8K7qAlY9F0CE7b387Q1OXgUNAIucktdYikZu6ZcoivDiD9HJ1NDc6rvnm6K5a
+ ALHUuiBgeDBg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9882"; a="180929272"
 X-IronPort-AV: E=Sophos;i="5.79,393,1602572400"; 
-   d="scan'208";a="180929271"
+   d="scan'208";a="180929272"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
   by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2021 18:23:40 -0800
-IronPort-SDR: +DsLSya6oP8e9yDQBB7bbhbxBQ0QVOLRPYNbetlVh9CI3SlNLL5/CwCLHMy9vj3z99+1MjNiwK
- EOzwPwAv8tGA==
+IronPort-SDR: qIAJuSV0FgCqFATnuenuxbpURWRXkPB/8PJAkzG3pxjn+UWDo8R/negCpTRa1MTgDIDf82mGz9
+ LMas1nSpqekw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.79,393,1602572400"; 
-   d="scan'208";a="581782145"
+   d="scan'208";a="581782148"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga005.fm.intel.com with ESMTP; 01 Feb 2021 18:23:39 -0800
+  by fmsmga005.fm.intel.com with ESMTP; 01 Feb 2021 18:23:40 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        netdev@vger.kernel.org, sassmann@redhat.com,
-        anthony.l.nguyen@intel.com, bjorn.topel@intel.com,
-        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
+Cc:     Eryk Rybak <eryk.roch.rybak@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com, anthony.l.nguyen@intel.com,
+        bjorn.topel@intel.com, maciej.fijalkowski@intel.com,
+        magnus.karlsson@intel.com,
         Aleksandr Loktionov <aleksandr.loktionov@intel.com>,
-        George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
-Subject: [PATCH net-next 5/6] i40e: Add info trace at loading XDP program
-Date:   Mon,  1 Feb 2021 18:24:19 -0800
-Message-Id: <20210202022420.1328397-6-anthony.l.nguyen@intel.com>
+        Kiran Bhandare <kiranx.bhandare@intel.com>
+Subject: [PATCH net-next 6/6] i40e: Log error for oversized MTU on device
+Date:   Mon,  1 Feb 2021 18:24:20 -0800
+Message-Id: <20210202022420.1328397-7-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210202022420.1328397-1-anthony.l.nguyen@intel.com>
 References: <20210202022420.1328397-1-anthony.l.nguyen@intel.com>
@@ -45,44 +45,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+From: Eryk Rybak <eryk.roch.rybak@intel.com>
 
-New trace indicates that the XDP program was loaded.
-The trace has a note that in case of using XDP_REDIRECT,
-number of queues on both interfaces shall be the same.
-This is required for optimal performance of XDP_REDIRECT,
-if interface used for TX has lower number of queues than
-a RX interface, the packets may be dropped (depending on
-RSS queue assignment).
+When attempting to link XDP prog with MTU larger than supported,
+user is not informed why XDP linking fails. Adding proper
+error message: "MTU too large to enable XDP".
+Due to the lack of support for non-static variables in netlinks
+extended ACK feature, additional information has been added to dmesg
+to better inform about invalid MTU setting.
 
-Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
 Signed-off-by: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
-Tested-by: George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
+Signed-off-by: Eryk Rybak <eryk.roch.rybak@intel.com>
+Tested-by: Kiran Bhandare <kiranx.bhandare@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 521ea9df38d5..f35bd9164106 100644
+index f35bd9164106..b52a324a9f28 100644
 --- a/drivers/net/ethernet/intel/i40e/i40e_main.c
 +++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -12489,11 +12489,14 @@ static int i40e_xdp_setup(struct i40e_vsi *vsi,
- 	/* Kick start the NAPI context if there is an AF_XDP socket open
- 	 * on that queue id. This so that receiving will start.
- 	 */
--	if (need_reset && prog)
-+	if (need_reset && prog) {
+@@ -12448,9 +12448,10 @@ static netdev_features_t i40e_features_check(struct sk_buff *skb,
+  * i40e_xdp_setup - add/remove an XDP program
+  * @vsi: VSI to changed
+  * @prog: XDP program
++ * @extack: netlink extended ack
+  **/
+-static int i40e_xdp_setup(struct i40e_vsi *vsi,
+-			  struct bpf_prog *prog)
++static int i40e_xdp_setup(struct i40e_vsi *vsi, struct bpf_prog *prog,
++			  struct netlink_ext_ack *extack)
+ {
+ 	int frame_size = vsi->netdev->mtu + ETH_HLEN + ETH_FCS_LEN + VLAN_HLEN;
+ 	struct i40e_pf *pf = vsi->back;
+@@ -12459,8 +12460,13 @@ static int i40e_xdp_setup(struct i40e_vsi *vsi,
+ 	int i;
+ 
+ 	/* Don't allow frames that span over multiple buffers */
+-	if (frame_size > vsi->rx_buf_len)
++	if (frame_size > vsi->rx_buf_len) {
++		NL_SET_ERR_MSG_MOD(extack, "MTU too large to enable XDP");
 +		dev_info(&pf->pdev->dev,
-+			 "Loading XDP program, please note: XDP_REDIRECT action requires the same number of queues on both interfaces\n");
- 		for (i = 0; i < vsi->num_queue_pairs; i++)
- 			if (vsi->xdp_rings[i]->xsk_pool)
- 				(void)i40e_xsk_wakeup(vsi->netdev, i,
- 						      XDP_WAKEUP_RX);
++			 "MTU of %u bytes is too large to enable XDP (maximum: %u bytes)\n",
++			 vsi->netdev->mtu, vsi->rx_buf_len);
+ 		return -EINVAL;
 +	}
  
- 	return 0;
- }
+ 	if (!i40e_enabled_xdp_vsi(vsi) && !prog)
+ 		return 0;
+@@ -12772,7 +12778,7 @@ static int i40e_xdp(struct net_device *dev,
+ 
+ 	switch (xdp->command) {
+ 	case XDP_SETUP_PROG:
+-		return i40e_xdp_setup(vsi, xdp->prog);
++		return i40e_xdp_setup(vsi, xdp->prog, xdp->extack);
+ 	case XDP_SETUP_XSK_POOL:
+ 		return i40e_xsk_pool_setup(vsi, xdp->xsk.pool,
+ 					   xdp->xsk.queue_id);
 -- 
 2.26.2
 
