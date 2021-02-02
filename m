@@ -2,100 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D34A930CBB6
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 20:36:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA70C30CBC6
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 20:36:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233235AbhBBTdM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 14:33:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36214 "EHLO
+        id S233297AbhBBTfF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 14:35:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239587AbhBBTbT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 14:31:19 -0500
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD02C061573
-        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 11:30:39 -0800 (PST)
-Received: by mail-qt1-x82d.google.com with SMTP id l23so15784623qtq.13
-        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 11:30:39 -0800 (PST)
+        with ESMTP id S239805AbhBBTex (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 14:34:53 -0500
+Received: from mail-qk1-x74a.google.com (mail-qk1-x74a.google.com [IPv6:2607:f8b0:4864:20::74a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EE49C06174A
+        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 11:34:10 -0800 (PST)
+Received: by mail-qk1-x74a.google.com with SMTP id m64so18323978qke.12
+        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 11:34:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=8fkoU9zm4gATdbtkMdpLPBgQybgWaU56gpeMC4190qs=;
-        b=OAZKSvQ3iSeaHlcOwTyAYxmeEy7YsTFtXARtJHjF2YUoKUkCv1l8tF3qPAAwo4nA71
-         HYY6gKzp2NNQh4sQt2xg9OAwvJv3sE0v9xKPV6j6uHGx4CFq58s2NZVdqxSC2D5uG5G8
-         vx851SbblRh4KkjTzhBqCREZW1wWGPKHYwAcrlzv1lMGuPF/Q8QcHXcG4mnPPDH5HKzw
-         9T5FQ10RW9NnR3JYcGcEko5sriVtRV9fHW/Z6jBDMuHmY5XiUjyIzUNFer8wwRnM+5fd
-         7sm2mixcDHXxH+KcUnEEtzWUGV5xtPxBpDBhWvu1XdIxVwrHmB5KJ2sKtYFiz+IQrHDB
-         i5IA==
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=7mjFDBlLOrroTL2nKpGO/1sBwkxR1/DzFWmT8k4ca/Y=;
+        b=XZji5f4QZcJc3cciIxV/ZUFt8q7jQOeZ3dgN77mV4En1eXvNdun9Lyfa2A3eQpCqvV
+         WL/iOwnSKik1JW4l2PEPR+yskCKOfARooFtvWOAU1CRfnV279Uv86+qrHQMGj9kkWz8k
+         OCGoaMiA/XxM8snEQtRhc0RqlIgIkBA9jHrw59UA9dRAKmoW2BVR799V2H8iMU5yazr2
+         WNrxJBccSz9HD/dm/SSAgQvGunJHQCpWBaoZOkHAdcdkmItuf15tgapNPvy1a9dNBR19
+         XURcSGtrO5FqlOcKWDo2SnVZqELVe4rh9BnRLZIYNMcXZqge+WNuA0mDctHSS7+3wXGW
+         75Vw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8fkoU9zm4gATdbtkMdpLPBgQybgWaU56gpeMC4190qs=;
-        b=P8PiVowWoteymm9deyipqLDdnTXWkJkZWzt98c2eMOTinOb4srHzpnT3WDrvA6xvJD
-         w6nDXjI58w3MdJYzj6t0+slRqDsnTM+obXV3b6iIO+8hnAbvuqlNYJdDuTNUhhz7dC62
-         d7D4rEfK9C6rXyemvi8+3AnIsiJmJA5/CgWDjYanZdzT3u8gd8yM0Kcim/Ly/29P1pug
-         AMF2UbK40ii9333HLvU5NGymm9MSuh/4RA6AePt02WR6guVcBCs2we7BeMTTIP6p1Sqc
-         bCwpjnX8V/4TFoU7f3QSk1Av9YMkh91cJIrlUMSIAfRvYIuCtkrwf4/uAwbo13VphNc0
-         3waQ==
-X-Gm-Message-State: AOAM531wwbFFWef4gEdDqXM+5MkkKYOS7xuJYiKH+8024/p5SW825CKz
-        iDLXTXs7aiQLdrE3OaH8QZqKcWpHObWrHVKW
-X-Google-Smtp-Source: ABdhPJx3UYtZwb0h5ZJ57ZrVFP5cPTGgfkSlaFdihe1OD1ZcBWkEGVl+vdN2Y8DXRiXd7IlZYBxgvQ==
-X-Received: by 2002:ac8:57c1:: with SMTP id w1mr21645089qta.313.1612294238493;
-        Tue, 02 Feb 2021 11:30:38 -0800 (PST)
-Received: from horizon.localdomain ([177.220.174.167])
-        by smtp.gmail.com with ESMTPSA id s15sm16624718qtn.35.2021.02.02.11.30.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Feb 2021 11:30:37 -0800 (PST)
-Received: by horizon.localdomain (Postfix, from userid 1000)
-        id 7B83CC008F; Tue,  2 Feb 2021 16:30:35 -0300 (-03)
-Date:   Tue, 2 Feb 2021 16:30:35 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH RESEND net-next] netlink: add tracepoint at NL_SET_ERR_MSG
-Message-ID: <20210202193035.GI3288@horizon.localdomain>
-References: <fb6e25a4833e6a0e055633092b05bae3c6e1c0d3.1611934253.git.marcelo.leitner@gmail.com>
- <20210201173400.19f452d4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210202123007.GE3288@horizon.localdomain>
- <37002645-e09b-1067-eda6-ee30155afe47@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <37002645-e09b-1067-eda6-ee30155afe47@gmail.com>
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=7mjFDBlLOrroTL2nKpGO/1sBwkxR1/DzFWmT8k4ca/Y=;
+        b=U/eRNju79dB8KFSEanyFPyjAglrBn9S/fj1IO95jrliCIsTBBsUK5Ns8NCVvHZxWCr
+         gAJmkvctFaVr/VdXolCS67eiqvViKJpxBXDpbFYkbNXz9fSknrut0gDg9+mcoV0BHHgr
+         CzjIsSkTqZB/sL4AjAzLFEao5YgSGXpY49AGKRk1owOym755pjoiuodXQnBDk3nmRDst
+         Jlr6LobIJo3K13I5Qpa2OKCUQMOhsj5fA65eDYTHZN5kwrgYGiSlmi3DNqUuQw5q67dy
+         nbS9ldClJ02vaHk3PgQuG2fKaDUKBmjaj321gNC+eX22mumdO1jhZXSRiE9u9riVNIaS
+         aMKA==
+X-Gm-Message-State: AOAM530ro9rB9Nj0IvmFloRAbVeRPt52OskYumPBs9z7PP1TjQ8KH0qk
+        /fi+9/OruUjeNwC3N7EiUimYlKqA6JU=
+X-Google-Smtp-Source: ABdhPJyStzGcJ1rYDikmQovo9rj/TamT+xJ23SIcDyr0EAfENN8pKceycOychwfR3Kuafu02XWw0mcSqkc4=
+Sender: "weiwan via sendgmr" <weiwan@weiwan.svl.corp.google.com>
+X-Received: from weiwan.svl.corp.google.com ([2620:15c:2c4:201:b40a:93c0:d2d6:71e3])
+ (user=weiwan job=sendgmr) by 2002:ad4:4f41:: with SMTP id eu1mr21991208qvb.34.1612294449569;
+ Tue, 02 Feb 2021 11:34:09 -0800 (PST)
+Date:   Tue,  2 Feb 2021 11:34:08 -0800
+Message-Id: <20210202193408.1171634-1-weiwan@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.30.0.365.g02bc693789-goog
+Subject: [PATCH net-next] tcp: use a smaller percpu_counter batch size for sk_alloc
+From:   Wei Wang <weiwan@google.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 02, 2021 at 09:16:28AM -0700, David Ahern wrote:
-> On 2/2/21 5:30 AM, Marcelo Ricardo Leitner wrote:
-> > 
-> > Also, if the message is a common one, one may not be able to easily
-> > distinguish them. Ideally this shouldn't happen, but when debugging
-> > applications such as OVS, where lots of netlink requests are flying,
-> > it saves us time. I can, for example, look at a perf capture and
-> > search for cls_flower or so. Otherwise, it will all show up as
-> > "af_netlink: <err_msg>"
-> 
-> Modules should be using the NL_SET_ERR_MSG_MOD variant, so the message
-> would be ""af_netlink: cls_flower: <err_msg>"
+Currently, a percpu_counter with the default batch size (2*nr_cpus) is
+used to record the total # of active sockets per protocol. This means
+sk_sockets_allocated_read_positive() could be off by +/-2*(nr_cpus^2).
+This under/over-estimation could lead to wrong memory suppression
+conditions in __sk_raise_mem_allocated().
+Fix this by using a more reasonable fixed batch size of 16.
 
-Ah, right. They don't always do, though (and that probably should be
-fixed). Also, currently there is no _MOD variant for NL_SET_ERR_MSG_ATTR.
+See related commit cf86a086a180 ("net/dst: use a smaller percpu_counter
+batch for dst entries accounting") that addresses a similar issue.
 
-For example:
-$ git grep NL_SET_ERR_MSG -- cls_flower.c
-cls_flower.c:                   NL_SET_ERR_MSG_MOD(extack, "Failed to setup flow action");
-cls_flower.c:           NL_SET_ERR_MSG_ATTR(extack,
-cls_flower.c:           NL_SET_ERR_MSG_ATTR(extack,
-cls_flower.c:           NL_SET_ERR_MSG(extack, "Missing MPLS option \"depth\"");
-...
+Signed-off-by: Wei Wang <weiwan@google.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: Soheil Hassas Yeganeh <soheil@google.com>
+---
+ include/net/sock.h | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-> 
-> I get the value in knowing the call site, so not arguing against that.
-> Just hoping that your experience matches theory.
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 129d200bccb4..690e496a0e79 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1350,14 +1350,18 @@ sk_memory_allocated_sub(struct sock *sk, int amt)
+ 	atomic_long_sub(amt, sk->sk_prot->memory_allocated);
+ }
+ 
++#define SK_ALLOC_PERCPU_COUNTER_BATCH 16
++
+ static inline void sk_sockets_allocated_dec(struct sock *sk)
+ {
+-	percpu_counter_dec(sk->sk_prot->sockets_allocated);
++	percpu_counter_add_batch(sk->sk_prot->sockets_allocated, -1,
++				 SK_ALLOC_PERCPU_COUNTER_BATCH);
+ }
+ 
+ static inline void sk_sockets_allocated_inc(struct sock *sk)
+ {
+-	percpu_counter_inc(sk->sk_prot->sockets_allocated);
++	percpu_counter_add_batch(sk->sk_prot->sockets_allocated, 1,
++				 SK_ALLOC_PERCPU_COUNTER_BATCH);
+ }
+ 
+ static inline u64
+-- 
+2.30.0.365.g02bc693789-goog
 
-Okay.
-
-Thanks,
-Marcelo
