@@ -2,149 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C054030C757
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 18:20:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E56D930C75A
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 18:20:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237368AbhBBRSN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 12:18:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34966 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237363AbhBBRPs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 12:15:48 -0500
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41898C061793;
-        Tue,  2 Feb 2021 09:14:17 -0800 (PST)
-Received: by mail-wr1-x444.google.com with SMTP id 6so21286492wri.3;
-        Tue, 02 Feb 2021 09:14:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=k4CVJlb0/AWH3A5Sub6ShZZ3WZC37rBXFHjTDRb3cs8=;
-        b=E7vNGQax2iQ+VzmOWvnQc0Ye+5pEJQ54SIN3BtnUz+f20UyqTUOd96462rNbqQ2w4G
-         AIxPDjuuEAOtxsNdfC1YdwNwbd/CUwcjZHNYsIYwtWTJeglBMsgpzNv9Fr7P7emFipcQ
-         YAfxD6H+9zbWpu1VhQn0hIPGHKhLkS0mnIMclIXFfsm96cmXH6K+zVTPNGq6NTmxY36m
-         5tSTDC2DtjKPTu2C7yngO4aG4zQumjZXhEGQGyi6bM4rpg/jb1KOP0Nu1oyy+YPyZHpD
-         XAyQd9PLaejKLKgMbxhEUiSv/x2L8tkE/Gax3xxRTjAEXCBhoOt+Z/dFQsoL6zjqOaiv
-         rrDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=k4CVJlb0/AWH3A5Sub6ShZZ3WZC37rBXFHjTDRb3cs8=;
-        b=duWcyMRN3YAGiPsm9YxTV69mE10eDK6PuNS72OH6lleS/ZHg0PQmF2dVmIQzmgSjNr
-         PHNI8WgojCAGFLm3+GYtH4meQZ9tsQIoXn5EXtopduBEN1j62RQC+1A8/xXfvD9yD5JG
-         DzLuH0I7qa5I+abwVmunM/2F+JkEpfLRVuxOKcve5hlVWiWcjtVJ2nSEUSl8op2k2JzN
-         plxf57Z5V2ygytl+WMUMzB9A4EOc90A06iSSrcKQjZeIzyTqRoWkxY03KHMsXi6EtIqO
-         EEldqnnTpBxEW01/B/Bc9B56FmeuHyb4tmjjmeqEjW0aZozIjXSMOJ7oLyKIV+vp/Qtp
-         cvZg==
-X-Gm-Message-State: AOAM532QPkc76Lx1CMFzw9i/YxBuPiN0k+GY75C+FD/TQJyy4DKD0QVK
-        gaEY6tVO8GQn+Xixy+CKPMgkDzCoXMZVr743aB8=
-X-Google-Smtp-Source: ABdhPJzgh6Vc+DUq9tdwN2uJ46Lh9+eMLS11bhb8F+ysmXG56poEbcOCvD5XP4uvYaOUA09pp7BUGnMtp1hix5FIEKk=
-X-Received: by 2002:adf:e448:: with SMTP id t8mr25353656wrm.288.1612286055917;
- Tue, 02 Feb 2021 09:14:15 -0800 (PST)
+        id S237424AbhBBRSg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 12:18:36 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:9686 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237359AbhBBRPp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 12:15:45 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B601988990000>; Tue, 02 Feb 2021 09:15:05 -0800
+Received: from HKMAIL101.nvidia.com (10.18.16.10) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 2 Feb
+ 2021 17:15:04 +0000
+Received: from HKMAIL101.nvidia.com (10.18.16.10) by HKMAIL101.nvidia.com
+ (10.18.16.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 2 Feb
+ 2021 17:14:58 +0000
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.177)
+ by HKMAIL101.nvidia.com (10.18.16.10) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Tue, 2 Feb 2021 17:14:58 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZY4wfd3RcD16qODVhstTCzCDCyx7n6Lc6wYzaxdM9yoknpaSKT3ZHREp71pleRWUafXgoOEGStabkMhB0WtHmRFo0kaQem7+rdWPk6lfgl54RqmHOak3aXMhAvP+Ks21+G1cZWhAEOYHFsKNjV6L5ntwIXl6tnNE9kt9xMNyOVdAOo/pmdtn8fLNOSgHR4XZbEbaUzVCB5fkFVezDJKzWtouDfsBr3XOkH1upX1nq7upQwx9UAyUMDGg3StufVtqTmMXsmI209CDEKyMrOHNwkQ0hibgFGyvPbPAVHwU0NphEnOaw0vdMh1SLN3wHH83PRvhBuaKXEDuOUjmZ4lW2w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VFWeLPdexSpoMRDUFwjP/3U5BhaEi9T3Yh6avk+uA+w=;
+ b=bdXOTJvEri2vX71lTgpx38iAIWosQzhyID5WgB9wR1f56QsmXGp2OsI1/T4pY9cGcU+ArCzzV5G1mrdmpPLnwlOg/eY1YqY8wwcuo+I0sQ2ThfdL7vY2s+1U+2eu2vg7rF/rI88REDLdEN3K4l6DGd+KNxLMnJEM5/p9aTJP9yWdydfzExjF7mSj1di+X+IxZ8NacCsYFH2jOHUxoWYMQNOsrOAqft7oJQmh9QukO6Z96tjGCc+dduHzMMvh963LuiydnZXsEBQL2ZbJUATLz88iXtE7b2JpXttzUfHbBu2GGRdAyIzPlR0r2m8xWf8T6n1mW+BmAH3gpfF6Hvaeyw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM6PR12MB4451.namprd12.prod.outlook.com (2603:10b6:5:2ab::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.16; Tue, 2 Feb
+ 2021 17:14:55 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::d6b:736:fa28:5e4]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::d6b:736:fa28:5e4%7]) with mapi id 15.20.3805.025; Tue, 2 Feb 2021
+ 17:14:55 +0000
+Date:   Tue, 2 Feb 2021 13:14:54 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Dan Williams <dan.j.williams@intel.com>
+CC:     "Saleem, Shiraz" <shiraz.saleem@intel.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
+        "Patil, Kiran" <kiran.patil@intel.com>
+Subject: Re: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
+ implement private channel OPs
+Message-ID: <20210202171454.GX4247@nvidia.com>
+References: <20210126005928.GF4147@nvidia.com>
+ <031c2675aff248bd9c78fada059b5c02@intel.com>
+ <20210127121847.GK1053290@unreal>
+ <ea62658f01664a6ea9438631c9ddcb6e@intel.com>
+ <20210127231641.GS4147@nvidia.com> <20210128054133.GA1877006@unreal>
+ <d58f341898834170af1bfb6719e17956@intel.com>
+ <20210201191805.GO4247@nvidia.com>
+ <925c33a0b174464898c9fc5651b981ee@intel.com>
+ <CAPcyv4gbW-27ySTmxf97zzcoVA_myM8uLV=ziscMuSKGBz7dqg@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CAPcyv4gbW-27ySTmxf97zzcoVA_myM8uLV=ziscMuSKGBz7dqg@mail.gmail.com>
+X-ClientProxiedBy: MN2PR04CA0001.namprd04.prod.outlook.com
+ (2603:10b6:208:d4::14) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
 MIME-Version: 1.0
-References: <20210202142901.7131-1-elic@nvidia.com>
-In-Reply-To: <20210202142901.7131-1-elic@nvidia.com>
-From:   Si-Wei Liu <siwliu.kernel@gmail.com>
-Date:   Tue, 2 Feb 2021 09:14:02 -0800
-Message-ID: <CAPWQSg3Z1aCZc7kX2x_4NLtAzkrZ+eO5ABBF0bAQfaLc=++Y2Q@mail.gmail.com>
-Subject: Re: [PATCH] vdpa/mlx5: Restore the hardware used index after change map
-To:     Eli Cohen <elic@nvidia.com>
-Cc:     mst@redhat.com, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lulu@redhat.com
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.162.115.133) by MN2PR04CA0001.namprd04.prod.outlook.com (2603:10b6:208:d4::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.17 via Frontend Transport; Tue, 2 Feb 2021 17:14:55 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1l6zGQ-002cWt-8J; Tue, 02 Feb 2021 13:14:54 -0400
+X-Header: ProcessedBy-CMR-outbound
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1612286105; bh=VFWeLPdexSpoMRDUFwjP/3U5BhaEi9T3Yh6avk+uA+w=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+         From:To:CC:Subject:Message-ID:References:Content-Type:
+         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+         X-MS-Exchange-MessageSentRepresentingType:X-Header;
+        b=dk6rKSEbb4BAKPnM9WyZOfedxViMOh+uS5rKLCGXmchYIZ7AoPCLkMFw9AJjfrYqX
+         +zoDxb4Eyo4EF4uM+z4hKLD1U6t8N91KyOpP0lak3oqwYqkktUNJccwBukjRD7f1wj
+         DgerNdOqzheGBnuiWcyzoYklDwNeAAtSUogz1u+aAnYqi5X6waW3t9Kuf+ahnItXv0
+         nj8pLhBCAXSs4NbA3drhdIzw9cQZ8vxwTRpOFtcE6hs7yIroLFzDZ6V2G3y7tdABmN
+         NOZSF3i0BbxZ7IPejBhCrnzTCd49WBpeH4bfDD3yf1vFRMRwnEodWIoXlcP64VoBhV
+         EHre/1Dz/ADIg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 2, 2021 at 6:34 AM Eli Cohen <elic@nvidia.com> wrote:
->
-> When a change of memory map occurs, the hardware resources are destroyed
-> and then re-created again with the new memory map. In such case, we need
-> to restore the hardware available and used indices. The driver failed to
-> restore the used index which is added here.
->
-> Fixes 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
-> Signed-off-by: Eli Cohen <elic@nvidia.com>
-> ---
-> This patch is being sent again a single patch the fixes hot memory
-> addtion to a qemy process.
->
->  drivers/vdpa/mlx5/net/mlx5_vnet.c | 7 +++++++
->  1 file changed, 7 insertions(+)
->
-> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> index 88dde3455bfd..839f57c64a6f 100644
-> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> @@ -87,6 +87,7 @@ struct mlx5_vq_restore_info {
->         u64 device_addr;
->         u64 driver_addr;
->         u16 avail_index;
-> +       u16 used_index;
->         bool ready;
->         struct vdpa_callback cb;
->         bool restore;
-> @@ -121,6 +122,7 @@ struct mlx5_vdpa_virtqueue {
->         u32 virtq_id;
->         struct mlx5_vdpa_net *ndev;
->         u16 avail_idx;
-> +       u16 used_idx;
->         int fw_state;
->
->         /* keep last in the struct */
-> @@ -804,6 +806,7 @@ static int create_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtque
->
->         obj_context = MLX5_ADDR_OF(create_virtio_net_q_in, in, obj_context);
->         MLX5_SET(virtio_net_q_object, obj_context, hw_available_index, mvq->avail_idx);
-> +       MLX5_SET(virtio_net_q_object, obj_context, hw_used_index, mvq->used_idx);
+On Mon, Feb 01, 2021 at 05:06:58PM -0800, Dan Williams wrote:
+> On Mon, Feb 1, 2021 at 4:40 PM Saleem, Shiraz <shiraz.saleem@intel.com> wrote:
+> >
+> > > Subject: Re: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
+> > > implement private channel OPs
+> > >
+> > > On Sat, Jan 30, 2021 at 01:19:36AM +0000, Saleem, Shiraz wrote:
+> > > > > Subject: Re: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver
+> > > > > and implement private channel OPs
+> > > > >
+> > > > > On Wed, Jan 27, 2021 at 07:16:41PM -0400, Jason Gunthorpe wrote:
+> > > > > > On Wed, Jan 27, 2021 at 10:17:56PM +0000, Saleem, Shiraz wrote:
+> > > > > >
+> > > > > > > Even with another core PCI driver, there still needs to be
+> > > > > > > private communication channel between the aux rdma driver and
+> > > > > > > this PCI driver to pass things like QoS updates.
+> > > > > >
+> > > > > > Data pushed from the core driver to its aux drivers should either
+> > > > > > be done through new callbacks in a struct device_driver or by
+> > > > > > having a notifier chain scheme from the core driver.
+> > > > >
+> > > > > Right, and internal to driver/core device_lock will protect from
+> > > > > parallel probe/remove and PCI flows.
+> > > > >
+> > > >
+> > > > OK. We will hold the device_lock while issuing the .ops callbacks from core
+> > > driver.
+> > > > This should solve our synchronization issue.
+> > > >
+> > > > There have been a few discussions in this thread. And I would like to
+> > > > be clear on what to do.
+> > > >
+> > > > So we will,
+> > > >
+> > > > 1. Remove .open/.close, .peer_register/.peer_unregister 2. Protect ops
+> > > > callbacks issued from core driver to the aux driver with device_lock
+> > >
+> > > A notifier chain is probably better, honestly.
+> > >
+> > > Especially since you don't want to split the netdev side, a notifier chain can be
+> > > used by both cases equally.
+> > >
+> >
+> > The device_lock seems to be a simple solution to this synchronization problem.
+> > May I ask what makes the notifier scheme better to solve this?
+> >
+> 
+> Only loosely following the arguments here, but one of the requirements
+> of the driver-op scheme is that the notifying agent needs to know the
+> target device. With the notifier-chain approach the target device
+> becomes anonymous to the notifier agent.
 
-The saved indexes will apply to the new virtqueue object whenever it
-is created. In virtio spec, these indexes will reset back to zero when
-the virtio device is reset. But I don't see how it's done today. IOW,
-I don't see where avail_idx and used_idx get cleared from the mvq for
-device reset via set_status().
+Yes, and you need to have an aux device in the first place. The netdev
+side has neither of this things. I think it would be a bit odd to have
+extensive callbacks that are for RDMA only, that suggests something in
+the core API is not general enough.
 
--Siwei
-
-
->         MLX5_SET(virtio_net_q_object, obj_context, queue_feature_bit_mask_12_3,
->                  get_features_12_3(ndev->mvdev.actual_features));
->         vq_ctx = MLX5_ADDR_OF(virtio_net_q_object, obj_context, virtio_q_context);
-> @@ -1022,6 +1025,7 @@ static int connect_qps(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *m
->  struct mlx5_virtq_attr {
->         u8 state;
->         u16 available_index;
-> +       u16 used_index;
->  };
->
->  static int query_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq,
-> @@ -1052,6 +1056,7 @@ static int query_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueu
->         memset(attr, 0, sizeof(*attr));
->         attr->state = MLX5_GET(virtio_net_q_object, obj_context, state);
->         attr->available_index = MLX5_GET(virtio_net_q_object, obj_context, hw_available_index);
-> +       attr->used_index = MLX5_GET(virtio_net_q_object, obj_context, hw_used_index);
->         kfree(out);
->         return 0;
->
-> @@ -1610,6 +1615,7 @@ static int save_channel_info(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqu
->                 return err;
->
->         ri->avail_index = attr.available_index;
-> +       ri->used_index = attr.used_index;
->         ri->ready = mvq->ready;
->         ri->num_ent = mvq->num_ent;
->         ri->desc_addr = mvq->desc_addr;
-> @@ -1654,6 +1660,7 @@ static void restore_channels_info(struct mlx5_vdpa_net *ndev)
->                         continue;
->
->                 mvq->avail_idx = ri->avail_index;
-> +               mvq->used_idx = ri->used_index;
->                 mvq->ready = ri->ready;
->                 mvq->num_ent = ri->num_ent;
->                 mvq->desc_addr = ri->desc_addr;
-> --
-> 2.29.2
->
+Jason
