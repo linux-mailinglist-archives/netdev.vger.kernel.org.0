@@ -2,152 +2,289 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DF5830B799
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 07:05:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFA4430B797
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 07:05:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232047AbhBBGE0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 01:04:26 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:29355 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231851AbhBBGEX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 01:04:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1612245756;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Xv+JO+o92kqfUO0/yiRUpJMXYvQ7l6Zv4xglUcA9zbk=;
-        b=hoI4SeOJszTClypUoLL0q4CE0cEVO/h6VgaE4P0+2vgXI94vPFHC+TaJ73Sp60bcNfgwuS
-        p5sHhEs3i1MFyRIe21LW3rpzvJyw/ifN9U1qlMb2UlvoVvulCNSgcxRBKGV2SUGH4KQ2Ia
-        EEmaOKbPKgnFEuhPzxgTh9qA5z5kOhI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-63-vxzO02PZNzWru9DGqfcFAA-1; Tue, 02 Feb 2021 01:02:35 -0500
-X-MC-Unique: vxzO02PZNzWru9DGqfcFAA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B734F8049C0;
-        Tue,  2 Feb 2021 06:02:33 +0000 (UTC)
-Received: from [10.72.13.250] (ovpn-13-250.pek2.redhat.com [10.72.13.250])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2241C5D9C6;
-        Tue,  2 Feb 2021 06:02:26 +0000 (UTC)
-Subject: Re: [PATCH 1/2] vdpa/mlx5: Avoid unnecessary query virtqueue
-To:     Si-Wei Liu <siwliu.kernel@gmail.com>
-Cc:     Eli Cohen <elic@nvidia.com>, mst@redhat.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lulu@redhat.com,
-        Si-Wei Liu <si-wei.liu@oracle.com>
-References: <20210128134130.3051-1-elic@nvidia.com>
- <20210128134130.3051-2-elic@nvidia.com>
- <CAPWQSg0XtEQ1U5N3a767Ak_naoyPdVF1CeE4r3hmN11a-aoBxg@mail.gmail.com>
- <CAPWQSg3U9DCSK_01Kzuea5B1X+Ef9JB23wBY82A3ss-UXGek_Q@mail.gmail.com>
- <9d6058d6-5ce1-0442-8fd9-5a6fe6a0bc6b@redhat.com>
- <CAPWQSg3KOAypcrs9krW8cGE7EDLTehCUCYFZMUYYNaYPH1oBZQ@mail.gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <c65808bf-b336-8718-f7ea-b39fcc658dfb@redhat.com>
-Date:   Tue, 2 Feb 2021 14:02:25 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-MIME-Version: 1.0
-In-Reply-To: <CAPWQSg3KOAypcrs9krW8cGE7EDLTehCUCYFZMUYYNaYPH1oBZQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+        id S232020AbhBBGDc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 01:03:32 -0500
+Received: from [1.6.215.26] ([1.6.215.26]:57563 "EHLO hyd1soter2"
+        rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231923AbhBBGD3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 01:03:29 -0500
+Received: from hyd1soter2.caveonetworks.com (localhost [127.0.0.1])
+        by hyd1soter2 (8.15.2/8.15.2/Debian-3) with ESMTP id 11262bcG027523;
+        Tue, 2 Feb 2021 11:32:37 +0530
+Received: (from geetha@localhost)
+        by hyd1soter2.caveonetworks.com (8.15.2/8.15.2/Submit) id 11262b5F027522;
+        Tue, 2 Feb 2021 11:32:37 +0530
+From:   Geetha sowjanya <gakula@marvell.com>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     sgoutham@marvell.com, davem@davemloft.net, kuba@kernel.org,
+        sbhatta@marvell.com, hkelam@marvell.com,
+        Geetha sowjanya <gakula@marvell.com>
+Subject: [net-next v2 11/14] octeontx2-pf: cn10k: Get max mtu supported from admin function
+Date:   Tue,  2 Feb 2021 11:32:36 +0530
+Message-Id: <1612245756-27482-1-git-send-email-gakula@marvell.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Hariprasad Kelam <hkelam@marvell.com>
 
-On 2021/2/2 下午12:15, Si-Wei Liu wrote:
-> On Mon, Feb 1, 2021 at 7:13 PM Jason Wang <jasowang@redhat.com> wrote:
->>
->> On 2021/2/2 上午3:17, Si-Wei Liu wrote:
->>> On Mon, Feb 1, 2021 at 10:51 AM Si-Wei Liu <siwliu.kernel@gmail.com> wrote:
->>>> On Thu, Jan 28, 2021 at 5:46 AM Eli Cohen <elic@nvidia.com> wrote:
->>>>> suspend_vq should only suspend the VQ on not save the current available
->>>>> index. This is done when a change of map occurs when the driver calls
->>>>> save_channel_info().
->>>> Hmmm, suspend_vq() is also called by teardown_vq(), the latter of
->>>> which doesn't save the available index as save_channel_info() doesn't
->>>> get called in that path at all. How does it handle the case that
->>>> aget_vq_state() is called from userspace (e.g. QEMU) while the
->>>> hardware VQ object was torn down, but userspace still wants to access
->>>> the queue index?
->>>>
->>>> Refer to https://lore.kernel.org/netdev/1601583511-15138-1-git-send-email-si-wei.liu@oracle.com/
->>>>
->>>> vhost VQ 0 ring restore failed: -1: Resource temporarily unavailable (11)
->>>> vhost VQ 1 ring restore failed: -1: Resource temporarily unavailable (11)
->>>>
->>>> QEMU will complain with the above warning while VM is being rebooted
->>>> or shut down.
->>>>
->>>> Looks to me either the kernel driver should cover this requirement, or
->>>> the userspace has to bear the burden in saving the index and not call
->>>> into kernel if VQ is destroyed.
->>> Actually, the userspace doesn't have the insights whether virt queue
->>> will be destroyed if just changing the device status via set_status().
->>> Looking at other vdpa driver in tree i.e. ifcvf it doesn't behave like
->>> so. Hence this still looks to me to be Mellanox specifics and
->>> mlx5_vdpa implementation detail that shouldn't expose to userspace.
->>
->> So I think we can simply drop this patch?
-> Yep, I think so. To be honest I don't know why it has anything to do
-> with the memory hotplug issue.
+CN10K supports max MTU of 16K on LMAC links and 64k on LBK
+links and Octeontx2 silicon supports 9K mtu on both links.
+Get the same from nix_get_hw_info mbox message in netdev probe.
 
+This patch also calculates receive buffer size required based
+on the MTU set.
 
-Eli may know more, my understanding is that, during memory hotplut, qemu 
-need to propagate new memory mappings via set_map(). For mellanox, it 
-means it needs to rebuild memory keys, so the virtqueue needs to be 
-suspended.
+Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Geetha sowjanya <gakula@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+---
+ drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c |  2 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_common.c   | 43 +++++++++++++++++++++-
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  2 +-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   | 33 +++++++++++++++--
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c | 27 ++++++++++----
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.h |  1 -
+ .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c   |  2 +-
+ 7 files changed, 93 insertions(+), 17 deletions(-)
 
-Thanks
-
-
->
-> -Siwei
->
->> Thanks
->>
->>
->>>> -Siwei
->>>>
->>>>
->>>>> Signed-off-by: Eli Cohen <elic@nvidia.com>
->>>>> ---
->>>>>    drivers/vdpa/mlx5/net/mlx5_vnet.c | 8 --------
->>>>>    1 file changed, 8 deletions(-)
->>>>>
->>>>> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
->>>>> index 88dde3455bfd..549ded074ff3 100644
->>>>> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
->>>>> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
->>>>> @@ -1148,8 +1148,6 @@ static int setup_vq(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq)
->>>>>
->>>>>    static void suspend_vq(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq)
->>>>>    {
->>>>> -       struct mlx5_virtq_attr attr;
->>>>> -
->>>>>           if (!mvq->initialized)
->>>>>                   return;
->>>>>
->>>>> @@ -1158,12 +1156,6 @@ static void suspend_vq(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *m
->>>>>
->>>>>           if (modify_virtqueue(ndev, mvq, MLX5_VIRTIO_NET_Q_OBJECT_STATE_SUSPEND))
->>>>>                   mlx5_vdpa_warn(&ndev->mvdev, "modify to suspend failed\n");
->>>>> -
->>>>> -       if (query_virtqueue(ndev, mvq, &attr)) {
->>>>> -               mlx5_vdpa_warn(&ndev->mvdev, "failed to query virtqueue\n");
->>>>> -               return;
->>>>> -       }
->>>>> -       mvq->avail_idx = attr.available_index;
->>>>>    }
->>>>>
->>>>>    static void suspend_vqs(struct mlx5_vdpa_net *ndev)
->>>>> --
->>>>> 2.29.2
->>>>>
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c
+index 1c7d478..238238b 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c
+@@ -108,7 +108,7 @@ int cn10k_sq_aq_init(void *dev, u16 qidx, u16 sqb_aura)
+ 	/* Only one SMQ is allocated, map all SQ's to that SMQ  */
+ 	aq->sq.smq = pfvf->hw.txschq_list[NIX_TXSCH_LVL_SMQ][0];
+ 	/* FIXME: set based on NIX_AF_DWRR_RPM_MTU*/
+-	aq->sq.smq_rr_weight = OTX2_MAX_MTU;
++	aq->sq.smq_rr_weight = pfvf->netdev->mtu;
+ 	aq->sq.default_chan = pfvf->hw.tx_chan_base;
+ 	aq->sq.sqe_stype = NIX_STYPE_STF; /* Cache SQB */
+ 	aq->sq.sqb_aura = sqb_aura;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+index 2accdc7..f5b3074 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+@@ -217,7 +217,6 @@ int otx2_hw_set_mtu(struct otx2_nic *pfvf, int mtu)
+ 		return -ENOMEM;
+ 	}
+ 
+-	pfvf->max_frs = mtu +  OTX2_ETH_HLEN;
+ 	req->maxlen = pfvf->max_frs;
+ 
+ 	err = otx2_sync_mbox_msg(&pfvf->mbox);
+@@ -591,7 +590,7 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl)
+ 	/* Set topology e.t.c configuration */
+ 	if (lvl == NIX_TXSCH_LVL_SMQ) {
+ 		req->reg[0] = NIX_AF_SMQX_CFG(schq);
+-		req->regval[0] = ((OTX2_MAX_MTU + OTX2_ETH_HLEN) << 8) |
++		req->regval[0] = ((pfvf->netdev->max_mtu + OTX2_ETH_HLEN) << 8) |
+ 				   OTX2_MIN_MTU;
+ 
+ 		req->regval[0] |= (0x20ULL << 51) | (0x80ULL << 39) |
+@@ -1618,6 +1617,46 @@ void otx2_set_cints_affinity(struct otx2_nic *pfvf)
+ 	}
+ }
+ 
++u16 otx2_get_max_mtu(struct otx2_nic *pfvf)
++{
++	struct nix_hw_info *rsp;
++	struct msg_req *req;
++	u16 max_mtu;
++	int rc;
++
++	mutex_lock(&pfvf->mbox.lock);
++
++	req = otx2_mbox_alloc_msg_nix_get_hw_info(&pfvf->mbox);
++	if (!req) {
++		rc =  -ENOMEM;
++		goto out;
++	}
++
++	rc = otx2_sync_mbox_msg(&pfvf->mbox);
++	if (!rc) {
++		rsp = (struct nix_hw_info *)
++		       otx2_mbox_get_rsp(&pfvf->mbox.mbox, 0, &req->hdr);
++
++		/* HW counts VLAN insertion bytes (8 for double tag)
++		 * irrespective of whether SQE is requesting to insert VLAN
++		 * in the packet or not. Hence these 8 bytes have to be
++		 * discounted from max packet size otherwise HW will throw
++		 * SMQ errors
++		 */
++		max_mtu = rsp->max_mtu - 8 - OTX2_ETH_HLEN;
++	}
++
++out:
++	mutex_unlock(&pfvf->mbox.lock);
++	if (rc) {
++		dev_warn(pfvf->dev,
++			 "Failed to get MTU from hardware setting default value(1500)\n");
++		max_mtu = 1500;
++	}
++	return max_mtu;
++}
++EXPORT_SYMBOL(otx2_get_max_mtu);
++
+ #define M(_name, _id, _fn_name, _req_type, _rsp_type)			\
+ int __weak								\
+ otx2_mbox_up_handler_ ## _fn_name(struct otx2_nic *pfvf,		\
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+index b6bdc6f..1cc7772 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+@@ -790,5 +790,5 @@ int otx2_del_macfilter(struct net_device *netdev, const u8 *mac);
+ int otx2_add_macfilter(struct net_device *netdev, const u8 *mac);
+ int otx2_enable_rxvlan(struct otx2_nic *pf, bool enable);
+ int otx2_install_rxvlan_offload_flow(struct otx2_nic *pfvf);
+-
++u16 otx2_get_max_mtu(struct otx2_nic *pfvf);
+ #endif /* OTX2_COMMON_H */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+index 7cb24df..05e782f 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+@@ -1285,6 +1285,33 @@ static void otx2_free_sq_res(struct otx2_nic *pf)
+ 	}
+ }
+ 
++static int otx2_get_rbuf_size(struct otx2_nic *pf, int mtu)
++{
++	int frame_size;
++	int total_size;
++	int rbuf_size;
++
++	/* The data transferred by NIX to memory consists of actual packet
++	 * plus additional data which has timestamp and/or EDSA/HIGIG2
++	 * headers if interface is configured in corresponding modes.
++	 * NIX transfers entire data using 6 segments/buffers and writes
++	 * a CQE_RX descriptor with those segment addresses. First segment
++	 * has additional data prepended to packet. Also software omits a
++	 * headroom of 128 bytes and sizeof(struct skb_shared_info) in
++	 * each segment. Hence the total size of memory needed
++	 * to receive a packet with 'mtu' is:
++	 * frame size =  mtu + additional data;
++	 * memory = frame_size + (headroom + struct skb_shared_info size) * 6;
++	 * each receive buffer size = memory / 6;
++	 */
++	frame_size = mtu + OTX2_ETH_HLEN + OTX2_HW_TIMESTAMP_LEN;
++	total_size = frame_size + (OTX2_HEAD_ROOM +
++		     OTX2_DATA_ALIGN(sizeof(struct skb_shared_info))) * 6;
++	rbuf_size = total_size / 6;
++
++	return ALIGN(rbuf_size, 2048);
++}
++
+ static int otx2_init_hw_resources(struct otx2_nic *pf)
+ {
+ 	struct nix_lf_free_req *free_req;
+@@ -1301,9 +1328,7 @@ static int otx2_init_hw_resources(struct otx2_nic *pf)
+ 	hw->sqpool_cnt = hw->tx_queues;
+ 	hw->pool_cnt = hw->rqpool_cnt + hw->sqpool_cnt;
+ 
+-	/* Get the size of receive buffers to allocate */
+-	pf->rbsize = RCV_FRAG_LEN(OTX2_HW_TIMESTAMP_LEN + pf->netdev->mtu +
+-				  OTX2_ETH_HLEN);
++	pf->rbsize = otx2_get_rbuf_size(pf, pf->netdev->mtu);
+ 
+ 	mutex_lock(&mbox->lock);
+ 	/* NPA init */
+@@ -2426,7 +2451,7 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ 	/* MTU range: 64 - 9190 */
+ 	netdev->min_mtu = OTX2_MIN_MTU;
+-	netdev->max_mtu = OTX2_MAX_MTU;
++	netdev->max_mtu = otx2_get_max_mtu(pf);
+ 
+ 	err = register_netdev(netdev);
+ 	if (err) {
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+index cdae83c..00e9e65 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+@@ -256,12 +256,11 @@ static bool otx2_check_rcv_errors(struct otx2_nic *pfvf,
+ 		/* For now ignore all the NPC parser errors and
+ 		 * pass the packets to stack.
+ 		 */
+-		if (cqe->sg.segs == 1)
+-			return false;
++		return false;
+ 	}
+ 
+ 	/* If RXALL is enabled pass on packets to stack. */
+-	if (cqe->sg.segs == 1 && (pfvf->netdev->features & NETIF_F_RXALL))
++	if (pfvf->netdev->features & NETIF_F_RXALL)
+ 		return false;
+ 
+ 	/* Free buffer back to pool */
+@@ -276,9 +275,14 @@ static void otx2_rcv_pkt_handler(struct otx2_nic *pfvf,
+ 				 struct nix_cqe_rx_s *cqe)
+ {
+ 	struct nix_rx_parse_s *parse = &cqe->parse;
++	struct nix_rx_sg_s *sg = &cqe->sg;
+ 	struct sk_buff *skb = NULL;
++	void *end, *start;
++	u64 *seg_addr;
++	u16 *seg_size;
++	int seg;
+ 
+-	if (unlikely(parse->errlev || parse->errcode || cqe->sg.segs > 1)) {
++	if (unlikely(parse->errlev || parse->errcode)) {
+ 		if (otx2_check_rcv_errors(pfvf, cqe, cq->cq_idx))
+ 			return;
+ 	}
+@@ -287,9 +291,18 @@ static void otx2_rcv_pkt_handler(struct otx2_nic *pfvf,
+ 	if (unlikely(!skb))
+ 		return;
+ 
+-	otx2_skb_add_frag(pfvf, skb, cqe->sg.seg_addr, cqe->sg.seg_size, parse);
+-	cq->pool_ptrs++;
+-
++	start = (void *)sg;
++	end = start + ((cqe->parse.desc_sizem1 + 1) * 16);
++	while (start < end) {
++		sg = (struct nix_rx_sg_s *)start;
++		seg_addr = &sg->seg_addr;
++		seg_size = (void *)sg;
++		for (seg = 0; seg < sg->segs; seg++, seg_addr++) {
++			otx2_skb_add_frag(pfvf, skb, *seg_addr, seg_size[seg], parse);
++			cq->pool_ptrs++;
++		}
++		start += sizeof(*sg);
++	}
+ 	otx2_set_rxhash(pfvf, cqe, skb);
+ 
+ 	skb_record_rx_queue(skb, cq->cq_idx);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
+index d2b26b3..52486c1 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
+@@ -24,7 +24,6 @@
+ 
+ #define	OTX2_ETH_HLEN		(VLAN_ETH_HLEN + VLAN_HLEN)
+ #define	OTX2_MIN_MTU		64
+-#define	OTX2_MAX_MTU		(9212 - OTX2_ETH_HLEN)
+ 
+ #define OTX2_MAX_GSO_SEGS	255
+ #define OTX2_MAX_FRAGS_IN_SQE	9
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+index 31e0325..085be90 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+@@ -586,7 +586,7 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ 	/* MTU range: 68 - 9190 */
+ 	netdev->min_mtu = OTX2_MIN_MTU;
+-	netdev->max_mtu = OTX2_MAX_MTU;
++	netdev->max_mtu = otx2_get_max_mtu(vf);
+ 
+ 	INIT_WORK(&vf->reset_task, otx2vf_reset_task);
+ 
+-- 
+2.7.4
 
