@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B09E430BC24
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 11:37:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3F9930BC27
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 11:37:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229897AbhBBKgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 05:36:25 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:1352 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229634AbhBBKgT (ORCPT
+        id S229883AbhBBKgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 05:36:46 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:7191 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229643AbhBBKgT (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 05:36:19 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B60192af90002>; Tue, 02 Feb 2021 02:35:37 -0800
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B60192afa0000>; Tue, 02 Feb 2021 02:35:38 -0800
 Received: from sw-mtx-036.mtx.labs.mlnx (172.20.145.6) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 2 Feb
- 2021 10:35:36 +0000
+ 2021 10:35:37 +0000
 From:   Parav Pandit <parav@nvidia.com>
 To:     <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <dsahern@gmail.com>,
         <stephen@networkplumber.org>, <mst@redhat.com>,
         <jasowang@redhat.com>
 CC:     Parav Pandit <parav@nvidia.com>
-Subject: [PATCH iproute2-next v3 2/5] utils: Add helper routines for indent handling
-Date:   Tue, 2 Feb 2021 12:35:15 +0200
-Message-ID: <20210202103518.3858-3-parav@nvidia.com>
+Subject: [PATCH iproute2-next v3 3/5] utils: Add generic socket helpers
+Date:   Tue, 2 Feb 2021 12:35:16 +0200
+Message-ID: <20210202103518.3858-4-parav@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210202103518.3858-1-parav@nvidia.com>
 References: <20210122112654.9593-3-parav@nvidia.com>
@@ -36,135 +36,207 @@ X-Originating-IP: [172.20.145.6]
 X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
  HQMAIL107.nvidia.com (172.20.187.13)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1612262137; bh=HDT133gXudxB52omx1TuwZ9j1XEiBgbv7aS9W5cuFWc=;
+        t=1612262138; bh=0vc9oIhSCphJBgS2b+BRbxBgWC7qIQCJt2iCtMo/YR4=;
         h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
          References:MIME-Version:Content-Transfer-Encoding:Content-Type:
          X-Originating-IP:X-ClientProxiedBy;
-        b=F0kHY59seyuMIo83PNO700wEQKWx/LGg2pWsTnPsgm2xuLlGaZiY8lopzEdksj28v
-         JqSQNS0+0u4IFyjuPICUZ868WR1AjbZtzSeLwESS1tcY313aHvoN3J6Iynrrpm0Ols
-         b2V7uFKTK/B5p3rc6Xrcz5T0VVCAHefePb1F24oUhZet7iUqVFu2wpEu8rt2XIG5/w
-         l/J5ypU9osePvD9H+2AEU7U2nlWgcXIxIYBLfWDEvnsa94yUvbpOGQke8O8BWaaO8H
-         HX2XoUkQPxpPJYpt9oij3Fhlznm47GPdaGungMX+ARRQH8Xy4bC41poY3rM6Xasl9x
-         d26ApxyZeeHyA==
+        b=BGkp6h5n8fRszi+YEgOuZUeZbyQQQ1thHiNcLkVvka8MCeg1ySro99CcBBsDUDrwT
+         fdL2V7aA6so1x/85U8YHb1BrdHHGqEEiL4l1VRn02k7CNxXBbfHBQiL36tfaOpVoYL
+         p3VTqyekp5nh6BesVUP+nXasLduwNkOnnX3UIxlRCfTqKf0NX5ixUtRwOxtuRgw2yY
+         rrqFsojThrOalH8SRyBK2H0WMF41Uf+tox84xi1V8dVxXne/l4NjgXf61A1BMkcAkl
+         DglreuW3uCBpOgT29fnT7dOFvRWw7msoih5RF0lQjBlPns3g+h57djNtrkjFeuBnDB
+         tEeOdQs1Zma6g==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Subsequent patch needs to use 2 char indentation for nested objects.
-Hence introduce a generic helpers to allocate, deallocate, increment,
-decrement and to print indent block.
+Subsequent patch needs to
+(a) query and use socket family
+(b) send/receive messages using this family
+
+Hence add helper routines to open, close, query family and to perform
+send receive operations.
 
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 ---
 changelog:
 v2->v3:
- - patch split from vdpa tool patch
+ - split patch from add vdpa tool for socket helpers
 ---
- include/utils.h | 16 ++++++++++++
- lib/utils.c     | 66 +++++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 82 insertions(+)
+ include/mnl_utils.h |  16 ++++++
+ lib/mnl_utils.c     | 121 ++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 137 insertions(+)
 
-diff --git a/include/utils.h b/include/utils.h
-index e66090ae..9b76c92a 100644
---- a/include/utils.h
-+++ b/include/utils.h
-@@ -349,4 +349,20 @@ int str_map_lookup_str(const struct str_num_map *map, =
-const char *needle);
- const char *str_map_lookup_u16(const struct str_num_map *map, uint16_t val=
-);
- const char *str_map_lookup_u8(const struct str_num_map *map, uint8_t val);
+diff --git a/include/mnl_utils.h b/include/mnl_utils.h
+index fa826ef1..9e7d6879 100644
+--- a/include/mnl_utils.h
++++ b/include/mnl_utils.h
+@@ -2,6 +2,22 @@
+ #ifndef __MNL_UTILS_H__
+ #define __MNL_UTILS_H__ 1
 =20
-+unsigned int get_str_char_count(const char *str, int match);
-+int str_split_by_char(char *str, char **before, char **after, int match);
-+
-+#define INDENT_STR_MAXLEN 32
-+
-+struct indent_mem {
-+	int indent_level;
-+	char indent_str[INDENT_STR_MAXLEN + 1];
++struct mnlu_gen_socket {
++	struct mnl_socket *nl;
++	char *buf;
++	uint32_t family;
++	unsigned int seq;
++	uint8_t version;
 +};
 +
-+struct indent_mem *alloc_indent_mem(void);
-+void free_indent_mem(struct indent_mem *mem);
-+void inc_indent(struct indent_mem *mem);
-+void dec_indent(struct indent_mem *mem);
-+void print_indent(struct indent_mem *mem);
++int mnlu_gen_socket_open(struct mnlu_gen_socket *nlg, const char *family_n=
+ame,
++			 uint8_t version);
++void mnlu_gen_socket_close(struct mnlu_gen_socket *nlg);
++struct nlmsghdr *mnlu_gen_socket_cmd_prepare(struct mnlu_gen_socket *nlg,
++					     uint8_t cmd, uint16_t flags);
++int mnlu_gen_socket_sndrcv(struct mnlu_gen_socket *nlg, const struct nlmsg=
+hdr *nlh,
++			   mnl_cb_t data_cb, void *data);
 +
- #endif /* __UTILS_H__ */
-diff --git a/lib/utils.c b/lib/utils.c
-index af1b553c..cc6d0e34 100644
---- a/lib/utils.c
-+++ b/lib/utils.c
-@@ -1978,3 +1978,69 @@ const char *str_map_lookup_u8(const struct str_num_m=
-ap *map, uint8_t val)
- 	}
- 	return NULL;
+ struct mnl_socket *mnlu_socket_open(int bus);
+ struct nlmsghdr *mnlu_msg_prepare(void *buf, uint32_t nlmsg_type, uint16_t=
+ flags,
+ 				  void *extra_header, size_t extra_header_size);
+diff --git a/lib/mnl_utils.c b/lib/mnl_utils.c
+index 46384ff8..4f699455 100644
+--- a/lib/mnl_utils.c
++++ b/lib/mnl_utils.c
+@@ -7,6 +7,7 @@
+ #include <string.h>
+ #include <time.h>
+ #include <libmnl/libmnl.h>
++#include <linux/genetlink.h>
+=20
+ #include "libnetlink.h"
+ #include "mnl_utils.h"
+@@ -108,3 +109,123 @@ int mnlu_socket_recv_run(struct mnl_socket *nl, unsig=
+ned int seq, void *buf, siz
+=20
+ 	return err;
  }
 +
-+unsigned int get_str_char_count(const char *str, int match)
++static int get_family_id_attr_cb(const struct nlattr *attr, void *data)
 +{
-+	unsigned int count =3D 0;
-+	const char *pos =3D str;
++	int type =3D mnl_attr_get_type(attr);
++	const struct nlattr **tb =3D data;
 +
-+	while ((pos =3D strchr(pos, match))) {
-+		count++;
-+		pos++;
-+	}
-+	return count;
++	if (mnl_attr_type_valid(attr, CTRL_ATTR_MAX) < 0)
++		return MNL_CB_ERROR;
++
++	if (type =3D=3D CTRL_ATTR_FAMILY_ID &&
++	    mnl_attr_validate(attr, MNL_TYPE_U16) < 0)
++		return MNL_CB_ERROR;
++	tb[type] =3D attr;
++	return MNL_CB_OK;
 +}
 +
-+int str_split_by_char(char *str, char **before, char **after, int match)
++static int get_family_id_cb(const struct nlmsghdr *nlh, void *data)
 +{
-+	char *slash;
++	struct genlmsghdr *genl =3D mnl_nlmsg_get_payload(nlh);
++	struct nlattr *tb[CTRL_ATTR_MAX + 1] =3D {};
++	uint32_t *p_id =3D data;
 +
-+	slash =3D strrchr(str, match);
-+	if (!slash)
-+		return -EINVAL;
-+	*slash =3D '\0';
-+	*before =3D str;
-+	*after =3D slash + 1;
++	mnl_attr_parse(nlh, sizeof(*genl), get_family_id_attr_cb, tb);
++	if (!tb[CTRL_ATTR_FAMILY_ID])
++		return MNL_CB_ERROR;
++	*p_id =3D mnl_attr_get_u16(tb[CTRL_ATTR_FAMILY_ID]);
++	return MNL_CB_OK;
++}
++
++static int family_get(struct mnlu_gen_socket *nlg, const char *family_name=
+)
++{
++	struct genlmsghdr hdr =3D {};
++	struct nlmsghdr *nlh;
++	int err;
++
++	hdr.cmd =3D CTRL_CMD_GETFAMILY;
++	hdr.version =3D 0x1;
++
++	nlh =3D mnlu_msg_prepare(nlg->buf, GENL_ID_CTRL,
++			       NLM_F_REQUEST | NLM_F_ACK,
++			       &hdr, sizeof(hdr));
++
++	mnl_attr_put_strz(nlh, CTRL_ATTR_FAMILY_NAME, family_name);
++
++	err =3D mnl_socket_sendto(nlg->nl, nlh, nlh->nlmsg_len);
++	if (err < 0)
++		return err;
++
++	err =3D mnlu_socket_recv_run(nlg->nl, nlh->nlmsg_seq, nlg->buf,
++				   MNL_SOCKET_BUFFER_SIZE,
++				   get_family_id_cb, &nlg->family);
++	return err;
++}
++
++int mnlu_gen_socket_open(struct mnlu_gen_socket *nlg, const char *family_n=
+ame,
++			 uint8_t version)
++{
++	int err;
++
++	nlg->buf =3D malloc(MNL_SOCKET_BUFFER_SIZE);
++	if (!nlg->buf)
++		goto err_buf_alloc;
++
++	nlg->nl =3D mnlu_socket_open(NETLINK_GENERIC);
++	if (!nlg->nl)
++		goto err_socket_open;
++
++	err =3D family_get(nlg, family_name);
++	if (err)
++		goto err_socket;
++
 +	return 0;
++
++err_socket:
++	mnl_socket_close(nlg->nl);
++err_socket_open:
++	free(nlg->buf);
++err_buf_alloc:
++	return -1;
 +}
 +
-+struct indent_mem *alloc_indent_mem(void)
++void mnlu_gen_socket_close(struct mnlu_gen_socket *nlg)
 +{
-+	struct indent_mem *mem =3D malloc(sizeof(*mem));
-+
-+	if (!mem)
-+		return NULL;
-+	strcpy(mem->indent_str, "");
-+	mem->indent_level =3D 0;
-+	return mem;
++	mnl_socket_close(nlg->nl);
++	free(nlg->buf);
 +}
 +
-+void free_indent_mem(struct indent_mem *mem)
++struct nlmsghdr *mnlu_gen_socket_cmd_prepare(struct mnlu_gen_socket *nlg,
++					     uint8_t cmd, uint16_t flags)
 +{
-+	free(mem);
++	struct genlmsghdr hdr =3D {};
++	struct nlmsghdr *nlh;
++
++	hdr.cmd =3D cmd;
++	hdr.version =3D nlg->version;
++	nlh =3D mnlu_msg_prepare(nlg->buf, nlg->family, flags, &hdr, sizeof(hdr))=
+;
++	nlg->seq =3D nlh->nlmsg_seq;
++	return nlh;
 +}
 +
-+#define INDENT_STR_STEP 2
-+
-+void inc_indent(struct indent_mem *mem)
++int mnlu_gen_socket_sndrcv(struct mnlu_gen_socket *nlg, const struct nlmsg=
+hdr *nlh,
++			   mnl_cb_t data_cb, void *data)
 +{
-+	if (mem->indent_level + INDENT_STR_STEP > INDENT_STR_MAXLEN)
-+		return;
-+	mem->indent_level +=3D INDENT_STR_STEP;
-+	memset(mem->indent_str, ' ', sizeof(mem->indent_str));
-+	mem->indent_str[mem->indent_level] =3D '\0';
-+}
++	int err;
 +
-+void dec_indent(struct indent_mem *mem)
-+{
-+	if (mem->indent_level - INDENT_STR_STEP < 0)
-+		return;
-+	mem->indent_level -=3D INDENT_STR_STEP;
-+	mem->indent_str[mem->indent_level] =3D '\0';
-+}
++	err =3D mnl_socket_sendto(nlg->nl, nlh, nlh->nlmsg_len);
++	if (err < 0) {
++		perror("Failed to send data");
++		return -errno;
++	}
 +
-+void print_indent(struct indent_mem *mem)
-+{
-+	if (mem->indent_level)
-+		printf("%s", mem->indent_str);
++	err =3D mnlu_socket_recv_run(nlg->nl, nlh->nlmsg_seq, nlg->buf,
++				   MNL_SOCKET_BUFFER_SIZE,
++				   data_cb, data);
++	if (err < 0) {
++		fprintf(stderr, "kernel answers: %s\n", strerror(errno));
++		return -errno;
++	}
++	return 0;
 +}
 --=20
 2.26.2
