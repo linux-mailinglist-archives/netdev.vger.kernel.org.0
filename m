@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 805E030C35D
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 16:18:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 580ED30C45C
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 16:50:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235306AbhBBPPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 10:15:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39218 "EHLO mail.kernel.org"
+        id S235707AbhBBPtk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 10:49:40 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38188 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235102AbhBBPNN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 10:13:13 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 419DF64F86;
-        Tue,  2 Feb 2021 15:07:09 +0000 (UTC)
+        id S235119AbhBBPNS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 10:13:18 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 68E2D64F8D;
+        Tue,  2 Feb 2021 15:07:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612278430;
-        bh=m6i17RICMcagB3fjBK0ektXxTsN0a4iiNGXmiZNNTos=;
+        s=k20201202; t=1612278431;
+        bh=7HAX9sU+l6BNdNYSlFXNawad2Tcj2aC8xHHqNBYP1s8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fz7zwml8HurzIafjNuFovltQo7VAiOaPBzEKyf/1DyQ7yRkN3Bz7j8ju7eSzfPbUh
-         rgq8LXnNSg2GCwdIqfcXWcpbdc3hTfN7qEWwX8pTnMX+2xOV/khJy6hthpooF8FuZu
-         v9P+SNQncwhf5wemXdN3c1ydp+8LwQf1+YeOJdhBY8zdRY1jRrC1KO4vkGMHaP1RzK
-         s4WLS3uR+wCMe4IH5xKztbKHvx174JHAAQl5AAMCOQOMLvlyIS0gEoruOcCWbIPzWS
-         IMsLgPMuo3Dt0Jy2QBbs7C0jbZhYkxVhwbquD3CjslcZThRFeuzeTJFdF9vy9vpXuE
-         VHtkSrkOVDkbw==
+        b=cfJF2q5y6mx9Kkc0zatpKb1q0azpClCI7nRNuKEAlpqM8HQP8c36FbRWG4PitVd50
+         gJCJEvPSChbtKIFBnbqxO3KdTi4H5KCrGuwI3bD/DRS0ho1v30/0hApPvrhKHP/5zE
+         CG6MBIlT3FlRWtmhmKPEuAmVgggl2Aj6OQYY+9i9hvAIy59K6BOoiiePPZK7GS5V0O
+         KRtBHp97sImVHIbcoD+b1pbF6rNXIJYaG+7jActLx7QE8aw89AODPUYyJSqgUOQdom
+         Av+wPNmialFhqynvP+Pgozvam3RYwkxnNm7xwqM0CSDazhV1pLeLyE95CqdmiDlOgj
+         5SW7qwejjtb9A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Dave Wysochanski <dwysocha@redhat.com>,
         Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 14/17] SUNRPC: Move simple_get_bytes and simple_get_netobj into private header
-Date:   Tue,  2 Feb 2021 10:06:48 -0500
-Message-Id: <20210202150651.1864426-14-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 15/17] SUNRPC: Handle 0 length opaque XDR object data properly
+Date:   Tue,  2 Feb 2021 10:06:49 -0500
+Message-Id: <20210202150651.1864426-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210202150651.1864426-1-sashal@kernel.org>
 References: <20210202150651.1864426-1-sashal@kernel.org>
@@ -45,185 +45,75 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Dave Wysochanski <dwysocha@redhat.com>
 
-[ Upstream commit ba6dfce47c4d002d96cd02a304132fca76981172 ]
+[ Upstream commit e4a7d1f7707eb44fd953a31dd59eff82009d879c ]
 
-Remove duplicated helper functions to parse opaque XDR objects
-and place inside new file net/sunrpc/auth_gss/auth_gss_internal.h.
-In the new file carry the license and copyright from the source file
-net/sunrpc/auth_gss/auth_gss.c.  Finally, update the comment inside
-include/linux/sunrpc/xdr.h since lockd is not the only user of
-struct xdr_netobj.
+When handling an auth_gss downcall, it's possible to get 0-length
+opaque object for the acceptor.  In the case of a 0-length XDR
+object, make sure simple_get_netobj() fills in dest->data = NULL,
+and does not continue to kmemdup() which will set
+dest->data = ZERO_SIZE_PTR for the acceptor.
+
+The trace event code can handle NULL but not ZERO_SIZE_PTR for a
+string, and so without this patch the rpcgss_context trace event
+will crash the kernel as follows:
+
+[  162.887992] BUG: kernel NULL pointer dereference, address: 0000000000000010
+[  162.898693] #PF: supervisor read access in kernel mode
+[  162.900830] #PF: error_code(0x0000) - not-present page
+[  162.902940] PGD 0 P4D 0
+[  162.904027] Oops: 0000 [#1] SMP PTI
+[  162.905493] CPU: 4 PID: 4321 Comm: rpc.gssd Kdump: loaded Not tainted 5.10.0 #133
+[  162.908548] Hardware name: Red Hat KVM, BIOS 0.5.1 01/01/2011
+[  162.910978] RIP: 0010:strlen+0x0/0x20
+[  162.912505] Code: 48 89 f9 74 09 48 83 c1 01 80 39 00 75 f7 31 d2 44 0f b6 04 16 44 88 04 11 48 83 c2 01 45 84 c0 75 ee c3 0f 1f 80 00 00 00 00 <80> 3f 00 74 10 48 89 f8 48 83 c0 01 80 38 00 75 f7 48 29 f8 c3 31
+[  162.920101] RSP: 0018:ffffaec900c77d90 EFLAGS: 00010202
+[  162.922263] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 00000000fffde697
+[  162.925158] RDX: 000000000000002f RSI: 0000000000000080 RDI: 0000000000000010
+[  162.928073] RBP: 0000000000000010 R08: 0000000000000e10 R09: 0000000000000000
+[  162.930976] R10: ffff8e698a590cb8 R11: 0000000000000001 R12: 0000000000000e10
+[  162.933883] R13: 00000000fffde697 R14: 000000010034d517 R15: 0000000000070028
+[  162.936777] FS:  00007f1e1eb93700(0000) GS:ffff8e6ab7d00000(0000) knlGS:0000000000000000
+[  162.940067] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  162.942417] CR2: 0000000000000010 CR3: 0000000104eba000 CR4: 00000000000406e0
+[  162.945300] Call Trace:
+[  162.946428]  trace_event_raw_event_rpcgss_context+0x84/0x140 [auth_rpcgss]
+[  162.949308]  ? __kmalloc_track_caller+0x35/0x5a0
+[  162.951224]  ? gss_pipe_downcall+0x3a3/0x6a0 [auth_rpcgss]
+[  162.953484]  gss_pipe_downcall+0x585/0x6a0 [auth_rpcgss]
+[  162.955953]  rpc_pipe_write+0x58/0x70 [sunrpc]
+[  162.957849]  vfs_write+0xcb/0x2c0
+[  162.959264]  ksys_write+0x68/0xe0
+[  162.960706]  do_syscall_64+0x33/0x40
+[  162.962238]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[  162.964346] RIP: 0033:0x7f1e1f1e57df
 
 Signed-off-by: Dave Wysochanski <dwysocha@redhat.com>
 Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/sunrpc/xdr.h              |  3 +-
- net/sunrpc/auth_gss/auth_gss.c          | 30 +-----------------
- net/sunrpc/auth_gss/auth_gss_internal.h | 42 +++++++++++++++++++++++++
- net/sunrpc/auth_gss/gss_krb5_mech.c     | 31 ++----------------
- 4 files changed, 46 insertions(+), 60 deletions(-)
- create mode 100644 net/sunrpc/auth_gss/auth_gss_internal.h
+ net/sunrpc/auth_gss/auth_gss_internal.h | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/sunrpc/xdr.h b/include/linux/sunrpc/xdr.h
-index 9db6097c22c5d..a8d68c5a4ca61 100644
---- a/include/linux/sunrpc/xdr.h
-+++ b/include/linux/sunrpc/xdr.h
-@@ -27,8 +27,7 @@ struct rpc_rqst;
- #define XDR_QUADLEN(l)		(((l) + 3) >> 2)
- 
- /*
-- * Generic opaque `network object.' At the kernel level, this type
-- * is used only by lockd.
-+ * Generic opaque `network object.'
-  */
- #define XDR_MAX_NETOBJ		1024
- struct xdr_netobj {
-diff --git a/net/sunrpc/auth_gss/auth_gss.c b/net/sunrpc/auth_gss/auth_gss.c
-index 5fc6c028f89c0..b7a71578bd986 100644
---- a/net/sunrpc/auth_gss/auth_gss.c
-+++ b/net/sunrpc/auth_gss/auth_gss.c
-@@ -29,6 +29,7 @@
- #include <linux/uaccess.h>
- #include <linux/hashtable.h>
- 
-+#include "auth_gss_internal.h"
- #include "../netns.h"
- 
- #include <trace/events/rpcgss.h>
-@@ -125,35 +126,6 @@ gss_cred_set_ctx(struct rpc_cred *cred, struct gss_cl_ctx *ctx)
- 	clear_bit(RPCAUTH_CRED_NEW, &cred->cr_flags);
- }
- 
--static const void *
--simple_get_bytes(const void *p, const void *end, void *res, size_t len)
--{
--	const void *q = (const void *)((const char *)p + len);
--	if (unlikely(q > end || q < p))
--		return ERR_PTR(-EFAULT);
--	memcpy(res, p, len);
--	return q;
--}
--
--static inline const void *
--simple_get_netobj(const void *p, const void *end, struct xdr_netobj *dest)
--{
--	const void *q;
--	unsigned int len;
--
--	p = simple_get_bytes(p, end, &len, sizeof(len));
--	if (IS_ERR(p))
--		return p;
--	q = (const void *)((const char *)p + len);
--	if (unlikely(q > end || q < p))
--		return ERR_PTR(-EFAULT);
+diff --git a/net/sunrpc/auth_gss/auth_gss_internal.h b/net/sunrpc/auth_gss/auth_gss_internal.h
+index c5603242b54bf..f6d9631bd9d00 100644
+--- a/net/sunrpc/auth_gss/auth_gss_internal.h
++++ b/net/sunrpc/auth_gss/auth_gss_internal.h
+@@ -34,9 +34,12 @@ simple_get_netobj(const void *p, const void *end, struct xdr_netobj *dest)
+ 	q = (const void *)((const char *)p + len);
+ 	if (unlikely(q > end || q < p))
+ 		return ERR_PTR(-EFAULT);
 -	dest->data = kmemdup(p, len, GFP_NOFS);
 -	if (unlikely(dest->data == NULL))
 -		return ERR_PTR(-ENOMEM);
--	dest->len = len;
--	return q;
--}
--
- static struct gss_cl_ctx *
- gss_cred_get_ctx(struct rpc_cred *cred)
- {
-diff --git a/net/sunrpc/auth_gss/auth_gss_internal.h b/net/sunrpc/auth_gss/auth_gss_internal.h
-new file mode 100644
-index 0000000000000..c5603242b54bf
---- /dev/null
-+++ b/net/sunrpc/auth_gss/auth_gss_internal.h
-@@ -0,0 +1,42 @@
-+// SPDX-License-Identifier: BSD-3-Clause
-+/*
-+ * linux/net/sunrpc/auth_gss/auth_gss_internal.h
-+ *
-+ * Internal definitions for RPCSEC_GSS client authentication
-+ *
-+ * Copyright (c) 2000 The Regents of the University of Michigan.
-+ * All rights reserved.
-+ *
-+ */
-+#include <linux/err.h>
-+#include <linux/string.h>
-+#include <linux/sunrpc/xdr.h>
-+
-+static inline const void *
-+simple_get_bytes(const void *p, const void *end, void *res, size_t len)
-+{
-+	const void *q = (const void *)((const char *)p + len);
-+	if (unlikely(q > end || q < p))
-+		return ERR_PTR(-EFAULT);
-+	memcpy(res, p, len);
-+	return q;
-+}
-+
-+static inline const void *
-+simple_get_netobj(const void *p, const void *end, struct xdr_netobj *dest)
-+{
-+	const void *q;
-+	unsigned int len;
-+
-+	p = simple_get_bytes(p, end, &len, sizeof(len));
-+	if (IS_ERR(p))
-+		return p;
-+	q = (const void *)((const char *)p + len);
-+	if (unlikely(q > end || q < p))
-+		return ERR_PTR(-EFAULT);
-+	dest->data = kmemdup(p, len, GFP_NOFS);
-+	if (unlikely(dest->data == NULL))
-+		return ERR_PTR(-ENOMEM);
-+	dest->len = len;
-+	return q;
-+}
-diff --git a/net/sunrpc/auth_gss/gss_krb5_mech.c b/net/sunrpc/auth_gss/gss_krb5_mech.c
-index 6e5d6d2402158..b552dd4f32f80 100644
---- a/net/sunrpc/auth_gss/gss_krb5_mech.c
-+++ b/net/sunrpc/auth_gss/gss_krb5_mech.c
-@@ -21,6 +21,8 @@
- #include <linux/sunrpc/xdr.h>
- #include <linux/sunrpc/gss_krb5_enctypes.h>
- 
-+#include "auth_gss_internal.h"
-+
- #if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
- # define RPCDBG_FACILITY	RPCDBG_AUTH
- #endif
-@@ -164,35 +166,6 @@ get_gss_krb5_enctype(int etype)
- 	return NULL;
++	if (len) {
++		dest->data = kmemdup(p, len, GFP_NOFS);
++		if (unlikely(dest->data == NULL))
++			return ERR_PTR(-ENOMEM);
++	} else
++		dest->data = NULL;
+ 	dest->len = len;
+ 	return q;
  }
- 
--static const void *
--simple_get_bytes(const void *p, const void *end, void *res, int len)
--{
--	const void *q = (const void *)((const char *)p + len);
--	if (unlikely(q > end || q < p))
--		return ERR_PTR(-EFAULT);
--	memcpy(res, p, len);
--	return q;
--}
--
--static const void *
--simple_get_netobj(const void *p, const void *end, struct xdr_netobj *res)
--{
--	const void *q;
--	unsigned int len;
--
--	p = simple_get_bytes(p, end, &len, sizeof(len));
--	if (IS_ERR(p))
--		return p;
--	q = (const void *)((const char *)p + len);
--	if (unlikely(q > end || q < p))
--		return ERR_PTR(-EFAULT);
--	res->data = kmemdup(p, len, GFP_NOFS);
--	if (unlikely(res->data == NULL))
--		return ERR_PTR(-ENOMEM);
--	res->len = len;
--	return q;
--}
--
- static inline const void *
- get_key(const void *p, const void *end,
- 	struct krb5_ctx *ctx, struct crypto_sync_skcipher **res)
 -- 
 2.27.0
 
