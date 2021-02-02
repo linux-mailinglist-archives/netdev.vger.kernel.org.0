@@ -2,105 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA70C30CBC6
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 20:36:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 947B030CBCF
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 20:36:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233297AbhBBTfF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 14:35:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36972 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239805AbhBBTex (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 14:34:53 -0500
-Received: from mail-qk1-x74a.google.com (mail-qk1-x74a.google.com [IPv6:2607:f8b0:4864:20::74a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EE49C06174A
-        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 11:34:10 -0800 (PST)
-Received: by mail-qk1-x74a.google.com with SMTP id m64so18323978qke.12
-        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 11:34:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:message-id:mime-version:subject:from:to:cc;
-        bh=7mjFDBlLOrroTL2nKpGO/1sBwkxR1/DzFWmT8k4ca/Y=;
-        b=XZji5f4QZcJc3cciIxV/ZUFt8q7jQOeZ3dgN77mV4En1eXvNdun9Lyfa2A3eQpCqvV
-         WL/iOwnSKik1JW4l2PEPR+yskCKOfARooFtvWOAU1CRfnV279Uv86+qrHQMGj9kkWz8k
-         OCGoaMiA/XxM8snEQtRhc0RqlIgIkBA9jHrw59UA9dRAKmoW2BVR799V2H8iMU5yazr2
-         WNrxJBccSz9HD/dm/SSAgQvGunJHQCpWBaoZOkHAdcdkmItuf15tgapNPvy1a9dNBR19
-         XURcSGtrO5FqlOcKWDo2SnVZqELVe4rh9BnRLZIYNMcXZqge+WNuA0mDctHSS7+3wXGW
-         75Vw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
-         :to:cc;
-        bh=7mjFDBlLOrroTL2nKpGO/1sBwkxR1/DzFWmT8k4ca/Y=;
-        b=U/eRNju79dB8KFSEanyFPyjAglrBn9S/fj1IO95jrliCIsTBBsUK5Ns8NCVvHZxWCr
-         gAJmkvctFaVr/VdXolCS67eiqvViKJpxBXDpbFYkbNXz9fSknrut0gDg9+mcoV0BHHgr
-         CzjIsSkTqZB/sL4AjAzLFEao5YgSGXpY49AGKRk1owOym755pjoiuodXQnBDk3nmRDst
-         Jlr6LobIJo3K13I5Qpa2OKCUQMOhsj5fA65eDYTHZN5kwrgYGiSlmi3DNqUuQw5q67dy
-         nbS9ldClJ02vaHk3PgQuG2fKaDUKBmjaj321gNC+eX22mumdO1jhZXSRiE9u9riVNIaS
-         aMKA==
-X-Gm-Message-State: AOAM530ro9rB9Nj0IvmFloRAbVeRPt52OskYumPBs9z7PP1TjQ8KH0qk
-        /fi+9/OruUjeNwC3N7EiUimYlKqA6JU=
-X-Google-Smtp-Source: ABdhPJyStzGcJ1rYDikmQovo9rj/TamT+xJ23SIcDyr0EAfENN8pKceycOychwfR3Kuafu02XWw0mcSqkc4=
-Sender: "weiwan via sendgmr" <weiwan@weiwan.svl.corp.google.com>
-X-Received: from weiwan.svl.corp.google.com ([2620:15c:2c4:201:b40a:93c0:d2d6:71e3])
- (user=weiwan job=sendgmr) by 2002:ad4:4f41:: with SMTP id eu1mr21991208qvb.34.1612294449569;
- Tue, 02 Feb 2021 11:34:09 -0800 (PST)
-Date:   Tue,  2 Feb 2021 11:34:08 -0800
-Message-Id: <20210202193408.1171634-1-weiwan@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.30.0.365.g02bc693789-goog
-Subject: [PATCH net-next] tcp: use a smaller percpu_counter batch size for sk_alloc
-From:   Wei Wang <weiwan@google.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S239717AbhBBTgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 14:36:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51286 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239877AbhBBTfj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 14:35:39 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A3F3A64E39;
+        Tue,  2 Feb 2021 19:34:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612294498;
+        bh=WC5Lt7FO1YCCTlx62ZrKm1lIJjAacPhiw1YwF3tHUJ8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=HeNWkMoDFzRTV5ILjCtPyxS6/ZeLWABp9ipxmY0mPZ/HqVYwm1x44OnL02CuYAft2
+         0EGKzulbkp2NFOKpDhRuaVz3N5g0mFFusjnVHWRRe5jnP/9VDWTNDEqdsGJF8FeBL/
+         CyfzeTZumODueoaPmZ0kNC0qooUOGKGecoYVs8/f1AywzzH4vYqfWuw0hPvPkjE5C/
+         cW3q5thnzxvZqv3rHYFXaRY0F4oEACAj5kYumtwCT/Q0aIhyMeZ17Xym/ehOtsPNWt
+         yQ2Iuum6N1R/+rvPtqIS+2YNkCFjX7MrOuOxcXwGMsC8LaI8YQT03Fk+yP4S/jYq3J
+         GVb3sSo1u2gEQ==
+Date:   Tue, 2 Feb 2021 11:34:56 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Cc:     Marek Majtyka <alardam@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        David Ahern <dsahern@gmail.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, hawk@kernel.org,
+        bpf <bpf@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        jeffrey.t.kirsher@intel.com
+Subject: Re: [PATCH v2 bpf 1/5] net: ethtool: add xdp properties flag set
+Message-ID: <20210202113456.30cfe21e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <87bld2smi9.fsf@toke.dk>
+References: <20201204102901.109709-1-marekx.majtyka@intel.com>
+        <878sad933c.fsf@toke.dk>
+        <20201204124618.GA23696@ranger.igk.intel.com>
+        <048bd986-2e05-ee5b-2c03-cd8c473f6636@iogearbox.net>
+        <20201207135433.41172202@carbon>
+        <5fce960682c41_5a96208e4@john-XPS-13-9370.notmuch>
+        <20201207230755.GB27205@ranger.igk.intel.com>
+        <5fd068c75b92d_50ce20814@john-XPS-13-9370.notmuch>
+        <20201209095454.GA36812@ranger.igk.intel.com>
+        <20201209125223.49096d50@carbon>
+        <e1573338-17c0-48f4-b4cd-28eeb7ce699a@gmail.com>
+        <1e5e044c8382a68a8a547a1892b48fb21d53dbb9.camel@kernel.org>
+        <cb6b6f50-7cf1-6519-a87a-6b0750c24029@gmail.com>
+        <f4eb614ac91ee7623d13ea77ff3c005f678c512b.camel@kernel.org>
+        <d5be0627-6a11-9c1f-8507-cc1a1421dade@gmail.com>
+        <6f8c23d4ac60525830399754b4891c12943b63ac.camel@kernel.org>
+        <CAAOQfrHN1-oHmbOksDv-BKWv4gDF2zHZ5dTew6R_QTh6s_1abg@mail.gmail.com>
+        <87h7mvsr0e.fsf@toke.dk>
+        <CAAOQfrHA+-BsikeQzXYcK_32BZMbm54x5p5YhAiBj==uaZvG1w@mail.gmail.com>
+        <87bld2smi9.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, a percpu_counter with the default batch size (2*nr_cpus) is
-used to record the total # of active sockets per protocol. This means
-sk_sockets_allocated_read_positive() could be off by +/-2*(nr_cpus^2).
-This under/over-estimation could lead to wrong memory suppression
-conditions in __sk_raise_mem_allocated().
-Fix this by using a more reasonable fixed batch size of 16.
+On Tue, 02 Feb 2021 13:05:34 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> Marek Majtyka <alardam@gmail.com> writes:
+>=20
+> > Thanks Toke,
+> >
+> > In fact, I was waiting for a single confirmation, disagreement or
+> > comment. I have it now. As there are no more comments, I am getting
+> > down to work right away. =20
+>=20
+> Awesome! And sorry for not replying straight away - I hate it when I
+> send out something myself and receive no replies, so I suppose I should
+> get better at not doing that myself :)
+>=20
+> As for the inclusion of the XDP_BASE / XDP_LIMITED_BASE sets (which I
+> just realised I didn't reply to), I am fine with defining XDP_BASE as a
+> shortcut for TX/ABORTED/PASS/DROP, but think we should skip
+> XDP_LIMITED_BASE and instead require all new drivers to implement the
+> full XDP_BASE set straight away. As long as we're talking about
+> features *implemented* by the driver, at least; i.e., it should still be
+> possible to *deactivate* XDP_TX if you don't want to use the HW
+> resources, but I don't think there's much benefit from defining the
+> LIMITED_BASE set as a shortcut for this mode...
 
-See related commit cf86a086a180 ("net/dst: use a smaller percpu_counter
-batch for dst entries accounting") that addresses a similar issue.
-
-Signed-off-by: Wei Wang <weiwan@google.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reviewed-by: Soheil Hassas Yeganeh <soheil@google.com>
----
- include/net/sock.h | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 129d200bccb4..690e496a0e79 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -1350,14 +1350,18 @@ sk_memory_allocated_sub(struct sock *sk, int amt)
- 	atomic_long_sub(amt, sk->sk_prot->memory_allocated);
- }
- 
-+#define SK_ALLOC_PERCPU_COUNTER_BATCH 16
-+
- static inline void sk_sockets_allocated_dec(struct sock *sk)
- {
--	percpu_counter_dec(sk->sk_prot->sockets_allocated);
-+	percpu_counter_add_batch(sk->sk_prot->sockets_allocated, -1,
-+				 SK_ALLOC_PERCPU_COUNTER_BATCH);
- }
- 
- static inline void sk_sockets_allocated_inc(struct sock *sk)
- {
--	percpu_counter_inc(sk->sk_prot->sockets_allocated);
-+	percpu_counter_add_batch(sk->sk_prot->sockets_allocated, 1,
-+				 SK_ALLOC_PERCPU_COUNTER_BATCH);
- }
- 
- static inline u64
--- 
-2.30.0.365.g02bc693789-goog
-
+I still have mixed feelings about these flags. The first step IMO
+should be adding validation tests. I bet^W pray every vendor has
+validation tests but since they are not unified we don't know what
+level of interoperability we're achieving in practice. That doesn't
+matter for trivial feature like base actions, but we'll inevitably=20
+move on to defining more advanced capabilities and the question of
+"what supporting X actually mean" will come up (3 years later, when
+we don't remember ourselves).
