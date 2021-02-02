@@ -2,178 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C31230CB2D
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 20:18:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3848230CB27
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 20:17:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239366AbhBBTPH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 14:15:07 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45964 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239455AbhBBTMB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 14:12:01 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4458864E3D;
-        Tue,  2 Feb 2021 19:11:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612293080;
-        bh=5CMHvq2AZyfB5l1to1DKLhb6cV7jVUYUbIBHJWolr84=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pBk9uZzmgkrbPfmKasC2lGDUS/LJYganPhoiX0LkYnVXoiO9VLBeuNmPB0CaKBeCN
-         +oWCjtSO9LsLXjWoMOZnfaanMMalSH6oe2H+Z648vYdTNBNiVPihwCP3/VK+DeBNE5
-         4CVosx7M/9uEvIVeyNw+nF8IDE/3Pp8l+AlscnfHT3BvXmICr4fr9RkpPB8yH46Abv
-         8HskldQxY+P+GZWi/KUdRJW/K0W3VvxYXBEpY9DeVzXhkPKDOZ8QiDmylJxVvd38Fy
-         FvzSu0nLoKpAWTAF6tSXu/6Su5Umnm+LZqT6wY6F1WtO2PPVYsIa9iwBEfZ0bdk8VK
-         xXar1smSr7YTA==
-Date:   Tue, 2 Feb 2021 21:11:16 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Don Dutile <ddutile@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH mlx5-next v5 3/4] net/mlx5: Dynamically assign MSI-X
- vectors count
-Message-ID: <20210202191116.GG3264866@unreal>
-References: <20210126085730.1165673-4-leon@kernel.org>
- <20210202172508.GA113855@bjorn-Precision-5520>
+        id S239550AbhBBTOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 14:14:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60364 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238444AbhBBTMV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 14:12:21 -0500
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEFE5C0617A9;
+        Tue,  2 Feb 2021 11:11:40 -0800 (PST)
+Received: by mail-yb1-xb2a.google.com with SMTP id j84so8312997ybg.1;
+        Tue, 02 Feb 2021 11:11:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KGOLlL3VmlklLSLtTOQCOorpz7skAhQrAaYiiIt3mXc=;
+        b=AGbpY123SzwXAhZmh+7h1fPD9QYPo7FRBr6njLYsJWiQgV451qY7UJ1T+1Tu2786T7
+         NaaVBJk+z6RTBQPCBWtf421r9c8EpbU4ncC8gEkc0DG99Lp9QHWSXn9SQP+ykdgwxyKA
+         uNPcsdPCi4OB6XwBNkArPFKsuakbVTlxGTP39JneEx+NCMWzIrd+SJjiJsGxkx9k4Drq
+         ocaCvqiuDvxSn4jQA05d+H5WECheGlWQ7Mzmdx7uPupegRhyFXxvtbsaJB+I3aDe37XN
+         ZVfX7wVW5TW40a86PavftNzt7jRrYC+oaLdOnJ8DuAhP/FdXyGxaG4NoAssk6hZt+JMl
+         TQPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KGOLlL3VmlklLSLtTOQCOorpz7skAhQrAaYiiIt3mXc=;
+        b=Gc8KE4ir7Ou8x/oEF0g3klN/MqDy1QCAbCu2m0CXBIwR96kI/fXnnI9dOwD1zueVgn
+         Mq/FWlalu5dv52invA9tXIN3fthbawUcCO39Kkb8Y5cMxbsTXkQsDn70XgvIDO4fOI9c
+         T8cvdZx9bPFlLDK6kh3fpNvz2WzAM21N8BKDGWUYJ+h9hiAK9iUsA67aIabqi8rJHxgl
+         YJWoeBkMXpBaPjfyXFo0dDxPLSldXjFKZS6ZvudpiP3DhdfB25xZ5qlCYdp6hBqH+CrC
+         yU8PdLV4h/pz1suvIMNTKNtecSGJVjFOudpNYioXk2E7mrAcq93iUqpvC7+4ke5F+LwM
+         USCw==
+X-Gm-Message-State: AOAM531x/QfJ6zDY8R1AfWOavf9Fgi3Yji2zpcqy2uzex/JK1xRaoOgx
+        SXKX1jF93lQ9QIT2cco5aJiK8N7tHl/7gLiqSsY=
+X-Google-Smtp-Source: ABdhPJzmLPH+wJJ5EfcKW2fQztuoli3JW9JCYfkRC/VJJ/OCuD+DRu3DZMN+6ee45h1Zip0cbPbWZqebCuoIRDm/wRc=
+X-Received: by 2002:a25:c5c1:: with SMTP id v184mr13084878ybe.56.1612293099895;
+ Tue, 02 Feb 2021 11:11:39 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210202172508.GA113855@bjorn-Precision-5520>
+References: <20210202080614.37903-1-yishaih@nvidia.com> <20210202080614.37903-3-yishaih@nvidia.com>
+In-Reply-To: <20210202080614.37903-3-yishaih@nvidia.com>
+From:   Or Gerlitz <gerlitz.or@gmail.com>
+Date:   Tue, 2 Feb 2021 21:11:28 +0200
+Message-ID: <CAJ3xEMid_wMdJ_bArXvzO1BCFJNU4s5_+555ywD3iW1DvdYztA@mail.gmail.com>
+Subject: Re: [PATCH net-next RESEND 2/2] net/mlx5: E-Switch, Implement devlink
+ port function cmds to control roce
+To:     Yishai Hadas <yishaih@nvidia.com>
+Cc:     Linux Netdev List <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Doug Ledford <dledford@redhat.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Parav Pandit <parav@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 02, 2021 at 11:25:08AM -0600, Bjorn Helgaas wrote:
-> On Tue, Jan 26, 2021 at 10:57:29AM +0200, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@nvidia.com>
-> >
-> > The number of MSI-X vectors is PCI property visible through lspci, that
-> > field is read-only and configured by the device. The static assignment
-> > of an amount of MSI-X vectors doesn't allow utilize the newly created
-> > VF because it is not known to the device the future load and configuration
-> > where that VF will be used.
-> >
-> > To overcome the inefficiency in the spread of such MSI-X vectors, we
-> > allow the kernel to instruct the device with the needed number of such
-> > vectors.
-> >
-> > Such change immediately increases the amount of MSI-X vectors for the
-> > system with @ VFs from 12 vectors per-VF, to be 32 vectors per-VF.
->
-> Not knowing anything about mlx5, it looks like maybe this gets some
-> parameters from firmware on the device, then changes the way MSI-X
-> vectors are distributed among VFs?
+On Tue, Feb 2, 2021 at 10:08 AM Yishai Hadas <yishaih@nvidia.com> wrote:
+> Implement devlink port function commands to enable / disable roce.
+> This is used to control the roce device capabilities.
 
-The mlx5 devices can operate in one of two modes: static MSI-X vector
-table size and dynamic.
+[..]
 
-For the same number of VFs, the device will get 12 vectors per-VF in static
-mode. In dynamic, the total number is higher and we will be able to distribute
-new amount better.
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+> @@ -122,8 +122,9 @@ struct mlx5_vport_info {
+>         int                     link_state;
+>         u32                     min_rate;
+>         u32                     max_rate;
+> -       bool                    spoofchk;
+> -       bool                    trusted;
+> +       u8                      spoofchk: 1;
+> +       u8                      trusted: 1;
+> +       u8                      roce_enabled: 1;
+>  };
 
->
-> I don't understand the implications above about "static assignment"
-> and "inefficiency in the spread."  I guess maybe this takes advantage
-> of the fact that you know how many VFs are enabled, so if NumVFs is
-> less that TotalVFs, you can assign more vectors to each VF?
-
-Internally, in the FW, we are using different pool and configuration scheme
-for such distribution. In static mode, the amount is pre-configured through
-our FW configuration tool (nvconfig), in dynamic, the driver is fully
-responsible. And yes. NumVFs helps to utilize it is better.
-
->
-> If that's the case, spell it out a little bit.  The current text makes
-> it sound like you discovered brand new MSI-X vectors somewhere,
-> regardless of how many VFs are enabled, which doesn't sound right.
-
-I will do.
-
->
-> > Before this patch:
-> > [root@server ~]# lspci -vs 0000:08:00.2
-> > 08:00.2 Ethernet controller: Mellanox Technologies MT27800 Family [ConnectX-5 Virtual Function]
-> > ....
-> > 	Capabilities: [9c] MSI-X: Enable- Count=12 Masked-
-> >
-> > After this patch:
-> > [root@server ~]# lspci -vs 0000:08:00.2
-> > 08:00.2 Ethernet controller: Mellanox Technologies MT27800 Family [ConnectX-5 Virtual Function]
-> > ....
-> > 	Capabilities: [9c] MSI-X: Enable- Count=32 Masked-
-> >
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > ---
-> >  .../net/ethernet/mellanox/mlx5/core/main.c    |  4 ++
-> >  .../ethernet/mellanox/mlx5/core/mlx5_core.h   |  5 ++
-> >  .../net/ethernet/mellanox/mlx5/core/pci_irq.c | 72 +++++++++++++++++++
-> >  .../net/ethernet/mellanox/mlx5/core/sriov.c   | 13 +++-
-> >  4 files changed, 92 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-> > index ca6f2fc39ea0..79cfcc844156 100644
-> > --- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-> > @@ -567,6 +567,10 @@ static int handle_hca_cap(struct mlx5_core_dev *dev, void *set_ctx)
-> >  	if (MLX5_CAP_GEN_MAX(dev, mkey_by_name))
-> >  		MLX5_SET(cmd_hca_cap, set_hca_cap, mkey_by_name, 1);
-> >
-> > +	if (MLX5_CAP_GEN_MAX(dev, num_total_dynamic_vf_msix))
-> > +		MLX5_SET(cmd_hca_cap, set_hca_cap, num_total_dynamic_vf_msix,
-> > +			 MLX5_CAP_GEN_MAX(dev, num_total_dynamic_vf_msix));
-> > +
-> >  	return set_caps(dev, set_ctx, MLX5_SET_HCA_CAP_OP_MOD_GENERAL_DEVICE);
-> >  }
-> >
-> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-> > index 0a0302ce7144..5babb4434a87 100644
-> > --- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-> > @@ -172,6 +172,11 @@ int mlx5_irq_attach_nb(struct mlx5_irq_table *irq_table, int vecidx,
-> >  		       struct notifier_block *nb);
-> >  int mlx5_irq_detach_nb(struct mlx5_irq_table *irq_table, int vecidx,
-> >  		       struct notifier_block *nb);
-> > +
-> > +int mlx5_set_msix_vec_count(struct mlx5_core_dev *dev, int devfn,
-> > +			    int msix_vec_count);
-> > +int mlx5_get_default_msix_vec_count(struct mlx5_core_dev *dev, int num_vfs);
-> > +
-> >  struct cpumask *
-> >  mlx5_irq_get_affinity_mask(struct mlx5_irq_table *irq_table, int vecidx);
-> >  struct cpu_rmap *mlx5_irq_get_rmap(struct mlx5_irq_table *table);
-> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-> > index 6fd974920394..2a35888fcff0 100644
-> > --- a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-> > @@ -55,6 +55,78 @@ static struct mlx5_irq *mlx5_irq_get(struct mlx5_core_dev *dev, int vecidx)
-> >  	return &irq_table->irq[vecidx];
-> >  }
-> >
-> > +/**
-> > + * mlx5_get_default_msix_vec_count() - Get defaults of number of MSI-X vectors
-> > + * to be set
->
-> s/defaults of number of/default number of/
-> s/to be set/to be assigned to each VF/ ?
->
-> > + * @dev: PF to work on
-> > + * @num_vfs: Number of VFs was asked when SR-IOV was enabled
->
-> s/Number of VFs was asked when SR-IOV was enabled/Number of enabled VFs/ ?
->
-> > + **/
->
-> Documentation/doc-guide/kernel-doc.rst says kernel-doc comments end
-> with just "*/" (not "**/").
-
-The netdev uses this style all other the place. Also it is internal API
-call, the kdoc is not needed here, so I followed existing format.
-
-I'll fix all comments and resubmit.
-
-Thanks
+This struct has attributes which have e-switch vport affiliation where
+roce enable/disable
+is a property of the vhca function-over-the-e-wire -- it's that we do
+something specific
+in the e-switching to enforce  - sounds like a problematic location to
+land the bit..
