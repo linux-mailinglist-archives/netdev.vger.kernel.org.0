@@ -2,257 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 343C930B41D
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 01:28:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D89F730B436
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 01:38:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231346AbhBBA1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 1 Feb 2021 19:27:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44438 "EHLO
+        id S229593AbhBBAiO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 1 Feb 2021 19:38:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230000AbhBBA1W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 19:27:22 -0500
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01FD2C061573
-        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 16:26:42 -0800 (PST)
-Received: by mail-pg1-x530.google.com with SMTP id s23so12369694pgh.11
-        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 16:26:41 -0800 (PST)
+        with ESMTP id S229527AbhBBAiN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 1 Feb 2021 19:38:13 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1FD6C061573
+        for <netdev@vger.kernel.org>; Mon,  1 Feb 2021 16:37:32 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id s3so7298977edi.7
+        for <netdev@vger.kernel.org>; Mon, 01 Feb 2021 16:37:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Zvj4aYU0y0Jr2U0ONP7hvmfsczhs3+MnKcZwV/cnZdw=;
-        b=nBic+2wNERUVxh4frW5hHdXZSE5Ed5BXva852fRGqSn4IWxee7J3HN6igQHkbbSjly
-         pj5o9Hzb/pSXKDKFklPFcaQH+JPOHPASayCxRhrgWDu6EeL9N59zPQqcjMEs46yQZxhM
-         r6HQHp3Ns6tm62de4Abh82qTpIBZiNuh1IOAUwBMYyw9dkuCCONA/R8swbUD0ZbZ3nns
-         PKEXbZGux2uGHJI0EVuihKYVH2v74Hb0RRRFlqQ4iFEkONyUheIpXXGPpeGMRdsPoxRU
-         z5txulPnUQIqv9owJI4BGK90jhOVKcFP34YKI1raUFWkSwTVJH1Z+7FkrW9jlr6fOUQZ
-         PesA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=jbYe5W7KGj+nAdDQNB6u8Akoy51s4bVc1vI8xnhdOX4=;
+        b=KkYldV8r9iACcYXCFL3rienD/lhfcAODv6bMNa2hawvvXad2LrwmeIO01Zo9or16Dj
+         cbOsxSzEpmjVY+EkwecIfcugKrhH6S0jqiSilPzvXEx6kTHW3TjPKq39LuDVB1A4xFxW
+         8pbxs/qbDCOAnl/wG2Mua9WUimF07niZjb9n0FAKt6UDEhtUOoShj+YZ+BWKwGzBdokC
+         Qh4sUCM21V0u+DRqV2cCSeyka4hW3Z4ZfN4ejrsvR9nl2d+vDZx4uU4oKYc0dg4A9GiA
+         Fumi9DcNr+NJAJURIou6XduXFtxezzxGQ2hwdgU3b6TXxWmE0TxAhJkJwBU8AYWH1wds
+         U32Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=Zvj4aYU0y0Jr2U0ONP7hvmfsczhs3+MnKcZwV/cnZdw=;
-        b=VvlWceU90erCuPXjkBtKK6ZXKWjzFQTx/HLg8sZsrw2amLwc6bOiSV10CNHSQF4bDM
-         eWmU2Uk93e6pfdDJJXIWz34+2DnNJAPOaHpnpCZCm37vGxmM2Vuw5exFBC0b6bAtTJdw
-         Zuit7N+cQuIcuK3gZkyvwhOLsf9NABSw+teFbGlb0ilzG2OMWzagxkVg/uWloe6895Lu
-         7eB+r2Xt0WltmeR7tPcdqo+CQ1YVlQ+6g1czp5HlsKcReSZMCrXJE6dg8/BM0SnTm7Tl
-         flu4C4dQPUM9dW0YaMOmtG4YvCNzLmoECS+yAkbvH6BKYaGCyQ8pu5Wq8nh+XnZdFKgc
-         1GjA==
-X-Gm-Message-State: AOAM531F2eqROjMkLOXCdRA4r19FdGWlJIr20pyzVKJobdrrRNfwmLad
-        k33pH++lCmld7d5WkwqgofXjH5y53WM=
-X-Google-Smtp-Source: ABdhPJyk/IIIRpTxoz85df1g1efKZSVygUAV3RhkhWUOpgig77CxqmyYy4ROzLdJyVhPgtU99nvzPg==
-X-Received: by 2002:a63:5407:: with SMTP id i7mr19456240pgb.418.1612225600960;
-        Mon, 01 Feb 2021 16:26:40 -0800 (PST)
-Received: from [10.67.49.228] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id y20sm9194223pfo.210.2021.02.01.16.26.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 01 Feb 2021 16:26:40 -0800 (PST)
-Subject: Re: About PHY_INTERFACE_MODE_REVMII
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>
-References: <20210201214515.cx6ivvme2tlquge2@skbuf>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <5a4d7b45-b50c-f735-b414-140eb68bc745@gmail.com>
-Date:   Mon, 1 Feb 2021 16:26:36 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jbYe5W7KGj+nAdDQNB6u8Akoy51s4bVc1vI8xnhdOX4=;
+        b=pRhNTwwIlf9rw3yef2hNNaJF6hF2Ptbwgh31cpVDTGoCrFXJ/TCNw/4U+nCsmtLBrd
+         jmSNmKJYv9s+latB6hZ7o6xGy/zz8mCFWHVlXtHRPtVL/a6uaFGIoLmaztM3qmkVyMTz
+         L6GcKvxHWrdYhr0lKYw1Zn4vq/qlpNx1AXZfbH/fkXJjm1ktdNSTjXeenmc8ZBSTK07F
+         /vi8mZm95KvKAyQjd2mjwjaHWgWVAgEjOuC767ldm8WKox7a2eFGUK4zHVLrvZGeiV17
+         O07dcf3FV2cVfiK2T2woyCiFbqthMormEL+i4/7tSBZpws5Nea81VBdeJ6TzdNSjabOC
+         6Fzg==
+X-Gm-Message-State: AOAM530iyAjyV8iQnIRyMkxGiKI8XUCxmmdNSyc7Ymu4fb0O1oNMIb/n
+        pFpJr11JEf4GQyZONwUS+14=
+X-Google-Smtp-Source: ABdhPJxIaxzn6KEW2UMFW/2zTTqiXnP1my/aQ+0NtFa8xvlVCmjsrYjT1ct0/UoBlwQRODJphZPbiw==
+X-Received: by 2002:a50:9fae:: with SMTP id c43mr7617494edf.269.1612226251421;
+        Mon, 01 Feb 2021 16:37:31 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id u5sm1518956edc.29.2021.02.01.16.37.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Feb 2021 16:37:30 -0800 (PST)
+Date:   Tue, 2 Feb 2021 02:37:29 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     George McCollister <george.mccollister@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org
+Subject: Re: [RESEND PATCH net-next 1/4] net: hsr: generate supervision frame
+ without HSR tag
+Message-ID: <20210202003729.oh224wtpqm6bcse3@skbuf>
+References: <20210201140503.130625-1-george.mccollister@gmail.com>
+ <20210201140503.130625-2-george.mccollister@gmail.com>
+ <20210201145943.ajxecwnhsjslr2uf@skbuf>
+ <CAFSKS=OR6dXWXdRTmYToH7NAnf6EiXsVbV_CpNkVr-z69vUz-g@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210201214515.cx6ivvme2tlquge2@skbuf>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFSKS=OR6dXWXdRTmYToH7NAnf6EiXsVbV_CpNkVr-z69vUz-g@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/1/21 1:45 PM, Vladimir Oltean wrote:
-> Hi Florian,
+On Mon, Feb 01, 2021 at 01:43:43PM -0600, George McCollister wrote:
+> > > diff --git a/net/hsr/hsr_device.c b/net/hsr/hsr_device.c
+> > > index ab953a1a0d6c..161b8da6a21d 100644
+> > > --- a/net/hsr/hsr_device.c
+> > > +++ b/net/hsr/hsr_device.c
+> > > @@ -242,8 +242,7 @@ static struct sk_buff *hsr_init_skb(struct hsr_port *master, u16 proto)
+> > >        * being, for PRP it is a trailer and for HSR it is a
+> > >        * header
+> > >        */
+> > > -     skb = dev_alloc_skb(sizeof(struct hsr_tag) +
+> > > -                         sizeof(struct hsr_sup_tag) +
+> > > +     skb = dev_alloc_skb(sizeof(struct hsr_sup_tag) +
+> > >                           sizeof(struct hsr_sup_payload) + hlen + tlen);
+> >
+> > Question 1: why are you no longer allocating struct hsr_tag (or struct prp_rct,
+> > which has the same size)?
 > 
-> I was looking at
-> 
->   commit 2cc70ba4cf5f97a7cf08063d2fae693d36b462eb
->   Author: Florian Fainelli <f.fainelli@gmail.com>
->   Date:   Tue May 28 04:07:21 2013 +0000
-> 
->       phy: add reverse MII PHY connection type
-> 
->       The PHY library currently does not know about the the reverse MII
->       connection type. Add it to the list of supported PHY modes and update
->       of_get_phy_mode() to support it and look for the string "rev-mii".
-> 
->       Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
->       Signed-off-by: David S. Miller <davem@davemloft.net>
-> 
-> and I couldn't figure out its intended use from the drivers that do make
-> use of it.
-> 
-> As far as I understand
-> https://www.eetimes.com/reverse-media-independent-interface-revmii-block-architecture/#
-> RevMII is a set of hardware state machines used to describe a MAC-to-MAC
-> connection in a richer manner than a fixed-link would. You mostly get
-> auto-negotiation via a minimal clause 28 state machine, which should
-> help avoid mismatch of link modes. You also get the illusion of a clause
-> 22 register map that should work with the genphy driver and give you
-> link status based on (?!) the link partner toggling BMCR_ANRESTART, for
-> the most part - which would allow you to catch a change in their link
-> mode advertisement.
-> 
-> The thing is, RevMII as I understand it is simply the state machines for
-> autoneg and the virtual MDIO interface. RevMII is not a data link
-> protocol, is it? So why does PHY_INTERFACE_MODE_REVMII exist? Having
-> RevMII for the MDIO link management doesn't mean you don't have MII, or
-> RMII, or RGMII, or whatever, for the actual data link.
-> 
-> Another thing is, I think there's one fundamental thing that RevMII
-> can't abstract away behind that genphy-compatible clause 22 register
-> map. That is whether you're on the 'PHY' side of the RevMII block or on
-> the 'MAC' side of it. I think mostly small embedded devices would
-> implement a RevMII block in order to disguise themselves as real PHYs to
-> whatever the real SoC that connects to them is. But the underlying data
-> link is fundamentally asymmetrical any way you look at it. For example,
-> in the legacy MII protocol, both TX_CLK and RX_CLK are driven by the PHY
-> at 25 MHz. This means that two devices that use MII as a data link must
-> be aware of their role as a MAC or as a PHY. Same thing with RMII, where
-> the 50 MHz clock signals are either driven by the MAC or by an external
-> oscillator (but not by the PHY).
-> 
-> The point is that if the system implementing the RevMII block (not the
-> one connected over real MDIO to it) is running Linux, this creates an
-> apparent paradox. The MAC driver will think it's connected to a PHY, but
-> nonetheless, the MAC must operate in the role of a PHY. This is the
-> description of a PHY-to-PHY setup, something which doesn't make sense.
+> Because the tag is no longer being included in the supervisory frame
+> here. If I understand correctly hsr_create_tagged_frame and
+> prp_create_tagged_frame will create a new skb with HSR_HLEN added
+> later.
 
-It depends on the level of control that you have and expect more on that
-below.
+I'm mostly doing static analysis of the code, which makes everything
+more difficult and also my review more inaccurate. I'll try to give your
+patches more testing when reviewing further, but I just got stuck into
+trying to understand them first.
 
-> I.e. the MAC driver supports RMII. If it's attached to an RMII PHY it
-> should operate as a MAC, drive the 50 MHz clock. Except when that RMII
-> PHY is actually a virtual RevMII PHY and we're on the local side of it,
-> then everything is in reverse and we should actually not drive the 50
-> MHz clock because we're the PHY. But if we're on the remote side of the
-> RevMII PHY, things are again normal and we should do whatever a RMII MAC
-> does, not what a RMII PHY does.
+So your change makes fill_frame_info classify supervision frames as
+skb_std instead of skb_hsr or skb_prp. The tag is added only in
+hsr_create_tagged_frame right before dispatch to the egress port.
+
+But that means that there are places like for example
+hsr_handle_sup_frame which clearly don't like that: it checks whether
+there's a tagged skb in either frame->skb_hsr or frame->skb_prp, but not
+in frame->skb_std, so it now does basically nothing.
+
+Don't we need hsr_handle_sup_frame?
+
+> > In hsr->proto_ops->fill_frame_info in the call path above, the skb is
+> > still put either into frame->skb_hsr or into frame->skb_prp, but not
+> > into frame->skb_std, even if it does not contain a struct hsr_tag.
 > 
-> Consider the picture below.
+> Are you sure? My patch changes hsr_fill_frame_info and
+> prp_fill_frame_info not to do that if port->type is HSR_PT_MASTER
+> which I'm pretty certain it always is when sending supervisory frames
+> like this. If I've overlooked something let me know.
+
+You're right, I had figured it out myself in the comment below where I
+called it a kludge.
+
+> >
+> > Also, which code exactly will insert the hsr_tag later? I assume
+> > hsr_fill_tag via hsr->proto_ops->create_tagged_frame?
 > 
->  +--------------------------+                    +--------------------------+
->  |Linux    +----+------+----+           MDIO/MDC |-----------+      Linux   |
->  |box A    |Side|RevMII|Side|<-------------------|    MDIO   |      box B   |
->  |      +--| A  |block | B  |<-------------------|controller |              |
->  |      |  +----+------+----+                    |-----------+              |
->  |      |                   |                    |        |                 |
->  |   internal               |                    |     phy-handle           |
->  |    MDIO                  |Actual data link    |                          |
->  |      |            +------|<-------------------|------+                   |
->  |  phy-handle       | MAC  |<-------------------| MAC  |                   |
->  |                   |as PHY|------------------->|as MAC|                   |
->  |                   +------|------------------->|------+                   |
->  |                          |MII/RMII/RGMII/SGMII|                          |
->  +--------------------------+                    +--------------------------+
+> Correct.
+
+I think it's too late, see above.
+
+> > > -     if (!hsr->prot_version)
+> > > -             proto = ETH_P_PRP;
+> > > -     else
+> > > -             proto = ETH_P_HSR;
+> > > -
+> > > -     skb = hsr_init_skb(master, proto);
+> > > +     skb = hsr_init_skb(master, ETH_P_PRP);
+> >
+> > Question 2: why is this correct, setting skb->protocol to ETH_P_PRP
+> > (HSR v0) regardless of prot_version? Also, why is the change necessary?
 > 
-> The RevMII block implemented by the hardware on Linux box A has two
-> virtual register maps compatible with a clause 22 gigabit PHY, called
-> side A and side B. Presumably same PHY ID is presented to both sides, so
-> both box A and box B load the same PHY driver (let that be genphy).
-> But the actual data link is RMII, which is asymmetric in roles (all MII
-> protocols are asymmetric in roles to some degree, even RGMII which does
-> support in-band signaling driven by the PHY, even SGMII where the same
-> thing is true). So somebody must tell Linux box A to configure the MAC
-> as a PHY, and Linux box B to configure the MAC as a MAC. Who tells them
-> that? I thought PHY_INTERFACE_MODE_REVMII was supposed to help, but I
-> just don't see how - the information about the underlying data link type
-> is just lost.
+> This part is not intuitive and I don't have a copy of the documents
+> where v0 was defined. It's unfortunate this code even supports v0
+> because AFAIK no one else uses it; but it's in here so we have to keep
+> supporting it I guess.
+> In v1 the tag has an eth type of 0x892f and the encapsulated
+> supervisory frame has a type of 0x88fb. In v0 0x88fb is used for the
+> eth type and there is no encapsulation type. So... this is correct
+> however I compared supervisory frame generation before and after this
+> patch for v0 and I found a problem. My changes make it add 0x88fb
+> again later for v0 which it's not supposed to do. I'll have to fix
+> that part somehow.
 
-That is true if we consider that you can use an electrical connection
-other than MII, which was the flaw in the reasoning leading to introduce
-the above commit. If you took the name reverse MII literally like I did,
-you would not think it would apply to anything but MII and maybe reduced
-MII, but not GMII or RGMII. More on that below.
+Step 1: Sign up for HSR maintainership, it's currently orphan
+Step 2: Delete HSRv0 support
+Step 3: See if anyone shouts, probably not
+Step 4: Profit.
 
+> >
+> > Why is it such a big deal if supervision frames have HSR/PRP tag or not?
 > 
-> Is it the case that the hardware on Linux box A is just supposed to hide
-> that it's really using RGMII/RMII/MII with a PHY role as the actual data
-> link, and just give that a pretty name "RevMII" aka "none of your business"?
-> But again I don't believe that to be true, somebody still has to care at
-> some point about protocol specific things, like RGMII delays, or
-> clocking setup at 25 or 50 or 125 MHz depending on whether MII or RMII
-> or RGMII is used, whether to generate inband signaling and wait for ACK,
-> etc etc.
+> Because if the switch does automatic HSR/PRP tag insertion it will end
+> up in there twice. You simply can't send anything with an HSR/PRP tag
+> if this is offloaded.
 
-I don't believe I ever saw a system that used reverse MII and yet did
-not use either plain MII as far as the electrical connections went. That
-does not mean you could not electrically connect these two systems using
-RMII, GMII or something else. With RGMII, I don't see the point in using
-a RevMII block especially as far as clocking goes, both link partners
-can have their own local clock and just do clock recovery upon receive.
-
-When this commit was done, the only use case that had to be supported
-was the case of two Ethernet MACs (one a video decoder, the other a
-cable modem) connected over a MII electrical connection and we could not
-change the cable modem side, so we act to make ourselves "look like" a
-PHY which the hardware supported. Back then the GENET driver was just
-getting a facelift to use PHYLIB and so it still used a fixed-link plus
-phy-mode = "rev-mii" to get that mode to work which was probably too big
-of a shortcut in addition to the flaw in the reasoning about what RevMII
-really was.
-
-If you would like to deprecate/warn when using PHY_INTERFACE_MODE_REVMII
-value and come up with a better way to represent such links, no issues
-with me, it looks like we have a few in tree users to convert.
--- 
-Florian
+When exactly will your hardware push a second HSR tag when the incoming
+packet already contains one? Obviously for tagged packets coming from
+the ring it should not do that. It must be treating the CPU port special
+somehow, but I don't understand how.
