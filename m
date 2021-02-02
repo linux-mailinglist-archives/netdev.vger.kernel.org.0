@@ -2,113 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 573D430C553
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 17:22:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D930230C1BD
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 15:35:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236163AbhBBQTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 11:19:10 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:28988 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234212AbhBBOPu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 09:15:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1612275264;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KunqakVn1xJ0m1dnFKxNWc2BsmU6toTjQEsO1J2kZn0=;
-        b=H//9CgY5x3z8CnKPCqtN4QQww5X39zOD+kZQL42HsZYk12GZZblJimwnUj/7VoLQcgkmA+
-        MVlbYlrC861VE66mS2O6cxrJcognYv5wUnKXN/49vaqoMT7/1snYFaTvLZuES9ywvQgi1K
-        p1n8MWpDhveMhl9VxVoXDO8sMGZ8twU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-505-B9QHKUKmMfmP75dYQNcZFA-1; Tue, 02 Feb 2021 09:14:22 -0500
-X-MC-Unique: B9QHKUKmMfmP75dYQNcZFA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S234373AbhBBOa5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 09:30:57 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51736 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234005AbhBBOTv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 09:19:51 -0500
+Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7F8F281620;
-        Tue,  2 Feb 2021 14:14:20 +0000 (UTC)
-Received: from carbon.lan (unknown [10.36.110.20])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4BD4F4D;
-        Tue,  2 Feb 2021 14:14:03 +0000 (UTC)
-Date:   Tue, 2 Feb 2021 15:14:00 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
-        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        toshiaki.makita1@gmail.com, lorenzo.bianconi@redhat.com,
-        toke@redhat.com, brouer@redhat.com
-Subject: Re: [PATCH v3 bpf-next] net: veth: alloc skb in bulk for
- ndo_xdp_xmit
-Message-ID: <20210202151400.00e36ff7@carbon.lan>
-In-Reply-To: <a14a30d3c06fff24e13f836c733d80efc0bd6eb5.1611957532.git.lorenzo@kernel.org>
-References: <a14a30d3c06fff24e13f836c733d80efc0bd6eb5.1611957532.git.lorenzo@kernel.org>
+        by mail.kernel.org (Postfix) with ESMTPSA id D925E64E2B;
+        Tue,  2 Feb 2021 14:15:17 +0000 (UTC)
+Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94)
+        (envelope-from <maz@kernel.org>)
+        id 1l6wSZ-00BVy2-W6; Tue, 02 Feb 2021 14:15:16 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Date:   Tue, 02 Feb 2021 14:15:15 +0000
+From:   Marc Zyngier <maz@kernel.org>
+To:     Jianyong Wu <jianyong.wu@arm.com>
+Cc:     netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org,
+        tglx@linutronix.de, pbonzini@redhat.com, richardcochran@gmail.com,
+        Mark.Rutland@arm.com, will@kernel.org, suzuki.poulose@arm.com,
+        Andre.Przywara@arm.com, steven.price@arm.com,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
+        Steve.Capper@arm.com, justin.he@arm.com, nd@arm.com
+Subject: Re: [PATCH v16 0/9] Enable ptp_kvm for arm/arm64
+In-Reply-To: <20201209060932.212364-1-jianyong.wu@arm.com>
+References: <20201209060932.212364-1-jianyong.wu@arm.com>
+User-Agent: Roundcube Webmail/1.4.10
+Message-ID: <74108ee1d0021acbdd7aed5b467e5432@kernel.org>
+X-Sender: maz@kernel.org
+X-SA-Exim-Connect-IP: 51.254.78.96
+X-SA-Exim-Rcpt-To: jianyong.wu@arm.com, netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org, tglx@linutronix.de, pbonzini@redhat.com, richardcochran@gmail.com, Mark.Rutland@arm.com, will@kernel.org, suzuki.poulose@arm.com, Andre.Przywara@arm.com, steven.price@arm.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org, Steve.Capper@arm.com, justin.he@arm.com, nd@arm.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 29 Jan 2021 23:04:08 +0100
-Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+On 2020-12-09 06:09, Jianyong Wu wrote:
+> Currently, we offen use ntp (sync time with remote network clock)
+> to sync time in VM. But the precision of ntp is subject to network 
+> delay
+> so it's difficult to sync time in a high precision.
+> 
+> kvm virtual ptp clock (ptp_kvm) offers another way to sync time in VM,
+> as the remote clock locates in the host instead of remote network 
+> clock.
+> It targets to sync time between guest and host in virtualization
+> environment and in this way, we can keep the time of all the VMs 
+> running
+> in the same host in sync. In general, the delay of communication 
+> between
+> host and guest is quiet small, so ptp_kvm can offer time sync precision
+> up to in order of nanosecond. Please keep in mind that ptp_kvm just
+> limits itself to be a channel which transmit the remote clock from
+> host to guest and leaves the time sync jobs to an application, eg. 
+> chrony,
+> in usersapce in VM.
+> 
+> How ptp_kvm works:
+> After ptp_kvm initialized, there will be a new device node under
+> /dev called ptp%d. A guest userspace service, like chrony, can use this
+> device to get host walltime, sometimes also counter cycle, which 
+> depends
+> on the service it calls. Then this guest userspace service can use 
+> those
+> data to do the time sync for guest.
+> here is a rough sketch to show how kvm ptp clock works.
+> 
+> |----------------------------|              
+> |--------------------------|
+> |       guest userspace      |              |          host            
+> |
+> |ioctl -> /dev/ptp%d         |              |                          
+> |
+> |       ^   |                |              |                          
+> |
+> |----------------------------|              |                          
+> |
+> |       |   | guest kernel   |              |                          
+> |
+> |       |   V      (get host walltime/counter cycle)                   
+> |
+> |      ptp_kvm -> hypercall - - - - - - - - - - ->hypercall service    
+> |
+> |                         <- - - - - - - - - - - -                     
+> |
+> |----------------------------|              
+> |--------------------------|
+> 
+> 1. time sync service in guest userspace call ptp device through 
+> /dev/ptp%d.
+> 2. ptp_kvm module in guest receives this request then invoke hypercall 
+> to route
+> into host kernel to request host walltime/counter cycle.
+> 3. ptp_kvm hypercall service in host response to the request and send 
+> data back.
+> 4. ptp (not ptp_kvm) in guest copy the data to userspace.
+> 
+> This ptp_kvm implementation focuses itself to step 2 and 3 and step 2 
+> works
+> in guest comparing step 3 works in host kernel.
 
-> Split ndo_xdp_xmit and ndo_start_xmit use cases in veth_xdp_rcv routine
-> in order to alloc skbs in bulk for XDP_PASS verdict.
-> Introduce xdp_alloc_skb_bulk utility routine to alloc skb bulk list.
-> The proposed approach has been tested in the following scenario:
-> 
-> eth (ixgbe) --> XDP_REDIRECT --> veth0 --> (remote-ns) veth1 --> XDP_PASS
-> 
-> XDP_REDIRECT: xdp_redirect_map bpf sample
-> XDP_PASS: xdp_rxq_info bpf sample
-> 
-> traffic generator: pkt_gen sending udp traffic on a remote device
-> 
-> bpf-next master: ~3.64Mpps
-> bpf-next + skb bulking allocation: ~3.79Mpps
-> 
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
+FWIW, and in order to speed up the review, I've posted a reworked
+version[0] of this series with changes that address the comments
+I had for on v16.
 
-I wanted Lorenzo to test 8 vs 16 bulking, but after much testing and
-IRC dialog, we cannot find and measure any difference with enough
-accuracy. Thus:
+Thanks,
 
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+         M.
 
-> Changes since v2:
-> - use __GFP_ZERO flag instead of memset
-> - move some veth_xdp_rcv_batch() logic in veth_xdp_rcv_skb()
-> 
-> Changes since v1:
-> - drop patch 2/3, squash patch 1/3 and 3/3
-> - set VETH_XDP_BATCH to 16
-> - rework veth_xdp_rcv to use __ptr_ring_consume
-> ---
->  drivers/net/veth.c | 78 ++++++++++++++++++++++++++++++++++------------
->  include/net/xdp.h  |  1 +
->  net/core/xdp.c     | 11 +++++++
->  3 files changed, 70 insertions(+), 20 deletions(-)
-> 
-> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-> index 6e03b619c93c..aa1a66ad2ce5 100644
-> --- a/drivers/net/veth.c
-> +++ b/drivers/net/veth.c
-> @@ -35,6 +35,7 @@
->  #define VETH_XDP_HEADROOM	(XDP_PACKET_HEADROOM + NET_IP_ALIGN)
->  
->  #define VETH_XDP_TX_BULK_SIZE	16
-> +#define VETH_XDP_BATCH		16
->  
-
-
+[0] https://lore.kernel.org/r/20210202141204.3134855-1-maz@kernel.org
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+Jazz is not dead. It just smells funny...
