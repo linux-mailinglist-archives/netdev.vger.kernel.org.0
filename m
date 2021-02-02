@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B879430B819
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 07:57:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3684730B81A
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 07:57:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232231AbhBBGz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 01:55:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50022 "EHLO mail.kernel.org"
+        id S232238AbhBBGz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 01:55:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50028 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232085AbhBBGzx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 01:55:53 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6513F64EE7;
-        Tue,  2 Feb 2021 06:55:12 +0000 (UTC)
+        id S232042AbhBBGzy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 01:55:54 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4FA7D64EE8;
+        Tue,  2 Feb 2021 06:55:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1612248913;
-        bh=64zPNsBlfb8Q82UxAFOfMhBRA7UZC8nZRPzrZ6vOjMQ=;
+        bh=6h96t0KmVA/ZHg0SCIB7LAec9IKH97aWu3/bgP48UsI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dqwZdwz9akev+JbiAk5k8uzXMtRq0aePlK86+2b+CXa3GbQ3PlaVz92UKwctzlMAD
-         DhC7K/LB1oBKlsYOoYwv9DHjvnTzGzpdIq95/Weu8TnlB78hf5HdxsK+sqSWIm+Rh3
-         adnwxTDiKZSBxRYrrti/SNeCniP/eAwUIu4I56Ao59h5d5/bDWm2yMVWP7SJm6mjWv
-         c0ENm+D0idYrEJ3jmRNgKR9Xn1rS2RdTH8XQ2WHIbpQczh9+ur8SjGq+Z4KaFRV5dF
-         Hoik4+iUHofXLlUjDSn7RqbFFl5Hxh1Q1TsUoMhr47DygBMWQuyIhV3sPUfAqdjCoD
-         U7FcABE0y6PrQ==
+        b=iXSvA9gkea0AQTuk2mp7nBz2UN+ZUnb+bRydeoq5JM8juF9M/7qWFMO7Wp9DGUR/z
+         cdwa5nqvw7epkxY20oiyBj2eU1D5dJ9WJsoLxmY2fv94KpyNLTpz0Dww+G/9mpOwO5
+         didPuc/sHz9NBJdIzX5in8m1eog+PaqdKz0SHBFcKv6TOhFVsbupgLMZq/bmtegF7y
+         l6CBN873akmOgC7NlF7moAg3pgcPtMtv2AdESWO0z9NvdTBYBZmc5KnqmHBnTJNKys
+         yhVMSJSf5PTv3EoK1EznnxdUx0v3s7uk0zYnqUHVw+EF5j47HI7IMocMvCVyB56Bz+
+         njtJfoJkkUumA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 03/14] net/mlx5e: Refactor mlx5e_netdev_init/cleanup to mlx5e_priv_init/cleanup
-Date:   Mon,  1 Feb 2021 22:54:46 -0800
-Message-Id: <20210202065457.613312-4-saeed@kernel.org>
+Subject: [net-next 04/14] net/mlx5e: Move netif_carrier_off() out of mlx5e_priv_init()
+Date:   Mon,  1 Feb 2021 22:54:47 -0800
+Message-Id: <20210202065457.613312-5-saeed@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210202065457.613312-1-saeed@kernel.org>
 References: <20210202065457.613312-1-saeed@kernel.org>
@@ -41,125 +41,57 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Roi Dayan <roid@nvidia.com>
 
-We actually initialize priv and not netdev. The only call to
-set netdev carrier will be moved in the following commit.
+It's not part of priv initialization.
 
 Signed-off-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |  8 ++++----
- .../net/ethernet/mellanox/mlx5/core/en_main.c | 20 +++++++++----------
- .../ethernet/mellanox/mlx5/core/ipoib/ipoib.c |  4 ++--
- 3 files changed, 16 insertions(+), 16 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c     | 6 +++---
+ drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c | 1 +
+ 2 files changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index fa461cfd6410..8cc80c31341f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -1160,10 +1160,10 @@ mlx5e_calc_max_nch(struct mlx5e_priv *priv, const struct mlx5e_profile *profile)
- 	return priv->netdev->num_rx_queues / max_t(u8, profile->rq_groups, 1);
- }
- 
--int mlx5e_netdev_init(struct net_device *netdev,
--		      struct mlx5e_priv *priv,
--		      struct mlx5_core_dev *mdev);
--void mlx5e_netdev_cleanup(struct net_device *netdev, struct mlx5e_priv *priv);
-+int mlx5e_priv_init(struct mlx5e_priv *priv,
-+		    struct net_device *netdev,
-+		    struct mlx5_core_dev *mdev);
-+void mlx5e_priv_cleanup(struct mlx5e_priv *priv);
- struct net_device *
- mlx5e_create_netdev(struct mlx5_core_dev *mdev, unsigned int txqs, unsigned int rxqs);
- int mlx5e_attach_netdev(struct mlx5e_priv *priv);
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 91f23871ded5..177e076f6cce 100644
+index 177e076f6cce..e468d8329c2a 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -5457,9 +5457,9 @@ static const struct mlx5e_profile mlx5e_nic_profile = {
- };
+@@ -5483,9 +5483,6 @@ int mlx5e_priv_init(struct mlx5e_priv *priv,
+ 	if (!priv->wq)
+ 		goto err_free_cpumask;
  
- /* mlx5e generic netdev management API (move to en_common.c) */
--int mlx5e_netdev_init(struct net_device *netdev,
--		      struct mlx5e_priv *priv,
--		      struct mlx5_core_dev *mdev)
-+int mlx5e_priv_init(struct mlx5e_priv *priv,
-+		    struct net_device *netdev,
-+		    struct mlx5_core_dev *mdev)
- {
- 	memset(priv, 0, sizeof(*priv));
+-	/* netdev init */
+-	netif_carrier_off(netdev);
+-
+ 	return 0;
  
-@@ -5494,7 +5494,7 @@ int mlx5e_netdev_init(struct net_device *netdev,
- 	return -ENOMEM;
- }
- 
--void mlx5e_netdev_cleanup(struct net_device *netdev, struct mlx5e_priv *priv)
-+void mlx5e_priv_cleanup(struct mlx5e_priv *priv)
- {
- 	int i;
- 
-@@ -5518,9 +5518,9 @@ mlx5e_create_netdev(struct mlx5_core_dev *mdev, unsigned int txqs, unsigned int
- 		return NULL;
- 	}
- 
--	err = mlx5e_netdev_init(netdev, netdev_priv(netdev), mdev);
-+	err = mlx5e_priv_init(netdev_priv(netdev), netdev, mdev);
- 	if (err) {
--		mlx5_core_err(mdev, "mlx5e_netdev_init failed, err=%d\n", err);
-+		mlx5_core_err(mdev, "mlx5e_priv_init failed, err=%d\n", err);
+ err_free_cpumask:
+@@ -5523,6 +5520,8 @@ mlx5e_create_netdev(struct mlx5_core_dev *mdev, unsigned int txqs, unsigned int
+ 		mlx5_core_err(mdev, "mlx5e_priv_init failed, err=%d\n", err);
  		goto err_free_netdev;
  	}
++
++	netif_carrier_off(netdev);
  	dev_net_set(netdev, mlx5_core_net(mdev));
-@@ -5625,9 +5625,9 @@ mlx5e_netdev_attach_profile(struct mlx5e_priv *priv,
- 	struct mlx5_core_dev *mdev = priv->mdev;
- 	int err;
  
--	err = mlx5e_netdev_init(netdev, priv, mdev);
-+	err = mlx5e_priv_init(priv, netdev, mdev);
- 	if (err) {
--		mlx5_core_err(mdev, "mlx5e_netdev_init failed, err=%d\n", err);
-+		mlx5_core_err(mdev, "mlx5e_priv_init failed, err=%d\n", err);
+ 	return netdev;
+@@ -5630,6 +5629,7 @@ mlx5e_netdev_attach_profile(struct mlx5e_priv *priv,
+ 		mlx5_core_err(mdev, "mlx5e_priv_init failed, err=%d\n", err);
  		return err;
  	}
++	netif_carrier_off(netdev);
  	priv->profile = new_profile;
-@@ -5660,7 +5660,7 @@ int mlx5e_netdev_change_profile(struct mlx5e_priv *priv,
- 	/* cleanup old profile */
- 	mlx5e_detach_netdev(priv);
- 	priv->profile->cleanup(priv);
--	mlx5e_netdev_cleanup(priv->netdev, priv);
-+	mlx5e_priv_cleanup(priv);
- 
- 	err = mlx5e_netdev_attach_profile(priv, new_profile, new_ppriv);
- 	if (err) { /* roll back to original profile */
-@@ -5685,7 +5685,7 @@ void mlx5e_destroy_netdev(struct mlx5e_priv *priv)
- {
- 	struct net_device *netdev = priv->netdev;
- 
--	mlx5e_netdev_cleanup(netdev, priv);
-+	mlx5e_priv_cleanup(priv);
- 	free_netdev(netdev);
- }
- 
+ 	priv->ppriv = new_ppriv;
+ 	err = new_profile->init(priv->mdev, priv->netdev);
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c
-index 5889029c2adf..8641bd9bbb53 100644
+index 8641bd9bbb53..1eeca45cfcdf 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/ipoib.c
-@@ -103,7 +103,7 @@ int mlx5i_init(struct mlx5_core_dev *mdev, struct net_device *netdev)
- /* Called directly before IPoIB netdevice is destroyed to cleanup SW structs */
- void mlx5i_cleanup(struct mlx5e_priv *priv)
+@@ -76,6 +76,7 @@ int mlx5i_init(struct mlx5_core_dev *mdev, struct net_device *netdev)
  {
--	mlx5e_netdev_cleanup(priv->netdev, priv);
-+	mlx5e_priv_cleanup(priv);
- }
+ 	struct mlx5e_priv *priv  = mlx5i_epriv(netdev);
  
- static void mlx5i_grp_sw_update_stats(struct mlx5e_priv *priv)
-@@ -744,7 +744,7 @@ static int mlx5_rdma_setup_rn(struct ib_device *ibdev, u8 port_num,
- 			goto destroy_ht;
- 	}
- 
--	err = mlx5e_netdev_init(netdev, epriv, mdev);
-+	err = mlx5e_priv_init(epriv, netdev, mdev);
- 	if (err)
- 		goto destroy_mdev_resources;
++	netif_carrier_off(netdev);
+ 	mlx5e_set_netdev_mtu_boundaries(priv);
+ 	netdev->mtu = netdev->max_mtu;
  
 -- 
 2.29.2
