@@ -2,137 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C6D630C5F4
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 17:37:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8292930C65E
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 17:46:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236621AbhBBQfM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 11:35:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53952 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236570AbhBBQdA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 11:33:00 -0500
-Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAC42C061573;
-        Tue,  2 Feb 2021 08:28:01 -0800 (PST)
-Received: by mail-ot1-x333.google.com with SMTP id e70so20342320ote.11;
-        Tue, 02 Feb 2021 08:28:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=LDgn1SWNf0wdSg79ulwE3dp31gPMMknk60I4YXAyX/U=;
-        b=I0Vk99hXLVShvyTDdHUmBfjqYZ+gzW08ZP79/2EVNaHxQPpJ+bf+1xQk2fU6mocd3D
-         qRCYVaEu58j5PIJJ+MEDpbJL8uHCvdInI5Er8rSEVOYrJxH3Zaw104i/PwsjTpx8Mxnu
-         0RZYnwezyQvQuKyFq2IbRYITb19zt+Tuucwx0tMvuBnUDDArFSSKMuyBkLUKmSc9FPJj
-         2L5C8jPCpvnq4/r2XyRcSIBcx/nZw6mKHM8tM/hDVk/P9QB46oJsUaLYVzUf0Q4QFfnX
-         oKj9j7UMT78JuCiGFzVrAHTWyLNo3up+yOzIsVCu4it+nrHAcpRWTEm1u1wPFG/qDtl0
-         eYYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition
-         :content-transfer-encoding:in-reply-to:user-agent;
-        bh=LDgn1SWNf0wdSg79ulwE3dp31gPMMknk60I4YXAyX/U=;
-        b=atn3MTo9N73IlPtmudQfBDimTntbv+afpQMIVfGX3qEm3jhrcP/bVbW2F/d05sybuM
-         BKBQAnhlqhMN9qDhpXVO+oVUwYXOAVLVZL9z90KDWkkl0tJr0uwrYRWlPzcP55HZDn3J
-         6Th/ERNj0UNk405fOkXo9zhUNfjjNuo+sc9mn/QrYPZS1GqAWdvzrc+C5lABEKEBx0zq
-         YEs0HJIGVaxqQCWT4rtxR9M6sFbvqPEB1jfkYVJV/bqWI6xSkfxPW47OesPWG0fVYK/Z
-         w+VVSTLHNJYgoeP1flYP9Y/xKR9ygKYNl8QJ9zx6gTIRugZv7MPJNnMortnH/KbNYFVz
-         dESQ==
-X-Gm-Message-State: AOAM531cAYC7fjlEiud6UA8IfBLn4XUlZziTN6smwkAZr6t69qaec6WJ
-        VELktPyW4bi5twQVlTV4WeY=
-X-Google-Smtp-Source: ABdhPJw22UCJZeQrbyeJq+KwF3PVuOvt5fNhj7g/A6PaUTp2SvnOSZTCqekJXXq/On84+Dcnx517Rg==
-X-Received: by 2002:a9d:7151:: with SMTP id y17mr15921335otj.39.1612283281433;
-        Tue, 02 Feb 2021 08:28:01 -0800 (PST)
-Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id a22sm4685260otp.53.2021.02.02.08.28.00
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 02 Feb 2021 08:28:00 -0800 (PST)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Tue, 2 Feb 2021 08:27:59 -0800
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Fugang Duan <fugang.duan@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Ungerer <gerg@linux-m68k.org>, netdev@vger.kernel.org,
-        linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: fec: Silence M5272 build warnings
-Message-ID: <20210202162759.GD159455@roeck-us.net>
-References: <20210202130650.865023-1-geert@linux-m68k.org>
+        id S236459AbhBBQqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 11:46:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58190 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236514AbhBBQaA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 11:30:00 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id F0FBE64E9B;
+        Tue,  2 Feb 2021 16:29:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612283351;
+        bh=paQ+BchwYVvwdJSw+2am0VhJqPwumNJxvJ12yTRWSpw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=UK6kKFcUjMI5eX8kXj5l5t4fWg8DmPpNdL3muGLNtrFV9Q9q1oJCBvWwGtusSUIv/
+         W15JGwT2I7P1dfnzYb522HEMVCivIJCbztD2bvvdrLpBp3hf65kANOy3Z988Wygv6C
+         a4jK2CVGwGA7mAzqELYuywb6jsdoHyxq0ZogWFOiLUisyKyRk7K90PKZCFosWJeepB
+         1DiITVstTAU7ZQb03xqkyDBtEGlNKm7zQ8deY6x6AZNHBp8Y7sX3yNROr2dqdv9eTC
+         vy5zi9VgWXJptRum47qzZzgbdX7b3CILl8EV+y6iLvGy5DqMyXhhrpXsaBjAa3x5st
+         XTM3lDzROHcZg==
+Date:   Tue, 2 Feb 2021 08:29:09 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Leon Romanovsky <leonro@nvidia.com>, coreteam@netfilter.org,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Westphal <fw@strlen.de>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Julian Anastasov <ja@ssi.bg>, linux-kernel@vger.kernel.org,
+        lvs-devel@vger.kernel.org, Matteo Croce <mcroce@redhat.com>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        Simon Horman <horms@verge.net.au>
+Subject: Re: [PATCH net 1/4] ipv6: silence compilation warning for non-IPV6
+ builds
+Message-ID: <20210202082909.7d8f479f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210202135544.3262383-2-leon@kernel.org>
+References: <20210202135544.3262383-1-leon@kernel.org>
+        <20210202135544.3262383-2-leon@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210202130650.865023-1-geert@linux-m68k.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 02, 2021 at 02:06:50PM +0100, Geert Uytterhoeven wrote:
-> If CONFIG_M5272=y:
+On Tue,  2 Feb 2021 15:55:41 +0200 Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
 > 
->     drivers/net/ethernet/freescale/fec_main.c: In function ‘fec_restart’:
->     drivers/net/ethernet/freescale/fec_main.c:948:6: warning: unused variable ‘val’ [-Wunused-variable]
->       948 |  u32 val;
-> 	  |      ^~~
->     drivers/net/ethernet/freescale/fec_main.c: In function ‘fec_get_mac’:
->     drivers/net/ethernet/freescale/fec_main.c:1667:28: warning: unused variable ‘pdata’ [-Wunused-variable]
->      1667 |  struct fec_platform_data *pdata = dev_get_platdata(&fep->pdev->dev);
-> 	  |                            ^~~~~
+> The W=1 compilation of allmodconfig generates the following warning:
 > 
-> Fix this by moving the variable declarations inside the existing #ifdef
-> blocks.
+> net/ipv6/icmp.c:448:6: warning: no previous prototype for 'icmp6_send' [-Wmissing-prototypes]
+>   448 | void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
+>       |      ^~~~~~~~~~
 > 
-> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> In such configuration, the icmp6_send() is not used outside of icmp.c, so close
+> its EXPORT_SYMBOL and add "static" word to limit the scope.
+> 
+> Fixes: cc7a21b6fbd9 ("ipv6: icmp6: avoid indirect call for icmpv6_send()")
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+That's a little much ifdefinery, why not move the declaration from
+under the ifdef in the header instead?
 
-> ---
->  drivers/net/ethernet/freescale/fec_main.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-> index 9ebdb0e54291b204..3db882322b2bd3e8 100644
-> --- a/drivers/net/ethernet/freescale/fec_main.c
-> +++ b/drivers/net/ethernet/freescale/fec_main.c
-> @@ -945,7 +945,6 @@ static void
->  fec_restart(struct net_device *ndev)
+If you repost please target net-next, admittedly these fixes are pretty
+"obviously correct" but they are not urgent either.
+
+> diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
+> index f3d05866692e..5d4232b492dc 100644
+> --- a/net/ipv6/icmp.c
+> +++ b/net/ipv6/icmp.c
+> @@ -445,6 +445,9 @@ static int icmp6_iif(const struct sk_buff *skb)
+>  /*
+>   *	Send an ICMP message in response to a packet in error
+>   */
+> +#if !IS_BUILTIN(CONFIG_IPV6)
+> +static
+> +#endif
+>  void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
+>  		const struct in6_addr *force_saddr)
 >  {
->  	struct fec_enet_private *fep = netdev_priv(ndev);
-> -	u32 val;
->  	u32 temp_mac[2];
->  	u32 rcntl = OPT_FRAME_SIZE | 0x04;
->  	u32 ecntl = 0x2; /* ETHEREN */
-> @@ -997,7 +996,8 @@ fec_restart(struct net_device *ndev)
->  
->  #if !defined(CONFIG_M5272)
->  	if (fep->quirks & FEC_QUIRK_HAS_RACC) {
-> -		val = readl(fep->hwp + FEC_RACC);
-> +		u32 val = readl(fep->hwp + FEC_RACC);
+> @@ -634,7 +637,10 @@ void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
+>  out_bh_enable:
+>  	local_bh_enable();
+>  }
 > +
->  		/* align IP header */
->  		val |= FEC_RACC_SHIFT16;
->  		if (fep->csum_flags & FLAG_RX_CSUM_ENABLED)
-> @@ -1664,7 +1664,6 @@ static int fec_enet_rx_napi(struct napi_struct *napi, int budget)
->  static void fec_get_mac(struct net_device *ndev)
->  {
->  	struct fec_enet_private *fep = netdev_priv(ndev);
-> -	struct fec_platform_data *pdata = dev_get_platdata(&fep->pdev->dev);
->  	unsigned char *iap, tmpaddr[ETH_ALEN];
->  
->  	/*
-> @@ -1695,6 +1694,8 @@ static void fec_get_mac(struct net_device *ndev)
->  		if (FEC_FLASHMAC)
->  			iap = (unsigned char *)FEC_FLASHMAC;
->  #else
-> +		struct fec_platform_data *pdata = dev_get_platdata(&fep->pdev->dev);
-> +
->  		if (pdata)
->  			iap = (unsigned char *)&pdata->mac;
->  #endif
-> -- 
-> 2.25.1
+> +#if IS_BUILTIN(CONFIG_IPV6)
+>  EXPORT_SYMBOL(icmp6_send);
+> +#endif
 > 
+>  /* Slightly more convenient version of icmp6_send.
+>   */
+> --
+> 2.29.2
+> 
+
