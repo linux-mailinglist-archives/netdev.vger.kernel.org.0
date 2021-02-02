@@ -2,93 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C7F630BABE
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 10:18:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CC8130BAD7
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 10:24:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232934AbhBBJQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 04:16:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44450 "EHLO
+        id S232750AbhBBJXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 04:23:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232865AbhBBJOj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 04:14:39 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF486C06174A
-        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 01:13:58 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id p20so9439919ejb.6
-        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 01:13:58 -0800 (PST)
+        with ESMTP id S232807AbhBBJVw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 04:21:52 -0500
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99448C06174A;
+        Tue,  2 Feb 2021 01:21:09 -0800 (PST)
+Received: by mail-lj1-x230.google.com with SMTP id m22so15687827ljj.4;
+        Tue, 02 Feb 2021 01:21:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=l766AWiQAnfrwWGGPS2NYbzoWAuQuGBLqlv7J+ZF8qM=;
-        b=OLkHd63qgXIXWxm+XhoCpx9tkpyu+5ZZzKVuQ+QophlQcbU6tvTvKH5XiQK/JqOqSR
-         6WszBk5oD37JjbhXYyatgoyT8TTt45eY+Qwc/ZekwZVjoTMPm/WiuEvMufbdogHVuumW
-         cbT4WunYZ6t8xO09efmqvOgYt92gUjWiBxH474CbuxKPC3AG/f9klUH8Gqo8JMjaMdiD
-         fyojPkdM2Nz6cy+JgO74OpkUWK/cyHLhMajsx2/j/8bvJWEgH4qg32Za5HBHngoYQvlk
-         pyJ0rqMM3IAGX+rPmCIBVldqAv27Rh8smpilyEGsicem+qmox9cBMEYM9omClTxNoTuB
-         qedg==
+        bh=rLnGvO/qQHa2EWoyYFO5NVkGeyHgHfQpLXHqwUMHMr4=;
+        b=mDNKERf1KBX0XmIX4zsOhJb63ydOHXL2XHEFNpHjVjlJ7u6D8d7FN9Wr3y5MOL88C5
+         wQ+3jiGTBq7GgicBJ1KM8Xub/5seUqxsdRJZxuvITLuf9wSFIR1lntBv5eDcM0HJt9/o
+         lQQLV2plNX3z6ES1abdAsowBtTpGpwimCjJZc7mwpRa8o90GhTODHBZLUZ0I2u+5j/5j
+         /iQ6AtTk9uNcP2Yr+V4WKjg44gsvhrYVJgmOlNBJnqVfQtBxS34dy0TsnQt49Qf9iuAa
+         etccBCTLA3iAAhBxnQL7sIx9xw7D9gd6Ijlb/ogKibgy/CPhUqob+F7eCs0rAfAZr8sD
+         N5Ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=l766AWiQAnfrwWGGPS2NYbzoWAuQuGBLqlv7J+ZF8qM=;
-        b=SMtFRuU4HtOXGbtqPXcEp6lDJ2D275bJDudt/Si66AYo0aBLFXqY3fpF0Xe66EN1Tk
-         bZ5wLslVXTJWzK5MRwseGjqeYth7sfGAtTPdEO/+fGhjf4JnF+kN9/Nuja4408cZo8mP
-         fjpbiVUiKgPpos/8fl2CejKWhzJtqJ30A7Ln+QaoD/Od5i7aYSsbB2tAsGF6N0go4tZj
-         F1diqAukJWPX+Hzjd/A6aYWQXOfi2dbfUnyAhkIdHyCdX3+RsmvsH/CiGbkmi7KHosQL
-         gtgQG6KmadIO/uOcGuDvGcVM/pnlgD4DDlioe2IxXTzouWQLYifBtbmBtQgREoFbRS02
-         XuwA==
-X-Gm-Message-State: AOAM533Uicwx0X51yARivnFq6uBsmggNYeCLR4mA8sqka5LauyUXVDKm
-        0LjMEfyI+epeDA==
-X-Google-Smtp-Source: ABdhPJyjUs2PHzKYpzuBXQOk748o35wKkXxKq/+lGfei4HbAQ/Gu1yoS+qOBflN9loO14UXrJE22bg==
-X-Received: by 2002:a17:906:f0d0:: with SMTP id dk16mr6119306ejb.533.1612257237538;
-        Tue, 02 Feb 2021 01:13:57 -0800 (PST)
-Received: from md2k7s8c.ad001.siemens.net ([2a02:810d:9040:4c1f:e0b6:d0e7:64d2:f3a0])
-        by smtp.gmail.com with ESMTPSA id u20sm1211770ejx.22.2021.02.02.01.13.56
+        bh=rLnGvO/qQHa2EWoyYFO5NVkGeyHgHfQpLXHqwUMHMr4=;
+        b=W/l4MXNb7p25IUOnzRDKbj2D2HveqEOfiXb/vD3kHGopYh3aFssmSL913Zwartp1av
+         fLWRR0WV+m77nVS2xZzBZI1z4xXEgpy6l/FWUgvQeGbFwI/tkNMlk55Ln8uvLushnogU
+         BFkEruMyMgKYeC8QwVCMf9Uk373Q7/SEwGy0ocTU0DGVsPhcSgOZzPzLq/Oci4thVuyh
+         2Mg9vDOGVAu9eLXlOnbuitzRKUMh4PDnpus772scLOv0aArCCkqrae1BZ15Dy85ywY/w
+         7gIYOCVhnkgSk0tlMz0V7xqi12QqXx5J0nP38N/izooRtX3xy3Pr2yRvKbcPggLxKjqw
+         uODA==
+X-Gm-Message-State: AOAM533L6FzyhS+QcWYgZxgNFxiGLX5JuC8cDZYrCMu7BqwKyBhWaUJj
+        jdDhMa0j4yL+VeNopElzFMQ=
+X-Google-Smtp-Source: ABdhPJy3u8txAbV4kKg26JT2C4g4fzcj8b4ktT2GGh0vXRJ7U3zgmPVu9Uv3X085E4iNnQ/PqRQQ3g==
+X-Received: by 2002:a2e:b048:: with SMTP id d8mr13097228ljl.138.1612257668162;
+        Tue, 02 Feb 2021 01:21:08 -0800 (PST)
+Received: from localhost.localdomain ([146.158.65.228])
+        by smtp.googlemail.com with ESMTPSA id y18sm3213608lfe.29.2021.02.02.01.21.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Feb 2021 01:13:56 -0800 (PST)
-From:   Andreas Oetken <ennoerlangen@googlemail.com>
-X-Google-Original-From: Andreas Oetken <ennoerlangen@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Andreas Oetken <ennoerlangen@gmail.com>,
-        Andreas Oetken <andreas.oetken@siemens.com>
-Subject: [PATCH v1] net: hsr: align sup_multicast_addr in struct hsr_priv to u16 boundary
-Date:   Tue,  2 Feb 2021 10:13:54 +0100
-Message-Id: <20210202091354.2743445-1-ennoerlangen@gmail.com>
-X-Mailer: git-send-email 2.30.0
+        Tue, 02 Feb 2021 01:21:07 -0800 (PST)
+From:   Sabyrzhan Tasbolatov <snovitoll@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzbot+c2a7e5c5211605a90865@syzkaller.appspotmail.com
+Subject: [PATCH] net/qrtr: restrict user-controlled length in qrtr_tun_write_iter()
+Date:   Tue,  2 Feb 2021 15:20:59 +0600
+Message-Id: <20210202092059.1361381-1-snovitoll@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andreas Oetken <andreas.oetken@siemens.com>
+syzbot found WARNING in qrtr_tun_write_iter [1] when write_iter length
+exceeds KMALLOC_MAX_SIZE causing order >= MAX_ORDER condition.
 
-sup_multicast_addr is passed to ether_addr_equal for address comparison
-which casts the address inputs to u16 leading to an unaligned access.
-Aligning the sup_multicast_addr to u16 boundary fixes the issue.
+Additionally, there is no check for 0 length write.
 
-Signed-off-by: Andreas Oetken <andreas.oetken@siemens.com>
+[1]
+WARNING: mm/page_alloc.c:5011
+[..]
+Call Trace:
+ alloc_pages_current+0x18c/0x2a0 mm/mempolicy.c:2267
+ alloc_pages include/linux/gfp.h:547 [inline]
+ kmalloc_order+0x2e/0xb0 mm/slab_common.c:837
+ kmalloc_order_trace+0x14/0x120 mm/slab_common.c:853
+ kmalloc include/linux/slab.h:557 [inline]
+ kzalloc include/linux/slab.h:682 [inline]
+ qrtr_tun_write_iter+0x8a/0x180 net/qrtr/tun.c:83
+ call_write_iter include/linux/fs.h:1901 [inline]
+
+Reported-by: syzbot+c2a7e5c5211605a90865@syzkaller.appspotmail.com
+Signed-off-by: Sabyrzhan Tasbolatov <snovitoll@gmail.com>
 ---
- net/hsr/hsr_main.h | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ net/qrtr/tun.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/net/hsr/hsr_main.h b/net/hsr/hsr_main.h
-index 7dc92ce5a134..a9c30a608e35 100644
---- a/net/hsr/hsr_main.h
-+++ b/net/hsr/hsr_main.h
-@@ -217,7 +217,10 @@ struct hsr_priv {
- 	u8 net_id;		/* for PRP, it occupies most significant 3 bits
- 				 * of lan_id
- 				 */
--	unsigned char		sup_multicast_addr[ETH_ALEN];
-+	unsigned char		sup_multicast_addr[ETH_ALEN] __aligned(sizeof(u16));
-+				/* Align to u16 boundary to avoid unaligned access
-+				 * in ether_addr_equal
-+				 */
- #ifdef	CONFIG_DEBUG_FS
- 	struct dentry *node_tbl_root;
- #endif
+diff --git a/net/qrtr/tun.c b/net/qrtr/tun.c
+index 15ce9b642b25..b238c40a9984 100644
+--- a/net/qrtr/tun.c
++++ b/net/qrtr/tun.c
+@@ -80,6 +80,12 @@ static ssize_t qrtr_tun_write_iter(struct kiocb *iocb, struct iov_iter *from)
+ 	ssize_t ret;
+ 	void *kbuf;
+ 
++	if (!len)
++		return -EINVAL;
++
++	if (len > KMALLOC_MAX_SIZE)
++		return -ENOMEM;
++
+ 	kbuf = kzalloc(len, GFP_KERNEL);
+ 	if (!kbuf)
+ 		return -ENOMEM;
 -- 
-2.30.0
+2.25.1
 
