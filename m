@@ -2,64 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF9A830BD5F
-	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 12:49:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 642DB30BD63
+	for <lists+netdev@lfdr.de>; Tue,  2 Feb 2021 12:49:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230184AbhBBLsz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 06:48:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49392 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229590AbhBBLsy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 06:48:54 -0500
-Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECD68C061573
-        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 03:48:13 -0800 (PST)
-Received: by mail-il1-x12f.google.com with SMTP id p15so18038172ilq.8
-        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 03:48:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ieee.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=i8yjWv7ZYVQ87c8yLM3My2cCeuFw/bHz0Id/b7ZzflI=;
-        b=g1bjm1Cw4dRx9KuSznNwNqd9zMQxQ8mh/yPrLOZIv2NVpVGDtDfMGVabbrqiubOOz6
-         QEERr305GVQlhPfuD4A1r0tkvP90qZ4m0UQBQzKLtKq8Sywf15xP5pwELhTkU1pzySgX
-         4pzlOZF4NXUvhNa7Cq+XO/G2GwSWxIkjNc5JY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=i8yjWv7ZYVQ87c8yLM3My2cCeuFw/bHz0Id/b7ZzflI=;
-        b=h7l1dY1eeCwnNNSZPnOcWw/O7aibM2SMyREO5m28Z3fkFj7WP0UiqDkVC5007st3ML
-         1tQkQaOUlFcw1UlEdDxMIXUjswbiOTtqdKeN3bHuIe1VKoQtYXNRvOq0s187CJdEqOoE
-         zlZ+Hqjh3ln7qyf1myw0uowd6FZZYgtWbklNW4rQrzMAu0xTR1+rpAFYH8sOSs/Vo/+9
-         um2t1Hrb91xnMhysA6W+zs0n49AtqFRMK2xTOrINUJwfYR0taNbXHQOUKjeRszbSNDgH
-         Vx2nkUipaozjOPQ7thwPbyFQimV3MwKxg+qdOC8C9Y4uRhYXr3GshBVQta8yTMI2N81q
-         q9kw==
-X-Gm-Message-State: AOAM530s1rLQSmdr5NNS2MZUGc1TimglZLu/VMa3mchoCIOjDDLADxWw
-        guXxr6oO7iLBimfnQI46RQLwhA==
-X-Google-Smtp-Source: ABdhPJz0wwATr5H/UtuNxpv0rTHAbjagxB2WPYjGve68R6vxpl2aolDKibNUmvaHUK5vQ+GagzOt6Q==
-X-Received: by 2002:a05:6e02:48f:: with SMTP id b15mr18473415ils.144.1612266493375;
-        Tue, 02 Feb 2021 03:48:13 -0800 (PST)
-Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id j25sm9762363iog.27.2021.02.02.03.48.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 02 Feb 2021 03:48:12 -0800 (PST)
-Subject: Re: [PATCH net] net: ipa: pass correct dma_handle to
- dma_free_coherent()
-To:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Alex Elder <elder@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-References: <YBjpTU2oejkNIULT@mwanda>
-From:   Alex Elder <elder@ieee.org>
-Message-ID: <cc689bd3-90d8-5ad5-661b-e2c3b76c7341@ieee.org>
-Date:   Tue, 2 Feb 2021 05:48:11 -0600
+        id S230518AbhBBLtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 06:49:20 -0500
+Received: from mx2.suse.de ([195.135.220.15]:52250 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230058AbhBBLtK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 06:49:10 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 184F1AD6A;
+        Tue,  2 Feb 2021 11:48:29 +0000 (UTC)
+Subject: Re: [PATCH net-next v2 1/4] mm: page_frag: Introduce
+ page_frag_alloc_align()
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Kevin Hao <haokexin@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        Eric Dumazet <edumazet@google.com>
+References: <20210131074426.44154-1-haokexin@gmail.com>
+ <20210131074426.44154-2-haokexin@gmail.com>
+ <20210202113618.s4tz2q7ysbnecgsl@skbuf>
+From:   Vlastimil Babka <vbabka@suse.cz>
+Message-ID: <2d406568-5b1d-d941-5503-68ba2ed49f34@suse.cz>
+Date:   Tue, 2 Feb 2021 12:48:28 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+ Thunderbird/78.7.0
 MIME-Version: 1.0
-In-Reply-To: <YBjpTU2oejkNIULT@mwanda>
+In-Reply-To: <20210202113618.s4tz2q7ysbnecgsl@skbuf>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -67,40 +42,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/1/21 11:55 PM, Dan Carpenter wrote:
-> The "ring->addr = addr;" assignment is done a few lines later so we
-> can't use "ring->addr" yet.  The correct dma_handle is "addr".
+On 2/2/21 12:36 PM, Ioana Ciornei wrote:
+> On Sun, Jan 31, 2021 at 03:44:23PM +0800, Kevin Hao wrote:
+>> In the current implementation of page_frag_alloc(), it doesn't have
+>> any align guarantee for the returned buffer address. But for some
+>> hardwares they do require the DMA buffer to be aligned correctly,
+>> so we would have to use some workarounds like below if the buffers
+>> allocated by the page_frag_alloc() are used by these hardwares for
+>> DMA.
+>>     buf = page_frag_alloc(really_needed_size + align);
+>>     buf = PTR_ALIGN(buf, align);
+>> 
+>> These codes seems ugly and would waste a lot of memories if the buffers
+>> are used in a network driver for the TX/RX.
 > 
-> Fixes: 650d1603825d ("soc: qcom: ipa: the generic software interface")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Isn't the memory wasted even with this change?
 
-Yikes.  Thank you for the fix.
+Yes, but less of it. Not always full amount of align, but up to it. Perhaps even
+zero.
 
-Reviewed-by: Alex Elder <elder@linaro.org>
+> I am not familiar with the frag allocator so I might be missing
+> something, but from what I understood each page_frag_cache keeps only
+> the offset inside the current page being allocated, offset which you
+> ALIGN_DOWN() to match the alignment requirement. I don't see how that
+> memory between the non-aligned and aligned offset is going to be used
+> again before the entire page is freed.
 
-> ---
-> Smatch also complians about:
-> 
->     drivers/net/ipa/gsi.c:1739 gsi_channel_setup()
->     warn: missing error code 'ret'
-> 
-> It probably should return -EINVAL, but I'm not positive.
-> 
->  drivers/net/ipa/gsi.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
-> index f79cf3c327c1..b559d14271e2 100644
-> --- a/drivers/net/ipa/gsi.c
-> +++ b/drivers/net/ipa/gsi.c
-> @@ -1373,7 +1373,7 @@ static int gsi_ring_alloc(struct gsi *gsi, struct gsi_ring *ring, u32 count)
->  	/* Hardware requires a 2^n ring size, with alignment equal to size */
->  	ring->virt = dma_alloc_coherent(dev, size, &addr, GFP_KERNEL);
->  	if (ring->virt && addr % size) {
-> -		dma_free_coherent(dev, size, ring->virt, ring->addr);
-> +		dma_free_coherent(dev, size, ring->virt, addr);
->  		dev_err(dev, "unable to alloc 0x%zx-aligned ring buffer\n",
->  			size);
->  		return -EINVAL;	/* Not a good error value, but distinct */
-> 
-
+True, thath's how page_frag is designed. The align amounts would be most likely
+too small to be usable anyway.
