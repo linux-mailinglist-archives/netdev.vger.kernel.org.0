@@ -2,234 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8779230E750
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 00:28:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3315C30E75E
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 00:30:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233257AbhBCX1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 18:27:49 -0500
-Received: from mga18.intel.com ([134.134.136.126]:48928 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233175AbhBCX1q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Feb 2021 18:27:46 -0500
-IronPort-SDR: /hFp+0JS3SDM+XQCRvHKtron76iB+oy9UBUWKOjmhL68g4O/bpHOWYaGw0nLuzh3IOd6LqD0PR
- 39Z9w/AdzIiQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9884"; a="168818220"
-X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; 
-   d="scan'208";a="168818220"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2021 15:27:02 -0800
-IronPort-SDR: z3zwkvSdmDim37+NX22SESgTf5QkR4pEO6qIDcIAhdt45dl+ounw2CZuyiCrf8F4nkzpOkGjgR
- 0QwLBCP+R+4Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; 
-   d="scan'208";a="372624412"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orsmga002.jf.intel.com with ESMTP; 03 Feb 2021 15:27:01 -0800
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Wed, 3 Feb 2021 15:27:01 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Wed, 3 Feb 2021 15:27:01 -0800
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2
- via Frontend Transport; Wed, 3 Feb 2021 15:27:01 -0800
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.175)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.1713.5; Wed, 3 Feb 2021 15:27:00 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Y96HlQAwbGeDOHx59xvb2hfaJ0fZ+nFwyBUtmKvYnk7CMdwA3svW1QPwqCVmXrQu4EG5IAiDrrX06UYKdVu4K6eGqI1SNxnhCImzVfOvcgakySQoOg1uObcilrMdYztsGzLQhLodjR5Lrte6zuajdMZIQmb+WKk7UVJHR/Or+TgBk2zQN3/8Gp/AuTXmA4rvAFr+A1IohsbvPwJg0nAMBKvXC5oSrRjGekjZga3f3KVk0KxbudzB9ZW9dL7Ad2Ah5Z2Qae/odRrKMGvwdTyzw9NjHphLS7UG082jkgXowEKg6ZdNBa6ZNqH+7teIV4hF65nCUVAB3xHCPXfTIijGbA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EGUCMZlwSGz+W22JSinjlMB0hyCGqcEHnWhqvRFZ69w=;
- b=Pe0tCvp4J3z5ypM+E8jMQZ7g1SMXTEfY9tNRDTkNIc8/zySroW53guhcURHvJ+8rzlr3uXJyWLidAIMo4kzx2el8+P9Il2d2U2/lBlx5DHhCaviiw76DjqWrsqxnpxkwKlBsXixG8BNSr6WoG7ynrdJEoCXM4L4MNK7Xtzsf8qH2IqzlvY1lrcwD9l5FsPA8a2P9sKVbxDJY5MQ9tbUEhowJwiqYA8e7g7gCkKXRLuxvfiyCuQ3BqozQ2BeCqJ6fQ8uhE9ZmFngDS4U0XyOANZyMCoW8hBf2GEdn9m9zZzM5ynwCwrR58IFBiHmwcHVLjwiUll36xos9PKmbkOlspA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EGUCMZlwSGz+W22JSinjlMB0hyCGqcEHnWhqvRFZ69w=;
- b=UakyC6CQDfN8Lmbg9vqC5Gj+s+GT9zseqslMJQg4NxIUwLbxXZBDFS3D9yt/hAbdiGVJEEqnfT/9pIItl1IlTDZm6OAIz72B4oGygoLSu5K4l2t4+rccugwkaNPVnQP4VQt13KdKPYmGfOmwTYb56hmeXvM0S1S4KeO/mmamA0U=
-Received: from DM6PR11MB4657.namprd11.prod.outlook.com (2603:10b6:5:2a6::7) by
- DM5PR11MB1353.namprd11.prod.outlook.com (2603:10b6:3:a::23) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3805.24; Wed, 3 Feb 2021 23:26:55 +0000
-Received: from DM6PR11MB4657.namprd11.prod.outlook.com
- ([fe80::519:e12e:e1e1:517b]) by DM6PR11MB4657.namprd11.prod.outlook.com
- ([fe80::519:e12e:e1e1:517b%6]) with mapi id 15.20.3805.027; Wed, 3 Feb 2021
- 23:26:55 +0000
-From:   "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "Topel, Bjorn" <bjorn.topel@intel.com>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        "Loktionov, Aleksandr" <aleksandr.loktionov@intel.com>,
-        "Kuruvinakunnel, George" <george.kuruvinakunnel@intel.com>
-Subject: RE: [PATCH net-next 5/6] i40e: Add info trace at loading XDP program
-Thread-Topic: [PATCH net-next 5/6] i40e: Add info trace at loading XDP program
-Thread-Index: AQHW+QpxBEoCi9GInUKx4Tg4yRhaSKpGMgfwgACRzYCAAFDLsA==
-Date:   Wed, 3 Feb 2021 23:26:55 +0000
-Message-ID: <DM6PR11MB465733FAB1743B925E4A3AC49BB49@DM6PR11MB4657.namprd11.prod.outlook.com>
-References: <20210202022420.1328397-1-anthony.l.nguyen@intel.com>
-        <20210202022420.1328397-6-anthony.l.nguyen@intel.com>
-        <DM6PR11MB4657968657193183F2082BC79BB49@DM6PR11MB4657.namprd11.prod.outlook.com>
- <20210203103241.7e86ca2b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210203103241.7e86ca2b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: pl-PL, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.5.1.3
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [5.173.176.249]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1fbdb634-260a-44e0-6374-08d8c89b31ef
-x-ms-traffictypediagnostic: DM5PR11MB1353:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM5PR11MB135356276E793615DBFD7EA69BB49@DM5PR11MB1353.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: f6buYaDW0piAcVc9PMU9ipqZinkq60oW+opPFRYYtnzr07nxiz2mjRl7vvjnX0G7fhN3QTyMa3/FH/s+H3KFhDnztoQ04HTghWbX49ydjsT8/EkxHACHaJD3TprAaOA+6n5iTbnf4CK2RaxsuHMHDhst/dH8wykdtblAaNBP7PihP0PqzKMh0FRhRVDrgOd5tx+waYRLHuxQ38sDrR51pPqI6YW7yvrMEkJnNuNgX5DBryob+s9OduNKe4uqYLu4qNz/PeKOLSCgASUtDGJN4bZFMOeijcwqgfMnnHGIK9Kg2Qp2JGYr+2JRDcrm2iYvT9tw2aThEfo57phLiXoAv6lJktEZpmRSFERCHlzPuBFGKa4QXtf5rG1BRqykhk2iAxKrnJ/DF/9MGKxV2KarxKP8tWwRIPWfMBzTvetoVX36sEfTACHdLbDV7ZQCDXohwq3oTmkEuMNp7TiZGqkwATDMPsEoZ4fIq5/FpDe2qHPxwgJbUm9WwlcBp34YvMsGjqoXZwVV9aR2IQ1sRxU0yg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB4657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(136003)(366004)(376002)(39860400002)(346002)(6916009)(66476007)(52536014)(9686003)(66446008)(76116006)(66946007)(33656002)(2906002)(55016002)(107886003)(478600001)(66556008)(26005)(83380400001)(7696005)(5660300002)(86362001)(4326008)(54906003)(316002)(8936002)(71200400001)(64756008)(8676002)(6506007)(186003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?GcEzl9M/aoCApmXm+gQv32be4oTSTKvgM7/NJcYWOw+ZuWbAmKGj+r0ChUBd?=
- =?us-ascii?Q?0V1A86Jx5gCSbDW2EcLkb5CQhIoKRNzVjuj8UOjhnBHbl2sup6EC41EUq0UP?=
- =?us-ascii?Q?1Ia0c4eMXm3DqSDnkOxac91EGYTkQW6Opxhr6tZKQ+xdFsTZV816hUu6DGp7?=
- =?us-ascii?Q?5tsO7ikxLjMC1HOKzQxXHTfkruXNPbndavfLTA2G1zI93hBdB0oragJo5LzO?=
- =?us-ascii?Q?LqhbN817OldM+fumdj6qJtAtH8nBcYTzcETcSr1q/G/YtQG3ZjIjDY9cXoSv?=
- =?us-ascii?Q?QS6mZHd/gvgQffNGCG+iRo5M/bAa2x5iBiLhZgGlbbV+tZcMntqbseKCj8Wo?=
- =?us-ascii?Q?A8+KOCSL23xIZAVwMiqCqRjDXyw3He9jdS8OfZfUNqnD484jEdgK/YHAWZST?=
- =?us-ascii?Q?HcSS47ghPsZne4t2PvxlMkCZ28lgdqYU+AWjCjkJ7RbzMMh6vGy1auU9URAz?=
- =?us-ascii?Q?YCJ6xOP9k/ZDTRQlrpCu8bEfHjePQVKRcV3VbqwhH2KK4O7AWQ44I1CqHbMK?=
- =?us-ascii?Q?pGh/IdA2kdTpqxVRbfrPsYIyBC2keSSPI1LbLKhN64E/dfrXomaAEVuQ2j7e?=
- =?us-ascii?Q?uvVmL6Uz9KNS2GUdGj7zML/01v+F7SIeUOppt046OShVPU0PYGGKxBfklygg?=
- =?us-ascii?Q?jshlJn13lwo7pLBB0gle/0dxpxclXz1lXwz5VuaK90pLQmNSQdkXfu9mWCoc?=
- =?us-ascii?Q?Jzext4SawOFkmeEWPj2YOsdVI4SECov2vH1jU4OeEELz6chMLrJg8+6IJmK9?=
- =?us-ascii?Q?faSvT9RrHblMVyzfZpqYeKfyZqNODJ67Bp10nqzWnqulnT6Rvd8Mp6C7V5a9?=
- =?us-ascii?Q?gZk+oJJSf1YkIOzcpuvUJurqazKaaYqMSOh3PMvpqa/+sZAkuUhmLgXxpnYs?=
- =?us-ascii?Q?KVG9L+3mSk7J8ZzeDbsVkGr48ZOVPZrkJl+1tSUKb5LeJrIyJXQy/Eg9w+ax?=
- =?us-ascii?Q?MJajFxa5nSocDMbtSBOERugAgH96zxxuFEWV+YoZQ4wIaA4KQSGj72UFJMFd?=
- =?us-ascii?Q?aahqxHxpa52+UVvW+NBcWM3pC4tZ02lft6ML4t61d/+HfeJprLIZjQnnHjHT?=
- =?us-ascii?Q?azyQOl4p?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S233668AbhBCX3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 18:29:35 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:37209 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232733AbhBCX3b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 18:29:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612394884;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qk0MRndwsudTUKG83wO3htOmgtnK5DShnl+yULNhutc=;
+        b=Eazmsv3WGJRWmge5fhdyuOhFf9l/nWodnrm3fBI0ai9xKJli0aJVzLjou3ymW0UShMKBZO
+        h/hI6/Yi7s05wJL3BCua7Ta0QbP/V2jodCxLBS3nUXk2PliZgE/qI7koQUwkmmCOVGu9Re
+        /0SYmPvTQQcATmuWRqlSDVzAzsodLAw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-217-sP3f55tYM9yrX1Mu_6I9qQ-1; Wed, 03 Feb 2021 18:28:00 -0500
+X-MC-Unique: sP3f55tYM9yrX1Mu_6I9qQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EA5B41083E9D;
+        Wed,  3 Feb 2021 23:27:55 +0000 (UTC)
+Received: from treble (ovpn-113-81.rdu2.redhat.com [10.10.113.81])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 27B245C1B4;
+        Wed,  3 Feb 2021 23:27:44 +0000 (UTC)
+Date:   Wed, 3 Feb 2021 17:27:35 -0600
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Ivan Babrou <ivan@cloudflare.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Ignat Korchagin <ignat@cloudflare.com>,
+        Hailong liu <liu.hailong6@zte.com.cn>,
+        Andrey Ryabinin <aryabinin@virtuozzo.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Julien Thierry <jthierry@redhat.com>,
+        Jiri Slaby <jirislaby@kernel.org>, kasan-dev@googlegroups.com,
+        linux-mm@kvack.org, linux-kernel <linux-kernel@vger.kernel.org>,
+        Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@redhat.com>, dm-devel@redhat.com,
+        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Robert Richter <rric@kernel.org>,
+        "Joel Fernandes (Google)" <joel@joelfernandes.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf@vger.kernel.org, Alexey Kardashevskiy <aik@ozlabs.ru>
+Subject: Re: BUG: KASAN: stack-out-of-bounds in
+ unwind_next_frame+0x1df5/0x2650
+Message-ID: <20210203232735.nw73kugja56jp4ls@treble>
+References: <CABWYdi3HjduhY-nQXzy2ezGbiMB1Vk9cnhW2pMypUa+P1OjtzQ@mail.gmail.com>
+ <CABWYdi27baYc3ShHcZExmmXVmxOQXo9sGO+iFhfZLq78k8iaAg@mail.gmail.com>
+ <YBrTaVVfWu2R0Hgw@hirez.programming.kicks-ass.net>
+ <CABWYdi2ephz57BA8bns3reMGjvs5m0hYp82+jBLZ6KD3Ba6zdQ@mail.gmail.com>
+ <20210203190518.nlwghesq75enas6n@treble>
+ <CABWYdi1ya41Ju9SsHMtRQaFQ=s8N23D3ADn6OV6iBwWM6H8=Zw@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB4657.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1fbdb634-260a-44e0-6374-08d8c89b31ef
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Feb 2021 23:26:55.5237
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: /k+m5lliLFU7+g81iQS81ttR2MUILxdPbwwc/prJyvCAKiBUVccgzD9V7/y0PVTxOzQI5Zn9/+ymei6bid54JnhnE3p44PtAMFhgaC2DY2o=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR11MB1353
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CABWYdi1ya41Ju9SsHMtRQaFQ=s8N23D3ADn6OV6iBwWM6H8=Zw@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->On Wed, 3 Feb 2021 10:00:07 +0000 Kubalewski, Arkadiusz wrote:
->> >> diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c=20
->> >> b/drivers/net/ethernet/intel/i40e/i40e_main.c
->> >> index 521ea9df38d5..f35bd9164106 100644
->> >> --- a/drivers/net/ethernet/intel/i40e/i40e_main.c
->> >> +++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
->> >> @@ -12489,11 +12489,14 @@ static int i40e_xdp_setup(struct i40e_vsi *=
-vsi,
->> >>  	/* Kick start the NAPI context if there is an AF_XDP socket open
->> >>  	 * on that queue id. This so that receiving will start.
->> >>  	 */
->> >> -	if (need_reset && prog)
->> >> +	if (need_reset && prog) {
->> >> +		dev_info(&pf->pdev->dev,
->> >> +			 "Loading XDP program, please note: XDP_REDIRECT action=20
->> >> +requires the same number of queues on both interfaces\n");
->> >
->> >We try to avoid spamming logs. This message will be helpful to users=20
->> >only the first time, if at all.
->>=20
->> You are probably right, it would look like a spam to the one who is=20
->> continuously loading and unloading the XDP programs.
->> But still, want to remain as much user friendly as possible.
->> Will use dev_info_once(...) instead.
->
->Not exactly what I meant, I meant that it's only marginally useful the fir=
-st time the user sees it. Not first time since boot.
->
->The two options that I think could be better are:
+On Wed, Feb 03, 2021 at 02:41:53PM -0800, Ivan Babrou wrote:
+> On Wed, Feb 3, 2021 at 11:05 AM Josh Poimboeuf <jpoimboe@redhat.com> wrote:
+> >
+> > On Wed, Feb 03, 2021 at 09:46:55AM -0800, Ivan Babrou wrote:
+> > > > Can you pretty please not line-wrap console output? It's unreadable.
+> > >
+> > > GMail doesn't make it easy, I'll send a link to a pastebin next time.
+> > > Let me know if you'd like me to regenerate the decoded stack.
+> > >
+> > > > > edfd9b7838ba5e47f19ad8466d0565aba5c59bf0 is the first bad commit
+> > > > > commit edfd9b7838ba5e47f19ad8466d0565aba5c59bf0
+> > > >
+> > > > Not sure what tree you're on, but that's not the upstream commit.
+> > >
+> > > I mentioned that it's a rebased core-static_call-2020-10-12 tag and
+> > > added a link to the upstream hash right below.
+> > >
+> > > > > Author: Steven Rostedt (VMware) <rostedt@goodmis.org>
+> > > > > Date:   Tue Aug 18 15:57:52 2020 +0200
+> > > > >
+> > > > >     tracepoint: Optimize using static_call()
+> > > > >
+> > > >
+> > > > There's a known issue with that patch, can you try:
+> > > >
+> > > >   http://lkml.kernel.org/r/20210202220121.435051654@goodmis.org
+> > >
+> > > I've tried it on top of core-static_call-2020-10-12 tag rebased on top
+> > > of v5.9 (to make it reproducible), and the patch did not help. Do I
+> > > need to apply the whole series or something else?
+> >
+> > Can you recreate with this patch, and add "unwind_debug" to the cmdline?
+> > It will spit out a bunch of stack data.
+> 
+> Here's the three I'm building:
+> 
+> * https://github.com/bobrik/linux/tree/ivan/static-call-5.9
+> 
+> It contains:
+> 
+> * v5.9 tag as the base
+> * static_call-2020-10-12 tag
+> * dm-crypt patches to reproduce the issue with KASAN
+> * x86/unwind: Add 'unwind_debug' cmdline option
+> * tracepoint: Fix race between tracing and removing tracepoint
+> 
+> The very same issue can be reproduced on 5.10.11 with no patches,
+> but I'm going with 5.9, since it boils down to static call changes.
+> 
+> Here's the decoded stack from the kernel with unwind debug enabled:
+> 
+> * https://gist.github.com/bobrik/ed052ac0ae44c880f3170299ad4af56b
+> 
+> See my first email for the exact commands that trigger this.
 
-Well, I know that this is far from being perfect.
-If I understand your comments correctly:
-
-> - work on improving the interfaces in terms of IRQ/queue config and
->   capabilities so the user is not confused in the first place;
-
-Improved interface would allow the driver which is being loaded with=20
-the xdp program to receive configuration of the other NICs=20
-on the system. (its number of queues/IRQs), and in such case we could
-warn the user about possible drops.
-
-
-> - detect that the configuration is in fact problematic=20
->   (IOW #Qs < #CPUs) and setting extack. If you set the extact and
->   return 0 / success the extact will show as "Warning: " in iproute2
->   output.
->
-
-It seems like this is the same idea? Detect number of queues of other NIC.
-Then warn the user.
-
-
-In general I agree and that was my first idea... but after all, we decided
-to just try hint the user, that proper configuration is required.
-
-
-(Hopefully) the proper solution..=20
-With my current knowledge and understanding of how XDP_REDIRECT works:
-It cannot be loaded with iproute2, it uses bpf maps thus it also
-requires an loader application to create ones
-(i.e. the one from samples/bpf/)
-The sample uses /tools/lib/bpf library calls, which uses netlink to=20
-eventually do the .ndo_bpf call on two ports. The one responsible
-for the RX and the other TX one. Although XDP can redirect to more then
-one TX. Thus proper solution has to work for both cases.
-In case of two or more devies used for redirecting TX (i.e. properly
-implemented xdp_redirect_map). The interface which is used for RX shall
-receive the lowest number of queues/IRQs of all the possible TX interfaces.
-Then it can properly warn the user.
-
-I think this is doable, but it requires changes on all the way from
-bpf program loader, through: libbpf, netlink, net/core..
-Probably finally extending netdev_bpf with a field that stores
-the lowest number of queues of the interfaces which are used for TX.
+Thanks.  Do you happen to have the original dmesg, before running it
+through the post-processing script?
 
 
-Real proper solution..
-Please, let me know if this is good approach, especially all the XDP expert=
-s.
-Maybe there are similar problems that I am not aware of?
+I assume you're using decode_stacktrace.sh?  It could use some
+improvement, it's stripping the function offset.
 
+Also spaces are getting inserted in odd places, messing the alignment.
 
-This patch..
-So we end up with the user which has to properly implement its
-bpf xdp redirect loader to pass the proper number of queues to the
-RX interface. Even with all the above changes in the kernel and its
-interfaces he still might not know that something is wrong with his
-configuration/code.
-Thus, even then information added in this patch might be useful.
-At least that is what I think.
+[  137.291837][    C0] ffff88809c409858: d7c4f3ce817a1700 (0xd7c4f3ce817a1700)
+[  137.291837][    C0] ffff88809c409860: 0000000000000000 (0x0)
+[  137.291839][    C0] ffff88809c409868: 00000000ffffffff (0xffffffff)
+[ 137.291841][ C0] ffff88809c409870: ffffffffa4f01a52 unwind_next_frame (arch/x86/kernel/unwind_orc.c:380 arch/x86/kernel/unwind_orc.c:553)
+[ 137.291843][ C0] ffff88809c409878: ffffffffa4f01a52 unwind_next_frame (arch/x86/kernel/unwind_orc.c:380 arch/x86/kernel/unwind_orc.c:553)
+[  137.291844][    C0] ffff88809c409880: ffff88809c409ac8 (0xffff88809c409ac8)
+[  137.291845][    C0] ffff88809c409888: 0000000000000086 (0x86)
+
+-- 
+Josh
+
