@@ -2,79 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43E5630D59F
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 09:54:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC19130D5A2
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 09:56:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233109AbhBCIxc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 03:53:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39066 "EHLO
+        id S232866AbhBCIzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 03:55:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233106AbhBCIxa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 03:53:30 -0500
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69469C0613ED
-        for <netdev@vger.kernel.org>; Wed,  3 Feb 2021 00:52:50 -0800 (PST)
-Received: by mail-lf1-x134.google.com with SMTP id d3so6202057lfg.10
-        for <netdev@vger.kernel.org>; Wed, 03 Feb 2021 00:52:50 -0800 (PST)
+        with ESMTP id S232591AbhBCIzN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 03:55:13 -0500
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 090F1C061573
+        for <netdev@vger.kernel.org>; Wed,  3 Feb 2021 00:54:33 -0800 (PST)
+Received: by mail-pg1-x534.google.com with SMTP id z21so16860970pgj.4
+        for <netdev@vger.kernel.org>; Wed, 03 Feb 2021 00:54:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1Mcu6MHvf1hlPzj5u7R0Y68W+pP6MSLeAHc6zmrK1lE=;
-        b=H0RELsY2Canz+0X9tK1JNgoNqCZQlLNaNkITuqaXIlCznsGvP1fVuqTdgPJqimvPXi
-         3cJkx85/p5tGWgdXAyOJkmBtqgUYwQBubCkSFwCg1nKcOZpOsx9aNbR8J3/aebbAfcqe
-         2VIFhZdChheZ3qQbItb+9R2qhBffrOUo1U4cYtKIJgwTzLAlumJ5CHEaALJXZlTP5nXX
-         R8YW1RcFI98M3dG2a31TDxWYJ+GWd0/McZaWg6VJ81EfdodkGDKPKJrJmbVe7gDAc3o0
-         +4TR/7L59jcnajJrCOiT+bX/xzXPnKmct4yWLpHqlA8h1XzgZ45zN3XGu0DGyj/9FeVt
-         1LOQ==
+        h=from:to:cc:subject:date:message-id;
+        bh=WW/1oS09fe/Xpd3aL+qLkZRimgVwhSlQWA9NjUqCCDs=;
+        b=tsiGxnr4ZbGRxCopqBElLcEJR5glvTc8oS3Kf01N1EnkRrJmqWNmiHoAycDryrJ/wa
+         hDLgf+hKNkW4txkp6/TygVUrNN5KNfMfOiTgYKz6cC8VPc9PKnSluny0B0ojWTTusGR8
+         SHKs7MoAnKaXInMiGInLPDU3frXNYVKYWVXKuu1UiqOcAfeRQum8fvyEK9O2+77eTRBP
+         UafCXehXalGob+jIxorPLDXxV2PwCKmdNHjzAJhifhB9bMaml0sWT0cxHDQbdAS0DVzm
+         f8a7p6HSP0L2XUc5hfLvTdTtmCS7GfSxmifcvqf0iMFshyzdchnAZV9W1NbgvL9vfk2i
+         2Scg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1Mcu6MHvf1hlPzj5u7R0Y68W+pP6MSLeAHc6zmrK1lE=;
-        b=snkL6d7JzfEevBHdDkxwwJoj00qMPTL5o4rKVs4mmC9jg2nJ0lHuWdjFR9f5u6ju0A
-         NbW4JMKO/hwd8QpZuneDORW1KwR3RVNOc+lWZn9k7Hv6Yv7n9oaHLs2x/SE6+fmjUSFA
-         7rYOAcqb1mxSHh0JzvfpG6SESjpsXkGOIrw6RYxGyDUePMJ8/URU2ytCxkI3M1+tI4zT
-         1BNv/HkJljzHo12T31MzpW8V5e4clk4cfb4yDiPfhbOQGSA5vh8QLx5TDpvg/XCsXCq0
-         aV2wXeE7cr4sA5sqI2x6yP8FBv1/O0F41ZKMnveCtgE+wIle22a9k0kRgFHImnAzoxi9
-         ZgFw==
-X-Gm-Message-State: AOAM530nTNyqGSJO/aPvEXJFuXfB+15GKnrS5Yq9xpx395sSwaY5fDsw
-        3GPD7f6zIeF03oJtYDXClW/FZ9CRUih+DEfCij0=
-X-Google-Smtp-Source: ABdhPJy34df5+QXDMiTRSPzx5BO8EpljdLpN5W8+Hsl2TFa6UJejgn3UTS0YR843OA/Z8otD0BLgOQBqovWqAs8BsdE=
-X-Received: by 2002:a19:224d:: with SMTP id i74mr1158258lfi.597.1612342369000;
- Wed, 03 Feb 2021 00:52:49 -0800 (PST)
-MIME-Version: 1.0
-References: <cover.1611637639.git.lucien.xin@gmail.com> <CADvbK_e-+tDucpUnRWQhQqpXSDTd_kbS_hLMkHwVNjWY5bnhuw@mail.gmail.com>
- <645990.1612339208@warthog.procyon.org.uk>
-In-Reply-To: <645990.1612339208@warthog.procyon.org.uk>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=WW/1oS09fe/Xpd3aL+qLkZRimgVwhSlQWA9NjUqCCDs=;
+        b=lMOrF7P6GHmWuCrCX8qa1vhTnkaX2+hLtFV7nBh5xP08cfzpshMuQFGagD21m0GkH6
+         uqtGO3qZPX+62tfeJ2bBoZBGC9M7zoFid4jVhk0ONt6kGLJO4JKvcvxuw7ZIHkAdKMUj
+         ekHUEl/R1aZsKlirtLAbAL7Wf8NeQlP4ARZTknDfk05sFyl+u88xHFSOz+9Uc5WRTUg6
+         PKHWwafc/YEgtOO2ng5i0BPa288y88y7Drc604IwsIoIMnCd9FGx60TDtD3v8Yo99Jrf
+         bcjiynuDdQoMN0UldDvTVKz5MrCklqEI/N2+hpi26byMgs8d18hEQfSs0o9/vYkiVP6w
+         /cVQ==
+X-Gm-Message-State: AOAM5307ndnPN9hyb+vO1pUAhnCF77f+DvbUNFJybEd72O5dQeqjxS97
+        5DZHWqealRQgXViXRh5LtBc8QEo9MHoT4g==
+X-Google-Smtp-Source: ABdhPJy02I/4wXm7EfY5zxtIrx2PnTi6psPAXlp//R6x2HgSqXlISuBtKXJy7MZKA2ppRUL9AMLmyQ==
+X-Received: by 2002:a63:cd08:: with SMTP id i8mr2500398pgg.425.1612342471881;
+        Wed, 03 Feb 2021 00:54:31 -0800 (PST)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id o13sm523425pfp.27.2021.02.03.00.54.30
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 03 Feb 2021 00:54:31 -0800 (PST)
 From:   Xin Long <lucien.xin@gmail.com>
-Date:   Wed, 3 Feb 2021 16:52:37 +0800
-Message-ID: <CADvbK_dJJjiQK+N0U04eWCU50DRbFLNqHSi7Apj==d3ygzkz6g@mail.gmail.com>
-Subject: Re: [PATCHv4 net-next 0/2] net: enable udp v6 sockets receiving v4
- packets with UDP GRO
-To:     David Howells <dhowells@redhat.com>
-Cc:     network dev <netdev@vger.kernel.org>, davem <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Willem de Bruijn <willemb@google.com>,
+To:     network dev <netdev@vger.kernel.org>
+Cc:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
+        pabeni@redhat.com, Willem de Bruijn <willemb@google.com>,
         Martin Varghese <martin.varghese@nokia.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        David Howells <dhowells@redhat.com>
+Subject: [PATCHv5 net-next 0/2] net: enable udp v6 sockets receiving v4 packets with UDP
+Date:   Wed,  3 Feb 2021 16:54:21 +0800
+Message-Id: <cover.1612342376.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 3, 2021 at 4:00 PM David Howells <dhowells@redhat.com> wrote:
->
-> Xin Long <lucien.xin@gmail.com> wrote:
->
-> > I saw the state of this patchset is still new, should I repost it?
->
-> It needs a fix in patch 2 (see my response to that patch).
->
-Sorry, my mistake, I forgot to enable rxrpc when building kernel.
-Will repost, Thank you.
+Currently, udp v6 socket can not process v4 packets with UDP GRO, as
+udp_encap_needed_key is not increased when udp_tunnel_encap_enable()
+is called for v6 socket.
 
-BTW, I'm also thinking to use udp_sock_create(), the only problem I can
-see is it may not do bind() in rxrpc_open_socket(), is that true? or we
-can actually bind to some address when a local address is not supplied?
+This patchset is to increase it and remove the unnecessary code in
+bareudp in Patch 1/2, and improve rxrpc encap_enable by calling
+udp_tunnel_encap_enable().
+
+v1->v4:
+  - See patch 1/2.
+v4->v5:
+  - See patch 2/2.
+
+Xin Long (2):
+  udp: call udp_encap_enable for v6 sockets when enabling encap
+  rxrpc: call udp_tunnel_encap_enable in rxrpc_open_socket
+
+ drivers/net/bareudp.c    | 6 ------
+ include/net/udp.h        | 1 +
+ include/net/udp_tunnel.h | 3 +--
+ net/ipv4/udp.c           | 6 ++++++
+ net/ipv6/udp.c           | 4 +++-
+ net/rxrpc/local_object.c | 7 ++-----
+ 6 files changed, 13 insertions(+), 14 deletions(-)
+
+-- 
+2.1.0
+
