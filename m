@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00F6B30E063
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 18:01:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49E9530E057
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 17:59:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231878AbhBCRAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 12:00:44 -0500
-Received: from mail-eopbgr00102.outbound.protection.outlook.com ([40.107.0.102]:12569
+        id S231593AbhBCQ7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 11:59:13 -0500
+Received: from mail-eopbgr00096.outbound.protection.outlook.com ([40.107.0.96]:21157
         "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231346AbhBCQ6Y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Feb 2021 11:58:24 -0500
+        id S231761AbhBCQ6E (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Feb 2021 11:58:04 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HcOpSeYYs2upq9Vs3nh1WpQudJbNbC0GgWLf4Yn0oUKmvuarONaTC3mlhxjvQAPNbXp5ZR1An6X6B32ANiOgQyo/veD/Vx+YqnHVpqnGAEWfIHT/RJiWNUkAJxMRw9CWXwztpYd5XUE0F7IpJ4oxV856VQmw7ZXxDURkgz1ltT7vcmxbilej5AjrDDxxcmaVAUMcEwDlGWmNbzvKvILdVPvV47frbGzxMn5D+IdT0ZQnNDkxUD5LtW2c66pyk9T8daEE0ltWvUWcSDJFbSSoK2BjT8a5wTg+hE81IoYd57Q7rHfadfcmxNQ5lUKm9o7ZvNgjs2VzabRUg2o835Q89Q==
+ b=WRgBDB0nHgMnzPdcBs+P/lRdEdycMUNtBBZGh0rVsst53LbdlfSWzKTVzn/ReNGl4UytUU+rIZ1pz2AtayGeinC2RvqETMjI3IVLKhK/ik3WmOxeWX8Rd8FLcMKRidN2zN0yn3jH2eNw4BitQceBmWqrzSW9Cd3nTd3cnWAtnNlIpmLW3vzUHjxPq+iKWwLk3PEw9mYFR1XuKzja3fyTaYy5dzRWlA5TLFw2TZ0Kt141p6TrK2xRxDZohI91i03fgCFE2HnqLgKfm8za6UVyCa7s0uaqgzR94flc+AkVAW+Z/m1ZNra3g4SB0xQ7qXvGfVMaiFcUH1QeFizpzgN7Hg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Zpfapr/sa3BpW0murgJm1XZxqAkEZMYlcfEr0buk54g=;
- b=BJiNAgR7oWZ+87XXDrG7LGzzfkU6FsqYJEWcPQ99cm3+BztYw1aaFGoJB0Y1Uiw3792bN3X9JLMRcPQ6yJAdbbOlMRBSGRVDVmO4iPhu0IS/Yh48Q+JgAblTd/FuKRStGEG/YoTnn3qS6OZL8GbG/9Rcr4hbKKHHbIiOLLQWB5cPT80uI00jImgHYR08WtT7VPzNVrccPDFTYEbtuJCLweqqMzPVdJiLPGCw2rdWKKGOZ1x+Ntd0dGUBCK3TyptJtlvGwXyR4EbK94De21uLHyWaovEf0HylR7RORznzVtJh8xi3uhR345x9EfpD67sOofbFCMfrZhWO0PAoWZL4/w==
+ bh=U68oR9IpMYbdQeZf3zPXyAyevSD/TnNuxfBGQSbUIxU=;
+ b=lrtadPSpYp7ExkrkIytqZ9yMIP3ZxwW+2fRzhhM4cgRx6aHrOs4iCdLV8o11NyCIe4T7X4IKRUjm+mCohR4JzVrM018wS+N4nS4mo9Y7TQKSuJPqVqDpiVx38rhVwSNj2CGmhZUCrArswyRmKI46VEyrqWGYy/zpVpAi/3WQq1v+zKjSfeXspA47vdgEHWpvinDRApYvHcLx/3NKcO7d2h//zZE7mK8OENUDMkozikNeU/q+ORhpH3cGFGezBinsL+et98m4701UYZDTq4mLTkS1rSSSreBwCtnztu8JPcjJFfYpJdR4Bc2bVV+8az/VfP7IEwrYTRKYfb/LyLMeNg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
  dkim=pass header.d=plvision.eu; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Zpfapr/sa3BpW0murgJm1XZxqAkEZMYlcfEr0buk54g=;
- b=tSzTIQEF6y0HeD7GZ9UO0pFKEnqQ/WwALbwvPzo0TYend6QArhxtOon6GolLq6JcKzpaZzm+6nMbOcBqsX927piXrsuib/aakUDSp03FquBtd2q6DQHSihycTKAICYo1oolB+WPIMtCbW7VkRTjiuGtwYkiXgnl5V4bAz1w94h4=
+ bh=U68oR9IpMYbdQeZf3zPXyAyevSD/TnNuxfBGQSbUIxU=;
+ b=jkYd0dNV7bExWbJFszmjMr5OwxTy7iFrpV7gzgCSeBQUOqvn3h0ERjdRnDWFj9vi4spXc73MKOXwaot/bOcaoMbww5eMFHEhtylNgsKc80v5B49r7ZsrGvE/hEXZdD7F1DnbOmBcLruJ4KL47ODjWGNAEny5uTC+yS7mQVIGHe0=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=plvision.eu;
 Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:56::28) by
  HE1P190MB0539.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:56::28) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3805.16; Wed, 3 Feb 2021 16:55:59 +0000
+ 15.20.3805.16; Wed, 3 Feb 2021 16:56:00 +0000
 Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
  ([fe80::bc8b:6638:a839:2a8f]) by HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
  ([fe80::bc8b:6638:a839:2a8f%5]) with mapi id 15.20.3805.023; Wed, 3 Feb 2021
- 16:55:59 +0000
+ 16:56:00 +0000
 From:   Vadym Kochan <vadym.kochan@plvision.eu>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -49,9 +49,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Mickey Rachamim <mickeyr@marvell.com>,
         Vadym Kochan <vadym.kochan@plvision.eu>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 6/7] net: marvell: prestera: align flood setting according to latest firmware version
-Date:   Wed,  3 Feb 2021 18:54:57 +0200
-Message-Id: <20210203165458.28717-7-vadym.kochan@plvision.eu>
+Subject: [PATCH net-next 7/7] net: marvell: prestera: fix port event handling on init
+Date:   Wed,  3 Feb 2021 18:54:58 +0200
+Message-Id: <20210203165458.28717-8-vadym.kochan@plvision.eu>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210203165458.28717-1-vadym.kochan@plvision.eu>
 References: <20210203165458.28717-1-vadym.kochan@plvision.eu>
@@ -62,263 +62,138 @@ X-ClientProxiedBy: AS8PR04CA0145.eurprd04.prod.outlook.com
  (2603:10a6:7:56::28)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from pc60716vkochan.x.ow.s (217.20.186.93) by AS8PR04CA0145.eurprd04.prod.outlook.com (2603:10a6:20b:127::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.19 via Frontend Transport; Wed, 3 Feb 2021 16:55:58 +0000
+Received: from pc60716vkochan.x.ow.s (217.20.186.93) by AS8PR04CA0145.eurprd04.prod.outlook.com (2603:10a6:20b:127::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.19 via Frontend Transport; Wed, 3 Feb 2021 16:55:59 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ea929631-b43e-48cf-3581-08d8c86494b2
+X-MS-Office365-Filtering-Correlation-Id: ef115064-1f0e-4aa4-d7e5-08d8c864954c
 X-MS-TrafficTypeDiagnostic: HE1P190MB0539:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HE1P190MB05393AE9157F8AC4B389176D95B49@HE1P190MB0539.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:644;
+X-Microsoft-Antispam-PRVS: <HE1P190MB05391D5E59C1FA645D566E0C95B49@HE1P190MB0539.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HSNauWN7h6pYwnZ8GNYVhzk++neyOaB3ySV6+o5RRNMfLSTlSb4GZsmuZd94p2FlZYVMJVaOAzwBd90hyGg+aJ3xN58+ZUrPLaBeBy8QoZ8FtHMJdgMqRldbH2JWoK02Pu5iQaZX3NC7BXNKvEGi3tUYOJSs/m21sQIfiJHXsu+qQ6cfARwjRK71fRP7sIM0VL56aveJp6GgVPloxfPxXGMJrGCHGNDnyaEa6kGEduZniZ/91Hk4ocmTLz7bNMnUQZgkaVKBGoK4x1sYMu1zdj9JOu1txckPzXCcL5flcTjLL/i94cceQA/MOi+EPdApjiorXCW6l7VG9i4sSgwqOAm/ZiYV5afKOyaC/tc5hweWUmmw8xwrZqL+enPvFsSRpdG90xLB1dcpFQEKuue/hLdRSiX+gPY0wWRx83xzhw7y4C9WSXxH6oqJEC9ekykCXSNLmKdpJ2qc5/sAv2Os2P3q8o2ej4JM79mwzcDMASpsZmwSjBAmCmXmXjtlD6pC+tY6UWokmfjHu0jtOTJv1Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1P190MB0539.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(39830400003)(396003)(366004)(376002)(136003)(346002)(478600001)(6486002)(110136005)(54906003)(83380400001)(8676002)(66556008)(44832011)(5660300002)(956004)(4326008)(6506007)(16526019)(36756003)(86362001)(186003)(26005)(6512007)(52116002)(2906002)(316002)(2616005)(66946007)(8936002)(1076003)(66476007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?zVoe7KahsrwTzzMoLCk1ZlsY+n4mGTTnmBFyV62ANzKJ+WthXWxUCTPL2MQK?=
- =?us-ascii?Q?/Yc7scxB0hYC1vJG+SNfRlZthA7axqvqCbt850uK45QQnlu/IhFkmHyYyeAa?=
- =?us-ascii?Q?RZOCd7bYw1KU0aM5CxOLILBKYsTNBav2u01b8bBhUqUvvjhngt9wxuMdhEvV?=
- =?us-ascii?Q?lb/R2e9g2KGKeWEpjTAyC35CRiaoCmuMSkiVBbtzay/9Hsr13zN/yOO54F+P?=
- =?us-ascii?Q?di5OdwZczQGjD9oEzF5n6cYl/5i8ruHj+ZYcc9HXiOt91RF5USRIXDhW7RSU?=
- =?us-ascii?Q?D2CJ73R0hDCjzWB+y9D8nOi7drm7vPgmIepsdcBfvwrd7+BhOxPk9vUru16N?=
- =?us-ascii?Q?yjepbeXM00YuhiZ4aHusoNcbmtvs2RDMH+EYw1QkDKq28b0KZeBGpMnF2nIW?=
- =?us-ascii?Q?BoppPCPWZPkIhMRHP9cOKNgX8bYooMdFp/swtIzr99JCx3/NKH87pqG+j89q?=
- =?us-ascii?Q?TYgZRvdjXGQkhYvJhmC7/BCzvERiaP9qo562F63nka0VhTS27m3K7oBr6hh1?=
- =?us-ascii?Q?rj7xTuelYkbk0u8Y1G2oaL39FSwkB4snzT+N6zrdlIFchuCAvf8XFChCHLcs?=
- =?us-ascii?Q?VWvzgZU/BySzTxhIZJHdcwVNN0iS8hlxpX8GFrwSiAEo2n9bjt9mRGiRb1v+?=
- =?us-ascii?Q?YBitXF2iVhEekt2wrPHE1s7Jzu6UWj0Gb4OK7gaD5ptEO+2adxvJ7Cg/DUQf?=
- =?us-ascii?Q?wfOEXwhUsFX2wkH6w55SxU4OYbaM7XC7F/PqZaO/52kBMerTsqW89SWI69FC?=
- =?us-ascii?Q?Cwofg72Az3BFF52SSahNqQ0vNlXQ7XR5AWKQAVa6vzzz6XiXU4l4sVkgpp1a?=
- =?us-ascii?Q?iIsGIdmWbAwCPmlQWQqVWwhgoL3Q9RwMNPmcfDuNgcKoZ0nWtpoIv/stnlgo?=
- =?us-ascii?Q?kLX0bkIWdJlbAfTWHjIQ/v24oakNMVR0RoPnq6oNzBVGjAe3HDgd6BBevwhe?=
- =?us-ascii?Q?pPf1vz5vCYzuW0FDhMn30ZFgC6J+UBK2dBDUzs+Z4988ZE7WXgRyiu8Q9m7C?=
- =?us-ascii?Q?Fa1axB4SwtxZGaiGy+aB7R0rAn328luuvH6YKEApW86nHDy6K5HFbeA5cbZv?=
- =?us-ascii?Q?GF2wmTJSfJxZ47esuu2+ILDJa3eI2pBEctf3frvP+/4eCSHZGt17ukxQI2Ta?=
- =?us-ascii?Q?tdK3p+8bvrQieJOMPFJd208B1MmlyR4ss3quRLppCrFAsjTcWJYZYMESxH5B?=
- =?us-ascii?Q?qLo1taVxFpSXn36qFPR5lUA+rktRPfPQGSZ59J12ZfVJ4hyEGao3f9sM85RI?=
- =?us-ascii?Q?F6FXTV42vMcW6TGoeInB0tdZYNEb0pdJZaT/yKHxaTNqi0HS9+YDf6ZAGMaR?=
- =?us-ascii?Q?ui8rBypwRVxU6ci7d1saLlW7?=
+X-Microsoft-Antispam-Message-Info: BqAY4NzdpKaZ5eA3dRKHfvsM9qiB6e1A+xn9GXiGIMTKrqeFZaz10OT7yt2p3I5B3RYZ830DJDEafZxU0MmC9dOjhoj+tGJ6LdOG9SDHB9CUl3zumqJrxI/pSBwKCqe9Ofd6FuwJ2D8REzVbO4m3PP6vtx6Nb211d1Ins8z4t2kQ164RwUoM3/Oozfknyb+Csz/zBSAqhe2BxwvsmBLuHDvP7tZoCbgDbe+jUBu/3sg/lBUs9pU/VY+uZn2YayqzAcXHMgc0sTbFgt6B5fWAl7nk6VU7AwlnPYKd9NecJuXfrzPCuYnxb9O2y8BRNhbMVLVqT7cVzyaMj0RyV5ls1+HrPDetbRpXcarsPbZ/Ao9W3Gz1iv+5vnoOXQ34XA+BiR+GGxZY7uY85yYxHOqNm8m5TgS3WyAS2Fjvz9f/+mHoCSMF5I+EgOxi3vmxe/GEG/y/wM3VudvOD1v2Ln56UHpHArvlERtsP5ePogyyKwI4D7WIkiCnBkUwHwYgLbOPqHD/879rPp5b4XI+qpBwyw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1P190MB0539.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(39830400003)(396003)(366004)(376002)(136003)(346002)(478600001)(6486002)(110136005)(54906003)(83380400001)(45080400002)(8676002)(66556008)(44832011)(5660300002)(956004)(4326008)(6506007)(16526019)(36756003)(86362001)(186003)(26005)(6512007)(52116002)(2906002)(316002)(2616005)(66946007)(8936002)(1076003)(66476007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?9K60y9W494ALdPISHmfT3Q+8vWtKm/SAGMpZYK0YrD/aTVeHkLYv1OHTFyLD?=
+ =?us-ascii?Q?8c5mD2QOWEZQCOsNIH7dg1c0R2VTHrhlfhJwxbdTDnV5FdoqfMyuIruHx9ZO?=
+ =?us-ascii?Q?2mj2GDWuLUYWVjZ3M8Qa6gxkQQf4CA4r2IDPVGrtCAIEiCYEhjivZbt1JSSi?=
+ =?us-ascii?Q?MJ1/ButiQ4PEBNHIh3CqmBU7K4vkpARKTC0MM1IJJ2YrNvHAgQZaawtQTfft?=
+ =?us-ascii?Q?pTb41M8ogUxfRm+XOMt6yZ2sQPbYCfUoQ+qeLlRL3pjChU+Ikzsv+SkvJvxs?=
+ =?us-ascii?Q?zDmlaLk9fqD+OUW4uFnx4ADRCJPKer765Q0GfDYxrtyPUe0cJM0M85LFTuAI?=
+ =?us-ascii?Q?ibheMa6RR0sqVNq7t9F1GN+OQwlw4kS5RAUzATK72A64WBeUnVMoWKyD+Q2w?=
+ =?us-ascii?Q?IO3v5lFLc0RHr/AvbdnoppKSFXf96Ng1jXGVLSVf3uWFD5drGe+DALQbp1pl?=
+ =?us-ascii?Q?zLe96nYTH+5cYbLYAjoUK3/kXOtl04EQB25jGYQHr0q74OB+5UF8zmS7DK6n?=
+ =?us-ascii?Q?+BOOL+XJak9Da4RFQcC9LaXNIJ8X+t0DRBKPdXkLadZQYg+ygpqrir8vAJck?=
+ =?us-ascii?Q?YmhSEhodGrOVNMNlG3xMOMd8L5S7SwhS7QVn+FHwK4ibGwm3Zw2DhV/nb47y?=
+ =?us-ascii?Q?PRJ+xSiyw6jCXy9SCIONLdUZNZvp+ARKXvFDdNfdSeT4iBklMDVKchDzBL9t?=
+ =?us-ascii?Q?O3K2WDE2+KI3ZfuninPWUfL2vLlSw+twtwVoxc5+pFRbTkk8FIyq8lwmOi2q?=
+ =?us-ascii?Q?NTj3c76NAadzBXNca+0pM5gdGaGVS7BTayBvVG6TJ71MZmZf+Ih70lA3vW1r?=
+ =?us-ascii?Q?EV1FpKlNEM7PQHO6A1kIXw5ay8+0Q/gmyB19ex2nuJbzu4UPxKwN2AK8qcyN?=
+ =?us-ascii?Q?yIfTfcUfBn9mtiQYsGAffOmfJIgA+sgIoMjch3uUCo/XdLvcveMuO4HHPPzE?=
+ =?us-ascii?Q?xaUyKG+tUxwHzur6IdWMpV5XzLBueCMUID6g+B9qIORJBDN2EveFM8Cl/M8z?=
+ =?us-ascii?Q?7ZD7FduhNWxSgdn1M7/IZTuPb2mOzqCdNKSDb3952+Rm2XazOJ1DgD0InYrO?=
+ =?us-ascii?Q?IsegSyBRPh6YpOZ2PuPRRTKYcB0mDYqZ1bxOPal6wxR2kAMypBRsBhKYVdYO?=
+ =?us-ascii?Q?8+MhhG3I0EBN1zmSecbF6Pk1EbA2d81CQqnEHlRhKeOAvCxr1jon9fNnus0f?=
+ =?us-ascii?Q?lyZ/DjXSEcZBySgOZ7Zts9/dJGYsWA8ZEbZCTA30QYbyoX+cUVtE7wZVXuEq?=
+ =?us-ascii?Q?HU1hp+eHRmi6OBwYPeXOlASykFX7rJW6eKcjIpNUR9vUxsBulpTKQCavomrh?=
+ =?us-ascii?Q?+6TW9Z3BC7qHtglN/nQp0ohG?=
 X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: ea929631-b43e-48cf-3581-08d8c86494b2
+X-MS-Exchange-CrossTenant-Network-Message-Id: ef115064-1f0e-4aa4-d7e5-08d8c864954c
 X-MS-Exchange-CrossTenant-AuthSource: HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Feb 2021 16:55:59.1815
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Feb 2021 16:56:00.2079
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: uJ6vqzai84J3pIqRnNEC4ibADpR2lW/nUkM2jB9j9TLelmRRQH4BZp8fZaSreILldxNdtZCPg/tcoixuBYUZpbyvRwHyLc+G3xCO4wWYqCI=
+X-MS-Exchange-CrossTenant-UserPrincipalName: VwXFTBxMMdrfbQzSUH2h+I4HYZYp4xKcfFONoInq6X2wWY2ZtGjYAOvf6TMP2er7GJXCES7LLKTjqjlvEa8NRDmvFJZBPdM2i8ivAroYnIA=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1P190MB0539
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Latest FW IPC floow message format was changed to configure uc/mc
-flooding separately, so change code according to this.
+For some reason there might be a crash during ports creation if port
+events are handling at the same time  because fw may send initial
+port event with down state.
+
+The crash points to cancel_delayed_work() which is called when port went
+is down.  Currently I did not find out the real cause of the issue, so
+fixed it by cancel port stats work only if previous port's state was up
+& runnig.
+
+The following is the crash which can be triggered:
+
+[   28.311104] Unable to handle kernel paging request at virtual address
+000071775f776600
+[   28.319097] Mem abort info:
+[   28.321914]   ESR = 0x96000004
+[   28.324996]   EC = 0x25: DABT (current EL), IL = 32 bits
+[   28.330350]   SET = 0, FnV = 0
+[   28.333430]   EA = 0, S1PTW = 0
+[   28.336597] Data abort info:
+[   28.339499]   ISV = 0, ISS = 0x00000004
+[   28.343362]   CM = 0, WnR = 0
+[   28.346354] user pgtable: 4k pages, 48-bit VAs, pgdp=0000000100bf7000
+[   28.352842] [000071775f776600] pgd=0000000000000000,
+p4d=0000000000000000
+[   28.359695] Internal error: Oops: 96000004 [#1] PREEMPT SMP
+[   28.365310] Modules linked in: prestera_pci(+) prestera
+uio_pdrv_genirq
+[   28.372005] CPU: 0 PID: 1291 Comm: kworker/0:1H Not tainted
+5.11.0-rc4 #1
+[   28.378846] Hardware name: DNI AmazonGo1 A7040 board (DT)
+[   28.384283] Workqueue: prestera_fw_wq prestera_fw_evt_work_fn
+[prestera_pci]
+[   28.391413] pstate: 60000085 (nZCv daIf -PAN -UAO -TCO BTYPE=--)
+[   28.397468] pc : get_work_pool+0x48/0x60
+[   28.401442] lr : try_to_grab_pending+0x6c/0x1b0
+[   28.406018] sp : ffff80001391bc60
+[   28.409358] x29: ffff80001391bc60 x28: 0000000000000000
+[   28.414725] x27: ffff000104fc8b40 x26: ffff80001127de88
+[   28.420089] x25: 0000000000000000 x24: ffff000106119760
+[   28.425452] x23: ffff00010775dd60 x22: ffff00010567e000
+[   28.430814] x21: 0000000000000000 x20: ffff80001391bcb0
+[   28.436175] x19: ffff00010775deb8 x18: 00000000000000c0
+[   28.441537] x17: 0000000000000000 x16: 000000008d9b0e88
+[   28.446898] x15: 0000000000000001 x14: 00000000000002ba
+[   28.452261] x13: 80a3002c00000002 x12: 00000000000005f4
+[   28.457622] x11: 0000000000000030 x10: 000000000000000c
+[   28.462985] x9 : 000000000000000c x8 : 0000000000000030
+[   28.468346] x7 : ffff800014400000 x6 : ffff000106119758
+[   28.473708] x5 : 0000000000000003 x4 : ffff00010775dc60
+[   28.479068] x3 : 0000000000000000 x2 : 0000000000000060
+[   28.484429] x1 : 000071775f776600 x0 : ffff00010775deb8
+[   28.489791] Call trace:
+[   28.492259]  get_work_pool+0x48/0x60
+[   28.495874]  cancel_delayed_work+0x38/0xb0
+[   28.500011]  prestera_port_handle_event+0x90/0xa0 [prestera]
+[   28.505743]  prestera_evt_recv+0x98/0xe0 [prestera]
+[   28.510683]  prestera_fw_evt_work_fn+0x180/0x228 [prestera_pci]
+[   28.516660]  process_one_work+0x1e8/0x360
+[   28.520710]  worker_thread+0x44/0x480
+[   28.524412]  kthread+0x154/0x160
+[   28.527670]  ret_from_fork+0x10/0x38
+[   28.531290] Code: a8c17bfd d50323bf d65f03c0 9278dc21 (f9400020)
+[   28.537429] ---[ end trace 5eced933df3a080b ]---
 
 Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>
 ---
- .../ethernet/marvell/prestera/prestera_hw.c   | 37 +++++++++++++--
- .../ethernet/marvell/prestera/prestera_hw.h   |  3 +-
- .../marvell/prestera/prestera_switchdev.c     | 46 +++++++++++++++----
- 3 files changed, 72 insertions(+), 14 deletions(-)
+ drivers/net/ethernet/marvell/prestera/prestera_main.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_hw.c b/drivers/net/ethernet/marvell/prestera/prestera_hw.c
-index 8afb45f66862..75034dcb3649 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_hw.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_hw.c
-@@ -90,6 +90,11 @@ enum {
- 	PRESTERA_PORT_TP_AUTO,
- };
- 
-+enum {
-+	PRESTERA_PORT_FLOOD_TYPE_UC = 0,
-+	PRESTERA_PORT_FLOOD_TYPE_MC = 1,
-+};
-+
- enum {
- 	PRESTERA_PORT_GOOD_OCTETS_RCV_CNT,
- 	PRESTERA_PORT_BAD_OCTETS_RCV_CNT,
-@@ -201,6 +206,11 @@ struct prestera_msg_port_mdix_param {
- 	u8 admin_mode;
- };
- 
-+struct prestera_msg_port_flood_param {
-+	u8 type;
-+	u8 enable;
-+};
-+
- union prestera_msg_port_param {
- 	u8  admin_state;
- 	u8  oper_state;
-@@ -209,7 +219,6 @@ union prestera_msg_port_param {
- 	u8  accept_frm_type;
- 	u32 speed;
- 	u8 learning;
--	u8 flood;
- 	u32 link_mode;
- 	u8  type;
- 	u8  duplex;
-@@ -218,6 +227,7 @@ union prestera_msg_port_param {
- 	struct prestera_msg_port_mdix_param mdix;
- 	struct prestera_msg_port_autoneg_param autoneg;
- 	struct prestera_msg_port_cap_param cap;
-+	struct prestera_msg_port_flood_param flood;
- };
- 
- struct prestera_msg_port_attr_req {
-@@ -1030,14 +1040,35 @@ int prestera_hw_port_learning_set(struct prestera_port *port, bool enable)
- 			    &req.cmd, sizeof(req));
- }
- 
--int prestera_hw_port_flood_set(struct prestera_port *port, bool flood)
-+int prestera_hw_port_uc_flood_set(struct prestera_port *port, bool flood)
-+{
-+	struct prestera_msg_port_attr_req req = {
-+		.attr = PRESTERA_CMD_PORT_ATTR_FLOOD,
-+		.port = port->hw_id,
-+		.dev = port->dev_id,
-+		.param = {
-+			.flood = {
-+				.type = PRESTERA_PORT_FLOOD_TYPE_UC,
-+				.enable = flood,
-+			}
-+		}
-+	};
-+
-+	return prestera_cmd(port->sw, PRESTERA_CMD_TYPE_PORT_ATTR_SET,
-+			    &req.cmd, sizeof(req));
-+}
-+
-+int prestera_hw_port_mc_flood_set(struct prestera_port *port, bool flood)
- {
- 	struct prestera_msg_port_attr_req req = {
- 		.attr = PRESTERA_CMD_PORT_ATTR_FLOOD,
- 		.port = port->hw_id,
- 		.dev = port->dev_id,
- 		.param = {
--			.flood = flood,
-+			.flood = {
-+				.type = PRESTERA_PORT_FLOOD_TYPE_MC,
-+				.enable = flood,
-+			}
- 		}
- 	};
- 
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_hw.h b/drivers/net/ethernet/marvell/prestera/prestera_hw.h
-index 68ce41595349..03b52db6f359 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_hw.h
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_hw.h
-@@ -138,7 +138,8 @@ int prestera_hw_port_mdix_get(const struct prestera_port *port, u8 *status,
- int prestera_hw_port_mdix_set(const struct prestera_port *port, u8 mode);
- int prestera_hw_port_speed_get(const struct prestera_port *port, u32 *speed);
- int prestera_hw_port_learning_set(struct prestera_port *port, bool enable);
--int prestera_hw_port_flood_set(struct prestera_port *port, bool flood);
-+int prestera_hw_port_uc_flood_set(struct prestera_port *port, bool flood);
-+int prestera_hw_port_mc_flood_set(struct prestera_port *port, bool flood);
- int prestera_hw_port_accept_frm_type(struct prestera_port *port,
- 				     enum prestera_accept_frm_type type);
- /* Vlan API */
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c b/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
-index 3750c66a550b..8449539fe944 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
-@@ -443,9 +443,13 @@ prestera_bridge_1d_port_join(struct prestera_bridge_port *br_port,
- 	if (err)
- 		return err;
- 
--	err = prestera_hw_port_flood_set(port, br_port->flags & BR_FLOOD);
-+	err = prestera_hw_port_uc_flood_set(port, br_port->flags & BR_FLOOD);
- 	if (err)
--		goto err_port_flood_set;
-+		goto err_port_uc_flood_set;
-+
-+	err = prestera_hw_port_mc_flood_set(port, br_port->flags & BR_MCAST_FLOOD);
-+	if (err)
-+		goto err_port_mc_flood_set;
- 
- 	err = prestera_hw_port_learning_set(port, br_port->flags & BR_LEARNING);
- 	if (err)
-@@ -454,8 +458,10 @@ prestera_bridge_1d_port_join(struct prestera_bridge_port *br_port,
- 	return 0;
- 
- err_port_learning_set:
--	prestera_hw_port_flood_set(port, false);
--err_port_flood_set:
-+	prestera_hw_port_mc_flood_set(port, false);
-+err_port_mc_flood_set:
-+	prestera_hw_port_uc_flood_set(port, false);
-+err_port_uc_flood_set:
- 	prestera_hw_bridge_port_delete(port, bridge->bridge_id);
- 
- 	return err;
-@@ -567,7 +573,8 @@ static void prestera_port_bridge_leave(struct prestera_port *port,
- 		prestera_bridge_1d_port_leave(br_port, port);
- 
- 	prestera_hw_port_learning_set(port, false);
--	prestera_hw_port_flood_set(port, false);
-+	prestera_hw_port_uc_flood_set(port, false);
-+	prestera_hw_port_mc_flood_set(port, false);
- 	prestera_port_vid_stp_set(port, PRESTERA_VID_ALL, BR_STATE_FORWARDING);
- 	prestera_bridge_port_put(br_port);
- }
-@@ -609,17 +616,28 @@ static int prestera_port_attr_br_flags_set(struct prestera_port *port,
- 	if (!br_port)
- 		return 0;
- 
--	err = prestera_hw_port_flood_set(port, flags & BR_FLOOD);
-+	err = prestera_hw_port_uc_flood_set(port, flags & BR_FLOOD);
- 	if (err)
--		return err;
-+		goto err_port_uc_flood_set;
-+
-+	err = prestera_hw_port_mc_flood_set(port, flags & BR_MCAST_FLOOD);
-+	if (err)
-+		goto err_port_mc_flood_set;
- 
- 	err = prestera_hw_port_learning_set(port, flags & BR_LEARNING);
- 	if (err)
--		return err;
-+		goto err_port_learning_set;
- 
- 	memcpy(&br_port->flags, &flags, sizeof(flags));
- 
- 	return 0;
-+
-+err_port_learning_set:
-+	prestera_hw_port_mc_flood_set(port, false);
-+err_port_mc_flood_set:
-+	prestera_hw_port_uc_flood_set(port, false);
-+err_port_uc_flood_set:
-+	return err;
- }
- 
- static int prestera_port_attr_br_ageing_set(struct prestera_port *port,
-@@ -914,9 +932,13 @@ prestera_port_vlan_bridge_join(struct prestera_port_vlan *port_vlan,
- 	if (port_vlan->br_port)
- 		return 0;
- 
--	err = prestera_hw_port_flood_set(port, br_port->flags & BR_FLOOD);
-+	err = prestera_hw_port_uc_flood_set(port, br_port->flags & BR_FLOOD);
- 	if (err)
--		return err;
-+		goto err_port_uc_flood_set;
-+
-+	err = prestera_hw_port_mc_flood_set(port, br_port->flags & BR_MCAST_FLOOD);
-+	if (err)
-+		goto err_port_mc_flood_set;
- 
- 	err = prestera_hw_port_learning_set(port, br_port->flags & BR_LEARNING);
- 	if (err)
-@@ -947,6 +969,10 @@ prestera_port_vlan_bridge_join(struct prestera_port_vlan *port_vlan,
- err_port_vid_stp_set:
- 	prestera_hw_port_learning_set(port, false);
- err_port_learning_set:
-+	prestera_hw_port_mc_flood_set(port, false);
-+err_port_mc_flood_set:
-+	prestera_hw_port_uc_flood_set(port, false);
-+err_port_uc_flood_set:
- 	return err;
- }
- 
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_main.c b/drivers/net/ethernet/marvell/prestera/prestera_main.c
+index 39465e65d09b..122324dae47d 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_main.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_main.c
+@@ -433,7 +433,8 @@ static void prestera_port_handle_event(struct prestera_switch *sw,
+ 			netif_carrier_on(port->dev);
+ 			if (!delayed_work_pending(caching_dw))
+ 				queue_delayed_work(prestera_wq, caching_dw, 0);
+-		} else {
++		} else if (netif_running(port->dev) &&
++			   netif_carrier_ok(port->dev)) {
+ 			netif_carrier_off(port->dev);
+ 			if (delayed_work_pending(caching_dw))
+ 				cancel_delayed_work(caching_dw);
 -- 
 2.17.1
 
