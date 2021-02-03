@@ -2,299 +2,354 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6ECD530E194
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 18:59:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D12530E1B9
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 19:02:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231944AbhBCR6N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 12:58:13 -0500
-Received: from mail.efficios.com ([167.114.26.124]:57748 "EHLO
-        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231828AbhBCR6K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 12:58:10 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id EAD922E1B81;
-        Wed,  3 Feb 2021 12:57:25 -0500 (EST)
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id Laf33Bz6ph5V; Wed,  3 Feb 2021 12:57:25 -0500 (EST)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 3A8F32E1B08;
-        Wed,  3 Feb 2021 12:57:25 -0500 (EST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 3A8F32E1B08
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
-        s=default; t=1612375045;
-        bh=+Qap7N2Y/QmVqgqw+bVa1bnoy5TmfjVjhj7na064KEk=;
-        h=Date:From:To:Message-ID:MIME-Version;
-        b=dOFQGDDKyyE2kjOazY1VDl/JsFGLVRbVBZVoCesYWWf2WNd8aqI3/z32qGsvFO/dK
-         YYIJTVzftkNRZMfQ6Jzaj9Woc9pr7HBCt3n4x7PO1+bQmuhile/fCdlUE0JqRMQAoB
-         vF50DRX+wvWaIrU2/mTrdEnFZOU+GlVyADVPW6CacmpKvL76gDh78fbq6OF7tr7QEq
-         HHTTeNOCatEYjuVJO2m2PHGzyYW6BWDfOeJmn2UuujkISHCzouk79FPheykY5Liv5P
-         E783dsRkSk7uhKiluz2e77C7lhpi4ZqFATE0SSJ+PZTf29SjyUDTVnVyLmQeuG5IQ2
-         8KVPBt6BNyDOQ==
-X-Virus-Scanned: amavisd-new at efficios.com
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id JOJTxMAyXdTv; Wed,  3 Feb 2021 12:57:25 -0500 (EST)
-Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
-        by mail.efficios.com (Postfix) with ESMTP id 0FFD42E1959;
-        Wed,  3 Feb 2021 12:57:25 -0500 (EST)
-Date:   Wed, 3 Feb 2021 12:57:24 -0500 (EST)
-From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-To:     rostedt <rostedt@goodmis.org>
-Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Florian Weimer <fw@deneb.enyo.de>,
-        syzbot+83aa762ef23b6f0d1991@syzkaller.appspotmail.com,
-        syzbot+d29e58bb557324e55e5e@syzkaller.appspotmail.com,
-        Matt Mullins <mmullins@mmlx.us>
-Message-ID: <1836191179.6214.1612375044968.JavaMail.zimbra@efficios.com>
-In-Reply-To: <20210203160550.710877069@goodmis.org>
-References: <20210203160517.982448432@goodmis.org> <20210203160550.710877069@goodmis.org>
-Subject: Re: [for-next][PATCH 14/15] tracepoint: Do not fail unregistering a
- probe due to memory failure
+        id S231592AbhBCSBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 13:01:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44468 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232724AbhBCSAu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 13:00:50 -0500
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1566C061786
+        for <netdev@vger.kernel.org>; Wed,  3 Feb 2021 10:00:09 -0800 (PST)
+Received: by mail-yb1-xb2d.google.com with SMTP id c3so471362ybi.3
+        for <netdev@vger.kernel.org>; Wed, 03 Feb 2021 10:00:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=X5r+7N4Z7IfU/TMw7ojZQJ/0nascEKkEMZSsaopQAek=;
+        b=IovWwbsaZrP7xyLOw8sKz5wpB+dOU0VM69+A6FUf/vXGEvCfWS5unNDR41CD2EszEP
+         xdzxBj4U6W1onGtiuP3aMzn5AXo+2Q81fccEdhXDxdPChmzGNAGUNsjdqDlzJNRgRgQL
+         P4OsXATDonNTeC9gMnN3oaLFiHYIwqH0y6UuAvXsRRhA7Y0idUatpR4ptUMiA4Sdw13e
+         4R+iw0VzNlinurTWR0l/zChtlidjZaHcoYtDBqgsNkM2UPOC66KvzcTMBBGwbFTwZ4kY
+         TVPoMnqZe+ZC8w87rHFh7gXOekj4eofoT1UdmEhkKcCKdFaog+qgJS1Y8ZajjJb5zaVj
+         +Xug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=X5r+7N4Z7IfU/TMw7ojZQJ/0nascEKkEMZSsaopQAek=;
+        b=AgUFMiPyyhHrdpbQqyiml2KKEWsR5dYzgJ9svXdgcGAoVrmfkqm7lbQHcowbJquOU/
+         vsRMmXaqJ8N4abD2oD/Oq4GRoQOOH/t13Yu9YwmhR1n6Zm1iwOXRkdh6SH4fnAAxAeHY
+         XuF7VffZ6aHS3QosGXxFFS2tNLG3E5tE6vCloP+jBqJLFfxTzVR9x8YwXxjfRz4qwz3j
+         bK3cBKm9SOVWCDRR+tAlM0IbFq1c/VBo9XU1hzFQ5VVImhnL4PnYlGcbBQNSXASwEjJ8
+         pO9a18wnIAfIflyY23fDKoBTVRBUmQXcEHStqk+qWX+Gp4rABh1N/rXV0tZQZ2nY6Xd1
+         OYbA==
+X-Gm-Message-State: AOAM5327dudanS7WJrCt60mLVuh1iKSYh76h7xsVL89D04teu62uZ9Lu
+        NO7+EGGnYne40u70iPz/w7+dktiz2IYP52vr6WA5k28tq6oHEg==
+X-Google-Smtp-Source: ABdhPJwV59sMSn5kouLgwtR3LXS7Duw7EdN+/9JojZ2HCMfHgWH0ycpVZ+g6649aCe1j6UWQ24DilvNdkO0GkfNsqHo=
+X-Received: by 2002:a25:10c3:: with SMTP id 186mr5971231ybq.195.1612375208978;
+ Wed, 03 Feb 2021 10:00:08 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [167.114.26.124]
-X-Mailer: Zimbra 8.8.15_GA_3996 (ZimbraWebClient - FF84 (Linux)/8.8.15_GA_3996)
-Thread-Topic: tracepoint: Do not fail unregistering a probe due to memory failure
-Thread-Index: GtmxsYito0gcoBg/ByOH+HQKBrh4xA==
+References: <20210129181812.256216-1-weiwan@google.com> <20210129181812.256216-3-weiwan@google.com>
+ <CAKgT0Uc882yDj5Vq-Nt_6U-jz3zWFUWJv0zuaGukb1z7Fy=ASQ@mail.gmail.com>
+In-Reply-To: <CAKgT0Uc882yDj5Vq-Nt_6U-jz3zWFUWJv0zuaGukb1z7Fy=ASQ@mail.gmail.com>
+From:   Wei Wang <weiwan@google.com>
+Date:   Wed, 3 Feb 2021 09:59:57 -0800
+Message-ID: <CAEA6p_DAzhOQhuG2oELYg60KXMWXKLiS0nV_z5pVncUL5s=2iw@mail.gmail.com>
+Subject: Re: [PATCH net-next v9 2/3] net: implement threaded-able napi poll
+ loop support
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>,
+        Felix Fietkau <nbd@nbd.name>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Feb 3, 2021 at 9:20 AM Alexander Duyck
+<alexander.duyck@gmail.com> wrote:
+>
+> On Fri, Jan 29, 2021 at 10:22 AM Wei Wang <weiwan@google.com> wrote:
+> >
+> > This patch allows running each napi poll loop inside its own
+> > kernel thread.
+> > The kthread is created during netif_napi_add() if dev->threaded
+> > is set. And threaded mode is enabled in napi_enable(). We will
+> > provide a way to set dev->threaded and enable threaded mode
+> > without a device up/down in the following patch.
+> >
+> > Once that threaded mode is enabled and the kthread is
+> > started, napi_schedule() will wake-up such thread instead
+> > of scheduling the softirq.
+> >
+> > The threaded poll loop behaves quite likely the net_rx_action,
+> > but it does not have to manipulate local irqs and uses
+> > an explicit scheduling point based on netdev_budget.
+> >
+> > Co-developed-by: Paolo Abeni <pabeni@redhat.com>
+> > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> > Co-developed-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
+> > Signed-off-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
+> > Co-developed-by: Jakub Kicinski <kuba@kernel.org>
+> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> > Signed-off-by: Wei Wang <weiwan@google.com>
+> > ---
+> >  include/linux/netdevice.h |  21 +++----
+> >  net/core/dev.c            | 117 ++++++++++++++++++++++++++++++++++++++
+> >  2 files changed, 124 insertions(+), 14 deletions(-)
+> >
+> > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> > index 02dcef4d66e2..f1e9fe9017ac 100644
+> > --- a/include/linux/netdevice.h
+> > +++ b/include/linux/netdevice.h
+> > @@ -347,6 +347,7 @@ struct napi_struct {
+> >         struct list_head        dev_list;
+> >         struct hlist_node       napi_hash_node;
+> >         unsigned int            napi_id;
+> > +       struct task_struct      *thread;
+> >  };
+> >
+> >  enum {
+> > @@ -358,6 +359,7 @@ enum {
+> >         NAPI_STATE_NO_BUSY_POLL,        /* Do not add in napi_hash, no busy polling */
+> >         NAPI_STATE_IN_BUSY_POLL,        /* sk_busy_loop() owns this NAPI */
+> >         NAPI_STATE_PREFER_BUSY_POLL,    /* prefer busy-polling over softirq processing*/
+> > +       NAPI_STATE_THREADED,            /* The poll is performed inside its own thread*/
+> >  };
+> >
+> >  enum {
+> > @@ -369,6 +371,7 @@ enum {
+> >         NAPIF_STATE_NO_BUSY_POLL        = BIT(NAPI_STATE_NO_BUSY_POLL),
+> >         NAPIF_STATE_IN_BUSY_POLL        = BIT(NAPI_STATE_IN_BUSY_POLL),
+> >         NAPIF_STATE_PREFER_BUSY_POLL    = BIT(NAPI_STATE_PREFER_BUSY_POLL),
+> > +       NAPIF_STATE_THREADED            = BIT(NAPI_STATE_THREADED),
+> >  };
+> >
+> >  enum gro_result {
+> > @@ -503,20 +506,7 @@ static inline bool napi_complete(struct napi_struct *n)
+> >   */
+> >  void napi_disable(struct napi_struct *n);
+> >
+> > -/**
+> > - *     napi_enable - enable NAPI scheduling
+> > - *     @n: NAPI context
+> > - *
+> > - * Resume NAPI from being scheduled on this context.
+> > - * Must be paired with napi_disable.
+> > - */
+> > -static inline void napi_enable(struct napi_struct *n)
+> > -{
+> > -       BUG_ON(!test_bit(NAPI_STATE_SCHED, &n->state));
+> > -       smp_mb__before_atomic();
+> > -       clear_bit(NAPI_STATE_SCHED, &n->state);
+> > -       clear_bit(NAPI_STATE_NPSVC, &n->state);
+> > -}
+> > +void napi_enable(struct napi_struct *n);
+> >
+> >  /**
+> >   *     napi_synchronize - wait until NAPI is not running
+> > @@ -1826,6 +1816,8 @@ enum netdev_priv_flags {
+> >   *
+> >   *     @wol_enabled:   Wake-on-LAN is enabled
+> >   *
+> > + *     @threaded:      napi threaded mode is enabled
+> > + *
+> >   *     @net_notifier_list:     List of per-net netdev notifier block
+> >   *                             that follow this device when it is moved
+> >   *                             to another network namespace.
+> > @@ -2143,6 +2135,7 @@ struct net_device {
+> >         struct lock_class_key   *qdisc_running_key;
+> >         bool                    proto_down;
+> >         unsigned                wol_enabled:1;
+> > +       unsigned                threaded:1;
+> >
+> >         struct list_head        net_notifier_list;
+> >
+> > diff --git a/net/core/dev.c b/net/core/dev.c
+> > index 7d23bff03864..743dd69fba19 100644
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
+> > @@ -91,6 +91,7 @@
+> >  #include <linux/etherdevice.h>
+> >  #include <linux/ethtool.h>
+> >  #include <linux/skbuff.h>
+> > +#include <linux/kthread.h>
+> >  #include <linux/bpf.h>
+> >  #include <linux/bpf_trace.h>
+> >  #include <net/net_namespace.h>
+> > @@ -1493,6 +1494,37 @@ void netdev_notify_peers(struct net_device *dev)
+> >  }
+> >  EXPORT_SYMBOL(netdev_notify_peers);
+> >
+> > +static int napi_threaded_poll(void *data);
+> > +
+> > +static int napi_kthread_create(struct napi_struct *n)
+> > +{
+> > +       int err = 0;
+> > +
+> > +       /* Create and wake up the kthread once to put it in
+> > +        * TASK_INTERRUPTIBLE mode to avoid the blocked task
+> > +        * warning and work with loadavg.
+> > +        */
+> > +       n->thread = kthread_run(napi_threaded_poll, n, "napi/%s-%d",
+> > +                               n->dev->name, n->napi_id);
+> > +       if (IS_ERR(n->thread)) {
+> > +               err = PTR_ERR(n->thread);
+> > +               pr_err("kthread_run failed with err %d\n", err);
+> > +               n->thread = NULL;
+> > +       }
+> > +
+> > +       return err;
+> > +}
+> > +
+> > +static void napi_kthread_stop(struct napi_struct *n)
+> > +{
+> > +       if (!n->thread)
+> > +               return;
+> > +
+> > +       kthread_stop(n->thread);
+> > +       clear_bit(NAPI_STATE_THREADED, &n->state);
+> > +       n->thread = NULL;
+> > +}
+> > +
+>
+> So I think the napi_kthread_stop should also be split into two parts
+> and distributed between the napi_disable and netif_napi_del functions.
+>
+> We should probably be clearing the NAPI_STATE_THREADED bit in
+> napi_disable, and freeing the thread in netif_napi_del.
+>
+> >  static int __dev_open(struct net_device *dev, struct netlink_ext_ack *extack)
+> >  {
+> >         const struct net_device_ops *ops = dev->netdev_ops;
+> > @@ -4252,6 +4284,21 @@ int gro_normal_batch __read_mostly = 8;
+> >  static inline void ____napi_schedule(struct softnet_data *sd,
+> >                                      struct napi_struct *napi)
+> >  {
+> > +       struct task_struct *thread;
+> > +
+> > +       if (test_bit(NAPI_STATE_THREADED, &napi->state)) {
+> > +               /* Paired with smp_mb__before_atomic() in
+> > +                * napi_enable(). Use READ_ONCE() to guarantee
+> > +                * a complete read on napi->thread. Only call
+> > +                * wake_up_process() when it's not NULL.
+> > +                */
+> > +               thread = READ_ONCE(napi->thread);
+> > +               if (thread) {
+> > +                       wake_up_process(thread);
+> > +                       return;
+> > +               }
+> > +       }
+> > +
+> >         list_add_tail(&napi->poll_list, &sd->poll_list);
+> >         __raise_softirq_irqoff(NET_RX_SOFTIRQ);
+> >  }
+> > @@ -6720,6 +6767,12 @@ void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
+> >         set_bit(NAPI_STATE_NPSVC, &napi->state);
+> >         list_add_rcu(&napi->dev_list, &dev->napi_list);
+> >         napi_hash_add(napi);
+> > +       /* Create kthread for this napi if dev->threaded is set.
+> > +        * Clear dev->threaded if kthread creation failed so that
+> > +        * threaded mode will not be enabled in napi_enable().
+> > +        */
+> > +       if (dev->threaded && napi_kthread_create(napi))
+> > +               dev->threaded = 0;
+> >  }
+> >  EXPORT_SYMBOL(netif_napi_add);
+> >
+> > @@ -6734,12 +6787,31 @@ void napi_disable(struct napi_struct *n)
+> >                 msleep(1);
+> >
+> >         hrtimer_cancel(&n->timer);
+> > +       napi_kthread_stop(n);
+> >
+>
+> So I think there may be an issue here since we had netif_napi_add
+> create the thread, but you are freeing it in napi_kthread_stop if I am
+> not mistaken. That is why I suggested making this only a clear_bit
+> call like the ones below to just clear the threaded flag from the
+> state.
 
+Makes sense. I will split napi_kthread_stop().
 
------ On Feb 3, 2021, at 11:05 AM, rostedt rostedt@goodmis.org wrote:
-
-> From: "Steven Rostedt (VMware)" <rostedt@goodmis.org>
-> 
-> The list of tracepoint callbacks is managed by an array that is protected
-> by RCU. To update this array, a new array is allocated, the updates are
-> copied over to the new array, and then the list of functions for the
-> tracepoint is switched over to the new array. After a completion of an RCU
-> grace period, the old array is freed.
-> 
-> This process happens for both adding a callback as well as removing one.
-> But on removing a callback, if the new array fails to be allocated, the
-> callback is not removed, and may be used after it is freed by the clients
-> of the tracepoint.
-> 
-> There's really no reason to fail if the allocation for a new array fails
-> when removing a function. Instead, the function can simply be replaced by a
-> stub function that could be cleaned up on the next modification of the
-> array. That is, instead of calling the function registered to the
-> tracepoint, it would call a stub function in its place.
-> 
-> Link: https://lore.kernel.org/r/20201115055256.65625-1-mmullins@mmlx.us
-> Link: https://lore.kernel.org/r/20201116175107.02db396d@gandalf.local.home
-> Link: https://lore.kernel.org/r/20201117211836.54acaef2@oasis.local.home
-> Link: https://lkml.kernel.org/r/20201118093405.7a6d2290@gandalf.local.home
-> 
-> [ Note, this version does use undefined compiler behavior (assuming that
->  a stub function with no parameters or return, can be called by a location
->  that thinks it has parameters but still no return value. Static calls
->  do the same thing, so this trick is not without precedent.
-> 
->  There's another solution that uses RCU tricks and is more complex, but
->  can be an alternative if this solution becomes an issue.
-> 
->  Link: https://lore.kernel.org/lkml/20210127170721.58bce7cc@gandalf.local.home/
-> ]
-> 
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: Josh Poimboeuf <jpoimboe@redhat.com>
-> Cc: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-> Cc: Ingo Molnar <mingo@redhat.com>
-> Cc: Alexei Starovoitov <ast@kernel.org>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Dmitry Vyukov <dvyukov@google.com>
-> Cc: Martin KaFai Lau <kafai@fb.com>
-> Cc: Song Liu <songliubraving@fb.com>
-> Cc: Yonghong Song <yhs@fb.com>
-> Cc: Andrii Nakryiko <andriin@fb.com>
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: KP Singh <kpsingh@chromium.org>
-> Cc: netdev <netdev@vger.kernel.org>
-> Cc: bpf <bpf@vger.kernel.org>
-> Cc: Kees Cook <keescook@chromium.org>
-> Cc: Florian Weimer <fw@deneb.enyo.de>
-> Fixes: 97e1c18e8d17b ("tracing: Kernel Tracepoints")
-> Reported-by: syzbot+83aa762ef23b6f0d1991@syzkaller.appspotmail.com
-> Reported-by: syzbot+d29e58bb557324e55e5e@syzkaller.appspotmail.com
-> Reported-by: Matt Mullins <mmullins@mmlx.us>
-> Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
-> Tested-by: Matt Mullins <mmullins@mmlx.us>
-> ---
-> kernel/tracepoint.c | 80 ++++++++++++++++++++++++++++++++++++---------
-> 1 file changed, 64 insertions(+), 16 deletions(-)
-> 
-> diff --git a/kernel/tracepoint.c b/kernel/tracepoint.c
-> index 7261fa0f5e3c..e8f20ae29c18 100644
-> --- a/kernel/tracepoint.c
-> +++ b/kernel/tracepoint.c
-> @@ -53,6 +53,12 @@ struct tp_probes {
-> 	struct tracepoint_func probes[];
-> };
-> 
-> +/* Called in removal of a func but failed to allocate a new tp_funcs */
-> +static void tp_stub_func(void)
-> +{
-> +	return;
-> +}
-> +
-> static inline void *allocate_probes(int count)
-> {
-> 	struct tp_probes *p  = kmalloc(struct_size(p, probes, count),
-> @@ -131,6 +137,7 @@ func_add(struct tracepoint_func **funcs, struct
-> tracepoint_func *tp_func,
-> {
-> 	struct tracepoint_func *old, *new;
-> 	int nr_probes = 0;
-> +	int stub_funcs = 0;
-> 	int pos = -1;
-> 
-> 	if (WARN_ON(!tp_func->func))
-> @@ -147,14 +154,34 @@ func_add(struct tracepoint_func **funcs, struct
-> tracepoint_func *tp_func,
-> 			if (old[nr_probes].func == tp_func->func &&
-> 			    old[nr_probes].data == tp_func->data)
-> 				return ERR_PTR(-EEXIST);
-> +			if (old[nr_probes].func == tp_stub_func)
-> +				stub_funcs++;
-> 		}
-> 	}
-> -	/* + 2 : one for new probe, one for NULL func */
-> -	new = allocate_probes(nr_probes + 2);
-> +	/* + 2 : one for new probe, one for NULL func - stub functions */
-> +	new = allocate_probes(nr_probes + 2 - stub_funcs);
-> 	if (new == NULL)
-> 		return ERR_PTR(-ENOMEM);
-> 	if (old) {
-> -		if (pos < 0) {
-> +		if (stub_funcs) {
-
-Considering that we end up implementing a case where we carefully copy over
-each item, I recommend we replace the two "memcpy" branches by a single item-wise
-implementation. It's a slow-path anyway, and reducing the overall complexity
-is a benefit for slow paths. Fewer bugs, less code to review, and it's easier to
-reach a decent testing state-space coverage.
-
-> +			/* Need to copy one at a time to remove stubs */
-> +			int probes = 0;
-> +
-> +			pos = -1;
-> +			for (nr_probes = 0; old[nr_probes].func; nr_probes++) {
-> +				if (old[nr_probes].func == tp_stub_func)
-> +					continue;
-> +				if (pos < 0 && old[nr_probes].prio < prio)
-> +					pos = probes++;
-> +				new[probes++] = old[nr_probes];
-> +			}
-> +			nr_probes = probes;
-
-Repurposing "nr_probes" from accounting for the number of items in the old
-array to counting the number of items in the new array in the middle of the
-function is confusing.
-
-> +			if (pos < 0)
-> +				pos = probes;
-> +			else
-> +				nr_probes--; /* Account for insertion */
-
-This is probably why you need to play tricks with nr_probes here.
-
-> +		} else if (pos < 0) {
-> 			pos = nr_probes;
-> 			memcpy(new, old, nr_probes * sizeof(struct tracepoint_func));
-> 		} else {
-> @@ -188,8 +215,9 @@ static void *func_remove(struct tracepoint_func **funcs,
-> 	/* (N -> M), (N > 1, M >= 0) probes */
-> 	if (tp_func->func) {
-> 		for (nr_probes = 0; old[nr_probes].func; nr_probes++) {
-> -			if (old[nr_probes].func == tp_func->func &&
-> -			     old[nr_probes].data == tp_func->data)
-> +			if ((old[nr_probes].func == tp_func->func &&
-> +			     old[nr_probes].data == tp_func->data) ||
-> +			    old[nr_probes].func == tp_stub_func)
-> 				nr_del++;
-> 		}
-> 	}
-> @@ -208,14 +236,32 @@ static void *func_remove(struct tracepoint_func **funcs,
-> 		/* N -> M, (N > 1, M > 0) */
-> 		/* + 1 for NULL */
-> 		new = allocate_probes(nr_probes - nr_del + 1);
-> -		if (new == NULL)
-> -			return ERR_PTR(-ENOMEM);
-> -		for (i = 0; old[i].func; i++)
-> -			if (old[i].func != tp_func->func
-> -					|| old[i].data != tp_func->data)
-> -				new[j++] = old[i];
-> -		new[nr_probes - nr_del].func = NULL;
-> -		*funcs = new;
-> +		if (new) {
-> +			for (i = 0; old[i].func; i++)
-> +				if ((old[i].func != tp_func->func
-> +				     || old[i].data != tp_func->data)
-> +				    && old[i].func != tp_stub_func)
-> +					new[j++] = old[i];
-> +			new[nr_probes - nr_del].func = NULL;
-> +			*funcs = new;
-> +		} else {
-> +			/*
-> +			 * Failed to allocate, replace the old function
-> +			 * with calls to tp_stub_func.
-> +			 */
-> +			for (i = 0; old[i].func; i++)
-> +				if (old[i].func == tp_func->func &&
-> +				    old[i].data == tp_func->data) {
-> +					old[i].func = tp_stub_func;
-
-This updates "func" while readers are loading it concurrently. I would recommend
-using WRITE_ONCE here paired with READ_ONCE within __traceiter_##_name.
-
-> +					/* Set the prio to the next event. */
-
-I don't get why the priority needs to be changed here. Could it simply stay
-at its original value ? It's already in the correct priority order anyway.
-
-> +					if (old[i + 1].func)
-> +						old[i].prio =
-> +							old[i + 1].prio;
-> +					else
-> +						old[i].prio = -1;
-> +				}
-> +			*funcs = old;
-
-I'm not sure what setting *funcs to old achieves ? Isn't it already pointing
-to old ?
-
-I'll send a patch which applies on top of yours implementing my recommendations.
-It shrinks the code complexity nicely:
-
- include/linux/tracepoint.h |  2 +-
- kernel/tracepoint.c        | 80 +++++++++++++-------------------------
- 2 files changed, 28 insertions(+), 54 deletions(-)
-
-Thanks,
-
-Mathieu
-
--- 
-Mathieu Desnoyers
-EfficiOS Inc.
-http://www.efficios.com
+>
+> >         clear_bit(NAPI_STATE_PREFER_BUSY_POLL, &n->state);
+> >         clear_bit(NAPI_STATE_DISABLE, &n->state);
+> >  }
+> >  EXPORT_SYMBOL(napi_disable);
+> >
+> > +/**
+> > + *     napi_enable - enable NAPI scheduling
+> > + *     @n: NAPI context
+> > + *
+> > + * Resume NAPI from being scheduled on this context.
+> > + * Must be paired with napi_disable.
+> > + */
+> > +void napi_enable(struct napi_struct *n)
+> > +{
+> > +       BUG_ON(!test_bit(NAPI_STATE_SCHED, &n->state));
+> > +       smp_mb__before_atomic();
+> > +       clear_bit(NAPI_STATE_SCHED, &n->state);
+> > +       clear_bit(NAPI_STATE_NPSVC, &n->state);
+> > +       if (n->dev->threaded && n->thread)
+> > +               set_bit(NAPI_STATE_THREADED, &n->state);
+> > +}
+> > +EXPORT_SYMBOL(napi_enable);
+> > +
+> >  static void flush_gro_hash(struct napi_struct *napi)
+> >  {
+> >         int i;
+> > @@ -6862,6 +6934,51 @@ static int napi_poll(struct napi_struct *n, struct list_head *repoll)
+> >         return work;
+> >  }
+> >
+> > +static int napi_thread_wait(struct napi_struct *napi)
+> > +{
+> > +       set_current_state(TASK_INTERRUPTIBLE);
+> > +
+> > +       while (!kthread_should_stop() && !napi_disable_pending(napi)) {
+> > +               if (test_bit(NAPI_STATE_SCHED, &napi->state)) {
+> > +                       WARN_ON(!list_empty(&napi->poll_list));
+> > +                       __set_current_state(TASK_RUNNING);
+> > +                       return 0;
+> > +               }
+> > +
+> > +               schedule();
+> > +               set_current_state(TASK_INTERRUPTIBLE);
+> > +       }
+> > +       __set_current_state(TASK_RUNNING);
+> > +       return -1;
+> > +}
+> > +
+> > +static int napi_threaded_poll(void *data)
+> > +{
+> > +       struct napi_struct *napi = data;
+> > +       void *have;
+> > +
+> > +       while (!napi_thread_wait(napi)) {
+> > +               for (;;) {
+> > +                       bool repoll = false;
+> > +
+> > +                       local_bh_disable();
+> > +
+> > +                       have = netpoll_poll_lock(napi);
+> > +                       __napi_poll(napi, &repoll);
+> > +                       netpoll_poll_unlock(have);
+> > +
+> > +                       __kfree_skb_flush();
+> > +                       local_bh_enable();
+> > +
+> > +                       if (!repoll)
+> > +                               break;
+> > +
+> > +                       cond_resched();
+> > +               }
+> > +       }
+> > +       return 0;
+> > +}
+> > +
+> >  static __latent_entropy void net_rx_action(struct softirq_action *h)
+> >  {
+> >         struct softnet_data *sd = this_cpu_ptr(&softnet_data);
+> > --
+> > 2.30.0.365.g02bc693789-goog
+> >
