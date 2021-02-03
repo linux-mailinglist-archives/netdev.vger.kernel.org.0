@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8721430DE34
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 16:33:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80DDB30DE36
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 16:33:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234327AbhBCPci (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 10:32:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40026 "EHLO
+        id S234332AbhBCPcx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 10:32:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233865AbhBCP3r (ORCPT
+        with ESMTP id S233895AbhBCP3r (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 10:29:47 -0500
 Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09ECEC0617A7
-        for <netdev@vger.kernel.org>; Wed,  3 Feb 2021 07:29:05 -0800 (PST)
-Received: by mail-io1-xd2b.google.com with SMTP id n201so1305359iod.12
-        for <netdev@vger.kernel.org>; Wed, 03 Feb 2021 07:29:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28BBEC061573
+        for <netdev@vger.kernel.org>; Wed,  3 Feb 2021 07:29:06 -0800 (PST)
+Received: by mail-io1-xd2b.google.com with SMTP id f6so5467380ioz.5
+        for <netdev@vger.kernel.org>; Wed, 03 Feb 2021 07:29:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=BhwlK/0Dz6i4rhS6CqV6gw/YDZHe+oacHIsDYWLXy98=;
-        b=jMZs86uVyvZ/BUdRF50YnogWNWfr84cD8rDT5RKFqR/Z1eu/C7fSq1YMvVGkWgplOd
-         wAcghBWHu84bvcOXKk+/sZmV0ItuVTH/bRH+UV+koNY4C2ksxWpTJFugcfmLnZlU6rr5
-         qgMbhF0495K9ItQEE3vGMDGHhEt7aGaEvt0hw6JCSrGGWD98b7MIRgI0qYsJavti2nat
-         PRIk3SHfbMV89F6W9cwLbD2eYBhQ4c7hf04gWfxJRzUTGIhqBdZ2BF2U2q8K6zCZUJPo
-         fq6qG1AiNXZ+tsYfuujwfk41jIcCrDt6XATZl9Y2l9U6wqSOjjIzghe47X53YwKh8olh
-         3xsQ==
+        bh=H+XXRPtcVhqL4SZA2xE4JtYQXLSPRWqhEcRZvJyBubQ=;
+        b=YovxfAMaF76XT4oZiDC/n4BsB6CfbxFMoq6w3nj3sc9K8BkiMOWb8UgvpQVmeZkvwA
+         P+5FkylqmSrH8aOKZA/3AX4qI0KYjJ8AtL/KeaimrjMEdNNfSBJFsLwLgO2BfIfRWtV3
+         Q502dUpZyZejYHakd9ulrcP2aVwOTmH2NysY1/rgUI9N1fGIZpxOr7X8hQLmxJY7T7lR
+         x6vovDwjdeTIdQgBJieQYcNUK2zzySJ3c83oEjkBqekehRwN3skmj/leMsHg/uMf8WT5
+         7WZcIZj8F5Zdvn0tS3ATXZxxin6G6OVwlkXJW/eXCc3l2w9kAQKZwVixb0p9TSn5igLq
+         3+jw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=BhwlK/0Dz6i4rhS6CqV6gw/YDZHe+oacHIsDYWLXy98=;
-        b=OQJdnSYAY0CLiVVft/rLF1p9zj9GWw95ttdZBRixubzLb8RIj6nnoA/cgE49jZYsYV
-         IepO9vM1zSQ3GvOnP4PCiW3lK5jJwGI8OAlLcuPIAEvkTtHRWRonLixYyScVsfWkrAhS
-         +inqcrlMRRfOBUhtwXN+j4EoDhaSFcvPTKO5ckH6oE/lvHa3YHaVoYx6WXDvQ/ObfnXd
-         QyWSXhZBORaxKTXH92lor9nPTTat+RE0O2XbcWaqjAi05Ff4P1AQb+FXahaoJvMqUAKk
-         hA2fSjZzL5+wofV9fsqwD2gkmX8+CEEzLtxga8XcQZIr8C/7PyVJEYaq1/gdGOwV5MZu
-         i8Og==
-X-Gm-Message-State: AOAM531jPCOV4yxxlHZrZsnBhNSbFpHEJx5v4b+yq9hMREkfNWvXFVDs
-        vH7EWcD44ilx532JhNwG5byCtRxde9meSg==
-X-Google-Smtp-Source: ABdhPJznmQp/8oNQh/yQFUjES5HS0W1g4rv4rgBKTEIWj0Yy6ie9Y+mUiEoRWXoUFEF4AjyGeao7Pw==
-X-Received: by 2002:a02:c909:: with SMTP id t9mr3431290jao.125.1612366144556;
-        Wed, 03 Feb 2021 07:29:04 -0800 (PST)
+        bh=H+XXRPtcVhqL4SZA2xE4JtYQXLSPRWqhEcRZvJyBubQ=;
+        b=UigmsQPTgj5giqKEGDm9AvYvHLCclEg1cnUwbbBEh8DrEPmVWxQ7OzbBQ3wxB8zMWJ
+         8mz9ppeKqr9k6AtyUqU+d5WRfQbkDEWFYGgLsE3GCt8m6v4Na9XKK1MIFfZ1/+bT+yoE
+         zPPUGTqSCR3xy70E81C4PP0vRnfQt+wBBei1+BPag9sfdyrMyt7HsF0zZuHOOWbe1/s6
+         Yzku777cnSqlYKn9z1pPDM6v3/7s+8n7wLMBNTU0EydGfpAotdNFbfDgBZ9mTbP2ZF7d
+         mHuP+ktl0/N6DbZEtHU9Dk/sM8Dg6d4N+W2HOr/B69liaFFLML7twxchpVQS9aU9BQds
+         9nng==
+X-Gm-Message-State: AOAM530f9oQ1TMP+7+qzNFHu5BPBMG2AyHToEcFbD64o5rsQeyHYdo0X
+        h9t43uhTcT8eSwhDMtFaKch8pg==
+X-Google-Smtp-Source: ABdhPJy+sB7tlzpuJ5rowSGj+JwgQeYPg6HivOTNPTr/ebuhpfQOU0MW6qsT6UeDqw3JZBHgliB8yQ==
+X-Received: by 2002:a05:6638:378c:: with SMTP id w12mr3458310jal.107.1612366145643;
+        Wed, 03 Feb 2021 07:29:05 -0800 (PST)
 Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id a15sm1119774ilb.11.2021.02.03.07.29.03
+        by smtp.gmail.com with ESMTPSA id a15sm1119774ilb.11.2021.02.03.07.29.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Feb 2021 07:29:03 -0800 (PST)
+        Wed, 03 Feb 2021 07:29:05 -0800 (PST)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     elder@kernel.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
         cpratapa@codeaurora.org, subashab@codeaurora.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 4/7] net: ipa: remove two unused register definitions
-Date:   Wed,  3 Feb 2021 09:28:52 -0600
-Message-Id: <20210203152855.11866-5-elder@linaro.org>
+Subject: [PATCH net-next 5/7] net: ipa: use a Boolean rather than count when replenishing
+Date:   Wed,  3 Feb 2021 09:28:53 -0600
+Message-Id: <20210203152855.11866-6-elder@linaro.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210203152855.11866-1-elder@linaro.org>
 References: <20210203152855.11866-1-elder@linaro.org>
@@ -64,37 +64,106 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We do not support inter-EE channel or event ring commands.  Inter-EE
-interrupts are disabled (and never re-enabled) for all channels and
-event rings, so we have no need for the GSI registers that clear
-those interrupt conditions.  So remove their definitions.
+The count argument to ipa_endpoint_replenish() is only ever 0 or 1,
+and always will be (because we always handle each receive buffer in
+a single transaction).  Rename the argument to be add_one and change
+it to be Boolean.
+
+Update the function description to reflect the current code.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/gsi_reg.h | 10 ----------
- 1 file changed, 10 deletions(-)
+ drivers/net/ipa/ipa_endpoint.c | 35 ++++++++++++++++++----------------
+ 1 file changed, 19 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/ipa/gsi_reg.h b/drivers/net/ipa/gsi_reg.h
-index 0e138bbd82053..299456e70f286 100644
---- a/drivers/net/ipa/gsi_reg.h
-+++ b/drivers/net/ipa/gsi_reg.h
-@@ -59,16 +59,6 @@
- #define GSI_INTER_EE_N_SRC_EV_CH_IRQ_OFFSET(ee) \
- 			(0x0000c01c + 0x1000 * (ee))
+diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
+index 7a46c790afbef..bff5d6ffd1186 100644
+--- a/drivers/net/ipa/ipa_endpoint.c
++++ b/drivers/net/ipa/ipa_endpoint.c
+@@ -1020,31 +1020,34 @@ static int ipa_endpoint_replenish_one(struct ipa_endpoint *endpoint)
+ }
  
--#define GSI_INTER_EE_SRC_CH_IRQ_CLR_OFFSET \
--			GSI_INTER_EE_N_SRC_CH_IRQ_CLR_OFFSET(GSI_EE_AP)
--#define GSI_INTER_EE_N_SRC_CH_IRQ_CLR_OFFSET(ee) \
--			(0x0000c028 + 0x1000 * (ee))
+ /**
+- * ipa_endpoint_replenish() - Replenish the Rx packets cache.
++ * ipa_endpoint_replenish() - Replenish endpoint receive buffers
+  * @endpoint:	Endpoint to be replenished
+- * @count:	Number of buffers to send to hardware
++ * @add_one:	Whether this is replacing a just-consumed buffer
+  *
+- * Allocate RX packet wrapper structures with maximal socket buffers
+- * for an endpoint.  These are supplied to the hardware, which fills
+- * them with incoming data.
++ * The IPA hardware can hold a fixed number of receive buffers for an RX
++ * endpoint, based on the number of entries in the underlying channel ring
++ * buffer.  If an endpoint's "backlog" is non-zero, it indicates how many
++ * more receive buffers can be supplied to the hardware.  Replenishing for
++ * an endpoint can be disabled, in which case requests to replenish a
++ * buffer are "saved", and transferred to the backlog once it is re-enabled
++ * again.
+  */
+-static void ipa_endpoint_replenish(struct ipa_endpoint *endpoint, u32 count)
++static void ipa_endpoint_replenish(struct ipa_endpoint *endpoint, bool add_one)
+ {
+ 	struct gsi *gsi;
+ 	u32 backlog;
+ 
+ 	if (!endpoint->replenish_enabled) {
+-		if (count)
+-			atomic_add(count, &endpoint->replenish_saved);
++		if (add_one)
++			atomic_inc(&endpoint->replenish_saved);
+ 		return;
+ 	}
+ 
 -
--#define GSI_INTER_EE_SRC_EV_CH_IRQ_CLR_OFFSET \
--			GSI_INTER_EE_N_SRC_EV_CH_IRQ_CLR_OFFSET(GSI_EE_AP)
--#define GSI_INTER_EE_N_SRC_EV_CH_IRQ_CLR_OFFSET(ee) \
--			(0x0000c02c + 0x1000 * (ee))
--
- #define GSI_CH_C_CNTXT_0_OFFSET(ch) \
- 		GSI_EE_N_CH_C_CNTXT_0_OFFSET((ch), GSI_EE_AP)
- #define GSI_EE_N_CH_C_CNTXT_0_OFFSET(ch, ee) \
+ 	while (atomic_dec_not_zero(&endpoint->replenish_backlog))
+ 		if (ipa_endpoint_replenish_one(endpoint))
+ 			goto try_again_later;
+-	if (count)
+-		atomic_add(count, &endpoint->replenish_backlog);
++	if (add_one)
++		atomic_inc(&endpoint->replenish_backlog);
+ 
+ 	return;
+ 
+@@ -1052,8 +1055,8 @@ static void ipa_endpoint_replenish(struct ipa_endpoint *endpoint, u32 count)
+ 	/* The last one didn't succeed, so fix the backlog */
+ 	backlog = atomic_inc_return(&endpoint->replenish_backlog);
+ 
+-	if (count)
+-		atomic_add(count, &endpoint->replenish_backlog);
++	if (add_one)
++		atomic_inc(&endpoint->replenish_backlog);
+ 
+ 	/* Whenever a receive buffer transaction completes we'll try to
+ 	 * replenish again.  It's unlikely, but if we fail to supply even
+@@ -1080,7 +1083,7 @@ static void ipa_endpoint_replenish_enable(struct ipa_endpoint *endpoint)
+ 	/* Start replenishing if hardware currently has no buffers */
+ 	max_backlog = gsi_channel_tre_max(gsi, endpoint->channel_id);
+ 	if (atomic_read(&endpoint->replenish_backlog) == max_backlog)
+-		ipa_endpoint_replenish(endpoint, 0);
++		ipa_endpoint_replenish(endpoint, false);
+ }
+ 
+ static void ipa_endpoint_replenish_disable(struct ipa_endpoint *endpoint)
+@@ -1099,7 +1102,7 @@ static void ipa_endpoint_replenish_work(struct work_struct *work)
+ 
+ 	endpoint = container_of(dwork, struct ipa_endpoint, replenish_work);
+ 
+-	ipa_endpoint_replenish(endpoint, 0);
++	ipa_endpoint_replenish(endpoint, false);
+ }
+ 
+ static void ipa_endpoint_skb_copy(struct ipa_endpoint *endpoint,
+@@ -1300,7 +1303,7 @@ static void ipa_endpoint_rx_complete(struct ipa_endpoint *endpoint,
+ {
+ 	struct page *page;
+ 
+-	ipa_endpoint_replenish(endpoint, 1);
++	ipa_endpoint_replenish(endpoint, true);
+ 
+ 	if (trans->cancelled)
+ 		return;
 -- 
 2.20.1
 
