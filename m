@@ -2,138 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA19F30D261
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 05:15:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B814430D268
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 05:20:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232375AbhBCEOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 23:14:35 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44914 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231362AbhBCEOd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 23:14:33 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CF31864F65;
-        Wed,  3 Feb 2021 04:13:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612325630;
-        bh=8qeokwYaVA/B7skuRg0jzqjkHgROeBuJC4e3desjFBw=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=iqPHyOeSTUCrDlHSHjQUXSfGI6K/lnmsRUr3KTDID+TuYxtnMq/0jOfweGJx57uwD
-         4oBB6r+9zJGyb3TKqiaDkLqXTZM+0URJNG1Ks/WHOMsAy1XbzIBoljPXIDIjkEjX1B
-         uLXASb3oykCNBykOmgS2lur/o3h5i7mF/QHiJA/MAfNXjKbFgfEUv4k8MW/RDoW0mt
-         DuJu0RXc4Jx1qf+udOfeHDxBZl+5O9VYIj55desww7WfnzgmGWQUbYY2tv5cWUUXRs
-         TD8u/mJjgVr2nnhRpzSZyhacxx6EOf3c+qBLpmRp23L3xiIV3wAhWC8sSV2njt/0T9
-         fDCQLyreC6Kpg==
-Message-ID: <d01dfcc6f46f2c70c4921139543e5823582678c8.camel@kernel.org>
-Subject: Re: [PATCH net-next 0/2] devlink: Add port function attribute to
- enable/disable roce
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>, Yishai Hadas <yishaih@nvidia.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, parav@nvidia.com
-Date:   Tue, 02 Feb 2021 20:13:48 -0800
-In-Reply-To: <20210202181401.66f4359f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20210201175152.11280-1-yishaih@nvidia.com>
-         <20210202181401.66f4359f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3 (3.38.3-1.fc33) 
+        id S232483AbhBCEQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 23:16:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36224 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232415AbhBCEQC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 23:16:02 -0500
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F27EDC061786
+        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 20:15:21 -0800 (PST)
+Received: by mail-pg1-x52c.google.com with SMTP id z21so16403080pgj.4
+        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 20:15:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:user-agent:in-reply-to:references:mime-version
+         :content-transfer-encoding:subject:to:cc:from:message-id;
+        bh=ntZZuB4lNRdlEmA1QwdGzboawIbLKUN51trQnhnQNhU=;
+        b=Sdc3sNaWQ52HnnDoOGP/5HG0j4k/oLV2QwXxTRbqVZHOtpRufdZ9YVNfKRwqPJ3sAl
+         gl1mKpAJHwtmWWQ1+u2oESPzTxoLy1NKUwGfKm+YbvKBJoPGBldUDm/a/Hd6bUZwutIk
+         4wyCHArpvAglGApXB4CrLwMnX/64gcwqslmzB1B2MFvwdmNldfDZa7H8qPSsXL7XBxZ4
+         Tl3sLKVaBOL8JeVT/Mvypx18RqLsLMILZklVdyfJLpjltOhknEw3uIPTr3zljLJXuXkU
+         f4SwUl0wT4p+diG2DXUdWDSeE+ZxSVH7k8AFTDQOkakNMzto46wXUya2vJGONAMmK2LK
+         9pbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:user-agent:in-reply-to:references
+         :mime-version:content-transfer-encoding:subject:to:cc:from
+         :message-id;
+        bh=ntZZuB4lNRdlEmA1QwdGzboawIbLKUN51trQnhnQNhU=;
+        b=Dm+vxepkcEtFnzBbOMj3hicUQZTB4NkW6+sgjcuERwwKA+XvTXKVxTRFhwftAgmEkm
+         12MugwklmSdwVpcA4zofywRnSD3r4PGT/6qppy90KPJEaYgCqvQjS1pLOi8QIBGRVNro
+         wbxIT0yLnJxpreoDTdlMS2+aO01FeLrO00IMrqsb2REYHGBfvwYq5enUEnPyp1wv15bu
+         1jA70ntqCzOC83h/OJnsLHGwKgmPCZP0WJw/3CfZceu4DuY8miHKM5xq5QtGIv879qvw
+         9Em1x1JQxtefCpMqooJ7ZbMZ7tvRuCV6L/332cbMmYPHrz7nOqtFRRAbNDuDr6Fm/w2E
+         CYAA==
+X-Gm-Message-State: AOAM530q3oVJ22+pHSG0d7Gt049g9dThHAjTcCDg5NZXzH9fdTdyvGPS
+        nLCko5TRFAS8yQ0u3ZgHVxQ/
+X-Google-Smtp-Source: ABdhPJztdID0w8dWehyys/UHBYBMqIoU4AGL99x/xmLaUN6co6J8MOQwa53NtiNdTj7MLlr83yR5KQ==
+X-Received: by 2002:a63:5351:: with SMTP id t17mr1499848pgl.176.1612325721421;
+        Tue, 02 Feb 2021 20:15:21 -0800 (PST)
+Received: from ?IPv6:2409:4072:619f:ff99:700b:51f3:e28:b00? ([2409:4072:619f:ff99:700b:51f3:e28:b00])
+        by smtp.gmail.com with ESMTPSA id p15sm477148pfn.172.2021.02.02.20.15.19
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 02 Feb 2021 20:15:20 -0800 (PST)
+Date:   Wed, 03 Feb 2021 09:45:06 +0530
+User-Agent: K-9 Mail for Android
+In-Reply-To: <20210202201008.274209f9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <1609958656-15064-1-git-send-email-hemantk@codeaurora.org> <20210113152625.GB30246@work> <YBGDng3VhE1Yw6zt@kroah.com> <20210201105549.GB108653@thinkpad> <YBfi573Bdfxy0GBt@kroah.com> <20210201121322.GC108653@thinkpad> <20210202042208.GB840@work> <20210202201008.274209f9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [RESEND PATCH v18 0/3] userspace MHI client interface driver
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Greg KH <gregkh@linuxfoundation.org>, davem@davemloft.net,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jhugo@codeaurora.org, bbhatt@codeaurora.org,
+        loic.poulain@linaro.org, netdev@vger.kernel.org
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Message-ID: <835B2E08-7B84-4A02-B82F-445467D69083@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2021-02-02 at 18:14 -0800, Jakub Kicinski wrote:
-> On Mon, 1 Feb 2021 19:51:50 +0200 Yishai Hadas wrote:
-> > Currently mlx5 PCI VF and SF are enabled by default for RoCE
-> > functionality.
-> > 
-> > Currently a user does not have the ability to disable RoCE for a
-> > PCI
-> > VF/SF device before such device is enumerated by the driver.
-> > 
-> > User is also incapable to do such setting from smartnic scenario
-> > for a
-> > VF from the smartnic.
-> > 
-> > Current 'enable_roce' device knob is limited to do setting only at
-> > driverinit time. By this time device is already created and
-> > firmware has
-> > already allocated necessary system memory for supporting RoCE.
-> > 
-> > When a RoCE is disabled for the PCI VF/SF device, it saves 1 Mbyte
-> > of
-> > system memory per function. Such saving is helpful when running on
-> > low
-> > memory embedded platform with many VFs or SFs.
-> > 
-> > Therefore, it is desired to empower user to disable RoCE
-> > functionality
-> > before a PCI SF/VF device is enumerated.
-> 
-> You say that the user on the VF/SF side wants to save memory, yet
-> the control knob is on the eswitch instance side, correct?
-> 
+Hi Jakub,=20
 
-yes, user in this case is the admin, who controls the provisioned
-network function SF/VFs.. by turning off this knob it allows to create
-more of that resource in case the user/admin is limited by memory.
+On 3 February 2021 9:40:08 AM IST, Jakub Kicinski <kuba@kernel=2Eorg> wrot=
+e:
+>On Tue, 2 Feb 2021 09:52:08 +0530 Manivannan Sadhasivam wrote:
+>> > > I don't see the connection here, sorry=2E
+>> >=20
+>> > For instance USB_NET_CDC_MBIM driver creates the /dev/cdc-wdmX
+>chardev node for
+>> > configuring the modems which supports MBIM protocol over USB=2E Like
+>that, this
+>> > driver creates /dev/mhiX_MBIM chardev node for configuring the
+>modem over MHI
+>> > bus instead of USB=2E The question arised why we are creating a
+>chardev node for
+>> > each supported configuration (channels in the case of MHI) and why
+>can't we use
+>> > the existing /dev/cdc-wdmZ interfaces? The anwser is there is no
+>standard
+>> > subsystem for WWAN and all the drivers represent a chardev which
+>gets used by
+>> > the userspace tools such a Network manager for establishing
+>connection=2E
+>> >=20
+>> > And /dev/cdc-wdmX is restricted to the USB CDC devices=2E
+>> >=20
+>> > Hope this clarifies!
+>>=20
+>> Jakub, Dave, Adding you both to get your reviews on this series=2E I've
+>> provided an explanation above and in the previous iteration [1]=2E
+>
+>Let's be clear what the review would be for=2E Yet another QMI chardev=20
+>or the "UCI" direct generic user space to firmware pipe?
 
-> > This is achieved by extending existing 'port function' object to
-> > control
-> > capabilities of a function. This enables users to control
-> > capability of
-> > the device before enumeration.
-> > 
-> > Examples when user prefers to disable RoCE for a VF when using
-> > switchdev
-> > mode:
-> > 
-> > $ devlink port show pci/0000:06:00.0/1
-> > pci/0000:06:00.0/1: type eth netdev pf0vf0 flavour pcivf controller
-> > 0
-> > pfnum 0 vfnum 0 external false splittable false
-> >   function:
-> >     hw_addr 00:00:00:00:00:00 roce on
-> > 
-> > $ devlink port function set pci/0000:06:00.0/1 roce off
-> >   
-> > $ devlink port show pci/0000:06:00.0/1
-> > pci/0000:06:00.0/1: type eth netdev pf0vf0 flavour pcivf controller
-> > 0
-> > pfnum 0 vfnum 0 external false splittable false
-> >   function:
-> >     hw_addr 00:00:00:00:00:00 roce off
-> > 
-> > FAQs:
-> > -----
-> > 1. What does roce on/off do?
-> > Ans: It disables RoCE capability of the function before its
-> > enumerated,
-> > so when driver reads the capability from the device firmware, it is
-> > disabled.
-> > At this point RDMA stack will not be able to create UD, QP1, RC,
-> > XRC
-> > type of QPs. When RoCE is disabled, the GID table of all ports of
-> > the
-> > device is disabled in the device and software stack.
-> > 
-> > 2. How is the roce 'port function' option different from existing
-> > devlink param?
-> > Ans: RoCE attribute at the port function level disables the RoCE
-> > capability at the specific function level; while enable_roce only
-> > does
-> > at the software level.
-> > 
-> > 3. Why is this option for disabling only RoCE and not the whole
-> > RDMA
-> > device?
-> > Ans: Because user still wants to use the RDMA device for non RoCE
-> > commands in more memory efficient way.
-> 
-> What are those "non-RoCE commands" that user may want to use "in a
-> more
-> efficient way"?
+The current patchset only supports QMI channel so I'd request you to revie=
+w the chardev node created for it=2E The QMI chardev node created will be u=
+nique for the MHI bus and the number of nodes depends on the MHI controller=
+s in the system (typically 1 but not limited)=2E=20
 
-RAW eth QP, i think you already know this one, it is a very thin layer
-that doesn't require the whole rdma stack.
+Thanks,=20
+Mani
 
-
+--=20
+Sent from my Android device with K-9 Mail=2E Please excuse my brevity=2E
