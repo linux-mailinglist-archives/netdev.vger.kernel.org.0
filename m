@@ -2,40 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DEDB30D0CB
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 02:31:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEC3330D0D9
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 02:34:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230479AbhBCBaI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 20:30:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35938 "EHLO mail.kernel.org"
+        id S231216AbhBCBcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 20:32:13 -0500
+Received: from mga05.intel.com ([192.55.52.43]:47732 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229778AbhBCBaB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 20:30:01 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 264E664E3D;
-        Wed,  3 Feb 2021 01:29:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612315760;
-        bh=vosx4JH15veIveNb+50DKtCa0cHZifhgUeN1VEmiuzA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=k7q/6d+EEQOXGQgF92sEipnrq3BaA2YhbyCauHwzxWebHOrzd6k0kjh5JUh9bWb5o
-         YUcweAP5m58Yla2fpYNYKSepzdmQMiamJm0USsxVeoFK0DVJj9Fsp0CX0afTjVkbCo
-         rz9AIfSYkQdBi2KM/NCyRnzTsA1WvtQA17dWSF5ueR80YBnTd1oHAiqM4bK2yjSJya
-         XcRAioLiPVC9QRURUcN/Dwo8+SR4zquJ087aUv/5mL9im97STpsZKkgI2cNw0hOuWk
-         2b01od4W9TkW4NgQr2kdGN/dCJFQnv2XiFV3heqhJdJRhq5bXqpCkTCNKliVc+eMGC
-         DQQSWfNVLQDwA==
-Date:   Tue, 2 Feb 2021 17:29:19 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Hariprasad Kelam <hkelam@marvell.com>
-Cc:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <davem@davemloft.net>, <willemdebruijn.kernel@gmail.com>,
-        <andrew@lunn.ch>, <sgoutham@marvell.com>, <lcherian@marvell.com>,
-        <gakula@marvell.com>, <jerinj@marvell.com>, <sbhatta@marvell.com>
-Subject: Re: [Patch v3 net-next 7/7] octeontx2-pf: ethtool physical link
- configuration
-Message-ID: <20210202172919.466bddcc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1612098665-187767-8-git-send-email-hkelam@marvell.com>
-References: <1612098665-187767-1-git-send-email-hkelam@marvell.com>
-        <1612098665-187767-8-git-send-email-hkelam@marvell.com>
+        id S231199AbhBCBcE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 20:32:04 -0500
+IronPort-SDR: LrYhDNPX/dWvzqtflLZLcDeS0Fkw7BVOy2iXCwv4iU14+E56xR2GHlDsl6YG5AKNatc4BWPejr
+ 8/PV+ak2vyqA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9883"; a="265798048"
+X-IronPort-AV: E=Sophos;i="5.79,397,1602572400"; 
+   d="scan'208";a="265798048"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2021 17:31:24 -0800
+IronPort-SDR: g0VbV6d3mrvXz2+hOUonCRCouFigUTY7NNeJ2htRsfi0jTnOUllhrOO4IPRmpZKeKQKoONICoG
+ 4hx83+WohOrA==
+X-IronPort-AV: E=Sophos;i="5.79,397,1602572400"; 
+   d="scan'208";a="392054902"
+Received: from jbrandeb-mobl4.amr.corp.intel.com (HELO localhost) ([10.212.172.218])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2021 17:31:23 -0800
+Date:   Tue, 2 Feb 2021 17:31:23 -0800
+From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Ahmed S. Darwish" <a.darwish@linutronix.de>
+Subject: Re: [PATCH 0/2] chelsio: cxgb: Use threaded interrupts for deferred
+ work
+Message-ID: <20210202173123.00001840@intel.com>
+In-Reply-To: <20210202170104.1909200-1-bigeasy@linutronix.de>
+References: <20210202170104.1909200-1-bigeasy@linutronix.de>
+X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -43,111 +44,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 31 Jan 2021 18:41:05 +0530 Hariprasad Kelam wrote:
-> From: Christina Jacob <cjacob@marvell.com>
+Sebastian Andrzej Siewior wrote:
+
+> Patch #2 fixes an issue in which del_timer_sync() and tasklet_kill() is
+> invoked from the interrupt handler. This is probably a rare error case
+> since it disables interrupts / the card in that case.
+> Patch #1 converts a worker to use a threaded interrupt which is then
+> also used in patch #2 instead adding another worker for this task (and
+> flush_work() to synchronise vs rmmod).
 > 
-> Register set_link_ksetting callback with driver such that
-> link configurations parameters like advertised mode,speed, duplex
-> and autoneg can be configured.
-> 
-> below command
-> ethtool -s eth0 advertise 0x1 speed 10 duplex full autoneg on
-> 
-> Signed-off-by: Christina Jacob <cjacob@marvell.com>
-> Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-> Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
-> ---
->  .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  | 67 ++++++++++++++++++++++
->  1 file changed, 67 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-> index d637815..74a62de 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-> @@ -1170,6 +1170,72 @@ static int otx2_get_link_ksettings(struct net_device *netdev,
->  	return 0;
->  }
->  
-> +static void otx2_get_advertised_mode(const struct ethtool_link_ksettings *cmd,
-> +				     u64 *mode)
-> +{
-> +	u32 bit_pos;
-> +
-> +	/* Firmware does not support requesting multiple advertised modes
-> +	 * return first set bit
-> +	 */
-> +	bit_pos = find_first_bit(cmd->link_modes.advertising,
-> +				 __ETHTOOL_LINK_MODE_MASK_NBITS);
-> +	if (bit_pos != __ETHTOOL_LINK_MODE_MASK_NBITS)
-> +		*mode = bit_pos;
-> +}
-> +
-> +static int otx2_set_link_ksettings(struct net_device *netdev,
-> +				   const struct ethtool_link_ksettings *cmd)
-> +{
-> +	struct otx2_nic *pf = netdev_priv(netdev);
-> +	struct ethtool_link_ksettings req_ks;
-> +	struct ethtool_link_ksettings cur_ks;
-> +	struct cgx_set_link_mode_req *req;
-> +	struct mbox *mbox = &pf->mbox;
-> +	int err = 0;
-> +
-> +	/* save requested link settings */
-> +	memcpy(&req_ks, cmd, sizeof(struct ethtool_link_ksettings));
+> This has been only compile tested.
 
-Why do you make this copy? The comment above does not help at all.
+Hi! Thanks for your patch. Do all drivers that use worker threads need
+to convert like this or only some?
 
-> +	memset(&cur_ks, 0, sizeof(struct ethtool_link_ksettings));
-> +
-> +	if (!ethtool_validate_speed(cmd->base.speed) ||
-> +	    !ethtool_validate_duplex(cmd->base.duplex))
-> +		return -EINVAL;
-> +
-> +	if (cmd->base.autoneg != AUTONEG_ENABLE &&
-> +	    cmd->base.autoneg != AUTONEG_DISABLE)
-> +		return -EINVAL;
-> +
-> +	otx2_get_link_ksettings(netdev, &cur_ks);
-> +
-> +	/* Check requested modes against supported modes by hardware */
-> +	if (!bitmap_subset(req_ks.link_modes.advertising,
-> +			   cur_ks.link_modes.supported,
-> +			   __ETHTOOL_LINK_MODE_MASK_NBITS))
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&mbox->lock);
-> +	req = otx2_mbox_alloc_msg_cgx_set_link_mode(&pf->mbox);
-> +	if (!req) {
-> +		err = -ENOMEM;
-> +		goto end;
-> +	}
-> +
-> +	req->args.speed = req_ks.base.speed;
-> +	/* firmware expects 1 for half duplex and 0 for full duplex
-> +	 * hence inverting
-> +	 */
-> +	req->args.duplex = req_ks.base.duplex ^ 0x1;
-> +	req->args.an = req_ks.base.autoneg;
-> +	otx2_get_advertised_mode(&req_ks, &req->args.mode);
+In future revisions, please indicate the tree
+you're targeting, net or net-next.  ie [PATCH net-next v1] I'd also
+invert the two paragraphs and talk about patch #1 first.
 
-But that only returns the first bit set. What does the device actually
-do? What if the user cleared a middle bit?
-
-> +	err = otx2_sync_mbox_msg(&pf->mbox);
-> +end:
-> +	mutex_unlock(&mbox->lock);
-> +	return err;
-> +}
-> +
->  static const struct ethtool_ops otx2_ethtool_ops = {
->  	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
->  				     ETHTOOL_COALESCE_MAX_FRAMES,
-> @@ -1200,6 +1266,7 @@ static const struct ethtool_ops otx2_ethtool_ops = {
->  	.get_fecparam		= otx2_get_fecparam,
->  	.set_fecparam		= otx2_set_fecparam,
->  	.get_link_ksettings     = otx2_get_link_ksettings,
-> +	.set_link_ksettings     = otx2_set_link_ksettings,
->  };
->  
->  void otx2_set_ethtool_ops(struct net_device *netdev)
-
+Jesse
