@@ -2,150 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2CF630E2D4
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 19:54:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9419C30E2EC
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 19:54:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232496AbhBCSvp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 13:51:45 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37006 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231149AbhBCSvo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Feb 2021 13:51:44 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6852364F7C;
-        Wed,  3 Feb 2021 18:51:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612378263;
-        bh=TdxVZ2G73584xRXDaoV0L00v+3CJN5sZ8D+K02FYf4Y=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OB5HautGtJ19BMhW51eHZaLdsGrW9HEj+pgq09AiW82n9eYZHG6FAaM470RK2ikNp
-         reRAAj1uHdMF2pZfINCUvoCL/C7fD514Vt7Hi+yImNvvuYEuKn3pytZKkKPEowKeJ0
-         ZE2d7WAka3yDSg7OO0bgtcgp1OZoI2EMsUk/8sOGx4UoGhsu5whvp9UbPJ/pXU1/la
-         es7cjbeaE3WNKDyasDbYawGHyNV/yV+rL55imBZKJ7RXjW1yGrFKCUx2CxiS8k1shx
-         2Z94kAHbP+4ex5ZSpGJxiOAttuZh0fKA8vXJR0YWSttPcpN9dD77eCvKROFVMdiFkc
-         KttuHLyMP+8ZA==
-Date:   Wed, 3 Feb 2021 10:51:02 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     Yishai Hadas <yishaih@nvidia.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, parav@nvidia.com
-Subject: Re: [PATCH net-next 0/2] devlink: Add port function attribute to
- enable/disable roce
-Message-ID: <20210203105102.71e6fa2d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <d01dfcc6f46f2c70c4921139543e5823582678c8.camel@kernel.org>
-References: <20210201175152.11280-1-yishaih@nvidia.com>
-        <20210202181401.66f4359f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <d01dfcc6f46f2c70c4921139543e5823582678c8.camel@kernel.org>
+        id S233178AbhBCSyd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 13:54:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56046 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229683AbhBCSyN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 13:54:13 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BD06C0613D6;
+        Wed,  3 Feb 2021 10:53:33 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id q7so385824wre.13;
+        Wed, 03 Feb 2021 10:53:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hCI6ZiNImno66RrVehBGLrYLxtapcVm5zzLIRSnM/WU=;
+        b=VCJ3330ilMlz+QT2OkDv5eR7bQwxwP0yJ4r1r8eJsgHMjJ4mxac6onJBjDTVewEAfM
+         diCPP7S02OhDsvmYqjgXAQNgAT6ONwiqutI/wpFQJwODGEkQi8Rpxx3+aMu/v5rkwQ1K
+         45o2B+snceo73W6d6J014W8pBSQ0p7DLFKxbtZT9EEQzRft4f0AVfA5sBCmfgTlpCJJV
+         y9/CGdMTWRA1Og+Lu/BYKrPGAgFBPZ0X3T8CBXUugd26gfroT2zpWJXg44RjxtBBjLb5
+         pkDo417TWzy3ABdFkyjkU/vjhEVXOGC5GYv3cR8DdEBN4pkGA9LFw7qMilUoL4B+V9nr
+         Hpaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hCI6ZiNImno66RrVehBGLrYLxtapcVm5zzLIRSnM/WU=;
+        b=e3kLRVaGmec4HfwTywG5bNHz+YR3NTBGoerezmXKov5evIYZAWmYaZiizCkinhUn+O
+         4FWXFSh60jxO8gS0LBg6kT9OqCNQ30viS3NhlQfoBmThwzixvZC2pBNpcQCSXRmDiOOd
+         yg0Q02vLnnAuESujjGfk82gSowjzDjpHV/EEEj9YZi+66RLu80yk8doaBSAuhwJjjbzn
+         SdkHegV3avhFnKcRUydXXbQ3/6D0r/OwymiaZIqQCvwZgQUHPTO2DO+2369dbu/+1NFS
+         kdXwZfPklFcZGlkIk0wOZGI4NmzPfKNK33uPRt/QHa6hIC29ApT1iWanJyqnSDfctwzU
+         Qt7w==
+X-Gm-Message-State: AOAM5300CAEzvXCM6NQrd9ETjvolljHzGG9MuuAMdppMThmeYWnVp7Cm
+        D0YyqtYuqoTI5+XKP6WSyHUmMPaPnBcfhoX+pYs=
+X-Google-Smtp-Source: ABdhPJyHLzSa0ru1ema9q6kVyMifJqigYStPu+h+0FBA1tpzSHcRislqBSWzhsMgmuJKF7sU+drOE/JpGjgTQCLonYE=
+X-Received: by 2002:adf:ed02:: with SMTP id a2mr5098155wro.197.1612378411971;
+ Wed, 03 Feb 2021 10:53:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20210129195240.31871-1-TheSven73@gmail.com> <20210129195240.31871-3-TheSven73@gmail.com>
+ <MN2PR11MB3662C081B6CDB8BC1143380FFAB79@MN2PR11MB3662.namprd11.prod.outlook.com>
+ <CAGngYiVvuNYC4WPCRfPOfjr98S_BGBNGjPze11AiHY9Pq1eJsA@mail.gmail.com> <MN2PR11MB3662E5A8E190F8F43F348E72FAB69@MN2PR11MB3662.namprd11.prod.outlook.com>
+In-Reply-To: <MN2PR11MB3662E5A8E190F8F43F348E72FAB69@MN2PR11MB3662.namprd11.prod.outlook.com>
+From:   Sven Van Asbroeck <thesven73@gmail.com>
+Date:   Wed, 3 Feb 2021 13:53:21 -0500
+Message-ID: <CAGngYiVK5=vggym5LiqvjiRVTSWscc=CgX6UPOBkZpknuLC62Q@mail.gmail.com>
+Subject: Re: [PATCH net-next v1 2/6] lan743x: support rx multi-buffer packets
+To:     Bryan Whitehead <Bryan.Whitehead@microchip.com>
+Cc:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Alexey Denisov <rtgbnm@gmail.com>,
+        Sergej Bauer <sbauer@blackbox.su>,
+        Tim Harvey <tharvey@gateworks.com>,
+        =?UTF-8?Q?Anders_R=C3=B8nningen?= <anders@ronningen.priv.no>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 02 Feb 2021 20:13:48 -0800 Saeed Mahameed wrote:
-> On Tue, 2021-02-02 at 18:14 -0800, Jakub Kicinski wrote:
-> > On Mon, 1 Feb 2021 19:51:50 +0200 Yishai Hadas wrote: =20
-> > > Currently mlx5 PCI VF and SF are enabled by default for RoCE
-> > > functionality.
-> > >=20
-> > > Currently a user does not have the ability to disable RoCE for a
-> > > PCI
-> > > VF/SF device before such device is enumerated by the driver.
-> > >=20
-> > > User is also incapable to do such setting from smartnic scenario
-> > > for a
-> > > VF from the smartnic.
-> > >=20
-> > > Current 'enable_roce' device knob is limited to do setting only at
-> > > driverinit time. By this time device is already created and
-> > > firmware has
-> > > already allocated necessary system memory for supporting RoCE.
-> > >=20
-> > > When a RoCE is disabled for the PCI VF/SF device, it saves 1 Mbyte
-> > > of
-> > > system memory per function. Such saving is helpful when running on
-> > > low
-> > > memory embedded platform with many VFs or SFs.
-> > >=20
-> > > Therefore, it is desired to empower user to disable RoCE
-> > > functionality
-> > > before a PCI SF/VF device is enumerated. =20
-> >=20
-> > You say that the user on the VF/SF side wants to save memory, yet
-> > the control knob is on the eswitch instance side, correct?
-> >  =20
->=20
-> yes, user in this case is the admin, who controls the provisioned
-> network function SF/VFs.. by turning off this knob it allows to create
-> more of that resource in case the user/admin is limited by memory.
+Thank you Bryan. I will prepare a v2 early next week.
 
-Ah, so in case of the SmartNIC this extra memory is allocated on the
-control system, not where the function resides?
+Would Microchip be able to donate some time to test v2? My own tests
+are certainly not perfect. Various stress tests across architectures
+(intel/arm) would help create confidence in the multi-buffer frame
+implementation. Perhaps Microchip has various test rigs already set
+up?
 
-My next question is regarding the behavior on the target system - what
-does "that user" see? Can we expect they will understand that the
-limitation was imposed by the admin and not due to some initialization
-failure or SW incompatibility?
-
-> > > This is achieved by extending existing 'port function' object to
-> > > control
-> > > capabilities of a function. This enables users to control
-> > > capability of
-> > > the device before enumeration.
-> > >=20
-> > > Examples when user prefers to disable RoCE for a VF when using
-> > > switchdev
-> > > mode:
-> > >=20
-> > > $ devlink port show pci/0000:06:00.0/1
-> > > pci/0000:06:00.0/1: type eth netdev pf0vf0 flavour pcivf controller
-> > > 0
-> > > pfnum 0 vfnum 0 external false splittable false
-> > > =C2=A0 function:
-> > > =C2=A0=C2=A0=C2=A0 hw_addr 00:00:00:00:00:00 roce on
-> > >=20
-> > > $ devlink port function set pci/0000:06:00.0/1 roce off
-> > > =C2=A0=20
-> > > $ devlink port show pci/0000:06:00.0/1
-> > > pci/0000:06:00.0/1: type eth netdev pf0vf0 flavour pcivf controller
-> > > 0
-> > > pfnum 0 vfnum 0 external false splittable false
-> > > =C2=A0 function:
-> > > =C2=A0=C2=A0=C2=A0 hw_addr 00:00:00:00:00:00 roce off
-> > >=20
-> > > FAQs:
-> > > -----
-> > > 1. What does roce on/off do?
-> > > Ans: It disables RoCE capability of the function before its
-> > > enumerated,
-> > > so when driver reads the capability from the device firmware, it is
-> > > disabled.
-> > > At this point RDMA stack will not be able to create UD, QP1, RC,
-> > > XRC
-> > > type of QPs. When RoCE is disabled, the GID table of all ports of
-> > > the
-> > > device is disabled in the device and software stack.
-> > >=20
-> > > 2. How is the roce 'port function' option different from existing
-> > > devlink param?
-> > > Ans: RoCE attribute at the port function level disables the RoCE
-> > > capability at the specific function level; while enable_roce only
-> > > does
-> > > at the software level.
-> > >=20
-> > > 3. Why is this option for disabling only RoCE and not the whole
-> > > RDMA
-> > > device?
-> > > Ans: Because user still wants to use the RDMA device for non RoCE
-> > > commands in more memory efficient way. =20
-> >=20
-> > What are those "non-RoCE commands" that user may want to use "in a
-> > more
-> > efficient way"? =20
->=20
-> RAW eth QP, i think you already know this one, it is a very thin layer
-> that doesn't require the whole rdma stack.
-
-Sorry for asking a leading question. You know how we'll feel about
-that one, do we need to talk this out or can we save ourselves the
-battle? :S
+After all, absence of bugs is more important than speed improvements.
