@@ -2,278 +2,324 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E909F30D590
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 09:52:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F2D530D59B
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 09:54:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233007AbhBCIvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 03:51:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38416 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232996AbhBCIuu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 03:50:50 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F811C061573
-        for <netdev@vger.kernel.org>; Wed,  3 Feb 2021 00:50:10 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id w1so34311012ejf.11
-        for <netdev@vger.kernel.org>; Wed, 03 Feb 2021 00:50:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=FDGu83x00/Kbq7cfgWDb84zPXIcJC3/OK0BtXFBvvpA=;
-        b=aWKZRaA12a0t0HAx5P0FkZHEOstlJNEQKYy0hNc5PMowuXy6Fmm6uOFe9yJfA8JMNf
-         KxLWb9jPYx1es+3Nnb0vcLd34lKq82BB/X5/3kL3FmEsAfrv9Iis6o+TFul4KmpbdF1e
-         uHr1kK3ipUk361duraChP8riyTz4F4UkfMHMsbUqtQJVp60NlQUkke/zo7Wm28FbwE3D
-         K9xpmbahGRzW2GX6vaX4p/4z1BG4m9sU26/ySg55nBuyUiHMIeKkNT4W8hJSF9BIA27x
-         RK2sRrvVd/HIlxFJy2sUkVOXOOZOtKEyvK6uIgAwYFjRa9088F7ZCQDyZDUprAUgWaZx
-         42JQ==
+        id S232893AbhBCIwj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 03:52:39 -0500
+Received: from mail-wr1-f44.google.com ([209.85.221.44]:46526 "EHLO
+        mail-wr1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232637AbhBCIwf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 03:52:35 -0500
+Received: by mail-wr1-f44.google.com with SMTP id q7so23187166wre.13
+        for <netdev@vger.kernel.org>; Wed, 03 Feb 2021 00:52:17 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=FDGu83x00/Kbq7cfgWDb84zPXIcJC3/OK0BtXFBvvpA=;
-        b=CXHPpLPrLyG1i6hmplFiPre+5wd9swEBfr9rQ9t+MRtt6gSVM2OMLxk78CeltHf6Sd
-         mjS3UnvnL22Lo84a12BjHTU5py9V2zBCI0GLXyzbDuISOQNn0Tj4/s2rB8cUWFIsuin3
-         R5uP9+9LpeiBQqiJC2uuyjBydbj/IfYVO4DmbRo5Gn85QbtmYzGC/FsOswdFIhiWyBgg
-         /x1O3OWxODsyEvrqQBFpk0ztfWZttTPP1wA3ubGXuW5EuDyLc0HLaMl91CWjxA/SkyzD
-         1IICNE8GJ6MOjYw70/Qd2HwxOTLosiU0WW4Ek/bB3Gn9+yFqHSFwA/Vf7MyPKJMrgA4U
-         t0hg==
-X-Gm-Message-State: AOAM5317YDmPkG5ecqLgQsasIdIjiWufDBLQv/+KhiMtp2m2wTNAhZHa
-        o23rlPlodBjaHuaQvm93qYQ=
-X-Google-Smtp-Source: ABdhPJzLxJU/GR4IVZyeoUN1tCtDpV2CowP/ZqWV9vu6qYnRtNgj2LnfqVzlEpGioDRgFRrPcnmOwA==
-X-Received: by 2002:a17:906:7006:: with SMTP id n6mr2121831ejj.35.1612342208473;
-        Wed, 03 Feb 2021 00:50:08 -0800 (PST)
-Received: from AHABDELS-M-J3JG ([173.38.220.50])
-        by smtp.gmail.com with ESMTPSA id gz14sm665201ejc.105.2021.02.03.00.50.07
-        (version=TLS1 cipher=AES128-SHA bits=128/128);
-        Wed, 03 Feb 2021 00:50:07 -0800 (PST)
-Date:   Wed, 3 Feb 2021 09:50:05 +0100
-From:   Ahmed Abdelsalam <ahabdels.dev@gmail.com>
-To:     Suprit Japagal <suprit.japagal@gmail.com>
-Cc:     David Ahern <dsahern@gmail.com>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        David Lebrun <david.lebrun@uclouvain.be>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] NET: SRv6: seg6_local: Fixed SRH processing when
- segments left is 0
-Message-Id: <20210203095005.4de51bc6632f2da2bb55c70a@gmail.com>
-In-Reply-To: <CAGTyo2N5KzFmDgjkqHGZAcO4ZdQ54iKDD6wCYDHemZHFGfP57A@mail.gmail.com>
-References: <20210131130840.32384-1-suprit.japagal@gmail.com>
-        <5ac9c562-6bd6-1ab5-3504-b83dc58c15cc@gmail.com>
-        <20210202105233.b78404a6747aead2c087b4e4@gmail.com>
-        <CAGTyo2N5KzFmDgjkqHGZAcO4ZdQ54iKDD6wCYDHemZHFGfP57A@mail.gmail.com>
-X-Mailer: Sylpheed 3.4.1 (GTK+ 2.24.21; x86_64-apple-darwin10.8.0)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=3mDiD0JJR4/9Mgq5fzOCXTZgztSQAbNAzSUZFA9ppc4=;
+        b=aVpveXa4gQAGalJbUUr9Z74t4KCG8hlxwGp1+vZ6PBrQ9IwVl2fjcGpzxmltpYKARJ
+         IaZ9sg1tf6Nm6HulTykiuizTxjjNqqwkDIWPbFJwM7YAwJiNCn1WG6CFTX1m9iH5D/DD
+         mRSlGSVr3BDb0KK5iKA3WFQXa6JE6sc3CaRVVRThdaknlX7+NglJyRGDFxE4IqtZYpIf
+         YC8Kxaq8VkwwlPEXaRibOfD3PbAqLEVeUMACB6o/GAsrw3clFqeb7O5eK/d09LpvKFOV
+         iQWB1IIz/dfmHBu0Bmcsm+yb8WLZIA50rsWRzRgiNhItMQ/RSBiUEc3j/bSAVq+NY1bL
+         0v+w==
+X-Gm-Message-State: AOAM530xGQAZzYX4Nc3lXiUSqIy7Vpt3KrF/0mY21Q/FRqplQxUycsZ+
+        y2HQdVW6UyvyJSM4bkEhY9I=
+X-Google-Smtp-Source: ABdhPJz/sXmbzXlifG2oC+cfB0KfIGBnEzSt3XadolhkJWhyOotfRp7ttmXDHGkeBWv3Nh3X9581Ww==
+X-Received: by 2002:adf:d206:: with SMTP id j6mr2194966wrh.427.1612342312029;
+        Wed, 03 Feb 2021 00:51:52 -0800 (PST)
+Received: from ?IPv6:2601:647:4802:9070:819b:e1e8:19a6:9008? ([2601:647:4802:9070:819b:e1e8:19a6:9008])
+        by smtp.gmail.com with ESMTPSA id i20sm1729359wmq.7.2021.02.03.00.51.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Feb 2021 00:51:51 -0800 (PST)
+Subject: Re: [PATCH v3 net-next 07/21] nvme-tcp: Add DDP data-path
+To:     Boris Pismenny <borisp@mellanox.com>, dsahern@gmail.com,
+        kuba@kernel.org, davem@davemloft.net, saeedm@nvidia.com,
+        hch@lst.de, axboe@fb.com, kbusch@kernel.org,
+        viro@zeniv.linux.org.uk, edumazet@google.com, smalin@marvell.com
+Cc:     boris.pismenny@gmail.com, linux-nvme@lists.infradead.org,
+        netdev@vger.kernel.org, benishay@nvidia.com, ogerlitz@nvidia.com,
+        yorayz@nvidia.com, Ben Ben-Ishay <benishay@mellanox.com>,
+        Or Gerlitz <ogerlitz@mellanox.com>,
+        Yoray Zack <yorayz@mellanox.com>
+References: <20210201100509.27351-1-borisp@mellanox.com>
+ <20210201100509.27351-8-borisp@mellanox.com>
+From:   Sagi Grimberg <sagi@grimberg.me>
+Message-ID: <9a8041aa-513f-09b9-63f4-3d12db19231c@grimberg.me>
+Date:   Wed, 3 Feb 2021 00:51:45 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
+MIME-Version: 1.0
+In-Reply-To: <20210201100509.27351-8-borisp@mellanox.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Suprit, 
-
-As you see the in the pseudocode, if Segments Left = 0, the End function will 
-stop processing the SRH and will process upper layer protocols for OAM (e.g., ICMP). 
-
-The packet will not be forwarded further. 
-
-What you propose here is a different thing, you want to decap the SRv6 
-headers and forward the packet further if Segments Left = 0.
-
-This is not a correct symantic of SRv6 End Behavior.   
 
 
-But if you need such behavior in your network, it already defined by another 
-flavor of the End function called Ultimate Segment Decapsulation (USD) [2]
-
-Please feel free to submit a patch to support this USD flavor of END.  
-
-[2] https://tools.ietf.org/html/draft-ietf-spring-srv6-network-programming-28#section-4.16.3
-
-Thanks
-Ahmed
- 
-
-
-On Tue, 2 Feb 2021 16:50:58 +0530
-Suprit Japagal <suprit.japagal@gmail.com> wrote:
-
-> Hi,
+On 2/1/21 2:04 AM, Boris Pismenny wrote:
+> Introduce the NVMe-TCP DDP data-path offload.
+> Using this interface, the NIC hardware will scatter TCP payload directly
+> to the BIO pages according to the command_id in the PDU.
+> To maintain the correctness of the network stack, the driver is expected
+> to construct SKBs that point to the BIO pages.
 > 
-> As per the section 4.1 of [1]:
+> The data-path interface contains two routines: tcp_ddp_setup/teardown.
+> The setup provides the mapping from command_id to the request buffers,
+> while the teardown removes this mapping.
 > 
-> "When N receives a packet whose IPv6 DA is S and S is a local *End SID*,
+> For efficiency, we introduce an asynchronous nvme completion, which is
+> split between NVMe-TCP and the NIC driver as follows:
+> NVMe-TCP performs the specific completion, while NIC driver performs the
+> generic mq_blk completion.
 > 
->    N does:
+> Signed-off-by: Boris Pismenny <borisp@mellanox.com>
+> Signed-off-by: Ben Ben-Ishay <benishay@mellanox.com>
+> Signed-off-by: Or Gerlitz <ogerlitz@mellanox.com>
+> Signed-off-by: Yoray Zack <yorayz@mellanox.com>
+> ---
+>   drivers/nvme/host/tcp.c | 141 +++++++++++++++++++++++++++++++++++++---
+>   1 file changed, 131 insertions(+), 10 deletions(-)
 > 
->    S01. When an SRH is processed {
->    S02.   If (Segments Left == 0) {
->    S03.      Stop processing the SRH, and proceed to process the next
->                 header in the packet, whose type is identified by
->                 the Next Header field in the routing header.
-> 
->    S04. }
-> "
-> S is the DA which is a local End SID and when SRH is processed, the
-> segments left field can be 0 as mentioned above.
-> Same goes for End.X SID and End.T SID as per section 4.2 and 4.3 of [1]
-> respectively.
-> 
-> Packets processed by End, End.X and End.T behaviors can have a Segment Left
-> Value
-> of zero.
-> 
-> [1]https://tools.ietf.org/html/draft-ietf-spring-srv6-network-programming-28
-> 
-> Thanks,
-> Suprit J
-> 
-> On Tue, Feb 2, 2021 at 3:22 PM Ahmed Abdelsalam <ahabdels.dev@gmail.com>
-> wrote:
-> 
-> > The current implementation is correct. This patch is introducing incorrect
-> > symantic to SRv6 End and End.T behaviors.
-> >
-> > SRv6 End and End.T behaviors (among other behaviors) are defined in the
-> > SRv6 Network Programming draft (Soon to published as an RFC) [1].
-> >
-> > SRv6 End and End.T behaviors are used to implement Traffic Engineering (TE)
-> > use-cases, where a node recieves the packet and send it to the next SID
-> > from
-> > the SRH SIDList.
-> >
-> > Packets processed by End and End.T behaviors can not have a Segment Left
-> > Value
-> > of zero.
-> >
-> > Please refer to sections 4.1 and 4.3 of [1].
-> >
-> >
-> > [1]
-> > https://tools.ietf.org/html/draft-ietf-spring-srv6-network-programming-28
-> >
-> > Ahmed
-> >
-> >
-> > On Sun, 31 Jan 2021 10:33:14 -0700
-> > David Ahern <dsahern@gmail.com> wrote:
-> >
-> > > [ cc David Lebrun, author of the original code ]
-> > >
-> > > On 1/31/21 6:08 AM, Suprit Japagal wrote:
-> > > > From: "Suprit.Japagal" <suprit.japagal@gmail.com>
-> > > >
-> > > > According to the standard IETF RFC 8754, section 4.3.1.1
-> > > > (https://tools.ietf.org/html/rfc8754#section-4.3.1.1)
-> > > > When the segments left in SRH equals to 0, proceed to process the
-> > > > next header in the packet, whose type is identified by the
-> > > > Next header field of the routing header.
-> > > >
-> > > > Signed-off-by: Suprit.Japagal <suprit.japagal@gmail.com>
-> > > > ---
-> > > >  net/ipv6/seg6_local.c | 54
-> > +++++++++++++++++++++++++++++++++++++++++++++------
-> > > >  1 file changed, 48 insertions(+), 6 deletions(-)
-> > > >
-> > > > diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
-> > > > index b07f7c1..b17f9dc 100644
-> > > > --- a/net/ipv6/seg6_local.c
-> > > > +++ b/net/ipv6/seg6_local.c
-> > > > @@ -273,11 +273,25 @@ static int input_action_end(struct sk_buff *skb,
-> > struct seg6_local_lwt *slwt)
-> > > >  {
-> > > >     struct ipv6_sr_hdr *srh;
-> > > >
-> > > > -   srh = get_and_validate_srh(skb);
-> > > > +   srh = get_srh(skb);
-> > > >     if (!srh)
-> > > >             goto drop;
-> > > >
-> > > > -   advance_nextseg(srh, &ipv6_hdr(skb)->daddr);
-> > > > +#ifdef CONFIG_IPV6_SEG6_HMAC
-> > > > +   if (srh->segments_left > 0)
-> > > > +           if (!seg6_hmac_validate_skb(skb))
-> > > > +                   goto drop;
-> > > > +#endif
-> > > > +
-> > > > +   if (srh->segments_left == 0) {
-> > > > +           if (!decap_and_validate(skb, srh->nexthdr))
-> > > > +                   goto drop;
-> > > > +
-> > > > +           if (!pskb_may_pull(skb, sizeof(struct ipv6hdr)))
-> > > > +                   goto drop;
-> > > > +   } else {
-> > > > +           advance_nextseg(srh, &ipv6_hdr(skb)->daddr);
-> > > > +   }
-> > > >
-> > > >     seg6_lookup_nexthop(skb, NULL, 0);
-> > > >
-> > > > @@ -293,11 +307,25 @@ static int input_action_end_x(struct sk_buff
-> > *skb, struct seg6_local_lwt *slwt)
-> > > >  {
-> > > >     struct ipv6_sr_hdr *srh;
-> > > >
-> > > > -   srh = get_and_validate_srh(skb);
-> > > > +   srh = get_srh(skb);
-> > > >     if (!srh)
-> > > >             goto drop;
-> > > >
-> > > > -   advance_nextseg(srh, &ipv6_hdr(skb)->daddr);
-> > > > +#ifdef CONFIG_IPV6_SEG6_HMAC
-> > > > +   if (srh->segments_left > 0)
-> > > > +           if (!seg6_hmac_validate_skb(skb))
-> > > > +                   goto drop;
-> > > > +#endif
-> > > > +
-> > > > +   if (srh->segments_left == 0) {
-> > > > +           if (!decap_and_validate(skb, srh->nexthdr))
-> > > > +                   goto drop;
-> > > > +
-> > > > +           if (!pskb_may_pull(skb, sizeof(struct ipv6hdr)))
-> > > > +                   goto drop;
-> > > > +   } else {
-> > > > +           advance_nextseg(srh, &ipv6_hdr(skb)->daddr);
-> > > > +   }
-> > > >
-> > > >     seg6_lookup_nexthop(skb, &slwt->nh6, 0);
-> > > >
-> > > > @@ -312,11 +340,25 @@ static int input_action_end_t(struct sk_buff
-> > *skb, struct seg6_local_lwt *slwt)
-> > > >  {
-> > > >     struct ipv6_sr_hdr *srh;
-> > > >
-> > > > -   srh = get_and_validate_srh(skb);
-> > > > +   srh = get_srh(skb);
-> > > >     if (!srh)
-> > > >             goto drop;
-> > > >
-> > > > -   advance_nextseg(srh, &ipv6_hdr(skb)->daddr);
-> > > > +#ifdef CONFIG_IPV6_SEG6_HMAC
-> > > > +   if (srh->segments_left > 0)
-> > > > +           if (!seg6_hmac_validate_skb(skb))
-> > > > +                   goto drop;
-> > > > +#endif
-> > > > +
-> > > > +   if (srh->segments_left == 0) {
-> > > > +           if (!decap_and_validate(skb, srh->nexthdr))
-> > > > +                   goto drop;
-> > > > +
-> > > > +           if (!pskb_may_pull(skb, sizeof(struct ipv6hdr)))
-> > > > +                   goto drop;
-> > > > +   } else {
-> > > > +           advance_nextseg(srh, &ipv6_hdr(skb)->daddr);
-> > > > +   }
-> > > >
-> > > >     seg6_lookup_nexthop(skb, NULL, slwt->table);
-> > > >
-> > > >
-> > >
-> >
-> >
-> > --
-> > Ahmed Abdelsalam <ahabdels.dev@gmail.com>
-> >
+> diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c
+> index ea67caf9d326..5cb46deb56e0 100644
+> --- a/drivers/nvme/host/tcp.c
+> +++ b/drivers/nvme/host/tcp.c
+> @@ -57,6 +57,11 @@ struct nvme_tcp_request {
+>   	size_t			offset;
+>   	size_t			data_sent;
+>   	enum nvme_tcp_send_state state;
+> +
+> +	bool			offloaded;
+> +	struct tcp_ddp_io	ddp;
+> +	__le16			status;
+> +	union nvme_result	result;
+>   };
+>   
+>   enum nvme_tcp_queue_flags {
+> @@ -232,10 +237,74 @@ static inline size_t nvme_tcp_pdu_last_send(struct nvme_tcp_request *req,
+>   #ifdef CONFIG_TCP_DDP
+>   
+>   static bool nvme_tcp_resync_request(struct sock *sk, u32 seq, u32 flags);
+> +static void nvme_tcp_ddp_teardown_done(void *ddp_ctx);
+>   static const struct tcp_ddp_ulp_ops nvme_tcp_ddp_ulp_ops = {
+>   	.resync_request		= nvme_tcp_resync_request,
+> +	.ddp_teardown_done	= nvme_tcp_ddp_teardown_done,
+>   };
+>   
+> +static
+> +int nvme_tcp_teardown_ddp(struct nvme_tcp_queue *queue,
+> +			  u16 command_id,
+> +			  struct request *rq)
+> +{
+> +	struct nvme_tcp_request *req = blk_mq_rq_to_pdu(rq);
+> +	struct net_device *netdev = queue->ctrl->offloading_netdev;
+> +	int ret;
+> +
+> +	if (unlikely(!netdev)) {
+> +		pr_info_ratelimited("%s: netdev not found\n", __func__);
+> +		return -EINVAL;
+> +	}
+> +
+> +	ret = netdev->tcp_ddp_ops->tcp_ddp_teardown(netdev, queue->sock->sk,
+> +						    &req->ddp, rq);
+> +	sg_free_table_chained(&req->ddp.sg_table, SG_CHUNK_SIZE);
+> +	req->offloaded = false;
 
+Why is the offloaded = false needed here? you also clear it when
+you setup.
 
--- 
-Ahmed Abdelsalam <ahabdels.dev@gmail.com>
+> +	return ret;
+> +}
+> +
+> +static void nvme_tcp_ddp_teardown_done(void *ddp_ctx)
+> +{
+> +	struct request *rq = ddp_ctx;
+> +	struct nvme_tcp_request *req = blk_mq_rq_to_pdu(rq);
+> +
+> +	if (!nvme_try_complete_req(rq, cpu_to_le16(req->status << 1), req->result))
+> +		nvme_complete_rq(rq);
+
+Why is the status shifted here? it was taken from the cqe as is..
+
+> +}
+> +
+> +static
+> +int nvme_tcp_setup_ddp(struct nvme_tcp_queue *queue,
+> +		       u16 command_id,
+> +		       struct request *rq)
+> +{
+> +	struct nvme_tcp_request *req = blk_mq_rq_to_pdu(rq);
+> +	struct net_device *netdev = queue->ctrl->offloading_netdev;
+> +	int ret;
+> +
+> +	req->offloaded = false;
+> +
+> +	if (unlikely(!netdev)) {
+> +		pr_info_ratelimited("%s: netdev not found\n", __func__);
+
+dev_info_ratelimited please.
+
+> +		return -EINVAL;
+> +	}
+> +
+> +	req->ddp.command_id = command_id;
+> +	req->ddp.sg_table.sgl = req->ddp.first_sgl;
+> +	ret = sg_alloc_table_chained(&req->ddp.sg_table, blk_rq_nr_phys_segments(rq),
+> +				     req->ddp.sg_table.sgl, SG_CHUNK_SIZE);
+> +	if (ret)
+> +		return -ENOMEM;
+> +	req->ddp.nents = blk_rq_map_sg(rq->q, rq, req->ddp.sg_table.sgl);
+> +
+> +	ret = netdev->tcp_ddp_ops->tcp_ddp_setup(netdev,
+> +						 queue->sock->sk,
+> +						 &req->ddp);
+> +	if (!ret)
+> +		req->offloaded = true;
+> +	return ret;
+> +}
+> +
+>   static
+>   int nvme_tcp_offload_socket(struct nvme_tcp_queue *queue)
+>   {
+> @@ -377,6 +446,25 @@ bool nvme_tcp_resync_request(struct sock *sk, u32 seq, u32 flags)
+>   
+>   #else
+>   
+> +static
+> +int nvme_tcp_setup_ddp(struct nvme_tcp_queue *queue,
+> +		       u16 command_id,
+> +		       struct request *rq)
+> +{
+> +	return -EINVAL;
+> +}
+> +
+> +static
+> +int nvme_tcp_teardown_ddp(struct nvme_tcp_queue *queue,
+> +			  u16 command_id,
+> +			  struct request *rq)
+> +{
+> +	return -EINVAL;
+> +}
+> +
+> +static void nvme_tcp_ddp_teardown_done(void *ddp_ctx)
+> +{}
+> +
+>   static
+>   int nvme_tcp_offload_socket(struct nvme_tcp_queue *queue)
+>   {
+> @@ -665,6 +753,7 @@ static void nvme_tcp_error_recovery(struct nvme_ctrl *ctrl)
+>   static int nvme_tcp_process_nvme_cqe(struct nvme_tcp_queue *queue,
+>   		struct nvme_completion *cqe)
+>   {
+> +	struct nvme_tcp_request *req;
+>   	struct request *rq;
+>   
+>   	rq = blk_mq_tag_to_rq(nvme_tcp_tagset(queue), cqe->command_id);
+> @@ -676,8 +765,15 @@ static int nvme_tcp_process_nvme_cqe(struct nvme_tcp_queue *queue,
+>   		return -EINVAL;
+>   	}
+>   
+> -	if (!nvme_try_complete_req(rq, cqe->status, cqe->result))
+> -		nvme_complete_rq(rq);
+> +	req = blk_mq_rq_to_pdu(rq);
+> +	if (req->offloaded) {
+> +		req->status = cqe->status;
+> +		req->result = cqe->result;
+> +		nvme_tcp_teardown_ddp(queue, cqe->command_id, rq);
+> +	} else {
+> +		if (!nvme_try_complete_req(rq, cqe->status, cqe->result))
+> +			nvme_complete_rq(rq);
+> +	}
+
+Maybe move this to nvme_tcp_complete_request as it is called from two
+code paths.
+
+>   	queue->nr_cqe++;
+>   
+>   	return 0;
+> @@ -871,9 +967,18 @@ static int nvme_tcp_recv_pdu(struct nvme_tcp_queue *queue, struct sk_buff *skb,
+>   static inline void nvme_tcp_end_request(struct request *rq, u16 status)
+>   {
+>   	union nvme_result res = {};
+> +	struct nvme_tcp_request *req = blk_mq_rq_to_pdu(rq);
+> +	struct nvme_tcp_queue *queue = req->queue;
+> +	struct nvme_tcp_data_pdu *pdu = (void *)queue->pdu;
+>   
+> -	if (!nvme_try_complete_req(rq, cpu_to_le16(status << 1), res))
+> -		nvme_complete_rq(rq);
+> +	if (req->offloaded) {
+> +		req->status = cpu_to_le16(status << 1);
+> +		req->result = res;
+> +		nvme_tcp_teardown_ddp(queue, pdu->command_id, rq);
+> +	} else {
+> +		if (!nvme_try_complete_req(rq, cpu_to_le16(status << 1), res))
+> +			nvme_complete_rq(rq);
+> +	}
+>   }
+>   
+>   static int nvme_tcp_recv_data(struct nvme_tcp_queue *queue, struct sk_buff *skb,
+> @@ -920,12 +1025,22 @@ static int nvme_tcp_recv_data(struct nvme_tcp_queue *queue, struct sk_buff *skb,
+>   		recv_len = min_t(size_t, recv_len,
+>   				iov_iter_count(&req->iter));
+>   
+> -		if (queue->data_digest)
+> -			ret = skb_copy_and_hash_datagram_iter(skb, *offset,
+> -				&req->iter, recv_len, queue->rcv_hash);
+> -		else
+> -			ret = skb_copy_datagram_iter(skb, *offset,
+> -					&req->iter, recv_len);
+> +		if (test_bit(NVME_TCP_Q_OFF_DDP, &queue->flags)) {
+> +			if (queue->data_digest)
+> +				ret = skb_ddp_copy_and_hash_datagram_iter(skb, *offset,
+> +						&req->iter, recv_len, queue->rcv_hash);
+> +			else
+> +				ret = skb_ddp_copy_datagram_iter(skb, *offset,
+> +						&req->iter, recv_len);
+> +		} else {
+> +			if (queue->data_digest)
+> +				ret = skb_copy_and_hash_datagram_iter(skb, *offset,
+> +						&req->iter, recv_len, queue->rcv_hash);
+> +			else
+> +				ret = skb_copy_datagram_iter(skb, *offset,
+> +						&req->iter, recv_len);
+> +		}
+> +
+
+Maybe move this hunk to nvme_tcp_consume_skb or something?
+
+>   		if (ret) {
+>   			dev_err(queue->ctrl->ctrl.device,
+>   				"queue %d failed to copy request %#x data",
+> @@ -1149,6 +1264,7 @@ static int nvme_tcp_try_send_cmd_pdu(struct nvme_tcp_request *req)
+>   	bool inline_data = nvme_tcp_has_inline_data(req);
+>   	u8 hdgst = nvme_tcp_hdgst_len(queue);
+>   	int len = sizeof(*pdu) + hdgst - req->offset;
+> +	struct request *rq = blk_mq_rq_from_pdu(req);
+>   	int flags = MSG_DONTWAIT;
+>   	int ret;
+>   
+> @@ -1157,6 +1273,10 @@ static int nvme_tcp_try_send_cmd_pdu(struct nvme_tcp_request *req)
+>   	else
+>   		flags |= MSG_EOR;
+>   
+> +	if (test_bit(NVME_TCP_Q_OFF_DDP, &queue->flags) &&
+> +	    blk_rq_nr_phys_segments(rq) && rq_data_dir(rq) == READ)
+> +		nvme_tcp_setup_ddp(queue, pdu->cmd.common.command_id, rq);
+> +
+>   	if (queue->hdr_digest && !req->offset)
+>   		nvme_tcp_hdgst(queue->snd_hash, pdu, sizeof(*pdu));
+>   
+> @@ -2464,6 +2584,7 @@ static blk_status_t nvme_tcp_setup_cmd_pdu(struct nvme_ns *ns,
+>   	req->data_len = blk_rq_nr_phys_segments(rq) ?
+>   				blk_rq_payload_bytes(rq) : 0;
+>   	req->curr_bio = rq->bio;
+> +	req->offloaded = false;
+
+offloaded is being cleared lots of times, and I'm not clear what are
+the lifetime rules here.
