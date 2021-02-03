@@ -2,65 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86D1D30DFB6
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 17:27:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC41030E047
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 17:57:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234255AbhBCQ1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 11:27:11 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:46408 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233269AbhBCQ1H (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Feb 2021 11:27:07 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1l7Kyz-0043ZV-4Z; Wed, 03 Feb 2021 17:26:21 +0100
-Date:   Wed, 3 Feb 2021 17:26:21 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     David Ahern <dsahern@gmail.com>,
-        Vadim Pasternak <vadimp@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "jacob.e.keller@intel.com" <jacob.e.keller@intel.com>,
-        Roopa Prabhu <roopa@nvidia.com>, mlxsw <mlxsw@nvidia.com>
-Subject: Re: [patch net-next RFC 00/10] introduce line card support for
- modular switch
-Message-ID: <YBrOrQ1kzmW5LrgX@lunn.ch>
-References: <YBLHaagSmqqUVap+@lunn.ch>
- <20210129072015.GA4652@nanopsycho.orion>
- <YBQujIdnFtEhWqTF@lunn.ch>
- <DM6PR12MB389878422F910221DB296DC2AFB99@DM6PR12MB3898.namprd12.prod.outlook.com>
- <YBRGj5Shy+qpUUgS@lunn.ch>
- <20210130141952.GB4652@nanopsycho.orion>
- <251d1e12-1d61-0922-31f8-a8313f18f194@gmail.com>
- <20210201081641.GC4652@nanopsycho.orion>
- <YBgE84Qguek7r27t@lunn.ch>
- <20210203145751.GD4652@nanopsycho.orion>
+        id S229897AbhBCQ47 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 11:56:59 -0500
+Received: from outbound-relay4.guardedhost.com ([216.239.133.204]:34730 "EHLO
+        outbound-relay4.guardedhost.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231584AbhBCQ4e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 11:56:34 -0500
+Received: from mail.guardedhost.com (tev-mx4.omnis.com [216.239.133.144])
+        by outbound-relay1.guardedhost.com (Postfix) with ESMTP id 4DW79G39RVz4x8b1;
+        Wed,  3 Feb 2021 16:55:46 +0000 (GMT)
+Received: from localhost.localdomain (unknown [178.239.198.140])
+        (Authenticated sender: alanp@snowmoose.com)
+        by mail.guardedhost.com (Postfix) with ESMTPSA id 4DW79C3wgqz30Kr;
+        Wed,  3 Feb 2021 16:55:43 +0000 (GMT)
+From:   Alan Perry <alanp@snowmoose.com>
+To:     stephen@networkplumber.org
+Cc:     netdev@vger.kernel.org, Alan Perry <alanp@snowmoose.com>,
+        Leon Romanovsky <leonro@nvidia.com>
+Subject: [PATCH iproute2 v3] Add a description section to the rdma man page
+Date:   Wed,  3 Feb 2021 08:45:10 -0800
+Message-Id: <20210203164509.41998-1-alanp@snowmoose.com>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210203145751.GD4652@nanopsycho.orion>
+Content-Transfer-Encoding: 8bit
+Authentication-Results: mail.guardedhost.com;auth=pass
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse-Id: A8E850B2-6640-11EB-8077-EADA428D60A2
+X-Virus-Scanned: clamav-milter 0.102.2 at tev-mx4.omnis.com
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> >When the platform line card driver is on the BMC, you need a proxy in
-> >between. Isn't this what IPMI and Redfish is all about? The proxy
-> >driver can offer the same interface as the platform line card driver.
-> 
-> Do you have any example of kernel driver which is doing some thing like
-> that?
+Add a description section to the rdma man page with basic info about the
+command for users unfamiliar with it.
 
-drivers/hwmon/ibmaem.c is a pretty normal looking HWMON driver, for
-temperature/power/energy sensors which are connected to the BMC and
-accessed over IPMI.
+Signed-off-by: Alan Perry <alanp@snowmoose.com>
+Acked-by: Leon Romanovsky <leonro@nvidia.com>
+---
+Changelog
+Removed man page date change. Reworked description change into several lines
+instead of one long line.
+---
+ man/man8/rdma.8 | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-char/ipmi/ipmi_watchdog.c as the name suggests is a watchdog. At first
-glance its API to user space follows the standard API, even if it does
-not make use of the watchdog subsystem core.
+diff --git a/man/man8/rdma.8 b/man/man8/rdma.8
+index c9e5d50d..9c016687 100644
+--- a/man/man8/rdma.8
++++ b/man/man8/rdma.8
+@@ -29,6 +29,12 @@ rdma \- RDMA tool
+ \fB\-j\fR[\fIson\fR] }
+ \fB\-p\fR[\fIretty\fR] }
+ 
++.SH DESCRIPTION
++.B rdma
++is a tool for querying and setting the configuration for RDMA, direct
++memory access between the memory of two computers without use of the
++operating system on either computer.
++
+ .SH OPTIONS
+ 
+ .TP
+-- 
+2.30.0
 
-These two should give you examples of how you talk to the BMC from a
-kernel driver.
-
-	 Andrew
