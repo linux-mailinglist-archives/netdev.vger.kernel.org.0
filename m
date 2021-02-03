@@ -2,107 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2982930E4D1
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 22:18:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7F9E30E4EF
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 22:27:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232183AbhBCVRT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 16:17:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58654 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231350AbhBCVRS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 16:17:18 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF82AC061573
-        for <netdev@vger.kernel.org>; Wed,  3 Feb 2021 13:16:37 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id hs11so1471516ejc.1
-        for <netdev@vger.kernel.org>; Wed, 03 Feb 2021 13:16:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=wERgaNtBKmioDXI4NuWAON27uwzoNSQ9EO+QRSyVJTE=;
-        b=lZZOeUuTqkceLM+J5w8iuWPkVJ//NwXIoSRoIAhzlTMPMn2g5IGxct54j8lg/VqqvS
-         h/m4aOZT/e2QXMDJ806q+ZAQCKoIlj6+FI5DRV2yW1zWJEqzC7vT+tazZIG+VVvR1629
-         9ryXiaB04hXGI6w9PmWRo9J7LJm0WvbY+GoeG9y13Lr/hen5n4nlQJf6W67W3vbMMu5S
-         jVZSivbThdugDD2oU/brWif0iH9Ww6GuIBUUqvFn1oMAHuAyUpSBxbfo3liYi73xkezl
-         P9ICZTBzxT/FZuLwrbZWe6aZsp4l6MxWXo/sxfVfSsNgoPqw8CGTpM/8/fcQ56f9B1mN
-         OCCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=wERgaNtBKmioDXI4NuWAON27uwzoNSQ9EO+QRSyVJTE=;
-        b=tHEFeDcOWEwGKC8cnLtoffZr9JcqQOvduNGEARU9Nt/FzK4VOMGTkdPZ5W4TaQWJS9
-         3YsbZyZ5xhEezi/9uEpYusGekrAOHt3cIXKAVn4IZQCmRCwouw7B18CmRBLUpBNKlbe6
-         yzJyLTB9c9lJ+mIcxTxOHeX6Hs73k10pI67z+6VtyjtMVB4Wo0LU91vwxw4QVv2ZQzF8
-         4TXWZ08xjacWFciJSmsY/g0ROUuRoQ6C7m0px2ydSWuugjenxzuASsmYcWiIyEzH0Thk
-         P0pOSEYNKz+X43XBZQykxcAoEW17E5u5IEq7vwS7MeLieIIR6Y2MrvaoDGtr/UqqOTwQ
-         Sr/g==
-X-Gm-Message-State: AOAM532UZTRa56hCDij40qZ8eMJ3mGMRZ99AsuhtM6LAshKpJLh0W3UK
-        H596FDhbTXDO+AJCuv/KWKY=
-X-Google-Smtp-Source: ABdhPJyXkQY0UjaZX3cMgllPYSxqkC3B31n7Y4lYXX8+crVn8r/q0O/v3K9muF2UdpyqHwEHz/eucQ==
-X-Received: by 2002:a17:906:719:: with SMTP id y25mr5063319ejb.180.1612386996505;
-        Wed, 03 Feb 2021 13:16:36 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id q14sm1477591edw.52.2021.02.03.13.16.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Feb 2021 13:16:35 -0800 (PST)
-Date:   Wed, 3 Feb 2021 23:16:34 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     George McCollister <george.mccollister@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org
-Subject: Re: [RESEND PATCH net-next 1/4] net: hsr: generate supervision frame
- without HSR tag
-Message-ID: <20210203211634.t7trwhtbhha5voms@skbuf>
-References: <20210201140503.130625-1-george.mccollister@gmail.com>
- <20210201140503.130625-2-george.mccollister@gmail.com>
- <20210201145943.ajxecwnhsjslr2uf@skbuf>
- <CAFSKS=OR6dXWXdRTmYToH7NAnf6EiXsVbV_CpNkVr-z69vUz-g@mail.gmail.com>
- <20210202003729.oh224wtpqm6bcse3@skbuf>
- <CAFSKS=MhuJtuXGDQHU_5w+AVf9DqdNh=zioJoZOuOYF5Jat-eQ@mail.gmail.com>
+        id S231775AbhBCV0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 16:26:51 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38776 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231709AbhBCV0s (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Feb 2021 16:26:48 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CD77564F5F;
+        Wed,  3 Feb 2021 21:26:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612387567;
+        bh=4UmJ66kt6LrH5hseYMX6YsFUM2xR/8M+Fm9LGmK3D74=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Eg6mWIKc3dLqTV2wamxx+pDCAB+Kqo9uL/2e4FGsVVj/qs9GYEZja6P2q0oLP0w6C
+         Wsj/0/lP5gcDwcz5yKEaazTszEStwTPPyGF1p+0lTFT9+SDcrMii5Tlf/W50aFJiVB
+         0jeOZLIKbou3zpp8d6Edfd5AAsBgZ5NPKowwOEbQGETswc543fhtfriXPR/Ilq6r+O
+         3jthzPi61vPBZ4j0+DwKegwiY+V2qJ3FkZfLiy744fFmHMwkb091RZVZu5QvVbpDh/
+         CRRowW3RDrDyhXF3cu/jp6oQOmcdBhxhlakifoitlYTyUaZUUaShay3Gfsh/aa9SUn
+         KG6Obo9wH0RGw==
+Date:   Wed, 3 Feb 2021 13:26:05 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     Yishai Hadas <yishaih@nvidia.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, parav@nvidia.com
+Subject: Re: [PATCH net-next 0/2] devlink: Add port function attribute to
+ enable/disable roce
+Message-ID: <20210203132605.7faf8ca0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <38d73470cd4faac0dc6c09697f33c5fb90d13f4e.camel@kernel.org>
+References: <20210201175152.11280-1-yishaih@nvidia.com>
+        <20210202181401.66f4359f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <d01dfcc6f46f2c70c4921139543e5823582678c8.camel@kernel.org>
+        <20210203105102.71e6fa2d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <38d73470cd4faac0dc6c09697f33c5fb90d13f4e.camel@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFSKS=MhuJtuXGDQHU_5w+AVf9DqdNh=zioJoZOuOYF5Jat-eQ@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 02, 2021 at 08:49:25AM -0600, George McCollister wrote:
-> > > This part is not intuitive and I don't have a copy of the documents
-> > > where v0 was defined. It's unfortunate this code even supports v0
-> > > because AFAIK no one else uses it; but it's in here so we have to keep
-> > > supporting it I guess.
-> > > In v1 the tag has an eth type of 0x892f and the encapsulated
-> > > supervisory frame has a type of 0x88fb. In v0 0x88fb is used for the
-> > > eth type and there is no encapsulation type. So... this is correct
-> > > however I compared supervisory frame generation before and after this
-> > > patch for v0 and I found a problem. My changes make it add 0x88fb
-> > > again later for v0 which it's not supposed to do. I'll have to fix
-> > > that part somehow.
-> >
-> > Step 1: Sign up for HSR maintainership, it's currently orphan
-> > Step 2: Delete HSRv0 support
-> > Step 3: See if anyone shouts, probably not
-> > Step 4: Profit.
+On Wed, 03 Feb 2021 11:22:44 -0800 Saeed Mahameed wrote:
+> On Wed, 2021-02-03 at 10:51 -0800, Jakub Kicinski wrote:
+> > On Tue, 02 Feb 2021 20:13:48 -0800 Saeed Mahameed wrote:  
+> > > yes, user in this case is the admin, who controls the provisioned
+> > > network function SF/VFs.. by turning off this knob it allows to
+> > > create
+> > > more of that resource in case the user/admin is limited by memory.  
+> > 
+> > Ah, so in case of the SmartNIC this extra memory is allocated on the
+> > control system, not where the function resides?
 > 
-> not a bad idea however user space defaults to using v0 when doing:
-> ip link add name hsr0 type hsr slave1 eth0 slave2 eth1
-> 
-> To use v1 you need to append "version 1".
-> 
-> It seems like it might be a hard sell to break the userspace default
-> even if no one in their right mind is using it. Still think it's
-> possible?
+> most of the memeory are actually allocated from where the function
+> resides, some are on the management system but it is not as critical.
+> SFs for now can only be probed on the management system, so the main
+> issue will be on the SmartNIC side for now.
 
-While HSRv0 is the default, IFLA_HSR_VERSION won't be put in the netlink
-message generated by iproute2 unless you explicitly write "version 0".
-So it's not like ip-link will now error out on a default RTM_NEWLINK
-message, the kernel will just use a different (and more sane, according
-to you) default.
-Removing support for a protocol is pretty radical, but I guess if you
-can make a convincing argument that nobody depends on it, it may get
-accepted.
+Why not leave the decision whether to allocate that memory or not to
+the SF itself? If user never binds the RDMA driver to the SF they
+clearly don't care for RDMA. No extra knobs needed.
+
+> > My next question is regarding the behavior on the target system -
+> > what
+> > does "that user" see? Can we expect they will understand that the
+> > limitation was imposed by the admin and not due to some
+> > initialization
+> > failure or SW incompatibility?
+>
+> the whole thing works with only real HW capabilities, there is no
+> synthetic SW capabilities. 
+> 
+> when mlx5 instance driver loads, it doesn't assume anything about
+> underlying HW, and it queries for the advertised FW capability
+> according to the HW spec before it enables a feature.
+> 
+> so this patch adds the ability for admin to enforce a specific HW cap
+> "off" for a VF/SF hca slice.
+> 
+> > > RAW eth QP, i think you already know this one, it is a very thin
+> > > layer
+> > > that doesn't require the whole rdma stack.  
+> > 
+> > Sorry for asking a leading question. You know how we'll feel about
+> > that one, do we need to talk this out or can we save ourselves the
+> > battle? :S  
+> 
+> I know, I know :/
+> 
+> So, there is no rdma bit/cap in HW.. to disable non-RoCE commands we
+> will have to disable etherent capability. 
+
+It's your driver, you can make it do what you need to. Why does 
+the RDMA driver bind successfully to a non-RoCE Ethernet device 
+in the first place?
+
+> The user interface here has no synthetic semantics, all knobs will
+> eventually be mapped to real HW/FW capabilities to get disabled.
+> 
+> the whole feature is about allowing admin to ship network functions
+> with different capabilities that are actually enforced by FW/HW.. 
+> so the user of the VF will see, RDMA/ETH only cards or both.
+
+RDMA-only, ETH-only, RDMA+ETH makes sense to me. Having an ETH-only
+device also exposed though rdma subsystem does not.
