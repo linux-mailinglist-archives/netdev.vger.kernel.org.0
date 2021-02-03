@@ -2,91 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5438A30E423
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 21:39:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4D7530E42F
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 21:49:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232201AbhBCUiF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 15:38:05 -0500
-Received: from novek.ru ([213.148.174.62]:40692 "EHLO novek.ru"
+        id S232145AbhBCUmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 15:42:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52286 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232001AbhBCUiF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Feb 2021 15:38:05 -0500
-Received: from nat1.ooonet.ru (gw.zelenaya.net [91.207.137.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id B808C5033A1;
-        Wed,  3 Feb 2021 23:37:21 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru B808C5033A1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1612384643; bh=ZvbYwwjqO2fGrp+q7CfISVULFkxNGBocFgzysYt0Mbg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=vRtwzMwkLKJId0Wn8q4QDITk3EuNZ2CR+q/qocI3xktw+rneiNCMikfjZlvel9eci
-         L9nnQMerf7dgPmes2pCkJ2NVdlS8z++JCy2JXnGrforoky9/YJSn/Vck6Q3kFKEXSh
-         cXRek95Pwm5EsOoqNr1TX8b66+D631bde0zf5DLg=
-From:   Vadim Fedorenko <vfedorenko@novek.ru>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Rong Chen <rong.a.chen@intel.com>
-Cc:     Vadim Fedorenko <vfedorenko@novek.ru>, netdev@vger.kernel.org
-Subject: [net-next] selftests/tls: fix selftest with CHACHA20-POLY1305
-Date:   Wed,  3 Feb 2021 23:37:14 +0300
-Message-Id: <1612384634-5377-1-git-send-email-vfedorenko@novek.ru>
-X-Mailer: git-send-email 1.8.3.1
-X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
-        autolearn=ham autolearn_force=no version=3.4.1
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
+        id S231367AbhBCUlz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Feb 2021 15:41:55 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 47DCC64F58;
+        Wed,  3 Feb 2021 20:41:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612384874;
+        bh=Pp/Dsui41S4wztlxsyQaknm4HrYNoFUyHkzlHBNU0i8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nBdZfTN2H85ynzcRdccShtUzxTV8f2DjWjEkOk12pykR2TM3FCyUUzDVxvmx3GTFD
+         z78gTs2bJl8/JMsoqPTZ696dZ9+LmPA8AIkzJLXOfJPkREEI94hznIfiUj7s18cjRO
+         RxeeLzy9Z1B0n/UDmAU9Qd0l4nN/pdcPbGJiaoPL04DbwH1enMVuLB86f37wNz4gGx
+         vIEl0tYSZmuwx9+Sp8n2qbh4soMl2K7KU+hGRYTmjswMaPdz7VFrNJ0tMnUO/rwCdS
+         p0EWocVPB2OSL32pmaCE4xt8mjQaEdYueb1SvdEz7GVCrQtFQtOL4g1TO4ugQ1ghiu
+         g/v/rQ4Yc60QA==
+Date:   Wed, 3 Feb 2021 12:41:12 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, sassmann@redhat.com,
+        Tony Brelinski <tonyx.brelinski@intel.com>
+Subject: Re: [PATCH net-next 04/15] ice: add devlink parameters to read and
+ write minimum security revision
+Message-ID: <20210203124112.67a1e1ee@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210129004332.3004826-5-anthony.l.nguyen@intel.com>
+References: <20210129004332.3004826-1-anthony.l.nguyen@intel.com>
+        <20210129004332.3004826-5-anthony.l.nguyen@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TLS selftests were broken also because of use of structure that
-was not exported to UAPI. Fix by defining the union in tests.
+On Thu, 28 Jan 2021 16:43:21 -0800 Tony Nguyen wrote:
+> From: Jacob Keller <jacob.e.keller@intel.com>
+> 
+> The ice NVM flash has a security revision field for the main NVM bank
+> and the Option ROM bank. In addition to the revision within the module,
+> the device also has a minimum security revision TLV area. This minimum
+> security revision field indicates the minimum value that will be
+> accepted for the associated security revision when loading the NVM bank.
+> 
+> Add functions to read and update the minimum security revisions. Use
+> these functions to implement devlink parameters, "fw.undi.minsrev" and
+> "fw.mgmt.minsrev".
+> 
+> These parameters are permanent (i.e. stored in flash), and are used to
+> indicate the minimum security revision of the associated NVM bank. If
+> the image in the bank has a lower security revision, then the flash
+> loader will not continue loading that flash bank.
+> 
+> The new parameters allow for opting in to update the minimum security
+> revision to ensure that a flash image with a known security flaw cannot
+> be loaded.
+> 
+> Note that the minimum security revision cannot be reduced, only
+> increased. The driver also refuses to allow an update if the currently
+> active image revision is lower than the requested value. This is done to
+> avoid potentially updating the value such that the device can no longer
+> start.
 
-Fixes: 3502bd9b5762 (selftests/tls: fix selftests after adding ChaCha20-Poly1305)
-Fixes: 4f336e88a870 (selftests/tls: add CHACHA20-POLY1305 to tls selftests)
-Reported-by: Rong Chen <rong.a.chen@intel.com>
-Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
----
- tools/testing/selftests/net/tls.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+Hi Jake, I had a couple of conversations with people from operations
+and I'm struggling to find interest in writing this parameter. 
 
-diff --git a/tools/testing/selftests/net/tls.c b/tools/testing/selftests/net/tls.c
-index e0088c2..426d078 100644
---- a/tools/testing/selftests/net/tls.c
-+++ b/tools/testing/selftests/net/tls.c
-@@ -133,7 +133,10 @@
- 
- FIXTURE_SETUP(tls)
- {
--	union tls_crypto_context tls12;
-+	union {
-+		struct tls12_crypto_info_aes_gcm_128 aes128;
-+		struct tls12_crypto_info_chacha20_poly1305 chacha20;
-+	} tls12;
- 	struct sockaddr_in addr;
- 	socklen_t len;
- 	int sfd, ret;
-@@ -143,14 +146,16 @@
- 	len = sizeof(addr);
- 
- 	memset(&tls12, 0, sizeof(tls12));
--	tls12.info.version = variant->tls_version;
--	tls12.info.cipher_type = variant->cipher_type;
- 	switch (variant->cipher_type) {
- 	case TLS_CIPHER_CHACHA20_POLY1305:
--		tls12_sz = sizeof(tls12_crypto_info_chacha20_poly1305);
-+		tls12_sz = sizeof(struct tls12_crypto_info_chacha20_poly1305);
-+		tls12.chacha20.info.version = variant->tls_version;
-+		tls12.chacha20.info.cipher_type = variant->cipher_type;
- 		break;
- 	case TLS_CIPHER_AES_GCM_128:
--		tls12_sz = sizeof(tls12_crypto_info_aes_gcm_128);
-+		tls12_sz = sizeof(struct tls12_crypto_info_aes_gcm_128);
-+		tls12.aes128.info.version = variant->tls_version;
-+		tls12.aes128.info.cipher_type = variant->cipher_type;
- 		break;
- 	default:
- 		tls12_sz = 0;
--- 
-1.8.3.1
+It seems like the expectation is that the min sec revision will go up
+automatically after a new firmware with a higher number is flashed.
 
+Do you have a user scenario where the manual bumping is needed?
