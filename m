@@ -2,137 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5681E30DD64
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 15:59:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5015130DDB1
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 16:11:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233479AbhBCO6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 09:58:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33184 "EHLO
+        id S233834AbhBCPKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 10:10:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232322AbhBCO6f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 09:58:35 -0500
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAC10C061573
-        for <netdev@vger.kernel.org>; Wed,  3 Feb 2021 06:57:54 -0800 (PST)
-Received: by mail-ej1-x630.google.com with SMTP id r12so36221580ejb.9
-        for <netdev@vger.kernel.org>; Wed, 03 Feb 2021 06:57:54 -0800 (PST)
+        with ESMTP id S234278AbhBCPIf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 10:08:35 -0500
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E7F5C06178B
+        for <netdev@vger.kernel.org>; Wed,  3 Feb 2021 07:07:55 -0800 (PST)
+Received: by mail-wr1-x429.google.com with SMTP id g10so24745465wrx.1
+        for <netdev@vger.kernel.org>; Wed, 03 Feb 2021 07:07:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=pSYv+khRvsbNf3JLj4jUwsjV7dEBBUnrTGHDrcWnC98=;
-        b=BMTgodEjkqKS2yo1DFfoMjBNNOfnxegrkP8gdFwpkUEk3YuZvBqJV9AEaQXwD9OARr
-         cnxslI4lZl2i/w6cnpGOIx2VCtjAC3VXulRQjMzU9q2tsV0XUIp4ntHZXRaBHdPJ98in
-         4jCRAEJPNmtqY0gCLRJ5nbdJLeCm6u/H2iH1z7zhQqwK0ZoOXZ4qHDvha4OQ6i1ToTEd
-         wQReG36sSJqS+IKm58CU4jmy5FPuvTQEP7t/dhcbTbwNW75IEz1RaxwafYATLokE0Uh7
-         hhoj8HtkJ1hVH/OO9Egjm1az7ExosizdQU/XN7dZe0CE685CJzvlgtnRhhIb8u1gbS4r
-         tyqw==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=qRlv3JFWFU/HIbB5VeHUwt+2xUMX5DE3/4o57Hrpdug=;
+        b=SJGY8/5UNCuhghV9VRtOXOoGniTGRFuqEPlw2S6JH4/oKVfoTkQ15rJVlekd77ytYE
+         trHg+uy/vYlb4r0tds3UJD9soNK11XN9gfp1+mjoGlkBwoxiobiwEsimqbpC9mVx7c/p
+         I+OX7j/QLwYzOGmer6bx6txDaHAItXrMX/XtalvRH9WiBr3w5+UhHxGIQfGDoEBwQnud
+         L3XYkAtd77ihLSrzkHKaMpXvyyIp/XiKjdsWg2PMCmoAEUW06ciot4XWnXAkhpiCWSlF
+         eglWw7JDgxniZnVECWvc/9ZGdPA/Z6Pi2JoJU09c+x+QS8XfDsBHwfsIGRwzygC7EsO7
+         WbVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pSYv+khRvsbNf3JLj4jUwsjV7dEBBUnrTGHDrcWnC98=;
-        b=osC0IpeQLjNPlcPAYKfJg95+NCbP+gkxhzqD1729At0C/snZAzPUHLx7OVxVUnCzaK
-         XeJ6vVCe96nLUCicDNbpguLbZ9r9/OHO1bYg5vV1NH5944dufens3QRBLNdObFd8GMRJ
-         xvX4OMRbt3LOLtZidFrSJ+OTBd/GMAs1xdx2IfVggoo3lzbZQzpcB2DxCQjrnMAbuo12
-         XF/8p+6xOto4Lg/g/9fUD4Ubterp7FU4JQ8zCNzhgw1y+EIFqixYqhr1jzyApbv5bTKF
-         ezJONJEr1IfiyC6E6T05Zvm2VzHjqJxMkKHIRZfdgjxu6IoDswk7PCJNeS67q1POBMNM
-         5GdA==
-X-Gm-Message-State: AOAM533Bj2smk28YACgmIF3UwkmTVw6U/X7dJqSw775j0BEZiHgN6awP
-        u0PxMc3/+pqW3aRMx93OQHYigg==
-X-Google-Smtp-Source: ABdhPJwTPU2ABZEJJOlwIDxF++zYCOtUxBjh39Lit5fpIMbxV/XpIob+YsCdGcn9UbggV+9lFcwEjA==
-X-Received: by 2002:a17:906:2cd4:: with SMTP id r20mr3592574ejr.291.1612364273457;
-        Wed, 03 Feb 2021 06:57:53 -0800 (PST)
-Received: from localhost (mail.chocen-mesto.cz. [85.163.43.2])
-        by smtp.gmail.com with ESMTPSA id go20sm1070502ejc.91.2021.02.03.06.57.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Feb 2021 06:57:52 -0800 (PST)
-Date:   Wed, 3 Feb 2021 15:57:51 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     David Ahern <dsahern@gmail.com>,
-        Vadim Pasternak <vadimp@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "jacob.e.keller@intel.com" <jacob.e.keller@intel.com>,
-        Roopa Prabhu <roopa@nvidia.com>, mlxsw <mlxsw@nvidia.com>
-Subject: Re: [patch net-next RFC 00/10] introduce line card support for
- modular switch
-Message-ID: <20210203145751.GD4652@nanopsycho.orion>
-References: <20210128081434.GV3565223@nanopsycho.orion>
- <YBLHaagSmqqUVap+@lunn.ch>
- <20210129072015.GA4652@nanopsycho.orion>
- <YBQujIdnFtEhWqTF@lunn.ch>
- <DM6PR12MB389878422F910221DB296DC2AFB99@DM6PR12MB3898.namprd12.prod.outlook.com>
- <YBRGj5Shy+qpUUgS@lunn.ch>
- <20210130141952.GB4652@nanopsycho.orion>
- <251d1e12-1d61-0922-31f8-a8313f18f194@gmail.com>
- <20210201081641.GC4652@nanopsycho.orion>
- <YBgE84Qguek7r27t@lunn.ch>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YBgE84Qguek7r27t@lunn.ch>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=qRlv3JFWFU/HIbB5VeHUwt+2xUMX5DE3/4o57Hrpdug=;
+        b=f6NiZ7TnGrO2OZ52b4wOWGMLhoWcyrnvyCVYtM4u17GlfB0QPES4SbHFdRWQepjrrz
+         wjoFP8alYsAjpyypiK0PfLUzXiecsH/9pj2PhqPqvBma7Hm97WIDr+eVkh4cSii1aWO5
+         E557rCOsCCLk6YjTHUzZxxAdqwMPNJTBTErdHWbZdnVX9RJaCYTT7h/1VkODT5ZB7Hml
+         AjuvD18WPLMsX/k9w9fvfykNGajxClYzPwLK9EPk02ocEOD43YrcJ4BR6TYE8gzf3mRY
+         cy4R655PLRi/33/pMAkcorNeJJ6Mjgotwmz63gOlRUT+5lQiBK+R0Ah7ePS1DajZJ0HK
+         enqg==
+X-Gm-Message-State: AOAM5317Mb4LlSMgGwLOmDZanrS7+lsLEb+YESQ0o4uYdKWaPE2FvoVy
+        3NZFerMwRY7rUxkZPancH7lBzngyFa51CA==
+X-Google-Smtp-Source: ABdhPJwIHmARQNhxdTFDM2ePQccX4y7fX3K3nwnyS5x92N1jVugDO+RnvL77ljUuIxSjQtzZKQK16A==
+X-Received: by 2002:adf:f8c8:: with SMTP id f8mr4091432wrq.132.1612364873973;
+        Wed, 03 Feb 2021 07:07:53 -0800 (PST)
+Received: from localhost.localdomain ([88.122.66.28])
+        by smtp.gmail.com with ESMTPSA id r1sm3947240wrl.95.2021.02.03.07.07.52
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 03 Feb 2021 07:07:53 -0800 (PST)
+From:   Loic Poulain <loic.poulain@linaro.org>
+To:     kuba@kernel.org, davem@davemloft.net
+Cc:     willemdebruijn.kernel@gmail.com, netdev@vger.kernel.org,
+        stranche@codeaurora.org, subashab@codeaurora.org,
+        Loic Poulain <loic.poulain@linaro.org>
+Subject: [PATCH net-next v4 1/2] net: mhi-net: Add de-aggeration support
+Date:   Wed,  3 Feb 2021 16:15:34 +0100
+Message-Id: <1612365335-14117-1-git-send-email-loic.poulain@linaro.org>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Feb 01, 2021 at 02:41:07PM CET, andrew@lunn.ch wrote:
->On Mon, Feb 01, 2021 at 09:16:41AM +0100, Jiri Pirko wrote:
->> Sun, Jan 31, 2021 at 06:09:24PM CET, dsahern@gmail.com wrote:
->> >On 1/30/21 7:19 AM, Jiri Pirko wrote:
->> >> Fri, Jan 29, 2021 at 06:31:59PM CET, andrew@lunn.ch wrote:
->> >>>> Platform line card driver is aware of line card I2C topology, its
->> >>>> responsibility is to detect line card basic hardware type, create I2C
->> >>>> topology (mux), connect all the necessary I2C devices, like hotswap
->> >>>> devices, voltage and power regulators devices, iio/a2d devices and line
->> >>>> card EEPROMs, creates LED instances for LED located on a line card, exposes
->> >>>> line card related attributes, like CPLD and FPGA versions, reset causes,
->> >>>> required powered through line card hwmon interface.
->> >>>
->> >>> So this driver, and the switch driver need to talk to each other, so
->> >>> the switch driver actually knows what, if anything, is in the slot.
->> >> 
->> >> Not possible in case the BMC is a different host, which is common
->> >> scenario.
->> >> 
->> >
->> >User provisions a 4 port card, but a 2 port card is inserted. How is
->> >this detected and the user told the wrong card is inserted?
->> 
->> The card won't get activated.
->> The user won't see the type of inserted linecard. Again, it is not
->> possible for ASIC to access the linecard eeprom. See Vadim's reply.
->> 
->> 
->> >
->> >If it is not detected that's a serious problem, no?
->> 
->> That is how it is, unfortunatelly.
->> 
->> 
->> >
->> >If it is detected why can't the same mechanism be used for auto
->> >provisioning?
->> 
->> Again, not possible to detect.
->
->If the platform line card driver is running in the host, you can
->detect it. From your wording, it sounds like some systems do have this
->driver in the host. So please add the needed code.
+When device side MTU is larger than host side MTU, the packets
+(typically rmnet packets) are split over multiple MHI transfers.
+In that case, fragments must be re-aggregated to recover the packet
+before forwarding to upper layer.
 
-But if not, it cannot. We still need the provisioning then.
+A fragmented packet result in -EOVERFLOW MHI transaction status for
+each of its fragments, except the final one. Such transfer was
+previously considered as error and fragments were simply dropped.
 
+This change adds re-aggregation mechanism using skb chaining, via
+skb frag_list.
 
->
->When the platform line card driver is on the BMC, you need a proxy in
->between. Isn't this what IPMI and Redfish is all about? The proxy
->driver can offer the same interface as the platform line card driver.
+A warning (once) is printed since this behavior usually comes from
+a misconfiguration of the device (e.g. modem MTU).
 
-Do you have any example of kernel driver which is doing some thing like
-that?
+Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
+---
+ v2: use zero-copy skb chaining instead of skb_copy_expand.
+ v3: Fix nit in commit msg + remove misleading inline comment for frag_list
+ v4: no change
 
+ drivers/net/mhi_net.c | 74 ++++++++++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 64 insertions(+), 10 deletions(-)
 
->
->    Andrew
+diff --git a/drivers/net/mhi_net.c b/drivers/net/mhi_net.c
+index 4f512531..8800991 100644
+--- a/drivers/net/mhi_net.c
++++ b/drivers/net/mhi_net.c
+@@ -32,6 +32,8 @@ struct mhi_net_stats {
+ struct mhi_net_dev {
+ 	struct mhi_device *mdev;
+ 	struct net_device *ndev;
++	struct sk_buff *skbagg_head;
++	struct sk_buff *skbagg_tail;
+ 	struct delayed_work rx_refill;
+ 	struct mhi_net_stats stats;
+ 	u32 rx_queue_sz;
+@@ -132,6 +134,32 @@ static void mhi_net_setup(struct net_device *ndev)
+ 	ndev->tx_queue_len = 1000;
+ }
+ 
++static struct sk_buff *mhi_net_skb_agg(struct mhi_net_dev *mhi_netdev,
++				       struct sk_buff *skb)
++{
++	struct sk_buff *head = mhi_netdev->skbagg_head;
++	struct sk_buff *tail = mhi_netdev->skbagg_tail;
++
++	/* This is non-paged skb chaining using frag_list */
++	if (!head) {
++		mhi_netdev->skbagg_head = skb;
++		return skb;
++	}
++
++	if (!skb_shinfo(head)->frag_list)
++		skb_shinfo(head)->frag_list = skb;
++	else
++		tail->next = skb;
++
++	head->len += skb->len;
++	head->data_len += skb->len;
++	head->truesize += skb->truesize;
++
++	mhi_netdev->skbagg_tail = skb;
++
++	return mhi_netdev->skbagg_head;
++}
++
+ static void mhi_net_dl_callback(struct mhi_device *mhi_dev,
+ 				struct mhi_result *mhi_res)
+ {
+@@ -142,19 +170,42 @@ static void mhi_net_dl_callback(struct mhi_device *mhi_dev,
+ 	free_desc_count = mhi_get_free_desc_count(mhi_dev, DMA_FROM_DEVICE);
+ 
+ 	if (unlikely(mhi_res->transaction_status)) {
+-		dev_kfree_skb_any(skb);
+-
+-		/* MHI layer stopping/resetting the DL channel */
+-		if (mhi_res->transaction_status == -ENOTCONN)
++		switch (mhi_res->transaction_status) {
++		case -EOVERFLOW:
++			/* Packet can not fit in one MHI buffer and has been
++			 * split over multiple MHI transfers, do re-aggregation.
++			 * That usually means the device side MTU is larger than
++			 * the host side MTU/MRU. Since this is not optimal,
++			 * print a warning (once).
++			 */
++			netdev_warn_once(mhi_netdev->ndev,
++					 "Fragmented packets received, fix MTU?\n");
++			skb_put(skb, mhi_res->bytes_xferd);
++			mhi_net_skb_agg(mhi_netdev, skb);
++			break;
++		case -ENOTCONN:
++			/* MHI layer stopping/resetting the DL channel */
++			dev_kfree_skb_any(skb);
+ 			return;
+-
+-		u64_stats_update_begin(&mhi_netdev->stats.rx_syncp);
+-		u64_stats_inc(&mhi_netdev->stats.rx_errors);
+-		u64_stats_update_end(&mhi_netdev->stats.rx_syncp);
++		default:
++			/* Unknown error, simply drop */
++			dev_kfree_skb_any(skb);
++			u64_stats_update_begin(&mhi_netdev->stats.rx_syncp);
++			u64_stats_inc(&mhi_netdev->stats.rx_errors);
++			u64_stats_update_end(&mhi_netdev->stats.rx_syncp);
++		}
+ 	} else {
++		skb_put(skb, mhi_res->bytes_xferd);
++
++		if (mhi_netdev->skbagg_head) {
++			/* Aggregate the final fragment */
++			skb = mhi_net_skb_agg(mhi_netdev, skb);
++			mhi_netdev->skbagg_head = NULL;
++		}
++
+ 		u64_stats_update_begin(&mhi_netdev->stats.rx_syncp);
+ 		u64_stats_inc(&mhi_netdev->stats.rx_packets);
+-		u64_stats_add(&mhi_netdev->stats.rx_bytes, mhi_res->bytes_xferd);
++		u64_stats_add(&mhi_netdev->stats.rx_bytes, skb->len);
+ 		u64_stats_update_end(&mhi_netdev->stats.rx_syncp);
+ 
+ 		switch (skb->data[0] & 0xf0) {
+@@ -169,7 +220,6 @@ static void mhi_net_dl_callback(struct mhi_device *mhi_dev,
+ 			break;
+ 		}
+ 
+-		skb_put(skb, mhi_res->bytes_xferd);
+ 		netif_rx(skb);
+ 	}
+ 
+@@ -267,6 +317,7 @@ static int mhi_net_probe(struct mhi_device *mhi_dev,
+ 	dev_set_drvdata(dev, mhi_netdev);
+ 	mhi_netdev->ndev = ndev;
+ 	mhi_netdev->mdev = mhi_dev;
++	mhi_netdev->skbagg_head = NULL;
+ 	SET_NETDEV_DEV(ndev, &mhi_dev->dev);
+ 	SET_NETDEV_DEVTYPE(ndev, &wwan_type);
+ 
+@@ -301,6 +352,9 @@ static void mhi_net_remove(struct mhi_device *mhi_dev)
+ 
+ 	mhi_unprepare_from_transfer(mhi_netdev->mdev);
+ 
++	if (mhi_netdev->skbagg_head)
++		kfree_skb(mhi_netdev->skbagg_head);
++
+ 	free_netdev(mhi_netdev->ndev);
+ }
+ 
+-- 
+2.7.4
+
