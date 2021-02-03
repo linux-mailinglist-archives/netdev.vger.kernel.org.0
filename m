@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49B8C30D27C
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 05:21:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A044830D281
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 05:21:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232963AbhBCETi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 23:19:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36746 "EHLO
+        id S233018AbhBCETw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 23:19:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232760AbhBCESY (ORCPT
+        with ESMTP id S232762AbhBCESY (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 23:18:24 -0500
-Received: from mail-oo1-xc30.google.com (mail-oo1-xc30.google.com [IPv6:2607:f8b0:4864:20::c30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4028C061793;
-        Tue,  2 Feb 2021 20:17:07 -0800 (PST)
-Received: by mail-oo1-xc30.google.com with SMTP id y21so2387069oot.12;
-        Tue, 02 Feb 2021 20:17:07 -0800 (PST)
+Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A4CDC061794;
+        Tue,  2 Feb 2021 20:17:09 -0800 (PST)
+Received: by mail-ot1-x332.google.com with SMTP id e70so22106517ote.11;
+        Tue, 02 Feb 2021 20:17:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=hu2PSvf1ubuS5CTlM1297EMYv4VI1bTTMBsgsZV1bMQ=;
-        b=Xopi7NxJGZjMD6E96E6Zwqp1FGbnAnTTS9fpOU3UDAKc2HXN/q98ycxqbFqFn41q7v
-         gzbQJQKHI3E+lfnNWYHG8HhpaofH6PI29MpySujaIcGP0REiKB0Xi/dQgUD5WPJy5YA0
-         mg4nVdrQlP7nkWt0IsXg0tVTKQkW0wCaKJFCzaQI9zzHDGEm6WVpAVgxjlApeyDUTown
-         0bE0SNP3/GlLFfd/tXKz5PA4xZRLJwhBpRQpYqTtbv9IA0jjjRFxcu0541J6/qvqS8LX
-         R8tquy6MKOVbFa+En0bk2xBqtCigC2yXb8oq1NT2cyooKQASt/3JFSTEiRT+IWvuK3TU
-         HXQg==
+        bh=GN8zP3UB5VJMaiI/5BQTm+oIsq+71H6Qn+yKzIEhQE8=;
+        b=N4k6iB1iwAc4+xCCISbCeU7Le+8Cw7BkN9C2UpcKHeCaWPIM0BGYT6Cv0BAc+zQf0z
+         UcThmK/mjM3AZ805CHXi+iKL/IuXxp4h9V2ciR9yiz2v+g7jiQCQy/qxaG4eIvNdOA+R
+         MfKW5T09POMs8bUeygBdrR9JsLwC+BjnTtKy9YDITQbtheH7XyB/DcE3Iy8zTK6C7SLQ
+         qnYHm2obNLADh2eqarfqHwUuhVktSv4lR0HAG3xUXjpuKbRx+t8KnTFA29hnuhfAXuYz
+         BxIjNpDypqSbplTSPjPzOIZysfwOiRtfx5UeanIgt09OMB4kEQ9TY9LVbnh2XS+3ZMrH
+         w+ew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=hu2PSvf1ubuS5CTlM1297EMYv4VI1bTTMBsgsZV1bMQ=;
-        b=ZK587+h5oaGcJeGc2VSUKe8rOzwOGFW4SeVS+/6exOZ3T1caMsUmC+fySNVEtLUlii
-         sHpDGhgFf1G0pslglVSP9Y09wv6/0BtuEjVO3MvRJJIjhOqUIHgsKgBH3szdJGoX7DBS
-         LqH8PGpeCQ63tRCnYAq8qrHT0cl6kvWknmgRgZeaPrQV0woxxhFOAnYjsgzGSBDhPYaf
-         71T/UT0ikalPJcrmWjmev6tC5OgaGj6wZZgX4MLFUlvCbA0L1XRMP/xXy4WVFaSP4QAK
-         thfxmI/0sw3QiqwYA+37HyRxJ9r0kEp51moy7s1BFs0xLZIYysdZ0yGG4T9r3mIqHlse
-         dWVw==
-X-Gm-Message-State: AOAM532rWY7fmF3z12PgTdVOZcyP5ufqpjqNnpMX/r8ZugvWMmNI7OXa
-        sHnPxfnmM3MGt97vyozbRlFSaGNpkbv8nw==
-X-Google-Smtp-Source: ABdhPJwYbPn6zl136gqq8TKcxOfa7RepL+MBrMNS/3yzIgNRTS22izXE3VQPaSHuLulohXaKev/aoA==
-X-Received: by 2002:a4a:d1de:: with SMTP id a30mr810423oos.43.1612325827011;
-        Tue, 02 Feb 2021 20:17:07 -0800 (PST)
+        bh=GN8zP3UB5VJMaiI/5BQTm+oIsq+71H6Qn+yKzIEhQE8=;
+        b=MJ+U5M/Nm1aiHvyKklSGyjsqVnBQoueSEfl8yhPIfZpyibDft4eQVu9dOAADAqOE0+
+         9p/RsixMSYI5lMUgrAAdB0rWWgIyoxIAmOpIu1Z6Ibl72UD09MEEgnMuWw6xe5XVSNOh
+         e4SWDI09/Z0uBU+VrdspWgxA4bANXrsp1xL7w4JJSV5/CF7Jo6NiyF6kgID57uCXUKWm
+         Xhqv/m+zh5mf8mVkBwELztCjOGIo/OBdxXxuQSV/mz5K4ojLp4tJL3PIsjI5RE2Xkl2e
+         ZbKsyM+3iR1O2ddEPWQo1PuOnawCOfPAfx0paHy+lHy2WUDGzztxKCLX1rsvG7Hc/ijM
+         9pug==
+X-Gm-Message-State: AOAM531rSDs+FX5o6uUrdsclhuMqxutSqskyVHtPQMIx9kpv2Qfnz7Lg
+        ZQ0nB1CQ92aLl5PtA/shfqh+rHnKeRtrww==
+X-Google-Smtp-Source: ABdhPJxCGYaDts//pAYD30pC10JIsY/BnC6sSVkE+STYVWl72C4V1snCvm9h8It6Z78JCNaRD6/0PA==
+X-Received: by 2002:a9d:4e04:: with SMTP id p4mr770036otf.150.1612325828466;
+        Tue, 02 Feb 2021 20:17:08 -0800 (PST)
 Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:90c4:ffea:6079:8a0c])
-        by smtp.gmail.com with ESMTPSA id s10sm209978ool.35.2021.02.02.20.17.05
+        by smtp.gmail.com with ESMTPSA id s10sm209978ool.35.2021.02.02.20.17.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Feb 2021 20:17:06 -0800 (PST)
+        Tue, 02 Feb 2021 20:17:07 -0800 (PST)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
@@ -56,9 +56,9 @@ Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jakub Sitnicki <jakub@cloudflare.com>,
         Lorenz Bauer <lmb@cloudflare.com>
-Subject: [Patch bpf-next 09/19] udp: add ->read_sock() and ->sendmsg_locked() to ipv6
-Date:   Tue,  2 Feb 2021 20:16:26 -0800
-Message-Id: <20210203041636.38555-10-xiyou.wangcong@gmail.com>
+Subject: [Patch bpf-next 10/19] af_unix: implement ->sendmsg_locked for dgram socket
+Date:   Tue,  2 Feb 2021 20:16:27 -0800
+Message-Id: <20210203041636.38555-11-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210203041636.38555-1-xiyou.wangcong@gmail.com>
 References: <20210203041636.38555-1-xiyou.wangcong@gmail.com>
@@ -70,10 +70,8 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Cong Wang <cong.wang@bytedance.com>
 
-Similarly, udpv6_sendmsg() takes lock_sock() inside too,
-we have to build ->sendmsg_locked() on top of it.
-
-For ->read_sock(), we can just use udp_read_sock().
+We already have unix_dgram_sendmsg(), we can just build
+its ->sendmsg_locked() on top of it.
 
 Cc: John Fastabend <john.fastabend@gmail.com>
 Cc: Daniel Borkmann <daniel@iogearbox.net>
@@ -81,126 +79,56 @@ Cc: Jakub Sitnicki <jakub@cloudflare.com>
 Cc: Lorenz Bauer <lmb@cloudflare.com>
 Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 ---
- include/net/ipv6.h  |  1 +
- net/ipv4/udp.c      |  1 +
- net/ipv6/af_inet6.c |  2 ++
- net/ipv6/udp.c      | 27 +++++++++++++++++++++------
- 4 files changed, 25 insertions(+), 6 deletions(-)
+ net/unix/af_unix.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-index bd1f396cc9c7..48b6850dae85 100644
---- a/include/net/ipv6.h
-+++ b/include/net/ipv6.h
-@@ -1119,6 +1119,7 @@ int inet6_hash_connect(struct inet_timewait_death_row *death_row,
- int inet6_sendmsg(struct socket *sock, struct msghdr *msg, size_t size);
- int inet6_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- 		  int flags);
-+int udpv6_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t len);
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index 41c3303c3357..4e1fa4ecbcfb 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -659,6 +659,7 @@ static ssize_t unix_stream_sendpage(struct socket *, struct page *, int offset,
+ static ssize_t unix_stream_splice_read(struct socket *,  loff_t *ppos,
+ 				       struct pipe_inode_info *, size_t size,
+ 				       unsigned int flags);
++static int __unix_dgram_sendmsg(struct sock*, struct msghdr *, size_t);
+ static int unix_dgram_sendmsg(struct socket *, struct msghdr *, size_t);
+ static int unix_dgram_recvmsg(struct socket *, struct msghdr *, size_t, int);
+ static int unix_dgram_connect(struct socket *, struct sockaddr *,
+@@ -738,6 +739,7 @@ static const struct proto_ops unix_dgram_ops = {
+ 	.listen =	sock_no_listen,
+ 	.shutdown =	unix_shutdown,
+ 	.sendmsg =	unix_dgram_sendmsg,
++	.sendmsg_locked = __unix_dgram_sendmsg,
+ 	.recvmsg =	unix_dgram_recvmsg,
+ 	.mmap =		sock_no_mmap,
+ 	.sendpage =	sock_no_sendpage,
+@@ -1611,10 +1613,10 @@ static void scm_stat_del(struct sock *sk, struct sk_buff *skb)
+  *	Send AF_UNIX data.
+  */
  
- /*
-  * reassembly.c
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 6dffbcec0b51..3acb1be73131 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -1825,6 +1825,7 @@ int udp_read_sock(struct sock *sk, read_descriptor_t *desc,
- 
- 	return copied;
- }
-+EXPORT_SYMBOL(udp_read_sock);
- 
- /*
-  * 	This should be easy, if there is something there we
-diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-index f091fe9b4da5..63c2d024f572 100644
---- a/net/ipv6/af_inet6.c
-+++ b/net/ipv6/af_inet6.c
-@@ -714,7 +714,9 @@ const struct proto_ops inet6_dgram_ops = {
- 	.setsockopt	   = sock_common_setsockopt,	/* ok		*/
- 	.getsockopt	   = sock_common_getsockopt,	/* ok		*/
- 	.sendmsg	   = inet6_sendmsg,		/* retpoline's sake */
-+	.sendmsg_locked	   = udpv6_sendmsg_locked,
- 	.recvmsg	   = inet6_recvmsg,		/* retpoline's sake */
-+	.read_sock	   = udp_read_sock,
- 	.mmap		   = sock_no_mmap,
- 	.sendpage	   = sock_no_sendpage,
- 	.set_peek_off	   = sk_set_peek_off,
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 66ebdfc83c95..c52ea171060d 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -1272,7 +1272,7 @@ static int udp_v6_push_pending_frames(struct sock *sk)
+-static int unix_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
+-			      size_t len)
++static int __unix_dgram_sendmsg(struct sock *sk, struct msghdr *msg,
++				size_t len)
+ {
+-	struct sock *sk = sock->sk;
++	struct socket *sock = sk->sk_socket;
+ 	struct net *net = sock_net(sk);
+ 	struct unix_sock *u = unix_sk(sk);
+ 	DECLARE_SOCKADDR(struct sockaddr_un *, sunaddr, msg->msg_name);
+@@ -1814,6 +1816,12 @@ static int unix_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
  	return err;
  }
  
--int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
-+static int __udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len, bool locked)
- {
- 	struct ipv6_txoptions opt_space;
- 	struct udp_sock *up = udp_sk(sk);
-@@ -1361,7 +1361,8 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 		 * There are pending frames.
- 		 * The socket lock must be held while it's corked.
- 		 */
--		lock_sock(sk);
-+		if (!locked)
-+			lock_sock(sk);
- 		if (likely(up->pending)) {
- 			if (unlikely(up->pending != AF_INET6)) {
- 				release_sock(sk);
-@@ -1370,7 +1371,8 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 			dst = NULL;
- 			goto do_append_data;
- 		}
--		release_sock(sk);
-+		if (!locked)
-+			release_sock(sk);
- 	}
- 	ulen += sizeof(struct udphdr);
- 
-@@ -1533,11 +1535,13 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 		goto out;
- 	}
- 
--	lock_sock(sk);
-+	if (!locked)
-+		lock_sock(sk);
- 	if (unlikely(up->pending)) {
- 		/* The socket is already corked while preparing it. */
- 		/* ... which is an evident application bug. --ANK */
--		release_sock(sk);
-+		if (!locked)
-+			release_sock(sk);
- 
- 		net_dbg_ratelimited("udp cork app bug 2\n");
- 		err = -EINVAL;
-@@ -1562,7 +1566,8 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 
- 	if (err > 0)
- 		err = np->recverr ? net_xmit_errno(err) : 0;
--	release_sock(sk);
-+	if (!locked)
-+		release_sock(sk);
- 
- out:
- 	dst_release(dst);
-@@ -1593,6 +1598,16 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 	goto out;
- }
- 
-+int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
++static int unix_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
++			      size_t len)
 +{
-+	return __udpv6_sendmsg(sk, msg, len, false);
++	return __unix_dgram_sendmsg(sock->sk, msg, len);
 +}
 +
-+int udpv6_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t len)
-+{
-+	return __udpv6_sendmsg(sk, msg, len, true);
-+}
-+
- void udpv6_destroy_sock(struct sock *sk)
- {
- 	struct udp_sock *up = udp_sk(sk);
+ /* We use paged skbs for stream sockets, and limit occupancy to 32768
+  * bytes, and a minimum of a full page.
+  */
 -- 
 2.25.1
 
