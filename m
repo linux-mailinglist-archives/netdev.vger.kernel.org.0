@@ -2,99 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DBEA130D200
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 04:11:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DB0030D233
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 04:40:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232626AbhBCDKV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 22:10:21 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55964 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231339AbhBCDKK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 22:10:10 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 1446764F72;
-        Wed,  3 Feb 2021 03:10:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612321812;
-        bh=DVAsYtLHaLcMX/14PHFr2NNfXmhYY0D8BRSRrDo5Wjc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=n0zFNdOD/xTuOwQEvAwqMFw4y5BJxJk4/azHo8JCZYuiW7sbP5V3TKMbL4UO2UFzn
-         nPB2qm94xg9Yn99w4b9U2lihk2orwlNj6yrV3gARHFpfSv9qcawoKe91RFQ9x7AzoN
-         Y9NY0U2XJP++Vkt0edg0+R6hHIIwvQuMBTUS9aq+uTXlcFzAImm9ADHiVHtXCaBHbt
-         OZz+biYpVSYWFt8SsDGFeirsiy+KlGNdt2SGrQbflbdithwXCkkhUVGX3Zk/4iZVWD
-         XxLw7h3AJMGNqIfwXXhjOmTUTXVGWUz/iWN2eVipRtSIBq/Zo990jIBmfJ4L3VTaD1
-         QmUSO3yZrSo/Q==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0830F609E5;
-        Wed,  3 Feb 2021 03:10:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S232568AbhBCDi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 22:38:29 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:44555 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S230083AbhBCDi2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 22:38:28 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from cmi@nvidia.com)
+        with SMTP; 3 Feb 2021 05:10:59 +0200
+Received: from dev-r630-03.mtbc.labs.mlnx (dev-r630-03.mtbc.labs.mlnx [10.75.205.13])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 1133AvNn017835;
+        Wed, 3 Feb 2021 05:10:58 +0200
+From:   Chris Mi <cmi@nvidia.com>
+To:     netdev@vger.kernel.org
+Cc:     idosch@nvidia.com, Chris Mi <cmi@nvidia.com>,
+        Yotam Gigi <yotam.gi@gmail.com>
+Subject: [PATCH net] net: psample: Fix the netlink skb length
+Date:   Wed,  3 Feb 2021 11:10:28 +0800
+Message-Id: <20210203031028.171318-1-cmi@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next 01/14] net/mlx5e: Separate between netdev objects and mlx5e
- profiles initialization
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161232181202.32173.7472689334752230766.git-patchwork-notify@kernel.org>
-Date:   Wed, 03 Feb 2021 03:10:12 +0000
-References: <20210202065457.613312-2-saeed@kernel.org>
-In-Reply-To: <20210202065457.613312-2-saeed@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        saeedm@nvidia.com, roid@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Currently, the netlink skb length only includes metadata and data
+length. It doesn't include the psample generic netlink header length.
+Fix it by adding it.
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+Fixes: 6ae0a6286171 ("net: Introduce psample, a new genetlink channel for packet sampling")
+CC: Yotam Gigi <yotam.gi@gmail.com>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: Chris Mi <cmi@nvidia.com>
+---
+ net/psample/psample.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-On Mon,  1 Feb 2021 22:54:44 -0800 you wrote:
-> From: Saeed Mahameed <saeedm@nvidia.com>
-> 
-> 1) Initialize netdevice features and structures on netdevice allocation
->    and outside of the mlx5e profile.
-> 
-> 2) As now mlx5e netdevice private params will be setup on profile init only
->    after netdevice features are already set, we add  a call to
->    netde_update_features() to resolve any conflict.
->    This is nice since we reuse the fix_features ndo code if a profile
->    wants different default features, instead of duplicating features
->    conflict resolution code on profile initialization.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,01/14] net/mlx5e: Separate between netdev objects and mlx5e profiles initialization
-    https://git.kernel.org/netdev/net-next/c/3ef14e463f6e
-  - [net-next,02/14] net/mxl5e: Add change profile method
-    https://git.kernel.org/netdev/net-next/c/c4d7eb57687f
-  - [net-next,03/14] net/mlx5e: Refactor mlx5e_netdev_init/cleanup to mlx5e_priv_init/cleanup
-    https://git.kernel.org/netdev/net-next/c/c9fd1e33e989
-  - [net-next,04/14] net/mlx5e: Move netif_carrier_off() out of mlx5e_priv_init()
-    https://git.kernel.org/netdev/net-next/c/1227bbc5d09e
-  - [net-next,05/14] net/mlx5e: Move set vxlan nic info to profile init
-    https://git.kernel.org/netdev/net-next/c/84db66124714
-  - [net-next,06/14] net/mlx5e: Avoid false lock depenency warning on tc_ht
-    https://git.kernel.org/netdev/net-next/c/9ba33339c043
-  - [net-next,07/14] net/mlx5e: Move representor neigh init into profile enable
-    https://git.kernel.org/netdev/net-next/c/6b424e13b010
-  - [net-next,08/14] net/mlx5e: Enable napi in channel's activation stage
-    https://git.kernel.org/netdev/net-next/c/7637e499e219
-  - [net-next,09/14] net/mlx5e: Increase indirection RQ table size to 256
-    https://git.kernel.org/netdev/net-next/c/1dd55ba2fb70
-  - [net-next,10/14] net/mlx5e: remove h from printk format specifier
-    https://git.kernel.org/netdev/net-next/c/1d3a3f3bfe3c
-  - [net-next,11/14] net/mlx5e: kTLS, Improve TLS RX workqueue scope
-    https://git.kernel.org/netdev/net-next/c/26432001b5c4
-  - [net-next,12/14] net/mlx5e: accel, remove redundant space
-    https://git.kernel.org/netdev/net-next/c/8271e341ed63
-  - [net-next,13/14] net/mlx5e: CT: remove useless conversion to PTR_ERR then ERR_PTR
-    https://git.kernel.org/netdev/net-next/c/902c02458925
-  - [net-next,14/14] net/mlx5: DR, Avoid unnecessary csum recalculation on supporting devices
-    https://git.kernel.org/netdev/net-next/c/a283ea1b9716
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+diff --git a/net/psample/psample.c b/net/psample/psample.c
+index 33e238c965bd..807d75f5a40f 100644
+--- a/net/psample/psample.c
++++ b/net/psample/psample.c
+@@ -363,6 +363,7 @@ void psample_sample_packet(struct psample_group *group, struct sk_buff *skb,
+ 	struct ip_tunnel_info *tun_info;
+ #endif
+ 	struct sk_buff *nl_skb;
++	int header_len;
+ 	int data_len;
+ 	int meta_len;
+ 	void *data;
+@@ -381,12 +382,13 @@ void psample_sample_packet(struct psample_group *group, struct sk_buff *skb,
+ 		meta_len += psample_tunnel_meta_len(tun_info);
+ #endif
+ 
++	/* psample generic netlink header size */
++	header_len = nlmsg_total_size(GENL_HDRLEN + psample_nl_family.hdrsize);
+ 	data_len = min(skb->len, trunc_size);
+-	if (meta_len + nla_total_size(data_len) > PSAMPLE_MAX_PACKET_SIZE)
+-		data_len = PSAMPLE_MAX_PACKET_SIZE - meta_len - NLA_HDRLEN
++	if (header_len + meta_len + nla_total_size(data_len) > PSAMPLE_MAX_PACKET_SIZE)
++		data_len = PSAMPLE_MAX_PACKET_SIZE - header_len - meta_len - NLA_HDRLEN
+ 			    - NLA_ALIGNTO;
+-
+-	nl_skb = genlmsg_new(meta_len + nla_total_size(data_len), GFP_ATOMIC);
++	nl_skb = genlmsg_new(header_len + meta_len + nla_total_size(data_len), GFP_ATOMIC);
+ 	if (unlikely(!nl_skb))
+ 		return;
+ 
+-- 
+2.26.2
 
