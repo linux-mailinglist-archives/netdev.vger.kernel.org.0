@@ -2,121 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5E6F30D8CA
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 12:37:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A864430D947
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 12:57:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234337AbhBCLhR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 06:37:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46104 "EHLO
+        id S234355AbhBCL4P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 06:56:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234119AbhBCLhJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 06:37:09 -0500
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E17D6C061786;
-        Wed,  3 Feb 2021 03:36:28 -0800 (PST)
-Received: by mail-wr1-x431.google.com with SMTP id l12so23839304wry.2;
-        Wed, 03 Feb 2021 03:36:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=piicmRCuLZbTBJlar9FXYLLsqVbbP0x2N6R3KyFMnss=;
-        b=AFIeOrcprV4b2fseY/Ehcn6HXdg5fNHAE5F1dXVBj0mrPYZuTS3wu2HFtQadCpAIEk
-         3zUk9L6uAztUgPb6sVY/AOJG/2Y1FAqwHzlHPzHsZ3rOnXOFfJM/Dx1ULbPKjfFXaSyz
-         OStvspiiiNeyLRMHeDm+bLPHcpZmiqDnHArhEDDzgAoL0IGM270hifvaO/fTQqo2oz/x
-         AaHTwzHUO7zgRZRArg5y/WD3yz4rJZveUf/q61Lhqt5EhCu+LxwoStABhFc7xBDrlOiT
-         FE2iJolIqd3xWV49mJZOWfv9oQmtgMOIEJFV8FJUola8lDdXlB2tB2GZoWZAQ3+UlmhF
-         0wBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=piicmRCuLZbTBJlar9FXYLLsqVbbP0x2N6R3KyFMnss=;
-        b=UhTPVwcE5qUd3WXv5b9c55zAbZcpPUz1+2ri5iIf0bZON+7PYYNMCLeAZMlSw4V/t1
-         PPmrF2rFvVWziIzN0FulmGUNDwoWDScq+nyAeFYfVxSn2DlMEkU8xzalGI2zrX8eE4vd
-         /9UnYkCfli0bY1pg+DIN8pe7le9WnmwWU9l+KZviNPSKmHNvnryfnpBMKTnbbpblq4fv
-         1dZEKVE5u6kk5jeJulY0A39wN+ciyTUCujZgqikPgmwcokuV+5d7kGipOMdsSgqUgtHM
-         Do2ewIUuuhMHjWajmkD5uyrvx6lX8KLrw2hHb/RI2BK3giM+GlyFtniK8k+nmfg8AoT6
-         E4vQ==
-X-Gm-Message-State: AOAM531XboZizz6iT9r8g59eSBDHei379o3TQ8aFfr9MugX0cWqPD1cj
-        sy0Oa0vAxz/MYk5wPNO9f+GhU8bDn2Ko+icC
-X-Google-Smtp-Source: ABdhPJz4Ml0T/POwNiVR6M1731jHxpXg8XUbjoRPaUUpU3OSBj5hsY75ssXcEcoIeL9xaWPDD90sjw==
-X-Received: by 2002:a5d:6b89:: with SMTP id n9mr2959659wrx.323.1612352187106;
-        Wed, 03 Feb 2021 03:36:27 -0800 (PST)
-Received: from anparri.mshome.net (host-95-238-70-33.retail.telecomitalia.it. [95.238.70.33])
-        by smtp.gmail.com with ESMTPSA id z1sm3183707wrp.62.2021.02.03.03.36.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Feb 2021 03:36:26 -0800 (PST)
-From:   "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     "K . Y . Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        Michael Kelley <mikelley@microsoft.com>,
-        linux-hyperv@vger.kernel.org,
-        Saruhan Karademir <skarade@microsoft.com>,
-        Juan Vazquez <juvazq@microsoft.com>,
-        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH net] hv_netvsc: Reset the RSC count if NVSP_STAT_FAIL in netvsc_receive()
-Date:   Wed,  3 Feb 2021 12:36:02 +0100
-Message-Id: <20210203113602.558916-1-parri.andrea@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S234241AbhBCL4M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 06:56:12 -0500
+Received: from iam.tj (soggy.cloud [IPv6:2a01:7e00:e000:151::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D862C061573
+        for <netdev@vger.kernel.org>; Wed,  3 Feb 2021 03:55:27 -0800 (PST)
+Received: from [IPv6:2a02:8010:4007::e86f:38d4:3289] (unknown [IPv6:2a02:8010:4007::e86f:38d4:3289])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
+        (No client certificate requested)
+        by iam.tj (Postfix) with ESMTPSA id AFFA9340F6;
+        Wed,  3 Feb 2021 11:55:25 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=elloe.vision; s=2019;
+        t=1612353325; bh=JSYIYSDCwVoclSAy1a9pV822R2G63x1Ml+TkX/LYWWY=;
+        h=To:From:Subject:Cc:Date:From;
+        b=cBho0foQLzA6dP3dLEUCsxZSoczMH0b6wEkiO4CvODX5wbapVKi22h/PVtavgOXtQ
+         8JQD56dlxswnOBf98alj1H1ikI7SDw4jC7L1A+DAB/08KByObI9HSJw4muQcHcM1Tw
+         npj2SvSlNVheI1cyAlYKPJHozXnAgiS4yZ8oRVRiV71Tz+w7Ord5sgpMdX7zSnoBoj
+         bJ67ziYfW63bVHm7VMRB8rOjP/OgEqMysgHStXZUySVbxG7yiJgRgs+Pl0AE9GUSsV
+         U6HNc96dPeyamSHe/aZVHZ0cH1YaqUqZLbxTDIZvmmCvVPvFEizKjD3SbMpSoUF75k
+         ZzNMtsec/IxRA==
+To:     netdev <netdev@vger.kernel.org>
+From:   "Tj (Elloe Linux)" <ml.linux@elloe.vision>
+Subject: kernel BUG at net/core/skbuff.c:109!
+Organization: Elloe CIC
+Cc:     Callum O'Connor <callum.oconnor@elloe.vision>
+Message-ID: <d7f38867-71d3-e91c-c71c-1dd37a4c3086@elloe.vision>
+Date:   Wed, 3 Feb 2021 11:55:25 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 44144185951a0f ("hv_netvsc: Add validation for untrusted Hyper-V
-values") added validation to rndis_filter_receive_data() (and
-rndis_filter_receive()) which introduced NVSP_STAT_FAIL-scenarios where
-the count is not updated/reset.  Fix this omission, and prevent similar
-scenarios from occurring in the future.
+On a recent build (5.10.0) we've seen several hard-to-pinpoint complete
+lock-ups requiring power-off restarts.
 
-Reported-by: Juan Vazquez <juvazq@microsoft.com>
-Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: netdev@vger.kernel.org
-Fixes: 44144185951a0f ("hv_netvsc: Add validation for untrusted Hyper-V values")
----
- drivers/net/hyperv/netvsc.c       | 5 ++++-
- drivers/net/hyperv/rndis_filter.c | 2 --
- 2 files changed, 4 insertions(+), 3 deletions(-)
+Today we found a small clue in the kernel log but unfortunately the
+complete backtrace wasn't captured (presumably system froze before log
+could be flushed) but I thought I should share it for investigation.
 
-diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
-index 2350342b961ff..13bd48a75db76 100644
---- a/drivers/net/hyperv/netvsc.c
-+++ b/drivers/net/hyperv/netvsc.c
-@@ -1262,8 +1262,11 @@ static int netvsc_receive(struct net_device *ndev,
- 		ret = rndis_filter_receive(ndev, net_device,
- 					   nvchan, data, buflen);
- 
--		if (unlikely(ret != NVSP_STAT_SUCCESS))
-+		if (unlikely(ret != NVSP_STAT_SUCCESS)) {
-+			/* Drop incomplete packet */
-+			nvchan->rsc.cnt = 0;
- 			status = NVSP_STAT_FAIL;
-+		}
- 	}
- 
- 	enq_receive_complete(ndev, net_device, q_idx,
-diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis_filter.c
-index 598713c0d5a87..3aab2b867fc0d 100644
---- a/drivers/net/hyperv/rndis_filter.c
-+++ b/drivers/net/hyperv/rndis_filter.c
-@@ -509,8 +509,6 @@ static int rndis_filter_receive_data(struct net_device *ndev,
- 	return ret;
- 
- drop:
--	/* Drop incomplete packet */
--	nvchan->rsc.cnt = 0;
- 	return NVSP_STAT_FAIL;
- }
- 
--- 
-2.25.1
+kernel BUG at net/core/skbuff.c:109!
 
+kernel: skbuff: skb_under_panic: text:ffffffffc103c622 len:1228 put:48
+head:ffffa00202858000 data:ffffa00202857ff2 tail:0x4be end:0x6c0 dev:wlp4s0
+kernel: ------------[ cut here ]------------
+kernel: kernel BUG at net/core/skbuff.c:109!
+
+Obviously this ought not to happen and we'd like to discover the cause.
+
+Whilst writing this report it happened again. Checking the logs we see
+three instances of the BUG none of which capture a stack trace:
+
+Jan 27
+Feb 03 #1
+Feb 03 #2
+
+The only slight clue may be a k3s service that we were unaware was
+constantly restarting and had reached 26,636 iterations just before the
+Feb 03 #1 BUG. However, we removed k3s immediately after and there were
+no similar clues 20 minutes later for the Feb 03 #2 BUG.
+
+Feb 03 11:11:13 elloe001 k3s[1209978]:
+time="2021-02-03T11:11:13.452745479Z" level=fatal msg="starting
+kubernetes: preparing server: start cluster and https:
+listen tcp 10.1.2.1:6443: bind: cannot assign requested address"
+Feb 03 11:11:13 elloe001 systemd[1]: k3s-main.service: Main process
+exited, code=exited, status=1/FAILURE
+Feb 03 11:11:13 elloe001 systemd[1]: k3s-main.service: Failed with
+result 'exit-code'.
+Feb 03 11:11:13 elloe001 systemd[1]: Failed to start Lightweight Kubernetes.
+Feb 03 11:11:18 elloe001 systemd[1]: k3s-dev.service: Scheduled restart
+job, restart counter is at 26636.
+Feb 03 11:11:18 elloe001 systemd[1]: k3s-main.service: Scheduled restart
+job, restart counter is at 26636.
+Feb 03 11:11:18 elloe001 systemd[1]: Stopped Lightweight Kubernetes.
+Feb 03 11:11:18 elloe001 systemd[1]: Starting Lightweight Kubernetes...
+Feb 03 11:11:18 elloe001 systemd[1]: Stopped Lightweight Kubernetes.
+Feb 03 11:11:18 elloe001 systemd[1]: Starting Lightweight Kubernetes...
+
+We don't think this is hardware related as we have several identical
+Lenovo E495 laptops and they have never suffered this.
+
+We don't know of any way to reproduce it at will.
