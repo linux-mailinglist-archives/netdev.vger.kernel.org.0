@@ -2,118 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F00F030E412
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 21:31:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CD2630E41B
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 21:34:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231511AbhBCUav (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 15:30:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48664 "EHLO
+        id S232183AbhBCUeW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 15:34:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231367AbhBCUas (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 15:30:48 -0500
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57290C0613ED;
-        Wed,  3 Feb 2021 12:30:08 -0800 (PST)
-Received: by mail-io1-xd2f.google.com with SMTP id s24so751248iob.6;
-        Wed, 03 Feb 2021 12:30:08 -0800 (PST)
+        with ESMTP id S232014AbhBCUeV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 15:34:21 -0500
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8E5FC0613D6;
+        Wed,  3 Feb 2021 12:33:40 -0800 (PST)
+Received: by mail-wm1-x343.google.com with SMTP id f16so1015286wmq.5;
+        Wed, 03 Feb 2021 12:33:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=wFjeCmd7uwrlvqvLPlufFHfHxqZnxa5Hn6c4hScQlNE=;
-        b=ERktb6XZPwM5K4q6V4fmCKD93UgjapeTUZZiNd+LFMR9EuUUcktlOQsONIrL78EDV7
-         AK0S0gBv9b9y86bNH3bTZ5wu+mjPoERPRq7/D98tIhM2h/liyU8mpkbaLEWkzMG16Jcn
-         U/h3TP8wA65okqC40l5cKADqXgNOIMp8PqTkcnpjjEma+st+1GAZ49Rz3TnfCRUjmpTx
-         4KZkj+8SAEX5M2y2bwJ5y1XVfjywca5mmex4wc03ykqlS4A6IWGTPHc1tB+ncfwnMG+t
-         vBpzXimlAzNZQMo9SaPMsKkp8ATRFoVwKoVg7WTpcPiWaOGyCWB3EDUiN4WPRD5q3YUJ
-         ejxg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rvq4Dfhyh4fJ1W4POXfEh5I1ofblW0n5lluj9P5Qnpg=;
+        b=Qm1a8vVLrO82aGS+yaiU1uw7P6h6BFsfSKT2A/1aw69fzNzo0tbdaj4ZCf88s100K/
+         MiOHFeRIeNCh0T8obUKlb1dLyKUy38dAHhP4glrM8LKOdkYBpfTLRsLx6ZeBmMhVncEW
+         eB7fCmFnYTh+he6Z4i/vREHEH0ZXpyHttFE5Zq9oFfYJesiPYbT93sYp7+MAyrkyiBF9
+         U/rMpkDoAcVvYum4fOGwoWT2ciQAxJnwjdaa8Q+7RnEgBOKZ7h8sEstyWlWQeCEnW4n5
+         mTgxwY/oiaMmjzzwewPCH9E1tGIQjB/hkgAaw5ptsmX1m3A1P+UCXd24DL87KcxXYbxn
+         iRog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=wFjeCmd7uwrlvqvLPlufFHfHxqZnxa5Hn6c4hScQlNE=;
-        b=AdE+l1MwPC91y2JKoJgWU0x0Y2AG4I/Q5uFgeHpA8crBDyokn9Hii4dIjE2tKudsx1
-         IcPrwLr812NwgyxMaSJflhNOOY4+GzFnSraOCCYEfNavy5EBbWMQx6I50Qr1LJFKGq/A
-         6AVQ9atBE97iZlXoSKwICpLpYAtT+KO6bsw+2B02L3bKP2oi3xau6MXkKa0c886gZfK6
-         wc3wAROwd+NZDSqSwML+usmcBwgsVm2PmcGMXqRbFCiTnhf1Y5O+X/Q8Hq/VXUO/Eh2z
-         yV03B697GggCAnywNtcc1ppiK7oyZ/+Y67nAT2riggMcCW+j4gWJXs1xBtHod/df6slP
-         HF4Q==
-X-Gm-Message-State: AOAM530xneoBu5byu/b4bsrsGtUmyMKJ22uteGJsQ4sU53QA/QJCrsyM
-        D6jwtQ5b/xq7jyWSKq3FmUU=
-X-Google-Smtp-Source: ABdhPJyrBUgQMD7fIy4RqPlhIg8KsMzQ8JD82A5gRi94EvR4XH7id9cNN3L1QJD3SWyPGMHkgZl+rw==
-X-Received: by 2002:a6b:ed0f:: with SMTP id n15mr3896782iog.94.1612384207741;
-        Wed, 03 Feb 2021 12:30:07 -0800 (PST)
-Received: from localhost ([172.243.146.206])
-        by smtp.gmail.com with ESMTPSA id d9sm1473037ilo.20.2021.02.03.12.30.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Feb 2021 12:30:06 -0800 (PST)
-Date:   Wed, 03 Feb 2021 12:29:57 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, duanxiongchun@bytedance.com,
-        Dongdong Wang <wangdongdong.6@bytedance.com>,
-        jiang.wang@bytedance.com, Cong Wang <cong.wang@bytedance.com>
-Message-ID: <601b07c5c8345_4b70c208f2@john-XPS-13-9370.notmuch>
-In-Reply-To: <CAM_iQpX-GDysSZTYr-2WsbqFP4VgG5ivcO1vwLvKVHkJ9hjodg@mail.gmail.com>
-References: <20210203041636.38555-1-xiyou.wangcong@gmail.com>
- <20210203174846.gvhyv3hlrfnep7xe@ast-mbp.dhcp.thefacebook.com>
- <CAM_iQpX-GDysSZTYr-2WsbqFP4VgG5ivcO1vwLvKVHkJ9hjodg@mail.gmail.com>
-Subject: Re: [Patch bpf-next 00/19] sock_map: add non-TCP and cross-protocol
- support
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rvq4Dfhyh4fJ1W4POXfEh5I1ofblW0n5lluj9P5Qnpg=;
+        b=KzU9s4mKB3+w9uYYOQg/wpfEOzf86hta8gFZUa2fWo5gS0cgf7U+XUiSg+OqPcucuw
+         D8QNLD2e1xYTmYpvkU7nGmG3sXtAmRJNfF/INj/eC51EYrpKwaOYCBT1mHTLyEwsvzqa
+         327PUKopmQ3MIV0wnxiYHoPwmb+NoS653C1evJ/60KXBej9qZoYeLBwv/xDF9TkoheK4
+         GZ8hAq6szW7Pah/VrAjPi9BwBKUi2P3ecm40YkSkwQv1Vk0wlb/1sWAxICqOktzXwVry
+         qOR65D6ujI286/N2snD4H9tva0bG1Urrr0Ni2mIEEmOaut0t+GhYeHdt2b1FuUwTlUP3
+         LC7A==
+X-Gm-Message-State: AOAM530bhAxEP+s+xPlvXEq2rLyIGWv5+9zoF021JuFQk8ZG57D9Mie4
+        TBcBC+ezHci1Fh3Z/X7dm4at4FKXu/D51FMqkCE=
+X-Google-Smtp-Source: ABdhPJzvnzLNoMuGQazQHTjr5w3Z3Xm/BTCzCJ2nKSclRo2HNLzgS4VzauF7TmpVIdxvZ/sA19S1pBE9Az/PL944Eew=
+X-Received: by 2002:a05:600c:354c:: with SMTP id i12mr4455953wmq.51.1612384419667;
+ Wed, 03 Feb 2021 12:33:39 -0800 (PST)
+MIME-Version: 1.0
+References: <20210202142901.7131-1-elic@nvidia.com> <CAPWQSg3Z1aCZc7kX2x_4NLtAzkrZ+eO5ABBF0bAQfaLc=++Y2Q@mail.gmail.com>
+ <20210203064812.GA33072@mtl-vdi-166.wap.labs.mlnx>
+In-Reply-To: <20210203064812.GA33072@mtl-vdi-166.wap.labs.mlnx>
+From:   Si-Wei Liu <siwliu.kernel@gmail.com>
+Date:   Wed, 3 Feb 2021 12:33:26 -0800
+Message-ID: <CAPWQSg0OptdAstG10e+zMvD2ZHbHdS+o2ppUxZyM0kJsd34FdA@mail.gmail.com>
+Subject: Re: [PATCH] vdpa/mlx5: Restore the hardware used index after change map
+To:     Eli Cohen <elic@nvidia.com>, Si-Wei Liu <si-wei.liu@oracle.com>
+Cc:     mst@redhat.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lulu@redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cong Wang wrote:
-> On Wed, Feb 3, 2021 at 9:48 AM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Tue, Feb 02, 2021 at 08:16:17PM -0800, Cong Wang wrote:
-> > > From: Cong Wang <cong.wang@bytedance.com>
+On Tue, Feb 2, 2021 at 10:48 PM Eli Cohen <elic@nvidia.com> wrote:
+>
+> On Tue, Feb 02, 2021 at 09:14:02AM -0800, Si-Wei Liu wrote:
+> > On Tue, Feb 2, 2021 at 6:34 AM Eli Cohen <elic@nvidia.com> wrote:
 > > >
-> > > Currently sockmap only fully supports TCP, UDP is partially supported
-> > > as it is only allowed to add into sockmap. This patch extends sockmap
-> > > with: 1) full UDP support; 2) full AF_UNIX dgram support; 3) cross
-> > > protocol support. Our goal is to allow socket splice between AF_UNIX
-> > > dgram and UDP.
+> > > When a change of memory map occurs, the hardware resources are destroyed
+> > > and then re-created again with the new memory map. In such case, we need
+> > > to restore the hardware available and used indices. The driver failed to
+> > > restore the used index which is added here.
+> > >
+> > > Fixes 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
+> > > Signed-off-by: Eli Cohen <elic@nvidia.com>
+> > > ---
+> > > This patch is being sent again a single patch the fixes hot memory
+> > > addtion to a qemy process.
+> > >
+> > >  drivers/vdpa/mlx5/net/mlx5_vnet.c | 7 +++++++
+> > >  1 file changed, 7 insertions(+)
+> > >
+> > > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > index 88dde3455bfd..839f57c64a6f 100644
+> > > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > @@ -87,6 +87,7 @@ struct mlx5_vq_restore_info {
+> > >         u64 device_addr;
+> > >         u64 driver_addr;
+> > >         u16 avail_index;
+> > > +       u16 used_index;
+> > >         bool ready;
+> > >         struct vdpa_callback cb;
+> > >         bool restore;
+> > > @@ -121,6 +122,7 @@ struct mlx5_vdpa_virtqueue {
+> > >         u32 virtq_id;
+> > >         struct mlx5_vdpa_net *ndev;
+> > >         u16 avail_idx;
+> > > +       u16 used_idx;
+> > >         int fw_state;
+> > >
+> > >         /* keep last in the struct */
+> > > @@ -804,6 +806,7 @@ static int create_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtque
+> > >
+> > >         obj_context = MLX5_ADDR_OF(create_virtio_net_q_in, in, obj_context);
+> > >         MLX5_SET(virtio_net_q_object, obj_context, hw_available_index, mvq->avail_idx);
+> > > +       MLX5_SET(virtio_net_q_object, obj_context, hw_used_index, mvq->used_idx);
 > >
-> > Please expand on the use case. The 'splice between af_unix and udp'
-> > doesn't tell me much. The selftest doesn't help to understand the scope either.
-> 
-> Sure. We have thousands of services connected to a daemon on every host
-> with UNIX dgram sockets, after they are moved into VM, we have to add a proxy
-> to forward these communications from VM to host, because rewriting thousands
-> of them is not practical. This proxy uses a UNIX socket connected to services
-> and uses a UDP socket to connect to the host. It is inefficient because data is
-> copied between kernel space and user space twice, and we can not use
-> splice() which only supports TCP. Therefore, we want to use sockmap to do
-> the splicing without even going to user-space at all (after the initial setup).
+> > The saved indexes will apply to the new virtqueue object whenever it
+> > is created. In virtio spec, these indexes will reset back to zero when
+> > the virtio device is reset. But I don't see how it's done today. IOW,
+> > I don't see where avail_idx and used_idx get cleared from the mvq for
+> > device reset via set_status().
+> >
+>
+> Right, but this is not strictly related to this patch. I will post
+> another patch to fix this.
 
-Thanks for the details. We also have a use-case similar to TCP sockets
-to apply policy/redirect to UDP sockets so will want similar semantics to
-how TCP skmsg programs work on egress.
+Better to post these two patches in a series.Or else it may cause VM
+reboot problem as that is where the device gets reset. The avail_index
+did not as the correct value will be written to by driver right after,
+but used_idx introduced by this patch is supplied by device hence this
+patch alone would introduce regression.
 
-> 
-> My colleague Jiang (already Cc'ed) is working on the sockmap support for
-> vsock so that we can move from UDP to vsock for host-VM communications.
+>
+> BTW, can you describe a secnario that would cause a reset (through
+> calling set_status()) that happens after the VQ has been used?
 
-Great. The host-VM channel came up a few times in the initial sockmap work,
-but I never got around to starting.
+You can try reboot the guest, that'll be the easy way to test.
 
-> 
-> If this is useful, I can add it in this cover letter in the next update.
-> 
+-Siwei
 
-Please add to the cover letter. I'll review the series today or
-tomorrow, I have a couple things on the TODO list for today that
-I need to get done first.
-
-> Thanks.
-
-Thanks for doing this work.
+>
+> > -Siwei
+> >
+> >
+> > >         MLX5_SET(virtio_net_q_object, obj_context, queue_feature_bit_mask_12_3,
+> > >                  get_features_12_3(ndev->mvdev.actual_features));
+> > >         vq_ctx = MLX5_ADDR_OF(virtio_net_q_object, obj_context, virtio_q_context);
+> > > @@ -1022,6 +1025,7 @@ static int connect_qps(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *m
+> > >  struct mlx5_virtq_attr {
+> > >         u8 state;
+> > >         u16 available_index;
+> > > +       u16 used_index;
+> > >  };
+> > >
+> > >  static int query_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq,
+> > > @@ -1052,6 +1056,7 @@ static int query_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueu
+> > >         memset(attr, 0, sizeof(*attr));
+> > >         attr->state = MLX5_GET(virtio_net_q_object, obj_context, state);
+> > >         attr->available_index = MLX5_GET(virtio_net_q_object, obj_context, hw_available_index);
+> > > +       attr->used_index = MLX5_GET(virtio_net_q_object, obj_context, hw_used_index);
+> > >         kfree(out);
+> > >         return 0;
+> > >
+> > > @@ -1610,6 +1615,7 @@ static int save_channel_info(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqu
+> > >                 return err;
+> > >
+> > >         ri->avail_index = attr.available_index;
+> > > +       ri->used_index = attr.used_index;
+> > >         ri->ready = mvq->ready;
+> > >         ri->num_ent = mvq->num_ent;
+> > >         ri->desc_addr = mvq->desc_addr;
+> > > @@ -1654,6 +1660,7 @@ static void restore_channels_info(struct mlx5_vdpa_net *ndev)
+> > >                         continue;
+> > >
+> > >                 mvq->avail_idx = ri->avail_index;
+> > > +               mvq->used_idx = ri->used_index;
+> > >                 mvq->ready = ri->ready;
+> > >                 mvq->num_ent = ri->num_ent;
+> > >                 mvq->desc_addr = ri->desc_addr;
+> > > --
+> > > 2.29.2
+> > >
