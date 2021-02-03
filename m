@@ -2,151 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4290C30D37D
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 07:51:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4393C30D391
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 07:59:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231513AbhBCGtA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 01:49:00 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:7289 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231186AbhBCGs7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 01:48:59 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B601a47330002>; Tue, 02 Feb 2021 22:48:19 -0800
-Received: from DRHQMAIL105.nvidia.com (10.27.9.14) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 3 Feb
- 2021 06:48:19 +0000
-Received: from mtl-vdi-166.wap.labs.mlnx (172.20.145.6) by
- DRHQMAIL105.nvidia.com (10.27.9.14) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3; Wed, 3 Feb 2021 06:48:16 +0000
-Date:   Wed, 3 Feb 2021 08:48:12 +0200
-From:   Eli Cohen <elic@nvidia.com>
-To:     Si-Wei Liu <siwliu.kernel@gmail.com>
-CC:     <mst@redhat.com>, <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lulu@redhat.com>
-Subject: Re: [PATCH] vdpa/mlx5: Restore the hardware used index after change
- map
-Message-ID: <20210203064812.GA33072@mtl-vdi-166.wap.labs.mlnx>
-References: <20210202142901.7131-1-elic@nvidia.com>
- <CAPWQSg3Z1aCZc7kX2x_4NLtAzkrZ+eO5ABBF0bAQfaLc=++Y2Q@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CAPWQSg3Z1aCZc7kX2x_4NLtAzkrZ+eO5ABBF0bAQfaLc=++Y2Q@mail.gmail.com>
-User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- DRHQMAIL105.nvidia.com (10.27.9.14)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1612334899; bh=bdWJXd3YSJWxG7Da0O4JneyR2Xqw2RHQwLqQqrk8WPY=;
-        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-         Content-Type:Content-Disposition:In-Reply-To:User-Agent:
-         X-Originating-IP:X-ClientProxiedBy;
-        b=pKhCUP08z1d/GjfKEtGyTR4xrOOO4sSqOTNQfZp+EK7WeZo1b5aGced6rYv43uMRH
-         6yapjy0thTQ6oAjcgkMqpprndUmZEvkRa5cGOfczGq5+L5o3/LY+JxmCvNi6Ogu5cQ
-         1Cicgn92mv2w/6DA/tA4Rq+7jp7GAplPSOovgAV27qLR5PJZ+yu/BfjlkhlkMlH1Dm
-         GJyNyp14Fq3eF6Zb80ClE9/W3e/K0ncYJ7sZY3iyZdZYJx/errBCQXGg64EHGvHehE
-         kaw0LlqTipeaZsWZQdo1ESYzb6sO9rGjmf4v5dys4HSuUA60QxJC0hy4hqkQwqb8fd
-         U91fUnfEWiQWQ==
+        id S231732AbhBCG5x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 01:57:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42478 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231600AbhBCG5v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 01:57:51 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00390C06174A
+        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 22:57:10 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id e62so22794115yba.5
+        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 22:57:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=/wnbMtD0oy336W9EDCGq60PMZiiWzWFv7G6400JHFhs=;
+        b=tfjQFmZuBFZHJuQTjSVhg3ixz+DnPLN/S9VEIvqbIxFzeoWNgV77XNtiyL9ixPO4Tb
+         dz0un2MfXWvAwVLGdjRh/++XmGFZd948pQuQFXv6vBXBjSlmZWraR0aKplDotFXISRP3
+         PeaaH93UfYOEVLcTJI3ORIUPgyXvtocYdiJV0Rzzn/CVwSvbupy+oy554e7WbzRO8+sk
+         mBMRaneAEtmswh0W3dKwol0esz25Gaupy0pjB6oF9Z2y+Gx8h+HzW/iChV83VZoVLDMJ
+         ehusselEhRZwCjTxFbKkR7wDR4RiJEaZHPGDsLcrWuNkLWdNWH0IIC74zkgZdeTrh0BK
+         sZ5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=/wnbMtD0oy336W9EDCGq60PMZiiWzWFv7G6400JHFhs=;
+        b=AzYnGYlbGTucLZl78isvr5m1Z0mgMIQGaPs20ZorX8a5W06GlRSrB0GmqA75Nq/3S3
+         OERKDayfx21NgdtDlTe5CCDdMJLe7XHnUxJVAjgo49LFutR/IcBKy/kOfMPE8hVqfpuk
+         TA6ZY0ah88pRRl9yE/MGNNRAOWckK9lVgSk5NxkGpbYED6qmueh2xt49ifcb5ePFCQL7
+         VHMNUdNsFndMXdnX+13tNfOUr4I+79oKD8BNAG8b+Y3WOLB2Rayr0dybjMLQ/VA/izqp
+         /+ygaibuEO4+yEwNeVnURkGMgP/aKa/0Ckp+W0+a+TVgseEvvqndjDKkIi2lTvKO/ORh
+         UQUg==
+X-Gm-Message-State: AOAM533q+ueEYgMwDYoLBGsCItY1GS3GRIuk2R3f2YzyBq+/GDaA0I6U
+        kBwDFbtlwG0dCHFAvy24vjEHL6aql+uN4gPrgA==
+X-Google-Smtp-Source: ABdhPJxSiqk8gZYYdNVJFLC3BUkDqUVnJelM3j+yz+P8URDuHFvJS7qJyIaFDqLtAWy+TUl7m+Am741X6VRHRXrL9A==
+Sender: "howardchung via sendgmr" 
+        <howardchung@howardchung-p920.tpe.corp.google.com>
+X-Received: from howardchung-p920.tpe.corp.google.com ([2401:fa00:1:10:c8ff:4e4a:dbd4:e8a6])
+ (user=howardchung job=sendgmr) by 2002:a25:ca8c:: with SMTP id
+ a134mr2589170ybg.106.1612335430056; Tue, 02 Feb 2021 22:57:10 -0800 (PST)
+Date:   Wed,  3 Feb 2021 14:56:44 +0800
+Message-Id: <20210203145558.Bluez.v1.1.I23ab3f91f23508bf84908e62d470bfab1d844f63@changeid>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.30.0.365.g02bc693789-goog
+Subject: [Bluez PATCH v1] Bluetooth: Fix crash in mgmt_add_adv_patterns_monitor_complete
+From:   Howard Chung <howardchung@google.com>
+To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org
+Cc:     Howard Chung <howardchung@google.com>,
+        Miao-chen Chou <mcchou@chromium.org>,
+        Manish Mandlik <mmandlik@chromium.org>,
+        Archie Pusaka <apusaka@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 02, 2021 at 09:14:02AM -0800, Si-Wei Liu wrote:
-> On Tue, Feb 2, 2021 at 6:34 AM Eli Cohen <elic@nvidia.com> wrote:
-> >
-> > When a change of memory map occurs, the hardware resources are destroyed
-> > and then re-created again with the new memory map. In such case, we need
-> > to restore the hardware available and used indices. The driver failed to
-> > restore the used index which is added here.
-> >
-> > Fixes 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
-> > Signed-off-by: Eli Cohen <elic@nvidia.com>
-> > ---
-> > This patch is being sent again a single patch the fixes hot memory
-> > addtion to a qemy process.
-> >
-> >  drivers/vdpa/mlx5/net/mlx5_vnet.c | 7 +++++++
-> >  1 file changed, 7 insertions(+)
-> >
-> > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > index 88dde3455bfd..839f57c64a6f 100644
-> > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > @@ -87,6 +87,7 @@ struct mlx5_vq_restore_info {
-> >         u64 device_addr;
-> >         u64 driver_addr;
-> >         u16 avail_index;
-> > +       u16 used_index;
-> >         bool ready;
-> >         struct vdpa_callback cb;
-> >         bool restore;
-> > @@ -121,6 +122,7 @@ struct mlx5_vdpa_virtqueue {
-> >         u32 virtq_id;
-> >         struct mlx5_vdpa_net *ndev;
-> >         u16 avail_idx;
-> > +       u16 used_idx;
-> >         int fw_state;
-> >
-> >         /* keep last in the struct */
-> > @@ -804,6 +806,7 @@ static int create_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtque
-> >
-> >         obj_context = MLX5_ADDR_OF(create_virtio_net_q_in, in, obj_context);
-> >         MLX5_SET(virtio_net_q_object, obj_context, hw_available_index, mvq->avail_idx);
-> > +       MLX5_SET(virtio_net_q_object, obj_context, hw_used_index, mvq->used_idx);
-> 
-> The saved indexes will apply to the new virtqueue object whenever it
-> is created. In virtio spec, these indexes will reset back to zero when
-> the virtio device is reset. But I don't see how it's done today. IOW,
-> I don't see where avail_idx and used_idx get cleared from the mvq for
-> device reset via set_status().
-> 
+If hci_add_adv_monitor is a pending command(e.g. forward to
+msft_add_monitor_pattern), it is possible that
+mgmt_add_adv_patterns_monitor_complete gets called before
+cmd->user_data gets set, which will cause a crash when we
+try to get the moniter handle through cmd->user_data in
+mgmt_add_adv_patterns_monitor_complete.
 
-Right, but this is not strictly related to this patch. I will post
-another patch to fix this.
+This moves the cmd->user_data assignment earlier than
+hci_add_adv_monitor.
 
-BTW, can you describe a secnario that would cause a reset (through
-calling set_status()) that happens after the VQ has been used?
+RIP: 0010:mgmt_add_adv_patterns_monitor_complete+0x82/0x187 [bluetooth]
+Code: 1e bf 03 00 00 00 be 52 00 00 00 4c 89 ea e8 9e
+e4 02 00 49 89 c6 48 85 c0 0f 84 06 01 00 00 48 89 5d b8 4c 89 fb 4d 8b
+7e 30 <41> 0f b7 47 18 66 89 45 c0 45 84 e4 75 5a 4d 8b 56 28 48 8d 4d
+c8
+RSP: 0018:ffffae81807dbcb8 EFLAGS: 00010286
+RAX: ffff91c4bdf723c0 RBX: 0000000000000000 RCX: ffff91c4e5da5b80
+RDX: ffff91c405680000 RSI: 0000000000000052 RDI: ffff91c49d654c00
+RBP: ffffae81807dbd00 R08: ffff91c49fb157e0 R09: ffff91c49fb157e0
+R10: 000000000002a4f0 R11: ffffffffc0819cfd R12: 0000000000000000
+R13: ffff91c405680000 R14: ffff91c4bdf723c0 R15: 0000000000000000
+FS:  0000000000000000(0000) GS:ffff91c4ea300000(0000)
+knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000018 CR3: 0000000133612002 CR4:
+00000000003606e0
+Call Trace:
+ ? msft_le_monitor_advertisement_cb+0x111/0x141
+[bluetooth]
+ hci_event_packet+0x425e/0x631c [bluetooth]
+ ? printk+0x59/0x73
+ ? __switch_to_asm+0x41/0x70
+ ?
+msft_le_set_advertisement_filter_enable_cb+0xa6/0xa6 [bluetooth]
+ ? bt_dbg+0xb4/0xbb [bluetooth]
+ ? __switch_to_asm+0x41/0x70
+ hci_rx_work+0x101/0x319 [bluetooth]
+ process_one_work+0x257/0x506
+ worker_thread+0x10d/0x284
+ kthread+0x14c/0x154
+ ? process_one_work+0x506/0x506
+ ? kthread_blkcg+0x2c/0x2c
+ ret_from_fork+0x1f/0x40
 
-> -Siwei
-> 
-> 
-> >         MLX5_SET(virtio_net_q_object, obj_context, queue_feature_bit_mask_12_3,
-> >                  get_features_12_3(ndev->mvdev.actual_features));
-> >         vq_ctx = MLX5_ADDR_OF(virtio_net_q_object, obj_context, virtio_q_context);
-> > @@ -1022,6 +1025,7 @@ static int connect_qps(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *m
-> >  struct mlx5_virtq_attr {
-> >         u8 state;
-> >         u16 available_index;
-> > +       u16 used_index;
-> >  };
-> >
-> >  static int query_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq,
-> > @@ -1052,6 +1056,7 @@ static int query_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueu
-> >         memset(attr, 0, sizeof(*attr));
-> >         attr->state = MLX5_GET(virtio_net_q_object, obj_context, state);
-> >         attr->available_index = MLX5_GET(virtio_net_q_object, obj_context, hw_available_index);
-> > +       attr->used_index = MLX5_GET(virtio_net_q_object, obj_context, hw_used_index);
-> >         kfree(out);
-> >         return 0;
-> >
-> > @@ -1610,6 +1615,7 @@ static int save_channel_info(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqu
-> >                 return err;
-> >
-> >         ri->avail_index = attr.available_index;
-> > +       ri->used_index = attr.used_index;
-> >         ri->ready = mvq->ready;
-> >         ri->num_ent = mvq->num_ent;
-> >         ri->desc_addr = mvq->desc_addr;
-> > @@ -1654,6 +1660,7 @@ static void restore_channels_info(struct mlx5_vdpa_net *ndev)
-> >                         continue;
-> >
-> >                 mvq->avail_idx = ri->avail_index;
-> > +               mvq->used_idx = ri->used_index;
-> >                 mvq->ready = ri->ready;
-> >                 mvq->num_ent = ri->num_ent;
-> >                 mvq->desc_addr = ri->desc_addr;
-> > --
-> > 2.29.2
-> >
+Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
+Reviewed-by: Manish Mandlik <mmandlik@chromium.org>
+Reviewed-by: Archie Pusaka <apusaka@chromium.org>
+Signed-off-by: Howard Chung <howardchung@google.com>
+---
+
+ net/bluetooth/mgmt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+index 8ff9c4bb43d11..74971b4bd4570 100644
+--- a/net/bluetooth/mgmt.c
++++ b/net/bluetooth/mgmt.c
+@@ -4303,6 +4303,7 @@ static int __add_adv_patterns_monitor(struct sock *sk, struct hci_dev *hdev,
+ 		goto unlock;
+ 	}
+ 
++	cmd->user_data = m;
+ 	pending = hci_add_adv_monitor(hdev, m, &err);
+ 	if (err) {
+ 		if (err == -ENOSPC || err == -ENOMEM)
+@@ -4330,7 +4331,6 @@ static int __add_adv_patterns_monitor(struct sock *sk, struct hci_dev *hdev,
+ 
+ 	hci_dev_unlock(hdev);
+ 
+-	cmd->user_data = m;
+ 	return 0;
+ 
+ unlock:
+-- 
+2.30.0.365.g02bc693789-goog
+
