@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A044830D281
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 05:21:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1905C30D284
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 05:21:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233018AbhBCETw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 23:19:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36748 "EHLO
+        id S233058AbhBCET5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 23:19:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232762AbhBCESY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 23:18:24 -0500
-Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A4CDC061794;
-        Tue,  2 Feb 2021 20:17:09 -0800 (PST)
-Received: by mail-ot1-x332.google.com with SMTP id e70so22106517ote.11;
-        Tue, 02 Feb 2021 20:17:09 -0800 (PST)
+        with ESMTP id S231944AbhBCES1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 23:18:27 -0500
+Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBA5EC061797;
+        Tue,  2 Feb 2021 20:17:10 -0800 (PST)
+Received: by mail-ot1-x336.google.com with SMTP id d7so22161932otf.3;
+        Tue, 02 Feb 2021 20:17:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=GN8zP3UB5VJMaiI/5BQTm+oIsq+71H6Qn+yKzIEhQE8=;
-        b=N4k6iB1iwAc4+xCCISbCeU7Le+8Cw7BkN9C2UpcKHeCaWPIM0BGYT6Cv0BAc+zQf0z
-         UcThmK/mjM3AZ805CHXi+iKL/IuXxp4h9V2ciR9yiz2v+g7jiQCQy/qxaG4eIvNdOA+R
-         MfKW5T09POMs8bUeygBdrR9JsLwC+BjnTtKy9YDITQbtheH7XyB/DcE3Iy8zTK6C7SLQ
-         qnYHm2obNLADh2eqarfqHwUuhVktSv4lR0HAG3xUXjpuKbRx+t8KnTFA29hnuhfAXuYz
-         BxIjNpDypqSbplTSPjPzOIZysfwOiRtfx5UeanIgt09OMB4kEQ9TY9LVbnh2XS+3ZMrH
-         w+ew==
+        bh=FbcI6wt1YBzeWqrusTkpbaZfnU8cH2xe50gLcZjha8Y=;
+        b=bTgpZ8EpJ+U6hBDnEOA1mhM+6MfCw0fSbK9KY39fKP6MA1CytaAePTJjaFfL2nBkU2
+         +TmPYYU3yeWxWm/U2JfCk2zrDl+JHfIFKisv7oQXxFdALRcLiQ1rqoeqcFUstb06eCb2
+         N/roDNssfhs33lO730uAnym3KqWZqACvrwJSSWataNBTMEwVc/Ff3szcNQkpxE8ERFdY
+         C31QPsTmdd4IJwKCXn2OjFrI19fUH0j+6LXAvRJ/TAcEtl09ztHoQqfGD6fCZUdg01Oa
+         vNXxZEwGpB4L1WwaXKfuyZu5gBoQJ8h1qzFib3gL+SxXvSVurgwX6vyYuZSk7YFK3TQK
+         0TFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=GN8zP3UB5VJMaiI/5BQTm+oIsq+71H6Qn+yKzIEhQE8=;
-        b=MJ+U5M/Nm1aiHvyKklSGyjsqVnBQoueSEfl8yhPIfZpyibDft4eQVu9dOAADAqOE0+
-         9p/RsixMSYI5lMUgrAAdB0rWWgIyoxIAmOpIu1Z6Ibl72UD09MEEgnMuWw6xe5XVSNOh
-         e4SWDI09/Z0uBU+VrdspWgxA4bANXrsp1xL7w4JJSV5/CF7Jo6NiyF6kgID57uCXUKWm
-         Xhqv/m+zh5mf8mVkBwELztCjOGIo/OBdxXxuQSV/mz5K4ojLp4tJL3PIsjI5RE2Xkl2e
-         ZbKsyM+3iR1O2ddEPWQo1PuOnawCOfPAfx0paHy+lHy2WUDGzztxKCLX1rsvG7Hc/ijM
-         9pug==
-X-Gm-Message-State: AOAM531rSDs+FX5o6uUrdsclhuMqxutSqskyVHtPQMIx9kpv2Qfnz7Lg
-        ZQ0nB1CQ92aLl5PtA/shfqh+rHnKeRtrww==
-X-Google-Smtp-Source: ABdhPJxCGYaDts//pAYD30pC10JIsY/BnC6sSVkE+STYVWl72C4V1snCvm9h8It6Z78JCNaRD6/0PA==
-X-Received: by 2002:a9d:4e04:: with SMTP id p4mr770036otf.150.1612325828466;
-        Tue, 02 Feb 2021 20:17:08 -0800 (PST)
+        bh=FbcI6wt1YBzeWqrusTkpbaZfnU8cH2xe50gLcZjha8Y=;
+        b=eZGnXsqzuDOArdUdpaAB5zMNBzQa5mkJU9YtoK8T2VPM4VOplJ5hNlRBp/wsZn/hQg
+         QYH9dYN46A1m1wqXx47LMEsHzcXMcflyEExS7bULxUZmteDORUrdIMWAi1sOARsMcbLp
+         5fhGmFRPjB6YVZXZx+y8LAZEa4jRwVuhRJyH+rV4puuycU3oHuuo2CaGQuFAOKHHbqjR
+         4Q8NJFHeXdzZ3WZS6bATuXEHukN2U6dxCo0sRZeeA+yYEUA7Rz8NkvM96Ky6G8ItUmTb
+         3jOQUrtnRpwAOdJAvN9UUf5nDYpMfOZVnCzKc4WFXss/CiNyogRME/eD2tiJlMXjmhCn
+         GqoA==
+X-Gm-Message-State: AOAM532K5SXXEr/562ywzybQzK+MdwMDWybg7xMmO/bBLy1Lx0X/cz0I
+        0wYyf1jVxG7I9G4KMyz/DzREyJV3tBBELQ==
+X-Google-Smtp-Source: ABdhPJxzQ9wsLkDoFo4vhjLHrIA+8tYBqV99ZetqsvSJCXTrcFWw0ItPVRG9mIMxga/h5rlJzLfaIg==
+X-Received: by 2002:a9d:6c85:: with SMTP id c5mr760176otr.300.1612325830009;
+        Tue, 02 Feb 2021 20:17:10 -0800 (PST)
 Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:90c4:ffea:6079:8a0c])
-        by smtp.gmail.com with ESMTPSA id s10sm209978ool.35.2021.02.02.20.17.07
+        by smtp.gmail.com with ESMTPSA id s10sm209978ool.35.2021.02.02.20.17.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Feb 2021 20:17:07 -0800 (PST)
+        Tue, 02 Feb 2021 20:17:09 -0800 (PST)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
@@ -56,9 +56,9 @@ Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jakub Sitnicki <jakub@cloudflare.com>,
         Lorenz Bauer <lmb@cloudflare.com>
-Subject: [Patch bpf-next 10/19] af_unix: implement ->sendmsg_locked for dgram socket
-Date:   Tue,  2 Feb 2021 20:16:27 -0800
-Message-Id: <20210203041636.38555-11-xiyou.wangcong@gmail.com>
+Subject: [Patch bpf-next 11/19] af_unix: implement ->read_sock() for sockmap
+Date:   Tue,  2 Feb 2021 20:16:28 -0800
+Message-Id: <20210203041636.38555-12-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210203041636.38555-1-xiyou.wangcong@gmail.com>
 References: <20210203041636.38555-1-xiyou.wangcong@gmail.com>
@@ -70,64 +70,85 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Cong Wang <cong.wang@bytedance.com>
 
-We already have unix_dgram_sendmsg(), we can just build
-its ->sendmsg_locked() on top of it.
-
 Cc: John Fastabend <john.fastabend@gmail.com>
 Cc: Daniel Borkmann <daniel@iogearbox.net>
 Cc: Jakub Sitnicki <jakub@cloudflare.com>
 Cc: Lorenz Bauer <lmb@cloudflare.com>
 Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 ---
- net/unix/af_unix.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ net/unix/af_unix.c | 46 ++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 46 insertions(+)
 
 diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index 41c3303c3357..4e1fa4ecbcfb 100644
+index 4e1fa4ecbcfb..9315c4f4c27a 100644
 --- a/net/unix/af_unix.c
 +++ b/net/unix/af_unix.c
-@@ -659,6 +659,7 @@ static ssize_t unix_stream_sendpage(struct socket *, struct page *, int offset,
- static ssize_t unix_stream_splice_read(struct socket *,  loff_t *ppos,
- 				       struct pipe_inode_info *, size_t size,
- 				       unsigned int flags);
-+static int __unix_dgram_sendmsg(struct sock*, struct msghdr *, size_t);
+@@ -662,6 +662,7 @@ static ssize_t unix_stream_splice_read(struct socket *,  loff_t *ppos,
+ static int __unix_dgram_sendmsg(struct sock*, struct msghdr *, size_t);
  static int unix_dgram_sendmsg(struct socket *, struct msghdr *, size_t);
  static int unix_dgram_recvmsg(struct socket *, struct msghdr *, size_t, int);
++int unix_read_sock(struct sock *sk, read_descriptor_t *desc, sk_read_actor_t recv_actor);
  static int unix_dgram_connect(struct socket *, struct sockaddr *,
-@@ -738,6 +739,7 @@ static const struct proto_ops unix_dgram_ops = {
+ 			      int, int);
+ static int unix_seqpacket_sendmsg(struct socket *, struct msghdr *, size_t);
+@@ -739,6 +740,7 @@ static const struct proto_ops unix_dgram_ops = {
  	.listen =	sock_no_listen,
  	.shutdown =	unix_shutdown,
  	.sendmsg =	unix_dgram_sendmsg,
-+	.sendmsg_locked = __unix_dgram_sendmsg,
++	.read_sock =	unix_read_sock,
+ 	.sendmsg_locked = __unix_dgram_sendmsg,
  	.recvmsg =	unix_dgram_recvmsg,
  	.mmap =		sock_no_mmap,
- 	.sendpage =	sock_no_sendpage,
-@@ -1611,10 +1613,10 @@ static void scm_stat_del(struct sock *sk, struct sk_buff *skb)
-  *	Send AF_UNIX data.
-  */
- 
--static int unix_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
--			      size_t len)
-+static int __unix_dgram_sendmsg(struct sock *sk, struct msghdr *msg,
-+				size_t len)
- {
--	struct sock *sk = sock->sk;
-+	struct socket *sock = sk->sk_socket;
- 	struct net *net = sock_net(sk);
- 	struct unix_sock *u = unix_sk(sk);
- 	DECLARE_SOCKADDR(struct sockaddr_un *, sunaddr, msg->msg_name);
-@@ -1814,6 +1816,12 @@ static int unix_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
+@@ -2190,6 +2192,50 @@ static int unix_dgram_recvmsg(struct socket *sock, struct msghdr *msg,
  	return err;
  }
  
-+static int unix_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
-+			      size_t len)
++int unix_read_sock(struct sock *sk, read_descriptor_t *desc,
++		   sk_read_actor_t recv_actor)
 +{
-+	return __unix_dgram_sendmsg(sock->sk, msg, len);
++	unsigned int flags = MSG_DONTWAIT;
++	struct unix_sock *u = unix_sk(sk);
++	struct sk_buff *skb;
++	int copied = 0;
++
++	while (1) {
++		int offset, err;
++
++		mutex_lock(&u->iolock);
++		skb = __skb_recv_datagram(sk, &sk->sk_receive_queue, flags,
++					  &offset, &err);
++		if (!skb) {
++			mutex_unlock(&u->iolock);
++			break;
++		}
++
++		if (offset < skb->len) {
++			int used;
++			size_t len;
++
++			len = skb->len - offset;
++			used = recv_actor(desc, skb, offset, len);
++			if (used <= 0) {
++				if (!copied)
++					copied = used;
++				mutex_unlock(&u->iolock);
++				break;
++			} else if (used <= len) {
++				copied += used;
++				offset += used;
++			}
++		}
++		mutex_unlock(&u->iolock);
++
++		if (!desc->count)
++			break;
++	}
++
++	return copied;
 +}
 +
- /* We use paged skbs for stream sockets, and limit occupancy to 32768
-  * bytes, and a minimum of a full page.
+ /*
+  *	Sleep until more data has arrived. But check for races..
   */
 -- 
 2.25.1
