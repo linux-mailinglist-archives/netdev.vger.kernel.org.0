@@ -2,70 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4508F30D326
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 06:41:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FDCB30D329
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 06:46:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231377AbhBCFlN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 00:41:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54350 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229995AbhBCFlK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 00:41:10 -0500
-Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A301C06174A
-        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 21:40:30 -0800 (PST)
-Received: by mail-qv1-xf33.google.com with SMTP id es14so11144481qvb.3
-        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 21:40:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=DOR+5GEacFMqHN+1IBwunsE0iiaRjaaxFk+4cnTED34=;
-        b=q6pBDsWc04vg/qRFIFtlcYcud9n0BxzTurvPR2DMkYu7OwcbS96d1kdIq7/DTMRwv9
-         9ChyU4WVIs7SKiQHJVWPDROpMezLC7UOroQz4t7fl/cXLTwYxq8bsxymRI70kFBOOCqO
-         Ky11TOVslL6gw7Gy2svD0zwsPT91e5kqUWNxE0Iw9ggfF9lgjSCNvueYBdIYkvF2z0Gh
-         MgsR3bOMtHE65isU77m1UqnqYy3EZp+MMzccXiaQf3e9rzhwnPMHmXQw0bqofL2RnnrS
-         7HlopoEsw4wbCa5n4P3z9JgqBPgk9VY6GAGr9O9elUEHGUFtMu6rKOdExNsdqz/21x89
-         4fRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=DOR+5GEacFMqHN+1IBwunsE0iiaRjaaxFk+4cnTED34=;
-        b=FnUUa1TkGBRf2Cw7DR4PrRMbXJ1oYWDzaQO5vkdNsVnUNeFAlhzi8vjJH2hD4uMjNO
-         BHdTZSR+6UtBN6m7WEnQvLElkTrWgDgRaEWfausom6Ws9t8TyZ8Nb8XEHHUzhkmWnPzQ
-         Thgy04Uya9ivCQ4O9/R4SezPzmb0Ry8yFONNbhGZQM+nWhmNskNFnjLvAf/6TbKOA8eB
-         3sr6pbNyUA+3LdRuCCnNJ9aloWqI0FPWptQuuYJi87mVpUwtoAcuNNV41i+0Z+r8CWfc
-         1aY7jkEUd1GfECTgxxJVYypvJI0okjDZUI+aQfKPg7WRlMSdO2yAXslVaNdIPpjiACX1
-         5hvg==
-X-Gm-Message-State: AOAM533QAXliCY+qsI4n5md0jpmbLkGjf8cUNkmbLhjqUnf76O7My75G
-        3yHIXWZszWk3k/K2d5/HQagT26y1pstKkw==
-X-Google-Smtp-Source: ABdhPJwzKsXSdaFa752weDCQnY/D08NROpTAmXMQ2l2sc8h+JQyyNnoH9bZp8Htn7Tvc/EowIS7XMg==
-X-Received: by 2002:ad4:4b2c:: with SMTP id s12mr1425891qvw.21.1612330829357;
-        Tue, 02 Feb 2021 21:40:29 -0800 (PST)
-Received: from [192.168.2.7] (c-67-182-242-199.hsd1.ut.comcast.net. [67.182.242.199])
-        by smtp.gmail.com with ESMTPSA id h6sm903475qkf.96.2021.02.02.21.40.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 02 Feb 2021 21:40:28 -0800 (PST)
-Subject: Re: [PATCH] Add documentation of ss filter to man page
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org
-References: <20210128081018.9394-1-astrothayne@gmail.com>
- <20210202142508.3d0aca91@hermes.local>
-From:   Thayne McCombs <astrothayne@gmail.com>
-Message-ID: <b19b6122-7b44-533c-98e9-fcd408d7ede3@gmail.com>
-Date:   Tue, 2 Feb 2021 22:40:26 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+        id S230281AbhBCFqr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 00:46:47 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:17355 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229554AbhBCFqq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 00:46:46 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B601a389e0000>; Tue, 02 Feb 2021 21:46:06 -0800
+Received: from localhost (172.20.145.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 3 Feb
+ 2021 05:46:05 +0000
+Date:   Wed, 3 Feb 2021 07:46:02 +0200
+From:   Leon Romanovsky <leonro@nvidia.com>
+To:     Alan Perry <alanp@snowmoose.com>
+CC:     <netdev@vger.kernel.org>
+Subject: Re: [PATCH iproute2-next] Add a description section to the rdma man
+ page
+Message-ID: <20210203054602.GI3264866@unreal>
+References: <20210203045234.57492-1-alanp@snowmoose.com>
 MIME-Version: 1.0
-In-Reply-To: <20210202142508.3d0aca91@hermes.local>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20210203045234.57492-1-alanp@snowmoose.com>
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1612331166; bh=nYjveTRrElhVDFfGudMCBCRpywaEzPvybMEIVpOsC+I=;
+        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+         Content-Type:Content-Disposition:In-Reply-To:X-Originating-IP:
+         X-ClientProxiedBy;
+        b=DokVp8qM/UyR6ZiZFdig8H7TP8Zo6ZnWtWCmbUtTog5mEnk/q9wYmpNAU4pAvR+XG
+         64qQGQjSc1WUabSrM79ZZT36eiCcoIJUUnVJmRw5Ixl5HEJJ/ZR1iZ+HCkQgIZh3HI
+         U8iuCcfT16CxHfzQPi91dD8UdaPekpBgFkO0RB0yr67XXOUfzdHuz4d0PxBcpws5LQ
+         bu1IDelEQq7MOmvLMl8rqm+MxjUVa+wqdhDWDAKCygYVRSikJC1ZpKcWkOY1lT/qzy
+         xccLe/ock+sMC/bU5R1OmfQs9ZPF0cmnZEMIAsVcbWUXm8Lhz/fo8cUnLraIV6xuqH
+         QovbpOAjZ/ErQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Awesome! Thank you very much! Sorry about the spelling errors.
+On Tue, Feb 02, 2021 at 08:52:35PM -0800, Alan Perry wrote:
+> Signed-off-by: Alan Perry <alanp@snowmoose.com>
+> Acked-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+>  man/man8/rdma.8 | 6 ++++++
+>  1 file changed, 6 insertions(+)
 
+We saw the commit message in the previous version.
+https://lore.kernel.org/netdev/20210202143902.47dca3d3@hermes.local
+
+Let's use it and don't forget to put Stephen in the TO:, also he needs
+"iproute2" in the title instead of "iproute2-next".
+
+Thanks
