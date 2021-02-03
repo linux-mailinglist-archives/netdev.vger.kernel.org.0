@@ -2,113 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B814430D268
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 05:20:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A43730D26C
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 05:21:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232483AbhBCEQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 23:16:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36224 "EHLO
+        id S232640AbhBCERo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 23:17:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232415AbhBCEQC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 23:16:02 -0500
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F27EDC061786
-        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 20:15:21 -0800 (PST)
-Received: by mail-pg1-x52c.google.com with SMTP id z21so16403080pgj.4
-        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 20:15:21 -0800 (PST)
+        with ESMTP id S230193AbhBCERe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 23:17:34 -0500
+Received: from mail-oo1-xc32.google.com (mail-oo1-xc32.google.com [IPv6:2607:f8b0:4864:20::c32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59B5DC061573;
+        Tue,  2 Feb 2021 20:16:54 -0800 (PST)
+Received: by mail-oo1-xc32.google.com with SMTP id u7so5723972ooq.0;
+        Tue, 02 Feb 2021 20:16:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:user-agent:in-reply-to:references:mime-version
-         :content-transfer-encoding:subject:to:cc:from:message-id;
-        bh=ntZZuB4lNRdlEmA1QwdGzboawIbLKUN51trQnhnQNhU=;
-        b=Sdc3sNaWQ52HnnDoOGP/5HG0j4k/oLV2QwXxTRbqVZHOtpRufdZ9YVNfKRwqPJ3sAl
-         gl1mKpAJHwtmWWQ1+u2oESPzTxoLy1NKUwGfKm+YbvKBJoPGBldUDm/a/Hd6bUZwutIk
-         4wyCHArpvAglGApXB4CrLwMnX/64gcwqslmzB1B2MFvwdmNldfDZa7H8qPSsXL7XBxZ4
-         Tl3sLKVaBOL8JeVT/Mvypx18RqLsLMILZklVdyfJLpjltOhknEw3uIPTr3zljLJXuXkU
-         f4SwUl0wT4p+diG2DXUdWDSeE+ZxSVH7k8AFTDQOkakNMzto46wXUya2vJGONAMmK2LK
-         9pbg==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=P0WJE/Xng3z47I7XKy7SH+sVHTxrFTJNjgm9MGAH3oI=;
+        b=DMKLXeFFEEzQuwAXmg5zel1W3vk6R3xkMaeqgj4mo/kswXwEjGCzxCZQIV+CRnk2qU
+         92pCA5qZuZVwewuqQPT8bt83to5ldqaW97+g8mUe/SqtSEQy5f54vdq83GFM4TNvSjlj
+         Yn4D6i1zEAoYcYNbVaY/pbMeyc3BZbkqBC9l+Ekfx0JZ3Tj3pSWTw8z6siZyOTrBB8CQ
+         yMaoDaEzKi2QHXLyTuu3QKcqMpSHkkcJq8q8rNnDpcRvKo4oOjFWi2++BxN2lTl1WC+s
+         aXTo73sF4p03LMNSwks9corFhvCmIaadSh4L1OcM/U64Yymg9eDOaImtV5LZW24xRjr+
+         LJwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:user-agent:in-reply-to:references
-         :mime-version:content-transfer-encoding:subject:to:cc:from
-         :message-id;
-        bh=ntZZuB4lNRdlEmA1QwdGzboawIbLKUN51trQnhnQNhU=;
-        b=Dm+vxepkcEtFnzBbOMj3hicUQZTB4NkW6+sgjcuERwwKA+XvTXKVxTRFhwftAgmEkm
-         12MugwklmSdwVpcA4zofywRnSD3r4PGT/6qppy90KPJEaYgCqvQjS1pLOi8QIBGRVNro
-         wbxIT0yLnJxpreoDTdlMS2+aO01FeLrO00IMrqsb2REYHGBfvwYq5enUEnPyp1wv15bu
-         1jA70ntqCzOC83h/OJnsLHGwKgmPCZP0WJw/3CfZceu4DuY8miHKM5xq5QtGIv879qvw
-         9Em1x1JQxtefCpMqooJ7ZbMZ7tvRuCV6L/332cbMmYPHrz7nOqtFRRAbNDuDr6Fm/w2E
-         CYAA==
-X-Gm-Message-State: AOAM530q3oVJ22+pHSG0d7Gt049g9dThHAjTcCDg5NZXzH9fdTdyvGPS
-        nLCko5TRFAS8yQ0u3ZgHVxQ/
-X-Google-Smtp-Source: ABdhPJztdID0w8dWehyys/UHBYBMqIoU4AGL99x/xmLaUN6co6J8MOQwa53NtiNdTj7MLlr83yR5KQ==
-X-Received: by 2002:a63:5351:: with SMTP id t17mr1499848pgl.176.1612325721421;
-        Tue, 02 Feb 2021 20:15:21 -0800 (PST)
-Received: from ?IPv6:2409:4072:619f:ff99:700b:51f3:e28:b00? ([2409:4072:619f:ff99:700b:51f3:e28:b00])
-        by smtp.gmail.com with ESMTPSA id p15sm477148pfn.172.2021.02.02.20.15.19
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 02 Feb 2021 20:15:20 -0800 (PST)
-Date:   Wed, 03 Feb 2021 09:45:06 +0530
-User-Agent: K-9 Mail for Android
-In-Reply-To: <20210202201008.274209f9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <1609958656-15064-1-git-send-email-hemantk@codeaurora.org> <20210113152625.GB30246@work> <YBGDng3VhE1Yw6zt@kroah.com> <20210201105549.GB108653@thinkpad> <YBfi573Bdfxy0GBt@kroah.com> <20210201121322.GC108653@thinkpad> <20210202042208.GB840@work> <20210202201008.274209f9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=P0WJE/Xng3z47I7XKy7SH+sVHTxrFTJNjgm9MGAH3oI=;
+        b=oIVQ7jqWMyaGbp3BS230+9yd6sIKEUESed6lsVrZKY1utZrrd0AIed25Fp6IjvFaGV
+         mT2DEkZZ4TtT8cSJ5IGJlvtDvVOnPYxZgK47cX5mul2AW8pTB6IhwQbcLGPw4mUHwoiJ
+         G4MvCxlv6E+lc6qT8L8WnqlIYf5UKWH7Nz44FDVjJr4uQhhDwlcrFW6uPWgguEjn0ggh
+         2Jc2wtnfVa2XSN2+UomQ88iQMjd6qn+/FKPLA6lI7CjixPkcr6TYOFlGdmh4M/Picok5
+         Awe5pHzylJUBlng1GvWaJLtHt9ptvXbbK6M53r2pcxtsxRF4rSBmE1fAGr7oElK2QfAq
+         wXtA==
+X-Gm-Message-State: AOAM530ONdlzKF4NMhUWL4JDVUz1x5rC7PqpsG3SXvUVdmg7Zom2R+dD
+        LNlj8AByLb7V8YHEh8QJNsQ4JpTCkkG9iw==
+X-Google-Smtp-Source: ABdhPJz/P+JCElXV3OOAo714kLdmhiDqhdtFuuxmSiWMRopuNzCV3kuGGjTQSmujeEwBEhFlK/9P1g==
+X-Received: by 2002:a4a:de94:: with SMTP id v20mr805375oou.90.1612325813512;
+        Tue, 02 Feb 2021 20:16:53 -0800 (PST)
+Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:90c4:ffea:6079:8a0c])
+        by smtp.gmail.com with ESMTPSA id s10sm209978ool.35.2021.02.02.20.16.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Feb 2021 20:16:52 -0800 (PST)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
+        wangdongdong.6@bytedance.com, jiang.wang@bytedance.com,
+        Cong Wang <cong.wang@bytedance.com>
+Subject: [Patch bpf-next 00/19] sock_map: add non-TCP and cross-protocol support
+Date:   Tue,  2 Feb 2021 20:16:17 -0800
+Message-Id: <20210203041636.38555-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [RESEND PATCH v18 0/3] userspace MHI client interface driver
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Greg KH <gregkh@linuxfoundation.org>, davem@davemloft.net,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jhugo@codeaurora.org, bbhatt@codeaurora.org,
-        loic.poulain@linaro.org, netdev@vger.kernel.org
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Message-ID: <835B2E08-7B84-4A02-B82F-445467D69083@linaro.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,=20
+From: Cong Wang <cong.wang@bytedance.com>
 
-On 3 February 2021 9:40:08 AM IST, Jakub Kicinski <kuba@kernel=2Eorg> wrot=
-e:
->On Tue, 2 Feb 2021 09:52:08 +0530 Manivannan Sadhasivam wrote:
->> > > I don't see the connection here, sorry=2E
->> >=20
->> > For instance USB_NET_CDC_MBIM driver creates the /dev/cdc-wdmX
->chardev node for
->> > configuring the modems which supports MBIM protocol over USB=2E Like
->that, this
->> > driver creates /dev/mhiX_MBIM chardev node for configuring the
->modem over MHI
->> > bus instead of USB=2E The question arised why we are creating a
->chardev node for
->> > each supported configuration (channels in the case of MHI) and why
->can't we use
->> > the existing /dev/cdc-wdmZ interfaces? The anwser is there is no
->standard
->> > subsystem for WWAN and all the drivers represent a chardev which
->gets used by
->> > the userspace tools such a Network manager for establishing
->connection=2E
->> >=20
->> > And /dev/cdc-wdmX is restricted to the USB CDC devices=2E
->> >=20
->> > Hope this clarifies!
->>=20
->> Jakub, Dave, Adding you both to get your reviews on this series=2E I've
->> provided an explanation above and in the previous iteration [1]=2E
->
->Let's be clear what the review would be for=2E Yet another QMI chardev=20
->or the "UCI" direct generic user space to firmware pipe?
+Currently sockmap only fully supports TCP, UDP is partially supported
+as it is only allowed to add into sockmap. This patch extends sockmap
+with: 1) full UDP support; 2) full AF_UNIX dgram support; 3) cross
+protocol support. Our goal is to allow socket splice between AF_UNIX
+dgram and UDP.
 
-The current patchset only supports QMI channel so I'd request you to revie=
-w the chardev node created for it=2E The QMI chardev node created will be u=
-nique for the MHI bus and the number of nodes depends on the MHI controller=
-s in the system (typically 1 but not limited)=2E=20
+On the high level, ->sendmsg_locked() and ->read_sock() are required
+for each protocol to support sockmap redirection, and in order to do
+sock proto update, a new ops ->update_proto() is introduced, which is
+also required to implement. It is slightly harder for AF_UNIX, as it
+does not have a full struct proto implementation and redirection.
 
-Thanks,=20
-Mani
+In order to support cross protocol, we have to make skb independent
+of protocols, which is extremely hard given how creatively UDP uses
+dev_scratch. Fortunately, we can pass skmsg instead of skb when
+redirecting to ingress, the only thing needs to add is a new
+->recvmsg() to retrieve skmsg. On the egress side, a new skb is
+allocated behind skb_send_sock_locked(), it comes for free.
+Another big barrier is skb CB, which was hard-coded as TCP_CB(),
+I switch it to skb ext to solve this problem. Please see patch 3 for
+more details.
 
---=20
-Sent from my Android device with K-9 Mail=2E Please excuse my brevity=2E
+This patchset passed all tests, the existing ones and the new ones I
+add within this patchset.
+
+---
+
+Cong Wang (19):
+  bpf: rename BPF_STREAM_PARSER to BPF_SOCK_MAP
+  skmsg: get rid of struct sk_psock_parser
+  skmsg: use skb ext instead of TCP_SKB_CB
+  sock_map: rename skb_parser and skb_verdict
+  sock_map: introduce BPF_SK_SKB_VERDICT
+  sock: introduce sk_prot->update_proto()
+  udp: implement ->sendmsg_locked()
+  udp: implement ->read_sock() for sockmap
+  udp: add ->read_sock() and ->sendmsg_locked() to ipv6
+  af_unix: implement ->sendmsg_locked for dgram socket
+  af_unix: implement ->read_sock() for sockmap
+  af_unix: implement ->update_proto()
+  af_unix: set TCP_ESTABLISHED for datagram sockets too
+  skmsg: extract __tcp_bpf_recvmsg() and tcp_bpf_wait_data()
+  udp: implement udp_bpf_recvmsg() for sockmap
+  af_unix: implement unix_dgram_bpf_recvmsg()
+  sock_map: update sock type checks
+  selftests/bpf: add test cases for unix and udp sockmap
+  selftests/bpf: add test case for redirection between udp and unix
+
+ MAINTAINERS                                   |   1 +
+ include/linux/bpf.h                           |   4 +-
+ include/linux/bpf_types.h                     |   2 +-
+ include/linux/skbuff.h                        |   4 +
+ include/linux/skmsg.h                         |  90 +++-
+ include/net/af_unix.h                         |  13 +
+ include/net/ipv6.h                            |   1 +
+ include/net/sock.h                            |   3 +
+ include/net/tcp.h                             |  33 +-
+ include/net/udp.h                             |   9 +-
+ include/uapi/linux/bpf.h                      |   1 +
+ kernel/bpf/syscall.c                          |   1 +
+ net/Kconfig                                   |  14 +-
+ net/core/Makefile                             |   2 +-
+ net/core/filter.c                             |   3 +-
+ net/core/skbuff.c                             |   7 +
+ net/core/skmsg.c                              | 223 +++++---
+ net/core/sock_map.c                           | 128 ++---
+ net/ipv4/Makefile                             |   2 +-
+ net/ipv4/af_inet.c                            |   2 +
+ net/ipv4/tcp_bpf.c                            | 130 +----
+ net/ipv4/tcp_ipv4.c                           |   3 +
+ net/ipv4/udp.c                                |  68 ++-
+ net/ipv4/udp_bpf.c                            |  78 ++-
+ net/ipv6/af_inet6.c                           |   2 +
+ net/ipv6/tcp_ipv6.c                           |   3 +
+ net/ipv6/udp.c                                |  30 +-
+ net/tls/tls_sw.c                              |   4 +-
+ net/unix/Makefile                             |   1 +
+ net/unix/af_unix.c                            | 105 +++-
+ net/unix/unix_bpf.c                           |  99 ++++
+ tools/bpf/bpftool/common.c                    |   1 +
+ tools/bpf/bpftool/prog.c                      |   1 +
+ tools/include/uapi/linux/bpf.h                |   1 +
+ .../selftests/bpf/prog_tests/sockmap_listen.c | 475 +++++++++++++++++-
+ .../selftests/bpf/progs/test_sockmap_listen.c |  24 +-
+ 36 files changed, 1233 insertions(+), 335 deletions(-)
+ create mode 100644 net/unix/unix_bpf.c
+
+-- 
+2.25.1
+
