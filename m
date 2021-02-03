@@ -2,215 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C148330D111
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 02:53:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 126FD30D119
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 02:56:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231546AbhBCBva (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 20:51:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33424 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231511AbhBCBvT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 20:51:19 -0500
-Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82497C061573
-        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 17:50:34 -0800 (PST)
-Received: by mail-il1-x136.google.com with SMTP id y17so21003509ili.12
-        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 17:50:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1hzuLQ5efXcxgJls7wE6XkIsu+NJ0B8iKuDXjUArPzY=;
-        b=R+k5jWma2bvjibXaiD+znt/HN2a7ZSn6MAV6H+V+kH2FWmDWCcHl0NYvPUOEq+lqT9
-         PLhr0xd37ain5X8u0ZR0EWHBOYgxevfrna98mdFsa1VICb62zLEx3U3WHM0itHE/zEBq
-         nbHcco723oKm/CO1z3Qe5DPP+4RF3ZNusJKz2f0wAi1ZOeFXYaAudJh/PsAdScHqgfvN
-         m8/eIQMfoJULUT40iuRyRTBZ6KDMbY1Kz7ncdubGY5XhkzBaJ+ZF8DofQta8flSghuod
-         7yP+nXV3kirjMoAsMVDj0LFxxRqG2UCtliIGTK3t2z/6MGFpUOGttghOMQmz3MjnfN3V
-         l4HA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1hzuLQ5efXcxgJls7wE6XkIsu+NJ0B8iKuDXjUArPzY=;
-        b=K/WKtBZ3DuVgqD59CxA/BSQkuLALeOlCD7jzBallZW0rd8RAudgmreWSyhHMsvouok
-         JaoCuT6esiUoO72oxbHGODMnOt3KtQm5mRk3ARPfTc+j0Ad+8ZcsDEI3VyO+NscIrgv8
-         xUhsJSJbdWv8bnWLfMurPWUbI6MY1eN4RP0cRv93XUTfSils9L2dICdxavC6J+bfTKIW
-         xPWAp55yObg376Bp0IlNDCd3JVJMgAyBK3dJDOI3eYZ6J6fzyrjvqrmzmrxHJzLbV2YQ
-         jjtI9gDVFdXkM7ii4xM3Cc/VgtKxiyuhsoZs2wFX6C3Fq3aNK9mrvdflR186e8bjExHA
-         gY9g==
-X-Gm-Message-State: AOAM532yqxQOMxKjvD0KsTDZhShioncXl1RE8O0ciVC+ornv4g0d7gQO
-        wpMRvaJ4eSOS/AJl7xvbBOrxiEUcoC0jEg967NY=
-X-Google-Smtp-Source: ABdhPJwXYOG/GOoRyM6iUtTg05Q5FS8kvKM5tPdenOK5kysSNfid9KPTISq9S2RBCtkgyoKzV7EJcwL4dNcpCIVlY4Q=
-X-Received: by 2002:a05:6e02:1185:: with SMTP id y5mr846403ili.237.1612317033858;
- Tue, 02 Feb 2021 17:50:33 -0800 (PST)
+        id S229991AbhBCBzf convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 2 Feb 2021 20:55:35 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:3414 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229696AbhBCBzf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 20:55:35 -0500
+Received: from nkgeml707-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4DVl8F3jWrz5NsS;
+        Wed,  3 Feb 2021 09:53:33 +0800 (CST)
+Received: from dggeme752-chm.china.huawei.com (10.3.19.98) by
+ nkgeml707-chm.china.huawei.com (10.98.57.157) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2106.2; Wed, 3 Feb 2021 09:54:51 +0800
+Received: from dggeme752-chm.china.huawei.com ([10.6.80.76]) by
+ dggeme752-chm.china.huawei.com ([10.6.80.76]) with mapi id 15.01.2106.006;
+ Wed, 3 Feb 2021 09:54:51 +0800
+From:   liaichun <liaichun@huawei.com>
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "vfalico@gmail.com" <vfalico@gmail.com>,
+        "andy@greyhouse.net" <andy@greyhouse.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Chenxiang (EulerOS)" <rose.chen@huawei.com>,
+        moyufeng <moyufeng@huawei.com>
+Subject: Re: [PATCH net v2]bonding: check port and aggregator when select
+Thread-Topic: [PATCH net v2]bonding: check port and aggregator when select
+Thread-Index: Adb5zAua4g+nQQYWRZWIIJvVf3Uhmw==
+Date:   Wed, 3 Feb 2021 01:54:50 +0000
+Message-ID: <4c5e467e07fb410ab4135b391d663ec1@huawei.com>
+Accept-Language: en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.136.112.224]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-References: <20210202194539.1442079-1-willemdebruijn.kernel@gmail.com>
-In-Reply-To: <20210202194539.1442079-1-willemdebruijn.kernel@gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Tue, 2 Feb 2021 17:50:23 -0800
-Message-ID: <CAKgT0Uc5ZoKFb4bxiPPz-S0snexe45F6c1JLb_uG6f+aPuLbhg@mail.gmail.com>
-Subject: Re: [PATCH net] udp: fix skb_copy_and_csum_datagram with odd segment sizes
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, oliver.graute@gmail.com,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Christoph Hellwig <hch@lst.de>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Willem de Bruijn <willemb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 2, 2021 at 11:45 AM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> From: Willem de Bruijn <willemb@google.com>
->
-> When iteratively computing a checksum with csum_block_add, track the
-> offset to correctly rotate in csum_block_add when offset is odd.
->
-> The open coded implementation of skb_copy_and_csum_datagram did this.
-> With the switch to __skb_datagram_iter calling csum_and_copy_to_iter,
-> pos was reinitialized to 0 on each call.
->
-> Bring back the pos by passing it along with the csum to the callback.
->
-> Link: https://lore.kernel.org/netdev/20210128152353.GB27281@optiplex/
-> Fixes: 950fcaecd5cc ("datagram: consolidate datagram copy to iter helpers")
-> Reported-by: Oliver Graute <oliver.graute@gmail.com>
-> Signed-off-by: Willem de Bruijn <willemb@google.com>
->
+> Aichun Li <liaichun@huawei.com> wrote:
+> 
+> >When the network service is repeatedly restarted in 802.3ad, there is a
+> >low  probability that oops occurs.
+> >Test commands:systemctl restart network
+> >
+> >1.crash: __enable_port():port->slave is NULL
+> [...]
+> >     PC: ffff000000e2fcd0  [ad_agg_selection_logic+328]
+> [...]
+> >2.I also have another call stack, same as in another person's post:
+> >https://lore.kernel.org/netdev/52630cba-cc60-a024-8dd0-8319e5245044@hu
+> a
+> >wei.com/
+> 
+> 	What hardware platform are you using here?
+> 
+> 	moyufeng <moyufeng@huawei.com> appears to be using the same
+> platform, and I've not had any success so far with the provided script to
+> reproduce the issue.  I'm using an x86_64 system, however, so I wonder if
+> perhaps this platform needs a barrier somewhere that x86 does not, or there's
+> something different in the timing of the device driver close logic.
+	Yes, I'm using an arm64 system.
+    And i'm different from moyufeng. I'm a physical machine, and he's a virtual
+ machine.
+> 
+> >Signed-off-by: Aichun Li <liaichun@huawei.com>
+> >---
+> > drivers/net/bonding/bond_3ad.c | 3 ++-
+> > 1 file changed, 2 insertions(+), 1 deletion(-)
+> >
+> >diff --git a/drivers/net/bonding/bond_3ad.c
+> >b/drivers/net/bonding/bond_3ad.c index aa001b16765a..9c8894631bdd
+> >100644
+> >--- a/drivers/net/bonding/bond_3ad.c
+> >+++ b/drivers/net/bonding/bond_3ad.c
+> >@@ -183,7 +183,7 @@ static inline void __enable_port(struct port *port)
+> >{
+> > 	struct slave *slave = port->slave;
+> >
+> >-	if ((slave->link == BOND_LINK_UP) && bond_slave_is_up(slave))
+> >+	if (slave && (slave->link == BOND_LINK_UP) &&
+> >+bond_slave_is_up(slave))
+> > 		bond_set_slave_active_flags(slave, BOND_SLAVE_NOTIFY_LATER); }
+> 
+> 	This change seems like a band aid to cover the real problem.
+> The caller of __enable_port is ad_agg_selection_logic, and it shouldn't be
+> possible for port->slave to be NULL when assigned to an aggregator.
+> 
+> >@@ -1516,6 +1516,7 @@ static void ad_port_selection_logic(struct port
+> *port, bool *update_slave_arr)
+> > 				  port->actor_port_number,
+> > 				  port->aggregator->aggregator_identifier);
+> > 		} else {
+> >+			port->aggregator = &(SLAVE_AD_INFO(slave)->aggregator);
+> > 			slave_err(bond->dev, port->slave->dev,
+> > 				  "Port %d did not find a suitable aggregator\n",
+> > 				  port->actor_port_number);
+> 
+> 	This change isn't correct; it's assigning the port to a more or less random
+> aggregator.  This would eliminate the panic, but isn't doing the right thing.
+> At this point in the code, the selection logic has failed to find an aggregator
+> that matches, and also failed to find a free aggregator.
+> 
+> 	I do need to fix up the failure handling here when it hits the "did not find a
+> suitable agg" case; the code here is simply wrong, and has been wrong since
+> the beginning.  I'll hack the driver to induce this situation rather than
+> reproducing whatever problem is making it unable to find a suitable
+> aggregator.
+	
+    Thank you for your reply and look forward to your solution.
+> 
+> 	-J
+> 
 > ---
->
-> Once the fix makes it to net-next, I'll follow-up with a regression
-> test to tools/testing/selftests/net
-> ---
->  include/linux/uio.h |  8 +++++++-
->  lib/iov_iter.c      | 24 ++++++++++++++----------
->  net/core/datagram.c |  4 +++-
->  3 files changed, 24 insertions(+), 12 deletions(-)
->
-> diff --git a/include/linux/uio.h b/include/linux/uio.h
-> index 72d88566694e..308194b08ca8 100644
-> --- a/include/linux/uio.h
-> +++ b/include/linux/uio.h
-> @@ -260,7 +260,13 @@ static inline void iov_iter_reexpand(struct iov_iter *i, size_t count)
->  {
->         i->count = count;
->  }
-> -size_t csum_and_copy_to_iter(const void *addr, size_t bytes, void *csump, struct iov_iter *i);
-> +
-> +struct csum_state {
-> +       __wsum *csump;
-> +       size_t off;
-> +};
-> +
+> 	-Jay Vosburgh, jay.vosburgh@canonical.com
 
-So now that we have a struct maintaining the state I am not sure it
-makes sense to be storing a pointer here. You can likely just get away
-with storing the checksum value itself and save yourself the extra
-pointer chases every time you want to read or write the checksum.
+---
+	-Aichun Li <liaichun@huawei.com>
 
-Then it is just the task for the caller to initialize the checksum and
-offset, and to copy the checksum to the appropriate pointer when done.
-As it stands I am not sure there is much value updating the checksum
-when the entire operation could fail anyway and return -EFAULT so it
-is probably better to hold off on updating the checksum until you have
-computed the entire thing.
-
-> +size_t csum_and_copy_to_iter(const void *addr, size_t bytes, void *csstate, struct iov_iter *i);
->  size_t csum_and_copy_from_iter(void *addr, size_t bytes, __wsum *csum, struct iov_iter *i);
->  bool csum_and_copy_from_iter_full(void *addr, size_t bytes, __wsum *csum, struct iov_iter *i);
->  size_t hash_and_copy_to_iter(const void *addr, size_t bytes, void *hashp,
-> diff --git a/lib/iov_iter.c b/lib/iov_iter.c
-> index a21e6a5792c5..087235d60514 100644
-> --- a/lib/iov_iter.c
-> +++ b/lib/iov_iter.c
-> @@ -592,14 +592,15 @@ static __wsum csum_and_memcpy(void *to, const void *from, size_t len,
->  }
->
->  static size_t csum_and_copy_to_pipe_iter(const void *addr, size_t bytes,
-> -                               __wsum *csum, struct iov_iter *i)
-> +                                        struct csum_state *csstate,
-> +                                        struct iov_iter *i)
->  {
->         struct pipe_inode_info *pipe = i->pipe;
->         unsigned int p_mask = pipe->ring_size - 1;
-> +       __wsum sum = *csstate->csump;
-> +       size_t off = csstate->off;
->         unsigned int i_head;
->         size_t n, r;
-> -       size_t off = 0;
-> -       __wsum sum = *csum;
->
->         if (!sanity(i))
->                 return 0;
-> @@ -621,7 +622,8 @@ static size_t csum_and_copy_to_pipe_iter(const void *addr, size_t bytes,
->                 i_head++;
->         } while (n);
->         i->count -= bytes;
-> -       *csum = sum;
-> +       *csstate->csump = sum;
-> +       csstate->off = off;
->         return bytes;
->  }
->
-> @@ -1522,18 +1524,19 @@ bool csum_and_copy_from_iter_full(void *addr, size_t bytes, __wsum *csum,
->  }
->  EXPORT_SYMBOL(csum_and_copy_from_iter_full);
->
-> -size_t csum_and_copy_to_iter(const void *addr, size_t bytes, void *csump,
-> +size_t csum_and_copy_to_iter(const void *addr, size_t bytes, void *_csstate,
->                              struct iov_iter *i)
->  {
-> +       struct csum_state *csstate = _csstate;
->         const char *from = addr;
-> -       __wsum *csum = csump;
->         __wsum sum, next;
-> -       size_t off = 0;
-> +       size_t off;
->
->         if (unlikely(iov_iter_is_pipe(i)))
-> -               return csum_and_copy_to_pipe_iter(addr, bytes, csum, i);
-> +               return csum_and_copy_to_pipe_iter(addr, bytes, _csstate, i);
->
-> -       sum = *csum;
-> +       sum = *csstate->csump;
-> +       off = csstate->off;
->         if (unlikely(iov_iter_is_discard(i))) {
->                 WARN_ON(1);     /* for now */
->                 return 0;
-> @@ -1561,7 +1564,8 @@ size_t csum_and_copy_to_iter(const void *addr, size_t bytes, void *csump,
->                 off += v.iov_len;
->         })
->         )
-> -       *csum = sum;
-> +       *csstate->csump = sum;
-> +       csstate->off = off;
->         return bytes;
->  }
->  EXPORT_SYMBOL(csum_and_copy_to_iter);
-> diff --git a/net/core/datagram.c b/net/core/datagram.c
-> index 81809fa735a7..c6ac5413dda9 100644
-> --- a/net/core/datagram.c
-> +++ b/net/core/datagram.c
-> @@ -721,8 +721,10 @@ static int skb_copy_and_csum_datagram(const struct sk_buff *skb, int offset,
->                                       struct iov_iter *to, int len,
->                                       __wsum *csump)
->  {
-> +       struct csum_state csdata = { .csump = csump };
-> +
->         return __skb_datagram_iter(skb, offset, to, len, true,
-> -                       csum_and_copy_to_iter, csump);
-> +                       csum_and_copy_to_iter, &csdata);
->  }
->
->  /**
-
-The rest of this looks good to me, and my only complaint is the
-performance nit called out above.
-
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
