@@ -2,114 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ABD430D5A5
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 09:56:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6A7530D5AE
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 09:58:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232591AbhBCIze (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 03:55:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39488 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233001AbhBCIza (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 03:55:30 -0500
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10F19C0613ED
-        for <netdev@vger.kernel.org>; Wed,  3 Feb 2021 00:54:50 -0800 (PST)
-Received: by mail-pf1-x42a.google.com with SMTP id w18so16204331pfu.9
-        for <netdev@vger.kernel.org>; Wed, 03 Feb 2021 00:54:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :in-reply-to:references;
-        bh=8N1rB5fqpCzAQ6vqQKc8x/26gbAnacYrV2W8lJzHL0Q=;
-        b=mNY5Pd/+OoyvmxaICuZjn2ng3yNlPMW+/N63MuYh4dDA/Zja2zMStBlkWUWqvJL/YW
-         lyVXr6zQVWgDblwQ0//jfaYnOMuWnGILLEuE2K4uO3XYf2mMrcQiBZHj4GXIbUv9p+dW
-         MJhfehofSf8CcRhAqGwiBGuR5/QBpY3z2i76mOk9XoRihz+W53eBkSJSahjPzJztLP8Y
-         JXh3RkXvPHjoKapDVl72tUz6Sjhi3pfjSX3ymzA4tpxYnKCRkZiXVgggq06R4RT1FYrt
-         yiUSWjyd63LBdyHyrob5NlbvcnfpMGBiENjhdv+oL675R4w21uHWVMRFMzEzgB366fAp
-         4NaA==
+        id S233169AbhBCI52 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 03:57:28 -0500
+Received: from mail-wm1-f50.google.com ([209.85.128.50]:51983 "EHLO
+        mail-wm1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232793AbhBCI5Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 03:57:25 -0500
+Received: by mail-wm1-f50.google.com with SMTP id m2so4688859wmm.1
+        for <netdev@vger.kernel.org>; Wed, 03 Feb 2021 00:57:08 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:in-reply-to:references;
-        bh=8N1rB5fqpCzAQ6vqQKc8x/26gbAnacYrV2W8lJzHL0Q=;
-        b=a2raFADUaLFZbkhxd82KxKdxdm0+rn/5ZZ5ipka4EjgJbEMj++2uC4kwerqBKbuPaW
-         78YEXXbOPG1DaXauQRXugAgvAZxCbLqegyQyikWBuFdoiBUxiAJCryTeMLf1kRmKo27f
-         DC5KvTPEo82LJhUohhKGBFWQr3pIXo0ACtfMd6PFiBaGthyDik8BgXvUzDL6/EOnt29F
-         ScHu9upb95oQipvVAZqyNPAZ1PkxxE425zf7vnoND8wlVsAhdZ/+RNffC9raDa+brZur
-         InTB3c2dEU2+yHNkMUNIt1phNO/LIyl2T5dNKsKNZNg4sfk/PUai3sQmSVTuFzhkzbZK
-         L3Ew==
-X-Gm-Message-State: AOAM531MMojtNHs7Bu7a+wMwsznm/k6wV3wytdLT2La90MVNrrCqpSpk
-        +cmlu0D2V838AkiDN5rlVYc5ziLJ1LAK3w==
-X-Google-Smtp-Source: ABdhPJx39jbkNdrx+PZIDG/IRe4gftHYkDtIY6L796RgYX34BB6vH//5W6oitKxXLr9kbucWnMQheQ==
-X-Received: by 2002:a63:3e49:: with SMTP id l70mr2505122pga.96.1612342489251;
-        Wed, 03 Feb 2021 00:54:49 -0800 (PST)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id i3sm1500889pfq.194.2021.02.03.00.54.48
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 03 Feb 2021 00:54:48 -0800 (PST)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>
-Cc:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
-        pabeni@redhat.com, Willem de Bruijn <willemb@google.com>,
-        Martin Varghese <martin.varghese@nokia.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        David Howells <dhowells@redhat.com>
-Subject: [PATCHv5 net-next 2/2] rxrpc: call udp_tunnel_encap_enable in rxrpc_open_socket
-Date:   Wed,  3 Feb 2021 16:54:23 +0800
-Message-Id: <2da45aee43c74c05a586a7d3c7b1f9fc48bb72f2.1612342376.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
-In-Reply-To: <fc62f5e225f83d128ea5222cc752cb1c38c92304.1612342376.git.lucien.xin@gmail.com>
-References: <cover.1612342376.git.lucien.xin@gmail.com>
- <fc62f5e225f83d128ea5222cc752cb1c38c92304.1612342376.git.lucien.xin@gmail.com>
-In-Reply-To: <cover.1612342376.git.lucien.xin@gmail.com>
-References: <cover.1612342376.git.lucien.xin@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=qRDMPPpE6Q0BZsDXBuCzb37H2VewHWoPubkDh6Tm0Ak=;
+        b=ejqj3MjsgmKKF5yM3Tm15+wKs6wYFDGpweMO5V5/q5//aoXQg5loTYrE6jr0H2lqe2
+         s0ULKwAJen2Ve1o9NjxddsZPlpYn/sFtujrIt5YpFBv2h4PfJYB8QFDn+lg/1X1FchSQ
+         YOWwvTXNgiwla/FjkedegjdEmN1nZmRCmrO3Hgw9cCQ5eeTObdF8UMVe5RYwMV0Wxu6+
+         rk9FREcMlI6G7DSCck8DX2JFjlH8wUpr2q8VsS2bWjyQ8n/fEuSIOIpgNuyWheecFmF+
+         9l0/BuREg7AdHM1lbPqdM1OEdUo0PmDSwMTiCimplV7poBLoUgTJ/OhGFA/XNwn8NqVr
+         nWFw==
+X-Gm-Message-State: AOAM530p33axxD0ElM2ifQcnEFRBDYh4p1HoQh/0mNzk4VgL6iRbPS4k
+        vgtUSTNq0XZNPhnQZgCILH4=
+X-Google-Smtp-Source: ABdhPJx2ARjyWIx1QP1gDjMCDFN2nXVrSB4da8n9sQfc67KWntpJplt7teI4c26GLv8D4A4I0LaaUA==
+X-Received: by 2002:a1c:4303:: with SMTP id q3mr1792240wma.3.1612342603121;
+        Wed, 03 Feb 2021 00:56:43 -0800 (PST)
+Received: from ?IPv6:2601:647:4802:9070:819b:e1e8:19a6:9008? ([2601:647:4802:9070:819b:e1e8:19a6:9008])
+        by smtp.gmail.com with ESMTPSA id b4sm2421732wrn.12.2021.02.03.00.56.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Feb 2021 00:56:42 -0800 (PST)
+Subject: Re: [PATCH v3 net-next 07/21] nvme-tcp: Add DDP data-path
+To:     Or Gerlitz <gerlitz.or@gmail.com>, Christoph Hellwig <hch@lst.de>,
+        Keith Busch <kbusch@kernel.org>, axboe@fb.com
+Cc:     Boris Pismenny <borisp@mellanox.com>, smalin@marvell.com,
+        yorayz@nvidia.com, boris.pismenny@gmail.com,
+        Ben Ben-Ishay <benishay@mellanox.com>,
+        Yoray Zack <yorayz@mellanox.com>,
+        linux-nvme@lists.infradead.org, David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Or Gerlitz <ogerlitz@mellanox.com>, benishay@nvidia.com,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Or Gerlitz <ogerlitz@nvidia.com>
+References: <20210201100509.27351-1-borisp@mellanox.com>
+ <20210201100509.27351-8-borisp@mellanox.com> <20210201173744.GC12960@lst.de>
+ <CAJ3xEMhninJE5zw7=QFL4gBVkH=1tAmQHyq7tKMqcSJ_KkDsWQ@mail.gmail.com>
+From:   Sagi Grimberg <sagi@grimberg.me>
+Message-ID: <80074375-2d37-d9b9-afbe-1f3d1db4a41f@grimberg.me>
+Date:   Wed, 3 Feb 2021 00:56:35 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
+MIME-Version: 1.0
+In-Reply-To: <CAJ3xEMhninJE5zw7=QFL4gBVkH=1tAmQHyq7tKMqcSJ_KkDsWQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When doing encap_enable/increasing encap_needed_key, up->encap_enabled
-is not set in rxrpc_open_socket(), and it will cause encap_needed_key
-not being decreased in udpv6_destroy_sock().
 
-This patch is to improve it by just calling udp_tunnel_encap_enable()
-where it increases both UDP and UDPv6 encap_needed_key and sets
-up->encap_enabled.
+>> Given how much ddp code there is can you split it into a separate file?
+> 
+> mmm, do we need to check the preferences or get to a consensus among
+> the maintainers for that one?
 
-v4->v5:
-  - add the missing '#include <net/udp_tunnel.h>', as David Howells
-    noticed.
+Not sure if moving it would be better here. Given that the ddp code is
+working directly on nvme-tcp structs we'll need a new shared header
+file..
 
-Acked-and-tested-by: David Howells <dhowells@redhat.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- net/rxrpc/local_object.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
-
-diff --git a/net/rxrpc/local_object.c b/net/rxrpc/local_object.c
-index 8c28810..33b4936 100644
---- a/net/rxrpc/local_object.c
-+++ b/net/rxrpc/local_object.c
-@@ -16,6 +16,7 @@
- #include <linux/hashtable.h>
- #include <net/sock.h>
- #include <net/udp.h>
-+#include <net/udp_tunnel.h>
- #include <net/af_rxrpc.h>
- #include "ar-internal.h"
- 
-@@ -135,11 +136,7 @@ static int rxrpc_open_socket(struct rxrpc_local *local, struct net *net)
- 	udp_sk(usk)->gro_receive = NULL;
- 	udp_sk(usk)->gro_complete = NULL;
- 
--	udp_encap_enable();
--#if IS_ENABLED(CONFIG_AF_RXRPC_IPV6)
--	if (local->srx.transport.family == AF_INET6)
--		udpv6_encap_enable();
--#endif
-+	udp_tunnel_encap_enable(local->socket);
- 	usk->sk_error_report = rxrpc_error_report;
- 
- 	/* if a local address was supplied then bind it */
--- 
-2.1.0
+Its possible to do, but I'm not sure the end result will be better..
 
