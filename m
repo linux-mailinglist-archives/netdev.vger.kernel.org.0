@@ -2,77 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE54B30E16D
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 18:50:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 865D130E186
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 18:57:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232171AbhBCRtf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 12:49:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42020 "EHLO
+        id S231516AbhBCRzL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 12:55:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231145AbhBCRta (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 12:49:30 -0500
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7582C061573;
-        Wed,  3 Feb 2021 09:48:49 -0800 (PST)
-Received: by mail-pl1-x62d.google.com with SMTP id e9so283195plh.3;
-        Wed, 03 Feb 2021 09:48:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=m1LyiYHdemJUR2u45HV2aTv5ozbheynSZ5Ve7rAeRxs=;
-        b=bDtC0yXAAFvXTUqWs+8cxETzTaciPeRTBDoQNHRMoMVI1a7Rbql3moyHQrsrF973Br
-         Si2yR+C9ZXwltmU3gim8Ppm/SvamRt9Ij5WiDC0l6JO+/6xaR+nnu3EzxNK7dXLmx1NF
-         thZfSrHBQZ9g9NkGsFiYkvR/TUqB5UDtV6xsAm9sla24I4KNOC0nyIDYjyhQ1OWZz8Mj
-         xrtkJC66BSBy7EkFrrWJZ+oEF/IKKro9K3bn7thCTVST+PTf+UnpdUTiz2jMmgcz2Jef
-         xfvhwfNqoJp8AvedmRrG66uyrTj6pBJYh9oh3J1j+bqX+c2IJ9wDZVNG7jXFCLXyq+/e
-         3usQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=m1LyiYHdemJUR2u45HV2aTv5ozbheynSZ5Ve7rAeRxs=;
-        b=dNCpA0lUzw+9a7h+XDxZa54UWQiGYICNgc5dUD+tPn+kY3sheOL7AwpLCErgAKI62+
-         y9fSj1htq0jSh5fULwwBbPo8H7FXLQZ/yfy4hMUEjSDWvV5M4Crzpl5Et/Nzo1IdJO/4
-         Eo3dLXMjhUaiB5AX/WaclZxNzxWkq5WyicghZR+TqKTVkr5wtkLA5X4xYZIV0fGt+Op7
-         N6lxtVBSwo1qX1UvxiophrsCfou3Jx6szXEswfOOjs9nXs9pHzuW8yFb7b6T42nsVkfP
-         1+yXH65vLajR65PD5N8/1QOMEfAVV9FULmHU4Nt/4Xtz0kz37JipdWFhSbR8lppwHXJ1
-         JNVg==
-X-Gm-Message-State: AOAM530zINUH6gv1tcWVxU89MlVEQVExXmq5JQKq8O001BIrt1KIhhW6
-        Mn/osuPkqzCofJ3Yd+WneXZwI/IWRTM=
-X-Google-Smtp-Source: ABdhPJyZTiduwwhhycoFBuQqIKKIUY9a3XkNeEBYGPBsBRSt+BjRiebeKf2U+vBEa+efMq+YDwbJGw==
-X-Received: by 2002:a17:902:ea91:b029:e1:8695:c199 with SMTP id x17-20020a170902ea91b02900e18695c199mr4190913plb.6.1612374529389;
-        Wed, 03 Feb 2021 09:48:49 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:75f7])
-        by smtp.gmail.com with ESMTPSA id n3sm3149052pfq.19.2021.02.03.09.48.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Feb 2021 09:48:48 -0800 (PST)
-Date:   Wed, 3 Feb 2021 09:48:46 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        duanxiongchun@bytedance.com, wangdongdong.6@bytedance.com,
-        jiang.wang@bytedance.com, Cong Wang <cong.wang@bytedance.com>
-Subject: Re: [Patch bpf-next 00/19] sock_map: add non-TCP and cross-protocol
- support
-Message-ID: <20210203174846.gvhyv3hlrfnep7xe@ast-mbp.dhcp.thefacebook.com>
-References: <20210203041636.38555-1-xiyou.wangcong@gmail.com>
+        with ESMTP id S231145AbhBCRzK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 12:55:10 -0500
+Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 625DFC061573;
+        Wed,  3 Feb 2021 09:54:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:Subject:Sender:
+        Reply-To:Cc:Content-ID:Content-Description;
+        bh=YkBJ95tIOheMu1qT8WUd4dMwBVvw2q3v5lgMfHoq7kk=; b=NoLr8WrKRkeWsZEmixlM19kKb8
+        ylLZ3Q4fyuek/8iEEdACx+Bs+ZmUQ1yFrBwv+LzVNy6N315lVq+ieAykNyvh3X35zyHAuTOZhz9Zm
+        nQhQKJRJxZlUaZcw4zyQbdb3qDLBKymBp6eo5lJGGsk4yvw6i3s5TPHRYd5ey+DdEHbTKLNQfK+nw
+        z+pg3Zk+F8HmVtAhFtD9Ww+BvDFzkD6XBl9vOfOo98j1xQvyYogudj9lVY65HL/1nTjI9M0btzklp
+        +cd6omQVMX2J4fXQo9q6tHwK9iBDBsaB8gNf6T4akDkf/sfY4DpRhmjb0bZwPulswriCgeJ+fbgG4
+        +r1XvbUg==;
+Received: from [2601:1c0:6280:3f0::aec2]
+        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1l7MME-0002YH-NI; Wed, 03 Feb 2021 17:54:27 +0000
+Subject: Re: [PATCH] drivers: net: ehternet: i825xx: Fix couple of spellings
+ in the file ether1.c
+To:     Bhaskar Chowdhury <unixbhaskar@gmail.com>, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210203151547.13273-1-unixbhaskar@gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <fb09ac34-12a9-f7df-131e-a98497f49d1b@infradead.org>
+Date:   Wed, 3 Feb 2021 09:54:22 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210203041636.38555-1-xiyou.wangcong@gmail.com>
+In-Reply-To: <20210203151547.13273-1-unixbhaskar@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 02, 2021 at 08:16:17PM -0800, Cong Wang wrote:
-> From: Cong Wang <cong.wang@bytedance.com>
+On 2/3/21 7:15 AM, Bhaskar Chowdhury wrote:
 > 
-> Currently sockmap only fully supports TCP, UDP is partially supported
-> as it is only allowed to add into sockmap. This patch extends sockmap
-> with: 1) full UDP support; 2) full AF_UNIX dgram support; 3) cross
-> protocol support. Our goal is to allow socket splice between AF_UNIX
-> dgram and UDP.
+> s/initialsation/initialisation/
+> s/specifiing/specifying/
+> 
+> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
 
-Please expand on the use case. The 'splice between af_unix and udp'
-doesn't tell me much. The selftest doesn't help to understand the scope either.
+Hi,
+
+$Subject has a typo/spello.
+
+The 2 fixes below look good (as explained in the patch description),
+but:
+can you explain the 3 changes below that AFAICT do nothing?
+
+
+> ---
+>  drivers/net/ethernet/i825xx/ether1.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/i825xx/ether1.c b/drivers/net/ethernet/i825xx/ether1.c
+> index a0bfb509e002..0233fb6e222d 100644
+> --- a/drivers/net/ethernet/i825xx/ether1.c
+> +++ b/drivers/net/ethernet/i825xx/ether1.c
+> @@ -885,7 +885,7 @@ ether1_recv_done (struct net_device *dev)
+>  		ether1_writew(dev, 0, priv(dev)->rx_tail, rfd_t, rfd_command, NORMALIRQS);
+>  		ether1_writew(dev, 0, priv(dev)->rx_tail, rfd_t, rfd_status, NORMALIRQS);
+>  		ether1_writew(dev, 0, priv(dev)->rx_tail, rfd_t, rfd_rbdoffset, NORMALIRQS);
+> -
+> +
+>  		priv(dev)->rx_tail = nexttail;
+>  		priv(dev)->rx_head = ether1_readw(dev, priv(dev)->rx_head, rfd_t, rfd_link, NORMALIRQS);
+>  	} while (1);
+> @@ -1031,7 +1031,7 @@ ether1_probe(struct expansion_card *ec, const struct ecard_id *id)
+> 
+>  	printk(KERN_INFO "%s: ether1 in slot %d, %pM\n",
+>  		dev->name, ec->slot_no, dev->dev_addr);
+> -
+> +
+>  	ecard_set_drvdata(ec, dev);
+>  	return 0;
+> 
+> @@ -1047,7 +1047,7 @@ static void ether1_remove(struct expansion_card *ec)
+>  {
+>  	struct net_device *dev = ecard_get_drvdata(ec);
+> 
+> -	ecard_set_drvdata(ec, NULL);
+> +	ecard_set_drvdata(ec, NULL);
+> 
+>  	unregister_netdev(dev);
+>  	free_netdev(dev);
+> --
+> 2.26.2
+> 
+
+
+-- 
+~Randy
+
