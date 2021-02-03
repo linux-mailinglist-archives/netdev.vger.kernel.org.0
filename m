@@ -2,69 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EB8030D144
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 03:12:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50A2B30D14B
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 03:16:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230179AbhBCCKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 21:10:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40824 "EHLO mail.kernel.org"
+        id S231734AbhBCCOo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 21:14:44 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41272 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229624AbhBCCKs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 2 Feb 2021 21:10:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 5934F64F77;
-        Wed,  3 Feb 2021 02:10:07 +0000 (UTC)
+        id S230098AbhBCCOn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 2 Feb 2021 21:14:43 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 275EE64F78;
+        Wed,  3 Feb 2021 02:14:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612318207;
-        bh=CGHQh/TE03WOGsqglRMUZdNF8m7rCsMbZpSXzcg5jTk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=s+i/UhJPBD1Y/PoZ9/bjlMem95YavYa9Bx7QrOmCOFwkzJWTd1MYsukKDzMhSoxw9
-         oMmDyXWooVgJzcnvH1nr3KrUQR5wDVg4QgbMjUbjnm55JBVh2rtYIZZf4Kp5UN/KHH
-         ZMKyt0jz8fY0fWw+OJrGPenFhWkGlYArIRh/g5AXHDcSKaqpGeuNGgWLlVH4QUaX8f
-         66bKFqDR9ZRsni0E/ZRQt1VKSfNDXqgA6uIoXbAXkXd8XmvWw5Yayxd6ImBpQmepq6
-         WKMno6cgST8CEk8LEmX2+nIywuAM1auQ8XM6PHOwLqohnodWxc/GCfM9YEauRAmepX
-         wa7NWjnnJ2Eig==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 49C85609E1;
-        Wed,  3 Feb 2021 02:10:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1612318442;
+        bh=Nw+vJvN6NWuPl0t2BHt2VefFIK3Rtuig6Vjum+RhBec=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=sCiPC/qhTV/ifEMhx0H7ocM2LdYWCicB3yxGKILSoir5GAHhL839namyDlxTyfxmc
+         PmG8Kp0vZO16h1rPPsXxyB1fGJYeO5K3eJh/e/0rKxc/9DIRXr7UW1tmt41EZdsYjU
+         AU+b5XcIphcfXkXcTaH95b1s71UbiMbYsTtzqGeCDtHc9bmfNAzua9EpuIVCALvLDe
+         bQAhNH8iDmF7QdLSm1/axBMa0foZhfEwCo+6xyxTrQaK9wnW/zqsldPVOyZVryJNiP
+         OlAJPSFzpu01YAODbsxmAUkHMyja6fLcxzk//6DhllVitMZ3z0khSiLajDoaEn9Ac5
+         wnKARxbo2y8BA==
+Date:   Tue, 2 Feb 2021 18:14:01 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Yishai Hadas <yishaih@nvidia.com>
+Cc:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
+        <parav@nvidia.com>, <saeedm@nvidia.com>
+Subject: Re: [PATCH net-next 0/2] devlink: Add port function attribute to
+ enable/disable roce
+Message-ID: <20210202181401.66f4359f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210201175152.11280-1-yishaih@nvidia.com>
+References: <20210201175152.11280-1-yishaih@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] r8169: Add support for another RTL8168FP
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161231820729.7086.8696746160919313169.git-patchwork-notify@kernel.org>
-Date:   Wed, 03 Feb 2021 02:10:07 +0000
-References: <20210202044813.1304266-1-kai.heng.feng@canonical.com>
-In-Reply-To: <20210202044813.1304266-1-kai.heng.feng@canonical.com>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     hkallweit1@gmail.com, nic_swsd@realtek.com, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (refs/heads/master):
-
-On Tue,  2 Feb 2021 12:48:12 +0800 you wrote:
-> According to the vendor driver, the new chip with XID 0x54b is
-> essentially the same as the one with XID 0x54a, but it doesn't need the
-> firmware.
+On Mon, 1 Feb 2021 19:51:50 +0200 Yishai Hadas wrote:
+> Currently mlx5 PCI VF and SF are enabled by default for RoCE
+> functionality.
 > 
-> So add support accordingly.
+> Currently a user does not have the ability to disable RoCE for a PCI
+> VF/SF device before such device is enumerated by the driver.
 > 
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> User is also incapable to do such setting from smartnic scenario for a
+> VF from the smartnic.
 > 
-> [...]
+> Current 'enable_roce' device knob is limited to do setting only at
+> driverinit time. By this time device is already created and firmware has
+> already allocated necessary system memory for supporting RoCE.
+> 
+> When a RoCE is disabled for the PCI VF/SF device, it saves 1 Mbyte of
+> system memory per function. Such saving is helpful when running on low
+> memory embedded platform with many VFs or SFs.
+> 
+> Therefore, it is desired to empower user to disable RoCE functionality
+> before a PCI SF/VF device is enumerated.
 
-Here is the summary with links:
-  - [v2] r8169: Add support for another RTL8168FP
-    https://git.kernel.org/netdev/net-next/c/e6d6ca6e1204
+You say that the user on the VF/SF side wants to save memory, yet
+the control knob is on the eswitch instance side, correct?
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> This is achieved by extending existing 'port function' object to control
+> capabilities of a function. This enables users to control capability of
+> the device before enumeration.
+> 
+> Examples when user prefers to disable RoCE for a VF when using switchdev
+> mode:
+> 
+> $ devlink port show pci/0000:06:00.0/1
+> pci/0000:06:00.0/1: type eth netdev pf0vf0 flavour pcivf controller 0
+> pfnum 0 vfnum 0 external false splittable false
+>   function:
+>     hw_addr 00:00:00:00:00:00 roce on
+> 
+> $ devlink port function set pci/0000:06:00.0/1 roce off
+>   
+> $ devlink port show pci/0000:06:00.0/1
+> pci/0000:06:00.0/1: type eth netdev pf0vf0 flavour pcivf controller 0
+> pfnum 0 vfnum 0 external false splittable false
+>   function:
+>     hw_addr 00:00:00:00:00:00 roce off
+> 
+> FAQs:
+> -----
+> 1. What does roce on/off do?
+> Ans: It disables RoCE capability of the function before its enumerated,
+> so when driver reads the capability from the device firmware, it is
+> disabled.
+> At this point RDMA stack will not be able to create UD, QP1, RC, XRC
+> type of QPs. When RoCE is disabled, the GID table of all ports of the
+> device is disabled in the device and software stack.
+> 
+> 2. How is the roce 'port function' option different from existing
+> devlink param?
+> Ans: RoCE attribute at the port function level disables the RoCE
+> capability at the specific function level; while enable_roce only does
+> at the software level.
+> 
+> 3. Why is this option for disabling only RoCE and not the whole RDMA
+> device?
+> Ans: Because user still wants to use the RDMA device for non RoCE
+> commands in more memory efficient way.
 
-
+What are those "non-RoCE commands" that user may want to use "in a more
+efficient way"?
