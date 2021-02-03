@@ -2,104 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22EC230E36A
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 20:41:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54EA930E3EB
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 21:15:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231556AbhBCTkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 14:40:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37726 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231557AbhBCTkI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 14:40:08 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BE05C061573
-        for <netdev@vger.kernel.org>; Wed,  3 Feb 2021 11:39:27 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id w1so912676ejf.11
-        for <netdev@vger.kernel.org>; Wed, 03 Feb 2021 11:39:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=d2hM7tfBFJxLwZrun5kz32bu7mL9u5x+3fila9t7zbc=;
-        b=m4FFXK6BCRTSgnYworNIDnZ8Y+UnavgI1jqJIfZkYTVrucHgY2I8eCqjQpcUM2j4xx
-         YvH5uoGRLgzJDz1VfyOJvWXG3FDmqv3gSLgv6zja7/iIzhelzgk9NU19gckhrpSr3M6y
-         OGlXZjCcOt/EdabJzWL3kFCP+BDdLWOV4y/bQ0Xp0uBCjnSb5AnCgKikfvta2ywlL2uz
-         rvyJ99RGFNDHgNrfKN5NU9hgGaEkBTc/e5NTlrL0V4pX/m/ZGM9RAUkfIpeC1weptrbd
-         mOJ2yYxKmZ0LfJzGQTKcEnrgTtB29xUb09VMGp7G7hB/U5UNQZ8LFZT+pEIqBUTb6BtX
-         Yevw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=d2hM7tfBFJxLwZrun5kz32bu7mL9u5x+3fila9t7zbc=;
-        b=Y1tbwtOe3ABweR6lxXGT9gcqDXypuGzcCNNYVv/kqnfNPiaJL0650ABKKe1lpXF/RV
-         uZklCjDXRKk32v+KN5KxSAAj+etvddhdeRajKqJURlnfb7aQqBgDRRT/iXzwiZkENikk
-         EmUtudSOE4z+BZbg/Asa216qarMPNRX3tcE2a55CMwc2pKOC81Cf6t2gE/Sw5ySNiz6V
-         mQXfUri0OaBJPVdr1rvQ7KefCyYq7DK84s1wEcJVNXuGb0z6ardfVOUEIMP9ZywE1KUk
-         +wB4jD0hJjolzDPXbk/jqlwoXUrBmKMGXf+QQ4CIQ8F4RVBctF9XMiVAt9QubLErcNbR
-         4MoQ==
-X-Gm-Message-State: AOAM531C7tCI5d4g58afNrhKxKZeWg4Sq0nVQ5neCxcLTlbHRTl/qEMh
-        tkuD5Kl8peEBx8rDsJH1ues=
-X-Google-Smtp-Source: ABdhPJzQXE1uzzcJGL/oRPtPVw9IQE1R+esmhS+oCd44e8CuM/2shZT2aFMG05YzuWT6oE3ArXk8Eg==
-X-Received: by 2002:a17:906:4707:: with SMTP id y7mr4714756ejq.445.1612381166068;
-        Wed, 03 Feb 2021 11:39:26 -0800 (PST)
-Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id t9sm1386478ejc.51.2021.02.03.11.39.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Feb 2021 11:39:25 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: [PATCH RESEND net-next] net: dsa: bcm_sf2: Check egress tagging of CFP rule with proper accessor
-Date:   Wed,  3 Feb 2021 21:39:18 +0200
-Message-Id: <20210203193918.2236994-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S231775AbhBCUOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 15:14:35 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48600 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231301AbhBCUOe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Feb 2021 15:14:34 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4330D64F74;
+        Wed,  3 Feb 2021 20:13:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612383234;
+        bh=naNYzzp/Pabw0t7/SkNVodAlMDX6j6FT3sxuxohzUh8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WSKkSV5DfTxMJnhGRZ6nntyDNi/AStZe4iWWJplcpwQ69JJgQDZQLOv7/0pRsi/c9
+         ffB6ofGRaZcwvf062v2e+AuMsN4mwXJw+QlDgYOalkJy6Tzsvs1mTVGQdtQwriI5Id
+         w1tzciPi/rPlZDqiwgqTBrbbNDEaGW3JPBjtdbEPUu/vewVZ22XoXMqWODcf8WoTEt
+         z+PB0JMns46MVwDo7NicMcnrUsUetANiejIyf6wmosYTFfs8mW27n8J+W2lgv2OVJY
+         Yq/kBOI0CbPASfGy3tgJPtenk9hKCoRc2QXxGH8ocSi8zBNJIdCu3eRRzPxU4Bh6AU
+         uZXpU0y4pfogw==
+Date:   Wed, 3 Feb 2021 12:13:52 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Bhaskar Chowdhury <unixbhaskar@gmail.com>, linux@armlinux.org.uk,
+        davem@davemloft.net, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] drivers: net: ehternet: i825xx: Fix couple of spellings
+ in the file ether1.c
+Message-ID: <20210203121352.41b4733d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <fb09ac34-12a9-f7df-131e-a98497f49d1b@infradead.org>
+References: <20210203151547.13273-1-unixbhaskar@gmail.com>
+        <fb09ac34-12a9-f7df-131e-a98497f49d1b@infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The flow steering struct ethtool_flow_ext::data field is __be32, so when
-the CFP code needs to check the VLAN egress tagging attribute in bit 0,
-it does this in CPU native endianness. So logically, the endianness
-conversion is set up the other way around, although in practice the same
-result is produced.
+On Wed, 3 Feb 2021 09:54:22 -0800 Randy Dunlap wrote:
+> On 2/3/21 7:15 AM, Bhaskar Chowdhury wrote:
+> > 
+> > s/initialsation/initialisation/
+> > s/specifiing/specifying/
+> > 
+> > Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>  
+> 
+> Hi,
+> 
+> $Subject has a typo/spello.
 
-Gets rid of build warning:
+This happens more than you'd think with spell fixies. Always makes me
+chuckle. FWIW "net: i825xx:" is enough of a prefix, no need to
+transcribe the entire directory path.
 
-warning: cast from restricted __be32
-warning: incorrect type in argument 1 (different base types)
-   expected unsigned int [usertype] val
-   got restricted __be32
-warning: cast from restricted __be32
-warning: cast from restricted __be32
-warning: cast from restricted __be32
-warning: cast from restricted __be32
-warning: restricted __be32 degrades to integer
+> The 2 fixes below look good (as explained in the patch description),
+> but:
+> can you explain the 3 changes below that AFAICT do nothing?
 
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/dsa/bcm_sf2_cfp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I think we can jump to the conclusion that Bhaskar's editor cleanup up
+trailing white space.
 
-diff --git a/drivers/net/dsa/bcm_sf2_cfp.c b/drivers/net/dsa/bcm_sf2_cfp.c
-index ed45d16250e1..178218cf73a3 100644
---- a/drivers/net/dsa/bcm_sf2_cfp.c
-+++ b/drivers/net/dsa/bcm_sf2_cfp.c
-@@ -886,7 +886,7 @@ static int bcm_sf2_cfp_rule_insert(struct dsa_switch *ds, int port,
- 
- 		vid = be16_to_cpu(fs->h_ext.vlan_tci) & VLAN_VID_MASK;
- 		vlan.vid = vid;
--		if (cpu_to_be32(fs->h_ext.data[1]) & 1)
-+		if (be32_to_cpu(fs->h_ext.data[1]) & 1)
- 			vlan.flags = BRIDGE_VLAN_INFO_UNTAGGED;
- 		else
- 			vlan.flags = 0;
--- 
-2.25.1
+Bhaskar please make sure that the patch does not make unrelated white 
+space changes.
+
+> >  drivers/net/ethernet/i825xx/ether1.c | 10 +++++-----
+> >  1 file changed, 5 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/drivers/net/ethernet/i825xx/ether1.c b/drivers/net/ethernet/i825xx/ether1.c
+> > index a0bfb509e002..0233fb6e222d 100644
+> > --- a/drivers/net/ethernet/i825xx/ether1.c
+> > +++ b/drivers/net/ethernet/i825xx/ether1.c
+> > @@ -885,7 +885,7 @@ ether1_recv_done (struct net_device *dev)
+> >  		ether1_writew(dev, 0, priv(dev)->rx_tail, rfd_t, rfd_command, NORMALIRQS);
+> >  		ether1_writew(dev, 0, priv(dev)->rx_tail, rfd_t, rfd_status, NORMALIRQS);
+> >  		ether1_writew(dev, 0, priv(dev)->rx_tail, rfd_t, rfd_rbdoffset, NORMALIRQS);
+> > -
+> > +
+> >  		priv(dev)->rx_tail = nexttail;
+> >  		priv(dev)->rx_head = ether1_readw(dev, priv(dev)->rx_head, rfd_t, rfd_link, NORMALIRQS);
+> >  	} while (1);
+> > @@ -1031,7 +1031,7 @@ ether1_probe(struct expansion_card *ec, const struct ecard_id *id)
+> > 
+> >  	printk(KERN_INFO "%s: ether1 in slot %d, %pM\n",
+> >  		dev->name, ec->slot_no, dev->dev_addr);
+> > -
+> > +
+> >  	ecard_set_drvdata(ec, dev);
+> >  	return 0;
+> > 
+> > @@ -1047,7 +1047,7 @@ static void ether1_remove(struct expansion_card *ec)
+> >  {
+> >  	struct net_device *dev = ecard_get_drvdata(ec);
+> > 
+> > -	ecard_set_drvdata(ec, NULL);
+> > +	ecard_set_drvdata(ec, NULL);
+> > 
+> >  	unregister_netdev(dev);
+> >  	free_netdev(dev);
+> > --
+> > 2.26.2
+> >   
+> 
+> 
 
