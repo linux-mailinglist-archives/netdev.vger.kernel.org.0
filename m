@@ -2,118 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10CEA30D864
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 12:20:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A38930D8C2
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 12:37:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234108AbhBCLSx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 06:18:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42028 "EHLO
+        id S234229AbhBCLgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 06:36:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233958AbhBCLSi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 06:18:38 -0500
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A1FCC06174A;
-        Wed,  3 Feb 2021 03:17:58 -0800 (PST)
-Received: by mail-wr1-x429.google.com with SMTP id 7so23779030wrz.0;
-        Wed, 03 Feb 2021 03:17:58 -0800 (PST)
+        with ESMTP id S234054AbhBCLgP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 06:36:15 -0500
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA2F3C061573;
+        Wed,  3 Feb 2021 03:35:34 -0800 (PST)
+Received: by mail-wm1-x331.google.com with SMTP id y187so4868023wmd.3;
+        Wed, 03 Feb 2021 03:35:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=EN3H31K/bOJSsjLnJKe3X5vfvZNM9RPMrc95EOotK5A=;
-        b=TaWzyS/PVn45vOTeLE+4NrqYi2JM8VVCv0GhDIxDPUPXQNgW3vt4Onfh/6DSXymRek
-         oL4wVmdvktu0n+MCCzcA8OTgZXolhwqdEklKjs09JBHIrugKA/DV7cYDytZf+oPG7SCj
-         cXAedcRsfj8sgYHUyZYkwcK7dy2sZ9x/KDdV3nMYsATWhQ6aTzyIZdgRrFUzf2FEAtmr
-         /UWomHlonmYykfbJA5pdo1TlexfIolsde+g2u5M+1WByW/afltxc/9lKBbl48e3BGU2M
-         Wn4kbTl7QNuPR/h7aCpwCwyNsyd3dig0IKSWNGQRQ6EPUHKdNKsDd2T0+VpRkpU+r6pA
-         nfIQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YaVlQ35WAgybEPmbAlTIUfx4arMZ+F8KRTsa3f1igzU=;
+        b=upJrN7YFovrxu3liXSBoVUEGk1nrL7a+DVGqKL9T+H53jYBwvepcctt6sLTufgv36B
+         JaIIo3tqLEmpcYoWAEVjMg6EmeTSjM4SwfX2aQrujQ/JYVtknmoM8wG9nZs0yoXSHtMb
+         cPbp87bCukLSKJp/L8mWy+2g9VmShnvinUFe7giIJE5P4rnDpiOwfuNzqpHRCv7a7jqu
+         yLbSD7srDIeuG94pmfmbFbMHrp0+VfLb52uCAYGMwy0HOZsMBg+QtKBXTrKnvMxmOsaB
+         YJqExyGbPt+/Xog9pU6PWyZSL6NAwFS8TH744P7YKe9OPh7RQk2a5+/UNrMhv22pR8dy
+         XyYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=EN3H31K/bOJSsjLnJKe3X5vfvZNM9RPMrc95EOotK5A=;
-        b=jS7dJsUtru3O0xuCilIxDODkaMV/TiJvGNW7pzuEnUvgkp5rtoqm/WRtKs84afsX4q
-         fySgbJMXd3ym4+hCM9USaYgQbga/Q8wOY6AbvGXFtDBSV3hc71sR7tI7P95Thiba0Ohc
-         BXoBv9qhpljTO5AIHg/s9atvifjl/rk3Bxk/VdOu26umApuyyVujTl2CGKCTDzlrNBsO
-         74oKVJQAaHcB7U4ZN3dBrCsOwSYsmeg1Efv+Fge5FFokn4Rv7qLAivAjVLxDkxvm3C0S
-         HgQvoZnf3kIQugnn2f7j75u8ljrBq0kNxuoI4QHgpxrvWFH1ElMgHeuSx63l3FOUXYYL
-         ow0Q==
-X-Gm-Message-State: AOAM530VM5MrIqX9diPgeiQeqmb8aDtO5lmEMWKe+rkI6GxtglSEG9Ju
-        x0kmqf5FOlWbFtwtyWOTZsY=
-X-Google-Smtp-Source: ABdhPJza9GPgkT8rzhWt3hMXfvVqVfZ3MkTD9GIA4r5axgX8dZ2EzAi1SVnIHaQI/F6vjjnOGehTdw==
-X-Received: by 2002:a05:6000:1249:: with SMTP id j9mr2989450wrx.307.1612351076761;
-        Wed, 03 Feb 2021 03:17:56 -0800 (PST)
-Received: from anparri (host-95-238-70-33.retail.telecomitalia.it. [95.238.70.33])
-        by smtp.gmail.com with ESMTPSA id l8sm2341491wmi.8.2021.02.03.03.17.55
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YaVlQ35WAgybEPmbAlTIUfx4arMZ+F8KRTsa3f1igzU=;
+        b=YZ9a4Z6TS9KCBHfX7TrVpIhPdXFT4oOHL4Utgqgm2hQrCf/yBpREd/djGMf+ziCMb4
+         1uDx5cdRbrQm3ON7swt4mB1izfollUthbg7aK/vMzHRJLS9QsDT7IsCRMsBVmJy0NsXB
+         jptjJnoOGN0LVUeFj6WhIKUVTISmmdDT1BFXSMuN51ESxKeorASEpUi2ab2ZZfmQEefh
+         iPMNbgv0m+R2w+gOWdbuqEq8DcsweytNSvYgdGaRmuoy/u7VXCnpt+fGEmG4V8tc1eKL
+         VSknS0D6c6eO8u36VRavTfw14zYIpxdk/0ntk9hD9M34QcPrx8w8Pqvp+zemxbgWs5Kg
+         xamw==
+X-Gm-Message-State: AOAM5334xAwUPpiL6uatbU7JlEWRkf6drz//PhWLA5Azkn/V9CGF599N
+        aQBPtT+sz04s8sii8e8fZe6IkuqAylmCxd3v
+X-Google-Smtp-Source: ABdhPJywxMKo8VB4wbNSeSVds0UKXGX5ehLV2hcGKIuAr6gze4gceTvmoJE+j13PlgpL5yacGMVhnw==
+X-Received: by 2002:a7b:c4c1:: with SMTP id g1mr2348153wmk.145.1612352132934;
+        Wed, 03 Feb 2021 03:35:32 -0800 (PST)
+Received: from anparri.mshome.net (host-95-238-70-33.retail.telecomitalia.it. [95.238.70.33])
+        by smtp.gmail.com with ESMTPSA id t18sm3295088wrr.56.2021.02.03.03.35.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Feb 2021 03:17:56 -0800 (PST)
-Date:   Wed, 3 Feb 2021 12:17:48 +0100
-From:   Andrea Parri <parri.andrea@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, mikelley@microsoft.com,
-        linux-hyperv@vger.kernel.org, skarade@microsoft.com,
-        juvazq@microsoft.com, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 net-next] hv_netvsc: Copy packets sent by Hyper-V out
- of the receive buffer
-Message-ID: <20210203111748.GA558300@anparri>
-References: <20210126162907.21056-1-parri.andrea@gmail.com>
- <161196780649.27852.15602248378687946476.git-patchwork-notify@kernel.org>
- <20210202081843.GA3923@anparri>
- <20210202114549.7488f5bd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        Wed, 03 Feb 2021 03:35:32 -0800 (PST)
+From:   "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     "K . Y . Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        Michael Kelley <mikelley@microsoft.com>,
+        linux-hyperv@vger.kernel.org,
+        Saruhan Karademir <skarade@microsoft.com>,
+        Juan Vazquez <juvazq@microsoft.com>,
+        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH net-next 0/2] Amend "hv_netvsc: Copy packets sent by Hyper-V out of the receive buffer"
+Date:   Wed,  3 Feb 2021 12:35:11 +0100
+Message-Id: <20210203113513.558864-1-parri.andrea@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210202114549.7488f5bd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 02, 2021 at 11:45:49AM -0800, Jakub Kicinski wrote:
-> On Tue, 2 Feb 2021 09:18:43 +0100 Andrea Parri wrote:
-> > Hi net maintainers,
-> > 
-> > 
-> > On Sat, Jan 30, 2021 at 12:50:06AM +0000, patchwork-bot+netdevbpf@kernel.org wrote:
-> > > Hello:
-> > > 
-> > > This patch was applied to netdev/net-next.git (refs/heads/master):
-> > > 
-> > > On Tue, 26 Jan 2021 17:29:07 +0100 you wrote:  
-> > > > Pointers to receive-buffer packets sent by Hyper-V are used within the
-> > > > guest VM.  Hyper-V can send packets with erroneous values or modify
-> > > > packet fields after they are processed by the guest.  To defend against
-> > > > these scenarios, copy (sections of) the incoming packet after validating
-> > > > their length and offset fields in netvsc_filter_receive().  In this way,
-> > > > the packet can no longer be modified by the host.
-> > > > 
-> > > > [...]  
-> > > 
-> > > Here is the summary with links:
-> > >   - [v2,net-next] hv_netvsc: Copy packets sent by Hyper-V out of the receive buffer
-> > >     https://git.kernel.org/netdev/net-next/c/0ba35fe91ce3  
-> > 
-> > I'd have some fixes on top of this and I'm wondering about the process: would
-> > you consider fixes/patches on top of this commit now? 
-> 
-> Fixes for bugs present in Linus's tree?
-> 
-> You need to target the net tree, and give us instructions on how to
-> resolve the conflict which will arise from merging net into net-next.
-> 
-> > would you rather prefer me to squash these fixes into a v3? other?
-> 
-> Networking trees are immutable, and v2 was already applied. We could
-> do a revert, apply fix, apply v3, but we prefer to just handle the 
-> merge conflict.
+Patch #2 also addresses the Smatch complaint reported here:
 
-Thanks for the clarification, Jakub.
-
-And sorry for the confusion; let me just send out the 'fixes'/patches (I
-have one targeting the net tree and two targeting the net-next tree, with
-no conflict between them), so that they can be reviewed and we can agree
-/discuss any further steps.
+   https://lkml.kernel.org/r/YBp2oVIdMe+G%2FliJ@mwanda/
 
 Thanks,
   Andrea
+
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: netdev@vger.kernel.org
+
+Andrea Parri (Microsoft) (2):
+  hv_netvsc: Allocate the recv_buf buffers after
+    NVSP_MSG1_TYPE_SEND_RECV_BUF
+  hv_netvsc: Load and store the proper (NBL_HASH_INFO) per-packet info
+
+ drivers/net/hyperv/netvsc.c       | 18 +++++++++++-------
+ drivers/net/hyperv/rndis_filter.c |  2 +-
+ 2 files changed, 12 insertions(+), 8 deletions(-)
+
+-- 
+2.25.1
+
