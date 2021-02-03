@@ -2,209 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 954B030E32F
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 20:23:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D042F30E34C
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 20:31:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232835AbhBCTXb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 14:23:31 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40920 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232051AbhBCTX0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Feb 2021 14:23:26 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3A7C564DF5;
-        Wed,  3 Feb 2021 19:22:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612380165;
-        bh=kB89/TlhGyCz1GyXxEFvgWet15euMK4rhW4b7b2/V84=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=MI0HrjGAS4mV4YDPWoDrMPrXkwkwTTc2EDZGQvmZj8sdt8Lx0MKKM33t1cCis8cZa
-         2AlVxeNattKePN4KlK38Dtz7VmE4JvocjzXCWIreZrPbF+4qYO7ZHnMx++LdJndH5m
-         xDxN0CvWpfb+HmMs4pLiaWdCAUsAYmqpI80Ag6LjNeTAREsbFwv6eBaqTGn2367hpK
-         sqtGNRP5mI06AGA5FNjV3oOLpWWFQ60DQ6kOV3R9eRYh/VCM8XSzUaelIgzVTq7C0H
-         6KwJ4Ai0C8AD2rXQowa/vIRHZkNIgjxPYG9i5t8u9xUSG3l/PODhJSFzpgUPoyIHs5
-         4oU14zUYJhwTQ==
-Message-ID: <38d73470cd4faac0dc6c09697f33c5fb90d13f4e.camel@kernel.org>
-Subject: Re: [PATCH net-next 0/2] devlink: Add port function attribute to
- enable/disable roce
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Yishai Hadas <yishaih@nvidia.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, parav@nvidia.com
-Date:   Wed, 03 Feb 2021 11:22:44 -0800
-In-Reply-To: <20210203105102.71e6fa2d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20210201175152.11280-1-yishaih@nvidia.com>
-         <20210202181401.66f4359f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <d01dfcc6f46f2c70c4921139543e5823582678c8.camel@kernel.org>
-         <20210203105102.71e6fa2d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3 (3.38.3-1.fc33) 
+        id S231134AbhBCTap (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 14:30:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35684 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229832AbhBCTai (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 14:30:38 -0500
+Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87BEAC06178C
+        for <netdev@vger.kernel.org>; Wed,  3 Feb 2021 11:29:58 -0800 (PST)
+Received: by mail-qv1-xf2c.google.com with SMTP id h21so544884qvb.8
+        for <netdev@vger.kernel.org>; Wed, 03 Feb 2021 11:29:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OBAOidSrXm2Sy3YWpFzBuwWGoxluD1cVMxKH70h9RdA=;
+        b=VvcwiUzaV4GaYHjC04reFXKGPZNzf8sPDljnzOcaFj6isl8heE+W+aC3WVVWIh1RYZ
+         QvPgf7zap2cTNZIBoB83sf0VPWrAkwjsdyeW5zaczqYsrrZEdBcB/NYjf/tKQAwc+d5b
+         qZv3NSQx09nPJl/apPmammstQwGJ3wEn6R3IXuI7mp6eQzO0u1DLNRcnHijYbuHXhMvZ
+         CSFk9Zh5414yO4BHNueOMEaWql6PfZiubz2Bi8l5ikMJY6w4Cs/Vjz7+73Sz986fsDVj
+         UfAIO6OWx8qcNNYStwG52WJWAl8WPTWyZDSy5fgFgOVmOaI9wLA2y44PvAUhYjlC1cvw
+         w1oQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OBAOidSrXm2Sy3YWpFzBuwWGoxluD1cVMxKH70h9RdA=;
+        b=AtcMvOgqFdXqeAbahaDyfZCGL1gxT0fmzh7MWqri9AbAD+wOb5wo7ZemjUVRKwxLec
+         VF2cV5LMIqddEWvz8YA4F3brDB3a/AO3JTH9fRH+FAcNLdIH84aVUuzDGLyMo8++z1Ms
+         h2qKEMorhiUE8LpYowsxQWPNcStzHdPd3DUP8kDE2terKVHgp8NrY+gf8hosY1nFRGId
+         dh1BA26NpOZalf7k43q0H+SIE363ES9jU0yBguSu4rOmoF/jOPD+tu8ZsA7fUlh5NF96
+         qqAaU4i/81FG/mOZwYYvda4YjnwOud0h+tLt1Pin8WO19gRCKFin6zbBof+nZrjVuirs
+         LaYg==
+X-Gm-Message-State: AOAM5308zV1nd8psfhRUXcplS3eNXgU/yy64/44OByXqB8sGlDRBuKk8
+        cpxrlCnSeVLlNzWxNVhHPQY1cWAAeaw=
+X-Google-Smtp-Source: ABdhPJypGVbp6daxuqqqhcX0BZcKVcJUqMuChO8YXteg5DQ5SOWG1a0spbI3XNwEIFME3b71C/Tsbg==
+X-Received: by 2002:a0c:9ac2:: with SMTP id k2mr4374168qvf.3.1612380597373;
+        Wed, 03 Feb 2021 11:29:57 -0800 (PST)
+Received: from willemb.nyc.corp.google.com ([2620:0:1003:312:2842:1f5d:2de6:8f67])
+        by smtp.gmail.com with ESMTPSA id c17sm2704135qkb.13.2021.02.03.11.29.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Feb 2021 11:29:55 -0800 (PST)
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, oliver.graute@gmail.com,
+        sagi@grimberg.me, viro@zeniv.linux.org.uk, hch@lst.de,
+        alexander.duyck@gmail.com, eric.dumazet@gmail.com,
+        Willem de Bruijn <willemb@google.com>
+Subject: [PATCH net v2] udp: fix skb_copy_and_csum_datagram with odd segment sizes
+Date:   Wed,  3 Feb 2021 14:29:52 -0500
+Message-Id: <20210203192952.1849843-1-willemdebruijn.kernel@gmail.com>
+X-Mailer: git-send-email 2.30.0.365.g02bc693789-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-02-03 at 10:51 -0800, Jakub Kicinski wrote:
-> On Tue, 02 Feb 2021 20:13:48 -0800 Saeed Mahameed wrote:
-> > On Tue, 2021-02-02 at 18:14 -0800, Jakub Kicinski wrote:
-> > > On Mon, 1 Feb 2021 19:51:50 +0200 Yishai Hadas wrote:  
-> > > > Currently mlx5 PCI VF and SF are enabled by default for RoCE
-> > > > functionality.
-> > > > 
-> > > > Currently a user does not have the ability to disable RoCE for
-> > > > a
-> > > > PCI
-> > > > VF/SF device before such device is enumerated by the driver.
-> > > > 
-> > > > User is also incapable to do such setting from smartnic
-> > > > scenario
-> > > > for a
-> > > > VF from the smartnic.
-> > > > 
-> > > > Current 'enable_roce' device knob is limited to do setting only
-> > > > at
-> > > > driverinit time. By this time device is already created and
-> > > > firmware has
-> > > > already allocated necessary system memory for supporting RoCE.
-> > > > 
-> > > > When a RoCE is disabled for the PCI VF/SF device, it saves 1
-> > > > Mbyte
-> > > > of
-> > > > system memory per function. Such saving is helpful when running
-> > > > on
-> > > > low
-> > > > memory embedded platform with many VFs or SFs.
-> > > > 
-> > > > Therefore, it is desired to empower user to disable RoCE
-> > > > functionality
-> > > > before a PCI SF/VF device is enumerated.  
-> > > 
-> > > You say that the user on the VF/SF side wants to save memory, yet
-> > > the control knob is on the eswitch instance side, correct?
-> > >   
-> > 
-> > yes, user in this case is the admin, who controls the provisioned
-> > network function SF/VFs.. by turning off this knob it allows to
-> > create
-> > more of that resource in case the user/admin is limited by memory.
-> 
-> Ah, so in case of the SmartNIC this extra memory is allocated on the
-> control system, not where the function resides?
-> 
+From: Willem de Bruijn <willemb@google.com>
 
-most of the memeory are actually allocated from where the function
-resides, some are on the management system but it is not as critical.
-SFs for now can only be probed on the management system, so the main
-issue will be on the SmartNIC side for now.
+When iteratively computing a checksum with csum_block_add, track the
+offset "pos" to correctly rotate in csum_block_add when offset is odd.
 
-> My next question is regarding the behavior on the target system -
-> what
-> does "that user" see? Can we expect they will understand that the
-> limitation was imposed by the admin and not due to some
-> initialization
-> failure or SW incompatibility?
-> 
+The open coded implementation of skb_copy_and_csum_datagram did this.
+With the switch to __skb_datagram_iter calling csum_and_copy_to_iter,
+pos was reinitialized to 0 on each call.
 
-the whole thing works with only real HW capabilities, there is no
-synthetic SW capabilities. 
+Bring back the pos by passing it along with the csum to the callback.
 
-when mlx5 instance driver loads, it doesn't assume anything about
-underlying HW, and it queries for the advertised FW capability
-according to the HW spec before it enables a feature.
+Changes v1->v2
+  - pass csum value, instead of csump pointer (Alexander Duyck)
 
-so this patch adds the ability for admin to enforce a specific HW cap
-"off" for a VF/SF hca slice.
+Link: https://lore.kernel.org/netdev/20210128152353.GB27281@optiplex/
+Fixes: 950fcaecd5cc ("datagram: consolidate datagram copy to iter helpers")
+Reported-by: Oliver Graute <oliver.graute@gmail.com>
+Signed-off-by: Willem de Bruijn <willemb@google.com>
+---
+ include/linux/uio.h |  8 +++++++-
+ lib/iov_iter.c      | 24 ++++++++++++++----------
+ net/core/datagram.c | 12 ++++++++++--
+ 3 files changed, 31 insertions(+), 13 deletions(-)
 
-
-> > > > This is achieved by extending existing 'port function' object
-> > > > to
-> > > > control
-> > > > capabilities of a function. This enables users to control
-> > > > capability of
-> > > > the device before enumeration.
-> > > > 
-> > > > Examples when user prefers to disable RoCE for a VF when using
-> > > > switchdev
-> > > > mode:
-> > > > 
-> > > > $ devlink port show pci/0000:06:00.0/1
-> > > > pci/0000:06:00.0/1: type eth netdev pf0vf0 flavour pcivf
-> > > > controller
-> > > > 0
-> > > > pfnum 0 vfnum 0 external false splittable false
-> > > >   function:
-> > > >     hw_addr 00:00:00:00:00:00 roce on
-> > > > 
-> > > > $ devlink port function set pci/0000:06:00.0/1 roce off
-> > > >   
-> > > > $ devlink port show pci/0000:06:00.0/1
-> > > > pci/0000:06:00.0/1: type eth netdev pf0vf0 flavour pcivf
-> > > > controller
-> > > > 0
-> > > > pfnum 0 vfnum 0 external false splittable false
-> > > >   function:
-> > > >     hw_addr 00:00:00:00:00:00 roce off
-> > > > 
-> > > > FAQs:
-> > > > -----
-> > > > 1. What does roce on/off do?
-> > > > Ans: It disables RoCE capability of the function before its
-> > > > enumerated,
-> > > > so when driver reads the capability from the device firmware,
-> > > > it is
-> > > > disabled.
-> > > > At this point RDMA stack will not be able to create UD, QP1,
-> > > > RC,
-> > > > XRC
-> > > > type of QPs. When RoCE is disabled, the GID table of all ports
-> > > > of
-> > > > the
-> > > > device is disabled in the device and software stack.
-> > > > 
-> > > > 2. How is the roce 'port function' option different from
-> > > > existing
-> > > > devlink param?
-> > > > Ans: RoCE attribute at the port function level disables the
-> > > > RoCE
-> > > > capability at the specific function level; while enable_roce
-> > > > only
-> > > > does
-> > > > at the software level.
-> > > > 
-> > > > 3. Why is this option for disabling only RoCE and not the whole
-> > > > RDMA
-> > > > device?
-> > > > Ans: Because user still wants to use the RDMA device for non
-> > > > RoCE
-> > > > commands in more memory efficient way.  
-> > > 
-> > > What are those "non-RoCE commands" that user may want to use "in
-> > > a
-> > > more
-> > > efficient way"?  
-> > 
-> > RAW eth QP, i think you already know this one, it is a very thin
-> > layer
-> > that doesn't require the whole rdma stack.
-> 
-> Sorry for asking a leading question. You know how we'll feel about
-> that one, do we need to talk this out or can we save ourselves the
-> battle? :S
-
-I know, I know :/
-
-So, there is no rdma bit/cap in HW.. to disable non-RoCE commands we
-will have to disable etherent capability. 
-
-The user interface here has no synthetic semantics, all knobs will
-eventually be mapped to real HW/FW capabilities to get disabled.
-
-the whole feature is about allowing admin to ship network functions
-with different capabilities that are actually enforced by FW/HW.. 
-so the user of the VF will see, RDMA/ETH only cards or both.
-
-
-
-
-
+diff --git a/include/linux/uio.h b/include/linux/uio.h
+index 72d88566694e..27ff8eb786dc 100644
+--- a/include/linux/uio.h
++++ b/include/linux/uio.h
+@@ -260,7 +260,13 @@ static inline void iov_iter_reexpand(struct iov_iter *i, size_t count)
+ {
+ 	i->count = count;
+ }
+-size_t csum_and_copy_to_iter(const void *addr, size_t bytes, void *csump, struct iov_iter *i);
++
++struct csum_state {
++	__wsum csum;
++	size_t off;
++};
++
++size_t csum_and_copy_to_iter(const void *addr, size_t bytes, void *csstate, struct iov_iter *i);
+ size_t csum_and_copy_from_iter(void *addr, size_t bytes, __wsum *csum, struct iov_iter *i);
+ bool csum_and_copy_from_iter_full(void *addr, size_t bytes, __wsum *csum, struct iov_iter *i);
+ size_t hash_and_copy_to_iter(const void *addr, size_t bytes, void *hashp,
+diff --git a/lib/iov_iter.c b/lib/iov_iter.c
+index a21e6a5792c5..f0b2ccb1bb01 100644
+--- a/lib/iov_iter.c
++++ b/lib/iov_iter.c
+@@ -592,14 +592,15 @@ static __wsum csum_and_memcpy(void *to, const void *from, size_t len,
+ }
+ 
+ static size_t csum_and_copy_to_pipe_iter(const void *addr, size_t bytes,
+-				__wsum *csum, struct iov_iter *i)
++					 struct csum_state *csstate,
++					 struct iov_iter *i)
+ {
+ 	struct pipe_inode_info *pipe = i->pipe;
+ 	unsigned int p_mask = pipe->ring_size - 1;
++	__wsum sum = csstate->csum;
++	size_t off = csstate->off;
+ 	unsigned int i_head;
+ 	size_t n, r;
+-	size_t off = 0;
+-	__wsum sum = *csum;
+ 
+ 	if (!sanity(i))
+ 		return 0;
+@@ -621,7 +622,8 @@ static size_t csum_and_copy_to_pipe_iter(const void *addr, size_t bytes,
+ 		i_head++;
+ 	} while (n);
+ 	i->count -= bytes;
+-	*csum = sum;
++	csstate->csum = sum;
++	csstate->off = off;
+ 	return bytes;
+ }
+ 
+@@ -1522,18 +1524,19 @@ bool csum_and_copy_from_iter_full(void *addr, size_t bytes, __wsum *csum,
+ }
+ EXPORT_SYMBOL(csum_and_copy_from_iter_full);
+ 
+-size_t csum_and_copy_to_iter(const void *addr, size_t bytes, void *csump,
++size_t csum_and_copy_to_iter(const void *addr, size_t bytes, void *_csstate,
+ 			     struct iov_iter *i)
+ {
++	struct csum_state *csstate = _csstate;
+ 	const char *from = addr;
+-	__wsum *csum = csump;
+ 	__wsum sum, next;
+-	size_t off = 0;
++	size_t off;
+ 
+ 	if (unlikely(iov_iter_is_pipe(i)))
+-		return csum_and_copy_to_pipe_iter(addr, bytes, csum, i);
++		return csum_and_copy_to_pipe_iter(addr, bytes, _csstate, i);
+ 
+-	sum = *csum;
++	sum = csstate->csum;
++	off = csstate->off;
+ 	if (unlikely(iov_iter_is_discard(i))) {
+ 		WARN_ON(1);	/* for now */
+ 		return 0;
+@@ -1561,7 +1564,8 @@ size_t csum_and_copy_to_iter(const void *addr, size_t bytes, void *csump,
+ 		off += v.iov_len;
+ 	})
+ 	)
+-	*csum = sum;
++	csstate->csum = sum;
++	csstate->off = off;
+ 	return bytes;
+ }
+ EXPORT_SYMBOL(csum_and_copy_to_iter);
+diff --git a/net/core/datagram.c b/net/core/datagram.c
+index 81809fa735a7..15ab9ffb27fe 100644
+--- a/net/core/datagram.c
++++ b/net/core/datagram.c
+@@ -721,8 +721,16 @@ static int skb_copy_and_csum_datagram(const struct sk_buff *skb, int offset,
+ 				      struct iov_iter *to, int len,
+ 				      __wsum *csump)
+ {
+-	return __skb_datagram_iter(skb, offset, to, len, true,
+-			csum_and_copy_to_iter, csump);
++	struct csum_state csdata = { .csum = *csump };
++	int ret;
++
++	ret = __skb_datagram_iter(skb, offset, to, len, true,
++				  csum_and_copy_to_iter, &csdata);
++	if (ret)
++		return ret;
++
++	*csump = csdata.csum;
++	return 0;
+ }
+ 
+ /**
+-- 
+2.30.0.365.g02bc693789-goog
 
