@@ -2,72 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E3A130E7AB
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 00:44:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 419BD30E7AD
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 00:44:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233895AbhBCXky (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 18:40:54 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52060 "EHLO mail.kernel.org"
+        id S233915AbhBCXlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 18:41:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52092 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232990AbhBCXkr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Feb 2021 18:40:47 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id B2EF264F55;
-        Wed,  3 Feb 2021 23:40:06 +0000 (UTC)
+        id S233830AbhBCXks (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Feb 2021 18:40:48 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id EC29664F6A;
+        Wed,  3 Feb 2021 23:40:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612395606;
-        bh=q/SjSLADoNWAplzXvrqgwGRy2kr6DvzzrzKxS1eFTPg=;
+        s=k20201202; t=1612395608;
+        bh=q9BxotSLBBSN8u2Vr9VcUeYX7bXPSF7tTXaw7RBTLS4=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ZDG4wi/9wSib03XsEWInZnlw0K/yBJUZZ0dMmTc6sL4SN6wBbjp6v6WoXljK+sk5y
-         RF4BmzMDI0iXbccZoiC4jESLGeK10pvt61SoMmlJ6wMniPkAWvlDxrkWCr4mGgjcRi
-         k73/76hOFr7exhrxTJ80MtGtKAc9j+ks17iOdAM0v6YniZxX1O9bl78Re83RJON3i9
-         RL3eHhFVTS4w5qKfnCEBgf7JyG/+6rt5l1BrlM4YVFqRQE2D/XotUafQ9Y76bWNAwM
-         TGjU6yZrNJIbcXIMgYS3wKKiG6dGVSjyoT/wMT7v53FGfNrTa6wotf5MjrwGLhA/es
-         CfmfZ2z+qLSuQ==
+        b=IuBHEyptqLsCyt1jR6LYEDFASPrbvnNcPL6EA0komEblBWgokNoHNOZn9+ER76eAx
+         roky4DXNtDHJYXd8bE4xFNomHoHtZAqCV+wrllbXg1Dr9U/UU66HgaYTwkSI18Ygyk
+         gqwdi74zogtRLaRGWIjoYSYU2TLMbowAyT8o7vDjvPfuf/Unh1xZEnqQMgtrB0+xoV
+         BjKjIe9OmRyEvFaulTIA/muOCqBM32sqRY1uZwgKOvrc2tyqDzY1FvAprg38rXO61W
+         SqMZUOHarLxFZvVvJeVldmKRaZl1i5S6ykKR03rnkanPdLYWZgXxDS/StiBmH00jU+
+         ThiWbc6GWyObg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9DC5F609E5;
-        Wed,  3 Feb 2021 23:40:06 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E0D83609E3;
+        Wed,  3 Feb 2021 23:40:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] NET: usb: qmi_wwan: Adding support for Cinterion MV31
+Subject: Re: [PATCH] net: usb: cdc_ncm: use new API for bh tasklet
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161239560664.28685.10189151259787509626.git-patchwork-notify@kernel.org>
-Date:   Wed, 03 Feb 2021 23:40:06 +0000
-References: <20210202084523.4371-1-christoph.schemmel@gmail.com>
-In-Reply-To: <20210202084523.4371-1-christoph.schemmel@gmail.com>
-To:     Christoph Schemmel <christoph.schemmel@gmail.com>
-Cc:     bjorn@mork.no, avem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        hans-christoph.schemmel@thalesgroup.com
+Message-Id: <161239560791.28685.2748394162925651238.git-patchwork-notify@kernel.org>
+Date:   Wed, 03 Feb 2021 23:40:07 +0000
+References: <20210130234637.26505-1-kernel@esmil.dk>
+In-Reply-To: <20210130234637.26505-1-kernel@esmil.dk>
+To:     Emil Renner Berthing <kernel@esmil.dk>
+Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        oliver@neukum.org, davem@davemloft.net, kuba@kernel.org,
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue,  2 Feb 2021 09:45:23 +0100 you wrote:
-> Adding support for Cinterion MV31 with PID 0x00B7.
+On Sun, 31 Jan 2021 00:46:37 +0100 you wrote:
+> This converts the driver to use the new tasklet API introduced in
+> commit 12cc923f1ccc ("tasklet: Introduce new initialization API")
 > 
-> T:  Bus=04 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#= 11 Spd=5000 MxCh= 0
-> D:  Ver= 3.20 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
-> P:  Vendor=1e2d ProdID=00b7 Rev=04.14
-> S:  Manufacturer=Cinterion
-> S:  Product=Cinterion USB Mobile Broadband
-> S:  SerialNumber=b3246eed
-> C:  #Ifs= 4 Cfg#= 1 Atr=a0 MxPwr=896mA
-> I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
-> I:  If#=0x1 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-> I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-> I:  If#=0x3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30 Driver=option
+> It is unfortunate that we need to add a pointer to the driver context to
+> get back to the usbnet device, but the space will be reclaimed once
+> there are no more users of the old API left and we can remove the data
+> value and flag from the tasklet struct.
 > 
 > [...]
 
 Here is the summary with links:
-  - NET: usb: qmi_wwan: Adding support for Cinterion MV31
-    https://git.kernel.org/netdev/net/c/a4dc7eee9106
+  - net: usb: cdc_ncm: use new API for bh tasklet
+    https://git.kernel.org/netdev/net-next/c/4f4e54366eae
 
 You are awesome, thank you!
 --
