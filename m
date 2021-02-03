@@ -2,108 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7F9E30E4EF
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 22:27:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E29230E501
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 22:33:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231775AbhBCV0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 16:26:51 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38776 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231709AbhBCV0s (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Feb 2021 16:26:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CD77564F5F;
-        Wed,  3 Feb 2021 21:26:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612387567;
-        bh=4UmJ66kt6LrH5hseYMX6YsFUM2xR/8M+Fm9LGmK3D74=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Eg6mWIKc3dLqTV2wamxx+pDCAB+Kqo9uL/2e4FGsVVj/qs9GYEZja6P2q0oLP0w6C
-         Wsj/0/lP5gcDwcz5yKEaazTszEStwTPPyGF1p+0lTFT9+SDcrMii5Tlf/W50aFJiVB
-         0jeOZLIKbou3zpp8d6Edfd5AAsBgZ5NPKowwOEbQGETswc543fhtfriXPR/Ilq6r+O
-         3jthzPi61vPBZ4j0+DwKegwiY+V2qJ3FkZfLiy744fFmHMwkb091RZVZu5QvVbpDh/
-         CRRowW3RDrDyhXF3cu/jp6oQOmcdBhxhlakifoitlYTyUaZUUaShay3Gfsh/aa9SUn
-         KG6Obo9wH0RGw==
-Date:   Wed, 3 Feb 2021 13:26:05 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     Yishai Hadas <yishaih@nvidia.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, parav@nvidia.com
-Subject: Re: [PATCH net-next 0/2] devlink: Add port function attribute to
- enable/disable roce
-Message-ID: <20210203132605.7faf8ca0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <38d73470cd4faac0dc6c09697f33c5fb90d13f4e.camel@kernel.org>
-References: <20210201175152.11280-1-yishaih@nvidia.com>
-        <20210202181401.66f4359f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <d01dfcc6f46f2c70c4921139543e5823582678c8.camel@kernel.org>
-        <20210203105102.71e6fa2d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <38d73470cd4faac0dc6c09697f33c5fb90d13f4e.camel@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S232287AbhBCVck (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 16:32:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33680 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232246AbhBCVcc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 16:32:32 -0500
+Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC3DC0613D6;
+        Wed,  3 Feb 2021 13:31:51 -0800 (PST)
+Received: by mail-il1-x129.google.com with SMTP id g9so664169ilc.3;
+        Wed, 03 Feb 2021 13:31:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=7GrgHNpUFSgq2Ni0af/cRNZE8SE1LdkzocQjKexWFf4=;
+        b=DUV3yG8sqNTrWl4rS+DcJqE/BrN/d5N/9a4M9ndqnxVqKvM2LTmIqocbKiLRYLDGuG
+         RYqrYQZ7L14+Nf3YH14kT44DEdyz8KEUpnpy1EyaLdle6X2aoybUCXHsNnuvnvb1CbR6
+         M2/qsgspPW7xk/JpIdc/182M9a0cqovaCaa4ynfIYQgHocYaU7lu2HpBpLYgp8rpdUl0
+         XjqZoAF1ysBNsH9KLhanzmM7bPNMkoPVj74cluXl294BsZRcj3y/BpU9esalj74iLLts
+         dIRCIvJcptcndR/e9h99dkOrckYNYoYKb8zd+fTQ8vpdYWPSG3IueKVUfLzmjAgUSb1E
+         kuxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=7GrgHNpUFSgq2Ni0af/cRNZE8SE1LdkzocQjKexWFf4=;
+        b=mDfnnNoQLL0ZAPKTXdB0jgvEI4zbnnwGbg0nWzd/K0U5mKJz1Hn/2C9MTJtidycK1v
+         kLX/Q9KLF3LXJTFo/nQt1vMesV1dN7+1f13n2alhfMKvvoPY0I5QSRhUVXNyCFY4Cy+M
+         a9pbQ3CTom+xojcMT++PMAQJCJga+BhRFH2rPoz+77fwyIUNAV0y04BYRKW8vcs28iNa
+         52qadGrL0PumdNb5Vyrhw3RQwh2N0SLxugDuiitMt74hZ2HVffLHOSCesBtgRXLuxyiG
+         kHODcTiozbCwIFP3gXZJRjkA86ONzJ9dPjw30Wv5seJNgG/NpX8rDKsupdFIF9oXaix4
+         O13g==
+X-Gm-Message-State: AOAM530SUBUGPtoaJGf9CB0ePUbtQOEpq6B61BqDllBJt+fdfHIavEnt
+        cehHTp2hEgvP7CP0Vjjcqtg=
+X-Google-Smtp-Source: ABdhPJypEUGK8gFQ/ByMHquSna5ZkgdMB3KpxCstu57nFna1iL1N9W8EsAaKnfrlwRQ5hpcKsf/sPQ==
+X-Received: by 2002:a92:130e:: with SMTP id 14mr4087442ilt.58.1612387911142;
+        Wed, 03 Feb 2021 13:31:51 -0800 (PST)
+Received: from localhost ([172.243.146.206])
+        by smtp.gmail.com with ESMTPSA id q25sm1640046iob.7.2021.02.03.13.31.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Feb 2021 13:31:50 -0800 (PST)
+Date:   Wed, 03 Feb 2021 13:31:42 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
+Cc:     andrii@kernel.org, kernel-team@fb.com,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <601b163e1bc2b_4e26f20898@john-XPS-13-9370.notmuch>
+In-Reply-To: <20210203203445.3356114-1-andrii@kernel.org>
+References: <20210203203445.3356114-1-andrii@kernel.org>
+Subject: RE: [PATCH bpf-next] libbpf: stop using feature-detection Makefiles
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 03 Feb 2021 11:22:44 -0800 Saeed Mahameed wrote:
-> On Wed, 2021-02-03 at 10:51 -0800, Jakub Kicinski wrote:
-> > On Tue, 02 Feb 2021 20:13:48 -0800 Saeed Mahameed wrote:  
-> > > yes, user in this case is the admin, who controls the provisioned
-> > > network function SF/VFs.. by turning off this knob it allows to
-> > > create
-> > > more of that resource in case the user/admin is limited by memory.  
-> > 
-> > Ah, so in case of the SmartNIC this extra memory is allocated on the
-> > control system, not where the function resides?
+Andrii Nakryiko wrote:
+> Libbpf's Makefile relies on Linux tools infrastructure's feature detection
+> framework, but libbpf's needs are very modest: it detects the presence of
+> libelf and libz, both of which are mandatory. So it doesn't benefit much from
+> the framework, but pays significant costs in terms of maintainability and
+> debugging experience, when something goes wrong. The other feature detector,
+> testing for the presernce of minimal BPF API in system headers is long
+> obsolete as well, providing no value.
 > 
-> most of the memeory are actually allocated from where the function
-> resides, some are on the management system but it is not as critical.
-> SFs for now can only be probed on the management system, so the main
-> issue will be on the SmartNIC side for now.
+> So stop using feature detection and just assume the presence of libelf and
+> libz during build time. Worst case, user will get a clear and actionable
+> linker error, e.g.:
+> 
+>   /usr/bin/ld: cannot find -lelf
+> 
+> On the other hand, we completely bypass recurring issues various users
+> reported over time with false negatives of feature detection (libelf or libz
+> not being detected, while they are actually present in the system).
+> 
+> Cc: Arnaldo Carvalho de Melo <acme@redhat.com>
+> Cc: Randy Dunlap <rdunlap@infradead.org>
+> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+> ---
+>  tools/lib/bpf/.gitignore |  1 -
+>  tools/lib/bpf/Makefile   | 47 ++++------------------------------------
+>  2 files changed, 4 insertions(+), 44 deletions(-)
 
-Why not leave the decision whether to allocate that memory or not to
-the SF itself? If user never binds the RDMA driver to the SF they
-clearly don't care for RDMA. No extra knobs needed.
+I've also hit these annoying cases at least once or twice.
 
-> > My next question is regarding the behavior on the target system -
-> > what
-> > does "that user" see? Can we expect they will understand that the
-> > limitation was imposed by the admin and not due to some
-> > initialization
-> > failure or SW incompatibility?
->
-> the whole thing works with only real HW capabilities, there is no
-> synthetic SW capabilities. 
-> 
-> when mlx5 instance driver loads, it doesn't assume anything about
-> underlying HW, and it queries for the advertised FW capability
-> according to the HW spec before it enables a feature.
-> 
-> so this patch adds the ability for admin to enforce a specific HW cap
-> "off" for a VF/SF hca slice.
-> 
-> > > RAW eth QP, i think you already know this one, it is a very thin
-> > > layer
-> > > that doesn't require the whole rdma stack.  
-> > 
-> > Sorry for asking a leading question. You know how we'll feel about
-> > that one, do we need to talk this out or can we save ourselves the
-> > battle? :S  
-> 
-> I know, I know :/
-> 
-> So, there is no rdma bit/cap in HW.. to disable non-RoCE commands we
-> will have to disable etherent capability. 
-
-It's your driver, you can make it do what you need to. Why does 
-the RDMA driver bind successfully to a non-RoCE Ethernet device 
-in the first place?
-
-> The user interface here has no synthetic semantics, all knobs will
-> eventually be mapped to real HW/FW capabilities to get disabled.
-> 
-> the whole feature is about allowing admin to ship network functions
-> with different capabilities that are actually enforced by FW/HW.. 
-> so the user of the VF will see, RDMA/ETH only cards or both.
-
-RDMA-only, ETH-only, RDMA+ETH makes sense to me. Having an ETH-only
-device also exposed though rdma subsystem does not.
+Acked-by: John Fastabend <john.fastabend@gmail.com>
