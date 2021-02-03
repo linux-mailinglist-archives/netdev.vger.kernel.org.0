@@ -2,91 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8959C30E32E
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 20:23:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 954B030E32F
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 20:23:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232549AbhBCTXX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 14:23:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34022 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232051AbhBCTXO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 14:23:14 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37632C061573;
-        Wed,  3 Feb 2021 11:22:34 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id d13so429367plg.0;
-        Wed, 03 Feb 2021 11:22:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Wdux1NgAhUede5q+Qa7ndsJ+hJBl2N+NtbM5uRVRO9k=;
-        b=IMP5qITpxUey3994OI8i3M927hg6jPIobRvRbTdplzHfRlngG2iXhimgqHvv8wc2db
-         O2ptbpedxAb6lbwnzwVcdk/dm23OzRFEXCDV842upN/PHCxK24fMh1bvVYllq6aLovUG
-         iWI0bCBQXKPYhXJm5lm4wRW1hPk0ddIvYP/Sscpy+lEtmvBkEaBl6zVaj4256kWjExFj
-         963UNAzzMqoNqB+c9fk7eEZCX1ByZE00LWk47uUaRDNYNRzLImnjvDxK4MNZogQDOhzb
-         vyTN2xvGEMO4lFbpKfWjzCuQ1CoaadqUOsqoacdKNkUlAWqBlE7f+O3Gphgo7rhFtNwy
-         moOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Wdux1NgAhUede5q+Qa7ndsJ+hJBl2N+NtbM5uRVRO9k=;
-        b=fa/aelm8+NQW+qvUjac9pCPuOGHVXRk8OSeLlTqiO/vLpk6lA4xgaiaBwY3ytIf4A/
-         zKahrwefPgeA9JzmSemgS7WQ1d6XHnoW5uyA8EAcq+kSaGwQ2VVsku20GrmGitrEC/4e
-         ZE8Ot2NsCk/wBJsdott0SFP3rmHVW2Lo6ZXlellMMj1cgULbajRw+gDjRhYEO/IltmVF
-         1CEbrNO1c33qvGVJqzWmRqVDi+jA3wGkqXcSnnaRv+HZq5/NsHusTp37B9n1xVQ2YO0x
-         F2RUFdoGXh5klgDLBBekbdvlW5MQsyYbmY9iPos9xTf+6wNzVtUAF3rX2TmeWTHo6NOT
-         7aHQ==
-X-Gm-Message-State: AOAM532To1v7/B8zXpEhO9ZVYmoNax4Ww9leqyZLk6mnh4iTrzXtABwR
-        ihxj/JjAZknc6rxssrLFAcOF3DJu62NemtReA7eKAnL1OUWDqA==
-X-Google-Smtp-Source: ABdhPJyOGgPHBIaW8sv4ULqrmu46An8oDd3Ac0xOUE6Q9k8YUDd3xL7S0TCSSbTCfbJYsrIvz0MMM0axWpDh5FEpaYs=
-X-Received: by 2002:a17:90a:8594:: with SMTP id m20mr4453779pjn.215.1612380153248;
- Wed, 03 Feb 2021 11:22:33 -0800 (PST)
-MIME-Version: 1.0
-References: <20210203041636.38555-1-xiyou.wangcong@gmail.com> <20210203174846.gvhyv3hlrfnep7xe@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20210203174846.gvhyv3hlrfnep7xe@ast-mbp.dhcp.thefacebook.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed, 3 Feb 2021 11:22:22 -0800
-Message-ID: <CAM_iQpX-GDysSZTYr-2WsbqFP4VgG5ivcO1vwLvKVHkJ9hjodg@mail.gmail.com>
-Subject: Re: [Patch bpf-next 00/19] sock_map: add non-TCP and cross-protocol support
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, duanxiongchun@bytedance.com,
-        Dongdong Wang <wangdongdong.6@bytedance.com>,
-        jiang.wang@bytedance.com, Cong Wang <cong.wang@bytedance.com>
+        id S232835AbhBCTXb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 14:23:31 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40920 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232051AbhBCTX0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Feb 2021 14:23:26 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3A7C564DF5;
+        Wed,  3 Feb 2021 19:22:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612380165;
+        bh=kB89/TlhGyCz1GyXxEFvgWet15euMK4rhW4b7b2/V84=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=MI0HrjGAS4mV4YDPWoDrMPrXkwkwTTc2EDZGQvmZj8sdt8Lx0MKKM33t1cCis8cZa
+         2AlVxeNattKePN4KlK38Dtz7VmE4JvocjzXCWIreZrPbF+4qYO7ZHnMx++LdJndH5m
+         xDxN0CvWpfb+HmMs4pLiaWdCAUsAYmqpI80Ag6LjNeTAREsbFwv6eBaqTGn2367hpK
+         sqtGNRP5mI06AGA5FNjV3oOLpWWFQ60DQ6kOV3R9eRYh/VCM8XSzUaelIgzVTq7C0H
+         6KwJ4Ai0C8AD2rXQowa/vIRHZkNIgjxPYG9i5t8u9xUSG3l/PODhJSFzpgUPoyIHs5
+         4oU14zUYJhwTQ==
+Message-ID: <38d73470cd4faac0dc6c09697f33c5fb90d13f4e.camel@kernel.org>
+Subject: Re: [PATCH net-next 0/2] devlink: Add port function attribute to
+ enable/disable roce
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Yishai Hadas <yishaih@nvidia.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, parav@nvidia.com
+Date:   Wed, 03 Feb 2021 11:22:44 -0800
+In-Reply-To: <20210203105102.71e6fa2d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20210201175152.11280-1-yishaih@nvidia.com>
+         <20210202181401.66f4359f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+         <d01dfcc6f46f2c70c4921139543e5823582678c8.camel@kernel.org>
+         <20210203105102.71e6fa2d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3 (3.38.3-1.fc33) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 3, 2021 at 9:48 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Tue, Feb 02, 2021 at 08:16:17PM -0800, Cong Wang wrote:
-> > From: Cong Wang <cong.wang@bytedance.com>
-> >
-> > Currently sockmap only fully supports TCP, UDP is partially supported
-> > as it is only allowed to add into sockmap. This patch extends sockmap
-> > with: 1) full UDP support; 2) full AF_UNIX dgram support; 3) cross
-> > protocol support. Our goal is to allow socket splice between AF_UNIX
-> > dgram and UDP.
->
-> Please expand on the use case. The 'splice between af_unix and udp'
-> doesn't tell me much. The selftest doesn't help to understand the scope either.
+On Wed, 2021-02-03 at 10:51 -0800, Jakub Kicinski wrote:
+> On Tue, 02 Feb 2021 20:13:48 -0800 Saeed Mahameed wrote:
+> > On Tue, 2021-02-02 at 18:14 -0800, Jakub Kicinski wrote:
+> > > On Mon, 1 Feb 2021 19:51:50 +0200 Yishai Hadas wrote:  
+> > > > Currently mlx5 PCI VF and SF are enabled by default for RoCE
+> > > > functionality.
+> > > > 
+> > > > Currently a user does not have the ability to disable RoCE for
+> > > > a
+> > > > PCI
+> > > > VF/SF device before such device is enumerated by the driver.
+> > > > 
+> > > > User is also incapable to do such setting from smartnic
+> > > > scenario
+> > > > for a
+> > > > VF from the smartnic.
+> > > > 
+> > > > Current 'enable_roce' device knob is limited to do setting only
+> > > > at
+> > > > driverinit time. By this time device is already created and
+> > > > firmware has
+> > > > already allocated necessary system memory for supporting RoCE.
+> > > > 
+> > > > When a RoCE is disabled for the PCI VF/SF device, it saves 1
+> > > > Mbyte
+> > > > of
+> > > > system memory per function. Such saving is helpful when running
+> > > > on
+> > > > low
+> > > > memory embedded platform with many VFs or SFs.
+> > > > 
+> > > > Therefore, it is desired to empower user to disable RoCE
+> > > > functionality
+> > > > before a PCI SF/VF device is enumerated.  
+> > > 
+> > > You say that the user on the VF/SF side wants to save memory, yet
+> > > the control knob is on the eswitch instance side, correct?
+> > >   
+> > 
+> > yes, user in this case is the admin, who controls the provisioned
+> > network function SF/VFs.. by turning off this knob it allows to
+> > create
+> > more of that resource in case the user/admin is limited by memory.
+> 
+> Ah, so in case of the SmartNIC this extra memory is allocated on the
+> control system, not where the function resides?
+> 
 
-Sure. We have thousands of services connected to a daemon on every host
-with UNIX dgram sockets, after they are moved into VM, we have to add a proxy
-to forward these communications from VM to host, because rewriting thousands
-of them is not practical. This proxy uses a UNIX socket connected to services
-and uses a UDP socket to connect to the host. It is inefficient because data is
-copied between kernel space and user space twice, and we can not use
-splice() which only supports TCP. Therefore, we want to use sockmap to do
-the splicing without even going to user-space at all (after the initial setup).
+most of the memeory are actually allocated from where the function
+resides, some are on the management system but it is not as critical.
+SFs for now can only be probed on the management system, so the main
+issue will be on the SmartNIC side for now.
 
-My colleague Jiang (already Cc'ed) is working on the sockmap support for
-vsock so that we can move from UDP to vsock for host-VM communications.
+> My next question is regarding the behavior on the target system -
+> what
+> does "that user" see? Can we expect they will understand that the
+> limitation was imposed by the admin and not due to some
+> initialization
+> failure or SW incompatibility?
+> 
 
-If this is useful, I can add it in this cover letter in the next update.
+the whole thing works with only real HW capabilities, there is no
+synthetic SW capabilities. 
 
-Thanks.
+when mlx5 instance driver loads, it doesn't assume anything about
+underlying HW, and it queries for the advertised FW capability
+according to the HW spec before it enables a feature.
+
+so this patch adds the ability for admin to enforce a specific HW cap
+"off" for a VF/SF hca slice.
+
+
+> > > > This is achieved by extending existing 'port function' object
+> > > > to
+> > > > control
+> > > > capabilities of a function. This enables users to control
+> > > > capability of
+> > > > the device before enumeration.
+> > > > 
+> > > > Examples when user prefers to disable RoCE for a VF when using
+> > > > switchdev
+> > > > mode:
+> > > > 
+> > > > $ devlink port show pci/0000:06:00.0/1
+> > > > pci/0000:06:00.0/1: type eth netdev pf0vf0 flavour pcivf
+> > > > controller
+> > > > 0
+> > > > pfnum 0 vfnum 0 external false splittable false
+> > > >   function:
+> > > >     hw_addr 00:00:00:00:00:00 roce on
+> > > > 
+> > > > $ devlink port function set pci/0000:06:00.0/1 roce off
+> > > >   
+> > > > $ devlink port show pci/0000:06:00.0/1
+> > > > pci/0000:06:00.0/1: type eth netdev pf0vf0 flavour pcivf
+> > > > controller
+> > > > 0
+> > > > pfnum 0 vfnum 0 external false splittable false
+> > > >   function:
+> > > >     hw_addr 00:00:00:00:00:00 roce off
+> > > > 
+> > > > FAQs:
+> > > > -----
+> > > > 1. What does roce on/off do?
+> > > > Ans: It disables RoCE capability of the function before its
+> > > > enumerated,
+> > > > so when driver reads the capability from the device firmware,
+> > > > it is
+> > > > disabled.
+> > > > At this point RDMA stack will not be able to create UD, QP1,
+> > > > RC,
+> > > > XRC
+> > > > type of QPs. When RoCE is disabled, the GID table of all ports
+> > > > of
+> > > > the
+> > > > device is disabled in the device and software stack.
+> > > > 
+> > > > 2. How is the roce 'port function' option different from
+> > > > existing
+> > > > devlink param?
+> > > > Ans: RoCE attribute at the port function level disables the
+> > > > RoCE
+> > > > capability at the specific function level; while enable_roce
+> > > > only
+> > > > does
+> > > > at the software level.
+> > > > 
+> > > > 3. Why is this option for disabling only RoCE and not the whole
+> > > > RDMA
+> > > > device?
+> > > > Ans: Because user still wants to use the RDMA device for non
+> > > > RoCE
+> > > > commands in more memory efficient way.  
+> > > 
+> > > What are those "non-RoCE commands" that user may want to use "in
+> > > a
+> > > more
+> > > efficient way"?  
+> > 
+> > RAW eth QP, i think you already know this one, it is a very thin
+> > layer
+> > that doesn't require the whole rdma stack.
+> 
+> Sorry for asking a leading question. You know how we'll feel about
+> that one, do we need to talk this out or can we save ourselves the
+> battle? :S
+
+I know, I know :/
+
+So, there is no rdma bit/cap in HW.. to disable non-RoCE commands we
+will have to disable etherent capability. 
+
+The user interface here has no synthetic semantics, all knobs will
+eventually be mapped to real HW/FW capabilities to get disabled.
+
+the whole feature is about allowing admin to ship network functions
+with different capabilities that are actually enforced by FW/HW.. 
+so the user of the VF will see, RDMA/ETH only cards or both.
+
+
+
+
+
+
