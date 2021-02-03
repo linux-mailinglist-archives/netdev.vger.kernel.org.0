@@ -2,106 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D749D30D3E7
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 08:10:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F82230D3EA
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 08:10:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232228AbhBCHJs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 02:09:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45002 "EHLO
+        id S232279AbhBCHK0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 02:10:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232091AbhBCHJf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 02:09:35 -0500
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41D7EC06178B
-        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 23:08:15 -0800 (PST)
-Received: by mail-lj1-x236.google.com with SMTP id e18so27058505lja.12
-        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 23:08:15 -0800 (PST)
+        with ESMTP id S232008AbhBCHKS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 02:10:18 -0500
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E944EC06174A
+        for <netdev@vger.kernel.org>; Tue,  2 Feb 2021 23:09:37 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id 11so25881526ybl.21
+        for <netdev@vger.kernel.org>; Tue, 02 Feb 2021 23:09:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=norrbonn-se.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=pZGVcxEVCheiG0wA/Yq7OXQtrC7VpDVqrb8lgaXPAlI=;
-        b=CJNkmrlxCA31zUIsKLsM306hmb13GPfZlnxgG+g/SAyjuw6A6KxnNXFhmKYNSkkFtP
-         FRput2SQdyeubp5rFRcoICgCST7RfknowFFmjfTO0q4pAgO3qIPr/X6fpaF5xuwPeGKD
-         uLGHtz0Ahle/Iy6n8xLGNm+mxdx66EsxeNO0OfYVI8nJUCZtvbpgNX3PsinDG2FQXm8n
-         6ushkqWIhp3kRzv3uBcvbnlNg2dXnKTbmDiDxTtRpeUlk9GcEZjA6zD+Q9nwBQ/5rIDK
-         QcDQGiHeBRloeJ34EGeywYUQzKrBDAPVUqnNkHWKstHkYka2qmb7fPDgvpJKpv8E/I8U
-         RApQ==
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=/wnbMtD0oy336W9EDCGq60PMZiiWzWFv7G6400JHFhs=;
+        b=ORpIZ9KqvA5JySv1a+xUn5mihk221WQUpgWJVo0oGIZRv5FvZ6QiHJy/rWa+IdEYjI
+         /8JHAUH81DnuGXTBISe7MuVXH1UcJOWYwxV1PZGf3qGUR5pivDIDyLTY1K5RB3RfjS8C
+         qdmy0O+f1yM9NW7yygT+6B3madCzZB+CdnwsAuZo5aU39rSboYuAaW580muhTehu4V3E
+         cigMubeYmMeWUvEC+mhwwHzpJVVgmmeuKNL4xxK0En3ZLAIZpDJxe/TO420R8rs1oIma
+         kUzrgy9y8ml3LVwxWfHb01cEiFrYwFZ5EH0TevmKlL2AdtqBUN0UMrChtJytP1Vhzq2q
+         7K6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=pZGVcxEVCheiG0wA/Yq7OXQtrC7VpDVqrb8lgaXPAlI=;
-        b=t0XY72ztIDxitLI9sWl2VKzdVx3WbwSRzRPwLnq2n1i6XfaR3Ntp+8XINK/ioP1QxD
-         SzdH3u7kdD4+BfIopx7SMKy/6NgOcv19hcaobW2J9de0vQU2JGWEueiDHZ2Yz1UHVoXN
-         f3yTnx2ns1V0Xcooz+ECMiyJXhU7/5p0h20rs8s1gnxcZGhbNcBBAekADBdsX6Q8T1sl
-         BYA0Nk/4XqijbBvpv69KTq/lR/rDMrnpmvRHql50M4C87mDRfjMjCfmbMxEircTeYuK4
-         A+k0aO2CBtPOWnuatztzCXFmSH9I1OrkLbVrLIn6EM5OBisM7x9a7yUDE4FZT5RcB7X1
-         Jdbw==
-X-Gm-Message-State: AOAM532ps5g2XzsC2cb9aMu/6ICDcDXswnLUc/ktvkbZzRuFhq8U3leP
-        aN09BAhHgJ3W87IlmxFzP1yLw1zDpDW5nA==
-X-Google-Smtp-Source: ABdhPJzu0HWiD0XoBkisDW4TuItdQssRfnHATxF8DhqstVLDpZik13MZ+7Kw0gjDbkHONSBZ3aOhcg==
-X-Received: by 2002:a2e:3a18:: with SMTP id h24mr958225lja.170.1612336093800;
-        Tue, 02 Feb 2021 23:08:13 -0800 (PST)
-Received: from mimer.emblasoft.lan (h-137-65.A159.priv.bahnhof.se. [81.170.137.65])
-        by smtp.gmail.com with ESMTPSA id d3sm147367lfg.122.2021.02.02.23.08.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Feb 2021 23:08:13 -0800 (PST)
-From:   Jonas Bonn <jonas@norrbonn.se>
-To:     laforge@gnumonks.org, kuba@kernel.org, netdev@vger.kernel.org,
-        pablo@netfilter.org
-Cc:     Jonas Bonn <jonas@norrbonn.se>
-Subject: [PATCH net-next v2 7/7] gtp: update rx_length_errors for abnormally short packets
-Date:   Wed,  3 Feb 2021 08:08:05 +0100
-Message-Id: <20210203070805.281321-8-jonas@norrbonn.se>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210203070805.281321-1-jonas@norrbonn.se>
-References: <20210202065159.227049-1-jonas@norrbonn.se>
- <20210203070805.281321-1-jonas@norrbonn.se>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=/wnbMtD0oy336W9EDCGq60PMZiiWzWFv7G6400JHFhs=;
+        b=G+lofpwCYXxA6Ba5jZ5lTP4VMEdO1i3be1/JMPQzuhI6cwIq3Z0O5dI4puQJMxeLO4
+         K9Gex3QR9Ce5lYvU4okM5RI+C0bfW853tF1ASqRbvCkbG+VDdcnHG3JWOmUal91ykRUJ
+         ywZ4YfCFINaS6oEwAqpSU0+mlYWFHxERS+g5RgQ6ZlZ/o9vl+Z1zIaODHR+pk0fgDYV0
+         1M/yb7oNkrQPW+BuP5h+DK1TYryuUDuzAZCFnAnuRAfEurD2WjoBqVHywFu+oBs1XmoK
+         5jBVBAx9q2iGCYYqx0lwbP7SBZMFGa2nhJrsD2laHtmRImritWaTTtIBJqe3AmE3tpSd
+         t59w==
+X-Gm-Message-State: AOAM530BqFhFhDe4HjppGsyrzQq3jelfBZNWVPBshAxnUldenXWPr+Ur
+        KmlgkgACFWqjJ+5coQ0E2QYWK84aHn8F44lSvA==
+X-Google-Smtp-Source: ABdhPJypZNI/m4g+qfZiw1c1Kl/BP/d7kUrd1HrLK8IrMqiQE82/eoWXzK8jRUdUY1sUw071wrH5VFpy2dvkgYlXwA==
+Sender: "howardchung via sendgmr" 
+        <howardchung@howardchung-p920.tpe.corp.google.com>
+X-Received: from howardchung-p920.tpe.corp.google.com ([2401:fa00:1:10:c8ff:4e4a:dbd4:e8a6])
+ (user=howardchung job=sendgmr) by 2002:a25:5cd7:: with SMTP id
+ q206mr2627199ybb.150.1612336177210; Tue, 02 Feb 2021 23:09:37 -0800 (PST)
+Date:   Wed,  3 Feb 2021 15:09:29 +0800
+Message-Id: <20210203150907.v1.1.I23ab3f91f23508bf84908e62d470bfab1d844f63@changeid>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.30.0.365.g02bc693789-goog
+Subject: [PATCH v1] Bluetooth: Fix crash in mgmt_add_adv_patterns_monitor_complete
+From:   Howard Chung <howardchung@google.com>
+To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org
+Cc:     Howard Chung <howardchung@google.com>,
+        Miao-chen Chou <mcchou@chromium.org>,
+        Manish Mandlik <mmandlik@chromium.org>,
+        Archie Pusaka <apusaka@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Based on work by Pravin Shelar.
+If hci_add_adv_monitor is a pending command(e.g. forward to
+msft_add_monitor_pattern), it is possible that
+mgmt_add_adv_patterns_monitor_complete gets called before
+cmd->user_data gets set, which will cause a crash when we
+try to get the moniter handle through cmd->user_data in
+mgmt_add_adv_patterns_monitor_complete.
 
-Update appropriate stats when packet transmission isn't possible.
+This moves the cmd->user_data assignment earlier than
+hci_add_adv_monitor.
 
-Signed-off-by: Jonas Bonn <jonas@norrbonn.se>
-Acked-by: Harald Welte <laforge@gnumonks.org>
+RIP: 0010:mgmt_add_adv_patterns_monitor_complete+0x82/0x187 [bluetooth]
+Code: 1e bf 03 00 00 00 be 52 00 00 00 4c 89 ea e8 9e
+e4 02 00 49 89 c6 48 85 c0 0f 84 06 01 00 00 48 89 5d b8 4c 89 fb 4d 8b
+7e 30 <41> 0f b7 47 18 66 89 45 c0 45 84 e4 75 5a 4d 8b 56 28 48 8d 4d
+c8
+RSP: 0018:ffffae81807dbcb8 EFLAGS: 00010286
+RAX: ffff91c4bdf723c0 RBX: 0000000000000000 RCX: ffff91c4e5da5b80
+RDX: ffff91c405680000 RSI: 0000000000000052 RDI: ffff91c49d654c00
+RBP: ffffae81807dbd00 R08: ffff91c49fb157e0 R09: ffff91c49fb157e0
+R10: 000000000002a4f0 R11: ffffffffc0819cfd R12: 0000000000000000
+R13: ffff91c405680000 R14: ffff91c4bdf723c0 R15: 0000000000000000
+FS:  0000000000000000(0000) GS:ffff91c4ea300000(0000)
+knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000018 CR3: 0000000133612002 CR4:
+00000000003606e0
+Call Trace:
+ ? msft_le_monitor_advertisement_cb+0x111/0x141
+[bluetooth]
+ hci_event_packet+0x425e/0x631c [bluetooth]
+ ? printk+0x59/0x73
+ ? __switch_to_asm+0x41/0x70
+ ?
+msft_le_set_advertisement_filter_enable_cb+0xa6/0xa6 [bluetooth]
+ ? bt_dbg+0xb4/0xbb [bluetooth]
+ ? __switch_to_asm+0x41/0x70
+ hci_rx_work+0x101/0x319 [bluetooth]
+ process_one_work+0x257/0x506
+ worker_thread+0x10d/0x284
+ kthread+0x14c/0x154
+ ? process_one_work+0x506/0x506
+ ? kthread_blkcg+0x2c/0x2c
+ ret_from_fork+0x1f/0x40
+
+Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
+Reviewed-by: Manish Mandlik <mmandlik@chromium.org>
+Reviewed-by: Archie Pusaka <apusaka@chromium.org>
+Signed-off-by: Howard Chung <howardchung@google.com>
 ---
- drivers/net/gtp.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
-index a1bb02818977..9a70f05baf6e 100644
---- a/drivers/net/gtp.c
-+++ b/drivers/net/gtp.c
-@@ -189,8 +189,10 @@ static int gtp_rx(struct pdp_ctx *pctx, struct sk_buff *skb,
+ net/bluetooth/mgmt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+index 8ff9c4bb43d11..74971b4bd4570 100644
+--- a/net/bluetooth/mgmt.c
++++ b/net/bluetooth/mgmt.c
+@@ -4303,6 +4303,7 @@ static int __add_adv_patterns_monitor(struct sock *sk, struct hci_dev *hdev,
+ 		goto unlock;
+ 	}
  
- 	/* Get rid of the GTP + UDP headers. */
- 	if (iptunnel_pull_header(skb, hdrlen, skb->protocol,
--				 !net_eq(sock_net(pctx->sk), dev_net(pctx->dev))))
--		return -1;
-+			 !net_eq(sock_net(pctx->sk), dev_net(pctx->dev)))) {
-+		pctx->dev->stats.rx_length_errors++;
-+		goto err;
-+	}
++	cmd->user_data = m;
+ 	pending = hci_add_adv_monitor(hdev, m, &err);
+ 	if (err) {
+ 		if (err == -ENOSPC || err == -ENOMEM)
+@@ -4330,7 +4331,6 @@ static int __add_adv_patterns_monitor(struct sock *sk, struct hci_dev *hdev,
  
- 	netdev_dbg(pctx->dev, "forwarding packet from GGSN to uplink\n");
+ 	hci_dev_unlock(hdev);
  
-@@ -206,6 +208,10 @@ static int gtp_rx(struct pdp_ctx *pctx, struct sk_buff *skb,
- 
- 	netif_rx(skb);
+-	cmd->user_data = m;
  	return 0;
-+
-+err:
-+	pctx->dev->stats.rx_dropped++;
-+	return -1;
- }
  
- /* 1 means pass up to the stack, -1 means drop and 0 means decapsulated. */
+ unlock:
 -- 
-2.27.0
+2.30.0.365.g02bc693789-goog
 
