@@ -2,254 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4023B30D2D3
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 06:20:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B56730D319
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 06:37:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231230AbhBCFRz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 00:17:55 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:33440 "EHLO
+        id S229685AbhBCFet (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 00:34:49 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:29576 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229845AbhBCFRx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 00:17:53 -0500
+        by vger.kernel.org with ESMTP id S229554AbhBCFes (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 00:34:48 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1612329386;
+        s=mimecast20190719; t=1612330401;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=RIuXnL+Hg9KeDbYH0PNTbg1/8jFx78+qdyuMnTHT5HY=;
-        b=W3dCOUuMgTeKhFthl4Dk3V/D3c7scdl1KyBIn4aft2V5UPVARI6CnpRK+Crje57bdW/DUI
-        x18On7HIJROaRLMWwxUymjV9FF1UlZN0NOBQah9O7bWBuQQmMuKnW9Ojbn2IuCR5bl/suC
-        6vYxvlBdYdyAhcWhLTZi1qacOSc0SmY=
+        bh=7esztaqzpOGAAI18gsF8qUEx5go7znlIB5z7sLa2fys=;
+        b=gKUPHDwbwuyL8eks2lkOlQZ2adxWjQzBUDH0/pxlAe87tr3kY1iui1546RdfVuRkUxoUn7
+        wwFu6o+/8CGyVGB9nK5qrTPfFlgHFTeA2nOzG3LI0s/m/gxEP8r7F8zWnk6uDgakkHLMmC
+        soBMpKSJF8siE9or0ioTJZE6Nil6cPs=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-362-Y8GF8fAEOJOwDKjLcUuz0Q-1; Wed, 03 Feb 2021 00:16:22 -0500
-X-MC-Unique: Y8GF8fAEOJOwDKjLcUuz0Q-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+ us-mta-372--D-u0sMQOJ6J46_YSwRflA-1; Wed, 03 Feb 2021 00:33:18 -0500
+X-MC-Unique: -D-u0sMQOJ6J46_YSwRflA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1AF4D107ACE3;
-        Wed,  3 Feb 2021 05:16:21 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 281C119611A3;
+        Wed,  3 Feb 2021 05:33:17 +0000 (UTC)
 Received: from [10.72.13.97] (ovpn-13-97.pek2.redhat.com [10.72.13.97])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 803D472167;
-        Wed,  3 Feb 2021 05:16:15 +0000 (UTC)
-Subject: Re: [PATCH 1/2] vdpa/mlx5: Avoid unnecessary query virtqueue
-To:     Si-Wei Liu <siwliu.kernel@gmail.com>, Eli Cohen <elic@nvidia.com>
-Cc:     mst@redhat.com, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lulu@redhat.com, Si-Wei Liu <si-wei.liu@oracle.com>
-References: <20210128134130.3051-1-elic@nvidia.com>
- <20210128134130.3051-2-elic@nvidia.com>
- <CAPWQSg0XtEQ1U5N3a767Ak_naoyPdVF1CeE4r3hmN11a-aoBxg@mail.gmail.com>
- <CAPWQSg3U9DCSK_01Kzuea5B1X+Ef9JB23wBY82A3ss-UXGek_Q@mail.gmail.com>
- <9d6058d6-5ce1-0442-8fd9-5a6fe6a0bc6b@redhat.com>
- <CAPWQSg3KOAypcrs9krW8cGE7EDLTehCUCYFZMUYYNaYPH1oBZQ@mail.gmail.com>
- <c65808bf-b336-8718-f7ea-b39fcc658dfb@redhat.com>
- <20210202070631.GA233234@mtl-vdi-166.wap.labs.mlnx>
- <CAPWQSg058RGaxSS7s5s=kpxdGryiy2padRFztUZtXN+ttiDd1A@mail.gmail.com>
- <20210202092253.GA236663@mtl-vdi-166.wap.labs.mlnx>
- <CAPWQSg0tRXoGF88LQSLzUg88ZEi8p+M=R6Qd445iABShfn-o4g@mail.gmail.com>
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9C343100AE2D;
+        Wed,  3 Feb 2021 05:33:14 +0000 (UTC)
+Subject: Re: [PATCH net] virtio-net: suppress bad irq warning for tx napi
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Wei Wang <weiwan@google.com>, David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        virtualization@lists.linux-foundation.org
+References: <20210129002136.70865-1-weiwan@google.com>
+ <a0b2cb8d-eb8f-30fb-2a22-678e6dd2f58f@redhat.com>
+ <CAF=yD-+aPBF2RaCR8L5orTM37bf7Z4Z8Qko2D2LZjOz0khHTUg@mail.gmail.com>
 From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <eed86e79-4fd9-dfcf-da17-288a3fc597e3@redhat.com>
-Date:   Wed, 3 Feb 2021 13:16:14 +0800
+Message-ID: <3a3e005d-f9b2-c16a-5ada-6e04242c618e@redhat.com>
+Date:   Wed, 3 Feb 2021 13:33:13 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <CAPWQSg0tRXoGF88LQSLzUg88ZEi8p+M=R6Qd445iABShfn-o4g@mail.gmail.com>
+In-Reply-To: <CAF=yD-+aPBF2RaCR8L5orTM37bf7Z4Z8Qko2D2LZjOz0khHTUg@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2021/2/3 上午1:54, Si-Wei Liu wrote:
-> On Tue, Feb 2, 2021 at 1:23 AM Eli Cohen <elic@nvidia.com> wrote:
->> On Tue, Feb 02, 2021 at 12:38:51AM -0800, Si-Wei Liu wrote:
->>> Thanks Eli and Jason for clarifications. See inline.
+On 2021/2/2 下午10:37, Willem de Bruijn wrote:
+> On Mon, Feb 1, 2021 at 10:09 PM Jason Wang <jasowang@redhat.com> wrote:
+>>
+>> On 2021/1/29 上午8:21, Wei Wang wrote:
+>>> With the implementation of napi-tx in virtio driver, we clean tx
+>>> descriptors from rx napi handler, for the purpose of reducing tx
+>>> complete interrupts. But this could introduce a race where tx complete
+>>> interrupt has been raised, but the handler found there is no work to do
+>>> because we have done the work in the previous rx interrupt handler.
+>>> This could lead to the following warning msg:
+>>> [ 3588.010778] irq 38: nobody cared (try booting with the
+>>> "irqpoll" option)
+>>> [ 3588.017938] CPU: 4 PID: 0 Comm: swapper/4 Not tainted
+>>> 5.3.0-19-generic #20~18.04.2-Ubuntu
+>>> [ 3588.017940] Call Trace:
+>>> [ 3588.017942]  <IRQ>
+>>> [ 3588.017951]  dump_stack+0x63/0x85
+>>> [ 3588.017953]  __report_bad_irq+0x35/0xc0
+>>> [ 3588.017955]  note_interrupt+0x24b/0x2a0
+>>> [ 3588.017956]  handle_irq_event_percpu+0x54/0x80
+>>> [ 3588.017957]  handle_irq_event+0x3b/0x60
+>>> [ 3588.017958]  handle_edge_irq+0x83/0x1a0
+>>> [ 3588.017961]  handle_irq+0x20/0x30
+>>> [ 3588.017964]  do_IRQ+0x50/0xe0
+>>> [ 3588.017966]  common_interrupt+0xf/0xf
+>>> [ 3588.017966]  </IRQ>
+>>> [ 3588.017989] handlers:
+>>> [ 3588.020374] [<000000001b9f1da8>] vring_interrupt
+>>> [ 3588.025099] Disabling IRQ #38
 >>>
->>> On Mon, Feb 1, 2021 at 11:06 PM Eli Cohen <elic@nvidia.com> wrote:
->>>> On Tue, Feb 02, 2021 at 02:02:25PM +0800, Jason Wang wrote:
->>>>> On 2021/2/2 下午12:15, Si-Wei Liu wrote:
->>>>>> On Mon, Feb 1, 2021 at 7:13 PM Jason Wang <jasowang@redhat.com> wrote:
->>>>>>> On 2021/2/2 上午3:17, Si-Wei Liu wrote:
->>>>>>>> On Mon, Feb 1, 2021 at 10:51 AM Si-Wei Liu <siwliu.kernel@gmail.com> wrote:
->>>>>>>>> On Thu, Jan 28, 2021 at 5:46 AM Eli Cohen <elic@nvidia.com> wrote:
->>>>>>>>>> suspend_vq should only suspend the VQ on not save the current available
->>>>>>>>>> index. This is done when a change of map occurs when the driver calls
->>>>>>>>>> save_channel_info().
->>>>>>>>> Hmmm, suspend_vq() is also called by teardown_vq(), the latter of
->>>>>>>>> which doesn't save the available index as save_channel_info() doesn't
->>>>>>>>> get called in that path at all. How does it handle the case that
->>>>>>>>> aget_vq_state() is called from userspace (e.g. QEMU) while the
->>>>>>>>> hardware VQ object was torn down, but userspace still wants to access
->>>>>>>>> the queue index?
->>>>>>>>>
->>>>>>>>> Refer to https://lore.kernel.org/netdev/1601583511-15138-1-git-send-email-si-wei.liu@oracle.com/
->>>>>>>>>
->>>>>>>>> vhost VQ 0 ring restore failed: -1: Resource temporarily unavailable (11)
->>>>>>>>> vhost VQ 1 ring restore failed: -1: Resource temporarily unavailable (11)
->>>>>>>>>
->>>>>>>>> QEMU will complain with the above warning while VM is being rebooted
->>>>>>>>> or shut down.
->>>>>>>>>
->>>>>>>>> Looks to me either the kernel driver should cover this requirement, or
->>>>>>>>> the userspace has to bear the burden in saving the index and not call
->>>>>>>>> into kernel if VQ is destroyed.
->>>>>>>> Actually, the userspace doesn't have the insights whether virt queue
->>>>>>>> will be destroyed if just changing the device status via set_status().
->>>>>>>> Looking at other vdpa driver in tree i.e. ifcvf it doesn't behave like
->>>>>>>> so. Hence this still looks to me to be Mellanox specifics and
->>>>>>>> mlx5_vdpa implementation detail that shouldn't expose to userspace.
->>>>>>> So I think we can simply drop this patch?
->>>>>> Yep, I think so. To be honest I don't know why it has anything to do
->>>>>> with the memory hotplug issue.
->>>>>
->>>>> Eli may know more, my understanding is that, during memory hotplut, qemu
->>>>> need to propagate new memory mappings via set_map(). For mellanox, it means
->>>>> it needs to rebuild memory keys, so the virtqueue needs to be suspended.
->>>>>
->>>> I think Siwei was asking why the first patch was related to the hotplug
->>>> issue.
->>> I was thinking how consistency is assured when saving/restoring this
->>> h/w avail_index against the one in the virtq memory, particularly in
->>> the region_add/.region_del() context (e.g. the hotplug case). Problem
->>> is I don't see explicit memory barrier when guest thread updates the
->>> avail_index, how does the device make sure the h/w avail_index is
->>> uptodate while guest may race with updating the virtq's avail_index in
->>> the mean while? Maybe I completely miss something obvious?
->> DKIM-Signature: v1; arsa-sha256; crelaxed/relaxed; dnvidia.com; sn1;
->>          t 12257780; bhHnB0z4VEKwRS3WGY8d836MJgxu5Eln/jbFZlNXVxc08;
->>          hX-PGP-Universal:Date:From:To:CC:Subject:Message-ID:References:
->>           MIME-Version:Content-Type:Content-Disposition:
->>           Content-Transfer-Encoding:In-Reply-To:User-Agent:X-Originating-IP:
->>           X-ClientProxiedBy;
->>          bgGmb8+rcn3/rKzKQ/7QzSnghWzZ+FAU0XntsRZYGQ66sFvT7zsYPHogG3LIWNY77t
->>           wNHPw7GCJrNaH3nEXPbOp0FMOZw4Kv4W7UPuYPobbLeTkvuPAidjB8dM42vz+1X61t
->>           9IVQT9X4hnAxRjI5CqZOo41GS4Tl1X+ykGoA+VE80BR/R/+nQ3tXDVULfppzeB+vu3
->>           TWnnpaZ2GyoNyPlMiyVRkHdXzDVgA4uQHxwHn7otGK5J4lzyu8KrFyQtiP+f6hfu5v
->>           crJkYS8e9A+rfzUmKWuyHcKcmhPhAVJ4XdpzZcDXXlMHVxG7nR1o88xttC6D1+oNIP
->>           9xHI3DkNBpEuA
->> If you're asking about syncronization upon hot plug of memory, the
->> hardware always goes to read the available index from memory when a new
->> hardware object is associted with a virtqueue. You can argue then that
->> you don't need to restore the available index and you may be right but
->> this is the currect inteface to the firmware.
+>>> This patch adds a new param to struct vring_virtqueue, and we set it for
+>>> tx virtqueues if napi-tx is enabled, to suppress the warning in such
+>>> case.
+>>>
+>>> Fixes: 7b0411ef4aa6 ("virtio-net: clean tx descriptors from rx napi")
+>>> Reported-by: Rick Jones <jonesrick@google.com>
+>>> Signed-off-by: Wei Wang <weiwan@google.com>
+>>> Signed-off-by: Willem de Bruijn <willemb@google.com>
 >>
+>> Please use get_maintainer.pl to make sure Michael and me were cced.
+> Will do. Sorry about that. I suggested just the virtualization list, my bad.
+>
+>>> ---
+>>>    drivers/net/virtio_net.c     | 19 ++++++++++++++-----
+>>>    drivers/virtio/virtio_ring.c | 16 ++++++++++++++++
+>>>    include/linux/virtio.h       |  2 ++
+>>>    3 files changed, 32 insertions(+), 5 deletions(-)
+>>>
+>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+>>> index 508408fbe78f..e9a3f30864e8 100644
+>>> --- a/drivers/net/virtio_net.c
+>>> +++ b/drivers/net/virtio_net.c
+>>> @@ -1303,13 +1303,22 @@ static void virtnet_napi_tx_enable(struct virtnet_info *vi,
+>>>                return;
+>>>        }
+>>>
+>>> +     /* With napi_tx enabled, free_old_xmit_skbs() could be called from
+>>> +      * rx napi handler. Set work_steal to suppress bad irq warning for
+>>> +      * IRQ_NONE case from tx complete interrupt handler.
+>>> +      */
+>>> +     virtqueue_set_work_steal(vq, true);
+>>> +
+>>>        return virtnet_napi_enable(vq, napi);
 >>
->> If you're asking on generally how sync is assured when the guest updates
->> the available index, can you please send a pointer to the code where you
->> see the update without a memory barrier?
-> This is a snippet of virtqueue_add_split() where avail_index gets
-> updated by guest:
+>> Do we need to force the ordering between steal set and napi enable?
+> The warning only occurs after one hundred spurious interrupts, so not
+> really.
+
+
+Ok, so it looks like a hint. Then I wonder how much value do we need to 
+introduce helper like virtqueue_set_work_steal() that allows the caller 
+to toggle. How about disable the check forever during virtqueue 
+initialization?
+
+
 >
->          /* Put entry in available array (but don't update avail->idx until they
->           * do sync). */
->          avail = vq->split.avail_idx_shadow & (vq->split.vring.num - 1);
->          vq->split.vring.avail->ring[avail] = cpu_to_virtio16(_vq->vdev, head);
+>>>    }
+>>>
+>>> -static void virtnet_napi_tx_disable(struct napi_struct *napi)
+>>> +static void virtnet_napi_tx_disable(struct virtqueue *vq,
+>>> +                                 struct napi_struct *napi)
+>>>    {
+>>> -     if (napi->weight)
+>>> +     if (napi->weight) {
+>>>                napi_disable(napi);
+>>> +             virtqueue_set_work_steal(vq, false);
+>>> +     }
+>>>    }
+>>>
+>>>    static void refill_work(struct work_struct *work)
+>>> @@ -1835,7 +1844,7 @@ static int virtnet_close(struct net_device *dev)
+>>>        for (i = 0; i < vi->max_queue_pairs; i++) {
+>>>                xdp_rxq_info_unreg(&vi->rq[i].xdp_rxq);
+>>>                napi_disable(&vi->rq[i].napi);
+>>> -             virtnet_napi_tx_disable(&vi->sq[i].napi);
+>>> +             virtnet_napi_tx_disable(vi->sq[i].vq, &vi->sq[i].napi);
+>>>        }
+>>>
+>>>        return 0;
+>>> @@ -2315,7 +2324,7 @@ static void virtnet_freeze_down(struct virtio_device *vdev)
+>>>        if (netif_running(vi->dev)) {
+>>>                for (i = 0; i < vi->max_queue_pairs; i++) {
+>>>                        napi_disable(&vi->rq[i].napi);
+>>> -                     virtnet_napi_tx_disable(&vi->sq[i].napi);
+>>> +                     virtnet_napi_tx_disable(vi->sq[i].vq, &vi->sq[i].napi);
+>>>                }
+>>>        }
+>>>    }
+>>> @@ -2440,7 +2449,7 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+>>>        if (netif_running(dev)) {
+>>>                for (i = 0; i < vi->max_queue_pairs; i++) {
+>>>                        napi_disable(&vi->rq[i].napi);
+>>> -                     virtnet_napi_tx_disable(&vi->sq[i].napi);
+>>> +                     virtnet_napi_tx_disable(vi->sq[i].vq, &vi->sq[i].napi);
+>>>                }
+>>>        }
+>>>
+>>> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+>>> index 71e16b53e9c1..f7c5d697c302 100644
+>>> --- a/drivers/virtio/virtio_ring.c
+>>> +++ b/drivers/virtio/virtio_ring.c
+>>> @@ -105,6 +105,9 @@ struct vring_virtqueue {
+>>>        /* Host publishes avail event idx */
+>>>        bool event;
+>>>
+>>> +     /* Tx side napi work could be done from rx side. */
+>>> +     bool work_steal;
+>>
+>> So vring_vritqueue is a general structure, let's avoid mentioning
+>> network specific stuffs here. And we need a better name like
+>> "no_interrupt_check"?
+>>
+>> And we need a separate patch for virtio core changes.
+> Ack. Will change.
 >
->          /* Descriptors and available array need to be set before we expose the
->           * new available array entries. */
->          virtio_wmb(vq->weak_barriers);
->          vq->split.avail_idx_shadow++;
->          vq->split.vring.avail->idx = cpu_to_virtio16(_vq->vdev,
->                                                  vq->split.avail_idx_shadow);
->          vq->num_added++;
+>>> +
+>>>        /* Head of free buffer list. */
+>>>        unsigned int free_head;
+>>>        /* Number we've added since last sync. */
+>>> @@ -1604,6 +1607,7 @@ static struct virtqueue *vring_create_virtqueue_packed(
+>>>        vq->notify = notify;
+>>>        vq->weak_barriers = weak_barriers;
+>>>        vq->broken = false;
+>>> +     vq->work_steal = false;
+>>>        vq->last_used_idx = 0;
+>>>        vq->num_added = 0;
+>>>        vq->packed_ring = true;
+>>> @@ -2038,6 +2042,9 @@ irqreturn_t vring_interrupt(int irq, void *_vq)
+>>>
+>>>        if (!more_used(vq)) {
+>>>                pr_debug("virtqueue interrupt with no work for %p\n", vq);
+>>
+>> Do we still need to keep this warning?
+> Come to think of it, I would say no, in this case.
 >
-> There's memory barrier to make sure the update to descriptor and
-> available ring is seen before writing to the avail->idx, but there
-> seems no gurantee that this update would flush to the memory
-> immmedately either before or after the mlx5-vdpa is suspened and gets
-> the old avail_index value stashed somewhere. In this case, how does
-> the hardware ensure the consistency between the guest virtio and host
-> mlx5-vdpa? Or, it completly relies on guest to update the avail_index
-> once the next buffer is available, so that the index will be in sync
-> again?
+>>
+>>> +             if (vq->work_steal)
+>>> +                     return IRQ_HANDLED;
+>>
+>> So I wonder instead of doing trick like this, maybe it's time to unify
+>> TX/RX NAPI with the help of[1] (virtio-net use queue pairs).
+>>
+>> Thanks
+>>
+>> [1] https://lkml.org/lkml/2014/12/25/169
+> Interesting idea. It does sound like a good fit for this model. The
+> patch in the Fixes line proved effective at suppressing unnecessary TX
+> interrupts when processing in RX interrupt handler. So not sure how
+> much will help in practice. Might be a nice project to evaluate
+> separate for net-next at some point.
 
 
-I'm not sure I get the question but notice that the driver should check 
-and notify virtqueue when device want a notification. So there's a 
-virtio_wmb() e.g in:
+Right, basically the idea is that if an irq is shared among several 
+virtqueues, there's no need to check for more_used() there.
 
-static bool virtqueue_kick_prepare_split(struct virtqueue *_vq)
-{
-     struct vring_virtqueue *vq = to_vvq(_vq);
-     u16 new, old;
-     bool needs_kick;
-
-     START_USE(vq);
-     /* We need to expose available array entries before checking avail
-      * event. */
-     virtio_mb(vq->weak_barries);
-
-     old = vq->split.avail_idx_shadow - vq->num_added;
-     new = vq->split.avail_idx_shadow;
-     vq->num_added = 0;
-
-(See the comment above virtio_mb()). So the avail idx is guaranteed to 
-be committed to memroy(cache hierarchy) before the check of 
-notification. I think we sync through this.
+Yes, we can try sometime in the future. (Or e.g we have more than 128 
+queue pairs).
 
 Thanks
 
 
 >
-> Thanks,
-> -Siwei
+> Thanks for the review!
 >
->>> Thanks,
->>> -Siwei
->>>
->>>> But you're correct. When memory is added, I get a new memory map. This
->>>> requires me to build a new memory key object which covers the new memory
->>>> map. Since the virtqueue objects are referencing this memory key, I need
->>>> to destroy them and build new ones referncing the new memory key.
->>>>
->>>>> Thanks
->>>>>
->>>>>
->>>>>> -Siwei
->>>>>>
->>>>>>> Thanks
->>>>>>>
->>>>>>>
->>>>>>>>> -Siwei
->>>>>>>>>
->>>>>>>>>
->>>>>>>>>> Signed-off-by: Eli Cohen <elic@nvidia.com>
->>>>>>>>>> ---
->>>>>>>>>>     drivers/vdpa/mlx5/net/mlx5_vnet.c | 8 --------
->>>>>>>>>>     1 file changed, 8 deletions(-)
->>>>>>>>>>
->>>>>>>>>> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
->>>>>>>>>> index 88dde3455bfd..549ded074ff3 100644
->>>>>>>>>> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
->>>>>>>>>> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
->>>>>>>>>> @@ -1148,8 +1148,6 @@ static int setup_vq(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq)
->>>>>>>>>>
->>>>>>>>>>     static void suspend_vq(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq)
->>>>>>>>>>     {
->>>>>>>>>> -       struct mlx5_virtq_attr attr;
->>>>>>>>>> -
->>>>>>>>>>            if (!mvq->initialized)
->>>>>>>>>>                    return;
->>>>>>>>>>
->>>>>>>>>> @@ -1158,12 +1156,6 @@ static void suspend_vq(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *m
->>>>>>>>>>
->>>>>>>>>>            if (modify_virtqueue(ndev, mvq, MLX5_VIRTIO_NET_Q_OBJECT_STATE_SUSPEND))
->>>>>>>>>>                    mlx5_vdpa_warn(&ndev->mvdev, "modify to suspend failed\n");
->>>>>>>>>> -
->>>>>>>>>> -       if (query_virtqueue(ndev, mvq, &attr)) {
->>>>>>>>>> -               mlx5_vdpa_warn(&ndev->mvdev, "failed to query virtqueue\n");
->>>>>>>>>> -               return;
->>>>>>>>>> -       }
->>>>>>>>>> -       mvq->avail_idx = attr.available_index;
->>>>>>>>>>     }
->>>>>>>>>>
->>>>>>>>>>     static void suspend_vqs(struct mlx5_vdpa_net *ndev)
->>>>>>>>>> --
->>>>>>>>>> 2.29.2
->>>>>>>>>>
 
