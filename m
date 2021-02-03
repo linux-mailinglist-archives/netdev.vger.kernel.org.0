@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1247530D290
-	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 05:21:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40AF230D293
+	for <lists+netdev@lfdr.de>; Wed,  3 Feb 2021 05:22:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233175AbhBCEUz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 2 Feb 2021 23:20:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36712 "EHLO
+        id S232208AbhBCEVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 2 Feb 2021 23:21:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232852AbhBCES4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 23:18:56 -0500
+        with ESMTP id S232947AbhBCETV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 2 Feb 2021 23:19:21 -0500
 Received: from mail-oo1-xc2c.google.com (mail-oo1-xc2c.google.com [IPv6:2607:f8b0:4864:20::c2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1EC8C0617AB;
-        Tue,  2 Feb 2021 20:17:16 -0800 (PST)
-Received: by mail-oo1-xc2c.google.com with SMTP id z36so5707810ooi.6;
-        Tue, 02 Feb 2021 20:17:16 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 661CEC061351;
+        Tue,  2 Feb 2021 20:17:18 -0800 (PST)
+Received: by mail-oo1-xc2c.google.com with SMTP id x23so5704323oop.1;
+        Tue, 02 Feb 2021 20:17:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=qGgIBOZxfhj4RQXaRAJW/z/oxERFBXXb52q9pb05GWg=;
-        b=ktAWrgMwRW/oX/JdYmeAPZuH2HFw7cuWSH4dOAlO7VW8gFmpW+kaA/GT+ySqF7FfI+
-         P90ifZbOQIdsDr+1cMVlOnFTHRBKzGU0WoB31s+LW3O9Z6jaUK305UZ4xvDi9gMG9gt4
-         IWgfx8fnOoF9ztmE2oSynaNmzxJWT3r+xVH0RoSIiK/S2MCGU3jkqX8wtj1NStIyIUOC
-         bxvSGW09PiGA0eoB2FV7jw2yKTT3srNMoeKvuTnLtoS8Z1dnfeW5rQPKFRQSJZdqIpQL
-         ylnuwHdHqP2LHfGMzVFIJXromVHNRyp4It9KONBshrPFB0UOwtYqwTCHQj9Nkf3bHy4Y
-         PLqQ==
+        bh=FCPDcm2U8/mVowiAl26odeeIloTX+VCHLbcc34SXhNg=;
+        b=KygWNLfC1FY5z3olUJ14gMzLoUBOpOOHpXUNc6udgsKN13ZIUd4Zc6YSKzU8aQ1Ykt
+         4nX0Is7bxVk3/QMseeZQEpVvFNvzpqlNhdD5diHAWaVg6q7xXBfEuaeytbhHIJhry2Qk
+         0NvbYQtxIAf0j6KSyhLpW8fOgq38YmDNOjVu+q2niaHw+lNhUUEGEiBABvpEM0HsxcSh
+         d73xvEFQGJ+H75E01LJbIZ2Mo+mXIF4TyMITrNe9rBbO8nUwyC7aAdqUtuNfaLifhGkn
+         Zmg9WDG7XN+NlcY8UxWpWyVHjycGr8Xd36auU7DbsosSKzF5vYD4sfQrjh8pCBRwktwX
+         5U2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qGgIBOZxfhj4RQXaRAJW/z/oxERFBXXb52q9pb05GWg=;
-        b=UYz1AwaeAwgp9JcoSsYkcNCYfnyOCTQkY317QCWYlieO0ZSelm1H48/wQnR1oisrrV
-         74jhy5cDTTM/+YKHM6LVvSltyHTg2EMO6PLL8wluSqJ/UEUs9kfxH+w5MAYBQi0Ti08M
-         Z9uTZaU2VS1PLB3AfUTPjKAlpHuRpiG42f8Oo3IygeWzS17OMLduoS/BKzfhqnQ8rJ7D
-         dDLks7kh32zT641UvS4Jr5SJmSq/XPhjF78UZ11uwFugHtZnElPdAA7DLbggcjaMpcNL
-         SPnGQUtkC1/CaMOQE6bCmJq9J69rIGSMTFaQK5R283Ck2OYAEhhdsnxPcEc/GvsRQteB
-         U0BA==
-X-Gm-Message-State: AOAM533yC4zykTZaY3/hAojVk7y2hrTK48WVriC50nKC4w3JLpB8+Css
-        H7vL+ryQVF7jHGnls6hvRmLuKFrSDsm0YQ==
-X-Google-Smtp-Source: ABdhPJzau0g7y3LgHF18hGPSqwt1wkCbsH3h2Tu/zVHKYAhvMRvHiRS0Ytu5Dp4X33E+nyRYNNiUKA==
-X-Received: by 2002:a4a:870c:: with SMTP id z12mr802907ooh.15.1612325836069;
-        Tue, 02 Feb 2021 20:17:16 -0800 (PST)
+        bh=FCPDcm2U8/mVowiAl26odeeIloTX+VCHLbcc34SXhNg=;
+        b=PiNdyKj/nrY/XR3dzlTuawnTflMGlK95mGhIzWKcxd2nSgB8q8IvIYm7T2VImhT/ue
+         veRqprdQDDUs0pVmyk1jKiUH+6beH3PVQ8Zden44Z/9ZyZlFvJrC3rSdzZEOO9QWzCJo
+         9/Gz4kPY/fprbIArxhJx4zHTNBLjgvjmDUplGFz3MOS/RG4jGsW+btmEh7k1ima7Cg0c
+         Z5c+fYm24+wgULcPKRHo5Gh80vtrOngQYCD1VUbzaALu8zR1U6LtOy6MjdMolnpynFrS
+         1vGCTYt/tMRkN/dQgQvyMf+Ih5118QS/kqZqrGET6+OeXEJipPloWCWZV5LWgQ91REYa
+         SfGQ==
+X-Gm-Message-State: AOAM530dZzdAXQKElU+QLmHi35osaAamRT5lpV3TKwnx4Ww0dJV6HkMJ
+        nTeGsCEpMf0xTJgTBLBw/eIqNAQuxoIAlA==
+X-Google-Smtp-Source: ABdhPJyKa0cfPJhBmE40ohTRIkysvgja2gz1icWBPmYBMWNAqtpuU8mN91+qkg9Yn2IPLSyAe+GpOA==
+X-Received: by 2002:a4a:d112:: with SMTP id k18mr682277oor.48.1612325837706;
+        Tue, 02 Feb 2021 20:17:17 -0800 (PST)
 Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:90c4:ffea:6079:8a0c])
-        by smtp.gmail.com with ESMTPSA id s10sm209978ool.35.2021.02.02.20.17.14
+        by smtp.gmail.com with ESMTPSA id s10sm209978ool.35.2021.02.02.20.17.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Feb 2021 20:17:15 -0800 (PST)
+        Tue, 02 Feb 2021 20:17:16 -0800 (PST)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
@@ -56,9 +56,9 @@ Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jakub Sitnicki <jakub@cloudflare.com>,
         Lorenz Bauer <lmb@cloudflare.com>
-Subject: [Patch bpf-next 15/19] udp: implement udp_bpf_recvmsg() for sockmap
-Date:   Tue,  2 Feb 2021 20:16:32 -0800
-Message-Id: <20210203041636.38555-16-xiyou.wangcong@gmail.com>
+Subject: [Patch bpf-next 16/19] af_unix: implement unix_dgram_bpf_recvmsg()
+Date:   Tue,  2 Feb 2021 20:16:33 -0800
+Message-Id: <20210203041636.38555-17-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210203041636.38555-1-xiyou.wangcong@gmail.com>
 References: <20210203041636.38555-1-xiyou.wangcong@gmail.com>
@@ -70,8 +70,12 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Cong Wang <cong.wang@bytedance.com>
 
-We have to implement udp_bpf_recvmsg() to replace the ->recvmsg()
-to retrieve skmsg from ingress_msg.
+We have to implement unix_dgram_bpf_recvmsg() to replace the
+original ->recvmsg() to retrieve skmsg from ingress_msg.
+
+AF_UNIX is again special here because the lack of
+sk_prot->recvmsg(). I simply add a special case inside
+unix_dgram_recvmsg() to call sk->sk_prot->recvmsg() directly.
 
 Cc: John Fastabend <john.fastabend@gmail.com>
 Cc: Daniel Borkmann <daniel@iogearbox.net>
@@ -79,50 +83,91 @@ Cc: Jakub Sitnicki <jakub@cloudflare.com>
 Cc: Lorenz Bauer <lmb@cloudflare.com>
 Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 ---
- net/ipv4/udp_bpf.c | 64 +++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 63 insertions(+), 1 deletion(-)
+ include/net/af_unix.h |  3 +++
+ net/unix/af_unix.c    | 21 ++++++++++++++++---
+ net/unix/unix_bpf.c   | 49 +++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 70 insertions(+), 3 deletions(-)
 
-diff --git a/net/ipv4/udp_bpf.c b/net/ipv4/udp_bpf.c
-index 595836088e85..9a37ba056575 100644
---- a/net/ipv4/udp_bpf.c
-+++ b/net/ipv4/udp_bpf.c
-@@ -4,6 +4,68 @@
- #include <linux/skmsg.h>
- #include <net/sock.h>
- #include <net/udp.h>
-+#include <net/inet_common.h>
+diff --git a/include/net/af_unix.h b/include/net/af_unix.h
+index fa75f899e88a..f6c43667e995 100644
+--- a/include/net/af_unix.h
++++ b/include/net/af_unix.h
+@@ -82,6 +82,9 @@ static inline struct unix_sock *unix_sk(const struct sock *sk)
+ long unix_inq_len(struct sock *sk);
+ long unix_outq_len(struct sock *sk);
+ 
++int __unix_dgram_recvmsg(struct sock *sk, struct msghdr *msg, size_t size,
++			 int nonblock, int flags, int *addr_len);
 +
-+#include "udp_impl.h"
-+
-+static struct proto *udpv6_prot_saved __read_mostly;
-+
-+static int sk_udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
-+			  int noblock, int flags, int *addr_len)
+ #ifdef CONFIG_SYSCTL
+ int unix_sysctl_register(struct net *net);
+ void unix_sysctl_unregister(struct net *net);
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index 21c4406f879b..eebcd6f7ef88 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -2094,11 +2094,11 @@ static void unix_copy_addr(struct msghdr *msg, struct sock *sk)
+ 	}
+ }
+ 
+-static int unix_dgram_recvmsg(struct socket *sock, struct msghdr *msg,
+-			      size_t size, int flags)
++int __unix_dgram_recvmsg(struct sock *sk, struct msghdr *msg, size_t size,
++			 int nonblock, int flags, int *addr_len)
+ {
+ 	struct scm_cookie scm;
+-	struct sock *sk = sock->sk;
++	struct socket *sock = sk->sk_socket;
+ 	struct unix_sock *u = unix_sk(sk);
+ 	struct sk_buff *skb, *last;
+ 	long timeo;
+@@ -2201,6 +2201,21 @@ static int unix_dgram_recvmsg(struct socket *sock, struct msghdr *msg,
+ 	return err;
+ }
+ 
++static int unix_dgram_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
++			      int flags)
 +{
-+#if IS_ENABLED(CONFIG_IPV6)
-+	if (sk->sk_family == AF_INET6)
-+		return udpv6_prot_saved->recvmsg(sk, msg, len, noblock, flags,
-+						 addr_len);
++	struct sock *sk = sock->sk;
++	int addr_len = 0;
++
++#ifdef CONFIG_BPF_SOCK_MAP
++	if (sk->sk_prot != &unix_proto)
++		return sk->sk_prot->recvmsg(sk, msg, size, flags & MSG_DONTWAIT,
++					    flags & ~MSG_DONTWAIT, &addr_len);
 +#endif
-+	return udp_prot.recvmsg(sk, msg, len, noblock, flags, addr_len);
++	return __unix_dgram_recvmsg(sk, msg, size, flags & MSG_DONTWAIT,
++				    flags, &addr_len);
 +}
 +
-+static int udp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
-+			   int nonblock, int flags, int *addr_len)
+ int unix_read_sock(struct sock *sk, read_descriptor_t *desc,
+ 		   sk_read_actor_t recv_actor)
+ {
+diff --git a/net/unix/unix_bpf.c b/net/unix/unix_bpf.c
+index 2e6a26ec4958..570261fd18cd 100644
+--- a/net/unix/unix_bpf.c
++++ b/net/unix/unix_bpf.c
+@@ -5,6 +5,54 @@
+ #include <net/sock.h>
+ #include <net/af_unix.h>
+ 
++static int unix_dgram_bpf_recvmsg(struct sock *sk, struct msghdr *msg,
++				  size_t len, int nonblock, int flags,
++				  int *addr_len)
 +{
 +	struct sk_psock *psock;
 +	int copied, ret;
 +
-+	if (unlikely(flags & MSG_ERRQUEUE))
-+		return inet_recv_error(sk, msg, len, addr_len);
-+
 +	psock = sk_psock_get(sk);
 +	if (unlikely(!psock))
-+		return sk_udp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
++		return __unix_dgram_recvmsg(sk, msg, len, nonblock, flags,
++					    addr_len);
 +
 +	lock_sock(sk);
-+	if (sk_psock_queue_empty(psock)) {
-+		ret = sk_udp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
++	if (!skb_queue_empty(&sk->sk_receive_queue) &&
++	    sk_psock_queue_empty(psock)) {
++		ret = __unix_dgram_recvmsg(sk, msg, len, nonblock, flags,
++					   addr_len);
 +		goto out;
 +	}
 +
@@ -137,7 +182,8 @@ index 595836088e85..9a37ba056575 100644
 +		if (data) {
 +			if (!sk_psock_queue_empty(psock))
 +				goto msg_bytes_ready;
-+			ret = sk_udp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
++			ret = __unix_dgram_recvmsg(sk, msg, len, nonblock,
++						   flags, addr_len);
 +			goto out;
 +		}
 +		if (err) {
@@ -152,25 +198,18 @@ index 595836088e85..9a37ba056575 100644
 +	sk_psock_put(sk, psock);
 +	return ret;
 +}
- 
- enum {
- 	UDP_BPF_IPV4,
-@@ -11,7 +73,6 @@ enum {
- 	UDP_BPF_NUM_PROTS,
- };
- 
--static struct proto *udpv6_prot_saved __read_mostly;
- static DEFINE_SPINLOCK(udpv6_prot_lock);
- static struct proto udp_bpf_prots[UDP_BPF_NUM_PROTS];
- 
-@@ -20,6 +81,7 @@ static void udp_bpf_rebuild_protos(struct proto *prot, const struct proto *base)
++
+ static struct proto *unix_prot_saved __read_mostly;
+ static DEFINE_SPINLOCK(unix_prot_lock);
+ static struct proto unix_bpf_prot;
+@@ -13,6 +61,7 @@ static void unix_bpf_rebuild_protos(struct proto *prot, const struct proto *base
+ {
  	*prot        = *base;
- 	prot->unhash = sock_map_unhash;
  	prot->close  = sock_map_close;
-+	prot->recvmsg = udp_bpf_recvmsg;
++	prot->recvmsg = unix_dgram_bpf_recvmsg;
  }
  
- static void udp_bpf_check_v6_needs_rebuild(struct proto *ops)
+ static void unix_bpf_check_needs_rebuild(struct proto *ops)
 -- 
 2.25.1
 
