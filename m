@@ -2,39 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E4BC30E7CF
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 00:48:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6185230E7D2
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 00:49:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233461AbhBCXru (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 18:47:50 -0500
-Received: from mga02.intel.com ([134.134.136.20]:27992 "EHLO mga02.intel.com"
+        id S233393AbhBCXso (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 18:48:44 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53536 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233084AbhBCXrt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Feb 2021 18:47:49 -0500
-IronPort-SDR: QRoc8yC+Yxbz+OxPz1IO2uvN6DgAlG8c1Bgm4YF9OH/6UoKoMqkPWhcgFvk2QqR8yFfqolEvdT
- XqMamOJFGfmA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9884"; a="168247871"
-X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; 
-   d="scan'208";a="168247871"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2021 15:47:01 -0800
-IronPort-SDR: Ushzf0FPlMHsggKSCxr+u2N1KUBhdPJUbkbvwRKRtM9ulGVWmTCYwY/BQAeDfsX9H5DzZbja7E
- 67UyxszPZmtw==
-X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; 
-   d="scan'208";a="414765482"
-Received: from jbrandeb-mobl4.amr.corp.intel.com (HELO localhost) ([10.209.23.15])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2021 15:47:00 -0800
-Date:   Wed, 3 Feb 2021 15:46:58 -0800
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     <davem@davemloft.net>, <kuba@kernel.org>, <sgoutham@marvell.com>,
-        <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] octeontx2-af: remove unneeded semicolon
-Message-ID: <20210203154658.00001f2f@intel.com>
-In-Reply-To: <1612318631-101349-1-git-send-email-yang.lee@linux.alibaba.com>
-References: <1612318631-101349-1-git-send-email-yang.lee@linux.alibaba.com>
-X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
+        id S232458AbhBCXsm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Feb 2021 18:48:42 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 52C8464F60;
+        Wed,  3 Feb 2021 23:48:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612396081;
+        bh=+6Wgzo0UAUksPUWapSep533wADw9r5wsvfB8fRBzU/8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=UIpgYckud7N2g2qsN2quewUJHN1CUfhAF2xZ2mhebPxmAgTlZ1pFi2i1CsFDlmmtt
+         FV5l4wXK+VlOFUX90qIWpCk/8kGxGxOFbh6e6aTEsMvpxeb5KHUCf3IfB6QWsRf3s3
+         Z4fdA6Q+ICKsQwqSTsnIK7vM3TofwoJjvDpC4SIolrap2mJPZo204ZtyPnB0BblQJv
+         ni/AeyRm9iqFminn9qBX3VTMmeWnuus99o8CnpBVWde/lCR7gwnJ3kSJLcueqXCA2r
+         xeleXlmjwqoauwANKqm8SuyqbtTQPU6bqIPnCupc8Wlz/i2dl3h6diFgdDF6SgymXf
+         DC9/FjRrODCtg==
+Date:   Wed, 3 Feb 2021 15:48:00 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Juergen Gross <jgross@suse.com>
+Cc:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Wei Liu <wei.liu@kernel.org>,
+        Paul Durrant <paul@xen.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Igor Druzhinin <igor.druzhinin@citrix.com>,
+        stable@vger.kernel.org
+Subject: Re: [PATCH] xen/netback: avoid race in
+ xenvif_rx_ring_slots_available()
+Message-ID: <20210203154800.4c6959d6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210202070938.7863-1-jgross@suse.com>
+References: <20210202070938.7863-1-jgross@suse.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -42,28 +44,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Yang Li wrote:
-
-> Eliminate the following coccicheck warning:
-> ./drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c:272:2-3:
-> Unneeded semicolon
-> ./drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c:1809:3-4:
-> Unneeded semicolon
-> ./drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c:1788:3-4:
-> Unneeded semicolon
-> ./drivers/net/ethernet/marvell/octeontx2/af/rvu.c:1326:2-3: Unneeded
-> semicolon
+On Tue,  2 Feb 2021 08:09:38 +0100 Juergen Gross wrote:
+> Since commit 23025393dbeb3b8b3 ("xen/netback: use lateeoi irq binding")
+> xenvif_rx_ring_slots_available() is no longer called only from the rx
+> queue kernel thread, so it needs to access the rx queue with the
+> associated queue held.
 > 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
-> ---
->  drivers/net/ethernet/marvell/octeontx2/af/rvu.c         | 2 +-
->  drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c | 4 ++--
->  drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c  | 2 +-
->  3 files changed, 4 insertions(+), 4 deletions(-)
+> Reported-by: Igor Druzhinin <igor.druzhinin@citrix.com>
+> Fixes: 23025393dbeb3b8b3 ("xen/netback: use lateeoi irq binding")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Juergen Gross <jgross@suse.com>
 
-Trivial patch, recommend net-next as it's not a critical fix, Yang,
-please include the targeted tree when sending like [PATCH net-next]
-
-otherwise, for net-next:
-Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Should we route this change via networking trees? I see the bug did not
+go through networking :)
