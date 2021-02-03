@@ -2,354 +2,369 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87F4A30E72A
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 00:22:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A54F30E72B
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 00:22:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233329AbhBCXUN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 18:20:13 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49168 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232745AbhBCXUK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Feb 2021 18:20:10 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9F6E264F55;
-        Wed,  3 Feb 2021 23:19:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612394369;
-        bh=Lrat3WBTqpjIT1TsWzSis+tJX1IZJKuzcUA+W+L8+x4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CZOEvme3GKMnbsMFpLPtgeV/l5Z1P1NqIHAursgoSxGgAC9BB7HnxmLdTMJZmZf6z
-         rRPXzy6NqxZirO762wdTwcV71OgSTpCmL5WL6O0ZbsaGHqx0Jum34gz1bIFOdKrWGR
-         L9wegQoVakCMNn71+E4SsiDNW9z9Eb2eTE1sXKKtL8ZrzIUeeYFKqZvn3JjdKMU8z0
-         YX74gTTxyMJQ/xeos3KmWGGMcm7kh4bYomufik2QKma2HaKoTcFH2FTUPFkOB4uA6B
-         tvprKWc61ON8sI74OCUqPz0oWb9CTyNfY1RTBBR1CKhmPkahQPXwcsEbF/mrllRfl6
-         TNA82NAlJtTIQ==
-Date:   Wed, 3 Feb 2021 15:19:27 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     bjorn@mork.no, dcbw@redhat.com, netdev@vger.kernel.org,
-        carl.yin@quectel.com
-Subject: Re: [PATCH net-next v2 3/3] net: mhi: Add mbim proto
-Message-ID: <20210203151927.6eae17a3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1612213542-17257-3-git-send-email-loic.poulain@linaro.org>
-References: <1612213542-17257-1-git-send-email-loic.poulain@linaro.org>
-        <1612213542-17257-3-git-send-email-loic.poulain@linaro.org>
+        id S233441AbhBCXUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 18:20:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56890 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233308AbhBCXUd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 18:20:33 -0500
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F49BC061573;
+        Wed,  3 Feb 2021 15:19:52 -0800 (PST)
+Received: by mail-ed1-x544.google.com with SMTP id t5so1718096eds.12;
+        Wed, 03 Feb 2021 15:19:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=TBJSzXFYJBmrV0iibiMXRoDs3cCvbGe8O3cmeHWVSBY=;
+        b=JCQXMBdUlsMoBgqqH/YpIB0a0fa87B+395I+R/ngqoxc7KMDPKYFXGyvU24+A/WmjB
+         bR7jokxdQfdN6jGD+8sJw06p6OtdskKeUMUWPBNmXEIymCdRUHyebQmfdzFxWherPKYs
+         XErQuR6Jsqmkha4ZBY6gAJowhi0yRnhi3ZVOu5x8DOFvuppPDznaZ5FlYrfMotiMHA7/
+         YLbhZJeJaEt3KIPwZtjhVH7loypRVBmJtXnWWXK1Pr5hCcWoTSfSK/9YOLMNIp/8wiDy
+         SMAk3VwtMWzJYK7Ba0z+DkqPbzaaekptFEmC1sN45u2AEfdum8Toj0SATjiJhyPfV9Kj
+         XQxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=TBJSzXFYJBmrV0iibiMXRoDs3cCvbGe8O3cmeHWVSBY=;
+        b=pscGEDuWQW0aieaGY6ebIG48iu+mqYEDNMA6RlqmGbV0Kfb1Ffea9RbSnPK5gzW7bu
+         57FEmn+uQ7Iy2QW2eUnEsNw22SK4Y19c0i5++jbu81pPPtx8c8niJ7xW7CvuFFkyCejr
+         tkBwPLUuAgm2HQ2pOQpXq5cqLcyn/MjlhUiVHakj34MGJTLDbCRaIPQz1oA0VGmMajUY
+         6+AIkFlRhyi75irMHHehCSmbOVKDDBbfN09JTtnVWgvmHi5qzDAmJU5Ob9cMPnRqhHNj
+         Cr4RijJ2Obd6VP5PBiooCvHzc/kV0r/XWz+sSAVZ3VAIV1fv+G0xqYfB/0ExbBKkJB/z
+         7U4g==
+X-Gm-Message-State: AOAM530lIJqfP3KUJU1oxR/eFEIAZ4OlmB04P8gpm/9SCamMdSPAHXAL
+        mK460Z+hdokA4oN7Q0P2947U7SO528nun52gd10=
+X-Google-Smtp-Source: ABdhPJzQhkoMjqOFAg1SXPEl07+HJNOeScobroYfS2l+7RZQUWmCGdG3rV8cSJKHNwwqE4bawogUORGa8ayRNs74jxo=
+X-Received: by 2002:a05:6402:138e:: with SMTP id b14mr4521577edv.10.1612394391235;
+ Wed, 03 Feb 2021 15:19:51 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20210128134130.3051-1-elic@nvidia.com> <20210128134130.3051-2-elic@nvidia.com>
+ <CAPWQSg0XtEQ1U5N3a767Ak_naoyPdVF1CeE4r3hmN11a-aoBxg@mail.gmail.com>
+ <CAPWQSg3U9DCSK_01Kzuea5B1X+Ef9JB23wBY82A3ss-UXGek_Q@mail.gmail.com>
+ <9d6058d6-5ce1-0442-8fd9-5a6fe6a0bc6b@redhat.com> <CAPWQSg3KOAypcrs9krW8cGE7EDLTehCUCYFZMUYYNaYPH1oBZQ@mail.gmail.com>
+ <c65808bf-b336-8718-f7ea-b39fcc658dfb@redhat.com> <20210202070631.GA233234@mtl-vdi-166.wap.labs.mlnx>
+ <CAPWQSg058RGaxSS7s5s=kpxdGryiy2padRFztUZtXN+ttiDd1A@mail.gmail.com>
+ <20210202092253.GA236663@mtl-vdi-166.wap.labs.mlnx> <CAPWQSg0tRXoGF88LQSLzUg88ZEi8p+M=R6Qd445iABShfn-o4g@mail.gmail.com>
+ <eed86e79-4fd9-dfcf-da17-288a3fc597e3@redhat.com>
+In-Reply-To: <eed86e79-4fd9-dfcf-da17-288a3fc597e3@redhat.com>
+From:   Si-Wei Liu <siwliu.kernel@gmail.com>
+Date:   Wed, 3 Feb 2021 15:19:40 -0800
+Message-ID: <CAPWQSg1=aXByZoR2eZj4rfak0CDxZF6GnLNsh-vMyqyERetQpw@mail.gmail.com>
+Subject: Re: [PATCH 1/2] vdpa/mlx5: Avoid unnecessary query virtqueue
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Eli Cohen <elic@nvidia.com>, mst@redhat.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lulu@redhat.com,
+        Si-Wei Liu <si-wei.liu@oracle.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  1 Feb 2021 22:05:42 +0100 Loic Poulain wrote:
-> MBIM has initially been specified by USB-IF for transporting data (IP)
-> between a modem and a host over USB. However some modern modems also
-> support MBIM over PCIe (via MHI). In the same way as QMAP(rmnet), it
-> allows to aggregate IP packets and to perform context multiplexing.
-> 
-> This change adds minimal MBIM data transport support to MHI, allowing
-> to support MBIM only modems. MBIM being based on USB NCM, it reuses
-> and copy some helpers/functions from the USB stack (cdc-ncm, cdc-mbim).
-> 
-> Note that is a subset of the CDC-MBIM specification, supporting only
-> transport of network data (IP), there is no support for DSS. Moreover
-> the multi-session (for multi-pdn) is not supported in this initial
-> version, but will be added latter, and aligned with the cdc-mbim
-> solution (VLAN tags).
-> 
-> This code has been inspired from the mhi_mbim downstream implementation
-> (Carl Yin <carl.yin@quectel.com>).
-> 
-> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
+On Tue, Feb 2, 2021 at 9:16 PM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> On 2021/2/3 =E4=B8=8A=E5=8D=881:54, Si-Wei Liu wrote:
+> > On Tue, Feb 2, 2021 at 1:23 AM Eli Cohen <elic@nvidia.com> wrote:
+> >> On Tue, Feb 02, 2021 at 12:38:51AM -0800, Si-Wei Liu wrote:
+> >>> Thanks Eli and Jason for clarifications. See inline.
+> >>>
+> >>> On Mon, Feb 1, 2021 at 11:06 PM Eli Cohen <elic@nvidia.com> wrote:
+> >>>> On Tue, Feb 02, 2021 at 02:02:25PM +0800, Jason Wang wrote:
+> >>>>> On 2021/2/2 =E4=B8=8B=E5=8D=8812:15, Si-Wei Liu wrote:
+> >>>>>> On Mon, Feb 1, 2021 at 7:13 PM Jason Wang <jasowang@redhat.com> wr=
+ote:
+> >>>>>>> On 2021/2/2 =E4=B8=8A=E5=8D=883:17, Si-Wei Liu wrote:
+> >>>>>>>> On Mon, Feb 1, 2021 at 10:51 AM Si-Wei Liu <siwliu.kernel@gmail.=
+com> wrote:
+> >>>>>>>>> On Thu, Jan 28, 2021 at 5:46 AM Eli Cohen <elic@nvidia.com> wro=
+te:
+> >>>>>>>>>> suspend_vq should only suspend the VQ on not save the current =
+available
+> >>>>>>>>>> index. This is done when a change of map occurs when the drive=
+r calls
+> >>>>>>>>>> save_channel_info().
+> >>>>>>>>> Hmmm, suspend_vq() is also called by teardown_vq(), the latter =
+of
+> >>>>>>>>> which doesn't save the available index as save_channel_info() d=
+oesn't
+> >>>>>>>>> get called in that path at all. How does it handle the case tha=
+t
+> >>>>>>>>> aget_vq_state() is called from userspace (e.g. QEMU) while the
+> >>>>>>>>> hardware VQ object was torn down, but userspace still wants to =
+access
+> >>>>>>>>> the queue index?
+> >>>>>>>>>
+> >>>>>>>>> Refer to https://lore.kernel.org/netdev/1601583511-15138-1-git-=
+send-email-si-wei.liu@oracle.com/
+> >>>>>>>>>
+> >>>>>>>>> vhost VQ 0 ring restore failed: -1: Resource temporarily unavai=
+lable (11)
+> >>>>>>>>> vhost VQ 1 ring restore failed: -1: Resource temporarily unavai=
+lable (11)
+> >>>>>>>>>
+> >>>>>>>>> QEMU will complain with the above warning while VM is being reb=
+ooted
+> >>>>>>>>> or shut down.
+> >>>>>>>>>
+> >>>>>>>>> Looks to me either the kernel driver should cover this requirem=
+ent, or
+> >>>>>>>>> the userspace has to bear the burden in saving the index and no=
+t call
+> >>>>>>>>> into kernel if VQ is destroyed.
+> >>>>>>>> Actually, the userspace doesn't have the insights whether virt q=
+ueue
+> >>>>>>>> will be destroyed if just changing the device status via set_sta=
+tus().
+> >>>>>>>> Looking at other vdpa driver in tree i.e. ifcvf it doesn't behav=
+e like
+> >>>>>>>> so. Hence this still looks to me to be Mellanox specifics and
+> >>>>>>>> mlx5_vdpa implementation detail that shouldn't expose to userspa=
+ce.
+> >>>>>>> So I think we can simply drop this patch?
+> >>>>>> Yep, I think so. To be honest I don't know why it has anything to =
+do
+> >>>>>> with the memory hotplug issue.
+> >>>>>
+> >>>>> Eli may know more, my understanding is that, during memory hotplut,=
+ qemu
+> >>>>> need to propagate new memory mappings via set_map(). For mellanox, =
+it means
+> >>>>> it needs to rebuild memory keys, so the virtqueue needs to be suspe=
+nded.
+> >>>>>
+> >>>> I think Siwei was asking why the first patch was related to the hotp=
+lug
+> >>>> issue.
+> >>> I was thinking how consistency is assured when saving/restoring this
+> >>> h/w avail_index against the one in the virtq memory, particularly in
+> >>> the region_add/.region_del() context (e.g. the hotplug case). Problem
+> >>> is I don't see explicit memory barrier when guest thread updates the
+> >>> avail_index, how does the device make sure the h/w avail_index is
+> >>> uptodate while guest may race with updating the virtq's avail_index i=
+n
+> >>> the mean while? Maybe I completely miss something obvious?
+> >> DKIM-Signature: v1; arsa-sha256; crelaxed/relaxed; dnvidia.com; sn1;
+> >>          t 12257780; bhHnB0z4VEKwRS3WGY8d836MJgxu5Eln/jbFZlNXVxc08;
+> >>          hX-PGP-Universal:Date:From:To:CC:Subject:Message-ID:Reference=
+s:
+> >>           MIME-Version:Content-Type:Content-Disposition:
+> >>           Content-Transfer-Encoding:In-Reply-To:User-Agent:X-Originati=
+ng-IP:
+> >>           X-ClientProxiedBy;
+> >>          bgGmb8+rcn3/rKzKQ/7QzSnghWzZ+FAU0XntsRZYGQ66sFvT7zsYPHogG3LIW=
+NY77t
+> >>           wNHPw7GCJrNaH3nEXPbOp0FMOZw4Kv4W7UPuYPobbLeTkvuPAidjB8dM42vz=
++1X61t
+> >>           9IVQT9X4hnAxRjI5CqZOo41GS4Tl1X+ykGoA+VE80BR/R/+nQ3tXDVULfppz=
+eB+vu3
+> >>           TWnnpaZ2GyoNyPlMiyVRkHdXzDVgA4uQHxwHn7otGK5J4lzyu8KrFyQtiP+f=
+6hfu5v
+> >>           crJkYS8e9A+rfzUmKWuyHcKcmhPhAVJ4XdpzZcDXXlMHVxG7nR1o88xttC6D=
+1+oNIP
+> >>           9xHI3DkNBpEuA
+> >> If you're asking about syncronization upon hot plug of memory, the
+> >> hardware always goes to read the available index from memory when a ne=
+w
+> >> hardware object is associted with a virtqueue. You can argue then that
+> >> you don't need to restore the available index and you may be right but
+> >> this is the currect inteface to the firmware.
+> >>
+> >>
+> >> If you're asking on generally how sync is assured when the guest updat=
+es
+> >> the available index, can you please send a pointer to the code where y=
+ou
+> >> see the update without a memory barrier?
+> > This is a snippet of virtqueue_add_split() where avail_index gets
+> > updated by guest:
+> >
+> >          /* Put entry in available array (but don't update avail->idx u=
+ntil they
+> >           * do sync). */
+> >          avail =3D vq->split.avail_idx_shadow & (vq->split.vring.num - =
+1);
+> >          vq->split.vring.avail->ring[avail] =3D cpu_to_virtio16(_vq->vd=
+ev, head);
+> >
+> >          /* Descriptors and available array need to be set before we ex=
+pose the
+> >           * new available array entries. */
+> >          virtio_wmb(vq->weak_barriers);
+> >          vq->split.avail_idx_shadow++;
+> >          vq->split.vring.avail->idx =3D cpu_to_virtio16(_vq->vdev,
+> >                                                  vq->split.avail_idx_sh=
+adow);
+> >          vq->num_added++;
+> >
+> > There's memory barrier to make sure the update to descriptor and
+> > available ring is seen before writing to the avail->idx, but there
+> > seems no gurantee that this update would flush to the memory
+> > immmedately either before or after the mlx5-vdpa is suspened and gets
+> > the old avail_index value stashed somewhere. In this case, how does
+> > the hardware ensure the consistency between the guest virtio and host
+> > mlx5-vdpa? Or, it completly relies on guest to update the avail_index
+> > once the next buffer is available, so that the index will be in sync
+> > again?
+>
+>
+> I'm not sure I get the question but notice that the driver should check
+> and notify virtqueue when device want a notification. So there's a
+> virtio_wmb() e.g in:
+>
+> static bool virtqueue_kick_prepare_split(struct virtqueue *_vq)
+> {
+>      struct vring_virtqueue *vq =3D to_vvq(_vq);
+>      u16 new, old;
+>      bool needs_kick;
+>
+>      START_USE(vq);
+>      /* We need to expose available array entries before checking avail
+>       * event. */
+>      virtio_mb(vq->weak_barries);
+>
+>      old =3D vq->split.avail_idx_shadow - vq->num_added;
+>      new =3D vq->split.avail_idx_shadow;
+>      vq->num_added =3D 0;
+>
+> (See the comment above virtio_mb()). So the avail idx is guaranteed to
+> be committed to memroy(cache hierarchy) before the check of
+> notification. I think we sync through this.
 
-> @@ -0,0 +1,39 @@
-> +/* SPDX-License-Identifier: GPL-2.0-or-later */
-> +/* MHI Network driver - Network over MHI bus
-> + *
-> + * Copyright (C) 2021 Linaro Ltd <loic.poulain@linaro.org>
-> + */
-> +
-> +struct mhi_net_stats {
-> +	u64_stats_t rx_packets;
-> +	u64_stats_t rx_bytes;
-> +	u64_stats_t rx_errors;
+Thanks for pointing it out! Indeed, the avail index is synced before
+kicking the device. However, even so I think the race might still be
+possible, see below:
 
-> -struct mhi_net_stats {
-> -	u64_stats_t rx_packets;
-> -	u64_stats_t rx_bytes;
-> -	u64_stats_t rx_errors;
 
-Could the move to the header be a separate patch or part to the previous
-patch?
+  mlx5_vdpa device                       virtio driver
+-------------------------------------------------------------------------
+                                  virtqueue_add_split
+                                    (bumped up avail_idx1 to
+                                    avail_idx2, but update
+                                    not yet committed to mem)
 
-> +#include <linux/ethtool.h>
-> +#include <linux/if_vlan.h>
-> +#include <linux/ip.h>
-> +#include <linux/mii.h>
-> +#include <linux/netdevice.h>
-> +#include <linux/skbuff.h>
-> +#include <linux/usb.h>
-> +#include <linux/usb/cdc.h>
-> +#include <linux/usb/usbnet.h>
-> +#include <linux/usb/cdc_ncm.h>
-> +
-> +#include "mhi.h"
-> +
-> +#define MHI_MBIM_MAX_BLOCK_SZ (31 * 1024)
-> +
-> +struct mbim_context {
-> +	u16 rx_seq;
-> +	u16 tx_seq;
-> +};
-> +
-> +static int mbim_rx_verify_nth16(struct sk_buff *skb)
-> +{
-> +	struct mhi_net_dev *dev = netdev_priv(skb->dev);
-> +	struct mbim_context *ctx = dev->proto_data;
-> +	struct usb_cdc_ncm_nth16 *nth16;
-> +	int ret = -EINVAL;
-> +	int len;
-> +
-> +	if (skb->len < (sizeof(struct usb_cdc_ncm_nth16) +
-> +			sizeof(struct usb_cdc_ncm_ndp16))) {
+(hot plug memory...)
+mlx5_vdpa_set_map
+  mlx5_vdpa_change_map
+    suspend_vqs
+      suspend_vq
+        (avail_idx1 was saved)
+    save_channels_info
+    :
+    :                             virtqueue_kick_prepare_split
+    :                               (avail_idx2 committed to memory)
+    restore_channels_info
+    setup_driver
+      ...
+        create_virtqueue
+          (saved avail_idx1
+          getting restored;
+          whereas current
+          avail_idx2 in
+          memory is ignored)
+:
+:
+                                   virtqueue_notify
+                                     vp_notify
+mlx5_vdpa_kick_vq
+  (device processing up to
+  avail_idx1 rather than
+  avail_idx2?)
 
-parenthesis unnecessary
 
-> +		netif_dbg(dev, rx_err, dev->ndev, "frame too short\n");
+According to Eli, the vdpa firmware does not load the latest value,
+i.e. avail_idx2 from memory when re-creating the virtqueue object.
+Instead it starts with a stale avail_idx1 that was saved in mlx5_vdpa
+driver private structure before the memory update is made. That is the
+way how the current firmware interface is designed. The thing I'm not
+sure though is if the firmware/device will resync and get to the
+latest avail_idx2 from memory while processing the kick request with
+mlx5_vdpa_kick_vq? If not, a few avail entries will be missing in the
+kick, which could cause odd behavior or implicit failure.
 
-Looks like we could use some more specific counters here, like 
-rx_length_errors?
+But if the firmware will resync on kick_vq (and get_vq_state), I think
+I completely lost the point of saving and restoring avail_idx when
+changing the memory map...
 
-> +		goto error;
-> +	}
-> +
-> +	nth16 = (struct usb_cdc_ncm_nth16 *)skb->data;
-> +
-> +	if (nth16->dwSignature != cpu_to_le32(USB_CDC_NCM_NTH16_SIGN)) {
-> +		netif_dbg(dev, rx_err, dev->ndev,
-> +			  "invalid NTH16 signature <%#010x>\n",
-> +			  le32_to_cpu(nth16->dwSignature));
-> +		goto error;
-> +	}
-> +
-> +	/* No limit on the block length, except the size of the data pkt */
-> +	len = le16_to_cpu(nth16->wBlockLength);
-> +	if (len > skb->len) {
+Thanks,
+-Siwei
 
-Also rx_length_errors?
-
-> +		netif_dbg(dev, rx_err, dev->ndev,
-> +			  "NTB does not fit into the skb %u/%u\n", len,
-> +			  skb->len);
-> +		goto error;
-> +	}
-> +
-> +	if ((ctx->rx_seq + 1) != le16_to_cpu(nth16->wSequence) &&
-> +	    (ctx->rx_seq || le16_to_cpu(nth16->wSequence)) &&
-> +	    !((ctx->rx_seq == 0xffff) && !le16_to_cpu(nth16->wSequence))) {
-
-Multiple unnecessary parens here. They make the grouping harder to
-follow.
-
-> +		netif_dbg(dev, rx_err, dev->ndev,
-> +			  "sequence number glitch prev=%d curr=%d\n",
-> +			  ctx->rx_seq, le16_to_cpu(nth16->wSequence));
-> +	}
-> +	ctx->rx_seq = le16_to_cpu(nth16->wSequence);
-> +
-> +	ret = le16_to_cpu(nth16->wNdpIndex);
-> +error:
-> +	return ret;
-> +}
-> +
-> +static int mbim_rx_verify_ndp16(struct sk_buff *skb, int ndpoffset)
-> +{
-> +	struct mhi_net_dev *dev = netdev_priv(skb->dev);
-> +	struct usb_cdc_ncm_ndp16 *ndp16;
-> +	int ret = -EINVAL;
-> +
-> +	if ((ndpoffset + sizeof(struct usb_cdc_ncm_ndp16)) > skb->len) {
-
-comments from previous function apply here, too.
-
-> +		netif_dbg(dev, rx_err, dev->ndev, "invalid NDP offset  <%u>\n",
-> +			  ndpoffset);
-> +		goto error;
-> +	}
-> +
-> +	ndp16 = (struct usb_cdc_ncm_ndp16 *)(skb->data + ndpoffset);
-> +
-> +	if (le16_to_cpu(ndp16->wLength) < USB_CDC_NCM_NDP16_LENGTH_MIN) {
-> +		netif_dbg(dev, rx_err, dev->ndev, "invalid DPT16 length <%u>\n",
-> +			  le16_to_cpu(ndp16->wLength));
-> +		goto error;
-> +	}
-> +
-> +	ret = ((le16_to_cpu(ndp16->wLength) -
-> +					sizeof(struct usb_cdc_ncm_ndp16)) /
-> +					sizeof(struct usb_cdc_ncm_dpe16));
-> +	ret--; /* Last entry is always a NULL terminator */
-> +
-> +	if ((sizeof(struct usb_cdc_ncm_ndp16) +
-> +	     ret * (sizeof(struct usb_cdc_ncm_dpe16))) > skb->len) {
-> +		netif_dbg(dev, rx_err, dev->ndev,
-> +			  "Invalid nframes = %d\n", ret);
-> +		ret = -EINVAL;
-> +	}
-> +
-> +error:
-> +	return ret;
-> +}
-> +
-> +static int mbim_rx_fixup(struct mhi_net_dev *mhi_netdev, struct sk_buff *skb)
-> +{
-> +	struct net_device *ndev = mhi_netdev->ndev;
-> +	int ndpoffset;
-> +
-> +	/* Check NTB header and retrieve first NDP offset */
-> +	ndpoffset = mbim_rx_verify_nth16(skb);
-> +	if (ndpoffset < 0) {
-> +		netdev_err(ndev, "MBIM: Incorrect NTB header\n");
-
-this needs to be rate limitted
-
-> +		goto error;
-> +	}
-> +
-> +	/* Process each NDP */
-> +	while (1) {
-> +		struct usb_cdc_ncm_ndp16 *ndp16;
-> +		struct usb_cdc_ncm_dpe16 *dpe16;
-> +		int nframes, n;
-> +
-> +		/* Check NDP header and retrieve number of datagrams */
-> +		nframes = mbim_rx_verify_ndp16(skb, ndpoffset);
-> +		if (nframes < 0) {
-> +			netdev_err(ndev, "MBIM: Incorrect NDP16\n");
-
-ditto
-
-> +			goto error;
-> +		}
-> +
-> +		/* Only support the IPS session 0 for now (only one PDN context)
-> +		 * There is no Data Service Stream (DSS) in MHI context.
-> +		 */
-> +		ndp16 = (struct usb_cdc_ncm_ndp16 *)(skb->data + ndpoffset);
-> +		switch (ndp16->dwSignature & cpu_to_le32(0x00ffffff)) {
-
-Add a define for the mask?
-
-> +		case cpu_to_le32(USB_CDC_MBIM_NDP16_IPS_SIGN):
-> +			break;
-
-Are you going to add more cases here?
-
-> +		default:
-> +			netdev_err(ndev, "MBIM: Unsupported NDP type\n");
-> +			goto next_ndp;
-> +		}
-> +
-> +		/* de-aggregate and deliver IP packets */
-> +		dpe16 = ndp16->dpe16;
-> +		for (n = 0; n < nframes; n++, dpe16++) {
-> +			u16 dgram_offset = le16_to_cpu(dpe16->wDatagramIndex);
-> +			u16 dgram_len = le16_to_cpu(dpe16->wDatagramLength);
-> +			struct sk_buff *skbn;
-> +
-> +			if (!dgram_offset || !dgram_len)
-> +				break; /* null terminator */
-> +
-> +			skbn = netdev_alloc_skb(ndev, dgram_len);
-> +			if (!skbn)
-> +				continue;
-> +
-> +			skb_put(skbn, dgram_len);
-> +			memcpy(skbn->data, skb->data + dgram_offset, dgram_len);
-> +
-> +			switch (skbn->data[0] & 0xf0) {
-> +			case 0x40:
-> +				skbn->protocol = htons(ETH_P_IP);
-> +				break;
-> +			case 0x60:
-> +				skbn->protocol = htons(ETH_P_IPV6);
-> +				break;
-> +			default:
-> +				netdev_err(ndev, "MBIM: unknown protocol\n");
-> +				continue;
-> +			}
-> +
-> +			netif_rx(skbn);
-> +		}
-> +next_ndp:
-> +		/* Other NDP to process? */
-> +		ndpoffset = le16_to_cpu(ndp16->wNextNdpIndex);
-> +		if (!ndpoffset)
-> +			break;
-> +	}
-> +
-> +	/* free skb */
-> +	dev_consume_skb_any(skb);
-> +	return 0;
-> +error:
-> +	dev_kfree_skb_any(skb);
-> +	return -EIO;
-
-Caller ignores the return value IIRC from the previous patch, no?
-In that case just make the return value void.
-
-> +}
-> +
-> +struct mbim_tx_hdr {
-> +	struct usb_cdc_ncm_nth16 nth16;
-> +	struct usb_cdc_ncm_ndp16 ndp16;
-> +	struct usb_cdc_ncm_dpe16 dpe16[2];
-> +} __packed;
-> +
-> +static struct sk_buff *mbim_tx_fixup(struct mhi_net_dev *mhi_netdev,
-> +				     struct sk_buff *skb)
-> +{
-> +	struct mbim_context *ctx = mhi_netdev->proto_data;
-> +	unsigned int dgram_size = skb->len;
-> +	struct usb_cdc_ncm_nth16 *nth16;
-> +	struct usb_cdc_ncm_ndp16 *ndp16;
-> +	struct mbim_tx_hdr *mbim_hdr;
-> +
-> +	/* For now, this is a partial implementation of CDC MBIM, only one NDP
-> +	 * is sent, containing the IP packet (no aggregation).
-> +	 */
-> +
-> +	if (skb_headroom(skb) < sizeof(struct mbim_tx_hdr)) {
-
-skb_cow_head()
-
-> +		dev_kfree_skb_any(skb);
-> +		return NULL;
-> +	}
-> +
-> +	mbim_hdr = skb_push(skb, sizeof(struct mbim_tx_hdr));
-> +
-> +	/* Fill NTB header */
-> +	nth16 = &mbim_hdr->nth16;
-> +	nth16->dwSignature = cpu_to_le32(USB_CDC_NCM_NTH16_SIGN);
-> +	nth16->wHeaderLength = cpu_to_le16(sizeof(struct usb_cdc_ncm_nth16));
-> +	nth16->wSequence = cpu_to_le16(ctx->tx_seq++);
-> +	nth16->wBlockLength = cpu_to_le16(skb->len);
-> +	nth16->wNdpIndex = cpu_to_le16(sizeof(struct usb_cdc_ncm_nth16));
-> +
-> +	/* Fill the unique NDP */
-> +	ndp16 = &mbim_hdr->ndp16;
-> +	ndp16->dwSignature = cpu_to_le32(USB_CDC_MBIM_NDP16_IPS_SIGN);
-> +	ndp16->wLength = cpu_to_le16(sizeof(struct usb_cdc_ncm_ndp16)
-> +					+ sizeof(struct usb_cdc_ncm_dpe16) * 2);
-> +	ndp16->wNextNdpIndex = 0;
-> +
-> +	/* Datagram follows the mbim header */
-> +	ndp16->dpe16[0].wDatagramIndex = cpu_to_le16(sizeof(struct mbim_tx_hdr));
-> +	ndp16->dpe16[0].wDatagramLength = cpu_to_le16(dgram_size);
-> +
-> +	/* null termination */
-> +	ndp16->dpe16[1].wDatagramIndex = 0;
-> +	ndp16->dpe16[1].wDatagramLength = 0;
-> +
-> +	return skb;
-> +}
+>
+> Thanks
+>
+>
+> >
+> > Thanks,
+> > -Siwei
+> >
+> >>> Thanks,
+> >>> -Siwei
+> >>>
+> >>>> But you're correct. When memory is added, I get a new memory map. Th=
+is
+> >>>> requires me to build a new memory key object which covers the new me=
+mory
+> >>>> map. Since the virtqueue objects are referencing this memory key, I =
+need
+> >>>> to destroy them and build new ones referncing the new memory key.
+> >>>>
+> >>>>> Thanks
+> >>>>>
+> >>>>>
+> >>>>>> -Siwei
+> >>>>>>
+> >>>>>>> Thanks
+> >>>>>>>
+> >>>>>>>
+> >>>>>>>>> -Siwei
+> >>>>>>>>>
+> >>>>>>>>>
+> >>>>>>>>>> Signed-off-by: Eli Cohen <elic@nvidia.com>
+> >>>>>>>>>> ---
+> >>>>>>>>>>     drivers/vdpa/mlx5/net/mlx5_vnet.c | 8 --------
+> >>>>>>>>>>     1 file changed, 8 deletions(-)
+> >>>>>>>>>>
+> >>>>>>>>>> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/=
+mlx5/net/mlx5_vnet.c
+> >>>>>>>>>> index 88dde3455bfd..549ded074ff3 100644
+> >>>>>>>>>> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> >>>>>>>>>> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> >>>>>>>>>> @@ -1148,8 +1148,6 @@ static int setup_vq(struct mlx5_vdpa_net=
+ *ndev, struct mlx5_vdpa_virtqueue *mvq)
+> >>>>>>>>>>
+> >>>>>>>>>>     static void suspend_vq(struct mlx5_vdpa_net *ndev, struct =
+mlx5_vdpa_virtqueue *mvq)
+> >>>>>>>>>>     {
+> >>>>>>>>>> -       struct mlx5_virtq_attr attr;
+> >>>>>>>>>> -
+> >>>>>>>>>>            if (!mvq->initialized)
+> >>>>>>>>>>                    return;
+> >>>>>>>>>>
+> >>>>>>>>>> @@ -1158,12 +1156,6 @@ static void suspend_vq(struct mlx5_vdpa=
+_net *ndev, struct mlx5_vdpa_virtqueue *m
+> >>>>>>>>>>
+> >>>>>>>>>>            if (modify_virtqueue(ndev, mvq, MLX5_VIRTIO_NET_Q_O=
+BJECT_STATE_SUSPEND))
+> >>>>>>>>>>                    mlx5_vdpa_warn(&ndev->mvdev, "modify to sus=
+pend failed\n");
+> >>>>>>>>>> -
+> >>>>>>>>>> -       if (query_virtqueue(ndev, mvq, &attr)) {
+> >>>>>>>>>> -               mlx5_vdpa_warn(&ndev->mvdev, "failed to query =
+virtqueue\n");
+> >>>>>>>>>> -               return;
+> >>>>>>>>>> -       }
+> >>>>>>>>>> -       mvq->avail_idx =3D attr.available_index;
+> >>>>>>>>>>     }
+> >>>>>>>>>>
+> >>>>>>>>>>     static void suspend_vqs(struct mlx5_vdpa_net *ndev)
+> >>>>>>>>>> --
+> >>>>>>>>>> 2.29.2
+> >>>>>>>>>>
+>
