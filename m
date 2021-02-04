@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1847630FC50
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 20:14:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04AA830FC4E
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 20:14:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239650AbhBDTMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 14:12:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56348 "EHLO
+        id S239580AbhBDTMg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 14:12:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239485AbhBDTBh (ORCPT
+        with ESMTP id S239504AbhBDTBh (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 14:01:37 -0500
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96A56C061797
-        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 11:00:17 -0800 (PST)
-Received: by mail-qt1-x832.google.com with SMTP id e11so3195699qtg.6
-        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 11:00:17 -0800 (PST)
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8E79C0617A9
+        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 11:00:18 -0800 (PST)
+Received: by mail-qt1-x82a.google.com with SMTP id l23so3159070qtq.13
+        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 11:00:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=semihalf-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=RqZ8rygl55sOxLHGojRF+8G9b1ZOqwiFUfZbypZoZLg=;
-        b=IalZioeoVLQEkhTqrRdqPEzoemActm15rC4bqLbYPlGpC8F26deSBrgO6Bs5ln1T3Q
-         bIZVpzddh0sDKQ8jMQWYcN1auGBE+hrWGiMQn6c09W6oLpzNvotsKPeRzqdcdjKOW4v1
-         pTt6wqVw1ahgpAko5xiX6lCxkBtAgVGZuTgnOfx3D8jVD3wyxcq6q0/INzNNg0XDasfE
-         aOP8mYlr8gCSGUz8rJ3l1NlwGpG8+ydBe/2M+4qEF5IpYjqCF6ozSwO9v837MVkU2SXG
-         OQn6z9LK72k1DR5LDyKKdq7V5XqhnR1I9CZwTsROTZa6MIwgEHf9iL54Ig/OUgPCdoNB
-         rfUw==
+        bh=N9US/5TNc0Ok0VGdX9ZNieOm9Pf1B0RTE4+h0FHKiuk=;
+        b=pbDl3mO+6QkOjkpgzThk9A/rv100jH0QMtWDj/tR+zPF1tdHeI0phwXjjPePwcixFH
+         Guov4anWa/y27woOBpf/qJbn9SXINCONz/w7pQ4iyMpADrP7B+X2r4dSUTDzsmcNC5il
+         DrAuh50UT/RhFhvIuSLanwXxY3a/MzhCvn/CUaPbTfMphjLONHoaqjkk2nk5Gev260p0
+         eAGdLMk6teSE83K9lz2auJW1UFbE8Nd0otRFOOFsLfLEFr3fQr43wE1okvSTm746lK/B
+         Wvjnc4xiZLfjPzBWWeI4+6MfGV4OYoW7pEB8GKW2OB2V7EeLslDtfN6/pyYx6Z1uw+FB
+         k8iQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=RqZ8rygl55sOxLHGojRF+8G9b1ZOqwiFUfZbypZoZLg=;
-        b=sCHYLJJHcw/biK9EPGve9hwYgvcrBiZYNDEa0lTVwPrvDcBpNzR8JHGh5/HiE9E3e2
-         POCuAgL/g1PcKRfhIkDaEUlzum5CKsFrVrQoIOVe5VbgK2rklDXglTNsNFfUAK/ZmVp1
-         r9LiRyiAA4QyxXGni2DZOvWSKClHSUMQBmAe/Xkoogep9D/E1OE+8AJc2B/3ELyhLJRJ
-         vwPjfvTcoLx//cmMhqNwkddX+s6A+EuL+4cGdREBkTAPbHpun53l8JngtikdvMzt3gsq
-         yIQyQEd7+WatnxrOzCNDEx9KbEK0XrEtz9068Fa+G8Q4pN+KScuK/WswoZ4ndQrNevSd
-         jbkQ==
-X-Gm-Message-State: AOAM533CZTWebrJ6GNJtYOd/r3cskqpUzd+7uGzlD1fg6DtcUIFfmPR5
-        UGamL6IDsPAHcpWQA7CZGrKZe+oEl6MKsbhL1zUx4A==
-X-Google-Smtp-Source: ABdhPJwhUGNf3alu5buhHjjbQ5aCLec+FqzmdGl+Lsrdd5fCzmIt4cYq9bpmPu9TKLHEdv8ikstrpgVFiPwbnloSMso=
-X-Received: by 2002:ac8:e0d:: with SMTP id a13mr1024600qti.16.1612465215632;
- Thu, 04 Feb 2021 11:00:15 -0800 (PST)
+        bh=N9US/5TNc0Ok0VGdX9ZNieOm9Pf1B0RTE4+h0FHKiuk=;
+        b=ohuo8NDk8enqCgPkeTJMV2T8frBj4oNAKbL3BrsarmPXvyx27u+XDDyTicBJwadSig
+         4Qlu7qNdW0DiHUbqX0kFjxBlbZpULVWdoCfukMFKTzKOEdwMG70Aeov1EMfCkDYfz/zD
+         c/RoLcSxNJh3BUooFdw/kDchfYYOwhqa/6WodFT1dRAJN5nqk2F8p4kFv/oTAHu2cfK4
+         exCuZZ4QNqmm3+LboiXZgFLXki6lbIIljmxESkFkcyo89p7Xe9e2NQO1jNZ9Xf5Ru33y
+         KkTfwIj+IhPePX16oIzxROoPghd+zlXXS0PygH/dP3RpT0WMBWvyOzfiDj55yv/G8JQo
+         PVdg==
+X-Gm-Message-State: AOAM531I2KwLfZq8crjo38OhCU2iQQmjEswF15DHhqnpzrGguji76LwP
+        gvl8F0L8M82iqMWlkBgp5uxSzgZjsVH1hW51D+sTiw==
+X-Google-Smtp-Source: ABdhPJwwFwAy3Zm/OAQwuxbMWkD6r6yUM7IFHt+usGrI1/dv2Qayk6IRQGrc2gR0VKmN1cclGDI6tNhaOiGBCbr8FNo=
+X-Received: by 2002:ac8:130d:: with SMTP id e13mr1007372qtj.216.1612465218070;
+ Thu, 04 Feb 2021 11:00:18 -0800 (PST)
 MIME-Version: 1.0
-References: <1612253821-1148-1-git-send-email-stefanc@marvell.com> <1612253821-1148-9-git-send-email-stefanc@marvell.com>
-In-Reply-To: <1612253821-1148-9-git-send-email-stefanc@marvell.com>
+References: <1612253821-1148-1-git-send-email-stefanc@marvell.com> <1612253821-1148-11-git-send-email-stefanc@marvell.com>
+In-Reply-To: <1612253821-1148-11-git-send-email-stefanc@marvell.com>
 From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Thu, 4 Feb 2021 20:00:04 +0100
-Message-ID: <CAPv3WKeTOC8nNo0NfbrKaJb7L8kBwecYRdFsgH0m6Zo6bc0Q5Q@mail.gmail.com>
-Subject: Re: [PATCH v7 net-next 08/15] net: mvpp2: add FCA RXQ non occupied
- descriptor threshold
+Date:   Thu, 4 Feb 2021 20:00:07 +0100
+Message-ID: <CAPv3WKcO5TLMrsTLMumG1fc=cPA4JLSh4JMBgSjT45oiCgxLLw@mail.gmail.com>
+Subject: Re: [PATCH v7 net-next 10/15] net: mvpp2: add RXQ flow control configurations
 To:     Stefan Chulski <stefanc@marvell.com>
 Cc:     netdev <netdev@vger.kernel.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
@@ -73,157 +72,268 @@ wt., 2 lut 2021 o 09:18 <stefanc@marvell.com> napisa=C5=82(a):
 >
 > From: Stefan Chulski <stefanc@marvell.com>
 >
-> The firmware needs to monitor the RX Non-occupied descriptor
-> bits for flow control to move to XOFF mode.
-> These bits need to be unmasked to be functional, but they will
-> not raise interrupts as we leave the RX exception summary
-> bit in MVPP2_ISR_RX_TX_MASK_REG clear.
+> This patch adds RXQ flow control configurations.
+> Flow control disabled by default.
+> Minimum ring size limited to 1024 descriptors.
 >
 > Signed-off-by: Stefan Chulski <stefanc@marvell.com>
 > ---
->  drivers/net/ethernet/marvell/mvpp2/mvpp2.h      |  3 ++
->  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 44 ++++++++++++++++---=
--
->  2 files changed, 40 insertions(+), 7 deletions(-)
+>  drivers/net/ethernet/marvell/mvpp2/mvpp2.h      |  35 +++++-
+>  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 116 ++++++++++++++++++=
+++
+>  2 files changed, 150 insertions(+), 1 deletion(-)
 >
 > diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/eth=
 ernet/marvell/mvpp2/mvpp2.h
-> index 73f087c..ca84995 100644
+> index e010410..0f27be0 100644
 > --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
 > +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-> @@ -295,6 +295,8 @@
->  #define     MVPP2_PON_CAUSE_TXP_OCCUP_DESC_ALL_MASK    0x3fc00000
->  #define     MVPP2_PON_CAUSE_MISC_SUM_MASK              BIT(31)
->  #define MVPP2_ISR_MISC_CAUSE_REG               0x55b0
-> +#define MVPP2_ISR_RX_ERR_CAUSE_REG(port)       (0x5520 + 4 * (port))
-> +#define     MVPP2_ISR_RX_ERR_CAUSE_NONOCC_MASK 0x00ff
->
->  /* Buffer Manager registers */
->  #define MVPP2_BM_POOL_BASE_REG(pool)           (0x6000 + ((pool) * 4))
-> @@ -764,6 +766,7 @@
->  #define MSS_SRAM_SIZE          0x800
->  #define FC_QUANTA              0xFFFF
->  #define FC_CLK_DIVIDER         100
+> @@ -766,9 +766,36 @@
+>  #define MSS_SRAM_SIZE                  0x800
+>  #define MSS_FC_COM_REG                 0
+>  #define FLOW_CONTROL_ENABLE_BIT                BIT(0)
+> +#define FLOW_CONTROL_UPDATE_COMMAND_BIT        BIT(31)
+>  #define FC_QUANTA                      0xFFFF
+>  #define FC_CLK_DIVIDER                 100
+> -#define MSS_THRESHOLD_STOP             768
+> +
+> +#define MSS_RXQ_TRESH_BASE             0x200
+> +#define MSS_RXQ_TRESH_OFFS             4
+> +#define MSS_RXQ_TRESH_REG(q, fq)       (MSS_RXQ_TRESH_BASE + (((q) + (fq=
+)) \
+> +                                       * MSS_RXQ_TRESH_OFFS))
+> +
+> +#define MSS_RXQ_TRESH_START_MASK       0xFFFF
+> +#define MSS_RXQ_TRESH_STOP_MASK                (0xFFFF << MSS_RXQ_TRESH_=
+STOP_OFFS)
+> +#define MSS_RXQ_TRESH_STOP_OFFS                16
+> +
+> +#define MSS_RXQ_ASS_BASE       0x80
+> +#define MSS_RXQ_ASS_OFFS       4
+> +#define MSS_RXQ_ASS_PER_REG    4
+> +#define MSS_RXQ_ASS_PER_OFFS   8
+> +#define MSS_RXQ_ASS_PORTID_OFFS        0
+> +#define MSS_RXQ_ASS_PORTID_MASK        0x3
+> +#define MSS_RXQ_ASS_HOSTID_OFFS        2
+> +#define MSS_RXQ_ASS_HOSTID_MASK        0x3F
+> +
+> +#define MSS_RXQ_ASS_Q_BASE(q, fq) ((((q) + (fq)) % MSS_RXQ_ASS_PER_REG) =
+        \
+> +                                 * MSS_RXQ_ASS_PER_OFFS)
+> +#define MSS_RXQ_ASS_PQ_BASE(q, fq) ((((q) + (fq)) / MSS_RXQ_ASS_PER_REG)=
+ \
+> +                                  * MSS_RXQ_ASS_OFFS)
+> +#define MSS_RXQ_ASS_REG(q, fq) (MSS_RXQ_ASS_BASE + MSS_RXQ_ASS_PQ_BASE(q=
+, fq))
+> +
 > +#define MSS_THRESHOLD_STOP     768
+> +#define MSS_THRESHOLD_START    1024
 >
 >  /* RX buffer constants */
 >  #define MVPP2_SKB_SHINFO_SIZE \
+> @@ -1026,6 +1053,9 @@ struct mvpp2 {
+>
+>         /* Global TX Flow Control config */
+>         bool global_tx_fc;
+> +
+> +       /* Spinlocks for CM3 shared memory configuration */
+> +       spinlock_t mss_spinlock;
+>  };
+>
+>  struct mvpp2_pcpu_stats {
+> @@ -1188,6 +1218,9 @@ struct mvpp2_port {
+>         bool rx_hwtstamp;
+>         enum hwtstamp_tx_types tx_hwtstamp_type;
+>         struct mvpp2_hwtstamp_queue tx_hwtstamp_queue[2];
+> +
+> +       /* Firmware TX flow control */
+> +       bool tx_fc;
+>  };
+>
+>  /* The mvpp2_tx_desc and mvpp2_rx_desc structures describe the
 > diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/ne=
 t/ethernet/marvell/mvpp2/mvpp2_main.c
-> index 6e59d07..19a3f38 100644
+> index 770f45a..d778ae1 100644
 > --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
 > +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> @@ -1134,14 +1134,19 @@ static inline void mvpp2_qvec_interrupt_disable(s=
-truct mvpp2_queue_vector *qvec)
->  static void mvpp2_interrupts_mask(void *arg)
->  {
->         struct mvpp2_port *port =3D arg;
-> +       int cpu =3D smp_processor_id();
-> +       u32 thread;
->
->         /* If the thread isn't used, don't do anything */
-> -       if (smp_processor_id() > port->priv->nthreads)
-> +       if (cpu >=3D port->priv->nthreads)
-
-The condition is changed - correctly, but it is a separate fix, that
-IMO should go through 'net' tree.
-
->                 return;
->
-> -       mvpp2_thread_write(port->priv,
-> -                          mvpp2_cpu_to_thread(port->priv, smp_processor_=
-id()),
-> +       thread =3D mvpp2_cpu_to_thread(port->priv, cpu);
-> +
-> +       mvpp2_thread_write(port->priv, thread,
->                            MVPP2_ISR_RX_TX_MASK_REG(port->id), 0);
-> +       mvpp2_thread_write(port->priv, thread,
-> +                          MVPP2_ISR_RX_ERR_CAUSE_REG(port->id), 0);
+> @@ -742,6 +742,110 @@ static void *mvpp2_buf_alloc(struct mvpp2_port *por=
+t,
+>         return data;
 >  }
 >
->  /* Unmask the current thread's Rx/Tx interrupts.
-> @@ -1151,20 +1156,25 @@ static void mvpp2_interrupts_mask(void *arg)
->  static void mvpp2_interrupts_unmask(void *arg)
->  {
->         struct mvpp2_port *port =3D arg;
-> -       u32 val;
-> +       int cpu =3D smp_processor_id();
-> +       u32 val, thread;
->
->         /* If the thread isn't used, don't do anything */
-> -       if (smp_processor_id() > port->priv->nthreads)
-> +       if (cpu >=3D port->priv->nthreads)
+> +/* Routine enable flow control for RXQs condition */
+> +static void mvpp2_rxq_enable_fc(struct mvpp2_port *port)
+> +{
+> +       int val, cm3_state, host_id, q;
+> +       int fq =3D port->first_rxq;
+> +       unsigned long flags;
+> +
+> +       spin_lock_irqsave(&port->priv->mss_spinlock, flags);
+> +
+> +       /* Remove Flow control enable bit to prevent race between FW and =
+Kernel
+> +        * If Flow control were enabled, it would be re-enabled.
 
-Ditto.
+Nit:
+
+s/were/was/
 
 Thanks,
 Marcin
 
 
->                 return;
->
-> +       thread =3D mvpp2_cpu_to_thread(port->priv, cpu);
+> +        */
+> +       val =3D mvpp2_cm3_read(port->priv, MSS_FC_COM_REG);
+> +       cm3_state =3D (val & FLOW_CONTROL_ENABLE_BIT);
+> +       val &=3D ~FLOW_CONTROL_ENABLE_BIT;
+> +       mvpp2_cm3_write(port->priv, MSS_FC_COM_REG, val);
 > +
->         val =3D MVPP2_CAUSE_MISC_SUM_MASK |
->                 MVPP2_CAUSE_RXQ_OCCUP_DESC_ALL_MASK(port->priv->hw_versio=
-n);
->         if (port->has_tx_irqs)
->                 val |=3D MVPP2_CAUSE_TXQ_OCCUP_DESC_ALL_MASK;
->
-> -       mvpp2_thread_write(port->priv,
-> -                          mvpp2_cpu_to_thread(port->priv, smp_processor_=
-id()),
-> +       mvpp2_thread_write(port->priv, thread,
->                            MVPP2_ISR_RX_TX_MASK_REG(port->id), val);
-> +       mvpp2_thread_write(port->priv, thread,
-> +                          MVPP2_ISR_RX_ERR_CAUSE_REG(port->id),
-> +                          MVPP2_ISR_RX_ERR_CAUSE_NONOCC_MASK);
->  }
->
->  static void
-> @@ -1189,6 +1199,9 @@ static void mvpp2_interrupts_unmask(void *arg)
->
->                 mvpp2_thread_write(port->priv, v->sw_thread_id,
->                                    MVPP2_ISR_RX_TX_MASK_REG(port->id), va=
-l);
-> +               mvpp2_thread_write(port->priv, v->sw_thread_id,
-> +                                  MVPP2_ISR_RX_ERR_CAUSE_REG(port->id),
-> +                                  MVPP2_ISR_RX_ERR_CAUSE_NONOCC_MASK);
->         }
->  }
->
-> @@ -2394,6 +2407,20 @@ static void mvpp2_txp_max_tx_size_set(struct mvpp2=
-_port *port)
->         }
->  }
->
-> +/* Set the number of non-occupied descriptors threshold */
-> +static void mvpp2_set_rxq_free_tresh(struct mvpp2_port *port,
-> +                                    struct mvpp2_rx_queue *rxq)
-> +{
-> +       u32 val;
+> +       /* Set same Flow control for all RXQs */
+> +       for (q =3D 0; q < port->nrxqs; q++) {
+> +               /* Set stop and start Flow control RXQ thresholds */
+> +               val =3D MSS_THRESHOLD_START;
+> +               val |=3D (MSS_THRESHOLD_STOP << MSS_RXQ_TRESH_STOP_OFFS);
+> +               mvpp2_cm3_write(port->priv, MSS_RXQ_TRESH_REG(q, fq), val=
+);
 > +
-> +       mvpp2_write(port->priv, MVPP2_RXQ_NUM_REG, rxq->id);
+> +               val =3D mvpp2_cm3_read(port->priv, MSS_RXQ_ASS_REG(q, fq)=
+);
+> +               /* Set RXQ port ID */
+> +               val &=3D ~(MSS_RXQ_ASS_PORTID_MASK << MSS_RXQ_ASS_Q_BASE(=
+q, fq));
+> +               val |=3D (port->id << MSS_RXQ_ASS_Q_BASE(q, fq));
+> +               val &=3D ~(MSS_RXQ_ASS_HOSTID_MASK << (MSS_RXQ_ASS_Q_BASE=
+(q, fq)
+> +                       + MSS_RXQ_ASS_HOSTID_OFFS));
 > +
-> +       val =3D mvpp2_read(port->priv, MVPP2_RXQ_THRESH_REG);
-> +       val &=3D ~MVPP2_RXQ_NON_OCCUPIED_MASK;
-> +       val |=3D MSS_THRESHOLD_STOP << MVPP2_RXQ_NON_OCCUPIED_OFFSET;
-> +       mvpp2_write(port->priv, MVPP2_RXQ_THRESH_REG, val);
+> +               /* Calculate RXQ host ID:
+> +                * In Single queue mode: Host ID equal to Host ID used fo=
+r
+> +                *                       shared RX interrupt
+> +                * In Multi queue mode: Host ID equal to number of
+> +                *                      RXQ ID / number of CoS queues
+> +                * In Single resource mode: Host ID always equal to 0
+> +                */
+> +               if (queue_mode =3D=3D MVPP2_QDIST_SINGLE_MODE)
+> +                       host_id =3D port->nqvecs;
+> +               else if (queue_mode =3D=3D MVPP2_QDIST_MULTI_MODE)
+> +                       host_id =3D q;
+> +               else
+> +                       host_id =3D 0;
+> +
+> +               /* Set RXQ host ID */
+> +               val |=3D (host_id << (MSS_RXQ_ASS_Q_BASE(q, fq)
+> +                       + MSS_RXQ_ASS_HOSTID_OFFS));
+> +
+> +               mvpp2_cm3_write(port->priv, MSS_RXQ_ASS_REG(q, fq), val);
+> +       }
+> +
+> +       /* Notify Firmware that Flow control config space ready for updat=
+e */
+> +       val =3D mvpp2_cm3_read(port->priv, MSS_FC_COM_REG);
+> +       val |=3D FLOW_CONTROL_UPDATE_COMMAND_BIT;
+> +       val |=3D cm3_state;
+> +       mvpp2_cm3_write(port->priv, MSS_FC_COM_REG, val);
+> +
+> +       spin_unlock_irqrestore(&port->priv->mss_spinlock, flags);
 > +}
 > +
->  /* Set the number of packets that will be received before Rx interrupt
->   * will be generated by HW.
->   */
-> @@ -2649,6 +2676,9 @@ static int mvpp2_rxq_init(struct mvpp2_port *port,
->         mvpp2_rx_pkts_coal_set(port, rxq);
->         mvpp2_rx_time_coal_set(port, rxq);
->
-> +       /* Set the number of non occupied descriptors threshold */
-> +       mvpp2_set_rxq_free_tresh(port, rxq);
+> +/* Routine disable flow control for RXQs condition */
+> +static void mvpp2_rxq_disable_fc(struct mvpp2_port *port)
+> +{
+> +       int val, cm3_state, q;
+> +       unsigned long flags;
+> +       int fq =3D port->first_rxq;
 > +
->         /* Add number of descriptors ready for receiving packets */
->         mvpp2_rxq_status_update(port, rxq->id, 0, rxq->size);
+> +       spin_lock_irqsave(&port->priv->mss_spinlock, flags);
+> +
+> +       /* Remove Flow control enable bit to prevent race between FW and =
+Kernel
+> +        * If Flow control were enabled, it would be re-enabled.
+> +        */
+> +       val =3D mvpp2_cm3_read(port->priv, MSS_FC_COM_REG);
+> +       cm3_state =3D (val & FLOW_CONTROL_ENABLE_BIT);
+> +       val &=3D ~FLOW_CONTROL_ENABLE_BIT;
+> +       mvpp2_cm3_write(port->priv, MSS_FC_COM_REG, val);
+> +
+> +       /* Disable Flow control for all RXQs */
+> +       for (q =3D 0; q < port->nrxqs; q++) {
+> +               /* Set threshold 0 to disable Flow control */
+> +               val =3D 0;
+> +               val |=3D (0 << MSS_RXQ_TRESH_STOP_OFFS);
+> +               mvpp2_cm3_write(port->priv, MSS_RXQ_TRESH_REG(q, fq), val=
+);
+> +
+> +               val =3D mvpp2_cm3_read(port->priv, MSS_RXQ_ASS_REG(q, fq)=
+);
+> +
+> +               val &=3D ~(MSS_RXQ_ASS_PORTID_MASK << MSS_RXQ_ASS_Q_BASE(=
+q, fq));
+> +
+> +               val &=3D ~(MSS_RXQ_ASS_HOSTID_MASK << (MSS_RXQ_ASS_Q_BASE=
+(q, fq)
+> +                       + MSS_RXQ_ASS_HOSTID_OFFS));
+> +
+> +               mvpp2_cm3_write(port->priv, MSS_RXQ_ASS_REG(q, fq), val);
+> +       }
+> +
+> +       /* Notify Firmware that Flow control config space ready for updat=
+e */
+> +       val =3D mvpp2_cm3_read(port->priv, MSS_FC_COM_REG);
+> +       val |=3D FLOW_CONTROL_UPDATE_COMMAND_BIT;
+> +       val |=3D cm3_state;
+> +       mvpp2_cm3_write(port->priv, MSS_FC_COM_REG, val);
+> +
+> +       spin_unlock_irqrestore(&port->priv->mss_spinlock, flags);
+> +}
+> +
+>  /* Release buffer to BM */
+>  static inline void mvpp2_bm_pool_put(struct mvpp2_port *port, int pool,
+>                                      dma_addr_t buf_dma_addr,
+> @@ -3006,6 +3110,9 @@ static void mvpp2_cleanup_rxqs(struct mvpp2_port *p=
+ort)
 >
+>         for (queue =3D 0; queue < port->nrxqs; queue++)
+>                 mvpp2_rxq_deinit(port, port->rxqs[queue]);
+> +
+> +       if (port->tx_fc)
+> +               mvpp2_rxq_disable_fc(port);
+>  }
+>
+>  /* Init all Rx queues for port */
+> @@ -3018,6 +3125,10 @@ static int mvpp2_setup_rxqs(struct mvpp2_port *por=
+t)
+>                 if (err)
+>                         goto err_cleanup;
+>         }
+> +
+> +       if (port->tx_fc)
+> +               mvpp2_rxq_enable_fc(port);
+> +
+>         return 0;
+>
+>  err_cleanup:
+> @@ -4317,6 +4428,8 @@ static int mvpp2_check_ringparam_valid(struct net_d=
+evice *dev,
+>
+>         if (ring->rx_pending > MVPP2_MAX_RXD_MAX)
+>                 new_rx_pending =3D MVPP2_MAX_RXD_MAX;
+> +       else if (ring->rx_pending < MSS_THRESHOLD_START)
+> +               new_rx_pending =3D MSS_THRESHOLD_START;
+>         else if (!IS_ALIGNED(ring->rx_pending, 16))
+>                 new_rx_pending =3D ALIGN(ring->rx_pending, 16);
+>
+> @@ -7170,6 +7283,9 @@ static int mvpp2_probe(struct platform_device *pdev=
+)
+>                         priv->hw_version =3D MVPP23;
+>         }
+>
+> +       /* Init mss lock */
+> +       spin_lock_init(&priv->mss_spinlock);
+> +
+>         /* Initialize network controller */
+>         err =3D mvpp2_init(pdev, priv);
+>         if (err < 0) {
 > --
 > 1.9.1
 >
