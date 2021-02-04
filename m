@@ -2,96 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8261930EDAE
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 08:49:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09D4230EDD7
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 08:57:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234723AbhBDHsG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 02:48:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52848 "EHLO
+        id S234646AbhBDHzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 02:55:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234605AbhBDHsD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 02:48:03 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F146C061788
-        for <netdev@vger.kernel.org>; Wed,  3 Feb 2021 23:47:23 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id f14so3625767ejc.8
-        for <netdev@vger.kernel.org>; Wed, 03 Feb 2021 23:47:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zcUQssxgBtY7TxqFXoJhN4nfsNFkzSKvDsleT73dDmU=;
-        b=JcyXwqkVuHgqNOIeGLsWFvJ3veEHpp+QYaFT65bhql1/L8+tyWG6KI+ORqGFC/pz6z
-         t401m09u/q+/ePt1kZ63CwCVqHxAp74NVhA/LJM4bX+8/lGQ8q2V6g9c4IUjf2/9RHEX
-         vVJ0x3Ot5q7z07fv45xLxk71prFlkFC0Q92qmsEMhLl1zzvRQ98WNEt7HTa4xjyt3IzW
-         DTZf0btoAvct2nkyeie8jFPCWEEyt8Zu7G8pD8mfMCUJhCvQFBGPyDKDL2wVsODUnlDI
-         fe5vmx/tjeDP/PZq4DqJvd21mwrkYeOHn3wo7aeJxC5qKpZpAT9yJ4wVK0Ze+LvB0txm
-         rNzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zcUQssxgBtY7TxqFXoJhN4nfsNFkzSKvDsleT73dDmU=;
-        b=nFJx+OwEuYwnUSmSMUuloEDk9UBHqDTPsb44amXU+BGywxCjJTLuDC7NVoCh1zlci6
-         vzILtICCQNMoLPNnuHMf1V4Qj/rCgAxxzn6j4J4yZY55qbeA3gnNQSRsK0pY/Zuu98bJ
-         8Zs1EUWEZ8TiKSeisXUL6xRJz3LDj3w4jEb4nMQ3zAU9pKk5GnhouBQaM61s7yZLrAcY
-         CouCUqmPDNpiZdH675mc4bN9ueWnSkz9OnTIkA1y4kwUTDezu6Ki+MvQwL2DpGCJ8Ygy
-         OWYWeHnrq9h8QH1yi35p/xavZ6SGDm632nxL5rU+wxxBqStLxIjRslmOXWaPDMtwCWi9
-         0UHQ==
-X-Gm-Message-State: AOAM532Dg7gsK6EYJph+gItWHBXbL8SmCsKNweY3VpJvU/ezqJhVXcHb
-        GvfXWSkhl94cw2ceADlV7PTa1Dd2+RLTXF6FsycGaw==
-X-Google-Smtp-Source: ABdhPJxObXHq9/oGu1M1z5iUX/n+NP1fQEPOFqIKaYXsaNwYg4fxm5cGjYP+ucSiU4tP0h2AzjAe51NFGAGbWOg0zU8=
-X-Received: by 2002:a17:907:a06f:: with SMTP id ia15mr6874717ejc.328.1612424841895;
- Wed, 03 Feb 2021 23:47:21 -0800 (PST)
+        with ESMTP id S232793AbhBDHzV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 02:55:21 -0500
+Received: from dvalin.narfation.org (dvalin.narfation.org [IPv6:2a00:17d8:100::8b1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE200C0613ED
+        for <netdev@vger.kernel.org>; Wed,  3 Feb 2021 23:54:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
+        s=20121; t=1612425279;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=6LFSJ7hPs/+x69XDL8Dkhthryw46ar40UZkpUsbgM+4=;
+        b=QCc2ezau4Tpj9OFt10cQvGE5LhZwJ9BKxQYJMXMGRqOl610Aq1Wtm6tz1j0LU2iDNUZpbI
+        eZFYggzcHBdghNp3+tnjBG1r5qGLH9Dk72rAYDbVIXlhdqI7LQCqKPl7ZUZ0ijEYh91VMv
+        XNaQOCiZDnYP4pKoQd3jIv32OZ1sMxM=
+From:   Sven Eckelmann <sven@narfation.org>
+To:     Simon Wunderlich <sw@simonwunderlich.de>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        b.a.t.m.a.n@lists.open-mesh.org
+Subject: Re: [PATCH 2/4] batman-adv: Update copyright years for 2021
+Date:   Thu, 04 Feb 2021 08:54:33 +0100
+Message-ID: <3636307.aAJz7UTs6F@ripper>
+In-Reply-To: <20210203163506.4b4dbff0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20210202174037.7081-1-sw@simonwunderlich.de> <20210202174037.7081-3-sw@simonwunderlich.de> <20210203163506.4b4dbff0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <1612213542-17257-1-git-send-email-loic.poulain@linaro.org> <20210203150843.06506420@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210203150843.06506420@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Thu, 4 Feb 2021 08:54:30 +0100
-Message-ID: <CAMZdPi_knLw3MQUr35khbrT7M6JjOVNi2f-+-6hrgEehubCmRQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 1/3] net: mhi: Add RX/TX fixup callbacks
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
-        Dan Williams <dcbw@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        =?UTF-8?B?Q2FybCBZaW4o5q635byg5oiQKQ==?= <carl.yin@quectel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="nextPart2733018.9YGKfJurXy"; micalg="pgp-sha512"; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+--nextPart2733018.9YGKfJurXy
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
+From: Sven Eckelmann <sven@narfation.org>
+To: Simon Wunderlich <sw@simonwunderlich.de>, Jakub Kicinski <kuba@kernel.org>
+Cc: davem@davemloft.net, netdev@vger.kernel.org, b.a.t.m.a.n@lists.open-mesh.org
+Subject: Re: [PATCH 2/4] batman-adv: Update copyright years for 2021
+Date: Thu, 04 Feb 2021 08:54:33 +0100
+Message-ID: <3636307.aAJz7UTs6F@ripper>
+In-Reply-To: <20210203163506.4b4dbff0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20210202174037.7081-1-sw@simonwunderlich.de> <20210202174037.7081-3-sw@simonwunderlich.de> <20210203163506.4b4dbff0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+
+On Thursday, 4 February 2021 01:35:06 CET Jakub Kicinski wrote:
+[...]
+> Is this how copyright works? I'm not a layer, but I thought it was
+> supposed to reflect changes done to given file in a given year.
+
+<irony>Because we all know that the first thing a person is doing when 
+submitting a change is to update the copyright year.</irony>
+
+So we have either the option to:
+
+* not update it at all (as in many kernel sources)
+* don't have it listed explicitly (as seen in other kernel sources)
+* update it once a year
+
+I personally like to have a simple solution so I don't have to deal with this 
+kind of details while doing interesting things. The current "solution"
+was to handle the copyright notices year for the whole project as one entity - 
+once per year and then ignore it for the rest of the year.
+
+And I would also prefer not to start a discussion about the differences 
+between the inalienable German Urheberrecht, pre 1989 anglo-american 
+copyright, post 1989 anglo american copyright and other copyright like laws.
+
+Kind regards,
+	Sven
 
 
-On Thu, 4 Feb 2021 at 00:08, Jakub Kicinski <kuba@kernel.org> wrote:
->
-> Please put the maintainers or the list thru which you expect the patch
-> to be applied in the To: field of your emails.
->
-> On Mon,  1 Feb 2021 22:05:40 +0100 Loic Poulain wrote:
-> > +     if (proto && proto->tx_fixup) {
-> > +             skb = proto->tx_fixup(mhi_netdev, skb);
-> > +             if (unlikely(!skb))
-> > +                     goto exit_drop;
-> > +     }
->
-> > @@ -170,7 +193,11 @@ static void mhi_net_dl_callback(struct mhi_device *mhi_dev,
-> >               }
-> >
-> >               skb_put(skb, mhi_res->bytes_xferd);
-> > -             netif_rx(skb);
-> > +
-> > +             if (proto && proto->rx_fixup)
-> > +                     proto->rx_fixup(mhi_netdev, skb);
-> > +             else
-> > +                     netif_rx(skb);
-> >       }
->
-> There us a slight asymmetry between tx_fixup and rx_fixup.
-> tx_fixup just massages the frame and then mhi_net still takes
-> care of transmission. On Rx side rx_fixup actually does the
-> netif_rx(skb). Maybe s/rx_fixup/rx/ ?
+--nextPart2733018.9YGKfJurXy
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
 
-Yes, that makes sense.
+-----BEGIN PGP SIGNATURE-----
 
-Loic
+iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAmAbqDkACgkQXYcKB8Em
+e0Yzhg/8C3UCwdVrki9UaPjFtfuSZz3l3/9o473xkvDgc0BvE+bHsPz+St2Zwdb9
+pCSrGYfk+3iGJMxUXruIQikS+khBDfDk14r+vgLzDfCSZbIsFlPU0B84VbVdmkVL
+KpIf8fmBKzQ7JXNnzT3xYt99Tp0lTHAK/yMvNI7uLWTzzcOkA6uM7i1Ci4d/i4dB
+z1zzcfkmMYHS4/Oq2RGCrTT0tchZgaL7mHUBUaxUnXQOJLseqvgwr+x8woPZvnN/
+EAXMJlmpmNmHVIGroQWkxmqSsTOsXSol7IhjA6n1yl5XrPnM8jLl5IAV32nBtkzb
+5DmcBvfbycwnCNFGJN5Me07B+n86K1XO3lud9xDEj/5JHByhs+fmkxjGR/b0yhzL
+yHdvJtecth3PoKvYcIOtp0TGQmsuh3R1N6rqUdKra0TP9DF+xS8N9sRZvKWmc6CI
+HcdSrd9p7NQ0DNb/uq520w8lyhIsKN+iNbT5IWnUWecrGKSFcj/LIqRj9gYSISmI
+5cNTIBzNKfyzGWbDsk0RUwHUGePxhMqslcsLmhN2seWzaG8au/y7DMI7qEkI+Kxd
+Zrdj53Ko7w42AQ+8BoyfVbtnyKoOksyZAQKjomgqCwHdUlFJgxfmbgf1xlQNoEkl
+Fr8Mn6qHDUlhUS1ZffrDWJ5w8fNBcG7dBvAoMl9qv7i2X9TJXro=
+=Xh1S
+-----END PGP SIGNATURE-----
+
+--nextPart2733018.9YGKfJurXy--
+
+
+
