@@ -2,116 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAB2330FF4F
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 22:32:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D67730FF54
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 22:32:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229681AbhBDVaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 16:30:25 -0500
-Received: from mout.gmx.net ([212.227.17.20]:56825 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229518AbhBDVaY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Feb 2021 16:30:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1612474128;
-        bh=5ccFS/qGcWaPtOtW+cFqga5nG89nyxGT3fl7/64mRug=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=DAvb5dDWDV6mQGGMr6MD5wEmozG46MvpSH2axsMNnQH8xSITriSz2e15Y3PVg/d4p
-         78JWt/CDaPFJdh3kb8gCwTeIHHFvzfISutrM8QB4wEu11R5EVYxYEbX/dnH9OoiSyK
-         6JCEb5rhngPGUYNZbx7gi6bpzZVuo7S1P9JjAH1Y=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [89.247.255.205] ([89.247.255.205]) by web-mail.gmx.net
- (3c-app-gmx-bap39.server.lan [172.19.172.109]) (via HTTP); Thu, 4 Feb 2021
- 22:28:47 +0100
-MIME-Version: 1.0
-Message-ID: <trinity-64b93de7-52ac-4127-a29a-1a6dbbb7aeb6-1612474127915@3c-app-gmx-bap39>
-From:   Norbert Slusarek <nslusarek@gmx.net>
-To:     Stefano Garzarella <sgarzare@redhat.com>, alex.popov@linux.com,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH] net/vmw_vsock: fix NULL pointer deref and improve locking
-Content-Type: text/plain; charset=UTF-8
-Date:   Thu, 4 Feb 2021 22:28:47 +0100
-Importance: normal
-Sensitivity: Normal
-X-Priority: 3
-X-Provags-ID: V03:K1:MjAhw9BAf3W3lL0ssB9gjrKP5cuRcvNySE9VMNYg5PQCDDUf5GjVe5hfBBjhShxbBl3pd
- D23ta1sJ5thUnahVzJpVp04ulsxAstIEyppRipzIKHcrH1JfPYv3tuu+IT51rIQJHDKDdKd/6axq
- D/VnApTyhrWjnLF0A7q6MKXQzrPtM3eaXvXq2CKEexVfSl9Ij46Mh9ZM1cA4jQVZnILZAfpQUWtw
- MrpDbVEmnq+UwWnwrw8wAhrzL3RLwq3Oq6moKn5gmc3DENCyNGYPbIFVaqeAHCa4W6svjr9qbAZQ
- Tc=
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:g1m1Hn1uDD4=:wmm9/vB/gc16myoaqEO5tX
- jMObfPlUcVaOml64IyxmaiRNYfswbpsP7QrS1FvOffwno0N+hvM2ZN5SXuvHKVkS9eZKC6e2Q
- w7zz0c7+0kRFp4TcvJwI3YLFyGA7fuyHNTgyvhFj6FK31QVR5iAQFbuFeHf5GTImQdPf8S3gu
- UA3fOf9dXJMqUH5PYDgg5GPl2u46krDHNk6Kb4K2NV2mf67WJWNB4pOWOIJe7C/ShuHaYTHYC
- kA9s6UDIRQPIs1O6Gp5xAXCSYDBuwAHmmZnWAlh2piL7lcO1QxUHrpTeFM6fYFX5oIBBOxsFz
- qxYhwRSTplwKsXYu6kE7LiioSvG2jBR7dr6COFZw0eUWxolCK2D8xbTi8Hc4l98Drit6F7Qzp
- 3KuExx96lHO5yYskNE6c8EqWfbGfvqm4lRIwrRDWVnCBICvOvHjcTzNtjPgkcwbuCZ/Tl2Lo+
- aInYPtg1Gi4AVNNLyhjr1E+akUNaejQZWD9o+GeVno7TYH0qn3KfDgaSmBZhersDuH3IxogXl
- Vim96aD0/IdopZmWiaUtrbRCektkIC+A7tUi6xg/G+r3b56Jjc3W+MxsaTJcKlMpXVONhBMPy
- GIEkljRhUHVfw=
-Content-Transfer-Encoding: quoted-printable
+        id S230020AbhBDVcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 16:32:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60714 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229996AbhBDVcA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 16:32:00 -0500
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34679C061788
+        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 13:31:20 -0800 (PST)
+Received: by mail-pl1-x649.google.com with SMTP id d1so2981699plh.13
+        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 13:31:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=6cPZ5kPektD2LUaJnGrZeXX6A6lY22JSNCfwvs2DOHU=;
+        b=ktPXMrhUOnXJGoDL7msDPRbTF7kXJpQNzZpVoWFJGnDfgzHxzanzmFTnI05XVl5Si+
+         Lma4jUF6hTdPlUiYipol8xxTmNmrI87cpRLgAgbaHkrET8U+2/dml3wTpewKq+Fubzj3
+         0Y6TrtQU+irSxbghQoO7BHffnv9hZNT7VzT1jTmM8UeJw0jkEsXqy2OedIYfClC6ze2u
+         TZqIU2ukZS+5bOgueQI3V4lyDRNKUBf7mTifgbqeRKxeAmIBCp9lgNVooNj76IgBQo9W
+         BspizCX5q1i8KMkwVaTLoqGVZNWzozGL+xDdNkurJp8lDTVd7dPcNYx9eAGlMz/oejx6
+         C6+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=6cPZ5kPektD2LUaJnGrZeXX6A6lY22JSNCfwvs2DOHU=;
+        b=S5bEulagjizAqDxoOOrhvDQJz/do52vS5OM0rWbrc6Tq1XRStrwr3GBgnCJ7M6ZDkv
+         0+POAD6aKvpMWQqv2iYnvTvM/bJeW0O7kNv/BA2MtfVMvf8u6X03DbEW0Xx2R/OYVdAe
+         rf+4Ki/sxrMaCHhoN5HDAtGMmtYDpBXRKEgIjuKU5Tqp2RQW2brlChJ55zpXXsWKpuLb
+         WZ6FJMRMxlNUGkx53yb8wWl7iYfVQscUUgKNrRBcsDIwidi7abbLjgDFXsek0ZWvPL5A
+         W6xXXoJq/oIovuztkUo8EGJi7wd6PAVpB69a1hd+dmX2o2y+4GZl/EtMamZY5p8Artl8
+         HCsw==
+X-Gm-Message-State: AOAM533JtxRlp9TP1WZPDIaB3KbppqCgdRLVJq0xU437YhZwfjOvqqnU
+        evBMGXfPRcYeOHZtLrF42Hq9o+gI+tQ=
+X-Google-Smtp-Source: ABdhPJy5C83TocK39MJUC0TVPzIHakH1pS80jG4GNH9wFkFSfl8oAuVn28fHlMwDRGD9wJtTnE9q1vqO7Yw=
+Sender: "weiwan via sendgmr" <weiwan@weiwan.svl.corp.google.com>
+X-Received: from weiwan.svl.corp.google.com ([2620:15c:2c4:201:819e:a51d:5f26:827c])
+ (user=weiwan job=sendgmr) by 2002:a17:902:aa08:b029:e0:52c:ab81 with SMTP id
+ be8-20020a170902aa08b02900e0052cab81mr986311plb.83.1612474279681; Thu, 04 Feb
+ 2021 13:31:19 -0800 (PST)
+Date:   Thu,  4 Feb 2021 13:31:14 -0800
+Message-Id: <20210204213117.1736289-1-weiwan@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.30.0.365.g02bc693789-goog
+Subject: [PATCH net-next v10 0/3] implement kthread based napi poll
+From:   Wei Wang <weiwan@google.com>
+To:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Felix Fietkau <nbd@nbd.name>,
+        Alexander Duyck <alexanderduyck@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Norbert Slusarek <nslusarek@gmx.net>
-Date: Thu, 4 Feb 2021 18:49:24 +0100
-Subject: [PATCH] net/vmw_vsock: fix NULL pointer deref and improve locking
+The idea of moving the napi poll process out of softirq context to a
+kernel thread based context is not new.
+Paolo Abeni and Hannes Frederic Sowa have proposed patches to move napi
+poll to kthread back in 2016. And Felix Fietkau has also proposed
+patches of similar ideas to use workqueue to process napi poll just a
+few weeks ago.
 
-In vsock_stream_connect(), a thread will enter schedule_timeout().
-While being scheduled out, another thread can enter vsock_stream_connect()=
- as
-well and set vsk->transport to NULL. In case a signal was sent, the first
-thread can leave schedule_timeout() and vsock_transport_cancel_pkt() will =
-be
-called right after. Inside vsock_transport_cancel_pkt(), a null dereferenc=
-e
-will happen on transport->cancel_pkt.
+The main reason we'd like to push forward with this idea is that the
+scheduler has poor visibility into cpu cycles spent in softirq context,
+and is not able to make optimal scheduling decisions of the user threads.
+For example, we see in one of the application benchmark where network
+load is high, the CPUs handling network softirqs has ~80% cpu util. And
+user threads are still scheduled on those CPUs, despite other more idle
+cpus available in the system. And we see very high tail latencies. In this
+case, we have to explicitly pin away user threads from the CPUs handling
+network softirqs to ensure good performance.
+With napi poll moved to kthread, scheduler is in charge of scheduling both
+the kthreads handling network load, and the user threads, and is able to
+make better decisions. In the previous benchmark, if we do this and we
+pin the kthreads processing napi poll to specific CPUs, scheduler is
+able to schedule user threads away from these CPUs automatically.
 
-The patch also features improved locking inside vsock_connect_timeout().
+And the reason we prefer 1 kthread per napi, instead of 1 workqueue
+entity per host, is that kthread is more configurable than workqueue,
+and we could leverage existing tuning tools for threads, like taskset,
+chrt, etc to tune scheduling class and cpu set, etc. Another reason is
+if we eventually want to provide busy poll feature using kernel threads
+for napi poll, kthread seems to be more suitable than workqueue.
+Furthermore, for large platforms with 2 NICs attached to 2 sockets,
+kthread is more flexible to be pinned to different sets of CPUs.  
 
-Signed-off-by: Norbert Slusarek <nslusarek@gmx.net>
-=2D--
- net/vmw_vsock/af_vsock.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+In this patch series, I revived Paolo and Hannes's patch in 2016 and
+made modifications. Then there are changes proposed by Felix, Jakub,
+Paolo and myself on top of those, with suggestions from Eric Dumazet.
 
-diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index 3b480ed0953a..ea7b9d208724 100644
-=2D-- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -1233,7 +1233,7 @@ static int vsock_transport_cancel_pkt(struct vsock_s=
-ock *vsk)
- {
- 	const struct vsock_transport *transport =3D vsk->transport;
+In terms of performance, I ran tcp_rr tests with 1000 flows with
+various request/response sizes, with RFS/RPS disabled, and compared
+performance between softirq vs kthread vs workqueue (patchset proposed
+by Felix Fietkau).
+Host has 56 hyper threads and 100Gbps nic, 8 rx queues and only 1 numa
+node. All threads are unpinned.
 
--	if (!transport->cancel_pkt)
-+	if (!transport || !transport->cancel_pkt)
- 		return -EOPNOTSUPP;
+        req/resp   QPS   50%tile    90%tile    99%tile    99.9%tile
+softirq   1B/1B   2.75M   337us       376us      1.04ms     3.69ms
+kthread   1B/1B   2.67M   371us       408us      455us      550us
+workq     1B/1B   2.56M   384us       435us      673us      822us
 
- 	return transport->cancel_pkt(vsk);
-@@ -1243,7 +1243,6 @@ static void vsock_connect_timeout(struct work_struct=
- *work)
- {
- 	struct sock *sk;
- 	struct vsock_sock *vsk;
--	int cancel =3D 0;
+softirq 5KB/5KB   1.46M   678us       750us      969us      2.78ms
+kthread 5KB/5KB   1.44M   695us       789us      891us      1.06ms
+workq   5KB/5KB   1.34M   720us       905us     1.06ms      1.57ms
 
- 	vsk =3D container_of(work, struct vsock_sock, connect_work.work);
- 	sk =3D sk_vsock(vsk);
-@@ -1254,11 +1253,9 @@ static void vsock_connect_timeout(struct work_struc=
-t *work)
- 		sk->sk_state =3D TCP_CLOSE;
- 		sk->sk_err =3D ETIMEDOUT;
- 		sk->sk_error_report(sk);
--		cancel =3D 1;
-+		vsock_transport_cancel_pkt(vsk);
- 	}
- 	release_sock(sk);
--	if (cancel)
--		vsock_transport_cancel_pkt(vsk);
+softirq 1MB/1MB   11.0K   79ms       166ms      306ms       630ms
+kthread 1MB/1MB   11.0K   75ms       177ms      303ms       596ms
+workq   1MB/1MB   11.0K   79ms       180ms      303ms       587ms
 
- 	sock_put(sk);
- }
-=2D-
-2.30.0
+When running workqueue implementation, I found the number of threads
+used is usually twice as much as kthread implementation. This probably
+introduces higher scheduling cost, which results in higher tail
+latencies in most cases.
+
+I also ran an application benchmark, which performs fixed qps remote SSD
+read/write operations, with various sizes. Again, both with RFS/RPS
+disabled.
+The result is as follows:
+         op_size  QPS   50%tile 95%tile 99%tile 99.9%tile  
+softirq   4K     572.6K   385us   1.5ms  3.16ms   6.41ms
+kthread   4K     572.6K   390us   803us  2.21ms   6.83ms
+workq     4k     572.6K   384us   763us  3.12ms   6.87ms
+
+softirq   64K    157.9K   736us   1.17ms 3.40ms   13.75ms
+kthread   64K    157.9K   745us   1.23ms 2.76ms    9.87ms 
+workq     64K    157.9K   746us   1.23ms 2.76ms    9.96ms
+
+softirq   1M     10.98K   2.03ms  3.10ms  3.7ms   11.56ms
+kthread   1M     10.98K   2.13ms  3.21ms  4.02ms  13.3ms
+workq     1M     10.98K   2.13ms  3.20ms  3.99ms  14.12ms
+
+In this set of tests, the latency is predominant by the SSD operation.
+Also, the user threads are much busier compared to tcp_rr tests. We have
+to pin the kthreads/workqueue threads to limit to a few CPUs, to not
+disturb user threads, and provide some isolation.
+
+Changes since v9:
+Small change in napi_poll() in patch 1.
+Split napi_kthread_stop() functionality to add separately in
+napi_disable() and netif_napi_del() in patch 2.
+Add description for napi_set_threaded() and return dev->threaded when
+dev->napi_list is empty for threaded sysfs in patch 3.
+
+Changes since v8:
+Added description for threaded param in struct net_device in patch 2.
+
+Changes since v7:
+Break napi_set_threaded() into 2 parts, one to create kthread called
+from netif_napi_add(), the other to set threaded bit in napi_enable(),
+to get rid of inconsistency through all napi in 1 dev.
+Added documentation for /sys/class/net/<dev>/threaded.
+
+Changes since v6:
+Added memory barrier in napi_set_threaded().
+Changed /sys/class/net/<dev>/thread to a ternary value.
+Change dev->threaded to a bit instead of bool.
+
+Changes since v5:
+Removed ASSERT_RTNL() from napi_set_threaded() and removed rtnl_lock()
+operation from napi_enable().
+
+Changes since v4:
+Recorded the threaded setting in dev and restore it in napi_enable().
+
+Changes since v3:
+Merged and rearranged patches in a logical order for easier review. 
+Changed sysfs control to be per device.
+
+Changes since v2:
+Corrected typo in patch 1, and updated the cover letter with more
+detailed and updated test results.
+
+Changes since v1:
+Replaced kthread_create() with kthread_run() in patch 5 as suggested by
+Felix Fietkau.
+
+Changes since RFC:
+Renamed the kthreads to be napi/<dev>-<napi_id> in patch 5 as suggested
+by Hannes Frederic Sowa.
+
+Felix Fietkau (1):
+  net: extract napi poll functionality to __napi_poll()
+
+Wei Wang (2):
+  net: implement threaded-able napi poll loop support
+  net: add sysfs attribute to control napi threaded mode
+
+ Documentation/ABI/testing/sysfs-class-net |  15 ++
+ include/linux/netdevice.h                 |  23 +--
+ net/core/dev.c                            | 212 ++++++++++++++++++++--
+ net/core/net-sysfs.c                      |  45 +++++
+ 4 files changed, 269 insertions(+), 26 deletions(-)
+
+-- 
+2.30.0.365.g02bc693789-goog
+
