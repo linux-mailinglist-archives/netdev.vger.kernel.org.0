@@ -2,88 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B983A30EC4F
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 07:09:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D9C830EC8D
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 07:38:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231546AbhBDGIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 01:08:18 -0500
-Received: from mga04.intel.com ([192.55.52.120]:52991 "EHLO mga04.intel.com"
+        id S232699AbhBDGiC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 01:38:02 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43122 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229752AbhBDGIR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Feb 2021 01:08:17 -0500
-IronPort-SDR: mLdB/EOCyyJpvIRIPv5CRcuLQTE7hAmSGgIhMX+jULFzjYXuJr/eGQPZaKb/DUjcr3SrvQvB2F
- AC+RB4o3msSw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9884"; a="178617424"
-X-IronPort-AV: E=Sophos;i="5.79,400,1602572400"; 
-   d="scan'208";a="178617424"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2021 22:07:37 -0800
-IronPort-SDR: GqenepCZ1VqBBEQ87nyq8OetNlRo6vlCyxXo/qqg4n3Jm1A6yowbrtNYPvD95I4kNJ6Zw4xKcw
- 1T+3iZ+3Lyfw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,400,1602572400"; 
-   d="scan'208";a="583080137"
-Received: from ssid-ilbpg3.png.intel.com ([10.88.227.36])
-  by fmsmga005.fm.intel.com with ESMTP; 03 Feb 2021 22:07:34 -0800
-From:   Song Yoong Siang <yoong.siang.song@intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Voon Wei Feng <weifeng.voon@intel.com>,
-        Wong Vee Khee <vee.khee.wong@intel.com>,
-        Song Yoong Siang <yoong.siang.song@intel.com>,
-        Gomes Vinicius <vinicius.gomes@intel.com>
-Subject: [PATCH net 1/1] net: stmmac: set TxQ mode back to DCB after disabling CBS
-Date:   Thu,  4 Feb 2021 22:03:16 +0800
-Message-Id: <1612447396-20351-1-git-send-email-yoong.siang.song@intel.com>
-X-Mailer: git-send-email 2.7.4
+        id S230311AbhBDGiA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Feb 2021 01:38:00 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A71D364E31;
+        Thu,  4 Feb 2021 06:37:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612420640;
+        bh=rr0vW6pTGISMmHI5KV2Xij6A6QnUmMJXU/yXHNMHaTg=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=a8QTW6B1BdT927mVxoUAfqMknKsQh9IFm/Gk0tIjjaPf2MwC1LGAE2DsgXCAGlPG0
+         uEDFAfZa9Ga1244a3GnNDSDBpPnIqkPukD/EQA9Eh2Dr0kqeo5cYHkofz3+/UcHjrG
+         wwlXplF0ouex5MOFj/4NYQyOpXt+/v3q1C4yEAFlIEod+f8ZqAl76/+5zG+M/A/51m
+         B0Ko1O9EymxKFuIRYuefBu8dENER7axR7MWbKO+UskfGAjdNRGTXTmV1XRE3FaWHC3
+         aQLqGAmCo692dUfdFO6yTKYWj18tXdarido4jn/6symddi04oKm+Qc23Jm9Fn8JryK
+         Zn3DjKnKwjPWg==
+Received: by mail-lj1-f174.google.com with SMTP id e18so2027187lja.12;
+        Wed, 03 Feb 2021 22:37:19 -0800 (PST)
+X-Gm-Message-State: AOAM532GqBiNjg+rAbzs7CFsh7aFs/DKEGjvBIIGdv5uiT+N0XTHEOaN
+        Z5wSihwTqAN3pZZBKWMxOQQLNgKnOByKai8MXMo=
+X-Google-Smtp-Source: ABdhPJwo9zhXhvDT8N8/k7FD3R/AhDgLztW4q8Ex7mixrFf5PJL7/7kSQ7x6AmuS/dy9dnJpOsCRP8qWg/KrQBDHYDw=
+X-Received: by 2002:a2e:918f:: with SMTP id f15mr3800925ljg.357.1612420637815;
+ Wed, 03 Feb 2021 22:37:17 -0800 (PST)
+MIME-Version: 1.0
+References: <20210203074127.8616-1-ciara.loftus@intel.com> <20210203074127.8616-2-ciara.loftus@intel.com>
+In-Reply-To: <20210203074127.8616-2-ciara.loftus@intel.com>
+From:   Song Liu <song@kernel.org>
+Date:   Wed, 3 Feb 2021 22:37:06 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW7Bat9oWw_3_TRgUzc7y61kUtTDYT9-4r2ZaOW7WTZ59g@mail.gmail.com>
+Message-ID: <CAPhsuW7Bat9oWw_3_TRgUzc7y61kUtTDYT9-4r2ZaOW7WTZ59g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 1/6] xsk: add tracepoints for packet drops
+To:     Ciara Loftus <ciara.loftus@intel.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>, bjorn@kernel.org,
+        weqaar.a.janjua@intel.com, Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+On Wed, Feb 3, 2021 at 12:13 AM Ciara Loftus <ciara.loftus@intel.com> wrote:
+>
+> This commit introduces tracing infrastructure for AF_XDP sockets
+> (xsks) and a new trace event called 'xsk_packet_drop'. This trace
+> event is triggered when a packet cannot be processed by the socket
+> due to one of the following issues:
+> (1) packet exceeds the maximum permitted size.
+> (2) invalid fill descriptor address.
+> (3) invalid tx descriptor field.
+>
+> The trace provides information about the error to the user. For
+> example the size vs permitted size is provided for (1). For (2)
+> and (3) the relevant descriptor fields are printed. This information
+> should help a user troubleshoot packet drops by providing this extra
+> level of detail which is not available through use of simple counters.
+>
+> The tracepoint can be enabled/disabled by toggling
+> /sys/kernel/debug/tracing/events/xsk/xsk_packet_drop/enable
+>
+> Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
+> ---
+>  MAINTAINERS                       |  1 +
+>  include/linux/bpf_trace.h         |  1 +
+>  include/trace/events/xsk.h        | 73 +++++++++++++++++++++++++++++++
+>  include/uapi/linux/if_xdp.h       |  6 +++
+>  kernel/bpf/core.c                 |  1 +
+>  net/xdp/xsk.c                     |  7 ++-
+>  net/xdp/xsk_buff_pool.c           |  3 ++
+>  net/xdp/xsk_queue.h               |  4 ++
+>  tools/include/uapi/linux/if_xdp.h |  6 +++
+>  9 files changed, 101 insertions(+), 1 deletion(-)
+>  create mode 100644 include/trace/events/xsk.h
+>
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 1df56a32d2df..efe6662d4198 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -19440,6 +19440,7 @@ S:      Maintained
+>  F:     Documentation/networking/af_xdp.rst
+>  F:     include/net/xdp_sock*
+>  F:     include/net/xsk_buff_pool.h
+> +F:     include/trace/events/xsk.h
+>  F:     include/uapi/linux/if_xdp.h
+>  F:     include/uapi/linux/xdp_diag.h
+>  F:     include/net/netns/xdp.h
+> diff --git a/include/linux/bpf_trace.h b/include/linux/bpf_trace.h
+> index ddf896abcfb6..477d29b6c2c1 100644
+> --- a/include/linux/bpf_trace.h
+> +++ b/include/linux/bpf_trace.h
+> @@ -3,5 +3,6 @@
+>  #define __LINUX_BPF_TRACE_H__
+>
+>  #include <trace/events/xdp.h>
+> +#include <trace/events/xsk.h>
+>
+>  #endif /* __LINUX_BPF_TRACE_H__ */
+> diff --git a/include/trace/events/xsk.h b/include/trace/events/xsk.h
+> new file mode 100644
+> index 000000000000..e2984fad372c
+> --- /dev/null
+> +++ b/include/trace/events/xsk.h
+> @@ -0,0 +1,73 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/* Copyright(c) 2021 Intel Corporation. */
+> +
+> +#undef TRACE_SYSTEM
+> +#define TRACE_SYSTEM xsk
+> +
+> +#if !defined(_TRACE_XSK_H) || defined(TRACE_HEADER_MULTI_READ)
+> +#define _TRACE_XSK_H
+> +
+> +#include <linux/if_xdp.h>
+> +#include <linux/tracepoint.h>
+> +
+> +#define print_reason(reason) \
+> +       __print_symbolic(reason, \
+> +                       { XSK_TRACE_DROP_PKT_TOO_BIG, "packet too big" }, \
+> +                       { XSK_TRACE_DROP_INVALID_FILLADDR, "invalid fill addr" }, \
+> +                       { XSK_TRACE_DROP_INVALID_TXD, "invalid tx desc" })
+> +
+> +#define print_val1(reason) \
+> +       __print_symbolic(reason, \
+> +                       { XSK_TRACE_DROP_PKT_TOO_BIG, "len" }, \
+> +                       { XSK_TRACE_DROP_INVALID_FILLADDR, "addr" }, \
+> +                       { XSK_TRACE_DROP_INVALID_TXD, "addr" })
+> +
+> +#define print_val2(reason) \
+> +       __print_symbolic(reason, \
+> +                       { XSK_TRACE_DROP_PKT_TOO_BIG, "max" }, \
+> +                       { XSK_TRACE_DROP_INVALID_FILLADDR, "not_used" }, \
+> +                       { XSK_TRACE_DROP_INVALID_TXD, "len" })
+> +
+> +#define print_val3(reason) \
+> +       __print_symbolic(reason, \
+> +                       { XSK_TRACE_DROP_PKT_TOO_BIG, "not_used" }, \
+> +                       { XSK_TRACE_DROP_INVALID_FILLADDR, "not_used" }, \
+> +                       { XSK_TRACE_DROP_INVALID_TXD, "options" })
+> +
+> +
+> +
 
-When disable CBS, mode_to_use parameter is not updated even the operation
-mode of Tx Queue is changed to Data Centre Bridging (DCB). Therefore,
-when tc_setup_cbs() function is called to re-enable CBS, the operation
-mode of Tx Queue remains at DCB, which causing CBS fails to work.
+nit: 3 empty lines.
 
-This patch updates the value of mode_to_use parameter to MTL_QUEUE_DCB
-after operation mode of Tx Queue is changed to DCB in stmmac_dma_qmode()
-callback function.
+> +TRACE_EVENT(xsk_packet_drop,
+> +
+> +       TP_PROTO(char *name, u16 queue_id, u32 reason, u64 val1, u64 val2, u64 val3),
+> +
+> +       TP_ARGS(name, queue_id, reason, val1, val2, val3),
+> +
+> +       TP_STRUCT__entry(
+> +               __field(char *, name)
+> +               __field(u16, queue_id)
+> +               __field(u32, reason)
+> +               __field(u64, val1)
+> +               __field(u32, val2)
+> +               __field(u32, val3)
+> +       ),
+> +
+> +       TP_fast_assign(
+> +               __entry->name = name;
+> +               __entry->queue_id = queue_id;
+> +               __entry->reason = reason;
+> +               __entry->val1 = val1;
+> +               __entry->val2 = val2;
+> +               __entry->val3 = val3;
+> +       ),
+> +
+> +       TP_printk("netdev: %s qid %u reason: %s: %s %llu %s %u %s %u",
+> +                 __entry->name, __entry->queue_id, print_reason(__entry->reason),
+> +                 print_val1(__entry->reason), __entry->val1,
+> +                 print_val2(__entry->reason), __entry->val2,
+> +                 print_val3(__entry->reason), __entry->val3
+> +       )
+> +);
+> +
+> +#endif /* _TRACE_XSK_H */
+> +
+> +#include <trace/define_trace.h>
+> diff --git a/include/uapi/linux/if_xdp.h b/include/uapi/linux/if_xdp.h
+> index a78a8096f4ce..d7eb031d2465 100644
+> --- a/include/uapi/linux/if_xdp.h
+> +++ b/include/uapi/linux/if_xdp.h
+> @@ -108,4 +108,10 @@ struct xdp_desc {
+>
+>  /* UMEM descriptor is __u64 */
+>
+> +enum xdp_trace_reasons {
 
-Fixes: 1f705bc61aee ("net: stmmac: Add support for CBS QDISC")
-Suggested-by: Gomes, Vinicius <vinicius.gomes@intel.com>
-Signed-off-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
-Signed-off-by: Song, Yoong Siang <yoong.siang.song@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+xdp_trace_reasons above, vs. XSK_TRACE_ below. Is this intentional?
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-index 8ed3b2c..5698554 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-@@ -324,7 +324,12 @@ static int tc_setup_cbs(struct stmmac_priv *priv,
- 
- 		priv->plat->tx_queues_cfg[queue].mode_to_use = MTL_QUEUE_AVB;
- 	} else if (!qopt->enable) {
--		return stmmac_dma_qmode(priv, priv->ioaddr, queue, MTL_QUEUE_DCB);
-+		ret = stmmac_dma_qmode(priv, priv->ioaddr, queue,
-+				       MTL_QUEUE_DCB);
-+		if (ret)
-+			return ret;
-+
-+		priv->plat->tx_queues_cfg[queue].mode_to_use = MTL_QUEUE_DCB;
- 	}
- 
- 	/* Port Transmit Rate and Speed Divider */
--- 
-2.7.4
+> +       XSK_TRACE_DROP_PKT_TOO_BIG,
+> +       XSK_TRACE_DROP_INVALID_FILLADDR,
+> +       XSK_TRACE_DROP_INVALID_TXD,
+> +};
+> +
 
+[...]
