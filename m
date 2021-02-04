@@ -2,54 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D67730FF54
+	by mail.lfdr.de (Postfix) with ESMTP id EEE3430FF56
 	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 22:32:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230020AbhBDVcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 16:32:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60714 "EHLO
+        id S230050AbhBDVcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 16:32:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229996AbhBDVcA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 16:32:00 -0500
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34679C061788
-        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 13:31:20 -0800 (PST)
-Received: by mail-pl1-x649.google.com with SMTP id d1so2981699plh.13
-        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 13:31:20 -0800 (PST)
+        with ESMTP id S230001AbhBDVcC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 16:32:02 -0500
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B038C06178A
+        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 13:31:22 -0800 (PST)
+Received: by mail-pj1-x1049.google.com with SMTP id t6so2962471pje.9
+        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 13:31:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=sender:date:message-id:mime-version:subject:from:to:cc;
-        bh=6cPZ5kPektD2LUaJnGrZeXX6A6lY22JSNCfwvs2DOHU=;
-        b=ktPXMrhUOnXJGoDL7msDPRbTF7kXJpQNzZpVoWFJGnDfgzHxzanzmFTnI05XVl5Si+
-         Lma4jUF6hTdPlUiYipol8xxTmNmrI87cpRLgAgbaHkrET8U+2/dml3wTpewKq+Fubzj3
-         0Y6TrtQU+irSxbghQoO7BHffnv9hZNT7VzT1jTmM8UeJw0jkEsXqy2OedIYfClC6ze2u
-         TZqIU2ukZS+5bOgueQI3V4lyDRNKUBf7mTifgbqeRKxeAmIBCp9lgNVooNj76IgBQo9W
-         BspizCX5q1i8KMkwVaTLoqGVZNWzozGL+xDdNkurJp8lDTVd7dPcNYx9eAGlMz/oejx6
-         C6+g==
+        h=sender:date:in-reply-to:message-id:mime-version:references:subject
+         :from:to:cc;
+        bh=tjTS3kEeQ+IonJ+K5+N9UT8qiB72Ta632M9PwJCf/+k=;
+        b=mFlWyWYSeFesdsXP5dNeu+BWgVM/+5hC4lSyDVpVlpbjkeNYRs8ZgSb0B2HqAttlpC
+         hmBVjfSUuhSpMpFxU3hkKkJtzqJ/zoaL/rLqzx5AvflB9Z3myR6DysrtIIMNBecX9TzF
+         nJnG7N5z1Go3bz6kSNtiFre4fk4sN6GePde1ZnmG1EoET1Tq+Zd6H+FYiF1v1/PKcUX4
+         kEPdevRBPesgecI4KlQe6u5KykeqB6wRmZtcTBBy5HgzV8TKkRoXk25qRFjIyRu+4nN+
+         R1SN7MAqlyc+eMpaTVASli54hnYH/ZKUNey+jsrnb1HiIIdIwmGJfCwxEFRx3OolFh18
+         io2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
-         :to:cc;
-        bh=6cPZ5kPektD2LUaJnGrZeXX6A6lY22JSNCfwvs2DOHU=;
-        b=S5bEulagjizAqDxoOOrhvDQJz/do52vS5OM0rWbrc6Tq1XRStrwr3GBgnCJ7M6ZDkv
-         0+POAD6aKvpMWQqv2iYnvTvM/bJeW0O7kNv/BA2MtfVMvf8u6X03DbEW0Xx2R/OYVdAe
-         rf+4Ki/sxrMaCHhoN5HDAtGMmtYDpBXRKEgIjuKU5Tqp2RQW2brlChJ55zpXXsWKpuLb
-         WZ6FJMRMxlNUGkx53yb8wWl7iYfVQscUUgKNrRBcsDIwidi7abbLjgDFXsek0ZWvPL5A
-         W6xXXoJq/oIovuztkUo8EGJi7wd6PAVpB69a1hd+dmX2o2y+4GZl/EtMamZY5p8Artl8
-         HCsw==
-X-Gm-Message-State: AOAM533JtxRlp9TP1WZPDIaB3KbppqCgdRLVJq0xU437YhZwfjOvqqnU
-        evBMGXfPRcYeOHZtLrF42Hq9o+gI+tQ=
-X-Google-Smtp-Source: ABdhPJy5C83TocK39MJUC0TVPzIHakH1pS80jG4GNH9wFkFSfl8oAuVn28fHlMwDRGD9wJtTnE9q1vqO7Yw=
+        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=tjTS3kEeQ+IonJ+K5+N9UT8qiB72Ta632M9PwJCf/+k=;
+        b=aloLUpCLNrBd8ttTiGNKeYid+MRXLclyhEAeJekTTsxhjrsK2AGNcqY8upEmPXNdDZ
+         OjHNdsJQKsgHuQXN/Kne16IGxIf6kNPhWhHzgAOnbpfdOA0jCP7nOLkFCKbBF10V74j3
+         O0b01mKn6vChD8AjAXjSYR5tMuebmUx+bZwqNFzbGQYSV95jkz7A8/ntZXfcb+nfkXZQ
+         LrPEL1nb1OHjMDetq9N4D8ultAh+vYNQEeRqglWRRwBxRRYCmgfG+PK4k8Q74aiAelN9
+         4pcfquWGz2On7XZkuQ6clewUSM/zCU95f4b0qicoDJR26h6pTE8Txz/vF55VlG796RPK
+         TRRg==
+X-Gm-Message-State: AOAM533Fagm0dsvIZan23D2khC17AnPhWkE+brUYU6ZIuxYrOv4qspTg
+        amr+MdW7MUEVylMZ12j/QUls5jJg8Yo=
+X-Google-Smtp-Source: ABdhPJy8BB5w9J49u7VaG4+MuLX6DJPgRVrgemrPqwL6ZEhS2VPwTaT7G3lcuLGg82KhGTG5s2AXMiO46m4=
 Sender: "weiwan via sendgmr" <weiwan@weiwan.svl.corp.google.com>
 X-Received: from weiwan.svl.corp.google.com ([2620:15c:2c4:201:819e:a51d:5f26:827c])
- (user=weiwan job=sendgmr) by 2002:a17:902:aa08:b029:e0:52c:ab81 with SMTP id
- be8-20020a170902aa08b02900e0052cab81mr986311plb.83.1612474279681; Thu, 04 Feb
- 2021 13:31:19 -0800 (PST)
-Date:   Thu,  4 Feb 2021 13:31:14 -0800
-Message-Id: <20210204213117.1736289-1-weiwan@google.com>
+ (user=weiwan job=sendgmr) by 2002:a17:90a:8d83:: with SMTP id
+ d3mr129584pjo.0.1612474281645; Thu, 04 Feb 2021 13:31:21 -0800 (PST)
+Date:   Thu,  4 Feb 2021 13:31:15 -0800
+In-Reply-To: <20210204213117.1736289-1-weiwan@google.com>
+Message-Id: <20210204213117.1736289-2-weiwan@google.com>
 Mime-Version: 1.0
+References: <20210204213117.1736289-1-weiwan@google.com>
 X-Mailer: git-send-email 2.30.0.365.g02bc693789-goog
-Subject: [PATCH net-next v10 0/3] implement kthread based napi poll
+Subject: [PATCH net-next v10 1/3] net: extract napi poll functionality to __napi_poll()
 From:   Wei Wang <weiwan@google.com>
 To:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>
@@ -63,145 +65,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The idea of moving the napi poll process out of softirq context to a
-kernel thread based context is not new.
-Paolo Abeni and Hannes Frederic Sowa have proposed patches to move napi
-poll to kthread back in 2016. And Felix Fietkau has also proposed
-patches of similar ideas to use workqueue to process napi poll just a
-few weeks ago.
+From: Felix Fietkau <nbd@nbd.name> 
 
-The main reason we'd like to push forward with this idea is that the
-scheduler has poor visibility into cpu cycles spent in softirq context,
-and is not able to make optimal scheduling decisions of the user threads.
-For example, we see in one of the application benchmark where network
-load is high, the CPUs handling network softirqs has ~80% cpu util. And
-user threads are still scheduled on those CPUs, despite other more idle
-cpus available in the system. And we see very high tail latencies. In this
-case, we have to explicitly pin away user threads from the CPUs handling
-network softirqs to ensure good performance.
-With napi poll moved to kthread, scheduler is in charge of scheduling both
-the kthreads handling network load, and the user threads, and is able to
-make better decisions. In the previous benchmark, if we do this and we
-pin the kthreads processing napi poll to specific CPUs, scheduler is
-able to schedule user threads away from these CPUs automatically.
+This commit introduces a new function __napi_poll() which does the main
+logic of the existing napi_poll() function, and will be called by other
+functions in later commits.
+This idea and implementation is done by Felix Fietkau <nbd@nbd.name> and
+is proposed as part of the patch to move napi work to work_queue
+context.
+This commit by itself is a code restructure.
 
-And the reason we prefer 1 kthread per napi, instead of 1 workqueue
-entity per host, is that kthread is more configurable than workqueue,
-and we could leverage existing tuning tools for threads, like taskset,
-chrt, etc to tune scheduling class and cpu set, etc. Another reason is
-if we eventually want to provide busy poll feature using kernel threads
-for napi poll, kthread seems to be more suitable than workqueue.
-Furthermore, for large platforms with 2 NICs attached to 2 sockets,
-kthread is more flexible to be pinned to different sets of CPUs.  
+Signed-off-by: Felix Fietkau <nbd@nbd.name> 
+Signed-off-by: Wei Wang <weiwan@google.com>
+Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+---
+ net/core/dev.c | 36 ++++++++++++++++++++++++------------
+ 1 file changed, 24 insertions(+), 12 deletions(-)
 
-In this patch series, I revived Paolo and Hannes's patch in 2016 and
-made modifications. Then there are changes proposed by Felix, Jakub,
-Paolo and myself on top of those, with suggestions from Eric Dumazet.
-
-In terms of performance, I ran tcp_rr tests with 1000 flows with
-various request/response sizes, with RFS/RPS disabled, and compared
-performance between softirq vs kthread vs workqueue (patchset proposed
-by Felix Fietkau).
-Host has 56 hyper threads and 100Gbps nic, 8 rx queues and only 1 numa
-node. All threads are unpinned.
-
-        req/resp   QPS   50%tile    90%tile    99%tile    99.9%tile
-softirq   1B/1B   2.75M   337us       376us      1.04ms     3.69ms
-kthread   1B/1B   2.67M   371us       408us      455us      550us
-workq     1B/1B   2.56M   384us       435us      673us      822us
-
-softirq 5KB/5KB   1.46M   678us       750us      969us      2.78ms
-kthread 5KB/5KB   1.44M   695us       789us      891us      1.06ms
-workq   5KB/5KB   1.34M   720us       905us     1.06ms      1.57ms
-
-softirq 1MB/1MB   11.0K   79ms       166ms      306ms       630ms
-kthread 1MB/1MB   11.0K   75ms       177ms      303ms       596ms
-workq   1MB/1MB   11.0K   79ms       180ms      303ms       587ms
-
-When running workqueue implementation, I found the number of threads
-used is usually twice as much as kthread implementation. This probably
-introduces higher scheduling cost, which results in higher tail
-latencies in most cases.
-
-I also ran an application benchmark, which performs fixed qps remote SSD
-read/write operations, with various sizes. Again, both with RFS/RPS
-disabled.
-The result is as follows:
-         op_size  QPS   50%tile 95%tile 99%tile 99.9%tile  
-softirq   4K     572.6K   385us   1.5ms  3.16ms   6.41ms
-kthread   4K     572.6K   390us   803us  2.21ms   6.83ms
-workq     4k     572.6K   384us   763us  3.12ms   6.87ms
-
-softirq   64K    157.9K   736us   1.17ms 3.40ms   13.75ms
-kthread   64K    157.9K   745us   1.23ms 2.76ms    9.87ms 
-workq     64K    157.9K   746us   1.23ms 2.76ms    9.96ms
-
-softirq   1M     10.98K   2.03ms  3.10ms  3.7ms   11.56ms
-kthread   1M     10.98K   2.13ms  3.21ms  4.02ms  13.3ms
-workq     1M     10.98K   2.13ms  3.20ms  3.99ms  14.12ms
-
-In this set of tests, the latency is predominant by the SSD operation.
-Also, the user threads are much busier compared to tcp_rr tests. We have
-to pin the kthreads/workqueue threads to limit to a few CPUs, to not
-disturb user threads, and provide some isolation.
-
-Changes since v9:
-Small change in napi_poll() in patch 1.
-Split napi_kthread_stop() functionality to add separately in
-napi_disable() and netif_napi_del() in patch 2.
-Add description for napi_set_threaded() and return dev->threaded when
-dev->napi_list is empty for threaded sysfs in patch 3.
-
-Changes since v8:
-Added description for threaded param in struct net_device in patch 2.
-
-Changes since v7:
-Break napi_set_threaded() into 2 parts, one to create kthread called
-from netif_napi_add(), the other to set threaded bit in napi_enable(),
-to get rid of inconsistency through all napi in 1 dev.
-Added documentation for /sys/class/net/<dev>/threaded.
-
-Changes since v6:
-Added memory barrier in napi_set_threaded().
-Changed /sys/class/net/<dev>/thread to a ternary value.
-Change dev->threaded to a bit instead of bool.
-
-Changes since v5:
-Removed ASSERT_RTNL() from napi_set_threaded() and removed rtnl_lock()
-operation from napi_enable().
-
-Changes since v4:
-Recorded the threaded setting in dev and restore it in napi_enable().
-
-Changes since v3:
-Merged and rearranged patches in a logical order for easier review. 
-Changed sysfs control to be per device.
-
-Changes since v2:
-Corrected typo in patch 1, and updated the cover letter with more
-detailed and updated test results.
-
-Changes since v1:
-Replaced kthread_create() with kthread_run() in patch 5 as suggested by
-Felix Fietkau.
-
-Changes since RFC:
-Renamed the kthreads to be napi/<dev>-<napi_id> in patch 5 as suggested
-by Hannes Frederic Sowa.
-
-Felix Fietkau (1):
-  net: extract napi poll functionality to __napi_poll()
-
-Wei Wang (2):
-  net: implement threaded-able napi poll loop support
-  net: add sysfs attribute to control napi threaded mode
-
- Documentation/ABI/testing/sysfs-class-net |  15 ++
- include/linux/netdevice.h                 |  23 +--
- net/core/dev.c                            | 212 ++++++++++++++++++++--
- net/core/net-sysfs.c                      |  45 +++++
- 4 files changed, 269 insertions(+), 26 deletions(-)
-
+diff --git a/net/core/dev.c b/net/core/dev.c
+index aae116d059da..0fd40b9847c3 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -6781,15 +6781,10 @@ void __netif_napi_del(struct napi_struct *napi)
+ }
+ EXPORT_SYMBOL(__netif_napi_del);
+ 
+-static int napi_poll(struct napi_struct *n, struct list_head *repoll)
++static int __napi_poll(struct napi_struct *n, bool *repoll)
+ {
+-	void *have;
+ 	int work, weight;
+ 
+-	list_del_init(&n->poll_list);
+-
+-	have = netpoll_poll_lock(n);
+-
+ 	weight = n->weight;
+ 
+ 	/* This NAPI_STATE_SCHED test is for avoiding a race
+@@ -6809,7 +6804,7 @@ static int napi_poll(struct napi_struct *n, struct list_head *repoll)
+ 			    n->poll, work, weight);
+ 
+ 	if (likely(work < weight))
+-		goto out_unlock;
++		return work;
+ 
+ 	/* Drivers must not modify the NAPI state if they
+ 	 * consume the entire weight.  In such cases this code
+@@ -6818,7 +6813,7 @@ static int napi_poll(struct napi_struct *n, struct list_head *repoll)
+ 	 */
+ 	if (unlikely(napi_disable_pending(n))) {
+ 		napi_complete(n);
+-		goto out_unlock;
++		return work;
+ 	}
+ 
+ 	/* The NAPI context has more processing work, but busy-polling
+@@ -6831,7 +6826,7 @@ static int napi_poll(struct napi_struct *n, struct list_head *repoll)
+ 			 */
+ 			napi_schedule(n);
+ 		}
+-		goto out_unlock;
++		return work;
+ 	}
+ 
+ 	if (n->gro_bitmask) {
+@@ -6849,12 +6844,29 @@ static int napi_poll(struct napi_struct *n, struct list_head *repoll)
+ 	if (unlikely(!list_empty(&n->poll_list))) {
+ 		pr_warn_once("%s: Budget exhausted after napi rescheduled\n",
+ 			     n->dev ? n->dev->name : "backlog");
+-		goto out_unlock;
++		return work;
+ 	}
+ 
+-	list_add_tail(&n->poll_list, repoll);
++	*repoll = true;
++
++	return work;
++}
++
++static int napi_poll(struct napi_struct *n, struct list_head *repoll)
++{
++	bool do_repoll = false;
++	void *have;
++	int work;
++
++	list_del_init(&n->poll_list);
++
++	have = netpoll_poll_lock(n);
++
++	work = __napi_poll(n, &do_repoll);
++
++	if (do_repoll)
++		list_add_tail(&n->poll_list, repoll);
+ 
+-out_unlock:
+ 	netpoll_poll_unlock(have);
+ 
+ 	return work;
 -- 
 2.30.0.365.g02bc693789-goog
 
