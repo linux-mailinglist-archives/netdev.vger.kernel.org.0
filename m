@@ -2,97 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60E7230F576
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 15:57:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E44E30F56E
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 15:54:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236954AbhBDOye (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 09:54:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58928 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236877AbhBDOwa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 09:52:30 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E42C061573
-        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 06:51:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=kC/7q5KJ4gPnnxs6D6VMDzQjvJoPTIlGyfYjLHi3Keg=; b=Kzs49MgMCIfs2t1mFkIeIhIw0
-        4MITam8ihvHpOSNWIrVe5x7DO8mQiJsKgIuDuddb1klj/E6n6yIgif8NmLb+r2OEPlZx04a01mK1m
-        OCTk6S8LTv8eejy9zQlTAYaVy+q5vu2xGOtygFcS/io2gVy7/DQJFb4eviTrqyGGxLpkzW1+5txJz
-        U8nTP+9HYWXyFb05ZSHIbp31vUvY7hjLy6JsXvDnrjSXe6IuCosMmqcve+KaXIV5F72mZzn3NsE86
-        xQBzj6v4vLPp0ckD0mZO4dy8JjJ/sYr0CfTXSz5RrCZCMXRNriq9c2YJjvFmFp14ZNK2pn61O2d7r
-        4Gp1v/48g==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:39128)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1l7fyh-0006fQ-6l; Thu, 04 Feb 2021 14:51:27 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1l7fye-0005Fq-ET; Thu, 04 Feb 2021 14:51:24 +0000
-Date:   Thu, 4 Feb 2021 14:51:24 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 3/3] net: dpaa2-mac: add backplane link mode
- support
-Message-ID: <20210204145124.GZ1463@shell.armlinux.org.uk>
-References: <20210119153545.GK1551@shell.armlinux.org.uk>
- <E1l1t3B-0005Vn-2N@rmk-PC.armlinux.org.uk>
- <20210120221900.i6esmk6uadgqpdtu@skbuf>
+        id S236925AbhBDOx0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 09:53:26 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:42691 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S236906AbhBDOwo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 09:52:44 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from maximmi@mellanox.com)
+        with SMTP; 4 Feb 2021 16:51:37 +0200
+Received: from dev-l-vrt-208.mtl.labs.mlnx (dev-l-vrt-208.mtl.labs.mlnx [10.234.208.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 114EpbLG018268;
+        Thu, 4 Feb 2021 16:51:37 +0200
+From:   Maxim Mikityanskiy <maximmi@mellanox.com>
+To:     David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Tariq Toukan <tariqt@nvidia.com>,
+        Yossi Kuperman <yossiku@nvidia.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>, netdev@vger.kernel.org
+Subject: [PATCH iproute2-next v3] tc/htb: Hierarchical QoS hardware offload
+Date:   Thu,  4 Feb 2021 16:51:37 +0200
+Message-Id: <20210204145137.165298-1-maximmi@mellanox.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210120221900.i6esmk6uadgqpdtu@skbuf>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 20, 2021 at 10:19:01PM +0000, Ioana Ciornei wrote:
-> On Tue, Jan 19, 2021 at 03:36:09PM +0000, Russell King wrote:
-> > Add support for backplane link mode, which is, according to discussions
-> > with NXP earlier in the year, is a mode where the OS (Linux) is able to
-> > manage the PCS and Serdes itself.
-> 
-> Indeed, DPMACs in TYPE_BACKPLANE can have both their PCS and SerDes managed
-> by Linux (since the firmware is not touching these).
-> That being said, DPMACs in TYPE_PHY (the type that is already supported
-> in dpaa2-mac) can also have their PCS managed by Linux (no interraction
-> from the firmware's part with the PCS, just the SerDes).
-> 
-> All in all, this patch is not needed for this particular usecase, where
-> the switch between 1000Base-X and SGMII is done by just a minor
-> reconfiguration in the PCS, without the need for SerDes changes.
-> 
-> Also, with just the changes from this patch, a interface connected to a
-> DPMAC in TYPE_BACKPLANE is not even creating a phylink instance. It's
-> mainly because of this check from dpaa2-eth:
-> 
-> 	if (dpaa2_eth_is_type_phy(priv)) {
-> 		err = dpaa2_mac_connect(mac);
-> 
-> 
-> I would suggest just dropping this patch.
+This commit adds support for configuring HTB in offload mode. HTB
+offload eliminates the single qdisc lock in the datapath and offloads
+the algorithm to the NIC. The new 'offload' parameter is added to
+enable this mode:
 
-Hi Ioana,
+    # tc qdisc replace dev eth0 root handle 1: htb offload
 
-So what is happening with this series given our discussions off-list?
+Classes are created as usual, but filters should be moved to clsact for
+lock-free classification (filters attached to HTB itself are not
+supported in the offload mode):
 
-Do I resend it as-is?
+    # tc filter add dev eth0 egress protocol ip flower dst_port 80
+    action skbedit priority 1:10
 
-Thanks.
+tc qdisc show and tc class show will indicate whether the offload is
+enabled. Example output:
 
+$ tc qdisc show dev eth1
+qdisc htb 1: root offloaded r2q 10 default 0 direct_packets_stat 0 direct_qlen 1000 offload
+qdisc pfifo 0: parent 1: limit 1000p
+qdisc pfifo 0: parent 1: limit 1000p
+qdisc pfifo 0: parent 1: limit 1000p
+qdisc pfifo 0: parent 1: limit 1000p
+qdisc pfifo 0: parent 1: limit 1000p
+qdisc pfifo 0: parent 1: limit 1000p
+qdisc pfifo 0: parent 1: limit 1000p
+qdisc pfifo 0: parent 1: limit 1000p
+$ tc class show dev eth1
+class htb 1:101 parent 1:1 prio 0 rate 4Gbit ceil 4Gbit burst 1000b cburst 1000b  offload
+class htb 1:1 root rate 100Gbit ceil 100Gbit burst 0b cburst 0b  offload
+class htb 1:103 parent 1:1 prio 0 rate 4Gbit ceil 4Gbit burst 1000b cburst 1000b  offload
+class htb 1:102 parent 1:1 prio 0 rate 4Gbit ceil 4Gbit burst 1000b cburst 1000b  offload
+class htb 1:105 parent 1:1 prio 0 rate 4Gbit ceil 4Gbit burst 1000b cburst 1000b  offload
+class htb 1:104 parent 1:1 prio 0 rate 4Gbit ceil 4Gbit burst 1000b cburst 1000b  offload
+class htb 1:107 parent 1:1 prio 0 rate 4Gbit ceil 4Gbit burst 1000b cburst 1000b  offload
+class htb 1:106 parent 1:1 prio 0 rate 4Gbit ceil 4Gbit burst 1000b cburst 1000b  offload
+class htb 1:108 parent 1:1 prio 0 rate 4Gbit ceil 4Gbit burst 1000b cburst 1000b  offload
+$ tc -j qdisc show dev eth1
+[{"kind":"htb","handle":"1:","root":true,"offloaded":true,"options":{"r2q":10,"default":"0","direct_packets_stat":0,"direct_qlen":1000,"offload":null}},{"kind":"pfifo","handle":"0:","parent":"1:","options":{"limit":1000}},{"kind":"pfifo","handle":"0:","parent":"1:","options":{"limit":1000}},{"kind":"pfifo","handle":"0:","parent":"1:","options":{"limit":1000}},{"kind":"pfifo","handle":"0:","parent":"1:","options":{"limit":1000}},{"kind":"pfifo","handle":"0:","parent":"1:","options":{"limit":1000}},{"kind":"pfifo","handle":"0:","parent":"1:","options":{"limit":1000}},{"kind":"pfifo","handle":"0:","parent":"1:","options":{"limit":1000}},{"kind":"pfifo","handle":"0:","parent":"1:","options":{"limit":1000}}]
+
+Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+---
+ man/man8/tc-htb.8 |  5 ++++-
+ tc/q_htb.c        | 10 +++++++++-
+ 2 files changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/man/man8/tc-htb.8 b/man/man8/tc-htb.8
+index a4162342..031b73ac 100644
+--- a/man/man8/tc-htb.8
++++ b/man/man8/tc-htb.8
+@@ -12,7 +12,7 @@ major:
+ minor-id
+ .B ] [ r2q
+ divisor
+-.B ]
++.B ] [ offload ]
+ 
+ .B tc class ... dev
+ dev
+@@ -104,6 +104,9 @@ Divisor used to calculate
+ values for classes.  Classes divide
+ .B rate
+ by this number.  Default value is 10.
++.TP
++offload
++Offload the HTB algorithm to hardware (requires driver and device support).
+ 
+ .SH CLASSES
+ Classes have a host of parameters to configure their operation.
+diff --git a/tc/q_htb.c b/tc/q_htb.c
+index c609e974..42566355 100644
+--- a/tc/q_htb.c
++++ b/tc/q_htb.c
+@@ -30,11 +30,12 @@
+ static void explain(void)
+ {
+ 	fprintf(stderr, "Usage: ... qdisc add ... htb [default N] [r2q N]\n"
+-		"                      [direct_qlen P]\n"
++		"                      [direct_qlen P] [offload]\n"
+ 		" default  minor id of class to which unclassified packets are sent {0}\n"
+ 		" r2q      DRR quantums are computed as rate in Bps/r2q {10}\n"
+ 		" debug    string of 16 numbers each 0-3 {0}\n\n"
+ 		" direct_qlen  Limit of the direct queue {in packets}\n"
++		" offload  enable hardware offload\n"
+ 		"... class add ... htb rate R1 [burst B1] [mpu B] [overhead O]\n"
+ 		"                      [prio P] [slot S] [pslot PS]\n"
+ 		"                      [ceil R2] [cburst B2] [mtu MTU] [quantum Q]\n"
+@@ -68,6 +69,7 @@ static int htb_parse_opt(struct qdisc_util *qu, int argc,
+ 	};
+ 	struct rtattr *tail;
+ 	unsigned int i; char *p;
++	bool offload = false;
+ 
+ 	while (argc > 0) {
+ 		if (matches(*argv, "r2q") == 0) {
+@@ -91,6 +93,8 @@ static int htb_parse_opt(struct qdisc_util *qu, int argc,
+ 			if (get_u32(&direct_qlen, *argv, 10)) {
+ 				explain1("direct_qlen"); return -1;
+ 			}
++		} else if (matches(*argv, "offload") == 0) {
++			offload = true;
+ 		} else {
+ 			fprintf(stderr, "What is \"%s\"?\n", *argv);
+ 			explain();
+@@ -103,6 +107,8 @@ static int htb_parse_opt(struct qdisc_util *qu, int argc,
+ 	if (direct_qlen != ~0U)
+ 		addattr_l(n, 2024, TCA_HTB_DIRECT_QLEN,
+ 			  &direct_qlen, sizeof(direct_qlen));
++	if (offload)
++		addattr(n, 2024, TCA_HTB_OFFLOAD);
+ 	addattr_nest_end(n, tail);
+ 	return 0;
+ }
+@@ -344,6 +350,8 @@ static int htb_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 		print_uint(PRINT_ANY, "direct_qlen", " direct_qlen %u",
+ 			   direct_qlen);
+ 	}
++	if (tb[TCA_HTB_OFFLOAD])
++		print_null(PRINT_ANY, "offload", " offload", NULL);
+ 	return 0;
+ }
+ 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.25.1
+
