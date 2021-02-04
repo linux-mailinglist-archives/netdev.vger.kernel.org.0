@@ -2,40 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB2FB30FDBA
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 21:06:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82CEC30FE09
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 21:23:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239833AbhBDUF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 15:05:56 -0500
-Received: from mga17.intel.com ([192.55.52.151]:33377 "EHLO mga17.intel.com"
+        id S239811AbhBDUUW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 15:20:22 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36134 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238886AbhBDUFf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Feb 2021 15:05:35 -0500
-IronPort-SDR: jvAFo7DsuFfZATPYGQi5hzoh0imAhOD9PBxPJLG6JDEIc0fV2QZupf54Iyc+hvxUnnXTqouC4Z
- NCPzAhHCb9wA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9885"; a="161075999"
-X-IronPort-AV: E=Sophos;i="5.81,153,1610438400"; 
-   d="scan'208";a="161075999"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2021 12:04:55 -0800
-IronPort-SDR: w25dlOuI26uqy8gsBnyLijkH7cRf4RJUGufCR72zFj2raTNoWynOFcePAKHrki6yHcm97DFzex
- eFpyZgruJOhQ==
-X-IronPort-AV: E=Sophos;i="5.81,153,1610438400"; 
-   d="scan'208";a="434093065"
-Received: from jbrandeb-mobl4.amr.corp.intel.com (HELO localhost) ([10.212.188.246])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2021 12:04:55 -0800
-Date:   Thu, 4 Feb 2021 12:04:54 -0800
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-To:     Geetha sowjanya <gakula@marvell.com>
-Cc:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <sgoutham@marvell.com>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <sbhatta@marvell.com>, <hkelam@marvell.com>, <jerinj@marvell.com>,
-        <lcherian@marvell.com>
-Subject: Re: [net-next v3 00/14] Add Marvell CN10K support
-Message-ID: <20210204120454.000054d6@intel.com>
-In-Reply-To: <1612437872-51671-1-git-send-email-gakula@marvell.com>
-References: <1612437872-51671-1-git-send-email-gakula@marvell.com>
-X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
+        id S239866AbhBDUUS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Feb 2021 15:20:18 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9C8B264F45;
+        Thu,  4 Feb 2021 20:10:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612469437;
+        bh=YhgF/qgTPY8xFI7LRUcob72nphckTIs1Ky/KJ/BOUPI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=vKXya9B1n25r1qlsDF21Zhj0wl5lQaXokuyN5pNXjOJnu24Dr5EDdN+uKdcEkJj7C
+         e93v72JRhPW4CnOhjtSJJFGreTmZO1sdfPdyd+wDian8Nk9BfgF2fiDXzB0g24D7eL
+         N2+56NTz/BZHkt8DrUM1OG0jSn4ivSjhSpDfFiZc8iLTfNrd8luVSgGzqtk5KDEtU/
+         vBNHjJqckgoY5kqrp+3Kr0HhHSrrNEFYQxHvVep9ADKiu9ga49hs+b7wQck8KNmw3G
+         UtIy06IZW/q72le8AMPmfMEB+qns5pAFOEnA+xi8ZRrvKbnI/qkEfXFFIUwpBEJLIS
+         FehDLEH+nu0qA==
+Date:   Thu, 4 Feb 2021 12:10:36 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jonas Bonn <jonas@norrbonn.se>
+Cc:     laforge@gnumonks.org, netdev@vger.kernel.org, pablo@netfilter.org
+Subject: Re: [PATCH net-next v2 0/7] GTP
+Message-ID: <20210204121036.3973b97f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210203070805.281321-1-jonas@norrbonn.se>
+References: <20210202065159.227049-1-jonas@norrbonn.se>
+        <20210203070805.281321-1-jonas@norrbonn.se>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -43,19 +39,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Geetha sowjanya wrote:
+On Wed,  3 Feb 2021 08:07:58 +0100 Jonas Bonn wrote:
+> There's ongoing work in this driver to provide support for IPv6, GRO,
+> GSO, and "collect metadata" mode operation.  In order to facilitate this
+> work going forward, this short series accumulates already ACK:ed patches
+> that are ready for the next merge window.
+> 
+> All of these patches should be uncontroversial at this point, including
+> the first one in the series that reverts a recently added change to
+> introduce "collect metadata" mode.  As that patch produces 'broken'
+> packets when common GTP headers are in place, it seems better to revert
+> it and rethink things a bit before inclusion.
 
-> v2-v3
-> Reposting as a single thread.
-
-FYI, it didn't work, suggest you try adding the git-send-email option
-(via git-config)
-
-sendemail.thread=true
-sendemail.chainreplyto=false
-
-And you can test locally by using first using git send-email to export
-to mbox and checking for References and In-Reply-to headers. Then
-sending for real.
-
-Good luck!
+Applied, thanks.
