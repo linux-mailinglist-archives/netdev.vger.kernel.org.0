@@ -2,67 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E77030F6E0
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 16:56:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05A7630F7A2
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 17:26:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237467AbhBDPxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 10:53:16 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:29046 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237612AbhBDPwd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 10:52:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1612453866;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=CMqAW4f0jFDOwbsOzxUzXJ4trluBioUFTVK0D7WjA74=;
-        b=Mi97tfFAiYh0nDyCm0jG6QTNZfG+6YBX134qsDDbgVhRLoGfrAI3NhbXrYn50qcLq9ej4c
-        UxzoQX1RaBEVlUWaI3kGSaq0gd9ZljAt7z/D5tLJBGkURQugk9YcO0WHMNJYqjoSMS593w
-        F0HG4CwFkJAejE3XbKx93DLb9PnYw9Q=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-363-8vlnf59-Phu7RyeoKwEXPw-1; Thu, 04 Feb 2021 10:51:05 -0500
-X-MC-Unique: 8vlnf59-Phu7RyeoKwEXPw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S237971AbhBDQWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 11:22:24 -0500
+Received: from novek.ru ([213.148.174.62]:60852 "EHLO novek.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237076AbhBDPLF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Feb 2021 10:11:05 -0500
+Received: from [192.168.0.18] (unknown [37.228.234.253])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CBD96801962;
-        Thu,  4 Feb 2021 15:51:03 +0000 (UTC)
-Received: from horizon.localdomain (ovpn-113-166.rdu2.redhat.com [10.10.113.166])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 8573260C16;
-        Thu,  4 Feb 2021 15:51:03 +0000 (UTC)
-Received: by horizon.localdomain (Postfix, from userid 1000)
-        id 30895C2CDA; Thu,  4 Feb 2021 12:51:01 -0300 (-03)
-Date:   Thu, 4 Feb 2021 12:51:01 -0300
-From:   Marcelo Ricardo Leitner <mleitner@redhat.com>
-To:     wenxu@ucloud.cn
-Cc:     jhs@mojatatu.com, kuba@kernel.org, netdev@vger.kernel.org,
-        Ilya Maximets <i.maximets@ovn.org>
-Subject: Re: [PATCH net v2] net/sched: cls_flower: Reject invalid ct_state
- flags rules
-Message-ID: <20210204155101.GK3399@horizon.localdomain>
-References: <1612453571-3645-1-git-send-email-wenxu@ucloud.cn>
+        by novek.ru (Postfix) with ESMTPSA id DC1BD503356;
+        Thu,  4 Feb 2021 18:10:16 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru DC1BD503356
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1612451418; bh=DZG7Aj/RwvEO3w+dP7epSHunV3aBlffxKrVr1EQMK+U=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=iYgduv8+Bd0EONz4MkLdSKHesWnE6fJZK3vu/4K1E/GQPGpovwJ4Nmks32QNJv3aS
+         lHeBWYO2ttIYidinhzw/MGkJ6fZ8O/QEN2mauKJvACWwyFZgmWXH2cYN92NBRKqRs4
+         MzkUy0U6Eda8XdvkAztGdEsuZZbofkzuDy9Adm+0=
+Subject: Re: [net] selftests: txtimestamp: fix compilation issue
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Jian Yang <jianyang@google.com>,
+        Network Development <netdev@vger.kernel.org>
+References: <1612385537-9076-1-git-send-email-vfedorenko@novek.ru>
+ <CA+FuTSf4mrJG48od153gec9-xtpAPwx_-OTkD=cMRCJMXnupjg@mail.gmail.com>
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+Message-ID: <6d6e929a-052c-04ff-2b97-084970c357b2@novek.ru>
+Date:   Thu, 4 Feb 2021 15:10:14 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1612453571-3645-1-git-send-email-wenxu@ucloud.cn>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+In-Reply-To: <CA+FuTSf4mrJG48od153gec9-xtpAPwx_-OTkD=cMRCJMXnupjg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,NICE_REPLY_A
+        autolearn=ham autolearn_force=no version=3.4.1
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 04, 2021 at 11:46:11PM +0800, wenxu@ucloud.cn wrote:
-> From: wenxu <wenxu@ucloud.cn>
+On 04.02.2021 13:34, Willem de Bruijn wrote:
+> On Wed, Feb 3, 2021 at 4:11 PM Vadim Fedorenko <vfedorenko@novek.ru> wrote:
+>>
+>> PACKET_TX_TIMESTAMP is defined in if_packet.h but it is not included in
+>> test. But we cannot include it because we have definitions of struct and
+>> including leads to redefinition error. So define PACKET_TX_TIMESTAMP too.
 > 
-> Reject the unsupported and invalid ct_state flags of cls flower rules.
+> The conflicts are with <netpacket/packet.h>. I think it will build if
+> you remove that.
+
+Good point. I will try to replace the includes.
+
+>> Fixes: 5ef5c90e3cb3 (selftests: move timestamping selftests to net folder)
 > 
-> Fixes: e0ace68af2ac ("net/sched: cls_flower: Add matching on conntrack info")
+> This commit only moved the file. The file was moved twice. Even though
+> it cannot really be applied easily before the move, this goes back to
+> commit 8fe2f761cae9 ("net-timestamp: expand documentation").
+Yeah, you are right. Didn't go so deep.
+
+>> Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
+> 
+> Do you also get the compiler warning about ambiguous control flow?
+> 
+>    tools/testing/selftests/net/txtimestamp.c:498:6: warning: suggest
+> explicit braces to avoid ambiguous ‘else’ [-Wdangling-else]
+> 
+> When touching this file, might be good to also fix that up:
+> 
+> -               if (cfg_use_pf_packet || cfg_ipproto == IPPROTO_RAW)
+> +               if (cfg_use_pf_packet || cfg_ipproto == IPPROTO_RAW) {
+>                          if (family == PF_INET)
+>                                  total_len += sizeof(struct iphdr);
+>                          else
+>                                  total_len += sizeof(struct ipv6hdr);
+> +               }
 > 
 
-Hopefully Jakub can strip the blank line above.
+Yes, but skipped it because the main goal was to fix selftests/net build in 
+general and forgot about it later. I will address this warning too.
 
-> Signed-off-by: wenxu <wenxu@ucloud.cn>
-
-Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-
+Thanks Willem!
