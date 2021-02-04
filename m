@@ -2,44 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D138E30F7E8
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 17:30:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EC9330F82A
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 17:40:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237109AbhBDQaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 11:30:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46276 "EHLO mail.kernel.org"
+        id S237638AbhBDQkH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 11:40:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46448 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237048AbhBDQ3j (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Feb 2021 11:29:39 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2F69664F4E;
-        Thu,  4 Feb 2021 16:28:56 +0000 (UTC)
+        id S238051AbhBDQaL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Feb 2021 11:30:11 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CBE4C64F53;
+        Thu,  4 Feb 2021 16:29:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612456138;
-        bh=056fz5EMahpKz5J2AFFhrRZLdav0oksdlYuTWVkGTOE=;
+        s=k20201202; t=1612456170;
+        bh=nUrqQVGTdVdtTvEZW10cth7m+C3EvTsyClTjZCQlpaA=;
         h=From:To:Cc:Subject:Date:From;
-        b=eKDw/p05Tk3cZopTI/UO6ecZ5Eykblpe5zL6hLjtrJgK2KMxtbbHgIFoSH7m1tLkS
-         SWq8wSUoO4aAFOQge9zMzhZdh8bC71t68PbkrQcWYf/y7SLaPUTS5hHexHWAjdCDXB
-         GT06EoDJAyCUByYYwNDHVzgRcqcH++MFI8pEKEL0e5Atf8gdYtLzDLTVHQ2ohXkaGc
-         Z3ocjVZY4RsD0g8xA10tDA/v1gRIJw8l2nosngyjXt22BIXmvvN3ZmWHMMxydoYQlu
-         gpYe2L+jeVU2wrCSuq4xsKiDDPmONooL4mTfS9mSR1JUCbHGttZV+whqC0dotR3Tfr
-         E1qjijBZKzP/g==
+        b=cGb0IozHEQwQpcghNonA3NiIhwU2TbMxGZkbUHMzbhF9xKoXQuDkMZ2yb0TN38pft
+         4scK04m0vuMVOqukfe3jBXNzyHHXq2OeMw+B324Q4/pSjMTTNDeGwpsyGDhkecCOz9
+         mtCzrWsRZz5RIIZuKKgRTkyzCJKwWfh858ZBJJxs0x4ZWRCVOVrYlkV844gjWL6trU
+         B6KGKQWD8aENjviCsBcVVq7Vqla9JuWwz1hLpSK9If1iUp5b5+MoWkHvuYWVlf2Lmx
+         P+LAKyEX69p2+bqHo7OSOQt3duFAYsjFxPnmDKRi0IOkiaE2S+wse0h58U95ex7lBx
+         Cnk1QgX4MFjxw==
 From:   Arnd Bergmann <arnd@kernel.org>
-To:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
+To:     Christian Lamparter <chunkeey@googlemail.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] brcm80211: fix alignment constraints
-Date:   Thu,  4 Feb 2021 17:28:35 +0100
-Message-Id: <20210204162852.3219572-1-arnd@kernel.org>
+Subject: [PATCH] carl9170: fix struct alignment conflict
+Date:   Thu,  4 Feb 2021 17:29:17 +0100
+Message-Id: <20210204162926.3262598-1-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -49,33 +44,100 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-sturct d11txh contains a ieee80211_rts structure, which is required to
-have at least two byte alignment, and this conflicts with the __packed
-attribute:
+Multiple structures in the carl9170 driver have alignment
+impossible alignment constraints that gcc warns about when
+building with 'make W=1':
 
-drivers/net/wireless/broadcom/brcm80211/brcmsmac/d11.h:786:1: warning: alignment 1 of 'struct d11txh' is less than 2 [-Wpacked-not-aligned]
+drivers/net/wireless/ath/carl9170/fwcmd.h:243:2: warning: alignment 1 of 'union <anonymous>' is less than 4 [-Wpacked-not-aligned]
+drivers/net/wireless/ath/carl9170/wlan.h:373:1: warning: alignment 1 of 'struct ar9170_rx_frame_single' is less than 2 [-Wpacked-not-aligned]
 
-Mark d11txh itself as having two-byte alignment to ensure the
-inner structure is properly aligned.
+In the carl9170_cmd structure, multiple members that have an explicit
+alignment requirement of four bytes are added into a union with explicit
+byte alignment, but this in turn is part of a structure that also has
+four-byte alignment.
+
+In the wlan.h header, multiple structures contain a ieee80211_hdr member
+that is required to be two-byte aligned to avoid alignmnet faults when
+processing network headers, but all members are forced to be byte-aligned
+using the __packed tag at the end of the struct definition.
+
+In both cases, leaving out the packing does not change the internal
+layout of the structure but changes the alignment constraint of the
+structure itself.
+
+Change all affected structures to only apply packing where it does
+not violate the alignment requirement of the contained structure.
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmsmac/d11.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/ath/carl9170/fwcmd.h |  2 +-
+ drivers/net/wireless/ath/carl9170/wlan.h  | 20 ++++++++++----------
+ 2 files changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/d11.h b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/d11.h
-index 9035cc4d6ff3..7870093629c3 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/d11.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/d11.h
-@@ -783,7 +783,7 @@ struct d11txh {
- 	u8 RTSPhyHeader[D11_PHY_HDR_LEN];	/* 0x2c - 0x2e */
- 	struct ieee80211_rts rts_frame;	/* 0x2f - 0x36 */
- 	u16 PAD;		/* 0x37 */
+diff --git a/drivers/net/wireless/ath/carl9170/fwcmd.h b/drivers/net/wireless/ath/carl9170/fwcmd.h
+index 56999a3b9d3b..4a500095555c 100644
+--- a/drivers/net/wireless/ath/carl9170/fwcmd.h
++++ b/drivers/net/wireless/ath/carl9170/fwcmd.h
+@@ -240,7 +240,7 @@ struct carl9170_cmd {
+ 		struct carl9170_bcn_ctrl_cmd	bcn_ctrl;
+ 		struct carl9170_rx_filter_cmd	rx_filter;
+ 		u8 data[CARL9170_MAX_CMD_PAYLOAD_LEN];
+-	} __packed;
++	} __packed __aligned(4);
+ } __packed __aligned(4);
+ 
+ #define	CARL9170_TX_STATUS_QUEUE	3
+diff --git a/drivers/net/wireless/ath/carl9170/wlan.h b/drivers/net/wireless/ath/carl9170/wlan.h
+index ea17995b32f4..bb73553fd7c2 100644
+--- a/drivers/net/wireless/ath/carl9170/wlan.h
++++ b/drivers/net/wireless/ath/carl9170/wlan.h
+@@ -367,27 +367,27 @@ struct ar9170_rx_macstatus {
+ 
+ struct ar9170_rx_frame_single {
+ 	struct ar9170_rx_head phy_head;
+-	struct ieee80211_hdr i3e;
++	struct ieee80211_hdr i3e __packed __aligned(2);
+ 	struct ar9170_rx_phystatus phy_tail;
+ 	struct ar9170_rx_macstatus macstatus;
 -} __packed;
-+} __packed __aligned(2);
++};
  
- #define	D11_TXH_LEN		112	/* bytes */
+ struct ar9170_rx_frame_head {
+ 	struct ar9170_rx_head phy_head;
+-	struct ieee80211_hdr i3e;
++	struct ieee80211_hdr i3e __packed __aligned(2);
+ 	struct ar9170_rx_macstatus macstatus;
+-} __packed;
++};
  
+ struct ar9170_rx_frame_middle {
+-	struct ieee80211_hdr i3e;
++	struct ieee80211_hdr i3e __packed __aligned(2);
+ 	struct ar9170_rx_macstatus macstatus;
+-} __packed;
++};
+ 
+ struct ar9170_rx_frame_tail {
+-	struct ieee80211_hdr i3e;
++	struct ieee80211_hdr i3e __packed __aligned(2);
+ 	struct ar9170_rx_phystatus phy_tail;
+ 	struct ar9170_rx_macstatus macstatus;
+-} __packed;
++};
+ 
+ struct ar9170_rx_frame {
+ 	union {
+@@ -395,8 +395,8 @@ struct ar9170_rx_frame {
+ 		struct ar9170_rx_frame_head head;
+ 		struct ar9170_rx_frame_middle middle;
+ 		struct ar9170_rx_frame_tail tail;
+-	} __packed;
+-} __packed;
++	};
++};
+ 
+ static inline u8 ar9170_get_decrypt_type(struct ar9170_rx_macstatus *t)
+ {
 -- 
 2.29.2
 
