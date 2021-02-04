@@ -2,81 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57A1A3100C6
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 00:35:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A72A3100DC
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 00:44:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230340AbhBDXeZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 18:34:25 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:14580 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229976AbhBDXeX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 18:34:23 -0500
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 114NEISh018203;
-        Thu, 4 Feb 2021 15:33:18 -0800
+        id S231171AbhBDXno (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 18:43:44 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:33568 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231157AbhBDXnb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 18:43:31 -0500
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 114NeTpe024807;
+        Thu, 4 Feb 2021 15:41:29 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : references : in-reply-to : content-type : content-id
  : content-transfer-encoding : mime-version; s=facebook;
- bh=H0y8Djd1TGaOIsjPfvGSGu+Zz0lSmGS/UMLsTDj2R2E=;
- b=pqDfsvTh9y21Y8BhfgwfxaR8Bbz4Vc7fQ64xLlL8zqI5eQpQezvpwlBuCD2B2gLbzRuB
- f9KeQIwfuAs3SpUcBD8xTjgbKg5vXeaMPQ+1q/JDcnbFSIX9cC2Nd73v5qfeMGcLF7tb
- JWLUdFSE8ljFMbkxHwmxj/r0HU8at5U8aYw= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 36fvyd1kb5-2
+ bh=PBYX2an5VPJuXTlNkDIetMKouARv3SqpZcmCLRv16YI=;
+ b=XXje9jc6Rt23J4kApOFngCnxsFZV2kB3io3u/DZQhmZ9qB5udLW4ZVaRNTuMy5YSbzji
+ lM0gifn2f6IfKXDv0uilj5mkwElRDlIQgulaMKJV4mDT2gAbChvYiLLg57q3gfoiulxs
+ +vmDOG8iC24iG5qh48ZDHbysuxSOIfYmP+s= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0089730.ppops.net with ESMTP id 36g18bqxq4-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 04 Feb 2021 15:33:18 -0800
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
+        Thu, 04 Feb 2021 15:41:29 -0800
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 4 Feb 2021 15:33:16 -0800
+ 15.1.1979.3; Thu, 4 Feb 2021 15:41:28 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CUU3XYF5/DecenhUZJrUzQNrsfaX6JwuZC9p7NkjPqCC5tJUdYAU5if4Tkxw+ZR3Jn50Db/KrSPM9213q5ITPVZ6drpz5zVq5TQrQQlfIMYgudFy/LD5NVUBCv/ulyrtvBjMqNBi3Qek2trG/j2O5NfSZeU7Q+fmkpXUp43ZSA2xRKkBHBa6XRlgFwJSjEAi/UNofLxQ4FCxEnN2udKIwgJFpH8eIV9cJ8mlX9+ijHd9Qnl0/+mGbZFHHaCqip/nZ+++0p18Q9HNABcJg8ScotWt7QSS+VapkIZPsMLV0F8wgGGt4aDeuMzLMpiSohcLAxiCJi5yC0nknweJHyV9JA==
+ b=ef230aF6ba8oWBx8u1b+aRH5nYOfqaGWu+CpcpxN6Zeb0RUa8rUhPnQupnxALboCB7BoK/5FTdbHpiDuj9d2aeEvcTJ3kd5XU403ChhIFip/b7Ym6exoL/oDUyEcp5kundY+wkYsPZqnfoZGrZzoAab0USapPcGgU1ZmWAc4cf1tF03pha54KTCLyDKboj+pooVQ4sK/7s4/YBRYBX0atN5XOk75QJ9Tazl2Z5BwjpCzAzsHNZhZdsnH+3GiKOZ+jgVz53CCTGmwuaQz29ZBgbnO7dqc0Xr80Bgx4SrmKETgqMqCVOG1rC9+CdMDffeIR0iogumYITM/vVXRq0x/Lw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=H0y8Djd1TGaOIsjPfvGSGu+Zz0lSmGS/UMLsTDj2R2E=;
- b=Cw5IFzg0f3eIr4DzMo+ACei2yC996bvUU0C/3yuUy5L9U2ig5wtYU6rFo4eoXlImanyNRAI5otI+2t3Van9WOvJRwq5U+O6WUhQ1OngZe0T/5Nkif/heLWdr0sDvFMbfI4d0XpkYrktFdXgvqZUFKftHUF3Ia7O3Y/gQpLTwiO/w6Hz8vJv6XpYfb7SOt6JvdjJA6WYMri50mngXTzDTJDsDSzhc7X2Dz0Gf86p7eImHKD0tatbtqRWntOU2yMP3p7db2/qT2wWTVjmJDlu+uM3S+EAtaGUo3eFA0TWhaJOFms3m6pN5OOy003YQL9X+UVE5+0CJqUq0Qmqrev0kAQ==
+ bh=PBYX2an5VPJuXTlNkDIetMKouARv3SqpZcmCLRv16YI=;
+ b=J2qdUUDCptJCrZGRTA5hynHpk9VXnFGG/Xzj81wA+JSTmtgVwyTGBMObp2CJstOQCZbPjGt2iFIanqjLt4I27QhMXA5dYT7c5zD9SiIbmqwGhFFPx8vL9lW0mIKcIzx25qsjdp9V0jcRz9+U1VUXjnwyR8U0viQ1NGp1ON3BzTlQAZJXejFNonHx4+B9eR9uMnIzavk2PgfIwsJuaFAuB637QPbbpaffZLUft696xdxrtVHYaUlNIeZd2IbYrruq2ZMZLwksEoMndw4Mmjon11S9ZgGb+2+dFyX2PaDEuucI0AdP0ACW45q4qtRDRFt4qfN+x55Pwi2b1PtTIzFvag==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
  header.d=fb.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
  s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=H0y8Djd1TGaOIsjPfvGSGu+Zz0lSmGS/UMLsTDj2R2E=;
- b=JjK/7xhIPmES6gRKzQhyw5o8PisOKqZidQoWZgx61bH2VDBDkFLUb1F8u3q32VqEQBtXRMGsLi86fw63OSKxXQORWfp4r/z2YJt/OMT4pIvZIarTJpNP9GADBaiiZ7oHDC7Jx6n6beOj4VdfQVpp1y98YH9yGYWTsv+ROjbGWKA=
+ bh=PBYX2an5VPJuXTlNkDIetMKouARv3SqpZcmCLRv16YI=;
+ b=QqcME0Ks/R4ab8tdatpAc0vHidgoEULtT5a4ZtdHYw0uJfyJIwcEfKqGflzsoz1PWN0Dli/Z88GHaQdS+A3pcHPSPHo7QiViGqEu+c0SAASkD39bEdFoISSDilxRKEDn/v71dla0HuKlegxgOgam6g3hOpiOTKkhWm3KreJVrIo=
 Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
- by BYAPR15MB2838.namprd15.prod.outlook.com (2603:10b6:a03:b4::29) with
+ by BYAPR15MB2565.namprd15.prod.outlook.com (2603:10b6:a03:14f::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.19; Thu, 4 Feb
- 2021 23:33:09 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.16; Thu, 4 Feb
+ 2021 23:41:26 +0000
 Received: from BYAPR15MB2999.namprd15.prod.outlook.com
  ([fe80::c97:58e4:ee9:1dc0]) by BYAPR15MB2999.namprd15.prod.outlook.com
  ([fe80::c97:58e4:ee9:1dc0%7]) with mapi id 15.20.3763.019; Thu, 4 Feb 2021
- 23:33:09 +0000
+ 23:41:26 +0000
 From:   Song Liu <songliubraving@fb.com>
 To:     Jiri Olsa <jolsa@kernel.org>
 CC:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "Martin Lau" <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>,
         Masahiro Yamada <masahiroy@kernel.org>,
         Michal Marek <michal.lkml@markovi.net>,
         "linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 1/4] tools/resolve_btfids: Build libbpf and
- libsubcmd in separate directories
-Thread-Topic: [PATCH bpf-next 1/4] tools/resolve_btfids: Build libbpf and
- libsubcmd in separate directories
-Thread-Index: AQHW+ztTcRSjOC657E2P+KoC+1mF2apIpbeA
-Date:   Thu, 4 Feb 2021 23:33:08 +0000
-Message-ID: <4EA9EEEC-ABCE-41E3-9405-D75B60BF44AD@fb.com>
+Subject: Re: [PATCH bpf-next 3/4] tools/resolve_btfids: Set srctree variable
+ unconditionally
+Thread-Topic: [PATCH bpf-next 3/4] tools/resolve_btfids: Set srctree variable
+ unconditionally
+Thread-Index: AQHW+ztbAyo95jsUA0qIqulLBpeFPKpIqAmA
+Date:   Thu, 4 Feb 2021 23:41:26 +0000
+Message-ID: <F9F430CE-4CEB-435C-8488-C5ADB2D06106@fb.com>
 References: <20210129134855.195810-1-jolsa@redhat.com>
  <20210204211825.588160-1-jolsa@kernel.org>
- <20210204211825.588160-2-jolsa@kernel.org>
-In-Reply-To: <20210204211825.588160-2-jolsa@kernel.org>
+ <20210204211825.588160-4-jolsa@kernel.org>
+In-Reply-To: <20210204211825.588160-4-jolsa@kernel.org>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -86,62 +86,62 @@ authentication-results: kernel.org; dkim=none (message not signed)
  header.d=none;kernel.org; dmarc=none action=none header.from=fb.com;
 x-originating-ip: [2620:10d:c091:480::1:aa49]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 7cace225-50c5-4769-3d49-08d8c9653b0c
-x-ms-traffictypediagnostic: BYAPR15MB2838:
+x-ms-office365-filtering-correlation-id: 0de4f7f2-cc6c-4b3a-390c-08d8c9666382
+x-ms-traffictypediagnostic: BYAPR15MB2565:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR15MB28380A2302D2B5DDB53641C8B3B39@BYAPR15MB2838.namprd15.prod.outlook.com>
+x-microsoft-antispam-prvs: <BYAPR15MB25653D09D5346A0A2035ED65B3B39@BYAPR15MB2565.namprd15.prod.outlook.com>
 x-fb-source: Internal
-x-ms-oob-tlc-oobclassifiers: OLM:5797;
+x-ms-oob-tlc-oobclassifiers: OLM:4502;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: dQZG8Oe0WYrW6F6jjiDjMKQ4e4OCYciJBeiFvAdPmPI+IhZfkpBV8l6vBetJr0jLYu2cjqV5uA1W6BhdYgVv2XrWr/fupgHUCv9MNCKIBrfWOh711Huwjg4bX+5+TNsMfXv+sJSkHpGZHYMOjv/Y0B22AVZ0Rnh4uSgfPUH8x333QKYdgZOTCUtGuUyA2tCEldp1/LBr4N52F4hvtLEuyqT37suK3cTvTZRNEcGtz9J7PHEsF2fCiwCHHPv/czfOLUtfPh7oh2M10dIjolSyv27J9zm6Bve/z4cm2Ean/2toR16PbAXfpKezem6IKkGxCOyjtmFXyA+y9VHagXMJ5949tJZUrqK+HUQvs27JM4asXXzSf9OY7P55KYBaiXb4Ej2W/fMleepfvm167jinOdCqoUDjMQfXA5uNX93fmPFLQmSDpZLjuKjZEI8EbhfDDc2QI5e1jf2Pue3aDyr4jJRqtHps5gBwTpBAzDs7t2hg53tWcdDQeVmnwLY1MwvQREbAMbznZZ84wSXp9wQJovkFPqfAs5yhOOcc82jIL87PCPtbeKl/Zp0oGmsaf0emDBz14FktufbobfSAqOcbCQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(346002)(39860400002)(376002)(136003)(366004)(5660300002)(2906002)(2616005)(8676002)(4744005)(6916009)(33656002)(8936002)(7416002)(6486002)(91956017)(66446008)(76116006)(86362001)(71200400001)(6506007)(36756003)(53546011)(316002)(66556008)(64756008)(478600001)(66476007)(4326008)(54906003)(6512007)(186003)(66946007)(45980500001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?juFWICrsEaQFMgzG9vx0aLYPeuhjoqa3I57RlLHsfJyz7va3mzw7vHJVXsjo?=
- =?us-ascii?Q?JnWTSdC2Mp2Z4RwFqOHKECNxj+OKwBL1AB7KIrHzEZiI6FvrnhfyB4qLY7Sd?=
- =?us-ascii?Q?sDwGRbgA1LytzWgrlNC7D3RvOVEDBdOHvzDYcHv1gTJwr4s6Ba65txhC2cg2?=
- =?us-ascii?Q?lyS51WZCNVaT6gvWVQo5eCha2y1dhJv8nE0q+CL08fE8yN6bGE9Asqel4A2x?=
- =?us-ascii?Q?4T237FnuwkROHk2wXSqoaGNPmc8BG3e8e1HZUJuL9kcfdRWgHHxRONa954xL?=
- =?us-ascii?Q?ufRFqJgUZLnRA9JH6ZWtpJ9uA9CqD3WPlmiz+xlQJPs+UaC6GECOKKONnlsv?=
- =?us-ascii?Q?nDDpXoEn0ujlSaBo009S5w8LnrWeCOmKnK58KMPc4AFERZOADF3wLC84+eQs?=
- =?us-ascii?Q?nNoY/rvdXe6jZZsJ0ylcyOQUQtXzgxfMd9IfUgQP0c1mUuly4yFujyBHLZeo?=
- =?us-ascii?Q?ma3ptefahFFS8ZhJcESBvEBI9/ph23mvrlcEr0fRHftk0om2awPpnwTLXIjg?=
- =?us-ascii?Q?Co9BaFK06nWDqlh3kQHPRn/8H5Ya8NOTI9PdjfpXS2bx+wkFi1U8ZkT4M1NP?=
- =?us-ascii?Q?IUQJ+NA0xDgE9J10syHPiPviHFWX8XeJ1M5EYTin5Qb6A5CS/kzB+vp+h0YM?=
- =?us-ascii?Q?BHx+k6kviI1vFTvNYgwB+pXSUU7TFqohTg0KuUYV7DpfuZ5SsPXRB5Lv47iY?=
- =?us-ascii?Q?yhziWdiIHhViwg+yTv1EU9g5UFd9H9GI5ulxlJKW4aGD7OtI6JjCtZEQdJqY?=
- =?us-ascii?Q?I7FYwX/JHSoekHLWXykscN+1tpq8NzhynRXuRCK9v1R7hreodaqs6wdx/NZT?=
- =?us-ascii?Q?BjgEJadje3tNdDRePFQJQCmj2VhwyBDbr0Y6n4OFMAMGTNi+ga4IGTcDHDYa?=
- =?us-ascii?Q?luNw1v6bo8BnCUOyn2G7WjXzG0++wtroEbQaBdpZEZ9+sGYXim14deYZBSoZ?=
- =?us-ascii?Q?tYows6TBl8VBv91MtTBrOLPS7pUX6A0BCTeqWWnV5VCc5waYSfVltSXZwYuz?=
- =?us-ascii?Q?yW9wiMpDh/VKyaDbjdaFZfT/FUL8Ss9Ryi7gIlHCDebQqbFm9pkJXBMZm+f2?=
- =?us-ascii?Q?qSoVFg2lGKvEMYMq+fQwWmEBJ9eR+yRhmQdo12G+U1B5ZhOqUuVifb7rtLKt?=
- =?us-ascii?Q?0tQTsoDECgUWZXmyspmmFfRjUfZFT9wTjW4DwufGzmknGcmgP0yiwxIjUoqu?=
- =?us-ascii?Q?PoWuj6s5X1uI+MKlPtfpmiCWYhOTGuGdLEFMG2aqmTU2ND5iEv/TmQIXjpbZ?=
- =?us-ascii?Q?y8X4NCdHjz0/5vIj/eJIxcQ9CQB5VXb6o7qOfg/yJX6mFcm3A+lP9sUaSujz?=
- =?us-ascii?Q?IdUBCtPYACJ3WXlSfqgWR6zRr5blVPQ0doXQrl5AS3Nv7L8DSpJ60BfAHub1?=
- =?us-ascii?Q?ed5TZfw=3D?=
+x-microsoft-antispam-message-info: 4jC9CiSro3ySwgEilSuVsCIx5ZZ0H/5S89u6gyudviXJR/aXw2KALFBchRLl/3rLabdyV+9rtx8EOiI4vgcd9PsRZ/lZyr5Ocsmg2OP43j56YOjZtVwcMPTFxxdM83n/XAsKR20oQiPqX5UHKdo3tVZ/EnSKr4+SleiT/rcapnyPR8R3IFGN9/r6NUHOWRR2Rcs8HBDJF2G8KJq+HI3b1/as3T4N8pfUp1AOQGCVxpYzDiyZhUgBIAwcsSE/Xx7VgKKOWDIDby7ms9ypMN8howAn+nXNcEJarapMggsxKQjm/Cgsn+T4fMNLBSXp92l0/wW9f/r28JN1Hn1YPhLV0Gy4tCpuKkHV/2k7hJ3Qw93eZTZCnAgZOFeem24K526p8Qi8L81+RS1fSsBruZtqwXx02khuthFe+x1rI8ZpxFcXqVCDVLKqXeDVHY+KH8oavQiSEdUEXkn30WqjSf/mTle/ZCQLKRFLL7F1FIGbFSNYFJyVvsP3wjjJH2bMmP0cDIR1iIHLMoP1lbEeVUXJtWvW3JwfwOEf5eD7yaFUd9258bXJ3UAj+BG54DfzOJAPP296VaNCcuR/l+CPYLB+xg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(366004)(346002)(39860400002)(376002)(136003)(53546011)(86362001)(6512007)(7416002)(6506007)(186003)(66946007)(4326008)(2906002)(6486002)(36756003)(6916009)(66556008)(66476007)(64756008)(2616005)(71200400001)(478600001)(66446008)(54906003)(5660300002)(316002)(8676002)(91956017)(8936002)(76116006)(83380400001)(33656002)(45980500001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?Gr8B4iChfX9bAGSZ2Rc/TKZRg5f30tqIFhhPM2rDw8+kFQj8Ihf7d/5NUvTK?=
+ =?us-ascii?Q?0l2w11QmgDkrOe0hBrWuPSAFkdoDV0z+9u+5+bCB1jW7SJyS5XOLgtKpVhJv?=
+ =?us-ascii?Q?62Qy4tsyBXb5jGzM0yQSH2KkHn18Mo/afX4RMJRqkqW82yHAoVuO4kT7KpT6?=
+ =?us-ascii?Q?ynCaaQzGkPSi9bCx5nXTBCWFzK5KrUxOl3lspr5PC6xmiebxIrxTAB0mK6lq?=
+ =?us-ascii?Q?cW1IzVvDHtt4/oxeavm0Cf9OisRNKNds6zmTjX664bIgDrqVDi55mzshJe2H?=
+ =?us-ascii?Q?adjoo0RBTUMUQGc63Y18WkcuuyN6C3AlsKNhwP7Mo+3uxPjqP/eLIehNqq4y?=
+ =?us-ascii?Q?NxFHUZtcu6htBMWgCcRZ1hKYL6IK2FoPGzUHsUxET6VaVIHlEWFGhByLS1x6?=
+ =?us-ascii?Q?lYHVac1TDd1N+IMF5WkXY7X8jQW6vXJO40ZNPFwqpYVkfTx0jHRgB9cy7M3L?=
+ =?us-ascii?Q?s6NnqnmI8jb5iGIUIjG0MPg2CrPPODKdn8bUPcgtGsQ58xmfbtd/BQQl2Cv8?=
+ =?us-ascii?Q?q87qcKFYk0HaUp3lIv43bjtI3A1NhmoJNKhC9XGbPJO1yaQ8+Bo2RwZEnKdw?=
+ =?us-ascii?Q?7Ju2pU6yNSxJrBVM9NqMiiYuWX+ifQdXGNyYZdzPtvyPp+TJ9jwlrRrc1VHK?=
+ =?us-ascii?Q?at/E97X5zhajEhxE71It7lMYlzzHnq+P1Z7DDJ17KNrTGUOeDa2V0J5xWw+7?=
+ =?us-ascii?Q?449W78DbTZjS++IBHwuCFporG25S6ewo8nnPnALwxFKIGkenatB4U5PecjUZ?=
+ =?us-ascii?Q?bWrpUKSQr3j9gBfJHJDgtX5XqPi029NoxtXHrqPyNHiAwSZy6nu9EnRx+MQp?=
+ =?us-ascii?Q?NHMEZkyCDvtoy7cQXjmMgYdjFOmeac+GWBnwxjZjTEtRbQVgj6CYY1+YOR4m?=
+ =?us-ascii?Q?XdI6VcQA8/h8JsK6PdYTdzGFUFSTYJZH1ed3jjCF3DPqr17sNlV+b5sngwFs?=
+ =?us-ascii?Q?hq/zw1Cl16IuwGlCNnR8DBr2OBIno+Ae8+0i5n0FXTdYBWS3eUIq62QuFhQy?=
+ =?us-ascii?Q?LnOWa2CNopY4NcmBxHGsKqAmbPsCDbsTee7+Ljlcxp9Ocv4NuGajbs1WMVCT?=
+ =?us-ascii?Q?O/DOhw+8TxP5k+JumrWuhM74QX4sRioup45nui7Adk6Tehelx2R9bi70aJr8?=
+ =?us-ascii?Q?YDicmJtvLFoVMvq3Hy0EsyMctfEZD7EOJF+2TaXpFqtBk76hzO53yhHHtXup?=
+ =?us-ascii?Q?eJQvPu4cpslPz1cqLGevwEsc2VzJ/51IYzEByTr1dfUBVj6Qb7uS4jplzOJq?=
+ =?us-ascii?Q?0q1shjxl8PE7BPuc4GpzRzy2rwkX3732+f/uKEX6+Dp6U/R3IzOJT/fn5R8b?=
+ =?us-ascii?Q?kzH25qTcijtH4w8wUEF6PFeIIzRsRblxQPu20J4FTttn1eTbhiyWp7A7CzYk?=
+ =?us-ascii?Q?bmvZ4Jc=3D?=
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <DAAF4978B9AB7F4195457CFD49AB124E@namprd15.prod.outlook.com>
+Content-ID: <AF3B18B269241B4686201DF810A7CABD@namprd15.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2999.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7cace225-50c5-4769-3d49-08d8c9653b0c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Feb 2021 23:33:09.1633
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0de4f7f2-cc6c-4b3a-390c-08d8c9666382
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Feb 2021 23:41:26.5541
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: dVlf8TTxFauR/9WYezcLNEAqsVzz028w48Qho8Sd3zqkx0e4jurgJqOHKv3ybHcW/3oPPUcl3eqPCedWzOFv9w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2838
+X-MS-Exchange-CrossTenant-userprincipalname: 7fjETco/lzgBtQ99rjum+9EXOOzXN9cdL575EA3VwN3YK3L7feWzJGYPPaZVDxVPFJD0/R8aP0MHhWH7LHL8Fw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2565
 X-OriginatorOrg: fb.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
  definitions=2021-02-04_13:2021-02-04,2021-02-04 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- impostorscore=0 mlxscore=0 lowpriorityscore=0 malwarescore=0 bulkscore=0
- priorityscore=1501 clxscore=1011 phishscore=0 spamscore=0 mlxlogscore=698
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102040143
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0 bulkscore=0
+ suspectscore=0 clxscore=1015 malwarescore=0 adultscore=0
+ lowpriorityscore=0 spamscore=0 impostorscore=0 priorityscore=1501
+ mlxscore=0 mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2102040144
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -151,18 +151,52 @@ X-Mailing-List: netdev@vger.kernel.org
 
 > On Feb 4, 2021, at 1:18 PM, Jiri Olsa <jolsa@kernel.org> wrote:
 >=20
-> Setting up separate build directories for libbpf and libpsubcmd,
-> so it's separated from other objects and we don't get them mixed
-> in the future.
+> We want this clean to be called from tree's root Makefile,
+> which defines same srctree variable and that will screw
+> the make setup.
 >=20
-> It also simplifies cleaning, which is now simple rm -rf.
+> We actually do not use srctree being passed from outside,
+> so we can solve this by setting current srctree value
+> directly.
 >=20
-> Also there's no need for FEATURE-DUMP.libbpf and bpf_helper_defs.h
-> files in .gitignore anymore.
+> Also root Makefile does not define the implicit RM variable,
+> so adding RM initialization.
 >=20
 > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 
-
 Acked-by: Song Liu <songliubraving@fb.com>
 
-[...]
+
+> ---
+> tools/bpf/resolve_btfids/Makefile | 3 +--
+> 1 file changed, 1 insertion(+), 2 deletions(-)
+>=20
+> diff --git a/tools/bpf/resolve_btfids/Makefile b/tools/bpf/resolve_btfids=
+/Makefile
+> index 3007cfabf5e6..b41fc9a81e83 100644
+> --- a/tools/bpf/resolve_btfids/Makefile
+> +++ b/tools/bpf/resolve_btfids/Makefile
+> @@ -2,11 +2,9 @@
+> include ../../scripts/Makefile.include
+> include ../../scripts/Makefile.arch
+>=20
+> -ifeq ($(srctree),)
+> srctree :=3D $(patsubst %/,%,$(dir $(CURDIR)))
+> srctree :=3D $(patsubst %/,%,$(dir $(srctree)))
+> srctree :=3D $(patsubst %/,%,$(dir $(srctree)))
+> -endif
+>=20
+> ifeq ($(V),1)
+>   Q =3D
+> @@ -22,6 +20,7 @@ AR       =3D $(HOSTAR)
+> CC       =3D $(HOSTCC)
+> LD       =3D $(HOSTLD)
+> ARCH     =3D $(HOSTARCH)
+> +RM      ?=3D rm
+>=20
+> OUTPUT ?=3D $(srctree)/tools/bpf/resolve_btfids/
+>=20
+> --=20
+> 2.26.2
+>=20
+
