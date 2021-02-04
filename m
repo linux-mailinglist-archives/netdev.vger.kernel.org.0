@@ -2,71 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E255330E8E3
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 01:49:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 712BE30E8F0
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 01:51:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234559AbhBDAr5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 19:47:57 -0500
-Received: from mga11.intel.com ([192.55.52.93]:40083 "EHLO mga11.intel.com"
+        id S234350AbhBDAvZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 19:51:25 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38794 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234583AbhBDApc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Feb 2021 19:45:32 -0500
-IronPort-SDR: Lb/ZATXfvqB/eRUT1ADKxIdizieBDYmFrj7G8+Bv107EXA8JBtXFQ5c3rvE67QylTdQwG/J2Ka
- zLg5xMfoSYjg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9884"; a="177638240"
-X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; 
-   d="scan'208";a="177638240"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2021 16:42:15 -0800
-IronPort-SDR: ++4gPz5MFHLEvLvMZH6r2ydQlYIxTFYcOQLDETM31w0W/cHu/+AEGvkDVGOey71rYQmWhm7Wb1
- gzv2bCLxKpew==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; 
-   d="scan'208";a="579687525"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga006.fm.intel.com with ESMTP; 03 Feb 2021 16:42:15 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        netdev@vger.kernel.org, sassmann@redhat.com,
-        anthony.l.nguyen@intel.com, Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH net-next 15/15] e1000: drop unneeded assignment in e1000_set_itr()
-Date:   Wed,  3 Feb 2021 16:42:59 -0800
-Message-Id: <20210204004259.3662059-16-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210204004259.3662059-1-anthony.l.nguyen@intel.com>
-References: <20210204004259.3662059-1-anthony.l.nguyen@intel.com>
+        id S233392AbhBDAvU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Feb 2021 19:51:20 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 25D1B64F4C;
+        Thu,  4 Feb 2021 00:50:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612399840;
+        bh=/jwmhOkkvsV+5tbBXO7Yw4MNLAkV97R3mNisDJKr+P0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=i9bV0LMNbbBFh+OI6yX0KUfGD4OwDY6uzXHIg2Qk6SQc41ACfikQXxci6AMe+e130
+         Sn9ocyOxRRjIqZhDhBx4asDa+xKB9nn8k5x0gQJhMslxrdSLb0eezMxHzWNx0MRlOM
+         SPRB8mrQetpcTGNWqNsONky68g7hrVM6v3uMfrXstlWSH0BcJqhDOas/drkwNGDTK3
+         Z5qwJSWFfLJW57AOWeIWKSwSU8udpBhdY28EPESu+XKFNVdTKP/vnbgfzbxnpLLscn
+         MBUWRd6yTC+8VuJU+OXd6CNX2qRlQf++XwQGTfqtd3iBxIT7oxBDE0jBDo0vvpQlnX
+         VCCP/rA8goD6Q==
+Date:   Wed, 3 Feb 2021 16:50:39 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Huazhong Tan <tanhuazhong@huawei.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <huangdaode@huawei.com>, <linuxarm@openeuler.org>,
+        Guangbin Huang <huangguangbin2@huawei.com>
+Subject: Re: [PATCH net-next 2/7] net: hns3: RSS indirection table and key
+ use device specifications
+Message-ID: <20210203165039.3bf2784d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1612269593-18691-3-git-send-email-tanhuazhong@huawei.com>
+References: <1612269593-18691-1-git-send-email-tanhuazhong@huawei.com>
+        <1612269593-18691-3-git-send-email-tanhuazhong@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+On Tue, 2 Feb 2021 20:39:48 +0800 Huazhong Tan wrote:
+>  struct hclgevf_rss_cfg {
+> -	u8  rss_hash_key[HCLGEVF_RSS_KEY_SIZE]; /* user configured hash keys */
+> +	/* user configured hash keys */
+> +	u8  rss_hash_key[HCLGEVF_RSS_KEY_SIZE_MAX];
+>  	u32 hash_algo;
+>  	u32 rss_size;
+>  	u8 hw_tc_map;
+> -	u8  rss_indirection_tbl[HCLGEVF_RSS_IND_TBL_SIZE]; /* shadow table */
+> +	/* shadow table */
+> +	u8  rss_indirection_tbl[HCLGEVF_RSS_IND_TBL_SIZE_MAX];
+>  	struct hclgevf_rss_tuple_cfg rss_tuple_sets;
+>  };
 
-The variable 'current_itr' is assigned to 0 before jumping to
-'set_itr_now' but it has not been used after the jump. So, remove the
-unneeded assignment.
-
-Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Reviewed-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/e1000/e1000_main.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/intel/e1000/e1000_main.c b/drivers/net/ethernet/intel/e1000/e1000_main.c
-index 5e28cf4fa2cd..042de276e632 100644
---- a/drivers/net/ethernet/intel/e1000/e1000_main.c
-+++ b/drivers/net/ethernet/intel/e1000/e1000_main.c
-@@ -2632,7 +2632,6 @@ static void e1000_set_itr(struct e1000_adapter *adapter)
- 
- 	/* for non-gigabit speeds, just fix the interrupt rate at 4000 */
- 	if (unlikely(adapter->link_speed != SPEED_1000)) {
--		current_itr = 0;
- 		new_itr = 4000;
- 		goto set_itr_now;
- 	}
--- 
-2.26.2
-
+What if the table sizes supported by the device grow beyond the
+.._SIZE_MAX constants? Are you handling that case?
