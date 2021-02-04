@@ -2,92 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E215030EF9A
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 10:25:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFA6730EF9C
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 10:25:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235140AbhBDJYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 04:24:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45190 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234788AbhBDJYQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 04:24:16 -0500
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3470DC061573;
-        Thu,  4 Feb 2021 01:23:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=CPyUnilJQ2QKupjj2xtE65PWmSMXgunXFpzexlPe1UE=; b=r0BCCyAZmU54nvsVfBVswXp6aR
-        KLl/ZzNbCFz0c1PR2bOqkBzRMxE/y4Rkk3SF8G2bcePsuQ+ey2Ss36eafH3GW3J/sZRG+xkmX1cdq
-        ladWBhYcO1uafEL2PC/2jWb2OJJ2qTlevwtaaIL1mhGr2B1XdzyK+Jlzrpg7wusl4voVeaGEB3MYk
-        0No9xiLDDGKEyJAgnBtsR4+PqWLhHqYzaC/KXHeD1vsganAlQMBPp+SkHc7avtO/ywZXekiSopdcE
-        1PHNzk8DzB8dcfQgr5G7wJeezVOQY/dWJaxyhhbYRZ/IKYrM4mY+oxURcc+vzjFUqKFjTMyjxm1N8
-        GBgYq4Vw==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1l7aqj-0008Nd-U9; Thu, 04 Feb 2021 09:22:54 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 385F2301A32;
-        Thu,  4 Feb 2021 10:22:48 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 15BDD213D2E27; Thu,  4 Feb 2021 10:22:48 +0100 (CET)
-Date:   Thu, 4 Feb 2021 10:22:48 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Ivan Babrou <ivan@cloudflare.com>
-Cc:     kernel-team <kernel-team@cloudflare.com>,
-        Ignat Korchagin <ignat@cloudflare.com>,
-        Hailong liu <liu.hailong6@zte.com.cn>,
-        Andrey Ryabinin <aryabinin@virtuozzo.com>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Julien Thierry <jthierry@redhat.com>,
-        Jiri Slaby <jirislaby@kernel.org>, kasan-dev@googlegroups.com,
-        linux-mm@kvack.org, linux-kernel <linux-kernel@vger.kernel.org>,
-        Alasdair Kergon <agk@redhat.com>,
-        Mike Snitzer <snitzer@redhat.com>, dm-devel@redhat.com,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Robert Richter <rric@kernel.org>,
-        "Joel Fernandes (Google)" <joel@joelfernandes.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf@vger.kernel.org, Alexey Kardashevskiy <aik@ozlabs.ru>
-Subject: Re: BUG: KASAN: stack-out-of-bounds in
- unwind_next_frame+0x1df5/0x2650
-Message-ID: <YBu86G1ckCckRyim@hirez.programming.kicks-ass.net>
-References: <CABWYdi3HjduhY-nQXzy2ezGbiMB1Vk9cnhW2pMypUa+P1OjtzQ@mail.gmail.com>
- <CABWYdi27baYc3ShHcZExmmXVmxOQXo9sGO+iFhfZLq78k8iaAg@mail.gmail.com>
- <YBrTaVVfWu2R0Hgw@hirez.programming.kicks-ass.net>
- <CABWYdi2ephz57BA8bns3reMGjvs5m0hYp82+jBLZ6KD3Ba6zdQ@mail.gmail.com>
+        id S235169AbhBDJYZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 04:24:25 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:3391 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235142AbhBDJYU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 04:24:20 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B601bbd1b0000>; Thu, 04 Feb 2021 01:23:39 -0800
+Received: from [172.27.8.91] (172.20.145.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 4 Feb
+ 2021 09:23:38 +0000
+Subject: Re: [PATCH net] net: psample: Fix the netlink skb length
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <idosch@nvidia.com>,
+        Yotam Gigi <yotam.gi@gmail.com>
+References: <20210203031028.171318-1-cmi@nvidia.com>
+ <20210203182103.0f8350a9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Chris Mi <cmi@nvidia.com>
+Message-ID: <d1d03742-3b04-2e6a-2166-ac2ea1a7d5c7@nvidia.com>
+Date:   Thu, 4 Feb 2021 17:23:35 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CABWYdi2ephz57BA8bns3reMGjvs5m0hYp82+jBLZ6KD3Ba6zdQ@mail.gmail.com>
+In-Reply-To: <20210203182103.0f8350a9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1612430619; bh=ZXDo3nhJuPQTiBbaT1Op6HbyeFNUeRCe30CYjzpVPzo=;
+        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
+         MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding:
+         Content-Language:X-Originating-IP:X-ClientProxiedBy;
+        b=eFguI4EUs/+G7cSanlAy9lPP+u+Gozu77B9TARgMZS4wyYbdpc5uXeIu+V/H6SYW4
+         JSzAOAOUNze2vaMdAvBL8HBTwxujfmB+DFMgsYkr11gd6H+vry2cBH3wpzw9xezu21
+         OKLt7mDUdze/3xWDX2/Hz6rhJLC6jlaVFzhUypgdrROM96wnk8Pli0Pn7NN52y1iUO
+         +i76Hx0J6Ybih2TU83d6BA6W/9dzUmkUqHJFvL2NGmD6TAw8kY0RFiRgsvLPtAxnAg
+         gI6Gde1oIZ5bq5S11G/wlha00th9ltwIkyJubFs5NHzWsRa0hkwyktjdHtw6V24rFE
+         K1AaF0zlmJLJQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 03, 2021 at 09:46:55AM -0800, Ivan Babrou wrote:
-> > Can you pretty please not line-wrap console output? It's unreadable.
-> 
-> GMail doesn't make it easy, I'll send a link to a pastebin next time.
-> Let me know if you'd like me to regenerate the decoded stack.
-
-Not my problem that you can't use email proper. Links go in the
-bitbucket. Either its in the email or it don't exist.
+On 2/4/2021 10:21 AM, Jakub Kicinski wrote:
+> On Wed,  3 Feb 2021 11:10:28 +0800 Chris Mi wrote:
+>> Currently, the netlink skb length only includes metadata and data
+>> length. It doesn't include the psample generic netlink header length.
+> But what's the bug? Did you see oversized messages on the socket?
+Yes.
+>   Did
+> one of the nla_put() fail?
+Yes.
+>
+>> Fixes: 6ae0a6286171 ("net: Introduce psample, a new genetlink channel for packet sampling")
+>> CC: Yotam Gigi <yotam.gi@gmail.com>
+>> Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+>> Signed-off-by: Chris Mi <cmi@nvidia.com>
+>> ---
+>>   net/psample/psample.c | 10 ++++++----
+>>   1 file changed, 6 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/net/psample/psample.c b/net/psample/psample.c
+>> index 33e238c965bd..807d75f5a40f 100644
+>> --- a/net/psample/psample.c
+>> +++ b/net/psample/psample.c
+>> @@ -363,6 +363,7 @@ void psample_sample_packet(struct psample_group *group, struct sk_buff *skb,
+>>   	struct ip_tunnel_info *tun_info;
+>>   #endif
+>>   	struct sk_buff *nl_skb;
+>> +	int header_len;
+>>   	int data_len;
+>>   	int meta_len;
+>>   	void *data;
+>> @@ -381,12 +382,13 @@ void psample_sample_packet(struct psample_group *group, struct sk_buff *skb,
+>>   		meta_len += psample_tunnel_meta_len(tun_info);
+>>   #endif
+>>   
+>> +	/* psample generic netlink header size */
+>> +	header_len = nlmsg_total_size(GENL_HDRLEN + psample_nl_family.hdrsize);
+> GENL_HDRLEN is already included by genlmsg_new() and fam->hdrsize is 0
+> / uninitialized for psample_nl_family. What am I missing? Ido?
+Thanks for pointing this out. If so, it seems this patch is incorrect.
+>
+>>   	data_len = min(skb->len, trunc_size);
+>> -	if (meta_len + nla_total_size(data_len) > PSAMPLE_MAX_PACKET_SIZE)
+>> -		data_len = PSAMPLE_MAX_PACKET_SIZE - meta_len - NLA_HDRLEN
+>> +	if (header_len + meta_len + nla_total_size(data_len) > PSAMPLE_MAX_PACKET_SIZE)
+>> +		data_len = PSAMPLE_MAX_PACKET_SIZE - header_len - meta_len - NLA_HDRLEN
+>>   			    - NLA_ALIGNTO;
+>> -
+>> -	nl_skb = genlmsg_new(meta_len + nla_total_size(data_len), GFP_ATOMIC);
+>> +	nl_skb = genlmsg_new(header_len + meta_len + nla_total_size(data_len), GFP_ATOMIC);
+>>   	if (unlikely(!nl_skb))
+>>   		return;
+>>   
 
