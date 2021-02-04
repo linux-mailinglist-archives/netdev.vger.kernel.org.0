@@ -2,104 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D9CD30EA76
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 03:54:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54D7E30EAAF
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 04:10:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234150AbhBDCyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 21:54:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46398 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231284AbhBDCyK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 21:54:10 -0500
-Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D9DC061573;
-        Wed,  3 Feb 2021 18:53:29 -0800 (PST)
-Received: by mail-il1-x136.google.com with SMTP id q5so1252072ilc.10;
-        Wed, 03 Feb 2021 18:53:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=go2HYs26cOfYUYY2faa5eBuiVSTmo5KLa3Wxaa/G6Cs=;
-        b=U/A//T+olYXqgyQ1IiAI1wfiwB4ssDjIj9cwpOPpx68cmlDlBrM79dkJJBHdYJ8YdJ
-         dvPAh7jnYgh6ZkbAvEmumiV1uPPfU6AGfWgIRzAhW52xnowZDi6Pdk3liWdwoVTdE2j1
-         0MathdjF6PAvUhuGQjANqw6F9PqlJ/i3bUtmz2cglQjOB+PouPei9rbKStT31m30aS4Y
-         kwuBdWrl1g8GiM6ZlMXuMCPfdAt84bpLhSBqvb5odskKPepc8sjLigA5EF3BJOeb5svs
-         AysrapGjJhRRptlxJKvV+lPXsFj3UwqC8p3lKion+tjECFKJ0HyslADLqe5ObEOBazRI
-         Y5gA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=go2HYs26cOfYUYY2faa5eBuiVSTmo5KLa3Wxaa/G6Cs=;
-        b=QtZw/Psnnp2lXyzdUbQFP+Vm8yP76jYwe3cwf8WFzTVwbwDuFDeg1k3YHcpkqaP54s
-         U7Pm2kqbCW6+mJFfUZnI30Mgxu2iN6E+ibhLZlJghcAhhJ0mwnlGPYpJTvLAnJi39u8g
-         IJsFdWQKQhLgZO7KsLyrNTSY72HMRNHJX99xFqvvfiOAekB4pMvCv7yvhicLTNBy06rF
-         ufaPhv5547ktX4epcSgQeHkKmYhue4O66WQgKpcCo55SO+p0UxazfwBIUGc99SVHJMfC
-         8Xy+PQmXxWWFc7KtNk8CURKAV51R8lqBzP8bMPvPq34pEiDrTdHdxTmfabgD2qEF871g
-         TGTw==
-X-Gm-Message-State: AOAM531OZR65/gg5PPywV+3LRv12a8QU4D2lrHwJnEIz8qG4UYlo7AEM
-        DShpeCZVeuKITCPjOsGS+ec=
-X-Google-Smtp-Source: ABdhPJz/pwOulosmkM8/ZyQsw9sbB4dUY5ED2KPMhp3ir7XbRnDgHgdC8T7DSPmmx1CtQvdi2gxLdw==
-X-Received: by 2002:a92:d249:: with SMTP id v9mr4990284ilg.305.1612407209400;
-        Wed, 03 Feb 2021 18:53:29 -0800 (PST)
-Received: from localhost ([172.243.146.206])
-        by smtp.gmail.com with ESMTPSA id e1sm2005405iod.17.2021.02.03.18.53.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Feb 2021 18:53:28 -0800 (PST)
-Date:   Wed, 03 Feb 2021 18:53:20 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     netdev@vger.kernel.org,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        bpf@vger.kernel.org,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Message-ID: <601b61a0e4868_194420834@john-XPS-13-9370.notmuch>
-In-Reply-To: <20210204001458.GB2900@Leo-laptop-t470s>
-References: <20210122074652.2981711-1-liuhangbin@gmail.com>
- <20210125124516.3098129-1-liuhangbin@gmail.com>
- <20210204001458.GB2900@Leo-laptop-t470s>
-Subject: Re: [PATCHv17 bpf-next 0/6] xdp: add a new helper for dev map
- multicast support
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        id S234551AbhBDDIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 22:08:18 -0500
+Received: from m12-16.163.com ([220.181.12.16]:52909 "EHLO m12-16.163.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234506AbhBDDIG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Feb 2021 22:08:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Date:From:Subject:Message-ID:MIME-Version; bh=Reot6
+        AsId5qeu1pVUXcL6feuR4qdIy6fvuI0wH6Qi3A=; b=RQZEfKfFqAnXN/utn8bqx
+        HZLckvadbMdqJctAKUbwjJMuHgfvwni4JrgRwz5Qrw1O5ScF6oDS7Fs0x77VqKGa
+        BVq/aQkTHj9acfSWbNMRo0R35JEuav5iWL8mqGe+2K3sAoWVVteV8grzMYiZRt/4
+        5vrEux46vn8Leoukg6I81A=
+Received: from localhost (unknown [119.137.55.230])
+        by smtp12 (Coremail) with SMTP id EMCowAB3MTkDQBtgyX2RaQ--.24271S2;
+        Thu, 04 Feb 2021 08:29:56 +0800 (CST)
+Date:   Thu, 4 Feb 2021 08:30:07 +0800
+From:   wengjianfeng <samirweng1979@163.com>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     stf_xl@wp.pl, helmut.schaa@googlemail.com, kvalo@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        wengjianfeng <wengjianfeng@yulong.com>
+Subject: Re: [PATCH] rt2x00: remove duplicate word in comment
+Message-ID: <20210204083007.000069d2@163.com>
+In-Reply-To: <6bf90f62-f14e-9c4a-748b-4923fcae9bef@infradead.org>
+References: <20210203063850.15844-1-samirweng1979@163.com>
+        <6bf90f62-f14e-9c4a-748b-4923fcae9bef@infradead.org>
+Organization: yulong
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; i686-w64-mingw32)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-CM-TRANSID: EMCowAB3MTkDQBtgyX2RaQ--.24271S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7tr18Jr4rAFW3uw4rZw45GFg_yoW8JFW3pF
+        WrGFWjkFyDGryDWa4xJa4Syry5Zas0kryUKr4DC3y5ZrW5XF1rJrZ7WF1xu3WDJ3yrGa4j
+        vr4Iq3W5WFZ8Ja7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jC1v3UUUUU=
+X-Originating-IP: [119.137.55.230]
+X-CM-SenderInfo: pvdpx25zhqwiqzxzqiywtou0bp/1tbiqgkusVr7sA05owABs7
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hangbin Liu wrote:
-> Hi Daniel, Alexei,
+On Wed, 3 Feb 2021 07:16:17 -0800
+Randy Dunlap <rdunlap@infradead.org> wrote:
+
+> On 2/2/21 10:38 PM, samirweng1979 wrote:
+> > From: wengjianfeng <wengjianfeng@yulong.com>
+> > 
+> > remove duplicate word 'we' in comment
+> > 
+> > Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
+> > ---
+> >  drivers/net/wireless/ralink/rt2x00/rt2x00crypto.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/net/wireless/ralink/rt2x00/rt2x00crypto.c
+> > b/drivers/net/wireless/ralink/rt2x00/rt2x00crypto.c index
+> > c861811..7158152 100644 ---
+> > a/drivers/net/wireless/ralink/rt2x00/rt2x00crypto.c +++
+> > b/drivers/net/wireless/ralink/rt2x00/rt2x00crypto.c @@ -179,7
+> > +179,7 @@ void rt2x00crypto_rx_insert_iv(struct sk_buff *skb,
+> >  	 * Make room for new data. There are 2 possibilities
+> >  	 * either the alignment is already present between
+> >  	 * the 802.11 header and payload. In that case we
+> > -	 * we have to move the header less then the iv_len
+> > +	 * have to move the header less then the iv_len
 > 
-> It has been one week after Maciej, Toke, John's review/ack. What should
-> I do to make a progress for this patch set?
+> s/then/than/
+> 
+> >  	 * since we can use the already available l2pad bytes
+> >  	 * for the iv data.
+> >  	 * When the alignment must be added manually we must
+> > 
+> 
 > 
 
-Patchwork is usually the first place to check:
+Hi Randy,
+   So you means add it for byte alignment, right? if yes,just ignore
+   the patch. thanks.
 
- https://patchwork.kernel.org/project/netdevbpf/list/?series=421095&state=*
-
-Looks like it was marked changed requested. After this its unlikely
-anyone will follow up on it, rightly so given the assumption another
-revision is coming.
-
-In this case my guess is it was moved into changes requested because
-I asked for a change, but then after some discussion you convinced me
-the change was not in fact needed.
-
-Alexei, Daniel can probably tell you if its easier to just send a v18
-or pull in the v17 assuming any final reviews don't kick anything
-else up.
-
-Thanks
-John
