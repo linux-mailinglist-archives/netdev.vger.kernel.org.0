@@ -2,171 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6B063100A4
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 00:29:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57A1A3100C6
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 00:35:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230106AbhBDX1X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 18:27:23 -0500
-Received: from mga02.intel.com ([134.134.136.20]:57600 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230152AbhBDX1I (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Feb 2021 18:27:08 -0500
-IronPort-SDR: vPJ0rznlnDm16wmZSdxmEnJdBoy6WQAasb3hLWJCh8b9bkjV/BneePGVj1ZeNzvzo3/TlwsNcV
- 4CLXYQzkBw+Q==
-X-IronPort-AV: E=McAfee;i="6000,8403,9885"; a="168462976"
-X-IronPort-AV: E=Sophos;i="5.81,153,1610438400"; 
-   d="scan'208";a="168462976"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2021 15:23:37 -0800
-IronPort-SDR: HIUb5L6ElQMAa5KXGgCP5zuq/M0tFCOXgV3Xl0cp1IOfJOnyPwCHlY+l+cwVc4U0o3oTawLvO5
- ZbZSAVWY66Aw==
-X-IronPort-AV: E=Sophos;i="5.81,153,1610438400"; 
-   d="scan'208";a="415560537"
-Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.255.231.23])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2021 15:23:37 -0800
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Westphal <fw@strlen.de>, davem@davemloft.net,
-        kuba@kernel.org, mptcp@lists.01.org, matthieu.baerts@tessares.net,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 2/2] mptcp: pm: add lockdep assertions
-Date:   Thu,  4 Feb 2021 15:23:30 -0800
-Message-Id: <20210204232330.202441-3-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.30.0
-In-Reply-To: <20210204232330.202441-1-mathew.j.martineau@linux.intel.com>
-References: <20210204232330.202441-1-mathew.j.martineau@linux.intel.com>
+        id S230340AbhBDXeZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 18:34:25 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:14580 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229976AbhBDXeX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 18:34:23 -0500
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 114NEISh018203;
+        Thu, 4 Feb 2021 15:33:18 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=H0y8Djd1TGaOIsjPfvGSGu+Zz0lSmGS/UMLsTDj2R2E=;
+ b=pqDfsvTh9y21Y8BhfgwfxaR8Bbz4Vc7fQ64xLlL8zqI5eQpQezvpwlBuCD2B2gLbzRuB
+ f9KeQIwfuAs3SpUcBD8xTjgbKg5vXeaMPQ+1q/JDcnbFSIX9cC2Nd73v5qfeMGcLF7tb
+ JWLUdFSE8ljFMbkxHwmxj/r0HU8at5U8aYw= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 36fvyd1kb5-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 04 Feb 2021 15:33:18 -0800
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 4 Feb 2021 15:33:16 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CUU3XYF5/DecenhUZJrUzQNrsfaX6JwuZC9p7NkjPqCC5tJUdYAU5if4Tkxw+ZR3Jn50Db/KrSPM9213q5ITPVZ6drpz5zVq5TQrQQlfIMYgudFy/LD5NVUBCv/ulyrtvBjMqNBi3Qek2trG/j2O5NfSZeU7Q+fmkpXUp43ZSA2xRKkBHBa6XRlgFwJSjEAi/UNofLxQ4FCxEnN2udKIwgJFpH8eIV9cJ8mlX9+ijHd9Qnl0/+mGbZFHHaCqip/nZ+++0p18Q9HNABcJg8ScotWt7QSS+VapkIZPsMLV0F8wgGGt4aDeuMzLMpiSohcLAxiCJi5yC0nknweJHyV9JA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=H0y8Djd1TGaOIsjPfvGSGu+Zz0lSmGS/UMLsTDj2R2E=;
+ b=Cw5IFzg0f3eIr4DzMo+ACei2yC996bvUU0C/3yuUy5L9U2ig5wtYU6rFo4eoXlImanyNRAI5otI+2t3Van9WOvJRwq5U+O6WUhQ1OngZe0T/5Nkif/heLWdr0sDvFMbfI4d0XpkYrktFdXgvqZUFKftHUF3Ia7O3Y/gQpLTwiO/w6Hz8vJv6XpYfb7SOt6JvdjJA6WYMri50mngXTzDTJDsDSzhc7X2Dz0Gf86p7eImHKD0tatbtqRWntOU2yMP3p7db2/qT2wWTVjmJDlu+uM3S+EAtaGUo3eFA0TWhaJOFms3m6pN5OOy003YQL9X+UVE5+0CJqUq0Qmqrev0kAQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=H0y8Djd1TGaOIsjPfvGSGu+Zz0lSmGS/UMLsTDj2R2E=;
+ b=JjK/7xhIPmES6gRKzQhyw5o8PisOKqZidQoWZgx61bH2VDBDkFLUb1F8u3q32VqEQBtXRMGsLi86fw63OSKxXQORWfp4r/z2YJt/OMT4pIvZIarTJpNP9GADBaiiZ7oHDC7Jx6n6beOj4VdfQVpp1y98YH9yGYWTsv+ROjbGWKA=
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
+ by BYAPR15MB2838.namprd15.prod.outlook.com (2603:10b6:a03:b4::29) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.19; Thu, 4 Feb
+ 2021 23:33:09 +0000
+Received: from BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::c97:58e4:ee9:1dc0]) by BYAPR15MB2999.namprd15.prod.outlook.com
+ ([fe80::c97:58e4:ee9:1dc0%7]) with mapi id 15.20.3763.019; Thu, 4 Feb 2021
+ 23:33:09 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Jiri Olsa <jolsa@kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "Martin Lau" <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        "linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>
+Subject: Re: [PATCH bpf-next 1/4] tools/resolve_btfids: Build libbpf and
+ libsubcmd in separate directories
+Thread-Topic: [PATCH bpf-next 1/4] tools/resolve_btfids: Build libbpf and
+ libsubcmd in separate directories
+Thread-Index: AQHW+ztTcRSjOC657E2P+KoC+1mF2apIpbeA
+Date:   Thu, 4 Feb 2021 23:33:08 +0000
+Message-ID: <4EA9EEEC-ABCE-41E3-9405-D75B60BF44AD@fb.com>
+References: <20210129134855.195810-1-jolsa@redhat.com>
+ <20210204211825.588160-1-jolsa@kernel.org>
+ <20210204211825.588160-2-jolsa@kernel.org>
+In-Reply-To: <20210204211825.588160-2-jolsa@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3654.40.0.2.32)
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=fb.com;
+x-originating-ip: [2620:10d:c091:480::1:aa49]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 7cace225-50c5-4769-3d49-08d8c9653b0c
+x-ms-traffictypediagnostic: BYAPR15MB2838:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR15MB28380A2302D2B5DDB53641C8B3B39@BYAPR15MB2838.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:5797;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: dQZG8Oe0WYrW6F6jjiDjMKQ4e4OCYciJBeiFvAdPmPI+IhZfkpBV8l6vBetJr0jLYu2cjqV5uA1W6BhdYgVv2XrWr/fupgHUCv9MNCKIBrfWOh711Huwjg4bX+5+TNsMfXv+sJSkHpGZHYMOjv/Y0B22AVZ0Rnh4uSgfPUH8x333QKYdgZOTCUtGuUyA2tCEldp1/LBr4N52F4hvtLEuyqT37suK3cTvTZRNEcGtz9J7PHEsF2fCiwCHHPv/czfOLUtfPh7oh2M10dIjolSyv27J9zm6Bve/z4cm2Ean/2toR16PbAXfpKezem6IKkGxCOyjtmFXyA+y9VHagXMJ5949tJZUrqK+HUQvs27JM4asXXzSf9OY7P55KYBaiXb4Ej2W/fMleepfvm167jinOdCqoUDjMQfXA5uNX93fmPFLQmSDpZLjuKjZEI8EbhfDDc2QI5e1jf2Pue3aDyr4jJRqtHps5gBwTpBAzDs7t2hg53tWcdDQeVmnwLY1MwvQREbAMbznZZ84wSXp9wQJovkFPqfAs5yhOOcc82jIL87PCPtbeKl/Zp0oGmsaf0emDBz14FktufbobfSAqOcbCQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(346002)(39860400002)(376002)(136003)(366004)(5660300002)(2906002)(2616005)(8676002)(4744005)(6916009)(33656002)(8936002)(7416002)(6486002)(91956017)(66446008)(76116006)(86362001)(71200400001)(6506007)(36756003)(53546011)(316002)(66556008)(64756008)(478600001)(66476007)(4326008)(54906003)(6512007)(186003)(66946007)(45980500001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?juFWICrsEaQFMgzG9vx0aLYPeuhjoqa3I57RlLHsfJyz7va3mzw7vHJVXsjo?=
+ =?us-ascii?Q?JnWTSdC2Mp2Z4RwFqOHKECNxj+OKwBL1AB7KIrHzEZiI6FvrnhfyB4qLY7Sd?=
+ =?us-ascii?Q?sDwGRbgA1LytzWgrlNC7D3RvOVEDBdOHvzDYcHv1gTJwr4s6Ba65txhC2cg2?=
+ =?us-ascii?Q?lyS51WZCNVaT6gvWVQo5eCha2y1dhJv8nE0q+CL08fE8yN6bGE9Asqel4A2x?=
+ =?us-ascii?Q?4T237FnuwkROHk2wXSqoaGNPmc8BG3e8e1HZUJuL9kcfdRWgHHxRONa954xL?=
+ =?us-ascii?Q?ufRFqJgUZLnRA9JH6ZWtpJ9uA9CqD3WPlmiz+xlQJPs+UaC6GECOKKONnlsv?=
+ =?us-ascii?Q?nDDpXoEn0ujlSaBo009S5w8LnrWeCOmKnK58KMPc4AFERZOADF3wLC84+eQs?=
+ =?us-ascii?Q?nNoY/rvdXe6jZZsJ0ylcyOQUQtXzgxfMd9IfUgQP0c1mUuly4yFujyBHLZeo?=
+ =?us-ascii?Q?ma3ptefahFFS8ZhJcESBvEBI9/ph23mvrlcEr0fRHftk0om2awPpnwTLXIjg?=
+ =?us-ascii?Q?Co9BaFK06nWDqlh3kQHPRn/8H5Ya8NOTI9PdjfpXS2bx+wkFi1U8ZkT4M1NP?=
+ =?us-ascii?Q?IUQJ+NA0xDgE9J10syHPiPviHFWX8XeJ1M5EYTin5Qb6A5CS/kzB+vp+h0YM?=
+ =?us-ascii?Q?BHx+k6kviI1vFTvNYgwB+pXSUU7TFqohTg0KuUYV7DpfuZ5SsPXRB5Lv47iY?=
+ =?us-ascii?Q?yhziWdiIHhViwg+yTv1EU9g5UFd9H9GI5ulxlJKW4aGD7OtI6JjCtZEQdJqY?=
+ =?us-ascii?Q?I7FYwX/JHSoekHLWXykscN+1tpq8NzhynRXuRCK9v1R7hreodaqs6wdx/NZT?=
+ =?us-ascii?Q?BjgEJadje3tNdDRePFQJQCmj2VhwyBDbr0Y6n4OFMAMGTNi+ga4IGTcDHDYa?=
+ =?us-ascii?Q?luNw1v6bo8BnCUOyn2G7WjXzG0++wtroEbQaBdpZEZ9+sGYXim14deYZBSoZ?=
+ =?us-ascii?Q?tYows6TBl8VBv91MtTBrOLPS7pUX6A0BCTeqWWnV5VCc5waYSfVltSXZwYuz?=
+ =?us-ascii?Q?yW9wiMpDh/VKyaDbjdaFZfT/FUL8Ss9Ryi7gIlHCDebQqbFm9pkJXBMZm+f2?=
+ =?us-ascii?Q?qSoVFg2lGKvEMYMq+fQwWmEBJ9eR+yRhmQdo12G+U1B5ZhOqUuVifb7rtLKt?=
+ =?us-ascii?Q?0tQTsoDECgUWZXmyspmmFfRjUfZFT9wTjW4DwufGzmknGcmgP0yiwxIjUoqu?=
+ =?us-ascii?Q?PoWuj6s5X1uI+MKlPtfpmiCWYhOTGuGdLEFMG2aqmTU2ND5iEv/TmQIXjpbZ?=
+ =?us-ascii?Q?y8X4NCdHjz0/5vIj/eJIxcQ9CQB5VXb6o7qOfg/yJX6mFcm3A+lP9sUaSujz?=
+ =?us-ascii?Q?IdUBCtPYACJ3WXlSfqgWR6zRr5blVPQ0doXQrl5AS3Nv7L8DSpJ60BfAHub1?=
+ =?us-ascii?Q?ed5TZfw=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <DAAF4978B9AB7F4195457CFD49AB124E@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2999.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7cace225-50c5-4769-3d49-08d8c9653b0c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Feb 2021 23:33:09.1633
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: dVlf8TTxFauR/9WYezcLNEAqsVzz028w48Qho8Sd3zqkx0e4jurgJqOHKv3ybHcW/3oPPUcl3eqPCedWzOFv9w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2838
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
+ definitions=2021-02-04_13:2021-02-04,2021-02-04 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
+ impostorscore=0 mlxscore=0 lowpriorityscore=0 malwarescore=0 bulkscore=0
+ priorityscore=1501 clxscore=1011 phishscore=0 spamscore=0 mlxlogscore=698
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2102040143
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
 
-Add a few assertions to make sure functions are called with the needed
-locks held.
-Two functions gain might_sleep annotations because they contain
-conditional calls to functions that sleep.
 
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- net/mptcp/pm.c         |  2 ++
- net/mptcp/pm_netlink.c | 13 +++++++++++++
- net/mptcp/protocol.c   |  4 ++++
- net/mptcp/protocol.h   |  5 +++++
- 4 files changed, 24 insertions(+)
+> On Feb 4, 2021, at 1:18 PM, Jiri Olsa <jolsa@kernel.org> wrote:
+>=20
+> Setting up separate build directories for libbpf and libpsubcmd,
+> so it's separated from other objects and we don't get them mixed
+> in the future.
+>=20
+> It also simplifies cleaning, which is now simple rm -rf.
+>=20
+> Also there's no need for FEATURE-DUMP.libbpf and bpf_helper_defs.h
+> files in .gitignore anymore.
+>=20
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 
-diff --git a/net/mptcp/pm.c b/net/mptcp/pm.c
-index 3a22e73220b9..1a25003fd8e3 100644
---- a/net/mptcp/pm.c
-+++ b/net/mptcp/pm.c
-@@ -20,6 +20,8 @@ int mptcp_pm_announce_addr(struct mptcp_sock *msk,
- 
- 	pr_debug("msk=%p, local_id=%d", msk, addr->id);
- 
-+	lockdep_assert_held(&msk->pm.lock);
-+
- 	if (add_addr) {
- 		pr_warn("addr_signal error, add_addr=%d", add_addr);
- 		return -EINVAL;
-diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index e7b1abb4f0c2..23780a13b934 100644
---- a/net/mptcp/pm_netlink.c
-+++ b/net/mptcp/pm_netlink.c
-@@ -145,6 +145,8 @@ select_local_address(const struct pm_nl_pernet *pernet,
- 	struct mptcp_pm_addr_entry *entry, *ret = NULL;
- 	struct sock *sk = (struct sock *)msk;
- 
-+	msk_owned_by_me(msk);
-+
- 	rcu_read_lock();
- 	__mptcp_flush_join_list(msk);
- 	list_for_each_entry_rcu(entry, &pernet->local_addr_list, list) {
-@@ -246,6 +248,8 @@ lookup_anno_list_by_saddr(struct mptcp_sock *msk,
- {
- 	struct mptcp_pm_add_entry *entry;
- 
-+	lockdep_assert_held(&msk->pm.lock);
-+
- 	list_for_each_entry(entry, &msk->pm.anno_list, list) {
- 		if (addresses_equal(&entry->addr, addr, true))
- 			return entry;
-@@ -342,6 +346,8 @@ static bool mptcp_pm_alloc_anno_list(struct mptcp_sock *msk,
- 	struct sock *sk = (struct sock *)msk;
- 	struct net *net = sock_net(sk);
- 
-+	lockdep_assert_held(&msk->pm.lock);
-+
- 	if (lookup_anno_list_by_saddr(msk, &entry->addr))
- 		return false;
- 
-@@ -496,6 +502,9 @@ void mptcp_pm_nl_add_addr_send_ack(struct mptcp_sock *msk)
- {
- 	struct mptcp_subflow_context *subflow;
- 
-+	msk_owned_by_me(msk);
-+	lockdep_assert_held(&msk->pm.lock);
-+
- 	if (!mptcp_pm_should_add_signal(msk))
- 		return;
- 
-@@ -566,6 +575,8 @@ void mptcp_pm_nl_rm_addr_received(struct mptcp_sock *msk)
- 
- 	pr_debug("address rm_id %d", msk->pm.rm_id);
- 
-+	msk_owned_by_me(msk);
-+
- 	if (!msk->pm.rm_id)
- 		return;
- 
-@@ -601,6 +612,8 @@ void mptcp_pm_nl_rm_subflow_received(struct mptcp_sock *msk, u8 rm_id)
- 
- 	pr_debug("subflow rm_id %d", rm_id);
- 
-+	msk_owned_by_me(msk);
-+
- 	if (!rm_id)
- 		return;
- 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 1405e146dd7c..b9f16a1535d2 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -2187,6 +2187,8 @@ static void __mptcp_close_subflow(struct mptcp_sock *msk)
- {
- 	struct mptcp_subflow_context *subflow, *tmp;
- 
-+	might_sleep();
-+
- 	list_for_each_entry_safe(subflow, tmp, &msk->conn_list, node) {
- 		struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
- 
-@@ -2529,6 +2531,8 @@ static void __mptcp_destroy_sock(struct sock *sk)
- 
- 	pr_debug("msk=%p", msk);
- 
-+	might_sleep();
-+
- 	/* dispose the ancillatory tcp socket, if any */
- 	if (msk->subflow) {
- 		iput(SOCK_INODE(msk->subflow));
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index 1cc7948a1826..73a923d02aad 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -288,6 +288,11 @@ struct mptcp_sock {
- #define mptcp_for_each_subflow(__msk, __subflow)			\
- 	list_for_each_entry(__subflow, &((__msk)->conn_list), node)
- 
-+static inline void msk_owned_by_me(const struct mptcp_sock *msk)
-+{
-+	sock_owned_by_me((const struct sock *)msk);
-+}
-+
- static inline struct mptcp_sock *mptcp_sk(const struct sock *sk)
- {
- 	return (struct mptcp_sock *)sk;
--- 
-2.30.0
 
+Acked-by: Song Liu <songliubraving@fb.com>
+
+[...]
