@@ -2,99 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 652D630F74E
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 17:13:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E20F30F753
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 17:13:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237780AbhBDQJ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 11:09:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41506 "EHLO mail.kernel.org"
+        id S237740AbhBDQL3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 11:11:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41792 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237835AbhBDQJa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Feb 2021 11:09:30 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B37B264F6A;
-        Thu,  4 Feb 2021 16:08:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1612454929;
-        bh=3IAPQCCNYn5V60zzmVrr36a9HtGkWRc99HBODO496rg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SbGXD2TYulwmiUQymxa1aJ6E9gI3aWMtXnHBN5sPgXVrkpXtCbu+v0ZHPxelGg3kf
-         OCEK7Js2lxNP6OULdJSFxzpq9FfVDxZmJCQNHvO0+GZx0qC8q1M2tspWFbV3CM2ebX
-         7vYTxzaaKedXFZO77mr+R3l5UMy2ORCNsruSabzc=
-Date:   Thu, 4 Feb 2021 17:08:46 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <uwe@kleine-koenig.org>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jens Axboe <axboe@kernel.dk>, Matt Mackall <mpm@selenic.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Peter Huewe <peterhuewe@gmx.de>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Haren Myneni <haren@us.ibm.com>,
-        Breno =?iso-8859-1?Q?Leit=E3o?= <leitao@debian.org>,
-        Nayna Jain <nayna@linux.ibm.com>,
-        Paulo Flabiano Smorigo <pfsmorigo@gmail.com>,
-        Steven Royer <seroyer@linux.ibm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Cristobal Forno <cforno12@linux.ibm.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dany Madden <drt@linux.ibm.com>, Lijun Pan <ljp@linux.ibm.com>,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        Tyrel Datwyler <tyreld@linux.ibm.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Michael Cyr <mikecyr@linux.ibm.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        sparclinux@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-integrity@vger.kernel.org,
-        netdev@vger.kernel.org, linux-scsi@vger.kernel.org,
-        target-devel@vger.kernel.org
-Subject: Re: [PATCH] vio: make remove callback return void
-Message-ID: <YBwcDmtefa2WmS90@kroah.com>
-References: <20210127215010.99954-1-uwe@kleine-koenig.org>
+        id S237687AbhBDQKr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Feb 2021 11:10:47 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 0915D64F6A;
+        Thu,  4 Feb 2021 16:10:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612455007;
+        bh=swyBGTcsJBrat/oEJNcKSg17JKJwWj1HmDi3Z4jelJw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=RDEqR/C103+FBZcNr88BS6Yt7pBqdwEzFe+5CTECorvhs7ARjSccKX1JjD9P2Qxaa
+         azCvoScFRl+z6z4EYzClwehTxZm2PqS4LLjyP7kzSnPr9yWTSo+OiuVoYQMbjKs7iL
+         kTcE7+8amvpL+Io1t5/z2hP5pWFnowjA8YlsqCjG/uOACIS7FhJMk+ws7FFc0ib0Dd
+         j9n3+CnHI5gwaxj+UD/zKL8rnX2/ezxLn3eCKT8mOaWZ3bd4hfpKaP7/AqS5ZjUEVN
+         u7+SsTx34EbuWIrIPXFFaAoxu8yo08YABd5/1Jm4jQ7/4YF2OZfZ9OrjVn9ecCv7F8
+         yvHtWVhIcAjlA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id F0422609EC;
+        Thu,  4 Feb 2021 16:10:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210127215010.99954-1-uwe@kleine-koenig.org>
+Subject: Re: [PATCH bpf-next] bpf: Emit explicit NULL pointer checks for PROBE_LDX
+ instructions.
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161245500698.23366.9347266254041745601.git-patchwork-notify@kernel.org>
+Date:   Thu, 04 Feb 2021 16:10:06 +0000
+References: <20210202053837.95909-1-alexei.starovoitov@gmail.com>
+In-Reply-To: <20210202053837.95909-1-alexei.starovoitov@gmail.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     davem@davemloft.net, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, kernel-team@fb.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 27, 2021 at 10:50:10PM +0100, Uwe Kleine-König wrote:
-> The driver core ignores the return value of struct bus_type::remove()
-> because there is only little that can be done. To simplify the quest to
-> make this function return void, let struct vio_driver::remove() return
-> void, too. All users already unconditionally return 0, this commit makes
-> it obvious that returning an error code is a bad idea and makes it
-> obvious for future driver authors that returning an error code isn't
-> intended.
-> 
-> Note there are two nominally different implementations for a vio bus:
-> one in arch/sparc/kernel/vio.c and the other in
-> arch/powerpc/platforms/pseries/vio.c. I didn't care to check which
-> driver is using which of these busses (or if even some of them can be
-> used with both) and simply adapt all drivers and the two bus codes in
-> one go.
-> 
-> Note that for the powerpc implementation there is a semantical change:
-> Before this patch for a device that was bound to a driver without a
-> remove callback vio_cmo_bus_remove(viodev) wasn't called. As the device
-> core still considers the device unbound after vio_bus_remove() returns
-> calling this unconditionally is the consistent behaviour which is
-> implemented here.
-> 
-> Signed-off-by: Uwe Kleine-König <uwe@kleine-koenig.org>
-> ---
-> Hello,
-> 
-> note that this change depends on
-> https://lore.kernel.org/r/20210121062005.53271-1-ljp@linux.ibm.com which removes
-> an (ignored) return -EBUSY in drivers/net/ethernet/ibm/ibmvnic.c.
-> I don't know when/if this latter patch will be applied, so it might take
-> some time until my patch can go in.
+Hello:
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This patch was applied to bpf/bpf-next.git (refs/heads/master):
+
+On Mon,  1 Feb 2021 21:38:37 -0800 you wrote:
+> From: Alexei Starovoitov <ast@kernel.org>
+> 
+> PTR_TO_BTF_ID registers contain either kernel pointer or NULL.
+> Emit the NULL check explicitly by JIT instead of going into
+> do_user_addr_fault() on NULL deference.
+> 
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> 
+> [...]
+
+Here is the summary with links:
+  - [bpf-next] bpf: Emit explicit NULL pointer checks for PROBE_LDX instructions.
+    https://git.kernel.org/bpf/bpf-next/c/4c5de127598e
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
