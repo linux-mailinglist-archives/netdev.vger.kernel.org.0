@@ -2,171 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48EF430ED2F
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 08:21:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 53E7630ED3E
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 08:24:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234286AbhBDHUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 02:20:09 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:10198 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234165AbhBDHUC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 02:20:02 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B601b9ff90001>; Wed, 03 Feb 2021 23:19:21 -0800
-Received: from mtl-vdi-166.wap.labs.mlnx (172.20.145.6) by
- HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3; Thu, 4 Feb 2021 07:19:19 +0000
-Date:   Thu, 4 Feb 2021 09:19:15 +0200
-From:   Eli Cohen <elic@nvidia.com>
-To:     Si-Wei Liu <siwliu.kernel@gmail.com>
-CC:     Si-Wei Liu <si-wei.liu@oracle.com>, <mst@redhat.com>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lulu@redhat.com>
-Subject: Re: [PATCH] vdpa/mlx5: Restore the hardware used index after change
- map
-Message-ID: <20210204071915.GA84219@mtl-vdi-166.wap.labs.mlnx>
-References: <20210202142901.7131-1-elic@nvidia.com>
- <CAPWQSg3Z1aCZc7kX2x_4NLtAzkrZ+eO5ABBF0bAQfaLc=++Y2Q@mail.gmail.com>
- <20210203064812.GA33072@mtl-vdi-166.wap.labs.mlnx>
- <CAPWQSg0OptdAstG10e+zMvD2ZHbHdS+o2ppUxZyM0kJsd34FdA@mail.gmail.com>
+        id S234347AbhBDHWz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 02:22:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47488 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233803AbhBDHWx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 02:22:53 -0500
+Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7EF8C0613D6;
+        Wed,  3 Feb 2021 23:22:13 -0800 (PST)
+Received: by mail-il1-x12c.google.com with SMTP id p15so1670525ilq.8;
+        Wed, 03 Feb 2021 23:22:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=J0Hhokg7bb4w32rTwE6DeGStp3ax7fi3VK+om+D8gps=;
+        b=vMbwPTWjoKKn4UtoCX2tY5RiZb8B7vThyDlUBBZW7TE26y4IOifKk7KPkgxvbmOHO0
+         6KVYtzuqS5f9z6GpXiY8YOl4ZaIAegheScHkXqduRs1pZGUOuzPljUxOlDkx02Uf44WK
+         HB6eqZPFkS5u7kveVWMZQWdgXOnOdxLw835vb/fgHoP4AJKZ8adYhcHOoqa5YCPvChIM
+         eXYUUNnNs4QxbES6nKSm3fCRYDzT3CptnNPL7wzUrIVi+q2jabNksuyTiIo0AHz+O55i
+         9/v/OIqQJ6H1fTlBqtgRm8VrEzAHrniGZZxOrISnXsMbjNgS4JWc1upqYaxdYYtRGmzL
+         hJFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=J0Hhokg7bb4w32rTwE6DeGStp3ax7fi3VK+om+D8gps=;
+        b=AXUFLnMxrKlt/rKe65v6rMVdEMnTYQcpIsNziuFxgaLWFlB9JyYpMbBA8iyJfs50le
+         1Z+eEK8W7pDTOdcyXWqqW+tp20ss/iP7xqwsGWojHJ4FHLsbeT7r2NSMc6G0Vfj7fZFd
+         38h0pSulshTpAcdOsOLPoCTcvv8EuowcmjaGvaymMflseVzCi4Mpb53kz6be5wo6FGOm
+         hSnLCwCf8WplFD6gBNU6x9Ve1HtLXB6V4nCYZ6usfqExfpXe/ecvhuFghPWBw9qCxU/u
+         DWhOb5MteAhIkhuUYL2OhMO9FByaOzYPqJOuASXP525enJsoqkWYxTJ2oY+Dbae0C1+W
+         1kqw==
+X-Gm-Message-State: AOAM533OIoXMA0gN26wR351LE9snfyS+XTVeOMEO8t6AR0y05HrdxkP/
+        NP87JBbS9Jj6SGQ1B+jPUwAHdtJFbT4Y3q0q+nU=
+X-Google-Smtp-Source: ABdhPJy/vmxig/W9Nw0gIHMoujn1aKGJuGQ4ghVxjXftdO9e/CK0p+9mzgPsiVHUi0Ph+DK34s+6mm6T4lDcs7oFmng=
+X-Received: by 2002:a92:444e:: with SMTP id a14mr5831856ilm.215.1612423333162;
+ Wed, 03 Feb 2021 23:22:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CAPWQSg0OptdAstG10e+zMvD2ZHbHdS+o2ppUxZyM0kJsd34FdA@mail.gmail.com>
-User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1612423161; bh=qXil4DVR+JNtZdJhYnjwoBi2C3SmZ4RSHdznLAfLqAM=;
-        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-         Content-Type:Content-Disposition:In-Reply-To:User-Agent:
-         X-Originating-IP:X-ClientProxiedBy;
-        b=UlEQn9p9Nk1JojpSH6PXd8MKt0dOxRKYw8iMGMZBuHBwDud4T1iZ2IvxmKHCzf7CG
-         APZk7f+plmsURiPTbOGQ+fTMkfuYdLBLFczwUgncJ3ZpcXxdYaJD+rl0UClAoD0+U6
-         Ds5BfR2e0Ogf/wu9MrixpFGvRigSfH8hJ1cQAd8Y3ZVXEmtN4A9iK2YSOmzCNbYgrZ
-         6Nb7/2ndMaM26lDpPrkl5BTiHTjkcJSkq0UV+vbBPxzH3penIQ7189LFEva0PTVV1F
-         wpKaRmTuXrINw9yAs2iGhx9Ox/+R1xGltj0GoCYagCheaM7p6sCNaWuy8e2QzroAvu
-         TOKOjnSHevD8Q==
+References: <20210111180609.713998-1-natechancellor@gmail.com>
+ <CAK7LNAQ=38BUi-EG5v2UiuAF-BOsVe5BTd-=jVYHHHPD7ikS5A@mail.gmail.com>
+ <20210111193400.GA1343746@ubuntu-m3-large-x86> <CAK7LNASZuWp=aPOCKo6QkdHwM5KG6MUv8305v3x-2yR7cKEX-w@mail.gmail.com>
+ <20210111200010.GA3635011@ubuntu-m3-large-x86> <CAEf4BzaL18a2+j3EYaD7jcnbJzqwG2MuBxXR2iRZ3KV9Jwrj6w@mail.gmail.com>
+ <CAEf4Bzbv6nrJNxbZAvFx4Djvf1zbWnrV_i90vPGHtV-W7Tz=bQ@mail.gmail.com> <20210113230739.GA22747@Ryzen-9-3900X.localdomain>
+In-Reply-To: <20210113230739.GA22747@Ryzen-9-3900X.localdomain>
+Reply-To: sedat.dilek@gmail.com
+From:   Sedat Dilek <sedat.dilek@gmail.com>
+Date:   Thu, 4 Feb 2021 08:22:01 +0100
+Message-ID: <CA+icZUVfznOpAQK=6GWoF6XmzHyXjdUgNG5HeoQw3Dwb4wW9uA@mail.gmail.com>
+Subject: Re: [PATCH] bpf: Hoise pahole version checks into Kconfig
+To:     Nathan Chancellor <natechancellor@gmail.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 03, 2021 at 12:33:26PM -0800, Si-Wei Liu wrote:
-> On Tue, Feb 2, 2021 at 10:48 PM Eli Cohen <elic@nvidia.com> wrote:
+On Thu, Jan 14, 2021 at 12:07 AM Nathan Chancellor
+<natechancellor@gmail.com> wrote:
+>
+> On Wed, Jan 13, 2021 at 02:38:27PM -0800, Andrii Nakryiko wrote:
+> > Hm.. Just saw Linus proposing using $(error-if) in Kconfig for an
+> > unrelated issue ([0]). If we can make this work, then it would catch
+> > such issue early on, yet won't have any downsides of hiding
+> > CONFIG_DEBUG_INFO_BTF if pahole is too old. WDYT?
 > >
-> > On Tue, Feb 02, 2021 at 09:14:02AM -0800, Si-Wei Liu wrote:
-> > > On Tue, Feb 2, 2021 at 6:34 AM Eli Cohen <elic@nvidia.com> wrote:
-> > > >
-> > > > When a change of memory map occurs, the hardware resources are destroyed
-> > > > and then re-created again with the new memory map. In such case, we need
-> > > > to restore the hardware available and used indices. The driver failed to
-> > > > restore the used index which is added here.
-> > > >
-> > > > Fixes 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
-> > > > Signed-off-by: Eli Cohen <elic@nvidia.com>
-> > > > ---
-> > > > This patch is being sent again a single patch the fixes hot memory
-> > > > addtion to a qemy process.
-> > > >
-> > > >  drivers/vdpa/mlx5/net/mlx5_vnet.c | 7 +++++++
-> > > >  1 file changed, 7 insertions(+)
-> > > >
-> > > > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > > > index 88dde3455bfd..839f57c64a6f 100644
-> > > > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > > > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > > > @@ -87,6 +87,7 @@ struct mlx5_vq_restore_info {
-> > > >         u64 device_addr;
-> > > >         u64 driver_addr;
-> > > >         u16 avail_index;
-> > > > +       u16 used_index;
-> > > >         bool ready;
-> > > >         struct vdpa_callback cb;
-> > > >         bool restore;
-> > > > @@ -121,6 +122,7 @@ struct mlx5_vdpa_virtqueue {
-> > > >         u32 virtq_id;
-> > > >         struct mlx5_vdpa_net *ndev;
-> > > >         u16 avail_idx;
-> > > > +       u16 used_idx;
-> > > >         int fw_state;
-> > > >
-> > > >         /* keep last in the struct */
-> > > > @@ -804,6 +806,7 @@ static int create_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtque
-> > > >
-> > > >         obj_context = MLX5_ADDR_OF(create_virtio_net_q_in, in, obj_context);
-> > > >         MLX5_SET(virtio_net_q_object, obj_context, hw_available_index, mvq->avail_idx);
-> > > > +       MLX5_SET(virtio_net_q_object, obj_context, hw_used_index, mvq->used_idx);
-> > >
-> > > The saved indexes will apply to the new virtqueue object whenever it
-> > > is created. In virtio spec, these indexes will reset back to zero when
-> > > the virtio device is reset. But I don't see how it's done today. IOW,
-> > > I don't see where avail_idx and used_idx get cleared from the mvq for
-> > > device reset via set_status().
-> > >
-> >
-> > Right, but this is not strictly related to this patch. I will post
-> > another patch to fix this.
-> 
-> Better to post these two patches in a series.Or else it may cause VM
-> reboot problem as that is where the device gets reset. The avail_index
-> did not as the correct value will be written to by driver right after,
-> but used_idx introduced by this patch is supplied by device hence this
-> patch alone would introduce regression.
-> 
+> >   [0] https://lore.kernel.org/lkml/CAHk-=wh-+TMHPTFo1qs-MYyK7tZh-OQovA=pP3=e06aCVp6_kA@mail.gmail.com/
+>
+> Yes, I think that would be exactly what we want because DEBUG_INFO_BTF
+> could cause the build to error if PAHOLE_VERSION is not >= 116. I will
+> try to keep an eye on that thread to see how it goes then respin this
+> based on anything that comes from it.
+>
 
-Thinking it over, I think this should be all fixed in a single patch.
-This fix alone introduces a regerssion as you pointed and there's no
-point in fixing it in another patch.
+For BPF/pahole testing (see [1]) with CONFIG_DEBUG_INFO_DWARF5=y I did:
 
-> >
-> > BTW, can you describe a secnario that would cause a reset (through
-> > calling set_status()) that happens after the VQ has been used?
-> 
-> You can try reboot the guest, that'll be the easy way to test.
-> 
-> -Siwei
-> 
-> >
-> > > -Siwei
-> > >
-> > >
-> > > >         MLX5_SET(virtio_net_q_object, obj_context, queue_feature_bit_mask_12_3,
-> > > >                  get_features_12_3(ndev->mvdev.actual_features));
-> > > >         vq_ctx = MLX5_ADDR_OF(virtio_net_q_object, obj_context, virtio_q_context);
-> > > > @@ -1022,6 +1025,7 @@ static int connect_qps(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *m
-> > > >  struct mlx5_virtq_attr {
-> > > >         u8 state;
-> > > >         u16 available_index;
-> > > > +       u16 used_index;
-> > > >  };
-> > > >
-> > > >  static int query_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *mvq,
-> > > > @@ -1052,6 +1056,7 @@ static int query_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueu
-> > > >         memset(attr, 0, sizeof(*attr));
-> > > >         attr->state = MLX5_GET(virtio_net_q_object, obj_context, state);
-> > > >         attr->available_index = MLX5_GET(virtio_net_q_object, obj_context, hw_available_index);
-> > > > +       attr->used_index = MLX5_GET(virtio_net_q_object, obj_context, hw_used_index);
-> > > >         kfree(out);
-> > > >         return 0;
-> > > >
-> > > > @@ -1610,6 +1615,7 @@ static int save_channel_info(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqu
-> > > >                 return err;
-> > > >
-> > > >         ri->avail_index = attr.available_index;
-> > > > +       ri->used_index = attr.used_index;
-> > > >         ri->ready = mvq->ready;
-> > > >         ri->num_ent = mvq->num_ent;
-> > > >         ri->desc_addr = mvq->desc_addr;
-> > > > @@ -1654,6 +1660,7 @@ static void restore_channels_info(struct mlx5_vdpa_net *ndev)
-> > > >                         continue;
-> > > >
-> > > >                 mvq->avail_idx = ri->avail_index;
-> > > > +               mvq->used_idx = ri->used_index;
-> > > >                 mvq->ready = ri->ready;
-> > > >                 mvq->num_ent = ri->num_ent;
-> > > >                 mvq->desc_addr = ri->desc_addr;
-> > > > --
-> > > > 2.29.2
-> > > >
+$ git diff
+diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+index b0840d192e95..f15b37143165 100644
+--- a/lib/Kconfig.debug
++++ b/lib/Kconfig.debug
+@@ -272,7 +272,7 @@ config DEBUG_INFO_DWARF5
+       bool "Generate DWARF Version 5 debuginfo"
+       depends on GCC_VERSION >= 50000 || CC_IS_CLANG
+       depends on CC_IS_GCC ||
+$(success,$(srctree)/scripts/test_dwarf5_support.sh $(CC)
+$(CLANG_FLAGS))
+-       depends on !DEBUG_INFO_BTF
++       depends on !DEBUG_INFO_BTF || (DEBUG_INFO_BTF && PAHOLE_VERSION >= 120)
+       help
+         Generate DWARF v5 debug info. Requires binutils 2.35.2, gcc 5.0+ (gcc
+         5.0+ accepts the -gdwarf-5 flag but only had partial support for some
+
+Thanks again for that patch.
+
+- Sedat -
+
+[1] https://git.kernel.org/pub/scm/devel/pahole/pahole.git/log/?h=tmp.1.20
