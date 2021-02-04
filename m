@@ -2,62 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4C1A30F6E5
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 16:56:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA38030F6DD
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 16:55:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237648AbhBDPyT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 10:54:19 -0500
-Received: from mail-m2836.qiye.163.com ([103.74.28.36]:42832 "EHLO
-        mail-m2836.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237453AbhBDPvv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 10:51:51 -0500
-Received: from [192.168.1.10] (unknown [180.157.168.158])
-        by mail-m2836.qiye.163.com (Hmail) with ESMTPA id 0FA98C0217;
-        Thu,  4 Feb 2021 23:50:53 +0800 (CST)
-Subject: Re: [PATCH net] net/sched: cls_flower: Return invalid for unknown
- ct_state flags rules
-To:     Marcelo Ricardo Leitner <mleitner@redhat.com>
-Cc:     i.maximets@ovn.org, netdev@vger.kernel.org
-References: <1612412244-26434-1-git-send-email-wenxu@ucloud.cn>
- <20210204133856.GH3399@horizon.localdomain>
-From:   wenxu <wenxu@ucloud.cn>
-Message-ID: <ef18cecf-f3ff-28b2-c53d-049722843c6d@ucloud.cn>
-Date:   Thu, 4 Feb 2021 23:50:53 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.3
+        id S237616AbhBDPwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 10:52:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43654 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237562AbhBDPwQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 10:52:16 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01473C0613D6
+        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 07:51:35 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id s3so4717960edi.7
+        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 07:51:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=d86uWRuSchZNGiF5GcPs01AGXa1MTPPIVm+o9lL5GbY=;
+        b=Qg8Wx2MJuya5g3GjTxRfHecgJuEQj/c2ecrnBoWU5qtf+r1VPJb+7qNk1gSVNXxzAt
+         wAOJcTtJramsRgiRmZqIn/R6PnNrMfkIllxzbZj1jvNdQR6eTN2rSfJPpKqxynRkPfAU
+         mTT5cpgX/jflPbvuMK687+QSF1MIjTaGqmOHDWSyAvBpxKnUhUnN6h3uWWmYexLgQK5d
+         TdnR1/ueH5SiMLpOpNI/0kmK2xVQzB2c/NUm8f7hviGnoBMAvklHF3tgrkfqATvRN2nw
+         6sTYYCeWL73TRGsD0wjib4VcQwOlj0VFhy1k8tYPe+L+3ZjPnxjZvFA5K544W/gLBVZK
+         YTpw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=d86uWRuSchZNGiF5GcPs01AGXa1MTPPIVm+o9lL5GbY=;
+        b=e1R8k9ycg3wtA6aCpFyPASLNQV6ZQNgHWqtSj1WH6t+Nndww4+JzCDXA6k++ATBONf
+         qElmmy004UBl6G5vXL42w/0ZN9YOXVB82Fzz/jLwynNjCV4BLap0VDpN7zVMK50nb51Q
+         vgRLCKMXAmaJC0SmUY1qLeHJ+PRBxxEIZHq0W5+IVw1IgYjcze7Z+Q57F972M6VGpkLx
+         rzacaWVeaEaFCaqtisEQe9nuo0U57DzDzsVMfPX5iDuCuJdoU+ewz8aSUwHkLR7CVszB
+         xNbUc89x0DEU0VjvakEpNoAi/enTMhDLfo6CExaNw+Nodompn6IRC1AqJdXY1K4oR2j4
+         x6Xg==
+X-Gm-Message-State: AOAM530hfu5wCUGOF/3C1H6/3nQ4+TbWEIOydLw2uI3/25gazOOoGdai
+        w8LkvTdSymZ7BOEQAVM7CZJrmFoHuoFBMf+0f/Q=
+X-Google-Smtp-Source: ABdhPJyR7UsY8ad2bn6sC9+KnfH6PP4QxgzlS5AZ2zY7/2M0RdEUzHXtetBfDfUwGtTQow4lu5jU9GgLomaMBqURBA4=
+X-Received: by 2002:a05:6402:149a:: with SMTP id e26mr8665817edv.254.1612453893736;
+ Thu, 04 Feb 2021 07:51:33 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210204133856.GH3399@horizon.localdomain>
-Content-Type: text/plain; charset=gbk
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSUI3V1ktWUFJV1kPCR
-        oVCBIfWUFZGhpPGUhLGU1DTk8ZVkpNSklPTkhDTk9JTElVGRETFhoSFyQUDg9ZV1kWGg8SFR0UWU
-        FZT0tIVUpKS0JITVVLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NDY6LDo*Hz00KgIVISk6AUhC
-        EVFPFCpVSlVKTUpJT05IQ05PT0pMVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpDS1VK
-        TkxVSk1DVUpOQ1lXWQgBWUFJS0tMNwY+
-X-HM-Tid: 0a776dbd3c02841ekuqw0fa98c0217
+References: <1612452064-20797-1-git-send-email-vfedorenko@novek.ru>
+In-Reply-To: <1612452064-20797-1-git-send-email-vfedorenko@novek.ru>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 4 Feb 2021 10:50:57 -0500
+Message-ID: <CAF=yD-Ksu5cwE9KK9Te4Cpz+57Aa19UHxtHpHoxQMBiB4d=zgw@mail.gmail.com>
+Subject: Re: [net v2] selftests: txtimestamp: fix compilation issue
+To:     Vadim Fedorenko <vfedorenko@novek.ru>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Jian Yang <jianyang@google.com>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-ÔÚ 2021/2/4 21:38, Marcelo Ricardo Leitner Ð´µÀ:
-> Hi,
+On Thu, Feb 4, 2021 at 10:21 AM Vadim Fedorenko <vfedorenko@novek.ru> wrote:
 >
-> On Thu, Feb 04, 2021 at 12:17:24PM +0800, wenxu@ucloud.cn wrote:
->> From: wenxu <wenxu@ucloud.cn>
->>
->> Reject the unknown ct_state flags of cls flower rules. This also make
->> the userspace like ovs to probe the ct_state flags support in the
->> kernel.
-> That's a good start but it could also do some combination sanity
-> checks, like ovs does in validate_ct_state(). For example, it does:
+> PACKET_TX_TIMESTAMP is defined in if_packet.h but it is not included in
+> test. It could be included instead of <netpacket/packet.h> otherwise
+> the error of redefinition arrives.
 >
->       if (state && !(state & CS_TRACKED)) {
->           ds_put_format(ds, "%s: invalid connection state: "
->                         "If \"trk\" is unset, no other flags are set\n",
->
-So this sanity checks maybe also need to be added in the ovs kernel modules?
+> Fixes: 8fe2f761cae9 (net-timestamp: expand documentation)
 
-The kernel datapath can work without ovs-vswitchd.
+Needs quotes
 
+  Fixes: 8fe2f761cae9 ("net-timestamp: expand documentation")
+
+When resending, can you also revise "It could be included instead .. "
+to "Include instead .."
+
+And mention in the commit the other warning fixed at the same time.
+Thanks for including that.
+
+> Suggested-by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
