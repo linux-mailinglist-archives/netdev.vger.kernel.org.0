@@ -2,116 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94B1330EF2E
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 10:06:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CEC6630EF45
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 10:12:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232839AbhBDJB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 04:01:58 -0500
-Received: from mga09.intel.com ([134.134.136.24]:14801 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231367AbhBDJB4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Feb 2021 04:01:56 -0500
-IronPort-SDR: odar9NWcFjx8xYnVO9RU4pwG6xJlV6BR7XeklVQr0muH8y//MtiBY9dXPeLCbiFHO8BsZftzTE
- VdfYxUDfSs/w==
-X-IronPort-AV: E=McAfee;i="6000,8403,9884"; a="181345758"
-X-IronPort-AV: E=Sophos;i="5.79,400,1602572400"; 
-   d="scan'208";a="181345758"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2021 01:01:14 -0800
-IronPort-SDR: iKmfqZSAaiVKcGxjlFVkXgVilZiWE+a+iariVSL4HT5TUs8ouHi1BejU/yxgvF1zdhFIccDM5y
- 2Nih4p4McA3A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,400,1602572400"; 
-   d="scan'208";a="579813960"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by fmsmga006.fm.intel.com with ESMTP; 04 Feb 2021 01:01:13 -0800
-Date:   Thu, 4 Feb 2021 09:51:58 +0100
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Camelia Groza <camelia.groza@nxp.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, madalin.bucur@oss.nxp.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net 1/3] dpaa_eth: reserve space for the xdp_frame under
- the A050385 erratum
-Message-ID: <20210204085158.GA2580@ranger.igk.intel.com>
-References: <cover.1612275417.git.camelia.groza@nxp.com>
- <b2e61a1ac55004ecbbe326cd878cd779df22aae8.1612275417.git.camelia.groza@nxp.com>
+        id S234108AbhBDJK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 04:10:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40698 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234475AbhBDJDP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 04:03:15 -0500
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B334C0613D6;
+        Thu,  4 Feb 2021 01:02:35 -0800 (PST)
+Received: by mail-lj1-x22a.google.com with SMTP id r23so578939ljh.1;
+        Thu, 04 Feb 2021 01:02:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=/TSLfTImrRe23/NrG2l7vYhOdNAwie8O/O5xzxImUdU=;
+        b=aG7+gHoq99GRCPDOwzPcfhr8S30YhEU4o8OfSI3+lqtqJizRr+J4xUM03W/Zpow0Up
+         wtp+D2JmFy9cydwabTgGXXL6H2Hcd1dsHJpz3KOVhheLHGHZpyeqErMXCppLckjb8mcV
+         VOLfdfVSkhCNSzP3g5RobY+5ANGIyj7+iecEXo+PENz83Yt4YPPMVNcy9owZqL62iIs7
+         fNyUSMnuaOLCJrfn3+Jhz64W2Cj/NqxX5Vm/9RNe7boHVI2ph1e1Vxz2y+TAsret2gBj
+         8wbppLU/33jziFOhjSigLtGHH1FxiYhV/dyL1EJRvdk692+1hUfH6fUQWk6K8eJs+xan
+         K8aw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=/TSLfTImrRe23/NrG2l7vYhOdNAwie8O/O5xzxImUdU=;
+        b=acs8yaJWrR7QY+ey6mJ9WDhHwnF/PBIkdTQeDdF87Bs4p047aDFddFwS0NStKwW7Ws
+         Esa0ZJDiq6ZV21eMeZQkFYM7YsHmoqNjRhK+zO6IH2KEyUxelVlu8/U2+T4/ldsOm2G6
+         /7jGZgLVfBVSNMKLTmB4oP2fjdxLLXWQ2SHZfGWZkeRUdbdQBffUQ0GNNSkGDMDuB/Tu
+         /1t8QQ09euulZ+gF98WzpxyFiyR+Tn9S1aYOQo/FK0FTp8QF5rFDcpevAInX+mLz8KhU
+         ZkwO1Q0MFpSxo+wiu0XergvAir16W0SArLVA59OZptS36Lz4cqlJ0J665geKxTaxFeRt
+         GSkw==
+X-Gm-Message-State: AOAM532TeEQ52oLAKPebnIhsfK0CLcI1pIqPFiT37v5y0h0C6TLLyxPj
+        kDLMU/2SpMrg7ECQF4AydrU=
+X-Google-Smtp-Source: ABdhPJxdCYKvUeTjW+84dAsnfdjxULW94PrUvOI4idUHZpRhBUNMIF77CoMBIjMEMqNeF43srEasYg==
+X-Received: by 2002:a2e:7a18:: with SMTP id v24mr4132393ljc.55.1612429353981;
+        Thu, 04 Feb 2021 01:02:33 -0800 (PST)
+Received: from localhost.localdomain ([146.158.65.224])
+        by smtp.googlemail.com with ESMTPSA id m78sm533479lfa.270.2021.02.04.01.02.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 04 Feb 2021 01:02:33 -0800 (PST)
+From:   Sabyrzhan Tasbolatov <snovitoll@gmail.com>
+To:     kuba@kernel.org
+Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, snovitoll@gmail.com,
+        syzbot+c2a7e5c5211605a90865@syzkaller.appspotmail.com
+Subject: [PATCH] net/qrtr: replaced useless kzalloc with kmalloc in qrtr_tun_write_iter()
+Date:   Thu,  4 Feb 2021 15:02:30 +0600
+Message-Id: <20210204090230.1794169-1-snovitoll@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210203162846.56a90288@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20210203162846.56a90288@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b2e61a1ac55004ecbbe326cd878cd779df22aae8.1612275417.git.camelia.groza@nxp.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 02, 2021 at 07:34:42PM +0200, Camelia Groza wrote:
-> When the erratum workaround is triggered, the newly created xdp_frame
-> structure is stored at the start of the newly allocated buffer. Avoid
-> the structure from being overwritten by explicitly reserving enough
-> space in the buffer for storing it.
-> 
-> Account for the fact that the structure's size might increase in time by
-> aligning the headroom to DPAA_FD_DATA_ALIGNMENT bytes, thus guaranteeing
-> the data's alignment.
-> 
-> Fixes: ae680bcbd06a ("dpaa_eth: implement the A050385 erratum workaround for XDP")
-> Signed-off-by: Camelia Groza <camelia.groza@nxp.com>
-> ---
->  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 17 +++++++++++++++--
->  1 file changed, 15 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> index 4360ce4d3fb6..e1d041c35ad9 100644
-> --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> @@ -2182,6 +2182,7 @@ static int dpaa_a050385_wa_xdpf(struct dpaa_priv *priv,
->  	struct xdp_frame *new_xdpf, *xdpf = *init_xdpf;
->  	void *new_buff;
->  	struct page *p;
-> +	int headroom;
->  
->  	/* Check the data alignment and make sure the headroom is large
->  	 * enough to store the xdpf backpointer. Use an aligned headroom
-> @@ -2197,19 +2198,31 @@ static int dpaa_a050385_wa_xdpf(struct dpaa_priv *priv,
->  		return 0;
->  	}
->  
-> +	/* The new xdp_frame is stored in the new buffer. Reserve enough space
-> +	 * in the headroom for storing it along with the driver's private
-> +	 * info. The headroom needs to be aligned to DPAA_FD_DATA_ALIGNMENT to
-> +	 * guarantee the data's alignment in the buffer.
-> +	 */
-> +	headroom = ALIGN(sizeof(*new_xdpf) + priv->tx_headroom,
-> +			 DPAA_FD_DATA_ALIGNMENT);
-> +
-> +	/* Assure the extended headroom and data fit in a one-paged buffer */
-> +	if (headroom + xdpf->len > DPAA_BP_RAW_SIZE)
+Replaced kzalloc() with kmalloc(), there is no need for zeroed-out
+memory for simple void *kbuf.
 
-This check might make more sense if you would be accounting for
-skb_shared_info as well I suppose, so that you know you'll still provide
-enough tailroom for future xdp multibuf support. Didn't all the previous
-code path make sure that there's a room for that?
+>For potential, separate clean up - this is followed 
+>by copy_from_iter_full(len) kzalloc() can probably 
+>be replaced by kmalloc()?
+>
+>>  	if (!kbuf)
+>>  		return -ENOMEM;
 
-> +		return -ENOMEM;
-> +
->  	p = dev_alloc_pages(0);
->  	if (unlikely(!p))
->  		return -ENOMEM;
->  
->  	/* Copy the data to the new buffer at a properly aligned offset */
->  	new_buff = page_address(p);
-> -	memcpy(new_buff + priv->tx_headroom, xdpf->data, xdpf->len);
-> +	memcpy(new_buff + headroom, xdpf->data, xdpf->len);
->  
->  	/* Create an XDP frame around the new buffer in a similar fashion
->  	 * to xdp_convert_buff_to_frame.
->  	 */
->  	new_xdpf = new_buff;
-> -	new_xdpf->data = new_buff + priv->tx_headroom;
-> +	new_xdpf->data = new_buff + headroom;
->  	new_xdpf->len = xdpf->len;
->  	new_xdpf->headroom = priv->tx_headroom;
->  	new_xdpf->frame_sz = DPAA_BP_RAW_SIZE;
-> -- 
-> 2.17.1
-> 
+Signed-off-by: Sabyrzhan Tasbolatov <snovitoll@gmail.com>
+---
+ net/qrtr/tun.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/qrtr/tun.c b/net/qrtr/tun.c
+index b238c40a9984..9b607c7614de 100644
+--- a/net/qrtr/tun.c
++++ b/net/qrtr/tun.c
+@@ -86,7 +86,7 @@ static ssize_t qrtr_tun_write_iter(struct kiocb *iocb, struct iov_iter *from)
+ 	if (len > KMALLOC_MAX_SIZE)
+ 		return -ENOMEM;
+ 
+-	kbuf = kzalloc(len, GFP_KERNEL);
++	kbuf = kmalloc(len, GFP_KERNEL);
+ 	if (!kbuf)
+ 		return -ENOMEM;
+ 
+-- 
+2.25.1
+
