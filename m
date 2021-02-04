@@ -2,93 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A25330E920
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 02:08:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7495730E95E
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 02:20:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234096AbhBDBHm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 20:07:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51824 "EHLO
+        id S234477AbhBDBTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 20:19:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233851AbhBDBHk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 20:07:40 -0500
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A0C4C061573
-        for <netdev@vger.kernel.org>; Wed,  3 Feb 2021 17:07:00 -0800 (PST)
-Received: by mail-io1-xd2b.google.com with SMTP id u8so1417664ior.13
-        for <netdev@vger.kernel.org>; Wed, 03 Feb 2021 17:07:00 -0800 (PST)
+        with ESMTP id S234448AbhBDBTf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 20:19:35 -0500
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A336FC061573;
+        Wed,  3 Feb 2021 17:18:55 -0800 (PST)
+Received: by mail-qk1-x72a.google.com with SMTP id a7so1813437qkb.13;
+        Wed, 03 Feb 2021 17:18:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=CgG8Hwt3SxrrGY2glvsXSBuEtqHY0gWizrBC8qUvw4s=;
-        b=D1pTorP4NprD0zWgkamOJfsGSCSkxnvm31BrzhpMlqbViV+4DDU9FL8W9UQt3bdOR7
-         KiQvr+MFwzkcYS9kqf9RoB8QlEHq6PdgxYv7r+HYot9Tz2LWutxOO6ub4pIE9pWitBg9
-         sVp8QqKP+4QKs0RuVoNGtkZVwai+UQu7UW55YdNtwxupxRYTgAzLZJsKcCsVq4QhPTYR
-         yRXgE1xutsru6N2nUJxUy3T1l7YiP/rXjUNsRxYlib8Tvy/S52qm/KGzacllErHf+4zt
-         TEdzSTn0f6cRKEHEmEztcLnpy6vPHrr8EeXrAx176Y0pd/A1tiokhPgXv87Zya1l+/ha
-         hdgA==
+        bh=BRSeNrAgqYoEdIAaT/E3XS8qfSyBH3EgUU59Y30fA1s=;
+        b=ZAss0ce0fku95ORQy+ibGYidBLcsdTDqWw1eMlcT8L+29e0PCrsgRy09+VdAQlqD0t
+         w3L03foqeCX4ms+DzBr8aiUcBbt79RQLUJXOA1KcYjYeM0eY9leq5l46BdyBpbaK2czN
+         Sw/Vi5qOw3tFt38jA3WMg+9bnfxW+4nXwb/exiZ7LPLucW9BwNnqPm/lpjDjvNblnVxI
+         4SdeLvCsHiOHYqWJ9ZUTtWdJWwknimfiy4oiGT4u5+Ju717WfjMx58y6VDVib36Ank9G
+         dGOWolWB73ePrCudDeVnOyAmGMSyXyJX7OvEjjkfn9yF59rNDdw6oDHulKFlq8nn5R7W
+         E99g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=CgG8Hwt3SxrrGY2glvsXSBuEtqHY0gWizrBC8qUvw4s=;
-        b=TCqB5GRXaDVdQW3kwrWKYBVKJOTINRd3MLZvdNKQtL9wjhJpBal31iL+Y/GDE0H5vm
-         3PooHUFyc73yVyZotBX32eiuQtvj3hHhYn06qwjFNGLPfGO2VskXkTLKHmFl5cchHfSp
-         HZ5ut9bJDdnk0egiD5m5gN5iJ3PGA8RRvlGeD3RvYam7Avr1vhdFJAw0oqrlI1eWtR94
-         PjpBFvBhTPc9rP4jBKh0KSqFQXLI7RgmPhSwOErgBaSAcFQdpHVwMzC2BJciE3qPToMM
-         NCCnJn5UI5WvKXnwouEoUQn+00dYD1OsGKO1P8OeNPDuLSBNc4GyKVPJ/F0Ce7PaIxia
-         aP/Q==
-X-Gm-Message-State: AOAM533KIVWKsi6r8RD/jnElL9rW9OyulL+2OFVeum/34ShoWQd/9yvG
-        L/6BFulbwqZ2G9mJXDl5JBqRuQ==
-X-Google-Smtp-Source: ABdhPJxKmk71GPIYpaPKqRrvRpuGe1xO+J77RRLMh3ShL3srd/V74hqtyMo4vsgjpA7QsMaB7qke6w==
-X-Received: by 2002:a05:6602:1223:: with SMTP id z3mr4786869iot.130.1612400820029;
-        Wed, 03 Feb 2021 17:07:00 -0800 (PST)
-Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id y16sm1813495ilm.7.2021.02.03.17.06.58
+        bh=BRSeNrAgqYoEdIAaT/E3XS8qfSyBH3EgUU59Y30fA1s=;
+        b=sWaAL1gufs3fzMJRgs82amtxICxG04oYWgFZYgWTX3CkOjUKmjy0+/iGPJ0Pu6fBte
+         bEp+hH6NkoVG9D/kv0LHN4JAu5YjsDVdq4PrYACyTG4IneuqHrP6KEVfNJnjDWVv0mPf
+         7ujE3OwKjKKlKWaAv/yc1KiHnd+5A74hGLdzeHlTzoPJN5dY3eBqgJWSIDIA1Gccnqrc
+         Fy4d3mdwU9sXdXf4e/6+95j7iSiDSIe+NivjFKa7+VShHZGH93jmxdM00RBcmfU5XGJX
+         ErCtdRJ8DuVOjyg1jXF3Ubo5a5zZAPQJSsm7r193+IZ/JsKYMOyLsnOFNhV1mgLJWW2j
+         kCDw==
+X-Gm-Message-State: AOAM530/5pqnS4xcGGSCNlGTnn866ThKh3U4af0+FZ3zUjqaVGWnqFEC
+        nPxDdJOKD3cfqTw1IUCG6RpyPnHnAeLU16Ct
+X-Google-Smtp-Source: ABdhPJzLTf/Qhr+L0sRCIEXwIUmlTRpWottYJiVdVtcdEGcmSO+elbFSLDO2CoYMpAOeUN4YFWISQQ==
+X-Received: by 2002:a37:be04:: with SMTP id o4mr5562190qkf.373.1612401534828;
+        Wed, 03 Feb 2021 17:18:54 -0800 (PST)
+Received: from localhost.localdomain ([138.199.13.179])
+        by smtp.gmail.com with ESMTPSA id w28sm3007719qtv.93.2021.02.03.17.18.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Feb 2021 17:06:59 -0800 (PST)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     dan.carpenter@oracle.com, elder@kernel.org, evgreen@chromium.org,
-        bjorn.andersson@linaro.org, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, netdev@vger.kernel.org,
+        Wed, 03 Feb 2021 17:18:54 -0800 (PST)
+From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
+To:     linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net v2] net: ipa: set error code in gsi_channel_setup()
-Date:   Wed,  3 Feb 2021 19:06:55 -0600
-Message-Id: <20210204010655.15619-1-elder@linaro.org>
-X-Mailer: git-send-email 2.20.1
+Cc:     rdunlap@infradead.org, Bhaskar Chowdhury <unixbhaskar@gmail.com>
+Subject: [PATCH V2] drivers: net: ethernet: i825xx: Fix couple of spellings and get rid of blank lines too in the file ether1.c
+Date:   Thu,  4 Feb 2021 06:48:21 +0530
+Message-Id: <20210204011821.18356-1-unixbhaskar@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In gsi_channel_setup(), we check to see if the configuration data
-contains any information about channels that are not supported by
-the hardware.  If one is found, we abort the setup process, but
-the error code (ret) is not set in this case.  Fix this bug.
 
-Fixes: 650d1603825d8 ("soc: qcom: ipa: the generic software interface")
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Alex Elder <elder@linaro.org>
+s/initialsation/initialisation/
+s/specifiing/specifying/
+
+Plus get rid of few blank lines.
+
+Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
 ---
-v2: Added "Fixes" tag.
+Changes from V1:
+   Fix typo in the subject line
+   Give explanation of all the changes in changelog text
 
- drivers/net/ipa/gsi.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/i825xx/ether1.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
-index 34e5f2155d620..b77f5fef7aeca 100644
---- a/drivers/net/ipa/gsi.c
-+++ b/drivers/net/ipa/gsi.c
-@@ -1710,6 +1710,7 @@ static int gsi_channel_setup(struct gsi *gsi)
- 		if (!channel->gsi)
- 			continue;	/* Ignore uninitialized channels */
- 
-+		ret = -EINVAL;
- 		dev_err(gsi->dev, "channel %u not supported by hardware\n",
- 			channel_id - 1);
- 		channel_id = gsi->channel_count;
--- 
-2.20.1
+diff --git a/drivers/net/ethernet/i825xx/ether1.c b/drivers/net/ethernet/i825xx/ether1.c
+index a0bfb509e002..850ea32091ed 100644
+--- a/drivers/net/ethernet/i825xx/ether1.c
++++ b/drivers/net/ethernet/i825xx/ether1.c
+@@ -20,7 +20,7 @@
+  * 1.02	RMK	25/05/1997	Added code to restart RU if it goes not ready
+  * 1.03	RMK	14/09/1997	Cleaned up the handling of a reset during the TX interrupt.
+  *				Should prevent lockup.
+- * 1.04 RMK	17/09/1997	Added more info when initialsation of chip goes wrong.
++ * 1.04 RMK	17/09/1997	Added more info when initialisation of chip goes wrong.
+  *				TDR now only reports failure when chip reports non-zero
+  *				TDR time-distance.
+  * 1.05	RMK	31/12/1997	Removed calls to dev_tint for 2.1
+@@ -117,7 +117,7 @@ ether1_outw_p (struct net_device *dev, unsigned short val, int addr, int svflgs)
+  * Some inline assembler to allow fast transfers on to/off of the card.
+  * Since this driver depends on some features presented by the ARM
+  * specific architecture, and that you can't configure this driver
+- * without specifiing ARM mode, this is not a problem.
++ * without specifying ARM mode, this is not a problem.
+  *
+  * This routine is essentially an optimised memcpy from the card's
+  * onboard RAM to kernel memory.
+@@ -885,7 +885,6 @@ ether1_recv_done (struct net_device *dev)
+ 		ether1_writew(dev, 0, priv(dev)->rx_tail, rfd_t, rfd_command, NORMALIRQS);
+ 		ether1_writew(dev, 0, priv(dev)->rx_tail, rfd_t, rfd_status, NORMALIRQS);
+ 		ether1_writew(dev, 0, priv(dev)->rx_tail, rfd_t, rfd_rbdoffset, NORMALIRQS);
+-
+ 		priv(dev)->rx_tail = nexttail;
+ 		priv(dev)->rx_head = ether1_readw(dev, priv(dev)->rx_head, rfd_t, rfd_link, NORMALIRQS);
+ 	} while (1);
+@@ -1028,10 +1027,8 @@ ether1_probe(struct expansion_card *ec, const struct ecard_id *id)
+ 	ret = register_netdev(dev);
+ 	if (ret)
+ 		goto free;
+-
+ 	printk(KERN_INFO "%s: ether1 in slot %d, %pM\n",
+ 		dev->name, ec->slot_no, dev->dev_addr);
+-
+ 	ecard_set_drvdata(ec, dev);
+ 	return 0;
+
+@@ -1047,7 +1044,7 @@ static void ether1_remove(struct expansion_card *ec)
+ {
+ 	struct net_device *dev = ecard_get_drvdata(ec);
+
+-	ecard_set_drvdata(ec, NULL);
++	ecard_set_drvdata(ec, NULL);
+
+ 	unregister_netdev(dev);
+ 	free_netdev(dev);
+--
+2.26.2
 
