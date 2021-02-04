@@ -2,98 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41FAA30F5CE
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 16:08:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BD6030F628
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 16:23:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237016AbhBDPGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 10:06:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33606 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237024AbhBDPFj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 10:05:39 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50A61C061786
-        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 07:04:59 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id u14so3916991wri.3
-        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 07:04:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=iHo3fk2qm0EEP2///XWtRGeKPst7YAsG4Ss5b7btM7c=;
-        b=i/qZJmESoh1cZX6R88Q211oeRkPn5T5brY/TxbLLGfPEf/BdbsGQQBbKQPwdQcCt06
-         g00EOpo2GeRKcfqQovmk82B/knAKq2fattKvG+XS4CqwBLVfYYbtAqL7TWc30J65Btut
-         hPs1swKah+Dqc3ZKTL5hiviP6ngErpGj2ZxJvpZOIJUAA/RPCeoULk9fOMIPIXbHyrP9
-         6M0/6Q4orAX5kQU+9wDWEgY8L1/L/48BYZ9z/LJozYDdBckngyBC2dkTANKflEiYOR/e
-         lipLTgY3nm8UTiUMPOBVaNqQXA/7roNOLboaSq2mDOvi6r89qNZLIwEWDAVa7cixV3gt
-         nl/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=iHo3fk2qm0EEP2///XWtRGeKPst7YAsG4Ss5b7btM7c=;
-        b=oHrzPmQP3tsnQeGzpCKZ545PeRe2cGmmDANzV2TmXoAxgSKTrTHEN0XPjSaTOFl/9I
-         3r6GmiI2x067KDmoa+OfndquQ66GQ7MKxjN9cOWHdg+drkTGBZDvebDcE/DYlomtIzKo
-         2V/uXJfhZT+BqjG5id1o1F2g2TkxWctXJ0gj9PMMSN+bFvYNmXUkV6hxNYkIclB9JCl5
-         aOz/FKJwugXX518HHvsG1lx+Icwf8HzRvU31qOohZmWZf2oXU+pV1H37CrYgG2fmhYa2
-         VcsOhab3sVlqdRW139kapg/YU3/1Xe3EV5rvK5Nk+ohIN8n4ua0K4cpuqvjTg8Q/bTqc
-         6/zQ==
-X-Gm-Message-State: AOAM531xqtjSIOZkcDkC7NGeZ9fKL4JeipdEjcqoeOSusOqgy8QXZbP7
-        9+nCwu3V9D/J9QBgX4LJmkA=
-X-Google-Smtp-Source: ABdhPJzxh0UQq36HUVyEBKDfzx0DTM8/o+PLGz1zFBHkRDuWLxh4MkAAJLPombpKw6RZur7vjwQUFA==
-X-Received: by 2002:adf:f6c4:: with SMTP id y4mr9697373wrp.127.1612451098114;
-        Thu, 04 Feb 2021 07:04:58 -0800 (PST)
-Received: from [192.168.1.101] ([37.171.155.194])
-        by smtp.gmail.com with ESMTPSA id l10sm8499740wro.4.2021.02.04.07.04.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 Feb 2021 07:04:57 -0800 (PST)
-Subject: Re: [PATCH net v2] udp: fix skb_copy_and_csum_datagram with odd
- segment sizes
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, oliver.graute@gmail.com,
-        sagi@grimberg.me, viro@zeniv.linux.org.uk, hch@lst.de,
-        alexander.duyck@gmail.com, eric.dumazet@gmail.com,
-        Willem de Bruijn <willemb@google.com>
-References: <20210203192952.1849843-1-willemdebruijn.kernel@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <02869fd8-7fbd-25db-c18c-cf9ab6db43f2@gmail.com>
-Date:   Thu, 4 Feb 2021 16:04:54 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
-MIME-Version: 1.0
-In-Reply-To: <20210203192952.1849843-1-willemdebruijn.kernel@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S237289AbhBDPXP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 10:23:15 -0500
+Received: from novek.ru ([213.148.174.62]:60962 "EHLO novek.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237067AbhBDPWF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Feb 2021 10:22:05 -0500
+Received: from nat1.ooonet.ru (gw.zelenaya.net [91.207.137.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id 391D8503356;
+        Thu,  4 Feb 2021 18:21:11 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 391D8503356
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1612452072; bh=VK2JrCCewEy2Qv8rVYgEUmReOuUvXQaVuZqnGPrhLh8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=eLNM5zFfVaVnE8IcdEbzTk81vXgRpTMToBHAuUVggFh+yUW2erK9G9qLAPwFNUVMw
+         aG5rwCQZpdKCX1xjVPndMvbO5rX8aPbhV4Ux88Qr3/cDCM/n3Ti8g6N2KXhKvCqRRk
+         hyUag31VWAEzXCKj/rezTNI7fa/9oMfSRnaoqN2Q=
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+To:     Jakub Kicinski <kuba@kernel.org>, Jian Yang <jianyang@google.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Vadim Fedorenko <vfedorenko@novek.ru>, netdev@vger.kernel.org
+Subject: [net v2] selftests: txtimestamp: fix compilation issue
+Date:   Thu,  4 Feb 2021 18:21:04 +0300
+Message-Id: <1612452064-20797-1-git-send-email-vfedorenko@novek.ru>
+X-Mailer: git-send-email 1.8.3.1
+X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
+        autolearn=ham autolearn_force=no version=3.4.1
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+PACKET_TX_TIMESTAMP is defined in if_packet.h but it is not included in
+test. It could be included instead of <netpacket/packet.h> otherwise
+the error of redefinition arrives.
 
+Fixes: 8fe2f761cae9 (net-timestamp: expand documentation)
+Suggested-by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
+---
+ tools/testing/selftests/net/txtimestamp.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-On 2/3/21 8:29 PM, Willem de Bruijn wrote:
-> From: Willem de Bruijn <willemb@google.com>
-> 
-> When iteratively computing a checksum with csum_block_add, track the
-> offset "pos" to correctly rotate in csum_block_add when offset is odd.
-> 
-> The open coded implementation of skb_copy_and_csum_datagram did this.
-> With the switch to __skb_datagram_iter calling csum_and_copy_to_iter,
-> pos was reinitialized to 0 on each call.
-> 
-> Bring back the pos by passing it along with the csum to the callback.
-> 
-> Changes v1->v2
->   - pass csum value, instead of csump pointer (Alexander Duyck)
-> 
-> Link: https://lore.kernel.org/netdev/20210128152353.GB27281@optiplex/
-> Fixes: 950fcaecd5cc ("datagram: consolidate datagram copy to iter helpers")
-> Reported-by: Oliver Graute <oliver.graute@gmail.com>
-> Signed-off-by: Willem de Bruijn <willemb@google.com>
-> ---
->
-
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+diff --git a/tools/testing/selftests/net/txtimestamp.c b/tools/testing/selftests/net/txtimestamp.c
+index 490a8cc..3d6bf54 100644
+--- a/tools/testing/selftests/net/txtimestamp.c
++++ b/tools/testing/selftests/net/txtimestamp.c
+@@ -26,6 +26,7 @@
+ #include <inttypes.h>
+ #include <linux/errqueue.h>
+ #include <linux/if_ether.h>
++#include <linux/if_packet.h>
+ #include <linux/ipv6.h>
+ #include <linux/net_tstamp.h>
+ #include <netdb.h>
+@@ -34,7 +35,6 @@
+ #include <netinet/ip.h>
+ #include <netinet/udp.h>
+ #include <netinet/tcp.h>
+-#include <netpacket/packet.h>
+ #include <poll.h>
+ #include <stdarg.h>
+ #include <stdbool.h>
+@@ -53,6 +53,7 @@
+ #define NSEC_PER_USEC	1000L
+ #define USEC_PER_SEC	1000000L
+ #define NSEC_PER_SEC	1000000000LL
++#define PACKET_TX_TIMESTAMP		16
+ 
+ /* command line parameters */
+ static int cfg_proto = SOCK_STREAM;
+@@ -495,12 +496,12 @@ static void do_test(int family, unsigned int report_opt)
+ 	total_len = cfg_payload_len;
+ 	if (cfg_use_pf_packet || cfg_proto == SOCK_RAW) {
+ 		total_len += sizeof(struct udphdr);
+-		if (cfg_use_pf_packet || cfg_ipproto == IPPROTO_RAW)
++		if (cfg_use_pf_packet || cfg_ipproto == IPPROTO_RAW) {
+ 			if (family == PF_INET)
+ 				total_len += sizeof(struct iphdr);
+ 			else
+ 				total_len += sizeof(struct ipv6hdr);
+-
++		}
+ 		/* special case, only rawv6_sendmsg:
+ 		 * pass proto in sin6_port if not connected
+ 		 * also see ANK comment in net/ipv4/raw.c
+-- 
+1.8.3.1
 
