@@ -2,90 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23EDD30FA4B
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 18:54:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E03130FA6E
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 18:58:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238437AbhBDRxi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 12:53:38 -0500
-Received: from novek.ru ([213.148.174.62]:34312 "EHLO novek.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238763AbhBDRvq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Feb 2021 12:51:46 -0500
-Received: from nat1.ooonet.ru (gw.zelenaya.net [91.207.137.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id 408D2503356;
-        Thu,  4 Feb 2021 20:51:02 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 408D2503356
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1612461064; bh=nI4XwOTBMvKXCnCLYIKzbedgxZZ+YOPun/c0F4fnnGg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=BUvZvptVzQWH1ExIu4jqck4grxsj2JHvga0fT5mq747FfEVJ7yf2NDeF4cSe8bmw8
-         d6YUXzV+XHetOq4Gmyi527Lbpek7saoHJZgyWGsai3LO3QnHCSAsZZYDrsfPHvUDu7
-         2QsuxCSoGtgsYGYsXWWJCEINEo1mmCuSQ9msDgD8=
-From:   Vadim Fedorenko <vfedorenko@novek.ru>
-To:     Jakub Kicinski <kuba@kernel.org>, Jian Yang <jianyang@google.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Vadim Fedorenko <vfedorenko@novek.ru>, netdev@vger.kernel.org
-Subject: [net v4] selftests: txtimestamp: fix compilation issue
-Date:   Thu,  4 Feb 2021 20:50:34 +0300
-Message-Id: <1612461034-24524-1-git-send-email-vfedorenko@novek.ru>
-X-Mailer: git-send-email 1.8.3.1
-X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
-        autolearn=ham autolearn_force=no version=3.4.1
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
+        id S238742AbhBDR5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 12:57:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42356 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238600AbhBDR5J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 12:57:09 -0500
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36851C0613D6;
+        Thu,  4 Feb 2021 09:56:23 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id j84so4083358ybg.1;
+        Thu, 04 Feb 2021 09:56:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5I40DHI/h59AkCtOXx10UCUmoyFeXFyTwT5DDhItD+s=;
+        b=sQYVIXMpXitQanDKb7QPgpDnb2TJSZ9VvJGyEsEDQ1LfFxgQyMeOz7Vij2ju750L+K
+         5H/8M/sQXwzXMLQcn/DvDzCWi/PHvofauix/xAMagKVrUxn639HKW7iy2wLipqKhenHE
+         j2UBhZCSG+KcWRfpRSo8xb2uwrrUs1XwjFEKj0ei4s340WkvyOCvd+qEEvScyEa8X2HU
+         iSnoeC3+fo7vV/j1dMopp2Z92aqMhnYVJComXEwvnxFEmWE1X4jEg0HnpnHts6i8ifbs
+         kRYmgUKTdWIVd2/OhafehvjlYe1Kf3Qu6GPjN4CvSPxf06jKAkSr+fhj7/MNK2U8J+E1
+         eLkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5I40DHI/h59AkCtOXx10UCUmoyFeXFyTwT5DDhItD+s=;
+        b=YMZgo6w1PD6Ftuz1INE3xReGu3zfcVOvBxCywK7o7bxt5cjzTkDdV/MYqv+U+fEmxp
+         p5w9Jux8qs/BNQ0YiAibcEqZCHB3qreiYFRkIh61/N9r1+PQhtnbcZqzKXT/SPNUVphn
+         T2dpIvOOzH1faQ29dczYn3oC1T85ZtLzZKq/IaFhcILc6H/z/Lu/TASXhsjOkFCrWaJt
+         iYHo0hm83RdZgCZ7I6RN3BlvuhAoc799DbmCz5cE4GjROnGBADjYoYkwOlXM5/OpTWhi
+         uxNSUHBHi0nJ+AyPwFQCHPiiVxXOvb+5/Cp8/bsEQ86BlW/xr8BWClkh3aptF+WDQAZc
+         1oVA==
+X-Gm-Message-State: AOAM530Gp/ugyLP0MwFrgTv5OugRr9b1aXLw0r1x7VCafJZWrEPq1SPm
+        prJHmnYSvfOf5meZPCeRFmZzqLixm15wgfmqDnw=
+X-Google-Smtp-Source: ABdhPJxRhWC5NXV5JEwvpeirQWFd4d1jO969HaFhJMvCmJoiKJN53VaDPC9gdMOgfDY66tag+jQ5od8h4l/1G1xtlOM=
+X-Received: by 2002:a25:6c08:: with SMTP id h8mr454596ybc.499.1612461382582;
+ Thu, 04 Feb 2021 09:56:22 -0800 (PST)
+MIME-Version: 1.0
+References: <20210204171942.469883-1-brianvv@google.com> <CAFSKS=P2d-szPdjukc_3HGBXKYv4k-fwh=OWBdHy2knqr-4-Hg@mail.gmail.com>
+In-Reply-To: <CAFSKS=P2d-szPdjukc_3HGBXKYv4k-fwh=OWBdHy2knqr-4-Hg@mail.gmail.com>
+From:   Brian Vazquez <brianvv.kernel@gmail.com>
+Date:   Thu, 4 Feb 2021 09:56:11 -0800
+Message-ID: <CABCgpaVCgBKGG8EeopROm4sGWyD_FHRveUpB1xyuy1n2=X3waA@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/2] net: add EXPORT_INDIRECT_CALLABLE wrapper
+To:     George McCollister <george.mccollister@gmail.com>
+Cc:     Brian Vazquez <brianvv@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        open list <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PACKET_TX_TIMESTAMP is defined in if_packet.h but it is not included in
-test. Include it instead of <netpacket/packet.h> otherwise the error of
-redefinition arrives.
-Also fix the compiler warning about ambiguous control flow by adding
-explicit braces.
+Yeah, I'm also not seeing it on patchwork. But I did get the email on
+both corp and personal email. So maybe something is failing at
+patchwork?
 
-Fixes: 8fe2f761cae9 ("net-timestamp: expand documentation")
-Suggested-by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
----
- tools/testing/selftests/net/txtimestamp.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/net/txtimestamp.c b/tools/testing/selftests/net/txtimestamp.c
-index 490a8cc..fabb1d5 100644
---- a/tools/testing/selftests/net/txtimestamp.c
-+++ b/tools/testing/selftests/net/txtimestamp.c
-@@ -26,6 +26,7 @@
- #include <inttypes.h>
- #include <linux/errqueue.h>
- #include <linux/if_ether.h>
-+#include <linux/if_packet.h>
- #include <linux/ipv6.h>
- #include <linux/net_tstamp.h>
- #include <netdb.h>
-@@ -34,7 +35,6 @@
- #include <netinet/ip.h>
- #include <netinet/udp.h>
- #include <netinet/tcp.h>
--#include <netpacket/packet.h>
- #include <poll.h>
- #include <stdarg.h>
- #include <stdbool.h>
-@@ -495,12 +495,12 @@ static void do_test(int family, unsigned int report_opt)
- 	total_len = cfg_payload_len;
- 	if (cfg_use_pf_packet || cfg_proto == SOCK_RAW) {
- 		total_len += sizeof(struct udphdr);
--		if (cfg_use_pf_packet || cfg_ipproto == IPPROTO_RAW)
-+		if (cfg_use_pf_packet || cfg_ipproto == IPPROTO_RAW) {
- 			if (family == PF_INET)
- 				total_len += sizeof(struct iphdr);
- 			else
- 				total_len += sizeof(struct ipv6hdr);
--
-+		}
- 		/* special case, only rawv6_sendmsg:
- 		 * pass proto in sin6_port if not connected
- 		 * also see ANK comment in net/ipv4/raw.c
--- 
-1.8.3.1
-
+On Thu, Feb 4, 2021 at 9:50 AM George McCollister
+<george.mccollister@gmail.com> wrote:
+>
+> I don't see the second patch.
+>
+> Regards,
+> George McCollister
