@@ -2,76 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A728030FC05
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 19:56:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD83830FC1A
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 20:00:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239468AbhBDSy5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 13:54:57 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49666 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238482AbhBDSyi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Feb 2021 13:54:38 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B4F7B64DE1;
-        Thu,  4 Feb 2021 18:53:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612464837;
-        bh=zLhrsQ3t0boP/eAaEbmY8Rcze1s9OVafy7KV+Tk7CrQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Z3ghuvAqq+zdbS8EvSzMw5PhYydM4BgjolpZ6p6bJPvk0PikHvX7rAyWuCE8BOsAR
-         Oqrk8Q949eR6YdC3Y1sw4rQhZW8/8j+2kjmezZwxYN5Tc2MmFWykZzEryZadNkZ6oM
-         XwGLMKOjOGrBtBZnKdm6vPc0c/ABpTUQ0LDSJi9a41AZKSGKvT8yFroYRtLpXJt6pN
-         5ySzmeti9PZYTWKcCedlpNEKDIh0PyLt46msjdvbKPUVL3IIBFOwWZOQ9AQgrC+2zt
-         C3hECIXlc/bFQWsr54VXE9kfcggSLh0z4wf1NSIOiSPp9sSZn25l9LW1OrKn1mcj7X
-         7ZtXgC/Tjjayw==
-Date:   Thu, 4 Feb 2021 10:53:56 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sabyrzhan Tasbolatov <snovitoll@gmail.com>
-Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org,
-        syzbot+c2a7e5c5211605a90865@syzkaller.appspotmail.com
-Subject: Re: [PATCH] net/qrtr: replaced useless kzalloc with kmalloc in
- qrtr_tun_write_iter()
-Message-ID: <20210204105356.3f41b3e2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210204105159.2ae254b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20210203162846.56a90288@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20210204090230.1794169-1-snovitoll@gmail.com>
-        <20210204105159.2ae254b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S239524AbhBDS7i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 13:59:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55790 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239481AbhBDS7G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 13:59:06 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B424C0613D6
+        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 10:58:26 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id c6so5599944ede.0
+        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 10:58:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dbxr5xg4qL8sih5Y0n1I1CEM+e3b+/PUXbcWXH5zZcs=;
+        b=nGWgUjhmyYVTq/fZg05Bsnu5y1IneDilgG+lWQlCZ+W8yDNRisJuxcf7kwNpBPqRNU
+         wydouML8FCl6S4nzkT/52sY2gUSTwz3TlMqgzRi7L6YvlSV3MJ4afgtsNlIEqEjBQe5q
+         5UEsIEuX9jy1Fngfqx6slJ4peNtImm/6c0BjyYb/5GPTIYguKRsp59d/LPgc08bUy+Xp
+         RzCOPyklHbiboL4EVYjOvTTATRMGzXTxdltd4PP2a1q7hzOsdz4ol3lRqogo0KIg0w3k
+         B9FajpDzlyQMorLYWnivROZuo+lVDuBAF16eIz98sVuh6pkTeP2fOhUQEB379Zvyl63I
+         LxVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dbxr5xg4qL8sih5Y0n1I1CEM+e3b+/PUXbcWXH5zZcs=;
+        b=LQy37rkYwOHa8PLenHpTHBmfhqNWYL7wZjHIPU2hbScG6hr/QK+3ZgSHoMoco9GqOV
+         fzDLY0qpvURHOYlAONd38wldDZy4HjtDPwpUCdROz4XuLXB2DcsKXJeOThoVtNX7qs24
+         aG+u3rRSjZ7q7utqbW+PiTiNqnmnwlj/YvmeNJAGhS/z4duF8vbHoGkwQjbw3PEVDV2G
+         HBPryLOJMTZ8XBcavhhRI4QKjIGevforqHes0/7Snd79CL2qCKrXgLv0b7Ma/xQO1NgJ
+         e3u/wVacUc5QPSemabCG7Z+VtW21y/MVPuTx/qdwl2xqBuJjCXyCENpba9QPRdUMggSQ
+         tLlA==
+X-Gm-Message-State: AOAM530LZZauvfxsNmTTXM5FB/dWpWpLhpV7MviljTmTxf8COhGX2wJf
+        xqicDO8ctn25aBh4lyAaXssSae59o4cyO1DaAO4=
+X-Google-Smtp-Source: ABdhPJxEAEUtz2OqJNNJY5Y3EgrxruQPEyzIZCl5tNEMbrgPQIJvAmvXd+VaYjJruFriu2eiK4cxIr+TDcK/yQc0hGg=
+X-Received: by 2002:a05:6402:149a:: with SMTP id e26mr38270edv.254.1612465105122;
+ Thu, 04 Feb 2021 10:58:25 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <1612461034-24524-1-git-send-email-vfedorenko@novek.ru>
+In-Reply-To: <1612461034-24524-1-git-send-email-vfedorenko@novek.ru>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 4 Feb 2021 13:57:48 -0500
+Message-ID: <CAF=yD-LgMjFt11kSvNUbwS-pXZdnucF8UxNZjyGUvJQcKyU-8w@mail.gmail.com>
+Subject: Re: [net v4] selftests: txtimestamp: fix compilation issue
+To:     Vadim Fedorenko <vfedorenko@novek.ru>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Jian Yang <jianyang@google.com>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 4 Feb 2021 10:51:59 -0800 Jakub Kicinski wrote:
-> On Thu,  4 Feb 2021 15:02:30 +0600 Sabyrzhan Tasbolatov wrote:
-> > Replaced kzalloc() with kmalloc(), there is no need for zeroed-out
-> > memory for simple void *kbuf.  
-> 
-> There is no need for zeroed-out memory because it's immediately
-> overwritten by copy_from_iter...
+On Thu, Feb 4, 2021 at 12:51 PM Vadim Fedorenko <vfedorenko@novek.ru> wrote:
+>
+> PACKET_TX_TIMESTAMP is defined in if_packet.h but it is not included in
+> test. Include it instead of <netpacket/packet.h> otherwise the error of
+> redefinition arrives.
+> Also fix the compiler warning about ambiguous control flow by adding
+> explicit braces.
+>
+> Fixes: 8fe2f761cae9 ("net-timestamp: expand documentation")
+> Suggested-by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
 
-Also if you don't mind please wait a week until the fixes get merged
-back into net-next and then repost. Otherwise this patch will not apply
-cleanly. (Fixes are merged into a different tree than cleanups)
+Acked-by: Willem de Bruijn <willemb@google.com>
 
-> > Signed-off-by: Sabyrzhan Tasbolatov <snovitoll@gmail.com>
-> > ---
-> >  net/qrtr/tun.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/net/qrtr/tun.c b/net/qrtr/tun.c
-> > index b238c40a9984..9b607c7614de 100644
-> > --- a/net/qrtr/tun.c
-> > +++ b/net/qrtr/tun.c
-> > @@ -86,7 +86,7 @@ static ssize_t qrtr_tun_write_iter(struct kiocb *iocb, struct iov_iter *from)
-> >  	if (len > KMALLOC_MAX_SIZE)
-> >  		return -ENOMEM;
-> >  
-> > -	kbuf = kzalloc(len, GFP_KERNEL);
-> > +	kbuf = kmalloc(len, GFP_KERNEL);
-> >  	if (!kbuf)
-> >  		return -ENOMEM;
-> >    
-> 
-
+Thanks for fixing this, Vadim.
