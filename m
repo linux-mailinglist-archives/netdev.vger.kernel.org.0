@@ -2,79 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22D8A30F76C
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 17:17:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 652D630F74E
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 17:13:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237760AbhBDQOQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 11:14:16 -0500
-Received: from mga17.intel.com ([192.55.52.151]:9911 "EHLO mga17.intel.com"
+        id S237780AbhBDQJ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 11:09:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41506 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237631AbhBDQIx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Feb 2021 11:08:53 -0500
-IronPort-SDR: Ne2SAtKc+EH0M1ksC1PlkWB0DaoY9Eedgarc+dfebN3fdcnjNmnfMY1xuz25oM9IRSRttwUj4I
- nJ/DNawnSp/g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9885"; a="161025234"
-X-IronPort-AV: E=Sophos;i="5.79,401,1602572400"; 
-   d="scan'208";a="161025234"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2021 08:07:22 -0800
-IronPort-SDR: c+jdb7JXd2t0VvhuqvSTRHc8VZqvpxiZQkpv5pP/W+iBiIYeiOSskyD9PO9X9b1QCnqysaqy4e
- 75gUFQ1AB0GQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,401,1602572400"; 
-   d="scan'208";a="434006013"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by orsmga001.jf.intel.com with ESMTP; 04 Feb 2021 08:07:20 -0800
-Date:   Thu, 4 Feb 2021 16:58:03 +0100
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Camelia Groza <camelia.groza@nxp.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, madalin.bucur@oss.nxp.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net 2/3] dpaa_eth: reduce data alignment requirements for
- the A050385 erratum
-Message-ID: <20210204155803.GC2580@ranger.igk.intel.com>
-References: <cover.1612275417.git.camelia.groza@nxp.com>
- <6e534e4b2da14bb57331446e950a49f237f979c0.1612275417.git.camelia.groza@nxp.com>
+        id S237835AbhBDQJa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Feb 2021 11:09:30 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B37B264F6A;
+        Thu,  4 Feb 2021 16:08:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1612454929;
+        bh=3IAPQCCNYn5V60zzmVrr36a9HtGkWRc99HBODO496rg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SbGXD2TYulwmiUQymxa1aJ6E9gI3aWMtXnHBN5sPgXVrkpXtCbu+v0ZHPxelGg3kf
+         OCEK7Js2lxNP6OULdJSFxzpq9FfVDxZmJCQNHvO0+GZx0qC8q1M2tspWFbV3CM2ebX
+         7vYTxzaaKedXFZO77mr+R3l5UMy2ORCNsruSabzc=
+Date:   Thu, 4 Feb 2021 17:08:46 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <uwe@kleine-koenig.org>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jens Axboe <axboe@kernel.dk>, Matt Mackall <mpm@selenic.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Peter Huewe <peterhuewe@gmx.de>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Haren Myneni <haren@us.ibm.com>,
+        Breno =?iso-8859-1?Q?Leit=E3o?= <leitao@debian.org>,
+        Nayna Jain <nayna@linux.ibm.com>,
+        Paulo Flabiano Smorigo <pfsmorigo@gmail.com>,
+        Steven Royer <seroyer@linux.ibm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Cristobal Forno <cforno12@linux.ibm.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Dany Madden <drt@linux.ibm.com>, Lijun Pan <ljp@linux.ibm.com>,
+        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+        Tyrel Datwyler <tyreld@linux.ibm.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Michael Cyr <mikecyr@linux.ibm.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        sparclinux@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-integrity@vger.kernel.org,
+        netdev@vger.kernel.org, linux-scsi@vger.kernel.org,
+        target-devel@vger.kernel.org
+Subject: Re: [PATCH] vio: make remove callback return void
+Message-ID: <YBwcDmtefa2WmS90@kroah.com>
+References: <20210127215010.99954-1-uwe@kleine-koenig.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <6e534e4b2da14bb57331446e950a49f237f979c0.1612275417.git.camelia.groza@nxp.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210127215010.99954-1-uwe@kleine-koenig.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 02, 2021 at 07:34:43PM +0200, Camelia Groza wrote:
-> The 256 byte data alignment is required for preventing DMA transaction
-> splits when crossing 4K page boundaries. Since XDP deals only with page
-> sized buffers or less, this restriction isn't needed. Instead, the data
-> only needs to be aligned to 64 bytes to prevent DMA transaction splits.
+On Wed, Jan 27, 2021 at 10:50:10PM +0100, Uwe Kleine-König wrote:
+> The driver core ignores the return value of struct bus_type::remove()
+> because there is only little that can be done. To simplify the quest to
+> make this function return void, let struct vio_driver::remove() return
+> void, too. All users already unconditionally return 0, this commit makes
+> it obvious that returning an error code is a bad idea and makes it
+> obvious for future driver authors that returning an error code isn't
+> intended.
 > 
-> These lessened restrictions can increase performance by widening the pool
-> of permitted data alignments and preventing unnecessary realignments.
+> Note there are two nominally different implementations for a vio bus:
+> one in arch/sparc/kernel/vio.c and the other in
+> arch/powerpc/platforms/pseries/vio.c. I didn't care to check which
+> driver is using which of these busses (or if even some of them can be
+> used with both) and simply adapt all drivers and the two bus codes in
+> one go.
 > 
-> Fixes: ae680bcbd06a ("dpaa_eth: implement the A050385 erratum workaround for XDP")
-> Signed-off-by: Camelia Groza <camelia.groza@nxp.com>
-
-Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-
+> Note that for the powerpc implementation there is a semantical change:
+> Before this patch for a device that was bound to a driver without a
+> remove callback vio_cmo_bus_remove(viodev) wasn't called. As the device
+> core still considers the device unbound after vio_bus_remove() returns
+> calling this unconditionally is the consistent behaviour which is
+> implemented here.
+> 
+> Signed-off-by: Uwe Kleine-König <uwe@kleine-koenig.org>
 > ---
->  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Hello,
 > 
-> diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> index e1d041c35ad9..78dfa05f6d55 100644
-> --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> @@ -2192,7 +2192,7 @@ static int dpaa_a050385_wa_xdpf(struct dpaa_priv *priv,
->  	 * byte frame headroom. If the XDP program uses all of it, copy the
->  	 * data to a new buffer and make room for storing the backpointer.
->  	 */
-> -	if (PTR_IS_ALIGNED(xdpf->data, DPAA_A050385_ALIGN) &&
-> +	if (PTR_IS_ALIGNED(xdpf->data, DPAA_FD_DATA_ALIGNMENT) &&
->  	    xdpf->headroom >= priv->tx_headroom) {
->  		xdpf->headroom = priv->tx_headroom;
->  		return 0;
-> -- 
-> 2.17.1
-> 
+> note that this change depends on
+> https://lore.kernel.org/r/20210121062005.53271-1-ljp@linux.ibm.com which removes
+> an (ignored) return -EBUSY in drivers/net/ethernet/ibm/ibmvnic.c.
+> I don't know when/if this latter patch will be applied, so it might take
+> some time until my patch can go in.
+
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
