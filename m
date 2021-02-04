@@ -2,109 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AB3630FC5C
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 20:18:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3656730FC2F
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 20:06:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239705AbhBDTOY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 14:14:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51170 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238458AbhBDShl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 13:37:41 -0500
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A615C0613D6
-        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 10:36:43 -0800 (PST)
-Received: by mail-yb1-xb2a.google.com with SMTP id s61so4196184ybi.4
-        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 10:36:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UqMQ/GMTZ6SvjPq30QG7VPUvPnPGHPYTqgfLdXQVAkc=;
-        b=LyZ3A3Lmzqa4HkekOWrcIkvNIGnTiP8h7yn6jpXCpK655PcTayjIddQGPC2ppHDZbt
-         DNYCPOMVwbxvrROgrXImQT/KspeG7SDBbwGktObKI3gkhQuesBOKqEJbYsco4Q+F7Y7M
-         RPpECwGpoNRF/5S1x0NAovWaucKKgZsW9SonsWJ7l7i1G0r8VKOK9snb9JMlQrfIM0gJ
-         L6tQSphrZCO6JLcWzgfXjAQsqzRnJ2EvIdNW3DEhNQ6+ox5vsJLwexcdqVBZf4Fvy8yp
-         ZSv8G0CH2ZtFiyMxh8f1/ZX5NMrRP05x5G7AtfhLUqI/BjuWNuh/h1d1fZj/ytGHeaQu
-         4MmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UqMQ/GMTZ6SvjPq30QG7VPUvPnPGHPYTqgfLdXQVAkc=;
-        b=oD4l+ZIdLJ6Cwe5jlqdGyqb9rpTNhM9GKehDQEBVHOtv3FACNaizuHdVxj/PbbjZC7
-         9RdSKJGshmUurwic4BvytEJhUX2i4lzjPz3jhKZXUqgmQtlDCWMOCBch5T/16NW9fZ+5
-         lrnBhjDWb4ENRoJ8IJ961KvTGObnqkaMsEelRjksg8hf4zeu7xQ+j1VYENEtBIcoz7KS
-         P2YSGxViFGQTwI77Ccw13r/wcg5vmp+hXRxIPiAtT/od0136mh9e/s1GikKnefVckJLo
-         qlKQplRkF79dDdobWvGUBD9oxPbKFWxgS6qGzmbAOVBWuAMC/lhhAOb56wJPWyIJcbjy
-         Gylg==
-X-Gm-Message-State: AOAM530ntcU+/3F/HaKHTgTCuqvr1vYctgJBfKElCy22bPpyjLXgB4aS
-        kBfmYaqWtB0Arhc0UbMsxrxiGwMJPW4eK1kcCho=
-X-Google-Smtp-Source: ABdhPJzNloHxgGPC4oJnyoA85Rq0G3DJrGU2d/8HUY7WajfwjT60zC6XBiMPLUIpZyr5jC/YDS6BF20iR9+NzsehnJo=
-X-Received: by 2002:a25:ba13:: with SMTP id t19mr806489ybg.129.1612463802396;
- Thu, 04 Feb 2021 10:36:42 -0800 (PST)
+        id S239562AbhBDTFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 14:05:02 -0500
+Received: from mga01.intel.com ([192.55.52.88]:46255 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239587AbhBDTEE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Feb 2021 14:04:04 -0500
+IronPort-SDR: WhgJSyIWnYctIOkzr1PBl1WUgla7TuIk8X3rDMf6SoM2pm+xyvSnzVhyGMwnwHhg5xzV/HfpuU
+ hXhrbzYr0ong==
+X-IronPort-AV: E=McAfee;i="6000,8403,9885"; a="200301947"
+X-IronPort-AV: E=Sophos;i="5.81,153,1610438400"; 
+   d="scan'208";a="200301947"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2021 11:03:23 -0800
+IronPort-SDR: jpKQen8Rw1w/GTlGqKxz5LW6mJtMIWqq23SRrSqGanQFPBDmmS6/gNVqQhCKbsB29Izz3kT1nU
+ eplBTt5FbMTw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,153,1610438400"; 
+   d="scan'208";a="393325665"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by orsmga008.jf.intel.com with ESMTP; 04 Feb 2021 11:03:22 -0800
+Date:   Thu, 4 Feb 2021 19:54:03 +0100
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Camelia Groza <camelia.groza@nxp.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, madalin.bucur@oss.nxp.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net v2 0/3] dpaa_eth: A050385 erratum workaround fixes
+ under XDP
+Message-ID: <20210204185403.GD2580@ranger.igk.intel.com>
+References: <cover.1612456902.git.camelia.groza@nxp.com>
 MIME-Version: 1.0
-References: <20210201100509.27351-1-borisp@mellanox.com> <20210201100509.27351-9-borisp@mellanox.com>
- <a104a5d1-b4cb-4275-6ced-b80f911b6f47@grimberg.me>
-In-Reply-To: <a104a5d1-b4cb-4275-6ced-b80f911b6f47@grimberg.me>
-From:   Or Gerlitz <gerlitz.or@gmail.com>
-Date:   Thu, 4 Feb 2021 20:36:31 +0200
-Message-ID: <CAJ3xEMhSxrjLfDvfzVRCLb27K4KmRh-KHQaKxvDF_6VDbNN8Jw@mail.gmail.com>
-Subject: Re: [PATCH v3 net-next 08/21] nvme-tcp : Recalculate crc in the end
- of the capsule
-To:     Sagi Grimberg <sagi@grimberg.me>
-Cc:     Boris Pismenny <borisp@mellanox.com>,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Christoph Hellwig <hch@lst.de>, axboe@fb.com,
-        Keith Busch <kbusch@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Eric Dumazet <edumazet@google.com>, smalin@marvell.com,
-        Yoray Zack <yorayz@mellanox.com>, yorayz@nvidia.com,
-        boris.pismenny@gmail.com, Ben Ben-Ishay <benishay@mellanox.com>,
-        benishay@nvidia.com, linux-nvme@lists.infradead.org,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Or Gerlitz <ogerlitz@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1612456902.git.camelia.groza@nxp.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 3, 2021 at 11:12 AM Sagi Grimberg <sagi@grimberg.me> wrote:
+On Thu, Feb 04, 2021 at 06:49:25PM +0200, Camelia Groza wrote:
+> This series addresses issue with the current workaround for the A050385
+> erratum in XDP scenarios.
+> 
+> The first patch makes sure the xdp_frame structure stored at the start of
+> new buffers isn't overwritten.
+> 
+> The second patch decreases the required data alignment value, thus
+> preventing unnecessary realignments.
+> 
+> The third patch moves the data in place to align it, instead of allocating
+> a new buffer for each frame that breaks the alignment rules, thus bringing
+> an up to 40% performance increase. With this change, the impact of the
+> erratum workaround is reduced in many cases to a single digit decrease, and
+> to lower double digits in single flow scenarios.
+> 
 
-> > @@ -1841,8 +1913,10 @@ static void __nvme_tcp_stop_queue(struct nvme_tcp_queue *queue)
-> >       nvme_tcp_restore_sock_calls(queue);
-> >       cancel_work_sync(&queue->io_work);
-> >
-> > -     if (test_bit(NVME_TCP_Q_OFF_DDP, &queue->flags))
-> > +     if (test_bit(NVME_TCP_Q_OFF_DDP, &queue->flags) ||
-> > +         test_bit(NVME_TCP_Q_OFF_DDGST_RX, &queue->flags))
-> >               nvme_tcp_unoffload_socket(queue);
-> > +
->
-> extra newline
+For series:
+Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 
-will remove
-
-> >   }
-> >
-> >   static void nvme_tcp_stop_queue(struct nvme_ctrl *nctrl, int qid)
-> > @@ -1970,8 +2044,6 @@ static int nvme_tcp_alloc_admin_queue(struct nvme_ctrl *ctrl)
-> >   {
-> >       int ret;
-> >
-> > -     to_tcp_ctrl(ctrl)->offloading_netdev = NULL;
-> > -
->
-> Unclear what is the intent here.
-
-yep, unclear indeed.. will look and probably remove
-
-as for your other comment on this patch, will get back to you later on
-
-> >       ret = nvme_tcp_alloc_queue(ctrl, 0, NVME_AQ_DEPTH);
-> >       if (ret)
-> >               return ret;
+> Changes in v2:
+> - guarantee enough tailroom is available for the shared_info in 1/3
+> 
+> Camelia Groza (3):
+>   dpaa_eth: reserve space for the xdp_frame under the A050385 erratum
+>   dpaa_eth: reduce data alignment requirements for the A050385 erratum
+>   dpaa_eth: try to move the data in place for the A050385 erratum
+> 
+>  .../net/ethernet/freescale/dpaa/dpaa_eth.c    | 42 +++++++++++++++++--
+>  1 file changed, 38 insertions(+), 4 deletions(-)
+> 
+> --
+> 2.17.1
+> 
