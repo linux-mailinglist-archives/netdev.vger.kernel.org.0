@@ -2,99 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A55A030F18A
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 12:07:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8096D30F18F
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 12:07:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235560AbhBDLGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 06:06:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38898 "EHLO
+        id S235581AbhBDLHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 06:07:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235518AbhBDLGx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 06:06:53 -0500
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81E97C061573
-        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 03:06:13 -0800 (PST)
-Received: by mail-pg1-x532.google.com with SMTP id t25so1861671pga.2
-        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 03:06:13 -0800 (PST)
+        with ESMTP id S235499AbhBDLHG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 06:07:06 -0500
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60096C0613D6
+        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 03:06:26 -0800 (PST)
+Received: by mail-pg1-x52a.google.com with SMTP id r38so1814259pgk.13
+        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 03:06:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Mznl2x0t9n//eV3qB2RdXE0dndjXVUaokt938SUBRto=;
-        b=LHSAVBW27sCFb6iQwtxU74DuseAv5wMI8+f/Gf6Il8eJr/Ghiw0oq2Os4cGUdRKvbr
-         8yy6AfxB23g2+WlCl+iwMlWlGnuMDPsbnEvoWpFebviW1h5+hr5Zm3j8eS/yKDylrXxK
-         tKvV+yPf1bimY9+GiJFr5ajZMku4oybxeA7SdYoL5tgiwhTf+WqW+RGMouEFVrRgk7OX
-         Unc5Da5Zl/HTVhe+sY95/ttinUPUw2oMWCbkIm/gmx01zxz+sNv292Jzs+YcXwUYKBXz
-         5dKT/yybIir2qbN5O2VOnJ2B/p3R0tlk/IgnP1EdWy5digzoXPqPIPWvdhmbOa9YYu4W
-         b1/Q==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Bzd7HKkd3Ts7ESkt/aXKI/JaGnhZL+skqDucX4yLTCQ=;
+        b=C3c5dyJb6O/yirl0WF84J4RT6j6OM2oYPdgzYChKvnn7e54EVcapMYrooxphRQCGtc
+         EHnKKcL4T46bfTuSE5iSFN5XH6Gh/ONPzXb3LmrgV2UcE3ajgNE/zRs+EQt+c/aM3DRw
+         q1f+9cOQuRfs++EeRILkxm4qzsfr+6pTSa09hZBe+F7NzGwhIuqo3OThZyeOeWlk12eO
+         GMnD4svgDEm3KNS9aHJkY1yGOJYSUpX5jXHmUrz5bPZyC28e0qzshMfE/o51ztssDV55
+         y1I4YtZsJJ5hRlC0LJ87EzhiFMK9qIGtcpx2InevX16Jw6mlaSM07T/Eyhq52poqLorN
+         KOLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Mznl2x0t9n//eV3qB2RdXE0dndjXVUaokt938SUBRto=;
-        b=tLjPul+jsdSi8xAb+M1zHfZuK8fkr8T5KUma7lkD8jW3QuKpwJZglEjvp3j3/7xVY0
-         6KwwThetSQAfMFNd5BkaoFkdKwWUE79eUbmih3NYU1RXduJAbVQAN5LePv3lzx0fIM5v
-         HucJLCKKLKlpwxKbUbqxgtjxOOhdoztbuzDaa63gTaQ0ecGk2hmSkirlMCyAnYQ/7vy3
-         Y9tU5KX421zKqUi0yEUrcAXjCjhaGLFjoYeIfFdsEX3/g5hn7aW2nf3HdZVGy+3CUp17
-         SpuWVd3staEdLYzC+gbH12t7Lfuym31AY3Iv7qULgCRimGJJYhDw2uqen08WQs5l44SV
-         H2JQ==
-X-Gm-Message-State: AOAM530bWW1U8rB/ruR4Rfsc6nXR/dIDUGcMcsehdEB5FCsTn25k4X9O
-        wj82NEnDhnm5xDPeT8hNBpo=
-X-Google-Smtp-Source: ABdhPJyYAVIyAFXnm75S+MSVk4RMguWyni4CWitq1UtNWeN1KmeES5X6sMx7Uyxt8osXxWk90pmCJQ==
-X-Received: by 2002:a05:6a00:8d0:b029:1b6:3581:4f41 with SMTP id s16-20020a056a0008d0b02901b635814f41mr7533435pfu.56.1612436772030;
-        Thu, 04 Feb 2021 03:06:12 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Bzd7HKkd3Ts7ESkt/aXKI/JaGnhZL+skqDucX4yLTCQ=;
+        b=L0cUffIPKuYPkZfrNEeo1GyLNbCHtdtjF8sNYMNFieixxKFStGdr2CvbAe/sKsR23k
+         EwOTA0mpVjmB3aNkrb5TbPizyeGl6mHq11Kgnvw0nd8iSL44aa7SZtPnH1T7N67hOU4N
+         0Ml/tTODakd9zcw6Uwba7TfhsgKnc8ABW9THd9afMZWZJ2Ih0qwsIf5TCqoCbNq8OHVX
+         4xMnueJNofwywZY/QZ+2sCycjs0GrjWLUepbsmrbT7J+Tb98YW9QvrwnLVBguA51sbPY
+         udKQxYuhFCRq9J8OcaqbHEbKZyONgxXl1dfQ8N3uPeUoZlflu3gdCy/JOf+H9J+f9m+Y
+         N4SA==
+X-Gm-Message-State: AOAM531pFSquSQgmDilAurQ6G0+uXO0Vpg7C3FwGcGLRiaoVsVjR8+FA
+        ygWQYhQbVduwA1BaQOTg9Qg=
+X-Google-Smtp-Source: ABdhPJwxg80JL7uzJYm6e8ZqRQQZBcVyE1xoR7h7pgijaY23L3+J6ubz96J9mZG3Ijj2ipr1a1XCTA==
+X-Received: by 2002:aa7:96bc:0:b029:1d3:3d93:5a11 with SMTP id g28-20020aa796bc0000b02901d33d935a11mr5652568pfk.4.1612436785982;
+        Thu, 04 Feb 2021 03:06:25 -0800 (PST)
 Received: from pek-lpggp6.wrs.com (unknown-105-123.windriver.com. [147.11.105.123])
-        by smtp.gmail.com with ESMTPSA id y15sm5283351pju.20.2021.02.04.03.06.06
+        by smtp.gmail.com with ESMTPSA id y15sm5283351pju.20.2021.02.04.03.06.19
         (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 04 Feb 2021 03:06:11 -0800 (PST)
+        Thu, 04 Feb 2021 03:06:25 -0800 (PST)
 From:   Kevin Hao <haokexin@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>
-Cc:     netdev@vger.kernel.org, linux-mm@kvack.org
-Subject: [PATCH net-next v3 0/4] net: Avoid the memory waste in some Ethernet drivers
-Date:   Thu,  4 Feb 2021 18:56:34 +0800
-Message-Id: <20210204105638.1584-1-haokexin@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-mm@kvack.org,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Subject: [PATCH net-next v3 1/4] mm: page_frag: Introduce page_frag_alloc_align()
+Date:   Thu,  4 Feb 2021 18:56:35 +0800
+Message-Id: <20210204105638.1584-2-haokexin@gmail.com>
 X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210204105638.1584-1-haokexin@gmail.com>
+References: <20210204105638.1584-1-haokexin@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+In the current implementation of page_frag_alloc(), it doesn't have
+any align guarantee for the returned buffer address. But for some
+hardwares they do require the DMA buffer to be aligned correctly,
+so we would have to use some workarounds like below if the buffers
+allocated by the page_frag_alloc() are used by these hardwares for
+DMA.
+    buf = page_frag_alloc(really_needed_size + align);
+    buf = PTR_ALIGN(buf, align);
 
-v3:
-  - Adjust patch 1 and 2 according to Alexander's suggestion.
-  - Add Tested-by from Subbaraya.
-  - Add Reviewed-by from Ioana.
+These codes seems ugly and would waste a lot of memories if the buffers
+are used in a network driver for the TX/RX. So introduce
+page_frag_alloc_align() to make sure that an aligned buffer address is
+returned.
 
-v2:
-  - Inline page_frag_alloc() and {netdev,napi}_alloc_frag()
-  - Adopt Vlastimil's suggestion and add his Acked-by
+Signed-off-by: Kevin Hao <haokexin@gmail.com>
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
+---
+v3: Use align mask as suggested by Alexander.
 
-In the current implementation of napi_alloc_frag(), it doesn't have any
-align guarantee for the returned buffer address. We would have to use
-some ugly workarounds to make sure that we can get a align buffer
-address for some Ethernet drivers. This patch series tries to introduce
-some helper functions to make sure that an align buffer is returned.
-Then we can drop the ugly workarounds and avoid the unnecessary memory
-waste.
+ include/linux/gfp.h | 12 ++++++++++--
+ mm/page_alloc.c     |  8 +++++---
+ 2 files changed, 15 insertions(+), 5 deletions(-)
 
-Kevin Hao (4):
-  mm: page_frag: Introduce page_frag_alloc_align()
-  net: Introduce {netdev,napi}_alloc_frag_align()
-  net: octeontx2: Use napi_alloc_frag_align() to avoid the memory waste
-  net: dpaa2: Use napi_alloc_frag_align() to avoid the memory waste
-
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |  3 +-
- .../marvell/octeontx2/nic/otx2_common.c       |  3 +-
- include/linux/gfp.h                           | 12 +++++--
- include/linux/skbuff.h                        | 36 +++++++++++++++++--
- mm/page_alloc.c                               |  8 +++--
- net/core/skbuff.c                             | 26 ++++++--------
- 6 files changed, 61 insertions(+), 27 deletions(-)
-
+diff --git a/include/linux/gfp.h b/include/linux/gfp.h
+index 53caa9846854..52cd415b436c 100644
+--- a/include/linux/gfp.h
++++ b/include/linux/gfp.h
+@@ -583,8 +583,16 @@ extern void free_pages(unsigned long addr, unsigned int order);
+ 
+ struct page_frag_cache;
+ extern void __page_frag_cache_drain(struct page *page, unsigned int count);
+-extern void *page_frag_alloc(struct page_frag_cache *nc,
+-			     unsigned int fragsz, gfp_t gfp_mask);
++extern void *page_frag_alloc_align(struct page_frag_cache *nc,
++				   unsigned int fragsz, gfp_t gfp_mask,
++				   unsigned int align_mask);
++
++static inline void *page_frag_alloc(struct page_frag_cache *nc,
++			     unsigned int fragsz, gfp_t gfp_mask)
++{
++	return page_frag_alloc_align(nc, fragsz, gfp_mask, ~0u);
++}
++
+ extern void page_frag_free(void *addr);
+ 
+ #define __free_page(page) __free_pages((page), 0)
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index ad3ed3ec4dd5..3583c6accd88 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -5137,8 +5137,9 @@ void __page_frag_cache_drain(struct page *page, unsigned int count)
+ }
+ EXPORT_SYMBOL(__page_frag_cache_drain);
+ 
+-void *page_frag_alloc(struct page_frag_cache *nc,
+-		      unsigned int fragsz, gfp_t gfp_mask)
++void *page_frag_alloc_align(struct page_frag_cache *nc,
++		      unsigned int fragsz, gfp_t gfp_mask,
++		      unsigned int align_mask)
+ {
+ 	unsigned int size = PAGE_SIZE;
+ 	struct page *page;
+@@ -5190,11 +5191,12 @@ void *page_frag_alloc(struct page_frag_cache *nc,
+ 	}
+ 
+ 	nc->pagecnt_bias--;
++	offset &= align_mask;
+ 	nc->offset = offset;
+ 
+ 	return nc->va + offset;
+ }
+-EXPORT_SYMBOL(page_frag_alloc);
++EXPORT_SYMBOL(page_frag_alloc_align);
+ 
+ /*
+  * Frees a page fragment allocated out of either a compound or order 0 page.
 -- 
 2.29.2
 
