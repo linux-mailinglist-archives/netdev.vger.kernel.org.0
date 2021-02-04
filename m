@@ -2,39 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB37E30FD8B
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 21:02:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB2FB30FDBA
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 21:06:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239889AbhBDUAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 15:00:16 -0500
-Received: from mail.kernel.org ([198.145.29.99]:32912 "EHLO mail.kernel.org"
+        id S239833AbhBDUF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 15:05:56 -0500
+Received: from mga17.intel.com ([192.55.52.151]:33377 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239891AbhBDT7S (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Feb 2021 14:59:18 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8A98364F38;
-        Thu,  4 Feb 2021 19:58:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612468717;
-        bh=u+6crpBq8Oq+sKoX2+GL7qm2xUVPXcP6Fd0cRAAhjTo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=thG8nnM8kWSZZ6YCcjlM1YxV5z+hcu7V9AGSlulpk7hYJKGuIrjzmYEtlHqawB0h3
-         o/P7rGZ3RmEI0AWse9EqKBt6/vfUpn2fwXxSUhn/OcUMsuGNaZy6JeFd2ZheAADfhu
-         RpDfDNtfFjysfU3i7icFO1e2bi4yFj9W9wSHpjkd7XpJLVMHEqLaxGtHz+WIaw3NUM
-         E/ipcTqPNAtP7/B0y2YXRX4uesSZOkYDiLe1NpngL4Nt2fSnrBlu9xnstj0LgKnDXK
-         6qWXDD3Nc9LWvoz+lOKJmrlzCKyUxgydqbQs8ol9Bysrz2iFufwHbIOvIjKEucUqPL
-         9VFXUupaVB29Q==
-Date:   Thu, 4 Feb 2021 11:58:36 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sven Eckelmann <sven@narfation.org>
-Cc:     Simon Wunderlich <sw@simonwunderlich.de>, davem@davemloft.net,
-        netdev@vger.kernel.org, b.a.t.m.a.n@lists.open-mesh.org
-Subject: Re: [PATCH 2/4] batman-adv: Update copyright years for 2021
-Message-ID: <20210204115836.4f66e1c8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <3636307.aAJz7UTs6F@ripper>
-References: <20210202174037.7081-1-sw@simonwunderlich.de>
-        <20210202174037.7081-3-sw@simonwunderlich.de>
-        <20210203163506.4b4dbff0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <3636307.aAJz7UTs6F@ripper>
+        id S238886AbhBDUFf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Feb 2021 15:05:35 -0500
+IronPort-SDR: jvAFo7DsuFfZATPYGQi5hzoh0imAhOD9PBxPJLG6JDEIc0fV2QZupf54Iyc+hvxUnnXTqouC4Z
+ NCPzAhHCb9wA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9885"; a="161075999"
+X-IronPort-AV: E=Sophos;i="5.81,153,1610438400"; 
+   d="scan'208";a="161075999"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2021 12:04:55 -0800
+IronPort-SDR: w25dlOuI26uqy8gsBnyLijkH7cRf4RJUGufCR72zFj2raTNoWynOFcePAKHrki6yHcm97DFzex
+ eFpyZgruJOhQ==
+X-IronPort-AV: E=Sophos;i="5.81,153,1610438400"; 
+   d="scan'208";a="434093065"
+Received: from jbrandeb-mobl4.amr.corp.intel.com (HELO localhost) ([10.212.188.246])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2021 12:04:55 -0800
+Date:   Thu, 4 Feb 2021 12:04:54 -0800
+From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
+To:     Geetha sowjanya <gakula@marvell.com>
+Cc:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <sgoutham@marvell.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <sbhatta@marvell.com>, <hkelam@marvell.com>, <jerinj@marvell.com>,
+        <lcherian@marvell.com>
+Subject: Re: [net-next v3 00/14] Add Marvell CN10K support
+Message-ID: <20210204120454.000054d6@intel.com>
+In-Reply-To: <1612437872-51671-1-git-send-email-gakula@marvell.com>
+References: <1612437872-51671-1-git-send-email-gakula@marvell.com>
+X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -42,39 +43,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 04 Feb 2021 08:54:33 +0100 Sven Eckelmann wrote:
-> On Thursday, 4 February 2021 01:35:06 CET Jakub Kicinski wrote:
-> [...]
-> > Is this how copyright works? I'm not a layer, but I thought it was
-> > supposed to reflect changes done to given file in a given year.  
-> 
-> <irony>Because we all know that the first thing a person is doing when 
-> submitting a change is to update the copyright year.</irony>
-> 
-> So we have either the option to:
-> 
-> * not update it at all (as in many kernel sources)
-> * don't have it listed explicitly (as seen in other kernel sources)
-> * update it once a year
-> 
-> I personally like to have a simple solution so I don't have to deal with this 
-> kind of details while doing interesting things. The current "solution"
-> was to handle the copyright notices year for the whole project as one entity - 
-> once per year and then ignore it for the rest of the year.
+Geetha sowjanya wrote:
 
-Back when I was working for a vendor I had a script which used git to
-find files touched in current year and then a bit of sed to update the
-dates. Instead of running your current script every Jan, you can run
-that one every Dec.
+> v2-v3
+> Reposting as a single thread.
 
-> And I would also prefer not to start a discussion about the differences 
-> between the inalienable German Urheberrecht, pre 1989 anglo-american 
-> copyright, post 1989 anglo american copyright and other copyright like laws.
+FYI, it didn't work, suggest you try adding the git-send-email option
+(via git-config)
 
-No need, we can depend on common sense. I hope you understand that a
-pull request which updates 8 lines of code, mostly comments, and then
-contains a version bump + 57 lines of copyright bumps is very likely 
-to give people a pause, right?
+sendemail.thread=true
+sendemail.chainreplyto=false
 
-If you strongly prefer the current model please add appropriate commit
-messages justifying it and repost. Right now patch 1 and 2 have none.
+And you can test locally by using first using git send-email to export
+to mbox and checking for References and In-Reply-to headers. Then
+sending for real.
+
+Good luck!
