@@ -2,147 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 602F730EA3F
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 03:35:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1217230EA4F
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 03:39:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234609AbhBDCdg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 21:33:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42038 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233760AbhBDCdf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 21:33:35 -0500
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81829C0613ED;
-        Wed,  3 Feb 2021 18:32:55 -0800 (PST)
-Received: by mail-qk1-x72f.google.com with SMTP id a12so1965690qkh.10;
-        Wed, 03 Feb 2021 18:32:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MJioKdNVOEvo/KsyqvjYGpC+hN5xTn7omYEUx0bMXvA=;
-        b=pHBuobSKILbJhuLLcc/3hth4BHKUubli9fuZUhZC+rObDP8cZ8bgoJmT3tzjw2EIg8
-         epntF8Yw9jYjZ0p3PZ8Aub5vPEkryWi29byJhQzH8Fn6PVBgQTIh5Iia20YZDOEs+udO
-         WelxyU/fEXLkjepwX1O4YkQUvFUErIANe2fGgIWWrimjEE1Qen3bLyvdHvFAoSyVKNXe
-         uwikz2zf6rUJvOrsRDPYUQMxbK/DcPK9+q34NsRcDDzpmZuzlM+AsIF8b10yNWpCzHdL
-         4kRKJPGbw+gQXjiiQCX9iulrmlR+Lr8OmjGRy8YeGGZemxroN9bKnm/im9h2PUzPWqb8
-         8BaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to;
-        bh=MJioKdNVOEvo/KsyqvjYGpC+hN5xTn7omYEUx0bMXvA=;
-        b=dn5EZauf6o/zmDZevH4vGS3sXpQVeS4GX3qJFfNUOl/5y19XEETT0uD6S/hHm/irlo
-         /mmYFv8rTjNu3e4E/BZoTETCl6zOgNfbtR5F8+Vbznsrl1IuKIpsK3Pzv+8vWwWF71Bx
-         Php5fdN2Q+zcyYVUQKzpE2uXftQKMDcY/iCnMvLgcS3TkwnWfa727d2xL7bEAO2IemY4
-         JY0Cjc4ZL7k4+ZjmZwV9JjQkv3h8ZkdTer5O7o3oASRfWF7J6Fbwi2tv//Ldjlm4yoZj
-         Eh91ht9jk6u15iwIJAauuuJk9fCFAqtUSqigtU5F2fISnrGOX8rg6Hgq76Q/eoX35v98
-         rXRA==
-X-Gm-Message-State: AOAM532gs6+R8d2z1zCGkUIbPNtQ1nRelkTYia+laWG66LswWJg/QUU5
-        p//27IiYQAlMvZNslOlVGeQ=
-X-Google-Smtp-Source: ABdhPJx8lCqzRhCNeQl1whuWue+5WRmG99XC7j3zoNvxdquVVyaGP6f4KGPx5SJ4mJazMH/jozA0bQ==
-X-Received: by 2002:a05:620a:2239:: with SMTP id n25mr5605909qkh.46.1612405974819;
-        Wed, 03 Feb 2021 18:32:54 -0800 (PST)
-Received: from Gentoo ([138.199.13.179])
-        by smtp.gmail.com with ESMTPSA id n78sm3818564qkn.22.2021.02.03.18.32.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Feb 2021 18:32:53 -0800 (PST)
-Date:   Thu, 4 Feb 2021 08:02:43 +0530
-From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V2] drivers: net: ethernet: i825xx: Fix couple of
- spellings and get rid of blank lines too in the file ether1.c
-Message-ID: <YBtcy8WPPSz6wCfO@Gentoo>
-Mail-Followup-To: Bhaskar Chowdhury <unixbhaskar@gmail.com>,
-        Randy Dunlap <rdunlap@infradead.org>, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210204011821.18356-1-unixbhaskar@gmail.com>
- <bea4f9c4-b1bb-eab6-3125-bfe69938fa5b@infradead.org>
+        id S234648AbhBDCjL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 21:39:11 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:44510 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234198AbhBDCjJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 21:39:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612406262;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qhb2kXItW2mHNSz2e91apSBwbAib3godlZyK9gF1DQM=;
+        b=JI8Q5PQF0s3p4p4iaHXV4AN87ytoqU3w8l++wR/GtbA7oIZRa//+Opicnbd21DsuRXtAMM
+        D/YbmTfKPzX6cpTpW2yJC7Lri1NGHCpSAHcsNHFYcRGV2Eu9qd4cSZP2vZYlUvz/6jBUlL
+        kHi0A9jCov+A5QTJF42YX1+h/eUZXQI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-597-OH7evkT8PvyBFzDkzbNQCA-1; Wed, 03 Feb 2021 21:37:40 -0500
+X-MC-Unique: OH7evkT8PvyBFzDkzbNQCA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DF32D801961;
+        Thu,  4 Feb 2021 02:37:35 +0000 (UTC)
+Received: from treble (ovpn-113-81.rdu2.redhat.com [10.10.113.81])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 383D85B695;
+        Thu,  4 Feb 2021 02:37:21 +0000 (UTC)
+Date:   Wed, 3 Feb 2021 20:37:19 -0600
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Ivan Babrou <ivan@cloudflare.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Ignat Korchagin <ignat@cloudflare.com>,
+        Hailong liu <liu.hailong6@zte.com.cn>,
+        Andrey Ryabinin <aryabinin@virtuozzo.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Julien Thierry <jthierry@redhat.com>,
+        Jiri Slaby <jirislaby@kernel.org>, kasan-dev@googlegroups.com,
+        linux-mm@kvack.org, linux-kernel <linux-kernel@vger.kernel.org>,
+        Alasdair Kergon <agk@redhat.com>,
+        Mike Snitzer <snitzer@redhat.com>, dm-devel@redhat.com,
+        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Robert Richter <rric@kernel.org>,
+        "Joel Fernandes (Google)" <joel@joelfernandes.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf@vger.kernel.org, Alexey Kardashevskiy <aik@ozlabs.ru>
+Subject: Re: BUG: KASAN: stack-out-of-bounds in
+ unwind_next_frame+0x1df5/0x2650
+Message-ID: <20210204023719.sbwh7o7un7j2zgkd@treble>
+References: <CABWYdi3HjduhY-nQXzy2ezGbiMB1Vk9cnhW2pMypUa+P1OjtzQ@mail.gmail.com>
+ <CABWYdi27baYc3ShHcZExmmXVmxOQXo9sGO+iFhfZLq78k8iaAg@mail.gmail.com>
+ <YBrTaVVfWu2R0Hgw@hirez.programming.kicks-ass.net>
+ <CABWYdi2ephz57BA8bns3reMGjvs5m0hYp82+jBLZ6KD3Ba6zdQ@mail.gmail.com>
+ <20210203190518.nlwghesq75enas6n@treble>
+ <CABWYdi1ya41Ju9SsHMtRQaFQ=s8N23D3ADn6OV6iBwWM6H8=Zw@mail.gmail.com>
+ <20210203232735.nw73kugja56jp4ls@treble>
+ <CABWYdi1zd51Jb35taWeGC-dR9SChq-4ixvyKms3KOKgV0idfPg@mail.gmail.com>
+ <20210204001700.ry6dpqvavcswyvy7@treble>
+ <CABWYdi0p91Y+TDUu38eey-p2GtxL6f=VHicTxS629VCMmrNLpQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="Dz9hAsEg3MNNcKsb"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <bea4f9c4-b1bb-eab6-3125-bfe69938fa5b@infradead.org>
+In-Reply-To: <CABWYdi0p91Y+TDUu38eey-p2GtxL6f=VHicTxS629VCMmrNLpQ@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Feb 03, 2021 at 04:52:42PM -0800, Ivan Babrou wrote:
+> We also have the following stack that doesn't touch any crypto:
+> 
+> * https://gist.github.com/bobrik/40e2559add2f0b26ae39da30dc451f1e
 
---Dz9hAsEg3MNNcKsb
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
+Can you also run this through decode_stacktrace.sh?
 
-On 18:09 Wed 03 Feb 2021, Randy Dunlap wrote:
->On 2/3/21 5:18 PM, Bhaskar Chowdhury wrote:
->>
->> s/initialsation/initialisation/
->> s/specifiing/specifying/
->>
->> Plus get rid of few blank lines.
->>
->> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
->> ---
->> Changes from V1:
->>    Fix typo in the subject line
->>    Give explanation of all the changes in changelog text
->>
->>  drivers/net/ethernet/i825xx/ether1.c | 9 +++------
->>  1 file changed, 3 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/i825xx/ether1.c b/drivers/net/ethernet/i825xx/ether1.c
->> index a0bfb509e002..850ea32091ed 100644
->> --- a/drivers/net/ethernet/i825xx/ether1.c
->> +++ b/drivers/net/ethernet/i825xx/ether1.c
->
->a. don't delete the blank lines
->b. the change below is not described and does not change any whitespace AFAICT.
->   I.e., DDT [don't do that].
->
-But what do you do when things getting automatically inducted in the
-patch???(You got to believe me)
+Both are useful (until I submit a fix for decode_stacktrace.sh).
 
-I haven't had touch that bloody function with my keystroke and it gets it on
-its own! Bemusing!
+> I cannot reproduce this one, and it took 2 days of uptime for it to
+> happen. Is there anything I can do to help diagnose it?
 
-Those blank lines too inducted from the fresh file(means in pristine form) ,so
-thought pruning would be good..hence the decision to get rid of those.
+Can you run with the same unwind_debug patch+cmdline when you try to
+recreate this one?  In the meantime I'll look at the available data.
 
-Wondering what the fuck is going on....
+-- 
+Josh
 
->> @@ -1047,7 +1044,7 @@ static void ether1_remove(struct expansion_card *ec)
->>  {
->>  	struct net_device *dev = ecard_get_drvdata(ec);
->>
->> -	ecard_set_drvdata(ec, NULL);
->> +	ecard_set_drvdata(ec, NULL);
->>
->>  	unregister_netdev(dev);
->>  	free_netdev(dev);
->
->
->--
->~Randy
->
-
---Dz9hAsEg3MNNcKsb
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEnwF+nWawchZUPOuwsjqdtxFLKRUFAmAbXMcACgkQsjqdtxFL
-KRXE3wgA08qhl3UlYZ5F03/kEOuJVrzbjZ27P2zjgZmen5iEaTN2Jlc/VjMe/tI0
-B97nAdg8pPmTtBpSS0e7Fc7W0t5y3/FOazlV/86V7fiEov3grjhJl+tzt4NfwxXL
-Mlhn3+8aL0Kui1YEKqKJuwYFwRO+ZaiqOFVi28VyT7ZcZDscXOXDmyR2tzfNFLl/
-HtPl6rO8nXBpoI6Af0hl2pcNFIP0WDKXsy6lOiCNLHPMEHZLceVpuzuFupx4eXXg
-qfZPnWDEA6MOGIt1INSdI/yZndi2eRnTVjPnRD6fRp+J4kiNyQrmnlnxLyJWZRF1
-5pwZRSn3pCRybvO+htN137Yi86zLsw==
-=gNBU
------END PGP SIGNATURE-----
-
---Dz9hAsEg3MNNcKsb--
