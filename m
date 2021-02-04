@@ -2,15 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 518BD30EF77
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 10:18:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B16730EF87
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 10:21:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234765AbhBDJR7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 04:17:59 -0500
-Received: from mx3.wp.pl ([212.77.101.10]:28961 "EHLO mx3.wp.pl"
+        id S235039AbhBDJVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 04:21:41 -0500
+Received: from mx4.wp.pl ([212.77.101.11]:50504 "EHLO mx4.wp.pl"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235203AbhBDJO6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Feb 2021 04:14:58 -0500
+        id S234315AbhBDJVi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Feb 2021 04:21:38 -0500
 Received: (wp-smtpd smtp.wp.pl 17215 invoked from network); 4 Feb 2021 10:14:04 +0100
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
           t=1612430044; bh=dXyM1tiDTBaOMaxbN/xXSQ8MKB+qXFyMO23iFtqxKK8=;
