@@ -2,408 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A205730F29A
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 12:43:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DAFBC30F2C3
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 12:57:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235942AbhBDLml (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 06:42:41 -0500
-Received: from mail-eopbgr60114.outbound.protection.outlook.com ([40.107.6.114]:12703
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        id S235791AbhBDL4N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 06:56:13 -0500
+Received: from mail-db8eur05on2052.outbound.protection.outlook.com ([40.107.20.52]:30272
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235586AbhBDLmf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Feb 2021 06:42:35 -0500
+        id S235683AbhBDL4M (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Feb 2021 06:56:12 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lnknTRm9TIZBh9fPMaMQI84azX6GOO363JMJK0jJMbOfxU/5/saySLkSrneNVYdCGmVogeIYcs05uMRoSfAySclLtthcaKDwWdkH9T900aJqQ/3PFUqf0eKuUTm3rH1ZMVwzz6bEm5H/jxLnn3dHR9IyQcx4FnhMfMwb8D+B6FlWSO5zzydYWmLfOEsyf7zQw4yogiJIxo3omFF0wy5ttZb7OEJkZOcRlfz75Rb9CpAj4wqEHBoyGEKn78fP793uGMdh0oFywBjLN9Z+S9w2xqcSaJJ3cI0HmL80F4KnEwfIikYdGpV+W9wpPd3O/CPdYdXJkZP39rwcQf9ihYbV2w==
+ b=QNgsp258JcNE8TjHmTb3+n6PQRJurH2IwlUQu6B21MzClIVhp4gFEhhZyXleClaFcQiUhPUnpwbYo476iBk8dso4u35/sjT+zu2GrB/IV/eWKK7pE7E0Xz3mNYjV1Pcl7BPvK4IGiFvYhe0aj8596BaGLlf2oyNC0uwXYcyCLfc/ihIfbBdHJgKNfIJe0cOo+vUtJHO9YOXZCo99TygwtcFYNpd02JI/OgiePRQn6QnRcx+Wu0oyVT20xAaf2a9ZLGC43hJwXUYvPmh5hi7PK5cNbXFAFrREI2ROxjykI0eyw1NUyBNeafsebN+K3NhlIvr9hAYYrrDO8QrTRuFrYw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1yH1CLuTMGL7Sm77zfODlzH0uUujUj0/1ns8ZnOXHf8=;
- b=eWCJrguxjYNMLwIYlAEfbZvJ5zIpE78RZrqFf/TDK+lSa8W69Gk2OcwwGYYJyfQLZ/QXDVTq3jMuqJLBnrIRYLtBif4apYLfNppesfzV2eHJDlpUrD80y2juuiw17o2bEIp2Cf/cLL3JUE+bqNFP3l46aEvDFgV5l/QiMxJ/6SJ5KRP9CttgWS1en9pBmouf2pwqLweevzuZtCy57EWPZkyMzJG8Ow3cByIF7VjwF0tleT5+kcgneRhxDvOp5wGZGP/WyiEEhrVc+ZSxqbSVzUNFaPpZmQQyMwlCCR/HMuwpsqIunmGV771f8vw8ZdSU2wLwTKC4o+ZTkfHup3o/Ag==
+ bh=vAPcOo8aD0QuEtZReDDJ1tPt4KVvwEa/D8ONvr1z6F4=;
+ b=XxAyJ0XCOS/YeAKDvSb6Tjj7/vFVvMajdidR8KQ7m+umksjUxV+sQSf7szYexX5vj1lJxKMUWDyZxZ5sm7bvU4VVC9a5A5jnVCAhvLlv2mghwn23FlGHJ9M8YktHz/EVEdRLvfl+6dQnNvXxJ0rQur4eXC6HPKfWeWmM5rYcY5xQmKz0uSiHsZg5x973j+y5YZN9dB6Op1EN3bUm5DCs6uiYdo91xik62A9+sqdSYaz6Qflyq6s7KnEOz3wFxR65RLHXz4iDDBUygkO9UAc6qH8cU8ZIVfEL6f2enlpEgt73kqu/BV0vZpDOsis2lRjK/ObGxo85pdDd0tinjjD/Og==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1yH1CLuTMGL7Sm77zfODlzH0uUujUj0/1ns8ZnOXHf8=;
- b=Jevi9WYP9l81/G60Wd6onHfFnoT2Gt0jlAhXY9SkN9924AfYCt6X0XL5W0vXjw8//93j+kySPG/+OUHrpaamJ1Oww1y7emDRye8CtkDdEA72Ks+VlldJblG9MZ0aEDxP8X+GYz7xe/76HyqtpUTe6FvZ0euoLu3s8oa7BKKSRXA=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=plvision.eu;
-Received: from AM0P190MB0738.EURP190.PROD.OUTLOOK.COM (2603:10a6:208:19b::9)
- by AM4P190MB0081.EURP190.PROD.OUTLOOK.COM (2603:10a6:200:5f::20) with
+ bh=vAPcOo8aD0QuEtZReDDJ1tPt4KVvwEa/D8ONvr1z6F4=;
+ b=aUAKURq3LRUOXOeulECRkiQCs8y5f97Nzv1PETPFZINFoRe734noGK/cthNId99xqQFuMYrsR1IO/io3VVCa8pjEpVEACuuS7VPQwaQK1qtpYkKO4+DzWs1eQycQJamraidOV/KpJ01Q/evLFcOgAEPS9oDQ52BsIyGiN6Df8AY=
+Received: from VI1PR04MB5807.eurprd04.prod.outlook.com (2603:10a6:803:ec::21)
+ by VI1PR04MB6877.eurprd04.prod.outlook.com (2603:10a6:803:131::23) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.23; Thu, 4 Feb
- 2021 11:41:43 +0000
-Received: from AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
- ([fe80::3011:87e8:b505:d066]) by AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
- ([fe80::3011:87e8:b505:d066%9]) with mapi id 15.20.3805.027; Thu, 4 Feb 2021
- 11:41:43 +0000
-From:   Oleksandr Mazur <oleksandr.mazur@plvision.eu>
-To:     netdev@vger.kernel.org
-Cc:     jiri@nvidia.com, davem@davemloft.net, linux-kernel@vger.kernel.org,
-        kuba@kernel.org, idosch@idosch.org,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>
-Subject: [RFC v5 net-next] net: core: devlink: add 'dropped' stats field for traps
-Date:   Thu,  4 Feb 2021 13:41:22 +0200
-Message-Id: <20210204114122.32644-1-oleksandr.mazur@plvision.eu>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-Originating-IP: [217.20.186.93]
-X-ClientProxiedBy: AM5P194CA0022.EURP194.PROD.OUTLOOK.COM
- (2603:10a6:203:8f::32) To AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:208:19b::9)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.17; Thu, 4 Feb
+ 2021 11:55:22 +0000
+Received: from VI1PR04MB5807.eurprd04.prod.outlook.com
+ ([fe80::6ccd:7fa9:bada:4]) by VI1PR04MB5807.eurprd04.prod.outlook.com
+ ([fe80::6ccd:7fa9:bada:4%7]) with mapi id 15.20.3805.027; Thu, 4 Feb 2021
+ 11:55:22 +0000
+From:   Camelia Alexandra Groza <camelia.groza@nxp.com>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+CC:     "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH net 1/3] dpaa_eth: reserve space for the xdp_frame under
+ the A050385 erratum
+Thread-Topic: [PATCH net 1/3] dpaa_eth: reserve space for the xdp_frame under
+ the A050385 erratum
+Thread-Index: AQHW+YnPkGf6mDF3HkiJWhcAPxnoRapHsuoAgAAsoxA=
+Date:   Thu, 4 Feb 2021 11:55:22 +0000
+Message-ID: <VI1PR04MB580752AFF9F191576278FC8CF2B39@VI1PR04MB5807.eurprd04.prod.outlook.com>
+References: <cover.1612275417.git.camelia.groza@nxp.com>
+ <b2e61a1ac55004ecbbe326cd878cd779df22aae8.1612275417.git.camelia.groza@nxp.com>
+ <20210204085158.GA2580@ranger.igk.intel.com>
+In-Reply-To: <20210204085158.GA2580@ranger.igk.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [82.78.148.61]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 0104c6b5-98bc-4473-6d55-08d8c903c099
+x-ms-traffictypediagnostic: VI1PR04MB6877:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR04MB6877B522E6D6DFCDFEA494D6F2B39@VI1PR04MB6877.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Vw9a5S6KUsT6xb9wWZ16e56W1j6NwKxiBEM8OudNcPi7En8rp7z3BSgHIGfYNiST6DstK4hAC3mk5QTisubvXeDVdV7kIvRuJkAzZGN6kFWr39J6LduF0eY1pu7DNzvtx6tF2Ytjslcp6Cu8BE1dEyD7CieM+Ew4i4e9CSNj62nPpVaQWzr+ZNpFSzNzt45lje/os9GuL0a6R1NhvXMMDd/T0lL7P1YuyWjENRuHr1z5l/mEE8kxqJ5ghqSdBMv6v7glyyIhIZ0lPzn9xCBk5b60Zln4llJ1NlgEk8pMOQFVeF0edN9EYIfixZ67nsnqnOZm9NqPkRI7xppnGJe9T7oNBapABa55Qp3pf+zKqNcwuMr6JCGBFcBKFLtSvkuJCCsbMDy9uuL4qHNg/55Zg/rKyPhSs+dbH/KCBVEFkVL8LbxZSoQGW6eXfjU/YpP7YRDczHuB2wiZLLi6/kRof7RhifuBQBSlqxLgXyan3EEe3anCJLJe7/u9Y0Hk9Z2rka9tHURXU5uOzmGYoKLRmw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5807.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(366004)(136003)(376002)(39860400002)(4326008)(53546011)(66446008)(71200400001)(66556008)(186003)(66476007)(6506007)(5660300002)(66946007)(83380400001)(64756008)(76116006)(316002)(54906003)(8936002)(55016002)(52536014)(26005)(33656002)(7696005)(6916009)(2906002)(478600001)(9686003)(8676002)(86362001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?zI0w8IbEwi3V5yhHpBqCvdYv8AJuwFAz1MTDgbbaDOYF7riUf8wKdX+U0NLu?=
+ =?us-ascii?Q?rFbwILWvPkyklNrSiJXvjcti0+XkMN0huSB8mTZxt36hMhcasdh1oiUkjc6R?=
+ =?us-ascii?Q?QOLStzRNDpf5PR/h+Tt8K4A1H6LBRB9W3wN2vh/NhFPGrbBHM3gXJzv1rlWG?=
+ =?us-ascii?Q?6gu4prrw0EzudpdxVyNvsTnrTB018U/cHRmTj5vhAtmkTo0zGDBGc3ZWfXwf?=
+ =?us-ascii?Q?eIvXQeBW/AhI7D6whTYK78At/pUadxnuCjqTMuTlO09zKcAKhUUM9xBfIjd8?=
+ =?us-ascii?Q?v0as4FKmoh9/OKjrn/SqEfL2VpW4AOQ+gW16up2hNGY/xglcso4FQ7paHnBP?=
+ =?us-ascii?Q?jmALE1VJyJerlrkn88/dDTM9+JosS2BrL6JQLm3MgKdbLzY0Fo7hpjfH1ota?=
+ =?us-ascii?Q?6cMhivnJkGIj2oXxnD236XG4FOhspz5OdBNe9EAlMw2BSFds9RZTqoN0XiZV?=
+ =?us-ascii?Q?9Lk5ZUdo/NDvpqslO3Z66vM/I+/89XW5cRQTB4fbQ9haudokeO/ScKpxk9A/?=
+ =?us-ascii?Q?9fE6YF+08MthGriImQzsMT3gePccCA45GMMcTRsa7bbmzqCew6ih0At0fLRY?=
+ =?us-ascii?Q?bwjqr4Lc6+KPN18n2O+JKURuAOzeAMJmcussIg6kHamPN1xqoSOoazKyadfJ?=
+ =?us-ascii?Q?KotDeHe8ZH9KsnqSqZir5LsEHjjOFcxXTqt6M/TPTdDME6pFZH2MviVjHas2?=
+ =?us-ascii?Q?Gy/Wt6PMbL59OMqltGvsPlfVZaRraxQ1r0g28r1Io3SdW9+Rc+R97g5R9fQR?=
+ =?us-ascii?Q?51Y/o1229Gj8Cg6yRz5CR3YrcR8ESQYdj547FM25oTXB742R43fywg7kbkA0?=
+ =?us-ascii?Q?g1xTu4+kQXm9gmz6QLiqRq8m2Ec4E2Rfr/ahsnRHtEhu8/LPHUlKOhBLL8UJ?=
+ =?us-ascii?Q?xZJ/O3e8fAcbLOwPkAztQujAOMa5n3/1V1zVNzTx2Bkb6xbtchGQRXRILQwi?=
+ =?us-ascii?Q?H3ZrnJbCFsAWAuSHPcRNjqgidG0MF+dGST3bDvo6/7EnPH+HCArMkHkZumz2?=
+ =?us-ascii?Q?piW1MEbG0iQ/ioHohVFzqy7smPExGZhcbDIKTz718tY6Zxq594X2dlArf5pC?=
+ =?us-ascii?Q?CDV/bJRPNcymOZBnHjJgxndDy3xrTc9hUiZr+/eQ6Xjf/M/3f7ZXu9Ie4ZRU?=
+ =?us-ascii?Q?YY9VApcdTu7mJOzXS4ynhr7Acx5m6VF3LBm/r2+A9PnRBr2eepZ/8f8yl1+a?=
+ =?us-ascii?Q?SmSUG5T/gC7UKmHhwP+eynzEYRTFSuWjtVPmfAyaq0YQg6VnpgUWPLO9vKxd?=
+ =?us-ascii?Q?qWfPJ2YnMj9z5UuhX204ke+o8cYnlZzjWlF1avWu+Z/ZuH+EMrcnk2A2CkU5?=
+ =?us-ascii?Q?g/g=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from omazur.x.ow.s (217.20.186.93) by AM5P194CA0022.EURP194.PROD.OUTLOOK.COM (2603:10a6:203:8f::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.17 via Frontend Transport; Thu, 4 Feb 2021 11:41:43 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9718b385-7db3-4b19-1963-08d8c901d845
-X-MS-TrafficTypeDiagnostic: AM4P190MB0081:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM4P190MB00817F62BB8FBF4D68D89C73E4B39@AM4P190MB0081.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2582;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Re+NbBP5WbF7rqBk8HC4/Kn5pjNEs9zWcfXWaaHLrj07wk9rbqI28g515LClzAxTlP1e5/BoaxKZBw1xJJ9hcfwWZ5FkPHG9sHQBl4ATZCoFTorvMedr4r3mUI2RRtHv01MO9byWf+XmM9OdPPUPGADXySIy3pUxcl1sow09mNtZa+S7ZUq8rxuni9qtGAmEwZZGIRXwSb4aSTCtfstnjF8M1Q4dqO799m4AIG5tN06cNAQlHVqPBNDDQ9Vsxdv3jilbNLPYq1U9ynmniLIaU6drNXu9C83CuZtkivJBR2K1X1QZea+cjwnA64ON+45X3/GSZ1A6dNhQnZ3RQuDJZvzDomNeqvDIoIkewPmub/fny15UIWX5zKELoo8sCJoN/NUK36HZHlzv+LuhJE+dkbCUNMAE11ZCQuni8D5Vj9blJ5V6aFMzea+Z3JjtVTUu7xdTOKZVUBhCFsZ8a2qCNe0HqpGMcwBo85jCC81ziFxLzSOpqsET+JHbd/SxZYCm6h+uABMyC4y0/of2SoWBvg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0P190MB0738.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(376002)(39830400003)(396003)(346002)(136003)(366004)(2906002)(956004)(8676002)(44832011)(2616005)(16526019)(6666004)(26005)(30864003)(52116002)(6506007)(1076003)(86362001)(36756003)(6512007)(478600001)(83380400001)(66946007)(8936002)(4326008)(316002)(6916009)(6486002)(66476007)(66556008)(186003)(107886003)(5660300002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?Tog4aIC/Q6SIk5Ixof3/hFoCKsyLkt7ihi2GNsMcaI3cJJIQdxwjvuj/4Rey?=
- =?us-ascii?Q?vhvigpp1J3ywNU7dIHPrUhgU33pYJOxdWF5cbOO5mgmHcmk3ZDdagtAh9BHv?=
- =?us-ascii?Q?DFDsiskJDZ8kaQEf1Ew3uPTWavcTMmHfdgFkULXnoicZ2mC1KEQcRt3jDpsF?=
- =?us-ascii?Q?ITKoqQiriqSw8SA9zWNHa8pyodyaUpdkyfYP+gvU786LitlV/oVJCRG/ZAPn?=
- =?us-ascii?Q?1/SS8VZdMhdKlWJi2f/FGfuRc3ODsVxij6c9YRMUtZEe4lY89jiL/NEraxTX?=
- =?us-ascii?Q?nX0/ePSbxt2GCYDSGihIo1SkEUiTAcNnKjA3/cDnQoxX3FM4PZaS/oeftLnS?=
- =?us-ascii?Q?tkNYWCp1pcHEXsKyhHbdx6qXRkVP+y6gKFDltErUhjX/AszNwtU1g4l8JJHf?=
- =?us-ascii?Q?zfmRcy/h073hPI0zGuanqsuHaZOXK0G4bwq3hmxX/N1P3/j5HGhxhQLSA5oI?=
- =?us-ascii?Q?OW7zOdQFnQgxnS4PYXPqhjqUDsw/7ZKdnzxpXx+9RD82pzkU7/cB5dbmVJda?=
- =?us-ascii?Q?okP8Ac2TaNiCFHKtZBIqGN/JAmCELKRVybQidsdzeEOqHOXaFMgxaXITM8XV?=
- =?us-ascii?Q?Y2MPbFbVaA5khP8rm2Hqyzgkq38uUkVQ+Q9J4YjtWcwcItvplOv7GSrsVzcj?=
- =?us-ascii?Q?bSo8qhq2aI83+MIS2uMPUeYO+auLSUDqbWk6ec3lMW57W4Ci3fCSWCpxmMOQ?=
- =?us-ascii?Q?b5aUmpdjtvzN6LaftR5sCMH7iOjGoE02+5g5nBSmHFardh0m/T8kbSNtpALA?=
- =?us-ascii?Q?Se2M96zr75LbaP/pKkhCdL8po4QF711plWs9+Q+IaA8rlWYYoivE9GxQ9UBh?=
- =?us-ascii?Q?OkU3kaUlRO1N3U705WQ4FspaNYODZMHTC4ktGMhJ2Hr/hMhz+6JJCCAg50vk?=
- =?us-ascii?Q?NAk2vYPZGkd3zH1uE5YtaGdyFjNuLpYHY37Mti0sJO9RsPNGq8V7DmBzmiEM?=
- =?us-ascii?Q?MditfkdyTIkBfoED4eW3dBNUoVzHqaX54K/Q3PWEnMqZS9ELaKk1EPfC+MXv?=
- =?us-ascii?Q?w5tlC0Ssfa+ENgvPWBhXr/gX7AzYnCOG7AUEKvQo6Kz3pvdUngutVZoKkc/A?=
- =?us-ascii?Q?gP6l/F0qInKmW+YbSM2fjjDd0r50QeOHdRvr8LI2X1VDfcoNxUG+REx96QD+?=
- =?us-ascii?Q?d1zNLh4nuEnUCUMJNtb4DUpkeB0bmxFwOBBz6E+BRnb828swKYtALxf0iiUo?=
- =?us-ascii?Q?D17jmfJWGe8cLkEWTvHA53z/cF/9tW69cTjop+DDS/pYuk1ZF4BrpJ/JHibm?=
- =?us-ascii?Q?mDAD2GOl6cT4Ri3csvFWuQhLgZv/JorJAiuiGvlRLHoPE+0EKb09+eooiFpq?=
- =?us-ascii?Q?uZb0AQjiHR1gR/53WmcmVFcR?=
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9718b385-7db3-4b19-1963-08d8c901d845
-X-MS-Exchange-CrossTenant-AuthSource: AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Feb 2021 11:41:43.5205
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5807.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0104c6b5-98bc-4473-6d55-08d8c903c099
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Feb 2021 11:55:22.5510
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QE/shpawzWIQ77vzDQpHMM75UHxg0XS9qs+GUpaK4ZRuTpPaXz0TZuH9X6bwDsF6ms3E1itZ8eyyuxGKnMO4mO+dLfHB865BeavnbHEXYfI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4P190MB0081
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: jRXprn0He6pJfw1dcUjAeZ/l65zixGQeAS3aUaR39FURYV8W8LNNuGAUK9XvcSs0LdqydngReoil9L9+OMi8EA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6877
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Whenever query statistics is issued for trap, devlink subsystem
-would also fill-in statistics 'dropped' field. This field indicates
-the number of packets HW dropped and failed to report to the device driver,
-and thus - to the devlink subsystem itself.
-In case if device driver didn't register callback for hard drop
-statistics querying, 'dropped' field will be omitted and not filled.
-Add trap_drop_counter_get callback implementation to the netdevsim.
-Add new test cases for netdevsim, to test both the callback
-functionality, as well as drop statistics alteration check.
+> -----Original Message-----
+> From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> Sent: Thursday, February 4, 2021 10:52
+> To: Camelia Alexandra Groza <camelia.groza@nxp.com>
+> Cc: kuba@kernel.org; davem@davemloft.net; Madalin Bucur (OSS)
+> <madalin.bucur@oss.nxp.com>; netdev@vger.kernel.org
+> Subject: Re: [PATCH net 1/3] dpaa_eth: reserve space for the xdp_frame
+> under the A050385 erratum
+>=20
+> On Tue, Feb 02, 2021 at 07:34:42PM +0200, Camelia Groza wrote:
+> > When the erratum workaround is triggered, the newly created xdp_frame
+> > structure is stored at the start of the newly allocated buffer. Avoid
+> > the structure from being overwritten by explicitly reserving enough
+> > space in the buffer for storing it.
+> >
+> > Account for the fact that the structure's size might increase in time b=
+y
+> > aligning the headroom to DPAA_FD_DATA_ALIGNMENT bytes, thus
+> guaranteeing
+> > the data's alignment.
+> >
+> > Fixes: ae680bcbd06a ("dpaa_eth: implement the A050385 erratum
+> workaround for XDP")
+> > Signed-off-by: Camelia Groza <camelia.groza@nxp.com>
+> > ---
+> >  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 17
+> +++++++++++++++--
+> >  1 file changed, 15 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> > index 4360ce4d3fb6..e1d041c35ad9 100644
+> > --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> > +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+> > @@ -2182,6 +2182,7 @@ static int dpaa_a050385_wa_xdpf(struct
+> dpaa_priv *priv,
+> >  	struct xdp_frame *new_xdpf, *xdpf =3D *init_xdpf;
+> >  	void *new_buff;
+> >  	struct page *p;
+> > +	int headroom;
+> >
+> >  	/* Check the data alignment and make sure the headroom is large
+> >  	 * enough to store the xdpf backpointer. Use an aligned headroom
+> > @@ -2197,19 +2198,31 @@ static int dpaa_a050385_wa_xdpf(struct
+> dpaa_priv *priv,
+> >  		return 0;
+> >  	}
+> >
+> > +	/* The new xdp_frame is stored in the new buffer. Reserve enough
+> space
+> > +	 * in the headroom for storing it along with the driver's private
+> > +	 * info. The headroom needs to be aligned to
+> DPAA_FD_DATA_ALIGNMENT to
+> > +	 * guarantee the data's alignment in the buffer.
+> > +	 */
+> > +	headroom =3D ALIGN(sizeof(*new_xdpf) + priv->tx_headroom,
+> > +			 DPAA_FD_DATA_ALIGNMENT);
+> > +
+> > +	/* Assure the extended headroom and data fit in a one-paged buffer
+> */
+> > +	if (headroom + xdpf->len > DPAA_BP_RAW_SIZE)
+>=20
+> This check might make more sense if you would be accounting for
+> skb_shared_info as well I suppose, so that you know you'll still provide
+> enough tailroom for future xdp multibuf support. Didn't all the previous
+> code path make sure that there's a room for that?
 
-Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
----
-V5:
-    1) Add missed static specifier for function in netdevsim/dev.c
-V4:
-    1) Change commit description / subject.
-    2) Change 'dropped' statistics fill condition from
-       'trap_drop_counter_get is registered' && 'trap action == drop'
-       to
-       'trap_drop_counter_get is registered'.
-    3) Fix statistics fill condition used for wrong stats attribute:
-       DEVLINK_ATTR_STATS_RX_PACKETS -> DEVLINK_ATTR_STATS_RX_DROPPED
-V3:
-    1) Mark subject as RFC instead of PATCH.
-V2:
-    1) Change commit description / subject.
-    2) Remove HARD_DROP action.
-    3) Remove devlink UAPI changes.
-    4) Rename hard statistics get callback to be 'trap_drop_counter_get'
-    5) Make callback get called for existing trap action - DROP:
-       whenever statistics for trap with DROP action is queried,
-       devlink subsystem would call-in callback to get stats from HW;
-    6) Add changes to the netdevsim support implemented changes
-       (as well as changes to make it possible to test netdevsim with
-        these changes).
-    7) Add new test cases to the netdevsim's kselftests to test new
-       changes provided with this patchset;
+Hi Maciej
 
-Test-results:
-# selftests: drivers/net/netdevsim: devlink_trap.sh
-# TEST: Initialization                                                [ OK ]
-# TEST: Trap action                                                   [ OK ]
-# TEST: Trap metadata                                                 [ OK ]
-# TEST: Non-existing trap                                             [ OK ]
-# TEST: Non-existing trap action                                      [ OK ]
-# TEST: Trap statistics                                               [ OK ]
-# TEST: Trap group action                                             [ OK ]
-# TEST: Non-existing trap group                                       [ OK ]
-# TEST: Trap group statistics                                         [ OK ]
-# TEST: Trap policer                                                  [ OK ]
-# TEST: Trap policer binding                                          [ OK ]
-# TEST: Port delete                                                   [ OK ]
-# TEST: Device delete                                                 [ OK ]
-ok 1 selftests: drivers/net/netdevsim: devlink_trap.sh
----
- drivers/net/netdevsim/dev.c                   | 22 ++++++++
- drivers/net/netdevsim/netdevsim.h             |  1 +
- include/net/devlink.h                         | 10 ++++
- net/core/devlink.c                            | 53 +++++++++++++++++--
- .../drivers/net/netdevsim/devlink_trap.sh     | 10 ++++
- .../selftests/net/forwarding/devlink_lib.sh   | 26 +++++++++
- 6 files changed, 118 insertions(+), 4 deletions(-)
+This function will have to go through large changes anyway once we enable
+multibuf support, so making it future-proof isn't a priority.
 
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index 816af1f55e2c..d83a53bd0930 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -231,6 +231,9 @@ static int nsim_dev_debugfs_init(struct nsim_dev *nsim_dev)
- 	debugfs_create_bool("fail_trap_policer_counter_get", 0600,
- 			    nsim_dev->ddir,
- 			    &nsim_dev->fail_trap_policer_counter_get);
-+	debugfs_create_bool("fail_trap_counter_get", 0600,
-+			    nsim_dev->ddir,
-+			    &nsim_dev->fail_trap_counter_get);
- 	nsim_udp_tunnels_debugfs_create(nsim_dev);
- 	return 0;
- }
-@@ -416,6 +419,7 @@ struct nsim_trap_data {
- 	struct delayed_work trap_report_dw;
- 	struct nsim_trap_item *trap_items_arr;
- 	u64 *trap_policers_cnt_arr;
-+	u64 trap_pkt_cnt;
- 	struct nsim_dev *nsim_dev;
- 	spinlock_t trap_lock;	/* Protects trap_items_arr */
- };
-@@ -892,6 +896,23 @@ nsim_dev_devlink_trap_policer_counter_get(struct devlink *devlink,
- 	return 0;
- }
- 
-+static int
-+nsim_dev_devlink_trap_hw_counter_get(struct devlink *devlink,
-+				     const struct devlink_trap *trap,
-+				     u64 *p_drops)
-+{
-+	struct nsim_dev *nsim_dev = devlink_priv(devlink);
-+	u64 *cnt;
-+
-+	if (nsim_dev->fail_trap_counter_get)
-+		return -EINVAL;
-+
-+	cnt = &nsim_dev->trap_data->trap_pkt_cnt;
-+	*p_drops = (*cnt)++;
-+
-+	return 0;
-+}
-+
- static const struct devlink_ops nsim_dev_devlink_ops = {
- 	.supported_flash_update_params = DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT |
- 					 DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK,
-@@ -905,6 +926,7 @@ static const struct devlink_ops nsim_dev_devlink_ops = {
- 	.trap_group_set = nsim_dev_devlink_trap_group_set,
- 	.trap_policer_set = nsim_dev_devlink_trap_policer_set,
- 	.trap_policer_counter_get = nsim_dev_devlink_trap_policer_counter_get,
-+	.trap_drop_counter_get = nsim_dev_devlink_trap_hw_counter_get,
- };
- 
- #define NSIM_DEV_MAX_MACS_DEFAULT 32
-diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
-index 48163c5f2ec9..f9aa8429549a 100644
---- a/drivers/net/netdevsim/netdevsim.h
-+++ b/drivers/net/netdevsim/netdevsim.h
-@@ -219,6 +219,7 @@ struct nsim_dev {
- 	bool fail_trap_group_set;
- 	bool fail_trap_policer_set;
- 	bool fail_trap_policer_counter_get;
-+	bool fail_trap_counter_get;
- 	struct {
- 		struct udp_tunnel_nic_shared utn_shared;
- 		u32 __ports[2][NSIM_UDP_TUNNEL_N_PORTS];
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index f466819cc477..0b9ed24533c5 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -1294,6 +1294,16 @@ struct devlink_ops {
- 				     const struct devlink_trap_group *group,
- 				     enum devlink_trap_action action,
- 				     struct netlink_ext_ack *extack);
-+	/**
-+	 * @trap_drop_counter_get: Trap drop counter get function.
-+	 *
-+	 * Should be used by device drivers to report number of packets
-+	 * that have been dropped, and cannot be passed to the devlink
-+	 * subsystem by the underlying device.
-+	 */
-+	int (*trap_drop_counter_get)(struct devlink *devlink,
-+				     const struct devlink_trap *trap,
-+				     u64 *p_drops);
- 	/**
- 	 * @trap_policer_init: Trap policer initialization function.
- 	 *
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index ee828e4b1007..f59c49c070c8 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -6791,8 +6791,9 @@ static void devlink_trap_stats_read(struct devlink_stats __percpu *trap_stats,
- 	}
- }
- 
--static int devlink_trap_stats_put(struct sk_buff *msg,
--				  struct devlink_stats __percpu *trap_stats)
-+static int
-+devlink_trap_group_stats_put(struct sk_buff *msg,
-+			     struct devlink_stats __percpu *trap_stats)
- {
- 	struct devlink_stats stats;
- 	struct nlattr *attr;
-@@ -6820,6 +6821,50 @@ static int devlink_trap_stats_put(struct sk_buff *msg,
- 	return -EMSGSIZE;
- }
- 
-+static int devlink_trap_stats_put(struct sk_buff *msg, struct devlink *devlink,
-+				  const struct devlink_trap_item *trap_item)
-+{
-+	struct devlink_stats stats;
-+	struct nlattr *attr;
-+	u64 drops = 0;
-+	int err;
-+
-+	if (devlink->ops->trap_drop_counter_get) {
-+		err = devlink->ops->trap_drop_counter_get(devlink,
-+							  trap_item->trap,
-+							  &drops);
-+		if (err)
-+			return err;
-+	}
-+
-+	devlink_trap_stats_read(trap_item->stats, &stats);
-+
-+	attr = nla_nest_start(msg, DEVLINK_ATTR_STATS);
-+	if (!attr)
-+		return -EMSGSIZE;
-+
-+	if (devlink->ops->trap_drop_counter_get &&
-+	    nla_put_u64_64bit(msg, DEVLINK_ATTR_STATS_RX_DROPPED, drops,
-+			      DEVLINK_ATTR_PAD))
-+		goto nla_put_failure;
-+
-+	if (nla_put_u64_64bit(msg, DEVLINK_ATTR_STATS_RX_PACKETS,
-+			      stats.rx_packets, DEVLINK_ATTR_PAD))
-+		goto nla_put_failure;
-+
-+	if (nla_put_u64_64bit(msg, DEVLINK_ATTR_STATS_RX_BYTES,
-+			      stats.rx_bytes, DEVLINK_ATTR_PAD))
-+		goto nla_put_failure;
-+
-+	nla_nest_end(msg, attr);
-+
-+	return 0;
-+
-+nla_put_failure:
-+	nla_nest_cancel(msg, attr);
-+	return -EMSGSIZE;
-+}
-+
- static int devlink_nl_trap_fill(struct sk_buff *msg, struct devlink *devlink,
- 				const struct devlink_trap_item *trap_item,
- 				enum devlink_command cmd, u32 portid, u32 seq,
-@@ -6857,7 +6902,7 @@ static int devlink_nl_trap_fill(struct sk_buff *msg, struct devlink *devlink,
- 	if (err)
- 		goto nla_put_failure;
- 
--	err = devlink_trap_stats_put(msg, trap_item->stats);
-+	err = devlink_trap_stats_put(msg, devlink, trap_item);
- 	if (err)
- 		goto nla_put_failure;
- 
-@@ -7074,7 +7119,7 @@ devlink_nl_trap_group_fill(struct sk_buff *msg, struct devlink *devlink,
- 			group_item->policer_item->policer->id))
- 		goto nla_put_failure;
- 
--	err = devlink_trap_stats_put(msg, group_item->stats);
-+	err = devlink_trap_group_stats_put(msg, group_item->stats);
- 	if (err)
- 		goto nla_put_failure;
- 
-diff --git a/tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh b/tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh
-index da49ad2761b5..ff4f3617e0c5 100755
---- a/tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh
-+++ b/tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh
-@@ -163,6 +163,16 @@ trap_stats_test()
- 			devlink_trap_action_set $trap_name "drop"
- 			devlink_trap_stats_idle_test $trap_name
- 			check_err $? "Stats of trap $trap_name not idle when action is drop"
-+
-+			echo "y"> $DEBUGFS_DIR/fail_trap_drop_counter_get
-+			devlink -s trap show $DEVLINK_DEV trap $trap_name &> /dev/null
-+			check_fail $? "Managed to read trap (hard dropped) statistics when should not"
-+			echo "n"> $DEBUGFS_DIR/fail_trap_drop_counter_get
-+			devlink -s trap show $DEVLINK_DEV trap $trap_name &> /dev/null
-+			check_err $? "Did not manage to read trap (hard dropped) statistics when should"
-+
-+			devlink_trap_drop_stats_idle_test $trap_name
-+			check_fail $? "Drop stats of trap $trap_name idle when should not"
- 		else
- 			devlink_trap_stats_idle_test $trap_name
- 			check_fail $? "Stats of non-drop trap $trap_name idle when should not"
-diff --git a/tools/testing/selftests/net/forwarding/devlink_lib.sh b/tools/testing/selftests/net/forwarding/devlink_lib.sh
-index 9c12c4fd3afc..2094ba025af5 100644
---- a/tools/testing/selftests/net/forwarding/devlink_lib.sh
-+++ b/tools/testing/selftests/net/forwarding/devlink_lib.sh
-@@ -318,6 +318,14 @@ devlink_trap_rx_bytes_get()
- 		| jq '.[][][]["stats"]["rx"]["bytes"]'
- }
- 
-+devlink_trap_drop_packets_get()
-+{
-+	local trap_name=$1; shift
-+
-+	devlink -js trap show $DEVLINK_DEV trap $trap_name \
-+		| jq '.[][][]["stats"]["rx"]["dropped"]'
-+}
-+
- devlink_trap_stats_idle_test()
- {
- 	local trap_name=$1; shift
-@@ -339,6 +347,24 @@ devlink_trap_stats_idle_test()
- 	fi
- }
- 
-+devlink_trap_drop_stats_idle_test()
-+{
-+	local trap_name=$1; shift
-+	local t0_packets t0_bytes
-+
-+	t0_packets=$(devlink_trap_drop_packets_get $trap_name)
-+
-+	sleep 1
-+
-+	t1_packets=$(devlink_trap_drop_packets_get $trap_name)
-+
-+	if [[ $t0_packets -eq $t1_packets ]]; then
-+		return 0
-+	else
-+		return 1
-+	fi
-+}
-+
- devlink_traps_enable_all()
- {
- 	local trap_name
--- 
-2.17.1
+Instead, I do want to return a valid xdp_frame so I need to guarantee the
+tailroom is there, even if we don't access it . I'll send a v2. Thanks.
 
+Camelia
