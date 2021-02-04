@@ -2,58 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FE4530EAD4
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 04:20:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DF6330EAEE
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 04:31:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233893AbhBDDTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 22:19:23 -0500
-Received: from szxga05-in.huawei.com ([45.249.212.191]:12072 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232123AbhBDDTV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 22:19:21 -0500
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4DWNy13c4dzMTcg;
-        Thu,  4 Feb 2021 11:16:57 +0800 (CST)
-Received: from ubuntu.network (10.175.138.68) by
- DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
- 14.3.498.0; Thu, 4 Feb 2021 11:18:28 +0800
-From:   Zheng Yongjun <zhengyongjun3@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Zheng Yongjun <zhengyongjun3@huawei.com>
-Subject: [PATCH net-next] net: core: Return the correct errno code
-Date:   Thu, 4 Feb 2021 11:19:23 +0800
-Message-ID: <20210204031923.15264-1-zhengyongjun3@huawei.com>
-X-Mailer: git-send-email 2.22.0
+        id S231553AbhBDDat (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 22:30:49 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:3417 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229601AbhBDDas (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 22:30:48 -0500
+Received: from dggeme711-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4DWPCf33Qxz5Gkl;
+        Thu,  4 Feb 2021 11:28:46 +0800 (CST)
+Received: from [127.0.0.1] (10.69.26.252) by dggeme711-chm.china.huawei.com
+ (10.1.199.107) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2106.2; Thu, 4 Feb
+ 2021 11:30:05 +0800
+Subject: Re: [PATCH net-next 2/7] net: hns3: RSS indirection table and key use
+ device specifications
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <huangdaode@huawei.com>, <linuxarm@openeuler.org>,
+        Guangbin Huang <huangguangbin2@huawei.com>
+References: <1612269593-18691-1-git-send-email-tanhuazhong@huawei.com>
+ <1612269593-18691-3-git-send-email-tanhuazhong@huawei.com>
+ <20210203165039.3bf2784d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Huazhong Tan <tanhuazhong@huawei.com>
+Message-ID: <c5cb912f-c7a1-7420-9323-a9690e514b3b@huawei.com>
+Date:   Thu, 4 Feb 2021 11:30:04 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.138.68]
+In-Reply-To: <20210203165039.3bf2784d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.69.26.252]
+X-ClientProxiedBy: dggeme714-chm.china.huawei.com (10.1.199.110) To
+ dggeme711-chm.china.huawei.com (10.1.199.107)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When kalloc or kmemdup failed, should return ENOMEM rather than ENOBUF.
 
-Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
----
- net/core/rtnetlink.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 2021/2/4 8:50, Jakub Kicinski wrote:
+> On Tue, 2 Feb 2021 20:39:48 +0800 Huazhong Tan wrote:
+>>   struct hclgevf_rss_cfg {
+>> -	u8  rss_hash_key[HCLGEVF_RSS_KEY_SIZE]; /* user configured hash keys */
+>> +	/* user configured hash keys */
+>> +	u8  rss_hash_key[HCLGEVF_RSS_KEY_SIZE_MAX];
+>>   	u32 hash_algo;
+>>   	u32 rss_size;
+>>   	u8 hw_tc_map;
+>> -	u8  rss_indirection_tbl[HCLGEVF_RSS_IND_TBL_SIZE]; /* shadow table */
+>> +	/* shadow table */
+>> +	u8  rss_indirection_tbl[HCLGEVF_RSS_IND_TBL_SIZE_MAX];
+>>   	struct hclgevf_rss_tuple_cfg rss_tuple_sets;
+>>   };
+> What if the table sizes supported by the device grow beyond the
+> .._SIZE_MAX constants? Are you handling that case?
 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 7d7223691783..6df8fb25668b 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -177,7 +177,7 @@ static int rtnl_register_internal(struct module *owner,
- 	struct rtnl_link *link, *old;
- 	struct rtnl_link __rcu **tab;
- 	int msgindex;
--	int ret = -ENOBUFS;
-+	int ret = -ENOMEM;
- 
- 	BUG_ON(protocol < 0 || protocol > RTNL_FAMILY_MAX);
- 	msgindex = rtm_msgindex(msgtype);
--- 
-2.22.0
+Sorry for missing this case, will allocate these tables by the queried 
+size instead
+
+of this fixed one, Since some verification job is needed, so this patch 
+will resend later.
+
+thanks.
+> .
 
