@@ -2,42 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AD4F30F7E1
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 17:30:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D138E30F7E8
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 17:30:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237770AbhBDQ3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 11:29:12 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46048 "EHLO mail.kernel.org"
+        id S237109AbhBDQaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 11:30:17 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46276 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237087AbhBDQ26 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Feb 2021 11:28:58 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E24A664F53;
-        Thu,  4 Feb 2021 16:28:15 +0000 (UTC)
+        id S237048AbhBDQ3j (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Feb 2021 11:29:39 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2F69664F4E;
+        Thu,  4 Feb 2021 16:28:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612456098;
-        bh=ytHJevR+zzgmOSRx6kpqUi3lL5tHgTyXFrb/w6GcbzM=;
+        s=k20201202; t=1612456138;
+        bh=056fz5EMahpKz5J2AFFhrRZLdav0oksdlYuTWVkGTOE=;
         h=From:To:Cc:Subject:Date:From;
-        b=XhN5ISGWyafpPs2enUgZVpXm4zoHkJUl3m57WK4TQXlYDlXQakC/EE45ItKpGRoI0
-         8jkXw0LehmGi2vqhtkiOKG/t9ZZb/0hk/ymjcKz6vwZ6OsCxlRfbzyrJQFPZIISCCk
-         +Ktuk2PtXZLRDBnOkXp3gOpekw0U18MVL3NhndpAMu/Uc4GvtJjpS+FggRjHG4nc0y
-         yRCHtbJ3hU4xz7+QH0MKPKlx4oFrjD4H4jggYp6DxQW3mX/Pb9/kFMNHER+HAuOMid
-         HMaBg4AuIPf8IpT9XQRRo8+i/VAjoZ1PeCRO8lCBpDLSuONnnpCkrC2Uo0UIdjfnGB
-         QjhhXrKfgbJXQ==
+        b=eKDw/p05Tk3cZopTI/UO6ecZ5Eykblpe5zL6hLjtrJgK2KMxtbbHgIFoSH7m1tLkS
+         SWq8wSUoO4aAFOQge9zMzhZdh8bC71t68PbkrQcWYf/y7SLaPUTS5hHexHWAjdCDXB
+         GT06EoDJAyCUByYYwNDHVzgRcqcH++MFI8pEKEL0e5Atf8gdYtLzDLTVHQ2ohXkaGc
+         Z3ocjVZY4RsD0g8xA10tDA/v1gRIJw8l2nosngyjXt22BIXmvvN3ZmWHMMxydoYQlu
+         gpYe2L+jeVU2wrCSuq4xsKiDDPmONooL4mTfS9mSR1JUCbHGttZV+whqC0dotR3Tfr
+         E1qjijBZKzP/g==
 From:   Arnd Bergmann <arnd@kernel.org>
-To:     Lennert Buytenhek <buytenh@wantstofly.org>,
+To:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Romain Perier <romain.perier@gmail.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Allen Pais <allen.lkml@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+Cc:     Arnd Bergmann <arnd@arndb.de>, linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] cwmwl8k: fix alignment constraints
-Date:   Thu,  4 Feb 2021 17:28:04 +0100
-Message-Id: <20210204162813.3159319-1-arnd@kernel.org>
+Subject: [PATCH] brcm80211: fix alignment constraints
+Date:   Thu,  4 Feb 2021 17:28:35 +0100
+Message-Id: <20210204162852.3219572-1-arnd@kernel.org>
 X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -47,33 +49,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-sturct mwl8k_dma_data contains a ieee80211_hdr structure, which is required to
+sturct d11txh contains a ieee80211_rts structure, which is required to
 have at least two byte alignment, and this conflicts with the __packed
 attribute:
 
-vers/net/wireless/marvell/mwl8k.c:811:1: warning: alignment 1 of 'struct mwl8k_dma_data' is less than 2 [-Wpacked-not-aligned]
+drivers/net/wireless/broadcom/brcm80211/brcmsmac/d11.h:786:1: warning: alignment 1 of 'struct d11txh' is less than 2 [-Wpacked-not-aligned]
 
-Mark mwl8k_dma_data itself as having two-byte alignment to ensure the
+Mark d11txh itself as having two-byte alignment to ensure the
 inner structure is properly aligned.
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/wireless/marvell/mwl8k.c | 2 +-
+ drivers/net/wireless/broadcom/brcm80211/brcmsmac/d11.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/marvell/mwl8k.c b/drivers/net/wireless/marvell/mwl8k.c
-index abf3b0233ccc..38eeab6369f7 100644
---- a/drivers/net/wireless/marvell/mwl8k.c
-+++ b/drivers/net/wireless/marvell/mwl8k.c
-@@ -808,7 +808,7 @@ struct mwl8k_dma_data {
- 	__le16 fwlen;
- 	struct ieee80211_hdr wh;
- 	char data[];
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/d11.h b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/d11.h
+index 9035cc4d6ff3..7870093629c3 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/d11.h
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/d11.h
+@@ -783,7 +783,7 @@ struct d11txh {
+ 	u8 RTSPhyHeader[D11_PHY_HDR_LEN];	/* 0x2c - 0x2e */
+ 	struct ieee80211_rts rts_frame;	/* 0x2f - 0x36 */
+ 	u16 PAD;		/* 0x37 */
 -} __packed;
 +} __packed __aligned(2);
  
- /* Routines to add/remove DMA header from skb.  */
- static inline void mwl8k_remove_dma_header(struct sk_buff *skb, __le16 qos)
+ #define	D11_TXH_LEN		112	/* bytes */
+ 
 -- 
 2.29.2
 
