@@ -2,166 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B756C30ED7B
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 08:38:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 350EB30ED8B
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 08:41:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234677AbhBDHhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 02:37:12 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:12000 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234667AbhBDHhG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 02:37:06 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B601ba3f90001>; Wed, 03 Feb 2021 23:36:25 -0800
-Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 4 Feb
- 2021 07:36:25 +0000
-Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server id 15.0.1473.3 via Frontend
- Transport; Thu, 4 Feb 2021 07:36:23 +0000
-From:   Eli Cohen <elic@nvidia.com>
-To:     <mst@redhat.com>, <jasowang@redhat.com>, <si-wei.liu@oracle.com>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <lulu@redhat.com>, <elic@nvidia.com>
-Subject: [PATCH v1] vdpa/mlx5: Restore the hardware used index after change map
-Date:   Thu, 4 Feb 2021 09:36:18 +0200
-Message-ID: <20210204073618.36336-1-elic@nvidia.com>
-X-Mailer: git-send-email 2.28.0
+        id S234719AbhBDHkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 02:40:18 -0500
+Received: from so15.mailgun.net ([198.61.254.15]:59119 "EHLO so15.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234694AbhBDHj5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Feb 2021 02:39:57 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1612424371; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=PNaFuQrq1FOPPvy1zsUBLo97crEnYUTCs9GUaPLmKcw=;
+ b=LcOmEUTEVCJyFU1AikWPXiQ+K+Zsop6/iq4Juq62qO4hBAFLB1hpMc3rj6QMwrsHKuJlYbg7
+ GMQm8MVv7jcyDNZAckFOF2LdkoeaUMzv9QHFrA7JsyV+ZsGlWXW1V0/G+LvJYrO+arRazGnR
+ a/daDe7UR+mQVWbDZ9yLbhfNqKU=
+X-Mailgun-Sending-Ip: 198.61.254.15
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
+ 601ba49087f205364e832d07 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 04 Feb 2021 07:38:56
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id D284BC43463; Thu,  4 Feb 2021 07:38:55 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 53D36C433C6;
+        Thu,  4 Feb 2021 07:38:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 53D36C433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1612424185; bh=SQJLeoiHUDk7V48beRRwq4hOUrhyW2x2dXNvzrQW7Hs=;
-        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-         Content-Transfer-Encoding:Content-Type;
-        b=mtLFjXzEdtPhOYfQyQLLAHTISl53x6edyTxNUdEHBw5bCaJpoRKXyxmoIGptWGxL+
-         TOkvy0/6t/VrmaD7vXI+Fk3AID0zbUW/BbQOioHfE3iek3MtTflCrRmy9T3gv8aOr7
-         MuxxFsOeV6IGu03iX7Q1CoXZoDyF2q6rHDGJbqwCnZNNtCFHKuOllwoGTSY7+LCINv
-         wOHUSkXfEc1tRql4d9KT/VoUoeQ943NI63UVzWMvZbaqHjzoLfsKwZQKODKxVbJjqB
-         LLpjjgCFZB2ZECqXPOFZKU+iLMCh7B9K+Vx/yASURHIZXZneek3y3/SxWeGBBaLBtC
-         vEanq4vG/LXFA==
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] ath10k: remove h from printk format specifier
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20210127222344.2445641-1-trix@redhat.com>
+References: <20210127222344.2445641-1-trix@redhat.com>
+To:     trix@redhat.com
+Cc:     davem@davemloft.net, kuba@kernel.org, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20210204073855.D284BC43463@smtp.codeaurora.org>
+Date:   Thu,  4 Feb 2021 07:38:55 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a change of memory map occurs, the hardware resources are destroyed
-and then re-created again with the new memory map. In such case, we need
-to restore the hardware available and used indices. The driver failed to
-restore the used index which is added here.
+trix@redhat.com wrote:
 
-Also, since the driver also fails to reset the available and used
-indices upon device reset, fix this here to avoid regression caused by
-the fact that used index may not be zero upon device reset.
+> This change fixes the checkpatch warning described in this commit
+> commit cbacb5ab0aa0 ("docs: printk-formats: Stop encouraging use of
+>   unnecessary %h[xudi] and %hh[xudi]")
+> 
+> Standard integer promotion is already done and %hx and %hhx is useless
+> so do not encourage the use of %hh[xudi] or %h[xudi].
+> 
+> Signed-off-by: Tom Rix <trix@redhat.com>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices=
-")
-Signed-off-by: Eli Cohen <elic@nvidia.com>
----
-v0 -> v1:
-Clear indices upon device reset
+Patch applied to ath-next branch of ath.git, thanks.
 
- drivers/vdpa/mlx5/net/mlx5_vnet.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+779750bb153d ath10k: remove h from printk format specifier
 
-diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5=
-_vnet.c
-index 88dde3455bfd..b5fe6d2ad22f 100644
---- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-+++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-@@ -87,6 +87,7 @@ struct mlx5_vq_restore_info {
- 	u64 device_addr;
- 	u64 driver_addr;
- 	u16 avail_index;
-+	u16 used_index;
- 	bool ready;
- 	struct vdpa_callback cb;
- 	bool restore;
-@@ -121,6 +122,7 @@ struct mlx5_vdpa_virtqueue {
- 	u32 virtq_id;
- 	struct mlx5_vdpa_net *ndev;
- 	u16 avail_idx;
-+	u16 used_idx;
- 	int fw_state;
-=20
- 	/* keep last in the struct */
-@@ -804,6 +806,7 @@ static int create_virtqueue(struct mlx5_vdpa_net *ndev,=
- struct mlx5_vdpa_virtque
-=20
- 	obj_context =3D MLX5_ADDR_OF(create_virtio_net_q_in, in, obj_context);
- 	MLX5_SET(virtio_net_q_object, obj_context, hw_available_index, mvq->avail=
-_idx);
-+	MLX5_SET(virtio_net_q_object, obj_context, hw_used_index, mvq->used_idx);
- 	MLX5_SET(virtio_net_q_object, obj_context, queue_feature_bit_mask_12_3,
- 		 get_features_12_3(ndev->mvdev.actual_features));
- 	vq_ctx =3D MLX5_ADDR_OF(virtio_net_q_object, obj_context, virtio_q_contex=
-t);
-@@ -1022,6 +1025,7 @@ static int connect_qps(struct mlx5_vdpa_net *ndev, st=
-ruct mlx5_vdpa_virtqueue *m
- struct mlx5_virtq_attr {
- 	u8 state;
- 	u16 available_index;
-+	u16 used_index;
- };
-=20
- static int query_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_vi=
-rtqueue *mvq,
-@@ -1052,6 +1056,7 @@ static int query_virtqueue(struct mlx5_vdpa_net *ndev=
-, struct mlx5_vdpa_virtqueu
- 	memset(attr, 0, sizeof(*attr));
- 	attr->state =3D MLX5_GET(virtio_net_q_object, obj_context, state);
- 	attr->available_index =3D MLX5_GET(virtio_net_q_object, obj_context, hw_a=
-vailable_index);
-+	attr->used_index =3D MLX5_GET(virtio_net_q_object, obj_context, hw_used_i=
-ndex);
- 	kfree(out);
- 	return 0;
-=20
-@@ -1535,6 +1540,16 @@ static void teardown_virtqueues(struct mlx5_vdpa_net=
- *ndev)
- 	}
- }
-=20
-+static void clear_virtqueues(struct mlx5_vdpa_net *ndev)
-+{
-+	int i;
-+
-+	for (i =3D ndev->mvdev.max_vqs - 1; i >=3D 0; i--) {
-+		ndev->vqs[i].avail_idx =3D 0;
-+		ndev->vqs[i].used_idx =3D 0;
-+	}
-+}
-+
- /* TODO: cross-endian support */
- static inline bool mlx5_vdpa_is_little_endian(struct mlx5_vdpa_dev *mvdev)
- {
-@@ -1610,6 +1625,7 @@ static int save_channel_info(struct mlx5_vdpa_net *nd=
-ev, struct mlx5_vdpa_virtqu
- 		return err;
-=20
- 	ri->avail_index =3D attr.available_index;
-+	ri->used_index =3D attr.used_index;
- 	ri->ready =3D mvq->ready;
- 	ri->num_ent =3D mvq->num_ent;
- 	ri->desc_addr =3D mvq->desc_addr;
-@@ -1654,6 +1670,7 @@ static void restore_channels_info(struct mlx5_vdpa_ne=
-t *ndev)
- 			continue;
-=20
- 		mvq->avail_idx =3D ri->avail_index;
-+		mvq->used_idx =3D ri->used_index;
- 		mvq->ready =3D ri->ready;
- 		mvq->num_ent =3D ri->num_ent;
- 		mvq->desc_addr =3D ri->desc_addr;
-@@ -1768,6 +1785,7 @@ static void mlx5_vdpa_set_status(struct vdpa_device *=
-vdev, u8 status)
- 	if (!status) {
- 		mlx5_vdpa_info(mvdev, "performing device reset\n");
- 		teardown_driver(ndev);
-+		clear_virtqueues(ndev);
- 		mlx5_vdpa_destroy_mr(&ndev->mvdev);
- 		ndev->mvdev.status =3D 0;
- 		ndev->mvdev.mlx_features =3D 0;
---=20
-2.29.2
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20210127222344.2445641-1-trix@redhat.com/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
