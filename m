@@ -2,114 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD92330EABD
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 04:14:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0598030EAC7
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 04:16:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233449AbhBDDNc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 22:13:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50562 "EHLO
+        id S233918AbhBDDP4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 22:15:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229601AbhBDDNa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 22:13:30 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56B88C061573;
-        Wed,  3 Feb 2021 19:12:50 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id g3so1002312plp.2;
-        Wed, 03 Feb 2021 19:12:50 -0800 (PST)
+        with ESMTP id S233517AbhBDDPw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 22:15:52 -0500
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4C75C061573;
+        Wed,  3 Feb 2021 19:15:12 -0800 (PST)
+Received: by mail-ot1-x333.google.com with SMTP id i20so2059584otl.7;
+        Wed, 03 Feb 2021 19:15:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=XhHDayQB6Bi+C4TWSaGKSP5yjJWA2Wx9lGm+oTkaXBI=;
-        b=Byaxvcpx2bWRrGEFfGMPzkBMxleLp6Ax3eF10E0gLScSJsyRHkIAjznCnqUJuf7v8C
-         7Ehkqhlyf3l8UTzVbqYFrt+5N/lpcAhquCKyTQyh9+FiddUIaheCKMKF1s2JRN+zAOyW
-         hwU6HQZomBJCEvcljygZ+hL1gduNUgTx1P7d6ggzpWMwRQaf4UWr8Ky11LWrZEZ3bupt
-         EYWBoVOwvx2ZU4ZuOl5rK3WLBZUWuO3MZfXZ7XZWUbdumWSSnRFo2BpO0jwUMv4Qcc8A
-         h91SrwM55St47zQegY0pBP1LIG851eGxDMk2hzVENeOa9/9snA2W+ineygAk5nh+OfJT
-         403A==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=dL2HlrenlcR0aeJ/c9YQKTZwO4wZrZX9JFm2i1Qu9X0=;
+        b=VDe/o2nxsc3rMKgqLbrY/PLCZmjOwugco0SREC5xz//Wu92VuUBF/x1Y5MHlfNmPrC
+         26oxzsS2J9yVwKfBlJ4qyacsmJpgxLDkjqxyydzHsSF3jl2okwPb2G7zA5dPj87PfVXK
+         2pjuOiXYdvjog+xNJ940aymXGiaKlboJD22xgnZZ5PypNa+GjKC1bCyUFlA0SijjVXOO
+         MHGLLOaRRXUOC0GuMUvP5Bqm3ykIxy/sJWJknq97iEOH6EVzW03IbNuVa8smNvFgAlXp
+         ALAvBkvDF05JYlyisjtI0p+vadarO0DnWIPg/1ZMwgEgb9lBSfs91PUb6e+1suBXIiFg
+         k7ZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=XhHDayQB6Bi+C4TWSaGKSP5yjJWA2Wx9lGm+oTkaXBI=;
-        b=ZlnkMlJoe++oeqdWarQoo5duPlOKUoR/BZWKo9N6tTrpCE6VQh6nFoL5ST872ojqc7
-         k5H0oCVI/k41mY36sRMEyW9k4NTObOd7bPczlm1qVvqTOH/QnuA0zNpIgYhMgg6Meuww
-         Nd6dcNcodpMVjnyx3yrD59UbzaAASUkC3Smme8asN9xusIQOHxMKpG2p+En6KN6PHXBm
-         4qTy2mskOixenoPd54EHn66+Qb+jSN2bplwRjwuSoUSAsPs4oheFLli9KSTgwU8n+/zX
-         AqzYk+oOTnVn1pXZnM3zTqcXIgD/UZbUYQHvsl5qj5KDN8JRp/BgneWocoyHtSX4GUDb
-         Xq0w==
-X-Gm-Message-State: AOAM533qxQIGIbbhFnT8K9EKJ26IgdbIyauJ4/fmutJ0PuRP5rabF+8h
-        fcc8+b5f4ifHVslLFIEcP+c=
-X-Google-Smtp-Source: ABdhPJxdfl+5Ppr1chsWLkRQlVmIlvcQKTrG9Jbx73KMHA5V8Q/2w6RuMK/RC2qtwbuRPTHFC1FxjQ==
-X-Received: by 2002:a17:902:e80c:b029:de:a20b:7a9c with SMTP id u12-20020a170902e80cb02900dea20b7a9cmr6271591plg.12.1612408369905;
-        Wed, 03 Feb 2021 19:12:49 -0800 (PST)
-Received: from Leo-laptop-t470s ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id f22sm3988108pfk.179.2021.02.03.19.12.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Feb 2021 19:12:49 -0800 (PST)
-Date:   Thu, 4 Feb 2021 11:12:36 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        netdev@vger.kernel.org,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        bpf@vger.kernel.org,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: Re: [PATCHv17 bpf-next 0/6] xdp: add a new helper for dev map
- multicast support
-Message-ID: <20210204031236.GC2900@Leo-laptop-t470s>
-References: <20210122074652.2981711-1-liuhangbin@gmail.com>
- <20210125124516.3098129-1-liuhangbin@gmail.com>
- <20210204001458.GB2900@Leo-laptop-t470s>
- <601b61a0e4868_194420834@john-XPS-13-9370.notmuch>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=dL2HlrenlcR0aeJ/c9YQKTZwO4wZrZX9JFm2i1Qu9X0=;
+        b=pchl157aPvlKXYnMSlFf+6nIwjperzZ2sABcsnhHvDxw49p0oucmYWCSeGU673vZ/3
+         n4NuCfLtQaf7a/a/UflW/XtZAZ4EyMRB+ZiISLVFrxSnExnIPZqRMPdG3fQcZnMyvUC3
+         0xzuyaaJ1pIhkVz5bZ+HhDc7SYh0NumKRWNPbkIP6I7xMjYXghe1wt8OWXRO7vX5wC52
+         I/3OU+1F2+kswsdHaupP9IzT8UgiBYSbV7zQA/HkQD0Rrlfix/oOCx5GRI6mpT44Pnp6
+         cVePvsgP3ToKDPJ6GjjUcBhAtbYAD4349LS7RMXGuO8bqKUBIRVUq4zJRTkrobifzpPl
+         J9XQ==
+X-Gm-Message-State: AOAM531t3x4mZ5XSJPUUhBp8rwG4iPMJ54FcY6OQ44JLoSOQWUWpZzVb
+        Z1OURWfkr52cG/t3lejb6ddGP2Wqcvo=
+X-Google-Smtp-Source: ABdhPJxfyfrQDNS5yRnsk+wrf/aedgAhlP5gs+HNxp8X9uFHxOFfEQn2O0jShbkrKyG/4I0aniDuHg==
+X-Received: by 2002:a05:6830:1158:: with SMTP id x24mr4075633otq.108.1612408512045;
+        Wed, 03 Feb 2021 19:15:12 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.50])
+        by smtp.googlemail.com with ESMTPSA id k129sm888820oib.5.2021.02.03.19.15.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Feb 2021 19:15:10 -0800 (PST)
+Subject: Re: [PATCH RESEND iproute2 5.11] iplink_can: add Classical CAN frame
+ LEN8_DLC support
+To:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, linux-can@vger.kernel.org
+References: <20210125104055.79882-1-socketcan@hartkopp.net>
+ <b835a46c-f950-6c58-f50f-9b2f4fd66b46@gmail.com>
+ <d8ba08c4-a1c2-78b8-1b09-36c522b07a8c@hartkopp.net>
+ <586c2310-17ee-328e-189c-f03aae1735e9@gmail.com>
+ <fe697032-88f2-c1f1-8afc-f4469a5f3bd5@hartkopp.net>
+ <1bf605b4-70e5-e5f2-f076-45c9b52a5758@gmail.com>
+ <dccf261d-6cc3-f79a-8044-f0800c88108d@hartkopp.net>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <aeb9d16e-e101-e2e5-d136-b48333f03997@gmail.com>
+Date:   Wed, 3 Feb 2021 20:15:07 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <601b61a0e4868_194420834@john-XPS-13-9370.notmuch>
+In-Reply-To: <dccf261d-6cc3-f79a-8044-f0800c88108d@hartkopp.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 03, 2021 at 06:53:20PM -0800, John Fastabend wrote:
-> Hangbin Liu wrote:
-> > Hi Daniel, Alexei,
-> > 
-> > It has been one week after Maciej, Toke, John's review/ack. What should
-> > I do to make a progress for this patch set?
-> > 
-> 
-> Patchwork is usually the first place to check:
+On 2/3/21 12:04 PM, Oliver Hartkopp wrote:
+> My only fault was, that I did not send the patch for iproute2-next at
+> the time when the len8_dlc patches were in net-next, right?
 
-Thanks John for the link.
-> 
->  https://patchwork.kernel.org/project/netdevbpf/list/?series=421095&state=*
-
-Before I sent the email I only checked link
-https://patchwork.kernel.org/project/netdevbpf/list/ but can't find my patch.
-
-How do you get the series number?
-
-> 
-> Looks like it was marked changed requested. After this its unlikely
-> anyone will follow up on it, rightly so given the assumption another
-> revision is coming.
-> 
-> In this case my guess is it was moved into changes requested because
-> I asked for a change, but then after some discussion you convinced me
-> the change was not in fact needed.
-> 
-> Alexei, Daniel can probably tell you if its easier to just send a v18
-> or pull in the v17 assuming any final reviews don't kick anything
-> else up.
-
-OK, I will wait for Alexei, Daniel and see if I need to do a rebase.
-
-Thanks
-Hangbin
+yes
