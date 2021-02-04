@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D81A30F23C
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 12:35:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B658A30F25A
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 12:39:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235949AbhBDLa5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 06:30:57 -0500
-Received: from [1.6.215.26] ([1.6.215.26]:20257 "EHLO hyd1soter2"
+        id S235804AbhBDLfh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 06:35:37 -0500
+Received: from [1.6.215.26] ([1.6.215.26]:1083 "EHLO hyd1soter2"
         rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235778AbhBDL2s (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Feb 2021 06:28:48 -0500
+        id S235605AbhBDL3M (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Feb 2021 06:29:12 -0500
 Received: from hyd1soter2.caveonetworks.com (localhost [127.0.0.1])
-        by hyd1soter2 (8.15.2/8.15.2/Debian-3) with ESMTP id 114BRqbv052260;
-        Thu, 4 Feb 2021 16:57:52 +0530
+        by hyd1soter2 (8.15.2/8.15.2/Debian-3) with ESMTP id 114BSGHF052318;
+        Thu, 4 Feb 2021 16:58:16 +0530
 Received: (from geetha@localhost)
-        by hyd1soter2.caveonetworks.com (8.15.2/8.15.2/Submit) id 114BRqEo052259;
-        Thu, 4 Feb 2021 16:57:52 +0530
+        by hyd1soter2.caveonetworks.com (8.15.2/8.15.2/Submit) id 114BSGDm052317;
+        Thu, 4 Feb 2021 16:58:16 +0530
 From:   Geetha sowjanya <gakula@marvell.com>
 To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     sgoutham@marvell.com, davem@davemloft.net, kuba@kernel.org,
-        sbhatta@marvell.com, hkelam@marvell.com, jerinj@marvell.com,
-        lcherian@marvell.com, Geetha sowjanya <gakula@marvell.com>
-Subject: [net-next v3 10/14] octeontx2-af: cn10K: Add MTU configuration
-Date:   Thu,  4 Feb 2021 16:57:43 +0530
-Message-Id: <1612438063-52219-1-git-send-email-gakula@marvell.com>
+        sbhatta@marvell.com, hkelam@marvell.com,
+        Geetha sowjanya <gakula@marvell.com>
+Subject: [net-next v3 11/14] octeontx2-pf: cn10k: Get max mtu supported from admin function
+Date:   Thu,  4 Feb 2021 16:58:14 +0530
+Message-Id: <1612438094-52277-1-git-send-email-gakula@marvell.com>
 X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -32,406 +32,261 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Hariprasad Kelam <hkelam@marvell.com>
 
-OcteonTx3 CN10K silicon supports bigger MTU when compared
-to 9216 MTU supported by OcteonTx2 silicon variants. Lookback
-interface supports upto 64K and RPM LMAC interfaces support
-upto 16K.
+CN10K supports max MTU of 16K on LMAC links and 64k on LBK
+links and Octeontx2 silicon supports 9K mtu on both links.
+Get the same from nix_get_hw_info mbox message in netdev probe.
 
-This patch does the necessary configuration and adds support
-for PF/VF drivers to retrieve max packet size supported via mbox
-
-This patch also configures tx link credit by considering supported
-fifo size and max packet length for Octeontx3 silicon.
-
-This patch also removes platform specific name from the driver name.
+This patch also calculates receive buffer size required based
+on the MTU set.
 
 Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
 Signed-off-by: Geetha sowjanya <gakula@marvell.com>
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/Makefile |  8 +--
- drivers/net/ethernet/marvell/octeontx2/af/cgx.c    | 10 +++
- drivers/net/ethernet/marvell/octeontx2/af/cgx.h    |  1 +
- drivers/net/ethernet/marvell/octeontx2/af/common.h |  2 +
- .../ethernet/marvell/octeontx2/af/lmac_common.h    |  1 +
- drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  9 ++-
- drivers/net/ethernet/marvell/octeontx2/af/rvu.c    | 29 ++++++++-
- drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |  2 +
- .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    | 13 ++++
- .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    | 74 ++++++++++++++++++++--
- .../net/ethernet/marvell/octeontx2/af/rvu_reg.h    |  1 +
- 11 files changed, 138 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c |  2 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_common.c   | 43 +++++++++++++++++++++-
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  2 +-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   | 35 ++++++++++++++++--
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c | 27 ++++++++++----
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.h |  1 -
+ .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c   |  2 +-
+ 7 files changed, 95 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/Makefile b/drivers/net/ethernet/marvell/octeontx2/af/Makefile
-index 621cc5b..1a34556 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/Makefile
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/Makefile
-@@ -4,10 +4,10 @@
- #
- 
- ccflags-y += -I$(src)
--obj-$(CONFIG_OCTEONTX2_MBOX) += octeontx2_mbox.o
--obj-$(CONFIG_OCTEONTX2_AF) += octeontx2_af.o
-+obj-$(CONFIG_OCTEONTX2_MBOX) += rvu_mbox.o
-+obj-$(CONFIG_OCTEONTX2_AF) += rvu_af.o
- 
--octeontx2_mbox-y := mbox.o rvu_trace.o
--octeontx2_af-y := cgx.o rvu.o rvu_cgx.o rvu_npa.o rvu_nix.o \
-+rvu_mbox-y := mbox.o rvu_trace.o
-+rvu_af-y := cgx.o rvu.o rvu_cgx.o rvu_npa.o rvu_nix.o \
- 		  rvu_reg.o rvu_npc.o rvu_debugfs.o ptp.o rvu_npc_fs.o \
- 		  rvu_cpt.o rvu_devlink.o rpm.o rvu_cn10k.o
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-index e3f063e..86f519f 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-@@ -895,6 +895,14 @@ int cgx_lmac_linkup_start(void *cgxd)
- 	return 0;
- }
- 
-+void cgx_lmac_get_fifolen(struct cgx *cgx)
-+{
-+	u64 cfg;
-+
-+	cfg = cgx_read(cgx, 0, CGX_CONST);
-+	cgx->mac_ops->fifo_len = FIELD_GET(CGX_CONST_RXFIFO_SIZE, cfg);
-+}
-+
- static int cgx_configure_interrupt(struct cgx *cgx, struct lmac *lmac,
- 				   int cnt, bool req_free)
- {
-@@ -949,6 +957,8 @@ static int cgx_lmac_init(struct cgx *cgx)
- 	u64 lmac_list;
- 	int i, err;
- 
-+	cgx_lmac_get_fifolen(cgx);
-+
- 	cgx->lmac_count = cgx->mac_ops->get_nr_lmacs(cgx);
- 	/* lmac_list specifies which lmacs are enabled
- 	 * when bit n is set to 1, LMAC[n] is enabled
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.h b/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
-index 7589721..f2c77e0 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
-@@ -56,6 +56,7 @@
- #define CGXX_SCRATCH0_REG		0x1050
- #define CGXX_SCRATCH1_REG		0x1058
- #define CGX_CONST			0x2000
-+#define CGX_CONST_RXFIFO_SIZE	        GENMASK_ULL(23, 0)
- #define CGXX_SPUX_CONTROL1		0x10000
- #define CGXX_SPUX_CONTROL1_LBK		BIT_ULL(14)
- #define CGXX_GMP_PCS_MRX_CTL		0x30000
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/common.h b/drivers/net/ethernet/marvell/octeontx2/af/common.h
-index 0100e70..e661093 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/common.h
-@@ -155,6 +155,8 @@ enum nix_scheduler {
- #define	NIC_HW_MIN_FRS			40
- #define	NIC_HW_MAX_FRS			9212
- #define	SDP_HW_MAX_FRS			65535
-+#define CN10K_LMAC_LINK_MAX_FRS		16380 /* 16k - FCS */
-+#define CN10K_LBK_LINK_MAX_FRS		65535 /* 64k */
- 
- /* NIX RX action operation*/
- #define NIX_RX_ACTIONOP_DROP		(0x0ull)
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h b/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
-index ac36e15..9c5a9c5 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
-@@ -61,6 +61,7 @@ struct mac_ops {
- 	u8			irq_offset;
- 	u8			int_ena_bit;
- 	u8			lmac_fwi;
-+	u32			fifo_len;
- 	bool			non_contiguous_serdes_lane;
- 	/* Incase of RPM get number of lmacs from RPMX_CMR_RX_LMACS[LMAC_EXIST]
- 	 * number of setbits in lmac_exist tells number of lmacs
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-index 333fa5e..fe36a07 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-@@ -244,7 +244,8 @@ M(NIX_BP_ENABLE,	0x8016, nix_bp_enable, nix_bp_cfg_req,	\
- M(NIX_BP_DISABLE,	0x8017, nix_bp_disable, nix_bp_cfg_req, msg_rsp) \
- M(NIX_GET_MAC_ADDR, 0x8018, nix_get_mac_addr, msg_req, nix_get_mac_addr_rsp) \
- M(NIX_CN10K_AQ_ENQ,	0x8019, nix_cn10k_aq_enq, nix_cn10k_aq_enq_req, \
--				nix_cn10k_aq_enq_rsp)
-+				nix_cn10k_aq_enq_rsp)			\
-+M(NIX_GET_HW_INFO,	0x801a, nix_get_hw_info, msg_req, nix_hw_info)
- 
- /* Messages initiated by AF (range 0xC00 - 0xDFF) */
- #define MBOX_UP_CGX_MESSAGES						\
-@@ -861,6 +862,12 @@ struct nix_bp_cfg_rsp {
- 	u8	chan_cnt; /* Number of channel for which bpids are assigned */
- };
- 
-+struct nix_hw_info {
-+	struct mbox_msghdr hdr;
-+	u16 max_mtu;
-+	u16 min_mtu;
-+};
-+
- /* NPC mbox message structs */
- 
- #define NPC_MCAM_ENTRY_INVALID	0xFFFF
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-index 9686395..be4731f 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-@@ -22,7 +22,7 @@
- 
- #include "rvu_trace.h"
- 
--#define DRV_NAME	"octeontx2-af"
-+#define DRV_NAME	"rvu_af"
- #define DRV_STRING      "Marvell OcteonTX2 RVU Admin Function Driver"
- 
- static int rvu_get_hwvf(struct rvu *rvu, int pcifunc);
-@@ -855,6 +855,31 @@ static int rvu_setup_cpt_hw_resource(struct rvu *rvu, int blkaddr)
- 	return rvu_alloc_bitmap(&block->lf);
- }
- 
-+static void rvu_get_lbk_bufsize(struct rvu *rvu)
-+{
-+	struct pci_dev *pdev = NULL;
-+	void __iomem *base;
-+	u64 lbk_const;
-+
-+	pdev = pci_get_device(PCI_VENDOR_ID_CAVIUM,
-+			      PCI_DEVID_OCTEONTX2_LBK, pdev);
-+	if (!pdev)
-+		return;
-+
-+	base = pci_ioremap_bar(pdev, 0);
-+	if (!base)
-+		goto err_put;
-+
-+	lbk_const = readq(base + LBK_CONST);
-+
-+	/* cache fifo size */
-+	rvu->hw->lbk_bufsize = FIELD_GET(LBK_CONST_BUF_SIZE, lbk_const);
-+
-+	iounmap(base);
-+err_put:
-+	pci_dev_put(pdev);
-+}
-+
- static int rvu_setup_hw_resources(struct rvu *rvu)
- {
- 	struct rvu_hwinfo *hw = rvu->hw;
-@@ -1025,6 +1050,8 @@ static int rvu_setup_hw_resources(struct rvu *rvu)
- 	if (err)
- 		goto npa_err;
- 
-+	rvu_get_lbk_bufsize(rvu);
-+
- 	err = rvu_nix_init(rvu);
- 	if (err)
- 		goto nix_err;
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-index bedccff..651407e 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-@@ -329,6 +329,7 @@ struct rvu_hwinfo {
- 	u8	npc_intfs;         /* No of interfaces */
- 	u8	npc_kpu_entries;   /* No of KPU entries */
- 	u16	npc_counters;	   /* No of match stats counters */
-+	u32	lbk_bufsize;	   /* FIFO size supported by LBK */
- 	bool	npc_ext_set;	   /* Extended register set */
- 
- 	struct hw_cap    cap;
-@@ -672,6 +673,7 @@ void npc_read_mcam_entry(struct rvu *rvu, struct npc_mcam *mcam,
- 			 int blkaddr, u16 src, struct mcam_entry *entry,
- 			 u8 *intf, u8 *ena);
- bool is_mac_feature_supported(struct rvu *rvu, int pf, int feature);
-+u32  rvu_cgx_get_fifolen(struct rvu *rvu);
- 
- /* CPT APIs */
- int rvu_cpt_lf_teardown(struct rvu *rvu, u16 pcifunc, int lf, int slot);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-index 8ec9b04..5e514f2 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-@@ -14,6 +14,7 @@
- 
- #include "rvu.h"
- #include "cgx.h"
-+#include "lmac_common.h"
- #include "rvu_reg.h"
- #include "rvu_trace.h"
- 
-@@ -669,6 +670,18 @@ int rvu_mbox_handler_cgx_features_get(struct rvu *rvu,
- 	return 0;
- }
- 
-+u32 rvu_cgx_get_fifolen(struct rvu *rvu)
-+{
-+	struct mac_ops *mac_ops;
-+	int rvu_def_cgx_id = 0;
-+	u32 fifo_len;
-+
-+	mac_ops = get_mac_ops(rvu_cgx_pdata(rvu_def_cgx_id, rvu));
-+	fifo_len = mac_ops ? mac_ops->fifo_len : 0;
-+
-+	return fifo_len;
-+}
-+
- static int rvu_cgx_config_intlbk(struct rvu *rvu, u16 pcifunc, bool en)
- {
- 	int pf = rvu_get_pf(pcifunc);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-index cf9e88c..ee27ddd 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-@@ -2543,6 +2543,43 @@ static int nix_af_mark_format_setup(struct rvu *rvu, struct nix_hw *nix_hw,
- 	return 0;
- }
- 
-+static void rvu_get_lbk_link_max_frs(struct rvu *rvu,  u16 *max_mtu)
-+{
-+	/* CN10K supports LBK FIFO size 72 KB */
-+	if (rvu->hw->lbk_bufsize == 0x12000)
-+		*max_mtu = CN10K_LBK_LINK_MAX_FRS;
-+	else
-+		*max_mtu = NIC_HW_MAX_FRS;
-+}
-+
-+static void rvu_get_lmac_link_max_frs(struct rvu *rvu, u16 *max_mtu)
-+{
-+	/* RPM supports FIFO len 128 KB */
-+	if (rvu_cgx_get_fifolen(rvu) == 0x20000)
-+		*max_mtu = CN10K_LMAC_LINK_MAX_FRS;
-+	else
-+		*max_mtu = NIC_HW_MAX_FRS;
-+}
-+
-+int rvu_mbox_handler_nix_get_hw_info(struct rvu *rvu, struct msg_req *req,
-+				     struct nix_hw_info *rsp)
-+{
-+	u16 pcifunc = req->hdr.pcifunc;
-+	int blkaddr;
-+
-+	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, pcifunc);
-+	if (blkaddr < 0)
-+		return NIX_AF_ERR_AF_LF_INVALID;
-+
-+	if (is_afvf(pcifunc))
-+		rvu_get_lbk_link_max_frs(rvu, &rsp->max_mtu);
-+	else
-+		rvu_get_lmac_link_max_frs(rvu, &rsp->max_mtu);
-+
-+	rsp->min_mtu = NIC_HW_MIN_FRS;
-+	return 0;
-+}
-+
- int rvu_mbox_handler_nix_stats_rst(struct rvu *rvu, struct msg_req *req,
- 				   struct msg_rsp *rsp)
- {
-@@ -3107,6 +3144,7 @@ int rvu_mbox_handler_nix_set_hw_frs(struct rvu *rvu, struct nix_frs_cfg *req,
- 	u64 cfg, lmac_fifo_len;
- 	struct nix_hw *nix_hw;
- 	u8 cgx = 0, lmac = 0;
-+	u16 max_mtu;
- 
- 	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, pcifunc);
- 	if (blkaddr < 0)
-@@ -3116,7 +3154,12 @@ int rvu_mbox_handler_nix_set_hw_frs(struct rvu *rvu, struct nix_frs_cfg *req,
- 	if (!nix_hw)
- 		return -EINVAL;
- 
--	if (!req->sdp_link && req->maxlen > NIC_HW_MAX_FRS)
-+	if (is_afvf(pcifunc))
-+		rvu_get_lbk_link_max_frs(rvu, &max_mtu);
-+	else
-+		rvu_get_lmac_link_max_frs(rvu, &max_mtu);
-+
-+	if (!req->sdp_link && req->maxlen > max_mtu)
- 		return NIX_AF_ERR_FRS_INVALID;
- 
- 	if (req->update_minlen && req->minlen < NIC_HW_MIN_FRS)
-@@ -3176,7 +3219,8 @@ int rvu_mbox_handler_nix_set_hw_frs(struct rvu *rvu, struct nix_frs_cfg *req,
- 
- 	/* Update transmit credits for CGX links */
- 	lmac_fifo_len =
--		CGX_FIFO_LEN / cgx_get_lmac_cnt(rvu_cgx_pdata(cgx, rvu));
-+		rvu_cgx_get_fifolen(rvu) /
-+		cgx_get_lmac_cnt(rvu_cgx_pdata(cgx, rvu));
- 	cfg = rvu_read64(rvu, blkaddr, NIX_AF_TX_LINKX_NORM_CREDIT(link));
- 	cfg &= ~(0xFFFFFULL << 12);
- 	cfg |=  ((lmac_fifo_len - req->maxlen) / 16) << 12;
-@@ -3216,23 +3260,40 @@ int rvu_mbox_handler_nix_set_rx_cfg(struct rvu *rvu, struct nix_rx_cfg *req,
- 	return 0;
- }
- 
-+static u64 rvu_get_lbk_link_credits(struct rvu *rvu, u16 lbk_max_frs)
-+{
-+	/* CN10k supports 72KB FIFO size and max packet size of 64k */
-+	if (rvu->hw->lbk_bufsize == 0x12000)
-+		return (rvu->hw->lbk_bufsize - lbk_max_frs) / 16;
-+
-+	return 1600; /* 16 * max LBK datarate = 16 * 100Gbps */
-+}
-+
- static void nix_link_config(struct rvu *rvu, int blkaddr)
- {
- 	struct rvu_hwinfo *hw = rvu->hw;
- 	int cgx, lmac_cnt, slink, link;
-+	u16 lbk_max_frs, lmac_max_frs;
- 	u64 tx_credits;
- 
-+	rvu_get_lbk_link_max_frs(rvu, &lbk_max_frs);
-+	rvu_get_lmac_link_max_frs(rvu, &lmac_max_frs);
-+
- 	/* Set default min/max packet lengths allowed on NIX Rx links.
- 	 *
- 	 * With HW reset minlen value of 60byte, HW will treat ARP pkts
- 	 * as undersize and report them to SW as error pkts, hence
- 	 * setting it to 40 bytes.
- 	 */
--	for (link = 0; link < (hw->cgx_links + hw->lbk_links); link++) {
-+	for (link = 0; link < hw->cgx_links; link++) {
- 		rvu_write64(rvu, blkaddr, NIX_AF_RX_LINKX_CFG(link),
--			    NIC_HW_MAX_FRS << 16 | NIC_HW_MIN_FRS);
-+				((u64)lmac_max_frs << 16) | NIC_HW_MIN_FRS);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c
+index 70548d1..da82f9f 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c
+@@ -108,7 +108,7 @@ int cn10k_sq_aq_init(void *dev, u16 qidx, u16 sqb_aura)
+ 	/* Only one SMQ is allocated, map all SQ's to that SMQ  */
+ 	aq->sq.smq = pfvf->hw.txschq_list[NIX_TXSCH_LVL_SMQ][0];
+ 	/* FIXME: set based on NIX_AF_DWRR_RPM_MTU*/
+-	aq->sq.smq_rr_weight = OTX2_MAX_MTU;
++	aq->sq.smq_rr_weight = pfvf->netdev->mtu;
+ 	aq->sq.default_chan = pfvf->hw.tx_chan_base;
+ 	aq->sq.sqe_stype = NIX_STYPE_STF; /* Cache SQB */
+ 	aq->sq.sqb_aura = sqb_aura;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+index fe62bfd..c496629 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+@@ -217,7 +217,6 @@ int otx2_hw_set_mtu(struct otx2_nic *pfvf, int mtu)
+ 		return -ENOMEM;
  	}
  
-+	for (link = hw->cgx_links; link < hw->lbk_links; link++) {
-+		rvu_write64(rvu, blkaddr, NIX_AF_RX_LINKX_CFG(link),
-+			    ((u64)lbk_max_frs << 16) | NIC_HW_MIN_FRS);
+-	pfvf->max_frs = mtu +  OTX2_ETH_HLEN;
+ 	req->maxlen = pfvf->max_frs;
+ 
+ 	err = otx2_sync_mbox_msg(&pfvf->mbox);
+@@ -592,7 +591,7 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl)
+ 	/* Set topology e.t.c configuration */
+ 	if (lvl == NIX_TXSCH_LVL_SMQ) {
+ 		req->reg[0] = NIX_AF_SMQX_CFG(schq);
+-		req->regval[0] = ((OTX2_MAX_MTU + OTX2_ETH_HLEN) << 8) |
++		req->regval[0] = ((pfvf->netdev->max_mtu + OTX2_ETH_HLEN) << 8) |
+ 				   OTX2_MIN_MTU;
+ 
+ 		req->regval[0] |= (0x20ULL << 51) | (0x80ULL << 39) |
+@@ -1619,6 +1618,46 @@ void otx2_set_cints_affinity(struct otx2_nic *pfvf)
+ 	}
+ }
+ 
++u16 otx2_get_max_mtu(struct otx2_nic *pfvf)
++{
++	struct nix_hw_info *rsp;
++	struct msg_req *req;
++	u16 max_mtu;
++	int rc;
++
++	mutex_lock(&pfvf->mbox.lock);
++
++	req = otx2_mbox_alloc_msg_nix_get_hw_info(&pfvf->mbox);
++	if (!req) {
++		rc =  -ENOMEM;
++		goto out;
 +	}
- 	if (hw->sdp_links) {
- 		link = hw->cgx_links + hw->lbk_links;
- 		rvu_write64(rvu, blkaddr, NIX_AF_RX_LINKX_CFG(link),
-@@ -3244,7 +3305,8 @@ static void nix_link_config(struct rvu *rvu, int blkaddr)
- 	 */
- 	for (cgx = 0; cgx < hw->cgx; cgx++) {
- 		lmac_cnt = cgx_get_lmac_cnt(rvu_cgx_pdata(cgx, rvu));
--		tx_credits = ((CGX_FIFO_LEN / lmac_cnt) - NIC_HW_MAX_FRS) / 16;
-+		tx_credits = ((rvu_cgx_get_fifolen(rvu) / lmac_cnt) -
-+			       lmac_max_frs) / 16;
- 		/* Enable credits and set credit pkt count to max allowed */
- 		tx_credits =  (tx_credits << 12) | (0x1FF << 2) | BIT_ULL(1);
- 		slink = cgx * hw->lmac_per_cgx;
-@@ -3258,7 +3320,7 @@ static void nix_link_config(struct rvu *rvu, int blkaddr)
- 	/* Set Tx credits for LBK link */
- 	slink = hw->cgx_links;
- 	for (link = slink; link < (slink + hw->lbk_links); link++) {
--		tx_credits = 1000; /* 10 * max LBK datarate = 10 * 100Gbps */
-+		tx_credits = rvu_get_lbk_link_credits(rvu, lbk_max_frs);
- 		/* Enable credits and set credit pkt count to max allowed */
- 		tx_credits =  (tx_credits << 12) | (0x1FF << 2) | BIT_ULL(1);
- 		rvu_write64(rvu, blkaddr,
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
-index 2460d71..3e401fd 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
-@@ -656,6 +656,7 @@
- #define LBK_CONST_CHANS			GENMASK_ULL(47, 32)
- #define LBK_CONST_DST			GENMASK_ULL(31, 28)
- #define LBK_CONST_SRC			GENMASK_ULL(27, 24)
-+#define LBK_CONST_BUF_SIZE		GENMASK_ULL(23, 0)
- #define LBK_LINK_CFG_RANGE_MASK		GENMASK_ULL(19, 16)
- #define LBK_LINK_CFG_ID_MASK		GENMASK_ULL(11, 6)
- #define LBK_LINK_CFG_BASE_MASK		GENMASK_ULL(5, 0)
++
++	rc = otx2_sync_mbox_msg(&pfvf->mbox);
++	if (!rc) {
++		rsp = (struct nix_hw_info *)
++		       otx2_mbox_get_rsp(&pfvf->mbox.mbox, 0, &req->hdr);
++
++		/* HW counts VLAN insertion bytes (8 for double tag)
++		 * irrespective of whether SQE is requesting to insert VLAN
++		 * in the packet or not. Hence these 8 bytes have to be
++		 * discounted from max packet size otherwise HW will throw
++		 * SMQ errors
++		 */
++		max_mtu = rsp->max_mtu - 8 - OTX2_ETH_HLEN;
++	}
++
++out:
++	mutex_unlock(&pfvf->mbox.lock);
++	if (rc) {
++		dev_warn(pfvf->dev,
++			 "Failed to get MTU from hardware setting default value(1500)\n");
++		max_mtu = 1500;
++	}
++	return max_mtu;
++}
++EXPORT_SYMBOL(otx2_get_max_mtu);
++
+ #define M(_name, _id, _fn_name, _req_type, _rsp_type)			\
+ int __weak								\
+ otx2_mbox_up_handler_ ## _fn_name(struct otx2_nic *pfvf,		\
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+index b6bdc6f..1cc7772 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+@@ -790,5 +790,5 @@ int otx2_del_macfilter(struct net_device *netdev, const u8 *mac);
+ int otx2_add_macfilter(struct net_device *netdev, const u8 *mac);
+ int otx2_enable_rxvlan(struct otx2_nic *pf, bool enable);
+ int otx2_install_rxvlan_offload_flow(struct otx2_nic *pfvf);
+-
++u16 otx2_get_max_mtu(struct otx2_nic *pfvf);
+ #endif /* OTX2_COMMON_H */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+index 8b6a012..01458fe 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+@@ -1285,6 +1285,33 @@ static void otx2_free_sq_res(struct otx2_nic *pf)
+ 	}
+ }
+ 
++static int otx2_get_rbuf_size(struct otx2_nic *pf, int mtu)
++{
++	int frame_size;
++	int total_size;
++	int rbuf_size;
++
++	/* The data transferred by NIX to memory consists of actual packet
++	 * plus additional data which has timestamp and/or EDSA/HIGIG2
++	 * headers if interface is configured in corresponding modes.
++	 * NIX transfers entire data using 6 segments/buffers and writes
++	 * a CQE_RX descriptor with those segment addresses. First segment
++	 * has additional data prepended to packet. Also software omits a
++	 * headroom of 128 bytes and sizeof(struct skb_shared_info) in
++	 * each segment. Hence the total size of memory needed
++	 * to receive a packet with 'mtu' is:
++	 * frame size =  mtu + additional data;
++	 * memory = frame_size + (headroom + struct skb_shared_info size) * 6;
++	 * each receive buffer size = memory / 6;
++	 */
++	frame_size = mtu + OTX2_ETH_HLEN + OTX2_HW_TIMESTAMP_LEN;
++	total_size = frame_size + (OTX2_HEAD_ROOM +
++		     OTX2_DATA_ALIGN(sizeof(struct skb_shared_info))) * 6;
++	rbuf_size = total_size / 6;
++
++	return ALIGN(rbuf_size, 2048);
++}
++
+ static int otx2_init_hw_resources(struct otx2_nic *pf)
+ {
+ 	struct nix_lf_free_req *free_req;
+@@ -1301,9 +1328,9 @@ static int otx2_init_hw_resources(struct otx2_nic *pf)
+ 	hw->sqpool_cnt = hw->tx_queues;
+ 	hw->pool_cnt = hw->rqpool_cnt + hw->sqpool_cnt;
+ 
+-	/* Get the size of receive buffers to allocate */
+-	pf->rbsize = RCV_FRAG_LEN(OTX2_HW_TIMESTAMP_LEN + pf->netdev->mtu +
+-				  OTX2_ETH_HLEN);
++	pf->max_frs = pf->netdev->mtu + OTX2_ETH_HLEN + OTX2_HW_TIMESTAMP_LEN;
++
++	pf->rbsize = otx2_get_rbuf_size(pf, pf->netdev->mtu);
+ 
+ 	mutex_lock(&mbox->lock);
+ 	/* NPA init */
+@@ -2426,7 +2453,7 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ 	/* MTU range: 64 - 9190 */
+ 	netdev->min_mtu = OTX2_MIN_MTU;
+-	netdev->max_mtu = OTX2_MAX_MTU;
++	netdev->max_mtu = otx2_get_max_mtu(pf);
+ 
+ 	err = register_netdev(netdev);
+ 	if (err) {
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+index cdae83c..00e9e65 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+@@ -256,12 +256,11 @@ static bool otx2_check_rcv_errors(struct otx2_nic *pfvf,
+ 		/* For now ignore all the NPC parser errors and
+ 		 * pass the packets to stack.
+ 		 */
+-		if (cqe->sg.segs == 1)
+-			return false;
++		return false;
+ 	}
+ 
+ 	/* If RXALL is enabled pass on packets to stack. */
+-	if (cqe->sg.segs == 1 && (pfvf->netdev->features & NETIF_F_RXALL))
++	if (pfvf->netdev->features & NETIF_F_RXALL)
+ 		return false;
+ 
+ 	/* Free buffer back to pool */
+@@ -276,9 +275,14 @@ static void otx2_rcv_pkt_handler(struct otx2_nic *pfvf,
+ 				 struct nix_cqe_rx_s *cqe)
+ {
+ 	struct nix_rx_parse_s *parse = &cqe->parse;
++	struct nix_rx_sg_s *sg = &cqe->sg;
+ 	struct sk_buff *skb = NULL;
++	void *end, *start;
++	u64 *seg_addr;
++	u16 *seg_size;
++	int seg;
+ 
+-	if (unlikely(parse->errlev || parse->errcode || cqe->sg.segs > 1)) {
++	if (unlikely(parse->errlev || parse->errcode)) {
+ 		if (otx2_check_rcv_errors(pfvf, cqe, cq->cq_idx))
+ 			return;
+ 	}
+@@ -287,9 +291,18 @@ static void otx2_rcv_pkt_handler(struct otx2_nic *pfvf,
+ 	if (unlikely(!skb))
+ 		return;
+ 
+-	otx2_skb_add_frag(pfvf, skb, cqe->sg.seg_addr, cqe->sg.seg_size, parse);
+-	cq->pool_ptrs++;
+-
++	start = (void *)sg;
++	end = start + ((cqe->parse.desc_sizem1 + 1) * 16);
++	while (start < end) {
++		sg = (struct nix_rx_sg_s *)start;
++		seg_addr = &sg->seg_addr;
++		seg_size = (void *)sg;
++		for (seg = 0; seg < sg->segs; seg++, seg_addr++) {
++			otx2_skb_add_frag(pfvf, skb, *seg_addr, seg_size[seg], parse);
++			cq->pool_ptrs++;
++		}
++		start += sizeof(*sg);
++	}
+ 	otx2_set_rxhash(pfvf, cqe, skb);
+ 
+ 	skb_record_rx_queue(skb, cq->cq_idx);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
+index d2b26b3..52486c1 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
+@@ -24,7 +24,6 @@
+ 
+ #define	OTX2_ETH_HLEN		(VLAN_ETH_HLEN + VLAN_HLEN)
+ #define	OTX2_MIN_MTU		64
+-#define	OTX2_MAX_MTU		(9212 - OTX2_ETH_HLEN)
+ 
+ #define OTX2_MAX_GSO_SEGS	255
+ #define OTX2_MAX_FRAGS_IN_SQE	9
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+index 31e0325..085be90 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+@@ -586,7 +586,7 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ 	/* MTU range: 68 - 9190 */
+ 	netdev->min_mtu = OTX2_MIN_MTU;
+-	netdev->max_mtu = OTX2_MAX_MTU;
++	netdev->max_mtu = otx2_get_max_mtu(vf);
+ 
+ 	INIT_WORK(&vf->reset_task, otx2vf_reset_task);
+ 
 -- 
 2.7.4
 
