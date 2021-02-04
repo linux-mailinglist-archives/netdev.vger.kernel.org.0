@@ -2,100 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61CE030FB30
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 19:23:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4D8630FB14
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 19:18:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238988AbhBDSUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 13:20:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47244 "EHLO
+        id S238912AbhBDSQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 13:16:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238948AbhBDSTf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 13:19:35 -0500
-Received: from mail-qv1-xf4a.google.com (mail-qv1-xf4a.google.com [IPv6:2607:f8b0:4864:20::f4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7707DC061786
-        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 10:18:55 -0800 (PST)
-Received: by mail-qv1-xf4a.google.com with SMTP id k20so2857317qvm.16
-        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 10:18:55 -0800 (PST)
+        with ESMTP id S238909AbhBDSO5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 13:14:57 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4494C0613D6
+        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 10:14:16 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id b9so6947940ejy.12
+        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 10:14:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:message-id:mime-version:subject:from:to:cc;
-        bh=jVxxi2FsPuJw4XM1jbb8exuFnk/zAFQh52OuUnL6x5c=;
-        b=eoiLv4Fjju3JEfXDuHbAba/lObCo1w6vbwyoS7MtecyRwqYnXpMFoZNAYuf+W6oplH
-         gED96JwbPRY7jeChrEt5R+59xV+yLfGj24fcQAeQ3kg+O5aLSKHWIqNnkUhhZ+dn8Rq4
-         BSdC2ZaIBJTBtyH56RgpmICjqdLlGqg7bhCp5MvnfQftXNufcaTDf86YmN34tkYl8nUh
-         E1TEXeKWOfc62QBEEL4iaICZJUqV2BK4Tg1pQtpDeOKiotE8p202ib96xqd5eEqoxJGm
-         +lkG9dpS6gQ0YmtwBPKtO1zwA8TCpj/+Qfh0XPeMeyCRpOBP6XgHl3PnRK0X4FR79HSi
-         HU0A==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Kr+c2JAhieRh3lTHlPicZCQErqUE2biE3BOKG7V3nDg=;
+        b=TajnI1d6xBPGJBjQ8Lh8bXkt/7pDIbOmf/c1pRayeODLG9RHXe5cR7ePB1xlaBZpwc
+         Ze2QRm0j60uI6ATmdyjXE6mB5L2gECji0foPaYXZs6f2XIqpooskxBvGh8Iso8NStqY4
+         CuAWpA2vpvuafLNPM0qGWMp2ABaxNHPlJ75+JfryDnfnQW9qjyCtsn8yS2sI+bpz+m4T
+         3KOB+CJzehfkQnhZrb7UOn0Ov3xZLNBHW364Genmle7N2u39lANL1P/fgiY7/pEzIHit
+         wGUYcD24LloMk/ykKap40fd9EN7sLSL/jsk/aPt778FcvYtHgWlNRLf6VbMqscooH5YF
+         jd3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
-         :to:cc;
-        bh=jVxxi2FsPuJw4XM1jbb8exuFnk/zAFQh52OuUnL6x5c=;
-        b=QOB6uq5PPPJw/Iqpfthzny8wzXvbHFrcnyhAQU+7U8y+4mFHrLOQYz8keYcCSd4uPA
-         TWQVFHUunxwSferVtMIy5NMIQtQgQv9nn3WX2inL9IIMjjmsJpUkb+sukpThR3HC8lUA
-         JxCDthbJV44uU0yBfvtar+M1hg+Fm2jhd02VpDDV03LgZcv6fwnJgUn4Eav4PeCevW2z
-         VA/Vv644hxZ3RGFyvgtbrFi9MpzaG44SMLdAPTQjlDwPvnEG6SEAwQjGOxinSgkkyfAJ
-         7PlpWkjz8DwIm3oKqreIN/FEScB0tZjTWYYlr7dPCoG0KlBWUmj6CG7hZVtACcEMnazU
-         Vd6Q==
-X-Gm-Message-State: AOAM530O9qvJlc9QthaWCG26TY7NRtlrZaTKlhdzpL+hF342rKqBgRnc
-        fsy5Xyvqmb7/vb7ytz31ogEUbtwFb0XB
-X-Google-Smtp-Source: ABdhPJyMx58OK+cTr24By73GqN8pUy8WYFcuOgVnb6Mlp/ZIQ5bdJXL9uXFa9JTBMZrMJ90CejS/EeyKo95s
-Sender: "brianvv via sendgmr" <brianvv@brianvv.c.googlers.com>
-X-Received: from brianvv.c.googlers.com ([fda3:e722:ac3:10:7f:e700:c0a8:348])
- (user=brianvv job=sendgmr) by 2002:a0c:e652:: with SMTP id
- c18mr436707qvn.59.1612462734464; Thu, 04 Feb 2021 10:18:54 -0800 (PST)
-Date:   Thu,  4 Feb 2021 18:18:38 +0000
-Message-Id: <20210204181839.558951-1-brianvv@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.30.0.365.g02bc693789-goog
-Subject: [PATCH net-next 1/2] net: add EXPORT_INDIRECT_CALLABLE wrapper
-From:   Brian Vazquez <brianvv@google.com>
-To:     Brian Vazquez <brianvv.kernel@gmail.com>,
-        Brian Vazquez <brianvv@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Stephen Rothwell <sfr@canb.auug.org.au>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Kr+c2JAhieRh3lTHlPicZCQErqUE2biE3BOKG7V3nDg=;
+        b=Exdyuzxtv1opVnIXouYfsgxe+rzn2HT1FvyLxwWRQp1b9qhYwOjCXITT6ofz/8m8tg
+         v6pf8kxhMrNGWkyLbQY+CKxwbwSPXGGbUEysdIh56pamPe6B7f44+h4yHPidmACowmZm
+         m2Ab7NWSjsa0tryr2G3dhIeEXVm1gUQrJbzeRssfyiJLmQ8I4wNWc0sAqORlzif3u6uf
+         0TlLooskZ2Io5SejAHgWt2pATk14ivfsrb0CR8mE+E76CF9bZLbTZg9t62UMvV1DaYDg
+         89bASoHTKDh8irBF1fsdIlXx6adcdEi3xjI5Ulmo9VmQr6QOwxLs0N8C3j4jmXILwPNO
+         i2yw==
+X-Gm-Message-State: AOAM531xfiKN0r3IP4/Y2GtZ1jV/QchmsTwsl8g/u+giicZpnBDLq3TH
+        o+LG+vcOaJ+Ae5sO9MMmbMueczorz5JGADaBcqFGTA==
+X-Google-Smtp-Source: ABdhPJwYth+XiqPEqqDfcczcj6Zfr7FLuWlYgtMs608flfjmR0cYg37z3k75VwW+nvA/Y1DlKvmEFpujC5jNG/ArJVs=
+X-Received: by 2002:a17:906:c00c:: with SMTP id e12mr333978ejz.103.1612462455429;
+ Thu, 04 Feb 2021 10:14:15 -0800 (PST)
+MIME-Version: 1.0
+References: <1612462661-23045-1-git-send-email-loic.poulain@linaro.org>
+In-Reply-To: <1612462661-23045-1-git-send-email-loic.poulain@linaro.org>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Thu, 4 Feb 2021 19:21:23 +0100
+Message-ID: <CAMZdPi_m8F83yWwamj7Os2pctYmDMRKbwKEi7CpQoH5CCSJMLg@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 0/5] Add MBIM over MHI support
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
+        Dan Williams <dcbw@redhat.com>,
+        =?UTF-8?B?Q2FybCBZaW4o5q635byg5oiQKQ==?= <carl.yin@quectel.com>,
+        mpearson@lenovo.com, cchen50@lenovo.com, jwjiang@lenovo.com,
+        ivan.zhang@quectel.com, Naveen Kumar <naveen.kumar@quectel.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a static function is annotated with INDIRECT_CALLABLE_SCOPE and
-CONFIG_RETPOLINE is set, the static keyword is removed. Sometimes the
-function needs to be exported but EXPORT_SYMBOL can't be used because if
-CONFIG_RETPOLINE is not set, we will attempt to export a static symbol.
+Hi Jakub,
 
-This patch introduces a new indirect call wrapper:
-EXPORT_INDIRECT_CALLABLE. This basically does EXPORT_SYMBOL when
-CONFIG_RETPOLINE is set, but does nothing when it's not.
+On Thu, 4 Feb 2021 at 19:09, Loic Poulain <loic.poulain@linaro.org> wrote:
+>
+> This patch adds MBIM decoding/encoding support to mhi-net, using
+> mhi-net rx and tx_fixup 'proto' callbacks introduced in the series.
 
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Brian Vazquez <brianvv@google.com>
----
- include/linux/indirect_call_wrapper.h | 2 ++
- 1 file changed, 2 insertions(+)
+This series has been rebased on top of the recently submitted:
+    [PATCH net-next v5 1/2] net: mhi-net: Add re-aggregation of
+fragmented packets
+Since I assumed it would be merged first, but let me know if it's not fine.
 
-diff --git a/include/linux/indirect_call_wrapper.h b/include/linux/indirect_call_wrapper.h
-index 54c02c84906a..a8345c8a613d 100644
---- a/include/linux/indirect_call_wrapper.h
-+++ b/include/linux/indirect_call_wrapper.h
-@@ -36,6 +36,7 @@
- 
- #define INDIRECT_CALLABLE_DECLARE(f)	f
- #define INDIRECT_CALLABLE_SCOPE
-+#define EXPORT_INDIRECT_CALLABLE(f)	EXPORT_SYMBOL(f)
- 
- #else
- #define INDIRECT_CALL_1(f, f1, ...) f(__VA_ARGS__)
-@@ -44,6 +45,7 @@
- #define INDIRECT_CALL_4(f, f4, f3, f2, f1, ...) f(__VA_ARGS__)
- #define INDIRECT_CALLABLE_DECLARE(f)
- #define INDIRECT_CALLABLE_SCOPE		static
-+#define EXPORT_INDIRECT_CALLABLE(f)
- #endif
- 
- /*
--- 
-2.30.0.365.g02bc693789-goog
+Regards,
+Loic
 
+
+>
+> v2:
+>    - net.c: mhi_net_dev as rx/tx_fixup parameter
+>    - mbim: Check nth size/sequence in nth16_verify
+>    - mbim: Add netif_dbg message for verbose error
+>    - mbim: Add inline comment for MHI MBIM limitation (no DSS)
+>    - mbim: Fix copyright issue
+>    - mbim: Reword commit message
+>
+> v3:
+>    - net: dedicated commit for mhi.h
+>    - net: add rx_length_errors stat change
+>    - net: rename rx_fixup to rx
+>    - net: proto rx returns void
+>    - mbim: remove all unecessary parenthesis
+>    - mbim: report errors and rx_length_errors
+>    - mbim: rate_limited errors in rx/tx path
+>    - mbim: create define for NDP signature mask
+>    - mbim: switch-case to if for signature check
+>    - mbim: skb_cow_head() to fix headroom if necessary
+>
+> Loic Poulain (5):
+>   net: mhi: Add protocol support
+>   net: mhi: Add dedicated folder
+>   net: mhi: Create mhi.h
+>   net: mhi: Add rx_length_errors stat
+>   net: mhi: Add mbim proto
+>
+>  drivers/net/Makefile         |   2 +-
+>  drivers/net/mhi/Makefile     |   3 +
+>  drivers/net/mhi/mhi.h        |  40 +++++
+>  drivers/net/mhi/net.c        | 408 +++++++++++++++++++++++++++++++++++++++++++
+>  drivers/net/mhi/proto_mbim.c | 294 +++++++++++++++++++++++++++++++
+>  drivers/net/mhi_net.c        | 384 ----------------------------------------
+>  6 files changed, 746 insertions(+), 385 deletions(-)
+>  create mode 100644 drivers/net/mhi/Makefile
+>  create mode 100644 drivers/net/mhi/mhi.h
+>  create mode 100644 drivers/net/mhi/net.c
+>  create mode 100644 drivers/net/mhi/proto_mbim.c
+>  delete mode 100644 drivers/net/mhi_net.c
+>
+> --
+> 2.7.4
+>
