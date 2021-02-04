@@ -2,1023 +2,306 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A6D430F20B
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 12:26:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8243930F20E
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 12:26:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235800AbhBDL0T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 06:26:19 -0500
-Received: from [1.6.215.26] ([1.6.215.26]:50287 "EHLO hyd1soter2"
+        id S235541AbhBDL0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 06:26:47 -0500
+Received: from [1.6.215.26] ([1.6.215.26]:10725 "EHLO hyd1soter2"
         rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235790AbhBDL0Q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Feb 2021 06:26:16 -0500
+        id S235679AbhBDL0b (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Feb 2021 06:26:31 -0500
 Received: from hyd1soter2.caveonetworks.com (localhost [127.0.0.1])
-        by hyd1soter2 (8.15.2/8.15.2/Debian-3) with ESMTP id 114BPSas051864;
-        Thu, 4 Feb 2021 16:55:28 +0530
+        by hyd1soter2 (8.15.2/8.15.2/Debian-3) with ESMTP id 114BPej4051913;
+        Thu, 4 Feb 2021 16:55:40 +0530
 Received: (from geetha@localhost)
-        by hyd1soter2.caveonetworks.com (8.15.2/8.15.2/Submit) id 114BPSlT051863;
-        Thu, 4 Feb 2021 16:55:28 +0530
+        by hyd1soter2.caveonetworks.com (8.15.2/8.15.2/Submit) id 114BPeZR051912;
+        Thu, 4 Feb 2021 16:55:40 +0530
 From:   Geetha sowjanya <gakula@marvell.com>
 To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     sgoutham@marvell.com, davem@davemloft.net, kuba@kernel.org,
         sbhatta@marvell.com, hkelam@marvell.com, jerinj@marvell.com,
         lcherian@marvell.com, Geetha sowjanya <gakula@marvell.com>
-Subject: [net-next v3 03/14] octeontx2-af: cn10k: Update NIX/NPA context structure
-Date:   Thu,  4 Feb 2021 16:55:27 +0530
-Message-Id: <1612437927-51822-1-git-send-email-gakula@marvell.com>
+Subject: [net-next v3 04/14] octeontx2-af: cn10k: Update NIX and NPA context in debugfs
+Date:   Thu,  4 Feb 2021 16:55:38 +0530
+Message-Id: <1612437938-51872-1-git-send-email-gakula@marvell.com>
 X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-NIX hardware context structure got changed to accommodate new
-features like bandwidth steering, L3/L4 outer/inner checksum
-enable/disable etc., on CN10K platform.
-This patch defines new mbox message NIX_CN10K_AQ_INST for new
-NIX context initialization.
-
-This patch also updates the NPA context structures to accommodate
-bit field changes made for CN10K platform.
-
-This patch also removes Big endian bit fields from existing
-structures as its support got deprecated in current and upcoming silicons.
+On CN10K platform NPA and NIX context structure bit fields
+had changed to support new features like bandwidth steering etc.
+This patch dumps approprate context for CN10K platform.
 
 Signed-off-by: Geetha sowjanya <gakula@marvell.com>
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  35 ++
- .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    |   8 +
- .../net/ethernet/marvell/octeontx2/af/rvu_struct.h | 604 ++++++---------------
- 3 files changed, 223 insertions(+), 424 deletions(-)
+ .../ethernet/marvell/octeontx2/af/rvu_debugfs.c    | 177 ++++++++++++++++++++-
+ 1 file changed, 175 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-index 5a08f3e..f2b37b3 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-@@ -241,6 +241,8 @@ M(NIX_BP_ENABLE,	0x8016, nix_bp_enable, nix_bp_cfg_req,	\
- 				nix_bp_cfg_rsp)	\
- M(NIX_BP_DISABLE,	0x8017, nix_bp_disable, nix_bp_cfg_req, msg_rsp) \
- M(NIX_GET_MAC_ADDR, 0x8018, nix_get_mac_addr, msg_req, nix_get_mac_addr_rsp) \
-+M(NIX_CN10K_AQ_ENQ,	0x8019, nix_cn10k_aq_enq, nix_cn10k_aq_enq_req, \
-+				nix_cn10k_aq_enq_rsp)
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+index 80e9643..02775d4 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+@@ -449,6 +449,7 @@ RVU_DEBUG_SEQ_FOPS(npa_qsize, npa_qsize_display, npa_qsize_write);
+ static void print_npa_aura_ctx(struct seq_file *m, struct npa_aq_enq_rsp *rsp)
+ {
+ 	struct npa_aura_s *aura = &rsp->aura;
++	struct rvu *rvu = m->private;
  
- /* Messages initiated by AF (range 0xC00 - 0xDFF) */
- #define MBOX_UP_CGX_MESSAGES						\
-@@ -549,6 +551,39 @@ struct nix_lf_free_req {
- 	u64 flags;
- };
+ 	seq_printf(m, "W0: Pool addr\t\t%llx\n", aura->pool_addr);
  
-+/* CN10K NIX AQ enqueue msg */
-+struct nix_cn10k_aq_enq_req {
-+	struct mbox_msghdr hdr;
-+	u32  qidx;
-+	u8 ctype;
-+	u8 op;
-+	union {
-+		struct nix_cn10k_rq_ctx_s rq;
-+		struct nix_cn10k_sq_ctx_s sq;
-+		struct nix_cq_ctx_s cq;
-+		struct nix_rsse_s   rss;
-+		struct nix_rx_mce_s mce;
-+	};
-+	union {
-+		struct nix_cn10k_rq_ctx_s rq_mask;
-+		struct nix_cn10k_sq_ctx_s sq_mask;
-+		struct nix_cq_ctx_s cq_mask;
-+		struct nix_rsse_s   rss_mask;
-+		struct nix_rx_mce_s mce_mask;
-+	};
-+};
+@@ -468,6 +469,9 @@ static void print_npa_aura_ctx(struct seq_file *m, struct npa_aq_enq_rsp *rsp)
+ 
+ 	seq_printf(m, "W3: limit\t\t%llu\nW3: bp\t\t\t%d\nW3: fc_ena\t\t%d\n",
+ 		   (u64)aura->limit, aura->bp, aura->fc_ena);
 +
-+struct nix_cn10k_aq_enq_rsp {
-+	struct mbox_msghdr hdr;
-+	union {
-+		struct nix_cn10k_rq_ctx_s rq;
-+		struct nix_cn10k_sq_ctx_s sq;
-+		struct nix_cq_ctx_s cq;
-+		struct nix_rsse_s   rss;
-+		struct nix_rx_mce_s mce;
-+	};
-+};
-+
- /* NIX AQ enqueue msg */
- struct nix_aq_enq_req {
- 	struct mbox_msghdr hdr;
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-index b54753e..46da18d 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-@@ -1000,6 +1000,14 @@ int rvu_mbox_handler_nix_aq_enq(struct rvu *rvu,
- 	return rvu_nix_aq_enq_inst(rvu, req, rsp);
++	if (!is_rvu_otx2(rvu))
++		seq_printf(m, "W3: fc_be\t\t%d\n", aura->fc_be);
+ 	seq_printf(m, "W3: fc_up_crossing\t%d\nW3: fc_stype\t\t%d\n",
+ 		   aura->fc_up_crossing, aura->fc_stype);
+ 	seq_printf(m, "W3: fc_hyst_bits\t%d\n", aura->fc_hyst_bits);
+@@ -485,12 +489,15 @@ static void print_npa_aura_ctx(struct seq_file *m, struct npa_aq_enq_rsp *rsp)
+ 	seq_printf(m, "W5: err_qint_idx \t%d\n", aura->err_qint_idx);
+ 
+ 	seq_printf(m, "W6: thresh\t\t%llu\n", (u64)aura->thresh);
++	if (!is_rvu_otx2(rvu))
++		seq_printf(m, "W6: fc_msh_dst\t\t%d\n", aura->fc_msh_dst);
  }
- #endif
-+/* CN10K mbox handler */
-+int rvu_mbox_handler_nix_cn10k_aq_enq(struct rvu *rvu,
-+				      struct nix_cn10k_aq_enq_req *req,
-+				      struct nix_cn10k_aq_enq_rsp *rsp)
+ 
+ /* Dumps given NPA Pool's context */
+ static void print_npa_pool_ctx(struct seq_file *m, struct npa_aq_enq_rsp *rsp)
+ {
+ 	struct npa_pool_s *pool = &rsp->pool;
++	struct rvu *rvu = m->private;
+ 
+ 	seq_printf(m, "W0: Stack base\t\t%llx\n", pool->stack_base);
+ 
+@@ -512,6 +519,8 @@ static void print_npa_pool_ctx(struct seq_file *m, struct npa_aq_enq_rsp *rsp)
+ 		   pool->avg_con, pool->fc_ena, pool->fc_stype);
+ 	seq_printf(m, "W4: fc_hyst_bits\t%d\nW4: fc_up_crossing\t%d\n",
+ 		   pool->fc_hyst_bits, pool->fc_up_crossing);
++	if (!is_rvu_otx2(rvu))
++		seq_printf(m, "W4: fc_be\t\t%d\n", pool->fc_be);
+ 	seq_printf(m, "W4: update_time\t\t%d\n", pool->update_time);
+ 
+ 	seq_printf(m, "W5: fc_addr\t\t%llx\n", pool->fc_addr);
+@@ -525,8 +534,10 @@ static void print_npa_pool_ctx(struct seq_file *m, struct npa_aq_enq_rsp *rsp)
+ 	seq_printf(m, "W8: thresh_int\t\t%d\n", pool->thresh_int);
+ 	seq_printf(m, "W8: thresh_int_ena\t%d\nW8: thresh_up\t\t%d\n",
+ 		   pool->thresh_int_ena, pool->thresh_up);
+-	seq_printf(m, "W8: thresh_qint_idx\t%d\nW8: err_qint_idx\t\t%d\n",
++	seq_printf(m, "W8: thresh_qint_idx\t%d\nW8: err_qint_idx\t%d\n",
+ 		   pool->thresh_qint_idx, pool->err_qint_idx);
++	if (!is_rvu_otx2(rvu))
++		seq_printf(m, "W8: fc_msh_dst\t\t%d\n", pool->fc_msh_dst);
+ }
+ 
+ /* Reads aura/pool's ctx from admin queue */
+@@ -910,11 +921,78 @@ static int rvu_dbg_nix_ndc_tx_hits_miss_display(struct seq_file *filp,
+ 
+ RVU_DEBUG_SEQ_FOPS(nix_ndc_tx_hits_miss, nix_ndc_tx_hits_miss_display, NULL);
+ 
++static void print_nix_cn10k_sq_ctx(struct seq_file *m,
++				   struct nix_cn10k_sq_ctx_s *sq_ctx)
 +{
-+	return rvu_nix_aq_enq_inst(rvu, (struct nix_aq_enq_req *)req,
-+				  (struct nix_aq_enq_rsp *)rsp);
++	seq_printf(m, "W0: ena \t\t\t%d\nW0: qint_idx \t\t\t%d\n",
++		   sq_ctx->ena, sq_ctx->qint_idx);
++	seq_printf(m, "W0: substream \t\t\t0x%03x\nW0: sdp_mcast \t\t\t%d\n",
++		   sq_ctx->substream, sq_ctx->sdp_mcast);
++	seq_printf(m, "W0: cq \t\t\t\t%d\nW0: sqe_way_mask \t\t%d\n\n",
++		   sq_ctx->cq, sq_ctx->sqe_way_mask);
++
++	seq_printf(m, "W1: smq \t\t\t%d\nW1: cq_ena \t\t\t%d\nW1: xoff\t\t\t%d\n",
++		   sq_ctx->smq, sq_ctx->cq_ena, sq_ctx->xoff);
++	seq_printf(m, "W1: sso_ena \t\t\t%d\nW1: smq_rr_weight\t\t%d\n",
++		   sq_ctx->sso_ena, sq_ctx->smq_rr_weight);
++	seq_printf(m, "W1: default_chan\t\t%d\nW1: sqb_count\t\t\t%d\n\n",
++		   sq_ctx->default_chan, sq_ctx->sqb_count);
++
++	seq_printf(m, "W2: smq_rr_count_lb \t\t%d\n", sq_ctx->smq_rr_count_lb);
++	seq_printf(m, "W2: smq_rr_count_ub \t\t%d\n", sq_ctx->smq_rr_count_ub);
++	seq_printf(m, "W2: sqb_aura \t\t\t%d\nW2: sq_int \t\t\t%d\n",
++		   sq_ctx->sqb_aura, sq_ctx->sq_int);
++	seq_printf(m, "W2: sq_int_ena \t\t\t%d\nW2: sqe_stype \t\t\t%d\n",
++		   sq_ctx->sq_int_ena, sq_ctx->sqe_stype);
++
++	seq_printf(m, "W3: max_sqe_size\t\t%d\nW3: cq_limit\t\t\t%d\n",
++		   sq_ctx->max_sqe_size, sq_ctx->cq_limit);
++	seq_printf(m, "W3: lmt_dis \t\t\t%d\nW3: mnq_dis \t\t\t%d\n",
++		   sq_ctx->mnq_dis, sq_ctx->lmt_dis);
++	seq_printf(m, "W3: smq_next_sq\t\t\t%d\nW3: smq_lso_segnum\t\t%d\n",
++		   sq_ctx->smq_next_sq, sq_ctx->smq_lso_segnum);
++	seq_printf(m, "W3: tail_offset \t\t%d\nW3: smenq_offset\t\t%d\n",
++		   sq_ctx->tail_offset, sq_ctx->smenq_offset);
++	seq_printf(m, "W3: head_offset\t\t\t%d\nW3: smenq_next_sqb_vld\t\t%d\n\n",
++		   sq_ctx->head_offset, sq_ctx->smenq_next_sqb_vld);
++
++	seq_printf(m, "W4: next_sqb \t\t\t%llx\n\n", sq_ctx->next_sqb);
++	seq_printf(m, "W5: tail_sqb \t\t\t%llx\n\n", sq_ctx->tail_sqb);
++	seq_printf(m, "W6: smenq_sqb \t\t\t%llx\n\n", sq_ctx->smenq_sqb);
++	seq_printf(m, "W7: smenq_next_sqb \t\t%llx\n\n",
++		   sq_ctx->smenq_next_sqb);
++
++	seq_printf(m, "W8: head_sqb\t\t\t%llx\n\n", sq_ctx->head_sqb);
++
++	seq_printf(m, "W9: vfi_lso_total\t\t%d\n", sq_ctx->vfi_lso_total);
++	seq_printf(m, "W9: vfi_lso_sizem1\t\t%d\nW9: vfi_lso_sb\t\t\t%d\n",
++		   sq_ctx->vfi_lso_sizem1, sq_ctx->vfi_lso_sb);
++	seq_printf(m, "W9: vfi_lso_mps\t\t\t%d\nW9: vfi_lso_vlan0_ins_ena\t%d\n",
++		   sq_ctx->vfi_lso_mps, sq_ctx->vfi_lso_vlan0_ins_ena);
++	seq_printf(m, "W9: vfi_lso_vlan1_ins_ena\t%d\nW9: vfi_lso_vld \t\t%d\n\n",
++		   sq_ctx->vfi_lso_vld, sq_ctx->vfi_lso_vlan1_ins_ena);
++
++	seq_printf(m, "W10: scm_lso_rem \t\t%llu\n\n",
++		   (u64)sq_ctx->scm_lso_rem);
++	seq_printf(m, "W11: octs \t\t\t%llu\n\n", (u64)sq_ctx->octs);
++	seq_printf(m, "W12: pkts \t\t\t%llu\n\n", (u64)sq_ctx->pkts);
++	seq_printf(m, "W14: dropped_octs \t\t%llu\n\n",
++		   (u64)sq_ctx->dropped_octs);
++	seq_printf(m, "W15: dropped_pkts \t\t%llu\n\n",
++		   (u64)sq_ctx->dropped_pkts);
 +}
- 
- int rvu_mbox_handler_nix_hwctx_disable(struct rvu *rvu,
- 				       struct hwctx_disable_req *req,
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_struct.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_struct.h
-index 5e15f4f..5e5f45c 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_struct.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_struct.h
-@@ -139,63 +139,29 @@ enum npa_inpq {
- 
- /* NPA admin queue instruction structure */
- struct npa_aq_inst_s {
--#if defined(__BIG_ENDIAN_BITFIELD)
--	u64 doneint               : 1;	/* W0 */
--	u64 reserved_44_62        : 19;
--	u64 cindex                : 20;
--	u64 reserved_17_23        : 7;
--	u64 lf                    : 9;
--	u64 ctype                 : 4;
--	u64 op                    : 4;
--#else
--	u64 op                    : 4;
-+	u64 op                    : 4; /* W0 */
- 	u64 ctype                 : 4;
- 	u64 lf                    : 9;
- 	u64 reserved_17_23        : 7;
- 	u64 cindex                : 20;
- 	u64 reserved_44_62        : 19;
- 	u64 doneint               : 1;
--#endif
- 	u64 res_addr;			/* W1 */
- };
- 
- /* NPA admin queue result structure */
- struct npa_aq_res_s {
--#if defined(__BIG_ENDIAN_BITFIELD)
--	u64 reserved_17_63        : 47; /* W0 */
--	u64 doneint               : 1;
--	u64 compcode              : 8;
--	u64 ctype                 : 4;
--	u64 op                    : 4;
--#else
--	u64 op                    : 4;
-+	u64 op                    : 4; /* W0 */
- 	u64 ctype                 : 4;
- 	u64 compcode              : 8;
- 	u64 doneint               : 1;
- 	u64 reserved_17_63        : 47;
--#endif
- 	u64 reserved_64_127;		/* W1 */
- };
- 
- struct npa_aura_s {
- 	u64 pool_addr;			/* W0 */
--#if defined(__BIG_ENDIAN_BITFIELD)	/* W1 */
--	u64 avg_level             : 8;
--	u64 reserved_118_119      : 2;
--	u64 shift                 : 6;
--	u64 aura_drop             : 8;
--	u64 reserved_98_103       : 6;
--	u64 bp_ena                : 2;
--	u64 aura_drop_ena         : 1;
--	u64 pool_drop_ena         : 1;
--	u64 reserved_93           : 1;
--	u64 avg_con               : 9;
--	u64 pool_way_mask         : 16;
--	u64 pool_caching          : 1;
--	u64 reserved_65           : 2;
--	u64 ena                   : 1;
--#else
--	u64 ena                   : 1;
-+	u64 ena                   : 1;  /* W1 */
- 	u64 reserved_65           : 2;
- 	u64 pool_caching          : 1;
- 	u64 pool_way_mask         : 16;
-@@ -209,59 +175,24 @@ struct npa_aura_s {
- 	u64 shift                 : 6;
- 	u64 reserved_118_119      : 2;
- 	u64 avg_level             : 8;
--#endif
--#if defined(__BIG_ENDIAN_BITFIELD)	/* W2 */
--	u64 reserved_189_191      : 3;
--	u64 nix1_bpid             : 9;
--	u64 reserved_177_179      : 3;
--	u64 nix0_bpid             : 9;
--	u64 reserved_164_167      : 4;
--	u64 count                 : 36;
--#else
--	u64 count                 : 36;
-+	u64 count                 : 36; /* W2 */
- 	u64 reserved_164_167      : 4;
- 	u64 nix0_bpid             : 9;
- 	u64 reserved_177_179      : 3;
- 	u64 nix1_bpid             : 9;
- 	u64 reserved_189_191      : 3;
--#endif
--#if defined(__BIG_ENDIAN_BITFIELD)	/* W3 */
--	u64 reserved_252_255      : 4;
--	u64 fc_hyst_bits          : 4;
--	u64 fc_stype              : 2;
--	u64 fc_up_crossing        : 1;
--	u64 fc_ena                : 1;
--	u64 reserved_240_243      : 4;
--	u64 bp                    : 8;
--	u64 reserved_228_231      : 4;
--	u64 limit                 : 36;
--#else
--	u64 limit                 : 36;
-+	u64 limit                 : 36; /* W3 */
- 	u64 reserved_228_231      : 4;
- 	u64 bp                    : 8;
--	u64 reserved_240_243      : 4;
-+	u64 reserved_241_243      : 3;
-+	u64 fc_be                 : 1;
- 	u64 fc_ena                : 1;
- 	u64 fc_up_crossing        : 1;
- 	u64 fc_stype              : 2;
- 	u64 fc_hyst_bits          : 4;
- 	u64 reserved_252_255      : 4;
--#endif
- 	u64 fc_addr;			/* W4 */
--#if defined(__BIG_ENDIAN_BITFIELD)	/* W5 */
--	u64 reserved_379_383      : 5;
--	u64 err_qint_idx          : 7;
--	u64 reserved_371          : 1;
--	u64 thresh_qint_idx       : 7;
--	u64 reserved_363          : 1;
--	u64 thresh_up             : 1;
--	u64 thresh_int_ena        : 1;
--	u64 thresh_int            : 1;
--	u64 err_int_ena           : 8;
--	u64 err_int               : 8;
--	u64 update_time           : 16;
--	u64 pool_drop             : 8;
--#else
--	u64 pool_drop             : 8;
-+	u64 pool_drop             : 8;  /* W5 */
- 	u64 update_time           : 16;
- 	u64 err_int               : 8;
- 	u64 err_int_ena           : 8;
-@@ -273,31 +204,15 @@ struct npa_aura_s {
- 	u64 reserved_371          : 1;
- 	u64 err_qint_idx          : 7;
- 	u64 reserved_379_383      : 5;
--#endif
--#if defined(__BIG_ENDIAN_BITFIELD)	/* W6 */
--	u64 reserved_420_447      : 28;
--	u64 thresh                : 36;
--#else
--	u64 thresh                : 36;
--	u64 reserved_420_447      : 28;
--#endif
-+	u64 thresh                : 36; /* W6*/
-+	u64 rsvd_423_420          : 4;
-+	u64 fc_msh_dst            : 11;
-+	u64 reserved_435_447      : 13;
- 	u64 reserved_448_511;		/* W7 */
- };
- 
- struct npa_pool_s {
- 	u64 stack_base;			/* W0 */
--#if defined(__BIG_ENDIAN_BITFIELD)	/* W1 */
--	u64 reserved_115_127      : 13;
--	u64 buf_size              : 11;
--	u64 reserved_100_103      : 4;
--	u64 buf_offset            : 12;
--	u64 stack_way_mask        : 16;
--	u64 reserved_70_71        : 3;
--	u64 stack_caching         : 1;
--	u64 reserved_66_67        : 2;
--	u64 nat_align             : 1;
--	u64 ena                   : 1;
--#else
- 	u64 ena                   : 1;
- 	u64 nat_align             : 1;
- 	u64 reserved_66_67        : 2;
-@@ -308,36 +223,10 @@ struct npa_pool_s {
- 	u64 reserved_100_103      : 4;
- 	u64 buf_size              : 11;
- 	u64 reserved_115_127      : 13;
--#endif
--#if defined(__BIG_ENDIAN_BITFIELD)	/* W2 */
--	u64 stack_pages           : 32;
--	u64 stack_max_pages       : 32;
--#else
- 	u64 stack_max_pages       : 32;
- 	u64 stack_pages           : 32;
--#endif
--#if defined(__BIG_ENDIAN_BITFIELD)	/* W3 */
--	u64 reserved_240_255      : 16;
--	u64 op_pc                 : 48;
--#else
- 	u64 op_pc                 : 48;
- 	u64 reserved_240_255      : 16;
--#endif
--#if defined(__BIG_ENDIAN_BITFIELD)	/* W4 */
--	u64 reserved_316_319      : 4;
--	u64 update_time           : 16;
--	u64 reserved_297_299      : 3;
--	u64 fc_up_crossing        : 1;
--	u64 fc_hyst_bits          : 4;
--	u64 fc_stype              : 2;
--	u64 fc_ena                : 1;
--	u64 avg_con               : 9;
--	u64 avg_level             : 8;
--	u64 reserved_270_271      : 2;
--	u64 shift                 : 6;
--	u64 reserved_260_263      : 4;
--	u64 stack_offset          : 4;
--#else
- 	u64 stack_offset          : 4;
- 	u64 reserved_260_263      : 4;
- 	u64 shift                 : 6;
-@@ -348,26 +237,13 @@ struct npa_pool_s {
- 	u64 fc_stype              : 2;
- 	u64 fc_hyst_bits          : 4;
- 	u64 fc_up_crossing        : 1;
--	u64 reserved_297_299      : 3;
-+	u64 fc_be		  : 1;
-+	u64 reserved_298_299      : 2;
- 	u64 update_time           : 16;
- 	u64 reserved_316_319      : 4;
--#endif
- 	u64 fc_addr;			/* W5 */
- 	u64 ptr_start;			/* W6 */
- 	u64 ptr_end;			/* W7 */
--#if defined(__BIG_ENDIAN_BITFIELD)	/* W8 */
--	u64 reserved_571_575      : 5;
--	u64 err_qint_idx          : 7;
--	u64 reserved_563          : 1;
--	u64 thresh_qint_idx       : 7;
--	u64 reserved_555          : 1;
--	u64 thresh_up             : 1;
--	u64 thresh_int_ena        : 1;
--	u64 thresh_int            : 1;
--	u64 err_int_ena           : 8;
--	u64 err_int               : 8;
--	u64 reserved_512_535      : 24;
--#else
- 	u64 reserved_512_535      : 24;
- 	u64 err_int               : 8;
- 	u64 err_int_ena           : 8;
-@@ -379,14 +255,10 @@ struct npa_pool_s {
- 	u64 reserved_563          : 1;
- 	u64 err_qint_idx          : 7;
- 	u64 reserved_571_575      : 5;
--#endif
--#if defined(__BIG_ENDIAN_BITFIELD)	/* W9 */
--	u64 reserved_612_639      : 28;
- 	u64 thresh                : 36;
--#else
--	u64 thresh                : 36;
--	u64 reserved_612_639      : 28;
--#endif
-+	u64 rsvd_615_612	  : 4;
-+	u64 fc_msh_dst		  : 11;
-+	u64 reserved_627_639      : 13;
- 	u64 reserved_640_703;		/* W10 */
- 	u64 reserved_704_767;		/* W11 */
- 	u64 reserved_768_831;		/* W12 */
-@@ -414,6 +286,7 @@ enum nix_aq_ctype {
- 	NIX_AQ_CTYPE_MCE  = 0x3,
- 	NIX_AQ_CTYPE_RSS  = 0x4,
- 	NIX_AQ_CTYPE_DYNO = 0x5,
-+	NIX_AQ_CTYPE_BAND_PROF = 0x6,
- };
- 
- /* NIX admin queue instruction opcodes */
-@@ -428,59 +301,29 @@ enum nix_aq_instop {
- 
- /* NIX admin queue instruction structure */
- struct nix_aq_inst_s {
--#if defined(__BIG_ENDIAN_BITFIELD)
--	u64 doneint		: 1;	/* W0 */
--	u64 reserved_44_62	: 19;
--	u64 cindex		: 20;
--	u64 reserved_15_23	: 9;
--	u64 lf			: 7;
--	u64 ctype		: 4;
--	u64 op			: 4;
--#else
- 	u64 op			: 4;
- 	u64 ctype		: 4;
--	u64 lf			: 7;
--	u64 reserved_15_23	: 9;
-+	u64 lf			: 9;
-+	u64 reserved_17_23	: 7;
- 	u64 cindex		: 20;
- 	u64 reserved_44_62	: 19;
- 	u64 doneint		: 1;
--#endif
- 	u64 res_addr;			/* W1 */
- };
- 
- /* NIX admin queue result structure */
- struct nix_aq_res_s {
--#if defined(__BIG_ENDIAN_BITFIELD)
--	u64 reserved_17_63	: 47;	/* W0 */
--	u64 doneint		: 1;
--	u64 compcode		: 8;
--	u64 ctype		: 4;
--	u64 op			: 4;
--#else
- 	u64 op			: 4;
- 	u64 ctype		: 4;
- 	u64 compcode		: 8;
- 	u64 doneint		: 1;
- 	u64 reserved_17_63	: 47;
--#endif
- 	u64 reserved_64_127;		/* W1 */
- };
- 
- /* NIX Completion queue context structure */
- struct nix_cq_ctx_s {
- 	u64 base;
--#if defined(__BIG_ENDIAN_BITFIELD)	/* W1 */
--	u64 wrptr		: 20;
--	u64 avg_con		: 9;
--	u64 cint_idx		: 7;
--	u64 cq_err		: 1;
--	u64 qint_idx		: 7;
--	u64 rsvd_81_83		: 3;
--	u64 bpid		: 9;
--	u64 rsvd_69_71		: 3;
--	u64 bp_ena		: 1;
--	u64 rsvd_64_67		: 4;
--#else
- 	u64 rsvd_64_67		: 4;
- 	u64 bp_ena		: 1;
- 	u64 rsvd_69_71		: 3;
-@@ -491,31 +334,10 @@ struct nix_cq_ctx_s {
- 	u64 cint_idx		: 7;
- 	u64 avg_con		: 9;
- 	u64 wrptr		: 20;
--#endif
--#if defined(__BIG_ENDIAN_BITFIELD)  /* W2 */
--	u64 update_time		: 16;
--	u64 avg_level		: 8;
--	u64 head		: 20;
--	u64 tail		: 20;
--#else
- 	u64 tail		: 20;
- 	u64 head		: 20;
- 	u64 avg_level		: 8;
- 	u64 update_time		: 16;
--#endif
--#if defined(__BIG_ENDIAN_BITFIELD)  /* W3 */
--	u64 cq_err_int_ena	: 8;
--	u64 cq_err_int		: 8;
--	u64 qsize		: 4;
--	u64 rsvd_233_235	: 3;
--	u64 caching		: 1;
--	u64 substream		: 20;
--	u64 rsvd_210_211	: 2;
--	u64 ena			: 1;
--	u64 drop_ena		: 1;
--	u64 drop		: 8;
--	u64 bp			: 8;
--#else
- 	u64 bp			: 8;
- 	u64 drop		: 8;
- 	u64 drop_ena		: 1;
-@@ -527,20 +349,161 @@ struct nix_cq_ctx_s {
- 	u64 qsize		: 4;
- 	u64 cq_err_int		: 8;
- 	u64 cq_err_int_ena	: 8;
--#endif
-+};
 +
-+/* CN10K NIX Receive queue context structure */
-+struct nix_cn10k_rq_ctx_s {
-+	u64 ena			: 1;
-+	u64 sso_ena		: 1;
-+	u64 ipsech_ena		: 1;
-+	u64 ena_wqwd		: 1;
-+	u64 cq			: 20;
-+	u64 rsvd_36_24		: 13;
-+	u64 lenerr_dis		: 1;
-+	u64 csum_il4_dis	: 1;
-+	u64 csum_ol4_dis	: 1;
-+	u64 len_il4_dis		: 1;
-+	u64 len_il3_dis		: 1;
-+	u64 len_ol4_dis		: 1;
-+	u64 len_ol3_dis		: 1;
-+	u64 wqe_aura		: 20;
-+	u64 spb_aura		: 20;
-+	u64 lpb_aura		: 20;
-+	u64 sso_grp		: 10;
-+	u64 sso_tt		: 2;
-+	u64 pb_caching		: 2;
-+	u64 wqe_caching		: 1;
-+	u64 xqe_drop_ena	: 1;
-+	u64 spb_drop_ena	: 1;
-+	u64 lpb_drop_ena	: 1;
-+	u64 pb_stashing		: 1;
-+	u64 ipsecd_drop_ena	: 1;
-+	u64 chi_ena		: 1;
-+	u64 rsvd_127_125	: 3;
-+	u64 band_prof_id	: 10; /* W2 */
-+	u64 rsvd_138		: 1;
-+	u64 policer_ena		: 1;
-+	u64 spb_sizem1		: 6;
-+	u64 wqe_skip		: 2;
-+	u64 rsvd_150_148	: 3;
-+	u64 spb_ena		: 1;
-+	u64 lpb_sizem1		: 12;
-+	u64 first_skip		: 7;
-+	u64 rsvd_171		: 1;
-+	u64 later_skip		: 6;
-+	u64 xqe_imm_size	: 6;
-+	u64 rsvd_189_184	: 6;
-+	u64 xqe_imm_copy	: 1;
-+	u64 xqe_hdr_split	: 1;
-+	u64 xqe_drop		: 8; /* W3 */
-+	u64 xqe_pass		: 8;
-+	u64 wqe_pool_drop	: 8;
-+	u64 wqe_pool_pass	: 8;
-+	u64 spb_aura_drop	: 8;
-+	u64 spb_aura_pass	: 8;
-+	u64 spb_pool_drop	: 8;
-+	u64 spb_pool_pass	: 8;
-+	u64 lpb_aura_drop	: 8; /* W4 */
-+	u64 lpb_aura_pass	: 8;
-+	u64 lpb_pool_drop	: 8;
-+	u64 lpb_pool_pass	: 8;
-+	u64 rsvd_291_288	: 4;
-+	u64 rq_int		: 8;
-+	u64 rq_int_ena		: 8;
-+	u64 qint_idx		: 7;
-+	u64 rsvd_319_315	: 5;
-+	u64 ltag		: 24; /* W5 */
-+	u64 good_utag		: 8;
-+	u64 bad_utag		: 8;
-+	u64 flow_tagw		: 6;
-+	u64 ipsec_vwqe		: 1;
-+	u64 vwqe_ena		: 1;
-+	u64 vwqe_wait		: 8;
-+	u64 max_vsize_exp	: 4;
-+	u64 vwqe_skip		: 2;
-+	u64 rsvd_383_382	: 2;
-+	u64 octs		: 48; /* W6 */
-+	u64 rsvd_447_432	: 16;
-+	u64 pkts		: 48; /* W7 */
-+	u64 rsvd_511_496	: 16;
-+	u64 drop_octs		: 48; /* W8 */
-+	u64 rsvd_575_560	: 16;
-+	u64 drop_pkts		: 48; /* W9 */
-+	u64 rsvd_639_624	: 16;
-+	u64 re_pkts		: 48; /* W10 */
-+	u64 rsvd_703_688	: 16;
-+	u64 rsvd_767_704;		/* W11 */
-+	u64 rsvd_831_768;		/* W12 */
-+	u64 rsvd_895_832;		/* W13 */
-+	u64 rsvd_959_896;		/* W14 */
-+	u64 rsvd_1023_960;		/* W15 */
-+};
+ /* Dumps given nix_sq's context */
+ static void print_nix_sq_ctx(struct seq_file *m, struct nix_aq_enq_rsp *rsp)
+ {
+ 	struct nix_sq_ctx_s *sq_ctx = &rsp->sq;
++	struct nix_hw *nix_hw = m->private;
++	struct rvu *rvu = nix_hw->rvu;
+ 
++	if (!is_rvu_otx2(rvu)) {
++		print_nix_cn10k_sq_ctx(m, (struct nix_cn10k_sq_ctx_s *)sq_ctx);
++		return;
++	}
+ 	seq_printf(m, "W0: sqe_way_mask \t\t%d\nW0: cq \t\t\t\t%d\n",
+ 		   sq_ctx->sqe_way_mask, sq_ctx->cq);
+ 	seq_printf(m, "W0: sdp_mcast \t\t\t%d\nW0: substream \t\t\t0x%03x\n",
+@@ -974,10 +1052,94 @@ static void print_nix_sq_ctx(struct seq_file *m, struct nix_aq_enq_rsp *rsp)
+ 		   (u64)sq_ctx->dropped_pkts);
+ }
+ 
++static void print_nix_cn10k_rq_ctx(struct seq_file *m,
++				   struct nix_cn10k_rq_ctx_s *rq_ctx)
++{
++	seq_printf(m, "W0: ena \t\t\t%d\nW0: sso_ena \t\t\t%d\n",
++		   rq_ctx->ena, rq_ctx->sso_ena);
++	seq_printf(m, "W0: ipsech_ena \t\t\t%d\nW0: ena_wqwd \t\t\t%d\n",
++		   rq_ctx->ipsech_ena, rq_ctx->ena_wqwd);
++	seq_printf(m, "W0: cq \t\t\t\t%d\nW0: lenerr_dis \t\t\t%d\n",
++		   rq_ctx->cq, rq_ctx->lenerr_dis);
++	seq_printf(m, "W0: csum_il4_dis \t\t%d\nW0: csum_ol4_dis \t\t%d\n",
++		   rq_ctx->csum_il4_dis, rq_ctx->csum_ol4_dis);
++	seq_printf(m, "W0: len_il4_dis \t\t%d\nW0: len_il3_dis \t\t%d\n",
++		   rq_ctx->len_il4_dis, rq_ctx->len_il3_dis);
++	seq_printf(m, "W0: len_ol4_dis \t\t%d\nW0: len_ol3_dis \t\t%d\n",
++		   rq_ctx->len_ol4_dis, rq_ctx->len_ol3_dis);
++	seq_printf(m, "W0: wqe_aura \t\t\t%d\n\n", rq_ctx->wqe_aura);
 +
-+/* CN10K NIX Send queue context structure */
-+struct nix_cn10k_sq_ctx_s {
-+	u64 ena                   : 1;
-+	u64 qint_idx              : 6;
-+	u64 substream             : 20;
-+	u64 sdp_mcast             : 1;
-+	u64 cq                    : 20;
-+	u64 sqe_way_mask          : 16;
-+	u64 smq                   : 10; /* W1 */
-+	u64 cq_ena                : 1;
-+	u64 xoff                  : 1;
-+	u64 sso_ena               : 1;
-+	u64 smq_rr_weight         : 14;
-+	u64 default_chan          : 12;
-+	u64 sqb_count             : 16;
-+	u64 rsvd_120_119          : 2;
-+	u64 smq_rr_count_lb       : 7;
-+	u64 smq_rr_count_ub       : 25; /* W2 */
-+	u64 sqb_aura              : 20;
-+	u64 sq_int                : 8;
-+	u64 sq_int_ena            : 8;
-+	u64 sqe_stype             : 2;
-+	u64 rsvd_191              : 1;
-+	u64 max_sqe_size          : 2; /* W3 */
-+	u64 cq_limit              : 8;
-+	u64 lmt_dis               : 1;
-+	u64 mnq_dis               : 1;
-+	u64 smq_next_sq           : 20;
-+	u64 smq_lso_segnum        : 8;
-+	u64 tail_offset           : 6;
-+	u64 smenq_offset          : 6;
-+	u64 head_offset           : 6;
-+	u64 smenq_next_sqb_vld    : 1;
-+	u64 smq_pend              : 1;
-+	u64 smq_next_sq_vld       : 1;
-+	u64 rsvd_255_253          : 3;
-+	u64 next_sqb              : 64; /* W4 */
-+	u64 tail_sqb              : 64; /* W5 */
-+	u64 smenq_sqb             : 64; /* W6 */
-+	u64 smenq_next_sqb        : 64; /* W7 */
-+	u64 head_sqb              : 64; /* W8 */
-+	u64 rsvd_583_576          : 8;  /* W9 */
-+	u64 vfi_lso_total         : 18;
-+	u64 vfi_lso_sizem1        : 3;
-+	u64 vfi_lso_sb            : 8;
-+	u64 vfi_lso_mps           : 14;
-+	u64 vfi_lso_vlan0_ins_ena : 1;
-+	u64 vfi_lso_vlan1_ins_ena : 1;
-+	u64 vfi_lso_vld           : 1;
-+	u64 rsvd_639_630          : 10;
-+	u64 scm_lso_rem           : 18; /* W10 */
-+	u64 rsvd_703_658          : 46;
-+	u64 octs                  : 48; /* W11 */
-+	u64 rsvd_767_752          : 16;
-+	u64 pkts                  : 48; /* W12 */
-+	u64 rsvd_831_816          : 16;
-+	u64 rsvd_895_832          : 64; /* W13 */
-+	u64 dropped_octs          : 48;
-+	u64 rsvd_959_944          : 16;
-+	u64 dropped_pkts          : 48;
-+	u64 rsvd_1023_1008        : 16;
- };
++	seq_printf(m, "W1: spb_aura \t\t\t%d\nW1: lpb_aura \t\t\t%d\n",
++		   rq_ctx->spb_aura, rq_ctx->lpb_aura);
++	seq_printf(m, "W1: spb_aura \t\t\t%d\n", rq_ctx->spb_aura);
++	seq_printf(m, "W1: sso_grp \t\t\t%d\nW1: sso_tt \t\t\t%d\n",
++		   rq_ctx->sso_grp, rq_ctx->sso_tt);
++	seq_printf(m, "W1: pb_caching \t\t\t%d\nW1: wqe_caching \t\t%d\n",
++		   rq_ctx->pb_caching, rq_ctx->wqe_caching);
++	seq_printf(m, "W1: xqe_drop_ena \t\t%d\nW1: spb_drop_ena \t\t%d\n",
++		   rq_ctx->xqe_drop_ena, rq_ctx->spb_drop_ena);
++	seq_printf(m, "W1: lpb_drop_ena \t\t%d\nW1: pb_stashing \t\t%d\n",
++		   rq_ctx->lpb_drop_ena, rq_ctx->pb_stashing);
++	seq_printf(m, "W1: ipsecd_drop_ena \t\t%d\nW1: chi_ena \t\t\t%d\n\n",
++		   rq_ctx->ipsecd_drop_ena, rq_ctx->chi_ena);
++
++	seq_printf(m, "W2: band_prof_id \t\t%d\n", rq_ctx->band_prof_id);
++	seq_printf(m, "W2: policer_ena \t\t%d\n", rq_ctx->policer_ena);
++	seq_printf(m, "W2: spb_sizem1 \t\t\t%d\n", rq_ctx->spb_sizem1);
++	seq_printf(m, "W2: wqe_skip \t\t\t%d\nW2: sqb_ena \t\t\t%d\n",
++		   rq_ctx->wqe_skip, rq_ctx->spb_ena);
++	seq_printf(m, "W2: lpb_size1 \t\t\t%d\nW2: first_skip \t\t\t%d\n",
++		   rq_ctx->lpb_sizem1, rq_ctx->first_skip);
++	seq_printf(m, "W2: later_skip\t\t\t%d\nW2: xqe_imm_size\t\t%d\n",
++		   rq_ctx->later_skip, rq_ctx->xqe_imm_size);
++	seq_printf(m, "W2: xqe_imm_copy \t\t%d\nW2: xqe_hdr_split \t\t%d\n\n",
++		   rq_ctx->xqe_imm_copy, rq_ctx->xqe_hdr_split);
++
++	seq_printf(m, "W3: xqe_drop \t\t\t%d\nW3: xqe_pass \t\t\t%d\n",
++		   rq_ctx->xqe_drop, rq_ctx->xqe_pass);
++	seq_printf(m, "W3: wqe_pool_drop \t\t%d\nW3: wqe_pool_pass \t\t%d\n",
++		   rq_ctx->wqe_pool_drop, rq_ctx->wqe_pool_pass);
++	seq_printf(m, "W3: spb_pool_drop \t\t%d\nW3: spb_pool_pass \t\t%d\n",
++		   rq_ctx->spb_pool_drop, rq_ctx->spb_pool_pass);
++	seq_printf(m, "W3: spb_aura_drop \t\t%d\nW3: spb_aura_pass \t\t%d\n\n",
++		   rq_ctx->spb_aura_pass, rq_ctx->spb_aura_drop);
++
++	seq_printf(m, "W4: lpb_aura_drop \t\t%d\nW3: lpb_aura_pass \t\t%d\n",
++		   rq_ctx->lpb_aura_pass, rq_ctx->lpb_aura_drop);
++	seq_printf(m, "W4: lpb_pool_drop \t\t%d\nW3: lpb_pool_pass \t\t%d\n",
++		   rq_ctx->lpb_pool_drop, rq_ctx->lpb_pool_pass);
++	seq_printf(m, "W4: rq_int \t\t\t%d\nW4: rq_int_ena\t\t\t%d\n",
++		   rq_ctx->rq_int, rq_ctx->rq_int_ena);
++	seq_printf(m, "W4: qint_idx \t\t\t%d\n\n", rq_ctx->qint_idx);
++
++	seq_printf(m, "W5: ltag \t\t\t%d\nW5: good_utag \t\t\t%d\n",
++		   rq_ctx->ltag, rq_ctx->good_utag);
++	seq_printf(m, "W5: bad_utag \t\t\t%d\nW5: flow_tagw \t\t\t%d\n",
++		   rq_ctx->bad_utag, rq_ctx->flow_tagw);
++	seq_printf(m, "W5: ipsec_vwqe \t\t\t%d\nW5: vwqe_ena \t\t\t%d\n",
++		   rq_ctx->ipsec_vwqe, rq_ctx->vwqe_ena);
++	seq_printf(m, "W5: vwqe_wait \t\t\t%d\nW5: max_vsize_exp\t\t%d\n",
++		   rq_ctx->vwqe_wait, rq_ctx->max_vsize_exp);
++	seq_printf(m, "W5: vwqe_skip \t\t\t%d\n\n", rq_ctx->vwqe_skip);
++
++	seq_printf(m, "W6: octs \t\t\t%llu\n\n", (u64)rq_ctx->octs);
++	seq_printf(m, "W7: pkts \t\t\t%llu\n\n", (u64)rq_ctx->pkts);
++	seq_printf(m, "W8: drop_octs \t\t\t%llu\n\n", (u64)rq_ctx->drop_octs);
++	seq_printf(m, "W9: drop_pkts \t\t\t%llu\n\n", (u64)rq_ctx->drop_pkts);
++	seq_printf(m, "W10: re_pkts \t\t\t%llu\n", (u64)rq_ctx->re_pkts);
++}
++
+ /* Dumps given nix_rq's context */
+ static void print_nix_rq_ctx(struct seq_file *m, struct nix_aq_enq_rsp *rsp)
+ {
+ 	struct nix_rq_ctx_s *rq_ctx = &rsp->rq;
++	struct nix_hw *nix_hw = m->private;
++	struct rvu *rvu = nix_hw->rvu;
++
++	if (!is_rvu_otx2(rvu)) {
++		print_nix_cn10k_rq_ctx(m, (struct nix_cn10k_rq_ctx_s *)rq_ctx);
++		return;
++	}
  
- /* NIX Receive queue context structure */
- struct nix_rq_ctx_s {
--#if defined(__BIG_ENDIAN_BITFIELD)  /* W0 */
--	u64 wqe_aura      : 20;
--	u64 substream     : 20;
--	u64 cq            : 20;
--	u64 ena_wqwd      : 1;
--	u64 ipsech_ena    : 1;
--	u64 sso_ena       : 1;
--	u64 ena           : 1;
--#else
- 	u64 ena           : 1;
- 	u64 sso_ena       : 1;
- 	u64 ipsech_ena    : 1;
-@@ -548,19 +511,6 @@ struct nix_rq_ctx_s {
- 	u64 cq            : 20;
- 	u64 substream     : 20;
- 	u64 wqe_aura      : 20;
--#endif
--#if defined(__BIG_ENDIAN_BITFIELD)  /* W1 */
--	u64 rsvd_127_122  : 6;
--	u64 lpb_drop_ena  : 1;
--	u64 spb_drop_ena  : 1;
--	u64 xqe_drop_ena  : 1;
--	u64 wqe_caching   : 1;
--	u64 pb_caching    : 2;
--	u64 sso_tt        : 2;
--	u64 sso_grp       : 10;
--	u64 lpb_aura      : 20;
--	u64 spb_aura      : 20;
--#else
- 	u64 spb_aura      : 20;
- 	u64 lpb_aura      : 20;
- 	u64 sso_grp       : 10;
-@@ -571,23 +521,7 @@ struct nix_rq_ctx_s {
- 	u64 spb_drop_ena  : 1;
- 	u64 lpb_drop_ena  : 1;
- 	u64 rsvd_127_122  : 6;
--#endif
--#if defined(__BIG_ENDIAN_BITFIELD)  /* W2 */
--	u64 xqe_hdr_split : 1;
--	u64 xqe_imm_copy  : 1;
--	u64 rsvd_189_184  : 6;
--	u64 xqe_imm_size  : 6;
--	u64 later_skip    : 6;
--	u64 rsvd_171      : 1;
--	u64 first_skip    : 7;
--	u64 lpb_sizem1    : 12;
--	u64 spb_ena       : 1;
--	u64 rsvd_150_148  : 3;
--	u64 wqe_skip      : 2;
--	u64 spb_sizem1    : 6;
--	u64 rsvd_139_128  : 12;
--#else
--	u64 rsvd_139_128  : 12;
-+	u64 rsvd_139_128  : 12; /* W2 */
- 	u64 spb_sizem1    : 6;
- 	u64 wqe_skip      : 2;
- 	u64 rsvd_150_148  : 3;
-@@ -600,18 +534,7 @@ struct nix_rq_ctx_s {
- 	u64 rsvd_189_184  : 6;
- 	u64 xqe_imm_copy  : 1;
- 	u64 xqe_hdr_split : 1;
--#endif
--#if defined(__BIG_ENDIAN_BITFIELD)  /* W3 */
--	u64 spb_pool_pass : 8;
--	u64 spb_pool_drop : 8;
--	u64 spb_aura_pass : 8;
--	u64 spb_aura_drop : 8;
--	u64 wqe_pool_pass : 8;
--	u64 wqe_pool_drop : 8;
--	u64 xqe_pass      : 8;
--	u64 xqe_drop      : 8;
--#else
--	u64 xqe_drop      : 8;
-+	u64 xqe_drop      : 8; /* W3*/
- 	u64 xqe_pass      : 8;
- 	u64 wqe_pool_drop : 8;
- 	u64 wqe_pool_pass : 8;
-@@ -619,19 +542,7 @@ struct nix_rq_ctx_s {
- 	u64 spb_aura_pass : 8;
- 	u64 spb_pool_drop : 8;
- 	u64 spb_pool_pass : 8;
--#endif
--#if defined(__BIG_ENDIAN_BITFIELD)  /* W4 */
--	u64 rsvd_319_315  : 5;
--	u64 qint_idx      : 7;
--	u64 rq_int_ena    : 8;
--	u64 rq_int        : 8;
--	u64 rsvd_291_288  : 4;
--	u64 lpb_pool_pass : 8;
--	u64 lpb_pool_drop : 8;
--	u64 lpb_aura_pass : 8;
--	u64 lpb_aura_drop : 8;
--#else
--	u64 lpb_aura_drop : 8;
-+	u64 lpb_aura_drop : 8; /* W4 */
- 	u64 lpb_aura_pass : 8;
- 	u64 lpb_pool_drop : 8;
- 	u64 lpb_pool_pass : 8;
-@@ -640,55 +551,21 @@ struct nix_rq_ctx_s {
- 	u64 rq_int_ena    : 8;
- 	u64 qint_idx      : 7;
- 	u64 rsvd_319_315  : 5;
--#endif
--#if defined(__BIG_ENDIAN_BITFIELD)  /* W5 */
--	u64 rsvd_383_366  : 18;
--	u64 flow_tagw     : 6;
--	u64 bad_utag      : 8;
--	u64 good_utag     : 8;
--	u64 ltag          : 24;
--#else
--	u64 ltag          : 24;
-+	u64 ltag          : 24; /* W5 */
- 	u64 good_utag     : 8;
- 	u64 bad_utag      : 8;
- 	u64 flow_tagw     : 6;
- 	u64 rsvd_383_366  : 18;
--#endif
--#if defined(__BIG_ENDIAN_BITFIELD)  /* W6 */
--	u64 rsvd_447_432  : 16;
--	u64 octs          : 48;
--#else
--	u64 octs          : 48;
-+	u64 octs          : 48; /* W6 */
- 	u64 rsvd_447_432  : 16;
--#endif
--#if defined(__BIG_ENDIAN_BITFIELD)  /* W7 */
--	u64 rsvd_511_496  : 16;
--	u64 pkts          : 48;
--#else
--	u64 pkts          : 48;
-+	u64 pkts          : 48; /* W7 */
- 	u64 rsvd_511_496  : 16;
--#endif
--#if defined(__BIG_ENDIAN_BITFIELD)  /* W8 */
-+	u64 drop_octs     : 48; /* W8 */
- 	u64 rsvd_575_560  : 16;
--	u64 drop_octs     : 48;
--#else
--	u64 drop_octs     : 48;
--	u64 rsvd_575_560  : 16;
--#endif
--#if defined(__BIG_ENDIAN_BITFIELD)	/* W9 */
--	u64 rsvd_639_624  : 16;
--	u64 drop_pkts     : 48;
--#else
--	u64 drop_pkts     : 48;
-+	u64 drop_pkts     : 48; /* W9 */
- 	u64 rsvd_639_624  : 16;
--#endif
--#if defined(__BIG_ENDIAN_BITFIELD)	/* W10 */
-+	u64 re_pkts       : 48; /* W10 */
- 	u64 rsvd_703_688  : 16;
--	u64 re_pkts       : 48;
--#else
--	u64 re_pkts       : 48;
--	u64 rsvd_703_688  : 16;
--#endif
- 	u64 rsvd_767_704;		/* W11 */
- 	u64 rsvd_831_768;		/* W12 */
- 	u64 rsvd_895_832;		/* W13 */
-@@ -711,30 +588,12 @@ enum nix_stype {
+ 	seq_printf(m, "W0: wqe_aura \t\t\t%d\nW0: substream \t\t\t0x%03x\n",
+ 		   rq_ctx->wqe_aura, rq_ctx->substream);
+@@ -1551,6 +1713,9 @@ static void rvu_dbg_cgx_init(struct rvu *rvu)
+ 	char dname[20];
+ 	void *cgx;
  
- /* NIX Send queue context structure */
- struct nix_sq_ctx_s {
--#if defined(__BIG_ENDIAN_BITFIELD)  /* W0 */
--	u64 sqe_way_mask          : 16;
--	u64 cq                    : 20;
--	u64 sdp_mcast             : 1;
--	u64 substream             : 20;
--	u64 qint_idx              : 6;
--	u64 ena                   : 1;
--#else
- 	u64 ena                   : 1;
- 	u64 qint_idx              : 6;
- 	u64 substream             : 20;
- 	u64 sdp_mcast             : 1;
- 	u64 cq                    : 20;
- 	u64 sqe_way_mask          : 16;
--#endif
--#if defined(__BIG_ENDIAN_BITFIELD)  /* W1 */
--	u64 sqb_count             : 16;
--	u64 default_chan          : 12;
--	u64 smq_rr_quantum        : 24;
--	u64 sso_ena               : 1;
--	u64 xoff                  : 1;
--	u64 cq_ena                : 1;
--	u64 smq                   : 9;
--#else
- 	u64 smq                   : 9;
- 	u64 cq_ena                : 1;
- 	u64 xoff                  : 1;
-@@ -742,37 +601,12 @@ struct nix_sq_ctx_s {
- 	u64 smq_rr_quantum        : 24;
- 	u64 default_chan          : 12;
- 	u64 sqb_count             : 16;
--#endif
--#if defined(__BIG_ENDIAN_BITFIELD)  /* W2 */
--	u64 rsvd_191              : 1;
--	u64 sqe_stype             : 2;
--	u64 sq_int_ena            : 8;
--	u64 sq_int                : 8;
--	u64 sqb_aura              : 20;
--	u64 smq_rr_count          : 25;
--#else
- 	u64 smq_rr_count          : 25;
- 	u64 sqb_aura              : 20;
- 	u64 sq_int                : 8;
- 	u64 sq_int_ena            : 8;
- 	u64 sqe_stype             : 2;
- 	u64 rsvd_191              : 1;
--#endif
--#if defined(__BIG_ENDIAN_BITFIELD)  /* W3 */
--	u64 rsvd_255_253          : 3;
--	u64 smq_next_sq_vld       : 1;
--	u64 smq_pend              : 1;
--	u64 smenq_next_sqb_vld    : 1;
--	u64 head_offset           : 6;
--	u64 smenq_offset          : 6;
--	u64 tail_offset           : 6;
--	u64 smq_lso_segnum        : 8;
--	u64 smq_next_sq           : 20;
--	u64 mnq_dis               : 1;
--	u64 lmt_dis               : 1;
--	u64 cq_limit              : 8;
--	u64 max_sqe_size          : 2;
--#else
- 	u64 max_sqe_size          : 2;
- 	u64 cq_limit              : 8;
- 	u64 lmt_dis               : 1;
-@@ -786,23 +620,11 @@ struct nix_sq_ctx_s {
- 	u64 smq_pend              : 1;
- 	u64 smq_next_sq_vld       : 1;
- 	u64 rsvd_255_253          : 3;
--#endif
- 	u64 next_sqb              : 64;/* W4 */
- 	u64 tail_sqb              : 64;/* W5 */
- 	u64 smenq_sqb             : 64;/* W6 */
- 	u64 smenq_next_sqb        : 64;/* W7 */
- 	u64 head_sqb              : 64;/* W8 */
--#if defined(__BIG_ENDIAN_BITFIELD)  /* W9 */
--	u64 rsvd_639_630          : 10;
--	u64 vfi_lso_vld           : 1;
--	u64 vfi_lso_vlan1_ins_ena : 1;
--	u64 vfi_lso_vlan0_ins_ena : 1;
--	u64 vfi_lso_mps           : 14;
--	u64 vfi_lso_sb            : 8;
--	u64 vfi_lso_sizem1        : 3;
--	u64 vfi_lso_total         : 18;
--	u64 rsvd_583_576          : 8;
--#else
- 	u64 rsvd_583_576          : 8;
- 	u64 vfi_lso_total         : 18;
- 	u64 vfi_lso_sizem1        : 3;
-@@ -812,68 +634,28 @@ struct nix_sq_ctx_s {
- 	u64 vfi_lso_vlan1_ins_ena : 1;
- 	u64 vfi_lso_vld           : 1;
- 	u64 rsvd_639_630          : 10;
--#endif
--#if defined(__BIG_ENDIAN_BITFIELD) /* W10 */
--	u64 rsvd_703_658          : 46;
--	u64 scm_lso_rem           : 18;
--#else
- 	u64 scm_lso_rem           : 18;
- 	u64 rsvd_703_658          : 46;
--#endif
--#if defined(__BIG_ENDIAN_BITFIELD) /* W11 */
--	u64 rsvd_767_752          : 16;
--	u64 octs                  : 48;
--#else
- 	u64 octs                  : 48;
- 	u64 rsvd_767_752          : 16;
--#endif
--#if defined(__BIG_ENDIAN_BITFIELD) /* W12 */
--	u64 rsvd_831_816          : 16;
--	u64 pkts                  : 48;
--#else
- 	u64 pkts                  : 48;
- 	u64 rsvd_831_816          : 16;
--#endif
- 	u64 rsvd_895_832          : 64;/* W13 */
--#if defined(__BIG_ENDIAN_BITFIELD) /* W14 */
--	u64 rsvd_959_944          : 16;
--	u64 dropped_octs          : 48;
--#else
- 	u64 dropped_octs          : 48;
- 	u64 rsvd_959_944          : 16;
--#endif
--#if defined(__BIG_ENDIAN_BITFIELD) /* W15 */
--	u64 rsvd_1023_1008        : 16;
--	u64 dropped_pkts          : 48;
--#else
- 	u64 dropped_pkts          : 48;
- 	u64 rsvd_1023_1008        : 16;
--#endif
- };
++	if (!cgx_get_cgxcnt_max())
++		return;
++
+ 	rvu->rvu_dbg.cgx_root = debugfs_create_dir("cgx", rvu->rvu_dbg.root);
  
- /* NIX Receive side scaling entry structure*/
- struct nix_rsse_s {
--#if defined(__BIG_ENDIAN_BITFIELD)
--	uint32_t reserved_20_31		: 12;
--	uint32_t rq			: 20;
--#else
- 	uint32_t rq			: 20;
- 	uint32_t reserved_20_31		: 12;
+ 	for (i = 0; i < cgx_get_cgxcnt_max(); i++) {
+@@ -2128,9 +2293,17 @@ static void rvu_dbg_cpt_init(struct rvu *rvu, int blkaddr)
+ 			    &rvu_dbg_cpt_err_info_fops);
+ }
  
--#endif
- };
++static const char *rvu_get_dbg_dir_name(struct rvu *rvu)
++{
++	if (!is_rvu_otx2(rvu))
++		return "cn10k";
++	else
++		return "octeontx2";
++}
++
+ void rvu_dbg_init(struct rvu *rvu)
+ {
+-	rvu->rvu_dbg.root = debugfs_create_dir(DEBUGFS_DIR_NAME, NULL);
++	rvu->rvu_dbg.root = debugfs_create_dir(rvu_get_dbg_dir_name(rvu), NULL);
  
- /* NIX receive multicast/mirror entry structure */
- struct nix_rx_mce_s {
--#if defined(__BIG_ENDIAN_BITFIELD)  /* W0 */
--	uint64_t next       : 16;
--	uint64_t pf_func    : 16;
--	uint64_t rsvd_31_24 : 8;
--	uint64_t index      : 20;
--	uint64_t eol        : 1;
--	uint64_t rsvd_2     : 1;
--	uint64_t op         : 2;
--#else
- 	uint64_t op         : 2;
- 	uint64_t rsvd_2     : 1;
- 	uint64_t eol        : 1;
-@@ -881,7 +663,6 @@ struct nix_rx_mce_s {
- 	uint64_t rsvd_31_24 : 8;
- 	uint64_t pf_func    : 16;
- 	uint64_t next       : 16;
--#endif
- };
- 
- enum nix_lsoalg {
-@@ -900,15 +681,6 @@ enum nix_txlayer {
- };
- 
- struct nix_lso_format {
--#if defined(__BIG_ENDIAN_BITFIELD)
--	u64 rsvd_19_63		: 45;
--	u64 alg			: 3;
--	u64 rsvd_14_15		: 2;
--	u64 sizem1		: 2;
--	u64 rsvd_10_11		: 2;
--	u64 layer		: 2;
--	u64 offset		: 8;
--#else
- 	u64 offset		: 8;
- 	u64 layer		: 2;
- 	u64 rsvd_10_11		: 2;
-@@ -916,24 +688,9 @@ struct nix_lso_format {
- 	u64 rsvd_14_15		: 2;
- 	u64 alg			: 3;
- 	u64 rsvd_19_63		: 45;
--#endif
- };
- 
- struct nix_rx_flowkey_alg {
--#if defined(__BIG_ENDIAN_BITFIELD)
--	u64 reserved_35_63	:29;
--	u64 ltype_match		:4;
--	u64 ltype_mask		:4;
--	u64 sel_chan		:1;
--	u64 ena			:1;
--	u64 reserved_24_24	:1;
--	u64 lid			:3;
--	u64 bytesm1		:5;
--	u64 hdr_offset		:8;
--	u64 fn_mask		:1;
--	u64 ln_mask		:1;
--	u64 key_offset		:6;
--#else
- 	u64 key_offset		:6;
- 	u64 ln_mask		:1;
- 	u64 fn_mask		:1;
-@@ -946,7 +703,6 @@ struct nix_rx_flowkey_alg {
- 	u64 ltype_mask		:4;
- 	u64 ltype_match		:4;
- 	u64 reserved_35_63	:29;
--#endif
- };
- 
- /* NIX VTAG size */
+ 	debugfs_create_file("rsrc_alloc", 0444, rvu->rvu_dbg.root, rvu,
+ 			    &rvu_dbg_rsrc_status_fops);
 -- 
 2.7.4
 
