@@ -2,148 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 558F430F30F
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 13:22:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0949B30F353
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 13:45:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235869AbhBDMUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 07:20:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54584 "EHLO
+        id S236125AbhBDMnf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 07:43:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235635AbhBDMUI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 07:20:08 -0500
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F24C061573;
-        Thu,  4 Feb 2021 04:19:28 -0800 (PST)
-Received: by mail-lj1-x22a.google.com with SMTP id e18so3089884lja.12;
-        Thu, 04 Feb 2021 04:19:28 -0800 (PST)
+        with ESMTP id S235973AbhBDMne (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 07:43:34 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D943DC0613D6
+        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 04:42:53 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id u14so3354690wri.3
+        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 04:42:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=jCgIHZMvz7BabuespFqm7XJATQtqJEhK3Ep4Ww3/xz4=;
-        b=ePQcpJWRFb98jGm8CkWhhudSKCHRlub5dAJlSxl5zLGntR/7ASSoZTgYEwZpTMzguM
-         uvLzFyjcD7qmWztUeBl9FVIHufL/K46hxxussbWfpw2ZdoHDZ6v0zP2mQLWlhfTxemxc
-         Ppn4OmQTTQcdt+KD+Pv72osPrQPEQjbY+5Eu7K+lYuXJPVVegJZcnestmCpRqL6OrbbH
-         EXwpj8ZfHI4QnVbnaYEhVpqPcuEk+9iRMkXqweRHireuQikzr6+6mBYe/9EgLVCMMk9a
-         4nrLof1fp5n2oEHbqHZkOfJO8D87qpsX1Cf1wDbNc2BkVjnhfHOIVwRc/ZIxrZWzA5VG
-         OubQ==
+        d=monstr-eu.20150623.gappssmtp.com; s=20150623;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Sf0cEHgoBjUUrSmCunlnTaOhu9gA+20DyV3BPL25Fks=;
+        b=CL6P0Yz49baJM/ZPXSPCSKTQ0dQoM9DUs/ZLFFBLST1y3bly48kVvNhc1Vodu6yVuN
+         dokdIZYyDV1Zlx2rTlzw7kbDt7ewU5+NZfN82391SzjhSh+Ko+2nql0fQKYS0H9oPV88
+         bUBJuGgDU2AOMVKQcXAwmDk+q8NcMRdOXZFXW5YJ3hrolxcm6BtrH9WX3ikrxCku0lPp
+         W7csdecqx3qZjQBDv7sJauhIhhWBsGTYUzY/xxh7Bon5GlvWsBUsJe3L4aUsZMu6Vh24
+         I1XEOePCh7jfdb/tgimGwrl4CTVus+bnDIGWZ/ROozjC0YS5hYff2AlKhVrqOhxopbwr
+         L+QA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=jCgIHZMvz7BabuespFqm7XJATQtqJEhK3Ep4Ww3/xz4=;
-        b=De7H3mBVaHNULW/YTfent4gyCmtH8MVFi37J2NBMfxwArKfnehF2R7Hw1FNdYLouxw
-         Qdtp3+KFPNTq0Ekm4zd5nUKcxRIZyBvb3Mtpd+P22FE8sidTllJU+lE02x67JfGrQS0L
-         +Livw8fKFElPdzuQF3fhsPS0iZfk//5ILOyV9v7Bd0YgkmC42T5d2amNbt/jutm/oe4Y
-         UclK7hS5CrmMJLz5UuF8/c36HEljtxAgX9EPQFMA2ioQP7dIa1zr79AI1J/rQzNgH8n4
-         GdmB3mM1CzDCJZLVl82eaxlBu9GjIwNC8Zh9QMVg6B5sVX/U3QD/OnswPHQYFWzFgUyh
-         B+CA==
-X-Gm-Message-State: AOAM531ezAA+o89cu3gGviZ7k9EDurXE4D1usomQn9seWnDYR3Qui9rS
-        BsiwsowoN/FogfnryQECd6NjmSiwoQEBmsoe
-X-Google-Smtp-Source: ABdhPJxkeYKCXtQ5qswzfNkcIWxobAKASiWtVRtjcUtBU1A9pNF27ijzUZip7WXyOrQbWihADlhVvg==
-X-Received: by 2002:a05:651c:512:: with SMTP id o18mr4669750ljp.388.1612441165091;
-        Thu, 04 Feb 2021 04:19:25 -0800 (PST)
-Received: from wbg (h-98-128-228-165.NA.cust.bahnhof.se. [98.128.228.165])
-        by smtp.gmail.com with ESMTPSA id r5sm647699ljc.81.2021.02.04.04.19.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Feb 2021 04:19:24 -0800 (PST)
-From:   Joachim Wiberg <troglobit@gmail.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Brian Vazquez <brianvv@google.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=Sf0cEHgoBjUUrSmCunlnTaOhu9gA+20DyV3BPL25Fks=;
+        b=c5pN64gRC3C4PvFWq1WJUKvvpl1Czl2jW0VhDePg16qatFZ/LRnUazWpPFvnipOYsE
+         20qmxNX1uOwb4j3oBss6V/EeJvwKjsr1f5HerNxu7qJblPhhfLCKdrfwRwQUVmAOhEkY
+         27DZP+6uFjLbBR5S5fB8DI0TUpYAB5x7VdUvlcIGh2RKKvkqvbgHrBdINTiFHNi227/J
+         S7KhBf0Be4vqahtCQptlWU4fSZkXrhtvNnF/av1J5FHeQxsY1pKavWJLDImbikdVU9hk
+         V5T0Ux0p0ZnomLTSz8eDn8u05DJY5EyU4S3JiauHhT7AwKD6eR13dYinOC1TvBgT1H1l
+         P7sg==
+X-Gm-Message-State: AOAM532rJNzXe2XaPlB7paImolC2eJ+/nUTDFnUlUawBpEIt6rleztFM
+        ij2wyA/vkuUyds2pKvE10llbTA==
+X-Google-Smtp-Source: ABdhPJwWFBGTfCzIYxIPWUtexWvAA0VI/2/svkzdxTyaMfgZnW0iMb8TFf7+LLz9Xunn4f+HSOji/g==
+X-Received: by 2002:a5d:6510:: with SMTP id x16mr8884764wru.175.1612442572651;
+        Thu, 04 Feb 2021 04:42:52 -0800 (PST)
+Received: from localhost (nat-35.starnet.cz. [178.255.168.35])
+        by smtp.gmail.com with ESMTPSA id r25sm8546181wrr.64.2021.02.04.04.42.51
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 04 Feb 2021 04:42:52 -0800 (PST)
+Sender: Michal Simek <monstr@monstr.eu>
+From:   Michal Simek <michal.simek@xilinx.com>
+To:     linux-kernel@vger.kernel.org, monstr@monstr.eu,
+        michal.simek@xilinx.com, git@xilinx.com
+Cc:     Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the net-next tree
-In-Reply-To: <20210204203834.4cc1a307@canb.auug.org.au>
-References: <20210204123331.21e4598b@canb.auug.org.au> <CAMzD94RaWQM3J8LctNE_C1fHKYCW8WkbVMda4UV95YbYskQXZw@mail.gmail.com> <20210204203834.4cc1a307@canb.auug.org.au>
-Date:   Thu, 04 Feb 2021 13:19:23 +0100
-Message-ID: <87eehwyqic.fsf@gmail.com>
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-arm-kernel@lists.infradead.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH] can: xilinx_can: Simplify code by using dev_err_probe()
+Date:   Thu,  4 Feb 2021 13:42:48 +0100
+Message-Id: <91af0945ed7397b08f1af0c829450620bd92b804.1612442564.git.michal.simek@xilinx.com>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi everyone,
+Use already prepared dev_err_probe() introduced by commit a787e5400a1c
+("driver core: add device probe log helper").
+It simplifies EPROBE_DEFER handling.
 
-On Thu, Feb 04, 2021 at 20:38, Stephen Rothwell <sfr@canb.auug.org.au> wrote:
-> On Wed, 3 Feb 2021 19:52:08 -0800 Brian Vazquez <brianvv@google.com> wrote:
->> Hi Stephen, thanks for the report. I'm having trouble trying to
->> compile for ppc, but I believe this should fix the problem, could you
->> test this patch, please? Thanks!
-> That fixed it, thanks (though the patch was badly wrapped and
-> whitespace damaged :-))
+Also unify message format for similar error cases.
 
-can confirm, that patch fixes building from latest net-next also for me.
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+---
 
-Here's an updated version.
+ drivers/net/can/xilinx_can.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-Regards
- /Joachim
+diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
+index 37fa19c62d73..3b883e607d8b 100644
+--- a/drivers/net/can/xilinx_can.c
++++ b/drivers/net/can/xilinx_can.c
+@@ -1772,17 +1772,15 @@ static int xcan_probe(struct platform_device *pdev)
+ 	/* Getting the CAN can_clk info */
+ 	priv->can_clk = devm_clk_get(&pdev->dev, "can_clk");
+ 	if (IS_ERR(priv->can_clk)) {
+-		if (PTR_ERR(priv->can_clk) != -EPROBE_DEFER)
+-			dev_err(&pdev->dev, "Device clock not found.\n");
+-		ret = PTR_ERR(priv->can_clk);
++		ret = dev_err_probe(&pdev->dev, PTR_ERR(priv->can_clk),
++				    "device clock not found\n");
+ 		goto err_free;
+ 	}
+ 
+ 	priv->bus_clk = devm_clk_get(&pdev->dev, devtype->bus_clk_name);
+ 	if (IS_ERR(priv->bus_clk)) {
+-		if (PTR_ERR(priv->bus_clk) != -EPROBE_DEFER)
+-			dev_err(&pdev->dev, "bus clock not found\n");
+-		ret = PTR_ERR(priv->bus_clk);
++		ret = dev_err_probe(&pdev->dev, PTR_ERR(priv->bus_clk),
++				    "bus clock not found\n");
+ 		goto err_free;
+ 	}
+ 
+-- 
+2.30.0
 
-diff --git a/include/linux/indirect_call_wrapper.h b/include/linux/indirect_call_wrapper.h
-index 54c02c84906a..551e515b405b 100644
---- a/include/linux/indirect_call_wrapper.h
-+++ b/include/linux/indirect_call_wrapper.h
-@@ -36,6 +36,7 @@
- 
- #define INDIRECT_CALLABLE_DECLARE(f)	f
- #define INDIRECT_CALLABLE_SCOPE
-+#define INDIRECT_CALLABLE_EXPORT(f)    EXPORT_SYMBOL(f)
- 
- #else
- #define INDIRECT_CALL_1(f, f1, ...) f(__VA_ARGS__)
-@@ -44,6 +45,7 @@
- #define INDIRECT_CALL_4(f, f4, f3, f2, f1, ...) f(__VA_ARGS__)
- #define INDIRECT_CALLABLE_DECLARE(f)
- #define INDIRECT_CALLABLE_SCOPE		static
-+#define INDIRECT_CALLABLE_EXPORT(f)
- #endif
- 
- /*
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index 9e6537709794..9dd8ff3887b7 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -1206,7 +1206,7 @@ INDIRECT_CALLABLE_SCOPE struct dst_entry *ipv4_dst_check(struct dst_entry *dst,
- 		return NULL;
- 	return dst;
- }
--EXPORT_SYMBOL(ipv4_dst_check);
-+INDIRECT_CALLABLE_EXPORT(ipv4_dst_check);
- 
- static void ipv4_send_dest_unreach(struct sk_buff *skb)
- {
-@@ -1337,7 +1337,7 @@ INDIRECT_CALLABLE_SCOPE unsigned int ipv4_mtu(const struct dst_entry *dst)
- 
- 	return mtu - lwtunnel_headroom(dst->lwtstate, mtu);
- }
--EXPORT_SYMBOL(ipv4_mtu);
-+INDIRECT_CALLABLE_EXPORT(ipv4_mtu);
- 
- static void ip_del_fnhe(struct fib_nh_common *nhc, __be32 daddr)
- {
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 8d9e053dc071..f0e9b07b92b7 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -2644,7 +2644,7 @@ INDIRECT_CALLABLE_SCOPE struct dst_entry *ip6_dst_check(struct dst_entry *dst,
- 
- 	return dst_ret;
- }
--EXPORT_SYMBOL(ip6_dst_check);
-+INDIRECT_CALLABLE_EXPORT(ip6_dst_check);
- 
- static struct dst_entry *ip6_negative_advice(struct dst_entry *dst)
- {
-@@ -3115,7 +3115,7 @@ INDIRECT_CALLABLE_SCOPE unsigned int ip6_mtu(const struct dst_entry *dst)
- 
- 	return mtu - lwtunnel_headroom(dst->lwtstate, mtu);
- }
--EXPORT_SYMBOL(ip6_mtu);
-+INDIRECT_CALLABLE_EXPORT(ip6_mtu);
- 
- /* MTU selection:
-  * 1. mtu on route is locked - use it
