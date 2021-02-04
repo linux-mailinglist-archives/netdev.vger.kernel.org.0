@@ -2,99 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5D7730EA09
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 03:18:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E54D30EA14
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 03:22:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233305AbhBDCQm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 21:16:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38422 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231550AbhBDCQm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 21:16:42 -0500
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED8FCC061573
-        for <netdev@vger.kernel.org>; Wed,  3 Feb 2021 18:16:01 -0800 (PST)
-Received: by mail-oi1-x22a.google.com with SMTP id n7so2144882oic.11
-        for <netdev@vger.kernel.org>; Wed, 03 Feb 2021 18:16:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=AJESvYOZ2NW9Jg3gzBgEsYBAcWSJCXJPCY8AwxXwGZc=;
-        b=jdiubEmH7WCocufS9KTHr6knhzJlT2KIer2D5AViiOgTAXf8fWKhV34AQYJdt4jyo9
-         PTq38ByTdWXfxKT5aM/sdO2RNea7jhbBOfuym5+HCs+bnYy8NFPTsA1DxKZzQ57gDY4n
-         wzsL5P//RCWSPEYDAflhqtCT+hbTWz5SqayIlEy224ZX7v5ufRDq2J8fo+vffjMwE8Mo
-         qSaVRAzHmB6WL6+HSGoeDErsDzwN6otiPoJYkU0EKqL+sbYbg21IXlePP7XzZFclC4TJ
-         ZIWj9sNTsZC4LUuZpv3+0SeXc+ZKi47yIaUWlpaGvOI2FHWNjmy3fLfkDmCE7qhr+CBl
-         jO/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=AJESvYOZ2NW9Jg3gzBgEsYBAcWSJCXJPCY8AwxXwGZc=;
-        b=iI+50TBmbd+BFoh16TTjMpHwvi3YDlbdf5epOKyqkckan9db6Q7WktgEFhgyw5lwUb
-         7N6tclTFGGfot3YR/GlZdjCAuFZbLLikDAivPFZRX44JVg6Xr4hH52moWXZLRpU7xADo
-         njyg+VXwlKH1h4Qzzb5Q5wdEDkfAld6fu/k4exPPCsV1D0UB7tmDC8yPN5r0vLx5efaC
-         GnX5+dfDarG7uCNpxr0gM9mlkXNDBpfjNteFMTW6eeKX5bczANX98mAQTZbXaWZaei8S
-         n0jnJng908svn8mejuIgO3i3tWk3N3JgPNAKB19n0SO6Vk5YH6PLyZkZkfq6Qr881rDy
-         5VhA==
-X-Gm-Message-State: AOAM533hwuKNIbm+BfbcrlMNReNpBDkvLEeipQy34mauej1LSxp+TF3e
-        gS1Ad2zYcnIFEXGll07OPiI=
-X-Google-Smtp-Source: ABdhPJzlxEa0DT/A+Ii5p5r4bRC6xPUF3uZ0V4S/KLe0J5qCQzy7vkEvoGYtz6F75BqkbxQOhiplKg==
-X-Received: by 2002:a05:6808:f09:: with SMTP id m9mr3896120oiw.92.1612404961481;
-        Wed, 03 Feb 2021 18:16:01 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.50])
-        by smtp.googlemail.com with ESMTPSA id f26sm826477otq.80.2021.02.03.18.16.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Feb 2021 18:16:00 -0800 (PST)
-Subject: Re: [PATCH net-next v2] netlink: add tracepoint at NL_SET_ERR_MSG
-To:     Marcelo Ricardo Leitner <mleitner@redhat.com>,
-        netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-References: <4546b63e67b2989789d146498b13cc09e1fdc543.1612403190.git.marcelo.leitner@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <be290c78-1929-9d33-d236-d5d202613522@gmail.com>
-Date:   Wed, 3 Feb 2021 19:15:57 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.7.0
+        id S234493AbhBDCVr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 21:21:47 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48760 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234145AbhBDCVp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Feb 2021 21:21:45 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A9A4464F51;
+        Thu,  4 Feb 2021 02:21:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612405264;
+        bh=z22fX17nBA76xdiYJKWJq/H/Bz0qshzVyPM92ooMce0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Pfm9CyYyYWaYdEYYh20CxqlYeJu0d14qNT1y/zsxFd2FCw3Tszozv06Dwq7ijY+A+
+         dBZjQ64UF1VJwi5amy6W9mn3lFp/uU4YgLe83IaUVDS0VBYz30whSGtoakrKcqNJWm
+         oigRYEqG3nsRvLPibnMVUBR/T8Wekghdh7mfCaiQp3CV1UNHoGMkhGyBR/26YO4cQG
+         6Bs++V87vvjO3iV6rePnJtaGTP3HNSddTRJWV8ZyX8dSjpGyThgVNbtyO9Yqm0mpz2
+         0Lhgfp9GUZ3ORV73zQHgtNsMCCX0rqbtAnDuiJEpICc4ESP9TcmL9wkZ9Bab/6US2w
+         rRCnMX2kh6DeA==
+Date:   Wed, 3 Feb 2021 18:21:03 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Chris Mi <cmi@nvidia.com>
+Cc:     netdev@vger.kernel.org, idosch@nvidia.com,
+        Yotam Gigi <yotam.gi@gmail.com>
+Subject: Re: [PATCH net] net: psample: Fix the netlink skb length
+Message-ID: <20210203182103.0f8350a9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210203031028.171318-1-cmi@nvidia.com>
+References: <20210203031028.171318-1-cmi@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <4546b63e67b2989789d146498b13cc09e1fdc543.1612403190.git.marcelo.leitner@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/3/21 6:48 PM, Marcelo Ricardo Leitner wrote:
-> From: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-> 
-> Often userspace won't request the extack information, or they don't log it
-> because of log level or so, and even when they do, sometimes it's not
-> enough to know exactly what caused the error.
-> 
-> Netlink extack is the standard way of reporting erros with descriptive
-> error messages. With a trace point on it, we then can know exactly where
-> the error happened, regardless of userspace app. Also, we can even see if
-> the err msg was overwritten.
-> 
-> The wrapper do_trace_netlink_extack() is because trace points shouldn't be
-> called from .h files, as trace points are not that small, and the function
-> call to do_trace_netlink_extack() on the macros is not protected by
-> tracepoint_enabled() because the macros are called from modules, and this
-> would require exporting some trace structs. As this is error path, it's
-> better to export just the wrapper instead.
-> 
-> v2: removed leftover tracepoint declaration
-> Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-> ---
->  include/linux/netlink.h        |  6 ++++++
->  include/trace/events/netlink.h | 29 +++++++++++++++++++++++++++++
->  net/netlink/af_netlink.c       |  8 ++++++++
->  3 files changed, 43 insertions(+)
->  create mode 100644 include/trace/events/netlink.h
-> 
+On Wed,  3 Feb 2021 11:10:28 +0800 Chris Mi wrote:
+> Currently, the netlink skb length only includes metadata and data
+> length. It doesn't include the psample generic netlink header length.
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+But what's the bug? Did you see oversized messages on the socket? Did
+one of the nla_put() fail?
+
+> Fixes: 6ae0a6286171 ("net: Introduce psample, a new genetlink channel for packet sampling")
+> CC: Yotam Gigi <yotam.gi@gmail.com>
+> Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+> Signed-off-by: Chris Mi <cmi@nvidia.com>
+> ---
+>  net/psample/psample.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
+> 
+> diff --git a/net/psample/psample.c b/net/psample/psample.c
+> index 33e238c965bd..807d75f5a40f 100644
+> --- a/net/psample/psample.c
+> +++ b/net/psample/psample.c
+> @@ -363,6 +363,7 @@ void psample_sample_packet(struct psample_group *group, struct sk_buff *skb,
+>  	struct ip_tunnel_info *tun_info;
+>  #endif
+>  	struct sk_buff *nl_skb;
+> +	int header_len;
+>  	int data_len;
+>  	int meta_len;
+>  	void *data;
+> @@ -381,12 +382,13 @@ void psample_sample_packet(struct psample_group *group, struct sk_buff *skb,
+>  		meta_len += psample_tunnel_meta_len(tun_info);
+>  #endif
+>  
+> +	/* psample generic netlink header size */
+> +	header_len = nlmsg_total_size(GENL_HDRLEN + psample_nl_family.hdrsize);
+
+GENL_HDRLEN is already included by genlmsg_new() and fam->hdrsize is 0
+/ uninitialized for psample_nl_family. What am I missing? Ido?
+
+>  	data_len = min(skb->len, trunc_size);
+> -	if (meta_len + nla_total_size(data_len) > PSAMPLE_MAX_PACKET_SIZE)
+> -		data_len = PSAMPLE_MAX_PACKET_SIZE - meta_len - NLA_HDRLEN
+> +	if (header_len + meta_len + nla_total_size(data_len) > PSAMPLE_MAX_PACKET_SIZE)
+> +		data_len = PSAMPLE_MAX_PACKET_SIZE - header_len - meta_len - NLA_HDRLEN
+>  			    - NLA_ALIGNTO;
+> -
+> -	nl_skb = genlmsg_new(meta_len + nla_total_size(data_len), GFP_ATOMIC);
+> +	nl_skb = genlmsg_new(header_len + meta_len + nla_total_size(data_len), GFP_ATOMIC);
+>  	if (unlikely(!nl_skb))
+>  		return;
+>  
+
