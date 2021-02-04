@@ -2,45 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5687430E9FB
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 03:11:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5D7730EA09
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 03:18:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232810AbhBDCKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 21:10:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37150 "EHLO
+        id S233305AbhBDCQm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 21:16:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231550AbhBDCKo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 21:10:44 -0500
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AD4CC0613D6;
-        Wed,  3 Feb 2021 18:10:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:Subject:Sender:
-        Reply-To:Cc:Content-ID:Content-Description;
-        bh=qpZXbW6EJfxgDufWrNMMYF+eNpvsq+lvzqFizGqVhaw=; b=LYnWJpaHdQRlqryZJtk5hjlnWM
-        zebhtvBAVeIQ/8eqLc7/AgEYRe/OW12kGVqAjqPnaPvYBbY99KKGOAhcrLG4PFgUwFg3R7ZhaHgIB
-        CRw00VCXz9AYn3+bZMnlnMcojekI3kT2k+85AWColBGffhddK8cq4GASCSTcD1NcrE3j84+oGgH4+
-        ZjxaZO5RYQ8Q0967lwEi2FCUu7DbbN1vygKurEmLt0pVvk9jlEIGZitonB1XhBHdKzIv/EHdflL8I
-        K6LMwuEGls8qgsyaY0UWKoo2tKKs12eFlfq1UHURpT1xH+GniYBzH3Qcdh2urbpRxJAp5VFVG1nqg
-        FVO2lRrw==;
-Received: from [2601:1c0:6280:3f0::aec2]
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1l7U5p-0002nc-Ap; Thu, 04 Feb 2021 02:10:01 +0000
-Subject: Re: [PATCH V2] drivers: net: ethernet: i825xx: Fix couple of
- spellings and get rid of blank lines too in the file ether1.c
-To:     Bhaskar Chowdhury <unixbhaskar@gmail.com>, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210204011821.18356-1-unixbhaskar@gmail.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <bea4f9c4-b1bb-eab6-3125-bfe69938fa5b@infradead.org>
-Date:   Wed, 3 Feb 2021 18:09:54 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        with ESMTP id S231550AbhBDCQm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 21:16:42 -0500
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED8FCC061573
+        for <netdev@vger.kernel.org>; Wed,  3 Feb 2021 18:16:01 -0800 (PST)
+Received: by mail-oi1-x22a.google.com with SMTP id n7so2144882oic.11
+        for <netdev@vger.kernel.org>; Wed, 03 Feb 2021 18:16:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=AJESvYOZ2NW9Jg3gzBgEsYBAcWSJCXJPCY8AwxXwGZc=;
+        b=jdiubEmH7WCocufS9KTHr6knhzJlT2KIer2D5AViiOgTAXf8fWKhV34AQYJdt4jyo9
+         PTq38ByTdWXfxKT5aM/sdO2RNea7jhbBOfuym5+HCs+bnYy8NFPTsA1DxKZzQ57gDY4n
+         wzsL5P//RCWSPEYDAflhqtCT+hbTWz5SqayIlEy224ZX7v5ufRDq2J8fo+vffjMwE8Mo
+         qSaVRAzHmB6WL6+HSGoeDErsDzwN6otiPoJYkU0EKqL+sbYbg21IXlePP7XzZFclC4TJ
+         ZIWj9sNTsZC4LUuZpv3+0SeXc+ZKi47yIaUWlpaGvOI2FHWNjmy3fLfkDmCE7qhr+CBl
+         jO/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=AJESvYOZ2NW9Jg3gzBgEsYBAcWSJCXJPCY8AwxXwGZc=;
+        b=iI+50TBmbd+BFoh16TTjMpHwvi3YDlbdf5epOKyqkckan9db6Q7WktgEFhgyw5lwUb
+         7N6tclTFGGfot3YR/GlZdjCAuFZbLLikDAivPFZRX44JVg6Xr4hH52moWXZLRpU7xADo
+         njyg+VXwlKH1h4Qzzb5Q5wdEDkfAld6fu/k4exPPCsV1D0UB7tmDC8yPN5r0vLx5efaC
+         GnX5+dfDarG7uCNpxr0gM9mlkXNDBpfjNteFMTW6eeKX5bczANX98mAQTZbXaWZaei8S
+         n0jnJng908svn8mejuIgO3i3tWk3N3JgPNAKB19n0SO6Vk5YH6PLyZkZkfq6Qr881rDy
+         5VhA==
+X-Gm-Message-State: AOAM533hwuKNIbm+BfbcrlMNReNpBDkvLEeipQy34mauej1LSxp+TF3e
+        gS1Ad2zYcnIFEXGll07OPiI=
+X-Google-Smtp-Source: ABdhPJzlxEa0DT/A+Ii5p5r4bRC6xPUF3uZ0V4S/KLe0J5qCQzy7vkEvoGYtz6F75BqkbxQOhiplKg==
+X-Received: by 2002:a05:6808:f09:: with SMTP id m9mr3896120oiw.92.1612404961481;
+        Wed, 03 Feb 2021 18:16:01 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.50])
+        by smtp.googlemail.com with ESMTPSA id f26sm826477otq.80.2021.02.03.18.16.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 03 Feb 2021 18:16:00 -0800 (PST)
+Subject: Re: [PATCH net-next v2] netlink: add tracepoint at NL_SET_ERR_MSG
+To:     Marcelo Ricardo Leitner <mleitner@redhat.com>,
+        netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+References: <4546b63e67b2989789d146498b13cc09e1fdc543.1612403190.git.marcelo.leitner@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <be290c78-1929-9d33-d236-d5d202613522@gmail.com>
+Date:   Wed, 3 Feb 2021 19:15:57 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.7.0
 MIME-Version: 1.0
-In-Reply-To: <20210204011821.18356-1-unixbhaskar@gmail.com>
+In-Reply-To: <4546b63e67b2989789d146498b13cc09e1fdc543.1612403190.git.marcelo.leitner@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -48,42 +68,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/3/21 5:18 PM, Bhaskar Chowdhury wrote:
+On 2/3/21 6:48 PM, Marcelo Ricardo Leitner wrote:
+> From: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 > 
-> s/initialsation/initialisation/
-> s/specifiing/specifying/
+> Often userspace won't request the extack information, or they don't log it
+> because of log level or so, and even when they do, sometimes it's not
+> enough to know exactly what caused the error.
 > 
-> Plus get rid of few blank lines.
+> Netlink extack is the standard way of reporting erros with descriptive
+> error messages. With a trace point on it, we then can know exactly where
+> the error happened, regardless of userspace app. Also, we can even see if
+> the err msg was overwritten.
 > 
-> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+> The wrapper do_trace_netlink_extack() is because trace points shouldn't be
+> called from .h files, as trace points are not that small, and the function
+> call to do_trace_netlink_extack() on the macros is not protected by
+> tracepoint_enabled() because the macros are called from modules, and this
+> would require exporting some trace structs. As this is error path, it's
+> better to export just the wrapper instead.
+> 
+> v2: removed leftover tracepoint declaration
+> Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 > ---
-> Changes from V1:
->    Fix typo in the subject line
->    Give explanation of all the changes in changelog text
+>  include/linux/netlink.h        |  6 ++++++
+>  include/trace/events/netlink.h | 29 +++++++++++++++++++++++++++++
+>  net/netlink/af_netlink.c       |  8 ++++++++
+>  3 files changed, 43 insertions(+)
+>  create mode 100644 include/trace/events/netlink.h
 > 
->  drivers/net/ethernet/i825xx/ether1.c | 9 +++------
->  1 file changed, 3 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/i825xx/ether1.c b/drivers/net/ethernet/i825xx/ether1.c
-> index a0bfb509e002..850ea32091ed 100644
-> --- a/drivers/net/ethernet/i825xx/ether1.c
-> +++ b/drivers/net/ethernet/i825xx/ether1.c
 
-a. don't delete the blank lines
-b. the change below is not described and does not change any whitespace AFAICT.
-   I.e., DDT [don't do that].
-
-> @@ -1047,7 +1044,7 @@ static void ether1_remove(struct expansion_card *ec)
->  {
->  	struct net_device *dev = ecard_get_drvdata(ec);
-> 
-> -	ecard_set_drvdata(ec, NULL);
-> +	ecard_set_drvdata(ec, NULL);
-> 
->  	unregister_netdev(dev);
->  	free_netdev(dev);
-
-
--- 
-~Randy
-
+Reviewed-by: David Ahern <dsahern@kernel.org>
