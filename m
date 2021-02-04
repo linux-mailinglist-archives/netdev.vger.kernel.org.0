@@ -2,74 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6483330E9A9
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 02:52:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B38230E9AB
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 02:52:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234132AbhBDBut (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 20:50:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50692 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233218AbhBDBur (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Feb 2021 20:50:47 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 595D964DA1;
-        Thu,  4 Feb 2021 01:50:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612403407;
-        bh=TbTgfsqOCGxCQ87GXfsQnv9W1EoaqxQn9wEPfmdCshQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=hgg1FHTBfaQhnwtJzo+LZAWdWsQDLHQsuOEeZmCN/030xj2QkgBUmKX9FZx7YaWew
-         bBzNKh7RTLiWPBvz4wcajCBZAVNkBPlvkzCsS6iat6jHCLDrZ2dUzA1VkN3E9SI2+e
-         FsMZQvSm6KTp6BQmhRv5AWQGo9MKdMSH36L37nyq0sJBWKaOqNspOkNfRvsgQo1SFD
-         K0Uzkdyp6CBQnIs+YtJ+KHIiTliI0kGPJRqehZkJkomMZY56xgBMlgdaEqH3onz/60
-         jGDSJPn3pS7Gk5SB4GUsUHqT0+KyrszIpCBfkeicqEAVoYCRT9ds4svpwUCnf+5XqI
-         OIhES4sgZ2d0w==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3E90D609EC;
-        Thu,  4 Feb 2021 01:50:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S234392AbhBDBwI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 20:52:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33158 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231259AbhBDBwH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 3 Feb 2021 20:52:07 -0500
+Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C113C0613D6
+        for <netdev@vger.kernel.org>; Wed,  3 Feb 2021 17:51:27 -0800 (PST)
+Received: by mail-qk1-x730.google.com with SMTP id a12so1887123qkh.10
+        for <netdev@vger.kernel.org>; Wed, 03 Feb 2021 17:51:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=pbFyeyTgMq/YfVxfYlhMlQPUwLskoiC4c9TMqZHDxPo=;
+        b=F1RgP3UXg8cX1ARBxMkssTInDHMJRhPPoK/5BNJ8GL6nlBwJ33bucbrExm1ytAtbGm
+         HbgxT5L/fIEsVhBw97S0p3GZZmeEO2XJ9BUbILKQ4DoLFeXP/ywx/uT57lpLO6wy32tE
+         KUKZJwdwrAtBBbTAMKC8oIoImmz1BRraHReMFmry0gU5bd6r8muOqDR2+cnXmair2ZtD
+         +jfR2t1rWO5IPVTCQwiiU1o10aVnWGHVdG/ucwSduBzyOfXxaHtYr0UebMIi4w+rufPx
+         7dHcwI6sijMXZv18hAOQV+kLRRLtxtxQbIzU49TK6PK5u6SZ8/4DH+q/E0UjLqcwNgxb
+         5Tgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=pbFyeyTgMq/YfVxfYlhMlQPUwLskoiC4c9TMqZHDxPo=;
+        b=LDt2WoGYju7QoRD4K/HqS8PV+SXCSTmStDVwVJg2ai0ryNtEI7pWUUzsTWZWfk64Lt
+         swehn8AqnxPPXR4OvCnKE4lgbYLYHl4WVtp4R6+dYJaNuFWNSBy3peZyRcZDFKEjY/Kr
+         q+NEd4NkcrqvzSX0784KctkEKQZ+Q9T7jsV6i11GIRmVcnd+D4yaehyxd+6zqc8P1JU6
+         uaJlRDEOVEC6SJwZdTq5yVUrIJ5VsSNQ+HgzA3ub6eMVo9OsBOJa4KAXBdu1SZb6B5k4
+         3140BR52xHUpfSE7PXaL8W437xwlGdiOGRqU1HOQqAqTw7HHuGu5kzNcAEU6VOFxnrgb
+         8/Yg==
+X-Gm-Message-State: AOAM530/Lz43Brsc2MS81nuDD0NpRJ8HglQlfeqONTHTytGhkloj0lpm
+        rpSjCMPWoLFDhqZIJFNrREI=
+X-Google-Smtp-Source: ABdhPJyeof5MJYvRQXWM/+A540ZBA1bgwwJy8qanmLjOw0tUezP/0kt5ym8eMpKagWtDQYM1Oo6Uow==
+X-Received: by 2002:a05:620a:5fa:: with SMTP id z26mr5566022qkg.108.1612403486518;
+        Wed, 03 Feb 2021 17:51:26 -0800 (PST)
+Received: from horizon.localdomain ([177.220.174.167])
+        by smtp.gmail.com with ESMTPSA id s129sm3625249qkh.37.2021.02.03.17.51.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Feb 2021 17:51:25 -0800 (PST)
+Received: by horizon.localdomain (Postfix, from userid 1000)
+        id 2FBAEC2CDA; Wed,  3 Feb 2021 22:51:22 -0300 (-03)
+Date:   Wed, 3 Feb 2021 22:51:22 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     David Ahern <dsahern@gmail.com>, Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next v2] netlink: add tracepoint at NL_SET_ERR_MSG
+Message-ID: <20210204015122.GN3288@horizon.localdomain>
+References: <4546b63e67b2989789d146498b13cc09e1fdc543.1612403190.git.marcelo.leitner@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2,net-next,0/3] Support for OcteonTX2 98xx CPT block.
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161240340725.20790.10609262359469267197.git-patchwork-notify@kernel.org>
-Date:   Thu, 04 Feb 2021 01:50:07 +0000
-References: <20210202152709.20450-1-schalla@marvell.com>
-In-Reply-To: <20210202152709.20450-1-schalla@marvell.com>
-To:     Srujana Challa <schalla@marvell.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        sgoutham@marvell.com, gakula@marvell.com, sbhatta@marvell.com,
-        schandran@marvell.com, pathreya@marvell.com, jerinj@marvell.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4546b63e67b2989789d146498b13cc09e1fdc543.1612403190.git.marcelo.leitner@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Tue, 2 Feb 2021 20:57:06 +0530 you wrote:
-> OcteonTX2 series of silicons have multiple variants, the
-> 98xx variant has two crypto (CPT) blocks to double the crypto
-> performance. This patchset adds support for new CPT block(CPT1).
+On Wed, Feb 03, 2021 at 10:48:16PM -0300, Marcelo Ricardo Leitner wrote:
+> From: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 > 
-> Srujana Challa (3):
->   octeontx2-af: Mailbox changes for 98xx CPT block
->   octeontx2-af: Add support for CPT1 in debugfs
->   octeontx2-af: Handle CPT function level reset
+> Often userspace won't request the extack information, or they don't log it
+> because of log level or so, and even when they do, sometimes it's not
+> enough to know exactly what caused the error.
 > 
-> [...]
+> Netlink extack is the standard way of reporting erros with descriptive
+> error messages. With a trace point on it, we then can know exactly where
+> the error happened, regardless of userspace app. Also, we can even see if
+> the err msg was overwritten.
+> 
+> The wrapper do_trace_netlink_extack() is because trace points shouldn't be
+> called from .h files, as trace points are not that small, and the function
+> call to do_trace_netlink_extack() on the macros is not protected by
+> tracepoint_enabled() because the macros are called from modules, and this
+> would require exporting some trace structs. As this is error path, it's
+> better to export just the wrapper instead.
+> 
+> v2: removed leftover tracepoint declaration
 
-Here is the summary with links:
-  - [v2,net-next,1/3] octeontx2-af: Mailbox changes for 98xx CPT block
-    https://git.kernel.org/netdev/net-next/c/de2854c87c64
-  - [v2,net-next,2/3] octeontx2-af: Add support for CPT1 in debugfs
-    https://git.kernel.org/netdev/net-next/c/b0f60fab7805
-  - [v2,net-next,3/3] octeontx2-af: Handle CPT function level reset
-    https://git.kernel.org/netdev/net-next/c/c57c58fd5c4f
+Whoops, missed a blank line here.
+Please just let me know if I should send a new one.
+Thanks.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+> Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
