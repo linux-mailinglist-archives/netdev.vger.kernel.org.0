@@ -2,65 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 744EB30FF6E
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 22:40:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69B8330FFA1
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 22:51:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229970AbhBDVi2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 16:38:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33868 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229511AbhBDViY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 16:38:24 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF59AC061788
-        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 13:37:43 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id l12so5339317wry.2
-        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 13:37:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=kV3pdYkUMMPTc34QJ2Tps7N4vq40FHIT1DCdZKrmptE=;
-        b=aOdtPDYDbkiEgX5SB2fOuTpADIxQaprWjbNhni26KnpeU+Aih4ppZn1u/N+CrAe2Nv
-         bgvSBpOfJhPDHQY8UDdSXeFVAF4i8LT6HzqbRLfPFOc0I1F8c5ftA4totHGsDRMI95Ko
-         Nb8FMpTMHyVzIgyHUyntP5ykiabnlh2N0Dxg/wo9h10+S3kjsd1FdCrbvni4EUHEKvfR
-         DF2Ip30t6sEu/EisB/SET07CJxXHfBUgTQ0yCYst3fpjWKWXbjq0ho0SnN3bxMqqZgMt
-         AgvNGcVQHkwRjdC/5D7Xaw8q/473G3JoTATKmlpT/frNPoh1cMSHCJ+MDX8fbuzowAMF
-         e1bg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=kV3pdYkUMMPTc34QJ2Tps7N4vq40FHIT1DCdZKrmptE=;
-        b=VcE8kvcXLsO8SBZ0JPdtXKC2AS9unPdp+lqZy14jz10+P/yob8iUY3r6t4MHYhMia1
-         wMR4PFCDMTkmbFE7W48q8hp8oFHa2EKemENijVI/M2cbWu06vJgMiRg9+cdXYXJSNYre
-         WwuWk9N5rIZb1wwk6yK2Jso3IucNhtuH9YkNmwMQlk9khgghzNaSpjJklEFOyETdK6G6
-         Y2HOFplazYbA8Wnf/rDFuBpne9nQCva8oJDnf4c1QR8FvwEjLaL8PvDXS7UW0D57EV3d
-         qcL47/RPWj114CUvZx6vBtM4Qnq05gFFVa+gyC6atwvITeVOt8MAL1bPKViMvs72OywA
-         27HQ==
-X-Gm-Message-State: AOAM530c0ojqhJ+7MW1Qq4cRECNDhN4iLBPNvN8X+GAHThe4gjcL8WzK
-        nuS4DdN9xUzZizo/XQp4JOgDcWxYT9w=
-X-Google-Smtp-Source: ABdhPJzZVVhRIccF0Dm38m5eaT36rv61sTgG/KhW9t9Wr0tEqlA0nH7SxyJyLjM8BL4JfRfIWMqEUQ==
-X-Received: by 2002:adf:ee09:: with SMTP id y9mr1470523wrn.74.1612474662455;
-        Thu, 04 Feb 2021 13:37:42 -0800 (PST)
-Received: from [192.168.1.101] ([37.171.155.194])
-        by smtp.gmail.com with ESMTPSA id 35sm10834320wrn.42.2021.02.04.13.37.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 Feb 2021 13:37:41 -0800 (PST)
-Subject: Re: [PATCH] net/vmw_vsock: fix NULL pointer deref and improve locking
-To:     Norbert Slusarek <nslusarek@gmx.net>,
-        Stefano Garzarella <sgarzare@redhat.com>, alex.popov@linux.com,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org
-References: <trinity-64b93de7-52ac-4127-a29a-1a6dbbb7aeb6-1612474127915@3c-app-gmx-bap39>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <d801ab6a-639d-579f-2292-9a7a557a593f@gmail.com>
-Date:   Thu, 4 Feb 2021 22:37:40 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        id S230518AbhBDVts (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 16:49:48 -0500
+Received: from mga14.intel.com ([192.55.52.115]:4828 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230186AbhBDVtd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Feb 2021 16:49:33 -0500
+IronPort-SDR: hvf8eLP8Hx3P7Psh62742eQCRFi0LrG1lB1a8ISVtSwdeoLS1aElt9hPOZU02NT8sMWvMb1/i5
+ Ear5qqXHO5eg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9885"; a="180557969"
+X-IronPort-AV: E=Sophos;i="5.81,153,1610438400"; 
+   d="scan'208";a="180557969"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2021 13:48:49 -0800
+IronPort-SDR: SnW/hIjuc/0Hy3rPOK7+jjn1KAdo8dt+qKF/Zm7EFyO+UG0u2HrBx5gGv3ETmy+MI+JSg+Crgx
+ 4hFjQLpupy9Q==
+X-IronPort-AV: E=Sophos;i="5.81,153,1610438400"; 
+   d="scan'208";a="393459890"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.209.103.68]) ([10.209.103.68])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2021 13:48:34 -0800
+Subject: Re: [PATCH net-next 04/15] ice: add devlink parameters to read and
+ write minimum security revision
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, sassmann@redhat.com,
+        Tony Brelinski <tonyx.brelinski@intel.com>
+References: <20210129004332.3004826-1-anthony.l.nguyen@intel.com>
+ <20210129004332.3004826-5-anthony.l.nguyen@intel.com>
+ <20210203124112.67a1e1ee@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <c9bfca09-7fc1-08dc-750d-de604fb37e00@intel.com>
+ <20210203180833.7188fbcf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <8a2d8aa2-8b94-ea71-df30-d0c02aea7355@intel.com>
+Date:   Thu, 4 Feb 2021 13:48:31 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
 MIME-Version: 1.0
-In-Reply-To: <trinity-64b93de7-52ac-4127-a29a-1a6dbbb7aeb6-1612474127915@3c-app-gmx-bap39>
+In-Reply-To: <20210203180833.7188fbcf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -70,66 +52,118 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 2/4/21 10:28 PM, Norbert Slusarek wrote:
-> From: Norbert Slusarek <nslusarek@gmx.net>
-> Date: Thu, 4 Feb 2021 18:49:24 +0100
-> Subject: [PATCH] net/vmw_vsock: fix NULL pointer deref and improve locking
-> 
-> In vsock_stream_connect(), a thread will enter schedule_timeout().
-> While being scheduled out, another thread can enter vsock_stream_connect() as
-> well and set vsk->transport to NULL. In case a signal was sent, the first
-> thread can leave schedule_timeout() and vsock_transport_cancel_pkt() will be
-> called right after. Inside vsock_transport_cancel_pkt(), a null dereference
-> will happen on transport->cancel_pkt.
-> 
-> The patch also features improved locking inside vsock_connect_timeout().
+On 2/3/2021 6:08 PM, Jakub Kicinski wrote:
+> On Wed, 3 Feb 2021 17:34:24 -0800 Jacob Keller wrote:
+>> On 2/3/2021 12:41 PM, Jakub Kicinski wrote:
+>>> On Thu, 28 Jan 2021 16:43:21 -0800 Tony Nguyen wrote:  
+>>>> From: Jacob Keller <jacob.e.keller@intel.com>
+>>>>
+>>>> The ice NVM flash has a security revision field for the main NVM bank
+>>>> and the Option ROM bank. In addition to the revision within the module,
+>>>> the device also has a minimum security revision TLV area. This minimum
+>>>> security revision field indicates the minimum value that will be
+>>>> accepted for the associated security revision when loading the NVM bank.
+>>>>
+>>>> Add functions to read and update the minimum security revisions. Use
+>>>> these functions to implement devlink parameters, "fw.undi.minsrev" and
+>>>> "fw.mgmt.minsrev".
+>>>>
+>>>> These parameters are permanent (i.e. stored in flash), and are used to
+>>>> indicate the minimum security revision of the associated NVM bank. If
+>>>> the image in the bank has a lower security revision, then the flash
+>>>> loader will not continue loading that flash bank.
+>>>>
+>>>> The new parameters allow for opting in to update the minimum security
+>>>> revision to ensure that a flash image with a known security flaw cannot
+>>>> be loaded.
+>>>>
+>>>> Note that the minimum security revision cannot be reduced, only
+>>>> increased. The driver also refuses to allow an update if the currently
+>>>> active image revision is lower than the requested value. This is done to
+>>>> avoid potentially updating the value such that the device can no longer
+>>>> start.  
+>>>
+>>> Hi Jake, I had a couple of conversations with people from operations
+>>> and I'm struggling to find interest in writing this parameter.   
+>>>> It seems like the expectation is that the min sec revision will go up  
+>>> automatically after a new firmware with a higher number is flashed.
+>>
+>> I believe the intention is that the update is not automatic, and
+>> requires the user to opt-in to enforcing the new minimum value. This is
+>> because once you update this value it is not possible to lower it
+>> without physical access to reflash the chip directly. It's intended as a
+>> mechanism to allow a system administrator to ensure that the board is
+>> unable to downgrade below a given minimum security revision.
+>>
+>>> Do you have a user scenario where the manual bumping is needed?
+>>>   
 
 
-We request Fixes: tag for patches targeting net tree.
+I've spoken with some of our customer support engineers. Feedback I've
+received is that this was implemented as an automatic/default/enforced
+update in past products. Several customers have indicated that they want
+to be in control of when this update happens, and not to have it happen
+automatically.
 
-You could also mention the vsock_connect_timeout()
-issue was found by a reviewer and give some credits ;)
+Specifically I've been asked to ensure this update is something that
+must be "opt in" and not by default, because of the issues we've
+received from vendors.
+
 
 > 
-> Signed-off-by: Norbert Slusarek <nslusarek@gmx.net>
-> ---
->  net/vmw_vsock/af_vsock.c | 7 ++-----
->  1 file changed, 2 insertions(+), 5 deletions(-)
+> Dunno, seems to me secure by default is a better approach. If admin 
+> is worried you can always ship an eval build which does not bump the
+> version. Or address the issues with the next release rather than roll
+> back.
 > 
-> diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-> index 3b480ed0953a..ea7b9d208724 100644
-> --- a/net/vmw_vsock/af_vsock.c
-> +++ b/net/vmw_vsock/af_vsock.c
-> @@ -1233,7 +1233,7 @@ static int vsock_transport_cancel_pkt(struct vsock_sock *vsk)
->  {
->  	const struct vsock_transport *transport = vsk->transport;
+
+This is how we had it implemented in previous products, but we got
+significant feedback that it should be a step that can be controlled by
+the admin, so that they can decide when it is appropriate.
+
+Making this the default behavior that the driver automatically occurs
+after an update is not something we want, based on the feedback we've
+received in our previous products.
+
+The feedback that we've received is that a "one size fits all" automatic
+update of the minimum value is not acceptable to all of our customers.
+
+>>
+>> Ofcourse, it is plausible that most won't actually update this ever,
+>> because preventing the ability to use an old firmware might not be desired.
 > 
-> -	if (!transport->cancel_pkt)
-> +	if (!transport || !transport->cancel_pkt)
->  		return -EOPNOTSUPP;
+> Well, if there is a point to secure boot w/ NICs people better prevent
+> replay attacks. Not every FW update is a security update, tho, so it's
+> not like "going to the old version" would never be possible.
 > 
->  	return transport->cancel_pkt(vsk);
-> @@ -1243,7 +1243,6 @@ static void vsock_connect_timeout(struct work_struct *work)
->  {
->  	struct sock *sk;
->  	struct vsock_sock *vsk;
-> -	int cancel = 0;
+
+After I spoke to some folks internally I believe I misstated above: it's
+not about never updating this, but about being in control of when to
+perform the update.
+
+>> The goal with this series was to provide a mechanism to allow the
+>> update, because existing tools based on direct flash access have support
+>> for this, and we want to ensure that these tools can be ported to
+>> devlink without the direct flash access that we were (ab)using before.
 > 
->  	vsk = container_of(work, struct vsock_sock, connect_work.work);
->  	sk = sk_vsock(vsk);
-> @@ -1254,11 +1253,9 @@ static void vsock_connect_timeout(struct work_struct *work)
->  		sk->sk_state = TCP_CLOSE;
->  		sk->sk_err = ETIMEDOUT;
->  		sk->sk_error_report(sk);
-> -		cancel = 1;
-> +		vsock_transport_cancel_pkt(vsk);
->  	}
->  	release_sock(sk);
-> -	if (cancel)
-> -		vsock_transport_cancel_pkt(vsk);
+> I'm not completely opposed to this mechanism (although you may want 
+> to communicate the approach to your customers clearly, because many
+> may be surprised) - but let's be clear - the goal of devlink is to
+> create a replacement for vendor tooling, not be their underlying
+> mechanism.
 > 
->  	sock_put(sk);
->  }
-> --
-> 2.30.0
-> 
+
+We want some mechanism to allow administrators to decide when to update
+this value. We do not want to have a "default" be to update because that
+means the system administrators who want control over the process might
+accidentally perform a non-reversible  operation. (Once you update the
+value you can't lower it without physically accessing the flash chip).
+
+I understand if the use of vendor-specific parameters here isn't
+acceptable. I'm happy to help design a more generic solution that avoids
+these and potentially integrates better into the flash update process.
+
+There is also the technical question of when the update can be
+performed. As is, it's a software controlled update, and must occur
+after the new flash image is booted, in order to ensure we do not update
+the value in a way that bricks the currently running firmware from booting.
