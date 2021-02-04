@@ -2,60 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6804630EFC0
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 10:35:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0CD030EFD7
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 10:41:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235249AbhBDJdW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 04:33:22 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:41295 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233628AbhBDJdS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 04:33:18 -0500
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1l7b04-00008O-Bw; Thu, 04 Feb 2021 09:32:32 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next] net/mlx5e: Fix spelling mistake "channles" -> "channels"
-Date:   Thu,  4 Feb 2021 09:32:32 +0000
-Message-Id: <20210204093232.50924-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.29.2
+        id S235224AbhBDJjV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 04:39:21 -0500
+Received: from bilbo.ozlabs.org ([203.11.71.1]:35547 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234689AbhBDJjR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Feb 2021 04:39:17 -0500
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4DWYQL6g3Vz9sWl;
+        Thu,  4 Feb 2021 20:38:34 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1612431515;
+        bh=GkEx+xpyKg8YhSyS0+o+FLZ1T3oYaokZiUmnkX7fgzM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZnbeILr2JrQhMuSCD4Ub9RJKyJFQ4f2LLWHTVwzSdJjB8PUsWEr97YEHcNwFHxT9w
+         eXou7cobOTkLey4PxS0HT7PaOd9U2mLMi60PfPwcxAGypYXbzbk01fJCOuIK2zZJMZ
+         MZgVGRpvUo7Fblwlt6Xo1zGqbEjsCF+YWPMvubtyHPkKom/1J9dgJeTsV8pz6HkJdF
+         e4FKzt4V2F9WUFgRcA2jdgWIVcGl34cd8skxtvM6xxvbtJEq2MoOirqdQLl6TDHlKg
+         ZvjeAHOAgZKRoycmSthOVz6fWKrXE815akxms4iSKLGrtq2Zg2FEtcZGZzj8aqDM1y
+         MA4u83k9J+2dw==
+Date:   Thu, 4 Feb 2021 20:38:34 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Brian Vazquez <brianvv@google.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build failure after merge of the net-next tree
+Message-ID: <20210204203834.4cc1a307@canb.auug.org.au>
+In-Reply-To: <CAMzD94RaWQM3J8LctNE_C1fHKYCW8WkbVMda4UV95YbYskQXZw@mail.gmail.com>
+References: <20210204123331.21e4598b@canb.auug.org.au>
+        <CAMzD94RaWQM3J8LctNE_C1fHKYCW8WkbVMda4UV95YbYskQXZw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/670ir_=mK2RASorDf90bdFe";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+--Sig_/670ir_=mK2RASorDf90bdFe
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-There is a spelling mistake in a netdev_warn message. Fix it.
+Hi Brian,
 
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Wed, 3 Feb 2021 19:52:08 -0800 Brian Vazquez <brianvv@google.com> wrote:
+>
+> Hi Stephen, thanks for the report. I'm having trouble trying to
+> compile for ppc, but I believe this should fix the problem, could you
+> test this patch, please? Thanks!
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 4cfdba997f24..35f69354e07a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -5647,7 +5647,7 @@ int mlx5e_netdev_change_profile(struct mlx5e_priv *priv,
- 	/* sanity */
- 	if (new_max_nch != priv->max_nch) {
- 		netdev_warn(priv->netdev,
--			    "%s: Replacing profile with different max channles\n",
-+			    "%s: Replacing profile with different max channels\n",
- 			    __func__);
- 		return -EINVAL;
- 	}
--- 
-2.29.2
+That fixed it, thanks (though the patch was badly wrapped and
+whitespace damaged :-))
 
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/670ir_=mK2RASorDf90bdFe
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmAbwJoACgkQAVBC80lX
+0GzWmgf/ZtCWjBm9z2ozvoasLSnlBHdRPZzOHIXAkhz/oKuqcU6Eya01heYx2zLT
+PQ9IRtSZInOdOAjXR16DOZ6rxKN/iFvGTfRag/b8Ba33U1+L48FQIsYe52T1Twm0
+3geKBo5GkonvJ32y8umffd/9B27543E2Pt3ntfMetl5gLh+Vqas3YqS7YDy483I8
+V3ZRAk18sSW794scEb5TpIfGJqTJHUlGLz2LtMHzMov4VP9RZYHMWSMskNngi2hg
+vUMEwF4AhXM2GYkiIwJdBrgONwW3GrPddBSd89Zb3d79ufUKIKMzTssBsovq3zoY
+myfPOAn3wF2esBto7fIt+qOiQCaCOQ==
+=Bgem
+-----END PGP SIGNATURE-----
+
+--Sig_/670ir_=mK2RASorDf90bdFe--
