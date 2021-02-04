@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3161930F051
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 11:17:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88BED30F049
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 11:17:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235433AbhBDKRF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 05:17:05 -0500
-Received: from mail-eopbgr80059.outbound.protection.outlook.com ([40.107.8.59]:56708
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        id S235359AbhBDKQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 05:16:24 -0500
+Received: from mail-eopbgr70070.outbound.protection.outlook.com ([40.107.7.70]:11334
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235355AbhBDKQw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Feb 2021 05:16:52 -0500
+        id S235298AbhBDKQV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Feb 2021 05:16:21 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kKK+5Nyo/4Mr0Kwv8cfMmFWvfWfo18mAgaTf1Fb29HHoMmYj3wDYorE5GjduSScdCaccFgrer2t17bsuu9QPK3YpjUCXROh1+DPygiFszTXHcmdbz0DZDknmeaHvG2S4LaF30RncBwtyQ6rN3tiAPAeVuBxpyM79IgFk7/9p8UbFFYiQxw9jSPDS1ed1E4IxDn/2mevFUhsPJDdMjioqgbqYoMXcfyyRYDpI/zqtR0yI8DwBAmqVCSOYMeNGgFlNPp4vNEdoGLj87WaB3DNc4uHs9mvvPmUWpfqzrmSfTEBqpBiNeWLH4STU/cP+BUvaKvVVIyR4tWuBkd9A1Z7oYw==
+ b=bt6raflU6Y7KKMVzv/UWJLXfQUo+uS9x4vDmgX5qYpd8QQRWJTzsHwkPc24TTSEdpUYQndrGQ0n8Njvt8dfQ7W0UUwjIvrTWtZid/pP1mmS238hvy03qzTFXY/4Py2tvV+RrPkWUkXanb0AFzlSvIOh49lU8If+XCcgnaR51nKl6a30azl0mylO6M1nGUZHi9omm0b1efW28HkoDb2OCMRlPKDxBCtyQnsNSLdZJNgi6H6eYZaEBy6DTljPkFSZQ3PnGzSjJImaKabGQRfuQIrBQjQrhJlGwgZgQ0fCnGmtLdQcDXo4GpsbzFWv106k2F8gSMD5h0Ao6KxuGrH55FA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0WnIxNW4i7FFy2C3Lfgx396jI5NpYMlWEFbXwFYw33Q=;
- b=KsirxvuzIyUrDA8MwDlUDJct4O7GisN6a5EzbrL5dhLGhz/G+zLP5wSW+HjtezbHyO25dOogSsUaPst2ckjSnnMpbEDQzcoV7/aalvlCpKOqf+nkEKjKkhZEDQ3V74EcolAEcz3gYAAp8rkzG9+GDPOQuwgpJde8UWqsOL8tlDRWGzpUUtB0wPFUBjp8oibM9Pjo3fxlB10Y1W8jAoyaasdJhFTQVjgS2mifLtk/tU+YmWaCe1b9TbmQDDjHfCkeFJCE1fvGvKk+krSRnDFTNJkEGjfKUYa23OPE26O70ZHljXw0D+lWXSfiKxclBkYZIHnJPA78lQEfO2P95SSpsw==
+ bh=cMF+eIomc07M1aaurkyMl3E56xVyIvVQKQAjRYpKjzo=;
+ b=Vo3gtwUtQNMk71NXzmWpBFZHFXsx9kqYrXzEQ8HKE1fiNHvZ8617aUFfKaub5I1u9gE6CH9VyiTqACMYX86NMzRCXJMo7Zo/nFXewjFpawdaJMvTFnJaTMVcJ7eoPnHv519v1nqncNW+QdsDFOqFdJsYmG/LqiNxqzYQDVK3WalFlM3r1RtOXS0nOm0e/clogKG3lujZt2V1Dkn2/EaGcgzefdL6nNWv7D3s1egcWoTjm+6FKH+IVAQ7Msw6yd0nfCTAnCJsM5Y4TZoyVdt4BFlkVpIrLTpfMhzQ+O6gHcWWGQuqLbYU/fzX1ciDcRWEokTUxRcfc+/GY35c8eGw3g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0WnIxNW4i7FFy2C3Lfgx396jI5NpYMlWEFbXwFYw33Q=;
- b=X0kypggcVlbzS/xOS6+0Ydj7PF9kO+zO5oKOVr1uvTZ5GWaoTlRUPq6RhNLbM1UtfG1JGJsXMZ3xBzWvmY4XMeEHaS1ts0jNdZgErhqVlsyezIbmojRsKkX6+J4JbQ3tIfyRbqQbxm0lUd9Fi9Mv5j1IQyWmWeU042PEAnSCBjU=
+ bh=cMF+eIomc07M1aaurkyMl3E56xVyIvVQKQAjRYpKjzo=;
+ b=VGWtKcPT88Mwu+f0lyHqNC3FiqhhWU49KI4I1/qy0UHi8/kVzja3irS4khaQjV8X5WgjKd5wTXa9pYT6MATlGTnmRTR/7XYk9guqV47Ez32MgwfPZoK0nTh25cqgDZyhAjqPpE1d0CMB6o8Rhye6nI1VCOibew/AQycZ+OXte5Q=
 Authentication-Results: st.com; dkim=none (message not signed)
  header.d=none;st.com; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB6800.eurprd04.prod.outlook.com (2603:10a6:803:133::16)
- by VE1PR04MB7407.eurprd04.prod.outlook.com (2603:10a6:800:1ab::5) with
+ by VI1PR04MB3055.eurprd04.prod.outlook.com (2603:10a6:802:9::25) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.17; Thu, 4 Feb
- 2021 10:15:29 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.17; Thu, 4 Feb
+ 2021 10:15:32 +0000
 Received: from VI1PR04MB6800.eurprd04.prod.outlook.com
  ([fe80::6958:79d5:16bf:5f14]) by VI1PR04MB6800.eurprd04.prod.outlook.com
  ([fe80::6958:79d5:16bf:5f14%9]) with mapi id 15.20.3825.019; Thu, 4 Feb 2021
- 10:15:29 +0000
+ 10:15:32 +0000
 From:   Joakim Zhang <qiangqing.zhang@nxp.com>
 To:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
         joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
         willemdebruijn.kernel@gmail.com
-Subject: [PATCH net-next 1/2] net: stmmac: remove redundant null check for ptp clock
-Date:   Thu,  4 Feb 2021 18:15:49 +0800
-Message-Id: <20210204101550.21595-2-qiangqing.zhang@nxp.com>
+Subject: [PATCH net-next 2/2] net: stmmac: slightly adjust the order of the codes in stmmac_resume()
+Date:   Thu,  4 Feb 2021 18:15:50 +0800
+Message-Id: <20210204101550.21595-3-qiangqing.zhang@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210204101550.21595-1-qiangqing.zhang@nxp.com>
 References: <20210204101550.21595-1-qiangqing.zhang@nxp.com>
@@ -54,76 +54,91 @@ X-ClientProxiedBy: SG2P153CA0032.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c7::19)
  To VI1PR04MB6800.eurprd04.prod.outlook.com (2603:10a6:803:133::16)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (119.31.174.71) by SG2P153CA0032.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c7::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.1 via Frontend Transport; Thu, 4 Feb 2021 10:15:25 +0000
+Received: from localhost.localdomain (119.31.174.71) by SG2P153CA0032.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c7::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.1 via Frontend Transport; Thu, 4 Feb 2021 10:15:29 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 4447d36c-cdc9-4d57-b2c9-08d8c8f5cbaf
-X-MS-TrafficTypeDiagnostic: VE1PR04MB7407:
-X-Microsoft-Antispam-PRVS: <VE1PR04MB7407B1E28FA5B20956C622C2E6B39@VE1PR04MB7407.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:454;
+X-MS-Office365-Filtering-Correlation-Id: a6a35f43-329b-405e-33bf-08d8c8f5ce05
+X-MS-TrafficTypeDiagnostic: VI1PR04MB3055:
+X-Microsoft-Antispam-PRVS: <VI1PR04MB30557E0AB4F766E1D154CD53E6B39@VI1PR04MB3055.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4125;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: xbmX0sZxOQMgMJfslPdvl1MXBJXnV/P+Gz1TfXqVGTEgbarekJGs0Gl+flwbu7K1bs4lhQwXnoAC0HrrF5CF7mqwVbtORP8/HpExMOHcEvpWfMjafRM03TrFAug5T7RgT0C9WHEJganXq+7p9cbaD+vBuSOTh5TSVqf/tifXsYld+akbdg8VHHNdIaFxRKc2aBgLQ7Fncdvd2E+QYqykbSmRkg1nNRGLrwW5939HH5uZLd1CF9Tk4Vd2scM07IFWxhdDOTl8DBodFwYYPOctaiJv3NL96jOWnzhyjQrUYqzii6ovbuZHbpfkm+eMyIMO4AJgODLfeKFFbS1RHMPuZ2o1xWVpKUMysMbnMEqhH/vD21QWcw+8aFp56aOHWXRkIr1zMmUCOhs7y0hurd8mSULjU5Z+urg26aAuyxnaHV32APT0wF4XXzZM9lhzaxeTHqudV7kxGlTGxMsNmzYxhcf+q4TV+T6BRbio1lNLwFkam6JPIuv6kbqNxhawCvWtzbtfRb5a8j5Uua3jYOj9Xcpn5RpD5sYQ2GrhwPKz2XOQ84ERwqXVEL/R3yqYidDngUhNIl2iCc8qECP6Lrzjdw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB6800.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(376002)(39860400002)(136003)(366004)(16526019)(186003)(2616005)(956004)(8676002)(86362001)(2906002)(6486002)(69590400011)(6666004)(83380400001)(26005)(8936002)(6506007)(36756003)(478600001)(5660300002)(316002)(66556008)(52116002)(66476007)(1076003)(66946007)(6512007)(4326008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?FdznQ2Zl+Xmhecps1/QHmt7nd0nVSnkoyZv2bC4h6oTOf1OGD13vpaiExs8c?=
- =?us-ascii?Q?XS1r0l0DYWpGexZttqYwE5HKLrUqczoSYr3IPA4VIgUkkI2sbbzes/Sr5N/Z?=
- =?us-ascii?Q?5Mdelwbh8j9VspcLb4+53jsYUV0Au4xMadt4ONqfsQ0m79JV3uyZdTMe8s0B?=
- =?us-ascii?Q?89C7JNgXVvTnUDFqdZiNR4NPtIkat2qT3164Ii1aC0PA5B5bJa/PJ+BmynvT?=
- =?us-ascii?Q?NNCpvr5V6YGm2aSsw+xf0USSLXpoU/TqNH1P0VlO4yzmt3nIrtp0R5Zm9SDR?=
- =?us-ascii?Q?HpvRiSHmnjvd40LHu3/cWU26tkjxQmEz+ol0iW7dJmD/EpWlXPhyLnuwL+RH?=
- =?us-ascii?Q?v4bXzjjBafA0cduOXyvbl/LfrnUl8RMYQC3AfNWabhN/znNkQuV8MFWlnx6G?=
- =?us-ascii?Q?iPRPVNigjWh8hUf8WjpmkCgiMTZ3fYKAkJVw3zFmk/11H2o7udI8lK3/K1+D?=
- =?us-ascii?Q?tvfraP8SM5/J2Hq2j6Xcc0N8Fu4OOlo5yBAz1syIeY25ZNsqHmEL2NZ9ag7h?=
- =?us-ascii?Q?v2ckvK8j7yGPZqY9MovXP+lvaNkC8CXE/4H4eso7El/OIHQ/TEcKfHZlejFu?=
- =?us-ascii?Q?cj2jjPQ5ap1wTgC2zC3z3VpurEpr1PqxpsKIyL6+T5OxtxMMmWWlQnXEerKW?=
- =?us-ascii?Q?C9XM3JKX5EwNId4OMu8nYcXWt2t4Dw51h40GyIrilzUVrq9CxOBawVi/fq27?=
- =?us-ascii?Q?3eM69DgRR0wrWq71wB9jPLi3EZ0WRjIoYm0UsK/zLjz9a6aYotNTfb7CVfQp?=
- =?us-ascii?Q?KnAe+Bndf1Svaiitvg8NBlMwBvGVQRzcIJahnJH8/RDCXTwHceua8RlwRQE7?=
- =?us-ascii?Q?OYFTQeo9cO6EmJ+SQGBeVBH0QEFnHdReab8yIFZ15iB+NSL9FXOLM62g3WJ8?=
- =?us-ascii?Q?G40FWIvD78pbNGq5MBMMTfkFzhHxiwvyCpuQDDAiMcQTXOV/QHFixPHFpsgP?=
- =?us-ascii?Q?on+eBoN3eR5QEIbPZbggTcTebTldyFKMC+546d/hmVZ/yPWeJFmLKfIEUB5F?=
- =?us-ascii?Q?4QR2Do9zBCBWbFd92dITPhBsZMv9R7w8INyvYNor0+l8i4AdaAy4wFZNOLQe?=
- =?us-ascii?Q?7cWI3+pe?=
+X-Microsoft-Antispam-Message-Info: x5LV8OEMvUN5wIbnaIU8whDEROD4GbgyE4RbPstN8SH8STtDvF4A0aFgF41pQVIkIIOaoYe4yXE6Oo6a/rSoqvbdmotPjgIQzUS424YXCoQpO1BlY9lL5jiAbPReAaXc9lQN8eGfVkzKqsZHsoO6fVK1TucM2cmnTz8IizxYWxgBz63pzAha+B8wCKeCTFHaQOTHWBTeRtJvnWVSlHNEdIDOCf6DQ2dHbIWtu94MaFWlzVoTFTLQA+wWHr5EwoiFupiJMTNYhdv1E6++WufEV2Ga2x/sqM1sQT6NigBqdz31lqiqQxfxfQHlDcB+zqsHcNlwNlHwaeTDMZidalit7afkCWNq5G7B1XMGs1Gv4qmdWgPcchtEDa3e/uJklFyinY9VrccMTMMCGXet01EamRQpPAD3xLIzN0VO7HtWib2skR3+XYoufFoqdP1w51DhiV2H4XhBZjgjIDPMQB9yGVQMOfuVJymornI+8+VCkDkwhivKUsm1ccW0++IUP6wK8OwBzSaJ6Xu52SPeJXAFAHiRKeg7HxYe4Y8D2Uog/lZaMO4WMAAYGPi6eZ9KGqI6sakoEc9WZ4dGg4UgGz3aoA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB6800.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(366004)(396003)(39860400002)(376002)(136003)(6512007)(86362001)(8676002)(83380400001)(8936002)(36756003)(6506007)(6666004)(1076003)(5660300002)(66556008)(478600001)(6486002)(26005)(16526019)(52116002)(66476007)(2906002)(2616005)(956004)(186003)(316002)(69590400011)(4326008)(66946007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?l6HdUUYTdQqppz+FB0sJUTglhW71cWNi3PafbexgqJPHCy6l0wxJeSWqTlG4?=
+ =?us-ascii?Q?G9kb1afMxD87c9DR6gtvrTNAnCenHcqcvFgj/+rUR2QgNPra8jMt6UuMgCec?=
+ =?us-ascii?Q?BVeV47UYSF7OBTvQd5ppSnAuiYiSoG47G7z8e3ui7xqg+C9AtPIdGgCGa0rs?=
+ =?us-ascii?Q?IGj2Cr3r8pVyid6LzG8qtVj60DK1P+ifg4mlItu/qayP+sLCpzGetridtwBQ?=
+ =?us-ascii?Q?crHN3+FNmYBTRVQWh+SF0zML64s9zfHGefGJliuPQO/Qj/PcbrFTzOh6RepX?=
+ =?us-ascii?Q?d+VnsPgnAQjQYc9wHURMbiYAJIFQbsq/De9kd0+kj0LdB/JwpkdtqPZOjnTj?=
+ =?us-ascii?Q?aqcHWhxk6p4EgHW+2DfdaNj/S72biOI/GwwvlVDqttamwMJqGRpKv3TkYDef?=
+ =?us-ascii?Q?YqF4ANcSfF/PY+vz4znKacyx0JnKZLDXzPtRAqcAcT5B3j2IkhRZ5r6FRzry?=
+ =?us-ascii?Q?SU7c3ebksdkMa+VbYMlEKvW8FTOLHFuJGKBwkIok093rrMS0YsBSIyuuZ6A/?=
+ =?us-ascii?Q?EXR3HGwNgGcfYicw3AAmFMsS9NMoq12H2H5zlJX9tFteBiamR/8tBi3EPrTZ?=
+ =?us-ascii?Q?HJMqd5z75bac24J0zpDl0lSxa1KXLaQSM3465G3hkaTKtTEEPlDGIIGzDQLj?=
+ =?us-ascii?Q?lVB1/ooGxtZihKz2RdbkmWZDY0xhV12+PW2xVYTqr+Ze4Sv+yqCtMWPLpPD8?=
+ =?us-ascii?Q?6mi7uYRrcVO7QbLCC4w48B0oND1rqQCb0dodY+0RIbaSuDLYtU10qWHFk7YE?=
+ =?us-ascii?Q?fADXu3wdTSOJI80lpRH9hT/g3D3bnUIpmpHDrdhpl0JOO1wJ6OH3IgPcl8SS?=
+ =?us-ascii?Q?Zkb3GsHFw/npLgKhp6itomnsjXELcAVnpqzNlMvgDaPzGCxjDlK6r+nQBHbT?=
+ =?us-ascii?Q?4UD7PJyMHVvMlY3cqvG3kNucoV28BiXuppzmSh/xGDLVm+wL1RtQA8F3fiFH?=
+ =?us-ascii?Q?p2pTC4geGcoZE0HRqsGlXqwfpsOMw+FGfnWiEpA9vLs2F3DtLXUKkRxyA9aj?=
+ =?us-ascii?Q?NAwbYY3lodRQfcQy2M6wgzAVrHKWoU+IQKUVdgf0S2po1PpBSE8cKWV6LqkD?=
+ =?us-ascii?Q?m1WsNmg8?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4447d36c-cdc9-4d57-b2c9-08d8c8f5cbaf
+X-MS-Exchange-CrossTenant-Network-Message-Id: a6a35f43-329b-405e-33bf-08d8c8f5ce05
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB6800.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Feb 2021 10:15:29.0851
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Feb 2021 10:15:32.6096
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1vyacbxp3TcQZ/kHmJrRp642mvtEZ2g6qCfOdBTnhMiXRWlDnmUEZwAycy9nOlc8kut+ks/42V5PNpM7xxD0AA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7407
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0aRjLkCRYNP8zphRlKjp6qE5TbMRKsj3+fmLh4X4IvzNZTxbCj+VGLKAGWxpeExLe2U+KyedgBr18SE8xDf9/w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB3055
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-commit 1c35cc9cf6a0 ("net: stmmac: remove redundant null check before
-clk_disable_unprepare()"), have not did NULL clock parameter check completely,
-this patch help remove redundant null check for ptp clock.
+Slightly adjust the order of the codes in stmmac_resume(), remove the
+check "if (!device_may_wakeup(priv->device) || !priv->plat->pmt)".
 
-Fixes: 1c35cc9cf6a0 ("net: stmmac: remove redundant null check before clk_disable_unprepare()")
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 26b971cd4da5..11e0b30b2e01 100644
+index 11e0b30b2e01..94d4f5d294f4 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -5291,8 +5291,7 @@ int stmmac_resume(struct device *dev)
- 		/* enable the clk previously disabled */
- 		clk_prepare_enable(priv->plat->stmmac_clk);
- 		clk_prepare_enable(priv->plat->pclk);
--		if (priv->plat->clk_ptp_ref)
--			clk_prepare_enable(priv->plat->clk_ptp_ref);
-+		clk_prepare_enable(priv->plat->clk_ptp_ref);
+@@ -5295,6 +5295,12 @@ int stmmac_resume(struct device *dev)
  		/* reset the phy so that it's ready */
  		if (priv->mii)
  			stmmac_mdio_reset(priv->mii);
++
++		rtnl_lock();
++		phylink_start(priv->phylink);
++		/* We may have called phylink_speed_down before */
++		phylink_speed_up(priv->phylink);
++		rtnl_unlock();
+ 	}
+ 
+ 	if (priv->plat->serdes_powerup) {
+@@ -5305,14 +5311,6 @@ int stmmac_resume(struct device *dev)
+ 			return ret;
+ 	}
+ 
+-	if (!device_may_wakeup(priv->device) || !priv->plat->pmt) {
+-		rtnl_lock();
+-		phylink_start(priv->phylink);
+-		/* We may have called phylink_speed_down before */
+-		phylink_speed_up(priv->phylink);
+-		rtnl_unlock();
+-	}
+-
+ 	rtnl_lock();
+ 	mutex_lock(&priv->lock);
+ 
 -- 
 2.17.1
 
