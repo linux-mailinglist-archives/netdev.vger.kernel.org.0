@@ -2,80 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A054A30E8B3
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 01:41:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14F5830E8C0
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 01:44:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234346AbhBDAlD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 3 Feb 2021 19:41:03 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36930 "EHLO mail.kernel.org"
+        id S234404AbhBDAnF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 3 Feb 2021 19:43:05 -0500
+Received: from mga11.intel.com ([192.55.52.93]:40026 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234158AbhBDAkr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 3 Feb 2021 19:40:47 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id A0BB164F6A;
-        Thu,  4 Feb 2021 00:40:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612399206;
-        bh=7KT0nKwSZ3Yg3lZtbd8rwlie3OCVRJWDCy2oOT2/k3c=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=DSr3BvRT2nn3di1mE5uarUbY+9AnbzwG6LCntijvY8XQFd7YSqOGttpSBJ6SejBZ0
-         17NiNtftkrelRUKEL9kWJUrdIHk7ViMgF0+FY/hEtZ30rIqbGvjcsYm3Jm2JTDcRpj
-         nUKqIlK1zt6nnZA+lyPCinHM3diYXp7bX8288rarKNse5KpERYPbl/+C8zjc/fJs3m
-         DBJ4K4zok1BBPNqJ2nNGm0qo4PmsdtT3lUOjlR6x1j/XAINuDdx0TxTDlKvCBddhXI
-         8YssgXEmz8Crc+MjbYn40L71f+pyuxSbCBTtreRLsVf3gE9BAPgToloGPdBLKaykNE
-         EPB9OFCFnFziw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 91444609EB;
-        Thu,  4 Feb 2021 00:40:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S234286AbhBDAm4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 3 Feb 2021 19:42:56 -0500
+IronPort-SDR: pbvVuhks6m3EtndE3J0cSSDo67nc7J5T/efl3fmlqNhL+9P2nJkgWx+rNSQ7Q1mL6tvNgSyBL/
+ hr4wbyucUo3w==
+X-IronPort-AV: E=McAfee;i="6000,8403,9884"; a="177638224"
+X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; 
+   d="scan'208";a="177638224"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2021 16:42:12 -0800
+IronPort-SDR: bLCbmHN01+U3/K/u1lViYl7Yx7a8IJcR9oPWABeIQdISCnZXFtzfYGq8GclKrz2Ic/HLhLYAil
+ KKA83JdW34hg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.79,399,1602572400"; 
+   d="scan'208";a="579687481"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by fmsmga006.fm.intel.com with ESMTP; 03 Feb 2021 16:42:12 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com
+Subject: [PATCH net-next 00/15][pull request] 1GbE Intel Wired LAN Driver Updates 2021-02-03
+Date:   Wed,  3 Feb 2021 16:42:44 -0800
+Message-Id: <20210204004259.3662059-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net/qrtr: restrict user-controlled length in
- qrtr_tun_write_iter()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161239920659.23511.13237805866635175575.git-patchwork-notify@kernel.org>
-Date:   Thu, 04 Feb 2021 00:40:06 +0000
-References: <20210202092059.1361381-1-snovitoll@gmail.com>
-In-Reply-To: <20210202092059.1361381-1-snovitoll@gmail.com>
-To:     Sabyrzhan Tasbolatov <snovitoll@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+c2a7e5c5211605a90865@syzkaller.appspotmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+This series contains updates to igc, igb, e1000e, and e1000 drivers.
 
-This patch was applied to netdev/net.git (refs/heads/master):
+Sasha adds counting of good transmit packets and reporting of NVM version
+and gPHY version in ethtool firmware version. Replaces the use of strlcpy
+to the preferred strscpy. Fixes a typo that caused the wrong register to be
+output. He also removes an unused function pointer, some unneeded defines,
+and a non-applicable comment. All changes for igc.
 
-On Tue,  2 Feb 2021 15:20:59 +0600 you wrote:
-> syzbot found WARNING in qrtr_tun_write_iter [1] when write_iter length
-> exceeds KMALLOC_MAX_SIZE causing order >= MAX_ORDER condition.
-> 
-> Additionally, there is no check for 0 length write.
-> 
-> [1]
-> WARNING: mm/page_alloc.c:5011
-> [..]
-> Call Trace:
->  alloc_pages_current+0x18c/0x2a0 mm/mempolicy.c:2267
->  alloc_pages include/linux/gfp.h:547 [inline]
->  kmalloc_order+0x2e/0xb0 mm/slab_common.c:837
->  kmalloc_order_trace+0x14/0x120 mm/slab_common.c:853
->  kmalloc include/linux/slab.h:557 [inline]
->  kzalloc include/linux/slab.h:682 [inline]
->  qrtr_tun_write_iter+0x8a/0x180 net/qrtr/tun.c:83
->  call_write_iter include/linux/fs.h:1901 [inline]
-> 
-> [...]
+Gal Hammer fixes a typo which caused the RDBAL register values to be
+shown instead of TDBAL for igb.
 
-Here is the summary with links:
-  - net/qrtr: restrict user-controlled length in qrtr_tun_write_iter()
-    https://git.kernel.org/netdev/net/c/2a80c1581237
+Nick Lowe enables RSS support for i211 devices for igb.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Tom Rix fixes checkpatch warning by removing h from printk format
+specifier for igb.
 
+Kaixu Xia removes setting of a variable that is overwritten before next
+use for e1000e.
+
+Sudip Mukherjee removes an unneeded assignment for e1000.
+
+Note: Most patches only compile tested.
+
+The following are changes since commit 32d1bbb1d609f5a78b0c95e2189f398a52a3fbf7:
+  net: fec: Silence M5272 build warnings
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 1GbE
+
+Gal Hammer (1):
+  igb: fix TDBAL register show incorrect value
+
+Kaixu Xia (1):
+  e1000e: remove the redundant value assignment in
+    e1000_update_nvm_checksum_spt
+
+Nick Lowe (1):
+  igb: Enable RSS for Intel I211 Ethernet Controller
+
+Sasha Neftin (10):
+  igc: Clean up nvm_operations structure
+  igc: Remove igc_set_fw_version comment
+  igc: Remove MULR mask define
+  igc: Add Host Good Packets Transmitted Count
+  igc: Expose the NVM version
+  igc: Expose the gPHY firmware version
+  igc: Prefer strscpy over strlcpy
+  igc: Remove unused local receiver mask
+  igc: Remove unused FUNC_1 mask
+  igc: Fix TDBAL register show incorrect value
+
+Sudip Mukherjee (1):
+  e1000: drop unneeded assignment in e1000_set_itr()
+
+Tom Rix (1):
+  igb: remove h from printk format specifier
+
+ drivers/net/ethernet/intel/e1000/e1000_main.c |  1 -
+ drivers/net/ethernet/intel/e1000e/ich8lan.c   |  7 ------
+ drivers/net/ethernet/intel/igb/igb_main.c     |  7 +++---
+ drivers/net/ethernet/intel/igc/igc.h          |  2 ++
+ drivers/net/ethernet/intel/igc/igc_defines.h  |  4 +---
+ drivers/net/ethernet/intel/igc/igc_dump.c     |  2 +-
+ drivers/net/ethernet/intel/igc/igc_ethtool.c  | 24 +++++++++++++++----
+ drivers/net/ethernet/intel/igc/igc_hw.h       |  1 -
+ drivers/net/ethernet/intel/igc/igc_main.c     |  1 +
+ drivers/net/ethernet/intel/igc/igc_phy.c      | 18 ++++++++++++++
+ drivers/net/ethernet/intel/igc/igc_phy.h      |  1 +
+ drivers/net/ethernet/intel/igc/igc_regs.h     |  1 +
+ 12 files changed, 48 insertions(+), 21 deletions(-)
+
+-- 
+2.26.2
 
