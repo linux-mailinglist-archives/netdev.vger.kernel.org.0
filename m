@@ -2,179 +2,300 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EB1B30FEE3
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 21:52:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E560030FF1F
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 22:13:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230104AbhBDUvi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 15:51:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52004 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230038AbhBDUv0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 15:51:26 -0500
-Received: from mail-vs1-xe2e.google.com (mail-vs1-xe2e.google.com [IPv6:2607:f8b0:4864:20::e2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 887DFC0613D6
-        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 12:50:46 -0800 (PST)
-Received: by mail-vs1-xe2e.google.com with SMTP id n18so2455656vsa.12
-        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 12:50:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=58FB/JLtXlmuPcKX/PnOSLc8qhL9LMB0SU8JDUNjepw=;
-        b=eajEEpNLTkZ8PeyTgqyoJ0CWtX08KJK1DvIHwMdeQi9CAurdGltqC51x7Zk+GbuSuv
-         8ZBE9uGrD8H2OjJFIYkHLqizhBmOpS5Ch4bvF/RWDKGriONIwFA0Ix7E1YCoEN+M6djQ
-         i9sF0KqClIm5LOUFW+ucCkx3gXJXv00CCBdyqn/dX8VgkZNigN4SW5jpbxPnp69kP3qF
-         tJ/uoIT8TbK+zyD9ymVEGejYvwguZQOpef1il0Atqjl/S1pApQvqbzt3nt2R7cXWSffm
-         T6kZE7mmrvmI4lYQsAOQYcBAYXpi4kjUdI0gSc3wLKoNrkgqu9zjY4s6Gpeq/KbBbBmL
-         sLmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=58FB/JLtXlmuPcKX/PnOSLc8qhL9LMB0SU8JDUNjepw=;
-        b=DgLg/7ueEWw1H6nwmo7s4hvihVttbubYPER1DJcZ/xcB5M0pm4za7mvrjxz5Wt9BxA
-         ERLxFedp6erXh1TrMM7LZ8cs5bU+RoU0euBLVReRN/NTWCTimJz/UcTtmyUG9hA2+wLe
-         rYDNa+fwg+47SsZN6UnpzhD/8Hr+ncD3zTvGUT+1LVHZC43cIID/by1/5oyemhmbzmQ1
-         p438PLEyOdZbwZDDMYWNeMMhKskMVcDGXfIwVn6gknVlUSoD34Om1DPN6jLDW0eVvyar
-         G+V2Bg/RXkqRIyoHVDX5Li9wSlNAntYBY49KJoJxJJfOqRHp5/pP9CQtIQb0qB3FIgSG
-         iZ9w==
-X-Gm-Message-State: AOAM532rqv8UckeQZirudLB4kMJ1CYzRrhfwUnhC0qE9PnLE4bqzN73Z
-        ccORv2ThO5t7znOQ0shkFdFUJRTk+eQ=
-X-Google-Smtp-Source: ABdhPJy+E/Yc8PwEm883w8wOKLOnjN6GtKxnrDETFFBTeNlW0hq9OAtb1MBbwGSDYbnQcjdv2XXU5g==
-X-Received: by 2002:a67:24c5:: with SMTP id k188mr1376112vsk.16.1612471844621;
-        Thu, 04 Feb 2021 12:50:44 -0800 (PST)
-Received: from mail-vs1-f49.google.com (mail-vs1-f49.google.com. [209.85.217.49])
-        by smtp.gmail.com with ESMTPSA id d125sm203275vsd.3.2021.02.04.12.50.43
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 Feb 2021 12:50:43 -0800 (PST)
-Received: by mail-vs1-f49.google.com with SMTP id 186so2446710vsz.13
-        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 12:50:43 -0800 (PST)
-X-Received: by 2002:a05:6102:21c2:: with SMTP id r2mr1296249vsg.13.1612471842695;
- Thu, 04 Feb 2021 12:50:42 -0800 (PST)
+        id S229705AbhBDVM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 16:12:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45878 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229511AbhBDVM4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Feb 2021 16:12:56 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6823064DC3;
+        Thu,  4 Feb 2021 21:12:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612473134;
+        bh=jMi9Fp9v8rwdLl3RtbPVpR5h5MQurHGRE/uhZhD5Xzc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=VKZXMu56xJDeQiTuMp2HcmnBa1QYzyvz9JG8WTAlxUnxQoujEZ5pzrEGEQ02IXgpV
+         dAEcL/w+vMFO0FssnL2vVGIJhCGA1ys60rxCet5VDHkR+/rWuDi53rXOHZp2EB0EjY
+         fsSIbAQ2P7mdA68m0KJcLira9VtfczmyF+98zCVOnyYUcres35Zt1GrjKkbVEE7oMS
+         1giagPD0cw0fV69+hOH0HTFla99AHOJBjhtpSlQ00RifhAkXKq08wAiTzo4oo1ptKp
+         fZhcLFAPI0/+FvVKEW8exD6NfEv6VRRXALz6DXYrVMSLNW2RPLHJTNlrTqmMxbxLq+
+         U2GJQ36RZd2qA==
+Date:   Thu, 4 Feb 2021 15:12:12 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH mlx5-next v5 1/4] PCI: Add sysfs callback to allow MSI-X
+ table size change of SR-IOV VFs
+Message-ID: <20210204211212.GA83310@bjorn-Precision-5520>
 MIME-Version: 1.0
-References: <20210129002136.70865-1-weiwan@google.com> <a0b2cb8d-eb8f-30fb-2a22-678e6dd2f58f@redhat.com>
- <CAF=yD-+aPBF2RaCR8L5orTM37bf7Z4Z8Qko2D2LZjOz0khHTUg@mail.gmail.com>
- <3a3e005d-f9b2-c16a-5ada-6e04242c618e@redhat.com> <CAF=yD-+NVKiwS6P2=cS=gk2nLcsWP1anMyy4ghdPiNrhOmLRDw@mail.gmail.com>
- <9b0b8f2a-8476-697e-9002-e9947e3eab63@redhat.com>
-In-Reply-To: <9b0b8f2a-8476-697e-9002-e9947e3eab63@redhat.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 4 Feb 2021 15:50:06 -0500
-X-Gmail-Original-Message-ID: <CA+FuTScVOuoHKtrdrRFswjA3Zq1-7sgMVhnP2iMB5sYFFS8NFg@mail.gmail.com>
-Message-ID: <CA+FuTScVOuoHKtrdrRFswjA3Zq1-7sgMVhnP2iMB5sYFFS8NFg@mail.gmail.com>
-Subject: Re: [PATCH net] virtio-net: suppress bad irq warning for tx napi
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Wei Wang <weiwan@google.com>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        virtualization@lists.linux-foundation.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210204155048.GC93433@unreal>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 3, 2021 at 10:06 PM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> On 2021/2/4 =E4=B8=8A=E5=8D=882:28, Willem de Bruijn wrote:
-> > On Wed, Feb 3, 2021 at 12:33 AM Jason Wang <jasowang@redhat.com> wrote:
-> >>
-> >> On 2021/2/2 =E4=B8=8B=E5=8D=8810:37, Willem de Bruijn wrote:
-> >>> On Mon, Feb 1, 2021 at 10:09 PM Jason Wang <jasowang@redhat.com> wrot=
-e:
-> >>>> On 2021/1/29 =E4=B8=8A=E5=8D=888:21, Wei Wang wrote:
-> >>>>> With the implementation of napi-tx in virtio driver, we clean tx
-> >>>>> descriptors from rx napi handler, for the purpose of reducing tx
-> >>>>> complete interrupts. But this could introduce a race where tx compl=
-ete
-> >>>>> interrupt has been raised, but the handler found there is no work t=
-o do
-> >>>>> because we have done the work in the previous rx interrupt handler.
-> >>>>> This could lead to the following warning msg:
-> >>>>> [ 3588.010778] irq 38: nobody cared (try booting with the
-> >>>>> "irqpoll" option)
-> >>>>> [ 3588.017938] CPU: 4 PID: 0 Comm: swapper/4 Not tainted
-> >>>>> 5.3.0-19-generic #20~18.04.2-Ubuntu
-> >>>>> [ 3588.017940] Call Trace:
-> >>>>> [ 3588.017942]  <IRQ>
-> >>>>> [ 3588.017951]  dump_stack+0x63/0x85
-> >>>>> [ 3588.017953]  __report_bad_irq+0x35/0xc0
-> >>>>> [ 3588.017955]  note_interrupt+0x24b/0x2a0
-> >>>>> [ 3588.017956]  handle_irq_event_percpu+0x54/0x80
-> >>>>> [ 3588.017957]  handle_irq_event+0x3b/0x60
-> >>>>> [ 3588.017958]  handle_edge_irq+0x83/0x1a0
-> >>>>> [ 3588.017961]  handle_irq+0x20/0x30
-> >>>>> [ 3588.017964]  do_IRQ+0x50/0xe0
-> >>>>> [ 3588.017966]  common_interrupt+0xf/0xf
-> >>>>> [ 3588.017966]  </IRQ>
-> >>>>> [ 3588.017989] handlers:
-> >>>>> [ 3588.020374] [<000000001b9f1da8>] vring_interrupt
-> >>>>> [ 3588.025099] Disabling IRQ #38
-> >>>>>
-> >>>>> This patch adds a new param to struct vring_virtqueue, and we set i=
-t for
-> >>>>> tx virtqueues if napi-tx is enabled, to suppress the warning in suc=
-h
-> >>>>> case.
-> >>>>>
-> >>>>> Fixes: 7b0411ef4aa6 ("virtio-net: clean tx descriptors from rx napi=
-")
-> >>>>> Reported-by: Rick Jones <jonesrick@google.com>
-> >>>>> Signed-off-by: Wei Wang <weiwan@google.com>
-> >>>>> Signed-off-by: Willem de Bruijn <willemb@google.com>
-> >>>> Please use get_maintainer.pl to make sure Michael and me were cced.
-> >>> Will do. Sorry about that. I suggested just the virtualization list, =
-my bad.
-> >>>
-> >>>>> ---
-> >>>>>     drivers/net/virtio_net.c     | 19 ++++++++++++++-----
-> >>>>>     drivers/virtio/virtio_ring.c | 16 ++++++++++++++++
-> >>>>>     include/linux/virtio.h       |  2 ++
-> >>>>>     3 files changed, 32 insertions(+), 5 deletions(-)
-> >>>>>
-> >>>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> >>>>> index 508408fbe78f..e9a3f30864e8 100644
-> >>>>> --- a/drivers/net/virtio_net.c
-> >>>>> +++ b/drivers/net/virtio_net.c
-> >>>>> @@ -1303,13 +1303,22 @@ static void virtnet_napi_tx_enable(struct v=
-irtnet_info *vi,
-> >>>>>                 return;
-> >>>>>         }
-> >>>>>
-> >>>>> +     /* With napi_tx enabled, free_old_xmit_skbs() could be called=
- from
-> >>>>> +      * rx napi handler. Set work_steal to suppress bad irq warnin=
-g for
-> >>>>> +      * IRQ_NONE case from tx complete interrupt handler.
-> >>>>> +      */
-> >>>>> +     virtqueue_set_work_steal(vq, true);
-> >>>>> +
-> >>>>>         return virtnet_napi_enable(vq, napi);
-> >>>> Do we need to force the ordering between steal set and napi enable?
-> >>> The warning only occurs after one hundred spurious interrupts, so not
-> >>> really.
-> >>
-> >> Ok, so it looks like a hint. Then I wonder how much value do we need t=
-o
-> >> introduce helper like virtqueue_set_work_steal() that allows the calle=
-r
-> >> to toggle. How about disable the check forever during virtqueue
-> >> initialization?
-> > Yes, that is even simpler.
+On Thu, Feb 04, 2021 at 05:50:48PM +0200, Leon Romanovsky wrote:
+> On Wed, Feb 03, 2021 at 06:10:39PM -0600, Bjorn Helgaas wrote:
+> > On Tue, Feb 02, 2021 at 09:44:29PM +0200, Leon Romanovsky wrote:
+> > > On Tue, Feb 02, 2021 at 12:06:09PM -0600, Bjorn Helgaas wrote:
+> > > > On Tue, Jan 26, 2021 at 10:57:27AM +0200, Leon Romanovsky wrote:
+> > > > > From: Leon Romanovsky <leonro@nvidia.com>
+> > > > >
+> > > > > Extend PCI sysfs interface with a new callback that allows
+> > > > > configure the number of MSI-X vectors for specific SR-IO VF.
+> > > > > This is needed to optimize the performance of newly bound
+> > > > > devices by allocating the number of vectors based on the
+> > > > > administrator knowledge of targeted VM.
+> > > >
+> > > > I'm reading between the lines here, but IIUC the point is that you
+> > > > have a PF that supports a finite number of MSI-X vectors for use
+> > > > by all the VFs, and this interface is to control the distribution
+> > > > of those MSI-X vectors among the VFs.
+
+> > This commit log should describe how *this* device manages this
+> > allocation and how the PF Table Size and the VF Table Sizes are
+> > related.  Per PCIe, there is no necessary connection between them.
+> 
+> There is no connection in mlx5 devices either. PF is used as a vehicle
+> to access VF that doesn't have driver yet. From "table size" perspective
+> they completely independent, because PF already probed by driver and
+> it is already too late to change it.
+> 
+> So PF table size is static and can be changed through FW utility only.
+
+This is where description of the device would be useful.  
+
+The fact that you need "sriov_vf_total_msix" to advertise how many
+vectors are available and "sriov_vf_msix_count" to influence how they
+are distributed across the VFs suggests that these Table Sizes are not
+completely independent.
+
+Can a VF have a bigger Table Size than the PF does?  Can all the VF
+Table Sizes added together be bigger than the PF Table Size?  If VF A
+has a larger Table Size, does that mean VF B must have a smaller Table
+Size?
+
+Obviously I do not understand the details about how this device works.
+It would be helpful to have those details here.
+
+Here's the sequence as I understand it:
+
+  1) PF driver binds to PF
+  2) PF driver enables VFs
+  3) PF driver creates /sys/.../<PF>/sriov_vf_total_msix
+  4) PF driver creates /sys/.../<VFn>/sriov_vf_msix_count for each VF
+  5) Management app reads sriov_vf_total_msix, writes sriov_vf_msix_count
+  6) VF driver binds to VF 
+  7) VF reads MSI-X Message Control (Table Size)
+
+Is it true that "lspci VF" at 4.1 and "lspci VF" at 5.1 may read
+different Table Sizes?  That would be a little weird.
+
+I'm also a little concerned about doing 2 before 3 & 4.  That works
+for mlx5 because implements the Table Size adjustment in a way that
+works *after* the VFs have been enabled.
+
+But it seems conceivable that a device could implement vector
+distribution in a way that would require the VF Table Sizes to be
+fixed *before* enabling VFs.  That would be nice in the sense that the
+VFs would be created "fully formed" and the VF Table Size would be
+completely read-only as documented.
+
+The other knob idea you mentioned at [2]:
+
+  echo "0000:01:00.2 123" > sriov_vf_msix_count
+
+would have the advantage of working for both cases.  That's definitely
+more complicated, but at the same time, I would hate to carve a sysfs
+interface into stone if it might not work for other devices.
+
+> > > > > +What:		/sys/bus/pci/devices/.../vfs_overlay/sriov_vf_total_msix
+> > > > > +Date:		January 2021
+> > > > > +Contact:	Leon Romanovsky <leonro@nvidia.com>
+> > > > > +Description:
+> > > > > +		This file is associated with the SR-IOV PFs.
+> > > > > +		It returns a total number of possible to configure MSI-X
+> > > > > +		vectors on the enabled VFs.
+> > > > > +
+> > > > > +		The values returned are:
+> > > > > +		 * > 0 - this will be total number possible to consume by VFs,
+> > > > > +		 * = 0 - feature is not supported
+> 
+> > Not sure the "= 0" description is necessary here.  If the value
+> > returned is the number of MSI-X vectors available for assignment to
+> > VFs, "0" is a perfectly legitimate value.  It just means there are
+> > none.  It doesn't need to be described separately.
+> 
+> I wanted to help users and remove ambiguity. For example, mlx5 drivers
+> will always implement proper .set_...() callbacks but for some devices
+> without needed FW support, the value will be 0. Instead of misleading
+> users with wrong promise that feature supported but doesn't have
+> available vectors, I decided to be more clear. For the users, 0 means, don't
+> try, it is not working.
+
+Oh, you mean "feature is not supported by the FIRMWARE on some mlx5
+devices"?  I totally missed that; I thought you meant "not supported
+by the PF driver."  Why not have the PF driver detect that the
+firmware doesn't support the feature and just not expose the sysfs
+files at all in that case?
+
+> > If we put them in a new "vfs_overlay" directory, it seems like
+> > overkill to repeat the "vf" part, but I'm hoping the new files can end
+> > up next to these existing files.  In that case, I think it makes sense
+> > to include "sriov".  And it probably does make sense to include "vf"
+> > as well.
+> 
+> I put everything in folder to group any possible future extensions.
+> Those extensions are applicable to SR-IOV VFs only, IMHO they deserve
+> separate folder.
+
+I'm not convinced (yet) that the possibility of future extensions is
+enough justification for adding the "vfs_overlay" directory.  It
+really complicates the code flow -- if we skipped the new directory,
+I'm pretty sure we could make .is_visible() work, which would be a
+major simplification.
+
+And there's quite a bit of value in the new files being right next to
+the existing sriov_* files.
+
+> > > > > +void pci_disable_vfs_overlay(struct pci_dev *dev)
+> > > > > +{
+> > > > > +	struct pci_dev *virtfn;
+> > > > > +	int id;
+> > > > > +
+> > > > > +	if (!dev->is_physfn || !dev->sriov->num_VFs)
+> > > > > +		return;
+> > > > > +
+> > > > > +	id = dev->sriov->num_VFs;
+> > > > > +	while (id--) {
+> > > > > +		virtfn = pci_get_domain_bus_and_slot(
+> > > > > +			pci_domain_nr(dev->bus), pci_iov_virtfn_bus(dev, id),
+> > > > > +			pci_iov_virtfn_devfn(dev, id));
+> > > > > +
+> > > > > +		if (!virtfn)
+> > > > > +			continue;
+> > > > > +
+> > > > > +		sysfs_remove_group(&virtfn->dev.kobj, &sriov_vf_dev_attr_group);
+> > > > > +	}
+> > > > > +	sysfs_remove_group(&dev->dev.kobj, &sriov_pf_dev_attr_group);
+> > > > > +}
+> > > > > +EXPORT_SYMBOL_GPL(pci_disable_vfs_overlay);
+> > > >
+> > > > I'm not convinced all this sysfs wrangling is necessary.  If it is,
+> > > > add a hint in a comment about why this is special and can't use
+> > > > something like sriov_dev_attr_group.
+> > >
+> > > This makes the overlay to be PF-driven. Alexander insisted on this flow.
 > >
-> > We still need the helper, as the internal variables of vring_virtqueue
-> > are not accessible from virtio-net. An earlier patch added the
-> > variable to virtqueue itself, but I think it belongs in
-> > vring_virtqueue. And the helper is not a lot of code.
->
->
-> It's better to do this before the allocating the irq. But it looks not
-> easy unless we extend find_vqs().
+> > If you're referring to [1], I think "insisted on this flow" might be
+> > an overstatement of what Alex was looking for.  IIUC Alex wants the
+> > sysfs files to be visible only when they're useful, i.e., when a
+> > driver implements ->sriov_set_msix_vec_count().
+> 
+> It is only one side of the request, the sysfs files shouldn't be visible
+> if PF driver was removed and visible again when its probed again.
 
-Can you elaborate why that is better? At virtnet_open the interrupts
-are not firing either.
+I can't parse this, but it's probably related to the question below.
 
-I have no preference. Just curious, especially if it complicates the patch.
+> > That seems reasonable and also seems like something a smarter
+> > .is_visible() function could accomplish without having drivers call
+> > pci_enable_vfs_overlay(), e.g., maybe some variation of this:
+> >
+> >   static umode_t sriov_vf_attrs_are_visible(...)
+> >   {
+> >     if (!pdev->msix_cap || dev_is_pf(dev))
+> >       return 0;
+> >
+> >     pf = pci_physfn(pdev);
+> >     if (pf->driver && pf->driver->sriov_set_msix_vec_count)
+> >       return a->mode;
+> >
+> >     return 0;
+> >   }
+> 
+> It doesn't work with the following flow:
+> 1. load driver
+> 2. disable autoprobe
+> 3. echo to sriov_numvfs
+> .... <--- you have this sriov_vf_attrs_are_visible() created
+> 4. unload driver
+> .... <--- sysfs still exists despite not having PF driver.
+
+I missed your point here, sorry.  After unloading the PF driver,
+"pf->driver" in the sketch above will be NULL, so the VF sysfs file
+would not be visible.  Right?  Maybe it has to do with autoprobe?  I
+didn't catch what the significance of disabling autoprobe was.
+
+> > > > > +void pci_sriov_set_vf_total_msix(struct pci_dev *dev, u32 count)
+> > > > > +{
+> > > > > +	if (!dev->is_physfn)
+> > > > > +		return;
+> > > > > +
+> > > > > +	dev->sriov->vf_total_msix = count;
+> > > >
+> > > > The PCI core doesn't use vf_total_msix at all.  The driver, e.g.,
+> > > > mlx5, calls this, and all the PCI core does is hang onto the value and
+> > > > expose it via sysfs.  I think I'd rather have a callback in struct
+> > > > pci_driver and let the driver supply the value when needed.  I.e.,
+> > > > sriov_vf_total_msix_show() would call the callback instead of looking
+> > > > at pdev->sriov->vf_total_msix.
+> > >
+> > > It will cause to unnecessary locking to ensure that driver doesn't
+> > > vanish during sysfs read. I can change, but don't think that it is right
+> > > decision.
+> >
+> > Doesn't sysfs already ensure the driver can't vanish while we're
+> > executing a DEVICE_ATTR accessor?
+> 
+> It is not, you can see it by adding device_lock_held() check in any
+> .show attribute. See drivers/base/core.c: dev_attr_show(), it doesn't
+> do much. This is why pci_vf_set_msix_vec_count() has double lock.
+
+Aahh, right, I learned something today, thanks!  There are only a few
+PCI sysfs attributes that reference the driver, and they do their own
+locking.
+
+I do think vf_total_msix is a bit of driver state related to
+implementing this functionality and doesn't need to be in the PCI
+core.  I think device locking is acceptable; it's very similar to what
+is done in sriov_numvfs_store().  Doing the locking and calling a
+driver callback makes it obvious that vf_total_msix is part of this PF
+driver-specific functionality, not a generic part of the PCI core.
+
+So let's give it a try.  If it turns out to be terrible, we can
+revisit it.
+
+> > Also, pci_vf_set_msix_vec_count() is in pci/msi.c, but AFAICT there's
+> > no actual *reason* for it to be there other than the fact that it has
+> > "msix" in the name.  It uses no MSI data structures.  Maybe it could
+> > be folded into sriov_vf_msix_count_store(), which would make the
+> > analysis even easier.
+> 
+> I put _set_ command near _get_ command, but I can move it to iov.c
+
+You mean you put pci_vf_set_msix_vec_count() near
+pci_msix_vec_count()?  That's *true*, but they are not analogues, and
+one is not setting the value returned by the other.
+
+pci_vf_set_msix_vec_count() is a completely magical thing that uses a
+device-specific mechanism on a PF that happens to change what
+pci_msix_vec_count() on a VF will return later.  I think this is more
+related to SR-IOV than it is to MSI.
+
+Bjorn
+
+> > [1] https://lore.kernel.org/r/CAKgT0UcJQ3uy6J_CCLizDLfzGL2saa_PjOYH4nK+RQjfmpNA=w@mail.gmail.com
+
+[2] https://lore.kernel.org/linux-pci/20210118132800.GA4835@unreal/
