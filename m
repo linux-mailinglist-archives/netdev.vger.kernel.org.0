@@ -2,118 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DF5230F9F7
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 18:42:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 929F730FA0B
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 18:45:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238705AbhBDRl2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 12:41:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38832 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238488AbhBDRkn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 12:40:43 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA90BC061786;
-        Thu,  4 Feb 2021 09:40:02 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id w2so6734490ejk.13;
-        Thu, 04 Feb 2021 09:40:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WGtGHJsvUwG5MwUcckxmFqwFncMzsH+2ot6iLYnWons=;
-        b=djLyUkuXKwVIXkHnp0OfEjoeNt1KBL3j5BeTzsOAAiQYwGXJqkOjT2yaFrMighB6oG
-         NxBzQuVmnGLRJgXooHlF/pa6Nfw2SMy+D7jft0AOckgT50j8DPZeZgsk4wVaNBf21zkW
-         MUdSxWePPYNFo3BCxPo2b5tQKLalApYkBBB8BWTwDt5d7XnqfUh7jzi4XCMT6z3nkG2T
-         72rtbwpRBYD0fjiwvgR4qir+feFD+jZOq8zV3Q64gmbcdxNNkDt+mYFPKzrd6iJhuMun
-         4gVQA2gd2gQjAqiUsA0e9sMcohvphb2Jw6BCsXV92fqcGEu3SzVQAhSaAdUWrf2qVEjI
-         IPcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=WGtGHJsvUwG5MwUcckxmFqwFncMzsH+2ot6iLYnWons=;
-        b=k1UmQ1HGq/uo1QHnqlNh5V4zS2dw1KxsfvXlFVy2iuUgU6ZwWD36H1IzM8rdIVrGIu
-         NKyCSLDL14EaK+DbwEWjBgTO2Zz/T9WtDwRXLxCUwllColuhAzDJDVwuWd8GbR/b6cKr
-         ZCc9ur+4cCkjI3lvTgGmSfA3NEDN1zpj7MUH9BR8Q4eisoXGMIpTmMSZxm/4LrLKYFFn
-         k61Pk3yF5GhpTHlWsTITsk4L4oalCRi6iNkx62cJc5zRQUlDqOtN1Nz5KDQNisXce43c
-         Umh2TCajWkFxoa6eqZN93uxZbnGeNLqRP9lTfTiU3l0xeJVHLc5J8vxZ4gfwCuhbYaOv
-         Hv1A==
-X-Gm-Message-State: AOAM532mj/5ewN163XMOt2CSV6ubmCdbpaapPAFCw1/HytPSMq7YjKYh
-        tA7w1CYkLzkSxFWrSkDTFfQRBSYq+UUylVen
-X-Google-Smtp-Source: ABdhPJxb9pG2YvThn6s7n91Fw5VyR/BYZ6xvzs3ldLw9+9DEJ8aqzzlMZkR3h89swCZrtaFQUS5oag==
-X-Received: by 2002:a17:906:b50:: with SMTP id v16mr221417ejg.298.1612460401728;
-        Thu, 04 Feb 2021 09:40:01 -0800 (PST)
-Received: from stitch.. ([80.71.140.73])
-        by smtp.gmail.com with ESMTPSA id o11sm2775886edt.96.2021.02.04.09.40.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Feb 2021 09:40:01 -0800 (PST)
-Sender: Emil Renner Berthing <emil.renner.berthing@gmail.com>
-From:   Emil Renner Berthing <kernel@esmil.dk>
-To:     netdev@vger.kernel.org
-Cc:     Emil Renner Berthing <kernel@esmil.dk>,
-        Kevin Curtis <kevin.curtis@farsite.co.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: wan: farsync: use new tasklet API
-Date:   Thu,  4 Feb 2021 18:39:47 +0100
-Message-Id: <20210204173947.92884-1-kernel@esmil.dk>
-X-Mailer: git-send-email 2.30.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S238610AbhBDRor (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 12:44:47 -0500
+Received: from novek.ru ([213.148.174.62]:34216 "EHLO novek.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238599AbhBDRog (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Feb 2021 12:44:36 -0500
+Received: from nat1.ooonet.ru (gw.zelenaya.net [91.207.137.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id 84E95503356;
+        Thu,  4 Feb 2021 20:43:50 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 84E95503356
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1612460632; bh=B+A360lxCikUuglRjqMa2pvztYPB1WgFIX9yI1XANvI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=CUib10pNSIupeqLHWBKzyoOT6YtuKacLVOhiDW8v/atKsfwvn9e2NP0Dn9ICmh65G
+         /yoNZQAGTN6ugKxZ5QUZ3KXyixKam0AmLaOo2EvS0KNBmlM4fpH01rMcDSAeZCjut3
+         XDf0ub/D2q5gwFFvJrn+l6HGzEiC3l+phcEP0haE=
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+To:     Jakub Kicinski <kuba@kernel.org>, Jian Yang <jianyang@google.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Vadim Fedorenko <vfedorenko@novek.ru>, netdev@vger.kernel.org
+Subject: [net v3] selftests: txtimestamp: fix compilation issue
+Date:   Thu,  4 Feb 2021 20:43:36 +0300
+Message-Id: <1612460616-22552-1-git-send-email-vfedorenko@novek.ru>
+X-Mailer: git-send-email 1.8.3.1
+X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
+        autolearn=ham autolearn_force=no version=3.4.1
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This converts the driver to use the new tasklet API introduced in
-commit 12cc923f1ccc ("tasklet: Introduce new initialization API")
+PACKET_TX_TIMESTAMP is defined in if_packet.h but it is not included in
+test. Include it instead of <netpacket/packet.h> otherwise the error of
+redefinition arrives.
+Also fix the compiler warning about ambiguous control flow by adding
+explicit braces.
 
-The new API changes the argument passed to callback functions,
-but fortunately it is unused so it is straight forward to use
-DECLARE_TASKLET rather than DECLARE_TASLKLET_OLD.
-
-Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
+Fixes: 8fe2f761cae9 ("net-timestamp: expand documentation")
+Suggested-by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
 ---
- drivers/net/wan/farsync.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ tools/testing/selftests/net/txtimestamp.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wan/farsync.c b/drivers/net/wan/farsync.c
-index b50cf11d197d..686a25d3b512 100644
---- a/drivers/net/wan/farsync.c
-+++ b/drivers/net/wan/farsync.c
-@@ -566,11 +566,11 @@ MODULE_DEVICE_TABLE(pci, fst_pci_dev_id);
+diff --git a/tools/testing/selftests/net/txtimestamp.c b/tools/testing/selftests/net/txtimestamp.c
+index 490a8cc..3d6bf54 100644
+--- a/tools/testing/selftests/net/txtimestamp.c
++++ b/tools/testing/selftests/net/txtimestamp.c
+@@ -26,6 +26,7 @@
+ #include <inttypes.h>
+ #include <linux/errqueue.h>
+ #include <linux/if_ether.h>
++#include <linux/if_packet.h>
+ #include <linux/ipv6.h>
+ #include <linux/net_tstamp.h>
+ #include <netdb.h>
+@@ -34,7 +35,6 @@
+ #include <netinet/ip.h>
+ #include <netinet/udp.h>
+ #include <netinet/tcp.h>
+-#include <netpacket/packet.h>
+ #include <poll.h>
+ #include <stdarg.h>
+ #include <stdbool.h>
+@@ -53,6 +53,7 @@
+ #define NSEC_PER_USEC	1000L
+ #define USEC_PER_SEC	1000000L
+ #define NSEC_PER_SEC	1000000000LL
++#define PACKET_TX_TIMESTAMP		16
  
- static void do_bottom_half_tx(struct fst_card_info *card);
- static void do_bottom_half_rx(struct fst_card_info *card);
--static void fst_process_tx_work_q(unsigned long work_q);
--static void fst_process_int_work_q(unsigned long work_q);
-+static void fst_process_tx_work_q(struct tasklet_struct *unused);
-+static void fst_process_int_work_q(struct tasklet_struct *unused);
- 
--static DECLARE_TASKLET_OLD(fst_tx_task, fst_process_tx_work_q);
--static DECLARE_TASKLET_OLD(fst_int_task, fst_process_int_work_q);
-+static DECLARE_TASKLET(fst_tx_task, fst_process_tx_work_q);
-+static DECLARE_TASKLET(fst_int_task, fst_process_int_work_q);
- 
- static struct fst_card_info *fst_card_array[FST_MAX_CARDS];
- static spinlock_t fst_work_q_lock;
-@@ -600,7 +600,7 @@ fst_q_work_item(u64 * queue, int card_index)
- }
- 
- static void
--fst_process_tx_work_q(unsigned long /*void **/work_q)
-+fst_process_tx_work_q(struct tasklet_struct *unused)
- {
- 	unsigned long flags;
- 	u64 work_txq;
-@@ -630,7 +630,7 @@ fst_process_tx_work_q(unsigned long /*void **/work_q)
- }
- 
- static void
--fst_process_int_work_q(unsigned long /*void **/work_q)
-+fst_process_int_work_q(struct tasklet_struct *unused)
- {
- 	unsigned long flags;
- 	u64 work_intq;
+ /* command line parameters */
+ static int cfg_proto = SOCK_STREAM;
+@@ -495,12 +496,12 @@ static void do_test(int family, unsigned int report_opt)
+ 	total_len = cfg_payload_len;
+ 	if (cfg_use_pf_packet || cfg_proto == SOCK_RAW) {
+ 		total_len += sizeof(struct udphdr);
+-		if (cfg_use_pf_packet || cfg_ipproto == IPPROTO_RAW)
++		if (cfg_use_pf_packet || cfg_ipproto == IPPROTO_RAW) {
+ 			if (family == PF_INET)
+ 				total_len += sizeof(struct iphdr);
+ 			else
+ 				total_len += sizeof(struct ipv6hdr);
+-
++		}
+ 		/* special case, only rawv6_sendmsg:
+ 		 * pass proto in sin6_port if not connected
+ 		 * also see ANK comment in net/ipv4/raw.c
 -- 
-2.30.0
+1.8.3.1
 
