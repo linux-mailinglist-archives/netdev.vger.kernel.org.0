@@ -2,174 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BAD930EDD8
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 08:57:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BFC630EDD6
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 08:57:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234769AbhBDH4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 02:56:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54360 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234723AbhBDH4r (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Feb 2021 02:56:47 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D931864F55;
-        Thu,  4 Feb 2021 07:56:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612425366;
-        bh=DSUZx40ENOPiuSW9/nMJGxTniUjgoz49uDMP6Q4Rxts=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LxS79Ss5DQ0dXhKXHao/98/eVwjHS09vED9xZfaHRDONWllLCXNqhv0rDLX/2Eivv
-         6/MwSQ+7pMtdbxWPCj1h9gFhfXRlqTKhRwDN6PHKecUt7NEkO1EpCpesUf2mLSuOL3
-         PaNYaLt/WdNlgFK8EQLgvV/xhte4mtMdMNYAyT63BE+qOZsJTTetBcttot+eY/tTcQ
-         dCUvxJI6Q+UPkhZgeM7tYylrUiykhSICIzfvBejp+pDxYUKNKQdmVa0tFwbLLsshJf
-         iQj+1ZC99yjjC6zg+6+9Vc8U/qP7o2C+qTkf6QjvCBs9lblHhHuywdwkgFXhunwxuM
-         JMeX3Va5/kyDA==
-Date:   Thu, 4 Feb 2021 13:26:01 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Steen Hegelund <steen.hegelund@microchip.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>
-Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH v13 2/4] phy: Add ethernet serdes configuration option
-Message-ID: <20210204075601.GI3079@vkoul-mobl.Dlink>
-References: <20210129130748.373831-1-steen.hegelund@microchip.com>
- <20210129130748.373831-3-steen.hegelund@microchip.com>
+        id S234771AbhBDHy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 02:54:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54308 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234769AbhBDHy4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 02:54:56 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78853C061573
+        for <netdev@vger.kernel.org>; Wed,  3 Feb 2021 23:54:16 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id b9so3614941ejy.12
+        for <netdev@vger.kernel.org>; Wed, 03 Feb 2021 23:54:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=reYmZlyHNIgipKF7ucvdToHvccizSip31uqGD3uwkxk=;
+        b=d+GVk3zTrCySrIcsGAwfItEwjF3yULCaQDHn5fQyarQww1L4ylamoWkLmVhWQAYCcL
+         DkmI+QC3650nehLu5isWckOC/Na+da6dHDxHtbfb0jkZJglhpGd+8GJRXxY/CMTHRbOJ
+         Mh9ttxJpJTbRW671l1JuXX/X95hg3jXwz6qf495BgijyfkcA2o+ez8BZZrLFz0lgsK6E
+         oil41O+M6I0wz3Ruxx3ed8BCtTp7OwMMhDE0POAUdc2B56Y+wAIVuo/izbZAHTw2fzWD
+         /MelPd14/1uA0nGzFG77DJi4eKtTyOfntMM+8szly97yaCdZNEoIqoi4Kwo9Kusum6Y8
+         XfHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=reYmZlyHNIgipKF7ucvdToHvccizSip31uqGD3uwkxk=;
+        b=tEGnMlHmsJzqFP22XeoPRI194kam0WDsRkPZWbJglagYEl6Enen18+NgPZ1V9sNJyp
+         scMhAPe/al5YKFEP/QbsCzNZUUUAtgK779NXHNterIS4lEbCjdsgRmo81m7c2NpSY60a
+         op7NTHh0mvBYgaDHXug2JyqkLy6pvJ7bnHvMEifMec9KLTdMx2DP0vfyECEc1lUtd99K
+         VpiwlzUVzKIGfJXP901BDLtjp7P/ljHxh9So24uufNUetUt+Y/n13szrZSrbq/KfIw4f
+         xGrQfNa6RGDfIO+gL99Vu4F1In+TVwSezAgi5ylNo5bgt6iB4KQW52VdLknKE8teQ5wO
+         IDmA==
+X-Gm-Message-State: AOAM5326d3he/PiLMfGR0iutDaXjEDbw0iqUwr46knMwPZnnP/00cWCP
+        AercKdC32RJL0Crc3s5WVj1rQVbjEIkt91Yygfpa6g==
+X-Google-Smtp-Source: ABdhPJzMe1TNaCxNpLZG8gDzQJGL+A4Eh6kuj/N+2NdX+by1l+jCZ7swnp8cqZmAeCP8H8ZjYu9qvVHFufirMU1Q2yo=
+X-Received: by 2002:a17:907:a06f:: with SMTP id ia15mr6893342ejc.328.1612425255089;
+ Wed, 03 Feb 2021 23:54:15 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210129130748.373831-3-steen.hegelund@microchip.com>
+References: <1612365335-14117-1-git-send-email-loic.poulain@linaro.org> <20210203151559.00007e94@intel.com>
+In-Reply-To: <20210203151559.00007e94@intel.com>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Thu, 4 Feb 2021 09:01:23 +0100
+Message-ID: <CAMZdPi9bL_pe0QmrHj=7PFN4bJAdtw-FOiSHHpoGw=ZZyyzYSQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 1/2] net: mhi-net: Add de-aggeration support
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Sean Tranchetti <stranche@codeaurora.org>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29-01-21, 14:07, Steen Hegelund wrote:
-> Provide a new ethernet phy configuration structure, that
-> allow PHYs used for ethernet to be configured with
-> speed, media type and clock information.
+Hi Jesse,
 
-This lgtm, Kishon ?
+On Thu, 4 Feb 2021 at 00:16, Jesse Brandeburg
+<jesse.brandeburg@intel.com> wrote:
+>
+> Loic Poulain wrote:
+>
+> > When device side MTU is larger than host side MTU, the packets
+> > (typically rmnet packets) are split over multiple MHI transfers.
+> > In that case, fragments must be re-aggregated to recover the packet
+> > before forwarding to upper layer.
+> >
+> > A fragmented packet result in -EOVERFLOW MHI transaction status for
+> > each of its fragments, except the final one. Such transfer was
+> > previously considered as error and fragments were simply dropped.
+> >
+> > This change adds re-aggregation mechanism using skb chaining, via
+> > skb frag_list.
+> >
+> > A warning (once) is printed since this behavior usually comes from
+> > a misconfiguration of the device (e.g. modem MTU).
+> >
+> > Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
+> > ---
+> >  v2: use zero-copy skb chaining instead of skb_copy_expand.
+> >  v3: Fix nit in commit msg + remove misleading inline comment for frag_list
+> >  v4: no change
+>
+> apologies for the nit, can you please fix the spelling of aggregation in
+> the subject?
 
-> 
-> Signed-off-by: Lars Povlsen <lars.povlsen@microchip.com>
-> Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> ---
->  drivers/phy/phy-core.c  | 30 ++++++++++++++++++++++++++++++
->  include/linux/phy/phy.h | 26 ++++++++++++++++++++++++++
->  2 files changed, 56 insertions(+)
-> 
-> diff --git a/drivers/phy/phy-core.c b/drivers/phy/phy-core.c
-> index 71cb10826326..ccb575b13777 100644
-> --- a/drivers/phy/phy-core.c
-> +++ b/drivers/phy/phy-core.c
-> @@ -373,6 +373,36 @@ int phy_set_mode_ext(struct phy *phy, enum phy_mode mode, int submode)
->  }
->  EXPORT_SYMBOL_GPL(phy_set_mode_ext);
->  
-> +int phy_set_media(struct phy *phy, enum phy_media media)
-> +{
-> +	int ret;
-> +
-> +	if (!phy || !phy->ops->set_media)
-> +		return 0;
-> +
-> +	mutex_lock(&phy->mutex);
-> +	ret = phy->ops->set_media(phy, media);
-> +	mutex_unlock(&phy->mutex);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(phy_set_media);
-> +
-> +int phy_set_speed(struct phy *phy, int speed)
-> +{
-> +	int ret;
-> +
-> +	if (!phy || !phy->ops->set_speed)
-> +		return 0;
-> +
-> +	mutex_lock(&phy->mutex);
-> +	ret = phy->ops->set_speed(phy, speed);
-> +	mutex_unlock(&phy->mutex);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(phy_set_speed);
-> +
->  int phy_reset(struct phy *phy)
->  {
->  	int ret;
-> diff --git a/include/linux/phy/phy.h b/include/linux/phy/phy.h
-> index e435bdb0bab3..e4fd69a1faa7 100644
-> --- a/include/linux/phy/phy.h
-> +++ b/include/linux/phy/phy.h
-> @@ -44,6 +44,12 @@ enum phy_mode {
->  	PHY_MODE_DP
->  };
->  
-> +enum phy_media {
-> +	PHY_MEDIA_DEFAULT,
-> +	PHY_MEDIA_SR,
-> +	PHY_MEDIA_DAC,
-> +};
-> +
->  /**
->   * union phy_configure_opts - Opaque generic phy configuration
->   *
-> @@ -64,6 +70,8 @@ union phy_configure_opts {
->   * @power_on: powering on the phy
->   * @power_off: powering off the phy
->   * @set_mode: set the mode of the phy
-> + * @set_media: set the media type of the phy (optional)
-> + * @set_speed: set the speed of the phy (optional)
->   * @reset: resetting the phy
->   * @calibrate: calibrate the phy
->   * @release: ops to be performed while the consumer relinquishes the PHY
-> @@ -75,6 +83,8 @@ struct phy_ops {
->  	int	(*power_on)(struct phy *phy);
->  	int	(*power_off)(struct phy *phy);
->  	int	(*set_mode)(struct phy *phy, enum phy_mode mode, int submode);
-> +	int	(*set_media)(struct phy *phy, enum phy_media media);
-> +	int	(*set_speed)(struct phy *phy, int speed);
->  
->  	/**
->  	 * @configure:
-> @@ -215,6 +225,8 @@ int phy_power_off(struct phy *phy);
->  int phy_set_mode_ext(struct phy *phy, enum phy_mode mode, int submode);
->  #define phy_set_mode(phy, mode) \
->  	phy_set_mode_ext(phy, mode, 0)
-> +int phy_set_media(struct phy *phy, enum phy_media media);
-> +int phy_set_speed(struct phy *phy, int speed);
->  int phy_configure(struct phy *phy, union phy_configure_opts *opts);
->  int phy_validate(struct phy *phy, enum phy_mode mode, int submode,
->  		 union phy_configure_opts *opts);
-> @@ -344,6 +356,20 @@ static inline int phy_set_mode_ext(struct phy *phy, enum phy_mode mode,
->  #define phy_set_mode(phy, mode) \
->  	phy_set_mode_ext(phy, mode, 0)
->  
-> +static inline int phy_set_media(struct phy *phy, enum phy_media media)
-> +{
-> +	if (!phy)
-> +		return 0;
-> +	return -ENOSYS;
-> +}
-> +
-> +static inline int phy_set_speed(struct phy *phy, int speed)
-> +{
-> +	if (!phy)
-> +		return 0;
-> +	return -ENOSYS;
-> +}
-> +
->  static inline enum phy_mode phy_get_mode(struct phy *phy)
->  {
->  	return PHY_MODE_INVALID;
-> -- 
-> 2.30.0
+I will, anyway I need to change that since it is not de-aggregation
+but re-aggregation of fragmented packets.
 
--- 
-~Vinod
+Thanks
+Loic
