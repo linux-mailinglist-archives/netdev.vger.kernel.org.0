@@ -2,111 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0949B30F353
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 13:45:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 770DF30F374
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 13:52:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236125AbhBDMnf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 07:43:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59606 "EHLO
+        id S236169AbhBDMuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 07:50:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235973AbhBDMne (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 07:43:34 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D943DC0613D6
-        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 04:42:53 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id u14so3354690wri.3
-        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 04:42:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=monstr-eu.20150623.gappssmtp.com; s=20150623;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Sf0cEHgoBjUUrSmCunlnTaOhu9gA+20DyV3BPL25Fks=;
-        b=CL6P0Yz49baJM/ZPXSPCSKTQ0dQoM9DUs/ZLFFBLST1y3bly48kVvNhc1Vodu6yVuN
-         dokdIZYyDV1Zlx2rTlzw7kbDt7ewU5+NZfN82391SzjhSh+Ko+2nql0fQKYS0H9oPV88
-         bUBJuGgDU2AOMVKQcXAwmDk+q8NcMRdOXZFXW5YJ3hrolxcm6BtrH9WX3ikrxCku0lPp
-         W7csdecqx3qZjQBDv7sJauhIhhWBsGTYUzY/xxh7Bon5GlvWsBUsJe3L4aUsZMu6Vh24
-         I1XEOePCh7jfdb/tgimGwrl4CTVus+bnDIGWZ/ROozjC0YS5hYff2AlKhVrqOhxopbwr
-         L+QA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=Sf0cEHgoBjUUrSmCunlnTaOhu9gA+20DyV3BPL25Fks=;
-        b=c5pN64gRC3C4PvFWq1WJUKvvpl1Czl2jW0VhDePg16qatFZ/LRnUazWpPFvnipOYsE
-         20qmxNX1uOwb4j3oBss6V/EeJvwKjsr1f5HerNxu7qJblPhhfLCKdrfwRwQUVmAOhEkY
-         27DZP+6uFjLbBR5S5fB8DI0TUpYAB5x7VdUvlcIGh2RKKvkqvbgHrBdINTiFHNi227/J
-         S7KhBf0Be4vqahtCQptlWU4fSZkXrhtvNnF/av1J5FHeQxsY1pKavWJLDImbikdVU9hk
-         V5T0Ux0p0ZnomLTSz8eDn8u05DJY5EyU4S3JiauHhT7AwKD6eR13dYinOC1TvBgT1H1l
-         P7sg==
-X-Gm-Message-State: AOAM532rJNzXe2XaPlB7paImolC2eJ+/nUTDFnUlUawBpEIt6rleztFM
-        ij2wyA/vkuUyds2pKvE10llbTA==
-X-Google-Smtp-Source: ABdhPJwWFBGTfCzIYxIPWUtexWvAA0VI/2/svkzdxTyaMfgZnW0iMb8TFf7+LLz9Xunn4f+HSOji/g==
-X-Received: by 2002:a5d:6510:: with SMTP id x16mr8884764wru.175.1612442572651;
-        Thu, 04 Feb 2021 04:42:52 -0800 (PST)
-Received: from localhost (nat-35.starnet.cz. [178.255.168.35])
-        by smtp.gmail.com with ESMTPSA id r25sm8546181wrr.64.2021.02.04.04.42.51
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 04 Feb 2021 04:42:52 -0800 (PST)
-Sender: Michal Simek <monstr@monstr.eu>
-From:   Michal Simek <michal.simek@xilinx.com>
-To:     linux-kernel@vger.kernel.org, monstr@monstr.eu,
-        michal.simek@xilinx.com, git@xilinx.com
-Cc:     Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
+        with ESMTP id S236147AbhBDMuH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 07:50:07 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9A2EC061786
+        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 04:49:26 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1l7e4Q-0006pB-5X; Thu, 04 Feb 2021 13:49:14 +0100
+Received: from hardanger.blackshift.org (unknown [IPv6:2a03:f580:87bc:d400:de60:60b:d135:1fda])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 7E7E15D68E8;
+        Thu,  4 Feb 2021 12:49:11 +0000 (UTC)
+Date:   Thu, 4 Feb 2021 13:49:10 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Michal Simek <michal.simek@xilinx.com>
+Cc:     linux-kernel@vger.kernel.org, monstr@monstr.eu, git@xilinx.com,
+        Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
         Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
         Wolfgang Grandegger <wg@grandegger.com>,
         linux-arm-kernel@lists.infradead.org, linux-can@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH] can: xilinx_can: Simplify code by using dev_err_probe()
-Date:   Thu,  4 Feb 2021 13:42:48 +0100
-Message-Id: <91af0945ed7397b08f1af0c829450620bd92b804.1612442564.git.michal.simek@xilinx.com>
-X-Mailer: git-send-email 2.30.0
+Subject: Re: [PATCH] can: xilinx_can: Simplify code by using dev_err_probe()
+Message-ID: <20210204124910.3k52e26pqnei2oqt@hardanger.blackshift.org>
+References: <91af0945ed7397b08f1af0c829450620bd92b804.1612442564.git.michal.simek@xilinx.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="xxblkl2lc6zjeh2y"
+Content-Disposition: inline
+In-Reply-To: <91af0945ed7397b08f1af0c829450620bd92b804.1612442564.git.michal.simek@xilinx.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use already prepared dev_err_probe() introduced by commit a787e5400a1c
-("driver core: add device probe log helper").
-It simplifies EPROBE_DEFER handling.
 
-Also unify message format for similar error cases.
+--xxblkl2lc6zjeh2y
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
----
+On 04.02.2021 13:42:48, Michal Simek wrote:
+> Use already prepared dev_err_probe() introduced by commit a787e5400a1c
+> ("driver core: add device probe log helper").
+> It simplifies EPROBE_DEFER handling.
+>=20
+> Also unify message format for similar error cases.
+>=20
+> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
 
- drivers/net/can/xilinx_can.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+Applied to linux-can-next/testing.
 
-diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
-index 37fa19c62d73..3b883e607d8b 100644
---- a/drivers/net/can/xilinx_can.c
-+++ b/drivers/net/can/xilinx_can.c
-@@ -1772,17 +1772,15 @@ static int xcan_probe(struct platform_device *pdev)
- 	/* Getting the CAN can_clk info */
- 	priv->can_clk = devm_clk_get(&pdev->dev, "can_clk");
- 	if (IS_ERR(priv->can_clk)) {
--		if (PTR_ERR(priv->can_clk) != -EPROBE_DEFER)
--			dev_err(&pdev->dev, "Device clock not found.\n");
--		ret = PTR_ERR(priv->can_clk);
-+		ret = dev_err_probe(&pdev->dev, PTR_ERR(priv->can_clk),
-+				    "device clock not found\n");
- 		goto err_free;
- 	}
- 
- 	priv->bus_clk = devm_clk_get(&pdev->dev, devtype->bus_clk_name);
- 	if (IS_ERR(priv->bus_clk)) {
--		if (PTR_ERR(priv->bus_clk) != -EPROBE_DEFER)
--			dev_err(&pdev->dev, "bus clock not found\n");
--		ret = PTR_ERR(priv->bus_clk);
-+		ret = dev_err_probe(&pdev->dev, PTR_ERR(priv->bus_clk),
-+				    "bus clock not found\n");
- 		goto err_free;
- 	}
- 
--- 
-2.30.0
+Thanks,
+Marc
 
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--xxblkl2lc6zjeh2y
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmAb7UMACgkQqclaivrt
+76moHQf+P+407ZM7dAhnCFn+vgcklv1aNqes5qfs04XTSoeW7YzpL2uIRirDRb75
+ofphIZZYwo2Cd7c1Tw44CzeUCsrurs3MYWdxQvv5FpZGkGIYEyktl3iuddPSEUqa
+xCZLMpsgCUQaBqDNKKv1wT9MZrXU9cNx2JJVOtoqqWCNldoL5recOdop6BpdN0OE
+nU0ljU1xscTbqF6tPAIsrroplc1otdK8tpJI4mwUOHebOpYlpd9WtTgXmKEETxkr
+mfgOOBjiCDs3IVSFNM+k4zw5ZG+3lxX7ygf5H0xrz7M4wTv/6gz9KO/PKqEjmMXX
+kFxlhMUuwqCq6AnNOuNdTXaNPcqskw==
+=JYmf
+-----END PGP SIGNATURE-----
+
+--xxblkl2lc6zjeh2y--
