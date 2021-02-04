@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1AE730FC27
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 20:03:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1847630FC50
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 20:14:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239559AbhBDTCm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 14:02:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56320 "EHLO
+        id S239650AbhBDTMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 14:12:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239502AbhBDTBc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 14:01:32 -0500
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EEF5C06178C
-        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 11:00:13 -0800 (PST)
-Received: by mail-qv1-xf29.google.com with SMTP id a1so2212666qvd.13
-        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 11:00:13 -0800 (PST)
+        with ESMTP id S239485AbhBDTBh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 14:01:37 -0500
+Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96A56C061797
+        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 11:00:17 -0800 (PST)
+Received: by mail-qt1-x832.google.com with SMTP id e11so3195699qtg.6
+        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 11:00:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=semihalf-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=CosMoQ9tIc5/m79M0QFjwdsnFzFUErPjwYBk3dn+CMM=;
-        b=u+CkVqrVV12cZ1chwGYhTraddNcAEOyRVY6lY4Hja9ayTgCPhQ7ZykQWXZbD6J+xSR
-         gDFTS3qPZPga3pqA3abMQqiR2Dj26kE1xzr3apDexQAyWz+7bkoFloTmAxNmzHth/I2e
-         mtI+ie1vFu52G3c9th9bqQfEOtnhTU2SKK64MsqEy9FTQrsr0BzVitNOhvF0VMeqexHZ
-         OmZKHZdKP5fEoF950L57HGGu+2BwQ1RWHD0iUbiT0452P1Z7rNSMna/Ta3fjX1eG4F0h
-         NajZWLNsTQ0z/LG0wqbUIRSdnTnC+I0GULESRAYVnEnAJO2UR4lJ/Wbuge/Ig4L2Kz3L
-         veug==
+        bh=RqZ8rygl55sOxLHGojRF+8G9b1ZOqwiFUfZbypZoZLg=;
+        b=IalZioeoVLQEkhTqrRdqPEzoemActm15rC4bqLbYPlGpC8F26deSBrgO6Bs5ln1T3Q
+         bIZVpzddh0sDKQ8jMQWYcN1auGBE+hrWGiMQn6c09W6oLpzNvotsKPeRzqdcdjKOW4v1
+         pTt6wqVw1ahgpAko5xiX6lCxkBtAgVGZuTgnOfx3D8jVD3wyxcq6q0/INzNNg0XDasfE
+         aOP8mYlr8gCSGUz8rJ3l1NlwGpG8+ydBe/2M+4qEF5IpYjqCF6ozSwO9v837MVkU2SXG
+         OQn6z9LK72k1DR5LDyKKdq7V5XqhnR1I9CZwTsROTZa6MIwgEHf9iL54Ig/OUgPCdoNB
+         rfUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=CosMoQ9tIc5/m79M0QFjwdsnFzFUErPjwYBk3dn+CMM=;
-        b=VGd7NHnDWf2glh6Apqg65Y1kRhVxoXTSMt87jVYdXfFv2pbUw/wcwjxjNg+7VASEo/
-         dCDPCMmj+JdCkHomhPUypYgdqdjJGhfmqpQWl4HPYJitXBNx5SF1PEeNe3nqrEaBzpWi
-         pVVVPRE32FooPcQVZE3XNTpZIVkvgIDJMktQJRBtbPd4WI/R7603PLTMt2J3W1kwVJRa
-         tqWc7Eg6jUEzaCkxk8inz2Bx4Hr4EqrqyH2MdMMLmBWWSvAfdzg5dk89v/jjUHh7naRN
-         VGbSDOGqovAayZEb2sIrS/ZWe+7RunGFgv10AkrdgvKQn/YXGmSAQs+0JnINsAhCz+jc
-         WNYg==
-X-Gm-Message-State: AOAM532C6ZzSBjM0HN7tT5T7qT0sG53jpDxYCSKKaDDA3Ydn/9G87xrO
-        FJJ33ciCVsmakUbPmDYt9UWcE+AyZzUXAcX6sAjb2w==
-X-Google-Smtp-Source: ABdhPJxhcI6Dc686Xb422FLIvhEsjd3vXHH5hrkN4IpWirX0bcsqAZpQ4e/1tHxJu8EGp+7i4BcqEO3MsmgOBHy0sUk=
-X-Received: by 2002:a0c:c509:: with SMTP id x9mr616635qvi.59.1612465212754;
- Thu, 04 Feb 2021 11:00:12 -0800 (PST)
+        bh=RqZ8rygl55sOxLHGojRF+8G9b1ZOqwiFUfZbypZoZLg=;
+        b=sCHYLJJHcw/biK9EPGve9hwYgvcrBiZYNDEa0lTVwPrvDcBpNzR8JHGh5/HiE9E3e2
+         POCuAgL/g1PcKRfhIkDaEUlzum5CKsFrVrQoIOVe5VbgK2rklDXglTNsNFfUAK/ZmVp1
+         r9LiRyiAA4QyxXGni2DZOvWSKClHSUMQBmAe/Xkoogep9D/E1OE+8AJc2B/3ELyhLJRJ
+         vwPjfvTcoLx//cmMhqNwkddX+s6A+EuL+4cGdREBkTAPbHpun53l8JngtikdvMzt3gsq
+         yIQyQEd7+WatnxrOzCNDEx9KbEK0XrEtz9068Fa+G8Q4pN+KScuK/WswoZ4ndQrNevSd
+         jbkQ==
+X-Gm-Message-State: AOAM533CZTWebrJ6GNJtYOd/r3cskqpUzd+7uGzlD1fg6DtcUIFfmPR5
+        UGamL6IDsPAHcpWQA7CZGrKZe+oEl6MKsbhL1zUx4A==
+X-Google-Smtp-Source: ABdhPJwhUGNf3alu5buhHjjbQ5aCLec+FqzmdGl+Lsrdd5fCzmIt4cYq9bpmPu9TKLHEdv8ikstrpgVFiPwbnloSMso=
+X-Received: by 2002:ac8:e0d:: with SMTP id a13mr1024600qti.16.1612465215632;
+ Thu, 04 Feb 2021 11:00:15 -0800 (PST)
 MIME-Version: 1.0
-References: <1612253821-1148-1-git-send-email-stefanc@marvell.com> <1612253821-1148-6-git-send-email-stefanc@marvell.com>
-In-Reply-To: <1612253821-1148-6-git-send-email-stefanc@marvell.com>
+References: <1612253821-1148-1-git-send-email-stefanc@marvell.com> <1612253821-1148-9-git-send-email-stefanc@marvell.com>
+In-Reply-To: <1612253821-1148-9-git-send-email-stefanc@marvell.com>
 From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Thu, 4 Feb 2021 20:00:01 +0100
-Message-ID: <CAPv3WKc4WMnwQ0K_bQhBYmRvLkDCC-CXD5gCd-PdnjzxKdhruQ@mail.gmail.com>
-Subject: Re: [PATCH v7 net-next 05/15] net: mvpp2: always compare hw-version
- vs MVPP21
+Date:   Thu, 4 Feb 2021 20:00:04 +0100
+Message-ID: <CAPv3WKeTOC8nNo0NfbrKaJb7L8kBwecYRdFsgH0m6Zo6bc0Q5Q@mail.gmail.com>
+Subject: Re: [PATCH v7 net-next 08/15] net: mvpp2: add FCA RXQ non occupied
+ descriptor threshold
 To:     Stefan Chulski <stefanc@marvell.com>
 Cc:     netdev <netdev@vger.kernel.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
@@ -69,223 +69,161 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi,
 
-wt., 2 lut 2021 o 09:17 <stefanc@marvell.com> napisa=C5=82(a):
+wt., 2 lut 2021 o 09:18 <stefanc@marvell.com> napisa=C5=82(a):
 >
 > From: Stefan Chulski <stefanc@marvell.com>
 >
-> Currently we have PP2v1 and PP2v2 hw-versions, with some different
-> handlers depending upon condition hw_version =3D MVPP21/MVPP22.
-> In a future there will be also PP2v3. Let's use now the generic
-> "if equal/notEqual MVPP21" for all cases instead of "if MVPP22".
+> The firmware needs to monitor the RX Non-occupied descriptor
+> bits for flow control to move to XOFF mode.
+> These bits need to be unmasked to be functional, but they will
+> not raise interrupts as we leave the RX exception summary
+> bit in MVPP2_ISR_RX_TX_MASK_REG clear.
 >
-> This patch does not change any functionality.
-> It is not intended to introduce PP2v3.
+> Signed-off-by: Stefan Chulski <stefanc@marvell.com>
+> ---
+>  drivers/net/ethernet/marvell/mvpp2/mvpp2.h      |  3 ++
+>  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 44 ++++++++++++++++---=
+-
+>  2 files changed, 40 insertions(+), 7 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/eth=
+ernet/marvell/mvpp2/mvpp2.h
+> index 73f087c..ca84995 100644
+> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+> @@ -295,6 +295,8 @@
+>  #define     MVPP2_PON_CAUSE_TXP_OCCUP_DESC_ALL_MASK    0x3fc00000
+>  #define     MVPP2_PON_CAUSE_MISC_SUM_MASK              BIT(31)
+>  #define MVPP2_ISR_MISC_CAUSE_REG               0x55b0
+> +#define MVPP2_ISR_RX_ERR_CAUSE_REG(port)       (0x5520 + 4 * (port))
+> +#define     MVPP2_ISR_RX_ERR_CAUSE_NONOCC_MASK 0x00ff
+>
+>  /* Buffer Manager registers */
+>  #define MVPP2_BM_POOL_BASE_REG(pool)           (0x6000 + ((pool) * 4))
+> @@ -764,6 +766,7 @@
+>  #define MSS_SRAM_SIZE          0x800
+>  #define FC_QUANTA              0xFFFF
+>  #define FC_CLK_DIVIDER         100
+> +#define MSS_THRESHOLD_STOP     768
+>
+>  /* RX buffer constants */
+>  #define MVPP2_SKB_SHINFO_SIZE \
+> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/ne=
+t/ethernet/marvell/mvpp2/mvpp2_main.c
+> index 6e59d07..19a3f38 100644
+> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> @@ -1134,14 +1134,19 @@ static inline void mvpp2_qvec_interrupt_disable(s=
+truct mvpp2_queue_vector *qvec)
+>  static void mvpp2_interrupts_mask(void *arg)
+>  {
+>         struct mvpp2_port *port =3D arg;
+> +       int cpu =3D smp_processor_id();
+> +       u32 thread;
+>
+>         /* If the thread isn't used, don't do anything */
+> -       if (smp_processor_id() > port->priv->nthreads)
+> +       if (cpu >=3D port->priv->nthreads)
 
-This is a preparation patch and it should be commited before "net:
-mvpp2: add PPv23 version definition"
+The condition is changed - correctly, but it is a separate fix, that
+IMO should go through 'net' tree.
+
+>                 return;
+>
+> -       mvpp2_thread_write(port->priv,
+> -                          mvpp2_cpu_to_thread(port->priv, smp_processor_=
+id()),
+> +       thread =3D mvpp2_cpu_to_thread(port->priv, cpu);
+> +
+> +       mvpp2_thread_write(port->priv, thread,
+>                            MVPP2_ISR_RX_TX_MASK_REG(port->id), 0);
+> +       mvpp2_thread_write(port->priv, thread,
+> +                          MVPP2_ISR_RX_ERR_CAUSE_REG(port->id), 0);
+>  }
+>
+>  /* Unmask the current thread's Rx/Tx interrupts.
+> @@ -1151,20 +1156,25 @@ static void mvpp2_interrupts_mask(void *arg)
+>  static void mvpp2_interrupts_unmask(void *arg)
+>  {
+>         struct mvpp2_port *port =3D arg;
+> -       u32 val;
+> +       int cpu =3D smp_processor_id();
+> +       u32 val, thread;
+>
+>         /* If the thread isn't used, don't do anything */
+> -       if (smp_processor_id() > port->priv->nthreads)
+> +       if (cpu >=3D port->priv->nthreads)
+
+Ditto.
 
 Thanks,
 Marcin
 
 
-> It just modifies MVPP21/MVPP22 check-condition
-> bringing it to generic and unified form correct for new-code
-> introducing and PP2v3 net-next generation.
+>                 return;
 >
-> Signed-off-by: Stefan Chulski <stefanc@marvell.com>
-> ---
->  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 36 ++++++++++---------=
--
->  1 file changed, 18 insertions(+), 18 deletions(-)
+> +       thread =3D mvpp2_cpu_to_thread(port->priv, cpu);
+> +
+>         val =3D MVPP2_CAUSE_MISC_SUM_MASK |
+>                 MVPP2_CAUSE_RXQ_OCCUP_DESC_ALL_MASK(port->priv->hw_versio=
+n);
+>         if (port->has_tx_irqs)
+>                 val |=3D MVPP2_CAUSE_TXQ_OCCUP_DESC_ALL_MASK;
 >
-> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/ne=
-t/ethernet/marvell/mvpp2/mvpp2_main.c
-> index 11c56d2..d80947a 100644
-> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> @@ -320,7 +320,7 @@ static int mvpp2_get_nrxqs(struct mvpp2 *priv)
->  {
->         unsigned int nrxqs;
->
-> -       if (priv->hw_version =3D=3D MVPP22 && queue_mode =3D=3D MVPP2_QDI=
-ST_SINGLE_MODE)
-> +       if (priv->hw_version !=3D MVPP21 && queue_mode =3D=3D MVPP2_QDIST=
-_SINGLE_MODE)
->                 return 1;
->
->         /* According to the PPv2.2 datasheet and our experiments on
-> @@ -447,7 +447,7 @@ static void mvpp2_bm_bufs_get_addrs(struct device *de=
-v, struct mvpp2 *priv,
->                                       MVPP2_BM_PHY_ALLOC_REG(bm_pool->id)=
-);
->         *phys_addr =3D mvpp2_thread_read(priv, thread, MVPP2_BM_VIRT_ALLO=
-C_REG);
->
-> -       if (priv->hw_version =3D=3D MVPP22) {
-> +       if (priv->hw_version !=3D MVPP21) {
->                 u32 val;
->                 u32 dma_addr_highbits, phys_addr_highbits;
->
-> @@ -743,7 +743,7 @@ static inline void mvpp2_bm_pool_put(struct mvpp2_por=
-t *port, int pool,
->         if (test_bit(thread, &port->priv->lock_map))
->                 spin_lock_irqsave(&port->bm_lock[thread], flags);
->
-> -       if (port->priv->hw_version =3D=3D MVPP22) {
-> +       if (port->priv->hw_version !=3D MVPP21) {
->                 u32 val =3D 0;
->
->                 if (sizeof(dma_addr_t) =3D=3D 8)
-> @@ -1200,7 +1200,7 @@ static bool mvpp2_port_supports_xlg(struct mvpp2_po=
-rt *port)
->
->  static bool mvpp2_port_supports_rgmii(struct mvpp2_port *port)
->  {
-> -       return !(port->priv->hw_version =3D=3D MVPP22 && port->gop_id =3D=
-=3D 0);
-> +       return !(port->priv->hw_version !=3D MVPP21 && port->gop_id =3D=
-=3D 0);
+> -       mvpp2_thread_write(port->priv,
+> -                          mvpp2_cpu_to_thread(port->priv, smp_processor_=
+id()),
+> +       mvpp2_thread_write(port->priv, thread,
+>                            MVPP2_ISR_RX_TX_MASK_REG(port->id), val);
+> +       mvpp2_thread_write(port->priv, thread,
+> +                          MVPP2_ISR_RX_ERR_CAUSE_REG(port->id),
+> +                          MVPP2_ISR_RX_ERR_CAUSE_NONOCC_MASK);
 >  }
 >
->  /* Port configuration routines */
-> @@ -1818,7 +1818,7 @@ static void mvpp2_mac_reset_assert(struct mvpp2_por=
-t *port)
->               MVPP2_GMAC_PORT_RESET_MASK;
->         writel(val, port->base + MVPP2_GMAC_CTRL_2_REG);
+>  static void
+> @@ -1189,6 +1199,9 @@ static void mvpp2_interrupts_unmask(void *arg)
 >
-> -       if (port->priv->hw_version =3D=3D MVPP22 && port->gop_id =3D=3D 0=
-) {
-> +       if (port->priv->hw_version !=3D MVPP21 && port->gop_id =3D=3D 0) =
-{
->                 val =3D readl(port->base + MVPP22_XLG_CTRL0_REG) &
->                       ~MVPP22_XLG_CTRL0_MAC_RESET_DIS;
->                 writel(val, port->base + MVPP22_XLG_CTRL0_REG);
-> @@ -1831,7 +1831,7 @@ static void mvpp22_pcs_reset_assert(struct mvpp2_po=
-rt *port)
->         void __iomem *mpcs, *xpcs;
->         u32 val;
->
-> -       if (port->priv->hw_version !=3D MVPP22 || port->gop_id !=3D 0)
-> +       if (port->priv->hw_version =3D=3D MVPP21 || port->gop_id !=3D 0)
->                 return;
->
->         mpcs =3D priv->iface_base + MVPP22_MPCS_BASE(port->gop_id);
-> @@ -1852,7 +1852,7 @@ static void mvpp22_pcs_reset_deassert(struct mvpp2_=
-port *port)
->         void __iomem *mpcs, *xpcs;
->         u32 val;
->
-> -       if (port->priv->hw_version !=3D MVPP22 || port->gop_id !=3D 0)
-> +       if (port->priv->hw_version =3D=3D MVPP21 || port->gop_id !=3D 0)
->                 return;
->
->         mpcs =3D priv->iface_base + MVPP22_MPCS_BASE(port->gop_id);
-> @@ -4189,7 +4189,7 @@ static void mvpp2_start_dev(struct mvpp2_port *port=
-)
->         /* Enable interrupts on all threads */
->         mvpp2_interrupts_enable(port);
->
-> -       if (port->priv->hw_version =3D=3D MVPP22)
-> +       if (port->priv->hw_version !=3D MVPP21)
->                 mvpp22_mode_reconfigure(port);
->
->         if (port->phylink) {
-> @@ -4405,7 +4405,7 @@ static int mvpp2_open(struct net_device *dev)
->                 valid =3D true;
+>                 mvpp2_thread_write(port->priv, v->sw_thread_id,
+>                                    MVPP2_ISR_RX_TX_MASK_REG(port->id), va=
+l);
+> +               mvpp2_thread_write(port->priv, v->sw_thread_id,
+> +                                  MVPP2_ISR_RX_ERR_CAUSE_REG(port->id),
+> +                                  MVPP2_ISR_RX_ERR_CAUSE_NONOCC_MASK);
 >         }
+>  }
 >
-> -       if (priv->hw_version =3D=3D MVPP22 && port->port_irq) {
-> +       if (priv->hw_version !=3D MVPP21 && port->port_irq) {
->                 err =3D request_irq(port->port_irq, mvpp2_port_isr, 0,
->                                   dev->name, port);
->                 if (err) {
-> @@ -6053,7 +6053,7 @@ static int mvpp2__mac_prepare(struct phylink_config=
- *config, unsigned int mode,
->                              MVPP2_GMAC_PORT_RESET_MASK,
->                              MVPP2_GMAC_PORT_RESET_MASK);
->
-> -               if (port->priv->hw_version =3D=3D MVPP22) {
-> +               if (port->priv->hw_version !=3D MVPP21) {
->                         mvpp22_gop_mask_irq(port);
->
->                         phy_power_off(port->comphy);
-> @@ -6107,7 +6107,7 @@ static int mvpp2_mac_finish(struct phylink_config *=
-config, unsigned int mode,
->  {
->         struct mvpp2_port *port =3D mvpp2_phylink_to_port(config);
->
-> -       if (port->priv->hw_version =3D=3D MVPP22 &&
-> +       if (port->priv->hw_version !=3D MVPP21 &&
->             port->phy_interface !=3D interface) {
->                 port->phy_interface =3D interface;
->
-> @@ -6787,7 +6787,7 @@ static int mvpp2_init(struct platform_device *pdev,=
- struct mvpp2 *priv)
->         if (dram_target_info)
->                 mvpp2_conf_mbus_windows(dram_target_info, priv);
->
-> -       if (priv->hw_version =3D=3D MVPP22)
-> +       if (priv->hw_version !=3D MVPP21)
->                 mvpp2_axi_init(priv);
->
->         /* Disable HW PHY polling */
-> @@ -6950,7 +6950,7 @@ static int mvpp2_probe(struct platform_device *pdev=
-)
->                         dev_warn(&pdev->dev, "Fail to alloc CM3 SRAM\n");
+> @@ -2394,6 +2407,20 @@ static void mvpp2_txp_max_tx_size_set(struct mvpp2=
+_port *port)
 >         }
+>  }
 >
-> -       if (priv->hw_version =3D=3D MVPP22 && dev_of_node(&pdev->dev)) {
-> +       if (priv->hw_version !=3D MVPP21 && dev_of_node(&pdev->dev)) {
->                 priv->sysctrl_base =3D
->                         syscon_regmap_lookup_by_phandle(pdev->dev.of_node=
-,
->                                                         "marvell,system-c=
-ontroller");
-> @@ -6963,7 +6963,7 @@ static int mvpp2_probe(struct platform_device *pdev=
-)
->                         priv->sysctrl_base =3D NULL;
->         }
+> +/* Set the number of non-occupied descriptors threshold */
+> +static void mvpp2_set_rxq_free_tresh(struct mvpp2_port *port,
+> +                                    struct mvpp2_rx_queue *rxq)
+> +{
+> +       u32 val;
+> +
+> +       mvpp2_write(port->priv, MVPP2_RXQ_NUM_REG, rxq->id);
+> +
+> +       val =3D mvpp2_read(port->priv, MVPP2_RXQ_THRESH_REG);
+> +       val &=3D ~MVPP2_RXQ_NON_OCCUPIED_MASK;
+> +       val |=3D MSS_THRESHOLD_STOP << MVPP2_RXQ_NON_OCCUPIED_OFFSET;
+> +       mvpp2_write(port->priv, MVPP2_RXQ_THRESH_REG, val);
+> +}
+> +
+>  /* Set the number of packets that will be received before Rx interrupt
+>   * will be generated by HW.
+>   */
+> @@ -2649,6 +2676,9 @@ static int mvpp2_rxq_init(struct mvpp2_port *port,
+>         mvpp2_rx_pkts_coal_set(port, rxq);
+>         mvpp2_rx_time_coal_set(port, rxq);
 >
-> -       if (priv->hw_version =3D=3D MVPP22 &&
-> +       if (priv->hw_version !=3D MVPP21 &&
->             mvpp2_get_nrxqs(priv) * 2 <=3D MVPP2_BM_MAX_POOLS)
->                 priv->percpu_pools =3D 1;
+> +       /* Set the number of non occupied descriptors threshold */
+> +       mvpp2_set_rxq_free_tresh(port, rxq);
+> +
+>         /* Add number of descriptors ready for receiving packets */
+>         mvpp2_rxq_status_update(port, rxq->id, 0, rxq->size);
 >
-> @@ -7010,7 +7010,7 @@ static int mvpp2_probe(struct platform_device *pdev=
-)
->                 if (err < 0)
->                         goto err_pp_clk;
->
-> -               if (priv->hw_version =3D=3D MVPP22) {
-> +               if (priv->hw_version !=3D MVPP21) {
->                         priv->mg_clk =3D devm_clk_get(&pdev->dev, "mg_clk=
-");
->                         if (IS_ERR(priv->mg_clk)) {
->                                 err =3D PTR_ERR(priv->mg_clk);
-> @@ -7051,7 +7051,7 @@ static int mvpp2_probe(struct platform_device *pdev=
-)
->                 return -EINVAL;
->         }
->
-> -       if (priv->hw_version =3D=3D MVPP22) {
-> +       if (priv->hw_version !=3D MVPP21) {
->                 err =3D dma_set_mask(&pdev->dev, MVPP2_DESC_DMA_MASK);
->                 if (err)
->                         goto err_axi_clk;
-> @@ -7131,10 +7131,10 @@ static int mvpp2_probe(struct platform_device *pd=
-ev)
->         clk_disable_unprepare(priv->axi_clk);
->
->  err_mg_core_clk:
-> -       if (priv->hw_version =3D=3D MVPP22)
-> +       if (priv->hw_version !=3D MVPP21)
->                 clk_disable_unprepare(priv->mg_core_clk);
->  err_mg_clk:
-> -       if (priv->hw_version =3D=3D MVPP22)
-> +       if (priv->hw_version !=3D MVPP21)
->                 clk_disable_unprepare(priv->mg_clk);
->  err_gop_clk:
->         clk_disable_unprepare(priv->gop_clk);
 > --
 > 1.9.1
 >
