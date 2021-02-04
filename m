@@ -2,69 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAE0F30F6A8
-	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 16:44:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AB8230F6B8
+	for <lists+netdev@lfdr.de>; Thu,  4 Feb 2021 16:48:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237603AbhBDPoc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 10:44:32 -0500
-Received: from www62.your-server.de ([213.133.104.62]:59092 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237498AbhBDPoD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 10:44:03 -0500
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1l7gml-000BBP-5T; Thu, 04 Feb 2021 16:43:11 +0100
-Received: from [85.7.101.30] (helo=pc-9.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1l7gmk-000NpS-Tq; Thu, 04 Feb 2021 16:43:10 +0100
-Subject: Re: [PATCH v3 bpf-next] net: veth: alloc skb in bulk for ndo_xdp_xmit
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, toshiaki.makita1@gmail.com,
-        lorenzo.bianconi@redhat.com, toke@redhat.com,
-        Andrew Morton <akpm@linux-foundation.org>
-References: <a14a30d3c06fff24e13f836c733d80efc0bd6eb5.1611957532.git.lorenzo@kernel.org>
- <e2ae0d97-376a-07db-94fb-14f1220acca5@iogearbox.net>
- <20210204100556.59459549@carbon.lan>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <65a218bc-3ebf-001e-174d-b67817c83b45@iogearbox.net>
-Date:   Thu, 4 Feb 2021 16:43:10 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <20210204100556.59459549@carbon.lan>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26070/Thu Feb  4 13:22:39 2021)
+        id S237565AbhBDPsL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 10:48:11 -0500
+Received: from mail-m2836.qiye.163.com ([103.74.28.36]:41086 "EHLO
+        mail-m2836.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237517AbhBDPrF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 10:47:05 -0500
+Received: from localhost.localdomain (unknown [123.59.132.129])
+        by mail-m2836.qiye.163.com (Hmail) with ESMTPA id 2AC67C02DB;
+        Thu,  4 Feb 2021 23:46:12 +0800 (CST)
+From:   wenxu@ucloud.cn
+To:     jhs@mojatatu.com, mleitner@redhat.com, kuba@kernel.org
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net v2] net/sched: cls_flower: Reject invalid ct_state flags rules
+Date:   Thu,  4 Feb 2021 23:46:11 +0800
+Message-Id: <1612453571-3645-1-git-send-email-wenxu@ucloud.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSUI3V1ktWUFJV1kPCR
+        oVCBIfWUFZQh1DGB9KHh9MH0wZVkpNSklPTkhOTElJTkxVGRETFhoSFyQUDg9ZV1kWGg8SFR0UWU
+        FZT0tIVUpKS0JITVVLWQY+
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Ky46HQw6Vj06HAIzMTVOSTQ*
+        DhMwCzdVSlVKTUpJT05ITkxJT0hLVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
+        QlVKSElVSklCWVdZCAFZQUhPSkw3Bg++
+X-HM-Tid: 0a776db8ee68841ekuqw2ac67c02db
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/4/21 10:05 AM, Jesper Dangaard Brouer wrote:
-[...]
-> It was Andrew (AKPM) that wanted the API to either return the requested
-> number of objects or fail. I respected the MM-maintainers request at
-> that point, even-though I wanted the other API as there is a small
-> performance advantage (not crossing page boundary in SLUB).
-> 
-> At that time we discussed it on MM-list, and I see his/the point:
-> If API can allocate less objs than requested, then think about how this
-> complicated the surrounding code. E.g. in this specific code we already
-> have VETH_XDP_BATCH(16) xdp_frame objects, which we need to get 16 SKB
-> objects for.  What should the code do if it cannot get 16 SKBs(?).
+From: wenxu <wenxu@ucloud.cn>
 
-Right, I mentioned the error handling complications above wrt < n_skb case. I think iff this
-ever gets implemented and there's a need, it would probably be best to add a new flag like
-__GFP_BULK_BEST_EFFORT to indicate that it would be okay to return x elements with x being
-in (0, size], so that only those callers need to deal with this, and all others can expect
-[as today] that != 0 means all #size elements were bulk alloc'ed.
+Reject the unsupported and invalid ct_state flags of cls flower rules.
 
-Thanks,
-Daniel
+Fixes: e0ace68af2ac ("net/sched: cls_flower: Add matching on conntrack info")
+
+Signed-off-by: wenxu <wenxu@ucloud.cn>
+---
+ include/uapi/linux/pkt_cls.h |  7 +++++++
+ net/sched/cls_flower.c       | 30 ++++++++++++++++++++++++++++++
+ 2 files changed, 37 insertions(+)
+
+diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
+index ee95f42..77df582 100644
+--- a/include/uapi/linux/pkt_cls.h
++++ b/include/uapi/linux/pkt_cls.h
+@@ -591,8 +591,15 @@ enum {
+ 	TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED = 1 << 1, /* Part of an existing connection. */
+ 	TCA_FLOWER_KEY_CT_FLAGS_RELATED = 1 << 2, /* Related to an established connection. */
+ 	TCA_FLOWER_KEY_CT_FLAGS_TRACKED = 1 << 3, /* Conntrack has occurred. */
++
++	__TCA_FLOWER_KEY_CT_FLAGS_MAX,
+ };
+ 
++#define TCA_FLOWER_KEY_CT_FLAGS_MAX \
++		((__TCA_FLOWER_KEY_CT_FLAGS_MAX - 1) << 1)
++#define TCA_FLOWER_KEY_CT_FLAGS_MASK \
++		(TCA_FLOWER_KEY_CT_FLAGS_MAX - 1)
++
+ enum {
+ 	TCA_FLOWER_KEY_ENC_OPTS_UNSPEC,
+ 	TCA_FLOWER_KEY_ENC_OPTS_GENEVE, /* Nested
+diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+index 84f9325..1cfdbd4 100644
+--- a/net/sched/cls_flower.c
++++ b/net/sched/cls_flower.c
+@@ -1390,12 +1390,37 @@ static int fl_set_enc_opt(struct nlattr **tb, struct fl_flow_key *key,
+ 	return 0;
+ }
+ 
++static int fl_validate_ct_state(u16 state, struct netlink_ext_ack *extack)
++{
++	if (state & ~TCA_FLOWER_KEY_CT_FLAGS_MASK) {
++		NL_SET_ERR_MSG_MOD(extack, "unsupported ct_state flags");
++		return -EINVAL;
++	}
++
++	if (state && !(state & TCA_FLOWER_KEY_CT_FLAGS_TRACKED)) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "ct_state trk unset, no other flag are set");
++		return -EINVAL;
++	}
++
++	if (state & TCA_FLOWER_KEY_CT_FLAGS_NEW &&
++	    state & TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "ct_state new and est are exclusive");
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
+ static int fl_set_key_ct(struct nlattr **tb,
+ 			 struct flow_dissector_key_ct *key,
+ 			 struct flow_dissector_key_ct *mask,
+ 			 struct netlink_ext_ack *extack)
+ {
+ 	if (tb[TCA_FLOWER_KEY_CT_STATE]) {
++		int err;
++
+ 		if (!IS_ENABLED(CONFIG_NF_CONNTRACK)) {
+ 			NL_SET_ERR_MSG(extack, "Conntrack isn't enabled");
+ 			return -EOPNOTSUPP;
+@@ -1403,6 +1428,11 @@ static int fl_set_key_ct(struct nlattr **tb,
+ 		fl_set_key_val(tb, &key->ct_state, TCA_FLOWER_KEY_CT_STATE,
+ 			       &mask->ct_state, TCA_FLOWER_KEY_CT_STATE_MASK,
+ 			       sizeof(key->ct_state));
++
++		err = fl_validate_ct_state(mask->ct_state, extack);
++		if (err)
++			return err;
++
+ 	}
+ 	if (tb[TCA_FLOWER_KEY_CT_ZONE]) {
+ 		if (!IS_ENABLED(CONFIG_NF_CONNTRACK_ZONES)) {
+-- 
+1.8.3.1
+
