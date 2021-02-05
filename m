@@ -2,79 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4C8C310132
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 01:02:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1374310153
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 01:07:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231458AbhBEAAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 19:00:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51904 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231239AbhBEAAt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Feb 2021 19:00:49 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E838164FB1;
-        Fri,  5 Feb 2021 00:00:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612483208;
-        bh=6y7bv715PH1oL4pQr0YSXZSZ/aHTrBXnXi4uHWlihc4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=byObGgNODnFGVcoi72CwdYsiD49mzorqO3nrcyldlF2ALddhCWf1SLc6lQ9OCFYrW
-         wNjqzkADA0Qg23lwpEAFiSwA9JkWGUsQnOb3smLzo0VxMDLZ3qgn8PrkDkkfBu8sui
-         hlLuz7ZxneH7zt3GDI5oVpbCzrQeH/D9kcjOur5U9tgEaPpWyO/9UYxV6S5dqZDw3R
-         AqZynorpnXGkyCN/wCoXRbKg0bQjE/1chdrIbVq0HhlCgI2CzLQe5Qgp+4h6KKjIG/
-         AaevBVZ4zT18MLj0ew+yE0/3ym6SwF4ySnqfjCByn2gHUsuzyf02it13lf3u2NqltD
-         CKQR3vF7Gfllg==
-Date:   Thu, 4 Feb 2021 16:00:06 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Arjun Roy <arjunroy@google.com>
-Cc:     Leon Romanovsky <leon@kernel.org>, David Ahern <dsahern@gmail.com>,
-        Arjun Roy <arjunroy.kdev@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
-Subject: Re: [net-next v2 2/2] tcp: Add receive timestamp support for
- receive zerocopy.
-Message-ID: <20210204160006.439ce566@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAOFY-A0_MU3LP2HNY_5a1XZLZHDr3_9tDq6v-YB-FSJJb7508g@mail.gmail.com>
-References: <20210121004148.2340206-1-arjunroy.kdev@gmail.com>
-        <20210121004148.2340206-3-arjunroy.kdev@gmail.com>
-        <20210122200723.50e4afe6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <a18cbf73-1720-dec0-fbc6-2e357fee6bd8@gmail.com>
-        <20210125061508.GC579511@unreal>
-        <ad3d4a29-b6c1-c6d2-3c0f-fff212f23311@gmail.com>
-        <CAOFY-A2y20N9mUDgknbqM=tR0SA6aS6aTjyybggWNa8uY2=U_Q@mail.gmail.com>
-        <20210202065221.GB1945456@unreal>
-        <CAOFY-A0_MU3LP2HNY_5a1XZLZHDr3_9tDq6v-YB-FSJJb7508g@mail.gmail.com>
+        id S231613AbhBEAHX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 19:07:23 -0500
+Received: from www62.your-server.de ([213.133.104.62]:60740 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231366AbhBEAHV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 19:07:21 -0500
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1l7odw-000208-RC; Fri, 05 Feb 2021 01:06:36 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1l7odw-000LFw-IN; Fri, 05 Feb 2021 01:06:36 +0100
+Subject: Re: [PATCH bpf-next V15 2/7] bpf: fix bpf_fib_lookup helper MTU check
+ for SKB ctx
+To:     Jesper Dangaard Brouer <brouer@redhat.com>, bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
+        colrack@gmail.com
+References: <161228314075.576669.15427172810948915572.stgit@firesoul>
+ <161228321177.576669.11521750082473556168.stgit@firesoul>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <ada19e5b-87be-ff39-45ba-ff0025bf1de9@iogearbox.net>
+Date:   Fri, 5 Feb 2021 01:06:35 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <161228321177.576669.11521750082473556168.stgit@firesoul>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26070/Thu Feb  4 13:22:39 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 4 Feb 2021 15:03:40 -0800 Arjun Roy wrote:
-> But, if it's an IN or IN-OUT field, it seems like mandating that the
-> application set it to 0 could break the case where a future
-> application sets it to some non-zero value and runs on an older
-> kernel.
+On 2/2/21 5:26 PM, Jesper Dangaard Brouer wrote:
+> BPF end-user on Cilium slack-channel (Carlo Carraro) wants to use
+> bpf_fib_lookup for doing MTU-check, but *prior* to extending packet size,
+> by adjusting fib_params 'tot_len' with the packet length plus the expected
+> encap size. (Just like the bpf_check_mtu helper supports). He discovered
+> that for SKB ctx the param->tot_len was not used, instead skb->len was used
+> (via MTU check in is_skb_forwardable() that checks against netdev MTU).
+> 
+> Fix this by using fib_params 'tot_len' for MTU check. If not provided (e.g.
+> zero) then keep existing TC behaviour intact. Notice that 'tot_len' for MTU
+> check is done like XDP code-path, which checks against FIB-dst MTU.
+> 
+> V13:
+> - Only do ifindex lookup one time, calling dev_get_by_index_rcu().
+> 
+> V10:
+> - Use same method as XDP for 'tot_len' MTU check
+> 
+> Fixes: 4c79579b44b1 ("bpf: Change bpf_fib_lookup to return lookup status")
+> Reported-by: Carlo Carraro <colrack@gmail.com>
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> Acked-by: John Fastabend <john.fastabend@gmail.com>
+[...]
 
-That usually works fine in practice, 0 means "do what old kernels did /
-feature not requested", then if newer userspace sets the field to non-0
-that means it requires a feature the kernel doesn't support. So -EINVAL
-/ -EOPNOTSUPP is right. BPF syscall has been successfully doing this
-since day 1, I'm not aware of any major snags.
+I was about to apply the series just now, but on a last double check there is
+a subtle logic bug in here that still needs fixing unfortunately. :/ See below:
 
-> And allowing it to be non-zero can maybe yield an unexpected
-> outcome if an old application that did not zero it runs on a newer
-> kernel.
+> @@ -5568,7 +5565,9 @@ BPF_CALL_4(bpf_skb_fib_lookup, struct sk_buff *, skb,
+>   	   struct bpf_fib_lookup *, params, int, plen, u32, flags)
+>   {
+>   	struct net *net = dev_net(skb->dev);
+> +	struct net_device *dev;
+>   	int rc = -EAFNOSUPPORT;
+> +	bool check_mtu = false;
+>   
+>   	if (plen < sizeof(*params))
+>   		return -EINVAL;
+> @@ -5576,23 +5575,30 @@ BPF_CALL_4(bpf_skb_fib_lookup, struct sk_buff *, skb,
+>   	if (flags & ~(BPF_FIB_LOOKUP_DIRECT | BPF_FIB_LOOKUP_OUTPUT))
+>   		return -EINVAL;
+>   
+> +	dev = dev_get_by_index_rcu(net, params->ifindex);
+> +	if (unlikely(!dev))
+> +		return -ENODEV;
 
-Could you refresh our memory as to why we can't require the application
-to pass zero-ed memory to TCP ZC? In practice is there are max
-reasonable length of the argument that such legacy application may pass
-so that we can start checking at a certain offset?
+Based on your earlier idea, you try to avoid refetching the dev this way, so
+here it's being looked up via params->ifindex provided from the BPF prog ...
 
-> So: maybe the right move is to mark it as reserved, not care what the
-> input value is, always set it to 0 before returning to the user, and
-> explicitly mandate that any future use of the field must be as an
-> OUT-only parameter?
+> +	if (params->tot_len)
+> +		check_mtu = true;
+> +
+>   	switch (params->family) {
+>   #if IS_ENABLED(CONFIG_INET)
+>   	case AF_INET:
+> -		rc = bpf_ipv4_fib_lookup(net, params, flags, false);
+> +		rc = bpf_ipv4_fib_lookup(net, dev, params, flags, check_mtu);
 
+... however, bpf_ipv{4,6}_fib_lookup() might change params->ifindex here to
+indicate nexthop output dev:
+
+[...]
+         dev = nhc->nhc_dev;
+
+         params->rt_metric = res.fi->fib_priority;
+         params->ifindex = dev->ifindex;
+[...]
+
+>   		break;
+>   #endif
+>   #if IS_ENABLED(CONFIG_IPV6)
+>   	case AF_INET6:
+> -		rc = bpf_ipv6_fib_lookup(net, params, flags, false);
+> +		rc = bpf_ipv6_fib_lookup(net, dev, params, flags, check_mtu);
+>   		break;
+>   #endif
+>   	}
+>   
+> -	if (!rc) {
+> -		struct net_device *dev;
+> -
+> -		dev = dev_get_by_index_rcu(net, params->ifindex);
+> +	if (rc == BPF_FIB_LKUP_RET_SUCCESS && !check_mtu) {
+> +		/* When tot_len isn't provided by user,
+> +		 * check skb against net_device MTU
+> +		 */
+>   		if (!is_skb_forwardable(dev, skb))
+>   			rc = BPF_FIB_LKUP_RET_FRAG_NEEDED;
+
+... so using old cached dev from above will result in wrong MTU check &
+subsequent passing of wrong params->mtu_result = dev->mtu this way. So one
+way to fix is that we would need to pass &dev to bpf_ipv{4,6}_fib_lookup().
+
+>   	}
+> 
+> 
+
+Thanks,
+Daniel
