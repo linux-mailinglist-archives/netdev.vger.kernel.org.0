@@ -2,69 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F30F311950
-	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 04:03:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C767F3119B3
+	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 04:18:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231433AbhBFDB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 22:01:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39752 "EHLO mail.kernel.org"
+        id S232107AbhBFDQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 22:16:18 -0500
+Received: from mga17.intel.com ([192.55.52.151]:24857 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231221AbhBFCvz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Feb 2021 21:51:55 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 04C2264F51;
-        Fri,  5 Feb 2021 22:35:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1612564551;
-        bh=/d7hyScWKy7rmoffTYVW8U8Hr6uQSMMsfR6pwjRMA6Y=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=eI5GH/v34mz5bxoyj0tyMgr4duFyxIKSgiuDVYXwI0Mw6RZO9YyoC/wwf+APLDn/D
-         IUIpI6af6qVqQQlAjixLznBHAhUVPlrFMgKED2ySuO/WFx18j1mpfLtq/bSUahZSEp
-         UqllQfm9SeE3k2A209qzOLjDabtsY7t9zsRpyV7w=
-Date:   Fri, 5 Feb 2021 14:35:50 -0800
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     NeilBrown <neilb@suse.de>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Xin Long <lucien.xin@gmail.com>, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-sctp@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 0/3] Fix some seq_file users that were recently broken
-Message-Id: <20210205143550.58d3530918459eafa918ad0c@linux-foundation.org>
-In-Reply-To: <161248518659.21478.2484341937387294998.stgit@noble1>
-References: <161248518659.21478.2484341937387294998.stgit@noble1>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.31; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S229841AbhBFC5j (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Feb 2021 21:57:39 -0500
+IronPort-SDR: U/+N79u++vnZ8VUhF0+Q6RnItyO6gEkpnFnHS5V6YXHQ9qv3Yr5ku6e3Ps5zaJLJhbdL3zygxm
+ Mqj9paEwndng==
+X-IronPort-AV: E=McAfee;i="6000,8403,9886"; a="161251109"
+X-IronPort-AV: E=Sophos;i="5.81,156,1610438400"; 
+   d="scan'208";a="161251109"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2021 14:39:15 -0800
+IronPort-SDR: KFM8S8tiDOmPq7MD68erqsL7cRkFyJbtugSKuT6jXOfB2SS0Ua3XNKA6uUnESEWmyhRTtrCDFC
+ AGacYmQyPwAA==
+X-IronPort-AV: E=Sophos;i="5.81,156,1610438400"; 
+   d="scan'208";a="373541870"
+Received: from iayoung-mobl1.amr.corp.intel.com (HELO vcostago-mobl2.amr.corp.intel.com) ([10.212.100.97])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2021 14:39:14 -0800
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Song Yoong Siang <yoong.siang.song@intel.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Voon Wei Feng <weifeng.voon@intel.com>,
+        Wong Vee Khee <vee.khee.wong@intel.com>,
+        Song Yoong Siang <yoong.siang.song@intel.com>
+Subject: Re: [PATCH net 1/1] net: stmmac: set TxQ mode back to DCB after
+ disabling CBS
+In-Reply-To: <1612447396-20351-1-git-send-email-yoong.siang.song@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+References: <1612447396-20351-1-git-send-email-yoong.siang.song@intel.com>
+Date:   Fri, 05 Feb 2021 14:38:57 -0800
+Message-ID: <8735yap2bi.fsf@vcostago-mobl2.amr.corp.intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 05 Feb 2021 11:36:30 +1100 NeilBrown <neilb@suse.de> wrote:
+Song Yoong Siang <yoong.siang.song@intel.com> writes:
 
-> A recent change to seq_file broke some users which were using seq_file
-> in a non-"standard" way ...  though the "standard" isn't documented, so
-> they can be excused.  The result is a possible leak - of memory in one
-> case, of references to a 'transport' in the other.
-> 
-> These three patches:
->  1/ document and explain the problem
->  2/ fix the problem user in x86
->  3/ fix the problem user in net/sctp
-> 
+> From: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+>
+> When disable CBS, mode_to_use parameter is not updated even the operation
+> mode of Tx Queue is changed to Data Centre Bridging (DCB). Therefore,
+> when tc_setup_cbs() function is called to re-enable CBS, the operation
+> mode of Tx Queue remains at DCB, which causing CBS fails to work.
+>
+> This patch updates the value of mode_to_use parameter to MTL_QUEUE_DCB
+> after operation mode of Tx Queue is changed to DCB in stmmac_dma_qmode()
+> callback function.
+>
+> Fixes: 1f705bc61aee ("net: stmmac: Add support for CBS QDISC")
+> Suggested-by: Gomes, Vinicius <vinicius.gomes@intel.com>
 
-1f4aace60b0e ("fs/seq_file.c: simplify seq_file iteration code and
-interface") was August 2018, so I don't think "recent" applies here?
+Just a nitpick/formality, I would prefer if you used:
 
-I didn't look closely, but it appears that the sctp procfs file is
-world-readable.  So we gave unprivileged userspace the ability to leak
-kernel memory?
+Suggested-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 
-So I'm thinking that we aim for 5.12-rc1 on all three patches with a cc:stable?
+> Signed-off-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+> Signed-off-by: Song, Yoong Siang <yoong.siang.song@intel.com>
+
+Patch looks good.
+
+Acked-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+
+Cheers,
+-- 
+Vinicius
