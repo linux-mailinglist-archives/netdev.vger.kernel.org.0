@@ -2,67 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CD753111D6
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 21:06:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8303E3111D8
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 21:06:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233197AbhBESUB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 13:20:01 -0500
-Received: from 95-165-96-9.static.spd-mgts.ru ([95.165.96.9]:37920 "EHLO
-        blackbox.su" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232956AbhBEPTi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Feb 2021 10:19:38 -0500
-Received: from metabook.localnet (metabook.metanet [192.168.2.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by blackbox.su (Postfix) with ESMTPSA id C7CC482F55;
-        Fri,  5 Feb 2021 20:01:01 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=blackbox.su; s=mail;
-        t=1612544461; bh=8d8pym2XIrk7WkGR4fNOkdwFEs3C+isJyx94BLKbO9E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NyGPq26wY9ROwjybDXexHkEG9WrPo8sXFAT8Qf2drMN8C2TGnzWJKfFbiv7kl5GYt
-         gk1bWhviOobmpG1WjncBxew6T1UcETxwvZvaKOM33TypT6VZYQZoQpasHxa/NLI6J4
-         UbdQCrPpr1xAlMcbGPDNbR6QuEHfawHL+Qx6YjjgALxbT3GGiyLUa9UHvRhXne+06L
-         +HggHUSP2JAPLa7C5m4TdBwVKiXzteU4MMK53OWPC4NvdZDArSVqlvfTP7DZq+Bucr
-         xNgOmb2vRIOhV4FMwfOGXuCHhSfTWJFsU35j14xtREY0A4fyubKA8N9QdYsNzwvrf7
-         nirLMTJfFkevA==
-From:   Sergej Bauer <sbauer@blackbox.su>
-To:     Sven Van Asbroeck <thesven73@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Markus.Elfring@web.de,
-        Alexey Denisov <rtgbnm@gmail.com>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Anders =?ISO-8859-1?Q?R=F8nningen?= <anders@ronningen.priv.no>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        "maintainer:MICROCHIP LAN743X ETHERNET DRIVER" 
-        <UNGLinuxDriver@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:MICROCHIP LAN743X ETHERNET DRIVER" 
-        <netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v1 1/6] lan743x: boost performance on cpu archs w/o dma cache snooping
-Date:   Fri, 05 Feb 2021 19:59:55 +0300
-Message-ID: <2417165.5kqOOugWi4@metabook>
-In-Reply-To: <CAGngYiUwzzmF2iPyBmrWBW_Oe=ffNbpxrZSyyQ6U_kLmNV56xg@mail.gmail.com>
-References: <CAGngYiUgjsgWYP76NKnrhbQthWbceaiugTFL=UVh_KvDuRhQUw@mail.gmail.com> <20210205150936.23010-1-sbauer@blackbox.su> <CAGngYiUwzzmF2iPyBmrWBW_Oe=ffNbpxrZSyyQ6U_kLmNV56xg@mail.gmail.com>
+        id S232452AbhBESUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 13:20:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48914 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233066AbhBEPTg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Feb 2021 10:19:36 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D4A7564F2C;
+        Fri,  5 Feb 2021 17:00:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612544413;
+        bh=bYsyypHJHkCDMPq/yGSFgDLzazYUpF+GyWHhaLu3g4k=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=b1jCslKGu5syM6wrgfzO+JQED3kse4raQl0d6FfhlQitKk+PIqGWsucshvT5xTTDT
+         pFgPhLBLy0lnyOoljOXKrQtVRJRYMQY0OAWwFJk+4+Fp8+fCoMCCz8RiNq/7A8GvwT
+         scyQNLe4GsQOdJx6RRmimhK+Iv6oHqD20IyhZq7qoah7ToC4DQ5H24blnfQCoo6qxA
+         zJ3fFY25tCWmIi2HnxEzY5JqdsQbVmqld1lGesBnu1pP5ENmCt4t4tE0NUWf9f2GbF
+         qS492rMyHch6HYBMm9czMXIuew2DqXpXu5d/HH0b2PJ6rjESiv0gM/XUS4YUwFRLvT
+         9NXR0ve6CzKgw==
+Date:   Fri, 5 Feb 2021 17:00:06 +0000
+From:   Will Deacon <will@kernel.org>
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Steven Price <steven.price@arm.com>, netdev@vger.kernel.org,
+        yangbo.lu@nxp.com, john.stultz@linaro.org, tglx@linutronix.de,
+        pbonzini@redhat.com, seanjc@google.com, richardcochran@gmail.com,
+        Mark.Rutland@arm.com, suzuki.poulose@arm.com,
+        Andre.Przywara@arm.com, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        kvm@vger.kernel.org, Steve.Capper@arm.com, justin.he@arm.com,
+        jianyong.wu@arm.com, kernel-team@android.com
+Subject: Re: [PATCH v17 1/7] arm/arm64: Probe for the presence of KVM
+ hypervisor
+Message-ID: <20210205170005.GC22665@willie-the-truck>
+References: <20210202141204.3134855-1-maz@kernel.org>
+ <20210202141204.3134855-2-maz@kernel.org>
+ <d5765ade-7199-2d1e-6d59-d3de6a52c6ce@arm.com>
+ <20210205111921.GA22109@willie-the-truck>
+ <e2eefee823f6a8e448f6d477cef315d4@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e2eefee823f6a8e448f6d477cef315d4@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sOn Friday, February 5, 2021 7:39:40 PM MSK Sven Van Asbroeck wrote:
-> Hi Sergej,
+On Fri, Feb 05, 2021 at 04:50:27PM +0000, Marc Zyngier wrote:
+> On 2021-02-05 11:19, Will Deacon wrote:
+> > On Fri, Feb 05, 2021 at 09:11:00AM +0000, Steven Price wrote:
+> > > On 02/02/2021 14:11, Marc Zyngier wrote:
+> > > > +	for (i = 0; i < 32; ++i) {
+> > > > +		if (res.a0 & (i))
+> > > > +			set_bit(i + (32 * 0), __kvm_arm_hyp_services);
+> > > > +		if (res.a1 & (i))
+> > > > +			set_bit(i + (32 * 1), __kvm_arm_hyp_services);
+> > > > +		if (res.a2 & (i))
+> > > > +			set_bit(i + (32 * 2), __kvm_arm_hyp_services);
+> > > > +		if (res.a3 & (i))
+> > > > +			set_bit(i + (32 * 3), __kvm_arm_hyp_services);
+> > > 
+> > > The bit shifts are missing, the tests should be of the form:
+> > > 
+> > > 	if (res.a0 & (1 << i))
+> > > 
+> > > Or indeed using a BIT() macro.
+> > 
+> > Maybe even test_bit()?
 > 
-> On Fri, Feb 5, 2021 at 10:09 AM Sergej Bauer <sbauer@blackbox.su> wrote:
-> > Tests after applying patches [2/6] and [3/6] are:
-> > $ ifmtu eth7 500
-> > $ sudo test_ber -l eth7 -c 1000 -n 1000000 -f500 --no-conf
+> Actually, maybe not doing things a-bit-at-a-time is less error prone.
+> See below what I intend to fold in.
 > 
-> Thank you! Is there a way for me to run test_ber myself?
-> Is this a standard, or a bespoke testing tool?
-It's kind of bespoke... A part of framework to assist HW guys in developing
-PHY-device. But the project is finished, so I could ask for permission to send
-the source to you.
+> Thanks,
+> 
+>         M.
+> 
+> diff --git a/drivers/firmware/smccc/kvm_guest.c
+> b/drivers/firmware/smccc/kvm_guest.c
+> index 00bf3c7969fc..08836f2f39ee 100644
+> --- a/drivers/firmware/smccc/kvm_guest.c
+> +++ b/drivers/firmware/smccc/kvm_guest.c
+> @@ -2,8 +2,8 @@
+> 
+>  #define pr_fmt(fmt) "smccc: KVM: " fmt
+> 
+> -#include <linux/init.h>
+>  #include <linux/arm-smccc.h>
+> +#include <linux/bitmap.h>
+>  #include <linux/kernel.h>
+>  #include <linux/string.h>
+> 
+> @@ -13,8 +13,8 @@ static DECLARE_BITMAP(__kvm_arm_hyp_services,
+> ARM_SMCCC_KVM_NUM_FUNCS) __ro_afte
+> 
+>  void __init kvm_init_hyp_services(void)
+>  {
+> -	int i;
+>  	struct arm_smccc_res res;
+> +	u32 val[4];
+> 
+>  	if (arm_smccc_1_1_get_conduit() != SMCCC_CONDUIT_HVC)
+>  		return;
+> @@ -28,16 +28,13 @@ void __init kvm_init_hyp_services(void)
+> 
+>  	memset(&res, 0, sizeof(res));
+>  	arm_smccc_1_1_invoke(ARM_SMCCC_VENDOR_HYP_KVM_FEATURES_FUNC_ID, &res);
+> -	for (i = 0; i < 32; ++i) {
+> -		if (res.a0 & (i))
+> -			set_bit(i + (32 * 0), __kvm_arm_hyp_services);
+> -		if (res.a1 & (i))
+> -			set_bit(i + (32 * 1), __kvm_arm_hyp_services);
+> -		if (res.a2 & (i))
+> -			set_bit(i + (32 * 2), __kvm_arm_hyp_services);
+> -		if (res.a3 & (i))
+> -			set_bit(i + (32 * 3), __kvm_arm_hyp_services);
+> -	}
+> +
+> +	val[0] = lower_32_bits(res.a0);
+> +	val[1] = lower_32_bits(res.a1);
+> +	val[2] = lower_32_bits(res.a2);
+> +	val[3] = lower_32_bits(res.a3);
+> +
+> +	bitmap_from_arr32(__kvm_arm_hyp_services, val, ARM_SMCCC_KVM_NUM_FUNCS);
 
+Nice! That's loads better.
 
-
+Will
