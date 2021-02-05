@@ -2,102 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12498310C10
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 14:46:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0A06310D71
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 16:54:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231354AbhBENnZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 08:43:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42592 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229683AbhBENkA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 08:40:00 -0500
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B28DEC061793
-        for <netdev@vger.kernel.org>; Fri,  5 Feb 2021 05:39:14 -0800 (PST)
-Received: by mail-io1-xd33.google.com with SMTP id j5so7023188iog.11
-        for <netdev@vger.kernel.org>; Fri, 05 Feb 2021 05:39:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=GeehWlA/F2e6kevzgurBlXoC2SgLPzjICfnHBJp8xXw=;
-        b=fyC5ieFmhX2gXuRDFBl3MnJdGZZEBosubYtfM0C93wwpliWDPTRzOqXUilpk4XXCUz
-         hx4lNX6V72yPEdFSLsfyuHZ0iMwCoF74ht9WUNRALMemGQVDJp69HdSWnFkV+sz/dYsA
-         z/6hVd0me17m0sY6+0FoRiQJY0hOgB2t5WhX0v2VtR5AZ0+sQAjTDKdTDBTm3szHb9ap
-         6h9XgVcz/Fk2Cjw9FEQTOZZGSagzggpCfl5amOD2VybjZjpabcc/KGi4kdztbgXt2IaI
-         jymzV5CR7YYK+44JKb4br38wOqkh9MDNDsSb4ETZQZYjjUBP2sYDz+oCSMKsqrNEfdfs
-         mQ2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=GeehWlA/F2e6kevzgurBlXoC2SgLPzjICfnHBJp8xXw=;
-        b=lD1EEpSLYPKZcqPy0SB/nSo24KjYXeiU1ezEYQv+6U0bnbabILHBKWA5DoZy0l2TMq
-         820xq16r7p6aDNqqsxDYw4q+cEQdRqk1wDfXZS4bwfB6AptL60jLisPn7iwnFmiXcG9z
-         gwNq9v/GpFX679KH8Me8KkZOa9RB/UDILSQgcvudrxokDzTrTJGN6SWOVKdz3VI6oSOM
-         204YWgZ7NeWn0Nu1N6RVbx46KREmaFhgdEAYEB55jr16v6MfnfV2cjr/5pH1dC9EsFy+
-         8agWV9flZjTb8Xf6OexL59Cpokj0etUUHbzQT8wFnrcMJrIxGvk88zAB5bwlqmf98blr
-         pWmA==
-X-Gm-Message-State: AOAM530ovz9lbIoUq82MDlwz4Ww3aVoTwuZiGE4Z5s8pT29RTSd6sSRU
-        MEk2tCvpctkAtRzQmurFAlUe4A==
-X-Google-Smtp-Source: ABdhPJzUu+mLjlS/mhwP9hIeGWQ2RXg/qpyfzUFtaOO8kCp50lZbw/OnwZvXxP1IEajLQvBtp/k+jg==
-X-Received: by 2002:a05:6602:1223:: with SMTP id z3mr4210661iot.130.1612532354220;
-        Fri, 05 Feb 2021 05:39:14 -0800 (PST)
-Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id f139sm4081947ilh.60.2021.02.05.05.39.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Feb 2021 05:39:13 -0800 (PST)
-Subject: Re: [PATCH net-next 2/7] net: ipa: synchronize NAPI only for suspend
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, elder@kernel.org, evgreen@chromium.org,
-        bjorn.andersson@linaro.org, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210203152855.11866-1-elder@linaro.org>
- <20210203152855.11866-3-elder@linaro.org>
- <20210204205322.792e079c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Alex Elder <elder@linaro.org>
-Message-ID: <b054d86b-dead-3fa8-e2d5-6068a4d54e6c@linaro.org>
-Date:   Fri, 5 Feb 2021 07:39:12 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
-MIME-Version: 1.0
-In-Reply-To: <20210204205322.792e079c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
+        id S231613AbhBEOPB convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 5 Feb 2021 09:15:01 -0500
+Received: from mga11.intel.com ([192.55.52.93]:60961 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231364AbhBEONe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Feb 2021 09:13:34 -0500
+IronPort-SDR: 9WbNsnZ+jFrHTvX8zE0fql/tDNOoQ2lxTl7VSede4QiBCxMqNq0xyGR3BO3iP2L25VPSmWS64z
+ p9Y1qpvdaV7g==
+X-IronPort-AV: E=McAfee;i="6000,8403,9885"; a="177940140"
+X-IronPort-AV: E=Sophos;i="5.81,155,1610438400"; 
+   d="scan'208";a="177940140"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2021 07:23:13 -0800
+IronPort-SDR: tMFdhCynUeam6V8pDza4NKZ6iOW6KRZGzVQSvQ57NOzkf0AYS3jriRTnp0qQgYPDOk+wsscLNg
+ GRR6fRu+twVQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,155,1610438400"; 
+   d="scan'208";a="581184900"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by fmsmga006.fm.intel.com with ESMTP; 05 Feb 2021 07:23:13 -0800
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Fri, 5 Feb 2021 07:23:12 -0800
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Fri, 5 Feb 2021 07:23:12 -0800
+Received: from fmsmsx612.amr.corp.intel.com ([10.18.126.92]) by
+ fmsmsx612.amr.corp.intel.com ([10.18.126.92]) with mapi id 15.01.2106.002;
+ Fri, 5 Feb 2021 07:23:12 -0800
+From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+CC:     "dledford@redhat.com" <dledford@redhat.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
+Subject: RE: [PATCH 04/22] ice: Register auxiliary device to provide RDMA
+Thread-Topic: [PATCH 04/22] ice: Register auxiliary device to provide RDMA
+Thread-Index: AQHW8RnXnqa89naYL0CyeK9hU5Aknao5PxeAgBB++qA=
+Date:   Fri, 5 Feb 2021 15:23:12 +0000
+Message-ID: <ae763e223c0040259c63c1e745faa095@intel.com>
+References: <20210122234827.1353-1-shiraz.saleem@intel.com>
+ <20210122234827.1353-5-shiraz.saleem@intel.com>
+ <20210125190923.GV4147@nvidia.com>
+In-Reply-To: <20210125190923.GV4147@nvidia.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+x-originating-ip: [10.1.200.100]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/4/21 10:53 PM, Jakub Kicinski wrote:
-> On Wed,  3 Feb 2021 09:28:50 -0600 Alex Elder wrote:
->>  int gsi_channel_suspend(struct gsi *gsi, u32 channel_id, bool stop)
->>  {
->>  	struct gsi_channel *channel = &gsi->channel[channel_id];
->> +	int ret;
->>  
->> -	return __gsi_channel_stop(channel, stop);
->> +	/* Synchronize NAPI if successful, to ensure polling has finished. */
->> +	ret = __gsi_channel_stop(channel, stop);
->> +	if (!ret)
->> +		napi_synchronize(&channel->napi);
->> +
->> +	return ret;
+> Subject: Re: [PATCH 04/22] ice: Register auxiliary device to provide RDMA
+>  
+> > @@ -1254,20 +1282,37 @@ int ice_init_peer_devices(struct ice_pf *pf)
+> >  		 * |--> iidc_peer_obj
+> >  		 * |--> *ice_peer_drv_int
+> >  		 *
+> > +		 * iidc_auxiliary_object (container_of parent for adev)
+> > +		 * |--> auxiliary_device
+> > +		 * |--> *iidc_peer_obj (pointer from internal struct)
+> > +		 *
+> >  		 * ice_peer_drv_int (internal only peer_drv struct)
+> >  		 */
+> >  		peer_obj_int = kzalloc(sizeof(*peer_obj_int), GFP_KERNEL);
+> > -		if (!peer_obj_int)
+> > +		if (!peer_obj_int) {
+> > +			ida_simple_remove(&ice_peer_ida, id);
+> >  			return -ENOMEM;
+> > +		}
 > 
-> nit:
-> 
-> 	ret = function();
-> 	if (ret)
-> 		return ret;
-> 
-> 	/* success path: do something else */
-> 
-> 	return 0;
+> Why is this allocated memory with a lifetime different from the aux device?
 
-No problem, I'm happy with it the way you suggest.  I will
-update in v2.   Thank you.
+This ice_peer_obj_int is the PCI driver internal only info about the peer_obj (not exposed externally)
+like the state machine, per PF. But Dave is re-writing all of this with the feedback about getting rid
+of state machine, and this peer_obj_int will likely be culled.
 
-					-Alex
+I think what we will end up with is an iidc_peer_obj per PF which is exported to aux driver with lifetime as described below.
+
+/* structure layout needed for container_of's looks like:  
+                  * iidc_auxiliary_dev (container_of parent for adev)
+                  * |--> auxiliary_device
+                  * |--> *iidc_peer_obj (pointer from peer_obj struct)
+                  *
+                  * The iidc_auxiliary device has a lifespan as long as it is
+                  * on the bus.  Once removed it will be freed and a new
+                  * one allocated if needed to re-add.
+                  *
+                  * The peer_obj is tied to the life of the PF, and will
+                  * exist as long as the PF driver is loaded.  It will be
+                  * freed in the remove flow for the PF driver.
+                  */
+
 
