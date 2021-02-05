@@ -2,97 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E959231144E
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 23:07:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73C463114D7
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 23:23:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233055AbhBEWDd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 17:03:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49200 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232975AbhBEO5z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 09:57:55 -0500
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41D56C0617A7;
-        Fri,  5 Feb 2021 08:26:50 -0800 (PST)
-Received: by mail-wm1-x32e.google.com with SMTP id w4so6483225wmi.4;
-        Fri, 05 Feb 2021 08:26:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=qkOMo2ll21Kj5Gw0zJCnssUfVA2sNkOv80MBYCGIhRA=;
-        b=GT3AhtO2+ycO8mxCe30V8GmkrI3L+0F/KIN6Ax0Eagi4Gz127rYwKdDDjpWgR08X9J
-         OorDdRoK0j2R3xAaHYzgkVbd9pad8BYOlWnWxiAXpZ3mdm8S9O0YJKLENZRJoVPQj6KW
-         n8IFVXOjx3xnyRw0Fnb3y6mQn/4mlXp+5olDkRQG7x3XVwJ1k/8KxlPinpLCPWVPMpwJ
-         HKjy2KGng9Apmh81L3FsMGMvvWOFWoH1hMLZcksUZJoRboUb6Iq43XGl1tbkEAScg41n
-         CoIaNNk28NN2lKV14VZrNasJ3aIW9NzVZhmpYzw4Y3YdrXxfHsgtvFb9IsfWPCtoGAu0
-         Qyzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=qkOMo2ll21Kj5Gw0zJCnssUfVA2sNkOv80MBYCGIhRA=;
-        b=I1HhU5lk8felwrvFuqfltFa2sF3j0RU20P1Xelex35fK/zEpDO1e4M6heOLfXnwtC2
-         ehWbTToT+KJanpTWgqjisHglOkwjV48BgFJAhubOxB/OX1BqC0PUZ8jvO3xHjulaeGYJ
-         rO2nSlEEygk7/5ZR0SjSaGcNeUJzfLfYnqZA7UVIkyqNrM5B6H6l8VyfB9/GjmkND4yy
-         qtJi+lp9851CdsK5b8F85hWktDGyQWWjoGrZ44i9xL9r/d+bfGSaKoSNAifPBG5Kk4Vf
-         2FelC1P6Y2uyVWxe5tP67lefX1i9HpWUiFU1u9gxX0NeT8ZZgOx6zpVQw4rc9N2gTWYo
-         k0gg==
-X-Gm-Message-State: AOAM533S/kMhqpys/RTzF17/gX60FSCkzXEQjC78Z3jM0/SrqIIQZ+Jq
-        eZU0I85BypM8+ebNd6q5poUC2ts5Okigyw==
-X-Google-Smtp-Source: ABdhPJwDegFue9QaFRgWm8J+tlU4FED2PpI55GA1+0qctSg7nTtNfSi6UikoGp/H2j4RVqBOb7R24A==
-X-Received: by 2002:a1c:e104:: with SMTP id y4mr3638295wmg.89.1612535090456;
-        Fri, 05 Feb 2021 06:24:50 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f1f:ad00:9118:8653:7e7:879e? (p200300ea8f1fad009118865307e7879e.dip0.t-ipconnect.de. [2003:ea:8f1f:ad00:9118:8653:7e7:879e])
-        by smtp.googlemail.com with ESMTPSA id h207sm9536401wme.18.2021.02.05.06.24.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Feb 2021 06:24:49 -0800 (PST)
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Raju Rangoju <rajur@chelsio.com>, Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Bjorn Helgaas <bhelgaas@google.com>
-Cc:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: [PATCH net-next v2 0/3] cxgb4: improve PCI VPD handling
-Message-ID: <8edfa4ae-1e78-249d-14fb-0e44a2c51864@gmail.com>
-Date:   Fri, 5 Feb 2021 15:24:43 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+        id S232336AbhBEWQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 17:16:16 -0500
+Received: from mout.gmx.net ([212.227.17.21]:40779 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231911AbhBEOdw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Feb 2021 09:33:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1612541460;
+        bh=JGYpDFHhSo4g9ugoufYI2NGUUGVLEggpA79m09ijH8M=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=BSOiwWJZJD06yMPMjHmTgd8uAx30gAYDZLbwxLbY6KkMeXvnQelN8fa6m8UAMHiaH
+         tEOJ118nyJnCzRvU7baqVOmh+ZSed6NS351aGkkDYuYfGX7Cl854MkgrcJoQ7XzzSV
+         j+SvwYG03fbP2M1iOF/UaPOzW2wpqOgSqauhG6Kk=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [87.123.206.138] ([87.123.206.138]) by web-mail.gmx.net
+ (3c-app-gmx-bap12.server.lan [172.19.172.82]) (via HTTP); Fri, 5 Feb 2021
+ 15:25:17 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Message-ID: <trinity-c2d6cede-bfb1-44e2-85af-1fbc7f541715-1612535117028@3c-app-gmx-bap12>
+From:   Norbert Slusarek <nslusarek@gmx.net>
+To:     sgarzare@redhat.com, alex.popov@linux.com, eric.dumazet@gmail.com
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH] net/vmw_vsock: fix NULL pointer dereference
+Content-Type: text/plain; charset=UTF-8
+Date:   Fri, 5 Feb 2021 15:25:17 +0100
+Importance: normal
+Sensitivity: Normal
+X-Priority: 3
+X-Provags-ID: V03:K1:HbQum5ZtedpsDyKZ2Rn4ubS1eAn1IHLXc1ch1/xQUAyZ/cTLAkDyJB0VQNwHxOpe23Ma+
+ 3YGvJ2i86CPcBaBqkQOdXezozMsDyOhEO0Tq8NM3mmyzjBjmkmF+8Hai9NBGglz6ob6hTB3jp6wR
+ HMa63jBVZ8V59Qn6oI46cz+iQi873E1RutV0MF9JZTIvpfqCaT2t5mbeu7ZiaXmM3c4E+sc9FnfS
+ ZmqFLuyYB7JTrUQTvaFXo9ri9iUe9RzcX4MHJR2zI+45JFSiLXO36S2wbHQU0T0NVN/ozt/XTX2O
+ TA=
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:5GSD1l7eiag=:bSjbnb2PxchdaQivwBJrIw
+ QIbwsWn596xjrRETKl5d3xZkXRm83khSEnbriWTv57fVehWV6Q8fe7hEbsnZ6cVj5006dXy/j
+ walkK5gVN6d4bXW2rTT1W4sJLfH7SSFAodDSOAsLcYtwcocWXpbNrxNdgaHVVBdfqlQCAOeiz
+ T64jMMpMCHyr2C9B5/1qyxG9jMTjoZmojOAsHhW2LWZH+zw6K8Mn/TFFq37iz36kbwoom1hHb
+ cz4gQswgNCDc1VQN3pJt9PaKsIXEUDHwlYcVcdSGYt/9+0RJXIVq+Ud1QNdFNxDXCX58m4W6p
+ gaU/2dPZbdSbYKV028vycYCvsBts8TQXjTiUvblOgwa2MbtZJsyKqFuUoymj8HwcJ8GZ51zMn
+ OVc3z+/fJtzuojRvOEr7VXsWZf+NxKf5W9Zzmjc+NSbzVIfSfJ3EMAwsYHI4YzXg2ayW9F5q/
+ XBZ+mMKl3uDTgthDXasmmQ6VbT01Ez3FCXdTqy0p/FSZnoE7scQs5htWOGNDH19u4EWMWHVze
+ nHX0OeBOc76X8NVT6HsgZUj+65C/6L0P93c57FFkOkSQb8pt/8o6+HL5LETbEeTjmNAfGWLVj
+ qldUxBGNJsNag=
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Working on PCI VPD core code I came across the Chelsio drivers.
-Let's improve the way how cxgb4 handles PCI VPD.
+From: Norbert Slusarek <nslusarek@gmx.net>
+Date: Fri, 5 Feb 2021 13:12:06 +0100
+Subject: [PATCH] net/vmw_vsock: fix NULL pointer dereference
 
-One major goal is to eventually remove pci_set_vpd_size(),
-cxgb4 is the only user. The amount of data exposed via the VPD
-interface is fixed, therefore I see no benefit in providing
-an interface for manipulating the VPD size.
+In vsock_stream_connect(), a thread will enter schedule_timeout().
+While being scheduled out, another thread can enter vsock_stream_connect()
+as well and set vsk->transport to NULL. In case a signal was sent, the
+first thread can leave schedule_timeout() and vsock_transport_cancel_pkt()
+will be called right after. Inside vsock_transport_cancel_pkt(), a null
+dereference will happen on transport->cancel_pkt.
 
-This series touches only device-specific quirks in the core code,
-therefore I think it should go via the netdev tree.
+Fixes: c0cfa2d8a788 ("vsock: add multi-transports support")
+Reported-by: Norbert Slusarek <nslusarek@gmx.net>
+Signed-off-by: Norbert Slusarek <nslusarek@gmx.net>
+=2D--
+ net/vmw_vsock/af_vsock.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-v2:
-- remove patch 1 from the series
+diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+index 6894f21dc147..cb81cfb47a78 100644
+=2D-- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -1233,7 +1233,7 @@ static int vsock_transport_cancel_pkt(struct vsock_s=
+ock *vsk)
+ {
+ 	const struct vsock_transport *transport =3D vsk->transport;
 
-Heiner Kallweit (3):
-  cxgb4: remove unused vpd_cap_addr
-  PCI/VPD: Change Chelsio T4 quirk to provide access to full virtual
-    address space
-  cxgb4: remove changing VPD len
+-	if (!transport->cancel_pkt)
++	if (!transport || !transport->cancel_pkt)
+ 		return -EOPNOTSUPP;
 
- .../net/ethernet/chelsio/cxgb4/cudbg_entity.h |  1 -
- .../net/ethernet/chelsio/cxgb4/cudbg_lib.c    | 21 ++++---------------
- drivers/net/ethernet/chelsio/cxgb4/cxgb4.h    |  1 -
- .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   |  2 --
- drivers/pci/vpd.c                             |  7 +++----
- 5 files changed, 7 insertions(+), 25 deletions(-)
-
--- 
+ 	return transport->cancel_pkt(vsk);
+=2D-
 2.30.0
-
