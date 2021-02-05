@@ -2,80 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD3C0311373
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 22:25:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F12103113D7
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 22:48:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233064AbhBEVYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 16:24:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50082 "EHLO
+        id S232010AbhBEVqu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 16:46:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232891AbhBEPBu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 10:01:50 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13073C06178C;
-        Fri,  5 Feb 2021 08:39:53 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id m13so8336139wro.12;
-        Fri, 05 Feb 2021 08:39:53 -0800 (PST)
+        with ESMTP id S231912AbhBEVq0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 16:46:26 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96AF1C061756;
+        Fri,  5 Feb 2021 13:45:45 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id v5so9763690lft.13;
+        Fri, 05 Feb 2021 13:45:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=me3FTzSZcjdT1PtgwoMZ44tI5YCzuNgZ6Xp92yrSWsI=;
-        b=chMzKh9krAIVQBkvSAjBKpWjzUixITFCXMcHcmhPA73u52j3zBYtIzvKm6tw0BOqpk
-         urjGp6JT0FBojBuCxIZVxedw4TO+bif6EkvV4+LJtOLhNnP79lg+SNBTQQcLxLyBlEDG
-         2Hr215ArgD2GJUbjNe5t0mVbzsAGyq8P6gQXy74VknBVk2P79NWzBh3LINJo+BkrYzaH
-         AgOTgYH8H5UT6Jr8+GLeAa7iQ8V+oRq031I91NY7p8WwKce5FvA9y0zreg/USfaYrdTn
-         FTix8/FvBQIkXZ9wjhICoHAkUWGKPkOwP9QCdSwuVzxwrAtmCzPv8w360fzHBtdH9+vr
-         t2pg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Di6p90oAYaCEY0Dm7sI6vpfXpEsHy9/oRKceNj8Eu0c=;
+        b=bnwIcV7ljZpqyM7r4u5xSmL+DGO823uc+2ePYgM95Lb/WkSYknFEbZjyL3OOSsJRXY
+         Z9tzg15UKeZGuNa1nNhmkqD7K5Cmr5dElD/HCVGJd8ZV5HLNtlEwKXf/mzcC2Pv4sN35
+         UTPuxGfy/54mnAS6SM+PQENTZgGDQLBo7kKrK8MWmnC3MXV2MtYP8fR7Iy7s21TZ/q1/
+         rPPqVUx0M9F3XtJ+wuaCAYMg8M82tAN4Xjm4kJgrHUS18pjC8nPuA7zOQFz+LjKBtb9o
+         TtjocNAnj9YfFnZ+8xZBH/wu3Io3nConzEiKf/LIiYtG+Pw2YMGpZu4qCUoDl9rxURay
+         9rPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=me3FTzSZcjdT1PtgwoMZ44tI5YCzuNgZ6Xp92yrSWsI=;
-        b=OKN7lCBw0XC2wT8TAg8VEp45xRwGSNcqeL2s2dVT2rg0Oepa79F9HUwNHKRnym9hrG
-         huVUJADbaUsCvokOMk9MMLpnFzC8PV6ZHNB5ZN758DK3zE9K3dzKri2g9iuHWr9DAuFC
-         DIpN9Zv6zf7OLfG30tIMMeAlCQP7KdEJ3uX2T5QSdtGok7UozwvfHk8yetpMWO+BCxLQ
-         JfN/iHgUEobZMe0wvbdIEtMcdsgfLf2R76cnz7ZH6Lqv7V3ptMyoVBe12xD07bkTtUel
-         V6LRAaCDlItpVj9eJN66pC1AAMjZZf7GETZPBAG5Elus+rotvm25hBweF7MzzpKgO03v
-         biXg==
-X-Gm-Message-State: AOAM5300OVL/lOHsuwnIXxrxkZWeHggmTtdS/kN2eUn9wq6f6BihUKeB
-        P5ntDf8tUou/TtVSQdvHrFA14WoIEzQP1OyURWw=
-X-Google-Smtp-Source: ABdhPJyvzE1xjGUvO+f+OKFMTgJhKfcepV0Sxx1TJV6X1ZwKvB3DMuGm22+N/LLGi9tP9kI0mcBAk75bYhP+4qbk/BA=
-X-Received: by 2002:a5d:65ca:: with SMTP id e10mr6118874wrw.166.1612543191744;
- Fri, 05 Feb 2021 08:39:51 -0800 (PST)
-MIME-Version: 1.0
-References: <CAGngYiUgjsgWYP76NKnrhbQthWbceaiugTFL=UVh_KvDuRhQUw@mail.gmail.com>
- <20210205150936.23010-1-sbauer@blackbox.su>
-In-Reply-To: <20210205150936.23010-1-sbauer@blackbox.su>
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-Date:   Fri, 5 Feb 2021 11:39:40 -0500
-Message-ID: <CAGngYiUwzzmF2iPyBmrWBW_Oe=ffNbpxrZSyyQ6U_kLmNV56xg@mail.gmail.com>
-Subject: Re: [PATCH net-next v1 1/6] lan743x: boost performance on cpu archs
- w/o dma cache snooping
-To:     Sergej Bauer <sbauer@blackbox.su>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Markus.Elfring@web.de,
-        Alexey Denisov <rtgbnm@gmail.com>,
-        Tim Harvey <tharvey@gateworks.com>,
-        =?UTF-8?Q?Anders_R=C3=B8nningen?= <anders@ronningen.priv.no>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        "maintainer:MICROCHIP LAN743X ETHERNET DRIVER" 
-        <UNGLinuxDriver@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Di6p90oAYaCEY0Dm7sI6vpfXpEsHy9/oRKceNj8Eu0c=;
+        b=fHi/v8rSTIxn8fCQafz5XT69ovwBLysSpQ+eGKTAbc5oJ506lRc1v1DZMKDa0/be8D
+         lTqqE9BJVU4PGMMoLNxWDDBCid6UwIezv2iIDrHhEdEdsUDl8hc0/cvbfrSWGN1csM+m
+         ++hLp7K056cxzWs3bnlvNivRfAIB3DEvB6YbGqtDTqIV7JNgBHqTYiHOKVC6DlSm84BQ
+         2bqGDLLO40KfoGT9xfFECuXVDA473ggHe7Hop47anaTQWOedBg19RDRnzWxOWE4/XubM
+         hsEl9cfRKcVn2CMmqVaVZ88q3etAXAybjlhJAIC+cGbgUlSCIKj7AowZE1rAet3uVajv
+         PaTA==
+X-Gm-Message-State: AOAM530JWoLVOMnWenj1BTS5fH91O7US9lk+Wvqie7ALwhXgE3rNJ0GM
+        Fn7gxK7KxBv6CyWwzSjUlGg=
+X-Google-Smtp-Source: ABdhPJzB1CpoqZCAZ617PA8JqjZW5zkzDuz7qJVAy7Eu2HFJTPyexmkdBA3IKzaCuU/oK8utxE5xAQ==
+X-Received: by 2002:a2e:a0c9:: with SMTP id f9mr3721924ljm.260.1612561544153;
+        Fri, 05 Feb 2021 13:45:44 -0800 (PST)
+Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.gmail.com with ESMTPSA id g4sm1102925lfu.283.2021.02.05.13.45.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Feb 2021 13:45:43 -0800 (PST)
+From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "open list:MICROCHIP LAN743X ETHERNET DRIVER" 
-        <netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Masahiro Yamada <masahiroy@kernel.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
+Subject: [PATCH net-next 1/2] dt-bindings: net: document BCM4908 Ethernet controller
+Date:   Fri,  5 Feb 2021 22:44:16 +0100
+Message-Id: <20210205214417.11178-1-zajec5@gmail.com>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Sergej,
+From: Rafał Miłecki <rafal@milecki.pl>
 
-On Fri, Feb 5, 2021 at 10:09 AM Sergej Bauer <sbauer@blackbox.su> wrote:
->
-> Tests after applying patches [2/6] and [3/6] are:
-> $ ifmtu eth7 500
-> $ sudo test_ber -l eth7 -c 1000 -n 1000000 -f500 --no-conf
+BCM4908 is a family of SoCs with integrated Ethernet controller.
 
-Thank you! Is there a way for me to run test_ber myself?
-Is this a standard, or a bespoke testing tool?
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+---
+ .../bindings/net/brcm,bcm4908enet.yaml        | 45 +++++++++++++++++++
+ 1 file changed, 45 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/brcm,bcm4908enet.yaml
+
+diff --git a/Documentation/devicetree/bindings/net/brcm,bcm4908enet.yaml b/Documentation/devicetree/bindings/net/brcm,bcm4908enet.yaml
+new file mode 100644
+index 000000000000..5f12f51c5b19
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/brcm,bcm4908enet.yaml
+@@ -0,0 +1,45 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/brcm,bcm4908enet.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Broadcom BCM4908 Ethernet controller
++
++description: Broadcom's Ethernet controller integrated into BCM4908 family SoCs
++
++maintainers:
++  - Rafał Miłecki <rafal@milecki.pl>
++
++properties:
++  compatible:
++    const: brcm,bcm4908enet
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    description: RX interrupt
++
++  interrupt-names:
++    const: rx
++
++required:
++  - reg
++  - interrupts
++  - interrupt-names
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    ethernet@80002000 {
++        compatible = "brcm,bcm4908enet";
++        reg = <0x80002000 0x1000>;
++
++        interrupts = <GIC_SPI 86 IRQ_TYPE_LEVEL_HIGH>;
++        interrupt-names = "rx";
++    };
+-- 
+2.26.2
+
