@@ -2,70 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20857310423
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 05:41:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4185531042F
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 05:52:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230243AbhBEEkz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 23:40:55 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45064 "EHLO mail.kernel.org"
+        id S230216AbhBEEvp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 23:51:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46026 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230171AbhBEEks (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Feb 2021 23:40:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 9206664FBF;
-        Fri,  5 Feb 2021 04:40:07 +0000 (UTC)
+        id S229849AbhBEEvm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Feb 2021 23:51:42 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BF5C561481;
+        Fri,  5 Feb 2021 04:51:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612500007;
-        bh=nhrKPEu6vHyKEhDVtPmarEbewnIXzip7XxWxfwCwnG8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=MKL6MyLbNoDahXK/r3Ai8QZAhD8KjxnhMZZCHFxbLybcskrHDbxV8oRyFI9F5KTuw
-         G6/U9dhaaUTWy5MR7eQKBK4bgiKKrZi4HO6b3WJg/rjtiu/V6+4V4EmIDcGxQPwv5T
-         gIenMxZMwxvXCRqsfuxas9qFxtarjiSCqpDNWLWrtmMH6pzPR0OMKgPyLE5WaOoRe5
-         tVDrYGjTR5Ppw1iVYRo+3+SRpErtc9l8/JKCi9zw4FQzVshjUrxneMH1oLCH+CYGFw
-         IDn0FFz6KB8jObR/8EX0E34Hw96xq2YzRhHA9yf+Cjn/igEZ83Fg4y9s5hMbUdRoyG
-         zs8A3nYFA+QiA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 808B5609F3;
-        Fri,  5 Feb 2021 04:40:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1612500661;
+        bh=vJRLWeUh1Mxpx9gsES/hy9gXr/MIHo+q7wald6FOY/o=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=OVBnYPE/2s304hVQWXBqdm8QY/yauVgOmeyp0lXUKEUsMmRQEqWQTiarm1B9oaUzM
+         z3fNKIb8RHfjF00JN8Pe0FUjVTJBRGLodYT7UDVney/9znuJFCQ0iV/O8aguX5mLLl
+         j0CpB+9tJiQSs+reo2ygAU+yy0k+KOsaGA/CNZPs9tShIk+re4JGr19E/XNuye5P5l
+         9kuPjAM1td4zXgJIbU6hKHp1skGxHxci4qN5bcfVB97F3gqjsNzwYxUtV4AjvsnSyh
+         5RmXZo6Qbt4Ic6Cy8At/EvJzZaVFQ3hzNett6KAO2vNpSOLjd6Lbn4nJW7sBcP6hdj
+         yeHT+tzBr2/Gw==
+Date:   Thu, 4 Feb 2021 20:50:59 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, elder@kernel.org, evgreen@chromium.org,
+        bjorn.andersson@linaro.org, cpratapa@codeaurora.org,
+        subashab@codeaurora.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 1/7] net: ipa: restructure a few functions
+Message-ID: <20210204205059.4b218a6d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210203152855.11866-2-elder@linaro.org>
+References: <20210203152855.11866-1-elder@linaro.org>
+        <20210203152855.11866-2-elder@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [net v4] selftests: txtimestamp: fix compilation issue
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161250000752.27819.13164862274576764733.git-patchwork-notify@kernel.org>
-Date:   Fri, 05 Feb 2021 04:40:07 +0000
-References: <1612461034-24524-1-git-send-email-vfedorenko@novek.ru>
-In-Reply-To: <1612461034-24524-1-git-send-email-vfedorenko@novek.ru>
-To:     Vadim Fedorenko <vfedorenko@novek.ru>
-Cc:     kuba@kernel.org, jianyang@google.com,
-        willemdebruijn.kernel@gmail.com, netdev@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Thu,  4 Feb 2021 20:50:34 +0300 you wrote:
-> PACKET_TX_TIMESTAMP is defined in if_packet.h but it is not included in
-> test. Include it instead of <netpacket/packet.h> otherwise the error of
-> redefinition arrives.
-> Also fix the compiler warning about ambiguous control flow by adding
-> explicit braces.
+On Wed,  3 Feb 2021 09:28:49 -0600 Alex Elder wrote:
+> Make __gsi_channel_start() and __gsi_channel_stop() more structurally
+> and semantically similar to each other:
+>   - Restructure __gsi_channel_start() to always return at the end of
+>     the function, similar to the way __gsi_channel_stop() does.
+>   - Move the mutex calls out of gsi_channel_stop_retry() and into
+>     __gsi_channel_stop().
 > 
-> Fixes: 8fe2f761cae9 ("net-timestamp: expand documentation")
-> Suggested-by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-> Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
+> Restructure gsi_channel_stop() to always return at the end of the
+> function, like gsi_channel_start() does.
 > 
-> [...]
+> Signed-off-by: Alex Elder <elder@linaro.org>
+> ---
+>  drivers/net/ipa/gsi.c | 45 +++++++++++++++++++++++--------------------
+>  1 file changed, 24 insertions(+), 21 deletions(-)
+> 
+> diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
+> index 53640447bf123..2671b76ebcfe3 100644
+> --- a/drivers/net/ipa/gsi.c
+> +++ b/drivers/net/ipa/gsi.c
+> @@ -873,17 +873,17 @@ static void gsi_channel_deprogram(struct gsi_channel *channel)
+>  
+>  static int __gsi_channel_start(struct gsi_channel *channel, bool start)
+>  {
+> -	struct gsi *gsi = channel->gsi;
+> -	int ret;
+> +	int ret = 0;
+>  
+> -	if (!start)
+> -		return 0;
+> +	if (start) {
+> +		struct gsi *gsi = channel->gsi;
+>  
+> -	mutex_lock(&gsi->mutex);
+> +		mutex_lock(&gsi->mutex);
+>  
+> -	ret = gsi_channel_start_command(channel);
+> +		ret = gsi_channel_start_command(channel);
+>  
+> -	mutex_unlock(&gsi->mutex);
+> +		mutex_unlock(&gsi->mutex);
+> +	}
 
-Here is the summary with links:
-  - [net,v4] selftests: txtimestamp: fix compilation issue
-    https://git.kernel.org/netdev/net/c/647b8dd51846
+nit: I thought just recently Willem pointed out that keeping main flow
+     unindented is considered good style, maybe it doesn't apply here
+     perfectly, but I'd think it still applies. Why have the entire
+     body of the function indented?
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+>  	return ret;
+>  }
+> @@ -910,11 +910,8 @@ int gsi_channel_start(struct gsi *gsi, u32 channel_id)
+>  static int gsi_channel_stop_retry(struct gsi_channel *channel)
+>  {
+>  	u32 retries = GSI_CHANNEL_STOP_RETRIES;
+> -	struct gsi *gsi = channel->gsi;
+>  	int ret;
+>  
+> -	mutex_lock(&gsi->mutex);
+> -
+>  	do {
+>  		ret = gsi_channel_stop_command(channel);
+>  		if (ret != -EAGAIN)
+> @@ -922,19 +919,26 @@ static int gsi_channel_stop_retry(struct gsi_channel *channel)
+>  		usleep_range(3 * USEC_PER_MSEC, 5 * USEC_PER_MSEC);
+>  	} while (retries--);
+>  
+> -	mutex_unlock(&gsi->mutex);
+> -
+>  	return ret;
+>  }
+>  
+>  static int __gsi_channel_stop(struct gsi_channel *channel, bool stop)
+>  {
+> -	int ret;
+> +	int ret = 0;
+>  
+>  	/* Wait for any underway transactions to complete before stopping. */
+>  	gsi_channel_trans_quiesce(channel);
+>  
+> -	ret = stop ? gsi_channel_stop_retry(channel) : 0;
+> +	if (stop) {
+> +		struct gsi *gsi = channel->gsi;
+> +
+> +		mutex_lock(&gsi->mutex);
+> +
+> +		ret = gsi_channel_stop_retry(channel);
+> +
+> +		mutex_unlock(&gsi->mutex);
+> +	}
+> +
+>  	/* Finally, ensure NAPI polling has finished. */
+>  	if (!ret)
+>  		napi_synchronize(&channel->napi);
+> @@ -948,15 +952,14 @@ int gsi_channel_stop(struct gsi *gsi, u32 channel_id)
+>  	struct gsi_channel *channel = &gsi->channel[channel_id];
+>  	int ret;
+>  
+> -	/* Only disable the completion interrupt if stop is successful */
+>  	ret = __gsi_channel_stop(channel, true);
+> -	if (ret)
+> -		return ret;
+> +	if (ret) {
 
+This inverts the logic, right? Is it intentional?
+
+> +		/* Disable the completion interrupt and NAPI if successful */
+> +		gsi_irq_ieob_disable_one(gsi, channel->evt_ring_id);
+> +		napi_disable(&channel->napi);
+> +	}
+>  
+> -	gsi_irq_ieob_disable_one(gsi, channel->evt_ring_id);
+> -	napi_disable(&channel->napi);
+> -
+> -	return 0;
+> +	return ret;
+>  }
+>  
+>  /* Reset and reconfigure a channel, (possibly) enabling the doorbell engine */
 
