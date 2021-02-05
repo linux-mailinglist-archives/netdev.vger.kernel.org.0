@@ -2,70 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26727310958
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 11:43:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8654531095B
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 11:43:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231312AbhBEKmX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 05:42:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60260 "EHLO
+        id S231504AbhBEKmx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 05:42:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230256AbhBEKjq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 05:39:46 -0500
+        with ESMTP id S231367AbhBEKkl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 05:40:41 -0500
 Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ACE2C061797
-        for <netdev@vger.kernel.org>; Fri,  5 Feb 2021 02:39:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54CD4C0613D6
+        for <netdev@vger.kernel.org>; Fri,  5 Feb 2021 02:40:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=0NBsznay4nSnq5tjYJlPeLdjFfT/PKR+t8SLeQA/wB8=; b=vIXUspZX4AIagvIK9mlnLdTBH
-        5Aeb70L0Oc9ipFx+Zltb06PdALvjwI1e5EMKr9qmGzo75RD1MwYmHwCFmT74rQlcCqHZSBKgLlpER
-        53i2WZTe0CV2lyhtuTOQcsjU+gBCIF8X28eN2kDI72uJZpj/vjO5C3ori22lqaYYR+iAmnoUSTGJp
-        u2K9+jxmjVoreXHvJQQBuhdsKL/Ep7zvkKt11fKuKMW3cXtnibBASP72YA/66ajQjv70aCDxVgkDP
-        joZW63TvTZNg3BYbgOaQQdHimLE9WVSq15bEYHMktOyoBpbTvi4pwhOmpX4Up7L0z+yfeJ3Jt8T8v
-        8uXduAojQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:39480)
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=nSHYMhvqOphCoHyQ9R0vTKHFP/F44ZYd0zzgjL3/cyk=; b=QywcD7WNEDcqV31LWonHUaWx/o
+        E6edlj8RZ5wyQyuzVwDWx8SKQWvDoalCcggboJiNXl1sfAwj+BRlR2ojJMCD5e6qlmvr7GfOlu0VJ
+        eKXaEKVZNjQV9VR/HzjNGffIFMtL8ZciAugAVit4Ii86hhjBHQTLMhPVYbJvHX/Az8qVt2p95vtO7
+        ovK8aHqdODTkw+MOIKoPnVVcPQE37s61kxmd4ssSbXtn6D/BwBRWMIbNMfRbloadsHGsOcFZQhCq2
+        Ot1/n9516zYvS47cvHyvFhY/jwQx6ZsqB0nBGYzVHbT15HVI2f8AxgXPwcEKeeT/3BoXkmEI6z2oh
+        R+NKDFmw==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:49110 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1l7yVx-0007eD-NK; Fri, 05 Feb 2021 10:39:01 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1l7yVw-00068A-4O; Fri, 05 Feb 2021 10:39:00 +0000
-Date:   Fri, 5 Feb 2021 10:39:00 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1l7yWt-0007eO-EU; Fri, 05 Feb 2021 10:39:59 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1l7yWt-0006oB-6j; Fri, 05 Feb 2021 10:39:59 +0000
+In-Reply-To: <20210205103859.GH1463@shell.armlinux.org.uk>
+References: <20210205103859.GH1463@shell.armlinux.org.uk>
+From:   Russell King <rmk+kernel@armlinux.org.uk>
 To:     Ioana Ciornei <ioana.ciornei@nxp.com>,
         Ioana Radulescu <ruxandra.radulescu@nxp.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH net-next v2 0/3] dpaa2: add 1000base-X support
-Message-ID: <20210205103859.GH1463@shell.armlinux.org.uk>
+Subject: [PATCH net-next v2 1/3] net: pcs: add pcs-lynx 1000BASE-X support
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1l7yWt-0006oB-6j@rmk-PC.armlinux.org.uk>
+Sender: Russell King <rmk@armlinux.org.uk>
+Date:   Fri, 05 Feb 2021 10:39:59 +0000
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Add support for 1000BASE-X to pcs-lynx for the LX2160A.
 
-This patch series adds 1000base-X support to pcs-lynx and DPAA2,
-allowing runtime switching between SGMII and 1000base-X. This is
-a pre-requisit for SFP module support on the SolidRun ComExpress 7.
+This commit prepares the ground work for allowing 1G fiber connections
+to be used with DPAA2 on the SolidRun CEX7 platforms.
 
-v2: updated with Ioana's r-b's, and comment on backplane support
+Reviewed-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/pcs/pcs-lynx.c | 36 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
 
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h |  4 ++-
- drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c | 25 ++++++++++++----
- drivers/net/pcs/pcs-lynx.c                       | 36 ++++++++++++++++++++++++
- 3 files changed, 59 insertions(+), 6 deletions(-)
-
+diff --git a/drivers/net/pcs/pcs-lynx.c b/drivers/net/pcs/pcs-lynx.c
+index 62bb9272dcb2..af36cd647bf5 100644
+--- a/drivers/net/pcs/pcs-lynx.c
++++ b/drivers/net/pcs/pcs-lynx.c
+@@ -11,6 +11,7 @@
+ #define LINK_TIMER_VAL(ns)		((u32)((ns) / SGMII_CLOCK_PERIOD_NS))
+ 
+ #define SGMII_AN_LINK_TIMER_NS		1600000 /* defined by SGMII spec */
++#define IEEE8023_LINK_TIMER_NS		10000000
+ 
+ #define LINK_TIMER_LO			0x12
+ #define LINK_TIMER_HI			0x13
+@@ -83,6 +84,7 @@ static void lynx_pcs_get_state(struct phylink_pcs *pcs,
+ 	struct lynx_pcs *lynx = phylink_pcs_to_lynx(pcs);
+ 
+ 	switch (state->interface) {
++	case PHY_INTERFACE_MODE_1000BASEX:
+ 	case PHY_INTERFACE_MODE_SGMII:
+ 	case PHY_INTERFACE_MODE_QSGMII:
+ 		phylink_mii_c22_pcs_get_state(lynx->mdio, state);
+@@ -108,6 +110,30 @@ static void lynx_pcs_get_state(struct phylink_pcs *pcs,
+ 		state->link, state->an_enabled, state->an_complete);
+ }
+ 
++static int lynx_pcs_config_1000basex(struct mdio_device *pcs,
++				     unsigned int mode,
++				     const unsigned long *advertising)
++{
++	struct mii_bus *bus = pcs->bus;
++	int addr = pcs->addr;
++	u32 link_timer;
++	int err;
++
++	link_timer = LINK_TIMER_VAL(IEEE8023_LINK_TIMER_NS);
++	mdiobus_write(bus, addr, LINK_TIMER_LO, link_timer & 0xffff);
++	mdiobus_write(bus, addr, LINK_TIMER_HI, link_timer >> 16);
++
++	err = mdiobus_modify(bus, addr, IF_MODE,
++			     IF_MODE_SGMII_EN | IF_MODE_USE_SGMII_AN,
++			     0);
++	if (err)
++		return err;
++
++	return phylink_mii_c22_pcs_config(pcs, mode,
++					  PHY_INTERFACE_MODE_1000BASEX,
++					  advertising);
++}
++
+ static int lynx_pcs_config_sgmii(struct mdio_device *pcs, unsigned int mode,
+ 				 const unsigned long *advertising)
+ {
+@@ -163,6 +189,8 @@ static int lynx_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
+ 	struct lynx_pcs *lynx = phylink_pcs_to_lynx(pcs);
+ 
+ 	switch (ifmode) {
++	case PHY_INTERFACE_MODE_1000BASEX:
++		return lynx_pcs_config_1000basex(lynx->mdio, mode, advertising);
+ 	case PHY_INTERFACE_MODE_SGMII:
+ 	case PHY_INTERFACE_MODE_QSGMII:
+ 		return lynx_pcs_config_sgmii(lynx->mdio, mode, advertising);
+@@ -185,6 +213,13 @@ static int lynx_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
+ 	return 0;
+ }
+ 
++static void lynx_pcs_an_restart(struct phylink_pcs *pcs)
++{
++	struct lynx_pcs *lynx = phylink_pcs_to_lynx(pcs);
++
++	phylink_mii_c22_pcs_an_restart(lynx->mdio);
++}
++
+ static void lynx_pcs_link_up_sgmii(struct mdio_device *pcs, unsigned int mode,
+ 				   int speed, int duplex)
+ {
+@@ -290,6 +325,7 @@ static void lynx_pcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
+ static const struct phylink_pcs_ops lynx_pcs_phylink_ops = {
+ 	.pcs_get_state = lynx_pcs_get_state,
+ 	.pcs_config = lynx_pcs_config,
++	.pcs_an_restart = lynx_pcs_an_restart,
+ 	.pcs_link_up = lynx_pcs_link_up,
+ };
+ 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.20.1
+
