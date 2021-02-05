@@ -2,83 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E5633104F4
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 07:31:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EF653104F0
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 07:31:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231169AbhBEG2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 01:28:42 -0500
-Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:60124 "EHLO
-        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229492AbhBEG2j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 01:28:39 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R921e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=17;SR=0;TI=SMTPD_---0UNwRPr4_1612506441;
-Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0UNwRPr4_1612506441)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 05 Feb 2021 14:27:46 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     ast@kernel.org
-Cc:     daniel@iogearbox.net, davem@davemloft.net, kuba@kernel.org,
-        hawk@kernel.org, john.fastabend@gmail.com, shuah@kernel.org,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Subject: [PATCH] selftests/bpf: Simplify the calculation of variables
-Date:   Fri,  5 Feb 2021 14:27:19 +0800
-Message-Id: <1612506439-56810-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S230510AbhBEG2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 01:28:18 -0500
+Received: from szxga07-in.huawei.com ([45.249.212.35]:12401 "EHLO
+        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229492AbhBEG2R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 01:28:17 -0500
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4DX55y16Lbz7hSV;
+        Fri,  5 Feb 2021 14:26:14 +0800 (CST)
+Received: from ubuntu.network (10.175.138.68) by
+ DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
+ 14.3.498.0; Fri, 5 Feb 2021 14:27:24 +0800
+From:   Zheng Yongjun <zhengyongjun3@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Zheng Yongjun <zhengyongjun3@huawei.com>
+Subject: [PATCH] net: core: Clean code style issues in `neighbour.c`
+Date:   Fri, 5 Feb 2021 14:28:21 +0800
+Message-ID: <20210205062821.3893-1-zhengyongjun3@huawei.com>
+X-Mailer: git-send-email 2.22.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.138.68]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the following coccicheck warnings:
+Do code format alignment to clean code style issues.
 
-./tools/testing/selftests/bpf/xdpxceiver.c:954:28-30: WARNING !A || A &&
-B is equivalent to !A || B.
-
-./tools/testing/selftests/bpf/xdpxceiver.c:932:28-30: WARNING !A || A &&
-B is equivalent to !A || B.
-
-./tools/testing/selftests/bpf/xdpxceiver.c:909:28-30: WARNING !A || A &&
-B is equivalent to !A || B.
-
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
 ---
- tools/testing/selftests/bpf/xdpxceiver.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/core/neighbour.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-index 1e722ee..98ad4a2 100644
---- a/tools/testing/selftests/bpf/xdpxceiver.c
-+++ b/tools/testing/selftests/bpf/xdpxceiver.c
-@@ -906,7 +906,7 @@ static void *worker_testapp_validate(void *arg)
- 			ksft_print_msg("Destroying socket\n");
- 	}
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index 9500d28a43b0..a742c918a09b 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -299,7 +299,7 @@ static void neigh_flush_dev(struct neigh_table *tbl, struct net_device *dev,
+ 		struct neighbour __rcu **np = &nht->hash_buckets[i];
  
--	if (!opt_bidi || (opt_bidi && bidi_pass)) {
-+	if (!opt_bidi || bidi_pass) {
- 		xsk_socket__delete(((struct ifobject *)arg)->xsk->xsk);
- 		(void)xsk_umem__delete(((struct ifobject *)arg)->umem->umem);
- 	}
-@@ -929,7 +929,7 @@ static void testapp_validate(void)
- 	pthread_mutex_lock(&sync_mutex);
+ 		while ((n = rcu_dereference_protected(*np,
+-					lockdep_is_held(&tbl->lock))) != NULL) {
++						      lockdep_is_held(&tbl->lock))) != NULL) {
+ 			if (dev && n->dev != dev) {
+ 				np = &n->next;
+ 				continue;
+@@ -309,7 +309,7 @@ static void neigh_flush_dev(struct neigh_table *tbl, struct net_device *dev,
+ 				continue;
+ 			}
+ 			rcu_assign_pointer(*np,
+-				   rcu_dereference_protected(n->next,
++					   rcu_dereference_protected(n->next,
+ 						lockdep_is_held(&tbl->lock)));
+ 			write_lock(&n->lock);
+ 			neigh_del_timer(n);
+@@ -634,7 +634,7 @@ static struct neighbour *___neigh_create(struct neigh_table *tbl,
+ 					    lockdep_is_held(&tbl->lock));
+ 	     n1 != NULL;
+ 	     n1 = rcu_dereference_protected(n1->next,
+-			lockdep_is_held(&tbl->lock))) {
++					    lockdep_is_held(&tbl->lock))) {
+ 		if (dev == n1->dev && !memcmp(n1->primary_key, n->primary_key, key_len)) {
+ 			if (want_ref)
+ 				neigh_hold(n1);
+@@ -962,7 +962,7 @@ static void neigh_periodic_work(struct work_struct *work)
+ 	 * BASE_REACHABLE_TIME.
+ 	 */
+ 	queue_delayed_work(system_power_efficient_wq, &tbl->gc_work,
+-			      NEIGH_VAR(&tbl->parms, BASE_REACHABLE_TIME) >> 1);
++			   NEIGH_VAR(&tbl->parms, BASE_REACHABLE_TIME) >> 1);
+ 	write_unlock_bh(&tbl->lock);
+ }
  
- 	/*Spawn RX thread */
--	if (!opt_bidi || (opt_bidi && !bidi_pass)) {
-+	if (!opt_bidi || !bidi_pass) {
- 		if (pthread_create(&t0, &attr, worker_testapp_validate, (void *)ifdict[1]))
- 			exit_with_error(errno);
- 	} else if (opt_bidi && bidi_pass) {
-@@ -951,7 +951,7 @@ static void testapp_validate(void)
- 	pthread_mutex_unlock(&sync_mutex);
+@@ -1620,8 +1620,7 @@ struct neigh_parms *neigh_parms_alloc(struct net_device *dev,
+ 	if (p) {
+ 		p->tbl		  = tbl;
+ 		refcount_set(&p->refcnt, 1);
+-		p->reachable_time =
+-				neigh_rand_reach_time(NEIGH_VAR(p, BASE_REACHABLE_TIME));
++		p->reachable_time = neigh_rand_reach_time(NEIGH_VAR(p, BASE_REACHABLE_TIME));
+ 		dev_hold(dev);
+ 		p->dev = dev;
+ 		write_pnet(&p->net, net);
+@@ -1693,7 +1692,7 @@ void neigh_table_init(int index, struct neigh_table *tbl)
  
- 	/*Spawn TX thread */
--	if (!opt_bidi || (opt_bidi && !bidi_pass)) {
-+	if (!opt_bidi || !bidi_pass) {
- 		if (pthread_create(&t1, &attr, worker_testapp_validate, (void *)ifdict[0]))
- 			exit_with_error(errno);
- 	} else if (opt_bidi && bidi_pass) {
+ #ifdef CONFIG_PROC_FS
+ 	if (!proc_create_seq_data(tbl->id, 0, init_net.proc_net_stat,
+-			      &neigh_stat_seq_ops, tbl))
++				  &neigh_stat_seq_ops, tbl))
+ 		panic("cannot create neighbour proc dir entry");
+ #endif
+ 
+@@ -1714,10 +1713,10 @@ void neigh_table_init(int index, struct neigh_table *tbl)
+ 	rwlock_init(&tbl->lock);
+ 	INIT_DEFERRABLE_WORK(&tbl->gc_work, neigh_periodic_work);
+ 	queue_delayed_work(system_power_efficient_wq, &tbl->gc_work,
+-			tbl->parms.reachable_time);
++			   tbl->parms.reachable_time);
+ 	timer_setup(&tbl->proxy_timer, neigh_proxy_process, 0);
+ 	skb_queue_head_init_class(&tbl->proxy_queue,
+-			&neigh_table_proxy_queue_class);
++				  &neigh_table_proxy_queue_class);
+ 
+ 	tbl->last_flush = now;
+ 	tbl->last_rand	= now + tbl->parms.reachable_time * 20;
 -- 
-1.8.3.1
+2.22.0
 
