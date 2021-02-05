@@ -2,78 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 603F83101E5
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 01:58:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85A90310219
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 02:11:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232289AbhBEA5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 19:57:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48316 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232279AbhBEA47 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 19:56:59 -0500
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19C8AC0613D6
-        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 16:56:19 -0800 (PST)
-Received: by mail-pg1-x529.google.com with SMTP id o16so3361008pgg.5
-        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 16:56:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=td8lYf7iJDPIhT02i3PgobJCeNCH7wemudZJq4hsJSQ=;
-        b=sMZm39LmejFPYL8leMwzCDWJ1VJD9emiysBnWY/nvuKNb+AgTwWNF4xWuAtihz7FMy
-         V8renTw09ViuvL1Vh105bNpXZVOzge6b5ZiQj70UerA7YNEHK181V3P1OqEUV152cxO1
-         qPPbjLv3W2TzUQfF5nOVokoKuHXdqgbBeV7Sz6+S69S02vCFfilc6sUixG/I3Pawcgrn
-         gQr5Eh+jhZMnBauP6Ggxpxl6KMkqd7n7UdOcILqOP1143o+hD+YWZe5TfMur0cEncJLL
-         uVfD6ENY9eRD289W/VD+BUROPrKAgiNTbnYwvkzccEJgoDQXXKdyRqFobzaawne8EH7d
-         7bDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=td8lYf7iJDPIhT02i3PgobJCeNCH7wemudZJq4hsJSQ=;
-        b=VZi0wMknuf/B1ayQEN3O59PnT2rPPI0SKOvCd0NAl/E3fAxoMUy4rTlHSx/jLKkFJ/
-         XAiIkCjNTjNAwK2nda5W9XJF0AiWaNv9dU4JfJpqe+cbh6Grz5amSZ+Tr9QPjlHovreT
-         s4JIPMbKEM2LdbVHYzQpHff4MyFhzrFKdzwGR7PsOLGHbHjddv7AtwHUWW+e/EkPI3ZL
-         fhlE8/aicooochpogeDeGO/ADybPdJC9i+W6/PY9IrGP3TLDTltGNgIdY1vZBXdctXmE
-         pak+CMaW+Q9tLrTOO0Pv1bGpRMe3FvYKsbE+4/NFXgBOFvId/Xi5C1ZAtitrjbe3Wkks
-         YdDw==
-X-Gm-Message-State: AOAM5309OZUzcFzMnRVSpxaFpbZYqW717TCO6O57fOHWVPHlruAu0nR7
-        8lTk9GxwT5zbJkecmp/oZVqbDwlXOms=
-X-Google-Smtp-Source: ABdhPJxitpjRN+OJT8DrpTXHer3PFPaaMmIafq15vAeqw2+EZi3a3ClSQbqgPjcJmBMJORUFTCyqVw==
-X-Received: by 2002:a63:464a:: with SMTP id v10mr1689802pgk.393.1612486578285;
-        Thu, 04 Feb 2021 16:56:18 -0800 (PST)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 17sm7606717pgy.53.2021.02.04.16.56.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Feb 2021 16:56:17 -0800 (PST)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org, mkubecek@suse.cz
-Cc:     andrew@lunn.ch, Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH ethtool] gitignore: Ignore .dirstamp
-Date:   Thu,  4 Feb 2021 16:56:15 -0800
-Message-Id: <20210205005615.1058972-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S232498AbhBEBJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 20:09:33 -0500
+Received: from mga09.intel.com ([134.134.136.24]:30707 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232263AbhBEBJa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Feb 2021 20:09:30 -0500
+IronPort-SDR: UlNY7Xq9Ryi8uj4H2WO0xTzHYU0k4maPRvuAwX/ZN9fRMhD+jUg6p+SIAlES9b/EeOkLz1rXDQ
+ CTU8PASWGVHg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9885"; a="181505413"
+X-IronPort-AV: E=Sophos;i="5.81,153,1610438400"; 
+   d="scan'208";a="181505413"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2021 17:08:49 -0800
+IronPort-SDR: rSfRk5qnf8S7RAXfEShK9dRTrJv8e2F2Uvfi8eVy379xAp/EEV6qVAXAJ39lCYB+uOohpQ5kLa
+ 1y52B6iOCZvg==
+X-IronPort-AV: E=Sophos;i="5.81,153,1610438400"; 
+   d="scan'208";a="393623628"
+Received: from jbrandeb-mobl4.amr.corp.intel.com (HELO localhost) ([10.212.188.246])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2021 17:08:49 -0800
+Date:   Thu, 4 Feb 2021 17:08:48 -0800
+From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
+To:     Song Yoong Siang <yoong.siang.song@intel.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Maxime Coquelin" <mcoquelin.stm32@gmail.com>,
+        <netdev@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        "Ong Boon Leong" <boon.leong.ong@intel.com>,
+        Voon Wei Feng <weifeng.voon@intel.com>,
+        Wong Vee Khee <vee.khee.wong@intel.com>,
+        Gomes Vinicius <vinicius.gomes@intel.com>
+Subject: Re: [PATCH net 1/1] net: stmmac: set TxQ mode back to DCB after
+ disabling CBS
+Message-ID: <20210204170848.00000aff@intel.com>
+In-Reply-To: <1612447396-20351-1-git-send-email-yoong.siang.song@intel.com>
+References: <1612447396-20351-1-git-send-email-yoong.siang.song@intel.com>
+X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- .gitignore | 1 +
- 1 file changed, 1 insertion(+)
+Song Yoong Siang wrote:
 
-diff --git a/.gitignore b/.gitignore
-index c4df588c37ea..0b7a71b58b7e 100644
---- a/.gitignore
-+++ b/.gitignore
-@@ -30,3 +30,4 @@ test-*.trs
- 
- .*.swp
- *.patch
-+.dirstamp
--- 
-2.25.1
+> From: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+> 
+> When disable CBS, mode_to_use parameter is not updated even the operation
+> mode of Tx Queue is changed to Data Centre Bridging (DCB). Therefore,
+> when tc_setup_cbs() function is called to re-enable CBS, the operation
+> mode of Tx Queue remains at DCB, which causing CBS fails to work.
+> 
+> This patch updates the value of mode_to_use parameter to MTL_QUEUE_DCB
+> after operation mode of Tx Queue is changed to DCB in stmmac_dma_qmode()
+> callback function.
+> 
+> Fixes: 1f705bc61aee ("net: stmmac: Add support for CBS QDISC")
+> Suggested-by: Gomes, Vinicius <vinicius.gomes@intel.com>
+> Signed-off-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+> Signed-off-by: Song, Yoong Siang <yoong.siang.song@intel.com>
 
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
