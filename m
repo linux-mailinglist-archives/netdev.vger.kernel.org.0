@@ -2,114 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40486310247
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 02:34:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE67D310262
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 02:48:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232839AbhBEBdY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 20:33:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56204 "EHLO
+        id S232952AbhBEBrx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 20:47:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232758AbhBEBdT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 20:33:19 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9ED1C0613D6
-        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 17:32:39 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id d2so2885057pjs.4
-        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 17:32:39 -0800 (PST)
+        with ESMTP id S232678AbhBEBrt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 20:47:49 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEE79C0613D6;
+        Thu,  4 Feb 2021 17:47:08 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id q12so7520226lfo.12;
+        Thu, 04 Feb 2021 17:47:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=5m/q933AKS5Da4UZBbBXaEy0isO/GWwDL1FAIdyxAWc=;
-        b=de9RQJWfm2RC9hOG+DHu1tA2ilVFCJisbNxWOksKkUsjdLH+6SoyKCN6dzb/BEszkV
-         PsFDp3IYzBr7VfBkxENRGKWiAI9QwZ6zJ10b42EnUoFuxsuiuSWszHoBoZx824J0QxiC
-         Kna9fhCsZWKJeWTp7cF1gAkfGqdQrIJQ9P/r6r6CBjfpQvMVFDWLI957yiyB+iWTXLx4
-         TNZBnP7ZN0kPw9AOh+xkf0JLM9j3N0WSuq7H94jNuVU13YkJupAvZ79QGbEjrYOfxDWZ
-         NmQaCSZB+IAZlCgex1/p8hty24Ed/ZwfCQPOAPgD3mAHdhxFFebkbQRDQqNEDH7Bs8zD
-         s7nQ==
+        bh=HFUlgfa0yv/MLmEQsXGfPFb3G6FL4A5NprSd5CvPpMk=;
+        b=r0yzv6pS19Vm35q0pMRBx8aAia/+6IDUR1k5NL6AYrf79UDYfw6vMbNRN5ecjSlKmx
+         B6eo54PGuK7/ON0tEVH3reuY0J7Cr5FpKy46tt8coqUGsldoRWyUb4ReUJJjVmJsocPR
+         zkDlzn5a/0VknhuBCwp/GGgkzGNaRoSlzXfLCHFQ+PNs7QdNhGp8iN7JgiP6myAZxJ/9
+         kf8gvqmM3KqpYnAsAUmRPWviV/eaOgNinIsseJtJbmx6ucxLiu8TDWdYX++yoh7KyCvN
+         I4l0yiOJfnll0dJMyRNN9OZpDtXqVm6NjvzBfMy+fkoKnlIuIwxKZ23wmg6z05CvAf3h
+         rc6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=5m/q933AKS5Da4UZBbBXaEy0isO/GWwDL1FAIdyxAWc=;
-        b=Qt6ABebYZumCtywMFLW5SnJ3yhTwdvXnjMjqLYScaGy1r4g1XoJfjO3Nmpp+ym6/6m
-         hhMfcxqwJqpPLJEE51Hfu058nP0rVgq7Y7WQYMLWMhSBtTNcikJ3kaCQt/dq8yGOOI0j
-         ZELwijAJ6KqllW8NzzWfqVQ2NJ4Tpb1D8XbjL6tZTe92UDS24AVjiv/EN6efM/e/KlFo
-         itEDkj/SGnAo5QQLD31PfdO/Gro1qGnc2UdwYgR00JOTJkIGALkKuLqBFKQapLFiMslQ
-         vjbVPtic+Nx1fJc78z+F8AS22u0qsA3RPXG+Wm6kcXRiJcHAcOfnqe7fJ0/SDsQ9cqv/
-         BdLg==
-X-Gm-Message-State: AOAM533iMFTw5fgPneMxCqpjX3yq3oSQcAs779I2965AvQk3EoaNDUkC
-        8zhmz0Az3Y9jn4Q3IbTecBEm8q6VBsGJIcltEmKLeA==
-X-Google-Smtp-Source: ABdhPJzToYcGq8Rasu96vuqQvr90B0PSPwz1jTDwsyNFnSZzIDCTC/xQcQpUJtDFXCIduf21oFdSHpeutIb7YPlqYlI=
-X-Received: by 2002:a17:902:c24b:b029:e1:8c46:f876 with SMTP id
- 11-20020a170902c24bb02900e18c46f876mr1864303plg.15.1612488759090; Thu, 04 Feb
- 2021 17:32:39 -0800 (PST)
+        bh=HFUlgfa0yv/MLmEQsXGfPFb3G6FL4A5NprSd5CvPpMk=;
+        b=AOcw7Dcqq3TaVRoXwuUFyDE7TcmZ1GMPils3GQrRu0RcSPYrz0WOg8xO5qU/Ggky4p
+         8TRe6p+AGktWgS93pLHoEiFFQk+atTIY+44D7QRX9gKVtNh0RtsK1+wU56sHVDGqQ44o
+         UQtaozZfRDMn3Iyp0CJfta9ue/3plu4C13yyzjPlkBOSt6QbzfBBPa81mQagxOktUn1z
+         UaoJ/DF9lKCr0iY8tQvXUDxCBo7fkM1AAdZoIYcTwllLe0E8PtrcT97FmShQT3fQ4E48
+         QCPGMOOBYOCWEIMmai01ipCGxmXmLZFAVVFN26LSPnR/TeFVhgZZ8k1WTvaBx/PNZcU6
+         KPMw==
+X-Gm-Message-State: AOAM53331V6JTF6KgeVVzfdwcypkRxeT/dIVTdreAH14zwCV/JRlPZy8
+        pNcdnsId7pAKiGk6+YoZ6oZdnhNR1aS+7WIm9Kw=
+X-Google-Smtp-Source: ABdhPJzN6nDTfTI5N6Ze/d63acaPTf5IvURc4EmTRMRKa0cicEA0x9aDrF8Vv70X+2ElBIPK216DaYBJuex8iam1x9A=
+X-Received: by 2002:a19:787:: with SMTP id 129mr1276232lfh.540.1612489627417;
+ Thu, 04 Feb 2021 17:47:07 -0800 (PST)
 MIME-Version: 1.0
-References: <20210121004148.2340206-1-arjunroy.kdev@gmail.com>
- <20210121004148.2340206-3-arjunroy.kdev@gmail.com> <20210122200723.50e4afe6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <a18cbf73-1720-dec0-fbc6-2e357fee6bd8@gmail.com> <20210125061508.GC579511@unreal>
- <ad3d4a29-b6c1-c6d2-3c0f-fff212f23311@gmail.com> <CAOFY-A2y20N9mUDgknbqM=tR0SA6aS6aTjyybggWNa8uY2=U_Q@mail.gmail.com>
- <20210202065221.GB1945456@unreal> <CAOFY-A0_MU3LP2HNY_5a1XZLZHDr3_9tDq6v-YB-FSJJb7508g@mail.gmail.com>
- <20210204160006.439ce566@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210204160006.439ce566@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Arjun Roy <arjunroy@google.com>
-Date:   Thu, 4 Feb 2021 17:32:28 -0800
-Message-ID: <CAOFY-A0fN20RdeLS+SXZ2-WC_3rtLEhgXkC8jJtX_431OrNy9Q@mail.gmail.com>
-Subject: Re: [net-next v2 2/2] tcp: Add receive timestamp support for receive zerocopy.
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leon@kernel.org>, David Ahern <dsahern@gmail.com>,
-        Arjun Roy <arjunroy.kdev@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
+References: <20210205015219.2939361-1-xujia39@huawei.com>
+In-Reply-To: <20210205015219.2939361-1-xujia39@huawei.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 4 Feb 2021 17:46:55 -0800
+Message-ID: <CAADnVQL5NBY2E2iGCYZAeGN5gtcK0uyM1UpDNaZ28Ukrrb8tGA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: clean up for 'const static' in bpf_lsm.c
+To:     Xu Jia <xujia39@huawei.com>
+Cc:     bpf <bpf@vger.kernel.org>, KP Singh <kpsingh@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Florent Revest <revest@chromium.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 4, 2021 at 4:00 PM Jakub Kicinski <kuba@kernel.org> wrote:
+On Thu, Feb 4, 2021 at 5:40 PM Xu Jia <xujia39@huawei.com> wrote:
 >
-> On Thu, 4 Feb 2021 15:03:40 -0800 Arjun Roy wrote:
-> > But, if it's an IN or IN-OUT field, it seems like mandating that the
-> > application set it to 0 could break the case where a future
-> > application sets it to some non-zero value and runs on an older
-> > kernel.
+> Prefer 'static const' over 'const static' here
 >
-> That usually works fine in practice, 0 means "do what old kernels did /
-> feature not requested", then if newer userspace sets the field to non-0
-> that means it requires a feature the kernel doesn't support. So -EINVAL
-> / -EOPNOTSUPP is right. BPF syscall has been successfully doing this
-> since day 1, I'm not aware of any major snags.
+> Signed-off-by: Xu Jia <xujia39@huawei.com>
+> ---
+>  kernel/bpf/bpf_lsm.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 >
-
-Alright, sounds good.
-
-> > And allowing it to be non-zero can maybe yield an unexpected
-> > outcome if an old application that did not zero it runs on a newer
-> > kernel.
+> diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
+> index 1622a44d1617..75b1c678d558 100644
+> --- a/kernel/bpf/bpf_lsm.c
+> +++ b/kernel/bpf/bpf_lsm.c
+> @@ -67,7 +67,7 @@ BPF_CALL_2(bpf_bprm_opts_set, struct linux_binprm *, bprm, u64, flags)
 >
-> Could you refresh our memory as to why we can't require the application
-> to pass zero-ed memory to TCP ZC? In practice is there are max
-> reasonable length of the argument that such legacy application may pass
-> so that we can start checking at a certain offset?
+>  BTF_ID_LIST_SINGLE(bpf_bprm_opts_set_btf_ids, struct, linux_binprm)
 >
+> -const static struct bpf_func_proto bpf_bprm_opts_set_proto = {
+> +static const struct bpf_func_proto bpf_bprm_opts_set_proto = {
 
-Actually I think that's fine. We have hitherto been just using length
-checks to distinguish between feature capability for rx. zerocopy but
-I think we can draw the line at this point (now that there's
-ambiguity) and start requiring zero'd memory.
-
-I will send out a patch soon; reserved u32 field, must be set to 0 for
-the current kernel, can be non-zero and in/out in future kernels as
-discussed.
-
-Thanks,
--Arjun
-
-
-> > So: maybe the right move is to mark it as reserved, not care what the
-> > input value is, always set it to 0 before returning to the user, and
-> > explicitly mandate that any future use of the field must be as an
-> > OUT-only parameter?
->
+I totally agree that it's more canonical this way, but I don't think
+such git history noise
+is worth it.
