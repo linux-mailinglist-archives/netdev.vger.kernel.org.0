@@ -2,80 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1C2A3107A1
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 10:23:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11AD83107C4
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 10:27:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230366AbhBEJUU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 04:20:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42504 "EHLO
+        id S230103AbhBEJX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 04:23:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229706AbhBEJRk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 04:17:40 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C65FC061786
-        for <netdev@vger.kernel.org>; Fri,  5 Feb 2021 01:16:23 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id g10so6856249wrx.1
-        for <netdev@vger.kernel.org>; Fri, 05 Feb 2021 01:16:23 -0800 (PST)
+        with ESMTP id S229934AbhBEJVE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 04:21:04 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFB07C0613D6;
+        Fri,  5 Feb 2021 01:20:44 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id d2so3438389pjs.4;
+        Fri, 05 Feb 2021 01:20:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=amy4L/8jH7mtZxpeWf9Qu1vs+rFEFgpRFCEiO9AV7Ao=;
-        b=RB2MTZXhxZ5xs70SUvleh2MZruvFRue7hITBRCxQUqVo12zU3OwY11g1CdptiTqGk/
-         roTONKdHt08a6063IwsUqkSe5SXh1MwFOdUd1GGuT6oJ2mnXqD8234bQdT0oDsOgH4fn
-         Tgm8dizKtOflG4eJqG4K+f7BMS8YY3QcEo6bPtoQPLbm8k0UFRYgjkvV5GKqZTzTcAC8
-         FNbpwq/GLn0cGxRkFG63u1VG3jHHgrMHdhh4WxqAt7XiICa9pxeYRg6yoDuSIq9NXcJz
-         pmlTfQLWIhw6qrzwuYV+mwoOb2oZYtEymKTiYDlF9doWLuJFC9Lnmb6i2qXIjyRIVN+3
-         u4Rw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=U6dWRiyrIbPA57yDDAstPw73ZY/dCSiR50oKzjx/H6g=;
+        b=HSa2DSSMZS+e+scFXZu0NDFNcryeuP7Aes44vX2eicn4LJOzoDW4pE4magZtPxVZum
+         XduPEeGVtNA0SLvbcmAkktQYYSJ6iNy9AFFRm0DCGM0qtc7RXLY6tkBBeBM4tCX9LKmS
+         3hu4orweIDyaCxc42NDaPbVyQ3TZoHRHGK/PnemFRGbOO2QdjVKjq2UF0BqC1BTYW+VC
+         xmPE+jZXWH6vkGgG+6WjhjacANCagFitJH4M6DKRoBnHiWOrMSvj8Z42wS2v966HMwB4
+         fGvfsTR1vLFZkD9D6t2AZ0YkBu60DoKza1WUOnBrT8IHQKjCAAOqtmhdrSv0jRo1dT38
+         FGlw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=amy4L/8jH7mtZxpeWf9Qu1vs+rFEFgpRFCEiO9AV7Ao=;
-        b=rb9R2fU4KgjyrQKP1LatC9kQZn5WoCOMVJ7aKnu9LA85C2DyAiuFNwPZDbAhQZ0J7M
-         BXTfKs60Cos/Fyy5/2YoJalcmu+XIJ/+jyJgiySEJbpF4jXZWzoCR8ux3TMOyXHsCy9E
-         skR3tQ+QzyxCuhH+TeJ3isAZezzjVDJJtUcRaYLc1tuZdVjnaz505U84ZP6mBU3u6xfe
-         Gbl49khmx13vxCvjtLTRYlAWxl13S8Z3XL7dgQ3cLj4wfgqUlbcj5+EA4hdWvEj9ZN61
-         rwTUJ48oEHKFCiSgJ9+8oYBCSYClCsXSyX1MBsxudRaZ46i266zU4OgKfMaCYQaXYDeU
-         X4cg==
-X-Gm-Message-State: AOAM531ucuw5JXwuIA11u1E2BYGWBqaGIURvHJ9Ok2Qkmlmwz7g3ABmE
-        zHVDJCRlmff6VIK5CaRlTx26ODUHhjOO4gxBloA=
-X-Google-Smtp-Source: ABdhPJy+X9DJjUo7WegQRzjKz7eKAQK+k5gs4uSh/eV4wefzelFkLEo/6hWgBFLrchRP6yB+8zjpcYCgOGcy7BRrPKQ=
-X-Received: by 2002:adf:f750:: with SMTP id z16mr3890879wrp.243.1612516582073;
- Fri, 05 Feb 2021 01:16:22 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=U6dWRiyrIbPA57yDDAstPw73ZY/dCSiR50oKzjx/H6g=;
+        b=tQ+4xpD72F7mLLOIWSGAfXrj3gqCG890yhNeGUMKSkhm0ds5qjO5wEgNCBIo3xGXiN
+         A4Jt4klhk+OK+Z9FuYjqHSmwSuNx8AJ25p/XI3oh810LRh1C7CLF15aJ0eEBgmO0wCIW
+         JpHaQ+UbVIdOj1L+ELlk94tV/2FUwnit+bQrWlrSnNS2DG0k/PuIS3mbTiJXFxgWu6sC
+         VbZ2bWIPbRttyGmO/i0p9X4b++Z4RVC9ta4ElKlnkMPua3vrjQ7j+tkLZAFVHjgoiGPb
+         MawQSu4VNfYfQ8YGcORZNLR1wk61JNTnJD4IWYgbgqHUpt2+CxY0DFhg8TG2UjcP5T+B
+         5n1Q==
+X-Gm-Message-State: AOAM531q2cUh9NxBmBnAqoh6YkKcJs0Z8h0PJ952+gBxDP8tugaQkWB2
+        QX1ft5py+Qy6YXNuOIO+iUMsIbz+GeDMKQeTc7g=
+X-Google-Smtp-Source: ABdhPJwG1sbba1GA71Z/ZsoLV0AXeXnT/scifzyZ8m25RVsPHbBrHLFRH2dadY60zQ8rJtTGlKMxsg==
+X-Received: by 2002:a17:90a:ba87:: with SMTP id t7mr3163335pjr.184.1612516844327;
+        Fri, 05 Feb 2021 01:20:44 -0800 (PST)
+Received: from localhost ([103.200.106.135])
+        by smtp.gmail.com with ESMTPSA id f15sm7768722pja.24.2021.02.05.01.20.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Feb 2021 01:20:43 -0800 (PST)
+Date:   Fri, 5 Feb 2021 14:50:32 +0530
+From:   Amey Narkhede <ameynarkhede02@gmail.com>
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     netdev@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: qlge/qlge_main: Use min_t instead of min
+Message-ID: <20210205092032.3cyymzvkp5nkiok3@archlinux>
+References: <20210204215451.69928-1-ameynarkhede02@gmail.com>
+ <20210204225844.GA431671@localhost>
 MIME-Version: 1.0
-References: <cover.1611637639.git.lucien.xin@gmail.com> <CADvbK_e-+tDucpUnRWQhQqpXSDTd_kbS_hLMkHwVNjWY5bnhuw@mail.gmail.com>
- <645990.1612339208@warthog.procyon.org.uk> <CADvbK_dJJjiQK+N0U04eWCU50DRbFLNqHSi7Apj==d3ygzkz6g@mail.gmail.com>
- <655776.1612343656@warthog.procyon.org.uk> <CADvbK_ePdoJRna81YwJUL5cqu1ST3W8J8kRqhbNVGdSse-3u1w@mail.gmail.com>
- <2099834.1612516465@warthog.procyon.org.uk>
-In-Reply-To: <2099834.1612516465@warthog.procyon.org.uk>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Fri, 5 Feb 2021 17:16:10 +0800
-Message-ID: <CADvbK_e1iXDM9MujHBRpO7tq2F01c7+Eg7bdL4bPD4c4_h-iAQ@mail.gmail.com>
-Subject: Re: [PATCHv4 net-next 0/2] net: enable udp v6 sockets receiving v4
- packets with UDP GRO
-To:     David Howells <dhowells@redhat.com>
-Cc:     network dev <netdev@vger.kernel.org>, davem <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Martin Varghese <martin.varghese@nokia.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        vfedorenko@novek.ru
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="ueodtozohea73jpb"
+Content-Disposition: inline
+In-Reply-To: <20210204225844.GA431671@localhost>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 5, 2021 at 5:14 PM David Howells <dhowells@redhat.com> wrote:
->
-> Xin Long <lucien.xin@gmail.com> wrote:
->
-> > Subject: [PATCH net-next] rxrpc: use udp tunnel APIs instead of open code in
-> >  rxrpc_open_socket
+
+--ueodtozohea73jpb
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On 21/02/04 03:58PM, Nathan Chancellor wrote:
+> On Fri, Feb 05, 2021 at 03:24:51AM +0530, ameynarkhede02@gmail.com wrote:
+> > From: Amey Narkhede <ameynarkhede02@gmail.com>
 > >
-> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> > Use min_t instead of min function in qlge/qlge_main.c
+> > Fixes following checkpatch.pl warning:
+> > WARNING: min() should probably be min_t(int, MAX_CPUS, num_online_cpus())
+> >
+> > Signed-off-by: Amey Narkhede <ameynarkhede02@gmail.com>
+> > ---
+> >  drivers/staging/qlge/qlge_main.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+> > index 402edaeff..29606d1eb 100644
+> > --- a/drivers/staging/qlge/qlge_main.c
+> > +++ b/drivers/staging/qlge/qlge_main.c
+> > @@ -3938,7 +3938,7 @@ static int ql_configure_rings(struct ql_adapter *qdev)
+> >  	int i;
+> >  	struct rx_ring *rx_ring;
+> >  	struct tx_ring *tx_ring;
+> > -	int cpu_cnt = min(MAX_CPUS, (int)num_online_cpus());
+> > +	int cpu_cnt = min_t(int, MAX_CPUS, (int)num_online_cpus());
 >
-> You can add "Acked-by: David Howells <dhowells@redhat.com>" if you want.
+> You should remove the cast on num_online_cpus() like checkpatch
+> suggests. min_t adds the cast to int on both of the inputs for you.
 >
-OK, Thank you so much!
+Thanks. Fixed in v2
+
+Amey
+
+--ueodtozohea73jpb
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEE6H5dELF7r4AXEH5hLybaax94G/8FAmAdDeAACgkQLybaax94
+G//LZQ//YzFyc1n4oGkSaJGiso13StX9yKhtHGF4+kH2iRzT6Et4/eJTZwnOCuzn
+XBMT0agwZFIBVlupnHi92uz8YwCPbmKmcLrWZAlO61XW65ITRjcdpw2N4GF/yOc8
+uAr74KvXLMmX9CKACUvaRGkVvu1eKuy6bFAMvbKxNUgwI1NvMJzLc2h+sD8dMk5p
+xPIG0wte9VXvbD9U+bWDeBdhlXKoAR8LPv/NmOy1NEzQ2Y33AXkGHenOQEPHGjGP
+MmeMj3lIiBH1Tohu+NJ7Yk3VqCc3d4Rtei/WueQ8EDsAvO1dzKRhhhnzR8Edty+N
+xGTNgSIL28HYOaW+3noiWhTbJHghmQp+3Nt3fdADU2avcs4l+WigfIm1gtlH/azT
+sar5v1rzmRSsJE+spCOuQ6YqXOguwspcpkQij/uEhy4+ASk1Xc/BhPVhFzycgtI/
+etH2+wqN591qPA3hvNqyVYfAb8ySC4iLYRYtBfxolNBZrIrLBiBiC4y4Jr+sfIlX
+dMAlEcFW9T5zjmZTO66Jtcz7Iz1ZI2HDzy0dVjUJCwVJVE0h9yq9NLShHg0KNhcH
+s+qS+RVbz6xPpxWKZkCkp5aLrk29t2HtTjPCy2++bGL40OskoF4QXfD/AGPhGj0G
+oFCdFONyUMkMMDnoYqp8RhpSUnhwKNy1MYqvbCz2fhZv0vXAitk=
+=r0ZT
+-----END PGP SIGNATURE-----
+
+--ueodtozohea73jpb--
