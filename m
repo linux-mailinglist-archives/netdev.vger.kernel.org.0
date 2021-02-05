@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FC96310C0C
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 14:43:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB9C0310C12
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 14:46:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230469AbhBENmx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 08:42:53 -0500
-Received: from mail-db8eur05on2069.outbound.protection.outlook.com ([40.107.20.69]:29638
+        id S231387AbhBENoF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 08:44:05 -0500
+Received: from mail-db8eur05on2061.outbound.protection.outlook.com ([40.107.20.61]:2785
         "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230310AbhBENjr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Feb 2021 08:39:47 -0500
+        id S229892AbhBENkV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Feb 2021 08:40:21 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lzw3T4p0yp5rqyTxhGOn3ezLd1JwuZkG4mrCkEZwOWZZ5x0YzQQ3maJIdSJUTJL7GP/KY3GLWx02VoyVPBlLyTI7HyeiCZ8rWCEZYbqwoFqB4nEV1QvWGKt2tcnaoJW+VnNAXkxJCkSG7O/LIgSB5Dsyrlhg/RcMlA+ggrtw5AuArRqlb2Q2sBJYuqTspenmq57Iep0djdCjQpFZmnwxirGkAZvK3F6wI/lu/LjatMXqxw9IxMJxziKvaWb9DQ3tIdPhm3heCV4qix1OqVkm4iX1+g5CFH2GZQQaVPLnjz6eJ0P3OgTjWMreR7lulKelpXOwTAksOOjPHQEI3X2kAw==
+ b=JY8nLsnh49aIo6q64yIc0WneuY3zKNYofm6phagyzW60sWcmsLEnse4yDVcKiBYHu0yxJYAi84zej0NH4YYSOr1MeL0lsreWCSD6I0OaTAGXQndBdK6sr8jdqHU0L1QW70PeVS7M9X1yZ0dAwXn7lW1f3P3U1jl+TkA8KEhNq7KYoDtLL1+i40wFdijeu6D2rpn4QAeDzOofqpRryAr3i1t/3zWu7VPFQenP8fbj8d3015K5Zqzt61H9NFkQjSesyjglD+QYwY8eelt2CeOVGJM+C0V5C6X9QgtOHR+7LaDdR0g4hI0+aAz3Zjx1h3Yb9QGUEQnQdJE+i+1VmcSFuw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=C2GQWcRrxWKKJ1Y8Eb9IZDiTIjf4XgrqccDO/eKS0g4=;
- b=NaOpJRgjp1fZbplT3qqTgEsz9+EM8QHyOpeecV1yr1W12SWJsvebY5f5YmKS5mrQt+N6vH/opCcXnogfNMXc7OsZpxATL2LCWBH8rerRZrFcIV1fg+cVXCXpl0NT5214gtFJxjdHoS2M2bUpfiVxK/Lw+R6m7q7n/KjnIyBUcoOIKZN8EKPjAoN40piaXouGbwWpty5kd4/w8duBz03umNkdb+f/ZgeenOFEbFxaPgk5Vp14t+T1db1qh3WjakD9c8jxmzVet6YOH745cXX5OhTYAeRHE6EQM33okLfdD0vLOngEuuG0DKIbpiOLkhbRCvx8KbtWGxOF7SaTDaJEGg==
+ bh=SlbQ4uKZpdFvDeLUhlMtEaRQlEWxgFQbLum/8JeYsZs=;
+ b=fj1SO7ku0EKq4maOLouNase2DplEDNIrnIGG9i0w/2uyKLtpewfp4mpbNpMtQ//yJdD9qyT7cjIsJ2CW8GlkqT7KUI1gKYcVUXv8YN5ESLP7jxySbFkR3oXD6vZp5zqpmH/7IxGWBDCs2S6PLGO4vSBniixcuWB7iShbCeizFAtHZWcyevXeKqhSPAprHT3943icPOn15fHFXdYri3PP9PMh80yE3weVMKnkxaxn1bmR5HPnq4VqKw/IJG6gzfuJ19xH0waiQ086JAnCGp9OWvN2JVoEwCbQIH8yZnHGn08u4irL1veEBP7qYDMa10TrD5ijU36Oi8rj2YXpDKfUHA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=C2GQWcRrxWKKJ1Y8Eb9IZDiTIjf4XgrqccDO/eKS0g4=;
- b=pgC5WS7UfPRMihawnn0z3G20mFn33KO8fMin3TWWyndT1dDcgmO0LDfUMIaqpDpJcgWN0oQSqHyAd3Aqds9pEPDhAjwgvijyvuO7WDXe1Zk0tW2z+BFnaetuyGiRX2Yl1WqTyQCM2xVtr0GoSmAPZPUl7taq0Ziuy//qnX91UBw=
+ bh=SlbQ4uKZpdFvDeLUhlMtEaRQlEWxgFQbLum/8JeYsZs=;
+ b=TlNX7zvRKrUzzMQsvMBwXS/clmfNZjKuqvN2vdSD+IqV4GHrf02DeXoIw1w2zlj3HubgndASXN+zhPhtnDHY8/ac9rh0/GkXR09EHXLMD31qMhM1AdJD4M8En7ZytQwx8br7+WcEpMUyshBaYld6nBKNAXYpnTmY7B7o6/9EcPo=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR04MB4910.eurprd04.prod.outlook.com (2603:10a6:803:5c::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.24; Fri, 5 Feb
- 2021 13:37:29 +0000
+ 2021 13:37:30 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3df3:2eba:51bb:58d7]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3df3:2eba:51bb:58d7%7]) with mapi id 15.20.3825.020; Fri, 5 Feb 2021
- 13:37:29 +0000
+ 13:37:30 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -44,9 +44,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Subject: [PATCH v3 net-next 3/4] Revert "net: Have netpoll bring-up DSA management interface"
-Date:   Fri,  5 Feb 2021 15:37:12 +0200
-Message-Id: <20210205133713.4172846-4-vladimir.oltean@nxp.com>
+Subject: [PATCH v3 net-next 4/4] Revert "net: ipv4: handle DSA enabled master network devices"
+Date:   Fri,  5 Feb 2021 15:37:13 +0200
+Message-Id: <20210205133713.4172846-5-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210205133713.4172846-1-vladimir.oltean@nxp.com>
 References: <20210205133713.4172846-1-vladimir.oltean@nxp.com>
@@ -58,60 +58,114 @@ X-ClientProxiedBy: VI1PR09CA0138.eurprd09.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (5.12.227.87) by VI1PR09CA0138.eurprd09.prod.outlook.com (2603:10a6:803:12c::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.20 via Frontend Transport; Fri, 5 Feb 2021 13:37:28 +0000
+Received: from localhost.localdomain (5.12.227.87) by VI1PR09CA0138.eurprd09.prod.outlook.com (2603:10a6:803:12c::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.20 via Frontend Transport; Fri, 5 Feb 2021 13:37:29 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: b1f406a6-e07c-4709-ab27-08d8c9db2e88
+X-MS-Office365-Filtering-Correlation-Id: a343179e-bb31-4860-3e6e-08d8c9db2f07
 X-MS-TrafficTypeDiagnostic: VI1PR04MB4910:
-X-Microsoft-Antispam-PRVS: <VI1PR04MB49102EC56E520870B04229E7E0B29@VI1PR04MB4910.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:119;
+X-Microsoft-Antispam-PRVS: <VI1PR04MB4910346FADE5027888D88F6FE0B29@VI1PR04MB4910.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:65;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: L2dVWSLUBiS0/HT8faCGoVMOSvfU7o5jfqL/WCdNJltUViJYdi0jlbpKvmn6+eCKmVUSarSbaM3eTUgocc1XjAldEg6yf3hzo6IVJhFyIOt3NxmcQENU5ZlDdNmlI3UMWMKp3Gs/UWYAL4Ysq/WuBTHh3UmNZ49rR+xun8T49LOSozlHoaepgxSy8vIcSvdw1PrhBPS/CzkNzqbUCGEconYlHCHmtLAmJrgeDyeiMtga4OH3L8VDWzuZK9103L9gV7JseGCP0N+hMpSHQTQu0959zKeEiADPPxSZ3zGWZWRoiY1mOyeaEi//HJk/vnwzimGhG++PetiTP5Eyeg7NKsTn776Fc/4fYHUYnIV6OF+fKIEOeJuVltv8BMz5Y5khr2+DG/GRCXTzQj1XMHlsw6VRnhPpob7KHjbWKYF2pxf60+hcWM0LZia6rbWIAIrd0XZkzTthn7G5J3m/H2QiEqfOlKk4Y/QJv0PhbgJYBVhrMBqjjODi8Gp682xcBhDJt8Rpfe8kN1HavTtMUnUfZbtlPLWOrz5AWGhvCbnawbMNdrTNWvINgG8O29505l9X
+X-Microsoft-Antispam-Message-Info: 8pyBwsfwxACo80XccOCYiNeJpWIvqkQShbfY+/DdRsVbwBlxGjXSBMLH5HoSSHM2lwf8wqmwSxEH500IEspycM3stX4waiUUFT9HITSUCs7TRWqmDkrZL7h+vCOJpilquO2WbEETpnx2GJgXbAhWREEADQQYePACcSEJ311+OwHhQLO9ASNbJKvbhl4PMBPIoudOsKq4oPu/8DWsJJfyliUW9U9YQ8kIuK77ISiIk6kiJ2Tpa2bpo7t0YOwg6W8JKASWJ0HjYwenaUZ7FIYzy+O5lzcvrLN7+kse4RDiibx0jqQoKPGqFQXvfJvzJbs6XsqpECKNdLzdWfQ5feXrZaXekKHvB5PJYaL2L9UrjmIk6AP+janohdqfDRhfaUo/EMyUBsqhI8Xde8MFjq+7fxFELEK5sRp8j3U58FNgrfYze2QcvicLgMSEtrJBTCmjS2FcCVMsYyh+L7ZfnXW/jM2lP+EmjoTFPFwxdBlRF3HK2xMoKgMZpt5EfKMPNuBl8NmgMxWFuV/pS7Yv+o+3EfajbN4K6PoO//P5q7Psxzr9CDZqTyoM+GnutfbkOh5r/UMz1eHNzf/D4QsnYdht5w==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(376002)(39860400002)(346002)(136003)(366004)(2906002)(16526019)(5660300002)(186003)(8936002)(69590400011)(8676002)(2616005)(1076003)(956004)(44832011)(6486002)(478600001)(4326008)(54906003)(6506007)(66946007)(83380400001)(86362001)(66556008)(66476007)(26005)(316002)(110136005)(6512007)(52116002)(36756003)(6666004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?7LsvvwDYSIUUPqpmAqhTlNTafwlitDscCqSaloYkS/XVZv0c/HLvAn4+N0ag?=
- =?us-ascii?Q?ETvVMRl+1RTa02//SBayhTItOtljZDM4QzuVxxR+aeFS/SS7VIExWpwi1XcQ?=
- =?us-ascii?Q?5N3HY5AVeciJfeMexCt3U8315k1vSVEiYll2wlo+XxBmJsjWISJS9sByEGY2?=
- =?us-ascii?Q?5vcT7IVe5MKI/vHpj4Js/AOrxN5JfpjkuF9BFQTxFocOs94kmwSx6OsXx5EE?=
- =?us-ascii?Q?gXqYNg1E/aKLn0BhBxXc21SG8k3ZY+qWvrrx9FVQtQr0X5c7vjmwx8nAm/YH?=
- =?us-ascii?Q?QmBp44Em8GQSo5AYJQC6W+UlMWhqY8PMY9dM4Tzr5puF5HouEDJfSeJ8fD0g?=
- =?us-ascii?Q?t0OrRZbugAibIVNRhBkEka1Hng5BGobsxDRcoUy+p6ibks+qpQFPTokCOkYF?=
- =?us-ascii?Q?up71m8CU7sd81iZ7UPtTlR03otn+AmmGt5dgj5Kk7cxplFSpSZzm8lu3N8OT?=
- =?us-ascii?Q?cTTvpTyNhyBk1bOnwQR5fWez8QJG/jtA9YE4GgxXc8Oq+X3Uzogf0GcmS+Zb?=
- =?us-ascii?Q?VJY8/v/ZTrgh/JOOZgSOOQjcgA7mi+idaVS6hXF39MxAnJXuC41sYTBtSuMS?=
- =?us-ascii?Q?IWvTqPSdD9Rv6CO0nR4LWvxRJFkBI4hMFSRaRqH84Dd9RL/mZRywV4UNzxoG?=
- =?us-ascii?Q?y0VGQsFpHaAJ3x8mSFZPl2KqQj4jQEk1r5sCPXXMfBVnIkKBWpmQcuamrLDL?=
- =?us-ascii?Q?Td+mWLRYQEC3Cj8JiiDYEPxO1kKkUZzKjLyVrKmccIiRfqHXssPrKScCZiRL?=
- =?us-ascii?Q?O0rcEOyipDMl8HMtITR1mMgERiO+RZ9V7ZgMKGh6qvQ5FBdL26Eww/TIovNx?=
- =?us-ascii?Q?Gx7NqHP5/96E30uMnPd6C2JgCZXcbsBkrCTMjjqkef4kad/3ZFxR0Wc0A+Eu?=
- =?us-ascii?Q?dcOdldTekKcwx7HRNjI/7uVyHnjT57Si2rBl4xnd7QVPhohz0y0d0XPnnLFi?=
- =?us-ascii?Q?YxRpcYmMLovM2/C6IRBTnfOHOsvu7yvwwfVak/+Mq9XuSlXVZKluttWUj/YO?=
- =?us-ascii?Q?JsSXKnEKZ31jRL4yl9xoT1EfvFVDYUrbS8f2QPrLqPjmlkZAPgfUOzIs27Xn?=
- =?us-ascii?Q?0cn543dBBLhtclWDO2jGw76d19gEgjQnFxnPDalqtkL20CVkt68CwV1Mbv7S?=
- =?us-ascii?Q?s09VCPb2hGcPZkkAq9WDTFK5OiG0q1kKO7CfQboi/AWxFqyajxbAyhCfEz7n?=
- =?us-ascii?Q?dSV4axnpRLJav47KZ9i1BtAgayM0InVwE/YVBe7122lnFiyB3yxrvd0/8oOX?=
- =?us-ascii?Q?lTH+sJCeWCt9XA52rW7OVptVOVqB4nnl9GMCRS75aNzNc98k15zdapKmkwis?=
- =?us-ascii?Q?atUTl/0Wrm8ieig8an23XCPT?=
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?gOjx008ZudSWsqHGKB7by4gcg+ZsYT4bmoBCTsQ5sZjea+EYjhNVV0D2AIn2?=
+ =?us-ascii?Q?SxbYm4/DFuMu0QZd4CFwBQ4qlFVmjF7IB8y1H/t2fU62MXOoJG3Rdo24nxbX?=
+ =?us-ascii?Q?NLtbZ/Lz1rrY8HRIkrCMu+8lGttxoe8ZGN6MKKNB1GNlw4V2yYfTmTZbiV3J?=
+ =?us-ascii?Q?uS7Aakw6Eo0MuqDS2fh9jpHcX/C0RzMq2TSzCzCfUyuuMMmaiyazfJsfhlrc?=
+ =?us-ascii?Q?YoFH7ksr9koDL6ED71kzosIfgJ0zOcLXUc37Ahz8pa9fHkVJppdGGBEI8CqP?=
+ =?us-ascii?Q?IkOxADO3VdGsdmymnNM+XklMmJ3pcIimUCIxE7Uh6kDRO/WC4X6mR3wMIo/n?=
+ =?us-ascii?Q?YVQ06FAQDofesY1tM7uqUP+Lr9z29B15x3SLIE0Qixff3flXz95IyX+6vudn?=
+ =?us-ascii?Q?AonE6QVe6arw6VebNX5lbzKNkGqe0Aymm4eRaMLDOm9Yba9QLJ0nOwrEgfx6?=
+ =?us-ascii?Q?AEtuRhmVR3+WGGa5+dDoIYO5iSDJD3OXAcswETjPKP9NLdJq2IXcE8NFqqPi?=
+ =?us-ascii?Q?Gkxh8w8rAZ+8V6yydaiLHU4UZMBv4fnL+QfzgRs520kekET9Q6Wuk3W3DY2B?=
+ =?us-ascii?Q?Pd1WcmRXA/h+oUyYzNVcx4aqcV7XLUJ/pli22vqmcEQpzhgzX0A6rbGqVj2C?=
+ =?us-ascii?Q?QYAWhn5g7gt9afHZgkmJ/P244tGLOaFxtpcqXpuwcXvD6EBs4NmxxNtHJWb7?=
+ =?us-ascii?Q?CLePZ6clc/E7BPRllh4QwAqb841ZG6lAd260cR5ehPOOO0gTCysuz9+Pvkx6?=
+ =?us-ascii?Q?Nu4ZFJ9TjXWMfDmSD60Ww5Dq5HRnfn6cHD5NbyhWYS6biOY52QqTut7E/dKN?=
+ =?us-ascii?Q?ZyNPqjnmp070berdEd8pgoY6+//p8zPwSCECKBZWjE422q6yvcVjfiHeH39D?=
+ =?us-ascii?Q?EmdZ2lNTDEWZn/U+qDd1XnbAvSWuaWJv61CMNwVgzJFDyOBZpA3X5EjZH4g9?=
+ =?us-ascii?Q?Utv6vx3wUJSIkkkysqDBOpZsewvHFBSs4MoejHz8yFotbCCzx2JGxC9YEYoL?=
+ =?us-ascii?Q?G6thY94PHUrnm9YolVTGXhY6K3nxfqu2vrW+naXwgs++yyyrXEnLmB+fjeK3?=
+ =?us-ascii?Q?QO+mcivO8iSxCC0UjpYU2Oq5VxZGKdouoFsnpeUpBfaKWaLf+ptGcOM7zahK?=
+ =?us-ascii?Q?ASL+ehHcWxcrn+fL7dfH8m5cYSvBeJN3AtvCCzpAfZda3rHldzvybcrpKiax?=
+ =?us-ascii?Q?u+m5n2aHGnaIHcrjADWL8QyLxvMak3j5h31aGS57eMJfZMNSUQ7eWArmLMJy?=
+ =?us-ascii?Q?V1KON1gqXkwXgQVJ7u7xiwVteIwtvZVhA9CjHZFL4wTPujyYhR8NcDvuTJDe?=
+ =?us-ascii?Q?GpZrAC+Yq0V4TI+k9nv6Siqc?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b1f406a6-e07c-4709-ab27-08d8c9db2e88
+X-MS-Exchange-CrossTenant-Network-Message-Id: a343179e-bb31-4860-3e6e-08d8c9db2f07
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Feb 2021 13:37:29.2912
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Feb 2021 13:37:30.1907
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oPD5ZtBmRHqlBouv2cEZqVdYsDAzGSauB2QIm6x7eQGRDG7WBc/owD1lUq3wOY2NqXl7QZ32b7Oq81+3bXv3Gw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: HV3gT5JDvIYD1sP9fqqiAymil6S8NLjzC5z9Zmuxd+xoT+ezc9n/axBrt4mBpA/ahlJ7kOYN2duJ2KCyQYc8HQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4910
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 1532b9778478577152201adbafa7738b1e844868.
+This reverts commit 728c02089a0e3eefb02e9927bfae50490f40e72e.
 
-The above commit is good and it works, however it was meant as a bugfix
-for stable kernels and now we have more self-contained ways in DSA to
-handle the situation where the DSA master must be brought up.
+Since 2015 DSA has gained more integration with the network stack, we
+can now have the same functionality without explicitly open-coding for
+it:
+- It now opens the DSA master netdevice automatically whenever a user
+  netdevice is opened.
+- The master and switch interfaces are coupled in an upper/lower
+  hierarchy using the netdev adjacency lists.
+
+In the nfsroot example below, the interface chosen by autoconfig was
+swp3, and every interface except that and the DSA master, eth1, was
+brought down afterwards:
+
+[    8.714215] mscc_felix 0000:00:00.5 swp0 (uninitialized): PHY [0000:00:00.3:10] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
+[    8.978041] mscc_felix 0000:00:00.5 swp1 (uninitialized): PHY [0000:00:00.3:11] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
+[    9.246134] mscc_felix 0000:00:00.5 swp2 (uninitialized): PHY [0000:00:00.3:12] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
+[    9.486203] mscc_felix 0000:00:00.5 swp3 (uninitialized): PHY [0000:00:00.3:13] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
+[    9.512827] mscc_felix 0000:00:00.5: configuring for fixed/internal link mode
+[    9.521047] mscc_felix 0000:00:00.5: Link is Up - 2.5Gbps/Full - flow control off
+[    9.530382] device eth1 entered promiscuous mode
+[    9.535452] DSA: tree 0 setup
+[    9.539777] printk: console [netcon0] enabled
+[    9.544504] netconsole: network logging started
+[    9.555047] fsl_enetc 0000:00:00.2 eth1: configuring for fixed/internal link mode
+[    9.562790] fsl_enetc 0000:00:00.2 eth1: Link is Up - 1Gbps/Full - flow control off
+[    9.564661] 8021q: adding VLAN 0 to HW filter on device bond0
+[    9.637681] fsl_enetc 0000:00:00.0 eth0: PHY [0000:00:00.0:02] driver [Qualcomm Atheros AR8031/AR8033] (irq=POLL)
+[    9.655679] fsl_enetc 0000:00:00.0 eth0: configuring for inband/sgmii link mode
+[    9.666611] mscc_felix 0000:00:00.5 swp0: configuring for inband/qsgmii link mode
+[    9.676216] 8021q: adding VLAN 0 to HW filter on device swp0
+[    9.682086] mscc_felix 0000:00:00.5 swp1: configuring for inband/qsgmii link mode
+[    9.690700] 8021q: adding VLAN 0 to HW filter on device swp1
+[    9.696538] mscc_felix 0000:00:00.5 swp2: configuring for inband/qsgmii link mode
+[    9.705131] 8021q: adding VLAN 0 to HW filter on device swp2
+[    9.710964] mscc_felix 0000:00:00.5 swp3: configuring for inband/qsgmii link mode
+[    9.719548] 8021q: adding VLAN 0 to HW filter on device swp3
+[    9.747811] Sending DHCP requests ..
+[   12.742899] mscc_felix 0000:00:00.5 swp1: Link is Up - 1Gbps/Full - flow control rx/tx
+[   12.743828] mscc_felix 0000:00:00.5 swp0: Link is Up - 1Gbps/Full - flow control off
+[   12.747062] IPv6: ADDRCONF(NETDEV_CHANGE): swp1: link becomes ready
+[   12.755216] fsl_enetc 0000:00:00.0 eth0: Link is Up - 1Gbps/Full - flow control rx/tx
+[   12.766603] IPv6: ADDRCONF(NETDEV_CHANGE): swp0: link becomes ready
+[   12.783188] mscc_felix 0000:00:00.5 swp2: Link is Up - 1Gbps/Full - flow control rx/tx
+[   12.785354] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+[   12.799535] IPv6: ADDRCONF(NETDEV_CHANGE): swp2: link becomes ready
+[   13.803141] mscc_felix 0000:00:00.5 swp3: Link is Up - 1Gbps/Full - flow control rx/tx
+[   13.811646] IPv6: ADDRCONF(NETDEV_CHANGE): swp3: link becomes ready
+[   15.452018] ., OK
+[   15.470336] IP-Config: Got DHCP answer from 10.0.0.1, my address is 10.0.0.39
+[   15.477887] IP-Config: Complete:
+[   15.481330]      device=swp3, hwaddr=00:04:9f:05:de:0a, ipaddr=10.0.0.39, mask=255.255.255.0, gw=10.0.0.1
+[   15.491846]      host=10.0.0.39, domain=(none), nis-domain=(none)
+[   15.498429]      bootserver=10.0.0.1, rootserver=10.0.0.1, rootpath=
+[   15.498481]      nameserver0=8.8.8.8
+[   15.627542] fsl_enetc 0000:00:00.0 eth0: Link is Down
+[   15.690903] mscc_felix 0000:00:00.5 swp0: Link is Down
+[   15.745216] mscc_felix 0000:00:00.5 swp1: Link is Down
+[   15.800498] mscc_felix 0000:00:00.5 swp2: Link is Down
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
@@ -123,61 +177,65 @@ None.
 Changes in v2:
 None.
 
- net/core/netpoll.c | 22 ++++------------------
- 1 file changed, 4 insertions(+), 18 deletions(-)
+ net/ipv4/ipconfig.c | 21 +++++++++++++++++----
+ 1 file changed, 17 insertions(+), 4 deletions(-)
 
-diff --git a/net/core/netpoll.c b/net/core/netpoll.c
-index 960948290001..c310c7c1cef7 100644
---- a/net/core/netpoll.c
-+++ b/net/core/netpoll.c
-@@ -29,7 +29,6 @@
- #include <linux/slab.h>
+diff --git a/net/ipv4/ipconfig.c b/net/ipv4/ipconfig.c
+index 3cd13e1bc6a7..f9ab1fb219ec 100644
+--- a/net/ipv4/ipconfig.c
++++ b/net/ipv4/ipconfig.c
+@@ -61,7 +61,6 @@
  #include <linux/export.h>
- #include <linux/if_vlan.h>
+ #include <net/net_namespace.h>
+ #include <net/arp.h>
 -#include <net/dsa.h>
- #include <net/tcp.h>
- #include <net/udp.h>
- #include <net/addrconf.h>
-@@ -658,15 +657,15 @@ EXPORT_SYMBOL_GPL(__netpoll_setup);
- 
- int netpoll_setup(struct netpoll *np)
- {
--	struct net_device *ndev = NULL, *dev = NULL;
--	struct net *net = current->nsproxy->net_ns;
-+	struct net_device *ndev = NULL;
- 	struct in_device *in_dev;
- 	int err;
- 
+ #include <net/ip.h>
+ #include <net/ipconfig.h>
+ #include <net/route.h>
+@@ -218,9 +217,9 @@ static int __init ic_open_devs(void)
+ 	last = &ic_first_dev;
  	rtnl_lock();
--	if (np->dev_name[0])
-+	if (np->dev_name[0]) {
-+		struct net *net = current->nsproxy->net_ns;
- 		ndev = __dev_get_by_name(net, np->dev_name);
--
-+	}
- 	if (!ndev) {
- 		np_err(np, "%s doesn't exist, aborting\n", np->dev_name);
- 		err = -ENODEV;
-@@ -674,19 +673,6 @@ int netpoll_setup(struct netpoll *np)
- 	}
- 	dev_hold(ndev);
  
--	/* bring up DSA management network devices up first */
--	for_each_netdev(net, dev) {
--		if (!netdev_uses_dsa(dev))
--			continue;
--
--		err = dev_change_flags(dev, dev->flags | IFF_UP, NULL);
--		if (err < 0) {
--			np_err(np, "%s failed to open %s\n",
--			       np->dev_name, dev->name);
--			goto put;
--		}
--	}
--
- 	if (netdev_master_upper_dev_get(ndev)) {
- 		np_err(np, "%s is a slave device, aborting\n", np->dev_name);
- 		err = -EBUSY;
+-	/* bring loopback and DSA master network devices up first */
++	/* bring loopback device up first */
+ 	for_each_netdev(&init_net, dev) {
+-		if (!(dev->flags & IFF_LOOPBACK) && !netdev_uses_dsa(dev))
++		if (!(dev->flags & IFF_LOOPBACK))
+ 			continue;
+ 		if (dev_change_flags(dev, dev->flags | IFF_UP, NULL) < 0)
+ 			pr_err("IP-Config: Failed to open %s\n", dev->name);
+@@ -305,6 +304,9 @@ static int __init ic_open_devs(void)
+ 	return 0;
+ }
+ 
++/* Close all network interfaces except the one we've autoconfigured, and its
++ * lowers, in case it's a stacked virtual interface.
++ */
+ static void __init ic_close_devs(void)
+ {
+ 	struct ic_device *d, *next;
+@@ -313,9 +315,20 @@ static void __init ic_close_devs(void)
+ 	rtnl_lock();
+ 	next = ic_first_dev;
+ 	while ((d = next)) {
++		bool bring_down = (d != ic_dev);
++		struct net_device *lower_dev;
++		struct list_head *iter;
++
+ 		next = d->next;
+ 		dev = d->dev;
+-		if (d != ic_dev && !netdev_uses_dsa(dev)) {
++
++		netdev_for_each_lower_dev(ic_dev->dev, lower_dev, iter) {
++			if (dev == lower_dev) {
++				bring_down = false;
++				break;
++			}
++		}
++		if (bring_down) {
+ 			pr_debug("IP-Config: Downing %s\n", dev->name);
+ 			dev_change_flags(dev, d->flags, NULL);
+ 		}
 -- 
 2.25.1
 
