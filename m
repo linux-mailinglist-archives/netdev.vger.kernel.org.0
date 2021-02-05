@@ -2,74 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BAA3E3104C5
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 06:53:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E5633104F4
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 07:31:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230402AbhBEFut (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 00:50:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51508 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229586AbhBEFus (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Feb 2021 00:50:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id DE2D764FA0;
-        Fri,  5 Feb 2021 05:50:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612504207;
-        bh=qzTqGev1hBUdwU64Jik155APlHGdFqTFwNx27Ifl0PA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Wn82XKYDLUplpHSrRiQjWeL8irYUuO1zGO9K4FlSjtjuM/tcd+pic5pWX2LoO33lG
-         FN5mVkCvWKzXBK3MsEeCb+E4JXB2PNW+Vx2o2bQXr6jHhU9aHyOjVdER46sKRpWDSn
-         HFO/ejiGMY0ZtP7MPblh0opzmat8GhD3tTBLNqKVNTbw8vbP0AQZwBXrPhZful+5xo
-         cHM4rQRsj4kloNN6jaFGx+FBDX5qkSIveB2x1ozCd7Mf4upck9+NC7WzHPm8dZxDzi
-         0h9M9usjA6c5cxJJOEwvVqRqcxDan5SWDzA5R4Yq1HgtxmXDz5QgPKVDRhEAsqPRQR
-         8rUq0cjj22CiA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D1A0460978;
-        Fri,  5 Feb 2021 05:50:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 1/4] netfilter: xt_recent: Fix attempt to update deleted
- entry
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161250420785.25728.14599762510510974298.git-patchwork-notify@kernel.org>
-Date:   Fri, 05 Feb 2021 05:50:07 +0000
-References: <20210205001727.2125-2-pablo@netfilter.org>
-In-Reply-To: <20210205001727.2125-2-pablo@netfilter.org>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, kuba@kernel.org
+        id S231169AbhBEG2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 01:28:42 -0500
+Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:60124 "EHLO
+        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229492AbhBEG2j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 01:28:39 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R921e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=17;SR=0;TI=SMTPD_---0UNwRPr4_1612506441;
+Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0UNwRPr4_1612506441)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 05 Feb 2021 14:27:46 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     ast@kernel.org
+Cc:     daniel@iogearbox.net, davem@davemloft.net, kuba@kernel.org,
+        hawk@kernel.org, john.fastabend@gmail.com, shuah@kernel.org,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Subject: [PATCH] selftests/bpf: Simplify the calculation of variables
+Date:   Fri,  5 Feb 2021 14:27:19 +0800
+Message-Id: <1612506439-56810-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Fix the following coccicheck warnings:
 
-This series was applied to netdev/net.git (refs/heads/master):
+./tools/testing/selftests/bpf/xdpxceiver.c:954:28-30: WARNING !A || A &&
+B is equivalent to !A || B.
 
-On Fri,  5 Feb 2021 01:17:24 +0100 you wrote:
-> From: Jozsef Kadlecsik <kadlec@mail.kfki.hu>
-> 
-> When both --reap and --update flag are specified, there's a code
-> path at which the entry to be updated is reaped beforehand,
-> which then leads to kernel crash. Reap only entries which won't be
-> updated.
-> 
-> [...]
+./tools/testing/selftests/bpf/xdpxceiver.c:932:28-30: WARNING !A || A &&
+B is equivalent to !A || B.
 
-Here is the summary with links:
-  - [net,1/4] netfilter: xt_recent: Fix attempt to update deleted entry
-    https://git.kernel.org/netdev/net/c/b1bdde33b723
-  - [net,2/4] selftests: netfilter: fix current year
-    https://git.kernel.org/netdev/net/c/a3005b0f83f2
-  - [net,3/4] netfilter: nftables: fix possible UAF over chains from packet path in netns
-    https://git.kernel.org/netdev/net/c/767d1216bff8
-  - [net,4/4] netfilter: flowtable: fix tcp and udp header checksum update
-    https://git.kernel.org/netdev/net/c/8d6bca156e47
+./tools/testing/selftests/bpf/xdpxceiver.c:909:28-30: WARNING !A || A &&
+B is equivalent to !A || B.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+---
+ tools/testing/selftests/bpf/xdpxceiver.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
+diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
+index 1e722ee..98ad4a2 100644
+--- a/tools/testing/selftests/bpf/xdpxceiver.c
++++ b/tools/testing/selftests/bpf/xdpxceiver.c
+@@ -906,7 +906,7 @@ static void *worker_testapp_validate(void *arg)
+ 			ksft_print_msg("Destroying socket\n");
+ 	}
+ 
+-	if (!opt_bidi || (opt_bidi && bidi_pass)) {
++	if (!opt_bidi || bidi_pass) {
+ 		xsk_socket__delete(((struct ifobject *)arg)->xsk->xsk);
+ 		(void)xsk_umem__delete(((struct ifobject *)arg)->umem->umem);
+ 	}
+@@ -929,7 +929,7 @@ static void testapp_validate(void)
+ 	pthread_mutex_lock(&sync_mutex);
+ 
+ 	/*Spawn RX thread */
+-	if (!opt_bidi || (opt_bidi && !bidi_pass)) {
++	if (!opt_bidi || !bidi_pass) {
+ 		if (pthread_create(&t0, &attr, worker_testapp_validate, (void *)ifdict[1]))
+ 			exit_with_error(errno);
+ 	} else if (opt_bidi && bidi_pass) {
+@@ -951,7 +951,7 @@ static void testapp_validate(void)
+ 	pthread_mutex_unlock(&sync_mutex);
+ 
+ 	/*Spawn TX thread */
+-	if (!opt_bidi || (opt_bidi && !bidi_pass)) {
++	if (!opt_bidi || !bidi_pass) {
+ 		if (pthread_create(&t1, &attr, worker_testapp_validate, (void *)ifdict[0]))
+ 			exit_with_error(errno);
+ 	} else if (opt_bidi && bidi_pass) {
+-- 
+1.8.3.1
 
