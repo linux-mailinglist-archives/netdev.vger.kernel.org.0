@@ -2,119 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6C633101C5
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 01:44:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 603F83101E5
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 01:58:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232122AbhBEAnj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 19:43:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45456 "EHLO
+        id S232289AbhBEA5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 19:57:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232086AbhBEAne (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 19:43:34 -0500
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 886A7C06178A;
-        Thu,  4 Feb 2021 16:42:52 -0800 (PST)
-Received: by mail-yb1-xb31.google.com with SMTP id w204so5121587ybg.2;
-        Thu, 04 Feb 2021 16:42:52 -0800 (PST)
+        with ESMTP id S232279AbhBEA47 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 19:56:59 -0500
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19C8AC0613D6
+        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 16:56:19 -0800 (PST)
+Received: by mail-pg1-x529.google.com with SMTP id o16so3361008pgg.5
+        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 16:56:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=D6i7Oinnx5ftOJvJSI5dtil0RLEVgRMyQjS9mzKj7sM=;
-        b=YS5jRGTpXoPoyjksLLqF16ikzDGVhGlOcUWBsnn2QVmGMhBcR+mQQxsKDLUcDSZLIB
-         tZB5Rys0cSHSpXQ6aNSzT9nevBwLu1k1SM4spujUxooEOO2VtjqfjfJp7OonalliTxne
-         287GlUeM59y5gYfo1JRfduNPLb4lKysoN7zc7sPq7vG141IHWYrcT2gxoSHqKo0pwEdM
-         qoy7Tu/ji+6qbg32RE+dlwqzo6YHK7CskroosBcV2T9dKjbwEdjlZjQFgdULrgV9/u0o
-         A+a/gqXNEXAHKrIG2fT3XchnAWG6O02KXTLP1WNPgW3PuG0+4d4XhFNLu6fKRTH7eFQN
-         643Q==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=td8lYf7iJDPIhT02i3PgobJCeNCH7wemudZJq4hsJSQ=;
+        b=sMZm39LmejFPYL8leMwzCDWJ1VJD9emiysBnWY/nvuKNb+AgTwWNF4xWuAtihz7FMy
+         V8renTw09ViuvL1Vh105bNpXZVOzge6b5ZiQj70UerA7YNEHK181V3P1OqEUV152cxO1
+         qPPbjLv3W2TzUQfF5nOVokoKuHXdqgbBeV7Sz6+S69S02vCFfilc6sUixG/I3Pawcgrn
+         gQr5Eh+jhZMnBauP6Ggxpxl6KMkqd7n7UdOcILqOP1143o+hD+YWZe5TfMur0cEncJLL
+         uVfD6ENY9eRD289W/VD+BUROPrKAgiNTbnYwvkzccEJgoDQXXKdyRqFobzaawne8EH7d
+         7bDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=D6i7Oinnx5ftOJvJSI5dtil0RLEVgRMyQjS9mzKj7sM=;
-        b=kMm+ai8m3y6xRwONn906vabsmqdTk+B3HSHAqP6iNRTxlR62e5CQPNx2A2Ek5DrVsb
-         AnhsUGSSvj2kYYDhGwdeLzF4ojmUKi3drLP49RpON15Uaif19gFYeGxnAnsNsUYKG2L3
-         Cm0+BoejRndvd027t4cEkk3nIzFTsRW9d8VcvE8y5l7sYYHfMq1Ziwa8gdCMbTj/E2ps
-         Zj3U7fvwMyS92NMtux/SVhMK4kxdSbCvGP2TFg/xfxVCt2xezxBAWvoxHklipsviff5F
-         cvPfTnQX4Ux5XNmQ37965IOVjkYdS6kbCJJL5viuO88KbPU6YynuSI4ZunFl4nPrgQnF
-         74yQ==
-X-Gm-Message-State: AOAM530JBZSL0LJmFcGsxE/wyjng+Fe1qtKYBuXXUN3zSNQXFFmhyliH
-        8zeTcuIOdNAurVAgOoJiysXtQDIAlhpJ98j2KYFkx3KfLK9H1Q==
-X-Google-Smtp-Source: ABdhPJxzbgK/gW63CT+c9eNPZCIySr18BJGzO0eJUOIZ4OWw5zmoNd8MDK7y7wLAw3/rLSOzXP9XpjgpQw8lIyvmchM=
-X-Received: by 2002:a25:d844:: with SMTP id p65mr2526202ybg.27.1612485771876;
- Thu, 04 Feb 2021 16:42:51 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=td8lYf7iJDPIhT02i3PgobJCeNCH7wemudZJq4hsJSQ=;
+        b=VZi0wMknuf/B1ayQEN3O59PnT2rPPI0SKOvCd0NAl/E3fAxoMUy4rTlHSx/jLKkFJ/
+         XAiIkCjNTjNAwK2nda5W9XJF0AiWaNv9dU4JfJpqe+cbh6Grz5amSZ+Tr9QPjlHovreT
+         s4JIPMbKEM2LdbVHYzQpHff4MyFhzrFKdzwGR7PsOLGHbHjddv7AtwHUWW+e/EkPI3ZL
+         fhlE8/aicooochpogeDeGO/ADybPdJC9i+W6/PY9IrGP3TLDTltGNgIdY1vZBXdctXmE
+         pak+CMaW+Q9tLrTOO0Pv1bGpRMe3FvYKsbE+4/NFXgBOFvId/Xi5C1ZAtitrjbe3Wkks
+         YdDw==
+X-Gm-Message-State: AOAM5309OZUzcFzMnRVSpxaFpbZYqW717TCO6O57fOHWVPHlruAu0nR7
+        8lTk9GxwT5zbJkecmp/oZVqbDwlXOms=
+X-Google-Smtp-Source: ABdhPJxitpjRN+OJT8DrpTXHer3PFPaaMmIafq15vAeqw2+EZi3a3ClSQbqgPjcJmBMJORUFTCyqVw==
+X-Received: by 2002:a63:464a:: with SMTP id v10mr1689802pgk.393.1612486578285;
+        Thu, 04 Feb 2021 16:56:18 -0800 (PST)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id 17sm7606717pgy.53.2021.02.04.16.56.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 04 Feb 2021 16:56:17 -0800 (PST)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org, mkubecek@suse.cz
+Cc:     andrew@lunn.ch, Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH ethtool] gitignore: Ignore .dirstamp
+Date:   Thu,  4 Feb 2021 16:56:15 -0800
+Message-Id: <20210205005615.1058972-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20210129134855.195810-1-jolsa@redhat.com> <20210204211825.588160-1-jolsa@kernel.org>
- <20210204211825.588160-3-jolsa@kernel.org>
-In-Reply-To: <20210204211825.588160-3-jolsa@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 4 Feb 2021 16:42:41 -0800
-Message-ID: <CAEf4Bzb+Mf-Md1-T+K0ZPUUQKX_6efJLPrLDfKqijJFPdRc02A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/4] tools/resolve_btfids: Check objects before removing
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 4, 2021 at 1:20 PM Jiri Olsa <jolsa@kernel.org> wrote:
->
-> We want this clean to be called from tree's root clean
-> and that one is silent if there's nothing to clean.
->
-> Adding check for all object to clean and display CLEAN
-> messages only if there are objects to remove.
->
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  tools/bpf/resolve_btfids/Makefile | 17 ++++++++++++-----
->  1 file changed, 12 insertions(+), 5 deletions(-)
->
-> diff --git a/tools/bpf/resolve_btfids/Makefile b/tools/bpf/resolve_btfids/Makefile
-> index b780b3a9fb07..3007cfabf5e6 100644
-> --- a/tools/bpf/resolve_btfids/Makefile
-> +++ b/tools/bpf/resolve_btfids/Makefile
-> @@ -64,13 +64,20 @@ $(BINARY): $(BPFOBJ) $(SUBCMDOBJ) $(BINARY_IN)
->         $(call msg,LINK,$@)
->         $(Q)$(CC) $(BINARY_IN) $(LDFLAGS) -o $@ $(BPFOBJ) $(SUBCMDOBJ) $(LIBS)
->
-> +clean_objects := $(wildcard $(OUTPUT)/*.o                \
-> +                            $(OUTPUT)/.*.o.cmd           \
-> +                            $(OUTPUT)/.*.o.d             \
-> +                            $(OUTPUT)/libbpf             \
-> +                            $(OUTPUT)/libsubcmd          \
-> +                            $(OUTPUT)/resolve_btfids)
-> +
-> +clean:
-> +
-> +ifneq ($(clean_objects),)
->  clean: fixdep-clean
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ .gitignore | 1 +
+ 1 file changed, 1 insertion(+)
 
-this looks a bit weird, declaring clean twice. Wouldn't moving ifneq
-inside the clean work just fine?
+diff --git a/.gitignore b/.gitignore
+index c4df588c37ea..0b7a71b58b7e 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -30,3 +30,4 @@ test-*.trs
+ 
+ .*.swp
+ *.patch
++.dirstamp
+-- 
+2.25.1
 
->         $(call msg,CLEAN,$(BINARY))
-> -       $(Q)$(RM) -f $(BINARY); \
-> -       $(RM) -rf $(if $(OUTPUT),$(OUTPUT),.)/feature; \
-> -       $(RM) -rf $(OUTPUT)libbpf; \
-> -       $(RM) -rf $(OUTPUT)libsubcmd; \
-> -       find $(if $(OUTPUT),$(OUTPUT),.) -name \*.o -or -name \*.o.cmd -or -name \*.o.d | xargs $(RM)
-> +       $(Q)$(RM) -rf $(clean_objects)
-> +endif
->
->  tags:
->         $(call msg,GEN,,tags)
-> --
-> 2.26.2
->
