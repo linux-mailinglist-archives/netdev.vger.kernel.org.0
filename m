@@ -2,82 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E6833114E7
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 23:23:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B60BC3114D3
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 23:23:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232728AbhBEWSC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 17:18:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43292 "EHLO
+        id S232748AbhBEWPF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 17:15:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232670AbhBEOcQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 09:32:16 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BB2DC061221;
-        Fri,  5 Feb 2021 08:08:58 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id i8so12708350ejc.7;
-        Fri, 05 Feb 2021 08:08:58 -0800 (PST)
+        with ESMTP id S232770AbhBEOhh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 09:37:37 -0500
+Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E498C06178C
+        for <netdev@vger.kernel.org>; Fri,  5 Feb 2021 08:15:31 -0800 (PST)
+Received: by mail-il1-x131.google.com with SMTP id p15so6268439ilq.8
+        for <netdev@vger.kernel.org>; Fri, 05 Feb 2021 08:15:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=R5nFxy4Bvc9UqP6WzBzfQTEG0FAeu+haMx96np+omMo=;
-        b=SkxTl7dg4/kQ6/uVdbjzPLlZhbFct6rOQUDHs7fnd78QqqRcYZQeeipCWfupHF40pk
-         i5zDi4j51nwMspV+Ow/eO0GiLnR5XPb+X4M0L3l2Ax/rMw9ifSnz2b2T5vPGo8jOWbPk
-         4ZlRaG6c3VAVb3WLshQ/b7lJJzRbnjX/w9y3nA1wMSz7q/V7O6oIf/XHzcWHJlUWF96M
-         /Vv+rcACbpcODuNULltUHIBftCbbFDyxJcylH/EZVlYJRK18WGujg1vUA+yLJ1w8Oedp
-         1i+Pt4MPOnJm+ahJPOEnW4td06UAcQg/JBZadILWbguPMGU2Ur1QpSzXYWb9yPaI1f9e
-         w1NQ==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=b3zypKCzWyxay+UIu/YEc9Osf3cOdr0Kv47aU++eg2A=;
+        b=wHMwWR7atLxSylIAhPsg+XbGgy2ngza9cJiVuoTVVSRT0VYoznd3z5oa6u2NIK+423
+         7ruKeIDQbtM7op5nTyQZmCjfIzSe2FJ2ZGzZp9qJtXTFOCDKC7YrV6YS1G+qT47ZCsEG
+         yImFk7Z9WJdF99Z+PUzvlKEs+JTVCt7Ex3+iEc0Qw2h6zz/IN0CbNAY3178P1ufzwFHY
+         2+mmqmYvTt/v2G9im0KE5xrUkTPqEuSwz1sduaV6b+TdaveBM45BWwxE2wq0IMMvINFJ
+         Rn1jEa/YEN/wxt3xacyQMoyZFfx4F+KqRIkPAfe57u6t+tXRoUuhAllT1IDUT4MHIqH2
+         ONPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=R5nFxy4Bvc9UqP6WzBzfQTEG0FAeu+haMx96np+omMo=;
-        b=lqw7579UQlVrb3Zvln/DLdQjSaor/GLJn+MEtFqHU2jDnGO9HslJ6UCJA+8xRLT3RE
-         Wuh7pOjlB2olMmFtGOgzDL7KKNwZR/Yjd7CWLFPp9y6YmlhwqcixW+jZDoiu8hn44MNP
-         sUtxj12836RWb7e8aYO4/HH1lIP2BHanLreSFLSYJF3JgsmHwkNcpn8T5TreLwvRLh7d
-         z3/AvmQsa9bZviCMofrTcmhUBYaieinHhU3tiUFIGcXNUQV0ReHb86Mxy/FJc84mSPGO
-         0XhZQNTppAg6tZ2X0rqKa4TASZfJudBx7qi4aBVixx4Hh1jJKthwgQlMLbo7ZtPHwMKe
-         IaxA==
-X-Gm-Message-State: AOAM530UPSsvxPLX3pxr2LmqGaPn+aPGaLeVJyv4HVXNQ32W3vJsh8nx
-        DOylBMyZLeBAOh/h+GcbkHMFhUpKOlM=
-X-Google-Smtp-Source: ABdhPJzYRW8GhrE8ij2ocDjjNLxXXtdRxY7LnssUqIvtP9+m2iGf6DAPG4l5T7OAzKWfzgoSTObIUQ==
-X-Received: by 2002:a17:906:3484:: with SMTP id g4mr4159438ejb.38.1612534185720;
-        Fri, 05 Feb 2021 06:09:45 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id zk6sm4019325ejb.119.2021.02.05.06.09.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Feb 2021 06:09:44 -0800 (PST)
-Date:   Fri, 5 Feb 2021 16:09:43 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Vadym Kochan <vadym.kochan@plvision.eu>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        netdev@vger.kernel.org, Mickey Rachamim <mickeyr@marvell.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 4/7] net: marvell: prestera: move netdev
- topology validation to prestera_main
-Message-ID: <20210205140943.6c6l2z2v453oteov@skbuf>
-References: <20210203165458.28717-1-vadym.kochan@plvision.eu>
- <20210203165458.28717-5-vadym.kochan@plvision.eu>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=b3zypKCzWyxay+UIu/YEc9Osf3cOdr0Kv47aU++eg2A=;
+        b=BAVqyQNYWWwJ1PYpu6PVC3U2q6Zcl+sH8FZ2g7Y3lP0H6udRJ9jVCaj3AiPHDrSwmT
+         qCiBMukyK+9lXJoPI0mdbYZhhSqCCsJHy8QCeS4H8TDwCAI/HrVCbAS0oFN8RPO/aWEK
+         +ymzhjxhlhdPX/9bRgsWU96WxF1/LjAxYdOSkZuRn46gZ4FpcWX0OwkK+RUWk5ARo/xB
+         h1c5jcyiQQIMGAOhgAutiO3YDU2ghUne1um5fpjgHEHtUGvV+2JQ6B5ZAu8lmNgS+b2o
+         0ULBK8yn9kO2HlAEr11IOAnd/VIDrTFsBzLXCcrjCYB7Dz3UAVtxWUC2fTQDsLgZhUrT
+         Ugzw==
+X-Gm-Message-State: AOAM531SbSZBoNTIyjW9/dpMFGaU9myxRMUgX1WPKG/Bh4lH3jL2LBPf
+        EZ7cYuhimLU6i2nVvCuTxf4bHwcDqDMvfkM0okCWOZ6isS9wzO+e
+X-Google-Smtp-Source: ABdhPJxe5vVd/CExVuPqdcTkzVFPRKKdBfU/HunhfInTRU8aAUoq7Spk84lhtpbSN+V7AcZIdO4t/9CQJ0/PFYf74d8=
+X-Received: by 2002:a92:d3c7:: with SMTP id c7mr3834270ilh.137.1612534233334;
+ Fri, 05 Feb 2021 06:10:33 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210203165458.28717-5-vadym.kochan@plvision.eu>
+References: <20210204213146.4192368-1-eric.dumazet@gmail.com>
+ <dbad0731e30c920cf4ab3458dfce3c73060e917c.camel@kernel.org>
+ <CANn89iJ4ki9m6ne0W72QZuSJsBvrv9BMf9Me5hL9gw2tUnHhWg@mail.gmail.com> <20210205130238.5741-1-alobakin@pm.me>
+In-Reply-To: <20210205130238.5741-1-alobakin@pm.me>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 5 Feb 2021 15:10:21 +0100
+Message-ID: <CANn89i+Rpxw__Yexvcaga5aQ84CjqAzPZ6FyaO4Ua1yWhB069w@mail.gmail.com>
+Subject: Re: [PATCH net] net: gro: do not keep too many GRO packets in napi->rx_list
+To:     Alexander Lobakin <alobakin@pm.me>
+Cc:     Saeed Mahameed <saeed@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Sperbeck <jsperbeck@google.com>,
+        Jian Yang <jianyang@google.com>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Edward Cree <ecree@solarflare.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 03, 2021 at 06:54:55PM +0200, Vadym Kochan wrote:
-> Move handling of PRECHANGEUPPER event from prestera_switchdev to
-> prestera_main which is responsible for basic netdev events handling
-> and routing them to related module.
-> 
-> Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>
-> ---
+On Fri, Feb 5, 2021 at 2:03 PM Alexander Lobakin <alobakin@pm.me> wrote:
+>
 
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+>
+> It's strange why mailmap didn't pick up my active email at pm.me.
+
+I took the signatures from c80794323e82, I CCed all people involved in
+this recent patch.
+
+It is very rare I use scripts/get_maintainer.pl since it tends to be noisy.
+
+>
+> Anyways, this fix is correct for me. It restores the original Edward's
+> logics, but without spurious out-of-order deliveries.
+> Moreover, the pre-patch behaviour can easily be achieved by increasing
+> net.core.gro_normal_batch if needed.
+>
+> Thanks!
+>
+> Reviewed-by: Alexander Lobakin <alobakin@pm.me>
+>
+
+Thanks.
