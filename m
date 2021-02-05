@@ -2,102 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CD2031096B
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 11:46:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87FAE310962
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 11:44:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231312AbhBEKpZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 05:45:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60498 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231476AbhBEKkw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 05:40:52 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C935C0617AA
-        for <netdev@vger.kernel.org>; Fri,  5 Feb 2021 02:40:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Qn2rgmzDuOrhSwmxRE/mJbcbohOyHkkBW5r8vUbcHDw=; b=NYy/MtlDWfYpzq46GYvyhNx23c
-        p9owp8MWd8wBTh1jDMUTu5CLWp5xAkoNdzGFdBxIalZ5bs2eb2lpHnJEyV6PfQBxSvDAkisCRLFle
-        ezFsGGIPqxghiEBPQ6TK9mqCvrQNyCNL6L1YNE6fj1iarmEMT3789EOzODBI+g+yArSxG/Nh+URS0
-        AL/yh7H49H72OB5ujTcSBSyzEP+NFY772M0kogdQnMqGyNfcQaqs8sOuf9bcR/1FbVi8oDvNik+Dq
-        NzhCVVeB1UjZipJgYUSlx082p4e4cJkr0pzf7vOnIS8PlqG4nXewSRDX7SDcEfYBFHpCsZZ44Myqg
-        L9vmL9pg==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:49114 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1l7yX3-0007ek-K9; Fri, 05 Feb 2021 10:40:09 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1l7yX3-0006ob-E6; Fri, 05 Feb 2021 10:40:09 +0000
-In-Reply-To: <20210205103859.GH1463@shell.armlinux.org.uk>
-References: <20210205103859.GH1463@shell.armlinux.org.uk>
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ioana Radulescu <ruxandra.radulescu@nxp.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH net-next v2 3/3] net: dpaa2-mac: add backplane link mode
- support
+        id S231492AbhBEKoa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 05:44:30 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:53199 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231555AbhBEKmF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 05:42:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612521634;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=W6jBem4kZByMthisphHJewkWb84OmU3PnI0wLH3ysj4=;
+        b=QEo88EKMBpmI6hC9sqEJ97tMjw88B38OOi6Zin4YIF2WXttRE60JvToLQBJZFPucBqN6G+
+        nUBxFX5zV2eZwjnYfKf/lBk7+PZc4M1RiwA0pM1KW+qyEn+9KB5kiNZly+85Y0iP2kyAEq
+        zYfugDWmToPvKlFU6hONPnNSCQ+zk6c=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-515-0pyJ_b4eMACpynE11xphbw-1; Fri, 05 Feb 2021 05:40:30 -0500
+X-MC-Unique: 0pyJ_b4eMACpynE11xphbw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7B68D1005501;
+        Fri,  5 Feb 2021 10:40:28 +0000 (UTC)
+Received: from krava (unknown [10.40.195.59])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 8CA3D5C233;
+        Fri,  5 Feb 2021 10:40:25 +0000 (UTC)
+Date:   Fri, 5 Feb 2021 11:40:24 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+Subject: Re: [PATCH bpf-next 2/4] tools/resolve_btfids: Check objects before
+ removing
+Message-ID: <YB0gmBYTvgAvRPuk@krava>
+References: <20210129134855.195810-1-jolsa@redhat.com>
+ <20210204211825.588160-1-jolsa@kernel.org>
+ <20210204211825.588160-3-jolsa@kernel.org>
+ <CAEf4Bzb+Mf-Md1-T+K0ZPUUQKX_6efJLPrLDfKqijJFPdRc02A@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1l7yX3-0006ob-E6@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Fri, 05 Feb 2021 10:40:09 +0000
+In-Reply-To: <CAEf4Bzb+Mf-Md1-T+K0ZPUUQKX_6efJLPrLDfKqijJFPdRc02A@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for backplane link mode, which is, according to discussions
-with NXP earlier in the year, is a mode where the OS (Linux) is able to
-manage the PCS and Serdes itself.
+On Thu, Feb 04, 2021 at 04:42:41PM -0800, Andrii Nakryiko wrote:
+> On Thu, Feb 4, 2021 at 1:20 PM Jiri Olsa <jolsa@kernel.org> wrote:
+> >
+> > We want this clean to be called from tree's root clean
+> > and that one is silent if there's nothing to clean.
+> >
+> > Adding check for all object to clean and display CLEAN
+> > messages only if there are objects to remove.
+> >
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
+> >  tools/bpf/resolve_btfids/Makefile | 17 ++++++++++++-----
+> >  1 file changed, 12 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/tools/bpf/resolve_btfids/Makefile b/tools/bpf/resolve_btfids/Makefile
+> > index b780b3a9fb07..3007cfabf5e6 100644
+> > --- a/tools/bpf/resolve_btfids/Makefile
+> > +++ b/tools/bpf/resolve_btfids/Makefile
+> > @@ -64,13 +64,20 @@ $(BINARY): $(BPFOBJ) $(SUBCMDOBJ) $(BINARY_IN)
+> >         $(call msg,LINK,$@)
+> >         $(Q)$(CC) $(BINARY_IN) $(LDFLAGS) -o $@ $(BPFOBJ) $(SUBCMDOBJ) $(LIBS)
+> >
+> > +clean_objects := $(wildcard $(OUTPUT)/*.o                \
+> > +                            $(OUTPUT)/.*.o.cmd           \
+> > +                            $(OUTPUT)/.*.o.d             \
+> > +                            $(OUTPUT)/libbpf             \
+> > +                            $(OUTPUT)/libsubcmd          \
+> > +                            $(OUTPUT)/resolve_btfids)
+> > +
+> > +clean:
+> > +
+> > +ifneq ($(clean_objects),)
+> >  clean: fixdep-clean
+> 
+> this looks a bit weird, declaring clean twice. Wouldn't moving ifneq
+> inside the clean work just fine?
 
-This commit prepares the ground work for allowing 1G fiber connections
-to be used with DPAA2 on the SolidRun CEX7 platforms.
+it has the fixdep-clean dependency we don't want to run
+if clean_objects is not defined.. I could move the empty
+clean to the the else path
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+jirka
+
+
 ---
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h | 4 +++-
- drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c | 5 +++--
- 2 files changed, 6 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-index c3d456c45102..9b6a89709ce1 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
-@@ -695,7 +695,9 @@ static inline unsigned int dpaa2_eth_rx_head_room(struct dpaa2_eth_priv *priv)
+diff --git a/tools/bpf/resolve_btfids/Makefile b/tools/bpf/resolve_btfids/Makefile
+index 1d46a247ec95..be09ec4f03ff 100644
+--- a/tools/bpf/resolve_btfids/Makefile
++++ b/tools/bpf/resolve_btfids/Makefile
+@@ -64,13 +64,20 @@ $(BINARY): $(BPFOBJ) $(SUBCMDOBJ) $(BINARY_IN)
+ 	$(call msg,LINK,$@)
+ 	$(Q)$(CC) $(BINARY_IN) $(LDFLAGS) -o $@ $(BPFOBJ) $(SUBCMDOBJ) $(LIBS)
  
- static inline bool dpaa2_eth_is_type_phy(struct dpaa2_eth_priv *priv)
- {
--	if (priv->mac && priv->mac->attr.link_type == DPMAC_LINK_TYPE_PHY)
-+	if (priv->mac &&
-+	    (priv->mac->attr.link_type == DPMAC_LINK_TYPE_PHY ||
-+	     priv->mac->attr.link_type == DPMAC_LINK_TYPE_BACKPLANE))
- 		return true;
++clean_objects := $(wildcard $(OUTPUT)/*.o                \
++                            $(OUTPUT)/.*.o.cmd           \
++                            $(OUTPUT)/.*.o.d             \
++                            $(OUTPUT)/libbpf             \
++                            $(OUTPUT)/libsubcmd          \
++                            $(OUTPUT)/resolve_btfids)
++
++ifneq ($(clean_objects),)
+ clean: fixdep-clean
+ 	$(call msg,CLEAN,$(BINARY))
+-	$(Q)$(RM) -f $(BINARY); \
+-	$(RM) -rf $(if $(OUTPUT),$(OUTPUT),.)/feature; \
+-	$(RM) -rf $(OUTPUT)/libbpf; \
+-	$(RM) -rf $(OUTPUT)/libsubcmd; \
+-	find $(if $(OUTPUT),$(OUTPUT),.) -name \*.o -or -name \*.o.cmd -or -name \*.o.d | xargs $(RM)
++	$(Q)$(RM) -rf $(clean_objects)
++else
++clean:
++endif
  
- 	return false;
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-index 3ddfb40eb5e4..ccaf7e35abeb 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-@@ -315,8 +315,9 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
- 		goto err_put_node;
- 	}
- 
--	if (mac->attr.link_type == DPMAC_LINK_TYPE_PHY &&
--	    mac->attr.eth_if != DPMAC_ETH_IF_RGMII) {
-+	if ((mac->attr.link_type == DPMAC_LINK_TYPE_PHY &&
-+	     mac->attr.eth_if != DPMAC_ETH_IF_RGMII) ||
-+	    mac->attr.link_type == DPMAC_LINK_TYPE_BACKPLANE) {
- 		err = dpaa2_pcs_create(mac, dpmac_node, mac->attr.id);
- 		if (err)
- 			goto err_put_node;
--- 
-2.20.1
+ tags:
+ 	$(call msg,GEN,,tags)
 
