@@ -2,51 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CCB93111A3
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 20:59:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F52731118F
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 20:55:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232917AbhBESQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 13:16:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60102 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229581AbhBESJ3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Feb 2021 13:09:29 -0500
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 41AF064FB7;
-        Fri,  5 Feb 2021 19:51:11 +0000 (UTC)
-Date:   Fri, 5 Feb 2021 14:51:09 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Bhaskar Chowdhury <unixbhaskar@gmail.com>
-Cc:     pmladek@suse.com, sergey.senozhatsky@gmail.com,
-        andriy.shevchenko@linux.intel.com, linux@rasmusvillemoes.dk,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, rdunlap@infradead.org
-Subject: Re: [PATCH] lib:  Replace obscene word with a better one :)
-Message-ID: <20210205145109.24498541@gandalf.local.home>
-In-Reply-To: <20210205121543.1315285-1-unixbhaskar@gmail.com>
-References: <20210205121543.1315285-1-unixbhaskar@gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S233383AbhBESM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 13:12:28 -0500
+Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:63766 "EHLO
+        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233205AbhBESKL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 13:10:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1612554755; x=1644090755;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=C33Hjg84IH/XVK5SstM96Qg+YYTr2LTi0w27tnHs3Ro=;
+  b=PwQsyj5RY1VsBBRXd1IH0Gjy2rwAqttQ2CgTbXfo8icnysGsQmga5T3R
+   UuZSQL19xffqRwoUpmfbPCLNrG79Y4p+gS9JXIsqkJa91W50kvNblbUsh
+   kpmcnat32fO15b3IvbsOD+ictXz4LTwXUkwpYapFfT6PBXCVflxC1LMDA
+   o=;
+X-IronPort-AV: E=Sophos;i="5.81,156,1610409600"; 
+   d="scan'208";a="116191570"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-e7be2041.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 05 Feb 2021 19:51:48 +0000
+Received: from EX13D28EUC001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-2a-e7be2041.us-west-2.amazon.com (Postfix) with ESMTPS id 84172A1EE7;
+        Fri,  5 Feb 2021 19:51:47 +0000 (UTC)
+Received: from u68c7b5b1d2d758.ant.amazon.com (10.43.161.244) by
+ EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Fri, 5 Feb 2021 19:51:39 +0000
+From:   Shay Agroskin <shayagr@amazon.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>
+CC:     Shay Agroskin <shayagr@amazon.com>, <dwmw@amazon.com>,
+        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
+        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
+        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
+        <benh@amazon.com>, <akiyano@amazon.com>, <sameehj@amazon.com>,
+        <ndagan@amazon.com>
+Subject: [PATCH net V1 0/1] Fix XDP bug in ENA driver
+Date:   Fri, 5 Feb 2021 21:51:13 +0200
+Message-ID: <20210205195114.10007-1-shayagr@amazon.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.161.244]
+X-ClientProxiedBy: EX13D27UWB003.ant.amazon.com (10.43.161.195) To
+ EX13D28EUC001.ant.amazon.com (10.43.164.4)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  5 Feb 2021 17:45:43 +0530
-Bhaskar Chowdhury <unixbhaskar@gmail.com> wrote:
+Hi all,
+This single patch fixes a bug spotted in previous XDP Redirect implementation in
+ENA.
 
-> s/fucked/messed/
+Shay Agroskin (1):
+  net: ena: Update XDP verdict upon failure
 
-Rules about obscene language is about new code coming into the kernel. We
-don't want to encourage people to do sweeping changes of existing code. It
-just causes unwanted churn, and adds noise to the git logs.
+ drivers/net/ethernet/amazon/ena/ena_netdev.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-Sorry, NAK.
+-- 
+2.17.1
 
--- Steve
