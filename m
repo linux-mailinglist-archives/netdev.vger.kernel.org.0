@@ -2,118 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3998831022E
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 02:25:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40486310247
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 02:34:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232663AbhBEBZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 20:25:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54534 "EHLO
+        id S232839AbhBEBdY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 20:33:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232391AbhBEBZh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 20:25:37 -0500
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E305C0613D6;
-        Thu,  4 Feb 2021 17:24:56 -0800 (PST)
-Received: by mail-yb1-xb2b.google.com with SMTP id k4so5174260ybp.6;
-        Thu, 04 Feb 2021 17:24:56 -0800 (PST)
+        with ESMTP id S232758AbhBEBdT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 20:33:19 -0500
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9ED1C0613D6
+        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 17:32:39 -0800 (PST)
+Received: by mail-pj1-x102a.google.com with SMTP id d2so2885057pjs.4
+        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 17:32:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=JU/raeYJR27PicXqCD5E08kik/ZTwMk0wIqJ2cm+620=;
-        b=tZtjzKRq9ihWGI0MjFf/6vxRkHNn6a8AIA0LHZBF1ytmeRl8kOqc+p0p90mEAVDkPV
-         t2t0eZNEEzFk+B+kdXNY7AYhLfH577dAtD/icpsjMzUCaul9UmZVA9MCkjz9PjnB0mi0
-         8LxfypDOSkBZN2LAdcpNg5vIziQYmTyFCTFdpzXWK2SH/Z/5WNdaa0Zu+itYK1mSlAB2
-         xr/Y5Le4q0BPD/Rhlx9EtrNe80MAdUYTjBALI0xh34n0Z69Ac93aYtg8klFpE8V+b9/t
-         6MIAwrcwJTsgznmFal1SLNVIrSw28i/xwkO8cSPpeBZcRvIBrAaE5dtU0LDXdU44Q7jY
-         aGkA==
+        bh=5m/q933AKS5Da4UZBbBXaEy0isO/GWwDL1FAIdyxAWc=;
+        b=de9RQJWfm2RC9hOG+DHu1tA2ilVFCJisbNxWOksKkUsjdLH+6SoyKCN6dzb/BEszkV
+         PsFDp3IYzBr7VfBkxENRGKWiAI9QwZ6zJ10b42EnUoFuxsuiuSWszHoBoZx824J0QxiC
+         Kna9fhCsZWKJeWTp7cF1gAkfGqdQrIJQ9P/r6r6CBjfpQvMVFDWLI957yiyB+iWTXLx4
+         TNZBnP7ZN0kPw9AOh+xkf0JLM9j3N0WSuq7H94jNuVU13YkJupAvZ79QGbEjrYOfxDWZ
+         NmQaCSZB+IAZlCgex1/p8hty24Ed/ZwfCQPOAPgD3mAHdhxFFebkbQRDQqNEDH7Bs8zD
+         s7nQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=JU/raeYJR27PicXqCD5E08kik/ZTwMk0wIqJ2cm+620=;
-        b=O49AE2/1k5sexo2r/5jsXDKM7uXPAdxd3yWe+fJauQ6NPcwBdW62jQpdJs7MrcyYOf
-         rsxUa+y8w+k39X2pSJAF32LXyXIKW5Yv0B6w7yJXerWnM8uPpxAUuDxN12+PdxQugpjT
-         /Dex7QavbAL/RZ8YseM628G8aseKkbnglM1RmrIxOBrE2t4kIwjPMUyftP58LS3lsNYN
-         IZlqM2TQOz/qLvFckyco98uh7WGTxi6IZvkBPD2v27fJq88Z6D4JCeKxdT+m1CSr/jqu
-         QVQ3SCbC46KWIOu3+VqnQ9AEUlSyrNM/exllmTFyKCV5Pk0z+qxUliWo6bsD7OjEWmeY
-         uQnQ==
-X-Gm-Message-State: AOAM531vYoUZ5w7TrPVN5j9L33uu9tg86VpP6r6HM3bcy3UGPeP2tmAm
-        xLMXwDbnPzxKlcacWUhx5br+UDJYgyIYVripYp1Avsj2+GKE8Apa
-X-Google-Smtp-Source: ABdhPJysn3NHGdFDkd1eSq92GIYy0j8F0yVhlRtC2g/GuR6/L53lWXisihLTp93qt8S6kji1B7T6sfTiPwiATncEJ7o=
-X-Received: by 2002:a25:f40e:: with SMTP id q14mr3097518ybd.230.1612488295518;
- Thu, 04 Feb 2021 17:24:55 -0800 (PST)
+        bh=5m/q933AKS5Da4UZBbBXaEy0isO/GWwDL1FAIdyxAWc=;
+        b=Qt6ABebYZumCtywMFLW5SnJ3yhTwdvXnjMjqLYScaGy1r4g1XoJfjO3Nmpp+ym6/6m
+         hhMfcxqwJqpPLJEE51Hfu058nP0rVgq7Y7WQYMLWMhSBtTNcikJ3kaCQt/dq8yGOOI0j
+         ZELwijAJ6KqllW8NzzWfqVQ2NJ4Tpb1D8XbjL6tZTe92UDS24AVjiv/EN6efM/e/KlFo
+         itEDkj/SGnAo5QQLD31PfdO/Gro1qGnc2UdwYgR00JOTJkIGALkKuLqBFKQapLFiMslQ
+         vjbVPtic+Nx1fJc78z+F8AS22u0qsA3RPXG+Wm6kcXRiJcHAcOfnqe7fJ0/SDsQ9cqv/
+         BdLg==
+X-Gm-Message-State: AOAM533iMFTw5fgPneMxCqpjX3yq3oSQcAs779I2965AvQk3EoaNDUkC
+        8zhmz0Az3Y9jn4Q3IbTecBEm8q6VBsGJIcltEmKLeA==
+X-Google-Smtp-Source: ABdhPJzToYcGq8Rasu96vuqQvr90B0PSPwz1jTDwsyNFnSZzIDCTC/xQcQpUJtDFXCIduf21oFdSHpeutIb7YPlqYlI=
+X-Received: by 2002:a17:902:c24b:b029:e1:8c46:f876 with SMTP id
+ 11-20020a170902c24bb02900e18c46f876mr1864303plg.15.1612488759090; Thu, 04 Feb
+ 2021 17:32:39 -0800 (PST)
 MIME-Version: 1.0
-References: <20210129134855.195810-1-jolsa@redhat.com> <20210204211825.588160-1-jolsa@kernel.org>
- <20210204211825.588160-4-jolsa@kernel.org>
-In-Reply-To: <20210204211825.588160-4-jolsa@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 4 Feb 2021 17:24:44 -0800
-Message-ID: <CAEf4BzbADQc4H5cW9x2rnZuNmXoj5BbniGngVK1Xv_bOMr-1iQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 3/4] tools/resolve_btfids: Set srctree variable unconditionally
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+References: <20210121004148.2340206-1-arjunroy.kdev@gmail.com>
+ <20210121004148.2340206-3-arjunroy.kdev@gmail.com> <20210122200723.50e4afe6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <a18cbf73-1720-dec0-fbc6-2e357fee6bd8@gmail.com> <20210125061508.GC579511@unreal>
+ <ad3d4a29-b6c1-c6d2-3c0f-fff212f23311@gmail.com> <CAOFY-A2y20N9mUDgknbqM=tR0SA6aS6aTjyybggWNa8uY2=U_Q@mail.gmail.com>
+ <20210202065221.GB1945456@unreal> <CAOFY-A0_MU3LP2HNY_5a1XZLZHDr3_9tDq6v-YB-FSJJb7508g@mail.gmail.com>
+ <20210204160006.439ce566@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210204160006.439ce566@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Arjun Roy <arjunroy@google.com>
+Date:   Thu, 4 Feb 2021 17:32:28 -0800
+Message-ID: <CAOFY-A0fN20RdeLS+SXZ2-WC_3rtLEhgXkC8jJtX_431OrNy9Q@mail.gmail.com>
+Subject: Re: [net-next v2 2/2] tcp: Add receive timestamp support for receive zerocopy.
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Leon Romanovsky <leon@kernel.org>, David Ahern <dsahern@gmail.com>,
+        Arjun Roy <arjunroy.kdev@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 4, 2021 at 1:21 PM Jiri Olsa <jolsa@kernel.org> wrote:
+On Thu, Feb 4, 2021 at 4:00 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> We want this clean to be called from tree's root Makefile,
-> which defines same srctree variable and that will screw
-> the make setup.
+> On Thu, 4 Feb 2021 15:03:40 -0800 Arjun Roy wrote:
+> > But, if it's an IN or IN-OUT field, it seems like mandating that the
+> > application set it to 0 could break the case where a future
+> > application sets it to some non-zero value and runs on an older
+> > kernel.
 >
-> We actually do not use srctree being passed from outside,
-> so we can solve this by setting current srctree value
-> directly.
+> That usually works fine in practice, 0 means "do what old kernels did /
+> feature not requested", then if newer userspace sets the field to non-0
+> that means it requires a feature the kernel doesn't support. So -EINVAL
+> / -EOPNOTSUPP is right. BPF syscall has been successfully doing this
+> since day 1, I'm not aware of any major snags.
 >
-> Also root Makefile does not define the implicit RM variable,
-> so adding RM initialization.
->
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  tools/bpf/resolve_btfids/Makefile | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->
-> diff --git a/tools/bpf/resolve_btfids/Makefile b/tools/bpf/resolve_btfids/Makefile
-> index 3007cfabf5e6..b41fc9a81e83 100644
-> --- a/tools/bpf/resolve_btfids/Makefile
-> +++ b/tools/bpf/resolve_btfids/Makefile
-> @@ -2,11 +2,9 @@
->  include ../../scripts/Makefile.include
->  include ../../scripts/Makefile.arch
->
-> -ifeq ($(srctree),)
->  srctree := $(patsubst %/,%,$(dir $(CURDIR)))
->  srctree := $(patsubst %/,%,$(dir $(srctree)))
->  srctree := $(patsubst %/,%,$(dir $(srctree)))
 
-Is this just a weird way of doing $(abspath $(CURDIR)/../../../)? Are
-there any advantages compared to a more straightforward way?
+Alright, sounds good.
 
-> -endif
+> > And allowing it to be non-zero can maybe yield an unexpected
+> > outcome if an old application that did not zero it runs on a newer
+> > kernel.
 >
->  ifeq ($(V),1)
->    Q =
-> @@ -22,6 +20,7 @@ AR       = $(HOSTAR)
->  CC       = $(HOSTCC)
->  LD       = $(HOSTLD)
->  ARCH     = $(HOSTARCH)
-> +RM      ?= rm
+> Could you refresh our memory as to why we can't require the application
+> to pass zero-ed memory to TCP ZC? In practice is there are max
+> reasonable length of the argument that such legacy application may pass
+> so that we can start checking at a certain offset?
 >
->  OUTPUT ?= $(srctree)/tools/bpf/resolve_btfids/
->
-> --
-> 2.26.2
+
+Actually I think that's fine. We have hitherto been just using length
+checks to distinguish between feature capability for rx. zerocopy but
+I think we can draw the line at this point (now that there's
+ambiguity) and start requiring zero'd memory.
+
+I will send out a patch soon; reserved u32 field, must be set to 0 for
+the current kernel, can be non-zero and in/out in future kernels as
+discussed.
+
+Thanks,
+-Arjun
+
+
+> > So: maybe the right move is to mark it as reserved, not care what the
+> > input value is, always set it to 0 before returning to the user, and
+> > explicitly mandate that any future use of the field must be as an
+> > OUT-only parameter?
 >
