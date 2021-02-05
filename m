@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F04C4311941
-	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 04:00:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16A6E311930
+	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 03:58:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231277AbhBFDAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 22:00:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41532 "EHLO
+        id S232430AbhBFC5n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 21:57:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232060AbhBFCuv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 21:50:51 -0500
+        with ESMTP id S230258AbhBFCrf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 21:47:35 -0500
 Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52E2BC0698C6;
-        Fri,  5 Feb 2021 14:25:16 -0800 (PST)
-Received: by mail-yb1-xb2c.google.com with SMTP id c3so8291979ybi.3;
-        Fri, 05 Feb 2021 14:25:16 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A694DC0698D1;
+        Fri,  5 Feb 2021 14:27:19 -0800 (PST)
+Received: by mail-yb1-xb2c.google.com with SMTP id y4so8236892ybk.12;
+        Fri, 05 Feb 2021 14:27:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=hYUg3hUYLhRgtIvFTbD2VmRbiO8E/oS3HEcH+2mdLys=;
-        b=D/3Szo3U0J1VcnkFYVHbqwjGp20STlNB4R1cBtjGpJ3Pe/kU/JgKGkAYcdQFg1oyeH
-         EFwqKYd0FfjGc/aJEK7kezMmBkJOQFoyMbP1X4O7qqFBnTnJB/pv6oWNiehS1ycSK8ZS
-         fO77QvpCHiX42uE03qFBinL40qgQPWhz+r//HGZaSOesmEM3z4UKLJWxQk+Uw9Ow1wLf
-         IOPeAdTfZZi0ohvdCHS4Wo0m9YKvAtkxhytEDe0ZOguQh4S2Lol9v3YgrbyFbTu9Zca0
-         zHwsn7Rmhm660asec3AV/x5tBA56CSt/j/w5FdmBjOYpqQhXf8JLfYG5zgNxnx/DYAMf
-         1PmA==
+        bh=ZF+kVH13+yhFtpWltQEZs61WOnOm+RDU6OENTzqgftM=;
+        b=FX3/yhSYZu2WlKBs037VWu5o38fnwMmwmslev82RnmoXC/UZqo9ACDdvZUW97Gtnvl
+         0B5V4D17NLpQk2wMrYcikSomF4TMY8UpJ2nNtAoqxFavUqUhA/6XBH4Frgg7gUngspo6
+         vvyVoMVsgU6Ei3gs40AlpaBeHMUnHphJ8rJRHAN2O+uj2dNQlkRbdNRNxjQ4S8DaOQ5E
+         gVQl8mNta+J0vxwWCbyuM4Hifbjqo4k4X3NILuewRsOdVKRhaggmTZzLxgLrKMgI8CJW
+         d1L/r7LX5RsH2t71y1Rz+XzqwBOiMN4C+wWAjCvSCFjauAkWYSyelIvu9kxaMAUN/tiE
+         CJ5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=hYUg3hUYLhRgtIvFTbD2VmRbiO8E/oS3HEcH+2mdLys=;
-        b=fbT7IFOTyBDNwxFvNYNEqawfSpazV4xkWGP6WrCCnlxadMPOFP5SVPP+ZPRyG/NLI1
-         E2viHDSDXeDapZwgIjrTteeIiJIcDoyzsmsE/TPnwghvJu2Jc/TnpwzGSIq2pqDo44v9
-         KGZq7/2lGZSRG6dzVERnrFFJO4yGg0ZYEsEwvehCNcemDFUPnf7YqBZ8c2u0mJTQLh6d
-         DmAJeFeQ3PwZUO5BHqCsdWrni6r3t2rQF+LFUIbn099g/l4EvCEj+pz+APjhVD4c+Q1c
-         19ZEGQxiX8ZwyMofvFexkuy/8MU7KsNbpSLeqDrzPnvDX+jItmbfcvODTAI1tk9DgDZe
-         stIA==
-X-Gm-Message-State: AOAM533m3bSw3vMkPWRBU/i+yzHiEBxTItDEwDjlXOJy1useiMtmJHCI
-        QAi1OwKCh8LMYZX3RXCHUptxgsTtN9y/6OyFczk=
-X-Google-Smtp-Source: ABdhPJxPvMF+GPOj/8IjoyGkasonxz/I6RMZw8DMRUyvUJ14OqNyfV/+HbUj0a2/lwXZGicPrAZWNrbkKKSo7ekzHN0=
-X-Received: by 2002:a5b:3c4:: with SMTP id t4mr8617231ybp.510.1612563915723;
- Fri, 05 Feb 2021 14:25:15 -0800 (PST)
+        bh=ZF+kVH13+yhFtpWltQEZs61WOnOm+RDU6OENTzqgftM=;
+        b=b6SZwVGwtB/7LDM/aKntBlr/Fk0OQE3mdTSSqCdjxBZ6j9BCX9xQ4D/atdlt/vZ0Uc
+         uDCMicj9JMUtBpoE7QJX9oE3KfAE8ZfEJqem2bmerZpc5/cLYgEb+AAuR6hYVJkg5gYD
+         aJcOtEMyEKc5mNnneDZCfESJllqfzG4vRpy8iA4ilnownDzkcJWEizIMFqe7xcNt4tOw
+         7Gsf/dDPmltBIiK/yFlO/LAXuS6WpC+Uo8Niau2jqk58PoaFU2rX55u2AzcX1cVHe52D
+         vjtzyDLThI52nyOPfJYQiM4mSUipRsgC5PWlaOGj2Lb0GU2/S0u5PalBhbCUaVxTCZmQ
+         ibtQ==
+X-Gm-Message-State: AOAM532K4s+uFgEh56JD9givHOVFbyXGfGnUam4/5Fwn1dHsCYxNx/z7
+        K0xOvxrndABMSKELK/qOBBRZXyGYgvcbiIystE8=
+X-Google-Smtp-Source: ABdhPJzUq31FJeNv9UnC/OaU7XfN5zJ4gnklBIWPCabLBw0WdzDZ5wjzOiAS8Xcv2r5S/iv+s/2buOiAdnlYtfo59mI=
+X-Received: by 2002:a25:da4d:: with SMTP id n74mr9798106ybf.347.1612564039083;
+ Fri, 05 Feb 2021 14:27:19 -0800 (PST)
 MIME-Version: 1.0
-References: <20210205124020.683286-1-jolsa@kernel.org> <20210205124020.683286-4-jolsa@kernel.org>
-In-Reply-To: <20210205124020.683286-4-jolsa@kernel.org>
+References: <20210205124020.683286-1-jolsa@kernel.org>
+In-Reply-To: <20210205124020.683286-1-jolsa@kernel.org>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 5 Feb 2021 14:25:04 -0800
-Message-ID: <CAEf4BzYPOmS9=cuF9BkUcWv1MNZ0OEyi-bT6KUwm60PxXivS2Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 3/4] tools/resolve_btfids: Set srctree variable unconditionally
+Date:   Fri, 5 Feb 2021 14:27:08 -0800
+Message-ID: <CAEf4Bzao-9wNdHxGu1mMhSie78FyWno-RYJM6_Jay8s=hyUWJg@mail.gmail.com>
+Subject: Re: [PATCHv2 bpf-next 0/4] kbuild/resolve_btfids: Invoke
+ resolve_btfids clean in root Makefile
 To:     Jiri Olsa <jolsa@kernel.org>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -67,55 +68,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 5, 2021 at 4:46 AM Jiri Olsa <jolsa@kernel.org> wrote:
+On Fri, Feb 5, 2021 at 4:45 AM Jiri Olsa <jolsa@kernel.org> wrote:
 >
-> We want this clean to be called from tree's root Makefile,
-> which defines same srctree variable and that will screw
-> the make setup.
+> hi,
+> resolve_btfids tool is used during the kernel build,
+> so we should clean it on kernel's make clean.
 >
-> We actually do not use srctree being passed from outside,
-> so we can solve this by setting current srctree value
-> directly.
+> v2 changes:
+>   - add Song's acks on patches 1 and 4 (others changed) [Song]
+>   - add missing / [Andrii]
+>   - change srctree variable initialization [Andrii]
+>   - shifted ifdef for clean target [Andrii]
 >
-> Also changing the way how srctree is initialized as suggested
-> by Andrri.
+> thanks,
+> jirka
 >
-> Also root Makefile does not define the implicit RM variable,
-> so adding RM initialization.
 >
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+
+FYI, your patch #2 didn't make it into the mailing list (see [0]). So
+maybe wait for a bit and if it doesn't arrive, re-submit?
+
+  [0] https://patchwork.kernel.org/user/todo/netdevbpf/?series=428711&delegate=121173&state=*
+
 > ---
-
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
-
->  tools/bpf/resolve_btfids/Makefile | 7 ++-----
->  1 file changed, 2 insertions(+), 5 deletions(-)
+> Jiri Olsa (4):
+>       tools/resolve_btfids: Build libbpf and libsubcmd in separate directories
+>       tools/resolve_btfids: Check objects before removing
+>       tools/resolve_btfids: Set srctree variable unconditionally
+>       kbuild: Add resolve_btfids clean to root clean target
 >
-> diff --git a/tools/bpf/resolve_btfids/Makefile b/tools/bpf/resolve_btfids/Makefile
-> index be09ec4f03ff..bb9fa8de7e62 100644
-> --- a/tools/bpf/resolve_btfids/Makefile
-> +++ b/tools/bpf/resolve_btfids/Makefile
-> @@ -2,11 +2,7 @@
->  include ../../scripts/Makefile.include
->  include ../../scripts/Makefile.arch
->
-> -ifeq ($(srctree),)
-> -srctree := $(patsubst %/,%,$(dir $(CURDIR)))
-> -srctree := $(patsubst %/,%,$(dir $(srctree)))
-> -srctree := $(patsubst %/,%,$(dir $(srctree)))
-> -endif
-> +srctree := $(abspath $(CURDIR)/../../../)
->
->  ifeq ($(V),1)
->    Q =
-> @@ -22,6 +18,7 @@ AR       = $(HOSTAR)
->  CC       = $(HOSTCC)
->  LD       = $(HOSTLD)
->  ARCH     = $(HOSTARCH)
-> +RM      ?= rm
->
->  OUTPUT ?= $(srctree)/tools/bpf/resolve_btfids/
->
-> --
-> 2.26.2
+>  Makefile                            |  7 ++++++-
+>  tools/bpf/resolve_btfids/.gitignore |  2 --
+>  tools/bpf/resolve_btfids/Makefile   | 44 ++++++++++++++++++++++----------------------
+>  3 files changed, 28 insertions(+), 25 deletions(-)
 >
