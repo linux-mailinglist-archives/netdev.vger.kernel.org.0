@@ -2,108 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95F5F311555
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 23:32:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F01CB31156F
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 23:32:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232748AbhBEW2l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 17:28:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41164 "EHLO
+        id S232528AbhBEWbz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 17:31:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231672AbhBEOVV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 09:21:21 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1125C061797;
-        Fri,  5 Feb 2021 07:59:06 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id y18so9287969edw.13;
-        Fri, 05 Feb 2021 07:59:06 -0800 (PST)
+        with ESMTP id S232496AbhBEORn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 09:17:43 -0500
+Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D25C0C06121D
+        for <netdev@vger.kernel.org>; Fri,  5 Feb 2021 07:47:04 -0800 (PST)
+Received: by mail-il1-x12e.google.com with SMTP id g9so6226004ilc.3
+        for <netdev@vger.kernel.org>; Fri, 05 Feb 2021 07:47:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=pl9PtiuMxl0Wa0UufjsEq2pee41iNKdi+j7uGSkuBlY=;
-        b=ifXVpwXtvtBs/eY+e1RftosFX11LP0QgXLOAecM6RjNtp1MBBYfe6a8sGTnuqdGieD
-         juOScMbSeZLQXpxrGmerKmCHw5Yxz5R463SwpcFnLdBUYk/Dbp2BBV+UqipuOVIWEjmc
-         ex7dVgjYVCXS+My4kk1vGAhNGKmVJo2AqiFnskJRz7f0CPTKZ4Ryo3HUhsWI6gfrKcZk
-         u83byyBo+QfqQdX9gcFSpExUFWWVBSX1qGmDUDfIfttdqTFRuuyumX8SPP2Bzvj7Mlmu
-         5oncJjPirvf/h2CpokF8aU6yg1VrtZD/BM/JePBDSBBHowMzYdxH2k949bHlVrLMgrbw
-         URGQ==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=kxUeKVVNjUYZDEFlDXz16lYFbO6uGbZz83MJ+yrq+To=;
+        b=MHKCxzmuwmO3/oZLWZYANCeI3dBbjZKs52DNYS2+XYmT7KjDFmHyFR0nnq0A+ugEQZ
+         drQjc5ZdJ6R1GWFpepq9BrE1iwWYD8dEOnJsRriHpru3d31kRDiamI8d810//keKACbk
+         MO0ri9erP1Bd+gzSnYdtozR7ml1kcSxE/WjN5YhbMEcrqRDZZWkR4wOFZdLiwD45o+mJ
+         jJjPDeLSlmCuTTX8ce31NMP4bnZyf/hhxlW7sQANGcGk7Gif/Y55RMnb11PHc3jWyXL7
+         1AV54PW0fGx89ViXdBD1qS4Ghmn8ZaIKpZZbeJGkuW/4cSgbLE924TKrcNLLkkDt2HBP
+         GbPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=pl9PtiuMxl0Wa0UufjsEq2pee41iNKdi+j7uGSkuBlY=;
-        b=eJoh3iYrODUxRZssg+oFB4yCxP7qLvGeOY0GW3TiyGGWVKOzBzk4IvXTevt5FMkMJ0
-         m0KbPUXVX9mMbBcD09lT5Ub55pkMp6Q8AnIP1Xo8t1u5nx/Ay7vvOx1/p1RtnbEH90ld
-         w66Z9fkwyEvfhIWHzNN1vi55Vc57Yn3Yzboj09HW2MJfRbRVdeBHKvKEYDHwMSkR8a2y
-         re+IWJiKIt81ihDQG6Nmr3yE5lNO3pgyHTyKPiYT/qzonoLD1O6OzFH2BvDIBhEQeDDp
-         ++cN4OlFeltouvhuPiVVgC7ybMv/Th6PqM0tBvb7FmhTE8sZ0qjQW4nn3PewaDQIzbaC
-         v2GQ==
-X-Gm-Message-State: AOAM533eSScaLiXrRXQuD5aTvBFjuJPlYlPIHLfpsJWfqVaGjWO0wdIU
-        f0xJqcFNKXc2RPlemhE+Izk+8IFXx16uuA==
-X-Google-Smtp-Source: ABdhPJwCCFXDZDrN4miU79NjOF7WAm1zKAMS0y2CG9OU6uhlmWNyiyQCgzq1BZAYb0iOFvxskCIJxg==
-X-Received: by 2002:adf:ef03:: with SMTP id e3mr5519833wro.98.1612535136318;
-        Fri, 05 Feb 2021 06:25:36 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f1f:ad00:9118:8653:7e7:879e? (p200300ea8f1fad009118865307e7879e.dip0.t-ipconnect.de. [2003:ea:8f1f:ad00:9118:8653:7e7:879e])
-        by smtp.googlemail.com with ESMTPSA id 36sm13069342wrj.97.2021.02.05.06.25.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Feb 2021 06:25:35 -0800 (PST)
-Subject: [PATCH net-next v2 1/3] cxgb4: remove unused vpd_cap_addr
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Raju Rangoju <rajur@chelsio.com>, Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Bjorn Helgaas <bhelgaas@google.com>
-Cc:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <8edfa4ae-1e78-249d-14fb-0e44a2c51864@gmail.com>
-Message-ID: <e3eed002-7a86-1336-4530-c1b6ab5261bd@gmail.com>
-Date:   Fri, 5 Feb 2021 15:25:33 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=kxUeKVVNjUYZDEFlDXz16lYFbO6uGbZz83MJ+yrq+To=;
+        b=iVZoMkRc5bGhMRvpkWvxA0RdtakMspsNmkJ7V272Vcsta/U7c2UoHuB7zmuijGM9tF
+         KRIKXFkJqMajR+lXNnN5Fu9g5LBiGj3PLznMtdzdeh300erRFYuViCA6ppuCem/5bGSU
+         OXHDkRQ8mtVPf+a0igdFYpLo96OnW0phAC6cph3SOuOOPR03a+FNwZz00g0j+jO6cOsk
+         PvjQb2OGOl1HnZoi1rG+ZTLcFR27mu2cuhbwLmS+XitqXwEY/4B9P2sRqdr0ijuJZUVY
+         S44QLoc9WRrmeo4SPNylXutMPpUME5daVqntxwGOG3Zmhvbkx6ua/xhtFH4GjyZmACxW
+         wTsg==
+X-Gm-Message-State: AOAM533Ymrs9n3vSjXjCRMxpNw9qUly0CpUke++v+9EEbVoUf5LZhCVZ
+        8z/fuPsD5MF+MPTjbElxi6/8ntWP+28i5g==
+X-Google-Smtp-Source: ABdhPJyN6tsNpizr/AS1lySXfiAP3FkWN+sGHt/OQ4uLybMXNhsf6SJ+WQxiPheahYUcmEaQREjJhw==
+X-Received: by 2002:a92:3306:: with SMTP id a6mr4036757ilf.55.1612535915555;
+        Fri, 05 Feb 2021 06:38:35 -0800 (PST)
+Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id h9sm4136882ili.43.2021.02.05.06.38.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Feb 2021 06:38:35 -0800 (PST)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     elder@kernel.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v2 2/7] net: ipa: synchronize NAPI only for suspend
+Date:   Fri,  5 Feb 2021 08:38:24 -0600
+Message-Id: <20210205143829.16271-3-elder@linaro.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20210205143829.16271-1-elder@linaro.org>
+References: <20210205143829.16271-1-elder@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <8edfa4ae-1e78-249d-14fb-0e44a2c51864@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Supposedly this is a leftover from T3 driver heritage. cxgb4 uses the
-PCI core VPD access code that handles detection of VPD capabilities.
+When stopping a channel, gsi_channel_stop() will ensure NAPI
+polling is complete when it calls napi_disable().  So there is no
+need to call napi_synchronize() in that case.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Move the call to napi_synchronize() out of __gsi_channel_stop()
+and into gsi_channel_suspend(), so it's only used where needed.
+
+Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ethernet/chelsio/cxgb4/cxgb4.h      | 1 -
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c | 2 --
- 2 files changed, 3 deletions(-)
+v2: - Return early to avoid blocks of indented code
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-index 8e681ce72..314f8d806 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-@@ -414,7 +414,6 @@ struct pf_resources {
- };
+ drivers/net/ipa/gsi.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
+index f0432c965168c..60eb765c53647 100644
+--- a/drivers/net/ipa/gsi.c
++++ b/drivers/net/ipa/gsi.c
+@@ -939,13 +939,7 @@ static int __gsi_channel_stop(struct gsi_channel *channel, bool stop)
  
- struct pci_params {
--	unsigned int vpd_cap_addr;
- 	unsigned char speed;
- 	unsigned char width;
- };
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-index 9f1965c80..6264bc66a 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-@@ -3201,8 +3201,6 @@ static void cxgb4_mgmt_fill_vf_station_mac_addr(struct adapter *adap)
- 	int err;
- 	u8 *na;
+ 	mutex_unlock(&gsi->mutex);
  
--	adap->params.pci.vpd_cap_addr = pci_find_capability(adap->pdev,
--							    PCI_CAP_ID_VPD);
- 	err = t4_get_raw_vpd_params(adap, &adap->params.vpd);
- 	if (err)
- 		return;
+-	if (ret)
+-		return ret;
+-
+-	/* Ensure NAPI polling has finished. */
+-	napi_synchronize(&channel->napi);
+-
+-	return 0;
++	return ret;
+ }
+ 
+ /* Stop a started channel */
+@@ -987,8 +981,16 @@ void gsi_channel_reset(struct gsi *gsi, u32 channel_id, bool doorbell)
+ int gsi_channel_suspend(struct gsi *gsi, u32 channel_id, bool stop)
+ {
+ 	struct gsi_channel *channel = &gsi->channel[channel_id];
++	int ret;
+ 
+-	return __gsi_channel_stop(channel, stop);
++	ret = __gsi_channel_stop(channel, stop);
++	if (ret)
++		return ret;
++
++	/* Ensure NAPI polling has finished. */
++	napi_synchronize(&channel->napi);
++
++	return 0;
+ }
+ 
+ /* Resume a suspended channel (starting will be requested if STOPPED) */
 -- 
-2.30.0
-
+2.20.1
 
