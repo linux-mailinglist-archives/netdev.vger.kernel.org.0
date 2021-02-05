@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8077B311034
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 19:45:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02080311098
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 20:00:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233660AbhBERBp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 12:01:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48238 "EHLO
+        id S233711AbhBERSE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 12:18:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233289AbhBEQ77 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 11:59:59 -0500
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50285C06174A;
-        Fri,  5 Feb 2021 10:41:41 -0800 (PST)
-Received: by mail-pg1-x531.google.com with SMTP id n10so5144904pgl.10;
-        Fri, 05 Feb 2021 10:41:41 -0800 (PST)
+        with ESMTP id S233041AbhBERQl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 12:16:41 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DEA4C061756;
+        Fri,  5 Feb 2021 10:58:23 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id g15so4343804pjd.2;
+        Fri, 05 Feb 2021 10:58:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=hC/UygB6GdsZ6eOraCnag63BwEncrG0x9BtmpVb+yMo=;
-        b=TjRy+eWKEXJUVeK/Gsejs2eaRhnLYsV0zq1vBr7NEsVAkz0F+cLP8n/qyRJhBd8RJ0
-         i8caCeYZvMwSx3PQRy3U8AhfRs5hqucvRhRetp4ZmWtJqjCOW0HJAW/NTdqZ1mGGjoCW
-         mIDuyz974q+SPxzrjIL9HI522rILrBeWl/abgB2nqB3DVt//140xaEpCbIlXkGgtwBp4
-         pRbM8YhcnK6Rse+YEa49mhHgDHPaRCcJ0j2reS9o0w+LjupolZFbMeYnVPAkjymxt/QN
-         mZ0Ruc/wh3S1ut7QZM8Czq4QjJFDsUQE6xbH/ei2zIONU8XfkXbOtixcQmkWIaNFQf97
-         1/pg==
+        bh=oStFooJPSyUUPaehiSFgmVTUpU7SYl2th8Aozvagcww=;
+        b=ItJfVIaS/zVvcDySM5ApBDGERunskRhZ3z4O5TXYHyiSpMzUgrJX6WwfClue2kx3Lb
+         Iwr2Q2pLa4Dza8Uff/8DLU0E9nIaoLYGSNRAD6FYdZ4sd3NHC1SQFU8Grb4KQLGlvB3N
+         UxXj1L1A45RefWcslfKPfH43PVjvpsmHbAz4mTKH4qqdvKYjSKaAi8qv4F0QtyMFIN0n
+         R0CGBO0eYcSNT3f5V5UhdBA8hs+yhJ9swzpWm3eeuGg5ydqUZ0rVzlPiqwcg7T9/1itn
+         3QiK73GGY+pvbVp7V3Q+keN6lvy1aaceeB1fOAgFlVVkMp6wYIYe5YqedV7Bs0I2uYUg
+         t0dw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=hC/UygB6GdsZ6eOraCnag63BwEncrG0x9BtmpVb+yMo=;
-        b=rhGvD0CSuvE+LuR7zxAg/J5myooHeVfr84Iu3ZuG6IJhAT747gyBiUw0/NR1zb5LwJ
-         YA93cFMQBL/q1/5ZZdHHq3aAkhAqOtc1aGVRpXzXEBL2bDmtCsmC6W/eZGLfDhzlRV6l
-         Bmh8hA0iiyCBre1awY3ipwbXNtqEAiUd+MVBAohyH1MOK4oCjJiuNx9jjR//j3SG0LTD
-         JSyAu57CN8UeuFN/YWA9aN4Ge70vi8C7dZMwPsxeoJs3YdGe1FlnmC0AiGMEIjxQal4Q
-         KDSv/1vSjhNd3wbjxYEEt/EsvGRYspJFCGQribOBmy4eGaKXpJqDxhDt2KMdZlUARWlZ
-         oxjg==
-X-Gm-Message-State: AOAM532z53Ukecx25pkz8Uuyt2Io+BHYS6f6sJ9VCmULuf26MAp+Iwt/
-        fk5AT7D46d82HKX3KD7kgM8OdbjILOWd6vA17NU=
-X-Google-Smtp-Source: ABdhPJwrOVLtit11sVA7UUmR/FA4HIEYLB0s09rOj5SXdwwlTMX4WOOCacRZCmMo1dZ+2GRXJIpGMQMAWYw6VULr1Og=
-X-Received: by 2002:a63:e50:: with SMTP id 16mr5569002pgo.74.1612550500873;
- Fri, 05 Feb 2021 10:41:40 -0800 (PST)
+        bh=oStFooJPSyUUPaehiSFgmVTUpU7SYl2th8Aozvagcww=;
+        b=KvjP0cIMNOKvbRMjGMQ2fjIGwMnLlME2lZk43HOzVP9RJlosiN2OASU40BUiVzk7Y5
+         jKhypH4CIfgqe7wEgOfascObAj0GPn9JiXrp6Aua999LlKKi7db4Zu/HTSp6PaxcDHVi
+         2mnbA4VgZk3UnuXTvHd5hP93/ekaY0HoyCv9kkby1sx2nL9fmj8o4qh5M/tMYQ4TXEdi
+         +74LWe0x7cj1GQAc7PfWnGRNU6UdwMP25z41ABZXMRB23jSonMzB/hix+VCqVoMMBtgW
+         JS8rW7dItlBETOlqTsySX+Kjnw0KCpXTWsl4UMIcZP+ElRibExDtnSY5ClANloTR0VB6
+         qK8Q==
+X-Gm-Message-State: AOAM531Urc7UEDbA1VQfQ4Dhzr9s7xD7BntXMn57F76KhrOFuW3sgxiA
+        Iq9RGy6iBvRjv3CVZlpdFM+lH66sCFNd17OfKcU=
+X-Google-Smtp-Source: ABdhPJw2fpaymWsQn8Lz4ksHt2GmzoGTUAPbpEI7vmF/Pxo1GqyI2pPVxQVzpfj/xlLogFp/04RgxKKeuo5zxeRUUU4=
+X-Received: by 2002:a17:902:b190:b029:df:fff2:c345 with SMTP id
+ s16-20020a170902b190b02900dffff2c345mr5119652plr.17.1612551503103; Fri, 05
+ Feb 2021 10:58:23 -0800 (PST)
 MIME-Version: 1.0
 References: <20210122154300.7628-1-calvin.johnson@oss.nxp.com>
  <20210122154300.7628-8-calvin.johnson@oss.nxp.com> <20210205172518.GA18214@lsv03152.swis.in-blr01.nxp.com>
- <CAHp75VdX2gZbt-eYp31wg0r+yih8omGxcTf6cMyhxjMZZYzFuQ@mail.gmail.com>
-In-Reply-To: <CAHp75VdX2gZbt-eYp31wg0r+yih8omGxcTf6cMyhxjMZZYzFuQ@mail.gmail.com>
+ <CAHp75VdX2gZbt-eYp31wg0r+yih8omGxcTf6cMyhxjMZZYzFuQ@mail.gmail.com> <CAHp75VdEjNhj5oQTqnnOhnibBAa2CoHf1PAvJi57X0d-6LC3NQ@mail.gmail.com>
+In-Reply-To: <CAHp75VdEjNhj5oQTqnnOhnibBAa2CoHf1PAvJi57X0d-6LC3NQ@mail.gmail.com>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 5 Feb 2021 20:41:24 +0200
-Message-ID: <CAHp75VdEjNhj5oQTqnnOhnibBAa2CoHf1PAvJi57X0d-6LC3NQ@mail.gmail.com>
+Date:   Fri, 5 Feb 2021 20:58:06 +0200
+Message-ID: <CAHp75VcVPfgA-WS+gAH6ugrzaU9_nhRcg0pC07x7XcBha55bPg@mail.gmail.com>
 Subject: Re: [net-next PATCH v4 07/15] net: mdiobus: Introduce fwnode_mdiobus_register_phy()
 To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
 Cc:     Grant Likely <grant.likely@arm.com>,
@@ -86,57 +87,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 5, 2021 at 8:25 PM Andy Shevchenko
+On Fri, Feb 5, 2021 at 8:41 PM Andy Shevchenko
 <andy.shevchenko@gmail.com> wrote:
-> On Fri, Feb 5, 2021 at 7:25 PM Calvin Johnson
-> <calvin.johnson@oss.nxp.com> wrote:
-> > On Fri, Jan 22, 2021 at 09:12:52PM +0530, Calvin Johnson wrote:
+> On Fri, Feb 5, 2021 at 8:25 PM Andy Shevchenko
+> <andy.shevchenko@gmail.com> wrote:
+> > On Fri, Feb 5, 2021 at 7:25 PM Calvin Johnson
+> > <calvin.johnson@oss.nxp.com> wrote:
+> > > On Fri, Jan 22, 2021 at 09:12:52PM +0530, Calvin Johnson wrote:
+> >
+> > ...
+> >
+> > > > +     rc = fwnode_property_match_string(child, "compatible", "ethernet-phy-ieee802.3-c45");
+> > > With ACPI, I'm facing some problem with fwnode_property_match_string(). It is
+> > > unable to detect the compatible string and returns -EPROTO.
+> > >
+> > > ACPI node for PHY4 is as below:
+> > >
+> > >  Device(PHY4) {
+> > >     Name (_ADR, 0x4)
+> > >     Name(_CRS, ResourceTemplate() {
+> > >     Interrupt(ResourceConsumer, Level, ActiveHigh, Shared)
+> > >     {
+> > >       AQR_PHY4_IT
+> > >     }
+> > >     }) // end of _CRS for PHY4
+> > >     Name (_DSD, Package () {
+> > >       ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+> > >         Package () {
 >
-> ...
+> > >           Package () {"compatible", "ethernet-phy-ieee802.3-c45"}
 >
-> > > +     rc = fwnode_property_match_string(child, "compatible", "ethernet-phy-ieee802.3-c45");
-> > With ACPI, I'm facing some problem with fwnode_property_match_string(). It is
-> > unable to detect the compatible string and returns -EPROTO.
-> >
-> > ACPI node for PHY4 is as below:
-> >
-> >  Device(PHY4) {
-> >     Name (_ADR, 0x4)
-> >     Name(_CRS, ResourceTemplate() {
-> >     Interrupt(ResourceConsumer, Level, ActiveHigh, Shared)
-> >     {
-> >       AQR_PHY4_IT
-> >     }
-> >     }) // end of _CRS for PHY4
-> >     Name (_DSD, Package () {
-> >       ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-> >         Package () {
+> I guess converting this to
+>            Package () {"compatible", Package() {"ethernet-phy-ieee802.3-c45"}}
+> will solve it.
 
-> >           Package () {"compatible", "ethernet-phy-ieee802.3-c45"}
+For the record, it doesn't mean there is no bug in the code. DT treats
+a single string as an array, but ACPI doesn't.
+And this is specific to _match_string() because it has two passes. And
+the first one fails.
+While reading a single string as an array of 1 element will work I believe.
 
-I guess converting this to
-           Package () {"compatible", Package() {"ethernet-phy-ieee802.3-c45"}}
-will solve it.
-
-> >        }
-
-> >     })
-> >   } // end of PHY4
-> >
-> >  What is see is that in acpi_data_get_property(),
-> > propvalue->type = 0x2(ACPI_TYPE_STRING) and type = 0x4(ACPI_TYPE_PACKAGE).
-> >
-> > Any help please?
-> >
-> > fwnode_property_match_string() works fine for DT.
+> > >        }
 >
-> Can you show the DT node which works and also input for the
-> )match_string() (i.o.w what exactly you are trying to match with)?
->
-> --
-> With Best Regards,
-> Andy Shevchenko
-
+> > >     })
+> > >   } // end of PHY4
+> > >
+> > >  What is see is that in acpi_data_get_property(),
+> > > propvalue->type = 0x2(ACPI_TYPE_STRING) and type = 0x4(ACPI_TYPE_PACKAGE).
+> > >
+> > > Any help please?
+> > >
+> > > fwnode_property_match_string() works fine for DT.
+> >
+> > Can you show the DT node which works and also input for the
+> > )match_string() (i.o.w what exactly you are trying to match with)?
 
 
 -- 
