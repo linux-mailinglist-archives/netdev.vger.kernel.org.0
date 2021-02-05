@@ -2,96 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 940FF3113E3
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 22:50:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA02E3113F3
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 22:53:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229777AbhBEVtw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 16:49:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60354 "EHLO
+        id S232852AbhBEVwy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 16:52:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232938AbhBEVto (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 16:49:44 -0500
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23FE0C06174A
-        for <netdev@vger.kernel.org>; Fri,  5 Feb 2021 13:49:04 -0800 (PST)
-Received: by mail-wr1-x434.google.com with SMTP id u14so9337590wri.3
-        for <netdev@vger.kernel.org>; Fri, 05 Feb 2021 13:49:03 -0800 (PST)
+        with ESMTP id S230064AbhBEVwl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 16:52:41 -0500
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66520C06174A
+        for <netdev@vger.kernel.org>; Fri,  5 Feb 2021 13:52:01 -0800 (PST)
+Received: by mail-io1-xd33.google.com with SMTP id q7so8776293iob.0
+        for <netdev@vger.kernel.org>; Fri, 05 Feb 2021 13:52:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=WORFReddpnV6GJa/j4pVo2tdv6pMAGvr6jqrgaloMuY=;
-        b=cu08zRKudQPdA5LPt0ZHZgggIevrzSb4fTlhSaRjiAaNWUVIbl3WBmTyoK5PVYtFin
-         +nh3K6Ol32BYwXoOb6iXka7WciumO6ahwfcsypD5hh/LWoyiYHF7mpRO7VQEJ3bIWUxX
-         rkJo++DbwbZK0+49/ca0jBmOSdui9itdsprd/rjrqr9moyuZws8hqbzYMo5VAm7OAZD+
-         JYLoBtYn7OQD2mgyV3mk7CftMg7Oby44ip/VEiqQD1ZYmf97JdOqzK7sTF2c+Co1jHLr
-         NzJpx8P9IXc2XbGKWhB5d726cjlUYUTZifr1x+i3EjurD+jWWfuZiquEmpNmPQqHyi1U
-         APHg==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=hbrb/uI0k3ZNQuj2wdQIApcZWfCHPVlwvdeH8dEraSY=;
+        b=kwrr3ILLVbxuNn95GOVOzUFj/I8VbmFN7DHQIjWHdZ4hzEzqzgLDBrHY6JAB6GK4rj
+         e9NBMfC+5XT+VMc3rHcgzSGPUBjZpe9BfKeQtVfxnQx7JCw3LkFBRSVq3WlAAEaSLcyd
+         S/vGxA2CQGbb9/zj3fT0EvapZyFTHavASX7aM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=WORFReddpnV6GJa/j4pVo2tdv6pMAGvr6jqrgaloMuY=;
-        b=kxSWK3/EJBJ6DZwbriwO0mkoXR78k8CgDZ3Fu5dZFxGpdehVxhr3v0+v+fp35MA28Z
-         uorqF7zwi8YaRhdT87jBiLDzcNkM5nGWTUZ+S6CCoihoEZXSFmY+m5BbYJTySwLfDJ5k
-         Oxjr2uwAt/zvjQB7cGINGnALAYpaqpiF0TT1z+4+zHRteWBMYulkOQ91EC24tqFdQ4mU
-         /fs+YYF1y66Cp4Ox20iOAnG/izYLgL4sayU5JGqEETcBx8vzA+6iVQHuC64FprW+PzxB
-         SvCwmLxvzC5zzI5nA79GA/+whp8KI8IPeOqlqaEiX/DcXADgXgpCo/kWJqCjVYqbWJ/k
-         vSHw==
-X-Gm-Message-State: AOAM5312Vi0IXd7NwMNbEvmdUzkEF9wqJPMcG1yGjjtEEHS7dQJ3gsn3
-        dKaBl8DLSOqLQ9TwvSV9MRpg3ZfO+VDxSw==
-X-Google-Smtp-Source: ABdhPJxBZ3bPL0FVM0LmhKWeJ2hIWRs8kuT9h1D0MM3OlDWTUEgOgF08dLocwep7OKrt4Eh7rt+D9w==
-X-Received: by 2002:a5d:53c3:: with SMTP id a3mr6925244wrw.43.1612561742567;
-        Fri, 05 Feb 2021 13:49:02 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f1f:ad00:11de:46a1:319f:d28? (p200300ea8f1fad0011de46a1319f0d28.dip0.t-ipconnect.de. [2003:ea:8f1f:ad00:11de:46a1:319f:d28])
-        by smtp.googlemail.com with ESMTPSA id h14sm9981702wmq.45.2021.02.05.13.48.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Feb 2021 13:49:02 -0800 (PST)
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: [PATCH net-next] r8169: don't try to disable interrupts if NAPI is
- scheduled already
-Message-ID: <78c7f2fb-9772-1015-8c1d-632cbdff253f@gmail.com>
-Date:   Fri, 5 Feb 2021 22:48:53 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=hbrb/uI0k3ZNQuj2wdQIApcZWfCHPVlwvdeH8dEraSY=;
+        b=gKqXfSTVF/P3HsGip5SzakWa+uB7sPL9o7huQOcYXDDL4NLvKXU+jh68uhH+PJ9XOX
+         Z7TGHlsqvAPYGJS7JtsAWch9ys2cbAXNcP9V0wvtR+3zn9yJqsJ0wtbsO4YsshuBd+5t
+         O5oaZx5MUh8SY/YM6BtmDlSBuEVr1XBRB0v4R9UUUQIZee30ymgVHAMIJfcwkI1y1N1N
+         iuUEk76J7kxRK19vmYgvYXfpO9gzm6UGcVyUxt1vPWX9lMTQHMuUExnuxyjVQ9tXXvlL
+         0LQfaFx8xFysKQOc9bTTd2dXAPaSauQG7ChUWU8EnLcVGKcb7/qro2pFfbMv17tjlfSw
+         Vjfg==
+X-Gm-Message-State: AOAM533/1XeFmMKr8fTM+zCzhgJpL72gOUwCokqOZpqheKHwc5ky5w48
+        oWbPMyFzlV5lsKSqYwdBSvIeKWN+Rn98QPDElpDlgA==
+X-Google-Smtp-Source: ABdhPJzcxriljsqWdvwW4z6b5WmkyWMVNRVz8l3AqIltHdpJpTta6xksckQ68Rk6RRFHzAX843Ju+/a3m4NKaUf9cnc=
+X-Received: by 2002:a6b:7e41:: with SMTP id k1mr5944734ioq.81.1612561920905;
+ Fri, 05 Feb 2021 13:52:00 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20201215172352.5311-1-youghand@codeaurora.org>
+ <f2089f3c-db96-87bc-d678-199b440c05be@nbd.name> <ba0e6a3b783722c22715ae21953b1036@codeaurora.org>
+In-Reply-To: <ba0e6a3b783722c22715ae21953b1036@codeaurora.org>
+From:   Abhishek Kumar <kuabhs@chromium.org>
+Date:   Fri, 5 Feb 2021 13:51:49 -0800
+Message-ID: <CACTWRwt0F24rkueS9Ydq6gY3M-oouKGpaL3rhWngQ7cTP0xHMA@mail.gmail.com>
+Subject: Re: [PATCH 2/3] mac80211: Add support to trigger sta disconnect on
+ hardware restart
+To:     Youghandhar Chintala <youghand@codeaurora.org>
+Cc:     Felix Fietkau <nbd@nbd.name>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Brian Norris <briannorris@chromium.org>,
+        Rakesh Pillai <pillair@codeaurora.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There's no benefit in trying to disable interrupts if NAPI is
-scheduled already. This allows us to save a PCI write in this case.
+Since using DELBA frame to APs to re-establish BA session has a
+dependency on APs and also some APs may not honour the DELBA frame. I
+am fine with having the disconnect/reconnect solution. The change
+looks good to me.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Reviewed-by: Abhishek Kumar <kuabhs@chromium.org>
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index eb4c2e678..c15c285a0 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -4544,8 +4544,10 @@ static irqreturn_t rtl8169_interrupt(int irq, void *dev_instance)
- 		rtl_schedule_task(tp, RTL_FLAG_TASK_RESET_PENDING);
- 	}
- 
--	rtl_irq_disable(tp);
--	napi_schedule(&tp->napi);
-+	if (napi_schedule_prep(&tp->napi)) {
-+		rtl_irq_disable(tp);
-+		__napi_schedule(&tp->napi);
-+	}
- out:
- 	rtl_ack_events(tp, status);
- 
--- 
-2.30.0
+Thanks
+Abhishek
 
-
+On Thu, Jan 28, 2021 at 12:08 AM <youghand@codeaurora.org> wrote:
+>
+> On 2020-12-15 23:10, Felix Fietkau wrote:
+> > On 2020-12-15 18:23, Youghandhar Chintala wrote:
+> >> Currently in case of target hardware restart, we just reconfig and
+> >> re-enable the security keys and enable the network queues to start
+> >> data traffic back from where it was interrupted.
+> >>
+> >> Many ath10k wifi chipsets have sequence numbers for the data
+> >> packets assigned by firmware and the mac sequence number will
+> >> restart from zero after target hardware restart leading to mismatch
+> >> in the sequence number expected by the remote peer vs the sequence
+> >> number of the frame sent by the target firmware.
+> >>
+> >> This mismatch in sequence number will cause out-of-order packets
+> >> on the remote peer and all the frames sent by the device are dropped
+> >> until we reach the sequence number which was sent before we restarted
+> >> the target hardware
+> >>
+> >> In order to fix this, we trigger a sta disconnect, for the targets
+> >> which expose this corresponding wiphy flag, in case of target hw
+> >> restart. After this there will be a fresh connection and thereby
+> >> avoiding the dropping of frames by remote peer.
+> >>
+> >> The right fix would be to pull the entire data path into the host
+> >> which is not feasible or would need lots of complex changes and
+> >> will still be inefficient.
+> > How about simply tracking which tids have aggregation enabled and send
+> > DELBA frames for those after the restart?
+> > It would mean less disruption for affected stations and less ugly hacks
+> > in the stack for unreliable hardware.
+> >
+> > - Felix
+>
+> Hi Felix,
+>
+> We did try to send an ADDBA frame to the AP once the SSR happened. The
+> AP ack=E2=80=99ed the frame and the new BA session with renewed sequence =
+number
+> was established. But still, the AP did not respond to the ping requests
+> with the new sequence number. It did not respond until one of the two
+> happened.
+> 1.      The sequence number was more than the sequence number that DUT ha=
+d
+> used before SSR happened
+> 2.      DUT disconnected and then reconnected.
+> The other option is to send a DELBA frame to the AP and make the AP also
+> force to establish the BA session from its side. This we feel can have
+> some interoperability issues as some of the AP=E2=80=99s may not honour t=
+he
+> DELBA frame and will continue to use the earlier BA session that it had
+> established. Given that re-negotiating the BA session is prone to IOT
+> issues, we feel that it would be good to go with the
+> Disconnect/Reconnect solution which is foolproof and will work in all
+> scenarios.
+>
+> Regards,
+> Youghandhar
