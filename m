@@ -2,88 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABFD031151E
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 23:24:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E6833114E7
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 23:23:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232236AbhBEWXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 17:23:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42294 "EHLO
+        id S232728AbhBEWSC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 17:18:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232579AbhBEO0c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 09:26:32 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6ECDC0617AA;
-        Fri,  5 Feb 2021 08:04:09 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id sa23so12787095ejb.0;
-        Fri, 05 Feb 2021 08:04:09 -0800 (PST)
+        with ESMTP id S232670AbhBEOcQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 09:32:16 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BB2DC061221;
+        Fri,  5 Feb 2021 08:08:58 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id i8so12708350ejc.7;
+        Fri, 05 Feb 2021 08:08:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tGuuL40sGcfgrloxWuU/Mr8s8X8BV6lQEs2pAh9D2YE=;
-        b=l/dzw7ifuNU24tZ6TXySAhV2vGO0CPg+7/Et9s1SxjCL4d9Nl33+Rw0jIimvXgRn+z
-         zDakgbxfwnjVO3AwcCqEc3VarFa1CBpq5/P0OsYi1NBVx3qXExOIxjGFSHtYSh68gMS4
-         Eve2H+tgiVQbHqWXyFfi3uzMbDy53BMdiIwFAM+0v+dlumZp9R1MMb3nhMwQy0vpGujS
-         XfYem9f7CG3lpYESGx0xVQntrt2mQJ0F3+TEJdhIE3p+HR0bH9ssiG73G4bSAgPKHh8H
-         ZbTkH5qjthgrh3GTKmk+WU7bLOFin0A79HZVM2SjlxTKJyBvvlxZEV42Lz++2tgyy7er
-         /Ajg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=R5nFxy4Bvc9UqP6WzBzfQTEG0FAeu+haMx96np+omMo=;
+        b=SkxTl7dg4/kQ6/uVdbjzPLlZhbFct6rOQUDHs7fnd78QqqRcYZQeeipCWfupHF40pk
+         i5zDi4j51nwMspV+Ow/eO0GiLnR5XPb+X4M0L3l2Ax/rMw9ifSnz2b2T5vPGo8jOWbPk
+         4ZlRaG6c3VAVb3WLshQ/b7lJJzRbnjX/w9y3nA1wMSz7q/V7O6oIf/XHzcWHJlUWF96M
+         /Vv+rcACbpcODuNULltUHIBftCbbFDyxJcylH/EZVlYJRK18WGujg1vUA+yLJ1w8Oedp
+         1i+Pt4MPOnJm+ahJPOEnW4td06UAcQg/JBZadILWbguPMGU2Ur1QpSzXYWb9yPaI1f9e
+         w1NQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tGuuL40sGcfgrloxWuU/Mr8s8X8BV6lQEs2pAh9D2YE=;
-        b=hTOWdfSc2sD5DZwdhYXs1Wbe+/4radVG2F+MUH2s839umyGTO7vVMSaLDwzFAjR3Ne
-         vyOiZIlf8N8pR49WwB/8Pko//PRmyi8XNh+0lj16wDrV0hclPnXBKAHk/ozgsA2ERSWc
-         urJC+sCkr91B/ehw91F1IDHJ+RU1i5rJktvk2PBDZALhsK+A4srHpdpLFoie0MWNoqsv
-         oWk0sy7SCUaK/kan+1uvVSP1RkQVHuzEin/ls/z16BPi9ohzvuAK/fw/BcIQrz6v1yoy
-         OMCQn6fWS6062xHekG0lFrvDjEIwv0VFGuYHan3j7yai8gYevOTYfyc0Qb55tqvoUQWW
-         qXJg==
-X-Gm-Message-State: AOAM531sooMTf0Dp85/BYWrQp+CSwST4vJN4lUkBUT2AbNZzJe9Jwf8C
-        ZIJzj7TOV9pRwpo+c1jPMewuTo3Txg3cELNsvrexevSE
-X-Google-Smtp-Source: ABdhPJz4c68iFt9emmCQCVE0NR6e5E0nuYYE7jDU6v3EZxjkge8aiiZNM7kql3sdPgVZ3CNhBKMRjiUgediRb51E9+U=
-X-Received: by 2002:a5d:60c6:: with SMTP id x6mr5108680wrt.85.1612534053076;
- Fri, 05 Feb 2021 06:07:33 -0800 (PST)
-MIME-Version: 1.0
-References: <20210129195240.31871-2-TheSven73@gmail.com> <20210205124419.8575-1-sbauer@blackbox.su>
-In-Reply-To: <20210205124419.8575-1-sbauer@blackbox.su>
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-Date:   Fri, 5 Feb 2021 09:07:22 -0500
-Message-ID: <CAGngYiUgjsgWYP76NKnrhbQthWbceaiugTFL=UVh_KvDuRhQUw@mail.gmail.com>
-Subject: Re: [PATCH net-next v1 1/6] lan743x: boost performance on cpu archs
- w/o dma cache snooping
-To:     Sergej Bauer <sbauer@blackbox.su>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Markus.Elfring@web.de,
-        Alexey Denisov <rtgbnm@gmail.com>,
-        Tim Harvey <tharvey@gateworks.com>,
-        =?UTF-8?Q?Anders_R=C3=B8nningen?= <anders@ronningen.priv.no>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        "maintainer:MICROCHIP LAN743X ETHERNET DRIVER" 
-        <UNGLinuxDriver@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=R5nFxy4Bvc9UqP6WzBzfQTEG0FAeu+haMx96np+omMo=;
+        b=lqw7579UQlVrb3Zvln/DLdQjSaor/GLJn+MEtFqHU2jDnGO9HslJ6UCJA+8xRLT3RE
+         Wuh7pOjlB2olMmFtGOgzDL7KKNwZR/Yjd7CWLFPp9y6YmlhwqcixW+jZDoiu8hn44MNP
+         sUtxj12836RWb7e8aYO4/HH1lIP2BHanLreSFLSYJF3JgsmHwkNcpn8T5TreLwvRLh7d
+         z3/AvmQsa9bZviCMofrTcmhUBYaieinHhU3tiUFIGcXNUQV0ReHb86Mxy/FJc84mSPGO
+         0XhZQNTppAg6tZ2X0rqKa4TASZfJudBx7qi4aBVixx4Hh1jJKthwgQlMLbo7ZtPHwMKe
+         IaxA==
+X-Gm-Message-State: AOAM530UPSsvxPLX3pxr2LmqGaPn+aPGaLeVJyv4HVXNQ32W3vJsh8nx
+        DOylBMyZLeBAOh/h+GcbkHMFhUpKOlM=
+X-Google-Smtp-Source: ABdhPJzYRW8GhrE8ij2ocDjjNLxXXtdRxY7LnssUqIvtP9+m2iGf6DAPG4l5T7OAzKWfzgoSTObIUQ==
+X-Received: by 2002:a17:906:3484:: with SMTP id g4mr4159438ejb.38.1612534185720;
+        Fri, 05 Feb 2021 06:09:45 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id zk6sm4019325ejb.119.2021.02.05.06.09.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Feb 2021 06:09:44 -0800 (PST)
+Date:   Fri, 5 Feb 2021 16:09:43 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Vadym Kochan <vadym.kochan@plvision.eu>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "open list:MICROCHIP LAN743X ETHERNET DRIVER" 
-        <netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        netdev@vger.kernel.org, Mickey Rachamim <mickeyr@marvell.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 4/7] net: marvell: prestera: move netdev
+ topology validation to prestera_main
+Message-ID: <20210205140943.6c6l2z2v453oteov@skbuf>
+References: <20210203165458.28717-1-vadym.kochan@plvision.eu>
+ <20210203165458.28717-5-vadym.kochan@plvision.eu>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210203165458.28717-5-vadym.kochan@plvision.eu>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Sergej,
+On Wed, Feb 03, 2021 at 06:54:55PM +0200, Vadym Kochan wrote:
+> Move handling of PRECHANGEUPPER event from prestera_switchdev to
+> prestera_main which is responsible for basic netdev events handling
+> and routing them to related module.
+> 
+> Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>
+> ---
 
-On Fri, Feb 5, 2021 at 7:44 AM Sergej Bauer <sbauer@blackbox.su> wrote:
->
-> Hi Sven
-> I can confirm great stability improvement after your patch
-> "lan743x: boost performance on cpu archs w/o dma cache snooping".
->
-> Test machine is Intel Pentium G4560 3.50GHz
-> lan743x with rejected virtual phy 'inside'
-
-Interesting, so the speed boost patch seems to improve things even on Intel...
-
-Would you be able to apply and test the multi-buffer patch as well?
-To do that, you can simply apply patches [2/6] and [3/6] on top of
-what you already have.
-
-Keeping in mind that Bryan has identified an issue with the above
-patch, which will get fixed in v2. So YMMV.
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
