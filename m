@@ -2,71 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4CA9311106
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 20:23:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D3F53110F8
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 20:21:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231657AbhBERjp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 12:39:45 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:39402 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233435AbhBEP5X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 10:57:23 -0500
-Received: from 1.general.cking.uk.vpn ([10.172.193.212])
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1l854C-0003cO-Bn; Fri, 05 Feb 2021 17:38:48 +0000
-To:     Johannes Berg <johannes.berg@intel.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Colin Ian King <colin.king@canonical.com>
-Subject: Potential invalid ~ operator in net/mac80211/cfg.c
-Message-ID: <4bb65f2f-48f9-7d9c-ab2e-15596f15a4d8@canonical.com>
-Date:   Fri, 5 Feb 2021 17:38:47 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+        id S233271AbhBERhs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 12:37:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34112 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233450AbhBEP5f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 10:57:35 -0500
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D200AC061786;
+        Fri,  5 Feb 2021 09:39:42 -0800 (PST)
+Received: by mail-lj1-x22f.google.com with SMTP id f2so8686072ljp.11;
+        Fri, 05 Feb 2021 09:39:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zq2tq6yHR4pXHFIL3vLqBUHAT4JaMWz+MiyU0v1vu0g=;
+        b=ckxEdHFrze9QuOrIRS+B3/v6N2YraDq30qDnuUaSEdKPKbzDHr5v+Gt+ggms8kDxLb
+         KRM67GI+AlAc0Mt9x3QXeMnLuVERRs3HzqIK1OYS9DWNRSDt8+CE3wu+7+S/y2kCH+ZN
+         vm2jkwZoTwkLSFKNvCIpag+GwrGsqgSkdLzvOjljamTXzVmuCKqyeQ2SDJrakIrbO0Gq
+         iNL+1goLIoCL4vK72mfo4AskKtq8tPdIFU9KeCPLZAqMbqE3ck7e5KVHALAgfByEZmtI
+         sOpY9Z4FpCfRoEvCtAY46x9yZ7244UyytkRl9nU5E36B/ExGPZnsadsvizd1w2jn+6Lv
+         twfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zq2tq6yHR4pXHFIL3vLqBUHAT4JaMWz+MiyU0v1vu0g=;
+        b=aSBWAdr6jXyhAKpKiUEDM3CC2CMy7BO/7bkur5qimc0OnPEfGO/wuUb+LG1ZZBD8CT
+         cPzzi/pR9r1CNNypsTNM8PIR7bfX6w55SbeVHGSxjYe0hcd7dZ8bJ149HVUpVah7KF0l
+         xL3ug1Lduc2s4f8FKUhwtXFxlGdari2PekDYIR3pJnENFZnRDLJNxHYtNUqORgg1+WfX
+         bla234jKA/xmcdeIxhle8GwPKYR0VydD/ZM8VRImQXnRQbtz8J+viQ3Vzgax8+szBQ8P
+         d3UPFay2cri4MAZ1kSfY+SThoNQvW7pzzRAF8G6boGxYCfWL1rPjdc5X36YSN2JUU5MQ
+         +8hQ==
+X-Gm-Message-State: AOAM530ZWBu8XPRXcsuyqHuFFRDIaJOMSrRwQ+isszaQswWCFHU9zz5R
+        W469Ek8/8CXe20nZ3NhAmFyI5mVXECugUQ==
+X-Google-Smtp-Source: ABdhPJye+i4t95Pl5+mUsUtHEvOgzCgVI4mT0d2KP5HJBj+JAKY5Bw2XvHTI2RhQuE/h1RHgd0ZlDQ==
+X-Received: by 2002:a2e:9f06:: with SMTP id u6mr3298965ljk.494.1612546781370;
+        Fri, 05 Feb 2021 09:39:41 -0800 (PST)
+Received: from rafiki.local (user-5-173-242-247.play-internet.pl. [5.173.242.247])
+        by smtp.gmail.com with ESMTPSA id n16sm1053230lfq.301.2021.02.05.09.39.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Feb 2021 09:39:40 -0800 (PST)
+From:   Lech Perczak <lech.perczak@gmail.com>
+To:     linux-usb@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Lech Perczak <lech.perczak@gmail.com>
+Subject: [PATCH v2 0/2] usb: add full support for ZTE P685M modem
+Date:   Fri,  5 Feb 2021 18:39:02 +0100
+Message-Id: <20210205173904.13916-1-lech.perczak@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi there,
+This modem is used in ZTE MF283+ LTE SOHO router, and carriers usually
+identify it as such. This series is a part of effort to get this router
+fully supported by OpenWrt. With this series, all interfaces of the modem
+are fully supported, and it can establish connection through QMI interface.
 
-while working through a backlog of older static analysis reports from
-Coverity I found an interesting use of the ~ operator that looks
-incorrect to me in function ieee80211_set_bitrate_mask():
 
-                for (j = 0; j < IEEE80211_HT_MCS_MASK_LEN; j++) {
-                        if (~sdata->rc_rateidx_mcs_mask[i][j]) {
-                                sdata->rc_has_mcs_mask[i] = true;
-                                break;
-                        }
-                }
+Lech Perczak (2):
+  net: usb: qmi_wwan: support ZTE P685M modem
+  usb: serial: option: add full support for ZTE P685M
 
-                for (j = 0; j < NL80211_VHT_NSS_MAX; j++) {
-                        if (~sdata->rc_rateidx_vht_mcs_mask[i][j]) {
-                                sdata->rc_has_vht_mcs_mask[i] = true;
-                                break;
-                        }
-                }
+ drivers/net/usb/qmi_wwan.c  | 1 +
+ drivers/usb/serial/option.c | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-For the ~ operator in both if stanzas, Coverity reports:
+-- 
+2.20.1
 
-Logical vs. bitwise operator (CONSTANT_EXPRESSION_RESULT)
-logical_vs_bitwise:
-
-~sdata->rc_rateidx_mcs_mask[i][j] is always 1/true regardless of the
-values of its operand. This occurs as the logical operand of if.
-    Did you intend to use ! rather than ~?
-
-I've checked the results of this and it does seem that ~ is incorrect
-and always returns true for the if expression. So it probably should be
-!, but I'm not sure if I'm missing something deeper here and wondering
-why this has always worked.
-
-Colin
