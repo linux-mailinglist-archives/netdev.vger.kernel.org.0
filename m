@@ -2,81 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E18F3110FC
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 20:21:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CB2631112F
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 20:30:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233509AbhBERhy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 12:37:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34846 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233055AbhBEP5j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 10:57:39 -0500
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18AACC0613D6;
-        Fri,  5 Feb 2021 09:39:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=K9RAcQUU8wl+QmrBr2wtAwlL0UcIu0I2afA4jOYwzNw=; b=1qmVu5Mv3ZaHZyVBwQY1aUmjNx
-        zSB3NH20gVNyuBC+1FCnETTO1ot3gEVpbEFIUUyjXAB9IX83ysqQpvt1yAlfVegNfdA1MituRl0H/
-        V4yF9EVDPL2CZgGrlGtXWRM3NQPIWzFx66ZW1svN6imAL6biwrbKG6r8Z9FBTBA+FCyPvjaxY2j+6
-        lnnaP89tHFFOtQrQ7yru/uYBmOsQfGpOBBzKjjq7n6LqSBM71MH4Tu3EqxCo/drb94e08JZyRUxJv
-        ZRH7WafNyuxdE+Myo1yZUAR7kJYJum8R9rLbgSZnjqvC/LQMZ2ZR4AWcJae2gMfVgRPJRWCOHZNeX
-        gKZgw4Yw==;
-Received: from [2601:1c0:6280:3f0::aec2]
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1l854e-0006xb-O6; Fri, 05 Feb 2021 17:39:17 +0000
-Subject: Re: [PATCH bpf] selftests/bpf: use bash instead of sh in
- test_xdp_redirect.sh
-To:     William Tu <u9012063@gmail.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-References: <20210205170950.145042-1-bjorn.topel@gmail.com>
- <CALDO+SZhgSr5haWT=c1b-+WMpeaPGkDYoxCoWtTaX2+L85WEJA@mail.gmail.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <b186bc7e-2b0b-58b8-065e-c77255b6aecb@infradead.org>
-Date:   Fri, 5 Feb 2021 09:39:12 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        id S233267AbhBERqa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 12:46:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56636 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233456AbhBERoB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Feb 2021 12:44:01 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 36AE664E3D;
+        Fri,  5 Feb 2021 19:25:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612553143;
+        bh=BgOb+TcaSnI3cZprwqZFAncIJNytyVytQSSPUe6lB9c=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lTTRFWaovu+4k6fALquGQu3mNtOYEKG2KuGug9GcoNhj6+CO+pTluxrvkx5PAqRNb
+         zR2xeh8wu8Vyah5gKiDi6w7z1SENCZeVB3Kd+G+KPa+ZsirrXigeDNUMAdYBiUant3
+         SbZtdnZWaD7udDIiZ//6gpPjZjyMwskvsKZ2Fq4+zVO8rh8470GbzZguVvirsq5QUI
+         cbVh9TQNt0FkCWLmojPfjtWjZU0Mj5oPJjPkhFQpobuDdreeX/nlpNvKlbnr7LfXOW
+         z3bcpBeHSVxlL5QFn0lwzm+Pksnyehfj+ChQIgeplt0OxVu9oisK5GKsaUxtIKHxWX
+         kY+TgwqQMn+Hw==
+Date:   Fri, 5 Feb 2021 11:25:42 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Hariprasad Kelam <hkelam@marvell.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "willemdebruijn.kernel@gmail.com" <willemdebruijn.kernel@gmail.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        "Geethasowjanya Akula" <gakula@marvell.com>,
+        Jerin Jacob Kollanukkaran <jerinj@marvell.com>,
+        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>
+Subject: Re: [Patch v3 net-next 7/7] octeontx2-pf: ethtool physical link
+ configuration
+Message-ID: <20210205112542.335c6bd5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CY4PR18MB1414EF4948CEF69C49E06F85DEB29@CY4PR18MB1414.namprd18.prod.outlook.com>
+References: <CY4PR18MB1414EF4948CEF69C49E06F85DEB29@CY4PR18MB1414.namprd18.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <CALDO+SZhgSr5haWT=c1b-+WMpeaPGkDYoxCoWtTaX2+L85WEJA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/5/21 9:30 AM, William Tu wrote:
-> On Fri, Feb 5, 2021 at 9:09 AM Björn Töpel <bjorn.topel@gmail.com> wrote:
->>
->> From: Björn Töpel <bjorn.topel@intel.com>
->>
->> The test_xdp_redirect.sh script uses some bash-features, such as
->> '&>'. On systems that use dash as the sh implementation this will not
->> work as intended. Change the shebang to use bash instead.
-
-Hi,
-In general we (kernel, maybe not bpf) try to move away from bash to a more
-"standard" sh shell, so things like "&>" would be converted to ">file 2>&1"
-or whatever is needed.
-
->> Also remove the 'set -e' since the script actually relies on that the
->> return value can be used to determine pass/fail of the test.
->>
->> Fixes: 996139e801fd ("selftests: bpf: add a test for XDP redirect")
->> Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
->> ---
-> LGTM, thanks.
-> Acked-by: William Tu <u9012063@gmail.com>
+On Fri, 5 Feb 2021 14:15:01 +0000 Hariprasad Kelam wrote:
+> > > Will add multi advertised mode support in near future.  
+> > 
+> > Looking at patch 6 it seems like the get side already supports multiple modes,
+> > although the example output only lists supported no advertised.
+> > 
+> > Is the device actually doing IEEE autoneg or just configures the speed, lanes
+> > etc. according to the link mode selected?  
 > 
+> Device supports IEEE autoneg mode. Agreed get_link_ksetting returns multiple modes .  
+> But set side  firmware code designed in such way that  it handles  single mode. Upon
+> Successful configuration firmware updates advertised modes to shared memory
+>  such that kernel will read and updates to ethtool.
 
-
--- 
-~Randy
-
+It needs to be symmetric, get needs to reflect what set specified. 
