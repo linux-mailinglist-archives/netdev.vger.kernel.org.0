@@ -2,106 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58C4731088E
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 10:58:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96CF8310959
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 11:43:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230495AbhBEJ6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 04:58:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50790 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229815AbhBEJz5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 04:55:57 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FBFFC06178C;
-        Fri,  5 Feb 2021 01:55:16 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id 7so7020648wrz.0;
-        Fri, 05 Feb 2021 01:55:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=MT0BlZZFXQ7Pukf17++wQpN4EZiEO2XNbV+qknkfsyA=;
-        b=YN/bcnZoNO4KfXVM+0sV8qqwBK2gJ64YbALf1RXWAcy8Uqxl1TNzBBX9oB56NN1h+B
-         bK0TJMqQT8L/+E4PVEhOvlZz3zDdUOohqMQGFcprGGpRPHTRvzJOOD86nPiyi/y7Y7/r
-         qDqFbPAYlARf0pcr+Mw2IORvdqwd8XFb8I0p+YwjvLzEI0UzC5WEW67HvWcQD3MxBev6
-         Riya5RK2gOpV+GiajE+stCFXjiQ0gi6aN3gmcu6QCn10xUH+jld/WyCqwLawdqjSFu2m
-         CZUl3oQvJKV0o2/OGIARU9+k+/79YSUnsQa+ENMBDWdTfP2PNvZl60H1JGkQ8AycLLNx
-         TAvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=MT0BlZZFXQ7Pukf17++wQpN4EZiEO2XNbV+qknkfsyA=;
-        b=dZhugUt5/OYvjYRJQ6K8gM4MQC+pMBAlWKaXKgx1JudlSCTGIBegjXaU71SuAdkr5J
-         DxyONMlOy0eZZwCn1541QccZCzz4N7I3NETsSwnXssHo+BRUm3n7MKVFoYsM45FberDF
-         rcmSz1FSKjX4fHQOeHIGVbQKXkV4/y+hYSuoTwKAQuH4df0qJ2psjavIHRrTg/adxDEE
-         caN5BXZkPtmphW1VQ8nkqbboxM5rCrYMMItnDXLDBbn6DJzsRBkNyzB2PICcbn6o01ad
-         8Ka/WLvpIoBdkoLPhR71AUgGKb/Dzbrk1kb7d/POyc+Eo8GG3waEnHdGqlsi+A8Y18f0
-         oQow==
-X-Gm-Message-State: AOAM531DrprtiLiABqoX1gCYeuFiWntYECtJqWpl57MSU+ReO85egIcx
-        Kutdt5CeuyJAEw8tQruXqY4=
-X-Google-Smtp-Source: ABdhPJx1/Me3l7tCNW11yyIC3uDqu69f7nvNS8wM0zQOOmPh5Fu5W6GNCNrDtAO8PGTekqBHbSuz0Q==
-X-Received: by 2002:adf:efc8:: with SMTP id i8mr4101524wrp.84.1612518914805;
-        Fri, 05 Feb 2021 01:55:14 -0800 (PST)
-Received: from felia.fritz.box ([2001:16b8:2ded:6500:7c12:49b0:591a:b2bd])
-        by smtp.gmail.com with ESMTPSA id u142sm8690977wmu.3.2021.02.05.01.55.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Feb 2021 01:55:14 -0800 (PST)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Parav Pandit <parav@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-doc@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] net/mlx5: docs: correct section reference in table of contents
-Date:   Fri,  5 Feb 2021 10:55:06 +0100
-Message-Id: <20210205095506.29146-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S231546AbhBEKm2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 05:42:28 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:32263 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231320AbhBEKgo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 05:36:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612521317;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=QJCCgzFVl3igOoCKJCJw9qlTMRXU0EBO0JvhKR9cbr4=;
+        b=Nqo64f/M5NEgucfwgKE25EWJ+8333kMekSRz0MsWwyFhuG/Oxk2uLbFASHFcfq4D8qHlKs
+        JN0dD3dksrNogCL/nFMgaMPRYS9dW5aJp3TBgnFJXqYaxUqEdxeOL2Rukw/+66+Q72qR4R
+        DqSCDougZKczUcfmUlOlI4pKlXZU7nw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-299-30aKlXhpNzqfdjB4BQeMvg-1; Fri, 05 Feb 2021 05:35:14 -0500
+X-MC-Unique: 30aKlXhpNzqfdjB4BQeMvg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9620E15720;
+        Fri,  5 Feb 2021 10:35:11 +0000 (UTC)
+Received: from krava (unknown [10.40.195.59])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 81A315C648;
+        Fri,  5 Feb 2021 10:35:08 +0000 (UTC)
+Date:   Fri, 5 Feb 2021 11:35:07 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+Subject: Re: [PATCH bpf-next 1/4] tools/resolve_btfids: Build libbpf and
+ libsubcmd in separate directories
+Message-ID: <YB0fW+zEPHa/XKsq@krava>
+References: <20210129134855.195810-1-jolsa@redhat.com>
+ <20210204211825.588160-1-jolsa@kernel.org>
+ <20210204211825.588160-2-jolsa@kernel.org>
+ <CAEf4BzYhnm2tfnuGWXDOAZZmYBnboSZ3JsWjDHM5ortCbaeEjw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzYhnm2tfnuGWXDOAZZmYBnboSZ3JsWjDHM5ortCbaeEjw@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 142d93d12dc1 ("net/mlx5: Add devlink subfunction port
-documentation") refers to a section 'mlx5 port function' in the table of
-contents, but includes a section 'mlx5 function attributes' instead.
+On Thu, Feb 04, 2021 at 04:39:38PM -0800, Andrii Nakryiko wrote:
+> On Thu, Feb 4, 2021 at 1:20 PM Jiri Olsa <jolsa@kernel.org> wrote:
+> >
+> > Setting up separate build directories for libbpf and libpsubcmd,
+> > so it's separated from other objects and we don't get them mixed
+> > in the future.
+> >
+> > It also simplifies cleaning, which is now simple rm -rf.
+> >
+> > Also there's no need for FEATURE-DUMP.libbpf and bpf_helper_defs.h
+> > files in .gitignore anymore.
+> >
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
+> >  tools/bpf/resolve_btfids/.gitignore |  2 --
+> >  tools/bpf/resolve_btfids/Makefile   | 26 +++++++++++---------------
+> >  2 files changed, 11 insertions(+), 17 deletions(-)
+> >
+> > diff --git a/tools/bpf/resolve_btfids/.gitignore b/tools/bpf/resolve_btfids/.gitignore
+> > index a026df7dc280..25f308c933cc 100644
+> > --- a/tools/bpf/resolve_btfids/.gitignore
+> > +++ b/tools/bpf/resolve_btfids/.gitignore
+> > @@ -1,4 +1,2 @@
+> > -/FEATURE-DUMP.libbpf
+> > -/bpf_helper_defs.h
+> >  /fixdep
+> >  /resolve_btfids
+> > diff --git a/tools/bpf/resolve_btfids/Makefile b/tools/bpf/resolve_btfids/Makefile
+> > index bf656432ad73..b780b3a9fb07 100644
+> > --- a/tools/bpf/resolve_btfids/Makefile
+> > +++ b/tools/bpf/resolve_btfids/Makefile
+> > @@ -28,22 +28,22 @@ OUTPUT ?= $(srctree)/tools/bpf/resolve_btfids/
+> >  LIBBPF_SRC := $(srctree)/tools/lib/bpf/
+> >  SUBCMD_SRC := $(srctree)/tools/lib/subcmd/
+> >
+> > -BPFOBJ     := $(OUTPUT)/libbpf.a
+> > -SUBCMDOBJ  := $(OUTPUT)/libsubcmd.a
+> > +BPFOBJ     := $(OUTPUT)/libbpf/libbpf.a
+> > +SUBCMDOBJ  := $(OUTPUT)/libsubcmd/libsubcmd.a
+> >
+> >  BINARY     := $(OUTPUT)/resolve_btfids
+> >  BINARY_IN  := $(BINARY)-in.o
+> >
+> >  all: $(BINARY)
+> >
+> > -$(OUTPUT):
+> > +$(OUTPUT) $(OUTPUT)/libbpf $(OUTPUT)/libsubcmd:
+> >         $(call msg,MKDIR,,$@)
+> > -       $(Q)mkdir -p $(OUTPUT)
+> > +       $(Q)mkdir -p $(@)
+> >
+> > -$(SUBCMDOBJ): fixdep FORCE
+> > -       $(Q)$(MAKE) -C $(SUBCMD_SRC) OUTPUT=$(OUTPUT)
+> > +$(SUBCMDOBJ): fixdep FORCE | $(OUTPUT)/libsubcmd
+> > +       $(Q)$(MAKE) -C $(SUBCMD_SRC) OUTPUT=$(abspath $(dir $@))/ $(abspath $@)
+> >
+> > -$(BPFOBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(OUTPUT)
+> > +$(BPFOBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(OUTPUT)/libbpf
+> >         $(Q)$(MAKE) $(submake_extras) -C $(LIBBPF_SRC)  OUTPUT=$(abspath $(dir $@))/ $(abspath $@)
+> >
+> >  CFLAGS := -g \
+> > @@ -57,23 +57,19 @@ LIBS = -lelf -lz
+> >  export srctree OUTPUT CFLAGS Q
+> >  include $(srctree)/tools/build/Makefile.include
+> >
+> > -$(BINARY_IN): fixdep FORCE
+> > +$(BINARY_IN): fixdep FORCE | $(OUTPUT)
+> >         $(Q)$(MAKE) $(build)=resolve_btfids
+> >
+> >  $(BINARY): $(BPFOBJ) $(SUBCMDOBJ) $(BINARY_IN)
+> >         $(call msg,LINK,$@)
+> >         $(Q)$(CC) $(BINARY_IN) $(LDFLAGS) -o $@ $(BPFOBJ) $(SUBCMDOBJ) $(LIBS)
+> >
+> > -libsubcmd-clean:
+> > -       $(Q)$(MAKE) -C $(SUBCMD_SRC) OUTPUT=$(OUTPUT) clean
+> > -
+> > -libbpf-clean:
+> > -       $(Q)$(MAKE) -C $(LIBBPF_SRC) OUTPUT=$(OUTPUT) clean
+> > -
+> > -clean: libsubcmd-clean libbpf-clean fixdep-clean
+> > +clean: fixdep-clean
+> >         $(call msg,CLEAN,$(BINARY))
+> >         $(Q)$(RM) -f $(BINARY); \
+> >         $(RM) -rf $(if $(OUTPUT),$(OUTPUT),.)/feature; \
+> > +       $(RM) -rf $(OUTPUT)libbpf; \
+> > +       $(RM) -rf $(OUTPUT)libsubcmd; \
+> 
+> If someone specifies OUTPUT=bla, you will attempt to delete blalibbpf,
+> not bla/libbpf
 
-Hence, make htmldocs warns:
+will add missing '/', thanks
 
-  mlx5.rst:16: WARNING: Unknown target name: "mlx5 port function".
-
-Correct the section reference in table of contents to the actual name of
-section in the documentation.
-
-Also, tune another section underline while visiting this document.
-
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
----
-Saeed, please pick this patch for your -next tree on top of the commit above.
-
- .../networking/device_drivers/ethernet/mellanox/mlx5.rst      | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-index a1b32fcd0d76..1b7e32d8a61b 100644
---- a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-+++ b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-@@ -13,12 +13,12 @@ Contents
- - `Devlink info`_
- - `Devlink parameters`_
- - `mlx5 subfunction`_
--- `mlx5 port function`_
-+- `mlx5 function attributes`_
- - `Devlink health reporters`_
- - `mlx5 tracepoints`_
- 
- Enabling the driver and kconfig options
--================================================
-+=======================================
- 
- | mlx5 core is modular and most of the major mlx5 core driver features can be selected (compiled in/out)
- | at build time via kernel Kconfig flags.
--- 
-2.17.1
+jirka
 
