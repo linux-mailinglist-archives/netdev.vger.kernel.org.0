@@ -2,164 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C6783106CB
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 09:35:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C18D53106FD
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 09:49:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229736AbhBEIeZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 03:34:25 -0500
-Received: from szxga06-in.huawei.com ([45.249.212.32]:12430 "EHLO
-        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229590AbhBEIeN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 03:34:13 -0500
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.59])
-        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4DX7vQ5WcCzjHFD;
-        Fri,  5 Feb 2021 16:32:18 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.56) by
- DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
- 14.3.498.0; Fri, 5 Feb 2021 16:33:17 +0800
-From:   Huazhong Tan <tanhuazhong@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <salil.mehta@huawei.com>,
-        <yisen.zhuang@huawei.com>, <huangdaode@huawei.com>,
-        <linuxarm@openeuler.org>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH V2 net-next 6/6] net: hns3: replace macro of max qset number with specification
-Date:   Fri, 5 Feb 2021 16:32:49 +0800
-Message-ID: <1612513969-9278-7-git-send-email-tanhuazhong@huawei.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1612513969-9278-1-git-send-email-tanhuazhong@huawei.com>
-References: <1612513969-9278-1-git-send-email-tanhuazhong@huawei.com>
+        id S229611AbhBEIrO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 03:47:14 -0500
+Received: from mail-co1nam11on2051.outbound.protection.outlook.com ([40.107.220.51]:6752
+        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229500AbhBEIrM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Feb 2021 03:47:12 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=czWrJET4FGyOE++y621eTdbkVeezUulCgcsOaBliFJztKEmW2IIqqXaDQSk1mPUN2pA+wdcUMqoVD9glB0x9qk4AbgCIV1TckjGEosoldaLDfhGARqN86wure0YZY9QXuIyWKJEF1D1y+K3aLgEvEG3mkbR/iJ8zd9UmKg2Efdk9r+Xr7FB4X0wGLUUfTT+x3wd/57bQt7eEAyHtDxQ/bxDMlBZpamOu1hEStTveqOavBfah22Zc0iVU7GuK3ZCIaVav9WzYvPz955WY0q7pQII3u23tq1R2Qu5h3TZ4xu6Drlysf3usTlzL3+SmrPZCF17m9vMYRaOlCV2HW6lZqQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EP6pq4CItDZtzXTFWszUmDr0o3zIPFdiXlIyEMlHxlM=;
+ b=JB5UeUYgfa2tdQO1nlTSdr2TKtOe4+2aDN3Y1AplWXuADBn6v529B2ohJumzU/VKcqtQv3xyC7EMEyPHET4PEcxWJ2jCQl2+pfTIkoogzpIfNZt0v9/fTsrQni+2RueIc55QlNRza/FkA7opob9lTicVVMU8dCn+oCh745pwANcNOsZQumdVjdmEf/Z7ALx5EmLBgBH8Q/WCYmvTfj4N6wTSPdwk+N2fK5dE1JrBDrulZsAS2MCr4NO9hziSGwIsFHQOYrVEIxmxyv+iIvlg9pffqDGisJGoPPmcBQDc/o3IZMNRhFShXEA/Xc8N3pxXOhtccaxyhAwwCUB+iNqUEQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=windriver.com; dmarc=pass action=none
+ header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=windriversystems.onmicrosoft.com;
+ s=selector2-windriversystems-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EP6pq4CItDZtzXTFWszUmDr0o3zIPFdiXlIyEMlHxlM=;
+ b=OA99V7VnWPrc0e9GPqLV0s+aZxVZafO6WktoHggwHgZVAJ6D09Xb6cHdXq+d1dmp4DtStzW3xpvGElFOvvR+657PG9hiy4uLxkU+v7GGMIcr5xpU2KZDYv0ph6jLAmz/TJ8JRFDNX0gW/3lw1yRI/TBsh5qdyEfKLmAhHxiEY/0=
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=windriver.com;
+Received: from DM5PR11MB1898.namprd11.prod.outlook.com (2603:10b6:3:114::10)
+ by DM6PR11MB3689.namprd11.prod.outlook.com (2603:10b6:5:143::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.17; Fri, 5 Feb
+ 2021 08:46:24 +0000
+Received: from DM5PR11MB1898.namprd11.prod.outlook.com
+ ([fe80::d4c5:af6f:ddff:a34d]) by DM5PR11MB1898.namprd11.prod.outlook.com
+ ([fe80::d4c5:af6f:ddff:a34d%8]) with mapi id 15.20.3825.024; Fri, 5 Feb 2021
+ 08:46:24 +0000
+Subject: Re: [PATCH 2/2] can: m_can: m_can_class_allocate_dev(): remove
+ impossible error return judgment
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     wg@grandegger.com, dmurphy@ti.com, sriram.dash@samsung.com,
+        kuba@kernel.org, davem@davemloft.net, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xulinsun@gmail.com
+References: <20210205072559.13241-1-xulin.sun@windriver.com>
+ <20210205072559.13241-2-xulin.sun@windriver.com>
+ <20210205081911.4xvabbzdtkvkpplq@hardanger.blackshift.org>
+From:   Xulin Sun <xulin.sun@windriver.com>
+Message-ID: <9cae961a-881d-8678-6ec3-0fd00c74c8ad@windriver.com>
+Date:   Fri, 5 Feb 2021 16:46:16 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+In-Reply-To: <20210205081911.4xvabbzdtkvkpplq@hardanger.blackshift.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Originating-IP: [60.247.85.82]
+X-ClientProxiedBy: HK2PR06CA0003.apcprd06.prod.outlook.com
+ (2603:1096:202:2e::15) To DM5PR11MB1898.namprd11.prod.outlook.com
+ (2603:10b6:3:114::10)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-CFilter-Loop: Reflected
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [128.224.162.221] (60.247.85.82) by HK2PR06CA0003.apcprd06.prod.outlook.com (2603:1096:202:2e::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.19 via Frontend Transport; Fri, 5 Feb 2021 08:46:21 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: cd1eb4a9-679f-4226-286f-08d8c9b284f5
+X-MS-TrafficTypeDiagnostic: DM6PR11MB3689:
+X-Microsoft-Antispam-PRVS: <DM6PR11MB36891CB4D8C2855777FB369DFBB29@DM6PR11MB3689.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Zc7B/kzDKHMWzC4/lugK16v7Rl58iWNG72Sqls6NwnRokhDW4MuVC2+qKzlx2tcZzfoOyD8LVE8/9HRatLnGb/jrGFAmmO5chDzNRaaDDl+zvpxFhcJW9+cExx804ETibuBk85kQWJ+lznIhSGPv6zcYDap5wxBOjU8n+yqoDZoZMCqvuba93tHrLyUhPVz+hJr5CCaMO3Tv+o5yCgr0j1rFCiQH1vJeuf5rzsL2NifieNxtjBi3sHFxXHDvrfIVNSvMzhuvL7iGXBMkL258zzgYSzjJ2Sy1zGsUTOO+0HSxiiUXuH9jpQCcNKof6Mj9coDhFX4LQY/InGvzR4pOjVCERUKUShcr36dk/3/deixiLZwNFfCdzLqLhFv4YT+SN+OMBOXoA5ulO+IKK9g2RuJLI1PYwBh2B/03oO26DXbbA/NQmapW30WgeBTSXWAI8jDKQOEUCiwcWvK+zfGb2RgK3Ggk5mcmhAwEubG7KQ0JEPMb8/Q5+Acj/86zJNSk9bV14FPbhY1jxxAijwPPLoxUWuZiCV0cn4whem7kFT9Eeq7+5duxn+jXxexGiODs4DM62tNC4IRgwsmbKWHE2+ITw9Rkr0/KcM2CdSNeVQUiMHjMeMX0wRwW4cb+D1dP
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR11MB1898.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(376002)(396003)(366004)(39850400004)(136003)(16576012)(66476007)(8676002)(66556008)(2906002)(6916009)(8936002)(6666004)(316002)(5660300002)(86362001)(26005)(186003)(52116002)(66946007)(6486002)(16526019)(956004)(2616005)(4326008)(44832011)(36756003)(478600001)(31696002)(7416002)(53546011)(6706004)(31686004)(78286007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?cGJGQlIrUUFualZyY0wyZmpkNHpkeHhFa2dtMVpQNDFkNkczemcwSTltTkxn?=
+ =?utf-8?B?ZUVVZlBpK0s3RVBQU1dUa3owaFkxcXlQVE05M3I5eDNwbXlCUnR2aTU3OWZ5?=
+ =?utf-8?B?UHVIMTFNUzcwUHBzbVhyVHp5T0JmU2daS3Q0MHpSNXJ5ekJMNFRzWkJMWnUx?=
+ =?utf-8?B?Qk03RWN3WUxmZDVRU1luQytleGhxU2paVVgrbzRvdDQxM2NCUWNsek1zV1Jw?=
+ =?utf-8?B?V3lvYmYyekJFRXFpS3hpMWI1TDhacWVCRmR1d1VDMjByZU1ETnEwMzF0WEFW?=
+ =?utf-8?B?QThjVVlNMWxNVU8ySFNLc1RxWUlRWUsvTEVCQU1pZWZaRFcwdkJ1OGZrMUk2?=
+ =?utf-8?B?VG9qM0p2VDBEaHBsTy9BY0p1ZzA1bmc3ZWNydEo4TFRzNUdtek5BNWpDVXBa?=
+ =?utf-8?B?Tk9CbHZheE1tWWpVNjAxSHFKZ0licDJwSUc1eEljV0VvQUVicndJMUNKWUIw?=
+ =?utf-8?B?SWNsRkd3cEJYWFNiVXRnMEtPeCt3RFY3dVVWTmpuKzIxS3UzVWpCbXBST0Vk?=
+ =?utf-8?B?cG5lZmR5ME9udkpaMFZ0cEt1SXorWlc1SmJRS05EMlYrTW9lQWNvclBlSGZ5?=
+ =?utf-8?B?ZlYva3JHLzYycjFRQy84bEtlZjB4c1Y3ajEza2Rnbk45NmJieEpuZDhTczR0?=
+ =?utf-8?B?T1liTVBpV0pRN3RBbldNWjdEdjNCQlJSMXFVZXQvSW9QOHpBVnZyWHhkVUxY?=
+ =?utf-8?B?REwrdTJmUjlGU1dMYXlWd3ZYQmRYSElrM1B1MUs4WmM3OGptdFNOaURLNEE3?=
+ =?utf-8?B?M0Y2WWNCOW0vT2V2ODRvQkV5K0Q3UmJuUWJqRkhhekdXNWdmMVhOeE0rU1ZL?=
+ =?utf-8?B?clZBZDlBWTlSODJ3Vm1hbktnajZZb0VLQi9aelZhVVg2VkdBbjIwejNzbnRa?=
+ =?utf-8?B?Q1Nodkk5ZDBEamd6OWNpMURvaFhLOUpTNFRsM2NUYlBOUWhOWFBZK2ZPU2RP?=
+ =?utf-8?B?b2RKeVlpQlZnc2hHS015UFptdGc5T0VVQ3pYMGNaS1l2SXpqYVRhQS8wNlhk?=
+ =?utf-8?B?d3N0NlFsODhsaWxNVnNYZXlrYlM3MHU5cCtKWWhDclppeU85VlBrQzdMeStB?=
+ =?utf-8?B?eHU4ZzFMRGZOTUdjaHVWSWs4K216OGh6b2pLTnRmQnBGQmQ4Q3VpVTNjamh0?=
+ =?utf-8?B?c3JPdG0weUFYdkJGZys4YksxdkJqRzc3Z21jZHp2Y0MzaHc1RDdyMjVnWDE4?=
+ =?utf-8?B?UzkxQ05DR0dwc29jUFBFRjNVZkNiN3ZDRUcrbjJYa2pIc1l3OVIvU1hyVktk?=
+ =?utf-8?B?TmE1MHhHclBWK3V3ZHVIekVHWkZRZDV2NXY5TXVoUDdwZFRpTEtzZ3o5bHJi?=
+ =?utf-8?B?WkRpbTI2Rktxa0FEWlRtSVo4SktqdnlyWko1RnNZaFJyNUZNTjJucHFZNUJW?=
+ =?utf-8?B?ZGVYY0RaOU5ydFpTVHc2Um5nWm1jTjgrWkpFRC84QzQ2TVJTQVFpdVgzODJ6?=
+ =?utf-8?B?bGdwanYrd0loNHdoSithek9leE91emZ0MTYxa0FnV1d6SG9kSTJsT1ZlZUth?=
+ =?utf-8?B?SmIwdEZwdTlVY3FUSytuUWVtTlFCYjV2RDhOdTRuR1hjQlZUZjB6aFM1STVU?=
+ =?utf-8?B?K1RPakpDUDhiZlFnM09MeTBpK1pkQnl4ZmZ4R0hLc2Z5Sjd1c1k0Zno3UjRs?=
+ =?utf-8?B?ejRZTXpaTzYvVzRkRTJFTHoyRWpKaW9RajRRL1VmYmlXQmtWZFdxRnhEWkYv?=
+ =?utf-8?B?eldRZ3o3QjN3V1FJclRacGs0N1o3cW1lYVFrbXB4YlJpemdWOXRaTnBYamhw?=
+ =?utf-8?Q?eDy6OD2DWwjF5Hp7rHRqH9SyWtVSHkciPsa16M7?=
+X-OriginatorOrg: windriver.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cd1eb4a9-679f-4226-286f-08d8c9b284f5
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR11MB1898.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Feb 2021 08:46:24.7185
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Hc+9YkPUKsP38+Cz6U6v/hfGbtY6BI0hgho2oR0T+cV4WYP2FUnyk+5rhFkZYYA7vGX4t6dR4+vBxrKJu6ptVA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3689
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Guangbin Huang <huangguangbin2@huawei.com>
+On 2021/2/5 下午4:19, Marc Kleine-Budde wrote:
+> On 05.02.2021 15:25:59, Xulin Sun wrote:
+>> If the previous can_net device has been successfully allocated, its
+>> private data structure is impossible to be empty, remove this redundant
+>> error return judgment. Otherwise, memory leaks for alloc_candev() will
+>> be triggered.
+> Your analysis is correct, the netdev_priv() will never fail. But how
+> will this trigger a mem leak on alloc_candev()? I've removed that
 
-The max qset number is a fixed value now and it is defined by a macro.
-In order to support other value in different kinds of device, it is
-better to use specification queried from firmware to replace macro.
+Hi Marc,
 
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hnae3.h                | 1 +
- drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c         | 1 +
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h     | 2 +-
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c | 8 +++-----
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 4 ++++
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h    | 2 ++
- 6 files changed, 12 insertions(+), 6 deletions(-)
+The previous code judges the netdev_priv is empty, and then goto out. 
+The correct approach should add free_candev(net_dev) before goto.
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index ed41414..e20a1b3 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -285,6 +285,7 @@ struct hnae3_dev_specs {
- 	u16 max_int_gl; /* max value of interrupt coalesce based on INT_GL */
- 	u8 max_non_tso_bd_num; /* max BD number of one non-TSO packet */
- 	u16 max_frm_size;
-+	u16 max_qset_num;
- };
- 
- struct hnae3_client_ops {
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-index d88fc3c..36c7813 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-@@ -391,6 +391,7 @@ static void hns3_dbg_dev_specs(struct hnae3_handle *h)
- 	dev_info(priv->dev, "MAX INT GL: %u\n", dev_specs->max_int_gl);
- 	dev_info(priv->dev, "MAX frame size: %u\n", dev_specs->max_frm_size);
- 	dev_info(priv->dev, "MAX TM RATE: %uMbps\n", dev_specs->max_tm_rate);
-+	dev_info(priv->dev, "MAX QSET number: %u\n", dev_specs->max_qset_num);
- }
- 
- static ssize_t hns3_dbg_cmd_read(struct file *filp, char __user *buffer,
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-index 2ad05d6..e7c915e 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-@@ -1132,7 +1132,7 @@ struct hclge_dev_specs_0_cmd {
- 
- struct hclge_dev_specs_1_cmd {
- 	__le16 max_frm_size;
--	__le16 rsv0;
-+	__le16 max_qset_num;
- 	__le16 max_int_gl;
- 	u8 rsv1[18];
- };
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
-index 8f3fefe..113efd4 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
-@@ -1599,8 +1599,6 @@ static void hclge_dbg_dump_qs_shaper_all(struct hclge_dev *hdev)
- static void hclge_dbg_dump_qs_shaper(struct hclge_dev *hdev,
- 				     const char *cmd_buf)
- {
--#define HCLGE_MAX_QSET_NUM 1024
--
- 	u16 qsid;
- 	int ret;
- 
-@@ -1610,9 +1608,9 @@ static void hclge_dbg_dump_qs_shaper(struct hclge_dev *hdev,
- 		return;
- 	}
- 
--	if (qsid >= HCLGE_MAX_QSET_NUM) {
--		dev_err(&hdev->pdev->dev, "qsid(%u) out of range[0-1023]\n",
--			qsid);
-+	if (qsid >= hdev->ae_dev->dev_specs.max_qset_num) {
-+		dev_err(&hdev->pdev->dev, "qsid(%u) out of range[0-%u]\n",
-+			qsid, hdev->ae_dev->dev_specs.max_qset_num - 1);
- 		return;
- 	}
- 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 1e1b9eb..f5a9884 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -1372,6 +1372,7 @@ static void hclge_set_default_dev_specs(struct hclge_dev *hdev)
- 	ae_dev->dev_specs.max_tm_rate = HCLGE_ETHER_MAX_RATE;
- 	ae_dev->dev_specs.max_int_gl = HCLGE_DEF_MAX_INT_GL;
- 	ae_dev->dev_specs.max_frm_size = HCLGE_MAC_MAX_FRAME;
-+	ae_dev->dev_specs.max_qset_num = HCLGE_MAX_QSET_NUM;
- }
- 
- static void hclge_parse_dev_specs(struct hclge_dev *hdev,
-@@ -1390,6 +1391,7 @@ static void hclge_parse_dev_specs(struct hclge_dev *hdev,
- 	ae_dev->dev_specs.int_ql_max = le16_to_cpu(req0->int_ql_max);
- 	ae_dev->dev_specs.rss_key_size = le16_to_cpu(req0->rss_key_size);
- 	ae_dev->dev_specs.max_tm_rate = le32_to_cpu(req0->max_tm_rate);
-+	ae_dev->dev_specs.max_qset_num = le16_to_cpu(req1->max_qset_num);
- 	ae_dev->dev_specs.max_int_gl = le16_to_cpu(req1->max_int_gl);
- 	ae_dev->dev_specs.max_frm_size = le16_to_cpu(req1->max_frm_size);
- }
-@@ -1406,6 +1408,8 @@ static void hclge_check_dev_specs(struct hclge_dev *hdev)
- 		dev_specs->rss_key_size = HCLGE_RSS_KEY_SIZE;
- 	if (!dev_specs->max_tm_rate)
- 		dev_specs->max_tm_rate = HCLGE_ETHER_MAX_RATE;
-+	if (!dev_specs->max_qset_num)
-+		dev_specs->max_qset_num = HCLGE_MAX_QSET_NUM;
- 	if (!dev_specs->max_int_gl)
- 		dev_specs->max_int_gl = HCLGE_DEF_MAX_INT_GL;
- 	if (!dev_specs->max_frm_size)
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-index a10a17c..33b17a1 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-@@ -148,6 +148,8 @@
- /* Factor used to calculate offset and bitmap of VF num */
- #define HCLGE_VF_NUM_PER_CMD           64
- 
-+#define HCLGE_MAX_QSET_NUM		1024
-+
- enum HLCGE_PORT_TYPE {
- 	HOST_PORT,
- 	NETWORK_PORT
--- 
-2.7.4
+The code Like:
 
+         class_dev = netdev_priv(net_dev);
+         if (!class_dev) {
+                 dev_err(dev, "Failed to init netdev cdevate");
++               free_candev(net_dev);
+                 goto out;
+         }
+
+Otherwise, memory leaks for alloc_candev() will be triggered.
+
+Now directly remove the impossible error return judgment to resolve the above possible issue.
+
+Thanks
+
+Xulin
+
+> statement. I'll add it back, if I've missed something.
+>
+>> Signed-off-by: Xulin Sun <xulin.sun@windriver.com>
+> Applied to linux-can-next/testing.
+>
+> Thanks,
+> Marc
+>
