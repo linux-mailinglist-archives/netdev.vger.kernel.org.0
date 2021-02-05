@@ -2,262 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C6A231044E
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 06:03:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF2A7310455
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 06:08:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230033AbhBEFCw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 00:02:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44454 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230192AbhBEFCc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 00:02:32 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1F01C0613D6
-        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 21:01:52 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id m12so2975214pjs.4
-        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 21:01:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=8nfjFzqBt4Y2yA0w2sVIDxBZ/HbWlT+uCvwHdu0bBZQ=;
-        b=K/AkARuVOF+InzuXadP+56WHjj+tof/T1n78bFkIcyKO2/L0A5Ip6+fWUo039hAIc8
-         NU+1C+6fYpljuFYmG57lPuUNlAr8RI+7XiFyqdyNMDgf08rezLicYDqa03noXdnp2ecK
-         kCryPkIuO7SM2RN4FKvh0WZ4FFK2/BfCVXCUQhSDPJGUsNFR+FUpeVanylKQFSMuve3W
-         uOJzYPoOqWNTD7kRXMW7r0M5cqT/KGXfPPRDG0XRmPItCz8hZPtQ/NrCYTDv6XPUu0dP
-         XP7rrNsze9OOTVGEMZC/GHmT16zEp08uv7/W+XvTfQoseRQHDpoHl/WC0qdBQUbgsMtM
-         4PeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=8nfjFzqBt4Y2yA0w2sVIDxBZ/HbWlT+uCvwHdu0bBZQ=;
-        b=FcqcwaFy7au4bLLXk/NvMjG+G2gxGY+vWcgHtVRMjWx1mF1irf33Rpza317ZzGd6xE
-         2KkL21LW2LDLiq1YYWUG5r+D9UxMG6yJtIE+WuiHb00vaWRnuLTbzKQi3KIrhFZUjBHj
-         NbhkfWtEiHEh2/tv8zVbjuaeSpNE7GcfiHMgxCT9Sz5UCFbNi/gptY5zz+bxsrLZi9Wd
-         Nu+qmWjY32Z+MDtUwzvsp+BivUBF3etsWEEjZtfk7hQ3fh7dClL/OhO0i+hctUBQauMZ
-         CUVAX1JVWeLzdNGchr5VflEN7SQwlo4K97y5ptZ7NpafVFKjbaLgmQMjGclRKEBWAp9K
-         jyNQ==
-X-Gm-Message-State: AOAM530anlw7kZjNq6XBZKk/cr29PgdCdkodYZrUBh/R8Bif0WGdLn6r
-        sAAmX9qrIoE3JD6QBkn2XXQ=
-X-Google-Smtp-Source: ABdhPJwrNWwE4fy9BNoa+C022YXIZQbTFJXOfPCrAPOm+zjW7plzbwG9sL5XJSAevwCBm/lNi4kCuQ==
-X-Received: by 2002:a17:903:185:b029:e1:8692:90bc with SMTP id z5-20020a1709030185b02900e1869290bcmr2395831plg.75.1612501312177;
-        Thu, 04 Feb 2021 21:01:52 -0800 (PST)
-Received: from aroeseler-ly545.local (h134-215-163-197.lapior.broadband.dynamic.tds.net. [134.215.163.197])
-        by smtp.gmail.com with ESMTPSA id b12sm163713pfr.178.2021.02.04.21.01.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Feb 2021 21:01:51 -0800 (PST)
-Message-ID: <2d6da285c746a0f95c1e1cc56c2a5aa59f1ea5c0.camel@gmail.com>
-Subject: Re: [PATCH V2 net-next 5/5] icmp: add response to RFC 8335 PROBE
- messages
-From:   Andreas Roeseler <andreas.a.roeseler@gmail.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>
-Date:   Thu, 04 Feb 2021 23:01:50 -0600
-In-Reply-To: <CAF=yD-JwREKypTt5a2xEF7Fru19A4vzUbkpxz+my+bYe8gVL3g@mail.gmail.com>
-References: <cover.1612393368.git.andreas.a.roeseler@gmail.com>
-         <7af3da33a7aa540f7878cfcbf5076dcf61d201ef.1612393368.git.andreas.a.roeseler@gmail.com>
-         <CAF=yD-JwREKypTt5a2xEF7Fru19A4vzUbkpxz+my+bYe8gVL3g@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3 
+        id S230382AbhBEFHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 00:07:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47696 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230243AbhBEFHI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Feb 2021 00:07:08 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 68D6A64E24;
+        Fri,  5 Feb 2021 05:06:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612501587;
+        bh=+iHve7ZuhGC08LCG+2DlGv166rTnOpTteCl4wHOU9Zc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ePTniRWVmCf/OJPzp3BVgYjoQznM1dtD7tyHnTUCuzcV86MuianhJsBrbfwW2CRHJ
+         WBhiJsoLfFkrnhtaGrx//nzFsFchpOiN938EXJuA5fPEPcGEu51gCSqblq6FdmtKV4
+         rrT737I5vD93M1IkwJLxmzk/23HIsPfD3rgZffxiuqKSlXd9p9W2GqNyFIGCwHSGWa
+         slPq/tEdRAvF2nauQtvfpZ54ZhGPttmJlthVF7P+LW/CL2g8+vxm3G7IRoJxwP3Nmf
+         WUoQ/45b8zilzhY1xwKpFpMoUV7CbrAxkhqlvUeO17rNISyzzbHgFH+uYSdIspdebb
+         Hyv6TipOOYrvg==
+Date:   Thu, 4 Feb 2021 21:06:26 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Subject: Re: [PATCH v2 net-next 2/4] net: dsa: automatically bring user
+ ports down when master goes down
+Message-ID: <20210204210626.5e90c766@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210203160823.2163194-3-olteanv@gmail.com>
+References: <20210203160823.2163194-1-olteanv@gmail.com>
+        <20210203160823.2163194-3-olteanv@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2021-02-04 at 14:52 -0500, Willem de Bruijn wrote:
-> On Wed, Feb 3, 2021 at 6:30 PM Andreas Roeseler
-> <andreas.a.roeseler@gmail.com> wrote:
-> > 
-> > Modify the icmp_rcv function to check for PROBE messages and call
-> > icmp_echo if a PROBE request is detected.
-> > 
-> > Modify the existing icmp_echo function to respond to both ping and
-> > PROBE
-> > requests.
-> > 
-> > This was tested using a custom modification of the iputils package
-> > and
-> > wireshark. It supports IPV4 probing by name, ifindex, and probing
-> > by both IPV4 and IPV6
-> > addresses. It currently does not support responding to probes off
-> > the proxy node
-> > (See RFC 8335 Section 2).
-> > 
-> > 
-> > Signed-off-by: Andreas Roeseler <andreas.a.roeseler@gmail.com>
-> > ---
-> > Changes since v1:
-> >  - Reorder variable declarations to follow coding style
-> >  - Switch to functions such as dev_get_by_name and ip_dev_find to
-> > lookup
-> >    net devices
-> > ---
-> >  net/ipv4/icmp.c | 98 ++++++++++++++++++++++++++++++++++++++++++++-
-> > ----
-> >  1 file changed, 88 insertions(+), 10 deletions(-)
-> > 
-> > diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-> > index 396b492c804f..18f9a2a3bf59 100644
-> > --- a/net/ipv4/icmp.c
-> > +++ b/net/ipv4/icmp.c
-> > @@ -983,21 +983,85 @@ static bool icmp_redirect(struct sk_buff
-> > *skb)
-> > 
-> >  static bool icmp_echo(struct sk_buff *skb)
-> >  {
-> > +       struct icmp_bxm icmp_param;
-> >         struct net *net;
-> > +       struct net_device *dev;
-> > +       struct icmp_extobj_hdr *extobj_hdr;
-> > +       struct icmp_ext_ctype3_hdr *ctype3_hdr;
-> > +       __u8 status;
+On Wed,  3 Feb 2021 18:08:21 +0200 Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> nit: please maintain reverse christmas tree variable ordering
+> This is not fixing any actual bug that I know of, but having a DSA
+> interface that is up even when its lower (master) interface is down is
+> one of those things that just do not sound right.
 > 
-> > 
-> >         net = dev_net(skb_dst(skb)->dev);
-> > -       if (!net->ipv4.sysctl_icmp_echo_ignore_all) {
-> > -               struct icmp_bxm icmp_param;
-> > +       /* should there be an ICMP stat for ignored echos? */
-> > +       if (net->ipv4.sysctl_icmp_echo_ignore_all)
-> > +               return true;
-> > +
-> > +       icmp_param.data.icmph           = *icmp_hdr(skb);
-> > +       icmp_param.skb                  = skb;
-> > +       icmp_param.offset               = 0;
-> > +       icmp_param.data_len             = skb->len;
-> > +       icmp_param.head_len             = sizeof(struct icmphdr);
-> > 
-> > -               icmp_param.data.icmph      = *icmp_hdr(skb);
-> > +       if (icmp_param.data.icmph.type == ICMP_ECHO) {
-> >                 icmp_param.data.icmph.type = ICMP_ECHOREPLY;
-> > -               icmp_param.skb             = skb;
-> > -               icmp_param.offset          = 0;
-> > -               icmp_param.data_len        = skb->len;
-> > -               icmp_param.head_len        = sizeof(struct
-> > icmphdr);
-> > -               icmp_reply(&icmp_param, skb);
-> > +               goto send_reply;
-> >         }
-> > -       /* should there be an ICMP stat for ignored echos? */
-> > +       if (!net->ipv4.sysctl_icmp_echo_enable_probe)
-> > +               return true;
-> > +       /* We currently do not support probing off the proxy node
-> > */
-> > +       if (!(ntohs(icmp_param.data.icmph.un.echo.sequence) & 1))
-> > +               return true;
+> Yes, DSA checks if the master is up before actually bringing the
+> user interface up, but nobody prevents bringing the master interface
+> down immediately afterwards... Then the user ports would attempt
+> dev_queue_xmit on an interface that is down, and wonder what's wrong.
 > 
-> What does this comment mean?
+> This patch prevents that from happening. NETDEV_GOING_DOWN is the
+> notification emitted _before_ the master actually goes down, and we are
+> protected by the rtnl_mutex, so all is well.
 > 
-> And why does the sequence number need to be even?
-
-RFC 8335 Section 2 specifies that the ICMP Extended Echo Request
-messages use a modified sequence number field, as follows.
-0                   1                   2                   3
-0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|     Type      |     Code      |          Checksum             |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|           Identifier          |Sequence Number|   Reserved  |L|
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-The L-bit is set if the probed interface resides on the proxy node. We
-only support probing interfaces that lie on the proxy node since it
-simplifies the response handler and, if we wanted to know the status of
-an interface on another node, we could simply probe that node instead.
-This line ensures that the L-bit is set to 1.
-
-I'll clarify the wording of the comment.
-
+> $ ip link set eno2 down
+> [  763.672211] mscc_felix 0000:00:00.5 swp0: Link is Down
+> [  763.880137] mscc_felix 0000:00:00.5 swp1: Link is Down
+> [  764.078773] mscc_felix 0000:00:00.5 swp2: Link is Down
+> [  764.197106] mscc_felix 0000:00:00.5 swp3: Link is Down
+> [  764.299384] fsl_enetc 0000:00:00.2 eno2: Link is Down
 > 
-> > +
-> > +       icmp_param.data.icmph.type = ICMP_EXT_ECHOREPLY;
-> > +       icmp_param.data.icmph.un.echo.sequence &= htons(0xFF00);
+> For those of you reading this because you were doing switch testing
+> such as latency measurements for autonomously forwarded traffic, and you
+> needed a controlled environment with no extra packets sent by the
+> network stack, this patch breaks that, because now the user ports go
+> down too, which may shut down the PHY etc. But please don't do it like
+> that, just do instead:
 > 
-> Why this mask?
-
-This clears the status fields of the reply message to avoid sending old
-data back to the probing host.
-
+> tc qdisc add dev eno2 clsact
+> tc filter add dev eno2 egress flower action drop
 > 
-> > +       extobj_hdr = (struct icmp_extobj_hdr *)(skb->data +
-> > sizeof(struct icmp_ext_hdr));
-> > +       ctype3_hdr = (struct icmp_ext_ctype3_hdr *)(extobj_hdr +
-> > 1);
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
+> Changes in v2:
+> Fix typo: !dsa_is_user_port -> dsa_is_user_port.
 > 
-> It is not safe to trust the contents of unverified packets. We cannot
-> just cast to a string and call dev_get_by_name. Need to verify packet
-> length and data format.
+>  net/dsa/slave.c | 30 ++++++++++++++++++++++++++++++
+>  1 file changed, 30 insertions(+)
 > 
+> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+> index 4616bd7c8684..aa7bd223073c 100644
+> --- a/net/dsa/slave.c
+> +++ b/net/dsa/slave.c
+> @@ -2084,6 +2084,36 @@ static int dsa_slave_netdevice_event(struct notifier_block *nb,
+>  		err = dsa_port_lag_change(dp, info->lower_state_info);
+>  		return notifier_from_errno(err);
+>  	}
+> +	case NETDEV_GOING_DOWN: {
+> +		struct dsa_port *dp, *cpu_dp;
+> +		struct dsa_switch_tree *dst;
+> +		int err = 0;
+> +
+> +		if (!netdev_uses_dsa(dev))
+> +			return NOTIFY_DONE;
+> +
+> +		cpu_dp = dev->dsa_ptr;
+> +		dst = cpu_dp->ds->dst;
+> +
+> +		list_for_each_entry(dp, &dst->ports, list) {
+> +			if (dsa_is_user_port(dp->ds, dp->index)) {
+> +				struct net_device *slave = dp->slave;
+> +
+> +				if (!(slave->flags & IFF_UP))
+> +					continue;
+> +
+> +				err = dev_change_flags(slave,
+> +						       slave->flags & ~IFF_UP,
+> +						       NULL);
+> +				if (err)
+> +					break;
+> +			}
+> +		}
 
-Great catch, I will work on adding this into the next version.
+Perhaps:
 
-> Also below code just casts to the expected data type at some offset.
-> Can that be defined more formally as header structs? Like ctype3_hdr,
-> but for other headers, as well.
-> 
+		LIST_HEAD(close_list);
 
-Will do.
+		list_for_each_entry(dp, &dst->ports, list)
+			list_add(&slave->close_list, &close_list);
 
-> > +       status = 0;
-> > +       switch (extobj_hdr->class_type) {
-> > +       case CTYPE_NAME:
-> > +               dev = dev_get_by_name(net, (char *)(extobj_hdr +
-> > 1));
-> > +               break;
-> > +       case CTYPE_INDEX:
-> > +               dev = dev_get_by_index(net, ntohl(*((uint32_t
-> > *)(extobj_hdr + 1))));
-> > +               break;
-> > +       case CTYPE_ADDR:
-> > +               switch (ntohs(ctype3_hdr->afi)) {
-> > +               case AFI_IP:
-> > +                       dev = ip_dev_find(net, *(__be32
-> > *)(ctype3_hdr + 1));
-> > +                       break;
-> > +               case AFI_IP6:
-> > +                       dev = ipv6_dev_find(net, (struct in6_addr
-> > *)(ctype3_hdr + 1), dev);
-> > +                       if(dev) dev_hold(dev);
-> > +                       break;
-> > +               default:
-> > +                       icmp_param.data.icmph.code =
-> > ICMP_EXT_MAL_QUERY;
-> > +                       goto send_reply;
-> > +               }
-> > +               break;
-> > +       default:
-> > +               icmp_param.data.icmph.code = ICMP_EXT_MAL_QUERY;
-> > +               goto send_reply;
-> > +       }
-> > +       if(!dev) {
-> > +               icmp_param.data.icmph.code = ICMP_EXT_NO_IF;
-> > +               goto send_reply;
-> > +       }
-> > +       /* RFC 8335: 3 the last 8 bits of the Extended Echo Reply
-> > Message
-> > +        *  are laid out as follows:
-> > +        *      +-+-+-+-+-+-+-+-+
-> > +        *      |State|Res|A|4|6|
-> > +        *      +-+-+-+-+-+-+-+-+
-> > +        */
-> > +       if (dev->flags & IFF_UP)
-> > +               status |= EXT_ECHOREPLY_ACTIVE;
-> > +       if (dev->ip_ptr->ifa_list)
-> > +               status |= EXT_ECHOREPLY_IPV4;
-> > +       if (!list_empty(&dev->ip6_ptr->addr_list))
-> > +               status |= EXT_ECHOREPLY_IPV6;
-> > +       dev_put(dev);
-> > +       icmp_param.data.icmph.un.echo.sequence |= htons(status);
-> > +
-> > +send_reply:
-> > +       icmp_reply(&icmp_param, skb);
-> >         return true;
-> >  }
+		dev_close_many(&close_list, true);
 
+		return NOTIFY_OK;
+
+But we can keep as is if you prefer.
+
+> +		return notifier_from_errno(err);
+> +	}
+> +	default:
+> +		break;
+>  	}
+>  
+>  	return NOTIFY_DONE;
 
