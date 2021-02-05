@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A99F310522
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 07:50:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12D41310523
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 07:50:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230415AbhBEGs3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 01:48:29 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55590 "EHLO mail.kernel.org"
+        id S231310AbhBEGsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 01:48:46 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55824 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231287AbhBEGps (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Feb 2021 01:45:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E86DD64FC7;
-        Fri,  5 Feb 2021 06:44:15 +0000 (UTC)
+        id S231316AbhBEGqL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Feb 2021 01:46:11 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 865DE64FCC;
+        Fri,  5 Feb 2021 06:44:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1612507456;
-        bh=SYdjmXT8A8oPrNYNjjwRd82j5jFH9105k+cFuJ5Y4nE=;
+        bh=GGMCabt/sjWFnqVxFkKclinSu0Igen6967to3HYD4DM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GZX+4YQUiJukX9HbiLUwa3l/mBdkXgdLJXqpcWOEPgct70AxOl2N2z+9iFReaRKLj
-         GTwKJbu3FTbzwsPTj7NsGrKAJlEYpe/u8E3gXHT1AUBz3k03dnY7tWBdYzBwwUIX0a
-         EaQxuEtpZt7ed49hI+N/Tg8rJZpLHsldezfz3YjPxbWSp44kQNTak5q6ZxMzjt0Ma5
-         zYWisb6d/QJoc/HDOI+OgAkRiuphZPJduiEblzQVA6ZqqGNcjd3AL1tzYumUVuWxeK
-         bt/W5zWPoMNZ//kq9todv/xecrniX23kiT4OuUfQpJLZEmiUJIVRL3+ZxTw5R09GA7
-         1VMdf+6nbfKgw==
+        b=EGM9n9dOkGGbaY9lFi/ce0PK/PfnJOrJJmcUIMbV6h6hUUEDu/EeJLk/kFM6GGa3l
+         szSy3ojkX4OF3iIt34kivbiiePmvgjwfNNHSmmb76cUZdEj7ApZLfBRQg+cduliuRj
+         nfmfPFjKWEPeIVeF3idkt9hJU4Y5/HLToOJocGHsFBJqgjmzHe5KHVUE2TIrdjtSG7
+         WYWuTRKFgr/LpbLZuT3JPzQmEWObyCkVPEOg3v+WJ0cy803kEd4j3SsteqJQtxcWmD
+         RY3UGOY6Wn/Km2Z8YI4iZZGNPu0GV2osAQdQqhiWHjzQEFxkU8zvdS0KMugUHRJZtF
+         1piWFLLyxvFog==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Vlad Buslov <vladbu@nvidia.com>,
         Dmytro Linkin <dlinkin@nvidia.com>,
         Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 15/17] net/mlx5e: TC preparation refactoring for routing update event
-Date:   Thu,  4 Feb 2021 22:40:49 -0800
-Message-Id: <20210205064051.89592-16-saeed@kernel.org>
+Subject: [net-next 16/17] net/mlx5e: Rename some encap-specific API to generic names
+Date:   Thu,  4 Feb 2021 22:40:50 -0800
+Message-Id: <20210205064051.89592-17-saeed@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210205064051.89592-1-saeed@kernel.org>
 References: <20210205064051.89592-1-saeed@kernel.org>
@@ -43,449 +43,115 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vlad Buslov <vladbu@nvidia.com>
 
-Following patch in series implement routing update event which requires
-ability to modify rule match_to_reg modify header actions dynamically
-during rule lifetime. In order to accommodate such behavior, refactor and
-extend TC infrastructure in following ways:
-
-- Modify mod_hdr infrastructure to preserve its parse attribute for whole
-rule lifetime, instead of deallocating it after rule creation.
-
-- Extend match_to_reg infrastructure with new function
-mlx5e_tc_match_to_reg_set_and_get_id() that returns mod_hdr action id that
-can be used afterwards to update the action, and
-mlx5e_tc_match_to_reg_mod_hdr_change() that can modify existing actions by
-its id.
-
-- Extend tun API with new functions mlx5e_tc_tun_update_header_ipv{4|6}()
-that are used to updated existing encap entry tunnel header.
+Some of the encap-specific functions and fields will also be used by route
+update infrastructure in following patches. Rename them to generic names.
 
 Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
 Signed-off-by: Dmytro Linkin <dlinkin@nvidia.com>
 Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/tc_ct.c    |   1 -
- .../ethernet/mellanox/mlx5/core/en/tc_tun.c   | 198 ++++++++++++++++++
- .../ethernet/mellanox/mlx5/core/en/tc_tun.h   |  10 +
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   |  73 ++++++-
- .../net/ethernet/mellanox/mlx5/core/en_tc.h   |  15 ++
- 5 files changed, 288 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c    |  2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_priv.h   |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c  | 10 +++++-----
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c        |  2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.h        |  2 +-
+ 5 files changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-index 3fb75dcdc68d..0b503ebe59ec 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-@@ -1763,7 +1763,6 @@ __mlx5_tc_ct_flow_offload_clear(struct mlx5_tc_ct_priv *ct_priv,
- 		goto err_set_registers;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+index a7ba1c84371d..065126370acd 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/rep/tc.c
+@@ -124,7 +124,7 @@ void mlx5e_rep_update_flows(struct mlx5e_priv *priv,
  	}
- 
--	dealloc_mod_hdr_actions(mod_acts);
- 	pre_ct_attr->modify_hdr = mod_hdr;
- 	pre_ct_attr->action |= MLX5_FLOW_CONTEXT_ACTION_MOD_HDR;
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c
-index 0ad22f5709a1..f8075a604605 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c
-@@ -318,6 +318,105 @@ int mlx5e_tc_tun_create_header_ipv4(struct mlx5e_priv *priv,
- 	return err;
+ unlock:
+ 	mutex_unlock(&esw->offloads.encap_tbl_lock);
+-	mlx5e_put_encap_flow_list(priv, &flow_list);
++	mlx5e_put_flow_list(priv, &flow_list);
  }
  
-+int mlx5e_tc_tun_update_header_ipv4(struct mlx5e_priv *priv,
-+				    struct net_device *mirred_dev,
-+				    struct mlx5e_encap_entry *e)
-+{
-+	int max_encap_size = MLX5_CAP_ESW(priv->mdev, max_encap_header_size);
-+	const struct ip_tunnel_key *tun_key = &e->tun_info->key;
-+	TC_TUN_ROUTE_ATTR_INIT(attr);
-+	int ipv4_encap_size;
-+	char *encap_header;
-+	struct iphdr *ip;
-+	u8 nud_state;
-+	int err;
-+
-+	/* add the IP fields */
-+	attr.fl.fl4.flowi4_tos = tun_key->tos;
-+	attr.fl.fl4.daddr = tun_key->u.ipv4.dst;
-+	attr.fl.fl4.saddr = tun_key->u.ipv4.src;
-+	attr.ttl = tun_key->ttl;
-+
-+	err = mlx5e_route_lookup_ipv4_get(priv, mirred_dev, &attr);
-+	if (err)
-+		return err;
-+
-+	ipv4_encap_size =
-+		(is_vlan_dev(attr.route_dev) ? VLAN_ETH_HLEN : ETH_HLEN) +
-+		sizeof(struct iphdr) +
-+		e->tunnel->calc_hlen(e);
-+
-+	if (max_encap_size < ipv4_encap_size) {
-+		mlx5_core_warn(priv->mdev, "encap size %d too big, max supported is %d\n",
-+			       ipv4_encap_size, max_encap_size);
-+		err = -EOPNOTSUPP;
-+		goto release_neigh;
-+	}
-+
-+	encap_header = kzalloc(ipv4_encap_size, GFP_KERNEL);
-+	if (!encap_header) {
-+		err = -ENOMEM;
-+		goto release_neigh;
-+	}
-+
-+	e->route_dev_ifindex = attr.route_dev->ifindex;
-+
-+	read_lock_bh(&attr.n->lock);
-+	nud_state = attr.n->nud_state;
-+	ether_addr_copy(e->h_dest, attr.n->ha);
-+	WRITE_ONCE(e->nhe->neigh_dev, attr.n->dev);
-+	read_unlock_bh(&attr.n->lock);
-+
-+	/* add ethernet header */
-+	ip = (struct iphdr *)gen_eth_tnl_hdr(encap_header, attr.route_dev, e,
-+					     ETH_P_IP);
-+
-+	/* add ip header */
-+	ip->tos = tun_key->tos;
-+	ip->version = 0x4;
-+	ip->ihl = 0x5;
-+	ip->ttl = attr.ttl;
-+	ip->daddr = attr.fl.fl4.daddr;
-+	ip->saddr = attr.fl.fl4.saddr;
-+
-+	/* add tunneling protocol header */
-+	err = mlx5e_gen_ip_tunnel_header((char *)ip + sizeof(struct iphdr),
-+					 &ip->protocol, e);
-+	if (err)
-+		goto free_encap;
-+
-+	e->encap_size = ipv4_encap_size;
-+	kfree(e->encap_header);
-+	e->encap_header = encap_header;
-+
-+	if (!(nud_state & NUD_VALID)) {
-+		neigh_event_send(attr.n, NULL);
-+		/* the encap entry will be made valid on neigh update event
-+		 * and not used before that.
-+		 */
-+		goto release_neigh;
-+	}
-+	e->pkt_reformat = mlx5_packet_reformat_alloc(priv->mdev,
-+						     e->reformat_type,
-+						     ipv4_encap_size, encap_header,
-+						     MLX5_FLOW_NAMESPACE_FDB);
-+	if (IS_ERR(e->pkt_reformat)) {
-+		err = PTR_ERR(e->pkt_reformat);
-+		goto free_encap;
-+	}
-+
-+	e->flags |= MLX5_ENCAP_ENTRY_VALID;
-+	mlx5e_rep_queue_neigh_stats_work(netdev_priv(attr.out_dev));
-+	mlx5e_route_lookup_ipv4_put(&attr);
-+	return err;
-+
-+free_encap:
-+	kfree(encap_header);
-+release_neigh:
-+	mlx5e_route_lookup_ipv4_put(&attr);
-+	return err;
-+}
-+
- #if IS_ENABLED(CONFIG_INET) && IS_ENABLED(CONFIG_IPV6)
- static int mlx5e_route_lookup_ipv6_get(struct mlx5e_priv *priv,
- 				       struct net_device *mirred_dev,
-@@ -476,6 +575,105 @@ int mlx5e_tc_tun_create_header_ipv6(struct mlx5e_priv *priv,
- 	mlx5e_route_lookup_ipv6_put(&attr);
- 	return err;
+ static int
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_priv.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_priv.h
+index 14db9b5accb1..4f35b486fb44 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_priv.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_priv.h
+@@ -95,7 +95,7 @@ struct mlx5e_tc_flow {
+ 				   * due to missing route)
+ 				   */
+ 	struct net_device *orig_dev; /* netdev adding flow first */
+-	int tmp_efi_index;
++	int tmp_entry_index;
+ 	struct list_head tmp_list; /* temporary flow list used by neigh update */
+ 	refcount_t refcnt;
+ 	struct rcu_head rcu_head;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
+index 577216744a17..bc0e26f3fd4c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun_encap.c
+@@ -106,8 +106,8 @@ void mlx5e_tc_encap_flows_add(struct mlx5e_priv *priv,
+ 		esw_attr = attr->esw_attr;
+ 		spec = &attr->parse_attr->spec;
+ 
+-		esw_attr->dests[flow->tmp_efi_index].pkt_reformat = e->pkt_reformat;
+-		esw_attr->dests[flow->tmp_efi_index].flags |= MLX5_ESW_DEST_ENCAP_VALID;
++		esw_attr->dests[flow->tmp_entry_index].pkt_reformat = e->pkt_reformat;
++		esw_attr->dests[flow->tmp_entry_index].flags |= MLX5_ESW_DEST_ENCAP_VALID;
+ 		/* Flow can be associated with multiple encap entries.
+ 		 * Before offloading the flow verify that all of them have
+ 		 * a valid neighbour.
+@@ -161,7 +161,7 @@ void mlx5e_tc_encap_flows_del(struct mlx5e_priv *priv,
+ 		/* update from encap rule to slow path rule */
+ 		rule = mlx5e_tc_offload_to_slow_path(esw, flow, spec);
+ 		/* mark the flow's encap dest as non-valid */
+-		esw_attr->dests[flow->tmp_efi_index].flags &= ~MLX5_ESW_DEST_ENCAP_VALID;
++		esw_attr->dests[flow->tmp_entry_index].flags &= ~MLX5_ESW_DEST_ENCAP_VALID;
+ 
+ 		if (IS_ERR(rule)) {
+ 			err = PTR_ERR(rule);
+@@ -195,7 +195,7 @@ void mlx5e_take_all_encap_flows(struct mlx5e_encap_entry *e, struct list_head *f
+ 			continue;
+ 		wait_for_completion(&flow->init_done);
+ 
+-		flow->tmp_efi_index = efi->index;
++		flow->tmp_entry_index = efi->index;
+ 		list_add(&flow->tmp_list, flow_list);
+ 	}
  }
-+
-+int mlx5e_tc_tun_update_header_ipv6(struct mlx5e_priv *priv,
-+				    struct net_device *mirred_dev,
-+				    struct mlx5e_encap_entry *e)
-+{
-+	int max_encap_size = MLX5_CAP_ESW(priv->mdev, max_encap_header_size);
-+	const struct ip_tunnel_key *tun_key = &e->tun_info->key;
-+	TC_TUN_ROUTE_ATTR_INIT(attr);
-+	struct ipv6hdr *ip6h;
-+	int ipv6_encap_size;
-+	char *encap_header;
-+	u8 nud_state;
-+	int err;
-+
-+	attr.ttl = tun_key->ttl;
-+
-+	attr.fl.fl6.flowlabel = ip6_make_flowinfo(RT_TOS(tun_key->tos), tun_key->label);
-+	attr.fl.fl6.daddr = tun_key->u.ipv6.dst;
-+	attr.fl.fl6.saddr = tun_key->u.ipv6.src;
-+
-+	err = mlx5e_route_lookup_ipv6_get(priv, mirred_dev, &attr);
-+	if (err)
-+		return err;
-+
-+	ipv6_encap_size =
-+		(is_vlan_dev(attr.route_dev) ? VLAN_ETH_HLEN : ETH_HLEN) +
-+		sizeof(struct ipv6hdr) +
-+		e->tunnel->calc_hlen(e);
-+
-+	if (max_encap_size < ipv6_encap_size) {
-+		mlx5_core_warn(priv->mdev, "encap size %d too big, max supported is %d\n",
-+			       ipv6_encap_size, max_encap_size);
-+		err = -EOPNOTSUPP;
-+		goto release_neigh;
-+	}
-+
-+	encap_header = kzalloc(ipv6_encap_size, GFP_KERNEL);
-+	if (!encap_header) {
-+		err = -ENOMEM;
-+		goto release_neigh;
-+	}
-+
-+	e->route_dev_ifindex = attr.route_dev->ifindex;
-+
-+	read_lock_bh(&attr.n->lock);
-+	nud_state = attr.n->nud_state;
-+	ether_addr_copy(e->h_dest, attr.n->ha);
-+	WRITE_ONCE(e->nhe->neigh_dev, attr.n->dev);
-+	read_unlock_bh(&attr.n->lock);
-+
-+	/* add ethernet header */
-+	ip6h = (struct ipv6hdr *)gen_eth_tnl_hdr(encap_header, attr.route_dev, e,
-+						 ETH_P_IPV6);
-+
-+	/* add ip header */
-+	ip6_flow_hdr(ip6h, tun_key->tos, 0);
-+	/* the HW fills up ipv6 payload len */
-+	ip6h->hop_limit   = attr.ttl;
-+	ip6h->daddr	  = attr.fl.fl6.daddr;
-+	ip6h->saddr	  = attr.fl.fl6.saddr;
-+
-+	/* add tunneling protocol header */
-+	err = mlx5e_gen_ip_tunnel_header((char *)ip6h + sizeof(struct ipv6hdr),
-+					 &ip6h->nexthdr, e);
-+	if (err)
-+		goto free_encap;
-+
-+	e->encap_size = ipv6_encap_size;
-+	kfree(e->encap_header);
-+	e->encap_header = encap_header;
-+
-+	if (!(nud_state & NUD_VALID)) {
-+		neigh_event_send(attr.n, NULL);
-+		/* the encap entry will be made valid on neigh update event
-+		 * and not used before that.
-+		 */
-+		goto release_neigh;
-+	}
-+
-+	e->pkt_reformat = mlx5_packet_reformat_alloc(priv->mdev,
-+						     e->reformat_type,
-+						     ipv6_encap_size, encap_header,
-+						     MLX5_FLOW_NAMESPACE_FDB);
-+	if (IS_ERR(e->pkt_reformat)) {
-+		err = PTR_ERR(e->pkt_reformat);
-+		goto free_encap;
-+	}
-+
-+	e->flags |= MLX5_ENCAP_ENTRY_VALID;
-+	mlx5e_rep_queue_neigh_stats_work(netdev_priv(attr.out_dev));
-+	mlx5e_route_lookup_ipv6_put(&attr);
-+	return err;
-+
-+free_encap:
-+	kfree(encap_header);
-+release_neigh:
-+	mlx5e_route_lookup_ipv6_put(&attr);
-+	return err;
-+}
- #endif
+@@ -294,7 +294,7 @@ void mlx5e_tc_update_neigh_used_value(struct mlx5e_neigh_hash_entry *nhe)
+ 		}
+ 		mutex_unlock(&esw->offloads.encap_tbl_lock);
  
- int mlx5e_tc_tun_route_lookup(struct mlx5e_priv *priv,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.h
-index 9d6ee9405eaf..fa992e869044 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.h
-@@ -59,16 +59,26 @@ int mlx5e_tc_tun_init_encap_attr(struct net_device *tunnel_dev,
- int mlx5e_tc_tun_create_header_ipv4(struct mlx5e_priv *priv,
- 				    struct net_device *mirred_dev,
- 				    struct mlx5e_encap_entry *e);
-+int mlx5e_tc_tun_update_header_ipv4(struct mlx5e_priv *priv,
-+				    struct net_device *mirred_dev,
-+				    struct mlx5e_encap_entry *e);
- 
- #if IS_ENABLED(CONFIG_INET) && IS_ENABLED(CONFIG_IPV6)
- int mlx5e_tc_tun_create_header_ipv6(struct mlx5e_priv *priv,
- 				    struct net_device *mirred_dev,
- 				    struct mlx5e_encap_entry *e);
-+int mlx5e_tc_tun_update_header_ipv6(struct mlx5e_priv *priv,
-+				    struct net_device *mirred_dev,
-+				    struct mlx5e_encap_entry *e);
- #else
- static inline int
- mlx5e_tc_tun_create_header_ipv6(struct mlx5e_priv *priv,
- 				struct net_device *mirred_dev,
- 				struct mlx5e_encap_entry *e) { return -EOPNOTSUPP; }
-+int mlx5e_tc_tun_update_header_ipv6(struct mlx5e_priv *priv,
-+				    struct net_device *mirred_dev,
-+				    struct mlx5e_encap_entry *e)
-+{ return -EOPNOTSUPP; }
- #endif
- int mlx5e_tc_tun_route_lookup(struct mlx5e_priv *priv,
- 			      struct mlx5_flow_spec *spec,
+-		mlx5e_put_encap_flow_list(priv, &flow_list);
++		mlx5e_put_flow_list(priv, &flow_list);
+ 		if (neigh_used) {
+ 			/* release current encap before breaking the loop */
+ 			mlx5e_encap_put(priv, e);
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 2cc31f99db9b..e6150c7597f0 100644
+index e6150c7597f0..c5ecb9e4e767 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -170,11 +170,11 @@ mlx5e_tc_match_to_reg_get_match(struct mlx5_flow_spec *spec,
+@@ -1451,7 +1451,7 @@ struct mlx5_fc *mlx5e_tc_get_counter(struct mlx5e_tc_flow *flow)
  }
  
- int
--mlx5e_tc_match_to_reg_set(struct mlx5_core_dev *mdev,
--			  struct mlx5e_tc_mod_hdr_acts *mod_hdr_acts,
--			  enum mlx5_flow_namespace_type ns,
--			  enum mlx5e_tc_attr_to_reg type,
--			  u32 data)
-+mlx5e_tc_match_to_reg_set_and_get_id(struct mlx5_core_dev *mdev,
-+				     struct mlx5e_tc_mod_hdr_acts *mod_hdr_acts,
-+				     enum mlx5_flow_namespace_type ns,
-+				     enum mlx5e_tc_attr_to_reg type,
-+				     u32 data)
+ /* Iterate over tmp_list of flows attached to flow_list head. */
+-void mlx5e_put_encap_flow_list(struct mlx5e_priv *priv, struct list_head *flow_list)
++void mlx5e_put_flow_list(struct mlx5e_priv *priv, struct list_head *flow_list)
  {
- 	int moffset = mlx5e_tc_attr_to_reg_mappings[type].moffset;
- 	int mfield = mlx5e_tc_attr_to_reg_mappings[type].mfield;
-@@ -198,9 +198,10 @@ mlx5e_tc_match_to_reg_set(struct mlx5_core_dev *mdev,
- 	MLX5_SET(set_action_in, modact, offset, moffset * 8);
- 	MLX5_SET(set_action_in, modact, length, mlen * 8);
- 	MLX5_SET(set_action_in, modact, data, data);
-+	err = mod_hdr_acts->num_actions;
- 	mod_hdr_acts->num_actions++;
+ 	struct mlx5e_tc_flow *flow, *tmp;
  
--	return 0;
-+	return err;
- }
- 
- static struct mlx5_tc_ct_priv *
-@@ -249,6 +250,41 @@ mlx5_tc_rule_delete(struct mlx5e_priv *priv,
- 	mlx5e_del_offloaded_nic_rule(priv, rule, attr);
- }
- 
-+int
-+mlx5e_tc_match_to_reg_set(struct mlx5_core_dev *mdev,
-+			  struct mlx5e_tc_mod_hdr_acts *mod_hdr_acts,
-+			  enum mlx5_flow_namespace_type ns,
-+			  enum mlx5e_tc_attr_to_reg type,
-+			  u32 data)
-+{
-+	int ret = mlx5e_tc_match_to_reg_set_and_get_id(mdev, mod_hdr_acts, ns, type, data);
-+
-+	return ret < 0 ? ret : 0;
-+}
-+
-+void mlx5e_tc_match_to_reg_mod_hdr_change(struct mlx5_core_dev *mdev,
-+					  struct mlx5e_tc_mod_hdr_acts *mod_hdr_acts,
-+					  enum mlx5e_tc_attr_to_reg type,
-+					  int act_id, u32 data)
-+{
-+	int moffset = mlx5e_tc_attr_to_reg_mappings[type].moffset;
-+	int mfield = mlx5e_tc_attr_to_reg_mappings[type].mfield;
-+	int mlen = mlx5e_tc_attr_to_reg_mappings[type].mlen;
-+	char *modact;
-+
-+	modact = mod_hdr_acts->actions + (act_id * MLX5_MH_ACT_SZ);
-+
-+	/* Firmware has 5bit length field and 0 means 32bits */
-+	if (mlen == 4)
-+		mlen = 0;
-+
-+	MLX5_SET(set_action_in, modact, action_type, MLX5_ACTION_TYPE_SET);
-+	MLX5_SET(set_action_in, modact, field, mfield);
-+	MLX5_SET(set_action_in, modact, offset, moffset * 8);
-+	MLX5_SET(set_action_in, modact, length, mlen * 8);
-+	MLX5_SET(set_action_in, modact, data, data);
-+}
-+
- struct mlx5e_hairpin {
- 	struct mlx5_hairpin *pair;
- 
-@@ -1214,6 +1250,26 @@ int mlx5e_tc_query_route_vport(struct net_device *out_dev, struct net_device *ro
- 	return err;
- }
- 
-+int mlx5e_tc_add_flow_mod_hdr(struct mlx5e_priv *priv,
-+			      struct mlx5e_tc_flow_parse_attr *parse_attr,
-+			      struct mlx5e_tc_flow *flow)
-+{
-+	struct mlx5e_tc_mod_hdr_acts *mod_hdr_acts = &parse_attr->mod_hdr_acts;
-+	struct mlx5_modify_hdr *mod_hdr;
-+
-+	mod_hdr = mlx5_modify_header_alloc(priv->mdev,
-+					   get_flow_name_space(flow),
-+					   mod_hdr_acts->num_actions,
-+					   mod_hdr_acts->actions);
-+	if (IS_ERR(mod_hdr))
-+		return PTR_ERR(mod_hdr);
-+
-+	WARN_ON(flow->attr->modify_hdr);
-+	flow->attr->modify_hdr = mod_hdr;
-+
-+	return 0;
-+}
-+
- static int
- mlx5e_tc_add_fdb_flow(struct mlx5e_priv *priv,
- 		      struct mlx5e_tc_flow *flow,
-@@ -1293,7 +1349,6 @@ mlx5e_tc_add_fdb_flow(struct mlx5e_priv *priv,
- 	if (attr->action & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR &&
- 	    !(attr->ct_attr.ct_action & TCA_CT_ACT_CLEAR)) {
- 		err = mlx5e_attach_mod_hdr(priv, flow, parse_attr);
--		dealloc_mod_hdr_actions(&parse_attr->mod_hdr_acts);
- 		if (err)
- 			return err;
- 	}
-@@ -1376,8 +1431,10 @@ static void mlx5e_tc_del_fdb_flow(struct mlx5e_priv *priv,
- 
- 	mlx5_tc_ct_match_del(get_ct_priv(priv), &flow->attr->ct_attr);
- 
--	if (attr->action & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR)
-+	if (attr->action & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR) {
-+		dealloc_mod_hdr_actions(&attr->parse_attr->mod_hdr_acts);
- 		mlx5e_detach_mod_hdr(priv, flow);
-+	}
- 
- 	if (attr->action & MLX5_FLOW_CONTEXT_ACTION_COUNT)
- 		mlx5_fc_destroy(esw_attr->counter_dev, attr->counter);
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-index 5434bbb9a217..9042e64a96ca 100644
+index 9042e64a96ca..89003ae7775a 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.h
-@@ -214,6 +214,11 @@ int mlx5e_tc_match_to_reg_set(struct mlx5_core_dev *mdev,
- 			      enum mlx5e_tc_attr_to_reg type,
- 			      u32 data);
+@@ -174,7 +174,7 @@ bool mlx5e_encap_take(struct mlx5e_encap_entry *e);
+ void mlx5e_encap_put(struct mlx5e_priv *priv, struct mlx5e_encap_entry *e);
  
-+void mlx5e_tc_match_to_reg_mod_hdr_change(struct mlx5_core_dev *mdev,
-+					  struct mlx5e_tc_mod_hdr_acts *mod_hdr_acts,
-+					  enum mlx5e_tc_attr_to_reg type,
-+					  int act_id, u32 data);
-+
- void mlx5e_tc_match_to_reg_match(struct mlx5_flow_spec *spec,
- 				 enum mlx5e_tc_attr_to_reg type,
- 				 u32 data,
-@@ -224,6 +229,16 @@ void mlx5e_tc_match_to_reg_get_match(struct mlx5_flow_spec *spec,
- 				     u32 *data,
- 				     u32 *mask);
+ void mlx5e_take_all_encap_flows(struct mlx5e_encap_entry *e, struct list_head *flow_list);
+-void mlx5e_put_encap_flow_list(struct mlx5e_priv *priv, struct list_head *flow_list);
++void mlx5e_put_flow_list(struct mlx5e_priv *priv, struct list_head *flow_list);
  
-+int mlx5e_tc_match_to_reg_set_and_get_id(struct mlx5_core_dev *mdev,
-+					 struct mlx5e_tc_mod_hdr_acts *mod_hdr_acts,
-+					 enum mlx5_flow_namespace_type ns,
-+					 enum mlx5e_tc_attr_to_reg type,
-+					 u32 data);
-+
-+int mlx5e_tc_add_flow_mod_hdr(struct mlx5e_priv *priv,
-+			      struct mlx5e_tc_flow_parse_attr *parse_attr,
-+			      struct mlx5e_tc_flow *flow);
-+
- int alloc_mod_hdr_actions(struct mlx5_core_dev *mdev,
- 			  int namespace,
- 			  struct mlx5e_tc_mod_hdr_acts *mod_hdr_acts);
+ struct mlx5e_neigh_hash_entry;
+ void mlx5e_tc_update_neigh_used_value(struct mlx5e_neigh_hash_entry *nhe);
 -- 
 2.29.2
 
