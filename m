@@ -2,69 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A216731027E
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 02:58:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13F173102B5
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 03:21:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229816AbhBEB5O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 20:57:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40610 "EHLO mail.kernel.org"
+        id S229783AbhBECUu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 21:20:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43698 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229631AbhBEB5N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 4 Feb 2021 20:57:13 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D19C264DC4;
-        Fri,  5 Feb 2021 01:56:29 +0000 (UTC)
+        id S229767AbhBECUr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 4 Feb 2021 21:20:47 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id DA2DA64FB6;
+        Fri,  5 Feb 2021 02:20:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612490190;
-        bh=ZlbTbixiZ/VEvhe2cB1BDy9leTlPGZZcyvIJqx6f2UI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tu6SJbXUsHBFLZamGifs83f3CijLyOjFBee5L2c4iFeuoBlcqfKvKIhvZc3L22Z+R
-         tj4OtzBNvXCd1gkay1lHs/nd57rPGEKXSgmcitvQJXpqPVESKx7TaT9aWCvHxfyh2C
-         OyTPEq5RzCUwfuqgsZjB9f7ng3IutikF/4Ce+tym0NfiWfuPmmdETry1Hco4C8u2kN
-         1Z+wjDtqiMrg0kz/fDOSsnZ/MxzHEO6WHMBtOinAwVe5DoAXBo6xc6PbgQAIbqFkGv
-         VhYGfuPZusMTknZUlZiZpuAFqgJZPFbNt3gXaqN1e+SUFquG0GafJv6BIFuRLsnot2
-         BkL2UbiwyKmNQ==
-Date:   Thu, 4 Feb 2021 17:56:28 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
-Cc:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Wei Liu <wei.liu@kernel.org>,
-        Paul Durrant <paul@xen.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Igor Druzhinin <igor.druzhinin@citrix.com>,
-        stable@vger.kernel.org
-Subject: Re: [PATCH] xen/netback: avoid race in
- xenvif_rx_ring_slots_available()
-Message-ID: <20210204175628.7904d1da@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <f6fa1533-0646-e8b1-b7f8-51ad70691cae@suse.com>
-References: <20210202070938.7863-1-jgross@suse.com>
-        <20210203154800.4c6959d6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <f6fa1533-0646-e8b1-b7f8-51ad70691cae@suse.com>
+        s=k20201202; t=1612491606;
+        bh=H+H/AegaPNy8zT1eA1zc6VeS9D+KFhBtz5zcPl0ASW4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=UGYOy6cyhpVhge4guA4V3aredNc2uV+bL/SxX8UsTxKd3t41rEeblpogLvYalOpP0
+         F1mNNtRQOQIfdnASAvsUD76uwPln0RFGwNRR3T18DGmKriFooP1Cmjs3/MbNnazv8r
+         byRTpLcfgg/TD4YrepGNQ7BCp19rOFtE9rnUEuGlBGbR6JEnkDPd3Rg1QQ6u0vfwoy
+         KfyMzHMDJCx3fgqtycTH9dBhTaSH2xPBTGutFpPDuCyruyBkr455vtpd2LaLMDMarh
+         79nlzmMzgXrr65OP9uAsOFOPoz5NLGzQLU2YePjNjACOBG/VRvfRK8f4S8DdYf7rW+
+         tiUfzr5rbDOkQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id CAC1A609F4;
+        Fri,  5 Feb 2021 02:20:06 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] cxgb4: Add new T6 PCI device id 0x6092
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161249160682.1910.11603408249834733728.git-patchwork-notify@kernel.org>
+Date:   Fri, 05 Feb 2021 02:20:06 +0000
+References: <20210202182511.8109-1-rajur@chelsio.com>
+In-Reply-To: <20210202182511.8109-1-rajur@chelsio.com>
+To:     Raju Rangoju <rajur@chelsio.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        rahul.lakkireddy@chelsio.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 4 Feb 2021 06:32:32 +0100 J=C3=BCrgen Gro=C3=9F wrote:
-> On 04.02.21 00:48, Jakub Kicinski wrote:
-> > On Tue,  2 Feb 2021 08:09:38 +0100 Juergen Gross wrote: =20
-> >> Since commit 23025393dbeb3b8b3 ("xen/netback: use lateeoi irq binding")
-> >> xenvif_rx_ring_slots_available() is no longer called only from the rx
-> >> queue kernel thread, so it needs to access the rx queue with the
-> >> associated queue held.
-> >>
-> >> Reported-by: Igor Druzhinin <igor.druzhinin@citrix.com>
-> >> Fixes: 23025393dbeb3b8b3 ("xen/netback: use lateeoi irq binding")
-> >> Cc: stable@vger.kernel.org
-> >> Signed-off-by: Juergen Gross <jgross@suse.com> =20
-> >=20
-> > Should we route this change via networking trees? I see the bug did not
-> > go through networking :)
->=20
-> I'm fine with either networking or the Xen tree. It should be included
-> in 5.11, though. So if you are willing to take it, please do so.
+Hello:
 
-All right, applied to net, it'll most likely hit Linus's tree on Tue.
+This patch was applied to netdev/net.git (refs/heads/master):
 
-Thanks!
+On Tue,  2 Feb 2021 23:55:11 +0530 you wrote:
+> Signed-off-by: Raju Rangoju <rajur@chelsio.com>
+> ---
+>  drivers/net/ethernet/chelsio/cxgb4/t4_pci_id_tbl.h | 1 +
+>  1 file changed, 1 insertion(+)
+
+Here is the summary with links:
+  - [net-next] cxgb4: Add new T6 PCI device id 0x6092
+    https://git.kernel.org/netdev/net/c/3401e4aa43a5
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
