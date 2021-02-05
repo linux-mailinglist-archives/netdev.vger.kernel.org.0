@@ -2,65 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 635C231043F
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 05:58:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 75462310443
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 06:00:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230191AbhBEE6Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 4 Feb 2021 23:58:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43532 "EHLO
+        id S231126AbhBEE6h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 4 Feb 2021 23:58:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229927AbhBEE6P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 23:58:15 -0500
-Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62CE8C0613D6
-        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 20:57:35 -0800 (PST)
-Received: by mail-ot1-x334.google.com with SMTP id d1so5713455otl.13
-        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 20:57:35 -0800 (PST)
+        with ESMTP id S230033AbhBEE6f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 4 Feb 2021 23:58:35 -0500
+Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A06BC061786
+        for <netdev@vger.kernel.org>; Thu,  4 Feb 2021 20:57:55 -0800 (PST)
+Received: by mail-ot1-x336.google.com with SMTP id d7so5767920otf.3
+        for <netdev@vger.kernel.org>; Thu, 04 Feb 2021 20:57:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Ss2sx2Novs0BCmPcW3vl+QFvdoPK2Z/lCC1NQojZm/M=;
-        b=a+GPXBellKQk6KGAgmmEXHEVJA3HEH6fkQMqlZzeIuexL2J2rltlrGqXcuZb3ixHy2
-         2GaJTuFvf5nDoyOtPURmbXUDg6DtVfFZVeQKD0v5xTbQMNF834jyI0sfeFtcmDGR4JaJ
-         XhFQWeztFs+4oY4FCgcr9Snp8nrvKN0IWwTXXtr5rlYOZcWMWoftlxS9mQ73A4z7w8S7
-         iJHRO3s6r4bjkvNH7LrBEuP0+/58jHDK6Yt6nElbPjyzzeomQIr9a2dd5GYyhcUp8pTX
-         24G74SgAbKEyGhUxrqWgjZsvqDaOGZycD27ULcJBELJ0emxTSq83hCwHXcWJSkHNzKUO
-         lTpw==
+        bh=pYNj1ioeAKjF12VVHsxe98piY/by3hAAPBaY1XeF9q4=;
+        b=mcyIBsXOk8TsI0y2rJ6+s5GsSjf3Bfh6VpOGtjVjLqbCogrkeunXh1vhp4sqZKM4Sd
+         z/aqDLnAJghv6w4pc71SS/rqwhwHdMlZPY/wiM0nJvx/myNXGOeMedJFR1V0K4TwB7VI
+         f3yWl0n2rej3UMMzoEkbZNRwXMxHJFsvHMSR9Lh1KtHujErOmQ5nGqroW1GlriVcIaL3
+         6q5lkBuN4Fviv43NKl8c19E/3srK42vLeYMuvuSusIsYIq9C5BoEpB/q5gVzxDelDuuh
+         IuzdBNnJEtWOpyExoAVzc0fiwKk6WaYZXmm0TSRxlZnm6iJF5ET2i9EDS4XmEe/tRlWp
+         qwwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=Ss2sx2Novs0BCmPcW3vl+QFvdoPK2Z/lCC1NQojZm/M=;
-        b=eguwEK3qyy37mg8ELUG5OyjlZo2WtIiMHuo8bMGuO83BiEguiLxQULd+U/Jf6+QrLO
-         6mJRgoncBOUnTnSOEkm3Tu/A1gUO0Etmi4Zwt6RuXzEhrGOtxSu6+PJtt5vEjFkcUBP6
-         A76iOrRwiSP4HIFtyITC6kzLp4IpFVWpYEvgwAeai+iTTjn2W+v8wSs0Le+pghlLnlSx
-         joHm2ULfKevllFSh/vn00aluyTW4JCVsNI63QJiXSRgqmDjKe4xHeQ4Wp46axYfwMLkL
-         iSZYQ4HQk5Ns4pItyw20Ze4u/hBCzGHO//Ujh19kemlLlHPmFj0tGYa+P+kjbjoFSB+m
-         NuXw==
-X-Gm-Message-State: AOAM533UJ3+kJchsyMb6ai4shhryU9DOn8783ULg86imfKdHg9rTGHXk
-        +amv/lBGEpMFyp6JFL3SD+0AhQsjJSQ=
-X-Google-Smtp-Source: ABdhPJwZBh+TzLfpr/PPvfPs55zc8tKMPsng3N3tqptJbv3P0epOTF6jkjZzRumoTgJCHx7UJqVoig==
-X-Received: by 2002:a05:6830:1d45:: with SMTP id p5mr2158046oth.272.1612501054553;
-        Thu, 04 Feb 2021 20:57:34 -0800 (PST)
+        bh=pYNj1ioeAKjF12VVHsxe98piY/by3hAAPBaY1XeF9q4=;
+        b=NwhP+GGiuA4yWNirVqfhTg60/oK4wEv2SAaSO1TYKlqu+gZe3x70Ql42+TDoQ9MTY+
+         gVSDswZi8xxWmLk99LxT8kTYicRKbdZyJHX7yNGDgxwEM0I0np+/7iYu/5xOY5VssxPU
+         t7faN8T133to+eRE8dJG8WV1166bT8EiVtcXpvpzaUBWCSmaQg25Hn3UwAskW9Yob0gE
+         lWKkq/oXlqs/U7I3A22QTz86Vq+a3yBLYGwyutRouhCVaLX40BwxuoZZ86xP5YDqk3Et
+         TbveBn7MhFlYmAczdPqHXItP5tBxh5wsHIjkkiJkUFm86xKjS/ejsjBZrZ7snvSiaz2f
+         NJ7A==
+X-Gm-Message-State: AOAM531VZJO+QZjeX6dUFzb3DQJQS4OUERHFpCelhetuqvYi8y8mviIn
+        NVyxcev6NWhngFdSgJK4qTo+Qh1i7Fo=
+X-Google-Smtp-Source: ABdhPJxymNll0XtRhBq0IFgWMq0WK/QzLQDi3GY98TxhB9t44XUfQSs3nQMY7q28XokFYN1AySewoA==
+X-Received: by 2002:a05:6830:134d:: with SMTP id r13mr2175488otq.140.1612501074274;
+        Thu, 04 Feb 2021 20:57:54 -0800 (PST)
 Received: from Davids-MacBook-Pro.local ([8.48.134.50])
-        by smtp.googlemail.com with ESMTPSA id n27sm1615347oij.36.2021.02.04.20.57.33
+        by smtp.googlemail.com with ESMTPSA id 62sm6249oii.23.2021.02.04.20.57.53
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 Feb 2021 20:57:34 -0800 (PST)
-Subject: Re: [PATCH ip-route2-next v2] ss: always prefer family as part of
- host condition to default family
-To:     Thayne McCombs <astrothayne@gmail.com>
-Cc:     netdev@vger.kernel.org
-References: <6d0eff35-b982-7d8d-d3c7-742411e93046@gmail.com>
- <20210202033210.2863-1-astrothayne@gmail.com>
+        Thu, 04 Feb 2021 20:57:53 -0800 (PST)
+Subject: Re: [PATCH iproute2-next v3] tc/htb: Hierarchical QoS hardware
+ offload
+To:     Maxim Mikityanskiy <maximmi@mellanox.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Tariq Toukan <tariqt@nvidia.com>,
+        Yossi Kuperman <yossiku@nvidia.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>, netdev@vger.kernel.org
+References: <20210204145137.165298-1-maximmi@mellanox.com>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <87e796a8-2011-96f4-9ae6-9a668f71d0d9@gmail.com>
-Date:   Thu, 4 Feb 2021 21:57:32 -0700
+Message-ID: <acd468c6-c3cd-f7eb-7ef8-0d029f198feb@gmail.com>
+Date:   Thu, 4 Feb 2021 21:57:52 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
  Gecko/20100101 Thunderbird/78.7.0
 MIME-Version: 1.0
-In-Reply-To: <20210202033210.2863-1-astrothayne@gmail.com>
+In-Reply-To: <20210204145137.165298-1-maximmi@mellanox.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -68,25 +70,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/1/21 8:32 PM, Thayne McCombs wrote:
-> I've fixed the indentation to use tabs instead of spaces. 
+On 2/4/21 7:51 AM, Maxim Mikityanskiy wrote:
+> This commit adds support for configuring HTB in offload mode. HTB
+> offload eliminates the single qdisc lock in the datapath and offloads
+> the algorithm to the NIC. The new 'offload' parameter is added to
+> enable this mode:
 > 
-> -- >8 --
-> ss accepts an address family both with the -f option and as part of a
-> host condition. However, if the family in the host condition is
-> different than the the last -f option, then which family is actually
-> used depends on the order that different families are checked.
+>     # tc qdisc replace dev eth0 root handle 1: htb offload
 > 
-> This changes parse_hostcond to check all family prefixes before parsing
-> the rest of the address, so that the host condition's family always has
-> a higher priority than the "preferred" family.
+> Classes are created as usual, but filters should be moved to clsact for
+> lock-free classification (filters attached to HTB itself are not
+> supported in the offload mode):
 > 
-> Signed-off-by: Thayne McCombs <astrothayne@gmail.com>
+>     # tc filter add dev eth0 egress protocol ip flower dst_port 80
+>     action skbedit priority 1:10
+> 
+> tc qdisc show and tc class show will indicate whether the offload is
+> enabled. Example output:
+> 
+> $ tc qdisc show dev eth1
+> qdisc htb 1: root offloaded r2q 10 default 0 direct_packets_stat 0 direct_qlen 1000 offload
+> qdisc pfifo 0: parent 1: limit 1000p
+> qdisc pfifo 0: parent 1: limit 1000p
+> qdisc pfifo 0: parent 1: limit 1000p
+> qdisc pfifo 0: parent 1: limit 1000p
+> qdisc pfifo 0: parent 1: limit 1000p
+> qdisc pfifo 0: parent 1: limit 1000p
+> qdisc pfifo 0: parent 1: limit 1000p
+> qdisc pfifo 0: parent 1: limit 1000p
+> $ tc class show dev eth1
+> class htb 1:101 parent 1:1 prio 0 rate 4Gbit ceil 4Gbit burst 1000b cburst 1000b  offload
+> class htb 1:1 root rate 100Gbit ceil 100Gbit burst 0b cburst 0b  offload
+> class htb 1:103 parent 1:1 prio 0 rate 4Gbit ceil 4Gbit burst 1000b cburst 1000b  offload
+> class htb 1:102 parent 1:1 prio 0 rate 4Gbit ceil 4Gbit burst 1000b cburst 1000b  offload
+> class htb 1:105 parent 1:1 prio 0 rate 4Gbit ceil 4Gbit burst 1000b cburst 1000b  offload
+> class htb 1:104 parent 1:1 prio 0 rate 4Gbit ceil 4Gbit burst 1000b cburst 1000b  offload
+> class htb 1:107 parent 1:1 prio 0 rate 4Gbit ceil 4Gbit burst 1000b cburst 1000b  offload
+> class htb 1:106 parent 1:1 prio 0 rate 4Gbit ceil 4Gbit burst 1000b cburst 1000b  offload
+> class htb 1:108 parent 1:1 prio 0 rate 4Gbit ceil 4Gbit burst 1000b cburst 1000b  offload
+> $ tc -j qdisc show dev eth1
+> [{"kind":"htb","handle":"1:","root":true,"offloaded":true,"options":{"r2q":10,"default":"0","direct_packets_stat":0,"direct_qlen":1000,"offload":null}},{"kind":"pfifo","handle":"0:","parent":"1:","options":{"limit":1000}},{"kind":"pfifo","handle":"0:","parent":"1:","options":{"limit":1000}},{"kind":"pfifo","handle":"0:","parent":"1:","options":{"limit":1000}},{"kind":"pfifo","handle":"0:","parent":"1:","options":{"limit":1000}},{"kind":"pfifo","handle":"0:","parent":"1:","options":{"limit":1000}},{"kind":"pfifo","handle":"0:","parent":"1:","options":{"limit":1000}},{"kind":"pfifo","handle":"0:","parent":"1:","options":{"limit":1000}},{"kind":"pfifo","handle":"0:","parent":"1:","options":{"limit":1000}}]
+> 
+> Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
+> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 > ---
->  misc/ss.c | 50 ++++++++++++++++++++++++--------------------------
->  1 file changed, 24 insertions(+), 26 deletions(-)
+>  man/man8/tc-htb.8 |  5 ++++-
+>  tc/q_htb.c        | 10 +++++++++-
+>  2 files changed, 13 insertions(+), 2 deletions(-)
 > 
->
 
 applied to iproute2-next. Thanks
 
