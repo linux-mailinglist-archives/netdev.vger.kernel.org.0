@@ -2,92 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13702310AFC
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 13:20:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DA28310B3D
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 13:44:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231931AbhBEMT6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 07:19:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53040 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231366AbhBEMRP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 07:17:15 -0500
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 091A0C0613D6;
-        Fri,  5 Feb 2021 04:16:35 -0800 (PST)
-Received: by mail-qv1-xf2f.google.com with SMTP id ew18so3297088qvb.4;
-        Fri, 05 Feb 2021 04:16:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2wLorlSLwD8qAK1tCDXh1sGAgsLi9xWf3prmJoyDJAg=;
-        b=PtASXxH3/2jHxOR4T+9fXBgKh9dRfaxFVmefhuS2U4Q/J03Up20YXm1Q1WbKS/f6Fl
-         ErdvsV6Z8Zs2a5TPGfCJZ0K6w/MzQIGZZTKzrQLLYG3LXAh9vJnPckO5Fxn7q44nFmys
-         B8lcjDe7MqcFq9FWZRbvqhT/PWG9071Z31GQdrWw3dRTaKJg/wnugByvWdWnDfsexWhn
-         lQc/1dV0014s0pd5yzXO01iUBfKHQyLMkqQpM/YnkTZp751MjUeCAijz7vA/rkYXDC3c
-         P25LIn7UZMWuU+d0HI3JVKvzwiacvgwER5MnJewt+8tY0alpnlsQO/mLzIW5RuM4uF7z
-         jFog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2wLorlSLwD8qAK1tCDXh1sGAgsLi9xWf3prmJoyDJAg=;
-        b=W/qpFoQcPsholci9KJ8ODwuQIPcCC1wjM5BuhgcPIj4cHchXvB9uFYjQoBz/FAULkJ
-         4u2OQAAwsv9lRtKRTM2BUotC7pU30dwq+8PefPDSzqm5Raset4GbDJPiDXWveVlY0LkO
-         j916Y1RL0znwSUoXBG6JiSjDHpnAn+uVo9IWDQqf1+GZRfIl7OmtLglgWZYjPV5QAn84
-         hAF0NbtZN8F6JSdcXJ40Q2g4lzx1xHwLhZquERBkaRVj2iTmAC/jiFyMGNOGc20Bs2xt
-         xB91qU0bfAIw1Xd/sv7aVvYF0VvR1d1B1l+C16dRG21xTWnIfEGzWOMHnpdxgQ0t0pPx
-         gfZw==
-X-Gm-Message-State: AOAM533Xl+OKFW8vqdG0jkbCfdHi5RGxoL/kJQacUpphWqRuw/01ZCGN
-        pqFotZA3cbEfNWjPa1fN2iY=
-X-Google-Smtp-Source: ABdhPJzA/cKN+AUQw23sLWPv+tFT6LuNDQiBAiKZR/e9S1Hwe+1Fe48tmJVez9MKD1WQQVGrbpfT1g==
-X-Received: by 2002:a05:6214:20a1:: with SMTP id 1mr3848322qvd.30.1612527394045;
-        Fri, 05 Feb 2021 04:16:34 -0800 (PST)
-Received: from localhost.localdomain ([138.199.10.106])
-        by smtp.gmail.com with ESMTPSA id g186sm8760220qke.0.2021.02.05.04.16.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Feb 2021 04:16:33 -0800 (PST)
-From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
-To:     pmladek@suse.com, rostedt@goodmis.org,
-        sergey.senozhatsky@gmail.com, andriy.shevchenko@linux.intel.com,
-        linux@rasmusvillemoes.dk, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     rdunlap@infradead.org, Bhaskar Chowdhury <unixbhaskar@gmail.com>
-Subject: [PATCH] lib:  Replace obscene word with a better one :)
-Date:   Fri,  5 Feb 2021 17:45:43 +0530
-Message-Id: <20210205121543.1315285-1-unixbhaskar@gmail.com>
-X-Mailer: git-send-email 2.30.0
+        id S232203AbhBEMn4 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 5 Feb 2021 07:43:56 -0500
+Received: from us-smtp-delivery-44.mimecast.com ([205.139.111.44]:24097 "EHLO
+        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232220AbhBEMle (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 07:41:34 -0500
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-354-H-yKuGuPNNqYTr-ayKu7HQ-1; Fri, 05 Feb 2021 07:40:29 -0500
+X-MC-Unique: H-yKuGuPNNqYTr-ayKu7HQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7545E107ACC7;
+        Fri,  5 Feb 2021 12:40:27 +0000 (UTC)
+Received: from krava.cust.in.nbox.cz (unknown [10.40.195.59])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8A5C360936;
+        Fri,  5 Feb 2021 12:40:24 +0000 (UTC)
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>
+Cc:     Song Liu <songliubraving@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        linux-kbuild@vger.kernel.org
+Subject: [PATCH bpf-next 1/4] tools/resolve_btfids: Build libbpf and libsubcmd in separate directories
+Date:   Fri,  5 Feb 2021 13:40:17 +0100
+Message-Id: <20210205124020.683286-2-jolsa@kernel.org>
+In-Reply-To: <20210205124020.683286-1-jolsa@kernel.org>
+References: <20210205124020.683286-1-jolsa@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: kernel.org
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=WINDOWS-1252
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Setting up separate build directories for libbpf and libpsubcmd,
+so it's separated from other objects and we don't get them mixed
+in the future.
 
+It also simplifies cleaning, which is now simple rm -rf.
 
-s/fucked/messed/
+Also there's no need for FEATURE-DUMP.libbpf and bpf_helper_defs.h
+files in .gitignore anymore.
 
-Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+Acked-by: Song Liu <songliubraving@fb.com>
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- lib/vsprintf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/bpf/resolve_btfids/.gitignore |  2 --
+ tools/bpf/resolve_btfids/Makefile   | 26 +++++++++++---------------
+ 2 files changed, 11 insertions(+), 17 deletions(-)
 
-diff --git a/lib/vsprintf.c b/lib/vsprintf.c
-index 3b53c73580c5..470805777117 100644
---- a/lib/vsprintf.c
-+++ b/lib/vsprintf.c
-@@ -7,7 +7,7 @@
-
- /* vsprintf.c -- Lars Wirzenius & Linus Torvalds. */
- /*
-- * Wirzenius wrote this portably, Torvalds fucked it up :-)
-+ * Wirzenius wrote this portably, Torvalds messed it up :-)
-  */
-
- /*
---
-2.30.0
+diff --git a/tools/bpf/resolve_btfids/.gitignore b/tools/bpf/resolve_btfids/.gitignore
+index a026df7dc280..25f308c933cc 100644
+--- a/tools/bpf/resolve_btfids/.gitignore
++++ b/tools/bpf/resolve_btfids/.gitignore
+@@ -1,4 +1,2 @@
+-/FEATURE-DUMP.libbpf
+-/bpf_helper_defs.h
+ /fixdep
+ /resolve_btfids
+diff --git a/tools/bpf/resolve_btfids/Makefile b/tools/bpf/resolve_btfids/Makefile
+index bf656432ad73..1d46a247ec95 100644
+--- a/tools/bpf/resolve_btfids/Makefile
++++ b/tools/bpf/resolve_btfids/Makefile
+@@ -28,22 +28,22 @@ OUTPUT ?= $(srctree)/tools/bpf/resolve_btfids/
+ LIBBPF_SRC := $(srctree)/tools/lib/bpf/
+ SUBCMD_SRC := $(srctree)/tools/lib/subcmd/
+ 
+-BPFOBJ     := $(OUTPUT)/libbpf.a
+-SUBCMDOBJ  := $(OUTPUT)/libsubcmd.a
++BPFOBJ     := $(OUTPUT)/libbpf/libbpf.a
++SUBCMDOBJ  := $(OUTPUT)/libsubcmd/libsubcmd.a
+ 
+ BINARY     := $(OUTPUT)/resolve_btfids
+ BINARY_IN  := $(BINARY)-in.o
+ 
+ all: $(BINARY)
+ 
+-$(OUTPUT):
++$(OUTPUT) $(OUTPUT)/libbpf $(OUTPUT)/libsubcmd:
+ 	$(call msg,MKDIR,,$@)
+-	$(Q)mkdir -p $(OUTPUT)
++	$(Q)mkdir -p $(@)
+ 
+-$(SUBCMDOBJ): fixdep FORCE
+-	$(Q)$(MAKE) -C $(SUBCMD_SRC) OUTPUT=$(OUTPUT)
++$(SUBCMDOBJ): fixdep FORCE | $(OUTPUT)/libsubcmd
++	$(Q)$(MAKE) -C $(SUBCMD_SRC) OUTPUT=$(abspath $(dir $@))/ $(abspath $@)
+ 
+-$(BPFOBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(OUTPUT)
++$(BPFOBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(OUTPUT)/libbpf
+ 	$(Q)$(MAKE) $(submake_extras) -C $(LIBBPF_SRC)  OUTPUT=$(abspath $(dir $@))/ $(abspath $@)
+ 
+ CFLAGS := -g \
+@@ -57,23 +57,19 @@ LIBS = -lelf -lz
+ export srctree OUTPUT CFLAGS Q
+ include $(srctree)/tools/build/Makefile.include
+ 
+-$(BINARY_IN): fixdep FORCE
++$(BINARY_IN): fixdep FORCE | $(OUTPUT)
+ 	$(Q)$(MAKE) $(build)=resolve_btfids
+ 
+ $(BINARY): $(BPFOBJ) $(SUBCMDOBJ) $(BINARY_IN)
+ 	$(call msg,LINK,$@)
+ 	$(Q)$(CC) $(BINARY_IN) $(LDFLAGS) -o $@ $(BPFOBJ) $(SUBCMDOBJ) $(LIBS)
+ 
+-libsubcmd-clean:
+-	$(Q)$(MAKE) -C $(SUBCMD_SRC) OUTPUT=$(OUTPUT) clean
+-
+-libbpf-clean:
+-	$(Q)$(MAKE) -C $(LIBBPF_SRC) OUTPUT=$(OUTPUT) clean
+-
+-clean: libsubcmd-clean libbpf-clean fixdep-clean
++clean: fixdep-clean
+ 	$(call msg,CLEAN,$(BINARY))
+ 	$(Q)$(RM) -f $(BINARY); \
+ 	$(RM) -rf $(if $(OUTPUT),$(OUTPUT),.)/feature; \
++	$(RM) -rf $(OUTPUT)/libbpf; \
++	$(RM) -rf $(OUTPUT)/libsubcmd; \
+ 	find $(if $(OUTPUT),$(OUTPUT),.) -name \*.o -or -name \*.o.cmd -or -name \*.o.d | xargs $(RM)
+ 
+ tags:
+-- 
+2.26.2
 
