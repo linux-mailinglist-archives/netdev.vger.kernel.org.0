@@ -2,64 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E4FA310528
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 07:50:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6931E310576
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 08:08:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231449AbhBEGtc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 01:49:32 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56088 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231357AbhBEGrZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Feb 2021 01:47:25 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9452864DD6;
-        Fri,  5 Feb 2021 06:46:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612507605;
-        bh=2TyDJcUp5VVoVBrxWcSba8AppyQ93QT3hKH0MGrUe+U=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=Z0ThHxLH0VUivg7VVjHCYyK7GRdIsqn9001IVwglLDhLavmb2CXvu/tVumkWHa5Ln
-         6gOKT8JxN0tJkb4kkXec+LSjjSnJp3M+97Cpbsv8DfFAqUEQ5BKvnN9epbbGNABEDR
-         O6Zh/T6E3W0c6heVhPomEUDt89zpX/KAOyNVFnkGnv/a7X8otoanFZxmeeWoxZkr5n
-         21wAJOi1jbs0/BhSj+AqBdjO7U6GC4At/tGQxE3OHirk/bt5IZud3Rsl60nftFeCoA
-         6Kg0BkF49birZvsUfHQx2KQVfNcp8p0CGiLE5HCnI8DDR7MASi73t9zrWB85Q0Z5fr
-         9RmmiZaruIzwQ==
-Message-ID: <1dd5bf9ec89a753fedd767d8503f5573b75ed1e1.camel@kernel.org>
-Subject: Re: [PATCH][next] net/mlx5e: Fix spelling mistake "Unknouwn" ->
- "Unknown"
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Colin King <colin.king@canonical.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Thu, 04 Feb 2021 22:46:43 -0800
-In-Reply-To: <20210203145736.00005b7b@intel.com>
-References: <20210203111049.18125-1-colin.king@canonical.com>
-         <20210203145736.00005b7b@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3 (3.38.3-1.fc33) 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S231256AbhBEHI3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 02:08:29 -0500
+Received: from mail-m2836.qiye.163.com ([103.74.28.36]:50170 "EHLO
+        mail-m2836.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231144AbhBEHIW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 02:08:22 -0500
+Received: from localhost.localdomain (unknown [123.59.132.129])
+        by mail-m2836.qiye.163.com (Hmail) with ESMTPA id 583C9C00ED;
+        Fri,  5 Feb 2021 15:07:30 +0800 (CST)
+From:   wenxu@ucloud.cn
+To:     kuba@kernel.org, mleitner@redhat.com
+Cc:     netdev@vger.kernel.org, jhs@mojatatu.com
+Subject: [PATCH net v3] net/sched: cls_flower: Reject invalid ct_state flags rules
+Date:   Fri,  5 Feb 2021 15:07:30 +0800
+Message-Id: <1612508850-11577-1-git-send-email-wenxu@ucloud.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSUI3V1ktWUFJV1kPCR
+        oVCBIfWUFZThpMGB0YGh8dTUpCVkpNSklOS0NDTktOSE9VGRETFhoSFyQUDg9ZV1kWGg8SFR0UWU
+        FZT0tIVUpKS0JITVVLWQY+
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MjY6DRw*PT0rMgIiD1EjSB8s
+        DAswCTxVSlVKTUpJTktDQ05LTE1KVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
+        QlVKSElVSklCWVdZCAFZQU9JTU43Bg++
+X-HM-Tid: 0a77710468e8841ekuqw583c9c00ed
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-02-03 at 14:57 -0800, Jesse Brandeburg wrote:
-> Colin King wrote:
-> 
-> > From: Colin Ian King <colin.king@canonical.com>
-> > 
-> > There is a spelling mistake in a netdev_warn message. Fix it.
-> > 
-> > Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> 
-> Trivial patch, looks fine!
-> 
-> Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+From: wenxu <wenxu@ucloud.cn>
 
-Applied to net-next-mlx5.
+Reject the unsupported and invalid ct_state flags of cls flower rules.
 
-Thanks!
+Fixes: e0ace68af2ac ("net/sched: cls_flower: Add matching on conntrack info")
+Signed-off-by: wenxu <wenxu@ucloud.cn>
+---
+v3: using NLA_POLICY_MASK and NL_SET_ERR_MSG_ATTR
+
+ include/uapi/linux/pkt_cls.h |  7 +++++++
+ net/sched/cls_flower.c       | 33 ++++++++++++++++++++++++++++++++-
+ 2 files changed, 39 insertions(+), 1 deletion(-)
+
+diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
+index ee95f42..77df582 100644
+--- a/include/uapi/linux/pkt_cls.h
++++ b/include/uapi/linux/pkt_cls.h
+@@ -591,8 +591,15 @@ enum {
+ 	TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED = 1 << 1, /* Part of an existing connection. */
+ 	TCA_FLOWER_KEY_CT_FLAGS_RELATED = 1 << 2, /* Related to an established connection. */
+ 	TCA_FLOWER_KEY_CT_FLAGS_TRACKED = 1 << 3, /* Conntrack has occurred. */
++
++	__TCA_FLOWER_KEY_CT_FLAGS_MAX,
+ };
+ 
++#define TCA_FLOWER_KEY_CT_FLAGS_MAX \
++		((__TCA_FLOWER_KEY_CT_FLAGS_MAX - 1) << 1)
++#define TCA_FLOWER_KEY_CT_FLAGS_MASK \
++		(TCA_FLOWER_KEY_CT_FLAGS_MAX - 1)
++
+ enum {
+ 	TCA_FLOWER_KEY_ENC_OPTS_UNSPEC,
+ 	TCA_FLOWER_KEY_ENC_OPTS_GENEVE, /* Nested
+diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+index 84f9325..4aebf4e 100644
+--- a/net/sched/cls_flower.c
++++ b/net/sched/cls_flower.c
+@@ -30,6 +30,9 @@
+ 
+ #include <uapi/linux/netfilter/nf_conntrack_common.h>
+ 
++#define TCA_FLOWER_KEY_CT_STATE_MASK_TYPE \
++			NLA_POLICY_MASK(NLA_U16, TCA_FLOWER_KEY_CT_FLAGS_MASK)
++
+ struct fl_flow_key {
+ 	struct flow_dissector_key_meta meta;
+ 	struct flow_dissector_key_control control;
+@@ -687,7 +690,7 @@ static void *fl_get(struct tcf_proto *tp, u32 handle)
+ 	[TCA_FLOWER_KEY_ENC_OPTS]	= { .type = NLA_NESTED },
+ 	[TCA_FLOWER_KEY_ENC_OPTS_MASK]	= { .type = NLA_NESTED },
+ 	[TCA_FLOWER_KEY_CT_STATE]	= { .type = NLA_U16 },
+-	[TCA_FLOWER_KEY_CT_STATE_MASK]	= { .type = NLA_U16 },
++	[TCA_FLOWER_KEY_CT_STATE_MASK]	= TCA_FLOWER_KEY_CT_STATE_MASK_TYPE,
+ 	[TCA_FLOWER_KEY_CT_ZONE]	= { .type = NLA_U16 },
+ 	[TCA_FLOWER_KEY_CT_ZONE_MASK]	= { .type = NLA_U16 },
+ 	[TCA_FLOWER_KEY_CT_MARK]	= { .type = NLA_U32 },
+@@ -1390,12 +1393,33 @@ static int fl_set_enc_opt(struct nlattr **tb, struct fl_flow_key *key,
+ 	return 0;
+ }
+ 
++static int fl_validate_ct_state(u16 state, struct nlattr *tb,
++				struct netlink_ext_ack *extack)
++{
++	if (state && !(state & TCA_FLOWER_KEY_CT_FLAGS_TRACKED)) {
++		NL_SET_ERR_MSG_ATTR(extack, tb,
++				    "ct_state no trk, no other flag are set");
++		return -EINVAL;
++	}
++
++	if (state & TCA_FLOWER_KEY_CT_FLAGS_NEW &&
++	    state & TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED) {
++		NL_SET_ERR_MSG_ATTR(extack, tb,
++				    "ct_state new and est are exclusive");
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
+ static int fl_set_key_ct(struct nlattr **tb,
+ 			 struct flow_dissector_key_ct *key,
+ 			 struct flow_dissector_key_ct *mask,
+ 			 struct netlink_ext_ack *extack)
+ {
+ 	if (tb[TCA_FLOWER_KEY_CT_STATE]) {
++		int err;
++
+ 		if (!IS_ENABLED(CONFIG_NF_CONNTRACK)) {
+ 			NL_SET_ERR_MSG(extack, "Conntrack isn't enabled");
+ 			return -EOPNOTSUPP;
+@@ -1403,6 +1427,13 @@ static int fl_set_key_ct(struct nlattr **tb,
+ 		fl_set_key_val(tb, &key->ct_state, TCA_FLOWER_KEY_CT_STATE,
+ 			       &mask->ct_state, TCA_FLOWER_KEY_CT_STATE_MASK,
+ 			       sizeof(key->ct_state));
++
++		err = fl_validate_ct_state(mask->ct_state,
++					   tb[TCA_FLOWER_KEY_CT_STATE_MASK],
++					   extack);
++		if (err)
++			return err;
++
+ 	}
+ 	if (tb[TCA_FLOWER_KEY_CT_ZONE]) {
+ 		if (!IS_ENABLED(CONFIG_NF_CONNTRACK_ZONES)) {
+-- 
+1.8.3.1
 
