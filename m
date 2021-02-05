@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AB923110E2
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 20:16:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F18DA3110E8
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 20:19:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233509AbhBERd2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 12:33:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34928 "EHLO
+        id S233643AbhBEReI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 12:34:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233305AbhBEP6Y (ORCPT
+        with ESMTP id S233291AbhBEP6Y (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 10:58:24 -0500
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D09AC06178A;
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DF37C061788;
         Fri,  5 Feb 2021 09:39:45 -0800 (PST)
-Received: by mail-lf1-x136.google.com with SMTP id a12so11085108lfb.1;
+Received: by mail-lf1-x130.google.com with SMTP id p21so10986086lfu.11;
         Fri, 05 Feb 2021 09:39:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=hseLb0dwWumgxU/+HV0VWRPn5JhtqayFxSzk7wGDI0A=;
-        b=YYyzUyNidCYEs9vScdRQDO8FiLHKo2XmBcrp9CZaN6HRQeQs6rDCB7RfAlhSJcieMj
-         UAG0dfnPO3SHfIGI0eimbXemT5HTZ1rzP6jxWOXfUmqOMnJQuaLx9EomeHsMxpKV5BYc
-         1vFprZ6Q39fK1JwpHblakPJnNt0V44EFplrIzflfmJc0ZWG4ljZXQmK8jONYoZj7Extr
-         pDxiIciKQsi2yiAgvOLedPf3x76RP7UjLG1H6eQQ79BvrOUcCKy/TehY0T4BkQAl/JLB
-         ftyMovMboKeF31NdPB+BSrO4doGBfxx0sYKzhoOlOWGuQZm7fzguhJH6eC1dd99+fesh
-         nOyQ==
+        bh=+zrSOqxy0ErPj0MsXNXkfWyM9kqx4Wiah0w21ZGB0bY=;
+        b=Ru7z4QFqDUc4HZlbYxWvSxAe1GiEb+ooIGs5rOByrwuRBVsilRSzNGZM0ds0A3rrlk
+         ozOCIvW4ebbuaHKIeDyP479DnN0XmRjf18/bBchfJdkBKLs4753YPNgsCD6rwT+Ii0uW
+         6SPXCa/2JjgPzz/9vvG+4bZ7EmK7zCgUHtEdkYhXSDUeWNWFzXYcORl28HBwNNs76z1l
+         eTgEFewMIvNUC+1mpmDrwWtUeoCJH3qUrEqNok71fJrQyD6PINdRXhIqk/jjdag7ac8Q
+         DtgiQ9pVWLpRT2SXzDd8CuIce/gA8rQaaDuj1iCMufRSLjoTNWCKV6ufQs/6wcUzkMGt
+         fJUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=hseLb0dwWumgxU/+HV0VWRPn5JhtqayFxSzk7wGDI0A=;
-        b=GSQQiWpZLORm9c0j2cZFpJL1z6OgPPqY/u8n5qCiGZ8NB/47T9H2qJDvCUsJg+IEjL
-         frg84SYamqmQgdzJiB4mdA37bdWVKiHGSlkjQRpDGQgQ//enybR8De1hn9+ezSiV9pjw
-         ISQ0fNpzvrtJ40qoKZ9mCvYd5EgbLbF4EuMpMh0Gx5/oaA+OkQgDcHi+Xu0P86u6N8qv
-         wuSj5wyd7OHP7Yk+KAVs67lRJwMxujQkaAkUooDwykInI7bWpP3gYIjLdaUAYaKBOAGh
-         fW8DrDKkDuNg5H+TjmKQEjbnBGFlJbx67oAPn6UvYruzEoVNSWk0k0amPljXMpFeSVwt
-         5qjA==
-X-Gm-Message-State: AOAM531uwJSEesheFqj7e17RVoUN2unpesniydLmy5iSVvTgBIpg4Li3
-        /QV02ykNXLRhL7j4cZaLQJNhskcf1nHSPA==
-X-Google-Smtp-Source: ABdhPJxP5sMoD/gCL4SiOmeR7Jb0WdHCMLb5NQG0CukrEqhNQjU1FgXtZHVGNf9yHo9uWsH5NSkbcg==
-X-Received: by 2002:a19:347:: with SMTP id 68mr3126116lfd.110.1612546782596;
-        Fri, 05 Feb 2021 09:39:42 -0800 (PST)
+        bh=+zrSOqxy0ErPj0MsXNXkfWyM9kqx4Wiah0w21ZGB0bY=;
+        b=GGNgLx+Tg0Hg1KIviXgAh573NHAfx217AqjRvInUzgDLTBVh1LJtkVYKK3j1FNrAU3
+         d56/298ZJWWlGkyXKCdtMeAQO04InYV/mn4KImVa44bdMwUlYAh/1igw4B8to2v7+1o+
+         unATy6a/7q1cCUk2BdTpJu7ituF7dLFzcrjgei5/uNwetXMWGmjxbJI3O5I4c/px1JwC
+         700y81rlQbnHxBTLoUEgDxpQLRnIBNzQTTqjCC4HCNGE4czjBLJTQ16ahWpIezY6uYB1
+         nRGOmgcBd7mSUaO6uwa2fT2gBzb05PSgkNJAAbcTwSnzDqT8l93ATHKbfrnVsE8Gc5Ub
+         2qcQ==
+X-Gm-Message-State: AOAM533CdB1behEbuuX0qsQTNQV6v3xXZCOHS+ApUxSVjoYXN50dhgBT
+        Xz2dj89TtGAIAnvJgU6KXLQfcFoAyaciGw==
+X-Google-Smtp-Source: ABdhPJwTPAWomtIUQ4HSvW2olLG+DjgxdHlyqBYvMhA6g6oTJ4kWImNYQaENQwiN/naq27+jzUOJwA==
+X-Received: by 2002:a19:c708:: with SMTP id x8mr2880474lff.575.1612546783915;
+        Fri, 05 Feb 2021 09:39:43 -0800 (PST)
 Received: from rafiki.local (user-5-173-242-247.play-internet.pl. [5.173.242.247])
-        by smtp.gmail.com with ESMTPSA id n16sm1053230lfq.301.2021.02.05.09.39.41
+        by smtp.gmail.com with ESMTPSA id n16sm1053230lfq.301.2021.02.05.09.39.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Feb 2021 09:39:42 -0800 (PST)
+        Fri, 05 Feb 2021 09:39:43 -0800 (PST)
 From:   Lech Perczak <lech.perczak@gmail.com>
 To:     linux-usb@vger.kernel.org, netdev@vger.kernel.org
 Cc:     Lech Perczak <lech.perczak@gmail.com>,
+        Johan Hovold <johan@kernel.org>,
         =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
-Subject: [PATCH v2 1/2] net: usb: qmi_wwan: support ZTE P685M modem
-Date:   Fri,  5 Feb 2021 18:39:03 +0100
-Message-Id: <20210205173904.13916-2-lech.perczak@gmail.com>
+Subject: [PATCH v2 2/2] usb: serial: option: add full support for ZTE P685M
+Date:   Fri,  5 Feb 2021 18:39:04 +0100
+Message-Id: <20210205173904.13916-3-lech.perczak@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210205173904.13916-1-lech.perczak@gmail.com>
 References: <20210205173904.13916-1-lech.perczak@gmail.com>
@@ -63,6 +64,11 @@ Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
+
+Only 1st (DIAG) port was supported, support ports 1 (PCUI) and 2 (Modem)
+on ff/00/00 too. Ports expose AT command interface. Blacklist ports 3
+now used by qmi_wwan and port 4 for ADB, and finally simplify device ID
+to match only ports 0-2.
 
 The modem is used inside ZTE MF283+ router and carriers identify it as
 such.
@@ -95,26 +101,30 @@ I:* If#= 4 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=42 Prot=01 Driver=(none)
 E:  Ad=88(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
 E:  Ad=05(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
 
+Cc: Johan Hovold <johan@kernel.org>
 Cc: Bjørn Mork <bjorn@mork.no>
 Signed-off-by: Lech Perczak <lech.perczak@gmail.com>
+
 ---
-v2: no changes to this patch, resend as series.
+v2: Blacklist ports 3-4 and simplify device ID,
+as suggested by Lars Melin.
 
- drivers/net/usb/qmi_wwan.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/usb/serial/option.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index cc4819282820..a0bf7737402f 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -1235,6 +1235,7 @@ static const struct usb_device_id products[] = {
- 	{QMI_FIXED_INTF(0x19d2, 0x1255, 4)},
- 	{QMI_FIXED_INTF(0x19d2, 0x1256, 4)},
- 	{QMI_FIXED_INTF(0x19d2, 0x1270, 5)},	/* ZTE MF667 */
-+	{QMI_FIXED_INTF(0x19d2, 0x1275, 3)},	/* ZTE P685M */
- 	{QMI_FIXED_INTF(0x19d2, 0x1401, 2)},
- 	{QMI_FIXED_INTF(0x19d2, 0x1402, 2)},	/* ZTE MF60 */
- 	{QMI_FIXED_INTF(0x19d2, 0x1424, 2)},
+diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
+index 3fe959104311..485d07df8f69 100644
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -1567,7 +1567,7 @@ static const struct usb_device_id option_ids[] = {
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1272, 0xff, 0xff, 0xff) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1273, 0xff, 0xff, 0xff) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1274, 0xff, 0xff, 0xff) },
+-	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1275, 0xff, 0xff, 0xff) },
++	{ USB_DEVICE(ZTE_VENDOR_ID, 0x1275), .driver_info = RSVD(3) | RSVD(4) }, /* ZTE P685M */
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1276, 0xff, 0xff, 0xff) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1277, 0xff, 0xff, 0xff) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1278, 0xff, 0xff, 0xff) },
 -- 
 2.20.1
 
