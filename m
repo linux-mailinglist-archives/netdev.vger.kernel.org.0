@@ -2,107 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93EB931192B
-	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 03:58:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 369403118F7
+	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 03:52:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232398AbhBFC5B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 21:57:01 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:46919 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231390AbhBFCr5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 21:47:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1612579591;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=AYGGDA96ECWqQKM+EqU3BIR3anY2ge6JyymK2JmAKVg=;
-        b=gTlLe4wxsef9J5ZsO4tfhM62MCoSiwIJ5cxeFk0Rg6SQi8nNbEfWvsrMXZBgJ+5dzC1dqr
-        gBiSboR6iR39VCQoI8PgwMwYpX++2C5LuTcp0a4ohr4TgTn76C7klLXBDk/mKt7lhkKDC/
-        a1aWxmaQmVYCTx8AmFCNCAAjOtQmpbI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-309-b4VtmItPNTCb09moGMDoJA-1; Fri, 05 Feb 2021 17:33:00 -0500
-X-MC-Unique: b4VtmItPNTCb09moGMDoJA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AE7F08030B7;
-        Fri,  5 Feb 2021 22:32:57 +0000 (UTC)
-Received: from krava (unknown [10.40.195.59])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 6E42560C9C;
-        Fri,  5 Feb 2021 22:32:54 +0000 (UTC)
-Date:   Fri, 5 Feb 2021 23:32:53 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Subject: Re: [PATCHv2 bpf-next 0/4] kbuild/resolve_btfids: Invoke
- resolve_btfids clean in root Makefile
-Message-ID: <YB3HlQRKBWKqlYZG@krava>
-References: <20210205124020.683286-1-jolsa@kernel.org>
- <CAEf4Bzao-9wNdHxGu1mMhSie78FyWno-RYJM6_Jay8s=hyUWJg@mail.gmail.com>
+        id S230145AbhBFCwC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 21:52:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39772 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231287AbhBFCmr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 21:42:47 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E664C08ECA4
+        for <netdev@vger.kernel.org>; Fri,  5 Feb 2021 14:34:13 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id s3so10771594edi.7
+        for <netdev@vger.kernel.org>; Fri, 05 Feb 2021 14:34:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mG/+7SuFXmevfrnANGa5Jna6PHbCifVjbjq7yXHqSpE=;
+        b=J/+sm7PoHCT+sgGsGKWwK2W/wG0ckNAZqcHZawLkWiiL9jr2heghJkRl4V4cgU7TqQ
+         /I5yKbdA/j+wdwaln5/6GChmxHSfnuuwgUOMCSUOOU/1ka23B0iW/tmz26TMiKq23dWH
+         uH12yZp/Xv82GLRWkn96TYtR0OxJqC2E/YwYWcTKNtRopTgjAcKFOcD1XJgnkqmeI7Ez
+         IZmMEP9iutKzLFuj52aJs9+SYm16PGfw5s76U4dXybt7U1tRIL/Q1aMdF5zG55+oKsrw
+         xKSCZ9zNb0ISpr1kl+9PCFECF9I6cnE263oQcWxFPeqE3D3EHa9lZsI2Y6oPmzlEPsTH
+         /XsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mG/+7SuFXmevfrnANGa5Jna6PHbCifVjbjq7yXHqSpE=;
+        b=JhZRYpPWaBEebZLawti5zl1YyS3usfxeb/6k3nUFKpL+dE45z3gXq6hv901YVvj1tC
+         2VbVONqW3T44G7ggIjNNG1B0BgpOErWkPLIG0tqa4eVqWuvL9oNrh55iXxecLYunirsc
+         Qe8wrXRdyC4piufKFtqQZJj6eyCAyH8F5fcY20KdyyAddM2xQn6Su6gF57DB5BJUeGmC
+         iCnubAJ0U0ZMuTf4WAftWADzaPNxQfJlU9noTQvTmIp7ZUf2zfkny4Ea1UOze13tLwGa
+         OeNP13OjCBkCyW0GAU6SiQ4vUIOzNv7TNW7/d24cyrytMgc0GNpLb90Q8NbKZ1oBNbHo
+         n7XQ==
+X-Gm-Message-State: AOAM5333YU5r13YfkokpIdcEygviDqxYCTtchxQxYVfEykbuYNs4qp7g
+        tQ4aNMIZRS0Z7HJqzd6qS24=
+X-Google-Smtp-Source: ABdhPJyX85W4tmXDmclm3hIC7wNdK1COeftfwlnKJf2NgG1IkZLmyXc16SjT004hM/uytrAssz4k0w==
+X-Received: by 2002:aa7:cd87:: with SMTP id x7mr6002633edv.210.1612564451960;
+        Fri, 05 Feb 2021 14:34:11 -0800 (PST)
+Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id t11sm4569992edd.1.2021.02.05.14.34.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Feb 2021 14:34:11 -0800 (PST)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Subject: [PATCH net-next] net: dsa: allow port mirroring towards foreign interfaces
+Date:   Sat,  6 Feb 2021 00:33:55 +0200
+Message-Id: <20210205223355.298049-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4Bzao-9wNdHxGu1mMhSie78FyWno-RYJM6_Jay8s=hyUWJg@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 05, 2021 at 02:27:08PM -0800, Andrii Nakryiko wrote:
-> On Fri, Feb 5, 2021 at 4:45 AM Jiri Olsa <jolsa@kernel.org> wrote:
-> >
-> > hi,
-> > resolve_btfids tool is used during the kernel build,
-> > so we should clean it on kernel's make clean.
-> >
-> > v2 changes:
-> >   - add Song's acks on patches 1 and 4 (others changed) [Song]
-> >   - add missing / [Andrii]
-> >   - change srctree variable initialization [Andrii]
-> >   - shifted ifdef for clean target [Andrii]
-> >
-> > thanks,
-> > jirka
-> >
-> >
-> 
-> FYI, your patch #2 didn't make it into the mailing list (see [0]). So
-> maybe wait for a bit and if it doesn't arrive, re-submit?
-> 
->   [0] https://patchwork.kernel.org/user/todo/netdevbpf/?series=428711&delegate=121173&state=*
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-hum and lore shows just 1 and 4
-  https://lore.kernel.org/bpf/20210205124020.683286-1-jolsa@kernel.org/
+To a DSA switch, port mirroring towards a foreign interface is the same
+as mirroring towards the CPU port, since all non-DSA interfaces are
+reachable through that. Tell the hardware to send the packets to the CPU
+port and let the mirred action deal with them in software.
 
-I'll check and resent later 
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ net/dsa/slave.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-thanks,
-jirka
-
-> 
-> > ---
-> > Jiri Olsa (4):
-> >       tools/resolve_btfids: Build libbpf and libsubcmd in separate directories
-> >       tools/resolve_btfids: Check objects before removing
-> >       tools/resolve_btfids: Set srctree variable unconditionally
-> >       kbuild: Add resolve_btfids clean to root clean target
-> >
-> >  Makefile                            |  7 ++++++-
-> >  tools/bpf/resolve_btfids/.gitignore |  2 --
-> >  tools/bpf/resolve_btfids/Makefile   | 44 ++++++++++++++++++++++----------------------
-> >  3 files changed, 28 insertions(+), 25 deletions(-)
-> >
-> 
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index b0571ab4e5a7..913a4a5e32a9 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -936,19 +936,19 @@ dsa_slave_add_cls_matchall_mirred(struct net_device *dev,
+ 	if (!act->dev)
+ 		return -EINVAL;
+ 
+-	if (!dsa_slave_dev_check(act->dev))
+-		return -EOPNOTSUPP;
+-
+ 	mall_tc_entry = kzalloc(sizeof(*mall_tc_entry), GFP_KERNEL);
+ 	if (!mall_tc_entry)
+ 		return -ENOMEM;
+ 
++	if (dsa_slave_dev_check(act->dev))
++		to_dp = dsa_slave_to_port(act->dev);
++	else
++		to_dp = dp->cpu_dp;
++
+ 	mall_tc_entry->cookie = cls->cookie;
+ 	mall_tc_entry->type = DSA_PORT_MALL_MIRROR;
+ 	mirror = &mall_tc_entry->mirror;
+ 
+-	to_dp = dsa_slave_to_port(act->dev);
+-
+ 	mirror->to_local_port = to_dp->index;
+ 	mirror->ingress = ingress;
+ 
+-- 
+2.25.1
 
