@@ -2,127 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89823310FE0
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 19:28:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C70AA311042
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 19:48:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233544AbhBEQpx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 11:45:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44742 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233367AbhBEQnp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 11:43:45 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93589C061574;
-        Fri,  5 Feb 2021 10:25:26 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id y10so3996902plk.7;
-        Fri, 05 Feb 2021 10:25:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hDtDmxYzgl4d3/qs8/uzGh/wEnBrhxdK4yPraq/NRyY=;
-        b=t/YdSGFw8VqVoa1GNBxu66fezqmi5TUbADL4oVBPP0/IG+bTi9h+DonXXD74X7QVK5
-         II/iIdPGSImQKVW0c0xTg+LpukBQkR3ZCwdgBBONudJ5sJ1CmSIZtK0fFW596jozgVfP
-         jDxRTaesog5T9hs6HHcA05q67L2mtvNUCgnbTcvhePAkiB1gbBgexUo+16qYPESc35cS
-         12YFYIz8AiLXqUaeA6GU0MdLL5T50YfvsHreaRKnTAL5VcciMUWT1OxjMi5lik8twYGl
-         ZEaEPXqp50XtaKR1OyCyTUpzAxhFczg3p+5TRhO45kA/kIUAuzqXOMjyXssWzV7gOPjc
-         etiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hDtDmxYzgl4d3/qs8/uzGh/wEnBrhxdK4yPraq/NRyY=;
-        b=LWthXTU67G1g5KeSCdClGLDWBO0B5k0kCMSI0WXLH054gb/qjarwjGlMhsvWjJ31j0
-         cFIglaaqnNqnQpoMvapGCXS3LE3SDJrq4UvMB1udptcHIzgPgJNZ7jVpM3Sb3hfW0GMb
-         c1oykQghk9vRFXSR4gKn60AtTdg54IJQpLcUneR5i5BuMJl9cAvihfhEpfeyDjLcnYXm
-         fqX0gGOYvSppUSfEQ5vk2qT/rEcdWcO4qAQLAbO9TxkKhowuSyh9WgqlemcT5+ekV7+z
-         eO6wY+vA3vDgVEJwSTNGCibERPxEIwHZvH+T6nyonaP91tmyRpZaa3Clf112B7n5535d
-         IvHw==
-X-Gm-Message-State: AOAM533dqfsuIj3UXS5DMWlbCvy3zcMb+QPS9X36etqoK7zsnWnEb1PY
-        DOe5sb61vGsQ9qKcY6iQ0n3LU13N6F21ByhR7Rw=
-X-Google-Smtp-Source: ABdhPJxA5kH01hLnpC/G1J9D4X8lAY5LIygvAT+AFOof8c9R8sEDvANdrZQK4kJzaz+ZteiN5lyLdGNZskLCBBI8/P4=
-X-Received: by 2002:a17:90a:1b23:: with SMTP id q32mr5408942pjq.181.1612549526116;
- Fri, 05 Feb 2021 10:25:26 -0800 (PST)
+        id S233795AbhBERDg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 12:03:36 -0500
+Received: from mail.thelounge.net ([91.118.73.15]:34701 "EHLO
+        mail.thelounge.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233462AbhBERBN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 12:01:13 -0500
+Received: from srv-rhsoft.rhsoft.net (rh.vpn.thelounge.net [10.10.10.2])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: h.reindl@thelounge.net)
+        by mail.thelounge.net (THELOUNGE MTA) with ESMTPSA id 4DXJ714tklzXRM;
+        Fri,  5 Feb 2021 15:42:53 +0100 (CET)
+To:     Jozsef Kadlecsik <kadlec@netfilter.org>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, kuba@kernel.org
+References: <20210205001727.2125-1-pablo@netfilter.org>
+ <20210205001727.2125-2-pablo@netfilter.org>
+ <69957353-7fe0-9faa-4ddd-1ac44d5386a5@thelounge.net>
+ <alpine.DEB.2.23.453.2102051448220.10405@blackhole.kfki.hu>
+From:   Reindl Harald <h.reindl@thelounge.net>
+Organization: the lounge interactive design
+Subject: Re: [PATCH net 1/4] netfilter: xt_recent: Fix attempt to update
+ deleted entry
+Message-ID: <a51d867a-3ca9-fd36-528a-353aa6c42f42@thelounge.net>
+Date:   Fri, 5 Feb 2021 15:42:53 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
 MIME-Version: 1.0
-References: <20210122154300.7628-1-calvin.johnson@oss.nxp.com>
- <20210122154300.7628-8-calvin.johnson@oss.nxp.com> <20210205172518.GA18214@lsv03152.swis.in-blr01.nxp.com>
-In-Reply-To: <20210205172518.GA18214@lsv03152.swis.in-blr01.nxp.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 5 Feb 2021 20:25:09 +0200
-Message-ID: <CAHp75VdX2gZbt-eYp31wg0r+yih8omGxcTf6cMyhxjMZZYzFuQ@mail.gmail.com>
-Subject: Re: [net-next PATCH v4 07/15] net: mdiobus: Introduce fwnode_mdiobus_register_phy()
-To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
-Cc:     Grant Likely <grant.likely@arm.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
-        Jon <jon@solid-run.com>, Saravana Kannan <saravanak@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        "linux.cj" <linux.cj@gmail.com>,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        devicetree <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <alpine.DEB.2.23.453.2102051448220.10405@blackhole.kfki.hu>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 5, 2021 at 7:25 PM Calvin Johnson
-<calvin.johnson@oss.nxp.com> wrote:
-> On Fri, Jan 22, 2021 at 09:12:52PM +0530, Calvin Johnson wrote:
 
-...
 
-> > +     rc = fwnode_property_match_string(child, "compatible", "ethernet-phy-ieee802.3-c45");
-> With ACPI, I'm facing some problem with fwnode_property_match_string(). It is
-> unable to detect the compatible string and returns -EPROTO.
->
-> ACPI node for PHY4 is as below:
->
->  Device(PHY4) {
->     Name (_ADR, 0x4)
->     Name(_CRS, ResourceTemplate() {
->     Interrupt(ResourceConsumer, Level, ActiveHigh, Shared)
->     {
->       AQR_PHY4_IT
->     }
->     }) // end of _CRS for PHY4
->     Name (_DSD, Package () {
->       ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
->         Package () {
->           Package () {"compatible", "ethernet-phy-ieee802.3-c45"}
->        }
->     })
->   } // end of PHY4
->
->  What is see is that in acpi_data_get_property(),
-> propvalue->type = 0x2(ACPI_TYPE_STRING) and type = 0x4(ACPI_TYPE_PACKAGE).
->
-> Any help please?
->
-> fwnode_property_match_string() works fine for DT.
+Am 05.02.21 um 14:54 schrieb Jozsef Kadlecsik:
+> Hi Harald,
+> 
+> On Fri, 5 Feb 2021, Reindl Harald wrote:
+> 
+>> "Reap only entries which won't be updated" sounds for me like the could
+>> be some optimization: i mean when you first update and then check what
+>> can be reaped the recently updated entry would not match to begin with
+> 
+> When the entry is new and the given recent table is full we cannot update
+> (add) it, unless old entries are deleted (reaped) first. So it'd require
+> more additional checkings to be introduced to reverse the order of the two
+> operations.
+well, the most important thing is that the firewall-vm stops to 
+kernel-panic, built that beast in autumn 2018 and until april 2019 i 
+went trough hell with random crashes all the time (connlimit regression, 
+driver issues, vmware issues and that one where i removed --reap on the 
+most called one with some other changes when it crashed 5 or 10 times a 
+day and then 3 days not at all so never figured out what was the gamechanger
 
-Can you show the DT node which works and also input for the
-)match_string() (i.o.w what exactly you are trying to match with)?
+on the other hand if you can't reap old entries because everything is 
+fresh (real DDOS) you can't update / add it anyways
 
--- 
-With Best Regards,
-Andy Shevchenko
+what makes me thinking about the ones without --reap - how is it 
+handeled in that case, i mean there must be some LRU logic present 
+anyways given that --reap is not enabled by default (otherwise that bug 
+would not have hitted me so long randomly)
+
+my first xt_recent-rule on top don't have --reap by intention because 
+it's the DDOS stuff with total connections to any machine per two 
+seconds, my guess what that --reap don't come for free and the 
+roudnabout 200 MB RAM overhead is OK, for the other 12 not hitting that 
+much the VM would consume 1.5 GB RAM after a few days instead 240 MB - 
+but they where obviosuly the trigger for random crashes
+
+how does that one work after "it's full" to track recent attackers 
+instead just consume memory and no longer work properly?
