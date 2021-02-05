@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EAEF31189D
-	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 03:44:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5F99311870
+	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 03:38:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231233AbhBFCml (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 21:42:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38350 "EHLO
+        id S229789AbhBFCiC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 21:38:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231378AbhBFCid (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 21:38:33 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C09CC06121F
-        for <netdev@vger.kernel.org>; Fri,  5 Feb 2021 14:03:14 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id l12so10720216edt.3
-        for <netdev@vger.kernel.org>; Fri, 05 Feb 2021 14:03:14 -0800 (PST)
+        with ESMTP id S230185AbhBFCfU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 21:35:20 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEF34C061223
+        for <netdev@vger.kernel.org>; Fri,  5 Feb 2021 14:03:17 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id i8so14410410ejc.7
+        for <netdev@vger.kernel.org>; Fri, 05 Feb 2021 14:03:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=e65FdPPpPqsFXEIrgbCwnULwizGY4EY0nzN9rQzDB7o=;
-        b=A142HV9ssaJZupirkDrITJqg0p7RaBikisEXHSAW8wEe8vSkgJzwuPfbdU8c9TCPtM
-         TvDbowcuS1eqRR2y/4dB77ylRtTBc8xaeD05YDXUOoayG8KThtDhrNI3PqG4H52gr+D0
-         Fjj/fRPO4pJx1Vt6y4V44gTOiigXPxyqOk7gb/UBrfI3gecXW51bBTQKwhWz2U1K57my
-         8xk55v0jrUaXAyAtoko1MZLGmFL0k5tPFBdOjMQ8ntzkE7Q554REvkMDMjJ2fCzMqyql
-         q7Xd2AlrxTipPUvboPWnSFo/Vf6a3iHUB7fzgVz/tMloITN6bxshDQoSNVNWW+UWvVWR
-         FNMg==
+        bh=MsV1sQIBZpuksx4sPdCdGrBtzsa4qZpu9FzXyF9RiLU=;
+        b=bzktRBIakRgngCW4fmg1eSKERCtBOnq0/KK9ohDllwkjw5dY3PdVk4VNfAFUl2lcjl
+         7v7aOBdqfJDoOdLFGiBVOLrG7q2iJLOsZvrXAkJsqWwjrPzNmE5DY1XVDDCARzzejLLj
+         Pd0ivEnI/fnKIQlHw50yZ30CH+zaAwOPr4K6KLoz/16gF0KWsrue7Adp3LN5LMb76Za8
+         8is7WZVQkgdsoVHXm0orTBK81lj11EShfPmBw76cGPgI0pgvGBdypcz9C7G+7i9g94uv
+         yaoRc3ivD98atDP/DYUL5oJuZ0S/qJ7vJzEQS7zXJrzoQ4gAT6pUaKA1fr6eGBziszUc
+         dIrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=e65FdPPpPqsFXEIrgbCwnULwizGY4EY0nzN9rQzDB7o=;
-        b=UmRAPQXtlOdDCzhOuALCFCxnlBxuAahpY9uNMIvlsQ05lbkEvxv7VCGBat7RU5B25C
-         mxidukplFodNbvMX+f+CsgzBUPQFfGEUIR+RBSR0oVxaBYgIodzwLMQjgsXjhdicsmN2
-         dpWobigZbykCvYnulwtMqWTOTLMMe7c5ecqwmPEWUu85W1AXZGg9RUMRtQzZnVKof5Ep
-         kEQo6v2+qgCl+uI8EWYwHYJjPTraAsetJcLCt9jr/Do/YZHE2k6GPh99YWx95Ln55yND
-         l8U60sq8ML43NeTtUn9NonnB3PfRL3QFpvrKPFrFjRTwj5KEChWVcM5x6tGdhQ/YsWBl
-         kW+A==
-X-Gm-Message-State: AOAM530vwjfWFLg04NBvVAUAm0EsKHQM8EKKJUCvQkUclyUhjb+cEbuX
-        jCpkPrpT1u1vr+ekc30N/h0=
-X-Google-Smtp-Source: ABdhPJzPkrIoxAlHZn+ESmKg2TCsAsUEscKAS5uzXk3W8Z9W+F5smNCf5ya0SgyOPoUVwKOhAmEBdA==
-X-Received: by 2002:aa7:d149:: with SMTP id r9mr3856361edo.38.1612562593039;
-        Fri, 05 Feb 2021 14:03:13 -0800 (PST)
+        bh=MsV1sQIBZpuksx4sPdCdGrBtzsa4qZpu9FzXyF9RiLU=;
+        b=YcRX0MAgTClAfLUA+2ow7NSzPHlNxDVsHiAE7zMhhumb4vWtGMnzGj5AzuFnrL3v/v
+         dTR/+5MI1WrBl0xls7olZkTf3PyVF8hH7WXa1t3Pi3FTJeev+/46xJswztzWa0VzESaj
+         3TYZQ0bXgtW67huFbqmZjLxnDTbp1RNIm33Fs5wG7DA6AjAZC6MPPOK9hMpgTabjggQM
+         yI5xN9a8/dNlBkdV+mmclJ1FIqCSj1TgkbTuJgBLv6hQSHfpkZC6dTAis9O2w40vFoQ6
+         t7aIj9fydHCiiQwLuBMIa/ITtaBUgY2QqjEO253zae0GLGeRl/l+iV2MIV8u3P3hixDk
+         /2tg==
+X-Gm-Message-State: AOAM532cYJctR5xnkp8oIxZp80V8mcMXOaHVtl5UlPRtBlnre+xz85Do
+        GlrQcqEey490U+qiGF3UZAsqsAmQbIA=
+X-Google-Smtp-Source: ABdhPJykkP6n9YNLjQRzRxIS6rjykzpvoxQlOgR24NF06MjiFBMSeloYcO/qJ5y4nG+XVCPYmPV4gQ==
+X-Received: by 2002:a17:906:84d7:: with SMTP id f23mr6268570ejy.87.1612562596584;
+        Fri, 05 Feb 2021 14:03:16 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id t16sm4969909edi.60.2021.02.05.14.03.11
+        by smtp.gmail.com with ESMTPSA id t16sm4969909edi.60.2021.02.05.14.03.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Feb 2021 14:03:12 -0800 (PST)
+        Fri, 05 Feb 2021 14:03:16 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -57,9 +57,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Claudiu Manoil <claudiu.manoil@nxp.com>
-Subject: [PATCH RESEND v3 net-next 02/12] net: mscc: ocelot: use a switch-case statement in ocelot_netdevice_event
-Date:   Sat,  6 Feb 2021 00:02:11 +0200
-Message-Id: <20210205220221.255646-3-olteanv@gmail.com>
+Subject: [PATCH RESEND v3 net-next 05/12] net: mscc: ocelot: set up the bonding mask in a way that avoids a net_device
+Date:   Sat,  6 Feb 2021 00:02:14 +0200
+Message-Id: <20210205220221.255646-6-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210205220221.255646-1-olteanv@gmail.com>
 References: <20210205220221.255646-1-olteanv@gmail.com>
@@ -71,115 +71,106 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Make ocelot's net device event handler more streamlined by structuring
-it in a similar way with others. The inspiration here was
-dsa_slave_netdevice_event.
+Since this code should be called from pure switchdev as well as from
+DSA, we must find a way to determine the bonding mask not by looking
+directly at the net_device lowers of the bonding interface, since those
+could have different private structures.
+
+We keep a pointer to the bonding upper interface, if present, in struct
+ocelot_port. Then the bonding mask becomes the bitwise OR of all ports
+that have the same bonding upper interface. This adds a duplication of
+functionality with the current "lags" array, but the duplication will be
+short-lived, since further patches will remove the latter completely.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 ---
- drivers/net/ethernet/mscc/ocelot_net.c | 68 +++++++++++++++++---------
- 1 file changed, 45 insertions(+), 23 deletions(-)
+Changes in v3:
+None.
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
-index c8106124f134..ec68cf644522 100644
---- a/drivers/net/ethernet/mscc/ocelot_net.c
-+++ b/drivers/net/ethernet/mscc/ocelot_net.c
-@@ -1137,49 +1137,71 @@ static int ocelot_netdevice_changeupper(struct net_device *dev,
- 					      info->upper_dev);
- 	}
+Changes in v2:
+Adapted to the merged version of the DSA API for LAG offload (i.e.
+rejecting a bonding interface due to tx_type now done within the
+.port_lag_join callback, caller is supposed to handle -EOPNOTSUPP).
+
+ drivers/net/ethernet/mscc/ocelot.c | 29 ++++++++++++++++++++++-------
+ include/soc/mscc/ocelot.h          |  2 ++
+ 2 files changed, 24 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index ef3f10f1e54f..127beedcccde 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -889,6 +889,24 @@ int ocelot_get_ts_info(struct ocelot *ocelot, int port,
+ }
+ EXPORT_SYMBOL(ocelot_get_ts_info);
  
--	return err;
-+	return notifier_from_errno(err);
++static u32 ocelot_get_bond_mask(struct ocelot *ocelot, struct net_device *bond)
++{
++	u32 mask = 0;
++	int port;
++
++	for (port = 0; port < ocelot->num_phys_ports; port++) {
++		struct ocelot_port *ocelot_port = ocelot->ports[port];
++
++		if (!ocelot_port)
++			continue;
++
++		if (ocelot_port->bond == bond)
++			mask |= BIT(port);
++	}
++
++	return mask;
 +}
 +
-+static int
-+ocelot_netdevice_lag_changeupper(struct net_device *dev,
-+				 struct netdev_notifier_changeupper_info *info)
-+{
-+	struct net_device *lower;
-+	struct list_head *iter;
-+	int err = NOTIFY_DONE;
-+
-+	netdev_for_each_lower_dev(dev, lower, iter) {
-+		err = ocelot_netdevice_changeupper(lower, info);
-+		if (err)
-+			return notifier_from_errno(err);
-+	}
-+
-+	return NOTIFY_DONE;
- }
- 
- static int ocelot_netdevice_event(struct notifier_block *unused,
- 				  unsigned long event, void *ptr)
+ static u32 ocelot_get_dsa_8021q_cpu_mask(struct ocelot *ocelot)
  {
--	struct netdev_notifier_changeupper_info *info = ptr;
- 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
--	int ret = 0;
+ 	u32 mask = 0;
+@@ -1319,20 +1337,15 @@ int ocelot_port_lag_join(struct ocelot *ocelot, int port,
+ 			 struct net_device *bond,
+ 			 struct netdev_lag_upper_info *info)
+ {
+-	struct net_device *ndev;
+ 	u32 bond_mask = 0;
+ 	int lag, lp;
  
--	if (event == NETDEV_PRECHANGEUPPER &&
--	    ocelot_netdevice_dev_check(dev) &&
--	    netif_is_lag_master(info->upper_dev)) {
--		struct netdev_lag_upper_info *lag_upper_info = info->upper_info;
-+	switch (event) {
-+	case NETDEV_PRECHANGEUPPER: {
-+		struct netdev_notifier_changeupper_info *info = ptr;
-+		struct netdev_lag_upper_info *lag_upper_info;
- 		struct netlink_ext_ack *extack;
+ 	if (info->tx_type != NETDEV_LAG_TX_TYPE_HASH)
+ 		return -EOPNOTSUPP;
  
-+		if (!ocelot_netdevice_dev_check(dev))
-+			break;
+-	rcu_read_lock();
+-	for_each_netdev_in_bond_rcu(bond, ndev) {
+-		struct ocelot_port_private *priv = netdev_priv(ndev);
++	ocelot->ports[port]->bond = bond;
+ 
+-		bond_mask |= BIT(priv->chip_port);
+-	}
+-	rcu_read_unlock();
++	bond_mask = ocelot_get_bond_mask(ocelot, bond);
+ 
+ 	lp = __ffs(bond_mask);
+ 
+@@ -1366,6 +1379,8 @@ void ocelot_port_lag_leave(struct ocelot *ocelot, int port,
+ 	u32 port_cfg;
+ 	int i;
+ 
++	ocelot->ports[port]->bond = NULL;
 +
-+		if (!netif_is_lag_master(info->upper_dev))
-+			break;
+ 	/* Remove port from any lag */
+ 	for (i = 0; i < ocelot->num_phys_ports; i++)
+ 		ocelot->lags[i] &= ~BIT(port);
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index 6a61c499a30d..e36a1ed29c01 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -611,6 +611,8 @@ struct ocelot_port {
+ 
+ 	u8				*xmit_template;
+ 	bool				is_dsa_8021q_cpu;
 +
-+		lag_upper_info = info->upper_info;
-+
- 		if (lag_upper_info &&
- 		    lag_upper_info->tx_type != NETDEV_LAG_TX_TYPE_HASH) {
- 			extack = netdev_notifier_info_to_extack(&info->info);
- 			NL_SET_ERR_MSG_MOD(extack, "LAG device using unsupported Tx type");
++	struct net_device		*bond;
+ };
  
--			ret = -EINVAL;
--			goto notify;
-+			return notifier_from_errno(-EINVAL);
- 		}
-+
-+		break;
- 	}
-+	case NETDEV_CHANGEUPPER: {
-+		struct netdev_notifier_changeupper_info *info = ptr;
- 
--	if (event == NETDEV_CHANGEUPPER) {
--		if (netif_is_lag_master(dev)) {
--			struct net_device *slave;
--			struct list_head *iter;
-+		if (ocelot_netdevice_dev_check(dev))
-+			return ocelot_netdevice_changeupper(dev, info);
- 
--			netdev_for_each_lower_dev(dev, slave, iter) {
--				ret = ocelot_netdevice_changeupper(slave, info);
--				if (ret)
--					goto notify;
--			}
--		} else {
--			ret = ocelot_netdevice_changeupper(dev, info);
--		}
-+		if (netif_is_lag_master(dev))
-+			return ocelot_netdevice_lag_changeupper(dev, info);
-+
-+		break;
-+	}
-+	default:
-+		break;
- 	}
- 
--notify:
--	return notifier_from_errno(ret);
-+	return NOTIFY_DONE;
- }
- 
- struct notifier_block ocelot_netdevice_nb __read_mostly = {
+ struct ocelot {
 -- 
 2.25.1
 
