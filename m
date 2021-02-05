@@ -2,63 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B4FB311136
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 20:32:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C0C6311149
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 20:36:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233521AbhBERsB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 12:48:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57976 "EHLO
+        id S233162AbhBERxB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 12:53:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233686AbhBERpX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 12:45:23 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A49CC061756;
-        Fri,  5 Feb 2021 11:27:07 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id t142so4719807wmt.1;
-        Fri, 05 Feb 2021 11:27:07 -0800 (PST)
+        with ESMTP id S233404AbhBERs6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 12:48:58 -0500
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8187C06174A;
+        Fri,  5 Feb 2021 11:30:41 -0800 (PST)
+Received: by mail-wr1-x429.google.com with SMTP id l12so8969522wry.2;
+        Fri, 05 Feb 2021 11:30:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:subject:to:cc:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=nQ5XuXL2KjXNQ6Da97fSEh5p9x+2C/EGVVzkYBXX5uw=;
-        b=Sxjh6er0UyBlGr9VjYFEbEueB3OKZsc9k26ygQmo2G2/Xb9+Fr51nLn6OilBaI+A63
-         9wbtURKXzMPxFKqkaDyyTiIfQ6CE4P8CVgK1tWqMV6QGVMi6EUOIguMU7iL9s3Za/aAO
-         WH2GDO3WKcsgJMvVQIl36pC2xSNzD7deOR/ZvBRmzR/AoLCPV47GnzdoiqdkiZP9P6Sw
-         AZCIRB0w8mlKhO2eDK82qNY+MRm1HKT3lGZG3aFksu4m146x+GNY8fNC4Taw52jZl0DC
-         VGEXnin9g9USWMJDlN/eZXREf9KSIV8LaaGPNM2egDrty/Fo0BI/xjiHc8Zup/I6M7PH
-         724w==
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=pl9PtiuMxl0Wa0UufjsEq2pee41iNKdi+j7uGSkuBlY=;
+        b=IfxgEsxRHzDwf0VPajMqdgWOzgKlbswJui641E+CoHCfg8bJaIfTbZmjFTeWHZCtPm
+         m7TwRkhEQ2G2hD6FBPtfU7o2Z2A/TOBj9ejDYqOjdYn4w7ZnHAdggIQ93eoRzNxLERY3
+         FoKmrfwGvTDhP+bsgW3mZ3oVcO4+qyDSArBCYqMv0q3b4ivz/Wv/yLU1PWAFQc/22RMH
+         YeWotIrdN7/Tr7Aufprp0Pa7B64LPjCSe2gWXtMPA/gyMq9v3MIYiwWyJwz6jPKt2JEb
+         +8vaRzonDqNwtXalT/np03PLRbbFrpoNeol3SdfvpjlfNOiapDyLGJBo7L5BZ7/9bFWx
+         KTvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=nQ5XuXL2KjXNQ6Da97fSEh5p9x+2C/EGVVzkYBXX5uw=;
-        b=VWofHmhYDe5YckHkX13jSwWDGSapay3X+1KVIcvkUCfuTBJryF+X1X/3oiJh+QUPJh
-         4WhT/aT6yDQ774YtjwEkH1jEY6QhTFjK8BocAsjobV7uM4OOKjLjAWeEML93dnyVpS5p
-         Y9iltckib1eEujrN0Pbph/4yAhOCN6LvEPOKv6Eq03chzSBuk63PpAty47Z5EYUMLgXa
-         RzWILAPsIuC80kH56c816hv2jP+w2UxdhYKCpktH3Ffz/YrVtTAWVt86uRygGACj1bnr
-         Vm5+muFzr//7B6ne1mSh+WeSIYyCUSleONxgHlMDj02s+JKtHrb/CEb8rwCsNSzAII6F
-         zzEQ==
-X-Gm-Message-State: AOAM530y0BmhuA/4zHENECkHPYORw/kwlHcRh3AZdC1NbCMfdTZdpp5O
-        xaeg/O+BcNdn1zMhRu3T2mPObSjIHLnuHA==
-X-Google-Smtp-Source: ABdhPJwY/fMzNcta3vA5H/vo73CK7DW+2SOiUynvm09+mzQ6lPnx5msSJIkFILTSEw/aOfJOzhO0kA==
-X-Received: by 2002:a1c:105:: with SMTP id 5mr4841773wmb.89.1612553225362;
-        Fri, 05 Feb 2021 11:27:05 -0800 (PST)
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=pl9PtiuMxl0Wa0UufjsEq2pee41iNKdi+j7uGSkuBlY=;
+        b=XDZ5UW+qTvY4cpGYmp7w9M6INUidPrzwBSmnm4wKadAUficujhStJYKhCT6pBKgDnC
+         2xVTks1Das6Ibe8tFa3ssMdg0+pT08QIj5NKShIZ8SnoAdMvaetHq1uOuO1Oo3Ts4Z6b
+         2qixtd6w75OV4B+qCqXFZ2LX93wcJqP5QrVWMtSY+WEXz520DNWGYJ33WhV/jC0f6eNL
+         CF2Cxzy0zStrR2sMTA175K0IiTQzl7ycbjpRhKLO7HkFXKW6LXc5Y768+5X62v9Nktne
+         HzMEc1K0QOI4fiIojVvOAsX3RGLOqd4ov97qb4/JG5bZdX9mWEacfhBzKxKnVhzBBHte
+         L6Sg==
+X-Gm-Message-State: AOAM530zE6o7hDm9oVBnQQjJIFKatIXe9VkJ5/i+23F8hlqN8I4+ITmg
+        UVC2yOncK3DzcDRmR7kS3Mv7uzjouiU03w==
+X-Google-Smtp-Source: ABdhPJxJMVVa8ALR3exPSd/D48YBzIT0o/Z/rIZPCll7z9zmUWLbHmW87GahTyekq7RqOiLwVl5rMA==
+X-Received: by 2002:adf:f8c1:: with SMTP id f1mr6682616wrq.76.1612553440248;
+        Fri, 05 Feb 2021 11:30:40 -0800 (PST)
 Received: from ?IPv6:2003:ea:8f1f:ad00:11de:46a1:319f:d28? (p200300ea8f1fad0011de46a1319f0d28.dip0.t-ipconnect.de. [2003:ea:8f1f:ad00:11de:46a1:319f:d28])
-        by smtp.googlemail.com with ESMTPSA id f14sm9601215wmc.32.2021.02.05.11.27.02
+        by smtp.googlemail.com with ESMTPSA id d13sm12897926wrx.93.2021.02.05.11.30.37
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Feb 2021 11:27:04 -0800 (PST)
+        Fri, 05 Feb 2021 11:30:39 -0800 (PST)
+Subject: [PATCH resend net-next v2 1/3] cxgb4: remove unused vpd_cap_addr
 From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH resend net-next v2 0/3] cxgb4: improve PCI VPD handling
 To:     Raju Rangoju <rajur@chelsio.com>, Jakub Kicinski <kuba@kernel.org>,
         David Miller <davem@davemloft.net>,
         Bjorn Helgaas <bhelgaas@google.com>
 Cc:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Message-ID: <6658af1a-88fc-1389-0126-77201b4af2b3@gmail.com>
-Date:   Fri, 5 Feb 2021 20:26:57 +0100
+References: <6658af1a-88fc-1389-0126-77201b4af2b3@gmail.com>
+Message-ID: <6feeeb18-2b4e-afce-ee25-21738223dced@gmail.com>
+Date:   Fri, 5 Feb 2021 20:29:11 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.7.0
 MIME-Version: 1.0
+In-Reply-To: <6658af1a-88fc-1389-0126-77201b4af2b3@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -66,35 +69,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Working on PCI VPD core code I came across the Chelsio drivers.
-Let's improve the way how cxgb4 handles PCI VPD.
+Supposedly this is a leftover from T3 driver heritage. cxgb4 uses the
+PCI core VPD access code that handles detection of VPD capabilities.
 
-One major goal is to eventually remove pci_set_vpd_size(),
-cxgb4 is the only user. The amount of data exposed via the VPD
-interface is fixed, therefore I see no benefit in providing
-an interface for manipulating the VPD size.
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4.h      | 1 -
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c | 2 --
+ 2 files changed, 3 deletions(-)
 
-This series touches only device-specific quirks in the core code,
-therefore I think it should go via the netdev tree.
-
-v2:
-- remove patch 1 from the series
-
-Resending the series because it seems netdev patchwork swallowed it.
-
-Heiner Kallweit (3):
-  cxgb4: remove unused vpd_cap_addr
-  PCI/VPD: Change Chelsio T4 quirk to provide access to full virtual
-    address space
-  cxgb4: remove changing VPD len
-
- .../net/ethernet/chelsio/cxgb4/cudbg_entity.h |  1 -
- .../net/ethernet/chelsio/cxgb4/cudbg_lib.c    | 21 ++++---------------
- drivers/net/ethernet/chelsio/cxgb4/cxgb4.h    |  1 -
- .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   |  2 --
- drivers/pci/vpd.c                             |  7 +++----
- 5 files changed, 7 insertions(+), 25 deletions(-)
-
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
+index 8e681ce72..314f8d806 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
+@@ -414,7 +414,6 @@ struct pf_resources {
+ };
+ 
+ struct pci_params {
+-	unsigned int vpd_cap_addr;
+ 	unsigned char speed;
+ 	unsigned char width;
+ };
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+index 9f1965c80..6264bc66a 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
+@@ -3201,8 +3201,6 @@ static void cxgb4_mgmt_fill_vf_station_mac_addr(struct adapter *adap)
+ 	int err;
+ 	u8 *na;
+ 
+-	adap->params.pci.vpd_cap_addr = pci_find_capability(adap->pdev,
+-							    PCI_CAP_ID_VPD);
+ 	err = t4_get_raw_vpd_params(adap, &adap->params.vpd);
+ 	if (err)
+ 		return;
 -- 
 2.30.0
+
+
 
