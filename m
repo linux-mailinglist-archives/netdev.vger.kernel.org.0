@@ -2,137 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 336783114E3
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 23:23:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E545C3114B5
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 23:14:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232694AbhBEWRl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 17:17:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43372 "EHLO
+        id S233058AbhBEWMm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 17:12:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232609AbhBEOcQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 09:32:16 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B1FC061222;
-        Fri,  5 Feb 2021 08:09:19 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id c6so9422269ede.0;
-        Fri, 05 Feb 2021 08:09:18 -0800 (PST)
+        with ESMTP id S230122AbhBEOmy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 09:42:54 -0500
+Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BFD6C06178A
+        for <netdev@vger.kernel.org>; Fri,  5 Feb 2021 08:20:18 -0800 (PST)
+Received: by mail-qt1-x832.google.com with SMTP id s11so1552515qtq.10
+        for <netdev@vger.kernel.org>; Fri, 05 Feb 2021 08:20:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=XrFiGb4s98X8FFWeanrSHmTuST16C6ouipnGlKmt0Hk=;
-        b=TeA04exmhdK8CwkVcVfIrvYN8A/vC8+PT4oCJhQv/Hkz5dLDaEaGJlEO6X4ZY52qu3
-         DjQwH2+IwZgc/QTJgSSdT6OuOww8SAoioHrPJwvanB7V+XQgv9528+dogteXJaO+02Jw
-         5rBLv3iFBcY3INfCZvD+OAhsDTfM7/iFMjDTPNd5bdvxFF7lfZDFsAwOiX1bjiZiDQex
-         IMHhY3XeXztkTMlZWRhGEIAJ/IGcWryX0qvW5vTsEp+72V4yX22baKLGglRjm6DJM1oQ
-         tar2TT3ner5KYYAsoMOUMvAv3Yv0ZT75sLSQDLm7mbJHGV3XIgo7PowFxo/C/RqyH+xs
-         QPpg==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VdNQsrR6L4Zb5IpKYZydONt7isMKUPDajZ0BlWteITU=;
+        b=oYNd5PJX6gg7KH71AKjbiEAz9Kz7MzbWaW1yw6K2Rjvnqxlxp4thLhFGUK17yziMxe
+         HIbaYfkz/JngwpV7mwg53Uk8LXJCMuTr4OI5pULgOgKSMQYphT3du6BV8mCdO0VPGTPU
+         5gvbGjDt5qP2dFvHmgutAmw2bh+jZAdr2usHCEKhOCGAZd+FLUILWyBvIrwcZpR2TE5t
+         Ume2RZdK/yvZq2EnDHfURZUFH2h6VCXrLMlMFUSf/ZAwQhCm/NTeeqM8I/NV3N8EA0Ge
+         hhN8QquqtoNFVGQUOs93vKRQpbpocI7qZm2fbAzB64k4LmJM+kHdS3/7Q2GK3EITZgeZ
+         J8MA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=XrFiGb4s98X8FFWeanrSHmTuST16C6ouipnGlKmt0Hk=;
-        b=hdKynnhGTpzg8Av5e9+7Aq3ZugNO4nQERvOf8ur2Cayx2yAR59CwjfbWQbfLAtm3MA
-         oFCftN1ouY660ZkF6uA5cczgxgWyWCjRTtjMJytv0/NNRsKxIogBwPfbuiHy8SXgX3jN
-         akpBXul6iUwKYQuwqWEGLUPCtMb2VV9txZqiFd1X5Rf+/ltgUblkDTOSEnHmAMAxDSqF
-         b//oEYgX7fPYXXxuYy5lWK5Zk+Y5w3CtFS2hJ5Ns3q7Z+DxJEYl2NgPf8vGS+DXo8Njt
-         qLeWjzpLiU9/0vwIurzk95a6Q1IwgB4cDEuXcIac27u34q8KfURoFLcYNe+652R3OFIm
-         jVLw==
-X-Gm-Message-State: AOAM530u8XGTYQtWraEUd9qLg7AeWC6chsr21vf/mVi2w3LUXGYe0PEy
-        /ZoU3OiDrQ2l+W0o7Oh/sGuEafE4hPZQfw==
-X-Google-Smtp-Source: ABdhPJyRiNFjoyAZIP4kvF/mH6laIlKd/ow9c7yk++Q4WoxsGDAMaKmRuj+6vRJPyr3xz0txYPaU4w==
-X-Received: by 2002:a5d:5111:: with SMTP id s17mr5270890wrt.331.1612535256274;
-        Fri, 05 Feb 2021 06:27:36 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f1f:ad00:9118:8653:7e7:879e? (p200300ea8f1fad009118865307e7879e.dip0.t-ipconnect.de. [2003:ea:8f1f:ad00:9118:8653:7e7:879e])
-        by smtp.googlemail.com with ESMTPSA id j7sm13275057wrp.72.2021.02.05.06.27.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Feb 2021 06:27:35 -0800 (PST)
-Subject: [PATCH net-next v2 3/3] cxgb4: remove changing VPD len
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Raju Rangoju <rajur@chelsio.com>, Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Bjorn Helgaas <bhelgaas@google.com>
-Cc:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <8edfa4ae-1e78-249d-14fb-0e44a2c51864@gmail.com>
-Message-ID: <90961c36-b345-5a7c-5ae8-c7c2311b56a8@gmail.com>
-Date:   Fri, 5 Feb 2021 15:27:32 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+        bh=VdNQsrR6L4Zb5IpKYZydONt7isMKUPDajZ0BlWteITU=;
+        b=tksgrPqdWfmo2BYPJHeNHgyAPSNvRfIKW4yKcIquLkK3YLrfZUUa+LhrKzvH7CkKDT
+         nZcNUGyVcjJEcD0LX5mPWRyfNxjDy+hBLKpHX2jzic5/RQb6DGxoEUoQIA+O6RCuCaZ9
+         Ed1fvTcqnq03WU3OGkqDm+K9fXrur9P4kfSc7s5ZhWmCjgvLogV+NJKWPJGnztc1jOn8
+         2ks/yqeXp4CZCCUogDwHCSkC3dTe8k20paTRPyDjI5yMFbM/J5NPfqkYdENL6Ov3a50l
+         VCE0Jc1HxIv9kadl0esJxLfXib5m89AmY1+aXbEPwdkPI7mhdBmHe8ZWul/UFzcPxDCX
+         nnRw==
+X-Gm-Message-State: AOAM531oBsRZC5M8zB1PYVsSGH075+z3fEJD9B2COSHRaaNS/OFdRr0+
+        5R6Zw4ldOrwhIJvxSn7iT1F2KrRLIsLsfQ==
+X-Google-Smtp-Source: ABdhPJwVvxuXEKeZt9qocecQAocBMYJpO8vCxFZkFDkDOLJH45JukiF1jbz9ySQMRStwBF5nCiosvg==
+X-Received: by 2002:a05:6638:3f7:: with SMTP id s23mr5291048jaq.80.1612535913255;
+        Fri, 05 Feb 2021 06:38:33 -0800 (PST)
+Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id h9sm4136882ili.43.2021.02.05.06.38.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Feb 2021 06:38:32 -0800 (PST)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     elder@kernel.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v2 0/7] net: ipa: a mix of small improvements
+Date:   Fri,  5 Feb 2021 08:38:22 -0600
+Message-Id: <20210205143829.16271-1-elder@linaro.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <8edfa4ae-1e78-249d-14fb-0e44a2c51864@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that the PCI VPD for Chelsio devices from T4 has been changed and VPD
-len is set to PCI_VPD_MAX_SIZE (32K), we don't have to change the VPD len
-any longer.
+Version 2 of this series restructures a couple of the changed
+functions (in patches 1 and 2) to avoid blocks of indented code
+by returning early when possible, as suggested by Jakub.  The
+description of the first patch was changed as a result, to better
+reflect what the updated patch does.  It also fixes one spot I
+identified when updating the code, where gsi_channel_stop() was
+doing the wrong thing on error.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- .../net/ethernet/chelsio/cxgb4/cudbg_entity.h |  1 -
- .../net/ethernet/chelsio/cxgb4/cudbg_lib.c    | 21 ++++---------------
- 2 files changed, 4 insertions(+), 18 deletions(-)
+The original description for this series is below.
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cudbg_entity.h b/drivers/net/ethernet/chelsio/cxgb4/cudbg_entity.h
-index 876f90e57..02ccb610a 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cudbg_entity.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cudbg_entity.h
-@@ -220,7 +220,6 @@ struct cudbg_mps_tcam {
- 	u8 reserved[2];
- };
- 
--#define CUDBG_VPD_PF_SIZE 0x800
- #define CUDBG_SCFG_VER_ADDR 0x06
- #define CUDBG_SCFG_VER_LEN 4
- #define CUDBG_VPD_VER_ADDR 0x18c7
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
-index 75474f810..addac5518 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
-@@ -2689,7 +2689,7 @@ int cudbg_collect_vpd_data(struct cudbg_init *pdbg_init,
- 	u32 scfg_vers, vpd_vers, fw_vers;
- 	struct cudbg_vpd_data *vpd_data;
- 	struct vpd_params vpd = { 0 };
--	int rc, ret;
-+	int rc;
- 
- 	rc = t4_get_raw_vpd_params(padap, &vpd);
- 	if (rc)
-@@ -2699,24 +2699,11 @@ int cudbg_collect_vpd_data(struct cudbg_init *pdbg_init,
- 	if (rc)
- 		return rc;
- 
--	/* Serial Configuration Version is located beyond the PF's vpd size.
--	 * Temporarily give access to entire EEPROM to get it.
--	 */
--	rc = pci_set_vpd_size(padap->pdev, EEPROMVSIZE);
--	if (rc < 0)
--		return rc;
--
--	ret = cudbg_read_vpd_reg(padap, CUDBG_SCFG_VER_ADDR, CUDBG_SCFG_VER_LEN,
--				 &scfg_vers);
--
--	/* Restore back to original PF's vpd size */
--	rc = pci_set_vpd_size(padap->pdev, CUDBG_VPD_PF_SIZE);
--	if (rc < 0)
-+	rc = cudbg_read_vpd_reg(padap, CUDBG_SCFG_VER_ADDR, CUDBG_SCFG_VER_LEN,
-+				&scfg_vers);
-+	if (rc)
- 		return rc;
- 
--	if (ret)
--		return ret;
--
- 	rc = cudbg_read_vpd_reg(padap, CUDBG_VPD_VER_ADDR, CUDBG_VPD_VER_LEN,
- 				vpd_str);
- 	if (rc)
+					-Alex
+
+This series contains a sort of unrelated set of code cleanups.
+
+The first two are things I wanted to do in a series that updated
+some NAPI code recently.  I didn't want to change things in a way
+that affected existing testing so I set these aside for later
+(i.e., now).
+
+The third makes a change to event ring handling that's similar to
+what was done a while back for channels.  There's little benefit to
+cacheing the current state of an event ring, so with this we'll just
+fetch the state from hardware whenever we need it.
+
+The fourth patch removes the definitions of two unused symbols.
+
+The fifth replaces a count that is always 0 or 1 with a Boolean.
+
+The sixth removes a build-time validation check that doesn't really
+provide benefit.
+
+And the last one fixes a problem (in two spots) that could cause a
+build-time check to fail "bogusly".
+
+					-Alex
+
+Alex Elder (7):
+  net: ipa: move mutex calls into __gsi_channel_stop()
+  net: ipa: synchronize NAPI only for suspend
+  net: ipa: do not cache event ring state
+  net: ipa: remove two unused register definitions
+  net: ipa: use a Boolean rather than count when replenishing
+  net: ipa: get rid of status size constraint
+  net: ipa: avoid field overflow
+
+ drivers/net/ipa/gsi.c          | 69 ++++++++++++++++++++--------------
+ drivers/net/ipa/gsi.h          |  1 -
+ drivers/net/ipa/gsi_reg.h      | 10 -----
+ drivers/net/ipa/ipa_endpoint.c | 38 +++++++++----------
+ drivers/net/ipa/ipa_reg.h      | 22 +++++++----
+ 5 files changed, 73 insertions(+), 67 deletions(-)
+
 -- 
-2.30.0
-
+2.20.1
 
