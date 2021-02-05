@@ -2,157 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96CF8310959
+	by mail.lfdr.de (Postfix) with ESMTP id 26727310958
 	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 11:43:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231546AbhBEKm2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 05:42:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:32263 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231320AbhBEKgo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 05:36:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1612521317;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=QJCCgzFVl3igOoCKJCJw9qlTMRXU0EBO0JvhKR9cbr4=;
-        b=Nqo64f/M5NEgucfwgKE25EWJ+8333kMekSRz0MsWwyFhuG/Oxk2uLbFASHFcfq4D8qHlKs
-        JN0dD3dksrNogCL/nFMgaMPRYS9dW5aJp3TBgnFJXqYaxUqEdxeOL2Rukw/+66+Q72qR4R
-        DqSCDougZKczUcfmUlOlI4pKlXZU7nw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-299-30aKlXhpNzqfdjB4BQeMvg-1; Fri, 05 Feb 2021 05:35:14 -0500
-X-MC-Unique: 30aKlXhpNzqfdjB4BQeMvg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9620E15720;
-        Fri,  5 Feb 2021 10:35:11 +0000 (UTC)
-Received: from krava (unknown [10.40.195.59])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 81A315C648;
-        Fri,  5 Feb 2021 10:35:08 +0000 (UTC)
-Date:   Fri, 5 Feb 2021 11:35:07 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 1/4] tools/resolve_btfids: Build libbpf and
- libsubcmd in separate directories
-Message-ID: <YB0fW+zEPHa/XKsq@krava>
-References: <20210129134855.195810-1-jolsa@redhat.com>
- <20210204211825.588160-1-jolsa@kernel.org>
- <20210204211825.588160-2-jolsa@kernel.org>
- <CAEf4BzYhnm2tfnuGWXDOAZZmYBnboSZ3JsWjDHM5ortCbaeEjw@mail.gmail.com>
+        id S231312AbhBEKmX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 05:42:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60260 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230256AbhBEKjq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 05:39:46 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ACE2C061797
+        for <netdev@vger.kernel.org>; Fri,  5 Feb 2021 02:39:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
+        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=0NBsznay4nSnq5tjYJlPeLdjFfT/PKR+t8SLeQA/wB8=; b=vIXUspZX4AIagvIK9mlnLdTBH
+        5Aeb70L0Oc9ipFx+Zltb06PdALvjwI1e5EMKr9qmGzo75RD1MwYmHwCFmT74rQlcCqHZSBKgLlpER
+        53i2WZTe0CV2lyhtuTOQcsjU+gBCIF8X28eN2kDI72uJZpj/vjO5C3ori22lqaYYR+iAmnoUSTGJp
+        u2K9+jxmjVoreXHvJQQBuhdsKL/Ep7zvkKt11fKuKMW3cXtnibBASP72YA/66ajQjv70aCDxVgkDP
+        joZW63TvTZNg3BYbgOaQQdHimLE9WVSq15bEYHMktOyoBpbTvi4pwhOmpX4Up7L0z+yfeJ3Jt8T8v
+        8uXduAojQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:39480)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1l7yVx-0007eD-NK; Fri, 05 Feb 2021 10:39:01 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1l7yVw-00068A-4O; Fri, 05 Feb 2021 10:39:00 +0000
+Date:   Fri, 5 Feb 2021 10:39:00 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ioana Radulescu <ruxandra.radulescu@nxp.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH net-next v2 0/3] dpaa2: add 1000base-X support
+Message-ID: <20210205103859.GH1463@shell.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAEf4BzYhnm2tfnuGWXDOAZZmYBnboSZ3JsWjDHM5ortCbaeEjw@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 04, 2021 at 04:39:38PM -0800, Andrii Nakryiko wrote:
-> On Thu, Feb 4, 2021 at 1:20 PM Jiri Olsa <jolsa@kernel.org> wrote:
-> >
-> > Setting up separate build directories for libbpf and libpsubcmd,
-> > so it's separated from other objects and we don't get them mixed
-> > in the future.
-> >
-> > It also simplifies cleaning, which is now simple rm -rf.
-> >
-> > Also there's no need for FEATURE-DUMP.libbpf and bpf_helper_defs.h
-> > files in .gitignore anymore.
-> >
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > ---
-> >  tools/bpf/resolve_btfids/.gitignore |  2 --
-> >  tools/bpf/resolve_btfids/Makefile   | 26 +++++++++++---------------
-> >  2 files changed, 11 insertions(+), 17 deletions(-)
-> >
-> > diff --git a/tools/bpf/resolve_btfids/.gitignore b/tools/bpf/resolve_btfids/.gitignore
-> > index a026df7dc280..25f308c933cc 100644
-> > --- a/tools/bpf/resolve_btfids/.gitignore
-> > +++ b/tools/bpf/resolve_btfids/.gitignore
-> > @@ -1,4 +1,2 @@
-> > -/FEATURE-DUMP.libbpf
-> > -/bpf_helper_defs.h
-> >  /fixdep
-> >  /resolve_btfids
-> > diff --git a/tools/bpf/resolve_btfids/Makefile b/tools/bpf/resolve_btfids/Makefile
-> > index bf656432ad73..b780b3a9fb07 100644
-> > --- a/tools/bpf/resolve_btfids/Makefile
-> > +++ b/tools/bpf/resolve_btfids/Makefile
-> > @@ -28,22 +28,22 @@ OUTPUT ?= $(srctree)/tools/bpf/resolve_btfids/
-> >  LIBBPF_SRC := $(srctree)/tools/lib/bpf/
-> >  SUBCMD_SRC := $(srctree)/tools/lib/subcmd/
-> >
-> > -BPFOBJ     := $(OUTPUT)/libbpf.a
-> > -SUBCMDOBJ  := $(OUTPUT)/libsubcmd.a
-> > +BPFOBJ     := $(OUTPUT)/libbpf/libbpf.a
-> > +SUBCMDOBJ  := $(OUTPUT)/libsubcmd/libsubcmd.a
-> >
-> >  BINARY     := $(OUTPUT)/resolve_btfids
-> >  BINARY_IN  := $(BINARY)-in.o
-> >
-> >  all: $(BINARY)
-> >
-> > -$(OUTPUT):
-> > +$(OUTPUT) $(OUTPUT)/libbpf $(OUTPUT)/libsubcmd:
-> >         $(call msg,MKDIR,,$@)
-> > -       $(Q)mkdir -p $(OUTPUT)
-> > +       $(Q)mkdir -p $(@)
-> >
-> > -$(SUBCMDOBJ): fixdep FORCE
-> > -       $(Q)$(MAKE) -C $(SUBCMD_SRC) OUTPUT=$(OUTPUT)
-> > +$(SUBCMDOBJ): fixdep FORCE | $(OUTPUT)/libsubcmd
-> > +       $(Q)$(MAKE) -C $(SUBCMD_SRC) OUTPUT=$(abspath $(dir $@))/ $(abspath $@)
-> >
-> > -$(BPFOBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(OUTPUT)
-> > +$(BPFOBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(OUTPUT)/libbpf
-> >         $(Q)$(MAKE) $(submake_extras) -C $(LIBBPF_SRC)  OUTPUT=$(abspath $(dir $@))/ $(abspath $@)
-> >
-> >  CFLAGS := -g \
-> > @@ -57,23 +57,19 @@ LIBS = -lelf -lz
-> >  export srctree OUTPUT CFLAGS Q
-> >  include $(srctree)/tools/build/Makefile.include
-> >
-> > -$(BINARY_IN): fixdep FORCE
-> > +$(BINARY_IN): fixdep FORCE | $(OUTPUT)
-> >         $(Q)$(MAKE) $(build)=resolve_btfids
-> >
-> >  $(BINARY): $(BPFOBJ) $(SUBCMDOBJ) $(BINARY_IN)
-> >         $(call msg,LINK,$@)
-> >         $(Q)$(CC) $(BINARY_IN) $(LDFLAGS) -o $@ $(BPFOBJ) $(SUBCMDOBJ) $(LIBS)
-> >
-> > -libsubcmd-clean:
-> > -       $(Q)$(MAKE) -C $(SUBCMD_SRC) OUTPUT=$(OUTPUT) clean
-> > -
-> > -libbpf-clean:
-> > -       $(Q)$(MAKE) -C $(LIBBPF_SRC) OUTPUT=$(OUTPUT) clean
-> > -
-> > -clean: libsubcmd-clean libbpf-clean fixdep-clean
-> > +clean: fixdep-clean
-> >         $(call msg,CLEAN,$(BINARY))
-> >         $(Q)$(RM) -f $(BINARY); \
-> >         $(RM) -rf $(if $(OUTPUT),$(OUTPUT),.)/feature; \
-> > +       $(RM) -rf $(OUTPUT)libbpf; \
-> > +       $(RM) -rf $(OUTPUT)libsubcmd; \
-> 
-> If someone specifies OUTPUT=bla, you will attempt to delete blalibbpf,
-> not bla/libbpf
+Hi,
 
-will add missing '/', thanks
+This patch series adds 1000base-X support to pcs-lynx and DPAA2,
+allowing runtime switching between SGMII and 1000base-X. This is
+a pre-requisit for SFP module support on the SolidRun ComExpress 7.
 
-jirka
+v2: updated with Ioana's r-b's, and comment on backplane support
 
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h |  4 ++-
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c | 25 ++++++++++++----
+ drivers/net/pcs/pcs-lynx.c                       | 36 ++++++++++++++++++++++++
+ 3 files changed, 59 insertions(+), 6 deletions(-)
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
