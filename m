@@ -2,217 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 934143115A8
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 23:43:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AA1D3115AD
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 23:43:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229774AbhBEWiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 17:38:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42140 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230518AbhBENhr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 08:37:47 -0500
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FAEAC061794
-        for <netdev@vger.kernel.org>; Fri,  5 Feb 2021 05:37:06 -0800 (PST)
-Received: by mail-il1-x12e.google.com with SMTP id a16so5820048ilq.5
-        for <netdev@vger.kernel.org>; Fri, 05 Feb 2021 05:37:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=zJIqK4oiGxD4mA82lsvyaEI4gUPeF1VfFpQthFbJ0uQ=;
-        b=XZ9IiNE48Aran2h3YLooLj/xyuGoN0yF/jjYVvnW+tjTsJbL7JGksIB22cRKrR5ZeG
-         aQ9MN9xH+yp2YHiyXy7Wvyayl7MhgqVeIWeAHlWBVLZ2g69qzPN8QjS0ry3Avk87kmbE
-         mrS0Hmmx0vl+JNGq4zbWfS9gY5GZd9yB+fl8w/ztqYfULriPkzRSw0Jm8k7GBUqULgQP
-         STmmB/bu+L88jSve1erdk+ZGfjq+gsXFfp1dl+CaD0RuA6Ng6JdyZzaSyJuk+chuB+F6
-         e5qs83YQnuKRJ+ryLWyy5XwH7ksZV22NIBXxCYOWvQ6S7en6guxybxZYA0R+u2G2AnH/
-         ZBCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=zJIqK4oiGxD4mA82lsvyaEI4gUPeF1VfFpQthFbJ0uQ=;
-        b=NZbfBLxEGM6NFqImBzfOlNSVoZ3uNIjatqPrKeb+apNsSbsMzN7BtlzqVo9rpJa/60
-         IzVhFgTR1eMbaK75kdToATePzjodH3Ai//HerZJckAMqQW0XiGUHbkgEzoubQjToZBQK
-         sdo9wynb8tcUiRmXIlbqiK6iQCe9kPatuKLRYppNrv+a9MUscTc286LRTqPhUBk4Y1h4
-         DQ5k0G6LHFTPD2xaS4guRTtVMmJFM8Ua51oZDwlJ8KZ0p242Z4EEpz8lmoNO/ZLVuvie
-         8f+mZuka4ljMgHtDx7D32Veqet0NbdsobYuGtM+sEFl+hPHi3crhoiMo7sQwKEXvNl9Y
-         tJhA==
-X-Gm-Message-State: AOAM531juSRSoNL8+vvCCnBiSjkVWJupiubB4CZJG5/4ANRyxtEnMZk7
-        LqqwM1hbYLYuGmhNDAIAqIIP+A==
-X-Google-Smtp-Source: ABdhPJwpLa4r6HWRIEy2ZuEJNr9XksrmXLFLgY9dF31jisYPBENUoWZIwHhCExxrIxl/sgXkgjR3hA==
-X-Received: by 2002:a05:6e02:20ca:: with SMTP id 10mr3950429ilq.14.1612532225956;
-        Fri, 05 Feb 2021 05:37:05 -0800 (PST)
-Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id l7sm4206824ils.48.2021.02.05.05.37.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Feb 2021 05:37:05 -0800 (PST)
-Subject: Re: [PATCH net-next 1/7] net: ipa: restructure a few functions
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, elder@kernel.org, evgreen@chromium.org,
-        bjorn.andersson@linaro.org, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210203152855.11866-1-elder@linaro.org>
- <20210203152855.11866-2-elder@linaro.org>
- <20210204205059.4b218a6d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Alex Elder <elder@linaro.org>
-Message-ID: <2946916e-9f1d-b73a-72b1-5f4ce8b2cc6c@linaro.org>
-Date:   Fri, 5 Feb 2021 07:37:04 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        id S231166AbhBEWik (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 17:38:40 -0500
+Received: from mail-eopbgr10046.outbound.protection.outlook.com ([40.107.1.46]:8928
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229986AbhBENjS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Feb 2021 08:39:18 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fQDpphT8/oiJsvwYs8Zem8wfA82yqNxDSMMWp31hfgD8vrdUQHmyV5wlRFtiq3W8lRYh5RQm5ButYJ+oTqVSySBMpE1+BGAZj1wai4oBHW5IhuiPIPIMiFKqSgmeh4BkK4em440mCrp1GNthWIJEhesgkHRHHAdklkCSdXq4Ca2SZGIxLkh4NLN+4jx6WLlrldybkjZS6D9PVg/ByduiD/EgNy8MAAWQMxlCYeyyjOpsl7omsfPgj7KWls8SzdXJxhC1Ifchkmck62Czxe8q/RKKrKR/WKfv8YtOnaX0vj1pN4bWpKg3y+h1kaDUvl3LIwGTrgj7WEEAgvVfcJR+PQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UvRbS3Gpd3VeGd9jDJi49eRbcej/hdmF8GvNTExog+E=;
+ b=JgBv9P4PZqIjBgkKF0OPGWR3OLs8ZJbeMQzSMQgPOETpIcGk25Zy+4ryxn86dbFFK/aDcSISlO6MlKLCNCDAbePjiCfNWK5uwzHN7jethjcCJbJTYkXFc5mgmkbsn0GjLLfTDhZbxl6mMM9+JzRZyN7PHx/31Nn/8zL6Ec4IvpmbVxnQ7+tgkmDVId7yEKPWdOZ4pvBcefWsdp+xZcCgFjX1HvxkV3fLbnttX1TjrdDMqdpqUX3ity3fh66KatyFtj14RtsrQlr+nCDpovogumccY8F55xieYxJBe80uBphAdCQUuwWBOh73u7BVuGHPPyeTpDKjLwIvnLWO32TU8w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UvRbS3Gpd3VeGd9jDJi49eRbcej/hdmF8GvNTExog+E=;
+ b=ZMxT2BSXS8aTqZrgOvQpiGNSWVu0Rk2/2M/3/xF+Js0L/TP/wR9ubBMavu4mAOni4DCPcsCHlcNjpZOBD3xM6Vji/HpPw5S4qWqE3B/qPb/pUDQW5R414bB1JTe/+MPQhRmdpS15VVvbEW8j2m81GE2NaEVoiMqOODKgxM2pyWE=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB4910.eurprd04.prod.outlook.com (2603:10a6:803:5c::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.24; Fri, 5 Feb
+ 2021 13:37:28 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3df3:2eba:51bb:58d7]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3df3:2eba:51bb:58d7%7]) with mapi id 15.20.3825.020; Fri, 5 Feb 2021
+ 13:37:28 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Subject: [PATCH v3 net-next 2/4] net: dsa: automatically bring user ports down when master goes down
+Date:   Fri,  5 Feb 2021 15:37:11 +0200
+Message-Id: <20210205133713.4172846-3-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210205133713.4172846-1-vladimir.oltean@nxp.com>
+References: <20210205133713.4172846-1-vladimir.oltean@nxp.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [5.12.227.87]
+X-ClientProxiedBy: VI1PR09CA0138.eurprd09.prod.outlook.com
+ (2603:10a6:803:12c::22) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
 MIME-Version: 1.0
-In-Reply-To: <20210204205059.4b218a6d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (5.12.227.87) by VI1PR09CA0138.eurprd09.prod.outlook.com (2603:10a6:803:12c::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.20 via Frontend Transport; Fri, 5 Feb 2021 13:37:27 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 8b549952-ec00-498d-a747-08d8c9db2e07
+X-MS-TrafficTypeDiagnostic: VI1PR04MB4910:
+X-Microsoft-Antispam-PRVS: <VI1PR04MB49105448C4E83C9B1CBFE80FE0B29@VI1PR04MB4910.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 8lENxtC2ITizsM7q/KEE9SWgLWzMCf9C+EbT8W7pxWtGTQ6Qzv1EVi0CVOYQu2Ls/35JWGitcn8aJN9SySLedklMtJd1SNVu9R1n+yv9gMhYIfLiPTwB3Aw8K1j0V99fqp7Ihcbt+xDxufIBAopl2MJfljVsuepPiNrOuEA1qrLEvIuoHJYF/lDsfFBe9xVwB2B6wAI2HH5mUzF73m6QDpSJgLAZAvAJQBdBQrA2/GYmwn/jFs+p8dhiezmG+CFejKxFu6cV30hiIblzTtX0Fb28YPVpRvfjGzopZFspjO2bjgE5+EJrWbEVQMi75EerC6ft5Xdz7mnoQ33IhTxgZSX9ujrkJFGjZnlIqBAlR8uHF+0I11cBT6lxBBdFbbZZzskA4NvVrrIA/FMu7LQ3wxG8yQtw0oaSXJHG7W6v0qglPmRqAcJOZFAnVZL4QKuDRdmz+gK7zEaNjdOxdKfVDIQbX8adrQ/+93i8qeNIDEk/0uT5HczKRsbXb3uIoRChTgUGc6QMKFpImiGx/isFyC8sA2KapaHrMT0Xy9qcbCHvpoHg5NiKFHP4Mzbp0fD3S/LtXq5jQ1CbBCWAKROyrw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(376002)(39860400002)(346002)(136003)(366004)(2906002)(16526019)(5660300002)(186003)(8936002)(69590400011)(8676002)(2616005)(1076003)(956004)(44832011)(6486002)(478600001)(4326008)(54906003)(6506007)(66946007)(83380400001)(86362001)(66556008)(66476007)(26005)(316002)(110136005)(6512007)(52116002)(36756003)(6666004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?y7BS87z6m4UllbZh9cB8XQNjOqipzQLD0UdaTLui/SeDmVdRDYn4c13UhZej?=
+ =?us-ascii?Q?AZv9CtzwyRLYznEz7VB27zaVU2NlMg0ENNTyYWUy0EbKRlCs0R5Pe7JxbmN4?=
+ =?us-ascii?Q?XpGrRdHn3vlDGE/SCGXONYy/585Uk4obtxIkR8E2MQqJ3lz4c5dL2csM4vZS?=
+ =?us-ascii?Q?0Pjf0b3CNLbE+ARy/QnVYOGsSV/BfmQsj4zraHWdQbY6RzV2PSWLsE6aT/dv?=
+ =?us-ascii?Q?5bb9/1yqh8aq+zAiEe8+eA/TOXQEE8RXq/L7XzlIfX7016UC1q/VH8zqCFZi?=
+ =?us-ascii?Q?Q2YRDN0IAXKZWnOmzdW4MWDjMfKy9RqRZSHo5omXaRNu/FOuvMGHvjJ+izga?=
+ =?us-ascii?Q?Dma936eSEr/CwZA03VmuEHmM00HPut1A47lHkToju9aUivfD7FHUu0TgGTg4?=
+ =?us-ascii?Q?jGLOCZmJN+vzJ2J2cJJIJ/Xg/BbQcwH+lLkRfvwR/BtyRouud3avCQARnAy1?=
+ =?us-ascii?Q?PWZ+9J9Y01i6GFuerHUJU+QF7WoCNH66kQBAVPS5GElAvw2Ax2hWvFi81wMd?=
+ =?us-ascii?Q?AE4L6ML38UtFOcrXPq4dx4W9VGnX7Us7UWAaY/ngNdvNgobBbINekGe//73V?=
+ =?us-ascii?Q?IGA2cBTn8rhb0Yulu1JznqUXpvHMDPceOpjeD40cOgbzii/zc7G5WT0vXK+e?=
+ =?us-ascii?Q?gTeEpbMFdjGAmSoZF6B/Q9mnhfhXO/vfEuv2JLxpv28t1xbFjluoiuLXG5/d?=
+ =?us-ascii?Q?7P3epfv9hjuLHrbW/nfZmTRyB3YebkL/7VfsZNPnRr3qsl3oq8b6INsvyoAL?=
+ =?us-ascii?Q?wg+o+ZylitDw57yqZiBmM+VyVXpKIhZhrGME+Byrkom5xsAI5EqmLyBImXeb?=
+ =?us-ascii?Q?WFdCxQUjU1Ix2J8PjMSYuZoOzaekaFk0yaKbiofLcTXN2FR57YIKVl+LQdL6?=
+ =?us-ascii?Q?m+7G6aQUtd7EpdVU0uoB15mquurf3qie/KukhkD3O+a7VC1Xw6u1Xy1LzSg0?=
+ =?us-ascii?Q?bsQkGyiGpCGVoNRKlKQkHxxhHfD3JFp1a8MeJEFcthTuL/JBGBASxJ7Bz1mI?=
+ =?us-ascii?Q?s/ClZpaBB0wD9SCCxyK3D9amHqXxDmQgQhHFePL9/Ns/H5DtnTvtVHeSoue3?=
+ =?us-ascii?Q?GJbiNuTgLn197JJL3Ulb9OnrTBvILeEacTyla1qwT2vmmj+N026aZN4LROfQ?=
+ =?us-ascii?Q?VqFW59O4C46V7Bj3Ib61iiAMCz0mQp8NU1/jjrIyQLE4KjgFeCYud0XK1iMG?=
+ =?us-ascii?Q?xHQTjJpsGfWsDoXMw4ch36bkrfReA+dTBAz5pxQlPi/8UR3U9B1hxi47VoeT?=
+ =?us-ascii?Q?JgMyTGfCR18YfrCNk+zY+ZMTdkf2kAXninOfcaswfsz1q7b2yNc2LU5wHFS3?=
+ =?us-ascii?Q?PID00/1z6dlVAUvpOr9lQ0YM?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8b549952-ec00-498d-a747-08d8c9db2e07
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Feb 2021 13:37:28.4357
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: oYDwezSZtWUT4ffOMoGOBDq+OP0KB6ez1jnArOAHH3cDS6XFO64AlqAatjfkin1aylEblbyeoEoHKgaBf4u6dA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4910
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/4/21 10:50 PM, Jakub Kicinski wrote:
-> On Wed,  3 Feb 2021 09:28:49 -0600 Alex Elder wrote:
->> Make __gsi_channel_start() and __gsi_channel_stop() more structurally
->> and semantically similar to each other:
->>   - Restructure __gsi_channel_start() to always return at the end of
->>     the function, similar to the way __gsi_channel_stop() does.
->>   - Move the mutex calls out of gsi_channel_stop_retry() and into
->>     __gsi_channel_stop().
->>
->> Restructure gsi_channel_stop() to always return at the end of the
->> function, like gsi_channel_start() does.
->>
->> Signed-off-by: Alex Elder <elder@linaro.org>
->> ---
->>  drivers/net/ipa/gsi.c | 45 +++++++++++++++++++++++--------------------
->>  1 file changed, 24 insertions(+), 21 deletions(-)
->>
->> diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
->> index 53640447bf123..2671b76ebcfe3 100644
->> --- a/drivers/net/ipa/gsi.c
->> +++ b/drivers/net/ipa/gsi.c
->> @@ -873,17 +873,17 @@ static void gsi_channel_deprogram(struct gsi_channel *channel)
->>  
->>  static int __gsi_channel_start(struct gsi_channel *channel, bool start)
->>  {
->> -	struct gsi *gsi = channel->gsi;
->> -	int ret;
->> +	int ret = 0;
->>  
->> -	if (!start)
->> -		return 0;
->> +	if (start) {
->> +		struct gsi *gsi = channel->gsi;
->>  
->> -	mutex_lock(&gsi->mutex);
->> +		mutex_lock(&gsi->mutex);
->>  
->> -	ret = gsi_channel_start_command(channel);
->> +		ret = gsi_channel_start_command(channel);
->>  
->> -	mutex_unlock(&gsi->mutex);
->> +		mutex_unlock(&gsi->mutex);
->> +	}
-> 
-> nit: I thought just recently Willem pointed out that keeping main flow
->      unindented is considered good style, maybe it doesn't apply here
->      perfectly, but I'd think it still applies. Why have the entire
->      body of the function indented?
+This is not fixing any actual bug that I know of, but having a DSA
+interface that is up even when its lower (master) interface is down is
+one of those things that just do not sound right.
 
-I *like* keeping the main flow un-indented (the way
-it was).
+Yes, DSA checks if the master is up before actually bringing the
+user interface up, but nobody prevents bringing the master interface
+down immediately afterwards... Then the user ports would attempt
+dev_queue_xmit on an interface that is down, and wonder what's wrong.
 
-It's a little funny, because one of my motivations for
-doing it this way was how I interpreted the comment
-from Willem (and echoed by you).  He said, "...easier
-to parse when the normal control flow is linear and
-the error path takes a branch (or goto, if reused)."
-And now that I read it again, I see that's what he
-was saying.
+This patch prevents that from happening. NETDEV_GOING_DOWN is the
+notification emitted _before_ the master actually goes down, and we are
+protected by the rtnl_mutex, so all is well.
 
-But the way I interpreted it was "don't return early
-for the success case," because that's what the code
-in question that elicited that comment was doing.
+For those of you reading this because you were doing switch testing
+such as latency measurements for autonomously forwarded traffic, and you
+needed a controlled environment with no extra packets sent by the
+network stack, this patch breaks that, because now the user ports go
+down too, which may shut down the PHY etc. But please don't do it like
+that, just do instead:
 
-In any case I concur with your comment and prefer the
-code the other way.  I will post v2 that will fix this,
-both here and in __gsi_channel_start().
+tc qdisc add dev eno2 clsact
+tc filter add dev eno2 egress flower action drop
 
-Thanks.
+Tested with two cascaded DSA switches:
+$ ip link set eno2 down
+sja1105 spi2.0 sw0p2: Link is Down
+mscc_felix 0000:00:00.5 swp0: Link is Down
+fsl_enetc 0000:00:00.2 eno2: Link is Down
 
-					-Alex
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+Changes in v2:
+Using dev_close_many as suggested by Jakub.
 
-> 
->>  	return ret;
->>  }
->> @@ -910,11 +910,8 @@ int gsi_channel_start(struct gsi *gsi, u32 channel_id)
->>  static int gsi_channel_stop_retry(struct gsi_channel *channel)
->>  {
->>  	u32 retries = GSI_CHANNEL_STOP_RETRIES;
->> -	struct gsi *gsi = channel->gsi;
->>  	int ret;
->>  
->> -	mutex_lock(&gsi->mutex);
->> -
->>  	do {
->>  		ret = gsi_channel_stop_command(channel);
->>  		if (ret != -EAGAIN)
->> @@ -922,19 +919,26 @@ static int gsi_channel_stop_retry(struct gsi_channel *channel)
->>  		usleep_range(3 * USEC_PER_MSEC, 5 * USEC_PER_MSEC);
->>  	} while (retries--);
->>  
->> -	mutex_unlock(&gsi->mutex);
->> -
->>  	return ret;
->>  }
->>  
->>  static int __gsi_channel_stop(struct gsi_channel *channel, bool stop)
->>  {
->> -	int ret;
->> +	int ret = 0;
->>  
->>  	/* Wait for any underway transactions to complete before stopping. */
->>  	gsi_channel_trans_quiesce(channel);
->>  
->> -	ret = stop ? gsi_channel_stop_retry(channel) : 0;
->> +	if (stop) {
->> +		struct gsi *gsi = channel->gsi;
->> +
->> +		mutex_lock(&gsi->mutex);
->> +
->> +		ret = gsi_channel_stop_retry(channel);
->> +
->> +		mutex_unlock(&gsi->mutex);
->> +	}
->> +
->>  	/* Finally, ensure NAPI polling has finished. */
->>  	if (!ret)
->>  		napi_synchronize(&channel->napi);
->> @@ -948,15 +952,14 @@ int gsi_channel_stop(struct gsi *gsi, u32 channel_id)
->>  	struct gsi_channel *channel = &gsi->channel[channel_id];
->>  	int ret;
->>  
->> -	/* Only disable the completion interrupt if stop is successful */
->>  	ret = __gsi_channel_stop(channel, true);
->> -	if (ret)
->> -		return ret;
->> +	if (ret) {
-> 
-> This inverts the logic, right? Is it intentional?
-> 
->> +		/* Disable the completion interrupt and NAPI if successful */
->> +		gsi_irq_ieob_disable_one(gsi, channel->evt_ring_id);
->> +		napi_disable(&channel->napi);
->> +	}
->>  
->> -	gsi_irq_ieob_disable_one(gsi, channel->evt_ring_id);
->> -	napi_disable(&channel->napi);
->> -
->> -	return 0;
->> +	return ret;
->>  }
->>  
->>  /* Reset and reconfigure a channel, (possibly) enabling the doorbell engine */
-> 
+Changes in v2:
+Fix typo: !dsa_is_user_port -> dsa_is_user_port.
+
+ net/dsa/slave.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index c95e3bdbe690..f77e9eeb1a62 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -2081,6 +2081,30 @@ static int dsa_slave_netdevice_event(struct notifier_block *nb,
+ 		err = dsa_port_lag_change(dp, info->lower_state_info);
+ 		return notifier_from_errno(err);
+ 	}
++	case NETDEV_GOING_DOWN: {
++		struct dsa_port *dp, *cpu_dp;
++		struct dsa_switch_tree *dst;
++		LIST_HEAD(close_list);
++
++		if (!netdev_uses_dsa(dev))
++			return NOTIFY_DONE;
++
++		cpu_dp = dev->dsa_ptr;
++		dst = cpu_dp->ds->dst;
++
++		list_for_each_entry(dp, &dst->ports, list) {
++			if (!dsa_is_user_port(dp->ds, dp->index))
++				continue;
++
++			list_add(&dp->slave->close_list, &close_list);
++		}
++
++		dev_close_many(&close_list, true);
++
++		return NOTIFY_OK;
++	}
++	default:
++		break;
+ 	}
+ 
+ 	return NOTIFY_DONE;
+-- 
+2.25.1
 
