@@ -2,92 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B2CE311446
-	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 23:06:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62F693114DB
+	for <lists+netdev@lfdr.de>; Fri,  5 Feb 2021 23:23:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232994AbhBEWCm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 17:02:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49208 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232969AbhBEO5n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 09:57:43 -0500
-Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3809C0617A9
-        for <netdev@vger.kernel.org>; Fri,  5 Feb 2021 08:26:53 -0800 (PST)
-Received: by mail-il1-x129.google.com with SMTP id m20so6291315ilj.13
-        for <netdev@vger.kernel.org>; Fri, 05 Feb 2021 08:26:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ktpO/jSmoOx5RVisI52DM6PeD/6jBsQ5/HisJypSEHU=;
-        b=bdgOwBy2EdlM8UU2CbP0LQUUrUdWj9ErOn2Pypwrr2YlwgXfTIy49IdBEeE/C4Gti8
-         pWfKw8O2Txoje8FGF+dNElEqJdDUvkOzRflX/T5ZZJB6fVLkOaoLtZw/mVgjhPMnBAeE
-         BPh1fVoyM6VGVVWmkMmRpTrWUSCQMLDzIPU2fnBgWKfrRuGRQje75F7s3vwo6mcqAMe0
-         qxQ7o8SWtPtOQ5elX/qC05vTjHAbcg43BKrkk217z6x3pygbQzE0G9QXZ4nCzgQHqjbX
-         UxOTqboS0NX4U7sWXbv5WOIPnLMIqqVI9hbHNMhYJHxd1wWF1V9h8rFFPVDaRxW+7+JY
-         bN+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ktpO/jSmoOx5RVisI52DM6PeD/6jBsQ5/HisJypSEHU=;
-        b=lFA1oCiZJHPkZ9ZE3G1UnH1bBw/ybRe+R33/KmOsIqTVTGGCd3GoB4CB5Gi3TWo+P+
-         URdCCVqtlML1zs+disFBsFqzGqutwIzzZ1U3RqhzpyEKm2QUj0nrM7C4w4vsmqaw5Mak
-         1aZQOU5BBIx/EvbqpW2xCAKvDh4TA9t6yj2LEJtkE9pTKayEfBwoRt6CsahdNa973HDU
-         cNvGIqru5FUgymtePMrUHOhbE7FZ6RzTFvFG6dfDnlaSAtxaatV2Gx8SXmNA/xlx/GG8
-         WFWAZs5AhYRe1dTvn/1fk7f/wN9k/fBCLMsOtirAQYilKe+XbcYBivNAbWdpRmRBzWQ/
-         /ApQ==
-X-Gm-Message-State: AOAM533R5/qcNdsIhjNgoYrU99ZtbvUDxS5ziP8CW+EKXW2GQiRMHF4t
-        FkoH1fd4JyJOWuxfG3FeeOs2wLlw8X0ttQ==
-X-Google-Smtp-Source: ABdhPJwiRGWecuiPuMFn8Z+xj2JpfGLpEDk9gLnBWUrlLf5hOstCF5U+3C2HcWcQqh7UrCSbndbi/g==
-X-Received: by 2002:a05:6602:2c4e:: with SMTP id x14mr4376864iov.58.1612535919991;
-        Fri, 05 Feb 2021 06:38:39 -0800 (PST)
-Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id h9sm4136882ili.43.2021.02.05.06.38.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Feb 2021 06:38:39 -0800 (PST)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     elder@kernel.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
-        cpratapa@codeaurora.org, subashab@codeaurora.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 6/7] net: ipa: get rid of status size constraint
-Date:   Fri,  5 Feb 2021 08:38:28 -0600
-Message-Id: <20210205143829.16271-7-elder@linaro.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210205143829.16271-1-elder@linaro.org>
-References: <20210205143829.16271-1-elder@linaro.org>
+        id S230111AbhBEWQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 17:16:36 -0500
+Received: from mout.gmx.net ([212.227.17.22]:51759 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231597AbhBEOdJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Feb 2021 09:33:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1612541403;
+        bh=zUCI8Ypd/xfX4FSR3qtqItGWSz7+x8Nvb3ALXYzZoWg=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=WECwIWEE9BJ/TxBTSGrhxo/VAjbRIQRzjeK495cLRdqWVHh7uO3xFswMU8sEB0yWq
+         oMFNobT1hCLFSCDLVb6r4fNpgLA0Idd7f9fNhxvwiOCuh4XLoWaggBlcC8SBMue5gv
+         FLX1Jvhku7aDnESj2uUIybJoJJeGW+5DUXAUmNhQ=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [87.123.206.138] ([87.123.206.138]) by web-mail.gmx.net
+ (3c-app-gmx-bap12.server.lan [172.19.172.82]) (via HTTP); Fri, 5 Feb 2021
+ 16:02:20 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <trinity-d2590cd7-50a1-4b89-824b-61f2d8a24aed-1612537340705@3c-app-gmx-bap12>
+From:   Norbert Slusarek <nslusarek@gmx.net>
+To:     kuba@kernel.org, sgarzare@redhat.com, alex.popov@linux.com,
+        eric.dumazet@gmail.com
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH] net/vmw_vsock: fix NULL pointer dereference
+Content-Type: text/plain; charset=UTF-8
+Date:   Fri, 5 Feb 2021 16:02:20 +0100
+Importance: normal
+Sensitivity: Normal
+X-Priority: 3
+X-Provags-ID: V03:K1:/F8jEMxPy/YDXqeScJFSNAdN2JmO547mkl2iOp/otTwyA1Jwyve+D//z8f3CiG2VcAsKO
+ b1CmHeKa0iTslS70R2My5+rjENr5CL2U5JezmqiQrkSgRL+l7Q5j117xeaQQkPsyCr6odbh8BFp4
+ oYbb1wPxke1puPduvvGBUzFSRtuxP70nIulMw3hlWmFvMeHrSrYm+TQR6psvH9P6hxCYJ/xWlp3h
+ V+98nP5sCLtp4edg0EBMBTxN8jDqIzjbdF040EZQFORdjz8yF6x8BO2uXZcVW6NF4qTjB01Ma0ID
+ Ww=
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:ojZVnsh307c=:NR1Q/bvP4DLx7MbgbiRQBf
+ tMQBKx0SSXXZJrMNzbaVhDuMFZOt3fyzjZkhmjT1ZTj1w6E2qcwv+TfmY9jWL/aGs4YlaGuf6
+ G6S+Y0eZmvayyjM8R1rAh18rDQpTimeDrVpiNirYtCkoPmcCFGM2QDQOdD9+M/VaP0F8Rx+Ga
+ T2CSC6+47bmVjnM3wPiEYcxZZzmynsHcLWgfpbMoBMNl7lwhFumKfan0RQIUVDOG8EYe+Yay8
+ 0ILMxPJAO+A9cSfrK+Z7r9dRE9PSKn5BpaXm81JVeRbREl3A++V8dxNLRqtMQp+1VM5p/TcJt
+ F1wMU9mS55Fj0vt6aRVlxCoZZizpADN6D3E0vLTY4CC5AscQVxG6/IXO34BwMW265A8goA43d
+ AdUL9tm8CpA6esfFGP6eiTsLylewCivgYpG4xGRmZNEUGo9Py3ZVjbLqWzbmEBWU26v+p5v5i
+ VbOmNJmDj+dNulXw+Zg/QX7xH680nn1vy7MNukHGaBDr92SOC6KH+midFxKDs0uqymlRBzF8Z
+ 48NQml0NHdS0EO4X04GSLpehReJ1/F7CcDjoAw0pTIYT65XkRNNx0w1fgHeq5fW4Cd6Q48EZc
+ 0xMH6AhetRpiE=
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a build-time check that the packet status structure is a
-multiple of 4 bytes in size.  It's not clear where that constraint
-comes from, but the structure defines what hardware provides so its
-definition won't change.  Get rid of the check; it adds no value.
-
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/ipa_endpoint.c | 3 ---
- 1 file changed, 3 deletions(-)
-
-diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index bff5d6ffd1186..7209ee3c31244 100644
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -174,9 +174,6 @@ static bool ipa_endpoint_data_valid(struct ipa *ipa, u32 count,
- 	enum ipa_endpoint_name name;
- 	u32 limit;
- 
--	/* Not sure where this constraint come from... */
--	BUILD_BUG_ON(sizeof(struct ipa_status) % 4);
--
- 	if (count > IPA_ENDPOINT_COUNT) {
- 		dev_err(dev, "too many endpoints specified (%u > %u)\n",
- 			count, IPA_ENDPOINT_COUNT);
--- 
-2.20.1
-
+Forgot to send it to the networking maintainer, +CC Jakub Kicinski <kuba@kernel.org>
