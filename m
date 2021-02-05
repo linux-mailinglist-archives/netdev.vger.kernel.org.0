@@ -2,62 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA4253118B3
-	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 03:44:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F04C4311941
+	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 04:00:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230408AbhBFCoh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 21:44:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37204 "EHLO
+        id S231277AbhBFDAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 22:00:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230104AbhBFCcW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 21:32:22 -0500
+        with ESMTP id S232060AbhBFCuv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 21:50:51 -0500
 Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BDE8C0698D0;
-        Fri,  5 Feb 2021 14:24:22 -0800 (PST)
-Received: by mail-yb1-xb2c.google.com with SMTP id v123so8213517yba.13;
-        Fri, 05 Feb 2021 14:24:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52E2BC0698C6;
+        Fri,  5 Feb 2021 14:25:16 -0800 (PST)
+Received: by mail-yb1-xb2c.google.com with SMTP id c3so8291979ybi.3;
+        Fri, 05 Feb 2021 14:25:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=uQykqIICKTbhMjXss2MdZxSh7LZznNksmMLb9c4zDc4=;
-        b=Ay28IZ3EsBl/gjG2R8wQSaUcxtl6QcUdqz5eD9wkDmwXZMxVicrSdYLMYmmx+yVEZN
-         ESfE6FRI7xmODJHf7tYejQJCD0REH/Je5d41OAgah7qGX1fOShnYtRpcMN/Q05LVk3L+
-         dx3u929XHqvFSCMw4f5ycfOgED9nXxPd7hv0t7eBRxdgs2ixnJub256N+O6iSza7CYWp
-         FwweYQSBbkgoUNx12rUD0PzYXOYXyGwZtoOyqNAUJkpzBQnXiWkWzDSEqW+giBCwW/UM
-         4lxZjdao/MABtm7gIfbuAUQ5K3x1/ViOoitrxijIZh5prwkOljMAkaR2m68PqU2STif+
-         shnQ==
+        bh=hYUg3hUYLhRgtIvFTbD2VmRbiO8E/oS3HEcH+2mdLys=;
+        b=D/3Szo3U0J1VcnkFYVHbqwjGp20STlNB4R1cBtjGpJ3Pe/kU/JgKGkAYcdQFg1oyeH
+         EFwqKYd0FfjGc/aJEK7kezMmBkJOQFoyMbP1X4O7qqFBnTnJB/pv6oWNiehS1ycSK8ZS
+         fO77QvpCHiX42uE03qFBinL40qgQPWhz+r//HGZaSOesmEM3z4UKLJWxQk+Uw9Ow1wLf
+         IOPeAdTfZZi0ohvdCHS4Wo0m9YKvAtkxhytEDe0ZOguQh4S2Lol9v3YgrbyFbTu9Zca0
+         zHwsn7Rmhm660asec3AV/x5tBA56CSt/j/w5FdmBjOYpqQhXf8JLfYG5zgNxnx/DYAMf
+         1PmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=uQykqIICKTbhMjXss2MdZxSh7LZznNksmMLb9c4zDc4=;
-        b=L24SkP7JnyaKZKs1DTHGqmF7lm9aM25s0ksoF4LXIWShNZByXXhddOUULPok58+1th
-         i49gMAgrJ6I9WNG7SVu6OF47E/UtTEP8dZavy9KKBmZ90bZpaX1UEoVuWSWNs1RcfB71
-         zOJVfroLRRmDdisWSsYya8HxZJvsFnjIT0oWPkcRcbwuWglZHl7GtS/JrvanhDhYwVIY
-         aTRljw/A+x/izJ2hlp96C1yV3UcoCTEYibN3BhbvtrDBnx2LjM6sv0ooBXqowkMPNvdq
-         j7LzyUFmSW7ZBtOYHL/VOmeTHemeMeLGA3J8lLkBVCTWHI1ev6XHgHocoH9B43SwJ7T5
-         bcuQ==
-X-Gm-Message-State: AOAM531wZjt/9iXEVYbIDI8w8jRMBJIUCxwBjLDMaO4e/G98lBmDt7ad
-        pHpbHTnBR6ZE+r/0o2cTN325xRw7eI264MD64ss=
-X-Google-Smtp-Source: ABdhPJxnBFgFM492SdCHWsGVGLaqGC/D15+x7dV47Dl81Nrb6e1r0coQitDT1CNXG/CqpyDLOFuBlX2m3U86YDmPvYQ=
-X-Received: by 2002:a25:4b86:: with SMTP id y128mr9295890yba.403.1612563861495;
- Fri, 05 Feb 2021 14:24:21 -0800 (PST)
+        bh=hYUg3hUYLhRgtIvFTbD2VmRbiO8E/oS3HEcH+2mdLys=;
+        b=fbT7IFOTyBDNwxFvNYNEqawfSpazV4xkWGP6WrCCnlxadMPOFP5SVPP+ZPRyG/NLI1
+         E2viHDSDXeDapZwgIjrTteeIiJIcDoyzsmsE/TPnwghvJu2Jc/TnpwzGSIq2pqDo44v9
+         KGZq7/2lGZSRG6dzVERnrFFJO4yGg0ZYEsEwvehCNcemDFUPnf7YqBZ8c2u0mJTQLh6d
+         DmAJeFeQ3PwZUO5BHqCsdWrni6r3t2rQF+LFUIbn099g/l4EvCEj+pz+APjhVD4c+Q1c
+         19ZEGQxiX8ZwyMofvFexkuy/8MU7KsNbpSLeqDrzPnvDX+jItmbfcvODTAI1tk9DgDZe
+         stIA==
+X-Gm-Message-State: AOAM533m3bSw3vMkPWRBU/i+yzHiEBxTItDEwDjlXOJy1useiMtmJHCI
+        QAi1OwKCh8LMYZX3RXCHUptxgsTtN9y/6OyFczk=
+X-Google-Smtp-Source: ABdhPJxPvMF+GPOj/8IjoyGkasonxz/I6RMZw8DMRUyvUJ14OqNyfV/+HbUj0a2/lwXZGicPrAZWNrbkKKSo7ekzHN0=
+X-Received: by 2002:a5b:3c4:: with SMTP id t4mr8617231ybp.510.1612563915723;
+ Fri, 05 Feb 2021 14:25:15 -0800 (PST)
 MIME-Version: 1.0
-References: <20210205124020.683286-1-jolsa@kernel.org> <20210205124020.683286-2-jolsa@kernel.org>
-In-Reply-To: <20210205124020.683286-2-jolsa@kernel.org>
+References: <20210205124020.683286-1-jolsa@kernel.org> <20210205124020.683286-4-jolsa@kernel.org>
+In-Reply-To: <20210205124020.683286-4-jolsa@kernel.org>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 5 Feb 2021 14:24:10 -0800
-Message-ID: <CAEf4BzYKq+Z1T6+yfM0dfuGMvZB1TRaqT-jWpPzUvgPdXh=Y0g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/4] tools/resolve_btfids: Build libbpf and
- libsubcmd in separate directories
+Date:   Fri, 5 Feb 2021 14:25:04 -0800
+Message-ID: <CAEf4BzYPOmS9=cuF9BkUcWv1MNZ0OEyi-bT6KUwm60PxXivS2Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 3/4] tools/resolve_btfids: Set srctree variable unconditionally
 To:     Jiri Olsa <jolsa@kernel.org>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andriin@fb.com>,
-        Song Liu <songliubraving@fb.com>,
         Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>,
         Masahiro Yamada <masahiroy@kernel.org>,
@@ -70,96 +69,53 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Fri, Feb 5, 2021 at 4:46 AM Jiri Olsa <jolsa@kernel.org> wrote:
 >
-> Setting up separate build directories for libbpf and libpsubcmd,
-> so it's separated from other objects and we don't get them mixed
-> in the future.
+> We want this clean to be called from tree's root Makefile,
+> which defines same srctree variable and that will screw
+> the make setup.
 >
-> It also simplifies cleaning, which is now simple rm -rf.
+> We actually do not use srctree being passed from outside,
+> so we can solve this by setting current srctree value
+> directly.
 >
-> Also there's no need for FEATURE-DUMP.libbpf and bpf_helper_defs.h
-> files in .gitignore anymore.
+> Also changing the way how srctree is initialized as suggested
+> by Andrri.
 >
-> Acked-by: Song Liu <songliubraving@fb.com>
+> Also root Makefile does not define the implicit RM variable,
+> so adding RM initialization.
+>
 > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > ---
 
 Acked-by: Andrii Nakryiko <andrii@kernel.org>
 
->  tools/bpf/resolve_btfids/.gitignore |  2 --
->  tools/bpf/resolve_btfids/Makefile   | 26 +++++++++++---------------
->  2 files changed, 11 insertions(+), 17 deletions(-)
+>  tools/bpf/resolve_btfids/Makefile | 7 ++-----
+>  1 file changed, 2 insertions(+), 5 deletions(-)
 >
-> diff --git a/tools/bpf/resolve_btfids/.gitignore b/tools/bpf/resolve_btfids/.gitignore
-> index a026df7dc280..25f308c933cc 100644
-> --- a/tools/bpf/resolve_btfids/.gitignore
-> +++ b/tools/bpf/resolve_btfids/.gitignore
-> @@ -1,4 +1,2 @@
-> -/FEATURE-DUMP.libbpf
-> -/bpf_helper_defs.h
->  /fixdep
->  /resolve_btfids
 > diff --git a/tools/bpf/resolve_btfids/Makefile b/tools/bpf/resolve_btfids/Makefile
-> index bf656432ad73..1d46a247ec95 100644
+> index be09ec4f03ff..bb9fa8de7e62 100644
 > --- a/tools/bpf/resolve_btfids/Makefile
 > +++ b/tools/bpf/resolve_btfids/Makefile
-> @@ -28,22 +28,22 @@ OUTPUT ?= $(srctree)/tools/bpf/resolve_btfids/
->  LIBBPF_SRC := $(srctree)/tools/lib/bpf/
->  SUBCMD_SRC := $(srctree)/tools/lib/subcmd/
+> @@ -2,11 +2,7 @@
+>  include ../../scripts/Makefile.include
+>  include ../../scripts/Makefile.arch
 >
-> -BPFOBJ     := $(OUTPUT)/libbpf.a
-> -SUBCMDOBJ  := $(OUTPUT)/libsubcmd.a
-> +BPFOBJ     := $(OUTPUT)/libbpf/libbpf.a
-> +SUBCMDOBJ  := $(OUTPUT)/libsubcmd/libsubcmd.a
+> -ifeq ($(srctree),)
+> -srctree := $(patsubst %/,%,$(dir $(CURDIR)))
+> -srctree := $(patsubst %/,%,$(dir $(srctree)))
+> -srctree := $(patsubst %/,%,$(dir $(srctree)))
+> -endif
+> +srctree := $(abspath $(CURDIR)/../../../)
 >
->  BINARY     := $(OUTPUT)/resolve_btfids
->  BINARY_IN  := $(BINARY)-in.o
+>  ifeq ($(V),1)
+>    Q =
+> @@ -22,6 +18,7 @@ AR       = $(HOSTAR)
+>  CC       = $(HOSTCC)
+>  LD       = $(HOSTLD)
+>  ARCH     = $(HOSTARCH)
+> +RM      ?= rm
 >
->  all: $(BINARY)
+>  OUTPUT ?= $(srctree)/tools/bpf/resolve_btfids/
 >
-> -$(OUTPUT):
-> +$(OUTPUT) $(OUTPUT)/libbpf $(OUTPUT)/libsubcmd:
->         $(call msg,MKDIR,,$@)
-> -       $(Q)mkdir -p $(OUTPUT)
-> +       $(Q)mkdir -p $(@)
->
-> -$(SUBCMDOBJ): fixdep FORCE
-> -       $(Q)$(MAKE) -C $(SUBCMD_SRC) OUTPUT=$(OUTPUT)
-> +$(SUBCMDOBJ): fixdep FORCE | $(OUTPUT)/libsubcmd
-> +       $(Q)$(MAKE) -C $(SUBCMD_SRC) OUTPUT=$(abspath $(dir $@))/ $(abspath $@)
->
-> -$(BPFOBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(OUTPUT)
-> +$(BPFOBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(OUTPUT)/libbpf
->         $(Q)$(MAKE) $(submake_extras) -C $(LIBBPF_SRC)  OUTPUT=$(abspath $(dir $@))/ $(abspath $@)
->
->  CFLAGS := -g \
-> @@ -57,23 +57,19 @@ LIBS = -lelf -lz
->  export srctree OUTPUT CFLAGS Q
->  include $(srctree)/tools/build/Makefile.include
->
-> -$(BINARY_IN): fixdep FORCE
-> +$(BINARY_IN): fixdep FORCE | $(OUTPUT)
->         $(Q)$(MAKE) $(build)=resolve_btfids
->
->  $(BINARY): $(BPFOBJ) $(SUBCMDOBJ) $(BINARY_IN)
->         $(call msg,LINK,$@)
->         $(Q)$(CC) $(BINARY_IN) $(LDFLAGS) -o $@ $(BPFOBJ) $(SUBCMDOBJ) $(LIBS)
->
-> -libsubcmd-clean:
-> -       $(Q)$(MAKE) -C $(SUBCMD_SRC) OUTPUT=$(OUTPUT) clean
-> -
-> -libbpf-clean:
-> -       $(Q)$(MAKE) -C $(LIBBPF_SRC) OUTPUT=$(OUTPUT) clean
-> -
-> -clean: libsubcmd-clean libbpf-clean fixdep-clean
-> +clean: fixdep-clean
->         $(call msg,CLEAN,$(BINARY))
->         $(Q)$(RM) -f $(BINARY); \
->         $(RM) -rf $(if $(OUTPUT),$(OUTPUT),.)/feature; \
-> +       $(RM) -rf $(OUTPUT)/libbpf; \
-> +       $(RM) -rf $(OUTPUT)/libsubcmd; \
->         find $(if $(OUTPUT),$(OUTPUT),.) -name \*.o -or -name \*.o.cmd -or -name \*.o.d | xargs $(RM)
->
->  tags:
 > --
 > 2.26.2
 >
