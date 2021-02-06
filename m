@@ -2,173 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AF86311BC1
-	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 07:40:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 778A9311BC5
+	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 07:58:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229534AbhBFGiz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Feb 2021 01:38:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33618 "EHLO
+        id S229565AbhBFG6K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Feb 2021 01:58:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229492AbhBFGiz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Feb 2021 01:38:55 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F01B2C06174A
-        for <netdev@vger.kernel.org>; Fri,  5 Feb 2021 22:38:14 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id cl8so4815743pjb.0
-        for <netdev@vger.kernel.org>; Fri, 05 Feb 2021 22:38:14 -0800 (PST)
+        with ESMTP id S229492AbhBFG6J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Feb 2021 01:58:09 -0500
+Received: from mail-oo1-xc2f.google.com (mail-oo1-xc2f.google.com [IPv6:2607:f8b0:4864:20::c2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CA32C06174A
+        for <netdev@vger.kernel.org>; Fri,  5 Feb 2021 22:57:29 -0800 (PST)
+Received: by mail-oo1-xc2f.google.com with SMTP id x19so2209715ooj.10
+        for <netdev@vger.kernel.org>; Fri, 05 Feb 2021 22:57:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ah16Tm7pIZZ71GnjSgsocms0uv9BGDOHd3yG17/sGTc=;
-        b=BFssyVPRCaMb/FrjT1hv7J6UwJVn9PXzFFMB5Oj+WlBHRaJHx85LZUjSRSgbrQFyM5
-         vv6xt6u+e0gGMDPYQHTSfFlfmlF1Y5dl3hG+2cFZhZWE8O2tJvo1JBkI1vJrZ3o1Xvmu
-         2+VDJlQKnkK4o2AKpnaUZU8qhF0nEHvsUSe7Q27fSqXPCZ4nUGAepL6hEqRC++y3fzN2
-         ZFV+8tDFAhGUVVNTV5fA7nvUZbDlTFbtoaeJo6Jtca+5ugk+FaBP4mApbs+TwZ6x7nnl
-         m89zYdoDNMCyOPMvtUilm+7B73aqNYocwmIfTlalwtZXzwMV2ER/c9ZEJ8b1o60kFSf4
-         sPVg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=8DiMpJT7Um/2h89dIOS5f4b7jbuvRU//md1Pt6mD0vg=;
+        b=gH5yS/7h3a7LXhrpwZpZpwh1Zi6rHdaOhJ7cRk5qtft8A7LrOILZ+HNvpNzhmuZTLK
+         EmVVdoJynYQey2z/Tere+LxM9OlTxkcI93+gz1GFTLH0fveR8n0B/c/BtQ4V7oWjCbDa
+         UZfsGRaEW5q0RPhtx1fQR33JSAYNs9ugi9bYhrTxE46ewJq/4NFcFXj8VTbUX/jv83LG
+         mfd8YFcQZ7NpQV4mTIsLjTmx4ilPtxXbEQ/L3e6FO55JUUwlcx0GSll3Q50GAWoksbjb
+         e4C96VZnr7DGuJ9ntK38iHe38/kRO0CyPyeLHPr9KSalI2G2uQwq/prrEjynI20avHmE
+         BASA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=Ah16Tm7pIZZ71GnjSgsocms0uv9BGDOHd3yG17/sGTc=;
-        b=LOUatGZy//YJbYSCoSmws+iqtLvA9JPhLJbMbSIUbj/z+R/EQs6n+GYaWQigRvOYgG
-         T4AZ0EXtFrDc2x2ZY5baNYLIumUDaBUdutPUjeCrVuZSbBjFk4DDTO1Y0Ks0rxTFlzQu
-         2KhWP8cJ88LVizvXA0bL5Ez+dc3jRVwQoFZKjHPmG/wTY5EM9y/Px4KsZO8F6ezk7aTQ
-         hislBudUMz+PXD0GoT9vpOEiDcMkAnt21UNumdrsDwJKA+rRlKpZJvUwBM0cjorBUUDK
-         B/wvYH04udgxgrWZSmeruGOeMyB0jvQYxqXcYZgmMXOgV3w+d1VVAJYubjMN6A+HuIuK
-         qXng==
-X-Gm-Message-State: AOAM531WFUJLkqs/P0spwVoak73tk9ip1CFAadgdSjl1SAYC9Q+9IBsF
-        xytnlJ1fWA2ftQ4YTYbB817dczMfTdlzow==
-X-Google-Smtp-Source: ABdhPJxXZC6a3yuXTcaE7DotTs5tHqrHDcCXa8v3EF5jwaI9UJ70nLcLbwu7bKSoNkKPI5Cq97UJSA==
-X-Received: by 2002:a17:90b:1105:: with SMTP id gi5mr7338964pjb.26.1612593494078;
-        Fri, 05 Feb 2021 22:38:14 -0800 (PST)
-Received: from tardis.. (c-67-182-242-199.hsd1.ut.comcast.net. [67.182.242.199])
-        by smtp.gmail.com with ESMTPSA id z11sm11971298pfk.97.2021.02.05.22.38.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Feb 2021 22:38:12 -0800 (PST)
-From:   Thayne McCombs <astrothayne@gmail.com>
-To:     netdev@vger.kernel.org, dsahern@kernel.org
-Cc:     Thayne McCombs <astrothayne@gmail.com>
-Subject: [PATCH iproute2-next] ss: Make leading ":" always optional for sport and dport
-Date:   Fri,  5 Feb 2021 23:36:51 -0700
-Message-Id: <20210206063650.7877-1-astrothayne@gmail.com>
-X-Mailer: git-send-email 2.30.0
+        bh=8DiMpJT7Um/2h89dIOS5f4b7jbuvRU//md1Pt6mD0vg=;
+        b=WQu3Y8Tm9y1quurIh2nVtmrE73yqIi0SZrdH/H4ty4W6EWPRBOpZpEFaftjRYQlYt2
+         ffo8RY6QLChLVVsUfcYSzW6tQqSgw1BOlDzK+2JdHsaqc41LMsTxR1TI88KF89TJEwdx
+         i1gHzjEApvG2kGptWpYRf2RKys8hkCMJuqmGAdsdYHpQ2RYnCDMM2SdR/HnhYOkOvwzO
+         lIOQISqJeV40anu+HZrUj8ceCeMXtanqjz7aCLidDk7lkgu8ZZbuElp83bC7Ey8fETUC
+         yb6kBtQJdJQ7vqajUCzQIZT1u/kHde81IYuOQWiNGt4rYTgmD4qp4+RYhNfRbMrggMu8
+         B/tw==
+X-Gm-Message-State: AOAM531VrGtMoAb6Z8PPgg76mYC/7xVlnvVZdynqFFnykesSmiFRVGX5
+        t0JZYaz2z9I7vCI9a3V/H+A=
+X-Google-Smtp-Source: ABdhPJyJB0xhb3w0kXszY44BHfUjfre7VNjsh4CRlh612FFK2X5UdkbuRoi9n7880pynObOrwYnKIA==
+X-Received: by 2002:a4a:4c97:: with SMTP id a145mr6090216oob.16.1612594648526;
+        Fri, 05 Feb 2021 22:57:28 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.30])
+        by smtp.googlemail.com with ESMTPSA id o16sm2295923ote.79.2021.02.05.22.57.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 05 Feb 2021 22:57:27 -0800 (PST)
+Subject: Re: [net] tcp: Explicitly mark reserved field in tcp_zerocopy_receive
+ args.
+To:     Arjun Roy <arjunroy.kdev@gmail.com>, davem@davemloft.net,
+        netdev@vger.kernel.org
+Cc:     arjunroy@google.com, edumazet@google.com, soheil@google.com,
+        Leon Romanovsky <leon@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20210205230127.310521-1-arjunroy.kdev@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <5bc63873-67e1-c3bd-116e-7b40a15d7d92@gmail.com>
+Date:   Fri, 5 Feb 2021 23:57:25 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210205230127.310521-1-arjunroy.kdev@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The sport and dport conditions in expressions were inconsistent on
-whether there should be a ":" at the beginning of the port when only a
-port was provided depending on the family. The link and netlink
-families required a ":" to work. The vsock family required the ":"
-to be absent. The inet and inet6 families work with or without a leading
-":".
+On 2/5/21 4:01 PM, Arjun Roy wrote:
+> From: Arjun Roy <arjunroy@google.com>
+> 
+> Explicitly define reserved field and require it to be 0-valued.
+> 
+> Fixes: 7eeba1706eba ("tcp: Add receive timestamp support for receive zerocopy.")
+> Signed-off-by: Arjun Roy <arjunroy@google.com>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Signed-off-by: Soheil Hassas Yeganeh <soheil@google.com>
+> Suggested-by: David Ahern <dsahern@gmail.com>
+> Suggested-by: Leon Romanovsky <leon@kernel.org>
+> Suggested-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+>  include/uapi/linux/tcp.h | 2 +-
+>  net/ipv4/tcp.c           | 2 ++
+>  2 files changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
+> index 42fc5a640df4..8fc09e8638b3 100644
+> --- a/include/uapi/linux/tcp.h
+> +++ b/include/uapi/linux/tcp.h
+> @@ -357,6 +357,6 @@ struct tcp_zerocopy_receive {
+>  	__u64 msg_control; /* ancillary data */
+>  	__u64 msg_controllen;
+>  	__u32 msg_flags;
+> -	/* __u32 hole;  Next we must add >1 u32 otherwise length checks fail. */
+> +	__u32 reserved; /* set to 0 for now */
+>  };
+>  #endif /* _UAPI_LINUX_TCP_H */
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index e1a17c6b473c..97aee57ab9b4 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -4159,6 +4159,8 @@ static int do_tcp_getsockopt(struct sock *sk, int level,
+>  		}
+>  		if (copy_from_user(&zc, optval, len))
+>  			return -EFAULT;
+> +		if (zc.reserved)
+> +			return -EOPNOTSUPP;
 
-This makes the leading ":" optional in all cases, so if sport or dport
-are used, then it works with a leading ":" or without one, as inet and
-inet6 did.
----
- misc/ss.c | 46 ++++++++++++++++++++++++----------------------
- 1 file changed, 24 insertions(+), 22 deletions(-)
-
-diff --git a/misc/ss.c b/misc/ss.c
-index aefa1c2f..5c934fa0 100644
---- a/misc/ss.c
-+++ b/misc/ss.c
-@@ -2111,6 +2111,18 @@ static void vsock_set_inet_prefix(inet_prefix *a, __u32 cid)
- 	memcpy(a->data, &cid, sizeof(cid));
- }
- 
-+static char* find_port(char *addr, bool is_port)
-+{
-+	char *port = NULL;
-+	if (is_port)
-+		port = addr;
-+	else
-+		port = strchr(addr, ':');
-+	if (port && *port == ':')
-+		*port++ = '\0';
-+	return port;
-+}
-+
- void *parse_hostcond(char *addr, bool is_port)
- {
- 	char *port = NULL;
-@@ -2152,17 +2164,16 @@ void *parse_hostcond(char *addr, bool is_port)
- 	if (fam == AF_PACKET) {
- 		a.addr.family = AF_PACKET;
- 		a.addr.bitlen = 0;
--		port = strchr(addr, ':');
-+		port = find_port(addr, is_port);
- 		if (port) {
--			*port = 0;
--			if (port[1] && strcmp(port+1, "*")) {
--				if (get_integer(&a.port, port+1, 0)) {
--					if ((a.port = xll_name_to_index(port+1)) <= 0)
-+			if (*port && strcmp(port, "*")) {
-+				if (get_integer(&a.port, port, 0)) {
-+					if ((a.port = xll_name_to_index(port)) <= 0)
- 						return NULL;
- 				}
- 			}
- 		}
--		if (addr[0] && strcmp(addr, "*")) {
-+		if (!is_port && addr[0] && strcmp(addr, "*")) {
- 			unsigned short tmp;
- 
- 			a.addr.bitlen = 32;
-@@ -2176,19 +2187,18 @@ void *parse_hostcond(char *addr, bool is_port)
- 	if (fam == AF_NETLINK) {
- 		a.addr.family = AF_NETLINK;
- 		a.addr.bitlen = 0;
--		port = strchr(addr, ':');
-+		port = find_port(addr, is_port);
- 		if (port) {
--			*port = 0;
--			if (port[1] && strcmp(port+1, "*")) {
--				if (get_integer(&a.port, port+1, 0)) {
--					if (strcmp(port+1, "kernel") == 0)
-+			if (*port && strcmp(port, "*")) {
-+				if (get_integer(&a.port, port, 0)) {
-+					if (strcmp(port, "kernel") == 0)
- 						a.port = 0;
- 					else
- 						return NULL;
- 				}
- 			}
- 		}
--		if (addr[0] && strcmp(addr, "*")) {
-+		if (!is_port && addr[0] && strcmp(addr, "*")) {
- 			a.addr.bitlen = 32;
- 			if (nl_proto_a2n(&a.addr.data[0], addr) == -1)
- 				return NULL;
-@@ -2201,21 +2211,13 @@ void *parse_hostcond(char *addr, bool is_port)
- 
- 		a.addr.family = AF_VSOCK;
- 
--		if (is_port)
--			port = addr;
--		else {
--			port = strchr(addr, ':');
--			if (port) {
--				*port = '\0';
--				port++;
--			}
--		}
-+		port = find_port(addr, is_port);
- 
- 		if (port && strcmp(port, "*") &&
- 		    get_u32((__u32 *)&a.port, port, 0))
- 			return NULL;
- 
--		if (addr[0] && strcmp(addr, "*")) {
-+		if (!is_port && addr[0] && strcmp(addr, "*")) {
- 			a.addr.bitlen = 32;
- 			if (get_u32(&cid, addr, 0))
- 				return NULL;
--- 
-2.30.0
-
+usually invalid values for uapi return -EINVAL
