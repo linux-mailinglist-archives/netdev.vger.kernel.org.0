@@ -2,88 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F4E7311C02
-	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 08:49:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04A17311C12
+	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 09:07:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229631AbhBFHrv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Feb 2021 02:47:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48294 "EHLO
+        id S229684AbhBFIFy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Feb 2021 03:05:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229492AbhBFHrt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Feb 2021 02:47:49 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2102BC06174A;
-        Fri,  5 Feb 2021 23:47:09 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id v15so10326415wrx.4;
-        Fri, 05 Feb 2021 23:47:08 -0800 (PST)
+        with ESMTP id S229539AbhBFIFv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Feb 2021 03:05:51 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F5C1C06174A
+        for <netdev@vger.kernel.org>; Sat,  6 Feb 2021 00:05:11 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id q2so8800558eds.11
+        for <netdev@vger.kernel.org>; Sat, 06 Feb 2021 00:05:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=8nbbx+2BPpOusI9WdJ1gNR0JQRp9V4wdi++84RYc1q0=;
-        b=hdAaw9ecKAbPrqZDbgx7RoCEPmIuju8UeNUT6H7sis7doWYMdZjAmzAFsA7qrRY9cn
-         acwIVe1OrKnkkUIziPduC9O9ja2VcVpDz/tRxJBf8boM3WIiy4bHWvXdb0oNSluNZj5r
-         95/qP+iETy50rYo94wWiERfRKyxgz6vwGCdhz6NARPVHtpbJ9SeixbrG9pgPfONvpy//
-         4oTfsBB0h0IjJf7jJnRslOPX17/e+9gSQfCcclfua8VbIqapLqOf94owdS8U63/wFZz+
-         StX6ksavDDUuHpmxlvsHjzzlMg5V/TF0Hbs4vKWntVsIFX+k6kASXUDJ15eC73Xo32eD
-         JAMw==
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=5lD39euqnLLWALUOK+cga3/qrcq4Set5HCzS7aBLz9o=;
+        b=H/kVu/wMJKrW80Hz0r1FdhbAln1kHQT3EjkvZPohN/qcSkI4wVrebfwPjENBipd2B8
+         s31bJEM5gX7iHM5TDDswLF9uETxuYNGY4zp3iyMD7QKboev334yQpaUj1SJfNv10oybi
+         6TbaXILI7VSa3BuFf39NRzBD/msoIgDegxL/okCuMn1CEuDLWEbXAKIVVSL0Zh4G1gdC
+         4Ur7QxguIj6AjhBrNaImcdyuzQMl8DzCQXApIWXFvzoGgPbd8uqpsDc66twumfrvY696
+         DUZsP9+YFm9cN7lujC6nET/1jiGCQP5oDxxm4dZOyRNUu+BcVMbNhdp/nao2tWjVkap7
+         fZOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=8nbbx+2BPpOusI9WdJ1gNR0JQRp9V4wdi++84RYc1q0=;
-        b=FXuwtXMa7TaoRgrSsuuh1qE7fKOM44/OSQsWZg/eUZCwU9iECsRGprkxtfvfRZ2AHJ
-         0kub9q3yPyhrEs9eXe3f2m8xy7TYH9eJNp6C4Ka3ZPUy1cU5dV0FJcysOc1NgTx4ntFQ
-         FFjw1adwSox2iNHkPqkrC7xiRTElygF0Q9JjU8nC8+qa0ffdMtcftU9E86wgzRlhrUBw
-         rZ89XnRgO396G1I77VpseYyY12RHQYfBOfGVxFANVr9XLUrvnP8rZI5byZ36Daf5+Cfj
-         +oT2qt73HwDMT/zRHdHYA1XVdCxRU36rMCU+uR1TDyS271Mk0Q9bEYXcO6Z3rpwxr5op
-         kDLw==
-X-Gm-Message-State: AOAM532U3pd9/XQHTqHuXiFnM8FhUfg6yProze3AApFHlFE/Y0WU4xtg
-        klxxZTJpKZ+6FHDUcuSgWkkvTSvAHA+6LP5ZL6c=
-X-Google-Smtp-Source: ABdhPJzh7y1I1nDbBMMNpxZNQaVpI1H0gv0nT0MNTDIHEHj7mB3mfsY2hRWHwa47CugLuO1Md6xqhaNSSxavwkZDNVU=
-X-Received: by 2002:a5d:60c2:: with SMTP id x2mr9336975wrt.248.1612597627691;
- Fri, 05 Feb 2021 23:47:07 -0800 (PST)
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=5lD39euqnLLWALUOK+cga3/qrcq4Set5HCzS7aBLz9o=;
+        b=is9QGJcruUOYfLUToP6QKihBF6Gt2a/pMYBEbiHqdczDSwloEMW1I2GRPrNcHeJKCd
+         KrIAOedZNiMARJbR4O9P5uBz21WUjhF/cSkU35gqjjX9ORe3nYdpL6uaT2v4E4qDEXh3
+         IDkzFvQwy0XPMl4Lbcd1yB0646hfmdXdJPkuM8R+GqRm5//A8Q8YudGCXweJeFkasIx8
+         dwGAQidMNMeF/8bGRCZ3ld8HSZKXkXU+r2n/pOpI7/h0L5mq9/Tq8T11CtP3L61FnE+G
+         L/v7fVo7PeE+CtTR6a0r4rcm8nYm6seR9y3+3I8XNzF4jdiVi81Rrw+4uFG2vH+TB0+J
+         K+jg==
+X-Gm-Message-State: AOAM531PGiPC09Mwkydkda54GdQL52cSqh/Xll7KyUJqroHQSwgo35lp
+        V32sHHdlpgJYV614GYLrQFWrVxJfLJ3UKuox6vE=
+X-Google-Smtp-Source: ABdhPJxZl56Jtg7AblTWFYMttlb2yh0QgrP2wJlxTqLKTGA7H6mX9qeUzGRdNEdA0OPEcDFjjEp7zaGsXkBeZsVDVTQ=
+X-Received: by 2002:a05:6402:d05:: with SMTP id eb5mr7246808edb.143.1612598710070;
+ Sat, 06 Feb 2021 00:05:10 -0800 (PST)
 MIME-Version: 1.0
-References: <20210205170950.145042-1-bjorn.topel@gmail.com>
- <CALDO+SZhgSr5haWT=c1b-+WMpeaPGkDYoxCoWtTaX2+L85WEJA@mail.gmail.com> <b186bc7e-2b0b-58b8-065e-c77255b6aecb@infradead.org>
-In-Reply-To: <b186bc7e-2b0b-58b8-065e-c77255b6aecb@infradead.org>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Sat, 6 Feb 2021 08:46:55 +0100
-Message-ID: <CAJ+HfNgRQ1do=tXhHOia2KdQQ-08CYduXcgdvT6o1XcL--+_yA@mail.gmail.com>
-Subject: Re: [PATCH bpf] selftests/bpf: use bash instead of sh in test_xdp_redirect.sh
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     William Tu <u9012063@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Received: by 2002:a17:906:7482:0:0:0:0 with HTTP; Sat, 6 Feb 2021 00:05:09
+ -0800 (PST)
+Reply-To: nascointt@hotmail.com
+From:   Nayef Abu Sakran <larryamaechi558@gmail.com>
+Date:   Sat, 6 Feb 2021 09:05:09 +0100
+Message-ID: <CALHLwjUxyr8hObAGgNZzOa7ypsUfN1Pjac-PF+nY3nzOxtZV-Q@mail.gmail.com>
+Subject: hi warm regards
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 5 Feb 2021 at 18:39, Randy Dunlap <rdunlap@infradead.org> wrote:
->
-> On 2/5/21 9:30 AM, William Tu wrote:
-> > On Fri, Feb 5, 2021 at 9:09 AM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail=
-.com> wrote:
-> >>
-> >> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> >>
-> >> The test_xdp_redirect.sh script uses some bash-features, such as
-> >> '&>'. On systems that use dash as the sh implementation this will not
-> >> work as intended. Change the shebang to use bash instead.
->
-> Hi,
-> In general we (kernel, maybe not bpf) try to move away from bash to a mor=
-e
-> "standard" sh shell, so things like "&>" would be converted to ">file 2>&=
-1"
-> or whatever is needed.
->
-
-Ok! I'll respin!
-
-Bj=C3=B6rn
+Did you received the mail i send to you?
