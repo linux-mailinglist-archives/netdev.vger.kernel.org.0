@@ -2,94 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45F03311E7C
-	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 16:44:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C30A1311E9A
+	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 17:22:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229976AbhBFPnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Feb 2021 10:43:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37496 "EHLO
+        id S229870AbhBFQTs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Feb 2021 11:19:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229586AbhBFPnr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Feb 2021 10:43:47 -0500
-Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8808BC06174A;
-        Sat,  6 Feb 2021 07:43:06 -0800 (PST)
-Received: by mail-il1-x12f.google.com with SMTP id e7so8695451ile.7;
-        Sat, 06 Feb 2021 07:43:06 -0800 (PST)
+        with ESMTP id S229793AbhBFQTq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Feb 2021 11:19:46 -0500
+Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84EFCC06174A
+        for <netdev@vger.kernel.org>; Sat,  6 Feb 2021 08:19:06 -0800 (PST)
+Received: by mail-ot1-x334.google.com with SMTP id t25so10086026otc.5
+        for <netdev@vger.kernel.org>; Sat, 06 Feb 2021 08:19:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aLDSj186f0bR5X7Y8YAcIhnfvG2HaPYJ7L9LPKrPwA8=;
-        b=pWgHDJ1CWcvw+AZdGCS9agQtQZkHarO5t4EvG6ZiuRTCKMC/hZWM3ZBjXn71tmlUCl
-         njiWna7r5z36slxDTiVoESyGopv9nSRHfk9Gfa6HNGWbI2DJE73XrR5px34p3fGP52IN
-         fVgXslELR5Dj5+uJHPYYqcBt30WMrKAJqskn3uCd7/hy1+Phkrcl32hOmupWBU5q5J5/
-         6AepUiLCf7hhiYfN+GJxNVgwiNXtNnhMdAw4vE+J/8P1EXnu6yu5eS/NC3UNsVIm2ZM3
-         SpDvjwaN9o1n7obSIx1v4fBRSFlAnanvUA0rEZeVVSB2pnxUXlWposd8bA31pBuafNeW
-         1gsQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Zzh4AKKfiFLIZO6lzJuAuzHsB2zMaTdc91wbmlIdcdc=;
+        b=Aev+PEQlg9cVSIQM8FkVYTLRjTzfZ9nSGG1pJ9Si0nNvqWi5i+qoslvpLMOsrhTso1
+         CylZuCN1RiVO6elTV657xLbQqtUzVyTorZeqMKiEDoBZXRNwkIDKzVfvJBZUhfm3b/1W
+         m1qlKCKDXAiu1tdaFIES/EDdcb0RF66mRnNfIItcoGdy4WREPQBZC1D+QGQdnMhdAHCg
+         U5UUfq3NAHl23oJ3CrX23bavS3gta9+dxGw4zlcbcZV60nm0byDDp+YaWxZX+TS2MLVM
+         +uNHCXMB7ohyHmK1IW/Vmyz3wb1o+N4ygGMcHJKLJ9+WdxR05ap6hqnekUE63O8xw3AT
+         LMxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aLDSj186f0bR5X7Y8YAcIhnfvG2HaPYJ7L9LPKrPwA8=;
-        b=cRr+xJtTu6my7OW0FSOfCR4F1TbCu56/GiUuKRpUBpuHwte2QCabnkin4+QA4lgDE7
-         VpkQoFzTQrlqWVLQNipY2l7imR/sqIPAu9TH2f/vxDmFShW9IQuKV3lAduQBqX8wRGZh
-         5PmMmsTX6hI9Tp8CgymqZx9qx8qsWnlEtNFRuV9AvO9+bD6wkJLeAolInwT1Es5ceT/P
-         /Hou47hapZ8s6IpG/UwPjgd+YdJBWsaORIOUo2oLqRofJS5wT26/s1njbsHVLncvUHKT
-         tMfQWeK3WQ+Ri7H8eB+S3twBQlOx78rYb/+uKk3NE+D0SExSExD0TN8FmTWmjrD6HuhT
-         PHeQ==
-X-Gm-Message-State: AOAM5325L5rBF4L311TXYBTyh6ZSjMy6hbS4icabLaThjkz6Db+dnWSD
-        5VrMhkGyGWW4lfC6WXXQQEcjoyp5bD9ZKe1kqrs=
-X-Google-Smtp-Source: ABdhPJyyv9u3uNtECdpZl23ih66cCZxfAMNVVrEe0JMbN8NsMQ5Q6rPJ/Hxg27ee8RgHx2/i/90fAbey5Iq87EZlcSw=
-X-Received: by 2002:a05:6e02:1a29:: with SMTP id g9mr8283633ile.54.1612626185418;
- Sat, 06 Feb 2021 07:43:05 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Zzh4AKKfiFLIZO6lzJuAuzHsB2zMaTdc91wbmlIdcdc=;
+        b=JeAga6PsVZcToUQ9NDRw4fVbpl3H6tXSrqAf1pJNwtf51bXSXA3sX0/1SjYKR1xlkm
+         7D5gMouyVA45dH3hxH8EUGivT2/vXFwyGzHLxNAbv7pMlT8ES1sYpmsm9MkAyExjlOzN
+         ZPccFFkPvfiuJwqnB/2l6+fv7HajgZnQ/kGpH/V5hVDQLxFq0H3GMZ0AkCrB5Dy3IWNM
+         U8TjvoPE/1x61pO5w1a0h+nKAjnCyuKLTCln7M+Wrbl166PyosXiCdSuroqBwo7csHbS
+         OJXSDE+fsQmw7S1NStaBL6vALhNH1fXE2o7Mpj5pK+6s55xdFsqmY/PL2M1MixM/0Ewt
+         SvDw==
+X-Gm-Message-State: AOAM530NQjR0RzbDBUrMrVHhsSB9RWuksZBTSRPRFYZQXCenr0MlRiH3
+        NHtFg4yjKw/MdQJfUJEfSOQ=
+X-Google-Smtp-Source: ABdhPJzSEJtyIlJp9Ie3SoPLjhQzs86q/XHq/FovJkRe75OQvLOWIrARioZlShd2GKFWKolqaGZZ+g==
+X-Received: by 2002:a05:6830:191:: with SMTP id q17mr6980295ota.110.1612628345731;
+        Sat, 06 Feb 2021 08:19:05 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.33])
+        by smtp.googlemail.com with ESMTPSA id l24sm2560178otq.5.2021.02.06.08.19.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 06 Feb 2021 08:19:04 -0800 (PST)
+Subject: Re: [net v2] tcp: Explicitly mark reserved field in
+ tcp_zerocopy_receive args.
+To:     Arjun Roy <arjunroy.kdev@gmail.com>, davem@davemloft.net,
+        netdev@vger.kernel.org
+Cc:     arjunroy@google.com, edumazet@google.com, soheil@google.com,
+        Leon Romanovsky <leon@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20210206070203.483362-1-arjunroy.kdev@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <42d8a9a6-a449-ee78-c486-520df6052d1f@gmail.com>
+Date:   Sat, 6 Feb 2021 09:19:03 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.7.0
 MIME-Version: 1.0
-References: <20210205224124.21345-1-xie.he.0141@gmail.com> <CA+FuTScLTZqZhNU7bWEw4OMTQzcKV106iRLwA--La0uH+JrTtg@mail.gmail.com>
-In-Reply-To: <CA+FuTScLTZqZhNU7bWEw4OMTQzcKV106iRLwA--La0uH+JrTtg@mail.gmail.com>
-From:   Eyal Birger <eyal.birger@gmail.com>
-Date:   Sat, 6 Feb 2021 17:42:54 +0200
-Message-ID: <CAHsH6GuW-xYp01ovBBC7+j8_v_WfiDmYznxW3Ajzo_qSFLy93A@mail.gmail.com>
-Subject: Re: [PATCH net-next] net/packet: Improve the comment about LL header
- visibility criteria
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Tanner Love <tannerlove@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210206070203.483362-1-arjunroy.kdev@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 2/6/21 12:02 AM, Arjun Roy wrote:
+> From: Arjun Roy <arjunroy@google.com>
+> 
+> Explicitly define reserved field and require it to be 0-valued.
+> 
+> Fixes: 7eeba1706eba ("tcp: Add receive timestamp support for receive zerocopy.")
+> Signed-off-by: Arjun Roy <arjunroy@google.com>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Signed-off-by: Soheil Hassas Yeganeh <soheil@google.com>
+> Suggested-by: David Ahern <dsahern@gmail.com>
+> Suggested-by: Leon Romanovsky <leon@kernel.org>
+> Suggested-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+>  include/uapi/linux/tcp.h | 2 +-
+>  net/ipv4/tcp.c           | 2 ++
+>  2 files changed, 3 insertions(+), 1 deletion(-)
+> 
 
-On Sat, Feb 6, 2021 at 4:52 AM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> On Fri, Feb 5, 2021 at 5:42 PM Xie He <xie.he.0141@gmail.com> wrote:
-> >
-> > The "dev_has_header" function, recently added in
-> > commit d549699048b4 ("net/packet: fix packet receive on L3 devices
-> > without visible hard header"),
-> > is more accurate as criteria for determining whether a device exposes
-> > the LL header to upper layers, because in addition to dev->header_ops,
-> > it also checks for dev->header_ops->create.
-> >
-> > When transmitting an skb on a device, dev_hard_header can be called to
-> > generate an LL header. dev_hard_header will only generate a header if
-> > dev->header_ops->create is present.
-> >
-> > Signed-off-by: Xie He <xie.he.0141@gmail.com>
->
-> Acked-by: Willem de Bruijn <willemb@google.com>
->
-> Indeed, existence of dev->header_ops->create is the deciding factor. Thanks Xie.
+Reviewed-by: David Ahern <dsahern@gmail.com>
 
-As such, may I suggest making this explicit by making
-dev_hard_header() use dev_has_header()?
 
-Eyal.
