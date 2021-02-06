@@ -2,93 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EFCB312037
-	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 22:53:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09884312049
+	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 23:30:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229713AbhBFVv0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Feb 2021 16:51:26 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:23345 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229536AbhBFVvY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Feb 2021 16:51:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1612648284; x=1644184284;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Y0LF0QiYzcdX2y6gwZ07FxsFEt3swqe56rzuZlawFZY=;
-  b=cDYNu+y0QI8Zs/iCh2jHO61uZbp+dt3c4VRjGTBP0dKcb0CTfsOIZtvC
-   WUh6sNqYltr2tD43X7/DrVjK93vAJUDpbb5XniAI87CLgBNQEPGoI0fqG
-   BajPc7nMIvPcIVglQLE8TX2f32oQwKC5PgLrRG1vOxguNnyTSNogG4Pxz
-   iFd2oCHevPXvMRot7yGdaGexjEMNRus0MhQTz1AJ+m+qS+XTxBz/G3D+4
-   pkqLjwubcYjUYiAQp789ri8nM5Gfh4N8h2tMDoexptfPj2RpMLSVxY0tL
-   SOyh3z2il9E1A0qR6EtALlA9819IJzxFR86IE6xpN916STEXWGVlVvfgy
-   w==;
-IronPort-SDR: gcsT9Pl+dqnMyULVGuASekAJ8cQq3N7GU2uvRFbX2u22exT5uskHtEuInH4D1G92ZidNUElUCj
- UsVlloBGTnVKheEQPtsV942divjR9FZLY1mSfEvrF31jIoXOZxcyhzCg0B6k74tQ9pU9SLQWbu
- v3xeNizgY5SUCsJV9nGOSZkXh73an31+crWYTENs0hbeLf7YYkPBy6rg54V9JC8Is/qgQNF/M6
- TGBaIkIAFNQJobu9Q5SaVxIBhH9VFU+dSfPZ4Zb+Dur/dNMG0Sen3jqSF0Gflx84n79ktffPQK
- nns=
-X-IronPort-AV: E=Sophos;i="5.81,158,1610434800"; 
-   d="scan'208";a="102871017"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Feb 2021 14:49:48 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Sat, 6 Feb 2021 14:49:48 -0700
-Received: from soft-dev3.localdomain (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Sat, 6 Feb 2021 14:49:46 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <jiri@resnulli.us>, <ivecera@redhat.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <roopa@nvidia.com>, <nikolay@nvidia.com>,
-        <rasmus.villemoes@prevas.dk>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bridge@lists.linux-foundation.org>
-CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net 2/2] switchdev: mrp: Remove SWITCHDEV_ATTR_ID_MRP_PORT_STAT
-Date:   Sat, 6 Feb 2021 22:47:34 +0100
-Message-ID: <20210206214734.1577849-3-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210206214734.1577849-1-horatiu.vultur@microchip.com>
-References: <20210206214734.1577849-1-horatiu.vultur@microchip.com>
+        id S229611AbhBFWaI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Feb 2021 17:30:08 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46898 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229522AbhBFWaG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 6 Feb 2021 17:30:06 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DAB9C64DA1;
+        Sat,  6 Feb 2021 22:29:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612650565;
+        bh=5whCFGTXa3J1746EODCwZovMzZz+QDWnX+nqhWJoo8Q=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KVbBniO58u4QFUB32f9KRwF91AQ+EOH3Kx8zSld2dTKeS6bbVngC8lN72bAzfjChU
+         YUyZhRLKOKOXDO5gxQCDAz3mX29oH29sevZ8Uq7CBif+qhiyCNbQFVq2+7gS0lWpII
+         4OOIAnMrjzqqky0uF+yK1je0plwSI4cGz8QhkwRWJEnaulhQHOWyLAJE1L3uaSdWzt
+         pMjZse5mPqyzYrP+8JcAYBI/6qGeasmvWuDb5Qg4t3+daMlPMNbG/ULsmZwMHMmmBv
+         WoQRsmkyFf/9YN+81bLJKOeuDc7LqZ8GvFworFp2kV9jIXY7gtX9/lNMetjRU+CLPe
+         bWI29EbUd4ilg==
+Date:   Sat, 6 Feb 2021 14:29:24 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     NeilBrown <neilb@suse.de>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Xin Long <lucien.xin@gmail.com>, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Vlad Yasevich <vyasevich@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-sctp@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 0/3] Fix some seq_file users that were recently broken
+Message-ID: <20210206142924.2bfc3cf5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210205143550.58d3530918459eafa918ad0c@linux-foundation.org>
+References: <161248518659.21478.2484341937387294998.stgit@noble1>
+        <20210205143550.58d3530918459eafa918ad0c@linux-foundation.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that MRP started to use also SWITCHDEV_ATTR_ID_PORT_STP_STATE to
-notify HW, then SWITCHDEV_ATTR_ID_MRP_PORT_STAT is not used anywhere
-else, therefore we can remove it.
+On Fri, 5 Feb 2021 14:35:50 -0800 Andrew Morton wrote:
+> On Fri, 05 Feb 2021 11:36:30 +1100 NeilBrown <neilb@suse.de> wrote:
+> 
+> > A recent change to seq_file broke some users which were using seq_file
+> > in a non-"standard" way ...  though the "standard" isn't documented, so
+> > they can be excused.  The result is a possible leak - of memory in one
+> > case, of references to a 'transport' in the other.
+> > 
+> > These three patches:
+> >  1/ document and explain the problem
+> >  2/ fix the problem user in x86
+> >  3/ fix the problem user in net/sctp
+> 
+> 1f4aace60b0e ("fs/seq_file.c: simplify seq_file iteration code and
+> interface") was August 2018, so I don't think "recent" applies here?
+> 
+> I didn't look closely, but it appears that the sctp procfs file is
+> world-readable.  So we gave unprivileged userspace the ability to leak
+> kernel memory?
+> 
+> So I'm thinking that we aim for 5.12-rc1 on all three patches with a cc:stable?
 
-Fixes: c284b545900830 ("switchdev: mrp: Extend switchdev API to offload MRP")
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- include/net/switchdev.h | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/include/net/switchdev.h b/include/net/switchdev.h
-index 99cd538d6519..afdf8bd1b4fe 100644
---- a/include/net/switchdev.h
-+++ b/include/net/switchdev.h
-@@ -42,7 +42,6 @@ enum switchdev_attr_id {
- 	SWITCHDEV_ATTR_ID_BRIDGE_MC_DISABLED,
- 	SWITCHDEV_ATTR_ID_BRIDGE_MROUTER,
- #if IS_ENABLED(CONFIG_BRIDGE_MRP)
--	SWITCHDEV_ATTR_ID_MRP_PORT_STATE,
- 	SWITCHDEV_ATTR_ID_MRP_PORT_ROLE,
- #endif
- };
-@@ -62,7 +61,6 @@ struct switchdev_attr {
- 		u16 vlan_protocol;			/* BRIDGE_VLAN_PROTOCOL */
- 		bool mc_disabled;			/* MC_DISABLED */
- #if IS_ENABLED(CONFIG_BRIDGE_MRP)
--		u8 mrp_port_state;			/* MRP_PORT_STATE */
- 		u8 mrp_port_role;			/* MRP_PORT_ROLE */
- #endif
- 	} u;
--- 
-2.27.0
-
+I'd rather take the sctp patch sooner, we'll send another batch 
+of networking fixes for 5.11, anyway. Would that be okay with you?
