@@ -2,135 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81A42311C38
-	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 09:38:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2144311C5E
+	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 10:28:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229754AbhBFIg7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Feb 2021 03:36:59 -0500
-Received: from mail-io1-f72.google.com ([209.85.166.72]:56046 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229704AbhBFIgy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Feb 2021 03:36:54 -0500
-Received: by mail-io1-f72.google.com with SMTP id a2so8266904iod.22
-        for <netdev@vger.kernel.org>; Sat, 06 Feb 2021 00:36:39 -0800 (PST)
+        id S229561AbhBFJ1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Feb 2021 04:27:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41264 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229508AbhBFJ1k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Feb 2021 04:27:40 -0500
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E646AC06174A;
+        Sat,  6 Feb 2021 01:26:59 -0800 (PST)
+Received: by mail-lj1-x22f.google.com with SMTP id y14so10181705ljn.8;
+        Sat, 06 Feb 2021 01:26:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+oY7zonC656M9bvmr5dvhg7r5T0AFXB5lSMtTFca7MI=;
+        b=Xjgp4TU4CXMrf4sw1J1JNimfIvf8RWq4KFrDP7k6kPAk+188EAWBq3L6PQNPzgWWen
+         3/Ap5Eq5J45NqxaVYwoV3BBw5c4s7jS0weLbonmiwdkPMJZV5YiT9+JlPmUJmfGRIwp6
+         /EKkQkx8r6q+IZ54vMD52SgOw8TGMBclqmxFafs9kTYrGxkfP8vqRo0ZJDmRPQWUL35c
+         TeFYZSUBceQwy/EWuw5PJGNL036PgCcF6UtkhLq3QqtdGaJY0SIcNKGI2gMD4byRNZJ+
+         6i3juDB2cYyDxfhjgn4PWofYLCWC0Oes4iV3yP9o+jFKICbEHefrDdIWwpEpfge9xpnI
+         eljA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=Vjllui7uaJPc8hueRFxPXFS2fUrnK2hwtttKy49Se7c=;
-        b=aPVvjqkGXaHcWa5I3glyRmVGEztn5B8k77Nj01nIOPBwaPsgJDNOKB4iKUvFPS+kGz
-         5OCMgjb2thmlVkFWsKyYVOmPEsXN7rkWd9sALxSlxK1TzLIgsalNJL4GvCLip0jCVVD6
-         0aH+DMWFJa42LLwJG8+plLchEEUX/SS5R+XfuYBe4+W6bc2x63wdLw73bavy6pwmVEO0
-         SV+tf5f5d/+sSG3O9WcsHnu4vI/B8aKBmybLYGR0fvFTbXnlp4IXRRBT3MenP2Lylgtf
-         LxnNtEQ3dieUvqU4GeFcAHTIafoMPUqQwMCVOkVdzfSwDg8sDAu3lFGP52RneSAoomMu
-         zVQQ==
-X-Gm-Message-State: AOAM532gneHdH5pQdSIOq5A6Vs0W7BVselcib//7slKAjPEkPYMYOur3
-        K3xMXJuMLKYvHN3L9O+x8e5P9OM/MBIwsB952EO1qxkc0W4V
-X-Google-Smtp-Source: ABdhPJxdYczRveQpCPBHDtTkJB7uRbqfviBPRd7k0i4Q1KOsXvzGLGjVkTTmxVFUU3t6/hf80LeKtMR7PaCztG8NUy+cBum5e6ty
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+oY7zonC656M9bvmr5dvhg7r5T0AFXB5lSMtTFca7MI=;
+        b=NyArxPNOvfhNC7FNljpzzTRfj5R5KLq+MK5r01GCdBWErB+0mQB5YKP1IaP3Sg3Vx5
+         mq+4IHuCHJqxz5vmei197YSFRfLy1tNrIxxr8LpU4A0xCEPoNzZSynisqbmx53KumEFZ
+         ARCPORfqv06gyfx/fHSGaE31xpryKua7VefIYUk4lZZImxTuGFk4VFzMd6W9SD+3q+/N
+         xWDLRXsuDmONGQrv293WnGLnJljL84XrGlWyTjar0elAg13awl7ugrOkRtP6lGjabK0t
+         x6sUrb+Bt3y2Y1NrdB4/GOLx0h40yk1phrFi0cy6GCKBK74pBJFSh0cigtORLpfgq2X8
+         8USQ==
+X-Gm-Message-State: AOAM533jeEdD7BLBF5+IrroO0l8xSxPnd9NjG1l0QcNQQkUdAlGZmBM2
+        n0TFX9ruLGUYD6LWwyT3CoE=
+X-Google-Smtp-Source: ABdhPJwKbsA1v5Wsifdw1oKHCuBMbbQqov5qnie1K0Y5gnLl++9BHaXyYSNDzcLldWr3jPPbCDUthw==
+X-Received: by 2002:a2e:888c:: with SMTP id k12mr5090061lji.365.1612603618277;
+        Sat, 06 Feb 2021 01:26:58 -0800 (PST)
+Received: from btopel-mobl.ger.intel.com (c-9b28e555.07-21-73746f28.bbcust.telenor.se. [85.229.40.155])
+        by smtp.gmail.com with ESMTPSA id c7sm1267929ljd.95.2021.02.06.01.26.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 06 Feb 2021 01:26:57 -0800 (PST)
+From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
+        u9012063@gmail.com, rdunlap@infradead.org
+Subject: [PATCH bpf v2] selftests/bpf: remove bash feature in test_xdp_redirect.sh
+Date:   Sat,  6 Feb 2021 10:26:54 +0100
+Message-Id: <20210206092654.155239-1-bjorn.topel@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-X-Received: by 2002:a6b:fb0f:: with SMTP id h15mr7682245iog.27.1612600573798;
- Sat, 06 Feb 2021 00:36:13 -0800 (PST)
-Date:   Sat, 06 Feb 2021 00:36:13 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000005dacd805baa6d46e@google.com>
-Subject: KASAN: wild-memory-access Write in l2cap_chan_put
-From:   syzbot <syzbot+a384548b03ddcbbaf619@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        luiz.dentz@gmail.com, marcel@holtmann.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+From: Björn Töpel <bjorn.topel@intel.com>
 
-syzbot found the following issue on:
+The test_xdp_redirect.sh script uses a bash redirect feature,
+'&>/dev/null'. Use '>/dev/null 2>&1' instead.
 
-HEAD commit:    88bb507a Merge tag 'media/v5.11-3' of git://git.kernel.org..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=112bab6f500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=6e95b9873f64b36c
-dashboard link: https://syzkaller.appspot.com/bug?extid=a384548b03ddcbbaf619
-userspace arch: i386
+Also remove the 'set -e' since the script actually relies on that the
+return value can be used to determine pass/fail of the test.
 
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+a384548b03ddcbbaf619@syzkaller.appspotmail.com
-
-==================================================================
-BUG: KASAN: wild-memory-access in instrument_atomic_read_write include/linux/instrumented.h:101 [inline]
-BUG: KASAN: wild-memory-access in atomic_fetch_sub_release include/asm-generic/atomic-instrumented.h:220 [inline]
-BUG: KASAN: wild-memory-access in __refcount_sub_and_test include/linux/refcount.h:272 [inline]
-BUG: KASAN: wild-memory-access in __refcount_dec_and_test include/linux/refcount.h:315 [inline]
-BUG: KASAN: wild-memory-access in refcount_dec_and_test include/linux/refcount.h:333 [inline]
-BUG: KASAN: wild-memory-access in kref_put include/linux/kref.h:64 [inline]
-BUG: KASAN: wild-memory-access in l2cap_chan_put+0x35/0x2e0 net/bluetooth/l2cap_core.c:502
-Write of size 4 at addr aaaa00aaaaaaaac2 by task kworker/2:22/10838
-
-CPU: 2 PID: 10838 Comm: kworker/2:22 Not tainted 5.11.0-rc6-syzkaller #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-Workqueue: events l2cap_chan_timeout
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x107/0x163 lib/dump_stack.c:120
- __kasan_report mm/kasan/report.c:400 [inline]
- kasan_report.cold+0x5f/0xd5 mm/kasan/report.c:413
- check_memory_region_inline mm/kasan/generic.c:179 [inline]
- check_memory_region+0x13d/0x180 mm/kasan/generic.c:185
- instrument_atomic_read_write include/linux/instrumented.h:101 [inline]
- atomic_fetch_sub_release include/asm-generic/atomic-instrumented.h:220 [inline]
- __refcount_sub_and_test include/linux/refcount.h:272 [inline]
- __refcount_dec_and_test include/linux/refcount.h:315 [inline]
- refcount_dec_and_test include/linux/refcount.h:333 [inline]
- kref_put include/linux/kref.h:64 [inline]
- l2cap_chan_put+0x35/0x2e0 net/bluetooth/l2cap_core.c:502
- l2cap_sock_kill+0xd0/0x240 net/bluetooth/l2cap_sock.c:1217
- l2cap_chan_timeout+0x1cc/0x2f0 net/bluetooth/l2cap_core.c:438
- process_one_work+0x98d/0x15f0 kernel/workqueue.c:2275
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2421
- kthread+0x3b1/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-==================================================================
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 2 PID: 10838 Comm: kworker/2:22 Tainted: G    B             5.11.0-rc6-syzkaller #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-Workqueue: events l2cap_chan_timeout
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x107/0x163 lib/dump_stack.c:120
- panic+0x306/0x73d kernel/panic.c:231
- end_report+0x58/0x5e mm/kasan/report.c:100
- __kasan_report mm/kasan/report.c:403 [inline]
- kasan_report.cold+0x67/0xd5 mm/kasan/report.c:413
- check_memory_region_inline mm/kasan/generic.c:179 [inline]
- check_memory_region+0x13d/0x180 mm/kasan/generic.c:185
- instrument_atomic_read_write include/linux/instrumented.h:101 [inline]
- atomic_fetch_sub_release include/asm-generic/atomic-instrumented.h:220 [inline]
- __refcount_sub_and_test include/linux/refcount.h:272 [inline]
- __refcount_dec_and_test include/linux/refcount.h:315 [inline]
- refcount_dec_and_test include/linux/refcount.h:333 [inline]
- kref_put include/linux/kref.h:64 [inline]
- l2cap_chan_put+0x35/0x2e0 net/bluetooth/l2cap_core.c:502
- l2cap_sock_kill+0xd0/0x240 net/bluetooth/l2cap_sock.c:1217
- l2cap_chan_timeout+0x1cc/0x2f0 net/bluetooth/l2cap_core.c:438
- process_one_work+0x98d/0x15f0 kernel/workqueue.c:2275
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2421
- kthread+0x3b1/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-Dumping ftrace buffer:
-   (ftrace buffer empty)
-Kernel Offset: disabled
-Rebooting in 1 seconds..
-ACPI MEMORY or I/O RESET_REG.
-
-
+Acked-by: William Tu <u9012063@gmail.com>
+Fixes: 996139e801fd ("selftests: bpf: add a test for XDP redirect")
+Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+William, I kept your Acked-by.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+v2: Kept /bin/sh and removed bashisms. (Randy)
+---
+ tools/testing/selftests/bpf/test_xdp_redirect.sh | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
+
+diff --git a/tools/testing/selftests/bpf/test_xdp_redirect.sh b/tools/testing/selftests/bpf/test_xdp_redirect.sh
+index dd80f0c84afb..4d4887da175c 100755
+--- a/tools/testing/selftests/bpf/test_xdp_redirect.sh
++++ b/tools/testing/selftests/bpf/test_xdp_redirect.sh
+@@ -46,20 +46,20 @@ test_xdp_redirect()
+ 
+ 	setup
+ 
+-	ip link set dev veth1 $xdpmode off &> /dev/null
++	ip link set dev veth1 $xdpmode off >/dev/null 2>&1
+ 	if [ $? -ne 0 ];then
+ 		echo "selftests: test_xdp_redirect $xdpmode [SKIP]"
+ 		return 0
+ 	fi
+ 
+-	ip -n ns1 link set veth11 $xdpmode obj xdp_dummy.o sec xdp_dummy &> /dev/null
+-	ip -n ns2 link set veth22 $xdpmode obj xdp_dummy.o sec xdp_dummy &> /dev/null
+-	ip link set dev veth1 $xdpmode obj test_xdp_redirect.o sec redirect_to_222 &> /dev/null
+-	ip link set dev veth2 $xdpmode obj test_xdp_redirect.o sec redirect_to_111 &> /dev/null
++	ip -n ns1 link set veth11 $xdpmode obj xdp_dummy.o sec xdp_dummy >/dev/null 2>&1
++	ip -n ns2 link set veth22 $xdpmode obj xdp_dummy.o sec xdp_dummy >/dev/null 2>&1
++	ip link set dev veth1 $xdpmode obj test_xdp_redirect.o sec redirect_to_222 >/dev/null 2>&1
++	ip link set dev veth2 $xdpmode obj test_xdp_redirect.o sec redirect_to_111 >/dev/null 2>&1
+ 
+-	ip netns exec ns1 ping -c 1 10.1.1.22 &> /dev/null
++	ip netns exec ns1 ping -c 1 10.1.1.22 >/dev/null 2>&1
+ 	local ret1=$?
+-	ip netns exec ns2 ping -c 1 10.1.1.11 &> /dev/null
++	ip netns exec ns2 ping -c 1 10.1.1.11 >/dev/null 2>&1
+ 	local ret2=$?
+ 
+ 	if [ $ret1 -eq 0 -a $ret2 -eq 0 ]; then
+@@ -72,7 +72,6 @@ test_xdp_redirect()
+ 	cleanup
+ }
+ 
+-set -e
+ trap cleanup 2 3 6 9
+ 
+ test_xdp_redirect xdpgeneric
+
+base-commit: 6183f4d3a0a2ad230511987c6c362ca43ec0055f
+-- 
+2.27.0
+
