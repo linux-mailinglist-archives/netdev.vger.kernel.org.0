@@ -2,136 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5908A312088
-	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 00:55:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D91E631208B
+	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 01:00:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229548AbhBFXyh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Feb 2021 18:54:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57158 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbhBFXyf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Feb 2021 18:54:35 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2CE9C06174A
-        for <netdev@vger.kernel.org>; Sat,  6 Feb 2021 15:53:54 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id w1so18897928ejf.11
-        for <netdev@vger.kernel.org>; Sat, 06 Feb 2021 15:53:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Kbc/ZBv3bpSJxpVzNgah8IZk1Do/cm/rTco4AbV4T80=;
-        b=p0C7uGzvg6MEHSVCWXG8lPcNvX8jj10VTMwOzik+RnMlM7Enm/pTZZ7USTe9rpPuJA
-         0ANoFwLVyBY3rYhxYEOs4+vRjXRDFVSWk5P+xeWkPiO/CXgz8MKgse2oQvJGFXY44qrP
-         ats6UN47u91yS/bBO7P1h0qMOUMM8zS94xtxIIrOXyQsghpL+BvKJ5xwAEb/YgZM4q8k
-         fO/JvJXnc8fXG2hxkV86HApfqh/gTHYF2IIwT0dJ1qLUesVqyQoxSDocNUNJc8JDn9RZ
-         fiEmujGzJSqq3ETJc2PnFrIpjEFQsWSqucmnlCxAbWgVwXVH/DpeGkGOv1IeJ+Ka1/l1
-         Elmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Kbc/ZBv3bpSJxpVzNgah8IZk1Do/cm/rTco4AbV4T80=;
-        b=MjAav+FtcXJpo+LHOGRGwrXxOeStICgMFRq767me+LAMQc8ah20pvgQKEqqpSoWe5I
-         Vmt5qb63KTCi2nBGX7fZMzWHUj3K1DedgjHh3OSmGjhZN7uY4d9NYAh+JbyzrbfkwDrX
-         gJu7/fcAzu4jVCWQMKlr+IDFZahHY/9W+XGD4cTg1ol5bR4jX72ozEc7gMRXAMtSuzfC
-         dEGveRIflQXSBKM75g/nVsNRrNfJT68eG5+zQweqeoIm9hyN1C3XPR4QWenfECDAR7tS
-         iz59VXH0Tncgjl+Iwe5Z2xBuCb+/xF+ssDN/ph7zRKwQR5tlv8tUjZZuDOZASnPByI/b
-         5wbg==
-X-Gm-Message-State: AOAM531tBl6u5CngQH6N2+c8idp+nyvnptGKGeTEa+Vz0Pcgz7ft5j0F
-        xsSO9BzNgjDckJnxS+b7TkY=
-X-Google-Smtp-Source: ABdhPJxu6N27eOpQePJVrFwspUW7u2M9EPk8TdHm/TrxdgpXrg8I2H1fYEiBqgRTEfmdpGx0AxzQRQ==
-X-Received: by 2002:a17:906:7e42:: with SMTP id z2mr10621640ejr.177.1612655631312;
-        Sat, 06 Feb 2021 15:53:51 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id z65sm6255974ede.80.2021.02.06.15.53.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 06 Feb 2021 15:53:50 -0800 (PST)
-Date:   Sun, 7 Feb 2021 01:53:49 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     George McCollister <george.mccollister@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 4/4] net: dsa: xrs700x: add HSR offloading
- support
-Message-ID: <20210206235349.7ypxtmjvnpxnn5cr@skbuf>
-References: <20210204215926.64377-1-george.mccollister@gmail.com>
- <20210204215926.64377-5-george.mccollister@gmail.com>
+        id S229590AbhBFX7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Feb 2021 18:59:39 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54046 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229522AbhBFX7j (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 6 Feb 2021 18:59:39 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5F17064E54;
+        Sat,  6 Feb 2021 23:58:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612655938;
+        bh=1rj+jy4S56LJr5Fp6OQGaPqhjd7IcwpsdGIi32P2Qnc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=bazbhkEJN6SOpf+iHoKPyR6EiPt7L9U7THgDfNmoHAogKLcH8Efl9drciFwBZnCk1
+         cXV0FDrh2nhNoNEoA7cY/jZQCNoNpqY8uNznrEAoq0z4KzdgcWFJSrWp4/Pnw+AB4F
+         W2vt6ezEQ3r9rQppqEXH43fewfW+4FXROSe4tWFs5MSDJTUF5knLuVo7bhen4UH2c8
+         Hj1MtEO45k8fHjseAe3oH376qyIUlCg7IpKMVHMmPZxeytpePwfJLKoRpriv9zoUma
+         ImW0++bJToxb/6Nt3lnYwq+K19KamIzfA16my1kbD4i0iQlqoR4vYWGV+lZH6x+JBK
+         4WKL0ZB8ak8aQ==
+Date:   Sat, 6 Feb 2021 15:58:57 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Subject: Re: [PATCH net-next] net: dsa: allow port mirroring towards foreign
+ interfaces
+Message-ID: <20210206155857.1d983d1f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210205230521.s2eb2alw5pkqqafv@skbuf>
+References: <20210205223355.298049-1-olteanv@gmail.com>
+        <fead6d2a-3455-785a-a367-974c2e6efdf3@gmail.com>
+        <20210205230521.s2eb2alw5pkqqafv@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210204215926.64377-5-george.mccollister@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 04, 2021 at 03:59:26PM -0600, George McCollister wrote:
-> +static int xrs700x_hsr_join(struct dsa_switch *ds, int port,
-> +			    struct net_device *hsr)
-> +{
-> +	unsigned int val = XRS_HSR_CFG_HSR_PRP;
-> +	struct dsa_port *partner = NULL, *dp;
-> +	struct xrs700x *priv = ds->priv;
-> +	struct net_device *slave;
-> +	enum hsr_version ver;
-> +	int ret;
-> +
-> +	ret = hsr_get_version(hsr, &ver);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (ver == HSR_V1)
-> +		val |= XRS_HSR_CFG_HSR;
-> +	else if (ver == PRP_V1)
-> +		val |= XRS_HSR_CFG_PRP;
-> +	else
-> +		return -EOPNOTSUPP;
-> +
-> +	dsa_hsr_foreach_port(dp, ds, hsr) {
-> +		partner = dp;
-> +	}
-> +
-> +	/* We can't enable redundancy on the switch until both
-> +	 * redundant ports have signed up.
-> +	 */
-> +	if (!partner)
-> +		return 0;
-> +
-> +	regmap_fields_write(priv->ps_forward, partner->index,
-> +			    XRS_PORT_DISABLED);
-> +	regmap_fields_write(priv->ps_forward, port, XRS_PORT_DISABLED);
-> +
-> +	regmap_write(priv->regmap, XRS_HSR_CFG(partner->index),
-> +		     val | XRS_HSR_CFG_LANID_A);
-> +	regmap_write(priv->regmap, XRS_HSR_CFG(port),
-> +		     val | XRS_HSR_CFG_LANID_B);
-> +
-> +	/* Clear bits for both redundant ports (HSR only) and the CPU port to
-> +	 * enable forwarding.
-> +	 */
-> +	val = GENMASK(ds->num_ports - 1, 0);
-> +	if (ver == HSR_V1) {
-> +		val &= ~BIT(partner->index);
-> +		val &= ~BIT(port);
-> +	}
-> +	val &= ~BIT(dsa_upstream_port(ds, port));
-> +	regmap_write(priv->regmap, XRS_PORT_FWD_MASK(partner->index), val);
-> +	regmap_write(priv->regmap, XRS_PORT_FWD_MASK(port), val);
-> +
-> +	regmap_fields_write(priv->ps_forward, partner->index,
-> +			    XRS_PORT_FORWARDING);
-> +	regmap_fields_write(priv->ps_forward, port, XRS_PORT_FORWARDING);
-> +
-> +	slave = dsa_to_port(ds, port)->slave;
-> +
-> +	slave->features |= NETIF_F_HW_HSR_TAG_INS | NETIF_F_HW_HSR_TAG_RM |
-> +			   NETIF_F_HW_HSR_FWD | NETIF_F_HW_HSR_DUP;
-> +
-> +	return 0;
-> +}
+On Sat, 6 Feb 2021 01:05:21 +0200 Vladimir Oltean wrote:
+> On Fri, Feb 05, 2021 at 02:42:55PM -0800, Florian Fainelli wrote:
+> > How does the mirred action deal with that case? How does it know that
+> > packets delivered to the DSA master should be sent towards a foreign
+> > address, do I need to set-up two mirred rules? One that set-ups the
+> > filter on say sw0p0 to redirect egress to eth0 (DSA master) and another
+> > one to ingress filter on eth0 and egress mirror to eth1 (USB ethernet
+> > dongle)?  
+> 
+> [ I should have posted this as RFC, somebody asked me if it's possible,
+>   I only tested ingress mirroring, saw something come out, and posted this.
+>   I didn't even study act_mirred.c to see why I got anything at all ]
 
-Is it deliberate that only one slave HSR/PRP port will have the offload
-ethtool features set? If yes, then I find that a bit odd from a user
-point of view.
+Let me mark it as RFC, then :)
+
+> For ingress mirroring there should be nothing special about the mirror
+> packets, it's just more traffic in the ingress data path where the qdisc
+> hook already exists.
+
+For ingress the only possible corner case seems to be if the filter has
+SKIP_SW set, then HW will send to CPU but SW will ignore.
+
+That's assuming the frame still comes on the CPU appropriately tagged.
+
+> For egress mirroring I don't think there's really any way for the mirred
+> action to take over the packets from what is basically the ingress qdisc
+> and into the egress qdisc of the DSA interface such that they will be
+> redirected to the selected mirror. I hadn't even thought about egress
+> mirroring. I suppose with more API, we could have DSA do introspection
+> into the frame header, see it's an egress-mirrored packet, and inject it
+> into the egress qdisc of the net device instead of doing netif_rx.
+
+IMHO it's not very pretty but FWIW some "SmartNIC" drivers already do
+a similar thing. But to be clear that's just an optimization, right?
+The SW should still be able to re-process and come to the same
+decisions as the switch, provided SKIP_SW was not set?
+
+> The idea with 2 mirrors might work however it's not amazing and I was
+> thinking that if we bother to do something at all, we could as well try
+> to think it through and come up with something that's seamless for the
+> user.
