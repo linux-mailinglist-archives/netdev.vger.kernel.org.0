@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE7FA311D41
-	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 13:57:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44AA8311D42
+	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 13:57:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230039AbhBFM5C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Feb 2021 07:57:02 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:8381 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229506AbhBFM4u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Feb 2021 07:56:50 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B601e91e80000>; Sat, 06 Feb 2021 04:56:08 -0800
+        id S229850AbhBFM5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Feb 2021 07:57:15 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:16895 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229816AbhBFM4v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Feb 2021 07:56:51 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B601e91e90000>; Sat, 06 Feb 2021 04:56:09 -0800
 Received: from sw-mtx-036.mtx.labs.mlnx (172.20.145.6) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Sat, 6 Feb
- 2021 12:56:07 +0000
+ 2021 12:56:08 +0000
 From:   Parav Pandit <parav@nvidia.com>
 To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
 CC:     Parav Pandit <parav@nvidia.com>
-Subject: [PATCH net-next 5/7] netdevsim: Simulate port function state for a PCI port
-Date:   Sat, 6 Feb 2021 14:55:49 +0200
-Message-ID: <20210206125551.8616-6-parav@nvidia.com>
+Subject: [PATCH net-next 6/7] netdevsim: Simulate port function set state for a PCI port
+Date:   Sat, 6 Feb 2021 14:55:50 +0200
+Message-ID: <20210206125551.8616-7-parav@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210206125551.8616-1-parav@nvidia.com>
 References: <20210206125551.8616-1-parav@nvidia.com>
@@ -32,24 +32,25 @@ X-Originating-IP: [172.20.145.6]
 X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
  HQMAIL107.nvidia.com (172.20.187.13)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1612616168; bh=l3RG+FL5Yo+wmL/xMYkuxh5Cccv1/QV0DIZafvf6PI8=;
+        t=1612616169; bh=gcpDPL8w2je/gqdmPrk4HwwoS/7BKh9oit9K83B6Tmk=;
         h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
          References:MIME-Version:Content-Transfer-Encoding:Content-Type:
          X-Originating-IP:X-ClientProxiedBy;
-        b=WQuZCRuWF8G0PYc6+PITDsqTWHlwhM46n5uMzVIXU2ZfKLp40SeYeDTlJm7i9w93I
-         KBIwLtF3XHOtv23rCLfRVhViEz8CPLf0qGlyAJw8hDCMJ+GE3G7UqeIzSzCcoVGxr1
-         HrwNvaEM/Nf+1CyVtk3Lc0ZrDto0G2YsnGQab5BVSxMppllxFexrSYbmgTXOO3wAdB
-         frG6AYjjsM8KCyUwE/Y3r96XeEjKBAbrNTvIxZFxRjX28UzjK2uAgqO+/OdeUDzRrK
-         2m1MjmCuS5GkjiLsdJgP0pBY/5HPeNpZ5NBZqhMcL+nENqPaUKFfXRSKAOXIO/jXUO
-         kLRg46M8Js9+w==
+        b=K6jcSK1SdnQWVCSYP2QA/98FVgyEy/P7Z8HnL3zlepZ6KxYuXlBGtmi/JSO80tNj2
+         RzWg9kycE5QTSvU2sDUCPFXsBt7ju9i6tUOb9VLt864YFNRU8vsDpNhifgT6qoHoRU
+         EK+lB0OqBI19P2lgSZkxDllobIAzakGI7jXiQGqb3lNauqIn3cJDqGAwbb4sduw9+2
+         OOB+2394st5bmF9CWRgkGvs4AKynZLbT+GFkLezbVN+wmxYA17mfvPVa3enO7MXpPW
+         p0scsqeOpRcVSDAoCuS8N+mPT92SOcQ0eqyYrv+Thkbnj9zoZquxG3feAjlDQS3i3q
+         nFNbKyelO03KQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Simulate port function state of a PCI port.
-This enables users to get the state of the PCI port function.
+This enables users to get and set the state of the PCI port function.
 
-Example of a PCI SF port which supports a port function hw_addr set:
+Example of a PCI SF port which supports a port function:
+
 Create a device with ID=3D10 and one physical port.
 $ echo "10 1" > /sys/bus/netdevsim/new_device
 
@@ -73,6 +74,10 @@ num 2 sfnum 0 splittable false
   function:
     hw_addr 00:00:00:00:00:00 state inactive opstate detached
 
+Set the MAC address and activate the function:
+$ devlink port function set netdevsim/netdevsim10/2 hw_addr 00:11:22:33:44:=
+55 state active
+
 Show the port and function attributes in JSON format:
 $ devlink port show netdevsim/netdevsim10/2 -jp
 {
@@ -86,9 +91,9 @@ $ devlink port show netdevsim/netdevsim10/2 -jp
             "sfnum": 0,
             "splittable": false,
             "function": {
-                "hw_addr": "00:00:00:00:00:00",
-                "state": "inactive",
-                "opstate": "detached"
+                "hw_addr": "00:11:22:33:44:55",
+                "state": "active",
+                "opstate": "attached"
             }
         }
     }
@@ -97,70 +102,50 @@ $ devlink port show netdevsim/netdevsim10/2 -jp
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 ---
  drivers/net/netdevsim/dev.c           |  1 +
- drivers/net/netdevsim/netdevsim.h     |  5 +++++
- drivers/net/netdevsim/port_function.c | 22 ++++++++++++++++++++++
- 3 files changed, 28 insertions(+)
+ drivers/net/netdevsim/netdevsim.h     |  4 ++++
+ drivers/net/netdevsim/port_function.c | 15 +++++++++++++++
+ 3 files changed, 20 insertions(+)
 
 diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index ab15b5f7e955..9f2164ea89cd 100644
+index 9f2164ea89cd..e8b6bd22fb1f 100644
 --- a/drivers/net/netdevsim/dev.c
 +++ b/drivers/net/netdevsim/dev.c
-@@ -909,6 +909,7 @@ static const struct devlink_ops nsim_dev_devlink_ops =
+@@ -910,6 +910,7 @@ static const struct devlink_ops nsim_dev_devlink_ops =
 =3D {
- 	.port_del =3D nsim_dev_devlink_port_del,
  	.port_function_hw_addr_get =3D nsim_dev_port_fn_hw_addr_get,
  	.port_function_hw_addr_set =3D nsim_dev_port_fn_hw_addr_set,
-+	.port_fn_state_get =3D nsim_dev_port_fn_state_get,
+ 	.port_fn_state_get =3D nsim_dev_port_fn_state_get,
++	.port_fn_state_set =3D nsim_dev_port_fn_state_set,
  };
 =20
  #define NSIM_DEV_MAX_MACS_DEFAULT 32
 diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netd=
 evsim.h
-index aafe2027a112..c0544d93e1e8 100644
+index c0544d93e1e8..93bfa3e946b2 100644
 --- a/drivers/net/netdevsim/netdevsim.h
 +++ b/drivers/net/netdevsim/netdevsim.h
-@@ -328,3 +328,8 @@ int nsim_dev_port_fn_hw_addr_set(struct devlink *devlin=
-k,
- 				 struct devlink_port *port,
- 				 const u8 *hw_addr, int hw_addr_len,
- 				 struct netlink_ext_ack *extack);
-+int nsim_dev_port_fn_state_get(struct devlink *devlink,
+@@ -333,3 +333,7 @@ int nsim_dev_port_fn_state_get(struct devlink *devlink,
+ 			       enum devlink_port_fn_state *state,
+ 			       enum devlink_port_fn_opstate *opstate,
+ 			       struct netlink_ext_ack *extack);
++int nsim_dev_port_fn_state_set(struct devlink *devlink,
 +			       struct devlink_port *port,
-+			       enum devlink_port_fn_state *state,
-+			       enum devlink_port_fn_opstate *opstate,
++			       enum devlink_port_fn_state state,
 +			       struct netlink_ext_ack *extack);
 diff --git a/drivers/net/netdevsim/port_function.c b/drivers/net/netdevsim/=
 port_function.c
-index d47cdf44770a..10c692b8aea2 100644
+index 10c692b8aea2..8e8e7d6df8a1 100644
 --- a/drivers/net/netdevsim/port_function.c
 +++ b/drivers/net/netdevsim/port_function.c
-@@ -17,6 +17,7 @@ struct nsim_port_fn {
- 	u32 sfnum;
- 	u16 pfnum;
- 	u8 hw_addr[ETH_ALEN];
-+	u8 state; /* enum devlink_port_fn_state */
- };
-=20
- static struct devlink_port *
-@@ -248,6 +249,7 @@ static int nsim_devlink_port_fn_add(struct devlink *dev=
-link,
- 		goto pf_err;
- 	}
-=20
-+	port->state =3D DEVLINK_PORT_FN_STATE_INACTIVE;
- 	err =3D devlink_port_register(devlink, &port->dl_port, port->port_index);
- 	if (err)
- 		goto reg_err;
-@@ -482,3 +484,23 @@ int nsim_dev_port_fn_hw_addr_set(struct devlink *devli=
-nk,
- 	memcpy(port->hw_addr, hw_addr, ETH_ALEN);
+@@ -504,3 +504,18 @@ int nsim_dev_port_fn_state_get(struct devlink *devlink=
+,
+ 		*opstate =3D DEVLINK_PORT_FN_OPSTATE_ATTACHED;
  	return 0;
  }
 +
-+int nsim_dev_port_fn_state_get(struct devlink *devlink,
++int nsim_dev_port_fn_state_set(struct devlink *devlink,
 +			       struct devlink_port *dl_port,
-+			       enum devlink_port_fn_state *state,
-+			       enum devlink_port_fn_opstate *opstate,
++			       enum devlink_port_fn_state state,
 +			       struct netlink_ext_ack *extack)
 +{
 +	struct nsim_dev *nsim_dev =3D devlink_priv(devlink);
@@ -169,11 +154,7 @@ nk,
 +	port =3D nsim_dev_to_port_fn(nsim_dev, dl_port, extack);
 +	if (IS_ERR(port))
 +		return PTR_ERR(port);
-+	*state =3D port->state;
-+	if (port->state =3D=3D DEVLINK_PORT_FN_STATE_INACTIVE)
-+		*opstate =3D DEVLINK_PORT_FN_OPSTATE_DETACHED;
-+	else
-+		*opstate =3D DEVLINK_PORT_FN_OPSTATE_ATTACHED;
++	port->state =3D state;
 +	return 0;
 +}
 --=20
