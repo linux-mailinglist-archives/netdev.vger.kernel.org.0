@@ -2,73 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24BEE311ABA
-	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 05:13:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BFB75311AE7
+	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 05:32:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229693AbhBFEMu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 23:12:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53156 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231354AbhBFEKu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Feb 2021 23:10:50 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 27E9664F05;
-        Sat,  6 Feb 2021 04:10:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612584608;
-        bh=wNYQu/XGEnEp/U0vSlR2d/tI2XllSHqm5QJmAMSR/Hc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ZPA7h8UNjLg4JMlI7m2dAXpCKlIgftzuGnojlniUkUWHScnyeKc5xIDBvIsixKTyy
-         TUGEHISiTglTrM6NBLpson4PWSG42qqy6GmcrEs/c5iMBxedLCgwvpKC95Uh2ZHo5f
-         QvBQPhcHeFljn8I8rYF+phoqZCuhfS8diziSq7DTmsBInkrz2Go6F7/fYpsB4JkEG1
-         JD0yOE4CFKIU3rxSZBK25t5d0J5Mv+FNw8S9OyTSvuOCbgONAfW0uI9BVl3ynuB7cT
-         PKgk+vXgOGzq2ZRpGzj6ZEJy3XuGUUJNJkzri56iuS+GTPyylais1LGWwaD8UkKD9i
-         6sry15QYibZ0Q==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0F677609F6;
-        Sat,  6 Feb 2021 04:10:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S229931AbhBFEbq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 23:31:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34330 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230419AbhBFE3W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 23:29:22 -0500
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C8CDC06174A;
+        Fri,  5 Feb 2021 20:28:42 -0800 (PST)
+Received: by mail-oi1-x22f.google.com with SMTP id n7so9742217oic.11;
+        Fri, 05 Feb 2021 20:28:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/kO59WxTah5Jbk4aAvw+fhwnlddy41PK6vTRHRR5apo=;
+        b=DOO91uFtkqVXVObxoWJJSgT/Y4MSY4JiBIbGhQrfH7tLn+RZpFrvlU6w2yLBPCqzI+
+         HVCuQ7yRC3jini3a4HooKPHH3CJd0HvMX0lb/Ux6bBeS2rQa1cZv69+pjonwl5FLsUeE
+         cGdIaoNdSJqYZsDTnvl0Xgl9enTojc6n9yAMLaMr+xyUsvrOgdkaW9/ZPNo4koRi9seQ
+         mXW0N1xrOwo0vAvO/y+Q8jGD/bRsKxaiSm+ri2Tt/hoS0dOjWACYIerVmfCTeQ2VkGMU
+         seySVvR+4tWN76v8BjaRXkJYd1ft5p0r29mKPvYs154DsjOGMy/Buk7s/2rbgPjsdNuu
+         /qYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/kO59WxTah5Jbk4aAvw+fhwnlddy41PK6vTRHRR5apo=;
+        b=ONvWb3VqPmOoMBfVzcfoG2S0fyv8mhVr97WOnq9KuqAdnsRXxxFcmHkpA6hXPreOYg
+         4A0SyGxfR8D4vcWZYDwhwISqLr+UlfechbJgABYo/YeaBzfLcVovaadJvSa1FixA9OAT
+         8TOUdto/JhbCnvxBqdQb0CvoO+EsS5JuuhjeEHdX6amT8blWZmXTGcYPN7XnjYnbMF41
+         NF3rVS4we41aJTCC7VIdk5pvuP4F63wwQm+SHHskDJYrPV8WECrWwwH+wFPJfYfQNEPW
+         H/NxpiXgLEqY4uopsYJrIlduCz202mij7DlGh2j8o5WfcwLLUc9S4zGBpJuZ1/dc6NFP
+         4wlg==
+X-Gm-Message-State: AOAM530VVgX+31DR2m6HOLfA9bvupQd3x7KEHV+gugcsqzlMdbr48x/U
+        CaedsEHTJQnmjM1taxzMHuKsPMqqvgc0JqwLujA=
+X-Google-Smtp-Source: ABdhPJzF0tXPDHPihGXR2OVqzrk74p0HCp/axMqC1HaF9ECuIsHwWKvYprJ2lzUfbSwJqKoNPQkm1MrkMddL33eeZBc=
+X-Received: by 2002:aca:e108:: with SMTP id y8mr2744280oig.114.1612585721575;
+ Fri, 05 Feb 2021 20:28:41 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 1/1] net: stmmac: set TxQ mode back to DCB after disabling
- CBS
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161258460805.22008.14706374158148847125.git-patchwork-notify@kernel.org>
-Date:   Sat, 06 Feb 2021 04:10:08 +0000
-References: <1612447396-20351-1-git-send-email-yoong.siang.song@intel.com>
-In-Reply-To: <1612447396-20351-1-git-send-email-yoong.siang.song@intel.com>
-To:     Song Yoong Siang <yoong.siang.song@intel.com>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
-        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        boon.leong.ong@intel.com, weifeng.voon@intel.com,
-        vee.khee.wong@intel.com, vinicius.gomes@intel.com
+References: <20210206000146.616465-1-enbyamy@gmail.com> <c1eae547-aa14-8307-cb81-b585a13bbd3d@infradead.org>
+In-Reply-To: <c1eae547-aa14-8307-cb81-b585a13bbd3d@infradead.org>
+From:   Amy Parker <enbyamy@gmail.com>
+Date:   Fri, 5 Feb 2021 20:28:30 -0800
+Message-ID: <CAE1WUT5XKgi10sMaCUFqENUffgUzCF-jrAJE9z=wKkW=yP_9mw@mail.gmail.com>
+Subject: Re: [PATCH 0/3] drivers/net/ethernet/amd: Follow style guide
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>, rppt@kernel.org,
+        netdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Fri, Feb 5, 2021 at 7:16 PM Randy Dunlap <rdunlap@infradead.org> wrote:
+>
+> On 2/5/21 4:01 PM, Amy Parker wrote:
+> > This patchset updates atarilance.c and sun3lance.c to follow the kernel
+> > style guide. Each patch tackles a different issue in the style guide.
+> >
+> >    -Amy IP
+> >
+> > Amy Parker (3):
+> >   drivers/net/ethernet/amd: Correct spacing around C keywords
+> >   drivers/net/ethernet/amd: Fix bracket matching and line levels
+> >   drivers/net/ethernet/amd: Break apart one-lined expressions
+> >
+> >  drivers/net/ethernet/amd/atarilance.c | 64 ++++++++++++++-------------
+> >  drivers/net/ethernet/amd/sun3lance.c  | 64 +++++++++++++++------------
+> >  2 files changed, 69 insertions(+), 59 deletions(-)
+> >
+>
+> Hi Amy,
+>
+> For each patch, can you confirm that the before & after binary files
+> are the same?  or if they are not the same, explain why not?
+>
+> Just something that I have done in the past...
+>
+> thanks.
 
-This patch was applied to netdev/net.git (refs/heads/master):
+At least when I tried - yes. These are just stylistic changes.
+Currently using gcc version 10.2.1.
 
-On Thu,  4 Feb 2021 22:03:16 +0800 you wrote:
-> From: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
-> 
-> When disable CBS, mode_to_use parameter is not updated even the operation
-> mode of Tx Queue is changed to Data Centre Bridging (DCB). Therefore,
-> when tc_setup_cbs() function is called to re-enable CBS, the operation
-> mode of Tx Queue remains at DCB, which causing CBS fails to work.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net,1/1] net: stmmac: set TxQ mode back to DCB after disabling CBS
-    https://git.kernel.org/netdev/net/c/f317e2ea8c88
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+   -Amy IP
