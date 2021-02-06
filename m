@@ -2,69 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6283A311E2B
-	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 15:58:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B710C311E33
+	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 16:00:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230198AbhBFO5K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Feb 2021 09:57:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55700 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230145AbhBFO4x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Feb 2021 09:56:53 -0500
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D5C5C06178A
-        for <netdev@vger.kernel.org>; Sat,  6 Feb 2021 06:55:57 -0800 (PST)
-Received: by mail-ej1-x62f.google.com with SMTP id i8so17611652ejc.7
-        for <netdev@vger.kernel.org>; Sat, 06 Feb 2021 06:55:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=sY4fgq/DSyThalwU7QX+pWYKs/8sGH7ZznMUn5qQ1EY=;
-        b=OLh8O5HPHkbHKn/B7MjZmJBMm08TY2tjbzlLR9wPezT3zRGDxxUT05CH0Ee2ZcUqRY
-         eCqgp1cg8TQBlz1LSGkB2AM2hmwwDyhl7pvXhANU/a+uatPz98VqXd9ZOk3y66HnbTfn
-         gL3+Y4kFYArAYNulQiXvkck6TgErdPYbRLoDnlzdLYVgLV1LDtTjyyrXydzqG0nRYJpP
-         0UEpZe66R/6padmdzUqPa7Pur4BhX6sVB2zLyOIje4h7Tqu4b0jF6R96qjCsj/crtAzg
-         f3orPWzHPdzEuqXZi1Dk1LkeK19OHIpHf+W2b+8A5riw9LzfkQMWMc/H2CnLhFo1fw58
-         N18Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=sY4fgq/DSyThalwU7QX+pWYKs/8sGH7ZznMUn5qQ1EY=;
-        b=J1KaLxHx+Wq4lI8EyRSXp9hG7T6KKgtBgq039Ea0820DD6p1Fw0DK+dQxdGD5adKQg
-         0L5ntkgLOjM+3XggeDkZ0xFnxQGAsENTF8rKgjRvMpD7TRssTMhYLunJT1KAcVLWozmP
-         /Qpo6qXBMPgGcCDK39SBUh8UD+eAIFC75TN9OyIf9G+ZZOwWelcGKz2jUoVSu/SIL5h5
-         norcE56fSjR9Ou7gKRUsosbuNnDdIs4oV27EH+kZZHEMBmWv7piXmWWFGId9qXsKXt9P
-         MZgCSuuhJPgyQ+Pc2ZOnvxY/+goREWql9HJTdYj1liu+UY3SJLJsfIU7Z5hXOJGkj/p3
-         nP2w==
-X-Gm-Message-State: AOAM533au/cCv3P1S+QZsTPzV2ItsVGFvKIzDvCHhlHLC+Sh/gIGKLFp
-        z39Err7RKPJY3hd6OuDOZFfWBJ9DVxzjkvtJG7o=
-X-Google-Smtp-Source: ABdhPJwjMvpuV/VqjgpveJvPNmYVeAMmn8WOjONDfrGssEavAqf0/tXnxurz++ZDtqwmWNnjAVf6/MGWmsSqJw5vX2k=
-X-Received: by 2002:a17:906:c413:: with SMTP id u19mr9176333ejz.147.1612623356087;
- Sat, 06 Feb 2021 06:55:56 -0800 (PST)
+        id S230239AbhBFO7C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Feb 2021 09:59:02 -0500
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:41211 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230012AbhBFO64 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Feb 2021 09:58:56 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 602635C00F7;
+        Sat,  6 Feb 2021 09:58:09 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Sat, 06 Feb 2021 09:58:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=URCcob
+        kKqLQS8W4sYgpUBzUkJgYtByBgc9tcfcd07v0=; b=TIKzHWC1Ab6ufIkjz0yP2d
+        JCyooGGwVBylTDyRcOXLCOBilLXmb+WeelKPOYnDwaeoQKXDCiHW1s9Y8bCi97YE
+        Hl7uPSHttRWGQ9yOwb4RhwDHeoPwxFIj7YB7Z4JOZmitM961S3cL4+3DozVJMpy9
+        5Dm9pRcb6LcfOnPNMgI/yfv/5Uk+l6UQ+x3PBQgtLkxeXLosDEbgThodzCLce629
+        QySe9gVF9XT93dqzjDEbW53gvt359xAMgNma4gf67XxNJ1zFC4ygoozk2JgiT4FO
+        W6QcO3sILcoRZ/GQs4kvTkvl5bZvxEEguEya5SQoMK3WNPfm4D4Hn8zl7JWct/oA
+        ==
+X-ME-Sender: <xms:gK4eYA2VBrW-ZIMKPLG8REukGB68zVt0iHqjcpkklw2I8yYFBubx_g>
+    <xme:gK4eYLFAqfNwbSwEZ-edePIlh2kfLKODtAWWC4hr3C6DevKWRtE3Dew7Ff5Tx3bRu
+    h2frN3bUHDee98>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrgeekgdejudcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
+    necukfhppeekgedrvddvledrudehfedrgeegnecuvehluhhsthgvrhfuihiivgeptdenuc
+    frrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:gK4eYI7pu-cenXL4K7Lyucgz8wzXB0tEwhI8jTLsS3Sho5s4A7glNQ>
+    <xmx:gK4eYJ1xozZTfqrszaXGmU6SmxszwgNWSfXjx21XMxZjK3ujVmXK9A>
+    <xmx:gK4eYDEyqjqHfztFaO3TkQEepntx4p1J1c6O_x8vM6bWfCrDP3e7pg>
+    <xmx:ga4eYIT0_LE2Rx_Lele0sqD4qv1vNUKInRWqGuo9uF43PCxpMsawoQ>
+Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
+        by mail.messagingengine.com (Postfix) with ESMTPA id DA4C11080057;
+        Sat,  6 Feb 2021 09:58:07 -0500 (EST)
+Date:   Sat, 6 Feb 2021 16:58:04 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+Cc:     netdev@vger.kernel.org, jiri@nvidia.com, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, kuba@kernel.org
+Subject: Re: [RFC v5 net-next] net: core: devlink: add 'dropped' stats field
+ for traps
+Message-ID: <20210206145804.GA3847855@shredder.lan>
+References: <20210204114122.32644-1-oleksandr.mazur@plvision.eu>
 MIME-Version: 1.0
-Received: by 2002:a17:906:25d0:0:0:0:0 with HTTP; Sat, 6 Feb 2021 06:55:55
- -0800 (PST)
-Reply-To: lawyer.nba@gmail.com
-From:   Barrister Daven Bango <stephennbada9@gmail.com>
-Date:   Sat, 6 Feb 2021 15:55:55 +0100
-Message-ID: <CAGSHw-Aw7aM3K_cZpN8a1qwjjK-RAWwzkEvOqmJCw75UoBtQfQ@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210204114122.32644-1-oleksandr.mazur@plvision.eu>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=20
-Korisnik fonda =C4=8Destitanja, Va=C5=A1a sredstva za naknadu od 850.000,00
-ameri=C4=8Dkih dolara odobrila je Me=C4=91unarodna monetarna organizacija (=
-MMF)
-u suradnji s (FBI) nakon mnogo istraga. =C4=8Cekamo da se obratimo za
-dodatne informacije
+On Thu, Feb 04, 2021 at 01:41:22PM +0200, Oleksandr Mazur wrote:
+> Whenever query statistics is issued for trap, devlink subsystem
+> would also fill-in statistics 'dropped' field. This field indicates
+> the number of packets HW dropped and failed to report to the device driver,
+> and thus - to the devlink subsystem itself.
+> In case if device driver didn't register callback for hard drop
+> statistics querying, 'dropped' field will be omitted and not filled.
+> Add trap_drop_counter_get callback implementation to the netdevsim.
+> Add new test cases for netdevsim, to test both the callback
+> functionality, as well as drop statistics alteration check.
+> 
+> Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
 
-Advokat: Daven Bango
-Telefon: +22891667276
-(URED MMF-a LOME TOGO)
+Code looks fine to me, but for non-RFC submission (with actual hw
+implementation), you probably want to split it into three patches:
+devlink, netdevsim, selftest.
