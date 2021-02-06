@@ -2,89 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93C13311FC6
-	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 20:50:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4E06311FCC
+	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 20:51:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229683AbhBFTsh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Feb 2021 14:48:37 -0500
-Received: from mail-wr1-f43.google.com ([209.85.221.43]:34795 "EHLO
-        mail-wr1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229508AbhBFTsf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Feb 2021 14:48:35 -0500
-Received: by mail-wr1-f43.google.com with SMTP id g10so12067391wrx.1;
-        Sat, 06 Feb 2021 11:48:18 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6g1k3SFhjqedu/1j0b61HvZBLCKR46ltwlIl3YSgDVs=;
-        b=lm0Slv6cxbRa+N26dRL+glQ93BzL7Z+5h/+5NgLLSn9kzh6eP8Ztpe/bZ5XJi6EseT
-         +WTz1gIumMfwTBSFxx/ZKA0+mEZa2O6mpCtXjyhqBVXcbkYSSh3fLiHRTVrIP+zGjHr8
-         XlElhQGEuIWIh5jRK4AfSoyg0zY/32hZeX6Fn1UdqdXgicI40Ai0WVGxmVyhTkBPar3h
-         a6Q8DkD1moVuu+uRD4D2hzG8oC0Tj+iLJ2bIf6MC732yN4iM6SHBkucYpP0GRPol2An8
-         N4pWYW0WaeLFffTcba+OoEngzYfMHBCGfDMBd4BBQmuC0uNdQLJo4p3+xNvUEiE+e/bi
-         KNHw==
-X-Gm-Message-State: AOAM531c+rEygXvCn9RekLOadIi3XhF5ay0GimWSxkB6Zo7g7i6G3WEa
-        y1sPy7FB//iWtlm+CF5zalLCLjQQUxE=
-X-Google-Smtp-Source: ABdhPJwQ2AN7lgHQDkpa5Sp6smR+vnQUcixsh7mmlxuWdUuCMxxwWuV3Smn6d7BvchunugEHEwBzvg==
-X-Received: by 2002:a05:6000:1082:: with SMTP id y2mr11107594wrw.27.1612640873008;
-        Sat, 06 Feb 2021 11:47:53 -0800 (PST)
-Received: from msft-t490s.teknoraver.net (net-2-36-203-239.cust.vodafonedsl.it. [2.36.203.239])
-        by smtp.gmail.com with ESMTPSA id e10sm16922915wro.65.2021.02.06.11.47.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 06 Feb 2021 11:47:52 -0800 (PST)
-From:   Matteo Croce <mcroce@linux.microsoft.com>
-To:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH RESEND net-next] cfg80211: remove unused callback
-Date:   Sat,  6 Feb 2021 20:47:47 +0100
-Message-Id: <20210206194747.11086-1-mcroce@linux.microsoft.com>
-X-Mailer: git-send-email 2.29.2
+        id S229623AbhBFTv0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Feb 2021 14:51:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60244 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229522AbhBFTvW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 6 Feb 2021 14:51:22 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1273A64E0D;
+        Sat,  6 Feb 2021 19:50:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612641041;
+        bh=m8WrAh681nUwKPtjq8duKCxuFDDTH9VjLnNFHpxjTV8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZlDvuOsDdkHpT7X1GgC4TC1NzFoz1NLeOh2/XHk633At58Qa/U/Iua67joweaiz50
+         7NxFepL08c25rajM9Cg4XQZwKi4VlCKQ6eyP8eNlS9eewcH9auVuO4gIsRe9A+1T78
+         5q2toB2dBlc0nR7/KZbbM301J1mBlzaeUbt6WixdGjByGl5M2xY8YOqxT4rAEBSPJL
+         QyZiM90rpHsOs9gGN6c4NhEiLkcJKBYLbNKKPd5b81EE3jf+SJa2K5+2nidgP0CAp7
+         zpteTNG/SMN1flMbXDfjs08NJqZ7L8pyyThAuG20GqQPQg5izPgBRFvbXQd9n3S/G4
+         obLi0KXx+DlRQ==
+Date:   Sat, 6 Feb 2021 11:50:40 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, Felix Fietkau <nbd@nbd.name>
+Subject: Re: pull-request: wireless-drivers-2021-02-05
+Message-ID: <20210206115040.0d887565@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210206194325.GA134674@lore-desk>
+References: <20210205163434.14D94C433ED@smtp.codeaurora.org>
+        <20210206093537.0bfaf0db@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20210206194325.GA134674@lore-desk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matteo Croce <mcroce@microsoft.com>
+On Sat, 6 Feb 2021 20:43:25 +0100 Lorenzo Bianconi wrote:
+> > Lorenzo, I'm just guessing what this code does, but you're dropping a
+> > frag without invalidating the rest of the SKB, which I presume is now
+> > truncated? Shouldn't the skb be dropped?
+> >  =20
+>=20
+> Hi Jakub,
+>=20
+> I agree. We can do something like:
+>=20
+> diff --git a/drivers/net/wireless/mediatek/mt76/dma.c b/drivers/net/wirel=
+ess/mediatek/mt76/dma.c
+> index e81dfaf99bcb..6d84533d1df2 100644
+> --- a/drivers/net/wireless/mediatek/mt76/dma.c
+> +++ b/drivers/net/wireless/mediatek/mt76/dma.c
+> @@ -511,8 +511,9 @@ mt76_add_fragment(struct mt76_dev *dev, struct mt76_q=
+ueue *q, void *data,
+>  {
+>  	struct sk_buff *skb =3D q->rx_head;
+>  	struct skb_shared_info *shinfo =3D skb_shinfo(skb);
+> +	int nr_frags =3D shinfo->nr_frags;
+> =20
+> -	if (shinfo->nr_frags < ARRAY_SIZE(shinfo->frags)) {
+> +	if (nr_frags < ARRAY_SIZE(shinfo->frags)) {
+>  		struct page *page =3D virt_to_head_page(data);
+>  		int offset =3D data - page_address(page) + q->buf_offset;
+> =20
+> @@ -526,7 +527,10 @@ mt76_add_fragment(struct mt76_dev *dev, struct mt76_=
+queue *q, void *data,
+>  		return;
+> =20
+>  	q->rx_head =3D NULL;
+> -	dev->drv->rx_skb(dev, q - dev->q_rx, skb);
+> +	if (nr_frags < ARRAY_SIZE(shinfo->frags))
+> +		dev->drv->rx_skb(dev, q - dev->q_rx, skb);
+> +	else
+> +		dev_kfree_skb(skb);
+>  }
+> =20
+>=20
+> I do not know if it can occur, but I guess we should even check q->rx_head
+> pointer before overwriting it because if the hw does not report more set =
+to
+> false for last fragment we will get a memory leak as well. Something like:
+>=20
+> @@ -578,6 +582,8 @@ mt76_dma_rx_process(struct mt76_dev *dev, struct mt76=
+_queue *q, int budget)
+>  		done++;
+> =20
+>  		if (more) {
+> +			if (q->rx_head)
+> +				dev_kfree_skb(q->rx_head);
+>  			q->rx_head =3D skb;
+>  			continue;
+>  		}
 
-The ieee80211 class registers a callback which actually does nothing.
-Given that the callback is optional, and all its accesses are protected
-by a NULL check, remove it entirely.
-
-Signed-off-by: Matteo Croce <mcroce@microsoft.com>
----
- net/wireless/sysfs.c | 7 -------
- 1 file changed, 7 deletions(-)
-
-diff --git a/net/wireless/sysfs.c b/net/wireless/sysfs.c
-index 3ac1f48195d2..41cb4d565149 100644
---- a/net/wireless/sysfs.c
-+++ b/net/wireless/sysfs.c
-@@ -81,12 +81,6 @@ static void wiphy_dev_release(struct device *dev)
- 	cfg80211_dev_free(rdev);
- }
- 
--static int wiphy_uevent(struct device *dev, struct kobj_uevent_env *env)
--{
--	/* TODO, we probably need stuff here */
--	return 0;
--}
--
- #ifdef CONFIG_PM_SLEEP
- static void cfg80211_leave_all(struct cfg80211_registered_device *rdev)
- {
-@@ -157,7 +151,6 @@ struct class ieee80211_class = {
- 	.owner = THIS_MODULE,
- 	.dev_release = wiphy_dev_release,
- 	.dev_groups = ieee80211_groups,
--	.dev_uevent = wiphy_uevent,
- 	.pm = WIPHY_PM_OPS,
- 	.ns_type = &net_ns_type_operations,
- 	.namespace = wiphy_namespace,
--- 
-2.29.2
-
+=F0=9F=91=8D
