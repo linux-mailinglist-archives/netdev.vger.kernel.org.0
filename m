@@ -2,73 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B929311FB2
-	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 20:30:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DAC3311FB4
+	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 20:32:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229618AbhBFTaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Feb 2021 14:30:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57490 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229506AbhBFTaV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 6 Feb 2021 14:30:21 -0500
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF62AC061756;
-        Sat,  6 Feb 2021 11:29:40 -0800 (PST)
-Received: by mail-pg1-x531.google.com with SMTP id m2so265999pgq.5;
-        Sat, 06 Feb 2021 11:29:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xGSjaRmx2p2JR0P8vIgapMMPpiVSYCegoLT/8AClYHY=;
-        b=eTmhq1wYHDxwnWkINjqlEtu842O9Rnb4Ox1dUXr7x6hCqNBx6Jqw+WMnO2U5a6DJja
-         xFMJea3Fty0UhCrr+D/MqhyAF4rEt6sJRZBqU/JP6Xqw17ClaO/QwUbW3wiVbzj97/b3
-         wHXHBBYFgXdwfwNLIf5myXcMxMhyOsM6/uatRD9sqfyAsAX2ql/oSUUv7ixUnuVkjPVO
-         JJJDtm8MGcFP6bk6lEjfsNpSKhIVwA8JgsOAj1Evhvu3NLzB2HZYAJoYy3N+zcFl6Eyx
-         2D4qPvGME5PJZkZ1u9dOd0wDxRzcFFPWk0orOWYc4Bg+eDBwAllBBm+aNHILje96NV00
-         UPFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xGSjaRmx2p2JR0P8vIgapMMPpiVSYCegoLT/8AClYHY=;
-        b=TNKcddET+DtVw2pk/4fGMOJqVlTzYBEhhaKX5SEZ3RMDpaR9+5sjlJ+ndPh5aqSQ0S
-         Z4HPQep6dUHAi+hg0dT6bAVGl0u5VUq1eKt/4oWWYjdFv6x2wJM27TybXbhmjHmBIRaT
-         2ND33QdUBA/hjpkNCzi6OE0bh7DGUomTgeHDpipbcxRuyPqTnjcOUoygF60BcNE3dNAi
-         cqNSR2jWVdAM3tWxndJ3CkQRI2ZqyuitC3tEXzfzvAQvSNDzUjSKDJIymRJaLXC0RzFO
-         6rpEFbopuo8s/c5ak39ddK0PtoHPwW8WOlRho1n4RTm5wwqib8ReZzotS6t6yAZnojd2
-         l4cA==
-X-Gm-Message-State: AOAM532eQr7D5mSIF3lpLhUGRaZWm2HPXCKl+Nb4Ow9zcT0vOG+IQEpf
-        hYxG8PA4HrzDUAmNRDc4h5ZZQltzWxqOZmst3Js=
-X-Google-Smtp-Source: ABdhPJwAkLN8g10OlB3QOqMgWP+3nVzA6UYe+ANY+hUE4aeH0D3U+oF7O3tc+4pwhT+YzAAE67o0QCfgQChml0WNbb0=
-X-Received: by 2002:a63:2cc5:: with SMTP id s188mr10811983pgs.233.1612639780483;
- Sat, 06 Feb 2021 11:29:40 -0800 (PST)
+        id S229693AbhBFTcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Feb 2021 14:32:12 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54734 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229684AbhBFTcE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 6 Feb 2021 14:32:04 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E943164E53;
+        Sat,  6 Feb 2021 19:31:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612639883;
+        bh=6bQmaNWvzHtJweYNj9imwAba7NyI4nxU1x/8VYWdK3g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=GvYxNzjfYRblqjt0a8ydcO0cMpC4cK6ZkIQie9oN5xa7uGSRz1n2L61DyxNNN4QI3
+         4nqOFk+scx9oLEZimMZM4molofwmHVtyZgFkVF1oJ2pVlBxXxA3e1tCNuiqJc4au80
+         DCrdd/Kn12TL5LxuBoCmIiHqfjOO5LBJD9zl1cBYTsr1+i8RR1lVYtJFmaFn0NWfOI
+         XDO7W/fLbmIRJw0Wc9WoK0DCeUd/Ed7+jnmOujrO+EVNTxoxubbMAuXX8wFkmlielP
+         31TwbscYvc423mPb8VYPTb6HYD9LD+56PCsyL4lEcdcCezvduVoJV/48aZ7eMLP9Co
+         2iqgYUEd1Ch8w==
+Date:   Sat, 6 Feb 2021 11:31:21 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Loic Poulain <loic.poulain@linaro.org>
+Cc:     davem@davemloft.net, willemdebruijn.kernel@gmail.com,
+        netdev@vger.kernel.org, stranche@codeaurora.org,
+        subashab@codeaurora.org
+Subject: Re: [PATCH net-next v5 1/2] net: mhi-net: Add re-aggregation of
+ fragmented packets
+Message-ID: <20210206113121.52f27389@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1612428002-12333-1-git-send-email-loic.poulain@linaro.org>
+References: <1612428002-12333-1-git-send-email-loic.poulain@linaro.org>
 MIME-Version: 1.0
-References: <20210205224124.21345-1-xie.he.0141@gmail.com> <CA+FuTScLTZqZhNU7bWEw4OMTQzcKV106iRLwA--La0uH+JrTtg@mail.gmail.com>
- <CAHsH6GuW-xYp01ovBBC7+j8_v_WfiDmYznxW3Ajzo_qSFLy93A@mail.gmail.com>
-In-Reply-To: <CAHsH6GuW-xYp01ovBBC7+j8_v_WfiDmYznxW3Ajzo_qSFLy93A@mail.gmail.com>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Sat, 6 Feb 2021 11:29:29 -0800
-Message-ID: <CAJht_ENLsfykXgz7jV6QNpEragQKueGTXy8yDbs=W_yZgDvHXg@mail.gmail.com>
-Subject: Re: [PATCH net-next] net/packet: Improve the comment about LL header
- visibility criteria
-To:     Eyal Birger <eyal.birger@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Tanner Love <tannerlove@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 6, 2021 at 7:43 AM Eyal Birger <eyal.birger@gmail.com> wrote:
->
-> As such, may I suggest making this explicit by making
-> dev_hard_header() use dev_has_header()?
+On Thu,  4 Feb 2021 09:40:00 +0100 Loic Poulain wrote:
+> When device side MTU is larger than host side MTU, the packets
+> (typically rmnet packets) are split over multiple MHI transfers.
+> In that case, fragments must be re-aggregated to recover the packet
+> before forwarding to upper layer.
+> 
+> A fragmented packet result in -EOVERFLOW MHI transaction status for
+> each of its fragments, except the final one. Such transfer was
+> previously considered as error and fragments were simply dropped.
+> 
+> This change adds re-aggregation mechanism using skb chaining, via
+> skb frag_list.
+> 
+> A warning (once) is printed since this behavior usually comes from
+> a misconfiguration of the device (e.g. modem MTU).
+> 
+> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
 
-That is a good idea. We may submit another patch for that.
+Applied, thanks, but I had to invert the order of the patches.
+Otherwise during bisection someone may hit a point in the tree
+where mhi_net generates fragmented skbs but rmnet does not handle
+them.
