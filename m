@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A54E93119CB
-	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 04:22:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42DA73119D2
+	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 04:22:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232155AbhBFDTY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 22:19:24 -0500
-Received: from correo.us.es ([193.147.175.20]:54022 "EHLO mail.us.es"
+        id S230415AbhBFDUr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 22:20:47 -0500
+Received: from correo.us.es ([193.147.175.20]:54028 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231743AbhBFDH7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 5 Feb 2021 22:07:59 -0500
+        id S231697AbhBFDIA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Feb 2021 22:08:00 -0500
 Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 73A5C191907
-        for <netdev@vger.kernel.org>; Sat,  6 Feb 2021 02:50:13 +0100 (CET)
+        by mail.us.es (Postfix) with ESMTP id 7F4F719191B
+        for <netdev@vger.kernel.org>; Sat,  6 Feb 2021 02:50:14 +0100 (CET)
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 61DA9DA78F
-        for <netdev@vger.kernel.org>; Sat,  6 Feb 2021 02:50:13 +0100 (CET)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 690DFDA78D
+        for <netdev@vger.kernel.org>; Sat,  6 Feb 2021 02:50:14 +0100 (CET)
 Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 56AD3DA78C; Sat,  6 Feb 2021 02:50:13 +0100 (CET)
+        id 5E61CDA78A; Sat,  6 Feb 2021 02:50:14 +0100 (CET)
 X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
 X-Spam-Level: 
 X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
         SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
         autolearn=disabled version=3.4.1
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id CF4ABDA704;
-        Sat,  6 Feb 2021 02:50:10 +0100 (CET)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 5B3CDDA722;
+        Sat,  6 Feb 2021 02:50:11 +0100 (CET)
 Received: from 192.168.1.97 (192.168.1.97)
  by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Sat, 06 Feb 2021 02:50:10 +0100 (CET)
+ Sat, 06 Feb 2021 02:50:11 +0100 (CET)
 X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
 Received: from localhost.localdomain (unknown [90.77.255.23])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPSA id 9F6C542E0F80;
-        Sat,  6 Feb 2021 02:50:10 +0100 (CET)
+        by entrada.int (Postfix) with ESMTPSA id 2BB2942E0F80;
+        Sat,  6 Feb 2021 02:50:11 +0100 (CET)
 X-SMTPAUTHUS: auth mail.us.es
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 1/7] netfilter: ctnetlink: remove get_ct indirection
-Date:   Sat,  6 Feb 2021 02:49:59 +0100
-Message-Id: <20210206015005.23037-2-pablo@netfilter.org>
+Subject: [PATCH net-next 2/7] ipvs: add weighted random twos choice algorithm
+Date:   Sat,  6 Feb 2021 02:50:00 +0100
+Message-Id: <20210206015005.23037-3-pablo@netfilter.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210206015005.23037-1-pablo@netfilter.org>
 References: <20210206015005.23037-1-pablo@netfilter.org>
@@ -54,137 +54,205 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Darby Payne <darby.payne@gmail.com>
 
-Use nf_ct_get() directly, its a small inline helper without dependencies.
+Adds the random twos choice load-balancing algorithm. The algorithm will
+pick two random servers based on weights. Then select the server with
+the least amount of connections normalized by weight. The algorithm
+avoids the "herd behavior" problem. The algorithm comes from a paper
+by Michael Mitzenmacher available here
+http://www.eecs.harvard.edu/~michaelm/NEWWORK/postscripts/twosurvey.pdf
 
-Add CONFIG_NF_CONNTRACK guards to elide the relevant part when conntrack
-isn't available at all.
-
-v2: add ifdef guard around nf_ct_get call (kernel test robot)
-Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Darby Payne <darby.payne@gmail.com>
+Acked-by: Julian Anastasov <ja@ssi.bg>
+Acked-by: Simon Horman <horms@verge.net.au>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- include/linux/netfilter.h            |  2 --
- net/netfilter/nf_conntrack_netlink.c |  7 -------
- net/netfilter/nfnetlink_log.c        |  8 +++++++-
- net/netfilter/nfnetlink_queue.c      | 10 ++++++++--
- 4 files changed, 15 insertions(+), 12 deletions(-)
+ net/netfilter/ipvs/Kconfig      |  11 +++
+ net/netfilter/ipvs/Makefile     |   1 +
+ net/netfilter/ipvs/ip_vs_twos.c | 139 ++++++++++++++++++++++++++++++++
+ 3 files changed, 151 insertions(+)
+ create mode 100644 net/netfilter/ipvs/ip_vs_twos.c
 
-diff --git a/include/linux/netfilter.h b/include/linux/netfilter.h
-index 0101747de549..f0f3a8354c3c 100644
---- a/include/linux/netfilter.h
-+++ b/include/linux/netfilter.h
-@@ -463,8 +463,6 @@ extern struct nf_ct_hook __rcu *nf_ct_hook;
- struct nlattr;
+diff --git a/net/netfilter/ipvs/Kconfig b/net/netfilter/ipvs/Kconfig
+index eb0e329f9b8d..8ca542a759d4 100644
+--- a/net/netfilter/ipvs/Kconfig
++++ b/net/netfilter/ipvs/Kconfig
+@@ -271,6 +271,17 @@ config	IP_VS_NQ
+ 	  If you want to compile it in kernel, say Y. To compile it as a
+ 	  module, choose M here. If unsure, say N.
  
- struct nfnl_ct_hook {
--	struct nf_conn *(*get_ct)(const struct sk_buff *skb,
--				  enum ip_conntrack_info *ctinfo);
- 	size_t (*build_size)(const struct nf_conn *ct);
- 	int (*build)(struct sk_buff *skb, struct nf_conn *ct,
- 		     enum ip_conntrack_info ctinfo,
-diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
-index 84caf3316946..1469365bac7e 100644
---- a/net/netfilter/nf_conntrack_netlink.c
-+++ b/net/netfilter/nf_conntrack_netlink.c
-@@ -2686,12 +2686,6 @@ ctnetlink_glue_build_size(const struct nf_conn *ct)
- 	       ;
- }
- 
--static struct nf_conn *ctnetlink_glue_get_ct(const struct sk_buff *skb,
--					     enum ip_conntrack_info *ctinfo)
--{
--	return nf_ct_get(skb, ctinfo);
--}
--
- static int __ctnetlink_glue_build(struct sk_buff *skb, struct nf_conn *ct)
- {
- 	const struct nf_conntrack_zone *zone;
-@@ -2925,7 +2919,6 @@ static void ctnetlink_glue_seqadj(struct sk_buff *skb, struct nf_conn *ct,
- }
- 
- static struct nfnl_ct_hook ctnetlink_glue_hook = {
--	.get_ct		= ctnetlink_glue_get_ct,
- 	.build_size	= ctnetlink_glue_build_size,
- 	.build		= ctnetlink_glue_build,
- 	.parse		= ctnetlink_glue_parse,
-diff --git a/net/netfilter/nfnetlink_log.c b/net/netfilter/nfnetlink_log.c
-index b35e8d9a5b37..26776b88a539 100644
---- a/net/netfilter/nfnetlink_log.c
-+++ b/net/netfilter/nfnetlink_log.c
-@@ -43,6 +43,10 @@
- #include "../bridge/br_private.h"
- #endif
- 
-+#if IS_ENABLED(CONFIG_NF_CONNTRACK)
-+#include <net/netfilter/nf_conntrack.h>
-+#endif
++config	IP_VS_TWOS
++	tristate "weighted random twos choice least-connection scheduling"
++	help
++	  The weighted random twos choice least-connection scheduling
++	  algorithm picks two random real servers and directs network
++	  connections to the server with the least active connections
++	  normalized by the server weight.
 +
- #define NFULNL_COPY_DISABLED	0xff
- #define NFULNL_NLBUFSIZ_DEFAULT	NLMSG_GOODSIZE
- #define NFULNL_TIMEOUT_DEFAULT 	100	/* every second */
-@@ -733,14 +737,16 @@ nfulnl_log_packet(struct net *net,
- 		size += nla_total_size(sizeof(u_int32_t));
- 	if (inst->flags & NFULNL_CFG_F_SEQ_GLOBAL)
- 		size += nla_total_size(sizeof(u_int32_t));
-+#if IS_ENABLED(CONFIG_NF_CONNTRACK)
- 	if (inst->flags & NFULNL_CFG_F_CONNTRACK) {
- 		nfnl_ct = rcu_dereference(nfnl_ct_hook);
- 		if (nfnl_ct != NULL) {
--			ct = nfnl_ct->get_ct(skb, &ctinfo);
-+			ct = nf_ct_get(skb, &ctinfo);
- 			if (ct != NULL)
- 				size += nfnl_ct->build_size(ct);
- 		}
- 	}
-+#endif
- 	if (pf == NFPROTO_NETDEV || pf == NFPROTO_BRIDGE)
- 		size += nfulnl_get_bridge_size(skb);
++	  If you want to compile it in kernel, say Y. To compile it as a
++	  module, choose M here. If unsure, say N.
++
+ comment 'IPVS SH scheduler'
  
-diff --git a/net/netfilter/nfnetlink_queue.c b/net/netfilter/nfnetlink_queue.c
-index d1d8bca03b4f..48a07914fd94 100644
---- a/net/netfilter/nfnetlink_queue.c
-+++ b/net/netfilter/nfnetlink_queue.c
-@@ -444,13 +444,15 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
+ config IP_VS_SH_TAB_BITS
+diff --git a/net/netfilter/ipvs/Makefile b/net/netfilter/ipvs/Makefile
+index bfce2677fda2..bb5d8125c82a 100644
+--- a/net/netfilter/ipvs/Makefile
++++ b/net/netfilter/ipvs/Makefile
+@@ -36,6 +36,7 @@ obj-$(CONFIG_IP_VS_SH) += ip_vs_sh.o
+ obj-$(CONFIG_IP_VS_MH) += ip_vs_mh.o
+ obj-$(CONFIG_IP_VS_SED) += ip_vs_sed.o
+ obj-$(CONFIG_IP_VS_NQ) += ip_vs_nq.o
++obj-$(CONFIG_IP_VS_TWOS) += ip_vs_twos.o
  
- 	nfnl_ct = rcu_dereference(nfnl_ct_hook);
- 
-+#if IS_ENABLED(CONFIG_NF_CONNTRACK)
- 	if (queue->flags & NFQA_CFG_F_CONNTRACK) {
- 		if (nfnl_ct != NULL) {
--			ct = nfnl_ct->get_ct(entskb, &ctinfo);
-+			ct = nf_ct_get(entskb, &ctinfo);
- 			if (ct != NULL)
- 				size += nfnl_ct->build_size(ct);
- 		}
- 	}
-+#endif
- 
- 	if (queue->flags & NFQA_CFG_F_UID_GID) {
- 		size += (nla_total_size(sizeof(u_int32_t))	/* uid */
-@@ -1104,9 +1106,10 @@ static struct nf_conn *nfqnl_ct_parse(struct nfnl_ct_hook *nfnl_ct,
- 				      struct nf_queue_entry *entry,
- 				      enum ip_conntrack_info *ctinfo)
- {
-+#if IS_ENABLED(CONFIG_NF_CONNTRACK)
- 	struct nf_conn *ct;
- 
--	ct = nfnl_ct->get_ct(entry->skb, ctinfo);
-+	ct = nf_ct_get(entry->skb, ctinfo);
- 	if (ct == NULL)
- 		return NULL;
- 
-@@ -1118,6 +1121,9 @@ static struct nf_conn *nfqnl_ct_parse(struct nfnl_ct_hook *nfnl_ct,
- 				      NETLINK_CB(entry->skb).portid,
- 				      nlmsg_report(nlh));
- 	return ct;
-+#else
-+	return NULL;
-+#endif
- }
- 
- static int nfqa_parse_bridge(struct nf_queue_entry *entry,
+ # IPVS application helpers
+ obj-$(CONFIG_IP_VS_FTP) += ip_vs_ftp.o
+diff --git a/net/netfilter/ipvs/ip_vs_twos.c b/net/netfilter/ipvs/ip_vs_twos.c
+new file mode 100644
+index 000000000000..acb55d8393ef
+--- /dev/null
++++ b/net/netfilter/ipvs/ip_vs_twos.c
+@@ -0,0 +1,139 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/* IPVS:        Power of Twos Choice Scheduling module
++ *
++ * Authors:     Darby Payne <darby.payne@applovin.com>
++ */
++
++#define KMSG_COMPONENT "IPVS"
++#define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/random.h>
++
++#include <net/ip_vs.h>
++
++/*    Power of Twos Choice scheduling, algorithm originally described by
++ *    Michael Mitzenmacher.
++ *
++ *    Randomly picks two destinations and picks the one with the least
++ *    amount of connections
++ *
++ *    The algorithm calculates a few variables
++ *    - total_weight = sum of all weights
++ *    - rweight1 = random number between [0,total_weight]
++ *    - rweight2 = random number between [0,total_weight]
++ *
++ *    For each destination
++ *      decrement rweight1 and rweight2 by the destination weight
++ *      pick choice1 when rweight1 is <= 0
++ *      pick choice2 when rweight2 is <= 0
++ *
++ *    Return choice2 if choice2 has less connections than choice 1 normalized
++ *    by weight
++ *
++ * References
++ * ----------
++ *
++ * [Mitzenmacher 2016]
++ *    The Power of Two Random Choices: A Survey of Techniques and Results
++ *    Michael Mitzenmacher, Andrea W. Richa y, Ramesh Sitaraman
++ *    http://www.eecs.harvard.edu/~michaelm/NEWWORK/postscripts/twosurvey.pdf
++ *
++ */
++static struct ip_vs_dest *ip_vs_twos_schedule(struct ip_vs_service *svc,
++					      const struct sk_buff *skb,
++					      struct ip_vs_iphdr *iph)
++{
++	struct ip_vs_dest *dest, *choice1 = NULL, *choice2 = NULL;
++	int rweight1, rweight2, weight1 = -1, weight2 = -1, overhead1 = 0;
++	int overhead2, total_weight = 0, weight;
++
++	IP_VS_DBG(6, "%s(): Scheduling...\n", __func__);
++
++	/* Generate a random weight between [0,sum of all weights) */
++	list_for_each_entry_rcu(dest, &svc->destinations, n_list) {
++		if (!(dest->flags & IP_VS_DEST_F_OVERLOAD)) {
++			weight = atomic_read(&dest->weight);
++			if (weight > 0) {
++				total_weight += weight;
++				choice1 = dest;
++			}
++		}
++	}
++
++	if (!choice1) {
++		ip_vs_scheduler_err(svc, "no destination available");
++		return NULL;
++	}
++
++	/* Add 1 to total_weight so that the random weights are inclusive
++	 * from 0 to total_weight
++	 */
++	total_weight += 1;
++	rweight1 = prandom_u32() % total_weight;
++	rweight2 = prandom_u32() % total_weight;
++
++	/* Pick two weighted servers */
++	list_for_each_entry_rcu(dest, &svc->destinations, n_list) {
++		if (dest->flags & IP_VS_DEST_F_OVERLOAD)
++			continue;
++
++		weight = atomic_read(&dest->weight);
++		if (weight <= 0)
++			continue;
++
++		rweight1 -= weight;
++		rweight2 -= weight;
++
++		if (rweight1 <= 0 && weight1 == -1) {
++			choice1 = dest;
++			weight1 = weight;
++			overhead1 = ip_vs_dest_conn_overhead(dest);
++		}
++
++		if (rweight2 <= 0 && weight2 == -1) {
++			choice2 = dest;
++			weight2 = weight;
++			overhead2 = ip_vs_dest_conn_overhead(dest);
++		}
++
++		if (weight1 != -1 && weight2 != -1)
++			goto nextstage;
++	}
++
++nextstage:
++	if (choice2 && (weight2 * overhead1) > (weight1 * overhead2))
++		choice1 = choice2;
++
++	IP_VS_DBG_BUF(6, "twos: server %s:%u conns %d refcnt %d weight %d\n",
++		      IP_VS_DBG_ADDR(choice1->af, &choice1->addr),
++		      ntohs(choice1->port), atomic_read(&choice1->activeconns),
++		      refcount_read(&choice1->refcnt),
++		      atomic_read(&choice1->weight));
++
++	return choice1;
++}
++
++static struct ip_vs_scheduler ip_vs_twos_scheduler = {
++	.name = "twos",
++	.refcnt = ATOMIC_INIT(0),
++	.module = THIS_MODULE,
++	.n_list = LIST_HEAD_INIT(ip_vs_twos_scheduler.n_list),
++	.schedule = ip_vs_twos_schedule,
++};
++
++static int __init ip_vs_twos_init(void)
++{
++	return register_ip_vs_scheduler(&ip_vs_twos_scheduler);
++}
++
++static void __exit ip_vs_twos_cleanup(void)
++{
++	unregister_ip_vs_scheduler(&ip_vs_twos_scheduler);
++	synchronize_rcu();
++}
++
++module_init(ip_vs_twos_init);
++module_exit(ip_vs_twos_cleanup);
++MODULE_LICENSE("GPL");
 -- 
 2.20.1
 
