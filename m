@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F051A312019
-	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 21:53:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F7EC312021
+	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 22:01:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229558AbhBFUwE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Feb 2021 15:52:04 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40792 "EHLO mail.kernel.org"
+        id S229618AbhBFVA7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Feb 2021 16:00:59 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41244 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229529AbhBFUwD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 6 Feb 2021 15:52:03 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1032264DD9;
-        Sat,  6 Feb 2021 20:51:22 +0000 (UTC)
+        id S229522AbhBFVA6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 6 Feb 2021 16:00:58 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6F4EE64E57;
+        Sat,  6 Feb 2021 21:00:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612644682;
-        bh=QXzXocad7OEM7KXmeipPBabltK3goLGrey1uddwragk=;
+        s=k20201202; t=1612645217;
+        bh=80CDBgeDWUtvbWtIen/0r+tgzUT0TauEI+1hVZnNfng=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mqch+l4Rw8LZuTxXL3pelwT8FrCfAINZmcTmaKm/tJdrAhG5kQxoQdxtKbelC4EMK
-         T7CAqPvi/oX+I3Z9SG/MBgdEcJONZnp421gY9wsETkzG98NClehaB/w0Ln+0GAxEAa
-         vggC5HgmwXDwuemPERmWuAAMeHP4UxK7/RgANaJreHjHjMtAKHc+YFBqgsWl5BWrHD
-         5xnOu0UkAisWwsBl00TUAAvdIF32fGTW0csWXjK/810GB/qoYJ0hniMVMlcieC9x1d
-         /qUqaUg2TC+lp5GHSkjxjkcsh1jluQkOCkMUivgf89f4Mfv0A6eIzS104W2Hs3eCA4
-         MWrHmMCmkUlHw==
-Date:   Sat, 6 Feb 2021 12:51:21 -0800
+        b=tKibYGPO+eAa1ZyjFEBAbLYow1Thu4gDcGKOSXnK05sbY7D94yvAgsWGUm+AdOZAw
+         KvcCukd5WCkYPSA6bG6pNNKm8bpEiGrFxDpPX5TQdee1W6VW2UMjwSaGFIk+JhxcMR
+         94ioDQL6ywseGkzI5kGVpg/FqmmxRwH1ruDLuwBur5oDsHYtkMpfBKmWctjQ5k7RWO
+         R1cvlI45e3kZFSXiMfnWqnh6BSkFCkIn2zj23XedJcLCfxW4OCNBK+1nTMSBvImUDg
+         AqhQRy0UzfYyIY4XHbbl3fpFZTcdFbUbjaB/ccoseSoue4d+EvN1n1uS00+EYcKJQZ
+         JYePTuSZvFvUQ==
+Date:   Sat, 6 Feb 2021 13:00:16 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     wenxu@ucloud.cn
-Cc:     mleitner@redhat.com, netdev@vger.kernel.org, jhs@mojatatu.com
-Subject: Re: [PATCH net v3] net/sched: cls_flower: Reject invalid ct_state
- flags rules
-Message-ID: <20210206125121.18e19eaa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1612508850-11577-1-git-send-email-wenxu@ucloud.cn>
-References: <1612508850-11577-1-git-send-email-wenxu@ucloud.cn>
+To:     Zheng Yongjun <zhengyongjun3@huawei.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: core: Clean code style issues in `neighbour.c`
+Message-ID: <20210206130016.7debcc34@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210205062821.3893-1-zhengyongjun3@huawei.com>
+References: <20210205062821.3893-1-zhengyongjun3@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -39,78 +39,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  5 Feb 2021 15:07:30 +0800 wenxu@ucloud.cn wrote:
-> From: wenxu <wenxu@ucloud.cn>
+On Fri, 5 Feb 2021 14:28:21 +0800 Zheng Yongjun wrote:
+> Do code format alignment to clean code style issues.
 > 
-> Reject the unsupported and invalid ct_state flags of cls flower rules.
-> 
-> Fixes: e0ace68af2ac ("net/sched: cls_flower: Add matching on conntrack info")
-> Signed-off-by: wenxu <wenxu@ucloud.cn>
-> ---
-> v3: using NLA_POLICY_MASK and NL_SET_ERR_MSG_ATTR
-> 
->  include/uapi/linux/pkt_cls.h |  7 +++++++
->  net/sched/cls_flower.c       | 33 ++++++++++++++++++++++++++++++++-
->  2 files changed, 39 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
-> index ee95f42..77df582 100644
-> --- a/include/uapi/linux/pkt_cls.h
-> +++ b/include/uapi/linux/pkt_cls.h
-> @@ -591,8 +591,15 @@ enum {
->  	TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED = 1 << 1, /* Part of an existing connection. */
->  	TCA_FLOWER_KEY_CT_FLAGS_RELATED = 1 << 2, /* Related to an established connection. */
->  	TCA_FLOWER_KEY_CT_FLAGS_TRACKED = 1 << 3, /* Conntrack has occurred. */
-> +
-> +	__TCA_FLOWER_KEY_CT_FLAGS_MAX,
->  };
->  
-> +#define TCA_FLOWER_KEY_CT_FLAGS_MAX \
-> +		((__TCA_FLOWER_KEY_CT_FLAGS_MAX - 1) << 1)
-> +#define TCA_FLOWER_KEY_CT_FLAGS_MASK \
-> +		(TCA_FLOWER_KEY_CT_FLAGS_MAX - 1)
+> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
 
-This calculation is rather complicated, sorry I missed this the first
-time around. And I don't think it needs to be in the uAPI.
+I don't think these changes make the code substantively more readable.
+At the same time they make the history harder to follow and may cause
+backporting failures.
 
->  enum {
->  	TCA_FLOWER_KEY_ENC_OPTS_UNSPEC,
->  	TCA_FLOWER_KEY_ENC_OPTS_GENEVE, /* Nested
-> diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-> index 84f9325..4aebf4e 100644
-> --- a/net/sched/cls_flower.c
-> +++ b/net/sched/cls_flower.c
-> @@ -30,6 +30,9 @@
->  
->  #include <uapi/linux/netfilter/nf_conntrack_common.h>
-
-We can add a define here:
-
-#define TCA_FLOWER_KEY_CT_FLAGS_MASK (TCA_FLOWER_KEY_CT_FLAGS_NEW | \
-				       TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED
-				       ...
-
-> +#define TCA_FLOWER_KEY_CT_STATE_MASK_TYPE \
-> +			NLA_POLICY_MASK(NLA_U16, TCA_FLOWER_KEY_CT_FLAGS_MASK)
-
-nit: using a define for policy is also uncommon AFAIK..
-
->  struct fl_flow_key {
->  	struct flow_dissector_key_meta meta;
->  	struct flow_dissector_key_control control;
-> @@ -687,7 +690,7 @@ static void *fl_get(struct tcf_proto *tp, u32 handle)
->  	[TCA_FLOWER_KEY_ENC_OPTS]	= { .type = NLA_NESTED },
->  	[TCA_FLOWER_KEY_ENC_OPTS_MASK]	= { .type = NLA_NESTED },
->  	[TCA_FLOWER_KEY_CT_STATE]	= { .type = NLA_U16 },
-> -	[TCA_FLOWER_KEY_CT_STATE_MASK]	= { .type = NLA_U16 },
-> +	[TCA_FLOWER_KEY_CT_STATE_MASK]	= TCA_FLOWER_KEY_CT_STATE_MASK_TYPE,
-
-.. if the line would be long just go to the next one:
-
-	[TCA_FLOWER_KEY_CT_STATE_MASK]	= 
-		NLA_POLICY_MASK(NLA_U16, TCA_FLOWER_KEY_CT_FLAGS_MASK)
-
->  	[TCA_FLOWER_KEY_CT_ZONE]	= { .type = NLA_U16 },
->  	[TCA_FLOWER_KEY_CT_ZONE_MASK]	= { .type = NLA_U16 },
->  	[TCA_FLOWER_KEY_CT_MARK]	= { .type = NLA_U32 },
-
+Unless area maintainers disagree I'm not applying this patch, sorry.
