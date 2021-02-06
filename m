@@ -2,91 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFB75311AE7
-	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 05:32:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A7AD311B0A
+	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 05:44:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229931AbhBFEbq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 23:31:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34330 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230419AbhBFE3W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 23:29:22 -0500
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C8CDC06174A;
-        Fri,  5 Feb 2021 20:28:42 -0800 (PST)
-Received: by mail-oi1-x22f.google.com with SMTP id n7so9742217oic.11;
-        Fri, 05 Feb 2021 20:28:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/kO59WxTah5Jbk4aAvw+fhwnlddy41PK6vTRHRR5apo=;
-        b=DOO91uFtkqVXVObxoWJJSgT/Y4MSY4JiBIbGhQrfH7tLn+RZpFrvlU6w2yLBPCqzI+
-         HVCuQ7yRC3jini3a4HooKPHH3CJd0HvMX0lb/Ux6bBeS2rQa1cZv69+pjonwl5FLsUeE
-         cGdIaoNdSJqYZsDTnvl0Xgl9enTojc6n9yAMLaMr+xyUsvrOgdkaW9/ZPNo4koRi9seQ
-         mXW0N1xrOwo0vAvO/y+Q8jGD/bRsKxaiSm+ri2Tt/hoS0dOjWACYIerVmfCTeQ2VkGMU
-         seySVvR+4tWN76v8BjaRXkJYd1ft5p0r29mKPvYs154DsjOGMy/Buk7s/2rbgPjsdNuu
-         /qYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/kO59WxTah5Jbk4aAvw+fhwnlddy41PK6vTRHRR5apo=;
-        b=ONvWb3VqPmOoMBfVzcfoG2S0fyv8mhVr97WOnq9KuqAdnsRXxxFcmHkpA6hXPreOYg
-         4A0SyGxfR8D4vcWZYDwhwISqLr+UlfechbJgABYo/YeaBzfLcVovaadJvSa1FixA9OAT
-         8TOUdto/JhbCnvxBqdQb0CvoO+EsS5JuuhjeEHdX6amT8blWZmXTGcYPN7XnjYnbMF41
-         NF3rVS4we41aJTCC7VIdk5pvuP4F63wwQm+SHHskDJYrPV8WECrWwwH+wFPJfYfQNEPW
-         H/NxpiXgLEqY4uopsYJrIlduCz202mij7DlGh2j8o5WfcwLLUc9S4zGBpJuZ1/dc6NFP
-         4wlg==
-X-Gm-Message-State: AOAM530VVgX+31DR2m6HOLfA9bvupQd3x7KEHV+gugcsqzlMdbr48x/U
-        CaedsEHTJQnmjM1taxzMHuKsPMqqvgc0JqwLujA=
-X-Google-Smtp-Source: ABdhPJzF0tXPDHPihGXR2OVqzrk74p0HCp/axMqC1HaF9ECuIsHwWKvYprJ2lzUfbSwJqKoNPQkm1MrkMddL33eeZBc=
-X-Received: by 2002:aca:e108:: with SMTP id y8mr2744280oig.114.1612585721575;
- Fri, 05 Feb 2021 20:28:41 -0800 (PST)
+        id S231670AbhBFEnu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 23:43:50 -0500
+Received: from mga18.intel.com ([134.134.136.126]:21611 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231529AbhBFEky (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 5 Feb 2021 23:40:54 -0500
+IronPort-SDR: NdCyZylKwH9B938ZCu5tK+5IgiJcTMrlOe5NjZIBTMQu6TIPi9sQUslZmtjWbwk2gUeMGNZBLT
+ 6xTkjsoG6EBg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9886"; a="169194687"
+X-IronPort-AV: E=Sophos;i="5.81,156,1610438400"; 
+   d="scan'208";a="169194687"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2021 20:40:11 -0800
+IronPort-SDR: jtu+hLIfwA1RHfN6Ry44mpSzM6PI8SW+XqCp5DbpL1vDpPl5zVfklecjQjtPRIdeb+ceNV813P
+ lxB2lux/0/Pg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,156,1610438400"; 
+   d="scan'208";a="434751037"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga001.jf.intel.com with ESMTP; 05 Feb 2021 20:40:11 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com
+Subject: [PATCH net-next v2 00/11][pull request] 100GbE Intel Wired LAN Driver Updates 2021-02-05
+Date:   Fri,  5 Feb 2021 20:40:50 -0800
+Message-Id: <20210206044101.636242-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <20210206000146.616465-1-enbyamy@gmail.com> <c1eae547-aa14-8307-cb81-b585a13bbd3d@infradead.org>
-In-Reply-To: <c1eae547-aa14-8307-cb81-b585a13bbd3d@infradead.org>
-From:   Amy Parker <enbyamy@gmail.com>
-Date:   Fri, 5 Feb 2021 20:28:30 -0800
-Message-ID: <CAE1WUT5XKgi10sMaCUFqENUffgUzCF-jrAJE9z=wKkW=yP_9mw@mail.gmail.com>
-Subject: Re: [PATCH 0/3] drivers/net/ethernet/amd: Follow style guide
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>, rppt@kernel.org,
-        netdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 5, 2021 at 7:16 PM Randy Dunlap <rdunlap@infradead.org> wrote:
->
-> On 2/5/21 4:01 PM, Amy Parker wrote:
-> > This patchset updates atarilance.c and sun3lance.c to follow the kernel
-> > style guide. Each patch tackles a different issue in the style guide.
-> >
-> >    -Amy IP
-> >
-> > Amy Parker (3):
-> >   drivers/net/ethernet/amd: Correct spacing around C keywords
-> >   drivers/net/ethernet/amd: Fix bracket matching and line levels
-> >   drivers/net/ethernet/amd: Break apart one-lined expressions
-> >
-> >  drivers/net/ethernet/amd/atarilance.c | 64 ++++++++++++++-------------
-> >  drivers/net/ethernet/amd/sun3lance.c  | 64 +++++++++++++++------------
-> >  2 files changed, 69 insertions(+), 59 deletions(-)
-> >
->
-> Hi Amy,
->
-> For each patch, can you confirm that the before & after binary files
-> are the same?  or if they are not the same, explain why not?
->
-> Just something that I have done in the past...
->
-> thanks.
+This series contains updates to ice driver only.
 
-At least when I tried - yes. These are just stylistic changes.
-Currently using gcc version 10.2.1.
+Jake adds adds reporting of timeout length during devlink flash and
+implements support to report devlink info regarding the version of
+firmware that is stored (downloaded) to the device, but is not yet active.
+ice_devlink_info_get will report "stored" versions when there is no
+pending flash update. Version info includes the UNDI Option ROM, the
+Netlist module, and the fw.bundle_id.
 
-   -Amy IP
+Gustavo A. R. Silva replaces a one-element array to flexible-array
+member.
+
+Bruce utilizes flex_array_size() helper and removes dead code on a check
+for a condition that can't occur.
+
+v2:
+* removed security revision implementation, and re-ordered patches to
+account for this removal
+* squashed patches implementing ice_read_flash_module to avoid patches
+refactoring the implementation of a previous patch in the series
+* modify ice_devlink_info_get to always report "stored" versions instead
+of only reporting them when a pending flash update is ready.
+
+The following are changes since commit 4d469ec8ec05e1fa4792415de1a95b28871ff2fa:
+  Merge branch '1GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 100GbE
+
+Bruce Allan (2):
+  ice: use flex_array_size where possible
+  ice: remove dead code
+
+Gustavo A. R. Silva (1):
+  ice: Replace one-element array with flexible-array member
+
+Jacob Keller (8):
+  ice: report timeout length for erasing during devlink flash
+  ice: create flash_info structure and separate NVM version
+  ice: introduce context struct for info report
+  ice: cache NVM module bank information
+  ice: introduce function for reading from flash modules
+  ice: display some stored NVM versions via devlink info
+  ice: display stored netlist versions via devlink info
+  ice: display stored UNDI firmware version via devlink info
+
+ drivers/net/ethernet/intel/ice/ice.h          |   2 +-
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  27 -
+ drivers/net/ethernet/intel/ice/ice_common.c   |   2 +-
+ drivers/net/ethernet/intel/ice/ice_devlink.c  | 273 ++++++--
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |   8 +-
+ .../net/ethernet/intel/ice/ice_flex_pipe.c    |   2 +-
+ .../net/ethernet/intel/ice/ice_fw_update.c    |  10 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     |  16 +-
+ drivers/net/ethernet/intel/ice/ice_nvm.c      | 662 ++++++++++++++----
+ drivers/net/ethernet/intel/ice/ice_nvm.h      |  14 +
+ drivers/net/ethernet/intel/ice/ice_status.h   |   1 +
+ drivers/net/ethernet/intel/ice/ice_type.h     | 131 +++-
+ 12 files changed, 906 insertions(+), 242 deletions(-)
+
+-- 
+2.26.2
+
