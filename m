@@ -2,117 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD1A931183F
-	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 03:34:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7489931185B
+	for <lists+netdev@lfdr.de>; Sat,  6 Feb 2021 03:36:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229544AbhBFCbe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 5 Feb 2021 21:31:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37192 "EHLO
+        id S231210AbhBFCfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 5 Feb 2021 21:35:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229537AbhBFCa6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 21:30:58 -0500
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF95CC08ED35;
-        Fri,  5 Feb 2021 15:19:25 -0800 (PST)
-Received: by mail-yb1-xb35.google.com with SMTP id y128so8336936ybf.10;
-        Fri, 05 Feb 2021 15:19:25 -0800 (PST)
+        with ESMTP id S230172AbhBFCcj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 5 Feb 2021 21:32:39 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21822C08EE0C;
+        Fri,  5 Feb 2021 16:02:03 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id l18so4711515pji.3;
+        Fri, 05 Feb 2021 16:02:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eaySnepDzbdWK06t4HWZqmtay2gND6FqJB5mQU1GyNk=;
-        b=A+eCqkjlgp/p4pwaEXRy99LxJWrvSUp2lG8jE+/nw8IYa7DCCx2brl+75YXwf4V1cH
-         GFAMb/Z0ZTwIS+jALWtv6JAOtd5wFxWsmhGZ3T+W7bNhACZo/3f0zmTvYZg2tBWnVH5Y
-         L7WZA3tzmn8iGAfBpejM7y37UgVhHc2hv110IssNLoILQ/xuOB+TOZjVDHvzldnGBLpN
-         Zrd+2FbNsvTUpXhaTNewl9Gofb8jmbx1xN0VgbaQfJ5OChdFnUxlvVukMIW/1iTLXA7L
-         eKLfkqiDvvFwKNHX4ehx5i3BN7IZWr9ezLEwSDOiwLvkUWmW3rdQmNxgq9nDlzBCOmOU
-         vzdQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4+TaH7FhFyvXQ+dRkOsL4rRGid5VY07dFOwf2AoTuxQ=;
+        b=DBSwGm0kuGQoBkyB/8OjbDLGV/Wgv1u/o0Qr2F5RiLkmH+BFaVn6Myyv1otOoKIoqf
+         UMB4hnJ6wcV8VPw5eR0dKs0kWWqpMiqCqaMkC5c4ZGB/0uy4fTRzsp5oEqsBlBw+IZIz
+         i2DT348zMS/h7CNuZtZnKDKmgooG8hrNbKYJ14PyxvXTzUYW0u63tqECGebMWErF+QBi
+         4HY6KKOebz9TT7+CL5QZf83sKxLheeBknDfbsX38j2VBexaJgO0gIAdFzAPEwsTQtFlm
+         roX4dQskjr/RCDceF2tsicpTDb9SeK05m+wi++2mtEbahlar5yNYKCYJnIE7kG52WujF
+         hsbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eaySnepDzbdWK06t4HWZqmtay2gND6FqJB5mQU1GyNk=;
-        b=BBNGXepVC50yDuSMYfNidNNJMW5+vAF29Rj4dGTcMsWvP2hK18A4KYXiYpxE5EeJDN
-         fYPoUt5AtzfVur2V1wZOgTpf7zM5ZJdsY9qE+45Qgmdw1YDyb1VvRjmOkssnz3gQzHwZ
-         Oq7Em4SDxCX8ibSXkUyvZ0boqQ6qDlanq6IPtvJQdakeTR/a0ZZjZ8KdJ1vkK2+H+Pfg
-         uBi4rrVWhmDoYc5qY4W856a+ASSsR1w6Yo8OWrwlidPgrcX6VkJvCYg75uSAP+gVU7qT
-         Q/pQFBbRxe0UhZfskofdGdjV3iY6W06goHuFXMhSRNAESnshJbdVo4tn9NktzTgoGGvw
-         7PUg==
-X-Gm-Message-State: AOAM530ugLJ7+4ymPJjStHiNVVtSfRLRnKPGXPxI7Aaz5rrhBMPpY1Vm
-        AWgnnXp2mfsES4zAsThrl2v3xi2CJLw+EXy08AfU+hFv0QFnu3Tf
-X-Google-Smtp-Source: ABdhPJwt7koiechQx56/EbEreAyk9y0MSngpulAsJbBPdaM7f/1PsGrvmYXWqGApF2lrJzzC7RycR83mu192C39uepk=
-X-Received: by 2002:a25:da4d:: with SMTP id n74mr10053150ybf.347.1612567165234;
- Fri, 05 Feb 2021 15:19:25 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4+TaH7FhFyvXQ+dRkOsL4rRGid5VY07dFOwf2AoTuxQ=;
+        b=VsRuu+5NssaYYw1f0Xqwjotn9gN81r5V9hBIzSqg6RbPwU6OC55GXEb8A9sGz4KLUT
+         6EEucPqrvqWv1SGTxAuTIOXdAW/+3Cwn7kPGHrBF/IpLdThG7sUmEiey47qZxQ2HayDu
+         wN9kD6mFzZCAap+/OKaNdV3kTTFXR1XmU98lRWBNOKgWlE48Xkr7njzxdQtfaORxEdre
+         zShsCfLtKkwKuafEDnIWz9jQEM96JaT6KHrelMLuzdhKcTG7O7UJqG940u0MELIOv/Q6
+         3Jd0OKxnur9RYnoJOo5YU6XE6da2c+NsoBBwDutj+N+Y35O0/LdbUq1PMEsx91q37ij4
+         gYrQ==
+X-Gm-Message-State: AOAM530KE9/9fupOpzabrzrhO6poLSkBNeuYBLGTFI8UoFGduQWRWDA4
+        +6yApzoiS+vfnAcPu3XtKPg=
+X-Google-Smtp-Source: ABdhPJx74xSyMB0VDzrMdOyldrSIeLLHt3H/b1DqKFsr/Uo8ZdN6oxK5cD4Xb1rv7eh/syJ5rGHxpg==
+X-Received: by 2002:a17:902:e551:b029:de:8dba:84a3 with SMTP id n17-20020a170902e551b02900de8dba84a3mr6242780plf.8.1612569722697;
+        Fri, 05 Feb 2021 16:02:02 -0800 (PST)
+Received: from amypc-samantha.home ([47.145.126.51])
+        by smtp.gmail.com with ESMTPSA id r189sm11771724pgr.10.2021.02.05.16.02.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Feb 2021 16:02:02 -0800 (PST)
+From:   Amy Parker <enbyamy@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, akpm@linux-foundation.org,
+        rppt@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Amy Parker <enbyamy@gmail.com>
+Subject: [PATCH 0/3] drivers/net/ethernet/amd: Follow style guide
+Date:   Fri,  5 Feb 2021 16:01:43 -0800
+Message-Id: <20210206000146.616465-1-enbyamy@gmail.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-References: <20210205124020.683286-1-jolsa@kernel.org> <20210205124020.683286-3-jolsa@kernel.org>
-In-Reply-To: <20210205124020.683286-3-jolsa@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 5 Feb 2021 15:19:14 -0800
-Message-ID: <CAEf4BzY6aJ5YfErvbY8AwuDztvgs4xrd5dC8y3vkxTZbiMppMA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/4] tools/resolve_btfids: Check objects before removing
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 5, 2021 at 2:59 PM Jiri Olsa <jolsa@kernel.org> wrote:
->
-> We want this clean to be called from tree's root clean
-> and that one is silent if there's nothing to clean.
->
-> Adding check for all object to clean and display CLEAN
-> messages only if there are objects to remove.
->
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
+This patchset updates atarilance.c and sun3lance.c to follow the kernel
+style guide. Each patch tackles a different issue in the style guide.
 
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
+   -Amy IP
 
->  tools/bpf/resolve_btfids/Makefile | 17 ++++++++++++-----
->  1 file changed, 12 insertions(+), 5 deletions(-)
->
-> diff --git a/tools/bpf/resolve_btfids/Makefile b/tools/bpf/resolve_btfids/Makefile
-> index 1d46a247ec95..be09ec4f03ff 100644
-> --- a/tools/bpf/resolve_btfids/Makefile
-> +++ b/tools/bpf/resolve_btfids/Makefile
-> @@ -64,13 +64,20 @@ $(BINARY): $(BPFOBJ) $(SUBCMDOBJ) $(BINARY_IN)
->         $(call msg,LINK,$@)
->         $(Q)$(CC) $(BINARY_IN) $(LDFLAGS) -o $@ $(BPFOBJ) $(SUBCMDOBJ) $(LIBS)
->
-> +clean_objects := $(wildcard $(OUTPUT)/*.o                \
-> +                            $(OUTPUT)/.*.o.cmd           \
-> +                            $(OUTPUT)/.*.o.d             \
-> +                            $(OUTPUT)/libbpf             \
-> +                            $(OUTPUT)/libsubcmd          \
-> +                            $(OUTPUT)/resolve_btfids)
-> +
-> +ifneq ($(clean_objects),)
->  clean: fixdep-clean
->         $(call msg,CLEAN,$(BINARY))
-> -       $(Q)$(RM) -f $(BINARY); \
-> -       $(RM) -rf $(if $(OUTPUT),$(OUTPUT),.)/feature; \
-> -       $(RM) -rf $(OUTPUT)/libbpf; \
-> -       $(RM) -rf $(OUTPUT)/libsubcmd; \
-> -       find $(if $(OUTPUT),$(OUTPUT),.) -name \*.o -or -name \*.o.cmd -or -name \*.o.d | xargs $(RM)
-> +       $(Q)$(RM) -rf $(clean_objects)
-> +else
-> +clean:
-> +endif
->
->  tags:
->         $(call msg,GEN,,tags)
-> --
-> 2.26.2
->
+Amy Parker (3):
+  drivers/net/ethernet/amd: Correct spacing around C keywords
+  drivers/net/ethernet/amd: Fix bracket matching and line levels
+  drivers/net/ethernet/amd: Break apart one-lined expressions
+
+ drivers/net/ethernet/amd/atarilance.c | 64 ++++++++++++++-------------
+ drivers/net/ethernet/amd/sun3lance.c  | 64 +++++++++++++++------------
+ 2 files changed, 69 insertions(+), 59 deletions(-)
+
+-- 
+2.29.2
+
