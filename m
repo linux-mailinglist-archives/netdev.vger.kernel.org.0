@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93C743122B2
-	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 09:31:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9B4B3122B7
+	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 09:31:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230288AbhBGI3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Feb 2021 03:29:47 -0500
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:48925 "EHLO
+        id S230208AbhBGIai (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Feb 2021 03:30:38 -0500
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:45475 "EHLO
         new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230033AbhBGI1J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 03:27:09 -0500
+        by vger.kernel.org with ESMTP id S230094AbhBGI11 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 03:27:27 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 234CF5801DE;
-        Sun,  7 Feb 2021 03:23:48 -0500 (EST)
+        by mailnew.nyi.internal (Postfix) with ESMTP id 553E35801DF;
+        Sun,  7 Feb 2021 03:23:50 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Sun, 07 Feb 2021 03:23:48 -0500
+  by compute3.internal (MEProxy); Sun, 07 Feb 2021 03:23:50 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=qEI07eSV7E9uv+rbHf/QMr/pTUGjDN+xKFvrzCzswxE=; b=TL3Sna+H
-        8NPb7sndTWya8R8xDcfB+ZeJUCclYj/psIXUQ3htxsF0YDb9k0WzOt22sXQGjhuL
-        qWgZdPiMcvVCJhlqo+T7TdevjOJ5NStGBel3GN/RUXObV4pp/KJ41sNmqjbWhNVQ
-        qZOqz9eBOUZIdHRs2Ux5GS8d2SBKmDcchI6s/ayPZru2ZgiRt6gGmmSODGh9w+ug
-        by/IGtK1Jh/JxZq9es1H6hnRrvo/66z+L4pmxhnnenOstI42N8OvpT8oJMqLNGaj
-        fyO5+j/tqpl8xUsKAeOqmxn7qtkgpAL4QvreKgkTlEsol6xevdJzdi4pFGZaptBz
-        8KZyI5/8tIEtZw==
-X-ME-Sender: <xms:lKMfYDzBN_QPqFIjJmiJgMe4WFOOTWMusxHLcaIC_K3a0RsvHjVpKg>
-    <xme:lKMfYLRKn4Zzbt-FH_SWH8lKA8h5tIXms-ztcgv2eOedYHwGhxLdJh4ETEBbAGJS8
-    BQcAI9FWLUQc_w>
+        fm2; bh=RtFLUJuEFOTzvMMmE/OWTMRcPlK9a50I0TAFxk/m1mA=; b=CIUe9BVj
+        R4wHbxOxJj9Nwux9q+bfVJH+pKdmuSv+qDJtWLcIQR053EjaVu0fBHd1Wh2UJqmn
+        FrNJXNlyQ8VrFddKnUScogoT/geKQm5vtyKOspEFPdogjRovTnR3CJGT3GHKOndY
+        HsiYWd1q4AW1qldeQHWsqamniEkmIOd9cPZwTXkDrTMd16Gv2l7QwdqJSfS68kd4
+        t00u57KT7JdwiOyGyHoMaC8J/VDBJn/ck2/1CnvxRdmZUylJ/P8rt6yDzpS3WwQW
+        0uZxiER933waFAVi+MV4abJ33/cB6yRA6o9HIM5LcxpaA9Yt4pSPABok1wSdDQTD
+        GYk4+aZn+fiI/w==
+X-ME-Sender: <xms:lqMfYP57sMcvggJFG4in4EGnIM3MI9FycNNDgSIwraEYc4ZM3t7MMA>
+    <xme:lqMfYE4bqW-oMoP46hJkvZi2n6mW2l6DNcppnpFmaqyrJXjopKNaevvclv_zFoh_c
+    qFN2iYRTnOapOo>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrhedtgddvjecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
     ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
     tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhfekhe
     fgtdfftefhledvjefggfehgfevjeekhfenucfkphepkeegrddvvdelrdduheefrdeggeen
-    ucevlhhushhtvghrufhiiigvpeefnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
+    ucevlhhushhtvghrufhiiigvpeeinecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
     gthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:lKMfYNXeQFzUjeTh9hLmh4I-Sxt9awiyyaJVZeLOj7FVNSl4OaPfEw>
-    <xmx:lKMfYNiqEfeaUkValoQd9RMC6VIV4BF2fB9hEgVXtraytgcocDk9Rw>
-    <xmx:lKMfYFCSZx0q9-jZEv8D7fi-Ycmzf1M6-Iv2YkKRA1iG1ghSiJH-XA>
-    <xmx:lKMfYJ0maf4FVTX3rqFSUexLVoABpAz7KsjZE8iq_mNyqO9D-KipBg>
+X-ME-Proxy: <xmx:lqMfYGcM0UADTuHr6_y-I5N4ABl-3ok73S4Zfg-dI9FS40c3a_ZC2w>
+    <xmx:lqMfYAI-_m9VimEf6D3lYYzZe76Ic-VJb4HKidPdNXo8KpTpMAI2yw>
+    <xmx:lqMfYDL3ET2t1fgZp0m_e2fcy0s4DU1tDIg7Onm5p5dWMbiTB4R4YQ>
+    <xmx:lqMfYK_ch43qw1XXVYagCL6Xo69DSkBizLNVFKlROE6_7xPsWDnh5Q>
 Received: from shredder.lan (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 175A71080057;
-        Sun,  7 Feb 2021 03:23:45 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 4F4F21080057;
+        Sun,  7 Feb 2021 03:23:48 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@gmail.com,
         jiri@nvidia.com, yoshfuji@linux-ipv6.org, amcohen@nvidia.com,
         roopa@nvidia.com, bpoirier@nvidia.com, sharpd@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 06/10] netdevsim: fib: Do not warn if route was not found for several events
-Date:   Sun,  7 Feb 2021 10:22:54 +0200
-Message-Id: <20210207082258.3872086-7-idosch@idosch.org>
+Subject: [PATCH net-next 07/10] netdevsim: dev: Initialize FIB module after debugfs
+Date:   Sun,  7 Feb 2021 10:22:55 +0200
+Message-Id: <20210207082258.3872086-8-idosch@idosch.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210207082258.3872086-1-idosch@idosch.org>
 References: <20210207082258.3872086-1-idosch@idosch.org>
@@ -63,51 +63,132 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Amit Cohen <amcohen@nvidia.com>
+From: Ido Schimmel <idosch@nvidia.com>
 
-The next patch will add the ability to fail route offload controlled by
-debugfs variable called "fail_route_offload".
-
-If we vetoed the addition, we might get a delete or append notification
-for a route we do not have. Therefore, do not warn if route was not found.
+Initialize the dummy FIB offload module after debugfs, so that the FIB
+module could create its own directory there.
 
 Signed-off-by: Amit Cohen <amcohen@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- drivers/net/netdevsim/fib.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/netdevsim/dev.c | 40 +++++++++++++++++++------------------
+ 1 file changed, 21 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/netdevsim/fib.c b/drivers/net/netdevsim/fib.c
-index 6b1ec3b4750c..b93bd483cf12 100644
---- a/drivers/net/netdevsim/fib.c
-+++ b/drivers/net/netdevsim/fib.c
-@@ -406,7 +406,7 @@ static void nsim_fib4_rt_remove(struct nsim_fib_data *data,
- 	struct nsim_fib4_rt *fib4_rt;
+diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+index 816af1f55e2c..dbeb29fa16e8 100644
+--- a/drivers/net/netdevsim/dev.c
++++ b/drivers/net/netdevsim/dev.c
+@@ -1012,23 +1012,25 @@ static int nsim_dev_reload_create(struct nsim_dev *nsim_dev,
+ 	nsim_dev->fw_update_status = true;
+ 	nsim_dev->fw_update_overwrite_mask = 0;
  
- 	fib4_rt = nsim_fib4_rt_lookup(&data->fib_rt_ht, fen_info);
--	if (WARN_ON_ONCE(!fib4_rt))
-+	if (!fib4_rt)
- 		return;
+-	nsim_dev->fib_data = nsim_fib_create(devlink, extack);
+-	if (IS_ERR(nsim_dev->fib_data))
+-		return PTR_ERR(nsim_dev->fib_data);
+-
+ 	nsim_devlink_param_load_driverinit_values(devlink);
  
- 	rhashtable_remove_fast(&data->fib_rt_ht, &fib4_rt->common.ht_node,
-@@ -482,7 +482,7 @@ static void nsim_fib6_rt_nh_del(struct nsim_fib6_rt *fib6_rt,
- 	struct nsim_fib6_rt_nh *fib6_rt_nh;
+ 	err = nsim_dev_dummy_region_init(nsim_dev, devlink);
+ 	if (err)
+-		goto err_fib_destroy;
++		return err;
  
- 	fib6_rt_nh = nsim_fib6_rt_nh_find(fib6_rt, rt);
--	if (WARN_ON_ONCE(!fib6_rt_nh))
-+	if (!fib6_rt_nh)
- 		return;
+ 	err = nsim_dev_traps_init(devlink);
+ 	if (err)
+ 		goto err_dummy_region_exit;
  
- 	fib6_rt->nhs--;
-@@ -565,7 +565,7 @@ static int nsim_fib6_rt_append(struct nsim_fib_data *data,
- 	int i, err;
++	nsim_dev->fib_data = nsim_fib_create(devlink, extack);
++	if (IS_ERR(nsim_dev->fib_data)) {
++		err = PTR_ERR(nsim_dev->fib_data);
++		goto err_traps_exit;
++	}
++
+ 	err = nsim_dev_health_init(nsim_dev, devlink);
+ 	if (err)
+-		goto err_traps_exit;
++		goto err_fib_destroy;
  
- 	fib6_rt = nsim_fib6_rt_lookup(&data->fib_rt_ht, rt);
--	if (WARN_ON_ONCE(!fib6_rt))
-+	if (!fib6_rt)
- 		return -EINVAL;
+ 	err = nsim_dev_port_add_all(nsim_dev, nsim_bus_dev->port_count);
+ 	if (err)
+@@ -1043,12 +1045,12 @@ static int nsim_dev_reload_create(struct nsim_dev *nsim_dev,
  
- 	for (i = 0; i < fib6_event->nrt6; i++) {
+ err_health_exit:
+ 	nsim_dev_health_exit(nsim_dev);
++err_fib_destroy:
++	nsim_fib_destroy(devlink, nsim_dev->fib_data);
+ err_traps_exit:
+ 	nsim_dev_traps_exit(devlink);
+ err_dummy_region_exit:
+ 	nsim_dev_dummy_region_exit(nsim_dev);
+-err_fib_destroy:
+-	nsim_fib_destroy(devlink, nsim_dev->fib_data);
+ 	return err;
+ }
+ 
+@@ -1080,15 +1082,9 @@ int nsim_dev_probe(struct nsim_bus_dev *nsim_bus_dev)
+ 	if (err)
+ 		goto err_devlink_free;
+ 
+-	nsim_dev->fib_data = nsim_fib_create(devlink, NULL);
+-	if (IS_ERR(nsim_dev->fib_data)) {
+-		err = PTR_ERR(nsim_dev->fib_data);
+-		goto err_resources_unregister;
+-	}
+-
+ 	err = devlink_register(devlink, &nsim_bus_dev->dev);
+ 	if (err)
+-		goto err_fib_destroy;
++		goto err_resources_unregister;
+ 
+ 	err = devlink_params_register(devlink, nsim_devlink_params,
+ 				      ARRAY_SIZE(nsim_devlink_params));
+@@ -1108,9 +1104,15 @@ int nsim_dev_probe(struct nsim_bus_dev *nsim_bus_dev)
+ 	if (err)
+ 		goto err_traps_exit;
+ 
++	nsim_dev->fib_data = nsim_fib_create(devlink, NULL);
++	if (IS_ERR(nsim_dev->fib_data)) {
++		err = PTR_ERR(nsim_dev->fib_data);
++		goto err_debugfs_exit;
++	}
++
+ 	err = nsim_dev_health_init(nsim_dev, devlink);
+ 	if (err)
+-		goto err_debugfs_exit;
++		goto err_fib_destroy;
+ 
+ 	err = nsim_bpf_dev_init(nsim_dev);
+ 	if (err)
+@@ -1128,6 +1130,8 @@ int nsim_dev_probe(struct nsim_bus_dev *nsim_bus_dev)
+ 	nsim_bpf_dev_exit(nsim_dev);
+ err_health_exit:
+ 	nsim_dev_health_exit(nsim_dev);
++err_fib_destroy:
++	nsim_fib_destroy(devlink, nsim_dev->fib_data);
+ err_debugfs_exit:
+ 	nsim_dev_debugfs_exit(nsim_dev);
+ err_traps_exit:
+@@ -1139,8 +1143,6 @@ int nsim_dev_probe(struct nsim_bus_dev *nsim_bus_dev)
+ 				  ARRAY_SIZE(nsim_devlink_params));
+ err_dl_unregister:
+ 	devlink_unregister(devlink);
+-err_fib_destroy:
+-	nsim_fib_destroy(devlink, nsim_dev->fib_data);
+ err_resources_unregister:
+ 	devlink_resources_unregister(devlink, NULL);
+ err_devlink_free:
+@@ -1157,10 +1159,10 @@ static void nsim_dev_reload_destroy(struct nsim_dev *nsim_dev)
+ 	debugfs_remove(nsim_dev->take_snapshot);
+ 	nsim_dev_port_del_all(nsim_dev);
+ 	nsim_dev_health_exit(nsim_dev);
++	nsim_fib_destroy(devlink, nsim_dev->fib_data);
+ 	nsim_dev_traps_exit(devlink);
+ 	nsim_dev_dummy_region_exit(nsim_dev);
+ 	mutex_destroy(&nsim_dev->port_list_lock);
+-	nsim_fib_destroy(devlink, nsim_dev->fib_data);
+ }
+ 
+ void nsim_dev_remove(struct nsim_bus_dev *nsim_bus_dev)
 -- 
 2.29.2
 
