@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4CEC312512
-	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 16:17:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E39DE312516
+	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 16:17:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229870AbhBGPQr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Feb 2021 10:16:47 -0500
-Received: from mx13.kaspersky-labs.com ([91.103.66.164]:15770 "EHLO
-        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229759AbhBGPQT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 10:16:19 -0500
-Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 1838652194F;
-        Sun,  7 Feb 2021 18:15:33 +0300 (MSK)
+        id S229976AbhBGPRK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Feb 2021 10:17:10 -0500
+Received: from mx12.kaspersky-labs.com ([91.103.66.155]:12701 "EHLO
+        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229690AbhBGPQr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 10:16:47 -0500
+Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay12.kaspersky-labs.com (Postfix) with ESMTP id ACAB47601B;
+        Sun,  7 Feb 2021 18:15:51 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail; t=1612710933;
-        bh=yXzORJ3um9E3cVu47+2l+Q/xtxOxHFFpqbcFlP4sHeo=;
+        s=mail; t=1612710951;
+        bh=rHifXE+UtLnEKvIrbXNmcRzsnUcnja9TP6Xp9JnrXGo=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=hbqBvUaHI9EYKxR/hf+uB0H7COY3CJPj8smbAatTtAt1t3h59ZY/3+DKS80w8dqM3
-         G8gFgOs4M90doiSX6SaFaQA+EEY8OgFwKWkO970SnWgF4AfTC1c2KKBOEY3V6yOIKd
-         RxNWAsCgjOz6l7TKhnoHhnZBDghjhcA6w/PZTy4I=
+        b=FFGar2K7X6hbZOBwkOV3BE7p3G3wfhD0gB4rVaRQyBQ+/Emk6ugCEXu9ZOgv+4QCp
+         tvs7xqkM6GG87/hvV8WvRNClnt0QYrwpLku3JMPyyvQn9jflveILNzP42lSqJnCAhh
+         Kf+G+tKiL3upmShJJr6ZDxI8Ty+WIY/moJgUUq9M=
 Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id A80CC52193F;
-        Sun,  7 Feb 2021 18:15:32 +0300 (MSK)
-Received: from arseniy-pc.avp.ru (10.64.68.128) by hqmailmbx3.avp.ru
+        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 697EF7601C;
+        Sun,  7 Feb 2021 18:15:51 +0300 (MSK)
+Received: from arseniy-pc.avp.ru (10.64.64.121) by hqmailmbx3.avp.ru
  (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2044.4; Sun, 7 Feb
- 2021 18:15:32 +0300
+ 2021 18:15:50 +0300
 From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -41,21 +41,21 @@ To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Jorgen Hansen <jhansen@vmware.com>,
         Colin Ian King <colin.king@canonical.com>,
         Andra Paraschiv <andraprs@amazon.com>,
-        Alexander Popov <alex.popov@linux.com>
+        Jeff Vander Stoep <jeffv@google.com>
 CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <stsp2@yandex.ru>, <oxffffaa@gmail.com>
-Subject: [RFC PATCH v4 04/17] af_vsock: implement SEQPACKET receive loop
-Date:   Sun, 7 Feb 2021 18:15:22 +0300
-Message-ID: <20210207151526.804741-1-arseny.krasnov@kaspersky.com>
+Subject: [RFC PATCH v4 05/17] af_vsock: separate wait space loop
+Date:   Sun, 7 Feb 2021 18:15:41 +0300
+Message-ID: <20210207151545.804889-1-arseny.krasnov@kaspersky.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210207151259.803917-1-arseny.krasnov@kaspersky.com>
 References: <20210207151259.803917-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.64.68.128]
-X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
+X-Originating-IP: [10.64.64.121]
+X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
  (10.64.67.243)
 X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
 X-KSE-AntiSpam-Interceptor-Info: scan successful
@@ -96,154 +96,143 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds receive loop for SEQPACKET. It looks like receive loop for
-STREAM, but there is a little bit difference:
-1) It doesn't call notify callbacks.
-2) It doesn't care about 'SO_SNDLOWAT' and 'SO_RCVLOWAT' values, because
-   there is no sense for these values in SEQPACKET case.
-3) It waits until whole record is received or error is found during
-   receiving.
-4) It processes and sets 'MSG_TRUNC' flag.
-
-So to avoid extra conditions for two types of socket inside one loop, two
-independent functions were created.
+This moves loop that waits for space on send to separate function,
+because it will be used for SEQ_BEGIN/SEQ_END sending before and
+after data transmission. Waiting for SEQ_BEGIN/SEQ_END is needed
+because such packets carries SEQPACKET header that couldn't be
+fragmented by credit mechanism, so to avoid it, sender waits until
+enough space will be ready.
 
 Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
 ---
- include/net/af_vsock.h   |  5 +++
- net/vmw_vsock/af_vsock.c | 96 +++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 100 insertions(+), 1 deletion(-)
+ include/net/af_vsock.h   |  2 +
+ net/vmw_vsock/af_vsock.c | 93 ++++++++++++++++++++++++++--------------
+ 2 files changed, 62 insertions(+), 33 deletions(-)
 
 diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
-index b1c717286993..bb6a0e52be86 100644
+index bb6a0e52be86..19f6f22821ec 100644
 --- a/include/net/af_vsock.h
 +++ b/include/net/af_vsock.h
-@@ -135,6 +135,11 @@ struct vsock_transport {
- 	bool (*stream_is_active)(struct vsock_sock *);
- 	bool (*stream_allow)(u32 cid, u32 port);
+@@ -205,6 +205,8 @@ void vsock_remove_sock(struct vsock_sock *vsk);
+ void vsock_for_each_connected_socket(void (*fn)(struct sock *sk));
+ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk);
+ bool vsock_find_cid(unsigned int cid);
++int vsock_wait_space(struct sock *sk, size_t space, int flags,
++		     struct vsock_transport_send_notify_data *send_data);
  
-+	/* SEQ_PACKET. */
-+	size_t (*seqpacket_seq_get_len)(struct vsock_sock *);
-+	int (*seqpacket_dequeue)(struct vsock_sock *, struct msghdr *,
-+				     int flags, bool *msg_ready);
-+
- 	/* Notification. */
- 	int (*notify_poll_in)(struct vsock_sock *, size_t, bool *);
- 	int (*notify_poll_out)(struct vsock_sock *, size_t, bool *);
+ /**** TAP ****/
+ 
 diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index 66c8a932f49b..3d8af987216a 100644
+index 3d8af987216a..ea99261e88ac 100644
 --- a/net/vmw_vsock/af_vsock.c
 +++ b/net/vmw_vsock/af_vsock.c
-@@ -1977,6 +1977,97 @@ static int __vsock_stream_recvmsg(struct sock *sk, struct msghdr *msg,
- 	return err;
+@@ -1693,6 +1693,64 @@ static int vsock_connectible_getsockopt(struct socket *sock,
+ 	return 0;
  }
  
-+static int __vsock_seqpacket_recvmsg(struct sock *sk, struct msghdr *msg,
-+				     size_t len, int flags)
++int vsock_wait_space(struct sock *sk, size_t space, int flags,
++		     struct vsock_transport_send_notify_data *send_data)
 +{
 +	const struct vsock_transport *transport;
-+	const struct iovec *orig_iov;
-+	unsigned long orig_nr_segs;
-+	bool msg_ready;
 +	struct vsock_sock *vsk;
-+	size_t record_len;
 +	long timeout;
-+	int err = 0;
-+	DEFINE_WAIT(wait);
++	int err;
++
++	DEFINE_WAIT_FUNC(wait, woken_wake_function);
 +
 +	vsk = vsock_sk(sk);
 +	transport = vsk->transport;
++	timeout = sock_sndtimeo(sk, flags & MSG_DONTWAIT);
++	err = 0;
 +
-+	timeout = sock_rcvtimeo(sk, flags & MSG_DONTWAIT);
-+	orig_nr_segs = msg->msg_iter.nr_segs;
-+	orig_iov = msg->msg_iter.iov;
-+	msg_ready = false;
-+	record_len = 0;
++	add_wait_queue(sk_sleep(sk), &wait);
 +
-+	while (1) {
-+		err = vsock_wait_data(sk, &wait, timeout, NULL, 0);
-+
-+		if (err <= 0) {
-+			/* In case of any loop break(timeout, signal
-+			 * interrupt or shutdown), we report user that
-+			 * nothing was copied.
-+			 */
-+			err = 0;
-+			break;
++	while (vsock_stream_has_space(vsk) < space &&
++	       sk->sk_err == 0 &&
++	       !(sk->sk_shutdown & SEND_SHUTDOWN) &&
++	       !(vsk->peer_shutdown & RCV_SHUTDOWN)) {
++		/* Don't wait for non-blocking sockets. */
++		if (timeout == 0) {
++			err = -EAGAIN;
++			goto out_err;
 +		}
 +
-+		if (record_len == 0) {
-+			record_len =
-+				transport->seqpacket_seq_get_len(vsk);
-+
-+			if (record_len == 0)
-+				continue;
++		if (send_data) {
++			err = transport->notify_send_pre_block(vsk, send_data);
++			if (err < 0)
++				goto out_err;
 +		}
 +
-+		err = transport->seqpacket_dequeue(vsk, msg,
-+					flags, &msg_ready);
-+		if (err < 0) {
-+			if (err == -EAGAIN) {
-+				iov_iter_init(&msg->msg_iter, READ,
-+					      orig_iov, orig_nr_segs,
-+					      len);
-+				/* Clear 'MSG_EOR' here, because dequeue
-+				 * callback above set it again if it was
-+				 * set by sender. This 'MSG_EOR' is from
-+				 * dropped record.
-+				 */
-+				msg->msg_flags &= ~MSG_EOR;
-+				record_len = 0;
-+				continue;
-+			}
-+
-+			err = -ENOMEM;
-+			break;
++		release_sock(sk);
++		timeout = wait_woken(&wait, TASK_INTERRUPTIBLE, timeout);
++		lock_sock(sk);
++		if (signal_pending(current)) {
++			err = sock_intr_errno(timeout);
++			goto out_err;
++		} else if (timeout == 0) {
++			err = -EAGAIN;
++			goto out_err;
 +		}
-+
-+		if (msg_ready)
-+			break;
 +	}
 +
-+	if (sk->sk_err)
++	if (sk->sk_err) {
 +		err = -sk->sk_err;
-+	else if (sk->sk_shutdown & RCV_SHUTDOWN)
-+		err = 0;
-+
-+	if (msg_ready) {
-+		/* User sets MSG_TRUNC, so return real length of
-+		 * packet.
-+		 */
-+		if (flags & MSG_TRUNC)
-+			err = record_len;
-+		else
-+			err = len - msg->msg_iter.count;
-+
-+		/* Always set MSG_TRUNC if real length of packet is
-+		 * bigger than user's buffer.
-+		 */
-+		if (record_len > len)
-+			msg->msg_flags |= MSG_TRUNC;
++	} else if ((sk->sk_shutdown & SEND_SHUTDOWN) ||
++		   (vsk->peer_shutdown & RCV_SHUTDOWN)) {
++		err = -EPIPE;
 +	}
 +
++out_err:
++	remove_wait_queue(sk_sleep(sk), &wait);
 +	return err;
 +}
++EXPORT_SYMBOL_GPL(vsock_wait_space);
 +
- static int
- vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- 			  int flags)
-@@ -2032,7 +2123,10 @@ vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- 		goto out;
- 	}
+ static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
+ 				     size_t len)
+ {
+@@ -1751,39 +1809,8 @@ static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
+ 	while (total_written < len) {
+ 		ssize_t written;
  
--	err = __vsock_stream_recvmsg(sk, msg, len, flags);
-+	if (sk->sk_type == SOCK_STREAM)
-+		err = __vsock_stream_recvmsg(sk, msg, len, flags);
-+	else
-+		err = __vsock_seqpacket_recvmsg(sk, msg, len, flags);
+-		add_wait_queue(sk_sleep(sk), &wait);
+-		while (vsock_stream_has_space(vsk) == 0 &&
+-		       sk->sk_err == 0 &&
+-		       !(sk->sk_shutdown & SEND_SHUTDOWN) &&
+-		       !(vsk->peer_shutdown & RCV_SHUTDOWN)) {
+-
+-			/* Don't wait for non-blocking sockets. */
+-			if (timeout == 0) {
+-				err = -EAGAIN;
+-				remove_wait_queue(sk_sleep(sk), &wait);
+-				goto out_err;
+-			}
+-
+-			err = transport->notify_send_pre_block(vsk, &send_data);
+-			if (err < 0) {
+-				remove_wait_queue(sk_sleep(sk), &wait);
+-				goto out_err;
+-			}
+-
+-			release_sock(sk);
+-			timeout = wait_woken(&wait, TASK_INTERRUPTIBLE, timeout);
+-			lock_sock(sk);
+-			if (signal_pending(current)) {
+-				err = sock_intr_errno(timeout);
+-				remove_wait_queue(sk_sleep(sk), &wait);
+-				goto out_err;
+-			} else if (timeout == 0) {
+-				err = -EAGAIN;
+-				remove_wait_queue(sk_sleep(sk), &wait);
+-				goto out_err;
+-			}
+-		}
+-		remove_wait_queue(sk_sleep(sk), &wait);
++		if (vsock_wait_space(sk, 1, msg->msg_flags, &send_data))
++			goto out_err;
  
- out:
- 	release_sock(sk);
+ 		/* These checks occur both as part of and after the loop
+ 		 * conditional since we need to check before and after
 -- 
 2.25.1
 
