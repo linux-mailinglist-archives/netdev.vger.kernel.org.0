@@ -2,176 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9045F31253F
-	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 16:27:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ACA63125F9
+	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 17:22:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230228AbhBGPZb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Feb 2021 10:25:31 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:45546 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230372AbhBGPXN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 10:23:13 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 117FFx1m004289;
-        Sun, 7 Feb 2021 07:22:27 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : content-type : content-transfer-encoding :
- mime-version; s=pfpt0220; bh=iEJ2ESN0IDzLh2QKXeAyfL1PqvLQQSVxWqyYk02Munw=;
- b=GkGuEVUVZyvEDgPocOTKWzQCLfW5WYOeIH3cV5JvYAFEqKVGvdI6MQ2ZdIrv73oCkveF
- FRKtOmfty9ipLuxmtC5HYoc/1PPTsvRKN01kYgc4bNy9jh0qSeo1XTKE6mSutJqgdMEP
- wxsrKfBWgtxYjOdmz4SlswQBC3fGuEK6lZiV6rJO+c9HFUhoMFdrVEnep4tMX++OZl5L
- 66LLFLI8nxvWo0El/1IFoI3ceOF4jg0CABmMZwhxDpCkJdfffRacqn818JvjsoQQ2wQ1
- s8Ka3sDAGwL1vOAtZLT5p3M7ttZoi+/pzLhHZRMQWW3tWabuyUBHfAj/ZIq8v9dWXRP2 6g== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com with ESMTP id 36hugq25rd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 07 Feb 2021 07:22:26 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 7 Feb
- 2021 07:22:24 -0800
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.172)
- by DC5-EXCH01.marvell.com (10.69.176.38) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2 via Frontend Transport; Sun, 7 Feb 2021 07:22:24 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e+VbB0JYKZXZ83yz17JzW3zog8UFyDMuJofpbm4yMb2VEBuPK4z2Xh+PTyzEdAcY4GuDE3o5PDdCBrpV+UVzEAv5SiHDyxf+26nSmhjMMrc24ZjYLgf4AE/M8XWJz28bJxYsPNPkWMWD/Ze6yzLjBLB2m9aU9DBVzgbaFuDOqH7KdG1d2v675GWuFGo23Yf9zLe6Tu2Vy9cAzyHpePvDZ7uGZzsk9eq4m5I+s8sXI8tZlU3A9z6fKYq4geCe7tAjfZd/S2Nf3TP7pYeJMCMYGAhxGAQVDRpqCRl5D6aC7+0rZvrohNtHbywiLww3TIRsUloLs87fJdOqVVv+5tyOlw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iEJ2ESN0IDzLh2QKXeAyfL1PqvLQQSVxWqyYk02Munw=;
- b=BYnonzanpKIQxtQznJt71iPHIf8YWGBW2lJr+M+3BWB9qe3ok8+yt1TV4KwqEmIWGmZTro4wNghxAyViqVVZVjT/9soali75b3qobeN+skTK+vcbY1gpgyFROVQljjYrCiPDfk2Y+vabNTawRxCPwY4w5qfCQvHrJCQYXx+Iys3KLYY6rmVvYY5CcChElape011NqrPuNc/eoje3XZ6PYkngKvmgqUsL7sHVnG5TY15KCBxNcPEO4y1/x5GCUrF2uoseQe8NaoivUJgB3OdL5vOXWNwzN0iFeCQwt7UbwC/wvO5nOpimASuOzozInTrYsetLS6o/YMZklXH1t42+4A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iEJ2ESN0IDzLh2QKXeAyfL1PqvLQQSVxWqyYk02Munw=;
- b=iTUvnJsXyYtMbghpJZElZD+BZ9XGzrnDSvppHKpoJRqGnrcFiVYv1I9r64jRi67JHq7rSME+4SAGmDHBQ95AECV0t6rQI4A6mjid8xhD+ryYHLv1PTTM7WvnP+/OQWQgH3XzCMUyzE/zzLqLcb2VjeRGI8HV6AdDVezk92WR1xg=
-Received: from MWHPR18MB1421.namprd18.prod.outlook.com (2603:10b6:320:2a::23)
- by MW3PR18MB3691.namprd18.prod.outlook.com (2603:10b6:303:5a::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.27; Sun, 7 Feb
- 2021 15:22:24 +0000
-Received: from MWHPR18MB1421.namprd18.prod.outlook.com
- ([fe80::25eb:fce2:fba7:327d]) by MWHPR18MB1421.namprd18.prod.outlook.com
- ([fe80::25eb:fce2:fba7:327d%4]) with mapi id 15.20.3825.030; Sun, 7 Feb 2021
- 15:22:24 +0000
-From:   Hariprasad Kelam <hkelam@marvell.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "willemdebruijn.kernel@gmail.com" <willemdebruijn.kernel@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        "Geethasowjanya Akula" <gakula@marvell.com>,
-        Jerin Jacob Kollanukkaran <jerinj@marvell.com>,
-        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>
-Subject: Re: [Patch v3 net-next 7/7] octeontx2-pf: ethtool physical link
- configuration
-Thread-Topic: [Patch v3 net-next 7/7] octeontx2-pf: ethtool physical link
- configuration
-Thread-Index: Adb9XdvVHdYITZIbTM6ovKwCtI7DnA==
-Date:   Sun, 7 Feb 2021 15:22:23 +0000
-Message-ID: <MWHPR18MB1421C5D4CA279B980DC8CFEFDEB09@MWHPR18MB1421.namprd18.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=marvell.com;
-x-originating-ip: [117.207.113.225]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f4c1bb23-0bac-43fe-6e5d-08d8cb7c2b8f
-x-ms-traffictypediagnostic: MW3PR18MB3691:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MW3PR18MB3691F345641A49EA2335BB77DEB09@MW3PR18MB3691.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5797;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 2U7SvZuEAqnwWdNXCOD14tMU4ux9K1yBvjAeL+mwNTdj3UITDNN7aDY2CMnARjzTSISf1tQNB5XYtaoFicorHLpPfYVHTzshFJvxoC74bljhYt6+LQUvc+LEKtUagyuET3RBXt3RxQp0XBzYnDwsEV8+WPMcswcceUGTpDVG+L0iRLRvJ+GQXdBiXKqOCkr/uuaQMMwGOmyHnvmt9PvOQBMmDXnVrFnPACsXg51IjbABvIYwfu9Il9OPZu8I2wYJ2PWTYyjCZTU+RqXdQsiYEbqcZCZ65kucGla7NShPLxHKIuPRuG6Eagb/Q+dtJkun73bKRC1XXCYK40QMt7yXQp3uPJSFe5NbHjb02mZ6lPWU+oePt90Y27PLLeIcwQCJ4d1FHCNXMhSPSdGoP+rVzTdWksyNOzgmqaagv3NJbyB9zQa4zXehmhHVJ4QaBju4riyvzl8r0KchrS6ont90d1sshV2BupqLi8hlhwM6XWYdu62RTHZxOU51s7E+B/x4zC3OLBhXFNwqJ7USuQYmow==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR18MB1421.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(396003)(39850400004)(366004)(136003)(346002)(6506007)(54906003)(8676002)(83380400001)(107886003)(26005)(53546011)(186003)(66446008)(8936002)(66946007)(4326008)(64756008)(66556008)(66476007)(86362001)(478600001)(316002)(76116006)(7696005)(9686003)(55016002)(33656002)(71200400001)(52536014)(6916009)(2906002)(5660300002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?bL6HPtIhFICRL21eyebc+iOV1rNLGhV2OgwFQD4zMJi60KhiqJBlAF3Gse/U?=
- =?us-ascii?Q?1RjHyGeb0/C3OuGHdSF9OSVMrity9A56KQp9lQtKk0flz9QvT4/klcZR93F2?=
- =?us-ascii?Q?Z1pbNaEdtYtomU9lO3YnU0hHd+N1aPtxwKcKAOWRM4aThkPXVJwMJTqxEgx9?=
- =?us-ascii?Q?F70cNfXP+B8DeCQE95WZuAV0FltMQMA+YxgNNb4gAWGulzUl2ZOStaqcp44d?=
- =?us-ascii?Q?PFf0VR9GtBC8IE0/vDYIGWx1UDtLV6ZAkB3YIUV2MmLnRF3Cekx6kVF/VSWK?=
- =?us-ascii?Q?KYtQQPPtt2uB1vFq291BB8jIBsSghmvbcwvRmhgM3p7+zFYRByT4NOhxQnEP?=
- =?us-ascii?Q?gpT/8+Tg1gWq0ZRRA80KCqPiQ6RjiBk5ohjbCU0UdH5RiUbkT89rLdVGyzeM?=
- =?us-ascii?Q?vKiVIN+cpLfJ4tqiEF2l+XRoApLrFDD6hY1Sim7JcmMFLnksMGulMCyqFGA7?=
- =?us-ascii?Q?L5rqMrfD+1tgYbCkBwjJflcx73yQH66TWBmHtwRJinE2vKCYDZDPzewgVLI1?=
- =?us-ascii?Q?xhEqHIJ/dMWw8ACNgXIqvelM98GjrAguT/oUS1Mv80a3LiyGF2ehWYFtgDnT?=
- =?us-ascii?Q?PyRT53SqUrDhquk+SpWmPSPJbOVhqGSzlWfb69BiE4B3oY+hTSXxQoJE4PI0?=
- =?us-ascii?Q?pDoO7NxAeCqajZZl+ngyRBYb3Gl1Wsb+JdLVTmkPv+ENTvykpwadzwu0UtZ4?=
- =?us-ascii?Q?btvkv3b4dPyQsWj/WVSBKIgBO506ZDGLNZ3sBT1+SkHznTCWyxmnr9Myy1n0?=
- =?us-ascii?Q?tmVGN44uHD7qG2Ib8cd7/ogxvYMA6m5XohMlt9DgMYcjkzFMKkBm6H64mvj5?=
- =?us-ascii?Q?+uLeFkozLSGhCMO3zVKqyCiSyMRJLLfKqcH9Dvoye+AMC0htnhqdxLTKq7UB?=
- =?us-ascii?Q?7IuF7c1jLzT4EK77rlZwH6PyE2KXxquW8jr0eg9gitEEl7Op+F3MvdOpgMvk?=
- =?us-ascii?Q?1hYC0EbAOj5ZF5eC0O63io9VBVXtF1/y7cc4KwGQngLIroli6yYx2nm9Ny5K?=
- =?us-ascii?Q?Wbpzz/DEmMUZzkF0GGFX6UJB2FpJGSRfmIPsFY1gDywGqxYVD4bp0PkjIIcn?=
- =?us-ascii?Q?YajNPp2Gdqghwj6RYRwtxGQL9TWjIxJlhUAm0DFuapicVB0l2yLpR+cO/3GQ?=
- =?us-ascii?Q?VeHGRWnQ8DUuOTl5f/8oZ77CVFerCddkCTagPnPE2c/xeTAP+CZNWhO7KUfq?=
- =?us-ascii?Q?kfcnxyvrMu8gA1CkDEdUA9GTP3G8AnLY3z80EpRktqFw4lnXGNkDJTTDDhEC?=
- =?us-ascii?Q?F7fBK1UlCeDaCRTUfxny7o9QZ9r94k725RZhFaMRb80O6G46y2IHU1vElNrf?=
- =?us-ascii?Q?/7jpbVb9OWxxuUjco4chfc6s?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S229733AbhBGQWF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Feb 2021 11:22:05 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:25344 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229629AbhBGQWA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 11:22:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612714833;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=FZqyDugOGOW0JQq4JTJQ1tDgFP/xH2dXqvp4jbAWnlA=;
+        b=RmgIofntqJBxbB2NSQAwYGxcjqzapGgewbxjKILKQYenodoE+oCkAPWQ9RHM2qL0cpjcnJ
+        6SCn+1ImcrtSu69VOACk4XBVTkc0CX0NSWUqc/hsW7JjSPjlnmn29Z+l4WhD4RAOqYUZn7
+        ZVKquqQNSqZncCaS0IcW4ytyKBEtnC8=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-456-Zw8jKY_uOHefwrvFOR9lWg-1; Sun, 07 Feb 2021 11:20:31 -0500
+X-MC-Unique: Zw8jKY_uOHefwrvFOR9lWg-1
+Received: by mail-ed1-f72.google.com with SMTP id bd22so11804341edb.4
+        for <netdev@vger.kernel.org>; Sun, 07 Feb 2021 08:20:31 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FZqyDugOGOW0JQq4JTJQ1tDgFP/xH2dXqvp4jbAWnlA=;
+        b=Lnz0zPa0N//vOHlu6VOYtVPmLJaNVMM3yPVHNVBgvcAVV2u1U1qou+ZERbHint/is7
+         VrAOKhiybSltH/vjvYcJQZ83e+NpqrjRbejmuvZQvsaysW1TZWqDIfExKloR5AiAEU8k
+         OEL2r8SGvcqHQYHgkPAIJqhfoW8jP/4n3gLuH+UshxrE+iy2V8v7YyGqQY0CVHKnpUnw
+         Xyw3u9y5ot2cBLP3DdH/Qf3pDFCbQkQzoLQQumAqLUmjeTIPYGmdGHJV+Tuao+28wCOb
+         IBp3C+7e0ZwEAD60myRtahVduFabi2OIjfVbSgjTqOa1/SzfCWi/7v915FzVmhj+GzvM
+         DSPA==
+X-Gm-Message-State: AOAM530sn2ZhtfAziKBMJb3ndCqdK9tthLI1vymWIvnCmHEzlBVrOFXX
+        kPTKan/+ACwsvFvJ9syZ5QWPlQBeiq1Vms8uN2KDxBk9Uz50RPzmgOV5KR9s+4kBsIFMkgPnPS+
+        zl3IgmlHoxr+yEvUh
+X-Received: by 2002:aa7:cb0d:: with SMTP id s13mr13143852edt.221.1612714830407;
+        Sun, 07 Feb 2021 08:20:30 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxSdcDNfe71ti67oDmkvTssos1+0OxTMKiTicFwRsqODDXrK/rf1JmpCvBGtLbnaWdb2ccmlQ==
+X-Received: by 2002:aa7:cb0d:: with SMTP id s13mr13143828edt.221.1612714830149;
+        Sun, 07 Feb 2021 08:20:30 -0800 (PST)
+Received: from redhat.com (bzq-79-180-2-31.red.bezeqint.net. [79.180.2.31])
+        by smtp.gmail.com with ESMTPSA id w3sm7043867eja.52.2021.02.07.08.20.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 07 Feb 2021 08:20:29 -0800 (PST)
+Date:   Sun, 7 Feb 2021 11:20:25 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Alexander Popov <alex.popov@linux.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stsp2@yandex.ru, oxffffaa@gmail.com
+Subject: Re: [RFC PATCH v4 00/17] virtio/vsock: introduce SOCK_SEQPACKET
+ support
+Message-ID: <20210207111954-mutt-send-email-mst@kernel.org>
+References: <20210207151259.803917-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR18MB1421.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f4c1bb23-0bac-43fe-6e5d-08d8cb7c2b8f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Feb 2021 15:22:23.7889
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: IWCvVCYlkxBOvFJOYUrVbvLdNyizcPVjKbKX5/ifLCpleOJr3TtdGkGvqCii+f+L7wekNGW3b5TfqABIZM5/xQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR18MB3691
-X-OriginatorOrg: marvell.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
- definitions=2021-02-07_07:2021-02-05,2021-02-07 signatures=0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210207151259.803917-1-arseny.krasnov@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+On Sun, Feb 07, 2021 at 06:12:56PM +0300, Arseny Krasnov wrote:
+> 	This patchset impelements support of SOCK_SEQPACKET for virtio
+> transport.
+> 	As SOCK_SEQPACKET guarantees to save record boundaries, so to
+> do it, two new packet operations were added: first for start of record
+>  and second to mark end of record(SEQ_BEGIN and SEQ_END later). Also,
+> both operations carries metadata - to maintain boundaries and payload
+> integrity. Metadata is introduced by adding special header with two
+> fields - message count and message length:
+> 
+> 	struct virtio_vsock_seq_hdr {
+> 		__le32  msg_cnt;
+> 		__le32  msg_len;
+> 	} __attribute__((packed));
+> 
+> 	This header is transmitted as payload of SEQ_BEGIN and SEQ_END
+> packets(buffer of second virtio descriptor in chain) in the same way as
+> data transmitted in RW packets. Payload was chosen as buffer for this
+> header to avoid touching first virtio buffer which carries header of
+> packet, because someone could check that size of this buffer is equal
+> to size of packet header. To send record, packet with start marker is
+> sent first(it's header contains length of record and counter), then
+> counter is incremented and all data is sent as usual 'RW' packets and
+> finally SEQ_END is sent(it also carries counter of message, which is
+> counter of SEQ_BEGIN + 1), also after sedning SEQ_END counter is
+> incremented again. On receiver's side, length of record is known from
+> packet with start record marker. To check that no packets were dropped
+> by transport, counters of two sequential SEQ_BEGIN and SEQ_END are
+> checked(counter of SEQ_END must be bigger that counter of SEQ_BEGIN by
+> 1) and length of data between two markers is compared to length in
+> SEQ_BEGIN header.
+> 	Now as  packets of one socket are not reordered neither on
+> vsock nor on vhost transport layers, such markers allows to restore
+> original record on receiver's side. If user's buffer is smaller that
+> record length, when all out of size data is dropped.
+> 	Maximum length of datagram is not limited as in stream socket,
+> because same credit logic is used. Difference with stream socket is
+> that user is not woken up until whole record is received or error
+> occurred. Implementation also supports 'MSG_EOR' and 'MSG_TRUNC' flags.
+> 	Tests also implemented.
+> 
+>  Arseny Krasnov (17):
+>   af_vsock: update functions for connectible socket
+>   af_vsock: separate wait data loop
+>   af_vsock: separate receive data loop
+>   af_vsock: implement SEQPACKET receive loop
+>   af_vsock: separate wait space loop
+>   af_vsock: implement send logic for SEQPACKET
+>   af_vsock: rest of SEQPACKET support
+>   af_vsock: update comments for stream sockets
+>   virtio/vsock: dequeue callback for SOCK_SEQPACKET
+>   virtio/vsock: fetch length for SEQPACKET record
+>   virtio/vsock: add SEQPACKET receive logic
+>   virtio/vsock: rest of SOCK_SEQPACKET support
+>   virtio/vsock: setup SEQPACKET ops for transport
+>   vhost/vsock: setup SEQPACKET ops for transport
+>   vsock_test: add SOCK_SEQPACKET tests
+>   loopback/vsock: setup SEQPACKET ops for transport
+>   virtio/vsock: simplify credit update function API
+> 
+>  drivers/vhost/vsock.c                   |   8 +-
+>  include/linux/virtio_vsock.h            |  15 +
+>  include/net/af_vsock.h                  |   9 +
+>  include/uapi/linux/virtio_vsock.h       |  16 +
+>  net/vmw_vsock/af_vsock.c                | 588 +++++++++++++++-------
+>  net/vmw_vsock/virtio_transport.c        |   5 +
+>  net/vmw_vsock/virtio_transport_common.c | 316 ++++++++++--
+>  net/vmw_vsock/vsock_loopback.c          |   5 +
+>  tools/testing/vsock/util.c              |  32 +-
+>  tools/testing/vsock/util.h              |   3 +
+>  tools/testing/vsock/vsock_test.c        | 126 +++++
+>  11 files changed, 895 insertions(+), 228 deletions(-)
+> 
+>  TODO:
+>  - What to do, when server doesn't support SOCK_SEQPACKET. In current
+>    implementation RST is replied in the same way when listening port
+>    is not found. I think that current RST is enough,because case when
+>    server doesn't support SEQ_PACKET is same when listener missed(e.g.
+>    no listener in both cases).
 
-> -----Original Message-----
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Saturday, February 6, 2021 12:56 AM
-> To: Hariprasad Kelam <hkelam@marvell.com>
-> Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org;
-> davem@davemloft.net; willemdebruijn.kernel@gmail.com;
-> andrew@lunn.ch; Sunil Kovvuri Goutham <sgoutham@marvell.com>; Linu
-> Cherian <lcherian@marvell.com>; Geethasowjanya Akula
-> <gakula@marvell.com>; Jerin Jacob Kollanukkaran <jerinj@marvell.com>;
-> Subbaraya Sundeep Bhatta <sbhatta@marvell.com>
-> Subject: [EXT] Re: [Patch v3 net-next 7/7] octeontx2-pf: ethtool physical=
- link
-> configuration
->=20
-> On Fri, 5 Feb 2021 14:15:01 +0000 Hariprasad Kelam wrote:
-> > > > Will add multi advertised mode support in near future.
-> > >
-> > > Looking at patch 6 it seems like the get side already supports
-> > > multiple modes, although the example output only lists supported no
-> advertised.
-> > >
-> > > Is the device actually doing IEEE autoneg or just configures the
-> > > speed, lanes etc. according to the link mode selected?
-> >
-> > Device supports IEEE autoneg mode. Agreed get_link_ksetting returns
-> multiple modes .
-> > But set side  firmware code designed in such way that  it handles
-> > single mode. Upon Successful configuration firmware updates advertised
-> > modes to shared memory  such that kernel will read and updates to
-> ethtool.
->=20
-> It needs to be symmetric, get needs to reflect what set specified.
+   - virtio spec patch
 
-Agreed.  Even though set supports single mode still it is displayed with ge=
-t link settings.
+>  v3 -> v4:
+>  - callbacks for loopback transport
+>  - SEQPACKET specific metadata moved from packet header to payload
+>    and called 'virtio_vsock_seq_hdr'
+>  - record integrity check:
+>    1) SEQ_END operation was added, which marks end of record.
+>    2) Both SEQ_BEGIN and SEQ_END carries counter which is incremented
+>       on every marker send.
+>  - af_vsock.c: socket operations for STREAM and SEQPACKET call same
+>    functions instead of having own "gates" differs only by names:
+>    'vsock_seqpacket/stream_getsockopt()' now replaced with
+>    'vsock_connectible_getsockopt()'.
+>  - af_vsock.c: 'seqpacket_dequeue' callback returns error and flag that
+>    record ready. There is no need to return number of copied bytes,
+>    because case when record received successfully is checked at virtio
+>    transport layer, when SEQ_END is processed. Also user doesn't need
+>    number of copied bytes, because 'recv()' from SEQPACKET could return
+>    error, length of users's buffer or length of whole record(both are
+>    known in af_vsock.c).
+>  - af_vsock.c: both wait loops in af_vsock.c(for data and space) moved
+>    to separate functions because now both called from several places.
+>  - af_vsock.c: 'vsock_assign_transport()' checks that 'new_transport'
+>    pointer is not NULL and returns 'ESOCKTNOSUPPORT' instead of 'ENODEV'
+>    if failed to use transport.
+>  - tools/testing/vsock/vsock_test.c: rename tests
+> 
+>  v2 -> v3:
+>  - patches reorganized: split for prepare and implementation patches
+>  - local variables are declared in "Reverse Christmas tree" manner
+>  - virtio_transport_common.c: valid leXX_to_cpu() for vsock header
+>    fields access
+>  - af_vsock.c: 'vsock_connectible_*sockopt()' added as shared code
+>    between stream and seqpacket sockets.
+>  - af_vsock.c: loops in '__vsock_*_recvmsg()' refactored.
+>  - af_vsock.c: 'vsock_wait_data()' refactored.
+> 
+>  v1 -> v2:
+>  - patches reordered: af_vsock.c related changes now before virtio vsock
+>  - patches reorganized: more small patches, where +/- are not mixed
+>  - tests for SOCK_SEQPACKET added
+>  - all commit messages updated
+>  - af_vsock.c: 'vsock_pre_recv_check()' inlined to
+>    'vsock_connectible_recvmsg()'
+>  - af_vsock.c: 'vsock_assign_transport()' returns ENODEV if transport
+>    was not found
+>  - virtio_transport_common.c: transport callback for seqpacket dequeue
+>  - virtio_transport_common.c: simplified
+>    'virtio_transport_recv_connected()'
+>  - virtio_transport_common.c: send reset on socket and packet type
+> 			      mismatch.
+> 
+> -- 
+> 2.25.1
 
-Thanks,
-Hariprasad k
