@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D80E3126DB
-	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 19:46:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0A473126E4
+	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 19:46:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229716AbhBGSo1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Feb 2021 13:44:27 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:30290 "EHLO
+        id S230023AbhBGSpZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Feb 2021 13:45:25 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:56532 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229991AbhBGSnq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 13:43:46 -0500
+        by vger.kernel.org with ESMTP id S229908AbhBGSny (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 13:43:54 -0500
 Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 117IVv86010025;
-        Sun, 7 Feb 2021 10:42:37 -0800
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 117IelEj027442;
+        Sun, 7 Feb 2021 10:42:51 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=Fju7VJVzj4BYevlp6YHfus5NhcYRY6k/q0luWVcHeOo=;
- b=GkG0h77Ibn/KH9WYw3zR0NRb3qXFK/7b4n3aWhDQIBMKuDTgZ+5Emvq8mvvpVjBsRWcv
- iVzuv6ASTjP0r0Oi59w3MXyJ7P3c1EVqyoZgxNuNy6Yfk8GaUJR/uteEMk5oQUF8kxol
- VWObNxymKJEZ5SrlKLzdLlrwry2XbzwabnMEeHTfVqN84gKhDG2DuNsM/eFbRsab6eic
- 9NZn7FdFuZ9phKpv7UseHuc+FIkgGkkGBi6hfZFGajK1HBnM38KW8U0GKHwwny03dUH4
- yTEfQQ9QaRoSsA9Sjtc0uQdn1k0hjAmeFkQKctgjjDlV1mJqXIbrK572kMYRhkvZQqBO gg== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 36hsbrampv-1
+ content-type; s=pfpt0220; bh=DvfD7O77b2ATuThWoUKzOIAnS3uUNeYNikGy/OGeLu8=;
+ b=P5KgyljHtEpFrD+DRN/OXuzv2Fg5kLNssoZion9cRcUneWGK8tGNQFzZ7w4p7LuxlH+P
+ u/3zvtEGwUm1YqnaLdJRSBEW0Rq18XvWqPT3yqVsJsAcKwvt+ZHdQyJ5s07EJBGN+xRt
+ XImDUP2h9JBz2lpXWFBLgrskEr5Z9X/1hb4Dvpp+JJLmL4L927qx4fYaQbuKnCbyzwW+
+ ZRNlxx3WvR2C1ex2lipCjWrN2S+TKEL1Hw1rMr7JJGcYvZLPh68nBlbPol7Pk+GcWLnC
+ pb423vHypwyiyTKrY8sf41dFd0EWTBKAwYneomx2LoaUO1KQKUVWTQk7efhElR2fax0Q BQ== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0a-0016f401.pphosted.com with ESMTP id 36hsbramq2-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 07 Feb 2021 10:42:37 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 7 Feb
- 2021 10:42:36 -0800
+        Sun, 07 Feb 2021 10:42:51 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 7 Feb
+ 2021 10:42:49 -0800
 Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sun, 7 Feb 2021 10:42:36 -0800
+ Transport; Sun, 7 Feb 2021 10:42:49 -0800
 Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id 269683F703F;
-        Sun,  7 Feb 2021 10:42:31 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id 9DBEF3F7040;
+        Sun,  7 Feb 2021 10:42:45 -0800 (PST)
 From:   <stefanc@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
@@ -46,9 +46,9 @@ CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
         <robh+dt@kernel.org>, <sebastian.hesselbarth@gmail.com>,
         <gregory.clement@bootlin.com>,
         <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH v9 net-next 13/15] net: mvpp2: add PPv23 RX FIFO flow control
-Date:   Sun, 7 Feb 2021 20:38:55 +0200
-Message-ID: <1612723137-18045-14-git-send-email-stefanc@marvell.com>
+Subject: [PATCH v9 net-next 14/15] net: mvpp2: set 802.3x GoP Flow Control mode
+Date:   Sun, 7 Feb 2021 20:38:56 +0200
+Message-ID: <1612723137-18045-15-git-send-email-stefanc@marvell.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1612723137-18045-1-git-send-email-stefanc@marvell.com>
 References: <1612723137-18045-1-git-send-email-stefanc@marvell.com>
@@ -62,138 +62,28 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Stefan Chulski <stefanc@marvell.com>
 
-New FIFO flow control feature was added in PPv23.
-PPv2 FIFO polled by HW and trigger pause frame if FIFO
-fill level is below threshold.
-FIFO HW flow control enabled with CM3 RXQ&BM flow
-control with ethtool.
-Current  FIFO thresholds is:
-9KB for port with maximum speed 10Gb/s port
-4KB for port with maximum speed 5Gb/s port
-2KB for port with maximum speed 1Gb/s port
+This patch fix GMAC TX flow control autoneg.
+Flow control autoneg wrongly were disabled with enabled TX
+flow control.
 
 Signed-off-by: Stefan Chulski <stefanc@marvell.com>
 ---
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h      | 15 ++++++
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 53 ++++++++++++++++++++
- 2 files changed, 68 insertions(+)
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-index 9b525b60..b61a1ba 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-@@ -770,6 +770,18 @@
- #define MVPP2_TX_FIFO_THRESHOLD(kb)	\
- 		((kb) * 1024 - MVPP2_TX_FIFO_THRESHOLD_MIN)
- 
-+/* RX FIFO threshold in 1KB granularity */
-+#define MVPP23_PORT0_FIFO_TRSH	(9 * 1024)
-+#define MVPP23_PORT1_FIFO_TRSH	(4 * 1024)
-+#define MVPP23_PORT2_FIFO_TRSH	(2 * 1024)
-+
-+/* RX Flow Control Registers */
-+#define MVPP2_RX_FC_REG(port)		(0x150 + 4 * (port))
-+#define     MVPP2_RX_FC_EN		BIT(24)
-+#define     MVPP2_RX_FC_TRSH_OFFS	16
-+#define     MVPP2_RX_FC_TRSH_MASK	(0xFF << MVPP2_RX_FC_TRSH_OFFS)
-+#define     MVPP2_RX_FC_TRSH_UNIT	256
-+
- /* MSS Flow control */
- #define MSS_FC_COM_REG			0
- #define FLOW_CONTROL_ENABLE_BIT		BIT(0)
-@@ -1498,6 +1510,8 @@ struct mvpp2_bm_pool {
- 
- void mvpp2_dbgfs_cleanup(struct mvpp2 *priv);
- 
-+void mvpp23_rx_fifo_fc_en(struct mvpp2 *priv, int port, bool en);
-+
- #ifdef CONFIG_MVPP2_PTP
- int mvpp22_tai_probe(struct device *dev, struct mvpp2 *priv);
- void mvpp22_tai_tstamp(struct mvpp2_tai *tai, u32 tstamp,
-@@ -1530,4 +1544,5 @@ static inline bool mvpp22_rx_hwtstamping(struct mvpp2_port *port)
- {
- 	return IS_ENABLED(CONFIG_MVPP2_PTP) && port->rx_hwtstamp;
- }
-+
- #endif
 diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 3faad04..a472125 100644
+index a472125..4d0a398 100644
 --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
 +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -6536,6 +6536,8 @@ static void mvpp2_mac_link_up(struct phylink_config *config,
- 			mvpp2_bm_pool_update_fc(port, port->pool_long, tx_pause);
- 			mvpp2_bm_pool_update_fc(port, port->pool_short, tx_pause);
- 		}
-+		if (port->priv->hw_version == MVPP23)
-+			mvpp23_rx_fifo_fc_en(port->priv, port->id, tx_pause);
- 	}
+@@ -6283,7 +6283,7 @@ static void mvpp2_gmac_config(struct mvpp2_port *port, unsigned int mode,
+ 	old_ctrl4 = ctrl4 = readl(port->base + MVPP22_GMAC_CTRL_4_REG);
  
- 	mvpp2_port_enable(port);
-@@ -7004,6 +7006,55 @@ static void mvpp22_rx_fifo_init(struct mvpp2 *priv)
- 	mvpp2_write(priv, MVPP2_RX_FIFO_INIT_REG, 0x1);
- }
+ 	ctrl0 &= ~MVPP2_GMAC_PORT_TYPE_MASK;
+-	ctrl2 &= ~(MVPP2_GMAC_INBAND_AN_MASK | MVPP2_GMAC_PCS_ENABLE_MASK);
++	ctrl2 &= ~(MVPP2_GMAC_INBAND_AN_MASK | MVPP2_GMAC_PCS_ENABLE_MASK | MVPP2_GMAC_FLOW_CTRL_MASK);
  
-+/* Configure Rx FIFO Flow control thresholds */
-+static void mvpp23_rx_fifo_fc_set_tresh(struct mvpp2 *priv)
-+{
-+	int port, val;
-+
-+	/* Port 0: maximum speed -10Gb/s port
-+	 *	   required by spec RX FIFO threshold 9KB
-+	 * Port 1: maximum speed -5Gb/s port
-+	 *	   required by spec RX FIFO threshold 4KB
-+	 * Port 2: maximum speed -1Gb/s port
-+	 *	   required by spec RX FIFO threshold 2KB
-+	 */
-+
-+	/* Without loopback port */
-+	for (port = 0; port < (MVPP2_MAX_PORTS - 1); port++) {
-+		if (port == 0) {
-+			val = (MVPP23_PORT0_FIFO_TRSH / MVPP2_RX_FC_TRSH_UNIT)
-+				<< MVPP2_RX_FC_TRSH_OFFS;
-+			val &= MVPP2_RX_FC_TRSH_MASK;
-+			mvpp2_write(priv, MVPP2_RX_FC_REG(port), val);
-+		} else if (port == 1) {
-+			val = (MVPP23_PORT1_FIFO_TRSH / MVPP2_RX_FC_TRSH_UNIT)
-+				<< MVPP2_RX_FC_TRSH_OFFS;
-+			val &= MVPP2_RX_FC_TRSH_MASK;
-+			mvpp2_write(priv, MVPP2_RX_FC_REG(port), val);
-+		} else {
-+			val = (MVPP23_PORT2_FIFO_TRSH / MVPP2_RX_FC_TRSH_UNIT)
-+				<< MVPP2_RX_FC_TRSH_OFFS;
-+			val &= MVPP2_RX_FC_TRSH_MASK;
-+			mvpp2_write(priv, MVPP2_RX_FC_REG(port), val);
-+		}
-+	}
-+}
-+
-+/* Configure Rx FIFO Flow control thresholds */
-+void mvpp23_rx_fifo_fc_en(struct mvpp2 *priv, int port, bool en)
-+{
-+	int val;
-+
-+	val = mvpp2_read(priv, MVPP2_RX_FC_REG(port));
-+
-+	if (en)
-+		val |= MVPP2_RX_FC_EN;
-+	else
-+		val &= ~MVPP2_RX_FC_EN;
-+
-+	mvpp2_write(priv, MVPP2_RX_FC_REG(port), val);
-+}
-+
- static void mvpp22_tx_fifo_set_hw(struct mvpp2 *priv, int port, int size)
- {
- 	int threshold = MVPP2_TX_FIFO_THRESHOLD(size);
-@@ -7155,6 +7206,8 @@ static int mvpp2_init(struct platform_device *pdev, struct mvpp2 *priv)
- 	} else {
- 		mvpp22_rx_fifo_init(priv);
- 		mvpp22_tx_fifo_init(priv);
-+		if (priv->hw_version == MVPP23)
-+			mvpp23_rx_fifo_fc_set_tresh(priv);
- 	}
- 
- 	if (priv->hw_version == MVPP21)
+ 	/* Configure port type */
+ 	if (phy_interface_mode_is_8023z(state->interface)) {
 -- 
 1.9.1
 
