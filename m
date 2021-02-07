@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8FC231252D
-	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 16:24:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A75C312530
+	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 16:24:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230218AbhBGPWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Feb 2021 10:22:08 -0500
-Received: from mx13.kaspersky-labs.com ([91.103.66.164]:16868 "EHLO
-        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229733AbhBGPTV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 10:19:21 -0500
-Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 5F5495211AB;
-        Sun,  7 Feb 2021 18:18:10 +0300 (MSK)
+        id S230259AbhBGPWb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Feb 2021 10:22:31 -0500
+Received: from mx12.kaspersky-labs.com ([91.103.66.155]:13698 "EHLO
+        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230191AbhBGPUP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 10:20:15 -0500
+Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 06BEF75FEF;
+        Sun,  7 Feb 2021 18:18:28 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail; t=1612711090;
-        bh=/5VHBfGOfsQL+b+EkweC4O0L0ehAWtB6qvZXpHfvkeE=;
+        s=mail; t=1612711108;
+        bh=YpsxUDJ7zagaiW0OYR1GJdRL/hrUe6967RwV89tHgtU=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=K0OAqTjO/WYF6Mh3fLc5I+N94IjyiYTih3jGXhFvhx1CxAPDdMMpbZ9u0S6vjj5XL
-         4IL7EBGIIh3OUovkxOSUcc/xhsjYV2wc//AL85QWTa1k5CIRD5kbVgaihoqaxrc+3c
-         pPJDRfmoKEifpBF0tqLQL5K9Z4ri2jVp2tkYqbQ8=
+        b=I5G9gGONdljeTPjA7IC6LYt8lONZFuCQFinL+IKJCQVeirQgmgopzMnVVDG/thxC/
+         nTlQ8/GZ23jNCwPWDLZBW6oYnp2m0O6j5przYpGHdCRAChNII5HrHVg4ZvUSn/TQkD
+         fxrwzZmr00TXV45oVITiLprLwZvkzzaM1PXnUVm0=
 Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id EAC58520F44;
-        Sun,  7 Feb 2021 18:18:09 +0300 (MSK)
-Received: from arseniy-pc.avp.ru (10.64.64.121) by hqmailmbx3.avp.ru
+        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id AB7D375FDC;
+        Sun,  7 Feb 2021 18:18:27 +0300 (MSK)
+Received: from arseniy-pc.avp.ru (10.64.68.128) by hqmailmbx3.avp.ru
  (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2044.4; Sun, 7 Feb
- 2021 18:18:09 +0300
+ 2021 18:18:27 +0300
 From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -39,23 +39,23 @@ To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Arseny Krasnov <arseny.krasnov@kaspersky.com>,
         Jorgen Hansen <jhansen@vmware.com>,
-        Colin Ian King <colin.king@canonical.com>,
         Andra Paraschiv <andraprs@amazon.com>,
+        Colin Ian King <colin.king@canonical.com>,
         Jeff Vander Stoep <jeffv@google.com>
 CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <stsp2@yandex.ru>, <oxffffaa@gmail.com>
-Subject: [RFC PATCH v4 13/17] virtio/vsock: setup SEQPACKET ops for transport
-Date:   Sun, 7 Feb 2021 18:18:00 +0300
-Message-ID: <20210207151803.805872-1-arseny.krasnov@kaspersky.com>
+Subject: [RFC PATCH v4 14/17] vhost/vsock: setup SEQPACKET ops for transport
+Date:   Sun, 7 Feb 2021 18:18:16 +0300
+Message-ID: <20210207151819.805989-1-arseny.krasnov@kaspersky.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210207151259.803917-1-arseny.krasnov@kaspersky.com>
 References: <20210207151259.803917-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.64.64.121]
-X-ClientProxiedBy: hqmailmbx1.avp.ru (10.64.67.241) To hqmailmbx3.avp.ru
+X-Originating-IP: [10.64.68.128]
+X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
  (10.64.67.243)
 X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
 X-KSE-AntiSpam-Interceptor-Info: scan successful
@@ -96,18 +96,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds SEQPACKET ops for virtio transport
+This also removes ignore of non-stream type of packets.
 
 Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
 ---
- net/vmw_vsock/virtio_transport.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/vhost/vsock.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
-index 2700a63ab095..bd3a854bb366 100644
---- a/net/vmw_vsock/virtio_transport.c
-+++ b/net/vmw_vsock/virtio_transport.c
-@@ -469,6 +469,11 @@ static struct virtio_transport virtio_transport = {
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index 5e78fb719602..5c86d09e36d9 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -354,8 +354,7 @@ vhost_vsock_alloc_pkt(struct vhost_virtqueue *vq,
+ 		return NULL;
+ 	}
+ 
+-	if (le16_to_cpu(pkt->hdr.type) == VIRTIO_VSOCK_TYPE_STREAM)
+-		pkt->len = le32_to_cpu(pkt->hdr.len);
++	pkt->len = le32_to_cpu(pkt->hdr.len);
+ 
+ 	/* No payload */
+ 	if (!pkt->len)
+@@ -424,6 +423,11 @@ static struct virtio_transport vhost_transport = {
  		.stream_is_active         = virtio_transport_stream_is_active,
  		.stream_allow             = virtio_transport_stream_allow,
  
