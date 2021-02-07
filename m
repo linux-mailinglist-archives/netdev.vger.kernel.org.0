@@ -2,138 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D19A3121EC
-	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 06:57:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26401312234
+	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 08:21:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229587AbhBGFvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Feb 2021 00:51:06 -0500
-Received: from mail29.static.mailgun.info ([104.130.122.29]:13166 "EHLO
-        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229445AbhBGFvE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 00:51:04 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1612677040; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=C57MKdbM9QZYpCQ2ncUjXMoC564wXOYgRhPojZSGn3s=; b=SDUbeVoZZBG6Znk1iDdAtfEolNz4O5140AncKeK4EchtGkJ/oq8yf/bXP4lEd4HCxZfykxfk
- W94sk/i82hbu7Vyb90wJAfQp2TwF06tdOQq5vZtP1/R7w8VoWLMWsAyB0is+v8QdF4bZMaUB
- LXdsYwY1IEYnlrHJbxCP7qsnAbA=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
- 601f7f93f112b7872c6ba8b6 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 07 Feb 2021 05:50:11
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 03882C43462; Sun,  7 Feb 2021 05:50:11 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id A81A6C433C6;
-        Sun,  7 Feb 2021 05:50:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A81A6C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, Felix Fietkau <nbd@nbd.name>
-Subject: Re: pull-request: wireless-drivers-2021-02-05
-References: <20210205163434.14D94C433ED@smtp.codeaurora.org>
-        <20210206093537.0bfaf0db@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20210206194325.GA134674@lore-desk>
-Date:   Sun, 07 Feb 2021 07:50:06 +0200
-In-Reply-To: <20210206194325.GA134674@lore-desk> (Lorenzo Bianconi's message
-        of "Sat, 6 Feb 2021 20:43:25 +0100")
-Message-ID: <87r1ls5svl.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S229615AbhBGHVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Feb 2021 02:21:13 -0500
+Received: from mail-io1-f70.google.com ([209.85.166.70]:51550 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229506AbhBGHVF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 02:21:05 -0500
+Received: by mail-io1-f70.google.com with SMTP id j2so9367974iow.18
+        for <netdev@vger.kernel.org>; Sat, 06 Feb 2021 23:20:49 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=xUTyJq/1MYIrp6IYEy72AdzuPFYzDzCFxmNycYmGDEQ=;
+        b=jislfIhoFkQ1GbkJ/LenmiYNGJe0sYihGgrPxv3c6IbdKKs/51K5MhT1UO1BfurqXP
+         8AisA4LydeTJenij9fNlU5XRYJjCVio6exx4y1zgfDOxJDRtQKC36qADV1+Pn7x0iv7q
+         jgcdcA44Y2aE5MKPHOly255vQqKI3pYuIFNrEZ0/oqIphjInDf08i2LVrq3J/Sjk5fHT
+         d45lfbu2TPs8V4nTb4NYILFrnUYO2/d0f2dqGTatUvSHZod5bNaWg5mdyFvCgD6xutfC
+         4dnENyjYVmUzY9z3MkXNlB7Uc64MRidycQuSJlegIsV5VAJAt2+VLwsqX+U3dxQ2KIhU
+         Faxw==
+X-Gm-Message-State: AOAM531L/FQNjEj3RVxUKBFH6sv2+YsenwIArcto4x3GYbQHB9bbuKil
+        NxDqz7k1OTck8GfZDBseE7JpSqlLoDFqd9gR10U5iWvN63Wg
+X-Google-Smtp-Source: ABdhPJy5d/CmGb6qZJzwZqyuMm66N/qCjTWrq/ZIZa5coUS04XgiYv1DEc6PTEkr04vMNbglPQDiF4Cpi8x9U8qbXRQZ25ZmcHA9
 MIME-Version: 1.0
-Content-Type: text/plain
+X-Received: by 2002:a05:6602:12:: with SMTP id b18mr10790843ioa.134.1612682424109;
+ Sat, 06 Feb 2021 23:20:24 -0800 (PST)
+Date:   Sat, 06 Feb 2021 23:20:24 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000006536505bab9e3d4@google.com>
+Subject: memory leak in __ieee80211_beacon_get
+From:   syzbot <syzbot+e832ab33619901afc64a@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lorenzo Bianconi <lorenzo.bianconi@redhat.com> writes:
+Hello,
 
->> On Fri,  5 Feb 2021 16:34:34 +0000 (UTC) Kalle Valo wrote:
->> > Hi,
->> > 
->> > here's a pull request to net tree, more info below. Please let me know if there
->> > are any problems.
->> 
->> Pulled, thanks! One thing to confirm tho..
->> 
->> > ath9k
->> > 
->> > * fix build regression related to LEDS_CLASS
->> > 
->> > mt76
->> > 
->> > * fix a memory leak
->> 
->> Lorenzo, I'm just guessing what this code does, but you're dropping a
->> frag without invalidating the rest of the SKB, which I presume is now
->> truncated? Shouldn't the skb be dropped?
->> 
->
-> Hi Jakub,
->
-> I agree. We can do something like:
->
-> diff --git a/drivers/net/wireless/mediatek/mt76/dma.c b/drivers/net/wireless/mediatek/mt76/dma.c
-> index e81dfaf99bcb..6d84533d1df2 100644
-> --- a/drivers/net/wireless/mediatek/mt76/dma.c
-> +++ b/drivers/net/wireless/mediatek/mt76/dma.c
-> @@ -511,8 +511,9 @@ mt76_add_fragment(struct mt76_dev *dev, struct mt76_queue *q, void *data,
->  {
->  	struct sk_buff *skb = q->rx_head;
->  	struct skb_shared_info *shinfo = skb_shinfo(skb);
-> +	int nr_frags = shinfo->nr_frags;
->  
-> -	if (shinfo->nr_frags < ARRAY_SIZE(shinfo->frags)) {
-> +	if (nr_frags < ARRAY_SIZE(shinfo->frags)) {
->  		struct page *page = virt_to_head_page(data);
->  		int offset = data - page_address(page) + q->buf_offset;
->  
-> @@ -526,7 +527,10 @@ mt76_add_fragment(struct mt76_dev *dev, struct mt76_queue *q, void *data,
->  		return;
->  
->  	q->rx_head = NULL;
-> -	dev->drv->rx_skb(dev, q - dev->q_rx, skb);
-> +	if (nr_frags < ARRAY_SIZE(shinfo->frags))
-> +		dev->drv->rx_skb(dev, q - dev->q_rx, skb);
-> +	else
-> +		dev_kfree_skb(skb);
->  }
->  
->
-> I do not know if it can occur, but I guess we should even check q->rx_head
-> pointer before overwriting it because if the hw does not report more set to
-> false for last fragment we will get a memory leak as well. Something like:
->
-> @@ -578,6 +582,8 @@ mt76_dma_rx_process(struct mt76_dev *dev, struct mt76_queue *q, int budget)
->  		done++;
->  
->  		if (more) {
-> +			if (q->rx_head)
-> +				dev_kfree_skb(q->rx_head);
->  			q->rx_head = skb;
->  			continue;
->  		}
+syzbot found the following issue on:
 
-So what's the plan? Is there going to be a followup patch? And should
-that also go to v5.11 or can it wait v5.12?
+HEAD commit:    3aaf0a27 Merge tag 'clang-format-for-linux-v5.11-rc7' of g..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=10f79330d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b7edd79f26f7c0c3
+dashboard link: https://syzkaller.appspot.com/bug?extid=e832ab33619901afc64a
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13e46a40d00000
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+e832ab33619901afc64a@syzkaller.appspotmail.com
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+BUG: memory leak
+unreferenced object 0xffff88811682b500 (size 232):
+  comm "softirq", pid 0, jiffies 4295119192 (age 15.070s)
+  hex dump (first 32 bytes):
+    10 c5 79 16 81 88 ff ff 10 c5 79 16 81 88 ff ff  ..y.......y.....
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<0000000092ce1185>] __alloc_skb+0x6d/0x280 net/core/skbuff.c:198
+    [<0000000027006abe>] __netdev_alloc_skb+0x6a/0x210 net/core/skbuff.c:446
+    [<00000000bbb79fe8>] netdev_alloc_skb include/linux/skbuff.h:2832 [inline]
+    [<00000000bbb79fe8>] dev_alloc_skb include/linux/skbuff.h:2845 [inline]
+    [<00000000bbb79fe8>] __ieee80211_beacon_get+0x662/0x7a0 net/mac80211/tx.c:4814
+    [<00000000d5da7a17>] ieee80211_beacon_get_tim+0x47/0x1c0 net/mac80211/tx.c:4928
+    [<0000000042c1663d>] ieee80211_beacon_get include/net/mac80211.h:4918 [inline]
+    [<0000000042c1663d>] mac80211_hwsim_beacon_tx+0xa1/0x2c0 drivers/net/wireless/mac80211_hwsim.c:1729
+    [<00000000681dd69b>] __iterate_interfaces+0x125/0x260 net/mac80211/util.c:793
+    [<00000000025fd347>] ieee80211_iterate_active_interfaces_atomic+0x2e/0x40 net/mac80211/util.c:829
+    [<00000000c135ff4a>] mac80211_hwsim_beacon+0x52/0xb0 drivers/net/wireless/mac80211_hwsim.c:1782
+    [<0000000018e3b983>] __run_hrtimer kernel/time/hrtimer.c:1519 [inline]
+    [<0000000018e3b983>] __hrtimer_run_queues+0x1ba/0x470 kernel/time/hrtimer.c:1583
+    [<00000000ac9fbd2f>] hrtimer_run_softirq+0x7e/0x100 kernel/time/hrtimer.c:1600
+    [<000000003b2a8015>] __do_softirq+0xbf/0x2ab kernel/softirq.c:343
+    [<00000000cfba3969>] asm_call_irq_on_stack+0xf/0x20
+    [<00000000a2e1da95>] __run_on_irqstack arch/x86/include/asm/irq_stack.h:26 [inline]
+    [<00000000a2e1da95>] run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:77 [inline]
+    [<00000000a2e1da95>] do_softirq_own_stack+0x32/0x40 arch/x86/kernel/irq_64.c:77
+    [<0000000075748e36>] invoke_softirq kernel/softirq.c:226 [inline]
+    [<0000000075748e36>] __irq_exit_rcu kernel/softirq.c:420 [inline]
+    [<0000000075748e36>] irq_exit_rcu+0x93/0xc0 kernel/softirq.c:432
+    [<000000006645e04e>] sysvec_apic_timer_interrupt+0x36/0x80 arch/x86/kernel/apic/apic.c:1096
+    [<00000000cffb1ca1>] asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:629
+
+BUG: memory leak
+unreferenced object 0xffff88811682db00 (size 232):
+  comm "softirq", pid 0, jiffies 4295119192 (age 15.070s)
+  hex dump (first 32 bytes):
+    10 c5 6b 16 81 88 ff ff 10 c5 6b 16 81 88 ff ff  ..k.......k.....
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<0000000092ce1185>] __alloc_skb+0x6d/0x280 net/core/skbuff.c:198
+    [<0000000027006abe>] __netdev_alloc_skb+0x6a/0x210 net/core/skbuff.c:446
+    [<00000000bbb79fe8>] netdev_alloc_skb include/linux/skbuff.h:2832 [inline]
+    [<00000000bbb79fe8>] dev_alloc_skb include/linux/skbuff.h:2845 [inline]
+    [<00000000bbb79fe8>] __ieee80211_beacon_get+0x662/0x7a0 net/mac80211/tx.c:4814
+    [<00000000d5da7a17>] ieee80211_beacon_get_tim+0x47/0x1c0 net/mac80211/tx.c:4928
+    [<0000000042c1663d>] ieee80211_beacon_get include/net/mac80211.h:4918 [inline]
+    [<0000000042c1663d>] mac80211_hwsim_beacon_tx+0xa1/0x2c0 drivers/net/wireless/mac80211_hwsim.c:1729
+    [<00000000681dd69b>] __iterate_interfaces+0x125/0x260 net/mac80211/util.c:793
+    [<00000000025fd347>] ieee80211_iterate_active_interfaces_atomic+0x2e/0x40 net/mac80211/util.c:829
+    [<00000000c135ff4a>] mac80211_hwsim_beacon+0x52/0xb0 drivers/net/wireless/mac80211_hwsim.c:1782
+    [<0000000018e3b983>] __run_hrtimer kernel/time/hrtimer.c:1519 [inline]
+    [<0000000018e3b983>] __hrtimer_run_queues+0x1ba/0x470 kernel/time/hrtimer.c:1583
+    [<00000000ac9fbd2f>] hrtimer_run_softirq+0x7e/0x100 kernel/time/hrtimer.c:1600
+    [<000000003b2a8015>] __do_softirq+0xbf/0x2ab kernel/softirq.c:343
+    [<00000000cfba3969>] asm_call_irq_on_stack+0xf/0x20
+    [<00000000a2e1da95>] __run_on_irqstack arch/x86/include/asm/irq_stack.h:26 [inline]
+    [<00000000a2e1da95>] run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:77 [inline]
+    [<00000000a2e1da95>] do_softirq_own_stack+0x32/0x40 arch/x86/kernel/irq_64.c:77
+    [<0000000075748e36>] invoke_softirq kernel/softirq.c:226 [inline]
+    [<0000000075748e36>] __irq_exit_rcu kernel/softirq.c:420 [inline]
+    [<0000000075748e36>] irq_exit_rcu+0x93/0xc0 kernel/softirq.c:432
+    [<000000006645e04e>] sysvec_apic_timer_interrupt+0x36/0x80 arch/x86/kernel/apic/apic.c:1096
+    [<00000000cffb1ca1>] asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:629
+
+BUG: memory leak
+unreferenced object 0xffff888116604400 (size 512):
+  comm "softirq", pid 0, jiffies 4295119192 (age 15.070s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<00000000d1a2675d>] __kmalloc_reserve net/core/skbuff.c:142 [inline]
+    [<00000000d1a2675d>] __alloc_skb+0xab/0x280 net/core/skbuff.c:210
+    [<0000000027006abe>] __netdev_alloc_skb+0x6a/0x210 net/core/skbuff.c:446
+    [<00000000bbb79fe8>] netdev_alloc_skb include/linux/skbuff.h:2832 [inline]
+    [<00000000bbb79fe8>] dev_alloc_skb include/linux/skbuff.h:2845 [inline]
+    [<00000000bbb79fe8>] __ieee80211_beacon_get+0x662/0x7a0 net/mac80211/tx.c:4814
+    [<00000000d5da7a17>] ieee80211_beacon_get_tim+0x47/0x1c0 net/mac80211/tx.c:4928
+    [<0000000042c1663d>] ieee80211_beacon_get include/net/mac80211.h:4918 [inline]
+    [<0000000042c1663d>] mac80211_hwsim_beacon_tx+0xa1/0x2c0 drivers/net/wireless/mac80211_hwsim.c:1729
+    [<00000000681dd69b>] __iterate_interfaces+0x125/0x260 net/mac80211/util.c:793
+    [<00000000025fd347>] ieee80211_iterate_active_interfaces_atomic+0x2e/0x40 net/mac80211/util.c:829
+    [<00000000c135ff4a>] mac80211_hwsim_beacon+0x52/0xb0 drivers/net/wireless/mac80211_hwsim.c:1782
+    [<0000000018e3b983>] __run_hrtimer kernel/time/hrtimer.c:1519 [inline]
+    [<0000000018e3b983>] __hrtimer_run_queues+0x1ba/0x470 kernel/time/hrtimer.c:1583
+    [<00000000ac9fbd2f>] hrtimer_run_softirq+0x7e/0x100 kernel/time/hrtimer.c:1600
+    [<000000003b2a8015>] __do_softirq+0xbf/0x2ab kernel/softirq.c:343
+    [<00000000cfba3969>] asm_call_irq_on_stack+0xf/0x20
+    [<00000000a2e1da95>] __run_on_irqstack arch/x86/include/asm/irq_stack.h:26 [inline]
+    [<00000000a2e1da95>] run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:77 [inline]
+    [<00000000a2e1da95>] do_softirq_own_stack+0x32/0x40 arch/x86/kernel/irq_64.c:77
+    [<0000000075748e36>] invoke_softirq kernel/softirq.c:226 [inline]
+    [<0000000075748e36>] __irq_exit_rcu kernel/softirq.c:420 [inline]
+    [<0000000075748e36>] irq_exit_rcu+0x93/0xc0 kernel/softirq.c:432
+    [<000000006645e04e>] sysvec_apic_timer_interrupt+0x36/0x80 arch/x86/kernel/apic/apic.c:1096
+    [<00000000cffb1ca1>] asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:629
+
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
