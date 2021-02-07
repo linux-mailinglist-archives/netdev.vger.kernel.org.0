@@ -2,110 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98EE2312098
-	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 01:51:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70FB63120A0
+	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 01:56:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229564AbhBGAoC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 6 Feb 2021 19:44:02 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59166 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229529AbhBGAoB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 6 Feb 2021 19:44:01 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5135764E89;
-        Sun,  7 Feb 2021 00:43:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612658600;
-        bh=yY7qfnSRAFCCi6LMat1keB9FyvYc27s2mI8Z0xVmisU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=B+bJm4lT83R+7tK7NWGDgvVK0hCua5RJHwo1tifBcBjRKXoru4XK+sIrgHXA54Z03
-         qT8SsWvml3I2U9nd91UI6TDsfl5kKLmL74C0fR4MUCbEtldpiM/S7I6ut9FKj1u8f3
-         KFWiMNlKyP72ZkPaMmaaahDObfiVUgqDgqV75VQegnuMto6diLWWnme3AOd9d+/fDK
-         p20fTvMSsCEpmKZFl0tlRBBkZmu63hdmGVWQBKdMOM1FAtdCCjPGnA277iQjBYK6MS
-         OV+ILahpkSfon+qyWTYAtuU2JdnEb3Y29anN/HWPf0vmGGhYtixU3iTDtyRkWWJDD2
-         qZTCg1PRtIjhg==
-Date:   Sat, 6 Feb 2021 16:43:19 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: Re: [PATCH net-next] net: dsa: allow port mirroring towards foreign
- interfaces
-Message-ID: <20210206164319.4120ce73@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210207001617.p3ohj754mi5vrydb@skbuf>
-References: <20210205223355.298049-1-olteanv@gmail.com>
-        <fead6d2a-3455-785a-a367-974c2e6efdf3@gmail.com>
-        <20210205230521.s2eb2alw5pkqqafv@skbuf>
-        <20210206155857.1d983d1f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20210207001617.p3ohj754mi5vrydb@skbuf>
+        id S229601AbhBGAzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 6 Feb 2021 19:55:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41978 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229522AbhBGAzu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 6 Feb 2021 19:55:50 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1017EC06174A;
+        Sat,  6 Feb 2021 16:55:09 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id f1so16663575lfu.3;
+        Sat, 06 Feb 2021 16:55:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=6h+heYhygsXnSMC08EOO+2H8p2FaBb1HiQe2ZxTK5YA=;
+        b=bTCXk1xoFTmCOpKiYvpqDfXVGidpvTsbcE2F4/z/p71XFabsKrsNvdBEYAK/+ZsFNo
+         dMO17Prkx1bal2dWhS4riqH5piEKWnfHwrw+EAB16uMAHagTQFmgvSnKaon3DrWfILuA
+         9iKLmeBrIdZLfSbYwGWrMuTVFFgTPMEhiB001HDy5Tb3Uk3q9NzfSH+8fN8o1nMo7kRv
+         n5j7OptfTmBqGr+7ikAjGo5JbI6IkYUO5y/ulZM0+DJAWWkBOC5hhN/ugT6yczk6gIvf
+         kklWLe6KPN4d6Jk23yIK1tXBGQl55GEgLEN3XiX8ymQiMMCBcyVfyIDRsJsDd4lWg3GE
+         yjnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=6h+heYhygsXnSMC08EOO+2H8p2FaBb1HiQe2ZxTK5YA=;
+        b=lxCe8pq4sd2jscK3KxaBWftCLT83cFZORAd/rQ8sB0qOhXhi8z4w/ZjLW1fz1WNRVt
+         8JnfAbNECF7Cq7ztbFWpdH3SoTXityKtpwGa4Lx/FgH41MXgzyiX1/KCckC8fdQKolPy
+         BMCcE9mZgR/xwaxiby5s2QOKgHOiLabwvbhcciHoiexHsuEzfCiK4o1P36/sQg7rYeYB
+         PxQAOFgxUX3OYngrw/l+mwQDIRwtpHJmgbPAq1d+Nlbs5z0ZVQe4RoA4OkgEhnvQ3JmI
+         SL/tzT0p8OAlFYIbMX6kPcuYrsNO8/FND0aWeM3w5DtklwlAIqh1TukhTGuqqNYUyydj
+         ZOsg==
+X-Gm-Message-State: AOAM533yx3rcRdtaDjg+yYvD/6dAeRFDyXcR6EFpifqjcCC4QlloRQxa
+        1BGxStMuiSxTVgavueNGgEq8MpNy7UQg5g==
+X-Google-Smtp-Source: ABdhPJwlFcFp0qxdXew8YcOxTtMTXfmVRK97ncXURzwnbIFNZdI+qAB/3UYDIL15bGZtu9MJ68tZ1g==
+X-Received: by 2002:a19:5e1d:: with SMTP id s29mr6788082lfb.440.1612659307586;
+        Sat, 06 Feb 2021 16:55:07 -0800 (PST)
+Received: from rafiki.local (user-5-173-242-247.play-internet.pl. [5.173.242.247])
+        by smtp.gmail.com with ESMTPSA id o14sm1453485ljp.48.2021.02.06.16.55.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 06 Feb 2021 16:55:07 -0800 (PST)
+From:   Lech Perczak <lech.perczak@gmail.com>
+To:     netdev@vger.kernel.org, linux-usb@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Lech Perczak <lech.perczak@gmail.com>,
+        Johan Hovold <johan@kernel.org>,
+        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
+Subject: [PATCH v3] usb: serial: option: update interface mapping for ZTE P685M
+Date:   Sun,  7 Feb 2021 01:54:43 +0100
+Message-Id: <20210207005443.12936-1-lech.perczak@gmail.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20210206121322.074ddbd3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20210206121322.074ddbd3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 7 Feb 2021 02:16:17 +0200 Vladimir Oltean wrote:
-> On Sat, Feb 06, 2021 at 03:58:57PM -0800, Jakub Kicinski wrote:
-> > > For ingress mirroring there should be nothing special about the mirror
-> > > packets, it's just more traffic in the ingress data path where the qdisc
-> > > hook already exists.  
-> > 
-> > For ingress the only possible corner case seems to be if the filter has
-> > SKIP_SW set, then HW will send to CPU but SW will ignore.  
-> 
-> Correct, but I'm not sure if this requirement can be enforced at driver
-> level though.
+This patch prepares for qmi_wwan driver support for the device.
+Previously "option" driver mapped itself to interfaces 0 and 3 (matching
+ff/ff/ff), while interface 3 is in fact a QMI port.
+Interfaces 1 and 2 (matching ff/00/00) expose AT commands,
+and weren't supported previously at all.
+Without this patch, a possible conflict would exist if device ID was
+added to qmi_wwan driver for interface 3.
 
-True, we'd need to add more info to struct flow_cls_common_offload.
+Update and simplify device ID to match interfaces 0-2 directly,
+to expose QCDM (0), PCUI (1), and modem (2) ports and avoid conflict
+with QMI (3), and ADB (4).
 
-> > That's assuming the frame still comes on the CPU appropriately tagged.  
-> 
-> For ingress mirroring I think the assumption that it does is reasonable,
-> since the packet should be mirrored before the forwarding took place, it
-> can only have one DSA tag and that would be the tag where the source
-> port is the ingress port.
-> For egress mirroring, software would need to see the mirrored packet as
-> coming from the egress port, and this would mean that the source port in
-> the DSA frame header would have to be equal to the egress port.
-> 
-> > > For egress mirroring I don't think there's really any way for the mirred
-> > > action to take over the packets from what is basically the ingress qdisc
-> > > and into the egress qdisc of the DSA interface such that they will be
-> > > redirected to the selected mirror. I hadn't even thought about egress
-> > > mirroring. I suppose with more API, we could have DSA do introspection
-> > > into the frame header, see it's an egress-mirrored packet, and inject it
-> > > into the egress qdisc of the net device instead of doing netif_rx.  
-> > 
-> > IMHO it's not very pretty but FWIW some "SmartNIC" drivers already do
-> > a similar thing. But to be clear that's just an optimization, right?
-> > The SW should still be able to re-process and come to the same
-> > decisions as the switch, provided SKIP_SW was not set?  
-> 
-> I guess what would need to happen is that we'd need to do something like
-> this, from the DSA tagging protocol files:
-> 
-> 	if (is_egress_mirror(skb)) {
-> 		skb_get(skb);
-> 		skb_push(skb, ETH_ALEN);
-> 		skb = sch_handle_egress(skb, &err, skb->dev);
-> 		if (skb)
-> 			consume_skb(skb);
-> 		return NULL;
-> 	}
-> 
-> basically just run whatever tc filters there might be on that packet (in
-> our case mirred), then discard it.
-> 
-> It's not an optimization thing. Egress mirrored traffic on a DSA switch
-> is still ingress traffic from software's perspective, so it won't match
-> on any mirred action on any egress qdisc. Only packets sent from the
-> network stack would match the mirred egress mirror rule, however there
-> might be lots of offloaded flows which don't.
-> 
-> Or I might just be misunderstanding.
+The modem is used inside ZTE MF283+ router and carriers identify it as
+such.
+Interface mapping is:
+0: QCDM, 1: AT (PCUI), 2: AT (Modem), 3: QMI, 4: ADB
 
-Okay, that makes sense, sounds like we just can't expect the DSA tag 
-with ingress port info preserved when frames are trapped at egress.
-All depends on HW capabilities then.
+T:  Bus=02 Lev=02 Prnt=02 Port=05 Cnt=01 Dev#=  3 Spd=480  MxCh= 0
+D:  Ver= 2.01 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
+P:  Vendor=19d2 ProdID=1275 Rev=f0.00
+S:  Manufacturer=ZTE,Incorporated
+S:  Product=ZTE Technologies MSM
+S:  SerialNumber=P685M510ZTED0000CP&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&0
+C:* #Ifs= 5 Cfg#= 1 Atr=a0 MxPwr=500mA
+I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=83(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
+E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=85(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
+E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+E:  Ad=87(I) Atr=03(Int.) MxPS=   8 Ivl=32ms
+E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 4 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=42 Prot=01 Driver=(none)
+E:  Ad=88(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=05(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+
+Cc: Johan Hovold <johan@kernel.org>
+Cc: Bjørn Mork <bjorn@mork.no>
+Signed-off-by: Lech Perczak <lech.perczak@gmail.com>
+---
+v3: No changes to contents of the patch.
+Resend as separate patch to be merged through USB subsystem, the
+following patch for qmi_wwan will go through netdev tree after this is
+merged.
+Updated commit description, added note about possible qmi_wwan conflict.
+
+v2: Blacklist ports 3-4 and simplify device ID,
+as suggested by Lars Melin.
+
+ drivers/usb/serial/option.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
+index 3fe959104311..485d07df8f69 100644
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -1567,7 +1567,7 @@ static const struct usb_device_id option_ids[] = {
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1272, 0xff, 0xff, 0xff) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1273, 0xff, 0xff, 0xff) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1274, 0xff, 0xff, 0xff) },
+-	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1275, 0xff, 0xff, 0xff) },
++	{ USB_DEVICE(ZTE_VENDOR_ID, 0x1275), .driver_info = RSVD(3) | RSVD(4) }, /* ZTE P685M */
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1276, 0xff, 0xff, 0xff) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1277, 0xff, 0xff, 0xff) },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1278, 0xff, 0xff, 0xff) },
+-- 
+2.20.1
+
