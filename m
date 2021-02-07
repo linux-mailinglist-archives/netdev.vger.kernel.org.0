@@ -2,31 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B6E63127D9
-	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 23:24:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDB463127DD
+	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 23:28:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229623AbhBGWYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Feb 2021 17:24:38 -0500
-Received: from antares.kleine-koenig.org ([94.130.110.236]:48884 "EHLO
-        antares.kleine-koenig.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229626AbhBGWYe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 17:24:34 -0500
-Received: by antares.kleine-koenig.org (Postfix, from userid 1000)
-        id C6E5EAF2EE6; Sun,  7 Feb 2021 23:23:51 +0100 (CET)
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
-To:     Tomas Winkler <tomas.winkler@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-watchdog@vger.kernel.org
-Subject: [PATCH v1 2/2] mei: bus: change remove callback to return void
-Date:   Sun,  7 Feb 2021 23:22:24 +0100
-Message-Id: <20210207222224.97547-2-uwe@kleine-koenig.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210207222224.97547-1-uwe@kleine-koenig.org>
-References: <20210207222224.97547-1-uwe@kleine-koenig.org>
+        id S229621AbhBGW1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Feb 2021 17:27:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34588 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229564AbhBGW1o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 17:27:44 -0500
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF642C061756;
+        Sun,  7 Feb 2021 14:27:03 -0800 (PST)
+Received: by mail-lj1-x234.google.com with SMTP id r23so12743482ljh.1;
+        Sun, 07 Feb 2021 14:27:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Di6p90oAYaCEY0Dm7sI6vpfXpEsHy9/oRKceNj8Eu0c=;
+        b=f75BMbPQ8WQQFH2FanltOAgV1MwkfM9ONOzTtMHaj6U3XwCbsxxh+BPIFZMojSFhoc
+         oXNrpU3lWwo6tdBZzpqH2fWb9V/Jfo+TtTm385WZyt0C6mYkqSTv0dDmUC06Yqo1jlmG
+         etV+92GNlzx0M24vb1LaJ1Pt/6SN1i9lrVyc2+P5nHaTJPTNz9WjiFq0oFhhxDvya/Ow
+         lZsrRtJB9bxWNb19A9LIX3bFYCwWEy1zXSson4BOTBuKPTBdpSSkHCqQ8eBFLzqQp0rZ
+         aB3k0eDtlZUGnMAZIis5Ds26ryRTYy834D32NqycvXbH41GzOvTY7tiWDCIzOp+NGBrm
+         tvLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Di6p90oAYaCEY0Dm7sI6vpfXpEsHy9/oRKceNj8Eu0c=;
+        b=XuTWN0+U5413Fj/s4LJQ5cWq5bPKRP8yFPlGXbbBKbBOaNOjsXtL/EguvIhV6Ixr9y
+         tNa8xWh19uabL0edw+zOJTp/H8ZrjKjpVR3FqJ+dhQXHBGfmh/Qg9yHEh53ZJs5T8qht
+         9vfuVkYEodxRHPz1UIXy9twyYeYyzSAv9kodxEoi7CAOpQzVPYYARvMfTTW1xnD0SF6c
+         hoTeny4iG+vBc+IbTzLqx2pUMj1QTHWHOjjWCp51brbAROM7p11oh0mVCmGSVcOd6PmY
+         9N4YTsaTq/odLj0TKu28MaPGylpbVAKXu3KRmAG1UTDaIeqmKtAxMJm4wswI1w8wrzJ8
+         gYPw==
+X-Gm-Message-State: AOAM530zmf6v4I0EkXUFmTFIBlwugbQ4rOhCcJiNn4jRKbLom3iQtu61
+        1xqqzRXkXZrV1M61rurZ64k=
+X-Google-Smtp-Source: ABdhPJzUfoE+9NCLD/4Z/HcxCQp2kdiPk7Dr+HCTKIbGu9eFjXP/Cg0XAN/XuIshnMBNNIGsF+86Pw==
+X-Received: by 2002:a2e:9d04:: with SMTP id t4mr9062916lji.56.1612736822472;
+        Sun, 07 Feb 2021 14:27:02 -0800 (PST)
+Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.gmail.com with ESMTPSA id n16sm502415lfe.13.2021.02.07.14.27.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 07 Feb 2021 14:27:01 -0800 (PST)
+From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Masahiro Yamada <masahiroy@kernel.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
+Subject: [PATCH V2 net-next 1/2] dt-bindings: net: document BCM4908 Ethernet controller
+Date:   Sun,  7 Feb 2021 23:26:31 +0100
+Message-Id: <20210207222632.10981-1-zajec5@gmail.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210205214417.11178-1-zajec5@gmail.com>
+References: <20210205214417.11178-1-zajec5@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -34,152 +69,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The driver core ignores the return value of mei_cl_device_remove() so
-passing an error value doesn't solve any problem. As most mei drivers'
-remove callbacks return 0 unconditionally and returning a different value
-doesn't have any effect, change this prototype to return void and return 0
-unconditionally in mei_cl_device_remove(). The only driver that could
-return an error value is modified to emit an explicit warning in the error
-case.
+From: Rafał Miłecki <rafal@milecki.pl>
 
-Signed-off-by: Uwe Kleine-König <uwe@kleine-koenig.org>
+BCM4908 is a family of SoCs with integrated Ethernet controller.
+
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
 ---
- drivers/misc/mei/bus.c           | 5 ++---
- drivers/misc/mei/hdcp/mei_hdcp.c | 7 +++++--
- drivers/nfc/microread/mei.c      | 4 +---
- drivers/nfc/pn544/mei.c          | 4 +---
- drivers/watchdog/mei_wdt.c       | 4 +---
- include/linux/mei_cl_bus.h       | 2 +-
- 6 files changed, 11 insertions(+), 15 deletions(-)
+ .../bindings/net/brcm,bcm4908enet.yaml        | 45 +++++++++++++++++++
+ 1 file changed, 45 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/brcm,bcm4908enet.yaml
 
-diff --git a/drivers/misc/mei/bus.c b/drivers/misc/mei/bus.c
-index 50d617e7467e..54dddae46705 100644
---- a/drivers/misc/mei/bus.c
-+++ b/drivers/misc/mei/bus.c
-@@ -879,17 +879,16 @@ static int mei_cl_device_remove(struct device *dev)
- {
- 	struct mei_cl_device *cldev = to_mei_cl_device(dev);
- 	struct mei_cl_driver *cldrv = to_mei_cl_driver(dev->driver);
--	int ret = 0;
- 
- 	if (cldrv->remove)
--		ret = cldrv->remove(cldev);
-+		cldrv->remove(cldev);
- 
- 	mei_cldev_unregister_callbacks(cldev);
- 
- 	mei_cl_bus_module_put(cldev);
- 	module_put(THIS_MODULE);
- 
--	return ret;
-+	return 0;
- }
- 
- static ssize_t name_show(struct device *dev, struct device_attribute *a,
-diff --git a/drivers/misc/mei/hdcp/mei_hdcp.c b/drivers/misc/mei/hdcp/mei_hdcp.c
-index 9ae9669e46ea..6a455ebe4891 100644
---- a/drivers/misc/mei/hdcp/mei_hdcp.c
-+++ b/drivers/misc/mei/hdcp/mei_hdcp.c
-@@ -845,16 +845,19 @@ static int mei_hdcp_probe(struct mei_cl_device *cldev,
- 	return ret;
- }
- 
--static int mei_hdcp_remove(struct mei_cl_device *cldev)
-+static void mei_hdcp_remove(struct mei_cl_device *cldev)
- {
- 	struct i915_hdcp_comp_master *comp_master =
- 						mei_cldev_get_drvdata(cldev);
-+	int ret;
- 
- 	component_master_del(&cldev->dev, &mei_component_master_ops);
- 	kfree(comp_master);
- 	mei_cldev_set_drvdata(cldev, NULL);
- 
--	return mei_cldev_disable(cldev);
-+	ret = mei_cldev_disable(cldev);
-+	if (ret)
-+		dev_warn(&cldev->dev, "mei_cldev_disable() failed\n")
- }
- 
- #define MEI_UUID_HDCP GUID_INIT(0xB638AB7E, 0x94E2, 0x4EA2, 0xA5, \
-diff --git a/drivers/nfc/microread/mei.c b/drivers/nfc/microread/mei.c
-index 5dad8847a9b3..8fa7771085eb 100644
---- a/drivers/nfc/microread/mei.c
-+++ b/drivers/nfc/microread/mei.c
-@@ -44,15 +44,13 @@ static int microread_mei_probe(struct mei_cl_device *cldev,
- 	return 0;
- }
- 
--static int microread_mei_remove(struct mei_cl_device *cldev)
-+static void microread_mei_remove(struct mei_cl_device *cldev)
- {
- 	struct nfc_mei_phy *phy = mei_cldev_get_drvdata(cldev);
- 
- 	microread_remove(phy->hdev);
- 
- 	nfc_mei_phy_free(phy);
--
--	return 0;
- }
- 
- static struct mei_cl_device_id microread_mei_tbl[] = {
-diff --git a/drivers/nfc/pn544/mei.c b/drivers/nfc/pn544/mei.c
-index 579bc599f545..5c10aac085a4 100644
---- a/drivers/nfc/pn544/mei.c
-+++ b/drivers/nfc/pn544/mei.c
-@@ -42,7 +42,7 @@ static int pn544_mei_probe(struct mei_cl_device *cldev,
- 	return 0;
- }
- 
--static int pn544_mei_remove(struct mei_cl_device *cldev)
-+static void pn544_mei_remove(struct mei_cl_device *cldev)
- {
- 	struct nfc_mei_phy *phy = mei_cldev_get_drvdata(cldev);
- 
-@@ -51,8 +51,6 @@ static int pn544_mei_remove(struct mei_cl_device *cldev)
- 	pn544_hci_remove(phy->hdev);
- 
- 	nfc_mei_phy_free(phy);
--
--	return 0;
- }
- 
- static struct mei_cl_device_id pn544_mei_tbl[] = {
-diff --git a/drivers/watchdog/mei_wdt.c b/drivers/watchdog/mei_wdt.c
-index 5391bf3e6b11..53165e49c298 100644
---- a/drivers/watchdog/mei_wdt.c
-+++ b/drivers/watchdog/mei_wdt.c
-@@ -619,7 +619,7 @@ static int mei_wdt_probe(struct mei_cl_device *cldev,
- 	return ret;
- }
- 
--static int mei_wdt_remove(struct mei_cl_device *cldev)
-+static void mei_wdt_remove(struct mei_cl_device *cldev)
- {
- 	struct mei_wdt *wdt = mei_cldev_get_drvdata(cldev);
- 
-@@ -636,8 +636,6 @@ static int mei_wdt_remove(struct mei_cl_device *cldev)
- 	dbgfs_unregister(wdt);
- 
- 	kfree(wdt);
--
--	return 0;
- }
- 
- #define MEI_UUID_WD UUID_LE(0x05B79A6F, 0x4628, 0x4D7F, \
-diff --git a/include/linux/mei_cl_bus.h b/include/linux/mei_cl_bus.h
-index 959ad7d850b4..07f5ef8fc456 100644
---- a/include/linux/mei_cl_bus.h
-+++ b/include/linux/mei_cl_bus.h
-@@ -68,7 +68,7 @@ struct mei_cl_driver {
- 
- 	int (*probe)(struct mei_cl_device *cldev,
- 		     const struct mei_cl_device_id *id);
--	int (*remove)(struct mei_cl_device *cldev);
-+	void (*remove)(struct mei_cl_device *cldev);
- };
- 
- int __mei_cldev_driver_register(struct mei_cl_driver *cldrv,
+diff --git a/Documentation/devicetree/bindings/net/brcm,bcm4908enet.yaml b/Documentation/devicetree/bindings/net/brcm,bcm4908enet.yaml
+new file mode 100644
+index 000000000000..5f12f51c5b19
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/brcm,bcm4908enet.yaml
+@@ -0,0 +1,45 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/brcm,bcm4908enet.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Broadcom BCM4908 Ethernet controller
++
++description: Broadcom's Ethernet controller integrated into BCM4908 family SoCs
++
++maintainers:
++  - Rafał Miłecki <rafal@milecki.pl>
++
++properties:
++  compatible:
++    const: brcm,bcm4908enet
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    description: RX interrupt
++
++  interrupt-names:
++    const: rx
++
++required:
++  - reg
++  - interrupts
++  - interrupt-names
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    ethernet@80002000 {
++        compatible = "brcm,bcm4908enet";
++        reg = <0x80002000 0x1000>;
++
++        interrupts = <GIC_SPI 86 IRQ_TYPE_LEVEL_HIGH>;
++        interrupt-names = "rx";
++    };
 -- 
-2.29.2
+2.26.2
 
