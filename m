@@ -2,142 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD079312680
-	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 18:54:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A281E312683
+	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 18:57:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229590AbhBGRyY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Feb 2021 12:54:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32786 "EHLO
+        id S229623AbhBGR5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Feb 2021 12:57:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbhBGRyY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 12:54:24 -0500
-Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31D16C06174A
-        for <netdev@vger.kernel.org>; Sun,  7 Feb 2021 09:53:44 -0800 (PST)
-Received: by mail-ot1-x333.google.com with SMTP id s107so12037829otb.8
-        for <netdev@vger.kernel.org>; Sun, 07 Feb 2021 09:53:44 -0800 (PST)
+        with ESMTP id S229510AbhBGR5H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 12:57:07 -0500
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5FF6C06174A
+        for <netdev@vger.kernel.org>; Sun,  7 Feb 2021 09:56:26 -0800 (PST)
+Received: by mail-qv1-xf29.google.com with SMTP id 2so6014260qvd.0
+        for <netdev@vger.kernel.org>; Sun, 07 Feb 2021 09:56:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=mEVNB6jnXZbsPPU4+9jkUDLMR/RAKX3G2sUl39TydP8=;
-        b=tjGEi1nrVa57lXbj0FzkPeVEkMQuflv+u3mlTm/TW/cLbwZS8y1cjNCIHMnuJFdi8u
-         +jWFw/rC9fcZvI4qwHwNsCuLcGpOoFX7zr4u14SJlnc2IAWUOpdqJDGAa8hdtvruDen8
-         ND8U+Po+BEC3N4XIfyAtZg+WxkdhDjb498BWe0Gn7/VtPZvRViuZfzFSQ2Emai5K2eXi
-         ldhVxUHQgMnKmUlrptGplQuHM12x4Qtl/kVwtD0GKv3qKHuTJjYGIV34J0cjnUEevAlM
-         2uOx1Y9e/iBWBUuxUKoK9hqsOaGTm0A7q1bfduMpIwWqfi8HrRbfFaROXAuMcDHPAGV1
-         iJJA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AmKdXhnMmhh2qdJMK40kptFf+aukBbJ7hh0zcn8qXQ8=;
+        b=al38wOd7XjTXg7DhFPbxgdLk+WNcLZJWY4VAdejvl0JDv6DpaU2IWhzHcd3NSwNSxo
+         1ErlC4r3CWYf39859liZ5w+jv40Yb3s4XvxOqG7w/oIbwJ4ohnWJa8yuW2ITQH0zftvC
+         Vz/eAcZkA0yJZuRdiy4y1v8KGa3v1fb2dP/eRlAuqCIRu7s7tKpNQ8I91wzYXSIxjfgk
+         2iLtR8TlC8Z5h7O/DJtLwURZQzIofRRDdXoVgxGARNy5IMzFD37shxnAXP0STfD+JYA2
+         fZNu+kP8/d8wP1atKjJjobua07CbD2kDuzx6yWzPXbKejAj2eBjKGvPtGjqT2fbBHkrX
+         LiLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=mEVNB6jnXZbsPPU4+9jkUDLMR/RAKX3G2sUl39TydP8=;
-        b=kv6XVFM6BYnPeY3M2urZ5spVJ2KbgQ0mo025m4CCb3lhcKt9juzFj9PxxpKqkXVM7w
-         qP/RPC9XE4f0MNq6CxUAjGMmHnA+Tg80LISaPErATUE4Q1qK4gncPSctHHRpfOKARsMo
-         xxpW7bYW+f2nzlL4Dnj9s12Zs8kx4FNw3w9jceSPg0wtTXezl2GlS0pL5XqvDESxNyEj
-         p70XDHKxpdmhKnHC/HeIN7mUoxQ30DS7fe+3CDr2yiNf1ikz7uohiVl0pMwIb9NDm9Rd
-         4Up+xc37QHt9B+5TKJSqX9DuJ3fYYcH8LAtIy4dcbm9Y/tZiC5wM6NVCdC4faemDn16V
-         +4bw==
-X-Gm-Message-State: AOAM531GjaAyy83AlZkTatyXmQ+DL+twt+g8WqrDYkqyOeVq9rJJksBk
-        UTtCHGXM4ZzXnzK6PYCZxIc=
-X-Google-Smtp-Source: ABdhPJx05HeMi+mwVy+Lbh2YaqSEeSEw5hH73Zhqki1DFtRrJgkm7aI9xh/v8MxDqKqhzV7fyw4lsQ==
-X-Received: by 2002:a9d:4d0a:: with SMTP id n10mr9812008otf.73.1612720423584;
-        Sun, 07 Feb 2021 09:53:43 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.33])
-        by smtp.googlemail.com with ESMTPSA id p23sm3273249otk.51.2021.02.07.09.53.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 07 Feb 2021 09:53:43 -0800 (PST)
-Subject: Re: [net-next v2] tcp: Explicitly mark reserved field in
- tcp_zerocopy_receive args.
-From:   David Ahern <dsahern@gmail.com>
-To:     Arjun Roy <arjunroy.kdev@gmail.com>, davem@davemloft.net,
-        netdev@vger.kernel.org
-Cc:     arjunroy@google.com, edumazet@google.com, soheil@google.com,
-        Leon Romanovsky <leon@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20210206203648.609650-1-arjunroy.kdev@gmail.com>
- <c81f79ee-e8d0-2f83-6926-c370e9540730@gmail.com>
-Message-ID: <78c74404-755a-66c8-1ebd-256b3dfca76c@gmail.com>
-Date:   Sun, 7 Feb 2021 10:53:41 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.7.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AmKdXhnMmhh2qdJMK40kptFf+aukBbJ7hh0zcn8qXQ8=;
+        b=Kt2LD85Clpmh8lGfV4SuyDzEy/SMcSWe/oD9YY5OQA/nn2neIZ+UC0radOEpP7jSJ+
+         MolzkKX/ZqkwuEoWJi/guCMY9T3N2wKUb4ivCfbdFpreuLSCzFuhpYhPTG16FPZ3OD78
+         DS+c6uqkuxJjXxh9K1XnCtCo8NceaLSkzZzPCpcBkHAa63C7MHsOBbaniQWDqi47G16T
+         R48dh428M07sGCfcbAmduO67ZYNJZ38YbKdW2j7iFRvQayB03KwCcLE2YcKkYQdLM7CV
+         cWr9c4WJikCyBTHBXVjWPxbMjG/inBogv7FkGDsncUebgIuYb/ac6nVFOKnUG0LHbzQ1
+         /Qfw==
+X-Gm-Message-State: AOAM533rnrzvQpiovDj0M0gf2feiCWrdBW6k+mglfzP7itK6OKsbRxrV
+        sEWBNz3JY/xERMTcosIwekLzyDTDiCqkErsqFNA=
+X-Google-Smtp-Source: ABdhPJwYeAcl8DZ/C1TfXGdHijNzhGJvGfEUmukvm95YF5+/JdABSJRiaEA1NDUQVL6Q8rG/WRF8KlYVDcZf5JfdLd4=
+X-Received: by 2002:a0c:ca8e:: with SMTP id a14mr13257188qvk.58.1612720586020;
+ Sun, 07 Feb 2021 09:56:26 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <c81f79ee-e8d0-2f83-6926-c370e9540730@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210123195916.2765481-1-jonas@norrbonn.se> <20210123195916.2765481-15-jonas@norrbonn.se>
+ <5c94d0f6-4d35-6654-4fde-1eebbcc7d74f@norrbonn.se>
+In-Reply-To: <5c94d0f6-4d35-6654-4fde-1eebbcc7d74f@norrbonn.se>
+From:   Pravin Shelar <pravin.ovn@gmail.com>
+Date:   Sun, 7 Feb 2021 09:56:15 -0800
+Message-ID: <CAOrHB_Abui8VgSm2xTxq0fbKRSMLO0nzAsWkwMkd7JioLqpDJA@mail.gmail.com>
+Subject: Re: [RFC PATCH 14/16] gtp: add support for flow based tunneling
+To:     Jonas Bonn <jonas@norrbonn.se>
+Cc:     Harald Welte <laforge@gnumonks.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Pravin B Shelar <pbshelar@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/7/21 10:49 AM, David Ahern wrote:
-> On 2/6/21 1:36 PM, Arjun Roy wrote:
->> From: Arjun Roy <arjunroy@google.com>
->>
->> Explicitly define reserved field and require it to be 0-valued.
->>
->> Fixes: 7eeba1706eba ("tcp: Add receive timestamp support for receive zerocopy.")
->> Signed-off-by: Arjun Roy <arjunroy@google.com>
->> Signed-off-by: Eric Dumazet <edumazet@google.com>
->> Signed-off-by: Soheil Hassas Yeganeh <soheil@google.com>
->> Suggested-by: David Ahern <dsahern@gmail.com>
->> Suggested-by: Leon Romanovsky <leon@kernel.org>
->> Suggested-by: Jakub Kicinski <kuba@kernel.org>
->> ---
->>  include/uapi/linux/tcp.h | 2 +-
->>  net/ipv4/tcp.c           | 2 ++
->>  2 files changed, 3 insertions(+), 1 deletion(-)
->>
->> diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
->> index 42fc5a640df4..8fc09e8638b3 100644
->> --- a/include/uapi/linux/tcp.h
->> +++ b/include/uapi/linux/tcp.h
->> @@ -357,6 +357,6 @@ struct tcp_zerocopy_receive {
->>  	__u64 msg_control; /* ancillary data */
->>  	__u64 msg_controllen;
->>  	__u32 msg_flags;
->> -	/* __u32 hole;  Next we must add >1 u32 otherwise length checks fail. */
->> +	__u32 reserved; /* set to 0 for now */
->>  };
->>  #endif /* _UAPI_LINUX_TCP_H */
->> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
->> index e1a17c6b473c..c8469c579ed8 100644
->> --- a/net/ipv4/tcp.c
->> +++ b/net/ipv4/tcp.c
->> @@ -4159,6 +4159,8 @@ static int do_tcp_getsockopt(struct sock *sk, int level,
->>  		}
->>  		if (copy_from_user(&zc, optval, len))
->>  			return -EFAULT;
->> +		if (zc.reserved)
->> +			return -EINVAL;
->>  		lock_sock(sk);
->>  		err = tcp_zerocopy_receive(sk, &zc, &tss);
->>  		release_sock(sk);
->>
-> 
-> 
-> The 'switch (len)' statement needs to be updated now that 'len' is not
-> going to end on the 'msg_flags' boundary? But then, how did that work
-> before if there was 4 byte padding?
-> 
-> Maybe I am missing something here. You currently have:
-> 
-> 	switch (len) {
-> 	case offsetofend(struct tcp_zerocopy_receive, msg_flags):
-> 
-
-Ah, I missed the lines before it:
-
-                if (len >= offsetofend(struct tcp_zerocopy_receive,
-msg_flags))
-                        goto zerocopy_rcv_cmsg;
+On Sat, Feb 6, 2021 at 10:06 AM Jonas Bonn <jonas@norrbonn.se> wrote:
+>
+> Hi Pravin et al;
+>
+> TL;DR:  we don't need to introduce an entire collect_md mode to the
+> driver; we just need to tweak what we've got so that metadata is
+> "always" added on RX and respected on TX; make the userspace socket
+> optional and dump GTP packets to netstack if it's not present; and make
+> a decision on whether to allow packets into netstack without validating
+> their IP address.
+>
+Thanks for summarizing the LWT mechanism below. Overall I am fine with
+the changes, a couple of comments inlined.
 
 
-Also, I see a check on zc.msg_flags for a specific flag option being
-set. What about other invalid bits in msg_flags? I do not see a check like:
+> On 23/01/2021 20:59, Jonas Bonn wrote:
+> > From: Pravin B Shelar <pbshelar@fb.com>
+> >
+> > This patch adds support for flow based tunneling, allowing to send and
+> > receive GTP tunneled packets via the (lightweight) tunnel metadata
+> > mechanism.  This would allow integration with OVS and eBPF using flow
+> > based tunneling APIs.
+> >
+> > The mechanism used here is to get the required GTP tunnel parameters
+> > from the tunnel metadata instead of looking up a pre-configured PDP
+> > context.  The tunnel metadata contains the necessary information for
+> > creating the GTP header.
+>
+>
+> So, I've been investigating this a bit further...
+>
+> What is being introduced in this patch is a variant of "normal
+> functionality" that resembles something called "collect metadata" mode
+> in other drivers (GRE, VXLAN, etc).  These other drivers operate in one
+> of two modes:  more-or-less-point-to-point mode, or this alternative
+> collect metadata varaint.  The latter is something that has been bolted
+> on to an existing implementation of the former.
+>
+> For iproute2, a parameter called 'external' is added to the setup of
+> links of the above type to switch between the two modes; the
+> point-to-point parameters are invalid in 'external' (or 'collect
+> metadata') mode.  The name 'external' is because the driver is
+> externally controlled, meaning that the tunnel information is not
+> hardcoded into the device instance itself.
+>
+> The GTP driver, however, has never been a point-to-point device.  It is
+> already 'externally controlled' in the sense that tunnels can be added
+> and removed at any time.  Adding this 'external' mode doesn't
+> immediately make sense because that's roughly what we already have.
+>
+> Looking into how ip_tunnel_collect_metadata() works, it looks to me like
+> it's always true if there's _ANY_ routing rule in the system with
+> 'tunnel ID' set.  Is that correct?  I'll assume it is in order to
+> continue my thoughts.
+>
+Right. It is just optimization to avoid allocating tun-dst in datapath.
 
-#define TCP_VALID_ZC_MSG_FLAGS   (TCP_CMSG_TS)
+> So, with that, either the system is collecting SKB metadata or it isn't.
+>   If it is, it seems reasonable that we populate incoming packets with
+> the tunnel ID as in this patch.  That said, I'm not convinced that we
+> should bypass the PDP context mechanism entirely... there should still
+> be a PDP context set up or we drop the packet for security reasons.
+>
+> For outgoing packets, it seems reasonable that the remote TEID may come
+> from metadata OR a PDP context.  That would allow some routing
+> alternatives to what we have right now which just does a PDP context
+> lookup based on the destination/source address of the packet.  It would
+> be nice for OVS/BPF to be able to direct a packet to a remote GTP
+> endpoint by providing that endpoint/TEID via a metadata structure.
+>
+> So we end up with, roughly:
+>
+> On RX:
+> i) check TEID in GTP header
+> ii) lookup PDP context
+> iii) validate IP of encapsulated packet
+> iv) if ip(tunnel_collect_metadata()) { /* add tun info */ }
+> v) decapsulate and pass to network stack
+>
+> On TX:
+> i) if SKB has metadata, get destination and TEID from metadata (tunnel ID)
+> ii) otherwise, lookup PDP context for packet
+>
+> For RX, only iv) is new; for TX only step i) is new.  The rest is what
+> we already have.
+>
+> The one thing that this complicates is the case where an external entity
+> (OVS or BPF) is doing validation of packet IP against incoming TEID.  In
+> that case, we've got double validation of the incoming address and, I
+> suppose, OVS/BPF would perhaps be more efficient (?)...  In that case,
+> holding a PDP context is a bit of a waste of memory.
+>
+> It's somewhat of a security issue to allow un-checked packets into the
+> system, so I'm not super keen on dropping the validation of incoming
+> packets; given the previous paragraph, however, we might add a flag when
+> creating the link to decide whether or not we allow packets through even
+> if we can't validate them.  This would also apply to packets without a
+> PDP context for an incoming TEID, too.  This flag, I suppose, looks a
+> bit like the 'collect_metadata' flag that Pravin has added here.
+>
+Yes. user should have the option to use GTP devices in LTW mode and
+bypass PDP session context completely. Lets add a flag for GTP link to
+have consistent behaviour for all types of LWT devices.
 
-	if (zc.msg_flags & ~(TCP_VALID_ZC_MSG_FLAGS))
-		return -EINVAL;
+> The other difference to what we currently have is that this patch sets
+> up a socket exclusively in kernel space for the tunnel; currently, all
+> sockets terminate in userspace:  userspace receives all packets that
+> can't be decapsulated and re-injected in to the network stack.  With
+> this patch, ALL packets (without a userspace termination) are
+> re-injected into the network stack; it's just that anything that can't
+> be decapsulated gets injected as a "GTP packet" with some metadata and
+> an UNKNOWN protocol type.  If nothing is looking at the metadata and
+> acting on it, then these will just get dropped; and that's what would
+> happen if nothing was listening on the userspace end, too.  So we might
+> as well just make the FD1 socket parameter to the link setup optional
+> and be done with it.
+>
+Good idea to make FD1 optional argument.
+
+Thanks.
