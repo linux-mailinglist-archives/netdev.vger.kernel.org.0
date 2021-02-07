@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0A473126E4
-	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 19:46:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26D783126E6
+	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 19:46:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230023AbhBGSpZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Feb 2021 13:45:25 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:56532 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229908AbhBGSny (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 13:43:54 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 117IelEj027442;
-        Sun, 7 Feb 2021 10:42:51 -0800
+        id S230137AbhBGSpl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Feb 2021 13:45:41 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:49776 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230034AbhBGSn6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 13:43:58 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 117IUPmw027844;
+        Sun, 7 Feb 2021 10:43:07 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=DvfD7O77b2ATuThWoUKzOIAnS3uUNeYNikGy/OGeLu8=;
- b=P5KgyljHtEpFrD+DRN/OXuzv2Fg5kLNssoZion9cRcUneWGK8tGNQFzZ7w4p7LuxlH+P
- u/3zvtEGwUm1YqnaLdJRSBEW0Rq18XvWqPT3yqVsJsAcKwvt+ZHdQyJ5s07EJBGN+xRt
- XImDUP2h9JBz2lpXWFBLgrskEr5Z9X/1hb4Dvpp+JJLmL4L927qx4fYaQbuKnCbyzwW+
- ZRNlxx3WvR2C1ex2lipCjWrN2S+TKEL1Hw1rMr7JJGcYvZLPh68nBlbPol7Pk+GcWLnC
- pb423vHypwyiyTKrY8sf41dFd0EWTBKAwYneomx2LoaUO1KQKUVWTQk7efhElR2fax0Q BQ== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 36hsbramq2-1
+ content-type; s=pfpt0220; bh=YyIJ/1eDbCh0foaOPgcKNNopcXPvlFkHzZZvwgJfM/4=;
+ b=dM2EmSeXOG9Yb/fxeYrJM0TT9ok+ev2aA68lL3teTYl5LopVAedtFwaYx9HwQ1RBbjjy
+ Dhcb8de0rLWCDxMFWGgb6TmYjVwB1VEJSH88vX2+Hz3JfZIKgYUHOudWJt/PC7xD3xdL
+ wXjZetags4pFBMBu+y4xn1L7FdEQqFj4KJZ5NKNSPLmDDKQ8He2NF5h5QTP2gl6yHPfD
+ qR+aiKnXH2wqV60ILZ+ta8Z3TjOl3jNdPVPpMKq+DQvkZtYRXGgoHVSwmdqVwmGJZStK
+ 053fsLoC++bbwKzmElFO8bD1vKFs1C/JiE5bcEVc/bjrUiUNpNhJP4AoF0mUOvBmcnxA CA== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 36hugq2ex2-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 07 Feb 2021 10:42:51 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 7 Feb
- 2021 10:42:49 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sun, 7 Feb 2021 10:42:49 -0800
+        Sun, 07 Feb 2021 10:43:07 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 7 Feb
+ 2021 10:43:05 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sun, 7 Feb 2021 10:43:05 -0800
 Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id 9DBEF3F7040;
-        Sun,  7 Feb 2021 10:42:45 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id 5788C3F7040;
+        Sun,  7 Feb 2021 10:43:01 -0800 (PST)
 From:   <stefanc@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
@@ -46,9 +46,9 @@ CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
         <robh+dt@kernel.org>, <sebastian.hesselbarth@gmail.com>,
         <gregory.clement@bootlin.com>,
         <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH v9 net-next 14/15] net: mvpp2: set 802.3x GoP Flow Control mode
-Date:   Sun, 7 Feb 2021 20:38:56 +0200
-Message-ID: <1612723137-18045-15-git-send-email-stefanc@marvell.com>
+Subject: [PATCH v9 net-next 15/15] net: mvpp2: add TX FC firmware check
+Date:   Sun, 7 Feb 2021 20:38:57 +0200
+Message-ID: <1612723137-18045-16-git-send-email-stefanc@marvell.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1612723137-18045-1-git-send-email-stefanc@marvell.com>
 References: <1612723137-18045-1-git-send-email-stefanc@marvell.com>
@@ -62,28 +62,95 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Stefan Chulski <stefanc@marvell.com>
 
-This patch fix GMAC TX flow control autoneg.
-Flow control autoneg wrongly were disabled with enabled TX
-flow control.
+Patch check that TX FC firmware is running in CM3.
+If not, global TX FC would be disabled.
 
 Signed-off-by: Stefan Chulski <stefanc@marvell.com>
 ---
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h      |  1 +
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 42 ++++++++++++++++----
+ 2 files changed, 36 insertions(+), 7 deletions(-)
 
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+index b61a1ba..da87152 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+@@ -828,6 +828,7 @@
+ 
+ #define MSS_THRESHOLD_STOP	768
+ #define MSS_THRESHOLD_START	1024
++#define MSS_FC_MAX_TIMEOUT	5000
+ 
+ /* RX buffer constants */
+ #define MVPP2_SKB_SHINFO_SIZE \
 diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index a472125..4d0a398 100644
+index 4d0a398..fed4521 100644
 --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
 +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -6283,7 +6283,7 @@ static void mvpp2_gmac_config(struct mvpp2_port *port, unsigned int mode,
- 	old_ctrl4 = ctrl4 = readl(port->base + MVPP22_GMAC_CTRL_4_REG);
+@@ -931,6 +931,34 @@ static void mvpp2_bm_pool_update_fc(struct mvpp2_port *port,
+ 	spin_unlock_irqrestore(&port->priv->mss_spinlock, flags);
+ }
  
- 	ctrl0 &= ~MVPP2_GMAC_PORT_TYPE_MASK;
--	ctrl2 &= ~(MVPP2_GMAC_INBAND_AN_MASK | MVPP2_GMAC_PCS_ENABLE_MASK);
-+	ctrl2 &= ~(MVPP2_GMAC_INBAND_AN_MASK | MVPP2_GMAC_PCS_ENABLE_MASK | MVPP2_GMAC_FLOW_CTRL_MASK);
++static int mvpp2_enable_global_fc(struct mvpp2 *priv)
++{
++	int val, timeout = 0;
++
++	/* Enable global flow control. In this stage global
++	 * flow control enabled, but still disabled per port.
++	 */
++	val = mvpp2_cm3_read(priv, MSS_FC_COM_REG);
++	val |= FLOW_CONTROL_ENABLE_BIT;
++	mvpp2_cm3_write(priv, MSS_FC_COM_REG, val);
++
++	/* Check if Firmware running and disable FC if not*/
++	val |= FLOW_CONTROL_UPDATE_COMMAND_BIT;
++	mvpp2_cm3_write(priv, MSS_FC_COM_REG, val);
++
++	while (timeout < MSS_FC_MAX_TIMEOUT) {
++		val = mvpp2_cm3_read(priv, MSS_FC_COM_REG);
++
++		if (!(val & FLOW_CONTROL_UPDATE_COMMAND_BIT))
++			return 0;
++		usleep_range(10, 20);
++		timeout++;
++	}
++
++	priv->global_tx_fc = false;
++	return -EOPNOTSUPP;
++}
++
+ /* Release buffer to BM */
+ static inline void mvpp2_bm_pool_put(struct mvpp2_port *port, int pool,
+ 				     dma_addr_t buf_dma_addr,
+@@ -7263,7 +7291,7 @@ static int mvpp2_probe(struct platform_device *pdev)
+ 	struct resource *res;
+ 	void __iomem *base;
+ 	int i, shared;
+-	int err, val;
++	int err;
  
- 	/* Configure port type */
- 	if (phy_interface_mode_is_8023z(state->interface)) {
+ 	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+ 	if (!priv)
+@@ -7487,13 +7515,13 @@ static int mvpp2_probe(struct platform_device *pdev)
+ 		goto err_port_probe;
+ 	}
+ 
+-	/* Enable global flow control. In this stage global
+-	 * flow control enabled, but still disabled per port.
+-	 */
+ 	if (priv->global_tx_fc && priv->hw_version != MVPP21) {
+-		val = mvpp2_cm3_read(priv, MSS_FC_COM_REG);
+-		val |= FLOW_CONTROL_ENABLE_BIT;
+-		mvpp2_cm3_write(priv, MSS_FC_COM_REG, val);
++		err = mvpp2_enable_global_fc(priv);
++		if (err) {
++			dev_warn(&pdev->dev, "CM3 firmware not running, version should be higher than 18.09 ");
++			dev_warn(&pdev->dev, "and chip revision B0\n");
++			dev_warn(&pdev->dev, "Flow control not supported\n");
++		}
+ 	}
+ 
+ 	mvpp2_dbgfs_init(priv, pdev->name);
 -- 
 1.9.1
 
