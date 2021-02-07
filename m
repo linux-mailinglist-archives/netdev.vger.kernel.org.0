@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BC93312532
-	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 16:24:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D759312537
+	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 16:24:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230377AbhBGPXX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Feb 2021 10:23:23 -0500
-Received: from mx13.kaspersky-labs.com ([91.103.66.164]:17177 "EHLO
-        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230226AbhBGPUn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 10:20:43 -0500
-Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 127EF520D18;
-        Sun,  7 Feb 2021 18:18:58 +0300 (MSK)
+        id S230046AbhBGPYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Feb 2021 10:24:04 -0500
+Received: from mx12.kaspersky-labs.com ([91.103.66.155]:14036 "EHLO
+        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230239AbhBGPUo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 10:20:44 -0500
+Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay12.kaspersky-labs.com (Postfix) with ESMTP id BBAB0759B2;
+        Sun,  7 Feb 2021 18:19:11 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail; t=1612711138;
-        bh=vznP3SDyPGb/5I/RG8qUNnKK6ABkiLEB4O91wr6uR0E=;
+        s=mail; t=1612711151;
+        bh=YA2kZ0rtd9LWy9mwBKezwHuJUnNbYwBs39DL982InAM=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=Z1DQVmThW4kYg0XN6Hcjp4iCehi1incVISji691FdEb4JmhqdW4t2JNqcrQZJWQuE
-         Knn6bVJ2cUDTPd5JhdWg85n4SVuc/WaPjUZYtLDpPyG3D2HpBkjcDmv+PSKtn7VKef
-         qfbhpCdTJQaKNUx3GEje2c3jlVMsN3NOLv5VLM5o=
+        b=e/LbW+g4EQJSjAKh5yNiznR2y6u17dLrpfxEMjIuffYV7AVgbmdZ7MHwEDnpR/UjP
+         AyW8a72axjfkw58c7SKQk4IfVfara4plpLEYQRum+UnQk4T2u3jeSmnVnjeaHjG/lQ
+         uXOD2dIVoPKUuWA45lwGwnqJaoF79V/kworWnUAs=
 Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id CC12E520D0B;
-        Sun,  7 Feb 2021 18:18:57 +0300 (MSK)
+        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 7C2327593C;
+        Sun,  7 Feb 2021 18:19:11 +0300 (MSK)
 Received: from arseniy-pc.avp.ru (10.64.64.121) by hqmailmbx3.avp.ru
  (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2044.4; Sun, 7 Feb
- 2021 18:18:57 +0300
+ 2021 18:19:10 +0300
 From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -39,15 +39,15 @@ To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Arseny Krasnov <arseny.krasnov@kaspersky.com>,
         Jorgen Hansen <jhansen@vmware.com>,
-        Colin Ian King <colin.king@canonical.com>,
         Andra Paraschiv <andraprs@amazon.com>,
-        Jeff Vander Stoep <jeffv@google.com>
+        Colin Ian King <colin.king@canonical.com>,
+        Alexander Popov <alex.popov@linux.com>
 CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <stsp2@yandex.ru>, <oxffffaa@gmail.com>
-Subject: [RFC PATCH v4 16/17] loopback/vsock: setup SEQPACKET ops for transport
-Date:   Sun, 7 Feb 2021 18:18:48 +0300
-Message-ID: <20210207151851.806233-1-arseny.krasnov@kaspersky.com>
+Subject: [RFC PATCH v4 17/17] virtio/vsock: simplify credit update function API
+Date:   Sun, 7 Feb 2021 18:19:03 +0300
+Message-ID: <20210207151906.806343-1-arseny.krasnov@kaspersky.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210207151259.803917-1-arseny.krasnov@kaspersky.com>
 References: <20210207151259.803917-1-arseny.krasnov@kaspersky.com>
@@ -55,7 +55,7 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Originating-IP: [10.64.64.121]
-X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
+X-ClientProxiedBy: hqmailmbx1.avp.ru (10.64.67.241) To hqmailmbx3.avp.ru
  (10.64.67.243)
 X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
 X-KSE-AntiSpam-Interceptor-Info: scan successful
@@ -96,29 +96,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds SEQPACKET ops for loopback transport
+'virtio_transport_send_credit_update()' has some extra args:
+1) 'type' may be set in 'virtio_transport_send_pkt_info()' using type
+   of socket.
+2) This function is static and 'hdr' arg was always NULL.
 
 Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
 ---
- net/vmw_vsock/vsock_loopback.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ net/vmw_vsock/virtio_transport_common.c | 20 +++++---------------
+ 1 file changed, 5 insertions(+), 15 deletions(-)
 
-diff --git a/net/vmw_vsock/vsock_loopback.c b/net/vmw_vsock/vsock_loopback.c
-index a45f7ffca8c5..c0da94119f74 100644
---- a/net/vmw_vsock/vsock_loopback.c
-+++ b/net/vmw_vsock/vsock_loopback.c
-@@ -89,6 +89,11 @@ static struct virtio_transport loopback_transport = {
- 		.stream_is_active         = virtio_transport_stream_is_active,
- 		.stream_allow             = virtio_transport_stream_allow,
+diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+index 0aa0fd33e9d6..46308679c8a4 100644
+--- a/net/vmw_vsock/virtio_transport_common.c
++++ b/net/vmw_vsock/virtio_transport_common.c
+@@ -286,13 +286,10 @@ void virtio_transport_put_credit(struct virtio_vsock_sock *vvs, u32 credit)
+ }
+ EXPORT_SYMBOL_GPL(virtio_transport_put_credit);
  
-+		.seqpacket_seq_send_len	  = virtio_transport_seqpacket_seq_send_len,
-+		.seqpacket_seq_send_eor	  = virtio_transport_seqpacket_seq_send_eor,
-+		.seqpacket_seq_get_len	  = virtio_transport_seqpacket_seq_get_len,
-+		.seqpacket_dequeue        = virtio_transport_seqpacket_dequeue,
-+
- 		.notify_poll_in           = virtio_transport_notify_poll_in,
- 		.notify_poll_out          = virtio_transport_notify_poll_out,
- 		.notify_recv_init         = virtio_transport_notify_recv_init,
+-static int virtio_transport_send_credit_update(struct vsock_sock *vsk,
+-					       int type,
+-					       struct virtio_vsock_hdr *hdr)
++static int virtio_transport_send_credit_update(struct vsock_sock *vsk)
+ {
+ 	struct virtio_vsock_pkt_info info = {
+ 		.op = VIRTIO_VSOCK_OP_CREDIT_UPDATE,
+-		.type = type,
+ 		.vsk = vsk,
+ 	};
+ 
+@@ -401,9 +398,7 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
+ 	 * with different values.
+ 	 */
+ 	if (free_space < VIRTIO_VSOCK_MAX_PKT_BUF_SIZE) {
+-		virtio_transport_send_credit_update(vsk,
+-						    VIRTIO_VSOCK_TYPE_STREAM,
+-						    NULL);
++		virtio_transport_send_credit_update(vsk);
+ 	}
+ 
+ 	return total;
+@@ -525,9 +520,7 @@ size_t virtio_transport_seqpacket_seq_get_len(struct vsock_sock *vsk)
+ 	spin_unlock_bh(&vvs->rx_lock);
+ 
+ 	if (bytes_dropped)
+-		virtio_transport_send_credit_update(vsk,
+-						    VIRTIO_VSOCK_TYPE_SEQPACKET,
+-						    NULL);
++		virtio_transport_send_credit_update(vsk);
+ 
+ 	return vvs->user_read_seq_len;
+ }
+@@ -624,8 +617,7 @@ static int virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
+ 
+ 	spin_unlock_bh(&vvs->rx_lock);
+ 
+-	virtio_transport_send_credit_update(vsk, VIRTIO_VSOCK_TYPE_SEQPACKET,
+-					    NULL);
++	virtio_transport_send_credit_update(vsk);
+ 
+ 	return err;
+ }
+@@ -735,15 +727,13 @@ EXPORT_SYMBOL_GPL(virtio_transport_do_socket_init);
+ void virtio_transport_notify_buffer_size(struct vsock_sock *vsk, u64 *val)
+ {
+ 	struct virtio_vsock_sock *vvs = vsk->trans;
+-	int type;
+ 
+ 	if (*val > VIRTIO_VSOCK_MAX_BUF_SIZE)
+ 		*val = VIRTIO_VSOCK_MAX_BUF_SIZE;
+ 
+ 	vvs->buf_alloc = *val;
+ 
+-	type = virtio_transport_get_type(sk_vsock(vsk));
+-	virtio_transport_send_credit_update(vsk, type, NULL);
++	virtio_transport_send_credit_update(vsk);
+ }
+ EXPORT_SYMBOL_GPL(virtio_transport_notify_buffer_size);
+ 
 -- 
 2.25.1
 
