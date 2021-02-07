@@ -2,39 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 977D731229C
-	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 09:27:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BDD7331229E
+	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 09:27:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229976AbhBGI0N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Feb 2021 03:26:13 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:4186 "EHLO
+        id S230133AbhBGI03 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Feb 2021 03:26:29 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:59238 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229910AbhBGIXH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 03:23:07 -0500
+        by vger.kernel.org with ESMTP id S229934AbhBGIXR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 03:23:17 -0500
 Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1178LGJS025666;
-        Sun, 7 Feb 2021 00:22:16 -0800
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1178LTrg025726;
+        Sun, 7 Feb 2021 00:22:26 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=7LwR1nLKUpv51GM9JH6RPwo2xhMdAQWWEf6bm82cJYo=;
- b=OIVPqXywKUioIF1XLTGEfNEyJ5tqgziU83ONROLNflDxTAF98ZRU1xSPpsipcPzyl5AK
- QdfRtdFuBNQ9hd0NdjmMv7v5NHuSwlR8Mi0EplxCJutNfKGfj4Gd8eMFmDzhKbNwSHTU
- A39gEComEU0IOBde4FhnTNYtvqzbAmXH1r/6v8uW1jcKWSNMsS8mtQINeQS5cmJ0Z99T
- +I/HhsF+wFwGsEGYGtb2a3VWpc6pt254oJP5FHMKCoN8bFg6ij/0wSz/d8yZf6c2u5af
- yvx6qxj4fBzm0FM55QCwrbF0cL5IrVB/VwR3GNTB66KY4khwG1Efk83QxeGu8gtdmOLf OA== 
+ content-type; s=pfpt0220; bh=/QR8n5+V9pV+Fvq2r4BCexTls+mo7fUS6/v+GPQ1Z/Y=;
+ b=d6lamYKUXv2VlU4AEdA1HL8CgOjX1vz2i4ZF7ciZdWhJ5ldDUzWBPFcZVuBX25O3EV4e
+ tySDQL58429yIe6aclYwAfVqOF6Pbrk62BjsFS7WiyqsMmJKticis0cgZJP80MaEN3tq
+ H9wYSC+QbtscmTRNsy9Jk2pbvaGJT8G/OWYA3iy8VmD8m7w68GuhqsjHpXpANOPLc6D1
+ cypuX8uLTc7g4JZEdSoKgiZUXIjvcYvB7l34BlW4PoMafZcMok95BHtuPZE3B1+m6uv2
+ qU0ruN2T3kZdVA2q5YQpXvZ/Y3KUon/WgdpK58o3GTzyMazxl3jQFHJ5GbBrgcJXcwbG kw== 
 Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 36hugq1m34-1
+        by mx0b-0016f401.pphosted.com with ESMTP id 36hugq1m3b-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 07 Feb 2021 00:22:16 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+        Sun, 07 Feb 2021 00:22:26 -0800
+Received: from SC-EXCH04.marvell.com (10.93.176.84) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 7 Feb
- 2021 00:22:14 -0800
+ 2021 00:22:24 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 7 Feb
+ 2021 00:22:23 -0800
 Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
  (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sun, 7 Feb 2021 00:22:14 -0800
+ Transport; Sun, 7 Feb 2021 00:22:23 -0800
 Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id 4DC963F703F;
-        Sun,  7 Feb 2021 00:22:10 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id 078723F703F;
+        Sun,  7 Feb 2021 00:22:19 -0800 (PST)
 From:   <stefanc@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
@@ -46,9 +49,9 @@ CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
         <robh+dt@kernel.org>, <sebastian.hesselbarth@gmail.com>,
         <gregory.clement@bootlin.com>,
         <linux-arm-kernel@lists.infradead.org>
-Subject: [RESEND PATCH v8 net-next 12/15] net: mvpp2: add BM protection underrun feature support
-Date:   Sun, 7 Feb 2021 10:19:21 +0200
-Message-ID: <1612685964-21890-13-git-send-email-stefanc@marvell.com>
+Subject: [RESEND PATCH v8 net-next 13/15] net: mvpp2: add PPv23 RX FIFO flow control
+Date:   Sun, 7 Feb 2021 10:19:22 +0200
+Message-ID: <1612685964-21890-14-git-send-email-stefanc@marvell.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1612685964-21890-1-git-send-email-stefanc@marvell.com>
 References: <1612685964-21890-1-git-send-email-stefanc@marvell.com>
@@ -62,122 +65,138 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Stefan Chulski <stefanc@marvell.com>
 
-The PP2v23 hardware supports a feature allowing to double the
-size of BPPI by decreasing number of pools from 16 to 8.
-Increasing of BPPI size protect BM drop from BPPI underrun.
-Underrun could occurred due to stress on DDR and as result slow buffer
-transition from BPPE to BPPI.
-New BPPI threshold recommended by spec is:
-BPPI low threshold - 640 buffers
-BPPI high threshold - 832 buffers
-Supported only in PPv23.
+New FIFO flow control feature was added in PPv23.
+PPv2 FIFO polled by HW and trigger pause frame if FIFO
+fill level is below threshold.
+FIFO HW flow control enabled with CM3 RXQ&BM flow
+control with ethtool.
+Current  FIFO thresholds is:
+9KB for port with maximum speed 10Gb/s port
+4KB for port with maximum speed 5Gb/s port
+2KB for port with maximum speed 1Gb/s port
 
 Signed-off-by: Stefan Chulski <stefanc@marvell.com>
 ---
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h      |  8 +++++
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 35 +++++++++++++++++++-
- 2 files changed, 42 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h      | 15 ++++++
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 53 ++++++++++++++++++++
+ 2 files changed, 68 insertions(+)
 
 diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-index 9071ab6..1967493 100644
+index 1967493..9947385 100644
 --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
 +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-@@ -324,6 +324,10 @@
- #define     MVPP2_BM_HIGH_THRESH_MASK		0x7f0000
- #define     MVPP2_BM_HIGH_THRESH_VALUE(val)	((val) << \
- 						MVPP2_BM_HIGH_THRESH_OFFS)
-+#define     MVPP2_BM_BPPI_HIGH_THRESH		0x1E
-+#define     MVPP2_BM_BPPI_LOW_THRESH		0x1C
-+#define     MVPP23_BM_BPPI_HIGH_THRESH		0x34
-+#define     MVPP23_BM_BPPI_LOW_THRESH		0x28
- #define MVPP2_BM_INTR_CAUSE_REG(pool)		(0x6240 + ((pool) * 4))
- #define     MVPP2_BM_RELEASED_DELAY_MASK	BIT(0)
- #define     MVPP2_BM_ALLOC_FAILED_MASK		BIT(1)
-@@ -352,6 +356,10 @@
- #define MVPP2_OVERRUN_ETH_DROP			0x7000
- #define MVPP2_CLS_ETH_DROP			0x7020
+@@ -770,6 +770,18 @@
+ #define MVPP2_TX_FIFO_THRESHOLD(kb)	\
+ 		((kb) * 1024 - MVPP2_TX_FIFO_THRESHOLD_MIN)
  
-+#define MVPP22_BM_POOL_BASE_ADDR_HIGH_REG	0x6310
-+#define     MVPP22_BM_POOL_BASE_ADDR_HIGH_MASK	0xff
-+#define     MVPP23_BM_8POOL_MODE		BIT(8)
++/* RX FIFO threshold in 1KB granularity */
++#define MVPP23_PORT0_FIFO_TRSH	(9 * 1024)
++#define MVPP23_PORT1_FIFO_TRSH	(4 * 1024)
++#define MVPP23_PORT2_FIFO_TRSH	(2 * 1024)
 +
- /* Hit counters registers */
- #define MVPP2_CTRS_IDX				0x7040
- #define     MVPP22_CTRS_TX_CTR(port, txq)	((txq) | ((port) << 3) | BIT(7))
++/* RX Flow Control Registers */
++#define MVPP2_RX_FC_REG(port)		(0x150 + 4 * (port))
++#define     MVPP2_RX_FC_EN		BIT(24)
++#define     MVPP2_RX_FC_TRSH_OFFS	16
++#define     MVPP2_RX_FC_TRSH_MASK	(0xFF << MVPP2_RX_FC_TRSH_OFFS)
++#define     MVPP2_RX_FC_TRSH_UNIT	256
++
+ /* MSS Flow control */
+ #define MSS_SRAM_SIZE			0x800
+ #define MSS_FC_COM_REG			0
+@@ -1502,6 +1514,8 @@ struct mvpp2_bm_pool {
+ 
+ void mvpp2_dbgfs_cleanup(struct mvpp2 *priv);
+ 
++void mvpp23_rx_fifo_fc_en(struct mvpp2 *priv, int port, bool en);
++
+ #ifdef CONFIG_MVPP2_PTP
+ int mvpp22_tai_probe(struct device *dev, struct mvpp2 *priv);
+ void mvpp22_tai_tstamp(struct mvpp2_tai *tai, u32 tstamp,
+@@ -1534,4 +1548,5 @@ static inline bool mvpp22_rx_hwtstamping(struct mvpp2_port *port)
+ {
+ 	return IS_ENABLED(CONFIG_MVPP2_PTP) && port->rx_hwtstamp;
+ }
++
+ #endif
 diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 5d80c5e..e41b173 100644
+index e41b173..5a51697 100644
 --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
 +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -70,6 +70,11 @@ enum mvpp2_bm_pool_log_num {
- module_param(queue_mode, int, 0444);
- MODULE_PARM_DESC(queue_mode, "Set queue_mode (single=0, multi=1)");
+@@ -6537,6 +6537,8 @@ static void mvpp2_mac_link_up(struct phylink_config *config,
+ 			mvpp2_bm_pool_update_fc(port, port->pool_long, tx_pause);
+ 			mvpp2_bm_pool_update_fc(port, port->pool_short, tx_pause);
+ 		}
++		if (port->priv->hw_version == MVPP23)
++			mvpp23_rx_fifo_fc_en(port->priv, port->id, tx_pause);
+ 	}
  
-+static int bm_underrun_protect = 1;
-+
-+module_param(bm_underrun_protect, int, 0444);
-+MODULE_PARM_DESC(bm_underrun_protect, "Set BM underrun protect feature (0-1), def=1");
-+
- /* Utility/helper methods */
- 
- void mvpp2_write(struct mvpp2 *priv, u32 offset, u32 data)
-@@ -424,6 +429,21 @@ static int mvpp2_bm_pool_create(struct device *dev, struct mvpp2 *priv,
- 
- 	val = mvpp2_read(priv, MVPP2_BM_POOL_CTRL_REG(bm_pool->id));
- 	val |= MVPP2_BM_START_MASK;
-+
-+	val &= ~MVPP2_BM_LOW_THRESH_MASK;
-+	val &= ~MVPP2_BM_HIGH_THRESH_MASK;
-+
-+	/* Set 8 Pools BPPI threshold if BM underrun protection feature
-+	 * was enabled
-+	 */
-+	if (priv->hw_version == MVPP23 && bm_underrun_protect) {
-+		val |= MVPP2_BM_LOW_THRESH_VALUE(MVPP23_BM_BPPI_LOW_THRESH);
-+		val |= MVPP2_BM_HIGH_THRESH_VALUE(MVPP23_BM_BPPI_HIGH_THRESH);
-+	} else {
-+		val |= MVPP2_BM_LOW_THRESH_VALUE(MVPP2_BM_BPPI_LOW_THRESH);
-+		val |= MVPP2_BM_HIGH_THRESH_VALUE(MVPP2_BM_BPPI_HIGH_THRESH);
-+	}
-+
- 	mvpp2_write(priv, MVPP2_BM_POOL_CTRL_REG(bm_pool->id), val);
- 
- 	bm_pool->size = size;
-@@ -592,6 +612,16 @@ static int mvpp2_bm_pools_init(struct device *dev, struct mvpp2 *priv)
- 	return err;
+ 	mvpp2_port_enable(port);
+@@ -7005,6 +7007,55 @@ static void mvpp22_rx_fifo_init(struct mvpp2 *priv)
+ 	mvpp2_write(priv, MVPP2_RX_FIFO_INIT_REG, 0x1);
  }
  
-+/* Routine enable PPv23 8 pool mode */
-+static void mvpp23_bm_set_8pool_mode(struct mvpp2 *priv)
++/* Configure Rx FIFO Flow control thresholds */
++static void mvpp23_rx_fifo_fc_set_tresh(struct mvpp2 *priv)
++{
++	int port, val;
++
++	/* Port 0: maximum speed -10Gb/s port
++	 *	   required by spec RX FIFO threshold 9KB
++	 * Port 1: maximum speed -5Gb/s port
++	 *	   required by spec RX FIFO threshold 4KB
++	 * Port 2: maximum speed -1Gb/s port
++	 *	   required by spec RX FIFO threshold 2KB
++	 */
++
++	/* Without loopback port */
++	for (port = 0; port < (MVPP2_MAX_PORTS - 1); port++) {
++		if (port == 0) {
++			val = (MVPP23_PORT0_FIFO_TRSH / MVPP2_RX_FC_TRSH_UNIT)
++				<< MVPP2_RX_FC_TRSH_OFFS;
++			val &= MVPP2_RX_FC_TRSH_MASK;
++			mvpp2_write(priv, MVPP2_RX_FC_REG(port), val);
++		} else if (port == 1) {
++			val = (MVPP23_PORT1_FIFO_TRSH / MVPP2_RX_FC_TRSH_UNIT)
++				<< MVPP2_RX_FC_TRSH_OFFS;
++			val &= MVPP2_RX_FC_TRSH_MASK;
++			mvpp2_write(priv, MVPP2_RX_FC_REG(port), val);
++		} else {
++			val = (MVPP23_PORT2_FIFO_TRSH / MVPP2_RX_FC_TRSH_UNIT)
++				<< MVPP2_RX_FC_TRSH_OFFS;
++			val &= MVPP2_RX_FC_TRSH_MASK;
++			mvpp2_write(priv, MVPP2_RX_FC_REG(port), val);
++		}
++	}
++}
++
++/* Configure Rx FIFO Flow control thresholds */
++void mvpp23_rx_fifo_fc_en(struct mvpp2 *priv, int port, bool en)
 +{
 +	int val;
 +
-+	val = mvpp2_read(priv, MVPP22_BM_POOL_BASE_ADDR_HIGH_REG);
-+	val |= MVPP23_BM_8POOL_MODE;
-+	mvpp2_write(priv, MVPP22_BM_POOL_BASE_ADDR_HIGH_REG, val);
++	val = mvpp2_read(priv, MVPP2_RX_FC_REG(port));
++
++	if (en)
++		val |= MVPP2_RX_FC_EN;
++	else
++		val &= ~MVPP2_RX_FC_EN;
++
++	mvpp2_write(priv, MVPP2_RX_FC_REG(port), val);
 +}
 +
- static int mvpp2_bm_init(struct device *dev, struct mvpp2 *priv)
+ static void mvpp22_tx_fifo_set_hw(struct mvpp2 *priv, int port, int size)
  {
- 	enum dma_data_direction dma_dir = DMA_FROM_DEVICE;
-@@ -645,6 +675,9 @@ static int mvpp2_bm_init(struct device *dev, struct mvpp2 *priv)
- 	if (!priv->bm_pools)
- 		return -ENOMEM;
- 
-+	if (priv->hw_version == MVPP23 && bm_underrun_protect)
-+		mvpp23_bm_set_8pool_mode(priv);
-+
- 	err = mvpp2_bm_pools_init(dev, priv);
- 	if (err < 0)
- 		return err;
-@@ -6491,7 +6524,7 @@ static void mvpp2_mac_link_up(struct phylink_config *config,
- 			     val);
+ 	int threshold = MVPP2_TX_FIFO_THRESHOLD(size);
+@@ -7156,6 +7207,8 @@ static int mvpp2_init(struct platform_device *pdev, struct mvpp2 *priv)
+ 	} else {
+ 		mvpp22_rx_fifo_init(priv);
+ 		mvpp22_tx_fifo_init(priv);
++		if (priv->hw_version == MVPP23)
++			mvpp23_rx_fifo_fc_set_tresh(priv);
  	}
  
--	if (port->priv->global_tx_fc) {
-+	if (port->priv->global_tx_fc && bm_underrun_protect) {
- 		port->tx_fc = tx_pause;
- 		if (tx_pause)
- 			mvpp2_rxq_enable_fc(port);
+ 	if (priv->hw_version == MVPP21)
 -- 
 1.9.1
 
