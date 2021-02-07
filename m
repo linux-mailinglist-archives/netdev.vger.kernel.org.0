@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F7213122BC
-	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 09:32:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07B343122BA
+	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 09:31:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229976AbhBGIbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Feb 2021 03:31:43 -0500
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:47851 "EHLO
+        id S229759AbhBGIbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Feb 2021 03:31:19 -0500
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:57027 "EHLO
         new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230183AbhBGI1u (ORCPT
+        by vger.kernel.org with ESMTP id S230184AbhBGI1u (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 03:27:50 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id B45E25801E4;
-        Sun,  7 Feb 2021 03:23:54 -0500 (EST)
+        by mailnew.nyi.internal (Postfix) with ESMTP id 8FE655801E8;
+        Sun,  7 Feb 2021 03:23:57 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Sun, 07 Feb 2021 03:23:54 -0500
+  by compute3.internal (MEProxy); Sun, 07 Feb 2021 03:23:57 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=CBISyTe1Zub/yUTLGj3lYAi0JyzPCpjZBhfK4lgEmRA=; b=ZiH9EOFw
-        EOY+MD2ONEUre2Je75fTZEsHAsr0ESUOnBVMi2KvYsyivhM637/8NLaYmhAYi1Cn
-        FYJPtUiyx3gNYNmq6FZ3BLbAuGxDwgfp/0jTn/9n/+GMSn+kZ61CK1rOdP8ev0M4
-        +eCV+9215R0ReiOmFF9M98rHA2dezGiI0ZELrmpDNPneA+kkPfHq9CZluypNde/+
-        mM4x8RyeFc3UbuYJUpmFH4V650+EeFN+6gi+ABwaK4DWd7h64ULNbWqzkjaj4S6M
-        5qMrddbhXa2/GejcXk2JhjLCsm9sk4WCYCAzgg9nSwxLE8gPCJZtDatIgFBzS3fz
-        OOKjkJ1u52tWAw==
-X-ME-Sender: <xms:mqMfYIAmmW9DFfIRAD1bSDqi4SU6-kQmWJPbQ-i_vVwHuYe6S4fo1Q>
-    <xme:mqMfYKiAwuLCBRIH6ktgMXIsJJvqFxEB8sQ2QPKL0Tb-aFG7Qjq6Oosk7FYJ43Wa0
-    3OM2cslfJFXz4Y>
+        fm2; bh=o4kuCeu0ErGnmM0Hixxxa5XVXqiF5yLertayOuU1NsY=; b=W5oZ1icd
+        4Azqv4YWtdk8uumaAC71wRKNQLCxm3dbfXC34Vlu9gZ8N7UrhcK2Mgk6u/BYFYLc
+        yHiGtYsBzlkdC307KuGTG/R/zwHYWYTkxSa1fTyNZuq8CbKgm39TH81iRUVsQzSD
+        U2L/PCFzbSjaMWiQ/W0qqi7r07/MzCkY475D8G71suSVhM91wdV7PPXN2qrHc1hL
+        1tkVTlvaD3Km+E/Reo5intYU1/my1fiA+G8suuw0edCGHHwyHFWFKNh1lXktMKM6
+        L7LpvneOupZ0ia//sr+9QKwJLdcClaK1UIVVlBOuG7qYfV717NzhehSKpgtI1NXy
+        6+EqkOGd1s6sbw==
+X-ME-Sender: <xms:naMfYJhX37D3pU0nY-OVg7QOwegFEBoYZb_JUCTlw4jOMDRRFWXSvw>
+    <xme:naMfYOD34M-uAgBRHV4e42-wSc31yEOzkULq827jfND2lQ6AZwiTL9QbMbNl_0mqx
+    TYxNGDCRmST9rw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrhedtgddvjecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
     ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
     tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhfekhe
     fgtdfftefhledvjefggfehgfevjeekhfenucfkphepkeegrddvvdelrdduheefrdeggeen
-    ucevlhhushhtvghrufhiiigvpeeinecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
+    ucevlhhushhtvghrufhiiigvpeelnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
     gthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:mqMfYLkPqI5wrH_O3gGPAM3qNGBxZFH0nJJ5dM9ZtnqiGZkiqTpqPw>
-    <xmx:mqMfYOxTHu3V6Sr8tF2kUZEl89x34_hv16BAstQRpqAbgqPofoIGAg>
-    <xmx:mqMfYNSHI3eQKnh11ib3yrVmLOaqNbdA1HChftHbbGFUq3AYTuJiIw>
-    <xmx:mqMfYIFYTkBT65orx1KKWT8XqKzUdq18lA-daTOQTMkpObTJtUoq1A>
+X-ME-Proxy: <xmx:naMfYJEiXVuW4IiOC6Cx1AkDJMue_L1dAcW6-7CtxrsYGPOioqUWAQ>
+    <xmx:naMfYORpRXRzLFqD-QG1A2oYdiKpagk1xxB5ml-IYv1AX8FRZ175gw>
+    <xmx:naMfYGyyJHGvwgGPS5a9oLutqeBkYlIuh1yUXqnkpDEetvNcsTCAmw>
+    <xmx:naMfYFnRTS7NV0kRFWcn-W5jtBQT9SETXSJqCucfTQjU7NPEOEvjVg>
 Received: from shredder.lan (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id B87F81080057;
-        Sun,  7 Feb 2021 03:23:52 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 014451080064;
+        Sun,  7 Feb 2021 03:23:54 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@gmail.com,
         jiri@nvidia.com, yoshfuji@linux-ipv6.org, amcohen@nvidia.com,
         roopa@nvidia.com, bpoirier@nvidia.com, sharpd@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 09/10] mlxsw: spectrum_router: Set offload_failed flag
-Date:   Sun,  7 Feb 2021 10:22:57 +0200
-Message-Id: <20210207082258.3872086-10-idosch@idosch.org>
+Subject: [PATCH net-next 10/10] selftests: netdevsim: Test route offload failure notifications
+Date:   Sun,  7 Feb 2021 10:22:58 +0200
+Message-Id: <20210207082258.3872086-11-idosch@idosch.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210207082258.3872086-1-idosch@idosch.org>
 References: <20210207082258.3872086-1-idosch@idosch.org>
@@ -65,116 +65,254 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Amit Cohen <amcohen@nvidia.com>
 
-When FIB_EVENT_ENTRY_{REPLACE, APPEND} are triggered and route insertion
-fails, FIB abort is triggered.
+Add cases to verify that when debugfs variable "fail_route_offload" is
+set, notification with "rt_offload_failed" flag is received.
 
-After aborting, set the appropriate hardware flag to make the kernel emit
-RTM_NEWROUTE notification with RTM_F_OFFLOAD_FAILED flag.
+Extend the existing cases to verify that when sysctl
+"fib_notify_on_flag_change" is set to 2, the kernel emits notifications
+only for failed route installation.
+
+$ ./fib_notifications.sh
+TEST: IPv4 route addition				[ OK ]
+TEST: IPv4 route deletion				[ OK ]
+TEST: IPv4 route replacement				[ OK ]
+TEST: IPv4 route offload failed				[ OK ]
+TEST: IPv6 route addition				[ OK ]
+TEST: IPv6 route deletion				[ OK ]
+TEST: IPv6 route replacement				[ OK ]
+TEST: IPv6 route offload failed				[ OK ]
 
 Signed-off-by: Amit Cohen <amcohen@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- .../ethernet/mellanox/mlxsw/spectrum_router.c | 52 +++++++++++++++++++
- 1 file changed, 52 insertions(+)
+ .../net/netdevsim/fib_notifications.sh        | 134 +++++++++++++++++-
+ 1 file changed, 132 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index a5f980b6940e..9ce90841f92d 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -4942,6 +4942,25 @@ mlxsw_sp_rt6_nexthop(struct mlxsw_sp_nexthop_group *nh_grp,
- 	return NULL;
- }
+diff --git a/tools/testing/selftests/drivers/net/netdevsim/fib_notifications.sh b/tools/testing/selftests/drivers/net/netdevsim/fib_notifications.sh
+index 16a9dd43aefc..8d91191a098c 100755
+--- a/tools/testing/selftests/drivers/net/netdevsim/fib_notifications.sh
++++ b/tools/testing/selftests/drivers/net/netdevsim/fib_notifications.sh
+@@ -7,9 +7,11 @@ ALL_TESTS="
+ 	ipv4_route_addition_test
+ 	ipv4_route_deletion_test
+ 	ipv4_route_replacement_test
++	ipv4_route_offload_failed_test
+ 	ipv6_route_addition_test
+ 	ipv6_route_deletion_test
+ 	ipv6_route_replacement_test
++	ipv6_route_offload_failed_test
+ "
  
-+static void
-+mlxsw_sp_fib4_offload_failed_flag_set(struct mlxsw_sp *mlxsw_sp,
-+				      struct fib_entry_notifier_info *fen_info)
-+{
-+	u32 *p_dst = (u32 *) &fen_info->dst;
-+	struct fib_rt_info fri;
-+
-+	fri.fi = fen_info->fi;
-+	fri.tb_id = fen_info->tb_id;
-+	fri.dst = cpu_to_be32(*p_dst);
-+	fri.dst_len = fen_info->dst_len;
-+	fri.tos = fen_info->tos;
-+	fri.type = fen_info->type;
-+	fri.offload = false;
-+	fri.trap = false;
-+	fri.offload_failed = true;
-+	fib_alias_hw_flags_set(mlxsw_sp_net(mlxsw_sp), &fri);
-+}
-+
- static void
- mlxsw_sp_fib4_entry_hw_flags_set(struct mlxsw_sp *mlxsw_sp,
- 				 struct mlxsw_sp_fib_entry *fib_entry)
-@@ -4990,6 +5009,30 @@ mlxsw_sp_fib4_entry_hw_flags_clear(struct mlxsw_sp *mlxsw_sp,
- 	fib_alias_hw_flags_set(mlxsw_sp_net(mlxsw_sp), &fri);
- }
+ NETDEVSIM_PATH=/sys/bus/netdevsim/
+@@ -17,9 +19,26 @@ DEV_ADDR=1337
+ DEV=netdevsim${DEV_ADDR}
+ DEVLINK_DEV=netdevsim/${DEV}
+ SYSFS_NET_DIR=/sys/bus/netdevsim/devices/$DEV/net/
++DEBUGFS_DIR=/sys/kernel/debug/netdevsim/$DEV/
+ NUM_NETIFS=0
+ source $lib_dir/lib.sh
  
-+#if IS_ENABLED(CONFIG_IPV6)
-+static void
-+mlxsw_sp_fib6_offload_failed_flag_set(struct mlxsw_sp *mlxsw_sp,
-+				      struct fib6_info **rt_arr,
-+				      unsigned int nrt6)
++check_rt_offload_failed()
 +{
-+	int i;
++	local outfile=$1; shift
++	local line
 +
-+	/* In IPv6 a multipath route is represented using multiple routes, so
-+	 * we need to set the flags on all of them.
-+	 */
-+	for (i = 0; i < nrt6; i++)
-+		fib6_info_hw_flags_set(mlxsw_sp_net(mlxsw_sp), rt_arr[i],
-+				       false, false, true);
-+}
-+#else
-+static void
-+mlxsw_sp_fib6_offload_failed_flag_set(struct mlxsw_sp *mlxsw_sp,
-+				      struct fib6_info **rt_arr,
-+				      unsigned int nrt6)
-+{
-+}
-+#endif
++	# Make sure that the first notification was emitted without
++	# RTM_F_OFFLOAD_FAILED flag and the second with RTM_F_OFFLOAD_FAILED
++	# flag
++	head -n 1 $outfile | grep -q "rt_offload_failed"
++	if [[ $? -eq 0 ]]; then
++		return 1
++	fi
 +
- #if IS_ENABLED(CONFIG_IPV6)
- static void
- mlxsw_sp_fib6_entry_hw_flags_set(struct mlxsw_sp *mlxsw_sp,
-@@ -7023,6 +7066,8 @@ static void mlxsw_sp_router_fib4_event_process(struct mlxsw_sp *mlxsw_sp,
- 		if (err) {
- 			mlxsw_sp_fib_entry_op_ctx_priv_put_all(op_ctx);
- 			mlxsw_sp_router_fib_abort(mlxsw_sp);
-+			mlxsw_sp_fib4_offload_failed_flag_set(mlxsw_sp,
-+							      &fib_event->fen_info);
- 		}
- 		fib_info_put(fib_event->fen_info.fi);
- 		break;
-@@ -7044,6 +7089,7 @@ static void mlxsw_sp_router_fib6_event_process(struct mlxsw_sp *mlxsw_sp,
- 					       struct mlxsw_sp_fib_entry_op_ctx *op_ctx,
- 					       struct mlxsw_sp_fib_event *fib_event)
++	head -n 2 $outfile | tail -n 1 | grep -q "rt_offload_failed"
++}
++
+ check_rt_trap()
  {
-+	struct mlxsw_sp_fib6_event *fib6_event = &fib_event->fib6_event;
- 	int err;
+ 	local outfile=$1; shift
+@@ -39,15 +58,23 @@ route_notify_check()
+ {
+ 	local outfile=$1; shift
+ 	local expected_num_lines=$1; shift
++	local offload_failed=${1:-0}; shift
  
- 	mlxsw_sp_span_respin(mlxsw_sp);
-@@ -7055,6 +7101,9 @@ static void mlxsw_sp_router_fib6_event_process(struct mlxsw_sp *mlxsw_sp,
- 		if (err) {
- 			mlxsw_sp_fib_entry_op_ctx_priv_put_all(op_ctx);
- 			mlxsw_sp_router_fib_abort(mlxsw_sp);
-+			mlxsw_sp_fib6_offload_failed_flag_set(mlxsw_sp,
-+							      fib6_event->rt_arr,
-+							      fib6_event->nrt6);
- 		}
- 		mlxsw_sp_router_fib6_event_fini(&fib_event->fib6_event);
- 		break;
-@@ -7064,6 +7113,9 @@ static void mlxsw_sp_router_fib6_event_process(struct mlxsw_sp *mlxsw_sp,
- 		if (err) {
- 			mlxsw_sp_fib_entry_op_ctx_priv_put_all(op_ctx);
- 			mlxsw_sp_router_fib_abort(mlxsw_sp);
-+			mlxsw_sp_fib6_offload_failed_flag_set(mlxsw_sp,
-+							      fib6_event->rt_arr,
-+							      fib6_event->nrt6);
- 		}
- 		mlxsw_sp_router_fib6_event_fini(&fib_event->fib6_event);
- 		break;
+ 	# check the monitor results
+ 	lines=`wc -l $outfile | cut "-d " -f1`
+ 	test $lines -eq $expected_num_lines
+ 	check_err $? "$expected_num_lines notifications were expected but $lines were received"
+ 
+-	if [[ $expected_num_lines -eq 2 ]]; then
++	if [[ $expected_num_lines -eq 1 ]]; then
++		return
++	fi
++
++	if [[ $offload_failed -eq 0 ]]; then
+ 		check_rt_trap $outfile
+ 		check_err $? "Wrong RTM_F_TRAP flags in notifications"
++	else
++		check_rt_offload_failed $outfile
++		check_err $? "Wrong RTM_F_OFFLOAD_FAILED flags in notifications"
+ 	fi
+ }
+ 
+@@ -57,6 +84,7 @@ route_addition_check()
+ 	local notify=$1; shift
+ 	local route=$1; shift
+ 	local expected_num_notifications=$1; shift
++	local offload_failed=${1:-0}; shift
+ 
+ 	ip netns exec testns1 sysctl -qw net.$ip.fib_notify_on_flag_change=$notify
+ 
+@@ -68,7 +96,7 @@ route_addition_check()
+ 	sleep 1
+ 	kill %% && wait %% &> /dev/null
+ 
+-	route_notify_check $outfile $expected_num_notifications
++	route_notify_check $outfile $expected_num_notifications $offload_failed
+ 	rm -f $outfile
+ 
+ 	$IP route del $route dev dummy1
+@@ -93,6 +121,13 @@ ipv4_route_addition_test()
+ 	expected_num_notifications=2
+ 	route_addition_check $ip $notify $route $expected_num_notifications
+ 
++	# notify=2 means emit notifications only for failed route installation,
++	# make sure a single notification will be emitted for the programmed
++	# route.
++	notify=2
++	expected_num_notifications=1
++	route_addition_check $ip $notify $route $expected_num_notifications
++
+ 	log_test "IPv4 route addition"
+ }
+ 
+@@ -185,11 +220,55 @@ ipv4_route_replacement_test()
+ 	expected_num_notifications=2
+ 	route_replacement_check $ip $notify $route $expected_num_notifications
+ 
++	# notify=2 means emit notifications only for failed route installation,
++	# make sure a single notification will be emitted for the new route.
++	notify=2
++	expected_num_notifications=1
++	route_replacement_check $ip $notify $route $expected_num_notifications
++
+ 	$IP link del name dummy2
+ 
+ 	log_test "IPv4 route replacement"
+ }
+ 
++ipv4_route_offload_failed_test()
++{
++
++	RET=0
++
++	local ip="ipv4"
++	local route=192.0.2.0/24
++	local offload_failed=1
++
++	echo "y"> $DEBUGFS_DIR/fib/fail_route_offload
++	check_err $? "Failed to setup route offload to fail"
++
++	# Make sure a single notification will be emitted for the programmed
++	# route.
++	local notify=0
++	local expected_num_notifications=1
++	route_addition_check $ip $notify $route $expected_num_notifications \
++		$offload_failed
++
++	# Make sure two notifications will be emitted for the new route.
++	notify=1
++	expected_num_notifications=2
++	route_addition_check $ip $notify $route $expected_num_notifications \
++		$offload_failed
++
++	# notify=2 means emit notifications only for failed route installation,
++	# make sure two notifications will be emitted for the new route.
++	notify=2
++	expected_num_notifications=2
++	route_addition_check $ip $notify $route $expected_num_notifications \
++		$offload_failed
++
++	echo "n"> $DEBUGFS_DIR/fib/fail_route_offload
++	check_err $? "Failed to setup route offload not to fail"
++
++	log_test "IPv4 route offload failed"
++}
++
+ ipv6_route_addition_test()
+ {
+ 	RET=0
+@@ -208,6 +287,13 @@ ipv6_route_addition_test()
+ 	expected_num_notifications=2
+ 	route_addition_check $ip $notify $route $expected_num_notifications
+ 
++	# notify=2 means emit notifications only for failed route installation,
++	# make sure a single notification will be emitted for the programmed
++	# route.
++	notify=2
++	expected_num_notifications=1
++	route_addition_check $ip $notify $route $expected_num_notifications
++
+ 	log_test "IPv6 route addition"
+ }
+ 
+@@ -250,11 +336,55 @@ ipv6_route_replacement_test()
+ 	expected_num_notifications=2
+ 	route_replacement_check $ip $notify $route $expected_num_notifications
+ 
++	# notify=2 means emit notifications only for failed route installation,
++	# make sure a single notification will be emitted for the new route.
++	notify=2
++	expected_num_notifications=1
++	route_replacement_check $ip $notify $route $expected_num_notifications
++
+ 	$IP link del name dummy2
+ 
+ 	log_test "IPv6 route replacement"
+ }
+ 
++ipv6_route_offload_failed_test()
++{
++
++	RET=0
++
++	local ip="ipv6"
++	local route=2001:db8:1::/64
++	local offload_failed=1
++
++	echo "y"> $DEBUGFS_DIR/fib/fail_route_offload
++	check_err $? "Failed to setup route offload to fail"
++
++	# Make sure a single notification will be emitted for the programmed
++	# route.
++	local notify=0
++	local expected_num_notifications=1
++	route_addition_check $ip $notify $route $expected_num_notifications \
++		$offload_failed
++
++	# Make sure two notifications will be emitted for the new route.
++	notify=1
++	expected_num_notifications=2
++	route_addition_check $ip $notify $route $expected_num_notifications \
++		$offload_failed
++
++	# notify=2 means emit notifications only for failed route installation,
++	# make sure two notifications will be emitted for the new route.
++	notify=2
++	expected_num_notifications=2
++	route_addition_check $ip $notify $route $expected_num_notifications \
++		$offload_failed
++
++	echo "n"> $DEBUGFS_DIR/fib/fail_route_offload
++	check_err $? "Failed to setup route offload not to fail"
++
++	log_test "IPv6 route offload failed"
++}
++
+ setup_prepare()
+ {
+ 	modprobe netdevsim &> /dev/null
 -- 
 2.29.2
 
