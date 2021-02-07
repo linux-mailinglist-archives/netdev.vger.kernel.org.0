@@ -2,119 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C63F931249C
-	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 15:14:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D83313124A8
+	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 15:22:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230155AbhBGOOE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Feb 2021 09:14:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42068 "EHLO
+        id S229754AbhBGOV7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Feb 2021 09:21:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230104AbhBGONu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 09:13:50 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29978C061756
-        for <netdev@vger.kernel.org>; Sun,  7 Feb 2021 06:13:10 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id b9so20444911ejy.12
-        for <netdev@vger.kernel.org>; Sun, 07 Feb 2021 06:13:10 -0800 (PST)
+        with ESMTP id S229756AbhBGOUz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 09:20:55 -0500
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 473A5C06174A;
+        Sun,  7 Feb 2021 06:19:20 -0800 (PST)
+Received: by mail-lj1-x229.google.com with SMTP id f19so13481933ljn.5;
+        Sun, 07 Feb 2021 06:19:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=w6oegXIzIc0UwP/fg1twf7f1LMWXjODHbU1V0MHboc4=;
-        b=Fgkk42D/h/KvLXiQkCCzsGy2s512RnstC9cnCW0vzDxwTyhkXkar870gdw0PJMDCsZ
-         O2z2Qo7nOyxeEvfAb9me/3o/QL5WyeDZBYVbdDZel6H2QbvSxgGMHOIMEw3Etcti4IPD
-         P52VdzjT7AmbdO1OKF3b5ExCBUW+goDx5XTfdZwY7NCaCBqxTB5nbFq/aHe0t7oid2oL
-         PElKW1YzkGtqgsK59SIGRh14xEgZ6CUlUEgqU9GYAGLcML6ts6dPfs5Mn52A8FqP2ZLz
-         RKE4JBOjj8OUucuPueCgOxGfh4vgC5NHrm8MO+rJxcrZg078vaYkyo80zAgk/Ck1OumA
-         PVow==
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=GdYfZzI0RqvLsVW43Ou8obsCgck5qqeRRlxTAKg2xMc=;
+        b=KlNzayDX9vXh/4qkSlxwOgzMYkp7c+BMw6N4ALpt3QVDPk6UHzjqeQTTVDsRWnSAS2
+         ywo7nD2MuikHoFpZ25NDoxJZGvt/wxJODeV34s7focW50kR0N0hrNr4cS1+MiicI1Pe9
+         hCzGwQj9KG5nN7ovkpslqIMe0rzHvtI7Xk6qlsPxqOA85OHN1LMW508WrVZSVP6v9J9m
+         uEOb3fBbrjOtAOiV0ApCZQwKKETigbBn4NtDQfN8Qer77bo0Xg8cX2RKPfXcCODqyOv/
+         YOV72qctE/dymJepLkMEBMB//aiqyt3eDFyCcMUNmbcRqNT3nE/icykSLU274wbMZg+H
+         i0qA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=w6oegXIzIc0UwP/fg1twf7f1LMWXjODHbU1V0MHboc4=;
-        b=W4H4UEJUt1/0h4g1k+jj/CoThgnGNzJAeE32P0k2IZynXVwzm4N8HEKpaecRJiLnqy
-         EhZOHQPZMdrSEBQbDlZsAD+m3Yu4I8fRcZhUxb1Fms/oNYqgpPghQ80M4u8iLq0lzJQG
-         Vh6Ow1VF/+XY+PN3GgsW0jmzeyr7dsGhHo1KkZzOdUZUjliNhAxkFsba9KH+/YO+16zZ
-         3O52WpxGyb8cw1m1lh9qbNgIhky4p4sz89L7h92RfZk999Gp+CnKyzM3JfPlTjyswNTS
-         tslAXA1l8S8yrdmbU0LdGA7gSWE1W3fyr16dgTKDhU6fYK1Wgvq0ExPfJ8KpBOOHPhAj
-         cLNg==
-X-Gm-Message-State: AOAM530e1o+CGxeQ5D0USQCPELDDp6qM7mJw5yiaJQtfhp7wlot1G/r0
-        09JrWyWEJWGJTQBf76C5xmE=
-X-Google-Smtp-Source: ABdhPJwEHlfxYvZkRGE5qe9GbdKWUbzpreU6bUsiLHWYa+0DGCAdXcaaqYik4Hxv/gfbibM45Juzxg==
-X-Received: by 2002:a17:906:1b11:: with SMTP id o17mr2265901ejg.295.1612707188971;
-        Sun, 07 Feb 2021 06:13:08 -0800 (PST)
-Received: from [132.68.43.187] ([132.68.43.187])
-        by smtp.gmail.com with ESMTPSA id f22sm6872841eje.34.2021.02.07.06.13.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 07 Feb 2021 06:13:08 -0800 (PST)
-Subject: Re: [PATCH v3 net-next 01/21] iov_iter: Introduce new procedures for
- copy to iter/pages
-To:     Ira Weiny <ira.weiny@intel.com>, Christoph Hellwig <hch@lst.de>
-Cc:     Or Gerlitz <gerlitz.or@gmail.com>,
-        Boris Pismenny <borisp@mellanox.com>, smalin@marvell.com,
-        Sagi Grimberg <sagi@grimberg.me>, yorayz@nvidia.com,
-        boris.pismenny@gmail.com, Ben Ben-Ishay <benishay@mellanox.com>,
-        Yoray Zack <yorayz@mellanox.com>,
-        linux-nvme@lists.infradead.org, David Miller <davem@davemloft.net>,
-        axboe@fb.com, Eric Dumazet <edumazet@google.com>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        David Ahern <dsahern@gmail.com>,
-        Keith Busch <kbusch@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Or Gerlitz <ogerlitz@mellanox.com>, benishay@nvidia.com,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Or Gerlitz <ogerlitz@nvidia.com>
-References: <20210201100509.27351-1-borisp@mellanox.com>
- <20210201100509.27351-2-borisp@mellanox.com> <20210201173548.GA12960@lst.de>
- <CAJ3xEMjLKoQe_OB_L+w2wwUGck74Gm6=GPA=CK73QpeFbXr7Bw@mail.gmail.com>
- <20210203165621.GB6691@lst.de>
- <20210203193434.GD3200985@iweiny-DESK2.sc.intel.com>
-From:   Boris Pismenny <borispismenny@gmail.com>
-Message-ID: <e1eb7f7d-9a2a-f879-6fc9-4b929f2a4239@gmail.com>
-Date:   Sun, 7 Feb 2021 16:13:03 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=GdYfZzI0RqvLsVW43Ou8obsCgck5qqeRRlxTAKg2xMc=;
+        b=Aby8laNByBlIyqhPNbE4btSX/civ6gILlLlVNgun8/vW8OAgfjLI8+ZxTXkP6oQ9ix
+         J7Z4VFs4G6XBEU/nAkpo81MmenNyxSoJylJPPvTjvBsm/oDBrVTc67+Ulfj5Tdu7/9w8
+         i1LF03hbXio+75gSn2o7sQi5CPaZZ433Bi+lhthDYyZ7WYALcjR3jNrY+KYJP/OEYwQM
+         wyJRbzXwG3cX6GaungX7ahAyLh5YqVJFeWluNyCrzrMJMMYjaOH0TW4zajVL12vbAIoa
+         aIuDtB9nqTkOmisevA7wd1E+MJ56cYAMj18LUEW61maMfMhCbnJaIkTePjK4RGoaz0q7
+         nMZg==
+X-Gm-Message-State: AOAM530tE3UV3/PSJyqcLYo8ogZ2231ATbS05tMMSSxte+dv4bPfPVX1
+        iehtW7I2i0K2n0+xdJFgFnTvh815iEHaTIu9R+eP/kVWeCw=
+X-Google-Smtp-Source: ABdhPJzrdrBBnJoJXwkHK2B06W93vmuBteUBCk143EmH95LQ6HQZxzMbUmkS4oW6SebmNZsF/YyXIhAl26pp1yLxlJw=
+X-Received: by 2002:a2e:89cd:: with SMTP id c13mr8199614ljk.285.1612707558527;
+ Sun, 07 Feb 2021 06:19:18 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210203193434.GD3200985@iweiny-DESK2.sc.intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From:   Jason Andryuk <jandryuk@gmail.com>
+Date:   Sun, 7 Feb 2021 09:19:07 -0500
+Message-ID: <CAKf6xpueeG-c+XV6gYu_H_DXNkR11+_v54hgv=vukuy+Tcb+LQ@mail.gmail.com>
+Subject: Stable request: iwlwifi: mvm: don't send RFH_QUEUE_CONFIG_CMD with no queues
+To:     stable@vger.kernel.org, Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>
+Cc:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03/02/2021 21:34, Ira Weiny wrote:
-> On Wed, Feb 03, 2021 at 05:56:21PM +0100, Christoph Hellwig wrote:
->> On Tue, Feb 02, 2021 at 08:00:51PM +0200, Or Gerlitz wrote:
->>> will look into this, any idea for a more suitable location?
->>
->> Maybe just a new file under lib/ for now?
->>
->>>> Overly long line.  But we're also looking into generic helpers for
->>>> this kind of things, not sure if they made it to linux-next in the
->>>> meantime, but please check.
->>>
->>> This is what I found in linux-next - note sure if you were referring to it
->>>
->>> commit 11432a3cc061c39475295be533c3674c4f8a6d0b
->>> Author: David Howells <dhowells@redhat.com>
->>>
->>>     iov_iter: Add ITER_XARRAY
->>
->> No, that's not it.  Ira, what is the status of the memcpy_{to,from}_page
->> helpers?
-> 
-> Converting the entire kernel tree in one series has become unwieldy so I've
-> given up.
-> 
-> But I have a series to convert btrfs which I could release by the end of the
-> week.  That should be good enough to push the memcpy_*_page() support in.
-> 
-> I'm get it formatted and submitted,
-> Ira
-> 
+Hi,
 
-To conclude this discussion, there's nothing that we need to change here
-as the relevant series is still WIP, right?
+commit 64f55156f7adedb1ac5bb9cdbcbc9ac05ff5a724 upstream
+
+The requested patch allows the iwlwifi driver to work with newer AX200
+wifi cards when MSI-X interrupts are not available.  Without it,
+bringing an interface "up" fails with a Microcode SW error.  Xen PCI
+passthrough with a linux stubdom doesn't enable MSI-X which triggers
+this condition.
+
+I think it's only applicable to 5.4 because it's in 5.10 and earlier
+kernels don't have AX200 support.
+
+I'm making this request to stable and CC-ing netdev since I saw a
+message [1] on netdev saying:
+"""
+We're actually experimenting with letting Greg take networking patches
+into stable like he does for every other tree. If the patch doesn't
+appear in the next stable release please poke stable@ directly.
+"""
+
+Thanks,
+Jason
+
+[1] https://lore.kernel.org/netdev/20210129193030.46ef3b17@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/
