@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B1BC3122AB
-	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 09:29:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C92303122B1
+	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 09:30:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229774AbhBGI3H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Feb 2021 03:29:07 -0500
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:44279 "EHLO
+        id S229445AbhBGI33 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Feb 2021 03:29:29 -0500
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:53233 "EHLO
         new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230086AbhBGIYt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 03:24:49 -0500
+        by vger.kernel.org with ESMTP id S229835AbhBGI1J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 03:27:09 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 84F705801D2;
-        Sun,  7 Feb 2021 03:23:43 -0500 (EST)
+        by mailnew.nyi.internal (Postfix) with ESMTP id 99A585801E2;
+        Sun,  7 Feb 2021 03:23:52 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Sun, 07 Feb 2021 03:23:43 -0500
+  by compute3.internal (MEProxy); Sun, 07 Feb 2021 03:23:52 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=b3cTFORZWU8PMzUw84BHRflv9GB4zEryRADwEl/F9AU=; b=jHzfjx39
-        h2x8eKdwrPbSUpDcceQh7CDRJ+cg0w1H4pEuiGR0hOYGrhQp9H4bxRETk1hmoHgp
-        bUmfLb7U9uE8jWZt/yGn3rH3lFMgLXFTBMjcn3h08b5YPc/51/+wJqPIf8jm2dUk
-        USp9Oo+0Hhnmxv6GLt7ZBoZfzXZM+ghzyjBjgVfma1wHhJkeQzYj5GTYJKT+T/G8
-        Klst94NQA5IW0DFYXQn/14oswsKqdnEdu3S/a7hMs0NQBi6sIJo/O4x6cUeAZHDo
-        aHpQyDqfUblbvkZK46Ess7kWTZPx6TkVmfIEM+PIVuR0XJZcA+568nGJJzGEzgpM
-        9YOVCSlBeRo25g==
-X-ME-Sender: <xms:j6MfYD9yjNWm6SrUkkmZdn_DXI_MUYsOp58noVYlZNbwFy5CIrA7Jg>
-    <xme:j6MfYPtae1crj71BGkZ3rSWPg9TQpdAchgbJAyftt9QquvyxejzX04YzkUfOxHNNh
-    UZYRqOzIN7ry5g>
+        fm2; bh=cgwGfcgNvzdq5XHm+G4P7P3RMUZY96yyYzEUEplTl+k=; b=V6O8Hodc
+        Hw0I/rHS6E6rZnd7jo/eL0lYud3+7NI8itG/XxvQ2NBUADaLWykzrywO7J6idjAG
+        9YczRwXa+8vt1MeTbFbl4qRUNcSqFOddrTYq80ZNz7+E+AqwBA/FOp/KFr0cv6/G
+        6P1gNyV/XYtt8aXNYLUcxTEOKkra7WaZ5hQktTPCKg/CoMbf7WqABXeKeV4utqYK
+        qbAmfxWSOBHFA741KgKRqfwlklsvHp0zaEzuAgP4dpx5AmuH6qekx9eHH3nkA6/Q
+        VaTjFbZz3Sx9UWtY0PqiBRE7xODRlD/y4FH1aOymqhyQthzjsg4T4AmwYwctdMG7
+        3tww5vYyj6AnTA==
+X-ME-Sender: <xms:mKMfYN1KmXV0npZGpanobtYVQSx6GJ9d-zNxI_F4agAdolGb3ljpxA>
+    <xme:mKMfYEGKOb1DB63-auq4-8ZDkuFzJYc1PYsSfFo6BRmwDtW4gIP68YoYQmgOevF96
+    3wQt8G8mGGOzIg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrhedtgddvjecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
     ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
     tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhfekhe
     fgtdfftefhledvjefggfehgfevjeekhfenucfkphepkeegrddvvdelrdduheefrdeggeen
-    ucevlhhushhtvghrufhiiigvpeefnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
+    ucevlhhushhtvghrufhiiigvpeeinecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
     gthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:j6MfYBCXB5T-fDU4bW9B0KQ63kl2tl7P7jtTU1qaO6faYZtO7kDQTw>
-    <xmx:j6MfYPcdl0DLUXOwgtytV_TwRcQGqlJluG4_VGxYdr2JpSPgqmiv0A>
-    <xmx:j6MfYINwO1OCLtMpYAazzDtWGLiGdnRkto5-lAyv2N6qpteqksoiVA>
-    <xmx:j6MfYJhjClCXtSWnQKvRQL2SbGRVU6Ndh6D2A5vPqIN_1P13T9wGRA>
+X-ME-Proxy: <xmx:mKMfYN6bAg2aqRcgjIgZaOr7wW-exTTlyk4E_2JRzeKiRRvfcCEm9Q>
+    <xmx:mKMfYK09sVsSSMcH5rBAqluqjmdovmlAHgziishfhKvzhAjpGtplnA>
+    <xmx:mKMfYAF1oGX_6JidvzofCtN8yShtJspQDkkI6dS8Dv3mkROpqFFjmw>
+    <xmx:mKMfYOY3KGvB1XHg6USQ3KlQY6_ghn3E0VwnFT9B7STU7mbFGwOGjw>
 Received: from shredder.lan (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id D58971080057;
-        Sun,  7 Feb 2021 03:23:40 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 768A11080057;
+        Sun,  7 Feb 2021 03:23:50 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@gmail.com,
         jiri@nvidia.com, yoshfuji@linux-ipv6.org, amcohen@nvidia.com,
         roopa@nvidia.com, bpoirier@nvidia.com, sharpd@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 04/10] IPv6: Add "offload failed" indication to routes
-Date:   Sun,  7 Feb 2021 10:22:52 +0200
-Message-Id: <20210207082258.3872086-5-idosch@idosch.org>
+Subject: [PATCH net-next 08/10] netdevsim: fib: Add debugfs to debug route offload failure
+Date:   Sun,  7 Feb 2021 10:22:56 +0200
+Message-Id: <20210207082258.3872086-9-idosch@idosch.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210207082258.3872086-1-idosch@idosch.org>
 References: <20210207082258.3872086-1-idosch@idosch.org>
@@ -65,132 +65,255 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Amit Cohen <amcohen@nvidia.com>
 
-After installing a route to the kernel, user space receives an
-acknowledgment, which means the route was installed in the kernel, but not
-necessarily in hardware.
+Add "fail_route_offload" flag to disallow offloading routes.
+It is needed to test "offload failed" notifications.
 
-The asynchronous nature of route installation in hardware can lead to a
-routing daemon advertising a route before it was actually installed in
-hardware. This can result in packet loss or mis-routed packets until the
-route is installed in hardware.
+Create the flag as part of nsim_fib_create() under fib directory and set
+it to false by default.
 
-To avoid such cases, previous patch set added the ability to emit
-RTM_NEWROUTE notifications whenever RTM_F_OFFLOAD/RTM_F_TRAP flags
-are changed, this behavior is controlled by sysctl.
-
-With the above mentioned behavior, it is possible to know from user-space
-if the route was offloaded, but if the offload fails there is no indication
-to user-space. Following a failure, a routing daemon will wait indefinitely
-for a notification that will never come.
-
-This patch adds an "offload_failed" indication to IPv6 routes, so that
-users will have better visibility into the offload process.
-
-'struct fib6_info' is extended with new field that indicates if route
-offload failed. Note that the new field is added using unused bit and
-therefore there is no need to increase struct size.
+When FIB_EVENT_ENTRY_{REPLACE, APPEND} are triggered and
+"fail_route_offload" value is true, set the appropriate hardware flag to
+make the kernel emit RTM_NEWROUTE notification with RTM_F_OFFLOAD_FAILED
+flag.
 
 Signed-off-by: Amit Cohen <amcohen@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 4 ++--
- drivers/net/netdevsim/fib.c                           | 2 +-
- include/net/ip6_fib.h                                 | 5 +++--
- net/ipv6/route.c                                      | 8 ++++++--
- 4 files changed, 12 insertions(+), 7 deletions(-)
+ drivers/net/netdevsim/fib.c | 114 +++++++++++++++++++++++++++++++++++-
+ 1 file changed, 112 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index ac9a174372cc..a5f980b6940e 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -5008,7 +5008,7 @@ mlxsw_sp_fib6_entry_hw_flags_set(struct mlxsw_sp *mlxsw_sp,
- 				  common);
- 	list_for_each_entry(mlxsw_sp_rt6, &fib6_entry->rt6_list, list)
- 		fib6_info_hw_flags_set(mlxsw_sp_net(mlxsw_sp), mlxsw_sp_rt6->rt,
--				       should_offload, !should_offload);
-+				       should_offload, !should_offload, false);
- }
- #else
- static void
-@@ -5030,7 +5030,7 @@ mlxsw_sp_fib6_entry_hw_flags_clear(struct mlxsw_sp *mlxsw_sp,
- 				  common);
- 	list_for_each_entry(mlxsw_sp_rt6, &fib6_entry->rt6_list, list)
- 		fib6_info_hw_flags_set(mlxsw_sp_net(mlxsw_sp), mlxsw_sp_rt6->rt,
--				       false, false);
-+				       false, false, false);
- }
- #else
- static void
 diff --git a/drivers/net/netdevsim/fib.c b/drivers/net/netdevsim/fib.c
-index ca19da169853..6b1ec3b4750c 100644
+index b93bd483cf12..46fb414f7ca6 100644
 --- a/drivers/net/netdevsim/fib.c
 +++ b/drivers/net/netdevsim/fib.c
-@@ -595,7 +595,7 @@ static void nsim_fib6_rt_hw_flags_set(struct nsim_fib_data *data,
- 	struct nsim_fib6_rt_nh *fib6_rt_nh;
+@@ -26,6 +26,7 @@
+ #include <net/fib_rules.h>
+ #include <net/net_namespace.h>
+ #include <net/nexthop.h>
++#include <linux/debugfs.h>
  
- 	list_for_each_entry(fib6_rt_nh, &fib6_rt->nh_list, list)
--		fib6_info_hw_flags_set(net, fib6_rt_nh->rt, false, trap);
-+		fib6_info_hw_flags_set(net, fib6_rt_nh->rt, false, trap, false);
- }
- #else
- static void nsim_fib6_rt_hw_flags_set(struct nsim_fib_data *data,
-diff --git a/include/net/ip6_fib.h b/include/net/ip6_fib.h
-index 1e262b23c68b..15b7fbe6b15c 100644
---- a/include/net/ip6_fib.h
-+++ b/include/net/ip6_fib.h
-@@ -195,7 +195,8 @@ struct fib6_info {
- 					fib6_destroying:1,
- 					offload:1,
- 					trap:1,
--					unused:2;
-+					offload_failed:1,
-+					unused:1;
+ #include "netdevsim.h"
  
- 	struct rcu_head			rcu;
- 	struct nexthop			*nh;
-@@ -539,7 +540,7 @@ static inline bool fib6_metric_locked(struct fib6_info *f6i, int metric)
- 	return !!(f6i->fib6_metrics->metrics[RTAX_LOCK - 1] & (1 << metric));
- }
- void fib6_info_hw_flags_set(struct net *net, struct fib6_info *f6i,
--			    bool offload, bool trap);
-+			    bool offload, bool trap, bool offload_failed);
+@@ -53,6 +54,8 @@ struct nsim_fib_data {
+ 	struct work_struct fib_event_work;
+ 	struct list_head fib_event_queue;
+ 	spinlock_t fib_event_queue_lock; /* Protects fib event queue list */
++	struct dentry *ddir;
++	bool fail_route_offload;
+ };
  
- #if IS_BUILTIN(CONFIG_IPV6) && defined(CONFIG_BPF_SYSCALL)
- struct bpf_iter__ipv6_route {
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 0d1784b0d65d..bc75b705f54b 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -5619,6 +5619,8 @@ static int rt6_fill_node(struct net *net, struct sk_buff *skb,
- 			rtm->rtm_flags |= RTM_F_OFFLOAD;
- 		if (rt->trap)
- 			rtm->rtm_flags |= RTM_F_TRAP;
-+		if (rt->offload_failed)
-+			rtm->rtm_flags |= RTM_F_OFFLOAD_FAILED;
- 	}
- 
- 	if (rtnl_put_cacheinfo(skb, dst, 0, expires, dst ? dst->error : 0) < 0)
-@@ -6070,16 +6072,18 @@ void fib6_rt_update(struct net *net, struct fib6_info *rt,
+ struct nsim_fib_rt_key {
+@@ -303,6 +306,25 @@ nsim_fib4_rt_lookup(struct rhashtable *fib_rt_ht,
+ 	return container_of(fib_rt, struct nsim_fib4_rt, common);
  }
  
- void fib6_info_hw_flags_set(struct net *net, struct fib6_info *f6i,
--			    bool offload, bool trap)
-+			    bool offload, bool trap, bool offload_failed)
- {
- 	struct sk_buff *skb;
++static void
++nsim_fib4_rt_offload_failed_flag_set(struct net *net,
++				     struct fib_entry_notifier_info *fen_info)
++{
++	u32 *p_dst = (u32 *)&fen_info->dst;
++	struct fib_rt_info fri;
++
++	fri.fi = fen_info->fi;
++	fri.tb_id = fen_info->tb_id;
++	fri.dst = cpu_to_be32(*p_dst);
++	fri.dst_len = fen_info->dst_len;
++	fri.tos = fen_info->tos;
++	fri.type = fen_info->type;
++	fri.offload = false;
++	fri.trap = false;
++	fri.offload_failed = true;
++	fib_alias_hw_flags_set(net, &fri);
++}
++
+ static void nsim_fib4_rt_hw_flags_set(struct net *net,
+ 				      const struct nsim_fib4_rt *fib4_rt,
+ 				      bool trap)
+@@ -384,6 +406,15 @@ static int nsim_fib4_rt_insert(struct nsim_fib_data *data,
+ 	struct nsim_fib4_rt *fib4_rt, *fib4_rt_old;
  	int err;
  
--	if (f6i->offload == offload && f6i->trap == trap)
-+	if (f6i->offload == offload && f6i->trap == trap &&
-+	    f6i->offload_failed == offload_failed)
- 		return;
++	if (data->fail_route_offload) {
++		/* For testing purposes, user set debugfs fail_route_offload
++		 * value to true. Simulate hardware programming latency and then
++		 * fail.
++		 */
++		msleep(1);
++		return -EINVAL;
++	}
++
+ 	fib4_rt = nsim_fib4_rt_create(data, fen_info);
+ 	if (!fib4_rt)
+ 		return -ENOMEM;
+@@ -423,6 +454,11 @@ static int nsim_fib4_event(struct nsim_fib_data *data,
+ 	switch (event) {
+ 	case FIB_EVENT_ENTRY_REPLACE:
+ 		err = nsim_fib4_rt_insert(data, fen_info);
++		if (err) {
++			struct net *net = devlink_net(data->devlink);
++
++			nsim_fib4_rt_offload_failed_flag_set(net, fen_info);
++		}
+ 		break;
+ 	case FIB_EVENT_ENTRY_DEL:
+ 		nsim_fib4_rt_remove(data, fen_info);
+@@ -564,6 +600,15 @@ static int nsim_fib6_rt_append(struct nsim_fib_data *data,
+ 	struct nsim_fib6_rt *fib6_rt;
+ 	int i, err;
  
- 	f6i->offload = offload;
- 	f6i->trap = trap;
-+	f6i->offload_failed = offload_failed;
++	if (data->fail_route_offload) {
++		/* For testing purposes, user set debugfs fail_route_offload
++		 * value to true. Simulate hardware programming latency and then
++		 * fail.
++		 */
++		msleep(1);
++		return -EINVAL;
++	}
++
+ 	fib6_rt = nsim_fib6_rt_lookup(&data->fib_rt_ht, rt);
+ 	if (!fib6_rt)
+ 		return -EINVAL;
+@@ -586,6 +631,26 @@ static int nsim_fib6_rt_append(struct nsim_fib_data *data,
+ 	return err;
+ }
  
- 	if (!rcu_access_pointer(f6i->fib6_node))
- 		/* The route was removed from the tree, do not send
++#if IS_ENABLED(CONFIG_IPV6)
++static void nsim_fib6_rt_offload_failed_flag_set(struct nsim_fib_data *data,
++						 struct fib6_info **rt_arr,
++						 unsigned int nrt6)
++
++{
++	struct net *net = devlink_net(data->devlink);
++	int i;
++
++	for (i = 0; i < nrt6; i++)
++		fib6_info_hw_flags_set(net, rt_arr[i], false, false, true);
++}
++#else
++static void nsim_fib6_rt_offload_failed_flag_set(struct nsim_fib_data *data,
++						 struct fib6_info **rt_arr,
++						 unsigned int nrt6)
++{
++}
++#endif
++
+ #if IS_ENABLED(CONFIG_IPV6)
+ static void nsim_fib6_rt_hw_flags_set(struct nsim_fib_data *data,
+ 				      const struct nsim_fib6_rt *fib6_rt,
+@@ -667,6 +732,15 @@ static int nsim_fib6_rt_insert(struct nsim_fib_data *data,
+ 	struct nsim_fib6_rt *fib6_rt, *fib6_rt_old;
+ 	int err;
+ 
++	if (data->fail_route_offload) {
++		/* For testing purposes, user set debugfs fail_route_offload
++		 * value to true. Simulate hardware programming latency and then
++		 * fail.
++		 */
++		msleep(1);
++		return -EINVAL;
++	}
++
+ 	fib6_rt = nsim_fib6_rt_create(data, fib6_event->rt_arr,
+ 				      fib6_event->nrt6);
+ 	if (IS_ERR(fib6_rt))
+@@ -764,7 +838,7 @@ static int nsim_fib6_event(struct nsim_fib_data *data,
+ 			   struct nsim_fib6_event *fib6_event,
+ 			   unsigned long event)
+ {
+-	int err = 0;
++	int err;
+ 
+ 	if (fib6_event->rt_arr[0]->fib6_src.plen)
+ 		return 0;
+@@ -772,9 +846,13 @@ static int nsim_fib6_event(struct nsim_fib_data *data,
+ 	switch (event) {
+ 	case FIB_EVENT_ENTRY_REPLACE:
+ 		err = nsim_fib6_rt_insert(data, fib6_event);
++		if (err)
++			goto err_rt_offload_failed_flag_set;
+ 		break;
+ 	case FIB_EVENT_ENTRY_APPEND:
+ 		err = nsim_fib6_rt_append(data, fib6_event);
++		if (err)
++			goto err_rt_offload_failed_flag_set;
+ 		break;
+ 	case FIB_EVENT_ENTRY_DEL:
+ 		nsim_fib6_rt_remove(data, fib6_event);
+@@ -783,6 +861,11 @@ static int nsim_fib6_event(struct nsim_fib_data *data,
+ 		break;
+ 	}
+ 
++	return 0;
++
++err_rt_offload_failed_flag_set:
++	nsim_fib6_rt_offload_failed_flag_set(data, fib6_event->rt_arr,
++					     fib6_event->nrt6);
+ 	return err;
+ }
+ 
+@@ -1290,10 +1373,29 @@ static void nsim_fib_event_work(struct work_struct *work)
+ 	mutex_unlock(&data->fib_lock);
+ }
+ 
++static int
++nsim_fib_debugfs_init(struct nsim_fib_data *data, struct nsim_dev *nsim_dev)
++{
++	data->ddir = debugfs_create_dir("fib", nsim_dev->ddir);
++	if (IS_ERR(data->ddir))
++		return PTR_ERR(data->ddir);
++
++	data->fail_route_offload = false;
++	debugfs_create_bool("fail_route_offload", 0600, data->ddir,
++			    &data->fail_route_offload);
++	return 0;
++}
++
++static void nsim_fib_debugfs_exit(struct nsim_fib_data *data)
++{
++	debugfs_remove_recursive(data->ddir);
++}
++
+ struct nsim_fib_data *nsim_fib_create(struct devlink *devlink,
+ 				      struct netlink_ext_ack *extack)
+ {
+ 	struct nsim_fib_data *data;
++	struct nsim_dev *nsim_dev;
+ 	int err;
+ 
+ 	data = kzalloc(sizeof(*data), GFP_KERNEL);
+@@ -1301,10 +1403,15 @@ struct nsim_fib_data *nsim_fib_create(struct devlink *devlink,
+ 		return ERR_PTR(-ENOMEM);
+ 	data->devlink = devlink;
+ 
+-	err = rhashtable_init(&data->nexthop_ht, &nsim_nexthop_ht_params);
++	nsim_dev = devlink_priv(devlink);
++	err = nsim_fib_debugfs_init(data, nsim_dev);
+ 	if (err)
+ 		goto err_data_free;
+ 
++	err = rhashtable_init(&data->nexthop_ht, &nsim_nexthop_ht_params);
++	if (err)
++		goto err_debugfs_exit;
++
+ 	mutex_init(&data->fib_lock);
+ 	INIT_LIST_HEAD(&data->fib_rt_list);
+ 	err = rhashtable_init(&data->fib_rt_ht, &nsim_fib_rt_ht_params);
+@@ -1365,6 +1472,8 @@ struct nsim_fib_data *nsim_fib_create(struct devlink *devlink,
+ 	rhashtable_free_and_destroy(&data->nexthop_ht, nsim_nexthop_free,
+ 				    data);
+ 	mutex_destroy(&data->fib_lock);
++err_debugfs_exit:
++	nsim_fib_debugfs_exit(data);
+ err_data_free:
+ 	kfree(data);
+ 	return ERR_PTR(err);
+@@ -1392,5 +1501,6 @@ void nsim_fib_destroy(struct devlink *devlink, struct nsim_fib_data *data)
+ 	WARN_ON_ONCE(!list_empty(&data->fib_event_queue));
+ 	WARN_ON_ONCE(!list_empty(&data->fib_rt_list));
+ 	mutex_destroy(&data->fib_lock);
++	nsim_fib_debugfs_exit(data);
+ 	kfree(data);
+ }
 -- 
 2.29.2
 
