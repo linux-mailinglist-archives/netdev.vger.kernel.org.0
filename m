@@ -2,80 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D83313124A8
-	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 15:22:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73D803124AA
+	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 15:27:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229754AbhBGOV7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Feb 2021 09:21:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43392 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229756AbhBGOUz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 09:20:55 -0500
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 473A5C06174A;
-        Sun,  7 Feb 2021 06:19:20 -0800 (PST)
-Received: by mail-lj1-x229.google.com with SMTP id f19so13481933ljn.5;
-        Sun, 07 Feb 2021 06:19:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=GdYfZzI0RqvLsVW43Ou8obsCgck5qqeRRlxTAKg2xMc=;
-        b=KlNzayDX9vXh/4qkSlxwOgzMYkp7c+BMw6N4ALpt3QVDPk6UHzjqeQTTVDsRWnSAS2
-         ywo7nD2MuikHoFpZ25NDoxJZGvt/wxJODeV34s7focW50kR0N0hrNr4cS1+MiicI1Pe9
-         hCzGwQj9KG5nN7ovkpslqIMe0rzHvtI7Xk6qlsPxqOA85OHN1LMW508WrVZSVP6v9J9m
-         uEOb3fBbrjOtAOiV0ApCZQwKKETigbBn4NtDQfN8Qer77bo0Xg8cX2RKPfXcCODqyOv/
-         YOV72qctE/dymJepLkMEBMB//aiqyt3eDFyCcMUNmbcRqNT3nE/icykSLU274wbMZg+H
-         i0qA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=GdYfZzI0RqvLsVW43Ou8obsCgck5qqeRRlxTAKg2xMc=;
-        b=Aby8laNByBlIyqhPNbE4btSX/civ6gILlLlVNgun8/vW8OAgfjLI8+ZxTXkP6oQ9ix
-         J7Z4VFs4G6XBEU/nAkpo81MmenNyxSoJylJPPvTjvBsm/oDBrVTc67+Ulfj5Tdu7/9w8
-         i1LF03hbXio+75gSn2o7sQi5CPaZZ433Bi+lhthDYyZ7WYALcjR3jNrY+KYJP/OEYwQM
-         wyJRbzXwG3cX6GaungX7ahAyLh5YqVJFeWluNyCrzrMJMMYjaOH0TW4zajVL12vbAIoa
-         aIuDtB9nqTkOmisevA7wd1E+MJ56cYAMj18LUEW61maMfMhCbnJaIkTePjK4RGoaz0q7
-         nMZg==
-X-Gm-Message-State: AOAM530tE3UV3/PSJyqcLYo8ogZ2231ATbS05tMMSSxte+dv4bPfPVX1
-        iehtW7I2i0K2n0+xdJFgFnTvh815iEHaTIu9R+eP/kVWeCw=
-X-Google-Smtp-Source: ABdhPJzrdrBBnJoJXwkHK2B06W93vmuBteUBCk143EmH95LQ6HQZxzMbUmkS4oW6SebmNZsF/YyXIhAl26pp1yLxlJw=
-X-Received: by 2002:a2e:89cd:: with SMTP id c13mr8199614ljk.285.1612707558527;
- Sun, 07 Feb 2021 06:19:18 -0800 (PST)
+        id S229788AbhBGOYy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Feb 2021 09:24:54 -0500
+Received: from novek.ru ([213.148.174.62]:39192 "EHLO novek.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229565AbhBGOYq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 7 Feb 2021 09:24:46 -0500
+Received: from [192.168.0.18] (unknown [37.228.234.253])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id C756B500ACF;
+        Sun,  7 Feb 2021 17:23:29 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru C756B500ACF
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1612707811; bh=9obz1s26oshiRnXru45x6dN4KP1BWv2+QBJm3ARKzNs=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=Ub+ZxPFqiRftXK/pEdXqcfY14Vo0IS5sXSsIJFLjvDC+KsTIIqkG9TBNlfEOYLvLJ
+         x56wwEHDlB1XJ4hOUIxgj24N1kYGWgv5/4cNsEwjLiAZOZLbYjwOlb3tXLhf9qMDiF
+         Tpn/+5HsxJYLi3XVV2f1jfLm21P2g87vioGo8+aU=
+Subject: Re: [PATCH net-next] rxrpc: use udp tunnel APIs instead of open code
+ in rxrpc_open_socket
+To:     Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        David Howells <dhowells@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Howells <dhowells@redhat.com>
+References: <33e11905352da3b65354622dcd2f7d2c3c00c645.1612686194.git.lucien.xin@gmail.com>
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+Message-ID: <d85e5bc1-8e74-321d-e727-f669a55da90f@novek.ru>
+Date:   Sun, 7 Feb 2021 14:23:25 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-From:   Jason Andryuk <jandryuk@gmail.com>
-Date:   Sun, 7 Feb 2021 09:19:07 -0500
-Message-ID: <CAKf6xpueeG-c+XV6gYu_H_DXNkR11+_v54hgv=vukuy+Tcb+LQ@mail.gmail.com>
-Subject: Stable request: iwlwifi: mvm: don't send RFH_QUEUE_CONFIG_CMD with no queues
-To:     stable@vger.kernel.org, Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-Cc:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <33e11905352da3b65354622dcd2f7d2c3c00c645.1612686194.git.lucien.xin@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,NICE_REPLY_A
+        autolearn=ham autolearn_force=no version=3.4.1
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 07.02.2021 08:23, Xin Long wrote:
+> In rxrpc_open_socket(), now it's using sock_create_kern() and
+> kernel_bind() to create a udp tunnel socket, and other kernel
+> APIs to set up it. These code can be replaced with udp tunnel
+> APIs udp_sock_create() and setup_udp_tunnel_sock(), and it'll
+> simplify rxrpc_open_socket().
+> 
+> Note that with this patch, the udp tunnel socket will always
+> bind to a random port if transport is not provided by users,
+> which is suggested by David Howells, thanks!
+> 
+> Acked-by: David Howells <dhowells@redhat.com>
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
 
-commit 64f55156f7adedb1ac5bb9cdbcbc9ac05ff5a724 upstream
+Looks good to me.
 
-The requested patch allows the iwlwifi driver to work with newer AX200
-wifi cards when MSI-X interrupts are not available.  Without it,
-bringing an interface "up" fails with a Microcode SW error.  Xen PCI
-passthrough with a linux stubdom doesn't enable MSI-X which triggers
-this condition.
-
-I think it's only applicable to 5.4 because it's in 5.10 and earlier
-kernels don't have AX200 support.
-
-I'm making this request to stable and CC-ing netdev since I saw a
-message [1] on netdev saying:
-"""
-We're actually experimenting with letting Greg take networking patches
-into stable like he does for every other tree. If the patch doesn't
-appear in the next stable release please poke stable@ directly.
-"""
-
-Thanks,
-Jason
-
-[1] https://lore.kernel.org/netdev/20210129193030.46ef3b17@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/
+Reviewed-by: Vadim Fedorenko <vfedorenko@novek.ru>
