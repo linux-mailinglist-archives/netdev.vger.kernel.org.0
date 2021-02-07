@@ -2,101 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6DAD3122D1
-	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 09:39:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0309C3122D2
+	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 09:45:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229623AbhBGIjJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Feb 2021 03:39:09 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:13831 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229506AbhBGIjD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 03:39:03 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B601fa6fe0000>; Sun, 07 Feb 2021 00:38:22 -0800
-Received: from [172.27.13.234] (172.20.145.6) by HQMAIL107.nvidia.com
+        id S229561AbhBGIpG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Feb 2021 03:45:06 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:2836 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229506AbhBGIpG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 03:45:06 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B601fa86a0000>; Sun, 07 Feb 2021 00:44:26 -0800
+Received: from sw-mtx-036.mtx.labs.mlnx (172.20.145.6) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Sun, 7 Feb
- 2021 08:38:20 +0000
-Subject: Re: [PATCH net 1/1] netfilter: conntrack: Check offload bit on table
- dump
-To:     Florian Westphal <fw@strlen.de>
-CC:     Pablo Neira Ayuso <pablo@netfilter.org>, <netdev@vger.kernel.org>,
-        "Paul Blakey" <paulb@nvidia.com>, Oz Shlomo <ozsh@nvidia.com>
-References: <20210128074052.777999-1-roid@nvidia.com>
- <20210130120114.GA7846@salvia>
- <3a29e9b5-7bf8-5c00-3ede-738f9b4725bf@nvidia.com>
- <997cbda4-acd1-a000-1408-269bc5c3abf3@nvidia.com>
- <20210201030853.GA19878@salvia>
- <1229b966-7772-44bd-6e91-fbde213ceb2d@nvidia.com>
- <20210201115036.GB12443@breakpoint.cc>
- <edb8da93-d859-e7ae-53dd-cae09dff2eba@nvidia.com>
- <20210201152534.GJ12443@breakpoint.cc>
- <a908ac8f-1fb4-1427-520d-3a702ecb7597@nvidia.com>
- <20210203125035.GC16570@breakpoint.cc>
-From:   Roi Dayan <roid@nvidia.com>
-Message-ID: <a283c129-5faa-17b3-b13a-ef336e3d5f85@nvidia.com>
-Date:   Sun, 7 Feb 2021 10:38:17 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+ 2021 08:44:25 +0000
+From:   Parav Pandit <parav@nvidia.com>
+To:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>
+CC:     Parav Pandit <parav@nvidia.com>
+Subject: [PATCH net-next v2 0/7] netdevsim port add, delete support
+Date:   Sun, 7 Feb 2021 10:44:05 +0200
+Message-ID: <20210207084412.252259-1-parav@nvidia.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210206125551.8616-1-parav@nvidia.com>
+References: <20210206125551.8616-1-parav@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <20210203125035.GC16570@breakpoint.cc>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 X-Originating-IP: [172.20.145.6]
 X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
  HQMAIL107.nvidia.com (172.20.187.13)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1612687102; bh=ckRaYIZhNfErdXl967jJneHJtZmeMgdH1Sb8jC/hjf4=;
-        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
-         MIME-Version:In-Reply-To:Content-Type:Content-Language:
-         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
-        b=DkT08IiTnmG80HLmxF5NGTkzAsrk5712nMn2jxldGIE9mDHWWbqMgZ5P1SBtMzSpz
-         ejGCqHDWNXC8LxQtP+6E5NVYnHfphSO58iQnOEjC6URS+yC5RW9C5fOOllkCIzwPEP
-         HwHlnMW1ZyymDno7+p/bOMZR8FCRRv3ASC4eTVqjzX0N4Rxm3Twfbs/8oN9iOM98Jx
-         wrmfy51LnU3CF4WB7I/vIT32FEGXdoiHyEnpTCR15Y1wYrN8m3ayrUXg5Ezqnmzqs6
-         I4Y+pgho9+Qk+V0slUu13fcGnYlJJ9Hkn+nUzOWU2hNKmJU2lwZ5lKC4l/p/n9f/bb
-         Ynadh1egpY9tw==
+        t=1612687466; bh=I3Yf9LWlaB7vvJandXXNlBmJSrW5OtmZ5Nihm9hFXKg=;
+        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
+         References:MIME-Version:Content-Transfer-Encoding:Content-Type:
+         X-Originating-IP:X-ClientProxiedBy;
+        b=jhgJeLuyAZDxDXLjdMnEQCQdZPksMyzvlOTgxa/7VnFPmIC2mKBhUt3+PEkjZqhGH
+         mH0eUlEwkgiokfoeqf9KEb0yWZCUlmZFHlGvGtC21bhOiXAhXgdK3OhzOLABrFqskN
+         zhpXXxpFYaSyILARZPMVrUTW9sYUEHRzCA8zre6ndwnVwR8q7zj2ASPSEjrFyTZbPk
+         rBRt3urjY7aDRbiOOACDIdPeRPti7NtHF+daNPGi6Of6/Q+nvplpRS2/jC4jHu9aTR
+         qHotS2BpeBLpJ2lpViMvM+pXNCN1yY2+HgAqvHNubf30g7IEDw2amfm6ayCi/Yrxrp
+         CkYenlLNR7Rgg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This series simulates one or more PCI PF and SF port addition and function
+configuration functionality.
 
+Example sequence:
+Create a device with ID=3D10 and one physical port.
+$ echo "10 1" > /sys/bus/netdevsim/new_device
 
-On 2021-02-03 2:50 PM, Florian Westphal wrote:
-> Roi Dayan <roid@nvidia.com> wrote:
->>> Do you think rhashtable_insert_fast() in flow_offload_add() blocks for
->>> dozens of seconds?
->>
->> I'm not sure. but its not only that but also the time to be in
->> established state as only then we offload.
-> 
-> That makes it even more weird.  Timeout for established is even larger.
-> In case of TCP, its days... so I don't understand at all :/
-> 
->>> Thats about the only thing I can see between 'offload bit gets set'
->>> and 'timeout is extended' in flow_offload_add() that could at least
->>> spend *some* time.
->>>
->>>> We hit this issue before more easily and pushed this fix
->>>>
->>>> 4203b19c2796 netfilter: flowtable: Set offload timeout when adding flow
->>>
->>> This fix makes sense to me.
->>
->> I just noted we didn't test correctly Pablo's suggestion instead of
->> to check the bit and extend the timeout in ctnetlink_dump_table() and
->> ct_seq_show() like GC does.
-> 
-> Ok.  Extending it there makes sense, but I still don't understand
-> why newly offloaded flows hit this problem.
-> 
-> Flow offload should never see a 'about to expire' ct entry.
-> The 'extend timeout from gc' is more to make sure GC doesn't reap
-> long-lived entries that have been offloaded aeons ago, not 'prevent
-> new flows from getting zapped...'
-> 
+Add PCI PF port:
+$ devlink port add netdevsim/netdevsim10 flavour pcipf pfnum 2
+netdevsim/netdevsim10/1: type eth netdev eth1 flavour pcipf controller 0 pf=
+num 2 external false splittable false
+  function:
+    hw_addr 00:00:00:00:00:00
 
-I'll add that an extended timeout from gc is if gc actually iterated
-this conn since it was created.
-I'll investigate this more and try to do more tests.
-thanks for the info
+$ devlink port add netdevsim/netdevsim10 flavour pcisf pfnum 2
+netdevsim/netdevsim10/2: type eth netdev eth2 flavour pcisf controller 0 pf=
+num 2 sfnum 0 splittable false
+  function:
+    hw_addr 00:00:00:00:00:00
+
+Show devlink port:
+$ devlink port show netdevsim/netdevsim10/2
+netdevsim/netdevsim10/2: type eth netdev eth2 flavour pcisf controller 0 pf=
+num 2 sfnum 0 splittable false
+  function:
+    hw_addr 00:00:00:00:00:00 state inactive opstate detached
+
+Set the MAC address and activate the function:
+$ devlink port function set netdevsim/netdevsim10/2 hw_addr 00:11:22:33:44:=
+55 state active
+
+Show the port and function attributes in JSON format:
+$ devlink port show netdevsim/netdevsim10/2 -jp
+{
+    "port": {
+        "netdevsim/netdevsim10/2": {
+            "type": "eth",
+            "netdev": "eth2",
+            "flavour": "pcisf",
+            "controller": 0,
+            "pfnum": 2,
+            "sfnum": 0,
+            "splittable": false,
+            "function": {
+                "hw_addr": "00:11:22:33:44:55",
+                "state": "active",
+                "opstate": "attached"
+            }
+        }
+    }
+}
+
+Delete PCI SF and PF ports:
+$ devlink port del netdevsim/netdevsim10/2
+
+Patch summary:
+patch-1 adds support for adding/remove PCI PF port
+patch-2 adds support for adding/remove PCI SF port
+patch-3 simulates MAC address query
+patch-4 simulates setting MAC address
+patch-5 simulates state query
+patch-6 simulates setting state
+patch-7 adds tests
+
+Parav Pandit (7):
+  netdevsim: Add support for add and delete of a PCI PF port
+  netdevsim: Add support for add and delete PCI SF port
+  netdevsim: Simulate get hardware address of a PCI port
+  netdevsim: Simulate set hardware address of a PCI port
+  netdevsim: Simulate port function state for a PCI port
+  netdevsim: Simulate port function set state for a PCI port
+  netdevsim: Add netdevsim port add test cases
+
+ drivers/net/netdevsim/Makefile                |   2 +-
+ drivers/net/netdevsim/dev.c                   |  14 +
+ drivers/net/netdevsim/netdevsim.h             |  38 ++
+ drivers/net/netdevsim/port_function.c         | 521 ++++++++++++++++++
+ .../drivers/net/netdevsim/devlink.sh          |  72 ++-
+ 5 files changed, 645 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/net/netdevsim/port_function.c
+
+--=20
+2.26.2
+
