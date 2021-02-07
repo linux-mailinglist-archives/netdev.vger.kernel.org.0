@@ -2,42 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF9083126BD
-	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 19:42:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FEA43126C0
+	for <lists+netdev@lfdr.de>; Sun,  7 Feb 2021 19:42:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229717AbhBGSkp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 7 Feb 2021 13:40:45 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:41586 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229626AbhBGSkn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 13:40:43 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 117IY6lJ014810;
-        Sun, 7 Feb 2021 10:39:51 -0800
+        id S229751AbhBGSlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 7 Feb 2021 13:41:00 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:9983 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229626AbhBGSk5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 7 Feb 2021 13:40:57 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 117ITVqg027003;
+        Sun, 7 Feb 2021 10:40:07 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=RdNj1xs03e1paOFCKsPuFia7ORTcb4m3bYZEEMGW1cU=;
- b=XOYxD75Aor0n60RsqYY150Jxz5PZD9upd7HrQHVMb2LT8zmPj/sNwCzcdAy6J/cY51zN
- Bl/smOziYVORYQxkE+sP6d5JhpVk8trvKOdPnBTVwkTSsFr6/6r0WSekE55O7CcersE5
- LbLIqBdGcBuy+hxQnVDT23dIidycSGhyBJb5UBf6528dqJSyqKCqjGUayJidpKqQ5Fc3
- XDgvwgO30RzZ0k2AXC0Z+4MqiUd8sPK7GCKcOhUh2Q3b3CiByk1i5D8AxgM6y9mjsAh/
- 8rvWAP81qk1WdLeZKogs6bbb/7rTHMwM1bTr7KoJjihICP86wsFtPlG92NCRXGvmJ9S7 dQ== 
+ content-type; s=pfpt0220; bh=yiE2ADaG2u4SWFtFQYQcMMzcQhr3YAXBFzh91k7yIkc=;
+ b=KpenzF3RFf8E462oUChh3R6TwV2sRxMgwwYbODGf2YEhHoNNnSo6epP/lKpM+1Y9RWdi
+ gilNH9GHZCOY1D5NKmpKtsGmEd5bsvjn5cn3qb6rAjJq6rcc3zpCPUhQcRw2Oou8a97K
+ 0pNj9DAU7cT/wCxdIJDs9KawuBWozhPY8gnKqJTQZjKmZ1dfTRZ1kQXGjn6QFzXwv7sq
+ DvtKY/9aHGNLjMPNNUylyObLwAa3lmk0Yr8VKbkthorNq8hPigYKrEcrhyr8G28QHpUX
+ q1bkCPXNM8tWVtPdwQ6C+0GKpEaFP8EnfYyB9jIaLp6kaktXtmWvBdsfOIdS6evjUCPY iQ== 
 Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 36hsbramkp-1
+        by mx0b-0016f401.pphosted.com with ESMTP id 36hugq2etm-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 07 Feb 2021 10:39:51 -0800
-Received: from SC-EXCH02.marvell.com (10.93.176.82) by DC5-EXCH01.marvell.com
+        Sun, 07 Feb 2021 10:40:07 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
  (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 7 Feb
- 2021 10:39:50 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 7 Feb
- 2021 10:39:49 -0800
+ 2021 10:40:05 -0800
 Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sun, 7 Feb 2021 10:39:49 -0800
+ Transport; Sun, 7 Feb 2021 10:40:05 -0800
 Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id 6B3A73F703F;
-        Sun,  7 Feb 2021 10:39:45 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id 115AE3F703F;
+        Sun,  7 Feb 2021 10:40:00 -0800 (PST)
 From:   <stefanc@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
@@ -48,11 +45,10 @@ CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
         <atenart@kernel.org>, <devicetree@vger.kernel.org>,
         <robh+dt@kernel.org>, <sebastian.hesselbarth@gmail.com>,
         <gregory.clement@bootlin.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Konstantin Porotchkin <kostap@marvell.com>
-Subject: [PATCH v9 net-next 02/15] dts: marvell: add CM3 SRAM memory to cp11x ethernet device tree
-Date:   Sun, 7 Feb 2021 20:38:44 +0200
-Message-ID: <1612723137-18045-3-git-send-email-stefanc@marvell.com>
+        <linux-arm-kernel@lists.infradead.org>
+Subject: [PATCH v9 net-next 03/15] net: mvpp2: add CM3 SRAM memory map
+Date:   Sun, 7 Feb 2021 20:38:45 +0200
+Message-ID: <1612723137-18045-4-git-send-email-stefanc@marvell.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1612723137-18045-1-git-send-email-stefanc@marvell.com>
 References: <1612723137-18045-1-git-send-email-stefanc@marvell.com>
@@ -64,29 +60,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Konstantin Porotchkin <kostap@marvell.com>
+From: Stefan Chulski <stefanc@marvell.com>
 
-CM3 SRAM address space would be used for Flow Control configuration.
+This patch adds CM3 memory map and CM3 read/write callbacks.
 
 Signed-off-by: Stefan Chulski <stefanc@marvell.com>
-Signed-off-by: Konstantin Porotchkin <kostap@marvell.com>
 ---
- arch/arm64/boot/dts/marvell/armada-cp11x.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h      |  1 +
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 26 ++++++++++++++++++++
+ 2 files changed, 27 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/marvell/armada-cp11x.dtsi b/arch/arm64/boot/dts/marvell/armada-cp11x.dtsi
-index 9dcf16b..6fe0d26 100644
---- a/arch/arm64/boot/dts/marvell/armada-cp11x.dtsi
-+++ b/arch/arm64/boot/dts/marvell/armada-cp11x.dtsi
-@@ -59,7 +59,7 @@
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+index 6bd7e40..56e90ab 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+@@ -925,6 +925,7 @@ struct mvpp2 {
+ 	/* Shared registers' base addresses */
+ 	void __iomem *lms_base;
+ 	void __iomem *iface_base;
++	void __iomem *cm3_base;
  
- 		CP11X_LABEL(ethernet): ethernet@0 {
- 			compatible = "marvell,armada-7k-pp22";
--			reg = <0x0 0x100000>, <0x129000 0xb000>;
-+			reg = <0x0 0x100000>, <0x129000 0xb000>, <0x220000 0x800>;
- 			clocks = <&CP11X_LABEL(clk) 1 3>, <&CP11X_LABEL(clk) 1 9>,
- 				 <&CP11X_LABEL(clk) 1 5>, <&CP11X_LABEL(clk) 1 6>,
- 				 <&CP11X_LABEL(clk) 1 18>;
+ 	/* On PPv2.2, each "software thread" can access the base
+ 	 * register through a separate address space, each 64 KB apart
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index a07cf60..eec3796 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -6846,6 +6846,27 @@ static int mvpp2_init(struct platform_device *pdev, struct mvpp2 *priv)
+ 	return 0;
+ }
+ 
++static int mvpp2_get_sram(struct platform_device *pdev,
++			  struct mvpp2 *priv)
++{
++	struct resource *res;
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 2);
++	if (!res) {
++		if (has_acpi_companion(&pdev->dev))
++			dev_warn(&pdev->dev, "ACPI is too old, Flow control not supported\n");
++		else
++			dev_warn(&pdev->dev, "DT is too old, Flow control not supported\n");
++		return 0;
++	}
++
++	priv->cm3_base = devm_ioremap_resource(&pdev->dev, res);
++	if (IS_ERR(priv->cm3_base))
++		return PTR_ERR(priv->cm3_base);
++
++	return 0;
++}
++
+ static int mvpp2_probe(struct platform_device *pdev)
+ {
+ 	const struct acpi_device_id *acpi_id;
+@@ -6902,6 +6923,11 @@ static int mvpp2_probe(struct platform_device *pdev)
+ 		priv->iface_base = devm_ioremap_resource(&pdev->dev, res);
+ 		if (IS_ERR(priv->iface_base))
+ 			return PTR_ERR(priv->iface_base);
++
++		/* Map CM3 SRAM */
++		err = mvpp2_get_sram(pdev, priv);
++		if (err)
++			dev_warn(&pdev->dev, "Fail to alloc CM3 SRAM\n");
+ 	}
+ 
+ 	if (priv->hw_version == MVPP22 && dev_of_node(&pdev->dev)) {
 -- 
 1.9.1
 
