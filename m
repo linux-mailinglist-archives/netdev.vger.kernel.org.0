@@ -2,175 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1D1C314398
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 00:18:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C5E231439E
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 00:21:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229806AbhBHXSD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 18:18:03 -0500
-Received: from ssl.serverraum.org ([176.9.125.105]:36011 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229615AbhBHXR6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 18:17:58 -0500
-Received: from mwalle01.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:fa59:71ff:fe9b:b851])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id CD65923E5F;
-        Tue,  9 Feb 2021 00:17:15 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1612826236;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=5c/pJ57U4o2ViQ39aD4KOnP9QhvaHjsYdRUFwTVjiqM=;
-        b=B9LRnagRdDQKXrj6YVcantPUw99n5a7V/t1mshSvMOloLAhK/1aHHuBFroIDc95DzB/rqx
-        jY0J5KIMKIKpW3N/V4FJlY6EGP2wU5RLzKb6bszrzQJfESmO2IloOmQmSezwBVdxIcYefS
-        iVPy5p9FCD0BHfPMGVlzzbEletAtBxM=
-From:   Michael Walle <michael@walle.cc>
-To:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next v2] net: phy: broadcom: remove BCM5482 1000Base-BX support
-Date:   Tue,  9 Feb 2021 00:17:06 +0100
-Message-Id: <20210208231706.31789-1-michael@walle.cc>
-X-Mailer: git-send-email 2.20.1
+        id S230049AbhBHXUw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 18:20:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56630 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229913AbhBHXUs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Feb 2021 18:20:48 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 4DA6664E7A;
+        Mon,  8 Feb 2021 23:20:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612826407;
+        bh=np9RFv3gOcJXMyUj4MZKAwZzqqyq73afMA84zT7bNbQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=bg0hvdj62DD2Yn1ACg150lrOUMKkbJmcuGiaum/gjqLYuHTVUwSYE0jEIHXxR4Y8E
+         /yTyFjOxDBY6Isi+rzORPVFN1A88vVKKP1QB4dbnd6YTrDWtqO9ZRFTX7/WdlIIHja
+         YAEDtLqiD/iTYNAeljQ2Qr2AkamYsAIAAqKIeWrnF1aQvZoTCr51BhNvYPH9CF2HTH
+         2eoWLqLWoCLeR2NV48vTng7JjLEkY/35Pe/gfO26KwBxluPvPxf1I5Jv/MZPUzjJ7/
+         CcQaIwJGJxPcshP/8My9LI6CEnfx1BA14GyICEHm5jS7dcTVN9lRNoYU/sKXKh5FFd
+         neElzdgdRJaBg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3A2C1609D4;
+        Mon,  8 Feb 2021 23:20:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam: Yes
+Subject: Re: [net-next PATCH] net-sysfs: Add rtnl locking for getting Tx queue
+ traffic class
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161282640723.30474.14084362862672002729.git-patchwork-notify@kernel.org>
+Date:   Mon, 08 Feb 2021 23:20:07 +0000
+References: <161282332082.135732.12397609202412953449.stgit@localhost.localdomain>
+In-Reply-To: <161282332082.135732.12397609202412953449.stgit@localhost.localdomain>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        atenart@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is nowhere used in the kernel. It also seems to be lacking the
-proper fiber advertise flags. Remove it.
+Hello:
 
-Signed-off-by: Michael Walle <michael@walle.cc>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
----
-changes since v1:
- - added queue to subject
- - reworded 1000BX to 1000Base-BX
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
- drivers/net/phy/broadcom.c | 93 +-------------------------------------
- 1 file changed, 1 insertion(+), 92 deletions(-)
+On Mon, 08 Feb 2021 14:29:18 -0800 you wrote:
+> From: Alexander Duyck <alexanderduyck@fb.com>
+> 
+> In order to access the suboordinate dev for a device we should be holding
+> the rtnl_lock when outside of the transmit path. The existing code was not
+> doing that for the sysfs dump function and as a result we were open to a
+> possible race.
+> 
+> [...]
 
-diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
-index 8a4ec3222168..3142ba768313 100644
---- a/drivers/net/phy/broadcom.c
-+++ b/drivers/net/phy/broadcom.c
-@@ -361,96 +361,6 @@ static int bcm54811_config_init(struct phy_device *phydev)
- 	return err;
- }
- 
--static int bcm5482_config_init(struct phy_device *phydev)
--{
--	int err, reg;
--
--	err = bcm54xx_config_init(phydev);
--
--	if (phydev->dev_flags & PHY_BCM_FLAGS_MODE_1000BX) {
--		/*
--		 * Enable secondary SerDes and its use as an LED source
--		 */
--		reg = bcm_phy_read_shadow(phydev, BCM5482_SHD_SSD);
--		bcm_phy_write_shadow(phydev, BCM5482_SHD_SSD,
--				     reg |
--				     BCM5482_SHD_SSD_LEDM |
--				     BCM5482_SHD_SSD_EN);
--
--		/*
--		 * Enable SGMII slave mode and auto-detection
--		 */
--		reg = BCM5482_SSD_SGMII_SLAVE | MII_BCM54XX_EXP_SEL_SSD;
--		err = bcm_phy_read_exp(phydev, reg);
--		if (err < 0)
--			return err;
--		err = bcm_phy_write_exp(phydev, reg, err |
--					BCM5482_SSD_SGMII_SLAVE_EN |
--					BCM5482_SSD_SGMII_SLAVE_AD);
--		if (err < 0)
--			return err;
--
--		/*
--		 * Disable secondary SerDes powerdown
--		 */
--		reg = BCM5482_SSD_1000BX_CTL | MII_BCM54XX_EXP_SEL_SSD;
--		err = bcm_phy_read_exp(phydev, reg);
--		if (err < 0)
--			return err;
--		err = bcm_phy_write_exp(phydev, reg,
--					err & ~BCM5482_SSD_1000BX_CTL_PWRDOWN);
--		if (err < 0)
--			return err;
--
--		/*
--		 * Select 1000BASE-X register set (primary SerDes)
--		 */
--		reg = bcm_phy_read_shadow(phydev, BCM54XX_SHD_MODE);
--		bcm_phy_write_shadow(phydev, BCM54XX_SHD_MODE,
--				     reg | BCM54XX_SHD_MODE_1000BX);
--
--		/*
--		 * LED1=ACTIVITYLED, LED3=LINKSPD[2]
--		 * (Use LED1 as secondary SerDes ACTIVITY LED)
--		 */
--		bcm_phy_write_shadow(phydev, BCM5482_SHD_LEDS1,
--			BCM5482_SHD_LEDS1_LED1(BCM_LED_SRC_ACTIVITYLED) |
--			BCM5482_SHD_LEDS1_LED3(BCM_LED_SRC_LINKSPD2));
--
--		/*
--		 * Auto-negotiation doesn't seem to work quite right
--		 * in this mode, so we disable it and force it to the
--		 * right speed/duplex setting.  Only 'link status'
--		 * is important.
--		 */
--		phydev->autoneg = AUTONEG_DISABLE;
--		phydev->speed = SPEED_1000;
--		phydev->duplex = DUPLEX_FULL;
--	}
--
--	return err;
--}
--
--static int bcm5482_read_status(struct phy_device *phydev)
--{
--	int err;
--
--	err = genphy_read_status(phydev);
--
--	if (phydev->dev_flags & PHY_BCM_FLAGS_MODE_1000BX) {
--		/*
--		 * Only link status matters for 1000Base-X mode, so force
--		 * 1000 Mbit/s full-duplex status
--		 */
--		if (phydev->link) {
--			phydev->speed = SPEED_1000;
--			phydev->duplex = DUPLEX_FULL;
--		}
--	}
--
--	return err;
--}
--
- static int bcm5481_config_aneg(struct phy_device *phydev)
- {
- 	struct device_node *np = phydev->mdio.dev.of_node;
-@@ -800,8 +710,7 @@ static struct phy_driver broadcom_drivers[] = {
- 	.phy_id_mask	= 0xfffffff0,
- 	.name		= "Broadcom BCM5482",
- 	/* PHY_GBIT_FEATURES */
--	.config_init	= bcm5482_config_init,
--	.read_status	= bcm5482_read_status,
-+	.config_init	= bcm54xx_config_init,
- 	.config_intr	= bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
- }, {
--- 
-2.20.1
+Here is the summary with links:
+  - [net-next] net-sysfs: Add rtnl locking for getting Tx queue traffic class
+    https://git.kernel.org/netdev/net-next/c/b2f175648031
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
