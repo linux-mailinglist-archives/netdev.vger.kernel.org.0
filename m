@@ -2,105 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C8CF313857
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 16:45:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5718B313854
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 16:45:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234005AbhBHPns (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 10:43:48 -0500
-Received: from www62.your-server.de ([213.133.104.62]:55680 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233804AbhBHPmO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 10:42:14 -0500
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1l98fF-000E8Z-Uo; Mon, 08 Feb 2021 16:41:26 +0100
-Received: from [85.7.101.30] (helo=pc-9.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1l98fF-000P5I-Kx; Mon, 08 Feb 2021 16:41:25 +0100
-Subject: Re: [PATCH bpf-next V15 2/7] bpf: fix bpf_fib_lookup helper MTU check
- for SKB ctx
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
-        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
-        colrack@gmail.com, David Ahern <dsahern@kernel.org>
-References: <161228314075.576669.15427172810948915572.stgit@firesoul>
- <161228321177.576669.11521750082473556168.stgit@firesoul>
- <ada19e5b-87be-ff39-45ba-ff0025bf1de9@iogearbox.net>
- <20210208145713.4ee3e9ba@carbon> <20210208162056.44b0236e@carbon>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <547131a3-5125-d419-8e61-0fc675d663a8@iogearbox.net>
-Date:   Mon, 8 Feb 2021 16:41:24 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S230217AbhBHPnU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 10:43:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58444 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234033AbhBHPm1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 10:42:27 -0500
+Received: from mail-oo1-xc31.google.com (mail-oo1-xc31.google.com [IPv6:2607:f8b0:4864:20::c31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D58C6C061788;
+        Mon,  8 Feb 2021 07:41:46 -0800 (PST)
+Received: by mail-oo1-xc31.google.com with SMTP id q4so3526169ood.8;
+        Mon, 08 Feb 2021 07:41:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=sxdNpbaxjlgrI7y1xjMXjF7UFp2IQQ7kDEnaAjSJx9g=;
+        b=YfIiYx/BKZ4rZeX8RpLOTQsQ/KtLpC8M6vxPN/XhchXntph3d2A7qVunw33G3PREa0
+         F+D2/WFlIa/yxvdNhzJ9UufatBB0/30XR7OCSbrAuPtQySZh6fH0VlX+20Q5nP8rbqt9
+         MqOz/KG5w9mdSYoW08j54YMvejJIKhVcHGQGR6c1beANVWZvAOeRgcMtc7UI49l8oZNM
+         cummtSiQEjqXpj61hbgNBBG3uFiUmnVdrYI4TzQuxqwcg71ZeFOVsp8NvX68SL47B2rb
+         cQs6UJ9HED2gjXaL6iSIH7rfPRBsJOY9c8sa+MlvIB8piR3LC+RxN1Yw8Eq+X+xQpRcc
+         aCOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=sxdNpbaxjlgrI7y1xjMXjF7UFp2IQQ7kDEnaAjSJx9g=;
+        b=E5V/9Cw9Pf4AwtJcb3RcKDW0Ly1KcHVfcq3dylvewGjtQO0rqCqEo1/wTw1Btv1aCJ
+         HlM5txq+1zFiOgXinz8JHWgQhfJsMHs77kb1GVrFvAIxVQpELE8yMj/wcZaMykr7VSQD
+         0D0bRAKRAGWeEnI8eF9a43h+6hyivjzs+HXWCjuCHs/E1LylijUWJ/giiFyH5sLWmEnr
+         4ywTE4rUEWaGPItXCxG7/hjLqNSX+3c/wBbIObWushfi5Yu8i4rs3tp7Kmo8NTkMHNnz
+         yCzlZfAOP3F00kKtVwt7Pe+xrIX0VzWil0JEnYzfMas48PhwOmfsE/d0a7hMl130AO6x
+         G/CQ==
+X-Gm-Message-State: AOAM532k9HL3RElgtTGjdLMG9kiFnDQ/LaKkzjrB20ivDrUUqXNACnHT
+        Fo8bujjI07Og4t8DgqJOk6isZF7y2C4=
+X-Google-Smtp-Source: ABdhPJwH0fwOOUu+Q0WPK3ANFlUUkzoJcW31wN26ZavLe1t95+GxV7PDkRUbDf4XQVe/bhFngUx0qQ==
+X-Received: by 2002:a4a:d031:: with SMTP id w17mr5052846oor.33.1612798906284;
+        Mon, 08 Feb 2021 07:41:46 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.33])
+        by smtp.googlemail.com with ESMTPSA id d17sm1097652ooh.32.2021.02.08.07.41.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 08 Feb 2021 07:41:45 -0800 (PST)
+Subject: Re: [PATCH iproute2-next V3] devlink: add support for port params
+ get/set
+To:     Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        netdev@vger.kernel.org
+Cc:     jiri@nvidia.com, davem@davemloft.net, linux-kernel@vger.kernel.org,
+        kuba@kernel.org
+References: <20210202130445.5950-1-oleksandr.mazur@plvision.eu>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <c22aaccf-59a9-d3bc-8eb3-0496f17c8dc3@gmail.com>
+Date:   Mon, 8 Feb 2021 08:41:43 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.7.0
 MIME-Version: 1.0
-In-Reply-To: <20210208162056.44b0236e@carbon>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20210202130445.5950-1-oleksandr.mazur@plvision.eu>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26074/Mon Feb  8 13:20:40 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/8/21 4:20 PM, Jesper Dangaard Brouer wrote:
-> On Mon, 8 Feb 2021 14:57:13 +0100
-> Jesper Dangaard Brouer <brouer@redhat.com> wrote:
->> On Fri, 5 Feb 2021 01:06:35 +0100
->> Daniel Borkmann <daniel@iogearbox.net> wrote:
->>> On 2/2/21 5:26 PM, Jesper Dangaard Brouer wrote:
->>>> BPF end-user on Cilium slack-channel (Carlo Carraro) wants to use
->>>> bpf_fib_lookup for doing MTU-check, but *prior* to extending packet size,
->>>> by adjusting fib_params 'tot_len' with the packet length plus the expected
->>>> encap size. (Just like the bpf_check_mtu helper supports). He discovered
->>>> that for SKB ctx the param->tot_len was not used, instead skb->len was used
->>>> (via MTU check in is_skb_forwardable() that checks against netdev MTU).
->>>>
->>>> Fix this by using fib_params 'tot_len' for MTU check. If not provided (e.g.
->>>> zero) then keep existing TC behaviour intact. Notice that 'tot_len' for MTU
->>>> check is done like XDP code-path, which checks against FIB-dst MTU.
-[...]
->>>> -	if (!rc) {
->>>> -		struct net_device *dev;
->>>> -
->>>> -		dev = dev_get_by_index_rcu(net, params->ifindex);
->>>> +	if (rc == BPF_FIB_LKUP_RET_SUCCESS && !check_mtu) {
->>>> +		/* When tot_len isn't provided by user,
->>>> +		 * check skb against net_device MTU
->>>> +		 */
->>>>    		if (!is_skb_forwardable(dev, skb))
->>>>    			rc = BPF_FIB_LKUP_RET_FRAG_NEEDED;
->>>
->>> ... so using old cached dev from above will result in wrong MTU check &
->>> subsequent passing of wrong params->mtu_result = dev->mtu this way.
->>
->> Yes, you are right, params->ifindex have a chance to change in the calls.
->> So, our attempt to save an ifindex lookup (dev_get_by_index_rcu) is not
->> correct.
->>
->>> So one
->>> way to fix is that we would need to pass &dev to bpf_ipv{4,6}_fib_lookup().
->>
->> Ok, I will try to code it up, and see how ugly it looks, but I'm no
->> longer sure that it is worth saving this ifindex lookup, as it will
->> only happen if BPF-prog didn't specify params->tot_len.
+On 2/2/21 6:04 AM, Oleksandr Mazur wrote:
+> Add implementation for the port parameters
+> getting/setting.
+> Add bash completion for port param.
+> Add man description for port param.
 > 
-> I guess we can still do this as an "optimization", but the dev/ifindex
-> will very likely be another at this point.
+> Example:
+> $ devlink dev param set netdevsim/netdevsim0/0 name test_port_parameter value false cmode runtime
+> 
+> $ devlink port param show netdevsim/netdevsim0/0 name test_port_parameter
+> netdevsim/netdevsim0/0:
+>   name test_port_parameter type driver-specific
+>     values:
+>       cmode runtime value false
+> 
+> $ devlink port  -jp param show netdevsim/netdevsim0/0 name test_port_parameter
+> {
+>     "param": {
+>         "netdevsim/netdevsim0/0": [ {
+>                 "name": "test_port_parameter",
+>                 "type": "driver-specific",
+>                 "values": [ {
+>                         "cmode": "runtime",
+>                         "value": false
+>                     } ]
+>             } ]
+>     }
+> }
+> 
+> Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+> ---
+> V3:
+>     1) Add usage example;
+>     2) Remove stray newline in code;
+> V2:
+>     1) Add bash completion for port param;
+>     2) Add man decsription / examples for port param;
+> 
+>  bash-completion/devlink |  55 ++++++++
+>  devlink/devlink.c       | 274 +++++++++++++++++++++++++++++++++++++++-
+>  man/man8/devlink-port.8 |  65 ++++++++++
+>  3 files changed, 388 insertions(+), 6 deletions(-)
+> 
 
-I would say for sake of progress, lets ship your series w/o this optimization so
-it can land, and we revisit this later on independent from here. Actually DavidA
-back then acked the old poc patch I posted, so maybe that's worth a revisit as
-well but needs more testing first.
+does not apply to iproute2-next. please rebase
 
-Thanks,
-Daniel
