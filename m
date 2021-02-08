@@ -2,131 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1A4931357C
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 15:46:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5766A313584
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 15:48:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232460AbhBHOqC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 09:46:02 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:25439 "EHLO
+        id S231682AbhBHOrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 09:47:06 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:31196 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232923AbhBHOol (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 09:44:41 -0500
+        by vger.kernel.org with ESMTP id S232771AbhBHOqh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 09:46:37 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1612795395;
+        s=mimecast20190719; t=1612795512;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding;
-        bh=hJ25Ui01C1ncQ+IMfWQfND73YP38mMdrHPvtKAqidhw=;
-        b=iFkB5Qx+rhb5IROSdhq79S9NHtvRZslfVESH3VJKVD+FiOQAfI/Q4jp2Y5Vu+8+MJNrhOU
-        xGuokUUTwbJu72D7OXftduxmtXV+Qsi8cVO7UI69nsgGQUEfxOY5PC5tETI/rvupBtalgS
-        ZYXVf5l2kEr8jQ2+jbaJdJdlFcP/v3g=
+        bh=wDyz1IFDSEAOIerG7E7i9OIec2MQQzh/7MUoQ35aflI=;
+        b=NcrwCJOF9GzFKMbfrmbbgt6bWzxEOHYwiNCWjFYL4VNBBruV2DbzqpvE4lRB4JliP4H6o4
+        0I0umLVF2vArQpCcn311LW7vulGpU4BZYF63+awR/FdJfk2VNBjesk16wS5q3UHru4gA6p
+        hv3W9vCwVFiIrCBB81su8Gtp0/kWkY4=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-258-Ja8sH24zPYSqpZXLVrafYw-1; Mon, 08 Feb 2021 09:43:13 -0500
-X-MC-Unique: Ja8sH24zPYSqpZXLVrafYw-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+ us-mta-580-h0NjNB0VO72XsLi_FX5LlQ-1; Mon, 08 Feb 2021 09:45:08 -0500
+X-MC-Unique: h0NjNB0VO72XsLi_FX5LlQ-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 564B31966322;
-        Mon,  8 Feb 2021 14:43:11 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4EC11801975;
+        Mon,  8 Feb 2021 14:45:07 +0000 (UTC)
 Received: from steredhat.redhat.com (ovpn-115-25.ams2.redhat.com [10.36.115.25])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 899315D9DE;
-        Mon,  8 Feb 2021 14:43:08 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E2FBD5D740;
+        Mon,  8 Feb 2021 14:44:55 +0000 (UTC)
 From:   Stefano Garzarella <sgarzare@redhat.com>
 To:     kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Jorgen Hansen <jhansen@vmware.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
-        Andy King <acking@vmware.com>, Wei Liu <wei.liu@kernel.org>,
-        Dmitry Torokhov <dtor@vmware.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        George Zhang <georgezhang@vmware.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Asias He <asias@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Claudio Imbrenda <imbrenda@linux.vnet.ibm.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>
-Subject: [PATCH net] vsock: fix locking in vsock_shutdown()
-Date:   Mon,  8 Feb 2021 15:43:07 +0100
-Message-Id: <20210208144307.83628-1-sgarzare@redhat.com>
+Subject: [PATCH net] vsock/virtio: update credit only if socket is not closed
+Date:   Mon,  8 Feb 2021 15:44:54 +0100
+Message-Id: <20210208144454.84438-1-sgarzare@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In vsock_shutdown() we touched some socket fields without holding the
-socket lock, such as 'state' and 'sk_flags'.
+If the socket is closed or is being released, some resources used by
+virtio_transport_space_update() such as 'vsk->trans' may be released.
 
-Also, after the introduction of multi-transport, we are accessing
-'vsk->transport' in vsock_send_shutdown() without holding the lock
-and this call can be made while the connection is in progress, so
-the transport can change in the meantime.
+To avoid a use after free bug we should only update the available credit
+when we are sure the socket is still open and we have the lock held.
 
-To avoid issues, we hold the socket lock when we enter in
-vsock_shutdown() and release it when we leave.
-
-Among the transports that implement the 'shutdown' callback, only
-hyperv_transport acquired the lock. Since the caller now holds it,
-we no longer take it.
-
-Fixes: d021c344051a ("VSOCK: Introduce VM Sockets")
+Fixes: 06a8fc78367d ("VSOCK: Introduce virtio_vsock_common.ko")
 Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
 ---
- net/vmw_vsock/af_vsock.c         | 8 +++++---
- net/vmw_vsock/hyperv_transport.c | 2 --
- 2 files changed, 5 insertions(+), 5 deletions(-)
+ net/vmw_vsock/virtio_transport_common.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index 4ea301fc2bf0..5546710d8ac1 100644
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -943,10 +943,12 @@ static int vsock_shutdown(struct socket *sock, int mode)
- 	 */
+diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+index 5956939eebb7..e4370b1b7494 100644
+--- a/net/vmw_vsock/virtio_transport_common.c
++++ b/net/vmw_vsock/virtio_transport_common.c
+@@ -1130,8 +1130,6 @@ void virtio_transport_recv_pkt(struct virtio_transport *t,
  
- 	sk = sock->sk;
-+
-+	lock_sock(sk);
- 	if (sock->state == SS_UNCONNECTED) {
- 		err = -ENOTCONN;
- 		if (sk->sk_type == SOCK_STREAM)
--			return err;
-+			goto out;
- 	} else {
- 		sock->state = SS_DISCONNECTING;
- 		err = 0;
-@@ -955,10 +957,8 @@ static int vsock_shutdown(struct socket *sock, int mode)
- 	/* Receive and send shutdowns are treated alike. */
- 	mode = mode & (RCV_SHUTDOWN | SEND_SHUTDOWN);
- 	if (mode) {
--		lock_sock(sk);
- 		sk->sk_shutdown |= mode;
- 		sk->sk_state_change(sk);
--		release_sock(sk);
+ 	vsk = vsock_sk(sk);
  
- 		if (sk->sk_type == SOCK_STREAM) {
- 			sock_reset_flag(sk, SOCK_DONE);
-@@ -966,6 +966,8 @@ static int vsock_shutdown(struct socket *sock, int mode)
- 		}
+-	space_available = virtio_transport_space_update(sk, pkt);
+-
+ 	lock_sock(sk);
+ 
+ 	/* Check if sk has been closed before lock_sock */
+@@ -1142,6 +1140,8 @@ void virtio_transport_recv_pkt(struct virtio_transport *t,
+ 		goto free_pkt;
  	}
  
-+out:
-+	release_sock(sk);
- 	return err;
- }
- 
-diff --git a/net/vmw_vsock/hyperv_transport.c b/net/vmw_vsock/hyperv_transport.c
-index 630b851f8150..5a3beef73461 100644
---- a/net/vmw_vsock/hyperv_transport.c
-+++ b/net/vmw_vsock/hyperv_transport.c
-@@ -479,9 +479,7 @@ static int hvs_shutdown(struct vsock_sock *vsk, int mode)
- 	if (!(mode & SEND_SHUTDOWN))
- 		return 0;
- 
--	lock_sock(sk);
- 	hvs_shutdown_lock_held(vsk->trans, mode);
--	release_sock(sk);
- 	return 0;
- }
++	space_available = virtio_transport_space_update(sk, pkt);
++
+ 	/* Update CID in case it has changed after a transport reset event */
+ 	vsk->local_addr.svm_cid = dst.svm_cid;
  
 -- 
 2.29.2
