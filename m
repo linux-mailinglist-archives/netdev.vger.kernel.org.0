@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1400C313ADE
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 18:26:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CAED9313AE5
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 18:28:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232964AbhBHR0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 12:26:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34900 "EHLO mail.kernel.org"
+        id S234854AbhBHR1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 12:27:36 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35240 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234800AbhBHRV0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Feb 2021 12:21:26 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BA31564EB8;
-        Mon,  8 Feb 2021 17:19:46 +0000 (UTC)
+        id S232960AbhBHRWB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Feb 2021 12:22:01 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4007764EB9;
+        Mon,  8 Feb 2021 17:19:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612804787;
-        bh=gRrWc7kvhk/DZiBYnZAAhJguwua33p7z3XuR3MwFUTM=;
+        s=k20201202; t=1612804789;
+        bh=8UKjHuY+6+Se0SIw/BGBgkBnLcYZ7w8PAQId9xAQEI4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j4ynVEPHuAGU/BVeCDcWY5qsenSbCVVgsn1/csFH3nFntFzthYW1/9KvRhPGRv1zy
-         /d8UEYZ5O3Pz26mgGVBOW37n/j6Mgo4eIfDGxVhbDEFbWayZ2OGD9xQqaLoUrFcVfy
-         YD5o1vStY3+LlBlllVFRHFtHQuQxJ9riTU4xd4ObLEHM8qhrYQJ+tD9kNsfRl/GeIj
-         LFFftdwOCDBPK4H4dHR0afWQ24kDEypeZnk3Owcx6qzgo61yypoMauJ+mko6UV0JJq
-         IblIAPPitPqiVLcFicEnPuULfY/zL205MY5EtK/ugPgvQ0JqmnNbUVqG7NfHwK8gO0
-         dIPoSaO0Qg2XA==
+        b=swcxZfaQnRhXm2wlJuHzpowEN6lNjygxoh8zCOjmkx0pOGzRQpXaC12i1HQSSFcqm
+         E701NTyd8hZwAxvabgeJ7426MI3FGl0qfkcl85bYvg0GblfNLkc6vH7hHIUXu+/JRK
+         6wQjbF8tjD+JT6o0LHCNi6isg/OnJJiM0MvMf1ufBGyO+9lmP+aaCO9WXGldLxM9bs
+         CQ/2J30dTY89UuzKjgfmdQgPD/fcDtt1NTQPXK8BSdaqdka/lbPIWMSl6Y95rttUaE
+         5QHb7Z7r/nxqfSe0TqwHSvpJHJ6V0WbimRaigpqTijaUlNESGHHNTChNxiPRVUKOFl
+         ogMr5eOcq9y2A==
 From:   Antoine Tenart <atenart@kernel.org>
 To:     davem@davemloft.net, kuba@kernel.org, alexander.duyck@gmail.com
 Cc:     Antoine Tenart <atenart@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH net-next v2 11/12] net: improve queue removal readability in __netif_set_xps_queue
-Date:   Mon,  8 Feb 2021 18:19:16 +0100
-Message-Id: <20210208171917.1088230-12-atenart@kernel.org>
+Subject: [PATCH net-next v2 12/12] net-sysfs: move the xps cpus/rxqs retrieval in a common function
+Date:   Mon,  8 Feb 2021 18:19:17 +0100
+Message-Id: <20210208171917.1088230-13-atenart@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210208171917.1088230-1-atenart@kernel.org>
 References: <20210208171917.1088230-1-atenart@kernel.org>
@@ -38,42 +38,156 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Improve the readability of the loop removing tx-queue from unused
-CPUs/rx-queues in __netif_set_xps_queue. The change should only be
-cosmetic.
+Most of the xps_cpus_show and xps_rxqs_show functions share the same
+logic. Having it in two different functions does not help maintenance.
+This patch moves their common logic into a new function, xps_queue_show,
+to improve this.
 
 Signed-off-by: Antoine Tenart <atenart@kernel.org>
 ---
- net/core/dev.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+ net/core/net-sysfs.c | 98 ++++++++++++++------------------------------
+ 1 file changed, 31 insertions(+), 67 deletions(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 9b91e0d0895c..7c3ac6736bb6 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -2766,13 +2766,16 @@ int __netif_set_xps_queue(struct net_device *dev, const unsigned long *mask,
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index 6ce5772e799e..984c15248483 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -1314,35 +1314,31 @@ static const struct attribute_group dql_group = {
+ #endif /* CONFIG_BQL */
  
- 	/* removes tx-queue from unused CPUs/rx-queues */
- 	for (j = 0; j < dev_maps->nr_ids; j++) {
--		for (i = tc, tci = j * dev_maps->num_tc; i--; tci++)
--			active |= remove_xps_queue(dev_maps, tci, index);
--		if (!netif_attr_test_mask(j, mask, dev_maps->nr_ids) ||
--		    !netif_attr_test_online(j, online_mask, dev_maps->nr_ids))
--			active |= remove_xps_queue(dev_maps, tci, index);
--		for (i = dev_maps->num_tc - tc, tci++; --i; tci++)
-+		tci = j * dev_maps->num_tc;
+ #ifdef CONFIG_XPS
+-static ssize_t xps_cpus_show(struct netdev_queue *queue,
+-			     char *buf)
++static ssize_t xps_queue_show(struct net_device *dev, unsigned int index,
++			      char *buf, enum xps_map_type type)
+ {
+-	struct net_device *dev = queue->dev;
+ 	struct xps_dev_maps *dev_maps;
+-	unsigned int index, nr_ids;
+-	int j, len, ret, tc = 0;
+ 	unsigned long *mask;
+-
+-	if (!netif_is_multiqueue(dev))
+-		return -ENOENT;
+-
+-	index = get_netdev_queue_index(queue);
+-
+-	/* If queue belongs to subordinate dev use its map */
+-	dev = netdev_get_tx_queue(dev, index)->sb_dev ? : dev;
++	unsigned int nr_ids;
++	int j, len, tc = 0;
+ 
+ 	tc = netdev_txq_to_tc(dev, index);
+ 	if (tc < 0)
+ 		return -EINVAL;
+ 
+ 	rcu_read_lock();
+-	dev_maps = rcu_dereference(dev->xps_maps[XPS_CPUS]);
+-	nr_ids = dev_maps ? dev_maps->nr_ids : nr_cpu_ids;
++	dev_maps = rcu_dereference(dev->xps_maps[type]);
 +
-+		for (i = 0; i < dev_maps->num_tc; i++, tci++) {
-+			if (i == tc &&
-+			    netif_attr_test_mask(j, mask, dev_maps->nr_ids) &&
-+			    netif_attr_test_online(j, online_mask, dev_maps->nr_ids))
-+				continue;
-+
- 			active |= remove_xps_queue(dev_maps, tci, index);
-+		}
++	/* Default to nr_cpu_ids/dev->num_rx_queues and do not just return 0
++	 * when dev_maps hasn't been allocated yet, to be backward compatible.
++	 */
++	nr_ids = dev_maps ? dev_maps->nr_ids :
++		 (type == XPS_CPUS ? nr_cpu_ids : dev->num_rx_queues);
+ 
+ 	mask = bitmap_zalloc(nr_ids, GFP_KERNEL);
+ 	if (!mask) {
+-		ret = -ENOMEM;
+-		goto err_rcu_unlock;
++		rcu_read_unlock();
++		return -ENOMEM;
  	}
  
- 	/* free map if not active */
+ 	if (!dev_maps || tc >= dev_maps->num_tc)
+@@ -1368,11 +1364,24 @@ static ssize_t xps_cpus_show(struct netdev_queue *queue,
+ 
+ 	len = bitmap_print_to_pagebuf(false, buf, mask, nr_ids);
+ 	bitmap_free(mask);
++
+ 	return len < PAGE_SIZE ? len : -EINVAL;
++}
+ 
+-err_rcu_unlock:
+-	rcu_read_unlock();
+-	return ret;
++static ssize_t xps_cpus_show(struct netdev_queue *queue, char *buf)
++{
++	struct net_device *dev = queue->dev;
++	unsigned int index;
++
++	if (!netif_is_multiqueue(dev))
++		return -ENOENT;
++
++	index = get_netdev_queue_index(queue);
++
++	/* If queue belongs to subordinate dev use its map */
++	dev = netdev_get_tx_queue(dev, index)->sb_dev ? : dev;
++
++	return xps_queue_show(dev, index, buf, XPS_CPUS);
+ }
+ 
+ static ssize_t xps_cpus_store(struct netdev_queue *queue,
+@@ -1419,56 +1428,11 @@ static struct netdev_queue_attribute xps_cpus_attribute __ro_after_init
+ static ssize_t xps_rxqs_show(struct netdev_queue *queue, char *buf)
+ {
+ 	struct net_device *dev = queue->dev;
+-	struct xps_dev_maps *dev_maps;
+-	unsigned int index, nr_ids;
+-	int j, len, ret, tc = 0;
+-	unsigned long *mask;
++	unsigned int index;
+ 
+ 	index = get_netdev_queue_index(queue);
+ 
+-	tc = netdev_txq_to_tc(dev, index);
+-	if (tc < 0)
+-		return -EINVAL;
+-
+-	rcu_read_lock();
+-	dev_maps = rcu_dereference(dev->xps_maps[XPS_RXQS]);
+-	nr_ids = dev_maps ? dev_maps->nr_ids : dev->num_rx_queues;
+-
+-	mask = bitmap_zalloc(nr_ids, GFP_KERNEL);
+-	if (!mask) {
+-		ret = -ENOMEM;
+-		goto err_rcu_unlock;
+-	}
+-
+-	if (!dev_maps || tc >= dev_maps->num_tc)
+-		goto out_no_maps;
+-
+-	for (j = 0; j < nr_ids; j++) {
+-		int i, tci = j * dev_maps->num_tc + tc;
+-		struct xps_map *map;
+-
+-		map = rcu_dereference(dev_maps->attr_map[tci]);
+-		if (!map)
+-			continue;
+-
+-		for (i = map->len; i--;) {
+-			if (map->queues[i] == index) {
+-				set_bit(j, mask);
+-				break;
+-			}
+-		}
+-	}
+-out_no_maps:
+-	rcu_read_unlock();
+-
+-	len = bitmap_print_to_pagebuf(false, buf, mask, nr_ids);
+-	bitmap_free(mask);
+-
+-	return len < PAGE_SIZE ? len : -EINVAL;
+-
+-err_rcu_unlock:
+-	rcu_read_unlock();
+-	return ret;
++	return xps_queue_show(dev, index, buf, XPS_RXQS);
+ }
+ 
+ static ssize_t xps_rxqs_store(struct netdev_queue *queue, const char *buf,
 -- 
 2.29.2
 
