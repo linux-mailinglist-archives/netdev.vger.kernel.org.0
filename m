@@ -2,160 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72BD2314328
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 23:46:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4913B314342
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 23:54:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230231AbhBHWq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 17:46:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36688 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229623AbhBHWqY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 17:46:24 -0500
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27F4FC061786
-        for <netdev@vger.kernel.org>; Mon,  8 Feb 2021 14:45:44 -0800 (PST)
-Received: by mail-il1-x132.google.com with SMTP id y17so14331160ili.12
-        for <netdev@vger.kernel.org>; Mon, 08 Feb 2021 14:45:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hGIOQY5y7KNyFv1PNJbwyNB1EPolE5acE8vlR5pmD0s=;
-        b=ZH6VWeoaO8fFryVEZAzChdS13fKAfJVU75L79OaUdwzyJsFIqrm7KP1OUN/iYa70az
-         LASO96p8I+xoNkttF+t6bEuJpJyvJg3w56Xw7K7uwEg4xGWAosYO4/QVaR0WVledLGBv
-         K9OPGKDGfKpSBWs7fXcNjsuXtVKc/VdR1d1MPyc4tSa94UuAhJllp+Ih2D1YdAM2m5ur
-         YstVhq6h18SI1pCgySLuv0bN7ADmQ579iTpBObAmon+ncFcm5w243wus4YzNyOXJHxi4
-         USJ6J1y+mKoCXs6B0U7aPHVY0RvCX6lnUHpdfaj2V+PGRNSvxB/1tqlZ7e5ExYInoN51
-         f9bQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hGIOQY5y7KNyFv1PNJbwyNB1EPolE5acE8vlR5pmD0s=;
-        b=TQN6evYttYjOD9Xi1I62SQNTmi0ZTN4HwTBTZgFbukqsFWcnxJc0fiPHzORtgS/kw2
-         xA/mNUjCDEM1PVxTK25at8HJQBSm4+TlI2LDctrbG2HIGyDvEwHnHlY1Wiy6/aolO7VS
-         Cb4jp5xTsiAeItHulNE8mUuz/hoZd8HuBjnQ5Wc3ZfLgAZBx4GJrBZqWdug6t3YgMdll
-         lYMTLoVwvN4tI9lxXMZglgpksfslfAaX/PshiOmkKBqODO/JwR1AUZ7C98Oj+Dz1pcr1
-         bIm1s2ZujoP4K37eS2QyoMCrE/2iMiDDTVI6XBOtAPJaMa+Eo0Fb9ehWDRzZXzfBxGfL
-         +3RA==
-X-Gm-Message-State: AOAM533gRe60Feq7xqDnnng2yCQmuT8lh1Ar7cDkd2mk6z4npjj/92t3
-        lcLlaP3RzmPsj+8KtFTMNILsIXuy7FjHm+2WXJU=
-X-Google-Smtp-Source: ABdhPJwgN2IHteRHKmmpVF6bc1zpOemdET5oGvUzvEqxKqO+rekzxWxOTE45p7h/DBtsgNmRDwwlu8r7/3JNpHojv2Y=
-X-Received: by 2002:a05:6e02:1185:: with SMTP id y5mr18016990ili.237.1612824343433;
- Mon, 08 Feb 2021 14:45:43 -0800 (PST)
+        id S230408AbhBHWxt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 17:53:49 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:62900 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229623AbhBHWxq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 17:53:46 -0500
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 118Mn3SC003817
+        for <netdev@vger.kernel.org>; Mon, 8 Feb 2021 14:53:03 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=nkM0GdW9T6Kcb1ILKMXGgq9TA/Z8MFxSvHXscRjvoxs=;
+ b=CRq94u0wjtnyRE/ICZ5KFNJ9l6tdqNCDdCvDxqIVRCijklNOj1DshXGNMvtVjpFs9qoI
+ lz50kJ45zJPAvdcfVeBWdkEr/0WEduGCNH6htTpP7TxiCs4KMvKa+/h+vnODUZsTHEGi
+ ubqxhYRIkTOrAaN8m0sNbjFxeJAAWGOgNYA= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 36hstpa7e5-6
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 08 Feb 2021 14:53:03 -0800
+Received: from intmgw002.25.frc3.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 8 Feb 2021 14:53:01 -0800
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id 5E91B62E092E; Mon,  8 Feb 2021 14:52:59 -0800 (PST)
+From:   Song Liu <songliubraving@fb.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-mm@kvack.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <kernel-team@fb.com>,
+        <akpm@linux-foundation.org>, Song Liu <songliubraving@fb.com>
+Subject: [PATCH v5 bpf-next 0/4] introduce bpf_iter for task_vma
+Date:   Mon, 8 Feb 2021 14:52:51 -0800
+Message-ID: <20210208225255.3089073-1-songliubraving@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-References: <20210208171917.1088230-1-atenart@kernel.org> <20210208171917.1088230-13-atenart@kernel.org>
-In-Reply-To: <20210208171917.1088230-13-atenart@kernel.org>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Mon, 8 Feb 2021 14:45:32 -0800
-Message-ID: <CAKgT0UdP+1giTCzyfZ5x8q51otv2+KiPUN8djF=8XGcMOEZgEQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 12/12] net-sysfs: move the xps cpus/rxqs
- retrieval in a common function
-To:     Antoine Tenart <atenart@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
+ definitions=2021-02-08_16:2021-02-08,2021-02-08 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
+ malwarescore=0 impostorscore=0 mlxlogscore=810 mlxscore=0
+ priorityscore=1501 phishscore=0 spamscore=0 lowpriorityscore=0
+ clxscore=1015 adultscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2009150000 definitions=main-2102080127
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 8, 2021 at 9:19 AM Antoine Tenart <atenart@kernel.org> wrote:
->
-> Most of the xps_cpus_show and xps_rxqs_show functions share the same
-> logic. Having it in two different functions does not help maintenance.
-> This patch moves their common logic into a new function, xps_queue_show,
-> to improve this.
->
-> Signed-off-by: Antoine Tenart <atenart@kernel.org>
-> ---
->  net/core/net-sysfs.c | 98 ++++++++++++++------------------------------
->  1 file changed, 31 insertions(+), 67 deletions(-)
->
-> diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-> index 6ce5772e799e..984c15248483 100644
-> --- a/net/core/net-sysfs.c
-> +++ b/net/core/net-sysfs.c
-> @@ -1314,35 +1314,31 @@ static const struct attribute_group dql_group = {
->  #endif /* CONFIG_BQL */
->
->  #ifdef CONFIG_XPS
-> -static ssize_t xps_cpus_show(struct netdev_queue *queue,
-> -                            char *buf)
-> +static ssize_t xps_queue_show(struct net_device *dev, unsigned int index,
-> +                             char *buf, enum xps_map_type type)
->  {
-> -       struct net_device *dev = queue->dev;
->         struct xps_dev_maps *dev_maps;
-> -       unsigned int index, nr_ids;
-> -       int j, len, ret, tc = 0;
->         unsigned long *mask;
-> -
-> -       if (!netif_is_multiqueue(dev))
-> -               return -ENOENT;
-> -
-> -       index = get_netdev_queue_index(queue);
-> -
-> -       /* If queue belongs to subordinate dev use its map */
-> -       dev = netdev_get_tx_queue(dev, index)->sb_dev ? : dev;
-> +       unsigned int nr_ids;
-> +       int j, len, tc = 0;
->
->         tc = netdev_txq_to_tc(dev, index);
->         if (tc < 0)
->                 return -EINVAL;
->
->         rcu_read_lock();
-> -       dev_maps = rcu_dereference(dev->xps_maps[XPS_CPUS]);
-> -       nr_ids = dev_maps ? dev_maps->nr_ids : nr_cpu_ids;
-> +       dev_maps = rcu_dereference(dev->xps_maps[type]);
-> +
-> +       /* Default to nr_cpu_ids/dev->num_rx_queues and do not just return 0
-> +        * when dev_maps hasn't been allocated yet, to be backward compatible.
-> +        */
-> +       nr_ids = dev_maps ? dev_maps->nr_ids :
-> +                (type == XPS_CPUS ? nr_cpu_ids : dev->num_rx_queues);
->
->         mask = bitmap_zalloc(nr_ids, GFP_KERNEL);
->         if (!mask) {
-> -               ret = -ENOMEM;
-> -               goto err_rcu_unlock;
-> +               rcu_read_unlock();
-> +               return -ENOMEM;
->         }
->
->         if (!dev_maps || tc >= dev_maps->num_tc)
-> @@ -1368,11 +1364,24 @@ static ssize_t xps_cpus_show(struct netdev_queue *queue,
->
->         len = bitmap_print_to_pagebuf(false, buf, mask, nr_ids);
->         bitmap_free(mask);
-> +
->         return len < PAGE_SIZE ? len : -EINVAL;
-> +}
->
-> -err_rcu_unlock:
-> -       rcu_read_unlock();
-> -       return ret;
-> +static ssize_t xps_cpus_show(struct netdev_queue *queue, char *buf)
-> +{
-> +       struct net_device *dev = queue->dev;
-> +       unsigned int index;
-> +
-> +       if (!netif_is_multiqueue(dev))
-> +               return -ENOENT;
-> +
-> +       index = get_netdev_queue_index(queue);
-> +
-> +       /* If queue belongs to subordinate dev use its map */
-> +       dev = netdev_get_tx_queue(dev, index)->sb_dev ? : dev;
-> +
-> +       return xps_queue_show(dev, index, buf, XPS_CPUS);
->  }
->
->  static ssize_t xps_cpus_store(struct netdev_queue *queue,
+This set introduces bpf_iter for task_vma, which can be used to generate
+information similar to /proc/pid/maps. Patch 4/4 adds an example that
+mimics /proc/pid/maps.
 
-So this patch has the same issue as the one that was removing the
-rtnl_lock. Basically the sb_dev needs to still be protected by the
-rtnl_lock. We might need to take the rtnl_lock and maybe make use of
-the get_device/put_device logic to make certain the device cannot be
-freed while you are passing it to xps_queue_show.
+Current /proc/<pid>/maps and /proc/<pid>/smaps provide information of
+vma's of a process. However, these information are not flexible enough to
+cover all use cases. For example, if a vma cover mixed 2MB pages and 4kB
+pages (x86_64), there is no easy way to tell which address ranges are
+backed by 2MB pages. task_vma solves the problem by enabling the user to
+generate customize information based on the vma (and vma->vm_mm,
+vma->vm_file, etc.).
+
+Changes v4 =3D> v5:
+  1. Fix a refcount leak on task_struct. (Yonghong)
+  2. Fix the selftest. (Yonghong)
+
+Changes v3 =3D> v4:
+  1. Avoid skipping vma by assigning invalid prev_vm_start in
+     task_vma_seq_stop(). (Yonghong)
+  2. Move "again" label in task_vma_seq_get_next() save a check. (Yonghon=
+g)
+
+Changes v2 =3D> v3:
+  1. Rewrite 1/4 so that we hold mmap_lock while calling BPF program. Thi=
+s
+     enables the BPF program to access the real vma with BTF. (Alexei)
+  2. Fix the logic when the control is returned to user space. (Yonghong)
+  3. Revise commit log and cover letter. (Yonghong)
+
+Changes v1 =3D> v2:
+  1. Small fixes in task_iter.c and the selftests. (Yonghong)
+
+Song Liu (4):
+  bpf: introduce task_vma bpf_iter
+  bpf: allow bpf_d_path in sleepable bpf_iter program
+  libbpf: introduce section "iter.s/" for sleepable bpf_iter program
+  selftests/bpf: add test for bpf_iter_task_vma
+
+ kernel/bpf/task_iter.c                        | 217 +++++++++++++++++-
+ kernel/trace/bpf_trace.c                      |   5 +
+ tools/lib/bpf/libbpf.c                        |   5 +
+ .../selftests/bpf/prog_tests/bpf_iter.c       | 118 +++++++++-
+ tools/testing/selftests/bpf/progs/bpf_iter.h  |   8 +
+ .../selftests/bpf/progs/bpf_iter_task_vma.c   |  58 +++++
+ 6 files changed, 400 insertions(+), 11 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_task_vma.c
+
+--
+2.24.1
