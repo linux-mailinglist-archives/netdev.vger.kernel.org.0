@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BACF312C08
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 09:41:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FFBE312C12
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 09:42:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229824AbhBHIj5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 03:39:57 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:40248 "EHLO
+        id S230217AbhBHImP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 03:42:15 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:29262 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230335AbhBHIg0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 03:36:26 -0500
+        by vger.kernel.org with ESMTP id S230352AbhBHIgk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 03:36:40 -0500
 Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1188WF92003105;
-        Mon, 8 Feb 2021 00:35:33 -0800
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1188WCRk003068;
+        Mon, 8 Feb 2021 00:35:44 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=Fju7VJVzj4BYevlp6YHfus5NhcYRY6k/q0luWVcHeOo=;
- b=Pgt0oKDUhub7mu4wctBkOlpIKrGGDgWQeRGxwdGNjHM+ii9RZjsPC7LtepGNsHWHYdNE
- hp1f+NgmfughA+4RGkbNJHRF8YFWnUM/OeHnepjypgExT1gvSprxN4xdVCoaeHcdc1nh
- 3Te900ihxcca2m4L+jXeH8SEYI7fYdetQBtRLlKUJhpDe7vbQP9weP2Wj5uksKjSwAKz
- fz50tsVYmjEwssYadhbt+RJYVZZ6KALHiMu3uOjqYR8axZFvH0yqI+oWhtf93REurxzO
- EaqCeP6lpzZFc0WeR7CdwIFP/AeRZjmUIKQMMelmg0db+1BL/7Gj7OT48pXnE1vz7iG7 4g== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com with ESMTP id 36hugq3yd0-2
+ content-type; s=pfpt0220; bh=DvfD7O77b2ATuThWoUKzOIAnS3uUNeYNikGy/OGeLu8=;
+ b=dS/HpoZg1VqjnSIuUWzUn0TRe6NMFU8xQ07Qn8766nQplFj20sLodW30I/Yhb02zmlyk
+ xbItxxVK8NytIjuT87S2aqkpAPMfcJv6+qn88IjUtGNsfNhos6J8O2iDwdp0MIOtVnGa
+ Jc+gaRiY+zRvkyxMe3MY3u2lXZfKjjCuDS7gNeL9dxMDIYDCCUqeTMGAzCXD36ux4F1Z
+ xyoaVuGfuFBJvvQxtnWBme3sW7zAIcAAhkMjINkmh12LojIaDT0xQoK1fra+a5Hd7IY2
+ kYxl6I1T96G7OEvdmIQqvPDVM+t4pOSOCqkjfvSaSaTz6RpkB5KzZ4AE7wiQwHOb0F6i zw== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 36hugq3ydb-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 08 Feb 2021 00:35:33 -0800
-Received: from SC-EXCH01.marvell.com (10.93.176.81) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 8 Feb
- 2021 00:35:30 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH01.marvell.com
+        Mon, 08 Feb 2021 00:35:44 -0800
+Received: from SC-EXCH01.marvell.com (10.93.176.81) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 8 Feb
+ 2021 00:35:42 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
  (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 8 Feb
- 2021 00:35:30 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 8 Feb 2021 00:35:30 -0800
+ 2021 00:35:41 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 8 Feb 2021 00:35:41 -0800
 Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id 5FF0A3F703F;
-        Mon,  8 Feb 2021 00:35:26 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id EE71F3F703F;
+        Mon,  8 Feb 2021 00:35:37 -0800 (PST)
 From:   <stefanc@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
@@ -49,9 +49,9 @@ CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
         <robh+dt@kernel.org>, <sebastian.hesselbarth@gmail.com>,
         <gregory.clement@bootlin.com>,
         <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH v10 net-next 13/15] net: mvpp2: add PPv23 RX FIFO flow control
-Date:   Mon, 8 Feb 2021 10:32:45 +0200
-Message-ID: <1612773167-22490-14-git-send-email-stefanc@marvell.com>
+Subject: [PATCH v10 net-next 14/15] net: mvpp2: set 802.3x GoP Flow Control mode
+Date:   Mon, 8 Feb 2021 10:32:46 +0200
+Message-ID: <1612773167-22490-15-git-send-email-stefanc@marvell.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1612773167-22490-1-git-send-email-stefanc@marvell.com>
 References: <1612773167-22490-1-git-send-email-stefanc@marvell.com>
@@ -65,138 +65,28 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Stefan Chulski <stefanc@marvell.com>
 
-New FIFO flow control feature was added in PPv23.
-PPv2 FIFO polled by HW and trigger pause frame if FIFO
-fill level is below threshold.
-FIFO HW flow control enabled with CM3 RXQ&BM flow
-control with ethtool.
-Current  FIFO thresholds is:
-9KB for port with maximum speed 10Gb/s port
-4KB for port with maximum speed 5Gb/s port
-2KB for port with maximum speed 1Gb/s port
+This patch fix GMAC TX flow control autoneg.
+Flow control autoneg wrongly were disabled with enabled TX
+flow control.
 
 Signed-off-by: Stefan Chulski <stefanc@marvell.com>
 ---
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h      | 15 ++++++
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 53 ++++++++++++++++++++
- 2 files changed, 68 insertions(+)
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-index 9b525b60..b61a1ba 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-@@ -770,6 +770,18 @@
- #define MVPP2_TX_FIFO_THRESHOLD(kb)	\
- 		((kb) * 1024 - MVPP2_TX_FIFO_THRESHOLD_MIN)
- 
-+/* RX FIFO threshold in 1KB granularity */
-+#define MVPP23_PORT0_FIFO_TRSH	(9 * 1024)
-+#define MVPP23_PORT1_FIFO_TRSH	(4 * 1024)
-+#define MVPP23_PORT2_FIFO_TRSH	(2 * 1024)
-+
-+/* RX Flow Control Registers */
-+#define MVPP2_RX_FC_REG(port)		(0x150 + 4 * (port))
-+#define     MVPP2_RX_FC_EN		BIT(24)
-+#define     MVPP2_RX_FC_TRSH_OFFS	16
-+#define     MVPP2_RX_FC_TRSH_MASK	(0xFF << MVPP2_RX_FC_TRSH_OFFS)
-+#define     MVPP2_RX_FC_TRSH_UNIT	256
-+
- /* MSS Flow control */
- #define MSS_FC_COM_REG			0
- #define FLOW_CONTROL_ENABLE_BIT		BIT(0)
-@@ -1498,6 +1510,8 @@ struct mvpp2_bm_pool {
- 
- void mvpp2_dbgfs_cleanup(struct mvpp2 *priv);
- 
-+void mvpp23_rx_fifo_fc_en(struct mvpp2 *priv, int port, bool en);
-+
- #ifdef CONFIG_MVPP2_PTP
- int mvpp22_tai_probe(struct device *dev, struct mvpp2 *priv);
- void mvpp22_tai_tstamp(struct mvpp2_tai *tai, u32 tstamp,
-@@ -1530,4 +1544,5 @@ static inline bool mvpp22_rx_hwtstamping(struct mvpp2_port *port)
- {
- 	return IS_ENABLED(CONFIG_MVPP2_PTP) && port->rx_hwtstamp;
- }
-+
- #endif
 diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 3faad04..a472125 100644
+index a472125..4d0a398 100644
 --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
 +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -6536,6 +6536,8 @@ static void mvpp2_mac_link_up(struct phylink_config *config,
- 			mvpp2_bm_pool_update_fc(port, port->pool_long, tx_pause);
- 			mvpp2_bm_pool_update_fc(port, port->pool_short, tx_pause);
- 		}
-+		if (port->priv->hw_version == MVPP23)
-+			mvpp23_rx_fifo_fc_en(port->priv, port->id, tx_pause);
- 	}
+@@ -6283,7 +6283,7 @@ static void mvpp2_gmac_config(struct mvpp2_port *port, unsigned int mode,
+ 	old_ctrl4 = ctrl4 = readl(port->base + MVPP22_GMAC_CTRL_4_REG);
  
- 	mvpp2_port_enable(port);
-@@ -7004,6 +7006,55 @@ static void mvpp22_rx_fifo_init(struct mvpp2 *priv)
- 	mvpp2_write(priv, MVPP2_RX_FIFO_INIT_REG, 0x1);
- }
+ 	ctrl0 &= ~MVPP2_GMAC_PORT_TYPE_MASK;
+-	ctrl2 &= ~(MVPP2_GMAC_INBAND_AN_MASK | MVPP2_GMAC_PCS_ENABLE_MASK);
++	ctrl2 &= ~(MVPP2_GMAC_INBAND_AN_MASK | MVPP2_GMAC_PCS_ENABLE_MASK | MVPP2_GMAC_FLOW_CTRL_MASK);
  
-+/* Configure Rx FIFO Flow control thresholds */
-+static void mvpp23_rx_fifo_fc_set_tresh(struct mvpp2 *priv)
-+{
-+	int port, val;
-+
-+	/* Port 0: maximum speed -10Gb/s port
-+	 *	   required by spec RX FIFO threshold 9KB
-+	 * Port 1: maximum speed -5Gb/s port
-+	 *	   required by spec RX FIFO threshold 4KB
-+	 * Port 2: maximum speed -1Gb/s port
-+	 *	   required by spec RX FIFO threshold 2KB
-+	 */
-+
-+	/* Without loopback port */
-+	for (port = 0; port < (MVPP2_MAX_PORTS - 1); port++) {
-+		if (port == 0) {
-+			val = (MVPP23_PORT0_FIFO_TRSH / MVPP2_RX_FC_TRSH_UNIT)
-+				<< MVPP2_RX_FC_TRSH_OFFS;
-+			val &= MVPP2_RX_FC_TRSH_MASK;
-+			mvpp2_write(priv, MVPP2_RX_FC_REG(port), val);
-+		} else if (port == 1) {
-+			val = (MVPP23_PORT1_FIFO_TRSH / MVPP2_RX_FC_TRSH_UNIT)
-+				<< MVPP2_RX_FC_TRSH_OFFS;
-+			val &= MVPP2_RX_FC_TRSH_MASK;
-+			mvpp2_write(priv, MVPP2_RX_FC_REG(port), val);
-+		} else {
-+			val = (MVPP23_PORT2_FIFO_TRSH / MVPP2_RX_FC_TRSH_UNIT)
-+				<< MVPP2_RX_FC_TRSH_OFFS;
-+			val &= MVPP2_RX_FC_TRSH_MASK;
-+			mvpp2_write(priv, MVPP2_RX_FC_REG(port), val);
-+		}
-+	}
-+}
-+
-+/* Configure Rx FIFO Flow control thresholds */
-+void mvpp23_rx_fifo_fc_en(struct mvpp2 *priv, int port, bool en)
-+{
-+	int val;
-+
-+	val = mvpp2_read(priv, MVPP2_RX_FC_REG(port));
-+
-+	if (en)
-+		val |= MVPP2_RX_FC_EN;
-+	else
-+		val &= ~MVPP2_RX_FC_EN;
-+
-+	mvpp2_write(priv, MVPP2_RX_FC_REG(port), val);
-+}
-+
- static void mvpp22_tx_fifo_set_hw(struct mvpp2 *priv, int port, int size)
- {
- 	int threshold = MVPP2_TX_FIFO_THRESHOLD(size);
-@@ -7155,6 +7206,8 @@ static int mvpp2_init(struct platform_device *pdev, struct mvpp2 *priv)
- 	} else {
- 		mvpp22_rx_fifo_init(priv);
- 		mvpp22_tx_fifo_init(priv);
-+		if (priv->hw_version == MVPP23)
-+			mvpp23_rx_fifo_fc_set_tresh(priv);
- 	}
- 
- 	if (priv->hw_version == MVPP21)
+ 	/* Configure port type */
+ 	if (phy_interface_mode_is_8023z(state->interface)) {
 -- 
 1.9.1
 
