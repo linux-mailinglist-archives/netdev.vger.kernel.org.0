@@ -2,157 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA162314142
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 22:07:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64427314156
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 22:11:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235282AbhBHVG7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 16:06:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59834 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235208AbhBHVGj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Feb 2021 16:06:39 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5BF1164E8C;
-        Mon,  8 Feb 2021 21:05:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612818358;
-        bh=FK1I/k8wX1BxFESt2f7/PabmUo1u8EhCiol1GuP7Enw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=chwcVp/RravmxujX3V/5ZSkSMQp/n79yAFzPDtuNg5I39lKIW8NNrJPnj0Vqwb+M1
-         +Ba/uWsMhkWs1dnN/84I6OK//0U0lpeSmyalZuTNKM+2n8HeItA++9eFfhCVwn5oAE
-         trBtEpiZRFPqvxXEKXs9t4kdygg9I8f6VkQg7ecAUgMll4R4PsDdkpDwc9eP6QxLjt
-         mWOYl2v1MHePRQCW2nMjgr/BhrtEw/+FfKHNqkCxugDUFZH1jTOm2CyIhyMuUZkAY2
-         xzayHH1wdsAbT6bDpYSXwaoBzeEccHv7LE9OiW7ET1qObc7Mb/FIM70VoU2zE3NvyN
-         h3vHwW22VINqQ==
-Date:   Mon, 8 Feb 2021 13:05:57 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     Vadym Kochan <vadym.kochan@plvision.eu>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        linux-kernel@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH net-next 5/7] net: marvell: prestera: add LAG support
-Message-ID: <20210208130557.56b14429@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <87v9b249oq.fsf@waldekranz.com>
-References: <20210203165458.28717-1-vadym.kochan@plvision.eu>
-        <20210203165458.28717-6-vadym.kochan@plvision.eu>
-        <20210204211647.7b9a8ebf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <87v9b249oq.fsf@waldekranz.com>
+        id S234837AbhBHVKs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 16:10:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44408 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233955AbhBHVK1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 16:10:27 -0500
+Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3C82C061786
+        for <netdev@vger.kernel.org>; Mon,  8 Feb 2021 13:09:46 -0800 (PST)
+Received: by mail-ot1-x336.google.com with SMTP id 63so15574335oty.0
+        for <netdev@vger.kernel.org>; Mon, 08 Feb 2021 13:09:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dZvH4fRnKKIDhOMvx3x7i/lw1s14lqNr+lPW1B4Qxvc=;
+        b=M+26JNAXoHYDx4KH+q/dL3KonSWGhI6jTyA/3azoh6oAN0xWz16Z7UMDCSn0wNSiPR
+         4698nsicg3EZ3InPFvambUOVl60rUUOzkPBSKfIk0xUS2YyyhXx9XHVcLBWBWIx29hjR
+         tToMeW54Q/oItkkcFJGao5t9MNmvKR1ETkAcR2V/9rswS40D4+wrlM/tdmObd4nQ5wYu
+         erQtFo4iIjoDdrajs7GtEJHadpnYZVjtyzM6JIBu0aRyEniKohHjNO30GE7PWjxtdgiy
+         6BWh/p9mpsiaktda/3inaNhZjZcQ60J0xWa/8yU6AtnGXCFhww5uas4pyoc30cZxhcGU
+         dBCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dZvH4fRnKKIDhOMvx3x7i/lw1s14lqNr+lPW1B4Qxvc=;
+        b=Crf3cideiXbvzKP4ZlZVL0rmykLUhCUqR3sajmV83SRl2WHzSMhlS1ezuZBAwe3uig
+         gVMPqVmWVoPBcutImPTG2h4QjlQS08RZLjMPdVMUIiLSHsT3tNbhj43V6PKenn2HPLzb
+         EWoTHkFUZtIO/TiIRC9zfuM5BT3+zQg0XI9dj4htqgSWb1kuvXCw/bulx/1ljam81cWK
+         MItgFT57+7asfwfmsjQL0d1b+qmw7hxJL2qEtBQS4uLSwHQkhft6G1ejVagg8woTH6Xl
+         pjuF/8eosRgSLSymNYdAtZ9pEtOKCZrsmJfVROrM8QO84OFuzDocrzXHS+zUW7cHpDy2
+         VoeA==
+X-Gm-Message-State: AOAM531Nblelr3IVLQd7Ke6rmdc/2yTWRBUbzfycjx7y0A11DdnzWLKd
+        3M9FszdhRjXAcKKoy1GJ1ZOeGG72CAUX8McPxNItgoBBcvpS
+X-Google-Smtp-Source: ABdhPJx10bJCklUqQnfOTaunXQU9xR/hiLF8U1+sqtvXK/UlUgHgpr5UKBRBlvCG7bWX5+FHcdVEMTFT6ICnmCgOcPU=
+X-Received: by 2002:a05:6830:1e51:: with SMTP id e17mr13721805otj.340.1612818586276;
+ Mon, 08 Feb 2021 13:09:46 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20210204215926.64377-1-george.mccollister@gmail.com> <87sg6648nw.fsf@waldekranz.com>
+In-Reply-To: <87sg6648nw.fsf@waldekranz.com>
+From:   George McCollister <george.mccollister@gmail.com>
+Date:   Mon, 8 Feb 2021 15:09:34 -0600
+Message-ID: <CAFSKS=OO8oi=757b9DqOMpS4X6jqf5rg+X=GO8G-hOQ+S7LaKQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 0/4] add HSR offloading support for DSA switches
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 08 Feb 2021 20:54:29 +0100 Tobias Waldekranz wrote:
-> On Thu, Feb 04, 2021 at 21:16, Jakub Kicinski <kuba@kernel.org> wrote:
-> > On Wed,  3 Feb 2021 18:54:56 +0200 Vadym Kochan wrote:  
-> >> From: Serhiy Boiko <serhiy.boiko@plvision.eu>
-> >> 
-> >> The following features are supported:
-> >> 
-> >>     - LAG basic operations
-> >>         - create/delete LAG
-> >>         - add/remove a member to LAG
-> >>         - enable/disable member in LAG
-> >>     - LAG Bridge support
-> >>     - LAG VLAN support
-> >>     - LAG FDB support
-> >> 
-> >> Limitations:
-> >> 
-> >>     - Only HASH lag tx type is supported
-> >>     - The Hash parameters are not configurable. They are applied
-> >>       during the LAG creation stage.
-> >>     - Enslaving a port to the LAG device that already has an
-> >>       upper device is not supported.  
+On Mon, Feb 8, 2021 at 2:16 PM Tobias Waldekranz <tobias@waldekranz.com> wrote:
+>
+> On Thu, Feb 04, 2021 at 15:59, George McCollister <george.mccollister@gmail.com> wrote:
+> > Add support for offloading HSR/PRP (IEC 62439-3) tag insertion, tag
+> > removal, forwarding and duplication on DSA switches.
+> > This series adds offloading to the xrs700x DSA driver.
 > >
-> > Tobias, Vladimir, you worked on LAG support recently, would you mind
-> > taking a look at this one?  
-> 
-> I took a quick look at it, and what I found left me very puzzled. I hope
-> you do not mind me asking a generic question about the policy around
-> switchdev drivers. If someone published a driver using something similar
-> to the following configuration flow:
-> 
-> iproute2  daemon(SDK)
->    |        ^    |
->    :        :    : user/kernel boundary
->    v        |    |
-> netlink     |    |
->    |        |    |
->    v        |    |
->  driver     |    |
->    |        |    |
->    '--------'    |
->                  : kernel/hardware boundary
->                  v
->                 ASIC
-> 
-> My guess is that they would be (rightly IMO) told something along the
-> lines of "we do not accept drivers that are just shims for proprietary
-> SDKs".
-> 
-> But it seems like if that same someone has enough area to spare in their
-> ASIC to embed a CPU, it is perfectly fine to run that same SDK on it,
-> call it "firmware", and then push a shim driver into the kernel tree.
-> 
-> iproute2
->    |
->    :               user/kernel boundary
->    v
-> netlink
->    |
->    v
->  driver
->    |
->    |
->    :               kernel/hardware boundary
->    '-------------.
->                  v
->              daemon(SDK)
->                  |
->                  v
->                 ASIC
-> 
-> What have we, the community, gained by this? In the old world, the
-> vendor usually at least had to ship me the SDK in source form. Having
-> seen the inside of some of those sausage factories, they are not the
-> kinds of code bases that I want at the bottom of my stack; even less so
-> in binary form where I am entirely at the vendor's mercy for bugfixes.
-> 
-> We are talking about a pure Ethernet fabric here, so there is no fig
-> leaf of "regulatory requirements" to hide behind, in contrast to WiFi
-> for example.
-> 
-> Is it the opinion of the netdev community that it is OK for vendors to
-> use this model?
+> > Changes since RFC:
+> >  * Split hsr and dsa patches. (Florian Fainelli)
+> >
+> > Changes since v1:
+> >  * Fixed some typos/wording. (Vladimir Oltean)
+> >  * eliminate IFF_HSR and use is_hsr_master instead. (Vladimir Oltean)
+> >  * Make hsr_handle_sup_frame handle skb_std as well (required when offloading)
+> >  * Don't add hsr tag for HSR v0 supervisory frames.
+> >  * Fixed tag insertion offloading for PRP.
+> >
+> > George McCollister (4):
+> >   net: hsr: generate supervision frame without HSR/PRP tag
+> >   net: hsr: add offloading support
+> >   net: dsa: add support for offloading HSR
+> >   net: dsa: xrs700x: add HSR offloading support
+> >
+> >  Documentation/networking/netdev-features.rst |  21 ++++++
+> >  drivers/net/dsa/xrs700x/xrs700x.c            | 106 +++++++++++++++++++++++++++
+> >  drivers/net/dsa/xrs700x/xrs700x_reg.h        |   5 ++
+> >  include/linux/if_hsr.h                       |  27 +++++++
+> >  include/linux/netdev_features.h              |   9 +++
+> >  include/net/dsa.h                            |  13 ++++
+> >  net/dsa/dsa_priv.h                           |  11 +++
+> >  net/dsa/port.c                               |  34 +++++++++
+> >  net/dsa/slave.c                              |  14 ++++
+> >  net/dsa/switch.c                             |  24 ++++++
+> >  net/dsa/tag_xrs700x.c                        |   7 +-
+> >  net/ethtool/common.c                         |   4 +
+> >  net/hsr/hsr_device.c                         |  46 ++----------
+> >  net/hsr/hsr_device.h                         |   1 -
+> >  net/hsr/hsr_forward.c                        |  33 ++++++++-
+> >  net/hsr/hsr_forward.h                        |   1 +
+> >  net/hsr/hsr_framereg.c                       |   2 +
+> >  net/hsr/hsr_main.c                           |  11 +++
+> >  net/hsr/hsr_main.h                           |   8 +-
+> >  net/hsr/hsr_slave.c                          |  10 ++-
+> >  20 files changed, 331 insertions(+), 56 deletions(-)
+> >  create mode 100644 include/linux/if_hsr.h
+> >
+> > --
+> > 2.11.0
+>
+> Hi George,
+>
+> I will hopefully have some more time to look into this during the coming
+> weeks. What follows are some random thoughts so far, I hope you can
+> accept the windy road :)
+>
+> Broadly speaking, I gather there are two common topologies that will be
+> used with the XRS chip: "End-device" and "RedBox".
+>
+> End-device:    RedBox:
+>  .-----.       .-----.
+>  | CPU |       | CPU |
+>  '--+--'       '--+--'
+>     |             |
+> .---0---.     .---0---.
+> |  XRS  |     |  XRS  3--- Non-redundant network
+> '-1---2-'     '-1---2-'
+>   |   |         |   |
+>  HSR Ring      HSR Ring
 
-I ask myself that question pretty much every day. Sadly I have no clear
-answer.
+There is also the HSR-HSR use case and HSR-PRP use case.
 
-Silicon is cheap, you can embed a reasonable ARM or Risc-V core in the
-chip for the area and power draw comparable to one high speed serdes
-lane.
+>
+> From the looks of it, this series only deals with the end-device
+> use-case. Is that right?
 
-The drivers landing in the kernel are increasingly meaningless. My day
-job is working for a hyperscaler. Even though we have one of the most
-capable kernel teams on the planet most of issues with HW we face
-result in "something is wrong with the FW, let's call the vendor".
+Correct. net/hsr doesn't support this use case right now. It will
+stomp the outgoing source MAC with that of the interface for instance.
+It also doesn't implement a ProxyNodeTable (though that actually
+wouldn't matter if you were offloading to the xrs700x I think). Try
+commenting out the ether_addr_copy() line in hsr_xmit and see if it
+makes your use case work.
 
-And even when I say "drivers landing" it is an overstatement.
-If you look at high speed anything these days the drivers cover
-multiple generations of hardware, seems like ~5 years ago most
-NIC vendors reached sufficient FW saturation to cover up differences
-between HW generations.
+>
+> I will be targeting a RedBox setup, and I believe that means that the
+> remaining port has to be configured as an "interlink". (HSR/PRP is still
+> pretty new to me). Is that equivalent to a Linux config like this:
 
-At the same time some FW is necessary. Certain chip functions, are 
-best driven by a micro-controller running a tight control loop. 
-The complexity of FW is a spectrum, from basic to Qualcomm. 
-The problem is there is no way for us to know what FW is hiding
-by just looking at the driver.
+Depends what you mean by configured as an interlink. I believe bit 9
+of HSR_CFG in the switch is only supposed to be used for the HSR-HSR
+and HSR-PRP use case, not HSR-SAN.
 
-Where do we draw the line? 
+>
+>       br0
+>      /   \
+>    hsr0   \
+>    /  \    \
+> swp1 swp2 swp3
+>
+> Or are there some additional semantics involved in forwarding between
+> the redundant ports and the interlink?
 
-Personally I'd really like to see us pushing back stronger.
+That sounds right.
+
+>
+> The chip is very rigid in the sense that most roles are statically
+> allocated to specific ports. I think we need to add checks for this.
+
+Okay. I'll look into this. Though a lot of the restrictions have to do
+with using the third gigabit port for an HSR/PRP interlink (not
+HSR-SAN) which I'm not currently supporting anyway.
+
+>
+> Looking at the packets being generated on the redundant ports, both
+> regular traffic and supervision frames seem to be HSR-tagged. Are
+> supervision frames not supposed to be sent with an outer ethertype of
+> 0x88fb? The manual talks about the possibility of setting up a policy
+> entry to bypass HSR-tagging (section 6.1.5), is this what that is for?
+
+This was changed between 62439-3:2010 and 62439-3:2012.
+"Prefixing the supervision frames on HSR by an HSR tag to simplify the hardware
+implementation and introduce a unique EtherType for HSR to simplify processing."
+The Linux HSR driver calls the former HSR v0 and the later HSR v1. I'm
+not sure what their intention was with this feature. The inbound
+policies are pretty flexible so maybe they didn't have anything so
+specific in mind.
+I don't think the xrs7000 series could offload HSR v0 anyway because
+the tag ether type is different.
+
+>
+> In the DSA layer (dsa_slave_changeupper), could we merge the two HSR
+> join/leave calls somehow? My guess is all drivers are going to end up
+> having to do the same dance of deferring configuration until both ports
+> are known.
+
+Describe what you mean a bit more. Do you mean join and leave should
+each only be called once with both hsr ports being passed in?
+
+>
+> Thanks for working on this!
