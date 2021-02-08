@@ -2,108 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9025312AFC
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 08:04:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43DC7312AFF
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 08:14:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229908AbhBHHEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 02:04:37 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58570 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229669AbhBHHEg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Feb 2021 02:04:36 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2D3E764E6F;
-        Mon,  8 Feb 2021 07:03:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612767835;
-        bh=N75mXS1/xQ073PsCL5kSLG2k8JxkkouUcv+uhwYmyHo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=A5k4JD2ozFojYOwaXxz/BqlqO6+CuOGvUiRJzLdmDGG4kcWCZoGa59qmD4VhWtwmt
-         emojzLtWcSiH2Y1V9uV/1QmSP6Z1cjRFvKM8eltSKF6c1iKnrWJPfM7L7D6Pv7ytKZ
-         5T2tM15D+FXC45ASbykBuw8OMvpTB8uesfUBhrrc4e/zbQ9VPt3uiIAxoozms+I+3c
-         cxMjkpTlgSak517+hyRk5/S5X44UZbidMBWMjy+UXwaR3TQCeRTTI86ecrlCVWylec
-         7iRAaToCiTs71+IuhCsVk8czuBbmstS4Tvprd+O+pmBcLNC2IG5BGd5+Io1kwUX2f8
-         2ztKGj6cNxtrQ==
-Date:   Mon, 8 Feb 2021 09:03:50 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Chris Mi <cmi@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        jiri@nvidia.com, Saeed Mahameed <saeedm@nvidia.com>,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH net-next v4] net: psample: Introduce stubs to remove NIC
- driver dependency
-Message-ID: <20210208070350.GB4656@unreal>
-References: <20210128014543.521151-1-cmi@nvidia.com>
- <CAM_iQpWQe1W+x_bua+OfjTR-tCgFYgj_8=eKz7VJdKHPRKuMYw@mail.gmail.com>
- <6c586e9a-b672-6e60-613b-4fb6e6db8c9a@nvidia.com>
- <20210129123009.3c07563d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210130144231.GA3329243@shredder.lan>
- <8924ef5a-a3ac-1664-ca11-5f2a1f35399a@nvidia.com>
- <20210201180837.GB3456040@shredder.lan>
+        id S229832AbhBHHMJ convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 8 Feb 2021 02:12:09 -0500
+Received: from szxga08-in.huawei.com ([45.249.212.255]:2827 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229669AbhBHHLW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 02:11:22 -0500
+Received: from dggeme755-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4DYxv308Z2z13rhR;
+        Mon,  8 Feb 2021 15:08:15 +0800 (CST)
+Received: from dggeme758-chm.china.huawei.com (10.3.19.104) by
+ dggeme755-chm.china.huawei.com (10.3.19.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2106.2; Mon, 8 Feb 2021 15:10:28 +0800
+Received: from dggeme758-chm.china.huawei.com ([10.6.80.69]) by
+ dggeme758-chm.china.huawei.com ([10.6.80.69]) with mapi id 15.01.2106.006;
+ Mon, 8 Feb 2021 15:10:28 +0800
+From:   "Wanghongzhe (Hongzhe, EulerOS)" <wanghongzhe@huawei.com>
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     "keescook@chromium.org" <keescook@chromium.org>,
+        "luto@amacapital.net" <luto@amacapital.net>,
+        "wad@chromium.org" <wad@chromium.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "yhs@fb.com" <yhs@fb.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
+Subject: RE: [PATCH] seccomp: Improve performance by optimizing memory barrier
+Thread-Topic: [PATCH] seccomp: Improve performance by optimizing memory
+ barrier
+Thread-Index: AQHW/eXFi+qpMZFbwU6sef0d1SUt7qpN1k9Q
+Date:   Mon, 8 Feb 2021 07:10:28 +0000
+Message-ID: <cf245927a58b4a62bb6ac9ac4169fff7@huawei.com>
+References: <1612183781-15469-1-git-send-email-wanghongzhe@huawei.com>
+ <20210208064336.GA4656@unreal>
+In-Reply-To: <20210208064336.GA4656@unreal>
+Accept-Language: en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.177.164]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210201180837.GB3456040@shredder.lan>
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 01, 2021 at 08:08:37PM +0200, Ido Schimmel wrote:
-> On Mon, Feb 01, 2021 at 09:37:11AM +0800, Chris Mi wrote:
-> > Hi Ido,
+> From: Leon Romanovsky [mailto:leon@kernel.org]
+> Sent: Monday, February 8, 2021 2:44 PM
+> To: Wanghongzhe (Hongzhe, EulerOS) <wanghongzhe@huawei.com>
+> Cc: keescook@chromium.org; luto@amacapital.net; wad@chromium.org;
+> ast@kernel.org; daniel@iogearbox.net; andrii@kernel.org; kafai@fb.com;
+> songliubraving@fb.com; yhs@fb.com; john.fastabend@gmail.com;
+> kpsingh@kernel.org; linux-kernel@vger.kernel.org; netdev@vger.kernel.org;
+> bpf@vger.kernel.org
+> Subject: Re: [PATCH] seccomp: Improve performance by optimizing memory
+> barrier
+> 
+> On Mon, Feb 01, 2021 at 08:49:41PM +0800, wanghongzhe wrote:
+> > If a thread(A)'s TSYNC flag is set from seccomp(), then it will
+> > synchronize its seccomp filter to other threads(B) in same thread
+> > group. To avoid race condition, seccomp puts rmb() between reading the
+> > mode and filter in seccomp check patch(in B thread).
+> > As a result, every syscall's seccomp check is slowed down by the
+> > memory barrier.
 > >
-> > On 1/30/2021 10:42 PM, Ido Schimmel wrote:
-> > > On Fri, Jan 29, 2021 at 12:30:09PM -0800, Jakub Kicinski wrote:
-> > > > On Fri, 29 Jan 2021 14:08:39 +0800 Chris Mi wrote:
-> > > > > Instead of discussing it several days, maybe it's better to review
-> > > > > current patch, so that we can move forward :)
-> > > > It took you 4 revisions to post a patch which builds cleanly and now
-> > > > you want to hasten the review? My favorite kind of submission.
-> > > >
-> > > > The mlxsw core + spectrum drivers are 65 times the size of psample
-> > > > on my system. Why is the dependency a problem?
-> > > mlxsw has been using psample for ~4 years and I don't remember seeing a
-> > > single complaint about the dependency. I don't understand why this patch
-> > > is needed.
-> > Please see Saeed's comment in previous email:
+> > However, we can optimize it by calling rmb() only when filter is NULL
+> > and reading it again after the barrier, which means the rmb() is
+> > called only once in thread lifetime.
 > >
-> > "
+> > The 'filter is NULL' conditon means that it is the first time
+> > attaching filter and is by other thread(A) using TSYNC flag.
+> > In this case, thread B may read the filter first and mode later in CPU
+> > out-of-order exection. After this time, the thread B's mode is always
+> > be set, and there will no race condition with the filter/bitmap.
 > >
-> > The issue is with distros who ship modules independently.. having a
-> > hard dependency will make it impossible for basic mlx5_core.ko users to
-> > load the driver when psample is not installed/loaded.
+> > In addtion, we should puts a write memory barrier between writing the
+> > filter and mode in smp_mb__before_atomic(), to avoid the race
+> > condition in TSYNC case.
 > >
-> > I prefer to have 0 dependency on external modules in a HW driver.
-> > "
->
-> I saw it, but it basically comes down to personal preferences.
-
-It is more than personal preferences. In opposite to the mlxsw which is
-used for netdev only, the mlx5_core is used by other subsystems, e.g. RDMA,
-so Saeed's request to avoid extra dependencies makes sense.
-
-We don't need psample dependency to run RDMA traffic.
-
->
+> > Signed-off-by: wanghongzhe <wanghongzhe@huawei.com>
+> > ---
+> >  kernel/seccomp.c | 31 ++++++++++++++++++++++---------
+> >  1 file changed, 22 insertions(+), 9 deletions(-)
 > >
-> > We are working on a tc sample offload feature for mlx5_core. The distros
-> > are likely to request us to do this. So we address it before submitting
-> > the driver changes.
->
-> Which distros? Can they comment here? mlxsw is in RHEL and I don't
-> remember queries from them about the psample module.
-
-There is a huge difference between being in RHEL and actively work with
-partners as mlx5 does.
-
-The open mailing list is not the right place to discuss our partnership
-relations.
-
-Thanks
-
->
+> > diff --git a/kernel/seccomp.c b/kernel/seccomp.c index
+> > 952dc1c90229..b944cb2b6b94 100644
+> > --- a/kernel/seccomp.c
+> > +++ b/kernel/seccomp.c
+> > @@ -397,8 +397,20 @@ static u32 seccomp_run_filters(const struct
+> seccomp_data *sd,
+> >  			READ_ONCE(current->seccomp.filter);
 > >
-> > Regards,
-> > Chris
-> >
+> >  	/* Ensure unexpected behavior doesn't result in failing open. */
+> > -	if (WARN_ON(f == NULL))
+> > -		return SECCOMP_RET_KILL_PROCESS;
+> > +	if (WARN_ON(f == NULL)) {
+> > +		/*
+> > +		 * Make sure the first filter addtion (from another
+> > +		 * thread using TSYNC flag) are seen.
+> > +		 */
+> > +		rmb();
+> > +
+> > +		/* Read again */
+> > +		f = READ_ONCE(current->seccomp.filter);
+> > +
+> > +		/* Ensure unexpected behavior doesn't result in failing open. */
+> > +		if (WARN_ON(f == NULL))
+> > +			return SECCOMP_RET_KILL_PROCESS;
+> > +	}
+> 
+> IMHO, double WARN_ON() for the fallback flow is too much.
+> Also according to the description, this "f == NULL" check is due to races and
+> not programming error which WARN_ON() are intended to catch.
+> 
+> Thanks
+
+Maybe you are right. I think 'if (f == NULL)' is enough for this optimizing.
