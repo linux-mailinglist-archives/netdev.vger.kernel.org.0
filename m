@@ -2,139 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0A57313939
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 17:23:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6D2D31396D
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 17:29:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234352AbhBHQWn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 11:22:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38842 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234346AbhBHQWV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 11:22:21 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90DE9C061788;
-        Mon,  8 Feb 2021 08:21:40 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id l18so9065027pji.3;
-        Mon, 08 Feb 2021 08:21:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FwkWha3g7oAGpB4ws7tQE2d1Ep3IiBneyrvjPgo+ZlY=;
-        b=c0r5N8jxVF6gKwrWgIFk8pzpa5inqJJ8IxXFim69z2u09lU41usZE+nCWufo8wzGbX
-         xQGTDDnnAMsMXQm4FA2+T7yT8T1Na/dsKGh9ru3rKRUcNdTBa+DnwhHcePl67AGtIvNe
-         fpKd1YiEuHmTv5UkLgVVYWCXVlNkOIn++vtiXyisvc7woTn4YLg3U1YENvqFW33tfkZN
-         VJv/o7M3bNp6zDQeKw6ksavdZKHzZo2ehclHD4qqHJPCrweuWN4ikyFN7aWYEJQwWyKF
-         dZ0DgxYyplPOGOLf85OWqLj64XccoT2gZzJDqgjGiX9JoCGzmkIM+kfKjL6JURNQJeMF
-         FNMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FwkWha3g7oAGpB4ws7tQE2d1Ep3IiBneyrvjPgo+ZlY=;
-        b=QcFgnZx7oEXV5Zd4qAd+YxNHmEvsiNj64X4wVAjm6NA02yHqu2kDQGWaRFSbfKFAWT
-         oFdbYCdBw1YlxqjyrdiJLEwyxJ83YMGA5fbf5PiI1gXoOSxVLuTjkfWRBXm+c7otgSmv
-         XIZpqvcABpyMAI05Q+gve0vGs8BTEFvGIDIQPodqay4XSQlTg/TGxPezCjJlgD+nJNtx
-         97pYDdP8UuNEQYtBcL4lMxcf52Tat3SQ6IOW2F0zkgQ4JvARpLMdMokJtoaPnQneTN0K
-         WGu+5f8JaixnFylUF9/oLgkz+zbTCT5kJO3cHpHW9W/WrZZBZpRDPfNKeZtCWluzeTnG
-         mHjg==
-X-Gm-Message-State: AOAM5308OJ4WCChoaZZaaAPw2N0C1Xr3RG3Nyj3QBe/setfJWvpi7k9I
-        W7S/3xuP9b/lODU7CXVe7qwFm0oe8P+k3VChYUU=
-X-Google-Smtp-Source: ABdhPJzb6rIZJDKS/VoraARCNlcsJfBDoL00x231IpA5pGuxpSRJ5AtRSTI37rFBU7VtykBXo28JwAtQX5qXW9rTlBo=
-X-Received: by 2002:a17:90a:644a:: with SMTP id y10mr18283260pjm.129.1612801300072;
- Mon, 08 Feb 2021 08:21:40 -0800 (PST)
+        id S234304AbhBHQ3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 11:29:16 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:45530 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233837AbhBHQ2u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 11:28:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612801644;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=K9lNJnNNY1Fz7QWSI+VzlyuLnjOEnPi/oNdJ+JCAbmg=;
+        b=Io/fozKcSDRnWpLhN9sjVOMbh33JzDnnyGOQNPEUnlKFo4CIic4+SenO0DMZXsaDXTCofH
+        NwOaGsE38fpJH9Ok6t/sEszF5i7uxwURDnrwIG5BHPicTtKLqIoTk3aAucjnezoK98noWe
+        +Wmx3elA8oYmyxkdS6iRy++VQWtMMH8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-140-SQ-Af8sWOo6gFa4yt4oVwQ-1; Mon, 08 Feb 2021 11:27:20 -0500
+X-MC-Unique: SQ-Af8sWOo6gFa4yt4oVwQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EFABF79EC0;
+        Mon,  8 Feb 2021 16:27:17 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.45])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2D3F76085D;
+        Mon,  8 Feb 2021 16:27:10 +0000 (UTC)
+Date:   Mon, 8 Feb 2021 17:27:09 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
+        colrack@gmail.com, David Ahern <dsahern@kernel.org>,
+        brouer@redhat.com
+Subject: Re: [PATCH bpf-next V15 2/7] bpf: fix bpf_fib_lookup helper MTU
+ check for SKB ctx
+Message-ID: <20210208172709.15415a46@carbon>
+In-Reply-To: <547131a3-5125-d419-8e61-0fc675d663a8@iogearbox.net>
+References: <161228314075.576669.15427172810948915572.stgit@firesoul>
+        <161228321177.576669.11521750082473556168.stgit@firesoul>
+        <ada19e5b-87be-ff39-45ba-ff0025bf1de9@iogearbox.net>
+        <20210208145713.4ee3e9ba@carbon>
+        <20210208162056.44b0236e@carbon>
+        <547131a3-5125-d419-8e61-0fc675d663a8@iogearbox.net>
 MIME-Version: 1.0
-References: <20210208151244.16338-1-calvin.johnson@oss.nxp.com> <20210208151244.16338-16-calvin.johnson@oss.nxp.com>
-In-Reply-To: <20210208151244.16338-16-calvin.johnson@oss.nxp.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 8 Feb 2021 18:21:22 +0200
-Message-ID: <CAHp75VcL1A3CxyS+KVwJsdhtQh3R12aUonPfstSgtzO4bRc1Zw@mail.gmail.com>
-Subject: Re: [net-next PATCH v5 15/15] net: dpaa2-mac: Add ACPI support for
- DPAA2 MAC driver
-To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
-Cc:     Grant Likely <grant.likely@arm.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
-        Jon <jon@solid-run.com>, Saravana Kannan <saravanak@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "linux.cj" <linux.cj@gmail.com>,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        netdev <netdev@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 8, 2021 at 5:15 PM Calvin Johnson
-<calvin.johnson@oss.nxp.com> wrote:
->
-> Modify dpaa2_mac_connect() to support ACPI along with DT.
-> Modify dpaa2_mac_get_node() to get the dpmac fwnode from either
-> DT or ACPI.
->
-> Replace of_get_phy_mode with fwnode_get_phy_mode to get
-> phy-mode for a dpmac_node.
->
-> Use helper function phylink_fwnode_phy_connect() to find phy_dev and
-> connect to mac->phylink.
+On Mon, 8 Feb 2021 16:41:24 +0100
+Daniel Borkmann <daniel@iogearbox.net> wrote:
 
-...
+> On 2/8/21 4:20 PM, Jesper Dangaard Brouer wrote:
+> > On Mon, 8 Feb 2021 14:57:13 +0100
+> > Jesper Dangaard Brouer <brouer@redhat.com> wrote:  
+> >> On Fri, 5 Feb 2021 01:06:35 +0100
+> >> Daniel Borkmann <daniel@iogearbox.net> wrote:  
+> >>> On 2/2/21 5:26 PM, Jesper Dangaard Brouer wrote:  
+> >>>> BPF end-user on Cilium slack-channel (Carlo Carraro) wants to use
+> >>>> bpf_fib_lookup for doing MTU-check, but *prior* to extending packet size,
+> >>>> by adjusting fib_params 'tot_len' with the packet length plus the expected
+> >>>> encap size. (Just like the bpf_check_mtu helper supports). He discovered
+> >>>> that for SKB ctx the param->tot_len was not used, instead skb->len was used
+> >>>> (via MTU check in is_skb_forwardable() that checks against netdev MTU).
+> >>>>
+> >>>> Fix this by using fib_params 'tot_len' for MTU check. If not provided (e.g.
+> >>>> zero) then keep existing TC behaviour intact. Notice that 'tot_len' for MTU
+> >>>> check is done like XDP code-path, which checks against FIB-dst MTU.  
+> [...]
+> >>>> -	if (!rc) {
+> >>>> -		struct net_device *dev;
+> >>>> -
+> >>>> -		dev = dev_get_by_index_rcu(net, params->ifindex);
+> >>>> +	if (rc == BPF_FIB_LKUP_RET_SUCCESS && !check_mtu) {
+> >>>> +		/* When tot_len isn't provided by user,
+> >>>> +		 * check skb against net_device MTU
+> >>>> +		 */
+> >>>>    		if (!is_skb_forwardable(dev, skb))
+> >>>>    			rc = BPF_FIB_LKUP_RET_FRAG_NEEDED;  
+> >>>
+> >>> ... so using old cached dev from above will result in wrong MTU check &
+> >>> subsequent passing of wrong params->mtu_result = dev->mtu this way.  
+> >>
+> >> Yes, you are right, params->ifindex have a chance to change in the calls.
+> >> So, our attempt to save an ifindex lookup (dev_get_by_index_rcu) is not
+> >> correct.
+> >>  
+> >>> So one
+> >>> way to fix is that we would need to pass &dev to bpf_ipv{4,6}_fib_lookup().  
+> >>
+> >> Ok, I will try to code it up, and see how ugly it looks, but I'm no
+> >> longer sure that it is worth saving this ifindex lookup, as it will
+> >> only happen if BPF-prog didn't specify params->tot_len.  
+> > 
+> > I guess we can still do this as an "optimization", but the dev/ifindex
+> > will very likely be another at this point.  
+> 
+> I would say for sake of progress, lets ship your series w/o this optimization so
+> it can land, and we revisit this later on independent from here. 
 
-> +       if (is_of_node(dev->parent->fwnode)) {
-> +               dpmacs = of_find_node_by_name(NULL, "dpmacs");
-> +               if (!dpmacs)
-> +                       return NULL;
-> +               parent = of_fwnode_handle(dpmacs);
-> +       } else if (is_acpi_node(dev->parent->fwnode)) {
+I would really really like to make progress for this patchset.  I
+unfortunately finished coding this up (and tested with selftests)
+before I noticed this request (without optimizations).
 
-> +               parent = dev->parent->fwnode;
+I guess, I can revert my recent work by pulling in V12 of the patch.
+I'll do it tomorrow, as I want to have time to run my tests before
+re-sending patchset.
 
-dev_fwnode(dev->parent) ?
+> Actually DavidA back then acked the old poc patch I posted, so maybe
+> that's worth a revisit as well but needs more testing first.
 
-> +       }
+Yes, we can always revisit this as an optimization.
 
-...
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
-> +               if (err) {
->                         continue;
-
-> +               } else if (id == dpmac_id) {
-
-Useless 'else'
-
-> +                       if (is_of_node(dev->parent->fwnode))
-
-dev_fwnode() ?
-
-> +                               of_node_put(dpmacs);
-> +                       return child;
-> +               }
-
-...
-
-> +       if (is_of_node(dev->parent->fwnode))
-
-Ditto ?
-
-> +               of_node_put(dpmacs);
-
---
-With Best Regards,
-Andy Shevchenko
