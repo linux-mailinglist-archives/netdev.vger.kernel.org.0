@@ -2,94 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 576B4313552
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 15:39:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1A4931357C
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 15:46:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232380AbhBHOhI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 09:37:08 -0500
-Received: from mail.xenproject.org ([104.130.215.37]:51080 "EHLO
-        mail.xenproject.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232255AbhBHOgQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 09:36:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=xen.org;
-        s=20200302mail; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
-        MIME-Version:Date:Message-ID:References:Cc:To:From:Subject;
-        bh=aivOqaGOcSxpvU6conwQTcZ0h2NZKR4vLEU5lBoBLnM=; b=TpQqFHUGQ309Z3JMnbU0rIfpjj
-        ASrKoC0dMPhuUjLk3ViAyPeqvknYbyMrlu/ppcR+upMwaNIxtxB5uhfH28LHUOellFyF5th0KdgHs
-        jKTAv2UPTPD50GHhHJfMLTxTwKrTdbDlgJtHRIu8230PgEIb7ppiHtcCI8fRvPRQBvDo=;
-Received: from xenbits.xenproject.org ([104.239.192.120])
-        by mail.xenproject.org with esmtp (Exim 4.92)
-        (envelope-from <julien@xen.org>)
-        id 1l97dF-0005YS-Lb; Mon, 08 Feb 2021 14:35:17 +0000
-Received: from [54.239.6.177] (helo=a483e7b01a66.ant.amazon.com)
-        by xenbits.xenproject.org with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.92)
-        (envelope-from <julien@xen.org>)
-        id 1l97dF-0007Co-Df; Mon, 08 Feb 2021 14:35:17 +0000
-Subject: Re: [PATCH 0/7] xen/events: bug fixes and some diagnostic aids
-From:   Julien Grall <julien@xen.org>
-To:     =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>,
-        xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org, netdev@vger.kernel.org,
-        linux-scsi@vger.kernel.org
-Cc:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        stable@vger.kernel.org,
-        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-        =?UTF-8?Q?Roger_Pau_Monn=c3=a9?= <roger.pau@citrix.com>,
-        Jens Axboe <axboe@kernel.dk>, Wei Liu <wei.liu@kernel.org>,
-        Paul Durrant <paul@xen.org>,
+        id S232460AbhBHOqC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 09:46:02 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:25439 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232923AbhBHOol (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 09:44:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612795395;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=hJ25Ui01C1ncQ+IMfWQfND73YP38mMdrHPvtKAqidhw=;
+        b=iFkB5Qx+rhb5IROSdhq79S9NHtvRZslfVESH3VJKVD+FiOQAfI/Q4jp2Y5Vu+8+MJNrhOU
+        xGuokUUTwbJu72D7OXftduxmtXV+Qsi8cVO7UI69nsgGQUEfxOY5PC5tETI/rvupBtalgS
+        ZYXVf5l2kEr8jQ2+jbaJdJdlFcP/v3g=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-258-Ja8sH24zPYSqpZXLVrafYw-1; Mon, 08 Feb 2021 09:43:13 -0500
+X-MC-Unique: Ja8sH24zPYSqpZXLVrafYw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 564B31966322;
+        Mon,  8 Feb 2021 14:43:11 +0000 (UTC)
+Received: from steredhat.redhat.com (ovpn-115-25.ams2.redhat.com [10.36.115.25])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 899315D9DE;
+        Mon,  8 Feb 2021 14:43:08 +0000 (UTC)
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Jorgen Hansen <jhansen@vmware.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20210206104932.29064-1-jgross@suse.com>
- <bd63694e-ac0c-7954-ec00-edad05f8da1c@xen.org>
- <eeb62129-d9fc-2155-0e0f-aff1fbb33fbc@suse.com>
- <fcf3181b-3efc-55f5-687c-324937b543e6@xen.org>
- <7aaeeb3d-1e1b-6166-84e9-481153811b62@suse.com>
- <6f547bb5-777a-6fc2-eba2-cccb4adfca87@xen.org>
- <0d623c98-a714-1639-cc53-f58ba3f08212@suse.com>
- <28399fd1-9fe8-f31a-6ee8-e78de567155b@xen.org>
- <1831964f-185e-31bb-2446-778f2c18d71b@suse.com>
- <e8c46e36-cf9e-fb30-21b5-fa662834a01a@xen.org>
- <199b76fd-630b-a0c6-926b-3e662103ec42@suse.com>
- <063eff75-56a5-1af7-f684-a2ed4b13c9a7@xen.org>
- <4279cab9-9b36-e83d-bd7a-ff7cd2832054@suse.com>
- <279b741b-09dc-c6af-bf9d-df57922fa465@xen.org>
-Message-ID: <9f07dae5-050c-da2c-edc1-e1587dbae9c4@xen.org>
-Date:   Mon, 8 Feb 2021 14:35:14 +0000
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.7.1
+        Andy King <acking@vmware.com>, Wei Liu <wei.liu@kernel.org>,
+        Dmitry Torokhov <dtor@vmware.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        George Zhang <georgezhang@vmware.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        Stefano Garzarella <sgarzare@redhat.com>
+Subject: [PATCH net] vsock: fix locking in vsock_shutdown()
+Date:   Mon,  8 Feb 2021 15:43:07 +0100
+Message-Id: <20210208144307.83628-1-sgarzare@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <279b741b-09dc-c6af-bf9d-df57922fa465@xen.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+In vsock_shutdown() we touched some socket fields without holding the
+socket lock, such as 'state' and 'sk_flags'.
 
+Also, after the introduction of multi-transport, we are accessing
+'vsk->transport' in vsock_send_shutdown() without holding the lock
+and this call can be made while the connection is in progress, so
+the transport can change in the meantime.
 
-On 08/02/2021 14:20, Julien Grall wrote:
->>>> I believe this will be the case before our "lateeoi" handling is
->>>> becoming active (more precise: when our IRQ handler is returning to
->>>> handle_fasteoi_irq()), resulting in the possibility of the same race we
->>>> are experiencing now.
->>>
->>> I am a bit confused what you mean by "lateeoi" handling is becoming 
->>> active. Can you clarify?
->>
->> See above: the next call of the handler should be allowed only after
->> xen_irq_lateeoi() for the IRQ has been called.
->>
->> If the handler is being called earlier we have the race resulting
->> in the WARN() splats.
-> 
-> I feel it is dislike to understand race with just words. Can you provide
+To avoid issues, we hold the socket lock when we enter in
+vsock_shutdown() and release it when we leave.
 
-Sorry I meant difficult rather than dislike.
+Among the transports that implement the 'shutdown' callback, only
+hyperv_transport acquired the lock. Since the caller now holds it,
+we no longer take it.
 
-Cheers,
+Fixes: d021c344051a ("VSOCK: Introduce VM Sockets")
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+---
+ net/vmw_vsock/af_vsock.c         | 8 +++++---
+ net/vmw_vsock/hyperv_transport.c | 2 --
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
+diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+index 4ea301fc2bf0..5546710d8ac1 100644
+--- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -943,10 +943,12 @@ static int vsock_shutdown(struct socket *sock, int mode)
+ 	 */
+ 
+ 	sk = sock->sk;
++
++	lock_sock(sk);
+ 	if (sock->state == SS_UNCONNECTED) {
+ 		err = -ENOTCONN;
+ 		if (sk->sk_type == SOCK_STREAM)
+-			return err;
++			goto out;
+ 	} else {
+ 		sock->state = SS_DISCONNECTING;
+ 		err = 0;
+@@ -955,10 +957,8 @@ static int vsock_shutdown(struct socket *sock, int mode)
+ 	/* Receive and send shutdowns are treated alike. */
+ 	mode = mode & (RCV_SHUTDOWN | SEND_SHUTDOWN);
+ 	if (mode) {
+-		lock_sock(sk);
+ 		sk->sk_shutdown |= mode;
+ 		sk->sk_state_change(sk);
+-		release_sock(sk);
+ 
+ 		if (sk->sk_type == SOCK_STREAM) {
+ 			sock_reset_flag(sk, SOCK_DONE);
+@@ -966,6 +966,8 @@ static int vsock_shutdown(struct socket *sock, int mode)
+ 		}
+ 	}
+ 
++out:
++	release_sock(sk);
+ 	return err;
+ }
+ 
+diff --git a/net/vmw_vsock/hyperv_transport.c b/net/vmw_vsock/hyperv_transport.c
+index 630b851f8150..5a3beef73461 100644
+--- a/net/vmw_vsock/hyperv_transport.c
++++ b/net/vmw_vsock/hyperv_transport.c
+@@ -479,9 +479,7 @@ static int hvs_shutdown(struct vsock_sock *vsk, int mode)
+ 	if (!(mode & SEND_SHUTDOWN))
+ 		return 0;
+ 
+-	lock_sock(sk);
+ 	hvs_shutdown_lock_held(vsk->trans, mode);
+-	release_sock(sk);
+ 	return 0;
+ }
+ 
 -- 
-Julien Grall
+2.29.2
+
