@@ -2,95 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA63D313E79
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 20:07:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CEF37313E81
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 20:09:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235974AbhBHTHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 14:07:06 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:56006 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235858AbhBHTFY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 14:05:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1612811036;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=iubsdQyZmS7XuDNFEDT0FSf3h1hb0DtOamZ9SZHA6wY=;
-        b=A+2OsWY7LiMfvSQ5wglgMtVX1+9kcbNN7gsQdtYodP1CiP9Ip70EyBQmYqVsgsErvr92wo
-        XYs7kWhD8A37Sm7B5IsDgYNtgTMjQ5Ngx0vBLQiTuIZe5D+lHFzomamLg1qNucIEoJWADm
-        gvLnuRWoEwO1H4lCvyWcLY4w+m6fTdU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-468-bkhd1WQsM4SBV0HxWnoE9Q-1; Mon, 08 Feb 2021 14:03:54 -0500
-X-MC-Unique: bkhd1WQsM4SBV0HxWnoE9Q-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AD6CF36492;
-        Mon,  8 Feb 2021 19:03:53 +0000 (UTC)
-Received: from horizon.localdomain (ovpn-113-37.rdu2.redhat.com [10.10.113.37])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 761C360C04;
-        Mon,  8 Feb 2021 19:03:53 +0000 (UTC)
-Received: by horizon.localdomain (Postfix, from userid 1000)
-        id 43CDDC00A2; Mon,  8 Feb 2021 16:03:51 -0300 (-03)
-Date:   Mon, 8 Feb 2021 16:03:51 -0300
-From:   Marcelo Ricardo Leitner <mleitner@redhat.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>, wenxu <wenxu@ucloud.cn>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Subject: Re: [PATCH net v4] net/sched: cls_flower: Reject invalid ct_state
- flags rules
-Message-ID: <20210208190351.GF2953@horizon.localdomain>
-References: <1612674803-7912-1-git-send-email-wenxu@ucloud.cn>
- <CAM_iQpXojFaYogRu76=jGr6cp74YcUyR_ZovRnSmKp9KaugBOw@mail.gmail.com>
- <20210208104759.77c247c6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S234943AbhBHTIr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 14:08:47 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35526 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234923AbhBHTGK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Feb 2021 14:06:10 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 783B364E8C;
+        Mon,  8 Feb 2021 19:05:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612811125;
+        bh=2JC70mXZqImlB6IjWOvtQN/wJ5o2d5jfmnWoF61hxG4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DfdXaKmVsCHSnfTWKM2Kspc1e1q8brgQ5Et/bNcRGbkjoDXPEMgaIrXX6IjiQoqki
+         DIoZ0Ab9usdBoEJkv5z4+AQHyWJVUefYiswO9p7HbGP/qEz+PP3XIpcyoIUpSxO1xd
+         JmkFmVEF4/sTc+q4u62dhpdOEShQec1zisR22w93DS4qZ77gUQnQaRyWMcG9HcReTz
+         8wAeVOwkq6p30PA2V5o4twg3+kz/JUUbu0T6O8QE+2N7cnsnWNiqcL5NF9Y9oYrwmI
+         ACivHDxYm1Yp0hJfpMIWrbzMdCaHL8ze4M1Z5BoCqrM/sgdVfFvbnxWr7NOqgjCJdT
+         0hTi5tVHoVbEA==
+Date:   Mon, 8 Feb 2021 11:05:21 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hovold <johan@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Joao Pinto <jpinto@synopsys.com>,
+        Lars Persson <larper@axis.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Vyacheslav Mitrofanov 
+        <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        <netdev@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 00/24] net: stmmac: Fix clocks/reset-related
+ procedures
+Message-ID: <20210208110521.59804f08@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210208135609.7685-1-Sergey.Semin@baikalelectronics.ru>
+References: <20210208135609.7685-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210208104759.77c247c6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 08, 2021 at 10:47:59AM -0800, Jakub Kicinski wrote:
-> On Mon, 8 Feb 2021 10:41:35 -0800 Cong Wang wrote:
-> > On Sat, Feb 6, 2021 at 9:26 PM <wenxu@ucloud.cn> wrote:
-> > > +       if (state && !(state & TCA_FLOWER_KEY_CT_FLAGS_TRACKED)) {
-> > > +               NL_SET_ERR_MSG_ATTR(extack, tb,
-> > > +                                   "ct_state no trk, no other flag are set");
-
-This one was imported from OvS but it's not accurate.
-Should be more like: no trk, so no other flag can be set
-or something like that.
-
-Seems it doesn't need to explicitly mention "ct_state" in the msg,
-btw. I can't check it right now but all other uses of
-NL_SET_ERR_MSG_ATTR are not doing it, at least in cls_flower.c.
-
-> > > +               return -EINVAL;
-> > > +       }
-> > > +
-> > > +       if (state & TCA_FLOWER_KEY_CT_FLAGS_NEW &&
-> > > +           state & TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED) {
-> > > +               NL_SET_ERR_MSG_ATTR(extack, tb,
-> > > +                                   "ct_state new and est are exclusive");  
-> > 
-> > Please spell out the full words, "trk" and "est" are not good abbreviations.
+On Mon, 8 Feb 2021 16:55:44 +0300 Serge Semin wrote:
+> Baikal-T1 SoC is equipped with two Synopsys DesignWare GMAC v3.73a-based
+> ethernet interfaces with no internal Ethernet PHY attached. The IP-cores
+> are configured as GMAC-AXI with CSR interface clocked by a dedicated
+> signal. Each of which has got Rx/Tx FIFOs of 16KB, up to 8 MAC addresses
+> capability, no embedded filter hash table logic, EEE enabled, IEEE 1588
+> and 1588-2008 Advanced timestamping capabilities, power management with
+> remote wake-up, IP CSUM hardware acceleration, a single PHY interface -
+> RGMII with MDIO bus, 1xGPI and 1xGPO.
 > 
-> It does match user space naming in OvS as well as iproute2:
+> This is a very first series of patches with fixes we've found to be
+> required in order to make things working well for our setup. The series
+> has turned to be rather large, but most of the patches are trivial and
+> some of them are just cleanups, so it shouldn't be that hard to review.
 
-I also think it makes sense as is.
+Hi Serge!
 
-> 
->         { "trk", TCA_FLOWER_KEY_CT_FLAGS_TRACKED },
->         { "new", TCA_FLOWER_KEY_CT_FLAGS_NEW },
->         { "est", TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED },
->         { "inv", TCA_FLOWER_KEY_CT_FLAGS_INVALID },
->         { "rpl", TCA_FLOWER_KEY_CT_FLAGS_REPLY },
-> 
-> IDK about netfilter itself.
-> 
+You've submitted 60 patches at once, that's a lot of patches, in netdev
+we limit submissions to 15 patches at a time to avoid overwhelming
+reviewers. 
 
+At a glance the patches seem to mix fixes which affect existing,
+supported systems (eg. error patch reference leaks) with extensions
+required to support your platform. Can the two be separated?
+The fixes for existing bugs should be targeting net (Subject: 
+[PATCH net]) and patches to support your platform net-next (Subject:
+[PATCH net-next]).
+
+Right now the patches are not tagged so our build bot tried applying
+them to net-next and they failed to apply, so I need to toss them away.
+
+Andrew, others, please chime in if I'm misreading the contents of the
+series or if you have additional guidance!
