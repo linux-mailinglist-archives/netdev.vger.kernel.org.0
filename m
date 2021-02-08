@@ -2,181 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1597F3133DC
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 14:55:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E1531313417
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 14:58:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231703AbhBHNy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 08:54:29 -0500
-Received: from mail-bn8nam11on2085.outbound.protection.outlook.com ([40.107.236.85]:23265
-        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231316AbhBHNx4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Feb 2021 08:53:56 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GdigEalrUb3Fa939HUV3ZMgIvOaxiZVNumKH74WjxP910SVakBYplS2Ev8s99+JTXNG0BpwMR1z4Ka7ss8oQ/mr5i2M6qQKcCC+ZGgBxcOq5qXe3FTd0KGCnrofzQGGqNdjHE9+4jfxyBHuPwGTWMYzHmBvkxU0O7e73AcgP6TUEILJqQCxjbJsB7q8l7oGLENz4qFjE1hsye5t3wLmDK5azGzjKbxeZRUqOnctZt2qqW36ja30PkpYHMAfFNP6o1zpMG2N7/qrAJR8zVc/WS0Aa7da+6piNTPmapo7MGF8wGeH30hJ3JbRgJlgfCzDkI0aVRmkvGhfggJZpRQQa7A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YYbRvdr9gWXYHoiohk6V7nMzJQcS0YgE93JznW8LOTw=;
- b=ly3+YDe8UJo2e1/3MGcel/gGp7HPKJQqxnVUf4vn22qbEHzHu9Qz+n/XKQkvTvaQu/jo5kvuFJqLz1AD7/qBqQNySCWkuIN5ITQNURohUmRyzhHRQBvEp8C7SVUL8vzWyhP3h6jfr6mWmMMlHuz6OWwnNSDH5IxI/CgBSCkSbOio/QfaWccFEC+EjmZWJNbaWhr0DWr14E+1mKXrDu2Z38ejPqw2DWCmrDG+I9/0owNjtmRipAUbkKfO/bCb2Z/D1con5oxCMuQbn1D16LHPv7Z12Ev5h7Nmbzbm+t3cyarV/a/n5wr6hpO7G292a466kMBEQZTcS1aTq6OfZ3BuyQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
- dkim=pass header.d=silabs.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YYbRvdr9gWXYHoiohk6V7nMzJQcS0YgE93JznW8LOTw=;
- b=gZyq66XZl6SZaLhfvhgaZ89+Q3DDRlNpCHTW6ymtRA/4nqfxNtqpSj8Ui+H4Nl8cr7UsghLiCqLiZoO5d9SqsX6/DaWiSLc+42DnU/eLM740nAYOVLW2DOR5ys0rK5BO753nHGfsagAEf7SDt14Ci5Aof3LqFrMUO7Rztdt90mI=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=silabs.com;
-Received: from SN6PR11MB2718.namprd11.prod.outlook.com (2603:10b6:805:63::18)
- by SA2PR11MB4969.namprd11.prod.outlook.com (2603:10b6:806:111::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.20; Mon, 8 Feb
- 2021 13:53:06 +0000
-Received: from SN6PR11MB2718.namprd11.prod.outlook.com
- ([fe80::a989:f850:6736:97ca]) by SN6PR11MB2718.namprd11.prod.outlook.com
- ([fe80::a989:f850:6736:97ca%5]) with mapi id 15.20.3825.030; Mon, 8 Feb 2021
- 13:53:06 +0000
-From:   Jerome Pouiller <Jerome.Pouiller@silabs.com>
-To:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Cc:     devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S231983AbhBHN6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 08:58:06 -0500
+Received: from mail.baikalelectronics.com ([87.245.175.226]:56726 "EHLO
+        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231756AbhBHN5A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 08:57:00 -0500
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?q?J=C3=A9r=C3=B4me=20Pouiller?= 
-        <jerome.pouiller@silabs.com>
-Subject: [PATCH] staging: wfx: fix possible panic with re-queued frames
-Date:   Mon,  8 Feb 2021 14:52:54 +0100
-Message-Id: <20210208135254.399964-1-Jerome.Pouiller@silabs.com>
-X-Mailer: git-send-email 2.30.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-X-Originating-IP: [2a01:e35:2435:66a0:544b:f17b:7ae8:fb7]
-X-ClientProxiedBy: SN7PR04CA0072.namprd04.prod.outlook.com
- (2603:10b6:806:121::17) To SN6PR11MB2718.namprd11.prod.outlook.com
- (2603:10b6:805:63::18)
+        Johan Hovold <johan@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Joao Pinto <jpinto@synopsys.com>,
+        Lars Persson <larper@axis.com>
+CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Vyacheslav Mitrofanov 
+        <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        <netdev@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 00/24] net: stmmac: Fix clocks/reset-related procedures
+Date:   Mon, 8 Feb 2021 16:55:44 +0300
+Message-ID: <20210208135609.7685-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from pc-42.silabs.com (2a01:e35:2435:66a0:544b:f17b:7ae8:fb7) by SN7PR04CA0072.namprd04.prod.outlook.com (2603:10b6:806:121::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.17 via Frontend Transport; Mon, 8 Feb 2021 13:53:04 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 65b6141d-5834-4223-dffa-08d8cc38dc76
-X-MS-TrafficTypeDiagnostic: SA2PR11MB4969:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <SA2PR11MB49699C817374377B400BE655938F9@SA2PR11MB4969.namprd11.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3276;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: cVeBZjP0o4r9SJGtvz8ZKCvy0olOWhzvidJ7D9p2l3m2Tqk2V052eHuDXAbffgbBKdH4d8kVomnCM+h37l1ivKuv4cNooA3B3mX19Wp6Cst1ArUFeEh0KqZptQoIidOn4Ksyw3QnIKBmikijkh1pUwinrGzxLIB6LcUMZ8j34pfH4oX23JECZaPwBFEtSjzSxEOcslY4DZW6WKkXMZ6wiKohNC5yYdABN+SxDcVDotj6ZNWeHXKg9S1Czibw1DVX/NN/lrryRugzZ5w4GfrT/+jwAiYVTJI4eD+Wver37GR5jv8z9iJXLn1f5O2xulaWmiRaz+MSGj3vRMdcwGqZlOq8m242NQLQ0JGY1y22YPOlt3tx6t8y3oCFud//dXT82cNkLd7zI216mS1pY5fOOl4eczZQCRs3abrFjqCxvYaSZML6CbYp+/0t0DfnaUCqGqse9FAOSCzS0LalETKAY3D9wjNRf9xa8gqAzfFYMA4EVW3kUCUoRtP8IJxUIeeIaE1+Hh0lbeUrSUFaSl29Qw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB2718.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(376002)(39850400004)(136003)(346002)(396003)(66476007)(66946007)(66556008)(186003)(2616005)(52116002)(86362001)(16526019)(2906002)(4326008)(66574015)(6666004)(5660300002)(1076003)(54906003)(478600001)(7696005)(6486002)(107886003)(8936002)(8676002)(83380400001)(316002)(36756003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?RDVrTXRUNkNuQjg5MnpobDFEVW9ERTUwN1p2TGo2U2lxNzNRa2NRUFRFUHlK?=
- =?utf-8?B?VWtQelpYdml4cGFJZ0FFZ3ZBUmFRMWo5OWFmNEJ5MXc3MjNzdlRKa2Y4b3U2?=
- =?utf-8?B?NlhwOTV6U3pCOEhHSGZ2Z1NybU05VVJ1ZC82MUtrTzdGTzJROXFZL0U0TXNB?=
- =?utf-8?B?SHRBdlBjMlJLZUIyMHdaV3N6UHJsWmtTdSs4WVFMZWVlWW9ZQ1ZibXEwRmNq?=
- =?utf-8?B?VDFzSzcxNHg1c0w4cE1hcjhqR051aitSVjFQc1A3M1lWQUJDNkV4Ni8vR0VS?=
- =?utf-8?B?UXZlalVvY2tVd1ZnYmd1ZWVEM20ra3dTNUJBTEFhQWt6T2dPSjBRclVydi9k?=
- =?utf-8?B?b3RDNHlEakQzZlF0Ym9DMWpHN3ZteVJJN2pZdGQ3c2FDVXplM1FPT3QyZmw2?=
- =?utf-8?B?SUJ1KzdnTlZHMk5HVC9reHpPYStOUmlUTXR1b09mWS9HTmgraGtwR2dPTWUz?=
- =?utf-8?B?N2tCZ04zYVpCa0dqT3JWK2VwR0tCeXorVXRLQnBCTG5qcjhPcDFTbUJCY3U4?=
- =?utf-8?B?WURkSm80QXNYUlBRaGlPMWRINCtkVXRLZHdIekhoWTMvb3FLMHhMYkdIQkRz?=
- =?utf-8?B?UmZTL0ZFUC9nNlZHMFFFVVJ6Y2FVRlJLZ20zdFc1MWdEMnAwa2cxTFhoaWht?=
- =?utf-8?B?WFVmZEpGd1BySEM3THJ6anFmQ2dqRHM2QkxtcGJMRFAwdXBEbmRDWFlpRStC?=
- =?utf-8?B?enU4YndBWFNQUUFiK2NrRG5OTlBldzFwMTJ4ZENGSzVLRXpUejBVK3BJZmlw?=
- =?utf-8?B?VlBEUEFmQU1VVHhzN2RXWG9HeWZFZ29oQy9JUVNNeU9MYmpTL3NsQVRueVJK?=
- =?utf-8?B?aFZLSWRNbk9UdzZnbDlaaTRWb25hZDgrcHRKV2lmZy83VGdmaUZMQUJiWFJX?=
- =?utf-8?B?VENJUFlod0JvTTRuZytTR3l0RFlGRE1QZWVSZ3JSdURGbzFiQ1dUS2JTSGdm?=
- =?utf-8?B?WHVGTmRHS0NSMDZUcDByTHRrWkxWTGp1cDFEVXBpczFFRDhqN0pFY2kxekxY?=
- =?utf-8?B?aUFoYXZQcXNYWE81dGNxdm5UWUIybG9QYk9UNTVhV056MWV0c2x0YlIwSnJi?=
- =?utf-8?B?L3lWSzdiRkp6a21LaUNXcW1hNzM0eGpvaEltQUhhOG44Y3hlVlZRVDF2cnNj?=
- =?utf-8?B?dWc5VmZHWFJiVWo4R2hzUHRPbWpKVlVKdHFXN2xnTEQzQXBDVE90djdWWGVC?=
- =?utf-8?B?UXdnblBHOUNWRUtVTUROZkNzR25vWVFtUDdvTldvK2ZXNG5pZWZRVnF5c0ha?=
- =?utf-8?B?QytxYkNRSmJMSEJWKzNyOFA2ZC9iL2o2RmpQSHE1Y1FKdE5XR1JCRHBBR000?=
- =?utf-8?B?RWFtd1R6SnU3dkp5UzhWZVBaZFBRK3ZSbG9NbDZCaGw2T1RUMHdmRFRSYmEw?=
- =?utf-8?B?OTdhQWRuY1ZxMS8zdHJ0dzB2R0ZsQ3M5WlBOQlBlNmdyankvaFh1Q0xrTXJP?=
- =?utf-8?B?cFBDbnYxNVdkWk5CKzU5V0lxYSt6UTV0eTdHWkpBNjhzYmV3bmFudUxjUmkv?=
- =?utf-8?B?YkVGcTZvR21paUFDdmQ0M1hnWTRHU1pYL2V0QW5yTW85RDZVNUJhd3VBS0ZH?=
- =?utf-8?B?N29CRWxGWnBLbXRZdFQ2d01ZQzJQcFJUdy83M0Flc0l2TitSUXQ0akQ4KzJ6?=
- =?utf-8?B?UURTcTFlV1hRcEY4VzY3LzB1QUpkMk5xVVBvaXBZNFgwVGVaWjJ5NGpiWWRy?=
- =?utf-8?B?bDcwazhsNWgwaDRmYTRqYWZ0ZHBGMUtVK0dpTklpYjhuVHJWUjk4YTlmU3hC?=
- =?utf-8?B?NUo0WU1OMXlSTFJkVGQ5dVBpcDZ5MWl0U1QzaWNPQWlFNDI4N0RvWmtqTDNp?=
- =?utf-8?B?YzczR0I3QnFUWmJ3Qkg3L2R2VzJiVUlTeWhUSnJvUGZlWHJjU1E4cWR2VFN4?=
- =?utf-8?Q?IHJx58zslYKj6?=
-X-OriginatorOrg: silabs.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 65b6141d-5834-4223-dffa-08d8cc38dc76
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB2718.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Feb 2021 13:53:06.4526
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rTGgHWGlWZZmaUv6WbSdL+HX2v44kPUnCUuu2/jCWQ/GyAcenODH5JlExshl6TmVKvtvv6t0qrDoiggrU1d5XQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR11MB4969
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogSsOpcsO0bWUgUG91aWxsZXIgPGplcm9tZS5wb3VpbGxlckBzaWxhYnMuY29tPgoKV2hl
-biB0aGUgZmlybXdhcmUgcmVqZWN0cyBhIGZyYW1lIChiZWNhdXNlIHN0YXRpb24gYmVjb21lIGFz
-bGVlcCBvcgpkaXNjb25uZWN0ZWQpLCB0aGUgZnJhbWUgaXMgcmUtcXVldWVkIGluIG1hYzgwMjEx
-LiBIb3dldmVyLCB0aGUKcmUtcXVldWVkIGZyYW1lIHdhcyA4IGJ5dGVzIGxvbmdlciB0aGFuIHRo
-ZSBvcmlnaW5hbCBvbmUgKHRoZSBzaXplIG9mCnRoZSBJQ1YgZm9yIHRoZSBlbmNyeXB0aW9uKS4g
-U28sIHdoZW4gbWFjODAyMTEgdHJ5IHRvIHNlbmQgdGhpcyBmcmFtZQphZ2FpbiwgaXQgaXMgYSBs
-aXR0bGUgYmlnZ2VyIHRoYW4gZXhwZWN0ZWQuCklmIHRoZSBmcmFtZSBpcyByZS1xdWV1ZWQgc2Vj
-dmVyYWwgdGltZSBpdCBlbmQgd2l0aCBhIHNrYl9vdmVyX3BhbmljCmJlY2F1c2UgdGhlIHNrYiBi
-dWZmZXIgaXMgbm90IGxhcmdlIGVub3VnaC4KCk5vdGUgaXQgb25seSBoYXBwZW5zIHdoZW4gZGV2
-aWNlIGFjdHMgYXMgYW4gQVAgYW5kIGVuY3J5cHRpb24gaXMKZW5hYmxlZC4KClRoaXMgcGF0Y2gg
-bW9yZSBvciBsZXNzIHJldmVydHMgdGhlIGNvbW1pdCAwNDlmZGUxMzA0MTkgKCJzdGFnaW5nOiB3
-Zng6CmRyb3AgdXNlbGVzcyBmaWVsZCBmcm9tIHN0cnVjdCB3ZnhfdHhfcHJpdiIpLgoKRml4ZXM6
-IDA0OWZkZTEzMDQxOSAoInN0YWdpbmc6IHdmeDogZHJvcCB1c2VsZXNzIGZpZWxkIGZyb20gc3Ry
-dWN0IHdmeF90eF9wcml2IikKU2lnbmVkLW9mZi1ieTogSsOpcsO0bWUgUG91aWxsZXIgPGplcm9t
-ZS5wb3VpbGxlckBzaWxhYnMuY29tPgotLS0KIGRyaXZlcnMvc3RhZ2luZy93ZngvZGF0YV90eC5j
-IHwgMTAgKysrKysrKysrLQogZHJpdmVycy9zdGFnaW5nL3dmeC9kYXRhX3R4LmggfCAgMSArCiAy
-IGZpbGVzIGNoYW5nZWQsIDEwIGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24oLSkKCmRpZmYgLS1n
-aXQgYS9kcml2ZXJzL3N0YWdpbmcvd2Z4L2RhdGFfdHguYyBiL2RyaXZlcnMvc3RhZ2luZy93Zngv
-ZGF0YV90eC5jCmluZGV4IDM2YjM2ZWYzOWQwNS4uNzdmYjEwNGVmZGVjIDEwMDY0NAotLS0gYS9k
-cml2ZXJzL3N0YWdpbmcvd2Z4L2RhdGFfdHguYworKysgYi9kcml2ZXJzL3N0YWdpbmcvd2Z4L2Rh
-dGFfdHguYwpAQCAtMzMxLDYgKzMzMSw3IEBAIHN0YXRpYyBpbnQgd2Z4X3R4X2lubmVyKHN0cnVj
-dCB3ZnhfdmlmICp3dmlmLCBzdHJ1Y3QgaWVlZTgwMjExX3N0YSAqc3RhLAogewogCXN0cnVjdCBo
-aWZfbXNnICpoaWZfbXNnOwogCXN0cnVjdCBoaWZfcmVxX3R4ICpyZXE7CisJc3RydWN0IHdmeF90
-eF9wcml2ICp0eF9wcml2OwogCXN0cnVjdCBpZWVlODAyMTFfdHhfaW5mbyAqdHhfaW5mbyA9IElF
-RUU4MDIxMV9TS0JfQ0Ioc2tiKTsKIAlzdHJ1Y3QgaWVlZTgwMjExX2tleV9jb25mICpod19rZXkg
-PSB0eF9pbmZvLT5jb250cm9sLmh3X2tleTsKIAlzdHJ1Y3QgaWVlZTgwMjExX2hkciAqaGRyID0g
-KHN0cnVjdCBpZWVlODAyMTFfaGRyICopc2tiLT5kYXRhOwpAQCAtMzQ0LDExICszNDUsMTQgQEAg
-c3RhdGljIGludCB3ZnhfdHhfaW5uZXIoc3RydWN0IHdmeF92aWYgKnd2aWYsIHN0cnVjdCBpZWVl
-ODAyMTFfc3RhICpzdGEsCiAKIAkvLyBGcm9tIG5vdyB0eF9pbmZvLT5jb250cm9sIGlzIHVudXNh
-YmxlCiAJbWVtc2V0KHR4X2luZm8tPnJhdGVfZHJpdmVyX2RhdGEsIDAsIHNpemVvZihzdHJ1Y3Qg
-d2Z4X3R4X3ByaXYpKTsKKwkvLyBGaWxsIHR4X3ByaXYKKwl0eF9wcml2ID0gKHN0cnVjdCB3Znhf
-dHhfcHJpdiAqKXR4X2luZm8tPnJhdGVfZHJpdmVyX2RhdGE7CisJdHhfcHJpdi0+aWN2X3NpemUg
-PSB3ZnhfdHhfZ2V0X2ljdl9sZW4oaHdfa2V5KTsKIAogCS8vIEZpbGwgaGlmX21zZwogCVdBUk4o
-c2tiX2hlYWRyb29tKHNrYikgPCB3bXNnX2xlbiwgIm5vdCBlbm91Z2ggc3BhY2UgaW4gc2tiIik7
-CiAJV0FSTihvZmZzZXQgJiAxLCAiYXR0ZW1wdCB0byB0cmFuc21pdCBhbiB1bmFsaWduZWQgZnJh
-bWUiKTsKLQlza2JfcHV0KHNrYiwgd2Z4X3R4X2dldF9pY3ZfbGVuKGh3X2tleSkpOworCXNrYl9w
-dXQoc2tiLCB0eF9wcml2LT5pY3Zfc2l6ZSk7CiAJc2tiX3B1c2goc2tiLCB3bXNnX2xlbik7CiAJ
-bWVtc2V0KHNrYi0+ZGF0YSwgMCwgd21zZ19sZW4pOwogCWhpZl9tc2cgPSAoc3RydWN0IGhpZl9t
-c2cgKilza2ItPmRhdGE7CkBAIC00ODQsNiArNDg4LDcgQEAgc3RhdGljIHZvaWQgd2Z4X3R4X2Zp
-bGxfcmF0ZXMoc3RydWN0IHdmeF9kZXYgKndkZXYsCiAKIHZvaWQgd2Z4X3R4X2NvbmZpcm1fY2Io
-c3RydWN0IHdmeF9kZXYgKndkZXYsIGNvbnN0IHN0cnVjdCBoaWZfY25mX3R4ICphcmcpCiB7CisJ
-Y29uc3Qgc3RydWN0IHdmeF90eF9wcml2ICp0eF9wcml2OwogCXN0cnVjdCBpZWVlODAyMTFfdHhf
-aW5mbyAqdHhfaW5mbzsKIAlzdHJ1Y3Qgd2Z4X3ZpZiAqd3ZpZjsKIAlzdHJ1Y3Qgc2tfYnVmZiAq
-c2tiOwpAQCAtNDk1LDYgKzUwMCw3IEBAIHZvaWQgd2Z4X3R4X2NvbmZpcm1fY2Ioc3RydWN0IHdm
-eF9kZXYgKndkZXYsIGNvbnN0IHN0cnVjdCBoaWZfY25mX3R4ICphcmcpCiAJCXJldHVybjsKIAl9
-CiAJdHhfaW5mbyA9IElFRUU4MDIxMV9TS0JfQ0Ioc2tiKTsKKwl0eF9wcml2ID0gd2Z4X3NrYl90
-eF9wcml2KHNrYik7CiAJd3ZpZiA9IHdkZXZfdG9fd3ZpZih3ZGV2LCAoKHN0cnVjdCBoaWZfbXNn
-ICopc2tiLT5kYXRhKS0+aW50ZXJmYWNlKTsKIAlXQVJOX09OKCF3dmlmKTsKIAlpZiAoIXd2aWYp
-CkBAIC01MDMsNiArNTA5LDggQEAgdm9pZCB3ZnhfdHhfY29uZmlybV9jYihzdHJ1Y3Qgd2Z4X2Rl
-diAqd2RldiwgY29uc3Qgc3RydWN0IGhpZl9jbmZfdHggKmFyZykKIAkvLyBOb3RlIHRoYXQgd2Z4
-X3BlbmRpbmdfZ2V0X3BrdF91c19kZWxheSgpIGdldCBkYXRhIGZyb20gdHhfaW5mbwogCV90cmFj
-ZV90eF9zdGF0cyhhcmcsIHNrYiwgd2Z4X3BlbmRpbmdfZ2V0X3BrdF91c19kZWxheSh3ZGV2LCBz
-a2IpKTsKIAl3ZnhfdHhfZmlsbF9yYXRlcyh3ZGV2LCB0eF9pbmZvLCBhcmcpOworCXNrYl90cmlt
-KHNrYiwgc2tiLT5sZW4gLSB0eF9wcml2LT5pY3Zfc2l6ZSk7CisKIAkvLyBGcm9tIG5vdywgeW91
-IGNhbiB0b3VjaCB0byB0eF9pbmZvLT5zdGF0dXMsIGJ1dCBkbyBub3QgdG91Y2ggdG8KIAkvLyB0
-eF9wcml2IGFueW1vcmUKIAkvLyBGSVhNRTogdXNlIGllZWU4MDIxMV90eF9pbmZvX2NsZWFyX3N0
-YXR1cygpCmRpZmYgLS1naXQgYS9kcml2ZXJzL3N0YWdpbmcvd2Z4L2RhdGFfdHguaCBiL2RyaXZl
-cnMvc3RhZ2luZy93ZngvZGF0YV90eC5oCmluZGV4IDQ2YzlmZmY3YTg3MC4uNDAxMzYzZDZiNTYz
-IDEwMDY0NAotLS0gYS9kcml2ZXJzL3N0YWdpbmcvd2Z4L2RhdGFfdHguaAorKysgYi9kcml2ZXJz
-L3N0YWdpbmcvd2Z4L2RhdGFfdHguaApAQCAtMzUsNiArMzUsNyBAQCBzdHJ1Y3QgdHhfcG9saWN5
-X2NhY2hlIHsKIAogc3RydWN0IHdmeF90eF9wcml2IHsKIAlrdGltZV90IHhtaXRfdGltZXN0YW1w
-OworCXVuc2lnbmVkIGNoYXIgaWN2X3NpemU7CiB9OwogCiB2b2lkIHdmeF90eF9wb2xpY3lfaW5p
-dChzdHJ1Y3Qgd2Z4X3ZpZiAqd3ZpZik7Ci0tIAoyLjMwLjAKCg==
+Baikal-T1 SoC is equipped with two Synopsys DesignWare GMAC v3.73a-based
+ethernet interfaces with no internal Ethernet PHY attached. The IP-cores
+are configured as GMAC-AXI with CSR interface clocked by a dedicated
+signal. Each of which has got Rx/Tx FIFOs of 16KB, up to 8 MAC addresses
+capability, no embedded filter hash table logic, EEE enabled, IEEE 1588
+and 1588-2008 Advanced timestamping capabilities, power management with
+remote wake-up, IP CSUM hardware acceleration, a single PHY interface -
+RGMII with MDIO bus, 1xGPI and 1xGPO.
+
+This is a very first series of patches with fixes we've found to be
+required in order to make things working well for our setup. The series
+has turned to be rather large, but most of the patches are trivial and
+some of them are just cleanups, so it shouldn't be that hard to review.
+
+The series starts with fixes of the PBL (Programmable DMA Burst length)
+DT-property, which is supposed to be defined for each DW *MAC IP-core, but
+not only for a Allwinner sun* GMAC and DW xGMAC. The number of possible
+PBL values need to be also extended in accordance with the DW *MAC manual.
+Then the TSO flag property should be also declared free of the
+vendor-specific conditional schema, because the driver expects the
+compatible string to have the IP-core version specified anyway and none of
+the glue-drivers refer to the property directly.
+
+Then we suggest to refactor the "snps,{axi,mtl-rx,mtl-tx}-config"
+properties/nodes declaration, so the configs would be able to be defined
+as the sub-nodes of the DW *MAC DT nodes. The reason is that the DW MAC
+DT-schema doesn't validate them at the moment and having them defined as
+separate from the DW MAC nodes isn't descriptive at all. (Please note the
+patch log, since the DT-schema tool needs to be fixed in order to make the
+change working).
+
+Another big modification of the DW *MAC bindings file is the generic
+DT-properties and generic DT-nodes schema splitting up. So in order to
+improve the DW *MAC bindings maintainability we suggest to leave the
+generic DW *MAC properties definition in the "snps,dwmac.yaml" file and
+move the bindings for the generic DW *MAC DT-nodes validation in the
+dedicated DT-schema "snps,dwmac-generic.yaml".
+
+Another concern has been related with the System/CSR clocks. We have
+discovered that currently the "stmmaceth" clocks are considered by the
+driver as the combined system+CSR clocks, while in fact CSR interface can
+be equipped with a dedicated clock source (this is our case). If so then
+the clock with "pclk" can be used to define the later one. But neither
+bindings are descriptive enough nor the DW *MAC driver is fixed to support
+that feature. So first we suggest to elaborate stmmaceth/pclk description
+in the bindings file and then fix the MDIO-bus clock selection procedure
+so pclk would be used there if specified. The DW QoS Eth MAC driver is
+also fixed in accordance with that modification.
+
+The biggest part of the series concerns adding the generic Tx/Rx clocks
+support to the DT-schema and to the DW MAC drivers and with fixed related
+to that. It is really a good decision to add the generic Tx/Rx clocks,
+because a lot of the glue-drivers expect them to be specified in the
+DT-node. So first we add the "tx"/"rx" clocks declaration in the generic
+DW MAC DT-schema. Then the glue-drivers like
+dwmac-rk/dwmac-sti/dwmac-stm32 remove() callbacks need to be fixed to call
+stmmac_remove_config_dt() otherwise the resources allocated in the
+stmmac_probe_config_dt() won't be freed on the device removal. A small
+modification needs to be provided for the cleanup-on-failure path of the
+stmmac_probe_config_dt() method in order to improve its maintainability.
+Then we've discovered that the "stmmaceth" and "pclk" clocks while being
+acquired and enabled in the stmmac_probe_config_dt() method are disabled
+in the stmmac_dvr_remove() function, which is erroneous for every
+cleanup-on-failure path of the glue-driver probe methods. Finally before
+adding the Tx/Rx clocks support we provide a set of optimizations of the
+"stmmaceth"/"pclk"/"ptp_clk" clocks and the "stmmaceth" reset procedures
+by removing the manual optional resources acquisition/enable/disable
+implementation with the one provided by the corresponding subsystems.
+Since the generic Tx/Rx clocks have been added we can freely remove the
+similar clocks handling from the glue-drivers.
+
+(Please note I have also discovered, but didn't try to fix the Allwinner
+Sun8i cleanup-on-failure path implemented in the DW MAC probe() procedure.
+It has been broken since don't know what time and it's a bit too
+complicated to be fixed with no hardware at hands.)
+
+That's it for now. The next series will concern the GPIOs support and
+Baikal-T1 SoC specific bindings.
+
+Link: https://lore.kernel.org/netdev/20201214091616.13545-1-Sergey.Semin@baikalelectronics.ru
+Changelog v2:
+- Discard "snps" vendor-prefix from the new AXI/MTL-Tx/Rx config
+  sub-nodes.
+- Add the new sub-nodes "axi-config", "mtl-rx-config" and "mtl-tx-config"
+  to the DW *MAC bindings describing the nodes the now deprecated
+  config-properties were supposed to refer to.
+- Fix invalid identation in the "snps,route-*" property settings.
+- Discard the patch
+  [PATCH 15/25] net: stmmac: Use optional clock request method to get pclk
+  since the corresponding functionality has already been integrated into
+  the driver.
+- Rebase on top of the kernel 5.11-rc7.
+
+Fixes: d2ed0a7755fe ("net: ethernet: stmmac: fix of-node and fixed-link-phydev leaks")
+Fixes: f573c0b9c4e0 ("stmmac: move stmmac_clk, pclk, clk_ptp_ref and stmmac_rst to platform structure")
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc: Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>
+Cc: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
+Cc: Vyacheslav Mitrofanov <Vyacheslav.Mitrofanov@baikalelectronics.ru>
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: netdev@vger.kernel.org
+Cc: linux-stm32@st-md-mailman.stormreply.com
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+
+Serge Semin (24):
+  dt-bindings: net: dwmac: Validate PBL for all IP-cores
+  dt-bindings: net: dwmac: Extend number of PBL values
+  dt-bindings: net: dwmac: Fix the TSO property declaration
+  dt-bindings: net: dwmac: Refactor snps,*-config properties
+  dt-bindings: net: dwmac: Elaborate stmmaceth/pclk description
+  dt-bindings: net: dwmac: Add Tx/Rx clock sources
+  dt-bindings: net: dwmac: Detach Generic DW MAC bindings
+  net: stmmac: Add {axi,mtl-rx,mtl-tx}-config sub-nodes support
+  net: stmmac: dwmac-rk: Cleanup STMMAC DT-config in remove cb
+  net: stmmac: dwmac-sti: Cleanup STMMAC DT-config in remove cb
+  net: stmmac: dwmac-stm32: Cleanup STMMAC DT-config in remove cb
+  net: stmmac: Directly call reverse methods in stmmac_probe_config_dt()
+  net: stmmac: Fix clocks left enabled on glue-probes failure
+  net: stmmac: Use optional clock request method to get stmmaceth
+  net: stmmac: Use optional clock request method to get ptp_clk
+  net: stmmac: Use optional reset control API to work with stmmaceth
+  net: stmmac: dwc-qos: Cleanup STMMAC platform data clock pointers
+  net: stmmac: dwc-qos: Use dev_err_probe() for probe errors handling
+  net: stmmac: Add Tx/Rx platform clocks support
+  net: stmmac: dwc-qos: Discard Tx/Rx clocks request
+  net: stmmac: dwmac-imx: Discard Tx clock request
+  net: stmmac: Call stmmaceth clock as system clock in warn-message
+  net: stmmac: Use pclk to set MDC clock frequency
+  net: stmmac: dwc-qos: Save master/slave clocks in the plat-data
+
+ .../bindings/net/snps,dwmac-generic.yaml      | 154 +++++
+ .../devicetree/bindings/net/snps,dwmac.yaml   | 578 ++++++++++--------
+ .../stmicro/stmmac/dwmac-dwc-qos-eth.c        |  90 +--
+ .../net/ethernet/stmicro/stmmac/dwmac-imx.c   |  21 +-
+ .../net/ethernet/stmicro/stmmac/dwmac-intel.c |   2 +
+ .../net/ethernet/stmicro/stmmac/dwmac-rk.c    |   3 +
+ .../net/ethernet/stmicro/stmmac/dwmac-sti.c   |   3 +
+ .../net/ethernet/stmicro/stmmac/dwmac-stm32.c |   2 +
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |  31 +-
+ .../ethernet/stmicro/stmmac/stmmac_platform.c |  85 ++-
+ include/linux/stmmac.h                        |   2 +
+ 11 files changed, 616 insertions(+), 355 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/snps,dwmac-generic.yaml
+
+-- 
+2.29.2
+
