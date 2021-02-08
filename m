@@ -2,116 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF87A313D8A
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 19:32:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AB5D313DA0
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 19:35:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231206AbhBHScK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 13:32:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38536 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234021AbhBHSbw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 13:31:52 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30373C061786
-        for <netdev@vger.kernel.org>; Mon,  8 Feb 2021 10:31:10 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id t142so76360wmt.1
-        for <netdev@vger.kernel.org>; Mon, 08 Feb 2021 10:31:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=Hs7wTewV0cufOq3PKa0WHvUyp9n739TnznjMarToqCc=;
-        b=RpH2Lz7pBFJIErN3xdxHHdFPlTYVidTrYSQl2BdM18gPbVKsM17KVw8Wm8RX2E2XW2
-         AycEOG7v0fX26zn8907VQhL15f534mcTbbZGCureeKPd6Hll9jI7w3377pnOlOiD9fuU
-         h+AfZ0LwIsl4uhEfrDJRnCQNGB4jKMHgk+3Shirh9RNs6Qu3vgRpRbPT9Ba3koI3dQ76
-         Dizy6QoxVDomW5LZ7lDk1yk+Ag6yp8JGjEULUE5RElSHF6VSTGfwLujuOV5eFqEPTn2b
-         9fWIxx0wU3fIeuVYl1B5Wdf6rQstvAFfx8Xq+hPv2KcrdgYDXPwWF4tfrpJ67JMEBTRS
-         TvFg==
+        id S235724AbhBHSfY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 13:35:24 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:34208 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235612AbhBHSd7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 13:33:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612809152;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=FONHI2TN+O9acLzuem6EKO8Yxg/GTLtQhMLyetszZzg=;
+        b=EomRJV7hFFm9W17H9Qfl+8xzS9xRLJdvG/fjpDXUfcTD8izfMoBqqWhqXMs/hMylQi/Ipl
+        OLWWQv/1/jeNZwSG8IS8ysQ04IYMhSHUYeCaCwORAK77DyVgxD/LzPUeEle3sCNoZSvTJU
+        GDGXyhgJSPO7PoLgnWEGYlapkPO2p1A=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-497-VBrsjuc1OKyBb3RCuCbHEw-1; Mon, 08 Feb 2021 13:32:30 -0500
+X-MC-Unique: VBrsjuc1OKyBb3RCuCbHEw-1
+Received: by mail-ed1-f72.google.com with SMTP id bo11so14636052edb.0
+        for <netdev@vger.kernel.org>; Mon, 08 Feb 2021 10:32:30 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Hs7wTewV0cufOq3PKa0WHvUyp9n739TnznjMarToqCc=;
-        b=pHFHtAT1mmyk4tpoEpTNzZu1xBjvfHTlWTTdS7ZfIFSaBd5udOYd8Pte4oBWJlkEMY
-         OYztzELJNTJdYRCXZfahxENZVQPSY55nnmV3+0zaoYuaBKzUhsx3iqfDG7nHvwYFkmZv
-         XqK17OsBowbfGsFMtwk0LZWDohNKm+ZN6mXN7NpBTMaN0XCIT+PYnsbkRkGKf8FBh4NX
-         rOvn/lpTjBByHKuVcOoyPpQaJjfSff83xzlMRjhjI8ZdRwafpJc61ioAfpNvW0zfTzyI
-         jjPgt2QzXpYUYBNK9QhvvSfeRzhPhWbie/99YHaglgPazinI1QD0CZQ86kRqsDv3sEgm
-         Q5oQ==
-X-Gm-Message-State: AOAM530HfNfk3nahK/55xZg2bnF8DpnW8PjiwT8inytMcQolgmr7KZOz
-        /oQM/FAegsevvi8gjT3Ckck=
-X-Google-Smtp-Source: ABdhPJwDkDr4OWzpD4EadcmAHIpfdVUqSpYecmRUS0lKqY3l3JR4RSI61qCyK3oygQYLf0zOoChAPQ==
-X-Received: by 2002:a05:600c:2f81:: with SMTP id t1mr100238wmn.186.1612809068975;
-        Mon, 08 Feb 2021 10:31:08 -0800 (PST)
-Received: from [192.168.1.101] ([37.171.108.87])
-        by smtp.gmail.com with ESMTPSA id q24sm51964wmq.24.2021.02.08.10.31.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Feb 2021 10:31:08 -0800 (PST)
-Subject: Re: [PATCH net-next 7/8] mld: convert ip6_sf_socklist to list macros
-To:     Taehee Yoo <ap420073@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org, dsahern@kernel.org,
-        xiyou.wangcong@gmail.com
-References: <20210208175820.5690-1-ap420073@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <8633a76b-84c1-44c1-f532-ce66c1502b5c@gmail.com>
-Date:   Mon, 8 Feb 2021 19:31:06 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FONHI2TN+O9acLzuem6EKO8Yxg/GTLtQhMLyetszZzg=;
+        b=e0cTXPVh+n9OuszDoxetVj8M+u4FV11n7mXSDQ2K6YVCt3w19IpcMyJyKHRD8SpFsc
+         3bw07Ru0lflmvEaypIDR69UJDyHHc/S+AoVrhNYhWddYKz3zH7uxZa5JrlOOz7DuO5G9
+         3kHUj51njAmFTBxh+PXl/RpJ52L5ctAQfYULzYEYD79vJLg38eofnpuqhP8+i/b0qm5c
+         fdg6SqqoAG9dd3fYiXK6wPIp6BgKfZJ1vfqIP4ZYiUM/CjkZpFznzUU0BhSgtb0bxV4J
+         ruTxUlaCGhW/d8uWk6ZG7oIuCQ9rtQAYc3qPG5sFfzUQVVHTYAhe6h1a8q70PYukoPcA
+         7TXw==
+X-Gm-Message-State: AOAM530gopGu0P2Kh6+Hmrgpt5F/Tzvjf5A9JkVZCuekLZL/YF7VU+gD
+        sGKkSU5pYeUNtJTkk1stNlA5ozmnyzuBQWmpAbsyyB2BfBQ/+8dJgAJsZ2lBehLGAXX4qQgLwVI
+        5XfM8rdZ46L/oqXE4
+X-Received: by 2002:aa7:c755:: with SMTP id c21mr18592170eds.47.1612809148226;
+        Mon, 08 Feb 2021 10:32:28 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxpsuTp5sRzeOMNIjmosofGMT5Va6UgHF+7NHtSfOHTT8nBvBhqO12WkK46eKwRMOgobAa2CA==
+X-Received: by 2002:aa7:c755:: with SMTP id c21mr18592153eds.47.1612809148080;
+        Mon, 08 Feb 2021 10:32:28 -0800 (PST)
+Received: from redhat.com (bzq-79-180-2-31.red.bezeqint.net. [79.180.2.31])
+        by smtp.gmail.com with ESMTPSA id x5sm10415492edi.35.2021.02.08.10.32.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Feb 2021 10:32:27 -0800 (PST)
+Date:   Mon, 8 Feb 2021 13:32:24 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     kuba@kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Asias He <asias@redhat.com>,
+        Claudio Imbrenda <imbrenda@linux.vnet.ibm.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>
+Subject: Re: [PATCH net] vsock/virtio: update credit only if socket is not
+ closed
+Message-ID: <20210208133211-mutt-send-email-mst@kernel.org>
+References: <20210208144454.84438-1-sgarzare@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20210208175820.5690-1-ap420073@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210208144454.84438-1-sgarzare@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2/8/21 6:58 PM, Taehee Yoo wrote:
-> Currently, struct ip6_sf_socklist doesn't use list API so that code
-> shape is a little bit different from others.
-> So it converts ip6_sf_socklist to use list API so it would
-> improve readability.
+On Mon, Feb 08, 2021 at 03:44:54PM +0100, Stefano Garzarella wrote:
+> If the socket is closed or is being released, some resources used by
+> virtio_transport_space_update() such as 'vsk->trans' may be released.
 > 
-> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+> To avoid a use after free bug we should only update the available credit
+> when we are sure the socket is still open and we have the lock held.
+> 
+> Fixes: 06a8fc78367d ("VSOCK: Introduce virtio_vsock_common.ko")
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+Probably stable material.
+
 > ---
->  include/net/if_inet6.h  |  19 +-
->  include/uapi/linux/in.h |   4 +-
->  net/ipv6/mcast.c        | 387 +++++++++++++++++++++++++---------------
->  3 files changed, 256 insertions(+), 154 deletions(-)
+>  net/vmw_vsock/virtio_transport_common.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/include/net/if_inet6.h b/include/net/if_inet6.h
-> index babf19c27b29..6885ab8ec2e9 100644
-> --- a/include/net/if_inet6.h
-> +++ b/include/net/if_inet6.h
-> @@ -13,6 +13,7 @@
->  #include <net/snmp.h>
->  #include <linux/ipv6.h>
->  #include <linux/refcount.h>
-> +#include <linux/types.h>
+> diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+> index 5956939eebb7..e4370b1b7494 100644
+> --- a/net/vmw_vsock/virtio_transport_common.c
+> +++ b/net/vmw_vsock/virtio_transport_common.c
+> @@ -1130,8 +1130,6 @@ void virtio_transport_recv_pkt(struct virtio_transport *t,
 >  
->  /* inet6_dev.if_flags */
+>  	vsk = vsock_sk(sk);
 >  
-> @@ -76,23 +77,19 @@ struct inet6_ifaddr {
->  };
+> -	space_available = virtio_transport_space_update(sk, pkt);
+> -
+>  	lock_sock(sk);
 >  
->  struct ip6_sf_socklist {
-> -	unsigned int		sl_max;
-> -	unsigned int		sl_count;
-> -	struct in6_addr		sl_addr[];
-> +	struct list_head	list;
-> +	struct in6_addr		sl_addr;
-> +	struct rcu_head		rcu;
->  };
->
-
-I dunno about readability, but :
-
-Your patches adds/delete more than 1000 lines, who is really going to review this ?
-
-You replace dense arrays by lists, so the performance will likely be hurt,
-as cpu caches will be poorly used.
-
+>  	/* Check if sk has been closed before lock_sock */
+> @@ -1142,6 +1140,8 @@ void virtio_transport_recv_pkt(struct virtio_transport *t,
+>  		goto free_pkt;
+>  	}
+>  
+> +	space_available = virtio_transport_space_update(sk, pkt);
+> +
+>  	/* Update CID in case it has changed after a transport reset event */
+>  	vsk->local_addr.svm_cid = dst.svm_cid;
+>  
+> -- 
+> 2.29.2
 
