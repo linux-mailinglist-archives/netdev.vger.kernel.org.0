@@ -2,100 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B53F313BF7
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 18:59:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66160313B84
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 18:51:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235092AbhBHR7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 12:59:31 -0500
-Received: from mail.baikalelectronics.com ([87.245.175.226]:58176 "EHLO
-        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234985AbhBHR4h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 12:56:37 -0500
-Date:   Mon, 8 Feb 2021 20:44:41 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Serge Semin <fancer.lancer@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S234961AbhBHRvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 12:51:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57542 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234962AbhBHRtE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 12:49:04 -0500
+Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1944C0617AB
+        for <netdev@vger.kernel.org>; Mon,  8 Feb 2021 09:48:24 -0800 (PST)
+Received: by mail-oi1-x236.google.com with SMTP id i3so5609233oif.1
+        for <netdev@vger.kernel.org>; Mon, 08 Feb 2021 09:48:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hqIt/UwNUJoQOM09qoHwRbtdcgdq4vD+X81GKl6pUvg=;
+        b=dIROg9GEeJLWJ7XzvQzbHYvDvby5DZSA5wtm0HUz+hH2dGsD3gA6Kmiit0wOe4THHY
+         PFGw2biv/f4Jt3Pmu2/yyyDY6LEptMbHzdQ093MuxDa5rv4qROkzjHFekTzKF0PccSag
+         v3r7b0aWCGMpeHb+QlgQX8AjF6YRATpuqzJPQFniDXHWE5/CII87sM/T9ni8CoMBw341
+         RejS20ewHvzHs7IB9RLQzcF872UhB3z273h10F15S/qg96XUWfScRkkdo8oNT36Yr0Vq
+         Z7et1TtnD0QGfzFZPQny/zxIOrbUVuzRjznOwu0qz/L39S1XAGXn9/iDbEdrbU1gQ/hb
+         SzaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hqIt/UwNUJoQOM09qoHwRbtdcgdq4vD+X81GKl6pUvg=;
+        b=ERn0XWutDn9dKgcQ6bEu85CyGF2q61WuOE7oqJ1GTVV442xP7/wwvC+vzTtldprIqz
+         5ywH2O6H5FtBGGWZEN9aNLmmWr1TJbet4dTJh5BWt1rEpEqIHB5woR1U1yAR0tVWk1U3
+         Nniuv0GSijGgXw3qG/W/CANURpIm2lv43WK4yLFvrfY8vLiXKZxkzok56wljNEj9uhf/
+         BvKwrFKZJykXSeHV6bYKtv46b95EMN+ZLxX8JumzX/YesrDCSjgXjTXvcnSjGnpGr+oN
+         WhBS4fFQOslvmMz+ZbHoBzQshGbIoV4F20ZoDQj0G1PteFlR/4K+Lil7ic5lCfcLVPYs
+         VAjQ==
+X-Gm-Message-State: AOAM533d46aOVlPXQkWdMvk00NvknNik7nuLbsc+DbvJyk/Zs9byyUYA
+        FvMJfwHfaWWHS35ukOz+pxSVTE8CsWLizQ==
+X-Google-Smtp-Source: ABdhPJyqiIARYiS9Nx6R2dRAOu7L9fFAY66xYQB52vNM3asD8uPvwfyxjaG4SWOx1mRUBpZwO/soKA==
+X-Received: by 2002:a54:4689:: with SMTP id k9mr12050417oic.149.1612806503972;
+        Mon, 08 Feb 2021 09:48:23 -0800 (PST)
+Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id c17sm853063otp.58.2021.02.08.09.48.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Feb 2021 09:48:22 -0800 (PST)
+Date:   Mon, 8 Feb 2021 11:48:20 -0600
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Amit Pundir <amit.pundir@linaro.org>,
+        Rob Herring <robh@kernel.org>, dt <devicetree@vger.kernel.org>,
+        netdev@vger.kernel.org, Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
+        linux-wireless@vger.kernel.org,
+        lkml <linux-kernel@vger.kernel.org>,
+        ath10k <ath10k@lists.infradead.org>,
+        John Stultz <john.stultz@linaro.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Vyacheslav Mitrofanov 
-        <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 01/20] net: phy: realtek: Fix events detection failure in
- LPI mode
-Message-ID: <20210208174441.z4nnugkaadhmgnum@mobilestation>
-References: <20210208140341.9271-1-Sergey.Semin@baikalelectronics.ru>
- <20210208140341.9271-2-Sergey.Semin@baikalelectronics.ru>
- <YCFYaFYgFikj/Gqz@lunn.ch>
+        Konrad Dybcio <konradybcio@gmail.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        David S Miller <davem@davemloft.net>
+Subject: Re: [PATCH] ath10k: Introduce a devicetree quirk to skip host cap
+ QMI requests
+Message-ID: <YCF5ZC/WMRefTRcQ@builder.lan>
+References: <1601058581-19461-1-git-send-email-amit.pundir@linaro.org>
+ <20200929190817.GA968845@bogus>
+ <20201029134017.GA807@yoga>
+ <CAMi1Hd20UpNhZm6z5t5Kcy8eTABiAj7X_Gm66QnJspZWSio0Ew@mail.gmail.com>
+ <20201124175146.GG185852@builder.lan>
+ <87sg8heeta.fsf@codeaurora.org>
+ <CAMi1Hd2FN6QQzbKHooVyqQfH1NFTNLt4RwxyVXRf+5DwTc9ojg@mail.gmail.com>
+ <87czxa4grv.fsf@codeaurora.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YCFYaFYgFikj/Gqz@lunn.ch>
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+In-Reply-To: <87czxa4grv.fsf@codeaurora.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 08, 2021 at 04:27:36PM +0100, Andrew Lunn wrote:
-> On Mon, Feb 08, 2021 at 05:03:22PM +0300, Serge Semin wrote:
-> > It has been noticed that RTL8211E PHY stops detecting and reporting events
-> > when EEE is successfully advertised and RXC stopping in LPI is enabled.
-> > The freeze happens right after 3.0.10 bit (PC1R "Clock Stop Enable"
-> > register) is set. At the same time LED2 stops blinking as if EEE mode has
-> > been disabled. Notably the network traffic still flows through the PHY
-> > with no obvious problem. Anyway if any MDIO read procedure is performed
-> > after the "RXC stop in LPI" mode is enabled PHY gets to be unfrozen, LED2
-> > starts blinking and PHY interrupts happens again. The problem has been
-> > noticed on RTL8211E PHY working together with DW GMAC 3.73a MAC and
-> > reporting its event via a dedicated IRQ signal. (Obviously the problem has
-> > been unnoticed in the polling mode, since it gets naturally fixed by the
-> > periodic MDIO read procedure from the PHY status register - BMSR.)
-> > 
-> > In order to fix that problem we suggest to locally re-implement the MMD
-> > write method for RTL8211E PHY and perform a dummy read right after the
-> > PC1R register is accessed to enable the RXC stopping in LPI mode.
+On Mon 08 Feb 11:21 CST 2021, Kalle Valo wrote:
+
+> Amit Pundir <amit.pundir@linaro.org> writes:
 > 
-> Hi Serge
+> > Hi Kalle,
+> >
+> > On Mon, 7 Dec 2020 at 22:25, Kalle Valo <kvalo@codeaurora.org> wrote:
+> >>
+> >> This is firmware version specific, right? There's also enum
+> >> ath10k_fw_features which is embedded within firmware-N.bin, we could add
+> >> a new flag there. But that means that a correct firmware-N.bin is needed
+> >> for each firmware version, not sure if that would work out. Just
+> >> throwing out ideas here.
+> >
+> > Apologies for this late reply. I was out for a while.
 > 
-> Is this listed in an Errata from Realtek?
+> No worries.
+> 
+> > If by that (the firmware version) you mean "QC_IMAGE_VERSION_STRING",
+> > then that may be a bit tricky. Pocophone F1 use the same firmware
+> > family version (WLAN.HL.2.0.XXX), used by Dragonboard 845c (which has
+> > Wi-Fi working upstream).
+> 
+> I'm meaning the ath10k firmware meta data we have in firmware-N.bin
+> (N=2,3,4...) file. A quick summary:
+> 
+> Every ath10k firmware release should have firmware-N.bin. The file is
+> created with this tool:
+> 
+> https://github.com/qca/qca-swiss-army-knife/blob/master/tools/scripts/ath10k/ath10k-fwencoder
+> 
+> firmware-N.bin contains various metadata, one of those being firmware
+> feature flags:
+> 
+> enum ath10k_fw_features {
+> 	/* wmi_mgmt_rx_hdr contains extra RSSI information */
+> 	ATH10K_FW_FEATURE_EXT_WMI_MGMT_RX = 0,
+> 
+> 	/* Firmware from 10X branch. Deprecated, don't use in new code. */
+> 	ATH10K_FW_FEATURE_WMI_10X = 1,
+> 
+>         [...]
+> 
+> So what you could is add a new flag enum ath10k_fw_features, create a
+> new firmware-N.bin for your device and enable the flag on the firmware
+> releases for your device only.
+> 
+> I don't know if this is usable, but one solution which came to my mind.
 
-Hi Andrew,
+It sounds quite reasonable to pass this using firmawre-N.bin instead of
+DT, however that would imply that we need to find firmware-N.bin in the
+device-specific directory, where we keep the wlanmdsp.mbn as well - and
+not under /lib/firmware/ath10k
 
-I honestly tried to find any doc with a glimpse of errata for RTL8211E
-PHY, but with no luck. Official datasheet didn't have any info regarding
-possible hw bugs too. Thus I had no choice but to find a fix of the
-problem myself.
 
-It took me some time to figure out why the events weren't reported after
-the very first link setup (turned out only a full HW reset clears the
-PC1R.10 bit state). I thought it could have been connected with some
-sleep/idle/power-safe mode. So I disabled the EEE initialization in the
-STMMAC driver. It worked. Then I left the EEE mode enabled, but called the
-phy_init_eee(phy, 0) method with "clk_stop_enable==0", so PHY wouldn't
-stop RXC in LPI mode. And it wonderfully worked. Then I started to dig in
-from another side. I left "RXC disable in LPI" mode enabled and tried to
-figure out what was going on with the PHY when it stopped reporting events
-just by reading from its CSR using phytool utility. It was curious to
-discover that any attempt to read from any PHY register caused the problem
-disappearance (LED2 started blinking, events got to be reported). Since I
-did nothing but a mere reading from a random even EEE-unrelated register I
-inferred that the problem must be in some HW/PHY bug. That's how I've got
-to the patch introduced here. If you have any better idea what could be a
-reason of that weird behavior I'd be glad to test it out on my device.
+For other devices (e.g. ADSP, modem or wlanmdsp.mbn) we're putting these
+in e.g. /lib/firmware/qcom/LENOVO/81JL/ and specifies the location using
+a firmware-name property in DT.
 
--Sergey
+Regards,
+Bjorn
 
 > 
->    Andrew
+> -- 
+> https://patchwork.kernel.org/project/linux-wireless/list/
+> 
+> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
