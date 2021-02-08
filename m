@@ -2,104 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08C26313802
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 16:35:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C8CF313857
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 16:45:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233931AbhBHPf0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 10:35:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56266 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229913AbhBHPcc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 10:32:32 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DB13C061793;
-        Mon,  8 Feb 2021 07:31:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=tdwCgKoyLdHxRuD+Ock+CY1gFHQqJYRvjdWG9ShjOkY=; b=zU/66JgRfM3qSDf+yVQGplFKy
-        365CNDWp7LAaZkjasaEkkS9zdxY9mFrU7lvKhaut2GV1Ldn4/Fij0JXoLSfivEaHY9RLDom9KJ3dD
-        MA3nRv/2W6bgJRVSxydYqGIjiNQR5Q23I0A91aNIdjgp8TcdQwsFxmWf2l7PMpgPZ0YqZaoAgXA2B
-        cpr8PNOGalTRQrkS5nsYuJTuPJDt/PcJoLAx42ZUSBpyVY9im2aHU4b3wjeCPzzcCZpNB2rxJBFfg
-        jCTsl0+X7RuBRskZz01elt+0+w3Ww0lp+GfXzhiyDE4wGLYeIYG6LiS6mmEdUv13JUT9xjeSpFtSn
-        LnmJIFeXQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:40812)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        id S234005AbhBHPns (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 10:43:48 -0500
+Received: from www62.your-server.de ([213.133.104.62]:55680 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233804AbhBHPmO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 10:42:14 -0500
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1l98fF-000E8Z-Uo; Mon, 08 Feb 2021 16:41:26 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1l98VN-0002Bx-JF; Mon, 08 Feb 2021 15:31:13 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1l98VL-00039T-3P; Mon, 08 Feb 2021 15:31:11 +0000
-Date:   Mon, 8 Feb 2021 15:31:11 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
-Cc:     Grant Likely <grant.likely@arm.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
-        Jon <jon@solid-run.com>, Saravana Kannan <saravanak@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        linux-kernel@vger.kernel.org, linux.cj@gmail.com,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-acpi@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [net-next PATCH v5 13/15] phylink: introduce
- phylink_fwnode_phy_connect()
-Message-ID: <20210208153111.GK1463@shell.armlinux.org.uk>
-References: <20210208151244.16338-1-calvin.johnson@oss.nxp.com>
- <20210208151244.16338-14-calvin.johnson@oss.nxp.com>
+        (envelope-from <daniel@iogearbox.net>)
+        id 1l98fF-000P5I-Kx; Mon, 08 Feb 2021 16:41:25 +0100
+Subject: Re: [PATCH bpf-next V15 2/7] bpf: fix bpf_fib_lookup helper MTU check
+ for SKB ctx
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
+        colrack@gmail.com, David Ahern <dsahern@kernel.org>
+References: <161228314075.576669.15427172810948915572.stgit@firesoul>
+ <161228321177.576669.11521750082473556168.stgit@firesoul>
+ <ada19e5b-87be-ff39-45ba-ff0025bf1de9@iogearbox.net>
+ <20210208145713.4ee3e9ba@carbon> <20210208162056.44b0236e@carbon>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <547131a3-5125-d419-8e61-0fc675d663a8@iogearbox.net>
+Date:   Mon, 8 Feb 2021 16:41:24 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210208151244.16338-14-calvin.johnson@oss.nxp.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+In-Reply-To: <20210208162056.44b0236e@carbon>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26074/Mon Feb  8 13:20:40 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 08, 2021 at 08:42:42PM +0530, Calvin Johnson wrote:
-> +int phylink_fwnode_phy_connect(struct phylink *pl,
-> +			       struct fwnode_handle *fwnode,
-> +			       u32 flags)
-> +{
-> +	struct fwnode_handle *phy_fwnode;
-> +	struct phy_device *phy_dev;
-> +	int ret;
-> +
-> +	if (is_of_node(fwnode)) {
-> +		/* Fixed links and 802.3z are handled without needing a PHY */
-> +		if (pl->cfg_link_an_mode == MLO_AN_FIXED ||
-> +		    (pl->cfg_link_an_mode == MLO_AN_INBAND &&
-> +		     phy_interface_mode_is_8023z(pl->link_interface)))
-> +			return 0;
+On 2/8/21 4:20 PM, Jesper Dangaard Brouer wrote:
+> On Mon, 8 Feb 2021 14:57:13 +0100
+> Jesper Dangaard Brouer <brouer@redhat.com> wrote:
+>> On Fri, 5 Feb 2021 01:06:35 +0100
+>> Daniel Borkmann <daniel@iogearbox.net> wrote:
+>>> On 2/2/21 5:26 PM, Jesper Dangaard Brouer wrote:
+>>>> BPF end-user on Cilium slack-channel (Carlo Carraro) wants to use
+>>>> bpf_fib_lookup for doing MTU-check, but *prior* to extending packet size,
+>>>> by adjusting fib_params 'tot_len' with the packet length plus the expected
+>>>> encap size. (Just like the bpf_check_mtu helper supports). He discovered
+>>>> that for SKB ctx the param->tot_len was not used, instead skb->len was used
+>>>> (via MTU check in is_skb_forwardable() that checks against netdev MTU).
+>>>>
+>>>> Fix this by using fib_params 'tot_len' for MTU check. If not provided (e.g.
+>>>> zero) then keep existing TC behaviour intact. Notice that 'tot_len' for MTU
+>>>> check is done like XDP code-path, which checks against FIB-dst MTU.
+[...]
+>>>> -	if (!rc) {
+>>>> -		struct net_device *dev;
+>>>> -
+>>>> -		dev = dev_get_by_index_rcu(net, params->ifindex);
+>>>> +	if (rc == BPF_FIB_LKUP_RET_SUCCESS && !check_mtu) {
+>>>> +		/* When tot_len isn't provided by user,
+>>>> +		 * check skb against net_device MTU
+>>>> +		 */
+>>>>    		if (!is_skb_forwardable(dev, skb))
+>>>>    			rc = BPF_FIB_LKUP_RET_FRAG_NEEDED;
+>>>
+>>> ... so using old cached dev from above will result in wrong MTU check &
+>>> subsequent passing of wrong params->mtu_result = dev->mtu this way.
+>>
+>> Yes, you are right, params->ifindex have a chance to change in the calls.
+>> So, our attempt to save an ifindex lookup (dev_get_by_index_rcu) is not
+>> correct.
+>>
+>>> So one
+>>> way to fix is that we would need to pass &dev to bpf_ipv{4,6}_fib_lookup().
+>>
+>> Ok, I will try to code it up, and see how ugly it looks, but I'm no
+>> longer sure that it is worth saving this ifindex lookup, as it will
+>> only happen if BPF-prog didn't specify params->tot_len.
+> 
+> I guess we can still do this as an "optimization", but the dev/ifindex
+> will very likely be another at this point.
 
-This difference between ACPI and DT really needs to be described in the
-commit description.
+I would say for sake of progress, lets ship your series w/o this optimization so
+it can land, and we revisit this later on independent from here. Actually DavidA
+back then acked the old poc patch I posted, so maybe that's worth a revisit as
+well but needs more testing first.
 
-For example, why is it acceptable to have a PHY in fixed-link mode if
-we're using ACPI, and not DT?
-
-If we look at the phylink code, accepting a PHY when in fixed-link mode
-is basically not supported... so why should ACPI allow this?
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Thanks,
+Daniel
