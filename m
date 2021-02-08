@@ -2,47 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D149F313934
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 17:22:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0A57313939
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 17:23:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234327AbhBHQWN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 11:22:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38702 "EHLO
+        id S234352AbhBHQWn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 11:22:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230029AbhBHQV4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 11:21:56 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6E0CC061786;
-        Mon,  8 Feb 2021 08:21:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=59295E+lNhRaUQR/4tni4iET5TTHw817McTVlGiR3g8=; b=YimHxmiuc7HtyvGIT/XM8b6r0
-        IKAPBCVrxhMFjXnTz4jH/DNxdQkXIfpxyRjw0xtmolumm/NDibr+cr+2obLnnXUeE/VZpOtKqeleL
-        D+YcIA+/3RmgaGx35HA8Bo3oOwoDQIm0+uksWrkS1n/6etafgX/CZ48Ttcq3r79X6P34iw2a9qRW/
-        Mov80ekourU49DGhhfU4RYpVUBL+FGCAW0euuC64I+Adq5cqVniCich016nyuhTPY2r313tT0bRCF
-        3w9W7/BtFH5zIOffr5lw/L7XqkMAqa2eCtY7Et1Uk/TbO7UkiXIZX9JVN1TpvAZq2XG7yR7QrPgND
-        J/qMpSWag==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:40830)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1l99HI-0002F9-Ts; Mon, 08 Feb 2021 16:20:44 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1l99HG-0003Bm-Pe; Mon, 08 Feb 2021 16:20:42 +0000
-Date:   Mon, 8 Feb 2021 16:20:42 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+        with ESMTP id S234346AbhBHQWV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 11:22:21 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90DE9C061788;
+        Mon,  8 Feb 2021 08:21:40 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id l18so9065027pji.3;
+        Mon, 08 Feb 2021 08:21:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FwkWha3g7oAGpB4ws7tQE2d1Ep3IiBneyrvjPgo+ZlY=;
+        b=c0r5N8jxVF6gKwrWgIFk8pzpa5inqJJ8IxXFim69z2u09lU41usZE+nCWufo8wzGbX
+         xQGTDDnnAMsMXQm4FA2+T7yT8T1Na/dsKGh9ru3rKRUcNdTBa+DnwhHcePl67AGtIvNe
+         fpKd1YiEuHmTv5UkLgVVYWCXVlNkOIn++vtiXyisvc7woTn4YLg3U1YENvqFW33tfkZN
+         VJv/o7M3bNp6zDQeKw6ksavdZKHzZo2ehclHD4qqHJPCrweuWN4ikyFN7aWYEJQwWyKF
+         dZ0DgxYyplPOGOLf85OWqLj64XccoT2gZzJDqgjGiX9JoCGzmkIM+kfKjL6JURNQJeMF
+         FNMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FwkWha3g7oAGpB4ws7tQE2d1Ep3IiBneyrvjPgo+ZlY=;
+        b=QcFgnZx7oEXV5Zd4qAd+YxNHmEvsiNj64X4wVAjm6NA02yHqu2kDQGWaRFSbfKFAWT
+         oFdbYCdBw1YlxqjyrdiJLEwyxJ83YMGA5fbf5PiI1gXoOSxVLuTjkfWRBXm+c7otgSmv
+         XIZpqvcABpyMAI05Q+gve0vGs8BTEFvGIDIQPodqay4XSQlTg/TGxPezCjJlgD+nJNtx
+         97pYDdP8UuNEQYtBcL4lMxcf52Tat3SQ6IOW2F0zkgQ4JvARpLMdMokJtoaPnQneTN0K
+         WGu+5f8JaixnFylUF9/oLgkz+zbTCT5kJO3cHpHW9W/WrZZBZpRDPfNKeZtCWluzeTnG
+         mHjg==
+X-Gm-Message-State: AOAM5308OJ4WCChoaZZaaAPw2N0C1Xr3RG3Nyj3QBe/setfJWvpi7k9I
+        W7S/3xuP9b/lODU7CXVe7qwFm0oe8P+k3VChYUU=
+X-Google-Smtp-Source: ABdhPJzb6rIZJDKS/VoraARCNlcsJfBDoL00x231IpA5pGuxpSRJ5AtRSTI37rFBU7VtykBXo28JwAtQX5qXW9rTlBo=
+X-Received: by 2002:a17:90a:644a:: with SMTP id y10mr18283260pjm.129.1612801300072;
+ Mon, 08 Feb 2021 08:21:40 -0800 (PST)
+MIME-Version: 1.0
+References: <20210208151244.16338-1-calvin.johnson@oss.nxp.com> <20210208151244.16338-16-calvin.johnson@oss.nxp.com>
+In-Reply-To: <20210208151244.16338-16-calvin.johnson@oss.nxp.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 8 Feb 2021 18:21:22 +0200
+Message-ID: <CAHp75VcL1A3CxyS+KVwJsdhtQh3R12aUonPfstSgtzO4bRc1Zw@mail.gmail.com>
+Subject: Re: [net-next PATCH v5 15/15] net: dpaa2-mac: Add ACPI support for
+ DPAA2 MAC driver
 To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
 Cc:     Grant Likely <grant.likely@arm.com>,
         "Rafael J . Wysocki" <rafael@kernel.org>,
         Jeremy Linton <jeremy.linton@arm.com>,
         Andrew Lunn <andrew@lunn.ch>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
         Cristi Sovaiala <cristian.sovaiala@nxp.com>,
         Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
         Ioana Ciornei <ioana.ciornei@nxp.com>,
@@ -53,39 +68,73 @@ Cc:     Grant Likely <grant.likely@arm.com>,
         Jon <jon@solid-run.com>, Saravana Kannan <saravanak@google.com>,
         Randy Dunlap <rdunlap@infradead.org>,
         Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        linux-kernel@vger.kernel.org, linux.cj@gmail.com,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "linux.cj" <linux.cj@gmail.com>,
         Diana Madalina Craciun <diana.craciun@nxp.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-acpi@vger.kernel.org,
+        netdev <netdev@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [net-next PATCH v5 13/15] phylink: introduce
- phylink_fwnode_phy_connect()
-Message-ID: <20210208162042.GL1463@shell.armlinux.org.uk>
-References: <20210208151244.16338-1-calvin.johnson@oss.nxp.com>
- <20210208151244.16338-14-calvin.johnson@oss.nxp.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210208151244.16338-14-calvin.johnson@oss.nxp.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 08, 2021 at 08:42:42PM +0530, Calvin Johnson wrote:
-> Define phylink_fwnode_phy_connect() to connect phy specified by
-> a fwnode to a phylink instance.
-> 
-> Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
+On Mon, Feb 8, 2021 at 5:15 PM Calvin Johnson
+<calvin.johnson@oss.nxp.com> wrote:
+>
+> Modify dpaa2_mac_connect() to support ACPI along with DT.
+> Modify dpaa2_mac_get_node() to get the dpmac fwnode from either
+> DT or ACPI.
+>
+> Replace of_get_phy_mode with fwnode_get_phy_mode to get
+> phy-mode for a dpmac_node.
+>
+> Use helper function phylink_fwnode_phy_connect() to find phy_dev and
+> connect to mac->phylink.
 
-Also, the subject line should be "net: phylink: ..." Consistency is
-really appreciated.
+...
 
-Thanks.
+> +       if (is_of_node(dev->parent->fwnode)) {
+> +               dpmacs = of_find_node_by_name(NULL, "dpmacs");
+> +               if (!dpmacs)
+> +                       return NULL;
+> +               parent = of_fwnode_handle(dpmacs);
+> +       } else if (is_acpi_node(dev->parent->fwnode)) {
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+> +               parent = dev->parent->fwnode;
+
+dev_fwnode(dev->parent) ?
+
+> +       }
+
+...
+
+> +               if (err) {
+>                         continue;
+
+> +               } else if (id == dpmac_id) {
+
+Useless 'else'
+
+> +                       if (is_of_node(dev->parent->fwnode))
+
+dev_fwnode() ?
+
+> +                               of_node_put(dpmacs);
+> +                       return child;
+> +               }
+
+...
+
+> +       if (is_of_node(dev->parent->fwnode))
+
+Ditto ?
+
+> +               of_node_put(dpmacs);
+
+--
+With Best Regards,
+Andy Shevchenko
