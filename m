@@ -2,15 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D81C31348C
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 15:10:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0C51313468
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 15:06:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232160AbhBHOH0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 09:07:26 -0500
-Received: from mail.baikalelectronics.com ([87.245.175.226]:57088 "EHLO
+        id S232605AbhBHOEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 09:04:01 -0500
+Received: from mail.baikalelectronics.com ([87.245.175.226]:57076 "EHLO
         mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231625AbhBHN6j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 08:58:39 -0500
+        with ESMTP id S232069AbhBHN6N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 08:58:13 -0500
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Rob Herring <robh+dt@kernel.org>,
         Giuseppe Cavallaro <peppe.cavallaro@st.com>,
@@ -22,6 +22,11 @@ To:     Rob Herring <robh+dt@kernel.org>,
         Maxime Ripard <mripard@kernel.org>,
         Joao Pinto <jpinto@synopsys.com>,
         Lars Persson <larper@axis.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>
 CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Serge Semin <fancer.lancer@gmail.com>,
@@ -33,9 +38,9 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 20/24] net: stmmac: dwc-qos: Discard Tx/Rx clocks request
-Date:   Mon, 8 Feb 2021 16:56:04 +0300
-Message-ID: <20210208135609.7685-21-Sergey.Semin@baikalelectronics.ru>
+Subject: [PATCH v2 21/24] net: stmmac: dwmac-imx: Discard Tx clock request
+Date:   Mon, 8 Feb 2021 16:56:05 +0300
+Message-ID: <20210208135609.7685-22-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20210208135609.7685-1-Sergey.Semin@baikalelectronics.ru>
 References: <20210208135609.7685-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -46,135 +51,96 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since the Tx/Rx clocks with the same names are now requested and
-enabled/disabled in the STMMAC DT-based platform config method, there is
-no need in duplicating the same procedures in the DWC QoS Eth sub-driver.
-Discard it then, but make sure the denoted clocks have been specified
-for the platform.
-
-Note also the deprecated clock "phy_ref_clk" have been defined as the Tx
-clock in the DWC QoS Eth bindings. Let's use a pointer to the Tx clock
-defined in the platform data then instead of the unrelated pclk pointer.
+Since the Tx clock is now requested and enabled/disabled in the STMMAC
+DT-based platform config method, there is no need in duplicating the same
+procedures in the DW MAC iMX sub-driver.
 
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 ---
- .../stmicro/stmmac/dwmac-dwc-qos-eth.c        | 44 +++++--------------
- 1 file changed, 11 insertions(+), 33 deletions(-)
+ .../net/ethernet/stmicro/stmmac/dwmac-imx.c   | 21 +++++--------------
+ 1 file changed, 5 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
-index b71f0c3faebe..f315ca395e12 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
-@@ -31,8 +31,6 @@ struct tegra_eqos {
- 	struct reset_control *rst;
- 	struct clk *clk_master;
- 	struct clk *clk_slave;
--	struct clk *clk_tx;
--	struct clk *clk_rx;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
+index 223f69da7e95..8b2c7f1ba745 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-imx.c
+@@ -40,7 +40,6 @@ struct imx_dwmac_ops {
  
- 	struct gpio_desc *reset;
- };
-@@ -155,7 +153,7 @@ static int dwc_qos_probe(struct platform_device *pdev,
- 		goto disable;
+ struct imx_priv_data {
+ 	struct device *dev;
+-	struct clk *clk_tx;
+ 	struct clk *clk_mem;
+ 	struct regmap *intf_regmap;
+ 	u32 intf_reg_off;
+@@ -104,12 +103,6 @@ static int imx_dwmac_init(struct platform_device *pdev, void *priv)
+ 		return ret;
  	}
  
--	plat_dat->pclk = clk;
-+	plat_dat->tx_clk = clk;
- 
+-	ret = clk_prepare_enable(dwmac->clk_tx);
+-	if (ret) {
+-		dev_err(&pdev->dev, "tx clock enable failed\n");
+-		goto clk_tx_en_failed;
+-	}
+-
+ 	if (dwmac->ops->set_intf_mode) {
+ 		ret = dwmac->ops->set_intf_mode(plat_dat);
+ 		if (ret)
+@@ -119,8 +112,6 @@ static int imx_dwmac_init(struct platform_device *pdev, void *priv)
  	return 0;
  
-@@ -175,8 +173,8 @@ static int dwc_qos_remove(struct platform_device *pdev)
- 	 * data so the stmmac_remove_config_dt() method wouldn't have disabled
- 	 * the clocks too.
- 	 */
--	clk_disable_unprepare(priv->plat->pclk);
--	priv->plat->pclk = NULL;
-+	clk_disable_unprepare(priv->plat->tx_clk);
-+	priv->plat->tx_clk = NULL;
- 
- 	clk_disable_unprepare(priv->plat->stmmac_clk);
- 	priv->plat->stmmac_clk = NULL;
-@@ -197,6 +195,7 @@ static int dwc_qos_remove(struct platform_device *pdev)
- static void tegra_eqos_fix_speed(void *priv, unsigned int speed)
- {
- 	struct tegra_eqos *eqos = priv;
-+	struct stmmac_priv *sp = netdev_priv(dev_get_drvdata(eqos->dev));
- 	unsigned long rate = 125000000;
- 	bool needs_calibration = false;
- 	u32 value;
-@@ -262,7 +261,7 @@ static void tegra_eqos_fix_speed(void *priv, unsigned int speed)
- 		writel(value, eqos->regs + AUTO_CAL_CONFIG);
- 	}
- 
--	err = clk_set_rate(eqos->clk_tx, rate);
-+	err = clk_set_rate(sp->plat->tx_clk, rate);
- 	if (err < 0)
- 		dev_err(eqos->dev, "failed to set TX rate: %d\n", err);
+ intf_mode_failed:
+-	clk_disable_unprepare(dwmac->clk_tx);
+-clk_tx_en_failed:
+ 	clk_disable_unprepare(dwmac->clk_mem);
+ 	return ret;
  }
-@@ -299,6 +298,11 @@ static int tegra_eqos_probe(struct platform_device *pdev,
- 	if (!is_of_node(dev->fwnode))
- 		goto bypass_clk_reset_gpio;
+@@ -129,7 +120,6 @@ static void imx_dwmac_exit(struct platform_device *pdev, void *priv)
+ {
+ 	struct imx_priv_data *dwmac = priv;
  
-+	if (!data->tx_clk || !data->rx_clk) {
-+		err = -EINVAL;
-+		goto error;
-+	}
-+
- 	eqos->clk_master = devm_clk_get(&pdev->dev, "master_bus");
- 	if (IS_ERR(eqos->clk_master)) {
- 		err = PTR_ERR(eqos->clk_master);
-@@ -321,30 +325,10 @@ static int tegra_eqos_probe(struct platform_device *pdev,
+-	clk_disable_unprepare(dwmac->clk_tx);
+ 	clk_disable_unprepare(dwmac->clk_mem);
+ }
  
- 	data->stmmac_clk = eqos->clk_slave;
- 
--	eqos->clk_rx = devm_clk_get(&pdev->dev, "rx");
--	if (IS_ERR(eqos->clk_rx)) {
--		err = PTR_ERR(eqos->clk_rx);
--		goto disable_slave;
--	}
--
--	err = clk_prepare_enable(eqos->clk_rx);
--	if (err < 0)
--		goto disable_slave;
--
--	eqos->clk_tx = devm_clk_get(&pdev->dev, "tx");
--	if (IS_ERR(eqos->clk_tx)) {
--		err = PTR_ERR(eqos->clk_tx);
--		goto disable_rx;
--	}
--
--	err = clk_prepare_enable(eqos->clk_tx);
--	if (err < 0)
--		goto disable_rx;
--
- 	eqos->reset = devm_gpiod_get(&pdev->dev, "phy-reset", GPIOD_OUT_HIGH);
- 	if (IS_ERR(eqos->reset)) {
- 		err = PTR_ERR(eqos->reset);
--		goto disable_tx;
-+		goto disable_slave;
+@@ -162,7 +152,7 @@ static void imx_dwmac_fix_speed(void *priv, unsigned int speed)
+ 		return;
  	}
  
- 	usleep_range(2000, 4000);
-@@ -385,10 +369,6 @@ static int tegra_eqos_probe(struct platform_device *pdev,
- 	reset_control_assert(eqos->rst);
- reset_phy:
- 	gpiod_set_value(eqos->reset, 1);
--disable_tx:
--	clk_disable_unprepare(eqos->clk_tx);
--disable_rx:
--	clk_disable_unprepare(eqos->clk_rx);
- disable_slave:
- 	clk_disable_unprepare(eqos->clk_slave);
- 	data->stmmac_clk = NULL;
-@@ -405,8 +385,6 @@ static int tegra_eqos_remove(struct platform_device *pdev)
+-	err = clk_set_rate(dwmac->clk_tx, rate);
++	err = clk_set_rate(plat_dat->tx_clk, rate);
+ 	if (err < 0)
+ 		dev_err(dwmac->dev, "failed to set tx rate %lu\n", rate);
+ }
+@@ -176,10 +166,9 @@ imx_dwmac_parse_dt(struct imx_priv_data *dwmac, struct device *dev)
+ 	if (of_get_property(np, "snps,rmii_refclk_ext", NULL))
+ 		dwmac->rmii_refclk_ext = true;
  
- 	reset_control_assert(eqos->rst);
- 	gpiod_set_value(eqos->reset, 1);
--	clk_disable_unprepare(eqos->clk_tx);
--	clk_disable_unprepare(eqos->clk_rx);
- 	clk_disable_unprepare(eqos->clk_slave);
- 	clk_disable_unprepare(eqos->clk_master);
+-	dwmac->clk_tx = devm_clk_get(dev, "tx");
+-	if (IS_ERR(dwmac->clk_tx)) {
+-		dev_err(dev, "failed to get tx clock\n");
+-		return PTR_ERR(dwmac->clk_tx);
++	if (!dwmac->plat_dat->tx_clk) {
++		dev_err(dev, "no tx clock found\n");
++		return -EINVAL;
+ 	}
  
+ 	dwmac->clk_mem = NULL;
+@@ -239,6 +228,7 @@ static int imx_dwmac_probe(struct platform_device *pdev)
+ 
+ 	dwmac->ops = data;
+ 	dwmac->dev = &pdev->dev;
++	dwmac->plat_dat = plat_dat;
+ 
+ 	ret = imx_dwmac_parse_dt(dwmac, &pdev->dev);
+ 	if (ret) {
+@@ -251,7 +241,6 @@ static int imx_dwmac_probe(struct platform_device *pdev)
+ 	plat_dat->exit = imx_dwmac_exit;
+ 	plat_dat->fix_mac_speed = imx_dwmac_fix_speed;
+ 	plat_dat->bsp_priv = dwmac;
+-	dwmac->plat_dat = plat_dat;
+ 
+ 	ret = imx_dwmac_init(pdev, dwmac);
+ 	if (ret)
 -- 
 2.29.2
 
