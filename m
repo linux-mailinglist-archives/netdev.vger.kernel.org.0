@@ -2,188 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06AD1312B2D
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 08:39:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 527FC312B3B
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 08:48:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230080AbhBHHie (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 02:38:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38924 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230046AbhBHHiA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 02:38:00 -0500
-Received: from antares.kleine-koenig.org (antares.kleine-koenig.org [IPv6:2a01:4f8:c0c:3a97::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20B5BC06174A;
-        Sun,  7 Feb 2021 23:37:20 -0800 (PST)
-Received: by antares.kleine-koenig.org (Postfix, from userid 1000)
-        id 4884EAF3701; Mon,  8 Feb 2021 08:37:18 +0100 (CET)
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
-To:     Tomas Winkler <tomas.winkler@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-watchdog@vger.kernel.org
-Subject: [PATCH v2 2/2] mei: bus: change remove callback to return void
-Date:   Mon,  8 Feb 2021 08:37:05 +0100
-Message-Id: <20210208073705.428185-3-uwe@kleine-koenig.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210208073705.428185-1-uwe@kleine-koenig.org>
-References: <20210208073705.428185-1-uwe@kleine-koenig.org>
+        id S230077AbhBHHsV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 02:48:21 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:11188 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229608AbhBHHsU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 02:48:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1612770499; x=1644306499;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=bQDgjZGs3K7YBKjwl0I+8ePEFmSBGZnt2EZpaNfIK9Q=;
+  b=gn5V4PMv5ZL4S8PVl7i2LK1W9Qa+09Ys1czHf1RlzEbVKVCKyLnnq7Te
+   JUqgHr1Zu84hw9tYpMlMPc2oGmLGJPB2K/lKorvoESx/w2UTAc4Bq6yKR
+   SuPY5n/eExsFnZOjFxbh9KpN8IIAXKFGuEPfeKEyvZqpqORHmTFY7jZCE
+   MxNScsmmxMLBWEY5iHDoJ75ut4xlyrlLptchyTB8TPTtWXUAdpCoy3iUf
+   /OQSN9kJ0zTD/GfArRo6Bi3HzMLnn0+/p8+KvJktI6c3fce1ZgY/1wP3C
+   olR2dBI+bhUHTgD138PQjzJWc5YemE3kpy41Zk59xSExgJPIkEiPO3l8y
+   w==;
+IronPort-SDR: 1kOSpgx1R0/NQAhcwZ31rMMeww8wucVbneeTsIswuD38ylHAF8+y7F3Pgyw5Wp5iK58i/TWbcP
+ Z1DsBzOW9gMyphhzhWTrURlQwwDz9Pk20UtAkFChYMmxHrndGPp5ENK865/DkOMKHvVb7bBr82
+ xWpotveEm1QjGqkN64mmTf/swrFUWf4KLz2u3khHzrlIDT6LFLUyBmqeZjVme79Ii7y2hikUA5
+ f19YWrUTO9D8g8XhIwcJMtx5vMBYCRXPVg7OMyoRXarYuHBiotoN6LZSfnOF2Jy4vKY0AwmeB4
+ qg4=
+X-IronPort-AV: E=Sophos;i="5.81,161,1610434800"; 
+   d="scan'208";a="105794403"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Feb 2021 00:47:01 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 8 Feb 2021 00:47:01 -0700
+Received: from tyr.hegelund-hansen.dk (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.1979.3 via Frontend Transport; Mon, 8 Feb 2021 00:46:59 -0700
+Message-ID: <c23acd4f56519d53e2cff634f85ae6bed25b4b09.camel@microchip.com>
+Subject: Re: [PATCH v13 3/4] phy: Add Sparx5 ethernet serdes PHY driver
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     Vinod Koul <vkoul@kernel.org>
+CC:     Kishon Vijay Abraham I <kishon@ti.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>
+Date:   Mon, 8 Feb 2021 08:46:58 +0100
+In-Reply-To: <20210204080107.GJ3079@vkoul-mobl.Dlink>
+References: <20210129130748.373831-1-steen.hegelund@microchip.com>
+         <20210129130748.373831-4-steen.hegelund@microchip.com>
+         <20210204080107.GJ3079@vkoul-mobl.Dlink>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The driver core ignores the return value of mei_cl_device_remove() so
-passing an error value doesn't solve any problem. As most mei drivers'
-remove callbacks return 0 unconditionally and returning a different value
-doesn't have any effect, change this prototype to return void and return 0
-unconditionally in mei_cl_device_remove(). The only driver that could
-return an error value is modified to emit an explicit warning in the error
-case.
+Hi Vinod,
 
-Acked-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Uwe Kleine-König <uwe@kleine-koenig.org>
----
- drivers/misc/mei/bus.c           | 5 ++---
- drivers/misc/mei/hdcp/mei_hdcp.c | 7 +++++--
- drivers/nfc/microread/mei.c      | 4 +---
- drivers/nfc/pn544/mei.c          | 4 +---
- drivers/watchdog/mei_wdt.c       | 4 +---
- include/linux/mei_cl_bus.h       | 2 +-
- 6 files changed, 11 insertions(+), 15 deletions(-)
+On Thu, 2021-02-04 at 13:31 +0530, Vinod Koul wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you
+> know the content is safe
+> 
+> On 29-01-21, 14:07, Steen Hegelund wrote:
+> > Add the Microchip Sparx5 ethernet serdes PHY driver for the 6G, 10G
+> > and 25G
+> > interfaces available in the Sparx5 SoC.
+> > 
+> > Signed-off-by: Bjarni Jonasson <bjarni.jonasson@microchip.com>
+> > Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+> > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> > Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> > ---
+> > 
 
-diff --git a/drivers/misc/mei/bus.c b/drivers/misc/mei/bus.c
-index 50d617e7467e..54dddae46705 100644
---- a/drivers/misc/mei/bus.c
-+++ b/drivers/misc/mei/bus.c
-@@ -879,17 +879,16 @@ static int mei_cl_device_remove(struct device *dev)
- {
- 	struct mei_cl_device *cldev = to_mei_cl_device(dev);
- 	struct mei_cl_driver *cldrv = to_mei_cl_driver(dev->driver);
--	int ret = 0;
- 
- 	if (cldrv->remove)
--		ret = cldrv->remove(cldev);
-+		cldrv->remove(cldev);
- 
- 	mei_cldev_unregister_callbacks(cldev);
- 
- 	mei_cl_bus_module_put(cldev);
- 	module_put(THIS_MODULE);
- 
--	return ret;
-+	return 0;
- }
- 
- static ssize_t name_show(struct device *dev, struct device_attribute *a,
-diff --git a/drivers/misc/mei/hdcp/mei_hdcp.c b/drivers/misc/mei/hdcp/mei_hdcp.c
-index 9ae9669e46ea..8447ad4b7d47 100644
---- a/drivers/misc/mei/hdcp/mei_hdcp.c
-+++ b/drivers/misc/mei/hdcp/mei_hdcp.c
-@@ -845,16 +845,19 @@ static int mei_hdcp_probe(struct mei_cl_device *cldev,
- 	return ret;
- }
- 
--static int mei_hdcp_remove(struct mei_cl_device *cldev)
-+static void mei_hdcp_remove(struct mei_cl_device *cldev)
- {
- 	struct i915_hdcp_comp_master *comp_master =
- 						mei_cldev_get_drvdata(cldev);
-+	int ret;
- 
- 	component_master_del(&cldev->dev, &mei_component_master_ops);
- 	kfree(comp_master);
- 	mei_cldev_set_drvdata(cldev, NULL);
- 
--	return mei_cldev_disable(cldev);
-+	ret = mei_cldev_disable(cldev);
-+	if (ret)
-+		dev_warn(&cldev->dev, "mei_cldev_disable() failed\n");
- }
- 
- #define MEI_UUID_HDCP GUID_INIT(0xB638AB7E, 0x94E2, 0x4EA2, 0xA5, \
-diff --git a/drivers/nfc/microread/mei.c b/drivers/nfc/microread/mei.c
-index 5dad8847a9b3..8fa7771085eb 100644
---- a/drivers/nfc/microread/mei.c
-+++ b/drivers/nfc/microread/mei.c
-@@ -44,15 +44,13 @@ static int microread_mei_probe(struct mei_cl_device *cldev,
- 	return 0;
- }
- 
--static int microread_mei_remove(struct mei_cl_device *cldev)
-+static void microread_mei_remove(struct mei_cl_device *cldev)
- {
- 	struct nfc_mei_phy *phy = mei_cldev_get_drvdata(cldev);
- 
- 	microread_remove(phy->hdev);
- 
- 	nfc_mei_phy_free(phy);
--
--	return 0;
- }
- 
- static struct mei_cl_device_id microread_mei_tbl[] = {
-diff --git a/drivers/nfc/pn544/mei.c b/drivers/nfc/pn544/mei.c
-index 579bc599f545..5c10aac085a4 100644
---- a/drivers/nfc/pn544/mei.c
-+++ b/drivers/nfc/pn544/mei.c
-@@ -42,7 +42,7 @@ static int pn544_mei_probe(struct mei_cl_device *cldev,
- 	return 0;
- }
- 
--static int pn544_mei_remove(struct mei_cl_device *cldev)
-+static void pn544_mei_remove(struct mei_cl_device *cldev)
- {
- 	struct nfc_mei_phy *phy = mei_cldev_get_drvdata(cldev);
- 
-@@ -51,8 +51,6 @@ static int pn544_mei_remove(struct mei_cl_device *cldev)
- 	pn544_hci_remove(phy->hdev);
- 
- 	nfc_mei_phy_free(phy);
--
--	return 0;
- }
- 
- static struct mei_cl_device_id pn544_mei_tbl[] = {
-diff --git a/drivers/watchdog/mei_wdt.c b/drivers/watchdog/mei_wdt.c
-index 5391bf3e6b11..53165e49c298 100644
---- a/drivers/watchdog/mei_wdt.c
-+++ b/drivers/watchdog/mei_wdt.c
-@@ -619,7 +619,7 @@ static int mei_wdt_probe(struct mei_cl_device *cldev,
- 	return ret;
- }
- 
--static int mei_wdt_remove(struct mei_cl_device *cldev)
-+static void mei_wdt_remove(struct mei_cl_device *cldev)
- {
- 	struct mei_wdt *wdt = mei_cldev_get_drvdata(cldev);
- 
-@@ -636,8 +636,6 @@ static int mei_wdt_remove(struct mei_cl_device *cldev)
- 	dbgfs_unregister(wdt);
- 
- 	kfree(wdt);
--
--	return 0;
- }
- 
- #define MEI_UUID_WD UUID_LE(0x05B79A6F, 0x4628, 0x4D7F, \
-diff --git a/include/linux/mei_cl_bus.h b/include/linux/mei_cl_bus.h
-index 959ad7d850b4..07f5ef8fc456 100644
---- a/include/linux/mei_cl_bus.h
-+++ b/include/linux/mei_cl_bus.h
-@@ -68,7 +68,7 @@ struct mei_cl_driver {
- 
- 	int (*probe)(struct mei_cl_device *cldev,
- 		     const struct mei_cl_device_id *id);
--	int (*remove)(struct mei_cl_device *cldev);
-+	void (*remove)(struct mei_cl_device *cldev);
- };
- 
- int __mei_cldev_driver_register(struct mei_cl_driver *cldrv,
--- 
-2.29.2
+...
+
+> > sdx5_rmw(SD25G_LANE_LANE_1E_LN_CFG_RXLB_EN_SET(params-
+> > >cfg_rxlb_en),
+> > +              SD25G_LANE_LANE_1E_LN_CFG_RXLB_EN,
+> > +              priv,
+> > +              SD25G_LANE_LANE_1E(sd_index));
+> > +
+> > +     sdx5_rmw(SD25G_LANE_LANE_19_LN_CFG_TXLB_EN_SET(params-
+> > >cfg_txlb_en),
+> > +              SD25G_LANE_LANE_19_LN_CFG_TXLB_EN,
+> > +              priv,
+> > +              SD25G_LANE_LANE_19(sd_index));
+> > +
+> > +     sdx5_rmw(SD25G_LANE_LANE_2E_LN_CFG_RSTN_DFEDIG_SET(0),
+> > +              SD25G_LANE_LANE_2E_LN_CFG_RSTN_DFEDIG,
+> > +              priv,
+> > +              SD25G_LANE_LANE_2E(sd_index));
+> > +
+> > +     sdx5_rmw(SD25G_LANE_LANE_2E_LN_CFG_RSTN_DFEDIG_SET(1),
+> > +              SD25G_LANE_LANE_2E_LN_CFG_RSTN_DFEDIG,
+> > +              priv,
+> > +              SD25G_LANE_LANE_2E(sd_index));
+> > +
+> > +     sdx5_rmw(SD_LANE_25G_SD_LANE_CFG_MACRO_RST_SET(0),
+> > +              SD_LANE_25G_SD_LANE_CFG_MACRO_RST,
+> > +              priv,
+> > +              SD_LANE_25G_SD_LANE_CFG(sd_index));
+> > +
+> > +     sdx5_rmw(SD25G_LANE_LANE_1C_LN_CFG_CDR_RSTN_SET(0),
+> > +              SD25G_LANE_LANE_1C_LN_CFG_CDR_RSTN,
+> > +              priv,
+> > +              SD25G_LANE_LANE_1C(sd_index));
+> 
+> This looks quite terrible :(
+> 
+> Can we do a table here for these and then write the configuration
+> table,
+> that may look better and easy to maintain ?
+
+I will restructure this.
+
+> 
+> > +
+> > +     usleep_range(1000, 2000);
+> > +
+> > +     sdx5_rmw(SD25G_LANE_LANE_1C_LN_CFG_CDR_RSTN_SET(1),
+> > +              SD25G_LANE_LANE_1C_LN_CFG_CDR_RSTN,
+> > +              priv,
+> > +              SD25G_LANE_LANE_1C(sd_index));
+> > +
+> > +     usleep_range(10000, 20000);
+> > +
+> > +     sdx5_rmw(SD25G_LANE_CMU_FF_REGISTER_TABLE_INDEX_SET(0xff),
+> > +              SD25G_LANE_CMU_FF_REGISTER_TABLE_INDEX,
+> > +              priv,
+> > +              SD25G_LANE_CMU_FF(sd_index));
+> > +
+> > +     value = sdx5_rd(priv, SD25G_LANE_CMU_C0(sd_index));
+> > +     value = SD25G_LANE_CMU_C0_PLL_LOL_UDL_GET(value);
+> > +
+> > +     if (value) {
+> > +             dev_err(macro->priv->dev, "25G PLL Loss of Lock:
+> > 0x%x\n", value);
+> > +             ret = -EINVAL;
+> > +     }
+> > +
+> > +     value = sdx5_rd(priv, SD_LANE_25G_SD_LANE_STAT(sd_index));
+> > +     value = SD_LANE_25G_SD_LANE_STAT_PMA_RST_DONE_GET(value);
+> > +
+> > +     if (value != 0x1) {
+> > +             dev_err(macro->priv->dev, "25G PMA Reset failed:
+> > 0x%x\n", value);
+> > +             ret = -EINVAL;
+> 
+> continue on error..?
+
+I will change that.
+
+> 
+> > +     }
+> > +
+> > +     sdx5_rmw(SD25G_LANE_CMU_2A_R_DBG_LOL_STATUS_SET(0x1),
+> > +              SD25G_LANE_CMU_2A_R_DBG_LOL_STATUS,
+> > +              priv,
+> > +              SD25G_LANE_CMU_2A(sd_index));
+> > +
+> > +     sdx5_rmw(SD_LANE_25G_SD_SER_RST_SER_RST_SET(0x0),
+> > +              SD_LANE_25G_SD_SER_RST_SER_RST,
+> > +              priv,
+> > 
+
+...
+
+> > sdx5_inst_rmw(SD10G_LANE_LANE_0E_CFG_RXLB_EN_SET(params-
+> > >cfg_rxlb_en) |
+> > +                   SD10G_LANE_LANE_0E_CFG_TXLB_EN_SET(params-
+> > >cfg_txlb_en),
+> > +                   SD10G_LANE_LANE_0E_CFG_RXLB_EN |
+> > +                   SD10G_LANE_LANE_0E_CFG_TXLB_EN,
+> > +                   sd_inst,
+> > +                   SD10G_LANE_LANE_0E(sd_index));
+> > +
+> > +     sdx5_rmw(SD_LANE_SD_LANE_CFG_MACRO_RST_SET(0),
+> > +              SD_LANE_SD_LANE_CFG_MACRO_RST,
+> > +              priv,
+> > +              SD_LANE_SD_LANE_CFG(sd_lane_tgt));
+> > +
+> > +     sdx5_inst_rmw(SD10G_LANE_LANE_50_CFG_SSC_RESETB_SET(1),
+> > +                   SD10G_LANE_LANE_50_CFG_SSC_RESETB,
+> > +                   sd_inst,
+> > +                   SD10G_LANE_LANE_50(sd_index));
+> > +
+> > +     sdx5_rmw(SD10G_LANE_LANE_50_CFG_SSC_RESETB_SET(1),
+> > +              SD10G_LANE_LANE_50_CFG_SSC_RESETB,
+> > +              priv,
+> > +              SD10G_LANE_LANE_50(sd_index));
+> > +
+> > +     sdx5_rmw(SD_LANE_MISC_SD_125_RST_DIS_SET(params->fx_100),
+> > +              SD_LANE_MISC_SD_125_RST_DIS,
+> > +              priv,
+> > +              SD_LANE_MISC(sd_lane_tgt));
+> > +
+> > +     sdx5_rmw(SD_LANE_MISC_RX_ENA_SET(params->fx_100),
+> > +              SD_LANE_MISC_RX_ENA,
+> > +              priv,
+> > +              SD_LANE_MISC(sd_lane_tgt));
+> > +
+> > +     sdx5_rmw(SD_LANE_MISC_MUX_ENA_SET(params->fx_100),
+> > +              SD_LANE_MISC_MUX_ENA,
+> > +              priv,
+> > +              SD_LANE_MISC(sd_lane_tgt));
+> 
+> Table for this set as well as other places please
+
+I will restructure the code here as well.
+> 
+> --
+> ~Vinod
+
+Thank you for your comments.
+
+BR
+Steen
+
+
 
