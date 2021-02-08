@@ -2,15 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 504AD31349E
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 15:11:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B91DA31349C
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 15:11:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232408AbhBHOKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 09:10:47 -0500
-Received: from mail.baikalelectronics.com ([87.245.175.226]:57234 "EHLO
+        id S232183AbhBHOKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 09:10:25 -0500
+Received: from mail.baikalelectronics.com ([87.245.175.226]:57244 "EHLO
         mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232698AbhBHOE2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 09:04:28 -0500
+        with ESMTP id S231336AbhBHOE3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 09:04:29 -0500
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@st.com>,
@@ -33,9 +33,9 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH 03/20] net: stmmac: Fix false MTL RX overflow handling for higher queues
-Date:   Mon, 8 Feb 2021 17:03:24 +0300
-Message-ID: <20210208140341.9271-4-Sergey.Semin@baikalelectronics.ru>
+Subject: [PATCH 04/20] net: stmmac: Assert reset control after MDIO de-registration
+Date:   Mon, 8 Feb 2021 17:03:25 +0300
+Message-ID: <20210208140341.9271-5-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20210208140341.9271-1-Sergey.Semin@baikalelectronics.ru>
 References: <20210208140341.9271-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -46,55 +46,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Judging by the MAC/MTL-related part of the ISR implementation if MTL IRQs
-status handler returns MTL Rx overflow bit set, the
-stmmac_set_rx_tail_ptr() method will be called for all subsequent queues.
-That most likely isn't what we want. Fix it by just overriding the status
-variable on each loop iteration. Note we can freely break the loop at the
-very beginning if the stmmac_host_mtl_irq_status() method returns -EINVAL,
-because that error means the MTL IRQ status handler isn't available for
-the detected hardware.
+Indeed it's unlikely but MDIO de-registration may still require an access
+to the core registers, which obviously won't be possible in case if the
+interface has been put into the reset state. So move the reset control
+assertion to be executed after the MDIO bus is de-registered.
 
-Fixes: 7bac4e1ec3ca ("net: stmmac: stmmac interrupt treatment prepared for multiple queues")
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-
 ---
-
-Folks, I haven't seen an effect of that bug. The patch has been created
-purely based on the code visual perception. If you think the handler is
-supposed to work like that and I am missing something (though I have much
-doubt about that), just drop this patch.
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 5ee840525824..d45af1ea2565 100644
+index d45af1ea2565..1c40dc26fbf7 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -4149,7 +4149,6 @@ static irqreturn_t stmmac_interrupt(int irq, void *dev_id)
- 	/* To handle GMAC own interrupts */
- 	if ((priv->plat->has_gmac) || xmac) {
- 		int status = stmmac_host_irq_status(priv, priv->hw, &priv->xstats);
--		int mtl_status;
+@@ -5159,10 +5159,10 @@ int stmmac_dvr_remove(struct device *dev)
+ 	stmmac_exit_fs(ndev);
+ #endif
+ 	phylink_destroy(priv->phylink);
+-	reset_control_assert(priv->plat->stmmac_rst);
+ 	if (priv->hw->pcs != STMMAC_PCS_TBI &&
+ 	    priv->hw->pcs != STMMAC_PCS_RTBI)
+ 		stmmac_mdio_unregister(ndev);
++	reset_control_assert(priv->plat->stmmac_rst);
+ 	destroy_workqueue(priv->wq);
+ 	mutex_destroy(&priv->lock);
  
- 		if (unlikely(status)) {
- 			/* For LPI we need to save the tx status */
-@@ -4162,10 +4161,10 @@ static irqreturn_t stmmac_interrupt(int irq, void *dev_id)
- 		for (queue = 0; queue < queues_count; queue++) {
- 			struct stmmac_rx_queue *rx_q = &priv->rx_queue[queue];
- 
--			mtl_status = stmmac_host_mtl_irq_status(priv, priv->hw,
--								queue);
--			if (mtl_status != -EINVAL)
--				status |= mtl_status;
-+			status = stmmac_host_mtl_irq_status(priv, priv->hw,
-+							    queue);
-+			if (status == -EINVAL)
-+				break;
- 
- 			if (status & CORE_IRQ_MTL_RX_OVERFLOW)
- 				stmmac_set_rx_tail_ptr(priv, priv->ioaddr,
 -- 
 2.29.2
 
