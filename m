@@ -2,15 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2BD931341B
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 14:58:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46FAA31342C
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 15:00:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231713AbhBHN6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 08:58:33 -0500
-Received: from mail.baikalelectronics.com ([87.245.175.226]:57072 "EHLO
+        id S232221AbhBHN7X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 08:59:23 -0500
+Received: from mail.baikalelectronics.com ([87.245.175.226]:57070 "EHLO
         mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231898AbhBHN5q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 08:57:46 -0500
+        with ESMTP id S231871AbhBHN5r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 08:57:47 -0500
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Rob Herring <robh+dt@kernel.org>,
         Giuseppe Cavallaro <peppe.cavallaro@st.com>,
@@ -33,9 +33,9 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 09/24] net: stmmac: dwmac-rk: Cleanup STMMAC DT-config in remove cb
-Date:   Mon, 8 Feb 2021 16:55:53 +0300
-Message-ID: <20210208135609.7685-10-Sergey.Semin@baikalelectronics.ru>
+Subject: [PATCH v2 10/24] net: stmmac: dwmac-sti: Cleanup STMMAC DT-config in remove cb
+Date:   Mon, 8 Feb 2021 16:55:54 +0300
+Message-ID: <20210208135609.7685-11-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20210208135609.7685-1-Sergey.Semin@baikalelectronics.ru>
 References: <20210208135609.7685-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -53,22 +53,22 @@ requested.
 Fixes: d2ed0a7755fe ("net: ethernet: stmmac: fix of-node and fixed-link-phydev leaks")
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c | 3 +++
+ drivers/net/ethernet/stmicro/stmmac/dwmac-sti.c | 3 +++
  1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
-index 6ef30252bfe0..01c10ca80f1a 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
-@@ -1433,11 +1433,14 @@ static int rk_gmac_probe(struct platform_device *pdev)
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sti.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sti.c
+index e1b63df6f96f..3454c5eff822 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sti.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sti.c
+@@ -370,11 +370,14 @@ static int sti_dwmac_probe(struct platform_device *pdev)
  
- static int rk_gmac_remove(struct platform_device *pdev)
+ static int sti_dwmac_remove(struct platform_device *pdev)
  {
 +	struct stmmac_priv *priv = netdev_priv(platform_get_drvdata(pdev));
- 	struct rk_priv_data *bsp_priv = get_stmmac_bsp_priv(&pdev->dev);
+ 	struct sti_dwmac *dwmac = get_stmmac_bsp_priv(&pdev->dev);
  	int ret = stmmac_dvr_remove(&pdev->dev);
  
- 	rk_gmac_powerdown(bsp_priv);
+ 	clk_disable_unprepare(dwmac->clk);
  
 +	stmmac_remove_config_dt(pdev, priv->plat);
 +
