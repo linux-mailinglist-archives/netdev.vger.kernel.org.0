@@ -2,106 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03E9C312B94
+	by mail.lfdr.de (Postfix) with ESMTP id 7F3DE312B95
 	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 09:22:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229684AbhBHIWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 03:22:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48314 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229526AbhBHIWD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 03:22:03 -0500
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49384C06174A;
-        Mon,  8 Feb 2021 00:21:23 -0800 (PST)
-Received: by mail-io1-xd32.google.com with SMTP id f6so14080600ioz.5;
-        Mon, 08 Feb 2021 00:21:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=Qbs+ZPZYOplhMksGGYGueYxsgtZWCEBIveGgFou8FGo=;
-        b=FKDdrlcMlEb765ACEyfEfa2AS/UOheZC9GyUADZPKTz0VQ0mez7zDQLTaQnCagiXdH
-         MoovO25p7PLQqf092+46itr3asrDIPXsTSduWmkhFlJC00X2b8KYvUyg4m9iH0bbPEiq
-         SyD9rRQ8HNQjLXxTEN3xgYOjcWBHE6FvIBvzlSFKb00Aujeg+mtXh+s1p5wqZwK54T5b
-         xZpgUPUFTNvukd0hu7rnOXSoytVE2Sn+JcdhT3GQqT4dNztNFJiW0jFviD3gjLNIS9Z7
-         ioRscgpmcv+os3dWbxnl8NM1N5nAfMvfST9GP4lB0IujamCKbKw2WItNaNadgaMX08b5
-         4vcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=Qbs+ZPZYOplhMksGGYGueYxsgtZWCEBIveGgFou8FGo=;
-        b=RwyzrkD0VwkJmoMngrmNkA47/AxQhgKNJsr8EFE3O3Q67TV8VzSBs1UwNaC7kPcuDy
-         uR3ELrNc8EKREmRxPmemUHKgNPJ6TJDq9kvKytaflBEH8dtS6XzNu/eXWqd34DQdUTF4
-         MzpRbuWCW21thYfryCXRpL9UTgEi9OlYBKWJA1vxfxiKXxVcNsTKLfIbzOwSrn9m0M7V
-         hydxJjR9UP23IcqtgcjpLjNwb6Zh71gWLnRiMI0KTzG1ZBLMT/l0vd8pdsBw2GQuXVMO
-         G0XQvsY494U821KuYKl8B0OP3hUhyGopd5GGKz4x5QmNaDtWGheUdeTrObCx1gUZLSrW
-         0l5Q==
-X-Gm-Message-State: AOAM530bOM483jlpOwZaPO0rOCAlhX11jT7uv0+oUeFfcpxbBIRlGFOw
-        NSw6G0zpVgPFR6n/UGjm+MY=
-X-Google-Smtp-Source: ABdhPJx6v+YSPQLvBT6Pt8P61K67QZpAjShsnqF1b3PzbBQk28sowIcbvuEkfjD89cH2vWmnN86WNg==
-X-Received: by 2002:a6b:ed02:: with SMTP id n2mr14601498iog.80.1612772482670;
-        Mon, 08 Feb 2021 00:21:22 -0800 (PST)
-Received: from localhost ([172.243.146.206])
-        by smtp.gmail.com with ESMTPSA id g6sm8489729ilf.3.2021.02.08.00.21.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Feb 2021 00:21:21 -0800 (PST)
-Date:   Mon, 08 Feb 2021 00:21:13 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
-        wangdongdong.6@bytedance.com, jiang.wang@bytedance.com,
-        Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Message-ID: <6020f4793d9b5_cc86820866@john-XPS-13-9370.notmuch>
-In-Reply-To: <20210203041636.38555-2-xiyou.wangcong@gmail.com>
-References: <20210203041636.38555-1-xiyou.wangcong@gmail.com>
- <20210203041636.38555-2-xiyou.wangcong@gmail.com>
-Subject: RE: [Patch bpf-next 01/19] bpf: rename BPF_STREAM_PARSER to
- BPF_SOCK_MAP
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S229720AbhBHIWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 03:22:08 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:15680 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229526AbhBHIWH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 03:22:07 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B6020f4860000>; Mon, 08 Feb 2021 00:21:26 -0800
+Received: from reg-r-vrt-018-180.nvidia.com (172.20.145.6) by
+ HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3; Mon, 8 Feb 2021 08:21:24 +0000
+References: <20210206050240.48410-1-saeed@kernel.org>
+ <20210206050240.48410-2-saeed@kernel.org>
+ <20210206181335.GA2959@horizon.localdomain>
+User-agent: mu4e 1.4.10; emacs 27.1
+From:   Vlad Buslov <vladbu@nvidia.com>
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+CC:     Saeed Mahameed <saeed@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        "Mark Bloch" <mbloch@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [net-next V2 01/17] net/mlx5: E-Switch, Refactor setting source
+ port
+In-Reply-To: <20210206181335.GA2959@horizon.localdomain>
+Date:   Mon, 8 Feb 2021 10:21:21 +0200
+Message-ID: <ygnhtuqngebi.fsf@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1612772486; bh=EOpHsumEErWGX2HEoZxLj3kocUmdX7pbA96L+FoucXk=;
+        h=References:User-agent:From:To:CC:Subject:In-Reply-To:Date:
+         Message-ID:MIME-Version:Content-Type:X-Originating-IP:
+         X-ClientProxiedBy;
+        b=GD/3/mIw1Fm906ZiE6/tNl1gbac/puXSSkTCzEtlhMRjxFJ27DAhyFvTMj6M7iT5I
+         SGRqlncxtUEbbiAPw0kDfu9em0Yi5IqHMqwytSX4i/ZIyY2GyBnVVyAWGOptTkALuT
+         /SRwnOztypqOLm3hbdfmlw/lr8wSGzeKgWmH0RPw96c0MJzrMrpT8VnZ7Oo7asTsuL
+         emJlvWI6ntsF/a1vnca28RaP1kt98fclwwbA8sTaaz/o3609VvGRUjmqBULyYRSl9u
+         DhHK4tlLNSFubua2f3G+ZLowd1m3dUtyqNgqOWpJMF8QbtDoJhltc89Sy940jY96H3
+         z5FK5jTgBKXJg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cong Wang wrote:
-> From: Cong Wang <cong.wang@bytedance.com>
-> 
-> Before we add non-TCP support, it is necessary to rename
-> BPF_STREAM_PARSER as it will be no longer specific to TCP,
-> and it does not have to be a parser either.
-> 
-> This patch renames BPF_STREAM_PARSER to BPF_SOCK_MAP, so
-> that sock_map.c hopefully would be protocol-independent.
-> 
-> Also, improve its Kconfig description to avoid confusion.
-> 
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> Cc: Lorenz Bauer <lmb@cloudflare.com>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> ---
 
-The BPF_STREAM_PARSER config was originally added because we need
-the STREAM_PARSER define and wanted a way to get the 'depends on'
-lines in Kconfig correct.
+On Sat 06 Feb 2021 at 20:13, Marcelo Ricardo Leitner <marcelo.leitner@gmail.com> wrote:
+> Hi,
+>
+> I didn't receive the cover letter, so I'm replying on this one. :-)
+>
+> This is nice. One thing is not clear to me yet. From the samples on
+> the cover letter:
+>
+> $ tc -s filter show dev enp8s0f0_1 ingress
+> filter protocol ip pref 4 flower chain 0
+> filter protocol ip pref 4 flower chain 0 handle 0x1
+>   dst_mac 0a:40:bd:30:89:99
+>   src_mac ca:2e:a7:3f:f5:0f
+>   eth_type ipv4
+>   ip_tos 0/0x3
+>   ip_flags nofrag
+>   in_hw in_hw_count 1
+>         action order 1: tunnel_key  set
+>         src_ip 7.7.7.5
+>         dst_ip 7.7.7.1
+>         ...
+>
+> $ tc -s filter show dev vxlan_sys_4789 ingress
+> filter protocol ip pref 4 flower chain 0
+> filter protocol ip pref 4 flower chain 0 handle 0x1
+>   dst_mac ca:2e:a7:3f:f5:0f
+>   src_mac 0a:40:bd:30:89:99
+>   eth_type ipv4
+>   enc_dst_ip 7.7.7.5
+>   enc_src_ip 7.7.7.1
+>   enc_key_id 98
+>   enc_dst_port 4789
+>   enc_tos 0
+>   ...
+>
+> These operations imply that 7.7.7.5 is configured on some interface on
+> the host. Most likely the VF representor itself, as that aids with ARP
+> resolution. Is that so?
+>
+> Thanks,
+> Marcelo
 
-Rather than rename this, lets reduce its scope to just the set
-of actions that need the STREAM_PARSER, this should be just the
-stream parser programs. We probably should have done this sooner,
-but doing it now will be fine.
+Hi Marcelo,
 
-I can probably draft a quick patch tomorrow if above is not clear.
-It can go into bpf-next outside this series as well to reduce
-the 19 patches a bit.
+The tunnel endpoint IP address is configured on VF that is represented
+by enp8s0f0_0 representor in example rules. The VF is on host.
 
-Thanks,
-John
+Regards,
+Vlad
+
