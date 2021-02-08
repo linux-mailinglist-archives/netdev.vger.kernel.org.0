@@ -2,15 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BC41313414
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 14:58:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E21E313418
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 14:58:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231861AbhBHN5g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 08:57:36 -0500
-Received: from mail.baikalelectronics.com ([87.245.175.226]:56764 "EHLO
+        id S232045AbhBHN6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 08:58:09 -0500
+Received: from mail.baikalelectronics.com ([87.245.175.226]:56784 "EHLO
         mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231774AbhBHN46 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 08:56:58 -0500
+        with ESMTP id S231791AbhBHN5B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 08:57:01 -0500
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Rob Herring <robh+dt@kernel.org>,
         Giuseppe Cavallaro <peppe.cavallaro@st.com>,
@@ -32,11 +32,10 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         <netdev@vger.kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v2 02/24] dt-bindings: net: dwmac: Extend number of PBL values
-Date:   Mon, 8 Feb 2021 16:55:46 +0300
-Message-ID: <20210208135609.7685-3-Sergey.Semin@baikalelectronics.ru>
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 03/24] dt-bindings: net: dwmac: Fix the TSO property declaration
+Date:   Mon, 8 Feb 2021 16:55:47 +0300
+Message-ID: <20210208135609.7685-4-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20210208135609.7685-1-Sergey.Semin@baikalelectronics.ru>
 References: <20210208135609.7685-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -47,63 +46,102 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In accordance with [1] the permitted PBL values can be set as one of [1,
-2, 4, 8, 16, 32]. The rest of the values result in undefined behavior. At
-the same time some of the permitted values can be also invalid depending
-on the controller FIFOs size and the data bus width. Due to having too
-many variables all the possible PBL property constraints can't be
-implemented in the bindings schema, let's extend the set of permitted PBL
-values to be as much as the configuration register supports leaving the
-undefined behaviour cases for developers to handle.
+Indeed the STMMAC driver doesn't take the vendor-specific compatible
+string into account to parse the "snps,tso" boolean property. It just
+makes sure the node is compatible with DW MAC 4.x, 5.x and DW xGMAC
+IP-cores. The original allwinner sunXi bindings file also didn't have the
+TSO-related property declared. Taking all of that into account fix the
+conditional statement so the TSO-property would be evaluated for the
+compatibles having the corresponding IP-core version.
 
-[1] DesignWare Cores Ethernet MAC Universal Databook, Revision 3.73a,
-    October 2013, p. 380.
+While at it move the whole allOf-block from the tail of the binding file
+to the head of it, as it's normally done in the most of the DT schemas.
 
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Reviewed-by: Rob Herring <robh@kernel.org>
+
+---
+
+Note this won't break the bindings description, since the "snps,tso"
+property isn't parsed by the Allwinner SunX GMAC glue driver, but only
+by the generic platform DT-parser.
 
 Changelog v2:
 - Use correct syntax of the JSON pointers, so the later would begin
   with a '/' after the '#'.
 ---
- Documentation/devicetree/bindings/net/snps,dwmac.yaml | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ .../devicetree/bindings/net/snps,dwmac.yaml   | 52 +++++++++----------
+ 1 file changed, 24 insertions(+), 28 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-index 40a002770441..cb68a8dcafd7 100644
+index cb68a8dcafd7..03d58bf9965f 100644
 --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
 +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-@@ -267,23 +267,26 @@ properties:
+@@ -37,6 +37,30 @@ select:
+   required:
+     - compatible
  
-   snps,pbl:
-     description:
--      Programmable Burst Length (tx and rx)
-+      Programmable Burst Length (tx and rx). Note some of these values
-+      can be still invalid due to HW limitations connected with the data
-+      bus width and the FIFOs depth, so a total length of a single DMA
-+      burst shouldn't exceed half the FIFO depth.
-     $ref: /schemas/types.yaml#/definitions/uint32
--    enum: [2, 4, 8]
-+    enum: [1, 2, 4, 8, 16, 32]
++allOf:
++  - $ref: "ethernet-controller.yaml#"
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - snps,dwmac-4.00
++              - snps,dwmac-4.10a
++              - snps,dwmac-4.20a
++              - snps,dwmac-5.10a
++              - snps,dwxgmac
++              - snps,dwxgmac-2.10
++
++      required:
++        - compatible
++    then:
++      properties:
++        snps,tso:
++          $ref: /schemas/types.yaml#/definitions/flag
++          description:
++            Enables the TSO feature otherwise it will be managed by
++            MAC HW capability register.
++
+ properties:
  
-   snps,txpbl:
-     description:
-       Tx Programmable Burst Length. If set, DMA tx will use this
-       value rather than snps,pbl.
-     $ref: /schemas/types.yaml#/definitions/uint32
--    enum: [2, 4, 8]
-+    enum: [1, 2, 4, 8, 16, 32]
+   # We need to include all the compatibles from schemas that will
+@@ -317,34 +341,6 @@ dependencies:
+   snps,reset-active-low: ["snps,reset-gpio"]
+   snps,reset-delay-us: ["snps,reset-gpio"]
  
-   snps,rxpbl:
-     description:
-       Rx Programmable Burst Length. If set, DMA rx will use this
-       value rather than snps,pbl.
-     $ref: /schemas/types.yaml#/definitions/uint32
--    enum: [2, 4, 8]
-+    enum: [1, 2, 4, 8, 16, 32]
+-allOf:
+-  - $ref: "ethernet-controller.yaml#"
+-  - if:
+-      properties:
+-        compatible:
+-          contains:
+-            enum:
+-              - allwinner,sun7i-a20-gmac
+-              - allwinner,sun8i-a83t-emac
+-              - allwinner,sun8i-h3-emac
+-              - allwinner,sun8i-r40-emac
+-              - allwinner,sun8i-v3s-emac
+-              - allwinner,sun50i-a64-emac
+-              - snps,dwmac-4.00
+-              - snps,dwmac-4.10a
+-              - snps,dwmac-4.20a
+-              - snps,dwxgmac
+-              - snps,dwxgmac-2.10
+-              - st,spear600-gmac
+-
+-    then:
+-      properties:
+-        snps,tso:
+-          $ref: /schemas/types.yaml#/definitions/flag
+-          description:
+-            Enables the TSO feature otherwise it will be managed by
+-            MAC HW capability register.
+-
+ additionalProperties: true
  
-   snps,no-pbl-x8:
-     $ref: /schemas/types.yaml#/definitions/flag
+ examples:
 -- 
 2.29.2
 
