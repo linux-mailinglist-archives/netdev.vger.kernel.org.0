@@ -2,98 +2,243 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4149A312AC1
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 07:35:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65D3A312AC7
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 07:36:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229873AbhBHGe1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 01:34:27 -0500
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:48175 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229725AbhBHGcg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 01:32:36 -0500
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailnew.nyi.internal (Postfix) with ESMTP id B22075801BA;
-        Mon,  8 Feb 2021 01:31:35 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Mon, 08 Feb 2021 01:31:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        subject:to:cc:references:from:message-id:date:mime-version
-        :in-reply-to:content-type:content-transfer-encoding; s=fm1; bh=q
-        yHgJypD7UyjQktxsd90zw6xmRVOTfop9RXXOGsXuwI=; b=klaYOGYQpnHUE8HUU
-        sSSe247L3eQh6ZH3D9HaJX0SaJmHkahb4kg5TRnRxb80Ynq/GHTiO2vfBOPOoubr
-        8CmJSWTGZu7doLCOcPn3eF1kA7QchCaapoUbwMe8facrpGxsNVZADWxJUhQb/z74
-        kRmENA8oL4o/EIKAx4qB9MIDXMmNi0zlNFHvUIoy6bBCHvrSqfeoqEdOWHuNTl3Q
-        0buG0oC2UQ8/WJAmM31Mc1UqWzmbyQTgyweVRwHfrTHiGTEWrFCI+3Iv5cCnJVyd
-        yc8CQDfTXcAghThoDpaSQU4+FC5upvGUTFZlPoG2qwyzqE5eWSLvd2mc9hGY5/L5
-        cyPuw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; bh=qyHgJypD7UyjQktxsd90zw6xmRVOTfop9RXXOGsXu
-        wI=; b=VOCyJ4nTludCu2lPGjVWCJ5JJZjPWDhWKCahVTLJS0X2SNoyrnWLFtv1z
-        KQyLkH9qMcz34GI2nyFHYyxgJZ3WilziW6dbtQhmNcVYbM5GRVRQbKW6DC2NpLNh
-        3Lb8kZiCDk/OORkwlzyuRzDwNeyjiXRR2Wym3b1VN4CzsuZhFL/SrbcWPwHtKDW9
-        FWUD4DIxz0lzttradaLVo02TMoiAaEFY6i0eerGKAo/an2dXSUk45UGuAJe+2qJw
-        ZlCgeeczx4vX/6VcA56FWRF7KhIpFR+su0x9VhEGouyy+h20EuE9dPedAU/yiPx4
-        UMrhbrzPYzft8MuLSWA33pdTwE9dQ==
-X-ME-Sender: <xms:x9ogYOynww6tOC8NrNPy05rfT3KysiJ27m4bMZcCferNrHf6hhV9-w>
-    <xme:x9ogYKSjss8887k49ijZX3Wt1tpwGA5tLoSrgqif5TAmQxpsOywWNGO6F8LbtOpxC
-    O3zKehzAbDgDfFz2A>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrhedvgdelgecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefuvfhfhffkffgfgggjtgfgsehtjeertddtfeejnecuhfhrohhmpefurghmuhgv
-    lhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtf
-    frrghtthgvrhhnpefgveffteelheffjeeukedvkedviedtheevgeefkeehueeiieeuteeu
-    gfettdeggeenucfkphepjedtrddufeehrddugeekrdduhedunecuvehluhhsthgvrhfuih
-    iivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshgrmhhuvghlsehshhholhhlrghn
-    ugdrohhrgh
-X-ME-Proxy: <xmx:x9ogYAVdpfj7TsRuHs1E-mxO9xedS1trjuHvV0rAZRCW-QmpBwhFuA>
-    <xmx:x9ogYEiFesu3NDomAFz3mCI_1ZaRzFCXokdFCfx9IDiI2jl86Qq5mQ>
-    <xmx:x9ogYAA0jUHeLeKVJj9OlxLxf8RH1WIwMRHoKTtrWfzOyUnzK7MPcw>
-    <xmx:x9ogYM4c_4N8gChxrZlEuymR1Eewfx6QWhcQa-jiK7gg0j-LkW6VJQ>
-Received: from [70.135.148.151] (70-135-148-151.lightspeed.stlsmo.sbcglobal.net [70.135.148.151])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 010B0240057;
-        Mon,  8 Feb 2021 01:31:34 -0500 (EST)
-Subject: Re: [PATCH] i2c: mv64xxx: Fix check for missing clock
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
+        id S229731AbhBHGfW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 01:35:22 -0500
+Received: from mx13.kaspersky-labs.com ([91.103.66.164]:61690 "EHLO
+        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229745AbhBHGd7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 01:33:59 -0500
+Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 770CB521864;
+        Mon,  8 Feb 2021 09:33:01 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
+        s=mail; t=1612765981;
+        bh=vGJIKcvNyCAWGkZdfQTcfoRfLevMPBJXafQ3HZHSHRk=;
+        h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
+        b=kyoKePY09dLwBk0VkkPtybBspjMtAv2qTGxR56s2dt/wQ4Fa8KOLtma844QTFNVS6
+         H4Nl2XyduoHNP4pkxx5cJH0UKc9dYKczXCnzcShNtXl8/ypS2x9o1SAjbcRPDNJ4HW
+         kYGrPI42AwgzCr8KaAJvpGqIww7AiH4qIUFN070Y=
+Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
+        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id 6E43C521863;
+        Mon,  8 Feb 2021 09:33:00 +0300 (MSK)
+Received: from [10.16.171.77] (10.64.64.121) by hqmailmbx3.avp.ru
+ (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2044.4; Mon, 8 Feb
+ 2021 09:32:59 +0300
+Subject: Re: [RFC PATCH v4 00/17] virtio/vsock: introduce SOCK_SEQPACKET
+ support
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+CC:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@siol.net>,
-        Corentin Labbe <clabbe@baylibre.com>
-Cc:     Ondrej Jirman <megous@megous.com>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@googlegroups.com,
-        Dan Carpenter <dan.carpenter@oracle.com>
-References: <20210208062859.11429-1-samuel@sholland.org>
- <20210208062859.11429-2-samuel@sholland.org>
-From:   Samuel Holland <samuel@sholland.org>
-Message-ID: <4f696b13-2475-49f2-5d75-f2120e159142@sholland.org>
-Date:   Mon, 8 Feb 2021 00:31:34 -0600
-User-Agent: Mozilla/5.0 (X11; Linux ppc64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        Jorgen Hansen <jhansen@vmware.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Alexander Popov <alex.popov@linux.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "stsp2@yandex.ru" <stsp2@yandex.ru>,
+        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
+References: <20210207151259.803917-1-arseny.krasnov@kaspersky.com>
+ <20210207111954-mutt-send-email-mst@kernel.org>
+From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Message-ID: <8bd3789c-8df1-4383-f233-b4b854b30970@kaspersky.com>
+Date:   Mon, 8 Feb 2021 09:32:59 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20210208062859.11429-2-samuel@sholland.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+In-Reply-To: <20210207111954-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.64.64.121]
+X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
+ (10.64.67.243)
+X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.16, Database issued on: 02/06/2021 23:52:08
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 161679 [Feb 06 2021]
+X-KSE-AntiSpam-Info: LuaCore: 422 422 763e61bea9fcfcd94e075081cb96e065bc0509b4
+X-KSE-AntiSpam-Info: Version: 5.9.16.0
+X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
+X-KSE-AntiSpam-Info: {Tracking_content_type, plain}
+X-KSE-AntiSpam-Info: {Tracking_date, moscow}
+X-KSE-AntiSpam-Info: {Tracking_c_tr_enc, eight_bit}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 02/06/2021 23:55:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 2/6/2021 9:17:00 PM
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KLMS-Rule-ID: 52
+X-KLMS-Message-Action: clean
+X-KLMS-AntiSpam-Status: not scanned, disabled by settings
+X-KLMS-AntiSpam-Interceptor-Info: not scanned
+X-KLMS-AntiPhishing: Clean, bases: 2021/02/08 00:52:00
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/02/08 00:27:00 #16141106
+X-KLMS-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/8/21 12:28 AM, Samuel Holland wrote:
-> In commit e5c02cf54154 ("i2c: mv64xxx: Add runtime PM support"), error
-> pointers to optional clocks were replaced by NULL to simplify the resume
-> callback implementation. However, that commit missed that the IS_ERR
-> check in mv64xxx_of_config should be replaced with a NULL check. As a
-> result, the check always passes, even for an invalid device tree.
 
-Sorry, please ignore this unrelated patch. I accidentally copied it to
-the wrong directory before sending this series.
-
-Samuel
+On 07.02.2021 19:20, Michael S. Tsirkin wrote:
+> On Sun, Feb 07, 2021 at 06:12:56PM +0300, Arseny Krasnov wrote:
+>> 	This patchset impelements support of SOCK_SEQPACKET for virtio
+>> transport.
+>> 	As SOCK_SEQPACKET guarantees to save record boundaries, so to
+>> do it, two new packet operations were added: first for start of record
+>>  and second to mark end of record(SEQ_BEGIN and SEQ_END later). Also,
+>> both operations carries metadata - to maintain boundaries and payload
+>> integrity. Metadata is introduced by adding special header with two
+>> fields - message count and message length:
+>>
+>> 	struct virtio_vsock_seq_hdr {
+>> 		__le32  msg_cnt;
+>> 		__le32  msg_len;
+>> 	} __attribute__((packed));
+>>
+>> 	This header is transmitted as payload of SEQ_BEGIN and SEQ_END
+>> packets(buffer of second virtio descriptor in chain) in the same way as
+>> data transmitted in RW packets. Payload was chosen as buffer for this
+>> header to avoid touching first virtio buffer which carries header of
+>> packet, because someone could check that size of this buffer is equal
+>> to size of packet header. To send record, packet with start marker is
+>> sent first(it's header contains length of record and counter), then
+>> counter is incremented and all data is sent as usual 'RW' packets and
+>> finally SEQ_END is sent(it also carries counter of message, which is
+>> counter of SEQ_BEGIN + 1), also after sedning SEQ_END counter is
+>> incremented again. On receiver's side, length of record is known from
+>> packet with start record marker. To check that no packets were dropped
+>> by transport, counters of two sequential SEQ_BEGIN and SEQ_END are
+>> checked(counter of SEQ_END must be bigger that counter of SEQ_BEGIN by
+>> 1) and length of data between two markers is compared to length in
+>> SEQ_BEGIN header.
+>> 	Now as  packets of one socket are not reordered neither on
+>> vsock nor on vhost transport layers, such markers allows to restore
+>> original record on receiver's side. If user's buffer is smaller that
+>> record length, when all out of size data is dropped.
+>> 	Maximum length of datagram is not limited as in stream socket,
+>> because same credit logic is used. Difference with stream socket is
+>> that user is not woken up until whole record is received or error
+>> occurred. Implementation also supports 'MSG_EOR' and 'MSG_TRUNC' flags.
+>> 	Tests also implemented.
+>>
+>>  Arseny Krasnov (17):
+>>   af_vsock: update functions for connectible socket
+>>   af_vsock: separate wait data loop
+>>   af_vsock: separate receive data loop
+>>   af_vsock: implement SEQPACKET receive loop
+>>   af_vsock: separate wait space loop
+>>   af_vsock: implement send logic for SEQPACKET
+>>   af_vsock: rest of SEQPACKET support
+>>   af_vsock: update comments for stream sockets
+>>   virtio/vsock: dequeue callback for SOCK_SEQPACKET
+>>   virtio/vsock: fetch length for SEQPACKET record
+>>   virtio/vsock: add SEQPACKET receive logic
+>>   virtio/vsock: rest of SOCK_SEQPACKET support
+>>   virtio/vsock: setup SEQPACKET ops for transport
+>>   vhost/vsock: setup SEQPACKET ops for transport
+>>   vsock_test: add SOCK_SEQPACKET tests
+>>   loopback/vsock: setup SEQPACKET ops for transport
+>>   virtio/vsock: simplify credit update function API
+>>
+>>  drivers/vhost/vsock.c                   |   8 +-
+>>  include/linux/virtio_vsock.h            |  15 +
+>>  include/net/af_vsock.h                  |   9 +
+>>  include/uapi/linux/virtio_vsock.h       |  16 +
+>>  net/vmw_vsock/af_vsock.c                | 588 +++++++++++++++-------
+>>  net/vmw_vsock/virtio_transport.c        |   5 +
+>>  net/vmw_vsock/virtio_transport_common.c | 316 ++++++++++--
+>>  net/vmw_vsock/vsock_loopback.c          |   5 +
+>>  tools/testing/vsock/util.c              |  32 +-
+>>  tools/testing/vsock/util.h              |   3 +
+>>  tools/testing/vsock/vsock_test.c        | 126 +++++
+>>  11 files changed, 895 insertions(+), 228 deletions(-)
+>>
+>>  TODO:
+>>  - What to do, when server doesn't support SOCK_SEQPACKET. In current
+>>    implementation RST is replied in the same way when listening port
+>>    is not found. I think that current RST is enough,because case when
+>>    server doesn't support SEQ_PACKET is same when listener missed(e.g.
+>>    no listener in both cases).
+>    - virtio spec patch
+Ok
+>
+>>  v3 -> v4:
+>>  - callbacks for loopback transport
+>>  - SEQPACKET specific metadata moved from packet header to payload
+>>    and called 'virtio_vsock_seq_hdr'
+>>  - record integrity check:
+>>    1) SEQ_END operation was added, which marks end of record.
+>>    2) Both SEQ_BEGIN and SEQ_END carries counter which is incremented
+>>       on every marker send.
+>>  - af_vsock.c: socket operations for STREAM and SEQPACKET call same
+>>    functions instead of having own "gates" differs only by names:
+>>    'vsock_seqpacket/stream_getsockopt()' now replaced with
+>>    'vsock_connectible_getsockopt()'.
+>>  - af_vsock.c: 'seqpacket_dequeue' callback returns error and flag that
+>>    record ready. There is no need to return number of copied bytes,
+>>    because case when record received successfully is checked at virtio
+>>    transport layer, when SEQ_END is processed. Also user doesn't need
+>>    number of copied bytes, because 'recv()' from SEQPACKET could return
+>>    error, length of users's buffer or length of whole record(both are
+>>    known in af_vsock.c).
+>>  - af_vsock.c: both wait loops in af_vsock.c(for data and space) moved
+>>    to separate functions because now both called from several places.
+>>  - af_vsock.c: 'vsock_assign_transport()' checks that 'new_transport'
+>>    pointer is not NULL and returns 'ESOCKTNOSUPPORT' instead of 'ENODEV'
+>>    if failed to use transport.
+>>  - tools/testing/vsock/vsock_test.c: rename tests
+>>
+>>  v2 -> v3:
+>>  - patches reorganized: split for prepare and implementation patches
+>>  - local variables are declared in "Reverse Christmas tree" manner
+>>  - virtio_transport_common.c: valid leXX_to_cpu() for vsock header
+>>    fields access
+>>  - af_vsock.c: 'vsock_connectible_*sockopt()' added as shared code
+>>    between stream and seqpacket sockets.
+>>  - af_vsock.c: loops in '__vsock_*_recvmsg()' refactored.
+>>  - af_vsock.c: 'vsock_wait_data()' refactored.
+>>
+>>  v1 -> v2:
+>>  - patches reordered: af_vsock.c related changes now before virtio vsock
+>>  - patches reorganized: more small patches, where +/- are not mixed
+>>  - tests for SOCK_SEQPACKET added
+>>  - all commit messages updated
+>>  - af_vsock.c: 'vsock_pre_recv_check()' inlined to
+>>    'vsock_connectible_recvmsg()'
+>>  - af_vsock.c: 'vsock_assign_transport()' returns ENODEV if transport
+>>    was not found
+>>  - virtio_transport_common.c: transport callback for seqpacket dequeue
+>>  - virtio_transport_common.c: simplified
+>>    'virtio_transport_recv_connected()'
+>>  - virtio_transport_common.c: send reset on socket and packet type
+>> 			      mismatch.
+>>
+>> -- 
+>> 2.25.1
+>
