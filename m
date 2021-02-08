@@ -2,87 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC376312F4A
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 11:44:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14848312F59
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 11:46:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232381AbhBHKmj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 05:42:39 -0500
-Received: from so15.mailgun.net ([198.61.254.15]:16543 "EHLO so15.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232568AbhBHKkY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Feb 2021 05:40:24 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1612780801; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=rsWO5gVXQJgQ7C6h+zCZSstEnkqvJD9Aka1MxQopoAM=;
- b=CU1mg2QeJVwT4Hp62PLkwfW/7/v/IiIHjVqN5mp2FpG+vlZmoWE1/dhj2ABT1jcU7VAP/o0u
- AXS9uKBj9YWEZiHKDsDHGMaQPl63jjcPYmzVhha9cLEcD5bJQKXe6uZu84LSGjSdO3Nbj5rj
- NvcH7kdTDZDiRnYtvVZvEDv7xsM=
-X-Mailgun-Sending-Ip: 198.61.254.15
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-west-2.postgun.com with SMTP id
- 602114e58e43a988b7a023a7 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 08 Feb 2021 10:39:33
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id CF51AC43464; Mon,  8 Feb 2021 10:39:32 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7F72AC433ED;
-        Mon,  8 Feb 2021 10:39:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7F72AC433ED
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S232555AbhBHKo4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 05:44:56 -0500
+Received: from mail.xenproject.org ([104.130.215.37]:50004 "EHLO
+        mail.xenproject.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232539AbhBHKl5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 05:41:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=xen.org;
+        s=20200302mail; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
+        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject;
+        bh=IQPlMuHphzCxemau7EPG8KdIBVritDvW1xuyCMc3fhU=; b=sC+AR9iTEqeFWbDuKWB5Y35WRU
+        0RbDCYD8HqDZ5+YavvWLxIKZjjBgShWRRynceb425BC8VjwpIVUA9HMJAGLCISgOYcuyi1zxNzhqU
+        swR71F4tJ9r/e/ArJUxgAMKjDK+qn++/QfBSK2/QATA/oMqTo/0taQ58egBGhScfddCo=;
+Received: from xenbits.xenproject.org ([104.239.192.120])
+        by mail.xenproject.org with esmtp (Exim 4.92)
+        (envelope-from <julien@xen.org>)
+        id 1l93yJ-0001Vr-NE; Mon, 08 Feb 2021 10:40:47 +0000
+Received: from [54.239.6.177] (helo=a483e7b01a66.ant.amazon.com)
+        by xenbits.xenproject.org with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.92)
+        (envelope-from <julien@xen.org>)
+        id 1l93yJ-0004LV-Ej; Mon, 08 Feb 2021 10:40:47 +0000
+Subject: Re: [PATCH 0/7] xen/events: bug fixes and some diagnostic aids
+To:     =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>,
+        xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
+        linux-block@vger.kernel.org, netdev@vger.kernel.org,
+        linux-scsi@vger.kernel.org
+Cc:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        stable@vger.kernel.org,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        =?UTF-8?Q?Roger_Pau_Monn=c3=a9?= <roger.pau@citrix.com>,
+        Jens Axboe <axboe@kernel.dk>, Wei Liu <wei.liu@kernel.org>,
+        Paul Durrant <paul@xen.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20210206104932.29064-1-jgross@suse.com>
+ <bd63694e-ac0c-7954-ec00-edad05f8da1c@xen.org>
+ <eeb62129-d9fc-2155-0e0f-aff1fbb33fbc@suse.com>
+ <fcf3181b-3efc-55f5-687c-324937b543e6@xen.org>
+ <7aaeeb3d-1e1b-6166-84e9-481153811b62@suse.com>
+ <6f547bb5-777a-6fc2-eba2-cccb4adfca87@xen.org>
+ <0d623c98-a714-1639-cc53-f58ba3f08212@suse.com>
+From:   Julien Grall <julien@xen.org>
+Message-ID: <28399fd1-9fe8-f31a-6ee8-e78de567155b@xen.org>
+Date:   Mon, 8 Feb 2021 10:40:44 +0000
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] rtlwifi: rtl8192se: remove redundant initialization of
- variable rtstatus
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20210128171048.644669-1-colin.king@canonical.com>
-References: <20210128171048.644669-1-colin.king@canonical.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     Ping-Ke Shih <pkshih@realtek.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20210208103932.CF51AC43464@smtp.codeaurora.org>
-Date:   Mon,  8 Feb 2021 10:39:32 +0000 (UTC)
+In-Reply-To: <0d623c98-a714-1639-cc53-f58ba3f08212@suse.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Colin King <colin.king@canonical.com> wrote:
+Hi Juergen,
 
-> From: Colin Ian King <colin.king@canonical.com>
+On 08/02/2021 10:22, Jürgen Groß wrote:
+> On 08.02.21 10:54, Julien Grall wrote:
+>> ... I don't really see how the difference matter here. The idea is to 
+>> re-use what's already existing rather than trying to re-invent the 
+>> wheel with an extra lock (or whatever we can come up).
 > 
-> The variable rtstatu is being initialized with a value that is never
-> read and it is being updated later with a new value.  The initialization
-> is redundant and can be removed.
-> 
-> Addresses-Coverity: ("Unused value")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> Acked-by: Willem de Bruijn <willemb@google.com>
+> The difference is that the race is occurring _before_ any IRQ is
+> involved. So I don't see how modification of IRQ handling would help.
 
-Patch applied to wireless-drivers-next.git, thanks.
+Roughly our current IRQ handling flow (handle_eoi_irq()) looks like:
 
-711fa16f1dfe rtlwifi: rtl8192se: remove redundant initialization of variable rtstatus
+if ( irq in progress )
+{
+   set IRQS_PENDING
+   return;
+}
+
+do
+{
+   clear IRQS_PENDING
+   handle_irq()
+} while (IRQS_PENDING is set)
+
+IRQ handling flow like handle_fasteoi_irq() looks like:
+
+if ( irq in progress )
+   return;
+
+handle_irq()
+
+The latter flow would catch "spurious" interrupt and ignore them. So it 
+would handle nicely the race when changing the event affinity.
+
+Cheers,
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20210128171048.644669-1-colin.king@canonical.com/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+Julien Grall
