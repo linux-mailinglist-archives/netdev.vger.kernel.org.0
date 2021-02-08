@@ -2,61 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71DEA313F36
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 20:38:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85F2C313F43
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 20:40:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236345AbhBHTha (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 14:37:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41494 "EHLO mail.kernel.org"
+        id S235343AbhBHTij (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 14:38:39 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:56178 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235286AbhBHTgQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Feb 2021 14:36:16 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D42B364E85;
-        Mon,  8 Feb 2021 19:35:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612812935;
-        bh=dKwjlNm+i5RciyQ00XGdrJFeGKcf1FLx4AW0D7t73Ck=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OKTyWXW/DPHe+OgplOgQf/rsaTUMYDTd01QhWMLXnLI6dL2/HY1mghC3l6wK0EQ/O
-         TwWMbXIRW+b38ItfeVQphMPBYsW3M1Zs0Ys50r2+OSEEKcM2dGuVa3zKhKbsZ/tgQH
-         RsWJBXDWyPinF3OnGJgyAsxWCA7anVv1QLa7elWq6uDjfAaHn+xqkHfUdiC1lzxEUU
-         98Gj4yqOuD/QadXwCJIdLTUVQV0b9wQ9FNM3RzvDhZVcuPysTTlYtBnOugD4UE393G
-         LUv2ZrYsm0JRvGFBD/MndKBmza9D+OgLefIkGjWbonSPoBkHrdBf3mFb0RPLRzFyXR
-         +8CbCQR//vSRg==
-Date:   Mon, 8 Feb 2021 11:35:34 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     Simon Wunderlich <sw@simonwunderlich.de>, davem@davemloft.net,
-        netdev@vger.kernel.org, b.a.t.m.a.n@lists.open-mesh.org,
-        Sven Eckelmann <sven@narfation.org>
-Subject: Re: [PATCH 4/4] batman-adv: Fix names for kernel-doc blocks
-Message-ID: <20210208113534.5a1a11ae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <44df86a7-e7a9-246a-e941-a7ec6f4c8774@infradead.org>
-References: <20210208165938.13262-1-sw@simonwunderlich.de>
-        <20210208165938.13262-5-sw@simonwunderlich.de>
-        <44df86a7-e7a9-246a-e941-a7ec6f4c8774@infradead.org>
+        id S236371AbhBHThW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Feb 2021 14:37:22 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1l9CKn-004vUw-8i; Mon, 08 Feb 2021 20:36:33 +0100
+Date:   Mon, 8 Feb 2021 20:36:33 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Vyacheslav Mitrofanov 
+        <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 00/16] net: stmmac: Add DW MAC GPIOs and Baikal-T1 GMAC
+ support
+Message-ID: <YCGSwZnSXIz5Ssef@lunn.ch>
+References: <20210208140820.10410-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210208140820.10410-1-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 8 Feb 2021 10:00:48 -0800 Randy Dunlap wrote:
-> On 2/8/21 8:59 AM, Simon Wunderlich wrote:
-> > From: Sven Eckelmann <sven@narfation.org>
-> > 
-> > kernel-doc can only correctly identify the documented function or struct
-> > when the name in the first kernel-doc line references it. But some of the
-> > kernel-doc blocks referenced a different function/struct then it actually
-> > documented.
-> > 
-> > Signed-off-by: Sven Eckelmann <sven@narfation.org>
-> > Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>  
-> 
-> Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
+On Mon, Feb 08, 2021 at 05:08:04PM +0300, Serge Semin wrote:
 
-Thanks!
+Hi Serge
 
-Just FWIW since this is a pull request I can't add tags on individual
-patches in git, but it will be recorded on the list, I guess..
+I suggest you split this patchset up. This uses the generic GPIO
+framework, which is great. But that also means you should be Cc: the
+GPIO subsystem maintainers and list. But you don't want to spam them
+with all the preparation work, which has little to do with the GPIO
+code.
+
+So please split the actual GPIO driver and DT binding patches from the
+rest. netdev can review the preparation work, with a comment in the
+0/X patch about what the big picture is, and then afterwards review
+the GPIO patchset with a wider audience.
+
+And as Jakub pointed out, nobody is going to review 60 patches all at
+once. Please submit one series at a time, get it merged, and then
+move onto the next.
+
+	 Andrew
