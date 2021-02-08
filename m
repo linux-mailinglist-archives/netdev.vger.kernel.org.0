@@ -2,190 +2,268 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6649B312D3E
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 10:28:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 370C8312D4B
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 10:30:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231630AbhBHJ1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 04:27:37 -0500
-Received: from esa1.mentor.iphmx.com ([68.232.129.153]:40810 "EHLO
-        esa1.mentor.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230239AbhBHJZa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 04:25:30 -0500
-IronPort-SDR: hB1Nvw8g4LQrxTCq/pK8/XsC+hJJ3/WH491QQc2C+afwk9h0mm0rDbBcnmn/KQZSsOZw7r4tyW
- l62a1B0rvKpz4I51ct4IblpMHGGqJbYmEVAypr2VgUK6CvVNzzyGAHgGAd7czJI+b3yK9ChzMP
- cuzCDUw5qTNOYfzl6eI5stgnYRP8LBwttWKjoyjCpqkQYIrc/Dq2lDqaoDye8J/M7cYwrnzNvT
- tHBxRvuKPp/UK2XGliFFVoimJiOMD5vwffjj5lBRzE5X/FOCfq11xT7nAl0+itfsfc/fsHhXs0
- wl8=
-X-IronPort-AV: E=Sophos;i="5.81,161,1610438400"; 
-   d="scan'208,223";a="60168842"
-Received: from orw-gwy-01-in.mentorg.com ([192.94.38.165])
-  by esa1.mentor.iphmx.com with ESMTP; 08 Feb 2021 01:24:17 -0800
-IronPort-SDR: YyXUU93KmTI2N2Up/kJyjsKZcvO36P3q4bCEdg/cj2VXg5/kQNgnhV+Dc6+ncsmoNjrde9Hnk7
- N08aPXP9x2JH9zv9SBGwqZ0J7wrx+DcKnkbzKHQ9sitU3CXJ6ew+0vdnFW6uX18LkabMgEuzKd
- 7TTmQj7q0moSQAL4PwTUINr5xBjZre9jbNix1VuE1BXyr8jzhcsmHUe+wmXiQoKlybfxANnLjN
- ppn5GvLlLmOSaFl1pn+q62be1Ckm4z686besYcsQVjUetRYREy43Hl9KWTFoTnYSWEbkB/3pJ+
- 7xY=
-From:   "Schmid, Carsten" <Carsten_Schmid@mentor.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "weiwan@google.com" <weiwan@google.com>,
-        "idosch@idosch.org" <idosch@idosch.org>,
-        "jesse@mbuki-mvuki.org" <jesse@mbuki-mvuki.org>,
-        "kafai@fb.com" <kafai@fb.com>,
-        "dsahern@gmail.com" <dsahern@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: AW: Where is this patch buried?
-Thread-Topic: Where is this patch buried?
-Thread-Index: AQHW/fIkZ019VAXYJE+A3ji1EQtU3KpN8pgAgAAFj1U=
-Date:   Mon, 8 Feb 2021 09:24:11 +0000
-Message-ID: <1612776251858.30522@mentor.com>
-References: <7953a4158fd14aabbcfbad8365231961@SVR-IES-MBX-03.mgc.mentorg.com>,<YCD6/OByXFRyuR71@kroah.com>
-In-Reply-To: <YCD6/OByXFRyuR71@kroah.com>
-Accept-Language: de-DE, en-IE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach: yes
-X-MS-TNEF-Correlator: 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [137.202.0.90]
-Content-Type: multipart/mixed; boundary="_002_161277625185830522mentorcom_"
+        id S230477AbhBHJaf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 04:30:35 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:57659 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231666AbhBHJ1y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 04:27:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612776387;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hYNmLVWjlxT+k3aE7QT+IAQgIjwsIKvrF+0CAZ8krTw=;
+        b=MYg2BY+4qJXF388ilL5YLzk0TFEgG/3BkN20zPIFHnwFYrm+Ngj7HQRj6dghoPsLKy6S9Y
+        nxaouX7yRUm/bcE9b6p7vcf0sOJQn1qOExPgstyx2f0mLMLX5BxMdocClRQRE5wlrRNj8x
+        W7CEOsF+5yxUS9WT05G3pImIdhkjsfs=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-513-C79AO-vBO_iekZiMEZmVAg-1; Mon, 08 Feb 2021 04:26:26 -0500
+X-MC-Unique: C79AO-vBO_iekZiMEZmVAg-1
+Received: by mail-ej1-f72.google.com with SMTP id n25so11378303ejd.5
+        for <netdev@vger.kernel.org>; Mon, 08 Feb 2021 01:26:26 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=hYNmLVWjlxT+k3aE7QT+IAQgIjwsIKvrF+0CAZ8krTw=;
+        b=M4H+gcuTXeCLACHvcm4E61PGlhU5r3qxSuWfRUWlMrImzaqBS6+jKo4k1WXLwE978+
+         1TIaj0deE1vu4W95dGcudwgiIag6W032AnhYV2Bj8NiiJVpG1HZwTHvm+pJpiIh2cKbj
+         FC4rWu0XpxxhZuhO+2UaSrvTDkA3Dy/JGQ+9PwyN8a+XEfiMl6TioF9Rq9IdtyWQQKQK
+         DZueDW9fwEp0+xD0TcTbb9M2nZ081JsGFD6tuomURedm1mbf1Q/JYfus4a1WtojXGhjv
+         ips57xMh2YesLclrkIovG/636Dkut4M9w4cnNrUgTbnQ252znsHq7FLj0NaHU2VJVC/n
+         Mnzg==
+X-Gm-Message-State: AOAM531kMI/Nqkcl4BilMtDBjXXnxYPIfVZGTN6JifQ9ZOB5sSmXbcLE
+        KuBAhdiNORzL+CY8hJqSivNbCf4Uciwwt5YgJj9x7QYz/zzdaz12TDhlFbU+BS6Szs4udbhicDt
+        84XOITyAbHghKgbNh
+X-Received: by 2002:a17:906:eca5:: with SMTP id qh5mr15724842ejb.161.1612776385083;
+        Mon, 08 Feb 2021 01:26:25 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyibNH61CwO8ms8feBlBM9dIeJY33HJUrYrlTUUoVvEXAxh6h+ELKUu+dYdQYCPdzKvo2AxkQ==
+X-Received: by 2002:a17:906:eca5:: with SMTP id qh5mr15724824ejb.161.1612776384845;
+        Mon, 08 Feb 2021 01:26:24 -0800 (PST)
+Received: from redhat.com (bzq-79-180-2-31.red.bezeqint.net. [79.180.2.31])
+        by smtp.gmail.com with ESMTPSA id y13sm4822537eds.25.2021.02.08.01.26.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Feb 2021 01:26:23 -0800 (PST)
+Date:   Mon, 8 Feb 2021 04:26:20 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Eli Cohen <elic@nvidia.com>, Si-Wei Liu <si-wei.liu@oracle.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lulu@redhat.com
+Subject: Re: [PATCH v1] vdpa/mlx5: Restore the hardware used index after
+ change map
+Message-ID: <20210208042512-mutt-send-email-mst@kernel.org>
+References: <20210204073618.36336-1-elic@nvidia.com>
+ <81f5ce4f-cdb0-26cd-0dce-7ada824b1b86@oracle.com>
+ <f2206fa2-0ddc-1858-54e7-71614b142e46@redhat.com>
+ <20210208063736.GA166546@mtl-vdi-166.wap.labs.mlnx>
+ <0d592ed0-3cea-cfb0-9b7b-9d2755da3f12@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <0d592ed0-3cea-cfb0-9b7b-9d2755da3f12@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---_002_161277625185830522mentorcom_
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+On Mon, Feb 08, 2021 at 05:04:27PM +0800, Jason Wang wrote:
+> 
+> On 2021/2/8 下午2:37, Eli Cohen wrote:
+> > On Mon, Feb 08, 2021 at 12:27:18PM +0800, Jason Wang wrote:
+> > > On 2021/2/6 上午7:07, Si-Wei Liu wrote:
+> > > > 
+> > > > On 2/3/2021 11:36 PM, Eli Cohen wrote:
+> > > > > When a change of memory map occurs, the hardware resources are destroyed
+> > > > > and then re-created again with the new memory map. In such case, we need
+> > > > > to restore the hardware available and used indices. The driver failed to
+> > > > > restore the used index which is added here.
+> > > > > 
+> > > > > Also, since the driver also fails to reset the available and used
+> > > > > indices upon device reset, fix this here to avoid regression caused by
+> > > > > the fact that used index may not be zero upon device reset.
+> > > > > 
+> > > > > Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5
+> > > > > devices")
+> > > > > Signed-off-by: Eli Cohen <elic@nvidia.com>
+> > > > > ---
+> > > > > v0 -> v1:
+> > > > > Clear indices upon device reset
+> > > > > 
+> > > > >    drivers/vdpa/mlx5/net/mlx5_vnet.c | 18 ++++++++++++++++++
+> > > > >    1 file changed, 18 insertions(+)
+> > > > > 
+> > > > > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > > b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > > index 88dde3455bfd..b5fe6d2ad22f 100644
+> > > > > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > > @@ -87,6 +87,7 @@ struct mlx5_vq_restore_info {
+> > > > >        u64 device_addr;
+> > > > >        u64 driver_addr;
+> > > > >        u16 avail_index;
+> > > > > +    u16 used_index;
+> > > > >        bool ready;
+> > > > >        struct vdpa_callback cb;
+> > > > >        bool restore;
+> > > > > @@ -121,6 +122,7 @@ struct mlx5_vdpa_virtqueue {
+> > > > >        u32 virtq_id;
+> > > > >        struct mlx5_vdpa_net *ndev;
+> > > > >        u16 avail_idx;
+> > > > > +    u16 used_idx;
+> > > > >        int fw_state;
+> > > > >          /* keep last in the struct */
+> > > > > @@ -804,6 +806,7 @@ static int create_virtqueue(struct mlx5_vdpa_net
+> > > > > *ndev, struct mlx5_vdpa_virtque
+> > > > >          obj_context = MLX5_ADDR_OF(create_virtio_net_q_in, in,
+> > > > > obj_context);
+> > > > >        MLX5_SET(virtio_net_q_object, obj_context, hw_available_index,
+> > > > > mvq->avail_idx);
+> > > > > +    MLX5_SET(virtio_net_q_object, obj_context, hw_used_index,
+> > > > > mvq->used_idx);
+> > > > >        MLX5_SET(virtio_net_q_object, obj_context,
+> > > > > queue_feature_bit_mask_12_3,
+> > > > >             get_features_12_3(ndev->mvdev.actual_features));
+> > > > >        vq_ctx = MLX5_ADDR_OF(virtio_net_q_object, obj_context,
+> > > > > virtio_q_context);
+> > > > > @@ -1022,6 +1025,7 @@ static int connect_qps(struct mlx5_vdpa_net
+> > > > > *ndev, struct mlx5_vdpa_virtqueue *m
+> > > > >    struct mlx5_virtq_attr {
+> > > > >        u8 state;
+> > > > >        u16 available_index;
+> > > > > +    u16 used_index;
+> > > > >    };
+> > > > >      static int query_virtqueue(struct mlx5_vdpa_net *ndev, struct
+> > > > > mlx5_vdpa_virtqueue *mvq,
+> > > > > @@ -1052,6 +1056,7 @@ static int query_virtqueue(struct
+> > > > > mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueu
+> > > > >        memset(attr, 0, sizeof(*attr));
+> > > > >        attr->state = MLX5_GET(virtio_net_q_object, obj_context, state);
+> > > > >        attr->available_index = MLX5_GET(virtio_net_q_object,
+> > > > > obj_context, hw_available_index);
+> > > > > +    attr->used_index = MLX5_GET(virtio_net_q_object, obj_context,
+> > > > > hw_used_index);
+> > > > >        kfree(out);
+> > > > >        return 0;
+> > > > >    @@ -1535,6 +1540,16 @@ static void teardown_virtqueues(struct
+> > > > > mlx5_vdpa_net *ndev)
+> > > > >        }
+> > > > >    }
+> > > > >    +static void clear_virtqueues(struct mlx5_vdpa_net *ndev)
+> > > > > +{
+> > > > > +    int i;
+> > > > > +
+> > > > > +    for (i = ndev->mvdev.max_vqs - 1; i >= 0; i--) {
+> > > > > +        ndev->vqs[i].avail_idx = 0;
+> > > > > +        ndev->vqs[i].used_idx = 0;
+> > > > > +    }
+> > > > > +}
+> > > > > +
+> > > > >    /* TODO: cross-endian support */
+> > > > >    static inline bool mlx5_vdpa_is_little_endian(struct mlx5_vdpa_dev
+> > > > > *mvdev)
+> > > > >    {
+> > > > > @@ -1610,6 +1625,7 @@ static int save_channel_info(struct
+> > > > > mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqu
+> > > > >            return err;
+> > > > >          ri->avail_index = attr.available_index;
+> > > > > +    ri->used_index = attr.used_index;
+> > > > >        ri->ready = mvq->ready;
+> > > > >        ri->num_ent = mvq->num_ent;
+> > > > >        ri->desc_addr = mvq->desc_addr;
+> > > > > @@ -1654,6 +1670,7 @@ static void restore_channels_info(struct
+> > > > > mlx5_vdpa_net *ndev)
+> > > > >                continue;
+> > > > >              mvq->avail_idx = ri->avail_index;
+> > > > > +        mvq->used_idx = ri->used_index;
+> > > > >            mvq->ready = ri->ready;
+> > > > >            mvq->num_ent = ri->num_ent;
+> > > > >            mvq->desc_addr = ri->desc_addr;
+> > > > > @@ -1768,6 +1785,7 @@ static void mlx5_vdpa_set_status(struct
+> > > > > vdpa_device *vdev, u8 status)
+> > > > >        if (!status) {
+> > > > >            mlx5_vdpa_info(mvdev, "performing device reset\n");
+> > > > >            teardown_driver(ndev);
+> > > > > +        clear_virtqueues(ndev);
+> > > > The clearing looks fine at the first glance, as it aligns with the other
+> > > > state cleanups floating around at the same place. However, the thing is
+> > > > get_vq_state() is supposed to be called right after to get sync'ed with
+> > > > the latest internal avail_index from device while vq is stopped. The
+> > > > index was saved in the driver software at vq suspension, but before the
+> > > > virtq object is destroyed. We shouldn't clear the avail_index too early.
+> > > 
+> > > Good point.
+> > > 
+> > > There's a limitation on the virtio spec and vDPA framework that we can not
+> > > simply differ device suspending from device reset.
+> > > 
+> > Are you talking about live migration where you reset the device but
+> > still want to know how far it progressed in order to continue from the
+> > same place in the new VM?
+> 
+> 
+> Yes. So if we want to support live migration at we need:
+> 
+> in src node:
+> 1) suspend the device
+> 2) get last_avail_idx via get_vq_state()
+> 
+> in the dst node:
+> 3) set last_avail_idx via set_vq_state()
+> 4) resume the device
+> 
+> So you can see, step 2 requires the device/driver not to forget the
+> last_avail_idx.
+> 
+> The annoying thing is that, in the virtio spec there's no definition of
+> device suspending. So we reuse set_status(0) right now for vq suspending.
+> Then if we forget last_avail_idx in set_status(0), it will break the
+> assumption of step 2).
+> 
+> 
+> > 
+> > > Need to think about that. I suggest a new state in [1], the issue is that
+> > > people doesn't like the asynchronous API that it introduces.
+> > > 
+> > > 
+> > > > Possibly it can be postponed to where VIRTIO_CONFIG_S_DRIVER_OK gets set
+> > > > again, i.e. right before the setup_driver() in mlx5_vdpa_set_status()?
+> > > 
+> > > Looks like a good workaround.
+> 
+> 
+> Rethink of this, this won't work for the step 4), if we reuse the S_DRING_OK
+> for resuming.
+> 
+> The most clean way is to invent the feature in virtio spec and implement
+> that in the driver.
+> 
+> Thanks
 
->> Hi Greg,
->>
->> in kernel 4.14 i have seen a NULL pointer deref in
->> [65064.613465] RIP: 0010:ip_route_output_key_hash_rcu+0x755/0x850
->> (i have a core dump and detailed analysis)
->>
->> That looks like this patch could have prevented it:
->>
->> https://www.spinics.net/lists/stable-commits/msg133055.html
->>
->> this one was queued for 4.14, but i can't find it in git tree?
->> Any idea who/what buried this one?
->>
->> In 4.19 it is present.
->>
->> Because our customer uses 4.14 (going to 4.14.212 in a few days) i kindl=
-y want to
->> ask why this patch hasn't entered 4.14.
->
-> Because it breaks the build?  Try it yourself and see what happens :)
+Given it's between parts of device (between qemu and host kernel)
+I don't think we need it in the spec even. Just add a new ioctl.
 
-yep. rt_add_uncached_list is implemented _after_ the call :-(
 
->
-> I will gladly take a working backport if you can submit it.
->
-Please find it attached - i needed to move rt_add_uncached_list before
-the rt_cache_route, nothing else changed.
-This is for 4.14 only, as other kernels do have this patch.
+> 
+> 
+> > > 
+> > > Thanks
+> > > 
+> > > 
+> > > > -Siwei
+> > > 
+> > > [1]
+> > > https://lists.oasis-open.org/archives/virtio-comment/202012/msg00029.html
+> > > 
+> > > 
+> > > > > mlx5_vdpa_destroy_mr(&ndev->mvdev);
+> > > > >            ndev->mvdev.status = 0;
+> > > > >            ndev->mvdev.mlx_features = 0;
 
-I can't reproduce the crash at will, but at least i could compile and flash=
- it on my target.
-And the target comes up .. hopefully the testing in other/newer kernels
-done by the developers of the patch is also valid for 4.14.
-
-> thanks,
->
-> greg k-h
-
-Thanks,
-Carsten
------------------
-Mentor Graphics (Deutschland) GmbH, Arnulfstrasse 201, 80634 M=FCnchen Regi=
-stergericht M=FCnchen HRB 106955, Gesch=E4ftsf=FChrer: Thomas Heurung, Fran=
-k Th=FCrauf
-
---_002_161277625185830522mentorcom_
-Content-Type: text/x-patch;
-	name="0001-ipv4-fix-race-condition-between-route-lookup-and-inv.patch"
-Content-Description: 0001-ipv4-fix-race-condition-between-route-lookup-and-inv.patch
-Content-Disposition: attachment;
-	filename="0001-ipv4-fix-race-condition-between-route-lookup-and-inv.patch";
-	size=4140; creation-date="Mon, 08 Feb 2021 09:13:00 GMT";
-	modification-date="Mon, 08 Feb 2021 09:13:00 GMT"
-Content-Transfer-Encoding: base64
-
-RnJvbSA2NjdmODE0MjA3ZmMwYWE5YjNlNjIwYzczM2QxNzU0ZWM1MjJjNDQ3IE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBXZWkgV2FuZyA8d2Vpd2FuQGdvb2dsZS5jb20+CkRhdGU6IFdl
-ZCwgMTYgT2N0IDIwMTkgMTI6MDM6MTUgLTA3MDAKU3ViamVjdDogW1BBVENIXSBpcHY0OiBmaXgg
-cmFjZSBjb25kaXRpb24gYmV0d2VlbiByb3V0ZSBsb29rdXAgYW5kCiBpbnZhbGlkYXRpb24KClsg
-dXBzdHJlYW0gY29tbWl0IDUwMThjNTk2MDdhNTExY2RlZTc0M2I2MjljNzYyMDZkOWM5ZTZkN2Ig
-XQoKSmVzc2UgYW5kIElkbyByZXBvcnRlZCB0aGUgZm9sbG93aW5nIHJhY2UgY29uZGl0aW9uOgo8
-Q1BVIEEsIHQwPiAtIFJlY2VpdmVkIHBhY2tldCBBIGlzIGZvcndhcmRlZCBhbmQgY2FjaGVkIGRz
-dCBlbnRyeSBpcwp0YWtlbiBmcm9tIHRoZSBuZXh0aG9wICgnbmhjLT5uaGNfcnRoX2lucHV0Jyku
-IENhbGxzIHNrYl9kc3Rfc2V0KCkKCjx0MT4gLSBHaXZlbiBKZXNzZSBoYXMgYnVzeSByb3V0ZXJz
-ICgiaW5nZXN0aW5nIGZ1bGwgQkdQIHJvdXRpbmcgdGFibGVzCmZyb20gbXVsdGlwbGUgSVNQcyIp
-LCByb3V0ZSBpcyBhZGRlZCAvIGRlbGV0ZWQgYW5kIHJ0X2NhY2hlX2ZsdXNoKCkgaXMKY2FsbGVk
-Cgo8Q1BVIEIsIHQyPiAtIFJlY2VpdmVkIHBhY2tldCBCIHRyaWVzIHRvIHVzZSB0aGUgc2FtZSBj
-YWNoZWQgZHN0IGVudHJ5CmZyb20gdDAsIGJ1dCBydF9jYWNoZV92YWxpZCgpIGlzIG5vIGxvbmdl
-ciB0cnVlIGFuZCBpdCBpcyByZXBsYWNlZCBpbgpydF9jYWNoZV9yb3V0ZSgpIGJ5IHRoZSBuZXdl
-ciBvbmUuIFRoaXMgY2FsbHMgZHN0X2Rldl9wdXQoKSBvbiB0aGUKb3JpZ2luYWwgZHN0IGVudHJ5
-IHdoaWNoIGFzc2lnbnMgdGhlIGJsYWNraG9sZSBuZXRkZXYgdG8gJ2RzdC0+ZGV2JwoKPENQVSBB
-LCB0Mz4gLSBkc3RfaW5wdXQoc2tiKSBpcyBjYWxsZWQgb24gcGFja2V0IEEgYW5kIGl0IGlzIGRy
-b3BwZWQgZHVlCnRvICdkc3QtPmRldicgYmVpbmcgdGhlIGJsYWNraG9sZSBuZXRkZXYKClRoZXJl
-IGFyZSAyIGlzc3VlcyBpbiB0aGUgdjQgcm91dGluZyBjb2RlOgoxLiBBIHBlci1uZXRucyBjb3Vu
-dGVyIGlzIHVzZWQgdG8gZG8gdGhlIHZhbGlkYXRpb24gb2YgdGhlIHJvdXRlLiBUaGF0Cm1lYW5z
-IHdoZW5ldmVyIGEgcm91dGUgaXMgY2hhbmdlZCBpbiB0aGUgbmV0bnMsIHVzZXJzIG9mIGFsbCBy
-b3V0ZXMgaW4KdGhlIG5ldG5zIG5lZWRzIHRvIHJlZG8gbG9va3VwLiB2NiBoYXMgYW4gaW1wbGVt
-ZW50YXRpb24gb2Ygb25seQp1cGRhdGluZyBmbl9zZXJudW0gZm9yIHJvdXRlcyB0aGF0IGFyZSBh
-ZmZlY3RlZC4KMi4gV2hlbiBydF9jYWNoZV92YWxpZCgpIHJldHVybnMgZmFsc2UsIHJ0X2NhY2hl
-X3JvdXRlKCkgaXMgY2FsbGVkIHRvCnRocm93IGF3YXkgdGhlIGN1cnJlbnQgY2FjaGUsIGFuZCBj
-cmVhdGUgYSBuZXcgb25lLiBUaGlzIHNlZW1zCnVubmVjZXNzYXJ5IGJlY2F1c2UgYXMgbG9uZyBh
-cyB0aGlzIHJvdXRlIGRvZXMgbm90IGNoYW5nZSwgdGhlIHJvdXRlCmNhY2hlIGRvZXMgbm90IG5l
-ZWQgdG8gYmUgcmVjcmVhdGVkLgoKVG8gZnVsbHkgc29sdmUgdGhlIGFib3ZlIDIgaXNzdWVzLCBp
-dCBwcm9iYWJseSBuZWVkcyBxdWl0ZSBzb21lIGNvZGUKY2hhbmdlcyBhbmQgcmVxdWlyZXMgY2Fy
-ZWZ1bCB0ZXN0aW5nLCBhbmQgZG9lcyBub3Qgc3VpdGUgZm9yIG5ldCBicmFuY2guCgpTbyB0aGlz
-IHBhdGNoIG9ubHkgdHJpZXMgdG8gYWRkIHRoZSBkZWxldGVkIGNhY2hlZCBydCBpbnRvIHRoZSB1
-bmNhY2hlZApsaXN0LCBzbyB1c2VyIGNvdWxkIHN0aWxsIGJlIGFibGUgdG8gdXNlIGl0IHRvIHJl
-Y2VpdmUgcGFja2V0cyB1bnRpbAppdCdzIGRvbmUuCgpGaXhlczogOTVjNDdmOWNmNWUwICgiaXB2
-NDogY2FsbCBkc3RfZGV2X3B1dCgpIHByb3Blcmx5IikKU2lnbmVkLW9mZi1ieTogV2VpIFdhbmcg
-PHdlaXdhbkBnb29nbGUuY29tPgpSZXBvcnRlZC1ieTogSWRvIFNjaGltbWVsIDxpZG9zY2hAaWRv
-c2NoLm9yZz4KUmVwb3J0ZWQtYnk6IEplc3NlIEhhdGhhd2F5IDxqZXNzZUBtYnVraS1tdnVraS5v
-cmc+ClRlc3RlZC1ieTogSmVzc2UgSGF0aGF3YXkgPGplc3NlQG1idWtpLW12dWtpLm9yZz4KQWNr
-ZWQtYnk6IE1hcnRpbiBLYUZhaSBMYXUgPGthZmFpQGZiLmNvbT4KQ2M6IERhdmlkIEFoZXJuIDxk
-c2FoZXJuQGdtYWlsLmNvbT4KUmV2aWV3ZWQtYnk6IElkbyBTY2hpbW1lbCA8aWRvc2NoQG1lbGxh
-bm94LmNvbT4KU2lnbmVkLW9mZi1ieTogRGF2aWQgUy4gTWlsbGVyIDxkYXZlbUBkYXZlbWxvZnQu
-bmV0PgpTaWduZWQtb2ZmLWJ5OiBDYXJzdGVuIFNjaG1pZCA8Y2Fyc3Rlbl9zY2htaWRAbWVudG9y
-LmNvbT4KLS0tCiBuZXQvaXB2NC9yb3V0ZS5jIHwgMzggKysrKysrKysrKysrKysrKysrKy0tLS0t
-LS0tLS0tLS0tLS0tLS0KIDEgZmlsZSBjaGFuZ2VkLCAxOSBpbnNlcnRpb25zKCspLCAxOSBkZWxl
-dGlvbnMoLSkKCmRpZmYgLS1naXQgYS9uZXQvaXB2NC9yb3V0ZS5jIGIvbmV0L2lwdjQvcm91dGUu
-YwppbmRleCBjMjViM2JlNzhlMDIuLjdlYjhmMzA0OGM4NiAxMDA2NDQKLS0tIGEvbmV0L2lwdjQv
-cm91dGUuYworKysgYi9uZXQvaXB2NC9yb3V0ZS5jCkBAIC0xNDMyLDYgKzE0MzIsMjQgQEAgc3Rh
-dGljIGJvb2wgcnRfYmluZF9leGNlcHRpb24oc3RydWN0IHJ0YWJsZSAqcnQsIHN0cnVjdCBmaWJf
-bmhfZXhjZXB0aW9uICpmbmhlLAogCXJldHVybiByZXQ7CiB9CiAKK3N0cnVjdCB1bmNhY2hlZF9s
-aXN0IHsKKwlzcGlubG9ja190CQlsb2NrOworCXN0cnVjdCBsaXN0X2hlYWQJaGVhZDsKK307CisK
-K3N0YXRpYyBERUZJTkVfUEVSX0NQVV9BTElHTkVEKHN0cnVjdCB1bmNhY2hlZF9saXN0LCBydF91
-bmNhY2hlZF9saXN0KTsKKworc3RhdGljIHZvaWQgcnRfYWRkX3VuY2FjaGVkX2xpc3Qoc3RydWN0
-IHJ0YWJsZSAqcnQpCit7CisJc3RydWN0IHVuY2FjaGVkX2xpc3QgKnVsID0gcmF3X2NwdV9wdHIo
-JnJ0X3VuY2FjaGVkX2xpc3QpOworCisJcnQtPnJ0X3VuY2FjaGVkX2xpc3QgPSB1bDsKKworCXNw
-aW5fbG9ja19iaCgmdWwtPmxvY2spOworCWxpc3RfYWRkX3RhaWwoJnJ0LT5ydF91bmNhY2hlZCwg
-JnVsLT5oZWFkKTsKKwlzcGluX3VubG9ja19iaCgmdWwtPmxvY2spOworfQorCiBzdGF0aWMgYm9v
-bCBydF9jYWNoZV9yb3V0ZShzdHJ1Y3QgZmliX25oICpuaCwgc3RydWN0IHJ0YWJsZSAqcnQpCiB7
-CiAJc3RydWN0IHJ0YWJsZSAqb3JpZywgKnByZXYsICoqcDsKQEAgLTE0NTEsNyArMTQ2OSw3IEBA
-IHN0YXRpYyBib29sIHJ0X2NhY2hlX3JvdXRlKHN0cnVjdCBmaWJfbmggKm5oLCBzdHJ1Y3QgcnRh
-YmxlICpydCkKIAlwcmV2ID0gY21weGNoZyhwLCBvcmlnLCBydCk7CiAJaWYgKHByZXYgPT0gb3Jp
-ZykgewogCQlpZiAob3JpZykgewotCQkJZHN0X2Rldl9wdXQoJm9yaWctPmRzdCk7CisJCQlydF9h
-ZGRfdW5jYWNoZWRfbGlzdChvcmlnKTsKIAkJCWRzdF9yZWxlYXNlKCZvcmlnLT5kc3QpOwogCQl9
-CiAJfSBlbHNlIHsKQEAgLTE0NjIsMjQgKzE0ODAsNiBAQCBzdGF0aWMgYm9vbCBydF9jYWNoZV9y
-b3V0ZShzdHJ1Y3QgZmliX25oICpuaCwgc3RydWN0IHJ0YWJsZSAqcnQpCiAJcmV0dXJuIHJldDsK
-IH0KIAotc3RydWN0IHVuY2FjaGVkX2xpc3QgewotCXNwaW5sb2NrX3QJCWxvY2s7Ci0Jc3RydWN0
-IGxpc3RfaGVhZAloZWFkOwotfTsKLQotc3RhdGljIERFRklORV9QRVJfQ1BVX0FMSUdORUQoc3Ry
-dWN0IHVuY2FjaGVkX2xpc3QsIHJ0X3VuY2FjaGVkX2xpc3QpOwotCi1zdGF0aWMgdm9pZCBydF9h
-ZGRfdW5jYWNoZWRfbGlzdChzdHJ1Y3QgcnRhYmxlICpydCkKLXsKLQlzdHJ1Y3QgdW5jYWNoZWRf
-bGlzdCAqdWwgPSByYXdfY3B1X3B0cigmcnRfdW5jYWNoZWRfbGlzdCk7Ci0KLQlydC0+cnRfdW5j
-YWNoZWRfbGlzdCA9IHVsOwotCi0Jc3Bpbl9sb2NrX2JoKCZ1bC0+bG9jayk7Ci0JbGlzdF9hZGRf
-dGFpbCgmcnQtPnJ0X3VuY2FjaGVkLCAmdWwtPmhlYWQpOwotCXNwaW5fdW5sb2NrX2JoKCZ1bC0+
-bG9jayk7Ci19Ci0KIHN0YXRpYyB2b2lkIGlwdjRfZHN0X2Rlc3Ryb3koc3RydWN0IGRzdF9lbnRy
-eSAqZHN0KQogewogCXN0cnVjdCBkc3RfbWV0cmljcyAqcCA9IChzdHJ1Y3QgZHN0X21ldHJpY3Mg
-KilEU1RfTUVUUklDU19QVFIoZHN0KTsKLS0gCjIuMTcuMQoK
-
---_002_161277625185830522mentorcom_--
