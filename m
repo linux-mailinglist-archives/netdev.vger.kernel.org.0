@@ -2,136 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F5C131421A
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 22:44:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81648314229
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 22:46:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236925AbhBHVmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 16:42:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50926 "EHLO
+        id S236975AbhBHVqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 16:46:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236903AbhBHVky (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 16:40:54 -0500
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36CDBC061788;
-        Mon,  8 Feb 2021 13:40:14 -0800 (PST)
-Received: by mail-pf1-x42a.google.com with SMTP id t29so10546028pfg.11;
-        Mon, 08 Feb 2021 13:40:14 -0800 (PST)
+        with ESMTP id S235471AbhBHVoc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 16:44:32 -0500
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96D48C061788
+        for <netdev@vger.kernel.org>; Mon,  8 Feb 2021 13:43:50 -0800 (PST)
+Received: by mail-io1-xd2b.google.com with SMTP id f2so4725728ioq.2
+        for <netdev@vger.kernel.org>; Mon, 08 Feb 2021 13:43:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=8otumswdHqgwIAwOA86zvsSS2AG0v6ru+JPtAFHbJ/8=;
-        b=m2yvFfJL4aXJQGxeToYNpg80bleF3qm7RLgTHvHxDX96N50u8dtOn4EPEiPNbJlJYZ
-         0n8qiOH1edrBvn4XSEFj8GxxhbbhubMzprG8SZAaL+oxymUgMZ6SZkP9MYh2Vhp9/aqd
-         i73MPY0qAi4n97Aa0g1Uv5xXYxcrn94PY50nRfiXChSkimsoELP5dWQTMPwe8e0ttOJB
-         qpDG8nNzo1HzddB0jDZXhQyJknUJG/TWvRQC54r5pU4ZzwHtcySyY0Flej7TbiM+whxe
-         0jQl/Z1R9tlTotXcSy1gldr+zoByN9fuHe5oBBFsCjLW78UTVIEca14ll3PsG9ibnqGV
-         YAoQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=znzdsgoVi1+0y3RXw53JIJIEVs7j8jUvaVY8J6otDH0=;
+        b=QfYHXUENEs9K3UAoRvi2Lo98SS3pmV13yLm8mGevjuWr5IVeN4950X1hhPsgrqlzsv
+         Ew6CIgKmqTlMPSoXLYvLandph9/KJzm99azFEb7B7cfIfyl7h3U+KTOYNIzPOul1Vt1E
+         xw/CkN5ON6FPizf+/eW4BhDPJemAlu5Fr37f9Xca5+vtEhnn5yikJU8dQnPsjEcEgvUO
+         7d4rjSQshKdSsqtLlbH9RUe/9AUeIVdHgbpX4yuzF2TaAD4ScGLfZ2CwVuInlTuxxfO6
+         Rn+eEF/stKcrWZOaISfjHnKeEXhQn2VPeo0GPq1i31akv33AOXUyDnn3hPf1nhrn/An7
+         dI2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=8otumswdHqgwIAwOA86zvsSS2AG0v6ru+JPtAFHbJ/8=;
-        b=qlzMmD7aAqaw9qAJP1sjKZdEzT/dJhyN4hlakHVFs5zmWDM0LjZUQ8r2aNwhn8fAer
-         pz3x3Va09Mmm2PGOn4/QJWr0DrKOGsSbSIk5qxqydD3xIE40sClt++K6z+BAVj1Mp80v
-         XdZk5I3vjtZnsQAr5byxJi0H5LKIxkf7PEwDlfjA+8IVNXgN8Hm2m0AJ0W4+q3q5aNBG
-         KxX3fKZKyL91zLHcjVMYxMOQHhz5H+iZ5Mcy1RURUTTRrl+GhBlXK7lEjadT5ZFpvCIK
-         fdje26TL/6fngQ1XWgAz5widtfhTGwy7jMMIswc1HecXvqnuKAge6CWMidoXt3dzk3ep
-         Z8xg==
-X-Gm-Message-State: AOAM532Y1ZlFACCL187OVshZmiCPQxQZt0lkxKx5b65fnoVpw8Oe+upj
-        k4ZLjx7kSxgm+8YFxlL6cCg=
-X-Google-Smtp-Source: ABdhPJya5PHTIGiI5BEFYWDLrTSHkd+ofhPbFUHyY/PUYxsUoSFACHfWK7LEQd43c4QJDVRicxckcA==
-X-Received: by 2002:a62:2cd0:0:b029:1bb:2947:5d5e with SMTP id s199-20020a622cd00000b02901bb29475d5emr19732302pfs.22.1612820413696;
-        Mon, 08 Feb 2021 13:40:13 -0800 (PST)
-Received: from [10.67.49.228] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id 73sm2383600pfa.27.2021.02.08.13.40.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Feb 2021 13:40:13 -0800 (PST)
-Subject: Re: [PATCH] net: phy: broadcom: remove BCM5482 1000BX support
-To:     Michael Walle <michael@walle.cc>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20210208213529.28481-1-michael@walle.cc>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <e49bcc75-7331-bd56-8db2-baab25840d57@gmail.com>
-Date:   Mon, 8 Feb 2021 13:40:11 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=znzdsgoVi1+0y3RXw53JIJIEVs7j8jUvaVY8J6otDH0=;
+        b=RVxI5Ms3rToYBvjgMWHsLt+v4ziSBLd60I9d1dcnMkFwo00SuDxRUMJ1+vIwJTIfMg
+         2wSYMg+nJGs0JOWC6j0UGt/bCTs/RctbcOwkadWN1Sxj7WWrpl0RR4Piyf0PROmyy3Ni
+         kG5kVt1npeH0nlWcCD2O17+g0+wPGdmpRcG26XsBoXpXEGsfwwfypGxOywv39AL4isGr
+         rJpuYPRFe1d1FERqeiACEuMktjRVwSQA2oJi30eBFiQFxEWq7jMpMLBnrMuKjPe18/7X
+         sdb+7rIupATzYKbv04Jw17f2LaF5wK6ki+nOkCcKrdjJJBWk6F3HMuHkS1c18wUk+HTv
+         FfCQ==
+X-Gm-Message-State: AOAM532CDtVr48YsyNdHueo6MZL3niFe4UtspeC/RDxpd6/weQ2enkB3
+        Km/+QwsVZDnPeXkIWzLYKTV0p0ElepvLQJitpr4B8lpo5m0noA==
+X-Google-Smtp-Source: ABdhPJy9LY1Fzp317OoUTrxQtoUSYf6l3C6vXLLZwVzvxXklDl5j2II0fIGP0bmODr1RTQnXxA2RK1zD8hLzj+eoUZQ=
+X-Received: by 2002:a05:6638:b12:: with SMTP id a18mr20013546jab.114.1612820629986;
+ Mon, 08 Feb 2021 13:43:49 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210208213529.28481-1-michael@walle.cc>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210208171917.1088230-1-atenart@kernel.org> <20210208171917.1088230-8-atenart@kernel.org>
+In-Reply-To: <20210208171917.1088230-8-atenart@kernel.org>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Mon, 8 Feb 2021 13:43:39 -0800
+Message-ID: <CAKgT0Ue1mYiuP1-qAovV4WwUrJ_k2Ug0tB+syzzHRtHeMiz7ww@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 07/12] net: remove the xps possible_mask
+To:     Antoine Tenart <atenart@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/8/21 1:35 PM, Michael Walle wrote:
-> It is nowhere used in the kernel. It also seems to be lacking the
-> proper fiber advertise flags. Remove it.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
+On Mon, Feb 8, 2021 at 9:19 AM Antoine Tenart <atenart@kernel.org> wrote:
+>
+> Remove the xps possible_mask. It was an optimization but we can just
+> loop from 0 to nr_ids now that it is embedded in the xps dev_maps. That
+> simplifies the code a bit.
+>
+> Suggested-by: Alexander Duyck <alexander.duyck@gmail.com>
+> Signed-off-by: Antoine Tenart <atenart@kernel.org>
+> ---
+>  net/core/dev.c       | 43 ++++++++++++++-----------------------------
+>  net/core/net-sysfs.c |  4 ++--
+>  2 files changed, 16 insertions(+), 31 deletions(-)
+>
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index abbb2ae6b3ed..d0c07ccea2e5 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -2505,33 +2505,27 @@ static void reset_xps_maps(struct net_device *dev,
+>         kfree_rcu(dev_maps, rcu);
+>  }
+>
+> -static void clean_xps_maps(struct net_device *dev, const unsigned long *mask,
+> +static void clean_xps_maps(struct net_device *dev,
+>                            struct xps_dev_maps *dev_maps, u16 offset, u16 count,
+>                            bool is_rxqs_map)
+>  {
+> -       unsigned int nr_ids = dev_maps->nr_ids;
+>         bool active = false;
+>         int i, j;
+>
+> -       for (j = -1; j = netif_attrmask_next(j, mask, nr_ids), j < nr_ids;)
+> -               active |= remove_xps_queue_cpu(dev, dev_maps, j, offset,
+> -                                              count);
+> +       for (j = 0; j < dev_maps->nr_ids; j++)
+> +               active |= remove_xps_queue_cpu(dev, dev_maps, j, offset, count);
+>         if (!active)
+>                 reset_xps_maps(dev, dev_maps, is_rxqs_map);
+>
+> -       if (!is_rxqs_map) {
+> -               for (i = offset + (count - 1); count--; i--) {
+> +       if (!is_rxqs_map)
+> +               for (i = offset + (count - 1); count--; i--)
+>                         netdev_queue_numa_node_write(
+> -                               netdev_get_tx_queue(dev, i),
+> -                               NUMA_NO_NODE);
+> -               }
+> -       }
+> +                               netdev_get_tx_queue(dev, i), NUMA_NO_NODE);
+>  }
+>
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+This violates the coding-style guide for the kernel. The if statement
+should still have braces as the for loop and
+netdev_queue_numa_node_write are more than a single statement. I'd be
+curious to see if checkpatch also complains about this because it
+probably should.
+
+For reference see the end of section 3.0 in
+Documentation/process/coding-style.rst.
+
+Other than that the rest of the patch seemed to be fine.
