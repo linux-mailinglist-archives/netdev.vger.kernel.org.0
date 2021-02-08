@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D19893140C7
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 21:46:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94A403140D0
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 21:47:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232893AbhBHUo4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 15:44:56 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:13252 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230328AbhBHUoU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 15:44:20 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B6021a26d0002>; Mon, 08 Feb 2021 12:43:25 -0800
-Received: from DRHQMAIL107.nvidia.com (10.27.9.16) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 8 Feb
- 2021 20:43:25 +0000
+        id S233739AbhBHUqc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 15:46:32 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:16103 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231687AbhBHUoa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 15:44:30 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B6021a2710000>; Mon, 08 Feb 2021 12:43:29 -0800
+Received: from DRHQMAIL107.nvidia.com (10.27.9.16) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 8 Feb
+ 2021 20:43:28 +0000
 Received: from yaviefel.local (172.20.145.6) by DRHQMAIL107.nvidia.com
  (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 8 Feb 2021
- 20:43:22 +0000
+ 20:43:25 +0000
 From:   Petr Machata <petrm@nvidia.com>
 To:     <netdev@vger.kernel.org>
 CC:     David Ahern <dsahern@kernel.org>,
@@ -26,9 +26,9 @@ CC:     David Ahern <dsahern@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Ido Schimmel <idosch@nvidia.com>,
         "Petr Machata" <petrm@nvidia.com>
-Subject: [RFC PATCH 01/13] nexthop: Pass nh_config to replace_nexthop()
-Date:   Mon, 8 Feb 2021 21:42:44 +0100
-Message-ID: <1470688a68d2ebe86243560e8aee2e7fa264506b.1612815058.git.petrm@nvidia.com>
+Subject: [RFC PATCH 02/13] nexthop: __nh_notifier_single_info_init(): Make nh_info an argument
+Date:   Mon, 8 Feb 2021 21:42:45 +0100
+Message-ID: <40b63a0000dd57478ac108defe59198b64075c61.1612815058.git.petrm@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <cover.1612815057.git.petrm@nvidia.com>
 References: <cover.1612815057.git.petrm@nvidia.com>
@@ -39,83 +39,82 @@ X-Originating-IP: [172.20.145.6]
 X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
  DRHQMAIL107.nvidia.com (10.27.9.16)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1612817005; bh=HHaIK+B3EWmPAEgiIBnZqANzE6bw/MWflTHTsXsOUcI=;
+        t=1612817009; bh=bwZzl9VJc2fL5kN0dfh+NGDqzaxyhgSsrfa3JN87AHY=;
         h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
          References:MIME-Version:Content-Transfer-Encoding:Content-Type:
          X-Originating-IP:X-ClientProxiedBy;
-        b=gLY26mrAbpsnntdfjHNQlbETxx5+7yaTCjXSMRh6sLPSYVLlrr1lWv245wyRT0fmo
-         4fSz9H4U+qWbwf+eUQ7UOBE+w2OUJo+IlLsZfrFdeD853jwi0XwRJXhdWoDhNJX9vA
-         GaT9eSKdoAKwZhmk17Y+D0WYH6jmN/WhLWkTO4uhVrUOglE0czyh5POJk9Q9yMpU8R
-         ENg58AKx2FTCtlwr89IW6MFOYXEnaIqurs8wq1BAEkl08cmrBIHqNA6jgS/jMc1me+
-         O+qRf8rWmiEKote+zTLaRZrkPIdTdjZNURvwUnBOZbUwve2L9Y198f40VLtwWeBfKn
-         onh0RwlQEUd6A==
+        b=Mn0qCxK4uTVd4aTjeUIp3vrEFSdBYNIr5qxCpabe8BypRI3WSO7ikL1Nqc/Iwnqxg
+         5LNSjHyat88Lois1RH82ERWtWfmm89XRz3cJUG95uR7Q//gKF6IMbFDy86XIMBVhdV
+         0K5qLKWo85E+hlJq6zwnsU3UP74/ro9T4vG2PDnweY4hVxI4HVUlCvu+VkthuwX8t2
+         b/57246Qm8APLs31l3QKwm6+5dKKmEgMCrOyJSajCsbxqK88C72r+WloYT1ffsnjw/
+         tJnX6FFtwwjVOZL+OikAYAPA/8YF8geEemMVOs+G1XYTqWyYIljxrbldlH9XJZvxOn
+         4h1UtnfGScQaw==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, replace assumes that the new group that is given is a
-fully-formed object. But mpath groups really only have one attribute, and
-that is the constituent next hop configuration. This may not be universally
-true. From the usability perspective, it is desirable to allow the replace
-operation to adjust just the constituent next hop configuration and leave
-the group attributes as such intact.
-
-But the object that keeps track of whether an attribute was or was not
-given is the nh_config object, not the next hop or next-hop group. To allow
-(selective) attribute updates during NH group replacement, propagate `cfg'
-to replace_nexthop() and further to replace_nexthop_grp().
+The cited function currently uses rtnl_dereference() to get nh_info from a
+handed-in nexthop. However, under the resilient hashing scheme, this
+function will not always be called under RTNL, sometimes the mutual
+exclusion will be achieved differently. Therefore move the nh_info
+extraction from the function to its callers to make it possible to use a
+different synchronization guarantee.
 
 Signed-off-by: Petr Machata <petrm@nvidia.com>
 Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 ---
- net/ipv4/nexthop.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ net/ipv4/nexthop.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
 diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-index f1c6cbdb9e43..5fc2ddc5d43c 100644
+index 5fc2ddc5d43c..7b687bca0b87 100644
 --- a/net/ipv4/nexthop.c
 +++ b/net/ipv4/nexthop.c
-@@ -1107,7 +1107,7 @@ static void nh_rt_cache_flush(struct net *net, struct=
- nexthop *nh)
- }
+@@ -52,10 +52,8 @@ static bool nexthop_notifiers_is_empty(struct net *net)
 =20
- static int replace_nexthop_grp(struct net *net, struct nexthop *old,
--			       struct nexthop *new,
-+			       struct nexthop *new, const struct nh_config *cfg,
- 			       struct netlink_ext_ack *extack)
+ static void
+ __nh_notifier_single_info_init(struct nh_notifier_single_info *nh_info,
+-			       const struct nexthop *nh)
++			       const struct nh_info *nhi)
  {
- 	struct nh_group *oldg, *newg;
-@@ -1276,7 +1276,8 @@ static void nexthop_replace_notify(struct net *net, s=
-truct nexthop *nh,
- }
+-	struct nh_info *nhi =3D rtnl_dereference(nh->nh_info);
+-
+ 	nh_info->dev =3D nhi->fib_nhc.nhc_dev;
+ 	nh_info->gw_family =3D nhi->fib_nhc.nhc_gw_family;
+ 	if (nh_info->gw_family =3D=3D AF_INET)
+@@ -71,12 +69,14 @@ __nh_notifier_single_info_init(struct nh_notifier_singl=
+e_info *nh_info,
+ static int nh_notifier_single_info_init(struct nh_notifier_info *info,
+ 					const struct nexthop *nh)
+ {
++	struct nh_info *nhi =3D rtnl_dereference(nh->nh_info);
++
+ 	info->type =3D NH_NOTIFIER_INFO_TYPE_SINGLE;
+ 	info->nh =3D kzalloc(sizeof(*info->nh), GFP_KERNEL);
+ 	if (!info->nh)
+ 		return -ENOMEM;
 =20
- static int replace_nexthop(struct net *net, struct nexthop *old,
--			   struct nexthop *new, struct netlink_ext_ack *extack)
-+			   struct nexthop *new, const struct nh_config *cfg,
-+			   struct netlink_ext_ack *extack)
- {
- 	bool new_is_reject =3D false;
- 	struct nh_grp_entry *nhge;
-@@ -1319,7 +1320,7 @@ static int replace_nexthop(struct net *net, struct ne=
-xthop *old,
+-	__nh_notifier_single_info_init(info->nh, nh);
++	__nh_notifier_single_info_init(info->nh, nhi);
+=20
+ 	return 0;
+ }
+@@ -103,11 +103,13 @@ static int nh_notifier_mp_info_init(struct nh_notifie=
+r_info *info,
+=20
+ 	for (i =3D 0; i < num_nh; i++) {
+ 		struct nh_grp_entry *nhge =3D &nhg->nh_entries[i];
++		struct nh_info *nhi;
+=20
++		nhi =3D rtnl_dereference(nhge->nh->nh_info);
+ 		info->nh_grp->nh_entries[i].id =3D nhge->nh->id;
+ 		info->nh_grp->nh_entries[i].weight =3D nhge->weight;
+ 		__nh_notifier_single_info_init(&info->nh_grp->nh_entries[i].nh,
+-					       nhge->nh);
++					       nhi);
  	}
 =20
- 	if (old->is_group)
--		err =3D replace_nexthop_grp(net, old, new, extack);
-+		err =3D replace_nexthop_grp(net, old, new, cfg, extack);
- 	else
- 		err =3D replace_nexthop_single(net, old, new, extack);
-=20
-@@ -1361,7 +1362,7 @@ static int insert_nexthop(struct net *net, struct nex=
-thop *new_nh,
- 		} else if (new_id > nh->id) {
- 			pp =3D &next->rb_right;
- 		} else if (replace) {
--			rc =3D replace_nexthop(net, nh, new_nh, extack);
-+			rc =3D replace_nexthop(net, nh, new_nh, cfg, extack);
- 			if (!rc) {
- 				new_nh =3D nh; /* send notification with old nh */
- 				replace_notify =3D 1;
+ 	return 0;
 --=20
 2.26.2
 
