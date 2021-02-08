@@ -2,195 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34873313770
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 16:26:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84CE4313776
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 16:26:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233374AbhBHPZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 10:25:24 -0500
-Received: from mail-db8eur05on2066.outbound.protection.outlook.com ([40.107.20.66]:10180
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233410AbhBHPSt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Feb 2021 10:18:49 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LZ9OiMKVzkCuDsA6U21UDCp39Kyg6EOnqHI2ksWryDWd/0PI/kaQ+Zgeap/tyFEAnwqFwTdyVkOR2iEhZNz5ActGvk3y5CY9I5Rm2MaYVSVhElINmKSZwFsLiPzHcHPgt6gRxNhbzpU6cNy33jVxM8Z+qidaNYjAjHQQg4IeG53whVGjQDdKXGMtdlFSPWzUIlf6JoXF63Km3WmCF5Iys65lzCNDoKGdlMBjcvhFb7cc6jw71/goM5EyiP448PP70I1TEv3+R0fYlcSj6wyNch3Lphj+Qo5VezyOYrB26h+ffTtdGvM5LpqTTh35kFx/xmvFUdscdXm3DB5aBnrH8Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aZ96Hd2ZfTaA4os9q6G6MW/XA9I0btG2XfLGGuywU6o=;
- b=ZOuf+KkE2AqrUkzYCkdj4fkyvi7H7YB8H5CLwW0lBN6QGJpTyX95QUO/lZX1TMY3mMx0y76D2hdH9jrnQqs2Eb1AGCWsudNtPtAVH3WbU00T1ieklSPrDi2AsP9WaKgVT26bUT8yFnFXWYoUM2qSeber7yewZne59Q9vrj2GpxZj9c1ZPyCPoyTWzch2Ix6+GgK277LUr8rfgWl/IfLl89ZO/l4l9jHuyQqz67H94TmrJkS/l8C8HyyjgdKQiFuBAxxMimJijfLSWBE5wEBiXK+pEtAHhiTAi9JD6zYZSttJyriBH+TSKdJo4S9UxEluR+VWxs4ekazaoggAosovUQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aZ96Hd2ZfTaA4os9q6G6MW/XA9I0btG2XfLGGuywU6o=;
- b=EWglQ7v8TKdcr/JBtqV7mchf7/SX92bo3Ta8mmbIAwtygai4cXsdVlX8zuWdrL/iEBfzzZO0VWR/CBTZuDWGPVpD/cIQvrpR6MJ4eUubrFy8xccvLDNt8FS5cm6rFVdZyXYeRBVelG+g2EsP229NUD8M1Bnqu+N52GwI6xAfAjE=
-Authentication-Results: arm.com; dkim=none (message not signed)
- header.d=none;arm.com; dmarc=none action=none header.from=oss.nxp.com;
-Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
- by AM0PR04MB6435.eurprd04.prod.outlook.com (2603:10a6:208:176::30) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.23; Mon, 8 Feb
- 2021 15:14:54 +0000
-Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
- ([fe80::e90e:b1d6:18a2:2d42]) by AM0PR04MB5636.eurprd04.prod.outlook.com
- ([fe80::e90e:b1d6:18a2:2d42%6]) with mapi id 15.20.3825.030; Mon, 8 Feb 2021
- 15:14:54 +0000
-From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
-To:     Grant Likely <grant.likely@arm.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
-        Jon <jon@solid-run.com>, Saravana Kannan <saravanak@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>
-Cc:     Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        linux-kernel@vger.kernel.org, linux.cj@gmail.com,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-acpi@vger.kernel.org,
-        Calvin Johnson <calvin.johnson@oss.nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [net-next PATCH v5 14/15] net: phylink: Refactor phylink_of_phy_connect()
-Date:   Mon,  8 Feb 2021 20:42:43 +0530
-Message-Id: <20210208151244.16338-15-calvin.johnson@oss.nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210208151244.16338-1-calvin.johnson@oss.nxp.com>
-References: <20210208151244.16338-1-calvin.johnson@oss.nxp.com>
-Content-Type: text/plain
-X-Originating-IP: [14.142.151.118]
-X-ClientProxiedBy: SG2PR04CA0176.apcprd04.prod.outlook.com
- (2603:1096:4:14::14) To AM0PR04MB5636.eurprd04.prod.outlook.com
- (2603:10a6:208:130::22)
+        id S232241AbhBHP01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 10:26:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:35243 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233658AbhBHPWk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 10:22:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612797673;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QNy5WOdfkE3pMx0D9j/pb+7r2EGl9bMcxUAhCX6+tzE=;
+        b=T1GAv0U2DDOWiDPb/OzJJwkdb7ZE8eD/S5DXK9dVrFFqlmjd8CqPCw/GtzcPoJfGUZKNy+
+        JRxggwk+iB7GVdZBvxGHLCj7YKuPUY6YeqYwlSAwzXa9mbLCs7xQeV3zHWOPGO9jROmBa8
+        K5TYffiPRkGpxSlkGuoGfDct9sgB5uk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-271-prTQfO3tO_eBPEZkQecGgA-1; Mon, 08 Feb 2021 10:21:08 -0500
+X-MC-Unique: prTQfO3tO_eBPEZkQecGgA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8B0D0C73A2;
+        Mon,  8 Feb 2021 15:21:05 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.45])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 73B0C5C1D0;
+        Mon,  8 Feb 2021 15:20:57 +0000 (UTC)
+Date:   Mon, 8 Feb 2021 16:20:56 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
+        colrack@gmail.com, David Ahern <dsahern@kernel.org>,
+        brouer@redhat.com
+Subject: Re: [PATCH bpf-next V15 2/7] bpf: fix bpf_fib_lookup helper MTU
+ check for SKB ctx
+Message-ID: <20210208162056.44b0236e@carbon>
+In-Reply-To: <20210208145713.4ee3e9ba@carbon>
+References: <161228314075.576669.15427172810948915572.stgit@firesoul>
+        <161228321177.576669.11521750082473556168.stgit@firesoul>
+        <ada19e5b-87be-ff39-45ba-ff0025bf1de9@iogearbox.net>
+        <20210208145713.4ee3e9ba@carbon>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2PR04CA0176.apcprd04.prod.outlook.com (2603:1096:4:14::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.19 via Frontend Transport; Mon, 8 Feb 2021 15:14:48 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 0237ae97-942f-47ca-9bd2-08d8cc4449de
-X-MS-TrafficTypeDiagnostic: AM0PR04MB6435:
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR04MB643592BAD10BA10E456C3947D28F9@AM0PR04MB6435.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3276;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ADCgCacO/cv8tbHnydBHZF0r7/oKo+fj6rCzuRZVqix+w9bf/FOuVJKSv5Vtjy3CFcij5ABxNRJ3KhiOfCP4RlM6KNKz/nhEgtSMihy7K+Jzn+lx4Das7Fa1pDxjG1JcjbHkRryk/hPqmrHVbJFhJYZql3BKYwjBmNhhblZvEESxcIVwoKgNGdYX199fm0zjnuMq2kSDaAyH90FbiwLeBOdwgmUahGWZvlR2q6OxrxugYIvBYr1phZIEEII+fTLsbOA8VL8p0W0kFZl7hA+ykB2klgoiPWlTEs3P/W2eu82uO9AJPCqmzAX+Z+JFOuVi+ZApJAzIyXJ3l/6GdyfBjRfpvDl0LrspnShV96GKfx/RqPMKzrcbZk5uTobqtgM9fMlfaCc7HnySr5klnjlIc4xzIYvXtTjcVqEWi2soLWJW2XwoUhlfVVA4WI/dYtWVsb62AyMVY9G+KGXP/WPCmXt3tS+ygfIktI6aJkSoLsC0hJyjNpU3YqkXR5P4PkQVB635zfG4dyzh8ffGf0daSAUMuXGRtKcuq/Zp3fu5+4CqUNsNBUv3u+XnlBACoAtLD7eIxz4qsVkljjBLyaeLPQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(396003)(136003)(346002)(39860400002)(366004)(44832011)(86362001)(83380400001)(6506007)(5660300002)(921005)(8676002)(66946007)(2616005)(66556008)(26005)(66476007)(1076003)(52116002)(316002)(110136005)(186003)(16526019)(8936002)(54906003)(7416002)(55236004)(2906002)(4326008)(478600001)(6512007)(1006002)(956004)(6486002)(6666004)(110426009);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?tcfNCyMFCMO2D5yHbWq8p5pvgDfA2CU/4gBWPFjNfLAAQ+oNQkHiRYkTgU+W?=
- =?us-ascii?Q?t05cNS7ncxkSYkr5qrKJEfs/YhqZobXapBDGHAzrVsSAlusulTKPpqDvot70?=
- =?us-ascii?Q?oRHmHhKOZT/9Xi10NQusdvABKsOK6rUjLiDBG5RYlQNvvg9XP4ozqqpYW94B?=
- =?us-ascii?Q?HjVIACtL3L+nJcUX7GaEi9SeTVEQ+NgBZPcR2Hxov4OLdkuaoIgN8q7eq1m8?=
- =?us-ascii?Q?FOaP2mIZqWf9NT6MslVwKduAoK0ZfL9aZl5TViTxf0WTatSrKZv7kUlas2q1?=
- =?us-ascii?Q?Crjlc5abopHD64N2AUKyN0uuN294VEnIcXLaT8lzMsXszsPXJ24dcRaYbwgk?=
- =?us-ascii?Q?GieY/G5s+7Wcl0YhBh6WYxdk4GIltIkRyZ1Vmazwpnb0OaSu5Jj5o3i0u/kd?=
- =?us-ascii?Q?qjRkjOWPApEzKf2i9iLZs+7l3ywc6I3CQKX5RWkh+xLPXMkCkn3KAq4CLSwi?=
- =?us-ascii?Q?cUcCmHzXlA59Wi2FtPQkKmae2Dooyl31p2v1UnQ8j5ZMBFokCmhvWDvWS48I?=
- =?us-ascii?Q?Lj2h6SVWNwT+L8PJlQ1iubrTCbKVbTwrhN5BHgBPkXiu5qp7HKjr2LyqyYcR?=
- =?us-ascii?Q?+L/dAdJkh5ZBX+IFdj9TDZKERfiww2ZpiNRXtnjkntolm86yIcV78XOAf7EV?=
- =?us-ascii?Q?zLEIMHnlkJSM1Zp2kJDtFD7Un9gh7LchiV8pQAk5bTc+v5vG2AChla2ggE4o?=
- =?us-ascii?Q?7UaGyIYmG3FIPjyti0HnontpFzDEFT7PeU8MA0SQKbJgf0rxKAD4r7SIKxqD?=
- =?us-ascii?Q?eireCntKEIbuS9bhhTh0TfLPqjDreGJYYMOUs5RxXuvl5De9bTwLprfNq9S9?=
- =?us-ascii?Q?+Q+ecZx2ONMnUn/ibCOgoSWhwO8UTLolwiqXclja29ma0IcAVXItgsy8j0GC?=
- =?us-ascii?Q?qoikq8qhQe3uD4FXarjpj1kqMydhekKhkgySr2b3hDJi2ukk2ZPn8ZqCAVOB?=
- =?us-ascii?Q?QTWbMgTxGgSxZM5pN4k7BN8QO1kenFV8fTf96HhsthfrVyxj985PTgIB//Fr?=
- =?us-ascii?Q?yfyDqQ64zaS2QZ3OtdRm3pu83OI2NMoRK8U8H3A3IyFyMUXlDZcTjYV+j8uS?=
- =?us-ascii?Q?dwveM4JTgA9zdN011i16cteJbLNcJwtwr320d0B85dLZzDVTpVftx18GMpxe?=
- =?us-ascii?Q?fiQsUmLda+pPy1ThD3UYaf871E/68GM9vmFbSLuBbeeze0M+VHGmUAAgfzoR?=
- =?us-ascii?Q?uQncRGj4N8UFzuoQHzN9nUL/Gh2Q3jL55C4lom/EPqAgKgj+aHtba2egkGXs?=
- =?us-ascii?Q?x2gCkNhQpbC7zbffjfvXd81MrtSOcNI8EwR8N4T/BZU80ok/w4Mt2h7BXSYS?=
- =?us-ascii?Q?6RDKKPw765wl2FWSn3YEHZ40?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0237ae97-942f-47ca-9bd2-08d8cc4449de
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5636.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Feb 2021 15:14:54.4212
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Ik6IBrcEIgIH2FQYKUMRhRcv5XuMhF34Wds1k39p+aGJMj2KgizpRcpiEdLuv13GsxzwHjlPFTNhDXOerP/7Ww==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6435
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Refactor phylink_of_phy_connect() to use phylink_fwnode_phy_connect().
+On Mon, 8 Feb 2021 14:57:13 +0100
+Jesper Dangaard Brouer <brouer@redhat.com> wrote:
 
-Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
----
+> On Fri, 5 Feb 2021 01:06:35 +0100
+> Daniel Borkmann <daniel@iogearbox.net> wrote:
+> 
+> > On 2/2/21 5:26 PM, Jesper Dangaard Brouer wrote:  
+> > > BPF end-user on Cilium slack-channel (Carlo Carraro) wants to use
+> > > bpf_fib_lookup for doing MTU-check, but *prior* to extending packet size,
+> > > by adjusting fib_params 'tot_len' with the packet length plus the expected
+> > > encap size. (Just like the bpf_check_mtu helper supports). He discovered
+> > > that for SKB ctx the param->tot_len was not used, instead skb->len was used
+> > > (via MTU check in is_skb_forwardable() that checks against netdev MTU).
+> > > 
+> > > Fix this by using fib_params 'tot_len' for MTU check. If not provided (e.g.
+> > > zero) then keep existing TC behaviour intact. Notice that 'tot_len' for MTU
+> > > check is done like XDP code-path, which checks against FIB-dst MTU.
+> > > 
+> > > V13:
+> > > - Only do ifindex lookup one time, calling dev_get_by_index_rcu().
+> > > 
+> > > V10:
+> > > - Use same method as XDP for 'tot_len' MTU check
+> > > 
+> > > Fixes: 4c79579b44b1 ("bpf: Change bpf_fib_lookup to return lookup status")
+> > > Reported-by: Carlo Carraro <colrack@gmail.com>
+> > > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> > > Acked-by: John Fastabend <john.fastabend@gmail.com>    
+> > [...]
+> > 
+> > I was about to apply the series just now, but on a last double check there is
+> > a subtle logic bug in here that still needs fixing unfortunately. :/ See below:
+> >   
+> > > @@ -5568,7 +5565,9 @@ BPF_CALL_4(bpf_skb_fib_lookup, struct sk_buff *, skb,
+> > >   	   struct bpf_fib_lookup *, params, int, plen, u32, flags)
+> > >   {
+> > >   	struct net *net = dev_net(skb->dev);
+> > > +	struct net_device *dev;
+> > >   	int rc = -EAFNOSUPPORT;
+> > > +	bool check_mtu = false;
+> > >   
+> > >   	if (plen < sizeof(*params))
+> > >   		return -EINVAL;
+> > > @@ -5576,23 +5575,30 @@ BPF_CALL_4(bpf_skb_fib_lookup, struct sk_buff *, skb,
+> > >   	if (flags & ~(BPF_FIB_LOOKUP_DIRECT | BPF_FIB_LOOKUP_OUTPUT))
+> > >   		return -EINVAL;
+> > >   
+> > > +	dev = dev_get_by_index_rcu(net, params->ifindex);
+> > > +	if (unlikely(!dev))
+> > > +		return -ENODEV;    
+> > 
+> > Based on your earlier idea, you try to avoid refetching the dev this way, so
+> > here it's being looked up via params->ifindex provided from the BPF prog ...
+> >   
+> > > +	if (params->tot_len)
+> > > +		check_mtu = true;
+> > > +
+> > >   	switch (params->family) {
+> > >   #if IS_ENABLED(CONFIG_INET)
+> > >   	case AF_INET:
+> > > -		rc = bpf_ipv4_fib_lookup(net, params, flags, false);
+> > > +		rc = bpf_ipv4_fib_lookup(net, dev, params, flags, check_mtu);    
+> > 
+> > ... however, bpf_ipv{4,6}_fib_lookup() might change params->ifindex here to
+> > indicate nexthop output dev:
+> > 
+> > [...]
+> >          dev = nhc->nhc_dev;
+> > 
+> >          params->rt_metric = res.fi->fib_priority;
+> >          params->ifindex = dev->ifindex;
+> > [...]  
+> 
+> I want to hear David Ahern, what cases does this cover?
 
-Changes in v5: None
-Changes in v4: None
-Changes in v3: None
-Changes in v2: None
+Let me answer this myself (as it should have be obvious to myself).
+The ifindex that is used as part of return param, is "set to the device
+index of the nexthop from the FIB lookup" (as man-page says).  The
+params->ifindex will *always* be updated, and will very likely be
+another ifindex, as on "input" it is the ingress-device and on
+"output" it will be egress-device (result of FIB lookup).
 
- drivers/net/phy/phylink.c | 39 +--------------------------------------
- 1 file changed, 1 insertion(+), 38 deletions(-)
-
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 5466e1e6272a..3d0dc53fd4f3 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -1080,44 +1080,7 @@ EXPORT_SYMBOL_GPL(phylink_connect_phy);
- int phylink_of_phy_connect(struct phylink *pl, struct device_node *dn,
- 			   u32 flags)
- {
--	struct device_node *phy_node;
--	struct phy_device *phy_dev;
--	int ret;
--
--	/* Fixed links and 802.3z are handled without needing a PHY */
--	if (pl->cfg_link_an_mode == MLO_AN_FIXED ||
--	    (pl->cfg_link_an_mode == MLO_AN_INBAND &&
--	     phy_interface_mode_is_8023z(pl->link_interface)))
--		return 0;
--
--	phy_node = of_parse_phandle(dn, "phy-handle", 0);
--	if (!phy_node)
--		phy_node = of_parse_phandle(dn, "phy", 0);
--	if (!phy_node)
--		phy_node = of_parse_phandle(dn, "phy-device", 0);
--
--	if (!phy_node) {
--		if (pl->cfg_link_an_mode == MLO_AN_PHY)
--			return -ENODEV;
--		return 0;
--	}
--
--	phy_dev = of_phy_find_device(phy_node);
--	/* We're done with the phy_node handle */
--	of_node_put(phy_node);
--	if (!phy_dev)
--		return -ENODEV;
--
--	ret = phy_attach_direct(pl->netdev, phy_dev, flags,
--				pl->link_interface);
--	if (ret)
--		return ret;
--
--	ret = phylink_bringup_phy(pl, phy_dev, pl->link_config.interface);
--	if (ret)
--		phy_detach(phy_dev);
--
--	return ret;
-+	return phylink_fwnode_phy_connect(pl, of_fwnode_handle(dn), flags);
- }
- EXPORT_SYMBOL_GPL(phylink_of_phy_connect);
  
+> > >   		break;
+> > >   #endif
+> > >   #if IS_ENABLED(CONFIG_IPV6)
+> > >   	case AF_INET6:
+> > > -		rc = bpf_ipv6_fib_lookup(net, params, flags, false);
+> > > +		rc = bpf_ipv6_fib_lookup(net, dev, params, flags, check_mtu);
+> > >   		break;
+> > >   #endif
+> > >   	}
+> > >   
+> > > -	if (!rc) {
+> > > -		struct net_device *dev;
+> > > -
+> > > -		dev = dev_get_by_index_rcu(net, params->ifindex);
+> > > +	if (rc == BPF_FIB_LKUP_RET_SUCCESS && !check_mtu) {
+> > > +		/* When tot_len isn't provided by user,
+> > > +		 * check skb against net_device MTU
+> > > +		 */
+> > >   		if (!is_skb_forwardable(dev, skb))
+> > >   			rc = BPF_FIB_LKUP_RET_FRAG_NEEDED;    
+> > 
+> > ... so using old cached dev from above will result in wrong MTU check &
+> > subsequent passing of wrong params->mtu_result = dev->mtu this way.   
+> 
+> Yes, you are right, params->ifindex have a chance to change in the calls.
+> So, our attempt to save an ifindex lookup (dev_get_by_index_rcu) is not
+> correct.
+> 
+> > So one
+> > way to fix is that we would need to pass &dev to bpf_ipv{4,6}_fib_lookup().  
+> 
+> Ok, I will try to code it up, and see how ugly it looks, but I'm no
+> longer sure that it is worth saving this ifindex lookup, as it will
+> only happen if BPF-prog didn't specify params->tot_len.
+
+I guess we can still do this as an "optimization", but the dev/ifindex
+will very likely be another at this point.
+
 -- 
-2.17.1
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
