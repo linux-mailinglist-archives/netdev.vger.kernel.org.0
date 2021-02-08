@@ -2,114 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AB5D313DA0
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 19:35:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 135D8313DDA
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 19:43:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235724AbhBHSfY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 13:35:24 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:34208 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235612AbhBHSd7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 13:33:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1612809152;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=FONHI2TN+O9acLzuem6EKO8Yxg/GTLtQhMLyetszZzg=;
-        b=EomRJV7hFFm9W17H9Qfl+8xzS9xRLJdvG/fjpDXUfcTD8izfMoBqqWhqXMs/hMylQi/Ipl
-        OLWWQv/1/jeNZwSG8IS8ysQ04IYMhSHUYeCaCwORAK77DyVgxD/LzPUeEle3sCNoZSvTJU
-        GDGXyhgJSPO7PoLgnWEGYlapkPO2p1A=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-497-VBrsjuc1OKyBb3RCuCbHEw-1; Mon, 08 Feb 2021 13:32:30 -0500
-X-MC-Unique: VBrsjuc1OKyBb3RCuCbHEw-1
-Received: by mail-ed1-f72.google.com with SMTP id bo11so14636052edb.0
-        for <netdev@vger.kernel.org>; Mon, 08 Feb 2021 10:32:30 -0800 (PST)
+        id S235793AbhBHSmh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 13:42:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40814 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235768AbhBHSm1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 13:42:27 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 213A1C061788
+        for <netdev@vger.kernel.org>; Mon,  8 Feb 2021 10:41:47 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id u143so4053959pfc.7
+        for <netdev@vger.kernel.org>; Mon, 08 Feb 2021 10:41:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3Xm/qvFs4/70pTQDZyKkVYeeOfhYWvle4ZoxP8OF/L8=;
+        b=iP+JeCeS2wfxyX+w88gwvUc8n0yhKl2/QkMZTPaGPzrrp3+FhHxHGm1sNwX070FMbR
+         ML0imNz5bxugMNFIJgXxXEKUUD9hS6cDTywmNfVAa3mDTRHMWV3yLd1HkD/DKT4UjTvB
+         gHn8QDYNBzR/YlrZCIP7fHeD4zvsmmMcK3zHRedFXxGFXuO8h/x4zGE3G3KANB9Hde1P
+         KoicQnpyvVqaVYcjXNYbCVoxA+URYQTvLC0T5MTcgj+SdQCE+JpbNoRBrZusstkbYa2u
+         BSnh9CClaUpiIqyiZSxokKO2jMTUZGLb47aVFSy+B62SZ5bnIAqV4DaEnIFA4jFMTRAY
+         ROJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=FONHI2TN+O9acLzuem6EKO8Yxg/GTLtQhMLyetszZzg=;
-        b=e0cTXPVh+n9OuszDoxetVj8M+u4FV11n7mXSDQ2K6YVCt3w19IpcMyJyKHRD8SpFsc
-         3bw07Ru0lflmvEaypIDR69UJDyHHc/S+AoVrhNYhWddYKz3zH7uxZa5JrlOOz7DuO5G9
-         3kHUj51njAmFTBxh+PXl/RpJ52L5ctAQfYULzYEYD79vJLg38eofnpuqhP8+i/b0qm5c
-         fdg6SqqoAG9dd3fYiXK6wPIp6BgKfZJ1vfqIP4ZYiUM/CjkZpFznzUU0BhSgtb0bxV4J
-         ruTxUlaCGhW/d8uWk6ZG7oIuCQ9rtQAYc3qPG5sFfzUQVVHTYAhe6h1a8q70PYukoPcA
-         7TXw==
-X-Gm-Message-State: AOAM530gopGu0P2Kh6+Hmrgpt5F/Tzvjf5A9JkVZCuekLZL/YF7VU+gD
-        sGKkSU5pYeUNtJTkk1stNlA5ozmnyzuBQWmpAbsyyB2BfBQ/+8dJgAJsZ2lBehLGAXX4qQgLwVI
-        5XfM8rdZ46L/oqXE4
-X-Received: by 2002:aa7:c755:: with SMTP id c21mr18592170eds.47.1612809148226;
-        Mon, 08 Feb 2021 10:32:28 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxpsuTp5sRzeOMNIjmosofGMT5Va6UgHF+7NHtSfOHTT8nBvBhqO12WkK46eKwRMOgobAa2CA==
-X-Received: by 2002:aa7:c755:: with SMTP id c21mr18592153eds.47.1612809148080;
-        Mon, 08 Feb 2021 10:32:28 -0800 (PST)
-Received: from redhat.com (bzq-79-180-2-31.red.bezeqint.net. [79.180.2.31])
-        by smtp.gmail.com with ESMTPSA id x5sm10415492edi.35.2021.02.08.10.32.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Feb 2021 10:32:27 -0800 (PST)
-Date:   Mon, 8 Feb 2021 13:32:24 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     kuba@kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Asias He <asias@redhat.com>,
-        Claudio Imbrenda <imbrenda@linux.vnet.ibm.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>
-Subject: Re: [PATCH net] vsock/virtio: update credit only if socket is not
- closed
-Message-ID: <20210208133211-mutt-send-email-mst@kernel.org>
-References: <20210208144454.84438-1-sgarzare@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3Xm/qvFs4/70pTQDZyKkVYeeOfhYWvle4ZoxP8OF/L8=;
+        b=lM3dmAOs80CPUsDvqbuFML2NgRAVw31PpG0alD/TposQ034ApqTH33JQHehsvg1dJo
+         /cJ/6KRRKPjKudPJGzNC5sMedo5fYXaCrUoiTcsCbY6FnigzgsisL9TPPCuOmxojjGqz
+         JjGhOwJmZ3y8cwLxZIPyeLwrgS2VOBii1hY9WXimO3+hojj7gHMUclKsJ3pCeUI/+ANz
+         ItHCC25+Rb/SwWmwTivGF6bQidSpyKNPdlXpqEjZsrzBNRAcboj6Dy/5keOq+8AzSlSP
+         nlL06Blkmp6E47Sh+3Gn8L8Mjzp+dtl34VVWz/XKMu6sqZHg9Z8ufEGck9HdkS2XY3k5
+         4r6g==
+X-Gm-Message-State: AOAM530oHh8T44tXzgYaGBQ+YL5rJosMuS8aO+tB42lg+GLUwWC3bekL
+        NsJ4kYgELU/FC+4w+IrOP2LX2VojezJkYJRGZMehCNar42iTvQ==
+X-Google-Smtp-Source: ABdhPJyNEI1T98kDg4hajSWYUL1EGWPawtX+i7I4PbPVtApMWfUhgy90Cl6wG71/pVE0bTjTUdkMbgAQrzBfHRAxuAE=
+X-Received: by 2002:a63:3c4e:: with SMTP id i14mr17876112pgn.266.1612809706734;
+ Mon, 08 Feb 2021 10:41:46 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210208144454.84438-1-sgarzare@redhat.com>
+References: <1612674803-7912-1-git-send-email-wenxu@ucloud.cn>
+In-Reply-To: <1612674803-7912-1-git-send-email-wenxu@ucloud.cn>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 8 Feb 2021 10:41:35 -0800
+Message-ID: <CAM_iQpXojFaYogRu76=jGr6cp74YcUyR_ZovRnSmKp9KaugBOw@mail.gmail.com>
+Subject: Re: [PATCH net v4] net/sched: cls_flower: Reject invalid ct_state
+ flags rules
+To:     wenxu <wenxu@ucloud.cn>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, mleitner@redhat.com,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 08, 2021 at 03:44:54PM +0100, Stefano Garzarella wrote:
-> If the socket is closed or is being released, some resources used by
-> virtio_transport_space_update() such as 'vsk->trans' may be released.
-> 
-> To avoid a use after free bug we should only update the available credit
-> when we are sure the socket is still open and we have the lock held.
-> 
-> Fixes: 06a8fc78367d ("VSOCK: Introduce virtio_vsock_common.ko")
-> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-
-Probably stable material.
-
-> ---
->  net/vmw_vsock/virtio_transport_common.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-> index 5956939eebb7..e4370b1b7494 100644
-> --- a/net/vmw_vsock/virtio_transport_common.c
-> +++ b/net/vmw_vsock/virtio_transport_common.c
-> @@ -1130,8 +1130,6 @@ void virtio_transport_recv_pkt(struct virtio_transport *t,
->  
->  	vsk = vsock_sk(sk);
->  
-> -	space_available = virtio_transport_space_update(sk, pkt);
-> -
->  	lock_sock(sk);
->  
->  	/* Check if sk has been closed before lock_sock */
-> @@ -1142,6 +1140,8 @@ void virtio_transport_recv_pkt(struct virtio_transport *t,
->  		goto free_pkt;
->  	}
->  
-> +	space_available = virtio_transport_space_update(sk, pkt);
+On Sat, Feb 6, 2021 at 9:26 PM <wenxu@ucloud.cn> wrote:
+> +       if (state && !(state & TCA_FLOWER_KEY_CT_FLAGS_TRACKED)) {
+> +               NL_SET_ERR_MSG_ATTR(extack, tb,
+> +                                   "ct_state no trk, no other flag are set");
+> +               return -EINVAL;
+> +       }
 > +
->  	/* Update CID in case it has changed after a transport reset event */
->  	vsk->local_addr.svm_cid = dst.svm_cid;
->  
-> -- 
-> 2.29.2
+> +       if (state & TCA_FLOWER_KEY_CT_FLAGS_NEW &&
+> +           state & TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED) {
+> +               NL_SET_ERR_MSG_ATTR(extack, tb,
+> +                                   "ct_state new and est are exclusive");
 
+Please spell out the full words, "trk" and "est" are not good abbreviations.
