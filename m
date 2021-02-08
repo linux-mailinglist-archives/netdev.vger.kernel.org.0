@@ -2,174 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 068F9312D0F
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 10:16:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47B46312D2D
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 10:23:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230310AbhBHJQM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 04:16:12 -0500
-Received: from mga09.intel.com ([134.134.136.24]:24622 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231448AbhBHJMb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Feb 2021 04:12:31 -0500
-IronPort-SDR: oyoe+dLh1uyZ3NQOwznCuDB+HlNwt0wK76S8obLcvtfJIvJsNOMedmM/D8osLwNLue2apTiuBC
- R+sm8MHIcokQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9888"; a="181829051"
-X-IronPort-AV: E=Sophos;i="5.81,161,1610438400"; 
-   d="scan'208";a="181829051"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2021 01:11:47 -0800
-IronPort-SDR: MBUxSNyQwLPUHZJPpyLAUMM8IvfdTPMit0X6YFbn8BH5WQshKCM0+kWHzq9MKPdbWcSAnkTqMQ
- tdloINw/eCEQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,161,1610438400"; 
-   d="scan'208";a="577597098"
-Received: from irsmsx602.ger.corp.intel.com ([163.33.146.8])
-  by orsmga005.jf.intel.com with ESMTP; 08 Feb 2021 01:11:46 -0800
-Received: from irsmsx604.ger.corp.intel.com (163.33.146.137) by
- irsmsx602.ger.corp.intel.com (163.33.146.8) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 8 Feb 2021 09:11:45 +0000
-Received: from irsmsx604.ger.corp.intel.com ([163.33.146.137]) by
- IRSMSX604.ger.corp.intel.com ([163.33.146.137]) with mapi id 15.01.1713.004;
- Mon, 8 Feb 2021 09:11:45 +0000
-From:   "Loftus, Ciara" <ciara.loftus@intel.com>
-To:     Song Liu <song@kernel.org>
-CC:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        "bjorn@kernel.org" <bjorn@kernel.org>,
-        "Janjua, Weqaar A" <weqaar.a.janjua@intel.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: RE: [PATCH bpf-next v4 1/6] xsk: add tracepoints for packet drops
-Thread-Topic: [PATCH bpf-next v4 1/6] xsk: add tracepoints for packet drops
-Thread-Index: AQHW+gQtY6FVIJp7kEmcFgyAhJ+OY6pHjEYAgAZzYrA=
-Date:   Mon, 8 Feb 2021 09:11:45 +0000
-Message-ID: <7bbb5eb6ae5f4a03b1ed60fbef998c2f@intel.com>
-References: <20210203074127.8616-1-ciara.loftus@intel.com>
- <20210203074127.8616-2-ciara.loftus@intel.com>
- <CAPhsuW7Bat9oWw_3_TRgUzc7y61kUtTDYT9-4r2ZaOW7WTZ59g@mail.gmail.com>
-In-Reply-To: <CAPhsuW7Bat9oWw_3_TRgUzc7y61kUtTDYT9-4r2ZaOW7WTZ59g@mail.gmail.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-x-originating-ip: [163.33.253.164]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S231372AbhBHJXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 04:23:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32852 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230333AbhBHJVZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 04:21:25 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69FA8C061786
+        for <netdev@vger.kernel.org>; Mon,  8 Feb 2021 01:20:45 -0800 (PST)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1l92in-0005yN-37; Mon, 08 Feb 2021 10:20:41 +0100
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1l92ik-0003fs-QN; Mon, 08 Feb 2021 10:20:38 +0100
+Date:   Mon, 8 Feb 2021 10:20:38 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>,
+        linux-kernel@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        Philippe Schenker <philippe.schenker@toradex.com>,
+        linux-imx@nxp.com, kernel@pengutronix.de,
+        David Jander <david@protonic.nl>,
+        Shawn Guo <shawnguo@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH v1 5/7] ARM i.MX6q: remove Atheros AR8035 SmartEEE fixup
+Message-ID: <20210208092038.cjmnycyctsapgy7w@pengutronix.de>
+References: <20210203091857.16936-1-o.rempel@pengutronix.de>
+ <20210203091857.16936-6-o.rempel@pengutronix.de>
+ <20210203095628.GP1463@shell.armlinux.org.uk>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20210203095628.GP1463@shell.armlinux.org.uk>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 10:03:28 up 67 days, 23:09, 39 users,  load average: 0.10, 0.07,
+ 0.08
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiA+DQo+ID4gVGhpcyBjb21taXQgaW50cm9kdWNlcyB0cmFjaW5nIGluZnJhc3RydWN0dXJlIGZv
-ciBBRl9YRFAgc29ja2V0cw0KPiA+ICh4c2tzKSBhbmQgYSBuZXcgdHJhY2UgZXZlbnQgY2FsbGVk
-ICd4c2tfcGFja2V0X2Ryb3AnLiBUaGlzIHRyYWNlDQo+ID4gZXZlbnQgaXMgdHJpZ2dlcmVkIHdo
-ZW4gYSBwYWNrZXQgY2Fubm90IGJlIHByb2Nlc3NlZCBieSB0aGUgc29ja2V0DQo+ID4gZHVlIHRv
-IG9uZSBvZiB0aGUgZm9sbG93aW5nIGlzc3VlczoNCj4gPiAoMSkgcGFja2V0IGV4Y2VlZHMgdGhl
-IG1heGltdW0gcGVybWl0dGVkIHNpemUuDQo+ID4gKDIpIGludmFsaWQgZmlsbCBkZXNjcmlwdG9y
-IGFkZHJlc3MuDQo+ID4gKDMpIGludmFsaWQgdHggZGVzY3JpcHRvciBmaWVsZC4NCj4gPg0KPiA+
-IFRoZSB0cmFjZSBwcm92aWRlcyBpbmZvcm1hdGlvbiBhYm91dCB0aGUgZXJyb3IgdG8gdGhlIHVz
-ZXIuIEZvcg0KPiA+IGV4YW1wbGUgdGhlIHNpemUgdnMgcGVybWl0dGVkIHNpemUgaXMgcHJvdmlk
-ZWQgZm9yICgxKS4gRm9yICgyKQ0KPiA+IGFuZCAoMykgdGhlIHJlbGV2YW50IGRlc2NyaXB0b3Ig
-ZmllbGRzIGFyZSBwcmludGVkLiBUaGlzIGluZm9ybWF0aW9uDQo+ID4gc2hvdWxkIGhlbHAgYSB1
-c2VyIHRyb3VibGVzaG9vdCBwYWNrZXQgZHJvcHMgYnkgcHJvdmlkaW5nIHRoaXMgZXh0cmENCj4g
-PiBsZXZlbCBvZiBkZXRhaWwgd2hpY2ggaXMgbm90IGF2YWlsYWJsZSB0aHJvdWdoIHVzZSBvZiBz
-aW1wbGUgY291bnRlcnMuDQo+ID4NCj4gPiBUaGUgdHJhY2Vwb2ludCBjYW4gYmUgZW5hYmxlZC9k
-aXNhYmxlZCBieSB0b2dnbGluZw0KPiA+IC9zeXMva2VybmVsL2RlYnVnL3RyYWNpbmcvZXZlbnRz
-L3hzay94c2tfcGFja2V0X2Ryb3AvZW5hYmxlDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBDaWFy
-YSBMb2Z0dXMgPGNpYXJhLmxvZnR1c0BpbnRlbC5jb20+DQo+ID4gLS0tDQo+ID4gIE1BSU5UQUlO
-RVJTICAgICAgICAgICAgICAgICAgICAgICB8ICAxICsNCj4gPiAgaW5jbHVkZS9saW51eC9icGZf
-dHJhY2UuaCAgICAgICAgIHwgIDEgKw0KPiA+ICBpbmNsdWRlL3RyYWNlL2V2ZW50cy94c2suaCAg
-ICAgICAgfCA3Mw0KPiArKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrDQo+ID4gIGluY2x1
-ZGUvdWFwaS9saW51eC9pZl94ZHAuaCAgICAgICB8ICA2ICsrKw0KPiA+ICBrZXJuZWwvYnBmL2Nv
-cmUuYyAgICAgICAgICAgICAgICAgfCAgMSArDQo+ID4gIG5ldC94ZHAveHNrLmMgICAgICAgICAg
-ICAgICAgICAgICB8ICA3ICsrLQ0KPiA+ICBuZXQveGRwL3hza19idWZmX3Bvb2wuYyAgICAgICAg
-ICAgfCAgMyArKw0KPiA+ICBuZXQveGRwL3hza19xdWV1ZS5oICAgICAgICAgICAgICAgfCAgNCAr
-Kw0KPiA+ICB0b29scy9pbmNsdWRlL3VhcGkvbGludXgvaWZfeGRwLmggfCAgNiArKysNCj4gPiAg
-OSBmaWxlcyBjaGFuZ2VkLCAxMDEgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQ0KPiA+ICBj
-cmVhdGUgbW9kZSAxMDA2NDQgaW5jbHVkZS90cmFjZS9ldmVudHMveHNrLmgNCj4gPg0KPiA+IGRp
-ZmYgLS1naXQgYS9NQUlOVEFJTkVSUyBiL01BSU5UQUlORVJTDQo+ID4gaW5kZXggMWRmNTZhMzJk
-MmRmLi5lZmU2NjYyZDQxOTggMTAwNjQ0DQo+ID4gLS0tIGEvTUFJTlRBSU5FUlMNCj4gPiArKysg
-Yi9NQUlOVEFJTkVSUw0KPiA+IEBAIC0xOTQ0MCw2ICsxOTQ0MCw3IEBAIFM6ICAgICAgTWFpbnRh
-aW5lZA0KPiA+ICBGOiAgICAgRG9jdW1lbnRhdGlvbi9uZXR3b3JraW5nL2FmX3hkcC5yc3QNCj4g
-PiAgRjogICAgIGluY2x1ZGUvbmV0L3hkcF9zb2NrKg0KPiA+ICBGOiAgICAgaW5jbHVkZS9uZXQv
-eHNrX2J1ZmZfcG9vbC5oDQo+ID4gK0Y6ICAgICBpbmNsdWRlL3RyYWNlL2V2ZW50cy94c2suaA0K
-PiA+ICBGOiAgICAgaW5jbHVkZS91YXBpL2xpbnV4L2lmX3hkcC5oDQo+ID4gIEY6ICAgICBpbmNs
-dWRlL3VhcGkvbGludXgveGRwX2RpYWcuaA0KPiA+ICBGOiAgICAgaW5jbHVkZS9uZXQvbmV0bnMv
-eGRwLmgNCj4gPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9icGZfdHJhY2UuaCBiL2luY2x1
-ZGUvbGludXgvYnBmX3RyYWNlLmgNCj4gPiBpbmRleCBkZGY4OTZhYmNmYjYuLjQ3N2QyOWI2YzJj
-MSAxMDA2NDQNCj4gPiAtLS0gYS9pbmNsdWRlL2xpbnV4L2JwZl90cmFjZS5oDQo+ID4gKysrIGIv
-aW5jbHVkZS9saW51eC9icGZfdHJhY2UuaA0KPiA+IEBAIC0zLDUgKzMsNiBAQA0KPiA+ICAjZGVm
-aW5lIF9fTElOVVhfQlBGX1RSQUNFX0hfXw0KPiA+DQo+ID4gICNpbmNsdWRlIDx0cmFjZS9ldmVu
-dHMveGRwLmg+DQo+ID4gKyNpbmNsdWRlIDx0cmFjZS9ldmVudHMveHNrLmg+DQo+ID4NCj4gPiAg
-I2VuZGlmIC8qIF9fTElOVVhfQlBGX1RSQUNFX0hfXyAqLw0KPiA+IGRpZmYgLS1naXQgYS9pbmNs
-dWRlL3RyYWNlL2V2ZW50cy94c2suaCBiL2luY2x1ZGUvdHJhY2UvZXZlbnRzL3hzay5oDQo+ID4g
-bmV3IGZpbGUgbW9kZSAxMDA2NDQNCj4gPiBpbmRleCAwMDAwMDAwMDAwMDAuLmUyOTg0ZmFkMzcy
-Yw0KPiA+IC0tLSAvZGV2L251bGwNCj4gPiArKysgYi9pbmNsdWRlL3RyYWNlL2V2ZW50cy94c2su
-aA0KPiA+IEBAIC0wLDAgKzEsNzMgQEANCj4gPiArLyogU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6
-IEdQTC0yLjAgKi8NCj4gPiArLyogQ29weXJpZ2h0KGMpIDIwMjEgSW50ZWwgQ29ycG9yYXRpb24u
-ICovDQo+ID4gKw0KPiA+ICsjdW5kZWYgVFJBQ0VfU1lTVEVNDQo+ID4gKyNkZWZpbmUgVFJBQ0Vf
-U1lTVEVNIHhzaw0KPiA+ICsNCj4gPiArI2lmICFkZWZpbmVkKF9UUkFDRV9YU0tfSCkgfHwgZGVm
-aW5lZChUUkFDRV9IRUFERVJfTVVMVElfUkVBRCkNCj4gPiArI2RlZmluZSBfVFJBQ0VfWFNLX0gN
-Cj4gPiArDQo+ID4gKyNpbmNsdWRlIDxsaW51eC9pZl94ZHAuaD4NCj4gPiArI2luY2x1ZGUgPGxp
-bnV4L3RyYWNlcG9pbnQuaD4NCj4gPiArDQo+ID4gKyNkZWZpbmUgcHJpbnRfcmVhc29uKHJlYXNv
-bikgXA0KPiA+ICsgICAgICAgX19wcmludF9zeW1ib2xpYyhyZWFzb24sIFwNCj4gPiArICAgICAg
-ICAgICAgICAgICAgICAgICB7IFhTS19UUkFDRV9EUk9QX1BLVF9UT09fQklHLCAicGFja2V0IHRv
-byBiaWciIH0sIFwNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICB7IFhTS19UUkFDRV9EUk9Q
-X0lOVkFMSURfRklMTEFERFIsICJpbnZhbGlkIGZpbGwgYWRkciIgfSwgXA0KPiA+ICsgICAgICAg
-ICAgICAgICAgICAgICAgIHsgWFNLX1RSQUNFX0RST1BfSU5WQUxJRF9UWEQsICJpbnZhbGlkIHR4
-IGRlc2MiIH0pDQo+ID4gKw0KPiA+ICsjZGVmaW5lIHByaW50X3ZhbDEocmVhc29uKSBcDQo+ID4g
-KyAgICAgICBfX3ByaW50X3N5bWJvbGljKHJlYXNvbiwgXA0KPiA+ICsgICAgICAgICAgICAgICAg
-ICAgICAgIHsgWFNLX1RSQUNFX0RST1BfUEtUX1RPT19CSUcsICJsZW4iIH0sIFwNCj4gPiArICAg
-ICAgICAgICAgICAgICAgICAgICB7IFhTS19UUkFDRV9EUk9QX0lOVkFMSURfRklMTEFERFIsICJh
-ZGRyIiB9LCBcDQo+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgeyBYU0tfVFJBQ0VfRFJPUF9J
-TlZBTElEX1RYRCwgImFkZHIiIH0pDQo+ID4gKw0KPiA+ICsjZGVmaW5lIHByaW50X3ZhbDIocmVh
-c29uKSBcDQo+ID4gKyAgICAgICBfX3ByaW50X3N5bWJvbGljKHJlYXNvbiwgXA0KPiA+ICsgICAg
-ICAgICAgICAgICAgICAgICAgIHsgWFNLX1RSQUNFX0RST1BfUEtUX1RPT19CSUcsICJtYXgiIH0s
-IFwNCj4gPiArICAgICAgICAgICAgICAgICAgICAgICB7IFhTS19UUkFDRV9EUk9QX0lOVkFMSURf
-RklMTEFERFIsICJub3RfdXNlZCIgfSwgXA0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgIHsg
-WFNLX1RSQUNFX0RST1BfSU5WQUxJRF9UWEQsICJsZW4iIH0pDQo+ID4gKw0KPiA+ICsjZGVmaW5l
-IHByaW50X3ZhbDMocmVhc29uKSBcDQo+ID4gKyAgICAgICBfX3ByaW50X3N5bWJvbGljKHJlYXNv
-biwgXA0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgIHsgWFNLX1RSQUNFX0RST1BfUEtUX1RP
-T19CSUcsICJub3RfdXNlZCIgfSwgXA0KPiA+ICsgICAgICAgICAgICAgICAgICAgICAgIHsgWFNL
-X1RSQUNFX0RST1BfSU5WQUxJRF9GSUxMQUREUiwgIm5vdF91c2VkIiB9LCBcDQo+ID4gKyAgICAg
-ICAgICAgICAgICAgICAgICAgeyBYU0tfVFJBQ0VfRFJPUF9JTlZBTElEX1RYRCwgIm9wdGlvbnMi
-IH0pDQo+ID4gKw0KPiA+ICsNCj4gPiArDQo+IA0KPiBuaXQ6IDMgZW1wdHkgbGluZXMuDQo+IA0K
-PiA+ICtUUkFDRV9FVkVOVCh4c2tfcGFja2V0X2Ryb3AsDQo+ID4gKw0KPiA+ICsgICAgICAgVFBf
-UFJPVE8oY2hhciAqbmFtZSwgdTE2IHF1ZXVlX2lkLCB1MzIgcmVhc29uLCB1NjQgdmFsMSwgdTY0
-IHZhbDIsDQo+IHU2NCB2YWwzKSwNCj4gPiArDQo+ID4gKyAgICAgICBUUF9BUkdTKG5hbWUsIHF1
-ZXVlX2lkLCByZWFzb24sIHZhbDEsIHZhbDIsIHZhbDMpLA0KPiA+ICsNCj4gPiArICAgICAgIFRQ
-X1NUUlVDVF9fZW50cnkoDQo+ID4gKyAgICAgICAgICAgICAgIF9fZmllbGQoY2hhciAqLCBuYW1l
-KQ0KPiA+ICsgICAgICAgICAgICAgICBfX2ZpZWxkKHUxNiwgcXVldWVfaWQpDQo+ID4gKyAgICAg
-ICAgICAgICAgIF9fZmllbGQodTMyLCByZWFzb24pDQo+ID4gKyAgICAgICAgICAgICAgIF9fZmll
-bGQodTY0LCB2YWwxKQ0KPiA+ICsgICAgICAgICAgICAgICBfX2ZpZWxkKHUzMiwgdmFsMikNCj4g
-PiArICAgICAgICAgICAgICAgX19maWVsZCh1MzIsIHZhbDMpDQo+ID4gKyAgICAgICApLA0KPiA+
-ICsNCj4gPiArICAgICAgIFRQX2Zhc3RfYXNzaWduKA0KPiA+ICsgICAgICAgICAgICAgICBfX2Vu
-dHJ5LT5uYW1lID0gbmFtZTsNCj4gPiArICAgICAgICAgICAgICAgX19lbnRyeS0+cXVldWVfaWQg
-PSBxdWV1ZV9pZDsNCj4gPiArICAgICAgICAgICAgICAgX19lbnRyeS0+cmVhc29uID0gcmVhc29u
-Ow0KPiA+ICsgICAgICAgICAgICAgICBfX2VudHJ5LT52YWwxID0gdmFsMTsNCj4gPiArICAgICAg
-ICAgICAgICAgX19lbnRyeS0+dmFsMiA9IHZhbDI7DQo+ID4gKyAgICAgICAgICAgICAgIF9fZW50
-cnktPnZhbDMgPSB2YWwzOw0KPiA+ICsgICAgICAgKSwNCj4gPiArDQo+ID4gKyAgICAgICBUUF9w
-cmludGsoIm5ldGRldjogJXMgcWlkICV1IHJlYXNvbjogJXM6ICVzICVsbHUgJXMgJXUgJXMgJXUi
-LA0KPiA+ICsgICAgICAgICAgICAgICAgIF9fZW50cnktPm5hbWUsIF9fZW50cnktPnF1ZXVlX2lk
-LCBwcmludF9yZWFzb24oX19lbnRyeS0NCj4gPnJlYXNvbiksDQo+ID4gKyAgICAgICAgICAgICAg
-ICAgcHJpbnRfdmFsMShfX2VudHJ5LT5yZWFzb24pLCBfX2VudHJ5LT52YWwxLA0KPiA+ICsgICAg
-ICAgICAgICAgICAgIHByaW50X3ZhbDIoX19lbnRyeS0+cmVhc29uKSwgX19lbnRyeS0+dmFsMiwN
-Cj4gPiArICAgICAgICAgICAgICAgICBwcmludF92YWwzKF9fZW50cnktPnJlYXNvbiksIF9fZW50
-cnktPnZhbDMNCj4gPiArICAgICAgICkNCj4gPiArKTsNCj4gPiArDQo+ID4gKyNlbmRpZiAvKiBf
-VFJBQ0VfWFNLX0ggKi8NCj4gPiArDQo+ID4gKyNpbmNsdWRlIDx0cmFjZS9kZWZpbmVfdHJhY2Uu
-aD4NCj4gPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS91YXBpL2xpbnV4L2lmX3hkcC5oIGIvaW5jbHVk
-ZS91YXBpL2xpbnV4L2lmX3hkcC5oDQo+ID4gaW5kZXggYTc4YTgwOTZmNGNlLi5kN2ViMDMxZDI0
-NjUgMTAwNjQ0DQo+ID4gLS0tIGEvaW5jbHVkZS91YXBpL2xpbnV4L2lmX3hkcC5oDQo+ID4gKysr
-IGIvaW5jbHVkZS91YXBpL2xpbnV4L2lmX3hkcC5oDQo+ID4gQEAgLTEwOCw0ICsxMDgsMTAgQEAg
-c3RydWN0IHhkcF9kZXNjIHsNCj4gPg0KPiA+ICAvKiBVTUVNIGRlc2NyaXB0b3IgaXMgX191NjQg
-Ki8NCj4gPg0KPiA+ICtlbnVtIHhkcF90cmFjZV9yZWFzb25zIHsNCj4gDQo+IHhkcF90cmFjZV9y
-ZWFzb25zIGFib3ZlLCB2cy4gWFNLX1RSQUNFXyBiZWxvdy4gSXMgdGhpcyBpbnRlbnRpb25hbD8N
-Cg0KSXQgbWFrZXMgc2Vuc2UgdG8gY2hhbmdlIGl0IHRvIHhza190cmFjZV9yZWFzb25zLiBJJ2xs
-IHJlc3BpbiB3aXRoIHRoaXMgY2hhbmdlLCBhbmQgYWxzbyByZW1vdmUgdGhlIGVtcHR5IGxpbmVz
-IHlvdSBmb3VuZC4NCg0KVGhhbmtzLA0KQ2lhcmENCg0KPiANCj4gPiArICAgICAgIFhTS19UUkFD
-RV9EUk9QX1BLVF9UT09fQklHLA0KPiA+ICsgICAgICAgWFNLX1RSQUNFX0RST1BfSU5WQUxJRF9G
-SUxMQUREUiwNCj4gPiArICAgICAgIFhTS19UUkFDRV9EUk9QX0lOVkFMSURfVFhELA0KPiA+ICt9
-Ow0KPiA+ICsNCj4gDQo+IFsuLi5dDQo=
+On Wed, Feb 03, 2021 at 09:56:28AM +0000, Russell King - ARM Linux admin wrote:
+> On Wed, Feb 03, 2021 at 10:18:55AM +0100, Oleksij Rempel wrote:
+> > This fixup removes the Lpi_en bit.
+> > 
+> > If this patch breaks functionality of your board, use following device
+> > tree properties:
+> > 
+> > 	ethernet-phy@X {
+> > 		reg = <0xX>;
+> > 		eee-broken-1000t;
+> > 		eee-broken-100tx;
+> > 		....
+> > 	};
+> 
+> That is the historical fix for this problem, but there is a better
+> solution now in net-next - configuring the Tw parameter for gigabit
+> connections. That solves the random link drop issue when EEE is
+> enabled.
+
+Do you mean this properties?
+  qca,smarteee-tw-us-1g
+  qca,smarteee-tw-us-100m
+
+Do you have some recommendations, which values can be here used? Are
+they same for all MACs? Or, can we calculate this values automatically?
+
+Beside, I have seen this patch: "ARM: dts: imx6qdl-sr-som: fix some
+cubox-i platforms"
+
+I had similar issue and it was triggered by the boot loader, which
+enabled 60 Ohm on-die termination. The fix was to remove this lines in
+the boot loader: wm 32 0x020e07ac 0x00000200 /* 60 Ohm ODT */
+
+> Support for this configuration has only recently been merged into
+> net-next and other trees for this merge window, so I ask that you
+> hold off at least this patch until the next cycle.
+
+ok.
+
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
