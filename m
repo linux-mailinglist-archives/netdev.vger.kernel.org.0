@@ -2,90 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5766A313584
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 15:48:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26E7531358D
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 15:49:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231682AbhBHOrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 09:47:06 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:31196 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232771AbhBHOqh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 09:46:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1612795512;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=wDyz1IFDSEAOIerG7E7i9OIec2MQQzh/7MUoQ35aflI=;
-        b=NcrwCJOF9GzFKMbfrmbbgt6bWzxEOHYwiNCWjFYL4VNBBruV2DbzqpvE4lRB4JliP4H6o4
-        0I0umLVF2vArQpCcn311LW7vulGpU4BZYF63+awR/FdJfk2VNBjesk16wS5q3UHru4gA6p
-        hv3W9vCwVFiIrCBB81su8Gtp0/kWkY4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-580-h0NjNB0VO72XsLi_FX5LlQ-1; Mon, 08 Feb 2021 09:45:08 -0500
-X-MC-Unique: h0NjNB0VO72XsLi_FX5LlQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4EC11801975;
-        Mon,  8 Feb 2021 14:45:07 +0000 (UTC)
-Received: from steredhat.redhat.com (ovpn-115-25.ams2.redhat.com [10.36.115.25])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E2FBD5D740;
-        Mon,  8 Feb 2021 14:44:55 +0000 (UTC)
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     kuba@kernel.org
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Asias He <asias@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Claudio Imbrenda <imbrenda@linux.vnet.ibm.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>
-Subject: [PATCH net] vsock/virtio: update credit only if socket is not closed
-Date:   Mon,  8 Feb 2021 15:44:54 +0100
-Message-Id: <20210208144454.84438-1-sgarzare@redhat.com>
+        id S231208AbhBHOsU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 09:48:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46572 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230352AbhBHOrW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 09:47:22 -0500
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09962C06178A
+        for <netdev@vger.kernel.org>; Mon,  8 Feb 2021 06:46:43 -0800 (PST)
+Received: by mail-ot1-x333.google.com with SMTP id q4so4716714otm.9
+        for <netdev@vger.kernel.org>; Mon, 08 Feb 2021 06:46:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fitHJU6fgIz43s6gomgoRGNbEK6sA9S10LIkpwU5gdc=;
+        b=M/b9AaWmwaTUMm+ms95cxEe1aKTmEbXJNmJwTDvIa9aj79Nl8N7FWzRy7M7Q7KeZ/d
+         uWwQs9lBiJkF1uJ/aQq1B8Q/IY7GlsBkdvxaLApVoVAW2+JW445HUJndOJV2v+HoZdXF
+         Lsso8zU2mxT8Au559rhD8lkiaWlRXWhioyYLa5MV7ejopGTy8YnbHlYjc/BPfMoLU5c5
+         7enHQYM+lp59m+be5J1UUqdV/PskgB4ewpGIBpErvl2NWBof4lmuI1w/Cr22AcH3zrs/
+         pXVDgHb1si2/GAxActKHNRRaz8c2erHujvFcfaAJAuINzg7C4PYAf89bYiWYnA2xB5XJ
+         3kTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fitHJU6fgIz43s6gomgoRGNbEK6sA9S10LIkpwU5gdc=;
+        b=cnxYWTvhVT6nC/RE+mpbL8G2/C+vGA4NlnBEycZX9edrH440JO6ghJ7xpCZLLodKO2
+         xwRslkPBhsqRtDnhlTrgRysJ7rc7KEXEq5ZfaDRhgHUA5tQwX6EjgCV4okiSH49vfrr2
+         6QcGrX+CjnQgsv5TE8ravKWdAr+PYsW6GEf6/msRrVYEz5yFEqDMcq6WvnsgJG67vp/p
+         rzhP6li9Ua6l613U4s0Uj/DBrHxsRKpdREmODLQg/mXsLCI9fxyckNjN09ovUgWNk/Ah
+         TkvD47PnxSvg5ujXxH+QdQAhzfaNAna4UVT4D7rDS1MaouRsOcyZIGnUxGF9IM+rxXeG
+         275w==
+X-Gm-Message-State: AOAM531kjkJjfr+6nCyHPLl9UsW5EK1ZHcM3ExmQVx5WiNBowEyJzV27
+        qGV4bgq7iNV8HndmSCG8YzBKdfmLymS7ak3gAQ==
+X-Google-Smtp-Source: ABdhPJzgIjPdwIQ2upPrOiBuF04dfcyHD2zn6ArENwIQQzMeiUQdGWTOtzFEhiPLoSAeqOmyfZjdNvLHelOe0z+piOA=
+X-Received: by 2002:a9d:e82:: with SMTP id 2mr12932354otj.287.1612795602455;
+ Mon, 08 Feb 2021 06:46:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+References: <20210204215926.64377-1-george.mccollister@gmail.com>
+ <20210204215926.64377-5-george.mccollister@gmail.com> <20210206235349.7ypxtmjvnpxnn5cr@skbuf>
+In-Reply-To: <20210206235349.7ypxtmjvnpxnn5cr@skbuf>
+From:   George McCollister <george.mccollister@gmail.com>
+Date:   Mon, 8 Feb 2021 08:46:29 -0600
+Message-ID: <CAFSKS=OpEnGDEFQQbq9eM+MWTNLFEfjhcsd8iNZqV2jhMJ76BQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 4/4] net: dsa: xrs700x: add HSR offloading support
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the socket is closed or is being released, some resources used by
-virtio_transport_space_update() such as 'vsk->trans' may be released.
+On Sat, Feb 6, 2021 at 5:53 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> On Thu, Feb 04, 2021 at 03:59:26PM -0600, George McCollister wrote:
+> > +static int xrs700x_hsr_join(struct dsa_switch *ds, int port,
+> > +                         struct net_device *hsr)
+> > +{
+> > +     unsigned int val = XRS_HSR_CFG_HSR_PRP;
+> > +     struct dsa_port *partner = NULL, *dp;
+> > +     struct xrs700x *priv = ds->priv;
+> > +     struct net_device *slave;
+> > +     enum hsr_version ver;
+> > +     int ret;
+> > +
+> > +     ret = hsr_get_version(hsr, &ver);
+> > +     if (ret)
+> > +             return ret;
+> > +
+> > +     if (ver == HSR_V1)
+> > +             val |= XRS_HSR_CFG_HSR;
+> > +     else if (ver == PRP_V1)
+> > +             val |= XRS_HSR_CFG_PRP;
+> > +     else
+> > +             return -EOPNOTSUPP;
+> > +
+> > +     dsa_hsr_foreach_port(dp, ds, hsr) {
+> > +             partner = dp;
+> > +     }
+> > +
+> > +     /* We can't enable redundancy on the switch until both
+> > +      * redundant ports have signed up.
+> > +      */
+> > +     if (!partner)
+> > +             return 0;
+> > +
+> > +     regmap_fields_write(priv->ps_forward, partner->index,
+> > +                         XRS_PORT_DISABLED);
+> > +     regmap_fields_write(priv->ps_forward, port, XRS_PORT_DISABLED);
+> > +
+> > +     regmap_write(priv->regmap, XRS_HSR_CFG(partner->index),
+> > +                  val | XRS_HSR_CFG_LANID_A);
+> > +     regmap_write(priv->regmap, XRS_HSR_CFG(port),
+> > +                  val | XRS_HSR_CFG_LANID_B);
+> > +
+> > +     /* Clear bits for both redundant ports (HSR only) and the CPU port to
+> > +      * enable forwarding.
+> > +      */
+> > +     val = GENMASK(ds->num_ports - 1, 0);
+> > +     if (ver == HSR_V1) {
+> > +             val &= ~BIT(partner->index);
+> > +             val &= ~BIT(port);
+> > +     }
+> > +     val &= ~BIT(dsa_upstream_port(ds, port));
+> > +     regmap_write(priv->regmap, XRS_PORT_FWD_MASK(partner->index), val);
+> > +     regmap_write(priv->regmap, XRS_PORT_FWD_MASK(port), val);
+> > +
+> > +     regmap_fields_write(priv->ps_forward, partner->index,
+> > +                         XRS_PORT_FORWARDING);
+> > +     regmap_fields_write(priv->ps_forward, port, XRS_PORT_FORWARDING);
+> > +
+> > +     slave = dsa_to_port(ds, port)->slave;
+> > +
+> > +     slave->features |= NETIF_F_HW_HSR_TAG_INS | NETIF_F_HW_HSR_TAG_RM |
+> > +                        NETIF_F_HW_HSR_FWD | NETIF_F_HW_HSR_DUP;
+> > +
+> > +     return 0;
+> > +}
+>
+> Is it deliberate that only one slave HSR/PRP port will have the offload
+> ethtool features set? If yes, then I find that a bit odd from a user
+> point of view.
 
-To avoid a use after free bug we should only update the available credit
-when we are sure the socket is still open and we have the lock held.
-
-Fixes: 06a8fc78367d ("VSOCK: Introduce virtio_vsock_common.ko")
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
----
- net/vmw_vsock/virtio_transport_common.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-index 5956939eebb7..e4370b1b7494 100644
---- a/net/vmw_vsock/virtio_transport_common.c
-+++ b/net/vmw_vsock/virtio_transport_common.c
-@@ -1130,8 +1130,6 @@ void virtio_transport_recv_pkt(struct virtio_transport *t,
- 
- 	vsk = vsock_sk(sk);
- 
--	space_available = virtio_transport_space_update(sk, pkt);
--
- 	lock_sock(sk);
- 
- 	/* Check if sk has been closed before lock_sock */
-@@ -1142,6 +1140,8 @@ void virtio_transport_recv_pkt(struct virtio_transport *t,
- 		goto free_pkt;
- 	}
- 
-+	space_available = virtio_transport_space_update(sk, pkt);
-+
- 	/* Update CID in case it has changed after a transport reset event */
- 	vsk->local_addr.svm_cid = dst.svm_cid;
- 
--- 
-2.29.2
-
+No. Good catch. This is a mistake I introduced when I added the code
+for finding the partner. Originally for testing I had hacks that hard
+coded the ports used and reconfigured HSR for each join.
