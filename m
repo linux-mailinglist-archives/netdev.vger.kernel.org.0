@@ -2,243 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65D3A312AC7
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 07:36:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40A37312AD2
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 07:39:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229731AbhBHGfW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 01:35:22 -0500
-Received: from mx13.kaspersky-labs.com ([91.103.66.164]:61690 "EHLO
-        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229745AbhBHGd7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 01:33:59 -0500
-Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 770CB521864;
-        Mon,  8 Feb 2021 09:33:01 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail; t=1612765981;
-        bh=vGJIKcvNyCAWGkZdfQTcfoRfLevMPBJXafQ3HZHSHRk=;
-        h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
-        b=kyoKePY09dLwBk0VkkPtybBspjMtAv2qTGxR56s2dt/wQ4Fa8KOLtma844QTFNVS6
-         H4Nl2XyduoHNP4pkxx5cJH0UKc9dYKczXCnzcShNtXl8/ypS2x9o1SAjbcRPDNJ4HW
-         kYGrPI42AwgzCr8KaAJvpGqIww7AiH4qIUFN070Y=
-Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id 6E43C521863;
-        Mon,  8 Feb 2021 09:33:00 +0300 (MSK)
-Received: from [10.16.171.77] (10.64.64.121) by hqmailmbx3.avp.ru
- (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2044.4; Mon, 8 Feb
- 2021 09:32:59 +0300
-Subject: Re: [RFC PATCH v4 00/17] virtio/vsock: introduce SOCK_SEQPACKET
- support
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-CC:     Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Alexander Popov <alex.popov@linux.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
+        id S229854AbhBHGil (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 01:38:41 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:2061 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229707AbhBHGia (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 01:38:30 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B6020dc360001>; Sun, 07 Feb 2021 22:37:42 -0800
+Received: from mtl-vdi-166.wap.labs.mlnx (172.20.145.6) by
+ HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3; Mon, 8 Feb 2021 06:37:40 +0000
+Date:   Mon, 8 Feb 2021 08:37:36 +0200
+From:   Eli Cohen <elic@nvidia.com>
+To:     Jason Wang <jasowang@redhat.com>
+CC:     Si-Wei Liu <si-wei.liu@oracle.com>, <mst@redhat.com>,
         <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stsp2@yandex.ru" <stsp2@yandex.ru>,
-        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
-References: <20210207151259.803917-1-arseny.krasnov@kaspersky.com>
- <20210207111954-mutt-send-email-mst@kernel.org>
-From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Message-ID: <8bd3789c-8df1-4383-f233-b4b854b30970@kaspersky.com>
-Date:   Mon, 8 Feb 2021 09:32:59 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lulu@redhat.com>
+Subject: Re: [PATCH v1] vdpa/mlx5: Restore the hardware used index after
+ change map
+Message-ID: <20210208063736.GA166546@mtl-vdi-166.wap.labs.mlnx>
+References: <20210204073618.36336-1-elic@nvidia.com>
+ <81f5ce4f-cdb0-26cd-0dce-7ada824b1b86@oracle.com>
+ <f2206fa2-0ddc-1858-54e7-71614b142e46@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20210207111954-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.64.64.121]
-X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
- (10.64.67.243)
-X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
-X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.16, Database issued on: 02/06/2021 23:52:08
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 161679 [Feb 06 2021]
-X-KSE-AntiSpam-Info: LuaCore: 422 422 763e61bea9fcfcd94e075081cb96e065bc0509b4
-X-KSE-AntiSpam-Info: Version: 5.9.16.0
-X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
-X-KSE-AntiSpam-Info: {Tracking_content_type, plain}
-X-KSE-AntiSpam-Info: {Tracking_date, moscow}
-X-KSE-AntiSpam-Info: {Tracking_c_tr_enc, eight_bit}
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Deterministic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 02/06/2021 23:55:00
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: Clean, bases: 2/6/2021 9:17:00 PM
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KLMS-Rule-ID: 52
-X-KLMS-Message-Action: clean
-X-KLMS-AntiSpam-Status: not scanned, disabled by settings
-X-KLMS-AntiSpam-Interceptor-Info: not scanned
-X-KLMS-AntiPhishing: Clean, bases: 2021/02/08 00:52:00
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/02/08 00:27:00 #16141106
-X-KLMS-AntiVirus-Status: Clean, skipped
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <f2206fa2-0ddc-1858-54e7-71614b142e46@redhat.com>
+User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1612766262; bh=GZEVufflg74OFOvuniETVdC5I8jX0QdMwpbjF2hzUhU=;
+        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+         Content-Type:Content-Disposition:Content-Transfer-Encoding:
+         In-Reply-To:User-Agent:X-Originating-IP:X-ClientProxiedBy;
+        b=UuBVDy7qo4fZgt2WqwRgNgxJFSquvEOwc6Huk8nXwisrabNUt9FrP45RgbFHfZ2UT
+         4OTVpDQGlrktXgo0+hEhN25Wecv8B3FbagOuYDrcsGGIgAKiOzB4GBNmSwAwJaffmt
+         VjpgCmAJquK1sCAAMj8sVIIpM5U+dt7QeyO0WxgSVQC4ud2ETViEV5f9hjHDBezB8v
+         SEmjhe12gcAhsNicabW8QsTsTamd/yYcbbZMyo/dtxpJdyDbhzfuH63gxRNL1cziLk
+         EHVlC0PE7FZMXCWRKihxCpfJicVcVEyanJuuMdKbcjmfmgH9sMuuYJSTDV0YMJqg6b
+         6nDHWMfRMJPuw==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Feb 08, 2021 at 12:27:18PM +0800, Jason Wang wrote:
+>=20
+> On 2021/2/6 =E4=B8=8A=E5=8D=887:07, Si-Wei Liu wrote:
+> >=20
+> >=20
+> > On 2/3/2021 11:36 PM, Eli Cohen wrote:
+> > > When a change of memory map occurs, the hardware resources are destro=
+yed
+> > > and then re-created again with the new memory map. In such case, we n=
+eed
+> > > to restore the hardware available and used indices. The driver failed=
+ to
+> > > restore the used index which is added here.
+> > >=20
+> > > Also, since the driver also fails to reset the available and used
+> > > indices upon device reset, fix this here to avoid regression caused b=
+y
+> > > the fact that used index may not be zero upon device reset.
+> > >=20
+> > > Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5
+> > > devices")
+> > > Signed-off-by: Eli Cohen <elic@nvidia.com>
+> > > ---
+> > > v0 -> v1:
+> > > Clear indices upon device reset
+> > >=20
+> > > =C2=A0 drivers/vdpa/mlx5/net/mlx5_vnet.c | 18 ++++++++++++++++++
+> > > =C2=A0 1 file changed, 18 insertions(+)
+> > >=20
+> > > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > index 88dde3455bfd..b5fe6d2ad22f 100644
+> > > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > @@ -87,6 +87,7 @@ struct mlx5_vq_restore_info {
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u64 device_addr;
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u64 driver_addr;
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u16 avail_index;
+> > > +=C2=A0=C2=A0=C2=A0 u16 used_index;
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 bool ready;
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct vdpa_callback cb;
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 bool restore;
+> > > @@ -121,6 +122,7 @@ struct mlx5_vdpa_virtqueue {
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u32 virtq_id;
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct mlx5_vdpa_net *ndev;
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u16 avail_idx;
+> > > +=C2=A0=C2=A0=C2=A0 u16 used_idx;
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 int fw_state;
+> > > =C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* keep last in the struct */
+> > > @@ -804,6 +806,7 @@ static int create_virtqueue(struct mlx5_vdpa_net
+> > > *ndev, struct mlx5_vdpa_virtque
+> > > =C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 obj_context =3D MLX5_ADDR_OF(cr=
+eate_virtio_net_q_in, in,
+> > > obj_context);
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 MLX5_SET(virtio_net_q_object, obj_cont=
+ext, hw_available_index,
+> > > mvq->avail_idx);
+> > > +=C2=A0=C2=A0=C2=A0 MLX5_SET(virtio_net_q_object, obj_context, hw_use=
+d_index,
+> > > mvq->used_idx);
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 MLX5_SET(virtio_net_q_object, obj_cont=
+ext,
+> > > queue_feature_bit_mask_12_3,
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 get_feat=
+ures_12_3(ndev->mvdev.actual_features));
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 vq_ctx =3D MLX5_ADDR_OF(virtio_net_q_o=
+bject, obj_context,
+> > > virtio_q_context);
+> > > @@ -1022,6 +1025,7 @@ static int connect_qps(struct mlx5_vdpa_net
+> > > *ndev, struct mlx5_vdpa_virtqueue *m
+> > > =C2=A0 struct mlx5_virtq_attr {
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u8 state;
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u16 available_index;
+> > > +=C2=A0=C2=A0=C2=A0 u16 used_index;
+> > > =C2=A0 };
+> > > =C2=A0 =C2=A0 static int query_virtqueue(struct mlx5_vdpa_net *ndev, =
+struct
+> > > mlx5_vdpa_virtqueue *mvq,
+> > > @@ -1052,6 +1056,7 @@ static int query_virtqueue(struct
+> > > mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueu
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 memset(attr, 0, sizeof(*attr));
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 attr->state =3D MLX5_GET(virtio_net_q_=
+object, obj_context, state);
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 attr->available_index =3D MLX5_GET(vir=
+tio_net_q_object,
+> > > obj_context, hw_available_index);
+> > > +=C2=A0=C2=A0=C2=A0 attr->used_index =3D MLX5_GET(virtio_net_q_object=
+, obj_context,
+> > > hw_used_index);
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kfree(out);
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return 0;
+> > > =C2=A0 @@ -1535,6 +1540,16 @@ static void teardown_virtqueues(struct
+> > > mlx5_vdpa_net *ndev)
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
+> > > =C2=A0 }
+> > > =C2=A0 +static void clear_virtqueues(struct mlx5_vdpa_net *ndev)
+> > > +{
+> > > +=C2=A0=C2=A0=C2=A0 int i;
+> > > +
+> > > +=C2=A0=C2=A0=C2=A0 for (i =3D ndev->mvdev.max_vqs - 1; i >=3D 0; i--=
+) {
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ndev->vqs[i].avail_idx =
+=3D 0;
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ndev->vqs[i].used_idx =3D=
+ 0;
+> > > +=C2=A0=C2=A0=C2=A0 }
+> > > +}
+> > > +
+> > > =C2=A0 /* TODO: cross-endian support */
+> > > =C2=A0 static inline bool mlx5_vdpa_is_little_endian(struct mlx5_vdpa=
+_dev
+> > > *mvdev)
+> > > =C2=A0 {
+> > > @@ -1610,6 +1625,7 @@ static int save_channel_info(struct
+> > > mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqu
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return err;
+> > > =C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ri->avail_index =3D attr.availa=
+ble_index;
+> > > +=C2=A0=C2=A0=C2=A0 ri->used_index =3D attr.used_index;
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ri->ready =3D mvq->ready;
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ri->num_ent =3D mvq->num_ent;
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ri->desc_addr =3D mvq->desc_addr;
+> > > @@ -1654,6 +1670,7 @@ static void restore_channels_info(struct
+> > > mlx5_vdpa_net *ndev)
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 continue;
+> > > =C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 mvq->av=
+ail_idx =3D ri->avail_index;
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 mvq->used_idx =3D ri->use=
+d_index;
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 mvq->ready =3D=
+ ri->ready;
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 mvq->num_ent =
+=3D ri->num_ent;
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 mvq->desc_addr=
+ =3D ri->desc_addr;
+> > > @@ -1768,6 +1785,7 @@ static void mlx5_vdpa_set_status(struct
+> > > vdpa_device *vdev, u8 status)
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (!status) {
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 mlx5_vdpa_info=
+(mvdev, "performing device reset\n");
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 teardown_drive=
+r(ndev);
+> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 clear_virtqueues(ndev);
+> > The clearing looks fine at the first glance, as it aligns with the othe=
+r
+> > state cleanups floating around at the same place. However, the thing is
+> > get_vq_state() is supposed to be called right after to get sync'ed with
+> > the latest internal avail_index from device while vq is stopped. The
+> > index was saved in the driver software at vq suspension, but before the
+> > virtq object is destroyed. We shouldn't clear the avail_index too early=
+.
+>=20
+>=20
+> Good point.
+>=20
+> There's a limitation on the virtio spec and vDPA framework that we can no=
+t
+> simply differ device suspending from device reset.
+>=20
 
-On 07.02.2021 19:20, Michael S. Tsirkin wrote:
-> On Sun, Feb 07, 2021 at 06:12:56PM +0300, Arseny Krasnov wrote:
->> 	This patchset impelements support of SOCK_SEQPACKET for virtio
->> transport.
->> 	As SOCK_SEQPACKET guarantees to save record boundaries, so to
->> do it, two new packet operations were added: first for start of record
->>  and second to mark end of record(SEQ_BEGIN and SEQ_END later). Also,
->> both operations carries metadata - to maintain boundaries and payload
->> integrity. Metadata is introduced by adding special header with two
->> fields - message count and message length:
->>
->> 	struct virtio_vsock_seq_hdr {
->> 		__le32  msg_cnt;
->> 		__le32  msg_len;
->> 	} __attribute__((packed));
->>
->> 	This header is transmitted as payload of SEQ_BEGIN and SEQ_END
->> packets(buffer of second virtio descriptor in chain) in the same way as
->> data transmitted in RW packets. Payload was chosen as buffer for this
->> header to avoid touching first virtio buffer which carries header of
->> packet, because someone could check that size of this buffer is equal
->> to size of packet header. To send record, packet with start marker is
->> sent first(it's header contains length of record and counter), then
->> counter is incremented and all data is sent as usual 'RW' packets and
->> finally SEQ_END is sent(it also carries counter of message, which is
->> counter of SEQ_BEGIN + 1), also after sedning SEQ_END counter is
->> incremented again. On receiver's side, length of record is known from
->> packet with start record marker. To check that no packets were dropped
->> by transport, counters of two sequential SEQ_BEGIN and SEQ_END are
->> checked(counter of SEQ_END must be bigger that counter of SEQ_BEGIN by
->> 1) and length of data between two markers is compared to length in
->> SEQ_BEGIN header.
->> 	Now as  packets of one socket are not reordered neither on
->> vsock nor on vhost transport layers, such markers allows to restore
->> original record on receiver's side. If user's buffer is smaller that
->> record length, when all out of size data is dropped.
->> 	Maximum length of datagram is not limited as in stream socket,
->> because same credit logic is used. Difference with stream socket is
->> that user is not woken up until whole record is received or error
->> occurred. Implementation also supports 'MSG_EOR' and 'MSG_TRUNC' flags.
->> 	Tests also implemented.
->>
->>  Arseny Krasnov (17):
->>   af_vsock: update functions for connectible socket
->>   af_vsock: separate wait data loop
->>   af_vsock: separate receive data loop
->>   af_vsock: implement SEQPACKET receive loop
->>   af_vsock: separate wait space loop
->>   af_vsock: implement send logic for SEQPACKET
->>   af_vsock: rest of SEQPACKET support
->>   af_vsock: update comments for stream sockets
->>   virtio/vsock: dequeue callback for SOCK_SEQPACKET
->>   virtio/vsock: fetch length for SEQPACKET record
->>   virtio/vsock: add SEQPACKET receive logic
->>   virtio/vsock: rest of SOCK_SEQPACKET support
->>   virtio/vsock: setup SEQPACKET ops for transport
->>   vhost/vsock: setup SEQPACKET ops for transport
->>   vsock_test: add SOCK_SEQPACKET tests
->>   loopback/vsock: setup SEQPACKET ops for transport
->>   virtio/vsock: simplify credit update function API
->>
->>  drivers/vhost/vsock.c                   |   8 +-
->>  include/linux/virtio_vsock.h            |  15 +
->>  include/net/af_vsock.h                  |   9 +
->>  include/uapi/linux/virtio_vsock.h       |  16 +
->>  net/vmw_vsock/af_vsock.c                | 588 +++++++++++++++-------
->>  net/vmw_vsock/virtio_transport.c        |   5 +
->>  net/vmw_vsock/virtio_transport_common.c | 316 ++++++++++--
->>  net/vmw_vsock/vsock_loopback.c          |   5 +
->>  tools/testing/vsock/util.c              |  32 +-
->>  tools/testing/vsock/util.h              |   3 +
->>  tools/testing/vsock/vsock_test.c        | 126 +++++
->>  11 files changed, 895 insertions(+), 228 deletions(-)
->>
->>  TODO:
->>  - What to do, when server doesn't support SOCK_SEQPACKET. In current
->>    implementation RST is replied in the same way when listening port
->>    is not found. I think that current RST is enough,because case when
->>    server doesn't support SEQ_PACKET is same when listener missed(e.g.
->>    no listener in both cases).
->    - virtio spec patch
-Ok
->
->>  v3 -> v4:
->>  - callbacks for loopback transport
->>  - SEQPACKET specific metadata moved from packet header to payload
->>    and called 'virtio_vsock_seq_hdr'
->>  - record integrity check:
->>    1) SEQ_END operation was added, which marks end of record.
->>    2) Both SEQ_BEGIN and SEQ_END carries counter which is incremented
->>       on every marker send.
->>  - af_vsock.c: socket operations for STREAM and SEQPACKET call same
->>    functions instead of having own "gates" differs only by names:
->>    'vsock_seqpacket/stream_getsockopt()' now replaced with
->>    'vsock_connectible_getsockopt()'.
->>  - af_vsock.c: 'seqpacket_dequeue' callback returns error and flag that
->>    record ready. There is no need to return number of copied bytes,
->>    because case when record received successfully is checked at virtio
->>    transport layer, when SEQ_END is processed. Also user doesn't need
->>    number of copied bytes, because 'recv()' from SEQPACKET could return
->>    error, length of users's buffer or length of whole record(both are
->>    known in af_vsock.c).
->>  - af_vsock.c: both wait loops in af_vsock.c(for data and space) moved
->>    to separate functions because now both called from several places.
->>  - af_vsock.c: 'vsock_assign_transport()' checks that 'new_transport'
->>    pointer is not NULL and returns 'ESOCKTNOSUPPORT' instead of 'ENODEV'
->>    if failed to use transport.
->>  - tools/testing/vsock/vsock_test.c: rename tests
->>
->>  v2 -> v3:
->>  - patches reorganized: split for prepare and implementation patches
->>  - local variables are declared in "Reverse Christmas tree" manner
->>  - virtio_transport_common.c: valid leXX_to_cpu() for vsock header
->>    fields access
->>  - af_vsock.c: 'vsock_connectible_*sockopt()' added as shared code
->>    between stream and seqpacket sockets.
->>  - af_vsock.c: loops in '__vsock_*_recvmsg()' refactored.
->>  - af_vsock.c: 'vsock_wait_data()' refactored.
->>
->>  v1 -> v2:
->>  - patches reordered: af_vsock.c related changes now before virtio vsock
->>  - patches reorganized: more small patches, where +/- are not mixed
->>  - tests for SOCK_SEQPACKET added
->>  - all commit messages updated
->>  - af_vsock.c: 'vsock_pre_recv_check()' inlined to
->>    'vsock_connectible_recvmsg()'
->>  - af_vsock.c: 'vsock_assign_transport()' returns ENODEV if transport
->>    was not found
->>  - virtio_transport_common.c: transport callback for seqpacket dequeue
->>  - virtio_transport_common.c: simplified
->>    'virtio_transport_recv_connected()'
->>  - virtio_transport_common.c: send reset on socket and packet type
->> 			      mismatch.
->>
->> -- 
->> 2.25.1
->
+Are you talking about live migration where you reset the device but
+still want to know how far it progressed in order to continue from the
+same place in the new VM?
+
+> Need to think about that. I suggest a new state in [1], the issue is that
+> people doesn't like the asynchronous API that it introduces.
+>=20
+>=20
+> >=20
+> > Possibly it can be postponed to where VIRTIO_CONFIG_S_DRIVER_OK gets se=
+t
+> > again, i.e. right before the setup_driver() in mlx5_vdpa_set_status()?
+>=20
+>=20
+> Looks like a good workaround.
+>=20
+> Thanks
+>=20
+>=20
+> >=20
+> > -Siwei
+>=20
+>=20
+> [1]
+> https://lists.oasis-open.org/archives/virtio-comment/202012/msg00029.html
+>=20
+>=20
+> >=20
+> > > mlx5_vdpa_destroy_mr(&ndev->mvdev);
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ndev->mvdev.st=
+atus =3D 0;
+> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ndev->mvdev.ml=
+x_features =3D 0;
+> >=20
+>=20
