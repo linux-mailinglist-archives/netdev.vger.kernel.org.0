@@ -2,80 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB9C1313E76
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 20:07:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA63D313E79
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 20:07:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235324AbhBHTGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 14:06:42 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:56082 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235826AbhBHTEg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Feb 2021 14:04:36 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1l9Bou-004vFh-KW; Mon, 08 Feb 2021 20:03:36 +0100
-Date:   Mon, 8 Feb 2021 20:03:36 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Serge Semin <fancer.lancer@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Vyacheslav Mitrofanov 
-        <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 01/20] net: phy: realtek: Fix events detection failure in
- LPI mode
-Message-ID: <YCGLCK+1RB7pzytU@lunn.ch>
-References: <20210208140341.9271-1-Sergey.Semin@baikalelectronics.ru>
- <20210208140341.9271-2-Sergey.Semin@baikalelectronics.ru>
- <YCFYaFYgFikj/Gqz@lunn.ch>
- <20210208174441.z4nnugkaadhmgnum@mobilestation>
+        id S235974AbhBHTHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 14:07:06 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:56006 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235858AbhBHTFY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 14:05:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612811036;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iubsdQyZmS7XuDNFEDT0FSf3h1hb0DtOamZ9SZHA6wY=;
+        b=A+2OsWY7LiMfvSQ5wglgMtVX1+9kcbNN7gsQdtYodP1CiP9Ip70EyBQmYqVsgsErvr92wo
+        XYs7kWhD8A37Sm7B5IsDgYNtgTMjQ5Ngx0vBLQiTuIZe5D+lHFzomamLg1qNucIEoJWADm
+        gvLnuRWoEwO1H4lCvyWcLY4w+m6fTdU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-468-bkhd1WQsM4SBV0HxWnoE9Q-1; Mon, 08 Feb 2021 14:03:54 -0500
+X-MC-Unique: bkhd1WQsM4SBV0HxWnoE9Q-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AD6CF36492;
+        Mon,  8 Feb 2021 19:03:53 +0000 (UTC)
+Received: from horizon.localdomain (ovpn-113-37.rdu2.redhat.com [10.10.113.37])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 761C360C04;
+        Mon,  8 Feb 2021 19:03:53 +0000 (UTC)
+Received: by horizon.localdomain (Postfix, from userid 1000)
+        id 43CDDC00A2; Mon,  8 Feb 2021 16:03:51 -0300 (-03)
+Date:   Mon, 8 Feb 2021 16:03:51 -0300
+From:   Marcelo Ricardo Leitner <mleitner@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>, wenxu <wenxu@ucloud.cn>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Subject: Re: [PATCH net v4] net/sched: cls_flower: Reject invalid ct_state
+ flags rules
+Message-ID: <20210208190351.GF2953@horizon.localdomain>
+References: <1612674803-7912-1-git-send-email-wenxu@ucloud.cn>
+ <CAM_iQpXojFaYogRu76=jGr6cp74YcUyR_ZovRnSmKp9KaugBOw@mail.gmail.com>
+ <20210208104759.77c247c6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210208174441.z4nnugkaadhmgnum@mobilestation>
+In-Reply-To: <20210208104759.77c247c6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Hi Andrew,
+On Mon, Feb 08, 2021 at 10:47:59AM -0800, Jakub Kicinski wrote:
+> On Mon, 8 Feb 2021 10:41:35 -0800 Cong Wang wrote:
+> > On Sat, Feb 6, 2021 at 9:26 PM <wenxu@ucloud.cn> wrote:
+> > > +       if (state && !(state & TCA_FLOWER_KEY_CT_FLAGS_TRACKED)) {
+> > > +               NL_SET_ERR_MSG_ATTR(extack, tb,
+> > > +                                   "ct_state no trk, no other flag are set");
+
+This one was imported from OvS but it's not accurate.
+Should be more like: no trk, so no other flag can be set
+or something like that.
+
+Seems it doesn't need to explicitly mention "ct_state" in the msg,
+btw. I can't check it right now but all other uses of
+NL_SET_ERR_MSG_ATTR are not doing it, at least in cls_flower.c.
+
+> > > +               return -EINVAL;
+> > > +       }
+> > > +
+> > > +       if (state & TCA_FLOWER_KEY_CT_FLAGS_NEW &&
+> > > +           state & TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED) {
+> > > +               NL_SET_ERR_MSG_ATTR(extack, tb,
+> > > +                                   "ct_state new and est are exclusive");  
+> > 
+> > Please spell out the full words, "trk" and "est" are not good abbreviations.
 > 
-> I honestly tried to find any doc with a glimpse of errata for RTL8211E
-> PHY, but with no luck. Official datasheet didn't have any info regarding
-> possible hw bugs too. Thus I had no choice but to find a fix of the
-> problem myself.
+> It does match user space naming in OvS as well as iproute2:
+
+I also think it makes sense as is.
+
 > 
-> It took me some time to figure out why the events weren't reported after
-> the very first link setup (turned out only a full HW reset clears the
-> PC1R.10 bit state). I thought it could have been connected with some
-> sleep/idle/power-safe mode. So I disabled the EEE initialization in the
-> STMMAC driver. It worked. Then I left the EEE mode enabled, but called the
-> phy_init_eee(phy, 0) method with "clk_stop_enable==0", so PHY wouldn't
-> stop RXC in LPI mode. And it wonderfully worked. Then I started to dig in
-> from another side. I left "RXC disable in LPI" mode enabled and tried to
-> figure out what was going on with the PHY when it stopped reporting events
-> just by reading from its CSR using phytool utility. It was curious to
-> discover that any attempt to read from any PHY register caused the problem
-> disappearance (LED2 started blinking, events got to be reported). Since I
-> did nothing but a mere reading from a random even EEE-unrelated register I
-> inferred that the problem must be in some HW/PHY bug. That's how I've got
-> to the patch introduced here. If you have any better idea what could be a
-> reason of that weird behavior I'd be glad to test it out on my device.
+>         { "trk", TCA_FLOWER_KEY_CT_FLAGS_TRACKED },
+>         { "new", TCA_FLOWER_KEY_CT_FLAGS_NEW },
+>         { "est", TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED },
+>         { "inv", TCA_FLOWER_KEY_CT_FLAGS_INVALID },
+>         { "rpl", TCA_FLOWER_KEY_CT_FLAGS_REPLY },
+> 
+> IDK about netfilter itself.
+> 
 
-It is a reasonable explanation, and a read should not do any harm.
-
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
-   
