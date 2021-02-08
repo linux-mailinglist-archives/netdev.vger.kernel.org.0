@@ -2,107 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7963031419B
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 22:22:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C758E3141DC
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 22:33:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236365AbhBHVWP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 16:22:15 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34630 "EHLO mail.kernel.org"
+        id S234231AbhBHVdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 16:33:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36780 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236342AbhBHVV4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Feb 2021 16:21:56 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2CF8A64EA4;
-        Mon,  8 Feb 2021 21:21:15 +0000 (UTC)
+        id S236435AbhBHVar (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Feb 2021 16:30:47 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 20F9064E82;
+        Mon,  8 Feb 2021 21:30:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612819275;
-        bh=CjLfdvjLjHY7owX0cES0KM8fOb4ZbrdpwB0cnsllKXA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pCepOw++zJEKZPq4WKtPU+Jiqf1147eq3ryim/U3MFNkPY8Ovcl5Eoci3fIlAvqx4
-         NX9UiFAQ4CKRTEjJ05Kbces/efOAe+2rDmg+X14Q/jC7NzVDesUgF6O2bSifvTIUED
-         bqd2HK/Om6wv5ddLTlBKxBC7U2h1HMFShgCF/bqOLCf2H7TrKrFvcke2eo6HxdEdx8
-         j+BV80HEpyBJC9Z0y4ywuerBbcu4KbwTiKWYYBAMa87lv6UsMlk4xi9RtgOIxIQEyY
-         qspcyxNWimYXXyFOhKzKqyEPh/4cg1kog3vPRjNmKBxdimDXhKu5sZprG6j46KBFGh
-         b0m8gTzEiaU6A==
-Date:   Mon, 8 Feb 2021 13:21:13 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     <netdev@vger.kernel.org>, <davem@davemloft.net>
-Subject: Re: [PATCH net-next v2 7/7] netdevsim: Add netdevsim port add test
- cases
-Message-ID: <20210208132113.128b3116@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210207084412.252259-8-parav@nvidia.com>
-References: <20210206125551.8616-1-parav@nvidia.com>
-        <20210207084412.252259-1-parav@nvidia.com>
-        <20210207084412.252259-8-parav@nvidia.com>
+        s=k20201202; t=1612819807;
+        bh=8xIc9+eRTA2pwgoXuNZTCRpm5QvH00mkbn877cIxlZI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=eVZVBK3hYJkb2FUR770GmzNhiFyu8x6s/kbmTJ8YJ3OKPW8GkLdsFQUqjvEQBTQ+8
+         ixqclPIvDfCRk858+9ifDQ4m0b09VJScwL7uHTHO3jaNIS3uy7bdealxl5LT6vXqjz
+         E0dl1DVz2lpiUUifdQ0pXHYKtEDr+VeD2Eft1EzHTlgFvwKplgGWORbpecPhfc3iwl
+         vzrJgbOi6NdFM0NZ23fHRTEKmtgm+PHoaSmo3whHjncWcL1JiMUu2uKM71vcFcc8Ph
+         Dsrmcr5oIciARKuB+dv+sDqOPJh5gVSksfT4fQQbJyRQe2gm+GpIr6C6hlBEqHqp79
+         NeD9VX/cq2H2g==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 16995609D4;
+        Mon,  8 Feb 2021 21:30:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v2] seg6: fool-proof the processing of SRv6 behavior
+ attributes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161281980708.9441.7211081316793679754.git-patchwork-notify@kernel.org>
+Date:   Mon, 08 Feb 2021 21:30:07 +0000
+References: <20210206170934.5982-1-andrea.mayer@uniroma2.it>
+In-Reply-To: <20210206170934.5982-1-andrea.mayer@uniroma2.it>
+To:     Andrea Mayer <andrea.mayer@uniroma2.it>
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, colin.king@canonical.com,
+        stefano.salsano@uniroma2.it, paolo.lungaroni@cnit.it,
+        ahabdels.dev@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 7 Feb 2021 10:44:12 +0200 Parav Pandit wrote:
-> +	RET=0
-> +	USR_PF_PORT_INDEX=600
-> +	USR_PFNUM_A=2
-> +	USR_PFNUM_B=3
-> +	USR_SF_PORT_INDEX=601
-> +	USR_SFNUM_A=44
-> +	USR_SFNUM_B=55
-> +
-> +	devlink port add $DL_HANDLE flavour pcipf pfnum $USR_PFNUM_A
-> +	check_err $? "Failed PF port addition"
-> +
-> +	devlink port show
-> +	check_err $? "Failed PF port show"
-> +
-> +	devlink port add $DL_HANDLE flavour pcisf pfnum $USR_PFNUM_A
-> +	check_err $? "Failed SF port addition"
-> +
-> +	devlink port add $DL_HANDLE flavour pcisf pfnum $USR_PFNUM_A \
-> +			sfnum $USR_SFNUM_A
-> +	check_err $? "Failed SF port addition"
-> +
-> +	devlink port add $DL_HANDLE flavour pcipf pfnum $USR_PFNUM_B
-> +	check_err $? "Failed second PF port addition"
-> +
-> +	devlink port add $DL_HANDLE/$USR_SF_PORT_INDEX flavour pcisf \
-> +			pfnum $USR_PFNUM_B sfnum $USR_SFNUM_B
-> +	check_err $? "Failed SF port addition"
-> +
-> +	devlink port show
-> +	check_err $? "Failed PF port show"
-> +
-> +	state=$(function_state_get "state")
-> +	check_err $? "Failed to get function state"
-> +	[ "$state" == "inactive" ]
-> +	check_err $? "Unexpected function state $state"
-> +
-> +	state=$(function_state_get "opstate")
-> +	check_err $? "Failed to get operational state"
-> +	[ "$state" == "detached" ]
-> +	check_err $? "Unexpected function opstate $opstate"
-> +
-> +	devlink port function set $DL_HANDLE/$USR_SF_PORT_INDEX state active
-> +	check_err $? "Failed to set state"
-> +
-> +	state=$(function_state_get "state")
-> +	check_err $? "Failed to get function state"
-> +	[ "$state" == "active" ]
-> +	check_err $? "Unexpected function state $state"
-> +
-> +	state=$(function_state_get "opstate")
-> +	check_err $? "Failed to get operational state"
-> +	[ "$state" == "attached" ]
-> +	check_err $? "Unexpected function opstate $opstate"
-> +
-> +	devlink port del $DL_HANDLE/$USR_SF_PORT_INDEX
-> +	check_err $? "Failed SF port deletion"
-> +
-> +	log_test "port_add test"
+Hello:
 
-I don't think this very basic test is worth the 600 LoC of netdevsim
-code.
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-If you come up with something better please don't post v3 it in reply 
-to previous threads.
+On Sat,  6 Feb 2021 18:09:34 +0100 you wrote:
+> The set of required attributes for a given SRv6 behavior is identified
+> using a bitmap stored in an unsigned long, since the initial design of SRv6
+> networking in Linux. Recently the same approach has been used for
+> identifying the optional attributes.
+> 
+> However, the number of attributes supported by SRv6 behaviors depends on
+> the size of the unsigned long type which changes with the architecture.
+> Indeed, on a 64-bit architecture, an SRv6 behavior can support up to 64
+> attributes while on a 32-bit architecture it can support at most 32
+> attributes.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v2] seg6: fool-proof the processing of SRv6 behavior attributes
+    https://git.kernel.org/netdev/net-next/c/300a0fd8afb1
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
