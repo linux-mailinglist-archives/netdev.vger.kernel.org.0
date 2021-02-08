@@ -2,15 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BEE5831348F
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 15:10:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BFED313466
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 15:06:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232321AbhBHOHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 09:07:49 -0500
-Received: from mail.baikalelectronics.com ([87.245.175.226]:57092 "EHLO
+        id S232570AbhBHODs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 09:03:48 -0500
+Received: from mail.baikalelectronics.com ([87.245.175.226]:57068 "EHLO
         mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231735AbhBHN6j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 08:58:39 -0500
+        with ESMTP id S232022AbhBHN6K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 08:58:10 -0500
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Rob Herring <robh+dt@kernel.org>,
         Giuseppe Cavallaro <peppe.cavallaro@st.com>,
@@ -33,9 +33,9 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 23/24] net: stmmac: Use pclk to set MDC clock frequency
-Date:   Mon, 8 Feb 2021 16:56:07 +0300
-Message-ID: <20210208135609.7685-24-Sergey.Semin@baikalelectronics.ru>
+Subject: [PATCH v2 24/24] net: stmmac: dwc-qos: Save master/slave clocks in the plat-data
+Date:   Mon, 8 Feb 2021 16:56:08 +0300
+Message-ID: <20210208135609.7685-25-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20210208135609.7685-1-Sergey.Semin@baikalelectronics.ru>
 References: <20210208135609.7685-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -46,41 +46,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In accordance with [1] the MDC clock frequency is supposed to be selected
-with respect to the CSR clock frequency. CSR clock can be either tied to
-the DW MAC system clock (GMAC main clock) or supplied via a dedicated
-clk_csr_i signal. Current MDC clock selection procedure handles the former
-case while having no support of the later one. That's wrong for the
-devices which have separate system and CSR clocks. Let's fix it by first
-trying to get the synchro-signal rate from the "pclk" clock, if it hasn't
-been specified then fall-back to the "stmmaceth" clock.
-
-[1] DesignWare Cores Ethernet MAC Universal Databook, Revision 3.73a,
-    October 2013, p. 424.
+Currently the "master_bus" clock of the DW QoS Eth controller isn't
+preserved in the STMMAC platform data, while the "slave_bus" clock is
+assigned to the stmmaceth clock pointer. It isn't correct from the
+platform clock bindings point of view. The "stmmaceth" clock is supposed
+to be the system clock, which is responsible for clocking the DMA
+transfers from/to the controller FIFOs to/from the system memory and the
+CSR interface if the later isn't separately clocked. If it's clocked
+separately then the STMMAC platform code expects to also have "pclk"
+specified. So in order to have the STMMAC platform data properly
+initialized we need to set the "master_bus" clock handler to the
+"stmmaceth" clock pointer, and the "slave_bus" clock handler to the "pclk"
+clock pointer.
 
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index a8dec219c295..03acf14d76de 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -206,7 +206,12 @@ static void stmmac_clk_csr_set(struct stmmac_priv *priv)
- {
- 	u32 clk_rate;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
+index f315ca395e12..bb2297638805 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
+@@ -313,6 +313,8 @@ static int tegra_eqos_probe(struct platform_device *pdev,
+ 	if (err < 0)
+ 		goto error;
  
--	clk_rate = clk_get_rate(priv->plat->stmmac_clk);
-+	/* If APB clock has been specified then it is supposed to be used
-+	 * to select the CSR mode. Otherwise the application clock is the
-+	 * source of the periodic signal for the CSR interface.
-+	 */
-+	clk_rate = clk_get_rate(priv->plat->pclk) ?:
-+		   clk_get_rate(priv->plat->stmmac_clk);
++	data->stmmac_clk = eqos->clk_master;
++
+ 	eqos->clk_slave = devm_clk_get(&pdev->dev, "slave_bus");
+ 	if (IS_ERR(eqos->clk_slave)) {
+ 		err = PTR_ERR(eqos->clk_slave);
+@@ -323,7 +325,7 @@ static int tegra_eqos_probe(struct platform_device *pdev,
+ 	if (err < 0)
+ 		goto disable_master;
  
- 	/* Platform provided default clk_csr would be assumed valid
- 	 * for all other cases except for the below mentioned ones.
+-	data->stmmac_clk = eqos->clk_slave;
++	data->pclk = eqos->clk_slave;
+ 
+ 	eqos->reset = devm_gpiod_get(&pdev->dev, "phy-reset", GPIOD_OUT_HIGH);
+ 	if (IS_ERR(eqos->reset)) {
+@@ -371,9 +373,10 @@ static int tegra_eqos_probe(struct platform_device *pdev,
+ 	gpiod_set_value(eqos->reset, 1);
+ disable_slave:
+ 	clk_disable_unprepare(eqos->clk_slave);
+-	data->stmmac_clk = NULL;
++	data->pclk = NULL;
+ disable_master:
+ 	clk_disable_unprepare(eqos->clk_master);
++	data->stmmac_clk = NULL;
+ error:
+ 	return err;
+ }
+@@ -392,6 +395,7 @@ static int tegra_eqos_remove(struct platform_device *pdev)
+ 	 * data so the stmmac_remove_config_dt() method wouldn't have disabled
+ 	 * the clocks too.
+ 	 */
++	priv->plat->pclk = NULL;
+ 	priv->plat->stmmac_clk = NULL;
+ 
+ 	return 0;
 -- 
 2.29.2
 
