@@ -2,91 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31BBD313DF5
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 19:46:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 584F8313E04
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 19:50:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234640AbhBHSqe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 13:46:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41184 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234505AbhBHSoQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 13:44:16 -0500
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6562EC061786;
-        Mon,  8 Feb 2021 10:43:30 -0800 (PST)
-Received: by mail-pl1-x630.google.com with SMTP id j11so8288333plt.11;
-        Mon, 08 Feb 2021 10:43:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Aq5eSvt4NqALvRk53zUWzyXHgyGsjEqoX/pbVrnQYsk=;
-        b=kX09tx2Wy8hDdSd+50jwrO8WEcp3ACrqT9qBsWgCmNvvlzC980AYDHeTBbCsTu2LBu
-         KOCO07A52tV9darQoQxh6ptf2dcGvK7Shr4X7SUNr6IQMpV0eeJtcwHGee1sPnRZjOl9
-         W2Re35qcylzqGqPajUsJC8+CH9MQ3OaWQ//hggUw+aesSZ1w58vGxuT1LniwI/SclAWl
-         5udOmXlGHoMpBL7V4BKYtc6BtUsnoED7onzmiFqWTXsIFV38M+gm+sfoR+XMv2dos6ga
-         2fm9yn9sU8dRNQV9ss6b7DSTqFWrHBcMVAADkH59ySL6cMATU+KndIMnGe8A+F/vpdVf
-         0TRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Aq5eSvt4NqALvRk53zUWzyXHgyGsjEqoX/pbVrnQYsk=;
-        b=aG3Eo8B685YQ2S3qa7nwxqOfyychNjbr+4N+YLynkL4V4ysuI9KWKkTve+RrX1Ass5
-         NpcX+nhyr/7AQgLSfQgOtdbwC/FHJL5GzzvMPFZl6LdgH6E6Uwc2HQvuRDd26PcK0mB3
-         cmis76MWA6gvHimpzq5Mxfboj7timSN7MCUTlJsQctgSsYy+Pv0TL5AkNvcFEJ9Wcnw6
-         qa1xbj0AIdsIyYjBflL7F7pK9sZfZARWXbgJfrrlAmEOq4bDe4oxu54UKCZ7/ALsaUkj
-         TTVC94khfoQc1/wn9IiYNo523D4CnF7dilRHeDfzSFRJoxygFcPrd8l5P21OlGViFz9E
-         AI0A==
-X-Gm-Message-State: AOAM530uZwBf2aMZxfF729bcqPVH+cXK4S1i8nvtqeFSMrvGomlMNMBJ
-        qlNtzXagBPmToq9T0HDsF0GIr85m/mD/AazdCbM=
-X-Google-Smtp-Source: ABdhPJwnqpYU4pKzBy2plLMy/ED+gtM4p0Zjxy9FEVwjgib8q6tT1r22x9BlLKHiHVlnL5TiqzGUFKKvBjVmn8ABNHQ=
-X-Received: by 2002:a17:90a:cf17:: with SMTP id h23mr110539pju.191.1612809809945;
- Mon, 08 Feb 2021 10:43:29 -0800 (PST)
+        id S234939AbhBHStk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 13:49:40 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60158 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234129AbhBHSsl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Feb 2021 13:48:41 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8E70764E73;
+        Mon,  8 Feb 2021 18:48:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612810080;
+        bh=61CCMFssdAMQvf8RcbtzaPbzokzik4DuhFO16o8WIQ0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=oraOYJbxkAStRu2KZFA51YLnWMixUw8WeP8AjZmSv14Fwd9ZMc9tBtFgNaBfMGzR9
+         u2MCGhHwEoL5cEz6kR6va3zbslUB0enS1HHq/ES1wG3CFpdGsVHv9ND0141hRodinv
+         9D69bIFFXevR/9Lxun4nBNawJA8rxR4jaCAUuoa8vBJi/BNj7XsMlQD3WDw4SItx8a
+         CMLOphVrnc+KT4Vm0ygQ/WKiqhhUmPvQwO/uSBLpTY4IF57GATE8DX//exAe8bRwNu
+         +c3kW5HLZxFUw4GLjBKUsa0SxPLr32ZEVHfTqsng+sAWAKUw0DYCKMpQMk70jN3kgr
+         2fBEX8C6FRjCA==
+Date:   Mon, 8 Feb 2021 10:47:59 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     wenxu <wenxu@ucloud.cn>, Jamal Hadi Salim <jhs@mojatatu.com>,
+        mleitner@redhat.com,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Subject: Re: [PATCH net v4] net/sched: cls_flower: Reject invalid ct_state
+ flags rules
+Message-ID: <20210208104759.77c247c6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAM_iQpXojFaYogRu76=jGr6cp74YcUyR_ZovRnSmKp9KaugBOw@mail.gmail.com>
+References: <1612674803-7912-1-git-send-email-wenxu@ucloud.cn>
+        <CAM_iQpXojFaYogRu76=jGr6cp74YcUyR_ZovRnSmKp9KaugBOw@mail.gmail.com>
 MIME-Version: 1.0
-References: <20210203041636.38555-1-xiyou.wangcong@gmail.com>
- <20210203041636.38555-19-xiyou.wangcong@gmail.com> <87h7mq4wh0.fsf@cloudflare.com>
-In-Reply-To: <87h7mq4wh0.fsf@cloudflare.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 8 Feb 2021 10:43:19 -0800
-Message-ID: <CAM_iQpUsOFEsSxeCTe5t1ZFdKZ+H1CfD7U=9c7QwdDiZZ_4pFg@mail.gmail.com>
-Subject: Re: [Patch bpf-next 18/19] selftests/bpf: add test cases for unix and
- udp sockmap
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, duanxiongchun@bytedance.com,
-        Dongdong Wang <wangdongdong.6@bytedance.com>,
-        jiang.wang@bytedance.com, Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 5, 2021 at 2:53 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
->
-> On Wed, Feb 03, 2021 at 05:16 AM CET, Cong Wang wrote:
-> > From: Cong Wang <cong.wang@bytedance.com>
-> >
-> > Add two test cases to ensure redirection between two
-> > AF_UNIX sockets or two UDP sockets work.
-> >
-> > Cc: John Fastabend <john.fastabend@gmail.com>
-> > Cc: Daniel Borkmann <daniel@iogearbox.net>
-> > Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> > Cc: Lorenz Bauer <lmb@cloudflare.com>
-> > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> > ---
->
-> If you extract a helper for creating a pair of connected sockets that:
->
->  1) delegates to socketpair() for AF_UNIX,
->  2) emulates socketpair() for INET/DGRAM,
->
-> then tests for INET and UNIX datagram sockets could share code.
+On Mon, 8 Feb 2021 10:41:35 -0800 Cong Wang wrote:
+> On Sat, Feb 6, 2021 at 9:26 PM <wenxu@ucloud.cn> wrote:
+> > +       if (state && !(state & TCA_FLOWER_KEY_CT_FLAGS_TRACKED)) {
+> > +               NL_SET_ERR_MSG_ATTR(extack, tb,
+> > +                                   "ct_state no trk, no other flag are set");
+> > +               return -EINVAL;
+> > +       }
+> > +
+> > +       if (state & TCA_FLOWER_KEY_CT_FLAGS_NEW &&
+> > +           state & TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED) {
+> > +               NL_SET_ERR_MSG_ATTR(extack, tb,
+> > +                                   "ct_state new and est are exclusive");  
+> 
+> Please spell out the full words, "trk" and "est" are not good abbreviations.
 
-Good idea. Will do it in the next update.
+It does match user space naming in OvS as well as iproute2:
 
-Thanks!
+        { "trk", TCA_FLOWER_KEY_CT_FLAGS_TRACKED },
+        { "new", TCA_FLOWER_KEY_CT_FLAGS_NEW },
+        { "est", TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED },
+        { "inv", TCA_FLOWER_KEY_CT_FLAGS_INVALID },
+        { "rpl", TCA_FLOWER_KEY_CT_FLAGS_REPLY },
+
+IDK about netfilter itself.
