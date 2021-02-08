@@ -2,58 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 565AD313EA2
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 20:15:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7662D313ECD
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 20:24:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235469AbhBHTPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 14:15:00 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:56120 "EHLO vps0.lunn.ch"
+        id S236194AbhBHTWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 14:22:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38862 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235973AbhBHTOX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Feb 2021 14:14:23 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1l9ByX-004vKt-RF; Mon, 08 Feb 2021 20:13:33 +0100
-Date:   Mon, 8 Feb 2021 20:13:33 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Vyacheslav Mitrofanov 
-        <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 09/20] net: stmmac: Discard mii_irq array from private
- data
-Message-ID: <YCGNXUSKwxnE8mSp@lunn.ch>
-References: <20210208140341.9271-1-Sergey.Semin@baikalelectronics.ru>
- <20210208140341.9271-10-Sergey.Semin@baikalelectronics.ru>
+        id S236176AbhBHTWb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Feb 2021 14:22:31 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 80EC364E8B;
+        Mon,  8 Feb 2021 19:21:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612812109;
+        bh=HEkPzVSkry8E9YDKVHLo7X6ed7LXeRyARAZV4hqq6HQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pQ+LAvyfo3pc6leD328KjW0jMnSRIHbLQHHEsIXPkhm1StrQ9U1WjjdFIIOSrQ+te
+         PDdEjhoTCWPdrnQ9q/AumcxKSQkTsMZfYh08xR0DI9eVgNTGAjt2q5wEhV0RtIQ/KJ
+         DiQGODGQbuCHT5Y/xvvGRJ768ozNBCziG5BPdwodzQXaBtG9xPh4+y4WJoV1w40VKN
+         s2+FUlXGgbsPliPPZ9UwJt3iPQE/Dv8nWHn2zaFxplWePfjqdZ3eZO3wFMQhkDBzRg
+         QoQoF4QhqBz4gRJt91/OaKIew1RT8BKdT/3Kgqpceljw3NMdDHHeU33MQthmUe/fTf
+         nHw5H8jijVHgw==
+Date:   Mon, 8 Feb 2021 11:21:48 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Marcelo Ricardo Leitner <mleitner@redhat.com>
+Cc:     wenxu@ucloud.cn, jhs@mojatatu.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net v4] net/sched: cls_flower: Reject invalid ct_state
+ flags rules
+Message-ID: <20210208112148.2d8d6d7d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210208185705.GE2953@horizon.localdomain>
+References: <1612674803-7912-1-git-send-email-wenxu@ucloud.cn>
+        <20210208185705.GE2953@horizon.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210208140341.9271-10-Sergey.Semin@baikalelectronics.ru>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 08, 2021 at 05:03:30PM +0300, Serge Semin wrote:
-> There has been no user of the denoted array of the device private data
-> since commit e7f4dc3536a4 ("mdio: Move allocation of interrupts into
-> core"). Discard it then.
+On Mon, 8 Feb 2021 15:57:05 -0300 Marcelo Ricardo Leitner wrote:
+> On Sun, Feb 07, 2021 at 01:13:23PM +0800, wenxu@ucloud.cn wrote:
+> > --- a/net/sched/cls_flower.c
+> > +++ b/net/sched/cls_flower.c
+> > @@ -30,6 +30,11 @@
+> >  
+> >  #include <uapi/linux/netfilter/nf_conntrack_common.h>
+> >  
+> > +#define TCA_FLOWER_KEY_CT_FLAGS_MASK (TCA_FLOWER_KEY_CT_FLAGS_NEW | \
+> > +				      TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED | \
+> > +				      TCA_FLOWER_KEY_CT_FLAGS_RELATED | \
+> > +				      TCA_FLOWER_KEY_CT_FLAGS_TRACKED)
+> > +  
 > 
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> I know Jakub had said the calculations for _MASK were complicated, but
+> seeing this, they seem worth, otherwise we have to manually maintain
+> this duplicated list of entries here.
+> 
+> Maybe add just the __TCA_FLOWER_KEY_CT_FLAGS_MAX to the enum, and do
+> the calcs here? (to avoid having them in uapi)
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+IDK, MAX feels rather weird for a bitfield. Someone would have to do no
+testing at all to miss extending the mask.
 
-    Andrew
+If you strongly prefer to keep the MAX definition let's at least move
+the mask definition out of the uAPI.
+
+> >  struct fl_flow_key {
+> >  	struct flow_dissector_key_meta meta;
+> >  	struct flow_dissector_key_control control;
