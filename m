@@ -2,476 +2,721 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FCD8313BE6
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 18:59:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11E8E313BED
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 18:59:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233044AbhBHR62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 12:58:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58960 "EHLO
+        id S235022AbhBHR6v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 12:58:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235119AbhBHRzg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 12:55:36 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDBACC06178C
-        for <netdev@vger.kernel.org>; Mon,  8 Feb 2021 09:54:55 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id g3so8243411plp.2
-        for <netdev@vger.kernel.org>; Mon, 08 Feb 2021 09:54:55 -0800 (PST)
+        with ESMTP id S231872AbhBHRz7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 12:55:59 -0500
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D516C061793
+        for <netdev@vger.kernel.org>; Mon,  8 Feb 2021 09:55:18 -0800 (PST)
+Received: by mail-pg1-x52c.google.com with SMTP id o21so9309671pgn.12
+        for <netdev@vger.kernel.org>; Mon, 08 Feb 2021 09:55:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=1G74omdaQsQ2/mmAeXPu9UjWD9wFAQbtL5FxBsIfALA=;
-        b=fTqtFq+marYNDUfImsYqesJ08IkqVWH2wHTrwATfcPux4etzzcuoWXExCWsT0EYNoF
-         we3DkN0X/1Y2wB6y4dApumNMvUrmn0erSI8HZOywtTsGCLZGKeH9YdL02YgirQ+G9hog
-         jmy3K9pg2/XX4EI9D07Qi5GKIhnjEVhwCQtKcUFnicBpSgh3XaKiQ5T6PWq71eUQxQnO
-         +WHTHeSHVI0nAf0O+6X5FoKYtr0zHSNIlXrNbme30yaHEU2pddOIk2l0nW+O8TWAXPyc
-         XkhhZGjw1CJHgYx/q9dZ7biHAMKFZuPl6a57K5LCO3Dj4v+9O4cFMvbXUjkuOXzdUI8S
-         +aaA==
+        bh=5LwNILtJ+GSUJjj0ZmPbjj70IBpIbFtM9sxTftOlGq4=;
+        b=YqR+j9U/rLMaKFsiwzrnA8ThwsN5t4kvOMRM2XFX9JeohqHsSxFAKfWtHBBPXb3XWu
+         dnVXuy1zGWU+XDQlDjQzJH7VYcsC9SbDH8yGksSIXni63DtPpCeyMVVKLOH57maNVolS
+         vjz91bkyQ72iubcDOQr30hnOLLv23b0CCX4/YT8pI/wbcTKqeLyz9aFfPv5D1w3QmyBa
+         Ng4iHuS8G54Pse2WbZ8jab4j4cOUEAU/g44cLHs6akqgXh1L04qwvXPC3CA4XXur/MSE
+         PXKX2gYtSYUNpBbKXBNJCvJv2J1lxuA0bw6IF6NnPWI3K7YZgaXNYhVfva6lu8I1+Xfb
+         S+KA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=1G74omdaQsQ2/mmAeXPu9UjWD9wFAQbtL5FxBsIfALA=;
-        b=Ka3PzzqnkMH4biZoSf/Bpml7+Hpn3dIy/aL3Xue5wnP6L1czagxaPCOi47QTJZBvfQ
-         3vnDOmV+QZc5GD9pJwuIYxGxPIk+sHeYm4HKyKbIK85FKc4h79opqki6nMxjfzHrwCKA
-         ReoLDLpkc5G5wkOr4egNfJiLpcHVU4x1gYfjKEdZSlU4qWJtqt3l/OWTGkVVlKTkN5vG
-         cJP9G/Fhvj8sgoEYrFDkf4e63L/5anpPZ8+g211VBJh4ydlIRWv13sDfZx69s8raS1Hq
-         kFEDMCDFcT2f3ASYpZ9IsMN4RxCljln34DDSR96zE3G/gt0Dsaecr/W8cWaYU8RxtGwr
-         R9kA==
-X-Gm-Message-State: AOAM5338DLLpEJKhN+xO7Z05zMukkkUBsZqe4NFzK/lRm4v+K8o25L+h
-        GKZktQacjVNLQCSt46+qoxM=
-X-Google-Smtp-Source: ABdhPJy3gRulY2HwMP+7/NfDnoVBWhu3K6aCvHDHK0i/2925SbmFlk0UBi02xzUS71KqX4Ehux4Cvw==
-X-Received: by 2002:a17:902:d686:b029:de:7845:c0b2 with SMTP id v6-20020a170902d686b02900de7845c0b2mr17200090ply.11.1612806895300;
-        Mon, 08 Feb 2021 09:54:55 -0800 (PST)
+        bh=5LwNILtJ+GSUJjj0ZmPbjj70IBpIbFtM9sxTftOlGq4=;
+        b=ENJOwNfb7MHtBCWqxRhSejn5LFj81yxHqn8bGDFLdNVlk/iIBHKPngbD4ojpq6ILt8
+         /r2Spyo0uM9FgXgSOHpL8JrIo4rcDMXASHx667O/ipySGNez2ym1X9GBa9xo6+bX3Qp/
+         PeUchrMjGsfiKFV8Cc7YNWK0omc0dh22SDnWhH96E0zDQW+XSawnV5Y91JO0OwJlq04Z
+         xv0DJBSjlhzbmPv5L6uafX9k16BPuixZjnaVFrwwV8GyiCEifVP6HJc/PNHOw2VXV/ah
+         5xjScHgmtHuRzCqaDFT+GVrnDUFXvNFgjz6BnrUg7E/kgTYCjwRVOUFpj2+f1lCfjsKI
+         L2qg==
+X-Gm-Message-State: AOAM5300JZN+3DwWu2QehHivtN6daZRq/oap8d2Pcyd8JbSYVGa0cq3D
+        BmIc7mcsRy6mpy0mzNGr2lw=
+X-Google-Smtp-Source: ABdhPJx4XKKWoAWz8BKxp7RYz7gzWb6rDAItTOKBHPPm7IHplsilO39ULszWsxoaIQLBIXHYuyWXUw==
+X-Received: by 2002:a63:d143:: with SMTP id c3mr18944158pgj.86.1612806917841;
+        Mon, 08 Feb 2021 09:55:17 -0800 (PST)
 Received: from localhost.localdomain ([49.173.165.50])
-        by smtp.gmail.com with ESMTPSA id hi15sm16926059pjb.19.2021.02.08.09.54.52
+        by smtp.gmail.com with ESMTPSA id e21sm18654361pgv.74.2021.02.08.09.55.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Feb 2021 09:54:54 -0800 (PST)
+        Mon, 08 Feb 2021 09:55:17 -0800 (PST)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
         dsahern@kernel.org, xiyou.wangcong@gmail.com
 Cc:     ap420073@gmail.com
-Subject: [PATCH net-next 4/8] mld: convert from timer to delayed work
-Date:   Mon,  8 Feb 2021 17:54:45 +0000
-Message-Id: <20210208175445.5203-1-ap420073@gmail.com>
+Subject: [PATCH net-next 5/8] mld: rename igmp6 to mld
+Date:   Mon,  8 Feb 2021 17:55:06 +0000
+Message-Id: <20210208175506.5284-1-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-mcast.c has several timers for delaying works.
-Timer's expire handler is working under BH context so it can't use
-sleepable things such as GFP_KERNEL, mutex, etc.
-In order to use sleepable APIs, it converts from timers to delayed work.
-But there are some critical sections, which is used by both process
-and BH context. So that it still uses spin_lock_bh() and rwlock.
+ipv6 multicast protocol is MLD, not IGMP6.
+So it should be renamed.
 
-Suggested-by: Cong Wang <xiyou.wangcong@gmail.com>
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
- include/net/if_inet6.h |   8 +--
- net/ipv6/mcast.c       | 141 ++++++++++++++++++++++++-----------------
- 2 files changed, 86 insertions(+), 63 deletions(-)
+ include/net/ndisc.h |  14 ++--
+ net/ipv6/af_inet6.c |  12 +--
+ net/ipv6/icmp.c     |   4 +-
+ net/ipv6/mcast.c    | 198 ++++++++++++++++++++++----------------------
+ 4 files changed, 115 insertions(+), 113 deletions(-)
 
-diff --git a/include/net/if_inet6.h b/include/net/if_inet6.h
-index cd17b756a2a5..096c0554d199 100644
---- a/include/net/if_inet6.h
-+++ b/include/net/if_inet6.h
-@@ -120,7 +120,7 @@ struct ifmcaddr6 {
- 	unsigned int		mca_sfmode;
- 	unsigned char		mca_crcount;
- 	unsigned long		mca_sfcount[2];
--	struct timer_list	mca_timer;
-+	struct delayed_work	mca_work;
- 	unsigned int		mca_flags;
- 	int			mca_users;
- 	refcount_t		mca_refcnt;
-@@ -178,9 +178,9 @@ struct inet6_dev {
- 	unsigned long		mc_qri;		/* Query Response Interval */
- 	unsigned long		mc_maxdelay;
+diff --git a/include/net/ndisc.h b/include/net/ndisc.h
+index 38e4094960ce..09b1e5948b73 100644
+--- a/include/net/ndisc.h
++++ b/include/net/ndisc.h
+@@ -479,17 +479,17 @@ void ndisc_update(const struct net_device *dev, struct neighbour *neigh,
+ 		  struct ndisc_options *ndopts);
  
--	struct timer_list	mc_gq_timer;	/* general query timer */
--	struct timer_list	mc_ifc_timer;	/* interface change timer */
--	struct timer_list	mc_dad_timer;	/* dad complete mc timer */
-+	struct delayed_work	mc_gq_work;	/* general query work */
-+	struct delayed_work	mc_ifc_work;	/* interface change work */
-+	struct delayed_work	mc_dad_work;	/* dad complete mc work */
+ /*
+- *	IGMP
++ *	MLD
+  */
+-int igmp6_init(void);
+-int igmp6_late_init(void);
++int mld_init(void);
++int mld_late_init(void);
  
- 	struct ifacaddr6	*ac_list;
- 	rwlock_t		lock;
+-void igmp6_cleanup(void);
+-void igmp6_late_cleanup(void);
++void mld_cleanup(void);
++void mld_late_cleanup(void);
+ 
+-int igmp6_event_query(struct sk_buff *skb);
++int mld_event_query(struct sk_buff *skb);
+ 
+-int igmp6_event_report(struct sk_buff *skb);
++int mld_event_report(struct sk_buff *skb);
+ 
+ 
+ #ifdef CONFIG_SYSCTL
+diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
+index 0e9994e0ecd7..ace6527171bd 100644
+--- a/net/ipv6/af_inet6.c
++++ b/net/ipv6/af_inet6.c
+@@ -1105,7 +1105,7 @@ static int __init inet6_init(void)
+ 	err = ndisc_init();
+ 	if (err)
+ 		goto ndisc_fail;
+-	err = igmp6_init();
++	err = mld_init();
+ 	if (err)
+ 		goto igmp_fail;
+ 
+@@ -1186,9 +1186,9 @@ static int __init inet6_init(void)
+ 	if (err)
+ 		goto rpl_fail;
+ 
+-	err = igmp6_late_init();
++	err = mld_late_init();
+ 	if (err)
+-		goto igmp6_late_err;
++		goto mld_late_err;
+ 
+ #ifdef CONFIG_SYSCTL
+ 	err = ipv6_sysctl_register();
+@@ -1205,9 +1205,9 @@ static int __init inet6_init(void)
+ 
+ #ifdef CONFIG_SYSCTL
+ sysctl_fail:
+-	igmp6_late_cleanup();
++	mld_late_cleanup();
+ #endif
+-igmp6_late_err:
++mld_late_err:
+ 	rpl_exit();
+ rpl_fail:
+ 	seg6_exit();
+@@ -1252,7 +1252,7 @@ static int __init inet6_init(void)
+ #endif
+ 	ipv6_netfilter_fini();
+ netfilter_fail:
+-	igmp6_cleanup();
++	mld_cleanup();
+ igmp_fail:
+ 	ndisc_cleanup();
+ ndisc_fail:
+diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
+index f3d05866692e..af0382a0de3c 100644
+--- a/net/ipv6/icmp.c
++++ b/net/ipv6/icmp.c
+@@ -943,11 +943,11 @@ static int icmpv6_rcv(struct sk_buff *skb)
+ 		break;
+ 
+ 	case ICMPV6_MGM_QUERY:
+-		igmp6_event_query(skb);
++		mld_event_query(skb);
+ 		break;
+ 
+ 	case ICMPV6_MGM_REPORT:
+-		igmp6_event_report(skb);
++		mld_event_report(skb);
+ 		break;
+ 
+ 	case ICMPV6_MGM_REDUCTION:
 diff --git a/net/ipv6/mcast.c b/net/ipv6/mcast.c
-index 45a983ed091e..ed31b3212b9e 100644
+index ed31b3212b9e..21f3bbec5568 100644
 --- a/net/ipv6/mcast.c
 +++ b/net/ipv6/mcast.c
-@@ -29,7 +29,6 @@
- #include <linux/socket.h>
- #include <linux/sockios.h>
- #include <linux/jiffies.h>
--#include <linux/times.h>
- #include <linux/net.h>
- #include <linux/in.h>
- #include <linux/in6.h>
-@@ -42,6 +41,7 @@
- #include <linux/slab.h>
- #include <linux/pkt_sched.h>
- #include <net/mld.h>
-+#include <linux/workqueue.h>
- 
- #include <linux/netfilter.h>
- #include <linux/netfilter_ipv6.h>
-@@ -67,11 +67,12 @@ static int __mld2_query_bugs[] __attribute__((__unused__)) = {
- 	BUILD_BUG_ON_ZERO(offsetof(struct mld2_grec, grec_mca) % 4)
- };
- 
-+static struct workqueue_struct *mld_wq;
+@@ -70,8 +70,8 @@ static int __mld2_query_bugs[] __attribute__((__unused__)) = {
+ static struct workqueue_struct *mld_wq;
  static struct in6_addr mld2_all_mcr = MLD2_ALL_MCR_INIT;
  
- static void igmp6_join_group(struct ifmcaddr6 *mc);
- static void igmp6_leave_group(struct ifmcaddr6 *mc);
--static void igmp6_timer_handler(struct timer_list *t);
-+static void mld_mca_work(struct work_struct *work);
+-static void igmp6_join_group(struct ifmcaddr6 *mc);
+-static void igmp6_leave_group(struct ifmcaddr6 *mc);
++static void mld_join_group(struct ifmcaddr6 *mc);
++static void mld_leave_group(struct ifmcaddr6 *mc);
+ static void mld_mca_work(struct work_struct *work);
  
  static void mld_ifc_event(struct inet6_dev *idev);
- static bool mld_in_v1_mode(const struct inet6_dev *idev);
-@@ -722,7 +723,7 @@ static void igmp6_group_dropped(struct ifmcaddr6 *mc)
- 		igmp6_leave_group(mc);
- 
- 	spin_lock_bh(&mc->mca_lock);
--	if (del_timer(&mc->mca_timer))
-+	if (cancel_delayed_work(&mc->mca_work))
- 		mca_put(mc);
- 	spin_unlock_bh(&mc->mca_lock);
- }
-@@ -850,7 +851,7 @@ static struct ifmcaddr6 *mca_alloc(struct inet6_dev *idev,
- 	if (!mc)
- 		return NULL;
- 
--	timer_setup(&mc->mca_timer, igmp6_timer_handler, 0);
-+	INIT_DELAYED_WORK(&mc->mca_work, mld_mca_work);
- 
- 	mc->mca_addr = *addr;
- 	mc->idev = idev; /* reference taken by caller */
-@@ -1030,48 +1031,51 @@ bool ipv6_chk_mcast_addr(struct net_device *dev, const struct in6_addr *group,
+@@ -663,7 +663,7 @@ bool inet6_mc_check(struct sock *sk, const struct in6_addr *mc_addr,
  	return rv;
  }
  
--static void mld_gq_start_timer(struct inet6_dev *idev)
-+static void mld_gq_start_work(struct inet6_dev *idev)
+-static void igmp6_group_added(struct ifmcaddr6 *mc)
++static void mld_group_added(struct ifmcaddr6 *mc)
  {
- 	unsigned long tv = prandom_u32() % idev->mc_maxdelay;
+ 	struct net_device *dev = mc->idev->dev;
+ 	char buf[MAX_ADDR_LEN];
+@@ -684,7 +684,7 @@ static void igmp6_group_added(struct ifmcaddr6 *mc)
+ 		return;
  
- 	idev->mc_gq_running = 1;
--	if (!mod_timer(&idev->mc_gq_timer, jiffies+tv+2))
-+	if (!mod_delayed_work(mld_wq, &idev->mc_gq_work,
-+			      msecs_to_jiffies(tv + 2)))
- 		in6_dev_hold(idev);
+ 	if (mld_in_v1_mode(mc->idev)) {
+-		igmp6_join_group(mc);
++		mld_join_group(mc);
+ 		return;
+ 	}
+ 	/* else v2 */
+@@ -699,7 +699,7 @@ static void igmp6_group_added(struct ifmcaddr6 *mc)
+ 	mld_ifc_event(mc->idev);
  }
  
--static void mld_gq_stop_timer(struct inet6_dev *idev)
-+static void mld_gq_stop_work(struct inet6_dev *idev)
+-static void igmp6_group_dropped(struct ifmcaddr6 *mc)
++static void mld_group_dropped(struct ifmcaddr6 *mc)
  {
- 	idev->mc_gq_running = 0;
--	if (del_timer(&idev->mc_gq_timer))
-+	if (cancel_delayed_work(&idev->mc_gq_work))
- 		__in6_dev_put(idev);
+ 	struct net_device *dev = mc->idev->dev;
+ 	char buf[MAX_ADDR_LEN];
+@@ -720,7 +720,7 @@ static void igmp6_group_dropped(struct ifmcaddr6 *mc)
+ 		return;
+ 
+ 	if (!mc->idev->dead)
+-		igmp6_leave_group(mc);
++		mld_leave_group(mc);
+ 
+ 	spin_lock_bh(&mc->mca_lock);
+ 	if (cancel_delayed_work(&mc->mca_work))
+@@ -923,7 +923,7 @@ static int __ipv6_dev_mc_inc(struct net_device *dev,
+ 	write_unlock_bh(&idev->lock);
+ 
+ 	mld_del_delrec(idev, mc);
+-	igmp6_group_added(mc);
++	mld_group_added(mc);
+ 	mca_put(mc);
+ 	return 0;
+ }
+@@ -949,7 +949,7 @@ int __ipv6_dev_mc_dec(struct inet6_dev *idev, const struct in6_addr *addr)
+ 			if (--mc->mca_users == 0) {
+ 				list_del(&mc->list);
+ 				write_unlock_bh(&idev->lock);
+-				igmp6_group_dropped(mc);
++				mld_group_dropped(mc);
+ 				ip6_mc_clear_src(mc);
+ 				mca_put(mc);
+ 				return 0;
+@@ -1080,10 +1080,10 @@ static void mld_dad_stop_work(struct inet6_dev *idev)
  }
  
--static void mld_ifc_start_timer(struct inet6_dev *idev, unsigned long delay)
-+static void mld_ifc_start_work(struct inet6_dev *idev, unsigned long delay)
- {
- 	unsigned long tv = prandom_u32() % delay;
+ /*
+- *	IGMP handling (alias multicast ICMPv6 messages)
++ *	MLD handling (alias multicast ICMPv6 messages)
+  */
  
--	if (!mod_timer(&idev->mc_ifc_timer, jiffies+tv+2))
-+	if (!mod_delayed_work(mld_wq, &idev->mc_ifc_work,
-+			      msecs_to_jiffies(tv + 2)))
- 		in6_dev_hold(idev);
- }
- 
--static void mld_ifc_stop_timer(struct inet6_dev *idev)
-+static void mld_ifc_stop_work(struct inet6_dev *idev)
- {
- 	idev->mc_ifc_count = 0;
--	if (del_timer(&idev->mc_ifc_timer))
-+	if (cancel_delayed_work(&idev->mc_ifc_work))
- 		__in6_dev_put(idev);
- }
- 
--static void mld_dad_start_timer(struct inet6_dev *idev, unsigned long delay)
-+static void mld_dad_start_work(struct inet6_dev *idev, unsigned long delay)
- {
- 	unsigned long tv = prandom_u32() % delay;
- 
--	if (!mod_timer(&idev->mc_dad_timer, jiffies+tv+2))
-+	if (!mod_delayed_work(mld_wq, &idev->mc_dad_work,
-+			      msecs_to_jiffies(tv + 2)))
- 		in6_dev_hold(idev);
- }
- 
--static void mld_dad_stop_timer(struct inet6_dev *idev)
-+static void mld_dad_stop_work(struct inet6_dev *idev)
- {
--	if (del_timer(&idev->mc_dad_timer))
-+	if (cancel_delayed_work(&idev->mc_dad_work))
- 		__in6_dev_put(idev);
- }
- 
-@@ -1083,21 +1087,21 @@ static void igmp6_group_queried(struct ifmcaddr6 *mc, unsigned long resptime)
+-static void igmp6_group_queried(struct ifmcaddr6 *mc, unsigned long resptime)
++static void mld_group_queried(struct ifmcaddr6 *mc, unsigned long resptime)
  {
  	unsigned long delay = resptime;
  
--	/* Do not start timer for these addresses */
-+	/* Do not start work for these addresses */
- 	if (ipv6_addr_is_ll_all_nodes(&mc->mca_addr) ||
- 	    IPV6_ADDR_MC_SCOPE(&mc->mca_addr) < IPV6_ADDR_SCOPE_LINKLOCAL)
+@@ -1337,7 +1337,7 @@ static int mld_process_v2(struct inet6_dev *idev, struct mld2_query *mld,
+ }
+ 
+ /* called with rcu_read_lock() */
+-int igmp6_event_query(struct sk_buff *skb)
++int mld_event_query(struct sk_buff *skb)
+ {
+ 	struct mld2_query *mlh2 = NULL;
+ 	const struct in6_addr *group;
+@@ -1425,7 +1425,7 @@ int igmp6_event_query(struct sk_buff *skb)
+ 	if (group_type == IPV6_ADDR_ANY) {
+ 		list_for_each_entry(mc, &idev->mc_list, list) {
+ 			spin_lock_bh(&mc->mca_lock);
+-			igmp6_group_queried(mc, max_delay);
++			mld_group_queried(mc, max_delay);
+ 			spin_unlock_bh(&mc->mca_lock);
+ 		}
+ 	} else {
+@@ -1446,7 +1446,7 @@ int igmp6_event_query(struct sk_buff *skb)
+ 			}
+ 			if (!(mc->mca_flags & MAF_GSQUERY) ||
+ 			    mld_marksources(mc, ntohs(mlh2->mld2q_nsrcs), mlh2->mld2q_srcs))
+-				igmp6_group_queried(mc, max_delay);
++				mld_group_queried(mc, max_delay);
+ 			spin_unlock_bh(&mc->mca_lock);
+ 			break;
+ 		}
+@@ -1457,7 +1457,7 @@ int igmp6_event_query(struct sk_buff *skb)
+ }
+ 
+ /* called with rcu_read_lock() */
+-int igmp6_event_report(struct sk_buff *skb)
++int mld_event_report(struct sk_buff *skb)
+ {
+ 	struct inet6_dev *idev;
+ 	struct ifmcaddr6 *mc;
+@@ -1983,7 +1983,7 @@ static void mld_send_cr(struct inet6_dev *idev)
+ 	mld_sendpack(skb);
+ }
+ 
+-static void igmp6_send(struct in6_addr *addr, struct net_device *dev, int type)
++static void mld_send(struct in6_addr *addr, struct net_device *dev, int type)
+ {
+ 	u8 ra[8] = { IPPROTO_ICMPV6, 0,
+ 		     IPV6_TLV_ROUTERALERT,
+@@ -2439,14 +2439,14 @@ static void ip6_mc_clear_src(struct ifmcaddr6 *mc)
+ }
+ 
+ 
+-static void igmp6_join_group(struct ifmcaddr6 *mc)
++static void mld_join_group(struct ifmcaddr6 *mc)
+ {
+ 	unsigned long delay;
+ 
+ 	if (mc->mca_flags & MAF_NOREPORT)
  		return;
  
--	if (del_timer(&mc->mca_timer)) {
-+	if (cancel_delayed_work(&mc->mca_work)) {
- 		mca_put(mc);
--		delay = mc->mca_timer.expires - jiffies;
-+		delay = mc->mca_work.timer.expires - jiffies;
- 	}
+-	igmp6_send(&mc->mca_addr, mc->idev->dev, ICMPV6_MGM_REPORT);
++	mld_send(&mc->mca_addr, mc->idev->dev, ICMPV6_MGM_REPORT);
  
- 	if (delay >= resptime)
- 		delay = prandom_u32() % resptime;
- 
--	mc->mca_timer.expires = jiffies + delay;
--	if (!mod_timer(&mc->mca_timer, jiffies + delay))
-+	if (!mod_delayed_work(mld_wq, &mc->mca_work,
-+			      msecs_to_jiffies(delay)))
- 		mca_get(mc);
- 	mc->mca_flags |= MAF_TIMER_RUNNING;
- }
-@@ -1308,10 +1312,10 @@ static int mld_process_v1(struct inet6_dev *idev, struct mld_msg *mld,
- 	if (v1_query)
- 		mld_set_v1_mode(idev);
- 
--	/* cancel MLDv2 report timer */
--	mld_gq_stop_timer(idev);
--	/* cancel the interface change timer */
--	mld_ifc_stop_timer(idev);
-+	/* cancel MLDv2 report work */
-+	mld_gq_stop_work(idev);
-+	/* cancel the interface change work */
-+	mld_ifc_stop_work(idev);
- 	/* clear deleted report items */
- 	mld_clear_delrec(idev);
- 
-@@ -1401,7 +1405,7 @@ int igmp6_event_query(struct sk_buff *skb)
- 			if (mlh2->mld2q_nsrcs)
- 				return -EINVAL; /* no sources allowed */
- 
--			mld_gq_start_timer(idev);
-+			mld_gq_start_work(idev);
- 			return 0;
- 		}
- 		/* mark sources to include, if group & source-specific */
-@@ -1485,14 +1489,14 @@ int igmp6_event_report(struct sk_buff *skb)
- 		return -ENODEV;
- 
- 	/*
--	 *	Cancel the timer for this group
-+	 *	Cancel the work for this group
- 	 */
- 
- 	read_lock_bh(&idev->lock);
- 	list_for_each_entry(mc, &idev->mc_list, list) {
- 		if (ipv6_addr_equal(&mc->mca_addr, &mld->mld_mca)) {
- 			spin_lock(&mc->mca_lock);
--			if (del_timer(&mc->mca_timer))
-+			if (cancel_delayed_work(&mc->mca_work))
- 				mca_put(mc);
- 			mc->mca_flags &= ~(MAF_LAST_REPORTER | MAF_TIMER_RUNNING);
- 			spin_unlock(&mc->mca_lock);
-@@ -2109,21 +2113,23 @@ void ipv6_mc_dad_complete(struct inet6_dev *idev)
- 		mld_send_initial_cr(idev);
- 		idev->mc_dad_count--;
- 		if (idev->mc_dad_count)
--			mld_dad_start_timer(idev,
--					    unsolicited_report_interval(idev));
-+			mld_dad_start_work(idev,
-+					   unsolicited_report_interval(idev));
- 	}
- }
- 
--static void mld_dad_timer_expire(struct timer_list *t)
-+static void mld_dad_work(struct work_struct *work)
- {
--	struct inet6_dev *idev = from_timer(idev, t, mc_dad_timer);
-+	struct inet6_dev *idev = container_of(to_delayed_work(work),
-+					      struct inet6_dev,
-+					      mc_dad_work);
- 
- 	mld_send_initial_cr(idev);
- 	if (idev->mc_dad_count) {
- 		idev->mc_dad_count--;
- 		if (idev->mc_dad_count)
--			mld_dad_start_timer(idev,
--					    unsolicited_report_interval(idev));
-+			mld_dad_start_work(idev,
-+					   unsolicited_report_interval(idev));
- 	}
- 	in6_dev_put(idev);
- }
-@@ -2445,12 +2451,13 @@ static void igmp6_join_group(struct ifmcaddr6 *mc)
  	delay = prandom_u32() % unsolicited_report_interval(mc->idev);
  
- 	spin_lock_bh(&mc->mca_lock);
--	if (del_timer(&mc->mca_timer)) {
-+	if (cancel_delayed_work(&mc->mca_work)) {
- 		mca_put(mc);
--		delay = mc->mca_timer.expires - jiffies;
-+		delay = mc->mca_work.timer.expires - jiffies;
- 	}
- 
--	if (!mod_timer(&mc->mca_timer, jiffies + delay))
-+	if (!mod_delayed_work(mld_wq, &mc->mca_work,
-+			      msecs_to_jiffies(delay)))
- 		mca_get(mc);
- 	mc->mca_flags |= MAF_TIMER_RUNNING | MAF_LAST_REPORTER;
- 	spin_unlock_bh(&mc->mca_lock);
-@@ -2487,25 +2494,27 @@ static void igmp6_leave_group(struct ifmcaddr6 *mc)
- 	}
+@@ -2482,12 +2482,12 @@ static int ip6_mc_leave_src(struct sock *sk, struct ipv6_mc_socklist *iml,
+ 	return err;
  }
  
--static void mld_gq_timer_expire(struct timer_list *t)
-+static void mld_gq_work(struct work_struct *work)
+-static void igmp6_leave_group(struct ifmcaddr6 *mc)
++static void mld_leave_group(struct ifmcaddr6 *mc)
  {
--	struct inet6_dev *idev = from_timer(idev, t, mc_gq_timer);
-+	struct inet6_dev *idev = container_of(to_delayed_work(work),
-+					      struct inet6_dev, mc_gq_work);
- 
- 	idev->mc_gq_running = 0;
- 	mld_send_report(idev, NULL);
- 	in6_dev_put(idev);
- }
- 
--static void mld_ifc_timer_expire(struct timer_list *t)
-+static void mld_ifc_work(struct work_struct *work)
- {
--	struct inet6_dev *idev = from_timer(idev, t, mc_ifc_timer);
-+	struct inet6_dev *idev = container_of(to_delayed_work(work),
-+					      struct inet6_dev, mc_ifc_work);
- 
- 	mld_send_cr(idev);
- 	if (idev->mc_ifc_count) {
- 		idev->mc_ifc_count--;
- 		if (idev->mc_ifc_count)
--			mld_ifc_start_timer(idev,
--					    unsolicited_report_interval(idev));
-+			mld_ifc_start_work(idev,
-+					   unsolicited_report_interval(idev));
- 	}
- 	in6_dev_put(idev);
- }
-@@ -2515,22 +2524,23 @@ static void mld_ifc_event(struct inet6_dev *idev)
- 	if (mld_in_v1_mode(idev))
- 		return;
- 	idev->mc_ifc_count = idev->mc_qrv;
--	mld_ifc_start_timer(idev, 1);
-+	mld_ifc_start_work(idev, 1);
- }
- 
--static void igmp6_timer_handler(struct timer_list *t)
-+static void mld_mca_work(struct work_struct *work)
- {
--	struct ifmcaddr6 *mc = from_timer(mc, t, mca_timer);
-+	struct ifmcaddr6 *mc = container_of(to_delayed_work(work),
-+					    struct ifmcaddr6, mca_work);
+ 	if (mld_in_v1_mode(mc->idev)) {
+ 		if (mc->mca_flags & MAF_LAST_REPORTER)
+-			igmp6_send(&mc->mca_addr, mc->idev->dev,
+-				   ICMPV6_MGM_REDUCTION);
++			mld_send(&mc->mca_addr, mc->idev->dev,
++				 ICMPV6_MGM_REDUCTION);
+ 	} else {
+ 		mld_add_delrec(mc->idev, mc);
+ 		mld_ifc_event(mc->idev);
+@@ -2533,7 +2533,7 @@ static void mld_mca_work(struct work_struct *work)
+ 					    struct ifmcaddr6, mca_work);
  
  	if (mld_in_v1_mode(mc->idev))
- 		igmp6_send(&mc->mca_addr, mc->idev->dev, ICMPV6_MGM_REPORT);
+-		igmp6_send(&mc->mca_addr, mc->idev->dev, ICMPV6_MGM_REPORT);
++		mld_send(&mc->mca_addr, mc->idev->dev, ICMPV6_MGM_REPORT);
  	else
  		mld_send_report(mc->idev, mc);
  
--	spin_lock(&mc->mca_lock);
-+	spin_lock_bh(&mc->mca_lock);
- 	mc->mca_flags |=  MAF_LAST_REPORTER;
- 	mc->mca_flags &= ~MAF_TIMER_RUNNING;
--	spin_unlock(&mc->mca_lock);
-+	spin_unlock_bh(&mc->mca_lock);
- 	mca_put(mc);
- }
+@@ -2554,7 +2554,7 @@ void ipv6_mc_unmap(struct inet6_dev *idev)
  
-@@ -2566,12 +2576,12 @@ void ipv6_mc_down(struct inet6_dev *idev)
+ 	read_lock_bh(&idev->lock);
  	list_for_each_entry_safe(mc, tmp, &idev->mc_list, list)
- 		igmp6_group_dropped(mc);
- 
--	/* Should stop timer after group drop. or we will
--	 * start timer again in mld_ifc_event()
-+	/* Should stop work after group drop. or we will
-+	 * start work again in mld_ifc_event()
- 	 */
--	mld_ifc_stop_timer(idev);
--	mld_gq_stop_timer(idev);
--	mld_dad_stop_timer(idev);
-+	mld_ifc_stop_work(idev);
-+	mld_gq_stop_work(idev);
-+	mld_dad_stop_work(idev);
+-		igmp6_group_dropped(mc);
++		mld_group_dropped(mc);
  	read_unlock_bh(&idev->lock);
  }
  
-@@ -2608,12 +2618,12 @@ void ipv6_mc_init_dev(struct inet6_dev *idev)
- 	write_lock_bh(&idev->lock);
- 	spin_lock_init(&idev->mc_tomb_lock);
- 	idev->mc_gq_running = 0;
--	timer_setup(&idev->mc_gq_timer, mld_gq_timer_expire, 0);
-+	INIT_DELAYED_WORK(&idev->mc_gq_work, mld_gq_work);
- 	INIT_LIST_HEAD(&idev->mc_tomb_list);
- 	INIT_LIST_HEAD(&idev->mc_list);
- 	idev->mc_ifc_count = 0;
--	timer_setup(&idev->mc_ifc_timer, mld_ifc_timer_expire, 0);
--	timer_setup(&idev->mc_dad_timer, mld_dad_timer_expire, 0);
-+	INIT_DELAYED_WORK(&idev->mc_ifc_work, mld_ifc_work);
-+	INIT_DELAYED_WORK(&idev->mc_dad_work, mld_dad_work);
+@@ -2574,7 +2574,7 @@ void ipv6_mc_down(struct inet6_dev *idev)
+ 	read_lock_bh(&idev->lock);
+ 
+ 	list_for_each_entry_safe(mc, tmp, &idev->mc_list, list)
+-		igmp6_group_dropped(mc);
++		mld_group_dropped(mc);
+ 
+ 	/* Should stop work after group drop. or we will
+ 	 * start work again in mld_ifc_event()
+@@ -2606,7 +2606,7 @@ void ipv6_mc_up(struct inet6_dev *idev)
  	ipv6_mc_reset(idev);
- 	write_unlock_bh(&idev->lock);
+ 	list_for_each_entry_safe(mc, tmp, &idev->mc_list, list) {
+ 		mld_del_delrec(idev, mc);
+-		igmp6_group_added(mc);
++		mld_group_added(mc);
+ 	}
+ 	read_unlock_bh(&idev->lock);
  }
-@@ -2626,7 +2636,7 @@ void ipv6_mc_destroy_dev(struct inet6_dev *idev)
+@@ -2670,7 +2670,7 @@ static void ipv6_mc_rejoin_groups(struct inet6_dev *idev)
+ 	if (mld_in_v1_mode(idev)) {
+ 		read_lock_bh(&idev->lock);
+ 		list_for_each_entry(mc, &idev->mc_list, list)
+-			igmp6_join_group(mc);
++			mld_join_group(mc);
+ 		read_unlock_bh(&idev->lock);
+ 	} else
+ 		mld_send_report(idev, NULL);
+@@ -2695,22 +2695,22 @@ static int ipv6_mc_netdev_event(struct notifier_block *this,
+ 	return NOTIFY_DONE;
+ }
+ 
+-static struct notifier_block igmp6_netdev_notifier = {
++static struct notifier_block mld_netdev_notifier = {
+ 	.notifier_call = ipv6_mc_netdev_event,
+ };
+ 
+ #ifdef CONFIG_PROC_FS
+-struct igmp6_mc_iter_state {
++struct mld_mc_iter_state {
+ 	struct seq_net_private p;
+ 	struct net_device *dev;
+ 	struct inet6_dev *idev;
+ };
+ 
+-#define igmp6_mc_seq_private(seq)	((struct igmp6_mc_iter_state *)(seq)->private)
++#define mld_mc_seq_private(seq)	((struct mld_mc_iter_state *)(seq)->private)
+ 
+-static inline struct ifmcaddr6 *igmp6_mc_get_first(struct seq_file *seq)
++static inline struct ifmcaddr6 *mld_mc_get_first(struct seq_file *seq)
  {
- 	struct ifmcaddr6 *mc, *tmp;
+-	struct igmp6_mc_iter_state *state = igmp6_mc_seq_private(seq);
++	struct mld_mc_iter_state *state = mld_mc_seq_private(seq);
+ 	struct net *net = seq_file_net(seq);
+ 	struct ifmcaddr6 *mc;
  
--	/* Deactivate timers */
-+	/* Deactivate works */
- 	ipv6_mc_down(idev);
- 	mld_clear_delrec(idev);
+@@ -2732,9 +2732,9 @@ static inline struct ifmcaddr6 *igmp6_mc_get_first(struct seq_file *seq)
+ 	return NULL;
+ }
  
-@@ -2799,7 +2809,7 @@ static int igmp6_mc_seq_show(struct seq_file *seq, void *v)
- 		   &mc->mca_addr,
- 		   mc->mca_users, mc->mca_flags,
- 		   (mc->mca_flags & MAF_TIMER_RUNNING) ?
--		   jiffies_to_clock_t(mc->mca_timer.expires - jiffies) : 0);
-+		   jiffies_to_clock_t(mc->mca_work.timer.expires - jiffies) : 0);
+-static struct ifmcaddr6 *igmp6_mc_get_next(struct seq_file *seq, struct ifmcaddr6 *mc)
++static struct ifmcaddr6 *mld_mc_get_next(struct seq_file *seq, struct ifmcaddr6 *mc)
+ {
+-	struct igmp6_mc_iter_state *state = igmp6_mc_seq_private(seq);
++	struct mld_mc_iter_state *state = mld_mc_seq_private(seq);
+ 
+ 	list_for_each_entry_continue(mc, &state->idev->mc_list, list)
+ 		return mc;
+@@ -2760,35 +2760,35 @@ static struct ifmcaddr6 *igmp6_mc_get_next(struct seq_file *seq, struct ifmcaddr
+ 	return mc;
+ }
+ 
+-static struct ifmcaddr6 *igmp6_mc_get_idx(struct seq_file *seq, loff_t pos)
++static struct ifmcaddr6 *mld_mc_get_idx(struct seq_file *seq, loff_t pos)
+ {
+-	struct ifmcaddr6 *mc = igmp6_mc_get_first(seq);
++	struct ifmcaddr6 *mc = mld_mc_get_first(seq);
+ 
+ 	if (mc)
+-		while (pos && (mc = igmp6_mc_get_next(seq, mc)) != NULL)
++		while (pos && (mc = mld_mc_get_next(seq, mc)) != NULL)
+ 			--pos;
+ 	return pos ? NULL : mc;
+ }
+ 
+-static void *igmp6_mc_seq_start(struct seq_file *seq, loff_t *pos)
++static void *mld_mc_seq_start(struct seq_file *seq, loff_t *pos)
+ 	__acquires(RCU)
+ {
+ 	rcu_read_lock();
+-	return igmp6_mc_get_idx(seq, *pos);
++	return mld_mc_get_idx(seq, *pos);
+ }
+ 
+-static void *igmp6_mc_seq_next(struct seq_file *seq, void *v, loff_t *pos)
++static void *mld_mc_seq_next(struct seq_file *seq, void *v, loff_t *pos)
+ {
+-	struct ifmcaddr6 *mc = igmp6_mc_get_next(seq, v);
++	struct ifmcaddr6 *mc = mld_mc_get_next(seq, v);
+ 
+ 	++*pos;
+ 	return mc;
+ }
+ 
+-static void igmp6_mc_seq_stop(struct seq_file *seq, void *v)
++static void mld_mc_seq_stop(struct seq_file *seq, void *v)
+ 	__releases(RCU)
+ {
+-	struct igmp6_mc_iter_state *state = igmp6_mc_seq_private(seq);
++	struct mld_mc_iter_state *state = mld_mc_seq_private(seq);
+ 
+ 	if (likely(state->idev)) {
+ 		read_unlock_bh(&state->idev->lock);
+@@ -2798,10 +2798,10 @@ static void igmp6_mc_seq_stop(struct seq_file *seq, void *v)
+ 	rcu_read_unlock();
+ }
+ 
+-static int igmp6_mc_seq_show(struct seq_file *seq, void *v)
++static int mld_mc_seq_show(struct seq_file *seq, void *v)
+ {
+ 	struct ifmcaddr6 *mc = (struct ifmcaddr6 *)v;
+-	struct igmp6_mc_iter_state *state = igmp6_mc_seq_private(seq);
++	struct mld_mc_iter_state *state = mld_mc_seq_private(seq);
+ 
+ 	seq_printf(seq,
+ 		   "%-4d %-15s %pi6 %5d %08X %ld\n",
+@@ -2813,25 +2813,25 @@ static int igmp6_mc_seq_show(struct seq_file *seq, void *v)
  	return 0;
  }
  
-@@ -3062,7 +3072,19 @@ static struct pernet_operations igmp6_net_ops = {
+-static const struct seq_operations igmp6_mc_seq_ops = {
+-	.start	=	igmp6_mc_seq_start,
+-	.next	=	igmp6_mc_seq_next,
+-	.stop	=	igmp6_mc_seq_stop,
+-	.show	=	igmp6_mc_seq_show,
++static const struct seq_operations mld_mc_seq_ops = {
++	.start	=	mld_mc_seq_start,
++	.next	=	mld_mc_seq_next,
++	.stop	=	mld_mc_seq_stop,
++	.show	=	mld_mc_seq_show,
+ };
  
- int __init igmp6_init(void)
+-struct igmp6_mcf_iter_state {
++struct mld_mcf_iter_state {
+ 	struct seq_net_private p;
+ 	struct net_device *dev;
+ 	struct inet6_dev *idev;
+ 	struct ifmcaddr6 *mc;
+ };
+ 
+-#define igmp6_mcf_seq_private(seq)	((struct igmp6_mcf_iter_state *)(seq)->private)
++#define mld_mcf_seq_private(seq)	((struct mld_mcf_iter_state *)(seq)->private)
+ 
+-static inline struct ip6_sf_list *igmp6_mcf_get_first(struct seq_file *seq)
++static inline struct ip6_sf_list *mld_mcf_get_first(struct seq_file *seq)
  {
--	return register_pernet_subsys(&igmp6_net_ops);
-+	int err;
-+
-+	err = register_pernet_subsys(&igmp6_net_ops);
-+	if (err)
-+		return err;
-+
-+	mld_wq = create_workqueue("mld");
-+	if (!mld_wq) {
-+		unregister_pernet_subsys(&igmp6_net_ops);
-+		return -ENOMEM;
-+	}
-+
-+	return err;
+-	struct igmp6_mcf_iter_state *state = igmp6_mcf_seq_private(seq);
++	struct mld_mcf_iter_state *state = mld_mcf_seq_private(seq);
+ 	struct net *net = seq_file_net(seq);
+ 	struct ip6_sf_list *psf = NULL;
+ 	struct ifmcaddr6 *mc = NULL;
+@@ -2863,10 +2863,10 @@ static inline struct ip6_sf_list *igmp6_mcf_get_first(struct seq_file *seq)
+ 	return psf;
  }
  
- int __init igmp6_late_init(void)
-@@ -3073,6 +3095,7 @@ int __init igmp6_late_init(void)
- void igmp6_cleanup(void)
+-static struct ip6_sf_list *igmp6_mcf_get_next(struct seq_file *seq,
+-					      struct ip6_sf_list *psf)
++static struct ip6_sf_list *mld_mcf_get_next(struct seq_file *seq,
++					    struct ip6_sf_list *psf)
  {
- 	unregister_pernet_subsys(&igmp6_net_ops);
-+	destroy_workqueue(mld_wq);
+-	struct igmp6_mcf_iter_state *state = igmp6_mcf_seq_private(seq);
++	struct mld_mcf_iter_state *state = mld_mcf_seq_private(seq);
+ 
+ 	list_for_each_entry_continue(psf, &state->mc->mca_source_list, list)
+ 		return psf;
+@@ -2913,39 +2913,39 @@ static struct ip6_sf_list *igmp6_mcf_get_next(struct seq_file *seq,
+ 	return psf;
  }
  
- void igmp6_late_cleanup(void)
+-static struct ip6_sf_list *igmp6_mcf_get_idx(struct seq_file *seq, loff_t pos)
++static struct ip6_sf_list *mld_mcf_get_idx(struct seq_file *seq, loff_t pos)
+ {
+-	struct ip6_sf_list *psf = igmp6_mcf_get_first(seq);
++	struct ip6_sf_list *psf = mld_mcf_get_first(seq);
+ 
+ 	if (psf)
+-		while (pos && (psf = igmp6_mcf_get_next(seq, psf)) != NULL)
++		while (pos && (psf = mld_mcf_get_next(seq, psf)) != NULL)
+ 			--pos;
+ 	return pos ? NULL : psf;
+ }
+ 
+-static void *igmp6_mcf_seq_start(struct seq_file *seq, loff_t *pos)
++static void *mld_mcf_seq_start(struct seq_file *seq, loff_t *pos)
+ 	__acquires(RCU)
+ {
+ 	rcu_read_lock();
+-	return *pos ? igmp6_mcf_get_idx(seq, *pos - 1) : SEQ_START_TOKEN;
++	return *pos ? mld_mcf_get_idx(seq, *pos - 1) : SEQ_START_TOKEN;
+ }
+ 
+-static void *igmp6_mcf_seq_next(struct seq_file *seq, void *v, loff_t *pos)
++static void *mld_mcf_seq_next(struct seq_file *seq, void *v, loff_t *pos)
+ {
+ 	struct ip6_sf_list *psf;
+ 
+ 	if (v == SEQ_START_TOKEN)
+-		psf = igmp6_mcf_get_first(seq);
++		psf = mld_mcf_get_first(seq);
+ 	else
+-		psf = igmp6_mcf_get_next(seq, v);
++		psf = mld_mcf_get_next(seq, v);
+ 	++*pos;
+ 	return psf;
+ }
+ 
+-static void igmp6_mcf_seq_stop(struct seq_file *seq, void *v)
++static void mld_mcf_seq_stop(struct seq_file *seq, void *v)
+ 	__releases(RCU)
+ {
+-	struct igmp6_mcf_iter_state *state = igmp6_mcf_seq_private(seq);
++	struct mld_mcf_iter_state *state = mld_mcf_seq_private(seq);
+ 
+ 	if (likely(state->mc)) {
+ 		spin_unlock_bh(&state->mc->mca_lock);
+@@ -2959,10 +2959,10 @@ static void igmp6_mcf_seq_stop(struct seq_file *seq, void *v)
+ 	rcu_read_unlock();
+ }
+ 
+-static int igmp6_mcf_seq_show(struct seq_file *seq, void *v)
++static int mld_mcf_seq_show(struct seq_file *seq, void *v)
+ {
+ 	struct ip6_sf_list *psf = (struct ip6_sf_list *)v;
+-	struct igmp6_mcf_iter_state *state = igmp6_mcf_seq_private(seq);
++	struct mld_mcf_iter_state *state = mld_mcf_seq_private(seq);
+ 
+ 	if (v == SEQ_START_TOKEN) {
+ 		seq_puts(seq, "Idx Device                Multicast Address                   Source Address    INC    EXC\n");
+@@ -2978,51 +2978,53 @@ static int igmp6_mcf_seq_show(struct seq_file *seq, void *v)
+ 	return 0;
+ }
+ 
+-static const struct seq_operations igmp6_mcf_seq_ops = {
+-	.start	=	igmp6_mcf_seq_start,
+-	.next	=	igmp6_mcf_seq_next,
+-	.stop	=	igmp6_mcf_seq_stop,
+-	.show	=	igmp6_mcf_seq_show,
++static const struct seq_operations mld_mcf_seq_ops = {
++	.start	=	mld_mcf_seq_start,
++	.next	=	mld_mcf_seq_next,
++	.stop	=	mld_mcf_seq_stop,
++	.show	=	mld_mcf_seq_show,
+ };
+ 
+-static int __net_init igmp6_proc_init(struct net *net)
++static int __net_init mld_proc_init(struct net *net)
+ {
+ 	int err;
+ 
+ 	err = -ENOMEM;
+-	if (!proc_create_net("igmp6", 0444, net->proc_net, &igmp6_mc_seq_ops,
+-			sizeof(struct igmp6_mc_iter_state)))
++	if (!proc_create_net("igmp6", 0444, net->proc_net, &mld_mc_seq_ops,
++			     sizeof(struct mld_mc_iter_state)))
+ 		goto out;
++
+ 	if (!proc_create_net("mcfilter6", 0444, net->proc_net,
+-			&igmp6_mcf_seq_ops,
+-			sizeof(struct igmp6_mcf_iter_state)))
+-		goto out_proc_net_igmp6;
++			&mld_mcf_seq_ops,
++			sizeof(struct mld_mcf_iter_state)))
++		goto out_proc_net_mld;
+ 
+ 	err = 0;
+ out:
+ 	return err;
+ 
+-out_proc_net_igmp6:
++out_proc_net_mld:
+ 	remove_proc_entry("igmp6", net->proc_net);
+ 	goto out;
+ }
+ 
+-static void __net_exit igmp6_proc_exit(struct net *net)
++static void __net_exit mld_proc_exit(struct net *net)
+ {
+ 	remove_proc_entry("mcfilter6", net->proc_net);
+ 	remove_proc_entry("igmp6", net->proc_net);
+ }
+ #else
+-static inline int igmp6_proc_init(struct net *net)
++static inline int mld_proc_init(struct net *net)
+ {
+ 	return 0;
+ }
+-static inline void igmp6_proc_exit(struct net *net)
++
++static inline void mld_proc_exit(struct net *net)
+ {
+ }
+ #endif
+ 
+-static int __net_init igmp6_net_init(struct net *net)
++static int __net_init mld_net_init(struct net *net)
+ {
+ 	int err;
+ 
+@@ -3044,7 +3046,7 @@ static int __net_init igmp6_net_init(struct net *net)
+ 		goto out_sock_create;
+ 	}
+ 
+-	err = igmp6_proc_init(net);
++	err = mld_proc_init(net);
+ 	if (err)
+ 		goto out_sock_create_autojoin;
+ 
+@@ -3058,47 +3060,47 @@ static int __net_init igmp6_net_init(struct net *net)
+ 	return err;
+ }
+ 
+-static void __net_exit igmp6_net_exit(struct net *net)
++static void __net_exit mld_net_exit(struct net *net)
+ {
+ 	inet_ctl_sock_destroy(net->ipv6.igmp_sk);
+ 	inet_ctl_sock_destroy(net->ipv6.mc_autojoin_sk);
+-	igmp6_proc_exit(net);
++	mld_proc_exit(net);
+ }
+ 
+-static struct pernet_operations igmp6_net_ops = {
+-	.init = igmp6_net_init,
+-	.exit = igmp6_net_exit,
++static struct pernet_operations mld_net_ops = {
++	.init = mld_net_init,
++	.exit = mld_net_exit,
+ };
+ 
+-int __init igmp6_init(void)
++int __init mld_init(void)
+ {
+ 	int err;
+ 
+-	err = register_pernet_subsys(&igmp6_net_ops);
++	err = register_pernet_subsys(&mld_net_ops);
+ 	if (err)
+ 		return err;
+ 
+ 	mld_wq = create_workqueue("mld");
+ 	if (!mld_wq) {
+-		unregister_pernet_subsys(&igmp6_net_ops);
++		unregister_pernet_subsys(&mld_net_ops);
+ 		return -ENOMEM;
+ 	}
+ 
+ 	return err;
+ }
+ 
+-int __init igmp6_late_init(void)
++int __init mld_late_init(void)
+ {
+-	return register_netdevice_notifier(&igmp6_netdev_notifier);
++	return register_netdevice_notifier(&mld_netdev_notifier);
+ }
+ 
+-void igmp6_cleanup(void)
++void mld_cleanup(void)
+ {
+-	unregister_pernet_subsys(&igmp6_net_ops);
++	unregister_pernet_subsys(&mld_net_ops);
+ 	destroy_workqueue(mld_wq);
+ }
+ 
+-void igmp6_late_cleanup(void)
++void mld_late_cleanup(void)
+ {
+-	unregister_netdevice_notifier(&igmp6_netdev_notifier);
++	unregister_netdevice_notifier(&mld_netdev_notifier);
+ }
 -- 
 2.17.1
 
