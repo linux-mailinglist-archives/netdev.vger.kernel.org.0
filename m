@@ -2,75 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26A6A3130D5
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 12:29:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9C5B313064
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 12:14:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233242AbhBHL2r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 06:28:47 -0500
-Received: from m12-16.163.com ([220.181.12.16]:54914 "EHLO m12-16.163.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230329AbhBHLZ2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Feb 2021 06:25:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Date:From:Subject:Message-ID:MIME-Version; bh=ZFWMb
-        A8IIRM4Y2Shp9y2AqfBxFZ/llCxBUNcYxvSxTA=; b=Pjl2oCBG+fOIGH7V7Lb92
-        4SukxyrkxChW8Z4GoKiOrNPtYqVph1cBznGFHBWqRDIelLcRjmPNewW1tKII/Jhz
-        0oojKTLMnHsWSkSVGCW/NGGuX4WKxda0oVibPFpZyOzaZ8OnxCWR5puEHwyVpR5h
-        Vv7DbQNPyF7wzfV6FOUgFM=
-Received: from localhost (unknown [119.137.53.134])
-        by smtp12 (Coremail) with SMTP id EMCowADn7VkvGyFgczS4bA--.30517S2;
-        Mon, 08 Feb 2021 19:06:24 +0800 (CST)
-Date:   Mon, 8 Feb 2021 19:06:19 +0800
-From:   wengjianfeng <samirweng1979@163.com>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, lee.jones@linaro.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        wengjianfeng <wengjianfeng@yulong.com>
-Subject: Re: [PATCH RESEND] wl1251: cmd: remove redundant assignment
-Message-ID: <20210208190619.00006644@163.com>
-In-Reply-To: <20210208105954.1EAD9C433CA@smtp.codeaurora.org>
-References: <20210208022535.17672-1-samirweng1979@163.com>
-        <20210208105954.1EAD9C433CA@smtp.codeaurora.org>
-Organization: yulong
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; i686-w64-mingw32)
+        id S232808AbhBHLNp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 06:13:45 -0500
+Received: from mail-io1-f70.google.com ([209.85.166.70]:38610 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232997AbhBHLKz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 06:10:55 -0500
+Received: by mail-io1-f70.google.com with SMTP id a12so6590696ioe.5
+        for <netdev@vger.kernel.org>; Mon, 08 Feb 2021 03:10:39 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=mPCbokCYCpjU+f1kvG8q1JfzTyfLjf02MHrBI6a5DbU=;
+        b=DQb5a5nFzNy+2gGQQUwyxgeDeRw/XLa0UxypifEE537fsCoYZwK9tBCtdFgfvCzT59
+         d0ljXLrco3b0jqj3cE9FTfzafbE2+EPCqBv0Y48EkKc79dkgNnlRUOVBd2Z+Tfb8CHej
+         Em64pOFhUuf/F/3CbXZB9cL/VB/lRpVfS2zD/CEE+9LybK4Hs93kkUBM0XOuuU2j4sCf
+         PWd6TjT9/8swyQ5vm+ElKaMkeLbJum0kQOK80/Kj6xCrl+XQfYdkcvXSnbxc7tTn0Fl3
+         GNyQ3t2ZA8KpGzfiDCHOQowMVCg4kbAbq9KCgwLGekWD9ociQqS0rSy6MMPodviJ1uaA
+         IWSQ==
+X-Gm-Message-State: AOAM532aj5dOjteILqd/Y32qLnhYvW7tXXIe3Y+PVjh9Dm7n6AnbgYOr
+        3Q6nsuj97DeNCbphZSv4FBE6v0bHp3sV84ggCeex+IyDEhsI
+X-Google-Smtp-Source: ABdhPJyTQRZEntJC1YlvSEsMdoQld4jNf2v4AzyxA8gpMEGEm/BZqSh0APYLDYj0OrDeFSXLY8cCAFpf2bQ6DOlvlcvSIBn8fP2S
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: EMCowADn7VkvGyFgczS4bA--.30517S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7GryUXw4fJw4xZFy5GFW7urg_yoW3Cwc_uF
-        4fWF1ruryktF48tFs2kw43XFn5Kr1UGw4kGw1FvryfCw1YgFWj9a1kKr9ayw4xX34Igr1D
-        WFn5trWktryjgjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU0fuctUUUUU==
-X-Originating-IP: [119.137.53.134]
-X-CM-SenderInfo: pvdpx25zhqwiqzxzqiywtou0bp/1tbiqhUzsVr7sEK95gAAs1
+X-Received: by 2002:a6b:3b53:: with SMTP id i80mr14479074ioa.203.1612782614531;
+ Mon, 08 Feb 2021 03:10:14 -0800 (PST)
+Date:   Mon, 08 Feb 2021 03:10:14 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000d6d06a05bad13604@google.com>
+Subject: memory leak in qrtr_create
+From:   syzbot <syzbot+35a511c72ea7356cdcf3@syzkaller.appspotmail.com>
+To:     bjorn.andersson@linaro.org, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, loic.poulain@linaro.org,
+        manivannan.sadhasivam@linaro.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  8 Feb 2021 10:59:54 +0000 (UTC)
-Kalle Valo <kvalo@codeaurora.org> wrote:
+Hello,
 
-> samirweng1979 <samirweng1979@163.com> wrote:
-> 
-> > From: wengjianfeng <wengjianfeng@yulong.com>
-> > 
-> > -ENOMEM has been used as a return value,it is not necessary to
-> > assign it, and if kzalloc fail,not need free it,so just return
-> > -ENOMEM when kzalloc fail.
-> > 
-> > Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
-> 
-> You sent the previous version just five days ago:
-> 
-> https://patchwork.kernel.org/project/linux-wireless/patch/20210203060306.2832-1-samirweng1979@163.com/
-> 
-> We maintainers are busy and usually takes some time to review the
-> patch. So please avoid resending patches in such short intervals.
-> 
-> Patch set to Superseded.
-> 
+syzbot found the following issue on:
 
-Hi Kalle,
-  I see, thanks your reply.
+HEAD commit:    13391c60 Merge branch 'linus' of git://git.kernel.org/pub/..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=15eb761b500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e7e6ee96c9292f22
+dashboard link: https://syzkaller.appspot.com/bug?extid=35a511c72ea7356cdcf3
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=103c58a0d00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1040bc54d00000
 
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+35a511c72ea7356cdcf3@syzkaller.appspotmail.com
+
+Warning: Permanently added '10.128.0.186' (ECDSA) to the list of known hosts.
+executing program
+executing program
+BUG: memory leak
+unreferenced object 0xffff88810127da40 (size 824):
+  comm "syz-executor472", pid 8431, jiffies 4294942269 (age 13.980s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    2a 00 01 40 00 00 00 00 00 00 00 00 00 00 00 00  *..@............
+  backtrace:
+    [<0000000041c0b1fe>] sk_prot_alloc+0x3e/0x1c0 net/core/sock.c:1679
+    [<00000000f73c2f2d>] sk_alloc+0x30/0x3f0 net/core/sock.c:1739
+    [<0000000069049cba>] qrtr_create+0x4d/0xb0 net/qrtr/qrtr.c:1258
+    [<0000000077afae5e>] __sock_create+0x1ab/0x2b0 net/socket.c:1406
+    [<000000007f58f353>] sock_create net/socket.c:1457 [inline]
+    [<000000007f58f353>] __sys_socket+0x6f/0x140 net/socket.c:1499
+    [<00000000217ba93a>] __do_sys_socket net/socket.c:1508 [inline]
+    [<00000000217ba93a>] __se_sys_socket net/socket.c:1506 [inline]
+    [<00000000217ba93a>] __x64_sys_socket+0x1a/0x20 net/socket.c:1506
+    [<00000000632eec5e>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+    [<00000000a6403a3c>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
