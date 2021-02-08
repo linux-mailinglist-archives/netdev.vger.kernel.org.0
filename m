@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D174313F2D
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 20:38:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FF84313F31
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 20:38:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236215AbhBHTg4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 14:36:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52216 "EHLO
+        id S236361AbhBHThK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 14:37:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236230AbhBHTfG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 14:35:06 -0500
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31575C0617A7
-        for <netdev@vger.kernel.org>; Mon,  8 Feb 2021 11:34:16 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id w11so12547892ybq.8
-        for <netdev@vger.kernel.org>; Mon, 08 Feb 2021 11:34:16 -0800 (PST)
+        with ESMTP id S236234AbhBHTfH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 14:35:07 -0500
+Received: from mail-qk1-x74a.google.com (mail-qk1-x74a.google.com [IPv6:2607:f8b0:4864:20::74a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04055C0617A9
+        for <netdev@vger.kernel.org>; Mon,  8 Feb 2021 11:34:18 -0800 (PST)
+Received: by mail-qk1-x74a.google.com with SMTP id x18so5814319qki.2
+        for <netdev@vger.kernel.org>; Mon, 08 Feb 2021 11:34:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=sender:date:in-reply-to:message-id:mime-version:references:subject
          :from:to:cc;
-        bh=/178W/gWgRrmzCNsCechDVt6IWBnhse2xaVZu64sZ+k=;
-        b=XumNa+/BeAnG11/0XnsfKrUONiPkkabM040wQJIiOiUImdAJiTYBXj1mF6SQ+Gr/H3
-         iNTqUBPEOwa8tyDuhSYwWak3z2Z8Ynq/Dm66lhf+ODVIfnEn01wORyoTrIxrdh81kUdl
-         2Mr3LAR//5cLUszkKVhUZqUg9y6NFogXuHGNj15BVVuHI2Zq8cD/vqFNFKrJ3n9CE2di
-         J7xlQbTpzwq35adosigXR/6uBCbsagxfuQtQVU8tC+aBbMRPlVTM8oMdylTYc96r0gzp
-         heaEpa05VxJ4b3gsG1sTHMJZJWZvNJtWvsB4LlJLQpMjLussAm14Y61W203rGfEx5H2e
-         m7ug==
+        bh=lyNvFzLMOm6Vlunzw+chJzXZCFsEIptRnlpon2EJ7QE=;
+        b=D71Zn6vuK8XSlgxDzvRcEJQl4Ibd6KtdKQeHiwNak5jL5Hy6YXscqQXfPiAwzI4dBk
+         MGmCXys+LDyB1DSCJG/IGgXacfru34iy07yhfF1uQzK+TU7HJ//22SjpsO6FIvGSHg3L
+         OO0mXoHC4CITBM0vEu9GIUGk/gvugo23FjGJeciKxVgfL6cTb1ST43SkmoLJvyP0NbUK
+         v2rVXRPI/05hmrQTFYpGPlEo+eWXfLnauX0qUJbC+jw6XAsx8juovXX8owcBSJ1eKscm
+         5wDuS6227EtPCiVW/kzAyUyoSw5qvpbULNZkVGxAmVY/iVlfPM0YxkrZLNL4HywkraVp
+         EFVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=/178W/gWgRrmzCNsCechDVt6IWBnhse2xaVZu64sZ+k=;
-        b=HzzkxzTPF9xEgzBRw6lBVuxRkoecTtVsk+4w+0Hp0lTbq5OGh+kHCTIB6lgZvLKFAU
-         SVA/APv7MkU70Ks5Jq+o4GKEkvxhawPA1/7fuYrC1wLHKKFgymzsHWbKBqOF3ehnMTVE
-         sQr7qsXYSgZhcAlFt021ndPcNQGakuSFmgZe+oSHPT3/nsqzkssEEGTUT0yeM/PT8uoD
-         t5OxYD4zy2Uh9c+iSo5PRsiCw+i1JvF1daoLcLLL5IpwjZLQ2X0bk3Wnb6xqj+LK0CrQ
-         VZiGklhr2Tvcp8RxpFAWv1Im61JueeCMFQBU8CZQrH/yVGAWuNTTqZnH6VRN8LArZi+D
-         2yvQ==
-X-Gm-Message-State: AOAM532fM5q9BeA3NBRkTepnjm3iOUyJoCxzgOajlo/RLVlaHZxOnZRc
-        jMr6x1fWLPw8bc2QeXKQFZI4djSXeQs=
-X-Google-Smtp-Source: ABdhPJw90BXOVLYseiVvrtvyjzi28BzO7TkwoLhLVmAk228CtqnQqWUKwgk0O6P0dWvCL9Xog4vEZdj8pMI=
+        bh=lyNvFzLMOm6Vlunzw+chJzXZCFsEIptRnlpon2EJ7QE=;
+        b=az3ZyQxxD12KU8qvvb/QuFlcvSJ7thl9+8Wo1O80/p8iEn57gaiiVVsuGtHogvYhv5
+         K4n0AfikJGRvLHOAFP1FVDDaalW7VsfLM6Sw4Xf0eZDyLbLphHOJCELjH8fHDmaTUwb+
+         AuUpqCgjeXos+uaTiXjrj2QsOtnFvAx7504ZDpjw3WJXl7xCbeq8bI7d6gaN7/kpLC9c
+         9zv0TJm69U1J+YkdbWQ7HCvBbeGA8JrsKp3cYPRUmzc/zqZIRnrGH+VzLox4+E+rgjpc
+         aX2krE2DQ5S3kI8bfrE5tSVJHtgtrIjHqSaZlAxdV48DJM8oihnk3DEQTmXpMDwIAbsp
+         zJoA==
+X-Gm-Message-State: AOAM531qRN/W0TYAd0pdZnVSh6uK1yYhaMqog9x4nnZxuz+cS1FuthNm
+        7PQhOVZKZRKAphxL0Fa2t0vmlPM7Wuw=
+X-Google-Smtp-Source: ABdhPJyoHBuestLi2dUzbpIEFWD/NQC6hlVGGNAgyvsKzrZAXn3lpS/oj+1Lt+9nWMCJJ++S7iTXYBjhY/s=
 Sender: "weiwan via sendgmr" <weiwan@weiwan.svl.corp.google.com>
 X-Received: from weiwan.svl.corp.google.com ([2620:15c:2c4:201:35a9:bca1:5bb0:4132])
- (user=weiwan job=sendgmr) by 2002:a25:ba13:: with SMTP id t19mr28264078ybg.129.1612812855491;
- Mon, 08 Feb 2021 11:34:15 -0800 (PST)
-Date:   Mon,  8 Feb 2021 11:34:09 -0800
+ (user=weiwan job=sendgmr) by 2002:a0c:f94a:: with SMTP id i10mr17801668qvo.22.1612812857196;
+ Mon, 08 Feb 2021 11:34:17 -0800 (PST)
+Date:   Mon,  8 Feb 2021 11:34:10 -0800
 In-Reply-To: <20210208193410.3859094-1-weiwan@google.com>
-Message-Id: <20210208193410.3859094-3-weiwan@google.com>
+Message-Id: <20210208193410.3859094-4-weiwan@google.com>
 Mime-Version: 1.0
 References: <20210208193410.3859094-1-weiwan@google.com>
 X-Mailer: git-send-email 2.30.0.478.g8a0d178c01-goog
-Subject: [PATCH net-next v11 2/3] net: implement threaded-able napi poll loop support
+Subject: [PATCH net-next v11 3/3] net: add sysfs attribute to control napi
+ threaded mode
 From:   Wei Wang <weiwan@google.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -65,269 +66,190 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch allows running each napi poll loop inside its own
-kernel thread.
-The kthread is created during netif_napi_add() if dev->threaded
-is set. And threaded mode is enabled in napi_enable(). We will
-provide a way to set dev->threaded and enable threaded mode
-without a device up/down in the following patch.
-
-Once that threaded mode is enabled and the kthread is
-started, napi_schedule() will wake-up such thread instead
-of scheduling the softirq.
-
-The threaded poll loop behaves quite likely the net_rx_action,
-but it does not have to manipulate local irqs and uses
-an explicit scheduling point based on netdev_budget.
+This patch adds a new sysfs attribute to the network device class.
+Said attribute provides a per-device control to enable/disable the
+threaded mode for all the napi instances of the given network device,
+without the need for a device up/down.
+User sets it to 1 or 0 to enable or disable threaded mode.
+Note: when switching between threaded and the current softirq based mode
+for a napi instance, it will not immediately take effect if the napi is
+currently being polled. The mode switch will happen for the next time
+napi_schedule() is called.
 
 Co-developed-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Co-developed-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
 Signed-off-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
-Co-developed-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Co-developed-by: Felix Fietkau <nbd@nbd.name>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Wei Wang <weiwan@google.com>
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
 ---
- include/linux/netdevice.h |  21 +++----
- net/core/dev.c            | 112 ++++++++++++++++++++++++++++++++++++++
- 2 files changed, 119 insertions(+), 14 deletions(-)
+ Documentation/ABI/testing/sysfs-class-net | 15 +++++++
+ include/linux/netdevice.h                 |  2 +
+ net/core/dev.c                            | 48 ++++++++++++++++++++++-
+ net/core/net-sysfs.c                      | 40 +++++++++++++++++++
+ 4 files changed, 103 insertions(+), 2 deletions(-)
 
+diff --git a/Documentation/ABI/testing/sysfs-class-net b/Documentation/ABI/testing/sysfs-class-net
+index 1f2002df5ba2..1419103d11f9 100644
+--- a/Documentation/ABI/testing/sysfs-class-net
++++ b/Documentation/ABI/testing/sysfs-class-net
+@@ -337,3 +337,18 @@ Contact:	netdev@vger.kernel.org
+ Description:
+ 		32-bit unsigned integer counting the number of times the link has
+ 		been down
++
++What:		/sys/class/net/<iface>/threaded
++Date:		Jan 2021
++KernelVersion:	5.12
++Contact:	netdev@vger.kernel.org
++Description:
++		Boolean value to control the threaded mode per device. User could
++		set this value to enable/disable threaded mode for all napi
++		belonging to this device, without the need to do device up/down.
++
++		Possible values:
++		== ==================================
++		0  threaded mode disabled for this dev
++		1  threaded mode enabled for this dev
++		== ==================================
 diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index e9e7ada07ea1..99fb4ec9573e 100644
+index 99fb4ec9573e..1340327f7abf 100644
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -347,6 +347,7 @@ struct napi_struct {
- 	struct list_head	dev_list;
- 	struct hlist_node	napi_hash_node;
- 	unsigned int		napi_id;
-+	struct task_struct	*thread;
- };
+@@ -497,6 +497,8 @@ static inline bool napi_complete(struct napi_struct *n)
+ 	return napi_complete_done(n, 0);
+ }
  
- enum {
-@@ -358,6 +359,7 @@ enum {
- 	NAPI_STATE_NO_BUSY_POLL,	/* Do not add in napi_hash, no busy polling */
- 	NAPI_STATE_IN_BUSY_POLL,	/* sk_busy_loop() owns this NAPI */
- 	NAPI_STATE_PREFER_BUSY_POLL,	/* prefer busy-polling over softirq processing*/
-+	NAPI_STATE_THREADED,		/* The poll is performed inside its own thread*/
- };
- 
- enum {
-@@ -369,6 +371,7 @@ enum {
- 	NAPIF_STATE_NO_BUSY_POLL	= BIT(NAPI_STATE_NO_BUSY_POLL),
- 	NAPIF_STATE_IN_BUSY_POLL	= BIT(NAPI_STATE_IN_BUSY_POLL),
- 	NAPIF_STATE_PREFER_BUSY_POLL	= BIT(NAPI_STATE_PREFER_BUSY_POLL),
-+	NAPIF_STATE_THREADED		= BIT(NAPI_STATE_THREADED),
- };
- 
- enum gro_result {
-@@ -503,20 +506,7 @@ static inline bool napi_complete(struct napi_struct *n)
-  */
- void napi_disable(struct napi_struct *n);
- 
--/**
-- *	napi_enable - enable NAPI scheduling
-- *	@n: NAPI context
-- *
-- * Resume NAPI from being scheduled on this context.
-- * Must be paired with napi_disable.
-- */
--static inline void napi_enable(struct napi_struct *n)
--{
--	BUG_ON(!test_bit(NAPI_STATE_SCHED, &n->state));
--	smp_mb__before_atomic();
--	clear_bit(NAPI_STATE_SCHED, &n->state);
--	clear_bit(NAPI_STATE_NPSVC, &n->state);
--}
-+void napi_enable(struct napi_struct *n);
- 
++int dev_set_threaded(struct net_device *dev, bool threaded);
++
  /**
-  *	napi_synchronize - wait until NAPI is not running
-@@ -1827,6 +1817,8 @@ enum netdev_priv_flags {
-  *
-  *	@wol_enabled:	Wake-on-LAN is enabled
-  *
-+ *	@threaded:	napi threaded mode is enabled
-+ *
-  *	@net_notifier_list:	List of per-net netdev notifier block
-  *				that follow this device when it is moved
-  *				to another network namespace.
-@@ -2145,6 +2137,7 @@ struct net_device {
- 	struct lock_class_key	*qdisc_running_key;
- 	bool			proto_down;
- 	unsigned		wol_enabled:1;
-+	unsigned		threaded:1;
- 
- 	struct list_head	net_notifier_list;
- 
+  *	napi_disable - prevent NAPI from scheduling
+  *	@n: NAPI context
 diff --git a/net/core/dev.c b/net/core/dev.c
-index 59751a22d7c3..1e35f4f44f3b 100644
+index 1e35f4f44f3b..7647278e46f0 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -91,6 +91,7 @@
- #include <linux/etherdevice.h>
- #include <linux/ethtool.h>
- #include <linux/skbuff.h>
-+#include <linux/kthread.h>
- #include <linux/bpf.h>
- #include <linux/bpf_trace.h>
- #include <net/net_namespace.h>
-@@ -1494,6 +1495,27 @@ void netdev_notify_peers(struct net_device *dev)
- }
- EXPORT_SYMBOL(netdev_notify_peers);
+@@ -4291,8 +4291,9 @@ static inline void ____napi_schedule(struct softnet_data *sd,
  
-+static int napi_threaded_poll(void *data);
-+
-+static int napi_kthread_create(struct napi_struct *n)
+ 	if (test_bit(NAPI_STATE_THREADED, &napi->state)) {
+ 		/* Paired with smp_mb__before_atomic() in
+-		 * napi_enable(). Use READ_ONCE() to guarantee
+-		 * a complete read on napi->thread. Only call
++		 * napi_enable()/dev_set_threaded().
++		 * Use READ_ONCE() to guarantee a complete
++		 * read on napi->thread. Only call
+ 		 * wake_up_process() when it's not NULL.
+ 		 */
+ 		thread = READ_ONCE(napi->thread);
+@@ -6738,6 +6739,49 @@ static void init_gro_hash(struct napi_struct *napi)
+ 	napi->gro_bitmask = 0;
+ }
+ 
++int dev_set_threaded(struct net_device *dev, bool threaded)
 +{
++	struct napi_struct *napi;
 +	int err = 0;
 +
-+	/* Create and wake up the kthread once to put it in
-+	 * TASK_INTERRUPTIBLE mode to avoid the blocked task
-+	 * warning and work with loadavg.
++	if (dev->threaded == threaded)
++		return 0;
++
++	if (threaded) {
++		list_for_each_entry(napi, &dev->napi_list, dev_list) {
++			if (!napi->thread) {
++				err = napi_kthread_create(napi);
++				if (err) {
++					threaded = false;
++					break;
++				}
++			}
++		}
++	}
++
++	dev->threaded = threaded;
++
++	/* Make sure kthread is created before THREADED bit
++	 * is set.
 +	 */
-+	n->thread = kthread_run(napi_threaded_poll, n, "napi/%s-%d",
-+				n->dev->name, n->napi_id);
-+	if (IS_ERR(n->thread)) {
-+		err = PTR_ERR(n->thread);
-+		pr_err("kthread_run failed with err %d\n", err);
-+		n->thread = NULL;
++	smp_mb__before_atomic();
++
++	/* Setting/unsetting threaded mode on a napi might not immediately
++	 * take effect, if the current napi instance is actively being
++	 * polled. In this case, the switch between threaded mode and
++	 * softirq mode will happen in the next round of napi_schedule().
++	 * This should not cause hiccups/stalls to the live traffic.
++	 */
++	list_for_each_entry(napi, &dev->napi_list, dev_list) {
++		if (threaded)
++			set_bit(NAPI_STATE_THREADED, &napi->state);
++		else
++			clear_bit(NAPI_STATE_THREADED, &napi->state);
 +	}
 +
 +	return err;
 +}
 +
- static int __dev_open(struct net_device *dev, struct netlink_ext_ack *extack)
+ void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
+ 		    int (*poll)(struct napi_struct *, int), int weight)
  {
- 	const struct net_device_ops *ops = dev->netdev_ops;
-@@ -4265,6 +4287,21 @@ int gro_normal_batch __read_mostly = 8;
- static inline void ____napi_schedule(struct softnet_data *sd,
- 				     struct napi_struct *napi)
- {
-+	struct task_struct *thread;
-+
-+	if (test_bit(NAPI_STATE_THREADED, &napi->state)) {
-+		/* Paired with smp_mb__before_atomic() in
-+		 * napi_enable(). Use READ_ONCE() to guarantee
-+		 * a complete read on napi->thread. Only call
-+		 * wake_up_process() when it's not NULL.
-+		 */
-+		thread = READ_ONCE(napi->thread);
-+		if (thread) {
-+			wake_up_process(thread);
-+			return;
-+		}
-+	}
-+
- 	list_add_tail(&napi->poll_list, &sd->poll_list);
- 	__raise_softirq_irqoff(NET_RX_SOFTIRQ);
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index daf502c13d6d..e72d474c2623 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -538,6 +538,45 @@ static ssize_t phys_switch_id_show(struct device *dev,
  }
-@@ -6728,6 +6765,12 @@ void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
- 	set_bit(NAPI_STATE_NPSVC, &napi->state);
- 	list_add_rcu(&napi->dev_list, &dev->napi_list);
- 	napi_hash_add(napi);
-+	/* Create kthread for this napi if dev->threaded is set.
-+	 * Clear dev->threaded if kthread creation failed so that
-+	 * threaded mode will not be enabled in napi_enable().
-+	 */
-+	if (dev->threaded && napi_kthread_create(napi))
-+		dev->threaded = 0;
- }
- EXPORT_SYMBOL(netif_napi_add);
+ static DEVICE_ATTR_RO(phys_switch_id);
  
-@@ -6745,9 +6788,28 @@ void napi_disable(struct napi_struct *n)
- 
- 	clear_bit(NAPI_STATE_PREFER_BUSY_POLL, &n->state);
- 	clear_bit(NAPI_STATE_DISABLE, &n->state);
-+	clear_bit(NAPI_STATE_THREADED, &n->state);
- }
- EXPORT_SYMBOL(napi_disable);
- 
-+/**
-+ *	napi_enable - enable NAPI scheduling
-+ *	@n: NAPI context
-+ *
-+ * Resume NAPI from being scheduled on this context.
-+ * Must be paired with napi_disable.
-+ */
-+void napi_enable(struct napi_struct *n)
++static ssize_t threaded_show(struct device *dev,
++			     struct device_attribute *attr, char *buf)
 +{
-+	BUG_ON(!test_bit(NAPI_STATE_SCHED, &n->state));
-+	smp_mb__before_atomic();
-+	clear_bit(NAPI_STATE_SCHED, &n->state);
-+	clear_bit(NAPI_STATE_NPSVC, &n->state);
-+	if (n->dev->threaded && n->thread)
-+		set_bit(NAPI_STATE_THREADED, &n->state);
-+}
-+EXPORT_SYMBOL(napi_enable);
++	struct net_device *netdev = to_net_dev(dev);
++	ssize_t ret = -EINVAL;
 +
- static void flush_gro_hash(struct napi_struct *napi)
- {
- 	int i;
-@@ -6773,6 +6835,11 @@ void __netif_napi_del(struct napi_struct *napi)
- 
- 	flush_gro_hash(napi);
- 	napi->gro_bitmask = 0;
++	if (!rtnl_trylock())
++		return restart_syscall();
 +
-+	if (napi->thread) {
-+		kthread_stop(napi->thread);
-+		napi->thread = NULL;
-+	}
- }
- EXPORT_SYMBOL(__netif_napi_del);
- 
-@@ -6867,6 +6934,51 @@ static int napi_poll(struct napi_struct *n, struct list_head *repoll)
- 	return work;
- }
- 
-+static int napi_thread_wait(struct napi_struct *napi)
-+{
-+	set_current_state(TASK_INTERRUPTIBLE);
++	if (dev_isalive(netdev))
++		ret = sprintf(buf, fmt_dec, netdev->threaded);
 +
-+	while (!kthread_should_stop() && !napi_disable_pending(napi)) {
-+		if (test_bit(NAPI_STATE_SCHED, &napi->state)) {
-+			WARN_ON(!list_empty(&napi->poll_list));
-+			__set_current_state(TASK_RUNNING);
-+			return 0;
-+		}
-+
-+		schedule();
-+		set_current_state(TASK_INTERRUPTIBLE);
-+	}
-+	__set_current_state(TASK_RUNNING);
-+	return -1;
++	rtnl_unlock();
++	return ret;
 +}
 +
-+static int napi_threaded_poll(void *data)
++static int modify_napi_threaded(struct net_device *dev, unsigned long val)
 +{
-+	struct napi_struct *napi = data;
-+	void *have;
++	int ret;
 +
-+	while (!napi_thread_wait(napi)) {
-+		for (;;) {
-+			bool repoll = false;
++	if (list_empty(&dev->napi_list))
++		return -EOPNOTSUPP;
 +
-+			local_bh_disable();
++	if (val != 0 && val != 1)
++		return -EOPNOTSUPP;
 +
-+			have = netpoll_poll_lock(napi);
-+			__napi_poll(napi, &repoll);
-+			netpoll_poll_unlock(have);
++	ret = dev_set_threaded(dev, val);
 +
-+			__kfree_skb_flush();
-+			local_bh_enable();
-+
-+			if (!repoll)
-+				break;
-+
-+			cond_resched();
-+		}
-+	}
-+	return 0;
++	return ret;
 +}
 +
- static __latent_entropy void net_rx_action(struct softirq_action *h)
- {
- 	struct softnet_data *sd = this_cpu_ptr(&softnet_data);
++static ssize_t threaded_store(struct device *dev,
++			      struct device_attribute *attr,
++			      const char *buf, size_t len)
++{
++	return netdev_store(dev, attr, buf, len, modify_napi_threaded);
++}
++static DEVICE_ATTR_RW(threaded);
++
+ static struct attribute *net_class_attrs[] __ro_after_init = {
+ 	&dev_attr_netdev_group.attr,
+ 	&dev_attr_type.attr,
+@@ -570,6 +609,7 @@ static struct attribute *net_class_attrs[] __ro_after_init = {
+ 	&dev_attr_proto_down.attr,
+ 	&dev_attr_carrier_up_count.attr,
+ 	&dev_attr_carrier_down_count.attr,
++	&dev_attr_threaded.attr,
+ 	NULL,
+ };
+ ATTRIBUTE_GROUPS(net_class);
 -- 
 2.30.0.478.g8a0d178c01-goog
 
