@@ -2,165 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E0393142C6
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 23:22:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 083C731430B
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 23:33:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230421AbhBHWWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 17:22:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59680 "EHLO
+        id S230139AbhBHWcQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 17:32:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230265AbhBHWVv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 17:21:51 -0500
-Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA349C061788
-        for <netdev@vger.kernel.org>; Mon,  8 Feb 2021 14:21:10 -0800 (PST)
-Received: by mail-il1-x133.google.com with SMTP id m20so14301484ilj.13
-        for <netdev@vger.kernel.org>; Mon, 08 Feb 2021 14:21:10 -0800 (PST)
+        with ESMTP id S229715AbhBHWcM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 17:32:12 -0500
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D419C061788
+        for <netdev@vger.kernel.org>; Mon,  8 Feb 2021 14:31:32 -0800 (PST)
+Received: by mail-qt1-x82a.google.com with SMTP id w20so11615356qta.0
+        for <netdev@vger.kernel.org>; Mon, 08 Feb 2021 14:31:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HA2/imsxse4+Wvfox3XugjZfAuFpdA1Zz1Po5JcNkf8=;
-        b=kuHWevKVQ5uQs6/PaYf7m99CJuGUt/t0sf6LRl8S310BzRqS8fbtyxFM/kY6tNa0Br
-         2mMUQhrkEwaftOItzVmIc+uyIj3+5QPw6VkXwULkYvMzZSqHh1GI2gDvchvuCEfR4eAc
-         v9p+YpHeeWa+Cc6N3ck+IbDXGp3nqxAbb7i7AmPH6SGD8NhJFXbppLsXwZ/zr6m92OtE
-         G2SlDL2UoH1e+7npeYiyNi/znmtEWPnqo9Wy6rBtLS6x3z+y/eFY94/I60hT944PC0km
-         Eg7mcCjdTjQ2l+jalBBgP6GyBCxA8Lut93J7YPjTnCQ3QH7w+LNkCZ4QKIgH5tnwoKzE
-         QGnA==
+        h=subject:from:to:cc:date:message-id:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=mcDXmCcUjjRsbxHxEdB07GNNJx+l2CLdTSrP6vvO7k4=;
+        b=jC0pWo4Rj0X9aTsXn+bbTz4aysLc3UgXsG58s0yLhtIlLm0EZGN+LHgsotYgd2xA5X
+         +2vlHNitPLC94OU5eGXs4QGjeJX2iF2muvW+kUqPpiYjxWbAGD12vxk0FATeR0+ob7tr
+         gPW/mnWR22zffdC5WntzFCt2aycxJSze2m/1K3jaiRJry9kDiR9H7/2gKt6EmA6LY+Uk
+         MiFdbcZVvLETav/o0Rda8j6+tOLtngqlu4/09+BXer1TPmZbcyKppiLUeM9BpkL6zRTL
+         44CBT/XNxSK25uDO5IwEmJ1Kv8zGLl4YQe/sjGGWCp8qJ5CB4HZcjS2FoY+zUryMb7an
+         xwow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HA2/imsxse4+Wvfox3XugjZfAuFpdA1Zz1Po5JcNkf8=;
-        b=F6+/b0yni6mbhcO2uNJytbhdgw+E6I/bKH/5krEAwW3KoEz6Ceb+GCaJyOyzg7ZpWS
-         p2TM9Fy34g88DnGFZ5C8mKUuvMMvewS31CdY8wzfxePmMiOT7rc+DfnQ3pkgcd82jB/2
-         mmfvw9GZXtetHPlq8ddUY3j+QMexP3LuPeDftMN7tFvGCXz1hYpHezzZyxTUSMEDBGAt
-         LseePub5U8xTjlWrOs1SS8l1WWs2/8VaV54CEqFb0OVM8Jo0dICvaUmsCjnQxl0hvCqf
-         pbOvTdiVI7pgWDbEYvHlmAGTAvaZyWg7rxPL02AF8Pvul3etNCZtFwcFgr2iJsh8z0R8
-         uu0g==
-X-Gm-Message-State: AOAM532TJmnD9Nbyp3ALGMd9+SItKqEump+3t1Y+McSlJaXWWrLnXF4p
-        zqZRDh6grAiKlNwHP5XSX5JhfjXEX+dWFFvh2wBDun9//Dc=
-X-Google-Smtp-Source: ABdhPJwpOQLGS5RhV6XBVXBHy5R0MJgNBpYPdXg04WaLHrHZYgFjCWVi7hAOc9dqNM0twiv9FbYqZ7TkP6RCNjncpyc=
-X-Received: by 2002:a05:6e02:2196:: with SMTP id j22mr17410953ila.64.1612822870054;
- Mon, 08 Feb 2021 14:21:10 -0800 (PST)
-MIME-Version: 1.0
-References: <20210208171917.1088230-1-atenart@kernel.org> <20210208171917.1088230-10-atenart@kernel.org>
-In-Reply-To: <20210208171917.1088230-10-atenart@kernel.org>
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=mcDXmCcUjjRsbxHxEdB07GNNJx+l2CLdTSrP6vvO7k4=;
+        b=on1JrsAT8FcmCmUZ/HajsLFLz5w3XCMhAo6MNkvRhBTtrtSVfb/TZpq02nGAHkfSMr
+         gMUW3ZJjINwUA3JbArjA69aem68Lccc9Rs3l5kCrhCSg2zoQIpgs7yKAD/o4gi6q/jLN
+         aT8hOjyTefN6g4wyRgWqNNBF8cmNoNFuj0lPrf0DywQPBK+aDQuMk7MFT4syhdVcIx7p
+         6NcPpARMPmDIZEy9SWnFR3eMzyEPi7Y7nBQwGbvIzs3itR7F0ppxZldJEKhVZj1/8sfY
+         LwIK2OZdYVpE+7IWNvGzZE37Pc1IMIu5QA4LIG/T9oytNLkc4XysbeoJxiE7nuX6rccA
+         YIKQ==
+X-Gm-Message-State: AOAM5300tAMXq1ypqXpwv/RP/4bdrj5SfJUbVkoK7w6onn4+2/lejNZX
+        AQF00qKallU0fVk5JDVOsxU=
+X-Google-Smtp-Source: ABdhPJyo1IQ1mZ6ItemKhMagWlI+4u9/dEWfw7VLMovnJAThZoaon+iyWASvJkd6tH5PEfv7lTGQDg==
+X-Received: by 2002:a05:622a:216:: with SMTP id b22mr17021782qtx.163.1612823491406;
+        Mon, 08 Feb 2021 14:31:31 -0800 (PST)
+Received: from localhost.localdomain ([50.39.189.65])
+        by smtp.gmail.com with ESMTPSA id q204sm158435qka.84.2021.02.08.14.31.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Feb 2021 14:31:30 -0800 (PST)
+Subject: [net-next PATCH] net-sysfs: Add rtnl locking for getting Tx queue
+ traffic class
 From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Mon, 8 Feb 2021 14:20:58 -0800
-Message-ID: <CAKgT0Uc3TePxDd12MQiWtkUmtjnd4CAsrN2U49R1p7wXsvxgRA@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 09/12] net-sysfs: remove the rtnl lock when
- accessing the xps maps
-To:     Antoine Tenart <atenart@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, atenart@kernel.org
+Date:   Mon, 08 Feb 2021 14:29:18 -0800
+Message-ID: <161282332082.135732.12397609202412953449.stgit@localhost.localdomain>
+User-Agent: StGit/0.23
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 8, 2021 at 9:19 AM Antoine Tenart <atenart@kernel.org> wrote:
->
-> Now that nr_ids and num_tc are stored in the xps dev_maps, which are RCU
-> protected, we do not have the need to protect the xps_cpus_show and
-> xps_rxqs_show functions with the rtnl lock.
->
-> Signed-off-by: Antoine Tenart <atenart@kernel.org>
-> ---
->  net/core/net-sysfs.c | 26 ++++----------------------
->  1 file changed, 4 insertions(+), 22 deletions(-)
->
-> diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-> index c2276b589cfb..6ce5772e799e 100644
-> --- a/net/core/net-sysfs.c
-> +++ b/net/core/net-sysfs.c
-> @@ -1328,17 +1328,12 @@ static ssize_t xps_cpus_show(struct netdev_queue *queue,
->
->         index = get_netdev_queue_index(queue);
->
-> -       if (!rtnl_trylock())
-> -               return restart_syscall();
-> -
->         /* If queue belongs to subordinate dev use its map */
->         dev = netdev_get_tx_queue(dev, index)->sb_dev ? : dev;
->
->         tc = netdev_txq_to_tc(dev, index);
-> -       if (tc < 0) {
-> -               ret = -EINVAL;
-> -               goto err_rtnl_unlock;
-> -       }
-> +       if (tc < 0)
-> +               return -EINVAL;
->
->         rcu_read_lock();
->         dev_maps = rcu_dereference(dev->xps_maps[XPS_CPUS]);
+From: Alexander Duyck <alexanderduyck@fb.com>
 
-So I think we hit a snag here. The sb_dev pointer is protected by the
-rtnl_lock. So I don't think we can release the rtnl_lock until after
-we are done with the dev pointer.
+In order to access the suboordinate dev for a device we should be holding
+the rtnl_lock when outside of the transmit path. The existing code was not
+doing that for the sysfs dump function and as a result we were open to a
+possible race.
 
-Also I am not sure it is safe to use netdev_txq_to_tc without holding
-the lock. I don't know if we ever went through and guaranteed that it
-will always work if the lock isn't held since in theory the device
-could reprogram all the map values out from under us.
+To resolve that take the rtnl lock prior to accessing the sb_dev field of
+the Tx queue and release it after we have retrieved the tc for the queue.
 
-Odds are we should probably fix traffic_class_show as I suspect it
-probably also needs to be holding the rtnl_lock to prevent any
-possible races. I'll submit a patch for that.
+Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
+---
+ net/core/net-sysfs.c |   13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-> @@ -1371,16 +1366,12 @@ static ssize_t xps_cpus_show(struct netdev_queue *queue,
->  out_no_maps:
->         rcu_read_unlock();
->
-> -       rtnl_unlock();
-> -
->         len = bitmap_print_to_pagebuf(false, buf, mask, nr_ids);
->         bitmap_free(mask);
->         return len < PAGE_SIZE ? len : -EINVAL;
->
->  err_rcu_unlock:
->         rcu_read_unlock();
-> -err_rtnl_unlock:
-> -       rtnl_unlock();
->         return ret;
->  }
->
-> @@ -1435,14 +1426,9 @@ static ssize_t xps_rxqs_show(struct netdev_queue *queue, char *buf)
->
->         index = get_netdev_queue_index(queue);
->
-> -       if (!rtnl_trylock())
-> -               return restart_syscall();
-> -
->         tc = netdev_txq_to_tc(dev, index);
-> -       if (tc < 0) {
-> -               ret = -EINVAL;
-> -               goto err_rtnl_unlock;
-> -       }
-> +       if (tc < 0)
-> +               return -EINVAL;
->
->         rcu_read_lock();
->         dev_maps = rcu_dereference(dev->xps_maps[XPS_RXQS]);
-> @@ -1475,8 +1461,6 @@ static ssize_t xps_rxqs_show(struct netdev_queue *queue, char *buf)
->  out_no_maps:
->         rcu_read_unlock();
->
-> -       rtnl_unlock();
-> -
->         len = bitmap_print_to_pagebuf(false, buf, mask, nr_ids);
->         bitmap_free(mask);
->
-> @@ -1484,8 +1468,6 @@ static ssize_t xps_rxqs_show(struct netdev_queue *queue, char *buf)
->
->  err_rcu_unlock:
->         rcu_read_unlock();
-> -err_rtnl_unlock:
-> -       rtnl_unlock();
->         return ret;
->  }
->
-> --
-> 2.29.2
->
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index daf502c13d6d..91afb0b6de69 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -1136,18 +1136,25 @@ static ssize_t traffic_class_show(struct netdev_queue *queue,
+ 				  char *buf)
+ {
+ 	struct net_device *dev = queue->dev;
++	int num_tc, tc;
+ 	int index;
+-	int tc;
+ 
+ 	if (!netif_is_multiqueue(dev))
+ 		return -ENOENT;
+ 
++	if (!rtnl_trylock())
++		return restart_syscall();
++
+ 	index = get_netdev_queue_index(queue);
+ 
+ 	/* If queue belongs to subordinate dev use its TC mapping */
+ 	dev = netdev_get_tx_queue(dev, index)->sb_dev ? : dev;
+ 
++	num_tc = dev->num_tc;
+ 	tc = netdev_txq_to_tc(dev, index);
++
++	rtnl_unlock();
++
+ 	if (tc < 0)
+ 		return -EINVAL;
+ 
+@@ -1158,8 +1165,8 @@ static ssize_t traffic_class_show(struct netdev_queue *queue,
+ 	 * belongs to the root device it will be reported with just the
+ 	 * traffic class, so just "0" for TC 0 for example.
+ 	 */
+-	return dev->num_tc < 0 ? sprintf(buf, "%d%d\n", tc, dev->num_tc) :
+-				 sprintf(buf, "%d\n", tc);
++	return num_tc < 0 ? sprintf(buf, "%d%d\n", tc, num_tc) :
++			    sprintf(buf, "%d\n", tc);
+ }
+ 
+ #ifdef CONFIG_XPS
+
+
