@@ -2,300 +2,355 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72133312E9B
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 11:13:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3ABB312EF4
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 11:27:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232085AbhBHKKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 05:10:49 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:16879 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231951AbhBHKGK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 05:06:10 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B60210cc30000>; Mon, 08 Feb 2021 02:04:51 -0800
-Received: from mtl-vdi-166.wap.labs.mlnx (172.20.145.6) by
- HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3; Mon, 8 Feb 2021 10:04:48 +0000
-Date:   Mon, 8 Feb 2021 12:04:45 +0200
-From:   Eli Cohen <elic@nvidia.com>
-To:     Jason Wang <jasowang@redhat.com>
-CC:     Si-Wei Liu <si-wei.liu@oracle.com>, <mst@redhat.com>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lulu@redhat.com>
-Subject: Re: [PATCH v1] vdpa/mlx5: Restore the hardware used index after
- change map
-Message-ID: <20210208100445.GA173340@mtl-vdi-166.wap.labs.mlnx>
-References: <20210204073618.36336-1-elic@nvidia.com>
- <81f5ce4f-cdb0-26cd-0dce-7ada824b1b86@oracle.com>
- <f2206fa2-0ddc-1858-54e7-71614b142e46@redhat.com>
- <20210208063736.GA166546@mtl-vdi-166.wap.labs.mlnx>
- <0d592ed0-3cea-cfb0-9b7b-9d2755da3f12@redhat.com>
+        id S232252AbhBHKZy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 05:25:54 -0500
+Received: from mx2.suse.de ([195.135.220.15]:42516 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232152AbhBHKXm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Feb 2021 05:23:42 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1612779774; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=60lHO1XdO2ZdH7NjubMLgmwlciqf0fRY8xZgW51WUbU=;
+        b=cCI1lUOYefv5w41g8IqFaarOQrGRW26S9XVaZ29zU2W7zMtAY1e/8OPD1HsVNd0SF1KGZP
+        7uBpXw8t/QrqYEkkhBLbir6WydP7kc60yyp0laO62qF5Sl11MUWmCs2GJWT84gTGeCuSpY
+        vhJ0nhQHlfe1bXiekrN6PlHfZg+Rr7I=
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id CF675AC6E;
+        Mon,  8 Feb 2021 10:22:53 +0000 (UTC)
+Subject: Re: [PATCH 0/7] xen/events: bug fixes and some diagnostic aids
+To:     Julien Grall <julien@xen.org>, xen-devel@lists.xenproject.org,
+        linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+        netdev@vger.kernel.org, linux-scsi@vger.kernel.org
+Cc:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        stable@vger.kernel.org,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        =?UTF-8?Q?Roger_Pau_Monn=c3=a9?= <roger.pau@citrix.com>,
+        Jens Axboe <axboe@kernel.dk>, Wei Liu <wei.liu@kernel.org>,
+        Paul Durrant <paul@xen.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20210206104932.29064-1-jgross@suse.com>
+ <bd63694e-ac0c-7954-ec00-edad05f8da1c@xen.org>
+ <eeb62129-d9fc-2155-0e0f-aff1fbb33fbc@suse.com>
+ <fcf3181b-3efc-55f5-687c-324937b543e6@xen.org>
+ <7aaeeb3d-1e1b-6166-84e9-481153811b62@suse.com>
+ <6f547bb5-777a-6fc2-eba2-cccb4adfca87@xen.org>
+From:   =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
+Message-ID: <0d623c98-a714-1639-cc53-f58ba3f08212@suse.com>
+Date:   Mon, 8 Feb 2021 11:22:52 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <0d592ed0-3cea-cfb0-9b7b-9d2755da3f12@redhat.com>
-User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1612778691; bh=XJ+H54J70iPjBxdLuqgMgGH6j1+wzx9oTigPzgI403k=;
-        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-         Content-Type:Content-Disposition:Content-Transfer-Encoding:
-         In-Reply-To:User-Agent:X-Originating-IP:X-ClientProxiedBy;
-        b=RXJmrLYCHPp1k4usEJvCWtqGYE1w7jPyjTjCKHMGu/0lZxAQR1nAX0GwBD5fvcrvw
-         aFgfS3xwGrlb1tFqPoC1zaAlt21rpD/eo/7cm1D2FoEElg0e4SuFb344riKB95RNa9
-         6X3w7xj9eYdpe82n1MRUIY9xbGbbAXGbOeg0BQ8ka3k+ZanX5iEzqqmnhdJR1KI580
-         GtwpbqpaWh8oc0/H9CSCQzEMI/aCE1UvJY+51YCfQnNFz6qFXCmFfl0OcWNNOeVrH3
-         ppphv/CTO29Axy4ZcD0uBkVXCz2VGZz56S8z/lu8Lu3j+JLoXxse64XlNurTKlgvcx
-         em0mQ/fS8CZiA==
+In-Reply-To: <6f547bb5-777a-6fc2-eba2-cccb4adfca87@xen.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="arpr7hQ62FH49b0XyzuGqHY5LdYWp7uWP"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 08, 2021 at 05:04:27PM +0800, Jason Wang wrote:
->=20
-> On 2021/2/8 =E4=B8=8B=E5=8D=882:37, Eli Cohen wrote:
-> > On Mon, Feb 08, 2021 at 12:27:18PM +0800, Jason Wang wrote:
-> > > On 2021/2/6 =E4=B8=8A=E5=8D=887:07, Si-Wei Liu wrote:
-> > > >=20
-> > > > On 2/3/2021 11:36 PM, Eli Cohen wrote:
-> > > > > When a change of memory map occurs, the hardware resources are de=
-stroyed
-> > > > > and then re-created again with the new memory map. In such case, =
-we need
-> > > > > to restore the hardware available and used indices. The driver fa=
-iled to
-> > > > > restore the used index which is added here.
-> > > > >=20
-> > > > > Also, since the driver also fails to reset the available and used
-> > > > > indices upon device reset, fix this here to avoid regression caus=
-ed by
-> > > > > the fact that used index may not be zero upon device reset.
-> > > > >=20
-> > > > > Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported ml=
-x5
-> > > > > devices")
-> > > > > Signed-off-by: Eli Cohen <elic@nvidia.com>
-> > > > > ---
-> > > > > v0 -> v1:
-> > > > > Clear indices upon device reset
-> > > > >=20
-> > > > >  =C2=A0 drivers/vdpa/mlx5/net/mlx5_vnet.c | 18 ++++++++++++++++++
-> > > > >  =C2=A0 1 file changed, 18 insertions(+)
-> > > > >=20
-> > > > > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > > > > b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > > > > index 88dde3455bfd..b5fe6d2ad22f 100644
-> > > > > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > > > > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > > > > @@ -87,6 +87,7 @@ struct mlx5_vq_restore_info {
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u64 device_addr;
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u64 driver_addr;
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u16 avail_index;
-> > > > > +=C2=A0=C2=A0=C2=A0 u16 used_index;
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 bool ready;
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct vdpa_callback cb;
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 bool restore;
-> > > > > @@ -121,6 +122,7 @@ struct mlx5_vdpa_virtqueue {
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u32 virtq_id;
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct mlx5_vdpa_net *ndev;
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u16 avail_idx;
-> > > > > +=C2=A0=C2=A0=C2=A0 u16 used_idx;
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 int fw_state;
-> > > > >  =C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* keep last in the struct=
- */
-> > > > > @@ -804,6 +806,7 @@ static int create_virtqueue(struct mlx5_vdpa_=
-net
-> > > > > *ndev, struct mlx5_vdpa_virtque
-> > > > >  =C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 obj_context =3D MLX5_ADDR_=
-OF(create_virtio_net_q_in, in,
-> > > > > obj_context);
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 MLX5_SET(virtio_net_q_object, obj=
-_context, hw_available_index,
-> > > > > mvq->avail_idx);
-> > > > > +=C2=A0=C2=A0=C2=A0 MLX5_SET(virtio_net_q_object, obj_context, hw=
-_used_index,
-> > > > > mvq->used_idx);
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 MLX5_SET(virtio_net_q_object, obj=
-_context,
-> > > > > queue_feature_bit_mask_12_3,
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 get=
-_features_12_3(ndev->mvdev.actual_features));
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 vq_ctx =3D MLX5_ADDR_OF(virtio_ne=
-t_q_object, obj_context,
-> > > > > virtio_q_context);
-> > > > > @@ -1022,6 +1025,7 @@ static int connect_qps(struct mlx5_vdpa_net
-> > > > > *ndev, struct mlx5_vdpa_virtqueue *m
-> > > > >  =C2=A0 struct mlx5_virtq_attr {
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u8 state;
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u16 available_index;
-> > > > > +=C2=A0=C2=A0=C2=A0 u16 used_index;
-> > > > >  =C2=A0 };
-> > > > >  =C2=A0 =C2=A0 static int query_virtqueue(struct mlx5_vdpa_net *n=
-dev, struct
-> > > > > mlx5_vdpa_virtqueue *mvq,
-> > > > > @@ -1052,6 +1056,7 @@ static int query_virtqueue(struct
-> > > > > mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueu
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 memset(attr, 0, sizeof(*attr));
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 attr->state =3D MLX5_GET(virtio_n=
-et_q_object, obj_context, state);
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 attr->available_index =3D MLX5_GE=
-T(virtio_net_q_object,
-> > > > > obj_context, hw_available_index);
-> > > > > +=C2=A0=C2=A0=C2=A0 attr->used_index =3D MLX5_GET(virtio_net_q_ob=
-ject, obj_context,
-> > > > > hw_used_index);
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kfree(out);
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return 0;
-> > > > >  =C2=A0 @@ -1535,6 +1540,16 @@ static void teardown_virtqueues(st=
-ruct
-> > > > > mlx5_vdpa_net *ndev)
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
-> > > > >  =C2=A0 }
-> > > > >  =C2=A0 +static void clear_virtqueues(struct mlx5_vdpa_net *ndev)
-> > > > > +{
-> > > > > +=C2=A0=C2=A0=C2=A0 int i;
-> > > > > +
-> > > > > +=C2=A0=C2=A0=C2=A0 for (i =3D ndev->mvdev.max_vqs - 1; i >=3D 0;=
- i--) {
-> > > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ndev->vqs[i].avail_id=
-x =3D 0;
-> > > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ndev->vqs[i].used_idx=
- =3D 0;
-> > > > > +=C2=A0=C2=A0=C2=A0 }
-> > > > > +}
-> > > > > +
-> > > > >  =C2=A0 /* TODO: cross-endian support */
-> > > > >  =C2=A0 static inline bool mlx5_vdpa_is_little_endian(struct mlx5=
-_vdpa_dev
-> > > > > *mvdev)
-> > > > >  =C2=A0 {
-> > > > > @@ -1610,6 +1625,7 @@ static int save_channel_info(struct
-> > > > > mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqu
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return er=
-r;
-> > > > >  =C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ri->avail_index =3D attr.a=
-vailable_index;
-> > > > > +=C2=A0=C2=A0=C2=A0 ri->used_index =3D attr.used_index;
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ri->ready =3D mvq->ready;
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ri->num_ent =3D mvq->num_ent;
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ri->desc_addr =3D mvq->desc_addr;
-> > > > > @@ -1654,6 +1670,7 @@ static void restore_channels_info(struct
-> > > > > mlx5_vdpa_net *ndev)
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0 continue;
-> > > > >  =C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 mv=
-q->avail_idx =3D ri->avail_index;
-> > > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 mvq->used_idx =3D ri-=
->used_index;
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 mvq->read=
-y =3D ri->ready;
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 mvq->num_=
-ent =3D ri->num_ent;
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 mvq->desc=
-_addr =3D ri->desc_addr;
-> > > > > @@ -1768,6 +1785,7 @@ static void mlx5_vdpa_set_status(struct
-> > > > > vdpa_device *vdev, u8 status)
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (!status) {
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 mlx5_vdpa=
-_info(mvdev, "performing device reset\n");
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 teardown_=
-driver(ndev);
-> > > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 clear_virtqueues(ndev=
-);
-> > > > The clearing looks fine at the first glance, as it aligns with the =
-other
-> > > > state cleanups floating around at the same place. However, the thin=
-g is
-> > > > get_vq_state() is supposed to be called right after to get sync'ed =
-with
-> > > > the latest internal avail_index from device while vq is stopped. Th=
-e
-> > > > index was saved in the driver software at vq suspension, but before=
- the
-> > > > virtq object is destroyed. We shouldn't clear the avail_index too e=
-arly.
-> > >=20
-> > > Good point.
-> > >=20
-> > > There's a limitation on the virtio spec and vDPA framework that we ca=
-n not
-> > > simply differ device suspending from device reset.
-> > >=20
-> > Are you talking about live migration where you reset the device but
-> > still want to know how far it progressed in order to continue from the
-> > same place in the new VM?
->=20
->=20
-> Yes. So if we want to support live migration at we need:
->=20
-> in src node:
-> 1) suspend the device
-> 2) get last_avail_idx via get_vq_state()
->=20
-> in the dst node:
-> 3) set last_avail_idx via set_vq_state()
-> 4) resume the device
->=20
-> So you can see, step 2 requires the device/driver not to forget the
-> last_avail_idx.
->=20
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--arpr7hQ62FH49b0XyzuGqHY5LdYWp7uWP
+Content-Type: multipart/mixed; boundary="8PGsFlUGasLxMz28nEmjrpbMjwk7PLL4D";
+ protected-headers="v1"
+From: =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
+To: Julien Grall <julien@xen.org>, xen-devel@lists.xenproject.org,
+ linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+ netdev@vger.kernel.org, linux-scsi@vger.kernel.org
+Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+ Stefano Stabellini <sstabellini@kernel.org>, stable@vger.kernel.org,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ =?UTF-8?Q?Roger_Pau_Monn=c3=a9?= <roger.pau@citrix.com>,
+ Jens Axboe <axboe@kernel.dk>, Wei Liu <wei.liu@kernel.org>,
+ Paul Durrant <paul@xen.org>, "David S. Miller" <davem@davemloft.net>,
+ Jakub Kicinski <kuba@kernel.org>
+Message-ID: <0d623c98-a714-1639-cc53-f58ba3f08212@suse.com>
+Subject: Re: [PATCH 0/7] xen/events: bug fixes and some diagnostic aids
+References: <20210206104932.29064-1-jgross@suse.com>
+ <bd63694e-ac0c-7954-ec00-edad05f8da1c@xen.org>
+ <eeb62129-d9fc-2155-0e0f-aff1fbb33fbc@suse.com>
+ <fcf3181b-3efc-55f5-687c-324937b543e6@xen.org>
+ <7aaeeb3d-1e1b-6166-84e9-481153811b62@suse.com>
+ <6f547bb5-777a-6fc2-eba2-cccb4adfca87@xen.org>
+In-Reply-To: <6f547bb5-777a-6fc2-eba2-cccb4adfca87@xen.org>
 
-Just to be sure, what really matters here is the used index. Becuase the
-vriqtueue itself is copied from the src VM to the dest VM. The available
-index is alreay there and we know the hardware reads it from there.
+--8PGsFlUGasLxMz28nEmjrpbMjwk7PLL4D
+Content-Type: multipart/mixed;
+ boundary="------------4E6A363ECAD742BE1796000E"
+Content-Language: en-US
 
-So it puzzles me why is set_vq_state() we do not communicate the saved
-used index.
+This is a multi-part message in MIME format.
+--------------4E6A363ECAD742BE1796000E
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 
-> The annoying thing is that, in the virtio spec there's no definition of
-> device suspending. So we reuse set_status(0) right now for vq suspending.
-> Then if we forget last_avail_idx in set_status(0), it will break the
-> assumption of step 2).
+On 08.02.21 10:54, Julien Grall wrote:
 >=20
 >=20
-> >=20
-> > > Need to think about that. I suggest a new state in [1], the issue is =
-that
-> > > people doesn't like the asynchronous API that it introduces.
-> > >=20
-> > >=20
-> > > > Possibly it can be postponed to where VIRTIO_CONFIG_S_DRIVER_OK get=
-s set
-> > > > again, i.e. right before the setup_driver() in mlx5_vdpa_set_status=
-()?
-> > >=20
-> > > Looks like a good workaround.
+> On 08/02/2021 09:41, J=C3=BCrgen Gro=C3=9F wrote:
+>> On 08.02.21 10:11, Julien Grall wrote:
+>>> Hi Juergen,
+>>>
+>>> On 07/02/2021 12:58, J=C3=BCrgen Gro=C3=9F wrote:
+>>>> On 06.02.21 19:46, Julien Grall wrote:
+>>>>> Hi Juergen,
+>>>>>
+>>>>> On 06/02/2021 10:49, Juergen Gross wrote:
+>>>>>> The first three patches are fixes for XSA-332. The avoid WARN spla=
+ts
+>>>>>> and a performance issue with interdomain events.
+>>>>>
+>>>>> Thanks for helping to figure out the problem. Unfortunately, I=20
+>>>>> still see reliably the WARN splat with the latest Linux master=20
+>>>>> (1e0d27fce010) + your first 3 patches.
+>>>>>
+>>>>> I am using Xen 4.11 (1c7d984645f9) and dom0 is forced to use the 2L=
+=20
+>>>>> events ABI.
+>>>>>
+>>>>> After some debugging, I think I have an idea what's went wrong. The=
+=20
+>>>>> problem happens when the event is initially bound from vCPU0 to a=20
+>>>>> different vCPU.
+>>>>>
+>>>>> =C2=A0From the comment in xen_rebind_evtchn_to_cpu(), we are maskin=
+g the=20
+>>>>> event to prevent it being delivered on an unexpected vCPU. However,=
+=20
+>>>>> I believe the following can happen:
+>>>>>
+>>>>> vCPU0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 | vCPU1
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 |
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 | Call xen_rebind_evtchn_to_cpu()
+>>>>> receive event X=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 |
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 | mask event X
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 | bind to vCPU1
+>>>>> <vCPU descheduled>=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | unma=
+sk event X
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 |
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 | receive event X
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 |
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 | handle_edge_irq(X)
+>>>>> handle_edge_irq(X)=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0=
+ -> handle_irq_event()
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0=C2=A0 -> set IRQD_IN_PROGRESS
+>>>>> =C2=A0=C2=A0-> set IRQS_PENDING=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 |
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0=C2=A0 -> evtchn_interrupt()
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0=C2=A0 -> clear IRQD_IN_PROGRESS
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 -> IRQS_PENDING is set
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 -> handle_irq_event()
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0=C2=A0 -> evtchn_interrupt()
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0=C2=A0=C2=A0=C2=A0 -> WARN()
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 |
+>>>>>
+>>>>> All the lateeoi handlers expect a ONESHOT semantic and=20
+>>>>> evtchn_interrupt() is doesn't tolerate any deviation.
+>>>>>
+>>>>> I think the problem was introduced by 7f874a0447a9 ("xen/events:=20
+>>>>> fix lateeoi irq acknowledgment") because the interrupt was disabled=
+=20
+>>>>> previously. Therefore we wouldn't do another iteration in=20
+>>>>> handle_edge_irq().
+>>>>
+>>>> I think you picked the wrong commit for blaming, as this is just
+>>>> the last patch of the three patches you were testing.
+>>>
+>>> I actually found the right commit for blaming but I copied the=20
+>>> information from the wrong shell :/. The bug was introduced by:
+>>>
+>>> c44b849cee8c ("xen/events: switch user event channels to lateeoi mode=
+l")
+>>>
+>>>>
+>>>>> Aside the handlers, I think it may impact the defer EOI mitigation =
+
+>>>>> because in theory if a 3rd vCPU is joining the party (let say vCPU =
+
+>>>>> A migrate the event from vCPU B to vCPU C). So info->{eoi_cpu,=20
+>>>>> irq_epoch, eoi_time} could possibly get mangled?
+>>>>>
+>>>>> For a fix, we may want to consider to hold evtchn_rwlock with the=20
+>>>>> write permission. Although, I am not 100% sure this is going to=20
+>>>>> prevent everything.
+>>>>
+>>>> It will make things worse, as it would violate the locking hierarchy=
+
+>>>> (xen_rebind_evtchn_to_cpu() is called with the IRQ-desc lock held).
+>>>
+>>> Ah, right.
+>>>
+>>>>
+>>>> On a first glance I think we'll need a 3rd masking state ("temporari=
+ly
+>>>> masked") in the second patch in order to avoid a race with lateeoi.
+>>>>
+>>>> In order to avoid the race you outlined above we need an "event is=20
+>>>> being
+>>>> handled" indicator checked via test_and_set() semantics in
+>>>> handle_irq_for_port() and reset only when calling clear_evtchn().
+>>>
+>>> It feels like we are trying to workaround the IRQ flow we are using=20
+>>> (i.e. handle_edge_irq()).
+>>
+>> I'm not really sure this is the main problem here. According to your
+>> analysis the main problem is occurring when handling the event, not wh=
+en
+>> handling the IRQ: the event is being received on two vcpus.
 >=20
+> I don't think we can easily divide the two because we rely on the IRQ=20
+> framework to handle the lifecycle of the event. So...
 >=20
-> Rethink of this, this won't work for the step 4), if we reuse the S_DRING=
-_OK
-> for resuming.
+>>
+>> Our problem isn't due to the IRQ still being pending, but due it being=
+
+>> raised again, which should happen for a one shot IRQ the same way.
 >=20
-> The most clean way is to invent the feature in virtio spec and implement
-> that in the driver.
->=20
-> Thanks
->=20
->=20
->=20
-> > >=20
-> > > Thanks
-> > >=20
-> > >=20
-> > > > -Siwei
-> > >=20
-> > > [1]
-> > > https://lists.oasis-open.org/archives/virtio-comment/202012/msg00029.=
-html
-> > >=20
-> > >=20
-> > > > > mlx5_vdpa_destroy_mr(&ndev->mvdev);
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ndev->mvd=
-ev.status =3D 0;
-> > > > >  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ndev->mvd=
-ev.mlx_features =3D 0;
->=20
+> ... I don't really see how the difference matter here. The idea is to=20
+> re-use what's already existing rather than trying to re-invent the whee=
+l=20
+> with an extra lock (or whatever we can come up).
+
+The difference is that the race is occurring _before_ any IRQ is
+involved. So I don't see how modification of IRQ handling would help.
+
+
+Juergen
+
+--------------4E6A363ECAD742BE1796000E
+Content-Type: application/pgp-keys;
+ name="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+ filename="OpenPGP_0xB0DE9DD628BF132F.asc"
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+xsBNBFOMcBYBCACgGjqjoGvbEouQZw/ToiBg9W98AlM2QHV+iNHsEs7kxWhKMjrioyspZKOBy=
+cWx
+w3ie3j9uvg9EOB3aN4xiTv4qbnGiTr3oJhkB1gsb6ToJQZ8uxGq2kaV2KL9650I1SJvedYm8O=
+f8Z
+d621lSmoKOwlNClALZNew72NjJLEzTalU1OdT7/i1TXkH09XSSI8mEQ/ouNcMvIJNwQpd369y=
+9bf
+IhWUiVXEK7MlRgUG6MvIj6Y3Am/BBLUVbDa4+gmzDC9ezlZkTZG2t14zWPvxXP3FAp2pkW0xq=
+G7/
+377qptDmrk42GlSKN4z76ELnLxussxc7I2hx18NUcbP8+uty4bMxABEBAAHNHEp1ZXJnZW4gR=
+3Jv
+c3MgPGpnQHBmdXBmLm5ldD7CwHkEEwECACMFAlOMcBYCGwMHCwkIBwMCAQYVCAIJCgsEFgIDA=
+QIe
+AQIXgAAKCRCw3p3WKL8TL0KdB/93FcIZ3GCNwFU0u3EjNbNjmXBKDY4FUGNQH2lvWAUy+dnyT=
+hpw
+dtF/jQ6j9RwE8VP0+NXcYpGJDWlNb9/JmYqLiX2Q3TyevpB0CA3dbBQp0OW0fgCetToGIQrg0=
+MbD
+1C/sEOv8Mr4NAfbauXjZlvTj30H2jO0u+6WGM6nHwbh2l5O8ZiHkH32iaSTfN7Eu5RnNVUJbv=
+oPH
+Z8SlM4KWm8rG+lIkGurqqu5gu8q8ZMKdsdGC4bBxdQKDKHEFExLJK/nRPFmAuGlId1E3fe10v=
+5QL
++qHI3EIPtyfE7i9Hz6rVwi7lWKgh7pe0ZvatAudZ+JNIlBKptb64FaiIOAWDCx1SzR9KdWVyZ=
+2Vu
+IEdyb3NzIDxqZ3Jvc3NAc3VzZS5jb20+wsB5BBMBAgAjBQJTjHCvAhsDBwsJCAcDAgEGFQgCC=
+QoL
+BBYCAwECHgECF4AACgkQsN6d1ii/Ey/HmQf/RtI7kv5A2PS4RF7HoZhPVPogNVbC4YA6lW7Dr=
+Wf0
+teC0RR3MzXfy6pJ+7KLgkqMlrAbN/8Dvjoz78X+5vhH/rDLa9BuZQlhFmvcGtCF8eR0T1v0nC=
+/nu
+AFVGy+67q2DH8As3KPu0344TBDpAvr2uYM4tSqxK4DURx5INz4ZZ0WNFHcqsfvlGJALDeE0Lh=
+ITT
+d9jLzdDad1pQSToCnLl6SBJZjDOX9QQcyUigZFtCXFst4dlsvddrxyqT1f17+2cFSdu7+ynLm=
+XBK
+7abQ3rwJY8SbRO2iRulogc5vr/RLMMlscDAiDkaFQWLoqHHOdfO9rURssHNN8WkMnQfvUewRz=
+80h
+SnVlcmdlbiBHcm9zcyA8amdyb3NzQG5vdmVsbC5jb20+wsB5BBMBAgAjBQJTjHDXAhsDBwsJC=
+AcD
+AgEGFQgCCQoLBBYCAwECHgECF4AACgkQsN6d1ii/Ey8PUQf/ehmgCI9jB9hlgexLvgOtf7PJn=
+FOX
+gMLdBQgBlVPO3/D9R8LtF9DBAFPNhlrsfIG/SqICoRCqUcJ96Pn3P7UUinFG/I0ECGF4EvTE1=
+jnD
+kfJZr6jrbjgyoZHiw/4BNwSTL9rWASyLgqlA8u1mf+c2yUwcGhgkRAd1gOwungxcwzwqgljf0=
+N51
+N5JfVRHRtyfwq/ge+YEkDGcTU6Y0sPOuj4Dyfm8fJzdfHNQsWq3PnczLVELStJNdapwPOoE+l=
+otu
+fe3AM2vAEYJ9rTz3Cki4JFUsgLkHFqGZarrPGi1eyQcXeluldO3m91NK/1xMI3/+8jbO0tsn1=
+tqS
+EUGIJi7ox80eSnVlcmdlbiBHcm9zcyA8amdyb3NzQHN1c2UuZGU+wsB5BBMBAgAjBQJTjHDrA=
+hsD
+BwsJCAcDAgEGFQgCCQoLBBYCAwECHgECF4AACgkQsN6d1ii/Ey+LhQf9GL45eU5vOowA2u5N3=
+g3O
+ZUEBmDHVVbqMtzwlmNC4k9Kx39r5s2vcFl4tXqW7g9/ViXYuiDXb0RfUpZiIUW89siKrkzmQ5=
+dM7
+wRqzgJpJwK8Bn2MIxAKArekWpiCKvBOB/Cc+3EXE78XdlxLyOi/NrmSGRIov0karw2RzMNOu5=
+D+j
+LRZQd1Sv27AR+IP3I8U4aqnhLpwhK7MEy9oCILlgZ1QZe49kpcumcZKORmzBTNh30FVKK1Evm=
+V2x
+AKDoaEOgQB4iFQLhJCdP1I5aSgM5IVFdn7v5YgEYuJYx37IoN1EblHI//x/e2AaIHpzK5h88N=
+Eaw
+QsaNRpNSrcfbFmAg987ATQRTjHAWAQgAyzH6AOODMBjgfWE9VeCgsrwH3exNAU32gLq2xvjpW=
+nHI
+s98ndPUDpnoxWQugJ6MpMncr0xSwFmHEgnSEjK/PAjppgmyc57BwKII3sV4on+gDVFJR6Y8ZR=
+wgn
+BC5mVM6JjQ5xDk8WRXljExRfUX9pNhdE5eBOZJrDRoLUmmjDtKzWaDhIg/+1Hzz93X4fCQkNV=
+bVF
+LELU9bMaLPBG/x5q4iYZ2k2ex6d47YE1ZFdMm6YBYMOljGkZKwYde5ldM9mo45mmwe0icXKLk=
+pEd
+IXKTZeKDO+Hdv1aqFuAcccTg9RXDQjmwhC3yEmrmcfl0+rPghO0Iv3OOImwTEe4co3c1mwARA=
+QAB
+wsBfBBgBAgAJBQJTjHAWAhsMAAoJELDendYovxMvQ/gH/1ha96vm4P/L+bQpJwrZ/dneZcmEw=
+Tbe
+8YFsw2V/Buv6Z4Mysln3nQK5ZadD534CF7TDVft7fC4tU4PONxF5D+/tvgkPfDAfF77zy2AH1=
+vJz
+Q1fOU8lYFpZXTXIHb+559UqvIB8AdgR3SAJGHHt4RKA0F7f5ipYBBrC6cyXJyyoprT10EMvU8=
+VGi
+wXvTyJz3fjoYsdFzpWPlJEBRMedCot60g5dmbdrZ5DWClAr0yau47zpWj3enf1tLWaqcsuylW=
+svi
+uGjKGw7KHQd3bxALOknAp4dN3QwBYCKuZ7AddY9yjynVaD5X7nF9nO5BjR/i1DG86lem3iBDX=
+zXs
+ZDn8R38=3D
+=3D2wuH
+-----END PGP PUBLIC KEY BLOCK-----
+
+--------------4E6A363ECAD742BE1796000E--
+
+--8PGsFlUGasLxMz28nEmjrpbMjwk7PLL4D--
+
+--arpr7hQ62FH49b0XyzuGqHY5LdYWp7uWP
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmAhEPwFAwAAAAAACgkQsN6d1ii/Ey+8
++gf/fYUiahBXkyaFYti/fdacT0KA4crdiz1HFIWfzYd6aE7hnhLSA9cgayDoTMzZ1ixUOP4Dg8zA
+RPsvIfz1HR433Qtn/LalZSRn3VdOV9UMQpCZeGptlLCUp7PYmVflhau47UZKdb12bXn2yAxHJ1nT
+80zX9Tq0gi5hsIfy/uoPeVL27XIP89Ze7IKn6x4vCBJ/r02tTNNz2jaYKDkenC0vO1y0CFP3rL9g
+cP3scoA+dEH9ZErOV4g9YsEpAliAZeVzEdjpNTUSE3Jj07rZccD83UNQRgUoIQqOkeNiShTzugbD
+ScMv4YjK2ItFjbV9x/8b4YpBDtNoYQV6j0+fd628QA==
+=7tk+
+-----END PGP SIGNATURE-----
+
+--arpr7hQ62FH49b0XyzuGqHY5LdYWp7uWP--
