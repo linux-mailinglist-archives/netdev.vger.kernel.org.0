@@ -2,39 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81453312BFA
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 09:38:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9213C312BF8
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 09:38:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230471AbhBHIiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 03:38:08 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:14106 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230258AbhBHIe7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 03:34:59 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1188WC4u003070;
-        Mon, 8 Feb 2021 00:34:07 -0800
+        id S230433AbhBHIhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 03:37:47 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:60598 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S230268AbhBHIfP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 03:35:15 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1188TsxW021079;
+        Mon, 8 Feb 2021 00:34:17 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=Te/P93E6xYEL0XCHhhJJsDjnhAHpLCRMF2jCq3hbBE0=;
- b=kwFnThkxTJHmxmnPJ2jDw7cPQOOl63xeE1D2Zc30Aqzmg2I5MBtUotICGgaHPEsTIA1w
- Ppqh73SANnb3qjh5q0Nmm7NLx13fVSbED5tBp5AmzAmpELOxHBW02CfOK4kfFhrknE/0
- OihzlTHoWvOmNEF+rBLFRqToKfZExRI8V68LdlqJx7CxHwiJTuzCwazoHQcQP9VjxZtc
- /YwYDRWFeO5lsHOXvA0VjFHz6d6rZijYN0X48fAtaZK4Vek0H71GRB8eL9rFWRtlhWXD
- PTxpGMyC4x4y49qIgX2YVthjMUGfj1Dm24xTIx3pThulUL6/TpObYXT9t0GJodku3xRT DA== 
+ content-type; s=pfpt0220; bh=Eanp+qVEZea1PzK1OZ8paYmWbRfLFUfDokgWTnwWj7U=;
+ b=b0TOQ77oAHYKSlHOrbPLb5yArcVVXXOvxKlRuiGepljB6cvK5nt5L2dlfpUgptG9inWa
+ cPY3gqMQZaTM1f/WAmOe5oKwbAX4Pep8Jv3I3tFTkD2i/M/FxxAU8rk3Cx5LqTW/OrUG
+ +WRk1+YRvVj3zrPRmruN6inAetfT9w0KndhvNhJ5u3UPm78V7ev6r/6X68Os6E9yhBQS
+ hQfE3fa+iN3Y18qllRz8B12LQ1d2X65BSxsKSK15/Ul/DlkI4zk0w4O1Z8VXPAlaVf9X
+ gJgubKjHnHdtwPMANMdCo8OytpnK2iaUawe6RAwSjJEo29FZo/f1KCKSofmnUgO+JqbC Wg== 
 Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 36hugq3y9e-1
+        by mx0a-0016f401.pphosted.com with ESMTP id 36hsbrc53c-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 08 Feb 2021 00:34:07 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+        Mon, 08 Feb 2021 00:34:16 -0800
+Received: from SC-EXCH01.marvell.com (10.93.176.81) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 8 Feb
- 2021 00:34:05 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 8 Feb 2021 00:34:05 -0800
+ 2021 00:34:15 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 8 Feb
+ 2021 00:34:15 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 8 Feb 2021 00:34:15 -0800
 Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id DEED23F7041;
-        Mon,  8 Feb 2021 00:34:01 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id 2B7253F7040;
+        Mon,  8 Feb 2021 00:34:10 -0800 (PST)
 From:   <stefanc@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
@@ -46,124 +49,152 @@ CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
         <robh+dt@kernel.org>, <sebastian.hesselbarth@gmail.com>,
         <gregory.clement@bootlin.com>,
         <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH v10 net-next 07/15] net: mvpp2: add FCA periodic timer configurations
-Date:   Mon, 8 Feb 2021 10:32:39 +0200
-Message-ID: <1612773167-22490-8-git-send-email-stefanc@marvell.com>
+Subject: [PATCH v10 net-next 08/15] net: mvpp2: add FCA RXQ non occupied descriptor threshold
+Date:   Mon, 8 Feb 2021 10:32:40 +0200
+Message-ID: <1612773167-22490-9-git-send-email-stefanc@marvell.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1612773167-22490-1-git-send-email-stefanc@marvell.com>
 References: <1612773167-22490-1-git-send-email-stefanc@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
- definitions=2021-02-08_02:2021-02-08,2021-02-08 signatures=0
+ definitions=2021-02-08_02:2021-02-05,2021-02-08 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Stefan Chulski <stefanc@marvell.com>
 
-Flow Control periodic timer would be used if port in
-XOFF to transmit periodic XOFF frames.
+The firmware needs to monitor the RX Non-occupied descriptor
+bits for flow control to move to XOFF mode.
+These bits need to be unmasked to be functional, but they will
+not raise interrupts as we leave the RX exception summary
+bit in MVPP2_ISR_RX_TX_MASK_REG clear.
 
 Signed-off-by: Stefan Chulski <stefanc@marvell.com>
 ---
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h      | 13 ++++++
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 45 ++++++++++++++++++++
- 2 files changed, 58 insertions(+)
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h      |  3 ++
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 44 ++++++++++++++++----
+ 2 files changed, 40 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-index e7bbf0a..9239d80 100644
+index 9239d80..d2cc513c 100644
 --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
 +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-@@ -596,6 +596,15 @@
- #define     MVPP22_MPCS_CLK_RESET_DIV_RATIO(n)	((n) << 4)
- #define     MVPP22_MPCS_CLK_RESET_DIV_SET	BIT(11)
+@@ -295,6 +295,8 @@
+ #define     MVPP2_PON_CAUSE_TXP_OCCUP_DESC_ALL_MASK	0x3fc00000
+ #define     MVPP2_PON_CAUSE_MISC_SUM_MASK		BIT(31)
+ #define MVPP2_ISR_MISC_CAUSE_REG		0x55b0
++#define MVPP2_ISR_RX_ERR_CAUSE_REG(port)	(0x5520 + 4 * (port))
++#define     MVPP2_ISR_RX_ERR_CAUSE_NONOCC_MASK	0x00ff
  
-+/* FCA registers. PPv2.2 and PPv2.3 */
-+#define MVPP22_FCA_BASE(port)			(0x7600 + (port) * 0x1000)
-+#define MVPP22_FCA_REG_SIZE			16
-+#define MVPP22_FCA_REG_MASK			0xFFFF
-+#define MVPP22_FCA_CONTROL_REG			0x0
-+#define MVPP22_FCA_ENABLE_PERIODIC		BIT(11)
-+#define MVPP22_PERIODIC_COUNTER_LSB_REG		(0x110)
-+#define MVPP22_PERIODIC_COUNTER_MSB_REG		(0x114)
-+
- /* XPCS registers. PPv2.2 and PPv2.3 */
- #define MVPP22_XPCS_BASE(port)			(0x7400 + (port) * 0x1000)
- #define MVPP22_XPCS_CFG0			0x0
-@@ -751,6 +760,10 @@
- #define MVPP2_TX_FIFO_THRESHOLD(kb)	\
- 		((kb) * 1024 - MVPP2_TX_FIFO_THRESHOLD_MIN)
+ /* Buffer Manager registers */
+ #define MVPP2_BM_POOL_BASE_REG(pool)		(0x6000 + ((pool) * 4))
+@@ -763,6 +765,7 @@
+ /* MSS Flow control */
+ #define FC_QUANTA		0xFFFF
+ #define FC_CLK_DIVIDER		100
++#define MSS_THRESHOLD_STOP	768
  
-+/* MSS Flow control */
-+#define FC_QUANTA		0xFFFF
-+#define FC_CLK_DIVIDER		100
-+
  /* RX buffer constants */
  #define MVPP2_SKB_SHINFO_SIZE \
- 	SKB_DATA_ALIGN(sizeof(struct skb_shared_info))
 diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 5730900..761f745 100644
+index 761f745..8b4073c 100644
 --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
 +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -1280,6 +1280,49 @@ static void mvpp22_gop_init_10gkr(struct mvpp2_port *port)
- 	writel(val, mpcs + MVPP22_MPCS_CLK_RESET);
+@@ -1133,14 +1133,19 @@ static inline void mvpp2_qvec_interrupt_disable(struct mvpp2_queue_vector *qvec)
+ static void mvpp2_interrupts_mask(void *arg)
+ {
+ 	struct mvpp2_port *port = arg;
++	int cpu = smp_processor_id();
++	u32 thread;
+ 
+ 	/* If the thread isn't used, don't do anything */
+-	if (smp_processor_id() > port->priv->nthreads)
++	if (cpu > port->priv->nthreads)
+ 		return;
+ 
+-	mvpp2_thread_write(port->priv,
+-			   mvpp2_cpu_to_thread(port->priv, smp_processor_id()),
++	thread = mvpp2_cpu_to_thread(port->priv, cpu);
++
++	mvpp2_thread_write(port->priv, thread,
+ 			   MVPP2_ISR_RX_TX_MASK_REG(port->id), 0);
++	mvpp2_thread_write(port->priv, thread,
++			   MVPP2_ISR_RX_ERR_CAUSE_REG(port->id), 0);
  }
  
-+static void mvpp22_gop_fca_enable_periodic(struct mvpp2_port *port, bool en)
+ /* Unmask the current thread's Rx/Tx interrupts.
+@@ -1150,20 +1155,25 @@ static void mvpp2_interrupts_mask(void *arg)
+ static void mvpp2_interrupts_unmask(void *arg)
+ {
+ 	struct mvpp2_port *port = arg;
+-	u32 val;
++	int cpu = smp_processor_id();
++	u32 val, thread;
+ 
+ 	/* If the thread isn't used, don't do anything */
+-	if (smp_processor_id() > port->priv->nthreads)
++	if (cpu > port->priv->nthreads)
+ 		return;
+ 
++	thread = mvpp2_cpu_to_thread(port->priv, cpu);
++
+ 	val = MVPP2_CAUSE_MISC_SUM_MASK |
+ 		MVPP2_CAUSE_RXQ_OCCUP_DESC_ALL_MASK(port->priv->hw_version);
+ 	if (port->has_tx_irqs)
+ 		val |= MVPP2_CAUSE_TXQ_OCCUP_DESC_ALL_MASK;
+ 
+-	mvpp2_thread_write(port->priv,
+-			   mvpp2_cpu_to_thread(port->priv, smp_processor_id()),
++	mvpp2_thread_write(port->priv, thread,
+ 			   MVPP2_ISR_RX_TX_MASK_REG(port->id), val);
++	mvpp2_thread_write(port->priv, thread,
++			   MVPP2_ISR_RX_ERR_CAUSE_REG(port->id),
++			   MVPP2_ISR_RX_ERR_CAUSE_NONOCC_MASK);
+ }
+ 
+ static void
+@@ -1188,6 +1198,9 @@ static void mvpp2_interrupts_unmask(void *arg)
+ 
+ 		mvpp2_thread_write(port->priv, v->sw_thread_id,
+ 				   MVPP2_ISR_RX_TX_MASK_REG(port->id), val);
++		mvpp2_thread_write(port->priv, v->sw_thread_id,
++				   MVPP2_ISR_RX_ERR_CAUSE_REG(port->id),
++				   MVPP2_ISR_RX_ERR_CAUSE_NONOCC_MASK);
+ 	}
+ }
+ 
+@@ -2393,6 +2406,20 @@ static void mvpp2_txp_max_tx_size_set(struct mvpp2_port *port)
+ 	}
+ }
+ 
++/* Set the number of non-occupied descriptors threshold */
++static void mvpp2_set_rxq_free_tresh(struct mvpp2_port *port,
++				     struct mvpp2_rx_queue *rxq)
 +{
-+	struct mvpp2 *priv = port->priv;
-+	void __iomem *fca = priv->iface_base + MVPP22_FCA_BASE(port->gop_id);
 +	u32 val;
 +
-+	val = readl(fca + MVPP22_FCA_CONTROL_REG);
-+	val &= ~MVPP22_FCA_ENABLE_PERIODIC;
-+	if (en)
-+		val |= MVPP22_FCA_ENABLE_PERIODIC;
-+	writel(val, fca + MVPP22_FCA_CONTROL_REG);
++	mvpp2_write(port->priv, MVPP2_RXQ_NUM_REG, rxq->id);
++
++	val = mvpp2_read(port->priv, MVPP2_RXQ_THRESH_REG);
++	val &= ~MVPP2_RXQ_NON_OCCUPIED_MASK;
++	val |= MSS_THRESHOLD_STOP << MVPP2_RXQ_NON_OCCUPIED_OFFSET;
++	mvpp2_write(port->priv, MVPP2_RXQ_THRESH_REG, val);
 +}
 +
-+static void mvpp22_gop_fca_set_timer(struct mvpp2_port *port, u32 timer)
-+{
-+	struct mvpp2 *priv = port->priv;
-+	void __iomem *fca = priv->iface_base + MVPP22_FCA_BASE(port->gop_id);
-+	u32 lsb, msb;
-+
-+	lsb = timer & MVPP22_FCA_REG_MASK;
-+	msb = timer >> MVPP22_FCA_REG_SIZE;
-+
-+	writel(lsb, fca + MVPP22_PERIODIC_COUNTER_LSB_REG);
-+	writel(msb, fca + MVPP22_PERIODIC_COUNTER_MSB_REG);
-+}
-+
-+/* Set Flow Control timer x100 faster than pause quanta to ensure that link
-+ * partner won't send traffic if port is in XOFF mode.
-+ */
-+static void mvpp22_gop_fca_set_periodic_timer(struct mvpp2_port *port)
-+{
-+	u32 timer;
-+
-+	timer = (port->priv->tclk / (USEC_PER_SEC * FC_CLK_DIVIDER))
-+		* FC_QUANTA;
-+
-+	mvpp22_gop_fca_enable_periodic(port, false);
-+
-+	mvpp22_gop_fca_set_timer(port, timer);
-+
-+	mvpp22_gop_fca_enable_periodic(port, true);
-+}
-+
- static int mvpp22_gop_init(struct mvpp2_port *port)
- {
- 	struct mvpp2 *priv = port->priv;
-@@ -1324,6 +1367,8 @@ static int mvpp22_gop_init(struct mvpp2_port *port)
- 	val |= GENCONF_SOFT_RESET1_GOP;
- 	regmap_write(priv->sysctrl_base, GENCONF_SOFT_RESET1, val);
+ /* Set the number of packets that will be received before Rx interrupt
+  * will be generated by HW.
+  */
+@@ -2648,6 +2675,9 @@ static int mvpp2_rxq_init(struct mvpp2_port *port,
+ 	mvpp2_rx_pkts_coal_set(port, rxq);
+ 	mvpp2_rx_time_coal_set(port, rxq);
  
-+	mvpp22_gop_fca_set_periodic_timer(port);
++	/* Set the number of non occupied descriptors threshold */
++	mvpp2_set_rxq_free_tresh(port, rxq);
 +
- unsupported_conf:
- 	return 0;
+ 	/* Add number of descriptors ready for receiving packets */
+ 	mvpp2_rxq_status_update(port, rxq->id, 0, rxq->size);
  
 -- 
 1.9.1
