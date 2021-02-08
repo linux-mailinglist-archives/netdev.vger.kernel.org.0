@@ -2,105 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C460C313292
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 13:41:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 349AA3132D1
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 13:57:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229793AbhBHMlN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 07:41:13 -0500
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:54307 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231956AbhBHMj6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 07:39:58 -0500
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 9E6465C0069;
-        Mon,  8 Feb 2021 07:38:43 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Mon, 08 Feb 2021 07:38:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm3; bh=fAIQMsT6jn1p/Ouj/vH4YmpVXRC
-        rcCIsVFko/r/lJkA=; b=HLNeS3snr9gr6d3Gfo1utIpp/70vDy80YWh5+P1oKD7
-        TW0iLbW2aeZrQHY3rSR0aMo0AUO1YC0+eghNYZL3pYciXJZiNLlQeb1HybIAcj4P
-        bEBjihdDcfWL698O0wrsLa2JH3hPKdkD2KBuFJ5nPGV7oWz0sVQwJEIeoNfkJlgy
-        R/HqKh9CYmT9ulvYd9sJjJcaEKqn1jtUOOsCiaO4qj8sR6iHovIEUyEFYfO3/YZN
-        PPzqBt29QZtPX7zHO6N1YisTUwB+bLK6cM8ggkD3XhnC2BZ5hQWpVI89bDOMd8bA
-        v2MVQANJvcyNMbJ/qbnOsykHH8sSpVN8+fkNkKNztJg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=fAIQMs
-        T6jn1p/Ouj/vH4YmpVXRCrcCIsVFko/r/lJkA=; b=cls8WGrXXQq3X5zfiDjqnD
-        VMxfdnC39emwa5roK72uq0iI1bx8hLXbfTTyZY9sI2K7S4/Vsa2rFzrDXIPVGhOm
-        Eyh3eUciv+hygChTIdVswGsvSswD9NJfQqJ7+6TBjToeeOm6s65AXinz3wQEKL7x
-        uEugMLRcN/THdNwvu6LaFng2kQJr9GWa+FVhnZmufHdJ4yfMI0Sr1HgThGyjvipq
-        I+cq4sSg8bowolyUnRSHf/vkaoyzk8LOTz2tTXXnO7SLmyPgLT1Mmr4J+fftcURX
-        a1aW0hDUvwiNVDot8o0xvwjes4wyLPLnKykxCcb9xqcJKrQte5MxX7o1tWpThkGw
-        ==
-X-ME-Sender: <xms:0zAhYFj5dSRE82JysO7JiA0uA2txl-WPVmIdT2SacnT03y5XMZMmMQ>
-    <xme:0zAhYKBWVvlWRCjifwLPpYn_zW-I0e-NKho46LlmA80c0nK1OCzZnMX8m1MgLGrUc
-    DL9gHBSwsGRjw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrheefgdegudcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepifhrvghgucfm
-    jfcuoehgrhgvgheskhhrohgrhhdrtghomheqnecuggftrfgrthhtvghrnhepueelledthe
-    ekleethfeludduvdfhffeuvdffudevgeehkeegieffveehgeeftefgnecuffhomhgrihhn
-    pehkvghrnhgvlhdrohhrghenucfkphepkeefrdekiedrjeegrdeigeenucevlhhushhtvg
-    hrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhhdr
-    tghomh
-X-ME-Proxy: <xmx:0zAhYFH6dk4M7JLzN_7aCTcbvH_scatm0ESrjfTo5ZfMcNhDg3Yocw>
-    <xmx:0zAhYKTGHJNuEqPiPrQXOb4Ntlli6uk_EQeTcPxp1dpl_s-Ah6idAw>
-    <xmx:0zAhYCywKxEbaQWmI5rWo9VAJ-j2o4KG3LMjJgpvfLYHjS4VaRaCFg>
-    <xmx:0zAhYN8WNODfdOdfniTVBt1maY-gJGT7LqMZ1Hx5bp2xx2MB-7GzQg>
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        by mail.messagingengine.com (Postfix) with ESMTPA id C2492240057;
-        Mon,  8 Feb 2021 07:38:42 -0500 (EST)
-Date:   Mon, 8 Feb 2021 13:38:40 +0100
-From:   Greg KH <greg@kroah.com>
-To:     Jason Andryuk <jandryuk@gmail.com>
-Cc:     stable@vger.kernel.org, Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>, netdev@vger.kernel.org
-Subject: Re: Stable request: iwlwifi: mvm: don't send RFH_QUEUE_CONFIG_CMD
- with no queues
-Message-ID: <YCEw0Ey8JuHjFVOz@kroah.com>
-References: <CAKf6xpueeG-c+XV6gYu_H_DXNkR11+_v54hgv=vukuy+Tcb+LQ@mail.gmail.com>
+        id S230144AbhBHM5o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 07:57:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51176 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229927AbhBHM5j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 07:57:39 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A5BFC06178A
+        for <netdev@vger.kernel.org>; Mon,  8 Feb 2021 04:56:59 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id x136so3097337pfc.2
+        for <netdev@vger.kernel.org>; Mon, 08 Feb 2021 04:56:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=4RTXjInOoJRZeudmogRQFPNiUagxIDCKGLphTA7zIco=;
+        b=nnkLSDk5whW+4/EpXsZHR9NOr6SbWmWALuILRyMg1om+SPTWuPrBzmvN+rnWRjctf2
+         IFD6Jae80QkwFLqtD5fvmmcDGqJOIcOx6A5to6yo33bXLLqSqRYPa+HvswycZcacLsNg
+         QTxS2fuvIAFBg+mCCztRoTZEICmqRaPeGTTT2gg/IIXxEP5rMbP4/6oOB1h50qejnKLj
+         UEW6u7UoSyUKJ6jwNzNFV3BUwfAeuaSDX2fzQRg+P1w0RBEec+2S/5iYy5qm+Nqqq3+P
+         vIWJUL3snbyphS0tQv96/JWnJ8xBIbOhclLjv696HvHoR5MIJs1IPT7Jl3484UBVQyEH
+         8ilA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=4RTXjInOoJRZeudmogRQFPNiUagxIDCKGLphTA7zIco=;
+        b=ldFy4HTT4N0y2JoMV9vMvnwja2AiXHymVCgTs7Wd/xOgIc3gWrxKnnF8PdSV6OUU8E
+         IsoW8KuA9BCG8PDmEy6IDzGZfmld0BDwX2VT53xJgpMQcoK82r4CuSyphQLTs/Y/2azI
+         1PZqKc0m84/hHWo+5SnkTgzLMTcw1vZNxm30y8S1LutODqCjvhQ1DXiI1oQl8RP/GxGB
+         cO929BmNK5IuqhT8lVzunZBDxHxwYIllrh6xPQmAjfetXYG5y6S3LbPLF7uO79HxR73o
+         B5fVC2ANLmoWuFUCb/GDbSZ+zTJUgsmpcejU+JZgfWWCyvAu/ys/o3YrqTvWWFRddwE0
+         4VVA==
+X-Gm-Message-State: AOAM533x7lf4EN27M6t8h1aTKYAY8SmgalFJthPplAYlJ3X4Le3XYMbs
+        Yh0mjpbP1GIVKM+ROdBJwTGPSK/aea4Wf98lLD4=
+X-Google-Smtp-Source: ABdhPJwq6DhHvIWSfeybQHuxjzlk5SG/uu6lwMDU72A6IFZ6haplNp+dRY7q/PU+NA+48TNHapDlhwJHXJxcuDBEpoQ=
+X-Received: by 2002:a63:dc56:: with SMTP id f22mr16890546pgj.106.1612789018750;
+ Mon, 08 Feb 2021 04:56:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKf6xpueeG-c+XV6gYu_H_DXNkR11+_v54hgv=vukuy+Tcb+LQ@mail.gmail.com>
+Received: by 2002:a17:90b:4c07:0:0:0:0 with HTTP; Mon, 8 Feb 2021 04:56:58
+ -0800 (PST)
+Reply-To: sgt.kayla12@gmail.com
+From:   Kayla <pakaramazabalo@gmail.com>
+Date:   Mon, 8 Feb 2021 12:56:58 +0000
+Message-ID: <CAEDgmhZJPfTYUPSGqMpX5GgK=7YYNwKjwkLhVLZTW5myaDSaOA@mail.gmail.com>
+Subject: Hello my dear,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 07, 2021 at 09:19:07AM -0500, Jason Andryuk wrote:
-> Hi,
-> 
-> commit 64f55156f7adedb1ac5bb9cdbcbc9ac05ff5a724 upstream
-> 
-> The requested patch allows the iwlwifi driver to work with newer AX200
-> wifi cards when MSI-X interrupts are not available.  Without it,
-> bringing an interface "up" fails with a Microcode SW error.  Xen PCI
-> passthrough with a linux stubdom doesn't enable MSI-X which triggers
-> this condition.
-> 
-> I think it's only applicable to 5.4 because it's in 5.10 and earlier
-> kernels don't have AX200 support.
-> 
-> I'm making this request to stable and CC-ing netdev since I saw a
-> message [1] on netdev saying:
-> """
-> We're actually experimenting with letting Greg take networking patches
-> into stable like he does for every other tree. If the patch doesn't
-> appear in the next stable release please poke stable@ directly.
-> """
-> 
-> Thanks,
-> Jason
-> 
-> [1] https://lore.kernel.org/netdev/20210129193030.46ef3b17@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/
-
-Now queued up.
-
-thanks,
-
-greg k-h
+I sent a message to you, did you get it?, Please confirm and write me
+back, thanks.
