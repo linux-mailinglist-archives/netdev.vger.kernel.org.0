@@ -2,75 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C758E3141DC
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 22:33:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B2A773141EF
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 22:36:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234231AbhBHVdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 16:33:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36780 "EHLO mail.kernel.org"
+        id S236710AbhBHVfy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 16:35:54 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37562 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236435AbhBHVar (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Feb 2021 16:30:47 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 20F9064E82;
-        Mon,  8 Feb 2021 21:30:07 +0000 (UTC)
+        id S236596AbhBHVfe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Feb 2021 16:35:34 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2352964E66;
+        Mon,  8 Feb 2021 21:34:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612819807;
-        bh=8xIc9+eRTA2pwgoXuNZTCRpm5QvH00mkbn877cIxlZI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=eVZVBK3hYJkb2FUR770GmzNhiFyu8x6s/kbmTJ8YJ3OKPW8GkLdsFQUqjvEQBTQ+8
-         ixqclPIvDfCRk858+9ifDQ4m0b09VJScwL7uHTHO3jaNIS3uy7bdealxl5LT6vXqjz
-         E0dl1DVz2lpiUUifdQ0pXHYKtEDr+VeD2Eft1EzHTlgFvwKplgGWORbpecPhfc3iwl
-         vzrJgbOi6NdFM0NZ23fHRTEKmtgm+PHoaSmo3whHjncWcL1JiMUu2uKM71vcFcc8Ph
-         Dsrmcr5oIciARKuB+dv+sDqOPJh5gVSksfT4fQQbJyRQe2gm+GpIr6C6hlBEqHqp79
-         NeD9VX/cq2H2g==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 16995609D4;
-        Mon,  8 Feb 2021 21:30:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1612820093;
+        bh=AeZbDf2uAYLml2HHXggg0lpyaNJI2z/wjZNYf8VawBk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=UUTkFMRnR1yb0YNZ34yB2VKXJlL4y8DQ7GxCo1nve5424WXkTgYeNj9hzQSYJ8l7s
+         eiUlWzUAuH8HmePVTImCnpTWQtuNuORNvAg3sacnQCUjRJ62nJeqcVNnR0tugCblx5
+         F8VLT412saynUFyxRhRhxZ/c95QOUj7jUmITpXIME8zh0zxOZnEoMxVZGPVZXWxq3l
+         S2V4XtLdhzobB2MT8ZF1yCnqWxE16y1+VYaz6Ry5YMi/E+0Zb/zJZVhYmE+g37bpKA
+         rXgJbsOAg+WJ4lfN58qcM18mGcFsEadG2K8v9yUMEZ/qYppsaDYIrayt2ITPdHD4nN
+         joFUNDmLQakeQ==
+Date:   Mon, 8 Feb 2021 13:34:47 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Huazhong Tan <tanhuazhong@huawei.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <huangdaode@huawei.com>, <linuxarm@openeuler.org>,
+        Yufeng Mo <moyufeng@huawei.com>
+Subject: Re: [PATCH net-next 03/12] net: hns3: check cmdq message parameters
+ sent from VF
+Message-ID: <20210208133447.14e1118a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1612784382-27262-4-git-send-email-tanhuazhong@huawei.com>
+References: <1612784382-27262-1-git-send-email-tanhuazhong@huawei.com>
+        <1612784382-27262-4-git-send-email-tanhuazhong@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2] seg6: fool-proof the processing of SRv6 behavior
- attributes
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161281980708.9441.7211081316793679754.git-patchwork-notify@kernel.org>
-Date:   Mon, 08 Feb 2021 21:30:07 +0000
-References: <20210206170934.5982-1-andrea.mayer@uniroma2.it>
-In-Reply-To: <20210206170934.5982-1-andrea.mayer@uniroma2.it>
-To:     Andrea Mayer <andrea.mayer@uniroma2.it>
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, colin.king@canonical.com,
-        stefano.salsano@uniroma2.it, paolo.lungaroni@cnit.it,
-        ahabdels.dev@gmail.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (refs/heads/master):
-
-On Sat,  6 Feb 2021 18:09:34 +0100 you wrote:
-> The set of required attributes for a given SRv6 behavior is identified
-> using a bitmap stored in an unsigned long, since the initial design of SRv6
-> networking in Linux. Recently the same approach has been used for
-> identifying the optional attributes.
+On Mon, 8 Feb 2021 19:39:33 +0800 Huazhong Tan wrote:
+> From: Yufeng Mo <moyufeng@huawei.com>
 > 
-> However, the number of attributes supported by SRv6 behaviors depends on
-> the size of the unsigned long type which changes with the architecture.
-> Indeed, on a 64-bit architecture, an SRv6 behavior can support up to 64
-> attributes while on a 32-bit architecture it can support at most 32
-> attributes.
+> The parameters sent from VF may be unreliable. If these
+> parameters are used directly, memory overwriting may occur.
+> Therefore, we need to check parameters before using.
 > 
-> [...]
+> Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
+> Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 
-Here is the summary with links:
-  - [net-next,v2] seg6: fool-proof the processing of SRv6 behavior attributes
-    https://git.kernel.org/netdev/net-next/c/300a0fd8afb1
+Are you sure this is not a fix which should target net and stable?
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Other than that the patches look good to me.
