@@ -2,15 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B87C313476
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 15:07:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BEE5831348F
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 15:10:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231857AbhBHOGc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 09:06:32 -0500
-Received: from mail.baikalelectronics.com ([87.245.175.226]:57090 "EHLO
+        id S232321AbhBHOHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 09:07:49 -0500
+Received: from mail.baikalelectronics.com ([87.245.175.226]:57092 "EHLO
         mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231717AbhBHN6f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 08:58:35 -0500
+        with ESMTP id S231735AbhBHN6j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 08:58:39 -0500
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Rob Herring <robh+dt@kernel.org>,
         Giuseppe Cavallaro <peppe.cavallaro@st.com>,
@@ -33,9 +33,9 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 22/24] net: stmmac: Call stmmaceth clock as system clock in warn-message
-Date:   Mon, 8 Feb 2021 16:56:06 +0300
-Message-ID: <20210208135609.7685-23-Sergey.Semin@baikalelectronics.ru>
+Subject: [PATCH v2 23/24] net: stmmac: Use pclk to set MDC clock frequency
+Date:   Mon, 8 Feb 2021 16:56:07 +0300
+Message-ID: <20210208135609.7685-24-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20210208135609.7685-1-Sergey.Semin@baikalelectronics.ru>
 References: <20210208135609.7685-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -46,38 +46,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-By all means of the stmmac_clk clock usage it isn't CSR clock, but the
-system or application clock, which in particular cases can be used as a
-clock source for the CSR interface. Make sure the warning message
-correctly identify the clock. While at it add error message printout if
-actual CSR clock failed to be requested.
+In accordance with [1] the MDC clock frequency is supposed to be selected
+with respect to the CSR clock frequency. CSR clock can be either tied to
+the DW MAC system clock (GMAC main clock) or supplied via a dedicated
+clk_csr_i signal. Current MDC clock selection procedure handles the former
+case while having no support of the later one. That's wrong for the
+devices which have separate system and CSR clocks. Let's fix it by first
+trying to get the synchro-signal rate from the "pclk" clock, if it hasn't
+been specified then fall-back to the "stmmaceth" clock.
+
+[1] DesignWare Cores Ethernet MAC Universal Databook, Revision 3.73a,
+    October 2013, p. 424.
 
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-index a6e35c84e135..7cbde9d99133 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-@@ -573,7 +573,7 @@ stmmac_probe_config_dt(struct platform_device *pdev, const char **mac)
- 						 STMMAC_RESOURCE_NAME);
- 	if (IS_ERR(plat->stmmac_clk)) {
- 		rc = PTR_ERR(plat->stmmac_clk);
--		dev_err_probe(&pdev->dev, rc, "Cannot get CSR clock\n");
-+		dev_err_probe(&pdev->dev, rc, "Cannot get system clock\n");
- 		goto error_dma_cfg_alloc;
- 	}
- 	clk_prepare_enable(plat->stmmac_clk);
-@@ -581,6 +581,7 @@ stmmac_probe_config_dt(struct platform_device *pdev, const char **mac)
- 	plat->pclk = devm_clk_get_optional(&pdev->dev, "pclk");
- 	if (IS_ERR(plat->pclk)) {
- 		rc = PTR_ERR(plat->pclk);
-+		dev_err_probe(&pdev->dev, rc, "Cannot get CSR clock\n");
- 		goto error_pclk_get;
- 	}
- 	clk_prepare_enable(plat->pclk);
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index a8dec219c295..03acf14d76de 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -206,7 +206,12 @@ static void stmmac_clk_csr_set(struct stmmac_priv *priv)
+ {
+ 	u32 clk_rate;
+ 
+-	clk_rate = clk_get_rate(priv->plat->stmmac_clk);
++	/* If APB clock has been specified then it is supposed to be used
++	 * to select the CSR mode. Otherwise the application clock is the
++	 * source of the periodic signal for the CSR interface.
++	 */
++	clk_rate = clk_get_rate(priv->plat->pclk) ?:
++		   clk_get_rate(priv->plat->stmmac_clk);
+ 
+ 	/* Platform provided default clk_csr would be assumed valid
+ 	 * for all other cases except for the below mentioned ones.
 -- 
 2.29.2
 
