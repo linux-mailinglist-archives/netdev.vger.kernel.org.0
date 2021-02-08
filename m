@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E7F2E31345C
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 15:06:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2EC6313460
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 15:06:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232164AbhBHOCw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 09:02:52 -0500
-Received: from mail.baikalelectronics.com ([87.245.175.226]:57068 "EHLO
+        id S232408AbhBHODQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 09:03:16 -0500
+Received: from mail.baikalelectronics.com ([87.245.175.226]:57076 "EHLO
         mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231905AbhBHN5r (ORCPT
+        with ESMTP id S231894AbhBHN5r (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 08:57:47 -0500
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Rob Herring <robh+dt@kernel.org>,
@@ -33,9 +33,9 @@ CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 08/24] net: stmmac: Add {axi,mtl-rx,mtl-tx}-config sub-nodes support
-Date:   Mon, 8 Feb 2021 16:55:52 +0300
-Message-ID: <20210208135609.7685-9-Sergey.Semin@baikalelectronics.ru>
+Subject: [PATCH v2 11/24] net: stmmac: dwmac-stm32: Cleanup STMMAC DT-config in remove cb
+Date:   Mon, 8 Feb 2021 16:55:55 +0300
+Message-ID: <20210208135609.7685-12-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20210208135609.7685-1-Sergey.Semin@baikalelectronics.ru>
 References: <20210208135609.7685-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -46,54 +46,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently the "snps,axi-config", "snps,mtl-rx-config" and
-"snps,mtl-tx-config" DT node properties are marked as deprecated when
-being defined as a phandle reference to a node with parameters. The new
-way of defining the DW MAC interfaces config is to add sub-nodes to the DW
-MAC device DT node with vendor-prefixless names. Make sure the STMMAC
-driver supports them.
+The stmmac_remove_config_dt() method needs to be called on the device
+remove procedure otherwise for at least some of device-nodes will be left
+requested.
 
+Fixes: d2ed0a7755fe ("net: ethernet: stmmac: fix of-node and fixed-link-phydev leaks")
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-
 ---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Changelog v2:
-- Discard "snps" vendor-prefix from the new AXI/MTL Tx/Rx config
-  sub-nodes.
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-index 6dc9f10414e4..1815fe36b62f 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-@@ -95,7 +95,8 @@ static struct stmmac_axi *stmmac_axi_setup(struct platform_device *pdev)
- 	struct device_node *np;
- 	struct stmmac_axi *axi;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c
+index 5d4df4c5254e..b45aab38c7b0 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c
+@@ -426,6 +426,8 @@ static int stm32_dwmac_remove(struct platform_device *pdev)
  
--	np = of_parse_phandle(pdev->dev.of_node, "snps,axi-config", 0);
-+	np = of_parse_phandle(pdev->dev.of_node, "snps,axi-config", 0) ?:
-+	     of_get_child_by_name(pdev->dev.of_node, "axi-config");
- 	if (!np)
- 		return NULL;
+ 	stm32_dwmac_clk_disable(priv->plat->bsp_priv);
  
-@@ -150,11 +151,13 @@ static int stmmac_mtl_setup(struct platform_device *pdev,
- 	plat->rx_queues_cfg[0].mode_to_use = MTL_QUEUE_DCB;
- 	plat->tx_queues_cfg[0].mode_to_use = MTL_QUEUE_DCB;
- 
--	rx_node = of_parse_phandle(pdev->dev.of_node, "snps,mtl-rx-config", 0);
-+	rx_node = of_parse_phandle(pdev->dev.of_node, "snps,mtl-rx-config", 0) ?:
-+		  of_get_child_by_name(pdev->dev.of_node, "mtl-rx-config");
- 	if (!rx_node)
- 		return ret;
- 
--	tx_node = of_parse_phandle(pdev->dev.of_node, "snps,mtl-tx-config", 0);
-+	tx_node = of_parse_phandle(pdev->dev.of_node, "snps,mtl-tx-config", 0) ?:
-+		  of_get_child_by_name(pdev->dev.of_node, "mtl-tx-config");
- 	if (!tx_node) {
- 		of_node_put(rx_node);
- 		return ret;
++	stmmac_remove_config_dt(pdev, priv->plat);
++
+ 	if (dwmac->irq_pwr_wakeup >= 0) {
+ 		dev_pm_clear_wake_irq(&pdev->dev);
+ 		device_init_wakeup(&pdev->dev, false);
 -- 
 2.29.2
 
