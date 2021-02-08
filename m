@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3621312AB4
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 07:31:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 866A8312AB1
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 07:31:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229797AbhBHGaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 01:30:46 -0500
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:41913 "EHLO
+        id S229752AbhBHGaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 01:30:19 -0500
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:51299 "EHLO
         new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229629AbhBHGaK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 01:30:10 -0500
+        by vger.kernel.org with ESMTP id S229615AbhBHGaJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 01:30:09 -0500
 Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailnew.nyi.internal (Postfix) with ESMTP id DAD97580218;
+        by mailnew.nyi.internal (Postfix) with ESMTP id 7FE54580217;
         Mon,  8 Feb 2021 01:29:03 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
   by compute5.internal (MEProxy); Mon, 08 Feb 2021 01:29:03 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
         from:to:cc:subject:date:message-id:in-reply-to:references
-        :mime-version:content-transfer-encoding; s=fm1; bh=T1+J0aCgQkzwe
-        JaAMrWxKE3uyhlZOFmpO4MFCRMyHkA=; b=DPQZimSHHsLfHQ2hQj/iLuW4PrQxX
-        J/qbq/qWtejw03wpEh8FKYWx1ZlrKa37WPXzeHF+xik81sdOwN64LPLBQDMZDScg
-        q4kXOWJOBYhNooYsG+4Vdpp5F6Escsai8h9iurl2ua5AjTNN+YLEucAHTecGY913
-        iGCcdOsOjf0jRZq4yMCSjd/tIyOahX160zT/QhzqtCox/EYITsMVbF/QOCQd8SZW
-        8lZIs72KRENWXj6Gg7CHAtZeeA39XbbpLfbFdtleQSyrCB/18nYYEsJsDH5Drm0g
-        0+SUVpovsaGmklWIT2FK+eUTJ2Y0WKgX/sK0RHa2TpgZ7sL13zKlUlGcA==
+        :mime-version:content-transfer-encoding; s=fm1; bh=QaX4dbz8bYwhB
+        LwW47Eu9IxjfHORPdrlkULng/kPy4A=; b=UnD7dvmx6ArgPC+GsxA217yceUwGb
+        Ry6k70nj+VI6I7PPvuMXL0TGgU0tC4a102sFwXTkH0bIxGlqzxwcHpOwOP4IyYFX
+        6ghs1+JCJR2dlcFrfEvVlhSLG4G69ShY1VjfjXzdz+HEYaror7cyVsowHhjPATcb
+        XcgWU4Ayk7/L31vL3OQocbdrFMY4exxJzAVqOFESyq2BaqOQEBqkyWCPJEg4tjsn
+        EaQIBKfGAyw2WY9n7p0SL+8a1cu8yypPhfCH7e/fWv+UvRtS3W1cnws04bP8oDFw
+        zY1aDJonKhuJ/v+XH4JwW071ee5hXVYY9t+eOg+dIqlu27a+bJBOS/Uhg==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=T1+J0aCgQkzweJaAMrWxKE3uyhlZOFmpO4MFCRMyHkA=; b=n6yPfuYD
-        rF9T3VZJ46HKecWAilk+3dNBSleZ+wS2Lr/NGycHOfGgSYbRDFT9o/kgYjaUD4JN
-        jYLCumqMSpDixF1jok6vCXUZCERoQmcOTCNFM1h3qsQOy5sCoScvI8dLLQihMCqG
-        6bxPLjK+EipXsiJwDaJ6Ec3UCak1S61pwZEU+k8t1qeEUFPJHM1M5TwYUZ4y4s6T
-        Ew5VYN8Nw9HP7UBATlT7SpZGJGDChTroR9ttft3GMx1sfHD6E8xeslzF7r+s7x8L
-        nfFz5n1EF7Dz/FWE8mW3vDZXEGhqidR60U0PYJxVRl0SvQdPioYS9bDJYCaxmZtv
-        LoYNDAi6TQHrZA==
-X-ME-Sender: <xms:LtogYL1rOuCn5EfSs4zy0gc8UQyvuOfCDV-6LV5SU2Xq-z9e11hlXg>
-    <xme:LtogYKHJ3XUBznwM_jwW_qCJ7Mgiym5GppmP7qZ-g-OLNOhGzl1Q5DgxN-62Kklw6
-    iKi1rmQBDtPjXNvTw>
+        fm2; bh=QaX4dbz8bYwhBLwW47Eu9IxjfHORPdrlkULng/kPy4A=; b=K8oabRGp
+        3sOQhRp85wxt/nJekNb+6Jrhua8orbTtMvMmK9CTRXyiWRD0jTGhYUyt5xxgy7x3
+        SJbnS3xSaqCqqW6m6O0yTZ7tddGNwdYTj9K9Tf445pZHotD+7c762LbuVahXImNw
+        i5Hbcy9bH1FW43PBcwBFgcUqCt3Kyt6QF6Mv95lUNcZ3qUNnf4QhULJxQtaeB3xK
+        QxGzUVFQtosITnXPt2xWjKC1QHNiwrvLpnCEfStrY4lncDpLKiplD8vBwIZCWJSN
+        ZtTv5ppccybYZ/F8ESUtuPeumwOvKB771mLiw8OiX+R4jniAa9AKDxeutG7RUGy8
+        Af23Z0YBRuN0hQ==
+X-ME-Sender: <xms:L9ogYENakmMYxQEBDAtA6xtx3ciHe_siDQylh06sweCz4pD10AA1KA>
+    <xme:L9ogYK-8InpjmeFsyGAcX3cVRihUZzganl1PiJNapdYhqMzkR6VTB3R2bZQVy9oXW
+    NhfYrGJlSBE-D3ibw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrhedvgdelgecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
@@ -48,12 +48,12 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrhedvgdelgecutefuodetggdote
     jeehueeinecukfhppeejtddrudefhedrudegkedrudehudenucevlhhushhtvghrufhiii
     gvpedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehsrghmuhgvlhesshhhohhllhgrnhgu
     rdhorhhg
-X-ME-Proxy: <xmx:LtogYL7XYejp_LguoQuTvG2c_Nsms6Wc1bOatNwdZPbfWwUNWQMaDQ>
-    <xmx:LtogYA38iMXrw8xJ2o2yZ_o7VV0uHalYZEcfLvVHmx2xs_dnqpRWcg>
-    <xmx:LtogYOHDBgzz6a24bz5tqXn4rSzLu6C8T2cve7vbH_viI6bgMPqaGA>
-    <xmx:L9ogYFfOO4l4vlIlSnlZU77YX8v08VebRHLTYJSO1XmhGSr32HZVnw>
+X-ME-Proxy: <xmx:L9ogYLToA-EAMOAwyIsFnA7li4wglN15GUzfnTy_wAiiL-rT4xlBYA>
+    <xmx:L9ogYMs4jzQdBTl2xGVEOFCIesQED2nug16cVBeSx4FQe1vKJ5FYrQ>
+    <xmx:L9ogYMdUaa-jiN-27Htb5mZXmAnVaoYvRoWq912XCQLczq9RZQm4Cw>
+    <xmx:L9ogYC16-WXaLmtnBWV-Ia56AU8XdkpM8FjQOdMLRQ8OmWSfAqDAhQ>
 Received: from titanium.stl.sholland.net (70-135-148-151.lightspeed.stlsmo.sbcglobal.net [70.135.148.151])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 2F20B1080063;
+        by mail.messagingengine.com (Postfix) with ESMTPA id BB33F1080064;
         Mon,  8 Feb 2021 01:29:02 -0500 (EST)
 From:   Samuel Holland <samuel@sholland.org>
 To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
@@ -68,9 +68,9 @@ To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
 Cc:     Ondrej Jirman <megous@megous.com>, netdev@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-sunxi@googlegroups.com, Samuel Holland <samuel@sholland.org>
-Subject: [PATCH net-next RESEND 2/5] net: stmmac: dwmac-sun8i: Remove unnecessary PHY power check
-Date:   Mon,  8 Feb 2021 00:28:56 -0600
-Message-Id: <20210208062859.11429-4-samuel@sholland.org>
+Subject: [PATCH net-next RESEND 3/5] net: stmmac: dwmac-sun8i: Use reset_control_reset
+Date:   Mon,  8 Feb 2021 00:28:57 -0600
+Message-Id: <20210208062859.11429-5-samuel@sholland.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210208062859.11429-1-samuel@sholland.org>
 References: <20210208062859.11429-1-samuel@sholland.org>
@@ -80,8 +80,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sun8i_dwmac_unpower_internal_phy already checks if the PHY is powered,
-so there is no need to do it again here.
+Use the appropriate function instead of reimplementing it,
+and update the error message to match the code.
 
 Reviewed-by: Chen-Yu Tsai <wens@csie.org>
 Signed-off-by: Samuel Holland <samuel@sholland.org>
@@ -90,22 +90,23 @@ Signed-off-by: Samuel Holland <samuel@sholland.org>
  1 file changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-index 8e505019adf8..3c3d0b99d3e8 100644
+index 3c3d0b99d3e8..0e8d88417251 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-@@ -1018,10 +1018,8 @@ static void sun8i_dwmac_exit(struct platform_device *pdev, void *priv)
- {
- 	struct sunxi_priv_data *gmac = priv;
- 
--	if (gmac->variant->soc_has_internal_phy) {
--		if (gmac->internal_phy_powered)
--			sun8i_dwmac_unpower_internal_phy(gmac);
--	}
-+	if (gmac->variant->soc_has_internal_phy)
-+		sun8i_dwmac_unpower_internal_phy(gmac);
- 
- 	clk_disable_unprepare(gmac->tx_clk);
- 
+@@ -806,11 +806,9 @@ static int sun8i_dwmac_power_internal_phy(struct stmmac_priv *priv)
+ 	/* Make sure the EPHY is properly reseted, as U-Boot may leave
+ 	 * it at deasserted state, and thus it may fail to reset EMAC.
+ 	 */
+-	reset_control_assert(gmac->rst_ephy);
+-
+-	ret = reset_control_deassert(gmac->rst_ephy);
++	ret = reset_control_reset(gmac->rst_ephy);
+ 	if (ret) {
+-		dev_err(priv->device, "Cannot deassert internal phy\n");
++		dev_err(priv->device, "Cannot reset internal PHY\n");
+ 		clk_disable_unprepare(gmac->ephy_clk);
+ 		return ret;
+ 	}
 -- 
 2.26.2
 
