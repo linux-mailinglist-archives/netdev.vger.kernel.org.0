@@ -2,15 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12B07313433
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 15:00:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2A61313441
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 15:02:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231476AbhBHOAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 09:00:12 -0500
-Received: from mail.baikalelectronics.com ([87.245.175.226]:57078 "EHLO
+        id S231863AbhBHOBr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 09:01:47 -0500
+Received: from mail.baikalelectronics.com ([87.245.175.226]:57064 "EHLO
         mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231909AbhBHN5v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 08:57:51 -0500
+        with ESMTP id S231904AbhBHN5r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 08:57:47 -0500
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Rob Herring <robh+dt@kernel.org>,
         Giuseppe Cavallaro <peppe.cavallaro@st.com>,
@@ -21,21 +21,22 @@ To:     Rob Herring <robh+dt@kernel.org>,
         Johan Hovold <johan@kernel.org>,
         Maxime Ripard <mripard@kernel.org>,
         Joao Pinto <jpinto@synopsys.com>,
-        Lars Persson <larper@axis.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+        Lars Persson <larper@axis.com>
 CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Serge Semin <fancer.lancer@gmail.com>,
         Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
         Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
         Vyacheslav Mitrofanov 
         <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         <netdev@vger.kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 13/24] net: stmmac: Fix clocks left enabled on glue-probes failure
-Date:   Mon, 8 Feb 2021 16:55:57 +0300
-Message-ID: <20210208135609.7685-14-Sergey.Semin@baikalelectronics.ru>
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v2 06/24] dt-bindings: net: dwmac: Add Tx/Rx clock sources
+Date:   Mon, 8 Feb 2021 16:55:50 +0300
+Message-ID: <20210208135609.7685-7-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20210208135609.7685-1-Sergey.Semin@baikalelectronics.ru>
 References: <20210208135609.7685-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -46,71 +47,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The generic clocks request and preparation have been moved from
-stmmac_dvr_probe()/stmmac_init_ptp() to the stmmac_probe_config_dt()
-method in the framework of commit f573c0b9c4e0 ("stmmac: move stmmac_clk,
-pclk, clk_ptp_ref and stmmac_rst to platform structure"). At the same time
-the clocks disabling and reset assertion have been left in
-stmmac_dvr_remove() instead of also being moved to the symmetric
-antagonistic method - stmmac_remove_config_dt(). Due to that all the glue
-drivers probe cleanup-on-failure paths don't perform the generic clocks
-disable/unprepare procedure, which of course is wrong. Fix it by moving
-the clocks disable/unprepare methods invocation to the
-stmmac_remove_config_dt() function.
+Generic DW *MAC can be connected to an external Transmit and Receive clock
+generators. Add the corresponding clocks description and clock-names to
+the generic bindings schema so new DW *MAC-based bindings wouldn't declare
+its own names of the same clocks.
 
-Fixes: f573c0b9c4e0 ("stmmac: move stmmac_clk, pclk, clk_ptp_ref and stmmac_rst to platform structure")
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c     | 2 ++
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c     | 2 --
- drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 4 +++-
- 3 files changed, 5 insertions(+), 3 deletions(-)
+ .../devicetree/bindings/net/snps,dwmac.yaml        | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index 103d2448e9e0..56b914b5527a 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -665,6 +665,8 @@ static void intel_eth_pci_remove(struct pci_dev *pdev)
+diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+index 21e53427551c..56baf8e6bf17 100644
+--- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
++++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+@@ -126,6 +126,18 @@ properties:
+           MCI, CSR and SMA interfaces run on this clock. If it's omitted,
+           the CSR interfaces are considered as synchronous to the system
+           clock domain.
++      - description:
++          GMAC Tx clock or so called Transmit clock. The clock is supplied
++          by an external with respect to the DW MAC clock generator.
++          The clock source and its frequency depends on the DW MAC xMII mode.
++          In case if it's supplied by PHY/SerDes this property can be
++          omitted.
++      - description:
++          GMAC Rx clock or so called Receive clock. The clock is supplied
++          by an external with respect to the DW MAC clock generator.
++          The clock source and its frequency depends on the DW MAC xMII mode.
++          In case if it's supplied by PHY/SerDes or it's synchronous to
++          the Tx clock this property can be omitted.
+       - description:
+           PTP reference clock. This clock is used for programming the
+           Timestamp Addend Register. If not passed then the system
+@@ -139,6 +151,8 @@ properties:
+       enum:
+         - stmmaceth
+         - pclk
++        - tx
++        - rx
+         - ptp_ref
  
- 	pci_free_irq_vectors(pdev);
- 
-+	clk_disable_unprepare(priv->plat->stmmac_clk);
-+
- 	clk_unregister_fixed_rate(priv->plat->stmmac_clk);
- 
- 	pcim_iounmap_regions(pdev, BIT(0));
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 26b971cd4da5..b371842d9337 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -5157,8 +5157,6 @@ int stmmac_dvr_remove(struct device *dev)
- 	phylink_destroy(priv->phylink);
- 	if (priv->plat->stmmac_rst)
- 		reset_control_assert(priv->plat->stmmac_rst);
--	clk_disable_unprepare(priv->plat->pclk);
--	clk_disable_unprepare(priv->plat->stmmac_clk);
- 	if (priv->hw->pcs != STMMAC_PCS_TBI &&
- 	    priv->hw->pcs != STMMAC_PCS_RTBI)
- 		stmmac_mdio_unregister(ndev);
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-index c9feac70ca77..ff66c470f07f 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-@@ -621,11 +621,13 @@ stmmac_probe_config_dt(struct platform_device *pdev, const char **mac)
-  * @pdev: platform_device structure
-  * @plat: driver data platform structure
-  *
-- * Release resources claimed by stmmac_probe_config_dt().
-+ * Disable and release resources claimed by stmmac_probe_config_dt().
-  */
- void stmmac_remove_config_dt(struct platform_device *pdev,
- 			     struct plat_stmmacenet_data *plat)
- {
-+	clk_disable_unprepare(plat->pclk);
-+	clk_disable_unprepare(plat->stmmac_clk);
- 	of_node_put(plat->phy_node);
- 	of_node_put(plat->mdio_node);
- }
+   resets:
 -- 
 2.29.2
 
