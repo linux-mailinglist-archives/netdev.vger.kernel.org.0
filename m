@@ -2,76 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A439313C52
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 19:07:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 772AE313CD4
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 19:11:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235298AbhBHSFc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 13:05:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60276 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235214AbhBHSBm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 13:01:42 -0500
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B43B0C06178C
-        for <netdev@vger.kernel.org>; Mon,  8 Feb 2021 10:01:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=MnHx+6OqNYGrQaMqs/3p4P8jUMaYpTZeoSWmjdztnUo=; b=d0HmsUj97tcOhSDVZs3CCWv/SK
-        lDyMaf8pnGdUjScqbgkGW0xOCPY1ihltD2rvCuOAQTjcT6dL+j7nPH3puxpaYod4LdbDEhwWNybsW
-        83VW6nY9SyhQoiQHaUVZDZsx5EXgMsL/zmFq8THxUkGLmmqQfyEAureArvOajdqQNrWbeWZ0eGp0T
-        nG2TiDR3EDpnaN27BiF3WflbeBudMMTXjqLEJO6Moi0dPgtgSODM2lrVFq88aBAt0IDqUz4ZMdvG7
-        wxzVEcNhRbo89AEaS9asquP9U7wGOhJIrgYz3RYj2Qt2m6/Tv7M0Rucdlnz6JyQsDkYL14Vths6XI
-        YaVFtfBg==;
-Received: from [2601:1c0:6280:3f0::cf3b]
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1l9AqC-0007xm-QX; Mon, 08 Feb 2021 18:00:53 +0000
-Subject: Re: [PATCH 4/4] batman-adv: Fix names for kernel-doc blocks
-To:     Simon Wunderlich <sw@simonwunderlich.de>, kuba@kernel.org,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, b.a.t.m.a.n@lists.open-mesh.org,
-        Sven Eckelmann <sven@narfation.org>
-References: <20210208165938.13262-1-sw@simonwunderlich.de>
- <20210208165938.13262-5-sw@simonwunderlich.de>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <44df86a7-e7a9-246a-e941-a7ec6f4c8774@infradead.org>
-Date:   Mon, 8 Feb 2021 10:00:48 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+        id S235459AbhBHSKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 13:10:37 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49432 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235435AbhBHSGT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Feb 2021 13:06:19 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CF08964E37;
+        Mon,  8 Feb 2021 18:04:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612807469;
+        bh=2Omi58tsxQZBEa5HkDAgeInYsygbftc+VgCHiwLCKPg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Be+4Mgs4FBwhFixpXHiKlPdqHAYAnZQ0BZ9oRXNZ/NRDvi2BflgNzHb+wN5VtzGlv
+         47jAZDt8DbU5ff/0ONtUD//AvdQKYpbQhPKq7iZWHMkdpwujL1A8A2tkYGsTg29n0t
+         FodtgXWXm62iX07QzXfmlQcoWiQm5GwnhAKHM3PhEAP2b9ZFzZHr4PICI6FoWU97Ts
+         0zonAOu1sjjVxk40DXEzYqTrdWKWcHMYzJVhtFi2ssH0GalglJFJZnsNffSIy3LXiC
+         9yhfV8l08mYK/JYA9r13TLPiBsXwuNcAD//Up/ChoUt1ty5tNrOiikC/QQViUimu59
+         4d7gSkDEdzSLg==
+Date:   Mon, 8 Feb 2021 10:04:27 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Edward Cree <ecree.xilinx@gmail.com>
+Cc:     Bhaskar Chowdhury <unixbhaskar@gmail.com>, davem@davemloft.net,
+        rppt@kernel.org, akpm@linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, rdunlap@infradead.org
+Subject: Re: [PATCH] drivers: net: ethernet: sun: Fix couple of spells in
+ the file sunhme.c
+Message-ID: <20210208100427.4708e1e0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <4134afc4-31d6-1b49-9b73-195a6d559953@gmail.com>
+References: <20210205124741.1397457-1-unixbhaskar@gmail.com>
+        <4134afc4-31d6-1b49-9b73-195a6d559953@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210208165938.13262-5-sw@simonwunderlich.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/8/21 8:59 AM, Simon Wunderlich wrote:
-> From: Sven Eckelmann <sven@narfation.org>
+On Mon, 8 Feb 2021 15:00:01 +0000 Edward Cree wrote:
+> On 05/02/2021 12:47, Bhaskar Chowdhury wrote:
+> > 
+> > 
+> > s/fuck/mess/
+> > s/fucking/soooo/
+> > 
+> > Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>  
 > 
-> kernel-doc can only correctly identify the documented function or struct
-> when the name in the first kernel-doc line references it. But some of the
-> kernel-doc blocks referenced a different function/struct then it actually
-> documented.
-> 
-> Signed-off-by: Sven Eckelmann <sven@narfation.org>
-> Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
+> Right or wrong, these are not "spelling fixes".
+> Please do not misrepresent your patch in your Subject: line.
+> (Also, subsystem prefix should probably just be "net: sunhme:".)
 
-Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
-
-Thanks.
-
-> ---
->  net/batman-adv/distributed-arp-table.c | 2 +-
->  net/batman-adv/multicast.c             | 2 +-
->  net/batman-adv/netlink.c               | 4 ++--
->  net/batman-adv/tp_meter.c              | 2 +-
->  net/batman-adv/types.h                 | 3 ++-
->  5 files changed, 7 insertions(+), 6 deletions(-)
-
-
--- 
-~Randy
-
+I think Steven already explained on the printf patch that the "obscene"
+language rules apply to new code only, so I marked this as Rejected
+silently.
