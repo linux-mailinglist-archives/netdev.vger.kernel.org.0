@@ -2,91 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 612A1313E54
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 20:01:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB9C1313E76
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 20:07:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235005AbhBHTAv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 14:00:51 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:57069 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233394AbhBHS6h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 13:58:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1612810630;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=91LVHLBIRVHkk+T1rimEVrXl0vPO+hPWtAkdqhc2bi4=;
-        b=JBmwFQB+lGkEYCn8xcY9MFqX+AGraWB6zYFcDyUa6aQoRWR7JkFjmyu7WebYoc5/d99wGr
-        7RAGAntyTiyviz1jc67Du+zlBeQF4b8lGXjqCuv7AyhcKd/EBFKka6cXqMcIygRM4NwUgm
-        py/+E+kUQvv7D71ZLLwV4InQ3aOBgpo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-195-Y89CsDOPPGO9p713aD96hw-1; Mon, 08 Feb 2021 13:57:09 -0500
-X-MC-Unique: Y89CsDOPPGO9p713aD96hw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B5962107ACF5;
-        Mon,  8 Feb 2021 18:57:07 +0000 (UTC)
-Received: from horizon.localdomain (ovpn-113-37.rdu2.redhat.com [10.10.113.37])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 710D95C3F8;
-        Mon,  8 Feb 2021 18:57:07 +0000 (UTC)
-Received: by horizon.localdomain (Postfix, from userid 1000)
-        id 380B4C00A2; Mon,  8 Feb 2021 15:57:05 -0300 (-03)
-Date:   Mon, 8 Feb 2021 15:57:05 -0300
-From:   Marcelo Ricardo Leitner <mleitner@redhat.com>
-To:     wenxu@ucloud.cn
-Cc:     jhs@mojatatu.com, kuba@kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net v4] net/sched: cls_flower: Reject invalid ct_state
- flags rules
-Message-ID: <20210208185705.GE2953@horizon.localdomain>
-References: <1612674803-7912-1-git-send-email-wenxu@ucloud.cn>
+        id S235324AbhBHTGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 14:06:42 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:56082 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235826AbhBHTEg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Feb 2021 14:04:36 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1l9Bou-004vFh-KW; Mon, 08 Feb 2021 20:03:36 +0100
+Date:   Mon, 8 Feb 2021 20:03:36 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Serge Semin <fancer.lancer@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Joao Pinto <Joao.Pinto@synopsys.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Vyacheslav Mitrofanov 
+        <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 01/20] net: phy: realtek: Fix events detection failure in
+ LPI mode
+Message-ID: <YCGLCK+1RB7pzytU@lunn.ch>
+References: <20210208140341.9271-1-Sergey.Semin@baikalelectronics.ru>
+ <20210208140341.9271-2-Sergey.Semin@baikalelectronics.ru>
+ <YCFYaFYgFikj/Gqz@lunn.ch>
+ <20210208174441.z4nnugkaadhmgnum@mobilestation>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1612674803-7912-1-git-send-email-wenxu@ucloud.cn>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+In-Reply-To: <20210208174441.z4nnugkaadhmgnum@mobilestation>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 07, 2021 at 01:13:23PM +0800, wenxu@ucloud.cn wrote:
-> --- a/net/sched/cls_flower.c
-> +++ b/net/sched/cls_flower.c
-> @@ -30,6 +30,11 @@
->  
->  #include <uapi/linux/netfilter/nf_conntrack_common.h>
->  
-> +#define TCA_FLOWER_KEY_CT_FLAGS_MASK (TCA_FLOWER_KEY_CT_FLAGS_NEW | \
-> +				      TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED | \
-> +				      TCA_FLOWER_KEY_CT_FLAGS_RELATED | \
-> +				      TCA_FLOWER_KEY_CT_FLAGS_TRACKED)
-> +
+> Hi Andrew,
+> 
+> I honestly tried to find any doc with a glimpse of errata for RTL8211E
+> PHY, but with no luck. Official datasheet didn't have any info regarding
+> possible hw bugs too. Thus I had no choice but to find a fix of the
+> problem myself.
+> 
+> It took me some time to figure out why the events weren't reported after
+> the very first link setup (turned out only a full HW reset clears the
+> PC1R.10 bit state). I thought it could have been connected with some
+> sleep/idle/power-safe mode. So I disabled the EEE initialization in the
+> STMMAC driver. It worked. Then I left the EEE mode enabled, but called the
+> phy_init_eee(phy, 0) method with "clk_stop_enable==0", so PHY wouldn't
+> stop RXC in LPI mode. And it wonderfully worked. Then I started to dig in
+> from another side. I left "RXC disable in LPI" mode enabled and tried to
+> figure out what was going on with the PHY when it stopped reporting events
+> just by reading from its CSR using phytool utility. It was curious to
+> discover that any attempt to read from any PHY register caused the problem
+> disappearance (LED2 started blinking, events got to be reported). Since I
+> did nothing but a mere reading from a random even EEE-unrelated register I
+> inferred that the problem must be in some HW/PHY bug. That's how I've got
+> to the patch introduced here. If you have any better idea what could be a
+> reason of that weird behavior I'd be glad to test it out on my device.
 
-I know Jakub had said the calculations for _MASK were complicated, but
-seeing this, they seem worth, otherwise we have to manually maintain
-this duplicated list of entries here.
+It is a reasonable explanation, and a read should not do any harm.
 
-Maybe add just the __TCA_FLOWER_KEY_CT_FLAGS_MAX to the enum, and do
-the calcs here? (to avoid having them in uapi)
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
->  struct fl_flow_key {
->  	struct flow_dissector_key_meta meta;
->  	struct flow_dissector_key_control control;
-> @@ -687,7 +692,8 @@ static void *fl_get(struct tcf_proto *tp, u32 handle)
->  	[TCA_FLOWER_KEY_ENC_OPTS]	= { .type = NLA_NESTED },
->  	[TCA_FLOWER_KEY_ENC_OPTS_MASK]	= { .type = NLA_NESTED },
->  	[TCA_FLOWER_KEY_CT_STATE]	= { .type = NLA_U16 },
-
-I wonder if this one should be protected by the flags mask as well.
-It won't take action on unknown bits because of the mask below, but
-still, it is accepting data that it doesn't know its meaning.
-
-> -	[TCA_FLOWER_KEY_CT_STATE_MASK]	= { .type = NLA_U16 },
-> +	[TCA_FLOWER_KEY_CT_STATE_MASK]	=
-> +		NLA_POLICY_MASK(NLA_U16, TCA_FLOWER_KEY_CT_FLAGS_MASK),
->  	[TCA_FLOWER_KEY_CT_ZONE]	= { .type = NLA_U16 },
->  	[TCA_FLOWER_KEY_CT_ZONE_MASK]	= { .type = NLA_U16 },
->  	[TCA_FLOWER_KEY_CT_MARK]	= { .type = NLA_U32 },
-
+    Andrew
+   
