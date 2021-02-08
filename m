@@ -2,103 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBCA6312E8B
-	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 11:09:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73739312E8F
+	for <lists+netdev@lfdr.de>; Mon,  8 Feb 2021 11:09:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232051AbhBHKGQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 05:06:16 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:31971 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232165AbhBHJ65 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 04:58:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1612778249;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=RvZB2MDYfZF1qZTLhRJJTQFx3HJrD/c9ga0gap1r0Iw=;
-        b=fTGy6Z9A1F9FKSLFD3+jG/9Pw3YXJrkTB8lPU7zq8NqZMNdxA2QUZb9J+/87Z5wvtIyZ5/
-        FqU6jzEBcSPZT2u/VJbp3xQHMZNIMIsuUcLKI0JNUINCOHRbZoLjJd2J36H/EkXeqQJ9a7
-        XE/+X0sPsM2xvD3wo7HH4xYg7OM7G48=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-14-In99Wbf1Pt-khWk0ZwMKbg-1; Mon, 08 Feb 2021 04:57:25 -0500
-X-MC-Unique: In99Wbf1Pt-khWk0ZwMKbg-1
-Received: by mail-ed1-f70.google.com with SMTP id b1so12983535edt.22
-        for <netdev@vger.kernel.org>; Mon, 08 Feb 2021 01:57:25 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=RvZB2MDYfZF1qZTLhRJJTQFx3HJrD/c9ga0gap1r0Iw=;
-        b=sEVtGwmMv9vddngW8H9vQe6M+HHxwyG3hRhnvhHTzcnSwVbw27It7bL9M7sJQdd2YS
-         rcZxk8WwbsYBcsP7XzGs+sOkvD1sRkMlqtJe11vWEnrwff5aGg6MrKzWMfit5mybWSG9
-         JVn1d4cYfqBlgbHUA9X5AJY6QUN7VDQSe8R8xxX+oDD5vNXrMj3favTXsC/9Imu2fsjm
-         rpYJQYqY+vPWXljv0BMJ3X22RKgekunfYBEJVpSqvjiCF5yvKHSTerJX/KRMWR/5fOGj
-         V+OX4RHJZsre8M+Eg9O2LXVvF0WblViPIDWlMXH1xoEsHjNZTj5LLesILdJewwPooPWw
-         Zx2w==
-X-Gm-Message-State: AOAM533PC4vl/D4ERNCQxtutMrH2gOU7voNhXOREb3CO4UgiiYeyp0fq
-        g+tANILU0JtggiSCdWd+W+XrH+w5eYmKqoMfPUoTaJfAp1i9yRhTgu+wxy6r5N5D/xqMdTX5Vqg
-        B2xMyLigxiFcKKmS1
-X-Received: by 2002:a17:906:69c2:: with SMTP id g2mr15591528ejs.249.1612778244679;
-        Mon, 08 Feb 2021 01:57:24 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxuMkDMU86Gua486YyYkyE3So25auj8KdRwJTxDrTGf27Ev7G+jbzxJNKOribW4cbFKzGSizw==
-X-Received: by 2002:a17:906:69c2:: with SMTP id g2mr15591508ejs.249.1612778244420;
-        Mon, 08 Feb 2021 01:57:24 -0800 (PST)
-Received: from redhat.com (bzq-79-180-2-31.red.bezeqint.net. [79.180.2.31])
-        by smtp.gmail.com with ESMTPSA id mh4sm5533387ejb.122.2021.02.08.01.57.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Feb 2021 01:57:23 -0800 (PST)
-Date:   Mon, 8 Feb 2021 04:57:20 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     kernel test robot <oliver.sang@intel.com>
-Cc:     Dongli Zhang <dongli.zhang@oracle.com>,
-        Eli Cohen <elic@nvidia.com>, Jason Wang <jasowang@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
-        lkp@intel.com, virtualization@lists.linux-foundation.org,
-        kvm@vger.kernel.org, netdev@vger.kernel.org, pbonzini@redhat.com,
-        stefanha@redhat.com, joe.jin@oracle.com,
-        aruna.ramakrishna@oracle.com, parav@nvidia.com
-Subject: Re: [vdpa_sim_net] 79991caf52:
- net/ipv4/ipmr.c:#RCU-list_traversed_in_non-reader_section
-Message-ID: <20210208045641-mutt-send-email-mst@kernel.org>
-References: <20210123080853.4214-1-dongli.zhang@oracle.com>
- <20210207030330.GB17282@xsang-OptiPlex-9020>
+        id S232320AbhBHKHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 05:07:44 -0500
+Received: from mail29.static.mailgun.info ([104.130.122.29]:28542 "EHLO
+        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231846AbhBHKET (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 05:04:19 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1612778634; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=Hm8GS0rOsCfvjICUAxi/K5Puq7MY8iUSmrsfVo7iuKE=; b=bgCe6JLj/xbXGTLztRs+vART8pjxRZDpbLylnqtAR5hSCO+TOUkGuk6AZiuakXAeR7zGmeQL
+ EYI1ZUJHSn9C+yIzDJPBtagah990FDgtf2UxilzJlVtnUZh52T++MCHp4z/6jH7nMxBFn5af
+ JamqG1CA3HerJV4Ug/5kkpWyI/8=
+X-Mailgun-Sending-Ip: 104.130.122.29
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
+ 60210c703919dfb45571aca3 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 08 Feb 2021 10:03:28
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 2C2F4C433C6; Mon,  8 Feb 2021 10:03:28 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from tynnyri.adurom.net (tynnyri.adurom.net [51.15.11.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 5AAE9C433CA;
+        Mon,  8 Feb 2021 10:03:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 5AAE9C433CA
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Matteo Croce <mcroce@linux.microsoft.com>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH RESEND net-next] cfg80211: remove unused callback
+References: <20210206194747.11086-1-mcroce@linux.microsoft.com>
+Date:   Mon, 08 Feb 2021 12:03:19 +0200
+In-Reply-To: <20210206194747.11086-1-mcroce@linux.microsoft.com> (Matteo
+        Croce's message of "Sat, 6 Feb 2021 20:47:47 +0100")
+Message-ID: <87o8gukhaw.fsf@tynnyri.adurom.net>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210207030330.GB17282@xsang-OptiPlex-9020>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 07, 2021 at 11:03:30AM +0800, kernel test robot wrote:
-> 
-> Greeting,
-> 
-> FYI, we noticed the following commit (built with gcc-9):
-> 
-> commit: 79991caf5202c7989928be534727805f8f68bb8d ("vdpa_sim_net: Add support for user supported devices")
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git Dongli-Zhang/vhost-scsi-alloc-vhost_scsi-with-kvzalloc-to-avoid-delay/20210129-191605
-> 
-> 
-> in testcase: trinity
-> version: trinity-static-x86_64-x86_64-f93256fb_2019-08-28
-> with following parameters:
-> 
-> 	runtime: 300s
-> 
-> test-description: Trinity is a linux system call fuzz tester.
-> test-url: http://codemonkey.org.uk/projects/trinity/
-> 
-> 
-> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 8G
-> 
-> caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
-> 
+Matteo Croce <mcroce@linux.microsoft.com> writes:
 
-Parav want to take a look?
+> From: Matteo Croce <mcroce@microsoft.com>
+>
+> The ieee80211 class registers a callback which actually does nothing.
+> Given that the callback is optional, and all its accesses are protected
+> by a NULL check, remove it entirely.
+>
+> Signed-off-by: Matteo Croce <mcroce@microsoft.com>
+> ---
+>  net/wireless/sysfs.c | 7 -------
+>  1 file changed, 7 deletions(-)
+
+Normally cfg80211 patches go to mac80211-next, not net-next.
 
 -- 
-MST
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
