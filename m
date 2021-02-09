@@ -2,71 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D604A315AA8
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 01:10:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D511315AAA
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 01:10:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234966AbhBJAHw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 19:07:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57174 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234370AbhBIXlT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Feb 2021 18:41:19 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 19F2E601FF;
-        Tue,  9 Feb 2021 23:40:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612914019;
-        bh=kbUSErCIqbQNZP6bznTc3ENEP22PQTAYqm+t2SqVG6Y=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=S6pFzKU+6eEqRN/jMgK7HDiBAxDGQhVbcmlDo8PC+FiSYx5x8Z4mQWu4YTJZ73WZl
-         ghEky4BpF2UUXkf6EzI51c5508XnWV5zdFRDs19pkF06h4wk2/eG21UMg/tBInZo3X
-         BXZ/tiPt52G++kANgLcIxEocYiNjrzABNkGydT/kTdQ4js5WA12dU6+qmOtCkiVAMy
-         UD6RwXtQnF6dJ9sHMal1EqWidh5xXeRGPzS/43OT7Sbv6DHrBT1ee5DNYEeNh1nIzJ
-         8zG0eC31cAfnQq79+VBt3qni3mY2qTVsxw+hRnkVfvswuEbmQ+9WXMvlgJ9WrhHQ9z
-         AwGUtqqeBhBBg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 08ACB609E4;
-        Tue,  9 Feb 2021 23:40:19 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S234989AbhBJAH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 19:07:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48146 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234480AbhBIXn1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 18:43:27 -0500
+Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4A69C061756;
+        Tue,  9 Feb 2021 15:42:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:Subject:Sender:
+        Reply-To:Cc:Content-ID:Content-Description;
+        bh=JqZPtG/TB/XswZSw5bmUCRK7B7+cprRdrJrDelTSrfY=; b=HNMpo/bbOD2d3JnJjyc1rkAKZb
+        DruBe+JtYzJ8aBmUnsFVFwDUEzvWEgXsSBk8E2hD4SLckUg1H7IFfjgywjGLGBJ1KgGiZN3ZaUNYq
+        NfKUR/tvgb+iUKU2TVDWyvgUOYxjELmoB23XR6QJWZ/MfbsF2U2gUIJO5Twgf0EiQNks82QKQ4FtH
+        xb5GVU/Qo7mRktdpPitUMnhLJcjIkdH/ZTe/V0cTQtc5ZOMwFXqh9/nMy11NRN+I1lZNWV8hcoMr/
+        euPS9q9u9UdCKm9eeEffKtKRLNa11tMSg9V5IQ6NYyYMKB7slfRZCXsqtoL/Gu7b11Bz0kUNYC74M
+        SV2qZwwQ==;
+Received: from [2601:1c0:6280:3f0::cf3b]
+        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1l9ceQ-0005x6-QP; Tue, 09 Feb 2021 23:42:35 +0000
+Subject: Re: [PATCH] wireless: brcm80211: Fix the spelling configation to
+ configuration in the file d11.h
+To:     Bhaskar Chowdhury <unixbhaskar@gmail.com>, kuba@kernel.org,
+        davem@davemloft.net, linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210209232921.1255425-1-unixbhaskar@gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <b5dbd677-f932-dcd0-0615-4989725510d1@infradead.org>
+Date:   Tue, 9 Feb 2021 15:42:28 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2] vsock: fix locking in vsock_shutdown()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161291401903.27742.9260442336714837672.git-patchwork-notify@kernel.org>
-Date:   Tue, 09 Feb 2021 23:40:19 +0000
-References: <20210209085219.14280-1-sgarzare@redhat.com>
-In-Reply-To: <20210209085219.14280-1-sgarzare@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     kuba@kernel.org, haiyangz@microsoft.com, wei.liu@kernel.org,
-        kys@microsoft.com, jhansen@vmware.com, davem@davemloft.net,
-        netdev@vger.kernel.org, sthemmin@microsoft.com,
-        linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        georgezhang@vmware.com
+In-Reply-To: <20210209232921.1255425-1-unixbhaskar@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Tue,  9 Feb 2021 09:52:19 +0100 you wrote:
-> In vsock_shutdown() we touched some socket fields without holding the
-> socket lock, such as 'state' and 'sk_flags'.
+On 2/9/21 3:29 PM, Bhaskar Chowdhury wrote:
 > 
-> Also, after the introduction of multi-transport, we are accessing
-> 'vsk->transport' in vsock_send_shutdown() without holding the lock
-> and this call can be made while the connection is in progress, so
-> the transport can change in the meantime.
+> s/configation/configuration/
 > 
-> [...]
+> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
 
-Here is the summary with links:
-  - [net,v2] vsock: fix locking in vsock_shutdown()
-    https://git.kernel.org/netdev/net/c/1c5fae9c9a09
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Thanks.
 
+> ---
+>  drivers/net/wireless/broadcom/brcm80211/brcmsmac/d11.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/d11.h b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/d11.h
+> index 9035cc4d6ff3..dc395566e495 100644
+> --- a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/d11.h
+> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/d11.h
+> @@ -1469,7 +1469,7 @@ struct d11rxhdr {
+>  /* htphy PhyRxStatus_1: */
+>  /* core enables for {3..0}, 0=disabled, 1=enabled */
+>  #define PRXS1_HTPHY_CORE_MASK	0x000F
+> -/* antenna configation */
+> +/* antenna configuration */
+>  #define PRXS1_HTPHY_ANTCFG_MASK	0x00F0
+>  /* Mixmode PLCP Length low byte mask */
+>  #define PRXS1_HTPHY_MMPLCPLenL_MASK	0xFF00
+> --
+> 2.30.0
+> 
+
+
+-- 
+~Randy
 
