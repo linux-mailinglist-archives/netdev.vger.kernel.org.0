@@ -2,110 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23BAF315547
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 18:41:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1386131558C
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 19:05:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233277AbhBIRj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 12:39:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53838 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233300AbhBIRhQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 12:37:16 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD050C061797;
-        Tue,  9 Feb 2021 09:36:35 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id g10so24910780eds.2;
-        Tue, 09 Feb 2021 09:36:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3IKSUC2PbMBLcmAxJNHDlsNxrnoGLUkLdRWIm40sEpc=;
-        b=LGw97nE1cdPwc3VbbdI7b3jcHyQ5rDSJXCpydItAPA5Duy7SnDry4v7J4PxhT0geS6
-         Q4VfKF0h844R3hVgCo54tdyExYyz5Mey9SqemYKef05Yhwl4eX8VZhJCjjGd2Xa90O01
-         PnHKbpH7BtHXyaPZdZzcY8cS02pRNsKUyPv6GdpdSnLDmd10xlE6NysARS0+T9Q2KY8d
-         x+HvCxriBjgv2a78wFPePpW0sqjFfX106VbA50dcMre5AA483PPmKFWlhW2zJyqeYOF0
-         C+PC6bAZ12wwNYmvAyxSoUAZXPDe8phSMQd5gPunsSFUMFjEqG1rYCstOM4qG53nb86p
-         roMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3IKSUC2PbMBLcmAxJNHDlsNxrnoGLUkLdRWIm40sEpc=;
-        b=TKcPyy6FzhnpwokROG+zMzAruQU3MC6unz5LtIjLiBBHtIJI2MZMAMQ7fHrUYZwN6o
-         lERcjUkzdhD+3kSNH616dIkJVwPJnPTNg1YwHdoqvnksFJfd/ym4SjRdw2UqolK7wMlh
-         I0Mx+uZozasC2OppyoQYH8AsKOm1KSgGpjT2AeG+Yi2OtRBaFTybIa3mQgRClMUe6Dnn
-         jx56y6zdbtQfEB5ZFCKXKspJK/fVhsS9rW34qaRBEjZNokpJqqm+Ck2vCnRqMOrfmBvi
-         ljIAH+NxzCpkX+wev3deLrdTnNraGIddZRQr2LzvT/RAHvvJnoifmv8xTlnHMIY/MV/9
-         x/EA==
-X-Gm-Message-State: AOAM5311dDX1xkSa2OF3ZOGmv5j8Lfqp8ctotWyfH9cnXBnSQRYlAjNj
-        oKRh8AAmceLbXZY7IEqGaEk=
-X-Google-Smtp-Source: ABdhPJzwBwXcr3FNir+11tzCbCmVt5tv5onkeBPfFP5BzJvTttLymfdZC3IkFLRtUk/UOK6Q6I7vng==
-X-Received: by 2002:aa7:c58e:: with SMTP id g14mr24696022edq.318.1612892194600;
-        Tue, 09 Feb 2021 09:36:34 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id z16sm6721317ejd.102.2021.02.09.09.36.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Feb 2021 09:36:33 -0800 (PST)
-Date:   Tue, 9 Feb 2021 19:36:31 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 03/11] net: bridge: don't print in
- br_switchdev_set_port_flag
-Message-ID: <20210209173631.c75cdjxphwzipeg5@skbuf>
-References: <20210209151936.97382-1-olteanv@gmail.com>
- <20210209151936.97382-4-olteanv@gmail.com>
+        id S232901AbhBISAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 13:00:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33134 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233260AbhBIRtP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Feb 2021 12:49:15 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 56E5C64DB3;
+        Tue,  9 Feb 2021 17:48:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612892909;
+        bh=0bwozM0+19GheowWSY/r03uwZDq+Knnhrmbub8g0N6Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=byU4w/21yTB7r7ByiSRRVMOX6dtzSThCyfIvKLZdTFmiDNCtN+eBtznGboki9nzex
+         qzRzeBhk7vuT8gDfqpjk36AuVKoifXMp7BXitegzmRmmWAggcN9VriCCCry++0W0TR
+         B3trywkx4+IHo2O//uJJos+OdmC9wmqqdkCS0Fg6DDtRyBk4ZMevelWH1NzSftjdu6
+         tOucl4W3TRK5oq0TxgO1OszwY2/3tPzwalLlhPIJnOS23DTyKZ3PHBZO9jtTAKgF4V
+         MSh5sKURSWOrY8czE4fMIKEyDH3egYXEJ+dIyyWZVgx4RUqMR+HKrAX+MxsWCDNcmA
+         PAU0FygKggQSw==
+Date:   Tue, 9 Feb 2021 09:48:28 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     Vadym Kochan <vadym.kochan@plvision.eu>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Mickey Rachamim <mickeyr@marvell.com>,
+        linux-kernel@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net-next 5/7] net: marvell: prestera: add LAG support
+Message-ID: <20210209094828.5635e2bc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <87pn194fp4.fsf@waldekranz.com>
+References: <20210203165458.28717-1-vadym.kochan@plvision.eu>
+        <20210203165458.28717-6-vadym.kochan@plvision.eu>
+        <20210204211647.7b9a8ebf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <87v9b249oq.fsf@waldekranz.com>
+        <20210208130557.56b14429@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <87pn194fp4.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210209151936.97382-4-olteanv@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 09, 2021 at 05:19:28PM +0200, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
->
-> Currently br_switchdev_set_port_flag has two options for error handling
-> and neither is good:
-> - The driver returns -EOPNOTSUPP in PRE_BRIDGE_FLAGS if it doesn't
->   support offloading that flag, and this gets silently ignored and
->   converted to an errno of 0. Nobody does this.
-> - The driver returns some other error code, like -EINVAL, in
->   PRE_BRIDGE_FLAGS, and br_switchdev_set_port_flag shouts loudly.
->
-> The problem is that we'd like to offload some port flags during bridge
-> join and leave, but also not have the bridge shout at us if those fail.
-> But on the other hand we'd like the user to know that we can't offload
-> something when they set that through netlink. And since we can't have
-> the driver return -EOPNOTSUPP or -EINVAL depending on whether it's
-> called by the user or internally by the bridge, let's just add an extack
-> argument to br_switchdev_set_port_flag and propagate it to its callers.
-> Then, when we need offloading to really fail silently, this can simply
-> be passed a NULL argument.
->
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
+On Tue, 09 Feb 2021 12:56:55 +0100 Tobias Waldekranz wrote:
+> > I ask myself that question pretty much every day. Sadly I have no clear
+> > answer.  
+> 
+> Thank you for your candid answer, really appreciate it. I do not envy
+> you one bit, making those decisions must be extremely hard.
+> 
+> > Silicon is cheap, you can embed a reasonable ARM or Risc-V core in the
+> > chip for the area and power draw comparable to one high speed serdes
+> > lane.
+> >
+> > The drivers landing in the kernel are increasingly meaningless. My day
+> > job is working for a hyperscaler. Even though we have one of the most
+> > capable kernel teams on the planet most of issues with HW we face
+> > result in "something is wrong with the FW, let's call the vendor".  
+> 
+> Right, and being a hyperscaler probably at least gets you some attention
+> when you call your vendor. My day job is working for a nanoscaler, so my
+> experience is that we must be prepared to solve all issues in-house; if
+> we get any help from the vendor that is just a bonus.
+> 
+> > And even when I say "drivers landing" it is an overstatement.
+> > If you look at high speed anything these days the drivers cover
+> > multiple generations of hardware, seems like ~5 years ago most
+> > NIC vendors reached sufficient FW saturation to cover up differences
+> > between HW generations.
+> >
+> > At the same time some FW is necessary. Certain chip functions, are 
+> > best driven by a micro-controller running a tight control loop.   
+> 
+> I agree. But I still do not understand why vendors cling to the source
+> of these like it was their wallet. That is the beauty of selling
+> silicon; you can fully leverage OSS and still have a very straight
+> forward business model.
 
-The build fails because since I started working on v2 and until I sent
-it, Jakub merged net into net-next which contained this fix:
-https://patchwork.kernel.org/project/netdevbpf/patch/20210207194733.1811529-1-olteanv@gmail.com/
-for which I couldn't change prototype due to it missing in net-next.
-I think I would like to rather wait to gather some feedback first before
-respinning v3, if possible.
+Vendors want to be able to "add value", lock users in and sell support.
+Users adding features themselves hurts their bottom line. Take a look
+at income breakdown for publicly traded companies. There were also
+rumors recently about certain huge silicon vendor revoking the SDK
+license from a NOS company after that company got bought.
+
+Business people make rational choices, trust me. It's on us to make
+rational choices in the interest of the community (incl. our users).
+
+> > The complexity of FW is a spectrum, from basic to Qualcomm. 
+> > The problem is there is no way for us to know what FW is hiding
+> > by just looking at the driver.
+> >
+> > Where do we draw the line?   
+> 
+> Yeah it is a very hard problem. In this particular case though, the
+> vendor explicitly said that what they have done is compiled their
+> existing SDK to run on the ASIC:
+> 
+> https://lore.kernel.org/netdev/BN6PR18MB1587EB225C6B80BF35A44EBFBA5A0@BN6PR18MB1587.namprd18.prod.outlook.com
+> 
+> So there is no reason that it could not be done as a proper driver.
+
+I guess you meant "no _technical_ reason" ;)
+
+> > Personally I'd really like to see us pushing back stronger.  
+> 
+> Hear, hear!
