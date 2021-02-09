@@ -2,93 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 162C4315517
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 18:29:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 462FF315534
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 18:39:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233241AbhBIR2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 12:28:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51708 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233217AbhBIR1h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 12:27:37 -0500
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18C92C06174A;
-        Tue,  9 Feb 2021 09:26:57 -0800 (PST)
-Received: by mail-il1-x12e.google.com with SMTP id e7so16791738ile.7;
-        Tue, 09 Feb 2021 09:26:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=6PvAm3QwxGsDZsZoQTDksRmElDwRMDjBuqTV7b5B5Ok=;
-        b=ftAMCLwOoSzTEDjFYM/0rR1EcV7zCOs2YhFXINQ8ov2HlUIHJHzRJ12Q8ArUtOWTCs
-         3iAE79P7jFUI4Mp82wxYvB0JT/0jrmSzivqseYGRvO202zA4+AWxMU2dl3DG9XTEeEFr
-         VL0t6sC9EMtvojD1KLwjZTg6zqlC99/sSa0BPNlniU1OFXGKuLxhY5hxDFy+wqV/kIx3
-         Vrtwe1Inpe+wnK/8e0t36wL3ZxQQGy3mvcTkmrLPLvIB7Ti06nYeNyqhAtGpR4V1BFTQ
-         /PsnmmRBlTWlqeLL5ugbnoxPVDHAvyn4EXVswVZ4zQrypM7CibqZYA/oEZqLyjC9kLfn
-         8k5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=6PvAm3QwxGsDZsZoQTDksRmElDwRMDjBuqTV7b5B5Ok=;
-        b=sitSk3mX+FnfxYwQ3wAZVSyn6xtpHR1TsMSWmSX97GA/h52oWuFu7MfOd4Br5ZKHEu
-         JWmE0jSdz3SNPcRCl3INN40R3oSMhBRTLQTEYKMZLx94kflhu5LbmFh+VNzjdlxL3AQY
-         9A9juQkFCxGW3SLFNH5Eq277G1biMWQq1S7842lMRb/S5F0ODgGB87Q8dphqDexMkBlT
-         v3kdaPHUMTHP7oYTgoxrJZlxlP3mpm3Kq7nbACGSn24T5++4p7VzMjRRWCfnJKjB7D6k
-         L2kFOMYhFrxHwT1yRDA9A25EdRslJieX9xq4x/0do1abyU8eReSSMJqeiCKuXa4jhhtF
-         2MMw==
-X-Gm-Message-State: AOAM531yPhIn2cBG6Wm8cIJ8RF9eyMuozOU5gkRNP17GFA73acgK2sCY
-        uDW8oJ+GQj4dGFK9LQbjHij0p/ipuCAggpwYS2M=
-X-Google-Smtp-Source: ABdhPJzjFsxd1Jx8D6WSw4iGNU9YPRHP9lt6r1niteZtOcIDIFklLcUOTDt0j5dQeVnCrmVzpiBf9elr6/gIRDOA7u4=
-X-Received: by 2002:a92:d8c5:: with SMTP id l5mr7983976ilo.209.1612891616488;
- Tue, 09 Feb 2021 09:26:56 -0800 (PST)
+        id S232879AbhBIRg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 12:36:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58286 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233232AbhBIRfm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Feb 2021 12:35:42 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7B3FE64E7E;
+        Tue,  9 Feb 2021 17:35:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612892101;
+        bh=2ry5h3lOxZL7tuhk5BAy7SlKInnx6xq7EGyfJE8uBhw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Y2c001D3lFY7aEapySs7wZdWRJXLbC0iOoao4QpbUnioFVLTMlkatIN5VlbLxMAE6
+         sS6FhUE4Ay2EfXroZM7+PPOM8/pefvZYA1X+1cDw0QmUulyRfMOobhPuFuy8xTWGb+
+         1+y7lrNaHpxE4vc6juE5bJUzAs2lwLgKF/CgUzj6+8BNyb5DiwvS1rvKq2hAU4f1ZG
+         X2Vf/yFc4rF2xOGWyOEdHjq3XVqk64IxdGyx1L02CdEfD49f3seqDFLtR3iJc9Qjas
+         a1dCFk0wtc6ZFkCdOYlmp9u66ZJ4XsL5l1vSJ+sZyBflmMoHnQ3EfRByYagAV95JaB
+         Vmvie4z8qiCXQ==
+Date:   Tue, 9 Feb 2021 09:35:00 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vadym Kochan <vadym.kochan@plvision.eu>,
+        Mickey Rachamim <mickeyr@marvell.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net-next 5/7] net: marvell: prestera: add LAG support
+Message-ID: <20210209093500.53b55ca8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YCKVAtu2Y8DAInI+@lunn.ch>
+References: <20210203165458.28717-1-vadym.kochan@plvision.eu>
+        <20210203165458.28717-6-vadym.kochan@plvision.eu>
+        <20210204211647.7b9a8ebf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <87v9b249oq.fsf@waldekranz.com>
+        <20210208130557.56b14429@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YCKVAtu2Y8DAInI+@lunn.ch>
 MIME-Version: 1.0
-References: <20210209034416.GA1669105@ubuntu-m3-large-x86> <CAEf4BzYnT-eoKRL9_Pu_DEuqXVa+edN5F-s+k2RxBSzcsSTJ1g@mail.gmail.com>
- <20210209052311.GA125918@ubuntu-m3-large-x86> <CAEf4BzZV0-zx6YKUUKmecs=icnQNXJjTokdkSAoexm36za+wdA@mail.gmail.com>
- <CAEf4BzYvri7wzRnGH_qQbavXOx5TfBA0qx4nYVnn=YNGv+vNVw@mail.gmail.com>
- <CAEf4Bzax90hn_5axpnCpW+E6gVc1mtUgCXWqmxV0tJ4Ud7bsaA@mail.gmail.com>
- <20210209074904.GA286822@ubuntu-m3-large-x86> <YCKB1TF5wz93EIBK@krava>
- <YCKlrLkTQXc4Cyx7@krava> <YCKwxNDkS9rdr43W@krava> <20210209163514.GA1226277@ubuntu-m3-large-x86>
- <CA+icZUWcyFLrFmW=btSFx_-5c-cUAYXhcjR+Jdog0-qV-bis7w@mail.gmail.com> <CAKwvOdkQixhz1LiMrFx=+zf5o29UHaUrGTz=TPEsigtGakDXBA@mail.gmail.com>
-In-Reply-To: <CAKwvOdkQixhz1LiMrFx=+zf5o29UHaUrGTz=TPEsigtGakDXBA@mail.gmail.com>
-Reply-To: sedat.dilek@gmail.com
-From:   Sedat Dilek <sedat.dilek@gmail.com>
-Date:   Tue, 9 Feb 2021 18:26:45 +0100
-Message-ID: <CA+icZUW1tyGK8tYnhhhODR4n6-8ozmqHyJ9V3HZGj0xEqV=7Fg@mail.gmail.com>
-Subject: Re: FAILED unresolved symbol vfs_truncate on arm64 with LLVM
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Veronika Kabatova <vkabatov@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 9, 2021 at 6:12 PM Nick Desaulniers <ndesaulniers@google.com> wrote:
->
-> On Tue, Feb 9, 2021 at 9:07 AM Sedat Dilek <sedat.dilek@gmail.com> wrote:
-> >
-> > We should ask linux-kbuild/Masahiro to have an option to OVERRIDE:
-> > When scripts/link-vmlinux.sh fails all generated files like vmlinux get removed.
-> > For further debugging they should be kept.
->
-> I find it annoying, too.  But I usually just comment out the body of
-> cleanup() in scripts/link-vmlinux.sh.
->
+On Tue, 9 Feb 2021 14:58:26 +0100 Andrew Lunn wrote:
+> > At the same time some FW is necessary. Certain chip functions, are 
+> > best driven by a micro-controller running a tight control loop.   
+> 
+> For a smart NIC, i could agree. But a switch? The data path is in
+> hardware. The driver is all about configuring this hardware, and then
+> it is idle. Polls the PHYs once a second, maybe gather statistics,
+> allows the network stack to perform STP, but otherwise it does
+> nothing.
+> 
+> So for me, i don't see that being a valid argument for this driver.
+> 
+> By putting their SDK inside the CPU on the switch, and adding an RPC
+> interface, Marvell can quickly get some sort of support working in the
+> Linux ecosystem. But this solution has all the problems of a binary
+> blob in userspace.
+> 
+> I doubt there is going to be any community engagement with this
+> driver. Marvell is going to have to add all the features. If a user
+> wants a feature which is not currently supported, they have little
+> chance of being able to add it themselves. There is no documentation
+> of the RPC interface. So even if the firmware has support for more
+> than what the Linux driver implements, only Marvell knows about it.
+> 
+> Products based around this driver are going to find it hard to
+> differentiate on switch features. The switch can do what Marvell
+> allows you to do. All differentiation is going to be limited to above
+> that, the user interface.
+> 
+> For some market segments, that might be enough. You don't see
+> community based patches adding new features to the Mellanex/nvidia
+> hardware. But when you look at the DSA drivers, a lot of the features
+> there are from the community. There is probably space for both.
+> 
+> Looking into my crystal ball, Marvell will probably have the base
+> features of their switch implemented before Microchip does, simply
+> because they are reusing code hidden away in the CPU. But then
+> development will stagnate. Microchip will take a bit longer to get the
+> base features implemented. But then because of the openness, users
+> will start using the hardware in different ways, and implement
+> features which are important to them. And contribute bug fixes. The
+> driver will keep gaining new features and mature, and in the end, the
+> device built from it will be a lot more divers and interesting.
+> 
+> What i'm not sure is how we as a community push back. Marvells whole
+> strategy is black box. I doubt we can make them open up the firmware.
+> Do we want to throw out the driver from the kernel? I don't think it
+> is that bad. We can point out the problems with Marvell's model. We
+> can put in review effort for Microchip, make their driver better. And
+> we can encourage the 3rd and 4th vendors in the enterprise switch
+> space to follow Microchips lead.
 
-That's fine with me.
+Sounds like we have 3 people who don't like FW-heavy designs dominating
+the kernel - this conversation can only go one way. 
 
-- Sedat -
+Marvell, Plvision anything to share? AFAIU the values of Linux kernel
+are open source, healthy community, empowering users. With the SDK on
+the embedded CPU your driver does not seem to tick any of these boxes.
