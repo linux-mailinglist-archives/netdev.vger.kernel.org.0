@@ -2,139 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B54D31457A
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 02:17:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F249E314578
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 02:17:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229854AbhBIBRW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 20:17:22 -0500
-Received: from mga07.intel.com ([134.134.136.100]:36409 "EHLO mga07.intel.com"
+        id S230149AbhBIBRF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 20:17:05 -0500
+Received: from mga07.intel.com ([134.134.136.100]:36361 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229669AbhBIBRK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Feb 2021 20:17:10 -0500
-IronPort-SDR: yVmUCIL8qBws299TgKJWkIM1m+Ew2KoC0rqS16AvWtWgkcCaZpu8uHaQZa3g0L0GnvViMuB0au
- ymVSwjMEofCQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9889"; a="245879728"
+        id S229669AbhBIBRB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Feb 2021 20:17:01 -0500
+IronPort-SDR: XvnBMU29Nz+HWAL9s7SXtJ9TaTi0KHl7k8d6Sn6ysQ77M0JKOFUBA6Fk7ztZZF90N7i1GOP0h9
+ B6FXirYEV2Jw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9889"; a="245879729"
 X-IronPort-AV: E=Sophos;i="5.81,163,1610438400"; 
-   d="scan'208";a="245879728"
+   d="scan'208";a="245879729"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
   by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2021 17:15:46 -0800
-IronPort-SDR: XTk9UOIrKE7acFeRQiuREAMR6atB0WsWbKDD32512LrwO6CrEQvLVm91WB89MbqdKhSSfWJPA3
- crM6q6gsp+aA==
+IronPort-SDR: aeOTBiv4069C1a4GSy36M8POufw5Zohrc/k9PW/elKKPfitMtOu8BE42VsfiM+2XeaJdpj20tM
+ bDXt67TOE+kw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.81,163,1610438400"; 
-   d="scan'208";a="487669584"
+   d="scan'208";a="487669587"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga001.fm.intel.com with ESMTP; 08 Feb 2021 17:15:46 -0800
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
-        sassmann@redhat.com
-Subject: [PATCH net-next 00/12][pull request] 100GbE Intel Wired LAN Driver Updates 2021-02-08
-Date:   Mon,  8 Feb 2021 17:16:24 -0800
-Message-Id: <20210209011636.1989093-1-anthony.l.nguyen@intel.com>
+Cc:     Brett Creeley <brett.creeley@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com, anthony.l.nguyen@intel.com,
+        Tony Brelinski <tonyx.brelinski@intel.com>
+Subject: [PATCH net-next 01/12] ice: log message when trusted VF goes in/out of promisc mode
+Date:   Mon,  8 Feb 2021 17:16:25 -0800
+Message-Id: <20210209011636.1989093-2-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210209011636.1989093-1-anthony.l.nguyen@intel.com>
+References: <20210209011636.1989093-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series contains updates to the ice driver and documentation.
+From: Brett Creeley <brett.creeley@intel.com>
 
-Brett adds a log message when a trusted VF goes in and out of promiscuous
-for consistency with i40e driver.
+Currently there is no message printed on the host when a VF goes in and
+out of promiscuous mode. This is causing confusion because this is the
+expected behavior based on i40e. Fix this.
 
-Dave implements a new LLDP command that allows adding VSI destinations to
-existing filters and adds support for netdev bonding events, current
-support is software based.
+Signed-off-by: Brett Creeley <brett.creeley@intel.com>
+Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 32 +++++++++++--------
+ 1 file changed, 19 insertions(+), 13 deletions(-)
 
-Michal refactors code to move from VSI stored xsk_buff_pools to
-netdev-provided ones.
-
-Kiran implements the creation scheduler aggregator nodes and distributing
-VSIs within the nodes.
-
-Ben modifies rate limit calculations to use clock frequency from the
-hardware instead of using a hardcoded one.
-
-Jesse adds support for user to control writeback frequency.
-
-Chinh refactors DCB variables out of the ice_port_info struct.
-
-Bruce removes some unnecessary casting.
-
-Mitch fixes an error message that was reported as if_up instead of if_down.
-
-Tony adjusts fallback allocation for MSI-X to use all given vectors instead
-of using only the minimum configuration and updates documentation for
-the ice driver.
-
-The following are changes since commit 08cbabb77e9098ec6c4a35911effac53e943c331:
-  Merge tag 'mlx5-updates-2021-02-04' of git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux
-and are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 100GbE
-
-Ben Shelton (1):
-  ice: Use PSM clock frequency to calculate RL profiles
-
-Brett Creeley (1):
-  ice: log message when trusted VF goes in/out of promisc mode
-
-Bruce Allan (1):
-  ice: remove unnecessary casts
-
-Chinh T Cao (1):
-  ice: Refactor DCB related variables out of the ice_port_info struct
-
-Dave Ertman (2):
-  ice: implement new LLDP filter command
-  ice: Add initial support framework for LAG
-
-Jesse Brandeburg (1):
-  ice: fix writeback enable logic
-
-Kiran Patil (1):
-  ice: create scheduler aggregator node config and move VSIs
-
-Michal Swiatkowski (1):
-  ice: Remove xsk_buff_pool from VSI structure
-
-Mitch Williams (1):
-  ice: Fix trivial error message
-
-Tony Nguyen (2):
-  ice: Improve MSI-X fallback logic
-  Documentation: ice: update documentation
-
- .../device_drivers/ethernet/intel/ice.rst     | 1027 ++++++++++++-
- drivers/net/ethernet/intel/ice/Makefile       |    1 +
- drivers/net/ethernet/intel/ice/ice.h          |   52 +-
- .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   25 +
- drivers/net/ethernet/intel/ice/ice_common.c   |   58 +-
- drivers/net/ethernet/intel/ice/ice_common.h   |    3 +
- drivers/net/ethernet/intel/ice/ice_controlq.c |    4 +-
- drivers/net/ethernet/intel/ice/ice_dcb.c      |   40 +-
- drivers/net/ethernet/intel/ice/ice_dcb_lib.c  |   47 +-
- drivers/net/ethernet/intel/ice/ice_dcb_nl.c   |   50 +-
- drivers/net/ethernet/intel/ice/ice_ethtool.c  |   14 +-
- .../net/ethernet/intel/ice/ice_flex_pipe.c    |   10 +-
- .../net/ethernet/intel/ice/ice_hw_autogen.h   |    3 +
- drivers/net/ethernet/intel/ice/ice_lag.c      |  445 ++++++
- drivers/net/ethernet/intel/ice/ice_lag.h      |   87 ++
- drivers/net/ethernet/intel/ice/ice_lib.c      |  142 +-
- drivers/net/ethernet/intel/ice/ice_main.c     |   87 +-
- drivers/net/ethernet/intel/ice/ice_sched.c    | 1283 +++++++++++++++--
- drivers/net/ethernet/intel/ice/ice_sched.h    |   24 +-
- drivers/net/ethernet/intel/ice/ice_switch.c   |    2 +-
- drivers/net/ethernet/intel/ice/ice_txrx.c     |   61 +-
- drivers/net/ethernet/intel/ice/ice_txrx.h     |    1 -
- drivers/net/ethernet/intel/ice/ice_type.h     |   27 +-
- .../net/ethernet/intel/ice/ice_virtchnl_pf.c  |   72 +-
- drivers/net/ethernet/intel/ice/ice_xsk.c      |   71 +-
- 25 files changed, 3234 insertions(+), 402 deletions(-)
- create mode 100644 drivers/net/ethernet/intel/ice/ice_lag.c
- create mode 100644 drivers/net/ethernet/intel/ice/ice_lag.h
-
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+index ec7f6c64132e..d0c3a5342aa9 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+@@ -2312,12 +2312,12 @@ bool ice_is_any_vf_in_promisc(struct ice_pf *pf)
+ static int ice_vc_cfg_promiscuous_mode_msg(struct ice_vf *vf, u8 *msg)
+ {
+ 	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
++	bool rm_promisc, alluni = false, allmulti = false;
+ 	struct virtchnl_promisc_info *info =
+ 	    (struct virtchnl_promisc_info *)msg;
+ 	struct ice_pf *pf = vf->pf;
+ 	struct ice_vsi *vsi;
+ 	struct device *dev;
+-	bool rm_promisc;
+ 	int ret = 0;
+ 
+ 	if (!test_bit(ICE_VF_STATE_ACTIVE, vf->vf_states)) {
+@@ -2344,8 +2344,13 @@ static int ice_vc_cfg_promiscuous_mode_msg(struct ice_vf *vf, u8 *msg)
+ 		goto error_param;
+ 	}
+ 
+-	rm_promisc = !(info->flags & FLAG_VF_UNICAST_PROMISC) &&
+-		!(info->flags & FLAG_VF_MULTICAST_PROMISC);
++	if (info->flags & FLAG_VF_UNICAST_PROMISC)
++		alluni = true;
++
++	if (info->flags & FLAG_VF_MULTICAST_PROMISC)
++		allmulti = true;
++
++	rm_promisc = !allmulti && !alluni;
+ 
+ 	if (vsi->num_vlan || vf->port_vlan_info) {
+ 		struct ice_vsi *pf_vsi = ice_get_main_vsi(pf);
+@@ -2399,12 +2404,12 @@ static int ice_vc_cfg_promiscuous_mode_msg(struct ice_vf *vf, u8 *msg)
+ 		enum ice_status status;
+ 		u8 promisc_m;
+ 
+-		if (info->flags & FLAG_VF_UNICAST_PROMISC) {
++		if (alluni) {
+ 			if (vf->port_vlan_info || vsi->num_vlan)
+ 				promisc_m = ICE_UCAST_VLAN_PROMISC_BITS;
+ 			else
+ 				promisc_m = ICE_UCAST_PROMISC_BITS;
+-		} else if (info->flags & FLAG_VF_MULTICAST_PROMISC) {
++		} else if (allmulti) {
+ 			if (vf->port_vlan_info || vsi->num_vlan)
+ 				promisc_m = ICE_MCAST_VLAN_PROMISC_BITS;
+ 			else
+@@ -2432,15 +2437,16 @@ static int ice_vc_cfg_promiscuous_mode_msg(struct ice_vf *vf, u8 *msg)
+ 		}
+ 	}
+ 
+-	if (info->flags & FLAG_VF_MULTICAST_PROMISC)
+-		set_bit(ICE_VF_STATE_MC_PROMISC, vf->vf_states);
+-	else
+-		clear_bit(ICE_VF_STATE_MC_PROMISC, vf->vf_states);
++	if (allmulti &&
++	    !test_and_set_bit(ICE_VF_STATE_MC_PROMISC, vf->vf_states))
++		dev_info(dev, "VF %u successfully set multicast promiscuous mode\n", vf->vf_id);
++	else if (!allmulti && test_and_clear_bit(ICE_VF_STATE_MC_PROMISC, vf->vf_states))
++		dev_info(dev, "VF %u successfully unset multicast promiscuous mode\n", vf->vf_id);
+ 
+-	if (info->flags & FLAG_VF_UNICAST_PROMISC)
+-		set_bit(ICE_VF_STATE_UC_PROMISC, vf->vf_states);
+-	else
+-		clear_bit(ICE_VF_STATE_UC_PROMISC, vf->vf_states);
++	if (alluni && !test_and_set_bit(ICE_VF_STATE_UC_PROMISC, vf->vf_states))
++		dev_info(dev, "VF %u successfully set unicast promiscuous mode\n", vf->vf_id);
++	else if (!alluni && test_and_clear_bit(ICE_VF_STATE_UC_PROMISC, vf->vf_states))
++		dev_info(dev, "VF %u successfully unset unicast promiscuous mode\n", vf->vf_id);
+ 
+ error_param:
+ 	return ice_vc_send_msg_to_vf(vf, VIRTCHNL_OP_CONFIG_PROMISCUOUS_MODE,
 -- 
 2.26.2
 
