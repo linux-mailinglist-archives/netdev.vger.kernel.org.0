@@ -2,106 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1B883156D9
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 20:34:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3426B31574A
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 21:00:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233655AbhBITdd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 14:33:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47516 "EHLO
+        id S233863AbhBIT6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 14:58:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233572AbhBITUE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 14:20:04 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77E84C061793
-        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 11:18:32 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id l8so6922449ybe.12
-        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 11:18:32 -0800 (PST)
+        with ESMTP id S233581AbhBITq6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 14:46:58 -0500
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B26F9C061224
+        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 11:20:37 -0800 (PST)
+Received: by mail-pg1-x534.google.com with SMTP id o21so11696898pgn.12
+        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 11:20:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=IaTAbos0q8KK6jEXiNUdRnHa4lXYuSQxuVK4ImXFqEo=;
-        b=rXIrVPzuGdU9fbdEcMPabND38fvK8xM9W7M2fmSr7xO5Lzt0/Y01oc3city4ECiRbA
-         M2flAjzpP+hIRKjR/aRjDiMUIIezp5FGp9wE6BEapRkBYwAQntQEr5jhS7nTP+WMbIOn
-         QSz2wtp46xkQjwZ2/Kbcl8M4wLi/g6g0nya4MO/URx/DM5wCtYqSQmOzbnXe2dXqVO47
-         XiIfvzpnXkmFsgnIZRQWctdZe358tzQ7ZHROBv9COcZ2wCN+tGv/HcsSPHB5gqNE4V12
-         7oPpB9EoJdxGUVtl92vBchjzc5sq/lnJBHah1lbJFe765/a74/cyVCm9bP+6qKoBrkex
-         rXAQ==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=T0Iw2wOHN1641GyiRl5J1CA2TZYNgtZQZmyhVPXKe9g=;
+        b=ZnxWb8L+lnAX2clf6e2m+1QaBsrHQg6caYu1dEe6DOQymkeP1vX5Gw+3xwBzcQNKmt
+         +L7xtaol7M0nUBDmGjJ1dmR7jEcXTPCANgIowVKQk4m+shanwlOXJO8RTbQRTeQAswzO
+         qWrCZrKB7fDXozPoC3lRw68sbqtTmKdBUjmjasT/+eVP4Q143uZUaZ4MRfK72iTNHCm4
+         E1aXOR86DmjBxjKwNTGSq1wzbYkPbrN/qQmGcbOwH9wkZiNBFn57jtqjmdQj4paC7Js/
+         m1mVxc1D27eiQl2PUPoJ8i5pQeU7oL0oV4/bz8+q/SNdKsKtbicnvWNZBjJAlX11O/wY
+         H7zw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=IaTAbos0q8KK6jEXiNUdRnHa4lXYuSQxuVK4ImXFqEo=;
-        b=VNABV2jN673ZMPAWOsPqVawrwO5Xk9JXeXoMtvb9b07gIxPXkZfMzt1RBE70Mjb44s
-         hGKmfo6F6wB5BfdJq2FhgJrds/5s5+W71Rx0PkEYc6gIMitHUbIrAgsMfPe15fmNhAqD
-         Ot0yHsJqv1DLDUP9AJ6cb6NBsmVavlnpDkS/LVxb3Z8MEKM3Y+8y9fqkNrB3HITCinrg
-         gdcHvLTOQCeYaJNa7Un7jWkrWK20CRsHk+zlGB0uGTdVguX1b6eC34A9qQqYJkQFTTmn
-         7wn/0eRdBaVazSTJiOaQUsFed6pkEEWlhjjrkz4u6LKT2+X+zUx3WNk7RN+cjuukTqJ/
-         VGbg==
-X-Gm-Message-State: AOAM5321neHBWKFhL/KT/cmspVpxbqPs/ji69trYtEdu8rvSTN9ENG6n
-        HcyF7b2gKPEL78S6Az/fCF7vix/tTpWoTkMpTCLLkA==
-X-Google-Smtp-Source: ABdhPJwRFVnxkY54Z0j9gN/wnYv2f1EOnHDvMpzv02PiqvRjRncENiKvZClqcxbO/6iJCyI3CHKCglV0fMYB4dgLXto=
-X-Received: by 2002:a25:60d6:: with SMTP id u205mr34879564ybb.276.1612898311344;
- Tue, 09 Feb 2021 11:18:31 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=T0Iw2wOHN1641GyiRl5J1CA2TZYNgtZQZmyhVPXKe9g=;
+        b=jUuZIb4qX5bK//+zUL4p2w8da+4fmUx9nWogyR0aQzqoZqlaY7DLPh4+reIUaClj2Z
+         2Db3xeh24XgCk3AFZO2AuN1GU2RgY7il17k0YVtqctX0DsVtWev/UyOI3mOhxxQ3L4Ay
+         UtSqKSDEkOYp/XYmmGwfPjATsMKiyJBxwplqAK5UI4hYwLm2+FJQ0nIq4ir9eEQ5bZv4
+         8ccD4v9bvJmxK5GhNGk56H44FoTbVBY6ZBYIb+YydUPmHfbNNmrtZ2hZQX6r32K3KCSr
+         Sif9R5CYv4rtyCnce1HglZB7+D0tlF41VAdns8Yz4Zk2Cn8k/6GWGG36w+v4VEePzQG3
+         XzzQ==
+X-Gm-Message-State: AOAM531nsW/0sa9f8VxLqmDBDm8pF/KaNBW2OSLRLZp/62iBhMPam23J
+        dGtzst3FGb8DU7o7Aa3P074=
+X-Google-Smtp-Source: ABdhPJwr6PDkTm5p0N5+08UYhEF2m7s/TjEsCxFinXpOB5Cgd4ZjeqMQAACn45qQIE4PvkThtxLNpQ==
+X-Received: by 2002:a63:e0c:: with SMTP id d12mr2380021pgl.67.1612898437366;
+        Tue, 09 Feb 2021 11:20:37 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:3965:c391:f1c0:1de0])
+        by smtp.gmail.com with ESMTPSA id p12sm3252390pju.35.2021.02.09.11.20.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Feb 2021 11:20:36 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        David Dworken <ddworken@google.com>,
+        Willem de Bruijn <willemb@google.com>
+Subject: [PATCH net-next 2/2] tcp: add some entropy in __inet_hash_connect()
+Date:   Tue,  9 Feb 2021 11:20:28 -0800
+Message-Id: <20210209192028.3350290-3-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.30.0.478.g8a0d178c01-goog
+In-Reply-To: <20210209192028.3350290-1-eric.dumazet@gmail.com>
+References: <20210209192028.3350290-1-eric.dumazet@gmail.com>
 MIME-Version: 1.0
-References: <20210201233445.2044327-1-jianyang.kernel@gmail.com>
- <87czx978x8.fsf@nvidia.com> <20210209082326.44dc3269@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAF2d9jj3x9CbPbB6u3gQyW=80WqXxwqnk2bbk1pEmkP6K_Wasg@mail.gmail.com> <20210209110426.67df7617@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210209110426.67df7617@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ==?= 
-        <maheshb@google.com>
-Date:   Tue, 9 Feb 2021 11:18:05 -0800
-Message-ID: <CAF2d9jhQQs+MX4TRbd1c7A3YH5cLV7uaJcQDhE1LWzMAG8uKjA@mail.gmail.com>
-Subject: Re: [PATCH net-next v3] net-loopback: set lo dev initial state to UP
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Petr Machata <petrm@nvidia.com>,
-        Jian Yang <jianyang.kernel@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        linux-netdev <netdev@vger.kernel.org>,
-        Jian Yang <jianyang@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 9, 2021 at 11:04 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Tue, 9 Feb 2021 10:49:23 -0800 Mahesh Bandewar (=E0=A4=AE=E0=A4=B9=E0=
-=A5=87=E0=A4=B6 =E0=A4=AC=E0=A4=82=E0=A4=A1=E0=A5=87=E0=A4=B5=E0=A4=BE=E0=
-=A4=B0) wrote:
-> > On Tue, Feb 9, 2021 at 8:23 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> > > On Tue, 9 Feb 2021 12:54:59 +0100 Petr Machata wrote:
-> > > > This will break user scripts, and it fact breaks kernel's very own
-> > > > selftest. We currently have this internally:
-> > > >
-> > > >     diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tool=
-s/testing/selftests/net/fib_nexthops.sh
-> > > >     index 4c7d33618437..bf8ed24ab3ba 100755
-> > > >     --- a/tools/testing/selftests/net/fib_nexthops.sh
-> > > >     +++ b/tools/testing/selftests/net/fib_nexthops.sh
-> > > >     @@ -121,8 +121,6 @@ create_ns()
-> > > >       set -e
-> > > >       ip netns add ${n}
-> > > >       ip netns set ${n} $((nsid++))
-> > > >     - ip -netns ${n} addr add 127.0.0.1/8 dev lo
-> > > >     - ip -netns ${n} link set lo up
-> > > >
-> > > >       ip netns exec ${n} sysctl -qw net.ipv4.ip_forward=3D1
-> > > >       ip netns exec ${n} sysctl -qw net.ipv4.fib_multipath_use_neig=
-h=3D1
-> > > >
-> > > > This now fails because the ip commands are run within a "set -e" bl=
-ock,
-> > > > and kernel rejects addition of a duplicate address.
-> > >
-> > > Thanks for the report, could you send a revert with this explanation?
-> > Rather than revert, shouldn't we just fix the self-test in that regard?
->
-> The selftest is just a messenger. We all know Linus's stand on
-> regressions, IMO we can't make an honest argument that the change
-> does not break user space after it broke our own selftest. Maybe
-> others disagree..
+From: Eric Dumazet <edumazet@google.com>
 
-Actually that was the reason behind encompassing this behavior change
-with a sysctl.
+Even when implementing RFC 6056 3.3.4 (Algorithm 4: Double-Hash
+Port Selection Algorithm), a patient attacker could still be able
+to collect enough state from an otherwise idle host.
+
+Idea of this patch is to inject some noise, in the
+cases __inet_hash_connect() found a candidate in the first
+attempt.
+
+This noise should not significantly reduce the collision
+avoidance, and should be zero if connection table
+is already well used.
+
+Note that this is not implementing RFC 6056 3.3.5
+because we think Algorithm 5 could hurt typical
+workloads.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: David Dworken <ddworken@google.com>
+Cc: Willem de Bruijn <willemb@google.com>
+---
+ net/ipv4/inet_hashtables.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index 12808dac923a4c29cb152201140757c69ba165e5..c96866a53a664601fdb8904f486cc590675ae34f 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -818,6 +818,11 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+ 	return -EADDRNOTAVAIL;
+ 
+ ok:
++	/* If our first attempt found a candidate, skip next candidate
++	 * in 1/16 of cases to add some noise.
++	 */
++	if (!i && !(prandom_u32() % 16))
++		i = 2;
+ 	WRITE_ONCE(table_perturb[index], READ_ONCE(table_perturb[index]) + i + 2);
+ 
+ 	/* Head lock still held and bh's disabled */
+-- 
+2.30.0.478.g8a0d178c01-goog
+
