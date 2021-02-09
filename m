@@ -2,117 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5ABAB3146A0
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 03:46:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B6743146A1
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 03:50:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230492AbhBICpc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 21:45:32 -0500
-Received: from szxga07-in.huawei.com ([45.249.212.35]:12879 "EHLO
-        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230402AbhBICoW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 21:44:22 -0500
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4DZRwv3q1Bz7jBp;
-        Tue,  9 Feb 2021 10:41:35 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.56) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.498.0; Tue, 9 Feb 2021 10:42:49 +0800
-From:   Huazhong Tan <tanhuazhong@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <salil.mehta@huawei.com>,
-        <yisen.zhuang@huawei.com>, <huangdaode@huawei.com>,
-        <linuxarm@openeuler.org>, Jian Shen <shenjian15@huawei.com>,
-        Huazhong tan <tanhuazhong@huawei.com>
-Subject: [PATCH V2 net-next 11/11] net: hns3: cleanup for endian issue for VF RSS
-Date:   Tue, 9 Feb 2021 10:42:01 +0800
-Message-ID: <1612838521-59915-12-git-send-email-tanhuazhong@huawei.com>
-X-Mailer: git-send-email 2.7.4
+        id S229733AbhBICt4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 21:49:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35760 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229702AbhBICtz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Feb 2021 21:49:55 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AC79C64E3B;
+        Tue,  9 Feb 2021 02:49:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612838954;
+        bh=oliKdDZxJ0h7FjRqssiDLuKSuMkP6ehrQ1TJE8eR8KQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ERct2oJxALf/xDyd2plPjtjuvU4G8s5iFOKlhr8qnWw450CT0KDdjfkZWXI2tNGG1
+         p16HoDZbnFUiPcxw86NSHI8JQWKTyFNCCbwuhV6D7zX+zt/52wzakY+4Y9INeyI4B9
+         SkSIDJy7xFrJnJhHJZjvDu1YvTUcSjRJ0uHwOvg0CJHcbdypJxHZBvlF0nrD0fLF8U
+         Yb0sCevDgx0nLrN0THXhOmAyxI1/gSe2k2n/J+39GZktcXtEV5qd5Cmpwqi+zKGVe3
+         vNbjFV4hOXQv4Dqp92xG2VhlyXsZ92RNiLmwYywVfpJ2CEdq3jRm4SPvC44r6zvmNG
+         0Z5/fR318Tgzw==
+Date:   Mon, 8 Feb 2021 18:49:12 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Huazhong Tan <tanhuazhong@huawei.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <huangdaode@huawei.com>, <linuxarm@openeuler.org>
+Subject: Re: [PATCH V2 net-next 00/11] net: hns3: some cleanups for -next
+Message-ID: <20210208184912.506ea430@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 In-Reply-To: <1612838521-59915-1-git-send-email-tanhuazhong@huawei.com>
 References: <1612838521-59915-1-git-send-email-tanhuazhong@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+On Tue, 9 Feb 2021 10:41:50 +0800 Huazhong Tan wrote:
+> There are some cleanups for the HNS3 ethernet driver.
+> 
+> change log:
+> V2: remove previous #3 which should target net.
+> 
+> previous version:
+> V1: https://patchwork.kernel.org/project/netdevbpf/cover/1612784382-27262-1-git-send-email-tanhuazhong@huawei.com/
 
-Currently the RSS commands of VF are using host byte order.
-According to the user manual, it should use little endian in
-the command to firmware. For the host and firmware are both
-using little endian, so it can work well in this case.
+Thank you!
 
-Do cleanup to make it more explicitly.
-
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
-Signed-off-by: Huazhong tan <tanhuazhong@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h  |  6 +++---
- drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 15 ++++++++++-----
- 2 files changed, 13 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h
-index 2a6aaff..8a37a22 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.h
-@@ -216,8 +216,8 @@ struct hclgevf_rss_input_tuple_cmd {
- #define HCLGEVF_RSS_CFG_TBL_SIZE	16
- 
- struct hclgevf_rss_indirection_table_cmd {
--	u16 start_table_index;
--	u16 rss_set_bitmap;
-+	__le16 start_table_index;
-+	__le16 rss_set_bitmap;
- 	u8 rsv[4];
- 	u8 rss_result[HCLGEVF_RSS_CFG_TBL_SIZE];
- };
-@@ -229,7 +229,7 @@ struct hclgevf_rss_indirection_table_cmd {
- #define HCLGEVF_RSS_TC_VALID_B		15
- #define HCLGEVF_MAX_TC_NUM		8
- struct hclgevf_rss_tc_mode_cmd {
--	u16 rss_tc_mode[HCLGEVF_MAX_TC_NUM];
-+	__le16 rss_tc_mode[HCLGEVF_MAX_TC_NUM];
- 	u8 rsv[8];
- };
- 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index ab213ad..ece3169 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -658,8 +658,9 @@ static int hclgevf_set_rss_indir_table(struct hclgevf_dev *hdev)
- 	for (i = 0; i < rss_cfg_tbl_num; i++) {
- 		hclgevf_cmd_setup_basic_desc(&desc, HCLGEVF_OPC_RSS_INDIR_TABLE,
- 					     false);
--		req->start_table_index = i * HCLGEVF_RSS_CFG_TBL_SIZE;
--		req->rss_set_bitmap = HCLGEVF_RSS_SET_BITMAP_MSK;
-+		req->start_table_index =
-+			cpu_to_le16(i * HCLGEVF_RSS_CFG_TBL_SIZE);
-+		req->rss_set_bitmap = cpu_to_le16(HCLGEVF_RSS_SET_BITMAP_MSK);
- 		for (j = 0; j < HCLGEVF_RSS_CFG_TBL_SIZE; j++)
- 			req->rss_result[j] =
- 				indir[i * HCLGEVF_RSS_CFG_TBL_SIZE + j];
-@@ -700,12 +701,16 @@ static int hclgevf_set_rss_tc_mode(struct hclgevf_dev *hdev,  u16 rss_size)
- 
- 	hclgevf_cmd_setup_basic_desc(&desc, HCLGEVF_OPC_RSS_TC_MODE, false);
- 	for (i = 0; i < HCLGEVF_MAX_TC_NUM; i++) {
--		hnae3_set_bit(req->rss_tc_mode[i], HCLGEVF_RSS_TC_VALID_B,
-+		u16 mode = 0;
-+
-+		hnae3_set_bit(mode, HCLGEVF_RSS_TC_VALID_B,
- 			      (tc_valid[i] & 0x1));
--		hnae3_set_field(req->rss_tc_mode[i], HCLGEVF_RSS_TC_SIZE_M,
-+		hnae3_set_field(mode, HCLGEVF_RSS_TC_SIZE_M,
- 				HCLGEVF_RSS_TC_SIZE_S, tc_size[i]);
--		hnae3_set_field(req->rss_tc_mode[i], HCLGEVF_RSS_TC_OFFSET_M,
-+		hnae3_set_field(mode, HCLGEVF_RSS_TC_OFFSET_M,
- 				HCLGEVF_RSS_TC_OFFSET_S, tc_offset[i]);
-+
-+		req->rss_tc_mode[i] = cpu_to_le16(mode);
- 	}
- 	status = hclgevf_cmd_send(&hdev->hw, &desc, 1);
- 	if (status)
--- 
-2.7.4
-
+Acked-by: Jakub Kicinski <kuba@kernel.org>
