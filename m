@@ -2,160 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EE293150D2
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 14:51:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83D8E3150FE
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 14:56:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231872AbhBINvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 08:51:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32814 "EHLO
+        id S231873AbhBIN4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 08:56:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231956AbhBINtu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 08:49:50 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D20D3C061797;
-        Tue,  9 Feb 2021 05:49:08 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id a9so31540402ejr.2;
-        Tue, 09 Feb 2021 05:49:08 -0800 (PST)
+        with ESMTP id S232072AbhBINy6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 08:54:58 -0500
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09CA2C061786
+        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 05:54:18 -0800 (PST)
+Received: by mail-ej1-x629.google.com with SMTP id w2so31524997ejk.13
+        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 05:54:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=EFHWJqOuZ5oCfySHPR3lGIAEM6/c2S56gFx0hAWTits=;
-        b=Ppv7Q7ejOG9vxA58OJEbZVdzNl7aX/qp2kwYiGA43KDSoKyQ/O+Xuo1h5pbXDi7Ihv
-         m+nOm1oG/rMqw5wq7RA/qdEqVjoIzBBzxVOVhZbbSNNzSm59kmnQ8CrSYf4VHuABfoRz
-         q7z+ZLHD5lB0VJIEvIG4s4hjEUscbocpcQ092Ui9Pqivm98hvHh+ji9xVq66RSU7/MIi
-         iokQyZCNIaUO1P+vfSBagS6Mwol9B3pNSpFjPvzeq8LCtMnyJz1VgrLbQ1XpDeuRIbVj
-         +asGO79iHe9LOxGKRC1ZCR8SMd6BhhNjnWuJFBbAV57WADu3Pxp1B+snMkjhRRPbILce
-         GmtQ==
+        bh=LHXxRnsLKoOvgd0yvx6F4xuhgUe7ABigB+ckGTWSYwg=;
+        b=Ft2JbOoNS11xYnG4jPafmaaqHhG1EEGHT7MA8DfFZxSLfyvH3n0DGPDVzkntupT43E
+         +bjzWtJmfui/DGFuFDIoqmHBcQZeiCglr4ynd28Z3pqgJleOYcpaKvfC0RoiW+szcGKa
+         CLmMJhbwaCXUD/O4NzezKg9O0NXgTBy3oFVNKuI6IL+6a/O1Ho5LGoOG858DdW7kMgOi
+         40jW6XqilwMS4/eBnplOvOIVqEd0WwXB8wOCQppbKmxfNwBZVPLeU1hutD8TRyLvnWgT
+         5SXPw9Se3AUZ9+xUxyr03aesF9vnfSWiq0jpjO5EKWJ19yWAwOvMb20BpcQ/cBFN7wfR
+         LtYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=EFHWJqOuZ5oCfySHPR3lGIAEM6/c2S56gFx0hAWTits=;
-        b=fGfNVFWp464zCeDR6SJnDU8j1rXJO74woAm7MQfk5GjVP/xjI/T51eoCXKCYju700B
-         /3okztziAcz1vAGKl6NBm77Vy87CNQnMcJKH8ol5GWqbE0lkzvQgR58SGWulX9renn+a
-         3TtdysE9kvMQkI7DTnUUJN2corgsneM/Nu2nms7bQroz0CRPpqQoLvPwmpjRXuXle0dg
-         3f/la18uNzRfD1XOMdM46TV1IgrX7Nx9U7HdbeCEYotoRkQWb7Qa5+No67blfT/vwBCb
-         joWusy75c6MjFcSNaL9QJ3nEKRb77h2ADjsAklbOUp2K5LisOz/l/KGp5gRbstpr/1gn
-         T55Q==
-X-Gm-Message-State: AOAM5319f1A5g4H1PpaURxi/fXopv2wCqb8eqZmFFMUFdxdJklRaLgcz
-        nwIl7EvPmZsHBTHFKP23/SpvVccPCT+OrfkxSDI=
-X-Google-Smtp-Source: ABdhPJzW3Fvi8O1I3RdTpgDrVo+V4N7HeT6KVKLgNNjdyfYAbynwehos99I2n2hC2EeG6e4aVy/1iB1HAvNbc6zHnDs=
-X-Received: by 2002:a17:906:158c:: with SMTP id k12mr22774572ejd.119.1612878542051;
- Tue, 09 Feb 2021 05:49:02 -0800 (PST)
+        bh=LHXxRnsLKoOvgd0yvx6F4xuhgUe7ABigB+ckGTWSYwg=;
+        b=KK0URSc5OQZ6Vw5UiOIlTocJmum4yrRzhdsHRx9AAeniRVOxrQGWZWqITP5VKdI2iQ
+         Z0Jzi8ojp22uvgXnWliscAATAXis9q3fEwxv3wjH5/a7dodTOa+ER3ph6ow3vf4wUJen
+         ElExLty2JZuqF6//21vKDFDCUiwx2GDO2imYun1BcxzykNqBI1OoLP0uinJMqtOFRz07
+         GQJvwwJa455Vq5Qylt60SiAB7aAdp1ZAHMk3wfWgHGdS7shAJADsBCf4NpXXyjJWLVH8
+         TsfGfBqLOb4EMJpNf4O25M3AEahUDdl2T7ldBm6XF3ZflOk8/IgdIn/S48+AT0ss6KFM
+         JjcA==
+X-Gm-Message-State: AOAM531LNqJvb9XuYAY6eGceYJqWABTkD4aTZtsajAxSfaZaMrAI5g4B
+        oSbcK5+NOi5pAadtlCcnuFJ+UdA27EdaAmYVTGQ=
+X-Google-Smtp-Source: ABdhPJwxdUAn9WHjqsT4NJBsFmkI4fLufcraU6RK4VvOJrza9m3CIZ7ManUXZ4AXC4z/SfN0G3UI3LDwT9GWibA5Vdk=
+X-Received: by 2002:a17:906:4dc5:: with SMTP id f5mr22171118ejw.11.1612878856672;
+ Tue, 09 Feb 2021 05:54:16 -0800 (PST)
 MIME-Version: 1.0
-References: <20210208113810.11118-1-hxseverything@gmail.com>
- <CA+FuTScScC2o6uDjua0T3Eucbjt8-YPf65h3xgxMpTtWvgjWmg@mail.gmail.com> <8552C5F8-8410-4E81-8AF4-7018878AFCDC@gmail.com>
-In-Reply-To: <8552C5F8-8410-4E81-8AF4-7018878AFCDC@gmail.com>
+References: <20210208185558.995292-1-willemdebruijn.kernel@gmail.com>
+ <20210208185558.995292-3-willemdebruijn.kernel@gmail.com> <c089cb3e-96cb-b42a-5ce1-d54d298987c4@redhat.com>
+In-Reply-To: <c089cb3e-96cb-b42a-5ce1-d54d298987c4@redhat.com>
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 9 Feb 2021 08:48:26 -0500
-Message-ID: <CAF=yD-LBLmGF5aZjTS_GJOY_CRKDeVShffsxqu00uy_tNYpL9w@mail.gmail.com>
-Subject: Re: [PATCH] bpf: in bpf_skb_adjust_room correct inner protocol for vxlan
-To:     =?UTF-8?B?6buE5a2m5qOu?= <hxseverything@gmail.com>
-Cc:     David Miller <davem@davemloft.net>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+Date:   Tue, 9 Feb 2021 08:53:40 -0500
+Message-ID: <CAF=yD-Jkm-Cfs2tHKhC17KfPp+=18y=9_XSuY-LNgkC-2_NfLA@mail.gmail.com>
+Subject: Re: [PATCH RFC v2 2/4] virtio-net: support receive timestamp
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org,
         Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        chengzhiyong <chengzhiyong@kuaishou.com>,
-        wangli <wangli09@kuaishou.com>,
-        Alan Maguire <alan.maguire@oracle.com>
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Willem de Bruijn <willemb@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 9, 2021 at 5:41 AM =E9=BB=84=E5=AD=A6=E6=A3=AE <hxseverything@g=
-mail.com> wrote:
+On Mon, Feb 8, 2021 at 11:13 PM Jason Wang <jasowang@redhat.com> wrote:
 >
-> Appreciate for your reply Willem!
 >
-> The original intention of this commit is that when we use bpf_skb_adjust_=
-room  to encapsulate
-> Vxlan packets, we find some powerful device features disabled.
->
-> Setting the inner_protocol directly as skb->protocol is the root cause.
->
-> I understand that it=E2=80=99s not easy to handle all tunnel protocol in =
-one bpf helper function. But for my
-> immature idea, when pushing Ethernet header, setting the inner_protocol a=
-s ETH_P_TEB may
-> be better.
->
-> Now the flag BPF_F_ADJ_ROOM_ENCAP_L4_UDP includes many udp tunnel types( =
-e.g.
-> udp+mpls, geneve, vxlan). Adding an independent flag to represents Vxlan =
-looks a little
-> reduplicative. What=E2=80=99s your suggestion?
+> On 2021/2/9 =E4=B8=8A=E5=8D=882:55, Willem de Bruijn wrote:
+> > From: Willem de Bruijn <willemb@google.com>
+> >
+> > Add optional PTP hardware rx timestamp offload for virtio-net.
+> >
+> > Accurate RTT measurement requires timestamps close to the wire.
+> > Introduce virtio feature VIRTIO_NET_F_RX_TSTAMP. If negotiated, the
+> > virtio-net header is expanded with room for a timestamp.
+> >
+> > A device may pass receive timestamps for all or some packets. Flag
+> > VIRTIO_NET_HDR_F_TSTAMP signals whether a timestamp is recorded.
+> >
+> > A driver that supports hardware timestamping must also support
+> > ioctl SIOCSHWTSTAMP. Implement that, as well as information getters
+> > ioctl SIOCGHWTSTAMP and ethtool get_ts_info (`ethtool -T $DEV`).
+> >
+> > The timestamp straddles (virtual) hardware domains. Like PTP, use
+> > international atomic time (CLOCK_TAI) as global clock base. The driver
+> > must sync with the device, e.g., through kvm-clock.
+> >
+> > Tested:
+> >    guest: ./timestamping eth0 \
+> >            SOF_TIMESTAMPING_RAW_HARDWARE \
+> >            SOF_TIMESTAMPING_RX_HARDWARE
+> >    host: nc -4 -u 192.168.1.1 319
+> >
+> > Changes RFC -> RFCv2
+> >    - rename virtio_net_hdr_v12 to virtio_net_hdr_hash_ts
+> >    - add ethtool .get_ts_info to query capabilities
+> >    - add ioctl SIOC[GS]HWTSTAMP to configure feature
+> >    - add vi->enable_rx_tstamp to store configuration
+> >    - convert virtioXX_to_cpu to leXX_to_cpu
+> >    - convert reserved to __u32
+> >
+> > Signed-off-by: Willem de Bruijn <willemb@google.com>
 
-Agreed. I don't mean to add a vxlan specific flag.
+> >   static const struct net_device_ops virtnet_netdev =3D {
+> >       .ndo_open            =3D virtnet_open,
+> >       .ndo_stop            =3D virtnet_close,
+> > @@ -2573,6 +2676,7 @@ static const struct net_device_ops virtnet_netdev=
+ =3D {
+> >       .ndo_features_check     =3D passthru_features_check,
+> >       .ndo_get_phys_port_name =3D virtnet_get_phys_port_name,
+> >       .ndo_set_features       =3D virtnet_set_features,
+> > +     .ndo_do_ioctl           =3D virtnet_ioctl,
+> >   };
+> >
+> >   static void virtnet_config_changed_work(struct work_struct *work)
+> > @@ -3069,6 +3173,11 @@ static int virtnet_probe(struct virtio_device *v=
+dev)
+> >               vi->hdr_len =3D sizeof(struct virtio_net_hdr_v1_hash);
+> >       }
+> >
+> > +     if (virtio_has_feature(vdev, VIRTIO_NET_F_RX_TSTAMP)) {
+> > +             vi->has_rx_tstamp =3D true;
+> > +             vi->hdr_len =3D sizeof(struct virtio_net_hdr_hash_ts);
+>
+>
+> Does this mean even if the device doesn't pass timestamp, the header
+> still contains the timestamp fields.
 
-Instead, a way to identify that the encapsulation includes a mac
-header. To a certain extent, that already exists as of commit
-58dfc900faff ("bpf: add layer 2 encap support to
-bpf_skb_adjust_room"). That computes an inner_maclen. It makes sense
-that inner_protocol needs to be updated if inner_maclen indicates a
-mac header.
+Yes. As implemented, the size of the header is constant across
+packets. If both sides negotiate the feature, then all headers reserve
+space, whether or not the specific packet has a timestamp.
 
-I would only not infer it based on some imprecise measure, such as
-inner_maclen being 14. But add a new explicit flag
-BPF_F_ADJ_ROOM_ENCAP_L2_ETH. Update inner protocol if the flag is
-passed and inner_maclen >=3D ETH_HLEN. Fail the operation if the flag is
-passed and inner_maclen is too short.
+So far headers are fixed size. I suppose we could investigate variable
+size headers. This goes back to our discussion in the previous
+patchset, that we can always add a packed-header feature later, if the
+number of optional features reaches a size that makes the complexity
+worthwhile.
 
-> Thanks again for your reply!
+> > +     }
+> > +
+> >       if (virtio_has_feature(vdev, VIRTIO_F_ANY_LAYOUT) ||
+> >           virtio_has_feature(vdev, VIRTIO_F_VERSION_1))
+> >               vi->any_header_sg =3D true;
+> > @@ -3260,7 +3369,7 @@ static struct virtio_device_id id_table[] =3D {
+> >       VIRTIO_NET_F_CTRL_MAC_ADDR, \
+> >       VIRTIO_NET_F_MTU, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS, \
+> >       VIRTIO_NET_F_SPEED_DUPLEX, VIRTIO_NET_F_STANDBY, \
+> > -     VIRTIO_NET_F_TX_HASH
+> > +     VIRTIO_NET_F_TX_HASH, VIRTIO_NET_F_RX_TSTAMP
+> >
+> >   static unsigned int features[] =3D {
+> >       VIRTNET_FEATURES,
+> > diff --git a/include/uapi/linux/virtio_net.h b/include/uapi/linux/virti=
+o_net.h
+> > index 273d43c35f59..a5c84410cf92 100644
+> > --- a/include/uapi/linux/virtio_net.h
+> > +++ b/include/uapi/linux/virtio_net.h
+> > @@ -57,6 +57,7 @@
+> >                                        * Steering */
+> >   #define VIRTIO_NET_F_CTRL_MAC_ADDR 23       /* Set MAC address */
+> >
+> > +#define VIRTIO_NET_F_RX_TSTAMP         55    /* Device sends TAI recei=
+ve time */
+> >   #define VIRTIO_NET_F_TX_HASH          56    /* Driver sends hash repo=
+rt */
+> >   #define VIRTIO_NET_F_HASH_REPORT  57        /* Supports hash report *=
+/
+> >   #define VIRTIO_NET_F_RSS      60    /* Supports RSS RX steering */
+> > @@ -126,6 +127,7 @@ struct virtio_net_hdr_v1 {
+> >   #define VIRTIO_NET_HDR_F_NEEDS_CSUM 1       /* Use csum_start, csum_o=
+ffset */
+> >   #define VIRTIO_NET_HDR_F_DATA_VALID 2       /* Csum is valid */
+> >   #define VIRTIO_NET_HDR_F_RSC_INFO   4       /* rsc info in csum_ fiel=
+ds */
+> > +#define VIRTIO_NET_HDR_F_TSTAMP              8       /* timestamp is r=
+ecorded */
+> >       __u8 flags;
+> >   #define VIRTIO_NET_HDR_GSO_NONE             0       /* Not a GSO fram=
+e */
+> >   #define VIRTIO_NET_HDR_GSO_TCPV4    1       /* GSO frame, IPv4 TCP (T=
+SO) */
+> > @@ -181,6 +183,17 @@ struct virtio_net_hdr_v1_hash {
+> >       };
+> >   };
+> >
+> > +struct virtio_net_hdr_hash_ts {
+> > +     struct virtio_net_hdr_v1 hdr;
+> > +     struct {
+> > +             __le32 value;
+> > +             __le16 report;
+> > +             __le16 flow_state;
+> > +     } hash;
 >
 >
->
-> > 2021=E5=B9=B42=E6=9C=888=E6=97=A5 =E4=B8=8B=E5=8D=889:06=EF=BC=8CWillem=
- de Bruijn <willemdebruijn.kernel@gmail.com> =E5=86=99=E9=81=93=EF=BC=9A
-> >
-> > On Mon, Feb 8, 2021 at 7:16 AM huangxuesen <hxseverything@gmail.com> wr=
-ote:
-> >>
-> >> From: huangxuesen <huangxuesen@kuaishou.com>
-> >>
-> >> When pushing vxlan tunnel header, set inner protocol as ETH_P_TEB in s=
-kb
-> >> to avoid HW device disabling udp tunnel segmentation offload, just lik=
-e
-> >> vxlan_build_skb does.
-> >>
-> >> Drivers for NIC may invoke vxlan_features_check to check the
-> >> inner_protocol in skb for vxlan packets to decide whether to disable
-> >> NETIF_F_GSO_MASK. Currently it sets inner_protocol as the original
-> >> skb->protocol, that will make mlx5_core disable TSO and lead to huge
-> >> performance degradation.
-> >>
-> >> Signed-off-by: huangxuesen <huangxuesen@kuaishou.com>
-> >> Signed-off-by: chengzhiyong <chengzhiyong@kuaishou.com>
-> >> Signed-off-by: wangli <wangli09@kuaishou.com>
-> >> ---
-> >> net/core/filter.c | 7 ++++++-
-> >> 1 file changed, 6 insertions(+), 1 deletion(-)
-> >>
-> >> diff --git a/net/core/filter.c b/net/core/filter.c
-> >> index 255aeee72402..f8d3ba3fe10f 100644
-> >> --- a/net/core/filter.c
-> >> +++ b/net/core/filter.c
-> >> @@ -3466,7 +3466,12 @@ static int bpf_skb_net_grow(struct sk_buff *skb=
-, u32 off, u32 len_diff,
-> >>                skb->inner_mac_header =3D inner_net - inner_mac_len;
-> >>                skb->inner_network_header =3D inner_net;
-> >>                skb->inner_transport_header =3D inner_trans;
-> >> -               skb_set_inner_protocol(skb, skb->protocol);
-> >> +
-> >> +               if (flags & BPF_F_ADJ_ROOM_ENCAP_L4_UDP &&
-> >> +                   inner_mac_len =3D=3D ETH_HLEN)
-> >> +                       skb_set_inner_protocol(skb, htons(ETH_P_TEB));
-> >
-> > This may be used by vxlan, but it does not imply it.
-> >
-> > Adding ETH_HLEN bytes likely means pushing an Ethernet header, but same=
- point.
-> >
-> > Conversely, pushing an Ethernet header is not limited to UDP encap.
-> >
-> > This probably needs a new explicit BPF_F_ADJ_ROOM_.. flag, rather than
-> > trying to infer from imprecise heuristics.
->
+> Any reason for not embedding structure virtio_net_hdr_v1_hash?
+
+Just that it becomes an onion of struct inside structs. I can change
+if you prefer.
+
+> Thanks
+
+As always, thanks for reviewing, Jason.
