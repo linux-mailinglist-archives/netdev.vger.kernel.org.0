@@ -2,118 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BAD6F315747
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 21:00:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48019315736
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 20:55:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233745AbhBIT4p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 14:56:45 -0500
-Received: from mx2.suse.de ([195.135.220.15]:37886 "EHLO mx2.suse.de"
+        id S233753AbhBITvk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 14:51:40 -0500
+Received: from mx2.suse.de ([195.135.220.15]:38498 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233501AbhBITlj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Feb 2021 14:41:39 -0500
+        id S233634AbhBITnM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Feb 2021 14:43:12 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 4B882AD24;
-        Tue,  9 Feb 2021 19:40:20 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id E31EEAE07;
+        Tue,  9 Feb 2021 19:42:29 +0000 (UTC)
 Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 11FA460573; Tue,  9 Feb 2021 20:40:20 +0100 (CET)
-Date:   Tue, 9 Feb 2021 20:40:20 +0100
+        id A6F9860573; Tue,  9 Feb 2021 20:42:29 +0100 (CET)
+Date:   Tue, 9 Feb 2021 20:42:29 +0100
 From:   Michal Kubecek <mkubecek@suse.cz>
 To:     Danielle Ratson <danieller@nvidia.com>
 Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, kuba@kernel.org,
         andrew@lunn.ch, mlxsw@nvidia.com
-Subject: Re: [PATCH ethtool v2 1/5] ethtool: Extend ethtool link modes
- settings uAPI with lanes
-Message-ID: <20210209194020.a7yjjd6hxj33l6ld@lion.mk-sys.cz>
+Subject: Re: [PATCH ethtool v2 2/5] netlink: settings: Add netlink support
+ for lanes parameter
+Message-ID: <20210209194229.7czrlyx6znjsy77v@lion.mk-sys.cz>
 References: <20210202182513.325864-1-danieller@nvidia.com>
- <20210202182513.325864-2-danieller@nvidia.com>
+ <20210202182513.325864-3-danieller@nvidia.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="gmj6d6mgliwdas4c"
+        protocol="application/pgp-signature"; boundary="3ssdmg5hcnfiq7bj"
 Content-Disposition: inline
-In-Reply-To: <20210202182513.325864-2-danieller@nvidia.com>
+In-Reply-To: <20210202182513.325864-3-danieller@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---gmj6d6mgliwdas4c
+--3ssdmg5hcnfiq7bj
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Feb 02, 2021 at 08:25:09PM +0200, Danielle Ratson wrote:
-> Add ETHTOOL_A_LINKMODES_LANES, expand ethtool_link_settings with
-> lanes attribute and define valid lanes in order to support a new
-> lanes-selector.
+On Tue, Feb 02, 2021 at 08:25:10PM +0200, Danielle Ratson wrote:
+> Add support for "ethtool -s <dev> lanes N ..." for setting a specific
+> number of lanes.
 >=20
 > Signed-off-by: Danielle Ratson <danieller@nvidia.com>
+> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 > ---
+>  ethtool.c          | 1 +
+>  netlink/settings.c | 8 ++++++++
+>  2 files changed, 9 insertions(+)
+>=20
+> diff --git a/ethtool.c b/ethtool.c
+> index 585aafa..fcb09f7 100644
+> --- a/ethtool.c
+> +++ b/ethtool.c
+> @@ -5620,6 +5620,7 @@ static const struct option args[] =3D {
+>  		.nlfunc	=3D nl_sset,
+>  		.help	=3D "Change generic options",
+>  		.xhelp	=3D "		[ speed %d ]\n"
+> +			  "		[ lanes %d ]\n"
+>  			  "		[ duplex half|full ]\n"
+>  			  "		[ port tp|aui|bnc|mii|fibre|da ]\n"
+>  			  "		[ mdix auto|on|off ]\n"
+> diff --git a/netlink/settings.c b/netlink/settings.c
+> index 90c28b1..6cb5d5b 100644
+> --- a/netlink/settings.c
+> +++ b/netlink/settings.c
+> @@ -20,6 +20,7 @@
+>  struct link_mode_info {
+>  	enum link_mode_class	class;
+>  	u32			speed;
+> +	u32			lanes;
+>  	u8			duplex;
+>  };
+> =20
 
-When updating the UAPI header copies, please do it in a separate commit
-which updates the whole uapi/ subdirectory to the state of a specific
-kernel commit. You can use the script at
-
-  https://www.kernel.org/pub/software/network/ethtool/ethtool-import-uapi
-
-It expects the LINUX_GIT environment variable to point to your local git
-repository with kernel tree and takes one argument identifying the
-commit you want to import the uapi headers from (commit id, tag or
-branch name can be used). In your case, net-next would be the most
-likely choice.
+This structure member is not used anywhere in this patch and, AFAICS,
+not even in the rest of your series. Perhaps a leftover from an older
+version?
 
 Michal
 
-> Notes:
->     v2:
->     	* Update headers after changes in upstream patches.
->=20
->  netlink/desc-ethtool.c       | 1 +
->  uapi/linux/ethtool_netlink.h | 1 +
->  2 files changed, 2 insertions(+)
->=20
-> diff --git a/netlink/desc-ethtool.c b/netlink/desc-ethtool.c
-> index 96291b9..fe5d7ba 100644
-> --- a/netlink/desc-ethtool.c
-> +++ b/netlink/desc-ethtool.c
-> @@ -87,6 +87,7 @@ static const struct pretty_nla_desc __linkmodes_desc[] =
-=3D {
->  	NLATTR_DESC_U8(ETHTOOL_A_LINKMODES_DUPLEX),
->  	NLATTR_DESC_U8(ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG),
->  	NLATTR_DESC_U8(ETHTOOL_A_LINKMODES_MASTER_SLAVE_STATE),
-> +	NLATTR_DESC_U32(ETHTOOL_A_LINKMODES_LANES),
->  };
-> =20
->  static const struct pretty_nla_desc __linkstate_desc[] =3D {
-> diff --git a/uapi/linux/ethtool_netlink.h b/uapi/linux/ethtool_netlink.h
-> index c022883..0cd6906 100644
-> --- a/uapi/linux/ethtool_netlink.h
-> +++ b/uapi/linux/ethtool_netlink.h
-> @@ -227,6 +227,7 @@ enum {
->  	ETHTOOL_A_LINKMODES_DUPLEX,		/* u8 */
->  	ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG,	/* u8 */
->  	ETHTOOL_A_LINKMODES_MASTER_SLAVE_STATE,	/* u8 */
-> +	ETHTOOL_A_LINKMODES_LANES,		/* u32 */
-> =20
->  	/* add new constants above here */
->  	__ETHTOOL_A_LINKMODES_CNT,
+> @@ -1067,6 +1068,13 @@ static const struct param_parser sset_params[] =3D=
+ {
+>  		.handler	=3D nl_parse_direct_u32,
+>  		.min_argc	=3D 1,
+>  	},
+> +	{
+> +		.arg		=3D "lanes",
+> +		.group		=3D ETHTOOL_MSG_LINKMODES_SET,
+> +		.type		=3D ETHTOOL_A_LINKMODES_LANES,
+> +		.handler	=3D nl_parse_direct_u32,
+> +		.min_argc	=3D 1,
+> +	},
+>  	{
+>  		.arg		=3D "duplex",
+>  		.group		=3D ETHTOOL_MSG_LINKMODES_SET,
 > --=20
 > 2.26.2
 >=20
 
---gmj6d6mgliwdas4c
+--3ssdmg5hcnfiq7bj
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmAi5R4ACgkQ538sG/LR
-dpU+eAf/YeQur0sKEiCEqXCvQbrw1XPmHm0pGrjsJDUzU7oce6kJ27qxt0wz08H2
-sclxFHHWJEDAfFJ93WwYAtB8rG9Zg52eFp54cY0ns+a6kli1yDNsHVOqxq3/qJSU
-SYrmYnAAEYFdwjN1o7Yq+CX/UP8G08JH0Yw3ZGHo8RbraYhZ/L4mAuU2dqsrEXsi
-1cJofgGRMDEPUOy+PsYpZhhHDEmqcoDXRamRwRO2YpYtmbw7a0HTCD9GhTbH9gxF
-8GZ3QPqvjV4J51YHlGeQpeD05k/PU+TW69oClx+7CXPilUUvKoOMOOWuP5uo7yZX
-h7wWOCwIr9hhJx24fLOBFAMsCkG1/Q==
-=GY9c
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmAi5aAACgkQ538sG/LR
+dpU4HwgAi0BLn9OlCfVp/Sfng4ajY40lg1IOdGeziFTbI3Q6jL1KhA+FGwJIomUc
+qb2YVzCo0tXrKZH2X90kNTC2cPm75bqe9+2d9UGi5PosFU+Zb9uokhzD0d5ZqTKy
+sXwRKp4tEcG6SNDpBAhRG3luLi48khPgiBOUT68Y9oAScflROK09WdySu3z6cC8C
+IcVQylBKNBrrQCXhBX59Q9GHNQRDeGRPvzqGMXO8kVPcbM/o4/L5KxEYIAg+aQHR
+v+XrOypw5LhJq6Y8UTkFP4ZN0/LJAnAN21AVSLmm8TQzoaRGeyJeT/2K4p3ozqaX
+gHOKAZDEgK38PYJKa6vaRtfUzNCuHA==
+=Debj
 -----END PGP SIGNATURE-----
 
---gmj6d6mgliwdas4c--
+--3ssdmg5hcnfiq7bj--
