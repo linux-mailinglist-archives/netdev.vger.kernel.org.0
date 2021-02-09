@@ -2,149 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB758314A41
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 09:28:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96C54314A43
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 09:28:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229754AbhBII10 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 03:27:26 -0500
-Received: from mail-eopbgr1400072.outbound.protection.outlook.com ([40.107.140.72]:27133
-        "EHLO JPN01-TY1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229743AbhBII1J (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Feb 2021 03:27:09 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bU1g0TuUvfIvaSfF3oyfirYltb55TXYUCq7epHxM4OEPTv+OgdxeL0C4Vpo+9CXDDlaUI0lhB3tqGsmlBt85kdpeIbTgtrpn8IsNnh85Md102mVluHmX1MADNvPQryhP0MOBAdO1CuFWcBEHnS5lyZGy450oofFEKNeABu/24+M+W41POoWquexH4U8QaOCCdEMKtqz00b0zKzucGfGGYjH8x5tpqkRp73gnIMhcsPxWUI9fWPy9I7ypixqBTxEhEnMVpw/tspf0xGFTkqwPOU+PS/8JhxjJtCCfaEGf6Db33kwHp1B+FimsifE0Nl9BfoxdBynVnVvpqyecW4H/yQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yNUfV1UQmMsM5fsHWJfn2pSx7A0sFASAduk7Akup3p8=;
- b=MGpwPCstEtHmnp72z+IbiRx+Iimjlak3wILfJwm17WD8+UONZYvjYz266UH2WSP8b8Bu4n6RlTX/Js17K+8lLfawaYudu5UnzyO0zsX8BXYnzqjGr8TyYoWyJtX1X7TWKBYFLL36FU2Q82T+sGD/deEy4DEgwwpZJ7q3ikiWgy9fxkl6z1ecUaRTD/8ufPbwcXT2aF0/YgpGtlA3iR0x1apgp/a10nf2Prm77Twi0Mz3rbhE+tvH/aM7atTy5BKOBoD402+MWaPch81E+tRgqB4bXOKhSaFDcNjQ1UgO7MarAf7ONMfn/b80jBuuoO19HVuhFvAvaVeDQ32wkAYGMA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nec.com; dmarc=pass action=none header.from=nec.com; dkim=pass
- header.d=nec.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nec.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yNUfV1UQmMsM5fsHWJfn2pSx7A0sFASAduk7Akup3p8=;
- b=jWcC2SxrpkVoOwPROUkhjtqLQIU18a8q0Bpj6Vd3eBqj8xnk9+7/JhgLEAaC9Vh4y1HxZmMgK3LNa3TZm1EQb8UG2XPnPncu0/33Q26VQeqnVayud0FEdftcNM9l4eIkMjfQxyzXMZqh95jqHxoMskUqupPYUAFgbKdl86OFZTY=
-Received: from OSBPR01MB2229.jpnprd01.prod.outlook.com (2603:1096:603:20::11)
- by OS3PR01MB6134.jpnprd01.prod.outlook.com (2603:1096:604:d0::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.20; Tue, 9 Feb
- 2021 08:24:52 +0000
-Received: from OSBPR01MB2229.jpnprd01.prod.outlook.com
- ([fe80::9c64:96a9:41a5:98e4]) by OSBPR01MB2229.jpnprd01.prod.outlook.com
- ([fe80::9c64:96a9:41a5:98e4%5]) with mapi id 15.20.3825.030; Tue, 9 Feb 2021
- 08:24:52 +0000
-From:   =?iso-2022-jp?B?Tk9NVVJBIEpVTklDSEkoGyRCTG5CPCEhPV8wbBsoQik=?= 
-        <junichi.nomura@nec.com>
-To:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "toke@redhat.com" <toke@redhat.com>,
-        =?iso-2022-jp?B?Tk9NVVJBIEpVTklDSEkoGyRCTG5CPCEhPV8wbBsoQik=?= 
-        <junichi.nomura@nec.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: [PATCH bpf] devmap: Use GFP_KERNEL for xdp bulk queue allocation
-Thread-Topic: [PATCH bpf] devmap: Use GFP_KERNEL for xdp bulk queue allocation
-Thread-Index: AQHW/r0Jwmd5e9huskOKvbv+Dh9u7w==
-Date:   Tue, 9 Feb 2021 08:24:52 +0000
-Message-ID: <20210209082451.GA44021@jeru.linux.bs1.fc.nec.co.jp>
-Accept-Language: ja-JP, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=nec.com;
-x-originating-ip: [165.225.110.205]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 0ab03ced-6651-493e-cb8d-08d8ccd42c4b
-x-ms-traffictypediagnostic: OS3PR01MB6134:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <OS3PR01MB61340C0EF366B43E3C2AADE3838E9@OS3PR01MB6134.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1169;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 7+ABFw7bC3Qz7wZBOlUO4ylXYyNebcNpHMtGbvQgtckCd4Seg3ZaIxPvAwZvJgsPNpYSNxfxCzScS9aUyCaJXHMooiGANWdxGszZGfLCaXKOxrVusppjxhWl7Q00WXLDtt5Oxt7ba5/tVSQ0yoR5lDojowP8PVSJHIbIz6rZBGCOeRv71JOKAMEQAJlD9dDzg/5DNXIxvXUDlTspGViW1pWmiHUQjHs7sD/+CnKNZbZg8hF73p/L45gaifs0IzQyy1OFBB6/T1vuBRHfyUfp2JzbzL2ULBLwj537pOyzGrKdZrhlMvZFWxX+Q+dwejIDO5vNMvOzUqj3N/4iJsq/SufqL/2EcA4/rTwEVVVFSE1W3xvsiPOf1noaDB8AQAamFTYJf8H+kDy92bUbQFdqNfMlA4NkcK4tRvUAERM7jmrkUCuySKZCDXffQUNQ7aXu+x2aISPvCHkza7rBzmwhVJohenTAIPk9sN/MogTZB/BxxAWFFvkNOhS6kF9jHdBESfyFIz+Jpdn4kB2T/AxNSA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OSBPR01MB2229.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(136003)(376002)(39860400002)(396003)(346002)(1076003)(8936002)(83380400001)(86362001)(55236004)(6486002)(6506007)(5660300002)(66556008)(9686003)(91956017)(316002)(4326008)(8676002)(26005)(54906003)(110136005)(76116006)(66946007)(71200400001)(478600001)(33656002)(186003)(2906002)(85182001)(66476007)(6512007)(64756008)(66446008);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?iso-2022-jp?B?NWVTN1JXZElEVWxsWFpCT2VlU3o2OTRpUE9ZSmd4eHVjZGRsMEFDRm8y?=
- =?iso-2022-jp?B?YmQxTXRRMlNwS0xJd2JtZTRaWUQ0eXB0QkxYK3p4cGdwcnpKMXdpRFRP?=
- =?iso-2022-jp?B?cE9jbXlpQUNnN2F2R1ZsMG44WVVYbkxKck9kN0xCQzNqVmUrVHAwSHR1?=
- =?iso-2022-jp?B?YXBaVmlhUnJ4d0FyalVHalUxc0d3V3JpbUVoR2R3THhGQ1EweklUcmN3?=
- =?iso-2022-jp?B?Ylk0NTVJdGgyN0NxR1czb3ZhN1JlRzVTUDdiUTFpeUY5c2l2aWlVYWJE?=
- =?iso-2022-jp?B?RVBwdG1PeFpSVk85ek54S1U4MmhsdFlROVFpeE9jRU0vNUMrZWxDTnNQ?=
- =?iso-2022-jp?B?UWhZckVaUGFsRkZnNk1JSmIrNFBVSU4xNWh2Mld5NFpUNm9hb1pQNjNa?=
- =?iso-2022-jp?B?Yis5bkZ1U0c4SzdTU1hwek1hckl4d08vZzNlU0lqSzFjNllGT2hhWmFh?=
- =?iso-2022-jp?B?S24vNDRGZmdNdjJ6TGo3aWl0ZlJkRXR4YjVyZjFXZFNMRlVmWjhQbWZt?=
- =?iso-2022-jp?B?VHl4NWtXUzdmV1lQVThXaWJ3QlByTDQrRjRCRmRNWjJqNXhmVGVEUG5i?=
- =?iso-2022-jp?B?amlwR2NzQWJ2QnZDaDFrcHkxSmIyWnBYOGZyY0lZK3ZOSkl6VHdlVTJU?=
- =?iso-2022-jp?B?blp6NkpOYkgrK3NIclkrenQzd0JFelhYcklzcFBwMTVsQXFYSTJiQkFD?=
- =?iso-2022-jp?B?N3N3QVpsKzNubnVMQmgrQ002aUZZTlk5R2U5Ti9pL1VNSktqS2Z3YVJW?=
- =?iso-2022-jp?B?ZExDcy9HMWpObm1oTkVzbS8vMVVOa0ZIQWZ0Rms4dUZMUzFYM21kZVZL?=
- =?iso-2022-jp?B?dk1ZeloyWEJoa3JnQzNpV1ZkN28ycTE4dG1IQzA5Y2RIa3pxZUYrZjNQ?=
- =?iso-2022-jp?B?UFVmNUFjUHhCTk9BUUR1NW53Y3B5Vm1kd05HUmRCVEhjeEMxZ0FFQXky?=
- =?iso-2022-jp?B?YithRHRkQllnaGZtd252aWZDZ3RHby81Q0ExNGJhSnVLOGpKNkovb0ZZ?=
- =?iso-2022-jp?B?RVRxOWNJdkFKTWI1NWVveHdTb0RUcFJacnRDemlqZWxCL2VSMmVBNnFi?=
- =?iso-2022-jp?B?ZnE1Y3RJOTFveERvSE5XVzRqTCtvRXorRk5DK3A3U3BUeEJYdkJLQUpP?=
- =?iso-2022-jp?B?QVZsSmZyVnl6OXhpbTdpM2hYS2x5Nk5aWHhqVi92aW1GUnhVN2dQczBW?=
- =?iso-2022-jp?B?MXlndFZGczh6a2s0cG5WMDNXeFZGYVRvOWJTQnN3S0JhS3BqTFhneDhL?=
- =?iso-2022-jp?B?TUpKVHZ0UnhIdjZObUpNWjB2QnVyaWkvVlNMZVFNV3ZCOWd4QTM3b3pz?=
- =?iso-2022-jp?B?c0xQYU12V3EwU0VvK0xaTVFUUG9lVDdKTUdFc2xMTUpwWDJoeStDczZ5?=
- =?iso-2022-jp?B?NW9qRTczN1VRbzlCakxEYUdmMnF6d3E5TnBNM1ZadjhWSlVTeW1MaUpj?=
- =?iso-2022-jp?B?akJ0Y0lmMUFlcCtySkhiSS80ZzFHN2RYTFRNNnFDMVp1blcrTnhrNllT?=
- =?iso-2022-jp?B?NStIMmp1Ky9QYmdET2NJMlFxeDY5NnpQNG1sdVZ0RjJENGxhZG5PZnhG?=
- =?iso-2022-jp?B?bGdoWlRsMGIrV1RYZTBzUXk0M2Y2RUZ2RGlNM2lIdmJLdnFkS2Z6d25B?=
- =?iso-2022-jp?B?NndwN3VNc1djL2c3SlVpMXhjUUJrbWgrcEtMREZYdndWVm92SnRTbGVT?=
- =?iso-2022-jp?B?TlBWTXNsYVBwaFpkekhhR2Qrc0pHVnR4TkJpaE9odkp6MDVhMU5Vb2Zh?=
- =?iso-2022-jp?B?a01Lb3dSbmZYK3pkZHFNdFczVnp3Q1BTQWI0anlySVQwVFZRLzFnTnV1?=
- =?iso-2022-jp?B?clRISnl3UjF3eGorOVJsbXIwUTkxZXkzSkNyRVJUY21iR3pHY2lDZ2kv?=
- =?iso-2022-jp?B?SVNJOFc1WmxRTk51SERzcE9WeFZCaU05ZVZEdkUyRjg0L1hWZ20ralZt?=
- =?iso-2022-jp?B?QUxWeHFKZ2hIY1YyMC8xOEl1WXJwdz09?=
-Content-Type: text/plain; charset="iso-2022-jp"
-Content-ID: <A521822A9B58B642A0FC4C645EE31822@jpnprd01.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S229784AbhBII2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 03:28:02 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:1788 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229671AbhBII12 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 03:27:28 -0500
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 11982TQg120319;
+        Tue, 9 Feb 2021 03:26:32 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=sv3C7wF3oZoO7KAFaHZNqG/h7UkOmmw6GYJ5ZuzJXno=;
+ b=HqW2R8hsOsMqdFDXa6GOdUCAPPJOC0lP3uIgwtdn2QZbKKWpd0fFsHKhq26ZyBweTGtX
+ kY9u5ZWrxpX2ocHRvzDNCtoGFxetfwmBaOOGLM96xlB4xZOfFH5qQx9XQ2ttGhvn61ga
+ 3U7Gt+ETaRN7rNx+SPp1hq9KxvTsMNTty4qpj5jECoUqqP87pFQTXE1qzmMl4Bf24yKK
+ GZEvG3qWoyxlVmBeftwEG8TRqb7mplrUb/dhYQyAH/mM9FehwCcqOvGTEfXfGbG0jrsK
+ wfjXXVpNkbO4OKs/GXgJAgy8jeFFHl4AapW4KcQEwhj1xnHRqEO2U64onfLNjacWIMvF 2Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 36knx0sk12-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 09 Feb 2021 03:26:31 -0500
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 11982sYB122374;
+        Tue, 9 Feb 2021 03:26:31 -0500
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 36knx0sk0n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 09 Feb 2021 03:26:31 -0500
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 1198MaQB016670;
+        Tue, 9 Feb 2021 08:26:29 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma06ams.nl.ibm.com with ESMTP id 36j94wj79v-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 09 Feb 2021 08:26:29 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1198QQnm41091386
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 9 Feb 2021 08:26:26 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CB46DA4066;
+        Tue,  9 Feb 2021 08:26:26 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 46E93A405B;
+        Tue,  9 Feb 2021 08:26:26 +0000 (GMT)
+Received: from [9.145.24.142] (unknown [9.145.24.142])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue,  9 Feb 2021 08:26:26 +0000 (GMT)
+Subject: Re: [PATCH net-next 8/8] mld: change context of mld module
+To:     Taehee Yoo <ap420073@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org, dsahern@kernel.org,
+        xiyou.wangcong@gmail.com, kgraul@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, borntraeger@de.ibm.com,
+        mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc,
+        sven@narfation.org, yoshfuji@linux-ipv6.org
+References: <20210208175952.5880-1-ap420073@gmail.com>
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+Message-ID: <ed1965e9-f35b-ec9b-f3ae-20a7adba956d@linux.ibm.com>
+Date:   Tue, 9 Feb 2021 09:26:26 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-X-OriginatorOrg: nec.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OSBPR01MB2229.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0ab03ced-6651-493e-cb8d-08d8ccd42c4b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Feb 2021 08:24:52.0603
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: e67df547-9d0d-4f4d-9161-51c6ed1f7d11
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 3kUG/zCkuwotszdTMdxQt/RWnNyVc6jcbY3RhYa+F0EJBKtkJbmJXkgSzE+gCMFYPQnJ6c+CXMQX7JtTZB/3lQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OS3PR01MB6134
+In-Reply-To: <20210208175952.5880-1-ap420073@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
+ definitions=2021-02-09_02:2021-02-08,2021-02-09 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ spamscore=0 malwarescore=0 suspectscore=0 clxscore=1011 mlxscore=0
+ lowpriorityscore=0 adultscore=0 bulkscore=0 mlxlogscore=999 phishscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2102090036
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The devmap bulk queue is allocated with GFP_ATOMIC and the allocation may
-fail if there is no available space in existing percpu pool.
+On 08.02.21 18:59, Taehee Yoo wrote:
+> MLD module's context is atomic although most logic is called from
+> control-path, not data path. Only a few functions are called from
+> datapath, most of the functions are called from the control-path.
+> Furthermore, MLD's response is not processed immediately because
+> MLD protocol is using delayed response.
+> It means that If a query is received, the node should have a delay
+> in response At this point, it could change the context.
+> It means most of the functions can be implemented as the sleepable
+> context so that mld functions can use sleepable functions.
+> 
+> Most resources are protected by spinlock and rwlock so the context
+> of mld functions is atomic. So, in order to change context, locking
+> scenario should be changed.
+> It switches from spinlock/rwlock to mutex and rcu.
+> 
+> Some locks are deleted and added.
+> 1. ipv6->mc_socklist->sflock is deleted
+> This is rwlock and it is unnecessary.
+> Because it protects ipv6_mc_socklist-sflist but it is now protected
+> by rtnl_lock().
+> 
+> 2. ifmcaddr6->mca_work_lock is added.
+> This lock protects ifmcaddr6->mca_work.
+> This workqueue can be used by both control-path and data-path.
+> It means mutex can't be used.
+> So mca_work_lock(spinlock) is added.
+> 
+> 3. inet6_dev->mc_tomb_lock is deleted
+> This lock protects inet6_dev->mc_bom_list.
+> But it is protected by rtnl_lock().
+> 
+> 4. inet6_dev->lock is used for protecting workqueues.
+> inet6_dev has its own workqueues(mc_gq_work, mc_ifc_work, mc_delrec_work)
+> and it can be started and stop by both control-path and data-path.
+> So, mutex can't be used.
+> 
+> Suggested-by: Cong Wang <xiyou.wangcong@gmail.com>
+> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+> ---
+>  drivers/s390/net/qeth_l3_main.c |   6 +-
+>  include/net/if_inet6.h          |  29 +-
+>  net/batman-adv/multicast.c      |   4 +-
+>  net/ipv6/addrconf.c             |   4 +-
+>  net/ipv6/mcast.c                | 785 ++++++++++++++++----------------
+>  5 files changed, 411 insertions(+), 417 deletions(-)
+> 
+> diff --git a/drivers/s390/net/qeth_l3_main.c b/drivers/s390/net/qeth_l3_main.c
+> index e49abdeff69c..085afb24482e 100644
+> --- a/drivers/s390/net/qeth_l3_main.c
+> +++ b/drivers/s390/net/qeth_l3_main.c
+> @@ -1098,8 +1098,8 @@ static int qeth_l3_add_mcast_rtnl(struct net_device *dev, int vid, void *arg)
+>  	tmp.disp_flag = QETH_DISP_ADDR_ADD;
+>  	tmp.is_multicast = 1;
+>  
+> -	read_lock_bh(&in6_dev->lock);
+> -	list_for_each_entry(im6, in6_dev->mc_list, list) {
+> +	rcu_read_lock();
+> +	list_for_each_entry_rcu(im6, in6_dev->mc_list, list) {
 
-Since commit 75ccae62cb8d42 ("xdp: Move devmap bulk queue into struct net_d=
-evice")
-moved the bulk queue allocation to NETDEV_REGISTER callback, whose context
-is allowed to sleep, use GFP_KERNEL instead of GFP_ATOMIC to let percpu
-allocator extend the pool when needed and avoid possible failure of netdev
-registration.
+No need for the rcu_read_lock(), we're called under rtnl.
+So if there's a v2, please just make this
 
-As the required alignment is natural, we can simply use alloc_percpu().
+	list_for_each_entry_rcu(im6, in6_dev->mc_list, list,
+				lockdep_rtnl_is_held())
 
-Signed-off-by: Jun'ichi Nomura <junichi.nomura@nec.com>
+>  		tmp.u.a6.addr = im6->mca_addr;
+>  
+>  		ipm = qeth_l3_find_addr_by_ip(card, &tmp);
+> @@ -1117,7 +1117,7 @@ static int qeth_l3_add_mcast_rtnl(struct net_device *dev, int vid, void *arg)
+>  			 qeth_l3_ipaddr_hash(ipm));
+>  
+>  	}
+> -	read_unlock_bh(&in6_dev->lock);
+> +	rcu_read_unlock();
+>  
+>  out:
+>  	return 0;
 
-diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-index f6e9c68afdd4..f4d3fe8e0652 100644
---- a/kernel/bpf/devmap.c
-+++ b/kernel/bpf/devmap.c
-@@ -803,8 +803,7 @@ static int dev_map_notification(struct notifier_block *=
-notifier,
-=20
- 		/* will be freed in free_netdev() */
- 		netdev->xdp_bulkq =3D
--			__alloc_percpu_gfp(sizeof(struct xdp_dev_bulk_queue),
--					   sizeof(void *), GFP_ATOMIC);
-+			alloc_percpu(struct xdp_dev_bulk_queue);
- 		if (!netdev->xdp_bulkq)
- 			return NOTIFY_BAD;
- =
+
