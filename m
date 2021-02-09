@@ -2,165 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96C54314A43
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 09:28:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E901A314A53
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 09:32:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229784AbhBII2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 03:28:02 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:1788 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229671AbhBII12 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 03:27:28 -0500
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 11982TQg120319;
-        Tue, 9 Feb 2021 03:26:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=sv3C7wF3oZoO7KAFaHZNqG/h7UkOmmw6GYJ5ZuzJXno=;
- b=HqW2R8hsOsMqdFDXa6GOdUCAPPJOC0lP3uIgwtdn2QZbKKWpd0fFsHKhq26ZyBweTGtX
- kY9u5ZWrxpX2ocHRvzDNCtoGFxetfwmBaOOGLM96xlB4xZOfFH5qQx9XQ2ttGhvn61ga
- 3U7Gt+ETaRN7rNx+SPp1hq9KxvTsMNTty4qpj5jECoUqqP87pFQTXE1qzmMl4Bf24yKK
- GZEvG3qWoyxlVmBeftwEG8TRqb7mplrUb/dhYQyAH/mM9FehwCcqOvGTEfXfGbG0jrsK
- wfjXXVpNkbO4OKs/GXgJAgy8jeFFHl4AapW4KcQEwhj1xnHRqEO2U64onfLNjacWIMvF 2Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 36knx0sk12-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 09 Feb 2021 03:26:31 -0500
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 11982sYB122374;
-        Tue, 9 Feb 2021 03:26:31 -0500
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 36knx0sk0n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 09 Feb 2021 03:26:31 -0500
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 1198MaQB016670;
-        Tue, 9 Feb 2021 08:26:29 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma06ams.nl.ibm.com with ESMTP id 36j94wj79v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 09 Feb 2021 08:26:29 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 1198QQnm41091386
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 9 Feb 2021 08:26:26 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CB46DA4066;
-        Tue,  9 Feb 2021 08:26:26 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 46E93A405B;
-        Tue,  9 Feb 2021 08:26:26 +0000 (GMT)
-Received: from [9.145.24.142] (unknown [9.145.24.142])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue,  9 Feb 2021 08:26:26 +0000 (GMT)
-Subject: Re: [PATCH net-next 8/8] mld: change context of mld module
-To:     Taehee Yoo <ap420073@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org, dsahern@kernel.org,
-        xiyou.wangcong@gmail.com, kgraul@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, borntraeger@de.ibm.com,
-        mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc,
-        sven@narfation.org, yoshfuji@linux-ipv6.org
-References: <20210208175952.5880-1-ap420073@gmail.com>
-From:   Julian Wiedmann <jwi@linux.ibm.com>
-Message-ID: <ed1965e9-f35b-ec9b-f3ae-20a7adba956d@linux.ibm.com>
-Date:   Tue, 9 Feb 2021 09:26:26 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        id S229760AbhBIIbP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 03:31:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48920 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229623AbhBIIbH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 03:31:07 -0500
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 711CAC06178B
+        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 00:30:26 -0800 (PST)
+Received: by mail-io1-xd2e.google.com with SMTP id f20so4377117ioo.10
+        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 00:30:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cMb3te+A56IcaTEcRriDT4+pJ2jbCyqlA+Erc56aT0A=;
+        b=BWuuo8Ju/ZW4fXvMr73cQ5mWfTqh9iRbdqvAFWoB3Q2H7NehE6qxql3xpW3PjM+i9Y
+         y/ZMF8IpjGLiItp4K4M0pxwPgKxOwe9vr3FFqBmd9LrzOwLeYasIf7Jw+sZgm9dLd0NS
+         nV9hZ5+XOuOvCnUS9SuaVr0HGn8YvfmXhfFvQQnI3npQ5kiBRl+9XBpboUDyQLChDRSo
+         HXtU8zmvB1A/WhuKW3ILomK8IakjH6NTI340zHvVEdcGkaMeafd51UypvworvQ3B/aM0
+         LXruzbFQO5vVoW2KehcRBFmn0fEZ++0vnCCNPNCHHZ1NNS8t2jakViPpemsIy8Q3kmZj
+         azzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cMb3te+A56IcaTEcRriDT4+pJ2jbCyqlA+Erc56aT0A=;
+        b=WTBiCns1w2/3+/fkAQUOv3K5HBSj4q6vFbInp6SyyC4GHwFxhHr759jXxWE5cywdO6
+         tkFy6vUQKuIScJnnholQh7D6KDzWo3sMzfKBc0OCztdUJzIxwFm0G3VLAXYZr1/QVUTU
+         Gd9fmVCBkEYSHHjihDN01SY00SemwQK3zpHSEFBgHP4Nx1AqiaQ4jky8Bh7arOWd8fBx
+         eAPDSpbfu9cv50N/NMxBRIKIWbakqjPLPyziZSbo47NlOX3ebuHav6e5/I55AGtZxnGk
+         G8QL0LtILO5XEYkDCWzRs67f+m5BKQR5zwZId4/YRd2/e1RI6fJCu0zVBWDEeRhi51xA
+         MlgQ==
+X-Gm-Message-State: AOAM532gEjWTtKxL7H390cSgwPytzT6k0sM/ytddEYVcoz5viHSYJHaD
+        8KTwWWuUO3Og7HVw8SzpRzL7ZQh2LWNHHJ+v0lnfxEC3JWA=
+X-Google-Smtp-Source: ABdhPJygi3Ii45Mt7MXiETdqQaz8r5tdyAvpHcYBismTG90tGYAEi0CxUCnLj4wGtxWPIy3UIKxjse+Gke4f/nd8vsI=
+X-Received: by 2002:a05:6638:204b:: with SMTP id t11mr21022296jaj.87.1612859425447;
+ Tue, 09 Feb 2021 00:30:25 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210208175952.5880-1-ap420073@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
- definitions=2021-02-09_02:2021-02-08,2021-02-09 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- spamscore=0 malwarescore=0 suspectscore=0 clxscore=1011 mlxscore=0
- lowpriorityscore=0 adultscore=0 bulkscore=0 mlxlogscore=999 phishscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102090036
+References: <20210208014545.6945-1-haokexin@gmail.com>
+In-Reply-To: <20210208014545.6945-1-haokexin@gmail.com>
+From:   sundeep subbaraya <sundeep.lkml@gmail.com>
+Date:   Tue, 9 Feb 2021 14:00:14 +0530
+Message-ID: <CALHRZurbWGP7GmaV2B3cu4hN3dFApf=mSzJvjxpPffgFfR2iEg@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: octeontx2: Fix the confusion in buffer
+ alloc failure path
+To:     Kevin Hao <haokexin@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        hariprasad <hkelam@marvell.com>, netdev@vger.kernel.org,
+        Pavel Machek <pavel@ucw.cz>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08.02.21 18:59, Taehee Yoo wrote:
-> MLD module's context is atomic although most logic is called from
-> control-path, not data path. Only a few functions are called from
-> datapath, most of the functions are called from the control-path.
-> Furthermore, MLD's response is not processed immediately because
-> MLD protocol is using delayed response.
-> It means that If a query is received, the node should have a delay
-> in response At this point, it could change the context.
-> It means most of the functions can be implemented as the sleepable
-> context so that mld functions can use sleepable functions.
-> 
-> Most resources are protected by spinlock and rwlock so the context
-> of mld functions is atomic. So, in order to change context, locking
-> scenario should be changed.
-> It switches from spinlock/rwlock to mutex and rcu.
-> 
-> Some locks are deleted and added.
-> 1. ipv6->mc_socklist->sflock is deleted
-> This is rwlock and it is unnecessary.
-> Because it protects ipv6_mc_socklist-sflist but it is now protected
-> by rtnl_lock().
-> 
-> 2. ifmcaddr6->mca_work_lock is added.
-> This lock protects ifmcaddr6->mca_work.
-> This workqueue can be used by both control-path and data-path.
-> It means mutex can't be used.
-> So mca_work_lock(spinlock) is added.
-> 
-> 3. inet6_dev->mc_tomb_lock is deleted
-> This lock protects inet6_dev->mc_bom_list.
-> But it is protected by rtnl_lock().
-> 
-> 4. inet6_dev->lock is used for protecting workqueues.
-> inet6_dev has its own workqueues(mc_gq_work, mc_ifc_work, mc_delrec_work)
-> and it can be started and stop by both control-path and data-path.
-> So, mutex can't be used.
-> 
-> Suggested-by: Cong Wang <xiyou.wangcong@gmail.com>
-> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+Tested-by: Subbaraya Sundeep <sbhatta@marvell.com>
+
+On Mon, Feb 8, 2021 at 7:27 AM Kevin Hao <haokexin@gmail.com> wrote:
+>
+> Pavel pointed that the return of dma_addr_t in
+> otx2_alloc_rbuf/__otx2_alloc_rbuf() seem suspicious because a negative
+> error code may be returned in some cases. For a dma_addr_t, the error
+> code such as -ENOMEM does seem a valid value, so we can't judge if the
+> buffer allocation fail or not based on that value. Add a parameter for
+> otx2_alloc_rbuf/__otx2_alloc_rbuf() to store the dma address and make
+> the return value to indicate if the buffer allocation really fail or
+> not.
+>
+> Reported-by: Pavel Machek <pavel@ucw.cz>
+> Signed-off-by: Kevin Hao <haokexin@gmail.com>
 > ---
->  drivers/s390/net/qeth_l3_main.c |   6 +-
->  include/net/if_inet6.h          |  29 +-
->  net/batman-adv/multicast.c      |   4 +-
->  net/ipv6/addrconf.c             |   4 +-
->  net/ipv6/mcast.c                | 785 ++++++++++++++++----------------
->  5 files changed, 411 insertions(+), 417 deletions(-)
-> 
-> diff --git a/drivers/s390/net/qeth_l3_main.c b/drivers/s390/net/qeth_l3_main.c
-> index e49abdeff69c..085afb24482e 100644
-> --- a/drivers/s390/net/qeth_l3_main.c
-> +++ b/drivers/s390/net/qeth_l3_main.c
-> @@ -1098,8 +1098,8 @@ static int qeth_l3_add_mcast_rtnl(struct net_device *dev, int vid, void *arg)
->  	tmp.disp_flag = QETH_DISP_ADDR_ADD;
->  	tmp.is_multicast = 1;
->  
-> -	read_lock_bh(&in6_dev->lock);
-> -	list_for_each_entry(im6, in6_dev->mc_list, list) {
-> +	rcu_read_lock();
-> +	list_for_each_entry_rcu(im6, in6_dev->mc_list, list) {
-
-No need for the rcu_read_lock(), we're called under rtnl.
-So if there's a v2, please just make this
-
-	list_for_each_entry_rcu(im6, in6_dev->mc_list, list,
-				lockdep_rtnl_is_held())
-
->  		tmp.u.a6.addr = im6->mca_addr;
->  
->  		ipm = qeth_l3_find_addr_by_ip(card, &tmp);
-> @@ -1117,7 +1117,7 @@ static int qeth_l3_add_mcast_rtnl(struct net_device *dev, int vid, void *arg)
->  			 qeth_l3_ipaddr_hash(ipm));
->  
->  	}
-> -	read_unlock_bh(&in6_dev->lock);
-> +	rcu_read_unlock();
->  
->  out:
->  	return 0;
-
-
+>  .../marvell/octeontx2/nic/otx2_common.c       | 38 +++++++++----------
+>  .../marvell/octeontx2/nic/otx2_common.h       |  7 ++--
+>  .../marvell/octeontx2/nic/otx2_txrx.c         |  5 +--
+>  3 files changed, 24 insertions(+), 26 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+> index cbd68fa9f1d6..ca2c47ce8ade 100644
+> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+> @@ -483,33 +483,34 @@ void otx2_config_irq_coalescing(struct otx2_nic *pfvf, int qidx)
+>                      (pfvf->hw.cq_ecount_wait - 1));
+>  }
+>
+> -dma_addr_t __otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool)
+> +int __otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool,
+> +                     dma_addr_t *dma)
+>  {
+> -       dma_addr_t iova;
+>         u8 *buf;
+>
+>         buf = napi_alloc_frag_align(pool->rbsize, OTX2_ALIGN);
+>         if (unlikely(!buf))
+>                 return -ENOMEM;
+>
+> -       iova = dma_map_single_attrs(pfvf->dev, buf, pool->rbsize,
+> +       *dma = dma_map_single_attrs(pfvf->dev, buf, pool->rbsize,
+>                                     DMA_FROM_DEVICE, DMA_ATTR_SKIP_CPU_SYNC);
+> -       if (unlikely(dma_mapping_error(pfvf->dev, iova))) {
+> +       if (unlikely(dma_mapping_error(pfvf->dev, *dma))) {
+>                 page_frag_free(buf);
+>                 return -ENOMEM;
+>         }
+>
+> -       return iova;
+> +       return 0;
+>  }
+>
+> -static dma_addr_t otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool)
+> +static int otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool,
+> +                          dma_addr_t *dma)
+>  {
+> -       dma_addr_t addr;
+> +       int ret;
+>
+>         local_bh_disable();
+> -       addr = __otx2_alloc_rbuf(pfvf, pool);
+> +       ret = __otx2_alloc_rbuf(pfvf, pool, dma);
+>         local_bh_enable();
+> -       return addr;
+> +       return ret;
+>  }
+>
+>  void otx2_tx_timeout(struct net_device *netdev, unsigned int txq)
+> @@ -903,7 +904,7 @@ static void otx2_pool_refill_task(struct work_struct *work)
+>         struct refill_work *wrk;
+>         int qidx, free_ptrs = 0;
+>         struct otx2_nic *pfvf;
+> -       s64 bufptr;
+> +       dma_addr_t bufptr;
+>
+>         wrk = container_of(work, struct refill_work, pool_refill_work.work);
+>         pfvf = wrk->pf;
+> @@ -913,8 +914,7 @@ static void otx2_pool_refill_task(struct work_struct *work)
+>         free_ptrs = cq->pool_ptrs;
+>
+>         while (cq->pool_ptrs) {
+> -               bufptr = otx2_alloc_rbuf(pfvf, rbpool);
+> -               if (bufptr <= 0) {
+> +               if (otx2_alloc_rbuf(pfvf, rbpool, &bufptr)) {
+>                         /* Schedule a WQ if we fails to free atleast half of the
+>                          * pointers else enable napi for this RQ.
+>                          */
+> @@ -1214,7 +1214,7 @@ int otx2_sq_aura_pool_init(struct otx2_nic *pfvf)
+>         struct otx2_snd_queue *sq;
+>         struct otx2_pool *pool;
+>         int err, ptr;
+> -       s64 bufptr;
+> +       dma_addr_t bufptr;
+>
+>         /* Calculate number of SQBs needed.
+>          *
+> @@ -1259,9 +1259,8 @@ int otx2_sq_aura_pool_init(struct otx2_nic *pfvf)
+>                         return -ENOMEM;
+>
+>                 for (ptr = 0; ptr < num_sqbs; ptr++) {
+> -                       bufptr = otx2_alloc_rbuf(pfvf, pool);
+> -                       if (bufptr <= 0)
+> -                               return bufptr;
+> +                       if (otx2_alloc_rbuf(pfvf, pool, &bufptr))
+> +                               return -ENOMEM;
+>                         otx2_aura_freeptr(pfvf, pool_id, bufptr);
+>                         sq->sqb_ptrs[sq->sqb_count++] = (u64)bufptr;
+>                 }
+> @@ -1280,7 +1279,7 @@ int otx2_rq_aura_pool_init(struct otx2_nic *pfvf)
+>         int stack_pages, pool_id, rq;
+>         struct otx2_pool *pool;
+>         int err, ptr, num_ptrs;
+> -       s64 bufptr;
+> +       dma_addr_t bufptr;
+>
+>         num_ptrs = pfvf->qset.rqe_cnt;
+>
+> @@ -1310,9 +1309,8 @@ int otx2_rq_aura_pool_init(struct otx2_nic *pfvf)
+>         for (pool_id = 0; pool_id < hw->rqpool_cnt; pool_id++) {
+>                 pool = &pfvf->qset.pool[pool_id];
+>                 for (ptr = 0; ptr < num_ptrs; ptr++) {
+> -                       bufptr = otx2_alloc_rbuf(pfvf, pool);
+> -                       if (bufptr <= 0)
+> -                               return bufptr;
+> +                       if (otx2_alloc_rbuf(pfvf, pool, &bufptr))
+> +                               return -ENOMEM;
+>                         otx2_aura_freeptr(pfvf, pool_id,
+>                                           bufptr + OTX2_HEAD_ROOM);
+>                 }
+> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+> index 143ae04c8ad5..0404900338e3 100644
+> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+> @@ -485,9 +485,9 @@ static inline u64 otx2_aura_allocptr(struct otx2_nic *pfvf, int aura)
+>
+>  /* Free pointer to a pool/aura */
+>  static inline void otx2_aura_freeptr(struct otx2_nic *pfvf,
+> -                                    int aura, s64 buf)
+> +                                    int aura, u64 buf)
+>  {
+> -       otx2_write128((u64)buf, (u64)aura | BIT_ULL(63),
+> +       otx2_write128(buf, (u64)aura | BIT_ULL(63),
+>                       otx2_get_regaddr(pfvf, NPA_LF_AURA_OP_FREE0));
+>  }
+>
+> @@ -636,7 +636,8 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl);
+>  int otx2_txsch_alloc(struct otx2_nic *pfvf);
+>  int otx2_txschq_stop(struct otx2_nic *pfvf);
+>  void otx2_sqb_flush(struct otx2_nic *pfvf);
+> -dma_addr_t __otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool);
+> +int __otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool,
+> +                     dma_addr_t *dma);
+>  int otx2_rxtx_enable(struct otx2_nic *pfvf, bool enable);
+>  void otx2_ctx_disable(struct mbox *mbox, int type, bool npa);
+>  int otx2_nix_config_bp(struct otx2_nic *pfvf, bool enable);
+> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+> index d0e25414f1a1..cc0dac325f77 100644
+> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+> @@ -304,7 +304,7 @@ static int otx2_rx_napi_handler(struct otx2_nic *pfvf,
+>  {
+>         struct nix_cqe_rx_s *cqe;
+>         int processed_cqe = 0;
+> -       s64 bufptr;
+> +       dma_addr_t bufptr;
+>
+>         while (likely(processed_cqe < budget)) {
+>                 cqe = (struct nix_cqe_rx_s *)CQE_ADDR(cq, cq->cq_head);
+> @@ -333,8 +333,7 @@ static int otx2_rx_napi_handler(struct otx2_nic *pfvf,
+>
+>         /* Refill pool with new buffers */
+>         while (cq->pool_ptrs) {
+> -               bufptr = __otx2_alloc_rbuf(pfvf, cq->rbpool);
+> -               if (unlikely(bufptr <= 0)) {
+> +               if (unlikely(__otx2_alloc_rbuf(pfvf, cq->rbpool, &bufptr))) {
+>                         struct refill_work *work;
+>                         struct delayed_work *dwork;
+>
+> --
+> 2.29.2
+>
