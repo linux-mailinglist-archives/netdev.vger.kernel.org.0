@@ -2,84 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97C0A31537F
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 17:12:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED930315392
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 17:16:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232742AbhBIQMM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 11:12:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35256 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232733AbhBIQLv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 11:11:51 -0500
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D748C06174A
-        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 08:11:11 -0800 (PST)
-Received: by mail-yb1-xb2b.google.com with SMTP id m76so18727398ybf.0
-        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 08:11:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zegi1/02lAykMG36iq8Jw9Il0zImHIJfyDBroQxzT2M=;
-        b=sqC8wjIaT8efrpTZgvQF6OH2H/JOyGEp6aLFL4TeDPy21taW6BgEOOKvSyLlx8XESo
-         JSkIevfXZVnAPkwvCua0eZXosbf3nKVcEvQEHc35A8uKwAIYVVyS4QKGHr5xtd1JjdBH
-         nMwsC32hnED+UmZSaSxW82E4d56sut4futzQxXNT8WIF3qGwrt4oym6DI5OkK3g5C7Ep
-         7fhj507DmlQ+/puUI+aue8SJwzovi0OVZkFaK2o+gE65LNyQ5wsr3OccxVLLuEhNWQiX
-         kPIGYjnJdgE/NlhaJgQtURABQInDramUMsbWkVe5JxlucrJeJBxDLJd/xUjJH2p30OVo
-         iAEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zegi1/02lAykMG36iq8Jw9Il0zImHIJfyDBroQxzT2M=;
-        b=PC+SCX3lWTzDlR0gghrnRP4eTND//T53CY/tmq7pgi8lIJs637naqitbs/uzYsvgjh
-         Z1eHKzTqiO2A39Cjm7Bx0iTOI3L4xHc5oDcRBv3QUygttHEEsdb5Zn71e1RFmzU9UWSf
-         peOTTIF9zd9TQly1t7oSTiEX7qdSMoS0KfC+I3RXFIuzwCcwrFh4kcH6KfjmkC9M0YmX
-         +l9FOHHsHjUSU6OCN5jg70+l5vZOH5Rju7hvwHc1mmVC451UOHSfGx89pUdmCVuywTGU
-         qxwaA2AIr7H12+MlIWuAI5Ko7VJETBZ2q+voeDrHFHQU3H4zy4LeQQOBZwig73qOHP8p
-         mj2Q==
-X-Gm-Message-State: AOAM5336Xcjt1EEKDVmlJgaLkSrQ0kZEYRQYaJ/gkvQ49guoafvXFeRG
-        R3dlnt8Gq2XAdG7vm9VEigVsSjWpu2WVEK8iN+E=
-X-Google-Smtp-Source: ABdhPJxnI03mzFQlAvFBIZuzPEZ9cm0K5GoTRLvuXb84Cjmbu1QxvniXPkopZAQGOdzR/E30j7alJJFpAVEvFb6OaMs=
-X-Received: by 2002:a25:ba13:: with SMTP id t19mr34074743ybg.129.1612887070856;
- Tue, 09 Feb 2021 08:11:10 -0800 (PST)
+        id S232343AbhBIQP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 11:15:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:53701 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231842AbhBIQPP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 11:15:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612887229;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=nnY4e3bu7/a3DG+aVrgYbco1QCGV9rZ/D0QUrkcNoPQ=;
+        b=JohqIKN+DUrgFdoAKz/drYKp1+vssVEhlz1w4MsTtmeqAbzYmkxrqwVawyiZDtnojRV4mA
+        09QyqiKKP4OabR0/CflnC8vh/mS21mTKiECcx+xd60VeAJVDaEHi6q7fSu9veDgfKtNyki
+        Ovi8cSec0iWeQEIHxjBAX3aQ77UENSY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-360-xaAYfVgPOkWgPiVw3qTkgw-1; Tue, 09 Feb 2021 11:13:45 -0500
+X-MC-Unique: xaAYfVgPOkWgPiVw3qTkgw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BD735801979;
+        Tue,  9 Feb 2021 16:13:42 +0000 (UTC)
+Received: from krava (unknown [10.40.192.77])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 725F060861;
+        Tue,  9 Feb 2021 16:13:39 +0000 (UTC)
+Date:   Tue, 9 Feb 2021 17:13:38 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        Veronika Kabatova <vkabatov@redhat.com>,
+        Jiri Olsa <jolsa@kernel.org>
+Subject: Re: FAILED unresolved symbol vfs_truncate on arm64 with LLVM
+Message-ID: <YCKwxNDkS9rdr43W@krava>
+References: <20210209034416.GA1669105@ubuntu-m3-large-x86>
+ <CAEf4BzYnT-eoKRL9_Pu_DEuqXVa+edN5F-s+k2RxBSzcsSTJ1g@mail.gmail.com>
+ <20210209052311.GA125918@ubuntu-m3-large-x86>
+ <CAEf4BzZV0-zx6YKUUKmecs=icnQNXJjTokdkSAoexm36za+wdA@mail.gmail.com>
+ <CAEf4BzYvri7wzRnGH_qQbavXOx5TfBA0qx4nYVnn=YNGv+vNVw@mail.gmail.com>
+ <CAEf4Bzax90hn_5axpnCpW+E6gVc1mtUgCXWqmxV0tJ4Ud7bsaA@mail.gmail.com>
+ <20210209074904.GA286822@ubuntu-m3-large-x86>
+ <YCKB1TF5wz93EIBK@krava>
+ <YCKlrLkTQXc4Cyx7@krava>
 MIME-Version: 1.0
-References: <20210206050240.48410-1-saeed@kernel.org> <20210206050240.48410-2-saeed@kernel.org>
- <20210206181335.GA2959@horizon.localdomain> <ygnhtuqngebi.fsf@nvidia.com>
- <20210208122213.338a673e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <ygnho8gtgw2l.fsf@nvidia.com>
-In-Reply-To: <ygnho8gtgw2l.fsf@nvidia.com>
-From:   Or Gerlitz <gerlitz.or@gmail.com>
-Date:   Tue, 9 Feb 2021 18:10:59 +0200
-Message-ID: <CAJ3xEMhjo6cYpW-A-0RXKVM52jPCzer_K0WOR64C7HMK8tuRew@mail.gmail.com>
-Subject: Re: [net-next V2 01/17] net/mlx5: E-Switch, Refactor setting source port
-To:     Vlad Buslov <vladbu@nvidia.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        Mark Bloch <mbloch@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YCKlrLkTQXc4Cyx7@krava>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 9, 2021 at 4:26 PM Vlad Buslov <vladbu@nvidia.com> wrote:
-> On Mon 08 Feb 2021 at 22:22, Jakub Kicinski <kuba@kernel.org> wrote:
-> > On Mon, 8 Feb 2021 10:21:21 +0200 Vlad Buslov wrote:
+On Tue, Feb 09, 2021 at 04:09:36PM +0100, Jiri Olsa wrote:
 
-> >> > These operations imply that 7.7.7.5 is configured on some interface on
-> >> > the host. Most likely the VF representor itself, as that aids with ARP
-> >> > resolution. Is that so?
+SNIP
 
-> >> The tunnel endpoint IP address is configured on VF that is represented
-> >> by enp8s0f0_0 representor in example rules. The VF is on host.
+> > > > >                 DW_AT_prototyped        (true)
+> > > > >                 DW_AT_type      (0x01cfdfe4 "long int")
+> > > > >                 DW_AT_external  (true)
+> > > > >
+> > > > 
+> > > > Ok, the problem appears to be not in DWARF, but in mcount_loc data.
+> > > > vfs_truncate's address is not recorded as ftrace-attachable, and thus
+> > > > pahole ignores it. I don't know why this happens and it's quite
+> > > > strange, given vfs_truncate is just a normal global function.
+> > 
+> > right, I can't see it in mcount adresses.. but it begins with instructions
+> > that appears to be nops, which would suggest it's traceable
+> > 
+> > 	ffff80001031f430 <vfs_truncate>:
+> > 	ffff80001031f430: 5f 24 03 d5   hint    #34
+> > 	ffff80001031f434: 1f 20 03 d5   nop
+> > 	ffff80001031f438: 1f 20 03 d5   nop
+> > 	ffff80001031f43c: 3f 23 03 d5   hint    #25
+> > 
+> > > > 
+> > > > I'd like to understand this issue before we try to fix it, but there
+> > > > is at least one improvement we can make: pahole should check ftrace
+> > > > addresses only for static functions, not the global ones (global ones
+> > > > should be always attachable, unless they are special, e.g., notrace
+> > > > and stuff). We can easily check that by looking at the corresponding
+> > > > symbol. But I'd like to verify that vfs_truncate is ftrace-attachable
+> 
+> I'm still trying to build the kernel.. however ;-)
 
-> > This is very confusing, are you saying that the 7.7.7.5 is configured
-> > both on VF and VFrep? Could you provide a full picture of the config
-> > with IP addresses and routing?
+I finally reproduced.. however arm's not using mcount_loc
+but some other special section.. so it's new mess for me
 
-> No, tunnel IP is configured on VF. That particular VF is in host [..]
+however I tried the same build without LLVM=1 and it passed,
+so my guess is that clang is doing something unexpected
 
-What's the motivation for that? isn't that introducing 3x slow down?
+jirka
+
