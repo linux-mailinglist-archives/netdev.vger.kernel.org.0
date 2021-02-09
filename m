@@ -2,185 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 664E0314883
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 07:15:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 166A3314889
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 07:17:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230051AbhBIGOK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 01:14:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47776 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229683AbhBIGOC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 01:14:02 -0500
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6779EC061786;
-        Mon,  8 Feb 2021 22:13:22 -0800 (PST)
-Received: by mail-yb1-xb2a.google.com with SMTP id w204so17110954ybg.2;
-        Mon, 08 Feb 2021 22:13:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Wlmna3DEiIiZVjhHWOjRL7VmzEe2uosGs1W7iJ27zug=;
-        b=WtqTXmstXwWpe8EGSKw1DXiDtUH73zhvhwLNV4pxXAPxy/mPXl/tRWvMt7IBgImld8
-         Pe+gQMscHrC55LZj0WvM0xC6idf2Pilh55DJEOCm58FxEGhSDUv+WGZMcOH84u6S+v+h
-         qxp55nAwuEToUgGt/yXCuQx+ii3ai9BLQ+7gp+oYRPrm5oLGlvHWeP6U1Zd7CwH8wkcw
-         iAqKMrWSzWD4ON2jvL8Q/y/sGhhkTJav2AP1p/Xd96rmB8hUKoFEv20Fab/hdexDlWFf
-         AdEQPl4VHqDopQ7DCwChRWrkIcPFvI6AG5On5j3duuth7/Iorm9uaq9aXhS1VIKE8VJ/
-         84bw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Wlmna3DEiIiZVjhHWOjRL7VmzEe2uosGs1W7iJ27zug=;
-        b=eolLXvgMYwjvrNUtZnF/LUYLrlm1mxu6vpVBdhp02BxRmPpQ8YNWLLaZs64i9nacQm
-         +jgsDb4FYJDVvcAtt+avxADnmH4xA224NPpMsiIBrTv9YBqVITk6Kkld/ZNGOD/mdTGZ
-         FiDJJuawjBBiJhZDS0agIMmr0VIMvna7Ga0cwVENVdY/1EchokELcFtcJsjpiBDGGbV2
-         Q4bJIgO5l+s0kbMjncF6DpBIsa6wQDJdlBZGocKfh47qEJdYIa3g/KcmDp5+XxJNUpQe
-         2prdT72pc7StxXHD2tV8rzrwn0NnC5NR8QflQlXh62JSZOe1jFwhkT4ohJmn9VwU0JwH
-         wFww==
-X-Gm-Message-State: AOAM5323U7lF5DhzxtfAUEJ1my46lxobS2uWLZ6e2ddI4RU6XoED9Y1O
-        c+64vK4LP1NFGtn6CH7EFc52xJCyxaGYUgjZTj0=
-X-Google-Smtp-Source: ABdhPJysH0ePXABLSOGQUYqfrIMImTf+faXzGCK7WpQuJzH4vwelkRfloHxrMVv3fMmP9tU7Yu6XgG+ZJcVXcB0T5LA=
-X-Received: by 2002:a25:4b86:: with SMTP id y128mr30188961yba.403.1612851201745;
- Mon, 08 Feb 2021 22:13:21 -0800 (PST)
+        id S230044AbhBIGQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 01:16:01 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41380 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229464AbhBIGP4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Feb 2021 01:15:56 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EF97264EB8;
+        Tue,  9 Feb 2021 06:15:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612851315;
+        bh=a7ndhO7sYv1/e3+bqD0RFzvVKWKeRKjNuOSPf7QgqyA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Fv4UohDKldrz01lbMyNhgCf3pU8u0aPY+GosGBrpYYhMmLvTbzMos8nACFtxJOZ+1
+         jHqyH9EgExWph4B+q82Oxx7CYh3MV6hj2CGcN9zwWRTzheSNPY3IKnYS6In5EIS4S8
+         I9uFeyU6Je4gga/E5JhAYrlvW7dByMzCEIdDxuSGyTQT04jKhdGg8Ozu7KGAUPIzII
+         FxjKXSrCkOfPvoDxuFWUKr+jzmBWLcb5EnTpa4uf48ex5ebCZOXTqHHLC4CrmLaO3N
+         4Tymi+b4yxrGAXTrUjYzDHfteDrpbN+U4LHyR6umr8p0yi1DcrxiOQppeHV30TjWzr
+         Kcz/jJTA/qdAQ==
+Date:   Tue, 9 Feb 2021 08:15:11 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Arjun Roy <arjunroy.kdev@gmail.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, arjunroy@google.com, edumazet@google.com,
+        soheil@google.com, David Ahern <dsahern@gmail.com>
+Subject: Re: [net-next v2] tcp: Explicitly mark reserved field in
+ tcp_zerocopy_receive args.
+Message-ID: <20210209061511.GI20265@unreal>
+References: <20210206203648.609650-1-arjunroy.kdev@gmail.com>
+ <20210206152828.6610da2b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210207082654.GC4656@unreal>
+ <20210208104143.60a6d730@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <20210209034416.GA1669105@ubuntu-m3-large-x86> <CAEf4BzYnT-eoKRL9_Pu_DEuqXVa+edN5F-s+k2RxBSzcsSTJ1g@mail.gmail.com>
- <20210209052311.GA125918@ubuntu-m3-large-x86> <CAEf4BzZV0-zx6YKUUKmecs=icnQNXJjTokdkSAoexm36za+wdA@mail.gmail.com>
-In-Reply-To: <CAEf4BzZV0-zx6YKUUKmecs=icnQNXJjTokdkSAoexm36za+wdA@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 8 Feb 2021 22:13:10 -0800
-Message-ID: <CAEf4BzYvri7wzRnGH_qQbavXOx5TfBA0qx4nYVnn=YNGv+vNVw@mail.gmail.com>
-Subject: Re: FAILED unresolved symbol vfs_truncate on arm64 with LLVM
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Veronika Kabatova <vkabatov@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210208104143.60a6d730@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 8, 2021 at 10:09 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Mon, Feb 8, 2021 at 9:23 PM Nathan Chancellor <nathan@kernel.org> wrote:
-> >
-> > On Mon, Feb 08, 2021 at 08:45:43PM -0800, Andrii Nakryiko wrote:
-> > > On Mon, Feb 8, 2021 at 7:44 PM Nathan Chancellor <nathan@kernel.org> wrote:
+On Mon, Feb 08, 2021 at 10:41:43AM -0800, Jakub Kicinski wrote:
+> On Sun, 7 Feb 2021 10:26:54 +0200 Leon Romanovsky wrote:
+> > On Sat, Feb 06, 2021 at 03:28:28PM -0800, Jakub Kicinski wrote:
+> > > On Sat,  6 Feb 2021 12:36:48 -0800 Arjun Roy wrote:
+> > > > From: Arjun Roy <arjunroy@google.com>
 > > > >
-> > > > Hi all,
-> > > >
-> > > > Recently, an issue with CONFIG_DEBUG_INFO_BTF was reported for arm64:
-> > > > https://groups.google.com/g/clang-built-linux/c/de_mNh23FOc/m/E7cu5BwbBAAJ
-> > > >
-> > > > $ make -skj"$(nproc)" ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
-> > > >                       LLVM=1 O=build/aarch64 defconfig
-> > > >
-> > > > $ scripts/config \
-> > > >     --file build/aarch64/.config \
-> > > >     -e BPF_SYSCALL \
-> > > >     -e DEBUG_INFO_BTF \
-> > > >     -e FTRACE \
-> > > >     -e FUNCTION_TRACER
-> > > >
-> > > > $ make -skj"$(nproc)" ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
-> > > >                       LLVM=1 O=build/aarch64 olddefconfig all
-> > > > ...
-> > > > FAILED unresolved symbol vfs_truncate
-> > > > ...
-> > > >
-> > > > My bisect landed on commit 6e22ab9da793 ("bpf: Add d_path helper")
-> > > > although that seems obvious given that is what introduced
-> > > > BTF_ID(func, vfs_truncate).
-> > > >
-> > > > I am using the latest pahole v1.20 and LLVM is at
-> > > > https://github.com/llvm/llvm-project/commit/14da287e18846ea86e45b421dc47f78ecc5aa7cb
-> > > > although I can reproduce back to LLVM 10.0.1, which is the earliest
-> > > > version that the kernel supports. I am very unfamiliar with BPF so I
-> > > > have no idea what is going wrong here. Is this a known issue?
-> > > >
+> > > > Explicitly define reserved field and require it to be 0-valued.
 > > >
-> > > I'll skip the reproduction games this time and will just request the
-> > > vmlinux image. Please upload somewhere so that we can look at DWARF
-> > > and see what's going on. Thanks.
+> > > > diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> > > > index e1a17c6b473c..c8469c579ed8 100644
+> > > > --- a/net/ipv4/tcp.c
+> > > > +++ b/net/ipv4/tcp.c
+> > > > @@ -4159,6 +4159,8 @@ static int do_tcp_getsockopt(struct sock *sk, int level,
+> > > >  		}
+> > > >  		if (copy_from_user(&zc, optval, len))
+> > > >  			return -EFAULT;
+> > > > +		if (zc.reserved)
+> > > > +			return -EINVAL;
+> > > >  		lock_sock(sk);
+> > > >  		err = tcp_zerocopy_receive(sk, &zc, &tss);
+> > > >  		release_sock(sk);
 > > >
+> > > I was expecting we'd also throw in a check_zeroed_user().
+> > > Either we can check if the buffer is zeroed all the way,
+> > > or we can't and we shouldn't validate reserved either
+> > >
+> > > 	check_zeroed_user(optval + offsetof(reserved),
+> > > 			  len - offsetof(reserved))
+> > > ?
 > >
-> > Sure thing, let me know if this works. I uploaded in two places to make
-> > it easier to grab:
+> > There is a check that len is not larger than zs and users can't give
+> > large buffer.
 > >
-> > zstd compressed:
-> > https://github.com/nathanchance/bug-files/blob/3b2873751e29311e084ae2c71604a1963f5e1a48/btf-aarch64/vmlinux.zst
-> >
+> > I would say that is pretty safe to write "if (zc.reserved)".
 >
-> Thanks. I clearly see at least one instance of seemingly well-formed
-> vfs_truncate DWARF declaration. Also there is a proper ELF symbol for
-> it. Which means it should have been generated in BTF, but it doesn't
-> appear to be, so it does seem like a pahole bug. I (or someone else
-> before me) will continue tomorrow.
->
-> $ llvm-dwarfdump vmlinux
-> ...
->
-> 0x00052e6f:   DW_TAG_subprogram
->                 DW_AT_name      ("vfs_truncate")
->                 DW_AT_decl_file
-> ("/home/nathan/cbl/src/linux/include/linux/fs.h")
->                 DW_AT_decl_line (2520)
->                 DW_AT_prototyped        (true)
->                 DW_AT_type      (0x000452cb "long int")
->                 DW_AT_declaration       (true)
->                 DW_AT_external  (true)
->
-> 0x00052e7b:     DW_TAG_formal_parameter
->                   DW_AT_type    (0x00045fc6 "const path*")
->
-> 0x00052e80:     DW_TAG_formal_parameter
->                   DW_AT_type    (0x00045213 "long long int")
->
-> ...
->
+> Which check? There's a check which truncates (writes back to user space
+> len = min(len, sizeof(zc)). Application can still pass garbage beyond
+> sizeof(zc) and syscall may start failing in the future if sizeof(zc)
+> changes.
 
-... and here's the *only* other one (not marked as declaration, but I
-thought we already handle that, Jiri?):
-
-0x01d0da35:   DW_TAG_subprogram
-                DW_AT_low_pc    (0xffff80001031f430)
-                DW_AT_high_pc   (0xffff80001031f598)
-                DW_AT_frame_base        (DW_OP_reg29)
-                DW_AT_GNU_all_call_sites        (true)
-                DW_AT_name      ("vfs_truncate")
-                DW_AT_decl_file ("/home/nathan/cbl/src/linux/fs/open.c")
-                DW_AT_decl_line (69)
-                DW_AT_prototyped        (true)
-                DW_AT_type      (0x01cfdfe4 "long int")
-                DW_AT_external  (true)
+At least in my tree, we have the length check:
+  4155                 if (len > sizeof(zc)) {
+  4156                         len = sizeof(zc);
+  4157                         if (put_user(len, optlen))
+  4158                                 return -EFAULT;
+  4159                 }
 
 
-> $ llvm-readelf -s vmlinux | rg vfs_truncate
->  15013: ffff800011c22418     4 OBJECT  LOCAL  DEFAULT    24
-> __BTF_ID__func__vfs_truncate__609
->  22531: ffff80001189fe0d     0 NOTYPE  LOCAL  DEFAULT    17
-> __kstrtab_vfs_truncate
->  22532: ffff8000118a985b     0 NOTYPE  LOCAL  DEFAULT    17
-> __kstrtabns_vfs_truncate
->  22534: ffff800011873b7c     0 NOTYPE  LOCAL  DEFAULT     8
-> __ksymtab_vfs_truncate
-> 176099: ffff80001031f430   360 FUNC    GLOBAL DEFAULT     2 vfs_truncate
->
-> $ bpftool btf dump file vmlinux | rg vfs_truncate
-> <nothing>
->
-> > uncompressed:
-> > https://1drv.ms/u/s!AsQNYeB-IEbqjQiUOspbEdXx49o7?e=ipA9Hv
-> >
-> > Cheers,
-> > Nathan
+Ad David wrote below, the "if (zc.reserved)" is enough.
+
+We have following options:
+1. Old kernel that have sizeof(sz) upto .reserved and old userspace
+-> len <= sizeof(sz) - works correctly.
+2. Old kernel that have sizeof(sz) upto .reserved and new userspace that
+sends larger struct -> "f (len > sizeof(zc))" will return -EFAULT
+3. New kernel that have sizeof(sz) beyond reserved and old userspace
+-> any new added field to struct sz should be checked and anyway it is the same as item 1.
+4. New kernel and new userspace
+-> standard flow.
+
+Thanks
