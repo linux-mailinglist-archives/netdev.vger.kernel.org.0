@@ -2,139 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D83B831589E
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 22:32:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10C803158A4
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 22:33:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233823AbhBIV0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 16:26:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43042 "EHLO
+        id S234386AbhBIV2l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 16:28:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234215AbhBIVJB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 16:09:01 -0500
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1069CC06174A;
-        Tue,  9 Feb 2021 13:06:37 -0800 (PST)
-Received: by mail-il1-x134.google.com with SMTP id e7so17408210ile.7;
-        Tue, 09 Feb 2021 13:06:37 -0800 (PST)
+        with ESMTP id S233922AbhBIVOO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 16:14:14 -0500
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA0EC0613D6
+        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 13:13:26 -0800 (PST)
+Received: by mail-oi1-x235.google.com with SMTP id m7so20948650oiw.12
+        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 13:13:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=15OODCihpty0UWi0a0aB28afyJjig1mNPU55XHksU0Y=;
-        b=WGXCYkfG2UPIZGxYCJxQlssPEm1c/IlOG/OKZvuBR+izcGLbqIiFcfuejjz/mGmaXQ
-         OfzIgOqW63BCSbhlSfev2owDbikYinz5IvA+aXtZi8UAmRcKM1JtOTRsxFiDdqbB+rZK
-         cMssXcwgnShvLxiXKNb1af1X6+vePNNgHf71OWkAAWi/LSCIRQgBXyzm3xqfEmBefztI
-         vTJG4RRv71a/763zsXLPjnDxESRZrXyXxXLc9gyOQ3mz3UtI2jkPQY9DyHWsdMQb1OZ/
-         6MvSndL/Mb4iTPgxdOvDg2Yz1PRmd1nCTbcm3mgb2ZyLbJ5qSGTBIrZ/Dp2EcdpoqliJ
-         gUhg==
+        h=from:to:cc:subject:date:message-id;
+        bh=zOr93WXqZTrgj40r/VXH5RS6b9QPAmKqC4y8SY4MmVE=;
+        b=IFfzTe2Vf7XGKUlO54vbIpDDLyvgED0kGUirNPBVeEj8z4rYkPjYgJ9LJlCuQsKQnt
+         VjgIF+DzJDNOh0e98JWTVECnJiFOktX+GRv+Lq6q80o8VsQ8roSR4q/+Zd6QVe1QP9oo
+         BMCZ5q0jDd+dcYyKWASOtEuATFeTckGKnT6fK3Vq2qdP6Eje4C5DP+c/zP271TmFQ1nU
+         eg0fOGQAozdm56OItFl/oln4d/xDVkgKQsnpzKarNxSKQkb+8or4dz0QnXenvVRANOpV
+         wx1Asuj3ri0OXRKTJQHo6Za6qaT7Hby12dx+M9eSgjn6wqLNJYazOvAz8Bnvlbzpl8Lk
+         vJ1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=15OODCihpty0UWi0a0aB28afyJjig1mNPU55XHksU0Y=;
-        b=s91Xm145AjTv+qg71k908NZ1gPEnT6GRtM70UVYsXE+Gh/0nwW/NfvQ/+DwXMRkUlB
-         1GOFYanrHOqPgQjNCwZ/hWhAB1ns/Nnm0s8xjg5rtCE55NICrFSdzTYkAlUy/UONVI/X
-         6Zbb8qOja2Xt3LDX8EL0bgmITtCgZcxPtRRrg1SDknDQZdRTlflvir1HCUMz7aUDOVM2
-         2nPpchGlB0z0ocEqBUQkl3I+BdKWlsr5ORoucCYR63VHSzzBRaR38Ikm2uoJwr+uheOu
-         KZ5H1jcMZJPfZ81xpPbTnmCjYzNoTObIuvOqS29wiBuwKnwOUMYTbjgjnFx90z40N8ud
-         mp/A==
-X-Gm-Message-State: AOAM530oK6UePWaMwPGEUUbGzi1crnurqop1u+VgJDPzwlVNVsNSDYV3
-        g7HIaCDD6O9S9mZ1/yulvIKZInIEOMNZeYzXS10=
-X-Google-Smtp-Source: ABdhPJx6CJULSRazipUh8Vc7wnERN3KJ4SipHXstSl2Km+4a0nkeP2kgKY7mN/5Pjmc5k6lp53CnVDwOyTqVCG4rPrQ=
-X-Received: by 2002:a92:cec2:: with SMTP id z2mr2768778ilq.42.1612904796430;
- Tue, 09 Feb 2021 13:06:36 -0800 (PST)
-MIME-Version: 1.0
-References: <20210209133445.700225-1-leon@kernel.org>
-In-Reply-To: <20210209133445.700225-1-leon@kernel.org>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Tue, 9 Feb 2021 13:06:25 -0800
-Message-ID: <CAKgT0Ud+c6wzo3n_8VgtVBQm-2UPic6U2QFuqqN-P9nEv_Y+JQ@mail.gmail.com>
-Subject: Re: [PATCH mlx5-next v6 0/4] Dynamically assign MSI-X vectors count
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        Don Dutile <ddutile@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=zOr93WXqZTrgj40r/VXH5RS6b9QPAmKqC4y8SY4MmVE=;
+        b=HF+6XDji7OCHPypOE4+2bHyqAdHuVO6PiNugWRENo8DLPz6C2i0yQUV6jmQGQ5ks6+
+         DG33OOvNXcQsGD1szVQkHqNRfBtEu8LGa0byXPprcp+QW5B67X8DH3oEBLk0Ayr8YZ2n
+         XKeOFMXrRi7a1AqNcdyz14ymNoPYVJHgEdGOjEDAzuxpYJOuURsbf5/EA1rjQcb/7c2z
+         gYgv/xlnjxo1/O1Wq0gtY7CxhmUsCESziJj20mBdEI6KlDNE1oR06gT+vOQ+FksLpzLg
+         qL6tMKq81KOqJNJNlj+Sthxn8mSDFenubVHTmwcf8Lso8MSuAr3a9bIIz2QueDFDpPML
+         6Uyg==
+X-Gm-Message-State: AOAM530b1zWOj8u9QZV4Rq8/dhZWzkGARYof2H3cEZVG4zwXxZB3yShW
+        NGpdsL/bluxAkdlNDesjYQ==
+X-Google-Smtp-Source: ABdhPJwQPIVjg/jV61MvVZhkFP+s+dN16N9y4y2ncRKXop9+HP8hE+y3MzTIl73QXUwduzB+gYBDzQ==
+X-Received: by 2002:aca:5f85:: with SMTP id t127mr3577862oib.76.1612905205795;
+        Tue, 09 Feb 2021 13:13:25 -0800 (PST)
+Received: from threadripper.novatech-llc.local ([216.21.169.52])
+        by smtp.gmail.com with ESMTPSA id r4sm2512777oig.52.2021.02.09.13.13.24
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 09 Feb 2021 13:13:24 -0800 (PST)
+From:   George McCollister <george.mccollister@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
+        George McCollister <george.mccollister@gmail.com>
+Subject: [PATCH net-next 1/2] net: dsa: xrs700x: fix unused warning for of_device_id
+Date:   Tue,  9 Feb 2021 15:12:55 -0600
+Message-Id: <20210209211256.111764-1-george.mccollister@gmail.com>
+X-Mailer: git-send-email 2.11.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 9, 2021 at 5:34 AM Leon Romanovsky <leon@kernel.org> wrote:
->
-> From: Leon Romanovsky <leonro@nvidia.com>
+Fix unused variable warning that occurs when CONFIG_OF isn't defined by
+adding __maybe_unused.
 
-<snip>
+>> drivers/net/dsa/xrs700x/xrs700x_i2c.c:127:34: warning: unused
+variable 'xrs700x_i2c_dt_ids' [-Wunused-const-variable]
+   static const struct of_device_id xrs700x_i2c_dt_ids[] = {
 
-> --------------------------------------------------------------------
-> Hi,
->
-> The number of MSI-X vectors is PCI property visible through lspci, that
-> field is read-only and configured by the device.
->
-> The static assignment of an amount of MSI-X vectors doesn't allow utilize
-> the newly created VF because it is not known to the device the future load
-> and configuration where that VF will be used.
->
-> The VFs are created on the hypervisor and forwarded to the VMs that have
-> different properties (for example number of CPUs).
->
-> To overcome the inefficiency in the spread of such MSI-X vectors, we
-> allow the kernel to instruct the device with the needed number of such
-> vectors, before VF is initialized and bounded to the driver.
->
-> Before this series:
-> [root@server ~]# lspci -vs 0000:08:00.2
-> 08:00.2 Ethernet controller: Mellanox Technologies MT27800 Family [ConnectX-5 Virtual Function]
-> ....
->         Capabilities: [9c] MSI-X: Enable- Count=12 Masked-
->
-> Configuration script:
-> 1. Start fresh
-> echo 0 > /sys/bus/pci/devices/0000\:08\:00.0/sriov_numvfs
-> modprobe -q -r mlx5_ib mlx5_core
-> 2. Ensure that driver doesn't run and it is safe to change MSI-X
-> echo 0 > /sys/bus/pci/devices/0000\:08\:00.0/sriov_drivers_autoprobe
-> 3. Load driver for the PF
-> modprobe mlx5_core
-> 4. Configure one of the VFs with new number
-> echo 2 > /sys/bus/pci/devices/0000\:08\:00.0/sriov_numvfs
-> echo 21 > /sys/bus/pci/devices/0000\:08\:00.2/sriov_vf_msix_count
->
-> After this series:
-> [root@server ~]# lspci -vs 0000:08:00.2
-> 08:00.2 Ethernet controller: Mellanox Technologies MT27800 Family [ConnectX-5 Virtual Function]
-> ....
->         Capabilities: [9c] MSI-X: Enable- Count=21 Masked-
->
-> Thanks
->
-> Leon Romanovsky (4):
->   PCI: Add sysfs callback to allow MSI-X table size change of SR-IOV VFs
->   net/mlx5: Add dynamic MSI-X capabilities bits
->   net/mlx5: Dynamically assign MSI-X vectors count
->   net/mlx5: Allow to the users to configure number of MSI-X vectors
->
->  Documentation/ABI/testing/sysfs-bus-pci       |  28 ++++
->  .../net/ethernet/mellanox/mlx5/core/main.c    |  17 ++
->  .../ethernet/mellanox/mlx5/core/mlx5_core.h   |  27 ++++
->  .../net/ethernet/mellanox/mlx5/core/pci_irq.c |  72 +++++++++
->  .../net/ethernet/mellanox/mlx5/core/sriov.c   |  58 ++++++-
->  drivers/pci/iov.c                             | 153 ++++++++++++++++++
->  include/linux/mlx5/mlx5_ifc.h                 |  11 +-
->  include/linux/pci.h                           |  12 ++
->  8 files changed, 375 insertions(+), 3 deletions(-)
->
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: George McCollister <george.mccollister@gmail.com>
+---
+ drivers/net/dsa/xrs700x/xrs700x_i2c.c  | 2 +-
+ drivers/net/dsa/xrs700x/xrs700x_mdio.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-This seems much improved from the last time I reviewed the patch set.
-I am good with the drop of the folder in favor of using "sriov" in the
-naming of the fields.
+diff --git a/drivers/net/dsa/xrs700x/xrs700x_i2c.c b/drivers/net/dsa/xrs700x/xrs700x_i2c.c
+index 16a46a78a037..489d9385b4f0 100644
+--- a/drivers/net/dsa/xrs700x/xrs700x_i2c.c
++++ b/drivers/net/dsa/xrs700x/xrs700x_i2c.c
+@@ -121,7 +121,7 @@ static const struct i2c_device_id xrs700x_i2c_id[] = {
+ 
+ MODULE_DEVICE_TABLE(i2c, xrs700x_i2c_id);
+ 
+-static const struct of_device_id xrs700x_i2c_dt_ids[] = {
++static const struct of_device_id __maybe_unused xrs700x_i2c_dt_ids[] = {
+ 	{ .compatible = "arrow,xrs7003e", .data = &xrs7003e_info },
+ 	{ .compatible = "arrow,xrs7003f", .data = &xrs7003f_info },
+ 	{ .compatible = "arrow,xrs7004e", .data = &xrs7004e_info },
+diff --git a/drivers/net/dsa/xrs700x/xrs700x_mdio.c b/drivers/net/dsa/xrs700x/xrs700x_mdio.c
+index a10ee28eb86e..3b3b78f20263 100644
+--- a/drivers/net/dsa/xrs700x/xrs700x_mdio.c
++++ b/drivers/net/dsa/xrs700x/xrs700x_mdio.c
+@@ -138,7 +138,7 @@ static void xrs700x_mdio_remove(struct mdio_device *mdiodev)
+ 	xrs700x_switch_remove(priv);
+ }
+ 
+-static const struct of_device_id xrs700x_mdio_dt_ids[] = {
++static const struct of_device_id __maybe_unused xrs700x_mdio_dt_ids[] = {
+ 	{ .compatible = "arrow,xrs7003e", .data = &xrs7003e_info },
+ 	{ .compatible = "arrow,xrs7003f", .data = &xrs7003f_info },
+ 	{ .compatible = "arrow,xrs7004e", .data = &xrs7004e_info },
+-- 
+2.11.0
 
-For the series:
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
