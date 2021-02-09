@@ -2,169 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F4C3315813
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 21:55:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98D9331581B
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 21:58:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233952AbhBIUvh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 15:51:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36646 "EHLO
+        id S234119AbhBIUxT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 15:53:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233893AbhBIUlm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 15:41:42 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC81C061D7D;
-        Tue,  9 Feb 2021 12:03:33 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id j21so4715282wmj.0;
-        Tue, 09 Feb 2021 12:03:33 -0800 (PST)
+        with ESMTP id S233904AbhBIUmH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 15:42:07 -0500
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC713C0698C4
+        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 12:09:44 -0800 (PST)
+Received: by mail-lf1-x133.google.com with SMTP id p21so30265827lfu.11
+        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 12:09:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:references:from:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=FoYK3y10ctekenhelipPCy41KdN9ge4kiy1j5pEZXLw=;
-        b=HMfndgWGrWMGy8RaSKT37wbq03RbZzqlph/TOTwab64sLwa0lgi8GwHmvk3MKt9B45
-         4bB5Jq029HFtqLZz9ykNAdLxWkNofceRGXj0B1Nt2JJdnLsnkDP2+Ktr+60hMPkv4ixY
-         9fG+3pOquCkWq9FsDWJ2+dy+BLhVkhMDY9OtX1h3UsIte18rfISsUt+jX0TKxq4N1Wi/
-         ypRGvEwx33PBSdrFbxFqayQGNGT2EgvtZI5eGwTTjsIilaUtS08EI54MbfK0B2OlCqjd
-         6D36OPdz16p++vAO4BOO9RGmGyBmG6+vyfxbTFT+61LKv7rjUNhSeWXhB3v1t5R0J0fS
-         +XPQ==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5yicjJeOjogJ0GBzkbyijZntdK7Ju5RCDDq26xojPak=;
+        b=AkqLjJVS69L2BZ803u4AcRr1NMKONSj0dEor9TQGaeLPX2QfLX3TfQm2A3e6PDMiFh
+         gE76mBeqSSkEVK8VkeRss/fAAYiOlhhPG9rN2B+2STSeXhI1XhGsj/NRZ2rXM+tSyzii
+         5vguStpjNGtnYE/4r/LrKioveAQAUhup7ASHhj/yJ/hDNWJL3SO+TLckcK3lxkQnMtnv
+         t8rdvH0HCMe3vQKfzZJwWeo671QAdpbL6yh84TqkIG7Nuq43Xp1V+XflGGHpNw4P5iBG
+         LbXhEVuJevVFSnvaqDK5cn9jSnT+K/S//9QfqVBz38ACB904w2YFUtLvZPuyAYZn5V27
+         jNkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=FoYK3y10ctekenhelipPCy41KdN9ge4kiy1j5pEZXLw=;
-        b=p43XBaJpq3HIdJULfwD6QnPTPC/jD7umYiyAkCc4ud/JSOFHoRNXVguMnPkddmW5Ss
-         mh3vEanZzdfx7YHQN5edrwV2rHSiNcm18mng6xMLpUeDtgv6tMtsQX8OWBsJFiCPFOLP
-         DNxgIwpE3ynXuEJTyivcbsqSoanbe57qbGxi+KEh+nbxLxe89AQ19O2ZgKuZxZWxwU2c
-         0sTUyE6xQ8yQtJIGVMDd3ww1x/HW1RiSSxV7hwwIhPdj3P9hnqDMmNe1mOzMPYFbgImB
-         YHVXEzKQUMKOk7g354DAF6icCIUyDOGRowOT9OGRv+O55Z4XqZD3/co/QtLCDB9OO8sQ
-         KtJQ==
-X-Gm-Message-State: AOAM532HRVc8J/XGEXzKqlPjjXFM/vf1Y7h2JhUn5Yl+myA+zZdbteWM
-        yWGiRG8rz+z578l3CpQ8aI4=
-X-Google-Smtp-Source: ABdhPJz5OlEcAcggpLfAl4VV5ssEWmy3CP/KlCueOmAIJTpPkr2Ukj3pis4ID9oEvKpAVoyN8/BhSA==
-X-Received: by 2002:a1c:2d8a:: with SMTP id t132mr4876062wmt.119.1612901012414;
-        Tue, 09 Feb 2021 12:03:32 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f1f:ad00:d8e6:4a8a:b30f:47d8? (p200300ea8f1fad00d8e64a8ab30f47d8.dip0.t-ipconnect.de. [2003:ea:8f1f:ad00:d8e6:4a8a:b30f:47d8])
-        by smtp.googlemail.com with ESMTPSA id j40sm5670486wmp.47.2021.02.09.12.03.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Feb 2021 12:03:31 -0800 (PST)
-To:     Michael Walle <michael@walle.cc>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>, Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20210209164051.18156-1-michael@walle.cc>
- <20210209164051.18156-6-michael@walle.cc>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next 5/9] net: phy: icplus: add IP101A/IP101G model
- detection
-Message-ID: <4645b902-aab4-c4d8-a5a9-1fbaf0ca67f6@gmail.com>
-Date:   Tue, 9 Feb 2021 21:03:24 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5yicjJeOjogJ0GBzkbyijZntdK7Ju5RCDDq26xojPak=;
+        b=Dh5TxFwjGOhB6AQY0tPQxfE47jy+38dSI8YDQ0hSok1+hvI6+N2aoJC/7n8viFvsvV
+         +TROemJ53srgWpwoysUl2Rf+8eaWy92kmpAKkrLOInXt0TjfnEHu/KYPrZr1WyHDARfe
+         jvS7b+3+qjEz2Q4CHNM+byXpAUFnmfs9BLPsXT/AEiRweHVeXFZQWHN+8MDJmbN9h2bT
+         8SelR/cmgzMV4MhdjYZPBvBumI8sy/QyRj2p9K0rJsJ3uiQyBqvLABvgbH6b5QShG35w
+         klCX/rd07C5LegDdamCGcAEolFZiHA/GvHP1rCmGEswv3S3lBnJf6irsSLVo7oLd60mb
+         6jRw==
+X-Gm-Message-State: AOAM531gemzW3PYRZ+SLcyuXbEto8JbHBNVW5nsZymSfgTvbphVV78+0
+        TSV/Tz5TVMekjzSoWo1Oln7pzPsf+59jYpJR4IgEtg==
+X-Google-Smtp-Source: ABdhPJx4JWlNZAnonhNS1++AdmiMVMLNX1/AZ6G2Miq/JtdC0hC8kv56kaHXCKdVVUmbLdMIkkOumTDOx1PybRcljzM=
+X-Received: by 2002:a05:6512:12c1:: with SMTP id p1mr15136130lfg.374.1612901382990;
+ Tue, 09 Feb 2021 12:09:42 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210209164051.18156-6-michael@walle.cc>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20210209034416.GA1669105@ubuntu-m3-large-x86> <CAEf4BzYnT-eoKRL9_Pu_DEuqXVa+edN5F-s+k2RxBSzcsSTJ1g@mail.gmail.com>
+ <20210209052311.GA125918@ubuntu-m3-large-x86> <CAEf4BzZV0-zx6YKUUKmecs=icnQNXJjTokdkSAoexm36za+wdA@mail.gmail.com>
+ <CAEf4BzYvri7wzRnGH_qQbavXOx5TfBA0qx4nYVnn=YNGv+vNVw@mail.gmail.com>
+ <CAEf4Bzax90hn_5axpnCpW+E6gVc1mtUgCXWqmxV0tJ4Ud7bsaA@mail.gmail.com>
+ <20210209074904.GA286822@ubuntu-m3-large-x86> <YCKB1TF5wz93EIBK@krava>
+ <YCKlrLkTQXc4Cyx7@krava> <YCKwxNDkS9rdr43W@krava> <YCLdJPPC+6QjUsR4@krava>
+In-Reply-To: <YCLdJPPC+6QjUsR4@krava>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Tue, 9 Feb 2021 12:09:31 -0800
+Message-ID: <CAKwvOdnqx5-SsicRf01yhxKOq8mAkYRd+zBScSOmEQ0XJe2mAg@mail.gmail.com>
+Subject: Re: FAILED unresolved symbol vfs_truncate on arm64 with LLVM
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        Veronika Kabatova <vkabatov@redhat.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Daniel Kiss <daniel.kiss@arm.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09.02.2021 17:40, Michael Walle wrote:
-> Unfortunately, the IP101A and IP101G share the same PHY identifier.
-> While most of the functions are somewhat backwards compatible, there is
-> for example the APS_EN bit on the IP101A but on the IP101G this bit
-> reserved. Also, the IP101G has many more functionalities.
-> 
-> Deduce the model by accessing the page select register which - according
-> to the datasheet - is not available on the IP101A. If this register is
-> writable, assume we have an IP101G.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> ---
->  drivers/net/phy/icplus.c | 43 +++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 42 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/phy/icplus.c b/drivers/net/phy/icplus.c
-> index 036bac628b11..189a9a34ed5f 100644
-> --- a/drivers/net/phy/icplus.c
-> +++ b/drivers/net/phy/icplus.c
-> @@ -44,6 +44,8 @@ MODULE_LICENSE("GPL");
->  #define IP101A_G_IRQ_DUPLEX_CHANGE	BIT(1)
->  #define IP101A_G_IRQ_LINK_CHANGE	BIT(0)
->  
-> +#define IP101G_PAGE_CONTROL				0x14
-> +#define IP101G_PAGE_CONTROL_MASK			GENMASK(4, 0)
->  #define IP101G_DIGITAL_IO_SPEC_CTRL			0x1d
->  #define IP101G_DIGITAL_IO_SPEC_CTRL_SEL_INTR32		BIT(2)
->  
-> @@ -61,8 +63,14 @@ enum ip101gr_sel_intr32 {
->  	IP101GR_SEL_INTR32_RXER,
->  };
->  
-> +enum ip101_model {
-> +	IP101A,
-> +	IP101G,
-> +};
-> +
->  struct ip101a_g_phy_priv {
->  	enum ip101gr_sel_intr32 sel_intr32;
-> +	enum ip101_model model;
->  };
->  
->  static int ip175c_config_init(struct phy_device *phydev)
-> @@ -175,6 +183,39 @@ static int ip175c_config_aneg(struct phy_device *phydev)
->  	return 0;
->  }
->  
-> +/* The IP101A and the IP101G share the same PHY identifier.The IP101G seems to
-> + * be a successor of the IP101A and implements more functions. Amongst other
-> + * things a page select register, which is not available on the IP101. Use this
-> + * to distinguish these two.
-> + */
-> +static int ip101a_g_detect_model(struct phy_device *phydev)
-> +{
-> +	struct ip101a_g_phy_priv *priv = phydev->priv;
-> +	int oldval, ret;
-> +
-> +	oldval = phy_read(phydev, IP101G_PAGE_CONTROL);
-> +	if (oldval < 0)
-> +		return oldval;
-> +
-> +	ret = phy_write(phydev, IP101G_PAGE_CONTROL, 0xffff);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = phy_read(phydev, IP101G_PAGE_CONTROL);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	if (ret == IP101G_PAGE_CONTROL_MASK)
-> +		priv->model = IP101G;
-> +	else
-> +		priv->model = IP101A;
-> +
-> +	phydev_dbg(phydev, "Detected %s\n",
-> +		   priv->model == IP101G ? "IP101G" : "IP101A");
-> +
-> +	return phy_write(phydev, IP101G_PAGE_CONTROL, oldval);
-> +}
-> +
->  static int ip101a_g_probe(struct phy_device *phydev)
->  {
->  	struct device *dev = &phydev->mdio.dev;
-> @@ -203,7 +244,7 @@ static int ip101a_g_probe(struct phy_device *phydev)
->  
->  	phydev->priv = priv;
->  
-> -	return 0;
-> +	return ip101a_g_detect_model(phydev);
->  }
->  
->  static int ip101a_g_config_init(struct phy_device *phydev)
-> 
+On Tue, Feb 9, 2021 at 11:06 AM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> On Tue, Feb 09, 2021 at 05:13:42PM +0100, Jiri Olsa wrote:
+> > On Tue, Feb 09, 2021 at 04:09:36PM +0100, Jiri Olsa wrote:
+> >
+> > SNIP
+> >
+> > > > > > >                 DW_AT_prototyped        (true)
+> > > > > > >                 DW_AT_type      (0x01cfdfe4 "long int")
+> > > > > > >                 DW_AT_external  (true)
+> > > > > > >
+> > > > > >
+> > > > > > Ok, the problem appears to be not in DWARF, but in mcount_loc data.
+> > > > > > vfs_truncate's address is not recorded as ftrace-attachable, and thus
+> > > > > > pahole ignores it. I don't know why this happens and it's quite
+> > > > > > strange, given vfs_truncate is just a normal global function.
+> > > >
+> > > > right, I can't see it in mcount adresses.. but it begins with instructions
+> > > > that appears to be nops, which would suggest it's traceable
+> > > >
+> > > >   ffff80001031f430 <vfs_truncate>:
+> > > >   ffff80001031f430: 5f 24 03 d5   hint    #34
+> > > >   ffff80001031f434: 1f 20 03 d5   nop
+> > > >   ffff80001031f438: 1f 20 03 d5   nop
+> > > >   ffff80001031f43c: 3f 23 03 d5   hint    #25
+> > > >
+> > > > > >
+> > > > > > I'd like to understand this issue before we try to fix it, but there
+> > > > > > is at least one improvement we can make: pahole should check ftrace
+> > > > > > addresses only for static functions, not the global ones (global ones
+> > > > > > should be always attachable, unless they are special, e.g., notrace
+> > > > > > and stuff). We can easily check that by looking at the corresponding
+> > > > > > symbol. But I'd like to verify that vfs_truncate is ftrace-attachable
+> > >
+> > > I'm still trying to build the kernel.. however ;-)
+> >
+> > I finally reproduced.. however arm's not using mcount_loc
+> > but some other special section.. so it's new mess for me
+>
+> so ftrace data actualy has vfs_truncate address but with extra 4 bytes:
+>
+>         ffff80001031f434
+>
+> real vfs_truncate address:
+>
+>         ffff80001031f430 g     F .text  0000000000000168 vfs_truncate
+>
+> vfs_truncate disasm:
+>
+>         ffff80001031f430 <vfs_truncate>:
+>         ffff80001031f430: 5f 24 03 d5   hint    #34
+>         ffff80001031f434: 1f 20 03 d5   nop
+>         ffff80001031f438: 1f 20 03 d5   nop
+>         ffff80001031f43c: 3f 23 03 d5   hint    #25
+>
+> thats why we don't match it in pahole.. I checked few other functions
+> and some have the same problem and some match the function boundary
+>
+> those that match don't have that first hint instrucion, like:
+>
+>         ffff800010321e40 <do_faccessat>:
+>         ffff800010321e40: 1f 20 03 d5   nop
+>         ffff800010321e44: 1f 20 03 d5   nop
+>         ffff800010321e48: 3f 23 03 d5   hint    #25
+>
+> any hints about hint instructions? ;-)
 
-You could also implement the match_phy_device callback. Then you can
-have separate PHY drivers for IP101A/IP101G. Would be cleaner I think.
-See the Realtek PHY driver for an example.
+aarch64 makes *some* newer instructions reuse the "hint" ie "nop"
+encoding space to make software backwards compatible on older hardware
+that doesn't support such instructions.  Is this BTI, perhaps? (The
+function is perhaps the destination of an indirect call?)
+-- 
+Thanks,
+~Nick Desaulniers
