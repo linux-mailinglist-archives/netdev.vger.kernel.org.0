@@ -2,74 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A9F731510E
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 14:59:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32018315119
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 15:02:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231996AbhBIN5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 08:57:54 -0500
-Received: from mail-wm1-f46.google.com ([209.85.128.46]:53814 "EHLO
-        mail-wm1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231135AbhBIN4W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 08:56:22 -0500
-Received: by mail-wm1-f46.google.com with SMTP id j11so3214412wmi.3;
-        Tue, 09 Feb 2021 05:56:06 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=XSnpm7/HVnmzb1rRaH6rhaurZgUv42UULqOJi/Beqao=;
-        b=D4Ek4cgqJooPeb583beOBFvfUnJTxcJf3MQsdxMteT8tpoACHNo29Cxy938QoCbsiz
-         buP9hyW7Ii8wh4ugURO34/APzExrrAVsLJQAF8/BIgXlvpeIBDp6jpRJt7QS0RnivrcN
-         n8xj6QMptIenethorH2XlOyzxfSvBFBJEmV+klsETyvZAM9Ez35UVOodpltGb2dzFKrX
-         sdyxg3/BK/GTxEdPhZjDhqKbmcGpgK52xjzgtN3cBSTr8ddUAR70trnh2fEHaHtKKkYV
-         lqhNVAuoFhn9+tB7B+xIv1B6UofXlG0PDPc52pDvHW1jzcIM0IVvIg/jo1cwfJfZhMvT
-         Sp+w==
-X-Gm-Message-State: AOAM532lYPltvysWL+YYFyw1ix1d/zjC4TQPpC5r7SbRX5QA8psZ+Qfd
-        +XdXCYQk3kiS2OxvoF3z08w=
-X-Google-Smtp-Source: ABdhPJwNB2giv7+CoyjHR4gxPw378n2meWhV1w/yKa2jvI06fXrZd3Z4dr3WdpEwpM4n3qwOnwgCXQ==
-X-Received: by 2002:a1c:ab57:: with SMTP id u84mr3640970wme.115.1612878940148;
-        Tue, 09 Feb 2021 05:55:40 -0800 (PST)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id 2sm20140855wre.24.2021.02.09.05.55.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Feb 2021 05:55:39 -0800 (PST)
-Date:   Tue, 9 Feb 2021 13:55:38 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Juergen Gross <jgross@suse.com>
-Cc:     xen-devel@lists.xenproject.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-scsi@vger.kernel.org,
-        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-        Roger Pau =?utf-8?B?TW9ubsOp?= <roger.pau@citrix.com>,
-        Jens Axboe <axboe@kernel.dk>, Wei Liu <wei.liu@kernel.org>,
-        Paul Durrant <paul@xen.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Stefano Stabellini <sstabellini@kernel.org>
-Subject: Re: [PATCH 4/7] xen/events: link interdomain events to associated
- xenbus device
-Message-ID: <20210209135538.ysr5pzxihvwxn22p@liuwe-devbox-debian-v2>
-References: <20210206104932.29064-1-jgross@suse.com>
- <20210206104932.29064-5-jgross@suse.com>
+        id S231932AbhBIOA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 09:00:26 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:57736 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230474AbhBIN7V (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Feb 2021 08:59:21 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1l9TX8-0057fl-I8; Tue, 09 Feb 2021 14:58:26 +0100
+Date:   Tue, 9 Feb 2021 14:58:26 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Tobias Waldekranz <tobias@waldekranz.com>,
+        Vadym Kochan <vadym.kochan@plvision.eu>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Mickey Rachamim <mickeyr@marvell.com>,
+        linux-kernel@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net-next 5/7] net: marvell: prestera: add LAG support
+Message-ID: <YCKVAtu2Y8DAInI+@lunn.ch>
+References: <20210203165458.28717-1-vadym.kochan@plvision.eu>
+ <20210203165458.28717-6-vadym.kochan@plvision.eu>
+ <20210204211647.7b9a8ebf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <87v9b249oq.fsf@waldekranz.com>
+ <20210208130557.56b14429@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210206104932.29064-5-jgross@suse.com>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20210208130557.56b14429@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 06, 2021 at 11:49:29AM +0100, Juergen Gross wrote:
-> In order to support the possibility of per-device event channel
-> settings (e.g. lateeoi spurious event thresholds) add a xenbus device
-> pointer to struct irq_info() and modify the related event channel
-> binding interfaces to take the pointer to the xenbus device as a
-> parameter instead of the domain id of the other side.
-> 
-> While at it remove the stale prototype of bind_evtchn_to_irq_lateeoi().
-> 
-> Signed-off-by: Juergen Gross <jgross@suse.com>
+> At the same time some FW is necessary. Certain chip functions, are 
+> best driven by a micro-controller running a tight control loop. 
 
-Reviewed-by: Wei Liu <wei.liu@kernel.org>
+For a smart NIC, i could agree. But a switch? The data path is in
+hardware. The driver is all about configuring this hardware, and then
+it is idle. Polls the PHYs once a second, maybe gather statistics,
+allows the network stack to perform STP, but otherwise it does
+nothing.
+
+So for me, i don't see that being a valid argument for this driver.
+
+By putting their SDK inside the CPU on the switch, and adding an RPC
+interface, Marvell can quickly get some sort of support working in the
+Linux ecosystem. But this solution has all the problems of a binary
+blob in userspace.
+
+I doubt there is going to be any community engagement with this
+driver. Marvell is going to have to add all the features. If a user
+wants a feature which is not currently supported, they have little
+chance of being able to add it themselves. There is no documentation
+of the RPC interface. So even if the firmware has support for more
+than what the Linux driver implements, only Marvell knows about it.
+
+Products based around this driver are going to find it hard to
+differentiate on switch features. The switch can do what Marvell
+allows you to do. All differentiation is going to be limited to above
+that, the user interface.
+
+For some market segments, that might be enough. You don't see
+community based patches adding new features to the Mellanex/nvidia
+hardware. But when you look at the DSA drivers, a lot of the features
+there are from the community. There is probably space for both.
+
+Looking into my crystal ball, Marvell will probably have the base
+features of their switch implemented before Microchip does, simply
+because they are reusing code hidden away in the CPU. But then
+development will stagnate. Microchip will take a bit longer to get the
+base features implemented. But then because of the openness, users
+will start using the hardware in different ways, and implement
+features which are important to them. And contribute bug fixes. The
+driver will keep gaining new features and mature, and in the end, the
+device built from it will be a lot more divers and interesting.
+
+What i'm not sure is how we as a community push back. Marvells whole
+strategy is black box. I doubt we can make them open up the firmware.
+Do we want to throw out the driver from the kernel? I don't think it
+is that bad. We can point out the problems with Marvell's model. We
+can put in review effort for Microchip, make their driver better. And
+we can encourage the 3rd and 4th vendors in the enterprise switch
+space to follow Microchips lead.
+
+      Andrew
