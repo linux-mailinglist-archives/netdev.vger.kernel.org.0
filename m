@@ -2,49 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C633B314B14
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 10:12:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE3CA314B03
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 10:00:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230330AbhBIJBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 04:01:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54850 "EHLO
+        id S229733AbhBIJAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 04:00:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230127AbhBII6q (ORCPT
+        with ESMTP id S230170AbhBII6q (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 03:58:46 -0500
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD98AC061788
-        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 00:57:56 -0800 (PST)
-Received: by mail-wm1-x329.google.com with SMTP id f16so2281203wmq.5
-        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 00:57:56 -0800 (PST)
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA2B7C06178A
+        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 00:57:57 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id n6so7815422wrv.8
+        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 00:57:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=xv6kZTW9YmYUbkT+aFJrSkdPmUaysAkCKC5Evv8SfHg=;
-        b=TAnLmi9S6aHVsQe+nq7cb6x+mcAnd9J0F3PGcNoV+6w4OSdmjDLmpmuAMCmI9jGzXM
-         8+eriN2L/qI6rB6jVzD7a7MU00EzWssY9H8wk+/DJKPNW6HYs1sDIPOT5CIILEFBbNff
-         /g/4kYLKPHgf4hlnQFWjkaAXSZyqQVj8m+SZZJKEhMQSLCAPvJG21vCUzbbguOdvzx3F
-         hJ9YT5cP6JQI2F6EzefDI/V7I2D/Q+/EH7SSUrKcsW79Fj/LM4++dfvVIwIjzoOUPhoe
-         DLbVnBxkZSjWGmXIpDT9ZkMnLDS0aVlrS2K3sdwFlck/jYEYBHWU+QUPCns+jpbWMIEo
-         xA7g==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=D1xoggkKUYPm/up9HUqtS9Xiw3MkdDwvnq8xK4ouEnc=;
+        b=DEMrIs+7nG1vykmUxnuuBvgSEP+iWHxBRCzZtsw0kFiLmpVsMMXbP0jkNnZ4ZMFdvG
+         am2V1JM3QfksypjkgRgkwNtTBhtlkQmgFxx5r6UfDRDtaa81dm7AAAbttGol/ISFym3v
+         JMeML9dXEcaVEG0BoIgi7c5qrBi1sy0c7OpQJUm/EfWBl6jP9pjpG2LZfdBPf93OsJni
+         JFtsm33LEylTQjjFza6c/u8z6wDNtz/61c5iL4oid6nBWgt3aQLJTaREo8Ec/JYWq9E8
+         3/VL/2twbW6IXHeSQJdDE0ULN5wx/FR+VS8wk/xbIjJ77EAN/ajpriglscpk+V+wmi2k
+         jVdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=xv6kZTW9YmYUbkT+aFJrSkdPmUaysAkCKC5Evv8SfHg=;
-        b=rbLow+Heisz0UJBUNWLEaqSaZXniXCVc0EweOnz7NHMItUrHtEVzEDW67TAZU5BkGa
-         B3O/x9yC9XJfRC316v/kk2D0zInW4I5rGUeI9/rWu5tC3IoC3DMGcIUglh+B8uSXiP3x
-         lTr9pFvdRSOTwbMuLke4uUeDiG93IdOCB+2di1/cArZrR/RoU5OkvpKalFNVTELMmHZk
-         /dc66qn2SyntOfwFPE8IBKiIIPHoIW1LeQL50xFo4CYmruHldaq7vY2KpR3G4jxhTgxO
-         lE5Bu0XpRhpioz1A68iQRvTxebog84mm6KnOFQ2cjgNtGX3LP/gFhvMexo86E5oJiHcV
-         PsDg==
-X-Gm-Message-State: AOAM530xtPegh9tOsY6BgBx8dMIOROp6SWIxar537a/PVWxHpiglAMls
-        K3SCDoFqNuLdy2NCuC2R3PUDkA==
-X-Google-Smtp-Source: ABdhPJzxxQRAgJYBhWH+BXCegaiVdFXuMN7BlABcGveJ5pnwxWUP9eh7yJwsns0YOGeCAS1+FeHgWA==
-X-Received: by 2002:a05:600c:d6:: with SMTP id u22mr2359822wmm.87.1612861075324;
-        Tue, 09 Feb 2021 00:57:55 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=D1xoggkKUYPm/up9HUqtS9Xiw3MkdDwvnq8xK4ouEnc=;
+        b=LM0heQdDemkwwZ56+HcuHRyBB/2TAuZkbJuYTm7L5iPKyXwbleUUD+WqvVYqobLpsU
+         oZE6txwl79l5NDuzvkVXXnOFgh1QCriFxNuDGv3Yo/+Is5tK95DRG9Q78jtd/svxHu03
+         S60b5d4ruxUhOVKCngs4G1Nv30OicSDVIoQQpH5mmuai9k4u1hZ6pLxqR1GtzXngwQBB
+         BlJDsa/GbVZheFtpernPwUXJfAmaNbCvVo1bX5vrUGqbIAJ4n+EOPSS21BMnuxrT/En/
+         5alxo0l0oL6/D4VRoYW79hFcf5cwzlMRfFFhaNAvID044BSmnmLmCTF6hcVrPS9roM2u
+         CkvQ==
+X-Gm-Message-State: AOAM532u7bW2NWdwkPDClPN84o61NM5mynFtEZ4tdWdL543pHpZFhdNq
+        NMHwfe6BTV4T4De/B9l1bG6AWo4/kxUli+Oo
+X-Google-Smtp-Source: ABdhPJwNV+VUd5Vf7PuNNn7qarhW1t9EIqe8yK4wSO3huC0VM4vwUr22ANuiASKu5CZTuVA0pbxewA==
+X-Received: by 2002:adf:c40a:: with SMTP id v10mr10676723wrf.10.1612861076528;
+        Tue, 09 Feb 2021 00:57:56 -0800 (PST)
 Received: from localhost.localdomain ([88.122.66.28])
-        by smtp.gmail.com with ESMTPSA id d3sm38348693wrp.79.2021.02.09.00.57.54
+        by smtp.gmail.com with ESMTPSA id d3sm38348693wrp.79.2021.02.09.00.57.55
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 09 Feb 2021 00:57:54 -0800 (PST)
+        Tue, 09 Feb 2021 00:57:56 -0800 (PST)
 From:   Loic Poulain <loic.poulain@linaro.org>
 To:     kuba@kernel.org, davem@davemloft.net
 Cc:     netdev@vger.kernel.org, bjorn@mork.no, dcbw@redhat.com,
@@ -52,66 +53,183 @@ Cc:     netdev@vger.kernel.org, bjorn@mork.no, dcbw@redhat.com,
         jwjiang@lenovo.com, ivan.zhang@quectel.com,
         naveen.kumar@quectel.com, ivan.mikhanchuk@quectel.com,
         Loic Poulain <loic.poulain@linaro.org>
-Subject: [PATCH net-next v5 0/5] Add MBIM over MHI support
-Date:   Tue,  9 Feb 2021 10:05:53 +0100
-Message-Id: <1612861558-14487-1-git-send-email-loic.poulain@linaro.org>
+Subject: [PATCH net-next v5 1/5] net: mhi: Add protocol support
+Date:   Tue,  9 Feb 2021 10:05:54 +0100
+Message-Id: <1612861558-14487-2-git-send-email-loic.poulain@linaro.org>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1612861558-14487-1-git-send-email-loic.poulain@linaro.org>
+References: <1612861558-14487-1-git-send-email-loic.poulain@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds MBIM decoding/encoding support to mhi-net, using
-mhi-net rx and tx_fixup 'proto' callbacks introduced in the series.
+MHI can transport different protocols, some are handled at upper level,
+like IP and QMAP(rmnet/netlink), but others will need to be inside MHI
+net driver, like mbim. This change adds support for protocol rx and
+tx_fixup callbacks registration, that can be used to encode/decode the
+targeted protocol.
 
-v2:
-   - net.c: mhi_net_dev as rx/tx_fixup parameter
-   - mbim: Check nth size/sequence in nth16_verify
-   - mbim: Add netif_dbg message for verbose error
-   - mbim: Add inline comment for MHI MBIM limitation (no DSS)
-   - mbim: Fix copyright issue
-   - mbim: Reword commit message
+Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
+---
+ drivers/net/mhi_net.c | 69 ++++++++++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 57 insertions(+), 12 deletions(-)
 
-v3:
-   - net: dedicated commit for mhi.h
-   - net: add rx_length_errors stat change
-   - net: rename rx_fixup to rx
-   - net: proto rx returns void
-   - mbim: remove all unnecessary parenthesis
-   - mbim: report errors and rx_length_errors
-   - mbim: rate_limited errors in rx/tx path
-   - mbim: create define for NDP signature mask
-   - mbim: switch-case to if for signature check
-   - mbim: skb_cow_head() to fix headroom if necessary
-
-v4:
-   - remove one extra useless parens pair
-
-v5:
-   - fix sparse issue reported by Jakub:
-     proto_mbim.c:159:41: warning: restricted __le32 degrades to integer
-     => use explicit endianess accessors for all values.
-
-
-Loic Poulain (5):
-  net: mhi: Add protocol support
-  net: mhi: Add dedicated folder
-  net: mhi: Create mhi.h
-  net: mhi: Add rx_length_errors stat
-  net: mhi: Add mbim proto
-
- drivers/net/Makefile         |   2 +-
- drivers/net/mhi/Makefile     |   3 +
- drivers/net/mhi/mhi.h        |  40 +++++
- drivers/net/mhi/net.c        | 408 +++++++++++++++++++++++++++++++++++++++++++
- drivers/net/mhi/proto_mbim.c | 293 +++++++++++++++++++++++++++++++
- drivers/net/mhi_net.c        | 384 ----------------------------------------
- 6 files changed, 745 insertions(+), 385 deletions(-)
- create mode 100644 drivers/net/mhi/Makefile
- create mode 100644 drivers/net/mhi/mhi.h
- create mode 100644 drivers/net/mhi/net.c
- create mode 100644 drivers/net/mhi/proto_mbim.c
- delete mode 100644 drivers/net/mhi_net.c
-
+diff --git a/drivers/net/mhi_net.c b/drivers/net/mhi_net.c
+index 8800991..b92c2e1 100644
+--- a/drivers/net/mhi_net.c
++++ b/drivers/net/mhi_net.c
+@@ -34,11 +34,24 @@ struct mhi_net_dev {
+ 	struct net_device *ndev;
+ 	struct sk_buff *skbagg_head;
+ 	struct sk_buff *skbagg_tail;
++	const struct mhi_net_proto *proto;
++	void *proto_data;
+ 	struct delayed_work rx_refill;
+ 	struct mhi_net_stats stats;
+ 	u32 rx_queue_sz;
+ };
+ 
++struct mhi_net_proto {
++	int (*init)(struct mhi_net_dev *mhi_netdev);
++	struct sk_buff * (*tx_fixup)(struct mhi_net_dev *mhi_netdev, struct sk_buff *skb);
++	void (*rx)(struct mhi_net_dev *mhi_netdev, struct sk_buff *skb);
++};
++
++struct mhi_device_info {
++	const char *netname;
++	const struct mhi_net_proto *proto;
++};
++
+ static int mhi_ndo_open(struct net_device *ndev)
+ {
+ 	struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
+@@ -68,26 +81,35 @@ static int mhi_ndo_stop(struct net_device *ndev)
+ static int mhi_ndo_xmit(struct sk_buff *skb, struct net_device *ndev)
+ {
+ 	struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
++	const struct mhi_net_proto *proto = mhi_netdev->proto;
+ 	struct mhi_device *mdev = mhi_netdev->mdev;
+ 	int err;
+ 
++	if (proto && proto->tx_fixup) {
++		skb = proto->tx_fixup(mhi_netdev, skb);
++		if (unlikely(!skb))
++			goto exit_drop;
++	}
++
+ 	err = mhi_queue_skb(mdev, DMA_TO_DEVICE, skb, skb->len, MHI_EOT);
+ 	if (unlikely(err)) {
+ 		net_err_ratelimited("%s: Failed to queue TX buf (%d)\n",
+ 				    ndev->name, err);
+-
+-		u64_stats_update_begin(&mhi_netdev->stats.tx_syncp);
+-		u64_stats_inc(&mhi_netdev->stats.tx_dropped);
+-		u64_stats_update_end(&mhi_netdev->stats.tx_syncp);
+-
+-		/* drop the packet */
+ 		dev_kfree_skb_any(skb);
++		goto exit_drop;
+ 	}
+ 
+ 	if (mhi_queue_is_full(mdev, DMA_TO_DEVICE))
+ 		netif_stop_queue(ndev);
+ 
+ 	return NETDEV_TX_OK;
++
++exit_drop:
++	u64_stats_update_begin(&mhi_netdev->stats.tx_syncp);
++	u64_stats_inc(&mhi_netdev->stats.tx_dropped);
++	u64_stats_update_end(&mhi_netdev->stats.tx_syncp);
++
++	return NETDEV_TX_OK;
+ }
+ 
+ static void mhi_ndo_get_stats64(struct net_device *ndev,
+@@ -164,6 +186,7 @@ static void mhi_net_dl_callback(struct mhi_device *mhi_dev,
+ 				struct mhi_result *mhi_res)
+ {
+ 	struct mhi_net_dev *mhi_netdev = dev_get_drvdata(&mhi_dev->dev);
++	const struct mhi_net_proto *proto = mhi_netdev->proto;
+ 	struct sk_buff *skb = mhi_res->buf_addr;
+ 	int free_desc_count;
+ 
+@@ -220,7 +243,10 @@ static void mhi_net_dl_callback(struct mhi_device *mhi_dev,
+ 			break;
+ 		}
+ 
+-		netif_rx(skb);
++		if (proto && proto->rx)
++			proto->rx(mhi_netdev, skb);
++		else
++			netif_rx(skb);
+ 	}
+ 
+ 	/* Refill if RX buffers queue becomes low */
+@@ -302,14 +328,14 @@ static struct device_type wwan_type = {
+ static int mhi_net_probe(struct mhi_device *mhi_dev,
+ 			 const struct mhi_device_id *id)
+ {
+-	const char *netname = (char *)id->driver_data;
++	const struct mhi_device_info *info = (struct mhi_device_info *)id->driver_data;
+ 	struct device *dev = &mhi_dev->dev;
+ 	struct mhi_net_dev *mhi_netdev;
+ 	struct net_device *ndev;
+ 	int err;
+ 
+-	ndev = alloc_netdev(sizeof(*mhi_netdev), netname, NET_NAME_PREDICTABLE,
+-			    mhi_net_setup);
++	ndev = alloc_netdev(sizeof(*mhi_netdev), info->netname,
++			    NET_NAME_PREDICTABLE, mhi_net_setup);
+ 	if (!ndev)
+ 		return -ENOMEM;
+ 
+@@ -318,6 +344,7 @@ static int mhi_net_probe(struct mhi_device *mhi_dev,
+ 	mhi_netdev->ndev = ndev;
+ 	mhi_netdev->mdev = mhi_dev;
+ 	mhi_netdev->skbagg_head = NULL;
++	mhi_netdev->proto = info->proto;
+ 	SET_NETDEV_DEV(ndev, &mhi_dev->dev);
+ 	SET_NETDEV_DEVTYPE(ndev, &wwan_type);
+ 
+@@ -337,8 +364,16 @@ static int mhi_net_probe(struct mhi_device *mhi_dev,
+ 	if (err)
+ 		goto out_err;
+ 
++	if (mhi_netdev->proto) {
++		err = mhi_netdev->proto->init(mhi_netdev);
++		if (err)
++			goto out_err_proto;
++	}
++
+ 	return 0;
+ 
++out_err_proto:
++	unregister_netdev(ndev);
+ out_err:
+ 	free_netdev(ndev);
+ 	return err;
+@@ -358,9 +393,19 @@ static void mhi_net_remove(struct mhi_device *mhi_dev)
+ 	free_netdev(mhi_netdev->ndev);
+ }
+ 
++static const struct mhi_device_info mhi_hwip0 = {
++	.netname = "mhi_hwip%d",
++};
++
++static const struct mhi_device_info mhi_swip0 = {
++	.netname = "mhi_swip%d",
++};
++
+ static const struct mhi_device_id mhi_net_id_table[] = {
+-	{ .chan = "IP_HW0", .driver_data = (kernel_ulong_t)"mhi_hwip%d" },
+-	{ .chan = "IP_SW0", .driver_data = (kernel_ulong_t)"mhi_swip%d" },
++	/* Hardware accelerated data PATH (to modem IPA), protocol agnostic */
++	{ .chan = "IP_HW0", .driver_data = (kernel_ulong_t)&mhi_hwip0 },
++	/* Software data PATH (to modem CPU) */
++	{ .chan = "IP_SW0", .driver_data = (kernel_ulong_t)&mhi_swip0 },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(mhi, mhi_net_id_table);
 -- 
 2.7.4
 
