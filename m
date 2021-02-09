@@ -2,158 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3A32314C6B
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 11:05:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0462314C70
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 11:05:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231302AbhBIKDh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 05:03:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40172 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230149AbhBIKBZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 05:01:25 -0500
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB28BC06178B
-        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 02:00:44 -0800 (PST)
-Received: by mail-lf1-x12d.google.com with SMTP id h26so1128830lfm.1
-        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 02:00:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uphZOEKoQUN5nIPEigaxViL9Cf8/hVG3zAzeLPZ76J4=;
-        b=EB7fQv+qnEvWhnWgWLmaZ7xqHmCzX+TPNsNeoPMkZY8IoDRkXb3SwWeoayMV84Ssi1
-         lU6LItH+g0pl1SLVMLdq/Rkb+YdO10qF+Vv2vfs9dFPFJbNc+MePYP2AVIeD23aVXfx4
-         gcRlXUn3SQq2zSb0XShbsVjPC3d5BdsI/X12TlJT/N/cJPNoYDhrQ2MVo061h4ZTOPUq
-         eDXs83kM02sOfBUxfv0oRuTMcKEIHnb4txZTDaY4TI+Q9ZLyz0alFxHOlBknYbDuEU+m
-         gc48V0H+QslZRBZQl/YchCUPp5KnGEQpA/J18c+zwR7lzlpJeXB1kzh2Tj52zlyMGAb+
-         dYqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uphZOEKoQUN5nIPEigaxViL9Cf8/hVG3zAzeLPZ76J4=;
-        b=KNug9HikDxYsxp0I3+XmprX3lbrFALzYlmg3HDYJN/2YNGBRcu/Rd6Nhdc+lWM4ieH
-         SLqDDyNsNMyLu4kVTQe2byM+lCtIiFB416NOm8l0FxDvAu1WBsk+NWmArQYJgvbhL2Yv
-         t/NwRcozEHX3SAomDdjfuxfXrvWkkafw7e5wejYCcZb3y5DrvvBGjIDUJX3Y6U/Oj5MX
-         UyXm50imXFjqm8JEJf4srDLMIZHjTIGViHj5KaXlyJIWJvheiIJbaEVyffl63z3OFIQj
-         g0rkHqphQ12HlmFJ7zWhtF1S15s/t2eCjJHHtzCsGh05OyJkh1U7hWhUASa7BBQCFtWy
-         MTyA==
-X-Gm-Message-State: AOAM531ZK+69T73iq+m2Vf3Xi6ay/LipvHBQ0W1uEpi+C4WSjbXF3Npw
-        cQN/ry7444nIW0mkt20FK6j1aZWahM9aremfH8U=
-X-Google-Smtp-Source: ABdhPJxGNhYodpJ8m4h91aAaQ0bs9mxb8pUDYwkvDeOyKaUPYwIu9VqzEHe9ReAktvzPrT1xU49v5kGd4kuNieBoLtU=
-X-Received: by 2002:ac2:5f04:: with SMTP id 4mr12632595lfq.357.1612864843412;
- Tue, 09 Feb 2021 02:00:43 -0800 (PST)
+        id S231376AbhBIKEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 05:04:40 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33320 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231256AbhBIKCN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Feb 2021 05:02:13 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5E09D64E9D;
+        Tue,  9 Feb 2021 10:01:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612864883;
+        bh=B10Hyq/wtIB3HZQivfE9KnVX+vkDVCQI5HDccdHG6Pg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kiRBHi4E1nHfZpTbuOGxSWHPmeNWkp2FCWD1M5j7o/l1bum0nFzSATkNA8rtMenHN
+         3S8FsrhEiQKhqgslzGobZWMICv3+HKlz+00VvFHk+NQxyBi/HaH3AjPm3iXUuJa4O+
+         EHU9hfG9ezYjUbQqBdWBbHODeDmi8NWC1NQ2/Ik2eQtlAbUQLoK/UI0f5RRVftF37C
+         tqRh173v5EL8zvnTBZzoCJMBsGOUf3EwFV4CKw2xVqD9kwXyAO9W7c3Xmz1Uho9d3o
+         J9lI2hUdie/f2CYxLpaZh1OqNLshgC0twKsPScYFw9HtewOGgyA5+ZSXkvwHqNA4qJ
+         a3pOphTvsHFGw==
+Date:   Tue, 9 Feb 2021 12:01:19 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Or Gerlitz <gerlitz.or@gmail.com>
+Cc:     Ido Schimmel <idosch@idosch.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v4] net: psample: Introduce stubs to remove NIC
+ driver dependency
+Message-ID: <20210209100119.GC139298@unreal>
+References: <20210129123009.3c07563d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210130144231.GA3329243@shredder.lan>
+ <8924ef5a-a3ac-1664-ca11-5f2a1f35399a@nvidia.com>
+ <20210201180837.GB3456040@shredder.lan>
+ <20210208070350.GB4656@unreal>
+ <20210208085746.GA179437@shredder.lan>
+ <20210208090702.GB20265@unreal>
+ <20210208170735.GA207830@shredder.lan>
+ <20210209064702.GB139298@unreal>
+ <CAJ3xEMh72mb9ZYd8umr-FTEO+MV6TNyqST2kLAz_wdLgPcFnww@mail.gmail.com>
 MIME-Version: 1.0
-References: <20210208175952.5880-1-ap420073@gmail.com> <ed1965e9-f35b-ec9b-f3ae-20a7adba956d@linux.ibm.com>
-In-Reply-To: <ed1965e9-f35b-ec9b-f3ae-20a7adba956d@linux.ibm.com>
-From:   Taehee Yoo <ap420073@gmail.com>
-Date:   Tue, 9 Feb 2021 19:00:31 +0900
-Message-ID: <CAMArcTVZ1+iTxaxdMtUbz3VRdeUXLJBvzS+REmucR-eDC_5cZw@mail.gmail.com>
-Subject: Re: [PATCH net-next 8/8] mld: change context of mld module
-To:     Julian Wiedmann <jwi@linux.ibm.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Netdev <netdev@vger.kernel.org>, dsahern@kernel.org,
-        Cong Wang <xiyou.wangcong@gmail.com>, kgraul@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, borntraeger@de.ibm.com,
-        mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc,
-        Sven Eckelmann <sven@narfation.org>, yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAJ3xEMh72mb9ZYd8umr-FTEO+MV6TNyqST2kLAz_wdLgPcFnww@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 9 Feb 2021 at 17:26, Julian Wiedmann <jwi@linux.ibm.com> wrote:
+On Tue, Feb 09, 2021 at 11:25:33AM +0200, Or Gerlitz wrote:
+> On Tue, Feb 9, 2021 at 8:49 AM Leon Romanovsky <leon@kernel.org> wrote:
 >
-
-Hi Julian,
-Thank you for the review!
-
-> On 08.02.21 18:59, Taehee Yoo wrote:
-> > MLD module's context is atomic although most logic is called from
-> > control-path, not data path. Only a few functions are called from
-> > datapath, most of the functions are called from the control-path.
-> > Furthermore, MLD's response is not processed immediately because
-> > MLD protocol is using delayed response.
-> > It means that If a query is received, the node should have a delay
-> > in response At this point, it could change the context.
-> > It means most of the functions can be implemented as the sleepable
-> > context so that mld functions can use sleepable functions.
-> >
-> > Most resources are protected by spinlock and rwlock so the context
-> > of mld functions is atomic. So, in order to change context, locking
-> > scenario should be changed.
-> > It switches from spinlock/rwlock to mutex and rcu.
-> >
-> > Some locks are deleted and added.
-> > 1. ipv6->mc_socklist->sflock is deleted
-> > This is rwlock and it is unnecessary.
-> > Because it protects ipv6_mc_socklist-sflist but it is now protected
-> > by rtnl_lock().
-> >
-> > 2. ifmcaddr6->mca_work_lock is added.
-> > This lock protects ifmcaddr6->mca_work.
-> > This workqueue can be used by both control-path and data-path.
-> > It means mutex can't be used.
-> > So mca_work_lock(spinlock) is added.
-> >
-> > 3. inet6_dev->mc_tomb_lock is deleted
-> > This lock protects inet6_dev->mc_bom_list.
-> > But it is protected by rtnl_lock().
-> >
-> > 4. inet6_dev->lock is used for protecting workqueues.
-> > inet6_dev has its own workqueues(mc_gq_work, mc_ifc_work, mc_delrec_work)
-> > and it can be started and stop by both control-path and data-path.
-> > So, mutex can't be used.
-> >
-> > Suggested-by: Cong Wang <xiyou.wangcong@gmail.com>
-> > Signed-off-by: Taehee Yoo <ap420073@gmail.com>
-> > ---
-> >  drivers/s390/net/qeth_l3_main.c |   6 +-
-> >  include/net/if_inet6.h          |  29 +-
-> >  net/batman-adv/multicast.c      |   4 +-
-> >  net/ipv6/addrconf.c             |   4 +-
-> >  net/ipv6/mcast.c                | 785 ++++++++++++++++----------------
-> >  5 files changed, 411 insertions(+), 417 deletions(-)
-> >
-> > diff --git a/drivers/s390/net/qeth_l3_main.c b/drivers/s390/net/qeth_l3_main.c
-> > index e49abdeff69c..085afb24482e 100644
-> > --- a/drivers/s390/net/qeth_l3_main.c
-> > +++ b/drivers/s390/net/qeth_l3_main.c
-> > @@ -1098,8 +1098,8 @@ static int qeth_l3_add_mcast_rtnl(struct net_device *dev, int vid, void *arg)
-> >       tmp.disp_flag = QETH_DISP_ADDR_ADD;
-> >       tmp.is_multicast = 1;
-> >
-> > -     read_lock_bh(&in6_dev->lock);
-> > -     list_for_each_entry(im6, in6_dev->mc_list, list) {
-> > +     rcu_read_lock();
-> > +     list_for_each_entry_rcu(im6, in6_dev->mc_list, list) {
+> [..]
 >
-> No need for the rcu_read_lock(), we're called under rtnl.
-> So if there's a v2, please just make this
+> > This is another problem with mlx5 - complete madness with config options
+> > that are not possible to test.
+> > ➜  kernel git:(rdma-next) grep -h "config MLX" drivers/net/ethernet/mellanox/mlx5/core/Kconfig | awk '{ print $2}' | sort |uniq |wc -l
+> > 19
 >
+> wait, why do you call it madness? we were suggested by some users (do
+> git blame for the patches) to refine things with multiple configs and it seem
+> to work quite well  -- what you don't like? and what's wrong with simple grep..
 
-Thanks! I missed checking for the RTNL :)
+Yes, I aware of these users and what and why they asked it.
 
-In the next patch, mc_list will not be changed to use list macro.
-So I will just remove read_{lock | unlock}_bh() in here.
+They didn't ask us to have new config for every feature/file, but to have
+light ethernet device.
 
->         list_for_each_entry_rcu(im6, in6_dev->mc_list, list,
->                                 lockdep_rtnl_is_held())
+Other users are distributions and they enable all options that supported in
+the specific kernel they picked, because they don't know in advance where their
+distro will be used.
+
+You also don't have capacity to test various combinations, so you
+test only small subset of common ones that are pretty standard. This is why
+you have this feeling of "work quite well".
+
+And I'm not talking about compilations but actual regression runs.
+
+I suggest to reduce number of configs to small amount, something like 3-5 options:
+ * Basic ethernet driver
+ * + ETH
+ * + RDMA
+ * + VDPA
+ * ....
+ * Full mlx5 driver
+
+And there is nothing wrong with simple grep, it was my copy/paste from
+another internal thread where this config bloat caused us to some griefs
+in regression.
+
+Thanks
+
 >
-> >               tmp.u.a6.addr = im6->mca_addr;
-> >
-> >               ipm = qeth_l3_find_addr_by_ip(card, &tmp);
-> > @@ -1117,7 +1117,7 @@ static int qeth_l3_add_mcast_rtnl(struct net_device *dev, int vid, void *arg)
-> >                        qeth_l3_ipaddr_hash(ipm));
-> >
-> >       }
-> > -     read_unlock_bh(&in6_dev->lock);
-> > +     rcu_read_unlock();
-> >
-> >  out:
-> >       return 0;
->
-
-Thanks a lot!
-Taehee Yoo
+> $ grep "config MLX5_" drivers/net/ethernet/mellanox/mlx5/core/Kconfig
+> config MLX5_CORE
+> config MLX5_ACCEL
+> config MLX5_FPGA
+> config MLX5_CORE_EN
+> config MLX5_EN_ARFS
+> config MLX5_EN_RXNFC
+> config MLX5_MPFS
+> config MLX5_ESWITCH
+> config MLX5_CLS_ACT
+> config MLX5_TC_CT
+> config MLX5_CORE_EN_DCB
+> config MLX5_CORE_IPOIB
+> config MLX5_FPGA_IPSEC
+> config MLX5_IPSEC
+> config MLX5_EN_IPSEC
+> config MLX5_FPGA_TLS
+> config MLX5_TLS
+> config MLX5_EN_TLS
+> config MLX5_SW_STEERING
+> config MLX5_SF
+> config MLX5_SF_MANAGER
+> config MLX5_EN_NVMEOTCP
