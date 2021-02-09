@@ -2,122 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9183314D6A
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 11:48:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D53E6314D6C
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 11:48:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231824AbhBIKrI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 05:47:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48704 "EHLO
+        id S231249AbhBIKrh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 05:47:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230097AbhBIKln (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 05:41:43 -0500
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE2EAC061788
-        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 02:40:28 -0800 (PST)
-Received: by mail-ej1-x62f.google.com with SMTP id w2so30402435ejk.13
-        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 02:40:28 -0800 (PST)
+        with ESMTP id S231971AbhBIKnZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 05:43:25 -0500
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1555FC06178A;
+        Tue,  9 Feb 2021 02:41:47 -0800 (PST)
+Received: by mail-pg1-x532.google.com with SMTP id t25so12208435pga.2;
+        Tue, 09 Feb 2021 02:41:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20150623.gappssmtp.com; s=20150623;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=5EMiA+M1EX7S3s6Ide6XiQEzuV5Nt4cOUQ27APguNU0=;
-        b=i4VcfUSqsS8YrEjOZD9RaQ1v7H59645vHWrG1Uuvb+TbUpummDTt5+SJddPabnAZd5
-         NzHwp1r/cZMNkEx+4f5a5Dt/KOGSODEwSbC4sJRbhxk8fFfmQ4/VtFNfd3dk+PfOQJfT
-         QPwECEoR+M7TCUnVicsfkJIuY1EFKwO/5Kmj5MMSZw4dRtnZF9/U0wNtiOD3goz7IKVH
-         qxq2F3f4cHHnWd1ppXrTDCac6gmIy6I9j5WrHgJEdnHwZz592RkRaL1O5Nn6+QutUMJI
-         vdjK0gvVjvkgQ5OBBn5cP5JOAPsmK0EnS5pmnv+PD/gpHGiUPgv4zOmLdSKZvGmwtIz0
-         zOIA==
+        d=gmail.com; s=20161025;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=JvfA/LJIleSb9j0rSYyHAJ/5yGWi0FFleE6u6qbY8iw=;
+        b=u0Yzpsaf7WWHwMAG0+z4czxMu7iL/3xkEr150rmGUrIQWJOYdBPS7h75VXXcso60Kl
+         DPu3VEMZG3kL+WZzup7v3/b5nRMJfmgkoWfV7Y8eI+vyq0GUzN2PqxfR5l9617pL9c5v
+         VMuDSOJ85rFPrdNXDcnLctv9hi/dsO/uoImQg5pjj+DcYF+T9IGATUoKeU5QHMc4SUyx
+         K3Tnw65ZkG7qSJQ6d2VXLWyybotmI6I34lktOQfvWNCM9ECyiSLnhh2/i0BXpsiRziAW
+         uWvCF47P/FbzKUZ7jmRgXkyyudPeUNymBUmKPDlGZWqf+H+LzAhVfE/INJzioyPHeSxK
+         i86w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=5EMiA+M1EX7S3s6Ide6XiQEzuV5Nt4cOUQ27APguNU0=;
-        b=WdavfzuZIGLVOcQBWcpmnD7H/6vB3xPT6s22bnW4jTUeyJHIWOUBNb+Y6L7sglPkHd
-         vTdJcpN7yokvqWi5s6YjW0k7B1KhRBwn1ziU21NvEXtyv7kNVKXlrfcVevmNU2bI7FmV
-         baoBEjtzQ2XjypaFMxeEYUKq/Ax0NPStCy2oX2QL7NYceAPcO0HIzjau3kkVof+cfLZd
-         yDmIy7R0diHOIa8qhPSfJTJd5vs8idluCth2iCjt/1dcrJ34EncqWyCWTI2ytHuR3f8D
-         4mdTwlRBLGoEDvNT77574vS87fMA+6m6nyBrlWZLL2yl8t9X/+K7QP8QmtUuGvu03rCA
-         /l9w==
-X-Gm-Message-State: AOAM532MEnGZtuWSsyajGtm/i7OpmE8FRFmMXIsEnp+0m/CJRkAIoWnB
-        VxvTtiXLRPNMmMHKlZwBCS41rA==
-X-Google-Smtp-Source: ABdhPJxGcvuqQyCWgb9RUGTA1z8jMVUXIlzQKrvrUIJSOil5ncVlDfKXXrZyHUvGRgUfdXMt5pjCeA==
-X-Received: by 2002:a17:906:3ac3:: with SMTP id z3mr21548623ejd.449.1612867227682;
-        Tue, 09 Feb 2021 02:40:27 -0800 (PST)
-Received: from [192.168.0.104] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id cb21sm11454323edb.57.2021.02.09.02.40.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Feb 2021 02:40:27 -0800 (PST)
-Subject: Re: [PATCH net-next 3/3] bonding: 3ad: Use a more verbose warning for
- unknown speeds
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-To:     netdev@vger.kernel.org
-Cc:     roopa@nvidia.com, idosch@nvidia.com, andy@greyhouse.net,
-        j.vosburgh@gmail.com, vfalico@gmail.com, kuba@kernel.org,
-        davem@davemloft.net
-References: <20210209103209.482770-1-razor@blackwall.org>
- <20210209103209.482770-4-razor@blackwall.org>
-Message-ID: <65f725fb-b6fb-af89-53b5-3718b43fe552@blackwall.org>
-Date:   Tue, 9 Feb 2021 12:40:25 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
-MIME-Version: 1.0
-In-Reply-To: <20210209103209.482770-4-razor@blackwall.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=JvfA/LJIleSb9j0rSYyHAJ/5yGWi0FFleE6u6qbY8iw=;
+        b=DBeVS61gj3gYciQ0cFdz34QmwLop9v7brGOy82HTI5tqBgyAOshDw7NQLqJNG7jkGp
+         8b6ntNihbvYMTzqyd//rPEhUYwovZoxC+AgqqajGxeAXvRXZzE062pRxct1PdbmQX83U
+         7e+tkJwNuzlYi61IU6Rha/g3vCv3SYvBPSJ+TJSvJVDOd38dEr7323Kuvb12DjJySerb
+         tWEGwvj9FaRmrtDVwWwGdByYLbeSJICLNr3GTrC+9hoZGtR7R4x4LOMiSvPeGi1VU1iF
+         GqGhsd28avjBk36ecQIeF6LUQyq6NApjUwJsdYbCNNVBXR9DREVehduAEvu+pqf3Io7R
+         fbRg==
+X-Gm-Message-State: AOAM5318YW4h+jo1h3i53LNzsCRL1UE8Lqshv11PKKzdjLMU3WUPIwXx
+        YaRN5GR/bxoI440nMRwi2sbOiEDE7FNRgg==
+X-Google-Smtp-Source: ABdhPJxLGPjTbaFdsoacNGBPV9gdIeBJbiolzVXTvl1ohN6RUq6ZyUxUVlVfznhzhAknqg6+btBh/Q==
+X-Received: by 2002:a62:8c05:0:b029:1d8:7f36:bcd8 with SMTP id m5-20020a628c050000b02901d87f36bcd8mr19154743pfd.43.1612867306644;
+        Tue, 09 Feb 2021 02:41:46 -0800 (PST)
+Received: from [172.17.32.195] ([122.10.101.134])
+        by smtp.gmail.com with ESMTPSA id c24sm5543375pfo.209.2021.02.09.02.41.43
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 09 Feb 2021 02:41:45 -0800 (PST)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.1\))
+Subject: Re: [PATCH] bpf: in bpf_skb_adjust_room correct inner protocol for
+ vxlan
+From:   =?utf-8?B?6buE5a2m5qOu?= <hxseverything@gmail.com>
+In-Reply-To: <CA+FuTScScC2o6uDjua0T3Eucbjt8-YPf65h3xgxMpTtWvgjWmg@mail.gmail.com>
+Date:   Tue, 9 Feb 2021 18:41:41 +0800
+Cc:     David Miller <davem@davemloft.net>, bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        chengzhiyong <chengzhiyong@kuaishou.com>,
+        wangli <wangli09@kuaishou.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <8552C5F8-8410-4E81-8AF4-7018878AFCDC@gmail.com>
+References: <20210208113810.11118-1-hxseverything@gmail.com>
+ <CA+FuTScScC2o6uDjua0T3Eucbjt8-YPf65h3xgxMpTtWvgjWmg@mail.gmail.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+X-Mailer: Apple Mail (2.3608.120.23.2.1)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/02/2021 12:32, Nikolay Aleksandrov wrote:
-> From: Ido Schimmel <idosch@nvidia.com>
-> 
-> The bond driver needs to be patched to support new ethtool speeds.
-> Currently it emits a single warning [1] when it encounters an unknown
-> speed. As evident by the two previous patches, this is not explicit
-> enough. Instead, use WARN_ONCE() to get a more verbose warning [2].
-> 
-> [1]
-> bond10: (slave swp1): unknown ethtool speed (200000) for port 1 (set it to 0)
-> 
-> [2]
-> bond20: (slave swp2): unknown ethtool speed (400000) for port 1 (set it to 0)
-> WARNING: CPU: 5 PID: 96 at drivers/net/bonding/bond_3ad.c:317 __get_link_speed.isra.0+0x110/0x120
-> Modules linked in:
-> CPU: 5 PID: 96 Comm: kworker/u16:5 Not tainted 5.11.0-rc6-custom-02818-g69a767ec7302 #3243
-> Hardware name: Mellanox Technologies Ltd. MSN4700/VMOD0010, BIOS 5.11 01/06/2019
-> Workqueue: bond20 bond_mii_monitor
-> RIP: 0010:__get_link_speed.isra.0+0x110/0x120
-> Code: 5b ff ff ff 52 4c 8b 4e 08 44 0f b7 c7 48 c7 c7 18 46 4a b8 48 8b 16 c6 05 d9 76 41 01 01 49 8b 31 89 44 24 04 e8 a2 8a 3f 00 <0f> 0b 8b 44 24 04 59 c3 0
-> f 1f 84 00 00 00 00 00 48 85 ff 74 3b 53
-> RSP: 0018:ffffb683c03afde0 EFLAGS: 00010282
-> RAX: 0000000000000000 RBX: ffff96bd3f2a9a38 RCX: 0000000000000000
-> RDX: ffff96c06fd67560 RSI: ffff96c06fd57850 RDI: ffff96c06fd57850
-> RBP: 0000000000000000 R08: ffffffffb8b49888 R09: 0000000000009ffb
-> R10: 00000000ffffe000 R11: 3fffffffffffffff R12: 0000000000000000
-> R13: ffff96bd3f2a9a38 R14: ffff96bd49c56400 R15: ffff96bd49c564f0
-> FS:  0000000000000000(0000) GS:ffff96c06fd40000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00007f327ad804b0 CR3: 0000000142ad5006 CR4: 00000000003706e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  ad_update_actor_keys+0x36/0xc0
->  bond_3ad_handle_link_change+0x5d/0xf0
->  bond_mii_monitor.cold+0x1c2/0x1e8
->  process_one_work+0x1c9/0x360
->  worker_thread+0x48/0x3c0
->  kthread+0x113/0x130
->  ret_from_fork+0x1f/0x30
-> 
-> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-> ---
->  drivers/net/bonding/bond_3ad.c | 9 ++++-----
->  1 file changed, 4 insertions(+), 5 deletions(-)
-> 
+Appreciate for your reply Willem!
 
-Oops, forgot to add my acked-by. :)
-Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+The original intention of this commit is that when we use =
+bpf_skb_adjust_room  to encapsulate=20
+Vxlan packets, we find some powerful device features disabled.=20
 
+Setting the inner_protocol directly as skb->protocol is the root cause.
+
+I understand that it=E2=80=99s not easy to handle all tunnel protocol in =
+one bpf helper function. But for my
+immature idea, when pushing Ethernet header, setting the inner_protocol =
+as ETH_P_TEB may
+be better.
+
+Now the flag BPF_F_ADJ_ROOM_ENCAP_L4_UDP includes many udp tunnel types( =
+e.g.=20
+udp+mpls, geneve, vxlan). Adding an independent flag to represents Vxlan =
+looks a little=20
+reduplicative. What=E2=80=99s your suggestion?
+
+Thanks again for your reply!
+
+
+
+> 2021=E5=B9=B42=E6=9C=888=E6=97=A5 =E4=B8=8B=E5=8D=889:06=EF=BC=8CWillem =
+de Bruijn <willemdebruijn.kernel@gmail.com> =E5=86=99=E9=81=93=EF=BC=9A
+>=20
+> On Mon, Feb 8, 2021 at 7:16 AM huangxuesen <hxseverything@gmail.com> =
+wrote:
+>>=20
+>> From: huangxuesen <huangxuesen@kuaishou.com>
+>>=20
+>> When pushing vxlan tunnel header, set inner protocol as ETH_P_TEB in =
+skb
+>> to avoid HW device disabling udp tunnel segmentation offload, just =
+like
+>> vxlan_build_skb does.
+>>=20
+>> Drivers for NIC may invoke vxlan_features_check to check the
+>> inner_protocol in skb for vxlan packets to decide whether to disable
+>> NETIF_F_GSO_MASK. Currently it sets inner_protocol as the original
+>> skb->protocol, that will make mlx5_core disable TSO and lead to huge
+>> performance degradation.
+>>=20
+>> Signed-off-by: huangxuesen <huangxuesen@kuaishou.com>
+>> Signed-off-by: chengzhiyong <chengzhiyong@kuaishou.com>
+>> Signed-off-by: wangli <wangli09@kuaishou.com>
+>> ---
+>> net/core/filter.c | 7 ++++++-
+>> 1 file changed, 6 insertions(+), 1 deletion(-)
+>>=20
+>> diff --git a/net/core/filter.c b/net/core/filter.c
+>> index 255aeee72402..f8d3ba3fe10f 100644
+>> --- a/net/core/filter.c
+>> +++ b/net/core/filter.c
+>> @@ -3466,7 +3466,12 @@ static int bpf_skb_net_grow(struct sk_buff =
+*skb, u32 off, u32 len_diff,
+>>                skb->inner_mac_header =3D inner_net - inner_mac_len;
+>>                skb->inner_network_header =3D inner_net;
+>>                skb->inner_transport_header =3D inner_trans;
+>> -               skb_set_inner_protocol(skb, skb->protocol);
+>> +
+>> +               if (flags & BPF_F_ADJ_ROOM_ENCAP_L4_UDP &&
+>> +                   inner_mac_len =3D=3D ETH_HLEN)
+>> +                       skb_set_inner_protocol(skb, =
+htons(ETH_P_TEB));
+>=20
+> This may be used by vxlan, but it does not imply it.
+>=20
+> Adding ETH_HLEN bytes likely means pushing an Ethernet header, but =
+same point.
+>=20
+> Conversely, pushing an Ethernet header is not limited to UDP encap.
+>=20
+> This probably needs a new explicit BPF_F_ADJ_ROOM_.. flag, rather than
+> trying to infer from imprecise heuristics.
 
