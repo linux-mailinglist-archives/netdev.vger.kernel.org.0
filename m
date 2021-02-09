@@ -2,97 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38B8A3158A8
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 22:33:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72A13315913
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 23:01:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234428AbhBIV3w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 16:29:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44206 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233924AbhBIVOO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 16:14:14 -0500
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B424C061788
-        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 13:13:28 -0800 (PST)
-Received: by mail-oi1-x22d.google.com with SMTP id k204so19418871oih.3
-        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 13:13:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=PDpwFkmPxH6ciI2XoWxAqgpzMyliu9KEV9JmnUxkEXM=;
-        b=KYc5ofENeXxcywILRgEwKQE5y1MqWfn3pVoDllTF7Dsd18PkcM4hsBkEC6yD9uvQeu
-         4D1hLK9ZAeQ0LUoWldu5HipiUo6dLsOM6hcVvzesj8xmn564pcYcCV89rMc6xtFOBSSb
-         NWnXeGng5jtQgd1SGGJfobpyOtVwOm4nTttOuV7TdghACX6Xx265ZhLTEubxKLGgnEuW
-         HR28nrAlSt8aPWnJj2PeNdgzX9+2ugsfZxv7oPx2QuBGbqb0339NiG6qDEEUjQRuePD8
-         fExiqngCrvCfeqXxVaOFLenOmqj0kRzy4H8oaSeO6MqFyQsVorP0XHIbRaeJgzf/MkTh
-         kZuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=PDpwFkmPxH6ciI2XoWxAqgpzMyliu9KEV9JmnUxkEXM=;
-        b=eyLzK6dnvrqFh0oZ3vjnPTGEiK+6N+fL3jCWroklaR7l6wfHyXwwOfo+6jE01E2hR2
-         p5HPk9pd4cMrLJTor291afebLeQQJiEXCax0khvz1TNUa0lqpKU38Y13jXr0n4FFFruF
-         zmsBWFkamon7v9Le2KWRUU+O55G9U5AgErsXyoDwRYeaTmOlhcDjMGpCAng1xF6iMlZR
-         mi9DK/XaWBHQm0NOc8TJPhn0DGc9AqKtAwoKsVNa1H+PonDJs3VfPL4oRk/dAxf3/SR+
-         m806AT55ng+/xg5DVlQGjfN29uMyG7cIYJuvaDLF6QFhwLykj9vHrRaCdYltNpenHIVK
-         HCqg==
-X-Gm-Message-State: AOAM533qy1rqT67QCgIlfis62RWZ4BkqCQ127w3J2vgct7r1T+rVIKx4
-        jwvM+FfAm9qEl1cEr25dWg==
-X-Google-Smtp-Source: ABdhPJxCmWQDcOiLMxDZIZZ3GTilrTn/PUOeFtMrtpG/nEoSewJrPR1nShCDfsa9QY02QJtF3VVOtg==
-X-Received: by 2002:aca:f00a:: with SMTP id o10mr3759516oih.175.1612905207795;
-        Tue, 09 Feb 2021 13:13:27 -0800 (PST)
-Received: from threadripper.novatech-llc.local ([216.21.169.52])
-        by smtp.gmail.com with ESMTPSA id r4sm2512777oig.52.2021.02.09.13.13.25
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 09 Feb 2021 13:13:26 -0800 (PST)
-From:   George McCollister <george.mccollister@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
-        George McCollister <george.mccollister@gmail.com>
-Subject: [PATCH net-next 2/2] net: dsa: xrs700x: use of_match_ptr() on xrs700x_mdio_dt_ids
-Date:   Tue,  9 Feb 2021 15:12:56 -0600
-Message-Id: <20210209211256.111764-2-george.mccollister@gmail.com>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20210209211256.111764-1-george.mccollister@gmail.com>
-References: <20210209211256.111764-1-george.mccollister@gmail.com>
+        id S233513AbhBIWAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 17:00:32 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:23824 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234305AbhBIVAT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 16:00:19 -0500
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 119JSsOO009519
+        for <netdev@vger.kernel.org>; Tue, 9 Feb 2021 11:31:09 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=qeWMbAqsV2xnsezJY3EKVF37E1MCAJSZfNjLznhKVgU=;
+ b=jSLsvcV6FFo+sCgs4TVhJuYfZfaQU2Tq6CAGrNZlXUGEwOvHetRV8tZk6wF7cK4PEj7N
+ vkEwxxk5SS12teOgxU9Do0l6i0Ma5hPTmm1jNYF03i7tZm5Q4wDcqGYwHFZ3FTrSR6PL
+ VWMULEU1W6xmoBvlGGoWtMHZWyCNC6ooIZs= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 36jcaa518c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 11:31:09 -0800
+Received: from intmgw006.03.ash8.facebook.com (2620:10d:c085:108::4) by
+ mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 9 Feb 2021 11:31:08 -0800
+Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
+        id EAB8329408EB; Tue,  9 Feb 2021 11:31:05 -0800 (PST)
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     <bpf@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH bpf 1/2] libbpf: Ignore non function pointer member in struct_ops
+Date:   Tue, 9 Feb 2021 11:31:05 -0800
+Message-ID: <20210209193105.1752743-1-kafai@fb.com>
+X-Mailer: git-send-email 2.24.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
+ definitions=2021-02-09_06:2021-02-09,2021-02-09 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
+ adultscore=0 suspectscore=0 mlxscore=0 mlxlogscore=602 phishscore=0
+ bulkscore=0 malwarescore=0 clxscore=1015 lowpriorityscore=0 spamscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2102090094
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use of_match_ptr() on xrs700x_mdio_dt_ids so that NULL is substituted
-when CONFIG_OF isn't defined. This will prevent unnecessary use of
-xrs700x_mdio_dt_ids when CONFIG_OF isn't defined.
+When libbpf initializes the kernel's struct_ops in
+"bpf_map__init_kern_struct_ops()", it enforces all
+pointer types must be a function pointer and rejects
+others.  It turns out to be too strict.  For example,
+when directly using "struct tcp_congestion_ops" from vmlinux.h,
+it has a "struct module *owner" member and it is set to NULL
+in a bpf_tcp_cc.o.
 
-Signed-off-by: George McCollister <george.mccollister@gmail.com>
+Instead, it only needs to ensure the member is a function
+pointer if it has been set (relocated) to a bpf-prog.
+This patch moves the "btf_is_func_proto(kern_mtype)" check
+after the existing "if (!prog) { continue; }".
+
+The "btf_is_func_proto(mtype)" has already been guaranteed
+in "bpf_object__collect_st_ops_relos()" which has been run
+before "bpf_map__init_kern_struct_ops()".  Thus, this check
+is removed.
+
+Fixes: 590a00888250 ("bpf: libbpf: Add STRUCT_OPS support")
+Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 ---
- drivers/net/dsa/xrs700x/xrs700x_mdio.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ tools/lib/bpf/libbpf.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/dsa/xrs700x/xrs700x_mdio.c b/drivers/net/dsa/xrs700x/xrs700x_mdio.c
-index 3b3b78f20263..44f58bee04a4 100644
---- a/drivers/net/dsa/xrs700x/xrs700x_mdio.c
-+++ b/drivers/net/dsa/xrs700x/xrs700x_mdio.c
-@@ -10,6 +10,7 @@
- #include <linux/module.h>
- #include <linux/phy.h>
- #include <linux/if_vlan.h>
-+#include <linux/of.h>
- #include "xrs700x.h"
- #include "xrs700x_reg.h"
- 
-@@ -150,7 +151,7 @@ MODULE_DEVICE_TABLE(of, xrs700x_mdio_dt_ids);
- static struct mdio_driver xrs700x_mdio_driver = {
- 	.mdiodrv.driver = {
- 		.name	= "xrs700x-mdio",
--		.of_match_table = xrs700x_mdio_dt_ids,
-+		.of_match_table = of_match_ptr(xrs700x_mdio_dt_ids),
- 	},
- 	.probe	= xrs700x_mdio_probe,
- 	.remove	= xrs700x_mdio_remove,
--- 
-2.11.0
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 6ae748f6ea11..b483608ea72a 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -887,12 +887,6 @@ static int bpf_map__init_kern_struct_ops(struct bpf_=
+map *map,
+ 			kern_mtype =3D skip_mods_and_typedefs(kern_btf,
+ 							    kern_mtype->type,
+ 							    &kern_mtype_id);
+-			if (!btf_is_func_proto(mtype) ||
+-			    !btf_is_func_proto(kern_mtype)) {
+-				pr_warn("struct_ops init_kern %s: non func ptr %s is not supported\n=
+",
+-					map->name, mname);
+-				return -ENOTSUP;
+-			}
+=20
+ 			prog =3D st_ops->progs[i];
+ 			if (!prog) {
+@@ -901,6 +895,12 @@ static int bpf_map__init_kern_struct_ops(struct bpf_=
+map *map,
+ 				continue;
+ 			}
+=20
++			if (!btf_is_func_proto(kern_mtype)) {
++				pr_warn("struct_ops init_kern %s: kernel member %s is not a func ptr=
+\n",
++					map->name, mname);
++				return -ENOTSUP;
++			}
++
+ 			prog->attach_btf_id =3D kern_type_id;
+ 			prog->expected_attach_type =3D kern_member_idx;
+=20
+--=20
+2.24.1
 
