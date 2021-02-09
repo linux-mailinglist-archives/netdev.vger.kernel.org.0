@@ -2,109 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08E4B31472B
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 04:47:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D595B314737
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 04:50:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229783AbhBIDpS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 22:45:18 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:24490 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229601AbhBIDjf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 22:39:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1612841852;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qXpTUfGjHXTgPLVJ/cRGBpFqZ3c/AyT0/M9azlEt+tE=;
-        b=AZYW9Xmb2kjLdcLAhTgUcBDo0wDNyAul5LqG41G0RKhGJz2vkFI84fzR7rBM4P/ux+qiPT
-        GK0P/dW4pvD68aD1D4V4Jx1qXOKYebGbEiNEavAFHaqSZPfaVyB8wFziPctIQGEsELuNXs
-        rQi7XZF9Kn6XY7XvB1qqfW1A8QZ/qhE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-60-ojgRJJiUN0mVCBrkrovz2A-1; Mon, 08 Feb 2021 22:37:29 -0500
-X-MC-Unique: ojgRJJiUN0mVCBrkrovz2A-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F318A6D4FE;
-        Tue,  9 Feb 2021 03:37:25 +0000 (UTC)
-Received: from [10.72.13.32] (ovpn-13-32.pek2.redhat.com [10.72.13.32])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E4AC110013D7;
-        Tue,  9 Feb 2021 03:37:23 +0000 (UTC)
-Subject: Re: [PATCH 3/3] mlx5_vdpa: defer clear_virtqueues to until DRIVER_OK
-To:     Si-Wei Liu <si-wei.liu@oracle.com>, mst@redhat.com, elic@nvidia.com
-Cc:     linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-References: <1612614564-4220-1-git-send-email-si-wei.liu@oracle.com>
- <1612614564-4220-3-git-send-email-si-wei.liu@oracle.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <2e2bc8d7-5d64-c28c-9aa0-1df32c7dcef3@redhat.com>
-Date:   Tue, 9 Feb 2021 11:37:22 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S229986AbhBIDt3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 22:49:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43590 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229876AbhBIDpo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Feb 2021 22:45:44 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1A53964DC3;
+        Tue,  9 Feb 2021 03:44:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612842258;
+        bh=/w2jiMlzkVdm1RkJJYVUh/o8YnxGktYLR7xd2szI5c4=;
+        h=Date:From:To:Cc:Subject:From;
+        b=PHX+ZK+Arb5cWnNYZpf97OGFqbMtHfXDNCtEC3Lkk1vl8m2CpxFQV0t01ifyCaWeb
+         Ko7L30yurDqYEizZzktwjgKjyWnnMwZ3I3Ew4LP8kN8j3SwapZ7YMUQ7cCj+4OiRog
+         ZS79DXDFKrai15edV/bFwHL5EhD1+TT4ylax5b9R3HALDMI4zIf2wZRhJexM7OmaZl
+         20jiB0sou0wP6o0EMMDDZHdWNVYNemvhGpbMumHj0HmsfPmB8XOoTWShB7HjWbnGfm
+         tygIIMfFLdebhaD+TPcltzamy9aWukk5DQd2C4uSYwUsPUfeW9eUEPOttW5Fr3JLlh
+         iC0feCChgkpoA==
+Date:   Mon, 8 Feb 2021 20:44:16 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        clang-built-linux@googlegroups.com,
+        Veronika Kabatova <vkabatov@redhat.com>,
+        Jiri Olsa <jolsa@kernel.org>
+Subject: FAILED unresolved symbol vfs_truncate on arm64 with LLVM
+Message-ID: <20210209034416.GA1669105@ubuntu-m3-large-x86>
 MIME-Version: 1.0
-In-Reply-To: <1612614564-4220-3-git-send-email-si-wei.liu@oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi all,
 
-On 2021/2/6 下午8:29, Si-Wei Liu wrote:
-> While virtq is stopped,  get_vq_state() is supposed to
-> be  called to  get  sync'ed  with  the latest internal
-> avail_index from device. The saved avail_index is used
-> to restate  the virtq  once device is started.  Commit
-> b35ccebe3ef7 introduced the clear_virtqueues() routine
-> to  reset  the saved  avail_index,  however, the index
-> gets cleared a bit earlier before get_vq_state() tries
-> to read it. This would cause consistency problems when
-> virtq is restarted, e.g. through a series of link down
-> and link up events. We  could  defer  the  clearing of
-> avail_index  to  until  the  device  is to be started,
-> i.e. until  VIRTIO_CONFIG_S_DRIVER_OK  is set again in
-> set_status().
->
-> Fixes: b35ccebe3ef7 ("vdpa/mlx5: Restore the hardware used index after change map")
-> Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
-> ---
->   drivers/vdpa/mlx5/net/mlx5_vnet.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> index aa6f8cd..444ab58 100644
-> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> @@ -1785,7 +1785,6 @@ static void mlx5_vdpa_set_status(struct vdpa_device *vdev, u8 status)
->   	if (!status) {
->   		mlx5_vdpa_info(mvdev, "performing device reset\n");
->   		teardown_driver(ndev);
-> -		clear_virtqueues(ndev);
->   		mlx5_vdpa_destroy_mr(&ndev->mvdev);
->   		ndev->mvdev.status = 0;
->   		++mvdev->generation;
-> @@ -1794,6 +1793,7 @@ static void mlx5_vdpa_set_status(struct vdpa_device *vdev, u8 status)
->   
->   	if ((status ^ ndev->mvdev.status) & VIRTIO_CONFIG_S_DRIVER_OK) {
->   		if (status & VIRTIO_CONFIG_S_DRIVER_OK) {
-> +			clear_virtqueues(ndev);
+Recently, an issue with CONFIG_DEBUG_INFO_BTF was reported for arm64:
+https://groups.google.com/g/clang-built-linux/c/de_mNh23FOc/m/E7cu5BwbBAAJ
 
+$ make -skj"$(nproc)" ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
+                      LLVM=1 O=build/aarch64 defconfig
 
-Rethink about this. As mentioned in another thread, this in fact breaks 
-set_vq_state().  (See vhost_virtqueue_start() -> 
-vhost_vdpa_set_vring_base() in qemu codes).
+$ scripts/config \
+    --file build/aarch64/.config \
+    -e BPF_SYSCALL \
+    -e DEBUG_INFO_BTF \
+    -e FTRACE \
+    -e FUNCTION_TRACER
 
-The issue is that the avail idx is forgot, we need keep it.
+$ make -skj"$(nproc)" ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
+                      LLVM=1 O=build/aarch64 olddefconfig all
+...
+FAILED unresolved symbol vfs_truncate
+...
 
-Thanks
+My bisect landed on commit 6e22ab9da793 ("bpf: Add d_path helper")
+although that seems obvious given that is what introduced
+BTF_ID(func, vfs_truncate).
 
+I am using the latest pahole v1.20 and LLVM is at
+https://github.com/llvm/llvm-project/commit/14da287e18846ea86e45b421dc47f78ecc5aa7cb
+although I can reproduce back to LLVM 10.0.1, which is the earliest
+version that the kernel supports. I am very unfamiliar with BPF so I
+have no idea what is going wrong here. Is this a known issue?
 
->   			err = setup_driver(ndev);
->   			if (err) {
->   				mlx5_vdpa_warn(mvdev, "failed to setup driver\n");
-
+Cheers,
+Nathan
