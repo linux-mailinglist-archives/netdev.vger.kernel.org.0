@@ -2,66 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68ABA3146A6
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 03:54:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 579A73146A9
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 03:56:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229891AbhBICyI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 21:54:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36226 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229692AbhBICyG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Feb 2021 21:54:06 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CB6CC64E0B;
-        Tue,  9 Feb 2021 02:53:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612839205;
-        bh=LA/z27QeigL5ShSYaItMvx2FJE2OnzHBzoj/AOnYgjE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=R1Wnyoi5WLviJZOfbi18b1bWtWaOFP33jMqKHbGwx2SrI5uSevvXJNdaxZFcSi1od
-         IU6OtKsX+sWAoq4sD7QcZ2+OAsFw4Zmu8pm/wQL8cCk4uJwiH9dDh3+8pomFmboDWn
-         SuwaMiOM3aCeN0b9h22tmOOcx9rfgQJIrxNfTpBlz4cwtOvt+IgtaqOJe8UkrohpE0
-         q5dQjdngw+RlYqbpjiZ4dhu8rpU0FHW3eMoNaPr+UPDCd13HiUpTxkHJjsaFEmsdOg
-         bW6z18QusfGZZMWkwFi5oWd8SHnuER9t0zrfNiaWyZBeOTrJb5BWm9vrFrZO2tuPF2
-         A0C55kq2VLzlg==
-Date:   Mon, 8 Feb 2021 18:53:23 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Arjun Roy <arjunroy.kdev@gmail.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, arjunroy@google.com, edumazet@google.com,
-        soheil@google.com
-Subject: Re: [net-next v2] tcp: Explicitly mark reserved field in
- tcp_zerocopy_receive args.
-Message-ID: <20210208185323.11c2bacf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <09fa284e-ea02-a6ca-cd8f-6d90dff2fa00@gmail.com>
-References: <20210206203648.609650-1-arjunroy.kdev@gmail.com>
-        <20210206152828.6610da2b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20210207082654.GC4656@unreal>
-        <20210208104143.60a6d730@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <09fa284e-ea02-a6ca-cd8f-6d90dff2fa00@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S230046AbhBICzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 21:55:50 -0500
+Received: from out30-131.freemail.mail.aliyun.com ([115.124.30.131]:60487 "EHLO
+        out30-131.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229692AbhBICzP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 21:55:15 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R711e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0UOGliBi_1612839265;
+Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0UOGliBi_1612839265)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 09 Feb 2021 10:54:32 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     pkshih@realtek.com
+Cc:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Subject: [PATCH] rtlwifi: rtl8192se: Simplify bool comparison
+Date:   Tue,  9 Feb 2021 10:54:24 +0800
+Message-Id: <1612839264-85773-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 8 Feb 2021 19:24:05 -0700 David Ahern wrote:
-> On 2/8/21 11:41 AM, Jakub Kicinski wrote:
-> > On Sun, 7 Feb 2021 10:26:54 +0200 Leon Romanovsky wrote:  
-> >> There is a check that len is not larger than zs and users can't give
-> >> large buffer.
-> >>
-> >> I would say that is pretty safe to write "if (zc.reserved)".  
-> > 
-> > Which check? There's a check which truncates (writes back to user space
-> > len = min(len, sizeof(zc)). Application can still pass garbage beyond
-> > sizeof(zc) and syscall may start failing in the future if sizeof(zc)
-> > changes.
-> 
-> That would be the case for new userspace on old kernel. Extending the
-> check to the end of the struct would guarantee new userspace can not ask
-> for something that the running kernel does not understand.
+Fix the follow coccicheck warnings:
 
-Indeed, so we're agreeing that check_zeroed_user() is needed before
-original optlen from user space gets truncated?
+./drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c:2305:6-27:
+WARNING: Comparison of 0/1 to bool variable.
+
+./drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c:1376:5-26:
+WARNING: Comparison of 0/1 to bool variable.
+
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+---
+ drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c
+index 47fabce..aff8ab0 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c
+@@ -1373,7 +1373,7 @@ static void _rtl92se_gen_refreshledstate(struct ieee80211_hw *hw)
+ 	struct rtl_pci *rtlpci = rtl_pcidev(rtl_pcipriv(hw));
+ 	struct rtl_led *pled0 = &rtlpriv->ledctl.sw_led0;
+ 
+-	if (rtlpci->up_first_time == 1)
++	if (rtlpci->up_first_time)
+ 		return;
+ 
+ 	if (rtlpriv->psc.rfoff_reason == RF_CHANGE_BY_IPS)
+@@ -2302,7 +2302,7 @@ bool rtl92se_gpio_radio_on_off_checking(struct ieee80211_hw *hw, u8 *valid)
+ 	bool turnonbypowerdomain = false;
+ 
+ 	/* just 8191se can check gpio before firstup, 92c/92d have fixed it */
+-	if ((rtlpci->up_first_time == 1) || (rtlpci->being_init_adapter))
++	if (rtlpci->up_first_time || rtlpci->being_init_adapter)
+ 		return false;
+ 
+ 	if (ppsc->swrf_processing)
+-- 
+1.8.3.1
+
