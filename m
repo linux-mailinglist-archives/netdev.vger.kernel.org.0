@@ -2,69 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 579A73146A9
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 03:56:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AD9F3146AB
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 03:58:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230046AbhBICzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 21:55:50 -0500
-Received: from out30-131.freemail.mail.aliyun.com ([115.124.30.131]:60487 "EHLO
-        out30-131.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229692AbhBICzP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 21:55:15 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R711e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0UOGliBi_1612839265;
-Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0UOGliBi_1612839265)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 09 Feb 2021 10:54:32 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     pkshih@realtek.com
-Cc:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Subject: [PATCH] rtlwifi: rtl8192se: Simplify bool comparison
-Date:   Tue,  9 Feb 2021 10:54:24 +0800
-Message-Id: <1612839264-85773-1-git-send-email-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S230161AbhBIC5f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 21:57:35 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36610 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229824AbhBIC5X (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Feb 2021 21:57:23 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3278964E0B;
+        Tue,  9 Feb 2021 02:56:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612839402;
+        bh=uMYIAbC+VgGR2pGD5Ys5jNFLw2hFkPR6W1SjvPRQrS8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DdH8AnkYFZd2Ao8jazUqfVq2nH9ffTlMPu2+zlQ8WuGNFY1gCiRhIMi6jObZJ+iE+
+         PDHh44qgEIhoM1paP/GwCzd7qvMdC47lOEOmE1Ud112q1uj3P4DY8BTrO+1E6TyEtk
+         lFWEi6W6SrTiW3fVWwWZyZn6dhFxYWteHLqxhiqixAojbwW1PSKVuT0LTFEgxXDRH8
+         12ca8qtqO3xtaS98V/1mE+1O5zKlX95VmZ/jsMa4PMyb823zfZzjpM5BW9WtVjy/j6
+         1mueENZ14lcIBSY8BOywBELSknzdyKYyWmoQe54bZzALq+nczOWj0eAwhhxOOBxkNS
+         GK5x2v/hh6U0Q==
+Date:   Mon, 8 Feb 2021 18:56:41 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Taehee Yoo <ap420073@gmail.com>
+Cc:     David Ahern <dsahern@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>, dsahern@kernel.org,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Subject: Re: [PATCH net-next 7/8] mld: convert ip6_sf_socklist to list
+ macros
+Message-ID: <20210208185641.70ef6444@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <8e1d588c-e9a4-04d2-62c3-138d5af21a32@gmail.com>
+References: <20210208175820.5690-1-ap420073@gmail.com>
+        <8633a76b-84c1-44c1-f532-ce66c1502b5c@gmail.com>
+        <CAMArcTVdhDZ-4yETx1mGnULfKU5uGdAKsLbXKSBi-ZmVMHbvfQ@mail.gmail.com>
+        <8e1d588c-e9a4-04d2-62c3-138d5af21a32@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the follow coccicheck warnings:
+On Mon, 8 Feb 2021 19:18:40 -0700 David Ahern wrote:
+> On 2/8/21 7:05 PM, Taehee Yoo wrote:
+> > Thanks, I understand why the arrays have been using.
+> > I will send a v2 patch, which contains only the necessary changes.  
+> 
+> please send v2 as a patch series and not 8 individual patches + cover
+> letter.
 
-./drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c:2305:6-27:
-WARNING: Comparison of 0/1 to bool variable.
-
-./drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c:1376:5-26:
-WARNING: Comparison of 0/1 to bool variable.
-
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
----
- drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c
-index 47fabce..aff8ab0 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c
-@@ -1373,7 +1373,7 @@ static void _rtl92se_gen_refreshledstate(struct ieee80211_hw *hw)
- 	struct rtl_pci *rtlpci = rtl_pcidev(rtl_pcipriv(hw));
- 	struct rtl_led *pled0 = &rtlpriv->ledctl.sw_led0;
- 
--	if (rtlpci->up_first_time == 1)
-+	if (rtlpci->up_first_time)
- 		return;
- 
- 	if (rtlpriv->psc.rfoff_reason == RF_CHANGE_BY_IPS)
-@@ -2302,7 +2302,7 @@ bool rtl92se_gpio_radio_on_off_checking(struct ieee80211_hw *hw, u8 *valid)
- 	bool turnonbypowerdomain = false;
- 
- 	/* just 8191se can check gpio before firstup, 92c/92d have fixed it */
--	if ((rtlpci->up_first_time == 1) || (rtlpci->being_init_adapter))
-+	if (rtlpci->up_first_time || rtlpci->being_init_adapter)
- 		return false;
- 
- 	if (ppsc->swrf_processing)
--- 
-1.8.3.1
-
+And if you use git send email please use --thread and
+--no-chain-reply-to, so that the patches are all "in response" 
+to the cover letter.
