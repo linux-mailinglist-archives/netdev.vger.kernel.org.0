@@ -2,262 +2,317 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BF77315413
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 17:40:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 281B131541B
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 17:41:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232966AbhBIQj4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 11:39:56 -0500
-Received: from ssl.serverraum.org ([176.9.125.105]:35929 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232473AbhBIQjr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 11:39:47 -0500
-Received: from mwalle01.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:fa59:71ff:fe9b:b851])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 01BDB22FB3;
-        Tue,  9 Feb 2021 17:39:00 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1612888741;
+        id S232932AbhBIQlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 11:41:15 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:58705 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232935AbhBIQk3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 11:40:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612888741;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=pldC4KDYMhYQEnWgcH3uaw5lE9NdWfcPJ/SoFuSqEO8=;
-        b=EuTZHZOyztJc0ihexGkjZQxeMnvwRubcbMcWXDUa6rQ6d1PIsIOLX+3MefO6Ym+szGavd2
-        c2/9TJmYvlWt2MciT21Q1gt0qd6ux0txnLAuep3+zb88L24+sJUNYnLyxggCCYHFoLufNb
-        se3+zxT7/cIHDJ2TrRL6KlUxyc0xYJ8=
-From:   Michael Walle <michael@walle.cc>
-To:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next] net: phy: introduce phydev->port
-Date:   Tue,  9 Feb 2021 17:38:52 +0100
-Message-Id: <20210209163852.17037-1-michael@walle.cc>
-X-Mailer: git-send-email 2.20.1
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=j18aWEf5CADfmqMvOrXJkqA0qqCkiJleoTu3goUeHSM=;
+        b=AjNTNrcJ2Fb1zlzA0SPp1dNydBJfYoax3n20rnBX6SRC4il/BLHHv+3Ds9BkvR2VTqy3/G
+        Y0rKUCmBrRg1jT0PG+AJe2DN8DyCUH0ERc+aJmSs/gDinhm6JRO76SmFkSRTYDlRbMFygb
+        i8S4ONclZvvBt7cUCpVfZgqalMLDxIo=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-140-p6MKepJnOAWSrlzfmMgFOQ-1; Tue, 09 Feb 2021 11:38:59 -0500
+X-MC-Unique: p6MKepJnOAWSrlzfmMgFOQ-1
+Received: by mail-wm1-f69.google.com with SMTP id o18so2930845wmq.2
+        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 08:38:59 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=j18aWEf5CADfmqMvOrXJkqA0qqCkiJleoTu3goUeHSM=;
+        b=qLKauK9RK3kn9LaEOwgmnRkmLKxrf9l3vjSK4riFHsLFtm7WiKcQvwImk6CuasrGK8
+         lbdoPsjQQiftX7ctpgNF3I2GQ5MDy4L6d1GeC99MwRBkvh+ErmE80ap9VyzLcNFI1DXR
+         Ure6k1hLQPpIFchBxb+ZX3pg381vL5TsJTrhUsu14FXwYyg8ZyYIY93eX1WYHQtxfc11
+         YPGKqoeGkpL7HZGAOh6IHyGQoH3sbemiY0w+cuhcy0VYi13yyR9cTsFsRSuCjAcRPaM7
+         lNm9PeOk20iYck/oT9prenCrrZ3l7oyp54dhNSjTre7Spp8vqdBpmNwOd20ymfKhCf39
+         FMOw==
+X-Gm-Message-State: AOAM531jlHztvESJhSPlLrFnBZ3lTnEbdBgJdF1bJ4R6f6IkB7UQvrEf
+        JTP2nYDl+7zffk2nGa0A0o+z3PZceKGGxmYQ/Wn9wVJI/+KndQKLyOLwWCFA7WQbvFXqZ3lQ0mq
+        CeH8MUp06UzCtIY3G
+X-Received: by 2002:a5d:690b:: with SMTP id t11mr26608188wru.12.1612888738146;
+        Tue, 09 Feb 2021 08:38:58 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzRKdJBQCdmzziwPcmnK3944oxwc/YSEzg8BUmyrortM8c8BTMwCWv53TxFKLYzqUjxjED4bg==
+X-Received: by 2002:a5d:690b:: with SMTP id t11mr26608156wru.12.1612888737904;
+        Tue, 09 Feb 2021 08:38:57 -0800 (PST)
+Received: from redhat.com (bzq-79-180-2-31.red.bezeqint.net. [79.180.2.31])
+        by smtp.gmail.com with ESMTPSA id v5sm17877825wro.71.2021.02.09.08.38.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Feb 2021 08:38:57 -0800 (PST)
+Date:   Tue, 9 Feb 2021 11:38:54 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        richardcochran@gmail.com, Willem de Bruijn <willemb@google.com>
+Subject: Re: [PATCH RFC v2 3/4] virtio-net: support transmit timestamp
+Message-ID: <20210209113643-mutt-send-email-mst@kernel.org>
+References: <20210208185558.995292-1-willemdebruijn.kernel@gmail.com>
+ <20210208185558.995292-4-willemdebruijn.kernel@gmail.com>
+ <6bfdf48d-c780-bc65-b0b9-24a33f18827b@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam: Yes
+In-Reply-To: <6bfdf48d-c780-bc65-b0b9-24a33f18827b@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-At the moment, PORT_MII is reported in the ethtool ops. This is odd
-because it is an interface between the MAC and the PHY and no external
-port. Some network card drivers will overwrite the port to twisted pair
-or fiber, though. Even worse, the MDI/MDIX setting is only used by
-ethtool if the port is twisted pair.
+On Tue, Feb 09, 2021 at 01:45:11PM +0800, Jason Wang wrote:
+> 
+> On 2021/2/9 上午2:55, Willem de Bruijn wrote:
+> > From: Willem de Bruijn <willemb@google.com>
+> > 
+> > Add optional PTP hardware tx timestamp offload for virtio-net.
+> > 
+> > Accurate RTT measurement requires timestamps close to the wire.
+> > Introduce virtio feature VIRTIO_NET_F_TX_TSTAMP, the transmit
+> > equivalent to VIRTIO_NET_F_RX_TSTAMP.
+> > 
+> > The driver sets VIRTIO_NET_HDR_F_TSTAMP to request a timestamp
+> > returned on completion. If the feature is negotiated, the device
+> > either places the timestamp or clears the feature bit.
+> > 
+> > The timestamp straddles (virtual) hardware domains. Like PTP, use
+> > international atomic time (CLOCK_TAI) as global clock base. The driver
+> > must sync with the device, e.g., through kvm-clock.
+> > 
+> > Modify can_push to ensure that on tx completion the header, and thus
+> > timestamp, is in a predicatable location at skb_vnet_hdr.
+> > 
+> > RFC: this implementation relies on the device writing to the buffer.
+> > That breaks DMA_TO_DEVICE semantics. For now, disable when DMA is on.
+> > The virtio changes should be a separate patch at the least.
+> > 
+> > Tested: modified txtimestamp.c to with h/w timestamping:
+> >    -       sock_opt = SOF_TIMESTAMPING_SOFTWARE |
+> >    +       sock_opt = SOF_TIMESTAMPING_RAW_HARDWARE |
+> >    + do_test(family, SOF_TIMESTAMPING_TX_HARDWARE);
+> > 
+> > Signed-off-by: Willem de Bruijn <willemb@google.com>
+> > ---
+> >   drivers/net/virtio_net.c        | 61 ++++++++++++++++++++++++++++-----
+> >   drivers/virtio/virtio_ring.c    |  3 +-
+> >   include/linux/virtio.h          |  1 +
+> >   include/uapi/linux/virtio_net.h |  1 +
+> >   4 files changed, 56 insertions(+), 10 deletions(-)
+> > 
+> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > index ac44c5efa0bc..fc8ecd3a333a 100644
+> > --- a/drivers/net/virtio_net.c
+> > +++ b/drivers/net/virtio_net.c
+> > @@ -210,6 +210,12 @@ struct virtnet_info {
+> >   	/* Device will pass rx timestamp. Requires has_rx_tstamp */
+> >   	bool enable_rx_tstamp;
+> > +	/* Device can pass CLOCK_TAI transmit time to the driver */
+> > +	bool has_tx_tstamp;
+> > +
+> > +	/* Device will pass tx timestamp. Requires has_tx_tstamp */
+> > +	bool enable_tx_tstamp;
+> > +
+> >   	/* Has control virtqueue */
+> >   	bool has_cvq;
+> > @@ -1401,6 +1407,20 @@ static int virtnet_receive(struct receive_queue *rq, int budget,
+> >   	return stats.packets;
+> >   }
+> > +static void virtnet_record_tx_tstamp(const struct send_queue *sq,
+> > +				     struct sk_buff *skb)
+> > +{
+> > +	const struct virtio_net_hdr_hash_ts *h = skb_vnet_hdr_ht(skb);
+> > +	const struct virtnet_info *vi = sq->vq->vdev->priv;
+> > +	struct skb_shared_hwtstamps ts;
+> > +
+> > +	if (h->hdr.flags & VIRTIO_NET_HDR_F_TSTAMP &&
+> > +	    vi->enable_tx_tstamp) {
+> > +		ts.hwtstamp = ns_to_ktime(le64_to_cpu(h->tstamp));
+> > +		skb_tstamp_tx(skb, &ts);
+> 
+> 
+> This probably won't work since the buffer is read-only from the device. (See
+> virtqueue_add_outbuf()).
+> 
+> Another issue that I vaguely remember that the virtio spec forbids out
+> buffer after in buffer.
 
-Set the port to PORT_TP by default because most PHY drivers are copper
-ones. If there is fibre support and it is enabled, the PHY driver will
-set it to PORT_FIBRE.
+Both Driver Requirements: Message Framing and Driver Requirements: Scatter-Gather Support
+have this statement:
 
-This will change reporting PORT_MII to either PORT_TP or PORT_FIBRE;
-except for the genphy fallback driver.
+	The driver MUST place any device-writable descriptor elements after any device-readable descriptor ele-
+	ments.
 
-Suggested-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- drivers/net/phy/broadcom.c   |  2 ++
- drivers/net/phy/dp83822.c    |  3 +++
- drivers/net/phy/dp83869.c    |  4 ++++
- drivers/net/phy/lxt.c        |  1 +
- drivers/net/phy/marvell.c    |  1 +
- drivers/net/phy/marvell10g.c |  2 ++
- drivers/net/phy/micrel.c     | 14 +++++++++++---
- drivers/net/phy/phy.c        |  2 +-
- drivers/net/phy/phy_device.c |  9 +++++++++
- include/linux/phy.h          |  2 ++
- 10 files changed, 36 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
-index 3142ba768313..0472b3470c59 100644
---- a/drivers/net/phy/broadcom.c
-+++ b/drivers/net/phy/broadcom.c
-@@ -410,6 +410,8 @@ static int bcm54616s_probe(struct phy_device *phydev)
- 		 */
- 		if (!(val & BCM54616S_100FX_MODE))
- 			phydev->dev_flags |= PHY_BCM_FLAGS_MODE_1000BX;
-+
-+		phydev->port = PORT_FIBRE;
- 	}
- 
- 	return 0;
-diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
-index fff371ca1086..be1224b4447b 100644
---- a/drivers/net/phy/dp83822.c
-+++ b/drivers/net/phy/dp83822.c
-@@ -554,6 +554,9 @@ static int dp83822_probe(struct phy_device *phydev)
- 
- 	dp83822_of_init(phydev);
- 
-+	if (dp83822->fx_enabled)
-+		phydev->port = PORT_FIBRE;
-+
- 	return 0;
- }
- 
-diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/dp83869.c
-index b30bc142d82e..755220c6451f 100644
---- a/drivers/net/phy/dp83869.c
-+++ b/drivers/net/phy/dp83869.c
-@@ -855,6 +855,10 @@ static int dp83869_probe(struct phy_device *phydev)
- 	if (ret)
- 		return ret;
- 
-+	if (dp83869->mode == DP83869_RGMII_100_BASE ||
-+	    dp83869->mode == DP83869_RGMII_1000_BASE)
-+		phydev->port = PORT_FIBRE;
-+
- 	return dp83869_config_init(phydev);
- }
- 
-diff --git a/drivers/net/phy/lxt.c b/drivers/net/phy/lxt.c
-index 0ee23d29c0d4..bde3356a2f86 100644
---- a/drivers/net/phy/lxt.c
-+++ b/drivers/net/phy/lxt.c
-@@ -292,6 +292,7 @@ static int lxt973_probe(struct phy_device *phydev)
- 		phy_write(phydev, MII_BMCR, val);
- 		/* Remember that the port is in fiber mode. */
- 		phydev->priv = lxt973_probe;
-+		phydev->port = PORT_FIBRE;
- 	} else {
- 		phydev->priv = NULL;
- 	}
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index b523aa37ebf0..3238d0fbf437 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -1552,6 +1552,7 @@ static int marvell_read_status_page(struct phy_device *phydev, int page)
- 	phydev->asym_pause = 0;
- 	phydev->speed = SPEED_UNKNOWN;
- 	phydev->duplex = DUPLEX_UNKNOWN;
-+	phydev->port = fiber ? PORT_FIBRE : PORT_TP;
- 
- 	if (phydev->autoneg == AUTONEG_ENABLE)
- 		err = marvell_read_status_page_an(phydev, fiber, status);
-diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
-index 1901ba277413..b1bb9b8e1e4e 100644
---- a/drivers/net/phy/marvell10g.c
-+++ b/drivers/net/phy/marvell10g.c
-@@ -631,6 +631,7 @@ static int mv3310_read_status_10gbaser(struct phy_device *phydev)
- 	phydev->link = 1;
- 	phydev->speed = SPEED_10000;
- 	phydev->duplex = DUPLEX_FULL;
-+	phydev->port = PORT_FIBRE;
- 
- 	return 0;
- }
-@@ -690,6 +691,7 @@ static int mv3310_read_status_copper(struct phy_device *phydev)
- 
- 	phydev->duplex = cssr1 & MV_PCS_CSSR1_DUPLEX_FULL ?
- 			 DUPLEX_FULL : DUPLEX_HALF;
-+	phydev->port = PORT_TP;
- 	phydev->mdix = cssr1 & MV_PCS_CSSR1_MDIX ?
- 		       ETH_TP_MDI_X : ETH_TP_MDI;
- 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 494abf608b8f..7ec6f70d6a82 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -341,14 +341,19 @@ static int kszphy_config_init(struct phy_device *phydev)
- 	return kszphy_config_reset(phydev);
- }
- 
-+static int ksz8041_fiber_mode(struct phy_device *phydev)
-+{
-+	struct device_node *of_node = phydev->mdio.dev.of_node;
-+
-+	return of_property_read_bool(of_node, "micrel,fiber-mode");
-+}
-+
- static int ksz8041_config_init(struct phy_device *phydev)
- {
- 	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
- 
--	struct device_node *of_node = phydev->mdio.dev.of_node;
--
- 	/* Limit supported and advertised modes in fiber mode */
--	if (of_property_read_bool(of_node, "micrel,fiber-mode")) {
-+	if (ksz8041_fiber_mode(phydev)) {
- 		phydev->dev_flags |= MICREL_PHY_FXEN;
- 		linkmode_set_bit(ETHTOOL_LINK_MODE_100baseT_Full_BIT, mask);
- 		linkmode_set_bit(ETHTOOL_LINK_MODE_100baseT_Half_BIT, mask);
-@@ -1176,6 +1181,9 @@ static int kszphy_probe(struct phy_device *phydev)
- 		}
- 	}
- 
-+	if (ksz8041_fiber_mode(phydev))
-+		phydev->port = PORT_FIBRE;
-+
- 	/* Support legacy board-file configuration */
- 	if (phydev->dev_flags & MICREL_PHY_50MHZ_CLK) {
- 		priv->rmii_ref_clk_sel = true;
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index 2e71d65ead54..9c4ee0a2143a 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -308,7 +308,7 @@ void phy_ethtool_ksettings_get(struct phy_device *phydev,
- 	if (phydev->interface == PHY_INTERFACE_MODE_MOCA)
- 		cmd->base.port = PORT_BNC;
- 	else
--		cmd->base.port = PORT_MII;
-+		cmd->base.port = phydev->port;
- 	cmd->base.transceiver = phy_is_internal(phydev) ?
- 				XCVR_INTERNAL : XCVR_EXTERNAL;
- 	cmd->base.phy_address = phydev->mdio.addr;
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 8447e56ba572..30a20a29ae05 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -606,6 +606,7 @@ struct phy_device *phy_device_create(struct mii_bus *bus, int addr, u32 phy_id,
- 	dev->pause = 0;
- 	dev->asym_pause = 0;
- 	dev->link = 0;
-+	dev->port = PORT_TP;
- 	dev->interface = PHY_INTERFACE_MODE_GMII;
- 
- 	dev->autoneg = AUTONEG_ENABLE;
-@@ -1403,6 +1404,14 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
- 
- 	phydev->state = PHY_READY;
- 
-+	/* Port is set to PORT_TP by default and the actual PHY driver will set
-+	 * it to different value depending on the PHY configuration. If we have
-+	 * the generic PHY driver we can't figure it out, thus set the old
-+	 * legacy PORT_MII value.
-+	 */
-+	if (using_genphy)
-+		phydev->port = PORT_MII;
-+
- 	/* Initial carrier state is off as the phy is about to be
- 	 * (re)initialized.
- 	 */
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index c22aba1bda59..d0e3a94882b1 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -503,6 +503,7 @@ struct macsec_ops;
-  *
-  * @speed: Current link speed
-  * @duplex: Current duplex
-+ * @port: Current port
-  * @pause: Current pause
-  * @asym_pause: Current asymmetric pause
-  * @supported: Combined MAC/PHY supported linkmodes
-@@ -581,6 +582,7 @@ struct phy_device {
- 	 */
- 	int speed;
- 	int duplex;
-+	int port;
- 	int pause;
- 	int asym_pause;
- 	u8 master_slave_get;
--- 
-2.20.1
+similarly
+
+Device Requirements: The Virtqueue Descriptor Table
+	A device MUST NOT write to a device-readable buffer, and a device SHOULD NOT read a device-writable
+	buffer.
+
+
+
+> 
+> > +	}
+> > +}
+> > +
+> >   static void free_old_xmit_skbs(struct send_queue *sq, bool in_napi)
+> >   {
+> >   	unsigned int len;
+> > @@ -1412,6 +1432,7 @@ static void free_old_xmit_skbs(struct send_queue *sq, bool in_napi)
+> >   		if (likely(!is_xdp_frame(ptr))) {
+> >   			struct sk_buff *skb = ptr;
+> > +			virtnet_record_tx_tstamp(sq, skb);
+> >   			pr_debug("Sent skb %p\n", skb);
+> >   			bytes += skb->len;
+> > @@ -1558,7 +1579,7 @@ static int xmit_skb(struct send_queue *sq, struct sk_buff *skb)
+> >   	struct virtio_net_hdr_mrg_rxbuf *hdr;
+> >   	const unsigned char *dest = ((struct ethhdr *)skb->data)->h_dest;
+> >   	struct virtnet_info *vi = sq->vq->vdev->priv;
+> > -	struct virtio_net_hdr_v1_hash *ht;
+> > +	struct virtio_net_hdr_hash_ts *ht;
+> >   	int num_sg;
+> >   	unsigned hdr_len = vi->hdr_len;
+> >   	bool can_push;
+> > @@ -1567,7 +1588,8 @@ static int xmit_skb(struct send_queue *sq, struct sk_buff *skb)
+> >   	can_push = vi->any_header_sg &&
+> >   		!((unsigned long)skb->data & (__alignof__(*hdr) - 1)) &&
+> > -		!skb_header_cloned(skb) && skb_headroom(skb) >= hdr_len;
+> > +		!skb_header_cloned(skb) && skb_headroom(skb) >= hdr_len &&
+> > +		!vi->enable_tx_tstamp;
+> >   	/* Even if we can, don't push here yet as this would skew
+> >   	 * csum_start offset below. */
+> >   	if (can_push)
+> > @@ -1588,10 +1610,12 @@ static int xmit_skb(struct send_queue *sq, struct sk_buff *skb)
+> >   		u16 report = skb->l4_hash ? VIRTIO_NET_HASH_REPORT_L4 :
+> >   					    VIRTIO_NET_HASH_REPORT_OTHER;
+> > -		ht->hash_value = cpu_to_le32(skb->hash);
+> > -		ht->hash_report = cpu_to_le16(report);
+> > -		ht->hash_state = cpu_to_le16(VIRTIO_NET_HASH_STATE_DEFAULT);
+> > +		ht->hash.value = cpu_to_le32(skb->hash);
+> > +		ht->hash.report = cpu_to_le16(report);
+> > +		ht->hash.flow_state = cpu_to_le16(VIRTIO_NET_HASH_STATE_DEFAULT);
+> >   	}
+> > +	if (vi->enable_tx_tstamp && skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)
+> > +		ht->hdr.flags |= VIRTIO_NET_HDR_F_TSTAMP;
+> >   	sg_init_table(sq->sg, skb_shinfo(skb)->nr_frags + (can_push ? 1 : 2));
+> >   	if (can_push) {
+> > @@ -2307,7 +2331,13 @@ static int virtnet_get_ts_info(struct net_device *dev,
+> >   		info->rx_filters = HWTSTAMP_FILTER_NONE;
+> >   	}
+> > -	info->tx_types = HWTSTAMP_TX_OFF;
+> > +	if (vi->has_tx_tstamp) {
+> > +		info->so_timestamping |= SOF_TIMESTAMPING_TX_HARDWARE |
+> > +					 SOF_TIMESTAMPING_RAW_HARDWARE;
+> > +		info->tx_types = HWTSTAMP_TX_ON;
+> > +	} else {
+> > +		info->tx_types = HWTSTAMP_TX_OFF;
+> > +	}
+> >   	return 0;
+> >   }
+> > @@ -2616,7 +2646,8 @@ static int virtnet_ioctl_set_hwtstamp(struct net_device *dev, struct ifreq *ifr)
+> >   		return -EFAULT;
+> >   	if (tsconf.flags)
+> >   		return -EINVAL;
+> > -	if (tsconf.tx_type != HWTSTAMP_TX_OFF)
+> > +	if (tsconf.tx_type != HWTSTAMP_TX_OFF &&
+> > +	    tsconf.tx_type != HWTSTAMP_TX_ON)
+> >   		return -ERANGE;
+> >   	if (tsconf.rx_filter != HWTSTAMP_FILTER_NONE &&
+> >   	    tsconf.rx_filter != HWTSTAMP_FILTER_ALL)
+> > @@ -2627,6 +2658,11 @@ static int virtnet_ioctl_set_hwtstamp(struct net_device *dev, struct ifreq *ifr)
+> >   	else
+> >   		vi->enable_rx_tstamp = tsconf.rx_filter == HWTSTAMP_FILTER_ALL;
+> > +	if (!vi->has_tx_tstamp)
+> > +		tsconf.tx_type = HWTSTAMP_TX_OFF;
+> > +	else
+> > +		vi->enable_tx_tstamp = tsconf.tx_type == HWTSTAMP_TX_ON;
+> > +
+> >   	if (copy_to_user(ifr->ifr_data, &tsconf, sizeof(tsconf)))
+> >   		return -EFAULT;
+> > @@ -2641,7 +2677,8 @@ static int virtnet_ioctl_get_hwtstamp(struct net_device *dev, struct ifreq *ifr)
+> >   	tsconf.flags = 0;
+> >   	tsconf.rx_filter = vi->enable_rx_tstamp ? HWTSTAMP_FILTER_ALL :
+> >   						  HWTSTAMP_FILTER_NONE;
+> > -	tsconf.tx_type = HWTSTAMP_TX_OFF;
+> > +	tsconf.tx_type = vi->enable_tx_tstamp ? HWTSTAMP_TX_ON :
+> > +						HWTSTAMP_TX_OFF;
+> >   	if (copy_to_user(ifr->ifr_data, &tsconf, sizeof(tsconf)))
+> >   		return -EFAULT;
+> > @@ -3178,6 +3215,12 @@ static int virtnet_probe(struct virtio_device *vdev)
+> >   		vi->hdr_len = sizeof(struct virtio_net_hdr_hash_ts);
+> >   	}
+> > +	if (virtio_has_feature(vdev, VIRTIO_NET_F_TX_TSTAMP) &&
+> > +	    !vring_use_dma_api(vdev)) {
+> > +		vi->has_tx_tstamp = true;
+> > +		vi->hdr_len = sizeof(struct virtio_net_hdr_hash_ts);
+> > +	}
+> > +
+> >   	if (virtio_has_feature(vdev, VIRTIO_F_ANY_LAYOUT) ||
+> >   	    virtio_has_feature(vdev, VIRTIO_F_VERSION_1))
+> >   		vi->any_header_sg = true;
+> > @@ -3369,7 +3412,7 @@ static struct virtio_device_id id_table[] = {
+> >   	VIRTIO_NET_F_CTRL_MAC_ADDR, \
+> >   	VIRTIO_NET_F_MTU, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS, \
+> >   	VIRTIO_NET_F_SPEED_DUPLEX, VIRTIO_NET_F_STANDBY, \
+> > -	VIRTIO_NET_F_TX_HASH, VIRTIO_NET_F_RX_TSTAMP
+> > +	VIRTIO_NET_F_TX_HASH, VIRTIO_NET_F_RX_TSTAMP, VIRTIO_NET_F_TX_TSTAMP
+> >   static unsigned int features[] = {
+> >   	VIRTNET_FEATURES,
+> > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+> > index 71e16b53e9c1..cf5d5d1f9b14 100644
+> > --- a/drivers/virtio/virtio_ring.c
+> > +++ b/drivers/virtio/virtio_ring.c
+> > @@ -238,7 +238,7 @@ static inline bool virtqueue_use_indirect(struct virtqueue *_vq,
+> >    * unconditionally on data path.
+> >    */
+> > -static bool vring_use_dma_api(struct virtio_device *vdev)
+> > +bool vring_use_dma_api(struct virtio_device *vdev)
+> >   {
+> >   	if (!virtio_has_dma_quirk(vdev))
+> >   		return true;
+> > @@ -257,6 +257,7 @@ static bool vring_use_dma_api(struct virtio_device *vdev)
+> >   	return false;
+> >   }
+> > +EXPORT_SYMBOL_GPL(vring_use_dma_api);
+> >   size_t virtio_max_dma_size(struct virtio_device *vdev)
+> >   {
+> > diff --git a/include/linux/virtio.h b/include/linux/virtio.h
+> > index 55ea329fe72a..5289e2812e95 100644
+> > --- a/include/linux/virtio.h
+> > +++ b/include/linux/virtio.h
+> > @@ -140,6 +140,7 @@ int virtio_device_freeze(struct virtio_device *dev);
+> >   int virtio_device_restore(struct virtio_device *dev);
+> >   #endif
+> > +bool vring_use_dma_api(struct virtio_device *vdev);
+> >   size_t virtio_max_dma_size(struct virtio_device *vdev);
+> >   #define virtio_device_for_each_vq(vdev, vq) \
+> > diff --git a/include/uapi/linux/virtio_net.h b/include/uapi/linux/virtio_net.h
+> > index a5c84410cf92..b5d6f0c6cead 100644
+> > --- a/include/uapi/linux/virtio_net.h
+> > +++ b/include/uapi/linux/virtio_net.h
+> > @@ -57,6 +57,7 @@
+> >   					 * Steering */
+> >   #define VIRTIO_NET_F_CTRL_MAC_ADDR 23	/* Set MAC address */
+> > +#define VIRTIO_NET_F_TX_TSTAMP	  54	/* Device sends TAI transmit time */
+> >   #define VIRTIO_NET_F_RX_TSTAMP	  55	/* Device sends TAI receive time */
+> 
+> 
+> I wonder how much value to split into two features.
+> 
+> Thanks
+> 
+> 
+> >   #define VIRTIO_NET_F_TX_HASH	  56	/* Driver sends hash report */
+> >   #define VIRTIO_NET_F_HASH_REPORT  57	/* Supports hash report */
 
