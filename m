@@ -2,83 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 826A0315312
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 16:46:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97C0A31537F
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 17:12:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232560AbhBIPop (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 10:44:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57580 "EHLO
+        id S232742AbhBIQMM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 11:12:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232548AbhBIPoi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 10:44:38 -0500
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3437C06178A
-        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 07:43:57 -0800 (PST)
-Received: by mail-io1-xd29.google.com with SMTP id e133so19168661iof.8
-        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 07:43:57 -0800 (PST)
+        with ESMTP id S232733AbhBIQLv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 11:11:51 -0500
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D748C06174A
+        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 08:11:11 -0800 (PST)
+Received: by mail-yb1-xb2b.google.com with SMTP id m76so18727398ybf.0
+        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 08:11:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=hy5AMyt/1iDdiYBeV3iuNw2opMX/pw0egMrX8pOxXhw=;
-        b=CaBOVCbdkdiMy5O+fztAZhk4EjVlVPZJqTgBAbOdsOKR0ODk/UAaA+mRwzcqNUyfUs
-         B0SFUKrj47b4CgjoJ4+Ta+TRrUQwj6EtHUNMIQet6Kq/5di5yArA/ogiDHHEkz+zH7Q2
-         9tg1kMfms89feyIXuWeD6MUiP0IsZeB98oTWlnmf0jFItuANiDCVnv85uLLCMAlcq/1i
-         O+l7rTU2GiXRgcbeOh1SPqZbDB3T7jIt75V0lcHI2USfhjGT4q9JEeXi7q6ggsFGdmL9
-         GhYAGDqCuTnVt9CckvebUXc6I1SbsncE3gSNP/pu6h3jI2M+FQpSUb5Yk46C+0Hr7ARs
-         I1Tg==
+        bh=zegi1/02lAykMG36iq8Jw9Il0zImHIJfyDBroQxzT2M=;
+        b=sqC8wjIaT8efrpTZgvQF6OH2H/JOyGEp6aLFL4TeDPy21taW6BgEOOKvSyLlx8XESo
+         JSkIevfXZVnAPkwvCua0eZXosbf3nKVcEvQEHc35A8uKwAIYVVyS4QKGHr5xtd1JjdBH
+         nMwsC32hnED+UmZSaSxW82E4d56sut4futzQxXNT8WIF3qGwrt4oym6DI5OkK3g5C7Ep
+         7fhj507DmlQ+/puUI+aue8SJwzovi0OVZkFaK2o+gE65LNyQ5wsr3OccxVLLuEhNWQiX
+         kPIGYjnJdgE/NlhaJgQtURABQInDramUMsbWkVe5JxlucrJeJBxDLJd/xUjJH2p30OVo
+         iAEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=hy5AMyt/1iDdiYBeV3iuNw2opMX/pw0egMrX8pOxXhw=;
-        b=fJ2MzD4HoZvs9UQfgZ4mM9wpdKHZrKVzJ8PWbzjDuCldenu4XwtUUTz34KpYtzjtUR
-         HkWnMKLKiEVghrAIkJtqEgxKzrDhoLnbHEhOhnJvHOmaqn3HEU3dRRAH8OmjgTg0Mva2
-         cllaZq9rtm/wOT+WK7WJlE3a/JtClviV8eoegcypx6rkRo8OLEZO/hQt3JWr1lOU3Pe1
-         BiuMEmF04EqLwRbcBrqzcJI78e2fTGLEZdJ35awW9eiVXdhJ+MNYrbrtXsELzH/ifICT
-         DUqnaMBlJLKzxsha9tTQFoZHHClohUvo3JnA0bceZ5F/rJ+sNucpdjBlYIPCam9/yszT
-         cojQ==
-X-Gm-Message-State: AOAM531Qnp0YvP8i9CnQ340pIDeeqbEGG5GAbMQGgDu8HhnA9SL01/5c
-        e1TX1SFhcqB7f8AA+D66J44zBn09pdBKaeXxHHY=
-X-Google-Smtp-Source: ABdhPJwnLQFiZ912pB9EloPC2QbEQlPLJGRrbaKH7f/NdgU6tZ9eId1mQyUTxvSBlwVvbMH+vTVFZ4TwjTSXzPPr0p8=
-X-Received: by 2002:a02:7710:: with SMTP id g16mr22789096jac.83.1612885437108;
- Tue, 09 Feb 2021 07:43:57 -0800 (PST)
+        bh=zegi1/02lAykMG36iq8Jw9Il0zImHIJfyDBroQxzT2M=;
+        b=PC+SCX3lWTzDlR0gghrnRP4eTND//T53CY/tmq7pgi8lIJs637naqitbs/uzYsvgjh
+         Z1eHKzTqiO2A39Cjm7Bx0iTOI3L4xHc5oDcRBv3QUygttHEEsdb5Zn71e1RFmzU9UWSf
+         peOTTIF9zd9TQly1t7oSTiEX7qdSMoS0KfC+I3RXFIuzwCcwrFh4kcH6KfjmkC9M0YmX
+         +l9FOHHsHjUSU6OCN5jg70+l5vZOH5Rju7hvwHc1mmVC451UOHSfGx89pUdmCVuywTGU
+         qxwaA2AIr7H12+MlIWuAI5Ko7VJETBZ2q+voeDrHFHQU3H4zy4LeQQOBZwig73qOHP8p
+         mj2Q==
+X-Gm-Message-State: AOAM5336Xcjt1EEKDVmlJgaLkSrQ0kZEYRQYaJ/gkvQ49guoafvXFeRG
+        R3dlnt8Gq2XAdG7vm9VEigVsSjWpu2WVEK8iN+E=
+X-Google-Smtp-Source: ABdhPJxnI03mzFQlAvFBIZuzPEZ9cm0K5GoTRLvuXb84Cjmbu1QxvniXPkopZAQGOdzR/E30j7alJJFpAVEvFb6OaMs=
+X-Received: by 2002:a25:ba13:: with SMTP id t19mr34074743ybg.129.1612887070856;
+ Tue, 09 Feb 2021 08:11:10 -0800 (PST)
 MIME-Version: 1.0
-References: <1612849958-25923-1-git-send-email-rahul.lakkireddy@chelsio.com>
-In-Reply-To: <1612849958-25923-1-git-send-email-rahul.lakkireddy@chelsio.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Tue, 9 Feb 2021 07:43:46 -0800
-Message-ID: <CAKgT0Uc=48siEFQ0kEx9mCzriZ1Dd1OuYkUXFimHpgSbkSUUHg@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] cxgb4: collect serial config version from register
-To:     Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Raju Rangoju <rajur@chelsio.com>
+References: <20210206050240.48410-1-saeed@kernel.org> <20210206050240.48410-2-saeed@kernel.org>
+ <20210206181335.GA2959@horizon.localdomain> <ygnhtuqngebi.fsf@nvidia.com>
+ <20210208122213.338a673e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <ygnho8gtgw2l.fsf@nvidia.com>
+In-Reply-To: <ygnho8gtgw2l.fsf@nvidia.com>
+From:   Or Gerlitz <gerlitz.or@gmail.com>
+Date:   Tue, 9 Feb 2021 18:10:59 +0200
+Message-ID: <CAJ3xEMhjo6cYpW-A-0RXKVM52jPCzer_K0WOR64C7HMK8tuRew@mail.gmail.com>
+Subject: Re: [net-next V2 01/17] net/mlx5: E-Switch, Refactor setting source port
+To:     Vlad Buslov <vladbu@nvidia.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        Mark Bloch <mbloch@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 8, 2021 at 10:10 PM Rahul Lakkireddy
-<rahul.lakkireddy@chelsio.com> wrote:
->
-> Collect serial config version information directly from an internal
-> register, instead of explicitly resizing VPD.
->
-> v2:
-> - Add comments on info stored in PCIE_STATIC_SPARE2 register.
->
-> Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
-> ---
->  .../net/ethernet/chelsio/cxgb4/cudbg_entity.h |  3 ---
->  .../net/ethernet/chelsio/cxgb4/cudbg_lib.c    | 24 +++----------------
->  drivers/net/ethernet/chelsio/cxgb4/t4_regs.h  |  6 +++++
->  3 files changed, 9 insertions(+), 24 deletions(-)
->
+On Tue, Feb 9, 2021 at 4:26 PM Vlad Buslov <vladbu@nvidia.com> wrote:
+> On Mon 08 Feb 2021 at 22:22, Jakub Kicinski <kuba@kernel.org> wrote:
+> > On Mon, 8 Feb 2021 10:21:21 +0200 Vlad Buslov wrote:
 
-Looks good.
+> >> > These operations imply that 7.7.7.5 is configured on some interface on
+> >> > the host. Most likely the VF representor itself, as that aids with ARP
+> >> > resolution. Is that so?
 
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+> >> The tunnel endpoint IP address is configured on VF that is represented
+> >> by enp8s0f0_0 representor in example rules. The VF is on host.
+
+> > This is very confusing, are you saying that the 7.7.7.5 is configured
+> > both on VF and VFrep? Could you provide a full picture of the config
+> > with IP addresses and routing?
+
+> No, tunnel IP is configured on VF. That particular VF is in host [..]
+
+What's the motivation for that? isn't that introducing 3x slow down?
