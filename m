@@ -2,61 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F05193159B6
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 23:52:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 240773159C4
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 23:59:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234490AbhBIWu6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 17:50:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60004 "EHLO
+        id S234177AbhBIWz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 17:55:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234450AbhBIW1n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 17:27:43 -0500
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2F10C0698C0
-        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 13:28:18 -0800 (PST)
-Received: by mail-pl1-x635.google.com with SMTP id u11so10502095plg.13
-        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 13:28:18 -0800 (PST)
+        with ESMTP id S234562AbhBIWcA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 17:32:00 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0EACC0698C1;
+        Tue,  9 Feb 2021 13:29:31 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id z9so2442340pjl.5;
+        Tue, 09 Feb 2021 13:29:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=8D6rMOrzsTTFX8M/pC9uFuyWBTRL9vGtjBd5HwxFljo=;
-        b=eeUbkMV7QSo9uVerwMffKZZ4ISJsNKk9mherVcG5VSbjrozbj9U5iJOaGlTXD8YKGq
-         f+NRPMq/A7Y8fOIGJtf2JOkTTojgoFQhSqFuUGQMbMpfey2UNgjnROiCDoPFi/eL0fyq
-         DfiBPpNVZTVP0BULfrV9wKZ4LpLc/QpNbukP1jDI+EjPMkA9EhDmomW9GHn/gqvbnCLs
-         ppMEP9eSdmRhbbR5wg/hXkFzpTWlg1xvjFVCfHKFPTuNZCuzymwx16og5I+iTd4keZbg
-         RQ3GUJVHki8kPn+DjlYJY/9HN/u4LKiZ3jLjrUjoCN88OuiQGbwqFYE5/k0lqPxlzzyw
-         2oOw==
+        bh=vFu+OipBrwtEdIo/aozLlKqEGgMlKw0YEDC3frRkzXg=;
+        b=QQjJX0ebki87Ij2npL/1hztxP0SlB1hFS2lx86A5ddBWb7dy5CFwnMK4/Gb4226EIh
+         3plOOlZETAlifZAk7yaFMarQDc+8XCwP4JaHqLnsNOOydjU7VLyKCfbIIkfpEKKnJQzC
+         SxfSI4yxgIzQt9BI5ICWE+LnMM+CvoE94nv4eJMYTNU99DK8CQZUGRUFKoB9cajUP8AG
+         jy+sp8sRvpyXSQCPzydklhSflwqFXQFf3Iig/u2cqQhl31nUWjJTGxSEUH+65s8YzL0o
+         MYWe86Rh7OB0i3x/kB3TLKhYpjc0HMwBHzaFB5BAGO+QP+qvad8xRsCIzINft7hduZDT
+         YiEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=8D6rMOrzsTTFX8M/pC9uFuyWBTRL9vGtjBd5HwxFljo=;
-        b=LmaMB4nN5UwnQn2D7i/8EN/y+sjzZrbVYsvYciM8qatZZVQdgrmFnQFyxZk/Ta3lDE
-         YO9sztmHFskkZTwnzI6b2aTftjncmwttgLiL1SatJgj7mHdvFE1OGUPPE+WH376JsEUx
-         Nwga6I7O1DNMmRefewyBQzsnV7pk2JA5wFg06os1tdJszLIfowBg4Jajma7PgF8YcM9q
-         +6ao/CW9twW4IlfV47GphbYdPutqlvlw+xMJ1GIofQw+hvYyxe/tCf1STVtmpmokw2pg
-         Lj6DCBbw/Ng0RN3vdxC7ZmXd3MXBHkGXQe+PCyZCglK/U7DJGOLRoO/1ycpLYELevODy
-         eBHw==
-X-Gm-Message-State: AOAM5337tHWQJzSfV2eQJ8q5qghDp/OByu1f7Sb6evr/WiQe+HZQfE8C
-        Yd4kC8+/S0LPolutd8MtynHSN8Zgz80=
-X-Google-Smtp-Source: ABdhPJw3VqN/ZBKm4DKA2X0yMDzck3bxBLUntQ5p3b0aF3hAJ9z42qdH2rZ7Mu1+1P+fZafqPYDR1g==
-X-Received: by 2002:a17:90a:928d:: with SMTP id n13mr6041351pjo.12.1612906098127;
-        Tue, 09 Feb 2021 13:28:18 -0800 (PST)
+        bh=vFu+OipBrwtEdIo/aozLlKqEGgMlKw0YEDC3frRkzXg=;
+        b=HJIsr8bbSU2MZIoMH9LcT5mX7RE6CisTG4vpSg8h3c9F6zag9yApEqJUlxDa7k3xOh
+         87lhyJdB3v+oFkNJItEbvoBbz0Ry+W5w/iYFP7ys6AazBNTGyPXfmjvOrcDqfbsIhsNX
+         N5qCGVRwJ3+0mzvgmO5r1rOI4FeOuRRbWg/SCYFUJD+e/iK0aMoeVSh+Z97uSe2Jp8B3
+         T9O9QfXYgjzqRUBK5uRNuKVUCXXkqBwx56pz5k0agYUlXX9gZGjkxkIpN00Ge/836uGL
+         8cHVPQSXEk1xoS6S0YbW643Js2CwVKgL5W0GJfpdiXPXtPo3SDpgdupgcY68bo1KwEga
+         ovpA==
+X-Gm-Message-State: AOAM532C3teNO00BYPxKOZyCX0VhJYHL5epSde/L20N7HpgRqs9bDD1B
+        tv8/JvOOr3QR3wie/fsPeXZ7ArT9pF4=
+X-Google-Smtp-Source: ABdhPJxmXjN5Umg8s/WQTtR/cfUP5tk/mH7Ayxd2RJiqGkYFvvdDDJD3InqKka61E/JPqBcRQPgoZg==
+X-Received: by 2002:a17:902:6b45:b029:e0:7a3:a8c with SMTP id g5-20020a1709026b45b02900e007a30a8cmr23455554plt.1.1612906170985;
+        Tue, 09 Feb 2021 13:29:30 -0800 (PST)
 Received: from [10.67.49.228] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id d18sm4872pjs.31.2021.02.09.13.28.17
+        by smtp.googlemail.com with ESMTPSA id j3sm335pjs.50.2021.02.09.13.29.27
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Feb 2021 13:28:17 -0800 (PST)
-Subject: Re: [PATCH net-next 2/2] net: dsa: xrs700x: use of_match_ptr() on
- xrs700x_mdio_dt_ids
-To:     George McCollister <george.mccollister@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
+        Tue, 09 Feb 2021 13:29:30 -0800 (PST)
+Subject: Re: [PATCH v2 net-next 07/11] net: dsa: kill .port_egress_floods
+ overengineering
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org
-References: <20210209211256.111764-1-george.mccollister@gmail.com>
- <20210209211256.111764-2-george.mccollister@gmail.com>
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org
+References: <20210209151936.97382-1-olteanv@gmail.com>
+ <20210209151936.97382-8-olteanv@gmail.com>
+ <20210209203724.t3gvjdzhxbkt3qu2@skbuf>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -112,12 +125,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <86fd26b4-4cac-9f16-d08c-45955c30bc8c@gmail.com>
-Date:   Tue, 9 Feb 2021 13:28:16 -0800
+Message-ID: <7f907d89-542f-2652-7cf6-ea196f754eac@gmail.com>
+Date:   Tue, 9 Feb 2021 13:29:25 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20210209211256.111764-2-george.mccollister@gmail.com>
+In-Reply-To: <20210209203724.t3gvjdzhxbkt3qu2@skbuf>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -125,13 +138,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/9/21 1:12 PM, George McCollister wrote:
-> Use of_match_ptr() on xrs700x_mdio_dt_ids so that NULL is substituted
-> when CONFIG_OF isn't defined. This will prevent unnecessary use of
-> xrs700x_mdio_dt_ids when CONFIG_OF isn't defined.
+On 2/9/21 12:37 PM, Vladimir Oltean wrote:
+> On Tue, Feb 09, 2021 at 05:19:32PM +0200, Vladimir Oltean wrote:
+>> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+>>
+>> The bridge offloads the port flags through a single bit mask using
+>> switchdev, which among others, contains learning and flooding settings.
+>>
+>> The commit 57652796aa97 ("net: dsa: add support for bridge flags")
+>> missed one crucial aspect of the SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS API
+>> when designing the API one level lower, towards the drivers.
+>> This is that the bitmask of passed brport flags never has more than one
+>> bit set at a time. On the other hand, the prototype passed to the driver
+>> is .port_egress_floods(int port, bool unicast, bool multicast), which
+>> configures two flags at a time.
+>>
+>> DSA currently checks if .port_egress_floods is implemented, and if it
+>> is, reports both BR_FLOOD and BR_MCAST_FLOOD as supported. So the driver
+>> has no choice if it wants to inform the bridge that, for example, it
+>> can't configure unicast flooding independently of multicast flooding -
+>> the DSA mid layer is standing in the way. Or the other way around: a new
+>> driver wants to start configuring BR_BCAST_FLOOD separately, but what do
+>> we do with the rest, which only support unicast and multicast flooding?
+>> Do we report broadcast flooding configuration as supported for those
+>> too, and silently do nothing?
+>>
+>> Secondly, currently DSA deems the driver too dumb to deserve knowing that
+>> a SWITCHDEV_ATTR_ID_BRIDGE_MROUTER attribute was offloaded, because it
+>> just calls .port_egress_floods for the CPU port. When we'll add support
+>> for the plain SWITCHDEV_ATTR_ID_PORT_MROUTER, that will become a real
+>> problem because the flood settings will need to be held statefully in
+>> the DSA middle layer, otherwise changing the mrouter port attribute will
+>> impact the flooding attribute. And that's _assuming_ that the underlying
+>> hardware doesn't have anything else to do when a multicast router
+>> attaches to a port than flood unknown traffic to it. If it does, there
+>> will need to be a dedicated .port_set_mrouter anyway.
+>>
+>> Lastly, we have DSA drivers that have a backlink into a pure switchdev
+>> driver (felix -> ocelot). It seems reasonable that the other switchdev
+>> drivers should not have to suffer from the oddities of DSA overengineering,
+>> so keeping DSA a pass-through layer makes more sense there.
+>>
+>> To simplify the brport flags situation we just delete .port_egress_floods
+>> and we introduce a simple .port_bridge_flags which is passed to the
+>> driver. Also, the logic from dsa_port_mrouter is removed and a
+>> .port_set_mrouter is created.
+>>
+>> Functionally speaking, we simply move the calls to .port_egress_floods
+>> one step lower, in the two drivers that implement it: mv88e6xxx and b53,
+>> so things should work just as before.
+>>
+>> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+>> ---
 > 
-> Signed-off-by: George McCollister <george.mccollister@gmail.com>
+> Florian, Andrew, what are your opinions on this patch? I guess what I
+> dislike the most about .port_egress_floods is that it combines the
+> unicast and multicast settings in the same callback, for no good
+> apparent reason. So that, at the very least, needs to change.
+> What do you prefer between having:
+> 	.port_set_unicast_floods
+> 	.port_set_multicast_floods
+> 	.port_set_broadcast_floods
+> 	.port_set_learning
+> and a single:
+> 	.port_bridge_flags
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Tough one, from a driver writer perspective the fewer callbacks to wire
+up the better, but from a framework perspective it is certainly easier
+to audit drivers if there is a callback for a narrow and specific use
+case. My vote goes for the single callback, that would lead to an easier
+patch set to review IMHO.
 -- 
 Florian
