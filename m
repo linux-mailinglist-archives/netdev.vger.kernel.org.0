@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45BCC314C01
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 10:47:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5796314BFE
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 10:47:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230419AbhBIJqE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 04:46:04 -0500
-Received: from a.mx.secunet.com ([62.96.220.36]:38558 "EHLO a.mx.secunet.com"
+        id S230384AbhBIJpx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 04:45:53 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:38554 "EHLO a.mx.secunet.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230144AbhBIJnv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Feb 2021 04:43:51 -0500
+        id S230122AbhBIJnu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Feb 2021 04:43:50 -0500
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id B50882006C;
+        by a.mx.secunet.com (Postfix) with ESMTP id 9D909204EF;
         Tue,  9 Feb 2021 10:43:08 +0100 (CET)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
         by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id CQcvEOPT5Qe8; Tue,  9 Feb 2021 10:43:08 +0100 (CET)
+        with ESMTP id So_PXF4qz-O6; Tue,  9 Feb 2021 10:43:08 +0100 (CET)
 Received: from cas-essen-02.secunet.de (unknown [10.53.40.202])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 4D0CF201E2;
+        by a.mx.secunet.com (Postfix) with ESMTPS id 2FCF52006C;
         Tue,  9 Feb 2021 10:43:08 +0100 (CET)
 Received: from mbx-essen-01.secunet.de (10.53.40.197) by
  cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
@@ -32,17 +32,19 @@ Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2044.4; Tue, 9 Feb 2021
  10:43:07 +0100
 Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 3623C3180060; Tue,  9 Feb 2021 10:43:08 +0100 (CET)
+        id 5DD093180130; Tue,  9 Feb 2021 10:43:08 +0100 (CET)
 From:   Steffen Klassert <steffen.klassert@secunet.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 CC:     Herbert Xu <herbert@gondor.apana.org.au>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         <netdev@vger.kernel.org>
-Subject: pull request (net-next): ipsec-next 2021-02-09
-Date:   Tue, 9 Feb 2021 10:43:01 +0100
-Message-ID: <20210209094305.3529418-1-steffen.klassert@secunet.com>
+Subject: [PATCH 1/4] xfrm: interface: enable TSO on xfrm interfaces
+Date:   Tue, 9 Feb 2021 10:43:02 +0100
+Message-ID: <20210209094305.3529418-2-steffen.klassert@secunet.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210209094305.3529418-1-steffen.klassert@secunet.com>
+References: <20210209094305.3529418-1-steffen.klassert@secunet.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -53,46 +55,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-1) Support TSO on xfrm interfaces.
-   From Eyal Birger.
+From: Eyal Birger <eyal.birger@gmail.com>
 
-2) Variable calculation simplifications in esp4/esp6.
-   From Jiapeng Chong / Jiapeng Zhong.
+Underlying xfrm output supports gso packets.
+Declare support in hw_features and adapt the xmit MTU check to pass GSO
+packets.
 
-3) Fix a return code in xfrm_do_migrate.
-   From Zheng Yongjun.
-
-Please pull or let me know if there are problems.
-
-Thanks!
-
-The following changes since commit ede71cae72855f8d6f6268510895210adc317666:
-
-  net-next: docs: Fix typos in snmp_counter.rst (2021-01-05 17:07:38 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec-next.git master
-
-for you to fetch changes up to 4ac7a6eecbec90c7f83d5ea6f0498d9fa9c62917:
-
-  xfrm: Return the correct errno code (2021-02-04 09:29:27 +0100)
-
-----------------------------------------------------------------
-Eyal Birger (1):
-      xfrm: interface: enable TSO on xfrm interfaces
-
-Jiapeng Chong (1):
-      esp: Simplify the calculation of variables
-
-Jiapeng Zhong (1):
-      net: Simplify the calculation of variables
-
-Zheng Yongjun (1):
-      xfrm: Return the correct errno code
-
- net/ipv4/esp4_offload.c   |  2 +-
- net/ipv6/esp6.c           |  2 +-
+Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+---
  net/xfrm/xfrm_interface.c | 10 +++++++++-
- net/xfrm/xfrm_user.c      |  2 +-
- 4 files changed, 12 insertions(+), 4 deletions(-)
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
+index 697cdcfbb5e1..495b1f5c979b 100644
+--- a/net/xfrm/xfrm_interface.c
++++ b/net/xfrm/xfrm_interface.c
+@@ -296,7 +296,8 @@ xfrmi_xmit2(struct sk_buff *skb, struct net_device *dev, struct flowi *fl)
+ 	}
+ 
+ 	mtu = dst_mtu(dst);
+-	if (skb->len > mtu) {
++	if ((!skb_is_gso(skb) && skb->len > mtu) ||
++	    (skb_is_gso(skb) && !skb_gso_validate_network_len(skb, mtu))) {
+ 		skb_dst_update_pmtu_no_confirm(skb, mtu);
+ 
+ 		if (skb->protocol == htons(ETH_P_IPV6)) {
+@@ -564,6 +565,11 @@ static void xfrmi_dev_setup(struct net_device *dev)
+ 	eth_broadcast_addr(dev->broadcast);
+ }
+ 
++#define XFRMI_FEATURES (NETIF_F_SG |		\
++			NETIF_F_FRAGLIST |	\
++			NETIF_F_GSO_SOFTWARE |	\
++			NETIF_F_HW_CSUM)
++
+ static int xfrmi_dev_init(struct net_device *dev)
+ {
+ 	struct xfrm_if *xi = netdev_priv(dev);
+@@ -581,6 +587,8 @@ static int xfrmi_dev_init(struct net_device *dev)
+ 	}
+ 
+ 	dev->features |= NETIF_F_LLTX;
++	dev->features |= XFRMI_FEATURES;
++	dev->hw_features |= XFRMI_FEATURES;
+ 
+ 	if (phydev) {
+ 		dev->needed_headroom = phydev->needed_headroom;
+-- 
+2.25.1
+
