@@ -2,125 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36A803144FC
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 01:36:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB9F8314517
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 01:51:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229671AbhBIAgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 19:36:04 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:6779 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbhBIAgC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 19:36:02 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B6021d8ca0000>; Mon, 08 Feb 2021 16:35:22 -0800
-Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 9 Feb
- 2021 00:35:21 +0000
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.102)
- by HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Tue, 9 Feb 2021 00:35:21 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QhPsWJHXsNssZmq4xuu8zp+3HeBBxdiiapw85qPQibpjQfYUTCSKxtA6emVSl10SR8MLbko7xdYA/NI1yGDtp9Rhh2ZWmFD0Nk1OHp4u5sgPwS0LK83vZh8UnI/WdjVhoI1/KnFBFCOUI6ZyYQdtqdukYN/RxZPHNasQutljIwPgV+pZlMBNsU37+NhBmlYKvMWtJMO5VsXbiOZmG1GYVAclr5yfhR/6cOu43eCSU/PhbgUhcTq4XsJKN3CWBALUlM6aO68vjhFfdsic/VklSrS0oSNkZD2Diqnuk7s9NvCbL8CSgA75D6aCdMoixujiFO+yZ9BXOhANqVb1cpEmcA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=r5jDbva86og4twIh075JX8vufkm/B1lCn2HVVlclSfI=;
- b=i6yZ5s2ezqMt61Z2q0QU3L1odBLZ2A8pBKErx1X4U74Jo2eE5Ea/hHcNndoFQiVgxZpzaB7IUENdpQ1Z9aJme1cQqeGmeo+bENfgIknxHqdlVBLRoYgafwGngsfsXflmZBwryDsckUAapZZxYAKh6dGz28o/YCiOnnxsIyPMREIjBlxacveqDrFUkDsKHW02i/72Y6mlWlQARwSM9xcJcmOnaIac48/kIzRaHBy3Q7SmGrpvVet1e6T7sEU63GAzCCUBqL3onUGT4h9GStvQwfTbZTUOP7q+osdiCmLz/1ux5s41L2DEDkmuyRyibfpTCjdRuhH55f4NPMMFnm3XpA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB2811.namprd12.prod.outlook.com (2603:10b6:5:45::28) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.30; Tue, 9 Feb
- 2021 00:35:20 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::d6b:736:fa28:5e4]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::d6b:736:fa28:5e4%7]) with mapi id 15.20.3825.030; Tue, 9 Feb 2021
- 00:35:20 +0000
-Date:   Mon, 8 Feb 2021 20:35:19 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     Doug Ledford <dledford@redhat.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>, <linux-rdma@vger.kernel.org>,
-        <netdev@vger.kernel.org>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [PATCH mlx5-next v2] RDMA/mlx5: Cleanup the synchronize_srcu()
- from the ODP flow
-Message-ID: <20210209003519.GA1244392@nvidia.com>
-References: <20210202071309.2057998-1-leon@kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20210202071309.2057998-1-leon@kernel.org>
-X-ClientProxiedBy: MN2PR13CA0018.namprd13.prod.outlook.com
- (2603:10b6:208:160::31) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+        id S230405AbhBIAuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 19:50:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34952 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229618AbhBIAuV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 19:50:21 -0500
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA6CDC061788
+        for <netdev@vger.kernel.org>; Mon,  8 Feb 2021 16:49:40 -0800 (PST)
+Received: by mail-il1-x130.google.com with SMTP id z18so14588834ile.9
+        for <netdev@vger.kernel.org>; Mon, 08 Feb 2021 16:49:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Rd7sUZoCfEeMwp4K0JvICSj9RceJe7m9YxLsT9n7Ku4=;
+        b=ocyKsUwQhs6CQLR8xwRjifxmzutdnPDvLnQFtrcnzXblMLgZXrMqjdXQVxvkNORFaJ
+         KS7S3Qppsl9Wj+nd7XxhcUsAaD2Z5aqnKyjerbLP+3zP56aSPncpcBJLrxvbG+YhCV1B
+         vjE7JShlUhyyOP7zM2sPIXjBIYqp+tcTdBnkRuhYJl6GHaTsq51Nh7MJr4Om8hVeepsS
+         pS3py7L7LHzybIEZ5VXwBLSkt8623YV6d1HQub0/FKTwu2qdnum712WGCN3Cmr2+5KZE
+         nmHHCzeG1p3Rc8ddjWpO6bRTPY/eMKQUF9ivtRCulEwC0nkD2OgF+xkfuDhAa3vV1V/9
+         X6gg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Rd7sUZoCfEeMwp4K0JvICSj9RceJe7m9YxLsT9n7Ku4=;
+        b=cFVzmiWDXCKVLV3jboSkjqdXVKvIQaPb2fv14ylcab4O5jmzBd86KK/BViVsa5eSsg
+         QpnTzv+RojlA8gyXDMTDzgzE2mevPoO4azClhjaSEsiapF7kiTZXryVOuZ2A/k3IKgnd
+         tIXKAkUkVwoUYB5RaPHaGtn6BdGYlW4XIw02GGSCjhonPDPshvcV08NQYtqP+BJG6HAq
+         q3ShKlvjpXr3AeFN+yHV9en+GxGMplZ3RA3sLvNF4DJybICuYX8CKl/g6QbYjEJRrO4e
+         4cWIAEIeP7jcTEtZyQdocUPZ2Ok3ylUaq8G+5Ao0IupY8ioq6kz/haciaD3g4M4TvskU
+         UVmg==
+X-Gm-Message-State: AOAM531gEbEoP7Ydp5zD93KmsZRJ2oOPZ8ncysTyp+H6N4E4kD5SB4wF
+        5x8R18XGFaOew4csZWe9AQwRH8gumHtFONYiqS8=
+X-Google-Smtp-Source: ABdhPJySEelkK3PyJP0Ey4nAk1hsSDo/6oTDQYHoLA0YlEOr5xiUiEuO/+nnwP9cSwEOrfWcOo1kWz++7SpH03GMGcs=
+X-Received: by 2002:a05:6e02:2196:: with SMTP id j22mr17793346ila.64.1612831780224;
+ Mon, 08 Feb 2021 16:49:40 -0800 (PST)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (142.162.115.133) by MN2PR13CA0018.namprd13.prod.outlook.com (2603:10b6:208:160::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.11 via Frontend Transport; Tue, 9 Feb 2021 00:35:20 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1l9Gzv-005Dju-2a; Mon, 08 Feb 2021 20:35:19 -0400
-X-Header: ProcessedBy-CMR-outbound
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1612830922; bh=r5jDbva86og4twIh075JX8vufkm/B1lCn2HVVlclSfI=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
-         From:To:CC:Subject:Message-ID:References:Content-Type:
-         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
-         X-MS-Exchange-MessageSentRepresentingType:X-Header;
-        b=KvNfITnTZMlbzKGxYp51L4x0ywZTL82TUNYtm/NuTUHphbXuSgNpJietDVwzO9IHt
-         X+ncm/EmZltsgB0/srTNTIUVnTvRRaquwijuTg6odgEdGUUF8k3uOduW6eQv4vag3t
-         sRiVTOky4/a7HmRDKWxU1BtU0wTnXVLK8Y21OAZhJnpUVvlPtqQ5UUDhAivzkrXiHb
-         1CnNsLrDEdEXQG/0+qg27OSBufXZI8uc8cOlrc9br868gVN5/rCybYMkQissvpyeDn
-         bWrabZ2mj4L13hscs0ABgrgP/G0o88Km0QfDxv0CKSbadVFZx/GUbZGWNnND4p6JW1
-         67U3oaATItn+g==
+References: <1612826906-25356-1-git-send-email-rahul.lakkireddy@chelsio.com>
+In-Reply-To: <1612826906-25356-1-git-send-email-rahul.lakkireddy@chelsio.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Mon, 8 Feb 2021 16:49:29 -0800
+Message-ID: <CAKgT0UfHm74LvNX3Uh00Kt6=H5+i=aE2heRqGa7o69mWB8UjGg@mail.gmail.com>
+Subject: Re: [PATCH net-next] cxgb4: collect serial config version from register
+To:     Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Raju Rangoju <rajur@chelsio.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 02, 2021 at 09:13:09AM +0200, Leon Romanovsky wrote:
-> From: Yishai Hadas <yishaih@nvidia.com>
-> 
-> Cleanup the synchronize_srcu() from the ODP flow as it was found to be a
-> very heavy time consumer as part of dereg_mr.
-> 
-> For example de-registration of 10000 ODP MRs each with size of 2M
-> hugepage took 19.6 sec comparing de-registration of same number of non
-> ODP MRs that took 172 ms.
-> 
-> The new locking scheme uses the wait_event() mechanism which follows the
-> use count of the MR instead of using synchronize_srcu().
-> 
-> By that change, the time required for the above test took 95 ms which is
-> even better than the non ODP flow.
-> 
-> Once fully dropped the srcu usage, had to come with a lock to protect
-> the XA access.
-> 
-> As part of using the above mechanism we could also clean the
-> num_deferred_work stuff and follow the use count instead.
-> 
-> Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+On Mon, Feb 8, 2021 at 3:48 PM Rahul Lakkireddy
+<rahul.lakkireddy@chelsio.com> wrote:
+>
+> Collect serial config version information directly from an internal
+> register, instead of explicitly resizing VPD.
+>
+> Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
 > ---
-> Changelog:
-> v2:
->  * Add checks of xa_erase() result as an outcome of memory error injection tests.
->  * Found extra place where we can change open-coded logic to use mlx5r_store_odp_mkey().
-> v1: https://lore.kernel.org/linux-rdma/20210128064812.1921519-1-leon@kernel.org
->  * Deleted not-relevant comment implicit_get_child_mr(), I have no idea
->    why wrong version of this patch was sent as v0.
->  * Deleted two new break lines added by me to make code more uniformly
->    in before "return ..." (sometimes it has new line, sometimes doesn't).
-> v0: https://lore.kernel.org/linux-rdma/20210127143051.1873866-1-leon@kernel.org
-> ---
->  drivers/infiniband/hw/mlx5/devx.c            |  13 +-
->  drivers/infiniband/hw/mlx5/main.c            |   5 -
->  drivers/infiniband/hw/mlx5/mlx5_ib.h         |  31 ++-
->  drivers/infiniband/hw/mlx5/mr.c              |  26 +--
->  drivers/infiniband/hw/mlx5/odp.c             | 224 +++++++------------
->  drivers/net/ethernet/mellanox/mlx5/core/mr.c |   1 +
->  include/linux/mlx5/driver.h                  |   2 +
->  7 files changed, 127 insertions(+), 175 deletions(-)
+>  .../net/ethernet/chelsio/cxgb4/cudbg_entity.h |  3 ---
+>  .../net/ethernet/chelsio/cxgb4/cudbg_lib.c    | 24 +++----------------
+>  drivers/net/ethernet/chelsio/cxgb4/t4_regs.h  |  2 ++
+>  3 files changed, 5 insertions(+), 24 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/chelsio/cxgb4/cudbg_entity.h b/drivers/net/ethernet/chelsio/cxgb4/cudbg_entity.h
+> index 876f90e5795e..d5218e74284c 100644
+> --- a/drivers/net/ethernet/chelsio/cxgb4/cudbg_entity.h
+> +++ b/drivers/net/ethernet/chelsio/cxgb4/cudbg_entity.h
+> @@ -220,9 +220,6 @@ struct cudbg_mps_tcam {
+>         u8 reserved[2];
+>  };
+>
+> -#define CUDBG_VPD_PF_SIZE 0x800
+> -#define CUDBG_SCFG_VER_ADDR 0x06
+> -#define CUDBG_SCFG_VER_LEN 4
+>  #define CUDBG_VPD_VER_ADDR 0x18c7
+>  #define CUDBG_VPD_VER_LEN 2
+>
+> diff --git a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
+> index 75474f810249..6c85a10f465c 100644
+> --- a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
+> +++ b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
+> @@ -2686,10 +2686,10 @@ int cudbg_collect_vpd_data(struct cudbg_init *pdbg_init,
+>         struct adapter *padap = pdbg_init->adap;
+>         struct cudbg_buffer temp_buff = { 0 };
+>         char vpd_str[CUDBG_VPD_VER_LEN + 1];
+> -       u32 scfg_vers, vpd_vers, fw_vers;
+>         struct cudbg_vpd_data *vpd_data;
+>         struct vpd_params vpd = { 0 };
+> -       int rc, ret;
+> +       u32 vpd_vers, fw_vers;
+> +       int rc;
+>
+>         rc = t4_get_raw_vpd_params(padap, &vpd);
+>         if (rc)
+> @@ -2699,24 +2699,6 @@ int cudbg_collect_vpd_data(struct cudbg_init *pdbg_init,
+>         if (rc)
+>                 return rc;
+>
+> -       /* Serial Configuration Version is located beyond the PF's vpd size.
+> -        * Temporarily give access to entire EEPROM to get it.
+> -        */
+> -       rc = pci_set_vpd_size(padap->pdev, EEPROMVSIZE);
+> -       if (rc < 0)
+> -               return rc;
+> -
+> -       ret = cudbg_read_vpd_reg(padap, CUDBG_SCFG_VER_ADDR, CUDBG_SCFG_VER_LEN,
+> -                                &scfg_vers);
+> -
+> -       /* Restore back to original PF's vpd size */
+> -       rc = pci_set_vpd_size(padap->pdev, CUDBG_VPD_PF_SIZE);
+> -       if (rc < 0)
+> -               return rc;
+> -
+> -       if (ret)
+> -               return ret;
+> -
+>         rc = cudbg_read_vpd_reg(padap, CUDBG_VPD_VER_ADDR, CUDBG_VPD_VER_LEN,
+>                                 vpd_str);
+>         if (rc)
+> @@ -2737,7 +2719,7 @@ int cudbg_collect_vpd_data(struct cudbg_init *pdbg_init,
+>         memcpy(vpd_data->bn, vpd.pn, PN_LEN + 1);
+>         memcpy(vpd_data->na, vpd.na, MACADDR_LEN + 1);
+>         memcpy(vpd_data->mn, vpd.id, ID_LEN + 1);
+> -       vpd_data->scfg_vers = scfg_vers;
+> +       vpd_data->scfg_vers = t4_read_reg(padap, PCIE_STATIC_SPARE2_A);
+>         vpd_data->vpd_vers = vpd_vers;
+>         vpd_data->fw_major = FW_HDR_FW_VER_MAJOR_G(fw_vers);
+>         vpd_data->fw_minor = FW_HDR_FW_VER_MINOR_G(fw_vers);
 
-Applied to for-next, thanks
+All of the above looks good to me.
 
-Jason
+> diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_regs.h b/drivers/net/ethernet/chelsio/cxgb4/t4_regs.h
+> index b11a172b5174..2d7bb8b66a3e 100644
+> --- a/drivers/net/ethernet/chelsio/cxgb4/t4_regs.h
+> +++ b/drivers/net/ethernet/chelsio/cxgb4/t4_regs.h
+> @@ -884,6 +884,8 @@
+>  #define TDUE_V(x) ((x) << TDUE_S)
+>  #define TDUE_F    TDUE_V(1U)
+>
+> +#define PCIE_STATIC_SPARE2_A   0x5bfc
+> +
+>  /* registers for module MC */
+>  #define MC_INT_CAUSE_A         0x7518
+>  #define MC_P_INT_CAUSE_A       0x41318
+
+I cannot say I am a fan of the naming. I assume that is the name of an
+existing register that someone claimed to use to store the serial
+config version? A comment explaining what all is stored in the
+register might be useful since the name doesn't imply anything related
+to a serial config version is stored there.
