@@ -2,120 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48019315736
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 20:55:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC7C031573B
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 20:56:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233753AbhBITvk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 14:51:40 -0500
-Received: from mx2.suse.de ([195.135.220.15]:38498 "EHLO mx2.suse.de"
+        id S233778AbhBITxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 14:53:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55924 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233634AbhBITnM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Feb 2021 14:43:12 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id E31EEAE07;
-        Tue,  9 Feb 2021 19:42:29 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id A6F9860573; Tue,  9 Feb 2021 20:42:29 +0100 (CET)
-Date:   Tue, 9 Feb 2021 20:42:29 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Danielle Ratson <danieller@nvidia.com>
-Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, kuba@kernel.org,
-        andrew@lunn.ch, mlxsw@nvidia.com
-Subject: Re: [PATCH ethtool v2 2/5] netlink: settings: Add netlink support
- for lanes parameter
-Message-ID: <20210209194229.7czrlyx6znjsy77v@lion.mk-sys.cz>
-References: <20210202182513.325864-1-danieller@nvidia.com>
- <20210202182513.325864-3-danieller@nvidia.com>
+        id S233690AbhBIToW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Feb 2021 14:44:22 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E836A64E7D;
+        Tue,  9 Feb 2021 19:43:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612899821;
+        bh=8WXzoyNmJXYYsY4nKsRw7MwdLD85EN0HCgwD/aOv0Mo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=p8LehPQ7SlqkOG0xfKAcr/TjLXZddKslZxo/r7xvkCOlxOdnKzy1vDaeqeYstrYLH
+         BAb7brbt2V4LaBLGpVXMhAxljLAdmBfkHX/sGTSOG/lwztdFY4KGdDuKNonbUu8+ct
+         7zHEPGkGbceFa387arB6aN8Ua8JeGrMsA+mSrNaH+rQ00l2XQ5vAtbIZN5T6xA8Xrg
+         YtgiUt6HyCysW02Ju6m05027F5exraZ1cCI75V6SH58jAr8CJyflau6aaIHqO4stQ5
+         hywDY1wucNYuXn1YDnGHPK4IiCStbIYwflyKGSQHO32w9LYR+x4TF65dixtCpTz4eQ
+         kKaefE3TuOtRw==
+Date:   Tue, 9 Feb 2021 11:43:40 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Mahesh Bandewar (=?UTF-8?B?4KSu4KS54KWH4KS2IOCkrOCkguCkoeClh+CktQ==?=
+        =?UTF-8?B?4KS+4KSw?=)" <maheshb@google.com>
+Cc:     Petr Machata <petrm@nvidia.com>,
+        Jian Yang <jianyang.kernel@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        linux-netdev <netdev@vger.kernel.org>,
+        Jian Yang <jianyang@google.com>
+Subject: Re: [PATCH net-next v3] net-loopback: set lo dev initial state to
+ UP
+Message-ID: <20210209114340.0857fbf5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAF2d9jhQQs+MX4TRbd1c7A3YH5cLV7uaJcQDhE1LWzMAG8uKjA@mail.gmail.com>
+References: <20210201233445.2044327-1-jianyang.kernel@gmail.com>
+        <87czx978x8.fsf@nvidia.com>
+        <20210209082326.44dc3269@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAF2d9jj3x9CbPbB6u3gQyW=80WqXxwqnk2bbk1pEmkP6K_Wasg@mail.gmail.com>
+        <20210209110426.67df7617@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAF2d9jhQQs+MX4TRbd1c7A3YH5cLV7uaJcQDhE1LWzMAG8uKjA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="3ssdmg5hcnfiq7bj"
-Content-Disposition: inline
-In-Reply-To: <20210202182513.325864-3-danieller@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---3ssdmg5hcnfiq7bj
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Tue, Feb 02, 2021 at 08:25:10PM +0200, Danielle Ratson wrote:
-> Add support for "ethtool -s <dev> lanes N ..." for setting a specific
-> number of lanes.
+On Tue, 9 Feb 2021 11:18:05 -0800 Mahesh Bandewar (=E0=A4=AE=E0=A4=B9=E0=A5=
+=87=E0=A4=B6 =E0=A4=AC=E0=A4=82=E0=A4=A1=E0=A5=87=E0=A4=B5=E0=A4=BE=E0=A4=
+=B0) wrote:
+> On Tue, Feb 9, 2021 at 11:04 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> > On Tue, 9 Feb 2021 10:49:23 -0800 Mahesh Bandewar (=E0=A4=AE=E0=A4=B9=
+=E0=A5=87=E0=A4=B6 =E0=A4=AC=E0=A4=82=E0=A4=A1=E0=A5=87=E0=A4=B5=E0=A4=BE=
+=E0=A4=B0) wrote: =20
+> > > On Tue, Feb 9, 2021 at 8:23 AM Jakub Kicinski <kuba@kernel.org> wrote=
+: =20
+> > > > On Tue, 9 Feb 2021 12:54:59 +0100 Petr Machata wrote: =20
+> > > > > This will break user scripts, and it fact breaks kernel's very own
+> > > > > selftest. We currently have this internally:
+> > > > >
+> > > > >     diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/to=
+ols/testing/selftests/net/fib_nexthops.sh
+> > > > >     index 4c7d33618437..bf8ed24ab3ba 100755
+> > > > >     --- a/tools/testing/selftests/net/fib_nexthops.sh
+> > > > >     +++ b/tools/testing/selftests/net/fib_nexthops.sh
+> > > > >     @@ -121,8 +121,6 @@ create_ns()
+> > > > >       set -e
+> > > > >       ip netns add ${n}
+> > > > >       ip netns set ${n} $((nsid++))
+> > > > >     - ip -netns ${n} addr add 127.0.0.1/8 dev lo
+> > > > >     - ip -netns ${n} link set lo up
+> > > > >
+> > > > >       ip netns exec ${n} sysctl -qw net.ipv4.ip_forward=3D1
+> > > > >       ip netns exec ${n} sysctl -qw net.ipv4.fib_multipath_use_ne=
+igh=3D1
+> > > > >
+> > > > > This now fails because the ip commands are run within a "set -e" =
+block,
+> > > > > and kernel rejects addition of a duplicate address. =20
+> > > >
+> > > > Thanks for the report, could you send a revert with this explanatio=
+n? =20
+> > > Rather than revert, shouldn't we just fix the self-test in that regar=
+d? =20
+> >
+> > The selftest is just a messenger. We all know Linus's stand on
+> > regressions, IMO we can't make an honest argument that the change
+> > does not break user space after it broke our own selftest. Maybe
+> > others disagree.. =20
 >=20
-> Signed-off-by: Danielle Ratson <danieller@nvidia.com>
-> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-> ---
->  ethtool.c          | 1 +
->  netlink/settings.c | 8 ++++++++
->  2 files changed, 9 insertions(+)
->=20
-> diff --git a/ethtool.c b/ethtool.c
-> index 585aafa..fcb09f7 100644
-> --- a/ethtool.c
-> +++ b/ethtool.c
-> @@ -5620,6 +5620,7 @@ static const struct option args[] =3D {
->  		.nlfunc	=3D nl_sset,
->  		.help	=3D "Change generic options",
->  		.xhelp	=3D "		[ speed %d ]\n"
-> +			  "		[ lanes %d ]\n"
->  			  "		[ duplex half|full ]\n"
->  			  "		[ port tp|aui|bnc|mii|fibre|da ]\n"
->  			  "		[ mdix auto|on|off ]\n"
-> diff --git a/netlink/settings.c b/netlink/settings.c
-> index 90c28b1..6cb5d5b 100644
-> --- a/netlink/settings.c
-> +++ b/netlink/settings.c
-> @@ -20,6 +20,7 @@
->  struct link_mode_info {
->  	enum link_mode_class	class;
->  	u32			speed;
-> +	u32			lanes;
->  	u8			duplex;
->  };
-> =20
+> Actually that was the reason behind encompassing this behavior change
+> with a sysctl.
 
-This structure member is not used anywhere in this patch and, AFAICS,
-not even in the rest of your series. Perhaps a leftover from an older
-version?
-
-Michal
-
-> @@ -1067,6 +1068,13 @@ static const struct param_parser sset_params[] =3D=
- {
->  		.handler	=3D nl_parse_direct_u32,
->  		.min_argc	=3D 1,
->  	},
-> +	{
-> +		.arg		=3D "lanes",
-> +		.group		=3D ETHTOOL_MSG_LINKMODES_SET,
-> +		.type		=3D ETHTOOL_A_LINKMODES_LANES,
-> +		.handler	=3D nl_parse_direct_u32,
-> +		.min_argc	=3D 1,
-> +	},
->  	{
->  		.arg		=3D "duplex",
->  		.group		=3D ETHTOOL_MSG_LINKMODES_SET,
-> --=20
-> 2.26.2
->=20
-
---3ssdmg5hcnfiq7bj
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmAi5aAACgkQ538sG/LR
-dpU4HwgAi0BLn9OlCfVp/Sfng4ajY40lg1IOdGeziFTbI3Q6jL1KhA+FGwJIomUc
-qb2YVzCo0tXrKZH2X90kNTC2cPm75bqe9+2d9UGi5PosFU+Zb9uokhzD0d5ZqTKy
-sXwRKp4tEcG6SNDpBAhRG3luLi48khPgiBOUT68Y9oAScflROK09WdySu3z6cC8C
-IcVQylBKNBrrQCXhBX59Q9GHNQRDeGRPvzqGMXO8kVPcbM/o4/L5KxEYIAg+aQHR
-v+XrOypw5LhJq6Y8UTkFP4ZN0/LJAnAN21AVSLmm8TQzoaRGeyJeT/2K4p3ozqaX
-gHOKAZDEgK38PYJKa6vaRtfUzNCuHA==
-=Debj
------END PGP SIGNATURE-----
-
---3ssdmg5hcnfiq7bj--
+Which as I explained to you is pointless for portable applications.
