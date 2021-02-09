@@ -2,111 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1386131558C
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 19:05:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A340E315593
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 19:05:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232901AbhBISAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 13:00:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33134 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233260AbhBIRtP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Feb 2021 12:49:15 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 56E5C64DB3;
-        Tue,  9 Feb 2021 17:48:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612892909;
-        bh=0bwozM0+19GheowWSY/r03uwZDq+Knnhrmbub8g0N6Y=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=byU4w/21yTB7r7ByiSRRVMOX6dtzSThCyfIvKLZdTFmiDNCtN+eBtznGboki9nzex
-         qzRzeBhk7vuT8gDfqpjk36AuVKoifXMp7BXitegzmRmmWAggcN9VriCCCry++0W0TR
-         B3trywkx4+IHo2O//uJJos+OdmC9wmqqdkCS0Fg6DDtRyBk4ZMevelWH1NzSftjdu6
-         tOucl4W3TRK5oq0TxgO1OszwY2/3tPzwalLlhPIJnOS23DTyKZ3PHBZO9jtTAKgF4V
-         MSh5sKURSWOrY8czE4fMIKEyDH3egYXEJ+dIyyWZVgx4RUqMR+HKrAX+MxsWCDNcmA
-         PAU0FygKggQSw==
-Date:   Tue, 9 Feb 2021 09:48:28 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     Vadym Kochan <vadym.kochan@plvision.eu>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        linux-kernel@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH net-next 5/7] net: marvell: prestera: add LAG support
-Message-ID: <20210209094828.5635e2bc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <87pn194fp4.fsf@waldekranz.com>
-References: <20210203165458.28717-1-vadym.kochan@plvision.eu>
-        <20210203165458.28717-6-vadym.kochan@plvision.eu>
-        <20210204211647.7b9a8ebf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <87v9b249oq.fsf@waldekranz.com>
-        <20210208130557.56b14429@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <87pn194fp4.fsf@waldekranz.com>
+        id S233340AbhBISEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 13:04:01 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:12795 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233046AbhBIRxR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 12:53:17 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B6022cbe20001>; Tue, 09 Feb 2021 09:52:34 -0800
+Received: from DRHQMAIL107.nvidia.com (10.27.9.16) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 9 Feb
+ 2021 17:52:33 +0000
+Received: from localhost.localdomain (172.20.145.6) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 9 Feb 2021
+ 17:52:31 +0000
+From:   Petr Machata <petrm@nvidia.com>
+To:     <netdev@vger.kernel.org>
+CC:     Petr Machata <petrm@nvidia.com>,
+        Jian Yang <jianyang.kernel@gmail.com>, <davem@davemloft.net>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Jian Yang <jianyang@google.com>
+Subject: [PATCH net-next] Revert "net-loopback: set lo dev initial state to UP"
+Date:   Tue, 9 Feb 2021 18:52:04 +0100
+Message-ID: <565e72d78de80b2db767d172691bb4b682c6f4fd.1612893026.git.petrm@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ DRHQMAIL107.nvidia.com (10.27.9.16)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1612893154; bh=ngDwYQ995XcPWFUInvTa4qFDqQNpu/4/NY2wK3Abag0=;
+        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+         Content-Transfer-Encoding:Content-Type:X-Originating-IP:
+         X-ClientProxiedBy;
+        b=l7MCItvYdyTTZPJ/ZpukvSZKJJDwD1KzZFtjLSQliqph6xpANZa608bPXxl/EQ5Xf
+         4OZRP+HQWAqcZXmj5guGUCN64T1SKEdtQAUpxuD+FxUmG6Xpc6IdafCR3LAq/0gE/E
+         Ld2m6NBvRpDzm3QkDaV5F72XzAGEwtDRcp5Mudear7mV8Ne4dzvuuEWrsjwJsqtUCu
+         bbEzlrKHzyJ60VkKGrIBEJroi+YByTZJHvvjV/2X6E98EY5YSqNk323gpcp1+GBwg7
+         12U9AChwSb8aGgrnnadaJ3xni/DugDJ5pdGvJGeLEI73KUzK08tUIzo6As82/uNc3F
+         f3YvMbqT/TvOA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 09 Feb 2021 12:56:55 +0100 Tobias Waldekranz wrote:
-> > I ask myself that question pretty much every day. Sadly I have no clear
-> > answer.  
-> 
-> Thank you for your candid answer, really appreciate it. I do not envy
-> you one bit, making those decisions must be extremely hard.
-> 
-> > Silicon is cheap, you can embed a reasonable ARM or Risc-V core in the
-> > chip for the area and power draw comparable to one high speed serdes
-> > lane.
-> >
-> > The drivers landing in the kernel are increasingly meaningless. My day
-> > job is working for a hyperscaler. Even though we have one of the most
-> > capable kernel teams on the planet most of issues with HW we face
-> > result in "something is wrong with the FW, let's call the vendor".  
-> 
-> Right, and being a hyperscaler probably at least gets you some attention
-> when you call your vendor. My day job is working for a nanoscaler, so my
-> experience is that we must be prepared to solve all issues in-house; if
-> we get any help from the vendor that is just a bonus.
-> 
-> > And even when I say "drivers landing" it is an overstatement.
-> > If you look at high speed anything these days the drivers cover
-> > multiple generations of hardware, seems like ~5 years ago most
-> > NIC vendors reached sufficient FW saturation to cover up differences
-> > between HW generations.
-> >
-> > At the same time some FW is necessary. Certain chip functions, are 
-> > best driven by a micro-controller running a tight control loop.   
-> 
-> I agree. But I still do not understand why vendors cling to the source
-> of these like it was their wallet. That is the beauty of selling
-> silicon; you can fully leverage OSS and still have a very straight
-> forward business model.
+In commit c9dca822c729 ("net-loopback: set lo dev initial state to UP"),
+linux started automatically bringing up the loopback device of a newly
+created namespace. However, an existing user script might reasonably have
+the following stanza when creating a new namespace -- and in fact at least
+tools/testing/selftests/net/fib_nexthops.sh in Linux's very own testsuite
+does:
 
-Vendors want to be able to "add value", lock users in and sell support.
-Users adding features themselves hurts their bottom line. Take a look
-at income breakdown for publicly traded companies. There were also
-rumors recently about certain huge silicon vendor revoking the SDK
-license from a NOS company after that company got bought.
+ # set -e
+ # ip netns add foo
+ # ip -netns foo addr add 127.0.0.1/8 dev lo
+ # ip -netns foo link set lo up
+ # set +e
 
-Business people make rational choices, trust me. It's on us to make
-rational choices in the interest of the community (incl. our users).
+This will now fail, because the kernel reasonably rejects "ip addr add" of
+a duplicate address. The described change of behavior therefore constitutes
+a breakage. Revert it.
 
-> > The complexity of FW is a spectrum, from basic to Qualcomm. 
-> > The problem is there is no way for us to know what FW is hiding
-> > by just looking at the driver.
-> >
-> > Where do we draw the line?   
-> 
-> Yeah it is a very hard problem. In this particular case though, the
-> vendor explicitly said that what they have done is compiled their
-> existing SDK to run on the ASIC:
-> 
-> https://lore.kernel.org/netdev/BN6PR18MB1587EB225C6B80BF35A44EBFBA5A0@BN6PR18MB1587.namprd18.prod.outlook.com
-> 
-> So there is no reason that it could not be done as a proper driver.
+Fixes: c9dca822c729 ("net-loopback: set lo dev initial state to UP")
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+---
+ drivers/net/loopback.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-I guess you meant "no _technical_ reason" ;)
+diff --git a/drivers/net/loopback.c b/drivers/net/loopback.c
+index 24487ec17f8b..a1c77cc00416 100644
+--- a/drivers/net/loopback.c
++++ b/drivers/net/loopback.c
+@@ -219,12 +219,6 @@ static __net_init int loopback_net_init(struct net *ne=
+t)
+=20
+ 	BUG_ON(dev->ifindex !=3D LOOPBACK_IFINDEX);
+ 	net->loopback_dev =3D dev;
+-
+-	/* bring loopback device UP */
+-	rtnl_lock();
+-	dev_open(dev, NULL);
+-	rtnl_unlock();
+-
+ 	return 0;
+=20
+ out_free_netdev:
+--=20
+2.26.2
 
-> > Personally I'd really like to see us pushing back stronger.  
-> 
-> Hear, hear!
