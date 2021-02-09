@@ -2,161 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1859031577C
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 21:10:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 489B9315787
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 21:13:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233855AbhBIUI4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 15:08:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53564 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233478AbhBITq6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 14:46:58 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAE5AC061222
-        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 11:20:34 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id my11so1876105pjb.1
-        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 11:20:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=uuBlVS8j8WwfkY9QXcefvXFO0/2RQL2/qFI64Gw+Bpw=;
-        b=OiYTudiewq2wtTt7n2gK8nGtoBAO56G1Fk1cV7EPccVQPZWMoZhj6PWW88vvOxnKSm
-         e3XxwyQTLewfoWVKJyn1VhvQo0mqN/bmEb/wTb/4z76wGymOKYp/KjGTwOAPNW/FpmiB
-         R51AGF1CHXc0MpkaXVPXKZPtkCUl7Ji5nCxnllB0Ke+7GD7zRcw94Siv07v95X8OUIRN
-         Q6s8vbhP68QnqEOJltlLLAI+kRmjp+9LlfEzzJcdmIIrZcXoejK3dn1sxJw9kcyQiR0t
-         0wQlDsTDZ0tHZvNeAxdqlTLMEMkXIvgpVfjK/CtUILQGn2MkIx9K5wfOCj+GJHmWFMPs
-         XARQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=uuBlVS8j8WwfkY9QXcefvXFO0/2RQL2/qFI64Gw+Bpw=;
-        b=nA1wtqUrKGKAQaHnFpXho6gSn75g2DtMcpaaLImhnmX6YYDw4Upe8DKQ6AGqBZcSfc
-         9HgwGQlBWL8mbwO3Z3+KUlga+sRGeeg9uvnuvkH2bYtRZIdgUAeowS1uZUcpk5EjPNdi
-         jcCNcgreNlQVgImoRxhyVRkQpfsm9xmNpX2CQ/1gpEqwebicq11n5JlAI4+nC707Ixi4
-         5ca8CNGcp+Lk+1Hp8D4egc3jkGBtp8qKzbrAZeC0OhYlPocHmj/ZBrLiUjFsuuR7+0JF
-         E5Juc59/12ctERG//9SouDfo+Mg3eHb7HWOsflkrma6I7KLoxWv/Lon6hDqvf2T99xyo
-         FMIQ==
-X-Gm-Message-State: AOAM533fil4Y6Orrxp4plRgRzTlT0P1Abbz4m7clmvb95cUR5xoIVZ8h
-        GG9pFBCyyEZeYYBKZnrsW0TA90kVjGQ=
-X-Google-Smtp-Source: ABdhPJxy01Mc2/wfcv5/ypn19zEp83FYIa3EEHqx/rl/GLFSgvsulRURmyRFilzIAkM12hhKF9Nu9Q==
-X-Received: by 2002:a17:902:eccb:b029:de:8483:505d with SMTP id a11-20020a170902eccbb02900de8483505dmr23014047plh.63.1612898434434;
-        Tue, 09 Feb 2021 11:20:34 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:3965:c391:f1c0:1de0])
-        by smtp.gmail.com with ESMTPSA id p12sm3252390pju.35.2021.02.09.11.20.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Feb 2021 11:20:33 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        David Dworken <ddworken@google.com>,
-        Willem de Bruijn <willemb@google.com>
-Subject: [PATCH net-next 1/2] tcp: change source port randomizarion at connect() time
-Date:   Tue,  9 Feb 2021 11:20:27 -0800
-Message-Id: <20210209192028.3350290-2-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.30.0.478.g8a0d178c01-goog
-In-Reply-To: <20210209192028.3350290-1-eric.dumazet@gmail.com>
-References: <20210209192028.3350290-1-eric.dumazet@gmail.com>
+        id S233742AbhBIULT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 15:11:19 -0500
+Received: from mx2.suse.de ([195.135.220.15]:44604 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233799AbhBITyR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Feb 2021 14:54:17 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id C6CA1ADDB;
+        Tue,  9 Feb 2021 19:34:38 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 8F42B60573; Tue,  9 Feb 2021 20:34:38 +0100 (CET)
+Date:   Tue, 9 Feb 2021 20:34:38 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Danielle Ratson <danieller@nvidia.com>
+Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, kuba@kernel.org,
+        andrew@lunn.ch, mlxsw@nvidia.com
+Subject: Re: [PATCH ethtool v2 0/5] Extend uAPI with lanes parameter
+Message-ID: <20210209193438.lv45lpljgea5zlk4@lion.mk-sys.cz>
+References: <20210202182513.325864-1-danieller@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="nhtosfgtebghhht2"
+Content-Disposition: inline
+In-Reply-To: <20210202182513.325864-1-danieller@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
 
-RFC 6056 (Recommendations for Transport-Protocol Port Randomization)
-provides good summary of why source selection needs extra care.
+--nhtosfgtebghhht2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-David Dworken reminded us that linux implements Algorithm 3
-as described in RFC 6056 3.3.3
+On Tue, Feb 02, 2021 at 08:25:08PM +0200, Danielle Ratson wrote:
+> Currently, there is no way of knowing how many lanes will be use to
+> achieve a wanted speed.
+> For example, 100G speed can be achieved using: 2X50 or 4X25.
+>=20
+> In order to solve that, extend ethtool uAPI with lanes as a new link
+> mode setting so the command below, for example, will be supported:
+> $ ethtool -s swp5 lanes N
+>=20
+> Patch #1: Update headers with the new parameter.
+> Patch #2: Support lanes in netlink.
+> Patch #3: Expose the number of lanes in use.
+> Patch #4: Add auto-completion for lanes.
+> Patch #5: Add lanes to man page.
+>=20
+> Danielle Ratson (5):
+>   ethtool: Extend ethtool link modes settings uAPI with lanes
+>   netlink: settings: Add netlink support for lanes parameter
+>   netlink: settings: Expose the number of lanes in use
+>   shell-completion: Add completion for lanes
+>   man: Add man page for setting lanes parameter
+>=20
+>  ethtool.8.in                  |  4 ++++
+>  ethtool.c                     |  1 +
+>  netlink/desc-ethtool.c        |  1 +
+>  netlink/settings.c            | 14 ++++++++++++++
+>  shell-completion/bash/ethtool |  4 ++++
+>  uapi/linux/ethtool_netlink.h  |  1 +
+>  6 files changed, 25 insertions(+)
 
-Quoting David :
-   In the context of the web, this creates an interesting info leak where
-   websites can count how many TCP connections a user's computer is
-   establishing over time. For example, this allows a website to count
-   exactly how many subresources a third party website loaded.
-   This also allows:
-   - Distinguishing between different users behind a VPN based on
-       distinct source port ranges.
-   - Tracking users over time across multiple networks.
-   - Covert communication channels between different browsers/browser
-       profiles running on the same computer
-   - Tracking what applications are running on a computer based on
-       the pattern of how fast source ports are getting incremented.
+Sorry for the delay, I was busy with other stuff last week and missed
+that with kernel part accepted, I should take care of the userspace
+counterpart.
 
-Section 3.3.4 describes an enhancement, that reduces
-attackers ability to use the basic information currently
-stored into the shared 'u32 hint'.
+The series looks good to me, except for two minor issues I'll comment to
+relevant patches.
 
-This change also decreases collision rate when
-multiple applications need to connect() to
-different destinations.
+Michal
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: David Dworken <ddworken@google.com>
-Cc: Willem de Bruijn <willemb@google.com>
----
- net/ipv4/inet_hashtables.c | 20 +++++++++++++++++---
- 1 file changed, 17 insertions(+), 3 deletions(-)
+--nhtosfgtebghhht2
+Content-Type: application/pgp-signature; name="signature.asc"
 
-diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index 45fb450b45227ce05cc5a2fd8b8a32089ad5c476..12808dac923a4c29cb152201140757c69ba165e5 100644
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -709,6 +709,17 @@ void inet_unhash(struct sock *sk)
- }
- EXPORT_SYMBOL_GPL(inet_unhash);
- 
-+/* RFC 6056 3.3.4.  Algorithm 4: Double-Hash Port Selection Algorithm
-+ * Note that we use 32bit integers (vs RFC 'short integers')
-+ * because 2^16 is not a multiple of num_ephemeral and this
-+ * property might be used by clever attacker.
-+ * RFC claims using TABLE_LENGTH=10 buckets gives an improvement,
-+ * we use 256 instead to really give more isolation and
-+ * privacy, this only consumes 1 KB of kernel memory.
-+ */
-+#define INET_TABLE_PERTURB_SHIFT 8
-+static u32 table_perturb[1 << INET_TABLE_PERTURB_SHIFT];
-+
- int __inet_hash_connect(struct inet_timewait_death_row *death_row,
- 		struct sock *sk, u32 port_offset,
- 		int (*check_established)(struct inet_timewait_death_row *,
-@@ -722,8 +733,8 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
- 	struct inet_bind_bucket *tb;
- 	u32 remaining, offset;
- 	int ret, i, low, high;
--	static u32 hint;
- 	int l3mdev;
-+	u32 index;
- 
- 	if (port) {
- 		head = &hinfo->bhash[inet_bhashfn(net, port,
-@@ -750,7 +761,10 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
- 	if (likely(remaining > 1))
- 		remaining &= ~1U;
- 
--	offset = (hint + port_offset) % remaining;
-+	net_get_random_once(table_perturb, sizeof(table_perturb));
-+	index = hash_32(port_offset, INET_TABLE_PERTURB_SHIFT);
-+
-+	offset = (READ_ONCE(table_perturb[index]) + port_offset) % remaining;
- 	/* In first pass we try ports of @low parity.
- 	 * inet_csk_get_port() does the opposite choice.
- 	 */
-@@ -804,7 +818,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
- 	return -EADDRNOTAVAIL;
- 
- ok:
--	hint += i + 2;
-+	WRITE_ONCE(table_perturb[index], READ_ONCE(table_perturb[index]) + i + 2);
- 
- 	/* Head lock still held and bh's disabled */
- 	inet_bind_hash(sk, tb, port);
--- 
-2.30.0.478.g8a0d178c01-goog
+-----BEGIN PGP SIGNATURE-----
 
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmAi48kACgkQ538sG/LR
+dpWUeggAgIIMDhklx86BUBbpfJ+FjIJDSB1qmkhU3v1SsvoxeC1D1QvlZcwL++2A
+Qg2/2Uj4g96IIT5Rv5gvBVR6mT01HZ4ewPsWsBthSd6yyfrSWhb3woI/ecqEBGlQ
+YRUyl6s0E2L74qhRQ5+eOYzL8qRvUknclrCKzxuZqvW+SNQm7/grgacFk59FuIXg
+Rf8dB0op6zu7TzvGQgFgsu+01X8Zu7Su5dZn7WgD0PUO+r6xbRiW4FP1Hi1O/7iz
+DSEQw9eBJ1LIwyvkP4SRTExwI0pFSoj1oKAC+i0ejUDKEjwkqE3WuofiSp6tvvhP
+jRUnPJ2T8w2oddpC945SNpSMeGCbIw==
+=BU52
+-----END PGP SIGNATURE-----
+
+--nhtosfgtebghhht2--
