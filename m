@@ -2,139 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A03A33159CF
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 00:06:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE83A3159D8
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 00:07:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234506AbhBIW7M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 17:59:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33900 "EHLO
+        id S234565AbhBIXDt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 18:03:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233900AbhBIWhC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 17:37:02 -0500
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 273A2C061A29
-        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 13:27:56 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id j11so10505073plt.11
-        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 13:27:56 -0800 (PST)
+        with ESMTP id S233466AbhBIWQY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 17:16:24 -0500
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E03AC08EC35;
+        Tue,  9 Feb 2021 14:00:42 -0800 (PST)
+Received: by mail-yb1-xb2a.google.com with SMTP id r2so19692763ybk.11;
+        Tue, 09 Feb 2021 14:00:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Fv0rtVw/U/ZXF+Z0uz/cI9ie8jh1Nush/G6L8BEg31A=;
-        b=cOpI2X+U6Tcgk3QPOvLYoVs+T5gQ0K6QIGEswKkPL9Ur4PPsU/o4MZoOLQtsT/nwDP
-         MhoGI9iKYuT38OaVpBBxvqirVUu4gw4MbeqNxKauAv0nZLgU2B+vnaDKHADyKiF3IIs0
-         9uRePj91Phlh1UG4DG5uCzwGZZDQhkRDq+AS2aRL5bvMZItVFlZBRJ8Ym6mKcXEU/ZVI
-         4DqS2wVkeve8yPGPPx6ZxIyz+xU1jCHgtjxjN5DrCVMy+QlUbkLAj/QyWwNSSIZ6j6oq
-         19A1dX+LDIkEe0fenBn5BHUammSFI9sIvajwUpqvGVjzshTu7Nog4Hd6UE0lNkaCvY0j
-         hsQw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1mNuTGw6QCJ1rVyIZY1Ms361jxEOonZzcPnEb1PlR7s=;
+        b=TIttP2smwoeR0jYMO0TWfVSoEUB5as8IPmTLk1QExm8zxi+AK/77ycztq00ZgZmAVK
+         bsP+f2A8uAV+uZF4+oC+zIpbypw5Mj25wE6qgbA7Da7OwSWywxJoOmuoY/PFCLZpCopz
+         2LvPQB+jLb49oeTOZStNZI150SQ61mRfo8FnrKv6+e2jjAEfjqww718n/uLa5IusGWZz
+         jk2+dCc7MbFo+l6rxd2ekK+U/84sgYh3IHiVHJnA6vtgtUXP5IOboFmhrAl5Gc2DXj90
+         Ig8QhNsIAHIDf8Js7Atgpzc8y8DWNfrWx4YGQNOcxlOwdGPm6mF82TB9WYDjlkTvv26X
+         KVXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=Fv0rtVw/U/ZXF+Z0uz/cI9ie8jh1Nush/G6L8BEg31A=;
-        b=X7u/EduKH5B1YyCMIHIj7ZnG0DI1eiXFTjhhhKooBxzMr/Ojs0qLBXQTjSC4xrjXaU
-         PblpWmVEJIpLhoKGGFYAHcuZWQGoabIeuvh3JanMXojsZdSr85eGNK7pXPffKa+NK315
-         sS/TVhidEMJHtbsPyVX1zcZevUduTbTFT13Ml5wcU4OW3QMqf4sasPPdWtHfjcT+OsMs
-         4299mUce5FG7R68pyEWAs+MFHTndpVJ7idwJf62XcvtymQK15GKfPzL/kuSbxImqj2do
-         gXXyupClrsvhozmqcTea/6FhAqWU+MqWqgVq3sDIbBFrfDSkI5yDdDOc1yNQpeXJbs3d
-         /mvg==
-X-Gm-Message-State: AOAM532NYDjJRgAGgkmsOG1zenANZSy3H/T+IwRXRnY534n51Y3pEMRo
-        qkdHRHYX7cIoVXuDb7iCZLvqTBf8aN0=
-X-Google-Smtp-Source: ABdhPJwcs8BgDKjX9eIVWI9t+Wo2aAakoJ/qRdYXI4xQMG34JlaWSo6LfDvaVSv0hGqpDscpPtk5bw==
-X-Received: by 2002:a17:90b:4c8f:: with SMTP id my15mr6092951pjb.87.1612906075353;
-        Tue, 09 Feb 2021 13:27:55 -0800 (PST)
-Received: from [10.67.49.228] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id 34sm24353630pgn.56.2021.02.09.13.27.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Feb 2021 13:27:54 -0800 (PST)
-Subject: Re: [PATCH net-next 1/2] net: dsa: xrs700x: fix unused warning for
- of_device_id
-To:     George McCollister <george.mccollister@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org
-References: <20210209211256.111764-1-george.mccollister@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
- xGlkaOSDuu09rxuW+69Y2f1TzjFuGpBk4ysWOR85O2Nx8AJ6fYGCoeTbovrNlGT1M9obSFGQ
- X3IzRnWoqlfudjTO5TKoqkbOgpYqIo5n1QbEjCCwCwCg3DOH/4ug2AUUlcIT9/l3pGvoRJ0E
- AICDzi3l7pmC5IWn2n1mvP5247urtHFs/uusE827DDj3K8Upn2vYiOFMBhGsxAk6YKV6IP0d
- ZdWX6fqkJJlu9cSDvWtO1hXeHIfQIE/xcqvlRH783KrihLcsmnBqOiS6rJDO2x1eAgC8meAX
- SAgsrBhcgGl2Rl5gh/jkeA5ykwbxA/9u1eEuL70Qzt5APJmqVXR+kWvrqdBVPoUNy/tQ8mYc
- nzJJ63ng3tHhnwHXZOu8hL4nqwlYHRa9eeglXYhBqja4ZvIvCEqSmEukfivk+DlIgVoOAJbh
- qIWgvr3SIEuR6ayY3f5j0f2ejUMYlYYnKdiHXFlF9uXm1ELrb0YX4GMHz7QnRmxvcmlhbiBG
- YWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+iGYEExECACYCGyMGCwkIBwMCBBUCCAME
- FgIDAQIeAQIXgAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2DvCVAJ4u4/bPF4P3jxb4qEY8I2gS
- 6hG0gACffNWlqJ2T4wSSn+3o7CCZNd7SLSC5BA0ESM+4EhAQAL/o09boR9D3Vk1Tt7+gpYr3
- WQ6hgYVON905q2ndEoA2J0dQxJNRw3snabHDDzQBAcqOvdi7YidfBVdKi0wxHhSuRBfuOppu
- pdXkb7zxuPQuSveCLqqZWRQ+Cc2QgF7SBqgznbe6Ngout5qXY5Dcagk9LqFNGhJQzUGHAsIs
- hap1f0B1PoUyUNeEInV98D8Xd/edM3mhO9nRpUXRK9Bvt4iEZUXGuVtZLT52nK6Wv2EZ1TiT
- OiqZlf1P+vxYLBx9eKmabPdm3yjalhY8yr1S1vL0gSA/C6W1o/TowdieF1rWN/MYHlkpyj9c
- Rpc281gAO0AP3V1G00YzBEdYyi0gaJbCEQnq8Vz1vDXFxHzyhgGz7umBsVKmYwZgA8DrrB0M
- oaP35wuGR3RJcaG30AnJpEDkBYHznI2apxdcuTPOHZyEilIRrBGzDwGtAhldzlBoBwE3Z3MY
- 31TOpACu1ZpNOMysZ6xiE35pWkwc0KYm4hJA5GFfmWSN6DniimW3pmdDIiw4Ifcx8b3mFrRO
- BbDIW13E51j9RjbO/nAaK9ndZ5LRO1B/8Fwat7bLzmsCiEXOJY7NNpIEpkoNoEUfCcZwmLrU
- +eOTPzaF6drw6ayewEi5yzPg3TAT6FV3oBsNg3xlwU0gPK3v6gYPX5w9+ovPZ1/qqNfOrbsE
- FRuiSVsZQ5s3AAMFD/9XjlnnVDh9GX/r/6hjmr4U9tEsM+VQXaVXqZuHKaSmojOLUCP/YVQo
- 7IiYaNssCS4FCPe4yrL4FJJfJAsbeyDykMN7wAnBcOkbZ9BPJPNCbqU6dowLOiy8AuTYQ48m
- vIyQ4Ijnb6GTrtxIUDQeOBNuQC/gyyx3nbL/lVlHbxr4tb6YkhkO6shjXhQh7nQb33FjGO4P
- WU11Nr9i/qoV8QCo12MQEo244RRA6VMud06y/E449rWZFSTwGqb0FS0seTcYNvxt8PB2izX+
- HZA8SL54j479ubxhfuoTu5nXdtFYFj5Lj5x34LKPx7MpgAmj0H7SDhpFWF2FzcC1bjiW9mjW
- HaKaX23Awt97AqQZXegbfkJwX2Y53ufq8Np3e1542lh3/mpiGSilCsaTahEGrHK+lIusl6mz
- Joil+u3k01ofvJMK0ZdzGUZ/aPMZ16LofjFA+MNxWrZFrkYmiGdv+LG45zSlZyIvzSiG2lKy
- kuVag+IijCIom78P9jRtB1q1Q5lwZp2TLAJlz92DmFwBg1hyFzwDADjZ2nrDxKUiybXIgZp9
- aU2d++ptEGCVJOfEW4qpWCCLPbOT7XBr+g/4H3qWbs3j/cDDq7LuVYIe+wchy/iXEJaQVeTC
- y5arMQorqTFWlEOgRA8OP47L9knl9i4xuR0euV6DChDrguup2aJVU4hPBBgRAgAPAhsMBQJU
- X9LxBQkeXB3fAAoJEGFXmRW1Y3YOj4UAn3nrFLPZekMeqX5aD/aq/dsbXSfyAKC45Go0YyxV
- HGuUuzv+GKZ6nsysJ7kCDQRXG8fwARAA6q/pqBi5PjHcOAUgk2/2LR5LjjesK50bCaD4JuNc
- YDhFR7Vs108diBtsho3w8WRd9viOqDrhLJTroVckkk74OY8r+3t1E0Dd4wHWHQZsAeUvOwDM
- PQMqTUBFuMi6ydzTZpFA2wBR9x6ofl8Ax+zaGBcFrRlQnhsuXLnM1uuvS39+pmzIjasZBP2H
- UPk5ifigXcpelKmj6iskP3c8QN6x6GjUSmYx+xUfs/GNVSU1XOZn61wgPDbgINJd/THGdqiO
- iJxCLuTMqlSsmh1+E1dSdfYkCb93R/0ZHvMKWlAx7MnaFgBfsG8FqNtZu3PCLfizyVYYjXbV
- WO1A23riZKqwrSJAATo5iTS65BuYxrFsFNPrf7TitM8E76BEBZk0OZBvZxMuOs6Z1qI8YKVK
- UrHVGFq3NbuPWCdRul9SX3VfOunr9Gv0GABnJ0ET+K7nspax0xqq7zgnM71QEaiaH17IFYGS
- sG34V7Wo3vyQzsk7qLf9Ajno0DhJ+VX43g8+AjxOMNVrGCt9RNXSBVpyv2AMTlWCdJ5KI6V4
- KEzWM4HJm7QlNKE6RPoBxJVbSQLPd9St3h7mxLcne4l7NK9eNgNnneT7QZL8fL//s9K8Ns1W
- t60uQNYvbhKDG7+/yLcmJgjF74XkGvxCmTA1rW2bsUriM533nG9gAOUFQjURkwI8jvMAEQEA
- AYkCaAQYEQIACQUCVxvH8AIbAgIpCRBhV5kVtWN2DsFdIAQZAQIABgUCVxvH8AAKCRCH0Jac
- RAcHBIkHD/9nmfog7X2ZXMzL9ktT++7x+W/QBrSTCTmq8PK+69+INN1ZDOrY8uz6htfTLV9+
- e2W6G8/7zIvODuHk7r+yQ585XbplgP0V5Xc8iBHdBgXbqnY5zBrcH+Q/oQ2STalEvaGHqNoD
- UGyLQ/fiKoLZTPMur57Fy1c9rTuKiSdMgnT0FPfWVDfpR2Ds0gpqWePlRuRGOoCln5GnREA/
- 2MW2rWf+CO9kbIR+66j8b4RUJqIK3dWn9xbENh/aqxfonGTCZQ2zC4sLd25DQA4w1itPo+f5
- V/SQxuhnlQkTOCdJ7b/mby/pNRz1lsLkjnXueLILj7gNjwTabZXYtL16z24qkDTI1x3g98R/
- xunb3/fQwR8FY5/zRvXJq5us/nLvIvOmVwZFkwXc+AF+LSIajqQz9XbXeIP/BDjlBNXRZNdo
- dVuSU51ENcMcilPr2EUnqEAqeczsCGpnvRCLfVQeSZr2L9N4svNhhfPOEscYhhpHTh0VPyxI
- pPBNKq+byuYPMyk3nj814NKhImK0O4gTyCK9b+gZAVvQcYAXvSouCnTZeJRrNHJFTgTgu6E0
- caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
- 6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <b7f2b6c2-8b9f-7fcd-d3fd-843d3c15fbb9@gmail.com>
-Date:   Tue, 9 Feb 2021 13:27:53 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1mNuTGw6QCJ1rVyIZY1Ms361jxEOonZzcPnEb1PlR7s=;
+        b=hJFxiXIzU/R6TONYhfmRLogV7tWoUUmtVxKlceI/mE5fV8UnwoxMC2YMlQBr4rl/PV
+         /MQ0P2Dan9OAJCQXDfvmhfaVzICF8b62ZnzHW/0JBUxnww9xkDh/0CbXg4BruM3/3Nbq
+         FUrKMpXRG5Xiz5MfdwC8pKklqkf76XjM9WwLn2wZA3gKxnOg9xbjHG3JJe+bhKRzZsY5
+         fAsU7KQsYOSeMcQO0Y9lvuHevmeQLvfuzciaU46QaeNz3pwDABviMW9Evr6RaNNSIwJ0
+         yDGFkpVwK5V58qjQjIJ4TbFbrHtWBnZbsJsO6rUWYuOouSM9tG+6JfHQfmDLyynFl3he
+         bWeg==
+X-Gm-Message-State: AOAM531e+mtiS79l3/e0E6TX9Ewv9s5WMz4/OMqXipYNUWV6DH7lEMCz
+        /ce1nMUEryyTOzPBpGj81hgY7AkAez1eSVuSyds=
+X-Google-Smtp-Source: ABdhPJzJz17tWPfwIN+9u5/u88KgYtN03N3XdZNzG+GOeawxbbqU/DXDgaJUgRxDHfopTnhjt3h6vUP0cjrwS3wKO+Y=
+X-Received: by 2002:a25:37c4:: with SMTP id e187mr13125154yba.347.1612908040498;
+ Tue, 09 Feb 2021 14:00:40 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210209211256.111764-1-george.mccollister@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210209034416.GA1669105@ubuntu-m3-large-x86> <CAEf4BzYnT-eoKRL9_Pu_DEuqXVa+edN5F-s+k2RxBSzcsSTJ1g@mail.gmail.com>
+ <20210209052311.GA125918@ubuntu-m3-large-x86> <CAEf4BzZV0-zx6YKUUKmecs=icnQNXJjTokdkSAoexm36za+wdA@mail.gmail.com>
+ <CAEf4BzYvri7wzRnGH_qQbavXOx5TfBA0qx4nYVnn=YNGv+vNVw@mail.gmail.com>
+ <CAEf4Bzax90hn_5axpnCpW+E6gVc1mtUgCXWqmxV0tJ4Ud7bsaA@mail.gmail.com>
+ <20210209074904.GA286822@ubuntu-m3-large-x86> <YCKB1TF5wz93EIBK@krava>
+ <YCKlrLkTQXc4Cyx7@krava> <CAEf4BzaL=qsSyDc8OxeN4pr7+Lvv+de4f+hM5a56LY8EABAk3w@mail.gmail.com>
+ <YCMEucGZVPPQuxWw@krava>
+In-Reply-To: <YCMEucGZVPPQuxWw@krava>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 9 Feb 2021 14:00:29 -0800
+Message-ID: <CAEf4BzacQrkSMnmeO3sunOs7sfhX1ZoD_Hnk4-cFUK-TpLNqUA@mail.gmail.com>
+Subject: Re: FAILED unresolved symbol vfs_truncate on arm64 with LLVM
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        Veronika Kabatova <vkabatov@redhat.com>,
+        Jiri Olsa <jolsa@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/9/21 1:12 PM, George McCollister wrote:
-> Fix unused variable warning that occurs when CONFIG_OF isn't defined by
-> adding __maybe_unused.
-> 
->>> drivers/net/dsa/xrs700x/xrs700x_i2c.c:127:34: warning: unused
-> variable 'xrs700x_i2c_dt_ids' [-Wunused-const-variable]
->    static const struct of_device_id xrs700x_i2c_dt_ids[] = {
-> 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: George McCollister <george.mccollister@gmail.com>
+On Tue, Feb 9, 2021 at 1:55 PM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> On Tue, Feb 09, 2021 at 12:59:51PM -0800, Andrii Nakryiko wrote:
+> > On Tue, Feb 9, 2021 at 7:09 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> > >
+> > > On Tue, Feb 09, 2021 at 01:36:41PM +0100, Jiri Olsa wrote:
+> > > > On Tue, Feb 09, 2021 at 12:49:04AM -0700, Nathan Chancellor wrote:
+> > > > > On Mon, Feb 08, 2021 at 10:56:36PM -0800, Andrii Nakryiko wrote:
+> > > > > > On Mon, Feb 8, 2021 at 10:13 PM Andrii Nakryiko
+> > > > > > <andrii.nakryiko@gmail.com> wrote:
+> > > > > > >
+> > > > > > > On Mon, Feb 8, 2021 at 10:09 PM Andrii Nakryiko
+> > > > > > > <andrii.nakryiko@gmail.com> wrote:
+> > > > > > > >
+> > > > > > > > On Mon, Feb 8, 2021 at 9:23 PM Nathan Chancellor <nathan@kernel.org> wrote:
+> > > > > > > > >
+> > > > > > > > > On Mon, Feb 08, 2021 at 08:45:43PM -0800, Andrii Nakryiko wrote:
+> > > > > > > > > > On Mon, Feb 8, 2021 at 7:44 PM Nathan Chancellor <nathan@kernel.org> wrote:
+> > > > > > > > > > >
+> > > > > > > > > > > Hi all,
+> > > > > > > > > > >
+> > > > > > > > > > > Recently, an issue with CONFIG_DEBUG_INFO_BTF was reported for arm64:
+> > > > > > > > > > > https://groups.google.com/g/clang-built-linux/c/de_mNh23FOc/m/E7cu5BwbBAAJ
+> > > > > > > > > > >
+> > > > > > > > > > > $ make -skj"$(nproc)" ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
+> > > > > > > > > > >                       LLVM=1 O=build/aarch64 defconfig
+> > > > > > > > > > >
+> > > > > > > > > > > $ scripts/config \
+> > > > > > > > > > >     --file build/aarch64/.config \
+> > > > > > > > > > >     -e BPF_SYSCALL \
+> > > > > > > > > > >     -e DEBUG_INFO_BTF \
+> > > > > > > > > > >     -e FTRACE \
+> > > > > > > > > > >     -e FUNCTION_TRACER
+> > > > > > > > > > >
+> > > > > > > > > > > $ make -skj"$(nproc)" ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
+> > > > > > > > > > >                       LLVM=1 O=build/aarch64 olddefconfig all
+> > > > > > > > > > > ...
+> > > > > > > > > > > FAILED unresolved symbol vfs_truncate
+> > > > > > > > > > > ...
+> > > > > > > > > > >
+> > > > > > > > > > > My bisect landed on commit 6e22ab9da793 ("bpf: Add d_path helper")
+> > > > > > > > > > > although that seems obvious given that is what introduced
+> > > > > > > > > > > BTF_ID(func, vfs_truncate).
+> > > > > > > > > > >
+> > > > > > > > > > > I am using the latest pahole v1.20 and LLVM is at
+> > > > > > > > > > > https://github.com/llvm/llvm-project/commit/14da287e18846ea86e45b421dc47f78ecc5aa7cb
+> > > > > > > > > > > although I can reproduce back to LLVM 10.0.1, which is the earliest
+> > > > > > > > > > > version that the kernel supports. I am very unfamiliar with BPF so I
+> > > > > > > > > > > have no idea what is going wrong here. Is this a known issue?
+> > > > > > > > > > >
+> > > > > > > > > >
+> > > > > > > > > > I'll skip the reproduction games this time and will just request the
+> > > > > > > > > > vmlinux image. Please upload somewhere so that we can look at DWARF
+> > > > > > > > > > and see what's going on. Thanks.
+> > > > > > > > > >
+> > > > > > > > >
+> > > > > > > > > Sure thing, let me know if this works. I uploaded in two places to make
+> > > > > > > > > it easier to grab:
+> > > > > > > > >
+> > > > > > > > > zstd compressed:
+> > > > > > > > > https://github.com/nathanchance/bug-files/blob/3b2873751e29311e084ae2c71604a1963f5e1a48/btf-aarch64/vmlinux.zst
+> > > > > > > > >
+> > > > > > > >
+> > > > > > > > Thanks. I clearly see at least one instance of seemingly well-formed
+> > > > > > > > vfs_truncate DWARF declaration. Also there is a proper ELF symbol for
+> > > > > > > > it. Which means it should have been generated in BTF, but it doesn't
+> > > > > > > > appear to be, so it does seem like a pahole bug. I (or someone else
+> > > > > > > > before me) will continue tomorrow.
+> > > > > > > >
+> > > > > > > > $ llvm-dwarfdump vmlinux
+> > > > > > > > ...
+> > > > > > > >
+> > > > > > > > 0x00052e6f:   DW_TAG_subprogram
+> > > > > > > >                 DW_AT_name      ("vfs_truncate")
+> > > > > > > >                 DW_AT_decl_file
+> > > > > > > > ("/home/nathan/cbl/src/linux/include/linux/fs.h")
+> > > > > > > >                 DW_AT_decl_line (2520)
+> > > > > > > >                 DW_AT_prototyped        (true)
+> > > > > > > >                 DW_AT_type      (0x000452cb "long int")
+> > > > > > > >                 DW_AT_declaration       (true)
+> > > > > > > >                 DW_AT_external  (true)
+> > > > > > > >
+> > > > > > > > 0x00052e7b:     DW_TAG_formal_parameter
+> > > > > > > >                   DW_AT_type    (0x00045fc6 "const path*")
+> > > > > > > >
+> > > > > > > > 0x00052e80:     DW_TAG_formal_parameter
+> > > > > > > >                   DW_AT_type    (0x00045213 "long long int")
+> > > > > > > >
+> > > > > > > > ...
+> > > > > > > >
+> > > > > > >
+> > > > > > > ... and here's the *only* other one (not marked as declaration, but I
+> > > > > > > thought we already handle that, Jiri?):
+> > > > > > >
+> > > > > > > 0x01d0da35:   DW_TAG_subprogram
+> > > > > > >                 DW_AT_low_pc    (0xffff80001031f430)
+> > > > > > >                 DW_AT_high_pc   (0xffff80001031f598)
+> > > > > > >                 DW_AT_frame_base        (DW_OP_reg29)
+> > > > > > >                 DW_AT_GNU_all_call_sites        (true)
+> > > > > > >                 DW_AT_name      ("vfs_truncate")
+> > > > > > >                 DW_AT_decl_file ("/home/nathan/cbl/src/linux/fs/open.c")
+> > > > > > >                 DW_AT_decl_line (69)
+> > > > > > >                 DW_AT_prototyped        (true)
+> > > > > > >                 DW_AT_type      (0x01cfdfe4 "long int")
+> > > > > > >                 DW_AT_external  (true)
+> > > > > > >
+> > > > > >
+> > > > > > Ok, the problem appears to be not in DWARF, but in mcount_loc data.
+> > > > > > vfs_truncate's address is not recorded as ftrace-attachable, and thus
+> > > > > > pahole ignores it. I don't know why this happens and it's quite
+> > > > > > strange, given vfs_truncate is just a normal global function.
+> > > >
+> > > > right, I can't see it in mcount adresses.. but it begins with instructions
+> > > > that appears to be nops, which would suggest it's traceable
+> > > >
+> > > >       ffff80001031f430 <vfs_truncate>:
+> > > >       ffff80001031f430: 5f 24 03 d5   hint    #34
+> > > >       ffff80001031f434: 1f 20 03 d5   nop
+> > > >       ffff80001031f438: 1f 20 03 d5   nop
+> > > >       ffff80001031f43c: 3f 23 03 d5   hint    #25
+> > > >
+> > > > > >
+> > > > > > I'd like to understand this issue before we try to fix it, but there
+> > > > > > is at least one improvement we can make: pahole should check ftrace
+> > > > > > addresses only for static functions, not the global ones (global ones
+> > > > > > should be always attachable, unless they are special, e.g., notrace
+> > > > > > and stuff). We can easily check that by looking at the corresponding
+> > > > > > symbol. But I'd like to verify that vfs_truncate is ftrace-attachable
+> > >
+> > > I'm still trying to build the kernel.. however ;-)
+> > >
+> > > patch below adds the ftrace check only for static functions
+> > > and lets the externa go through.. but as you said, in this
+> > > case we'll need to figure out the 'notrace' and other checks
+> > > ftrace is doing
+> > >
+> > > jirka
+> > >
+> > >
+> > > ---
+> > > diff --git a/btf_encoder.c b/btf_encoder.c
+> > > index b124ec20a689..4d147406cfa5 100644
+> > > --- a/btf_encoder.c
+> > > +++ b/btf_encoder.c
+> > > @@ -734,7 +734,7 @@ int cu__encode_btf(struct cu *cu, int verbose, bool force,
+> > >                         continue;
+> > >                 if (!has_arg_names(cu, &fn->proto))
+> > >                         continue;
+> > > -               if (functions_cnt) {
+> > > +               if (!fn->external && functions_cnt) {
+> >
+> > I wouldn't trust DWARF, honestly. Wouldn't checking GLOBAL vs LOCAL
+> > FUNC ELF symbol be more reliable?
+>
+> that'd mean extra bsearch on each processed function,
+> on the ther hand, we'are already slow ;-) I'll check
+> how big the slowdown would be
+>
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+We currently record addresses and do binary search. Now we need to
+record address + size and still do binary search with a slightly
+different semantics (find closest entry >= addr). Then just check that
+it overlaps, taking into account the length of the function code. It
+shouldn't result in a noticeable slowdown. Might be actually faster,
+because we might avoid callback function call costs.
+
+> jirka
+>
