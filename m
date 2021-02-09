@@ -2,238 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C2AD314F10
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 13:38:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D541314F0D
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 13:38:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230180AbhBIMi1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 07:38:27 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:57078 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230097AbhBIMiV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 07:38:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1612874214;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=eulVAMoLgsuddyX2bCd+R+0WX0Ut6HY0WT7Kb2ZLf3w=;
-        b=adlfWkMZovcbsx93esFczYGObrnPjo0mU1ryfkTywaI2odaRtdjYyjW6RAg0Qu+1278nxV
-        qXNe0LUkV6wZSO6nv8hLoVJUsRWPeybedjY5pd+9EmKBD0xkuHcBeGq7nulwLFIlpbM+lE
-        TQfZfcma/9/r/GIT8zcgX0NCWu9BE/g=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-340-tNzawCiWNlSngklNyFLHRw-1; Tue, 09 Feb 2021 07:36:43 -0500
-X-MC-Unique: tNzawCiWNlSngklNyFLHRw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B344ABBEED;
-        Tue,  9 Feb 2021 12:36:41 +0000 (UTC)
-Received: from krava (unknown [10.40.196.4])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 4577A5D6D7;
-        Tue,  9 Feb 2021 12:36:38 +0000 (UTC)
-Date:   Tue, 9 Feb 2021 13:36:37 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Veronika Kabatova <vkabatov@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>
-Subject: Re: FAILED unresolved symbol vfs_truncate on arm64 with LLVM
-Message-ID: <YCKB1TF5wz93EIBK@krava>
-References: <20210209034416.GA1669105@ubuntu-m3-large-x86>
- <CAEf4BzYnT-eoKRL9_Pu_DEuqXVa+edN5F-s+k2RxBSzcsSTJ1g@mail.gmail.com>
- <20210209052311.GA125918@ubuntu-m3-large-x86>
- <CAEf4BzZV0-zx6YKUUKmecs=icnQNXJjTokdkSAoexm36za+wdA@mail.gmail.com>
- <CAEf4BzYvri7wzRnGH_qQbavXOx5TfBA0qx4nYVnn=YNGv+vNVw@mail.gmail.com>
- <CAEf4Bzax90hn_5axpnCpW+E6gVc1mtUgCXWqmxV0tJ4Ud7bsaA@mail.gmail.com>
- <20210209074904.GA286822@ubuntu-m3-large-x86>
+        id S230154AbhBIMh6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 07:37:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45560 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230126AbhBIMhy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 07:37:54 -0500
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87393C06178C
+        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 04:37:13 -0800 (PST)
+Received: by mail-lj1-x231.google.com with SMTP id a17so22091455ljq.2
+        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 04:37:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=dp2/Yyn+Nvj/ORiR/zBP8Aijq2eR2MP6XOPOex6Vg3A=;
+        b=MuZh103+OAj6XXbs7B8F3Y7XRPR8d1VUeYirFAeRFIe73Pm6euPoF4Tqzc2CrZv8PD
+         npf5UZo8El2rpmYjUL0T8LxeunY4XkQXJDjzcpX1voZXo9b2BDEwjhGH/aFAhh22U28X
+         4kM1DliNgWKCJmCrXiJdCzWvjLibeVYptx5mtOS/XvE8RLqf+0Db+oiWcpvLJ6DiPj+x
+         GtactdODwlHW9xI1Z3hWQN7qohjGqGDxQfLwPX2/8+9tytjmfOiQ4r9A6s1X/Cnro51r
+         W1wDSwgzJhjUIss0Fo/BsVF3PN74C15ZpDET/8MVGlon9I0P2NxGLn7vHoOx6pDkm2CZ
+         hztw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=dp2/Yyn+Nvj/ORiR/zBP8Aijq2eR2MP6XOPOex6Vg3A=;
+        b=TMkuEETK6ACqIG/3YvzkTYoJ3rK7kVzQOkViJQo2U06PafHWn8JJRhbNqV8ZGEAvCz
+         SQRdY2xQERXMFVS7f05RHgiSPbumC62p1DJGGa0tkA7fOpEUozxunZxNk1NUDEKZZJua
+         HH9hwISuvf1MbGtRCJsmA5CC9MZuxzJuP2oTF8o+PYX7QOEWXHA59BWtSeK5OJGQKNQq
+         DIzVHt5Gu8D4UGFKsW6PscUcQk0vRdU5eNbTXCkl5ztqBDf3vrWmP04EpPyknNk1qyqt
+         CkkAXo2TR6gV99MUVol1Do4jRvfPSMh+YMBzIaakdJMGAZUbG0AziEY/GcdR0uKhGXZK
+         5BIg==
+X-Gm-Message-State: AOAM53033vXjM19bus7g48uCv52PUCW77Zbbk3hCDXUE82vT0EI9vBYy
+        9H93mTKdlqR9JYjdfRJyRDCVfw==
+X-Google-Smtp-Source: ABdhPJw1WVrHc6Xfjj4qcr3YM4W3dJ1gaVjQhHK9TYWLCs3MYIYDiQTAD+84eqLp00T/jwlJoC9hxw==
+X-Received: by 2002:a2e:9bce:: with SMTP id w14mr14249808ljj.120.1612874231943;
+        Tue, 09 Feb 2021 04:37:11 -0800 (PST)
+Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id t24sm725872ljd.56.2021.02.09.04.37.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Feb 2021 04:37:11 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+Cc:     Vadym Kochan <vadym.kochan@plvision.eu>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Mickey Rachamim <mickeyr@marvell.com>,
+        linux-kernel@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net-next 5/7] net: marvell: prestera: add LAG support
+In-Reply-To: <YCG7lEncISjQwEOk@lunn.ch>
+References: <20210203165458.28717-1-vadym.kochan@plvision.eu> <20210203165458.28717-6-vadym.kochan@plvision.eu> <20210204211647.7b9a8ebf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <87v9b249oq.fsf@waldekranz.com> <20210208130557.56b14429@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <YCG7lEncISjQwEOk@lunn.ch>
+Date:   Tue, 09 Feb 2021 13:37:10 +0100
+Message-ID: <87mtwd4du1.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210209074904.GA286822@ubuntu-m3-large-x86>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 09, 2021 at 12:49:04AM -0700, Nathan Chancellor wrote:
-> On Mon, Feb 08, 2021 at 10:56:36PM -0800, Andrii Nakryiko wrote:
-> > On Mon, Feb 8, 2021 at 10:13 PM Andrii Nakryiko
-> > <andrii.nakryiko@gmail.com> wrote:
-> > >
-> > > On Mon, Feb 8, 2021 at 10:09 PM Andrii Nakryiko
-> > > <andrii.nakryiko@gmail.com> wrote:
-> > > >
-> > > > On Mon, Feb 8, 2021 at 9:23 PM Nathan Chancellor <nathan@kernel.org> wrote:
-> > > > >
-> > > > > On Mon, Feb 08, 2021 at 08:45:43PM -0800, Andrii Nakryiko wrote:
-> > > > > > On Mon, Feb 8, 2021 at 7:44 PM Nathan Chancellor <nathan@kernel.org> wrote:
-> > > > > > >
-> > > > > > > Hi all,
-> > > > > > >
-> > > > > > > Recently, an issue with CONFIG_DEBUG_INFO_BTF was reported for arm64:
-> > > > > > > https://groups.google.com/g/clang-built-linux/c/de_mNh23FOc/m/E7cu5BwbBAAJ
-> > > > > > >
-> > > > > > > $ make -skj"$(nproc)" ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
-> > > > > > >                       LLVM=1 O=build/aarch64 defconfig
-> > > > > > >
-> > > > > > > $ scripts/config \
-> > > > > > >     --file build/aarch64/.config \
-> > > > > > >     -e BPF_SYSCALL \
-> > > > > > >     -e DEBUG_INFO_BTF \
-> > > > > > >     -e FTRACE \
-> > > > > > >     -e FUNCTION_TRACER
-> > > > > > >
-> > > > > > > $ make -skj"$(nproc)" ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
-> > > > > > >                       LLVM=1 O=build/aarch64 olddefconfig all
-> > > > > > > ...
-> > > > > > > FAILED unresolved symbol vfs_truncate
-> > > > > > > ...
-> > > > > > >
-> > > > > > > My bisect landed on commit 6e22ab9da793 ("bpf: Add d_path helper")
-> > > > > > > although that seems obvious given that is what introduced
-> > > > > > > BTF_ID(func, vfs_truncate).
-> > > > > > >
-> > > > > > > I am using the latest pahole v1.20 and LLVM is at
-> > > > > > > https://github.com/llvm/llvm-project/commit/14da287e18846ea86e45b421dc47f78ecc5aa7cb
-> > > > > > > although I can reproduce back to LLVM 10.0.1, which is the earliest
-> > > > > > > version that the kernel supports. I am very unfamiliar with BPF so I
-> > > > > > > have no idea what is going wrong here. Is this a known issue?
-> > > > > > >
-> > > > > >
-> > > > > > I'll skip the reproduction games this time and will just request the
-> > > > > > vmlinux image. Please upload somewhere so that we can look at DWARF
-> > > > > > and see what's going on. Thanks.
-> > > > > >
-> > > > >
-> > > > > Sure thing, let me know if this works. I uploaded in two places to make
-> > > > > it easier to grab:
-> > > > >
-> > > > > zstd compressed:
-> > > > > https://github.com/nathanchance/bug-files/blob/3b2873751e29311e084ae2c71604a1963f5e1a48/btf-aarch64/vmlinux.zst
-> > > > >
-> > > >
-> > > > Thanks. I clearly see at least one instance of seemingly well-formed
-> > > > vfs_truncate DWARF declaration. Also there is a proper ELF symbol for
-> > > > it. Which means it should have been generated in BTF, but it doesn't
-> > > > appear to be, so it does seem like a pahole bug. I (or someone else
-> > > > before me) will continue tomorrow.
-> > > >
-> > > > $ llvm-dwarfdump vmlinux
-> > > > ...
-> > > >
-> > > > 0x00052e6f:   DW_TAG_subprogram
-> > > >                 DW_AT_name      ("vfs_truncate")
-> > > >                 DW_AT_decl_file
-> > > > ("/home/nathan/cbl/src/linux/include/linux/fs.h")
-> > > >                 DW_AT_decl_line (2520)
-> > > >                 DW_AT_prototyped        (true)
-> > > >                 DW_AT_type      (0x000452cb "long int")
-> > > >                 DW_AT_declaration       (true)
-> > > >                 DW_AT_external  (true)
-> > > >
-> > > > 0x00052e7b:     DW_TAG_formal_parameter
-> > > >                   DW_AT_type    (0x00045fc6 "const path*")
-> > > >
-> > > > 0x00052e80:     DW_TAG_formal_parameter
-> > > >                   DW_AT_type    (0x00045213 "long long int")
-> > > >
-> > > > ...
-> > > >
-> > >
-> > > ... and here's the *only* other one (not marked as declaration, but I
-> > > thought we already handle that, Jiri?):
-> > >
-> > > 0x01d0da35:   DW_TAG_subprogram
-> > >                 DW_AT_low_pc    (0xffff80001031f430)
-> > >                 DW_AT_high_pc   (0xffff80001031f598)
-> > >                 DW_AT_frame_base        (DW_OP_reg29)
-> > >                 DW_AT_GNU_all_call_sites        (true)
-> > >                 DW_AT_name      ("vfs_truncate")
-> > >                 DW_AT_decl_file ("/home/nathan/cbl/src/linux/fs/open.c")
-> > >                 DW_AT_decl_line (69)
-> > >                 DW_AT_prototyped        (true)
-> > >                 DW_AT_type      (0x01cfdfe4 "long int")
-> > >                 DW_AT_external  (true)
-> > >
-> > 
-> > Ok, the problem appears to be not in DWARF, but in mcount_loc data.
-> > vfs_truncate's address is not recorded as ftrace-attachable, and thus
-> > pahole ignores it. I don't know why this happens and it's quite
-> > strange, given vfs_truncate is just a normal global function.
+On Mon, Feb 08, 2021 at 23:30, Andrew Lunn <andrew@lunn.ch> wrote:
+>> > I took a quick look at it, and what I found left me very puzzled. I hope
+>> > you do not mind me asking a generic question about the policy around
+>> > switchdev drivers. If someone published a driver using something similar
+>> > to the following configuration flow:
+>> > 
+>> > iproute2  daemon(SDK)
+>> >    |        ^    |
+>> >    :        :    : user/kernel boundary
+>> >    v        |    |
+>> > netlink     |    |
+>> >    |        |    |
+>> >    v        |    |
+>> >  driver     |    |
+>> >    |        |    |
+>> >    '--------'    |
+>> >                  : kernel/hardware boundary
+>> >                  v
+>> >                 ASIC
+>> > 
+>> > My guess is that they would be (rightly IMO) told something along the
+>> > lines of "we do not accept drivers that are just shims for proprietary
+>> > SDKs".
+>> > 
+>> > But it seems like if that same someone has enough area to spare in their
+>> > ASIC to embed a CPU, it is perfectly fine to run that same SDK on it,
+>> > call it "firmware", and then push a shim driver into the kernel tree.
+>> > 
+>> > iproute2
+>> >    |
+>> >    :               user/kernel boundary
+>> >    v
+>> > netlink
+>> >    |
+>> >    v
+>> >  driver
+>> >    |
+>> >    |
+>> >    :               kernel/hardware boundary
+>> >    '-------------.
+>> >                  v
+>> >              daemon(SDK)
+>> >                  |
+>> >                  v
+>> >                 ASIC
+>> > 
+>> > What have we, the community, gained by this? In the old world, the
+>> > vendor usually at least had to ship me the SDK in source form. Having
+>> > seen the inside of some of those sausage factories, they are not the
+>> > kinds of code bases that I want at the bottom of my stack; even less so
+>> > in binary form where I am entirely at the vendor's mercy for bugfixes.
+>> > 
+>> > We are talking about a pure Ethernet fabric here, so there is no fig
+>> > leaf of "regulatory requirements" to hide behind, in contrast to WiFi
+>> > for example.
+>> > 
+>> > Is it the opinion of the netdev community that it is OK for vendors to
+>> > use this model?
+>
+> What i find interesting is the comparison between Microchip Sparx5 and
+> Marvell Prestera. They offer similar capabilities. Both have a CPU on
+> them. As you say Marvell is pushing their SDK into this CPU, black
+> box. Microchip decided to open everything, no firmware, the kernel
+> driver is directly accessing the hardware, the datasheet is available,
+> and microchip engineers are here on the list.
 
-right, I can't see it in mcount adresses.. but it begins with instructions
-that appears to be nops, which would suggest it's traceable
+Indeed, it is a very stark difference in approach. Perhaps a silly
+example, but it speaks to their developer focus, just the fact that they
+have an online register reference on GitHub[1] amazed me. What a breath
+of fresh air! ...and speaks to the general state of things, I guess :)
 
-	ffff80001031f430 <vfs_truncate>:
-	ffff80001031f430: 5f 24 03 d5   hint    #34
-	ffff80001031f434: 1f 20 03 d5   nop
-	ffff80001031f438: 1f 20 03 d5   nop
-	ffff80001031f43c: 3f 23 03 d5   hint    #25
+Unsurprisingly the team behind it are also really great to work with!
 
-> > 
-> > I'd like to understand this issue before we try to fix it, but there
-> > is at least one improvement we can make: pahole should check ftrace
-> > addresses only for static functions, not the global ones (global ones
-> > should be always attachable, unless they are special, e.g., notrace
-> > and stuff). We can easily check that by looking at the corresponding
-> > symbol. But I'd like to verify that vfs_truncate is ftrace-attachable
-> > for that particular kernel. For that we'll need Nathan's cooperation,
-> > unless someone else can build an arm64 kernel with the same problem
-> > and check.
+> I really hope that Sparx5 takes off, and displaces Prestera. In terms
 
-I'm building on arm now, let's see
+We are certainly keeping our eyes on it!
 
-> 
-> Sure, just let me know what I need to do and I can do it!
+> of being able to solve issues, we the community can work with
+> Sparx5. Prestera is too much a black box.
 
+I would only add that I still, perhaps naively, hope Marvell will
+eventually see the benefits of having a truly open driver.
 
-could you please verify that you don't see vfs_truncate in
-available_filter_functions?
+> 	Andrew
 
- # cat /sys/kernel/debug/tracing/available_filter_functions | grep vfs_truncate
-
-thanks,
-jirka
-
-> 
-> Cheers,
-> Nathan
-> 
-> > >
-> > > > $ llvm-readelf -s vmlinux | rg vfs_truncate
-> > > >  15013: ffff800011c22418     4 OBJECT  LOCAL  DEFAULT    24
-> > > > __BTF_ID__func__vfs_truncate__609
-> > > >  22531: ffff80001189fe0d     0 NOTYPE  LOCAL  DEFAULT    17
-> > > > __kstrtab_vfs_truncate
-> > > >  22532: ffff8000118a985b     0 NOTYPE  LOCAL  DEFAULT    17
-> > > > __kstrtabns_vfs_truncate
-> > > >  22534: ffff800011873b7c     0 NOTYPE  LOCAL  DEFAULT     8
-> > > > __ksymtab_vfs_truncate
-> > > > 176099: ffff80001031f430   360 FUNC    GLOBAL DEFAULT     2 vfs_truncate
-> > > >
-> > > > $ bpftool btf dump file vmlinux | rg vfs_truncate
-> > > > <nothing>
-> > > >
-> > > > > uncompressed:
-> > > > > https://1drv.ms/u/s!AsQNYeB-IEbqjQiUOspbEdXx49o7?e=ipA9Hv
-> > > > >
-> > > > > Cheers,
-> > > > > Nathan
-> > 
-> > -- 
-> > You received this message because you are subscribed to the Google Groups "Clang Built Linux" group.
-> > To unsubscribe from this group and stop receiving emails from it, send an email to clang-built-linux+unsubscribe@googlegroups.com.
-> > To view this discussion on the web visit https://groups.google.com/d/msgid/clang-built-linux/CAEf4Bzax90hn_5axpnCpW%2BE6gVc1mtUgCXWqmxV0tJ4Ud7bsaA%40mail.gmail.com.
-> 
-
+[1]: https://microchip-ung.github.io/sparx-5_reginfo/reginfo_sparx-5.html
