@@ -2,89 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5C02315AA5
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 01:10:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64F7D315AA7
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 01:10:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234939AbhBJAHB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 19:07:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45372 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234071AbhBIXam (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 18:30:42 -0500
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 468A3C061788;
-        Tue,  9 Feb 2021 15:29:41 -0800 (PST)
-Received: by mail-qt1-x82b.google.com with SMTP id c1so351941qtc.1;
-        Tue, 09 Feb 2021 15:29:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FCzySfYlN/LAMWv+m8/NSEcLX72JeDg9cjMwwQeX7SY=;
-        b=ayaNl9D+oKLQ1blTkbwDyocbPrnUunuRO4tCdYXMJnfkODFRedDSfdiUdG5BDuV8Ma
-         pkY4A6DpD/7CJKH6leedn3WrsM9j5pYc2qsuXFo/Bbk29GkT9yuN15iUWYKdTszeRDgX
-         45UkG58ynPpyiceKQr3OXzJZ/PLhWcJfsq0elPiQvEeRTsjXSPJ62otoKkJwXHfRHJ6T
-         Lkc8C87yZy4Co53iFwJsTQvSMo22oxwplqJ0lYOsY8gSe6ZFWuYa7EL6NaJILbPnnwNm
-         aDNJlYftQ/r2WdgSSoCKr3A5iaMVkkgao+NFK7xzuvu9iLxHtqCfHqiYue9obW593eG9
-         oaew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FCzySfYlN/LAMWv+m8/NSEcLX72JeDg9cjMwwQeX7SY=;
-        b=o9n8pxEEun3bMFoLEWUuiIOUGpWZtsl7Qkb4JLxe17ZIXgbgGCFA8HX9hMbyP0ZgLk
-         5oBMwGS/iDTvfbZJ1d/5JOARDDvXgqJVFMb8e5mCzXBxQuC8pa2QjS9+bnhP1dGO6D4J
-         6tPG3EKPNOkYv9+4mpzPxhQUMvTrBSmPdRQ5R9JZ3gWr+iTxafh+l72IdcZZ4ixvmlEp
-         quzOwzvSc/CrZSDzc3yoNwd+vydqo14FiN0u7p6nU/gIJzgfxh5FY7ICWw+MBzsGkWxN
-         XAwtyE70tE1Hv70XQd+eLNBPc+g/cqY8DeipnG85BIP61CVwCG3k34c+Qp8kfu5IZFNL
-         siFQ==
-X-Gm-Message-State: AOAM533ZuVeK2kiAvQkWg+7fcOx1ljxnsQxWNKHzQ8T0S91S7NTMHkoD
-        H441OaRWn+6KL8JxKCo3O7o=
-X-Google-Smtp-Source: ABdhPJzWjtd7mDkggf6eI3egIwv0oVz1HQJcpTau/MvDs9fwivqo1ixNGGF/w9cIEhCuItAKLyq2LA==
-X-Received: by 2002:ac8:3a65:: with SMTP id w92mr417559qte.267.1612913380563;
-        Tue, 09 Feb 2021 15:29:40 -0800 (PST)
-Received: from localhost.localdomain ([138.199.13.164])
-        by smtp.gmail.com with ESMTPSA id 17sm263168qtu.23.2021.02.09.15.29.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Feb 2021 15:29:39 -0800 (PST)
-From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
-To:     kuba@kernel.org, davem@davemloft.net,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     rdunlap@infradead.org, Bhaskar Chowdhury <unixbhaskar@gmail.com>
-Subject: [PATCH] wireless: brcm80211: Fix the spelling configation to configuration in the file d11.h
-Date:   Wed, 10 Feb 2021 04:59:21 +0530
-Message-Id: <20210209232921.1255425-1-unixbhaskar@gmail.com>
-X-Mailer: git-send-email 2.30.0
+        id S234946AbhBJAHp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 19:07:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55280 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234139AbhBIXbl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Feb 2021 18:31:41 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id CCB8264E0D;
+        Tue,  9 Feb 2021 23:30:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612913407;
+        bh=7lVs/dDtva8M6rzae0hpHLDBOhhd/Atiw4MgtlZBDDM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=hkXbbvfUUT3/dlnbubBxzqp0DL2lpeCDNbIqFo2FUxBGuGjLMolmBD+Na8YjurfRm
+         UneicrXf2+34fceuPUQoalf0H6Y/YJ7CgiLeNwHZmQcUTJEGDr8fizL0G+dg1BLCtx
+         Bw195hWquajoEzD/ajZb6UpZxop5L+FoVXHXSmyUxiuTeZzmq2AzH1NV50xTqceuVM
+         fXhIUidhkpxPRX5ssP9gsPHENCY8ec03vuKm/2grgBddEGp08/6oOa0l00GhWYiYPp
+         OtcdGIkfHr3Jmj/xQPAUvPep63vOEKThd6ZANzd/xjSnTl0CbDPSFxPRClyZ9uxkgH
+         2NIfikhv1GHeg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id BAE9B609D6;
+        Tue,  9 Feb 2021 23:30:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/3] net: hns3: fixes for -net
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161291340776.23530.538116330448620412.git-patchwork-notify@kernel.org>
+Date:   Tue, 09 Feb 2021 23:30:07 +0000
+References: <1612861387-35858-1-git-send-email-tanhuazhong@huawei.com>
+In-Reply-To: <1612861387-35858-1-git-send-email-tanhuazhong@huawei.com>
+To:     Huazhong Tan <tanhuazhong@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        salil.mehta@huawei.com, yisen.zhuang@huawei.com,
+        huangdaode@huawei.com, linuxarm@openeuler.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
-s/configation/configuration/
+This series was applied to netdev/net.git (refs/heads/master):
 
-Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
----
- drivers/net/wireless/broadcom/brcm80211/brcmsmac/d11.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Tue, 9 Feb 2021 17:03:04 +0800 you wrote:
+> The parameters sent from vf may be unreliable. If these
+> parameters are used directly, memory overwriting may occur.
+> 
+> So this series adds some checks for this case.
+> 
+> Yufeng Mo (3):
+>   net: hns3: add a check for queue_id in hclge_reset_vf_queue()
+>   net: hns3: add a check for tqp_index in
+>     hclge_get_ring_chain_from_mbx()
+>   net: hns3: add a check for index in hclge_get_rss_key()
+> 
+> [...]
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/d11.h b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/d11.h
-index 9035cc4d6ff3..dc395566e495 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/d11.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/d11.h
-@@ -1469,7 +1469,7 @@ struct d11rxhdr {
- /* htphy PhyRxStatus_1: */
- /* core enables for {3..0}, 0=disabled, 1=enabled */
- #define PRXS1_HTPHY_CORE_MASK	0x000F
--/* antenna configation */
-+/* antenna configuration */
- #define PRXS1_HTPHY_ANTCFG_MASK	0x00F0
- /* Mixmode PLCP Length low byte mask */
- #define PRXS1_HTPHY_MMPLCPLenL_MASK	0xFF00
+Here is the summary with links:
+  - [net,1/3] net: hns3: add a check for queue_id in hclge_reset_vf_queue()
+    https://git.kernel.org/netdev/net/c/67a69f84cab6
+  - [net,2/3] net: hns3: add a check for tqp_index in hclge_get_ring_chain_from_mbx()
+    https://git.kernel.org/netdev/net/c/326334aad024
+  - [net,3/3] net: hns3: add a check for index in hclge_get_rss_key()
+    https://git.kernel.org/netdev/net/c/532cfc0df1e4
+
+You are awesome, thank you!
 --
-2.30.0
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
