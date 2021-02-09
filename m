@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 842AE3152B5
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 16:26:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF34C3152B1
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 16:24:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232565AbhBIPY0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 10:24:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52576 "EHLO
+        id S232603AbhBIPYJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 10:24:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232521AbhBIPVP (ORCPT
+        with ESMTP id S232520AbhBIPVP (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 10:21:15 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C7E3C0617A9;
-        Tue,  9 Feb 2021 07:20:08 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id s5so24223134edw.8;
-        Tue, 09 Feb 2021 07:20:08 -0800 (PST)
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF0DAC0617AA;
+        Tue,  9 Feb 2021 07:20:09 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id l12so24224122edt.3;
+        Tue, 09 Feb 2021 07:20:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=13x8BtqrFi7wGn+7v8wT41cX4qyFUC8xGVV984/bSdc=;
-        b=b5qXSv5VHkMX+0fEBMpuVGSj5jcAVdrq2JbGFhvzTGNANk1aLfOv6gyaKVlIHPWUUw
-         nY+08v32kbPM9KyzpTLy6U6X+OYrpdrSTzKsFrovcAHb6sq80BjjRcPBDSO8ZIe6Thre
-         kpjWJTXul7gqwBW6YllzkYX4kWkQPPGNb/Y5OLjbm1wyHVQ6WWrRX+VySEBq34vTI2zR
-         F9zGu00ZQh4qp7JqS577cJ8xS8aMbX6qW7i/PZ1CSGnUC0klfNkJlAOdDMyfo7B66PZS
-         ZpojqxB+cxGMvDg/cTnTztp2EaTOV4hnEJWWdK2I6qBDdDVE07wOEvG6iGm6Y9BrRPeo
-         TuNA==
+        bh=c1pny1b48sKsEbv6rVca01Eti9d/VIqA4FzxKGgQlq4=;
+        b=vcFoijkidJ20uNV3aDzXVPrjCU4zs5QjLtUa60SHWFEa6BF21dbTUPaigA/DOzmhlE
+         E6sUWNhwjwGtpckjo5LMVlIzibXzo78fjwRwFkHROeMYIGD195XEyei8voJU7vySmPVk
+         +qBV98PSZXdA/ddnImEvMp0CJnUXMeOr6BJ+mD/R0XLpkTyX5+irjwv7p2vOLjC3B21L
+         eg7iUhhbPAvrQLRKv0KI3TJkGzmO4dnNblA30YbChiW0cdfxX5cMz8nE4ygtEnmlRZjJ
+         KeIVTTugS91l36q00sHQ9NdkLhcpGy8NjrP+3tAWj+Z5+YztVm2i03oLKqP9CvmTtXzs
+         afEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=13x8BtqrFi7wGn+7v8wT41cX4qyFUC8xGVV984/bSdc=;
-        b=Zr4+a5Opy3FUYErgorCTYp3PsW2CehGXX0Rjc7IAE7MpoD3itJYLY9uGBpGDMhlR6e
-         HT46Zmq0+zKpDhbHCTNdrSAeQbwCXKjTnKoQSSU6KKbNn8U55HVRNs6Va2PlTN2e4K6U
-         r/EiJaNskd5Idunwtbfxfx36ugZBoAPXZKZ03+hj43ZZ836JlSiydArSV9oFPQYD2yaP
-         ua8vgBpfcyIFuF4Rgebl3KpE47X5teSfk22V2oiImcgLuvTXPQI91G9Nc896e9fFNf+Q
-         yZj5P3BZvnzWgg2QUBXNkbpPeHvu1HS5/FemLQ/sqmJEcmIw+yP8QJqQ0XMXAZLLLAoS
-         Rp5A==
-X-Gm-Message-State: AOAM531W5qUDZOOjg0RXshI2DD9gzSDECUGsArKLh2spDs4aGgcumEMS
-        xyVEqANZoQ5h7vLWby0wOOQ=
-X-Google-Smtp-Source: ABdhPJzzspUKXFZrH+3VC6pisQEwk16pC6HXczLuqpBCKYPuBHBpr5QJ/eq6r00l4ZPqohpbOPxRYA==
-X-Received: by 2002:a05:6402:497:: with SMTP id k23mr22979145edv.315.1612884005627;
-        Tue, 09 Feb 2021 07:20:05 -0800 (PST)
+        bh=c1pny1b48sKsEbv6rVca01Eti9d/VIqA4FzxKGgQlq4=;
+        b=MmchX7CpuYnuxl3xc+V4I30qT1XTpAIxXP6fCfUj2TImgc3WTDX3GLtyYYTYz6wpQ2
+         Xe8dzirj71lcq+JlV1YnWQEljAcpeUx/UXr3BfD05OB3qWAaMjPf+RdoFIfSSlHMA7WB
+         PsFaS9ae6xXC3SdIbbDR8QHQDAjHpg7T9VQXDYWbRRgx7K4+s0PLJqSoADlyWBCwF8fx
+         xBsAiH+zIfwoqXrm94xliqVZyme9IcqdlRJ5ibin3mUn2odGh4JVFOlZ5U+/9YVlufiG
+         9SF6rQlVqvHggtbtH2aj7Dz6o5g179JNsRJfYc5hjUKaHRbUQr4Fp0SyA2KW9PVWo0hg
+         surA==
+X-Gm-Message-State: AOAM530iCBAbyyq7hgA1EMnqsrHHyx1vRZGzd6IIc258qjNwO9dtlCYh
+        Gelwr+F0qKwxGtyc1qro0HA=
+X-Google-Smtp-Source: ABdhPJxjUOMVnIadWENCQNO/1uV1fV9SI3kApXJ2sBNU2CekcqmAiIVPQ0K0dH5p40TKoPWBCn9bPA==
+X-Received: by 2002:a50:cf02:: with SMTP id c2mr23230333edk.333.1612884008308;
+        Tue, 09 Feb 2021 07:20:08 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id q2sm11686108edv.93.2021.02.09.07.20.03
+        by smtp.gmail.com with ESMTPSA id q2sm11686108edv.93.2021.02.09.07.20.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Feb 2021 07:20:04 -0800 (PST)
+        Tue, 09 Feb 2021 07:20:06 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -65,9 +65,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Grygorii Strashko <grygorii.strashko@ti.com>,
         Ioana Ciornei <ioana.ciornei@nxp.com>,
         Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org
-Subject: [PATCH v2 net-next 09/11] net: mscc: ocelot: use separate flooding PGID for broadcast
-Date:   Tue,  9 Feb 2021 17:19:34 +0200
-Message-Id: <20210209151936.97382-10-olteanv@gmail.com>
+Subject: [PATCH v2 net-next 10/11] net: mscc: ocelot: offload bridge port flags to device
+Date:   Tue,  9 Feb 2021 17:19:35 +0200
+Message-Id: <20210209151936.97382-11-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210209151936.97382-1-olteanv@gmail.com>
 References: <20210209151936.97382-1-olteanv@gmail.com>
@@ -79,85 +79,191 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-In preparation of offloading the bridge port flags which have
-independent settings for unknown multicast and for broadcast, we should
-also start reserving one destination Port Group ID for the flooding of
-broadcast packets, to allow configuring it individually.
+We should not be unconditionally enabling address learning, since doing
+that is actively detrimential when a port is standalone and not offloading
+a bridge. Namely, if a port in the switch is standalone and others are
+offloading the bridge, then we could enter a situation where we learn an
+address towards the standalone port, but the bridged ports could not
+forward the packet there, because the CPU is the only path between the
+standalone and the bridged ports. The solution of course is to not
+enable address learning unless the bridge asks for it.
+
+We need to set up the initial port flags for no learning and flooding
+everything, then the bridge takes over. The flood configuration was
+already configured ok in ocelot_init, we just need to disable learning
+in ocelot_init_port.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 ---
 Changes in v2:
-None.
+- Disable learning in ocelot_init_port.
+- Keep a single bool ocelot_port->learn_ena instead of
+  ocelot_port->brport_flags.
+- Stop touching the brport_flags from ocelot_port_bridge_leave (which
+  was a leftover).
 
- drivers/net/ethernet/mscc/ocelot.c | 13 ++++++++-----
- include/soc/mscc/ocelot.h          | 15 ++++++++-------
- 2 files changed, 16 insertions(+), 12 deletions(-)
+ drivers/net/dsa/ocelot/felix.c         | 10 +++++
+ drivers/net/ethernet/mscc/ocelot.c     | 59 +++++++++++++++++++++++++-
+ drivers/net/ethernet/mscc/ocelot_net.c |  4 ++
+ include/soc/mscc/ocelot.h              |  3 ++
+ 4 files changed, 75 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index 1bd5aea12b25..4ff18415ef95 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -553,6 +553,15 @@ static void felix_bridge_stp_state_set(struct dsa_switch *ds, int port,
+ 	return ocelot_bridge_stp_state_set(ocelot, port, state);
+ }
+ 
++static int felix_bridge_flags(struct dsa_switch *ds, int port,
++			      struct switchdev_brport_flags val,
++			      struct netlink_ext_ack *extack)
++{
++	struct ocelot *ocelot = ds->priv;
++
++	return ocelot_port_bridge_flags(ocelot, port, val);
++}
++
+ static int felix_bridge_join(struct dsa_switch *ds, int port,
+ 			     struct net_device *br)
+ {
+@@ -1358,6 +1367,7 @@ const struct dsa_switch_ops felix_switch_ops = {
+ 	.port_fdb_del			= felix_fdb_del,
+ 	.port_mdb_add			= felix_mdb_add,
+ 	.port_mdb_del			= felix_mdb_del,
++	.port_bridge_flags		= felix_bridge_flags,
+ 	.port_bridge_join		= felix_bridge_join,
+ 	.port_bridge_leave		= felix_bridge_leave,
+ 	.port_lag_join			= felix_lag_join,
 diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index f8b85ab8be5d..8c1052346b58 100644
+index 8c1052346b58..65bc7d59d2c9 100644
 --- a/drivers/net/ethernet/mscc/ocelot.c
 +++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -1662,7 +1662,7 @@ int ocelot_init(struct ocelot *ocelot)
- 	/* Setup flooding PGIDs */
- 	for (i = 0; i < ocelot->num_flooding_pgids; i++)
- 		ocelot_write_rix(ocelot, ANA_FLOODING_FLD_MULTICAST(PGID_MC) |
--				 ANA_FLOODING_FLD_BROADCAST(PGID_MC) |
-+				 ANA_FLOODING_FLD_BROADCAST(PGID_BC) |
- 				 ANA_FLOODING_FLD_UNICAST(PGID_UC),
- 				 ANA_FLOODING, i);
- 	ocelot_write(ocelot, ANA_FLOODING_IPMC_FLD_MC6_DATA(PGID_MCIPV6) |
-@@ -1683,15 +1683,18 @@ int ocelot_init(struct ocelot *ocelot)
- 		ocelot_write_rix(ocelot, 0, ANA_PGID_PGID, PGID_SRC + port);
- 	}
+@@ -984,6 +984,7 @@ EXPORT_SYMBOL(ocelot_apply_bridge_fwd_mask);
  
--	/* Allow broadcast MAC frames. */
- 	for_each_nonreserved_multicast_dest_pgid(ocelot, i) {
- 		u32 val = ANA_PGID_PGID_PGID(GENMASK(ocelot->num_phys_ports - 1, 0));
+ void ocelot_bridge_stp_state_set(struct ocelot *ocelot, int port, u8 state)
+ {
++	struct ocelot_port *ocelot_port = ocelot->ports[port];
+ 	u32 port_cfg;
  
- 		ocelot_write_rix(ocelot, val, ANA_PGID_PGID, i);
- 	}
--	ocelot_write_rix(ocelot,
--			 ANA_PGID_PGID_PGID(GENMASK(ocelot->num_phys_ports, 0)),
--			 ANA_PGID_PGID, PGID_MC);
-+	/* Allow broadcast and unknown L2 multicast to the CPU. */
-+	ocelot_rmw_rix(ocelot, ANA_PGID_PGID_PGID(BIT(ocelot->num_phys_ports)),
-+		       ANA_PGID_PGID_PGID(BIT(ocelot->num_phys_ports)),
-+		       ANA_PGID_PGID, PGID_MC);
-+	ocelot_rmw_rix(ocelot, ANA_PGID_PGID_PGID(BIT(ocelot->num_phys_ports)),
-+		       ANA_PGID_PGID_PGID(BIT(ocelot->num_phys_ports)),
-+		       ANA_PGID_PGID, PGID_BC);
- 	ocelot_write_rix(ocelot, 0, ANA_PGID_PGID, PGID_MCIPV4);
- 	ocelot_write_rix(ocelot, 0, ANA_PGID_PGID, PGID_MCIPV6);
+ 	if (!(BIT(port) & ocelot->bridge_mask))
+@@ -996,7 +997,8 @@ void ocelot_bridge_stp_state_set(struct ocelot *ocelot, int port, u8 state)
+ 		ocelot->bridge_fwd_mask |= BIT(port);
+ 		fallthrough;
+ 	case BR_STATE_LEARNING:
+-		port_cfg |= ANA_PORT_PORT_CFG_LEARN_ENA;
++		if (ocelot_port->learn_ena)
++			port_cfg |= ANA_PORT_PORT_CFG_LEARN_ENA;
+ 		break;
  
+ 	default:
+@@ -1480,6 +1482,57 @@ int ocelot_get_max_mtu(struct ocelot *ocelot, int port)
+ }
+ EXPORT_SYMBOL(ocelot_get_max_mtu);
+ 
++int ocelot_port_bridge_flags(struct ocelot *ocelot, int port,
++			     struct switchdev_brport_flags flags)
++{
++	struct ocelot_port *ocelot_port = ocelot->ports[port];
++
++	if (flags.mask & ~(BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD |
++			   BR_BCAST_FLOOD))
++		return -EINVAL;
++
++	if (flags.mask & BR_LEARNING) {
++		u32 val = 0;
++
++		ocelot_port->learn_ena = !!(flags.val & BR_LEARNING);
++		if (ocelot_port->learn_ena)
++			val = ANA_PORT_PORT_CFG_LEARN_ENA;
++
++		ocelot_rmw_gix(ocelot, val, ANA_PORT_PORT_CFG_LEARN_ENA,
++			       ANA_PORT_PORT_CFG, port);
++	}
++
++	if (flags.mask & BR_FLOOD) {
++		u32 val = 0;
++
++		if (flags.val & BR_FLOOD)
++			val = BIT(port);
++
++		ocelot_rmw_rix(ocelot, val, BIT(port), ANA_PGID_PGID, PGID_UC);
++	}
++
++	if (flags.mask & BR_MCAST_FLOOD) {
++		u32 val = 0;
++
++		if (flags.val & BR_MCAST_FLOOD)
++			val = BIT(port);
++
++		ocelot_rmw_rix(ocelot, val, BIT(port), ANA_PGID_PGID, PGID_MC);
++	}
++
++	if (flags.mask & BR_BCAST_FLOOD) {
++		u32 val = 0;
++
++		if (flags.val & BR_BCAST_FLOOD)
++			val = BIT(port);
++
++		ocelot_rmw_rix(ocelot, val, BIT(port), ANA_PGID_PGID, PGID_BC);
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL(ocelot_port_bridge_flags);
++
+ void ocelot_init_port(struct ocelot *ocelot, int port)
+ {
+ 	struct ocelot_port *ocelot_port = ocelot->ports[port];
+@@ -1524,6 +1577,10 @@ void ocelot_init_port(struct ocelot *ocelot, int port)
+ 		       ANA_PORT_DROP_CFG_DROP_MC_SMAC_ENA,
+ 		       ANA_PORT_DROP_CFG, port);
+ 
++	/* Disable source address learning for standalone mode */
++	ocelot_rmw_gix(ocelot, 0, ANA_PORT_PORT_CFG_LEARN_ENA,
++		       ANA_PORT_PORT_CFG, port);
++
+ 	/* Set default VLAN and tag type to 8021Q. */
+ 	ocelot_rmw_gix(ocelot, REW_PORT_VLAN_CFG_PORT_TPID(ETH_P_8021Q),
+ 		       REW_PORT_VLAN_CFG_PORT_TPID_M,
+diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
+index f9da4aa39444..9944d79c6685 100644
+--- a/drivers/net/ethernet/mscc/ocelot_net.c
++++ b/drivers/net/ethernet/mscc/ocelot_net.c
+@@ -1026,6 +1026,10 @@ static int ocelot_port_attr_set(struct net_device *dev,
+ 	case SWITCHDEV_ATTR_ID_BRIDGE_MC_DISABLED:
+ 		ocelot_port_attr_mc_set(ocelot, port, !attr->u.mc_disabled);
+ 		break;
++	case SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS:
++		err = ocelot_port_bridge_flags(ocelot, port,
++					       attr->u.brport_flags);
++		break;
+ 	default:
+ 		err = -EOPNOTSUPP;
+ 		break;
 diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index d0d48e9620fb..7ee85527cb5f 100644
+index 7ee85527cb5f..e6aacf65fa1e 100644
 --- a/include/soc/mscc/ocelot.h
 +++ b/include/soc/mscc/ocelot.h
-@@ -54,16 +54,17 @@
-  * PGID_CPU: used for whitelisting certain MAC addresses, such as the addresses
-  *           of the switch port net devices, towards the CPU port module.
-  * PGID_UC: the flooding destinations for unknown unicast traffic.
-- * PGID_MC: the flooding destinations for broadcast and non-IP multicast
-- *          traffic.
-+ * PGID_MC: the flooding destinations for non-IP multicast traffic.
-  * PGID_MCIPV4: the flooding destinations for IPv4 multicast traffic.
-  * PGID_MCIPV6: the flooding destinations for IPv6 multicast traffic.
-+ * PGID_BC: the flooding destinations for broadcast traffic.
-  */
--#define PGID_CPU			59
--#define PGID_UC				60
--#define PGID_MC				61
--#define PGID_MCIPV4			62
--#define PGID_MCIPV6			63
-+#define PGID_CPU			58
-+#define PGID_UC				59
-+#define PGID_MC				60
-+#define PGID_MCIPV4			61
-+#define PGID_MCIPV6			62
-+#define PGID_BC				63
+@@ -612,6 +612,7 @@ struct ocelot_port {
  
- #define for_each_unicast_dest_pgid(ocelot, pgid)		\
- 	for ((pgid) = 0;					\
+ 	u8				*xmit_template;
+ 	bool				is_dsa_8021q_cpu;
++	bool				learn_ena;
+ 
+ 	struct net_device		*bond;
+ 	bool				lag_tx_active;
+@@ -764,6 +765,8 @@ void ocelot_adjust_link(struct ocelot *ocelot, int port,
+ int ocelot_port_vlan_filtering(struct ocelot *ocelot, int port, bool enabled);
+ void ocelot_bridge_stp_state_set(struct ocelot *ocelot, int port, u8 state);
+ void ocelot_apply_bridge_fwd_mask(struct ocelot *ocelot);
++int ocelot_port_bridge_flags(struct ocelot *ocelot, int port,
++			     struct switchdev_brport_flags val);
+ int ocelot_port_bridge_join(struct ocelot *ocelot, int port,
+ 			    struct net_device *bridge);
+ int ocelot_port_bridge_leave(struct ocelot *ocelot, int port,
 -- 
 2.25.1
 
