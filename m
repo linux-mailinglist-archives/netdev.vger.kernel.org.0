@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D79B314695
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 03:45:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D279314697
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 03:45:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230216AbhBICnn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 21:43:43 -0500
-Received: from szxga07-in.huawei.com ([45.249.212.35]:12875 "EHLO
+        id S230298AbhBICnr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 21:43:47 -0500
+Received: from szxga07-in.huawei.com ([45.249.212.35]:12877 "EHLO
         szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229611AbhBICnk (ORCPT
+        with ESMTP id S229759AbhBICnk (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 21:43:40 -0500
 Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4DZRwp37Lfz7jBx;
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4DZRwp2vbHz7jBv;
         Tue,  9 Feb 2021 10:41:30 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
@@ -21,11 +21,11 @@ From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <salil.mehta@huawei.com>,
         <yisen.zhuang@huawei.com>, <huangdaode@huawei.com>,
-        <linuxarm@openeuler.org>, Jian Shen <shenjian15@huawei.com>,
+        <linuxarm@openeuler.org>, Peng Li <lipeng321@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH V2 net-next 02/11] net: hns3: remove redundant client_setup_tc handle
-Date:   Tue, 9 Feb 2021 10:41:52 +0800
-Message-ID: <1612838521-59915-3-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH V2 net-next 03/11] net: hns3: remove the shaper param magic number
+Date:   Tue, 9 Feb 2021 10:41:53 +0800
+Message-ID: <1612838521-59915-4-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1612838521-59915-1-git-send-email-tanhuazhong@huawei.com>
 References: <1612838521-59915-1-git-send-email-tanhuazhong@huawei.com>
@@ -37,111 +37,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+From: Peng Li <lipeng321@huawei.com>
 
-Since the real tx queue number and real rx queue number
-always be updated when netdev opens, it's redundant
-to call hclge_client_setup_tc to do the same thing.
-So remove it.
+To make the code more readable, this patch adds a definition for
+the magic number 126 used for the default shaper param ir_b, and
+rename macro DIVISOR_IR_B_126.
 
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
+No functional change.
+
+Signed-off-by: Peng Li <lipeng321@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  1 -
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 15 ------------
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c | 27 ----------------------
- 3 files changed, 43 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index e20a1b3..12548809 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -292,7 +292,6 @@ struct hnae3_client_ops {
- 	int (*init_instance)(struct hnae3_handle *handle);
- 	void (*uninit_instance)(struct hnae3_handle *handle, bool reset);
- 	void (*link_status_change)(struct hnae3_handle *handle, bool state);
--	int (*setup_tc)(struct hnae3_handle *handle, u8 tc);
- 	int (*reset_notify)(struct hnae3_handle *handle,
- 			    enum hnae3_reset_notify_type type);
- 	void (*process_hw_error)(struct hnae3_handle *handle,
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index cf16d5f..4c10b87 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -4378,20 +4378,6 @@ static void hns3_link_status_change(struct hnae3_handle *handle, bool linkup)
- 	}
- }
- 
--static int hns3_client_setup_tc(struct hnae3_handle *handle, u8 tc)
--{
--	struct hnae3_knic_private_info *kinfo = &handle->kinfo;
--	struct net_device *ndev = kinfo->netdev;
--
--	if (tc > HNAE3_MAX_TC)
--		return -EINVAL;
--
--	if (!ndev)
--		return -ENODEV;
--
--	return hns3_nic_set_real_num_queue(ndev);
--}
--
- static void hns3_clear_tx_ring(struct hns3_enet_ring *ring)
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+index 906d98e..151afd1 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+@@ -41,8 +41,9 @@ static int hclge_shaper_para_calc(u32 ir, u8 shaper_level,
+ 				  struct hclge_shaper_ir_para *ir_para,
+ 				  u32 max_tm_rate)
  {
- 	while (ring->next_to_clean != ring->next_to_use) {
-@@ -4828,7 +4814,6 @@ static const struct hnae3_client_ops client_ops = {
- 	.init_instance = hns3_client_init,
- 	.uninit_instance = hns3_client_uninit,
- 	.link_status_change = hns3_link_status_change,
--	.setup_tc = hns3_client_setup_tc,
- 	.reset_notify = hns3_reset_notify,
- 	.process_hw_error = hns3_process_hw_error,
- };
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c
-index e08d11b8..5bf5db9 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c
-@@ -176,29 +176,6 @@ static int hclge_map_update(struct hclge_dev *hdev)
- 	return hclge_rss_init_hw(hdev);
- }
++#define DEFAULT_SHAPER_IR_B	126
+ #define DIVISOR_CLK		(1000 * 8)
+-#define DIVISOR_IR_B_126	(126 * DIVISOR_CLK)
++#define DEFAULT_DIVISOR_IR_B	(DEFAULT_SHAPER_IR_B * DIVISOR_CLK)
  
--static int hclge_client_setup_tc(struct hclge_dev *hdev)
--{
--	struct hclge_vport *vport = hdev->vport;
--	struct hnae3_client *client;
--	struct hnae3_handle *handle;
--	int ret;
--	u32 i;
--
--	for (i = 0; i < hdev->num_vmdq_vport + 1; i++) {
--		handle = &vport[i].nic;
--		client = handle->client;
--
--		if (!client || !client->ops || !client->ops->setup_tc)
--			continue;
--
--		ret = client->ops->setup_tc(handle, hdev->tm_info.num_tc);
--		if (ret)
--			return ret;
--	}
--
--	return 0;
--}
--
- static int hclge_notify_down_uinit(struct hclge_dev *hdev)
- {
- 	int ret;
-@@ -257,10 +234,6 @@ static int hclge_ieee_setets(struct hnae3_handle *h, struct ieee_ets *ets)
- 		if (ret)
- 			goto err_out;
+ 	static const u16 tick_array[HCLGE_SHAPER_LVL_CNT] = {
+ 		6 * 256,        /* Prioriy level */
+@@ -69,10 +70,10 @@ static int hclge_shaper_para_calc(u32 ir, u8 shaper_level,
+ 	 * ir_calc = ---------------- * 1000
+ 	 *		tick * 1
+ 	 */
+-	ir_calc = (DIVISOR_IR_B_126 + (tick >> 1) - 1) / tick;
++	ir_calc = (DEFAULT_DIVISOR_IR_B + (tick >> 1) - 1) / tick;
  
--		ret = hclge_client_setup_tc(hdev);
--		if (ret)
--			goto err_out;
--
- 		ret = hclge_notify_init_up(hdev);
- 		if (ret)
- 			return ret;
+ 	if (ir_calc == ir) {
+-		ir_para->ir_b = 126;
++		ir_para->ir_b = DEFAULT_SHAPER_IR_B;
+ 		ir_para->ir_u = 0;
+ 		ir_para->ir_s = 0;
+ 
+@@ -81,7 +82,8 @@ static int hclge_shaper_para_calc(u32 ir, u8 shaper_level,
+ 		/* Increasing the denominator to select ir_s value */
+ 		while (ir_calc >= ir && ir) {
+ 			ir_s_calc++;
+-			ir_calc = DIVISOR_IR_B_126 / (tick * (1 << ir_s_calc));
++			ir_calc = DEFAULT_DIVISOR_IR_B /
++				  (tick * (1 << ir_s_calc));
+ 		}
+ 
+ 		ir_para->ir_b = (ir * tick * (1 << ir_s_calc) +
+@@ -92,12 +94,12 @@ static int hclge_shaper_para_calc(u32 ir, u8 shaper_level,
+ 
+ 		while (ir_calc < ir) {
+ 			ir_u_calc++;
+-			numerator = DIVISOR_IR_B_126 * (1 << ir_u_calc);
++			numerator = DEFAULT_DIVISOR_IR_B * (1 << ir_u_calc);
+ 			ir_calc = (numerator + (tick >> 1)) / tick;
+ 		}
+ 
+ 		if (ir_calc == ir) {
+-			ir_para->ir_b = 126;
++			ir_para->ir_b = DEFAULT_SHAPER_IR_B;
+ 		} else {
+ 			u32 denominator = DIVISOR_CLK * (1 << --ir_u_calc);
+ 			ir_para->ir_b = (ir * tick + (denominator >> 1)) /
 -- 
 2.7.4
 
