@@ -2,167 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE5D5315831
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 22:01:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7898431584E
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 22:10:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234222AbhBIU5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 15:57:33 -0500
-Received: from mail-40134.protonmail.ch ([185.70.40.134]:21330 "EHLO
-        mail-40134.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233862AbhBIUuU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 15:50:20 -0500
-Date:   Tue, 09 Feb 2021 20:49:30 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1612903778; bh=hDcvm3I1usK8Mp4wrfq9qJ216nYvewc8ajVIpsly8xw=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=Q1r9YNcKYVYQN30xsJRU37z3WfBhThWeGyroYTGTYZsFOS8Bowbel0iNEptyiJ4x9
-         h/jKzie6Rx0DIezVZLUdJCAc/U8ooUMMCEV6sityGhDGGNrpDMvrYqdRZyoEzxCh1h
-         0XMD8/XjF0RaHmEBvkzbVUNuguv7mRTQLV4qC3roT3VZg3nM62COwkqcWTB+gWOtib
-         v8K1gyqD5VC9B10akYBpbxSOxYe3eRLiH5swFlB+yFq/hCcVq8Gr/z6PbHLR5EEyv7
-         0DadsEajDkH96mqsg0YOZnkqKRhTx63xworLuuPc5NAxC37Rp4EYHBlLGnZs5hgWmA
-         /hs8LvwwTaPYA==
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Kevin Hao <haokexin@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        id S233971AbhBIVHq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 16:07:46 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:40427 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234086AbhBIUwy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 15:52:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612903859;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ffZWl0zAkeShUXi5oSKZSyfqba08rmdzeXxgPDXidzE=;
+        b=RZ+GSEdG4S1x/LVSelcKCHgG6YCAv1J/60Zn4Tnp1iUsombx3RVEvFaOL4HrU4VqWjy8qv
+        XH5/jLDmLWkpL5um3t60g0+C99EuRcfyW9b3qUTnurtUgNOZFRfWlR2FT6bmXxGHUq6rA2
+        k/NqY+AkFzE6C8SqjeoPExYOxs+xTLU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-327-TPMk_TRPPyyGwYD-JA5hEQ-1; Tue, 09 Feb 2021 15:50:55 -0500
+X-MC-Unique: TPMk_TRPPyyGwYD-JA5hEQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F28809126F;
+        Tue,  9 Feb 2021 20:50:52 +0000 (UTC)
+Received: from krava (unknown [10.40.192.77])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 7D6C86062F;
+        Tue,  9 Feb 2021 20:50:49 +0000 (UTC)
+Date:   Tue, 9 Feb 2021 21:50:48 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        =?utf-8?Q?Bj=C3=B6rn_T=C3=B6pel?= <bjorn@kernel.org>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        Yonghong Song <yhs@fb.com>, zhudi <zhudi21@huawei.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [v3 net-next 10/10] skbuff: queue NAPI_MERGED_FREE skbs into NAPI cache instead of freeing
-Message-ID: <20210209204533.327360-11-alobakin@pm.me>
-In-Reply-To: <20210209204533.327360-1-alobakin@pm.me>
-References: <20210209204533.327360-1-alobakin@pm.me>
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        Veronika Kabatova <vkabatov@redhat.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Daniel Kiss <daniel.kiss@arm.com>
+Subject: Re: FAILED unresolved symbol vfs_truncate on arm64 with LLVM
+Message-ID: <YCL1qLzuATlvM8Dh@krava>
+References: <20210209052311.GA125918@ubuntu-m3-large-x86>
+ <CAEf4BzZV0-zx6YKUUKmecs=icnQNXJjTokdkSAoexm36za+wdA@mail.gmail.com>
+ <CAEf4BzYvri7wzRnGH_qQbavXOx5TfBA0qx4nYVnn=YNGv+vNVw@mail.gmail.com>
+ <CAEf4Bzax90hn_5axpnCpW+E6gVc1mtUgCXWqmxV0tJ4Ud7bsaA@mail.gmail.com>
+ <20210209074904.GA286822@ubuntu-m3-large-x86>
+ <YCKB1TF5wz93EIBK@krava>
+ <YCKlrLkTQXc4Cyx7@krava>
+ <YCKwxNDkS9rdr43W@krava>
+ <YCLdJPPC+6QjUsR4@krava>
+ <CAKwvOdnqx5-SsicRf01yhxKOq8mAkYRd+zBScSOmEQ0XJe2mAg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKwvOdnqx5-SsicRf01yhxKOq8mAkYRd+zBScSOmEQ0XJe2mAg@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-napi_frags_finish() and napi_skb_finish() can only be called inside
-NAPI Rx context, so we can feed NAPI cache with skbuff_heads that
-got NAPI_MERGED_FREE verdict instead of immediate freeing.
-Replace __kfree_skb() with __kfree_skb_defer() in napi_skb_finish()
-and move napi_skb_free_stolen_head() to skbuff.c, so it can drop skbs
-to NAPI cache.
-As many drivers call napi_alloc_skb()/napi_get_frags() on their
-receive path, this becomes especially useful.
+On Tue, Feb 09, 2021 at 12:09:31PM -0800, Nick Desaulniers wrote:
+> On Tue, Feb 9, 2021 at 11:06 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> >
+> > On Tue, Feb 09, 2021 at 05:13:42PM +0100, Jiri Olsa wrote:
+> > > On Tue, Feb 09, 2021 at 04:09:36PM +0100, Jiri Olsa wrote:
+> > >
+> > > SNIP
+> > >
+> > > > > > > >                 DW_AT_prototyped        (true)
+> > > > > > > >                 DW_AT_type      (0x01cfdfe4 "long int")
+> > > > > > > >                 DW_AT_external  (true)
+> > > > > > > >
+> > > > > > >
+> > > > > > > Ok, the problem appears to be not in DWARF, but in mcount_loc data.
+> > > > > > > vfs_truncate's address is not recorded as ftrace-attachable, and thus
+> > > > > > > pahole ignores it. I don't know why this happens and it's quite
+> > > > > > > strange, given vfs_truncate is just a normal global function.
+> > > > >
+> > > > > right, I can't see it in mcount adresses.. but it begins with instructions
+> > > > > that appears to be nops, which would suggest it's traceable
+> > > > >
+> > > > >   ffff80001031f430 <vfs_truncate>:
+> > > > >   ffff80001031f430: 5f 24 03 d5   hint    #34
+> > > > >   ffff80001031f434: 1f 20 03 d5   nop
+> > > > >   ffff80001031f438: 1f 20 03 d5   nop
+> > > > >   ffff80001031f43c: 3f 23 03 d5   hint    #25
+> > > > >
+> > > > > > >
+> > > > > > > I'd like to understand this issue before we try to fix it, but there
+> > > > > > > is at least one improvement we can make: pahole should check ftrace
+> > > > > > > addresses only for static functions, not the global ones (global ones
+> > > > > > > should be always attachable, unless they are special, e.g., notrace
+> > > > > > > and stuff). We can easily check that by looking at the corresponding
+> > > > > > > symbol. But I'd like to verify that vfs_truncate is ftrace-attachable
+> > > >
+> > > > I'm still trying to build the kernel.. however ;-)
+> > >
+> > > I finally reproduced.. however arm's not using mcount_loc
+> > > but some other special section.. so it's new mess for me
+> >
+> > so ftrace data actualy has vfs_truncate address but with extra 4 bytes:
+> >
+> >         ffff80001031f434
+> >
+> > real vfs_truncate address:
+> >
+> >         ffff80001031f430 g     F .text  0000000000000168 vfs_truncate
+> >
+> > vfs_truncate disasm:
+> >
+> >         ffff80001031f430 <vfs_truncate>:
+> >         ffff80001031f430: 5f 24 03 d5   hint    #34
+> >         ffff80001031f434: 1f 20 03 d5   nop
+> >         ffff80001031f438: 1f 20 03 d5   nop
+> >         ffff80001031f43c: 3f 23 03 d5   hint    #25
+> >
+> > thats why we don't match it in pahole.. I checked few other functions
+> > and some have the same problem and some match the function boundary
+> >
+> > those that match don't have that first hint instrucion, like:
+> >
+> >         ffff800010321e40 <do_faccessat>:
+> >         ffff800010321e40: 1f 20 03 d5   nop
+> >         ffff800010321e44: 1f 20 03 d5   nop
+> >         ffff800010321e48: 3f 23 03 d5   hint    #25
+> >
+> > any hints about hint instructions? ;-)
+> 
+> aarch64 makes *some* newer instructions reuse the "hint" ie "nop"
+> encoding space to make software backwards compatible on older hardware
+> that doesn't support such instructions.  Is this BTI, perhaps? (The
+> function is perhaps the destination of an indirect call?)
 
-Signed-off-by: Alexander Lobakin <alobakin@pm.me>
----
- include/linux/skbuff.h |  1 +
- net/core/dev.c         |  9 +--------
- net/core/skbuff.c      | 12 +++++++++---
- 3 files changed, 11 insertions(+), 11 deletions(-)
+I see, I think we can't take ftrace addresses as start of the function
+because there could be extra instruction(s) related to the call before
+it like here
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 5bb443d37bf4..f8737ad91cc7 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -2919,6 +2919,7 @@ static inline struct sk_buff *napi_alloc_skb(struct n=
-api_struct *napi,
- }
- void napi_consume_skb(struct sk_buff *skb, int budget);
-=20
-+void napi_skb_free_stolen_head(struct sk_buff *skb);
- void __kfree_skb_defer(struct sk_buff *skb);
-=20
- /**
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 135d46c0c3c7..68ad03382f6a 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -6056,13 +6056,6 @@ struct packet_offload *gro_find_complete_by_type(__b=
-e16 type)
- }
- EXPORT_SYMBOL(gro_find_complete_by_type);
-=20
--static void napi_skb_free_stolen_head(struct sk_buff *skb)
--{
--=09skb_dst_drop(skb);
--=09skb_ext_put(skb);
--=09kmem_cache_free(skbuff_head_cache, skb);
--}
--
- static gro_result_t napi_skb_finish(struct napi_struct *napi,
- =09=09=09=09    struct sk_buff *skb,
- =09=09=09=09    gro_result_t ret)
-@@ -6076,7 +6069,7 @@ static gro_result_t napi_skb_finish(struct napi_struc=
-t *napi,
- =09=09if (NAPI_GRO_CB(skb)->free =3D=3D NAPI_GRO_FREE_STOLEN_HEAD)
- =09=09=09napi_skb_free_stolen_head(skb);
- =09=09else
--=09=09=09__kfree_skb(skb);
-+=09=09=09__kfree_skb_defer(skb);
- =09=09break;
-=20
- =09case GRO_HELD:
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 8850086f8605..6dbc486c1d68 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -872,9 +872,6 @@ static void napi_skb_cache_put(struct sk_buff *skb)
- =09struct napi_alloc_cache *nc =3D this_cpu_ptr(&napi_alloc_cache);
- =09u32 i;
-=20
--=09/* drop skb->head and call any destructors for packet */
--=09skb_release_all(skb);
--
- =09kasan_poison_object_data(skbuff_head_cache, skb);
- =09nc->skb_cache[nc->skb_count++] =3D skb;
-=20
-@@ -891,6 +888,14 @@ static void napi_skb_cache_put(struct sk_buff *skb)
-=20
- void __kfree_skb_defer(struct sk_buff *skb)
- {
-+=09skb_release_all(skb);
-+=09napi_skb_cache_put(skb);
-+}
-+
-+void napi_skb_free_stolen_head(struct sk_buff *skb)
-+{
-+=09skb_dst_drop(skb);
-+=09skb_ext_put(skb);
- =09napi_skb_cache_put(skb);
- }
-=20
-@@ -916,6 +921,7 @@ void napi_consume_skb(struct sk_buff *skb, int budget)
- =09=09return;
- =09}
-=20
-+=09skb_release_all(skb);
- =09napi_skb_cache_put(skb);
- }
- EXPORT_SYMBOL(napi_consume_skb);
---=20
-2.30.0
+we need to check ftrace address be within the function/symbol,
+not exact start
 
+jirka
 
