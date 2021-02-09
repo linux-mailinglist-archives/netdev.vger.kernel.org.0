@@ -2,31 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 507D7315422
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 17:44:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4210315425
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 17:44:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233037AbhBIQmK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 11:42:10 -0500
-Received: from ssl.serverraum.org ([176.9.125.105]:42063 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232990AbhBIQll (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 11:41:41 -0500
+        id S233061AbhBIQmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 11:42:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41830 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233007AbhBIQlv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 11:41:51 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5190C06174A;
+        Tue,  9 Feb 2021 08:41:10 -0800 (PST)
 Received: from mwalle01.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:fa59:71ff:fe9b:b851])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 87FF023E71;
+        by ssl.serverraum.org (Postfix) with ESMTPSA id D40AA23E72;
         Tue,  9 Feb 2021 17:40:59 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1612888859;
+        t=1612888860;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Bxc9KRh8pbUNYXBUDxUS9794Kzu6uOVSNNkAcgWJUD8=;
-        b=fJJEePwuubcMfqTMq/ADvCggymC4t+CkNxkq6F1ZnSwfvoPJVwwbH6gmSKPQAPwI6tqr3S
-        9qL21rDTtwlXZ7DFZ2WlQ6PerzTYB1xvqxFf5hwxtlJnvZ1uRo7iuT+yKR7aUO0/CTmzUT
-        lHYUJHgfS0ga9JSNRMcegQ2fR/bsg7o=
+        bh=hJNVxqE7Xse8XBjBEKAe7Qk6Rnt0Snkjba3AveKRohU=;
+        b=HijcEWfPxGz0uJt/Pxp18MnH9WYukHuyEoxWToXi4cz9PUNuCVEY1DOCKrzBY3RsBKcMQU
+        K461ZQRSyoIK8yEzDE+B70a2SqXdJxUcZW2lBUZFS+wgc0EhmsMMkxZj2xwvuPBVFAJc+E
+        0RFs3vPUiY75R1nlIlna6k9lZ5jptEc=
 From:   Michael Walle <michael@walle.cc>
 To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -35,9 +38,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next 4/9] net: phy: icplus: use the .soft_reset() of the phy-core
-Date:   Tue,  9 Feb 2021 17:40:46 +0100
-Message-Id: <20210209164051.18156-5-michael@walle.cc>
+Subject: [PATCH net-next 5/9] net: phy: icplus: add IP101A/IP101G model detection
+Date:   Tue,  9 Feb 2021 17:40:47 +0100
+Message-Id: <20210209164051.18156-6-michael@walle.cc>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210209164051.18156-1-michael@walle.cc>
 References: <20210209164051.18156-1-michael@walle.cc>
@@ -47,82 +50,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The PHY core already resets the PHY before .config_init() if a
-.soft_reset() op is registered. Drop the open-coded ip1xx_reset().
+Unfortunately, the IP101A and IP101G share the same PHY identifier.
+While most of the functions are somewhat backwards compatible, there is
+for example the APS_EN bit on the IP101A but on the IP101G this bit
+reserved. Also, the IP101G has many more functionalities.
+
+Deduce the model by accessing the page select register which - according
+to the datasheet - is not available on the IP101A. If this register is
+writable, assume we have an IP101G.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/net/phy/icplus.c | 32 ++------------------------------
- 1 file changed, 2 insertions(+), 30 deletions(-)
+ drivers/net/phy/icplus.c | 43 +++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 42 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/phy/icplus.c b/drivers/net/phy/icplus.c
-index 43b69addc0ce..036bac628b11 100644
+index 036bac628b11..189a9a34ed5f 100644
 --- a/drivers/net/phy/icplus.c
 +++ b/drivers/net/phy/icplus.c
-@@ -120,36 +120,10 @@ static int ip175c_config_init(struct phy_device *phydev)
+@@ -44,6 +44,8 @@ MODULE_LICENSE("GPL");
+ #define IP101A_G_IRQ_DUPLEX_CHANGE	BIT(1)
+ #define IP101A_G_IRQ_LINK_CHANGE	BIT(0)
+ 
++#define IP101G_PAGE_CONTROL				0x14
++#define IP101G_PAGE_CONTROL_MASK			GENMASK(4, 0)
+ #define IP101G_DIGITAL_IO_SPEC_CTRL			0x1d
+ #define IP101G_DIGITAL_IO_SPEC_CTRL_SEL_INTR32		BIT(2)
+ 
+@@ -61,8 +63,14 @@ enum ip101gr_sel_intr32 {
+ 	IP101GR_SEL_INTR32_RXER,
+ };
+ 
++enum ip101_model {
++	IP101A,
++	IP101G,
++};
++
+ struct ip101a_g_phy_priv {
+ 	enum ip101gr_sel_intr32 sel_intr32;
++	enum ip101_model model;
+ };
+ 
+ static int ip175c_config_init(struct phy_device *phydev)
+@@ -175,6 +183,39 @@ static int ip175c_config_aneg(struct phy_device *phydev)
  	return 0;
  }
  
--static int ip1xx_reset(struct phy_device *phydev)
--{
--	int bmcr;
--
--	/* Software Reset PHY */
--	bmcr = phy_read(phydev, MII_BMCR);
--	if (bmcr < 0)
--		return bmcr;
--	bmcr |= BMCR_RESET;
--	bmcr = phy_write(phydev, MII_BMCR, bmcr);
--	if (bmcr < 0)
--		return bmcr;
--
--	do {
--		bmcr = phy_read(phydev, MII_BMCR);
--		if (bmcr < 0)
--			return bmcr;
--	} while (bmcr & BMCR_RESET);
--
--	return 0;
--}
--
- static int ip1001_config_init(struct phy_device *phydev)
++/* The IP101A and the IP101G share the same PHY identifier.The IP101G seems to
++ * be a successor of the IP101A and implements more functions. Amongst other
++ * things a page select register, which is not available on the IP101. Use this
++ * to distinguish these two.
++ */
++static int ip101a_g_detect_model(struct phy_device *phydev)
++{
++	struct ip101a_g_phy_priv *priv = phydev->priv;
++	int oldval, ret;
++
++	oldval = phy_read(phydev, IP101G_PAGE_CONTROL);
++	if (oldval < 0)
++		return oldval;
++
++	ret = phy_write(phydev, IP101G_PAGE_CONTROL, 0xffff);
++	if (ret)
++		return ret;
++
++	ret = phy_read(phydev, IP101G_PAGE_CONTROL);
++	if (ret < 0)
++		return ret;
++
++	if (ret == IP101G_PAGE_CONTROL_MASK)
++		priv->model = IP101G;
++	else
++		priv->model = IP101A;
++
++	phydev_dbg(phydev, "Detected %s\n",
++		   priv->model == IP101G ? "IP101G" : "IP101A");
++
++	return phy_write(phydev, IP101G_PAGE_CONTROL, oldval);
++}
++
+ static int ip101a_g_probe(struct phy_device *phydev)
  {
- 	int c;
+ 	struct device *dev = &phydev->mdio.dev;
+@@ -203,7 +244,7 @@ static int ip101a_g_probe(struct phy_device *phydev)
  
--	c = ip1xx_reset(phydev);
--	if (c < 0)
--		return c;
--
- 	/* Enable Auto Power Saving mode */
- 	c = phy_read(phydev, IP1001_SPEC_CTRL_STATUS_2);
- 	if (c < 0)
-@@ -237,10 +211,6 @@ static int ip101a_g_config_init(struct phy_device *phydev)
- 	struct ip101a_g_phy_priv *priv = phydev->priv;
- 	int err, c;
+ 	phydev->priv = priv;
  
--	c = ip1xx_reset(phydev);
--	if (c < 0)
--		return c;
--
- 	/* configure the RXER/INTR_32 pin of the 32-pin IP101GR if needed: */
- 	switch (priv->sel_intr32) {
- 	case IP101GR_SEL_INTR32_RXER:
-@@ -346,6 +316,7 @@ static struct phy_driver icplus_driver[] = {
- 	.name		= "ICPlus IP1001",
- 	/* PHY_GBIT_FEATURES */
- 	.config_init	= ip1001_config_init,
-+	.soft_reset	= genphy_soft_reset,
- 	.suspend	= genphy_suspend,
- 	.resume		= genphy_resume,
- }, {
-@@ -356,6 +327,7 @@ static struct phy_driver icplus_driver[] = {
- 	.config_intr	= ip101a_g_config_intr,
- 	.handle_interrupt = ip101a_g_handle_interrupt,
- 	.config_init	= ip101a_g_config_init,
-+	.soft_reset	= genphy_soft_reset,
- 	.suspend	= genphy_suspend,
- 	.resume		= genphy_resume,
- } };
+-	return 0;
++	return ip101a_g_detect_model(phydev);
+ }
+ 
+ static int ip101a_g_config_init(struct phy_device *phydev)
 -- 
 2.20.1
 
