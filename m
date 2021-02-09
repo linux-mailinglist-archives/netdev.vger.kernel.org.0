@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43783314B15
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 10:12:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A03D6314B1E
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 10:12:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229945AbhBIJBd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 04:01:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54870 "EHLO
+        id S230477AbhBIJHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 04:07:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230183AbhBII6q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 03:58:46 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F9C8C06178C
-        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 00:58:00 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id b3so20641702wrj.5
-        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 00:58:00 -0800 (PST)
+        with ESMTP id S230198AbhBIJAg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 04:00:36 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63DD6C061793
+        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 00:58:01 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id q7so20593532wre.13
+        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 00:58:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=nUxAXdLjhkJNUqiBcTNdD1orykfV5lPBWV6f7eDBEEk=;
-        b=og0zYNFuIfnOyzDZ+rF4cq10kfF2FN328svbr8HZVYuYvn332y0r8UUG8iPVwejzAU
-         kais7gmM0lW1Rw6nigqK1urngPaCjqxbBZdAH10oHPSBgyYQiDJRKqNCZtYEO8UJctrV
-         mP9OIxwaJPyjb4n4iftCSOYq9yxTiQtqiz6DNMzPab2mmC0kqkYuQ8hWfyodVQRSmsdy
-         gIDOgHBRAqi95KOFuNxUMh7QHzQKOtdEyQOvwoqFpKpOx4a+vgZusL9SOfkL1C9BP70c
-         WQ/u7rYLUXn+Bd1RqETSubtdAkL2BbbXXLGCw3iT0IMz+PU7hHeXy6lB8gIqdFVoIuAa
-         /hiw==
+        bh=d/vcUFElLAuaSN3VBWBjg1pNshUOyxf0nCgvwWAXx70=;
+        b=R6rF8ziL4TxdR5RXMcmtNQq8ZQMT0sTTuBOzJ3Bh9mnHEvNX0YpjoHmaqojcWS26TB
+         WZcRCIlA7HigJkSAOjybd35eM455fUycY7n58z2pQL7Q5cNXggQcGeY4bCmUvSpOeYxG
+         CjKYFARbirAB4Ye3OlGmcZjYsyQIybj97QkPlDu/N7cwuZW/DZN4zspKDbMdm4ScmNqE
+         lOOZi89JPwI6A2FKEuBqeKfiNndOmfnOCqvXFSlpK9Trbm7uv8HyAn9H9eEhENzdgBZM
+         D2ZGA7AZyZOvMlgA+UwK/eYsTFMlAHw4XlxGc8nYmrDP+lVjnqqKU5ldn0i4drvIuCyG
+         WY1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=nUxAXdLjhkJNUqiBcTNdD1orykfV5lPBWV6f7eDBEEk=;
-        b=qHuqqfSMzOqag2he2SwccjgvhB3LfAfHem9INCDOLNHtbVLc/1nO1BPW/o3bIQXbR1
-         7A6O0+3ieDf8dIe0Hbqk1h+H/XJ7QVwVrpgEon4mx6ZbeUBOV2uY9tepFYsh36RnGxSD
-         236FVzUgzBM8FmUW2j6VKwIpRkmnPxElxRkDnmK4ktL4jOfQcoHHoKqOP/JNlz9n/FtI
-         MXfjskrH8H4+nHDbpPHUrMCkei2Y1cyr9T/Hl9QPUYwgKVAUBAC1SJhDZyC8qloHHANI
-         kd3s6Mm23ZPwdM/09B5UAXDodCL+q/50tEWrQn+/Xe16FUvfK6FHt3Cwhb+C85Ixyd2a
-         5qyQ==
-X-Gm-Message-State: AOAM533LFLtiCRMNBJGYALaEoco/qfvh+uCVAOc8Kw7sXLsObnUdFUD7
-        nkj8OLi5Apx97a/jBqYkFvQAeQ==
-X-Google-Smtp-Source: ABdhPJxoAkNZE4VJncT3E3NsI9XK2XcG2SvLJ8EYTbV0odgHwffJaY/rMsfY9Br2UH2uK7ADPe7w5A==
-X-Received: by 2002:a05:6000:cd:: with SMTP id q13mr24186024wrx.138.1612861079021;
-        Tue, 09 Feb 2021 00:57:59 -0800 (PST)
+        bh=d/vcUFElLAuaSN3VBWBjg1pNshUOyxf0nCgvwWAXx70=;
+        b=Z1REGWJR7Gyl7uq8TmMjTAfnBDa3JzAM0O526u28Xolaj5nmp0Yw2jhGPIE7IpA7R+
+         9zgoR6ylqptzP6y8zmiq+bhtlaDOtRfTmLNTLjjXVCCN1e5ZLFfDEemC4pwgOI7HQVFo
+         J8Pu1FMKtw5AOTouT1BALxjwWnpwR1cpWv7gsCXsZA/dryiJSR9ldI1p7wMtYmYqIxQM
+         f5SsH3r1HwTNvBr2317zspEuh+AT2anIdFHz5P5odQMfFmOHt03FD0g5mElZvQUPTpo1
+         gjVqa9GRbgDFntHr28/1PdAlLNWM7i4gfYqPKeznmdHXbK82uUhWO21Hs2dMf+uaCu0B
+         ZFYw==
+X-Gm-Message-State: AOAM532XaGW25oeEgTmKNMU/e4kGKNKuuTiYMks84XDuihb+CVYARAsP
+        PBGzgAhq3XrysHP44aOw2DQ4MQ==
+X-Google-Smtp-Source: ABdhPJx2XDoI+HnDtYH5TmjCJGXZ9e/L1dKwNM348mCd1VbXTMqQotTeLNIk2xOaiv1m4JiY+iEF0A==
+X-Received: by 2002:a5d:5010:: with SMTP id e16mr1995305wrt.202.1612861080034;
+        Tue, 09 Feb 2021 00:58:00 -0800 (PST)
 Received: from localhost.localdomain ([88.122.66.28])
-        by smtp.gmail.com with ESMTPSA id d3sm38348693wrp.79.2021.02.09.00.57.58
+        by smtp.gmail.com with ESMTPSA id d3sm38348693wrp.79.2021.02.09.00.57.59
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 09 Feb 2021 00:57:58 -0800 (PST)
+        Tue, 09 Feb 2021 00:57:59 -0800 (PST)
 From:   Loic Poulain <loic.poulain@linaro.org>
 To:     kuba@kernel.org, davem@davemloft.net
 Cc:     netdev@vger.kernel.org, bjorn@mork.no, dcbw@redhat.com,
@@ -53,9 +53,9 @@ Cc:     netdev@vger.kernel.org, bjorn@mork.no, dcbw@redhat.com,
         jwjiang@lenovo.com, ivan.zhang@quectel.com,
         naveen.kumar@quectel.com, ivan.mikhanchuk@quectel.com,
         Loic Poulain <loic.poulain@linaro.org>
-Subject: [PATCH net-next v5 3/5] net: mhi: Create mhi.h
-Date:   Tue,  9 Feb 2021 10:05:56 +0100
-Message-Id: <1612861558-14487-4-git-send-email-loic.poulain@linaro.org>
+Subject: [PATCH net-next v5 4/5] net: mhi: Add rx_length_errors stat
+Date:   Tue,  9 Feb 2021 10:05:57 +0100
+Message-Id: <1612861558-14487-5-git-send-email-loic.poulain@linaro.org>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1612861558-14487-1-git-send-email-loic.poulain@linaro.org>
 References: <1612861558-14487-1-git-send-email-loic.poulain@linaro.org>
@@ -63,106 +63,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move mhi-net shared structures to mhi header, that will be used by
-upcoming proto(s).
+This can be used by proto when packet len is incorrect.
 
 Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
 ---
- drivers/net/mhi/mhi.h | 36 ++++++++++++++++++++++++++++++++++++
- drivers/net/mhi/net.c | 33 ++-------------------------------
- 2 files changed, 38 insertions(+), 31 deletions(-)
- create mode 100644 drivers/net/mhi/mhi.h
+ drivers/net/mhi/mhi.h | 1 +
+ drivers/net/mhi/net.c | 1 +
+ 2 files changed, 2 insertions(+)
 
 diff --git a/drivers/net/mhi/mhi.h b/drivers/net/mhi/mhi.h
-new file mode 100644
-index 0000000..5050e4a
---- /dev/null
+index 5050e4a..82210e0 100644
+--- a/drivers/net/mhi/mhi.h
 +++ b/drivers/net/mhi/mhi.h
-@@ -0,0 +1,36 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+/* MHI Network driver - Network over MHI bus
-+ *
-+ * Copyright (C) 2021 Linaro Ltd <loic.poulain@linaro.org>
-+ */
-+
-+struct mhi_net_stats {
-+	u64_stats_t rx_packets;
-+	u64_stats_t rx_bytes;
-+	u64_stats_t rx_errors;
-+	u64_stats_t rx_dropped;
-+	u64_stats_t tx_packets;
-+	u64_stats_t tx_bytes;
-+	u64_stats_t tx_errors;
-+	u64_stats_t tx_dropped;
-+	struct u64_stats_sync tx_syncp;
-+	struct u64_stats_sync rx_syncp;
-+};
-+
-+struct mhi_net_dev {
-+	struct mhi_device *mdev;
-+	struct net_device *ndev;
-+	struct sk_buff *skbagg_head;
-+	struct sk_buff *skbagg_tail;
-+	const struct mhi_net_proto *proto;
-+	void *proto_data;
-+	struct delayed_work rx_refill;
-+	struct mhi_net_stats stats;
-+	u32 rx_queue_sz;
-+};
-+
-+struct mhi_net_proto {
-+	int (*init)(struct mhi_net_dev *mhi_netdev);
-+	struct sk_buff * (*tx_fixup)(struct mhi_net_dev *mhi_netdev, struct sk_buff *skb);
-+	void (*rx)(struct mhi_net_dev *mhi_netdev, struct sk_buff *skb);
-+};
+@@ -9,6 +9,7 @@ struct mhi_net_stats {
+ 	u64_stats_t rx_bytes;
+ 	u64_stats_t rx_errors;
+ 	u64_stats_t rx_dropped;
++	u64_stats_t rx_length_errors;
+ 	u64_stats_t tx_packets;
+ 	u64_stats_t tx_bytes;
+ 	u64_stats_t tx_errors;
 diff --git a/drivers/net/mhi/net.c b/drivers/net/mhi/net.c
-index b92c2e1..58b4b7c 100644
+index 58b4b7c..44cbfb3 100644
 --- a/drivers/net/mhi/net.c
 +++ b/drivers/net/mhi/net.c
-@@ -12,41 +12,12 @@
- #include <linux/skbuff.h>
- #include <linux/u64_stats_sync.h>
+@@ -95,6 +95,7 @@ static void mhi_ndo_get_stats64(struct net_device *ndev,
+ 		stats->rx_bytes = u64_stats_read(&mhi_netdev->stats.rx_bytes);
+ 		stats->rx_errors = u64_stats_read(&mhi_netdev->stats.rx_errors);
+ 		stats->rx_dropped = u64_stats_read(&mhi_netdev->stats.rx_dropped);
++		stats->rx_length_errors = u64_stats_read(&mhi_netdev->stats.rx_length_errors);
+ 	} while (u64_stats_fetch_retry_irq(&mhi_netdev->stats.rx_syncp, start));
  
-+#include "mhi.h"
-+
- #define MHI_NET_MIN_MTU		ETH_MIN_MTU
- #define MHI_NET_MAX_MTU		0xffff
- #define MHI_NET_DEFAULT_MTU	0x4000
- 
--struct mhi_net_stats {
--	u64_stats_t rx_packets;
--	u64_stats_t rx_bytes;
--	u64_stats_t rx_errors;
--	u64_stats_t rx_dropped;
--	u64_stats_t tx_packets;
--	u64_stats_t tx_bytes;
--	u64_stats_t tx_errors;
--	u64_stats_t tx_dropped;
--	struct u64_stats_sync tx_syncp;
--	struct u64_stats_sync rx_syncp;
--};
--
--struct mhi_net_dev {
--	struct mhi_device *mdev;
--	struct net_device *ndev;
--	struct sk_buff *skbagg_head;
--	struct sk_buff *skbagg_tail;
--	const struct mhi_net_proto *proto;
--	void *proto_data;
--	struct delayed_work rx_refill;
--	struct mhi_net_stats stats;
--	u32 rx_queue_sz;
--};
--
--struct mhi_net_proto {
--	int (*init)(struct mhi_net_dev *mhi_netdev);
--	struct sk_buff * (*tx_fixup)(struct mhi_net_dev *mhi_netdev, struct sk_buff *skb);
--	void (*rx)(struct mhi_net_dev *mhi_netdev, struct sk_buff *skb);
--};
--
- struct mhi_device_info {
- 	const char *netname;
- 	const struct mhi_net_proto *proto;
+ 	do {
 -- 
 2.7.4
 
