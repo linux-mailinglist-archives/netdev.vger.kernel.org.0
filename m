@@ -2,84 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EBA831452F
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 02:01:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B54D31457A
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 02:17:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229979AbhBIBBV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 20:01:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37306 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229725AbhBIBBS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 20:01:18 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64683C06178B;
-        Mon,  8 Feb 2021 17:00:37 -0800 (PST)
-Received: from mwalle01.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:fa59:71ff:fe9b:b851])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 0614423E5F;
-        Tue,  9 Feb 2021 02:00:34 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1612832435;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=tlMbOLlnttzc2yi2QIs9YDNySRHjbXZPpuZQyV3BLzs=;
-        b=OG/65SgjmeyYnrPIRTtOEUJ1/2nrJuwI/MmGlMAQaE8xkZXmuqCfDn/zUnOTtqrYUA7qrF
-        PQolq/xCDsyTN0h6nkbFIjqx3OkYN9xR6p4D12PO8Xn6Yd0BGG5eIA8KJw2Fi4tWc6rl45
-        PmoAXTCW5mJNNsVoXoshr13wrH8HqsY=
-From:   Michael Walle <michael@walle.cc>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next] net: phy: drop explicit genphy_read_status() op
-Date:   Tue,  9 Feb 2021 02:00:18 +0100
-Message-Id: <20210209010018.1134-1-michael@walle.cc>
-X-Mailer: git-send-email 2.20.1
+        id S229854AbhBIBRW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 20:17:22 -0500
+Received: from mga07.intel.com ([134.134.136.100]:36409 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229669AbhBIBRK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 8 Feb 2021 20:17:10 -0500
+IronPort-SDR: yVmUCIL8qBws299TgKJWkIM1m+Ew2KoC0rqS16AvWtWgkcCaZpu8uHaQZa3g0L0GnvViMuB0au
+ ymVSwjMEofCQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9889"; a="245879728"
+X-IronPort-AV: E=Sophos;i="5.81,163,1610438400"; 
+   d="scan'208";a="245879728"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2021 17:15:46 -0800
+IronPort-SDR: XTk9UOIrKE7acFeRQiuREAMR6atB0WsWbKDD32512LrwO6CrEQvLVm91WB89MbqdKhSSfWJPA3
+ crM6q6gsp+aA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,163,1610438400"; 
+   d="scan'208";a="487669584"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by fmsmga001.fm.intel.com with ESMTP; 08 Feb 2021 17:15:46 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com
+Subject: [PATCH net-next 00/12][pull request] 100GbE Intel Wired LAN Driver Updates 2021-02-08
+Date:   Mon,  8 Feb 2021 17:16:24 -0800
+Message-Id: <20210209011636.1989093-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-genphy_read_status() is already the default for the .read_status() op.
-Drop the unnecessary references.
+This series contains updates to the ice driver and documentation.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- drivers/net/phy/marvell.c | 1 -
- drivers/net/phy/micrel.c  | 1 -
- 2 files changed, 2 deletions(-)
+Brett adds a log message when a trusted VF goes in and out of promiscuous
+for consistency with i40e driver.
 
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index 620052c023a5..b523aa37ebf0 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -2852,7 +2852,6 @@ static struct phy_driver marvell_drivers[] = {
- 		.probe = marvell_probe,
- 		.config_init = m88e1145_config_init,
- 		.config_aneg = m88e1101_config_aneg,
--		.read_status = genphy_read_status,
- 		.config_intr = marvell_config_intr,
- 		.handle_interrupt = marvell_handle_interrupt,
- 		.resume = genphy_resume,
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 39c7c786a912..494abf608b8f 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -1368,7 +1368,6 @@ static struct phy_driver ksphy_driver[] = {
- 	.driver_data	= &ksz9021_type,
- 	.probe		= kszphy_probe,
- 	.config_init	= ksz9131_config_init,
--	.read_status	= genphy_read_status,
- 	.config_intr	= kszphy_config_intr,
- 	.handle_interrupt = kszphy_handle_interrupt,
- 	.get_sset_count = kszphy_get_sset_count,
+Dave implements a new LLDP command that allows adding VSI destinations to
+existing filters and adds support for netdev bonding events, current
+support is software based.
+
+Michal refactors code to move from VSI stored xsk_buff_pools to
+netdev-provided ones.
+
+Kiran implements the creation scheduler aggregator nodes and distributing
+VSIs within the nodes.
+
+Ben modifies rate limit calculations to use clock frequency from the
+hardware instead of using a hardcoded one.
+
+Jesse adds support for user to control writeback frequency.
+
+Chinh refactors DCB variables out of the ice_port_info struct.
+
+Bruce removes some unnecessary casting.
+
+Mitch fixes an error message that was reported as if_up instead of if_down.
+
+Tony adjusts fallback allocation for MSI-X to use all given vectors instead
+of using only the minimum configuration and updates documentation for
+the ice driver.
+
+The following are changes since commit 08cbabb77e9098ec6c4a35911effac53e943c331:
+  Merge tag 'mlx5-updates-2021-02-04' of git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 100GbE
+
+Ben Shelton (1):
+  ice: Use PSM clock frequency to calculate RL profiles
+
+Brett Creeley (1):
+  ice: log message when trusted VF goes in/out of promisc mode
+
+Bruce Allan (1):
+  ice: remove unnecessary casts
+
+Chinh T Cao (1):
+  ice: Refactor DCB related variables out of the ice_port_info struct
+
+Dave Ertman (2):
+  ice: implement new LLDP filter command
+  ice: Add initial support framework for LAG
+
+Jesse Brandeburg (1):
+  ice: fix writeback enable logic
+
+Kiran Patil (1):
+  ice: create scheduler aggregator node config and move VSIs
+
+Michal Swiatkowski (1):
+  ice: Remove xsk_buff_pool from VSI structure
+
+Mitch Williams (1):
+  ice: Fix trivial error message
+
+Tony Nguyen (2):
+  ice: Improve MSI-X fallback logic
+  Documentation: ice: update documentation
+
+ .../device_drivers/ethernet/intel/ice.rst     | 1027 ++++++++++++-
+ drivers/net/ethernet/intel/ice/Makefile       |    1 +
+ drivers/net/ethernet/intel/ice/ice.h          |   52 +-
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   25 +
+ drivers/net/ethernet/intel/ice/ice_common.c   |   58 +-
+ drivers/net/ethernet/intel/ice/ice_common.h   |    3 +
+ drivers/net/ethernet/intel/ice/ice_controlq.c |    4 +-
+ drivers/net/ethernet/intel/ice/ice_dcb.c      |   40 +-
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.c  |   47 +-
+ drivers/net/ethernet/intel/ice/ice_dcb_nl.c   |   50 +-
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |   14 +-
+ .../net/ethernet/intel/ice/ice_flex_pipe.c    |   10 +-
+ .../net/ethernet/intel/ice/ice_hw_autogen.h   |    3 +
+ drivers/net/ethernet/intel/ice/ice_lag.c      |  445 ++++++
+ drivers/net/ethernet/intel/ice/ice_lag.h      |   87 ++
+ drivers/net/ethernet/intel/ice/ice_lib.c      |  142 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     |   87 +-
+ drivers/net/ethernet/intel/ice/ice_sched.c    | 1283 +++++++++++++++--
+ drivers/net/ethernet/intel/ice/ice_sched.h    |   24 +-
+ drivers/net/ethernet/intel/ice/ice_switch.c   |    2 +-
+ drivers/net/ethernet/intel/ice/ice_txrx.c     |   61 +-
+ drivers/net/ethernet/intel/ice/ice_txrx.h     |    1 -
+ drivers/net/ethernet/intel/ice/ice_type.h     |   27 +-
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  |   72 +-
+ drivers/net/ethernet/intel/ice/ice_xsk.c      |   71 +-
+ 25 files changed, 3234 insertions(+), 402 deletions(-)
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_lag.c
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_lag.h
+
 -- 
-2.20.1
+2.26.2
 
