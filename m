@@ -2,91 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06D6631452C
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 02:01:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EBA831452F
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 02:01:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229721AbhBIBAv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 20:00:51 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42696 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229636AbhBIBAt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 8 Feb 2021 20:00:49 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 654F564E9C;
-        Tue,  9 Feb 2021 01:00:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612832408;
-        bh=SqCmp/Hab7eXk2nmS+mhs6dkadzjIFiRTf5EbWqGk+g=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=pSGJ0Hrd2MB8biVigQJQ37esNgw8Np4T2Oyod4WuEGmB1y2pYOfrRN9cCD3L/Rq4I
-         U2UEXdRF3GuDDwkfH3gTxXq4Ds7pUMEI411wZ3PtQmwq9elYer+NL4Dv4kCG7tNlWD
-         EMcULzb7I56ckUKXPxmYXwHj+t6gz1xiSWFpSe7+ILNMj7ZCFdbZe/fy0qA2B1ykXg
-         eNUsS/YQ95y1CCOgJXEGRpZVNwmL3a2LoBXDkOeylyEI1MxY9yr+EsSIEoQLF9V0lf
-         OScaUeYwu7iw4PmSm5NLYPMnEfrCbnWz/wKz7hp5XrKBumTxWGy4Z0GdDJ9j77znhZ
-         swj14IsZROnRQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 51DBE609D6;
-        Tue,  9 Feb 2021 01:00:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S229979AbhBIBBV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 20:01:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37306 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229725AbhBIBBS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 20:01:18 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64683C06178B;
+        Mon,  8 Feb 2021 17:00:37 -0800 (PST)
+Received: from mwalle01.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:fa59:71ff:fe9b:b851])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 0614423E5F;
+        Tue,  9 Feb 2021 02:00:34 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1612832435;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=tlMbOLlnttzc2yi2QIs9YDNySRHjbXZPpuZQyV3BLzs=;
+        b=OG/65SgjmeyYnrPIRTtOEUJ1/2nrJuwI/MmGlMAQaE8xkZXmuqCfDn/zUnOTtqrYUA7qrF
+        PQolq/xCDsyTN0h6nkbFIjqx3OkYN9xR6p4D12PO8Xn6Yd0BGG5eIA8KJw2Fi4tWc6rl45
+        PmoAXTCW5mJNNsVoXoshr13wrH8HqsY=
+From:   Michael Walle <michael@walle.cc>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH net-next] net: phy: drop explicit genphy_read_status() op
+Date:   Tue,  9 Feb 2021 02:00:18 +0100
+Message-Id: <20210209010018.1134-1-michael@walle.cc>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 00/10] Add support for route offload failure
- notifications
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161283240833.11828.1873955065991159036.git-patchwork-notify@kernel.org>
-Date:   Tue, 09 Feb 2021 01:00:08 +0000
-References: <20210207082258.3872086-1-idosch@idosch.org>
-In-Reply-To: <20210207082258.3872086-1-idosch@idosch.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        dsahern@gmail.com, jiri@nvidia.com, yoshfuji@linux-ipv6.org,
-        amcohen@nvidia.com, roopa@nvidia.com, bpoirier@nvidia.com,
-        sharpd@nvidia.com, mlxsw@nvidia.com, idosch@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+genphy_read_status() is already the default for the .read_status() op.
+Drop the unnecessary references.
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+Signed-off-by: Michael Walle <michael@walle.cc>
+---
+ drivers/net/phy/marvell.c | 1 -
+ drivers/net/phy/micrel.c  | 1 -
+ 2 files changed, 2 deletions(-)
 
-On Sun,  7 Feb 2021 10:22:48 +0200 you wrote:
-> From: Ido Schimmel <idosch@nvidia.com>
-> 
-> This is a complementary series to the one merged in commit 389cb1ecc86e
-> ("Merge branch 'add-notifications-when-route-hardware-flags-change'").
-> 
-> The previous series added RTM_NEWROUTE notifications to user space
-> whenever a route was successfully installed in hardware or when its
-> state in hardware changed. This allows routing daemons to delay
-> advertisement of routes until they are installed in hardware.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,01/10] rtnetlink: Add RTM_F_OFFLOAD_FAILED flag
-    https://git.kernel.org/netdev/net-next/c/49fc251360a1
-  - [net-next,02/10] IPv4: Add "offload failed" indication to routes
-    https://git.kernel.org/netdev/net-next/c/36c5100e859d
-  - [net-next,03/10] IPv4: Extend 'fib_notify_on_flag_change' sysctl
-    https://git.kernel.org/netdev/net-next/c/648106c30a63
-  - [net-next,04/10] IPv6: Add "offload failed" indication to routes
-    https://git.kernel.org/netdev/net-next/c/0c5fcf9e249e
-  - [net-next,05/10] IPv6: Extend 'fib_notify_on_flag_change' sysctl
-    https://git.kernel.org/netdev/net-next/c/6fad361ae9f4
-  - [net-next,06/10] netdevsim: fib: Do not warn if route was not found for several events
-    https://git.kernel.org/netdev/net-next/c/484a4dfb7558
-  - [net-next,07/10] netdevsim: dev: Initialize FIB module after debugfs
-    https://git.kernel.org/netdev/net-next/c/f57ab5b75f71
-  - [net-next,08/10] netdevsim: fib: Add debugfs to debug route offload failure
-    https://git.kernel.org/netdev/net-next/c/134c75324240
-  - [net-next,09/10] mlxsw: spectrum_router: Set offload_failed flag
-    https://git.kernel.org/netdev/net-next/c/a4cb1c02c3e1
-  - [net-next,10/10] selftests: netdevsim: Test route offload failure notifications
-    https://git.kernel.org/netdev/net-next/c/9ee53e37532f
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+index 620052c023a5..b523aa37ebf0 100644
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -2852,7 +2852,6 @@ static struct phy_driver marvell_drivers[] = {
+ 		.probe = marvell_probe,
+ 		.config_init = m88e1145_config_init,
+ 		.config_aneg = m88e1101_config_aneg,
+-		.read_status = genphy_read_status,
+ 		.config_intr = marvell_config_intr,
+ 		.handle_interrupt = marvell_handle_interrupt,
+ 		.resume = genphy_resume,
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index 39c7c786a912..494abf608b8f 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -1368,7 +1368,6 @@ static struct phy_driver ksphy_driver[] = {
+ 	.driver_data	= &ksz9021_type,
+ 	.probe		= kszphy_probe,
+ 	.config_init	= ksz9131_config_init,
+-	.read_status	= genphy_read_status,
+ 	.config_intr	= kszphy_config_intr,
+ 	.handle_interrupt = kszphy_handle_interrupt,
+ 	.get_sset_count = kszphy_get_sset_count,
+-- 
+2.20.1
 
