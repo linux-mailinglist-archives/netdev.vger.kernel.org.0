@@ -2,149 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D53E6314D6C
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 11:48:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7900314D8F
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 11:55:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231249AbhBIKrh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 05:47:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48980 "EHLO
+        id S232131AbhBIKwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 05:52:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231971AbhBIKnZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 05:43:25 -0500
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1555FC06178A;
-        Tue,  9 Feb 2021 02:41:47 -0800 (PST)
-Received: by mail-pg1-x532.google.com with SMTP id t25so12208435pga.2;
-        Tue, 09 Feb 2021 02:41:47 -0800 (PST)
+        with ESMTP id S231876AbhBIKu2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 05:50:28 -0500
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5DB1C061786
+        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 02:49:47 -0800 (PST)
+Received: by mail-yb1-xb32.google.com with SMTP id l8so5343364ybe.12
+        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 02:49:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=JvfA/LJIleSb9j0rSYyHAJ/5yGWi0FFleE6u6qbY8iw=;
-        b=u0Yzpsaf7WWHwMAG0+z4czxMu7iL/3xkEr150rmGUrIQWJOYdBPS7h75VXXcso60Kl
-         DPu3VEMZG3kL+WZzup7v3/b5nRMJfmgkoWfV7Y8eI+vyq0GUzN2PqxfR5l9617pL9c5v
-         VMuDSOJ85rFPrdNXDcnLctv9hi/dsO/uoImQg5pjj+DcYF+T9IGATUoKeU5QHMc4SUyx
-         K3Tnw65ZkG7qSJQ6d2VXLWyybotmI6I34lktOQfvWNCM9ECyiSLnhh2/i0BXpsiRziAW
-         uWvCF47P/FbzKUZ7jmRgXkyyudPeUNymBUmKPDlGZWqf+H+LzAhVfE/INJzioyPHeSxK
-         i86w==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=mWnGVpGdIniN/JBQucs5qFSgacY7h12miIr8vgpNNDk=;
+        b=M6u3jS3Ck/wVDX/3hOEfLaVx4mode1StZcBVz6LY1LOOrwy0xw7FqRsHamdXVIvOwF
+         muQbDwrpOFl5HLY2z0FdHRdW/reuuPosp4M446G9PGwfG2uDYj8h6jQLxHrDpVZMzUoy
+         qcd9XB0xmgZuD56sTGFsBiygs08gZsZJdgh2oVJuDLb589AYbOsalsrd/s5J1waOF4Qi
+         rG6zdkxiRMsuLM09aRXwCyzBewgJzPxYoAC0i0olFxyV0bIVMcYdDBPjJ4gDyOXSG+UB
+         gKgFwq6oC5h8Eut5qJLT2vQMaUCwp+icaSJGeAYRXgNFHNZ1RS1FWYHJGNzauwT2IKBB
+         /iOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=JvfA/LJIleSb9j0rSYyHAJ/5yGWi0FFleE6u6qbY8iw=;
-        b=DBeVS61gj3gYciQ0cFdz34QmwLop9v7brGOy82HTI5tqBgyAOshDw7NQLqJNG7jkGp
-         8b6ntNihbvYMTzqyd//rPEhUYwovZoxC+AgqqajGxeAXvRXZzE062pRxct1PdbmQX83U
-         7e+tkJwNuzlYi61IU6Rha/g3vCv3SYvBPSJ+TJSvJVDOd38dEr7323Kuvb12DjJySerb
-         tWEGwvj9FaRmrtDVwWwGdByYLbeSJICLNr3GTrC+9hoZGtR7R4x4LOMiSvPeGi1VU1iF
-         GqGhsd28avjBk36ecQIeF6LUQyq6NApjUwJsdYbCNNVBXR9DREVehduAEvu+pqf3Io7R
-         fbRg==
-X-Gm-Message-State: AOAM5318YW4h+jo1h3i53LNzsCRL1UE8Lqshv11PKKzdjLMU3WUPIwXx
-        YaRN5GR/bxoI440nMRwi2sbOiEDE7FNRgg==
-X-Google-Smtp-Source: ABdhPJxLGPjTbaFdsoacNGBPV9gdIeBJbiolzVXTvl1ohN6RUq6ZyUxUVlVfznhzhAknqg6+btBh/Q==
-X-Received: by 2002:a62:8c05:0:b029:1d8:7f36:bcd8 with SMTP id m5-20020a628c050000b02901d87f36bcd8mr19154743pfd.43.1612867306644;
-        Tue, 09 Feb 2021 02:41:46 -0800 (PST)
-Received: from [172.17.32.195] ([122.10.101.134])
-        by smtp.gmail.com with ESMTPSA id c24sm5543375pfo.209.2021.02.09.02.41.43
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 09 Feb 2021 02:41:45 -0800 (PST)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.1\))
-Subject: Re: [PATCH] bpf: in bpf_skb_adjust_room correct inner protocol for
- vxlan
-From:   =?utf-8?B?6buE5a2m5qOu?= <hxseverything@gmail.com>
-In-Reply-To: <CA+FuTScScC2o6uDjua0T3Eucbjt8-YPf65h3xgxMpTtWvgjWmg@mail.gmail.com>
-Date:   Tue, 9 Feb 2021 18:41:41 +0800
-Cc:     David Miller <davem@davemloft.net>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        chengzhiyong <chengzhiyong@kuaishou.com>,
-        wangli <wangli09@kuaishou.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=mWnGVpGdIniN/JBQucs5qFSgacY7h12miIr8vgpNNDk=;
+        b=GewUbQdrkwReDiUn+Io4HmYtlejT21BinOKUoy8ggRGIXxhdD0WyFgOL/UTPKfmGMA
+         gplmoVOjhoJbHL2J/kOYisjZu65JJ894nZHko6/yUfxCBXCSkdhTsyCf4hDMpggz8tDv
+         WULycp1NXZTrRlC0um3IMLs1iACEk02U3cTdR5OYFA0Kwa7dBxmifW1P6PgEaTaVBuyF
+         XqcAIcHd0MICqvkxJcMamYYH1eBavDvnUN7XaLuY/1iJD9LTRXXZW0EK+BoaAGeIS8T4
+         Ns8iR7AkngPHFcFpD1oSw7ejyS5qIv+3ZxVn4Hlj5rXrtE1NrD99Gw4dXUR2aBcti4Fz
+         4qTw==
+X-Gm-Message-State: AOAM531dEkumjUodUrSEMVKtIetGFWSl0lvqlsCXrhpSK5H62rhmDJ3u
+        ST742pLfU2Nmi5FOUp4aFIeIzdAB12Kag15zKQvKL/+ZSVE=
+X-Google-Smtp-Source: ABdhPJwTc1hwrjCvN1mpRFPSn1O68VHy+iD8al0fY6NCQAzsS0utVvGa0RQdYTljnOJmv/by0Vxx6nuX1l4wfAHfa0c=
+X-Received: by 2002:a25:5388:: with SMTP id h130mr30799930ybb.329.1612867787011;
+ Tue, 09 Feb 2021 02:49:47 -0800 (PST)
+MIME-Version: 1.0
+References: <20210129123009.3c07563d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210130144231.GA3329243@shredder.lan> <8924ef5a-a3ac-1664-ca11-5f2a1f35399a@nvidia.com>
+ <20210201180837.GB3456040@shredder.lan> <20210208070350.GB4656@unreal>
+ <20210208085746.GA179437@shredder.lan> <20210208090702.GB20265@unreal>
+ <20210208170735.GA207830@shredder.lan> <20210209064702.GB139298@unreal>
+ <CAJ3xEMh72mb9ZYd8umr-FTEO+MV6TNyqST2kLAz_wdLgPcFnww@mail.gmail.com> <20210209100119.GC139298@unreal>
+In-Reply-To: <20210209100119.GC139298@unreal>
+From:   Or Gerlitz <gerlitz.or@gmail.com>
+Date:   Tue, 9 Feb 2021 12:49:35 +0200
+Message-ID: <CAJ3xEMiKokWFn8MKJoaDD=U80q7FzfRR9YH1ozFTUyR0yO5_TQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v4] net: psample: Introduce stubs to remove NIC
+ driver dependency
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Ido Schimmel <idosch@idosch.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <8552C5F8-8410-4E81-8AF4-7018878AFCDC@gmail.com>
-References: <20210208113810.11118-1-hxseverything@gmail.com>
- <CA+FuTScScC2o6uDjua0T3Eucbjt8-YPf65h3xgxMpTtWvgjWmg@mail.gmail.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-X-Mailer: Apple Mail (2.3608.120.23.2.1)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Appreciate for your reply Willem!
+On Tue, Feb 9, 2021 at 12:01 PM Leon Romanovsky <leon@kernel.org> wrote:
+>
+> On Tue, Feb 09, 2021 at 11:25:33AM +0200, Or Gerlitz wrote:
+> > On Tue, Feb 9, 2021 at 8:49 AM Leon Romanovsky <leon@kernel.org> wrote:
+> >
+> > [..]
+> >
+> > > This is another problem with mlx5 - complete madness with config opti=
+ons
+> > > that are not possible to test.
+> > > =E2=9E=9C  kernel git:(rdma-next) grep -h "config MLX" drivers/net/et=
+hernet/mellanox/mlx5/core/Kconfig | awk '{ print $2}' | sort |uniq |wc -l
+> > > 19
+> >
+> > wait, why do you call it madness? we were suggested by some users (do
+> > git blame for the patches) to refine things with multiple configs and i=
+t seem
+> > to work quite well  -- what you don't like? and what's wrong with simpl=
+e grep..
+>
+> Yes, I aware of these users and what and why they asked it.
+>
+> They didn't ask us to have new config for every feature/file, but to have
+> light ethernet device.
+>
+> Other users are distributions and they enable all options that supported =
+in
+> the specific kernel they picked, because they don't know in advance where=
+ their
+> distro will be used.
+>
+> You also don't have capacity to test various combinations, so you
+> test only small subset of common ones that are pretty standard. This is w=
+hy
+> you have this feeling of "work quite well".
 
-The original intention of this commit is that when we use =
-bpf_skb_adjust_room  to encapsulate=20
-Vxlan packets, we find some powerful device features disabled.=20
+ok, point taken
 
-Setting the inner_protocol directly as skb->protocol is the root cause.
+> And I'm not talking about compilations but actual regression runs.
 
-I understand that it=E2=80=99s not easy to handle all tunnel protocol in =
-one bpf helper function. But for my
-immature idea, when pushing Ethernet header, setting the inner_protocol =
-as ETH_P_TEB may
-be better.
+understood
 
-Now the flag BPF_F_ADJ_ROOM_ENCAP_L4_UDP includes many udp tunnel types( =
-e.g.=20
-udp+mpls, geneve, vxlan). Adding an independent flag to represents Vxlan =
-looks a little=20
-reduplicative. What=E2=80=99s your suggestion?
+> I suggest to reduce number of configs to small amount, something like 3-5=
+ options:
+>  * Basic ethernet driver
+>  * + ETH
+>  * + RDMA
+>  * + VDPA
+>  * ....
+>  * Full mlx5 driver
 
-Thanks again for your reply!
+doesn't sound impossible
 
+> And there is nothing wrong with simple grep [..]
 
-
-> 2021=E5=B9=B42=E6=9C=888=E6=97=A5 =E4=B8=8B=E5=8D=889:06=EF=BC=8CWillem =
-de Bruijn <willemdebruijn.kernel@gmail.com> =E5=86=99=E9=81=93=EF=BC=9A
->=20
-> On Mon, Feb 8, 2021 at 7:16 AM huangxuesen <hxseverything@gmail.com> =
-wrote:
->>=20
->> From: huangxuesen <huangxuesen@kuaishou.com>
->>=20
->> When pushing vxlan tunnel header, set inner protocol as ETH_P_TEB in =
-skb
->> to avoid HW device disabling udp tunnel segmentation offload, just =
-like
->> vxlan_build_skb does.
->>=20
->> Drivers for NIC may invoke vxlan_features_check to check the
->> inner_protocol in skb for vxlan packets to decide whether to disable
->> NETIF_F_GSO_MASK. Currently it sets inner_protocol as the original
->> skb->protocol, that will make mlx5_core disable TSO and lead to huge
->> performance degradation.
->>=20
->> Signed-off-by: huangxuesen <huangxuesen@kuaishou.com>
->> Signed-off-by: chengzhiyong <chengzhiyong@kuaishou.com>
->> Signed-off-by: wangli <wangli09@kuaishou.com>
->> ---
->> net/core/filter.c | 7 ++++++-
->> 1 file changed, 6 insertions(+), 1 deletion(-)
->>=20
->> diff --git a/net/core/filter.c b/net/core/filter.c
->> index 255aeee72402..f8d3ba3fe10f 100644
->> --- a/net/core/filter.c
->> +++ b/net/core/filter.c
->> @@ -3466,7 +3466,12 @@ static int bpf_skb_net_grow(struct sk_buff =
-*skb, u32 off, u32 len_diff,
->>                skb->inner_mac_header =3D inner_net - inner_mac_len;
->>                skb->inner_network_header =3D inner_net;
->>                skb->inner_transport_header =3D inner_trans;
->> -               skb_set_inner_protocol(skb, skb->protocol);
->> +
->> +               if (flags & BPF_F_ADJ_ROOM_ENCAP_L4_UDP &&
->> +                   inner_mac_len =3D=3D ETH_HLEN)
->> +                       skb_set_inner_protocol(skb, =
-htons(ETH_P_TEB));
->=20
-> This may be used by vxlan, but it does not imply it.
->=20
-> Adding ETH_HLEN bytes likely means pushing an Ethernet header, but =
-same point.
->=20
-> Conversely, pushing an Ethernet header is not limited to UDP encap.
->=20
-> This probably needs a new explicit BPF_F_ADJ_ROOM_.. flag, rather than
-> trying to infer from imprecise heuristics.
-
+no worries
