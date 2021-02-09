@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 889C2315867
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 22:16:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A657D315837
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 22:01:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234379AbhBIVNr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 16:13:47 -0500
-Received: from mail-40131.protonmail.ch ([185.70.40.131]:52473 "EHLO
-        mail-40131.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234038AbhBIUtS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 15:49:18 -0500
-Date:   Tue, 09 Feb 2021 20:48:28 +0000
+        id S234266AbhBIU7T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 15:59:19 -0500
+Received: from mail1.protonmail.ch ([185.70.40.18]:64982 "EHLO
+        mail1.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233871AbhBIUvI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 15:51:08 -0500
+Date:   Tue, 09 Feb 2021 20:48:41 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1612903714; bh=ptg4dtlOixx4N/Ps+zPYWXSaL+5RU9Pp83Jx/VqNNi4=;
+        t=1612903727; bh=2ZGDTP+U1Ebxj8vWtkJrsSoHhtkyLcBn7TvjRNc6gew=;
         h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=OthOSBa4ZrVmt9Pe6U5c7kIM32c/S/wz17TmX0NJafAk6xcJdpHkqzSbpNbtd2K8y
-         mHH/fZD/2sx4wtjTL9Shycb3FMOB6oC+0sEuI8Ji1T4guq/t2X9LYileHj0bOVP2PQ
-         qGSog8aAfij2n6xA5Y40BE7KGr4eMLRy6fXF0qyEPhdPpNviCtLtBAN0BqnmjTurui
-         G16vUDZK8enN4jCa8Xop74SzsuPqBHw+OvAUjxITA/zHvQx4UouSM9LoWFibVdek4N
-         DcYzaGG7UsRtUhYBFanGRfomZ3NmSyC9csMipA/XOX+VK6G5EfmXM2GXp8khjeRYF2
-         ZnFUxWNrK/CzA==
+        b=VlKfBN/r+GewNxB0eXUx8LKYeZatc5GhKMZhyyw6gWk6e44G+zbpeQMgWe6f6wPCW
+         hfzy4q2QMvXBU2xTq8yXZu+uQq4Jbk7Q9a6aXjxtcJ6Ks+boM30JzLw+3DXU1u83dn
+         dI7hYcVSW89Kj87Ij/mnikLb+1TkI7nCXNlM+syGZMQI+sSt/N5jiQVWzVE1In8NVA
+         mymbj9ASCWyyeJF0J5zK+JDn06Vje0YfHjdI4z6xoqI/hzLxx5HQp6dc9j8xXkWILH
+         rEZdWWrRBETwcNKqUTe3uc1EIx996qJyQ0hXfcGZ2sWBusIjIP5J5BXTA2YMZNx7j2
+         Cgd4bUS4ALdzQ==
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 From:   Alexander Lobakin <alobakin@pm.me>
@@ -51,8 +51,8 @@ Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
         Yang Yingliang <yangyingliang@huawei.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [v3 net-next 06/10] skbuff: remove __kfree_skb_flush()
-Message-ID: <20210209204533.327360-7-alobakin@pm.me>
+Subject: [v3 net-next 07/10] skbuff: move NAPI cache declarations upper in the file
+Message-ID: <20210209204533.327360-8-alobakin@pm.me>
 In-Reply-To: <20210209204533.327360-1-alobakin@pm.me>
 References: <20210209204533.327360-1-alobakin@pm.me>
 MIME-Version: 1.0
@@ -67,90 +67,129 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This function isn't much needed as NAPI skb queue gets bulk-freed
-anyway when there's no more room, and even may reduce the efficiency
-of bulk operations.
-It will be even less needed after reusing skb cache on allocation path,
-so remove it and this way lighten network softirqs a bit.
+NAPI cache structures will be used for allocating skbuff_heads,
+so move their declarations a bit upper.
 
-Suggested-by: Eric Dumazet <edumazet@google.com>
 Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 ---
- include/linux/skbuff.h |  1 -
- net/core/dev.c         |  6 +-----
- net/core/skbuff.c      | 12 ------------
- 3 files changed, 1 insertion(+), 18 deletions(-)
+ net/core/skbuff.c | 90 +++++++++++++++++++++++------------------------
+ 1 file changed, 45 insertions(+), 45 deletions(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 0a4e91a2f873..0e0707296098 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -2919,7 +2919,6 @@ static inline struct sk_buff *napi_alloc_skb(struct n=
-api_struct *napi,
- }
- void napi_consume_skb(struct sk_buff *skb, int budget);
-=20
--void __kfree_skb_flush(void);
- void __kfree_skb_defer(struct sk_buff *skb);
-=20
- /**
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 21d74d30f5d7..135d46c0c3c7 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4906,8 +4906,6 @@ static __latent_entropy void net_tx_action(struct sof=
-tirq_action *h)
- =09=09=09else
- =09=09=09=09__kfree_skb_defer(skb);
- =09=09}
--
--=09=09__kfree_skb_flush();
- =09}
-=20
- =09if (sd->output_queue) {
-@@ -6873,7 +6871,7 @@ static __latent_entropy void net_rx_action(struct sof=
-tirq_action *h)
-=20
- =09=09if (list_empty(&list)) {
- =09=09=09if (!sd_has_rps_ipi_waiting(sd) && list_empty(&repoll))
--=09=09=09=09goto out;
-+=09=09=09=09return;
- =09=09=09break;
- =09=09}
-=20
-@@ -6900,8 +6898,6 @@ static __latent_entropy void net_rx_action(struct sof=
-tirq_action *h)
- =09=09__raise_softirq_irqoff(NET_RX_SOFTIRQ);
-=20
- =09net_rps_action_and_irq_enable(sd);
--out:
--=09__kfree_skb_flush();
- }
-=20
- struct netdev_adjacent {
 diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 1c6f6ef70339..4be2bb969535 100644
+index 4be2bb969535..860a9d4f752f 100644
 --- a/net/core/skbuff.c
 +++ b/net/core/skbuff.c
-@@ -838,18 +838,6 @@ void __consume_stateless_skb(struct sk_buff *skb)
- =09kfree_skbmem(skb);
+@@ -119,6 +119,51 @@ static void skb_under_panic(struct sk_buff *skb, unsig=
+ned int sz, void *addr)
+ =09skb_panic(skb, sz, addr, __func__);
  }
 =20
--void __kfree_skb_flush(void)
++#define NAPI_SKB_CACHE_SIZE=0964
++
++struct napi_alloc_cache {
++=09struct page_frag_cache page;
++=09unsigned int skb_count;
++=09void *skb_cache[NAPI_SKB_CACHE_SIZE];
++};
++
++static DEFINE_PER_CPU(struct page_frag_cache, netdev_alloc_cache);
++static DEFINE_PER_CPU(struct napi_alloc_cache, napi_alloc_cache);
++
++static void *__alloc_frag_align(unsigned int fragsz, gfp_t gfp_mask,
++=09=09=09=09unsigned int align_mask)
++{
++=09struct napi_alloc_cache *nc =3D this_cpu_ptr(&napi_alloc_cache);
++
++=09return page_frag_alloc_align(&nc->page, fragsz, gfp_mask, align_mask);
++}
++
++void *__napi_alloc_frag_align(unsigned int fragsz, unsigned int align_mask=
+)
++{
++=09fragsz =3D SKB_DATA_ALIGN(fragsz);
++
++=09return __alloc_frag_align(fragsz, GFP_ATOMIC, align_mask);
++}
++EXPORT_SYMBOL(__napi_alloc_frag_align);
++
++void *__netdev_alloc_frag_align(unsigned int fragsz, unsigned int align_ma=
+sk)
++{
++=09struct page_frag_cache *nc;
++=09void *data;
++
++=09fragsz =3D SKB_DATA_ALIGN(fragsz);
++=09if (in_irq() || irqs_disabled()) {
++=09=09nc =3D this_cpu_ptr(&netdev_alloc_cache);
++=09=09data =3D page_frag_alloc_align(nc, fragsz, GFP_ATOMIC, align_mask);
++=09} else {
++=09=09local_bh_disable();
++=09=09data =3D __alloc_frag_align(fragsz, GFP_ATOMIC, align_mask);
++=09=09local_bh_enable();
++=09}
++=09return data;
++}
++EXPORT_SYMBOL(__netdev_alloc_frag_align);
++
+ /* Caller must provide SKB that is memset cleared */
+ static void __build_skb_around(struct sk_buff *skb, void *data,
+ =09=09=09       unsigned int frag_size)
+@@ -220,51 +265,6 @@ struct sk_buff *build_skb_around(struct sk_buff *skb,
+ }
+ EXPORT_SYMBOL(build_skb_around);
+=20
+-#define NAPI_SKB_CACHE_SIZE=0964
+-
+-struct napi_alloc_cache {
+-=09struct page_frag_cache page;
+-=09unsigned int skb_count;
+-=09void *skb_cache[NAPI_SKB_CACHE_SIZE];
+-};
+-
+-static DEFINE_PER_CPU(struct page_frag_cache, netdev_alloc_cache);
+-static DEFINE_PER_CPU(struct napi_alloc_cache, napi_alloc_cache);
+-
+-static void *__alloc_frag_align(unsigned int fragsz, gfp_t gfp_mask,
+-=09=09=09=09unsigned int align_mask)
 -{
 -=09struct napi_alloc_cache *nc =3D this_cpu_ptr(&napi_alloc_cache);
 -
--=09/* flush skb_cache if containing objects */
--=09if (nc->skb_count) {
--=09=09kmem_cache_free_bulk(skbuff_head_cache, nc->skb_count,
--=09=09=09=09     nc->skb_cache);
--=09=09nc->skb_count =3D 0;
--=09}
+-=09return page_frag_alloc_align(&nc->page, fragsz, gfp_mask, align_mask);
 -}
 -
- static inline void _kfree_skb_defer(struct sk_buff *skb)
- {
- =09struct napi_alloc_cache *nc =3D this_cpu_ptr(&napi_alloc_cache);
+-void *__napi_alloc_frag_align(unsigned int fragsz, unsigned int align_mask=
+)
+-{
+-=09fragsz =3D SKB_DATA_ALIGN(fragsz);
+-
+-=09return __alloc_frag_align(fragsz, GFP_ATOMIC, align_mask);
+-}
+-EXPORT_SYMBOL(__napi_alloc_frag_align);
+-
+-void *__netdev_alloc_frag_align(unsigned int fragsz, unsigned int align_ma=
+sk)
+-{
+-=09struct page_frag_cache *nc;
+-=09void *data;
+-
+-=09fragsz =3D SKB_DATA_ALIGN(fragsz);
+-=09if (in_irq() || irqs_disabled()) {
+-=09=09nc =3D this_cpu_ptr(&netdev_alloc_cache);
+-=09=09data =3D page_frag_alloc_align(nc, fragsz, GFP_ATOMIC, align_mask);
+-=09} else {
+-=09=09local_bh_disable();
+-=09=09data =3D __alloc_frag_align(fragsz, GFP_ATOMIC, align_mask);
+-=09=09local_bh_enable();
+-=09}
+-=09return data;
+-}
+-EXPORT_SYMBOL(__netdev_alloc_frag_align);
+-
+ /*
+  * kmalloc_reserve is a wrapper around kmalloc_node_track_caller that tell=
+s
+  * the caller if emergency pfmemalloc reserves are being used. If it is an=
+d
 --=20
 2.30.0
 
