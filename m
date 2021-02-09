@@ -2,93 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 918BB3154E6
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 18:21:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 162C4315517
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 18:29:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233022AbhBIRVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 12:21:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50300 "EHLO
+        id S233241AbhBIR2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 12:28:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232827AbhBIRVH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 12:21:07 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53D3BC061574
-        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 09:20:27 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id w1so32898837ejf.11
-        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 09:20:27 -0800 (PST)
+        with ESMTP id S233217AbhBIR1h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 12:27:37 -0500
+Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18C92C06174A;
+        Tue,  9 Feb 2021 09:26:57 -0800 (PST)
+Received: by mail-il1-x12e.google.com with SMTP id e7so16791738ile.7;
+        Tue, 09 Feb 2021 09:26:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=iNVIpUUGzPSMmzM1YgoDxgr7l8s2IfWS0TNnBIAZ8vU=;
-        b=AmpsmpT8zIv5qC8kaerel8XYMPVzMwcAVCTLH3YB/Ho+Oj/MPWYcXPUs1x2ygNinjF
-         DOiZoavoHlL5SkBcQ72wRkUgdBnyWD2xJHTUu/GvyIcDWc+CxPaUs2j8gQWtOGgvIMop
-         KFe5bZZIUF44PZBMV3AY8VT2BVmtj3a0bejVAXOpZILgAUMilTEY1g3zXQBmrAxKcecS
-         YBgeDm9QlGvNxxfm5SNjJt4L8pYyuws0SdZspXq7eaon9QF8TLs1TmKvLdpg6urGX6Ps
-         oPVRVK4GHJEMF6jIb13qcc4R0c45tEwCKTVOd13j5p+b69l7XP+h9vdJj4WwoERZ/gl1
-         KNjA==
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=6PvAm3QwxGsDZsZoQTDksRmElDwRMDjBuqTV7b5B5Ok=;
+        b=ftAMCLwOoSzTEDjFYM/0rR1EcV7zCOs2YhFXINQ8ov2HlUIHJHzRJ12Q8ArUtOWTCs
+         3iAE79P7jFUI4Mp82wxYvB0JT/0jrmSzivqseYGRvO202zA4+AWxMU2dl3DG9XTEeEFr
+         VL0t6sC9EMtvojD1KLwjZTg6zqlC99/sSa0BPNlniU1OFXGKuLxhY5hxDFy+wqV/kIx3
+         Vrtwe1Inpe+wnK/8e0t36wL3ZxQQGy3mvcTkmrLPLvIB7Ti06nYeNyqhAtGpR4V1BFTQ
+         /PsnmmRBlTWlqeLL5ugbnoxPVDHAvyn4EXVswVZ4zQrypM7CibqZYA/oEZqLyjC9kLfn
+         8k5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=iNVIpUUGzPSMmzM1YgoDxgr7l8s2IfWS0TNnBIAZ8vU=;
-        b=seGq/iz0dSUnEHVTLwvOg2+is8PiHQ+5VJ2fYz/GXcZPwYKPRXp0xYLOMcw38Z655e
-         aUAoj6WDOxJUKkoQFiO/LmYS2yR1CKEt3l2V7KW/iIFBkLGEImmzFyqzAetMyiR68KyG
-         dyeknBl2WQfGr/t2aVvW2rO3PtGyIRxPwoMh8Gq3b1e6QjyIrqK/36RSobJgAS95EIKZ
-         Ms0PUsQcBkJ+arJzuHmPZ2BqJNOvo1vvRf69M0DexWsYMdr+7tySqfS4xchUzjTaAani
-         MIV3fxE8UYVHErdoXQ7zhfndYO7KqriK2Qh4NRNPHvcwooQ1Mja+pbLGEs9GC9mUOMMh
-         UyWw==
-X-Gm-Message-State: AOAM532A1hK/GbVzcjoS4ma0AHbdZEWFDiegNhi28j1fgXHArzFLj9+c
-        gypZ4QGl1rH9xUzMECGo5Mg=
-X-Google-Smtp-Source: ABdhPJwWeAmzi6lpJSELm+yfVLyhsD6CmHwa58vjmgOQxks26cNpQ8wGWO36grY0j3tUDrPWNfGZLg==
-X-Received: by 2002:a17:906:a153:: with SMTP id bu19mr24004710ejb.287.1612891226096;
-        Tue, 09 Feb 2021 09:20:26 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id d3sm4282230edk.82.2021.02.09.09.20.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Feb 2021 09:20:25 -0800 (PST)
-Date:   Tue, 9 Feb 2021 19:20:24 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     George McCollister <george.mccollister@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 3/4] net: dsa: add support for offloading HSR
-Message-ID: <20210209172024.qlpomxk6siiz5tbr@skbuf>
-References: <20210204215926.64377-1-george.mccollister@gmail.com>
- <20210204215926.64377-4-george.mccollister@gmail.com>
- <20210206232931.pbdvtx3gyluw2s4u@skbuf>
- <CAFSKS=MbXJ5VOL1aPWsNyxZfhOUh9XJ7taGMrNnNv5F2OQPJzA@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=6PvAm3QwxGsDZsZoQTDksRmElDwRMDjBuqTV7b5B5Ok=;
+        b=sitSk3mX+FnfxYwQ3wAZVSyn6xtpHR1TsMSWmSX97GA/h52oWuFu7MfOd4Br5ZKHEu
+         JWmE0jSdz3SNPcRCl3INN40R3oSMhBRTLQTEYKMZLx94kflhu5LbmFh+VNzjdlxL3AQY
+         9A9juQkFCxGW3SLFNH5Eq277G1biMWQq1S7842lMRb/S5F0ODgGB87Q8dphqDexMkBlT
+         v3kdaPHUMTHP7oYTgoxrJZlxlP3mpm3Kq7nbACGSn24T5++4p7VzMjRRWCfnJKjB7D6k
+         L2kFOMYhFrxHwT1yRDA9A25EdRslJieX9xq4x/0do1abyU8eReSSMJqeiCKuXa4jhhtF
+         2MMw==
+X-Gm-Message-State: AOAM531yPhIn2cBG6Wm8cIJ8RF9eyMuozOU5gkRNP17GFA73acgK2sCY
+        uDW8oJ+GQj4dGFK9LQbjHij0p/ipuCAggpwYS2M=
+X-Google-Smtp-Source: ABdhPJzjFsxd1Jx8D6WSw4iGNU9YPRHP9lt6r1niteZtOcIDIFklLcUOTDt0j5dQeVnCrmVzpiBf9elr6/gIRDOA7u4=
+X-Received: by 2002:a92:d8c5:: with SMTP id l5mr7983976ilo.209.1612891616488;
+ Tue, 09 Feb 2021 09:26:56 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFSKS=MbXJ5VOL1aPWsNyxZfhOUh9XJ7taGMrNnNv5F2OQPJzA@mail.gmail.com>
+References: <20210209034416.GA1669105@ubuntu-m3-large-x86> <CAEf4BzYnT-eoKRL9_Pu_DEuqXVa+edN5F-s+k2RxBSzcsSTJ1g@mail.gmail.com>
+ <20210209052311.GA125918@ubuntu-m3-large-x86> <CAEf4BzZV0-zx6YKUUKmecs=icnQNXJjTokdkSAoexm36za+wdA@mail.gmail.com>
+ <CAEf4BzYvri7wzRnGH_qQbavXOx5TfBA0qx4nYVnn=YNGv+vNVw@mail.gmail.com>
+ <CAEf4Bzax90hn_5axpnCpW+E6gVc1mtUgCXWqmxV0tJ4Ud7bsaA@mail.gmail.com>
+ <20210209074904.GA286822@ubuntu-m3-large-x86> <YCKB1TF5wz93EIBK@krava>
+ <YCKlrLkTQXc4Cyx7@krava> <YCKwxNDkS9rdr43W@krava> <20210209163514.GA1226277@ubuntu-m3-large-x86>
+ <CA+icZUWcyFLrFmW=btSFx_-5c-cUAYXhcjR+Jdog0-qV-bis7w@mail.gmail.com> <CAKwvOdkQixhz1LiMrFx=+zf5o29UHaUrGTz=TPEsigtGakDXBA@mail.gmail.com>
+In-Reply-To: <CAKwvOdkQixhz1LiMrFx=+zf5o29UHaUrGTz=TPEsigtGakDXBA@mail.gmail.com>
+Reply-To: sedat.dilek@gmail.com
+From:   Sedat Dilek <sedat.dilek@gmail.com>
+Date:   Tue, 9 Feb 2021 18:26:45 +0100
+Message-ID: <CA+icZUW1tyGK8tYnhhhODR4n6-8ozmqHyJ9V3HZGj0xEqV=7Fg@mail.gmail.com>
+Subject: Re: FAILED unresolved symbol vfs_truncate on arm64 with LLVM
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        Veronika Kabatova <vkabatov@redhat.com>,
+        Jiri Olsa <jolsa@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 08, 2021 at 11:21:26AM -0600, George McCollister wrote:
-> > If you return zero, the software fallback is never going to kick in.
+On Tue, Feb 9, 2021 at 6:12 PM Nick Desaulniers <ndesaulniers@google.com> wrote:
 >
-> For join and leave? How is this not a problem for the bridge and lag
-> functions? They work the same way don't they? I figured it would be
-> safe to follow what they were doing.
+> On Tue, Feb 9, 2021 at 9:07 AM Sedat Dilek <sedat.dilek@gmail.com> wrote:
+> >
+> > We should ask linux-kbuild/Masahiro to have an option to OVERRIDE:
+> > When scripts/link-vmlinux.sh fails all generated files like vmlinux get removed.
+> > For further debugging they should be kept.
+>
+> I find it annoying, too.  But I usually just comment out the body of
+> cleanup() in scripts/link-vmlinux.sh.
+>
 
-I didn't say that the bridge and LAG offloading logic does the right
-thing, but it is on its way there...
+That's fine with me.
 
-Those "XXX not offloaded" messages were tested with cases where the
-.port_lag_join callback _is_ present, but fails (due to things like
-incompatible xmit hashing policy). They were not tested with the case
-where the driver does not implement .port_lag_join at all.
-
-Doesn't mean you shouldn't do the right thing. I'll send some patches
-soon, hopefully, fixing that for LAG and the bridge, you can concentrate
-on HSR. For the non-offload scenario where the port is basically
-standalone, we also need to disable the other bridge functions such as
-address learning, otherwise it won't work properly, and that's where
-I've been focusing my attention lately. You can't offload the bridge in
-software, or a LAG, if you have address learning enabled. For HSR it's
-even more interesting, you need to have address learning disabled even
-when you offload the DANH/DANP.
+- Sedat -
