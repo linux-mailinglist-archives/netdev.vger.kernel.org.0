@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D82F315839
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 22:01:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DF4E31587C
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 22:24:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234284AbhBIU7d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 15:59:33 -0500
-Received: from mail1.protonmail.ch ([185.70.40.18]:52696 "EHLO
-        mail1.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234074AbhBIUu7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 15:50:59 -0500
-Date:   Tue, 09 Feb 2021 20:47:48 +0000
+        id S233690AbhBIVS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 16:18:28 -0500
+Received: from mail-40131.protonmail.ch ([185.70.40.131]:32828 "EHLO
+        mail-40131.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233746AbhBIUtQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 15:49:16 -0500
+Date:   Tue, 09 Feb 2021 20:48:01 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1612903676; bh=TNjH2OfntVMafeUExGLXFCMb3pBMh6ePd4fTgzTIZmc=;
+        t=1612903687; bh=b/V72/ecFuIE5O8hexSZT3uuOukgCm1wtsY9SYdVkY0=;
         h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=ou0BO8btB9uj5a0JyAgEuRgYLVipOvJTcyXQOi23D/fvjJyTvSB7srawpn7P7pJlv
-         vfZCVrUUnb62n9yoVR8JzDg6AR3qMF5uQD79ypOdZ88KiJNCuJAPk1GnHBbZ9pNbhB
-         NxyU85YPrVN+ggVUuCTPKWC0ye97KNiCiuE+KxFDBAbJjxqvOrPSUeBNNgdLEJE3/M
-         Hfkyya8tWEIAcXtQcH1eBSjxGcU08QVWI1/NHe0E5qcggi/f10kqZfT/Hh6y8PXFQf
-         /j/f1V5D6RtEEKUHSY+oQ3wwc/0B6SLP0Bopk7d1C3qGQ1Gi0RysAnh2Bn7C08xdFf
-         FucsqV32sg3Iw==
+        b=JnuH+cQZfyOm/8T7Ha9GM8GYAketexyUteS/Kgj1numcPsfdWlVErX3JaIYy6i5hL
+         0UG/IdexzfKUFpDpI6vYEOYxYlZFx+sMHpZkm4wIVJ4Bh5g6tiOjr74aGjtt6C1bJw
+         Hd5/BI5Ny24LNouxRZb9Jcm2cVFuLqvoIpiUAaRHZDKfYquSicoNxNoCnNQlew4XJ1
+         H+cYt9y+agPAkH5G4F5s6cP4Q8W1njpGYxR/wGCuTuj/Hy9hZMJQ/32PBVJRcyrthX
+         28fxyVik5JpQByp/XeCVDSZJtkgK/hyg1/oMPQSybffYMmIyNXXQBX+wBtMDs5BfQ7
+         TOVYoo5Brq6pw==
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 From:   Alexander Lobakin <alobakin@pm.me>
@@ -51,8 +51,8 @@ Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
         Yang Yingliang <yangyingliang@huawei.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [v3 net-next 03/10] skbuff: make __build_skb_around() return void
-Message-ID: <20210209204533.327360-4-alobakin@pm.me>
+Subject: [v3 net-next 04/10] skbuff: simplify __alloc_skb() a bit
+Message-ID: <20210209204533.327360-5-alobakin@pm.me>
 In-Reply-To: <20210209204533.327360-1-alobakin@pm.me>
 References: <20210209204533.327360-1-alobakin@pm.me>
 MIME-Version: 1.0
@@ -67,64 +67,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-__build_skb_around() can never fail and always returns passed skb.
-Make it return void to simplify and optimize the code.
+Use unlikely() annotations for skbuff_head and data similarly to the
+two other allocation functions and remove totally redundant goto.
 
 Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 ---
- net/core/skbuff.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ net/core/skbuff.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
 diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 70289f22a6f4..c7d184e11547 100644
+index c7d184e11547..88566de26cd1 100644
 --- a/net/core/skbuff.c
 +++ b/net/core/skbuff.c
-@@ -120,8 +120,8 @@ static void skb_under_panic(struct sk_buff *skb, unsign=
-ed int sz, void *addr)
- }
+@@ -339,8 +339,8 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gf=
+p_mask,
 =20
- /* Caller must provide SKB that is memset cleared */
--static struct sk_buff *__build_skb_around(struct sk_buff *skb,
--=09=09=09=09=09  void *data, unsigned int frag_size)
-+static void __build_skb_around(struct sk_buff *skb, void *data,
-+=09=09=09       unsigned int frag_size)
- {
- =09struct skb_shared_info *shinfo;
- =09unsigned int size =3D frag_size ? : ksize(data);
-@@ -144,8 +144,6 @@ static struct sk_buff *__build_skb_around(struct sk_buf=
-f *skb,
- =09atomic_set(&shinfo->dataref, 1);
+ =09/* Get the HEAD */
+ =09skb =3D kmem_cache_alloc_node(cache, gfp_mask & ~__GFP_DMA, node);
+-=09if (!skb)
+-=09=09goto out;
++=09if (unlikely(!skb))
++=09=09return NULL;
+ =09prefetchw(skb);
+=20
+ =09/* We do our best to align skb_shared_info on a separate cache
+@@ -351,7 +351,7 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gf=
+p_mask,
+ =09size =3D SKB_DATA_ALIGN(size);
+ =09size +=3D SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
+ =09data =3D kmalloc_reserve(size, gfp_mask, node, &pfmemalloc);
+-=09if (!data)
++=09if (unlikely(!data))
+ =09=09goto nodata;
+ =09/* kmalloc(size) might give us more room than requested.
+ =09 * Put skb_shared_info exactly at the end of allocated zone,
+@@ -395,12 +395,11 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t =
+gfp_mask,
 =20
  =09skb_set_kcov_handle(skb, kcov_common_handle());
--
--=09return skb;
+=20
+-out:
+ =09return skb;
++
+ nodata:
+ =09kmem_cache_free(cache, skb);
+-=09skb =3D NULL;
+-=09goto out;
++=09return NULL;
  }
+ EXPORT_SYMBOL(__alloc_skb);
 =20
- /**
-@@ -176,8 +174,9 @@ struct sk_buff *__build_skb(void *data, unsigned int fr=
-ag_size)
- =09=09return NULL;
-=20
- =09memset(skb, 0, offsetof(struct sk_buff, tail));
-+=09__build_skb_around(skb, data, frag_size);
-=20
--=09return __build_skb_around(skb, data, frag_size);
-+=09return skb;
- }
-=20
- /* build_skb() is wrapper over __build_skb(), that specifically
-@@ -210,9 +209,9 @@ struct sk_buff *build_skb_around(struct sk_buff *skb,
- =09if (unlikely(!skb))
- =09=09return NULL;
-=20
--=09skb =3D __build_skb_around(skb, data, frag_size);
-+=09__build_skb_around(skb, data, frag_size);
-=20
--=09if (skb && frag_size) {
-+=09if (frag_size) {
- =09=09skb->head_frag =3D 1;
- =09=09if (page_is_pfmemalloc(virt_to_head_page(data)))
- =09=09=09skb->pfmemalloc =3D 1;
 --=20
 2.30.0
 
