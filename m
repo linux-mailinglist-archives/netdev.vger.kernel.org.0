@@ -2,96 +2,262 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94C233148DA
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 07:31:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF8B5314900
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 07:40:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230283AbhBIGaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 01:30:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50250 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230269AbhBIG3u (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Feb 2021 01:29:50 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8E32A64E8C;
-        Tue,  9 Feb 2021 06:29:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612852147;
-        bh=K25iNb1rh/gKqTgVFxTrczRoT/80KSzESkfb4xiDHGk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ROzKHV0WvQyqm0TqNeLV451j7H2by4fBMbh/KpzDqOujh/YETWJy1TMwt+09dGQ5D
-         bdqpP9MHLesiNBJX0UYV1KKFsDAo7wmhHJj/wtZfTy/Y0XZ+wcD3hMg/ZBsEhrrxd3
-         OK3cL1CjSBRvDNpCllE0rRKHKGP2v/BNJ8xedzFm0GMtXnKazheben2CggXvCBieZT
-         9JTRkxaeSOYba7uPvzpA0gajjvuyi0vn6jo931wkN9GXUohqf9X08C+GvWWK7gEfkF
-         7EHjVTHgLgdhFFLn7gr0HmWASiojTWwGgNn6dZkldtceQkIYJeMRTyus+CUwexrl70
-         oemYj382SND3A==
-Date:   Tue, 9 Feb 2021 08:29:03 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Arjun Roy <arjunroy.kdev@gmail.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, arjunroy@google.com, edumazet@google.com,
-        soheil@google.com
-Subject: Re: [net-next v2] tcp: Explicitly mark reserved field in
- tcp_zerocopy_receive args.
-Message-ID: <20210209062903.GA139298@unreal>
-References: <20210206203648.609650-1-arjunroy.kdev@gmail.com>
- <20210206152828.6610da2b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210207082654.GC4656@unreal>
- <20210208104143.60a6d730@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <09fa284e-ea02-a6ca-cd8f-6d90dff2fa00@gmail.com>
- <20210208185323.11c2bacf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <af35d535-8d58-3cf3-60e3-1764e409308b@gmail.com>
+        id S230179AbhBIGjR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 01:39:17 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:54869 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229910AbhBIGjJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 01:39:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612852661;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=f45eMdlWCNGfjFr544mMESqKY7wvuw1YZDO4LRpxZ9g=;
+        b=i1MG5K0wW8F40opk3OVMl7X89IsW4nrXs7SHOmfV3A3y7RAmiErJd7BHr6Sqtc955TvmCu
+        xLuyDpYm45SIUhkbyP/F5yRcj8tNXlGXnKaZriiXHD6dIVAcuVAFkFOWiTBcF2NJfLqrsv
+        LSBK7MgqXP9+ImsrCm/emMKXLTX3qJI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-496-lnQfYz0bOou6AQPKSsWLow-1; Tue, 09 Feb 2021 01:37:37 -0500
+X-MC-Unique: lnQfYz0bOou6AQPKSsWLow-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 81AD0192CC40;
+        Tue,  9 Feb 2021 06:37:36 +0000 (UTC)
+Received: from [10.72.13.32] (ovpn-13-32.pek2.redhat.com [10.72.13.32])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 16AE85D6D7;
+        Tue,  9 Feb 2021 06:37:30 +0000 (UTC)
+Subject: Re: [PATCH v1] vdpa/mlx5: Restore the hardware used index after
+ change map
+To:     Eli Cohen <elic@nvidia.com>
+Cc:     Si-Wei Liu <si-wei.liu@oracle.com>, mst@redhat.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lulu@redhat.com
+References: <20210204073618.36336-1-elic@nvidia.com>
+ <81f5ce4f-cdb0-26cd-0dce-7ada824b1b86@oracle.com>
+ <f2206fa2-0ddc-1858-54e7-71614b142e46@redhat.com>
+ <20210208063736.GA166546@mtl-vdi-166.wap.labs.mlnx>
+ <0d592ed0-3cea-cfb0-9b7b-9d2755da3f12@redhat.com>
+ <20210208100445.GA173340@mtl-vdi-166.wap.labs.mlnx>
+ <379d79ff-c8b4-9acb-1ee4-16573b601973@redhat.com>
+ <20210209061232.GC210455@mtl-vdi-166.wap.labs.mlnx>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <411ff244-a698-a312-333a-4fdbeb3271d1@redhat.com>
+Date:   Tue, 9 Feb 2021 14:37:29 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <af35d535-8d58-3cf3-60e3-1764e409308b@gmail.com>
+In-Reply-To: <20210209061232.GC210455@mtl-vdi-166.wap.labs.mlnx>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 08, 2021 at 08:20:29PM -0700, David Ahern wrote:
-> On 2/8/21 7:53 PM, Jakub Kicinski wrote:
-> > On Mon, 8 Feb 2021 19:24:05 -0700 David Ahern wrote:
-> >> On 2/8/21 11:41 AM, Jakub Kicinski wrote:
-> >>> On Sun, 7 Feb 2021 10:26:54 +0200 Leon Romanovsky wrote:
-> >>>> There is a check that len is not larger than zs and users can't give
-> >>>> large buffer.
-> >>>>
-> >>>> I would say that is pretty safe to write "if (zc.reserved)".
-> >>>
-> >>> Which check? There's a check which truncates (writes back to user space
-> >>> len = min(len, sizeof(zc)). Application can still pass garbage beyond
-> >>> sizeof(zc) and syscall may start failing in the future if sizeof(zc)
-> >>> changes.
-> >>
-> >> That would be the case for new userspace on old kernel. Extending the
-> >> check to the end of the struct would guarantee new userspace can not ask
-> >> for something that the running kernel does not understand.
-> >
-> > Indeed, so we're agreeing that check_zeroed_user() is needed before
-> > original optlen from user space gets truncated?
-> >
->
-> I thought so, but maybe not. To think through this ...
->
-> If current kernel understands a struct of size N, it can only copy that
-> amount from user to kernel. Anything beyond is ignored in these
-> multiplexed uAPIs, and that is where the new userspace on old kernel falls.
->
-> Known value checks can only be done up to size N. In this case, the
-> reserved field is at the end of the known struct size, so checking just
-> the field is fine. Going beyond the reserved field has implications for
-> extensions to the API which should be handled when those extensions are
-> added.
 
-It is handled.
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/net/ipv4/tcp.c#n4155
-		if (len > sizeof(zc)) {
-			len = sizeof(zc);
-			if (put_user(len, optlen))
-				return -EFAULT;
-		}
+On 2021/2/9 下午2:12, Eli Cohen wrote:
+> On Tue, Feb 09, 2021 at 11:20:14AM +0800, Jason Wang wrote:
+>> On 2021/2/8 下午6:04, Eli Cohen wrote:
+>>> On Mon, Feb 08, 2021 at 05:04:27PM +0800, Jason Wang wrote:
+>>>> On 2021/2/8 下午2:37, Eli Cohen wrote:
+>>>>> On Mon, Feb 08, 2021 at 12:27:18PM +0800, Jason Wang wrote:
+>>>>>> On 2021/2/6 上午7:07, Si-Wei Liu wrote:
+>>>>>>> On 2/3/2021 11:36 PM, Eli Cohen wrote:
+>>>>>>>> When a change of memory map occurs, the hardware resources are destroyed
+>>>>>>>> and then re-created again with the new memory map. In such case, we need
+>>>>>>>> to restore the hardware available and used indices. The driver failed to
+>>>>>>>> restore the used index which is added here.
+>>>>>>>>
+>>>>>>>> Also, since the driver also fails to reset the available and used
+>>>>>>>> indices upon device reset, fix this here to avoid regression caused by
+>>>>>>>> the fact that used index may not be zero upon device reset.
+>>>>>>>>
+>>>>>>>> Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5
+>>>>>>>> devices")
+>>>>>>>> Signed-off-by: Eli Cohen<elic@nvidia.com>
+>>>>>>>> ---
+>>>>>>>> v0 -> v1:
+>>>>>>>> Clear indices upon device reset
+>>>>>>>>
+>>>>>>>>      drivers/vdpa/mlx5/net/mlx5_vnet.c | 18 ++++++++++++++++++
+>>>>>>>>      1 file changed, 18 insertions(+)
+>>>>>>>>
+>>>>>>>> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+>>>>>>>> b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+>>>>>>>> index 88dde3455bfd..b5fe6d2ad22f 100644
+>>>>>>>> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+>>>>>>>> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+>>>>>>>> @@ -87,6 +87,7 @@ struct mlx5_vq_restore_info {
+>>>>>>>>          u64 device_addr;
+>>>>>>>>          u64 driver_addr;
+>>>>>>>>          u16 avail_index;
+>>>>>>>> +    u16 used_index;
+>>>>>>>>          bool ready;
+>>>>>>>>          struct vdpa_callback cb;
+>>>>>>>>          bool restore;
+>>>>>>>> @@ -121,6 +122,7 @@ struct mlx5_vdpa_virtqueue {
+>>>>>>>>          u32 virtq_id;
+>>>>>>>>          struct mlx5_vdpa_net *ndev;
+>>>>>>>>          u16 avail_idx;
+>>>>>>>> +    u16 used_idx;
+>>>>>>>>          int fw_state;
+>>>>>>>>            /* keep last in the struct */
+>>>>>>>> @@ -804,6 +806,7 @@ static int create_virtqueue(struct mlx5_vdpa_net
+>>>>>>>> *ndev, struct mlx5_vdpa_virtque
+>>>>>>>>            obj_context = MLX5_ADDR_OF(create_virtio_net_q_in, in,
+>>>>>>>> obj_context);
+>>>>>>>>          MLX5_SET(virtio_net_q_object, obj_context, hw_available_index,
+>>>>>>>> mvq->avail_idx);
+>>>>>>>> +    MLX5_SET(virtio_net_q_object, obj_context, hw_used_index,
+>>>>>>>> mvq->used_idx);
+>>>>>>>>          MLX5_SET(virtio_net_q_object, obj_context,
+>>>>>>>> queue_feature_bit_mask_12_3,
+>>>>>>>>               get_features_12_3(ndev->mvdev.actual_features));
+>>>>>>>>          vq_ctx = MLX5_ADDR_OF(virtio_net_q_object, obj_context,
+>>>>>>>> virtio_q_context);
+>>>>>>>> @@ -1022,6 +1025,7 @@ static int connect_qps(struct mlx5_vdpa_net
+>>>>>>>> *ndev, struct mlx5_vdpa_virtqueue *m
+>>>>>>>>      struct mlx5_virtq_attr {
+>>>>>>>>          u8 state;
+>>>>>>>>          u16 available_index;
+>>>>>>>> +    u16 used_index;
+>>>>>>>>      };
+>>>>>>>>        static int query_virtqueue(struct mlx5_vdpa_net *ndev, struct
+>>>>>>>> mlx5_vdpa_virtqueue *mvq,
+>>>>>>>> @@ -1052,6 +1056,7 @@ static int query_virtqueue(struct
+>>>>>>>> mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueu
+>>>>>>>>          memset(attr, 0, sizeof(*attr));
+>>>>>>>>          attr->state = MLX5_GET(virtio_net_q_object, obj_context, state);
+>>>>>>>>          attr->available_index = MLX5_GET(virtio_net_q_object,
+>>>>>>>> obj_context, hw_available_index);
+>>>>>>>> +    attr->used_index = MLX5_GET(virtio_net_q_object, obj_context,
+>>>>>>>> hw_used_index);
+>>>>>>>>          kfree(out);
+>>>>>>>>          return 0;
+>>>>>>>>      @@ -1535,6 +1540,16 @@ static void teardown_virtqueues(struct
+>>>>>>>> mlx5_vdpa_net *ndev)
+>>>>>>>>          }
+>>>>>>>>      }
+>>>>>>>>      +static void clear_virtqueues(struct mlx5_vdpa_net *ndev)
+>>>>>>>> +{
+>>>>>>>> +    int i;
+>>>>>>>> +
+>>>>>>>> +    for (i = ndev->mvdev.max_vqs - 1; i >= 0; i--) {
+>>>>>>>> +        ndev->vqs[i].avail_idx = 0;
+>>>>>>>> +        ndev->vqs[i].used_idx = 0;
+>>>>>>>> +    }
+>>>>>>>> +}
+>>>>>>>> +
+>>>>>>>>      /* TODO: cross-endian support */
+>>>>>>>>      static inline bool mlx5_vdpa_is_little_endian(struct mlx5_vdpa_dev
+>>>>>>>> *mvdev)
+>>>>>>>>      {
+>>>>>>>> @@ -1610,6 +1625,7 @@ static int save_channel_info(struct
+>>>>>>>> mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqu
+>>>>>>>>              return err;
+>>>>>>>>            ri->avail_index = attr.available_index;
+>>>>>>>> +    ri->used_index = attr.used_index;
+>>>>>>>>          ri->ready = mvq->ready;
+>>>>>>>>          ri->num_ent = mvq->num_ent;
+>>>>>>>>          ri->desc_addr = mvq->desc_addr;
+>>>>>>>> @@ -1654,6 +1670,7 @@ static void restore_channels_info(struct
+>>>>>>>> mlx5_vdpa_net *ndev)
+>>>>>>>>                  continue;
+>>>>>>>>                mvq->avail_idx = ri->avail_index;
+>>>>>>>> +        mvq->used_idx = ri->used_index;
+>>>>>>>>              mvq->ready = ri->ready;
+>>>>>>>>              mvq->num_ent = ri->num_ent;
+>>>>>>>>              mvq->desc_addr = ri->desc_addr;
+>>>>>>>> @@ -1768,6 +1785,7 @@ static void mlx5_vdpa_set_status(struct
+>>>>>>>> vdpa_device *vdev, u8 status)
+>>>>>>>>          if (!status) {
+>>>>>>>>              mlx5_vdpa_info(mvdev, "performing device reset\n");
+>>>>>>>>              teardown_driver(ndev);
+>>>>>>>> +        clear_virtqueues(ndev);
+>>>>>>> The clearing looks fine at the first glance, as it aligns with the other
+>>>>>>> state cleanups floating around at the same place. However, the thing is
+>>>>>>> get_vq_state() is supposed to be called right after to get sync'ed with
+>>>>>>> the latest internal avail_index from device while vq is stopped. The
+>>>>>>> index was saved in the driver software at vq suspension, but before the
+>>>>>>> virtq object is destroyed. We shouldn't clear the avail_index too early.
+>>>>>> Good point.
+>>>>>>
+>>>>>> There's a limitation on the virtio spec and vDPA framework that we can not
+>>>>>> simply differ device suspending from device reset.
+>>>>>>
+>>>>> Are you talking about live migration where you reset the device but
+>>>>> still want to know how far it progressed in order to continue from the
+>>>>> same place in the new VM?
+>>>> Yes. So if we want to support live migration at we need:
+>>>>
+>>>> in src node:
+>>>> 1) suspend the device
+>>>> 2) get last_avail_idx via get_vq_state()
+>>>>
+>>>> in the dst node:
+>>>> 3) set last_avail_idx via set_vq_state()
+>>>> 4) resume the device
+>>>>
+>>>> So you can see, step 2 requires the device/driver not to forget the
+>>>> last_avail_idx.
+>>>>
+>>> Just to be sure, what really matters here is the used index. Becuase the
+>>> vriqtueue itself is copied from the src VM to the dest VM. The available
+>>> index is alreay there and we know the hardware reads it from there.
+>>
+>> So for "last_avail_idx" I meant the hardware internal avail index. It's not
+>> stored in the virtqueue so we must migrate it from src to dest and set them
+>> through set_vq_state(). Then in the destination, the virtqueue can be
+>> restarted from that index.
+>>
+> Consider this case: driver posted buffers till avail index becomes the
+> value 50. Hardware is executing but made it till 20 when virtqueue was
+> suspended due to live migration - this is indicated by hardware used
+> index equal 20.
+
+
+So in this case the used index in the virtqueue should be 20? Otherwise 
+we need not sync used index itself but all the used entries that is not 
+committed to the used ring.
+
+
+> Now the vritqueue is copied to the new VM and the
+> hardware now has to continue execution from index 20. We need to tell
+> the hardware via configuring the last used_index.
+
+
+If the hardware can not sync the index from the virtqueue, the driver 
+can do the synchronization by make the last_used_idx equals to used 
+index in the virtqueue.
 
 Thanks
 
+
+>   So why don't we
+> restore the used index?
 >
-> So, in short I think the "if (zc.reserved)" is correct as Leon noted.
+>>> So it puzzles me why is set_vq_state() we do not communicate the saved
+>>> used index.
+>>
+>> We don't do that since:
+>>
+>> 1) if the hardware can sync its internal used index from the virtqueue
+>> during device, then we don't need it
+>> 2) if the hardware can not sync its internal used index, the driver (e.g as
+>> you did here) can do that.
+>>
+>> But there's no way for the hardware to deduce the internal avail index from
+>> the virtqueue, that's why avail index is sycned.
+>>
+>> Thanks
+>>
+>>
+
