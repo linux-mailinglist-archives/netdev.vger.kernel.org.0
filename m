@@ -2,158 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E90C4314914
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 07:48:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2A85314918
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 07:49:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229752AbhBIGrr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 01:47:47 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59720 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229521AbhBIGrr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Feb 2021 01:47:47 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8D2A064E10;
-        Tue,  9 Feb 2021 06:47:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612853226;
-        bh=oKVovTKhvczU4tEQW9qNHoEeYMW424OaQMx5Tm6UnEU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ClWO5PpuPiVLlKHZxmGpkUe+TlGwzWYGvfJQ/CfYtbK2UzsPUBeuMvVIWJ0bPvWcN
-         D3FSFZ3Qc7iWUDuIwtIcTL2j2x9Cw3F/A9cbZsRSRXCctf3tJygl0likDzVLBxldM/
-         jWw3YSxrT+Fw+/rb9s/nfX7A56b+x0wfpfeKcRycRHLEMYei0LEbAbhRpeKUX+JVGr
-         s6AC2qnh0UTBP/ONyxzbpCqsgFutFembjHWPn9/x3rA2wHNYjJFbxJMEBC7R0B616w
-         s1W9X8WfLcQ47zq8ZslNnDK/W0EsJSeLAqWDqdkGsfVwrPQTwi56tSBAoIJkVcJth6
-         7++dGkGfKzGKw==
-Date:   Tue, 9 Feb 2021 08:47:02 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Chris Mi <cmi@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        jiri@nvidia.com, Saeed Mahameed <saeedm@nvidia.com>,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH net-next v4] net: psample: Introduce stubs to remove NIC
- driver dependency
-Message-ID: <20210209064702.GB139298@unreal>
-References: <CAM_iQpWQe1W+x_bua+OfjTR-tCgFYgj_8=eKz7VJdKHPRKuMYw@mail.gmail.com>
- <6c586e9a-b672-6e60-613b-4fb6e6db8c9a@nvidia.com>
- <20210129123009.3c07563d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210130144231.GA3329243@shredder.lan>
- <8924ef5a-a3ac-1664-ca11-5f2a1f35399a@nvidia.com>
- <20210201180837.GB3456040@shredder.lan>
- <20210208070350.GB4656@unreal>
- <20210208085746.GA179437@shredder.lan>
- <20210208090702.GB20265@unreal>
- <20210208170735.GA207830@shredder.lan>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210208170735.GA207830@shredder.lan>
+        id S229759AbhBIGtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 01:49:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55302 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229464AbhBIGtJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 01:49:09 -0500
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 503FFC061786;
+        Mon,  8 Feb 2021 22:48:29 -0800 (PST)
+Received: by mail-io1-xd34.google.com with SMTP id q7so17742901iob.0;
+        Mon, 08 Feb 2021 22:48:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=vn04CRRunlm4IYIn+hFYIf3vBeSbVNhIrnfDu+YIRzw=;
+        b=eVobysR84m97DqPra7MIA+UI0+ln3PFHP4WxpcuZ0gky0kBMV2eu1mU0PTPlO3pxcn
+         XwnnUwCryp8CtTNpqXGxSk1kp9law4NEYzOZlMZyQuB4p155bw9lKqBih28k8Ke+8I97
+         sni4HrsBTmHlgKKdJzQQynwx9yg90YLPs2uQFcDNtt9UYyT8sppiekS+DOdLQLgqqwQa
+         dEfcFegAu0vvhUUJhZqN8RNPplFtQ89LbGRKgHhpLHj3y7S/mFxDUbURskrrFFOw9hda
+         v6+lKCnECOPNCkZ4S3lLrRZC4z3RMgt5hPo0/BR0EOkU1dJcCR6k183NSdUUIUhQaNYy
+         WYNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=vn04CRRunlm4IYIn+hFYIf3vBeSbVNhIrnfDu+YIRzw=;
+        b=IKr+zaKqrXvZGXrEgEb2xFrHfKYVmgmjxdFWdkFKAIQcDidYCGEwDbRo4MINXoXydh
+         Uo33PPgPKYwnr3gRl38GkGybuVcnN1UaPH0DQ5ms6ItwCbA7qrOSKY3LQY44/0RPlwi8
+         u82/TKe4XSWI0TrNIFXUQE729ga77dNey2lQBHwJ18dOrs3CZAreiccM2teCOVshArg8
+         Rn2xcZwrmfq5bn0//QUNSzerCnAIFs0wzmnQl6NKQaPn178/wbGuu47m6A+PHLJlKhaN
+         1nsaM/ki+94WCAAypIF1ePGjJvIaF/3q3yGrW6iEJoIb2p+mh+opuc+kq84+Q1jIKy76
+         7+AA==
+X-Gm-Message-State: AOAM533BmTm5P1urDKXPuL2zS3QxeRHsfTzkVKeJKT1f7t9c+yUOavbg
+        cVM4jN9vcZwKDFLFbdGVBtg=
+X-Google-Smtp-Source: ABdhPJyKsKhCvg49Tf/8tkPb/vgI7l3Iz9ERyXuTirX6u8MyskBSKq8KYj3HFyW2GmduF6BIHajJVw==
+X-Received: by 2002:a02:e87:: with SMTP id 129mr20808060jae.34.1612853308682;
+        Mon, 08 Feb 2021 22:48:28 -0800 (PST)
+Received: from localhost ([172.243.146.206])
+        by smtp.gmail.com with ESMTPSA id t18sm9180400ioi.33.2021.02.08.22.48.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Feb 2021 22:48:27 -0800 (PST)
+Date:   Mon, 08 Feb 2021 22:48:20 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, duanxiongchun@bytedance.com,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        jiang.wang@bytedance.com, Cong Wang <cong.wang@bytedance.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Message-ID: <6022303458ba9_13a65f208f7@john-XPS-13-9370.notmuch>
+In-Reply-To: <CAM_iQpWu8PMbSTfsifBy9j9BLrMn69H2fFkjdRVpGGtbmUURFw@mail.gmail.com>
+References: <20210203041636.38555-1-xiyou.wangcong@gmail.com>
+ <20210203041636.38555-2-xiyou.wangcong@gmail.com>
+ <6020f4793d9b5_cc86820866@john-XPS-13-9370.notmuch>
+ <CAM_iQpWu8PMbSTfsifBy9j9BLrMn69H2fFkjdRVpGGtbmUURFw@mail.gmail.com>
+Subject: Re: [Patch bpf-next 01/19] bpf: rename BPF_STREAM_PARSER to
+ BPF_SOCK_MAP
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 08, 2021 at 07:07:35PM +0200, Ido Schimmel wrote:
-> On Mon, Feb 08, 2021 at 11:07:02AM +0200, Leon Romanovsky wrote:
-> > On Mon, Feb 08, 2021 at 10:57:46AM +0200, Ido Schimmel wrote:
-> > > On Mon, Feb 08, 2021 at 09:03:50AM +0200, Leon Romanovsky wrote:
-> > > > On Mon, Feb 01, 2021 at 08:08:37PM +0200, Ido Schimmel wrote:
-> > > > > On Mon, Feb 01, 2021 at 09:37:11AM +0800, Chris Mi wrote:
-> > > > > > Hi Ido,
-> > > > > >
-> > > > > > On 1/30/2021 10:42 PM, Ido Schimmel wrote:
-> > > > > > > On Fri, Jan 29, 2021 at 12:30:09PM -0800, Jakub Kicinski wrote:
-> > > > > > > > On Fri, 29 Jan 2021 14:08:39 +0800 Chris Mi wrote:
-> > > > > > > > > Instead of discussing it several days, maybe it's better to review
-> > > > > > > > > current patch, so that we can move forward :)
-> > > > > > > > It took you 4 revisions to post a patch which builds cleanly and now
-> > > > > > > > you want to hasten the review? My favorite kind of submission.
-> > > > > > > >
-> > > > > > > > The mlxsw core + spectrum drivers are 65 times the size of psample
-> > > > > > > > on my system. Why is the dependency a problem?
-> > > > > > > mlxsw has been using psample for ~4 years and I don't remember seeing a
-> > > > > > > single complaint about the dependency. I don't understand why this patch
-> > > > > > > is needed.
-> > > > > > Please see Saeed's comment in previous email:
-> > > > > >
-> > > > > > "
-> > > > > >
-> > > > > > The issue is with distros who ship modules independently.. having a
-> > > > > > hard dependency will make it impossible for basic mlx5_core.ko users to
-> > > > > > load the driver when psample is not installed/loaded.
-> > > > > >
-> > > > > > I prefer to have 0 dependency on external modules in a HW driver.
-> > > > > > "
-> > > > >
-> > > > > I saw it, but it basically comes down to personal preferences.
-> > > >
-> > > > It is more than personal preferences. In opposite to the mlxsw which is
-> > > > used for netdev only, the mlx5_core is used by other subsystems, e.g. RDMA,
-> > > > so Saeed's request to avoid extra dependencies makes sense.
-> > > >
-> > > > We don't need psample dependency to run RDMA traffic.
-> > >
-> > > Right, you don't need it. The dependency is "PSAMPLE || PSAMPLE=n". You
-> > > can compile out psample and RDMA will work.
+Cong Wang wrote:
+> On Mon, Feb 8, 2021 at 12:21 AM John Fastabend <john.fastabend@gmail.com> wrote:
 > >
-> > So do you suggest to all our HPC users recompile their distribution kernel
-> > just to make sure that psample is not called?
->
-> I don't know. What are they complaining about? That psample needs to be
-> installed for mlx5_core to be loaded? How come the rest of the
-> dependencies are installed?
+> > Cong Wang wrote:
+> > > From: Cong Wang <cong.wang@bytedance.com>
+> > >
+> > > Before we add non-TCP support, it is necessary to rename
+> > > BPF_STREAM_PARSER as it will be no longer specific to TCP,
+> > > and it does not have to be a parser either.
+> > >
+> > > This patch renames BPF_STREAM_PARSER to BPF_SOCK_MAP, so
+> > > that sock_map.c hopefully would be protocol-independent.
+> > >
+> > > Also, improve its Kconfig description to avoid confusion.
+> > >
+> > > Cc: John Fastabend <john.fastabend@gmail.com>
+> > > Cc: Daniel Borkmann <daniel@iogearbox.net>
+> > > Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> > > Cc: Lorenz Bauer <lmb@cloudflare.com>
+> > > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> > > ---
+> >
+> > The BPF_STREAM_PARSER config was originally added because we need
+> > the STREAM_PARSER define and wanted a way to get the 'depends on'
+> > lines in Kconfig correct.
+> >
+> > Rather than rename this, lets reduce its scope to just the set
+> > of actions that need the STREAM_PARSER, this should be just the
+> > stream parser programs. We probably should have done this sooner,
+> > but doing it now will be fine.
+> 
+> This makes sense, but we still need a Kconfig for the rest sockmap
+> code, right? At least for the dependency on NET_SOCK_MSG?
 
-The psample module was first dependency that caught our attention. It is
-here as an example of such not-needed dependency. Like Saeed said, we are
-interested in more general solution that will allow us to use external
-modules in fully dynamic mode.
+Lets just enable NET_SOCK_MSG when CONFIG_BPF_SYSCALL is enabled. We
+never put any of the other maps, devmap, cpumap, etc. behind an
+explicit flag like this.
 
-Internally, as a preparation to the submission of mlx5 code that used nf_conntrack,
-we found that restart of firewald service will bring down our mlx5_core driver, because
-of such dependency.
+> 
+> >
+> > I can probably draft a quick patch tomorrow if above is not clear.
+> > It can go into bpf-next outside this series as well to reduce
+> > the 19 patches a bit.
+> 
+> I can handle it in my next update too, like all other feedbacks.
 
-So to answer on your question, HPC didn't complain yet, but we don't have any plans
-to wait till they complain.
+Great thanks. Especially because I haven't got to it yet today.
 
->
-> Or are they complaining about the size / memory footprint of psample?
-> Because then they should first check mlx5_core when all of its options
-> are blindly enabled as part of a distribution config.
+> 
+> Thanks.
 
-You are too focused on psample, while Saeed and I are saying more
-general statement "I prefer to have 0 dependency on external modules in a HW driver."
 
->
-> AFAICS, mlx5 still does not have any code that uses psample. You can
-> wrap it in a config option and keep the weak dependency on psample.
-> Something like:
->
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Kconfig b/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
-> index ad45d20f9d44..d17d03d8cc8b 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
-> @@ -104,6 +104,15 @@ config MLX5_TC_CT
->
->           If unsure, set to Y
->
-> +config MLX5_TC_SAMPLE
-> +       bool "MLX5 TC sample offload support"
-> +       depends on MLX5_CLS_ACT
-> +       depends on PSAMPLE || PSAMPLE=n
-> +       default n
-> +       help
-> +         Say Y here if you want to support offloading tc rules that use sample
-> +          action.
-> +
-
-This is another problem with mlx5 - complete madness with config options
-that are not possible to test.
-➜  kernel git:(rdma-next) grep -h "config MLX" drivers/net/ethernet/mellanox/mlx5/core/Kconfig | awk '{ print $2}' | sort |uniq |wc -l
-19
-
-And it is not weak dependency, but still hard dependency because you
-need to recompile your kernel/module to disable/enable it. Any service
-that will need to reload psample module for some reason will remove
-mlx5_core.
-
-Thanks
