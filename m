@@ -2,131 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0729C314A90
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 09:43:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19B37314A95
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 09:46:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229895AbhBIInP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 03:43:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51506 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229690AbhBIInB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 03:43:01 -0500
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4B0CC06178B
-        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 00:42:13 -0800 (PST)
-Received: by mail-yb1-xb2d.google.com with SMTP id r2so17366814ybk.11
-        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 00:42:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ry/aW8pM4+OFmgM9J1BvMlzktMEn61WP1dLbo7LFb/M=;
-        b=lPc+gbS1oeVsa25Eet1RIHnU8hSqRQyBkNghjNzRY2wrkrgXwdaS+hEF6tnHA9cEed
-         uMt+M9F4Gy9FD4cY+X33oCcsWl09BEnWDORqFPzfpZu9sDwLaXGYCLGyPVvChPsmUBKu
-         QAZB71yW1FbSUIoWeYZE6rbHk7uPmQ5SxsIwBHU7sxMkcPs9UdauZgyDIgFJDf0gEZhB
-         571fuai/Fxk+J7WQg+kwozaNhaPgNOt0xCG/KQNoF7SAgqru22C3PF21epb8pJcaWLYM
-         HcqgmGHIPNwHdm/IZIQ0/E8nBNpbte+DRVdenkVuYm6OVuZoUHGWfFP0bQuIJE3edJnS
-         SrhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ry/aW8pM4+OFmgM9J1BvMlzktMEn61WP1dLbo7LFb/M=;
-        b=JZY59G0QEvKvx7CXxn27hdrBtAnx8MISFC2LsoMSHOp0XVk7rS77i0bZZlmz/T8zLo
-         PGgCjFAmFYVaBipp5P4OH4+kX877H9SNjmeVq0oVMQpcz+kgwe0QRj1JVojVSOfoPxc1
-         D14RaCqRcKqqZKuWOeUshPbEEVlspPsKNnUO8squYBp6WzDDy2lkWUEL++o03Av46atQ
-         kEGdQlJ9XI96ZYzIj7dlZmKrW6wHcs3pN1hjpcyDVoMBnIVw92fXehLzZM05lilLFlZQ
-         udZTf3fxQIyVNjF4D7uGFab4kexQPcd0zwNZrS1oJES4+XGy/YuodplMdm+JvUoQwrCC
-         peNQ==
-X-Gm-Message-State: AOAM530hCmqxJOx5lC3NedqdUxWwvrjrep+NhLEteQ2a1SCzIt0ZE0vG
-        yae6qBi1R8TflrVUCJLJTbxrkSYJKIYFZjrlxE4CDy5WnuEDCQ==
-X-Google-Smtp-Source: ABdhPJykv5KnyrJV71TbtGDB0hdEeSbJnwLfif8W+M0nz7NxvbrdgCijLYQQCDpMyuW3/CVvwuN8+gS9LXzYMN7nsdw=
-X-Received: by 2002:a25:1646:: with SMTP id 67mr32358350ybw.97.1612860133207;
- Tue, 09 Feb 2021 00:42:13 -0800 (PST)
+        id S230003AbhBIIny (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 03:43:54 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:7430 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S229690AbhBIInr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 03:43:47 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 1198afpp003954;
+        Tue, 9 Feb 2021 00:42:45 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=RBZH28AihrXWJ0czsh9x/Sr5BV4yon92OXbl1WE+hOA=;
+ b=KKt1buR7m9FyfKosk82NAEdPD3UhRDhXg/Kif9tWVDEoIcUCnMWypea/Ov/z1nl7yggY
+ AXf7dORFHkx+CcWr3iJLcrxORzhDRZQbUcpaYKyFKjZks4GSjremZS7cHCxrpPcKYXVp
+ VZ57C++fkrR5QCFm5GS4nq5G6MtMqfd1VmHP0Ck6lK/7I5doiJI8TmyjkhMBxVXEFe+B
+ ywChlvR64BuwG7jKc7z9w2Sg+SQBvtYdowI6R5t38zCEReJnZqP8IUBP9xMI7xJCVE9E
+ 0tpx9/fzhVMIisdp4557fGCDch/8HG3dzmtTrTtZDv1VJ7JphVFO+zQyBZxdWC4Y48XH IA== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0a-0016f401.pphosted.com with ESMTP id 36hsbrfspc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 09 Feb 2021 00:42:45 -0800
+Received: from SC-EXCH02.marvell.com (10.93.176.82) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 9 Feb
+ 2021 00:42:43 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 9 Feb
+ 2021 00:42:43 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 9 Feb 2021 00:42:43 -0800
+Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
+        by maili.marvell.com (Postfix) with ESMTP id 255953F703F;
+        Tue,  9 Feb 2021 00:42:38 -0800 (PST)
+From:   <stefanc@marvell.com>
+To:     <netdev@vger.kernel.org>
+CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
+        <nadavh@marvell.com>, <ymarkman@marvell.com>,
+        <linux-kernel@vger.kernel.org>, <stefanc@marvell.com>,
+        <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
+        <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
+        <atenart@kernel.org>, <devicetree@vger.kernel.org>,
+        <robh+dt@kernel.org>, <sebastian.hesselbarth@gmail.com>,
+        <gregory.clement@bootlin.com>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: [PATCH v11 net-next 00/15] net: mvpp2: Add TX Flow Control support
+Date:   Tue, 9 Feb 2021 10:42:16 +0200
+Message-ID: <1612860151-12275-1-git-send-email-stefanc@marvell.com>
+X-Mailer: git-send-email 1.9.1
 MIME-Version: 1.0
-References: <20210206050240.48410-1-saeed@kernel.org>
-In-Reply-To: <20210206050240.48410-1-saeed@kernel.org>
-From:   Or Gerlitz <gerlitz.or@gmail.com>
-Date:   Tue, 9 Feb 2021 10:42:02 +0200
-Message-ID: <CAJ3xEMhPU=hr-wNN+g8Yq4rMqFQQGybQnn86mmbXrTTN6Xb8xw@mail.gmail.com>
-Subject: Re: [pull request][net-next V2 00/17] mlx5 updates 2021-02-04
-To:     Saeed Mahameed <saeed@kernel.org>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Linux Netdev List <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
+ definitions=2021-02-09_02:2021-02-09,2021-02-09 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 6, 2021 at 7:10 AM Saeed Mahameed <saeed@kernel.org> wrote:
+From: Stefan Chulski <stefanc@marvell.com>
 
-> Vlad Buslov says:
+Armada hardware has a pause generation mechanism in GOP (MAC).
+The GOP generate flow control frames based on an indication programmed in Ports Control 0 Register. There is a bit per port.
+However assertion of the PortX Pause bits in the ports control 0 register only sends a one time pause.
+To complement the function the GOP has a mechanism to periodically send pause control messages based on periodic counters.
+This mechanism ensures that the pause is effective as long as the Appropriate PortX Pause is asserted.
 
-> Implement support for VF tunneling
+Problem is that Packet Processor that actually can drop packets due to lack of resources not connected to the GOP flow control generation mechanism.
+To solve this issue Armada has firmware running on CM3 CPU dedicated for Flow Control support.
+Firmware monitors Packet Processor resources and asserts XON/XOFF by writing to Ports Control 0 Register.
 
-> Currently, mlx5 only supports configuration with tunnel endpoint IP address on
-> uplink representor. Remove implicit and explicit assumptions of tunnel always
-> being terminated on uplink and implement necessary infrastructure for
-> configuring tunnels on VF representors and updating rules on such tunnels
-> according to routing changes.
+MSS shared SRAM memory used to communicate between CM3 firmware and PP2 driver.
+During init PP2 driver informs firmware about used BM pools, RXQs, congestion and depletion thresholds.
 
-> SW TC model
+The pause frames are generated whenever congestion or depletion in resources is detected.
+The back pressure is stopped when the resource reaches a sufficient level.
+So the congestion/depletion and sufficient level implement a hysteresis that reduces the XON/XOFF toggle frequency.
 
-maybe before SW TC model, you can explain the vswitch SW model (TC is
-a vehicle to implement the SW model).
+Packet Processor v23 hardware introduces support for RX FIFO fill level monitor.
+Patch "add PPv23 version definition" to differ between v23 and v22 hardware.
+Patch "add TX FC firmware check" verifies that CM3 firmware supports Flow Control monitoring.
 
-SW model for VST and "classic" v-switch tunnel setup:
+v10 --> v11
+- Improve "net: mvpp2: add CM3 SRAM memory map" comment
+- Move condition check to 'net: mvpp2: always compare hw-version vs MVPP21' patch
 
-For example, in VST model, each virtio/vf/sf vport has a vlan
-such that the v-switch tags packets going out "south" of the
-vport towards the uplink, untags packets going "north" from
-the uplink, matches on the vport tag and forwards them to
-the vport (and does nothing for east-west traffic).
+v9 --> v10
+- Add CM3 SRAM description to PPv2 documentation
 
-In a similar manner, in "classic" v-switch tunnel setup, each
-virtio/vf/sf vport is somehow associated with VNI/s marking the
-tenant/s it belongs to. Same tenant east-west traffic on the
-host doesn't go through any encap/decap. The v-switch adds the
-relevant tunnel MD to packets/skbs sent "southward" by the end-point
-and forwards it to the VTEP which applies encap based on the MD (LWT
-scheme) and sends the packets to the wire. On RX, the VTEP decaps
-the tunnel info from the packet, adds it as MD to the skb and
-forwards the packet up into the stack where the vsw hooks it, matches
-on the MD + inner tuple and then forwards it to the relevant endpoint.
+v8 --> v9
+- Replace generic pool allocation with devm_ioremap_resource
 
-HW offloads for VST and "classic" v-switch tunnel setup:
+v7 --> v8
+- Reorder "always compare hw-version vs MVPP21" and "add PPv23 version definition" commits
+- Typo fixes
+- Remove condition fix from "add RXQ flow control configurations"
 
-more or less straight forward based on the above
+v6 --> v7
+- Reduce patch set from 18 to 15 patches
+ - Documentation change combined into a single patch
+ - RXQ and BM size change combined into a single patch
+ - Ring size change check moved into "add RXQ flow control configurations" commit
 
-> From TC perspective VF tunnel configuration requires two rules in both
-> directions:
+v5 --> v6
+- No change
 
-> TX rules
-> 1. Rule that redirects packets from UL to VF rep that has the tunnel
-> endpoint IP address:
-> 2. Rule that decapsulates the tunneled flow and redirects to destination VF
-> representor:
+v4 --> v5
+- Add missed Signed-off
+- Fix warnings in patches 3 and 12
+- Add revision requirement to warning message
+- Move mss_spinlock into RXQ flow control configurations patch
+- Improve FCA RXQ non occupied descriptor threshold commit message
 
-> RX rules
-> 1. Rule that encapsulates the tunneled flow and redirects packets from
-> source VF rep to tunnel device:
-> 2. Rule that redirects from tunnel device to UL rep:
+v3 --> v4
+- Remove RFC tag
 
-mmm it's kinda hard managing to follow and catch up a SW model from TC rules..
+v2 --> v3
+- Remove inline functions
+- Add PPv2.3 description into marvell-pp2.txt
+- Improve mvpp2_interrupts_mask/unmask procedure
+- Improve FC enable/disable procedure
+- Add priv->sram_pool check
+- Remove gen_pool_destroy call
+- Reduce Flow Control timer to x100 faster
 
-I think we need these two to begin with (in whatever order that works
-better for you)
+v1 --> v2
+- Add memory requirements information
+- Add EPROBE_DEFER if of_gen_pool_get return NULL
+- Move Flow control configuration to mvpp2_mac_link_up callback
+- Add firmware version info with Flow control support
 
-[1] Motivation for enhanced v-switch tunnel setup:
+Konstantin Porotchkin (1):
+  dts: marvell: add CM3 SRAM memory to cp11x ethernet device tree
 
-[2] SW model for enhanced v-switch tunnel setup:
+Stefan Chulski (14):
+  doc: marvell: add CM3 address space and PPv2.3 description
+  net: mvpp2: add CM3 SRAM memory map
+  net: mvpp2: always compare hw-version vs MVPP21
+  net: mvpp2: add PPv23 version definition
+  net: mvpp2: increase BM pool and RXQ size
+  net: mvpp2: add FCA periodic timer configurations
+  net: mvpp2: add FCA RXQ non occupied descriptor threshold
+  net: mvpp2: enable global flow control
+  net: mvpp2: add RXQ flow control configurations
+  net: mvpp2: add ethtool flow control configuration support
+  net: mvpp2: add BM protection underrun feature support
+  net: mvpp2: add PPv23 RX FIFO flow control
+  net: mvpp2: set 802.3x GoP Flow Control mode
+  net: mvpp2: add TX FC firmware check
 
-> HW offloads model
+ Documentation/devicetree/bindings/net/marvell-pp2.txt |   6 +-
+ arch/arm64/boot/dts/marvell/armada-cp11x.dtsi         |   2 +-
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h            | 124 ++++-
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c       | 526 ++++++++++++++++++--
+ 4 files changed, 609 insertions(+), 49 deletions(-)
 
-a clear SW model before HW offloads model..
+-- 
+1.9.1
 
->  25 files changed, 3812 insertions(+), 1057 deletions(-)
-
-for adding almost 4K LOCs
