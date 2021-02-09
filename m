@@ -2,144 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35FEC314713
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 04:30:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69B4131471B
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 04:38:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230490AbhBIDaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 22:30:00 -0500
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:33779 "EHLO
-        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230491AbhBIDZs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 22:25:48 -0500
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 8DDFF58015A;
-        Mon,  8 Feb 2021 22:24:31 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Mon, 08 Feb 2021 22:24:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        to:cc:references:from:subject:message-id:date:mime-version
-        :in-reply-to:content-type:content-transfer-encoding; s=fm1; bh=4
-        DiscTR6+K04v5pQyWV0iTVaBBWAg9lBcNkZsN81LHA=; b=F88+D0aHTMKL++WnJ
-        //N/yaD06mgxOst6EWNCoy54TfJiTwiEgNTkoIaXHJbxWinTfy0agykHsbZj0+6C
-        dSisvfGKwcqoVSW7zk0sL+fjnnb/ZZcQiAg5DG0LHTtLzuXFLBaakdmBAD7aQOAi
-        jUhRjIic6Rau8bphEVExAl3v2rNp5AayWl7cvKdzoSZzQ4xBkgFxK+1SAW6LPZ4D
-        QiiWmt2n3OdFCqerz1YPEAADpTIR1V1IgUYcMcgRHsAf6rYVrH4YIK/66eA8EH5V
-        x0pxbFstD4EFqJXK/bf5GwRT49dXF5WRL6gDcvoP8G1zXOs9hJxdR4Y+xaQjxUyr
-        AZBAA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; bh=4DiscTR6+K04v5pQyWV0iTVaBBWAg9lBcNkZsN81L
-        HA=; b=bfP1WHpoS9jpHZpGxcwwvDuyDOE0Q0Ip6tGyfjnNgUcVzY7Cg2lYtU6cm
-        mp19CLQQ9Qe/Z/oFt6z/xCbqkb0dFx8b5bVhPhT6py96z01HLu//3RLO5Ur3GC1M
-        OOrlZOTfoh2bva8nZyMQXCbn4Al0mPZO2/5yNP1+5yq1xVR1bznaIk+Wq4KBU2YR
-        iVt2wkdiERMJTKsd8iA310Svci6QTsSIxIuFwhI6xmcoUDjJW3DgNAUAHPOddUnQ
-        P1A5DFWXbtPq87/1IU+05HWslDCLFuVkQ8onfd14kFxQYwgY1no/t/0/tIU/kHL7
-        zwHKVprFmX8AGPQVOHMJNVuR7ogJg==
-X-ME-Sender: <xms:bAAiYF8sSjpbKske3vQajbBr6qA8JEdW-kJvk5-C1EiYjK_jLqLaOw>
-    <xme:bAAiYJta_AaZoswPFy-lnayPaYA1hE9-fsRlR2BZ1jlOheUq2uFdVPbqUiFFq5vyh
-    dCqVPWxvk061xaXdw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrheeggdeitdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefvfhfhuffkffgfgggjtgfgsehtkeertddtfeejnecuhfhrohhmpefurghmuhgv
-    lhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtf
-    frrghtthgvrhhnpedvtddtjeeiuddugfffveetkeffgeffgedutdfgfeekudevudekffeh
-    tdefveeuvdenucfkphepjedtrddufeehrddugeekrdduhedunecuvehluhhsthgvrhfuih
-    iivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshgrmhhuvghlsehshhholhhlrghn
-    ugdrohhrgh
-X-ME-Proxy: <xmx:bAAiYDAuHpuZZVxPKPthg6F3SeWur-6CxPno1t-VZOwd3sQDcj2y7w>
-    <xmx:bAAiYJc2fKISPusaS96w3h7-QG2ZXtHtNkUC4JNFMc3MkLE1N-KoIQ>
-    <xmx:bAAiYKOsZkkkBJ9yFI6EMBQUS9UVoYLb-FrMBMBNIBnYFtEk35ZS5Q>
-    <xmx:bwAiYGniK4t9kay0GE7FNrridH9vQMPR495wlPXoSh_4U9FXSs4a2w>
-Received: from [70.135.148.151] (70-135-148-151.lightspeed.stlsmo.sbcglobal.net [70.135.148.151])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 2FD4B240057;
-        Mon,  8 Feb 2021 22:24:28 -0500 (EST)
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S229705AbhBIDgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 22:36:51 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:55349 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230356AbhBIDc4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 22:32:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612841457;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=caTHZTenmPQKadGbUAGyUsIA4p8IzVJtUSrJaDPU17o=;
+        b=U8yJw+U1hCy55rVe+2by/JxpAgmHnvI7HuxXVpWtfupXFOM6kBVYTGEL/FgpoaXSZrNh7z
+        fYKrD6Xa614E1LTXEmQnAUHEVDL7eUJ3Tog1th379ajTuNjaKkviQeA1+TdE7lksdM04Cu
+        buMMOcVH30nD3Wl1xnFx4dP7dra/lt0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-104-GCB9qVSGPHG1msTW-0rOBQ-1; Mon, 08 Feb 2021 22:27:10 -0500
+X-MC-Unique: GCB9qVSGPHG1msTW-0rOBQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 85AF3192D785;
+        Tue,  9 Feb 2021 03:27:09 +0000 (UTC)
+Received: from [10.72.13.32] (ovpn-13-32.pek2.redhat.com [10.72.13.32])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1D3D960C5B;
+        Tue,  9 Feb 2021 03:27:06 +0000 (UTC)
+Subject: Re: [PATCH net] virtio-net: suppress bad irq warning for tx napi
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Wei Wang <weiwan@google.com>, David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@siol.net>,
-        Corentin Labbe <clabbe@baylibre.com>,
-        Ondrej Jirman <megous@megous.com>,
-        Netdev <netdev@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        LKML <linux-kernel@vger.kernel.org>, linux-sunxi@googlegroups.com
-References: <20210208062859.11429-1-samuel@sholland.org>
- <20210208062859.11429-5-samuel@sholland.org>
- <CAKgT0Ue3GAWbjZcX7aFxuM-iY-Ga2E0JOTftUqPBQC_dEGz_Eg@mail.gmail.com>
-From:   Samuel Holland <samuel@sholland.org>
-Subject: Re: [PATCH net-next RESEND 3/5] net: stmmac: dwmac-sun8i: Use
- reset_control_reset
-Message-ID: <b12c9e59-cb96-dd88-e2b7-31517bd0f63e@sholland.org>
-Date:   Mon, 8 Feb 2021 21:24:27 -0600
-User-Agent: Mozilla/5.0 (X11; Linux ppc64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        virtualization@lists.linux-foundation.org
+References: <20210129002136.70865-1-weiwan@google.com>
+ <a0b2cb8d-eb8f-30fb-2a22-678e6dd2f58f@redhat.com>
+ <CAF=yD-+aPBF2RaCR8L5orTM37bf7Z4Z8Qko2D2LZjOz0khHTUg@mail.gmail.com>
+ <3a3e005d-f9b2-c16a-5ada-6e04242c618e@redhat.com>
+ <CAF=yD-+NVKiwS6P2=cS=gk2nLcsWP1anMyy4ghdPiNrhOmLRDw@mail.gmail.com>
+ <9b0b8f2a-8476-697e-9002-e9947e3eab63@redhat.com>
+ <CA+FuTScVOuoHKtrdrRFswjA3Zq1-7sgMVhnP2iMB5sYFFS8NFg@mail.gmail.com>
+ <50ae0b71-df87-f26c-8b4d-8035f9f6a58d@redhat.com>
+ <CAF=yD-J5-60D=JDwvpecjaO6J03SZHoHJyCsR3B1HbP1-jbqng@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <00de1b0f-f2aa-de54-9c7e-472643400417@redhat.com>
+Date:   Tue, 9 Feb 2021 11:27:05 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <CAKgT0Ue3GAWbjZcX7aFxuM-iY-Ga2E0JOTftUqPBQC_dEGz_Eg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+In-Reply-To: <CAF=yD-J5-60D=JDwvpecjaO6J03SZHoHJyCsR3B1HbP1-jbqng@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/8/21 10:29 AM, Alexander Duyck wrote:
-> On Sun, Feb 7, 2021 at 10:32 PM Samuel Holland <samuel@sholland.org> wrote:
+
+On 2021/2/9 上午3:08, Willem de Bruijn wrote:
+> On Sun, Feb 7, 2021 at 10:29 PM Jason Wang <jasowang@redhat.com> wrote:
 >>
->> Use the appropriate function instead of reimplementing it,
->> and update the error message to match the code.
+>> On 2021/2/5 上午4:50, Willem de Bruijn wrote:
+>>> On Wed, Feb 3, 2021 at 10:06 PM Jason Wang <jasowang@redhat.com> wrote:
+>>>> On 2021/2/4 上午2:28, Willem de Bruijn wrote:
+>>>>> On Wed, Feb 3, 2021 at 12:33 AM Jason Wang <jasowang@redhat.com> wrote:
+>>>>>> On 2021/2/2 下午10:37, Willem de Bruijn wrote:
+>>>>>>> On Mon, Feb 1, 2021 at 10:09 PM Jason Wang <jasowang@redhat.com> wrote:
+>>>>>>>> On 2021/1/29 上午8:21, Wei Wang wrote:
+>>>>>>>>> With the implementation of napi-tx in virtio driver, we clean tx
+>>>>>>>>> descriptors from rx napi handler, for the purpose of reducing tx
+>>>>>>>>> complete interrupts. But this could introduce a race where tx complete
+>>>>>>>>> interrupt has been raised, but the handler found there is no work to do
+>>>>>>>>> because we have done the work in the previous rx interrupt handler.
+>>>>>>>>> This could lead to the following warning msg:
+>>>>>>>>> [ 3588.010778] irq 38: nobody cared (try booting with the
+>>>>>>>>> "irqpoll" option)
+>>>>>>>>> [ 3588.017938] CPU: 4 PID: 0 Comm: swapper/4 Not tainted
+>>>>>>>>> 5.3.0-19-generic #20~18.04.2-Ubuntu
+>>>>>>>>> [ 3588.017940] Call Trace:
+>>>>>>>>> [ 3588.017942]  <IRQ>
+>>>>>>>>> [ 3588.017951]  dump_stack+0x63/0x85
+>>>>>>>>> [ 3588.017953]  __report_bad_irq+0x35/0xc0
+>>>>>>>>> [ 3588.017955]  note_interrupt+0x24b/0x2a0
+>>>>>>>>> [ 3588.017956]  handle_irq_event_percpu+0x54/0x80
+>>>>>>>>> [ 3588.017957]  handle_irq_event+0x3b/0x60
+>>>>>>>>> [ 3588.017958]  handle_edge_irq+0x83/0x1a0
+>>>>>>>>> [ 3588.017961]  handle_irq+0x20/0x30
+>>>>>>>>> [ 3588.017964]  do_IRQ+0x50/0xe0
+>>>>>>>>> [ 3588.017966]  common_interrupt+0xf/0xf
+>>>>>>>>> [ 3588.017966]  </IRQ>
+>>>>>>>>> [ 3588.017989] handlers:
+>>>>>>>>> [ 3588.020374] [<000000001b9f1da8>] vring_interrupt
+>>>>>>>>> [ 3588.025099] Disabling IRQ #38
+>>>>>>>>>
+>>>>>>>>> This patch adds a new param to struct vring_virtqueue, and we set it for
+>>>>>>>>> tx virtqueues if napi-tx is enabled, to suppress the warning in such
+>>>>>>>>> case.
+>>>>>>>>>
+>>>>>>>>> Fixes: 7b0411ef4aa6 ("virtio-net: clean tx descriptors from rx napi")
+>>>>>>>>> Reported-by: Rick Jones <jonesrick@google.com>
+>>>>>>>>> Signed-off-by: Wei Wang <weiwan@google.com>
+>>>>>>>>> Signed-off-by: Willem de Bruijn <willemb@google.com>
+>>>>>>>> Please use get_maintainer.pl to make sure Michael and me were cced.
+>>>>>>> Will do. Sorry about that. I suggested just the virtualization list, my bad.
+>>>>>>>
+>>>>>>>>> ---
+>>>>>>>>>       drivers/net/virtio_net.c     | 19 ++++++++++++++-----
+>>>>>>>>>       drivers/virtio/virtio_ring.c | 16 ++++++++++++++++
+>>>>>>>>>       include/linux/virtio.h       |  2 ++
+>>>>>>>>>       3 files changed, 32 insertions(+), 5 deletions(-)
+>>>>>>>>>
+>>>>>>>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+>>>>>>>>> index 508408fbe78f..e9a3f30864e8 100644
+>>>>>>>>> --- a/drivers/net/virtio_net.c
+>>>>>>>>> +++ b/drivers/net/virtio_net.c
+>>>>>>>>> @@ -1303,13 +1303,22 @@ static void virtnet_napi_tx_enable(struct virtnet_info *vi,
+>>>>>>>>>                   return;
+>>>>>>>>>           }
+>>>>>>>>>
+>>>>>>>>> +     /* With napi_tx enabled, free_old_xmit_skbs() could be called from
+>>>>>>>>> +      * rx napi handler. Set work_steal to suppress bad irq warning for
+>>>>>>>>> +      * IRQ_NONE case from tx complete interrupt handler.
+>>>>>>>>> +      */
+>>>>>>>>> +     virtqueue_set_work_steal(vq, true);
+>>>>>>>>> +
+>>>>>>>>>           return virtnet_napi_enable(vq, napi);
+>>>>>>>> Do we need to force the ordering between steal set and napi enable?
+>>>>>>> The warning only occurs after one hundred spurious interrupts, so not
+>>>>>>> really.
+>>>>>> Ok, so it looks like a hint. Then I wonder how much value do we need to
+>>>>>> introduce helper like virtqueue_set_work_steal() that allows the caller
+>>>>>> to toggle. How about disable the check forever during virtqueue
+>>>>>> initialization?
+>>>>> Yes, that is even simpler.
+>>>>>
+>>>>> We still need the helper, as the internal variables of vring_virtqueue
+>>>>> are not accessible from virtio-net. An earlier patch added the
+>>>>> variable to virtqueue itself, but I think it belongs in
+>>>>> vring_virtqueue. And the helper is not a lot of code.
+>>>> It's better to do this before the allocating the irq. But it looks not
+>>>> easy unless we extend find_vqs().
+>>> Can you elaborate why that is better? At virtnet_open the interrupts
+>>> are not firing either.
 >>
->> Reviewed-by: Chen-Yu Tsai <wens@csie.org>
->> Signed-off-by: Samuel Holland <samuel@sholland.org>
->> ---
->>  drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 6 ++----
->>  1 file changed, 2 insertions(+), 4 deletions(-)
+>> I think you meant NAPI actually?
+> I meant interrupt: we don't have to worry about the spurious interrupt
+> warning when no interrupts will be firing. Until virtnet_open
+> completes, the device is down.
+
+
+Ok.
+
+
+>
+>
+>>> I have no preference. Just curious, especially if it complicates the patch.
+>>>
+>> My understanding is that. It's probably ok for net. But we probably need
+>> to document the assumptions to make sure it was not abused in other drivers.
 >>
->> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
->> index 3c3d0b99d3e8..0e8d88417251 100644
->> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
->> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
->> @@ -806,11 +806,9 @@ static int sun8i_dwmac_power_internal_phy(struct stmmac_priv *priv)
->>         /* Make sure the EPHY is properly reseted, as U-Boot may leave
->>          * it at deasserted state, and thus it may fail to reset EMAC.
->>          */
->> -       reset_control_assert(gmac->rst_ephy);
->> -
->> -       ret = reset_control_deassert(gmac->rst_ephy);
->> +       ret = reset_control_reset(gmac->rst_ephy);
->>         if (ret) {
->> -               dev_err(priv->device, "Cannot deassert internal phy\n");
->> +               dev_err(priv->device, "Cannot reset internal PHY\n");
->>                 clk_disable_unprepare(gmac->ephy_clk);
->>                 return ret;
->>         }
-> 
-> I'm assuming you have exclusive access to the phy and this isn't a
-> shared line? Just wanting to confirm since the function call has the
-> following comment in the header for the documentation.
+>> Introduce new parameters for find_vqs() can help to eliminate the subtle
+>> stuffs but I agree it looks like a overkill.
+>>
+>> (Btw, I forget the numbers but wonder how much difference if we simple
+>> remove the free_old_xmits() from the rx NAPI path?)
+> The committed patchset did not record those numbers, but I found them
+> in an earlier iteration:
+>
+>    [PATCH net-next 0/3] virtio-net tx napi
+>    https://lists.openwall.net/netdev/2017/04/02/55
+>
+> It did seem to significantly reduce compute cycles ("Gcyc") at the
+> time. For instance:
+>
+>      TCP_RR Latency (us):
+>      1x:
+>        p50              24       24       21
+>        p99              27       27       27
+>        Gcycles         299      432      308
+>
+> I'm concerned that removing it now may cause a regression report in a
+> few months. That is higher risk than the spurious interrupt warning
+> that was only reported after years of use.
 
-Yes, this driver has exclusive access:
 
-	gmac->rst_ephy = of_reset_control_get_exclusive(iphynode, NULL);
+Right.
 
-And this is a reset line for the Ethernet PHY inside the SoC, that as
-far as I can tell is not shared with anything else.
+So if Michael is fine with this approach, I'm ok with it. But we 
+probably need to a TODO to invent the interrupt handlers that can be 
+used for more than one virtqueues. When MSI-X is enabled, the interrupt 
+handler (vring_interrup()) assumes the interrupt is used by a single 
+virtqueue.
 
->  * Consumers must not use reset_control_(de)assert on shared reset lines when
->  * reset_control_reset has been used.
->  *
-> 
-> If that is the case it might not hurt to add some documentation to
-> your call to reset_control_reset here explaining that it is safe to do
-> so since you have exclusive access.
+Thanks
 
-I can expand the comment above this line for v2.
 
-Cheers,
-Samuel
+>
+
