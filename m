@@ -2,99 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 715AB314609
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 03:06:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1C9231460D
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 03:09:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229754AbhBICGD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 8 Feb 2021 21:06:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51316 "EHLO
+        id S230356AbhBICGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 8 Feb 2021 21:06:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229587AbhBICF7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 21:05:59 -0500
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3794C061786;
-        Mon,  8 Feb 2021 18:05:19 -0800 (PST)
-Received: by mail-yb1-xb2d.google.com with SMTP id r2so16617480ybk.11;
-        Mon, 08 Feb 2021 18:05:19 -0800 (PST)
+        with ESMTP id S230228AbhBICGv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 8 Feb 2021 21:06:51 -0500
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B27A4C061786
+        for <netdev@vger.kernel.org>; Mon,  8 Feb 2021 18:06:10 -0800 (PST)
+Received: by mail-lj1-x236.google.com with SMTP id a22so4631706ljp.10
+        for <netdev@vger.kernel.org>; Mon, 08 Feb 2021 18:06:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=JO5qLiF+a+hB9CUaJSVEMzuCKkUN/wHWCBTXp26fOdU=;
-        b=utKJib+zv1hs1MYwf7oH+/3ONJyPZXj1bdWxHKMZLEwUIqA29FNsCybFJ9o2RzgJmA
-         peZ/XXhWFbXRhkApUez+wcwoSx485s0FqQ1RWI0xf1lBQT3B6pRbLWVVph+sHjy1rDLC
-         uqY4dZ4urFYBtGQ764SAnYfTcuTuEBdIlvaPIHoigPYGn3WFEgY8BdOI6yjBVnAIHW76
-         aAteUKPPP0zWhBG+J91lvyN+Q3795aTLWHB+ngITpW2M2gIk7eBjSY6HjCEQGANdaeM/
-         zeg8nsswihteJUNyIasdWVYwcr0Dvv49OhuX7/XfIJjM9pe4o4on7ZLJeppqFPWiSKxF
-         NSBQ==
+        bh=nfXd2mulWBs1LljfvvnW5kYLVafMCXcQ5E6FUoFwv4A=;
+        b=pTY5szFS18Zm4S8wAuqUNZCahymj7ICHGNNynvuAvCkBCatKuV15Y9jRBcQCHGKAIQ
+         78w595Rm0faRyQoEHuM6gXfjOO5uGqjeU2ycWX+tk2fnXMvW+3u2j009KqTU89qLYLhA
+         iJGsu0HoGZxMmjKRh9iPKfRb0rj367TLzK3kpAesTKnBZGt+98QyT1pUjr8+uh4jXrUi
+         hbvdw0532O+glo1OMVE2t4QVk8ZpSczmLnPaGUQN2yKdo4zOP+Bi0/8E3LCgt5gLGWvT
+         SChHi68dBy8HTEwN7WzMIks4kw8HXB1PDNHu9BhL+T+wFQvguQgEPMMS23x0CcsTzdQ9
+         FLhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=JO5qLiF+a+hB9CUaJSVEMzuCKkUN/wHWCBTXp26fOdU=;
-        b=BmlHj1Wh/ssoXN+39DMuTf0vb9VB+yJPQiISnn7T6dH1dbYUnQwezYiQTgySZsMT4W
-         xynVDeuhmLlmP44E/39JwhaFU7863YjEW0Q8vdAnu6sV0kEPT+nad08McEAvnJ6CamI7
-         RWCcw7C19n4eqZB37tGvxICi99S/DvhpKndZ92/hZQsPL+vPVrd6A8iSpyS30IpAUVX/
-         bFFos2ctuktetfdABre2GY3m6in5xqe595EEN/Gw+KJU444z9+gvq4fzKjLMTEdnMBz0
-         Gu9gVy1r0QBJxMETYRhyJL4FdZokk7kQ6qL1gvj/yYJPYtpfPS3iMS3s9VzA+RpB431V
-         a9Gg==
-X-Gm-Message-State: AOAM533dsANc/mjVbdnV8TaxKmidpXkzRtO/CsoYsnPHlWQwH+x+N4IB
-        qLCO7vId7ViJ7SgZxCbUBJDwlX/EAdYcrQFWghU=
-X-Google-Smtp-Source: ABdhPJzS8LI/HnORR5Fnz81XjOCMXBAfgvuWJ4Szw+qFQjPrBM35hOyYaLOz+T8bDTPUdV3frgxbvesSokgDED+RMNU=
-X-Received: by 2002:a25:4b86:: with SMTP id y128mr29262047yba.403.1612836318942;
- Mon, 08 Feb 2021 18:05:18 -0800 (PST)
+        bh=nfXd2mulWBs1LljfvvnW5kYLVafMCXcQ5E6FUoFwv4A=;
+        b=OaD7TLIlyiGa+2Pf/YN/O6Zpkoane6bjAb29faRnVZWyX9NsZpLepkuY5bWZ6HSFbr
+         GRy1QbCNLVNe/DxfUQocfavngqk6a5xYMdNdGMGf5RYuWDntD5++smsDcJMwjyR6VRux
+         CrpMMKHPqv0UXMdLVXSy9QYkXsQ/ROrpLDryWpYQuxLgQ5/nYFkNNIQ1BuSXsMG7sVTz
+         xULFHm6Ch0S5dVkDvwbfoA/PmplKwO5qd/wUWwQYQMzOtn55YBKmpEjZ/btcVRnphCkw
+         0KXvp6iADmYxroImGVUMCRlhYaparlVKkB7g+qgsQPpVY1PLHZ7cu119pyBN40GeICf1
+         CJRg==
+X-Gm-Message-State: AOAM532DIe6UV83tP6saGr4e0VMKY2hIIuFUq6zh+szdMgJaPvpuQpK8
+        WHVdIXqvwMt+c3tcwMK9X6KiZ6UXqIZWl1RBQMRqjyltXwM=
+X-Google-Smtp-Source: ABdhPJxdHF/AuUvN8VZPkIn1OfvCIKsMaaxSuYJLgKjB/RsaEnhFhbGUh2NSg8sJNciJkM50U6BlUSb/lOARSHr477M=
+X-Received: by 2002:a2e:b803:: with SMTP id u3mr5698994ljo.481.1612836369237;
+ Mon, 08 Feb 2021 18:06:09 -0800 (PST)
 MIME-Version: 1.0
-References: <1612780213-84583-1-git-send-email-yang.lee@linux.alibaba.com>
-In-Reply-To: <1612780213-84583-1-git-send-email-yang.lee@linux.alibaba.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 8 Feb 2021 18:05:08 -0800
-Message-ID: <CAEf4Bzaugcu=fYrZxkkA+fssZPJooWbwQH4hGJTJReGR63Vkdw@mail.gmail.com>
-Subject: Re: [PATCH] selftests: bpf: remove unneeded semicolon
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
+References: <20210208175820.5690-1-ap420073@gmail.com> <8633a76b-84c1-44c1-f532-ce66c1502b5c@gmail.com>
+In-Reply-To: <8633a76b-84c1-44c1-f532-ce66c1502b5c@gmail.com>
+From:   Taehee Yoo <ap420073@gmail.com>
+Date:   Tue, 9 Feb 2021 11:05:58 +0900
+Message-ID: <CAMArcTVdhDZ-4yETx1mGnULfKU5uGdAKsLbXKSBi-ZmVMHbvfQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 7/8] mld: convert ip6_sf_socklist to list macros
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Netdev <netdev@vger.kernel.org>, dsahern@kernel.org,
+        Cong Wang <xiyou.wangcong@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 8, 2021 at 2:30 AM Yang Li <yang.lee@linux.alibaba.com> wrote:
+On Tue, 9 Feb 2021 at 03:31, Eric Dumazet <eric.dumazet@gmail.com> wrote:
 >
-> Eliminate the following coccicheck warning:
-> ./tools/testing/selftests/bpf/test_flow_dissector.c:506:2-3: Unneeded
-> semicolon
->
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
-> ---
 
-Applied to bpf-next, changing subject to have more canonical
-"selftests/bpf: " prefix. Thanks.
+Hi Eric,
+Thank you for the review!
 
->  tools/testing/selftests/bpf/test_flow_dissector.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> diff --git a/tools/testing/selftests/bpf/test_flow_dissector.c b/tools/testing/selftests/bpf/test_flow_dissector.c
-> index 01f0c63..571cc07 100644
-> --- a/tools/testing/selftests/bpf/test_flow_dissector.c
-> +++ b/tools/testing/selftests/bpf/test_flow_dissector.c
-> @@ -503,7 +503,7 @@ static int do_rx(int fd)
->                 if (rbuf != cfg_payload_char)
->                         error(1, 0, "recv: payload mismatch");
->                 num++;
-> -       };
-> +       }
 >
->         return num;
->  }
-> --
-> 1.8.3.1
+> On 2/8/21 6:58 PM, Taehee Yoo wrote:
+> > Currently, struct ip6_sf_socklist doesn't use list API so that code
+> > shape is a little bit different from others.
+> > So it converts ip6_sf_socklist to use list API so it would
+> > improve readability.
+> >
+> > Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+> > ---
+> >  include/net/if_inet6.h  |  19 +-
+> >  include/uapi/linux/in.h |   4 +-
+> >  net/ipv6/mcast.c        | 387 +++++++++++++++++++++++++---------------
+> >  3 files changed, 256 insertions(+), 154 deletions(-)
+> >
+> > diff --git a/include/net/if_inet6.h b/include/net/if_inet6.h
+> > index babf19c27b29..6885ab8ec2e9 100644
+> > --- a/include/net/if_inet6.h
+> > +++ b/include/net/if_inet6.h
+> > @@ -13,6 +13,7 @@
+> >  #include <net/snmp.h>
+> >  #include <linux/ipv6.h>
+> >  #include <linux/refcount.h>
+> > +#include <linux/types.h>
+> >
+> >  /* inet6_dev.if_flags */
+> >
+> > @@ -76,23 +77,19 @@ struct inet6_ifaddr {
+> >  };
+> >
+> >  struct ip6_sf_socklist {
+> > -     unsigned int            sl_max;
+> > -     unsigned int            sl_count;
+> > -     struct in6_addr         sl_addr[];
+> > +     struct list_head        list;
+> > +     struct in6_addr         sl_addr;
+> > +     struct rcu_head         rcu;
+> >  };
+> >
 >
+> I dunno about readability, but :
+>
+> Your patches adds/delete more than 1000 lines, who is really going to review this ?
+>
+
+Sorry for that, I think I was so hasty.
+
+> You replace dense arrays by lists, so the performance will likely be hurt,
+> as cpu caches will be poorly used.
+>
+
+Thanks, I understand why the arrays have been using.
+I will send a v2 patch, which contains only the necessary changes.
+
+Thanks a lot,
+Taehee Yoo
