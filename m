@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79E3931586D
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 22:17:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 889C2315867
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 22:16:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234396AbhBIVPF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 16:15:05 -0500
-Received: from mail-40136.protonmail.ch ([185.70.40.136]:54445 "EHLO
-        mail-40136.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233767AbhBIUtQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 15:49:16 -0500
-Date:   Tue, 09 Feb 2021 20:48:14 +0000
+        id S234379AbhBIVNr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 16:13:47 -0500
+Received: from mail-40131.protonmail.ch ([185.70.40.131]:52473 "EHLO
+        mail-40131.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234038AbhBIUtS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 15:49:18 -0500
+Date:   Tue, 09 Feb 2021 20:48:28 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1612903699; bh=85QQJNudKIF3Xtg97Y7g4QbqbeIMU4YL32cELilgRjM=;
+        t=1612903714; bh=ptg4dtlOixx4N/Ps+zPYWXSaL+5RU9Pp83Jx/VqNNi4=;
         h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=jhApZdmS2S6jhwoIFR1qFMrJ6Ar22V773Peax4i31bvsu8PZ9fepGhgyUjViJmVhS
-         7Xf5ZdSVsTMVkg8neW2VcsC8HSTrUjsSoLCvW/+KCp1HfitZdYSuYafr7U7YlatlP1
-         E2MO4pNbPYQ9ztadhoqkSrfN9Kbl8nROfOZmQISwoTSo979kbbfKJ1n/y83Gj7oHsn
-         OnSLcwikPEpLi78JUssBc2v+gEoA/RFkplg4sO0iulkPxhLosp87I+ar9ypnRJLMTu
-         p4wG38GmF9XhNW1HNCpvliQv2lyBb6uZpyPXChyhFugUsX3lZiOn5qOV8VcOBrF2lp
-         lvfyBv34dYsXg==
+        b=OthOSBa4ZrVmt9Pe6U5c7kIM32c/S/wz17TmX0NJafAk6xcJdpHkqzSbpNbtd2K8y
+         mHH/fZD/2sx4wtjTL9Shycb3FMOB6oC+0sEuI8Ji1T4guq/t2X9LYileHj0bOVP2PQ
+         qGSog8aAfij2n6xA5Y40BE7KGr4eMLRy6fXF0qyEPhdPpNviCtLtBAN0BqnmjTurui
+         G16vUDZK8enN4jCa8Xop74SzsuPqBHw+OvAUjxITA/zHvQx4UouSM9LoWFibVdek4N
+         DcYzaGG7UsRtUhYBFanGRfomZ3NmSyC9csMipA/XOX+VK6G5EfmXM2GXp8khjeRYF2
+         ZnFUxWNrK/CzA==
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 From:   Alexander Lobakin <alobakin@pm.me>
@@ -51,8 +51,8 @@ Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
         Yang Yingliang <yangyingliang@huawei.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [v3 net-next 05/10] skbuff: use __build_skb_around() in __alloc_skb()
-Message-ID: <20210209204533.327360-6-alobakin@pm.me>
+Subject: [v3 net-next 06/10] skbuff: remove __kfree_skb_flush()
+Message-ID: <20210209204533.327360-7-alobakin@pm.me>
 In-Reply-To: <20210209204533.327360-1-alobakin@pm.me>
 References: <20210209204533.327360-1-alobakin@pm.me>
 MIME-Version: 1.0
@@ -67,60 +67,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Just call __build_skb_around() instead of open-coding it.
+This function isn't much needed as NAPI skb queue gets bulk-freed
+anyway when there's no more room, and even may reduce the efficiency
+of bulk operations.
+It will be even less needed after reusing skb cache on allocation path,
+so remove it and this way lighten network softirqs a bit.
 
+Suggested-by: Eric Dumazet <edumazet@google.com>
 Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 ---
- net/core/skbuff.c | 18 +-----------------
- 1 file changed, 1 insertion(+), 17 deletions(-)
+ include/linux/skbuff.h |  1 -
+ net/core/dev.c         |  6 +-----
+ net/core/skbuff.c      | 12 ------------
+ 3 files changed, 1 insertion(+), 18 deletions(-)
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 88566de26cd1..1c6f6ef70339 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -326,7 +326,6 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gf=
-p_mask,
- =09=09=09    int flags, int node)
- {
- =09struct kmem_cache *cache;
--=09struct skb_shared_info *shinfo;
- =09struct sk_buff *skb;
- =09u8 *data;
- =09bool pfmemalloc;
-@@ -366,21 +365,8 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t g=
-fp_mask,
- =09 * the tail pointer in struct sk_buff!
- =09 */
- =09memset(skb, 0, offsetof(struct sk_buff, tail));
--=09/* Account for allocated memory : skb + skb->head */
--=09skb->truesize =3D SKB_TRUESIZE(size);
-+=09__build_skb_around(skb, data, 0);
- =09skb->pfmemalloc =3D pfmemalloc;
--=09refcount_set(&skb->users, 1);
--=09skb->head =3D data;
--=09skb->data =3D data;
--=09skb_reset_tail_pointer(skb);
--=09skb->end =3D skb->tail + size;
--=09skb->mac_header =3D (typeof(skb->mac_header))~0U;
--=09skb->transport_header =3D (typeof(skb->transport_header))~0U;
--
--=09/* make sure we initialize shinfo sequentially */
--=09shinfo =3D skb_shinfo(skb);
--=09memset(shinfo, 0, offsetof(struct skb_shared_info, dataref));
--=09atomic_set(&shinfo->dataref, 1);
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 0a4e91a2f873..0e0707296098 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -2919,7 +2919,6 @@ static inline struct sk_buff *napi_alloc_skb(struct n=
+api_struct *napi,
+ }
+ void napi_consume_skb(struct sk_buff *skb, int budget);
 =20
- =09if (flags & SKB_ALLOC_FCLONE) {
- =09=09struct sk_buff_fclones *fclones;
-@@ -393,8 +379,6 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gf=
-p_mask,
- =09=09fclones->skb2.fclone =3D SKB_FCLONE_CLONE;
+-void __kfree_skb_flush(void);
+ void __kfree_skb_defer(struct sk_buff *skb);
+=20
+ /**
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 21d74d30f5d7..135d46c0c3c7 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4906,8 +4906,6 @@ static __latent_entropy void net_tx_action(struct sof=
+tirq_action *h)
+ =09=09=09else
+ =09=09=09=09__kfree_skb_defer(skb);
+ =09=09}
+-
+-=09=09__kfree_skb_flush();
  =09}
 =20
--=09skb_set_kcov_handle(skb, kcov_common_handle());
--
- =09return skb;
+ =09if (sd->output_queue) {
+@@ -6873,7 +6871,7 @@ static __latent_entropy void net_rx_action(struct sof=
+tirq_action *h)
 =20
- nodata:
+ =09=09if (list_empty(&list)) {
+ =09=09=09if (!sd_has_rps_ipi_waiting(sd) && list_empty(&repoll))
+-=09=09=09=09goto out;
++=09=09=09=09return;
+ =09=09=09break;
+ =09=09}
+=20
+@@ -6900,8 +6898,6 @@ static __latent_entropy void net_rx_action(struct sof=
+tirq_action *h)
+ =09=09__raise_softirq_irqoff(NET_RX_SOFTIRQ);
+=20
+ =09net_rps_action_and_irq_enable(sd);
+-out:
+-=09__kfree_skb_flush();
+ }
+=20
+ struct netdev_adjacent {
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 1c6f6ef70339..4be2bb969535 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -838,18 +838,6 @@ void __consume_stateless_skb(struct sk_buff *skb)
+ =09kfree_skbmem(skb);
+ }
+=20
+-void __kfree_skb_flush(void)
+-{
+-=09struct napi_alloc_cache *nc =3D this_cpu_ptr(&napi_alloc_cache);
+-
+-=09/* flush skb_cache if containing objects */
+-=09if (nc->skb_count) {
+-=09=09kmem_cache_free_bulk(skbuff_head_cache, nc->skb_count,
+-=09=09=09=09     nc->skb_cache);
+-=09=09nc->skb_count =3D 0;
+-=09}
+-}
+-
+ static inline void _kfree_skb_defer(struct sk_buff *skb)
+ {
+ =09struct napi_alloc_cache *nc =3D this_cpu_ptr(&napi_alloc_cache);
 --=20
 2.30.0
 
