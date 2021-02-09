@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FCA331504F
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 14:36:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5ED331505B
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 14:36:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230000AbhBINfj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 08:35:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43764 "EHLO mail.kernel.org"
+        id S230264AbhBINf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 08:35:59 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43990 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229754AbhBINfc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Feb 2021 08:35:32 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E032364ECC;
-        Tue,  9 Feb 2021 13:34:49 +0000 (UTC)
+        id S230208AbhBINfs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Feb 2021 08:35:48 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CC1C564EDA;
+        Tue,  9 Feb 2021 13:35:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612877690;
-        bh=fXqWep+KN2b7Xc3+f00vVLhERkWSLlkL3KBQF0E6Vnc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=mwLmX9w4rWb9Ru7Ff7ZhbmOGl4CLd8TM27NFg9V4NdaAIFxhn+ptpnLfd94Hzaplb
-         XSIK7Mk4YVtUlZkZgUAi3SQo8Iwc6hUNfUry4PDHna/oEARBeZjQXSr2Pl778142s6
-         2EhIzWxtcGHqrU1GrrOEqvqc7XRZr0XzagE4gHZQcAkJEKRqe3LNk4Yc3/N1+4WzT0
-         nxo19pnNW8qAO3D/2xTyDUajOsGOyKbCvaVP9BOA6pSqeCpCmB5VmCvmgLcKlHIViC
-         01IV5YaOeL/LuPpEVidR5uS/tQFrHrHwOoGzsH03MgVvlsZVfb1iM5Tmhi8mp4v5IN
-         cv4MpcgePExoQ==
+        s=k20201202; t=1612877704;
+        bh=JBhprM4DIDADxeTeqD6MW59O69WywX5uOcYWV/jADd4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=V80fYHx/7+xncRsX3aBxC0HO69IxgnZq/34phC6vPKqXjm/D1blfRpwEtDd11fsHl
+         kmwMooMYbNuyxcPc19n3rVQmCLlLhv49koepXgCt8uKUiiBwMjDkPkojFSqfpnm6OL
+         eji/gn1C6MhRMFyC4W5PYcvocHHNmS0D53mkIH28D+KIJlOVoO/wbIRdXltJlFK5Jk
+         9LWFbBAy4cxmQCGkb5iAk3Irt/5peUqog/an+RuQlbx772XuId8uLywyH78/BSg06y
+         4ImlLL/6dKDOBJOLV4QalXYBRjzbu3GQRneF2tZUsMWjnD0rVPAYf5JMyJi/ImzNq7
+         1Qc+VMRGo46EQ==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Bjorn Helgaas <bhelgaas@google.com>,
         Saeed Mahameed <saeedm@nvidia.com>
@@ -34,10 +34,12 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Don Dutile <ddutile@redhat.com>,
         Alex Williamson <alex.williamson@redhat.com>,
         "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH mlx5-next v6 0/4] Dynamically assign MSI-X vectors count
-Date:   Tue,  9 Feb 2021 15:34:41 +0200
-Message-Id: <20210209133445.700225-1-leon@kernel.org>
+Subject: [PATCH mlx5-next v6 1/4] PCI: Add sysfs callback to allow MSI-X table size change of SR-IOV VFs
+Date:   Tue,  9 Feb 2021 15:34:42 +0200
+Message-Id: <20210209133445.700225-2-leon@kernel.org>
 X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210209133445.700225-1-leon@kernel.org>
+References: <20210209133445.700225-1-leon@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -46,122 +48,290 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Changelog
-v6:
- * Patch 1:
-   * English fixes
-   * Moved pci_vf_set_msix_vec_count() from msi.c to iov.c
-   * Embedded pci_vf_set_msix_vec_count() into sriov_vf_msix_count_store
-   * Deleted sriov_vf_msix_count_show
-   * Deleted vfs_overlay folder
-   * Renamed functions *_vfs_overlay_* to be *_vf_overlay_*
-   * Deleted is_supported and attribute_group because it confused people more than
-     it gave advantage.
-   * Changed vf_total_msix to be callback
- * Patch 3:
-   * Fixed english as suggested by Bjorn
-   * Added more explanations to the commit message
- * Patch 4:
-   * Protected enable/disable with capability check
-v5: https://lore.kernel.org/linux-pci/20210126085730.1165673-1-leon@kernel.org
- * Patch 1:
-  * Added forgotten "inline" keyword when declaring empty functions.
-v4: https://lore.kernel.org/linux-pci/20210124131119.558563-1-leon@kernel.org
- * Used sysfs_emit() instead of sprintf() in new sysfs entries.
- * Changed EXPORT_SYMBOL to be EXPORT_SYMBOL_GPL for pci_iov_virtfn_devfn().
- * Rewrote sysfs registration code to be driven by PF that wants to enable VF
-   overlay instead of creating to all SR-IOV devices.
- * Grouped all such functionality under new "vfs_overlay" folder.
- * Combined two PCI patches into one.
-v3: https://lore.kernel.org/linux-pci/20210117081548.1278992-1-leon@kernel.org
- * Renamed pci_set_msix_vec_count to be pci_vf_set_msix_vec_count.
- * Added VF msix_cap check to hide sysfs entry if device doesn't support msix.
- * Changed "-" to be ":" in the mlx5 patch to silence CI warnings about missing
-   kdoc description.
- * Split differently error print in mlx5 driver to avoid checkpatch warning.
-v2: https://lore.kernel.org/linux-pci/20210114103140.866141-1-leon@kernel.org
- * Patch 1:
-  * Renamed vf_msix_vec sysfs knob to be sriov_vf_msix_count
-  * Added PF and VF device locks during set MSI-X call to protect from parallel
-    driver bind/unbind operations.
-  * Removed extra checks when reading sriov_vf_msix, because users will
-    be able to distinguish between supported/not supported by looking on
-    sriov_vf_total_msix count.
-  * Changed all occurrences of "numb" to be "count"
-  * Changed returned error from EOPNOTSUPP to be EBUSY if user tries to set
-    MSI-X count after driver already bound to the VF.
-  * Added extra comment in pci_set_msix_vec_count() to emphasize that driver
-    should not be bound.
- * Patch 2:
-  * Changed vf_total_msix from int to be u32 and updated function signatures
-    accordingly.
-  * Improved patch title
-v1: https://lore.kernel.org/linux-pci/20210110150727.1965295-1-leon@kernel.org
- * Improved wording and commit messages of first PCI patch
- * Added extra PCI patch to provide total number of MSI-X vectors
- * Prohibited read of vf_msix_vec sysfs file if driver doesn't support write
- * Removed extra function definition in pci.h
-v0: https://lore.kernel.org/linux-pci/20210103082440.34994-1-leon@kernel.org
+Extend PCI sysfs interface with a new callback that allows configuration
+of the number of MSI-X vectors for specific SR-IOV VF. This is needed
+to optimize the performance of VFs devices by allocating the number of
+vectors based on the administrator knowledge of the intended use of the VF.
 
---------------------------------------------------------------------
-Hi,
+This function is applicable for SR-IOV VF because such devices allocate
+their MSI-X table before they will run on the VMs and HW can't guess the
+right number of vectors, so some devices allocate them statically and equally.
 
-The number of MSI-X vectors is PCI property visible through lspci, that
-field is read-only and configured by the device.
+1) The newly added /sys/bus/pci/devices/.../sriov_vf_msix_count
+file will be seen for the VFs and it is writable as long as a driver is not
+bound to the VF.
 
-The static assignment of an amount of MSI-X vectors doesn't allow utilize
-the newly created VF because it is not known to the device the future load
-and configuration where that VF will be used.
+The values accepted are:
+ * > 0 - this will be number reported by the Table Size in the VF's MSI-X Message
+         Control register
+ * < 0 - not valid
+ * = 0 - will reset to the device default value
 
-The VFs are created on the hypervisor and forwarded to the VMs that have
-different properties (for example number of CPUs).
+2) In order to make management easy, provide new read-only sysfs file that
+returns a total number of possible to configure MSI-X vectors.
 
-To overcome the inefficiency in the spread of such MSI-X vectors, we
-allow the kernel to instruct the device with the needed number of such
-vectors, before VF is initialized and bounded to the driver.
+cat /sys/bus/pci/devices/.../sriov_vf_total_msix
+  = 0 - feature is not supported
+  > 0 - total number of MSI-X vectors available for distribution among the VFs
 
-Before this series:
-[root@server ~]# lspci -vs 0000:08:00.2
-08:00.2 Ethernet controller: Mellanox Technologies MT27800 Family [ConnectX-5 Virtual Function]
-....
-        Capabilities: [9c] MSI-X: Enable- Count=12 Masked-
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+---
+ Documentation/ABI/testing/sysfs-bus-pci |  28 +++++
+ drivers/pci/iov.c                       | 153 ++++++++++++++++++++++++
+ include/linux/pci.h                     |  12 ++
+ 3 files changed, 193 insertions(+)
 
-Configuration script:
-1. Start fresh
-echo 0 > /sys/bus/pci/devices/0000\:08\:00.0/sriov_numvfs
-modprobe -q -r mlx5_ib mlx5_core
-2. Ensure that driver doesn't run and it is safe to change MSI-X
-echo 0 > /sys/bus/pci/devices/0000\:08\:00.0/sriov_drivers_autoprobe
-3. Load driver for the PF
-modprobe mlx5_core
-4. Configure one of the VFs with new number
-echo 2 > /sys/bus/pci/devices/0000\:08\:00.0/sriov_numvfs
-echo 21 > /sys/bus/pci/devices/0000\:08\:00.2/sriov_vf_msix_count
+diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
+index 25c9c39770c6..7dadc3610959 100644
+--- a/Documentation/ABI/testing/sysfs-bus-pci
++++ b/Documentation/ABI/testing/sysfs-bus-pci
+@@ -375,3 +375,31 @@ Description:
+ 		The value comes from the PCI kernel device state and can be one
+ 		of: "unknown", "error", "D0", D1", "D2", "D3hot", "D3cold".
+ 		The file is read only.
++
++What:		/sys/bus/pci/devices/.../sriov_vf_total_msix
++Date:		January 2021
++Contact:	Leon Romanovsky <leonro@nvidia.com>
++Description:
++		This file is associated with the SR-IOV PFs.
++		It contains the total number of MSI-X vectors available for
++		assignment to all VFs associated with this PF. It may be zero
++		if the device doesn't support this functionality.
++
++What:		/sys/bus/pci/devices/.../sriov_vf_msix_count
++Date:		January 2021
++Contact:	Leon Romanovsky <leonro@nvidia.com>
++Description:
++		This file is associated with the SR-IOV VFs.
++		It allows configuration of the number of MSI-X vectors for
++		the VF. This is needed to optimize performance of newly bound
++		devices by allocating the number of vectors based on the
++		administrator knowledge of targeted VM.
++
++		The values accepted are:
++		 * > 0 - this will be number reported by the VF's MSI-X
++			 capability
++		 * < 0 - not valid
++		 * = 0 - will reset to the device default value
++
++		The file is writable if the PF is bound to a driver that
++		implements ->sriov_set_msix_vec_count().
+diff --git a/drivers/pci/iov.c b/drivers/pci/iov.c
+index 4afd4ee4f7f0..c0554aa6b90a 100644
+--- a/drivers/pci/iov.c
++++ b/drivers/pci/iov.c
+@@ -31,6 +31,7 @@ int pci_iov_virtfn_devfn(struct pci_dev *dev, int vf_id)
+ 	return (dev->devfn + dev->sriov->offset +
+ 		dev->sriov->stride * vf_id) & 0xff;
+ }
++EXPORT_SYMBOL_GPL(pci_iov_virtfn_devfn);
 
-After this series:
-[root@server ~]# lspci -vs 0000:08:00.2
-08:00.2 Ethernet controller: Mellanox Technologies MT27800 Family [ConnectX-5 Virtual Function]
-....
-        Capabilities: [9c] MSI-X: Enable- Count=21 Masked-
+ /*
+  * Per SR-IOV spec sec 3.3.10 and 3.3.11, First VF Offset and VF Stride may
+@@ -157,6 +158,158 @@ int pci_iov_sysfs_link(struct pci_dev *dev,
+ 	return rc;
+ }
 
-Thanks
++#ifdef CONFIG_PCI_MSI
++static ssize_t sriov_vf_msix_count_store(struct device *dev,
++					 struct device_attribute *attr,
++					 const char *buf, size_t count)
++{
++	struct pci_dev *vf_dev = to_pci_dev(dev);
++	struct pci_dev *pdev = pci_physfn(vf_dev);
++	int val, ret;
++
++	ret = kstrtoint(buf, 0, &val);
++	if (ret)
++		return ret;
++
++	if (val < 0)
++		return -EINVAL;
++
++	device_lock(&pdev->dev);
++	if (!pdev->driver || !pdev->driver->sriov_set_msix_vec_count) {
++		ret = -EOPNOTSUPP;
++		goto err_pdev;
++	}
++
++	device_lock(&vf_dev->dev);
++	if (vf_dev->driver) {
++		/*
++		 * Driver already probed this VF and configured itself
++		 * based on previously configured (or default) MSI-X vector
++		 * count. It is too late to change this field for this
++		 * specific VF.
++		 */
++		ret = -EBUSY;
++		goto err_dev;
++	}
++
++	ret = pdev->driver->sriov_set_msix_vec_count(vf_dev, val);
++
++err_dev:
++	device_unlock(&vf_dev->dev);
++err_pdev:
++	device_unlock(&pdev->dev);
++	return ret ? : count;
++}
++static DEVICE_ATTR_WO(sriov_vf_msix_count);
++
++static ssize_t sriov_vf_total_msix_show(struct device *dev,
++					struct device_attribute *attr,
++					char *buf)
++{
++	struct pci_dev *pdev = to_pci_dev(dev);
++	u32 vf_total_msix;
++
++	device_lock(dev);
++	if (!pdev->driver || !pdev->driver->sriov_get_vf_total_msix) {
++		device_unlock(dev);
++		return -EOPNOTSUPP;
++	}
++	vf_total_msix = pdev->driver->sriov_get_vf_total_msix(pdev);
++	device_unlock(dev);
++
++	return sysfs_emit(buf, "%u\n", vf_total_msix);
++}
++static DEVICE_ATTR_RO(sriov_vf_total_msix);
++#endif
++
++static const struct attribute *sriov_pf_dev_attrs[] = {
++#ifdef CONFIG_PCI_MSI
++	&dev_attr_sriov_vf_total_msix.attr,
++#endif
++	NULL,
++};
++
++static const struct attribute *sriov_vf_dev_attrs[] = {
++#ifdef CONFIG_PCI_MSI
++	&dev_attr_sriov_vf_msix_count.attr,
++#endif
++	NULL,
++};
++
++/*
++ * The PF can change the specific properties of associated VFs. Such
++ * functionality is usually known after PF probed and PCI sysfs files
++ * were already created.
++ *
++ * The function below is driven by such PF. It adds sysfs files to already
++ * existing PF/VF sysfs device hierarchies.
++ */
++int pci_enable_vf_overlay(struct pci_dev *dev)
++{
++	struct pci_dev *virtfn;
++	int id, ret;
++
++	if (!dev->is_physfn || !dev->sriov->num_VFs)
++		return 0;
++
++	ret = sysfs_create_files(&dev->dev.kobj, sriov_pf_dev_attrs);
++	if (ret)
++		return ret;
++
++	for (id = 0; id < dev->sriov->num_VFs; id++) {
++		virtfn = pci_get_domain_bus_and_slot(
++			pci_domain_nr(dev->bus), pci_iov_virtfn_bus(dev, id),
++			pci_iov_virtfn_devfn(dev, id));
++
++		if (!virtfn)
++			continue;
++
++		ret = sysfs_create_files(&virtfn->dev.kobj,
++					 sriov_vf_dev_attrs);
++		if (ret)
++			goto out;
++	}
++	return 0;
++
++out:
++	while (id--) {
++		virtfn = pci_get_domain_bus_and_slot(
++			pci_domain_nr(dev->bus), pci_iov_virtfn_bus(dev, id),
++			pci_iov_virtfn_devfn(dev, id));
++
++		if (!virtfn)
++			continue;
++
++		sysfs_remove_files(&virtfn->dev.kobj, sriov_vf_dev_attrs);
++	}
++	sysfs_remove_files(&dev->dev.kobj, sriov_pf_dev_attrs);
++	return ret;
++}
++EXPORT_SYMBOL_GPL(pci_enable_vf_overlay);
++
++void pci_disable_vf_overlay(struct pci_dev *dev)
++{
++	struct pci_dev *virtfn;
++	int id;
++
++	if (!dev->is_physfn || !dev->sriov->num_VFs)
++		return;
++
++	id = dev->sriov->num_VFs;
++	while (id--) {
++		virtfn = pci_get_domain_bus_and_slot(
++			pci_domain_nr(dev->bus), pci_iov_virtfn_bus(dev, id),
++			pci_iov_virtfn_devfn(dev, id));
++
++		if (!virtfn)
++			continue;
++
++		sysfs_remove_files(&virtfn->dev.kobj, sriov_vf_dev_attrs);
++	}
++	sysfs_remove_files(&dev->dev.kobj, sriov_pf_dev_attrs);
++}
++EXPORT_SYMBOL_GPL(pci_disable_vf_overlay);
++
+ int pci_iov_add_virtfn(struct pci_dev *dev, int id)
+ {
+ 	int i;
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index b32126d26997..732611937574 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -856,6 +856,11 @@ struct module;
+  *		e.g. drivers/net/e100.c.
+  * @sriov_configure: Optional driver callback to allow configuration of
+  *		number of VFs to enable via sysfs "sriov_numvfs" file.
++ * @sriov_set_msix_vec_count: Driver callback to change number of MSI-X vectors
++ *              to configure via sysfs "sriov_vf_msix_count" entry. This will
++ *              change MSI-X Table Size in their Message Control registers.
++ * @sriov_get_vf_total_msix: Total number of MSI-X veectors to distribute
++ *              to the VFs
+  * @err_handler: See Documentation/PCI/pci-error-recovery.rst
+  * @groups:	Sysfs attribute groups.
+  * @driver:	Driver model structure.
+@@ -871,6 +876,8 @@ struct pci_driver {
+ 	int  (*resume)(struct pci_dev *dev);	/* Device woken up */
+ 	void (*shutdown)(struct pci_dev *dev);
+ 	int  (*sriov_configure)(struct pci_dev *dev, int num_vfs); /* On PF */
++	int  (*sriov_set_msix_vec_count)(struct pci_dev *vf, int msix_vec_count); /* On PF */
++	u32  (*sriov_get_vf_total_msix)(struct pci_dev *pf);
+ 	const struct pci_error_handlers *err_handler;
+ 	const struct attribute_group **groups;
+ 	struct device_driver	driver;
+@@ -2059,6 +2066,9 @@ void __iomem *pci_ioremap_wc_bar(struct pci_dev *pdev, int bar);
+ int pci_iov_virtfn_bus(struct pci_dev *dev, int id);
+ int pci_iov_virtfn_devfn(struct pci_dev *dev, int id);
 
-Leon Romanovsky (4):
-  PCI: Add sysfs callback to allow MSI-X table size change of SR-IOV VFs
-  net/mlx5: Add dynamic MSI-X capabilities bits
-  net/mlx5: Dynamically assign MSI-X vectors count
-  net/mlx5: Allow to the users to configure number of MSI-X vectors
++int pci_enable_vf_overlay(struct pci_dev *dev);
++void pci_disable_vf_overlay(struct pci_dev *dev);
++
+ int pci_enable_sriov(struct pci_dev *dev, int nr_virtfn);
+ void pci_disable_sriov(struct pci_dev *dev);
 
- Documentation/ABI/testing/sysfs-bus-pci       |  28 ++++
- .../net/ethernet/mellanox/mlx5/core/main.c    |  17 ++
- .../ethernet/mellanox/mlx5/core/mlx5_core.h   |  27 ++++
- .../net/ethernet/mellanox/mlx5/core/pci_irq.c |  72 +++++++++
- .../net/ethernet/mellanox/mlx5/core/sriov.c   |  58 ++++++-
- drivers/pci/iov.c                             | 153 ++++++++++++++++++
- include/linux/mlx5/mlx5_ifc.h                 |  11 +-
- include/linux/pci.h                           |  12 ++
- 8 files changed, 375 insertions(+), 3 deletions(-)
-
+@@ -2100,6 +2110,8 @@ static inline int pci_iov_add_virtfn(struct pci_dev *dev, int id)
+ }
+ static inline void pci_iov_remove_virtfn(struct pci_dev *dev,
+ 					 int id) { }
++static inline int pci_enable_vf_overlay(struct pci_dev *dev) { return 0; }
++static inline void pci_disable_vf_overlay(struct pci_dev *dev) { }
+ static inline void pci_disable_sriov(struct pci_dev *dev) { }
+ static inline int pci_num_vf(struct pci_dev *dev) { return 0; }
+ static inline int pci_vfs_assigned(struct pci_dev *dev)
 --
 2.29.2
 
