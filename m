@@ -2,62 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB7D7315461
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 17:52:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A077E31548A
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 18:01:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233184AbhBIQwE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 11:52:04 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47904 "EHLO mail.kernel.org"
+        id S232561AbhBIQ76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 11:59:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50228 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232898AbhBIQuv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Feb 2021 11:50:51 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id A2FD264EAC;
-        Tue,  9 Feb 2021 16:50:06 +0000 (UTC)
+        id S232758AbhBIQ7w (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Feb 2021 11:59:52 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B5F9364DFF;
+        Tue,  9 Feb 2021 16:59:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612889406;
-        bh=cb58caZa/ePtgtnfHpUuGlhvL9WcchbQK37K8FlJOoY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=OIbHHNxtN6og5JnwUbAxskksdYdes1LvBlzabY3tPAJioNdcXNrjl0bDq5RTvtyXZ
-         GwFrmmkXQsMkLr1i8mitmAKym9b0sLVNWUWWpxS5bDRqS7tve36c6uqS3OuZDVqXpJ
-         gXWgLVLL82AWY0Aa05GD5nQl0C4nlORRDxemBqeWu/b49KgPjLqpscNkKrStNfKoGE
-         ObdEE7zrUrhzXrK3w7jGDNN2bhyFtd/PT8Mqw9eH9x1UIY8LjR/eYBA/nop+XjoqfT
-         HsInj1+RrBl9dXV7Rq7j36PJYq9icJ65cbwi7mP3is0Q0rBakVQ/DEzO+mTDECi7gy
-         hlXDFZgwa/NwA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9848C609E4;
-        Tue,  9 Feb 2021 16:50:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1612889951;
+        bh=8K5ejtn/yPTDA8lFr2UcKkYnKPVUdZcXXOHzTB6me4E=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=FgWHapvhi2j4xC0E6ZIEaJxUrYq3zTpyvvunu7eK7uxeibjPQxzsPKXLfbeofZ7Bq
+         Ak71FX8P4Sg+ZcGFxTVAluNwpPbk8avPQb/d7HAO+gs7Q0Bwir+iI9Y/NjKxbv/7+w
+         uUYGCXVSpWnrWaFmU6GIGJAZUjKtV4lGn7yCs1TJSgutELKiDnw/0t719JMMrXah2N
+         +F+HvXoNOAP9UtVjPRplNDqZBuQRfvJHy454YnDNzxeuWaRhC9XYCO4c1eUep5EEmz
+         O9MNtuxh+juwmyw8vHevJxztd8UDPtCkDNj5UtbXdrCEwuYN5jv4x4IuBvdUeAmREi
+         TNeQpozgp5SZw==
+Date:   Tue, 9 Feb 2021 08:59:09 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Arjun Roy <arjunroy.kdev@gmail.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, arjunroy@google.com, edumazet@google.com,
+        soheil@google.com
+Subject: Re: [net-next v2] tcp: Explicitly mark reserved field in
+ tcp_zerocopy_receive args.
+Message-ID: <20210209085909.32d27f0d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <af35d535-8d58-3cf3-60e3-1764e409308b@gmail.com>
+References: <20210206203648.609650-1-arjunroy.kdev@gmail.com>
+        <20210206152828.6610da2b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20210207082654.GC4656@unreal>
+        <20210208104143.60a6d730@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <09fa284e-ea02-a6ca-cd8f-6d90dff2fa00@gmail.com>
+        <20210208185323.11c2bacf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <af35d535-8d58-3cf3-60e3-1764e409308b@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH ethtool] gitignore: Ignore .dirstamp
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161288940661.5204.6235090896302129954.git-patchwork-notify@kernel.org>
-Date:   Tue, 09 Feb 2021 16:50:06 +0000
-References: <20210205005615.1058972-1-f.fainelli@gmail.com>
-In-Reply-To: <20210205005615.1058972-1-f.fainelli@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, mkubecek@suse.cz, andrew@lunn.ch
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Mon, 8 Feb 2021 20:20:29 -0700 David Ahern wrote:
+> On 2/8/21 7:53 PM, Jakub Kicinski wrote:
+> > On Mon, 8 Feb 2021 19:24:05 -0700 David Ahern wrote:  
+> >> That would be the case for new userspace on old kernel. Extending the
+> >> check to the end of the struct would guarantee new userspace can not ask
+> >> for something that the running kernel does not understand.  
+> > 
+> > Indeed, so we're agreeing that check_zeroed_user() is needed before
+> > original optlen from user space gets truncated?
+> 
+> I thought so, but maybe not. To think through this ...
+> 
+> If current kernel understands a struct of size N, it can only copy that
+> amount from user to kernel. Anything beyond is ignored in these
+> multiplexed uAPIs, and that is where the new userspace on old kernel falls.
+> 
+> Known value checks can only be done up to size N. In this case, the
+> reserved field is at the end of the known struct size, so checking just
+> the field is fine. Going beyond the reserved field has implications for
+> extensions to the API which should be handled when those extensions are
+> added.
 
-This patch was applied to ethtool/ethtool.git (refs/heads/master):
+Let me try one last time.
 
-On Thu,  4 Feb 2021 16:56:15 -0800 you wrote:
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
->  .gitignore | 1 +
->  1 file changed, 1 insertion(+)
+There is no check in the kernels that len <= N. User can pass any
+length _already_. check_zeroed_user() forces the values beyond the
+structure length to be known (0) rather than anything. It can only 
+avoid breakages in the future.
 
-Here is the summary with links:
-  - [ethtool] gitignore: Ignore .dirstamp
-    https://git.kernel.org/pub/scm/network/ethtool/ethtool.git/commit/?id=b9af58abce8a
+> So, in short I think the "if (zc.reserved)" is correct as Leon noted.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+If it's correct to check some arbitrary part of the buffer is zeroed 
+it should be correct to check the entire tail is zeroed.
