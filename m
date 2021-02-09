@@ -2,119 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 669E9314E3B
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 12:30:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AB50314E68
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 12:49:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229581AbhBIL2w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 06:28:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58742 "EHLO
+        id S229558AbhBILps (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 06:45:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229734AbhBIL1w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 06:27:52 -0500
-Received: from mail-wm1-x349.google.com (mail-wm1-x349.google.com [IPv6:2a00:1450:4864:20::349])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 519CFC06178B
-        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 03:27:12 -0800 (PST)
-Received: by mail-wm1-x349.google.com with SMTP id r13so2071337wmq.9
-        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 03:27:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:message-id:mime-version:subject:from:to:cc;
-        bh=A5PjxBocm6GkKPxXcYzX2e1AeHxW0gP+W7kFc8REg2E=;
-        b=ofP339Bc5incCy4OVOMtxQ6ESTNMLP3Fc6EZ7VuXFsN0nYTCQuk3+Saa2UBlwztZ04
-         8ZfX/NKW7MwxFkaStBW0GBGHv5nyLJClX5a4HNKpwvY8aZKkDqS18qOB5fmuiBzgx1lx
-         k9IKdZGVfB6c+hJ98cgN3nh35iDKtooVTgyWjrRxFLw76X9Yg3G93wWrLoIHORVj/wj0
-         9isSi7YjzfOrQGavjf96/f69AWde9QdwEmcAULfGVvVM90BSaujuIMkxeAzRh81H4aGE
-         +n/UGB58fR+evj/4F7nqI10mVBlmJZ9H5/m2oUXnCrvGaHiaY6QFyMXllL0MV+R+pFrf
-         4vzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
-         :to:cc;
-        bh=A5PjxBocm6GkKPxXcYzX2e1AeHxW0gP+W7kFc8REg2E=;
-        b=L/Ax11z0NYzHPwgbEJy2P4QSvDiMqJXJEFrOpatE9B9eZ411MYE4hAqxB6Mx6nQF61
-         P6797g2Iun59ewgqu5/5PitIb0TX/42SEEcdVaeCeqj9BraIOVLtRTyDRVq0UGOo4VAF
-         XQJmTECP5B7qaq1+yHA/Ux9Vgb8HwJ09eaeELBZBoPc1Yfktnh0obJru+1Lvw2bF0z6l
-         Gx0OPiZsINKukrjYiz/0/RG5Jh0cCpbSvgm22itsoNl2Cx2iwtlDh6wxvgtfsjbuSFsM
-         u0ZzWqrYBboHGZ+DpB8bkXtcSgI8vYT0VVmHCdt85wMVV+xG6aLb/Pp05KHglIbC3DiW
-         5VxA==
-X-Gm-Message-State: AOAM5317beZ83p9Xqybpz59DpzBeUMhsKQ89ENsbODI/VxbRUAsnFQ3Q
-        tQuva8pRa9SLKe0m4TfWZwSbyay81Q==
-X-Google-Smtp-Source: ABdhPJy71wYx5F5tGmoACI6FT7+5mPXDTjIjyxo+ykfIRjL5SWm/BBNye+fcUz68j74/ZTvvlLPyboqWrg==
-Sender: "elver via sendgmr" <elver@elver.muc.corp.google.com>
-X-Received: from elver.muc.corp.google.com ([2a00:79e0:15:13:51c9:b9a4:3e29:2cd0])
- (user=elver job=sendgmr) by 2002:a05:600c:35c9:: with SMTP id
- r9mr396002wmq.0.1612870029964; Tue, 09 Feb 2021 03:27:09 -0800 (PST)
-Date:   Tue,  9 Feb 2021 12:27:01 +0100
-Message-Id: <20210209112701.3341724-1-elver@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.30.0.478.g8a0d178c01-goog
-Subject: [PATCH] bpf_lru_list: Read double-checked variable once without lock
-From:   Marco Elver <elver@google.com>
-To:     elver@google.com, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     kasan-dev@googlegroups.com, paulmck@kernel.org, dvyukov@google.com,
-        syzbot+3536db46dfa58c573458@syzkaller.appspotmail.com,
-        syzbot+516acdb03d3e27d91bcd@syzkaller.appspotmail.com
-Content-Type: text/plain; charset="UTF-8"
+        with ESMTP id S230205AbhBILfU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 06:35:20 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF9ABC061797
+        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 03:32:06 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1l9RF9-0004S2-Pu; Tue, 09 Feb 2021 12:31:43 +0100
+Received: from hardanger.blackshift.org (unknown [IPv6:2a03:f580:87bc:d400:655a:4660:2120:638])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 264185DB349;
+        Tue,  9 Feb 2021 11:28:16 +0000 (UTC)
+Date:   Tue, 9 Feb 2021 12:28:15 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     David Laight <David.Laight@ACULAB.COM>
+Cc:     Arnd Bergmann <arnd@kernel.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] can: ucan: fix alignment constraints
+Message-ID: <20210209112815.hqndd7qonsygvv4n@hardanger.blackshift.org>
+References: <20210204162625.3099392-1-arnd@kernel.org>
+ <20210208131624.y5ro74e4fibpg6rk@hardanger.blackshift.org>
+ <bd7e6497b3f64fb5bb839dc9a9d51d6a@AcuMS.aculab.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="djjdhxlhmqm3zy7h"
+Content-Disposition: inline
+In-Reply-To: <bd7e6497b3f64fb5bb839dc9a9d51d6a@AcuMS.aculab.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For double-checked locking in bpf_common_lru_push_free(), node->type is
-read outside the critical section and then re-checked under the lock.
-However, concurrent writes to node->type result in data races.
 
-For example, the following concurrent access was observed by KCSAN:
+--djjdhxlhmqm3zy7h
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-  write to 0xffff88801521bc22 of 1 bytes by task 10038 on cpu 1:
-   __bpf_lru_node_move_in        kernel/bpf/bpf_lru_list.c:91
-   __local_list_flush            kernel/bpf/bpf_lru_list.c:298
-   ...
-  read to 0xffff88801521bc22 of 1 bytes by task 10043 on cpu 0:
-   bpf_common_lru_push_free      kernel/bpf/bpf_lru_list.c:507
-   bpf_lru_push_free             kernel/bpf/bpf_lru_list.c:555
-   ...
+On 09.02.2021 10:34:42, David Laight wrote:
+> From: Marc Kleine-Budde
+> > Sent: 08 February 2021 13:16
+> >=20
+> > On 04.02.2021 17:26:13, Arnd Bergmann wrote:
+> > > From: Arnd Bergmann <arnd@arndb.de>
+> > >
+> > > struct ucan_message_in contains member with 4-byte alignment
+> > > but is itself marked as unaligned, which triggers a warning:
+> > >
+> > > drivers/net/can/usb/ucan.c:249:1: warning: alignment 1 of 'struct uca=
+n_message_in' is less than 4 [-
+> > Wpacked-not-aligned]
+> > >
+> > > Mark the outer structure to have the same alignment as the inner
+> > > one.
+> > >
+> > > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> >=20
+> > Applied to linux-can-next/testing.
+>=20
+> I've just had a look at that file.
+>=20
+> Are any of the __packed or __aligned actually required at all.
+>=20
+> AFAICT there is one structure that would have end-padding.
+> But I didn't actually spot anything validating it's length.
+> Which may well mean that it is possible to read off the end
+> of the USB receive buffer - plausibly into unmapped addresses.
 
-Fix the data races where node->type is read outside the critical section
-(for double-checked locking) by marking the access with READ_ONCE() as
-well as ensuring the variable is only accessed once.
+In ucan_read_bulk_callback() there is a check of the urb's length,
+as well as the length information inside the rx'ed data:
 
-Reported-by: syzbot+3536db46dfa58c573458@syzkaller.appspotmail.com
-Reported-by: syzbot+516acdb03d3e27d91bcd@syzkaller.appspotmail.com
-Signed-off-by: Marco Elver <elver@google.com>
----
-Detailed reports:
-	https://groups.google.com/g/syzkaller-upstream-moderation/c/PwsoQ7bfi8k/m/NH9Ni2WxAQAJ
-	https://groups.google.com/g/syzkaller-upstream-moderation/c/-fXQO9ehxSM/m/RmQEcI2oAQAJ
----
- kernel/bpf/bpf_lru_list.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+https://elixir.bootlin.com/linux/v5.10.14/source/drivers/net/can/usb/ucan.c=
+#L734
 
-diff --git a/kernel/bpf/bpf_lru_list.c b/kernel/bpf/bpf_lru_list.c
-index 1b6b9349cb85..d99e89f113c4 100644
---- a/kernel/bpf/bpf_lru_list.c
-+++ b/kernel/bpf/bpf_lru_list.c
-@@ -502,13 +502,14 @@ struct bpf_lru_node *bpf_lru_pop_free(struct bpf_lru *lru, u32 hash)
- static void bpf_common_lru_push_free(struct bpf_lru *lru,
- 				     struct bpf_lru_node *node)
- {
-+	u8 node_type = READ_ONCE(node->type);
- 	unsigned long flags;
- 
--	if (WARN_ON_ONCE(node->type == BPF_LRU_LIST_T_FREE) ||
--	    WARN_ON_ONCE(node->type == BPF_LRU_LOCAL_LIST_T_FREE))
-+	if (WARN_ON_ONCE(node_type == BPF_LRU_LIST_T_FREE) ||
-+	    WARN_ON_ONCE(node_type == BPF_LRU_LOCAL_LIST_T_FREE))
- 		return;
- 
--	if (node->type == BPF_LRU_LOCAL_LIST_T_PENDING) {
-+	if (node_type == BPF_LRU_LOCAL_LIST_T_PENDING) {
- 		struct bpf_lru_locallist *loc_l;
- 
- 		loc_l = per_cpu_ptr(lru->common_lru.local_list, node->cpu);
--- 
-2.30.0.478.g8a0d178c01-goog
+| static void ucan_read_bulk_callback(struct urb *urb)
+| [...]
+| 		/* check sanity (length of header) */
+| 		if ((urb->actual_length - pos) < UCAN_IN_HDR_SIZE) {
+| 			netdev_warn(up->netdev,
+| 				    "invalid message (short; no hdr; l:%d)\n",
+| 				    urb->actual_length);
+| 			goto resubmit;
+| 		}
+|=20
+| 		/* setup the message address */
+| 		m =3D (struct ucan_message_in *)
+| 			((u8 *)urb->transfer_buffer + pos);
+| 		len =3D le16_to_cpu(m->len);
+|=20
+| 		/* check sanity (length of content) */
+| 		if (urb->actual_length - pos < len) {
+| 			netdev_warn(up->netdev,
+| 				    "invalid message (short; no data; l:%d)\n",
+| 				    urb->actual_length);
+| 			print_hex_dump(KERN_WARNING,
+| 				       "raw data: ",
+| 				       DUMP_PREFIX_ADDRESS,
+| 				       16,
+| 				       1,
+| 				       urb->transfer_buffer,
+| 				       urb->actual_length,
+| 				       true);
+|=20
+| 			goto resubmit;
+| 		}
 
+
+> I looked because all the patches to 'fix' the compiler warning
+> are dubious.
+> Once you've changed the outer alignment (eg of a union) then
+> the compiler will assume that any pointer to that union is aligned.
+> So any _packed() attributes that are required for mis-aligned
+> accesses get ignored - because the compiler knows the pointer
+> must be aligned.
+
+Here the packed attribute is not to tell the compiler, that a pointer
+to the struct ucan_message_in may be unaligned. Rather is tells the
+compiler to not add any holes into the struct.
+
+| struct ucan_message_in {
+| 	__le16 len; /* Length of the content include header */
+| 	u8 type;    /* UCAN_IN_RX and friends */
+| 	u8 subtype; /* command sub type */
+|=20
+| 	union {
+| 		/* CAN Frame received
+| 		 * (type =3D=3D UCAN_IN_RX)
+| 		 * && ((msg.can_msg.id & CAN_RTR_FLAG) =3D=3D 0)
+| 		 */
+| 		struct ucan_can_msg can_msg;
+|=20
+| 		/* CAN transmission complete
+| 		 * (type =3D=3D UCAN_IN_TX_COMPLETE)
+| 		 */
+| 		struct ucan_tx_complete_entry_t can_tx_complete_msg[0];
+| 	} __aligned(0x4) msg;
+| } __packed;
+
+> So while the changes remove the warning, they may be removing
+> support for misaligned addresses.
+
+There won't be any misaligned access on the struct, the USB device
+will send it aligned and the driver will enforce the alignment:
+
+| 		/* proceed to next message */
+| 		pos +=3D len;
+| 		/* align to 4 byte boundary */
+| 		pos =3D round_up(pos, 4);
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--djjdhxlhmqm3zy7h
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmAiccwACgkQqclaivrt
+76kTRQf/VhGlpKxtfkAF8AWG10yA3INg9/1yq2i1yWV3QzCKTiWm0uaVgUSv77Lm
+Jg4zGGkjEnEDcxHUoVaFB2JmJ4uhRgm83c21ZpYyvkuGjVFixTwsnILELh2hCS6w
+Ltn3CSxJFXBCLQ/CNDL/xcyNhLKJcICOfs8BRHF7OAjbERrjIRBY9d+ZluZ+LGFo
+J1SkCiaRl3MjwJJKfsX6rdSEl5ohYu+BQtg9zRITbLyeEX/kx7XkVSV3wJmA50aM
+bjfc3rWhrLonsGRok0PJOkHuj7qxpwMruJCM160ywliiB+Lh4REgoV4NVfAsNKMd
+7GCF/fw9PSW/7b5o/3qDxoB/31HoqA==
+=MGWN
+-----END PGP SIGNATURE-----
+
+--djjdhxlhmqm3zy7h--
