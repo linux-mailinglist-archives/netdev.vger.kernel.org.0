@@ -2,102 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01EED314809
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 06:24:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CB1F31483F
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 06:32:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229975AbhBIFX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 00:23:57 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58046 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229517AbhBIFXz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Feb 2021 00:23:55 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id F294864EB1;
-        Tue,  9 Feb 2021 05:23:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612848193;
-        bh=cIa4yuE4wgHoWKKtola0MO/gqRhj6bS1TQtpj76aK+o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=u5V645Vj5Aqw4dAPQZAJLzpFwFTgDcQyDNUftu10FbFLbiurnOBaToQLtz1zwmIDZ
-         fnUSUAj+nfDV6Ns9eZiyCyHYOPAcV7wfbQc3lV2hX876bPET7voROaMhChlo75DjGv
-         gS3IqKaUNB5mxUNcXv5EfrB4VlE/4Rqj1Qcd/L26gY53e62SgTHy2aa8hgP1Iz1VNn
-         HB9s7nGKS8eOaoBe3qKH8D3ktnbV7/CCY1yUSTFEpzgt3qKg79ys1JWP5ZCqcVrhqu
-         bZk0ZQvyV1wUfOdgTlmF0vOk/Q7x1e9CXD1HVB+Q+7oSQ/SU4Pvx4TAjGsbP9msrnq
-         Gk50UemfBJrXQ==
-Date:   Mon, 8 Feb 2021 22:23:11 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Veronika Kabatova <vkabatov@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>
-Subject: Re: FAILED unresolved symbol vfs_truncate on arm64 with LLVM
-Message-ID: <20210209052311.GA125918@ubuntu-m3-large-x86>
-References: <20210209034416.GA1669105@ubuntu-m3-large-x86>
- <CAEf4BzYnT-eoKRL9_Pu_DEuqXVa+edN5F-s+k2RxBSzcsSTJ1g@mail.gmail.com>
+        id S229636AbhBIFcg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 00:32:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38964 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229472AbhBIFcf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 00:32:35 -0500
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A22DDC061786
+        for <netdev@vger.kernel.org>; Mon,  8 Feb 2021 21:31:54 -0800 (PST)
+Received: by mail-pg1-x52d.google.com with SMTP id r38so11725045pgk.13
+        for <netdev@vger.kernel.org>; Mon, 08 Feb 2021 21:31:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6Es1GdAlUGQj8jvxU9L2mbmTr2aezEuOKz5fxGjCRcg=;
+        b=YRlFv4ssrgJ8GE90hEUV7OcvagfuecikdW3NBvPX6mJubf3BJM0iTaAB8JL0V9JWQf
+         xgOP2VVdZxixQQzuVydBnJAKWQoG1Ng9wfBKdJWSIVahPt2OS/fhE0bz3+LZxrilLfQJ
+         Yqc62dEiFoqpjO4DAkr0PBxGh7sAqVwK0a7w3PTFVlaGjU9Cs8o04AO5gfCe5B+1viGH
+         qGOIMZNGKa9KXXfHxetdtx2eHoJ3O6zrTIr7r4RzbLBere364wP3jIavzx8CKY0p72Ze
+         3/+sVw5HhITWMUfKlUqVwwNjdpESkKshNBL7kPj0s1d5q6WAovyTiLWdD+LnMD1J8Hgg
+         Enaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6Es1GdAlUGQj8jvxU9L2mbmTr2aezEuOKz5fxGjCRcg=;
+        b=Z+Aq7xk2dgpDG11n0/hk9Rs1ziuz/Z+qW1IQdJv9F9VsyHnnykYJSRbtkT+94bxSU8
+         +PGKSTqfr0NMLAYVO9R1f/JA9YE35nduri4CG9W9xY6/3g41FYItJ+8w1VGZAxBxafJN
+         20tBCajfGmNVQMWcdH59RlOl9vbdEfaC6+qDPzN1lM7YxgrozcsUOm373oka4BF4d0Rk
+         zshqrocbeZsY6NF9jENMheIKFy6XyU5hbzEa2ZYakoXJB1a3ExeZymog1AAYcj/Y53Zt
+         GeS0Yv2gl8AKnjvAzcHGiGHAOFrHsNalSCRRgubZicED8irNOBriZhKB/xdPiuM/G6LS
+         4QlA==
+X-Gm-Message-State: AOAM533BNzAou+NBVy0ZbIuwvWsm+O7JNkqBTmHeHsH2Jlm2YRvRcV8f
+        3BZqloLfJyXAllbUQBTK6t09UbHqkgSB2B0K2b4kKFzF768=
+X-Google-Smtp-Source: ABdhPJyn1rKc1BHOXxEH3Nhl2HlqjAsI8ZYQYtnAtmgWQaTOfMLbXdLMWDzjFjP8zyLb0/7RkyBO/m/Kxg5Iqge43HQ=
+X-Received: by 2002:aa7:9981:0:b029:1d4:2f7b:e0d with SMTP id
+ k1-20020aa799810000b02901d42f7b0e0dmr21439569pfh.10.1612848714027; Mon, 08
+ Feb 2021 21:31:54 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzYnT-eoKRL9_Pu_DEuqXVa+edN5F-s+k2RxBSzcsSTJ1g@mail.gmail.com>
+References: <20210208175010.4664-1-ap420073@gmail.com> <CAM_iQpU5Z_pZvwKSVBY6Ge8ADsTxsDh+2cvtoO+Oduqr9mXMQA@mail.gmail.com>
+ <CAMArcTXXsWoRqcsg0-zkDTwPbAonBCo1tBiKTr7_ZBF1Y5NxqQ@mail.gmail.com>
+In-Reply-To: <CAMArcTXXsWoRqcsg0-zkDTwPbAonBCo1tBiKTr7_ZBF1Y5NxqQ@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 8 Feb 2021 21:31:42 -0800
+Message-ID: <CAM_iQpU=GXHQ=j+f5F9nHY8XA=v_qrfc0YDvEKJJ=nv02BXZTw@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/8] mld: change context from atomic to sleepable
+To:     Taehee Yoo <ap420073@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        dsahern@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 08, 2021 at 08:45:43PM -0800, Andrii Nakryiko wrote:
-> On Mon, Feb 8, 2021 at 7:44 PM Nathan Chancellor <nathan@kernel.org> wrote:
-> >
-> > Hi all,
-> >
-> > Recently, an issue with CONFIG_DEBUG_INFO_BTF was reported for arm64:
-> > https://groups.google.com/g/clang-built-linux/c/de_mNh23FOc/m/E7cu5BwbBAAJ
-> >
-> > $ make -skj"$(nproc)" ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
-> >                       LLVM=1 O=build/aarch64 defconfig
-> >
-> > $ scripts/config \
-> >     --file build/aarch64/.config \
-> >     -e BPF_SYSCALL \
-> >     -e DEBUG_INFO_BTF \
-> >     -e FTRACE \
-> >     -e FUNCTION_TRACER
-> >
-> > $ make -skj"$(nproc)" ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
-> >                       LLVM=1 O=build/aarch64 olddefconfig all
-> > ...
-> > FAILED unresolved symbol vfs_truncate
-> > ...
-> >
-> > My bisect landed on commit 6e22ab9da793 ("bpf: Add d_path helper")
-> > although that seems obvious given that is what introduced
-> > BTF_ID(func, vfs_truncate).
-> >
-> > I am using the latest pahole v1.20 and LLVM is at
-> > https://github.com/llvm/llvm-project/commit/14da287e18846ea86e45b421dc47f78ecc5aa7cb
-> > although I can reproduce back to LLVM 10.0.1, which is the earliest
-> > version that the kernel supports. I am very unfamiliar with BPF so I
-> > have no idea what is going wrong here. Is this a known issue?
-> >
-> 
-> I'll skip the reproduction games this time and will just request the
-> vmlinux image. Please upload somewhere so that we can look at DWARF
-> and see what's going on. Thanks.
-> 
+On Mon, Feb 8, 2021 at 6:17 PM Taehee Yoo <ap420073@gmail.com> wrote:
+> You're right, this patchset contains many unnecessary changes.
+> So I will send a v2 patch, which contains only the necessary changes.
+> And target branch will be 'net', not 'net-next'.
 
-Sure thing, let me know if this works. I uploaded in two places to make
-it easier to grab:
+Just to be clear: this is up to you. I am not suggesting they should
+target 'net', I am fine with 'net' or 'net-next'. All I suggest is to split
+them.
 
-zstd compressed:
-https://github.com/nathanchance/bug-files/blob/3b2873751e29311e084ae2c71604a1963f5e1a48/btf-aarch64/vmlinux.zst
-
-uncompressed:
-https://1drv.ms/u/s!AsQNYeB-IEbqjQiUOspbEdXx49o7?e=ipA9Hv
-
-Cheers,
-Nathan
+Thanks!
