@@ -2,81 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9169314AA0
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 09:47:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15880314ADC
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 09:56:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229930AbhBIIp2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 03:45:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51862 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229939AbhBIIoe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 03:44:34 -0500
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45DAAC061786
-        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 00:43:54 -0800 (PST)
-Received: by mail-yb1-xb2e.google.com with SMTP id 133so4709557ybd.5
-        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 00:43:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QKD+LfgYPVad1KdNmmugXgXYrqECs6LKgXsefo95DaI=;
-        b=bm9iiYDjySpATAfMkMsb9IZ/v0iTwBtWYe9OjYxcrtvJK+SrZk/AdN7Y+fc2pMHkJN
-         PY66FFRkOzViqqPpaLg0pxP8E2bgJ5333P16i1ZRGS/cDEqRV+n4Y3rL3614IT6QcLDv
-         i1EjAVJXbKtFhBZ6DT2+0SQfdUUhtC2cSQXupH8+MJjjnNi4nNwQG6WwfUpADdCZp/pQ
-         x4yMYMtHKq8M+U7j00XpRhUD7I7H29PBLx5haGdED4+Sp6hPe0WyxhvBQjIcFRqULpR3
-         p8uvfwdtrI41F/+XJ79Ad1taEGJACoXnQlB1lzLcjP/NVVSOgFsADxyjIotpNZ2SOsK8
-         o2Ng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QKD+LfgYPVad1KdNmmugXgXYrqECs6LKgXsefo95DaI=;
-        b=kg3jwqXmC+NHwL76Aw8x8/a2TKHNVIfRoziRivRYhOqkVBpWX7+qL3vhCQD2LxXnD2
-         JMsKVHEIZGhT55KpibRdSsbn4AzlcrxhgLO0k4qhhR1+vtArnZHcg783Qvvt7STfrrTy
-         obcXIBn+d2tE80ftS6vTiuQt4jhd/bS+S63IS4Wd9+oY7sQ8eEA7eNHVovby6mzYzY8k
-         X2MJk0+bfxE3hlLjkq9Ll4kPm+UFrV+rW681DsEoRxp/D9kjp1JXIQHfIkwzHxVpnL1M
-         sF2LEHiQswSmo5E03Vs9WBf8gOUJlxGHqqTXDwP7bLVqCBOMzV6aSjDlbpe4F5t2fL6m
-         exyg==
-X-Gm-Message-State: AOAM531a6MCBZJodRvx9w1cA7PJq8S2Cu+EgA0SVLkO2F3tmHIMfVUrC
-        em2m6fUsbbiBIJoz2PujzkB13+vhcAZXZwmL3i8=
-X-Google-Smtp-Source: ABdhPJwX993nSgCzGM3PeFTDeANG+qUExV3YCzvQtpk2p3v1spjD5xuFh7t66MijvyJ6ZmAMs5K1m1KN6G1tK7/ikkU=
-X-Received: by 2002:a25:9383:: with SMTP id a3mr3858900ybm.215.1612860233652;
- Tue, 09 Feb 2021 00:43:53 -0800 (PST)
-MIME-Version: 1.0
-References: <20210206050240.48410-1-saeed@kernel.org> <CAJ3xEMhPU=hr-wNN+g8Yq4rMqFQQGybQnn86mmbXrTTN6Xb8xw@mail.gmail.com>
-In-Reply-To: <CAJ3xEMhPU=hr-wNN+g8Yq4rMqFQQGybQnn86mmbXrTTN6Xb8xw@mail.gmail.com>
-From:   Or Gerlitz <gerlitz.or@gmail.com>
-Date:   Tue, 9 Feb 2021 10:43:42 +0200
-Message-ID: <CAJ3xEMi3SMP2vqjWYuX8RFJeXSrr9gPdxYF4UqiNtmCt=QL2NA@mail.gmail.com>
-Subject: Re: [pull request][net-next V2 00/17] mlx5 updates 2021-02-04
-To:     Saeed Mahameed <saeed@kernel.org>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Linux Netdev List <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S230160AbhBIIwX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 03:52:23 -0500
+Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:48166 "EHLO
+        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230034AbhBIIrp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 03:47:45 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R441e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04420;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=17;SR=0;TI=SMTPD_---0UOHZN5R_1612860400;
+Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0UOHZN5R_1612860400)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 09 Feb 2021 16:46:47 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     ast@kernel.org
+Cc:     daniel@iogearbox.net, davem@davemloft.net, kuba@kernel.org,
+        hawk@kernel.org, john.fastabend@gmail.com, shuah@kernel.org,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Subject: [PATCH bpf-next] selftests/bpf: Simplify the calculation of variables
+Date:   Tue,  9 Feb 2021 16:46:38 +0800
+Message-Id: <1612860398-102839-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 9, 2021 at 10:42 AM Or Gerlitz <gerlitz.or@gmail.com> wrote:
-> On Sat, Feb 6, 2021 at 7:10 AM Saeed Mahameed <saeed@kernel.org> wrote:
-> > Vlad Buslov says:
->
-> > Implement support for VF tunneling
->
-> > Currently, mlx5 only supports configuration with tunnel endpoint IP address on
-> > uplink representor. Remove implicit and explicit assumptions of tunnel always
-> > being terminated on uplink and implement necessary infrastructure for
-> > configuring tunnels on VF representors and updating rules on such tunnels
-> > according to routing changes.
->
-> > SW TC model
->
-> maybe before SW TC model, you can explain the vswitch SW model (TC is
-> a vehicle to implement the SW model).
+Fix the following coccicheck warnings:
 
-I thought my earlier post missed the list, so I reposted, but realized
-now it didn't,
-feel free to address either of the posts
+./tools/testing/selftests/bpf/xdpxceiver.c:954:28-30: WARNING !A || A &&
+B is equivalent to !A || B.
+
+./tools/testing/selftests/bpf/xdpxceiver.c:932:28-30: WARNING !A || A &&
+B is equivalent to !A || B.
+
+./tools/testing/selftests/bpf/xdpxceiver.c:909:28-30: WARNING !A || A &&
+B is equivalent to !A || B.
+
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+---
+ tools/testing/selftests/bpf/xdpxceiver.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
+index 99ea6cf..f4a96d5 100644
+--- a/tools/testing/selftests/bpf/xdpxceiver.c
++++ b/tools/testing/selftests/bpf/xdpxceiver.c
+@@ -897,7 +897,7 @@ static void *worker_testapp_validate(void *arg)
+ 			ksft_print_msg("Destroying socket\n");
+ 	}
+ 
+-	if (!opt_bidi || (opt_bidi && bidi_pass)) {
++	if (!opt_bidi || bidi_pass) {
+ 		xsk_socket__delete(ifobject->xsk->xsk);
+ 		(void)xsk_umem__delete(ifobject->umem->umem);
+ 	}
+@@ -922,7 +922,7 @@ static void testapp_validate(void)
+ 	pthread_mutex_lock(&sync_mutex);
+ 
+ 	/*Spawn RX thread */
+-	if (!opt_bidi || (opt_bidi && !bidi_pass)) {
++	if (!opt_bidi || !bidi_pass) {
+ 		if (pthread_create(&t0, &attr, worker_testapp_validate, ifdict[1]))
+ 			exit_with_error(errno);
+ 	} else if (opt_bidi && bidi_pass) {
+@@ -942,7 +942,7 @@ static void testapp_validate(void)
+ 	pthread_mutex_unlock(&sync_mutex);
+ 
+ 	/*Spawn TX thread */
+-	if (!opt_bidi || (opt_bidi && !bidi_pass)) {
++	if (!opt_bidi || !bidi_pass) {
+ 		if (pthread_create(&t1, &attr, worker_testapp_validate, ifdict[0]))
+ 			exit_with_error(errno);
+ 	} else if (opt_bidi && bidi_pass) {
+-- 
+1.8.3.1
+
