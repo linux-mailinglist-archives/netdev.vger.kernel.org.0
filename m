@@ -2,117 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72A13315913
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 23:01:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41E00315930
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 23:15:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233513AbhBIWAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 17:00:32 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:23824 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234305AbhBIVAT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 16:00:19 -0500
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 119JSsOO009519
-        for <netdev@vger.kernel.org>; Tue, 9 Feb 2021 11:31:09 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=qeWMbAqsV2xnsezJY3EKVF37E1MCAJSZfNjLznhKVgU=;
- b=jSLsvcV6FFo+sCgs4TVhJuYfZfaQU2Tq6CAGrNZlXUGEwOvHetRV8tZk6wF7cK4PEj7N
- vkEwxxk5SS12teOgxU9Do0l6i0Ma5hPTmm1jNYF03i7tZm5Q4wDcqGYwHFZ3FTrSR6PL
- VWMULEU1W6xmoBvlGGoWtMHZWyCNC6ooIZs= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 36jcaa518c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 11:31:09 -0800
-Received: from intmgw006.03.ash8.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 9 Feb 2021 11:31:08 -0800
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id EAB8329408EB; Tue,  9 Feb 2021 11:31:05 -0800 (PST)
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     <bpf@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH bpf 1/2] libbpf: Ignore non function pointer member in struct_ops
-Date:   Tue, 9 Feb 2021 11:31:05 -0800
-Message-ID: <20210209193105.1752743-1-kafai@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S233970AbhBIWL5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 17:11:57 -0500
+Received: from correo.us.es ([193.147.175.20]:40678 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233773AbhBIWH4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Feb 2021 17:07:56 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 659EBB6339
+        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 22:35:19 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 56968DA789
+        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 22:35:19 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 4B64BDA72F; Tue,  9 Feb 2021 22:35:19 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
+        autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 109A5DA789;
+        Tue,  9 Feb 2021 22:35:17 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 09 Feb 2021 22:35:17 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from localhost.localdomain (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPSA id CA67142DC6DD;
+        Tue,  9 Feb 2021 22:35:16 +0100 (CET)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
+Subject: [PATCH net 1/2] netfilter: conntrack: skip identical origin tuple in same zone only
+Date:   Tue,  9 Feb 2021 22:35:10 +0100
+Message-Id: <20210209213511.23298-2-pablo@netfilter.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20210209213511.23298-1-pablo@netfilter.org>
+References: <20210209213511.23298-1-pablo@netfilter.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
- definitions=2021-02-09_06:2021-02-09,2021-02-09 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
- adultscore=0 suspectscore=0 mlxscore=0 mlxlogscore=602 phishscore=0
- bulkscore=0 malwarescore=0 clxscore=1015 lowpriorityscore=0 spamscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102090094
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When libbpf initializes the kernel's struct_ops in
-"bpf_map__init_kern_struct_ops()", it enforces all
-pointer types must be a function pointer and rejects
-others.  It turns out to be too strict.  For example,
-when directly using "struct tcp_congestion_ops" from vmlinux.h,
-it has a "struct module *owner" member and it is set to NULL
-in a bpf_tcp_cc.o.
+From: Florian Westphal <fw@strlen.de>
 
-Instead, it only needs to ensure the member is a function
-pointer if it has been set (relocated) to a bpf-prog.
-This patch moves the "btf_is_func_proto(kern_mtype)" check
-after the existing "if (!prog) { continue; }".
+The origin skip check needs to re-test the zone. Else, we might skip
+a colliding tuple in the reply direction.
 
-The "btf_is_func_proto(mtype)" has already been guaranteed
-in "bpf_object__collect_st_ops_relos()" which has been run
-before "bpf_map__init_kern_struct_ops()".  Thus, this check
-is removed.
+This only occurs when using 'directional zones' where origin tuples
+reside in different zones but the reply tuples share the same zone.
 
-Fixes: 590a00888250 ("bpf: libbpf: Add STRUCT_OPS support")
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+This causes the new conntrack entry to be dropped at confirmation time
+because NAT clash resolution was elided.
+
+Fixes: 4e35c1cb9460240 ("netfilter: nf_nat: skip nat clash resolution for same-origin entries")
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- tools/lib/bpf/libbpf.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ net/netfilter/nf_conntrack_core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 6ae748f6ea11..b483608ea72a 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -887,12 +887,6 @@ static int bpf_map__init_kern_struct_ops(struct bpf_=
-map *map,
- 			kern_mtype =3D skip_mods_and_typedefs(kern_btf,
- 							    kern_mtype->type,
- 							    &kern_mtype_id);
--			if (!btf_is_func_proto(mtype) ||
--			    !btf_is_func_proto(kern_mtype)) {
--				pr_warn("struct_ops init_kern %s: non func ptr %s is not supported\n=
-",
--					map->name, mname);
--				return -ENOTSUP;
--			}
-=20
- 			prog =3D st_ops->progs[i];
- 			if (!prog) {
-@@ -901,6 +895,12 @@ static int bpf_map__init_kern_struct_ops(struct bpf_=
-map *map,
+diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+index 234b7cab37c3..ff0168736f6e 100644
+--- a/net/netfilter/nf_conntrack_core.c
++++ b/net/netfilter/nf_conntrack_core.c
+@@ -1229,7 +1229,8 @@ nf_conntrack_tuple_taken(const struct nf_conntrack_tuple *tuple,
+ 			 * Let nf_ct_resolve_clash() deal with this later.
+ 			 */
+ 			if (nf_ct_tuple_equal(&ignored_conntrack->tuplehash[IP_CT_DIR_ORIGINAL].tuple,
+-					      &ct->tuplehash[IP_CT_DIR_ORIGINAL].tuple))
++					      &ct->tuplehash[IP_CT_DIR_ORIGINAL].tuple) &&
++					      nf_ct_zone_equal(ct, zone, IP_CT_DIR_ORIGINAL))
  				continue;
- 			}
-=20
-+			if (!btf_is_func_proto(kern_mtype)) {
-+				pr_warn("struct_ops init_kern %s: kernel member %s is not a func ptr=
-\n",
-+					map->name, mname);
-+				return -ENOTSUP;
-+			}
-+
- 			prog->attach_btf_id =3D kern_type_id;
- 			prog->expected_attach_type =3D kern_member_idx;
-=20
---=20
-2.24.1
+ 
+ 			NF_CT_STAT_INC_ATOMIC(net, found);
+-- 
+2.20.1
 
