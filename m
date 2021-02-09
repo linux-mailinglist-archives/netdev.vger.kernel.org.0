@@ -2,115 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E8D031687A
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 14:58:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A329316909
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 15:25:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231868AbhBJN50 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 08:57:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34476 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231440AbhBJN4w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 08:56:52 -0500
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A06AC06174A
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 05:56:11 -0800 (PST)
-Received: by mail-qt1-x832.google.com with SMTP id c5so1535495qth.2
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 05:56:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=HqaaWL9GkybFbf1f9Nk80tEVe7WpQxrJxNKLFj1spnw=;
-        b=anyo83kjJHccd8wb5UNEBYJY074jv7IYYrcnFOUvCB5q/nE5x3YSD31FhMbknM1UI3
-         KGbjJOTZ6PJDz0mGE0jJ070iJloseEL7Zy+6FeHQg2OieytmrL8brSO+ALoOuJkEcRV5
-         hDu7vR4bPAQT1m0Wjw+9D2qn+YGhA6sy7DhQrUNHp14QCeVAtTbF/bSS3r7B/9PLcAW4
-         DzTZjNSiJd3TndsE7dxgx0BkF5/jvowH75BArBpx5PsEi7dsPLGi6dEln4dGnE+9b8rJ
-         3tNObx5E/mW/j3/zsZtLqWgP9jwmkhFprayjCOpFuemqfpsZFOuH1A5kjTTDEIDJ0kWj
-         gt4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=HqaaWL9GkybFbf1f9Nk80tEVe7WpQxrJxNKLFj1spnw=;
-        b=L/Q/iqdFThJt9bSDgQEG2o+U47UAUEtotAL7Z304Qw13OvRvDY6uXlTAvyiZTl7RWs
-         PKppRl5NRhEY/IUAiMGgsRxOQLb2BM8d9ll9cI0GDldWOpFjiobL90iQUc1ty3FnZYu5
-         SCMK0haE1OxM6+U47q6lKC2cHAecXPFksFknel6nONF3VShe0rR3dGn7ueC4c82yHyl5
-         BWQ4oTSQYR3mFU57oV2VWDsSqKdE/envqPMywYO2CFxBfPS1d31Vldvl2woYW1EyyitG
-         4v9oADUAOyYdfhpwsYvEO51S2hzr2O7udN4wofChVBPZjGrMhYaSjL0yODTuVWMwgWE5
-         jypQ==
-X-Gm-Message-State: AOAM5339t24EOkbrWYXvZibDwqlxFzrMuthjCpI5/dIBwF7PspZNYs/N
-        QLswdNVsgchXsaUzMyIOxBY=
-X-Google-Smtp-Source: ABdhPJwt70PKXKqjfSoycldyLxj4fHBd6QvrMNEUpBaptH2o5lY+O0F91H/e+8L5kHuwLl7C/xEG9Q==
-X-Received: by 2002:ac8:ace:: with SMTP id g14mr2729119qti.156.1612965370322;
-        Wed, 10 Feb 2021 05:56:10 -0800 (PST)
-Received: from horizon.localdomain ([177.79.104.116])
-        by smtp.gmail.com with ESMTPSA id t19sm1554519qke.109.2021.02.10.05.56.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Feb 2021 05:56:09 -0800 (PST)
-Received: by horizon.localdomain (Postfix, from userid 1000)
-        id A41B7C009A; Wed, 10 Feb 2021 10:56:05 -0300 (-03)
-Date:   Wed, 10 Feb 2021 10:56:05 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Or Gerlitz <gerlitz.or@gmail.com>
-Cc:     Vlad Buslov <vladbu@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
-        Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        Mark Bloch <mbloch@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [net-next V2 01/17] net/mlx5: E-Switch, Refactor setting source
- port
-Message-ID: <20210210135605.GD2859@horizon.localdomain>
-References: <20210206050240.48410-1-saeed@kernel.org>
- <20210206050240.48410-2-saeed@kernel.org>
- <20210206181335.GA2959@horizon.localdomain>
- <ygnhtuqngebi.fsf@nvidia.com>
- <20210208122213.338a673e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <ygnho8gtgw2l.fsf@nvidia.com>
- <CAJ3xEMhjo6cYpW-A-0RXKVM52jPCzer_K0WOR64C7HMK8tuRew@mail.gmail.com>
+        id S230298AbhBJOY3 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 10 Feb 2021 09:24:29 -0500
+Received: from spam.auroraoh.com ([24.56.89.101]:59108 "EHLO
+        barracuda.auroraoh.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S230107AbhBJOY2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 09:24:28 -0500
+X-ASG-Debug-ID: 1612967002-112c0d6a799da00002-BZBGGp
+Received: from COASRV-MAIL2.auroraoh.loc (coasrv-mail2.auroraoh.loc [10.3.1.15]) by barracuda.auroraoh.com with ESMTP id FPCoqcJ2ABy0p7qN; Wed, 10 Feb 2021 09:23:22 -0500 (EST)
+X-Barracuda-Envelope-From: JanuskaD@auroraoh.com
+X-Barracuda-RBL-Trusted-Forwarder: 10.3.1.15
+Received: from [172.20.10.5] (197.210.29.8) by COASRV-MAIL2.auroraoh.loc
+ (10.3.1.15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5; Tue, 9 Feb 2021
+ 02:41:04 -0500
+Content-Type: text/plain; charset="iso-8859-1"
+X-Barracuda-RBL-Trusted-Forwarder: 172.20.10.5
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJ3xEMhjo6cYpW-A-0RXKVM52jPCzer_K0WOR64C7HMK8tuRew@mail.gmail.com>
+Content-Transfer-Encoding: 8BIT
+Content-Description: Mail message body
+Subject: We are a registered Private Loan Investment Company in the United Kingdom,
+ we also registered with the Turkish British Chamber of Commerce and Industry
+ (TBCCI) we have operations in Europe and Asia.
+To:     Recipients <januskad@auroraoh.com>
+X-ASG-Orig-Subj: We are a registered Private Loan Investment Company in the United Kingdom,
+ we also registered with the Turkish British Chamber of Commerce and Industry
+ (TBCCI) we have operations in Europe and Asia.
+From:   <januskad@auroraoh.com>
+Date:   Tue, 9 Feb 2021 15:40:17 +0800
+Reply-To: <cfolimiited@gmail.com>
+X-Priority: 1 (High)
+X-Antivirus: Avast (VPS 210207-2, 02/07/2021), Outbound message
+X-Antivirus-Status: Clean
+Message-ID: <d46ecc4f-b603-47c1-83c7-0caec3f47064@COASRV-MAIL2.auroraoh.loc>
+X-Originating-IP: [197.210.29.8]
+X-ClientProxiedBy: COASRV-MAIL3.auroraoh.loc (10.3.1.13) To
+ COASRV-MAIL2.auroraoh.loc (10.3.1.15)
+X-Barracuda-Connect: coasrv-mail2.auroraoh.loc[10.3.1.15]
+X-Barracuda-Start-Time: 1612967002
+X-Barracuda-URL: https://10.3.1.12:443/cgi-mod/mark.cgi
+X-Virus-Scanned: by bsmtpd at auroraoh.com
+X-Barracuda-Scan-Msg-Size: 755
+X-Barracuda-BRTS-Status: 1
+X-Barracuda-Spam-Score: 1.61
+X-Barracuda-Spam-Status: No, SCORE=1.61 using global scores of TAG_LEVEL=1000.0 QUARANTINE_LEVEL=1000.0 KILL_LEVEL=5.0 tests=BSF_SC0_SA609_NRN, BSF_SC0_SA912_RP_FR, BSF_SC0_SA_TO_FROM_ADDR_MATCH, NO_REAL_NAME
+X-Barracuda-Spam-Report: Code version 3.2, rules version 3.2.3.87886
+        Rule breakdown below
+         pts rule name              description
+        ---- ---------------------- --------------------------------------------------
+        0.00 NO_REAL_NAME           From: does not include a real name
+        0.01 BSF_SC0_SA912_RP_FR    Custom Rule BSF_SC0_SA912_RP_FR
+        0.50 BSF_SC0_SA_TO_FROM_ADDR_MATCH Sender Address Matches Recipient
+                                   Address
+        1.10 BSF_SC0_SA609_NRN      Custom Rule SA609_NRN
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 09, 2021 at 06:10:59PM +0200, Or Gerlitz wrote:
-> On Tue, Feb 9, 2021 at 4:26 PM Vlad Buslov <vladbu@nvidia.com> wrote:
-> > On Mon 08 Feb 2021 at 22:22, Jakub Kicinski <kuba@kernel.org> wrote:
-> > > On Mon, 8 Feb 2021 10:21:21 +0200 Vlad Buslov wrote:
-> 
-> > >> > These operations imply that 7.7.7.5 is configured on some interface on
-> > >> > the host. Most likely the VF representor itself, as that aids with ARP
-> > >> > resolution. Is that so?
-> 
-> > >> The tunnel endpoint IP address is configured on VF that is represented
-> > >> by enp8s0f0_0 representor in example rules. The VF is on host.
-> 
-> > > This is very confusing, are you saying that the 7.7.7.5 is configured
-> > > both on VF and VFrep? Could you provide a full picture of the config
-> > > with IP addresses and routing?
-> 
-> > No, tunnel IP is configured on VF. That particular VF is in host [..]
-> 
-> What's the motivation for that? isn't that introducing 3x slow down?
+We are seeking for beneficiaries who source for fund to expand/relocating their business interest abroad. We are ready to fund projects outside Turkey and United Kingdom in the form of Soft Loan. We grant loans to both corporate and private entities at a low interest rate of 2% R.O.I per annul.
 
-Vlad please correct me if I'm wrong.
+We like to grant loan in the following sectors: oil/Gas, banking, real estate, stock speculation and mining, transportation, health sector and tobacco, Communication Services, Agriculture Forestry & Fishing, thus any sector. The terms are very flexible and interesting.
 
-I think this boils down to not using the uplink representor as a real
-interface. This way, the host can make use of 7.7.7.5 for other stuff
-as well without passing (heavy) traffic through representor ports,
-which are not meant for it.
+Please contact us for more details;
 
-So the host can have the IP 7.7.7.5 and also decapsulate vxlan traffic
-on it, which wouldn't be possible/recommended otherwise.
 
-Another moment that this gets visible is with VF LAG. When we bond the
-uplink representors, add an IP to it and do vxlan decap, that IP is
-meant only for the decap process and shouldn't be used for heavier
-traffic as its passing through representor ports.
+Kind regards,
 
-Then, tc config for decap need to be done on VF0rep and not on VF0
-itself because that would be a security problem: one VF (which could
-be on a netns) could steer packets to another VF at will.
+Paul McCann
+
+-- 
+This email has been checked for viruses by Avast antivirus software.
+https://www.avast.com/antivirus
+
