@@ -2,127 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2A85314918
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 07:49:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B664431491D
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 07:52:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229759AbhBIGtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 01:49:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55302 "EHLO
+        id S229846AbhBIGwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 01:52:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229464AbhBIGtJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 01:49:09 -0500
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 503FFC061786;
-        Mon,  8 Feb 2021 22:48:29 -0800 (PST)
-Received: by mail-io1-xd34.google.com with SMTP id q7so17742901iob.0;
-        Mon, 08 Feb 2021 22:48:29 -0800 (PST)
+        with ESMTP id S229464AbhBIGwT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 01:52:19 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A698C061786;
+        Mon,  8 Feb 2021 22:51:39 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id z6so20237047wrq.10;
+        Mon, 08 Feb 2021 22:51:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=vn04CRRunlm4IYIn+hFYIf3vBeSbVNhIrnfDu+YIRzw=;
-        b=eVobysR84m97DqPra7MIA+UI0+ln3PFHP4WxpcuZ0gky0kBMV2eu1mU0PTPlO3pxcn
-         XwnnUwCryp8CtTNpqXGxSk1kp9law4NEYzOZlMZyQuB4p155bw9lKqBih28k8Ke+8I97
-         sni4HrsBTmHlgKKdJzQQynwx9yg90YLPs2uQFcDNtt9UYyT8sppiekS+DOdLQLgqqwQa
-         dEfcFegAu0vvhUUJhZqN8RNPplFtQ89LbGRKgHhpLHj3y7S/mFxDUbURskrrFFOw9hda
-         v6+lKCnECOPNCkZ4S3lLrRZC4z3RMgt5hPo0/BR0EOkU1dJcCR6k183NSdUUIUhQaNYy
-         WYNw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=I7v+PJ0b9OiyE//SnnB+M67vmqUOjCNOaES/F2utvdE=;
+        b=kPxmuPF/3SKpRHtEj6a+pzvVJBU1nVTAI5Oy8WxJ13KYGPV/sgtcE3J/3qwxsUvoKD
+         2NcNWE5ILKhDG9XdzHjNckFoziIEMcBOcCIPaE6wWuFk+Sb8/arYh0BM6tF97q/wQ5J2
+         QXizQZIuFa/zSNd3q72blV3biE36oq1EB1jf3yS6MwDL1F6oHVEhgQHuGgBfXeP/QHct
+         LvHD7Ynf0Hf1lz++Z3L51ihdiu4PFNjC0IJ6KxGLBFLHk62JSnHvzA72aSiaA1xUfREB
+         txP/pMsKQQJ93dLOpL3+CrxENp/vlkW/vzH2U1aHleQR3CYWpKSxcnwxOQKO7eRGfcXY
+         fwgQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=vn04CRRunlm4IYIn+hFYIf3vBeSbVNhIrnfDu+YIRzw=;
-        b=IKr+zaKqrXvZGXrEgEb2xFrHfKYVmgmjxdFWdkFKAIQcDidYCGEwDbRo4MINXoXydh
-         Uo33PPgPKYwnr3gRl38GkGybuVcnN1UaPH0DQ5ms6ItwCbA7qrOSKY3LQY44/0RPlwi8
-         u82/TKe4XSWI0TrNIFXUQE729ga77dNey2lQBHwJ18dOrs3CZAreiccM2teCOVshArg8
-         Rn2xcZwrmfq5bn0//QUNSzerCnAIFs0wzmnQl6NKQaPn178/wbGuu47m6A+PHLJlKhaN
-         1nsaM/ki+94WCAAypIF1ePGjJvIaF/3q3yGrW6iEJoIb2p+mh+opuc+kq84+Q1jIKy76
-         7+AA==
-X-Gm-Message-State: AOAM533BmTm5P1urDKXPuL2zS3QxeRHsfTzkVKeJKT1f7t9c+yUOavbg
-        cVM4jN9vcZwKDFLFbdGVBtg=
-X-Google-Smtp-Source: ABdhPJyKsKhCvg49Tf/8tkPb/vgI7l3Iz9ERyXuTirX6u8MyskBSKq8KYj3HFyW2GmduF6BIHajJVw==
-X-Received: by 2002:a02:e87:: with SMTP id 129mr20808060jae.34.1612853308682;
-        Mon, 08 Feb 2021 22:48:28 -0800 (PST)
-Received: from localhost ([172.243.146.206])
-        by smtp.gmail.com with ESMTPSA id t18sm9180400ioi.33.2021.02.08.22.48.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Feb 2021 22:48:27 -0800 (PST)
-Date:   Mon, 08 Feb 2021 22:48:20 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, duanxiongchun@bytedance.com,
-        Dongdong Wang <wangdongdong.6@bytedance.com>,
-        jiang.wang@bytedance.com, Cong Wang <cong.wang@bytedance.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Message-ID: <6022303458ba9_13a65f208f7@john-XPS-13-9370.notmuch>
-In-Reply-To: <CAM_iQpWu8PMbSTfsifBy9j9BLrMn69H2fFkjdRVpGGtbmUURFw@mail.gmail.com>
-References: <20210203041636.38555-1-xiyou.wangcong@gmail.com>
- <20210203041636.38555-2-xiyou.wangcong@gmail.com>
- <6020f4793d9b5_cc86820866@john-XPS-13-9370.notmuch>
- <CAM_iQpWu8PMbSTfsifBy9j9BLrMn69H2fFkjdRVpGGtbmUURFw@mail.gmail.com>
-Subject: Re: [Patch bpf-next 01/19] bpf: rename BPF_STREAM_PARSER to
- BPF_SOCK_MAP
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=I7v+PJ0b9OiyE//SnnB+M67vmqUOjCNOaES/F2utvdE=;
+        b=ki2zGcBRpLcL+gqNaP0iVzcoTSIFMS0qqcK5odZfcO0M54qth6TzdH9QxpwXBthBWv
+         TQKKmQpG4fdlNopG9yk+Cb2fMfvw932wy/KOpKh81p/wdhiqDHC55W9x+o2osJRcvzjw
+         WVFfYeXTqOS/UJiNr4RdhmneDMKLDoLQRV0l5+t01SWv/+Z8VW3gnd9CSeiFm2oxqekZ
+         U3p79cDpaQnOGWl/08JhVE1bj10a70b4iDQ3ryisq8yeIuntq9NYA7FMR5Fkb/sZ20l2
+         igqFTcKTwp31Mba+Gt0Y12z+otu7ql8OfyoVNE+L/LmDMe8UsUdPsXV2O8s1k7M1lBN2
+         c1PQ==
+X-Gm-Message-State: AOAM532XvXMKwMD9qV25K0gBXjer5iiRlNNTOlsnMT+ViRcmnTaUUZyB
+        v6PGtio1o+tp5+gnAEh1qXI=
+X-Google-Smtp-Source: ABdhPJz5C6QHu3jqiwI5UgADjj0R104S9vMSzIKY7LXFfnowlcigNxM9+oEC69FuVzwGTmq93180sg==
+X-Received: by 2002:adf:dd45:: with SMTP id u5mr23386681wrm.392.1612853498244;
+        Mon, 08 Feb 2021 22:51:38 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f1f:ad00:88d8:7242:b455:4959? (p200300ea8f1fad0088d87242b4554959.dip0.t-ipconnect.de. [2003:ea:8f1f:ad00:88d8:7242:b455:4959])
+        by smtp.googlemail.com with ESMTPSA id u14sm482224wro.10.2021.02.08.22.51.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 08 Feb 2021 22:51:37 -0800 (PST)
+Subject: Re: [PATCH net-next v2] net: phy: broadcom: remove BCM5482
+ 1000Base-BX support
+To:     Andrew Lunn <andrew@lunn.ch>, Michael Walle <michael@walle.cc>
+Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20210208231706.31789-1-michael@walle.cc>
+ <YCHlnr7dFWuECcqv@lunn.ch>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <1662168f-06ca-5c20-0d3c-4470d4eec2e5@gmail.com>
+Date:   Tue, 9 Feb 2021 07:51:30 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
+MIME-Version: 1.0
+In-Reply-To: <YCHlnr7dFWuECcqv@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cong Wang wrote:
-> On Mon, Feb 8, 2021 at 12:21 AM John Fastabend <john.fastabend@gmail.com> wrote:
-> >
-> > Cong Wang wrote:
-> > > From: Cong Wang <cong.wang@bytedance.com>
-> > >
-> > > Before we add non-TCP support, it is necessary to rename
-> > > BPF_STREAM_PARSER as it will be no longer specific to TCP,
-> > > and it does not have to be a parser either.
-> > >
-> > > This patch renames BPF_STREAM_PARSER to BPF_SOCK_MAP, so
-> > > that sock_map.c hopefully would be protocol-independent.
-> > >
-> > > Also, improve its Kconfig description to avoid confusion.
-> > >
-> > > Cc: John Fastabend <john.fastabend@gmail.com>
-> > > Cc: Daniel Borkmann <daniel@iogearbox.net>
-> > > Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> > > Cc: Lorenz Bauer <lmb@cloudflare.com>
-> > > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> > > ---
-> >
-> > The BPF_STREAM_PARSER config was originally added because we need
-> > the STREAM_PARSER define and wanted a way to get the 'depends on'
-> > lines in Kconfig correct.
-> >
-> > Rather than rename this, lets reduce its scope to just the set
-> > of actions that need the STREAM_PARSER, this should be just the
-> > stream parser programs. We probably should have done this sooner,
-> > but doing it now will be fine.
+On 09.02.2021 02:30, Andrew Lunn wrote:
+> On Tue, Feb 09, 2021 at 12:17:06AM +0100, Michael Walle wrote:
+>> It is nowhere used in the kernel. It also seems to be lacking the
+>> proper fiber advertise flags. Remove it.
 > 
-> This makes sense, but we still need a Kconfig for the rest sockmap
-> code, right? At least for the dependency on NET_SOCK_MSG?
-
-Lets just enable NET_SOCK_MSG when CONFIG_BPF_SYSCALL is enabled. We
-never put any of the other maps, devmap, cpumap, etc. behind an
-explicit flag like this.
-
+> Maybe also remove the #define for PHY_BCM_FLAGS_MODE_1000BX? Maybe
+> there is an out of tree driver using this? By removing the #define, it
+> will fail at compile time, making it obvious the support has been
+> removed?
 > 
-> >
-> > I can probably draft a quick patch tomorrow if above is not clear.
-> > It can go into bpf-next outside this series as well to reduce
-> > the 19 patches a bit.
-> 
-> I can handle it in my next update too, like all other feedbacks.
 
-Great thanks. Especially because I haven't got to it yet today.
-
-> 
-> Thanks.
-
-
+AFAICS this flag is still used in BCM54616S PHY driver code.
