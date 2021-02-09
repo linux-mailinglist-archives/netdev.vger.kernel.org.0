@@ -2,249 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4327314CCB
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 11:22:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 486CF314CC8
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 11:21:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231727AbhBIKTg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 05:19:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43614 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231389AbhBIKR0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 05:17:26 -0500
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B946C061788
-        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 02:16:46 -0800 (PST)
-Received: by mail-pg1-x52c.google.com with SMTP id t11so8474264pgu.8
-        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 02:16:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nwegWcvfdOvDBjpI6rTN4TRoTlFUhYh/KI8czL+q75A=;
-        b=WhhuOYrkXCM28jqhwV4zuWDb0/BpS8M3ZgiZZGQgwiYZPS8Aw3sEVN08hDBWqngs75
-         3ekHx94OeAnXz++bWuWjLEb9r3uQKJnU/D3ols4sH1IMrG8qhcj/bCFhRHLzOqrk+ztd
-         G6qUYIIIFKbu0+sWJ2krolsEmI/p4UcwiuPyWyDGN+f/tBgw2kVM3xNtOX5aIv4QIqk9
-         pFqr61flU0+HaXkZ2fq37FBdFRzvnpBAaI9hJYK0uadYjD1IG5Is/LnLMDaZyjoc2VSD
-         XgjjA+d0T4CQYIao/ZYDHO+v3uhDeU28OG4x4UmkdSlr9FhkdRuVGz4HvWZZD0Bx0XPH
-         2nqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nwegWcvfdOvDBjpI6rTN4TRoTlFUhYh/KI8czL+q75A=;
-        b=nmSg6SPortdgrvPFN/RtgI3ctBeYBR4+AmVOWrNWwZpEqIf8jr+ggqiC6XxD5c/ofr
-         h5AiGGFWcA6RrsgvUxG0Mq1dHrmqFG1Zwd4c0vE9WndSYGffmuXgAhtZ/8flg0lEmcBD
-         70XvxRs3+ZwTBu4LohHscX1yXq2gyhCeC3AdIF/rql4cXUsnpXsrce+h8yxavCVpZ5hs
-         1/csHQ3JceDkC/8H4ltRg0QifPJ1NxoYrNTmWatvc4LCqpiIDQhBhtoXD8SuA3vCDPqw
-         Pa4ivyd/B8QKjKSia99bcyuKRzYM/LAv7xJ8Myv4yO779ASFpDGV9QP4hIjuaXtUrVx3
-         vMXQ==
-X-Gm-Message-State: AOAM533y6qdVUPPJtNykcbeRjczv5AbLSYenRLva+5IBTrizk39FIu/l
-        zXo7Fhh0fWmZTgIESfwGC+qpg5iG/tB1vA==
-X-Google-Smtp-Source: ABdhPJxzSNOTNWpY5Us48fBgnjhRQpMVHMU9p3aISm43yT7ugEX+l5FfYhOejxd0ObSIUajS89WBmQ==
-X-Received: by 2002:a63:2746:: with SMTP id n67mr20743051pgn.54.1612865805503;
-        Tue, 09 Feb 2021 02:16:45 -0800 (PST)
-Received: from pek-lpggp6.wrs.com (unknown-105-123.windriver.com. [147.11.105.123])
-        by smtp.gmail.com with ESMTPSA id j185sm22261207pge.46.2021.02.09.02.16.38
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 09 Feb 2021 02:16:44 -0800 (PST)
-From:   Kevin Hao <haokexin@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Sunil Goutham <sgoutham@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        hariprasad <hkelam@marvell.com>, netdev@vger.kernel.org,
-        Pavel Machek <pavel@ucw.cz>
-Subject: [PATCH net-next v2] net: octeontx2: Fix the confusion in buffer alloc failure path
-Date:   Tue,  9 Feb 2021 18:15:16 +0800
-Message-Id: <20210209101516.7536-1-haokexin@gmail.com>
-X-Mailer: git-send-email 2.29.2
+        id S231320AbhBIKSx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 05:18:53 -0500
+Received: from mail.baikalelectronics.com ([87.245.175.226]:59670 "EHLO
+        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231318AbhBIKQV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 05:16:21 -0500
+Date:   Tue, 9 Feb 2021 13:15:28 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+CC:     Serge Semin <fancer.lancer@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Joao Pinto <Joao.Pinto@synopsys.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Vyacheslav Mitrofanov 
+        <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        <netdev@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 01/20] net: phy: realtek: Fix events detection failure in
+ LPI mode
+Message-ID: <20210209101528.3lf47ouaedfgq74n@mobilestation>
+References: <20210208140341.9271-1-Sergey.Semin@baikalelectronics.ru>
+ <20210208140341.9271-2-Sergey.Semin@baikalelectronics.ru>
+ <8300d9ca-b877-860f-a975-731d6d3a93a5@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <8300d9ca-b877-860f-a975-731d6d3a93a5@gmail.com>
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Pavel pointed that the return of dma_addr_t in
-otx2_alloc_rbuf/__otx2_alloc_rbuf() seem suspicious because a negative
-error code may be returned in some cases. For a dma_addr_t, the error
-code such as -ENOMEM does seem a valid value, so we can't judge if the
-buffer allocation fail or not based on that value. Add a parameter for
-otx2_alloc_rbuf/__otx2_alloc_rbuf() to store the dma address and make
-the return value to indicate if the buffer allocation really fail or
-not.
+On Mon, Feb 08, 2021 at 09:14:02PM +0100, Heiner Kallweit wrote:
+> On 08.02.2021 15:03, Serge Semin wrote:
+> > It has been noticed that RTL8211E PHY stops detecting and reporting events
+> > when EEE is successfully advertised and RXC stopping in LPI is enabled.
+> > The freeze happens right after 3.0.10 bit (PC1R "Clock Stop Enable"
+> > register) is set. At the same time LED2 stops blinking as if EEE mode has
+> > been disabled. Notably the network traffic still flows through the PHY
+> > with no obvious problem. Anyway if any MDIO read procedure is performed
+> > after the "RXC stop in LPI" mode is enabled PHY gets to be unfrozen, LED2
+> > starts blinking and PHY interrupts happens again. The problem has been
+> > noticed on RTL8211E PHY working together with DW GMAC 3.73a MAC and
+> > reporting its event via a dedicated IRQ signal. (Obviously the problem has
+> > been unnoticed in the polling mode, since it gets naturally fixed by the
+> > periodic MDIO read procedure from the PHY status register - BMSR.)
+> > 
+> > In order to fix that problem we suggest to locally re-implement the MMD
+> > write method for RTL8211E PHY and perform a dummy read right after the
+> > PC1R register is accessed to enable the RXC stopping in LPI mode.
+> > 
+> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> > ---
+> >  drivers/net/phy/realtek.c | 37 +++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 37 insertions(+)
+> > 
+> > diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+> > index 99ecd6c4c15a..cbb86c257aae 100644
+> > --- a/drivers/net/phy/realtek.c
+> > +++ b/drivers/net/phy/realtek.c
+> > @@ -559,6 +559,42 @@ static int rtl822x_write_mmd(struct phy_device *phydev, int devnum, u16 regnum,
+> >  	return ret;
+> >  }
+> >  
+> > +static int rtl8211e_write_mmd(struct phy_device *phydev, int devnum, u16 regnum,
+> > +			      u16 val)
+> > +{
+> > +	int ret;
+> > +
+> > +	/* Write to the MMD registers by using the standard control/data pair.
+> > +	 * The only difference is that we need to perform a dummy read after
+> > +	 * the PC1R.CLKSTOP_EN bit is set. It's required to workaround an issue
+> > +	 * of a partial core freeze so LED2 stops blinking in EEE mode, PHY
+> > +	 * stops detecting the link change and raising IRQs until any read from
+> > +	 * its registers performed. That happens only if and right after the PHY
+> > +	 * is enabled to stop RXC in LPI mode.
+> > +	 */
+> > +	ret = __phy_write(phydev, MII_MMD_CTRL, devnum);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	ret = __phy_write(phydev, MII_MMD_DATA, regnum);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	ret = __phy_write(phydev, MII_MMD_CTRL, devnum | MII_MMD_CTRL_NOINCR);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> 
 
-Reported-by: Pavel Machek <pavel@ucw.cz>
-Signed-off-by: Kevin Hao <haokexin@gmail.com>
-Tested-by: Subbaraya Sundeep <sbhatta@marvell.com>
----
-v2: Just sort the variable declaration and add Tested-by from Subbaraya.
-    No function change.
+> Nice analysis. Alternatively to duplicating this code piece we could
+> export mmd_phy_indirect(). But up to you.
 
- .../marvell/octeontx2/nic/otx2_common.c       | 38 +++++++++----------
- .../marvell/octeontx2/nic/otx2_common.h       |  7 ++--
- .../marvell/octeontx2/nic/otx2_txrx.c         |  5 +--
- 3 files changed, 24 insertions(+), 26 deletions(-)
+I also considered creating a generic method to access the MMD
+registers of a generic PHY, something like phy_read()/phy_write(), but
+for MMD (alas just exporting mmd_phy_indirect() would not be enough).
+But as I see it such methods need to be created only after we get to
+have at least several places with duplicating direct MMD-read/write
+patterns. Doing that just for a single place seems redundant. Anyway it's
+up to maintainers to decide whether they want to see a generic part
+of the phy_read_mmd()/phy_write_mmd() methods being detached and
+exported as something like genphy_{read,write}_mmd() methods. I can do
+that in v2 if you ask me to.
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-index cbd68fa9f1d6..70a91d8be074 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-@@ -483,33 +483,34 @@ void otx2_config_irq_coalescing(struct otx2_nic *pfvf, int qidx)
- 		     (pfvf->hw.cq_ecount_wait - 1));
- }
- 
--dma_addr_t __otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool)
-+int __otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool,
-+		      dma_addr_t *dma)
- {
--	dma_addr_t iova;
- 	u8 *buf;
- 
- 	buf = napi_alloc_frag_align(pool->rbsize, OTX2_ALIGN);
- 	if (unlikely(!buf))
- 		return -ENOMEM;
- 
--	iova = dma_map_single_attrs(pfvf->dev, buf, pool->rbsize,
-+	*dma = dma_map_single_attrs(pfvf->dev, buf, pool->rbsize,
- 				    DMA_FROM_DEVICE, DMA_ATTR_SKIP_CPU_SYNC);
--	if (unlikely(dma_mapping_error(pfvf->dev, iova))) {
-+	if (unlikely(dma_mapping_error(pfvf->dev, *dma))) {
- 		page_frag_free(buf);
- 		return -ENOMEM;
- 	}
- 
--	return iova;
-+	return 0;
- }
- 
--static dma_addr_t otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool)
-+static int otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool,
-+			   dma_addr_t *dma)
- {
--	dma_addr_t addr;
-+	int ret;
- 
- 	local_bh_disable();
--	addr = __otx2_alloc_rbuf(pfvf, pool);
-+	ret = __otx2_alloc_rbuf(pfvf, pool, dma);
- 	local_bh_enable();
--	return addr;
-+	return ret;
- }
- 
- void otx2_tx_timeout(struct net_device *netdev, unsigned int txq)
-@@ -903,7 +904,7 @@ static void otx2_pool_refill_task(struct work_struct *work)
- 	struct refill_work *wrk;
- 	int qidx, free_ptrs = 0;
- 	struct otx2_nic *pfvf;
--	s64 bufptr;
-+	dma_addr_t bufptr;
- 
- 	wrk = container_of(work, struct refill_work, pool_refill_work.work);
- 	pfvf = wrk->pf;
-@@ -913,8 +914,7 @@ static void otx2_pool_refill_task(struct work_struct *work)
- 	free_ptrs = cq->pool_ptrs;
- 
- 	while (cq->pool_ptrs) {
--		bufptr = otx2_alloc_rbuf(pfvf, rbpool);
--		if (bufptr <= 0) {
-+		if (otx2_alloc_rbuf(pfvf, rbpool, &bufptr)) {
- 			/* Schedule a WQ if we fails to free atleast half of the
- 			 * pointers else enable napi for this RQ.
- 			 */
-@@ -1213,8 +1213,8 @@ int otx2_sq_aura_pool_init(struct otx2_nic *pfvf)
- 	struct otx2_hw *hw = &pfvf->hw;
- 	struct otx2_snd_queue *sq;
- 	struct otx2_pool *pool;
-+	dma_addr_t bufptr;
- 	int err, ptr;
--	s64 bufptr;
- 
- 	/* Calculate number of SQBs needed.
- 	 *
-@@ -1259,9 +1259,8 @@ int otx2_sq_aura_pool_init(struct otx2_nic *pfvf)
- 			return -ENOMEM;
- 
- 		for (ptr = 0; ptr < num_sqbs; ptr++) {
--			bufptr = otx2_alloc_rbuf(pfvf, pool);
--			if (bufptr <= 0)
--				return bufptr;
-+			if (otx2_alloc_rbuf(pfvf, pool, &bufptr))
-+				return -ENOMEM;
- 			otx2_aura_freeptr(pfvf, pool_id, bufptr);
- 			sq->sqb_ptrs[sq->sqb_count++] = (u64)bufptr;
- 		}
-@@ -1280,7 +1279,7 @@ int otx2_rq_aura_pool_init(struct otx2_nic *pfvf)
- 	int stack_pages, pool_id, rq;
- 	struct otx2_pool *pool;
- 	int err, ptr, num_ptrs;
--	s64 bufptr;
-+	dma_addr_t bufptr;
- 
- 	num_ptrs = pfvf->qset.rqe_cnt;
- 
-@@ -1310,9 +1309,8 @@ int otx2_rq_aura_pool_init(struct otx2_nic *pfvf)
- 	for (pool_id = 0; pool_id < hw->rqpool_cnt; pool_id++) {
- 		pool = &pfvf->qset.pool[pool_id];
- 		for (ptr = 0; ptr < num_ptrs; ptr++) {
--			bufptr = otx2_alloc_rbuf(pfvf, pool);
--			if (bufptr <= 0)
--				return bufptr;
-+			if (otx2_alloc_rbuf(pfvf, pool, &bufptr))
-+				return -ENOMEM;
- 			otx2_aura_freeptr(pfvf, pool_id,
- 					  bufptr + OTX2_HEAD_ROOM);
- 		}
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index 143ae04c8ad5..0404900338e3 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -485,9 +485,9 @@ static inline u64 otx2_aura_allocptr(struct otx2_nic *pfvf, int aura)
- 
- /* Free pointer to a pool/aura */
- static inline void otx2_aura_freeptr(struct otx2_nic *pfvf,
--				     int aura, s64 buf)
-+				     int aura, u64 buf)
- {
--	otx2_write128((u64)buf, (u64)aura | BIT_ULL(63),
-+	otx2_write128(buf, (u64)aura | BIT_ULL(63),
- 		      otx2_get_regaddr(pfvf, NPA_LF_AURA_OP_FREE0));
- }
- 
-@@ -636,7 +636,8 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl);
- int otx2_txsch_alloc(struct otx2_nic *pfvf);
- int otx2_txschq_stop(struct otx2_nic *pfvf);
- void otx2_sqb_flush(struct otx2_nic *pfvf);
--dma_addr_t __otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool);
-+int __otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool,
-+		      dma_addr_t *dma);
- int otx2_rxtx_enable(struct otx2_nic *pfvf, bool enable);
- void otx2_ctx_disable(struct mbox *mbox, int type, bool npa);
- int otx2_nix_config_bp(struct otx2_nic *pfvf, bool enable);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-index d0e25414f1a1..cc0dac325f77 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-@@ -304,7 +304,7 @@ static int otx2_rx_napi_handler(struct otx2_nic *pfvf,
- {
- 	struct nix_cqe_rx_s *cqe;
- 	int processed_cqe = 0;
--	s64 bufptr;
-+	dma_addr_t bufptr;
- 
- 	while (likely(processed_cqe < budget)) {
- 		cqe = (struct nix_cqe_rx_s *)CQE_ADDR(cq, cq->cq_head);
-@@ -333,8 +333,7 @@ static int otx2_rx_napi_handler(struct otx2_nic *pfvf,
- 
- 	/* Refill pool with new buffers */
- 	while (cq->pool_ptrs) {
--		bufptr = __otx2_alloc_rbuf(pfvf, cq->rbpool);
--		if (unlikely(bufptr <= 0)) {
-+		if (unlikely(__otx2_alloc_rbuf(pfvf, cq->rbpool, &bufptr))) {
- 			struct refill_work *work;
- 			struct delayed_work *dwork;
- 
--- 
-2.29.2
+-Sergey
 
+> 
+> > +	ret = __phy_write(phydev, MII_MMD_DATA, val);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	if (devnum == MDIO_MMD_PCS && regnum == MDIO_CTRL1 &&
+> > +	    val & MDIO_PCS_CTRL1_CLKSTOP_EN)
+> > +		ret =  __phy_read(phydev, MII_MMD_DATA);
+> > +
+> > +	return ret < 0 ? ret : 0;
+> > +}
+> > +
+> >  static int rtl822x_get_features(struct phy_device *phydev)
+> >  {
+> >  	int val;
+> > @@ -725,6 +761,7 @@ static struct phy_driver realtek_drvs[] = {
+> >  		.resume		= genphy_resume,
+> >  		.read_page	= rtl821x_read_page,
+> >  		.write_page	= rtl821x_write_page,
+> > +		.write_mmd	= rtl8211e_write_mmd,
+> >  	}, {
+> >  		PHY_ID_MATCH_EXACT(0x001cc916),
+> >  		.name		= "RTL8211F Gigabit Ethernet",
+> > 
+> 
