@@ -2,200 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AB50314E68
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 12:49:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0259314E65
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 12:49:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229558AbhBILps (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 06:45:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60228 "EHLO
+        id S230372AbhBILou (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 06:44:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230205AbhBILfU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 06:35:20 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF9ABC061797
-        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 03:32:06 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1l9RF9-0004S2-Pu; Tue, 09 Feb 2021 12:31:43 +0100
-Received: from hardanger.blackshift.org (unknown [IPv6:2a03:f580:87bc:d400:655a:4660:2120:638])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 264185DB349;
-        Tue,  9 Feb 2021 11:28:16 +0000 (UTC)
-Date:   Tue, 9 Feb 2021 12:28:15 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     David Laight <David.Laight@ACULAB.COM>
-Cc:     Arnd Bergmann <arnd@kernel.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] can: ucan: fix alignment constraints
-Message-ID: <20210209112815.hqndd7qonsygvv4n@hardanger.blackshift.org>
-References: <20210204162625.3099392-1-arnd@kernel.org>
- <20210208131624.y5ro74e4fibpg6rk@hardanger.blackshift.org>
- <bd7e6497b3f64fb5bb839dc9a9d51d6a@AcuMS.aculab.com>
+        with ESMTP id S230196AbhBILle (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 06:41:34 -0500
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28C6EC06178A
+        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 03:40:54 -0800 (PST)
+Received: by mail-qk1-x729.google.com with SMTP id t63so17597466qkc.1
+        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 03:40:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=41hi0c02oO4tuVV9L3cubuwMoL173xYyde0J3gmHoXc=;
+        b=fCj4pquVd+PYGzXHqiOzDIiiXRItclK5wdS6DU24eUPtYG+9Cggfj3eH70jg+mmE2X
+         Kc8C4HjFPJ+96a6fmoFEq9Vj+0JBrS3CEusK9LwAu/fmTYSQvI8dRDE3r8DTwJaVKxOS
+         dioyYvCpcHCKJubWfmmxabMaMeJ1m1R8tKy5MLKvdLpen13KO/+3fKblqdX2y/3qxgrm
+         rYH1YnUtRSO420arDanE5tBHaDrrcPgP6AamClV1ZnhQkximvTzpj6ggX5lIU+ladOAi
+         uNEE2LlTLBtxa+5FoaGjWipXnBbskEAWG+dKZcKd5WzHjNGyMYE9lp7IUX7stfa7WJv4
+         0YAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=41hi0c02oO4tuVV9L3cubuwMoL173xYyde0J3gmHoXc=;
+        b=g12Y1Lfgt3s575nxGE8aE0/iIKXntsQViwUOVQevxbUqT3C+QUEuhteFSaab+Y1OQ9
+         3XJr31SAbqI83K3YZ+qo9y+Xw30vlJyhAB3KYGAIUR19NZh/HmYj+b2HZG7ON8CpMQ/l
+         njgLwFUnK3cKi0qud940sy2RINf/KZfhHc/m3MztWCB2bBz6RkJOV7Q80VYY1wF2V+SL
+         QS4zpdi+xIjQYcUztgoFFjEGC+B5a3wnqdM+S2BrJtc/lH/iAaHpYYNsnZcJQPycPo5S
+         YL+P3shjmyDAZfx/rrQh2K+100ADwdg13f1w9HP0k72nmD4jgftEB3VR9kPa/fqGvXJp
+         cnNA==
+X-Gm-Message-State: AOAM530iDxHY/f9BDBsDQ5KP6fuGjZF6uyAKsvzm5mIU/9UZ7I/QVvyI
+        /P1Xn5vHnKhlzIUBazau4vjGNkHiF2620IjvBVgGwg==
+X-Google-Smtp-Source: ABdhPJxCHSJNQXMjgze7X9u2yZHdDNqVyw+Bk6ovFO5Ibu9/5qGY8UcJiI9iON3FJkM1rECcEHVerJiY6P8pQKYSQYs=
+X-Received: by 2002:a37:74b:: with SMTP id 72mr20666133qkh.155.1612870853195;
+ Tue, 09 Feb 2021 03:40:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="djjdhxlhmqm3zy7h"
-Content-Disposition: inline
-In-Reply-To: <bd7e6497b3f64fb5bb839dc9a9d51d6a@AcuMS.aculab.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <1612860151-12275-1-git-send-email-stefanc@marvell.com>
+In-Reply-To: <1612860151-12275-1-git-send-email-stefanc@marvell.com>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Tue, 9 Feb 2021 12:40:41 +0100
+Message-ID: <CAPv3WKfbz6c69ON_gd7yu41QFU+C9qtoW1P=+P-NKZ7vQLE5FA@mail.gmail.com>
+Subject: Re: [PATCH v11 net-next 00/15] net: mvpp2: Add TX Flow Control support
+To:     Stefan Chulski <stefanc@marvell.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>, nadavh@marvell.com,
+        Yan Markman <ymarkman@marvell.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <rmk+kernel@armlinux.org.uk>, atenart@kernel.org,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        =?UTF-8?Q?Gr=C3=A9gory_Clement?= <gregory.clement@bootlin.com>,
+        linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Stefan,
 
---djjdhxlhmqm3zy7h
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+wt., 9 lut 2021 o 09:43 <stefanc@marvell.com> napisa=C5=82(a):
+>
+> From: Stefan Chulski <stefanc@marvell.com>
+>
+> Armada hardware has a pause generation mechanism in GOP (MAC).
+> The GOP generate flow control frames based on an indication programmed in=
+ Ports Control 0 Register. There is a bit per port.
+> However assertion of the PortX Pause bits in the ports control 0 register=
+ only sends a one time pause.
+> To complement the function the GOP has a mechanism to periodically send p=
+ause control messages based on periodic counters.
+> This mechanism ensures that the pause is effective as long as the Appropr=
+iate PortX Pause is asserted.
+>
+> Problem is that Packet Processor that actually can drop packets due to la=
+ck of resources not connected to the GOP flow control generation mechanism.
+> To solve this issue Armada has firmware running on CM3 CPU dedicated for =
+Flow Control support.
+> Firmware monitors Packet Processor resources and asserts XON/XOFF by writ=
+ing to Ports Control 0 Register.
+>
+> MSS shared SRAM memory used to communicate between CM3 firmware and PP2 d=
+river.
+> During init PP2 driver informs firmware about used BM pools, RXQs, conges=
+tion and depletion thresholds.
+>
+> The pause frames are generated whenever congestion or depletion in resour=
+ces is detected.
+> The back pressure is stopped when the resource reaches a sufficient level=
+.
+> So the congestion/depletion and sufficient level implement a hysteresis t=
+hat reduces the XON/XOFF toggle frequency.
+>
+> Packet Processor v23 hardware introduces support for RX FIFO fill level m=
+onitor.
+> Patch "add PPv23 version definition" to differ between v23 and v22 hardwa=
+re.
+> Patch "add TX FC firmware check" verifies that CM3 firmware supports Flow=
+ Control monitoring.
+>
+> v10 --> v11
+> - Improve "net: mvpp2: add CM3 SRAM memory map" comment
+> - Move condition check to 'net: mvpp2: always compare hw-version vs MVPP2=
+1' patch
+>
+> v9 --> v10
+> - Add CM3 SRAM description to PPv2 documentation
+>
+> v8 --> v9
+> - Replace generic pool allocation with devm_ioremap_resource
+>
+> v7 --> v8
+> - Reorder "always compare hw-version vs MVPP21" and "add PPv23 version de=
+finition" commits
+> - Typo fixes
+> - Remove condition fix from "add RXQ flow control configurations"
+>
+> v6 --> v7
+> - Reduce patch set from 18 to 15 patches
+>  - Documentation change combined into a single patch
+>  - RXQ and BM size change combined into a single patch
+>  - Ring size change check moved into "add RXQ flow control configurations=
+" commit
+>
+> v5 --> v6
+> - No change
+>
+> v4 --> v5
+> - Add missed Signed-off
+> - Fix warnings in patches 3 and 12
+> - Add revision requirement to warning message
+> - Move mss_spinlock into RXQ flow control configurations patch
+> - Improve FCA RXQ non occupied descriptor threshold commit message
+>
+> v3 --> v4
+> - Remove RFC tag
+>
+> v2 --> v3
+> - Remove inline functions
+> - Add PPv2.3 description into marvell-pp2.txt
+> - Improve mvpp2_interrupts_mask/unmask procedure
+> - Improve FC enable/disable procedure
+> - Add priv->sram_pool check
+> - Remove gen_pool_destroy call
+> - Reduce Flow Control timer to x100 faster
+>
+> v1 --> v2
+> - Add memory requirements information
+> - Add EPROBE_DEFER if of_gen_pool_get return NULL
+> - Move Flow control configuration to mvpp2_mac_link_up callback
+> - Add firmware version info with Flow control support
+>
+> Konstantin Porotchkin (1):
+>   dts: marvell: add CM3 SRAM memory to cp11x ethernet device tree
+>
+> Stefan Chulski (14):
+>   doc: marvell: add CM3 address space and PPv2.3 description
+>   net: mvpp2: add CM3 SRAM memory map
+>   net: mvpp2: always compare hw-version vs MVPP21
+>   net: mvpp2: add PPv23 version definition
+>   net: mvpp2: increase BM pool and RXQ size
+>   net: mvpp2: add FCA periodic timer configurations
+>   net: mvpp2: add FCA RXQ non occupied descriptor threshold
+>   net: mvpp2: enable global flow control
+>   net: mvpp2: add RXQ flow control configurations
+>   net: mvpp2: add ethtool flow control configuration support
+>   net: mvpp2: add BM protection underrun feature support
+>   net: mvpp2: add PPv23 RX FIFO flow control
+>   net: mvpp2: set 802.3x GoP Flow Control mode
+>   net: mvpp2: add TX FC firmware check
+>
+>  Documentation/devicetree/bindings/net/marvell-pp2.txt |   6 +-
+>  arch/arm64/boot/dts/marvell/armada-cp11x.dtsi         |   2 +-
+>  drivers/net/ethernet/marvell/mvpp2/mvpp2.h            | 124 ++++-
+>  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c       | 526 ++++++++++++=
+++++++--
+>  4 files changed, 609 insertions(+), 49 deletions(-)
+>
 
-On 09.02.2021 10:34:42, David Laight wrote:
-> From: Marc Kleine-Budde
-> > Sent: 08 February 2021 13:16
-> >=20
-> > On 04.02.2021 17:26:13, Arnd Bergmann wrote:
-> > > From: Arnd Bergmann <arnd@arndb.de>
-> > >
-> > > struct ucan_message_in contains member with 4-byte alignment
-> > > but is itself marked as unaligned, which triggers a warning:
-> > >
-> > > drivers/net/can/usb/ucan.c:249:1: warning: alignment 1 of 'struct uca=
-n_message_in' is less than 4 [-
-> > Wpacked-not-aligned]
-> > >
-> > > Mark the outer structure to have the same alignment as the inner
-> > > one.
-> > >
-> > > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> >=20
-> > Applied to linux-can-next/testing.
->=20
-> I've just had a look at that file.
->=20
-> Are any of the __packed or __aligned actually required at all.
->=20
-> AFAICT there is one structure that would have end-padding.
-> But I didn't actually spot anything validating it's length.
-> Which may well mean that it is possible to read off the end
-> of the USB receive buffer - plausibly into unmapped addresses.
+For the series:
+Acked-by: Marcin Wojtas <mw@semihalf.com>
 
-In ucan_read_bulk_callback() there is a check of the urb's length,
-as well as the length information inside the rx'ed data:
-
-https://elixir.bootlin.com/linux/v5.10.14/source/drivers/net/can/usb/ucan.c=
-#L734
-
-| static void ucan_read_bulk_callback(struct urb *urb)
-| [...]
-| 		/* check sanity (length of header) */
-| 		if ((urb->actual_length - pos) < UCAN_IN_HDR_SIZE) {
-| 			netdev_warn(up->netdev,
-| 				    "invalid message (short; no hdr; l:%d)\n",
-| 				    urb->actual_length);
-| 			goto resubmit;
-| 		}
-|=20
-| 		/* setup the message address */
-| 		m =3D (struct ucan_message_in *)
-| 			((u8 *)urb->transfer_buffer + pos);
-| 		len =3D le16_to_cpu(m->len);
-|=20
-| 		/* check sanity (length of content) */
-| 		if (urb->actual_length - pos < len) {
-| 			netdev_warn(up->netdev,
-| 				    "invalid message (short; no data; l:%d)\n",
-| 				    urb->actual_length);
-| 			print_hex_dump(KERN_WARNING,
-| 				       "raw data: ",
-| 				       DUMP_PREFIX_ADDRESS,
-| 				       16,
-| 				       1,
-| 				       urb->transfer_buffer,
-| 				       urb->actual_length,
-| 				       true);
-|=20
-| 			goto resubmit;
-| 		}
-
-
-> I looked because all the patches to 'fix' the compiler warning
-> are dubious.
-> Once you've changed the outer alignment (eg of a union) then
-> the compiler will assume that any pointer to that union is aligned.
-> So any _packed() attributes that are required for mis-aligned
-> accesses get ignored - because the compiler knows the pointer
-> must be aligned.
-
-Here the packed attribute is not to tell the compiler, that a pointer
-to the struct ucan_message_in may be unaligned. Rather is tells the
-compiler to not add any holes into the struct.
-
-| struct ucan_message_in {
-| 	__le16 len; /* Length of the content include header */
-| 	u8 type;    /* UCAN_IN_RX and friends */
-| 	u8 subtype; /* command sub type */
-|=20
-| 	union {
-| 		/* CAN Frame received
-| 		 * (type =3D=3D UCAN_IN_RX)
-| 		 * && ((msg.can_msg.id & CAN_RTR_FLAG) =3D=3D 0)
-| 		 */
-| 		struct ucan_can_msg can_msg;
-|=20
-| 		/* CAN transmission complete
-| 		 * (type =3D=3D UCAN_IN_TX_COMPLETE)
-| 		 */
-| 		struct ucan_tx_complete_entry_t can_tx_complete_msg[0];
-| 	} __aligned(0x4) msg;
-| } __packed;
-
-> So while the changes remove the warning, they may be removing
-> support for misaligned addresses.
-
-There won't be any misaligned access on the struct, the USB device
-will send it aligned and the driver will enforce the alignment:
-
-| 		/* proceed to next message */
-| 		pos +=3D len;
-| 		/* align to 4 byte boundary */
-| 		pos =3D round_up(pos, 4);
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---djjdhxlhmqm3zy7h
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmAiccwACgkQqclaivrt
-76kTRQf/VhGlpKxtfkAF8AWG10yA3INg9/1yq2i1yWV3QzCKTiWm0uaVgUSv77Lm
-Jg4zGGkjEnEDcxHUoVaFB2JmJ4uhRgm83c21ZpYyvkuGjVFixTwsnILELh2hCS6w
-Ltn3CSxJFXBCLQ/CNDL/xcyNhLKJcICOfs8BRHF7OAjbERrjIRBY9d+ZluZ+LGFo
-J1SkCiaRl3MjwJJKfsX6rdSEl5ohYu+BQtg9zRITbLyeEX/kx7XkVSV3wJmA50aM
-bjfc3rWhrLonsGRok0PJOkHuj7qxpwMruJCM160ywliiB+Lh4REgoV4NVfAsNKMd
-7GCF/fw9PSW/7b5o/3qDxoB/31HoqA==
-=MGWN
------END PGP SIGNATURE-----
-
---djjdhxlhmqm3zy7h--
+Thanks,
+Marcin
