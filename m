@@ -2,133 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBB8C314D46
-	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 11:43:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02D99314D68
+	for <lists+netdev@lfdr.de>; Tue,  9 Feb 2021 11:48:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232009AbhBIKiN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 05:38:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47132 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231785AbhBIKdt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 05:33:49 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C118C061793
-        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 02:33:08 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id hs11so30501242ejc.1
-        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 02:33:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=pU+OX90lxBxSULEfhANKbIE/Stad0bhVCCPB37fq3V8=;
-        b=uOeVlII1joPJGrGM7ioEQvI4TFcu7uvVOunOZY6MZHQkWkF6Au3YhdUcxNrnRD4X1S
-         NznynEhjLxkgnzisVcEc2EXlLsXRPdYFyR4i7H8cpACTdVYxLxpXmuvk60weC2BzmhII
-         7G4ogf70dvX5DMbEBEJ5F6gVXdHRZPXSdzs5HMNetNZ/yOf/sejlIG5MXJ04qXrK38wU
-         tsuz3uXVYiFfKbqTUFE1+ThCqVHSChnRsdsOSalPB4nWbjRdD2LgDJCJMfR6LyRB23bn
-         08fLL8GRIdIcCRZ/Bl73I8/gdPif+0/1t63Uuw4fetlReRxTRX3NFFBVvdXqYyaM5jYG
-         HTqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=pU+OX90lxBxSULEfhANKbIE/Stad0bhVCCPB37fq3V8=;
-        b=UkCJVn89uQPJ+xBDgX3DONgyfnBgFutn7I12pTz7wQ5RsQ1zM184af1JtquAAB28d5
-         7oR+s33NKnRdDy957zm3hu5d5KaUSNP/cM9NC3SzfGlnSUjblPj/FGzMRpgDdpr3mWXr
-         mQka0nWVuKrBpsC8/1aPhglCwxJYGlymj7Z9w+W6SgrXyfE0ARSHL5xq0XNK2MU+iIfd
-         siUbQSsZvsqShiPIaGQBY7GdAUKOb7pGp655Qc9UGjIf48j4kFheAAAvdYTybjOGnucj
-         T2sSjviTVKyWPxBs5dSIG8QIR0qIIPjANiU8tbYpaWLxM2QVLRESkwNhXmKJZzhyPPZB
-         YYlA==
-X-Gm-Message-State: AOAM531uClJ/f8Z0ywkWXFtQQSIHZ7zCjalpWq5D38wWHIv38HknUK20
-        jZeRnRY358d2k7YUy6IFZK1r6f+iLE+JOPoCyziOPQ==
-X-Google-Smtp-Source: ABdhPJxj32UCAuGucKAdAzpyJRyGa1U1L+vcZZ882Xy+JRW4pT7i729xjX+0bj445/Xj0tYhm0jBIQ==
-X-Received: by 2002:a17:906:3484:: with SMTP id g4mr21255904ejb.38.1612866786517;
-        Tue, 09 Feb 2021 02:33:06 -0800 (PST)
-Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id q20sm8486896ejs.17.2021.02.09.02.33.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Feb 2021 02:33:06 -0800 (PST)
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-To:     netdev@vger.kernel.org
-Cc:     roopa@nvidia.com, idosch@nvidia.com, andy@greyhouse.net,
-        j.vosburgh@gmail.com, vfalico@gmail.com, kuba@kernel.org,
-        davem@davemloft.net
-Subject: [PATCH net-next 3/3] bonding: 3ad: Use a more verbose warning for unknown speeds
-Date:   Tue,  9 Feb 2021 12:32:09 +0200
-Message-Id: <20210209103209.482770-4-razor@blackwall.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210209103209.482770-1-razor@blackwall.org>
-References: <20210209103209.482770-1-razor@blackwall.org>
+        id S231951AbhBIKqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 05:46:42 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:58056 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231785AbhBIKjx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 05:39:53 -0500
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-120-WxJzoBj3O66osIn6Rz9_oQ-1; Tue, 09 Feb 2021 10:34:43 +0000
+X-MC-Unique: WxJzoBj3O66osIn6Rz9_oQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Tue, 9 Feb 2021 10:34:42 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Tue, 9 Feb 2021 10:34:42 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Marc Kleine-Budde' <mkl@pengutronix.de>,
+        Arnd Bergmann <arnd@kernel.org>
+CC:     Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        "Oliver Hartkopp" <socketcan@hartkopp.net>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] can: ucan: fix alignment constraints
+Thread-Topic: [PATCH] can: ucan: fix alignment constraints
+Thread-Index: AQHW/h0DjBhn7+16ykCQOOnmCF4WhKpPn1uQ
+Date:   Tue, 9 Feb 2021 10:34:42 +0000
+Message-ID: <bd7e6497b3f64fb5bb839dc9a9d51d6a@AcuMS.aculab.com>
+References: <20210204162625.3099392-1-arnd@kernel.org>
+ <20210208131624.y5ro74e4fibpg6rk@hardanger.blackshift.org>
+In-Reply-To: <20210208131624.y5ro74e4fibpg6rk@hardanger.blackshift.org>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
-
-The bond driver needs to be patched to support new ethtool speeds.
-Currently it emits a single warning [1] when it encounters an unknown
-speed. As evident by the two previous patches, this is not explicit
-enough. Instead, use WARN_ONCE() to get a more verbose warning [2].
-
-[1]
-bond10: (slave swp1): unknown ethtool speed (200000) for port 1 (set it to 0)
-
-[2]
-bond20: (slave swp2): unknown ethtool speed (400000) for port 1 (set it to 0)
-WARNING: CPU: 5 PID: 96 at drivers/net/bonding/bond_3ad.c:317 __get_link_speed.isra.0+0x110/0x120
-Modules linked in:
-CPU: 5 PID: 96 Comm: kworker/u16:5 Not tainted 5.11.0-rc6-custom-02818-g69a767ec7302 #3243
-Hardware name: Mellanox Technologies Ltd. MSN4700/VMOD0010, BIOS 5.11 01/06/2019
-Workqueue: bond20 bond_mii_monitor
-RIP: 0010:__get_link_speed.isra.0+0x110/0x120
-Code: 5b ff ff ff 52 4c 8b 4e 08 44 0f b7 c7 48 c7 c7 18 46 4a b8 48 8b 16 c6 05 d9 76 41 01 01 49 8b 31 89 44 24 04 e8 a2 8a 3f 00 <0f> 0b 8b 44 24 04 59 c3 0
-f 1f 84 00 00 00 00 00 48 85 ff 74 3b 53
-RSP: 0018:ffffb683c03afde0 EFLAGS: 00010282
-RAX: 0000000000000000 RBX: ffff96bd3f2a9a38 RCX: 0000000000000000
-RDX: ffff96c06fd67560 RSI: ffff96c06fd57850 RDI: ffff96c06fd57850
-RBP: 0000000000000000 R08: ffffffffb8b49888 R09: 0000000000009ffb
-R10: 00000000ffffe000 R11: 3fffffffffffffff R12: 0000000000000000
-R13: ffff96bd3f2a9a38 R14: ffff96bd49c56400 R15: ffff96bd49c564f0
-FS:  0000000000000000(0000) GS:ffff96c06fd40000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f327ad804b0 CR3: 0000000142ad5006 CR4: 00000000003706e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- ad_update_actor_keys+0x36/0xc0
- bond_3ad_handle_link_change+0x5d/0xf0
- bond_mii_monitor.cold+0x1c2/0x1e8
- process_one_work+0x1c9/0x360
- worker_thread+0x48/0x3c0
- kthread+0x113/0x130
- ret_from_fork+0x1f/0x30
-
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- drivers/net/bonding/bond_3ad.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
-index 2e670f68626d..460dc1bfc7a9 100644
---- a/drivers/net/bonding/bond_3ad.c
-+++ b/drivers/net/bonding/bond_3ad.c
-@@ -326,11 +326,10 @@ static u16 __get_link_speed(struct port *port)
- 
- 		default:
- 			/* unknown speed value from ethtool. shouldn't happen */
--			if (slave->speed != SPEED_UNKNOWN)
--				pr_warn_once("%s: (slave %s): unknown ethtool speed (%d) for port %d (set it to 0)\n",
--					     slave->bond->dev->name,
--					     slave->dev->name, slave->speed,
--					     port->actor_port_number);
-+			WARN_ONCE(slave->speed != SPEED_UNKNOWN,
-+				  "%s: (slave %s): unknown ethtool speed (%d) for port %d (set it to 0)\n",
-+				  slave->bond->dev->name, slave->dev->name,
-+				  slave->speed, port->actor_port_number);
- 			speed = 0;
- 			break;
- 		}
--- 
-2.29.2
+RnJvbTogTWFyYyBLbGVpbmUtQnVkZGUNCj4gU2VudDogMDggRmVicnVhcnkgMjAyMSAxMzoxNg0K
+PiANCj4gT24gMDQuMDIuMjAyMSAxNzoyNjoxMywgQXJuZCBCZXJnbWFubiB3cm90ZToNCj4gPiBG
+cm9tOiBBcm5kIEJlcmdtYW5uIDxhcm5kQGFybmRiLmRlPg0KPiA+DQo+ID4gc3RydWN0IHVjYW5f
+bWVzc2FnZV9pbiBjb250YWlucyBtZW1iZXIgd2l0aCA0LWJ5dGUgYWxpZ25tZW50DQo+ID4gYnV0
+IGlzIGl0c2VsZiBtYXJrZWQgYXMgdW5hbGlnbmVkLCB3aGljaCB0cmlnZ2VycyBhIHdhcm5pbmc6
+DQo+ID4NCj4gPiBkcml2ZXJzL25ldC9jYW4vdXNiL3VjYW4uYzoyNDk6MTogd2FybmluZzogYWxp
+Z25tZW50IDEgb2YgJ3N0cnVjdCB1Y2FuX21lc3NhZ2VfaW4nIGlzIGxlc3MgdGhhbiA0IFstDQo+
+IFdwYWNrZWQtbm90LWFsaWduZWRdDQo+ID4NCj4gPiBNYXJrIHRoZSBvdXRlciBzdHJ1Y3R1cmUg
+dG8gaGF2ZSB0aGUgc2FtZSBhbGlnbm1lbnQgYXMgdGhlIGlubmVyDQo+ID4gb25lLg0KPiA+DQo+
+ID4gU2lnbmVkLW9mZi1ieTogQXJuZCBCZXJnbWFubiA8YXJuZEBhcm5kYi5kZT4NCj4gDQo+IEFw
+cGxpZWQgdG8gbGludXgtY2FuLW5leHQvdGVzdGluZy4NCg0KSSd2ZSBqdXN0IGhhZCBhIGxvb2sg
+YXQgdGhhdCBmaWxlLg0KDQpBcmUgYW55IG9mIHRoZSBfX3BhY2tlZCBvciBfX2FsaWduZWQgYWN0
+dWFsbHkgcmVxdWlyZWQgYXQgYWxsLg0KDQpBRkFJQ1QgdGhlcmUgaXMgb25lIHN0cnVjdHVyZSB0
+aGF0IHdvdWxkIGhhdmUgZW5kLXBhZGRpbmcuDQpCdXQgSSBkaWRuJ3QgYWN0dWFsbHkgc3BvdCBh
+bnl0aGluZyB2YWxpZGF0aW5nIGl0J3MgbGVuZ3RoLg0KV2hpY2ggbWF5IHdlbGwgbWVhbiB0aGF0
+IGl0IGlzIHBvc3NpYmxlIHRvIHJlYWQgb2ZmIHRoZSBlbmQNCm9mIHRoZSBVU0IgcmVjZWl2ZSBi
+dWZmZXIgLSBwbGF1c2libHkgaW50byB1bm1hcHBlZCBhZGRyZXNzZXMuDQoNCkkgbG9va2VkIGJl
+Y2F1c2UgYWxsIHRoZSBwYXRjaGVzIHRvICdmaXgnIHRoZSBjb21waWxlciB3YXJuaW5nDQphcmUg
+ZHViaW91cy4NCk9uY2UgeW91J3ZlIGNoYW5nZWQgdGhlIG91dGVyIGFsaWdubWVudCAoZWcgb2Yg
+YSB1bmlvbikgdGhlbg0KdGhlIGNvbXBpbGVyIHdpbGwgYXNzdW1lIHRoYXQgYW55IHBvaW50ZXIg
+dG8gdGhhdCB1bmlvbiBpcyBhbGlnbmVkLg0KU28gYW55IF9wYWNrZWQoKSBhdHRyaWJ1dGVzIHRo
+YXQgYXJlIHJlcXVpcmVkIGZvciBtaXMtYWxpZ25lZA0KYWNjZXNzZXMgZ2V0IGlnbm9yZWQgLSBi
+ZWNhdXNlIHRoZSBjb21waWxlciBrbm93cyB0aGUgcG9pbnRlcg0KbXVzdCBiZSBhbGlnbmVkLg0K
+DQpTbyB3aGlsZSB0aGUgY2hhbmdlcyByZW1vdmUgdGhlIHdhcm5pbmcsIHRoZXkgbWF5IGJlIHJl
+bW92aW5nDQpzdXBwb3J0IGZvciBtaXNhbGlnbmVkIGFkZHJlc3Nlcy4NCg0KCURhdmlkDQoNCi0N
+ClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBN
+aWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxl
+cykNCg==
 
