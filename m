@@ -2,552 +2,344 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8A57316A75
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 16:46:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 37F2B316A8C
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 16:57:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231915AbhBJPq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 10:46:29 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:5515 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230028AbhBJPqY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 10:46:24 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B6023ffa20000>; Wed, 10 Feb 2021 07:45:38 -0800
-Received: from DRHQMAIL107.nvidia.com (10.27.9.16) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 10 Feb
- 2021 15:45:37 +0000
-Received: from mtl-vdi-166.wap.labs.mlnx (172.20.145.6) by
- DRHQMAIL107.nvidia.com (10.27.9.16) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3; Wed, 10 Feb 2021 15:45:35 +0000
-Date:   Wed, 10 Feb 2021 17:45:31 +0200
-From:   Eli Cohen <elic@nvidia.com>
-To:     Si-Wei Liu <si-wei.liu@oracle.com>
-CC:     Jason Wang <jasowang@redhat.com>, <mst@redhat.com>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lulu@redhat.com>
-Subject: Re: [PATCH v1] vdpa/mlx5: Restore the hardware used index after
- change map
-Message-ID: <20210210154531.GA70716@mtl-vdi-166.wap.labs.mlnx>
-References: <f2206fa2-0ddc-1858-54e7-71614b142e46@redhat.com>
- <20210208063736.GA166546@mtl-vdi-166.wap.labs.mlnx>
- <0d592ed0-3cea-cfb0-9b7b-9d2755da3f12@redhat.com>
- <20210208100445.GA173340@mtl-vdi-166.wap.labs.mlnx>
- <379d79ff-c8b4-9acb-1ee4-16573b601973@redhat.com>
- <20210209061232.GC210455@mtl-vdi-166.wap.labs.mlnx>
- <411ff244-a698-a312-333a-4fdbeb3271d1@redhat.com>
- <a90dd931-43cc-e080-5886-064deb972b11@oracle.com>
- <b749313c-3a44-f6b2-f9b8-3aefa2c2d72c@redhat.com>
- <24d383db-e65c-82ff-9948-58ead3fc502b@oracle.com>
+        id S231922AbhBJP5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 10:57:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60308 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231803AbhBJP5D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 10:57:03 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C87FC061756;
+        Wed, 10 Feb 2021 07:56:23 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id c11so1512463pfp.10;
+        Wed, 10 Feb 2021 07:56:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=McQRFsxOcI8aHwHC0zjblj7atjYGCgUIoXv69mIC1Q4=;
+        b=YQgJ3cij+gOOioVvpKXjQqCFsFuVNYsWtI5SZO2XC8tJJGo4lxjRC0G+3GuzoTmteE
+         9wJ5M1nbWfqon52DmLiXjr6ZQgm9aYaimKuBJwxd+gv74MeYNHpyex93K1c4oqnL1pEj
+         vXwPVsck7bclSEx2JTNdX6FQ7uFxYJXGT52+PGAg/gvg92ggCVp2MEw7LX4fp6oDf/LT
+         hNwJfxYof8e/xPsF24GiNm3//MY4Hy+m40Da7/8P/CnSZ/jxk5QhAL6aaAwgPS2/No9l
+         W4APuHb/YAS37hyuPdfDaGR/WcCSbNi3maXql05N4fF5QtN3ykfVsB42A/O9TUF7HpIo
+         29eA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=McQRFsxOcI8aHwHC0zjblj7atjYGCgUIoXv69mIC1Q4=;
+        b=Rxmi2/2nyIkI2lGr+xnNuwSvbfXumy98hVKi8TRWUrQbKek1XhFGyzhJa6kJpmAVGz
+         Sm3+A0v/a7K8GBERNMuKATy4N6TA1/BAyiZrQBRxohJcbYhXF7J92OPnVAlMcS2cqCc4
+         P1IIGfsVAX/cztbteLPhBJ8a+PJl4YX2hs21FyJrp6gM+r1+IKwi/8nVCBJA0519vctX
+         fZw8Ws2T+il40wfdQ46XpMUn4RU5OFw7zBAOoV1RJV8sC6ZzL7JVTWj3CGKK6C8PEdEP
+         VZevXZY7bfRIB87EytZsDnGCNfa5E706AlP31zs439WrdQgvrDnoqKFjoHdGQ6b8bkse
+         9hQQ==
+X-Gm-Message-State: AOAM533m1N1oOIaEnrm8pklygIaoQsKCxPD3S8f8PmdNSElYondLqsyg
+        gbCK1reaU3lZ4zA2fx/fOz8=
+X-Google-Smtp-Source: ABdhPJwp4r/Cjuh2T6+N5kPz9EUYqrp3xdSXNE/SH3Ebur2+M/+RVQJI7xx1+2hzvyY1sI30fvuEag==
+X-Received: by 2002:a63:214e:: with SMTP id s14mr3680116pgm.101.1612972582469;
+        Wed, 10 Feb 2021 07:56:22 -0800 (PST)
+Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:8209:ec67:2f9:2f8c])
+        by smtp.gmail.com with ESMTPSA id p12sm2535081pju.35.2021.02.10.07.56.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Feb 2021 07:56:22 -0800 (PST)
+From:   Xie He <xie.he.0141@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-x25@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Martin Schiller <ms@dev.tdt.de>,
+        Krzysztof Halasa <khc@pm.waw.pl>
+Cc:     Xie He <xie.he.0141@gmail.com>
+Subject: [PATCH net-next RFC] net: hdlc_x25: Queue outgoing LAPB frames
+Date:   Wed, 10 Feb 2021 07:56:10 -0800
+Message-Id: <20210210155610.13753-1-xie.he.0141@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <24d383db-e65c-82ff-9948-58ead3fc502b@oracle.com>
-User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- DRHQMAIL107.nvidia.com (10.27.9.16)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1612971938; bh=Mvjar+MDzte0e7PXITZH5XjchctM+p7uThBWHgJoDAw=;
-        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-         Content-Type:Content-Disposition:Content-Transfer-Encoding:
-         In-Reply-To:User-Agent:X-Originating-IP:X-ClientProxiedBy;
-        b=ZH8qc48T1Pc6FU++CW2R8WjvPDpKbqkAig7g12u1xoTQH2LO2bw+1hAShp7eHTFPn
-         xOB4Vw26mC8rwm6llfulEMLw4KhdfqUHNKcae6mCSypuronsf+eDiPeS1yB0AOaHMT
-         cMUDEwQIsXbQ3EgKdf17Ltdk7hOVk27Um+5zVLijq5OrFM5KVcKY9ZxYGqa5EcO/tY
-         biHfGLc4ie0jrqzDfy1spu1ffQ0kqkSDu2qOl1RBHHPNiagH2DPec5wjnUx9l5n0pv
-         iJ0mOTHIfekYwDXzsy2oezjUj1V9JRensEuHIaSA1U6NpsYsfnf1VN1RKVApkoJNu2
-         0QkY/88VlMZ+A==
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 10, 2021 at 12:59:03AM -0800, Si-Wei Liu wrote:
->=20
->=20
-> On 2/9/2021 7:53 PM, Jason Wang wrote:
-> >=20
-> > On 2021/2/10 =E4=B8=8A=E5=8D=8810:30, Si-Wei Liu wrote:
-> > >=20
-> > >=20
-> > > On 2/8/2021 10:37 PM, Jason Wang wrote:
-> > > >=20
-> > > > On 2021/2/9 =E4=B8=8B=E5=8D=882:12, Eli Cohen wrote:
-> > > > > On Tue, Feb 09, 2021 at 11:20:14AM +0800, Jason Wang wrote:
-> > > > > > On 2021/2/8 =E4=B8=8B=E5=8D=886:04, Eli Cohen wrote:
-> > > > > > > On Mon, Feb 08, 2021 at 05:04:27PM +0800, Jason Wang wrote:
-> > > > > > > > On 2021/2/8 =E4=B8=8B=E5=8D=882:37, Eli Cohen wrote:
-> > > > > > > > > On Mon, Feb 08, 2021 at 12:27:18PM +0800, Jason Wang wrot=
-e:
-> > > > > > > > > > On 2021/2/6 =E4=B8=8A=E5=8D=887:07, Si-Wei Liu wrote:
-> > > > > > > > > > > On 2/3/2021 11:36 PM, Eli Cohen wrote:
-> > > > > > > > > > > > When a change of memory map
-> > > > > > > > > > > > occurs, the hardware resources
-> > > > > > > > > > > > are destroyed
-> > > > > > > > > > > > and then re-created again with
-> > > > > > > > > > > > the new memory map. In such
-> > > > > > > > > > > > case, we need
-> > > > > > > > > > > > to restore the hardware
-> > > > > > > > > > > > available and used indices. The
-> > > > > > > > > > > > driver failed to
-> > > > > > > > > > > > restore the used index which is added here.
-> > > > > > > > > > > >=20
-> > > > > > > > > > > > Also, since the driver also
-> > > > > > > > > > > > fails to reset the available and
-> > > > > > > > > > > > used
-> > > > > > > > > > > > indices upon device reset, fix
-> > > > > > > > > > > > this here to avoid regression
-> > > > > > > > > > > > caused by
-> > > > > > > > > > > > the fact that used index may not be zero upon devic=
-e reset.
-> > > > > > > > > > > >=20
-> > > > > > > > > > > > Fixes: 1a86b377aa21 ("vdpa/mlx5:
-> > > > > > > > > > > > Add VDPA driver for supported
-> > > > > > > > > > > > mlx5
-> > > > > > > > > > > > devices")
-> > > > > > > > > > > > Signed-off-by: Eli Cohen<elic@nvidia.com>
-> > > > > > > > > > > > ---
-> > > > > > > > > > > > v0 -> v1:
-> > > > > > > > > > > > Clear indices upon device reset
-> > > > > > > > > > > >=20
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0 drivers/vdpa/mlx5/net/mlx5_vnet=
-.c | 18 ++++++++++++++++++
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0 1 file changed, 18 insertions(+=
-)
-> > > > > > > > > > > >=20
-> > > > > > > > > > > > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > > > > > > > > > > > b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > > > > > > > > > > > index 88dde3455bfd..b5fe6d2ad22f 100644
-> > > > > > > > > > > > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > > > > > > > > > > > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > > > > > > > > > > > @@ -87,6 +87,7 @@ struct mlx5_vq_restore_info {
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u64 dev=
-ice_addr;
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u64 dri=
-ver_addr;
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u16 ava=
-il_index;
-> > > > > > > > > > > > +=C2=A0=C2=A0=C2=A0 u16 used_index;
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 bool re=
-ady;
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct =
-vdpa_callback cb;
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 bool re=
-store;
-> > > > > > > > > > > > @@ -121,6 +122,7 @@ struct mlx5_vdpa_virtqueue {
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u32 vir=
-tq_id;
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct =
-mlx5_vdpa_net *ndev;
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u16 ava=
-il_idx;
-> > > > > > > > > > > > +=C2=A0=C2=A0=C2=A0 u16 used_idx;
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 int fw_=
-state;
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =
-/* keep last in the struct */
-> > > > > > > > > > > > @@ -804,6 +806,7 @@ static int
-> > > > > > > > > > > > create_virtqueue(struct
-> > > > > > > > > > > > mlx5_vdpa_net
-> > > > > > > > > > > > *ndev, struct mlx5_vdpa_virtque
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =
-obj_context =3D
-> > > > > > > > > > > > MLX5_ADDR_OF(create_virtio_net_q_in,
-> > > > > > > > > > > > in,
-> > > > > > > > > > > > obj_context);
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0
-> > > > > > > > > > > > MLX5_SET(virtio_net_q_object,
-> > > > > > > > > > > > obj_context, hw_available_index,
-> > > > > > > > > > > > mvq->avail_idx);
-> > > > > > > > > > > > +=C2=A0=C2=A0=C2=A0 MLX5_SET(virtio_net_q_object, o=
-bj_context, hw_used_index,
-> > > > > > > > > > > > mvq->used_idx);
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 MLX5_SE=
-T(virtio_net_q_object, obj_context,
-> > > > > > > > > > > > queue_feature_bit_mask_12_3,
-> > > > > > > > > > > > get_features_12_3(ndev->mvdev.actual_features));
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 vq_ctx =
-=3D
-> > > > > > > > > > > > MLX5_ADDR_OF(virtio_net_q_object,
-> > > > > > > > > > > > obj_context,
-> > > > > > > > > > > > virtio_q_context);
-> > > > > > > > > > > > @@ -1022,6 +1025,7 @@ static int
-> > > > > > > > > > > > connect_qps(struct mlx5_vdpa_net
-> > > > > > > > > > > > *ndev, struct mlx5_vdpa_virtqueue *m
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0 struct mlx5_virtq_attr {
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u8 stat=
-e;
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u16 ava=
-ilable_index;
-> > > > > > > > > > > > +=C2=A0=C2=A0=C2=A0 u16 used_index;
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0 };
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0 =C2=A0 static int
-> > > > > > > > > > > > query_virtqueue(struct
-> > > > > > > > > > > > mlx5_vdpa_net *ndev, struct
-> > > > > > > > > > > > mlx5_vdpa_virtqueue *mvq,
-> > > > > > > > > > > > @@ -1052,6 +1056,7 @@ static int query_virtqueue(st=
-ruct
-> > > > > > > > > > > > mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueu
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 memset(=
-attr, 0, sizeof(*attr));
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 attr->s=
-tate =3D
-> > > > > > > > > > > > MLX5_GET(virtio_net_q_object,
-> > > > > > > > > > > > obj_context, state);
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 attr->a=
-vailable_index =3D MLX5_GET(virtio_net_q_object,
-> > > > > > > > > > > > obj_context, hw_available_index);
-> > > > > > > > > > > > +=C2=A0=C2=A0=C2=A0 attr->used_index =3D
-> > > > > > > > > > > > MLX5_GET(virtio_net_q_object,
-> > > > > > > > > > > > obj_context,
-> > > > > > > > > > > > hw_used_index);
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kfree(o=
-ut);
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return =
-0;
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0 @@ -1535,6 +1540,16 @@
-> > > > > > > > > > > > static void
-> > > > > > > > > > > > teardown_virtqueues(struct
-> > > > > > > > > > > > mlx5_vdpa_net *ndev)
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0 }
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0 +static void clear_virtqueues(s=
-truct mlx5_vdpa_net *ndev)
-> > > > > > > > > > > > +{
-> > > > > > > > > > > > +=C2=A0=C2=A0=C2=A0 int i;
-> > > > > > > > > > > > +
-> > > > > > > > > > > > +=C2=A0=C2=A0=C2=A0 for (i =3D ndev->mvdev.max_vqs =
-- 1; i >=3D 0; i--) {
-> > > > > > > > > > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ndev->v=
-qs[i].avail_idx =3D 0;
-> > > > > > > > > > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ndev->v=
-qs[i].used_idx =3D 0;
-> > > > > > > > > > > > +=C2=A0=C2=A0=C2=A0 }
-> > > > > > > > > > > > +}
-> > > > > > > > > > > > +
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0 /* TODO: cross-endian support *=
-/
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0 static inline bool
-> > > > > > > > > > > > mlx5_vdpa_is_little_endian(struct
-> > > > > > > > > > > > mlx5_vdpa_dev
-> > > > > > > > > > > > *mvdev)
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0 {
-> > > > > > > > > > > > @@ -1610,6 +1625,7 @@ static int save_channel_info(=
-struct
-> > > > > > > > > > > > mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqu
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 return err;
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =
-ri->avail_index =3D attr.available_index;
-> > > > > > > > > > > > +=C2=A0=C2=A0=C2=A0 ri->used_index =3D attr.used_in=
-dex;
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ri->rea=
-dy =3D mvq->ready;
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ri->num=
-_ent =3D mvq->num_ent;
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ri->des=
-c_addr =3D mvq->desc_addr;
-> > > > > > > > > > > > @@ -1654,6 +1670,7 @@ static void restore_channels_=
-info(struct
-> > > > > > > > > > > > mlx5_vdpa_net *ndev)
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 continue;
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0 mvq->avail_idx =3D ri->avail_index;
-> > > > > > > > > > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 mvq->us=
-ed_idx =3D ri->used_index;
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 mvq->ready =3D ri->ready;
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 mvq->num_ent =3D ri->num_ent;
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 mvq->desc_addr =3D ri->desc_addr;
-> > > > > > > > > > > > @@ -1768,6 +1785,7 @@ static void mlx5_vdpa_set_sta=
-tus(struct
-> > > > > > > > > > > > vdpa_device *vdev, u8 status)
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (!st=
-atus) {
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0
-> > > > > > > > > > > > mlx5_vdpa_info(mvdev,
-> > > > > > > > > > > > "performing device reset\n");
-> > > > > > > > > > > > =C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 teardown_driver(ndev);
-> > > > > > > > > > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 clear_v=
-irtqueues(ndev);
-> > > > > > > > > > > The clearing looks fine at the first
-> > > > > > > > > > > glance, as it aligns with the other
-> > > > > > > > > > > state cleanups floating around at
-> > > > > > > > > > > the same place. However, the thing
-> > > > > > > > > > > is
-> > > > > > > > > > > get_vq_state() is supposed to be
-> > > > > > > > > > > called right after to get sync'ed
-> > > > > > > > > > > with
-> > > > > > > > > > > the latest internal avail_index from
-> > > > > > > > > > > device while vq is stopped. The
-> > > > > > > > > > > index was saved in the driver
-> > > > > > > > > > > software at vq suspension, but
-> > > > > > > > > > > before the
-> > > > > > > > > > > virtq object is destroyed. We
-> > > > > > > > > > > shouldn't clear the avail_index too
-> > > > > > > > > > > early.
-> > > > > > > > > > Good point.
-> > > > > > > > > >=20
-> > > > > > > > > > There's a limitation on the virtio spec
-> > > > > > > > > > and vDPA framework that we can not
-> > > > > > > > > > simply differ device suspending from device reset.
-> > > > > > > > > >=20
-> > > > > > > > > Are you talking about live migration where
-> > > > > > > > > you reset the device but
-> > > > > > > > > still want to know how far it progressed in
-> > > > > > > > > order to continue from the
-> > > > > > > > > same place in the new VM?
-> > > > > > > > Yes. So if we want to support live migration at we need:
-> > > > > > > >=20
-> > > > > > > > in src node:
-> > > > > > > > 1) suspend the device
-> > > > > > > > 2) get last_avail_idx via get_vq_state()
-> > > > > > > >=20
-> > > > > > > > in the dst node:
-> > > > > > > > 3) set last_avail_idx via set_vq_state()
-> > > > > > > > 4) resume the device
-> > > > > > > >=20
-> > > > > > > > So you can see, step 2 requires the device/driver not to fo=
-rget the
-> > > > > > > > last_avail_idx.
-> > > > > > > >=20
-> > > > > > > Just to be sure, what really matters here is the
-> > > > > > > used index. Becuase the
-> > > > > > > vriqtueue itself is copied from the src VM to the
-> > > > > > > dest VM. The available
-> > > > > > > index is alreay there and we know the hardware reads it from =
-there.
-> > > > > >=20
-> > > > > > So for "last_avail_idx" I meant the hardware internal
-> > > > > > avail index. It's not
-> > > > > > stored in the virtqueue so we must migrate it from src
-> > > > > > to dest and set them
-> > > > > > through set_vq_state(). Then in the destination, the virtqueue =
-can be
-> > > > > > restarted from that index.
-> > > > > >=20
-> > > > > Consider this case: driver posted buffers till avail index become=
-s the
-> > > > > value 50. Hardware is executing but made it till 20 when virtqueu=
-e was
-> > > > > suspended due to live migration - this is indicated by hardware u=
-sed
-> > > > > index equal 20.
-> > > >=20
-> > > >=20
-> > > > So in this case the used index in the virtqueue should be 20?
-> > > > Otherwise we need not sync used index itself but all the used
-> > > > entries that is not committed to the used ring.
-> > >=20
-> > > In other word, for mlx5 vdpa there's no such internal last_avail_idx
-> > > stuff maintained by the hardware, right?
-> >=20
-> >=20
-> > For each device it should have one otherwise it won't work correctly
-> > during stop/resume. See the codes mlx5_vdpa_get_vq_state() which calls
-> > query_virtqueue() that build commands to query "last_avail_idx" from th=
-e
-> > hardware:
-> >=20
-> > =C2=A0=C2=A0=C2=A0 MLX5_SET(general_obj_in_cmd_hdr, cmd_hdr, opcode,
-> > MLX5_CMD_OP_QUERY_GENERAL_OBJECT);
-> > =C2=A0=C2=A0=C2=A0 MLX5_SET(general_obj_in_cmd_hdr, cmd_hdr, obj_type,
-> > MLX5_OBJ_TYPE_VIRTIO_NET_Q);
-> > =C2=A0=C2=A0=C2=A0 MLX5_SET(general_obj_in_cmd_hdr, cmd_hdr, obj_id, mv=
-q->virtq_id);
-> > =C2=A0=C2=A0=C2=A0 MLX5_SET(general_obj_in_cmd_hdr, cmd_hdr, uid, ndev-=
->mvdev.res.uid);
-> > =C2=A0=C2=A0=C2=A0 err =3D mlx5_cmd_exec(ndev->mvdev.mdev, in, sizeof(i=
-n), out, outlen);
-> > =C2=A0=C2=A0=C2=A0 if (err)
-> > =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 goto err_cmd;
-> >=20
-> > =C2=A0=C2=A0=C2=A0 obj_context =3D MLX5_ADDR_OF(query_virtio_net_q_out,=
- out, obj_context);
-> > =C2=A0=C2=A0=C2=A0 memset(attr, 0, sizeof(*attr));
-> > =C2=A0=C2=A0=C2=A0 attr->state =3D MLX5_GET(virtio_net_q_object, obj_co=
-ntext, state);
-> > =C2=A0=C2=A0=C2=A0 attr->available_index =3D MLX5_GET(virtio_net_q_obje=
-ct, obj_context,
-> > hw_available_index);
-> >=20
-> Eli should be able to correct me, but this hw_available_index might just =
-be
-> a cached value of virtqueue avail_index in the memory from the most recen=
-t
-> sync. I doubt it's the one you talked about in software implementation. I=
-f I
-> understand Eli correctly, hardware will always reload the latest avail_in=
-dex
-> from memory whenever it's being sync'ed again.
+When sending packets, we will first hand over the (L3) packets to the
+LAPB module, then the LAPB module will hand over the corresponding LAPB
+(L2) frames back to us for us to transmit.
 
-That's my understanding too. I am still trying to get confirmation from
-hardware guys. Will send when I have them.
+The LAPB module can also emit LAPB (L2) frames at any time without an
+(L3) packet currently being sent, when it is trying to send (L3) packets
+queued up in its internal queue, or when it decides to send some (L2)
+control frame.
 
->=20
-> <quote>
-> The hardware always goes to read the available index from memory. The
-> requirement to configure it when creating a new object is still a
-> requirement defined by the interface so I must not violate interface
-> requirments.
-> </quote>
->=20
-> If the hardware does everything perfectly that is able to flush pending
-> requests, update descriptors, rings plus used indices all at once before =
-the
-> suspension, there's no need for hardware to maintain a separate internal
-> index than the h/w used_index. The hardware can get started from the save=
-d
-> used_index upon resuming. I view this is of (hardware) implementation
-> choices and thought it does not violate the virtio spec?
->=20
->=20
-> >=20
-> >=20
-> >=20
-> > > And the used_idx in the virtqueue is always in sync with the
-> > > hardware used_index, and hardware is supposed to commit pending used
-> > > buffers to the ring while bumping up the hardware used_index (and
-> > > also committed to memory) altogether prior to suspension, is my
-> > > understanding correct here? Double checking if this is the expected
-> > > semantics of what
-> > > modify_virtqueue(MLX5_VIRTIO_NET_Q_OBJECT_STATE_SUSPEND) should
-> > > achieve.
-> > >=20
+This means we need have a queue for these outgoing LAPB (L2) frames to
+avoid congestion. This queue needs to be controlled by the hardware
+drivers' netif_stop_queue and netif_wake_queue calls. So we need to use
+a qdisc TX queue for this purpose.
 
-That's my understanding too.
+On the other hand, the outgoing (L3) packets don't need to be queued,
+because the LAPB module already has an internal queue for them.
 
-> > > If the above is true, then it looks to me for mlx5 vdpa we should
-> > > really return h/w used_idx rather than the last_avail_idx through
-> > > get_vq_state(), in order to reconstruct the virt queue state post
-> > > live migration. For the set_map case, the internal last_avail_idx
-> > > really doesn't matter, although both indices are saved and restored
-> > > transparently as-is.
-> >=20
+However, currently the outgoing LAPB (L2) frames are not queued. This
+can cause frames to be dropped by hardware drivers when they are busy.
+At the same time the (L3) packets are being queued and controlled by
+hardware drivers' netif_stop_queue and netif_wake_queue calls. This is
+unnecessary and meaningless.
 
-Right, that's what I think too. In fact, I discussed that already with
-Jason over the phone yesterday. The conclusion was since the only thing
-that matters for a network device is the used index, I tried to return
-the hardware used index in get_vq_state (instead of hardware available
-index) and restore the value I get in set_vq_state into the hardware
-used index. I am still not done with this experiment but will update.
+To solve this problem, we can split the HDLC device into two devices:
+a virtual X.25 device and an actual HDLC device, using the virtual
+X.25 device to send (L3) packets and using the actual HDLC device to
+queue LAPB (L2) frames. The outgoing LAPB queue will be controlled by
+hardware drivers' netif_stop_queue and netif_wake_queue calls, while
+outgoing (L3) packets will not be affected by these calls.
 
-> >=20
-> > Right, a subtle thing here is that: for the device that might have can'=
-t
-> > not complete all virtqueue requests during vq suspending, the
-> > "last_avail_idx" might not be equal to the hardware used_idx. Thing
-> > might be true for the storage devices that needs to connect to a remote
-> > backend. But this is not the case of networking device, so
-> > last_avail_idx should be equal to hardware used_idx here.
-> Eli, since it's your hardware, does it work this way? i.e. does the firmw=
-are
-> interface see a case where virtqueue requests can't be completed before
-> suspending vq?
->=20
-This can happen regardless of what effort firmware does to complete all
-pending requests. An example is the hot plugging of memory. The set map
-call is called and mlx5 vdpa driver tears down the vitqueue objects
-while the guest driver can still be posting requests to the virtqueue.
-So we find ourselves in a situation and used index is behine the
-available index.
+Cc: Martin Schiller <ms@dev.tdt.de>
+Signed-off-by: Xie He <xie.he.0141@gmail.com>
+---
+ drivers/net/wan/hdlc_x25.c | 156 ++++++++++++++++++++++++++++++-------
+ 1 file changed, 127 insertions(+), 29 deletions(-)
 
-> > But using the "last_avail_idx" or hardware avail_idx should always be
-> > better in this case since it's guaranteed to correct and will have less
-> > confusion. We use this convention in other types of vhost backends
-> > (vhost-kernel, vhost-user).
-> >=20
-> > So looking at mlx5_set_vq_state(), it probably won't work since it
-> > doesn't not set either hardware avail_idx or hardware used_idx:
-> The saved mvq->avail_idx will be used to recreate hardware virtq object a=
-nd
-> the used index in create_virtqueue(), once status DRIVER_OK is set. I
-> suspect we should pass the index to mvq->used_idx in
-> mlx5_vdpa_set_vq_state() below instead.
->=20
-Right, that's what I am checking but still no final conclusions. I need
-to harness hardware guy to provide me with clear answers.
->=20
-> Thanks,
-> -Siwei
-> >=20
-> > static int mlx5_vdpa_set_vq_state(struct vdpa_device *vdev, u16 idx,
-> > =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=
-=C2=A0 =C2=A0 const struct vdpa_vq_state *state)
-> > {
-> > =C2=A0=C2=A0=C2=A0 struct mlx5_vdpa_dev *mvdev =3D to_mvdev(vdev);
-> > =C2=A0=C2=A0=C2=A0 struct mlx5_vdpa_net *ndev =3D to_mlx5_vdpa_ndev(mvd=
-ev);
-> > =C2=A0=C2=A0=C2=A0 struct mlx5_vdpa_virtqueue *mvq =3D &ndev->vqs[idx];
-> >=20
-> > =C2=A0=C2=A0=C2=A0 if (mvq->fw_state =3D=3D MLX5_VIRTIO_NET_Q_OBJECT_ST=
-ATE_RDY) {
-> > =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 mlx5_vdpa_warn(mvdev, "can't modi=
-fy available index\n");
-> > =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 return -EINVAL;
-> > =C2=A0=C2=A0=C2=A0 }
-> >=20
-> > =C2=A0=C2=A0=C2=A0 mvq->avail_idx =3D state->avail_index;
-> > =C2=A0=C2=A0=C2=A0 return 0;
-> > }
-> >=20
-> > Depends on the hardware, we should either set hardware used_idx or
-> > hardware avail_idx here.
-> >=20
-> > I think we need to clarify how device is supposed to work in the virtio
-> > spec.
-> >=20
-> > Thanks
-> >=20
-> >=20
-> > >=20
-> > > -Siwei
-> > >=20
-> > > >=20
-> > > >=20
-> > > > > Now the vritqueue is copied to the new VM and the
-> > > > > hardware now has to continue execution from index 20. We need to =
-tell
-> > > > > the hardware via configuring the last used_index.
-> > > >=20
-> > > >=20
-> > > > If the hardware can not sync the index from the virtqueue, the
-> > > > driver can do the synchronization by make the last_used_idx
-> > > > equals to used index in the virtqueue.
-> > > >=20
-> > > > Thanks
-> > > >=20
-> > > >=20
-> > > > > =C2=A0 So why don't we
-> > > > > restore the used index?
-> > > > >=20
-> > > > > > > So it puzzles me why is set_vq_state() we do not
-> > > > > > > communicate the saved
-> > > > > > > used index.
-> > > > > >=20
-> > > > > > We don't do that since:
-> > > > > >=20
-> > > > > > 1) if the hardware can sync its internal used index from
-> > > > > > the virtqueue
-> > > > > > during device, then we don't need it
-> > > > > > 2) if the hardware can not sync its internal used index,
-> > > > > > the driver (e.g as
-> > > > > > you did here) can do that.
-> > > > > >=20
-> > > > > > But there's no way for the hardware to deduce the
-> > > > > > internal avail index from
-> > > > > > the virtqueue, that's why avail index is sycned.
-> > > > > >=20
-> > > > > > Thanks
-> > > > > >=20
-> > > > > >=20
-> > > >=20
-> > >=20
-> >=20
->=20
+diff --git a/drivers/net/wan/hdlc_x25.c b/drivers/net/wan/hdlc_x25.c
+index bb164805804e..f21aaee364e2 100644
+--- a/drivers/net/wan/hdlc_x25.c
++++ b/drivers/net/wan/hdlc_x25.c
+@@ -23,6 +23,13 @@
+ 
+ struct x25_state {
+ 	x25_hdlc_proto settings;
++	struct net_device *x25_dev;
++	spinlock_t x25_dev_lock; /* Protects the x25_dev pointer */
++};
++
++/* Pointed to by netdev_priv(x25_dev) */
++struct x25_device {
++	struct net_device *hdlc_dev;
+ };
+ 
+ static int x25_ioctl(struct net_device *dev, struct ifreq *ifr);
+@@ -32,6 +39,11 @@ static struct x25_state *state(hdlc_device *hdlc)
+ 	return hdlc->state;
+ }
+ 
++static struct x25_device *dev_to_x25(struct net_device *dev)
++{
++	return netdev_priv(dev);
++}
++
+ /* These functions are callbacks called by LAPB layer */
+ 
+ static void x25_connect_disconnect(struct net_device *dev, int reason, int code)
+@@ -89,15 +101,10 @@ static int x25_data_indication(struct net_device *dev, struct sk_buff *skb)
+ 
+ static void x25_data_transmit(struct net_device *dev, struct sk_buff *skb)
+ {
+-	hdlc_device *hdlc = dev_to_hdlc(dev);
+-
++	skb->dev = dev_to_x25(dev)->hdlc_dev;
++	skb->protocol = htons(ETH_P_HDLC);
+ 	skb_reset_network_header(skb);
+-	skb->protocol = hdlc_type_trans(skb, dev);
+-
+-	if (dev_nit_active(dev))
+-		dev_queue_xmit_nit(skb, dev);
+-
+-	hdlc->xmit(skb, dev); /* Ignore return value :-( */
++	dev_queue_xmit(skb);
+ }
+ 
+ 
+@@ -163,17 +170,18 @@ static int x25_open(struct net_device *dev)
+ 		.data_indication = x25_data_indication,
+ 		.data_transmit = x25_data_transmit,
+ 	};
+-	hdlc_device *hdlc = dev_to_hdlc(dev);
++	struct net_device *hdlc_dev = dev_to_x25(dev)->hdlc_dev;
++	hdlc_device *hdlc = dev_to_hdlc(hdlc_dev);
+ 	struct lapb_parms_struct params;
+ 	int result;
+ 
+ 	result = lapb_register(dev, &cb);
+ 	if (result != LAPB_OK)
+-		return result;
++		return -ENOMEM;
+ 
+ 	result = lapb_getparms(dev, &params);
+ 	if (result != LAPB_OK)
+-		return result;
++		return -EINVAL;
+ 
+ 	if (state(hdlc)->settings.dce)
+ 		params.mode = params.mode | LAPB_DCE;
+@@ -188,16 +196,104 @@ static int x25_open(struct net_device *dev)
+ 
+ 	result = lapb_setparms(dev, &params);
+ 	if (result != LAPB_OK)
+-		return result;
++		return -EINVAL;
+ 
+ 	return 0;
+ }
+ 
+ 
+ 
+-static void x25_close(struct net_device *dev)
++static int x25_close(struct net_device *dev)
+ {
+ 	lapb_unregister(dev);
++	return 0;
++}
++
++static const struct net_device_ops hdlc_x25_netdev_ops = {
++	.ndo_open       = x25_open,
++	.ndo_stop       = x25_close,
++	.ndo_start_xmit = x25_xmit,
++};
++
++static void x25_setup_virtual_dev(struct net_device *dev)
++{
++	dev->netdev_ops	     = &hdlc_x25_netdev_ops;
++	dev->type            = ARPHRD_X25;
++	dev->addr_len        = 0;
++	dev->hard_header_len = 0;
++}
++
++static int x25_hdlc_open(struct net_device *dev)
++{
++	struct hdlc_device *hdlc = dev_to_hdlc(dev);
++	struct net_device *x25_dev;
++	char x25_dev_name[sizeof(x25_dev->name)];
++	int result;
++
++	if (strlen(dev->name) + 4 >= sizeof(x25_dev_name))
++		return -EINVAL;
++
++	strcpy(x25_dev_name, dev->name);
++	strcat(x25_dev_name, "_x25");
++
++	x25_dev = alloc_netdev(sizeof(struct x25_device), x25_dev_name,
++			       NET_NAME_PREDICTABLE, x25_setup_virtual_dev);
++	if (!x25_dev)
++		return -ENOMEM;
++
++	/* When transmitting data:
++	 * first we'll remove a pseudo header of 1 byte,
++	 * then the LAPB module will prepend an LAPB header of at most 3 bytes.
++	 */
++	x25_dev->needed_headroom = 3 - 1;
++	x25_dev->mtu = dev->mtu - (3 - 1);
++	dev_to_x25(x25_dev)->hdlc_dev = dev;
++
++	result = register_netdevice(x25_dev);
++	if (result) {
++		free_netdev(x25_dev);
++		return result;
++	}
++
++	spin_lock_bh(&state(hdlc)->x25_dev_lock);
++	state(hdlc)->x25_dev = x25_dev;
++	spin_unlock_bh(&state(hdlc)->x25_dev_lock);
++
++	return 0;
++}
++
++static void x25_hdlc_close(struct net_device *dev)
++{
++	struct hdlc_device *hdlc = dev_to_hdlc(dev);
++	struct net_device *x25_dev = state(hdlc)->x25_dev;
++
++	if (x25_dev->flags & IFF_UP)
++		dev_close(x25_dev);
++
++	spin_lock_bh(&state(hdlc)->x25_dev_lock);
++	state(hdlc)->x25_dev = NULL;
++	spin_unlock_bh(&state(hdlc)->x25_dev_lock);
++
++	unregister_netdevice(x25_dev);
++	free_netdev(x25_dev);
++}
++
++static void x25_hdlc_start(struct net_device *dev)
++{
++	struct hdlc_device *hdlc = dev_to_hdlc(dev);
++	struct net_device *x25_dev = state(hdlc)->x25_dev;
++
++	/* hdlc.c guarantees no racing so we're sure x25_dev is valid */
++	netif_carrier_on(x25_dev);
++}
++
++static void x25_hdlc_stop(struct net_device *dev)
++{
++	struct hdlc_device *hdlc = dev_to_hdlc(dev);
++	struct net_device *x25_dev = state(hdlc)->x25_dev;
++
++	/* hdlc.c guarantees no racing so we're sure x25_dev is valid */
++	netif_carrier_off(x25_dev);
+ }
+ 
+ 
+@@ -205,27 +301,38 @@ static void x25_close(struct net_device *dev)
+ static int x25_rx(struct sk_buff *skb)
+ {
+ 	struct net_device *dev = skb->dev;
++	struct hdlc_device *hdlc = dev_to_hdlc(dev);
++	struct net_device *x25_dev;
+ 
+ 	if ((skb = skb_share_check(skb, GFP_ATOMIC)) == NULL) {
+ 		dev->stats.rx_dropped++;
+ 		return NET_RX_DROP;
+ 	}
+ 
+-	if (lapb_data_received(dev, skb) == LAPB_OK)
+-		return NET_RX_SUCCESS;
+-
+-	dev->stats.rx_errors++;
++	spin_lock_bh(&state(hdlc)->x25_dev_lock);
++	x25_dev = state(hdlc)->x25_dev;
++	if (!x25_dev)
++		goto drop;
++	if (lapb_data_received(x25_dev, skb) != LAPB_OK)
++		goto drop;
++	spin_unlock_bh(&state(hdlc)->x25_dev_lock);
++	return NET_RX_SUCCESS;
++
++drop:
++	spin_unlock_bh(&state(hdlc)->x25_dev_lock);
++	dev->stats.rx_dropped++;
+ 	dev_kfree_skb_any(skb);
+ 	return NET_RX_DROP;
+ }
+ 
+ 
+ static struct hdlc_proto proto = {
+-	.open		= x25_open,
+-	.close		= x25_close,
++	.open		= x25_hdlc_open,
++	.close		= x25_hdlc_close,
++	.start		= x25_hdlc_start,
++	.stop		= x25_hdlc_stop,
+ 	.ioctl		= x25_ioctl,
+ 	.netif_rx	= x25_rx,
+-	.xmit		= x25_xmit,
+ 	.module		= THIS_MODULE,
+ };
+ 
+@@ -299,15 +406,6 @@ static int x25_ioctl(struct net_device *dev, struct ifreq *ifr)
+ 
+ 		memcpy(&state(hdlc)->settings, &new_settings, size);
+ 
+-		/* There's no header_ops so hard_header_len should be 0. */
+-		dev->hard_header_len = 0;
+-		/* When transmitting data:
+-		 * first we'll remove a pseudo header of 1 byte,
+-		 * then we'll prepend an LAPB header of at most 3 bytes.
+-		 */
+-		dev->needed_headroom = 3 - 1;
+-
+-		dev->type = ARPHRD_X25;
+ 		call_netdevice_notifiers(NETDEV_POST_TYPE_CHANGE, dev);
+ 		netif_dormant_off(dev);
+ 		return 0;
+-- 
+2.27.0
+
