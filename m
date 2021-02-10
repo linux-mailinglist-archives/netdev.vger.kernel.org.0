@@ -2,217 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3796A316735
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 13:57:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28C1731673F
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 13:58:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231286AbhBJMz5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 07:55:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49518 "EHLO
+        id S231518AbhBJM5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 07:57:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230231AbhBJMzr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 07:55:47 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCA66C0613D6;
-        Wed, 10 Feb 2021 04:55:04 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id p20so3989657ejb.6;
-        Wed, 10 Feb 2021 04:55:04 -0800 (PST)
+        with ESMTP id S231351AbhBJM4M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 07:56:12 -0500
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56077C061786
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 04:55:31 -0800 (PST)
+Received: by mail-ej1-x635.google.com with SMTP id lg21so4008947ejb.3
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 04:55:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yvWNSLBnIED6Uz5npYebJVkI215pDH4z2ka4OyJnM00=;
-        b=F7gGWbpA3v0TzCV6woadq/YRQHlD1652IP4xmDUBh8NTC4g1/rIL42m20SKaxYTREB
-         XYxPTukjIaqI/23Oi3qLjfKQjsuY5HmvJjfg58cP1TAB+RGY8xoEVsM4pp2zJiecDcG9
-         dT6rf5JBas8GK7ia9QC7XESY0WdBmDrSoI6ac86ma5E7Cnzxbp/G32+rAtyoUnHTrraA
-         RF1OOKof9AfNfiNXWHWriCFzZkZ3T7SxrN6vXozv0uEuB20SxXynIasbj2Ow14mXGYPO
-         UKiFnlkmgPKQRmHoovcl4K+uihUMgjFM0/SU3gX7uMyW1xXAQtkTS3L1DgIwxOXDyqVs
-         pqyg==
+        d=sartura-hr.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OHOlOhcQ+zRM08ThU13hzkWKzBwX1E8wDjj/X8CawAg=;
+        b=1NJLJVasOsjg2D8QyTt6YfgsQSkcKVj6ahijVhKmG5dQ6UCBcMYGvYWDE5dpYlNSaz
+         OT3p91d6FOX8k2qln/eIt1EMXmML2/1xSKmZVg6Rg3PM5lERdBBQeaMytNqvWVXbSIj0
+         mr6Mbbs/z7/cyXq4vyf0PsFnisJNKuFAQHb0YvjWoPv9wWhcrILORBXXC8dkB8Y88c69
+         9FMtUhflhwWTB9dSD/LHYZK4H7lwandVc6Re/f3DnJDmfXzx1iAEbOC5axjaHm1ZKpbS
+         FxuxYyUVe7u32A34wJcd29v9f7Ap0w53MwfHbnTCyZckuRjBOATVM/3sdeS73rpA6nRO
+         gt0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yvWNSLBnIED6Uz5npYebJVkI215pDH4z2ka4OyJnM00=;
-        b=XaMb6WjQ4JSG+l2GlBj/8LNyOs+7WWQbAeK1Ms9CAzyGVi/X8WuCQYQSN4AA8xxxuw
-         M7Zn0LwPCY7uq2bOD4VluTQlxSm4TxiyoeLi4PfkaxKjIbTJ/sgP9HhzxmXCspexS50V
-         e+RAOsO5jyYS8m4aoxMeQukvAA2O4C/XzARO+IgfvoKTuzIxfr0BrGj2TcAN//SVaCUa
-         Mxg4v+Z8gxqavVW66KcfFdK2UA2UjP7g7HfD8uGLTvpF8JhI1BS+Mqf/wqwtlCqdpaLL
-         H/8Y1alRQGKV9fSl5RbrEMnMweyj1VfXVC4oPNE4TTS3gOKkhF3snQmFK7CFDOCVxKYf
-         YioQ==
-X-Gm-Message-State: AOAM532IiaVMJv/HdIFdTWD1WsTxSnh0TZ12BS8ilj7lZwUwCjDY2dLy
-        oLuz+qvJSymumkH1RJ9d6vE=
-X-Google-Smtp-Source: ABdhPJyLGbV/nNAC6T+GUy+trJ3pEdNdQpdiY69d3RcUOMssp7n3ir0Y2vtrY/UNv4XSVjs2vOqMMA==
-X-Received: by 2002:a17:907:76c5:: with SMTP id kf5mr2807348ejc.534.1612961703531;
-        Wed, 10 Feb 2021 04:55:03 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id v9sm1092989ejd.92.2021.02.10.04.55.01
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OHOlOhcQ+zRM08ThU13hzkWKzBwX1E8wDjj/X8CawAg=;
+        b=YLPIhwKwYUeux++cvBIRGlm0SniF/3t3UwhNtMocdONGSlPB4oX13jv7AKJdHWOOpA
+         fPrX/dtXEDtwQig6VAe1uWjfXr+Iq6zgcKv0vGyYeoSHlIFlN4ExJothELLsWQJ7O1eW
+         1q7B2NRH3AOCahDqreoOlIvSlXMrxoCguaUFN8v5VYftw4clfUjpXFYoi1L2WHHhbTPX
+         b5sVqnW4w4CIdIUFVza9/Hh08hHpYaWM9A3k8kxdZnyqpcOs/UDBnjN8Aw8WxNmqHQAW
+         As4/zvfdCeaMlADCtduL6BkWHDHAaE1r2XfBPGXg+NvsTLmH3ImQ/vK8V4nrKo8GOTdV
+         CQfQ==
+X-Gm-Message-State: AOAM531jJtMmKLdLg35vJnj23TgIEswNiEOWfR6sfTOhui4bJj7qiCOr
+        MMkVpx4tHJDZd3N3p82u4Yx9Lg==
+X-Google-Smtp-Source: ABdhPJz5myXkPhHhSvFomd4ohKnj3VSNl3FJWuFgcafxmK6wC/Ofubabk2glsJSKLT+eTLFeaMZkeQ==
+X-Received: by 2002:a17:906:d922:: with SMTP id rn2mr2882148ejb.414.1612961729918;
+        Wed, 10 Feb 2021 04:55:29 -0800 (PST)
+Received: from localhost.localdomain (dh207-97-164.xnet.hr. [88.207.97.164])
+        by smtp.googlemail.com with ESMTPSA id u5sm1084900edc.29.2021.02.10.04.55.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Feb 2021 04:55:02 -0800 (PST)
-Date:   Wed, 10 Feb 2021 14:55:01 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, Roopa Prabhu <roopa@nvidia.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 00/11] Cleanup in brport flags switchdev
- offload for DSA
-Message-ID: <20210210125501.f6lbfv5y5zj4qrmi@skbuf>
-References: <20210210091445.741269-1-olteanv@gmail.com>
- <a8e9284b-f0a6-0343-175d-8c323371ef8d@nvidia.com>
- <20210210104549.ga3lgjafn5x3htwj@skbuf>
- <a58e9615-036c-0431-4ea6-004af4988b27@nvidia.com>
- <20210210110125.rw6fvjtsqmmuglcg@skbuf>
- <90b255e6-efd2-b234-7bfc-4285331e56b1@nvidia.com>
- <20210210120106.g7blqje3wq4j5l6j@skbuf>
- <20210210122105.GA294287@shredder.lan>
- <20210210122936.rpvdh7ksjfh2ee6b@skbuf>
- <20210210123823.GA294900@shredder.lan>
+        Wed, 10 Feb 2021 04:55:29 -0800 (PST)
+From:   Robert Marko <robert.marko@sartura.hr>
+To:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk
+Cc:     Robert Marko <robert.marko@sartura.hr>
+Subject: [PATCH v2 net-next 0/4] Add support for Qualcomm QCA807x PHYs
+Date:   Wed, 10 Feb 2021 13:55:19 +0100
+Message-Id: <20210210125523.2146352-1-robert.marko@sartura.hr>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210210123823.GA294900@shredder.lan>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 10, 2021 at 02:38:23PM +0200, Ido Schimmel wrote:
-> On Wed, Feb 10, 2021 at 02:29:36PM +0200, Vladimir Oltean wrote:
-> > On Wed, Feb 10, 2021 at 02:21:05PM +0200, Ido Schimmel wrote:
-> > > On Wed, Feb 10, 2021 at 02:01:06PM +0200, Vladimir Oltean wrote:
-> > > > On Wed, Feb 10, 2021 at 01:05:57PM +0200, Nikolay Aleksandrov wrote:
-> > > > > On 10/02/2021 13:01, Vladimir Oltean wrote:
-> > > > > > On Wed, Feb 10, 2021 at 12:52:33PM +0200, Nikolay Aleksandrov wrote:
-> > > > > >> On 10/02/2021 12:45, Vladimir Oltean wrote:
-> > > > > >>> Hi Nikolay,
-> > > > > >>>
-> > > > > >>> On Wed, Feb 10, 2021 at 12:31:43PM +0200, Nikolay Aleksandrov wrote:
-> > > > > >>>> Hi Vladimir,
-> > > > > >>>> Let's take a step back for a moment and discuss the bridge unlock/lock sequences
-> > > > > >>>> that come with this set. I'd really like to avoid those as they're a recipe
-> > > > > >>>> for future problems. The only good way to achieve that currently is to keep
-> > > > > >>>> the PRE_FLAGS call and do that in unsleepable context but move the FLAGS call
-> > > > > >>>> after the flags have been changed (if they have changed obviously). That would
-> > > > > >>>> make the code read much easier since we'll have all our lock/unlock sequences
-> > > > > >>>> in the same code blocks and won't play games to get sleepable context.
-> > > > > >>>> Please let's think and work in that direction, rather than having:
-> > > > > >>>> +	spin_lock_bh(&p->br->lock);
-> > > > > >>>> +	if (err) {
-> > > > > >>>> +		netdev_err(p->dev, "%s\n", extack._msg);
-> > > > > >>>> +		return err;
-> > > > > >>>>  	}
-> > > > > >>>> +
-> > > > > >>>>
-> > > > > >>>> which immediately looks like a bug even though after some code checking we can
-> > > > > >>>> verify it's ok. WDYT?
-> > > > > >>>>
-> > > > > >>>> I plan to get rid of most of the br->lock since it's been abused for a very long
-> > > > > >>>> time because it's essentially STP lock, but people have started using it for other
-> > > > > >>>> things and I plan to fix that when I get more time.
-> > > > > >>>
-> > > > > >>> This won't make the sysfs codepath any nicer, will it?
-> > > > > >>>
-> > > > > >>
-> > > > > >> Currently we'll have to live with a hack that checks if the flags have changed. I agree
-> > > > > >> it won't be pretty, but we won't have to unlock and lock again in the middle of the
-> > > > > >> called function and we'll have all our locking in the same place, easier to verify and
-> > > > > >> later easier to remove. Once I get rid of most of the br->lock usage we can revisit
-> > > > > >> the drop of PRE_FLAGS if it's a problem. The alternative is to change the flags, then
-> > > > > >> send the switchdev notification outside of the lock and revert the flags if it doesn't
-> > > > > >> go through which doesn't sound much better.
-> > > > > >> I'm open to any other suggestions, but definitely would like to avoid playing locking games.
-> > > > > >> Even if it means casing out flag setting from all other store_ functions for sysfs.
-> > > > > >
-> > > > > > By casing out flag settings you mean something like this?
-> > > > > >
-> > > > > >
-> > > > > > #define BRPORT_ATTR(_name, _mode, _show, _store)		\
-> > > > > > const struct brport_attribute brport_attr_##_name = { 	        \
-> > > > > > 	.attr = {.name = __stringify(_name), 			\
-> > > > > > 		 .mode = _mode },				\
-> > > > > > 	.show	= _show,					\
-> > > > > > 	.store_unlocked	= _store,				\
-> > > > > > };
-> > > > > >
-> > > > > > #define BRPORT_ATTR_FLAG(_name, _mask)				\
-> > > > > > static ssize_t show_##_name(struct net_bridge_port *p, char *buf) \
-> > > > > > {								\
-> > > > > > 	return sprintf(buf, "%d\n", !!(p->flags & _mask));	\
-> > > > > > }								\
-> > > > > > static int store_##_name(struct net_bridge_port *p, unsigned long v) \
-> > > > > > {								\
-> > > > > > 	return store_flag(p, v, _mask);				\
-> > > > > > }								\
-> > > > > > static BRPORT_ATTR(_name, 0644,					\
-> > > > > > 		   show_##_name, store_##_name)
-> > > > > >
-> > > > > > static ssize_t brport_store(struct kobject *kobj,
-> > > > > > 			    struct attribute *attr,
-> > > > > > 			    const char *buf, size_t count)
-> > > > > > {
-> > > > > > 	...
-> > > > > >
-> > > > > > 	} else if (brport_attr->store_unlocked) {
-> > > > > > 		val = simple_strtoul(buf, &endp, 0);
-> > > > > > 		if (endp == buf)
-> > > > > > 			goto out_unlock;
-> > > > > > 		ret = brport_attr->store_unlocked(p, val);
-> > > > > > 	}
-> > > > > >
-> > > > >
-> > > > > Yes, this can work but will need a bit more changes because of br_port_flags_change().
-> > > > > Then the netlink side can be modeled in a similar way.
-> > > >
-> > > > What I just don't understand is how others can get away with doing
-> > > > sleepable work in atomic context but I can't make the notifier blocking
-> > > > by dropping a spinlock which isn't needed there, because it looks ugly :D
-> > >
-> > > Can you please point to the bug? I'm not following
-> >
-> > For example, mlxsw eventually calls mlxsw_sp_fid_flood_set from the
-> > SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS handling data path, and this
-> > function allocates memory with GFP_KERNEL.
-> >
-> > Another example is prestera which eventually calls prestera_fw_send_req
-> > which takes a mutex_lock.
-> >
-> > Yet another example are mv88e6xxx and b53 which use MDIO and SPI
-> > from their .port_egress_floods implementation, buses which have
-> > might_sleep() in them.
->
-> Right, but see the code:
->
-> ```
-> 	attr.id = SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS;
-> 	attr.flags = SWITCHDEV_F_DEFER;
-> 	attr.u.brport_flags = flags;
->
-> 	err = switchdev_port_attr_set(p->dev, &attr);
-> ```
->
-> And check how SWITCHDEV_F_DEFER is used.
->
-> We can squash SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS and
-> SWITCHDEV_ATTR_ID_PORT_PRE_BRIDGE_FLAGS into one blocking notification
-> by reducing the scope of the bridge lock like Nik suggested. Currently
-> it's just blindly taken around br_setport().
+This patch series adds support for Qualcomm QCA807x PHYs.
 
-Okay, so the deferred attr_set propagates just a possible ENOMEM from
-the deferred work enqueue, not the actual failure if that occurred.
+These are really common companion PHYs on boards featuring
+Qualcomm IPQ40xx, IPQ60xx and IPQ807x SoCs.
 
-I can leave alone the piece that sends two notifications for now, but I
-would still need to deliver the full struct switchdev_brport_flags with
-both the flags and the mask to both the PRE_BRIDGE_FLAGS and the
-BRIDGE_FLAGS, because I need to deliver an extack from the sja1105 driver
-that BR_FLOOD should always have the same value as BR_MCAST_FLOOD.
+They are 2 or 5 port IEEE 802.3 clause 22 compliant
+10BASE-Te, 100BASE-TX and 1000BASE-T PHY-s.
+
+They feature 2 SerDes, one for PSGMII or QSGMII connection with MAC,
+while second one is SGMII for connection to MAC or fiber.
+
+Both models have a combo port that supports 1000BASE-X and 100BASE-FX
+fiber.
+
+Each PHY inside of QCA807x series has 2 digitally controlled output only
+pins that natively drive LED-s.
+But some vendors used these to driver generic LED-s controlled by
+user space, so lets enable registering each PHY as GPIO controller and
+add driver for it.
+
+Robert Marko (4):
+  dt-bindings: net: Add QCA807x PHY
+  dt-bindings: net: Add bindings for Qualcomm QCA807x
+  net: phy: Add Qualcomm QCA807x driver
+  MAINTAINERS: Add entry for Qualcomm QCA807x PHY driver
+
+ .../devicetree/bindings/net/qcom,qca807x.yaml |  70 ++
+ MAINTAINERS                                   |   9 +
+ drivers/net/phy/Kconfig                       |  10 +
+ drivers/net/phy/Makefile                      |   1 +
+ drivers/net/phy/qca807x.c                     | 855 ++++++++++++++++++
+ include/dt-bindings/net/qcom-qca807x.h        |  30 +
+ 6 files changed, 975 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/qcom,qca807x.yaml
+ create mode 100644 drivers/net/phy/qca807x.c
+ create mode 100644 include/dt-bindings/net/qcom-qca807x.h
+
+-- 
+2.29.2
+
