@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CA4B316038
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 08:45:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3095316045
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 08:47:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232836AbhBJHpD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 02:45:03 -0500
-Received: from szxga07-in.huawei.com ([45.249.212.35]:12895 "EHLO
+        id S232927AbhBJHqq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 02:46:46 -0500
+Received: from szxga07-in.huawei.com ([45.249.212.35]:12896 "EHLO
         szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232590AbhBJHo6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 02:44:58 -0500
+        with ESMTP id S229683AbhBJHph (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 02:45:37 -0500
 Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4DbBZ010zDz7jRK;
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4DbBZ02ZV5z7jYm;
         Wed, 10 Feb 2021 15:42:48 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
@@ -23,9 +23,9 @@ CC:     <netdev@vger.kernel.org>, <salil.mehta@huawei.com>,
         <yisen.zhuang@huawei.com>, <huangdaode@huawei.com>,
         <linuxarm@openeuler.org>, Jian Shen <shenjian15@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 07/13] net: hns3: refactor out hclgevf_get_rss_tuple()
-Date:   Wed, 10 Feb 2021 15:43:19 +0800
-Message-ID: <1612943005-59416-8-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 08/13] net: hns3: split out hclge_dbg_dump_qos_buf_cfg()
+Date:   Wed, 10 Feb 2021 15:43:20 +0800
+Message-ID: <1612943005-59416-9-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1612943005-59416-1-git-send-email-tanhuazhong@huawei.com>
 References: <1612943005-59416-1-git-send-email-tanhuazhong@huawei.com>
@@ -39,119 +39,239 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jian Shen <shenjian15@huawei.com>
 
-To improve code readability and maintainability, separate
-the flow type parsing part and the converting part from
-bloated hclgevf_get_rss_tuple().
+hclge_dbg_dump_qos_buf_cfg() is bloated, so split it into
+separate functions for readability and maintainability.
 
 Signed-off-by: Jian Shen <shenjian15@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  | 67 ++++++++++++++--------
- 1 file changed, 42 insertions(+), 25 deletions(-)
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c | 158 +++++++++++++++------
+ 1 file changed, 115 insertions(+), 43 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index ece3169..c4ac2b9 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -954,56 +954,73 @@ static int hclgevf_set_rss_tuple(struct hnae3_handle *handle,
- 	return 0;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
+index a0a33c0..6b1d197 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
+@@ -984,39 +984,39 @@ static void hclge_dbg_dump_qos_pri_map(struct hclge_dev *hdev)
+ 	dev_info(&hdev->pdev->dev, "pri_7_to_tc: 0x%x\n", pri_map->pri7_tc);
  }
  
--static int hclgevf_get_rss_tuple(struct hnae3_handle *handle,
--				 struct ethtool_rxnfc *nfc)
-+static int hclgevf_get_rss_tuple_by_flow_type(struct hclgevf_dev *hdev,
-+					      int flow_type, u8 *tuple_sets)
+-static void hclge_dbg_dump_qos_buf_cfg(struct hclge_dev *hdev)
++static int hclge_dbg_dump_tx_buf_cfg(struct hclge_dev *hdev)
  {
--	struct hclgevf_dev *hdev = hclgevf_ae_get_hdev(handle);
--	struct hclgevf_rss_cfg *rss_cfg = &hdev->rss_cfg;
--	u8 tuple_sets;
--
--	if (hdev->ae_dev->dev_version < HNAE3_DEVICE_VERSION_V2)
--		return -EOPNOTSUPP;
--
--	nfc->data = 0;
--
--	switch (nfc->flow_type) {
-+	switch (flow_type) {
- 	case TCP_V4_FLOW:
--		tuple_sets = rss_cfg->rss_tuple_sets.ipv4_tcp_en;
-+		*tuple_sets = hdev->rss_cfg.rss_tuple_sets.ipv4_tcp_en;
- 		break;
- 	case UDP_V4_FLOW:
--		tuple_sets = rss_cfg->rss_tuple_sets.ipv4_udp_en;
-+		*tuple_sets = hdev->rss_cfg.rss_tuple_sets.ipv4_udp_en;
- 		break;
- 	case TCP_V6_FLOW:
--		tuple_sets = rss_cfg->rss_tuple_sets.ipv6_tcp_en;
-+		*tuple_sets = hdev->rss_cfg.rss_tuple_sets.ipv6_tcp_en;
- 		break;
- 	case UDP_V6_FLOW:
--		tuple_sets = rss_cfg->rss_tuple_sets.ipv6_udp_en;
-+		*tuple_sets = hdev->rss_cfg.rss_tuple_sets.ipv6_udp_en;
- 		break;
- 	case SCTP_V4_FLOW:
--		tuple_sets = rss_cfg->rss_tuple_sets.ipv4_sctp_en;
-+		*tuple_sets = hdev->rss_cfg.rss_tuple_sets.ipv4_sctp_en;
- 		break;
- 	case SCTP_V6_FLOW:
--		tuple_sets = rss_cfg->rss_tuple_sets.ipv6_sctp_en;
-+		*tuple_sets = hdev->rss_cfg.rss_tuple_sets.ipv6_sctp_en;
- 		break;
- 	case IPV4_FLOW:
- 	case IPV6_FLOW:
--		tuple_sets = HCLGEVF_S_IP_BIT | HCLGEVF_D_IP_BIT;
-+		*tuple_sets = HCLGEVF_S_IP_BIT | HCLGEVF_D_IP_BIT;
- 		break;
- 	default:
- 		return -EINVAL;
- 	}
+ 	struct hclge_tx_buff_alloc_cmd *tx_buf_cmd;
+-	struct hclge_rx_priv_buff_cmd *rx_buf_cmd;
+-	struct hclge_rx_priv_wl_buf *rx_priv_wl;
+-	struct hclge_rx_com_wl *rx_packet_cnt;
+-	struct hclge_rx_com_thrd *rx_com_thrd;
+-	struct hclge_rx_com_wl *rx_com_wl;
+-	enum hclge_opcode_type cmd;
+-	struct hclge_desc desc[2];
++	struct hclge_desc desc;
+ 	int i, ret;
  
--	if (!tuple_sets)
--		return 0;
+-	cmd = HCLGE_OPC_TX_BUFF_ALLOC;
+-	hclge_cmd_setup_basic_desc(desc, cmd, true);
+-	ret = hclge_cmd_send(&hdev->hw, desc, 1);
++	hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_TX_BUFF_ALLOC, true);
++	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
+ 	if (ret)
+-		goto err_qos_cmd_send;
++		return ret;
+ 
+ 	dev_info(&hdev->pdev->dev, "dump qos buf cfg\n");
+-
+-	tx_buf_cmd = (struct hclge_tx_buff_alloc_cmd *)desc[0].data;
++	tx_buf_cmd = (struct hclge_tx_buff_alloc_cmd *)desc.data;
+ 	for (i = 0; i < HCLGE_MAX_TC_NUM; i++)
+ 		dev_info(&hdev->pdev->dev, "tx_packet_buf_tc_%d: 0x%x\n", i,
+ 			 le16_to_cpu(tx_buf_cmd->tx_pkt_buff[i]));
+ 
+-	cmd = HCLGE_OPC_RX_PRIV_BUFF_ALLOC;
+-	hclge_cmd_setup_basic_desc(desc, cmd, true);
+-	ret = hclge_cmd_send(&hdev->hw, desc, 1);
 +	return 0;
 +}
 +
-+static u64 hclgevf_convert_rss_tuple(u8 tuple_sets)
++static int hclge_dbg_dump_rx_priv_buf_cfg(struct hclge_dev *hdev)
 +{
-+	u64 tuple_data = 0;
- 
- 	if (tuple_sets & HCLGEVF_D_PORT_BIT)
--		nfc->data |= RXH_L4_B_2_3;
-+		tuple_data |= RXH_L4_B_2_3;
- 	if (tuple_sets & HCLGEVF_S_PORT_BIT)
--		nfc->data |= RXH_L4_B_0_1;
-+		tuple_data |= RXH_L4_B_0_1;
- 	if (tuple_sets & HCLGEVF_D_IP_BIT)
--		nfc->data |= RXH_IP_DST;
-+		tuple_data |= RXH_IP_DST;
- 	if (tuple_sets & HCLGEVF_S_IP_BIT)
--		nfc->data |= RXH_IP_SRC;
-+		tuple_data |= RXH_IP_SRC;
++	struct hclge_rx_priv_buff_cmd *rx_buf_cmd;
++	struct hclge_desc desc;
++	int i, ret;
 +
-+	return tuple_data;
++	hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_RX_PRIV_BUFF_ALLOC, true);
++	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
+ 	if (ret)
+-		goto err_qos_cmd_send;
++		return ret;
+ 
+ 	dev_info(&hdev->pdev->dev, "\n");
+-	rx_buf_cmd = (struct hclge_rx_priv_buff_cmd *)desc[0].data;
++	rx_buf_cmd = (struct hclge_rx_priv_buff_cmd *)desc.data;
+ 	for (i = 0; i < HCLGE_MAX_TC_NUM; i++)
+ 		dev_info(&hdev->pdev->dev, "rx_packet_buf_tc_%d: 0x%x\n", i,
+ 			 le16_to_cpu(rx_buf_cmd->buf_num[i]));
+@@ -1024,43 +1024,61 @@ static void hclge_dbg_dump_qos_buf_cfg(struct hclge_dev *hdev)
+ 	dev_info(&hdev->pdev->dev, "rx_share_buf: 0x%x\n",
+ 		 le16_to_cpu(rx_buf_cmd->shared_buf));
+ 
+-	cmd = HCLGE_OPC_RX_COM_WL_ALLOC;
+-	hclge_cmd_setup_basic_desc(desc, cmd, true);
+-	ret = hclge_cmd_send(&hdev->hw, desc, 1);
++	return 0;
 +}
 +
-+static int hclgevf_get_rss_tuple(struct hnae3_handle *handle,
-+				 struct ethtool_rxnfc *nfc)
++static int hclge_dbg_dump_rx_common_wl_cfg(struct hclge_dev *hdev)
 +{
-+	struct hclgevf_dev *hdev = hclgevf_ae_get_hdev(handle);
-+	u8 tuple_sets;
++	struct hclge_rx_com_wl *rx_com_wl;
++	struct hclge_desc desc;
 +	int ret;
 +
-+	if (hdev->ae_dev->dev_version < HNAE3_DEVICE_VERSION_V2)
-+		return -EOPNOTSUPP;
-+
-+	nfc->data = 0;
-+
-+	ret = hclgevf_get_rss_tuple_by_flow_type(hdev, nfc->flow_type,
-+						 &tuple_sets);
-+	if (ret || !tuple_sets)
++	hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_RX_COM_WL_ALLOC, true);
++	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
+ 	if (ret)
+-		goto err_qos_cmd_send;
 +		return ret;
-+
-+	nfc->data = hclgevf_convert_rss_tuple(tuple_sets);
  
- 	return 0;
- }
+-	rx_com_wl = (struct hclge_rx_com_wl *)desc[0].data;
++	rx_com_wl = (struct hclge_rx_com_wl *)desc.data;
+ 	dev_info(&hdev->pdev->dev, "\n");
+ 	dev_info(&hdev->pdev->dev, "rx_com_wl: high: 0x%x, low: 0x%x\n",
+ 		 le16_to_cpu(rx_com_wl->com_wl.high),
+ 		 le16_to_cpu(rx_com_wl->com_wl.low));
+ 
+-	cmd = HCLGE_OPC_RX_GBL_PKT_CNT;
+-	hclge_cmd_setup_basic_desc(desc, cmd, true);
+-	ret = hclge_cmd_send(&hdev->hw, desc, 1);
++	return 0;
++}
++
++static int hclge_dbg_dump_rx_global_pkt_cnt(struct hclge_dev *hdev)
++{
++	struct hclge_rx_com_wl *rx_packet_cnt;
++	struct hclge_desc desc;
++	int ret;
++
++	hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_RX_GBL_PKT_CNT, true);
++	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
+ 	if (ret)
+-		goto err_qos_cmd_send;
++		return ret;
+ 
+-	rx_packet_cnt = (struct hclge_rx_com_wl *)desc[0].data;
++	rx_packet_cnt = (struct hclge_rx_com_wl *)desc.data;
+ 	dev_info(&hdev->pdev->dev,
+ 		 "rx_global_packet_cnt: high: 0x%x, low: 0x%x\n",
+ 		 le16_to_cpu(rx_packet_cnt->com_wl.high),
+ 		 le16_to_cpu(rx_packet_cnt->com_wl.low));
+-	dev_info(&hdev->pdev->dev, "\n");
+ 
+-	if (!hnae3_dev_dcb_supported(hdev)) {
+-		dev_info(&hdev->pdev->dev,
+-			 "Only DCB-supported dev supports rx priv wl\n");
+-		return;
+-	}
+-	cmd = HCLGE_OPC_RX_PRIV_WL_ALLOC;
+-	hclge_cmd_setup_basic_desc(&desc[0], cmd, true);
++	return 0;
++}
++
++static int hclge_dbg_dump_rx_priv_wl_buf_cfg(struct hclge_dev *hdev)
++{
++	struct hclge_rx_priv_wl_buf *rx_priv_wl;
++	struct hclge_desc desc[2];
++	int i, ret;
++
++	hclge_cmd_setup_basic_desc(&desc[0], HCLGE_OPC_RX_PRIV_WL_ALLOC, true);
+ 	desc[0].flag |= cpu_to_le16(HCLGE_CMD_FLAG_NEXT);
+-	hclge_cmd_setup_basic_desc(&desc[1], cmd, true);
++	hclge_cmd_setup_basic_desc(&desc[1], HCLGE_OPC_RX_PRIV_WL_ALLOC, true);
+ 	ret = hclge_cmd_send(&hdev->hw, desc, 2);
+ 	if (ret)
+-		goto err_qos_cmd_send;
++		return ret;
+ 
+ 	rx_priv_wl = (struct hclge_rx_priv_wl_buf *)desc[0].data;
+ 	for (i = 0; i < HCLGE_TC_NUM_ONE_DESC; i++)
+@@ -1077,13 +1095,21 @@ static void hclge_dbg_dump_qos_buf_cfg(struct hclge_dev *hdev)
+ 			 le16_to_cpu(rx_priv_wl->tc_wl[i].high),
+ 			 le16_to_cpu(rx_priv_wl->tc_wl[i].low));
+ 
+-	cmd = HCLGE_OPC_RX_COM_THRD_ALLOC;
+-	hclge_cmd_setup_basic_desc(&desc[0], cmd, true);
++	return 0;
++}
++
++static int hclge_dbg_dump_rx_common_threshold_cfg(struct hclge_dev *hdev)
++{
++	struct hclge_rx_com_thrd *rx_com_thrd;
++	struct hclge_desc desc[2];
++	int i, ret;
++
++	hclge_cmd_setup_basic_desc(&desc[0], HCLGE_OPC_RX_COM_THRD_ALLOC, true);
+ 	desc[0].flag |= cpu_to_le16(HCLGE_CMD_FLAG_NEXT);
+-	hclge_cmd_setup_basic_desc(&desc[1], cmd, true);
++	hclge_cmd_setup_basic_desc(&desc[1], HCLGE_OPC_RX_COM_THRD_ALLOC, true);
+ 	ret = hclge_cmd_send(&hdev->hw, desc, 2);
+ 	if (ret)
+-		goto err_qos_cmd_send;
++		return ret;
+ 
+ 	dev_info(&hdev->pdev->dev, "\n");
+ 	rx_com_thrd = (struct hclge_rx_com_thrd *)desc[0].data;
+@@ -1100,6 +1126,52 @@ static void hclge_dbg_dump_qos_buf_cfg(struct hclge_dev *hdev)
+ 			 i + HCLGE_TC_NUM_ONE_DESC,
+ 			 le16_to_cpu(rx_com_thrd->com_thrd[i].high),
+ 			 le16_to_cpu(rx_com_thrd->com_thrd[i].low));
++
++	return 0;
++}
++
++static void hclge_dbg_dump_qos_buf_cfg(struct hclge_dev *hdev)
++{
++	enum hclge_opcode_type cmd;
++	int ret;
++
++	cmd = HCLGE_OPC_TX_BUFF_ALLOC;
++	ret = hclge_dbg_dump_tx_buf_cfg(hdev);
++	if (ret)
++		goto err_qos_cmd_send;
++
++	cmd = HCLGE_OPC_RX_PRIV_BUFF_ALLOC;
++	ret = hclge_dbg_dump_rx_priv_buf_cfg(hdev);
++	if (ret)
++		goto err_qos_cmd_send;
++
++	cmd = HCLGE_OPC_RX_COM_WL_ALLOC;
++	ret = hclge_dbg_dump_rx_common_wl_cfg(hdev);
++	if (ret)
++		goto err_qos_cmd_send;
++
++	cmd = HCLGE_OPC_RX_GBL_PKT_CNT;
++	ret = hclge_dbg_dump_rx_global_pkt_cnt(hdev);
++	if (ret)
++		goto err_qos_cmd_send;
++
++	dev_info(&hdev->pdev->dev, "\n");
++	if (!hnae3_dev_dcb_supported(hdev)) {
++		dev_info(&hdev->pdev->dev,
++			 "Only DCB-supported dev supports rx priv wl\n");
++		return;
++	}
++
++	cmd = HCLGE_OPC_RX_PRIV_WL_ALLOC;
++	ret = hclge_dbg_dump_rx_priv_wl_buf_cfg(hdev);
++	if (ret)
++		goto err_qos_cmd_send;
++
++	cmd = HCLGE_OPC_RX_COM_THRD_ALLOC;
++	ret = hclge_dbg_dump_rx_common_threshold_cfg(hdev);
++	if (ret)
++		goto err_qos_cmd_send;
++
+ 	return;
+ 
+ err_qos_cmd_send:
 -- 
 2.7.4
 
