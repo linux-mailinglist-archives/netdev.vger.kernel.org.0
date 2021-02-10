@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E16F31736F
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 23:36:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05DB2317375
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 23:36:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233006AbhBJWek (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 17:34:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33114 "EHLO
+        id S233668AbhBJWff (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 17:35:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233454AbhBJWe2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 17:34:28 -0500
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EED8EC061794
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 14:33:26 -0800 (PST)
-Received: by mail-io1-xd32.google.com with SMTP id e133so3680204iof.8
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 14:33:26 -0800 (PST)
+        with ESMTP id S233646AbhBJWfO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 17:35:14 -0500
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54CAFC061797
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 14:33:28 -0800 (PST)
+Received: by mail-io1-xd35.google.com with SMTP id n14so3718418iog.3
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 14:33:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ebGMA32A3lz4dOPF3atpHHf9aQxnDO22teaa/gzKf7E=;
-        b=TRkL8rpb7xtowbI7NG5qRcVYCoyiVGgNCywcggZ+i3Y5YsMSxdMkcklXAj/HqCbCKp
-         7WjOTC+wEQW658qVbVhEtpD41DsJLrs+9aXyDJL2MwfPgTX1kuk2KK4cghv58MTne353
-         aMnSyVqAIy6gqAOlPrKyK6cuEs07P7AKQLEPfkt+0iAz9f8ZmMzu7uuZZx0c1zlGbhvt
-         I9tAZzgq/7RaMV6AL5F9IO7/YKEXLk418PA+hjOfovJC8SD2W4o8U2ilkFVmlPOqEa8o
-         DYXll+c00hfrCX6KiJUXOBnnOxD8E7OtFAbnXj+SRe28CIr5cZySVb73PVcDhn0keBwl
-         DtjQ==
+        bh=t6ANzS3+2tsE4t3VkmY2+dGn199wA0IEauFrqe8OQ8I=;
+        b=rx1gHAS3m7M8qLsT/QutCzEXdVpE33jO3rQxZCXbbv6wdn7fc7u7eIM2zs2wdXztUf
+         QlUSR0fIcYZH7M8voIHAyab4WdSe/bS/mgAXT/XVoj5PaMoJlMJnQUvGcXKm/Z3CwZ0Z
+         DTTeWz6M5knBMDXf8bxILstsm9NktEbTSi++CB0Ge+1Z10iLRp4r86NXwxuWegT/3mdF
+         F/VMh4b6iZiv7flvKueNqpOz36G18IsE8A1JniVPLTU1mtq4ukTMkoEMUqUObts0fVKa
+         r+GCSc8o1vkCnJcUgIOB1gREk36BkkKUwhbI3S1AIESJvXUmTCbScnz00FYyY3xV1lKp
+         p3tg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ebGMA32A3lz4dOPF3atpHHf9aQxnDO22teaa/gzKf7E=;
-        b=keZyvcq9CYBvT6gGL7LAjhIe1LBMdBnuSCF15duPjDBo3YE9E3bml4ep/jxB4zRJGc
-         zGK8yq83O4xcR+0Yfe7B1syFU1eGCYF+ZNs9VkXgWABDjUEY5icalPvTKIeqSAsVJ1En
-         0cEj4XJWKiAcr5N+MY/umi39YAYHNbLG4HYj9IOzpJu7BdP5oLhhEqwgf+AShcCGVOVa
-         YaCWFdFOfRh5ZMADW5O38iSTSx1CNgoiaKzkDC/D0u7D3Fy0CD61kZ30/whbuhSmOiX5
-         Eu2coc0VC3ibzJyEFJ90aL1AhRsUKg1sN+RDhxN/PJdIE8IHKA66O2FXPb2EOC18fucb
-         3BXg==
-X-Gm-Message-State: AOAM532oNEYOmdcs2KEw0qof6ZKCP57U8YTBt3XzjdVq8DrQzk4K/UM2
-        uHb2p8BzYulTjqwv20Oevr7KOA==
-X-Google-Smtp-Source: ABdhPJzzApz4CRdzB0M8M/56mIFQy+VD+EC7Q5O0Ksdf8b1eA+vagWh3Ckhsxf+xnr9NQYSzpZMQUA==
-X-Received: by 2002:a5d:81c8:: with SMTP id t8mr2888690iol.38.1612996406423;
-        Wed, 10 Feb 2021 14:33:26 -0800 (PST)
+        bh=t6ANzS3+2tsE4t3VkmY2+dGn199wA0IEauFrqe8OQ8I=;
+        b=oCa7Wdov2cHYt6hBdhStMz7UfnjJF53nZ/90lXMVWp5MT2p7XyYcuA59BqWqxfhNQA
+         PAwZt+AGCKWHmCwpFpEFCQsDRZAvT5ZUEEpo+8jhfQ47pJmG6AFOQCDGHDIlXQUpH5jv
+         0wOfychAYTCMjm1WgBsHPaeVeAdG+hXD8R9nyOEn+DzEQwREkz4kb5Of6POhmJOz0eaE
+         vT4yRCiQxVY8TFUqiulB7XgyLUHGmtn4bf1PWWUb0VqciYQxTbiY/JsXMQ7sEctARBJz
+         w+0dQ0iG/0ZHMy+9PrYM8cyqnNe/KQxzfs1DzbxGj+fVbG+cgzEzrP+7dSfPyef09YSv
+         ZlxQ==
+X-Gm-Message-State: AOAM5312NUPkj7Z9cpPhr6GS5dDUF174oY28YeJwBw4up/tmZHbPMAWs
+        1lGUQz3DIjiWeIcHAuIgprGSkg==
+X-Google-Smtp-Source: ABdhPJyCTB0itxNqAqGaLffREvLUicNoOc5hpdY7w62GFgm2dwu53vtVUdQcfc+wrSoELM46UzdbAg==
+X-Received: by 2002:a6b:6d18:: with SMTP id a24mr2668255iod.169.1612996407300;
+        Wed, 10 Feb 2021 14:33:27 -0800 (PST)
 Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id e23sm1484525ioc.34.2021.02.10.14.33.25
+        by smtp.gmail.com with ESMTPSA id e23sm1484525ioc.34.2021.02.10.14.33.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Feb 2021 14:33:26 -0800 (PST)
+        Wed, 10 Feb 2021 14:33:27 -0800 (PST)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     elder@kernel.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
         cpratapa@codeaurora.org, subashab@codeaurora.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 3/5] net: ipa: fix register write command validation
-Date:   Wed, 10 Feb 2021 16:33:18 -0600
-Message-Id: <20210210223320.11269-4-elder@linaro.org>
+Subject: [PATCH net-next 4/5] net: ipa: introduce ipa_table_hash_support()
+Date:   Wed, 10 Feb 2021 16:33:19 -0600
+Message-Id: <20210210223320.11269-5-elder@linaro.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210210223320.11269-1-elder@linaro.org>
 References: <20210210223320.11269-1-elder@linaro.org>
@@ -64,85 +64,96 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In ipa_cmd_register_write_valid() we verify that values we will
-supply to a REGISTER_WRITE IPA immediate command will fit in
-the fields that need to hold them.  This patch fixes some issues
-in that function and ipa_cmd_register_write_offset_valid().
+Introduce a new function to abstract the knowledge of whether hashed
+routing and filter tables are supported for a given IPA instance.
 
-The dev_err() call in ipa_cmd_register_write_offset_valid() has
-some printf format errors:
-  - The name of the register (corresponding to the string format
-    specifier) was not supplied.
-  - The IPA base offset and offset need to be supplied separately to
-    match the other format specifiers.
-Also make the ~0 constant used there to compute the maximum
-supported offset value explicitly unsigned.
-
-There are two other issues in ipa_cmd_register_write_valid():
-  - There's no need to check the hash flush register for platforms
-    (like IPA v4.2) that do not support hashed tables
-  - The highest possible endpoint number, whose status register
-    offset is computed, is COUNT - 1, not COUNT.
-
-Fix these problems, and add some additional commentary.
+IPA v4.2 is the only one that doesn't support hashed tables (now
+and for the foreseeable future), but the name of the helper function
+is better for explaining what's going on.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa_cmd.c | 30 +++++++++++++++++++++++-------
- 1 file changed, 23 insertions(+), 7 deletions(-)
+ drivers/net/ipa/ipa_cmd.c   |  2 +-
+ drivers/net/ipa/ipa_table.c | 14 ++++++++------
+ drivers/net/ipa/ipa_table.h |  6 ++++++
+ 3 files changed, 15 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/ipa/ipa_cmd.c b/drivers/net/ipa/ipa_cmd.c
-index 97b50fee60089..8c832bf2637ab 100644
+index 8c832bf2637ab..6a698ac9e6987 100644
 --- a/drivers/net/ipa/ipa_cmd.c
 +++ b/drivers/net/ipa/ipa_cmd.c
-@@ -244,11 +244,15 @@ static bool ipa_cmd_register_write_offset_valid(struct ipa *ipa,
- 	if (ipa->version != IPA_VERSION_3_5_1)
- 		bit_count += hweight32(REGISTER_WRITE_FLAGS_OFFSET_HIGH_FMASK);
- 	BUILD_BUG_ON(bit_count > 32);
--	offset_max = ~0 >> (32 - bit_count);
-+	offset_max = ~0U >> (32 - bit_count);
+@@ -268,7 +268,7 @@ static bool ipa_cmd_register_write_valid(struct ipa *ipa)
+ 	/* If hashed tables are supported, ensure the hash flush register
+ 	 * offset will fit in a register write IPA immediate command.
+ 	 */
+-	if (ipa->version != IPA_VERSION_4_2) {
++	if (ipa_table_hash_support(ipa)) {
+ 		offset = ipa_reg_filt_rout_hash_flush_offset(ipa->version);
+ 		name = "filter/route hash flush";
+ 		if (!ipa_cmd_register_write_offset_valid(ipa, name, offset))
+diff --git a/drivers/net/ipa/ipa_table.c b/drivers/net/ipa/ipa_table.c
+index 32e2d3e052d55..5e069f0f5d706 100644
+--- a/drivers/net/ipa/ipa_table.c
++++ b/drivers/net/ipa/ipa_table.c
+@@ -239,6 +239,11 @@ static void ipa_table_validate_build(void)
  
-+	/* Make sure the offset can be represented by the field(s)
-+	 * that holds it.  Also make sure the offset is not outside
-+	 * the overall IPA memory range.
-+	 */
- 	if (offset > offset_max || ipa->mem_offset > offset_max - offset) {
- 		dev_err(dev, "%s offset too large 0x%04x + 0x%04x > 0x%04x)\n",
--				ipa->mem_offset + offset, offset_max);
-+			name, ipa->mem_offset, offset, offset_max);
- 		return false;
- 	}
+ #endif /* !IPA_VALIDATE */
  
-@@ -261,12 +265,24 @@ static bool ipa_cmd_register_write_valid(struct ipa *ipa)
- 	const char *name;
- 	u32 offset;
++bool ipa_table_hash_support(struct ipa *ipa)
++{
++	return ipa->version != IPA_VERSION_4_2;
++}
++
+ /* Zero entry count means no table, so just return a 0 address */
+ static dma_addr_t ipa_table_addr(struct ipa *ipa, bool filter_mask, u16 count)
+ {
+@@ -412,8 +417,7 @@ int ipa_table_hash_flush(struct ipa *ipa)
+ 	struct gsi_trans *trans;
+ 	u32 val;
  
--	offset = ipa_reg_filt_rout_hash_flush_offset(ipa->version);
--	name = "filter/route hash flush";
--	if (!ipa_cmd_register_write_offset_valid(ipa, name, offset))
--		return false;
-+	/* If hashed tables are supported, ensure the hash flush register
-+	 * offset will fit in a register write IPA immediate command.
-+	 */
-+	if (ipa->version != IPA_VERSION_4_2) {
-+		offset = ipa_reg_filt_rout_hash_flush_offset(ipa->version);
-+		name = "filter/route hash flush";
-+		if (!ipa_cmd_register_write_offset_valid(ipa, name, offset))
-+			return false;
-+	}
+-	/* IPA version 4.2 does not support hashed tables */
+-	if (ipa->version == IPA_VERSION_4_2)
++	if (!ipa_table_hash_support(ipa))
+ 		return 0;
  
--	offset = IPA_REG_ENDP_STATUS_N_OFFSET(IPA_ENDPOINT_COUNT);
-+	/* Each endpoint can have a status endpoint associated with it,
-+	 * and this is recorded in an endpoint register.  If the modem
-+	 * crashes, we reset the status endpoint for all modem endpoints
-+	 * using a register write IPA immediate command.  Make sure the
-+	 * worst case (highest endpoint number) offset of that endpoint
-+	 * fits in the register write command field(s) that must hold it.
-+	 */
-+	offset = IPA_REG_ENDP_STATUS_N_OFFSET(IPA_ENDPOINT_COUNT - 1);
- 	name = "maximal endpoint status";
- 	if (!ipa_cmd_register_write_offset_valid(ipa, name, offset))
- 		return false;
+ 	trans = ipa_cmd_trans_alloc(ipa, 1);
+@@ -531,8 +535,7 @@ static void ipa_filter_config(struct ipa *ipa, bool modem)
+ 	enum gsi_ee_id ee_id = modem ? GSI_EE_MODEM : GSI_EE_AP;
+ 	u32 ep_mask = ipa->filter_map;
+ 
+-	/* IPA version 4.2 has no hashed route tables */
+-	if (ipa->version == IPA_VERSION_4_2)
++	if (!ipa_table_hash_support(ipa))
+ 		return;
+ 
+ 	while (ep_mask) {
+@@ -582,8 +585,7 @@ static void ipa_route_config(struct ipa *ipa, bool modem)
+ {
+ 	u32 route_id;
+ 
+-	/* IPA version 4.2 has no hashed route tables */
+-	if (ipa->version == IPA_VERSION_4_2)
++	if (!ipa_table_hash_support(ipa))
+ 		return;
+ 
+ 	for (route_id = 0; route_id < IPA_ROUTE_COUNT_MAX; route_id++)
+diff --git a/drivers/net/ipa/ipa_table.h b/drivers/net/ipa/ipa_table.h
+index 78038d14fcea9..c14fbe64d360e 100644
+--- a/drivers/net/ipa/ipa_table.h
++++ b/drivers/net/ipa/ipa_table.h
+@@ -51,6 +51,12 @@ static inline bool ipa_filter_map_valid(struct ipa *ipa, u32 filter_mask)
+ 
+ #endif /* !IPA_VALIDATE */
+ 
++/**
++ * ipa_table_hash_support() - Return true if hashed tables are supported
++ * @ipa:	IPA pointer
++ */
++bool ipa_table_hash_support(struct ipa *ipa);
++
+ /**
+  * ipa_table_reset() - Reset filter and route tables entries to "none"
+  * @ipa:	IPA pointer
 -- 
 2.20.1
 
