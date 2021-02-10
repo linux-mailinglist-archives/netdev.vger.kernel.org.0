@@ -2,142 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D1B5315DFE
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 05:03:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93524315E02
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 05:05:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229772AbhBJECa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 23:02:30 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:45139 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229601AbhBJECY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 23:02:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1612929657;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LiSar9TAMcy2xRKolsSKppUgJqRDQOLGsEBTg7PEtAM=;
-        b=MkhsLP7NMCMJryY90Y/6HIs7ka6uC0gt3/mJcyvBjwK+e2blk7WErWJwBdsRZK9+tQDsOa
-        LsFM2foQNMX9pZJHsGksqE5cB55jpAWxSVAKeCj5DiVig4kC5H2SXIFQurhJQoSQvLu+Ji
-        T/e4cZOVHMJ+ZSxoavRTxXa/a/z8oSQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-76-pat8V0wMPIeyoW0ZjqVYMg-1; Tue, 09 Feb 2021 23:00:56 -0500
-X-MC-Unique: pat8V0wMPIeyoW0ZjqVYMg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9C762189DF4F;
-        Wed, 10 Feb 2021 04:00:54 +0000 (UTC)
-Received: from [10.72.12.223] (ovpn-12-223.pek2.redhat.com [10.72.12.223])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 830E219C78;
-        Wed, 10 Feb 2021 04:00:48 +0000 (UTC)
-Subject: Re: [PATCH 3/3] mlx5_vdpa: defer clear_virtqueues to until DRIVER_OK
-To:     Si-Wei Liu <si-wei.liu@oracle.com>, mst@redhat.com, elic@nvidia.com
-Cc:     linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-References: <1612614564-4220-1-git-send-email-si-wei.liu@oracle.com>
- <1612614564-4220-3-git-send-email-si-wei.liu@oracle.com>
- <2e2bc8d7-5d64-c28c-9aa0-1df32c7dcef3@redhat.com>
- <00d3ec60-3635-a5f1-15fc-21e6ce53202b@oracle.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <ca25b0fd-5871-2543-d802-b10ed2a1d3a4@redhat.com>
-Date:   Wed, 10 Feb 2021 12:00:46 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S230013AbhBJEEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 23:04:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48664 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229970AbhBJEEr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 23:04:47 -0500
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 672A3C061574
+        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 20:04:02 -0800 (PST)
+Received: by mail-pg1-x530.google.com with SMTP id t25so392236pga.2
+        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 20:04:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=13htU43l4iXdwWGjKhK+Mq7lwY4rAEAn4rIxx4Bzw64=;
+        b=cV/p65Y1ubYQU/mRvJJ2ttkOJdOko3eFqoyU2afeygOc+qyzvTm7SYGR2cUQLatWVw
+         U3a75yIwpZ3p7aVcXMWec2Ph1nP2NjjFZ/jto9zacjtjIJsQAZR84GhYylMLyK8bZ0GL
+         B3Xhpn7Ao//EdpE2hGwzkNu8Eeq0mmdGDEkcTmv6PV0ywe6xrZmHQbmhjlXMaNiYOtDy
+         Rlxm+jvlrVC2kculn1ODfkDpgR4jt2EG/It9L+mc1TKTIO+WwwbBQigO8x77tgZRmvJs
+         a6tQd/39Afw6svyY7JbFGgwS2N6BzofBnQlzC/ZY9RCXfEBN7bP8XdJj5Uc2KZvgzTsu
+         soRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=13htU43l4iXdwWGjKhK+Mq7lwY4rAEAn4rIxx4Bzw64=;
+        b=Gj+Hzp0beI5BdjlOg67I1thW35k2SWXDb5Uz+aTT2O64jCfLWsSNtsTiHLfmYjt49m
+         2vB7uPxxvOyziah7GuWcxzO8fqLFPg78KXPVGwMZ3pHjkzaLuLCUx5u8xLze5vfd0xwa
+         FdYHLP6Q6Ivdd9RkGGqPHMFnIy8iUW/K5FLH5i31rg4LltiLiGC6lY/0+vTGLQuTdB7L
+         H2dFQ/Sdrj5/hRcxlWY2FEk4cXJopKIQqhbDRrJKMGfZU3bMQWrmxwYhhfMrcaoS9/FO
+         kH5TttxhTYa04uQ9MeQz6I8UhWp5JlRuqkPBeSTZ4mtU4smnAUdPfb7hNItBHFd97DCL
+         Sh+g==
+X-Gm-Message-State: AOAM531SjYVsJkd8RwVxYjcfuYp/Lbc1ukR3EmpaywcqSENpL5o1FIVD
+        /3fbCLmHj54mHwxAjfyb/kPQTm89Bdk=
+X-Google-Smtp-Source: ABdhPJz2+YqhibocoadpuwnCQqloGLL0OAjc7p9BXSzuaDZMScxa9+GGMlNILyKgY4eAbyDspALpLw==
+X-Received: by 2002:a63:f614:: with SMTP id m20mr1260234pgh.200.1612929841441;
+        Tue, 09 Feb 2021 20:04:01 -0800 (PST)
+Received: from [10.230.29.30] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id s23sm374337pfc.211.2021.02.09.20.03.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 Feb 2021 20:04:00 -0800 (PST)
+Subject: Re: [PATCH net-next v3 3/4] net: dsa: add support for offloading HSR
+To:     George McCollister <george.mccollister@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org
+References: <20210210010213.27553-1-george.mccollister@gmail.com>
+ <20210210010213.27553-4-george.mccollister@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <2d067c4a-103d-997a-8a8a-fac3ae16e586@gmail.com>
+Date:   Tue, 9 Feb 2021 20:04:03 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.7.1
 MIME-Version: 1.0
-In-Reply-To: <00d3ec60-3635-a5f1-15fc-21e6ce53202b@oracle.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210210010213.27553-4-george.mccollister@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2021/2/10 上午8:26, Si-Wei Liu wrote:
->
->
-> On 2/8/2021 7:37 PM, Jason Wang wrote:
->>
->> On 2021/2/6 下午8:29, Si-Wei Liu wrote:
->>> While virtq is stopped,  get_vq_state() is supposed to
->>> be  called to  get  sync'ed  with  the latest internal
->>> avail_index from device. The saved avail_index is used
->>> to restate  the virtq  once device is started.  Commit
->>> b35ccebe3ef7 introduced the clear_virtqueues() routine
->>> to  reset  the saved  avail_index,  however, the index
->>> gets cleared a bit earlier before get_vq_state() tries
->>> to read it. This would cause consistency problems when
->>> virtq is restarted, e.g. through a series of link down
->>> and link up events. We  could  defer  the  clearing of
->>> avail_index  to  until  the  device  is to be started,
->>> i.e. until  VIRTIO_CONFIG_S_DRIVER_OK  is set again in
->>> set_status().
->>>
->>> Fixes: b35ccebe3ef7 ("vdpa/mlx5: Restore the hardware used index 
->>> after change map")
->>> Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
->>> ---
->>>   drivers/vdpa/mlx5/net/mlx5_vnet.c | 2 +-
->>>   1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c 
->>> b/drivers/vdpa/mlx5/net/mlx5_vnet.c
->>> index aa6f8cd..444ab58 100644
->>> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
->>> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
->>> @@ -1785,7 +1785,6 @@ static void mlx5_vdpa_set_status(struct 
->>> vdpa_device *vdev, u8 status)
->>>       if (!status) {
->>>           mlx5_vdpa_info(mvdev, "performing device reset\n");
->>>           teardown_driver(ndev);
->>> -        clear_virtqueues(ndev);
->>>           mlx5_vdpa_destroy_mr(&ndev->mvdev);
->>>           ndev->mvdev.status = 0;
->>>           ++mvdev->generation;
->>> @@ -1794,6 +1793,7 @@ static void mlx5_vdpa_set_status(struct 
->>> vdpa_device *vdev, u8 status)
->>>         if ((status ^ ndev->mvdev.status) & 
->>> VIRTIO_CONFIG_S_DRIVER_OK) {
->>>           if (status & VIRTIO_CONFIG_S_DRIVER_OK) {
->>> +            clear_virtqueues(ndev);
->>
->>
->> Rethink about this. As mentioned in another thread, this in fact 
->> breaks set_vq_state().  (See vhost_virtqueue_start() -> 
->> vhost_vdpa_set_vring_base() in qemu codes).
-> I assume that the clearing for vhost-vdpa would be done via (qemu code),
->
-> vhost_dev_start()->vhost_vdpa_dev_start()->vhost_vdpa_call(status | 
-> VIRTIO_CONFIG_S_DRIVER_OK)
->
-> which is _after_ vhost_virtqueue_start() gets called to restore the 
-> avail_idx to h/w in vhost_dev_start(). What am I missing here?
->
-> -Siwei
 
-
-I think not. I thought clear_virtqueues() will clear hardware index but 
-looks not. (I guess we need a better name other than clear_virtqueues(), 
-e.g from the name it looks like the it will clear the hardware states)
-
-Thanks
-
-
->
->
->>
->> The issue is that the avail idx is forgot, we need keep it.
->>
->> Thanks
->>
->>
->>>               err = setup_driver(ndev);
->>>               if (err) {
->>>                   mlx5_vdpa_warn(mvdev, "failed to setup driver\n");
->>
->
-
+On 2/9/2021 5:02 PM, George McCollister wrote:
+> Add support for offloading of HSR/PRP (IEC 62439-3) tag insertion
+> tag removal, duplicate generation and forwarding on DSA switches.
+> 
+> Add DSA_NOTIFIER_HSR_JOIN and DSA_NOTIFIER_HSR_LEAVE which trigger calls
+> to .port_hsr_join and .port_hsr_leave in the DSA driver for the switch.
+> 
+> The DSA switch driver should then set netdev feature flags for the
+> HSR/PRP operation that it offloads.
+>     NETIF_F_HW_HSR_TAG_INS
+>     NETIF_F_HW_HSR_TAG_RM
+>     NETIF_F_HW_HSR_FWD
+>     NETIF_F_HW_HSR_DUP
+> 
+> Signed-off-by: George McCollister <george.mccollister@gmail.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
