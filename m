@@ -2,937 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B7EA3162A6
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 10:49:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64DCB3162B0
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 10:51:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229713AbhBJJtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 04:49:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37454 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229761AbhBJJsE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 04:48:04 -0500
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F884C061756;
-        Wed, 10 Feb 2021 01:47:23 -0800 (PST)
-Received: by mail-lf1-x136.google.com with SMTP id p21so1832071lfu.11;
-        Wed, 10 Feb 2021 01:47:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=RG3A0J6O3bJrqfSbM7RpIV6/QWpHnJBLSYznMFGKAHk=;
-        b=D8h0vp1IQEvZWnyMZ9+OpspM9uHGuZZMCsm4CNIbAEai0vqHC0TsqAjBSZXQjYZ/68
-         9zz5tQN0z/KWQFFjWwI6X6IqOocvN/ayKeNv8xWf3wDxr0A3HcxNdkOyO6Zhu5ZLDoEi
-         HW4i7FsGFAb6I6/TD805B/dPZi5FIfTo5O6ava8+l/HPs88AxMQTqLEJneMQ3nbNshpT
-         n7rvUILu0UBZmMp0wmgYZJQYi7DiHKxeJNN1EgST/jhUSTj4Si1lGyeL7ER43+Ah035Z
-         SkYJhKgOsgZqVp1OSxKEs6q3ydO18M/fGanVAHnHpekT0/+ZLSr+IVdjmbOAkMoBtI/U
-         gBEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=RG3A0J6O3bJrqfSbM7RpIV6/QWpHnJBLSYznMFGKAHk=;
-        b=AiR3HZNnvbjhba4bV8C8Gln2qcBifEtAHYA8gBAyFc0Zb4RzO2pTFXHIoQt4Kx8War
-         iwGBI+03UMGl1RUXZAUHtyfn5qujVFVi4vOvs+GfTs3SNGsmYypby6f8DjqyRVaUBdkL
-         HN16q8GS/fQM7X1/BvoKi6Qpy60dXglBPPRuoI7Aa8jDn23ogmqqmtA2Kx/Qok1c6WHF
-         Ai/SkTssiqcJ3COhBIMAy8GfbDOYvZbCzeXEpBaJd7APfd2orRm7Y0zResmuTGT8cnTm
-         95a75wB+zhxmUb5bCIHH6kqYcpmUYk5QPlPuLCePuwEoGrBvZl+eZOrcDqaDaRQ8EKeU
-         IdPw==
-X-Gm-Message-State: AOAM5315qzeG2pFf632LRz75Q3OZUpWDQ8jkscWkVnwd7Nizk3bxXLjr
-        P5BiUrT7dd4OxxSGpZkDrhE=
-X-Google-Smtp-Source: ABdhPJw1YPParqV1L+G/Qs+yRFnEd6YFWl86Xm8QjElKwOXgmF6OJ8xsPQnx4MLM9nux6Npz7tXosA==
-X-Received: by 2002:a19:4197:: with SMTP id o145mr1256428lfa.424.1612950441804;
-        Wed, 10 Feb 2021 01:47:21 -0800 (PST)
-Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id c23sm229188lfi.241.2021.02.10.01.47.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Feb 2021 01:47:21 -0800 (PST)
-From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Masahiro Yamada <masahiroy@kernel.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
-Subject: [PATCH V4 net-next 2/2] net: broadcom: bcm4908_enet: add BCM4908 controller driver
-Date:   Wed, 10 Feb 2021 10:47:02 +0100
-Message-Id: <20210210094702.24348-2-zajec5@gmail.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210210094702.24348-1-zajec5@gmail.com>
-References: <20210209230130.4690-2-zajec5@gmail.com>
- <20210210094702.24348-1-zajec5@gmail.com>
+        id S229837AbhBJJup (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 04:50:45 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:25706 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229562AbhBJJtk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 04:49:40 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11A9ePQf013264;
+        Wed, 10 Feb 2021 01:48:31 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=974Hly9sCs6t1AhxSUZXS2xJUJdHLMgDC4fXkoSIvkc=;
+ b=ch8RJXFgog+0wo4iLxjXZT1S2gl/A+aBqIUDTaxJ63pW5606X1dB0km6cjWGw7UYGrfK
+ z/fB0s3DELWp5WCb9ld93t31S8q6yPTHrXPE3pr+3+RVM/Zhiis3Rz5NL9l74ncQDr8l
+ rBwFGSmBBrlPcOZ77XnJLpeGl4hhH6UbjgJ2IJYAHXa5Lsho+fIuNv0KU3lw8kXz3ryK
+ XMkrIxkv+q96RKlpytP5utkWk9J3PasRiI6F72/qyvHE+3aKDyhPkbYp6kvehSgDK0h5
+ 1gLG6Euqb9lPlla0nV7Q8JMT+RFOeHCQbgdYS+XxZ226bMDMjHdh/E8wgSQfrnUrUvVu MA== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 36hugqb90w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 10 Feb 2021 01:48:31 -0800
+Received: from SC-EXCH01.marvell.com (10.93.176.81) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 10 Feb
+ 2021 01:48:29 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 10 Feb
+ 2021 01:48:28 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 10 Feb 2021 01:48:28 -0800
+Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
+        by maili.marvell.com (Postfix) with ESMTP id ACAFD3F703F;
+        Wed, 10 Feb 2021 01:48:24 -0800 (PST)
+From:   <stefanc@marvell.com>
+To:     <netdev@vger.kernel.org>
+CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
+        <nadavh@marvell.com>, <ymarkman@marvell.com>,
+        <linux-kernel@vger.kernel.org>, <stefanc@marvell.com>,
+        <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
+        <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
+        <atenart@kernel.org>, <devicetree@vger.kernel.org>,
+        <robh+dt@kernel.org>, <sebastian.hesselbarth@gmail.com>,
+        <gregory.clement@bootlin.com>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: [PATCH v12 net-next 00/15] net: mvpp2: Add TX Flow Control support
+Date:   Wed, 10 Feb 2021 11:48:05 +0200
+Message-ID: <1612950500-9682-1-git-send-email-stefanc@marvell.com>
+X-Mailer: git-send-email 1.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
+ definitions=2021-02-10_03:2021-02-09,2021-02-10 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rafał Miłecki <rafal@milecki.pl>
+From: Stefan Chulski <stefanc@marvell.com>
 
-BCM4908 SoCs family has integrated Ethernel controller that includes
-UniMAC but uses different DMA engine (than other controllers) and
-requires different programming.
+Armada hardware has a pause generation mechanism in GOP (MAC).
+The GOP generate flow control frames based on an indication programmed in Ports Control 0 Register. There is a bit per port.
+However assertion of the PortX Pause bits in the ports control 0 register only sends a one time pause.
+To complement the function the GOP has a mechanism to periodically send pause control messages based on periodic counters.
+This mechanism ensures that the pause is effective as long as the Appropriate PortX Pause is asserted.
 
-Ethernet controller in BCM4908 is always connected to the internal SF2
-switch's port and uses fixed link.
+Problem is that Packet Processor that actually can drop packets due to lack of resources not connected to the GOP flow control generation mechanism.
+To solve this issue Armada has firmware running on CM3 CPU dedicated for Flow Control support.
+Firmware monitors Packet Processor resources and asserts XON/XOFF by writing to Ports Control 0 Register.
 
-Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
----
-V2: Use cpu_to_le32()
-    Reported-by: kernel test robot <lkp@intel.com>
-    Add "depends" to the Kconfig
-V3: Rename using "_enet" (with underscore)
-    One more cpu_to_le32()
-    Replace magic number with ETH_FCS_LEN
-    Add kfree_skb() to fix potential memory leak
-V4: Drop "inline" from C functions
-    Drop unneeded memset() call
-    Drop unused enet_umac_maskset()
-    Fix typo in "enable"
-    Update commit description
----
- MAINTAINERS                                  |   9 +
- drivers/net/ethernet/broadcom/Kconfig        |   8 +
- drivers/net/ethernet/broadcom/Makefile       |   1 +
- drivers/net/ethernet/broadcom/bcm4908_enet.c | 671 +++++++++++++++++++
- drivers/net/ethernet/broadcom/bcm4908_enet.h |  96 +++
- 5 files changed, 785 insertions(+)
- create mode 100644 drivers/net/ethernet/broadcom/bcm4908_enet.c
- create mode 100644 drivers/net/ethernet/broadcom/bcm4908_enet.h
+MSS shared SRAM memory used to communicate between CM3 firmware and PP2 driver.
+During init PP2 driver informs firmware about used BM pools, RXQs, congestion and depletion thresholds.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index d1b0057a9797..0e2489c630f8 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -3445,6 +3445,15 @@ F:	Documentation/devicetree/bindings/mips/brcm/
- F:	arch/mips/bcm47xx/*
- F:	arch/mips/include/asm/mach-bcm47xx/*
- 
-+BROADCOM BCM4908 ETHERNET DRIVER
-+M:	Rafał Miłecki <rafal@milecki.pl>
-+M:	bcm-kernel-feedback-list@broadcom.com
-+L:	netdev@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/net/brcm,bcm4908-enet.yaml
-+F:	drivers/net/ethernet/broadcom/bcm4908_enet.*
-+F:	drivers/net/ethernet/broadcom/unimac.h
-+
- BROADCOM BCM5301X ARM ARCHITECTURE
- M:	Hauke Mehrtens <hauke@hauke-m.de>
- M:	Rafał Miłecki <zajec5@gmail.com>
-diff --git a/drivers/net/ethernet/broadcom/Kconfig b/drivers/net/ethernet/broadcom/Kconfig
-index 4bdf8fbe75a6..d1e439cc2eab 100644
---- a/drivers/net/ethernet/broadcom/Kconfig
-+++ b/drivers/net/ethernet/broadcom/Kconfig
-@@ -51,6 +51,14 @@ config B44_PCI
- 	depends on B44_PCI_AUTOSELECT && B44_PCICORE_AUTOSELECT
- 	default y
- 
-+config BCM4908_ENET
-+	tristate "Broadcom BCM4908 internal mac support"
-+	depends on ARCH_BCM4908 || COMPILE_TEST
-+	default ARCH_BCM4908
-+	help
-+	  This driver supports Ethernet controller integrated into Broadcom
-+	  BCM4908 family SoCs.
-+
- config BCM63XX_ENET
- 	tristate "Broadcom 63xx internal mac support"
- 	depends on BCM63XX
-diff --git a/drivers/net/ethernet/broadcom/Makefile b/drivers/net/ethernet/broadcom/Makefile
-index 7046ad6d3d0e..0ddfb5b5d53c 100644
---- a/drivers/net/ethernet/broadcom/Makefile
-+++ b/drivers/net/ethernet/broadcom/Makefile
-@@ -4,6 +4,7 @@
- #
- 
- obj-$(CONFIG_B44) += b44.o
-+obj-$(CONFIG_BCM4908_ENET) += bcm4908_enet.o
- obj-$(CONFIG_BCM63XX_ENET) += bcm63xx_enet.o
- obj-$(CONFIG_BCMGENET) += genet/
- obj-$(CONFIG_BNX2) += bnx2.o
-diff --git a/drivers/net/ethernet/broadcom/bcm4908_enet.c b/drivers/net/ethernet/broadcom/bcm4908_enet.c
-new file mode 100644
-index 000000000000..414809c5b923
---- /dev/null
-+++ b/drivers/net/ethernet/broadcom/bcm4908_enet.c
-@@ -0,0 +1,671 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (C) 2021 Rafał Miłecki <rafal@milecki.pl>
-+ */
-+
-+#include <linux/delay.h>
-+#include <linux/etherdevice.h>
-+#include <linux/interrupt.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+#include <linux/slab.h>
-+#include <linux/string.h>
-+
-+#include "bcm4908_enet.h"
-+#include "unimac.h"
-+
-+#define ENET_DMA_CH_RX_CFG			ENET_DMA_CH0_CFG
-+#define ENET_DMA_CH_TX_CFG			ENET_DMA_CH1_CFG
-+#define ENET_DMA_CH_RX_STATE_RAM		ENET_DMA_CH0_STATE_RAM
-+#define ENET_DMA_CH_TX_STATE_RAM		ENET_DMA_CH1_STATE_RAM
-+
-+#define ENET_TX_BDS_NUM				200
-+#define ENET_RX_BDS_NUM				200
-+#define ENET_RX_BDS_NUM_MAX			8192
-+
-+#define ENET_DMA_INT_DEFAULTS			(ENET_DMA_CH_CFG_INT_DONE | \
-+						 ENET_DMA_CH_CFG_INT_NO_DESC | \
-+						 ENET_DMA_CH_CFG_INT_BUFF_DONE)
-+#define ENET_DMA_MAX_BURST_LEN			8 /* in 64 bit words */
-+
-+#define ENET_MTU_MIN				60
-+#define ENET_MTU_MAX				1500 /* Is it possible to support 2044? */
-+#define ENET_MTU_MAX_EXTRA_SIZE			32 /* L2 */
-+
-+struct bcm4908_enet_dma_ring_bd {
-+	__le32 ctl;
-+	__le32 addr;
-+} __packed;
-+
-+struct bcm4908_enet_dma_ring_slot {
-+	struct sk_buff *skb;
-+	unsigned int len;
-+	dma_addr_t dma_addr;
-+};
-+
-+struct bcm4908_enet_dma_ring {
-+	int is_tx;
-+	int read_idx;
-+	int write_idx;
-+	int length;
-+	u16 cfg_block;
-+	u16 st_ram_block;
-+
-+	union {
-+		void *cpu_addr;
-+		struct bcm4908_enet_dma_ring_bd *buf_desc;
-+	};
-+	dma_addr_t dma_addr;
-+
-+	struct bcm4908_enet_dma_ring_slot *slots;
-+};
-+
-+struct bcm4908_enet {
-+	struct device *dev;
-+	struct net_device *netdev;
-+	struct napi_struct napi;
-+	void __iomem *base;
-+
-+	struct bcm4908_enet_dma_ring tx_ring;
-+	struct bcm4908_enet_dma_ring rx_ring;
-+};
-+
-+/***
-+ * R/W ops
-+ */
-+
-+static u32 enet_read(struct bcm4908_enet *enet, u16 offset)
-+{
-+	return readl(enet->base + offset);
-+}
-+
-+static void enet_write(struct bcm4908_enet *enet, u16 offset, u32 value)
-+{
-+	writel(value, enet->base + offset);
-+}
-+
-+static void enet_maskset(struct bcm4908_enet *enet, u16 offset, u32 mask, u32 set)
-+{
-+	u32 val;
-+
-+	WARN_ON(set & ~mask);
-+
-+	val = enet_read(enet, offset);
-+	val = (val & ~mask) | (set & mask);
-+	enet_write(enet, offset, val);
-+}
-+
-+static void enet_set(struct bcm4908_enet *enet, u16 offset, u32 set)
-+{
-+	enet_maskset(enet, offset, set, set);
-+}
-+
-+static u32 enet_umac_read(struct bcm4908_enet *enet, u16 offset)
-+{
-+	return enet_read(enet, ENET_UNIMAC + offset);
-+}
-+
-+static void enet_umac_write(struct bcm4908_enet *enet, u16 offset, u32 value)
-+{
-+	enet_write(enet, ENET_UNIMAC + offset, value);
-+}
-+
-+static void enet_umac_set(struct bcm4908_enet *enet, u16 offset, u32 set)
-+{
-+	enet_set(enet, ENET_UNIMAC + offset, set);
-+}
-+
-+/***
-+ * Helpers
-+ */
-+
-+static void bcm4908_enet_intrs_on(struct bcm4908_enet *enet)
-+{
-+	enet_write(enet, ENET_DMA_CH_RX_CFG + ENET_DMA_CH_CFG_INT_MASK, ENET_DMA_INT_DEFAULTS);
-+}
-+
-+static void bcm4908_enet_intrs_off(struct bcm4908_enet *enet)
-+{
-+	enet_write(enet, ENET_DMA_CH_RX_CFG + ENET_DMA_CH_CFG_INT_MASK, 0);
-+}
-+
-+static void bcm4908_enet_intrs_ack(struct bcm4908_enet *enet)
-+{
-+	enet_write(enet, ENET_DMA_CH_RX_CFG + ENET_DMA_CH_CFG_INT_STAT, ENET_DMA_INT_DEFAULTS);
-+}
-+
-+/***
-+ * DMA
-+ */
-+
-+static int bcm4908_dma_alloc_buf_descs(struct bcm4908_enet *enet,
-+				       struct bcm4908_enet_dma_ring *ring)
-+{
-+	int size = ring->length * sizeof(struct bcm4908_enet_dma_ring_bd);
-+	struct device *dev = enet->dev;
-+
-+	ring->cpu_addr = dma_alloc_coherent(dev, size, &ring->dma_addr, GFP_KERNEL);
-+	if (!ring->cpu_addr)
-+		return -ENOMEM;
-+
-+	if (((uintptr_t)ring->cpu_addr) & (0x40 - 1)) {
-+		dev_err(dev, "Invalid DMA ring alignment\n");
-+		goto err_free_buf_descs;
-+	}
-+
-+	ring->slots = kzalloc(ring->length * sizeof(*ring->slots), GFP_KERNEL);
-+	if (!ring->slots)
-+		goto err_free_buf_descs;
-+
-+	ring->read_idx = 0;
-+	ring->write_idx = 0;
-+
-+	return 0;
-+
-+err_free_buf_descs:
-+	dma_free_coherent(dev, size, ring->cpu_addr, ring->dma_addr);
-+	return -ENOMEM;
-+}
-+
-+static void bcm4908_enet_dma_free(struct bcm4908_enet *enet)
-+{
-+	struct bcm4908_enet_dma_ring *tx_ring = &enet->tx_ring;
-+	struct bcm4908_enet_dma_ring *rx_ring = &enet->rx_ring;
-+	struct device *dev = enet->dev;
-+	int size;
-+
-+	size = rx_ring->length * sizeof(struct bcm4908_enet_dma_ring_bd);
-+	if (rx_ring->cpu_addr)
-+		dma_free_coherent(dev, size, rx_ring->cpu_addr, rx_ring->dma_addr);
-+	kfree(rx_ring->slots);
-+
-+	size = tx_ring->length * sizeof(struct bcm4908_enet_dma_ring_bd);
-+	if (tx_ring->cpu_addr)
-+		dma_free_coherent(dev, size, tx_ring->cpu_addr, tx_ring->dma_addr);
-+	kfree(tx_ring->slots);
-+}
-+
-+static int bcm4908_enet_dma_alloc(struct bcm4908_enet *enet)
-+{
-+	struct bcm4908_enet_dma_ring *tx_ring = &enet->tx_ring;
-+	struct bcm4908_enet_dma_ring *rx_ring = &enet->rx_ring;
-+	struct device *dev = enet->dev;
-+	int err;
-+
-+	tx_ring->length = ENET_TX_BDS_NUM;
-+	tx_ring->is_tx = 1;
-+	tx_ring->cfg_block = ENET_DMA_CH_TX_CFG;
-+	tx_ring->st_ram_block = ENET_DMA_CH_TX_STATE_RAM;
-+	err = bcm4908_dma_alloc_buf_descs(enet, tx_ring);
-+	if (err) {
-+		dev_err(dev, "Failed to alloc TX buf descriptors: %d\n", err);
-+		return err;
-+	}
-+
-+	rx_ring->length = ENET_RX_BDS_NUM;
-+	rx_ring->is_tx = 0;
-+	rx_ring->cfg_block = ENET_DMA_CH_RX_CFG;
-+	rx_ring->st_ram_block = ENET_DMA_CH_RX_STATE_RAM;
-+	err = bcm4908_dma_alloc_buf_descs(enet, rx_ring);
-+	if (err) {
-+		dev_err(dev, "Failed to alloc RX buf descriptors: %d\n", err);
-+		bcm4908_enet_dma_free(enet);
-+		return err;
-+	}
-+
-+	return 0;
-+}
-+
-+static void bcm4908_enet_dma_reset(struct bcm4908_enet *enet)
-+{
-+	struct bcm4908_enet_dma_ring *rings[] = { &enet->rx_ring, &enet->tx_ring };
-+	int i;
-+
-+	/* Disable the DMA controller and channel */
-+	for (i = 0; i < ARRAY_SIZE(rings); i++)
-+		enet_write(enet, rings[i]->cfg_block + ENET_DMA_CH_CFG, 0);
-+	enet_maskset(enet, ENET_DMA_CONTROLLER_CFG, ENET_DMA_CTRL_CFG_MASTER_EN, 0);
-+
-+	/* Reset channels state */
-+	for (i = 0; i < ARRAY_SIZE(rings); i++) {
-+		struct bcm4908_enet_dma_ring *ring = rings[i];
-+
-+		enet_write(enet, ring->st_ram_block + ENET_DMA_CH_STATE_RAM_BASE_DESC_PTR, 0);
-+		enet_write(enet, ring->st_ram_block + ENET_DMA_CH_STATE_RAM_STATE_DATA, 0);
-+		enet_write(enet, ring->st_ram_block + ENET_DMA_CH_STATE_RAM_DESC_LEN_STATUS, 0);
-+		enet_write(enet, ring->st_ram_block + ENET_DMA_CH_STATE_RAM_DESC_BASE_BUFPTR, 0);
-+	}
-+}
-+
-+static int bcm4908_enet_dma_alloc_rx_buf(struct bcm4908_enet *enet, unsigned int idx)
-+{
-+	struct bcm4908_enet_dma_ring_bd *buf_desc = &enet->rx_ring.buf_desc[idx];
-+	struct bcm4908_enet_dma_ring_slot *slot = &enet->rx_ring.slots[idx];
-+	struct device *dev = enet->dev;
-+	u32 tmp;
-+	int err;
-+
-+	slot->len = ENET_MTU_MAX + ENET_MTU_MAX_EXTRA_SIZE;
-+
-+	slot->skb = netdev_alloc_skb(enet->netdev, slot->len);
-+	if (!slot->skb)
-+		return -ENOMEM;
-+
-+	slot->dma_addr = dma_map_single(dev, slot->skb->data, slot->len, DMA_FROM_DEVICE);
-+	err = dma_mapping_error(dev, slot->dma_addr);
-+	if (err) {
-+		dev_err(dev, "Failed to map DMA buffer: %d\n", err);
-+		kfree_skb(slot->skb);
-+		slot->skb = NULL;
-+		return err;
-+	}
-+
-+	tmp = slot->len << DMA_CTL_LEN_DESC_BUFLENGTH_SHIFT;
-+	tmp |= DMA_CTL_STATUS_OWN;
-+	if (idx == enet->rx_ring.length - 1)
-+		tmp |= DMA_CTL_STATUS_WRAP;
-+	buf_desc->ctl = cpu_to_le32(tmp);
-+	buf_desc->addr = cpu_to_le32(slot->dma_addr);
-+
-+	return 0;
-+}
-+
-+static void bcm4908_enet_dma_ring_init(struct bcm4908_enet *enet,
-+				       struct bcm4908_enet_dma_ring *ring)
-+{
-+	int reset_channel = 0; /* We support only 1 main channel (with TX and RX) */
-+	int reset_subch = ring->is_tx ? 1 : 0;
-+
-+	/* Reset the DMA channel */
-+	enet_write(enet, ENET_DMA_CTRL_CHANNEL_RESET, BIT(reset_channel * 2 + reset_subch));
-+	enet_write(enet, ENET_DMA_CTRL_CHANNEL_RESET, 0);
-+
-+	enet_write(enet, ring->cfg_block + ENET_DMA_CH_CFG, 0);
-+	enet_write(enet, ring->cfg_block + ENET_DMA_CH_CFG_MAX_BURST, ENET_DMA_MAX_BURST_LEN);
-+	enet_write(enet, ring->cfg_block + ENET_DMA_CH_CFG_INT_MASK, 0);
-+
-+	enet_write(enet, ring->st_ram_block + ENET_DMA_CH_STATE_RAM_BASE_DESC_PTR,
-+		   (uint32_t)ring->dma_addr);
-+}
-+
-+static void bcm4908_enet_dma_uninit(struct bcm4908_enet *enet)
-+{
-+	struct bcm4908_enet_dma_ring *rx_ring = &enet->rx_ring;
-+	struct bcm4908_enet_dma_ring_slot *slot;
-+	struct device *dev = enet->dev;
-+	int i;
-+
-+	for (i = rx_ring->length - 1; i >= 0; i--) {
-+		slot = &rx_ring->slots[i];
-+		if (!slot->skb)
-+			continue;
-+		dma_unmap_single(dev, slot->dma_addr, slot->len, DMA_FROM_DEVICE);
-+		kfree_skb(slot->skb);
-+		slot->skb = NULL;
-+	}
-+}
-+
-+static int bcm4908_enet_dma_init(struct bcm4908_enet *enet)
-+{
-+	struct bcm4908_enet_dma_ring *rx_ring = &enet->rx_ring;
-+	struct device *dev = enet->dev;
-+	int err;
-+	int i;
-+
-+	for (i = 0; i < rx_ring->length; i++) {
-+		err = bcm4908_enet_dma_alloc_rx_buf(enet, i);
-+		if (err) {
-+			dev_err(dev, "Failed to alloc RX buffer: %d\n", err);
-+			bcm4908_enet_dma_uninit(enet);
-+			return err;
-+		}
-+	}
-+
-+	bcm4908_enet_dma_ring_init(enet, &enet->tx_ring);
-+	bcm4908_enet_dma_ring_init(enet, &enet->rx_ring);
-+
-+	return 0;
-+}
-+
-+static void bcm4908_enet_dma_tx_ring_enable(struct bcm4908_enet *enet,
-+					    struct bcm4908_enet_dma_ring *ring)
-+{
-+	enet_write(enet, ring->cfg_block + ENET_DMA_CH_CFG, ENET_DMA_CH_CFG_ENABLE);
-+}
-+
-+static void bcm4908_enet_dma_tx_ring_disable(struct bcm4908_enet *enet,
-+					     struct bcm4908_enet_dma_ring *ring)
-+{
-+	enet_write(enet, ring->cfg_block + ENET_DMA_CH_CFG, 0);
-+}
-+
-+static void bcm4908_enet_dma_rx_ring_enable(struct bcm4908_enet *enet,
-+					    struct bcm4908_enet_dma_ring *ring)
-+{
-+	enet_set(enet, ring->cfg_block + ENET_DMA_CH_CFG, ENET_DMA_CH_CFG_ENABLE);
-+}
-+
-+static void bcm4908_enet_dma_rx_ring_disable(struct bcm4908_enet *enet,
-+					     struct bcm4908_enet_dma_ring *ring)
-+{
-+	unsigned long deadline;
-+	u32 tmp;
-+
-+	enet_maskset(enet, ring->cfg_block + ENET_DMA_CH_CFG, ENET_DMA_CH_CFG_ENABLE, 0);
-+
-+	deadline = jiffies + usecs_to_jiffies(2000);
-+	do {
-+		tmp = enet_read(enet, ring->cfg_block + ENET_DMA_CH_CFG);
-+		if (!(tmp & ENET_DMA_CH_CFG_ENABLE))
-+			return;
-+		enet_maskset(enet, ring->cfg_block + ENET_DMA_CH_CFG, ENET_DMA_CH_CFG_ENABLE, 0);
-+		usleep_range(10, 30);
-+	} while (!time_after_eq(jiffies, deadline));
-+
-+	dev_warn(enet->dev, "Timeout waiting for DMA TX stop\n");
-+}
-+
-+/***
-+ * Ethernet driver
-+ */
-+
-+static void bcm4908_enet_gmac_init(struct bcm4908_enet *enet)
-+{
-+	u32 cmd;
-+
-+	cmd = enet_umac_read(enet, UMAC_CMD);
-+	enet_umac_write(enet, UMAC_CMD, cmd | CMD_SW_RESET);
-+	enet_umac_write(enet, UMAC_CMD, cmd & ~CMD_SW_RESET);
-+
-+	enet_set(enet, ENET_FLUSH, ENET_FLUSH_RXFIFO_FLUSH | ENET_FLUSH_TXFIFO_FLUSH);
-+	enet_maskset(enet, ENET_FLUSH, ENET_FLUSH_RXFIFO_FLUSH | ENET_FLUSH_TXFIFO_FLUSH, 0);
-+
-+	enet_set(enet, ENET_MIB_CTRL, ENET_MIB_CTRL_CLR_MIB);
-+	enet_maskset(enet, ENET_MIB_CTRL, ENET_MIB_CTRL_CLR_MIB, 0);
-+
-+	cmd = enet_umac_read(enet, UMAC_CMD);
-+	cmd &= ~(CMD_SPEED_MASK << CMD_SPEED_SHIFT);
-+	cmd &= ~CMD_TX_EN;
-+	cmd &= ~CMD_RX_EN;
-+	cmd |= CMD_SPEED_1000 << CMD_SPEED_SHIFT;
-+	enet_umac_write(enet, UMAC_CMD, cmd);
-+
-+	enet_maskset(enet, ENET_GMAC_STATUS,
-+		     ENET_GMAC_STATUS_ETH_SPEED_MASK |
-+		     ENET_GMAC_STATUS_HD |
-+		     ENET_GMAC_STATUS_AUTO_CFG_EN |
-+		     ENET_GMAC_STATUS_LINK_UP,
-+		     ENET_GMAC_STATUS_ETH_SPEED_1000 |
-+		     ENET_GMAC_STATUS_AUTO_CFG_EN |
-+		     ENET_GMAC_STATUS_LINK_UP);
-+}
-+
-+static irqreturn_t bcm4908_enet_irq_handler(int irq, void *dev_id)
-+{
-+	struct bcm4908_enet *enet = dev_id;
-+
-+	bcm4908_enet_intrs_off(enet);
-+	bcm4908_enet_intrs_ack(enet);
-+
-+	napi_schedule(&enet->napi);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int bcm4908_enet_open(struct net_device *netdev)
-+{
-+	struct bcm4908_enet *enet = netdev_priv(netdev);
-+	struct device *dev = enet->dev;
-+	int err;
-+
-+	err = request_irq(netdev->irq, bcm4908_enet_irq_handler, 0, "enet", enet);
-+	if (err) {
-+		dev_err(dev, "Failed to request IRQ %d: %d\n", netdev->irq, err);
-+		return err;
-+	}
-+
-+	bcm4908_enet_gmac_init(enet);
-+	bcm4908_enet_dma_reset(enet);
-+	bcm4908_enet_dma_init(enet);
-+
-+	enet_umac_set(enet, UMAC_CMD, CMD_TX_EN | CMD_RX_EN);
-+
-+	enet_set(enet, ENET_DMA_CONTROLLER_CFG, ENET_DMA_CTRL_CFG_MASTER_EN);
-+	enet_maskset(enet, ENET_DMA_CONTROLLER_CFG, ENET_DMA_CTRL_CFG_FLOWC_CH1_EN, 0);
-+	bcm4908_enet_dma_rx_ring_enable(enet, &enet->rx_ring);
-+
-+	napi_enable(&enet->napi);
-+	netif_carrier_on(netdev);
-+	netif_start_queue(netdev);
-+
-+	bcm4908_enet_intrs_ack(enet);
-+	bcm4908_enet_intrs_on(enet);
-+
-+	return 0;
-+}
-+
-+static int bcm4908_enet_stop(struct net_device *netdev)
-+{
-+	struct bcm4908_enet *enet = netdev_priv(netdev);
-+
-+	netif_stop_queue(netdev);
-+	netif_carrier_off(netdev);
-+	napi_disable(&enet->napi);
-+
-+	bcm4908_enet_dma_rx_ring_disable(enet, &enet->rx_ring);
-+	bcm4908_enet_dma_tx_ring_disable(enet, &enet->tx_ring);
-+
-+	bcm4908_enet_dma_uninit(enet);
-+
-+	free_irq(enet->netdev->irq, enet);
-+
-+	return 0;
-+}
-+
-+static int bcm4908_enet_start_xmit(struct sk_buff *skb, struct net_device *netdev)
-+{
-+	struct bcm4908_enet *enet = netdev_priv(netdev);
-+	struct bcm4908_enet_dma_ring *ring = &enet->tx_ring;
-+	struct bcm4908_enet_dma_ring_slot *slot;
-+	struct device *dev = enet->dev;
-+	struct bcm4908_enet_dma_ring_bd *buf_desc;
-+	int free_buf_descs;
-+	u32 tmp;
-+
-+	/* Free transmitted skbs */
-+	while (ring->read_idx != ring->write_idx) {
-+		buf_desc = &ring->buf_desc[ring->read_idx];
-+		if (le32_to_cpu(buf_desc->ctl) & DMA_CTL_STATUS_OWN)
-+			break;
-+		slot = &ring->slots[ring->read_idx];
-+
-+		dma_unmap_single(dev, slot->dma_addr, slot->len, DMA_TO_DEVICE);
-+		dev_kfree_skb(slot->skb);
-+		if (++ring->read_idx == ring->length)
-+			ring->read_idx = 0;
-+	}
-+
-+	/* Don't use the last empty buf descriptor */
-+	if (ring->read_idx <= ring->write_idx)
-+		free_buf_descs = ring->read_idx - ring->write_idx + ring->length;
-+	else
-+		free_buf_descs = ring->read_idx - ring->write_idx;
-+	if (free_buf_descs < 2)
-+		return NETDEV_TX_BUSY;
-+
-+	/* Hardware removes OWN bit after sending data */
-+	buf_desc = &ring->buf_desc[ring->write_idx];
-+	if (unlikely(le32_to_cpu(buf_desc->ctl) & DMA_CTL_STATUS_OWN)) {
-+		netif_stop_queue(netdev);
-+		return NETDEV_TX_BUSY;
-+	}
-+
-+	slot = &ring->slots[ring->write_idx];
-+	slot->skb = skb;
-+	slot->len = skb->len;
-+	slot->dma_addr = dma_map_single(dev, skb->data, skb->len, DMA_TO_DEVICE);
-+	if (unlikely(dma_mapping_error(dev, slot->dma_addr)))
-+		return NETDEV_TX_BUSY;
-+
-+	tmp = skb->len << DMA_CTL_LEN_DESC_BUFLENGTH_SHIFT;
-+	tmp |= DMA_CTL_STATUS_OWN;
-+	tmp |= DMA_CTL_STATUS_SOP;
-+	tmp |= DMA_CTL_STATUS_EOP;
-+	tmp |= DMA_CTL_STATUS_APPEND_CRC;
-+	if (ring->write_idx + 1 == ring->length - 1)
-+		tmp |= DMA_CTL_STATUS_WRAP;
-+
-+	buf_desc->addr = cpu_to_le32((uint32_t)slot->dma_addr);
-+	buf_desc->ctl = cpu_to_le32(tmp);
-+
-+	bcm4908_enet_dma_tx_ring_enable(enet, &enet->tx_ring);
-+
-+	if (++ring->write_idx == ring->length - 1)
-+		ring->write_idx = 0;
-+	enet->netdev->stats.tx_bytes += skb->len;
-+	enet->netdev->stats.tx_packets++;
-+
-+	return NETDEV_TX_OK;
-+}
-+
-+static int bcm4908_enet_poll(struct napi_struct *napi, int weight)
-+{
-+	struct bcm4908_enet *enet = container_of(napi, struct bcm4908_enet, napi);
-+	struct device *dev = enet->dev;
-+	int handled = 0;
-+
-+	while (handled < weight) {
-+		struct bcm4908_enet_dma_ring_bd *buf_desc;
-+		struct bcm4908_enet_dma_ring_slot slot;
-+		u32 ctl;
-+		int len;
-+		int err;
-+
-+		buf_desc = &enet->rx_ring.buf_desc[enet->rx_ring.read_idx];
-+		ctl = le32_to_cpu(buf_desc->ctl);
-+		if (ctl & DMA_CTL_STATUS_OWN)
-+			break;
-+
-+		slot = enet->rx_ring.slots[enet->rx_ring.read_idx];
-+
-+		/* Provide new buffer before unpinning the old one */
-+		err = bcm4908_enet_dma_alloc_rx_buf(enet, enet->rx_ring.read_idx);
-+		if (err)
-+			break;
-+
-+		if (++enet->rx_ring.read_idx == enet->rx_ring.length)
-+			enet->rx_ring.read_idx = 0;
-+
-+		len = (ctl & DMA_CTL_LEN_DESC_BUFLENGTH) >> DMA_CTL_LEN_DESC_BUFLENGTH_SHIFT;
-+
-+		if (len < ENET_MTU_MIN ||
-+		    (ctl & (DMA_CTL_STATUS_SOP | DMA_CTL_STATUS_EOP)) != (DMA_CTL_STATUS_SOP | DMA_CTL_STATUS_EOP)) {
-+			kfree(slot.skb);
-+			enet->netdev->stats.rx_dropped++;
-+			break;
-+		}
-+
-+		dma_unmap_single(dev, slot.dma_addr, slot.len, DMA_FROM_DEVICE);
-+
-+		skb_put(slot.skb, len - ETH_FCS_LEN);
-+		slot.skb->protocol = eth_type_trans(slot.skb, enet->netdev);
-+		netif_receive_skb(slot.skb);
-+
-+		enet->netdev->stats.rx_packets++;
-+		enet->netdev->stats.rx_bytes += len;
-+	}
-+
-+	if (handled < weight) {
-+		napi_complete_done(napi, handled);
-+		bcm4908_enet_intrs_on(enet);
-+	}
-+
-+	return handled;
-+}
-+
-+static const struct net_device_ops bcm4908_enet_netdev_ops = {
-+	.ndo_open = bcm4908_enet_open,
-+	.ndo_stop = bcm4908_enet_stop,
-+	.ndo_start_xmit = bcm4908_enet_start_xmit,
-+	.ndo_set_mac_address = eth_mac_addr,
-+};
-+
-+static int bcm4908_enet_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct net_device *netdev;
-+	struct bcm4908_enet *enet;
-+	int err;
-+
-+	netdev = devm_alloc_etherdev(dev, sizeof(*enet));
-+	if (!netdev)
-+		return -ENOMEM;
-+
-+	enet = netdev_priv(netdev);
-+	enet->dev = dev;
-+	enet->netdev = netdev;
-+
-+	enet->base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(enet->base)) {
-+		dev_err(dev, "Failed to map registers: %ld\n", PTR_ERR(enet->base));
-+		return PTR_ERR(enet->base);
-+	}
-+
-+	netdev->irq = platform_get_irq(pdev, 0);
-+	if (netdev->irq < 0)
-+		return netdev->irq;
-+
-+	dma_set_coherent_mask(dev, DMA_BIT_MASK(32));
-+
-+	err = bcm4908_enet_dma_alloc(enet);
-+	if (err)
-+		return err;
-+
-+	SET_NETDEV_DEV(netdev, &pdev->dev);
-+	eth_hw_addr_random(netdev);
-+	netdev->netdev_ops = &bcm4908_enet_netdev_ops;
-+	netdev->min_mtu = ETH_ZLEN;
-+	netdev->mtu = ENET_MTU_MAX;
-+	netdev->max_mtu = ENET_MTU_MAX;
-+	netif_napi_add(netdev, &enet->napi, bcm4908_enet_poll, 64);
-+
-+	err = register_netdev(netdev);
-+	if (err) {
-+		bcm4908_enet_dma_free(enet);
-+		return err;
-+	}
-+
-+	platform_set_drvdata(pdev, enet);
-+
-+	return 0;
-+}
-+
-+static int bcm4908_enet_remove(struct platform_device *pdev)
-+{
-+	struct bcm4908_enet *enet = platform_get_drvdata(pdev);
-+
-+	unregister_netdev(enet->netdev);
-+	netif_napi_del(&enet->napi);
-+	bcm4908_enet_dma_free(enet);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id bcm4908_enet_of_match[] = {
-+	{ .compatible = "brcm,bcm4908-enet"},
-+	{},
-+};
-+
-+static struct platform_driver bcm4908_enet_driver = {
-+	.driver = {
-+		.name = "bcm4908_enet",
-+		.of_match_table = bcm4908_enet_of_match,
-+	},
-+	.probe	= bcm4908_enet_probe,
-+	.remove = bcm4908_enet_remove,
-+};
-+module_platform_driver(bcm4908_enet_driver);
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_DEVICE_TABLE(of, bcm4908_enet_of_match);
-diff --git a/drivers/net/ethernet/broadcom/bcm4908_enet.h b/drivers/net/ethernet/broadcom/bcm4908_enet.h
-new file mode 100644
-index 000000000000..8a3ede2da537
---- /dev/null
-+++ b/drivers/net/ethernet/broadcom/bcm4908_enet.h
-@@ -0,0 +1,96 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+#ifndef __BCM4908_ENET_H
-+#define __BCM4908_ENET_H
-+
-+#define ENET_CONTROL					0x000
-+#define ENET_MIB_CTRL					0x004
-+#define  ENET_MIB_CTRL_CLR_MIB				0x00000001
-+#define ENET_RX_ERR_MASK				0x008
-+#define ENET_MIB_MAX_PKT_SIZE				0x00C
-+#define  ENET_MIB_MAX_PKT_SIZE_VAL			0x00003fff
-+#define ENET_DIAG_OUT					0x01c
-+#define ENET_ENABLE_DROP_PKT				0x020
-+#define ENET_IRQ_ENABLE					0x024
-+#define  ENET_IRQ_ENABLE_OVFL				0x00000001
-+#define ENET_GMAC_STATUS				0x028
-+#define  ENET_GMAC_STATUS_ETH_SPEED_MASK		0x00000003
-+#define  ENET_GMAC_STATUS_ETH_SPEED_10			0x00000000
-+#define  ENET_GMAC_STATUS_ETH_SPEED_100			0x00000001
-+#define  ENET_GMAC_STATUS_ETH_SPEED_1000		0x00000002
-+#define  ENET_GMAC_STATUS_HD				0x00000004
-+#define  ENET_GMAC_STATUS_AUTO_CFG_EN			0x00000008
-+#define  ENET_GMAC_STATUS_LINK_UP			0x00000010
-+#define ENET_IRQ_STATUS					0x02c
-+#define  ENET_IRQ_STATUS_OVFL				0x00000001
-+#define ENET_OVERFLOW_COUNTER				0x030
-+#define ENET_FLUSH					0x034
-+#define  ENET_FLUSH_RXFIFO_FLUSH			0x00000001
-+#define  ENET_FLUSH_TXFIFO_FLUSH			0x00000002
-+#define ENET_RSV_SELECT					0x038
-+#define ENET_BP_FORCE					0x03c
-+#define  ENET_BP_FORCE_FORCE				0x00000001
-+#define ENET_DMA_RX_OK_TO_SEND_COUNT			0x040
-+#define  ENET_DMA_RX_OK_TO_SEND_COUNT_VAL		0x0000000f
-+#define ENET_TX_CRC_CTRL				0x044
-+#define ENET_MIB					0x200
-+#define ENET_UNIMAC					0x400
-+#define ENET_DMA					0x800
-+#define ENET_DMA_CONTROLLER_CFG				0x800
-+#define  ENET_DMA_CTRL_CFG_MASTER_EN			0x00000001
-+#define  ENET_DMA_CTRL_CFG_FLOWC_CH1_EN			0x00000002
-+#define  ENET_DMA_CTRL_CFG_FLOWC_CH3_EN			0x00000004
-+#define ENET_DMA_FLOWCTL_CH1_THRESH_LO			0x804
-+#define ENET_DMA_FLOWCTL_CH1_THRESH_HI			0x808
-+#define ENET_DMA_FLOWCTL_CH1_ALLOC			0x80c
-+#define  ENET_DMA_FLOWCTL_CH1_ALLOC_FORCE		0x80000000
-+#define ENET_DMA_FLOWCTL_CH3_THRESH_LO			0x810
-+#define ENET_DMA_FLOWCTL_CH3_THRESH_HI			0x814
-+#define ENET_DMA_FLOWCTL_CH3_ALLOC			0x818
-+#define ENET_DMA_FLOWCTL_CH5_THRESH_LO			0x81C
-+#define ENET_DMA_FLOWCTL_CH5_THRESH_HI			0x820
-+#define ENET_DMA_FLOWCTL_CH5_ALLOC			0x824
-+#define ENET_DMA_FLOWCTL_CH7_THRESH_LO			0x828
-+#define ENET_DMA_FLOWCTL_CH7_THRESH_HI			0x82C
-+#define ENET_DMA_FLOWCTL_CH7_ALLOC			0x830
-+#define ENET_DMA_CTRL_CHANNEL_RESET			0x834
-+#define ENET_DMA_CTRL_CHANNEL_DEBUG			0x838
-+#define ENET_DMA_CTRL_GLOBAL_INTERRUPT_STATUS		0x840
-+#define ENET_DMA_CTRL_GLOBAL_INTERRUPT_MASK		0x844
-+#define ENET_DMA_CH0_CFG				0xa00		/* RX */
-+#define ENET_DMA_CH1_CFG				0xa10		/* TX */
-+#define ENET_DMA_CH0_STATE_RAM				0xc00		/* RX */
-+#define ENET_DMA_CH1_STATE_RAM				0xc10		/* TX */
-+
-+#define ENET_DMA_CH_CFG					0x00		/* assorted configuration */
-+#define  ENET_DMA_CH_CFG_ENABLE				0x00000001	/* set to enable channel */
-+#define  ENET_DMA_CH_CFG_PKT_HALT			0x00000002	/* idle after an EOP flag is detected */
-+#define  ENET_DMA_CH_CFG_BURST_HALT			0x00000004	/* idle after finish current memory burst */
-+#define ENET_DMA_CH_CFG_INT_STAT			0x04		/* interrupts control and status */
-+#define ENET_DMA_CH_CFG_INT_MASK			0x08		/* interrupts mask */
-+#define  ENET_DMA_CH_CFG_INT_BUFF_DONE			0x00000001	/* buffer done */
-+#define  ENET_DMA_CH_CFG_INT_DONE			0x00000002	/* packet xfer complete */
-+#define  ENET_DMA_CH_CFG_INT_NO_DESC			0x00000004	/* no valid descriptors */
-+#define  ENET_DMA_CH_CFG_INT_RX_ERROR			0x00000008	/* rxdma detect client protocol error */
-+#define ENET_DMA_CH_CFG_MAX_BURST			0x0c		/* max burst length permitted */
-+#define  ENET_DMA_CH_CFG_MAX_BURST_DESCSIZE_SEL		0x00040000	/* DMA Descriptor Size Selection */
-+#define ENET_DMA_CH_CFG_SIZE				0x10
-+
-+#define ENET_DMA_CH_STATE_RAM_BASE_DESC_PTR		0x00		/* descriptor ring start address */
-+#define ENET_DMA_CH_STATE_RAM_STATE_DATA		0x04		/* state/bytes done/ring offset */
-+#define ENET_DMA_CH_STATE_RAM_DESC_LEN_STATUS		0x08		/* buffer descriptor status and len */
-+#define ENET_DMA_CH_STATE_RAM_DESC_BASE_BUFPTR		0x0c		/* buffer descrpitor current processing */
-+#define ENET_DMA_CH_STATE_RAM_SIZE			0x10
-+
-+#define DMA_CTL_STATUS_APPEND_CRC			0x00000100
-+#define DMA_CTL_STATUS_APPEND_BRCM_TAG			0x00000200
-+#define DMA_CTL_STATUS_PRIO				0x00000C00  /* Prio for Tx */
-+#define DMA_CTL_STATUS_WRAP				0x00001000  /* */
-+#define DMA_CTL_STATUS_SOP				0x00002000  /* first buffer in packet */
-+#define DMA_CTL_STATUS_EOP				0x00004000  /* last buffer in packet */
-+#define DMA_CTL_STATUS_OWN				0x00008000  /* cleared by DMA, set by SW */
-+#define DMA_CTL_LEN_DESC_BUFLENGTH			0x0fff0000
-+#define DMA_CTL_LEN_DESC_BUFLENGTH_SHIFT		16
-+#define DMA_CTL_LEN_DESC_MULTICAST			0x40000000
-+#define DMA_CTL_LEN_DESC_USEFPM				0x80000000
-+
-+#endif
+The pause frames are generated whenever congestion or depletion in resources is detected.
+The back pressure is stopped when the resource reaches a sufficient level.
+So the congestion/depletion and sufficient level implement a hysteresis that reduces the XON/XOFF toggle frequency.
+
+Packet Processor v23 hardware introduces support for RX FIFO fill level monitor.
+Patch "add PPv23 version definition" to differ between v23 and v22 hardware.
+Patch "add TX FC firmware check" verifies that CM3 firmware supports Flow Control monitoring.
+
+v11 --> v12
+- Improve warning message in "net: mvpp2: add TX FC firmware check" patch
+
+v10 --> v11
+- Improve "net: mvpp2: add CM3 SRAM memory map" comment
+- Move condition check to 'net: mvpp2: always compare hw-version vs MVPP21' patch
+
+v9 --> v10
+- Add CM3 SRAM description to PPv2 documentation
+
+v8 --> v9
+- Replace generic pool allocation with devm_ioremap_resource
+
+v7 --> v8
+- Reorder "always compare hw-version vs MVPP21" and "add PPv23 version definition" commits
+- Typo fixes
+- Remove condition fix from "add RXQ flow control configurations"
+
+v6 --> v7
+- Reduce patch set from 18 to 15 patches
+ - Documentation change combined into a single patch
+ - RXQ and BM size change combined into a single patch
+ - Ring size change check moved into "add RXQ flow control configurations" commit
+
+v5 --> v6
+- No change
+
+v4 --> v5
+- Add missed Signed-off
+- Fix warnings in patches 3 and 12
+- Add revision requirement to warning message
+- Move mss_spinlock into RXQ flow control configurations patch
+- Improve FCA RXQ non occupied descriptor threshold commit message
+
+v3 --> v4
+- Remove RFC tag
+
+v2 --> v3
+- Remove inline functions
+- Add PPv2.3 description into marvell-pp2.txt
+- Improve mvpp2_interrupts_mask/unmask procedure
+- Improve FC enable/disable procedure
+- Add priv->sram_pool check
+- Remove gen_pool_destroy call
+- Reduce Flow Control timer to x100 faster
+
+v1 --> v2
+- Add memory requirements information
+- Add EPROBE_DEFER if of_gen_pool_get return NULL
+- Move Flow control configuration to mvpp2_mac_link_up callback
+- Add firmware version info with Flow control support
+
+Konstantin Porotchkin (1):
+  dts: marvell: add CM3 SRAM memory to cp11x ethernet device tree
+
+Stefan Chulski (14):
+  doc: marvell: add CM3 address space and PPv2.3 description
+  net: mvpp2: add CM3 SRAM memory map
+  net: mvpp2: always compare hw-version vs MVPP21
+  net: mvpp2: add PPv23 version definition
+  net: mvpp2: increase BM pool and RXQ size
+  net: mvpp2: add FCA periodic timer configurations
+  net: mvpp2: add FCA RXQ non occupied descriptor threshold
+  net: mvpp2: enable global flow control
+  net: mvpp2: add RXQ flow control configurations
+  net: mvpp2: add ethtool flow control configuration support
+  net: mvpp2: add BM protection underrun feature support
+  net: mvpp2: add PPv23 RX FIFO flow control
+  net: mvpp2: set 802.3x GoP Flow Control mode
+  net: mvpp2: add TX FC firmware check
+
+ Documentation/devicetree/bindings/net/marvell-pp2.txt |   6 +-
+ arch/arm64/boot/dts/marvell/armada-cp11x.dtsi         |   2 +-
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h            | 124 ++++-
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c       | 523 ++++++++++++++++++--
+ 4 files changed, 606 insertions(+), 49 deletions(-)
+
 -- 
-2.26.2
+1.9.1
 
