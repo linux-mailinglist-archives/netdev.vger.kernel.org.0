@@ -2,272 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D94EE315BE1
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 02:08:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D0F1315C30
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 02:27:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233868AbhBJBGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 20:06:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38296 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233592AbhBJBEY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 20:04:24 -0500
-Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0E80C06178A
-        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 17:02:57 -0800 (PST)
-Received: by mail-ot1-x329.google.com with SMTP id e4so319898ote.5
-        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 17:02:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Jx62OiEXDib1xRp8Mx3bWL31WWrS0KuHnddJf9fxMWc=;
-        b=drch+NcOACwp3xLlsktQfowO4ymrayUZZyh9sRI5uHxD4tsYal0NHALWMSWC1Olgze
-         sh4fifoqdQCj4Qb5UesjoaFm5JDmgItcbHAcOG1da2oE9RchDuNP8++/wrO9ZsnKmhQu
-         Y9Uy9aisd3cAOr/LBD2djzvRNvo2GG4cuAW1KdAp0y3mVFD+HgMgT0M7e2Fc3xLY1geu
-         eMxofwAGC5YcdqNC5BCBvdtlYkY74VBNmbpRtzbgzXLceLghJIhcoc6l7zcZhVMPBOpH
-         rJR0wfbZvtvDmOJz9SgZpeS+18u5T97YxhGT8AqZyREK7j2VnxT3G6mLFkJiLOlg7x/U
-         Wo3g==
+        id S234973AbhBJB03 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 20:26:29 -0500
+Received: from mail-il1-f198.google.com ([209.85.166.198]:37591 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234578AbhBJBY7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 20:24:59 -0500
+Received: by mail-il1-f198.google.com with SMTP id g3so764665ild.4
+        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 17:24:43 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=Jx62OiEXDib1xRp8Mx3bWL31WWrS0KuHnddJf9fxMWc=;
-        b=sWbj0ExZHBkecRkCyavGFqWXHdvURPdTeKw6EqDHBLOrFL5WeeK/8iXklNId94zNG9
-         lJDkPYOTdkhAYelf7/s1mlm3LqzdLr1YusAB81GNSbQRPP/YLFoo6IPlfUjKMBnPx5wU
-         I1G9d/8nR5O/CeVK2ZsddKsdkHSl7NiV21QfjCkxUXAVapTVFFtfgvs/jkph2hoiBvKc
-         0KkNQvlueFs3Fp0sgNGtQ7HkX3VJ5LWDQxCONfvOP1NMHj9cHibxj6WU4JxAQeW9xAuR
-         9VetlpmAPcj7q9cQ0cwlJMKsRXAL3wxu4UTZF/1N8ZeUTcEv4kU8vyx8JoOpyqs1Ibfq
-         kI7Q==
-X-Gm-Message-State: AOAM5329GMNBTErYC57M4S9GfUilc2HtFoiUzj1ThYS38r4sye+585oT
-        5x1AsgVULBz0MqwqaRmylQ==
-X-Google-Smtp-Source: ABdhPJw8BvHnlPeZflb3n0pXcH3MHALQwzCVWuOZ8dXJwbbk3bUC9NgK+TJjExk60yJ8+otpr8SVzQ==
-X-Received: by 2002:a9d:70d3:: with SMTP id w19mr290466otj.177.1612918977194;
-        Tue, 09 Feb 2021 17:02:57 -0800 (PST)
-Received: from threadripper.novatech-llc.local ([216.21.169.52])
-        by smtp.gmail.com with ESMTPSA id i9sm101811oii.34.2021.02.09.17.02.55
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 09 Feb 2021 17:02:55 -0800 (PST)
-From:   George McCollister <george.mccollister@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
-        George McCollister <george.mccollister@gmail.com>
-Subject: [PATCH net-next v3 4/4] net: dsa: xrs700x: add HSR offloading support
-Date:   Tue,  9 Feb 2021 19:02:13 -0600
-Message-Id: <20210210010213.27553-5-george.mccollister@gmail.com>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20210210010213.27553-1-george.mccollister@gmail.com>
-References: <20210210010213.27553-1-george.mccollister@gmail.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=2vMkVRm2x4zbU65Zq94duQZfZU4RCzVVhgNBmR6/9hQ=;
+        b=UM0ER58iQ+pRmGv800fGZyPt+SdeEFdWoBc+Vi/Sw6zL2EhUwQU1CZKRXHav+smqpe
+         9uP69HcHTLaeaG9pd18M5UHFBW6Kmhr+TfTT9wctViLqTCEAsV2krdryObzD164swDhz
+         dhopgyY5I3eVGBAerKwO2Tc3FnB4qjwGkQEuc5UOEX+UWP8AbLB7A8hyxT2qf4tfTJnV
+         IYUY2iJ/qsQTlRKS5gngXVLPYRZWI6QKnR9yIN5SgHVYrcmwhbyk4m/EPpj3WfmCgPFD
+         3aeBqDSX89MkPEEVN3fSsXXWYBde7Qm6V7pErHkC+mL6LIDGgZlqn7EbKzJ5pUEfgyo3
+         1T8Q==
+X-Gm-Message-State: AOAM5311Ece3pRCJPsrOp7VWcrzieRCd/MqYbyVcJGqnmwXB6C6ZsYIw
+        scWyH4r5Uti/j1qXdFWDqVJbmhLPquuttg07ZtSPKYC9T+a1
+X-Google-Smtp-Source: ABdhPJzqkqqDFx8Mjm98Xwt5yO10GQ6mjXcZkdI+PWhSxcUD19xgunM/mIya0VQyZ4vkI7kEhl9Lk6bDVUcPRbju0rvNeMd50Dn6
+MIME-Version: 1.0
+X-Received: by 2002:a92:dd0a:: with SMTP id n10mr619114ilm.191.1612920258517;
+ Tue, 09 Feb 2021 17:24:18 -0800 (PST)
+Date:   Tue, 09 Feb 2021 17:24:18 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000000f622105baf14335@google.com>
+Subject: UBSAN: shift-out-of-bounds in xprt_do_reserve
+From:   syzbot <syzbot+f3a0fa110fd630ab56c8@syzkaller.appspotmail.com>
+To:     anna.schumaker@netapp.com, bfields@fieldses.org,
+        chuck.lever@oracle.com, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        trond.myklebust@hammerspace.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add offloading for HSR/PRP (IEC 62439-3) tag insertion, tag removal
-forwarding and duplication supported by the xrs7000 series switches.
+Hello,
 
-Only HSR v1 and PRP v1 are supported by the xrs7000 series switches (HSR
-v0 is not).
+syzbot found the following issue on:
 
-Signed-off-by: George McCollister <george.mccollister@gmail.com>
+HEAD commit:    dd86e7fa Merge tag 'pci-v5.11-fixes-2' of git://git.kernel..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=105930c4d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=266a5362c89c8127
+dashboard link: https://syzkaller.appspot.com/bug?extid=f3a0fa110fd630ab56c8
+compiler:       Debian clang version 11.0.1-2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17ba3038d00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15cf0d64d00000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+f3a0fa110fd630ab56c8@syzkaller.appspotmail.com
+
+================================================================================
+UBSAN: shift-out-of-bounds in net/sunrpc/xprt.c:658:14
+shift exponent 536870976 is too large for 64-bit type 'unsigned long'
+CPU: 1 PID: 8411 Comm: syz-executor902 Not tainted 5.11.0-rc6-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x137/0x1be lib/dump_stack.c:120
+ ubsan_epilogue lib/ubsan.c:148 [inline]
+ __ubsan_handle_shift_out_of_bounds+0x432/0x4d0 lib/ubsan.c:395
+ xprt_calc_majortimeo net/sunrpc/xprt.c:658 [inline]
+ xprt_init_majortimeo net/sunrpc/xprt.c:686 [inline]
+ xprt_request_init net/sunrpc/xprt.c:1805 [inline]
+ xprt_do_reserve+0x751/0x770 net/sunrpc/xprt.c:1815
+ __rpc_execute+0x1e1/0xb00 net/sunrpc/sched.c:891
+ rpc_run_task+0x5a4/0x740 net/sunrpc/clnt.c:1140
+ rpc_call_sync net/sunrpc/clnt.c:1169 [inline]
+ rpc_ping net/sunrpc/clnt.c:2682 [inline]
+ rpc_create_xprt+0x2f3/0x700 net/sunrpc/clnt.c:477
+ rpc_create+0x5df/0x8a0 net/sunrpc/clnt.c:593
+ nfs_create_rpc_client+0x5a0/0x740 fs/nfs/client.c:536
+ nfs_init_client+0x53/0xf0 fs/nfs/client.c:653
+ nfs_init_server fs/nfs/client.c:692 [inline]
+ nfs_create_server+0x82d/0x2130 fs/nfs/client.c:996
+ nfs_try_get_tree+0x385/0x1040 fs/nfs/super.c:939
+ vfs_get_tree+0x86/0x270 fs/super.c:1496
+ do_new_mount fs/namespace.c:2881 [inline]
+ path_mount+0x17ad/0x2a00 fs/namespace.c:3211
+ do_mount fs/namespace.c:3224 [inline]
+ __do_sys_mount fs/namespace.c:3432 [inline]
+ __se_sys_mount+0x28c/0x320 fs/namespace.c:3409
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x43ef89
+Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffe0a856338 EFLAGS: 00000246 ORIG_RAX: 00000000000000a5
+RAX: ffffffffffffffda RBX: 0030656c69662f2e RCX: 000000000043ef89
+RDX: 0000000020fb5ffc RSI: 0000000020000080 RDI: 00000000200000c0
+RBP: 0000000000402f70 R08: 000000002000a000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000403000
+R13: 0000000000000000 R14: 00000000004ac018 R15: 0000000000400488
+================================================================================
+
+
 ---
- drivers/net/dsa/xrs700x/xrs700x.c     | 121 ++++++++++++++++++++++++++++++++++
- drivers/net/dsa/xrs700x/xrs700x_reg.h |   5 ++
- net/dsa/tag_xrs700x.c                 |   7 +-
- 3 files changed, 132 insertions(+), 1 deletion(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/net/dsa/xrs700x/xrs700x.c b/drivers/net/dsa/xrs700x/xrs700x.c
-index 259f5e657c46..f025f968f96d 100644
---- a/drivers/net/dsa/xrs700x/xrs700x.c
-+++ b/drivers/net/dsa/xrs700x/xrs700x.c
-@@ -7,11 +7,17 @@
- #include <net/dsa.h>
- #include <linux/if_bridge.h>
- #include <linux/of_device.h>
-+#include <linux/netdev_features.h>
-+#include <linux/if_hsr.h>
- #include "xrs700x.h"
- #include "xrs700x_reg.h"
- 
- #define XRS700X_MIB_INTERVAL msecs_to_jiffies(3000)
- 
-+#define XRS7000X_SUPPORTED_HSR_FEATURES \
-+	(NETIF_F_HW_HSR_TAG_INS | NETIF_F_HW_HSR_TAG_RM | \
-+	 NETIF_F_HW_HSR_FWD | NETIF_F_HW_HSR_DUP)
-+
- #define XRS7003E_ID	0x100
- #define XRS7003F_ID	0x101
- #define XRS7004E_ID	0x200
-@@ -496,6 +502,119 @@ static void xrs700x_bridge_leave(struct dsa_switch *ds, int port,
- 	xrs700x_bridge_common(ds, port, bridge, false);
- }
- 
-+static int xrs700x_hsr_join(struct dsa_switch *ds, int port,
-+			    struct net_device *hsr)
-+{
-+	unsigned int val = XRS_HSR_CFG_HSR_PRP;
-+	struct dsa_port *partner = NULL, *dp;
-+	struct xrs700x *priv = ds->priv;
-+	struct net_device *slave;
-+	int ret, i, hsr_pair[2];
-+	enum hsr_version ver;
-+
-+	ret = hsr_get_version(hsr, &ver);
-+	if (ret)
-+		return ret;
-+
-+	/* Only ports 1 and 2 can be HSR/PRP redundant ports. */
-+	if (port != 1 && port != 2)
-+		return -EOPNOTSUPP;
-+
-+	if (ver == HSR_V1)
-+		val |= XRS_HSR_CFG_HSR;
-+	else if (ver == PRP_V1)
-+		val |= XRS_HSR_CFG_PRP;
-+	else
-+		return -EOPNOTSUPP;
-+
-+	dsa_hsr_foreach_port(dp, ds, hsr) {
-+		partner = dp;
-+	}
-+
-+	/* We can't enable redundancy on the switch until both
-+	 * redundant ports have signed up.
-+	 */
-+	if (!partner)
-+		return 0;
-+
-+	regmap_fields_write(priv->ps_forward, partner->index,
-+			    XRS_PORT_DISABLED);
-+	regmap_fields_write(priv->ps_forward, port, XRS_PORT_DISABLED);
-+
-+	regmap_write(priv->regmap, XRS_HSR_CFG(partner->index),
-+		     val | XRS_HSR_CFG_LANID_A);
-+	regmap_write(priv->regmap, XRS_HSR_CFG(port),
-+		     val | XRS_HSR_CFG_LANID_B);
-+
-+	/* Clear bits for both redundant ports (HSR only) and the CPU port to
-+	 * enable forwarding.
-+	 */
-+	val = GENMASK(ds->num_ports - 1, 0);
-+	if (ver == HSR_V1) {
-+		val &= ~BIT(partner->index);
-+		val &= ~BIT(port);
-+	}
-+	val &= ~BIT(dsa_upstream_port(ds, port));
-+	regmap_write(priv->regmap, XRS_PORT_FWD_MASK(partner->index), val);
-+	regmap_write(priv->regmap, XRS_PORT_FWD_MASK(port), val);
-+
-+	regmap_fields_write(priv->ps_forward, partner->index,
-+			    XRS_PORT_FORWARDING);
-+	regmap_fields_write(priv->ps_forward, port, XRS_PORT_FORWARDING);
-+
-+	hsr_pair[0] = port;
-+	hsr_pair[1] = partner->index;
-+	for (i = 0; i < ARRAY_SIZE(hsr_pair); i++) {
-+		slave = dsa_to_port(ds, hsr_pair[i])->slave;
-+		slave->features |= XRS7000X_SUPPORTED_HSR_FEATURES;
-+	}
-+
-+	return 0;
-+}
-+
-+static int xrs700x_hsr_leave(struct dsa_switch *ds, int port,
-+			     struct net_device *hsr)
-+{
-+	struct dsa_port *partner = NULL, *dp;
-+	struct xrs700x *priv = ds->priv;
-+	struct net_device *slave;
-+	int i, hsr_pair[2];
-+	unsigned int val;
-+
-+	dsa_hsr_foreach_port(dp, ds, hsr) {
-+		partner = dp;
-+	}
-+
-+	if (!partner)
-+		return 0;
-+
-+	regmap_fields_write(priv->ps_forward, partner->index,
-+			    XRS_PORT_DISABLED);
-+	regmap_fields_write(priv->ps_forward, port, XRS_PORT_DISABLED);
-+
-+	regmap_write(priv->regmap, XRS_HSR_CFG(partner->index), 0);
-+	regmap_write(priv->regmap, XRS_HSR_CFG(port), 0);
-+
-+	/* Clear bit for the CPU port to enable forwarding. */
-+	val = GENMASK(ds->num_ports - 1, 0);
-+	val &= ~BIT(dsa_upstream_port(ds, port));
-+	regmap_write(priv->regmap, XRS_PORT_FWD_MASK(partner->index), val);
-+	regmap_write(priv->regmap, XRS_PORT_FWD_MASK(port), val);
-+
-+	regmap_fields_write(priv->ps_forward, partner->index,
-+			    XRS_PORT_FORWARDING);
-+	regmap_fields_write(priv->ps_forward, port, XRS_PORT_FORWARDING);
-+
-+	hsr_pair[0] = port;
-+	hsr_pair[1] = partner->index;
-+	for (i = 0; i < ARRAY_SIZE(hsr_pair); i++) {
-+		slave = dsa_to_port(ds, hsr_pair[i])->slave;
-+		slave->features &= ~XRS7000X_SUPPORTED_HSR_FEATURES;
-+	}
-+
-+	return 0;
-+}
-+
- static const struct dsa_switch_ops xrs700x_ops = {
- 	.get_tag_protocol	= xrs700x_get_tag_protocol,
- 	.setup			= xrs700x_setup,
-@@ -509,6 +628,8 @@ static const struct dsa_switch_ops xrs700x_ops = {
- 	.get_stats64		= xrs700x_get_stats64,
- 	.port_bridge_join	= xrs700x_bridge_join,
- 	.port_bridge_leave	= xrs700x_bridge_leave,
-+	.port_hsr_join		= xrs700x_hsr_join,
-+	.port_hsr_leave		= xrs700x_hsr_leave,
- };
- 
- static int xrs700x_detect(struct xrs700x *priv)
-diff --git a/drivers/net/dsa/xrs700x/xrs700x_reg.h b/drivers/net/dsa/xrs700x/xrs700x_reg.h
-index a135d4d92b6d..470d00e07f15 100644
---- a/drivers/net/dsa/xrs700x/xrs700x_reg.h
-+++ b/drivers/net/dsa/xrs700x/xrs700x_reg.h
-@@ -49,6 +49,11 @@
- 
- /* Port Configuration Registers - HSR/PRP */
- #define XRS_HSR_CFG(x)			(XRS_PORT_HSR_BASE(x) + 0x0)
-+#define XRS_HSR_CFG_HSR_PRP		BIT(0)
-+#define XRS_HSR_CFG_HSR			0
-+#define XRS_HSR_CFG_PRP			BIT(8)
-+#define XRS_HSR_CFG_LANID_A		0
-+#define XRS_HSR_CFG_LANID_B		BIT(10)
- 
- /* Port Configuration Registers - PTP */
- #define XRS_PTP_RX_SYNC_DELAY_NS_LO(x)	(XRS_PORT_PTP_BASE(x) + 0x2)
-diff --git a/net/dsa/tag_xrs700x.c b/net/dsa/tag_xrs700x.c
-index db0ed1a5fcb7..858cdf9d2913 100644
---- a/net/dsa/tag_xrs700x.c
-+++ b/net/dsa/tag_xrs700x.c
-@@ -11,12 +11,17 @@
- 
- static struct sk_buff *xrs700x_xmit(struct sk_buff *skb, struct net_device *dev)
- {
--	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	struct dsa_port *partner, *dp = dsa_slave_to_port(dev);
- 	u8 *trailer;
- 
- 	trailer = skb_put(skb, 1);
- 	trailer[0] = BIT(dp->index);
- 
-+	if (dp->hsr_dev)
-+		dsa_hsr_foreach_port(partner, dp->ds, dp->hsr_dev)
-+			if (partner != dp)
-+				trailer[0] |= BIT(partner->index);
-+
- 	return skb;
- }
- 
--- 
-2.11.0
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
