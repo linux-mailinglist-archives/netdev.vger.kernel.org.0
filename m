@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80341316034
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 08:44:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D85C316041
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 08:46:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232730AbhBJHoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 02:44:55 -0500
-Received: from szxga07-in.huawei.com ([45.249.212.35]:12892 "EHLO
+        id S232894AbhBJHqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 02:46:00 -0500
+Received: from szxga07-in.huawei.com ([45.249.212.35]:13335 "EHLO
         szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232355AbhBJHoy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 02:44:54 -0500
+        with ESMTP id S232847AbhBJHph (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 02:45:37 -0500
 Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4DbBZ01bPYz7jWg;
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4DbBZ02LwKz7jYT;
         Wed, 10 Feb 2021 15:42:48 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
@@ -21,11 +21,11 @@ From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <salil.mehta@huawei.com>,
         <yisen.zhuang@huawei.com>, <huangdaode@huawei.com>,
-        <linuxarm@openeuler.org>, Peng Li <lipeng321@huawei.com>,
+        <linuxarm@openeuler.org>, Jiaran Zhang <zhangjiaran@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 03/13] net: hns3: clean up hns3_dbg_cmd_write()
-Date:   Wed, 10 Feb 2021 15:43:15 +0800
-Message-ID: <1612943005-59416-4-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 04/13] net: hns3: use ipv6_addr_any() helper
+Date:   Wed, 10 Feb 2021 15:43:16 +0800
+Message-ID: <1612943005-59416-5-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1612943005-59416-1-git-send-email-tanhuazhong@huawei.com>
 References: <1612943005-59416-1-git-send-email-tanhuazhong@huawei.com>
@@ -37,87 +37,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peng Li <lipeng321@huawei.com>
+From: Jiaran Zhang <zhangjiaran@huawei.com>
 
-As more commands are added, hns3_dbg_cmd_write() is going to
-get more bloated, so move the part about command check into
-a separate function.
+Use common ipv6_addr_any() to determine if an addr is ipv6 any addr.
 
-Signed-off-by: Peng Li <lipeng321@huawei.com>
+Signed-off-by: Jiaran Zhang <zhangjiaran@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c | 44 +++++++++++++---------
- 1 file changed, 26 insertions(+), 18 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-index 818ac2c..dd11c57 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-@@ -423,6 +423,30 @@ static ssize_t hns3_dbg_cmd_read(struct file *filp, char __user *buffer,
- 	return (*ppos = len);
- }
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index 64a80a5..e2c5b8f 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -13,6 +13,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/if_vlan.h>
+ #include <linux/crash_dump.h>
++#include <net/ipv6.h>
+ #include <net/rtnetlink.h>
+ #include "hclge_cmd.h"
+ #include "hclge_dcb.h"
+@@ -5508,12 +5509,10 @@ static int hclge_fd_check_tcpip6_tuple(struct ethtool_tcpip6_spec *spec,
+ 		BIT(INNER_IP_TOS);
  
-+static int hns3_dbg_check_cmd(struct hnae3_handle *handle, char *cmd_buf)
-+{
-+	int ret = 0;
-+
-+	if (strncmp(cmd_buf, "help", 4) == 0)
-+		hns3_dbg_help(handle);
-+	else if (strncmp(cmd_buf, "queue info", 10) == 0)
-+		ret = hns3_dbg_queue_info(handle, cmd_buf);
-+	else if (strncmp(cmd_buf, "queue map", 9) == 0)
-+		ret = hns3_dbg_queue_map(handle);
-+	else if (strncmp(cmd_buf, "bd info", 7) == 0)
-+		ret = hns3_dbg_bd_info(handle, cmd_buf);
-+	else if (strncmp(cmd_buf, "dev capability", 14) == 0)
-+		hns3_dbg_dev_caps(handle);
-+	else if (strncmp(cmd_buf, "dev spec", 8) == 0)
-+		hns3_dbg_dev_specs(handle);
-+	else if (handle->ae_algo->ops->dbg_run_cmd)
-+		ret = handle->ae_algo->ops->dbg_run_cmd(handle, cmd_buf);
-+	else
-+		ret = -EOPNOTSUPP;
-+
-+	return ret;
-+}
-+
- static ssize_t hns3_dbg_cmd_write(struct file *filp, const char __user *buffer,
- 				  size_t count, loff_t *ppos)
- {
-@@ -430,7 +454,7 @@ static ssize_t hns3_dbg_cmd_write(struct file *filp, const char __user *buffer,
- 	struct hns3_nic_priv *priv  = handle->priv;
- 	char *cmd_buf, *cmd_buf_tmp;
- 	int uncopied_bytes;
--	int ret = 0;
-+	int ret;
+ 	/* check whether src/dst ip address used */
+-	if (!spec->ip6src[0] && !spec->ip6src[1] &&
+-	    !spec->ip6src[2] && !spec->ip6src[3])
++	if (ipv6_addr_any((struct in6_addr *)spec->ip6src))
+ 		*unused_tuple |= BIT(INNER_SRC_IP);
  
- 	if (*ppos != 0)
- 		return 0;
-@@ -461,23 +485,7 @@ static ssize_t hns3_dbg_cmd_write(struct file *filp, const char __user *buffer,
- 		count = cmd_buf_tmp - cmd_buf + 1;
- 	}
+-	if (!spec->ip6dst[0] && !spec->ip6dst[1] &&
+-	    !spec->ip6dst[2] && !spec->ip6dst[3])
++	if (ipv6_addr_any((struct in6_addr *)spec->ip6dst))
+ 		*unused_tuple |= BIT(INNER_DST_IP);
  
--	if (strncmp(cmd_buf, "help", 4) == 0)
--		hns3_dbg_help(handle);
--	else if (strncmp(cmd_buf, "queue info", 10) == 0)
--		ret = hns3_dbg_queue_info(handle, cmd_buf);
--	else if (strncmp(cmd_buf, "queue map", 9) == 0)
--		ret = hns3_dbg_queue_map(handle);
--	else if (strncmp(cmd_buf, "bd info", 7) == 0)
--		ret = hns3_dbg_bd_info(handle, cmd_buf);
--	else if (strncmp(cmd_buf, "dev capability", 14) == 0)
--		hns3_dbg_dev_caps(handle);
--	else if (strncmp(cmd_buf, "dev spec", 8) == 0)
--		hns3_dbg_dev_specs(handle);
--	else if (handle->ae_algo->ops->dbg_run_cmd)
--		ret = handle->ae_algo->ops->dbg_run_cmd(handle, cmd_buf);
--	else
--		ret = -EOPNOTSUPP;
--
-+	ret = hns3_dbg_check_cmd(handle, cmd_buf);
- 	if (ret)
- 		hns3_dbg_help(handle);
+ 	if (!spec->psrc)
+@@ -5538,12 +5537,10 @@ static int hclge_fd_check_ip6_tuple(struct ethtool_usrip6_spec *spec,
+ 		BIT(INNER_IP_TOS) | BIT(INNER_SRC_PORT) | BIT(INNER_DST_PORT);
  
+ 	/* check whether src/dst ip address used */
+-	if (!spec->ip6src[0] && !spec->ip6src[1] &&
+-	    !spec->ip6src[2] && !spec->ip6src[3])
++	if (ipv6_addr_any((struct in6_addr *)spec->ip6src))
+ 		*unused_tuple |= BIT(INNER_SRC_IP);
+ 
+-	if (!spec->ip6dst[0] && !spec->ip6dst[1] &&
+-	    !spec->ip6dst[2] && !spec->ip6dst[3])
++	if (ipv6_addr_any((struct in6_addr *)spec->ip6dst))
+ 		*unused_tuple |= BIT(INNER_DST_IP);
+ 
+ 	if (!spec->l4_proto)
 -- 
 2.7.4
 
