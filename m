@@ -2,165 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EBDC315E26
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 05:18:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EA88315E3C
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 05:36:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230160AbhBJERY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 23:17:24 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:38814 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229684AbhBJERQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 23:17:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1612930550;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KWkZGceImgODZQt4JilFUnzdPSObR5bScucQBFdzS90=;
-        b=TRRsR+phzw3J1aJOYpwIFnAQ+pjEaYCzkX9F/wZJbBTQyElkbvAPbN3Pgrf3TBnwIi0MUM
-        /RJi4XNn9/dCeHMVr/9TxAQkcS99SOBlKDh4Fo3+m2BGyVVULQ8p6u4102zJOWEv27pAvb
-        iC2jARarxvdWDa5TIYrckMGkINX29qw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-537-uHbe-3d8PpiZJtK2MnObKQ-1; Tue, 09 Feb 2021 23:15:46 -0500
-X-MC-Unique: uHbe-3d8PpiZJtK2MnObKQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D2B72801962;
-        Wed, 10 Feb 2021 04:15:44 +0000 (UTC)
-Received: from [10.72.12.223] (ovpn-12-223.pek2.redhat.com [10.72.12.223])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DC00D60C4D;
-        Wed, 10 Feb 2021 04:15:38 +0000 (UTC)
-Subject: Re: [PATCH RFC v2 3/4] virtio-net: support transmit timestamp
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org,
-        Network Development <netdev@vger.kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Willem de Bruijn <willemb@google.com>
-References: <20210208185558.995292-1-willemdebruijn.kernel@gmail.com>
- <20210208185558.995292-4-willemdebruijn.kernel@gmail.com>
- <6bfdf48d-c780-bc65-b0b9-24a33f18827b@redhat.com>
- <20210209113643-mutt-send-email-mst@kernel.org>
- <CAF=yD-Lw7LKypTLEfQmcqR9SwcL6f9wH=_yjQdyGak4ORegRug@mail.gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <af5b16fb-8b22-f081-3aa0-92839b7153d6@redhat.com>
-Date:   Wed, 10 Feb 2021 12:15:37 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S230268AbhBJEgP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 23:36:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55452 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229690AbhBJEgE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 23:36:04 -0500
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74AFAC061574
+        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 20:35:24 -0800 (PST)
+Received: by mail-oi1-x235.google.com with SMTP id 18so670902oiz.7
+        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 20:35:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=pmDYdHylpLZ7e7YMJmaf0L7DKxyrerSfd1ak0nyGYUA=;
+        b=WJmCJ3H/qC6comj1Iiy+U/tnqXHH8YC1ZR/YKYg6jA6kB37Dz+h67wCTl6TSFkUUit
+         qflRadlk+WB9wuFepLayzwgUvJFuJgIcsTvnhtr/zQfjH34nD28lRHOKsl1WkyX2SUaj
+         DLt6Jvf8Jis1AkQCIv3vieLmpDz95G3zqdMTzsISeIpACWia429GTmkPjm+6lU2n6VfK
+         IIL+LWAW/zT6eLHLxE3uJ5UKungk9fUk3XbGMwDEjiDLzDWVJfTQ+p9hiA20ohFqo6Go
+         wnSvgVD98Mzpif+nzxOX69xvlYnavRJGsASxTk/uneKspRT47RR7zjtrNHmZf5EePCAi
+         jRTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=pmDYdHylpLZ7e7YMJmaf0L7DKxyrerSfd1ak0nyGYUA=;
+        b=doix+a0QQpQKA9JyvwNiY9AqBf9U/fjQELPIVoqAds4/pPUu6h70f3KuNRCv5aN3ym
+         BG31EijcwXey8q8bsthyrgf1uRk8GH1BykY9ktmJgIfpbnffnqCh/TBOdU+i6PpATjPT
+         8hE97H+cwyh/SPfDZy8rYnKSST4pJ6nsAlg0D+Ivwync8w76v0grhmy3IcSIwes9UfJw
+         3AlfhP8P+oX/NKCHrJ8whUHji3GVz9J2iMe1Ta1yKCaMjyR4WL3RnjYX7mCK+aQS3FCN
+         exbPUZixVhQsHSp1XCVf7WxTXV6f5EceGySJ0A+ifHwUYQGNpfPyhWlZF2Vx1MRjMd5c
+         9QSA==
+X-Gm-Message-State: AOAM533tMId0NbIPgR2Wq/v+lsFeGoZCR6yVVQhiraqwsDqOOfJQLM9i
+        8ZIUhHeUxyq2tIvlYa6YOFA=
+X-Google-Smtp-Source: ABdhPJyh8IfBc3OTaC14S/B7gqgX7OlFGOJxtKRL0Lc9VqQEWe3il88OzTPXzcn7ekJb32fdUG+EZw==
+X-Received: by 2002:aca:c704:: with SMTP id x4mr874079oif.24.1612931723731;
+        Tue, 09 Feb 2021 20:35:23 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.33])
+        by smtp.googlemail.com with ESMTPSA id g66sm171211otg.54.2021.02.09.20.35.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 Feb 2021 20:35:22 -0800 (PST)
+Subject: Re: [net-next v2] tcp: Explicitly mark reserved field in
+ tcp_zerocopy_receive args.
+To:     Arjun Roy <arjunroy@google.com>, Jakub Kicinski <kuba@kernel.org>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Arjun Roy <arjunroy.kdev@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>
+References: <20210206203648.609650-1-arjunroy.kdev@gmail.com>
+ <20210206152828.6610da2b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210207082654.GC4656@unreal>
+ <20210208104143.60a6d730@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <09fa284e-ea02-a6ca-cd8f-6d90dff2fa00@gmail.com>
+ <20210208185323.11c2bacf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <af35d535-8d58-3cf3-60e3-1764e409308b@gmail.com>
+ <20210209085909.32d27f0d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAOFY-A3wgGfBM0gia66VJY_iUBueWN1a4Ai8v9MT+at_pcH7-w@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <3d3a2949-0ce6-01d9-a1f1-2f48720d99a9@gmail.com>
+Date:   Tue, 9 Feb 2021 21:35:20 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.7.0
 MIME-Version: 1.0
-In-Reply-To: <CAF=yD-Lw7LKypTLEfQmcqR9SwcL6f9wH=_yjQdyGak4ORegRug@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAOFY-A3wgGfBM0gia66VJY_iUBueWN1a4Ai8v9MT+at_pcH7-w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2021/2/10 上午10:36, Willem de Bruijn wrote:
-> On Tue, Feb 9, 2021 at 11:39 AM Michael S. Tsirkin<mst@redhat.com>  wrote:
->> On Tue, Feb 09, 2021 at 01:45:11PM +0800, Jason Wang wrote:
->>> On 2021/2/9 上午2:55, Willem de Bruijn wrote:
->>>> From: Willem de Bruijn<willemb@google.com>
+On 2/9/21 4:46 PM, Arjun Roy wrote:
+> On Tue, Feb 9, 2021 at 8:59 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>>
+>> On Mon, 8 Feb 2021 20:20:29 -0700 David Ahern wrote:
+>>> On 2/8/21 7:53 PM, Jakub Kicinski wrote:
+>>>> On Mon, 8 Feb 2021 19:24:05 -0700 David Ahern wrote:
+>>>>> That would be the case for new userspace on old kernel. Extending the
+>>>>> check to the end of the struct would guarantee new userspace can not ask
+>>>>> for something that the running kernel does not understand.
 >>>>
->>>> Add optional PTP hardware tx timestamp offload for virtio-net.
->>>>
->>>> Accurate RTT measurement requires timestamps close to the wire.
->>>> Introduce virtio feature VIRTIO_NET_F_TX_TSTAMP, the transmit
->>>> equivalent to VIRTIO_NET_F_RX_TSTAMP.
->>>>
->>>> The driver sets VIRTIO_NET_HDR_F_TSTAMP to request a timestamp
->>>> returned on completion. If the feature is negotiated, the device
->>>> either places the timestamp or clears the feature bit.
->>>>
->>>> The timestamp straddles (virtual) hardware domains. Like PTP, use
->>>> international atomic time (CLOCK_TAI) as global clock base. The driver
->>>> must sync with the device, e.g., through kvm-clock.
->>>>
->>>> Modify can_push to ensure that on tx completion the header, and thus
->>>> timestamp, is in a predicatable location at skb_vnet_hdr.
->>>>
->>>> RFC: this implementation relies on the device writing to the buffer.
->>>> That breaks DMA_TO_DEVICE semantics. For now, disable when DMA is on.
->>>> The virtio changes should be a separate patch at the least.
->>>>
->>>> Tested: modified txtimestamp.c to with h/w timestamping:
->>>>     -       sock_opt = SOF_TIMESTAMPING_SOFTWARE |
->>>>     +       sock_opt = SOF_TIMESTAMPING_RAW_HARDWARE |
->>>>     + do_test(family, SOF_TIMESTAMPING_TX_HARDWARE);
->>>>
->>>> Signed-off-by: Willem de Bruijn<willemb@google.com>
->>>> ---
->>>>    drivers/net/virtio_net.c        | 61 ++++++++++++++++++++++++++++-----
->>>>    drivers/virtio/virtio_ring.c    |  3 +-
->>>>    include/linux/virtio.h          |  1 +
->>>>    include/uapi/linux/virtio_net.h |  1 +
->>>>    4 files changed, 56 insertions(+), 10 deletions(-)
->>>>
->>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
->>>> index ac44c5efa0bc..fc8ecd3a333a 100644
->>>> --- a/drivers/net/virtio_net.c
->>>> +++ b/drivers/net/virtio_net.c
->>>> @@ -210,6 +210,12 @@ struct virtnet_info {
->>>>      /* Device will pass rx timestamp. Requires has_rx_tstamp */
->>>>      bool enable_rx_tstamp;
->>>> +   /* Device can pass CLOCK_TAI transmit time to the driver */
->>>> +   bool has_tx_tstamp;
->>>> +
->>>> +   /* Device will pass tx timestamp. Requires has_tx_tstamp */
->>>> +   bool enable_tx_tstamp;
->>>> +
->>>>      /* Has control virtqueue */
->>>>      bool has_cvq;
->>>> @@ -1401,6 +1407,20 @@ static int virtnet_receive(struct receive_queue *rq, int budget,
->>>>      return stats.packets;
->>>>    }
->>>> +static void virtnet_record_tx_tstamp(const struct send_queue *sq,
->>>> +                                struct sk_buff *skb)
->>>> +{
->>>> +   const struct virtio_net_hdr_hash_ts *h = skb_vnet_hdr_ht(skb);
->>>> +   const struct virtnet_info *vi = sq->vq->vdev->priv;
->>>> +   struct skb_shared_hwtstamps ts;
->>>> +
->>>> +   if (h->hdr.flags & VIRTIO_NET_HDR_F_TSTAMP &&
->>>> +       vi->enable_tx_tstamp) {
->>>> +           ts.hwtstamp = ns_to_ktime(le64_to_cpu(h->tstamp));
->>>> +           skb_tstamp_tx(skb, &ts);
->>> This probably won't work since the buffer is read-only from the device. (See
->>> virtqueue_add_outbuf()).
+>>>> Indeed, so we're agreeing that check_zeroed_user() is needed before
+>>>> original optlen from user space gets truncated?
 >>>
->>> Another issue that I vaguely remember that the virtio spec forbids out
->>> buffer after in buffer.
->> Both Driver Requirements: Message Framing and Driver Requirements: Scatter-Gather Support
->> have this statement:
+>>> I thought so, but maybe not. To think through this ...
+>>>
+>>> If current kernel understands a struct of size N, it can only copy that
+>>> amount from user to kernel. Anything beyond is ignored in these
+>>> multiplexed uAPIs, and that is where the new userspace on old kernel falls.
+>>>
+>>> Known value checks can only be done up to size N. In this case, the
+>>> reserved field is at the end of the known struct size, so checking just
+>>> the field is fine. Going beyond the reserved field has implications for
+>>> extensions to the API which should be handled when those extensions are
+>>> added.
 >>
->>          The driver MUST place any device-writable descriptor elements after any device-readable descriptor ele-
->>          ments.
+>> Let me try one last time.
 >>
+>> There is no check in the kernels that len <= N. User can pass any
+>> length _already_. check_zeroed_user() forces the values beyond the
+>> structure length to be known (0) rather than anything. It can only
+>> avoid breakages in the future.
 >>
->> similarly
+>>> So, in short I think the "if (zc.reserved)" is correct as Leon noted.
 >>
->> Device Requirements: The Virtqueue Descriptor Table
->>          A device MUST NOT write to a device-readable buffer, and a device SHOULD NOT read a device-writable
->>          buffer.
-> Thanks. That's clear. So the clean solution would be to add a
-> device-writable descriptor after the existing device-readable ones.
+>> If it's correct to check some arbitrary part of the buffer is zeroed
+>> it should be correct to check the entire tail is zeroed.
+> 
+> So, coming back to the thread, I think the following appears to be the
+> current thoughts:
+> 
+> 1. It is requested that, on the kernel as it stands today, fields
+> beyond zc.msg_flags (including zc.reserved, the only such field as of
+> this patch) are zero'd out. So a new userspace asking to do specific
+> things would fail on this old kernel with EINVAL. Old userspace would
+> work on old or new kernels. New of course works on new kernels.
+> 2. If it's correct to check some arbitrary field (zc.reserved) to be
+> 0, then it should be fine to check this for all future fields >=
+> reserved in the struct. So some advanced userspace down the line
+> doesn't get confused.
+> 
+> Strictly speaking, I'm not convinced this is necessary - eg. 64 bytes
+> struct right now, suppose userspace of the future gives us 96 bytes of
+> which the last 32 are non-zero for some feature or the other. We, in
+> the here and now kernel, truncate that length to 64 (as in we only
+> copy to kernel those first 64 bytes) and set the returned length to
+> 64. The understanding being, any (future, past or present) userspace
+> consults the output value; and considers anything byte >= the returned
+> len to be untouched by the kernel executing the call (ie. garbage,
+> unacted upon).
+> 
+> So, how would this work for old+new userspace on old+new kernel?
+> 
+> A) old+old, new+new: sizes match, no issue
+> B) new kernel, old userspace: That's not an issue. We have the
+> switch(len) statement for that.
+> C) old kernel, new userspace: that's the 96 vs. 64 B example above -
+> new userspace would see that the kernel only operated on 64 B and
+> treat the last 32 B as garbage/unacted on.
+> 
+> In this case, we would not give EINVAL on case C, as we would if we
+> returned EINVAL on a check_zeroed_user() case for fields past
+> zc.reserved. We'd do a zerocopy operating on just the features we know
+> about, and communicate to the user that we only acted on features up
+> until this byte offset.
+> 
+> Now, given this is the case, we still have the padding confusion with
+> zc.reserved and the current struct size, so we have to force it to 0
+> as we are doing. But I think we don't need to go beyond this so far.
+> 
+> Thus, my personal preference is to not have the check_zeroed_user()
+> check. But if the consensus demands it, then it's an easy enough fix.
+> What are your thoughts?
+> 
 
+bpf uses check_zeroed_user to make sure extensions to its structs are
+compatible, so yes, this is required.
 
-I think so, but a question is the format for this tailer. I think it 
-might be better to post a spec patch to discuss.
-
-Thanks
-
-
->
-> And the device must be aware that this is to return the tstamp only.
-> In the example implementation of vhost, it has to exclude this last
-> descriptor from the msg->msg_iter iovec array with packet data
-> initialized at get_tx_bufs/init_iov_iter.
->
-
+Also, you need to address legitimate msg_flags as I mentioned in another
+response.
