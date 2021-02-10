@@ -2,170 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EA88315E3C
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 05:36:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A70C6315E5D
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 05:53:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230268AbhBJEgP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 23:36:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55452 "EHLO
+        id S230349AbhBJEwR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 23:52:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229690AbhBJEgE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 23:36:04 -0500
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74AFAC061574
-        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 20:35:24 -0800 (PST)
-Received: by mail-oi1-x235.google.com with SMTP id 18so670902oiz.7
-        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 20:35:24 -0800 (PST)
+        with ESMTP id S230363AbhBJEwM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 23:52:12 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58613C0613D6
+        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 20:51:32 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id i8so1612940ejc.7
+        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 20:51:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=pmDYdHylpLZ7e7YMJmaf0L7DKxyrerSfd1ak0nyGYUA=;
-        b=WJmCJ3H/qC6comj1Iiy+U/tnqXHH8YC1ZR/YKYg6jA6kB37Dz+h67wCTl6TSFkUUit
-         qflRadlk+WB9wuFepLayzwgUvJFuJgIcsTvnhtr/zQfjH34nD28lRHOKsl1WkyX2SUaj
-         DLt6Jvf8Jis1AkQCIv3vieLmpDz95G3zqdMTzsISeIpACWia429GTmkPjm+6lU2n6VfK
-         IIL+LWAW/zT6eLHLxE3uJ5UKungk9fUk3XbGMwDEjiDLzDWVJfTQ+p9hiA20ohFqo6Go
-         wnSvgVD98Mzpif+nzxOX69xvlYnavRJGsASxTk/uneKspRT47RR7zjtrNHmZf5EePCAi
-         jRTA==
+        d=linaro.org; s=google;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=XaN/0XOML5ISGne77tosJ/UMQ+VNnecYRI0zkEqsHfQ=;
+        b=wRxhh7aw3E28nJI/1G9scXLgbWxiPPrTA9EIBBogeqS2OH09opamaOKvvyD5f75vok
+         y/buCtLML1AcX3LylM8xdR2kna+DvS6idJ9Qo56F0p0CNw7YMbYZ+1ZFZNqomcKq4JAg
+         DZHi/j0b5VftZB7BD4Fd1T8K+nnX2PwdVRghrWeEDK5+DoiHRTwD9zQu6DeBN89bmDIt
+         QDNJlUKGxRw10xKsVKUmv1vsA8/IzPzaI0znuis1cJApEOWP3tWJhNltn88LmwiORcs+
+         8G/PqVwfSu2iLngLvqJp+yogmMFXtr7NNWMoVc0y0riaeP/ioMvqX9ig8GD6zMw7tUZH
+         Z94Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=pmDYdHylpLZ7e7YMJmaf0L7DKxyrerSfd1ak0nyGYUA=;
-        b=doix+a0QQpQKA9JyvwNiY9AqBf9U/fjQELPIVoqAds4/pPUu6h70f3KuNRCv5aN3ym
-         BG31EijcwXey8q8bsthyrgf1uRk8GH1BykY9ktmJgIfpbnffnqCh/TBOdU+i6PpATjPT
-         8hE97H+cwyh/SPfDZy8rYnKSST4pJ6nsAlg0D+Ivwync8w76v0grhmy3IcSIwes9UfJw
-         3AlfhP8P+oX/NKCHrJ8whUHji3GVz9J2iMe1Ta1yKCaMjyR4WL3RnjYX7mCK+aQS3FCN
-         exbPUZixVhQsHSp1XCVf7WxTXV6f5EceGySJ0A+ifHwUYQGNpfPyhWlZF2Vx1MRjMd5c
-         9QSA==
-X-Gm-Message-State: AOAM533tMId0NbIPgR2Wq/v+lsFeGoZCR6yVVQhiraqwsDqOOfJQLM9i
-        8ZIUhHeUxyq2tIvlYa6YOFA=
-X-Google-Smtp-Source: ABdhPJyh8IfBc3OTaC14S/B7gqgX7OlFGOJxtKRL0Lc9VqQEWe3il88OzTPXzcn7ekJb32fdUG+EZw==
-X-Received: by 2002:aca:c704:: with SMTP id x4mr874079oif.24.1612931723731;
-        Tue, 09 Feb 2021 20:35:23 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.33])
-        by smtp.googlemail.com with ESMTPSA id g66sm171211otg.54.2021.02.09.20.35.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Feb 2021 20:35:22 -0800 (PST)
-Subject: Re: [net-next v2] tcp: Explicitly mark reserved field in
- tcp_zerocopy_receive args.
-To:     Arjun Roy <arjunroy@google.com>, Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Arjun Roy <arjunroy.kdev@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
-References: <20210206203648.609650-1-arjunroy.kdev@gmail.com>
- <20210206152828.6610da2b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210207082654.GC4656@unreal>
- <20210208104143.60a6d730@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <09fa284e-ea02-a6ca-cd8f-6d90dff2fa00@gmail.com>
- <20210208185323.11c2bacf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <af35d535-8d58-3cf3-60e3-1764e409308b@gmail.com>
- <20210209085909.32d27f0d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAOFY-A3wgGfBM0gia66VJY_iUBueWN1a4Ai8v9MT+at_pcH7-w@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <3d3a2949-0ce6-01d9-a1f1-2f48720d99a9@gmail.com>
-Date:   Tue, 9 Feb 2021 21:35:20 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.7.0
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=XaN/0XOML5ISGne77tosJ/UMQ+VNnecYRI0zkEqsHfQ=;
+        b=n2K7Ds7XhNcoZo9oEVC4Z2Yc+Sa1WUbzh7wWSN4ZXNiGUnIixibLLGsjw4Iy5DC5e1
+         uFRsfPS8ULnhVj/bs1VTv/0OdFQmdcqD0ivdOghpPLq0m7IGmkBqEju/3q++rt4nxgHN
+         AImCnX6QWOBLC+AJzZRn0oEFp0Aj/NGtxSlqij4c4BaqInfz0aDZ1js6QVEQA5IHP282
+         Iqk4ei2UXZ95a7qHI+l+eOijLYv3hRuQOh0f3kXOKAkNoO3YNHs23H7+bJNstAO550O8
+         itryJBFpLoRg2MlQu6twPGw6Iz0DWKQQ8aB1v0oUpA6srxb7T9UsxyHjpgb3Red3vraJ
+         G3dQ==
+X-Gm-Message-State: AOAM531plS9OpsLGSuhiS/t2U1+a8Z4Bvyqp6Z6R20MDJQGZDsIEOFzK
+        kBK7bIsJepr1Ss5+RxS7XtPQqNXy4k3k4WX3g8lbPA==
+X-Google-Smtp-Source: ABdhPJwIZvBOETdhaNiVYBcViLC8njG0hErwOb+CC7WimPqDDwrqyJGXRcDVM7UyWidbxWeJ+u73Y1LgiHXNFkYWoEo=
+X-Received: by 2002:a17:906:4c85:: with SMTP id q5mr1086056eju.375.1612932689516;
+ Tue, 09 Feb 2021 20:51:29 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <CAOFY-A3wgGfBM0gia66VJY_iUBueWN1a4Ai8v9MT+at_pcH7-w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Wed, 10 Feb 2021 10:21:18 +0530
+Message-ID: <CA+G9fYvUst_2scufRYP-qOTr22oAO5LEyH-yu0MrXj4S-TVWPQ@mail.gmail.com>
+Subject: [next] [arm] ERROR: modpost: "udp_sock_create6" [net/rxrpc/rxrpc.ko] undefined!
+To:     Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        lkft-triage@lists.linaro.org,
+        Linux-OMAP <linux-omap@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-afs@lists.infradead.org, Arnd Bergmann <arnd@arndb.de>,
+        Tony Lindgren <tony@atomide.com>,
+        David Howells <dhowells@redhat.com>,
+        Xin Long <lucien.xin@gmail.com>, Rolf Eike Beer <eb@emlix.com>,
+        eric.snowberg@oracle.com, Masahiro Yamada <masahiroy@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/9/21 4:46 PM, Arjun Roy wrote:
-> On Tue, Feb 9, 2021 at 8:59 AM Jakub Kicinski <kuba@kernel.org> wrote:
->>
->> On Mon, 8 Feb 2021 20:20:29 -0700 David Ahern wrote:
->>> On 2/8/21 7:53 PM, Jakub Kicinski wrote:
->>>> On Mon, 8 Feb 2021 19:24:05 -0700 David Ahern wrote:
->>>>> That would be the case for new userspace on old kernel. Extending the
->>>>> check to the end of the struct would guarantee new userspace can not ask
->>>>> for something that the running kernel does not understand.
->>>>
->>>> Indeed, so we're agreeing that check_zeroed_user() is needed before
->>>> original optlen from user space gets truncated?
->>>
->>> I thought so, but maybe not. To think through this ...
->>>
->>> If current kernel understands a struct of size N, it can only copy that
->>> amount from user to kernel. Anything beyond is ignored in these
->>> multiplexed uAPIs, and that is where the new userspace on old kernel falls.
->>>
->>> Known value checks can only be done up to size N. In this case, the
->>> reserved field is at the end of the known struct size, so checking just
->>> the field is fine. Going beyond the reserved field has implications for
->>> extensions to the API which should be handled when those extensions are
->>> added.
->>
->> Let me try one last time.
->>
->> There is no check in the kernels that len <= N. User can pass any
->> length _already_. check_zeroed_user() forces the values beyond the
->> structure length to be known (0) rather than anything. It can only
->> avoid breakages in the future.
->>
->>> So, in short I think the "if (zc.reserved)" is correct as Leon noted.
->>
->> If it's correct to check some arbitrary part of the buffer is zeroed
->> it should be correct to check the entire tail is zeroed.
-> 
-> So, coming back to the thread, I think the following appears to be the
-> current thoughts:
-> 
-> 1. It is requested that, on the kernel as it stands today, fields
-> beyond zc.msg_flags (including zc.reserved, the only such field as of
-> this patch) are zero'd out. So a new userspace asking to do specific
-> things would fail on this old kernel with EINVAL. Old userspace would
-> work on old or new kernels. New of course works on new kernels.
-> 2. If it's correct to check some arbitrary field (zc.reserved) to be
-> 0, then it should be fine to check this for all future fields >=
-> reserved in the struct. So some advanced userspace down the line
-> doesn't get confused.
-> 
-> Strictly speaking, I'm not convinced this is necessary - eg. 64 bytes
-> struct right now, suppose userspace of the future gives us 96 bytes of
-> which the last 32 are non-zero for some feature or the other. We, in
-> the here and now kernel, truncate that length to 64 (as in we only
-> copy to kernel those first 64 bytes) and set the returned length to
-> 64. The understanding being, any (future, past or present) userspace
-> consults the output value; and considers anything byte >= the returned
-> len to be untouched by the kernel executing the call (ie. garbage,
-> unacted upon).
-> 
-> So, how would this work for old+new userspace on old+new kernel?
-> 
-> A) old+old, new+new: sizes match, no issue
-> B) new kernel, old userspace: That's not an issue. We have the
-> switch(len) statement for that.
-> C) old kernel, new userspace: that's the 96 vs. 64 B example above -
-> new userspace would see that the kernel only operated on 64 B and
-> treat the last 32 B as garbage/unacted on.
-> 
-> In this case, we would not give EINVAL on case C, as we would if we
-> returned EINVAL on a check_zeroed_user() case for fields past
-> zc.reserved. We'd do a zerocopy operating on just the features we know
-> about, and communicate to the user that we only acted on features up
-> until this byte offset.
-> 
-> Now, given this is the case, we still have the padding confusion with
-> zc.reserved and the current struct size, so we have to force it to 0
-> as we are doing. But I think we don't need to go beyond this so far.
-> 
-> Thus, my personal preference is to not have the check_zeroed_user()
-> check. But if the consensus demands it, then it's an easy enough fix.
-> What are your thoughts?
-> 
+Linux next tag 20210209 arm omap2plus_defconfig make modules failed.
+   - arm (omap2plus_defconfig) with gcc-10 - FAILED
+   - arm (omap2plus_defconfig) with gcc-9 - FAILED
+   - arm (omap2plus_defconfig) with gcc-8 - FAILED
 
-bpf uses check_zeroed_user to make sure extensions to its structs are
-compatible, so yes, this is required.
+make --silent --keep-going --jobs=8
+O=/home/tuxbuild/.cache/tuxmake/builds/1/tmp ARCH=arm
+CROSS_COMPILE=arm-linux-gnueabihf- 'CC=sccache
+arm-linux-gnueabihf-gcc' 'HOSTCC=sccache gcc'
 
-Also, you need to address legitimate msg_flags as I mentioned in another
-response.
+ERROR: modpost: "udp_sock_create6" [net/rxrpc/rxrpc.ko] undefined!
+ERROR: modpost: "setup_udp_tunnel_sock" [net/rxrpc/rxrpc.ko] undefined!
+ERROR: modpost: "udp_sock_create4" [net/rxrpc/rxrpc.ko] undefined!
+make[2]: *** [scripts/Makefile.modpost:132: Module.symvers] Error 1
+make[2]: *** Deleting file 'Module.symvers'
+make[2]: Target '__modpost' not remade because of errors.
+
+Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
+
+build log link,
+https://builds.tuxbuild.com/1oF9lZzseBXx1Dl1IkVLgB4nvhM/
+
+-- 
+Linaro LKFT
+https://lkft.linaro.org
