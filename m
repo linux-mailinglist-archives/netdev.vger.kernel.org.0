@@ -2,123 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A7EB3162C2
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 10:53:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C23A316364
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 11:13:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230134AbhBJJwe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 04:52:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38000 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229711AbhBJJui (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 04:50:38 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BA19C061574
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 01:49:58 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id w2so2897760ejk.13
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 01:49:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1Q5bQyQ8IS37wv39ZHRPDAzN4fI8/qzVcd35DG9rFLY=;
-        b=lJ1TnOkrZv/1PfykX+h78rns7ux6llFRy8IwvtH/wbr3R8iuIU4gYBkYvUtUxtkVK9
-         iisEND+aeMgCY4aRc8+SJNPFvVGgrOxXgVUPEBkWX+MhXyxODFcg7/XBvG6rHznez7Jv
-         iH+n9A5gj6hAvZ13nryx0jGwzsxcazTDeFUMFYTNMZc9F8uMqLUGyaf2kefOT4p3cBbb
-         76SCLgzJzxhANT4+H4PwvFjIMGb5BWRDKD7V8ijf8iUPppTfP1GhO2sjSwIGdVuDqqIm
-         3S/rgPCm84Jdtlfm0OIDkweWahEmyEsqNkH32Bkx8smwbhZONpsf9Jdt9EtXdcezVWVO
-         T1qg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1Q5bQyQ8IS37wv39ZHRPDAzN4fI8/qzVcd35DG9rFLY=;
-        b=htsVR2oC6sSrpcFUt+t2S7E0dSkkWLWLiVecw8sf+zO6HhEMQdknslQyh42hYOJnGE
-         Jnkr4iX02OLK9juHVkBInPCAFyz2kCv7GyMWygUT/wm0vZNx/a/K4feGva7MNUCBxzED
-         qzgowhGtiJpnDE4iqLA6O9T7XQo7KKeFFPRd40LkYAAeeTnkfflBAn5SkOr+Rj5fE2Na
-         0fFzcElfXmrcCaZ9el9C53eant/ROxeeeSEvJ1aofd3Yf01bivtNaDDOGnuZPPvaKP09
-         LiICc7jpEJqhH+cZa+P0/LrbLAJPiUBDX2fPTxhncNTWy86LyxSK5jPXSxjLVcyig8rH
-         WQug==
-X-Gm-Message-State: AOAM531qcKvKySfWBJYkBIrZXGW96T1Tpjl6GeyaW8dfagYIHpcpusX0
-        53uS2EUMgcGGykXbTNs+sp4=
-X-Google-Smtp-Source: ABdhPJyEpTpEfiMAQYkJMkg0ICQkU7f3uCVRI5Rp1fNAbFTw4K0okj1lONBleNoqq/aYLAIAZ3ygOw==
-X-Received: by 2002:a17:906:46ce:: with SMTP id k14mr2187697ejs.480.1612950596784;
-        Wed, 10 Feb 2021 01:49:56 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id c1sm740824eja.81.2021.02.10.01.49.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Feb 2021 01:49:55 -0800 (PST)
-Date:   Wed, 10 Feb 2021 11:49:54 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     George McCollister <george.mccollister@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v3 4/4] net: dsa: xrs700x: add HSR offloading
- support
-Message-ID: <20210210094954.7fi4bhh6dboa6s5i@skbuf>
-References: <20210210010213.27553-1-george.mccollister@gmail.com>
- <20210210010213.27553-5-george.mccollister@gmail.com>
- <f5b361ec-c8a1-22b7-42b3-94fbe4387525@gmail.com>
+        id S230106AbhBJKMd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 05:12:33 -0500
+Received: from mail-db8eur05on2078.outbound.protection.outlook.com ([40.107.20.78]:37152
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230302AbhBJKJV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Feb 2021 05:09:21 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cT9i0Kh6BmWfJ7FDSSELLv7+ztzLMkB957qGfIZbqroYznW1sA9Y9BVbNUfCH/V08UkDGiwI6l8/paSEzP0LZ+YqHbZNUdTcLldPYtpHGK47x0QK1hPl2fpQDEQlbF0JKuQ82UBl1P5kCNP7Zl42XNQMmgQRE0n3dFV5146QVpoEZ/m3PYhS36vLgIw+ccNfk8fMW9mm6OD6lkX2osH3vg3eaDRKnZMQ5z3qS9zxtqhYhYyTxOhHidxxZKt35QyzQyxixx7zb4SzfQUr3vP2va24BI3ltfAOTyBeHEvoaL/7Wv3rcwxVFGtlQ4AUCU3RFUFNJHJ1/kjlizYgA3ShhQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mkSCqEMIbki/ZQV1uwE6Y+aTejTgyR51Z2ansgi2fl0=;
+ b=iTNBI0WEMAXs5Q/y8pAWW7O/du2SNs3lb7qfadxfyoU7kn0F15aKR1U/GLwjwih0wtuMxTIFvS3iYWxGnOPBDr1isOIwN1ULAUsMiDuo+RCwKwDSWmgSxETFHJjwZtYCW3ORWWXO93iSswj9FOTN5hZaRWwDm4OO+CZFbA9V3XAlDPz1apXCVMuvmnZIBZrG50CO3NqJMHrGUv/F268iiwzvgiwtkJjJXaXjge20HbnIcg/eI21A35CbPxjqZCzTyQSLqHGk4/Ix+Pce46u0ZJUtWCHdUX9I7KxUDx+5y3NdG5V9TFy+bU0bd+G8Y4gWqfl4DK8Q/NwusqzBMfFlAg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mkSCqEMIbki/ZQV1uwE6Y+aTejTgyR51Z2ansgi2fl0=;
+ b=ntVQEZ0d8Bi7ms99wOlSg3940EJvoKVm34Q7x1mPwNq8W3+YvFcY68xERqUfcIkL8HKCKezRcquTjDKTutdUl6G2FW9Bqgjyu9KOSD0pFynCRYXGvpVett1UtjLKwU0E5bSgGPASZ1tKVS6dDw2Wn1CafskzFz+CQiosqe3VOWs=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB5134.eurprd04.prod.outlook.com (2603:10a6:803:5f::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.19; Wed, 10 Feb
+ 2021 10:08:32 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3df3:2eba:51bb:58d7]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3df3:2eba:51bb:58d7%7]) with mapi id 15.20.3825.030; Wed, 10 Feb 2021
+ 10:08:32 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+CC:     "jiri@resnulli.us" <jiri@resnulli.us>,
+        "ivecera@redhat.com" <ivecera@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "roopa@nvidia.com" <roopa@nvidia.com>,
+        "nikolay@nvidia.com" <nikolay@nvidia.com>,
+        "rasmus.villemoes@prevas.dk" <rasmus.villemoes@prevas.dk>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "bridge@lists.linux-foundation.org" 
+        <bridge@lists.linux-foundation.org>
+Subject: Re: [PATCH net-next v3 0/5] bridge: mrp: Extend br_mrp_switchdev_*
+Thread-Topic: [PATCH net-next v3 0/5] bridge: mrp: Extend br_mrp_switchdev_*
+Thread-Index: AQHW/yGN1ipr+GfbIUiWAmue2IqujqpRKxqA
+Date:   Wed, 10 Feb 2021 10:08:31 +0000
+Message-ID: <20210210100831.acnycww3wkeb6imt@skbuf>
+References: <20210209202112.2545325-1-horatiu.vultur@microchip.com>
+In-Reply-To: <20210209202112.2545325-1-horatiu.vultur@microchip.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: microchip.com; dkim=none (message not signed)
+ header.d=none;microchip.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [5.12.227.87]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 522297dc-9c55-4209-e178-08d8cdabd20d
+x-ms-traffictypediagnostic: VI1PR04MB5134:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR04MB51340619C33B7D95C2A9879DE08D9@VI1PR04MB5134.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3631;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: R2Y+QhXpcMxPlJtkbcLijv8pPUH4fZB54PtM1pMTh2JP94ycJkjnQDzZlDbJmf5NcGSYxr22TjNqKFN7jmoqjKrrxADIpBlJNlb0Tqq1f6C2SPbRGa/VQumrsXLFL+vNO5cY1KhzezA7NYCf9diVbXhwgZy0fnGPFlBQTkI9u4narf8ZhMrfh57bbIduMAJJu0xbM1YQHV99Xi+HPJF7uKdaRmDCM5S7687DI43zXVN7pEmO5QjqrO7VloscLYHd2ireunjmaefP2gC/7Hr6tvXmwnb+V4t5FjrzDaXHlz7C7aMslC14Yz2czoKjI+8PfK/5VgDLsHBAf54xCn4A9t1mdJT9vnlp0drYDcBjmk69za5gaXehO/eXXHqTWi/kxrqWRUJdJxHNFOiH/42b4IZpSmy3KbyGH46qiZJvZR2uPlZzHzhP+O4OzyPC+lRN2HrFdjOZXbFIMFHWg4WElYLI8heAqqCfd0Ydk++MA9a4eRb1n/wuVN/GgZq1LS2WsOhijwZH6D3TlPh/zveUZA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(376002)(136003)(39860400002)(346002)(366004)(396003)(71200400001)(4326008)(2906002)(8676002)(66446008)(64756008)(66556008)(54906003)(66476007)(6506007)(83380400001)(76116006)(44832011)(1076003)(478600001)(5660300002)(26005)(33716001)(86362001)(8936002)(6486002)(66946007)(6512007)(6916009)(9686003)(316002)(186003)(7416002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?m9zF83YdmeW7+NUbFC8JOEve6GIR87QG2/cJkOYZWX9bXT9hQX3evC+am0eA?=
+ =?us-ascii?Q?Da4zFzdDc4so7Bj5jX2I31eU93dfMdquyEIMutxp5Q6hgRF8ge/7LF4cwsCD?=
+ =?us-ascii?Q?tpJtFWsCgBd0A1+H+/2tq9px1j7I+jSe2/CFqZuqiJsDuSgWMgDa0LRJesZa?=
+ =?us-ascii?Q?6Xw83YNmlASAwNWqXD+eCBkiyR964qvKpBZUAj3eVP2L61GBa0yEbSxJTFDz?=
+ =?us-ascii?Q?jccQAd25k+O75NF2SyZZgbkBo6rOkErA1DSjWNgn0SH4xulGt+7yAsDqtuJ/?=
+ =?us-ascii?Q?izeO12u8Af8EoOwF4BfqGnCTQdj/7F7qmTDDxahrV/GKbrI66dzmHQFZHm2B?=
+ =?us-ascii?Q?79+w2+ACjXUM7lZ4PzSKpHlrlSU0tubf02qRqkxewDWteSave/jn+QspueyG?=
+ =?us-ascii?Q?8od2RYIAbwAFN+mTG31YleBGnKG0xrzR9kGsSLaAekqZNicg0kl5PRSkOCTk?=
+ =?us-ascii?Q?b67O8NEftcIC8GkSWiquoDscbMkQWIEtiBuqx+tSKAUHQvFNMIyKh6bxrFM7?=
+ =?us-ascii?Q?HYzuvMLx56d0/ViKM8Fs0LcFwtuza4xIizSnuxg8m3hTur9PbGXMRnDphG7p?=
+ =?us-ascii?Q?qtl8xnzFWyjmkLpBVEfRf1kHGItHXt1l4LUklXV/jpWoRPYOIiLDXC3GOcwe?=
+ =?us-ascii?Q?1sq7DY5Gnj5CU/zwAUI3tG6VW6DQmlm27a9Wt6+8wOhBQt4/08B02UiwH5D0?=
+ =?us-ascii?Q?/J8b1kCDoNH9svmzI/dN6xF9PbYTQ/ClZAe8ngyvpn/50lp8QVFW03Utr7sY?=
+ =?us-ascii?Q?XVeX73pfPxrLUv3E5Eorl/z2WrezBNZfx+gy2K32rzTlPl9hICG3mxxt/29J?=
+ =?us-ascii?Q?LwWbDtzjPf5gJRxNd+blMDlyzGJ9P3fdw1VmLZQjuBJWrvw3NLvrg7vqeK3T?=
+ =?us-ascii?Q?IIJQnEl1vaxtDIGJ6WS0kN1dUb4a3+WjYOAyAUswRQJTnMQKtl+BWyaVLwPZ?=
+ =?us-ascii?Q?u7Z+xHcTxA0k4IeDfawcfHkr7hO/2yiBoxp1mrYPPQNeGclZquPj6C+0hrEz?=
+ =?us-ascii?Q?0L3u32MG7Mvh6081q023Ct441sIBVLkqP+QPe/1rK7PJz/STr02/cX5TsWpq?=
+ =?us-ascii?Q?4y2fvgSXcKHng9NGcq/Kgd8c4NkxKOaTJqfFcFOHOT4tFeD/h9zfVJmumGAT?=
+ =?us-ascii?Q?ryOdHKdHG/hrbw5WWoNO++LlGB/BNogdtaDobPSnSOKgWZPbZ/tRb5ATtFXu?=
+ =?us-ascii?Q?RSo4zzbPIbcU6WAqhAmaA+vo6OhD/9yCPI4WGAUbh+mf1gJCY5UJhcgQhMr7?=
+ =?us-ascii?Q?8Abf5ZgA2Q5VGn1vo8UQPqmSJF0pbwgchNJ/O+tP8Py1KadmMjJtG9JlPoyE?=
+ =?us-ascii?Q?YONY3KqN4FJKkZZZr1obRd/K?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <90E48C016380FC4182CC031CB1AA155D@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f5b361ec-c8a1-22b7-42b3-94fbe4387525@gmail.com>
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 522297dc-9c55-4209-e178-08d8cdabd20d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Feb 2021 10:08:31.9812
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: CD7omGggi78p01JxJSzu4QIIV/KDQRe/6uOWVhLkmm13LLzcnyhbWAnxbsWykrFLlb/ELpSGf/M5rHC70vNj6A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5134
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 09, 2021 at 08:11:15PM -0800, Florian Fainelli wrote:
-> 
-> 
-> On 2/9/2021 5:02 PM, George McCollister wrote:
-> > Add offloading for HSR/PRP (IEC 62439-3) tag insertion, tag removal
-> > forwarding and duplication supported by the xrs7000 series switches.
-> > 
-> > Only HSR v1 and PRP v1 are supported by the xrs7000 series switches (HSR
-> > v0 is not).
-> > 
-> > Signed-off-by: George McCollister <george.mccollister@gmail.com>
-> > ---
-> [snip]
-> > +	val &= ~BIT(dsa_upstream_port(ds, port));
-> > +	regmap_write(priv->regmap, XRS_PORT_FWD_MASK(partner->index), val);
-> > +	regmap_write(priv->regmap, XRS_PORT_FWD_MASK(port), val);
-> > +
-> > +	regmap_fields_write(priv->ps_forward, partner->index,
-> > +			    XRS_PORT_FORWARDING);
-> > +	regmap_fields_write(priv->ps_forward, port, XRS_PORT_FORWARDING);
-> > +
-> > +	hsr_pair[0] = port;
-> > +	hsr_pair[1] = partner->index;
-> > +	for (i = 0; i < ARRAY_SIZE(hsr_pair); i++) {
-> > +		slave = dsa_to_port(ds, hsr_pair[i])->slave;
-> > +		slave->features |= XRS7000X_SUPPORTED_HSR_FEATURES;
-> 
-> It's a bit weird to change the supported features while joining, usually
-> you set them ahead of time to indicate what you are capable of doing and
-> those can get toggled by user-space to enable/disable said feature, I
-> suppose the goal here is to influence the HSR data path's decisions to
-> insert or not tags so this may be okay. This does beg several questions:
-> 
-> - should slave->vlan_features also include that feature set somehow (can
-> I have a VLAN upper?)
+Hi Horatiu,
 
-hsr_check_dev_ok:
-	if (is_vlan_dev(dev)) {
-		NL_SET_ERR_MSG_MOD(extack, "HSR on top of VLAN is not yet supported in this driver.");
-		return -EINVAL;
-	}
+On Tue, Feb 09, 2021 at 09:21:07PM +0100, Horatiu Vultur wrote:
+> This patch series extends MRP switchdev to allow the SW to have a better
+> understanding if the HW can implement the MRP functionality or it needs
+> to help the HW to run it. There are 3 cases:
+> - when HW can't implement at all the functionality.
+> - when HW can implement a part of the functionality but needs the SW
+>   implement the rest. For example if it can't detect when it stops
+>   receiving MRP Test frames but it can copy the MRP frames to CPU to
+>   allow the SW to determine this.  Another example is generating the MRP
+>   Test frames. If HW can't do that then the SW is used as backup.
+> - when HW can implement completely the functionality.
+>=20
+> So, initially the SW tries to offload the entire functionality in HW, if
+> that fails it tries offload parts of the functionality in HW and use the
+> SW as helper and if also this fails then MRP can't run on this HW.
+>=20
+> Also implement the switchdev calls for Ocelot driver. This is an example
+> where the HW can't run completely the functionality but it can help the S=
+W
+> to run it, by trapping all MRP frames to CPU.
+>=20
+> v3:
+>  - implement the switchdev calls needed by Ocelot driver.
+> v2:
+>  - fix typos in comments and in commit messages
+>  - remove some of the comments
+>  - move repeated code in helper function
+>  - fix issue when deleting a node when sw_backup was true
+>=20
+> Horatiu Vultur (5):
+>   switchdev: mrp: Extend ring_role_mrp and in_role_mrp
+>   bridge: mrp: Add 'enum br_mrp_hw_support'
+>   bridge: mrp: Extend br_mrp_switchdev to detect better the errors
+>   bridge: mrp: Update br_mrp to use new return values of
+>     br_mrp_switchdev
+>   net: mscc: ocelot: Add support for MRP
+>=20
+>  drivers/net/ethernet/mscc/ocelot_net.c     | 154 +++++++++++++++++++
+>  drivers/net/ethernet/mscc/ocelot_vsc7514.c |   6 +
+>  include/net/switchdev.h                    |   2 +
+>  include/soc/mscc/ocelot.h                  |   6 +
+>  net/bridge/br_mrp.c                        |  43 ++++--
+>  net/bridge/br_mrp_switchdev.c              | 171 +++++++++++++--------
+>  net/bridge/br_private_mrp.h                |  38 +++--
+>  7 files changed, 327 insertions(+), 93 deletions(-)
+>=20
+> --=20
+> 2.27.0
+>=20
 
-> - should there be a notifier running to advertise NETDEV_FEAT_CHANGE?
+Which net-next commit can these patches be applied to? On the current
+master I get:
 
-I felt it's a bit weird too to toggle the netdev flags just like that
-instead of just enabling them at probe time or something (or have DSA
-set them in dsa_slave_create(), just as it currently checks
-ds->ops->port_vlan_add), but since there's no need for anyone to process
-that notification, and there don't appear to be any strict guidelines, I
-didn't say anything. I guess the current code is just fine for what is
-needed at the moment.
-
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Applying: switchdev: mrp: Extend ring_role_mrp and in_role_mrp
+Applying: bridge: mrp: Add 'enum br_mrp_hw_support'
+Applying: bridge: mrp: Extend br_mrp_switchdev to detect better the errors
+error: patch failed: net/bridge/br_mrp_switchdev.c:177
+error: net/bridge/br_mrp_switchdev.c: patch does not apply
+Patch failed at 0004 bridge: mrp: Extend br_mrp_switchdev to detect better =
+the errors
+hint: Use 'git am --show-current-patch' to see the failed patch
+When you have resolved this problem, run "git am --continue".
+If you prefer to skip this patch, run "git am --skip" instead.
+To restore the original branch and stop patching, run "git am --abort".=
