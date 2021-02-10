@@ -2,134 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73E48315C8F
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 02:49:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CD1C315CA1
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 02:54:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234790AbhBJBsx convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 9 Feb 2021 20:48:53 -0500
-Received: from mga04.intel.com ([192.55.52.120]:51519 "EHLO mga04.intel.com"
+        id S234683AbhBJBxo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 20:53:44 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:59100 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234370AbhBJBrg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 9 Feb 2021 20:47:36 -0500
-IronPort-SDR: GbO0KKdzdtyRkBxJEWMSpRr0mCGya8aMpvNd5/mhwLTJ7gjDRBv06kUbHUOvyEgO2ttLBL3ZHc
- Y4IMnpABJwPg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9890"; a="179438962"
-X-IronPort-AV: E=Sophos;i="5.81,166,1610438400"; 
-   d="scan'208";a="179438962"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2021 17:46:48 -0800
-IronPort-SDR: VwV9tN20w9Co4NJOFoUs63/jmgJQCVI+eY5nEubICaY/tvpsaBUl98E4XqbvVbsi1d60hP8Tkm
- 0ISb7kmfidUA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,166,1610438400"; 
-   d="scan'208";a="375177282"
-Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
-  by orsmga002.jf.intel.com with ESMTP; 09 Feb 2021 17:46:47 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Tue, 9 Feb 2021 17:46:47 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Tue, 9 Feb 2021 17:46:47 -0800
-Received: from orsmsx610.amr.corp.intel.com ([10.22.229.23]) by
- ORSMSX610.amr.corp.intel.com ([10.22.229.23]) with mapi id 15.01.2106.002;
- Tue, 9 Feb 2021 17:46:47 -0800
-From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
-To:     Punit Agrawal <punit1.agrawal@toshiba.co.jp>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "daichi1.fukui@toshiba.co.jp" <daichi1.fukui@toshiba.co.jp>,
-        "nobuhiro1.iwamatsu@toshiba.co.jp" <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Corinna Vinschen <vinschen@redhat.com>,
-        "Brown, Aaron F" <aaron.f.brown@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: RE: [PATCH v4.4.y, v4.9.y] igb: Remove incorrect "unexpected SYS
- WRAP" log message
-Thread-Topic: [PATCH v4.4.y, v4.9.y] igb: Remove incorrect "unexpected SYS
- WRAP" log message
-Thread-Index: AQHW/00Ea3dgcbxX60mwhrS/nkhIh6pQnn8g
-Date:   Wed, 10 Feb 2021 01:46:46 +0000
-Message-ID: <c5d7ccb5804b46eea2ef9fe29c66720f@intel.com>
-References: <20210210013448.2116413-1-punit1.agrawal@toshiba.co.jp>
-In-Reply-To: <20210210013448.2116413-1-punit1.agrawal@toshiba.co.jp>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-x-originating-ip: [10.22.254.132]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S234459AbhBJBwY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 9 Feb 2021 20:52:24 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1l9efG-005Dku-19; Wed, 10 Feb 2021 02:51:34 +0100
+Date:   Wed, 10 Feb 2021 02:51:34 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Walle <michael@walle.cc>
+Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next] net: phy: introduce phydev->port
+Message-ID: <YCM8JiO4FfKx5ECo@lunn.ch>
+References: <20210209163852.17037-1-michael@walle.cc>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210209163852.17037-1-michael@walle.cc>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> @@ -1552,6 +1552,7 @@ static int marvell_read_status_page(struct phy_device *phydev, int page)
+>  	phydev->asym_pause = 0;
+>  	phydev->speed = SPEED_UNKNOWN;
+>  	phydev->duplex = DUPLEX_UNKNOWN;
+> +	phydev->port = fiber ? PORT_FIBRE : PORT_TP;
+>  
+>  	if (phydev->autoneg == AUTONEG_ENABLE)
+>  		err = marvell_read_status_page_an(phydev, fiber, status);
 
+...
 
-> -----Original Message-----
-> From: Punit Agrawal <punit1.agrawal@toshiba.co.jp>
-> Sent: Tuesday, February 09, 2021 5:35 PM
-> To: netdev@vger.kernel.org
-> Cc: Brandeburg, Jesse <jesse.brandeburg@intel.com>; Nguyen, Anthony L
-> <anthony.l.nguyen@intel.com>; daichi1.fukui@toshiba.co.jp;
-> nobuhiro1.iwamatsu@toshiba.co.jp; Corinna Vinschen <vinschen@redhat.com>;
-> Keller, Jacob E <jacob.e.keller@intel.com>; Brown, Aaron F
-> <aaron.f.brown@intel.com>; Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-> Subject: [PATCH v4.4.y, v4.9.y] igb: Remove incorrect "unexpected SYS WRAP" log
-> message
-> 
-> From: Corinna Vinschen <vinschen@redhat.com>
-> 
-> commit 2643e6e90210e16c978919617170089b7c2164f7 upstream
-> 
-> TSAUXC.DisableSystime is never set, so SYSTIM runs into a SYS WRAP
-> every 1100 secs on 80580/i350/i354 (40 bit SYSTIM) and every 35000
-> secs on 80576 (45 bit SYSTIM).
-> 
-> This wrap event sets the TSICR.SysWrap bit unconditionally.
-> 
-> However, checking TSIM at interrupt time shows that this event does not
-> actually cause the interrupt.  Rather, it's just bycatch while the
-> actual interrupt is caused by, for instance, TSICR.TXTS.
-> 
-> The conclusion is that the SYS WRAP is actually expected, so the
-> "unexpected SYS WRAP" message is entirely bogus and just helps to
-> confuse users.  Drop it.
-> 
-> Signed-off-by: Corinna Vinschen <vinschen@redhat.com>
-> Acked-by: Jacob Keller <jacob.e.keller@intel.com>
-> Tested-by: Aaron Brown <aaron.f.brown@intel.com>
-> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-> ---
-> Hi,
-> 
-> A customer reported that the following message appears in the kernel
-> logs every 1100s -
-> 
->     igb 0000:01:00.1: unexpected SYS WRAP
-> 
-> As the systems have large uptimes the messages are crowding the logs.
-> 
-> The message was dropped in
-> commit 2643e6e90210e16c ("igb: Remove incorrect "unexpected SYS WRAP" log
-> message")
-> in v4.14.
-> 
-> Please consider applying to patch to v4.4 and v4.9 stable kernels - it
-> applies cleanly to both the trees.
-> 
-> Thanks,
-> Punit
-> 
+> --- a/drivers/net/phy/phy.c
+> +++ b/drivers/net/phy/phy.c
+> @@ -308,7 +308,7 @@ void phy_ethtool_ksettings_get(struct phy_device *phydev,
+>  	if (phydev->interface == PHY_INTERFACE_MODE_MOCA)
+>  		cmd->base.port = PORT_BNC;
+>  	else
+> -		cmd->base.port = PORT_MII;
+> +		cmd->base.port = phydev->port;
+>  	cmd->base.transceiver = phy_is_internal(phydev) ?
+>  				XCVR_INTERNAL : XCVR_EXTERNAL;
+>  	cmd->base.phy_address = phydev->mdio.addr;
 
-It makes sense to me for htis to apply to those stable trees as well.
+This is a general comment, not a problem specific to this patch.
 
-Thanks,
-Jake
+There is some interesting race conditions here. The marvell driver
+first checks the fibre page and gets the status of the fiber port. As
+you can see from the hunk above, it clears out pause, duplex, speed,
+sets port to PORT_FIBRE, and then reads the PHY registers to set these
+values. If link is not detected on the fibre, it swaps page and does
+it all again, but for the copper port. So once per second,
+phydev->port is going to flip flop PORT_FIBER->PORT_TP, if copper has
+link.
 
+Now, the read_status() call into the driver should be performed while
+holding the phydev->lock. So to the PHY state machine, this flip/flop
+does not matter, it is atomic with respect to the lock. But
+phy_ethtool_ksettings_get() is not talking the lock. It could see
+speed, duplex, and port while they have _UNKNOWN values, or port is
+part way through a flip flop. I think we need to take the lock here.
+phy_ethtool_ksettings_set() should also probably take the lock.
+
+     Andrew
