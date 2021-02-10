@@ -2,170 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8D013165EE
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 13:04:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9966316643
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 13:13:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230034AbhBJMDw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 07:03:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37944 "EHLO
+        id S231352AbhBJMNO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 07:13:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231124AbhBJMBv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 07:01:51 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 306EFC06174A;
-        Wed, 10 Feb 2021 04:01:10 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id f14so3643376ejc.8;
-        Wed, 10 Feb 2021 04:01:10 -0800 (PST)
+        with ESMTP id S231398AbhBJMKa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 07:10:30 -0500
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4145C061224
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 04:04:37 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id t142so1622095wmt.1
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 04:04:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=2NPoseU3+T4T+f+cn5abepjcDycycu9LCWGAa05SN3E=;
-        b=HE6uBuptTXdUGANaII/WQiiYZJZFpbO8xPwk0jQG6BI9+8wbYqZeEtHkSrwaUJNC5A
-         n61XWFq9B7QgH88rSSbipN2dQYkV0YwqwoRKtRQ7si+hB4VrWxD7jFVstJbfa42wNzRI
-         6MBR2D32RCSl/kXapuAkVfO/MA9OT9vEBkvH6U7HeuKKKRCQa6kGIE4mWwj6f4qgPqhn
-         2/S4izOkVM3uf+V/Ei2dNMCgZA1w6PBTBe7PCbI+PEsVlkvsblXDtVrLuUOcEfBAVj/v
-         BBIrka+bIjfuHATphmnBwbKBYAzlySe8vfl1lBfM4i1cdaX3lUjccX628VlmiN8nWH6a
-         MiTQ==
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+9PeUG6v1r8aFGi6ORK3pCJUjeurz7TuWVSE9CMni0c=;
+        b=vefKpoHHE9JY7wsXqdCVcvzKivbYRTXzF+0dgJaRh4tzwGHJlFAPcT6iyCPjtVk/QO
+         2nbSc5689PqMRWiH0mYBu5uUXuBmmxhvZbfVsxAu4AYbT9KkUXLQ8GUARAWnmp4QnaYC
+         qrzOL4EoDzuwTZWyGC0rpjwwcObKmnDgs1a7A=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2NPoseU3+T4T+f+cn5abepjcDycycu9LCWGAa05SN3E=;
-        b=JYvs0u23TPT2KmEpDmXx8/gcUFjl9rW/G0pKM7wYM9AETPQCPwg0PBvr2dEZJlCx5F
-         dh2fH1LmB5fORtA+dQn5aYiJR3GmQQTjFlLyG1sVkbpQ/z0lsKXAWCOwvgsJ2/HK4TP3
-         nV5XyX4ikmXcuv9ea+5ophx+RdjGs8f4NxC9H4EALBkGqptPxCFuQScb7J0v/r6uFC/z
-         3DfgmDsdrVwrVPojxlaMypDlGV/ps0NbtB1imrRRa09rAyDjEdLJx+nEW05seruHTBS8
-         MgxSFmJE5h9CvKNC76HHp6HCEtmwNmjniVPqmhfVSKVqUD3X95UbUpZNMgwcQ4feDv38
-         4Dmg==
-X-Gm-Message-State: AOAM533dmRJm8Jk8fNSjfnZo37Wclnmk65I+2tuQTx8MPcnqDf1QkX+Y
-        bE9WLdoCSZiGUzIGpustWWwOcJlY5x0=
-X-Google-Smtp-Source: ABdhPJxOcxQYrTGQisMgQqjvBXPsilzEFuhkRo+n/5F4tT7h3fVZ8Fh5zK8P2qwW2xJImIlcrL4azw==
-X-Received: by 2002:a17:907:da9:: with SMTP id go41mr2633618ejc.326.1612958468879;
-        Wed, 10 Feb 2021 04:01:08 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id o4sm830293edw.78.2021.02.10.04.01.07
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+9PeUG6v1r8aFGi6ORK3pCJUjeurz7TuWVSE9CMni0c=;
+        b=NYXRq1+Oxci1hXdoL+BJLL+3kDqpTXYLJvITewAjNx6clhoY81Okj6+wtMbdqS36BW
+         8rvWF0qRgfKs8kSJGf2dlv1ON4A75avVIP9IZ6pH93Nb2UmmOI//wOw1ssjVymzEEgbu
+         xidpcdcasfv4AenTe7qZVhR395kxIZ3eKEggvtOtz92cFMqV/2UDkWvQUpDvQMmUGBPT
+         wAmOVhb4zD+snlXOfkA5D8xZfURrY4gLsSkdvRexb8BtnVkqFwVfrsGSqpa5cxmVr/d2
+         8Yw9I+a0HpcY3yao7VT0Tb0yEV/W7TVNbC6OuR8xbFjPxmcww0IBd+SGP0TzZPHpZgX0
+         gnRg==
+X-Gm-Message-State: AOAM531MUILYl1hiZ596Z8rIJ3awdq6TpDeERMG5mR6TfvPHM3Z6dNEd
+        LRNBDrr/FphujfBf7L8qI1eatQ==
+X-Google-Smtp-Source: ABdhPJwpmZw+y59+QzJHB79z4KhJzeSBdFZ5h0S1sHnxAqBTLAPp1GIONJS8JzIW2wEz2gPnFzl8PA==
+X-Received: by 2002:a1c:9851:: with SMTP id a78mr2600203wme.66.1612958676276;
+        Wed, 10 Feb 2021 04:04:36 -0800 (PST)
+Received: from antares.lan (c.3.c.9.d.d.c.e.0.a.6.8.a.9.e.c.f.f.6.2.a.5.a.7.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:7a5a:26ff:ce9a:86a0:ecdd:9c3c])
+        by smtp.gmail.com with ESMTPSA id j7sm2837854wrp.72.2021.02.10.04.04.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Feb 2021 04:01:08 -0800 (PST)
-Date:   Wed, 10 Feb 2021 14:01:06 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Nikolay Aleksandrov <nikolay@nvidia.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, Roopa Prabhu <roopa@nvidia.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 00/11] Cleanup in brport flags switchdev
- offload for DSA
-Message-ID: <20210210120106.g7blqje3wq4j5l6j@skbuf>
-References: <20210210091445.741269-1-olteanv@gmail.com>
- <a8e9284b-f0a6-0343-175d-8c323371ef8d@nvidia.com>
- <20210210104549.ga3lgjafn5x3htwj@skbuf>
- <a58e9615-036c-0431-4ea6-004af4988b27@nvidia.com>
- <20210210110125.rw6fvjtsqmmuglcg@skbuf>
- <90b255e6-efd2-b234-7bfc-4285331e56b1@nvidia.com>
+        Wed, 10 Feb 2021 04:04:35 -0800 (PST)
+From:   Lorenz Bauer <lmb@cloudflare.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     kernel-team@cloudflare.com, Lorenz Bauer <lmb@cloudflare.com>,
+        bpf@vger.kernel.org, linux-alpha@vger.kernel.org,
+        linux-api@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, netdev@vger.kernel.org,
+        sparclinux@vger.kernel.org
+Subject: [PATCH bpf 0/4] Expose network namespace cookies to user space
+Date:   Wed, 10 Feb 2021 12:04:21 +0000
+Message-Id: <20210210120425.53438-1-lmb@cloudflare.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <90b255e6-efd2-b234-7bfc-4285331e56b1@nvidia.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 10, 2021 at 01:05:57PM +0200, Nikolay Aleksandrov wrote:
-> On 10/02/2021 13:01, Vladimir Oltean wrote:
-> > On Wed, Feb 10, 2021 at 12:52:33PM +0200, Nikolay Aleksandrov wrote:
-> >> On 10/02/2021 12:45, Vladimir Oltean wrote:
-> >>> Hi Nikolay,
-> >>>
-> >>> On Wed, Feb 10, 2021 at 12:31:43PM +0200, Nikolay Aleksandrov wrote:
-> >>>> Hi Vladimir,
-> >>>> Let's take a step back for a moment and discuss the bridge unlock/lock sequences
-> >>>> that come with this set. I'd really like to avoid those as they're a recipe
-> >>>> for future problems. The only good way to achieve that currently is to keep
-> >>>> the PRE_FLAGS call and do that in unsleepable context but move the FLAGS call
-> >>>> after the flags have been changed (if they have changed obviously). That would
-> >>>> make the code read much easier since we'll have all our lock/unlock sequences
-> >>>> in the same code blocks and won't play games to get sleepable context.
-> >>>> Please let's think and work in that direction, rather than having:
-> >>>> +	spin_lock_bh(&p->br->lock);
-> >>>> +	if (err) {
-> >>>> +		netdev_err(p->dev, "%s\n", extack._msg);
-> >>>> +		return err;
-> >>>>  	}
-> >>>> +
-> >>>>
-> >>>> which immediately looks like a bug even though after some code checking we can
-> >>>> verify it's ok. WDYT?
-> >>>>
-> >>>> I plan to get rid of most of the br->lock since it's been abused for a very long
-> >>>> time because it's essentially STP lock, but people have started using it for other
-> >>>> things and I plan to fix that when I get more time.
-> >>>
-> >>> This won't make the sysfs codepath any nicer, will it?
-> >>>
-> >>
-> >> Currently we'll have to live with a hack that checks if the flags have changed. I agree
-> >> it won't be pretty, but we won't have to unlock and lock again in the middle of the
-> >> called function and we'll have all our locking in the same place, easier to verify and
-> >> later easier to remove. Once I get rid of most of the br->lock usage we can revisit
-> >> the drop of PRE_FLAGS if it's a problem. The alternative is to change the flags, then
-> >> send the switchdev notification outside of the lock and revert the flags if it doesn't
-> >> go through which doesn't sound much better.
-> >> I'm open to any other suggestions, but definitely would like to avoid playing locking games.
-> >> Even if it means casing out flag setting from all other store_ functions for sysfs.
-> >
-> > By casing out flag settings you mean something like this?
-> >
-> >
-> > #define BRPORT_ATTR(_name, _mode, _show, _store)		\
-> > const struct brport_attribute brport_attr_##_name = { 	        \
-> > 	.attr = {.name = __stringify(_name), 			\
-> > 		 .mode = _mode },				\
-> > 	.show	= _show,					\
-> > 	.store_unlocked	= _store,				\
-> > };
-> >
-> > #define BRPORT_ATTR_FLAG(_name, _mask)				\
-> > static ssize_t show_##_name(struct net_bridge_port *p, char *buf) \
-> > {								\
-> > 	return sprintf(buf, "%d\n", !!(p->flags & _mask));	\
-> > }								\
-> > static int store_##_name(struct net_bridge_port *p, unsigned long v) \
-> > {								\
-> > 	return store_flag(p, v, _mask);				\
-> > }								\
-> > static BRPORT_ATTR(_name, 0644,					\
-> > 		   show_##_name, store_##_name)
-> >
-> > static ssize_t brport_store(struct kobject *kobj,
-> > 			    struct attribute *attr,
-> > 			    const char *buf, size_t count)
-> > {
-> > 	...
-> >
-> > 	} else if (brport_attr->store_unlocked) {
-> > 		val = simple_strtoul(buf, &endp, 0);
-> > 		if (endp == buf)
-> > 			goto out_unlock;
-> > 		ret = brport_attr->store_unlocked(p, val);
-> > 	}
-> >
->
-> Yes, this can work but will need a bit more changes because of br_port_flags_change().
-> Then the netlink side can be modeled in a similar way.
+We're working on a user space control plane for the BPF sk_lookup
+hook [1]. The hook attaches to a network namespace and allows
+control over which socket receives a new connection / packet.
 
-What I just don't understand is how others can get away with doing
-sleepable work in atomic context but I can't make the notifier blocking
-by dropping a spinlock which isn't needed there, because it looks ugly :D
+Roughly, applications can give a socket to our user space component
+to participate in custom bind semantics. This creates an edge case
+where  an application can provide us with a socket that lives in
+a different network namespace than our BPF sk_lookup program.
+We'd like to return an error in this case.
+
+Additionally, we have some user space state that is tied to the
+network namespace. We currently use the inode of the nsfs entry
+in a directory name, but this is suffers from inode reuse.
+
+I'm proposing to fix both of these issues by adding a new
+SO_NETNS_COOKIE socket option as well as a NS_GET_COOKIE ioctl.
+Using these we get a stable, unique identifier for a network
+namespace and check whether a socket belongs to the "correct"
+namespace.
+
+NS_GET_COOKIE could be renamed to NS_GET_NET_COOKIE. I kept the
+name generic because it seems like other namespace types could
+benefit from a cookie as well.
+
+I'm trying to land this via the bpf tree since this is where the
+netns cookie originated, please let me know if this isn't
+appropriate.
+
+1: https://www.kernel.org/doc/html/latest/bpf/prog_sk_lookup.html
+
+Cc: bpf@vger.kernel.org
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-api@vger.kernel.org
+Cc: linux-arch@vger.kernel.org
+Cc: linux-fsdevel@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-kselftest@vger.kernel.org
+Cc: linux-mips@vger.kernel.org
+Cc: linux-parisc@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Cc: sparclinux@vger.kernel.org
+
+Lorenz Bauer (4):
+  net: add SO_NETNS_COOKIE socket option
+  nsfs: add an ioctl to discover the network namespace cookie
+  tools/testing: add test for NS_GET_COOKIE
+  tools/testing: add a selftest for SO_NETNS_COOKIE
+
+ arch/alpha/include/uapi/asm/socket.h          |  2 +
+ arch/mips/include/uapi/asm/socket.h           |  2 +
+ arch/parisc/include/uapi/asm/socket.h         |  2 +
+ arch/sparc/include/uapi/asm/socket.h          |  2 +
+ fs/nsfs.c                                     |  9 +++
+ include/linux/sock_diag.h                     | 20 ++++++
+ include/net/net_namespace.h                   | 11 ++++
+ include/uapi/asm-generic/socket.h             |  2 +
+ include/uapi/linux/nsfs.h                     |  2 +
+ net/core/filter.c                             |  9 ++-
+ net/core/sock.c                               |  7 +++
+ tools/testing/selftests/net/.gitignore        |  1 +
+ tools/testing/selftests/net/Makefile          |  2 +-
+ tools/testing/selftests/net/so_netns_cookie.c | 61 +++++++++++++++++++
+ tools/testing/selftests/nsfs/.gitignore       |  1 +
+ tools/testing/selftests/nsfs/Makefile         |  2 +-
+ tools/testing/selftests/nsfs/netns.c          | 57 +++++++++++++++++
+ 17 files changed, 185 insertions(+), 7 deletions(-)
+ create mode 100644 tools/testing/selftests/net/so_netns_cookie.c
+ create mode 100644 tools/testing/selftests/nsfs/netns.c
+
+-- 
+2.27.0
+
