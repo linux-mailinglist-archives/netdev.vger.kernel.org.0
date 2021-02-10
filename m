@@ -2,73 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AEB47316A21
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 16:27:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 617EE316A2F
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 16:29:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231993AbhBJP1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 10:27:37 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:46462 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229934AbhBJP1e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 10:27:34 -0500
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1l9rO9-0007dY-2z; Wed, 10 Feb 2021 15:26:45 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Huazhong Tan <tanhuazhong@huawei.com>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next] net: hns3: Fix uninitialized return from function
-Date:   Wed, 10 Feb 2021 15:26:44 +0000
-Message-Id: <20210210152644.137770-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.30.0
+        id S232086AbhBJP3i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 10:29:38 -0500
+Received: from ares.krystal.co.uk ([77.72.0.130]:58130 "EHLO
+        ares.krystal.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231478AbhBJP3I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 10:29:08 -0500
+Received: from [51.148.178.73] (port=60568 helo=pbcllap7)
+        by ares.krystal.co.uk with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <john.efstathiades@pebblebay.com>)
+        id 1l9rPd-00E7ZQ-S1; Wed, 10 Feb 2021 15:28:17 +0000
+Reply-To: <john.efstathiades@pebblebay.com>
+From:   "John Efstathiades" <john.efstathiades@pebblebay.com>
+To:     "'Andrew Lunn'" <andrew@lunn.ch>
+Cc:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <Woojung.Huh@microchip.com>
+References: <20210204113121.29786-1-john.efstathiades@pebblebay.com> <20210204113121.29786-3-john.efstathiades@pebblebay.com> <YBv5S3OVWnPX5Y+M@lunn.ch>
+In-Reply-To: <YBv5S3OVWnPX5Y+M@lunn.ch>
+Subject: RE: [PATCH net-next 2/9] lan78xx: disable U1/U2 power state transitions
+Date:   Wed, 10 Feb 2021 15:27:57 -0000
+Organization: Pebble Bay Consulting Ltd
+Message-ID: <004b01d6ffc1$5b31ce10$11956a30$@pebblebay.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+        charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQIpfIuWVWp4oXxuaZJopfPMH/GLnQGIcgi8AWJVsDiplTIVIA==
+Content-Language: en-gb
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - ares.krystal.co.uk
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - pebblebay.com
+X-Get-Message-Sender-Via: ares.krystal.co.uk: authenticated_id: john.efstathiades@pebblebay.com
+X-Authenticated-Sender: ares.krystal.co.uk: john.efstathiades@pebblebay.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
 
-Currently function hns3_reset_notify_uninit_enet is returning
-the contents of the uninitialized variable ret.  Fix this by
-removing ret (since it is no longer used) and replace it with
-a return of the literal value 0.
+> -----Original Message-----
+> From: Andrew Lunn <andrew@lunn.ch>
+> Sent: 04 February 2021 13:40
 
-Addresses-Coverity: ("Uninitialized scalar variable")
-Fixes: 64749c9c38a9 ("net: hns3: remove redundant return value of hns3_uninit_all_ring()")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+> Could you expand this comment a bit. Most people here are network
+> people, and have not idea what U1/U2 is. I assume it is some USB term?
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 9565b7999426..bf4302a5cf95 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -4640,7 +4640,6 @@ static int hns3_reset_notify_uninit_enet(struct hnae3_handle *handle)
- {
- 	struct net_device *netdev = handle->kinfo.netdev;
- 	struct hns3_nic_priv *priv = netdev_priv(netdev);
--	int ret;
- 
- 	if (!test_and_clear_bit(HNS3_NIC_STATE_INITED, &priv->state)) {
- 		netdev_warn(netdev, "already uninitialized\n");
-@@ -4662,7 +4661,7 @@ static int hns3_reset_notify_uninit_enet(struct hnae3_handle *handle)
- 
- 	hns3_put_ring_config(priv);
- 
--	return ret;
-+	return 0;
- }
- 
- static int hns3_reset_notify(struct hnae3_handle *handle,
--- 
-2.30.0
+Yes, they refer to USB 3.0 power states.
+
+> Some performance numbers would be nice here. And maybe current draw?
+
+I'll do this in the next revision of the patch.
+
+John
 
