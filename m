@@ -2,156 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B55493161F3
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 10:19:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4423B316204
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 10:22:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229631AbhBJJS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 04:18:56 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:46563 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230388AbhBJJP6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 04:15:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1612948470;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=DTTShUwVJ0CrEkc+tYcazKGDX2AZYCkEtJJC3BlqDjo=;
-        b=VM9NpJLSNyhSccz7er5P0aa5Bjk13+UsVXSFuOiC1rStb5OBipEfGSt1NCNciS2dij1OUw
-        qx5p1Jcha2uo3TvijTitUD8+p6OXRS6mQIBWNB45OCg49PjtYmUvgHKUKi0hWHgtHr+Ker
-        JkDQw9HvooVT7xdHuTLKTiXzeUmAhyI=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-73-8sHDyxzrM8eMqT2gb3HZOQ-1; Wed, 10 Feb 2021 04:14:27 -0500
-X-MC-Unique: 8sHDyxzrM8eMqT2gb3HZOQ-1
-Received: by mail-wr1-f72.google.com with SMTP id s18so1340146wrf.0
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 01:14:26 -0800 (PST)
+        id S229544AbhBJJWR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 04:22:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59616 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229863AbhBJJT7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 04:19:59 -0500
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F48EC06174A;
+        Wed, 10 Feb 2021 01:19:13 -0800 (PST)
+Received: by mail-ej1-x629.google.com with SMTP id sa23so2855572ejb.0;
+        Wed, 10 Feb 2021 01:19:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qNqiC3tG2xwOJq2qddxb/1WR+HrSzwiNawlUePCsQFs=;
+        b=FZHA5b7/YbuGyx85UjaXr9oA7wpfJd4MyLm1ksHXD3V6l7MiRrIaewHCmrv+bq8Zi8
+         hiJ22S3maNnxwqq2z4zZn9+TANcjaVDKFB6MX/1Vi3hnHUH+cTuWfy5r8n1etiZUXQdM
+         LMfkTM71xfGGdEwcSrTmn70MpKhdA0FNWu4YQIStGJ4vr55WIyH7/AYfQ4SALcTXr6sk
+         rxpgfNbQc9Z22hNYBB9+cL8Z/2Ue9GL8iuCl06lZN9wyyarPc4pKVqdZn0f5WJIBAoeg
+         5F2jOum72Q5wcrtY5tjoR2ETeeXSk1Aai3Vc3ZChzfqCRC5WpEVJKfwwvp9XZAYFw3zI
+         ccTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DTTShUwVJ0CrEkc+tYcazKGDX2AZYCkEtJJC3BlqDjo=;
-        b=mYVZKRULnTVLwyheGjajWg80q0qsjBpJhwJPiMvEygll6hrvCFpZXD55ADdClwapMX
-         YLLW2mLfW8/ce4yyz+unm+uVw9/Hl3u5AKHudVVQKcXmbulKj41QCCX8TcnExS+2WIEg
-         OZuqtvHTlwMyZ87iMckgm5WSPoZ1UvQAe2NxdmPAUSWdZucT6pU9oB5yoAOWz38yQ3AU
-         Vru08BrCxgJOFU+ifgjI/JZ9VoJKkCzIj1rTufKhZHmfNPZWyIxGAirAC01VkG3mTzf7
-         kek66a02qRyjWFf074yKJCmOiaSauQWf4elFFVGzrUwI83ryRcgtXuPYUafUkhdcJgru
-         WHUA==
-X-Gm-Message-State: AOAM533roowcex7gqnnUrO6NkZJDnE9IuikIW7pNX1NakSJwpqv5THbQ
-        j4RENfAerFaIaJLnHcp/h8pyAYfViItnbBmDMGb8MSF5tfJ1HgzjrdJDowcqbFgZqTRNfABaqav
-        Xj2ZI2sDjrcPn1JFT
-X-Received: by 2002:adf:f905:: with SMTP id b5mr2415512wrr.129.1612948465660;
-        Wed, 10 Feb 2021 01:14:25 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyVKNmX7F7uxfESFV+eOczVcXshzHHqofRNkNcRtOMdL/1msWkrIn0DfFr8uZOjZfXmBf8p7g==
-X-Received: by 2002:adf:f905:: with SMTP id b5mr2415495wrr.129.1612948465499;
-        Wed, 10 Feb 2021 01:14:25 -0800 (PST)
-Received: from redhat.com (bzq-79-180-2-31.red.bezeqint.net. [79.180.2.31])
-        by smtp.gmail.com with ESMTPSA id l83sm1814553wmf.4.2021.02.10.01.14.23
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qNqiC3tG2xwOJq2qddxb/1WR+HrSzwiNawlUePCsQFs=;
+        b=Rrri5mfHSCI3bo4MAQvUEz0usPCuGd6H09nJF1SADZyWVLZnHMgMEh3z+uvaAYOUV2
+         sSIPec7KiP2EeflsrB8cFO8wREGBIHOgMrPCF+c9HzVMFQ7DBUL3hZyXlRcGKQRlH/WQ
+         Mx7x2FqAuD5++QE6EH7IbyFjtkmzW8v8UuJqA+2qX4fWvVepq32j4oSXEo9DHzfZS9d7
+         EVmMpz757sJivzuoevAQvrKXbt0Bt9z0KcaI/yEsuLxslE9yNrMVWbonPUQ/Ui/WnI7o
+         R+gwWc5ZbuTJ9+GuhEbWfYR6nLem+5e5QF+Z+YvaVw+r0gCabB9UR7VB1KQ4NPNgX5sF
+         vReQ==
+X-Gm-Message-State: AOAM531/oxrdY6vLVVwMhgC4NTpp5LaKhPPV8HGPt8e7hH+GdboeCocu
+        C6wAjVWRVc/2BhvLsXXlcysqLCOrF7k=
+X-Google-Smtp-Source: ABdhPJwIfhzp1/ATswAZt7VNiXvQg+QbM0Af40aVGYZcs2kRvVjaRB7YpSMTSF0/8yNHzKfuuoXOFg==
+X-Received: by 2002:a17:906:ce24:: with SMTP id sd4mr1980081ejb.21.1612948752399;
+        Wed, 10 Feb 2021 01:19:12 -0800 (PST)
+Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id u2sm701801ejb.65.2021.02.10.01.19.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Feb 2021 01:14:24 -0800 (PST)
-Date:   Wed, 10 Feb 2021 04:14:21 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Wei Wang <weiwan@google.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Jason Wang <jasowang@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH net] virtio-net: suppress bad irq warning for tx napi
-Message-ID: <20210210040802-mutt-send-email-mst@kernel.org>
-References: <CAF=yD-+aPBF2RaCR8L5orTM37bf7Z4Z8Qko2D2LZjOz0khHTUg@mail.gmail.com>
- <3a3e005d-f9b2-c16a-5ada-6e04242c618e@redhat.com>
- <CAF=yD-+NVKiwS6P2=cS=gk2nLcsWP1anMyy4ghdPiNrhOmLRDw@mail.gmail.com>
- <9b0b8f2a-8476-697e-9002-e9947e3eab63@redhat.com>
- <CA+FuTScVOuoHKtrdrRFswjA3Zq1-7sgMVhnP2iMB5sYFFS8NFg@mail.gmail.com>
- <50ae0b71-df87-f26c-8b4d-8035f9f6a58d@redhat.com>
- <CAF=yD-J5-60D=JDwvpecjaO6J03SZHoHJyCsR3B1HbP1-jbqng@mail.gmail.com>
- <00de1b0f-f2aa-de54-9c7e-472643400417@redhat.com>
- <CAF=yD-K9xTBStGR5BEiS6WZd=znqM_ENcj9_nb=rrpcMORqE8g@mail.gmail.com>
- <CAEA6p_Bi1OMTas0W4VuxAMz8Frf+vBNc8c7xCDUxb_uwUy8Zgw@mail.gmail.com>
+        Wed, 10 Feb 2021 01:19:11 -0800 (PST)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org
+Subject: [PATCH v3 net-next 00/11] Cleanup in brport flags switchdev offload for DSA
+Date:   Wed, 10 Feb 2021 11:14:34 +0200
+Message-Id: <20210210091445.741269-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEA6p_Bi1OMTas0W4VuxAMz8Frf+vBNc8c7xCDUxb_uwUy8Zgw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 09, 2021 at 10:00:22AM -0800, Wei Wang wrote:
-> On Tue, Feb 9, 2021 at 6:58 AM Willem de Bruijn
-> <willemdebruijn.kernel@gmail.com> wrote:
-> >
-> > > >>> I have no preference. Just curious, especially if it complicates the patch.
-> > > >>>
-> > > >> My understanding is that. It's probably ok for net. But we probably need
-> > > >> to document the assumptions to make sure it was not abused in other drivers.
-> > > >>
-> > > >> Introduce new parameters for find_vqs() can help to eliminate the subtle
-> > > >> stuffs but I agree it looks like a overkill.
-> > > >>
-> > > >> (Btw, I forget the numbers but wonder how much difference if we simple
-> > > >> remove the free_old_xmits() from the rx NAPI path?)
-> > > > The committed patchset did not record those numbers, but I found them
-> > > > in an earlier iteration:
-> > > >
-> > > >    [PATCH net-next 0/3] virtio-net tx napi
-> > > >    https://lists.openwall.net/netdev/2017/04/02/55
-> > > >
-> > > > It did seem to significantly reduce compute cycles ("Gcyc") at the
-> > > > time. For instance:
-> > > >
-> > > >      TCP_RR Latency (us):
-> > > >      1x:
-> > > >        p50              24       24       21
-> > > >        p99              27       27       27
-> > > >        Gcycles         299      432      308
-> > > >
-> > > > I'm concerned that removing it now may cause a regression report in a
-> > > > few months. That is higher risk than the spurious interrupt warning
-> > > > that was only reported after years of use.
-> > >
-> > >
-> > > Right.
-> > >
-> > > So if Michael is fine with this approach, I'm ok with it. But we
-> > > probably need to a TODO to invent the interrupt handlers that can be
-> > > used for more than one virtqueues. When MSI-X is enabled, the interrupt
-> > > handler (vring_interrup()) assumes the interrupt is used by a single
-> > > virtqueue.
-> >
-> > Thanks.
-> >
-> > The approach to schedule tx-napi from virtnet_poll_cleantx instead of
-> > cleaning directly in this rx-napi function was not effective at
-> > suppressing the warning, I understand.
-> 
-> Correct. I tried the approach to schedule tx napi instead of directly
-> do free_old_xmit_skbs() in virtnet_poll_cleantx(). But the warning
-> still happens.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Two questions here: is the device using packed or split vqs?
-And is event index enabled?
+The initial goal of this series was to have better support for
+standalone ports mode and multiple bridges on the DSA drivers like
+ocelot/felix and sja1105. Proper support for standalone mode requires
+disabling address learning, which in turn requires interaction with the
+switchdev notifier, which is actually where most of the patches are.
 
-I think one issue is that at the moment with split and event index we
-don't actually disable events at all.
+I also noticed that most of the drivers are actually talking either to
+firmware or SPI/MDIO connected devices from the brport flags switchdev
+attribute handler, so it makes sense to actually make it sleepable
+instead of atomic.
 
-static void virtqueue_disable_cb_split(struct virtqueue *_vq)
-{
-        struct vring_virtqueue *vq = to_vvq(_vq);
+Vladimir Oltean (11):
+  net: switchdev: propagate extack to port attributes
+  net: bridge: offload all port flags at once in br_setport
+  net: bridge: don't print in br_switchdev_set_port_flag
+  net: dsa: configure proper brport flags when ports leave the bridge
+  net: squash switchdev attributes PRE_BRIDGE_FLAGS and BRIDGE_FLAGS
+  net: dsa: kill .port_egress_floods overengineering
+  net: prep switchdev drivers for concurrent
+    SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS
+  net: bridge: put SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS on the blocking
+    call chain
+  net: mscc: ocelot: use separate flooding PGID for broadcast
+  net: mscc: ocelot: offload bridge port flags to device
+  net: dsa: sja1105: offload bridge port flags to device
 
-        if (!(vq->split.avail_flags_shadow & VRING_AVAIL_F_NO_INTERRUPT)) {
-                vq->split.avail_flags_shadow |= VRING_AVAIL_F_NO_INTERRUPT;
-                if (!vq->event)
-                        vq->split.vring.avail->flags =
-                                cpu_to_virtio16(_vq->vdev,
-                                                vq->split.avail_flags_shadow);
-        }
-}
-
-Can you try your napi patch + disable event index?
-
+ drivers/net/dsa/b53/b53_common.c              |  20 +-
+ drivers/net/dsa/mv88e6xxx/chip.c              |  21 +-
+ drivers/net/dsa/ocelot/felix.c                |  10 +
+ drivers/net/dsa/sja1105/sja1105.h             |   2 +
+ drivers/net/dsa/sja1105/sja1105_main.c        | 212 +++++++++++++++++-
+ drivers/net/dsa/sja1105/sja1105_spi.c         |   6 +
+ .../marvell/prestera/prestera_switchdev.c     |  54 +++--
+ .../mellanox/mlxsw/spectrum_switchdev.c       |  90 ++++----
+ drivers/net/ethernet/mscc/ocelot.c            |  72 +++++-
+ drivers/net/ethernet/mscc/ocelot_net.c        |   7 +-
+ drivers/net/ethernet/rocker/rocker.h          |   2 +-
+ drivers/net/ethernet/rocker/rocker_main.c     |  24 +-
+ drivers/net/ethernet/rocker/rocker_ofdpa.c    |  26 ++-
+ drivers/net/ethernet/ti/cpsw_switchdev.c      |  35 ++-
+ drivers/staging/fsl-dpaa2/ethsw/ethsw.c       |  43 ++--
+ include/net/dsa.h                             |   7 +-
+ include/net/switchdev.h                       |  14 +-
+ include/soc/mscc/ocelot.h                     |  18 +-
+ net/bridge/br_netlink.c                       | 162 ++++++-------
+ net/bridge/br_private.h                       |   6 +-
+ net/bridge/br_switchdev.c                     |  33 ++-
+ net/bridge/br_sysfs_if.c                      |  21 +-
+ net/dsa/dsa_priv.h                            |   8 +-
+ net/dsa/port.c                                |  76 ++++---
+ net/dsa/slave.c                               |  10 +-
+ net/switchdev/switchdev.c                     |  11 +-
+ 26 files changed, 654 insertions(+), 336 deletions(-)
 
 -- 
-MST
+2.25.1
 
