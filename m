@@ -2,197 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F941316BB9
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 17:51:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18483316BD2
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 17:56:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231959AbhBJQvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 11:51:31 -0500
-Received: from ssl.serverraum.org ([176.9.125.105]:39949 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233088AbhBJQty (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 11:49:54 -0500
-Received: from mwalle01.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:fa59:71ff:fe9b:b851])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id C73D523E83;
-        Wed, 10 Feb 2021 17:48:00 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1612975681;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HOk8FU5aNzbxZFRMHXvhBJsCoU8i/72M6o4pS66b2UU=;
-        b=bQnI9A2DPvVPWMVpfchXUVMuVndTc4oRIF8BPrG2hBMTgvqsbJNGjim7hVp/mhmZS7w7Xx
-        iP38Vz4ALaUJ3nRpoR8ZwbjJNAJ7mQBnJSJNdhB0bx8A2FdGIlDEyzRgY6IhYC3PygSZ/u
-        jhh+y4nTcms84yuMMOVOHbHFzANueHQ=
-From:   Michael Walle <michael@walle.cc>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S232294AbhBJQzB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 11:55:01 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:13219 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233284AbhBJQwk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 11:52:40 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B60240f2d0003>; Wed, 10 Feb 2021 08:51:57 -0800
+Received: from DRHQMAIL107.nvidia.com (10.27.9.16) by HQMAIL111.nvidia.com
+ (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 10 Feb
+ 2021 16:51:57 +0000
+Received: from reg-r-vrt-018-180.nvidia.com (172.20.145.6) by
+ DRHQMAIL107.nvidia.com (10.27.9.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3; Wed, 10 Feb 2021 16:51:55 +0000
+References: <20210206050240.48410-1-saeed@kernel.org>
+ <CAJ3xEMhPU=hr-wNN+g8Yq4rMqFQQGybQnn86mmbXrTTN6Xb8xw@mail.gmail.com>
+User-agent: mu4e 1.4.10; emacs 27.1
+From:   Vlad Buslov <vladbu@nvidia.com>
+To:     Or Gerlitz <gerlitz.or@gmail.com>
+CC:     Saeed Mahameed <saeed@kernel.org>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next v2 9/9] net: phy: icplus: add MDI/MDIX support for IP101A/G
-Date:   Wed, 10 Feb 2021 17:47:46 +0100
-Message-Id: <20210210164746.26336-10-michael@walle.cc>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210210164746.26336-1-michael@walle.cc>
-References: <20210210164746.26336-1-michael@walle.cc>
+        Linux Netdev List <netdev@vger.kernel.org>
+Subject: Re: [pull request][net-next V2 00/17] mlx5 updates 2021-02-04
+In-Reply-To: <CAJ3xEMhPU=hr-wNN+g8Yq4rMqFQQGybQnn86mmbXrTTN6Xb8xw@mail.gmail.com>
+Date:   Wed, 10 Feb 2021 18:51:53 +0200
+Message-ID: <ygnhy2fvg91y.fsf@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ DRHQMAIL107.nvidia.com (10.27.9.16)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1612975917; bh=X3akhWrU5noARCF7Lt4aeKRl+xjPBPu13DgRt/Ls0hY=;
+        h=References:User-agent:From:To:CC:Subject:In-Reply-To:Date:
+         Message-ID:MIME-Version:Content-Type:X-Originating-IP:
+         X-ClientProxiedBy;
+        b=E6xJA1CXdPLarbXHuk+EYZM6bPmCw3OLVVkdMAq//bupggt6SKdG5gsKWPwJ/ml96
+         WYfrSVBol87SxhvquO4fkmf87OQAbqQIBH0I4JJ7srcrQ0K5SKGj1d79J6beHIDQNp
+         DsZUyR44cMrNn6CUq/DGSS8uz/OwIS8OODMbU5ek8vjPaLz93MER/yo/Pl53Rl2vnW
+         i6KZ1sAjidTH00gEPM+N/GGS2uoyhQ1fQ8zAPI2Fb38dxcbuSSrs424UEVznnAynTO
+         RqIjte1SGxfrmMloVIcPj0F24v2dfUEA+SEgZ7zVv4T7DRN7hGghYMy7LRSxrf4ccj
+         6JjCGtUIapnRQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement the operations to set desired mode and retrieve the current
-mode.
 
-This feature was tested with an IP101G.
+On Tue 09 Feb 2021 at 10:42, Or Gerlitz <gerlitz.or@gmail.com> wrote:
+> On Sat, Feb 6, 2021 at 7:10 AM Saeed Mahameed <saeed@kernel.org> wrote:
+>
+>> Vlad Buslov says:
+>
+>> Implement support for VF tunneling
+>
+>> Currently, mlx5 only supports configuration with tunnel endpoint IP address on
+>> uplink representor. Remove implicit and explicit assumptions of tunnel always
+>> being terminated on uplink and implement necessary infrastructure for
+>> configuring tunnels on VF representors and updating rules on such tunnels
+>> according to routing changes.
+>
+>> SW TC model
+>
+> maybe before SW TC model, you can explain the vswitch SW model (TC is
+> a vehicle to implement the SW model).
+>
+> SW model for VST and "classic" v-switch tunnel setup:
+>
+> For example, in VST model, each virtio/vf/sf vport has a vlan
+> such that the v-switch tags packets going out "south" of the
+> vport towards the uplink, untags packets going "north" from
+> the uplink, matches on the vport tag and forwards them to
+> the vport (and does nothing for east-west traffic).
+>
+> In a similar manner, in "classic" v-switch tunnel setup, each
+> virtio/vf/sf vport is somehow associated with VNI/s marking the
+> tenant/s it belongs to. Same tenant east-west traffic on the
+> host doesn't go through any encap/decap. The v-switch adds the
+> relevant tunnel MD to packets/skbs sent "southward" by the end-point
+> and forwards it to the VTEP which applies encap based on the MD (LWT
+> scheme) and sends the packets to the wire. On RX, the VTEP decaps
+> the tunnel info from the packet, adds it as MD to the skb and
+> forwards the packet up into the stack where the vsw hooks it, matches
+> on the MD + inner tuple and then forwards it to the relevant endpoint.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
----
-Changes since v1:
- - none, except that the callbacks are register for both IP101A and IP101G
-   PHY drivers
+Moving tunnel endpoint to VF doesn't change anything in this
+high-level description.
 
- drivers/net/phy/icplus.c | 93 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 93 insertions(+)
+>
+> HW offloads for VST and "classic" v-switch tunnel setup:
+>
+> more or less straight forward based on the above
+>
+>> From TC perspective VF tunnel configuration requires two rules in both
+>> directions:
+>
+>> TX rules
+>> 1. Rule that redirects packets from UL to VF rep that has the tunnel
+>> endpoint IP address:
+>> 2. Rule that decapsulates the tunneled flow and redirects to destination VF
+>> representor:
+>
+>> RX rules
+>> 1. Rule that encapsulates the tunneled flow and redirects packets from
+>> source VF rep to tunnel device:
+>> 2. Rule that redirects from tunnel device to UL rep:
+>
+> mmm it's kinda hard managing to follow and catch up a SW model from TC rules..
+>
+> I think we need these two to begin with (in whatever order that works
+> better for you)
+>
+> [1] Motivation for enhanced v-switch tunnel setup:
+>
+> [2] SW model for enhanced v-switch tunnel setup:
+>
+>> HW offloads model
+>
+> a clear SW model before HW offloads model..
 
-diff --git a/drivers/net/phy/icplus.c b/drivers/net/phy/icplus.c
-index 52ba5a697025..26b591e18120 100644
---- a/drivers/net/phy/icplus.c
-+++ b/drivers/net/phy/icplus.c
-@@ -37,12 +37,17 @@ MODULE_LICENSE("GPL");
- #define IP1001_SPEC_CTRL_STATUS_2	20	/* IP1001 Spec. Control Reg 2 */
- #define IP1001_APS_ON			11	/* IP1001 APS Mode  bit */
- #define IP101A_G_APS_ON			BIT(1)	/* IP101A/G APS Mode bit */
-+#define IP101A_G_AUTO_MDIX_DIS		BIT(11)
- #define IP101A_G_IRQ_CONF_STATUS	0x11	/* Conf Info IRQ & Status Reg */
- #define	IP101A_G_IRQ_PIN_USED		BIT(15) /* INTR pin used */
- #define IP101A_G_IRQ_ALL_MASK		BIT(11) /* IRQ's inactive */
- #define IP101A_G_IRQ_SPEED_CHANGE	BIT(2)
- #define IP101A_G_IRQ_DUPLEX_CHANGE	BIT(1)
- #define IP101A_G_IRQ_LINK_CHANGE	BIT(0)
-+#define IP101A_G_PHY_STATUS		18
-+#define IP101A_G_MDIX			BIT(9)
-+#define IP101A_G_PHY_SPEC_CTRL		30
-+#define IP101A_G_FORCE_MDIX		BIT(3)
- 
- #define IP101G_PAGE_CONTROL				0x14
- #define IP101G_PAGE_CONTROL_MASK			GENMASK(4, 0)
-@@ -297,6 +302,90 @@ static int ip101g_config_init(struct phy_device *phydev)
- 	return ip101a_g_config_intr_pin(phydev);
- }
- 
-+static int ip101a_g_read_status(struct phy_device *phydev)
-+{
-+	int oldpage, ret, stat1, stat2;
-+
-+	ret = genphy_read_status(phydev);
-+	if (ret)
-+		return ret;
-+
-+	oldpage = phy_select_page(phydev, IP101G_DEFAULT_PAGE);
-+
-+	ret = __phy_read(phydev, IP10XX_SPEC_CTRL_STATUS);
-+	if (ret < 0)
-+		goto out;
-+	stat1 = ret;
-+
-+	ret = __phy_read(phydev, IP101A_G_PHY_SPEC_CTRL);
-+	if (ret < 0)
-+		goto out;
-+	stat2 = ret;
-+
-+	if (stat1 & IP101A_G_AUTO_MDIX_DIS) {
-+		if (stat2 & IP101A_G_FORCE_MDIX)
-+			phydev->mdix_ctrl = ETH_TP_MDI_X;
-+		else
-+			phydev->mdix_ctrl = ETH_TP_MDI;
-+	} else {
-+		phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
-+	}
-+
-+	if (stat2 & IP101A_G_MDIX)
-+		phydev->mdix = ETH_TP_MDI_X;
-+	else
-+		phydev->mdix = ETH_TP_MDI;
-+
-+	ret = 0;
-+
-+out:
-+	return phy_restore_page(phydev, oldpage, ret);
-+}
-+
-+static int ip101a_g_config_mdix(struct phy_device *phydev)
-+{
-+	u16 ctrl = 0, ctrl2 = 0;
-+	int oldpage, ret;
-+
-+	switch (phydev->mdix_ctrl) {
-+	case ETH_TP_MDI:
-+		ctrl = IP101A_G_AUTO_MDIX_DIS;
-+		break;
-+	case ETH_TP_MDI_X:
-+		ctrl = IP101A_G_AUTO_MDIX_DIS;
-+		ctrl2 = IP101A_G_FORCE_MDIX;
-+		break;
-+	case ETH_TP_MDI_AUTO:
-+		break;
-+	default:
-+		return 0;
-+	}
-+
-+	oldpage = phy_select_page(phydev, IP101G_DEFAULT_PAGE);
-+
-+	ret = __phy_modify(phydev, IP10XX_SPEC_CTRL_STATUS,
-+			   IP101A_G_AUTO_MDIX_DIS, ctrl);
-+	if (ret)
-+		goto out;
-+
-+	ret = __phy_modify(phydev, IP101A_G_PHY_SPEC_CTRL,
-+			   IP101A_G_FORCE_MDIX, ctrl2);
-+
-+out:
-+	return phy_restore_page(phydev, oldpage, ret);
-+}
-+
-+static int ip101a_g_config_aneg(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	ret = ip101a_g_config_mdix(phydev);
-+	if (ret)
-+		return ret;
-+
-+	return genphy_config_aneg(phydev);
-+}
-+
- static int ip101a_g_ack_interrupt(struct phy_device *phydev)
- {
- 	int err;
-@@ -503,6 +592,8 @@ static struct phy_driver icplus_driver[] = {
- 	.config_intr	= ip101a_g_config_intr,
- 	.handle_interrupt = ip101a_g_handle_interrupt,
- 	.config_init	= ip101a_config_init,
-+	.config_aneg	= ip101a_g_config_aneg,
-+	.read_status	= ip101a_g_read_status,
- 	.soft_reset	= genphy_soft_reset,
- 	.suspend	= genphy_suspend,
- 	.resume		= genphy_resume,
-@@ -516,6 +607,8 @@ static struct phy_driver icplus_driver[] = {
- 	.config_intr	= ip101a_g_config_intr,
- 	.handle_interrupt = ip101a_g_handle_interrupt,
- 	.config_init	= ip101g_config_init,
-+	.config_aneg	= ip101a_g_config_aneg,
-+	.read_status	= ip101a_g_read_status,
- 	.soft_reset	= genphy_soft_reset,
- 	.get_sset_count = ip101g_get_sset_count,
- 	.get_strings	= ip101g_get_strings,
--- 
-2.20.1
+Hope my replies to Jakub and Marcelo also address these.
+
+>
+>>  25 files changed, 3812 insertions(+), 1057 deletions(-)
+>
+> for adding almost 4K LOCs
 
