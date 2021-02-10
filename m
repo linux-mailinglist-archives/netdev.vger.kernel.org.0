@@ -2,127 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86B61317319
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 23:16:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54CA5317355
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 23:29:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233150AbhBJWPo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 17:15:44 -0500
-Received: from mail.baikalelectronics.com ([87.245.175.226]:35476 "EHLO
+        id S232663AbhBJW24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 17:28:56 -0500
+Received: from mail.baikalelectronics.com ([87.245.175.226]:35520 "EHLO
         mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230229AbhBJWPk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 17:15:40 -0500
-Date:   Thu, 11 Feb 2021 01:14:55 +0300
+        with ESMTP id S232097AbhBJW2w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 17:28:52 -0500
+Date:   Thu, 11 Feb 2021 01:28:05 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+To:     Rob Herring <robh@kernel.org>
 CC:     Serge Semin <fancer.lancer@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
         Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@st.com>,
         Jose Abreu <joabreu@synopsys.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Joao Pinto <jpinto@synopsys.com>,
-        Lars Persson <larper@axis.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
         Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
         Vyacheslav Mitrofanov 
         <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         <netdev@vger.kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 16/24] net: stmmac: Use optional reset control API to
- work with stmmaceth
-Message-ID: <20210210221455.jo22rq6eey3ujqmt@mobilestation>
-References: <20210208135609.7685-1-Sergey.Semin@baikalelectronics.ru>
- <20210208135609.7685-17-Sergey.Semin@baikalelectronics.ru>
- <20210210144924.6b8e7a11@xhacker.debian>
+Subject: Re: [PATCH 01/16] dt-bindings: net: dwmac: Add DW GMAC GPIOs
+ properties
+Message-ID: <20210210222805.upoioue7uc6cat2v@mobilestation>
+References: <20210208140820.10410-1-Sergey.Semin@baikalelectronics.ru>
+ <20210208140820.10410-2-Sergey.Semin@baikalelectronics.ru>
+ <20210209231352.GA402351@robh.at.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20210210144924.6b8e7a11@xhacker.debian>
+In-Reply-To: <20210209231352.GA402351@robh.at.kernel.org>
 X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 10, 2021 at 02:49:24PM +0800, Jisheng Zhang wrote:
-> Hi,
-> 
-> On Mon, 8 Feb 2021 16:56:00 +0300 Serge Semin wrote:
-> 
-> 
+On Tue, Feb 09, 2021 at 05:13:52PM -0600, Rob Herring wrote:
+> On Mon, Feb 08, 2021 at 05:08:05PM +0300, Serge Semin wrote:
+> > Synopsys DesignWare Ethernet controllers can be synthesized with
+> > General-Purpose IOs support. GPIOs can work either as inputs or as outputs
+> > thus belong to the gpi_i and gpo_o ports respectively. The ports width
+> > (number of possible inputs/outputs) and the configuration registers layout
+> > depend on the IP-core version. For instance, DW GMAC can have from 0 to 4
+> > GPIs and from 0 to 4 GPOs, while DW xGMAC have a wider ports width up to
+> > 16 pins of each one.
 > > 
-> > Since commit bb3222f71b57 ("net: stmmac: platform: use optional clk/reset
-> > get APIs") a manual implementation of the optional device reset control
-> > functionality has been replaced with using the
-> > devm_reset_control_get_optional() method. But for some reason the optional
-> > reset control handler usage hasn't been fixed and preserved the
-> > NULL-checking statements. There is no need in that in order to perform the
-> > reset control assertion/deassertion because the passed NULL will be
-> > considered by the reset framework as absent optional reset control handler
-> > anyway.
+> > So the DW MAC DT-node can be equipped with "ngpios" property, which can't
+> > have a value greater than 32, standard GPIO-related properties like
+> > "gpio-controller" and "#gpio-cells", and, if GPIs are supposed to be
+> > detected, IRQ-controller related properties.
 > > 
-> > Fixes: bb3222f71b57 ("net: stmmac: platform: use optional clk/reset get APIs")
+> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> > ---
+> >  .../devicetree/bindings/net/snps,dwmac.yaml     | 17 +++++++++++++++++
+> >  1 file changed, 17 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > index bdc437b14878..fcca23d3727e 100644
+> > --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> > @@ -110,6 +110,23 @@ properties:
+> >    reset-names:
+> >      const: stmmaceth
+> >  
+> > +  ngpios:
+> > +    description:
+> > +      Total number of GPIOs the MAC supports. The property shall include both
+> > +      the GPI and GPO ports width.
+> > +    minimum: 1
+> > +    maximum: 32
 > 
 
-> The patch itself looks good, but the Fix tag isn't necessary since the
-> patch is a clean up rather than a bug fix. Can you please drop it in next
-> version?
+> Does the driver actually need this? I'd omit it if just to validate 
+> consumers are in range.
 
-Ok. I'll remove it.
+I can't say for all possible DW MAC IP-cores (I've got manuals for
+GMAC and xGMAC only), but at least DW GMAC can't have more than four
+GPIs and four GPOs, while XGMACs can be synthesized with up to 16
+each. That's why I've set the upper boundary here as 32. But the
+driver uses the ngpios property do determine the total number GPIOs
+the core has been synthesized. Th number of GPIs and GPOs will be
+auto-detected then (by writing-reading to-from the GPI type field of
+the GPIO control register).
+
+> 
+> Are GPI and GPO counts independent? If so, this isn't really sufficient.
+
+Yeap, they are independent. What do you suggest then? Define some
+vendor-specific properties like snps,ngpis and snps,ngpos? If so then
+they seem more generic than vendor-specific, because the separated
+GPI and GPO space isn't an unique feature of the DW MAC GPIOs. Do we
+need to create a generic version of such properties then? (That much
+more changes then introduced here. We'd need to fix the dt-schema tool
+too then.)
 
 -Sergey
 
 > 
-> Thanks
-> 
-> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> > ---
-> >  .../net/ethernet/stmicro/stmmac/stmmac_main.c | 19 ++++++++-----------
-> >  1 file changed, 8 insertions(+), 11 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > index 4f1bf8f6538b..a8dec219c295 100644
-> > --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > @@ -4935,15 +4935,13 @@ int stmmac_dvr_probe(struct device *device,
-> >         if ((phyaddr >= 0) && (phyaddr <= 31))
-> >                 priv->plat->phy_addr = phyaddr;
-> > 
-> > -       if (priv->plat->stmmac_rst) {
-> > -               ret = reset_control_assert(priv->plat->stmmac_rst);
-> > -               reset_control_deassert(priv->plat->stmmac_rst);
-> > -               /* Some reset controllers have only reset callback instead of
-> > -                * assert + deassert callbacks pair.
-> > -                */
-> > -               if (ret == -ENOTSUPP)
-> > -                       reset_control_reset(priv->plat->stmmac_rst);
-> > -       }
-> > +       ret = reset_control_assert(priv->plat->stmmac_rst);
-> > +       reset_control_deassert(priv->plat->stmmac_rst);
-> > +       /* Some reset controllers have only reset callback instead of
-> > +        * assert + deassert callbacks pair.
-> > +        */
-> > +       if (ret == -ENOTSUPP)
-> > +               reset_control_reset(priv->plat->stmmac_rst);
-> > 
-> >         /* Init MAC and get the capabilities */
-> >         ret = stmmac_hw_init(priv);
-> > @@ -5155,8 +5153,7 @@ int stmmac_dvr_remove(struct device *dev)
-> >         stmmac_exit_fs(ndev);
-> >  #endif
-> >         phylink_destroy(priv->phylink);
-> > -       if (priv->plat->stmmac_rst)
-> > -               reset_control_assert(priv->plat->stmmac_rst);
-> > +       reset_control_assert(priv->plat->stmmac_rst);
-> >         if (priv->hw->pcs != STMMAC_PCS_TBI &&
-> >             priv->hw->pcs != STMMAC_PCS_RTBI)
-> >                 stmmac_mdio_unregister(ndev);
-> > --
-> > 2.29.2
-> > 
-> 
+> Rob
