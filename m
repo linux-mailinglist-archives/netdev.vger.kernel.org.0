@@ -2,183 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E28EB317252
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 22:26:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 602CB317293
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 22:42:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233454AbhBJV0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 16:26:30 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:16580 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232132AbhBJVYY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 16:24:24 -0500
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11AL83Nj012685;
-        Wed, 10 Feb 2021 13:23:26 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=TRdP5b88P3ZlLPYJhuzO1k8jJZEk+R2ZP7paWBVU0e0=;
- b=XVd0LcTuoaXsVn+psZj9J3LuR2axwxUG5oo1bavjsE4UhZE3VMqw4THHhYaglmrgDzKV
- ipTn+oxBXySke1hNShZ19fXw9sCMstGcOZjP1HV6qFNcYvstmGtgX3/LeuGD4/uej1hh
- rYoJA/QHWBmFRKeBaExMp1t81zhGnPnwQwU= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 36jc1cm9dq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 10 Feb 2021 13:23:26 -0800
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.198) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 10 Feb 2021 13:23:25 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DcjPlTVd4Vrh9Peb3wDhhAH2zSxW5EnE9DaUE6E0U7T1ZSK1xJTRvLFPopV22CngBSGx8qGURLcmMHKXfxe7v5Q8vdr8xFE8YYz4n/uZ+cM1PxcCWDBJYBtpt2luwkto3ZHBm42oMpg1E4g1asBUgKzwis51UTT+BZH677YwXtA7E+RvpO4HTKmVRwEa77Jbe5dYQTIS5UzQnhR4e2X2U4UaUa2QAjlTMMa+/wH2ga6g566If6HCYPjPUT9iEFUjPrayErOTYiaHdAxsTB8Bym1LGZdzmniJKAte7kuZ4Fe+kJaW61qpMWgZkUxYczP7Wq869QgfHzpo/UZx49r22g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TRdP5b88P3ZlLPYJhuzO1k8jJZEk+R2ZP7paWBVU0e0=;
- b=XWADPa7Nk9di2Tu+6loTUJ18XAFJJxzUhpsDRcg0vuZslDnFEZkwkeXznTk9cQJrNnDNytv94sf9FCVxNPaGpr4tfe3ygstTa2u+PM2nXsz5bgqhFQHU6B8gC1wPnLOBtf2bqiIS3081VigJcu7dV7eQ16DvpxMkakGf8KG/FMC09K4gDvzi9iPtKUH91iaJMCHD68RAQXhcwfCkvMdCd+syMhfHZ3l9p64sXxLMcCKuOULb4IDsm3dc5aOmhVIhbxIPzh5qk84CYJ3MzJpQqLJ6Tq9b6Y6ZKbYs3IseDfzowesmczAi878jZli3RssQsYSiCMQpJ72Ym/Dl6Fsm8g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
- by BYAPR15MB2327.namprd15.prod.outlook.com (2603:10b6:a02:8e::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.20; Wed, 10 Feb
- 2021 21:23:24 +0000
-Received: from BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::c585:b877:45fe:4e3f]) by BY5PR15MB3571.namprd15.prod.outlook.com
- ([fe80::c585:b877:45fe:4e3f%7]) with mapi id 15.20.3825.030; Wed, 10 Feb 2021
- 21:23:24 +0000
-Date:   Wed, 10 Feb 2021 13:23:17 -0800
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        id S232920AbhBJVmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 16:42:19 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:31591 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232212AbhBJVmO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 16:42:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612993248;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=hi2X5jnGRi7KT3vlKkAdXUsSwPyG3HDv963BA62z9vA=;
+        b=MVc4/xHA901ccgJrH6G7F4PWP0eCRvcxVtsKa1YglX/g/MrwwhJWRWwOakjVreGCcr3esa
+        MFOlkwU3vtzh5Cw7J8gnxXI60W7Mvek04MChtQds5iN1tQtzHiCFM4dZ4qcAZURIDue4C9
+        5G5ONXN9bQiurLv4FPBSCtheF1WMT6s=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-425-aurJ37NeNTOrIP7lzzX4pA-1; Wed, 10 Feb 2021 16:40:46 -0500
+X-MC-Unique: aurJ37NeNTOrIP7lzzX4pA-1
+Received: by mail-wm1-f70.google.com with SMTP id o18so1513941wmq.2
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 13:40:46 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hi2X5jnGRi7KT3vlKkAdXUsSwPyG3HDv963BA62z9vA=;
+        b=jpuwJYApdLtZiAWYELLyRotruMJiOYGayDKu2vY2/lRHC4/qAyPDP5dMT20okwyaUW
+         bH52A0Q0BK0lU2ujaYAR14bHOt3qd9MzV3ojrmVAzT/YgYCwVTWxBm+F5k/C8BUbdcsK
+         4qkiCeZmmL1kQ1vHag16deTyBLkubiDYT0/EameiUuOikmxWx/eAt22FQ1sK09fgV44/
+         ILRUbNqbtD8hGUARhIVg8BdF1YV9PokeEaX2/HTuK5HGJI3zTwHjZlUyUPQgt2cABzjw
+         901NbH62ol6wMVvSNd5quM74rA7kQ7vOGY+wkrZvOwYlg+o6NUyJY+KSp87z2ThgQV/Y
+         1m0w==
+X-Gm-Message-State: AOAM532e0w5jMwJ4xpmgF8aG7z3mwJTrrTYDfAxvmytzBqimnl8gx1qX
+        itiKTaaSudhjdqOrV0eDLVjgyF02O9M/owBfOqAhLiQAbaD501gjN1UnWq9x5mm8pc03qZCN8PL
+        m444R+huWAsbZ8HXj
+X-Received: by 2002:a1c:c903:: with SMTP id f3mr1050592wmb.69.1612993245120;
+        Wed, 10 Feb 2021 13:40:45 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwEZ8liZuKYUAcB0H7NMYB9jERfv/Iy/eLiiOFihgo+hWnxXSocQL+S/PQhfhUBwNqqpOQigQ==
+X-Received: by 2002:a1c:c903:: with SMTP id f3mr1050574wmb.69.1612993244940;
+        Wed, 10 Feb 2021 13:40:44 -0800 (PST)
+Received: from redhat.com (bzq-79-180-2-31.red.bezeqint.net. [79.180.2.31])
+        by smtp.gmail.com with ESMTPSA id j185sm5103692wma.1.2021.02.10.13.40.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Feb 2021 13:40:44 -0800 (PST)
+Date:   Wed, 10 Feb 2021 16:40:41 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Networking <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf 1/2] libbpf: Ignore non function pointer member in
- struct_ops
-Message-ID: <20210210212317.3sqgq5jxcdbq6a73@kafai-mbp.dhcp.thefacebook.com>
-References: <20210209193105.1752743-1-kafai@fb.com>
- <CAEf4BzYmTSfRv4vhPeDiYq-zdoAE9rvy=hszsQNUzQ3noeii-Q@mail.gmail.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzYmTSfRv4vhPeDiYq-zdoAE9rvy=hszsQNUzQ3noeii-Q@mail.gmail.com>
-X-Originating-IP: [2620:10d:c090:400::5:c10c]
-X-ClientProxiedBy: MW4PR03CA0355.namprd03.prod.outlook.com
- (2603:10b6:303:dc::30) To BY5PR15MB3571.namprd15.prod.outlook.com
- (2603:10b6:a03:1f6::32)
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
+        dust.li@linux.alibaba.com
+Subject: Re: [PATCH netdev] virtio-net: support XDP_TX when not more queues
+Message-ID: <20210210163945-mutt-send-email-mst@kernel.org>
+References: <81abae33fc8dbec37ef0061ff6f6fd696b484a3e.1610523188.git.xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:c10c) by MW4PR03CA0355.namprd03.prod.outlook.com (2603:10b6:303:dc::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.27 via Frontend Transport; Wed, 10 Feb 2021 21:23:23 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 16760ffe-0753-4732-08ad-08d8ce0a1925
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2327:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB2327D52CC2D45115C7FCB0F0D58D9@BYAPR15MB2327.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gaErzNZgqJbega+rS1M4xb9/N6EtrDkbyibHz2lrI4Pbt+Md/gD0eG0xIeiyPRm3FpFVdY7Q1c8Fc8UToL+Bq0KhanwW9v/+fdBdbRrscdFs/kW/rc0DOiaupHRUK6Nzy0naRiuDLiE+lIKGEMRaY4O4hh3DLV5OPJIznpyx3Vqb3FfCak8lwQ5PghtfWUviyYRTzm74+vBOrBz0QA6KBdoQHXb0L9yTyDHW4Hq3xuAYXo7ZUauJ+Y6/8RYrmik4bau2OFwZ7mk9fkLJe6Zv3HJnCEJVAhYbU88VUbpnE2XKN4hneA7aN0sU9eQdEr8Ri7VfRZoAVY2hzuLHiWaOOaQH12jOIr8QfcdKjeV+cA49Vf02YS69EQctJlX7U4mi1ejverBJbIoc8sCf2TN4PDfuVPqB6jp3xQaQXweHsq88v2nB8RzA0u31bkVjlW3md6XIbnV3yckI0uvzJrKD97gNPqjwt+SP7nN6iw+MvMABKej7iJyGnbRsP8eUzE8ACVMv14JoKS+Dzk84OnnVhQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(366004)(376002)(39860400002)(346002)(136003)(5660300002)(8676002)(1076003)(86362001)(4326008)(6666004)(316002)(66476007)(66556008)(66946007)(7696005)(52116002)(53546011)(6506007)(83380400001)(16526019)(8936002)(478600001)(55016002)(9686003)(6916009)(54906003)(186003)(2906002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?VkQN0yXu/c4lpEAq/Tvr/zwGdWioii90NWNty+kS9u+38VSnoeRzQI/JZowy?=
- =?us-ascii?Q?clgHB0gKjc7m0fAiBJC+YRXtjPOfc+9PbQQbWOmOvqS9yLP+q6v0l3H1Oj06?=
- =?us-ascii?Q?p2oT+zPsYWKslme0ZpKhim9L4O29Vr/DmHVEUOJ28CApr3t3sie3tvjycwvU?=
- =?us-ascii?Q?y/dxxEC0HzQaO0swyL/fV6gTJqfMl9yfwM8TWyNlBk16ins+rmSre1kuFW3A?=
- =?us-ascii?Q?fBeEt//ZU9u4SHUHS5bfd+Im8jaCKDYx0JR2KudASchta7NBF5W6FBlFxx2G?=
- =?us-ascii?Q?hff/7FDuFNneTrEr+Y/lyp4UZWsXKct04k3YKDrjMlqTsthwAfOXyfVbR2zC?=
- =?us-ascii?Q?qLkH/qh/k9VpYpHslM70wKr2H2sNqWRj/j6PhYTG0ZHrU68QoZvptOuuxGBn?=
- =?us-ascii?Q?mGsjxDPFEI4544ahWj78v7TB0TSfIGYthWZFX/FgUQO17PksjSDHVFTsOMnQ?=
- =?us-ascii?Q?UOglOrCwlloSpYUb+r+Nf0+tqQW3QWRax1feKs1CIREf4NMQHOs9uwnfsPJV?=
- =?us-ascii?Q?2kbbquKIrdGxZOy2Pcp8o+65JGegd2t99Qv7Q0pUzyd5mm7/Jw6V8wTBiRFX?=
- =?us-ascii?Q?iiDkD7ZAXpXZzXAa0sH4gogCMTRTF3oMhpMMgnmAw1LYiTrAzmQuKoGqmWzY?=
- =?us-ascii?Q?adWzL+BDV8gB3QrXju/fKuOJjYWYFId82Xy7uAzI/hKGF5xKtAGT5iSY6bJG?=
- =?us-ascii?Q?w8BVymMzKm37hsMY3vT9XU1LlEfO41qFHvEYrEiYN6umIStZqUV/+Lkl11+t?=
- =?us-ascii?Q?OwK8CfWAfOntrM/P9W5ire8Q8XyTnbMxyYrbLvKLPbddtCn4HjlyNseer7Jj?=
- =?us-ascii?Q?YhYzOEW0Jz5VRrrcT7857ULPcTu40cPqFNalg93y3HL1wYzs10eIgPTI/F5v?=
- =?us-ascii?Q?WND31jNcUPd854Dv+X6eq5iapFxFSocjEu1F1AZPdy4RyWn52XH/yc8kcrvc?=
- =?us-ascii?Q?YcXBS9Emcn1IRemNnN5dhvij9Zsp9HCJqGhRDEHef2AS242I/4zCVEcHmV23?=
- =?us-ascii?Q?HATHWmFqthz752KXZ7bLPotu/6bSColdMONYeRiLrH06Xw17iYW/wt7cZPBc?=
- =?us-ascii?Q?cQXgzIAZHSceacTLqQTYq9CIFyJol0kDcVQ9QWr0z0iqFccZmvwMFEz44fYP?=
- =?us-ascii?Q?I7hoFKQE3vcnIyab+Z3Tka/gkESfBzcVOWam83opkNn85cL+JUlFh6zyADpa?=
- =?us-ascii?Q?rOmxoOx/SGH5rQpo9OmirIbNVviChAk/eY1mZCadytXwLPiRFOSRjcpev4vm?=
- =?us-ascii?Q?fyW2YZQoq4UmEJD07ZWufVcEjtwDChP0rxtOwZVVNCX4k+fhQZkJ4FbA9AZJ?=
- =?us-ascii?Q?CBUmQovtVoOhehGblqkjB5qqcbskKsQ9hvkSlyRWnAm1qg=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 16760ffe-0753-4732-08ad-08d8ce0a1925
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2021 21:23:24.1326
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1bPVi98F6H6TVpE+2svOm8wM4rIIlbjDBJOXXlXppHhYEiK95M1pZyfo4qzgNUo1
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2327
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
- definitions=2021-02-10_10:2021-02-10,2021-02-10 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
- lowpriorityscore=0 phishscore=0 clxscore=1015 bulkscore=0 suspectscore=0
- malwarescore=0 mlxlogscore=999 adultscore=0 spamscore=0 priorityscore=1501
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102100187
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <81abae33fc8dbec37ef0061ff6f6fd696b484a3e.1610523188.git.xuanzhuo@linux.alibaba.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 10, 2021 at 12:26:20PM -0800, Andrii Nakryiko wrote:
-> On Tue, Feb 9, 2021 at 12:40 PM Martin KaFai Lau <kafai@fb.com> wrote:
-> >
-> > When libbpf initializes the kernel's struct_ops in
-> > "bpf_map__init_kern_struct_ops()", it enforces all
-> > pointer types must be a function pointer and rejects
-> > others.  It turns out to be too strict.  For example,
-> > when directly using "struct tcp_congestion_ops" from vmlinux.h,
-> > it has a "struct module *owner" member and it is set to NULL
-> > in a bpf_tcp_cc.o.
-> >
-> > Instead, it only needs to ensure the member is a function
-> > pointer if it has been set (relocated) to a bpf-prog.
-> > This patch moves the "btf_is_func_proto(kern_mtype)" check
-> > after the existing "if (!prog) { continue; }".
-> >
-> > The "btf_is_func_proto(mtype)" has already been guaranteed
-> > in "bpf_object__collect_st_ops_relos()" which has been run
-> > before "bpf_map__init_kern_struct_ops()".  Thus, this check
-> > is removed.
-> >
-> > Fixes: 590a00888250 ("bpf: libbpf: Add STRUCT_OPS support")
-> > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
-> > ---
+On Wed, Jan 13, 2021 at 04:08:57PM +0800, Xuan Zhuo wrote:
+> The number of queues implemented by many virtio backends is limited,
+> especially some machines have a large number of CPUs. In this case, it
+> is often impossible to allocate a separate queue for XDP_TX.
 > 
-> Looks good, see nit below.
+> This patch allows XDP_TX to run by reuse the existing SQ with
+> __netif_tx_lock() hold when there are not enough queues.
 > 
-> Acked-by: Andrii Nakryiko <andrii@kernel.org>
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
+
+I'd like to get some advice on whether this is ok from some
+XDP experts - previously my understanding was that it is
+preferable to disable XDP for such devices than
+use locks on XDP fast path.
+
+> ---
+>  drivers/net/virtio_net.c | 47 +++++++++++++++++++++++++++++++++++------------
+>  1 file changed, 35 insertions(+), 12 deletions(-)
 > 
-> >  tools/lib/bpf/libbpf.c | 12 ++++++------
-> >  1 file changed, 6 insertions(+), 6 deletions(-)
-> >
-> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> > index 6ae748f6ea11..b483608ea72a 100644
-> > --- a/tools/lib/bpf/libbpf.c
-> > +++ b/tools/lib/bpf/libbpf.c
-> > @@ -887,12 +887,6 @@ static int bpf_map__init_kern_struct_ops(struct bpf_map *map,
-> >                         kern_mtype = skip_mods_and_typedefs(kern_btf,
-> >                                                             kern_mtype->type,
-> >                                                             &kern_mtype_id);
-> > -                       if (!btf_is_func_proto(mtype) ||
-> > -                           !btf_is_func_proto(kern_mtype)) {
-> > -                               pr_warn("struct_ops init_kern %s: non func ptr %s is not supported\n",
-> > -                                       map->name, mname);
-> > -                               return -ENOTSUP;
-> > -                       }
-> >
-> >                         prog = st_ops->progs[i];
-> >                         if (!prog) {
-> 
-> debug message below this line is a bit misleading, it talks about
-> "func ptr is not set", but it actually could be any kind of field. So
-> it would be nice to just talk about "members" or "fields" there, no?
-Good catch.  The debug message needs to change.
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index ba8e637..7a3b2a7 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -195,6 +195,9 @@ struct virtnet_info {
+>  	/* # of XDP queue pairs currently used by the driver */
+>  	u16 xdp_queue_pairs;
+>  
+> +	/* xdp_queue_pairs may be 0, when xdp is already loaded. So add this. */
+> +	bool xdp_enabled;
+> +
+>  	/* I like... big packets and I cannot lie! */
+>  	bool big_packets;
+>  
+> @@ -481,14 +484,34 @@ static int __virtnet_xdp_xmit_one(struct virtnet_info *vi,
+>  	return 0;
+>  }
+>  
+> -static struct send_queue *virtnet_xdp_sq(struct virtnet_info *vi)
+> +static struct send_queue *virtnet_get_xdp_sq(struct virtnet_info *vi)
+>  {
+>  	unsigned int qp;
+> +	struct netdev_queue *txq;
+> +
+> +	if (vi->curr_queue_pairs > nr_cpu_ids) {
+> +		qp = vi->curr_queue_pairs - vi->xdp_queue_pairs + smp_processor_id();
+> +	} else {
+> +		qp = smp_processor_id() % vi->curr_queue_pairs;
+> +		txq = netdev_get_tx_queue(vi->dev, qp);
+> +		__netif_tx_lock(txq, raw_smp_processor_id());
+> +	}
+>  
+> -	qp = vi->curr_queue_pairs - vi->xdp_queue_pairs + smp_processor_id();
+>  	return &vi->sq[qp];
+>  }
+>  
+> +static void virtnet_put_xdp_sq(struct virtnet_info *vi)
+> +{
+> +	unsigned int qp;
+> +	struct netdev_queue *txq;
+> +
+> +	if (vi->curr_queue_pairs <= nr_cpu_ids) {
+> +		qp = smp_processor_id() % vi->curr_queue_pairs;
+> +		txq = netdev_get_tx_queue(vi->dev, qp);
+> +		__netif_tx_unlock(txq);
+> +	}
+> +}
+> +
+>  static int virtnet_xdp_xmit(struct net_device *dev,
+>  			    int n, struct xdp_frame **frames, u32 flags)
+>  {
+> @@ -512,7 +535,7 @@ static int virtnet_xdp_xmit(struct net_device *dev,
+>  	if (!xdp_prog)
+>  		return -ENXIO;
+>  
+> -	sq = virtnet_xdp_sq(vi);
+> +	sq = virtnet_get_xdp_sq(vi);
+>  
+>  	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK)) {
+>  		ret = -EINVAL;
+> @@ -560,12 +583,13 @@ static int virtnet_xdp_xmit(struct net_device *dev,
+>  	sq->stats.kicks += kicks;
+>  	u64_stats_update_end(&sq->stats.syncp);
+>  
+> +	virtnet_put_xdp_sq(vi);
+>  	return ret;
+>  }
+>  
+>  static unsigned int virtnet_get_headroom(struct virtnet_info *vi)
+>  {
+> -	return vi->xdp_queue_pairs ? VIRTIO_XDP_HEADROOM : 0;
+> +	return vi->xdp_enabled ? VIRTIO_XDP_HEADROOM : 0;
+>  }
+>  
+>  /* We copy the packet for XDP in the following cases:
+> @@ -1457,12 +1481,13 @@ static int virtnet_poll(struct napi_struct *napi, int budget)
+>  		xdp_do_flush();
+>  
+>  	if (xdp_xmit & VIRTIO_XDP_TX) {
+> -		sq = virtnet_xdp_sq(vi);
+> +		sq = virtnet_get_xdp_sq(vi);
+>  		if (virtqueue_kick_prepare(sq->vq) && virtqueue_notify(sq->vq)) {
+>  			u64_stats_update_begin(&sq->stats.syncp);
+>  			sq->stats.kicks++;
+>  			u64_stats_update_end(&sq->stats.syncp);
+>  		}
+> +		virtnet_put_xdp_sq(vi);
+>  	}
+>  
+>  	return received;
+> @@ -2416,12 +2441,8 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+>  		xdp_qp = nr_cpu_ids;
+>  
+>  	/* XDP requires extra queues for XDP_TX */
+> -	if (curr_qp + xdp_qp > vi->max_queue_pairs) {
+> -		NL_SET_ERR_MSG_MOD(extack, "Too few free TX rings available");
+> -		netdev_warn(dev, "request %i queues but max is %i\n",
+> -			    curr_qp + xdp_qp, vi->max_queue_pairs);
+> -		return -ENOMEM;
+> -	}
+> +	if (curr_qp + xdp_qp > vi->max_queue_pairs)
+> +		xdp_qp = 0;
+>  
+>  	old_prog = rtnl_dereference(vi->rq[0].xdp_prog);
+>  	if (!prog && !old_prog)
+> @@ -2453,12 +2474,14 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+>  	netif_set_real_num_rx_queues(dev, curr_qp + xdp_qp);
+>  	vi->xdp_queue_pairs = xdp_qp;
+>  
+> +	vi->xdp_enabled = false;
+>  	if (prog) {
+>  		for (i = 0; i < vi->max_queue_pairs; i++) {
+>  			rcu_assign_pointer(vi->rq[i].xdp_prog, prog);
+>  			if (i == 0 && !old_prog)
+>  				virtnet_clear_guest_offloads(vi);
+>  		}
+> +		vi->xdp_enabled = true;
+>  	}
+>  
+>  	for (i = 0; i < vi->max_queue_pairs; i++) {
+> @@ -2526,7 +2549,7 @@ static int virtnet_set_features(struct net_device *dev,
+>  	int err;
+>  
+>  	if ((dev->features ^ features) & NETIF_F_LRO) {
+> -		if (vi->xdp_queue_pairs)
+> +		if (vi->xdp_enabled)
+>  			return -EBUSY;
+>  
+>  		if (features & NETIF_F_LRO)
+> -- 
+> 1.8.3.1
+
