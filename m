@@ -2,131 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 801AC31722A
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 22:16:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D86D31722E
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 22:18:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232633AbhBJVQW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 16:16:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44374 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233521AbhBJVPm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 16:15:42 -0500
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D863BC061788
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 13:13:54 -0800 (PST)
-Received: by mail-il1-x12e.google.com with SMTP id a16so3228215ilq.5
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 13:13:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wkGHGHCDtF/e56vw7nKTBuP3UHCQdUWg9HZpFXYrggA=;
-        b=Jh9f0ljt8Jhp+qw+yxtvXzyErFX+M3LwJERppl/c3WO3UsxWbzHyBUpI1DBT+EH3nJ
-         43F8yDWf3EuwgrgrNZ0CWmWFgL1D26RAoMcEY+u0x1RaVLNrwlre6K9qmx8HjR4p3elV
-         Hzlpfx9o23l5EgrFk36pQzqkmnbOHbyNV8A9pC4ezk2LuovAAFSwNnQofDEqsu4y5HgM
-         IZNoH7ZJvAiG4J/lQfq3dMGAUn36xRL9++Es+hQC5N+2huEx38Ha47QBO2EuBY0s8Uti
-         TNAX7706iRTGqeLJZVvbHXjAkuhLAWfT7VULCMrfAPimnTBFaE4yqUvA5L/gtklYqrUT
-         tacg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wkGHGHCDtF/e56vw7nKTBuP3UHCQdUWg9HZpFXYrggA=;
-        b=qrZ2OXqlXjt1x4aA4ic7BcfxmveyR1PnR5fXNzb+YH3zYKJ1igT3Jbfe48gdDOFeKi
-         MAsqLxvWfRUDqrkiBpSAW4qHZiI32M0qwJ7DfonHZNjzbFAq3qp8JXfZLMvmbHcAZp1m
-         txGaRUfz8VKWlHk7Q1c/KJkTNY8R54cf6XHFrgr3FoYLI/9X3G7LHLRLMWavH+aO3vEW
-         Ok2QaWpmrwgtkbmn3OuqI+QNZWggRcWy+DQtEfCN+ra+fusCPFRiRoM74Kjh8YdSP8/e
-         7sAX1HVzu7ZH1Zsmk1RgetE/VAeHdx++jbKwZOalmYIcYbeMb8+Gb3UX6OI5i/IGOpM8
-         t/Pw==
-X-Gm-Message-State: AOAM533CSZkNaWXyfW0eR8LhxP04BO0aea1U13FklthOyXuQyod4H3+X
-        WsRWiIIByr8rQ8DyQDSSMBvbuQ==
-X-Google-Smtp-Source: ABdhPJyPzxJ19bCcVdJ2bK/7klllblUMnUgpGCczbJlwIGDQuvnm3ZO4nC9nNOWXR1oR7Sm/LnYXPA==
-X-Received: by 2002:a92:d11:: with SMTP id 17mr2997477iln.57.1612991632527;
-        Wed, 10 Feb 2021 13:13:52 -0800 (PST)
-Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id v1sm1549546ilm.35.2021.02.10.13.13.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Feb 2021 13:13:51 -0800 (PST)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     elder@kernel.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
-        cpratapa@codeaurora.org, subashab@codeaurora.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] net: ipa: pass checksum trailer with received packets
-Date:   Wed, 10 Feb 2021 15:13:49 -0600
-Message-Id: <20210210211349.13158-1-elder@linaro.org>
-X-Mailer: git-send-email 2.20.1
+        id S232565AbhBJVSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 16:18:41 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:47336 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S232166AbhBJVSj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 16:18:39 -0500
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 11ALBplp012296;
+        Wed, 10 Feb 2021 13:17:44 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=CiQcdCNCySkNI/rtQRtbu3L0uPtZqSbJo9s5FYKY6Vk=;
+ b=GrKxn0oX+xtqZO4KMocDlHwy+k2A76CKgyTQlZaR39FRv4siB/tosh8Lf68vrk7n4sV1
+ Yc1UfXQ4diYyPv+IkxekvqWceR7gH0/UusTnivMy+7KefkQo8+OK1ux2FOfr8egVtGMU
+ Sbvu0VEmQCytWF5BZjIQg+DH8Ierx80tYWg= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0001303.ppops.net with ESMTP id 36mcakkt46-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 10 Feb 2021 13:17:44 -0800
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 10 Feb 2021 13:17:43 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QLsfbndQgXZIkPqFv2aSXWu0zZ/Qcu9i5DPHOFjJsRyRZSxel+2ZFJLwvc0dZPJ+OBWK2Mo1hQJsLOnAa0I7YfEg/VsSB6AYffUQMCfaB4sP06lbTCUdrJNac9w1LvyiTAWb4dLnkzrpsYOzKOIlAewZt1lnkVUIj6TTnRYU6losKjYjFR2Nyhvi4TqcLVJSfTp9BMgDtrPf3KfAB9vD+LqfAchc7Pmy8vdNM8PYod7JIH+1b09G85XDnFoXdTof/U0Snga0UfxDIXWGZJLWcY1q7EbOxYLfBeMBCT7wmxjHKYNl2rw2pGc3dcI8wO3K/iTsD44zFIwrKanSc3h/Sw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CiQcdCNCySkNI/rtQRtbu3L0uPtZqSbJo9s5FYKY6Vk=;
+ b=Pxzoyuwnom1CJEcF9xtIi64dw4wPTQodtjRTIXJhRePrNnjfgtYttA7sXZDy54YO7+7t5x/o8u7057egljSQ4EV7PPxNRSWm+gZoZ10zbbBidCTt61/LXccugCbyD2SWoofneeAKigQeUVwM26LpPe+0ZyfCVqr6uQMEuYTaA0OE5OzFybuDwWWA7K0zTv7OlZXP9wSiMU30iWa+arzGBDNOfOqnuNxPT9+7cLh3xG7uCiRZuI5kxLUNu3rN4/UTdb7VLmNYMIpQs/0uInxyShdule7dxd2bTTp1KRy9LT/Ce38iKm/O//kFAfr4ZNEfNmFOUp+52KkLztZ3ZQwdUg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+ by BY5PR15MB3569.namprd15.prod.outlook.com (2603:10b6:a03:1ff::32) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.30; Wed, 10 Feb
+ 2021 21:17:40 +0000
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::c585:b877:45fe:4e3f]) by BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::c585:b877:45fe:4e3f%7]) with mapi id 15.20.3825.030; Wed, 10 Feb 2021
+ 21:17:40 +0000
+Date:   Wed, 10 Feb 2021 13:17:35 -0800
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
+Subject: Re: [PATCH bpf 2/2] bpf: selftests: Add non function pointer test to
+ struct_ops
+Message-ID: <20210210211735.4snmhc7gofo6zrp5@kafai-mbp.dhcp.thefacebook.com>
+References: <20210209193105.1752743-1-kafai@fb.com>
+ <20210209193112.1752976-1-kafai@fb.com>
+ <CAEf4BzbZmmezSxYLCOdeeA4zW+vdDvQH57wQ-qpFSKiMcE1tVw@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzbZmmezSxYLCOdeeA4zW+vdDvQH57wQ-qpFSKiMcE1tVw@mail.gmail.com>
+X-Originating-IP: [2620:10d:c090:400::5:c10c]
+X-ClientProxiedBy: SJ0PR03CA0345.namprd03.prod.outlook.com
+ (2603:10b6:a03:39c::20) To BY5PR15MB3571.namprd15.prod.outlook.com
+ (2603:10b6:a03:1f6::32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:c10c) by SJ0PR03CA0345.namprd03.prod.outlook.com (2603:10b6:a03:39c::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.27 via Frontend Transport; Wed, 10 Feb 2021 21:17:40 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 93ac34e0-fa71-43d5-1f66-08d8ce094c36
+X-MS-TrafficTypeDiagnostic: BY5PR15MB3569:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BY5PR15MB3569AAC77EB40D534540776DD58D9@BY5PR15MB3569.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:4125;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: hwUH8COPE0z20FYtbiKsDo3G0rK3Oe9343u5svqWgICTA0Pi9w1jQfhtEIUC2CawCORyI/vK/4YgCt2ty25ecK3v4TNR6RA+2WDya8AcUYY2GvdS7PGXiChanOFOc1MquSDiZ0Uf6KayPAFf3pq6xVrlc/7/uAwcSC/ChIGXG4Vrmd3MUj16xFeT/eV/sG00LhG1qG1+jylXFCuYU6BdCOdeQYS75k4wqQmH0oa1Wk7uJnXGi9QnTMG7jmtBWuN4lgeYayRmo7+NDv/SedchXFh9hSxN3VkclfVfNv5y+WWhd4l9DYaEa1cJWgkQfEXbrstfh1YqNXjt7m3RetKtta2mZhu/OLQv+bkQsaHQ3hQwszi02UgKv2/NG4Mnjmo8gtWlzB0cZ6kjOmWfwcPzMDH7hTtWU6fX0UlucHM6GcadBPxZVxykDF60KpF5PLjgyvnFJclvVc2u/BlP8Kpt5+BcTDkJHinXjlSBfnL3bCYPBpTvfJfy/xag4Jk18aaFffLrI6rG8O0G9h+pZRESbA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(366004)(346002)(39860400002)(376002)(136003)(7696005)(5660300002)(86362001)(478600001)(52116002)(1076003)(186003)(16526019)(9686003)(6916009)(8936002)(55016002)(66946007)(316002)(54906003)(66476007)(6506007)(53546011)(8676002)(2906002)(4326008)(6666004)(66556008)(83380400001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?Nnb9hkrOH5o2a9o/BPIOKMMsskEK5qHUWEUa2W+GmHe8h3dxhfafzdDZEwmI?=
+ =?us-ascii?Q?GubtfWe+vFJl+s3hGwJlrS/Zs7gSFVJFJC5MMMBs7RK2J23mK1MIYQzEaDa8?=
+ =?us-ascii?Q?QOqiYwltqg3Qum3PkU8ZJei+qLVttmg3epH0ioURvGF8yyee1CuQq82F3PeQ?=
+ =?us-ascii?Q?78m2HJA8mjRhAYLBJNsWoXyduCcksWTZ1TMOjoofn7N1yqBkk0xgBIf9NFuD?=
+ =?us-ascii?Q?sIDVdOENlr6Oi0lydxG+cYipws1q7OmHn3uuJxn07OUibfOtKrxQTam74quX?=
+ =?us-ascii?Q?VqosAJNdGdQGi8kBD6fbugx6iDQnVmXAI2awFACM4zjsNr1JLKQrfk6S9Nka?=
+ =?us-ascii?Q?zSHPw29qjyqmHJXrQtSPVFDpI6JfduzlaK0rwko89xLRy++lz7Dg1Q/2DQ1p?=
+ =?us-ascii?Q?QZlHTKBk8WLjuaeI5TqlpywQMmbSxssZsaDYZHG9vbvs7v1ZFVEJv9kLhawY?=
+ =?us-ascii?Q?2XgHNAAP4Vcr/dXgaTGpf64O2mM9o/coWcSVGmfr6IuvRl8HcdGFCgBTp3Sp?=
+ =?us-ascii?Q?s9gPPBt2laoo7yPC+TIrttDornJJyzkCcWkglicyohDx980KinlzCCL7nEcM?=
+ =?us-ascii?Q?4OzWhizY1m4nrah97M0I+zujTig4fhqFnj/sQYU+NQyMQMMnC/yDRgbgSNcH?=
+ =?us-ascii?Q?sKrJ1ZDNgA1L+jODuy8LLGQQ1JoP3jXPKHN+66SQX0nIYsFXYapdrurUGsUd?=
+ =?us-ascii?Q?DqUtPsRibzVzyNk0zFleAsfDq4ewRh1BZMH6/y0Y4W5mp8my+IVt7wC1q+wK?=
+ =?us-ascii?Q?Fxn4lLNG5sFTCfMZy2diiG0a0aXN2I+YyFRMrHLmv5FLJyi/8RLVG1YiNV63?=
+ =?us-ascii?Q?n2q2f6yETDijv0QgjPvKo0rc7SVhLvS2fhYPnEOmSKSXnIj3SiIONABRGnoS?=
+ =?us-ascii?Q?VjF2DwJ2kIGEf5WmhJsEI99pSE+QSYzZhrjAUxrh0Qu2RxpqtgwpfiagQL+6?=
+ =?us-ascii?Q?cyCBFydW9yMm6TBcGMuIL2VZu4K3WWDi0/NeyeHst+XuUNxX6fXUuH9+fnyi?=
+ =?us-ascii?Q?2pcqO5UwufkpYYYuZAc+YVm2wOFjxrTLxbZiJ2EVa2EL8IEfd57y9eKlICxg?=
+ =?us-ascii?Q?YNYbFl4wbMtyZ3sW4ppnKhnLcWYImNYowtcy4ooWcRjHUl1zUcau2YOWCjZ+?=
+ =?us-ascii?Q?ziR7Y7ZPW3mblfk2V098fZiBMZNhfQ4wwiM+Ux0VbcAj/Z1Q/Ff//g91qp4r?=
+ =?us-ascii?Q?BJbBcdgzyayf5HpPg10XWljX8hLSnXvgMqHOH+4lf3p2SlREmGNS6cEl+efL?=
+ =?us-ascii?Q?Cn2seyx1XZSZtgsDXwtzHOcy7G1iwHXko1hH7yWKgXjtMErca7FcH7e3SsaQ?=
+ =?us-ascii?Q?z4V0szB1Sx/gwcGbrp41dG7c+B9oSDWasfMoMXiwzKOJwg=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 93ac34e0-fa71-43d5-1f66-08d8ce094c36
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2021 21:17:40.3526
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: XyWhdDX/mnN9GIoJnUIu2k0Rq9fxGHQ5stgrVkJnAfueeRFVt83mmwHVtIVGBGMl
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR15MB3569
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
+ definitions=2021-02-10_10:2021-02-10,2021-02-10 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ spamscore=0 mlxscore=0 impostorscore=0 priorityscore=1501 adultscore=0
+ phishscore=0 clxscore=1015 mlxlogscore=957 lowpriorityscore=0 bulkscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2102100187
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For a QMAP RX endpoint, received packets will be passed to the RMNet
-driver.  If RX checksum offload is enabled, the RMNet driver expects
-to find a trailer following each packet that contains computed
-checksum information.  Currently the IPA driver is passing the
-packet without the trailer.
+On Wed, Feb 10, 2021 at 12:27:38PM -0800, Andrii Nakryiko wrote:
+> On Tue, Feb 9, 2021 at 12:11 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> >
+> > This patch adds a "void *owner" member.  The existing
+> > bpf_tcp_ca test will ensure the bpf_cubic.o and bpf_dctcp.o
+> > can be loaded.
+> >
+> > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> > ---
+> 
+> Acked-by: Andrii Nakryiko <andrii@kernel.org>
+> 
+> What will happen if BPF code initializes such non-func ptr member?
+> Will libbpf complain or just ignore those values? Ignoring initialized
+> members isn't great.
+The latter. libbpf will ignore non-func ptr member.  The non-func ptr
+member stays zero when it is passed to the kernel.
 
-Fix this bug.
+libbpf can be changed to copy this non-func ptr value.
+The kernel will decide what to do with it.  It will
+then be consistent with int/array member like ".name"
+and ".flags" where the kernel will verify the value.
+I can spin v2 to do that.
 
-Fixes: 84f9bd12d46db ("soc: qcom: ipa: IPA endpoints")
-Signed-off-by: Alex Elder <elder@linaro.org>
----
-
-David/Jakub,
-I would like to have this back-ported as bug fix.  At its core, the
-fix is simple, but even if it were reduced to a one-line change, the
-result won't cleanly apply to both net/master and net-next/master.
-How should this be handled?  What can I do to make it easier?
-
-Thanks.
-
-					-Alex
-
- drivers/net/ipa/ipa_endpoint.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index 7209ee3c31244..5e3c2b3f38a95 100644
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -1232,6 +1232,11 @@ static void ipa_endpoint_status_parse(struct ipa_endpoint *endpoint,
- 	void *data = page_address(page) + NET_SKB_PAD;
- 	u32 unused = IPA_RX_BUFFER_SIZE - total_len;
- 	u32 resid = total_len;
-+	u32 trailer_len = 0;
-+
-+	/* If checksum offload is enabled, each packet includes a trailer */
-+	if (endpoint->data->checksum)
-+		trailer_len = sizeof(struct rmnet_map_dl_csum_trailer);
- 
- 	while (resid) {
- 		const struct ipa_status *status = data;
-@@ -1260,18 +1265,18 @@ static void ipa_endpoint_status_parse(struct ipa_endpoint *endpoint,
- 		 */
- 		align = endpoint->data->rx.pad_align ? : 1;
- 		len = le16_to_cpu(status->pkt_len);
--		len = sizeof(*status) + ALIGN(len, align);
--		if (endpoint->data->checksum)
--			len += sizeof(struct rmnet_map_dl_csum_trailer);
-+		len = sizeof(*status) + ALIGN(len, align) + trailer_len;
- 
- 		if (!ipa_endpoint_status_drop(endpoint, status)) {
- 			void *data2;
- 			u32 extra;
- 			u32 len2;
- 
--			/* Client receives only packet data (no status) */
-+			/* Strip off the status element and pass only the
-+			 * packet data (plus checksum trailer if enabled).
-+			 */
- 			data2 = data + sizeof(*status);
--			len2 = le16_to_cpu(status->pkt_len);
-+			len2 = le16_to_cpu(status->pkt_len) + trailer_len;
- 
- 			/* Have the true size reflect the extra unused space in
- 			 * the original receive buffer.  Distribute the "cost"
--- 
-2.20.1
-
+> 
+> >  tools/testing/selftests/bpf/bpf_tcp_helpers.h | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/tools/testing/selftests/bpf/bpf_tcp_helpers.h b/tools/testing/selftests/bpf/bpf_tcp_helpers.h
+> > index 6a9053162cf2..91f0fac632f4 100644
+> > --- a/tools/testing/selftests/bpf/bpf_tcp_helpers.h
+> > +++ b/tools/testing/selftests/bpf/bpf_tcp_helpers.h
+> > @@ -177,6 +177,7 @@ struct tcp_congestion_ops {
+> >          * after all the ca_state processing. (optional)
+> >          */
+> >         void (*cong_control)(struct sock *sk, const struct rate_sample *rs);
+> > +       void *owner;
+> >  };
+> >
+> >  #define min(a, b) ((a) < (b) ? (a) : (b))
+> > --
+> > 2.24.1
+> >
