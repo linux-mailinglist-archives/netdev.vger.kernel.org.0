@@ -2,146 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 375D73163B9
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 11:25:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B71283163C7
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 11:27:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230471AbhBJKZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 05:25:13 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:39095 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231157AbhBJKWy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 05:22:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1612952486;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FrRMQyNzbOonugall6MoIHltbjoyLBJFXBqHzB+D16g=;
-        b=GciFz0p40S6gtoojLUB8IdKi2gEkZUNYeuss3ZROUob29ysAuho6MCGJ2VllAwkEyPKvJj
-        yFyCdrz78EdGCTxuBfLWz24jyRXaNTe9lR3iViq0VvxNFAbOXaGRMQLjO2jehb3V97djPo
-        6SmPmlCMG34cbLASOLCcg2ybWzhY3yQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-38-0X9mPebLMQazw4csxE2_RQ-1; Wed, 10 Feb 2021 05:21:24 -0500
-X-MC-Unique: 0X9mPebLMQazw4csxE2_RQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4F9A6814317;
-        Wed, 10 Feb 2021 10:21:20 +0000 (UTC)
-Received: from ovpn-115-79.ams2.redhat.com (ovpn-115-79.ams2.redhat.com [10.36.115.79])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8D3B36F44E;
-        Wed, 10 Feb 2021 10:21:07 +0000 (UTC)
-Message-ID: <b6efe8d3a4ebf8188c040c5401b50b6c11b6eaf9.camel@redhat.com>
-Subject: Re: [v3 net-next 08/10] skbuff: reuse NAPI skb cache on allocation
- path (__build_skb())
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Alexander Lobakin <alobakin@pm.me>,
+        id S230256AbhBJK0b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 05:26:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45190 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230382AbhBJKYL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 05:24:11 -0500
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE41C061756;
+        Wed, 10 Feb 2021 02:23:31 -0800 (PST)
+Received: by mail-ej1-x631.google.com with SMTP id hs11so3179062ejc.1;
+        Wed, 10 Feb 2021 02:23:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=QQ6ibbCKatXHbmogp1EYUWCfgYRqjn+iKPBMKIlVQ9Y=;
+        b=OkJLE9Z6va0hGpYeZtIu0b6Wy37PWF448S8/SjiY1YwifTyTSCGyrf8vP3VuzJhXd1
+         BKN95vIGZ0/+gbavKal1KBQKQdB3ZaRKur+vj8sqClkSST3DEdCtAtwirYgQUdQ58+Dc
+         pthI/LlvvBEWvwPtcsKOLF8FPsPT1Kr0SBfl3uQZEqjdnKGZqenIo5nneu+75/k9NCZ8
+         gGQAESEpycLRXJpav6xndQBQlyVKQ1TuBqZI3SBkRN5q2teM1/dNOJXeqK4FUh7avo26
+         6FKcCdariok/z2pdUMdr2L4ysXMcBTnVzieWTdRKyENiEY7tgAhbEbwibXo5bTffHb+8
+         zLDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=QQ6ibbCKatXHbmogp1EYUWCfgYRqjn+iKPBMKIlVQ9Y=;
+        b=duOKHEFXgoBdnRdqHHJYiST76HgzwpHuPNU3wg8mxcFLGE54pByiDxBzA2PhXh2fHO
+         mhIPYgWm1cC/ee30ilAMxxYFiWiyr2kl4AeYisardEQ2yvq6JFpUe1e6IM8172wiHYYe
+         jDq/fawOd4gKGzLZqvC00wBH6s+OlBz4PCP/7C/hQFqB3daMtp9E5kGP9wnUAqWOeugN
+         CqOHw8LyFTMakQMJZ1UeBf2euYdatT2D7B3S/ivNJ1cVNxwq23Gnu3fl6EPKinrrtKLW
+         OOGT0GU5/NYfjPbCO/ivRUoegwdU+S/vWncrxE2F7DGyEZnuZGHfhMyii2y9ZsIGA0j8
+         aRDQ==
+X-Gm-Message-State: AOAM532UPYbr4tY3KXc2NYLDHB0PAmV9ZSfPpxu9k9HX8mdBMJz7VkAJ
+        hOus+myLPBSr78oABYPB0nQ=
+X-Google-Smtp-Source: ABdhPJw2FGF6YWFnpCNhD/33aoau3KgLTwQFsjmdbteKV+TtEEpI1WvYjNKHm2SDYZnTS8CgonhE3A==
+X-Received: by 2002:a17:906:ecb6:: with SMTP id qh22mr2311964ejb.252.1612952610145;
+        Wed, 10 Feb 2021 02:23:30 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id q16sm801100ejd.39.2021.02.10.02.23.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Feb 2021 02:23:29 -0800 (PST)
+Date:   Wed, 10 Feb 2021 12:23:28 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Kevin Hao <haokexin@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        =?ISO-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        Yonghong Song <yhs@fb.com>, zhudi <zhudi21@huawei.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-Date:   Wed, 10 Feb 2021 11:21:06 +0100
-In-Reply-To: <20210209204533.327360-9-alobakin@pm.me>
-References: <20210209204533.327360-1-alobakin@pm.me>
-         <20210209204533.327360-9-alobakin@pm.me>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org
+Subject: Re: [PATCH v3 net-next 07/11] net: prep switchdev drivers for
+ concurrent SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS
+Message-ID: <20210210102328.7jpzlobpwotdo63z@skbuf>
+References: <20210210091445.741269-1-olteanv@gmail.com>
+ <20210210091445.741269-8-olteanv@gmail.com>
+ <20210210101257.GA287766@shredder.lan>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210210101257.GA287766@shredder.lan>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, Feb 10, 2021 at 12:12:57PM +0200, Ido Schimmel wrote:
+> On Wed, Feb 10, 2021 at 11:14:41AM +0200, Vladimir Oltean wrote:
+> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > 
+> > Because the bridge will start offloading SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS
+> > while not serialized by any lock such as the br->lock spinlock, existing
+> > drivers that treat that attribute and cache the brport flags might no
+> > longer work correctly.
+> 
+> Can you explain the race? This notification is sent from sysfs/netlink
+> call path, both of which take rtnl.
 
-I'm sorry for the late feedback, I could not step-in before.
-
-Also adding Jesper for awareness, as he introduced the bulk free
-infrastructure.
-
-On Tue, 2021-02-09 at 20:48 +0000, Alexander Lobakin wrote:
-> @@ -231,7 +256,7 @@ struct sk_buff *__build_skb(void *data, unsigned int frag_size)
->   */
->  struct sk_buff *build_skb(void *data, unsigned int frag_size)
->  {
-> -	struct sk_buff *skb = __build_skb(data, frag_size);
-> +	struct sk_buff *skb = __build_skb(data, frag_size, true);
-
-I must admit I'm a bit scared of this. There are several high speed
-device drivers that will move to bulk allocation, and we don't have any
-performance figure for them.
-
-In my experience with (low end) MIPS board, cache misses cost tend to
-be much less visible there compared to reasonably recent server H/W,
-because the CPU/memory access time difference is much lower.
-
-When moving to higher end H/W the performance gain you measured could
-be completely countered by less optimal cache usage.
-
-I fear also latency spikes - I'm unsure if a 32 skbs allocation vs a
-single skb would be visible e.g. in a round-robin test. Generally
-speaking bulk allocating 32 skbs looks a bit too much. IIRC, when
-Edward added listification to GRO, he did several measures with
-different list size and found 8 to be the optimal value (for the tested
-workload). Above such number the list become too big and the pressure
-on the cache outweighted the bulking benefits.
-
-Perhaps giving the device drivers the ability to opt-in on this infra
-via a new helper - as done back then with napi_consume_skb() - would
-make this change safer?
-
-> @@ -838,31 +863,31 @@ void __consume_stateless_skb(struct sk_buff *skb)
->  	kfree_skbmem(skb);
->  }
->  
-> -static inline void _kfree_skb_defer(struct sk_buff *skb)
-> +static void napi_skb_cache_put(struct sk_buff *skb)
->  {
->  	struct napi_alloc_cache *nc = this_cpu_ptr(&napi_alloc_cache);
-> +	u32 i;
->  
->  	/* drop skb->head and call any destructors for packet */
->  	skb_release_all(skb);
->  
-> -	/* record skb to CPU local list */
-> +	kasan_poison_object_data(skbuff_head_cache, skb);
->  	nc->skb_cache[nc->skb_count++] = skb;
->  
-> -#ifdef CONFIG_SLUB
-> -	/* SLUB writes into objects when freeing */
-> -	prefetchw(skb);
-> -#endif
-
-It looks like this chunk has been lost. Is that intentional?
-
-Thanks!
-
-Paolo
-
+Replying here to both you and Nikolay: there isn't any race, sorry, I
+missed the fact that brport_store takes the rtnl_mutex and by extension
+I thought that RTM_SETLINK runs unlocked too, without really checking.
+Well, at least that's good news, the implementation can be a lot more
+straightforward then...
