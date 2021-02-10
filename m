@@ -2,35 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96B6C315F1C
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 06:38:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C98E315F20
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 06:43:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231429AbhBJFgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 00:36:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35726 "EHLO mail.kernel.org"
+        id S231496AbhBJFna (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 00:43:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35980 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229798AbhBJFgr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Feb 2021 00:36:47 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 17A0864E4B;
-        Wed, 10 Feb 2021 05:36:07 +0000 (UTC)
+        id S231458AbhBJFnX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Feb 2021 00:43:23 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 49D1B64E3E;
+        Wed, 10 Feb 2021 05:42:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612935367;
-        bh=nvkAoWycvbbcUGYK6a56kBDCwUmogqBQDgKgZB1qLrc=;
+        s=k20201202; t=1612935762;
+        bh=LWLN+C2cwhauN4xaZIPOAGBmvFz2pWpCauybY9DtChw=;
         h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=c5LEIgWSKvHf5DJAWVz/gejil4ucHTRab/Uh4yDnmpKPlmHE2riMkPoXtNVU+Tovi
-         9dyFBbuI0N+7o5TlhC547w884dZI5bcBR6wZp9eIorN5rdJM5WyGjo6BzKwhA+mj3o
-         mllkLzVTrVbTzDeX/GxMRZ9jx6wPh/dwSxijW0o6AwrAKXpBLgbEDcONdvwqcJmilq
-         5X7lsnFJQJFd/taRM5NGoCR7Go3s2T84rZrBsTk0U8ljoNF+J/q+sArI+DyyZW/IDk
-         WshnEMlzd/FHLQgn88C/huFfe3ZCaZZx6U7qKdHyRuMsH9Tbr5Tl2LENvXHDIAv3Me
-         gIMS4W4LLdCpg==
-Message-ID: <eae35802d6fd3b55a8f8238e44462f619645177b.camel@kernel.org>
-Subject: Re: mlx5e compilation failure
+        b=MmZOvvXj5DXJD1nC14WUSOxmMJf3onbk/yUVk6MgsWgNrrlVUHaEYvLdwy1J4t3lM
+         mKIARWxLVKQAWmpT4UWXi+0MrWzGXexahrZoQudeWizVLPinyZSGh3w5J3edazc1kE
+         ZbxpABlaB8ZxSR/GygaZ3hRQSbUT0cwO4zDpqc7ULVLJGBZQWM3ZtMipB6KMgKkxoz
+         VG863JxCY6i8ItD5mw/BJb6U9u28bs/GyBE4Jb3LbqsgWsUlN15GCBn/SoCqmvwGaN
+         hKN0G0e2AKvslY0eq6Ar9Wbh4E106hhVunyFlTDbRs9sCV7Tsu6l7TVAWFHXS7q3u8
+         Lw8XXPJq0fChg==
+Message-ID: <28f0dde76d1dbc666a4eaf9e5b23eaec9989aad8.camel@kernel.org>
+Subject: Re: [PATCH] net/mlx5: docs: correct section reference in table of
+ contents
 From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     netdev@vger.kernel.org
-Date:   Tue, 09 Feb 2021 21:36:06 -0800
-In-Reply-To: <20210209194906.vo3ssh3gwzt3k5u2@bsd-mbp.dhcp.thefacebook.com>
-References: <20210209194906.vo3ssh3gwzt3k5u2@bsd-mbp.dhcp.thefacebook.com>
+To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Parav Pandit <parav@nvidia.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-doc@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Tue, 09 Feb 2021 21:42:41 -0800
+In-Reply-To: <20210205095506.29146-1-lukas.bulwahn@gmail.com>
+References: <20210205095506.29146-1-lukas.bulwahn@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.38.3 (3.38.3-1.fc33) 
 MIME-Version: 1.0
@@ -39,37 +46,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2021-02-09 at 11:49 -0800, Jonathan Lemon wrote:
-> On mlx5e fails to compile on the latesst net-next:
+On Fri, 2021-02-05 at 10:55 +0100, Lukas Bulwahn wrote:
+> Commit 142d93d12dc1 ("net/mlx5: Add devlink subfunction port
+> documentation") refers to a section 'mlx5 port function' in the table
+> of
+> contents, but includes a section 'mlx5 function attributes' instead.
 > 
->   CC      drivers/net/ethernet/mellanox/mlx5/core/en_main.o
-> In file included from
-> ../drivers/net/ethernet/mellanox/mlx5/core/en_tc.h:40,
->                  from
-> ../drivers/net/ethernet/mellanox/mlx5/core/en_main.c:45:
-> ../drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.h:24:29: error:
-> field ‘match_level’ has incomplete type
->    24 |  enum mlx5_flow_match_level match_level;
->       |                             ^~~~~~~~~~~
+> Hence, make htmldocs warns:
 > 
-> With this .config snippet:
->     CONFIG_MLX5_CORE=y
->     # CONFIG_MLX5_FPGA is not set
->     CONFIG_MLX5_CORE_EN=y
->     # CONFIG_MLX5_EN_ARFS is not set
->     CONFIG_MLX5_EN_RXNFC=y
->     CONFIG_MLX5_MPFS=y
->     # CONFIG_MLX5_ESWITCH is not set
->     CONFIG_MLX5_CORE_EN_DCB=y
->     # CONFIG_MLX5_CORE_IPOIB is not set
->     # CONFIG_MLX5_SF is not set
+>   mlx5.rst:16: WARNING: Unknown target name: "mlx5 port function".
 > 
-> Presumably because ESWITCH is not enabled.
+> Correct the section reference in table of contents to the actual name
+> of
+> section in the documentation.
+> 
+> Also, tune another section underline while visiting this document.
+> 
+> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+> ---
+> Saeed, please pick this patch for your -next tree on top of the
+> commit above.
 
-Thanks Jonathan for the report,
+Applied to net-next-mlx5,
 
-this patch should fix the issue:
-https://patchwork.kernel.org/project/netdevbpf/patch/20210209203722.12387-1-saeed@kernel.org/
-
-
+Thanks,
+Saeed.
 
