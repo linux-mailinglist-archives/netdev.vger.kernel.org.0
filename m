@@ -2,69 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 203E431640C
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 11:40:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60652316412
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 11:42:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231195AbhBJKj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 05:39:27 -0500
-Received: from mail.thelounge.net ([91.118.73.15]:21841 "EHLO
-        mail.thelounge.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231311AbhBJKf7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 05:35:59 -0500
-Received: from srv-rhsoft.rhsoft.net (rh.vpn.thelounge.net [10.10.10.2])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-256))
+        id S230420AbhBJKle (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 05:41:34 -0500
+Received: from ssl.serverraum.org ([176.9.125.105]:42263 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230417AbhBJKjI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 05:39:08 -0500
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: h.reindl@thelounge.net)
-        by mail.thelounge.net (THELOUNGE MTA) with ESMTPSA id 4DbGNd6cv9zXMD;
-        Wed, 10 Feb 2021 11:34:57 +0100 (CET)
-Subject: Re: [PATCH net 1/4] netfilter: xt_recent: Fix attempt to update
- deleted entry
-To:     Jozsef Kadlecsik <kadlec@netfilter.org>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, kuba@kernel.org
-References: <20210205001727.2125-1-pablo@netfilter.org>
- <20210205001727.2125-2-pablo@netfilter.org>
- <69957353-7fe0-9faa-4ddd-1ac44d5386a5@thelounge.net>
- <alpine.DEB.2.23.453.2102051448220.10405@blackhole.kfki.hu>
- <a51d867a-3ca9-fd36-528a-353aa6c42f42@thelounge.net>
- <3018f068-62b1-6dae-2dde-39d1a62fbcb2@thelounge.net>
- <alpine.DEB.2.23.453.2102072036220.16338@blackhole.kfki.hu>
-From:   Reindl Harald <h.reindl@thelounge.net>
-Organization: the lounge interactive design
-Message-ID: <303fdd83-a324-5d0c-b45e-9584ea0c9cd5@thelounge.net>
-Date:   Wed, 10 Feb 2021 11:34:57 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 59A0323E64;
+        Wed, 10 Feb 2021 11:38:18 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1612953498;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wh0vTlN5xwzrmuM0AHqMMV/jTENHTG631Hbx7eavitU=;
+        b=Ja1dQUdofMfZzdNohvdRWJcjdbK5gNJ5QfdLojNaWUP0Bz1x2+Ses6OB922d6G4OpHyOSb
+        ZZYrqzxVZym7uacqfIbLjHTwCxFdhbCXIhg72XIHqcAL+90f04vhiMCq5OtEhEIZHds/Ji
+        KaBnAH2nS+r4dY9T95BYOosF487Oyb0=
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.23.453.2102072036220.16338@blackhole.kfki.hu>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
+Date:   Wed, 10 Feb 2021 11:38:18 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next 7/9] net: phy: icplus: select page before writing
+ control register
+In-Reply-To: <20210210103059.GR1463@shell.armlinux.org.uk>
+References: <20210209164051.18156-1-michael@walle.cc>
+ <20210209164051.18156-8-michael@walle.cc>
+ <d5672062-c619-02a4-3bbe-dad44371331d@gmail.com>
+ <20210210103059.GR1463@shell.armlinux.org.uk>
+User-Agent: Roundcube Webmail/1.4.10
+Message-ID: <d35f726f82c6c743519f3d8a36037dfa@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-Am 07.02.21 um 20:38 schrieb Jozsef Kadlecsik:
-> On Sun, 7 Feb 2021, Reindl Harald wrote:
+Am 2021-02-10 11:30, schrieb Russell King - ARM Linux admin:
+> On Wed, Feb 10, 2021 at 08:03:07AM +0100, Heiner Kallweit wrote:
+>> On 09.02.2021 17:40, Michael Walle wrote:
+>> > +out:
+>> > +	return phy_restore_page(phydev, oldpage, err);
+>> 
+>> If a random page was set before entering config_init, do we actually 
+>> want
+>> to restore it? Or wouldn't it be better to set the default page as 
+>> part
+>> of initialization?
 > 
->>> well, the most important thing is that the firewall-vm stops to
->>> kernel-panic
->>
->> why is that still not part of 5.10.14 given how old that issue is :-(
->>
->> https://cdn.kernel.org/pub/linux/kernel/v5.x/ChangeLog-5.10.14
-> 
-> Probably we missed the window when patches were accepted for the new
-> release. That's all
+> I think you've missed asking one key question: does the paging on this
+> PHY affect the standardised registers at 0..15 inclusive, or does it
+> only affect registers 16..31?
 
-probably something is broken in the whole process given that 5.10.15 
-still don't contain the fix while i am tired of a new "stable release" 
-every few days and 5.10.x like every LTS release in the past few years 
-has a peak of it
+For this PHY it affects only registers >=16. But that doesn't invaldiate
+the point that for other PHYs this might affect all regsisters. Eg. ones
+where you could select between fiber and copper pages, right?
 
-https://cdn.kernel.org/pub/linux/kernel/v5.x/ChangeLog-5.10.15
+> If it doesn't affect the standardised registers, then the genphy_*
+> functions don't care which page is selected.
 
+-- 
+-michael
