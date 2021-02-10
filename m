@@ -2,110 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4945A317453
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 00:26:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40A4A317447
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 00:24:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234082AbhBJXZS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 18:25:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44074 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233926AbhBJXYg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 18:24:36 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A535CC061788;
-        Wed, 10 Feb 2021 15:23:55 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id l25so7135579eja.9;
-        Wed, 10 Feb 2021 15:23:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=LVyB6aVFegjh/BB39Z/3gEanq6lvT/mhc2gjTlbR304=;
-        b=Ltsi8EvdBtQvRjoANMJcwrISpAFLvmJ2C8VxRcxriJbvaZ1H9uMjsHWcx4k1KVwIp0
-         bEprsSTU/icuARDSY1rU06I6BedOoXhuhcIgJh6jxcQt9ggsbMK3SyzdhcxnWfOWN9gT
-         E5PYWDallpyZg5bnCqT7zgXoUxWsagtNa206F8EEFkBmsPO6KcpFz/zIWRjDEVcWBl3U
-         m0CKh8UMubbkzKQ1GFQajoSPGu94+hVxEvlymy59SIYbcYLFwtM3w4Yu7fAPflkJsmfG
-         LbzrxtfSEmjjRz3SHakXq/z1GCjoceNkpUvScCPt/IKE/L2FAZmjSB2HX9PO1F40u57g
-         evTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LVyB6aVFegjh/BB39Z/3gEanq6lvT/mhc2gjTlbR304=;
-        b=Z126DDr/XTEWjcbQNU9ITxxEKF1kwLKL7YEQxjurwXEM66rwGxa+qTIUPgoEc2XE+g
-         G1QwW/FWJy766KiZ3rwk/YkYujEqAstzlnI4EjyEMB5fMx4lZv/guLzjEdMJ1MfML5Dc
-         dSm/KB9J62pzn5PyqOMQda+n/gsTKEqmT5urYELElGE0poYeHwOL2gvChkUisQnLfu8r
-         HAauXRqhh7o4aNmZPKcT1njNbZSH+DNeKyBTSLOTCx+8FCzun3QukdEiUMDoBo0UCEgy
-         Hjo1eu349jAa2a09SVqh+ACBcPpb2G4B8/FwfllBmk93Mbq9b345HPMpIFJPoBnpb61F
-         FHVw==
-X-Gm-Message-State: AOAM533kGjb2pwTL8s2oMoHNK+xJH25Z6Tdw8opVERCUO+Anrv5TvjFw
-        3JWQaAQmcuRHN7fWFhzZ+Ug=
-X-Google-Smtp-Source: ABdhPJzF0KSQ9DdcnciBemPnpUA2B28QOBhea1HzTO3oC0toBtKbhjUBAWV9/atUFBeQfPDx+7VJVA==
-X-Received: by 2002:a17:906:8519:: with SMTP id i25mr5508356ejx.106.1612999434425;
-        Wed, 10 Feb 2021 15:23:54 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id w18sm2263806edt.8.2021.02.10.15.23.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Feb 2021 15:23:53 -0800 (PST)
-Date:   Thu, 11 Feb 2021 01:23:52 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 04/11] net: bridge: offload initial and final
- port flags through switchdev
-Message-ID: <20210210232352.m7nqzvs2g4i74rx4@skbuf>
-References: <20210209151936.97382-1-olteanv@gmail.com>
- <20210209151936.97382-5-olteanv@gmail.com>
- <20210209185100.GA266253@shredder.lan>
- <20210209202045.obayorcud4fg2qqb@skbuf>
- <20210209220124.GA271860@shredder.lan>
- <20210209225153.j7u6zwnpdgskvr2v@skbuf>
- <20210210105949.GB287766@shredder.lan>
+        id S232633AbhBJXYA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 18:24:00 -0500
+Received: from mga01.intel.com ([192.55.52.88]:20916 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231547AbhBJXX6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Feb 2021 18:23:58 -0500
+IronPort-SDR: mu6UPU8v2cWmIpiX7V0+QZGwXFRdGIvWpqB7mKh35ZJRLa0Royvpbxk3En8Xd5r42+MigT4YEW
+ 01sHlWTBD0fA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9891"; a="201287981"
+X-IronPort-AV: E=Sophos;i="5.81,169,1610438400"; 
+   d="scan'208";a="201287981"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2021 15:23:42 -0800
+IronPort-SDR: R3cklj0YZtcfOBXmcBjRZtDsgGcQdusqMDjeRzncZro2U2EiyWwlJz90brDu9gBIClNBlsfaRa
+ ++phPs3QMw0A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,169,1610438400"; 
+   d="scan'208";a="361512334"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by fmsmga007.fm.intel.com with ESMTP; 10 Feb 2021 15:23:42 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com
+Subject: [PATCH net-next 0/7][pull request] 40GbE Intel Wired LAN Driver Updates 2021-02-10
+Date:   Wed, 10 Feb 2021 15:24:29 -0800
+Message-Id: <20210210232436.4084373-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210210105949.GB287766@shredder.lan>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 10, 2021 at 12:59:49PM +0200, Ido Schimmel wrote:
-> > > The reverse, during unlinking, would be to refuse unlinking if the upper
-> > > has uppers of its own. netdev_upper_dev_unlink() needs to learn to
-> > > return an error and callers such as team/bond need to learn to handle
-> > > it, but it seems patchable.
-> >
-> > Again, this was treated prior to my deletion in this series and not by
-> > erroring out, I just really didn't think it through.
-> >
-> > So you're saying that if we impose that all switchdev drivers restrict
-> > the house of cards to be constructed from the bottom up, and destructed
-> > from the top down, then the notification of bridge port flags can stay
-> > in the bridge layer?
->
-> I actually don't think it's a good idea to have this in the bridge in
-> any case. I understand that it makes sense for some devices where
-> learning, flooding, etc are port attributes, but in other devices these
-> can be {port,vlan} attributes and then you need to take care of them
-> when a vlan is added / deleted and not only when a port is removed from
-> the bridge. So for such devices this really won't save anything. I would
-> thus leave it to the lower levels to decide.
+This series contains updates to i40e driver only.
 
-Just for my understanding, how are per-{port,vlan} attributes such as
-learning and flooding managed by the Linux bridge? How can I disable
-flooding only in a certain VLAN?
+Arkadiusz adds support for software controlled DCB. Upon disabling of the
+firmware LLDP agent, the driver configures DCB with default values
+(only one Traffic Class). At the same time, it allows a software based
+LLDP agent - userspace application i.e. lldpad) to receive DCB TLVs
+and set desired DCB configuration through DCB related netlink callbacks.
+
+Aleksandr implements get and set ethtool ops for Energy Efficient
+Ethernet.
+
+Przemyslaw extends support for ntuple filters allowing for Flow Director
+IPv6 and VLAN filters.
+
+Kaixu Xia removes an unneeded assignment.
+
+The following are changes since commit dc9d87581d464e7b7d38853d6904b70b6c920d99:
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 40GbE
+
+Aleksandr Loktionov (1):
+  i40e: Add EEE status getting & setting implementation
+
+Arkadiusz Kubalewski (3):
+  i40e: Add hardware configuration for software based DCB
+  i40e: Add init and default config of software based DCB
+  i40e: Add netlink callbacks support for software based DCB
+
+Kaixu Xia (1):
+  i40e: remove the useless value assignment in i40e_clean_adminq_subtask
+
+Przemyslaw Patynowski (2):
+  i40e: Add flow director support for IPv6
+  i40e: VLAN field for flow director
+
+ drivers/net/ethernet/intel/i40e/i40e.h        |  26 +-
+ .../net/ethernet/intel/i40e/i40e_adminq_cmd.h |  11 +-
+ drivers/net/ethernet/intel/i40e/i40e_common.c |  65 +-
+ drivers/net/ethernet/intel/i40e/i40e_dcb.c    | 949 +++++++++++++++++-
+ drivers/net/ethernet/intel/i40e/i40e_dcb.h    | 169 +++-
+ drivers/net/ethernet/intel/i40e/i40e_dcb_nl.c | 752 +++++++++++++-
+ .../net/ethernet/intel/i40e/i40e_ethtool.c    | 382 ++++++-
+ drivers/net/ethernet/intel/i40e/i40e_main.c   | 601 ++++++++++-
+ .../net/ethernet/intel/i40e/i40e_prototype.h  |   9 +-
+ .../net/ethernet/intel/i40e/i40e_register.h   | 174 +++-
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c   | 534 ++++++----
+ drivers/net/ethernet/intel/i40e/i40e_type.h   |   5 +-
+ 12 files changed, 3378 insertions(+), 299 deletions(-)
+
+-- 
+2.26.2
+
