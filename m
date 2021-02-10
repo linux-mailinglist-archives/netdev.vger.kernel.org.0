@@ -2,34 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBFDC316BC7
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 17:53:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F941316BB9
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 17:51:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233299AbhBJQwk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 11:52:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43516 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233074AbhBJQt7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 11:49:59 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF166C061756;
-        Wed, 10 Feb 2021 08:49:18 -0800 (PST)
+        id S231959AbhBJQvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 11:51:31 -0500
+Received: from ssl.serverraum.org ([176.9.125.105]:39949 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233088AbhBJQty (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 11:49:54 -0500
 Received: from mwalle01.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:fa59:71ff:fe9b:b851])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 4832423E82;
+        by ssl.serverraum.org (Postfix) with ESMTPSA id C73D523E83;
         Wed, 10 Feb 2021 17:48:00 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1612975680;
+        t=1612975681;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=1uSl+dUW0xjnoJ3uxLG4ASQZ0SNxGxoU81I2YBKvtcw=;
-        b=rKjgD1pQ6nktHws7DPLib041QY6NsxS/x7pL8h2yBeWmyGhbrRc4az1ZlyQkMPybMhtyKE
-        7MGvi43hNc20W9TzGAG5aCDL7a+LTiQ2reTn4ioKJgbk7deDkuWZLu3hBa3fRd/R9iizmI
-        A9bcK4v70TmgDh4VcBUFdEx9HTky3qE=
+        bh=HOk8FU5aNzbxZFRMHXvhBJsCoU8i/72M6o4pS66b2UU=;
+        b=bQnI9A2DPvVPWMVpfchXUVMuVndTc4oRIF8BPrG2hBMTgvqsbJNGjim7hVp/mhmZS7w7Xx
+        iP38Vz4ALaUJ3nRpoR8ZwbjJNAJ7mQBnJSJNdhB0bx8A2FdGIlDEyzRgY6IhYC3PygSZ/u
+        jhh+y4nTcms84yuMMOVOHbHFzANueHQ=
 From:   Michael Walle <michael@walle.cc>
 To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -38,9 +35,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next v2 8/9] net: phy: icplus: add PHY counter for IP101G
-Date:   Wed, 10 Feb 2021 17:47:45 +0100
-Message-Id: <20210210164746.26336-9-michael@walle.cc>
+Subject: [PATCH net-next v2 9/9] net: phy: icplus: add MDI/MDIX support for IP101A/G
+Date:   Wed, 10 Feb 2021 17:47:46 +0100
+Message-Id: <20210210164746.26336-10-michael@walle.cc>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210210164746.26336-1-michael@walle.cc>
 References: <20210210164746.26336-1-michael@walle.cc>
@@ -50,138 +47,152 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The IP101G provides three counters: RX packets, CRC errors and symbol
-errors. The error counters can be configured to clear automatically on
-read. Unfortunately, this isn't true for the RX packet counter. Because
-of this and because the RX packet counter is more likely to overflow,
-than the error counters implement only support for the error counters.
+Implement the operations to set desired mode and retrieve the current
+mode.
+
+This feature was tested with an IP101G.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
 Changes since v1:
- - renamed the functions to represend a IP101G-only function
- - enable the counters in IP101G's config_init()
+ - none, except that the callbacks are register for both IP101A and IP101G
+   PHY drivers
 
- drivers/net/phy/icplus.c | 75 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 75 insertions(+)
+ drivers/net/phy/icplus.c | 93 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 93 insertions(+)
 
 diff --git a/drivers/net/phy/icplus.c b/drivers/net/phy/icplus.c
-index a6394ad3cfe0..52ba5a697025 100644
+index 52ba5a697025..26b591e18120 100644
 --- a/drivers/net/phy/icplus.c
 +++ b/drivers/net/phy/icplus.c
-@@ -51,6 +51,12 @@ MODULE_LICENSE("GPL");
+@@ -37,12 +37,17 @@ MODULE_LICENSE("GPL");
+ #define IP1001_SPEC_CTRL_STATUS_2	20	/* IP1001 Spec. Control Reg 2 */
+ #define IP1001_APS_ON			11	/* IP1001 APS Mode  bit */
+ #define IP101A_G_APS_ON			BIT(1)	/* IP101A/G APS Mode bit */
++#define IP101A_G_AUTO_MDIX_DIS		BIT(11)
+ #define IP101A_G_IRQ_CONF_STATUS	0x11	/* Conf Info IRQ & Status Reg */
+ #define	IP101A_G_IRQ_PIN_USED		BIT(15) /* INTR pin used */
+ #define IP101A_G_IRQ_ALL_MASK		BIT(11) /* IRQ's inactive */
+ #define IP101A_G_IRQ_SPEED_CHANGE	BIT(2)
+ #define IP101A_G_IRQ_DUPLEX_CHANGE	BIT(1)
+ #define IP101A_G_IRQ_LINK_CHANGE	BIT(0)
++#define IP101A_G_PHY_STATUS		18
++#define IP101A_G_MDIX			BIT(9)
++#define IP101A_G_PHY_SPEC_CTRL		30
++#define IP101A_G_FORCE_MDIX		BIT(3)
  
- #define IP101G_DEFAULT_PAGE			16
- 
-+#define IP101G_P1_CNT_CTRL		17
-+#define CNT_CTRL_RX_EN			BIT(13)
-+#define IP101G_P8_CNT_CTRL		17
-+#define CNT_CTRL_RDCLR_EN		BIT(15)
-+#define IP101G_CNT_REG			18
-+
- #define IP175C_PHY_ID 0x02430d80
- #define IP1001_PHY_ID 0x02430d90
- #define IP101A_PHY_ID 0x02430c54
-@@ -65,8 +71,19 @@ enum ip101gr_sel_intr32 {
- 	IP101GR_SEL_INTR32_RXER,
- };
- 
-+struct ip101g_hw_stat {
-+	const char *name;
-+	int page;
-+};
-+
-+static struct ip101g_hw_stat ip101g_hw_stats[] = {
-+	{ "phy_crc_errors", 1 },
-+	{ "phy_symbol_errors", 11, },
-+};
-+
- struct ip101a_g_phy_priv {
- 	enum ip101gr_sel_intr32 sel_intr32;
-+	u64 stats[ARRAY_SIZE(ip101g_hw_stats)];
- };
- 
- static int ip175c_config_init(struct phy_device *phydev)
-@@ -263,6 +280,20 @@ static int ip101a_config_init(struct phy_device *phydev)
- 
- static int ip101g_config_init(struct phy_device *phydev)
- {
-+	int ret;
-+
-+	/* Enable the PHY counters */
-+	ret = phy_modify_paged(phydev, 1, IP101G_P1_CNT_CTRL,
-+			       CNT_CTRL_RX_EN, CNT_CTRL_RX_EN);
-+	if (ret)
-+		return ret;
-+
-+	/* Clear error counters on read */
-+	ret = phy_modify_paged(phydev, 8, IP101G_P8_CNT_CTRL,
-+			       CNT_CTRL_RDCLR_EN, CNT_CTRL_RDCLR_EN);
-+	if (ret)
-+		return ret;
-+
+ #define IP101G_PAGE_CONTROL				0x14
+ #define IP101G_PAGE_CONTROL_MASK			GENMASK(4, 0)
+@@ -297,6 +302,90 @@ static int ip101g_config_init(struct phy_device *phydev)
  	return ip101a_g_config_intr_pin(phydev);
  }
  
-@@ -403,6 +434,47 @@ static int ip101g_match_phy_device(struct phy_device *phydev)
- 	return ip101a_g_match_phy_device(phydev, false);
- }
- 
-+static int ip101g_get_sset_count(struct phy_device *phydev)
++static int ip101a_g_read_status(struct phy_device *phydev)
 +{
-+	return ARRAY_SIZE(ip101g_hw_stats);
-+}
++	int oldpage, ret, stat1, stat2;
 +
-+static void ip101g_get_strings(struct phy_device *phydev, u8 *data)
-+{
-+	int i;
++	ret = genphy_read_status(phydev);
++	if (ret)
++		return ret;
 +
-+	for (i = 0; i < ARRAY_SIZE(ip101g_hw_stats); i++)
-+		strscpy(data + i * ETH_GSTRING_LEN,
-+			ip101g_hw_stats[i].name, ETH_GSTRING_LEN);
-+}
++	oldpage = phy_select_page(phydev, IP101G_DEFAULT_PAGE);
 +
-+static u64 ip101g_get_stat(struct phy_device *phydev, int i)
-+{
-+	struct ip101g_hw_stat stat = ip101g_hw_stats[i];
-+	struct ip101a_g_phy_priv *priv = phydev->priv;
-+	int val;
-+	u64 ret;
++	ret = __phy_read(phydev, IP10XX_SPEC_CTRL_STATUS);
++	if (ret < 0)
++		goto out;
++	stat1 = ret;
 +
-+	val = phy_read_paged(phydev, stat.page, IP101G_CNT_REG);
-+	if (val < 0) {
-+		ret = U64_MAX;
++	ret = __phy_read(phydev, IP101A_G_PHY_SPEC_CTRL);
++	if (ret < 0)
++		goto out;
++	stat2 = ret;
++
++	if (stat1 & IP101A_G_AUTO_MDIX_DIS) {
++		if (stat2 & IP101A_G_FORCE_MDIX)
++			phydev->mdix_ctrl = ETH_TP_MDI_X;
++		else
++			phydev->mdix_ctrl = ETH_TP_MDI;
 +	} else {
-+		priv->stats[i] += val;
-+		ret = priv->stats[i];
++		phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
 +	}
 +
-+	return ret;
++	if (stat2 & IP101A_G_MDIX)
++		phydev->mdix = ETH_TP_MDI_X;
++	else
++		phydev->mdix = ETH_TP_MDI;
++
++	ret = 0;
++
++out:
++	return phy_restore_page(phydev, oldpage, ret);
 +}
 +
-+static void ip101g_get_stats(struct phy_device *phydev,
-+			     struct ethtool_stats *stats, u64 *data)
++static int ip101a_g_config_mdix(struct phy_device *phydev)
 +{
-+	int i;
++	u16 ctrl = 0, ctrl2 = 0;
++	int oldpage, ret;
 +
-+	for (i = 0; i < ARRAY_SIZE(ip101g_hw_stats); i++)
-+		data[i] = ip101g_get_stat(phydev, i);
++	switch (phydev->mdix_ctrl) {
++	case ETH_TP_MDI:
++		ctrl = IP101A_G_AUTO_MDIX_DIS;
++		break;
++	case ETH_TP_MDI_X:
++		ctrl = IP101A_G_AUTO_MDIX_DIS;
++		ctrl2 = IP101A_G_FORCE_MDIX;
++		break;
++	case ETH_TP_MDI_AUTO:
++		break;
++	default:
++		return 0;
++	}
++
++	oldpage = phy_select_page(phydev, IP101G_DEFAULT_PAGE);
++
++	ret = __phy_modify(phydev, IP10XX_SPEC_CTRL_STATUS,
++			   IP101A_G_AUTO_MDIX_DIS, ctrl);
++	if (ret)
++		goto out;
++
++	ret = __phy_modify(phydev, IP101A_G_PHY_SPEC_CTRL,
++			   IP101A_G_FORCE_MDIX, ctrl2);
++
++out:
++	return phy_restore_page(phydev, oldpage, ret);
 +}
 +
- static struct phy_driver icplus_driver[] = {
++static int ip101a_g_config_aneg(struct phy_device *phydev)
++{
++	int ret;
++
++	ret = ip101a_g_config_mdix(phydev);
++	if (ret)
++		return ret;
++
++	return genphy_config_aneg(phydev);
++}
++
+ static int ip101a_g_ack_interrupt(struct phy_device *phydev)
  {
- 	PHY_ID_MATCH_MODEL(IP175C_PHY_ID),
-@@ -445,6 +517,9 @@ static struct phy_driver icplus_driver[] = {
+ 	int err;
+@@ -503,6 +592,8 @@ static struct phy_driver icplus_driver[] = {
+ 	.config_intr	= ip101a_g_config_intr,
  	.handle_interrupt = ip101a_g_handle_interrupt,
- 	.config_init	= ip101g_config_init,
+ 	.config_init	= ip101a_config_init,
++	.config_aneg	= ip101a_g_config_aneg,
++	.read_status	= ip101a_g_read_status,
  	.soft_reset	= genphy_soft_reset,
-+	.get_sset_count = ip101g_get_sset_count,
-+	.get_strings	= ip101g_get_strings,
-+	.get_stats	= ip101g_get_stats,
  	.suspend	= genphy_suspend,
  	.resume		= genphy_resume,
- } };
+@@ -516,6 +607,8 @@ static struct phy_driver icplus_driver[] = {
+ 	.config_intr	= ip101a_g_config_intr,
+ 	.handle_interrupt = ip101a_g_handle_interrupt,
+ 	.config_init	= ip101g_config_init,
++	.config_aneg	= ip101a_g_config_aneg,
++	.read_status	= ip101a_g_read_status,
+ 	.soft_reset	= genphy_soft_reset,
+ 	.get_sset_count = ip101g_get_sset_count,
+ 	.get_strings	= ip101g_get_strings,
 -- 
 2.20.1
 
