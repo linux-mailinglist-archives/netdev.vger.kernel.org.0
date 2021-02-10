@@ -2,108 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54CA5317355
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 23:29:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A8E0317369
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 23:34:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232663AbhBJW24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 17:28:56 -0500
-Received: from mail.baikalelectronics.com ([87.245.175.226]:35520 "EHLO
-        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232097AbhBJW2w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 17:28:52 -0500
-Date:   Thu, 11 Feb 2021 01:28:05 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Rob Herring <robh@kernel.org>
-CC:     Serge Semin <fancer.lancer@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Vyacheslav Mitrofanov 
-        <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 01/16] dt-bindings: net: dwmac: Add DW GMAC GPIOs
- properties
-Message-ID: <20210210222805.upoioue7uc6cat2v@mobilestation>
-References: <20210208140820.10410-1-Sergey.Semin@baikalelectronics.ru>
- <20210208140820.10410-2-Sergey.Semin@baikalelectronics.ru>
- <20210209231352.GA402351@robh.at.kernel.org>
+        id S232500AbhBJWea (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 17:34:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33036 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231205AbhBJWeE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 17:34:04 -0500
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BC6FC0613D6
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 14:33:24 -0800 (PST)
+Received: by mail-io1-xd2b.google.com with SMTP id f2so3727742ioq.2
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 14:33:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jc0cKAaWwDGgmfaTk/UgFMkJLA66GM85PZScS2V+gQk=;
+        b=AsV/JDL0H+XSIovRmupF23EzOLT3l99uwlVTF0UQ4Fk77n72M2Abjgp5pzhFYearBC
+         2Q5/6+VZecf2ijlsEKAL95qAF9tYy5FqWvpPr/beakdWoBGTyGx5g1X249wmeJeYoEtt
+         nF5SSN8Z+esyomp+A/ke39U2cn2yyDB5l0IsjTgQSSGC/7alKQ+OvmQEndEFEIml2ef6
+         zKD0sqGafAUzU4PAr87nRV+NbBpm+VebuhxsWMWmTfe7YTavIl/cX+0Us91L7BASA4qw
+         ftUwpt5CaV/69iywQDBAHE8DnGZx0LO/d1IT+lYBkotAoQ18OZFrsyYaivea7Ww8y8Mu
+         ZjmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jc0cKAaWwDGgmfaTk/UgFMkJLA66GM85PZScS2V+gQk=;
+        b=CgFJoW6pp7jBYNUnfT1CkMePP8A+GbAesAl5FuKkb7/GsfpK8U9rNxiW8Zt8ptPxrR
+         IBpsnJ7w0650dj9+XjAIu4klmYJoTla7CCNmmsVC5K+lA6O+P5xYploUyUP388cHDcy7
+         hqxpWNkXYJkvSsOCNHit8nW6gIZX2kGtiZCd+tWwHXQULQ3O3l6R2SsGfL++XE+txLHW
+         ESnFc49BOIYTHrgrYbmUz/xLf7QXc7mnVhR6PPOsNHxsq9j3vfO6T5aMPS0xc2cKi5ef
+         yN/CmEHxNA8C0PTgBcW0l+JAwdjkA5AtSQNaTzoD1iQRmguwyTVnBjMzuZFcGbmdXX0y
+         BuOQ==
+X-Gm-Message-State: AOAM5339yQT5HZmTjin17U0RWL5r/wRcwSbT3FkOHB/qJADQy/2YW9eu
+        opV1LFfF1Md0SrZK915GqpRszA==
+X-Google-Smtp-Source: ABdhPJwh/5mrknwGHGZd8XUrNCYgFjovnKFPoWo7Sa1TkpqUbuF+OUcHK9xRM3w9N2Ozm7c9Lzbs3A==
+X-Received: by 2002:a6b:5404:: with SMTP id i4mr2685666iob.62.1612996403568;
+        Wed, 10 Feb 2021 14:33:23 -0800 (PST)
+Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id e23sm1484525ioc.34.2021.02.10.14.33.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Feb 2021 14:33:23 -0800 (PST)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     elder@kernel.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/5] net: ipa: some more cleanup
+Date:   Wed, 10 Feb 2021 16:33:15 -0600
+Message-Id: <20210210223320.11269-1-elder@linaro.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20210209231352.GA402351@robh.at.kernel.org>
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 09, 2021 at 05:13:52PM -0600, Rob Herring wrote:
-> On Mon, Feb 08, 2021 at 05:08:05PM +0300, Serge Semin wrote:
-> > Synopsys DesignWare Ethernet controllers can be synthesized with
-> > General-Purpose IOs support. GPIOs can work either as inputs or as outputs
-> > thus belong to the gpi_i and gpo_o ports respectively. The ports width
-> > (number of possible inputs/outputs) and the configuration registers layout
-> > depend on the IP-core version. For instance, DW GMAC can have from 0 to 4
-> > GPIs and from 0 to 4 GPOs, while DW xGMAC have a wider ports width up to
-> > 16 pins of each one.
-> > 
-> > So the DW MAC DT-node can be equipped with "ngpios" property, which can't
-> > have a value greater than 32, standard GPIO-related properties like
-> > "gpio-controller" and "#gpio-cells", and, if GPIs are supposed to be
-> > detected, IRQ-controller related properties.
-> > 
-> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> > ---
-> >  .../devicetree/bindings/net/snps,dwmac.yaml     | 17 +++++++++++++++++
-> >  1 file changed, 17 insertions(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> > index bdc437b14878..fcca23d3727e 100644
-> > --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> > +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> > @@ -110,6 +110,23 @@ properties:
-> >    reset-names:
-> >      const: stmmaceth
-> >  
-> > +  ngpios:
-> > +    description:
-> > +      Total number of GPIOs the MAC supports. The property shall include both
-> > +      the GPI and GPO ports width.
-> > +    minimum: 1
-> > +    maximum: 32
-> 
+This is another fairly innocuous set of cleanup patches.
 
-> Does the driver actually need this? I'd omit it if just to validate 
-> consumers are in range.
+The first was motivated by a bug found that would affect IPA v4.5.
+It maintain a new GSI address pointer; one is the "raw" (original
+mapped) address, and the other will have been adjusted if necessary
+for use on newer platforms.
 
-I can't say for all possible DW MAC IP-cores (I've got manuals for
-GMAC and xGMAC only), but at least DW GMAC can't have more than four
-GPIs and four GPOs, while XGMACs can be synthesized with up to 16
-each. That's why I've set the upper boundary here as 32. But the
-driver uses the ngpios property do determine the total number GPIOs
-the core has been synthesized. Th number of GPIs and GPOs will be
-auto-detected then (by writing-reading to-from the GPI type field of
-the GPIO control register).
+The second just quiets some unnecessary noise during early probe.
 
-> 
-> Are GPI and GPO counts independent? If so, this isn't really sufficient.
+The third fixes some errors that show up when IPA_VALIDATION is
+enabled.
 
-Yeap, they are independent. What do you suggest then? Define some
-vendor-specific properties like snps,ngpis and snps,ngpos? If so then
-they seem more generic than vendor-specific, because the separated
-GPI and GPO space isn't an unique feature of the DW MAC GPIOs. Do we
-need to create a generic version of such properties then? (That much
-more changes then introduced here. We'd need to fix the dt-schema tool
-too then.)
+The last two just create helper functions to improve readability.
 
--Sergey
+					-Alex
 
-> 
-> Rob
+Alex Elder (5):
+  net: ipa: use a separate pointer for adjusted GSI memory
+  net: ipa: don't report EPROBE_DEFER error
+  net: ipa: fix register write command validation
+  net: ipa: introduce ipa_table_hash_support()
+  net: ipa: introduce gsi_channel_initialized()
+
+ drivers/net/ipa/gsi.c       | 48 +++++++++++++++++++------------------
+ drivers/net/ipa/gsi.h       |  3 ++-
+ drivers/net/ipa/gsi_reg.h   | 19 +++++++++------
+ drivers/net/ipa/ipa_clock.c | 10 +++++---
+ drivers/net/ipa/ipa_cmd.c   | 30 +++++++++++++++++------
+ drivers/net/ipa/ipa_table.c | 14 ++++++-----
+ drivers/net/ipa/ipa_table.h |  6 +++++
+ 7 files changed, 83 insertions(+), 47 deletions(-)
+
+-- 
+2.20.1
+
