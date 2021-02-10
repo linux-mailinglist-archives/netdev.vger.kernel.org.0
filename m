@@ -2,105 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B7D53160FA
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 09:28:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EC2031613C
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 09:46:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231354AbhBJI1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 03:27:38 -0500
-Received: from mail29.static.mailgun.info ([104.130.122.29]:33010 "EHLO
-        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230118AbhBJI0c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 03:26:32 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1612945572; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=9EoJ98RLCOjfNGA9m9IWMD0BBEcL08tR1uiW4fkuRXk=; b=FL9knDF+/FuCTnXp3ItWpaSFXJ1xuYx+To1aAOZObVcBeLYLPRNZ5YJ64H5oAAIujMzXe/zA
- Z/aP0R5sbjFcY0FNGF2t9/NQ7c7YnAmRCX/XaY+mlR3LcuLkuRCt+8LIHhVhxop0ZeX7MCxy
- k3FtpsEk+G3fJ5RH9TyyxAVSKgQ=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
- 6023988434db06ef79edb787 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 10 Feb 2021 08:25:40
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 035F8C433ED; Wed, 10 Feb 2021 08:25:39 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 4F74CC433ED;
-        Wed, 10 Feb 2021 08:25:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 4F74CC433ED
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Shuah Khan <skhan@linuxfoundation.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ath10k@lists.infradead.org
-Subject: Re: [PATCH 4/5] ath10k: detect conf_mutex held ath10k_drain_tx() calls
-References: <cover.1612915444.git.skhan@linuxfoundation.org>
-        <a980abfb143f5240375f3f1046f0f26971c695e6.1612915444.git.skhan@linuxfoundation.org>
-Date:   Wed, 10 Feb 2021 10:25:35 +0200
-In-Reply-To: <a980abfb143f5240375f3f1046f0f26971c695e6.1612915444.git.skhan@linuxfoundation.org>
-        (Shuah Khan's message of "Tue, 9 Feb 2021 17:42:25 -0700")
-Message-ID: <87lfbwtjls.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S229956AbhBJIjq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 03:39:46 -0500
+Received: from 6.mo179.mail-out.ovh.net ([46.105.56.76]:44202 "EHLO
+        6.mo179.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229837AbhBJIgk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 03:36:40 -0500
+X-Greylist: delayed 36310 seconds by postgrey-1.27 at vger.kernel.org; Wed, 10 Feb 2021 03:36:40 EST
+Received: from player773.ha.ovh.net (unknown [10.110.208.22])
+        by mo179.mail-out.ovh.net (Postfix) with ESMTP id 3B77018C4D6
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 08:58:04 +0100 (CET)
+Received: from milecki.pl (ip-194-187-74-233.konfederacka.maverick.com.pl [194.187.74.233])
+        (Authenticated sender: rafal@milecki.pl)
+        by player773.ha.ovh.net (Postfix) with ESMTPSA id 85E8E1AFFF6D6;
+        Wed, 10 Feb 2021 07:57:51 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-104R00586a19810-fc92-4ea2-a265-0e6f67f37ab4,
+                    4D22BEF75CFDE1719A9C318D5396F6FE99F55012) smtp.auth=rafal@milecki.pl
+X-OVh-ClientIp: 194.187.74.233
+Subject: Re: [PATCH V3 net-next 2/2] net: broadcom: bcm4908_enet: add BCM4908
+ controller driver
+To:     Andrew Lunn <andrew@lunn.ch>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Masahiro Yamada <masahiroy@kernel.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com
+References: <20210207222632.10981-2-zajec5@gmail.com>
+ <20210209230130.4690-1-zajec5@gmail.com>
+ <20210209230130.4690-2-zajec5@gmail.com> <YCNHU2g1m4dFahBd@lunn.ch>
+From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+Message-ID: <b13c82b5-49fb-533d-dfd6-dcc2f4c9f90d@milecki.pl>
+Date:   Wed, 10 Feb 2021 08:57:50 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <YCNHU2g1m4dFahBd@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Ovh-Tracer-Id: 10523786433230573199
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgeduledrheeigdduudehucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepuffvfhfhkffffgggjggtgfesthejredttdefjeenucfhrhhomheptfgrfhgrlhcuofhilhgvtghkihcuoehrrghfrghlsehmihhlvggtkhhirdhplheqnecuggftrfgrthhtvghrnhepkeekgeefieeuhfdujeefgeektddujeekledvheehfeelfffhfeekjefhfeehuefhnecukfhppedtrddtrddtrddtpdduleegrddukeejrdejgedrvdeffeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphdqohhuthdphhgvlhhopehplhgrhigvrhejjeefrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheprhgrfhgrlhesmhhilhgvtghkihdrphhlpdhrtghpthhtohepnhgvthguvghvsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Shuah Khan <skhan@linuxfoundation.org> writes:
+On 10.02.2021 03:39, Andrew Lunn wrote:
+>> +static inline u32 enet_read(struct bcm4908_enet *enet, u16 offset)
+>> +{
+>> +	return readl(enet->base + offset);
+>> +}
+> 
+> No inline functions in C files please. Let the compiler decide.
 
-> ath10k_drain_tx() must not be called with conf_mutex held as workers can
-> use that also. Add check to detect conf_mutex held calls.
->
-> Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+According to the kernel's coding style (coding-style.rst) inline should
+*not* be used for 3+ LOC functions in general. According to that, I should
+only fix my enet_maskset() which isn't 1 LOC indeed.
 
-The commit log does not answer to "Why?". How did you find this? What
-actual problem are you trying to solve?
+If that Documentation is outdated and/or inaccurate, could you propose a
+change for it, please? That rule comes from 2006 (a771f2b82aa2), so I
+understand it may need updating. We should have that officially documented
+though, to avoid per-tree or per-maintainer rules for stuff like this.
 
-> ---
->  drivers/net/wireless/ath/ath10k/mac.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
-> index 53f92945006f..3545ce7dce0a 100644
-> --- a/drivers/net/wireless/ath/ath10k/mac.c
-> +++ b/drivers/net/wireless/ath/ath10k/mac.c
-> @@ -4566,6 +4566,7 @@ static void ath10k_mac_op_wake_tx_queue(struct ieee80211_hw *hw,
->  /* Must not be called with conf_mutex held as workers can use that also. */
->  void ath10k_drain_tx(struct ath10k *ar)
->  {
-> +	WARN_ON(lockdep_is_held(&ar->conf_mutex));
+Personally I don't have enough compiler knowledge to propose and/or discuss
+such stuff. That's why I prefer following Documentation written by smarter
+ones ;)
 
-Empty line after WARN_ON().
 
-Shouldn't this check debug_locks similarly lockdep_assert_held() does?
+>> +static int bcm4908_dma_alloc_buf_descs(struct bcm4908_enet *enet,
+>> +				       struct bcm4908_enet_dma_ring *ring)
+>> +{
+>> +	int size = ring->length * sizeof(struct bcm4908_enet_dma_ring_bd);
+>> +	struct device *dev = enet->dev;
+>> +
+>> +	ring->cpu_addr = dma_alloc_coherent(dev, size, &ring->dma_addr, GFP_KERNEL);
+>> +	if (!ring->cpu_addr)
+>> +		return -ENOMEM;
+>> +
+>> +	if (((uintptr_t)ring->cpu_addr) & (0x40 - 1)) {
+>> +		dev_err(dev, "Invalid DMA ring alignment\n");
+>> +		goto err_free_buf_descs;
+>> +	}
+>> +
+>> +	ring->slots = kzalloc(ring->length * sizeof(*ring->slots), GFP_KERNEL);
+>> +	if (!ring->slots)
+>> +		goto err_free_buf_descs;
+>> +
+>> +	memset(ring->cpu_addr, 0, size);
+> 
+> It looks like dma_alloc_coherent() will perform a clear. See __dma_alloc_from_coherent()
 
-#define lockdep_assert_held(l)	do {				\
-		WARN_ON(debug_locks && !lockdep_is_held(l));	\
-	} while (0)
+Thanks!
 
-And I suspect you need #ifdef CONFIG_LOCKDEP which should fix the kbuild
-bot error.
 
-But honestly I would prefer to have lockdep_assert_not_held() in
-include/linux/lockdep.h, much cleaner that way. Also
-i915_gem_object_lookup_rcu() could then use the same macro.
+>> +static void bcm4908_enet_dma_reset(struct bcm4908_enet *enet)
+>> +{
+>> +	struct bcm4908_enet_dma_ring *rings[] = { &enet->rx_ring, &enet->tx_ring };
+>> +	int i;
+>> +
+>> +	/* Disable the DMA controller and channel */
+>> +	for (i = 0; i < ARRAY_SIZE(rings); i++)
+>> +		enet_write(enet, rings[i]->cfg_block + ENET_DMA_CH_CFG, 0);
+>> +	enet_maskset(enet, ENET_DMA_CONTROLLER_CFG, ENET_DMA_CTRL_CFG_MASTER_EN, 0);
+> 
+> Is there a need to wait for any in flight DMA transfers to complete
+> before you go further? Or is that what
+> bcm4908_enet_dma_rx_ring_disable() is doing?
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+bcm4908_enet_dma_rx_ring_disable() checks for DMA to "confirm" it got stopped.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
+>> +
+>> +	/* Reset channels state */
+>> +	for (i = 0; i < ARRAY_SIZE(rings); i++) {
+>> +		struct bcm4908_enet_dma_ring *ring = rings[i];
+>> +
+>> +		enet_write(enet, ring->st_ram_block + ENET_DMA_CH_STATE_RAM_BASE_DESC_PTR, 0);
+>> +		enet_write(enet, ring->st_ram_block + ENET_DMA_CH_STATE_RAM_STATE_DATA, 0);
+>> +		enet_write(enet, ring->st_ram_block + ENET_DMA_CH_STATE_RAM_DESC_LEN_STATUS, 0);
+>> +		enet_write(enet, ring->st_ram_block + ENET_DMA_CH_STATE_RAM_DESC_BASE_BUFPTR, 0);
+>> +	}
+>> +}
+>> +
+>> +static void bcm4908_enet_dma_tx_ring_ensable(struct bcm4908_enet *enet,
+>> +					     struct bcm4908_enet_dma_ring *ring)
+> 
+> enable not ensable?
+
+Absolutely :)
+
+
+>> +static int bcm4908_enet_open(struct net_device *netdev)
+>> +{
+>> +	struct bcm4908_enet *enet = netdev_priv(netdev);
+>> +	struct device *dev = enet->dev;
+>> +	int err;
+>> +
+>> +	err = request_irq(netdev->irq, bcm4908_enet_irq_handler, 0, "enet", enet);
+>> +	if (err) {
+>> +		dev_err(dev, "Failed to request IRQ %d: %d\n", netdev->irq, err);
+>> +		return err;
+>> +	}
+>> +
+>> +	bcm4908_enet_gmac_init(enet);
+>> +	bcm4908_enet_dma_reset(enet);
+>> +	bcm4908_enet_dma_init(enet);
+>> +
+>> +	enet_umac_set(enet, UMAC_CMD, CMD_TX_EN | CMD_RX_EN);
+>> +
+>> +	enet_set(enet, ENET_DMA_CONTROLLER_CFG, ENET_DMA_CTRL_CFG_MASTER_EN);
+>> +	enet_maskset(enet, ENET_DMA_CONTROLLER_CFG, ENET_DMA_CTRL_CFG_FLOWC_CH1_EN, 0);
+>> +	bcm4908_enet_dma_rx_ring_enable(enet, &enet->rx_ring);
+>> +
+>> +	napi_enable(&enet->napi);
+>> +	netif_carrier_on(netdev);
+>> +	netif_start_queue(netdev);
+>> +
+>> +	bcm4908_enet_intrs_ack(enet);
+>> +	bcm4908_enet_intrs_on(enet);
+>> +
+>> +	return 0;
+>> +}
+> 
+> No PHY handling? It would be normal to connect the phy in open.
+
+I believe so, this controller is integrated into SoC and is always connected
+to the (internal) switch port. It uses a fixed link.
