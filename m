@@ -2,169 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11D4F315FC8
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 08:00:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BABE31600F
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 08:28:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232197AbhBJHA3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 02:00:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57968 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231841AbhBJHAT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 02:00:19 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12C20C061574;
-        Tue,  9 Feb 2021 22:59:39 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id t2so612075pjq.2;
-        Tue, 09 Feb 2021 22:59:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XCKWQNXWB4AbvF10Eq2wrIvNf5gXtMMoP+h6tI0nVDM=;
-        b=dUCJIKT7aBYjoMQ8jr7wgyBQJ5WqUJorZzKTG+pbcyDfq/iEuAvsOCoWsxv8gUbdqz
-         mI0lOziSQ38kvLr5oZypSXwXRvvlcqLyod+gikdudir/j88WgFD9S/qWlAJaErEA7Zzn
-         AoN9Y8IqDPQBShXrdox6skLICdItIRoYi0umkrDMNSnmuOmHF/JUiWCtEkc0hr194ZH9
-         X1izEidQ7Ic0rVnNfY/0xNOq6NcsUZ/gr0fQEJRs61R7uQ/UWSDVPa6ZBQPfo6QiCeJS
-         PApZ5NCn6YQtlQiljmp2KUQFL04ckQ1QTQHufISFDnEo9hf8RaWimiw31rUIs/suvB3A
-         9U6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XCKWQNXWB4AbvF10Eq2wrIvNf5gXtMMoP+h6tI0nVDM=;
-        b=FVbReNbHniF2hSfSK1Qk5az0vWzfZ+xL7UXji6KoSERCLjX7JNTCj/vbFll79D0OT2
-         c3HbA7STa48vQcglpnSPnLXrk8UjYEdF9eiWnWfXik4OoHFsCamh38yyHdfFs4HeONQW
-         qZh0opXB1lfnlVk/SxACzhHaWZBnXynLYetGwZNAhG8x0mT30aHvdrfCo0Bil6MdxWy0
-         GggwAavvCR/FTv119He0nLFjPFMKATUiDpO3UOtOLHYnVx27kAjKVvpjyGmOSIBePZsT
-         cQwE9Eq2L5XRca1d+gZrz7lxbnyXMKvripGnhmvRsg6jtNYWGaa2tq8WN4TnAEns/A+Z
-         +gLA==
-X-Gm-Message-State: AOAM532+8vq0Exe9gbTm9d0HzKAmaiwW1nucAEzPeHU2WS+o2Ts/FBUS
-        XKpO36Gwwmg9trSiLBlAtEc=
-X-Google-Smtp-Source: ABdhPJwUoXpV1tL5kupZmldpBDDiMjYRs9uyOK8RVWTHCVhX3vAQ1TICsphNDjdq5xLN3NQrpqdFRA==
-X-Received: by 2002:a17:902:e812:b029:de:5af2:3d09 with SMTP id u18-20020a170902e812b02900de5af23d09mr1748022plg.33.1612940378569;
-        Tue, 09 Feb 2021 22:59:38 -0800 (PST)
-Received: from localhost.localdomain ([154.48.252.67])
-        by smtp.gmail.com with ESMTPSA id w128sm1071489pfb.12.2021.02.09.22.59.35
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 09 Feb 2021 22:59:37 -0800 (PST)
-From:   huangxuesen <hxseverything@gmail.com>
-To:     willemdebruijn.kernel@gmail.com
-Cc:     davem@davemloft.net, bpf@vger.kernel.org, daniel@iogearbox.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        huangxuesen <huangxuesen@kuaishou.com>,
-        Willem de Bruijn <willemb@google.com>,
-        chengzhiyong <chengzhiyong@kuaishou.com>,
-        wangli <wangli09@kuaishou.com>
-Subject: [PATCH/v2] bpf: add bpf_skb_adjust_room flag BPF_F_ADJ_ROOM_ENCAP_L2_ETH
-Date:   Wed, 10 Feb 2021 14:59:25 +0800
-Message-Id: <20210210065925.22614-1-hxseverything@gmail.com>
-X-Mailer: git-send-email 2.24.3 (Apple Git-128)
+        id S232726AbhBJH1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 02:27:33 -0500
+Received: from smht-115-229.dattaweb.com ([200.58.115.229]:41481 "EHLO
+        smht-115-229.dattaweb.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232564AbhBJHZz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 02:25:55 -0500
+X-Greylist: delayed 1192 seconds by postgrey-1.27 at vger.kernel.org; Wed, 10 Feb 2021 02:25:54 EST
+Received: from smarthost04-ded.dattaweb.com (localhost [127.0.0.1])
+        by smarthost04-ded.dattaweb.com (Postfix) with ESMTPS id A7B8C934304;
+        Wed, 10 Feb 2021 03:48:35 -0300 (-03)
+Received: from vps-1625202-x.dattaweb.com (vps-1625202-x.dattaweb.com [66.97.40.69])
+        by smarthost04-ded.dattaweb.com (Postfix) with ESMTPS id 7E5AB934279;
+        Wed, 10 Feb 2021 03:48:35 -0300 (-03)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=forumemprendedores.com; s=mail; h=Content-Transfer-Encoding:Content-Type:
+        MIME-Version:Date:Subject:From:Reply-To:Sender:Message-ID:To:Cc:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=abKsANgvaIAft8JF1Kf6VDvnqZJXsRNCwGeaIdDP8mI=; b=X4ibAJkNNb3WHhNyfXl18NivqP
+        DcAv6ZF+XUPpYmwTnzVwfFRaIJExexkMKqygS5KawPGGBMdflETcwGFctGK1O2XMx/LHwhdaDQLdT
+        OznS+hTpPKOgWQTUa48PBvSndGT6+vkD/tpBmTqeQ4ngC5IctWvYWvNZSu3AS16w1b0I=;
+Received: from [105.96.16.85] (helo=User)
+        by vps-1625202-x.dattaweb.com with esmtpa (Exim 4.92.2)
+        (envelope-from <info@office.com>)
+        id 1l9jLv-0008Ku-1H; Wed, 10 Feb 2021 03:51:55 -0300
+Reply-To: <pwilmshst@gmail.com>
+From:   "Jacquet Thierry Elysee Rene" <info@office.com>
+Subject: ATTENTION
+Date:   Wed, 10 Feb 2021 07:47:51 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+        charset="Windows-1251"
+Content-Transfer-Encoding: 7bit
+X-Priority: 3
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook Express 6.00.2600.0000
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2600.0000
+X-Spam-Score: 12.3
+X-Spam-Score-Int: 122
+X-Spam-Bar: ++++++++++++
+X-Spam-Report: Action: no action
+ Symbol: ARC_NA(0.00)
+ Symbol: HAS_REPLYTO(0.00)
+ Symbol: RCVD_VIA_SMTP_AUTH(0.00)
+ Symbol: FROM_HAS_DN(0.00)
+ Symbol: FORGED_MUA_OUTLOOK(3.00)
+ Symbol: FREEMAIL_ENVRCPT(0.00)
+ Symbol: TAGGED_RCPT(0.00)
+ Symbol: FREEMAIL_REPLYTO(0.00)
+ Symbol: REPLYTO_DOM_NEQ_FROM_DOM(0.00)
+ Symbol: RCVD_HELO_USER(3.00)
+ Symbol: BAYES_SPAM(5.09)
+ Symbol: MIME_GOOD(-0.10)
+ Symbol: MISSING_MID(2.50)
+ Symbol: AUTHENTICATED_LOCAL_USER(-5.00)
+ Symbol: HAS_X_PRIO_THREE(0.00)
+ Symbol: SUBJ_ALL_CAPS(0.67)
+ Symbol: MISSING_TO(2.00)
+ Symbol: RCVD_COUNT_ONE(0.00)
+ Symbol: RCVD_NO_TLS_LAST(0.10)
+ Symbol: FROM_EQ_ENVFROM(0.00)
+ Symbol: R_NO_SPACE_IN_FROM(1.00)
+ Symbol: MIME_TRACE(0.00)
+ Symbol: ASN(0.00)
+ Message-ID: undef
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - vps-1625202-x.dattaweb.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [502 502] / [502 502]
+X-AntiAbuse: Sender Address Domain - office.com
+Message-Id: <20210210064835.A7B8C934304@smarthost04-ded.dattaweb.com>
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: huangxuesen <huangxuesen@kuaishou.com>
+Attention Sir,
 
-bpf_skb_adjust_room sets the inner_protocol as skb->protocol for packets
-encapsulation. But that is not appropriate when pushing Ethernet header.
+I represent an investor seeking to invest  in any lucrative investment in your country, If you have a solid background and the idea of making good profit in real estate or in any  business, Please write to me for possible business cooperation.
 
-Add an option to further specify encap L2 type and set the inner_protocol
-as ETH_P_TEB.
+Email: pwilmshst@gmail.com
 
-Suggested-by: Willem de Bruijn <willemb@google.com>
-Signed-off-by: huangxuesen <huangxuesen@kuaishou.com>
-Signed-off-by: chengzhiyong <chengzhiyong@kuaishou.com>
-Signed-off-by: wangli <wangli09@kuaishou.com>
----
- include/uapi/linux/bpf.h       |  5 +++++
- net/core/filter.c              | 11 ++++++++++-
- tools/include/uapi/linux/bpf.h |  5 +++++
- 3 files changed, 20 insertions(+), 1 deletion(-)
-
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 77d7c1b..d791596 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -1751,6 +1751,10 @@ struct bpf_stack_build_id {
-  *		  Use with ENCAP_L3/L4 flags to further specify the tunnel
-  *		  type; *len* is the length of the inner MAC header.
-  *
-+ *		* **BPF_F_ADJ_ROOM_ENCAP_L2_ETH**:
-+ *		  Use with BPF_F_ADJ_ROOM_ENCAP_L2 flag to further specify the
-+ *		  L2 type as Ethernet.
-+ *
-  * 		A call to this helper is susceptible to change the underlying
-  * 		packet buffer. Therefore, at load time, all checks on pointers
-  * 		previously done by the verifier are invalidated and must be
-@@ -4088,6 +4092,7 @@ enum {
- 	BPF_F_ADJ_ROOM_ENCAP_L4_GRE	= (1ULL << 3),
- 	BPF_F_ADJ_ROOM_ENCAP_L4_UDP	= (1ULL << 4),
- 	BPF_F_ADJ_ROOM_NO_CSUM_RESET	= (1ULL << 5),
-+	BPF_F_ADJ_ROOM_ENCAP_L2_ETH	= (1ULL << 6),
- };
- 
- enum {
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 255aeee..8d1fb61 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -3412,6 +3412,7 @@ static u32 bpf_skb_net_base_len(const struct sk_buff *skb)
- 					 BPF_F_ADJ_ROOM_ENCAP_L3_MASK | \
- 					 BPF_F_ADJ_ROOM_ENCAP_L4_GRE | \
- 					 BPF_F_ADJ_ROOM_ENCAP_L4_UDP | \
-+					 BPF_F_ADJ_ROOM_ENCAP_L2_ETH | \
- 					 BPF_F_ADJ_ROOM_ENCAP_L2( \
- 					  BPF_ADJ_ROOM_ENCAP_L2_MASK))
- 
-@@ -3448,6 +3449,10 @@ static int bpf_skb_net_grow(struct sk_buff *skb, u32 off, u32 len_diff,
- 		    flags & BPF_F_ADJ_ROOM_ENCAP_L4_UDP)
- 			return -EINVAL;
- 
-+		if (flags & BPF_F_ADJ_ROOM_ENCAP_L2_ETH &&
-+		    inner_mac_len < ETH_HLEN)
-+			return -EINVAL;
-+
- 		if (skb->encapsulation)
- 			return -EALREADY;
- 
-@@ -3466,7 +3471,11 @@ static int bpf_skb_net_grow(struct sk_buff *skb, u32 off, u32 len_diff,
- 		skb->inner_mac_header = inner_net - inner_mac_len;
- 		skb->inner_network_header = inner_net;
- 		skb->inner_transport_header = inner_trans;
--		skb_set_inner_protocol(skb, skb->protocol);
-+
-+		if (flags & BPF_F_ADJ_ROOM_ENCAP_L2_ETH)
-+			skb_set_inner_protocol(skb, htons(ETH_P_TEB));
-+		else
-+			skb_set_inner_protocol(skb, skb->protocol);
- 
- 		skb->encapsulation = 1;
- 		skb_set_network_header(skb, mac_len);
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 77d7c1b..d791596 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -1751,6 +1751,10 @@ struct bpf_stack_build_id {
-  *		  Use with ENCAP_L3/L4 flags to further specify the tunnel
-  *		  type; *len* is the length of the inner MAC header.
-  *
-+ *		* **BPF_F_ADJ_ROOM_ENCAP_L2_ETH**:
-+ *		  Use with BPF_F_ADJ_ROOM_ENCAP_L2 flag to further specify the
-+ *		  L2 type as Ethernet.
-+ *
-  * 		A call to this helper is susceptible to change the underlying
-  * 		packet buffer. Therefore, at load time, all checks on pointers
-  * 		previously done by the verifier are invalidated and must be
-@@ -4088,6 +4092,7 @@ enum {
- 	BPF_F_ADJ_ROOM_ENCAP_L4_GRE	= (1ULL << 3),
- 	BPF_F_ADJ_ROOM_ENCAP_L4_UDP	= (1ULL << 4),
- 	BPF_F_ADJ_ROOM_NO_CSUM_RESET	= (1ULL << 5),
-+	BPF_F_ADJ_ROOM_ENCAP_L2_ETH	= (1ULL << 6),
- };
- 
- enum {
--- 
-1.8.3.1
-
+Regards,
+Jacquet Thierry Elysee Rene.
