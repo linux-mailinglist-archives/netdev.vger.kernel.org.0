@@ -2,114 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 617C6317234
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 22:22:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E28EB317252
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 22:26:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232738AbhBJVVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 16:21:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45722 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230107AbhBJVVu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 16:21:50 -0500
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D662C061574
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 13:21:10 -0800 (PST)
-Received: by mail-oi1-x229.google.com with SMTP id u66so3700461oig.9
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 13:21:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ip1AHGKwKY2VNyKo96TDsETMQmOB/EbZSzj9oNoDO2U=;
-        b=NWB5+chUooMs3Trh8sFoEbpC18itlf2XkqapW5z3nrQz7shRIGfGWseyQcnnL4V85x
-         HEpqNisHFxn8XKsIDQ144kk61XB2k82rqs9qxy63/SOGXYSfKhqht1LTRZJBKORiMt+t
-         +sHQua3NFMbahX/45R5RmXGkcX/rKvYPvc5E8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ip1AHGKwKY2VNyKo96TDsETMQmOB/EbZSzj9oNoDO2U=;
-        b=t2LJW/4CW6Ln3kLttMP7lG0+2RAUMS3P57nCbOJV95/YWLiVsvrN5Q+E/ho5gES2hD
-         WbEQRE+fx0r6L10UMcopzyZ27VOjfoiXrQ893as4iyEa70MHTXqsh8eHQUu2gQlLIKwh
-         4S62CZQV1ntH/sAfMUyH0SQkO+hP87kuOSxdeGxwKxAzPGvXBWMu0U91e0iq2Cz8XuFQ
-         cUXaxV7DdaxomV+V954vmHUooyN+2+PVR+BGP4inbTlYRPFuBTrRUNMvPNqq5XHUIyVH
-         gptGkLWBHufLxMiBZ0GP4CAY7KKm/jjl8lcGAAf+2aRY6cVGwNlKEUho9iBVBGx7EuDh
-         Vg/w==
-X-Gm-Message-State: AOAM532zyYTgLRaLTTbcR04PlGUV92UOJqS5JwNTFM6+hGI3fBZhpZlX
-        B+qbB5eEFurPub0nFL6treYe/w==
-X-Google-Smtp-Source: ABdhPJxrT8FYtLTqI2w9XouF8Nl/Ld4dzKncBZAgYE5/OdBRp3ZyZcfZDRKJ9fkokKBDb8panqyRpA==
-X-Received: by 2002:aca:af91:: with SMTP id y139mr718825oie.88.1612992069497;
-        Wed, 10 Feb 2021 13:21:09 -0800 (PST)
-Received: from shuah-t480s.internal (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
-        by smtp.gmail.com with ESMTPSA id l4sm597454oou.8.2021.02.10.13.21.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Feb 2021 13:21:09 -0800 (PST)
-From:   Shuah Khan <skhan@linuxfoundation.org>
-To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
-Cc:     Shuah Khan <skhan@linuxfoundation.org>, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] ath10k: hold RCU lock when calling ieee80211_find_sta_by_ifaddr()
-Date:   Wed, 10 Feb 2021 14:21:07 -0700
-Message-Id: <20210210212107.40373-1-skhan@linuxfoundation.org>
-X-Mailer: git-send-email 2.27.0
+        id S233454AbhBJV0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 16:26:30 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:16580 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232132AbhBJVYY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 16:24:24 -0500
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11AL83Nj012685;
+        Wed, 10 Feb 2021 13:23:26 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=TRdP5b88P3ZlLPYJhuzO1k8jJZEk+R2ZP7paWBVU0e0=;
+ b=XVd0LcTuoaXsVn+psZj9J3LuR2axwxUG5oo1bavjsE4UhZE3VMqw4THHhYaglmrgDzKV
+ ipTn+oxBXySke1hNShZ19fXw9sCMstGcOZjP1HV6qFNcYvstmGtgX3/LeuGD4/uej1hh
+ rYoJA/QHWBmFRKeBaExMp1t81zhGnPnwQwU= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 36jc1cm9dq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 10 Feb 2021 13:23:26 -0800
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.198) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 10 Feb 2021 13:23:25 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DcjPlTVd4Vrh9Peb3wDhhAH2zSxW5EnE9DaUE6E0U7T1ZSK1xJTRvLFPopV22CngBSGx8qGURLcmMHKXfxe7v5Q8vdr8xFE8YYz4n/uZ+cM1PxcCWDBJYBtpt2luwkto3ZHBm42oMpg1E4g1asBUgKzwis51UTT+BZH677YwXtA7E+RvpO4HTKmVRwEa77Jbe5dYQTIS5UzQnhR4e2X2U4UaUa2QAjlTMMa+/wH2ga6g566If6HCYPjPUT9iEFUjPrayErOTYiaHdAxsTB8Bym1LGZdzmniJKAte7kuZ4Fe+kJaW61qpMWgZkUxYczP7Wq869QgfHzpo/UZx49r22g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TRdP5b88P3ZlLPYJhuzO1k8jJZEk+R2ZP7paWBVU0e0=;
+ b=XWADPa7Nk9di2Tu+6loTUJ18XAFJJxzUhpsDRcg0vuZslDnFEZkwkeXznTk9cQJrNnDNytv94sf9FCVxNPaGpr4tfe3ygstTa2u+PM2nXsz5bgqhFQHU6B8gC1wPnLOBtf2bqiIS3081VigJcu7dV7eQ16DvpxMkakGf8KG/FMC09K4gDvzi9iPtKUH91iaJMCHD68RAQXhcwfCkvMdCd+syMhfHZ3l9p64sXxLMcCKuOULb4IDsm3dc5aOmhVIhbxIPzh5qk84CYJ3MzJpQqLJ6Tq9b6Y6ZKbYs3IseDfzowesmczAi878jZli3RssQsYSiCMQpJ72Ym/Dl6Fsm8g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+ by BYAPR15MB2327.namprd15.prod.outlook.com (2603:10b6:a02:8e::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.20; Wed, 10 Feb
+ 2021 21:23:24 +0000
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::c585:b877:45fe:4e3f]) by BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::c585:b877:45fe:4e3f%7]) with mapi id 15.20.3825.030; Wed, 10 Feb 2021
+ 21:23:24 +0000
+Date:   Wed, 10 Feb 2021 13:23:17 -0800
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
+Subject: Re: [PATCH bpf 1/2] libbpf: Ignore non function pointer member in
+ struct_ops
+Message-ID: <20210210212317.3sqgq5jxcdbq6a73@kafai-mbp.dhcp.thefacebook.com>
+References: <20210209193105.1752743-1-kafai@fb.com>
+ <CAEf4BzYmTSfRv4vhPeDiYq-zdoAE9rvy=hszsQNUzQ3noeii-Q@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzYmTSfRv4vhPeDiYq-zdoAE9rvy=hszsQNUzQ3noeii-Q@mail.gmail.com>
+X-Originating-IP: [2620:10d:c090:400::5:c10c]
+X-ClientProxiedBy: MW4PR03CA0355.namprd03.prod.outlook.com
+ (2603:10b6:303:dc::30) To BY5PR15MB3571.namprd15.prod.outlook.com
+ (2603:10b6:a03:1f6::32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:c10c) by MW4PR03CA0355.namprd03.prod.outlook.com (2603:10b6:303:dc::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.27 via Frontend Transport; Wed, 10 Feb 2021 21:23:23 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 16760ffe-0753-4732-08ad-08d8ce0a1925
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2327:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB2327D52CC2D45115C7FCB0F0D58D9@BYAPR15MB2327.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gaErzNZgqJbega+rS1M4xb9/N6EtrDkbyibHz2lrI4Pbt+Md/gD0eG0xIeiyPRm3FpFVdY7Q1c8Fc8UToL+Bq0KhanwW9v/+fdBdbRrscdFs/kW/rc0DOiaupHRUK6Nzy0naRiuDLiE+lIKGEMRaY4O4hh3DLV5OPJIznpyx3Vqb3FfCak8lwQ5PghtfWUviyYRTzm74+vBOrBz0QA6KBdoQHXb0L9yTyDHW4Hq3xuAYXo7ZUauJ+Y6/8RYrmik4bau2OFwZ7mk9fkLJe6Zv3HJnCEJVAhYbU88VUbpnE2XKN4hneA7aN0sU9eQdEr8Ri7VfRZoAVY2hzuLHiWaOOaQH12jOIr8QfcdKjeV+cA49Vf02YS69EQctJlX7U4mi1ejverBJbIoc8sCf2TN4PDfuVPqB6jp3xQaQXweHsq88v2nB8RzA0u31bkVjlW3md6XIbnV3yckI0uvzJrKD97gNPqjwt+SP7nN6iw+MvMABKej7iJyGnbRsP8eUzE8ACVMv14JoKS+Dzk84OnnVhQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(366004)(376002)(39860400002)(346002)(136003)(5660300002)(8676002)(1076003)(86362001)(4326008)(6666004)(316002)(66476007)(66556008)(66946007)(7696005)(52116002)(53546011)(6506007)(83380400001)(16526019)(8936002)(478600001)(55016002)(9686003)(6916009)(54906003)(186003)(2906002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?VkQN0yXu/c4lpEAq/Tvr/zwGdWioii90NWNty+kS9u+38VSnoeRzQI/JZowy?=
+ =?us-ascii?Q?clgHB0gKjc7m0fAiBJC+YRXtjPOfc+9PbQQbWOmOvqS9yLP+q6v0l3H1Oj06?=
+ =?us-ascii?Q?p2oT+zPsYWKslme0ZpKhim9L4O29Vr/DmHVEUOJ28CApr3t3sie3tvjycwvU?=
+ =?us-ascii?Q?y/dxxEC0HzQaO0swyL/fV6gTJqfMl9yfwM8TWyNlBk16ins+rmSre1kuFW3A?=
+ =?us-ascii?Q?fBeEt//ZU9u4SHUHS5bfd+Im8jaCKDYx0JR2KudASchta7NBF5W6FBlFxx2G?=
+ =?us-ascii?Q?hff/7FDuFNneTrEr+Y/lyp4UZWsXKct04k3YKDrjMlqTsthwAfOXyfVbR2zC?=
+ =?us-ascii?Q?qLkH/qh/k9VpYpHslM70wKr2H2sNqWRj/j6PhYTG0ZHrU68QoZvptOuuxGBn?=
+ =?us-ascii?Q?mGsjxDPFEI4544ahWj78v7TB0TSfIGYthWZFX/FgUQO17PksjSDHVFTsOMnQ?=
+ =?us-ascii?Q?UOglOrCwlloSpYUb+r+Nf0+tqQW3QWRax1feKs1CIREf4NMQHOs9uwnfsPJV?=
+ =?us-ascii?Q?2kbbquKIrdGxZOy2Pcp8o+65JGegd2t99Qv7Q0pUzyd5mm7/Jw6V8wTBiRFX?=
+ =?us-ascii?Q?iiDkD7ZAXpXZzXAa0sH4gogCMTRTF3oMhpMMgnmAw1LYiTrAzmQuKoGqmWzY?=
+ =?us-ascii?Q?adWzL+BDV8gB3QrXju/fKuOJjYWYFId82Xy7uAzI/hKGF5xKtAGT5iSY6bJG?=
+ =?us-ascii?Q?w8BVymMzKm37hsMY3vT9XU1LlEfO41qFHvEYrEiYN6umIStZqUV/+Lkl11+t?=
+ =?us-ascii?Q?OwK8CfWAfOntrM/P9W5ire8Q8XyTnbMxyYrbLvKLPbddtCn4HjlyNseer7Jj?=
+ =?us-ascii?Q?YhYzOEW0Jz5VRrrcT7857ULPcTu40cPqFNalg93y3HL1wYzs10eIgPTI/F5v?=
+ =?us-ascii?Q?WND31jNcUPd854Dv+X6eq5iapFxFSocjEu1F1AZPdy4RyWn52XH/yc8kcrvc?=
+ =?us-ascii?Q?YcXBS9Emcn1IRemNnN5dhvij9Zsp9HCJqGhRDEHef2AS242I/4zCVEcHmV23?=
+ =?us-ascii?Q?HATHWmFqthz752KXZ7bLPotu/6bSColdMONYeRiLrH06Xw17iYW/wt7cZPBc?=
+ =?us-ascii?Q?cQXgzIAZHSceacTLqQTYq9CIFyJol0kDcVQ9QWr0z0iqFccZmvwMFEz44fYP?=
+ =?us-ascii?Q?I7hoFKQE3vcnIyab+Z3Tka/gkESfBzcVOWam83opkNn85cL+JUlFh6zyADpa?=
+ =?us-ascii?Q?rOmxoOx/SGH5rQpo9OmirIbNVviChAk/eY1mZCadytXwLPiRFOSRjcpev4vm?=
+ =?us-ascii?Q?fyW2YZQoq4UmEJD07ZWufVcEjtwDChP0rxtOwZVVNCX4k+fhQZkJ4FbA9AZJ?=
+ =?us-ascii?Q?CBUmQovtVoOhehGblqkjB5qqcbskKsQ9hvkSlyRWnAm1qg=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 16760ffe-0753-4732-08ad-08d8ce0a1925
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2021 21:23:24.1326
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1bPVi98F6H6TVpE+2svOm8wM4rIIlbjDBJOXXlXppHhYEiK95M1pZyfo4qzgNUo1
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2327
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
+ definitions=2021-02-10_10:2021-02-10,2021-02-10 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
+ lowpriorityscore=0 phishscore=0 clxscore=1015 bulkscore=0 suspectscore=0
+ malwarescore=0 mlxlogscore=999 adultscore=0 spamscore=0 priorityscore=1501
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2102100187
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ieee80211_find_sta_by_ifaddr() must be called under the RCU lock and
-the resulting pointer is only valid under RCU lock as well.
-
-Fix ath10k_wmi_tlv_op_pull_peer_stats_info() to hold RCU lock before it
-calls ieee80211_find_sta_by_ifaddr() and release it when the resulting
-pointer is no longer needed.
-
-This problem was found while reviewing code to debug RCU warn from
-ath10k_wmi_tlv_parse_peer_stats_info().
-
-Link: https://lore.kernel.org/linux-wireless/7230c9e5-2632-b77e-c4f9-10eca557a5bb@linuxfoundation.org/
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
----
-Changes since v1:
-- v1 also included fix to ath10k_wmi_tlv_parse_peer_stats_info()
-  RCU wrn which was already fixed. v2 drops that and fixes just
-  ath10k_wmi_event_tdls_peer()
- 
- drivers/net/wireless/ath/ath10k/wmi-tlv.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/wireless/ath/ath10k/wmi-tlv.c b/drivers/net/wireless/ath/ath10k/wmi-tlv.c
-index bfdd017f1405..d97b33f789e4 100644
---- a/drivers/net/wireless/ath/ath10k/wmi-tlv.c
-+++ b/drivers/net/wireless/ath/ath10k/wmi-tlv.c
-@@ -576,13 +576,13 @@ static void ath10k_wmi_event_tdls_peer(struct ath10k *ar, struct sk_buff *skb)
- 	case WMI_TDLS_TEARDOWN_REASON_TX:
- 	case WMI_TDLS_TEARDOWN_REASON_RSSI:
- 	case WMI_TDLS_TEARDOWN_REASON_PTR_TIMEOUT:
-+		rcu_read_lock();
- 		station = ieee80211_find_sta_by_ifaddr(ar->hw,
- 						       ev->peer_macaddr.addr,
- 						       NULL);
- 		if (!station) {
- 			ath10k_warn(ar, "did not find station from tdls peer event");
--			kfree(tb);
--			return;
-+			goto exit;
- 		}
- 		arvif = ath10k_get_arvif(ar, __le32_to_cpu(ev->vdev_id));
- 		ieee80211_tdls_oper_request(
-@@ -593,6 +593,9 @@ static void ath10k_wmi_event_tdls_peer(struct ath10k *ar, struct sk_buff *skb)
- 					);
- 		break;
- 	}
-+
-+exit:
-+	rcu_read_unlock();
- 	kfree(tb);
- }
- 
--- 
-2.27.0
-
+On Wed, Feb 10, 2021 at 12:26:20PM -0800, Andrii Nakryiko wrote:
+> On Tue, Feb 9, 2021 at 12:40 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> >
+> > When libbpf initializes the kernel's struct_ops in
+> > "bpf_map__init_kern_struct_ops()", it enforces all
+> > pointer types must be a function pointer and rejects
+> > others.  It turns out to be too strict.  For example,
+> > when directly using "struct tcp_congestion_ops" from vmlinux.h,
+> > it has a "struct module *owner" member and it is set to NULL
+> > in a bpf_tcp_cc.o.
+> >
+> > Instead, it only needs to ensure the member is a function
+> > pointer if it has been set (relocated) to a bpf-prog.
+> > This patch moves the "btf_is_func_proto(kern_mtype)" check
+> > after the existing "if (!prog) { continue; }".
+> >
+> > The "btf_is_func_proto(mtype)" has already been guaranteed
+> > in "bpf_object__collect_st_ops_relos()" which has been run
+> > before "bpf_map__init_kern_struct_ops()".  Thus, this check
+> > is removed.
+> >
+> > Fixes: 590a00888250 ("bpf: libbpf: Add STRUCT_OPS support")
+> > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> > ---
+> 
+> Looks good, see nit below.
+> 
+> Acked-by: Andrii Nakryiko <andrii@kernel.org>
+> 
+> >  tools/lib/bpf/libbpf.c | 12 ++++++------
+> >  1 file changed, 6 insertions(+), 6 deletions(-)
+> >
+> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > index 6ae748f6ea11..b483608ea72a 100644
+> > --- a/tools/lib/bpf/libbpf.c
+> > +++ b/tools/lib/bpf/libbpf.c
+> > @@ -887,12 +887,6 @@ static int bpf_map__init_kern_struct_ops(struct bpf_map *map,
+> >                         kern_mtype = skip_mods_and_typedefs(kern_btf,
+> >                                                             kern_mtype->type,
+> >                                                             &kern_mtype_id);
+> > -                       if (!btf_is_func_proto(mtype) ||
+> > -                           !btf_is_func_proto(kern_mtype)) {
+> > -                               pr_warn("struct_ops init_kern %s: non func ptr %s is not supported\n",
+> > -                                       map->name, mname);
+> > -                               return -ENOTSUP;
+> > -                       }
+> >
+> >                         prog = st_ops->progs[i];
+> >                         if (!prog) {
+> 
+> debug message below this line is a bit misleading, it talks about
+> "func ptr is not set", but it actually could be any kind of field. So
+> it would be nice to just talk about "members" or "fields" there, no?
+Good catch.  The debug message needs to change.
