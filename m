@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B2E2316211
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 10:23:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DA1631621B
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 10:24:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230375AbhBJJX3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 04:23:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59810 "EHLO
+        id S230259AbhBJJYg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 04:24:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229923AbhBJJUt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 04:20:49 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31458C06178C;
-        Wed, 10 Feb 2021 01:19:17 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id l25so2785739eja.9;
-        Wed, 10 Feb 2021 01:19:17 -0800 (PST)
+        with ESMTP id S229654AbhBJJUx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 04:20:53 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 266F6C061793;
+        Wed, 10 Feb 2021 01:19:19 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id bl23so2827212ejb.5;
+        Wed, 10 Feb 2021 01:19:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=jVYV/IEJLn+oDKZarf8v/4qMiyYU4u6o+oEq57AKcMw=;
-        b=ECWIlBXbdq+7trHQRUPJ5xapE6rneaAvB2JbCvV/Mto23qC0it1K3RwOsQCMl6KPqa
-         JRfDShJqY8TZxftaa+Quxh8xskyOMaiJtF5KtvuHc86uA/2e3GNJnBnyMqxX3DVIftCZ
-         1/U8SUlI3InO5vRMA2LdFtdlCMIYGnladOgTtEIXx/5PXipScyGqPApyZ6KMOMBndfT9
-         u8PGVyq3wa1+c7jQ9t3+gyCvYVHzQnzoQx8k/kJp61qYoT6Pp/iuY2txRxY+l11uPbxx
-         jMzDVRjiCJistBjXVZZfKuiYr5TgWaww/A9j4F0EF5pYd8MKq8zgXpg0NeS84oJ5Y987
-         7gWQ==
+        bh=BaqHv35UAk0w7T/uD/CSSDW6lycJdyqutaqpLfpkUVI=;
+        b=U474aC74CwqAWi7SHJtwSnOKIbXigvlO4bts0L0AuxnJDjKGkfNO45S3MpsQ63V89l
+         fzpg46e7j1JdZq45baVuSlaFsCMXkjN+tV4CLnbkIN5B6W7rwfE/6KnnKvr67JjxLHRD
+         NEr2T5ppiT9A64tJKtRqU/COyK1X0dPM4g1Ztp0ar7chXMlGm/oAwfWJh4W1P/h1YUEF
+         m7raxCMKjjmPsLeBysEz0YF2TyItESN7lJInywLxVC3xue7JEXTLzTTHBFi7tIkRV8bb
+         nX5f17aJKpGRjbUyEkpXVJv60+cJDb6NddGoCfkwRdmlJArGcrpnKhqpV5iycsPMR0Wh
+         2oZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=jVYV/IEJLn+oDKZarf8v/4qMiyYU4u6o+oEq57AKcMw=;
-        b=BRIhJ/zXddUH3DyDHgFo5XnO8A+YEH0lWMi35smtPZJPmOgacPEihJdvxF5m6EsWVq
-         GMjItuK8TqHLRpJiZO8Tet7bKx0/fb+ITO2CL8ZBAN3Jr/xH+vsSzM1Y9xyIQYxebndD
-         PxfJSbKtrhbx9ZyOHMDA8FiVcXvvWbh5jrRUVPM50djxs1oNJJb/yr32SA3b0B4fIEk5
-         FX87ieM4kPMVPO5MSR0MWnbXXk1ZBpSVh6cMmFXZm6ExZARrkWySAnHeiivYMmsDmeUN
-         2BcCikL+aIytplA2QGZcTfOUdljrky2nfBz1fiK1GEogg8O522Enebd8OtsePGOyerFf
-         kMuA==
-X-Gm-Message-State: AOAM530tz1tZIHJrPWZhc2FNzSd3O4wQLf3rfEYXiplb64TeWrspCQC5
-        KxwKQx9IZ9maS92PLC1Gbik=
-X-Google-Smtp-Source: ABdhPJyEMH4qbUTroz7TANMA/YCXOwwr6OqI+5GYVWX3jvhqE3nbs56Lmw7A+K952/WTiRoM4YOaqA==
-X-Received: by 2002:a17:906:c10a:: with SMTP id do10mr1995422ejc.543.1612948755883;
-        Wed, 10 Feb 2021 01:19:15 -0800 (PST)
+        bh=BaqHv35UAk0w7T/uD/CSSDW6lycJdyqutaqpLfpkUVI=;
+        b=IidnRjrgOmlJR0maay3bVrzA5WpPTUSR6tJGFuWxc08DdKVnpzz48NyTI0p71JIf66
+         +3smm0/PyTvXKHgWcio0NdIPsL/rZ52n1BfuxdOeDIQCQRq84LR0eFebTHKJZ0OJWmkq
+         gVSYF5z46857kkmN9EW5JBdhXAI3Rn1rBQ0xScV2zgTiOzXBlc1FfWlpTeO3StDRi79z
+         XXwCmW2tDXZ3EXodA9u+7AXQxKjhVyPHZkVm+sfQ6/8IfOKAsRD7DqBTelCQ0cYp32ce
+         hdFM9v/YSlSAOvkLjn68/iGCDQhODiR1sadkoF+BKvMJQYnQKsvFuAkNFJfvxeaFK5rt
+         /hsg==
+X-Gm-Message-State: AOAM5310FYofzkXxdD/OeZUgoKry5elPnrmnYWyLP+kzDCpI5nmjlkgx
+        CpKy3gJECQ7xA1SfPumNPek=
+X-Google-Smtp-Source: ABdhPJxJFKeE+HQFussmBFnBxLn/qAlsEu7SJIIcZc9iiyPppfQZzhx46FNg4sjy4j9lZHHZEGogTw==
+X-Received: by 2002:a17:906:391b:: with SMTP id f27mr1990443eje.228.1612948757874;
+        Wed, 10 Feb 2021 01:19:17 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id u2sm701801ejb.65.2021.02.10.01.19.14
+        by smtp.gmail.com with ESMTPSA id u2sm701801ejb.65.2021.02.10.01.19.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Feb 2021 01:19:15 -0800 (PST)
+        Wed, 10 Feb 2021 01:19:16 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -65,9 +65,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Grygorii Strashko <grygorii.strashko@ti.com>,
         Ioana Ciornei <ioana.ciornei@nxp.com>,
         Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org
-Subject: [PATCH v3 net-next 02/11] net: bridge: offload all port flags at once in br_setport
-Date:   Wed, 10 Feb 2021 11:14:36 +0200
-Message-Id: <20210210091445.741269-3-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 03/11] net: bridge: don't print in br_switchdev_set_port_flag
+Date:   Wed, 10 Feb 2021 11:14:37 +0200
+Message-Id: <20210210091445.741269-4-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210210091445.741269-1-olteanv@gmail.com>
 References: <20210210091445.741269-1-olteanv@gmail.com>
@@ -79,306 +79,174 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-If for example this command:
+Currently br_switchdev_set_port_flag has two options for error handling
+and neither is good:
+- The driver returns -EOPNOTSUPP in PRE_BRIDGE_FLAGS if it doesn't
+  support offloading that flag, and this gets silently ignored and
+  converted to an errno of 0. Nobody does this.
+- The driver returns some other error code, like -EINVAL, in
+  PRE_BRIDGE_FLAGS, and br_switchdev_set_port_flag shouts loudly.
 
-ip link set swp0 type bridge_slave flood off mcast_flood off learning off
-
-succeeded at configuring BR_FLOOD and BR_MCAST_FLOOD but not at
-BR_LEARNING, there would be no attempt to revert the partial state in
-any way. Arguably, if the user changes more than one flag through the
-same netlink command, this one _should_ be all or nothing, which means
-it should be passed through switchdev as all or nothing.
-
-We also move the br->lock handling inside br_setport in anticipation of
-a future patch which will temporarily drop the lock around
-br_switchdev_set_port_flag, since we would like that switchdev
-notification to be emitted in blocking context.
+The problem is that we'd like to offload some port flags during bridge
+join and leave, but also not have the bridge shout at us if those fail.
+But on the other hand we'd like the user to know that we can't offload
+something when they set that through netlink. And since we can't have
+the driver return -EOPNOTSUPP or -EINVAL depending on whether it's
+called by the user or internally by the bridge, let's just add an extack
+argument to br_switchdev_set_port_flag and propagate it to its callers.
+Then, when we need offloading to really fail silently, this can simply
+be passed a NULL argument.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 Changes in v3:
-Don't attempt to drop br->lock around br_switchdev_set_port_flag now,
-move that part to a later patch.
+- Deal with the br_switchdev_set_port_flag call from sysfs too.
 
 Changes in v2:
-Patch is new.
+- br_set_port_flag now returns void, so no extack there.
+- don't overwrite extack in br_switchdev_set_port_flag if already
+  populated.
 
-Changes in v2:
-Patch is new.
-
- net/bridge/br_netlink.c   | 145 ++++++++++++++------------------------
- net/bridge/br_switchdev.c |   7 +-
- 2 files changed, 58 insertions(+), 94 deletions(-)
+ net/bridge/br_netlink.c   |  9 +++++----
+ net/bridge/br_private.h   |  6 ++++--
+ net/bridge/br_switchdev.c | 13 +++++++------
+ net/bridge/br_sysfs_if.c  |  7 +++++--
+ 4 files changed, 21 insertions(+), 14 deletions(-)
 
 diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-index bd3962da345a..4e64775bd8fb 100644
+index 4e64775bd8fb..b7731614c036 100644
 --- a/net/bridge/br_netlink.c
 +++ b/net/bridge/br_netlink.c
-@@ -853,103 +853,76 @@ static int br_set_port_state(struct net_bridge_port *p, u8 state)
- }
- 
- /* Set/clear or port flags based on attribute */
--static int br_set_port_flag(struct net_bridge_port *p, struct nlattr *tb[],
--			    int attrtype, unsigned long mask)
-+static void br_set_port_flag(struct net_bridge_port *p, struct nlattr *tb[],
-+			     int attrtype, unsigned long mask)
- {
--	unsigned long flags;
--	int err;
--
- 	if (!tb[attrtype])
--		return 0;
-+		return;
- 
- 	if (nla_get_u8(tb[attrtype]))
--		flags = p->flags | mask;
-+		p->flags |= mask;
- 	else
--		flags = p->flags & ~mask;
--
--	err = br_switchdev_set_port_flag(p, flags, mask);
--	if (err)
--		return err;
--
--	p->flags = flags;
--	return 0;
-+		p->flags &= ~mask;
+@@ -866,7 +866,8 @@ static void br_set_port_flag(struct net_bridge_port *p, struct nlattr *tb[],
  }
  
  /* Process bridge protocol info on port */
- static int br_setport(struct net_bridge_port *p, struct nlattr *tb[])
+-static int br_setport(struct net_bridge_port *p, struct nlattr *tb[])
++static int br_setport(struct net_bridge_port *p, struct nlattr *tb[],
++		      struct netlink_ext_ack *extack)
  {
--	unsigned long old_flags = p->flags;
--	bool br_vlan_tunnel_old = false;
-+	unsigned long old_flags, changed_mask;
-+	bool br_vlan_tunnel_old;
- 	int err;
+ 	unsigned long old_flags, changed_mask;
+ 	bool br_vlan_tunnel_old;
+@@ -896,7 +897,7 @@ static int br_setport(struct net_bridge_port *p, struct nlattr *tb[])
  
--	err = br_set_port_flag(p, tb, IFLA_BRPORT_MODE, BR_HAIRPIN_MODE);
--	if (err)
--		return err;
-+	spin_lock_bh(&p->br->lock);
+ 	changed_mask = old_flags ^ p->flags;
  
--	err = br_set_port_flag(p, tb, IFLA_BRPORT_GUARD, BR_BPDU_GUARD);
--	if (err)
--		return err;
-+	old_flags = p->flags;
-+	br_vlan_tunnel_old = (old_flags & BR_VLAN_TUNNEL) ? true : false;
- 
--	err = br_set_port_flag(p, tb, IFLA_BRPORT_FAST_LEAVE, BR_MULTICAST_FAST_LEAVE);
--	if (err)
--		return err;
-+	br_set_port_flag(p, tb, IFLA_BRPORT_MODE, BR_HAIRPIN_MODE);
-+	br_set_port_flag(p, tb, IFLA_BRPORT_GUARD, BR_BPDU_GUARD);
-+	br_set_port_flag(p, tb, IFLA_BRPORT_FAST_LEAVE,
-+			 BR_MULTICAST_FAST_LEAVE);
-+	br_set_port_flag(p, tb, IFLA_BRPORT_PROTECT, BR_ROOT_BLOCK);
-+	br_set_port_flag(p, tb, IFLA_BRPORT_LEARNING, BR_LEARNING);
-+	br_set_port_flag(p, tb, IFLA_BRPORT_UNICAST_FLOOD, BR_FLOOD);
-+	br_set_port_flag(p, tb, IFLA_BRPORT_MCAST_FLOOD, BR_MCAST_FLOOD);
-+	br_set_port_flag(p, tb, IFLA_BRPORT_MCAST_TO_UCAST,
-+			 BR_MULTICAST_TO_UNICAST);
-+	br_set_port_flag(p, tb, IFLA_BRPORT_BCAST_FLOOD, BR_BCAST_FLOOD);
-+	br_set_port_flag(p, tb, IFLA_BRPORT_PROXYARP, BR_PROXYARP);
-+	br_set_port_flag(p, tb, IFLA_BRPORT_PROXYARP_WIFI, BR_PROXYARP_WIFI);
-+	br_set_port_flag(p, tb, IFLA_BRPORT_VLAN_TUNNEL, BR_VLAN_TUNNEL);
-+	br_set_port_flag(p, tb, IFLA_BRPORT_NEIGH_SUPPRESS, BR_NEIGH_SUPPRESS);
-+	br_set_port_flag(p, tb, IFLA_BRPORT_ISOLATED, BR_ISOLATED);
- 
--	err = br_set_port_flag(p, tb, IFLA_BRPORT_PROTECT, BR_ROOT_BLOCK);
--	if (err)
--		return err;
-+	changed_mask = old_flags ^ p->flags;
- 
--	err = br_set_port_flag(p, tb, IFLA_BRPORT_LEARNING, BR_LEARNING);
--	if (err)
--		return err;
--
--	err = br_set_port_flag(p, tb, IFLA_BRPORT_UNICAST_FLOOD, BR_FLOOD);
--	if (err)
--		return err;
--
--	err = br_set_port_flag(p, tb, IFLA_BRPORT_MCAST_FLOOD, BR_MCAST_FLOOD);
--	if (err)
--		return err;
--
--	err = br_set_port_flag(p, tb, IFLA_BRPORT_MCAST_TO_UCAST, BR_MULTICAST_TO_UNICAST);
--	if (err)
--		return err;
--
--	err = br_set_port_flag(p, tb, IFLA_BRPORT_BCAST_FLOOD, BR_BCAST_FLOOD);
--	if (err)
--		return err;
--
--	err = br_set_port_flag(p, tb, IFLA_BRPORT_PROXYARP, BR_PROXYARP);
--	if (err)
--		return err;
--
--	err = br_set_port_flag(p, tb, IFLA_BRPORT_PROXYARP_WIFI, BR_PROXYARP_WIFI);
--	if (err)
--		return err;
--
--	br_vlan_tunnel_old = (p->flags & BR_VLAN_TUNNEL) ? true : false;
--	err = br_set_port_flag(p, tb, IFLA_BRPORT_VLAN_TUNNEL, BR_VLAN_TUNNEL);
--	if (err)
--		return err;
-+	err = br_switchdev_set_port_flag(p, p->flags, changed_mask);
-+	if (err) {
-+		p->flags = old_flags;
-+		goto out;
-+	}
- 
- 	if (br_vlan_tunnel_old && !(p->flags & BR_VLAN_TUNNEL))
- 		nbp_vlan_tunnel_info_flush(p);
- 
-+	br_port_flags_change(p, changed_mask);
-+
- 	if (tb[IFLA_BRPORT_COST]) {
- 		err = br_stp_set_path_cost(p, nla_get_u32(tb[IFLA_BRPORT_COST]));
- 		if (err)
--			return err;
-+			goto out;
- 	}
- 
- 	if (tb[IFLA_BRPORT_PRIORITY]) {
- 		err = br_stp_set_port_priority(p, nla_get_u16(tb[IFLA_BRPORT_PRIORITY]));
- 		if (err)
--			return err;
-+			goto out;
- 	}
- 
- 	if (tb[IFLA_BRPORT_STATE]) {
- 		err = br_set_port_state(p, nla_get_u8(tb[IFLA_BRPORT_STATE]));
- 		if (err)
--			return err;
-+			goto out;
- 	}
- 
- 	if (tb[IFLA_BRPORT_FLUSH])
-@@ -961,7 +934,7 @@ static int br_setport(struct net_bridge_port *p, struct nlattr *tb[])
- 
- 		err = br_multicast_set_port_router(p, mcast_router);
- 		if (err)
--			return err;
-+			goto out;
- 	}
- 
- 	if (tb[IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT]) {
-@@ -970,27 +943,20 @@ static int br_setport(struct net_bridge_port *p, struct nlattr *tb[])
- 		hlimit = nla_get_u32(tb[IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT]);
- 		err = br_multicast_eht_set_hosts_limit(p, hlimit);
- 		if (err)
--			return err;
-+			goto out;
- 	}
- #endif
- 
- 	if (tb[IFLA_BRPORT_GROUP_FWD_MASK]) {
- 		u16 fwd_mask = nla_get_u16(tb[IFLA_BRPORT_GROUP_FWD_MASK]);
- 
--		if (fwd_mask & BR_GROUPFWD_MACPAUSE)
--			return -EINVAL;
-+		if (fwd_mask & BR_GROUPFWD_MACPAUSE) {
-+			err = -EINVAL;
-+			goto out;
-+		}
- 		p->group_fwd_mask = fwd_mask;
- 	}
- 
--	err = br_set_port_flag(p, tb, IFLA_BRPORT_NEIGH_SUPPRESS,
--			       BR_NEIGH_SUPPRESS);
--	if (err)
--		return err;
--
--	err = br_set_port_flag(p, tb, IFLA_BRPORT_ISOLATED, BR_ISOLATED);
--	if (err)
--		return err;
--
- 	if (tb[IFLA_BRPORT_BACKUP_PORT]) {
- 		struct net_device *backup_dev = NULL;
- 		u32 backup_ifindex;
-@@ -999,17 +965,21 @@ static int br_setport(struct net_bridge_port *p, struct nlattr *tb[])
- 		if (backup_ifindex) {
- 			backup_dev = __dev_get_by_index(dev_net(p->dev),
- 							backup_ifindex);
--			if (!backup_dev)
--				return -ENOENT;
-+			if (!backup_dev) {
-+				err = -ENOENT;
-+				goto out;
-+			}
- 		}
- 
- 		err = nbp_backup_change(p, backup_dev);
- 		if (err)
--			return err;
-+			goto out;
- 	}
- 
--	br_port_flags_change(p, old_flags ^ p->flags);
--	return 0;
-+out:
-+	spin_unlock_bh(&p->br->lock);
-+
-+	return err;
- }
- 
- /* Change state and parameters on port. */
-@@ -1045,9 +1015,7 @@ int br_setlink(struct net_device *dev, struct nlmsghdr *nlh, u16 flags,
+-	err = br_switchdev_set_port_flag(p, p->flags, changed_mask);
++	err = br_switchdev_set_port_flag(p, p->flags, changed_mask, extack);
+ 	if (err) {
+ 		p->flags = old_flags;
+ 		goto out;
+@@ -1015,7 +1016,7 @@ int br_setlink(struct net_device *dev, struct nlmsghdr *nlh, u16 flags,
  			if (err)
  				return err;
  
--			spin_lock_bh(&p->br->lock);
- 			err = br_setport(p, tb);
--			spin_unlock_bh(&p->br->lock);
+-			err = br_setport(p, tb);
++			err = br_setport(p, tb, extack);
  		} else {
  			/* Binary compatibility with old RSTP */
  			if (nla_len(protinfo) < sizeof(u8))
-@@ -1134,17 +1102,10 @@ static int br_port_slave_changelink(struct net_device *brdev,
- 				    struct nlattr *data[],
- 				    struct netlink_ext_ack *extack)
- {
--	struct net_bridge *br = netdev_priv(brdev);
--	int ret;
--
+@@ -1105,7 +1106,7 @@ static int br_port_slave_changelink(struct net_device *brdev,
  	if (!data)
  		return 0;
  
--	spin_lock_bh(&br->lock);
--	ret = br_setport(br_port_get_rtnl(dev), data);
--	spin_unlock_bh(&br->lock);
--
--	return ret;
-+	return br_setport(br_port_get_rtnl(dev), data);
+-	return br_setport(br_port_get_rtnl(dev), data);
++	return br_setport(br_port_get_rtnl(dev), data, extack);
  }
  
  static int br_port_fill_slave_info(struct sk_buff *skb,
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index d242ba668e47..a1639d41188b 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -1575,7 +1575,8 @@ bool nbp_switchdev_allowed_egress(const struct net_bridge_port *p,
+ 				  const struct sk_buff *skb);
+ int br_switchdev_set_port_flag(struct net_bridge_port *p,
+ 			       unsigned long flags,
+-			       unsigned long mask);
++			       unsigned long mask,
++			       struct netlink_ext_ack *extack);
+ void br_switchdev_fdb_notify(const struct net_bridge_fdb_entry *fdb,
+ 			     int type);
+ int br_switchdev_port_vlan_add(struct net_device *dev, u16 vid, u16 flags,
+@@ -1605,7 +1606,8 @@ static inline bool nbp_switchdev_allowed_egress(const struct net_bridge_port *p,
+ 
+ static inline int br_switchdev_set_port_flag(struct net_bridge_port *p,
+ 					     unsigned long flags,
+-					     unsigned long mask)
++					     unsigned long mask,
++					     struct netlink_ext_ack *extack)
+ {
+ 	return 0;
+ }
 diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
-index a9c23ef83443..c004ade25ac0 100644
+index c004ade25ac0..ac8dead86bf2 100644
 --- a/net/bridge/br_switchdev.c
 +++ b/net/bridge/br_switchdev.c
-@@ -65,16 +65,19 @@ int br_switchdev_set_port_flag(struct net_bridge_port *p,
+@@ -60,7 +60,8 @@ bool nbp_switchdev_allowed_egress(const struct net_bridge_port *p,
+ 
+ int br_switchdev_set_port_flag(struct net_bridge_port *p,
+ 			       unsigned long flags,
+-			       unsigned long mask)
++			       unsigned long mask,
++			       struct netlink_ext_ack *extack)
+ {
  	struct switchdev_attr attr = {
  		.orig_dev = p->dev,
- 		.id = SWITCHDEV_ATTR_ID_PORT_PRE_BRIDGE_FLAGS,
--		.u.brport_flags = mask,
- 	};
- 	struct switchdev_notifier_port_attr_info info = {
- 		.attr = &attr,
- 	};
- 	int err;
+@@ -80,14 +81,15 @@ int br_switchdev_set_port_flag(struct net_bridge_port *p,
  
--	if (mask & ~BR_PORT_FLAGS_HW_OFFLOAD)
-+	flags &= BR_PORT_FLAGS_HW_OFFLOAD;
-+	mask &= BR_PORT_FLAGS_HW_OFFLOAD;
-+	if (!mask)
- 		return 0;
- 
-+	attr.u.brport_flags = mask;
-+
  	/* We run from atomic context here */
  	err = call_switchdev_notifiers(SWITCHDEV_PORT_ATTR_SET, p->dev,
- 				       &info.info, NULL);
+-				       &info.info, NULL);
++				       &info.info, extack);
+ 	err = notifier_to_errno(err);
+ 	if (err == -EOPNOTSUPP)
+ 		return 0;
+ 
+ 	if (err) {
+-		br_warn(p->br, "bridge flag offload is not supported %u(%s)\n",
+-			(unsigned int)p->port_no, p->dev->name);
++		if (extack && !extack->_msg)
++			NL_SET_ERR_MSG_MOD(extack,
++					   "bridge flag offload is not supported");
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+@@ -97,8 +99,7 @@ int br_switchdev_set_port_flag(struct net_bridge_port *p,
+ 
+ 	err = switchdev_port_attr_set(p->dev, &attr);
+ 	if (err) {
+-		br_warn(p->br, "error setting offload flag on port %u(%s)\n",
+-			(unsigned int)p->port_no, p->dev->name);
++		NL_SET_ERR_MSG_MOD(extack, "error setting offload flag on port");
+ 		return err;
+ 	}
+ 
+diff --git a/net/bridge/br_sysfs_if.c b/net/bridge/br_sysfs_if.c
+index 5aea9427ffe1..72e92376eef1 100644
+--- a/net/bridge/br_sysfs_if.c
++++ b/net/bridge/br_sysfs_if.c
+@@ -59,6 +59,7 @@ static BRPORT_ATTR(_name, 0644,					\
+ static int store_flag(struct net_bridge_port *p, unsigned long v,
+ 		      unsigned long mask)
+ {
++	struct netlink_ext_ack extack = {0};
+ 	unsigned long flags = p->flags;
+ 	int err;
+ 
+@@ -68,9 +69,11 @@ static int store_flag(struct net_bridge_port *p, unsigned long v,
+ 		flags &= ~mask;
+ 
+ 	if (flags != p->flags) {
+-		err = br_switchdev_set_port_flag(p, flags, mask);
+-		if (err)
++		err = br_switchdev_set_port_flag(p, flags, mask, &extack);
++		if (err) {
++			netdev_err(p->dev, "%s\n", extack._msg);
+ 			return err;
++		}
+ 
+ 		p->flags = flags;
+ 		br_port_flags_change(p, mask);
 -- 
 2.25.1
 
