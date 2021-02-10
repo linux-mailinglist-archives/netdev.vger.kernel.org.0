@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ED3A316273
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 10:38:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9844D316285
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 10:41:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229854AbhBJJhg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 04:37:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34722 "EHLO
+        id S230184AbhBJJkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 04:40:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229892AbhBJJfZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 04:35:25 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B63A0C06174A
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 01:33:13 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id i8so2875735ejc.7
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 01:33:13 -0800 (PST)
+        with ESMTP id S229867AbhBJJiX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 04:38:23 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD521C061574
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 01:37:42 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id t5so2072445eds.12
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 01:37:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=wk7YrWlOQA56vJ4RdCSPwxakotHhYG4niWd4UtEagLk=;
-        b=l8uPRVCA3/tK6ENQnII9YdwRuCC58ttEhYrMHPK83Bcz+p3fhHPBNW3exR9/OLndRk
-         3LHx0oCfcjGsUR6JS3V0Pg9sLHBhnev15MAVWtSgtTdFRiERdv+JXp2uoWXvncXjBvql
-         e3Qq1kWDtglcBeEyZNyJ4tyjA82N6c79I+w/LNDVjBcavXs7APRLzwqHYIfFyHqeXIUW
-         7wiQjVg2BNe6Nq8FRmW5BpgM9YarVkjuBvhZ2Xh9obBaflcFXw1b3NIAOtUmdU/plp5d
-         VkYiwf+IkMlfrnNH0LcXHaXmPrNqxLr+4aifOwz14quW2IFFKdk2EhRddfe2TUP9BX1A
-         /5AQ==
+        bh=FZCgpqKnnKfLF/fMbcUSmlq4NgZCgXwFXRK7pAt5wMg=;
+        b=ISSNe0jxf/PdZ3R3Pjzkz15ObqOLA8BlhNn0NXRNKoNHKLHJsQd1bnxA0a9ez3JsNA
+         PkSOS8hR7c7jYoW1bL5hO/XQcNzU54XHU9c+9+7Zkv56mOdr1g9n9fwwY4XA7kOoZkTZ
+         tvAD2yuKUXaOVze3vZ2OKLatPJeBvtjj5+DJzpyL6pW2auUctmWucakqBoMYHpHbA0Ol
+         9rfLhVbtPJZvmibBNiJqz1vi1Z0VV9FlYZvIzXR3jpQh3UI8kUZW9khnJKta0Kw3eRIf
+         PKhmSI/kPepgLuL22AaQtA5QlZmVZr4WhQJkbcjWRs4nJtDCblAQf405sVDqwwkFuMLG
+         kRDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=wk7YrWlOQA56vJ4RdCSPwxakotHhYG4niWd4UtEagLk=;
-        b=MXBFxB5ESacyG0BSlndHr2mHVWqOoDU6UYke5WftrvGiIde4npr07hBlg3Sd4mxn4U
-         woihTtX56cbToObbjiJ115qVrdJihh2epaeVa18zpUBVW6Po9vggS4Inv0IvjDdrVEv+
-         RcIoOIC3WlkXKlaU9DGh4q6ZM28Gtzh4nrc1usEzw/kTFiKW1FNfN781ScAsQkUREpsW
-         DP56GBZA3v2XXBu9+uxPA8pc/hbtscR6qZT8YpaM3r0iVIxjSqbeOoLNDTKv/nUGtmsf
-         wSdSWiFP5hDKoWDKfs+PiWeO79FfgwmxoNfqnN3ZTUzPnMgJk7+0C4gT4/n9CQZEBgg2
-         pj5A==
-X-Gm-Message-State: AOAM532uxcllte/c6M0DTpSjMOYOlOHQAnPFNJmPXgsAnf50RoJ8pv+h
-        k/tpDduQNQkTkp2wsCts+8E=
-X-Google-Smtp-Source: ABdhPJwAncwdcnSQaqDrAdyDzbgcjwVyAQshmTpo3EcaQT4C82AX/KWcJggw0+cD1bVi4+Z1VSnIFw==
-X-Received: by 2002:a17:906:85d8:: with SMTP id i24mr2091798ejy.115.1612949592376;
-        Wed, 10 Feb 2021 01:33:12 -0800 (PST)
+        bh=FZCgpqKnnKfLF/fMbcUSmlq4NgZCgXwFXRK7pAt5wMg=;
+        b=mlxJ6/3f61eT0VyZ91epz8926YFTep99q8DEvPQelSQFfAxMLr9cAoaomWe7LpdRxF
+         WXU4I/XFM6d8f0TJo6ITDEkmHi3BMFsG7pzlNBdSXotoDKF5femeT3zbe4AAm/PlgHyU
+         NcRe1r2eAbGn9bNY0JH9xpTJ9/0M1u+Qx9cVLM6hN6Zxo5N+bs27L67U1a4BoQHOrl9B
+         GCu1EQVCDsU7E2NMC0VMsjTlk0Dx3OhmC/x8JGjR/p9ew5T5aS50lkBJhP0NWYAWkgK3
+         Sfde3RuPURSS+s2cFH9TATYxY0ueIFvGiBm0KQpB1SoKSFUYFuobHn9ik+GjSEwZZ9kF
+         qIbA==
+X-Gm-Message-State: AOAM533w4lfn7LYPku0EfuWoXruiJ1sz3rfwaPtSfVeWL2ciHDLxzlAG
+        RYssg3SOaFK5tMKfga9gdlA=
+X-Google-Smtp-Source: ABdhPJy5R93VFbbFpH1dfBkomGskQEgSxyHavFtIb7z6bbtRH3lTXJ2OM6nqv+RvbuxpkHsdrq1Jyw==
+X-Received: by 2002:aa7:c944:: with SMTP id h4mr2301983edt.233.1612949861514;
+        Wed, 10 Feb 2021 01:37:41 -0800 (PST)
 Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id u9sm724779ejc.57.2021.02.10.01.33.11
+        by smtp.gmail.com with ESMTPSA id g3sm725154ejz.91.2021.02.10.01.37.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Feb 2021 01:33:11 -0800 (PST)
-Date:   Wed, 10 Feb 2021 11:33:10 +0200
+        Wed, 10 Feb 2021 01:37:40 -0800 (PST)
+Date:   Wed, 10 Feb 2021 11:37:39 +0200
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     George McCollister <george.mccollister@gmail.com>
 Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
@@ -55,33 +55,43 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Tobias Waldekranz <tobias@waldekranz.com>,
         Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v3 1/4] net: hsr: generate supervision frame
- without HSR/PRP tag
-Message-ID: <20210210093310.c3el4m57hmso4kya@skbuf>
+Subject: Re: [PATCH net-next v3 2/4] net: hsr: add offloading support
+Message-ID: <20210210093739.wrakrn7d3gngo2m7@skbuf>
 References: <20210210010213.27553-1-george.mccollister@gmail.com>
- <20210210010213.27553-2-george.mccollister@gmail.com>
+ <20210210010213.27553-3-george.mccollister@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210210010213.27553-2-george.mccollister@gmail.com>
+In-Reply-To: <20210210010213.27553-3-george.mccollister@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 09, 2021 at 07:02:10PM -0600, George McCollister wrote:
-> For a switch to offload insertion of HSR/PRP tags, frames must not be
-> sent to the CPU facing switch port with a tag. Generate supervision frames
-> (eth type ETH_P_PRP) without HSR v1 (ETH_P_HSR)/PRP tag and rely on
-> create_tagged_frame which inserts it later. This will allow skipping the
-> tag insertion for all outgoing frames in the future which is required for
-> HSR v1/PRP tag insertions to be offloaded.
+On Tue, Feb 09, 2021 at 07:02:11PM -0600, George McCollister wrote:
+> Add support for offloading of HSR/PRP (IEC 62439-3) tag insertion
+> tag removal, duplicate generation and forwarding.
 > 
-> HSR v0 supervision frames always contain tag information so insertion of
-> the tag can't be offloaded. IEC 62439-3 Ed.2.0 (HSR v1) specifically
-> notes that this was changed since v0 to allow offloading.
+> For HSR, insertion involves the switch adding a 6 byte HSR header after
+> the 14 byte Ethernet header. For PRP it adds a 6 byte trailer.
+> 
+> Tag removal involves automatically stripping the HSR/PRP header/trailer
+> in the switch. This is possible when the switch also performs auto
+> deduplication using the HSR/PRP header/trailer (making it no longer
+> required).
+> 
+> Forwarding involves automatically forwarding between redundant ports in
+> an HSR. This is crucial because delay is accumulated as a frame passes
+> through each node in the ring.
+> 
+> Duplication involves the switch automatically sending a single frame
+> from the CPU port to both redundant ports. This is required because the
+> inserted HSR/PRP header/trailer must contain the same sequence number
+> on the frames sent out both redundant ports.
+> 
+> Export is_hsr_master so DSA can tell them apart from other devices in
+> dsa_slave_changeupper.
 > 
 > Signed-off-by: George McCollister <george.mccollister@gmail.com>
 > ---
 
 Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Tested-by: Vladimir Oltean <olteanv@gmail.com>
