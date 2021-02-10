@@ -2,362 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA232316E87
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 19:26:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16F18316E8F
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 19:27:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233668AbhBJSZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 13:25:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34968 "EHLO
+        id S233706AbhBJS0n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 13:26:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233903AbhBJSWx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 13:22:53 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53AF7C0613D6;
-        Wed, 10 Feb 2021 10:20:32 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id q12so809543ybm.8;
-        Wed, 10 Feb 2021 10:20:32 -0800 (PST)
+        with ESMTP id S231543AbhBJSYX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 13:24:23 -0500
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3728C061788;
+        Wed, 10 Feb 2021 10:23:42 -0800 (PST)
+Received: by mail-wm1-x32a.google.com with SMTP id o15so834445wmq.5;
+        Wed, 10 Feb 2021 10:23:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XUbrz/8xxXdqtk8DEEenUBbYYKqni3z7WGyd8h4oZBY=;
-        b=J9eWa3RpkQaebDbcQKNXKnSBZqx9C75YjbJL8V6IyuhI5IBc4sTEyLvG+Nj2s2h1QI
-         jhSEzgvIgVKtaIT4ag2tUySMoC4aVWxS74EsSqS32UDeowmR9ZQEhGxvnfv7QJG6mige
-         RY25Kww5WvRQPeKxDoL20fTVYAAEJTq30YXM+OdQnflpknrIAObdQSWoFn+flzdyrUlg
-         s4H11eYWGl5GQ0L9Cq8kGhJ+3H7t2MJtcbY353U/H38Zg6UvHhwVQeoT+kqAT3EftkrG
-         B/71zNBuxzjdUeqpCYrtFxZ8APFory4XbdMdJRayFbDKGHqodnc/5JAnY5ErdqZUQdzP
-         zPCQ==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=CdBsBnJwl+BS8FihCKmsZbFb/tYHU132d5H7XgeWACY=;
+        b=U15VVGoljDYUQOaU5sDAIVb3uvCVyUMCPSOxjwCb1KzY2CR5gmGquUKhUvNOAtAAna
+         Aag7dF9Gw+ei/FGbq+AImycLgpbKWiPVt7JIToQJCGQzg8E/zvb1EDrCequANh52psHg
+         w0DYl6G8gscntTn7xS9iB0Aiy6irCAM91iEOHHGo2glsnhglGUBpr3VLOuVo4siv3u4W
+         xhLbn1JV6iceK4cduDi38506bm68HQQ3OXxgrhu1w7SzX0FCIVdQi1r44L1Qp7dvYgiN
+         qJw0xeYsja2IcuadajAzqi9gH3ObJpZmsOQ6lEWuEPUJneJE3CBBUn90/XWLbA7rL1oL
+         oEOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XUbrz/8xxXdqtk8DEEenUBbYYKqni3z7WGyd8h4oZBY=;
-        b=f2kvlMi9zca9fAY0iM5uT2hAa3cq/CJ786hhvxb8j9OTwRzWGCi7Yxnog3JQB5whgW
-         lw1bDZQc9/no2kZ55hA+X7nAreeUx9oN3cP6jbjvPDv/qaMep8qTBg9y2/JHQtGE/hk+
-         Dzkfl2EbWgbC822I4SDkHBwGYrNnFIl/CVub8uHk+vRhmJxiYNoAQ/+afeF9M8ZuQJhJ
-         V6DtHf42RXOeyMJ9SCqIayx21knz5nbl6namVCs7SzooGM9TikafDN7AwjxnnFd/UG4d
-         p6h8w+ApTyTYTzN6SwRJojJj7yHj6sSOwQoUAgXXE8wtO7b5MLqrSm3pfnrhTU7dLfCG
-         bKYA==
-X-Gm-Message-State: AOAM531p2yzc0BzOBrKh9EzVS4F8X4uxSfRQKYzdZCH17ipB2m0MECmM
-        e5gdbZkWCsdQZuF41TcHKqDO4klRNJf8API0NGoLkBCHNUTqaw==
-X-Google-Smtp-Source: ABdhPJzXyCnLbaMkBV2vpG2T7RtKv6hUcKpEzK48FT2v3pKmRsOpbI15DIMcznlQz8LOFKHrvlh+XtO4P2b/cknanIc=
-X-Received: by 2002:a25:c905:: with SMTP id z5mr5909207ybf.260.1612981231520;
- Wed, 10 Feb 2021 10:20:31 -0800 (PST)
-MIME-Version: 1.0
-References: <20210209052311.GA125918@ubuntu-m3-large-x86> <CAEf4BzZV0-zx6YKUUKmecs=icnQNXJjTokdkSAoexm36za+wdA@mail.gmail.com>
- <CAEf4BzYvri7wzRnGH_qQbavXOx5TfBA0qx4nYVnn=YNGv+vNVw@mail.gmail.com>
- <CAEf4Bzax90hn_5axpnCpW+E6gVc1mtUgCXWqmxV0tJ4Ud7bsaA@mail.gmail.com>
- <20210209074904.GA286822@ubuntu-m3-large-x86> <YCKB1TF5wz93EIBK@krava>
- <YCKlrLkTQXc4Cyx7@krava> <CAEf4BzaL=qsSyDc8OxeN4pr7+Lvv+de4f+hM5a56LY8EABAk3w@mail.gmail.com>
- <YCMEucGZVPPQuxWw@krava> <CAEf4BzacQrkSMnmeO3sunOs7sfhX1ZoD_Hnk4-cFUK-TpLNqUA@mail.gmail.com>
- <YCPfEzp3ogCBTBaS@krava>
-In-Reply-To: <YCPfEzp3ogCBTBaS@krava>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 10 Feb 2021 10:20:20 -0800
-Message-ID: <CAEf4BzbzquqsA5=_UqDukScuoGLfDhZiiXs_sgYBuNUvTBuV6w@mail.gmail.com>
-Subject: Re: FAILED unresolved symbol vfs_truncate on arm64 with LLVM
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=CdBsBnJwl+BS8FihCKmsZbFb/tYHU132d5H7XgeWACY=;
+        b=V4yUE3MhTj48pREgn4GrvTpSnT7MrO6r0NHihey7udTx8OU0x0w98jx0uOOlOFhkf3
+         un9rSLMae66KOuPe1rJCJG1eh2Hu5zjuKwJxWOl1iSS07wrGUMEOIdPk5Qz0HxNS2rom
+         dWF/Oqbr8Zus8AUV+5cguhkZq5bjSXjnMSqyYRMv5hYJb74iuvzMiO2bhI6wtxydhNkk
+         cSmvYm65b7a1+Lc6bkp7+5ihK6Ov7frnD2Nn8PsW7mrhnpSmP4E36keExuq9j53dN8E3
+         DF5QLJc47tpsojwwtXU11GkLKZcM3NO6GzoI974yOVlYZwApr8Q0klR29E+DYx0+eH2Y
+         gApQ==
+X-Gm-Message-State: AOAM533Tz39lQDGZbZP1Nmd+N4HEQgTm5/eblRuBzIpaWKEOX7paa812
+        aFINsgosnHVKtrj8/kPNxXY=
+X-Google-Smtp-Source: ABdhPJyEsFslrLF8BdJCt4pySRMF+u9JLA9NjUEN2Q6w7mlB3R/gC1qzGh+mzGZt16qOecGbVo45nQ==
+X-Received: by 2002:a1c:9c06:: with SMTP id f6mr214023wme.72.1612981421607;
+        Wed, 10 Feb 2021 10:23:41 -0800 (PST)
+Received: from [192.168.1.101] ([37.166.86.204])
+        by smtp.gmail.com with ESMTPSA id 13sm3342087wmj.11.2021.02.10.10.23.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Feb 2021 10:23:41 -0800 (PST)
+Subject: Re: KASAN: vmalloc-out-of-bounds Read in bpf_trace_run3
+To:     Yonghong Song <yhs@fb.com>, Dmitry Vyukov <dvyukov@google.com>,
+        syzbot <syzbot+d29e58bb557324e55e5e@syzkaller.appspotmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>, andrii@kernel.org,
+        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Veronika Kabatova <vkabatov@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Martin KaFai Lau <kafai@fb.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, Ingo Molnar <mingo@elte.hu>,
+        Ingo Molnar <mingo@redhat.com>, mmullins@fb.com,
+        netdev <netdev@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Song Liu <songliubraving@fb.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+References: <00000000000004500b05b31e68ce@google.com>
+ <CACT4Y+aBVQ6LKYf9wCV=AUx23xpWmb_6-mBqwkQgeyfXA3SS2A@mail.gmail.com>
+ <20201113053722.7i4xkiyrlymcwebg@hydra.tuxags.com>
+ <c63f89b2-0627-91d8-a609-3f2a3b5b5a2d@fb.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <7b0fe079-bcd3-484d-fda6-12d962f584f8@gmail.com>
+Date:   Wed, 10 Feb 2021 19:23:38 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
+MIME-Version: 1.0
+In-Reply-To: <c63f89b2-0627-91d8-a609-3f2a3b5b5a2d@fb.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 10, 2021 at 5:26 AM Jiri Olsa <jolsa@redhat.com> wrote:
->
-> On Tue, Feb 09, 2021 at 02:00:29PM -0800, Andrii Nakryiko wrote:
->
-> SNIP
->
-> > > > > I'm still trying to build the kernel.. however ;-)
-> > > > >
-> > > > > patch below adds the ftrace check only for static functions
-> > > > > and lets the externa go through.. but as you said, in this
-> > > > > case we'll need to figure out the 'notrace' and other checks
-> > > > > ftrace is doing
-> > > > >
-> > > > > jirka
-> > > > >
-> > > > >
-> > > > > ---
-> > > > > diff --git a/btf_encoder.c b/btf_encoder.c
-> > > > > index b124ec20a689..4d147406cfa5 100644
-> > > > > --- a/btf_encoder.c
-> > > > > +++ b/btf_encoder.c
-> > > > > @@ -734,7 +734,7 @@ int cu__encode_btf(struct cu *cu, int verbose, bool force,
-> > > > >                         continue;
-> > > > >                 if (!has_arg_names(cu, &fn->proto))
-> > > > >                         continue;
-> > > > > -               if (functions_cnt) {
-> > > > > +               if (!fn->external && functions_cnt) {
-> > > >
-> > > > I wouldn't trust DWARF, honestly. Wouldn't checking GLOBAL vs LOCAL
-> > > > FUNC ELF symbol be more reliable?
-> > >
-> > > that'd mean extra bsearch on each processed function,
-> > > on the ther hand, we'are already slow ;-) I'll check
-> > > how big the slowdown would be
-> > >
-> >
-> > We currently record addresses and do binary search. Now we need to
-> > record address + size and still do binary search with a slightly
-> > different semantics (find closest entry >= addr). Then just check that
-> > it overlaps, taking into account the length of the function code. It
-> > shouldn't result in a noticeable slowdown. Might be actually faster,
-> > because we might avoid callback function call costs.
->
-> I'm still not sure how to handle the external check for function via elf,
-
-I might be missing something, but don't all functions have
-corresponding ELF symbols? And then symbol can have LOCAL or GLOBAL
-type. LOCALs are supposed to be not visible outside respective CUs (so
-correspond to static functions), while GLOBALs are extern-able funcs.
-So if func's symbol is GLOBAL, it should be ok to assume it's
-attachable (not inlined, at least).
-
-> but below is change for checking that ftrace addrs are within elf functions
->
-> seems to work in my tests, I'll run some more tests and send full patch
-
-It seems unnecessarily convoluted. I was thinking about something like
-this (the diff will totally be screwed up by gmail, and I haven't even
-compiled it):
-
-diff --git a/btf_encoder.c b/btf_encoder.c
-index b124ec20a689..8162b238bd43 100644
---- a/btf_encoder.c
-+++ b/btf_encoder.c
-@@ -236,6 +236,23 @@ get_kmod_addrs(struct btf_elf *btfe, __u64
-**paddrs, __u64 *pcount)
-        return 0;
- }
-
-+struct func_seg { __u64 start; __u64 end; };
-+
-+static int func_exists(struct func_seg *segs, size_t len, __u64 addr)
-+{
-+       size_t l = 0, r = len - 1, m;
-+
-+       while (l < r) {
-+               m = l + (r - l + 1) / 2;
-+               if (segs[m].start <= addr)
-+                       l = m;
-+               else
-+                       r = m - 1;
-+       }
-+
-+       return segs[l].start <= addr && addr < segs[l].end;
-+}
-+
- static int setup_functions(struct btf_elf *btfe, struct funcs_layout *fl)
- {
-        __u64 *addrs, count, i;
-@@ -286,7 +303,7 @@ static int setup_functions(struct btf_elf *btfe,
-struct funcs_layout *fl)
-                __u64 addr = kmod ? func->addr + func->sh_addr : func->addr;
-
-                /* Make sure function is within ftrace addresses. */
--               if (bsearch(&addr, addrs, count, sizeof(addrs[0]), addrs_cmp)) {
-+               if (func_exists(addrs, count, addr))
-                        /*
-                         * We iterate over sorted array, so we can easily skip
-                         * not valid item and move following valid field into
 
 
-So the idea is to use address segments and check whether there is a
-segment that overlaps with a given address by first binary searching
-for a segment with the largest starting address that is <= addr. And
-then just confirming that segment does overlap with the requested
-address.
+On 11/13/20 5:08 PM, Yonghong Song wrote:
+> 
+> 
+> On 11/12/20 9:37 PM, Matt Mullins wrote:
+>> On Wed, Nov 11, 2020 at 03:57:50PM +0100, Dmitry Vyukov wrote:
+>>> On Mon, Nov 2, 2020 at 12:54 PM syzbot
+>>> <syzbot+d29e58bb557324e55e5e@syzkaller.appspotmail.com> wrote:
+>>>>
+>>>> Hello,
+>>>>
+>>>> syzbot found the following issue on:
+>>>>
+>>>> HEAD commit:    080b6f40 bpf: Don't rely on GCC __attribute__((optimize)) ..
+>>>> git tree:       bpf
+>>>> console output: https://syzkaller.appspot.com/x/log.txt?x=1089d37c500000
+>>>> kernel config:  https://syzkaller.appspot.com/x/.config?x=58a4ca757d776bfe
+>>>> dashboard link: https://syzkaller.appspot.com/bug?extid=d29e58bb557324e55e5e
+>>>> compiler:       gcc (GCC) 10.1.0-syz 20200507
+>>>> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10f4b032500000
+>>>> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1371a47c500000
+>>>>
+>>>> The issue was bisected to:
+>>>>
+>>>> commit 9df1c28bb75217b244257152ab7d788bb2a386d0
+>>>> Author: Matt Mullins <mmullins@fb.com>
+>>>> Date:   Fri Apr 26 18:49:47 2019 +0000
+>>>>
+>>>>      bpf: add writable context for raw tracepoints
+>>>
+>>>
+>>> We have a number of kernel memory corruptions related to bpf_trace_run now:
+>>> https://groups.google.com/g/syzkaller-bugs/search?q=kernel/trace/bpf_trace.c
+>>>
+>>> Can raw tracepoints "legally" corrupt kernel memory (a-la /dev/kmem)?
+>>> Or they shouldn't?
+>>>
+>>> Looking at the description of Matt's commit, it seems that corruptions
+>>> should not be possible (bounded buffer, checked size, etc). Then it
+>>> means it's a real kernel bug?
+>>
+>> This bug doesn't seem to be related to the writability of the
+>> tracepoint; it bisected to that commit simply because it used
+>> BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE for the reproducer and it EINVAL's
+>> before that program type was introduced.  The BPF program it loads is
+>> pretty much a no-op.
+>>
+>> The problem here is a kmalloc failure injection into
+>> tracepoint_probe_unregister, but the error is ignored -- so the bpf
+>> program is freed even though the tracepoint is never unregistered.
+>>
+>> I have a first pass at a patch to pipe through the error code, but it's
+>> pretty ugly.  It's also called from the file_operations ->release(), for
+> 
+> Maybe you can still post the patch, so people can review and make suggestions which may lead to a *better* solution.
 
-WDYT?
 
->
-> jirka
->
->
-> ---
-> diff --git a/btf_encoder.c b/btf_encoder.c
-> index b124ec20a689..548a12847f99 100644
-> --- a/btf_encoder.c
-> +++ b/btf_encoder.c
-> @@ -36,6 +36,7 @@ struct funcs_layout {
->  struct elf_function {
->         const char      *name;
->         unsigned long    addr;
-> +       unsigned long    end;
->         unsigned long    sh_addr;
->         bool             generated;
->  };
-> @@ -44,7 +45,7 @@ static struct elf_function *functions;
->  static int functions_alloc;
->  static int functions_cnt;
->
-> -static int functions_cmp(const void *_a, const void *_b)
-> +static int functions_cmp_name(const void *_a, const void *_b)
->  {
->         const struct elf_function *a = _a;
->         const struct elf_function *b = _b;
-> @@ -52,6 +53,16 @@ static int functions_cmp(const void *_a, const void *_b)
->         return strcmp(a->name, b->name);
->  }
->
-> +static int functions_cmp_addr(const void *_a, const void *_b)
-> +{
-> +       const struct elf_function *a = _a;
-> +       const struct elf_function *b = _b;
-> +
-> +       if (a->addr == b->addr)
-> +               return 0;
-> +       return a->addr < b->addr ? -1 : 1;
-> +}
-> +
->  static void delete_functions(void)
->  {
->         free(functions);
-> @@ -98,6 +109,7 @@ static int collect_function(struct btf_elf *btfe, GElf_Sym *sym,
->
->         functions[functions_cnt].name = name;
->         functions[functions_cnt].addr = elf_sym__value(sym);
-> +       functions[functions_cnt].end = (__u64) -1;
->         functions[functions_cnt].sh_addr = sh.sh_addr;
->         functions[functions_cnt].generated = false;
->         functions_cnt++;
-> @@ -236,9 +248,25 @@ get_kmod_addrs(struct btf_elf *btfe, __u64 **paddrs, __u64 *pcount)
->         return 0;
->  }
->
-> +static bool is_addr_in_func(__u64 addr, struct elf_function *func, bool kmod)
-> +{
-> +       /*
-> +        * For vmlinux image both addrs[x] and functions[x]::addr
-> +        * values are final address and are comparable.
-> +        *
-> +        * For kernel module addrs[x] is final address, but
-> +        * functions[x]::addr is relative address within section
-> +        * and needs to be relocated by adding sh_addr.
-> +        */
-> +       __u64 start = kmod ? func->addr + func->sh_addr : func->addr;
-> +       __u64 end = kmod ? func->end+ func->sh_addr : func->end;
-> +
-> +       return start <= addr && addr < end;
-> +}
-> +
->  static int setup_functions(struct btf_elf *btfe, struct funcs_layout *fl)
->  {
-> -       __u64 *addrs, count, i;
-> +       __u64 *addrs, count, i_func, i_addr;
->         int functions_valid = 0;
->         bool kmod = false;
->
-> @@ -266,43 +294,62 @@ static int setup_functions(struct btf_elf *btfe, struct funcs_layout *fl)
->                 return 0;
->         }
->
-> -       qsort(addrs, count, sizeof(addrs[0]), addrs_cmp);
-> -       qsort(functions, functions_cnt, sizeof(functions[0]), functions_cmp);
-> -
->         /*
-> -        * Let's got through all collected functions and filter
-> -        * out those that are not in ftrace.
-> +        * Sort both functions and addrs so we can iterate
-> +        * both of them simultaneously and found matching
-> +        * func/addr pairs.
->          */
-> -       for (i = 0; i < functions_cnt; i++) {
-> -               struct elf_function *func = &functions[i];
-> -               /*
-> -                * For vmlinux image both addrs[x] and functions[x]::addr
-> -                * values are final address and are comparable.
-> -                *
-> -                * For kernel module addrs[x] is final address, but
-> -                * functions[x]::addr is relative address within section
-> -                * and needs to be relocated by adding sh_addr.
-> -                */
-> -               __u64 addr = kmod ? func->addr + func->sh_addr : func->addr;
-> +       qsort(addrs, count, sizeof(addrs[0]), addrs_cmp);
-> +       qsort(functions, functions_cnt, sizeof(functions[0]), functions_cmp_addr);
-> +
-> +       for (i_func = 0, i_addr = 0; i_func < functions_cnt; i_func++) {
-> +               struct elf_function *func = &functions[i_func];
-> +
-> +               if (i_func + 1 < functions_cnt)
-> +                       func->end = functions[i_func + 1].addr;
-> +
-> +               for (; i_addr < count; i_addr++) {
-> +                       __u64 addr = addrs[i_addr];
-> +
-> +                       /* Functions are  ahead, catch up with addrs. */
-> +                       if (addr < func->addr)
-> +                               continue;
-> +
-> +                       /* Addr is within function - mark function as valid. */
-> +                       if (is_addr_in_func(addr, func, kmod)) {
-> +                               /*
-> +                                * We iterate over sorted array, so we can easily skip
-> +                                * not valid item and move following valid field into
-> +                                * its place, and still keep the 'new' array sorted.
-> +                                */
-> +                               if (i_func != functions_valid)
-> +                                       functions[functions_valid] = functions[i_func];
-> +                               functions_valid++;
-> +                               i_addr++;
-> +                       }
->
-> -               /* Make sure function is within ftrace addresses. */
-> -               if (bsearch(&addr, addrs, count, sizeof(addrs[0]), addrs_cmp)) {
->                         /*
-> -                        * We iterate over sorted array, so we can easily skip
-> -                        * not valid item and move following valid field into
-> -                        * its place, and still keep the 'new' array sorted.
-> +                        * Addrs are ahead, catch up with functions, or we just
-> +                        * found valid function and want to move to another.
->                          */
-> -                       if (i != functions_valid)
-> -                               functions[functions_valid] = functions[i];
-> -                       functions_valid++;
-> +                       break;
->                 }
->         }
->
-> +       if (btf_elf__verbose) {
-> +               printf("Found %d functions out of %d symbols and %llu ftrace addresses.\n",
-> +                       functions_valid, functions_cnt, count);
-> +       }
-> +
->         functions_cnt = functions_valid;
->         free(addrs);
->
-> -       if (btf_elf__verbose)
-> -               printf("Found %d functions!\n", functions_cnt);
-> +       /*
-> +        * And finaly sort 'valid' functions by name,
-> +        * so find_function can be used.
-> +        */
-> +       qsort(functions, functions_cnt, sizeof(functions[0]), functions_cmp_name);
-> +
->         return 0;
->  }
->
-> @@ -312,7 +359,7 @@ static struct elf_function *find_function(const struct btf_elf *btfe,
->         struct elf_function key = { .name = name };
->
->         return bsearch(&key, functions, functions_cnt, sizeof(functions[0]),
-> -                      functions_cmp);
-> +                      functions_cmp_name);
->  }
->
->  static bool btf_name_char_ok(char c, bool first)
->
+ping
+
+This bug is still there.
+
+
+> 
+>> which errors are solidly ignored in __fput(), so I'm not sure what the
+>> best way to handle ENOMEM is...
+>>
+>>>
+>>>
+>>>
+>>>> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12b6c4da500000
+>>>> final oops:     https://syzkaller.appspot.com/x/report.txt?x=11b6c4da500000
+>>>> console output: https://syzkaller.appspot.com/x/log.txt?x=16b6c4da500000
+>>>>
+>>>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+>>>> Reported-by: syzbot+d29e58bb557324e55e5e@syzkaller.appspotmail.com
+>>>> Fixes: 9df1c28bb752 ("bpf: add writable context for raw tracepoints")
+>>>>
+>>>> ==================================================================
+>>>> BUG: KASAN: vmalloc-out-of-bounds in __bpf_trace_run kernel/trace/bpf_trace.c:2045 [inline]
+>>>> BUG: KASAN: vmalloc-out-of-bounds in bpf_trace_run3+0x3e0/0x3f0 kernel/trace/bpf_trace.c:2083
+>>>> Read of size 8 at addr ffffc90000e6c030 by task kworker/0:3/3754
+>>>>
+>>>> CPU: 0 PID: 3754 Comm: kworker/0:3 Not tainted 5.9.0-syzkaller #0
+>>>> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+>>>> Workqueue:  0x0 (events)
+>>>> Call Trace:
+>>>>   __dump_stack lib/dump_stack.c:77 [inline]
+>>>>   dump_stack+0x107/0x163 lib/dump_stack.c:118
+>>>>   print_address_description.constprop.0.cold+0x5/0x4c8 mm/kasan/report.c:385
+>>>>   __kasan_report mm/kasan/report.c:545 [inline]
+>>>>   kasan_report.cold+0x1f/0x37 mm/kasan/report.c:562
+>>>>   __bpf_trace_run kernel/trace/bpf_trace.c:2045 [inline]
+>>>>   bpf_trace_run3+0x3e0/0x3f0 kernel/trace/bpf_trace.c:2083
+>>>>   __bpf_trace_sched_switch+0xdc/0x120 include/trace/events/sched.h:138
+>>>>   __traceiter_sched_switch+0x64/0xb0 include/trace/events/sched.h:138
+>>>>   trace_sched_switch include/trace/events/sched.h:138 [inline]
+>>>>   __schedule+0xeb8/0x2130 kernel/sched/core.c:4520
+>>>>   schedule+0xcf/0x270 kernel/sched/core.c:4601
+>>>>   worker_thread+0x14c/0x1120 kernel/workqueue.c:2439
+>>>>   kthread+0x3af/0x4a0 kernel/kthread.c:292
+>>>>   ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+>>>>
+>>>>
+>>>> Memory state around the buggy address:
+>>>>   ffffc90000e6bf00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+>>>>   ffffc90000e6bf80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+>>>>> ffffc90000e6c000: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+>>>>                                       ^
+>>>>   ffffc90000e6c080: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+>>>>   ffffc90000e6c100: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+>>>> ==================================================================
+> [...]
