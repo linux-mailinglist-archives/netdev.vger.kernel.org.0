@@ -2,134 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18483316BD2
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 17:56:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50C1E316C94
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 18:27:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232294AbhBJQzB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 11:55:01 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:13219 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233284AbhBJQwk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 11:52:40 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B60240f2d0003>; Wed, 10 Feb 2021 08:51:57 -0800
-Received: from DRHQMAIL107.nvidia.com (10.27.9.16) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 10 Feb
- 2021 16:51:57 +0000
-Received: from reg-r-vrt-018-180.nvidia.com (172.20.145.6) by
- DRHQMAIL107.nvidia.com (10.27.9.16) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3; Wed, 10 Feb 2021 16:51:55 +0000
-References: <20210206050240.48410-1-saeed@kernel.org>
- <CAJ3xEMhPU=hr-wNN+g8Yq4rMqFQQGybQnn86mmbXrTTN6Xb8xw@mail.gmail.com>
-User-agent: mu4e 1.4.10; emacs 27.1
-From:   Vlad Buslov <vladbu@nvidia.com>
-To:     Or Gerlitz <gerlitz.or@gmail.com>
-CC:     Saeed Mahameed <saeed@kernel.org>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        id S232431AbhBJR0j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 12:26:39 -0500
+Received: from mo-csw-fb1114.securemx.jp ([210.130.202.173]:59120 "EHLO
+        mo-csw-fb.securemx.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232323AbhBJR0e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 12:26:34 -0500
+Received: by mo-csw-fb.securemx.jp (mx-mo-csw-fb1114) id 11AGYxrj019692; Thu, 11 Feb 2021 01:34:59 +0900
+Received: by mo-csw.securemx.jp (mx-mo-csw1115) id 11AGUBlD013230; Thu, 11 Feb 2021 01:30:12 +0900
+X-Iguazu-Qid: 2wGrDNODbnC4NWYf9U
+X-Iguazu-QSIG: v=2; s=0; t=1612974611; q=2wGrDNODbnC4NWYf9U; m=qvhUx0fW06Lu699Wo/0sWZFrEnkOK7Pe4pExWVbAvzM=
+Received: from imx2.toshiba.co.jp (imx2.toshiba.co.jp [106.186.93.51])
+        by relay.securemx.jp (mx-mr1113) id 11AGU82C026482;
+        Thu, 11 Feb 2021 01:30:09 +0900
+Received: from enc01.toshiba.co.jp ([106.186.93.100])
+        by imx2.toshiba.co.jp  with ESMTP id 11AGU83o007059;
+        Thu, 11 Feb 2021 01:30:08 +0900 (JST)
+Received: from hop001.toshiba.co.jp ([133.199.164.63])
+        by enc01.toshiba.co.jp  with ESMTP id 11AGU7FV029437;
+        Thu, 11 Feb 2021 01:30:08 +0900
+From:   Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Linux Netdev List <netdev@vger.kernel.org>
-Subject: Re: [pull request][net-next V2 00/17] mlx5 updates 2021-02-04
-In-Reply-To: <CAJ3xEMhPU=hr-wNN+g8Yq4rMqFQQGybQnn86mmbXrTTN6Xb8xw@mail.gmail.com>
-Date:   Wed, 10 Feb 2021 18:51:53 +0200
-Message-ID: <ygnhy2fvg91y.fsf@nvidia.com>
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        punit1.agrawal@toshiba.co.jp, yuji2.ishikawa@toshiba.co.jp,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+Subject: [PATCH 1/4] dt-bindings: net: Add DT bindings for Toshiba Visconti TMPV7700 SoC
+Date:   Thu, 11 Feb 2021 01:29:51 +0900
+X-TSB-HOP: ON
+Message-Id: <20210210162954.3955785-2-nobuhiro1.iwamatsu@toshiba.co.jp>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20210210162954.3955785-1-nobuhiro1.iwamatsu@toshiba.co.jp>
+References: <20210210162954.3955785-1-nobuhiro1.iwamatsu@toshiba.co.jp>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- DRHQMAIL107.nvidia.com (10.27.9.16)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1612975917; bh=X3akhWrU5noARCF7Lt4aeKRl+xjPBPu13DgRt/Ls0hY=;
-        h=References:User-agent:From:To:CC:Subject:In-Reply-To:Date:
-         Message-ID:MIME-Version:Content-Type:X-Originating-IP:
-         X-ClientProxiedBy;
-        b=E6xJA1CXdPLarbXHuk+EYZM6bPmCw3OLVVkdMAq//bupggt6SKdG5gsKWPwJ/ml96
-         WYfrSVBol87SxhvquO4fkmf87OQAbqQIBH0I4JJ7srcrQ0K5SKGj1d79J6beHIDQNp
-         DsZUyR44cMrNn6CUq/DGSS8uz/OwIS8OODMbU5ek8vjPaLz93MER/yo/Pl53Rl2vnW
-         i6KZ1sAjidTH00gEPM+N/GGS2uoyhQ1fQ8zAPI2Fb38dxcbuSSrs424UEVznnAynTO
-         RqIjte1SGxfrmMloVIcPj0F24v2dfUEA+SEgZ7zVv4T7DRN7hGghYMy7LRSxrf4ccj
-         6JjCGtUIapnRQ==
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Add device tree bindings for ethernet controller of Toshiba Visconti
+TMPV7700 SoC series.
 
-On Tue 09 Feb 2021 at 10:42, Or Gerlitz <gerlitz.or@gmail.com> wrote:
-> On Sat, Feb 6, 2021 at 7:10 AM Saeed Mahameed <saeed@kernel.org> wrote:
->
->> Vlad Buslov says:
->
->> Implement support for VF tunneling
->
->> Currently, mlx5 only supports configuration with tunnel endpoint IP address on
->> uplink representor. Remove implicit and explicit assumptions of tunnel always
->> being terminated on uplink and implement necessary infrastructure for
->> configuring tunnels on VF representors and updating rules on such tunnels
->> according to routing changes.
->
->> SW TC model
->
-> maybe before SW TC model, you can explain the vswitch SW model (TC is
-> a vehicle to implement the SW model).
->
-> SW model for VST and "classic" v-switch tunnel setup:
->
-> For example, in VST model, each virtio/vf/sf vport has a vlan
-> such that the v-switch tags packets going out "south" of the
-> vport towards the uplink, untags packets going "north" from
-> the uplink, matches on the vport tag and forwards them to
-> the vport (and does nothing for east-west traffic).
->
-> In a similar manner, in "classic" v-switch tunnel setup, each
-> virtio/vf/sf vport is somehow associated with VNI/s marking the
-> tenant/s it belongs to. Same tenant east-west traffic on the
-> host doesn't go through any encap/decap. The v-switch adds the
-> relevant tunnel MD to packets/skbs sent "southward" by the end-point
-> and forwards it to the VTEP which applies encap based on the MD (LWT
-> scheme) and sends the packets to the wire. On RX, the VTEP decaps
-> the tunnel info from the packet, adds it as MD to the skb and
-> forwards the packet up into the stack where the vsw hooks it, matches
-> on the MD + inner tuple and then forwards it to the relevant endpoint.
+Signed-off-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+---
+ .../bindings/net/toshiba,visconti-dwmac.yaml  | 87 +++++++++++++++++++
+ 1 file changed, 87 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/toshiba,visconti-dwmac.yaml
 
-Moving tunnel endpoint to VF doesn't change anything in this
-high-level description.
-
->
-> HW offloads for VST and "classic" v-switch tunnel setup:
->
-> more or less straight forward based on the above
->
->> From TC perspective VF tunnel configuration requires two rules in both
->> directions:
->
->> TX rules
->> 1. Rule that redirects packets from UL to VF rep that has the tunnel
->> endpoint IP address:
->> 2. Rule that decapsulates the tunneled flow and redirects to destination VF
->> representor:
->
->> RX rules
->> 1. Rule that encapsulates the tunneled flow and redirects packets from
->> source VF rep to tunnel device:
->> 2. Rule that redirects from tunnel device to UL rep:
->
-> mmm it's kinda hard managing to follow and catch up a SW model from TC rules..
->
-> I think we need these two to begin with (in whatever order that works
-> better for you)
->
-> [1] Motivation for enhanced v-switch tunnel setup:
->
-> [2] SW model for enhanced v-switch tunnel setup:
->
->> HW offloads model
->
-> a clear SW model before HW offloads model..
-
-Hope my replies to Jakub and Marcelo also address these.
-
->
->>  25 files changed, 3812 insertions(+), 1057 deletions(-)
->
-> for adding almost 4K LOCs
+diff --git a/Documentation/devicetree/bindings/net/toshiba,visconti-dwmac.yaml b/Documentation/devicetree/bindings/net/toshiba,visconti-dwmac.yaml
+new file mode 100644
+index 000000000000..21ae140cfd5c
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/toshiba,visconti-dwmac.yaml
+@@ -0,0 +1,87 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: "http://devicetree.org/schemas/net/toshiba,visconti-dwmac.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++
++title: Toshiba Visconti DWMAC Ethernet controller
++
++maintainers:
++  - Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
++
++select:
++  properties:
++    compatible:
++      contains:
++        enum:
++          - toshiba,visconti-dwmac
++  required:
++    - compatible
++
++allOf:
++  - $ref: "snps,dwmac.yaml#"
++
++properties:
++  compatible:
++    oneOf:
++      - items:
++          - enum:
++              - toshiba,visconti-dwmac
++          - const: snps,dwmac-4.10a
++
++  reg:
++    items:
++      - description:
++          A register range should be the one of the DWMAC controller
++
++  clocks:
++    items:
++      - description: main clock
++      - description: PHY reference clock
++
++  clock-names:
++    items:
++      - const: stmmaceth
++      - const: phy_ref_clk
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - clock-names
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    soc {
++        #address-cells = <2>;
++        #size-cells = <2>;
++
++        piether: ethernet@28000000 {
++            compatible = "toshiba,visconti-dwmac", "snps,dwmac-4.10a";
++            reg = <0 0x28000000 0 0x10000>;
++            interrupts = <GIC_SPI 156 IRQ_TYPE_LEVEL_HIGH>;
++            interrupt-names = "macirq";
++            clocks = <&clk300mhz>, <&clk125mhz>;
++            clock-names = "stmmaceth", "phy_ref_clk";
++            snps,txpbl = <4>;
++            snps,rxpbl = <4>;
++            dma-coherent;
++            phy-mode = "rgmii";
++            phy-handle = <&phy0>;
++
++            mdio0 {
++                #address-cells = <0x1>;
++                #size-cells = <0x0>;
++                compatible = "snps,dwmac-mdio";
++
++                phy0: ethernet-phy@1 {
++                    device_type = "ethernet-phy";
++                    reg = <0x1>;
++                };
++            };
++        };
++    };
+-- 
+2.27.0
 
