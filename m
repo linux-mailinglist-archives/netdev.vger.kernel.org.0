@@ -2,98 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99272317027
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 20:31:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 24F86317084
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 20:45:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234617AbhBJTaa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 14:30:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49842 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234615AbhBJTaV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 14:30:21 -0500
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1E2CC061756
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 11:29:40 -0800 (PST)
-Received: by mail-io1-xd33.google.com with SMTP id s24so3145573iob.6
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 11:29:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tqlwuM0nqOM3PYeoYsohQJYr4JJ43HhwvUkpDIXOjfA=;
-        b=JX8PbSOApVOpduFj9mNKI71V7XIPcQn/KwCoDgzy41IVBlwuARHz+snW1GwsaHHGQ/
-         WOx2tkO1/gpaNGcRrnLsnf7QD853RFLGQ/pAjQ1paYxxROkH4wvw2iuaONlQyifg1Pe2
-         ALo0zbodRPRfWlNdt+iqxLQWZINDP053mt69of1N6rW/agssVcooxvrq1nqr02n8dIym
-         NbtCD7XNozcSofyW/ZWSaXEEieen0fW2JVqujTPurKeFdwNUP+MbxSpAHWTu9XMySCxv
-         ct56RGctKtvGll0P2uZLIFg4I2LVqHJsioZXSlIMaQqEdeftqlSBNxb5YhhNv+ssq1sR
-         YsqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tqlwuM0nqOM3PYeoYsohQJYr4JJ43HhwvUkpDIXOjfA=;
-        b=LdYtmRK66UfDsHWqpQxkDdIS3X22jagZCB2mivu3bfcidbuOdLPcJ2aRBEBgzf3MJE
-         L/OLUjxBMG9BSwd2+TFxsYCBhvFQr2BgdceiI26BHVgFG5b4OyQxf/pxPCMC+aXYhewT
-         QHGWGU0dQqXIAeqeswDwgG/Co1/+7lTIw19LYNwoS7b98GKmz0ren85SurGRG3E5i56i
-         HQpolNywIPhZtDVttLPZTFc+u7ATlSRj7BZAl6kjAte9SidQRMJg5EuzuyzZeG5eIn4a
-         hFNwumF0rLuhmuXZOzTyE6goAPq3fbOuaCDdQmqR0BskjPw9Mn4vtePx12AmWqE6sSQU
-         /R9g==
-X-Gm-Message-State: AOAM531Rt/M0iTyMVqZuEx1SrLm2BdE6GowIRgyFLDRq8UyKM6QiznhL
-        eo9XThfuWWBIpT++4IcZVp/foAlWMwDGLMdn+GxMjOhBmbs=
-X-Google-Smtp-Source: ABdhPJwOWsQ2tiFNzggH7Ep19o0nGkIUvfgKjBUMYHE5zvO/0YR8afIpJTKC32vSC0HWXEtfHmKwZ2NeWiKxgj63Q1Q=
-X-Received: by 2002:a05:6602:2c52:: with SMTP id x18mr2243900iov.5.1612985380384;
- Wed, 10 Feb 2021 11:29:40 -0800 (PST)
+        id S232166AbhBJTpJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 14:45:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37976 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232802AbhBJTog (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Feb 2021 14:44:36 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1724764E57;
+        Wed, 10 Feb 2021 19:43:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612986235;
+        bh=bgCsZ03i95vQiy2BEuAXPEwY9pbkTTIwDSWELbLF8+g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=mD8AOnd7KvdMGoiZRGe5t7bN5xPPbvl56S/KLb/lddwh4X/Ce2QusoFqaekEKCfBh
+         50sMYmFaEFjrJp52zieFuprG3q8NO5CMW+gT2fSiOFtHkBMPQlnGMh5Txxua5Gl9Gr
+         dmAmwFUvU1NPZ2zHi3dsE7LvHr6GA3YypmrCJgNd9F4wAO/dm6An2DOnbg6Ym6rOAi
+         AO11mLN/ZVI21LvjkmzZIltq4Co5pPr92n6riDc//0ik/FFTBiOxRRNnx+F+kWkolX
+         37LHBKvEdgSKo0wzmXpuACuIO6RrM7blpIJ2dXBOtbM6muHryDTJO6734uZt+qh0gz
+         HolCIdENFRz7g==
+Date:   Wed, 10 Feb 2021 11:43:54 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vlad Buslov <vladbu@nvidia.com>
+Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Mark Bloch <mbloch@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Or Gerlitz <gerlitz.or@gmail.com>
+Subject: Re: [net-next V2 01/17] net/mlx5: E-Switch, Refactor setting source
+ port
+Message-ID: <20210210114354.0646b575@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <ygnhim70go6m.fsf@nvidia.com>
+References: <20210206050240.48410-1-saeed@kernel.org>
+        <20210206050240.48410-2-saeed@kernel.org>
+        <20210206181335.GA2959@horizon.localdomain>
+        <ygnhtuqngebi.fsf@nvidia.com>
+        <20210208122213.338a673e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <ygnho8gtgw2l.fsf@nvidia.com>
+        <20210209100504.119925c1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <ygnhlfbxgifc.fsf@nvidia.com>
+        <20210209115012.049ee898@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <ygnhim70go6m.fsf@nvidia.com>
 MIME-Version: 1.0
-References: <20210209101516.7536-1-haokexin@gmail.com>
-In-Reply-To: <20210209101516.7536-1-haokexin@gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Wed, 10 Feb 2021 11:29:28 -0800
-Message-ID: <CAKgT0Ueb-RbnBy2XxPPM7EuAvghHxFJupipWT=5A33nD_KhGdg@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] net: octeontx2: Fix the confusion in buffer
- alloc failure path
-To:     Kevin Hao <haokexin@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        hariprasad <hkelam@marvell.com>, Netdev <netdev@vger.kernel.org>,
-        Pavel Machek <pavel@ucw.cz>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 9, 2021 at 2:23 AM Kevin Hao <haokexin@gmail.com> wrote:
->
-> Pavel pointed that the return of dma_addr_t in
-> otx2_alloc_rbuf/__otx2_alloc_rbuf() seem suspicious because a negative
-> error code may be returned in some cases. For a dma_addr_t, the error
-> code such as -ENOMEM does seem a valid value, so we can't judge if the
-> buffer allocation fail or not based on that value. Add a parameter for
-> otx2_alloc_rbuf/__otx2_alloc_rbuf() to store the dma address and make
-> the return value to indicate if the buffer allocation really fail or
-> not.
->
-> Reported-by: Pavel Machek <pavel@ucw.cz>
-> Signed-off-by: Kevin Hao <haokexin@gmail.com>
-> Tested-by: Subbaraya Sundeep <sbhatta@marvell.com>
+On Wed, 10 Feb 2021 13:25:05 +0200 Vlad Buslov wrote:
+> On Tue 09 Feb 2021 at 21:50, Jakub Kicinski <kuba@kernel.org> wrote:
+> > On Tue, 9 Feb 2021 21:17:11 +0200 Vlad Buslov wrote:  
+> >> 4. Decapsulated payload appears on namespaced VF with IP address
+> >> 5.5.5.5:
+> >> 
+> >> $ sudo ip  netns exec ns0 tcpdump -ni enp8s0f0v1 -vvv -c 3  
+> >
+> > So there are two VFs? Hm, completely missed that. Could you *please*
+> > provide an ascii diagram for the entire flow? None of those dumps
+> > you're showing gives us the high level picture, and it's quite hard 
+> > to follow which enpsfyxz interface is what.  
+> 
+> Sure. Here it is:
 
-Actually in most cases -ENOMEM wouldn't be a valid value. The issue is
-that you wouldn't have enough space to store anything since you are
-only 12 bytes from overflowing the DMA value. That is why ~0 is used
-as the DMA_MAPPING_ERROR value as there is only enough space to
-possibly store 1 byte before it overflows.
-
-I wonder if it wouldn't make sense to look at coming up with a set of
-macros to convert the error values into a dma_addr_t value and to test
-for those errors being present similar to what we already have for
-pointers. It should work for most cases as I think the error values
-are only up to something like -133 and I don't think we have too many
-cases where something like an Rx buffer will be that small.
-
-Anyway that is future work for another time.
-
-The code itself looks fine.
-
-Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+Thanks a lot, that clarifies it!
