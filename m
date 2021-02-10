@@ -2,80 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A907F31730F
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 23:15:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86B61317319
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 23:16:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232490AbhBJWPH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 17:15:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57170 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231193AbhBJWPF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 17:15:05 -0500
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 263B7C061574
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 14:14:25 -0800 (PST)
-Received: by mail-yb1-xb31.google.com with SMTP id b187so3613464ybg.9
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 14:14:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=VWjM7/wBKHL4scsTLe5KXcjevC2FogNYYzs0R/QPoac=;
-        b=XStRtBd97ht21JGd6R50j43IpSGd/zQ+tXkHzGCHtpVVCHPOnuPS8ekC3qlryUbaE9
-         6mfGre+OYSuDNrZgaCGwGjLaubT2VoZLZ1OFzmkXira5oSpR2IYILbEv2rtwVh2gbws4
-         3Hw5jnE1RwwC2ROy0y2mCdsbIqk4CAm2TzofA7naiWhQLr3mHyJwsn8EooBG7EMENpJW
-         DWkmHWCLgdAJBd4NCIF1ONv8b3pcHD74cL0nxWGhTuAuehlsn4dKDzE/YUkmhSN502zR
-         Fe77wG2OR3+eLe2FyIUyM+4IJZC0aJqMNIamsP0OV/Cp5JpgscsP+0zaPdMvovwkhFVQ
-         FZHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=VWjM7/wBKHL4scsTLe5KXcjevC2FogNYYzs0R/QPoac=;
-        b=bdhxtVCIkYeksqirbA6gBbwbcXQ6xK/k4jBEnS6AklilJ3y9eAG3Hbvl4wdxxF9xvr
-         u+e+SVE2iPZY0Geo7uMDfQGHgulLMRrJXrno65v9H68DG6C8p6BUaWyA5460ZLPFIRy8
-         xfC7OXLC0j0Hcxk+uINYlZYo0o/954rh+gLchhkXqtbKdHMDOs0V3dnSpfIYLqy43co7
-         S1c38R2QgPlw6xdW2/sBrYhOirXfjrTeTDE3p9y0F49duVbhy4PjZQWaYq92S/kw5YvV
-         RUz2Ox+DNwOnS/kWRU1CY0aTOeW96VVshLerDZfcwOyM4bnd+iqge3Uq3gs7JBVTaFjS
-         MapQ==
-X-Gm-Message-State: AOAM531rhB+Ns/6F7OuxIY6eQPQtYQ1khg3f9ecA7WTDrj0FTu5X6mqE
-        gKHR/AmqjsIGoF1Wq2NfFJ3Aex0dG+mwfvrCxA1Brw==
-X-Google-Smtp-Source: ABdhPJz3URz0lofJcCssdyg7nZLDEZn/GHBJSrxxYizLGPovCOiOwHAwalAXeiod/kZgAJAenDpnQBty+NJ6rTZjf+4=
-X-Received: by 2002:a25:b74c:: with SMTP id e12mr7988864ybm.20.1612995264346;
- Wed, 10 Feb 2021 14:14:24 -0800 (PST)
-MIME-Version: 1.0
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Wed, 10 Feb 2021 14:13:48 -0800
-Message-ID: <CAGETcx9YpCUMmHjyydMtOJP9SKBbVsHNB-9SspD9u=txJ12Gug@mail.gmail.com>
-Subject: phy_attach_direct()'s use of device_bind_driver()
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        id S233150AbhBJWPo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 17:15:44 -0500
+Received: from mail.baikalelectronics.com ([87.245.175.226]:35476 "EHLO
+        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230229AbhBJWPk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 17:15:40 -0500
+Date:   Thu, 11 Feb 2021 01:14:55 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+CC:     Serge Semin <fancer.lancer@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Android Kernel Team <kernel-team@android.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jon Hunter <jonathanh@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Joao Pinto <jpinto@synopsys.com>,
+        Lars Persson <larper@axis.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Vyacheslav Mitrofanov 
+        <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
+        <netdev@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 16/24] net: stmmac: Use optional reset control API to
+ work with stmmaceth
+Message-ID: <20210210221455.jo22rq6eey3ujqmt@mobilestation>
+References: <20210208135609.7685-1-Sergey.Semin@baikalelectronics.ru>
+ <20210208135609.7685-17-Sergey.Semin@baikalelectronics.ru>
+ <20210210144924.6b8e7a11@xhacker.debian>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20210210144924.6b8e7a11@xhacker.debian>
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Wed, Feb 10, 2021 at 02:49:24PM +0800, Jisheng Zhang wrote:
+> Hi,
+> 
+> On Mon, 8 Feb 2021 16:56:00 +0300 Serge Semin wrote:
+> 
+> 
+> > 
+> > Since commit bb3222f71b57 ("net: stmmac: platform: use optional clk/reset
+> > get APIs") a manual implementation of the optional device reset control
+> > functionality has been replaced with using the
+> > devm_reset_control_get_optional() method. But for some reason the optional
+> > reset control handler usage hasn't been fixed and preserved the
+> > NULL-checking statements. There is no need in that in order to perform the
+> > reset control assertion/deassertion because the passed NULL will be
+> > considered by the reset framework as absent optional reset control handler
+> > anyway.
+> > 
+> > Fixes: bb3222f71b57 ("net: stmmac: platform: use optional clk/reset get APIs")
+> 
 
-This email was triggered by this other email[1].
+> The patch itself looks good, but the Fix tag isn't necessary since the
+> patch is a clean up rather than a bug fix. Can you please drop it in next
+> version?
 
-Why is phy_attach_direct() directly calling device_bind_driver()
-instead of using bus_probe_device()? I'm asking because this is
-causing device links status to not get updated correctly and causes
-this[2] warning.
+Ok. I'll remove it.
 
-We can fix the device links issue with something like this[3], but
-want to understand the reason for the current implementation of
-phy_attach_direct() before we go ahead and put in that fix.
+-Sergey
 
-Thanks,
-Saravana
-
-[1] - https://lore.kernel.org/lkml/e11bc6a2-ec9d-ea3b-71f7-13c9f764bbfc@nvidia.com/#t
-[2] - https://lore.kernel.org/lkml/56f7d032-ba5a-a8c7-23de-2969d98c527e@nvidia.com/
-[3] - https://lore.kernel.org/lkml/6a43e209-1d2d-b10a-4564-0289d54135d3@nvidia.com/
+> 
+> Thanks
+> 
+> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> > ---
+> >  .../net/ethernet/stmicro/stmmac/stmmac_main.c | 19 ++++++++-----------
+> >  1 file changed, 8 insertions(+), 11 deletions(-)
+> > 
+> > diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> > index 4f1bf8f6538b..a8dec219c295 100644
+> > --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> > +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> > @@ -4935,15 +4935,13 @@ int stmmac_dvr_probe(struct device *device,
+> >         if ((phyaddr >= 0) && (phyaddr <= 31))
+> >                 priv->plat->phy_addr = phyaddr;
+> > 
+> > -       if (priv->plat->stmmac_rst) {
+> > -               ret = reset_control_assert(priv->plat->stmmac_rst);
+> > -               reset_control_deassert(priv->plat->stmmac_rst);
+> > -               /* Some reset controllers have only reset callback instead of
+> > -                * assert + deassert callbacks pair.
+> > -                */
+> > -               if (ret == -ENOTSUPP)
+> > -                       reset_control_reset(priv->plat->stmmac_rst);
+> > -       }
+> > +       ret = reset_control_assert(priv->plat->stmmac_rst);
+> > +       reset_control_deassert(priv->plat->stmmac_rst);
+> > +       /* Some reset controllers have only reset callback instead of
+> > +        * assert + deassert callbacks pair.
+> > +        */
+> > +       if (ret == -ENOTSUPP)
+> > +               reset_control_reset(priv->plat->stmmac_rst);
+> > 
+> >         /* Init MAC and get the capabilities */
+> >         ret = stmmac_hw_init(priv);
+> > @@ -5155,8 +5153,7 @@ int stmmac_dvr_remove(struct device *dev)
+> >         stmmac_exit_fs(ndev);
+> >  #endif
+> >         phylink_destroy(priv->phylink);
+> > -       if (priv->plat->stmmac_rst)
+> > -               reset_control_assert(priv->plat->stmmac_rst);
+> > +       reset_control_assert(priv->plat->stmmac_rst);
+> >         if (priv->hw->pcs != STMMAC_PCS_TBI &&
+> >             priv->hw->pcs != STMMAC_PCS_RTBI)
+> >                 stmmac_mdio_unregister(ndev);
+> > --
+> > 2.29.2
+> > 
+> 
