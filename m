@@ -2,129 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4838316B47
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 17:33:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B4D9316BA3
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 17:48:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231186AbhBJQb0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 11:31:26 -0500
-Received: from mail2.protonmail.ch ([185.70.40.22]:41308 "EHLO
-        mail2.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232531AbhBJQaa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 11:30:30 -0500
-Date:   Wed, 10 Feb 2021 16:29:38 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1612974587; bh=9n7R30ez+8NGaLh1O893hoIhJlElIMgk5xtfqPCBjQ8=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=fT7wZmVwnEnV9lfYQgwyVu8GDUa8OgXuJ+fkoS7xmEUh4eMzpCEsVr3pOyuvNt+9v
-         JhxUsYBYx0k2BSogdKzo2bsVWA2o5NiiImBJV3B8L0ETuQVZpWTwfbBq+6/fxBSuPU
-         XS1SR3meALsKmBiJBvcuVYYjJIvghqDxKfND7FiCVnoVIARUY0W3P2I1ru7NkfN6N/
-         BobSbHKU/BaOBIMD09My+aLx9kRs4ZMqehiscFSRE1Nxl1XFat5UNHHWYaHEKj1MfQ
-         EMzw4jFC4eDlU92j40B0e/ALMxFHdnJpNK5xmwu34Coe+FuJBSBfwS2oQ5egEa/OlI
-         ZNSht26et4qtA==
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Kevin Hao <haokexin@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        =?utf-8?Q?Bj=C3=B6rn_T=C3=B6pel?= <bjorn@kernel.org>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        Yonghong Song <yhs@fb.com>, zhudi <zhudi21@huawei.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Florian Westphal <fw@strlen.de>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH v4 net-next 05/11] skbuff: use __build_skb_around() in __alloc_skb()
-Message-ID: <20210210162732.80467-6-alobakin@pm.me>
-In-Reply-To: <20210210162732.80467-1-alobakin@pm.me>
-References: <20210210162732.80467-1-alobakin@pm.me>
+        id S231810AbhBJQsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 11:48:19 -0500
+Received: from mo-csw-fb1115.securemx.jp ([210.130.202.174]:47380 "EHLO
+        mo-csw-fb.securemx.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232968AbhBJQsN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 11:48:13 -0500
+X-Greylist: delayed 913 seconds by postgrey-1.27 at vger.kernel.org; Wed, 10 Feb 2021 11:48:12 EST
+Received: by mo-csw-fb.securemx.jp (mx-mo-csw-fb1115) id 11AGYw23013277; Thu, 11 Feb 2021 01:34:59 +0900
+Received: by mo-csw.securemx.jp (mx-mo-csw1116) id 11AGUCSL006843; Thu, 11 Feb 2021 01:30:12 +0900
+X-Iguazu-Qid: 2wGr679RaFze44qkqG
+X-Iguazu-QSIG: v=2; s=0; t=1612974612; q=2wGr679RaFze44qkqG; m=gIDcb4kkM1O+D3JQdk8N2k7LylMYkPKopE0RIriw17g=
+Received: from imx12.toshiba.co.jp (imx12.toshiba.co.jp [61.202.160.132])
+        by relay.securemx.jp (mx-mr1113) id 11AGU8JO026471;
+        Thu, 11 Feb 2021 01:30:08 +0900
+Received: from enc02.toshiba.co.jp ([61.202.160.51])
+        by imx12.toshiba.co.jp  with ESMTP id 11AGU84n001510;
+        Thu, 11 Feb 2021 01:30:08 +0900 (JST)
+Received: from hop101.toshiba.co.jp ([133.199.85.107])
+        by enc02.toshiba.co.jp  with ESMTP id 11AGU7MD013085;
+        Thu, 11 Feb 2021 01:30:07 +0900
+From:   Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        punit1.agrawal@toshiba.co.jp, yuji2.ishikawa@toshiba.co.jp,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+Subject: [PATCH 0/4] net: stmmac: Add Toshiba Visconti SoCs glue driver
+Date:   Thu, 11 Feb 2021 01:29:50 +0900
+X-TSB-HOP: ON
+Message-Id: <20210210162954.3955785-1-nobuhiro1.iwamatsu@toshiba.co.jp>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Just call __build_skb_around() instead of open-coding it.
+Hi,
 
-Signed-off-by: Alexander Lobakin <alobakin@pm.me>
----
- net/core/skbuff.c | 18 +-----------------
- 1 file changed, 1 insertion(+), 17 deletions(-)
+This series is the ethernet driver for Toshiba's ARM SoC, Visconti[0].
+This provides DT binding documentation, device driver, MAINTAINER files, and updates to DT files.
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 88566de26cd1..1c6f6ef70339 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -326,7 +326,6 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gf=
-p_mask,
- =09=09=09    int flags, int node)
- {
- =09struct kmem_cache *cache;
--=09struct skb_shared_info *shinfo;
- =09struct sk_buff *skb;
- =09u8 *data;
- =09bool pfmemalloc;
-@@ -366,21 +365,8 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t g=
-fp_mask,
- =09 * the tail pointer in struct sk_buff!
- =09 */
- =09memset(skb, 0, offsetof(struct sk_buff, tail));
--=09/* Account for allocated memory : skb + skb->head */
--=09skb->truesize =3D SKB_TRUESIZE(size);
-+=09__build_skb_around(skb, data, 0);
- =09skb->pfmemalloc =3D pfmemalloc;
--=09refcount_set(&skb->users, 1);
--=09skb->head =3D data;
--=09skb->data =3D data;
--=09skb_reset_tail_pointer(skb);
--=09skb->end =3D skb->tail + size;
--=09skb->mac_header =3D (typeof(skb->mac_header))~0U;
--=09skb->transport_header =3D (typeof(skb->transport_header))~0U;
--
--=09/* make sure we initialize shinfo sequentially */
--=09shinfo =3D skb_shinfo(skb);
--=09memset(shinfo, 0, offsetof(struct skb_shared_info, dataref));
--=09atomic_set(&shinfo->dataref, 1);
-=20
- =09if (flags & SKB_ALLOC_FCLONE) {
- =09=09struct sk_buff_fclones *fclones;
-@@ -393,8 +379,6 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gf=
-p_mask,
- =09=09fclones->skb2.fclone =3D SKB_FCLONE_CLONE;
- =09}
-=20
--=09skb_set_kcov_handle(skb, kcov_common_handle());
--
- =09return skb;
-=20
- nodata:
---=20
-2.30.1
+Best regards,
+  Nobuhiro
 
+[0]: https://toshiba.semicon-storage.com/ap-en/semiconductor/product/image-recognition-processors-visconti.htmli
 
+Nobuhiro Iwamatsu (4):
+  dt-bindings: net: Add DT bindings for Toshiba Visconti TMPV7700 SoC
+  net: stmmac: Add Toshiba Visconti SoCs glue driver
+  MAINTAINERS: Add entries for Toshiba Visconti ethernet controller
+  arm: dts: visconti: Add DT support for Toshiba Visconti5 ethernet
+    controller
+
+ .../bindings/net/toshiba,visconti-dwmac.yaml  |  87 ++++++
+ MAINTAINERS                                   |   2 +
+ .../boot/dts/toshiba/tmpv7708-rm-mbrc.dts     |  18 ++
+ arch/arm64/boot/dts/toshiba/tmpv7708.dtsi     |  24 ++
+ drivers/net/ethernet/stmicro/stmmac/Kconfig   |   8 +
+ drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
+ .../ethernet/stmicro/stmmac/dwmac-visconti.c  | 292 ++++++++++++++++++
+ 7 files changed, 432 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/toshiba,visconti-dwmac.yaml
+ create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
+
+-- 
+2.27.0
