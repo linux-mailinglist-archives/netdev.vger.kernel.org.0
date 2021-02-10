@@ -2,249 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FAAC316ABC
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 17:08:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BACE8316ACA
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 17:12:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231984AbhBJQIT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 11:08:19 -0500
-Received: from foss.arm.com ([217.140.110.172]:40020 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231431AbhBJQIP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Feb 2021 11:08:15 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3EB95113E;
-        Wed, 10 Feb 2021 08:07:29 -0800 (PST)
-Received: from [192.168.1.179] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3F48C3F73B;
-        Wed, 10 Feb 2021 08:07:26 -0800 (PST)
-Subject: Re: [PATCH v18 1/7] arm/arm64: Probe for the presence of KVM
- hypervisor
-To:     Marc Zyngier <maz@kernel.org>, netdev@vger.kernel.org,
-        yangbo.lu@nxp.com, john.stultz@linaro.org, tglx@linutronix.de,
-        pbonzini@redhat.com, seanjc@google.com, richardcochran@gmail.com,
-        Mark.Rutland@arm.com, will@kernel.org, suzuki.poulose@arm.com,
-        Andre.Przywara@arm.com, lorenzo.pieralisi@arm.com,
-        sudeep.holla@arm.com
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
-        Steve.Capper@arm.com, justin.he@arm.com, jianyong.wu@arm.com,
-        kernel-team@android.com
-References: <20210208134029.3269384-1-maz@kernel.org>
- <20210208134029.3269384-2-maz@kernel.org>
-From:   Steven Price <steven.price@arm.com>
-Message-ID: <7ac905c1-1039-eff6-7785-f2eef3d8e934@arm.com>
-Date:   Wed, 10 Feb 2021 16:07:46 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S231801AbhBJQMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 11:12:25 -0500
+Received: from ares.krystal.co.uk ([77.72.0.130]:40310 "EHLO
+        ares.krystal.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229934AbhBJQMS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 11:12:18 -0500
+Received: from [51.148.178.73] (port=65008 helo=pbcllap7)
+        by ares.krystal.co.uk with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <john.efstathiades@pebblebay.com>)
+        id 1l9s5R-00EyLe-Md; Wed, 10 Feb 2021 16:11:29 +0000
+Reply-To: <john.efstathiades@pebblebay.com>
+From:   "John Efstathiades" <john.efstathiades@pebblebay.com>
+To:     "'Jesse Brandeburg'" <jesse.brandeburg@intel.com>
+Cc:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <Woojung.Huh@microchip.com>
+References: <20210204113121.29786-1-john.efstathiades@pebblebay.com>    <20210204113121.29786-2-john.efstathiades@pebblebay.com> <20210204124314.00007907@intel.com>
+In-Reply-To: <20210204124314.00007907@intel.com>
+Subject: RE: [PATCH net-next 1/9] lan78xx: add NAPI interface support
+Date:   Wed, 10 Feb 2021 16:11:09 -0000
+Organization: Pebble Bay Consulting Ltd
+Message-ID: <005101d6ffc7$6409d8b0$2c1d8a10$@pebblebay.com>
 MIME-Version: 1.0
-In-Reply-To: <20210208134029.3269384-2-maz@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
+Content-Type: text/plain;
+        charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQIpfIuWVWp4oXxuaZJopfPMH/GLnQECyV9lAbFJeiOpluv9sA==
+Content-Language: en-gb
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - ares.krystal.co.uk
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - pebblebay.com
+X-Get-Message-Sender-Via: ares.krystal.co.uk: authenticated_id: john.efstathiades@pebblebay.com
+X-Authenticated-Sender: ares.krystal.co.uk: john.efstathiades@pebblebay.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/02/2021 13:40, Marc Zyngier wrote:
-> From: Will Deacon <will@kernel.org>
-> 
-> Although the SMCCC specification provides some limited functionality for
-> describing the presence of hypervisor and firmware services, this is
-> generally applicable only to functions designated as "Arm Architecture
-> Service Functions" and no portable discovery mechanism is provided for
-> standard hypervisor services, despite having a designated range of
-> function identifiers reserved by the specification.
-> 
-> In an attempt to avoid the need for additional firmware changes every
-> time a new function is added, introduce a UID to identify the service
-> provider as being compatible with KVM. Once this has been established,
-> additional services can be discovered via a feature bitmap.
-> 
-> Signed-off-by: Will Deacon <will@kernel.org>
-> Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
-> [maz: move code to its own file, plug it into PSCI]
-> Signed-off-by: Marc Zyngier <maz@kernel.org>
-> Link: https://lore.kernel.org/r/20201209060932.212364-2-jianyong.wu@arm.com
+Apologies for taking a while to respond.
 
-Looks good to me, FWIW:
-
-Reviewed-by: Steven Price <steven.price@arm.com>
-
-> ---
->   arch/arm/include/asm/hypervisor.h   |  3 ++
->   arch/arm64/include/asm/hypervisor.h |  3 ++
->   drivers/firmware/psci/psci.c        |  2 ++
->   drivers/firmware/smccc/Makefile     |  2 +-
->   drivers/firmware/smccc/kvm_guest.c  | 50 +++++++++++++++++++++++++++++
->   drivers/firmware/smccc/smccc.c      |  1 +
->   include/linux/arm-smccc.h           | 25 +++++++++++++++
->   7 files changed, 85 insertions(+), 1 deletion(-)
->   create mode 100644 drivers/firmware/smccc/kvm_guest.c
+> -----Original Message-----
+> From: Jesse Brandeburg <jesse.brandeburg@intel.com>
+> Sent: 04 February 2021 20:43
 > 
-> diff --git a/arch/arm/include/asm/hypervisor.h b/arch/arm/include/asm/hypervisor.h
-> index df8524365637..bd61502b9715 100644
-> --- a/arch/arm/include/asm/hypervisor.h
-> +++ b/arch/arm/include/asm/hypervisor.h
-> @@ -4,4 +4,7 @@
->   
->   #include <asm/xen/hypervisor.h>
->   
-> +void kvm_init_hyp_services(void);
-> +bool kvm_arm_hyp_service_available(u32 func_id);
-> +
->   #endif
-> diff --git a/arch/arm64/include/asm/hypervisor.h b/arch/arm64/include/asm/hypervisor.h
-> index f9cc1d021791..0ae427f352c8 100644
-> --- a/arch/arm64/include/asm/hypervisor.h
-> +++ b/arch/arm64/include/asm/hypervisor.h
-> @@ -4,4 +4,7 @@
->   
->   #include <asm/xen/hypervisor.h>
->   
-> +void kvm_init_hyp_services(void);
-> +bool kvm_arm_hyp_service_available(u32 func_id);
-> +
->   #endif
-> diff --git a/drivers/firmware/psci/psci.c b/drivers/firmware/psci/psci.c
-> index f5fc429cae3f..69e296f02902 100644
-> --- a/drivers/firmware/psci/psci.c
-> +++ b/drivers/firmware/psci/psci.c
-> @@ -23,6 +23,7 @@
->   
->   #include <asm/cpuidle.h>
->   #include <asm/cputype.h>
-> +#include <asm/hypervisor.h>
->   #include <asm/system_misc.h>
->   #include <asm/smp_plat.h>
->   #include <asm/suspend.h>
-> @@ -498,6 +499,7 @@ static int __init psci_probe(void)
->   		psci_init_cpu_suspend();
->   		psci_init_system_suspend();
->   		psci_init_system_reset2();
-> +		kvm_init_hyp_services();
->   	}
->   
->   	return 0;
-> diff --git a/drivers/firmware/smccc/Makefile b/drivers/firmware/smccc/Makefile
-> index 72ab84042832..40d19144a860 100644
-> --- a/drivers/firmware/smccc/Makefile
-> +++ b/drivers/firmware/smccc/Makefile
-> @@ -1,4 +1,4 @@
->   # SPDX-License-Identifier: GPL-2.0
->   #
-> -obj-$(CONFIG_HAVE_ARM_SMCCC_DISCOVERY)	+= smccc.o
-> +obj-$(CONFIG_HAVE_ARM_SMCCC_DISCOVERY)	+= smccc.o kvm_guest.o
->   obj-$(CONFIG_ARM_SMCCC_SOC_ID)	+= soc_id.o
-> diff --git a/drivers/firmware/smccc/kvm_guest.c b/drivers/firmware/smccc/kvm_guest.c
-> new file mode 100644
-> index 000000000000..08836f2f39ee
-> --- /dev/null
-> +++ b/drivers/firmware/smccc/kvm_guest.c
-> @@ -0,0 +1,50 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +#define pr_fmt(fmt) "smccc: KVM: " fmt
-> +
-> +#include <linux/arm-smccc.h>
-> +#include <linux/bitmap.h>
-> +#include <linux/kernel.h>
-> +#include <linux/string.h>
-> +
-> +#include <asm/hypervisor.h>
-> +
-> +static DECLARE_BITMAP(__kvm_arm_hyp_services, ARM_SMCCC_KVM_NUM_FUNCS) __ro_after_init = { };
-> +
-> +void __init kvm_init_hyp_services(void)
-> +{
-> +	struct arm_smccc_res res;
-> +	u32 val[4];
-> +
-> +	if (arm_smccc_1_1_get_conduit() != SMCCC_CONDUIT_HVC)
-> +		return;
-> +
-> +	arm_smccc_1_1_invoke(ARM_SMCCC_VENDOR_HYP_CALL_UID_FUNC_ID, &res);
-> +	if (res.a0 != ARM_SMCCC_VENDOR_HYP_UID_KVM_REG_0 ||
-> +	    res.a1 != ARM_SMCCC_VENDOR_HYP_UID_KVM_REG_1 ||
-> +	    res.a2 != ARM_SMCCC_VENDOR_HYP_UID_KVM_REG_2 ||
-> +	    res.a3 != ARM_SMCCC_VENDOR_HYP_UID_KVM_REG_3)
-> +		return;
-> +
-> +	memset(&res, 0, sizeof(res));
-> +	arm_smccc_1_1_invoke(ARM_SMCCC_VENDOR_HYP_KVM_FEATURES_FUNC_ID, &res);
-> +
-> +	val[0] = lower_32_bits(res.a0);
-> +	val[1] = lower_32_bits(res.a1);
-> +	val[2] = lower_32_bits(res.a2);
-> +	val[3] = lower_32_bits(res.a3);
-> +
-> +	bitmap_from_arr32(__kvm_arm_hyp_services, val, ARM_SMCCC_KVM_NUM_FUNCS);
-> +
-> +	pr_info("hypervisor services detected (0x%08lx 0x%08lx 0x%08lx 0x%08lx)\n",
-> +		 res.a3, res.a2, res.a1, res.a0);
-> +}
-> +
-> +bool kvm_arm_hyp_service_available(u32 func_id)
-> +{
-> +	if (func_id >= ARM_SMCCC_KVM_NUM_FUNCS)
-> +		return -EINVAL;
-> +
-> +	return test_bit(func_id, __kvm_arm_hyp_services);
-> +}
-> +EXPORT_SYMBOL_GPL(kvm_arm_hyp_service_available);
-> diff --git a/drivers/firmware/smccc/smccc.c b/drivers/firmware/smccc/smccc.c
-> index 00c88b809c0c..94eca6ffda05 100644
-> --- a/drivers/firmware/smccc/smccc.c
-> +++ b/drivers/firmware/smccc/smccc.c
-> @@ -7,6 +7,7 @@
->   
->   #include <linux/init.h>
->   #include <linux/arm-smccc.h>
-> +#include <linux/kernel.h>
->   
->   static u32 smccc_version = ARM_SMCCC_VERSION_1_0;
->   static enum arm_smccc_conduit smccc_conduit = SMCCC_CONDUIT_NONE;
-> diff --git a/include/linux/arm-smccc.h b/include/linux/arm-smccc.h
-> index f860645f6512..74e90b65b489 100644
-> --- a/include/linux/arm-smccc.h
-> +++ b/include/linux/arm-smccc.h
-> @@ -55,6 +55,8 @@
->   #define ARM_SMCCC_OWNER_TRUSTED_OS	50
->   #define ARM_SMCCC_OWNER_TRUSTED_OS_END	63
->   
-> +#define ARM_SMCCC_FUNC_QUERY_CALL_UID  0xff01
-> +
->   #define ARM_SMCCC_QUIRK_NONE		0
->   #define ARM_SMCCC_QUIRK_QCOM_A6		1 /* Save/restore register a6 */
->   
-> @@ -87,6 +89,29 @@
->   			   ARM_SMCCC_SMC_32,				\
->   			   0, 0x7fff)
->   
-> +#define ARM_SMCCC_VENDOR_HYP_CALL_UID_FUNC_ID				\
-> +	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,				\
-> +			   ARM_SMCCC_SMC_32,				\
-> +			   ARM_SMCCC_OWNER_VENDOR_HYP,			\
-> +			   ARM_SMCCC_FUNC_QUERY_CALL_UID)
-> +
-> +/* KVM UID value: 28b46fb6-2ec5-11e9-a9ca-4b564d003a74 */
-> +#define ARM_SMCCC_VENDOR_HYP_UID_KVM_REG_0	0xb66fb428U
-> +#define ARM_SMCCC_VENDOR_HYP_UID_KVM_REG_1	0xe911c52eU
-> +#define ARM_SMCCC_VENDOR_HYP_UID_KVM_REG_2	0x564bcaa9U
-> +#define ARM_SMCCC_VENDOR_HYP_UID_KVM_REG_3	0x743a004dU
-> +
-> +/* KVM "vendor specific" services */
-> +#define ARM_SMCCC_KVM_FUNC_FEATURES		0
-> +#define ARM_SMCCC_KVM_FUNC_FEATURES_2		127
-> +#define ARM_SMCCC_KVM_NUM_FUNCS			128
-> +
-> +#define ARM_SMCCC_VENDOR_HYP_KVM_FEATURES_FUNC_ID			\
-> +	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,				\
-> +			   ARM_SMCCC_SMC_32,				\
-> +			   ARM_SMCCC_OWNER_VENDOR_HYP,			\
-> +			   ARM_SMCCC_KVM_FUNC_FEATURES)
-> +
->   #define SMCCC_ARCH_WORKAROUND_RET_UNAFFECTED	1
->   
->   /* Paravirtualised time calls (defined by ARM DEN0057A) */
-> 
+> NB: I thought I'd have a close look at this since I thought I
+> understand NAPI pretty well, but using NAPI to transmit frames as well
+> as with a usb device has got me pretty confused. 
+
+I'll try to add some more rationale in the next revision of the patch.
+However, the short answer is that using NAPI for transmit under high load is
+the most effective way of getting the frames into the device's internal
+buffer RAM.
+
+> Also, I suspect that
+> you didn't try compiling this against the net-next kernel.
+
+I thought I had but it appears not. I won't let that happen again.
+
+> I'm stopping my review only partially completed, please address issues
+> https://patchwork.kernel.org/project/netdevbpf/patch/20210204113121.29786-
+> 2-john.efstathiades@pebblebay.com/
+
+Thanks, will do, but it will take me a few weeks to sort everything out due
+to my other commitments.
+
+> It might make it easier for reviewers to split the "infrastructure"
+> refactors this patch uses into separate pieces. I know it is more work
+> and this is tested already by you, but this is a pretty complicated
+> chunk of code to review.
+
+I appreciate this is a complicated patch, a point made by another reviewer. 
+Could you explain what you mean by "infrastructure" refactors, please?
+
+I'll certainly look at how to split this patch into smaller chunks but that
+might be quite hard to do.
+
+If that turns out not to possible, do you have any suggestions on how I can
+make the patch easier for reviewers to understand and review?
+
+John
 
