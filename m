@@ -2,284 +2,387 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD9CD315DCF
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 04:38:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72F49315DF4
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 04:55:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229876AbhBJDg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 9 Feb 2021 22:36:58 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:48034 "EHLO
-        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229544AbhBJDg5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 22:36:57 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        by mail.monkeyblade.net (Postfix) with ESMTPSA id 177CC4D2CA80E;
-        Tue,  9 Feb 2021 19:36:17 -0800 (PST)
-Date:   Tue, 09 Feb 2021 19:36:11 -0800 (PST)
-Message-Id: <20210209.193611.1524785817913120444.davem@davemloft.net>
-To:     torvalds@linux-foundation.org, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [GIT] Networking 
-From:   David Miller <davem@davemloft.net>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Tue, 09 Feb 2021 19:36:17 -0800 (PST)
+        id S229771AbhBJDyt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 9 Feb 2021 22:54:49 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:45786 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229503AbhBJDys (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 9 Feb 2021 22:54:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612929200;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8IpLBSg1+psqXS4gK7Kxa2B5zToJZmbNHb6kpSKm+3Q=;
+        b=V3/0bAQl+P1XGNKPJolLUh12VEqLxdU1w/yrtYjtMr43zLJYCkkyYXHyHnbQJKYSHoRVAy
+        Q/EfXc2U7kpz0n6JZ6LILvzMkZPb2LVpaoB+HjM/SEL4FosY+SERVVt+bLd9IOEPuBJQMV
+        WorWkeF/W9ZIgkN+mM5AyanAJs6N8UE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-129-tRyM0tO6MWmOgx0ZElTwLA-1; Tue, 09 Feb 2021 22:53:18 -0500
+X-MC-Unique: tRyM0tO6MWmOgx0ZElTwLA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 150B11005501;
+        Wed, 10 Feb 2021 03:53:17 +0000 (UTC)
+Received: from [10.72.12.223] (ovpn-12-223.pek2.redhat.com [10.72.12.223])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 45D671B4B0;
+        Wed, 10 Feb 2021 03:53:10 +0000 (UTC)
+Subject: Re: [PATCH v1] vdpa/mlx5: Restore the hardware used index after
+ change map
+To:     Si-Wei Liu <si-wei.liu@oracle.com>, Eli Cohen <elic@nvidia.com>
+Cc:     mst@redhat.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lulu@redhat.com
+References: <20210204073618.36336-1-elic@nvidia.com>
+ <81f5ce4f-cdb0-26cd-0dce-7ada824b1b86@oracle.com>
+ <f2206fa2-0ddc-1858-54e7-71614b142e46@redhat.com>
+ <20210208063736.GA166546@mtl-vdi-166.wap.labs.mlnx>
+ <0d592ed0-3cea-cfb0-9b7b-9d2755da3f12@redhat.com>
+ <20210208100445.GA173340@mtl-vdi-166.wap.labs.mlnx>
+ <379d79ff-c8b4-9acb-1ee4-16573b601973@redhat.com>
+ <20210209061232.GC210455@mtl-vdi-166.wap.labs.mlnx>
+ <411ff244-a698-a312-333a-4fdbeb3271d1@redhat.com>
+ <a90dd931-43cc-e080-5886-064deb972b11@oracle.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <b749313c-3a44-f6b2-f9b8-3aefa2c2d72c@redhat.com>
+Date:   Wed, 10 Feb 2021 11:53:08 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <a90dd931-43cc-e080-5886-064deb972b11@oracle.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-Another pile of networing fixes:
+On 2021/2/10 上午10:30, Si-Wei Liu wrote:
+>
+>
+> On 2/8/2021 10:37 PM, Jason Wang wrote:
+>>
+>> On 2021/2/9 下午2:12, Eli Cohen wrote:
+>>> On Tue, Feb 09, 2021 at 11:20:14AM +0800, Jason Wang wrote:
+>>>> On 2021/2/8 下午6:04, Eli Cohen wrote:
+>>>>> On Mon, Feb 08, 2021 at 05:04:27PM +0800, Jason Wang wrote:
+>>>>>> On 2021/2/8 下午2:37, Eli Cohen wrote:
+>>>>>>> On Mon, Feb 08, 2021 at 12:27:18PM +0800, Jason Wang wrote:
+>>>>>>>> On 2021/2/6 上午7:07, Si-Wei Liu wrote:
+>>>>>>>>> On 2/3/2021 11:36 PM, Eli Cohen wrote:
+>>>>>>>>>> When a change of memory map occurs, the hardware resources 
+>>>>>>>>>> are destroyed
+>>>>>>>>>> and then re-created again with the new memory map. In such 
+>>>>>>>>>> case, we need
+>>>>>>>>>> to restore the hardware available and used indices. The 
+>>>>>>>>>> driver failed to
+>>>>>>>>>> restore the used index which is added here.
+>>>>>>>>>>
+>>>>>>>>>> Also, since the driver also fails to reset the available and 
+>>>>>>>>>> used
+>>>>>>>>>> indices upon device reset, fix this here to avoid regression 
+>>>>>>>>>> caused by
+>>>>>>>>>> the fact that used index may not be zero upon device reset.
+>>>>>>>>>>
+>>>>>>>>>> Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for 
+>>>>>>>>>> supported mlx5
+>>>>>>>>>> devices")
+>>>>>>>>>> Signed-off-by: Eli Cohen<elic@nvidia.com>
+>>>>>>>>>> ---
+>>>>>>>>>> v0 -> v1:
+>>>>>>>>>> Clear indices upon device reset
+>>>>>>>>>>
+>>>>>>>>>>      drivers/vdpa/mlx5/net/mlx5_vnet.c | 18 ++++++++++++++++++
+>>>>>>>>>>      1 file changed, 18 insertions(+)
+>>>>>>>>>>
+>>>>>>>>>> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+>>>>>>>>>> b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+>>>>>>>>>> index 88dde3455bfd..b5fe6d2ad22f 100644
+>>>>>>>>>> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+>>>>>>>>>> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+>>>>>>>>>> @@ -87,6 +87,7 @@ struct mlx5_vq_restore_info {
+>>>>>>>>>>          u64 device_addr;
+>>>>>>>>>>          u64 driver_addr;
+>>>>>>>>>>          u16 avail_index;
+>>>>>>>>>> +    u16 used_index;
+>>>>>>>>>>          bool ready;
+>>>>>>>>>>          struct vdpa_callback cb;
+>>>>>>>>>>          bool restore;
+>>>>>>>>>> @@ -121,6 +122,7 @@ struct mlx5_vdpa_virtqueue {
+>>>>>>>>>>          u32 virtq_id;
+>>>>>>>>>>          struct mlx5_vdpa_net *ndev;
+>>>>>>>>>>          u16 avail_idx;
+>>>>>>>>>> +    u16 used_idx;
+>>>>>>>>>>          int fw_state;
+>>>>>>>>>>            /* keep last in the struct */
+>>>>>>>>>> @@ -804,6 +806,7 @@ static int create_virtqueue(struct 
+>>>>>>>>>> mlx5_vdpa_net
+>>>>>>>>>> *ndev, struct mlx5_vdpa_virtque
+>>>>>>>>>>            obj_context = MLX5_ADDR_OF(create_virtio_net_q_in, 
+>>>>>>>>>> in,
+>>>>>>>>>> obj_context);
+>>>>>>>>>>          MLX5_SET(virtio_net_q_object, obj_context, 
+>>>>>>>>>> hw_available_index,
+>>>>>>>>>> mvq->avail_idx);
+>>>>>>>>>> +    MLX5_SET(virtio_net_q_object, obj_context, hw_used_index,
+>>>>>>>>>> mvq->used_idx);
+>>>>>>>>>>          MLX5_SET(virtio_net_q_object, obj_context,
+>>>>>>>>>> queue_feature_bit_mask_12_3,
+>>>>>>>>>> get_features_12_3(ndev->mvdev.actual_features));
+>>>>>>>>>>          vq_ctx = MLX5_ADDR_OF(virtio_net_q_object, obj_context,
+>>>>>>>>>> virtio_q_context);
+>>>>>>>>>> @@ -1022,6 +1025,7 @@ static int connect_qps(struct 
+>>>>>>>>>> mlx5_vdpa_net
+>>>>>>>>>> *ndev, struct mlx5_vdpa_virtqueue *m
+>>>>>>>>>>      struct mlx5_virtq_attr {
+>>>>>>>>>>          u8 state;
+>>>>>>>>>>          u16 available_index;
+>>>>>>>>>> +    u16 used_index;
+>>>>>>>>>>      };
+>>>>>>>>>>        static int query_virtqueue(struct mlx5_vdpa_net *ndev, 
+>>>>>>>>>> struct
+>>>>>>>>>> mlx5_vdpa_virtqueue *mvq,
+>>>>>>>>>> @@ -1052,6 +1056,7 @@ static int query_virtqueue(struct
+>>>>>>>>>> mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueu
+>>>>>>>>>>          memset(attr, 0, sizeof(*attr));
+>>>>>>>>>>          attr->state = MLX5_GET(virtio_net_q_object, 
+>>>>>>>>>> obj_context, state);
+>>>>>>>>>>          attr->available_index = MLX5_GET(virtio_net_q_object,
+>>>>>>>>>> obj_context, hw_available_index);
+>>>>>>>>>> +    attr->used_index = MLX5_GET(virtio_net_q_object, 
+>>>>>>>>>> obj_context,
+>>>>>>>>>> hw_used_index);
+>>>>>>>>>>          kfree(out);
+>>>>>>>>>>          return 0;
+>>>>>>>>>>      @@ -1535,6 +1540,16 @@ static void 
+>>>>>>>>>> teardown_virtqueues(struct
+>>>>>>>>>> mlx5_vdpa_net *ndev)
+>>>>>>>>>>          }
+>>>>>>>>>>      }
+>>>>>>>>>>      +static void clear_virtqueues(struct mlx5_vdpa_net *ndev)
+>>>>>>>>>> +{
+>>>>>>>>>> +    int i;
+>>>>>>>>>> +
+>>>>>>>>>> +    for (i = ndev->mvdev.max_vqs - 1; i >= 0; i--) {
+>>>>>>>>>> +        ndev->vqs[i].avail_idx = 0;
+>>>>>>>>>> +        ndev->vqs[i].used_idx = 0;
+>>>>>>>>>> +    }
+>>>>>>>>>> +}
+>>>>>>>>>> +
+>>>>>>>>>>      /* TODO: cross-endian support */
+>>>>>>>>>>      static inline bool mlx5_vdpa_is_little_endian(struct 
+>>>>>>>>>> mlx5_vdpa_dev
+>>>>>>>>>> *mvdev)
+>>>>>>>>>>      {
+>>>>>>>>>> @@ -1610,6 +1625,7 @@ static int save_channel_info(struct
+>>>>>>>>>> mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqu
+>>>>>>>>>>              return err;
+>>>>>>>>>>            ri->avail_index = attr.available_index;
+>>>>>>>>>> +    ri->used_index = attr.used_index;
+>>>>>>>>>>          ri->ready = mvq->ready;
+>>>>>>>>>>          ri->num_ent = mvq->num_ent;
+>>>>>>>>>>          ri->desc_addr = mvq->desc_addr;
+>>>>>>>>>> @@ -1654,6 +1670,7 @@ static void restore_channels_info(struct
+>>>>>>>>>> mlx5_vdpa_net *ndev)
+>>>>>>>>>>                  continue;
+>>>>>>>>>>                mvq->avail_idx = ri->avail_index;
+>>>>>>>>>> +        mvq->used_idx = ri->used_index;
+>>>>>>>>>>              mvq->ready = ri->ready;
+>>>>>>>>>>              mvq->num_ent = ri->num_ent;
+>>>>>>>>>>              mvq->desc_addr = ri->desc_addr;
+>>>>>>>>>> @@ -1768,6 +1785,7 @@ static void mlx5_vdpa_set_status(struct
+>>>>>>>>>> vdpa_device *vdev, u8 status)
+>>>>>>>>>>          if (!status) {
+>>>>>>>>>>              mlx5_vdpa_info(mvdev, "performing device reset\n");
+>>>>>>>>>>              teardown_driver(ndev);
+>>>>>>>>>> +        clear_virtqueues(ndev);
+>>>>>>>>> The clearing looks fine at the first glance, as it aligns with 
+>>>>>>>>> the other
+>>>>>>>>> state cleanups floating around at the same place. However, the 
+>>>>>>>>> thing is
+>>>>>>>>> get_vq_state() is supposed to be called right after to get 
+>>>>>>>>> sync'ed with
+>>>>>>>>> the latest internal avail_index from device while vq is 
+>>>>>>>>> stopped. The
+>>>>>>>>> index was saved in the driver software at vq suspension, but 
+>>>>>>>>> before the
+>>>>>>>>> virtq object is destroyed. We shouldn't clear the avail_index 
+>>>>>>>>> too early.
+>>>>>>>> Good point.
+>>>>>>>>
+>>>>>>>> There's a limitation on the virtio spec and vDPA framework that 
+>>>>>>>> we can not
+>>>>>>>> simply differ device suspending from device reset.
+>>>>>>>>
+>>>>>>> Are you talking about live migration where you reset the device but
+>>>>>>> still want to know how far it progressed in order to continue 
+>>>>>>> from the
+>>>>>>> same place in the new VM?
+>>>>>> Yes. So if we want to support live migration at we need:
+>>>>>>
+>>>>>> in src node:
+>>>>>> 1) suspend the device
+>>>>>> 2) get last_avail_idx via get_vq_state()
+>>>>>>
+>>>>>> in the dst node:
+>>>>>> 3) set last_avail_idx via set_vq_state()
+>>>>>> 4) resume the device
+>>>>>>
+>>>>>> So you can see, step 2 requires the device/driver not to forget the
+>>>>>> last_avail_idx.
+>>>>>>
+>>>>> Just to be sure, what really matters here is the used index. 
+>>>>> Becuase the
+>>>>> vriqtueue itself is copied from the src VM to the dest VM. The 
+>>>>> available
+>>>>> index is alreay there and we know the hardware reads it from there.
+>>>>
+>>>> So for "last_avail_idx" I meant the hardware internal avail index. 
+>>>> It's not
+>>>> stored in the virtqueue so we must migrate it from src to dest and 
+>>>> set them
+>>>> through set_vq_state(). Then in the destination, the virtqueue can be
+>>>> restarted from that index.
+>>>>
+>>> Consider this case: driver posted buffers till avail index becomes the
+>>> value 50. Hardware is executing but made it till 20 when virtqueue was
+>>> suspended due to live migration - this is indicated by hardware used
+>>> index equal 20.
+>>
+>>
+>> So in this case the used index in the virtqueue should be 20? 
+>> Otherwise we need not sync used index itself but all the used entries 
+>> that is not committed to the used ring.
+>
+> In other word, for mlx5 vdpa there's no such internal last_avail_idx 
+> stuff maintained by the hardware, right? 
+
+
+For each device it should have one otherwise it won't work correctly 
+during stop/resume. See the codes mlx5_vdpa_get_vq_state() which calls 
+query_virtqueue() that build commands to query "last_avail_idx" from the 
+hardware:
+
+     MLX5_SET(general_obj_in_cmd_hdr, cmd_hdr, opcode, 
+MLX5_CMD_OP_QUERY_GENERAL_OBJECT);
+     MLX5_SET(general_obj_in_cmd_hdr, cmd_hdr, obj_type, 
+MLX5_OBJ_TYPE_VIRTIO_NET_Q);
+     MLX5_SET(general_obj_in_cmd_hdr, cmd_hdr, obj_id, mvq->virtq_id);
+     MLX5_SET(general_obj_in_cmd_hdr, cmd_hdr, uid, ndev->mvdev.res.uid);
+     err = mlx5_cmd_exec(ndev->mvdev.mdev, in, sizeof(in), out, outlen);
+     if (err)
+         goto err_cmd;
+
+     obj_context = MLX5_ADDR_OF(query_virtio_net_q_out, out, obj_context);
+     memset(attr, 0, sizeof(*attr));
+     attr->state = MLX5_GET(virtio_net_q_object, obj_context, state);
+     attr->available_index = MLX5_GET(virtio_net_q_object, obj_context, 
+hw_available_index);
+
+
+
+
+> And the used_idx in the virtqueue is always in sync with the hardware 
+> used_index, and hardware is supposed to commit pending used buffers to 
+> the ring while bumping up the hardware used_index (and also committed 
+> to memory) altogether prior to suspension, is my understanding correct 
+> here? Double checking if this is the expected semantics of what 
+> modify_virtqueue(MLX5_VIRTIO_NET_Q_OBJECT_STATE_SUSPEND) should achieve.
+>
+> If the above is true, then it looks to me for mlx5 vdpa we should 
+> really return h/w used_idx rather than the last_avail_idx through 
+> get_vq_state(), in order to reconstruct the virt queue state post live 
+> migration. For the set_map case, the internal last_avail_idx really 
+> doesn't matter, although both indices are saved and restored 
+> transparently as-is.
+
+
+Right, a subtle thing here is that: for the device that might have can't 
+not complete all virtqueue requests during vq suspending, the 
+"last_avail_idx" might not be equal to the hardware used_idx. Thing 
+might be true for the storage devices that needs to connect to a remote 
+backend. But this is not the case of networking device, so 
+last_avail_idx should be equal to hardware used_idx here. But using the 
+"last_avail_idx" or hardware avail_idx should always be better in this 
+case since it's guaranteed to correct and will have less confusion. We 
+use this convention in other types of vhost backends (vhost-kernel, 
+vhost-user).
+
+So looking at mlx5_set_vq_state(), it probably won't work since it 
+doesn't not set either hardware avail_idx or hardware used_idx:
+
+static int mlx5_vdpa_set_vq_state(struct vdpa_device *vdev, u16 idx,
+                   const struct vdpa_vq_state *state)
+{
+     struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
+     struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
+     struct mlx5_vdpa_virtqueue *mvq = &ndev->vqs[idx];
+
+     if (mvq->fw_state == MLX5_VIRTIO_NET_Q_OBJECT_STATE_RDY) {
+         mlx5_vdpa_warn(mvdev, "can't modify available index\n");
+         return -EINVAL;
+     }
+
+     mvq->avail_idx = state->avail_index;
+     return 0;
+}
+
+Depends on the hardware, we should either set hardware used_idx or 
+hardware avail_idx here.
+
+I think we need to clarify how device is supposed to work in the virtio 
+spec.
+
+Thanks
+
+
+>
+> -Siwei
+>
+>>
+>>
+>>> Now the vritqueue is copied to the new VM and the
+>>> hardware now has to continue execution from index 20. We need to tell
+>>> the hardware via configuring the last used_index.
+>>
+>>
+>> If the hardware can not sync the index from the virtqueue, the driver 
+>> can do the synchronization by make the last_used_idx equals to used 
+>> index in the virtqueue.
+>>
+>> Thanks
+>>
+>>
+>>>   So why don't we
+>>> restore the used index?
+>>>
+>>>>> So it puzzles me why is set_vq_state() we do not communicate the 
+>>>>> saved
+>>>>> used index.
+>>>>
+>>>> We don't do that since:
+>>>>
+>>>> 1) if the hardware can sync its internal used index from the virtqueue
+>>>> during device, then we don't need it
+>>>> 2) if the hardware can not sync its internal used index, the driver 
+>>>> (e.g as
+>>>> you did here) can do that.
+>>>>
+>>>> But there's no way for the hardware to deduce the internal avail 
+>>>> index from
+>>>> the virtqueue, that's why avail index is sycned.
+>>>>
+>>>> Thanks
+>>>>
+>>>>
+>>
+>
 
-1) ath9k build error fix from Arnd Bergmann
-
-2) dma memory leak fix in mediatec driver from Lorenzo Bianconi.
-
-3) bpf int3 kprobe fix from Alexei Starovoitov.
-
-4) bpf stackmap integer overflow fix from Bui Quang Minh.
-
-5) Add usb device ids for Cinterion MV31 to qmi_qwwan driver, from
-   Christoph Schemmel.
-
-6) Don't update deleted entry in xt_recent netfilter module, from Jazsef Kadlecsik.
-
-7) Use after free in nftables, fix from Pablo Neira Ayuso.
-
-8) Header checksum fix in flowtable from Sven Auhagen.
-
-9) Validate user controlled length in qrtr code, from Sabyrzhan Tasbolatov.
-
-10) Fix race in xen/netback, from Juergen Gross,
-
-11) New device ID in cxgb4, from Raju Rangoju.
-
-12) Fix ring locking in rxrpc release call, from David Howells.
-
-13) Don't return LAPB error codes from x25_open(), from Xie He.
-
-14) Missing error returns in gsi_channel_setup() from Alex Elder.
-
-15) Get skb_copy_and_csum_datagram working properly with odd segment sizes,
-    from Willem de Bruijn.
-
-16) Missing RFS/RSS table init in enetc driver, from Vladimir Oltean.
-
-17) Do teardown on probe failure in DSA, from Vladimir Oltean.
-
-18) Fix compilation failures of txtimestamp selftest, from Vadim Fedorenko.
-
-19) Limit rx per-napi gro queue size to fix latency regression,  from Eric Dumazet.
-
-20) dpaa_eth xdp fixes from Camelia Groza.
-
-21) Missing txq mode update when switching CBS off, in stmmac driver,
-    from Mohammad Athari Bin Ismail.
-
-22) Failover pending logic fix in ibmvnic driver, from Sukadev Bhattiprolu.
-
-23) Null deref fix in vmw_vsock, from Norbert Slusarek.
-
-24) Missing verdict update in xdp paths of ena driver, from Shay Agroskin.
-
-25) seq_file iteration fix in sctp from Neil Brown.
-
-26) bpf 32-bit src register truncation fix on div/mod, from Daniel Borkmann.
-
-27) Fix jmp32 pruning in bpf verifier, from  Daniel Borkmann.
-
-28) Fix locking in vsock_shutdown(),  from Stefano Garzarella.
-
-29) Various missing index bound checks in hns3 driver, from Yufeng Mo.
-
-30) Flush ports on .phylink_mac_link_down() in dsa felix driver, from Vladimir Oltean.
-
-31) Don't mix up stp and mrp port states in bridge layer, from Horatiu Vultur.
-
-32) Fix locking during netif_tx_disable(), from Edwin Peer.
-
-Please pull, thanks a lot!
-
-The following changes since commit 3aaf0a27ffc29b19a62314edd684b9bc6346f9a8:
-
-  Merge tag 'clang-format-for-linux-v5.11-rc7' of git://github.com/ojeda/linux (2021-02-02 10:46:59 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git 
-
-for you to fetch changes up to b8776f14a47046796fe078c4a2e691f58e00ae06:
-
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf (2021-02-09 18:55:17 -0800)
-
-----------------------------------------------------------------
-Alex Elder (1):
-      net: ipa: set error code in gsi_channel_setup()
-
-Alexei Starovoitov (1):
-      bpf: Unbreak BPF_PROG_TYPE_KPROBE when kprobe is called via do_int3
-
-Andrea Parri (Microsoft) (1):
-      hv_netvsc: Reset the RSC count if NVSP_STAT_FAIL in netvsc_receive()
-
-Arnd Bergmann (1):
-      ath9k: fix build error with LEDS_CLASS=m
-
-Bui Quang Minh (1):
-      bpf: Check for integer overflow when using roundup_pow_of_two()
-
-Camelia Groza (3):
-      dpaa_eth: reserve space for the xdp_frame under the A050385 erratum
-      dpaa_eth: reduce data alignment requirements for the A050385 erratum
-      dpaa_eth: try to move the data in place for the A050385 erratum
-
-Christoph Schemmel (1):
-      NET: usb: qmi_wwan: Adding support for Cinterion MV31
-
-Daniel Borkmann (3):
-      bpf: Fix verifier jsgt branch analysis on max bound
-      bpf: Fix verifier jmp32 pruning decision logic
-      bpf: Fix 32 bit src register truncation on div/mod
-
-David Howells (1):
-      rxrpc: Fix clearance of Tx/Rx ring when releasing a call
-
-David S. Miller (4):
-      Merge branch 'bridge-mrp'
-      Merge branch 'hns3-fixes'
-      Merge git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf
-      Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf
-
-Edwin Peer (1):
-      net: watchdog: hold device global xmit lock during tx disable
-
-Eric Dumazet (1):
-      net: gro: do not keep too many GRO packets in napi->rx_list
-
-Fabian Frederick (1):
-      selftests: netfilter: fix current year
-
-Florian Westphal (1):
-      netfilter: conntrack: skip identical origin tuple in same zone only
-
-Horatiu Vultur (2):
-      bridge: mrp: Fix the usage of br_mrp_port_switchdev_set_state
-      switchdev: mrp: Remove SWITCHDEV_ATTR_ID_MRP_PORT_STAT
-
-Jakub Kicinski (3):
-      Merge git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf
-      Merge branch 'dpaa_eth-a050385-erratum-workaround-fixes-under-xdp'
-      Merge tag 'wireless-drivers-2021-02-05' of git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers
-
-Jozsef Kadlecsik (1):
-      netfilter: xt_recent: Fix attempt to update deleted entry
-
-Juergen Gross (1):
-      xen/netback: avoid race in xenvif_rx_ring_slots_available()
-
-Lorenzo Bianconi (1):
-      mt76: dma: fix a possible memory leak in mt76_add_fragment()
-
-Mohammad Athari Bin Ismail (1):
-      net: stmmac: set TxQ mode back to DCB after disabling CBS
-
-NeilBrown (1):
-      net: fix iteration for sctp transport seq_files
-
-Norbert Slusarek (2):
-      net/vmw_vsock: fix NULL pointer dereference
-      net/vmw_vsock: improve locking in vsock_connect_timeout()
-
-Pablo Neira Ayuso (2):
-      netfilter: nftables: fix possible UAF over chains from packet path in netns
-      netfilter: nftables: relax check for stateful expressions in set definition
-
-Raju Rangoju (1):
-      cxgb4: Add new T6 PCI device id 0x6092
-
-Sabyrzhan Tasbolatov (1):
-      net/qrtr: restrict user-controlled length in qrtr_tun_write_iter()
-
-Shay Agroskin (1):
-      net: ena: Update XDP verdict upon failure
-
-Stefano Garzarella (2):
-      vsock/virtio: update credit only if socket is not closed
-      vsock: fix locking in vsock_shutdown()
-
-Sukadev Bhattiprolu (1):
-      ibmvnic: Clear failover_pending if unable to schedule
-
-Sven Auhagen (1):
-      netfilter: flowtable: fix tcp and udp header checksum update
-
-Vadim Fedorenko (2):
-      selftests/tls: fix selftest with CHACHA20-POLY1305
-      selftests: txtimestamp: fix compilation issue
-
-Vladimir Oltean (3):
-      net: enetc: initialize the RFS and RSS memories
-      net: dsa: call teardown method on probe failure
-      net: dsa: felix: implement port flushing on .phylink_mac_link_down
-
-Willem de Bruijn (1):
-      udp: fix skb_copy_and_csum_datagram with odd segment sizes
-
-Xie He (1):
-      net: hdlc_x25: Return meaningful error code in x25_open
-
-Yufeng Mo (3):
-      net: hns3: add a check for queue_id in hclge_reset_vf_queue()
-      net: hns3: add a check for tqp_index in hclge_get_ring_chain_from_mbx()
-      net: hns3: add a check for index in hclge_get_rss_key()
-
- drivers/net/dsa/ocelot/felix.c                          | 17 ++++++++++++++++-
- drivers/net/ethernet/amazon/ena/ena_netdev.c            |  6 +++++-
- drivers/net/ethernet/chelsio/cxgb4/t4_pci_id_tbl.h      |  1 +
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.c          | 42 ++++++++++++++++++++++++++++++++++++++----
- drivers/net/ethernet/freescale/enetc/enetc_hw.h         |  2 ++
- drivers/net/ethernet/freescale/enetc/enetc_pf.c         | 59 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c |  7 +++++++
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c  | 29 +++++++++++++++++++++++++----
- drivers/net/ethernet/ibm/ibmvnic.c                      | 17 ++++++++++++++++-
- drivers/net/ethernet/mscc/ocelot.c                      | 54 ++++++++++++++++++++++++++++++++++++++++++++++++++++++
- drivers/net/ethernet/mscc/ocelot_io.c                   |  8 ++++++++
- drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c         |  7 ++++++-
- drivers/net/hyperv/netvsc.c                             |  5 ++++-
- drivers/net/hyperv/rndis_filter.c                       |  2 --
- drivers/net/ipa/gsi.c                                   |  1 +
- drivers/net/usb/qmi_wwan.c                              |  1 +
- drivers/net/wan/hdlc_x25.c                              |  6 +++---
- drivers/net/wireless/ath/ath9k/Kconfig                  |  8 ++------
- drivers/net/wireless/mediatek/mt76/dma.c                |  8 +++++---
- drivers/net/xen-netback/rx.c                            |  9 ++++++++-
- include/linux/netdevice.h                               |  2 ++
- include/linux/uio.h                                     |  8 +++++++-
- include/net/switchdev.h                                 |  2 --
- include/soc/mscc/ocelot.h                               |  2 ++
- kernel/bpf/stackmap.c                                   |  2 ++
- kernel/bpf/verifier.c                                   | 38 ++++++++++++++++++++------------------
- kernel/trace/bpf_trace.c                                |  3 ---
- lib/iov_iter.c                                          | 24 ++++++++++++++----------
- net/bridge/br_mrp.c                                     |  9 ++++++---
- net/bridge/br_mrp_switchdev.c                           |  7 +++----
- net/bridge/br_private_mrp.h                             |  3 +--
- net/core/datagram.c                                     | 12 ++++++++++--
- net/core/dev.c                                          | 11 ++++++-----
- net/dsa/dsa2.c                                          |  7 +++++--
- net/mac80211/Kconfig                                    |  2 +-
- net/netfilter/nf_conntrack_core.c                       |  3 ++-
- net/netfilter/nf_flow_table_core.c                      |  4 ++--
- net/netfilter/nf_tables_api.c                           | 53 ++++++++++++++++++++++++++++++++++-------------------
- net/netfilter/xt_recent.c                               | 12 ++++++++++--
- net/qrtr/tun.c                                          |  6 ++++++
- net/rxrpc/call_object.c                                 |  2 --
- net/sctp/proc.c                                         | 16 ++++++++++++----
- net/vmw_vsock/af_vsock.c                                | 15 +++++++--------
- net/vmw_vsock/hyperv_transport.c                        |  4 ----
- net/vmw_vsock/virtio_transport_common.c                 |  4 ++--
- tools/testing/selftests/net/tls.c                       | 15 ++++++++++-----
- tools/testing/selftests/net/txtimestamp.c               |  6 +++---
- tools/testing/selftests/netfilter/nft_meta.sh           |  2 +-
- 48 files changed, 429 insertions(+), 134 deletions(-)
