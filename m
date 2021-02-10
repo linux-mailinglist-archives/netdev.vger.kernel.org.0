@@ -2,174 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4ACC31694D
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 15:42:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3005316951
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 15:42:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230043AbhBJOmM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 09:42:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44156 "EHLO
+        id S231419AbhBJOmc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 09:42:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230014AbhBJOmD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 09:42:03 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A62BCC061574
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 06:41:21 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id w2so4599552ejk.13
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 06:41:21 -0800 (PST)
+        with ESMTP id S231342AbhBJOma (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 09:42:30 -0500
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9AEC061756
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 06:41:49 -0800 (PST)
+Received: by mail-pl1-x62d.google.com with SMTP id k22so1312374pll.6
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 06:41:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=lX1gJvsaJMOE2HAb4oPWo/N+8MXFPja4wdxtivXDiE4=;
-        b=gWUQ0Ou+JJ8cIRNFgEVYrux2Oy3TDrho0YHS7FImAisolJ0Z1/S28JztOc4+pkui1+
-         ImoTy/GFmtTdCKrqw8R/L5eqN5aerrrj1wL0bzeB6PSvj+2d7p60YNxIjwnJkwTH4LCr
-         jbglhhbLOxaIIXodeK9NCxIPRfZhguxNn1pUCCChfKBH9fNmlzh4TXRXSHcLLxwrs8WC
-         FjF77qdCZCrxbFTzLua4JEvafEP/rRTfbFfMsjwvrR2DlhIW7VBA1xWgx5IyT6qj+slp
-         blLC36BrDBK1sa6xQdTOBrlg1Ql7Jeys088g8mUHjtHETm7vy+53GzemovL2sxi/F6z5
-         X9pQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MT7keg16HOD7Yj8F6crKSCJLg5paz35PgZJDP/CvKvw=;
+        b=HztgfDSA+Jc/RGjvO34xfwKKAoHcgSxEQP5suNZKtGwdkKJaEyJmJ0BU+6Xe5FOrx4
+         4EzEtVFyZeyr6V6ZPRl0TGjq0dghFtkVkei3DIsUfoukleJnVDQe3SzUrCBeW/tBVDHm
+         q72FGW1F32T4lDHrJGn0HItCcXja9FuF+/ZZ3fzvJKG4jdIdVBVya7l498sJ03RjNYJE
+         DOoPopRI27te7okhX/r5PN8K34YkpU2SveuLIr+jkHtj2/uUOxEsMiS5gQFgr64IzrqX
+         Ciace1KunyyxxSLsHODdnZIuF+tdWjiEdI4TNqass3hQPxiopFbmWwHYZ2ub0cgXhssC
+         jRUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=lX1gJvsaJMOE2HAb4oPWo/N+8MXFPja4wdxtivXDiE4=;
-        b=C5QwbjDHuyFGd6UidIJSeLLttJ05R/RSKfcsZcwkxATaAFysEI+nL//7kyBok9unf/
-         w7O7cnoZiwJpzkMCjvhu+fkYAJdL8C0XG1xEAjpqM2y/pmyTjmR7QY0ttbKC9iR1r+u4
-         59CGMUwfyAM0R3yGe5KMO0Dg4t0obsk+DKaRjSbZgdaqRguHxvvZCK+wVVhCaw3xyAuK
-         igQUJ6f55K6zfqPGHMw/KzbQjJxy7yeUJwzx42PSt+h8Gz4hwxFuUvQWIcCVARyudJF/
-         Har8nAigBp5S6rfgCLr3q6kAzHsZXxmKhPsPhn/At0BewyGSUg5E1y+VH7NldxC1QeVO
-         Jb5g==
-X-Gm-Message-State: AOAM530tKoG3JIj/bJIeaMKVPQhaSruIYj0LB7mVYbjnLc/fAPnJ9XN0
-        cDDV1WubSNuw3t5PxTSI1fBU1FHS419zhLbALbo=
-X-Google-Smtp-Source: ABdhPJyXpW27MAdu1Z1p13czrxpyX4vFJ5nzDgxwB80JNQc9NcYuG8eufXyFt15QOni3kyaVA04ja5i9wD+Vz35J+Q0=
-X-Received: by 2002:a17:906:4dc5:: with SMTP id f5mr3211802ejw.11.1612968080427;
- Wed, 10 Feb 2021 06:41:20 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MT7keg16HOD7Yj8F6crKSCJLg5paz35PgZJDP/CvKvw=;
+        b=DkCXHqqD64fQUj00luVfgI7NUiMWRnH1YY20gyZ7WpJqsmN3Ps4WCmN6Ps2jCxDISk
+         XqnJO8Lo85EVSmKJAoKXuofwXFkSeNDxUwYLMqwF7+19SyXJpgG6XMQDqBEl8BSrdfox
+         2CtRT9OsFhZ7W+IxNqy0PrQKSYGbM3cOdS35VNMQ3dfQ8DVlJB3EEBd0QkMhBD1/OAM8
+         6276+HwhNS+uPLM+BCUNPY6f86iVBCHQJKTFsDmiNkFhSxIJD1UEdWqpT9xdYFe5yRFF
+         hfAy6hykCta+FBNt5AmGW4W1+NuX8ahUgMQMPSwWSiOyWaLNOOaH9uoCQPpN2PgvZQxD
+         Obow==
+X-Gm-Message-State: AOAM5334bRVQX4yxed8654xXlxkfKc/ET1NO48MsmG2OipZjEWRtAsc2
+        9iaXNqOXvk+SlismVjG5eg4=
+X-Google-Smtp-Source: ABdhPJy8reKmE/Su8t7v2/7QDDtYVPZGcFiEhBna3sScZANCzPSlcNLlMQ3zouP2BVNy2klZekKgLA==
+X-Received: by 2002:a17:902:d510:b029:e1:1040:3726 with SMTP id b16-20020a170902d510b02900e110403726mr3182410plg.59.1612968109026;
+        Wed, 10 Feb 2021 06:41:49 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:48d8:4083:5be:90d7])
+        by smtp.gmail.com with ESMTPSA id bk12sm2466873pjb.1.2021.02.10.06.41.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Feb 2021 06:41:48 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Subject: [PATCH net-next] net: initialize net->net_cookie at netns setup
+Date:   Wed, 10 Feb 2021 06:41:44 -0800
+Message-Id: <20210210144144.24284-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.30.0.478.g8a0d178c01-goog
 MIME-Version: 1.0
-References: <20210208185558.995292-1-willemdebruijn.kernel@gmail.com>
- <20210208185558.995292-4-willemdebruijn.kernel@gmail.com> <6bfdf48d-c780-bc65-b0b9-24a33f18827b@redhat.com>
- <20210209113643-mutt-send-email-mst@kernel.org> <CAF=yD-Lw7LKypTLEfQmcqR9SwcL6f9wH=_yjQdyGak4ORegRug@mail.gmail.com>
- <af5b16fb-8b22-f081-3aa0-92839b7153d6@redhat.com>
-In-Reply-To: <af5b16fb-8b22-f081-3aa0-92839b7153d6@redhat.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 10 Feb 2021 09:40:44 -0500
-Message-ID: <CAF=yD-JLcuaRckKGJSt9Oi-_7W2=1t9FLR6=Thdh5krh6+L9sw@mail.gmail.com>
-Subject: Re: [PATCH RFC v2 3/4] virtio-net: support transmit timestamp
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        Network Development <netdev@vger.kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Willem de Bruijn <willemb@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 9, 2021 at 11:15 PM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> On 2021/2/10 =E4=B8=8A=E5=8D=8810:36, Willem de Bruijn wrote:
-> > On Tue, Feb 9, 2021 at 11:39 AM Michael S. Tsirkin<mst@redhat.com>  wro=
-te:
-> >> On Tue, Feb 09, 2021 at 01:45:11PM +0800, Jason Wang wrote:
-> >>> On 2021/2/9 =E4=B8=8A=E5=8D=882:55, Willem de Bruijn wrote:
-> >>>> From: Willem de Bruijn<willemb@google.com>
-> >>>>
-> >>>> Add optional PTP hardware tx timestamp offload for virtio-net.
-> >>>>
-> >>>> Accurate RTT measurement requires timestamps close to the wire.
-> >>>> Introduce virtio feature VIRTIO_NET_F_TX_TSTAMP, the transmit
-> >>>> equivalent to VIRTIO_NET_F_RX_TSTAMP.
-> >>>>
-> >>>> The driver sets VIRTIO_NET_HDR_F_TSTAMP to request a timestamp
-> >>>> returned on completion. If the feature is negotiated, the device
-> >>>> either places the timestamp or clears the feature bit.
-> >>>>
-> >>>> The timestamp straddles (virtual) hardware domains. Like PTP, use
-> >>>> international atomic time (CLOCK_TAI) as global clock base. The driv=
-er
-> >>>> must sync with the device, e.g., through kvm-clock.
-> >>>>
-> >>>> Modify can_push to ensure that on tx completion the header, and thus
-> >>>> timestamp, is in a predicatable location at skb_vnet_hdr.
-> >>>>
-> >>>> RFC: this implementation relies on the device writing to the buffer.
-> >>>> That breaks DMA_TO_DEVICE semantics. For now, disable when DMA is on=
-.
-> >>>> The virtio changes should be a separate patch at the least.
-> >>>>
-> >>>> Tested: modified txtimestamp.c to with h/w timestamping:
-> >>>>     -       sock_opt =3D SOF_TIMESTAMPING_SOFTWARE |
-> >>>>     +       sock_opt =3D SOF_TIMESTAMPING_RAW_HARDWARE |
-> >>>>     + do_test(family, SOF_TIMESTAMPING_TX_HARDWARE);
-> >>>>
-> >>>> Signed-off-by: Willem de Bruijn<willemb@google.com>
-> >>>> ---
-> >>>>    drivers/net/virtio_net.c        | 61 ++++++++++++++++++++++++++++=
------
-> >>>>    drivers/virtio/virtio_ring.c    |  3 +-
-> >>>>    include/linux/virtio.h          |  1 +
-> >>>>    include/uapi/linux/virtio_net.h |  1 +
-> >>>>    4 files changed, 56 insertions(+), 10 deletions(-)
-> >>>>
-> >>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> >>>> index ac44c5efa0bc..fc8ecd3a333a 100644
-> >>>> --- a/drivers/net/virtio_net.c
-> >>>> +++ b/drivers/net/virtio_net.c
-> >>>> @@ -210,6 +210,12 @@ struct virtnet_info {
-> >>>>      /* Device will pass rx timestamp. Requires has_rx_tstamp */
-> >>>>      bool enable_rx_tstamp;
-> >>>> +   /* Device can pass CLOCK_TAI transmit time to the driver */
-> >>>> +   bool has_tx_tstamp;
-> >>>> +
-> >>>> +   /* Device will pass tx timestamp. Requires has_tx_tstamp */
-> >>>> +   bool enable_tx_tstamp;
-> >>>> +
-> >>>>      /* Has control virtqueue */
-> >>>>      bool has_cvq;
-> >>>> @@ -1401,6 +1407,20 @@ static int virtnet_receive(struct receive_que=
-ue *rq, int budget,
-> >>>>      return stats.packets;
-> >>>>    }
-> >>>> +static void virtnet_record_tx_tstamp(const struct send_queue *sq,
-> >>>> +                                struct sk_buff *skb)
-> >>>> +{
-> >>>> +   const struct virtio_net_hdr_hash_ts *h =3D skb_vnet_hdr_ht(skb);
-> >>>> +   const struct virtnet_info *vi =3D sq->vq->vdev->priv;
-> >>>> +   struct skb_shared_hwtstamps ts;
-> >>>> +
-> >>>> +   if (h->hdr.flags & VIRTIO_NET_HDR_F_TSTAMP &&
-> >>>> +       vi->enable_tx_tstamp) {
-> >>>> +           ts.hwtstamp =3D ns_to_ktime(le64_to_cpu(h->tstamp));
-> >>>> +           skb_tstamp_tx(skb, &ts);
-> >>> This probably won't work since the buffer is read-only from the devic=
-e. (See
-> >>> virtqueue_add_outbuf()).
-> >>>
-> >>> Another issue that I vaguely remember that the virtio spec forbids ou=
-t
-> >>> buffer after in buffer.
-> >> Both Driver Requirements: Message Framing and Driver Requirements: Sca=
-tter-Gather Support
-> >> have this statement:
-> >>
-> >>          The driver MUST place any device-writable descriptor elements=
- after any device-readable descriptor ele-
-> >>          ments.
-> >>
-> >>
-> >> similarly
-> >>
-> >> Device Requirements: The Virtqueue Descriptor Table
-> >>          A device MUST NOT write to a device-readable buffer, and a de=
-vice SHOULD NOT read a device-writable
-> >>          buffer.
-> > Thanks. That's clear. So the clean solution would be to add a
-> > device-writable descriptor after the existing device-readable ones.
->
->
-> I think so, but a question is the format for this tailer. I think it
-> might be better to post a spec patch to discuss.
+From: Eric Dumazet <edumazet@google.com>
 
-Okay I'll do that. I want to get something that works first, to make
-sure that whatever I propose in spec is actually implementable.
+It is simpler to make net->net_cookie a plain u64
+written once in setup_net() instead of looping
+and using atomic64 helpers.
+
+Lorenz Bauer wants to add SO_NETNS_COOKIE socket option
+and this patch would makes his patch series simpler.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Lorenz Bauer <lmb@cloudflare.com>
+---
+ include/net/net_namespace.h |  4 +---
+ net/core/filter.c           |  8 +++-----
+ net/core/net_namespace.c    | 19 +++----------------
+ 3 files changed, 7 insertions(+), 24 deletions(-)
+
+diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
+index 29567875f4280116200f0676d6d619f3d9b46279..dcaee24a4d8773ff3bb2adbe5fe9136dfc186184 100644
+--- a/include/net/net_namespace.h
++++ b/include/net/net_namespace.h
+@@ -165,7 +165,7 @@ struct net {
+ 	struct netns_xfrm	xfrm;
+ #endif
+ 
+-	atomic64_t		net_cookie; /* written once */
++	u64			net_cookie; /* written once */
+ 
+ #if IS_ENABLED(CONFIG_IP_VS)
+ 	struct netns_ipvs	*ipvs;
+@@ -224,8 +224,6 @@ extern struct list_head net_namespace_list;
+ struct net *get_net_ns_by_pid(pid_t pid);
+ struct net *get_net_ns_by_fd(int fd);
+ 
+-u64 __net_gen_cookie(struct net *net);
+-
+ #ifdef CONFIG_SYSCTL
+ void ipx_register_sysctl(void);
+ void ipx_unregister_sysctl(void);
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 9ab94e90d66059702a7417ab844d4e8e5f4732c7..74bd401bf483d212884a026599167c1098e78d28 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -4645,11 +4645,9 @@ static const struct bpf_func_proto bpf_get_socket_cookie_sock_ops_proto = {
+ 
+ static u64 __bpf_get_netns_cookie(struct sock *sk)
+ {
+-#ifdef CONFIG_NET_NS
+-	return __net_gen_cookie(sk ? sk->sk_net.net : &init_net);
+-#else
+-	return 0;
+-#endif
++	const struct net *net = sk ? sock_net(sk) : &init_net;
++
++	return net->net_cookie;
+ }
+ 
+ BPF_CALL_1(bpf_get_netns_cookie_sock, struct sock *, ctx)
+diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
+index 2ef3b4557f40d72d27a1642d98f1e8f06caf9835..43b6ac4c44395b55c966f3fb9141c25bb91848cf 100644
+--- a/net/core/net_namespace.c
++++ b/net/core/net_namespace.c
+@@ -72,18 +72,6 @@ static unsigned int max_gen_ptrs = INITIAL_NET_GEN_PTRS;
+ 
+ DEFINE_COOKIE(net_cookie);
+ 
+-u64 __net_gen_cookie(struct net *net)
+-{
+-	while (1) {
+-		u64 res = atomic64_read(&net->net_cookie);
+-
+-		if (res)
+-			return res;
+-		res = gen_cookie_next(&net_cookie);
+-		atomic64_cmpxchg(&net->net_cookie, 0, res);
+-	}
+-}
+-
+ static struct net_generic *net_alloc_generic(void)
+ {
+ 	struct net_generic *ng;
+@@ -332,6 +320,9 @@ static __net_init int setup_net(struct net *net, struct user_namespace *user_ns)
+ 	refcount_set(&net->ns.count, 1);
+ 	refcount_set(&net->passive, 1);
+ 	get_random_bytes(&net->hash_mix, sizeof(u32));
++	preempt_disable();
++	net->net_cookie = gen_cookie_next(&net_cookie);
++	preempt_enable();
+ 	net->dev_base_seq = 1;
+ 	net->user_ns = user_ns;
+ 	idr_init(&net->netns_ids);
+@@ -1103,10 +1094,6 @@ static int __init net_ns_init(void)
+ 
+ 	rcu_assign_pointer(init_net.gen, ng);
+ 
+-	preempt_disable();
+-	__net_gen_cookie(&init_net);
+-	preempt_enable();
+-
+ 	down_write(&pernet_ops_rwsem);
+ 	if (setup_net(&init_net, &init_user_ns))
+ 		panic("Could not setup the initial network namespace");
+-- 
+2.30.0.478.g8a0d178c01-goog
+
