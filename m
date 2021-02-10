@@ -2,150 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF50D317471
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 00:33:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EFF2317483
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 00:36:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234023AbhBJXc5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 18:32:57 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:47912 "EHLO
-        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234006AbhBJXcp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 18:32:45 -0500
+        id S234039AbhBJXfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 18:35:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46282 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234009AbhBJXeu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 18:34:50 -0500
+X-Greylist: delayed 123 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 10 Feb 2021 15:34:09 PST
+Received: from mail.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84A55C06174A;
+        Wed, 10 Feb 2021 15:34:08 -0800 (PST)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        by mail.monkeyblade.net (Postfix) with ESMTPSA id 65AFB4D25BDAF;
-        Wed, 10 Feb 2021 15:32:04 -0800 (PST)
-Date:   Wed, 10 Feb 2021 15:32:03 -0800 (PST)
-Message-Id: <20210210.153203.2010046208603151217.davem@davemloft.net>
-To:     steen.hegelund@microchip.com
-Cc:     kishon@ti.com, vkoul@kernel.org, alexandre.belloni@bootlin.com,
-        lars.povlsen@microchip.com, bjarni.jonasson@microchip.com,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, andrew@lunn.ch
-Subject: Re: [PATCH v14 2/4] phy: Add media type and speed serdes
- configuration interfaces
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id 7D8694D25BDAF;
+        Wed, 10 Feb 2021 15:34:07 -0800 (PST)
+Date:   Wed, 10 Feb 2021 15:34:06 -0800 (PST)
+Message-Id: <20210210.153406.1774734837784815987.davem@davemloft.net>
+To:     olteanv@gmail.com
+Cc:     kuba@kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
+        roopa@nvidia.com, nikolay@nvidia.com, jiri@resnulli.us,
+        idosch@idosch.org, claudiu.manoil@nxp.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        vkochan@marvell.com, tchornyi@marvell.com,
+        grygorii.strashko@ti.com, ioana.ciornei@nxp.com,
+        ivecera@redhat.com, linux-omap@vger.kernel.org
+Subject: Re: [PATCH v3 net-next 07/11] net: prep switchdev drivers for
+ concurrent SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20210210085255.2006824-3-steen.hegelund@microchip.com>
-References: <20210210085255.2006824-1-steen.hegelund@microchip.com>
-        <20210210085255.2006824-3-steen.hegelund@microchip.com>
+In-Reply-To: <20210210091445.741269-8-olteanv@gmail.com>
+References: <20210210091445.741269-1-olteanv@gmail.com>
+        <20210210091445.741269-8-olteanv@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 27.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Wed, 10 Feb 2021 15:32:04 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Wed, 10 Feb 2021 15:34:08 -0800 (PST)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Steen Hegelund <steen.hegelund@microchip.com>
-Date: Wed, 10 Feb 2021 09:52:53 +0100
+From: Vladimir Oltean <olteanv@gmail.com>
+Date: Wed, 10 Feb 2021 11:14:41 +0200
 
-> Provide new phy configuration interfaces for media type and speed that
-> allows allows e.g. PHYs used for ethernet to be configured with this
-> information.
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> Signed-off-by: Lars Povlsen <lars.povlsen@microchip.com>
-> Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> ---
->  drivers/phy/phy-core.c  | 30 ++++++++++++++++++++++++++++++
->  include/linux/phy/phy.h | 26 ++++++++++++++++++++++++++
->  2 files changed, 56 insertions(+)
+> Because the bridge will start offloading SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS
+> while not serialized by any lock such as the br->lock spinlock, existing
+> drivers that treat that attribute and cache the brport flags might no
+> longer work correctly.
 > 
-> diff --git a/drivers/phy/phy-core.c b/drivers/phy/phy-core.c
-> index 71cb10826326..ccb575b13777 100644
-> --- a/drivers/phy/phy-core.c
-> +++ b/drivers/phy/phy-core.c
-> @@ -373,6 +373,36 @@ int phy_set_mode_ext(struct phy *phy, enum phy_mode mode, int submode)
->  }
->  EXPORT_SYMBOL_GPL(phy_set_mode_ext);
->  
-> +int phy_set_media(struct phy *phy, enum phy_media media)
-> +{
-> +	int ret;
-> +
-> +	if (!phy || !phy->ops->set_media)
-> +		return 0;
-> +
-> +	mutex_lock(&phy->mutex);
-> +	ret = phy->ops->set_media(phy, media);
-> +	mutex_unlock(&phy->mutex);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(phy_set_media);
-> +
-> +int phy_set_speed(struct phy *phy, int speed)
-> +{
-> +	int ret;
-> +
-> +	if (!phy || !phy->ops->set_speed)
-> +		return 0;
-> +
-> +	mutex_lock(&phy->mutex);
-> +	ret = phy->ops->set_speed(phy, speed);
-> +	mutex_unlock(&phy->mutex);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(phy_set_speed);
-> +
->  int phy_reset(struct phy *phy)
->  {
->  	int ret;
-> diff --git a/include/linux/phy/phy.h b/include/linux/phy/phy.h
-> index e435bdb0bab3..e4fd69a1faa7 100644
-> --- a/include/linux/phy/phy.h
-> +++ b/include/linux/phy/phy.h
-> @@ -44,6 +44,12 @@ enum phy_mode {
->  	PHY_MODE_DP
->  };
->  
-> +enum phy_media {
-> +	PHY_MEDIA_DEFAULT,
-> +	PHY_MEDIA_SR,
-> +	PHY_MEDIA_DAC,
-> +};
-> +
->  /**
->   * union phy_configure_opts - Opaque generic phy configuration
->   *
-> @@ -64,6 +70,8 @@ union phy_configure_opts {
->   * @power_on: powering on the phy
->   * @power_off: powering off the phy
->   * @set_mode: set the mode of the phy
-> + * @set_media: set the media type of the phy (optional)
-> + * @set_speed: set the speed of the phy (optional)
->   * @reset: resetting the phy
->   * @calibrate: calibrate the phy
->   * @release: ops to be performed while the consumer relinquishes the PHY
-> @@ -75,6 +83,8 @@ struct phy_ops {
->  	int	(*power_on)(struct phy *phy);
->  	int	(*power_off)(struct phy *phy);
->  	int	(*set_mode)(struct phy *phy, enum phy_mode mode, int submode);
-> +	int	(*set_media)(struct phy *phy, enum phy_media media);
-> +	int	(*set_speed)(struct phy *phy, int speed);
->  
->  	/**
->  	 * @configure:
-> @@ -215,6 +225,8 @@ int phy_power_off(struct phy *phy);
->  int phy_set_mode_ext(struct phy *phy, enum phy_mode mode, int submode);
->  #define phy_set_mode(phy, mode) \
->  	phy_set_mode_ext(phy, mode, 0)
-> +int phy_set_media(struct phy *phy, enum phy_media media);
-> +int phy_set_speed(struct phy *phy, int speed);
->  int phy_configure(struct phy *phy, union phy_configure_opts *opts);
->  int phy_validate(struct phy *phy, enum phy_mode mode, int submode,
->  		 union phy_configure_opts *opts);
-> @@ -344,6 +356,20 @@ static inline int phy_set_mode_ext(struct phy *phy, enum phy_mode mode,
->  #define phy_set_mode(phy, mode) \
->  	phy_set_mode_ext(phy, mode, 0)
->  
-> +static inline int phy_set_media(struct phy *phy, enum phy_media media)
-> +{
-> +	if (!phy)
-> +		return 0;
-> +	return -ENOSYS;
-> +}
+> The issue is that the brport flags are a single unsigned long bitmask,
+> and the bridge only guarantees the validity of the changed bits, not the
+> full state. So when offloading two concurrent switchdev attributes, such
+> as one for BR_LEARNING and another for BR_FLOOD, it might happen that
+> the flags having BR_FLOOD are written into the cached value, and this in
+> turn disables the BR_LEARNING bit which was set previously.
+> 
+> We can fix this across the board by keeping individual boolean variables
+> for each brport flag. Note that mlxsw and prestera were setting the
+> BR_LEARNING_SYNC flag too, but that appears to be just dead code, so I
+> removed it.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Maybe ENODEV instead?
+
+This needs updating because, as discussed, there is no race.
