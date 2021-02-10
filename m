@@ -2,201 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55A4331646A
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 11:57:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01261316474
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 11:59:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229884AbhBJK4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 05:56:19 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:8259 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230235AbhBJKxo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 05:53:44 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B6023bb0a0001>; Wed, 10 Feb 2021 02:52:58 -0800
-Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 10 Feb
- 2021 10:52:44 +0000
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.171)
- by HQMAIL109.nvidia.com (172.20.187.15) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Wed, 10 Feb 2021 10:52:44 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IsoOblxAylTBHWjPT1dtKjykKaEE52+eaRYV2XwCSso8AKqdVcqiNPbpXd7ffb3UvyKt38/h0u88vn/lzNQev4Kynr7dS2q+KMzcgXDrpobgFrmDjTTQgaWFtspstIpQM7kUUM+UQbOg5hJ0XeH2GGiy4ljcutoVbl6w+cHoasrv+3vgPn6K1B0vPJvdzHff1xBzFLazUodPEWf37Bh/Zx3EKgJLtgJiMliHuBSxR6kjDNN0/OFesiwI+2BBvSm8IJrD8RGaAqDiX7Vo3pP7R+qRrmMefjs1aw5Whdspm9bSU+6fWO3cWP76iwKdy21mJ5cS8cKeSjF9ROL6UTf87w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XoyCDkVxFMW5IEGPNDnX4tj6Kvb9pVf6rwR0O8yY8SA=;
- b=T39CgAmJL9kQiV5UfxZbYEi6trzoApo1G/tOcXqZ4er54amivOys6ekQC/bdM4U7FLmF8+K9FzoEbB7iY4fSz8Cbcne+0d63Dj2QPOghp1FgVsH4qj8QfFbT/LF9pAcMIc7yCyk0RC4eMowQaHX7+HeU+svPyMn6Z5kYV8WAIn79NbADr5IO7yqnWxYPO6hFD29ecARWbBvn+pjjQtXPSXEkjAPc9pVR+gTPNeaj7J/tyXhukZ7ftLDkiEbHcoFQfa54ln3pYgddl8Xie34h/j7zwN8Gq7ItyCikUdqkc2c/dwmyIHIQOz7Z4Jh5oaaOzLAHgKy8WLAqrk8JzCBaWA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB4403.namprd12.prod.outlook.com (2603:10b6:5:2ab::24)
- by DM5PR12MB1610.namprd12.prod.outlook.com (2603:10b6:4:3::12) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3825.30; Wed, 10 Feb 2021 10:52:43 +0000
-Received: from DM6PR12MB4403.namprd12.prod.outlook.com
- ([fe80::5c42:cbe:fe28:3a9b]) by DM6PR12MB4403.namprd12.prod.outlook.com
- ([fe80::5c42:cbe:fe28:3a9b%5]) with mapi id 15.20.3846.027; Wed, 10 Feb 2021
- 10:52:43 +0000
-Subject: Re: [PATCH v3 net-next 00/11] Cleanup in brport flags switchdev
- offload for DSA
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>,
-        "Roopa Prabhu" <roopa@nvidia.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "Alexandre Belloni" <alexandre.belloni@bootlin.com>,
-        <UNGLinuxDriver@microchip.com>, Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ivan Vecera <ivecera@redhat.com>, <linux-omap@vger.kernel.org>
-References: <20210210091445.741269-1-olteanv@gmail.com>
- <a8e9284b-f0a6-0343-175d-8c323371ef8d@nvidia.com>
- <20210210104549.ga3lgjafn5x3htwj@skbuf>
-From:   Nikolay Aleksandrov <nikolay@nvidia.com>
-Message-ID: <a58e9615-036c-0431-4ea6-004af4988b27@nvidia.com>
-Date:   Wed, 10 Feb 2021 12:52:33 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
-In-Reply-To: <20210210104549.ga3lgjafn5x3htwj@skbuf>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [213.179.129.39]
-X-ClientProxiedBy: ZR0P278CA0004.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:16::14) To DM6PR12MB4403.namprd12.prod.outlook.com
- (2603:10b6:5:2ab::24)
+        id S230028AbhBJK7B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 05:59:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:55270 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230019AbhBJKzY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 05:55:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612954437;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QNdS4uaIcL7T8BO9ZPW9arckpg/ta/zEzSVdZa8TFqs=;
+        b=cdaHsWvAFYW1AEhOhkTHnXN7dHpa9wL3FV6BM6p3r3K84QRuLPk+aE+H42ETIdXF+Ney9t
+        aXQ/q9iRNHUI+PZRzUICpq6be1Gt96GkIGpDCa4I5KEDC2GyGv9i0QSbSEEX3XyeBc5yt1
+        cjuYsxep85emjhC893L0R972A/foEJc=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-421-VKw1MGZKNPCKCCUY1OuUvg-1; Wed, 10 Feb 2021 05:53:55 -0500
+X-MC-Unique: VKw1MGZKNPCKCCUY1OuUvg-1
+Received: by mail-ed1-f69.google.com with SMTP id x13so2209832edi.7
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 02:53:55 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=QNdS4uaIcL7T8BO9ZPW9arckpg/ta/zEzSVdZa8TFqs=;
+        b=NlmLg/ytg48rj1Nt2Cw9cXp0rVreYXdRpsz5/Tge5NClpkjCSkNGQgT6MOELeejQeg
+         pSnchD11QTLsmoz7OT192jzTUtAx0fhnvb41pYaWNX8BgDVwSFxb1x4SIIC6RJOlwatn
+         SkqsS8TNJhHZTBKzq1+UdU9TQ4cUu7VAIpN+rL9RGBsrSGcDgnEv7LbaVMTODuPJfkHs
+         0GFmt75VhLes11bremudiaHo7GvIPRwMFEY2JMfcw8Ju5c4+WWOTzLXvkwL7tXhcTBA6
+         56Bn0QXX3J6dvOazZH+/3wnqijQULB71iWeVqgADgpMuhOBdZe+yQSmkPOFjoTx8lhMD
+         KlVQ==
+X-Gm-Message-State: AOAM532JtmWZWdRL5cJMhN5OtuJR2SM7Lpva3slK++osqZkuEL2wHUcc
+        Tf52xBN/iKrDZe3R4YPOaH0gbO52vpzKuxUDoOgbkyHiqXrA9TA+iN4U8n7s4tS0lldQfe4Zy+r
+        HbyzGn2IRcO423igg
+X-Received: by 2002:a17:906:854f:: with SMTP id h15mr2314404ejy.2.1612954434536;
+        Wed, 10 Feb 2021 02:53:54 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy9kxjrkvs0lMRtZKb7eZ5+PmgxP+XOmQ4alp1vZxt2LBpsa3XZxhu0QXOHuBKYBoklVFBcjg==
+X-Received: by 2002:a17:906:854f:: with SMTP id h15mr2314389ejy.2.1612954434350;
+        Wed, 10 Feb 2021 02:53:54 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id c6sm694540edx.62.2021.02.10.02.53.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Feb 2021 02:53:53 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 7B6561804EE; Wed, 10 Feb 2021 11:53:53 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>, Marek Majtyka <alardam@gmail.com>
+Cc:     Saeed Mahameed <saeed@kernel.org>, David Ahern <dsahern@gmail.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, hawk@kernel.org,
+        bpf <bpf@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        jeffrey.t.kirsher@intel.com
+Subject: Re: [PATCH v2 bpf 1/5] net: ethtool: add xdp properties flag set
+In-Reply-To: <20210203090232.4a259958@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20201204102901.109709-1-marekx.majtyka@intel.com>
+ <5fce960682c41_5a96208e4@john-XPS-13-9370.notmuch>
+ <20201207230755.GB27205@ranger.igk.intel.com>
+ <5fd068c75b92d_50ce20814@john-XPS-13-9370.notmuch>
+ <20201209095454.GA36812@ranger.igk.intel.com>
+ <20201209125223.49096d50@carbon>
+ <e1573338-17c0-48f4-b4cd-28eeb7ce699a@gmail.com>
+ <1e5e044c8382a68a8a547a1892b48fb21d53dbb9.camel@kernel.org>
+ <cb6b6f50-7cf1-6519-a87a-6b0750c24029@gmail.com>
+ <f4eb614ac91ee7623d13ea77ff3c005f678c512b.camel@kernel.org>
+ <d5be0627-6a11-9c1f-8507-cc1a1421dade@gmail.com>
+ <6f8c23d4ac60525830399754b4891c12943b63ac.camel@kernel.org>
+ <CAAOQfrHN1-oHmbOksDv-BKWv4gDF2zHZ5dTew6R_QTh6s_1abg@mail.gmail.com>
+ <87h7mvsr0e.fsf@toke.dk>
+ <CAAOQfrHA+-BsikeQzXYcK_32BZMbm54x5p5YhAiBj==uaZvG1w@mail.gmail.com>
+ <87bld2smi9.fsf@toke.dk>
+ <20210202113456.30cfe21e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAAOQfrGqcsn3wu5oxzHYxtE8iK3=gFdTka5HSh5Fe9Hc6HWRWA@mail.gmail.com>
+ <20210203090232.4a259958@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 10 Feb 2021 11:53:53 +0100
+Message-ID: <874kikry66.fsf@toke.dk>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [10.21.241.121] (213.179.129.39) by ZR0P278CA0004.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:16::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.26 via Frontend Transport; Wed, 10 Feb 2021 10:52:38 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e730c586-a4b5-4642-3297-08d8cdb1fe02
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1610:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM5PR12MB161003140F651B6EF49766E4DF8D9@DM5PR12MB1610.namprd12.prod.outlook.com>
-X-Header: ProcessedBy-CMR-outbound
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: EytQKX+k4yqHN8962ceH6axMTwDE16Ly+vrBgEPmYnpDuDKAWECMj2A6JEp7lMcIiK9TaLwtDCgQGEgCw7HT5Lqm4A+yOQppAwlQqklEcRE2viJzSP7ODnPO3HM9XrLMYiNMlY3t/BeBbpQjfUORL4gVIP23MmjnzrJ+Txcne/geha+fO/BX7JvrGD2cXYZdMBA/E9reD5cBRWTK6H4yMuyoWJzkXA557huB4cWbThu4F0M4mWie4d4Z1JjKVGI8krI/ccQsSN0w04YL+XO1FbcnH//18lS+MTKaUEPUMsSmNr5PdQYDUw7rf/u5Aguke6EOljnV/UD4/lOvqVtJV9FCMAN8v86yIreBPh6HJrbr0KveoICWrMCLaPg9FvogItVRvUllqZl0o4vKVfgnAwqHTB2xBGLBJjLz7YCdJb8mTBG0tK3WJPeO8y5AhbIaCZut/Y+74nyCve05CmiUgMKACJPAT0t4mclNuMl24gYevpci9IJ6tLENGBaJmbRVQJeZiFWf5SWDJMFnXmj2Pekp7hT6QOJSuIxC0QDrxQLZeun4bwFgo8S5YtNyznEH0ezQ069AH8hbgILxT7PJ0qg0I25Wkm3BPcBLGn2Z4Es=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4403.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(39850400004)(376002)(366004)(346002)(396003)(6666004)(53546011)(2906002)(26005)(31696002)(478600001)(36756003)(86362001)(31686004)(5660300002)(16526019)(7416002)(186003)(4326008)(2616005)(6916009)(54906003)(16576012)(83380400001)(316002)(8676002)(956004)(66476007)(6486002)(8936002)(66556008)(66946007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?YzhZR0VNOVlBaFh4SUpPcmRKbmExTkRZcVFiMWIwQWVleXVrV1orL2JWWUFS?=
- =?utf-8?B?RTF6MDhHN2RWWEVNL0VZR1VTVU9qWWM1Uy9RWWYwTThDWHgzQTFCcklhZ1pa?=
- =?utf-8?B?TFBidVZROE5jbVIwUzFaZHVURXBzbEtZV0srbUdFUGc0UVN6RmxDYlAyNXVp?=
- =?utf-8?B?WTdqeXB1UkpISW5FQUhvMUxjZ1p0SFpJM1UxMVJnZEhMRGJralJTNnZlZXpO?=
- =?utf-8?B?c2ZCVThPRTN1UUZDem10bU85MG1uNitLL25rRDh0M2IyU0FvNkx3RGpLRzZI?=
- =?utf-8?B?MGRmcmtJOTlZUGZDMWFPZjhZa1d1K1FtZ3NPY25xUE81U2poWjk3Slc3bkJr?=
- =?utf-8?B?SktvSlVaUGp5eXVZTWVsN2dRSXUzR1BZcWgxS0EzcXV1K0pDZndhUVg5Vjhw?=
- =?utf-8?B?S3lNWHlKcVJkRWl5OHVRU2lHSGM5Z01zSHJFVis0c0VFcFFqdUF0bmttdFFj?=
- =?utf-8?B?THY5SkZVTkluem9LTUxOR0lFQnRvOUpHcjQ2S0RpMkRGYjVlZDFiMTRJeDFa?=
- =?utf-8?B?VnByTVBUZlU1Z2lVYlVNZlVFRzF4TFNkRE9VckM0Tkc4U1ZsYS9vRyt6ZkEy?=
- =?utf-8?B?cSsxYm56b2RHaFBlWmR5SU5Vb3k3K0J6cU5KdkQ4ZElWMXU4d2d1OTg3ZFhV?=
- =?utf-8?B?TTZXaFJYZFo1VXBLNS9IMFlUVWNEc2JGa0VXNS9pUmRodzVuL2E0RWRhQmRZ?=
- =?utf-8?B?dVIyT3k3d2F1Q3FseHN4VWhrdHhONFRaVC9oemNmZXRqUTNvR1BmbjI2Ykly?=
- =?utf-8?B?MXZsZzhRNkJnb3FQT3NuYjhnRW9IbTQ3M2pZY0hiUWZIMy9lQ2U0ZC9LUzdz?=
- =?utf-8?B?UzlYVUo2SEk1Snkyd3c3cVJhVDR3QitzNDdneENkRUJpRTNTOWVXV2xpN1pp?=
- =?utf-8?B?TmNwV01PcG8yb3RjQkE5VEdJSWpvbk1UR1VuMFIxdEkxZmFSbTg3OUNnNHVX?=
- =?utf-8?B?a3ovTFdUWkZnQWNOQUIyNlB4N2lROTVBMm9xYWpqcXJCNkRoL2FZNFFOTmlN?=
- =?utf-8?B?N1ZhSi9ZTDdBVUJMTkdneFB5NWZyMTcvaEZ4dTRUQmNEMFp4M2l4RmNSa0pS?=
- =?utf-8?B?L2MvSjRKQXZRVmFHK0JMNWpDb2VvT09IZzBxdDRSQmd5d2dUZHhzS2wyTlFZ?=
- =?utf-8?B?Vm44S3VGTTJrM1ZHZHlFSHAyMDFsRWFsWFk5VzVJd0MwNXVrUlhjTFM3VWY2?=
- =?utf-8?B?cVNqQWFYeUJSU2ovMGtsSnlyeDFyS25yb0VrR0dnUDNtYzJqUkcvZjdKbnJ5?=
- =?utf-8?B?V1gvWVlYbjZjMDE5VU83b1Q1ZGZZNVBSR0ZYNFJUU1kvd1R5VG5aV0M4ZTFz?=
- =?utf-8?B?M2RrOUtnYzI1SlRrNTRkNkpVakJsemU2YURGUWpycm51UmRVaUtHK3FBdDhQ?=
- =?utf-8?B?M2dXZHRIaHNLbmo5aE5obUorYTVsT2dCeGJmanNISllGTXE5RnhxNFZ5NEJR?=
- =?utf-8?B?VzlUWU5kZE5lSmIvV0RudlMweEE0S0RUUGdhaHlTU2lvNElsVm1ScmFHNmRu?=
- =?utf-8?B?TkEza2VFZnNkbTduRlZpc1lMMDNxWUpZbmxtc2hheE0zRlJySEFzSmpJdlJJ?=
- =?utf-8?B?ejI2cU9KOHRicnR1YjRTdW41VS9UcUl6aTZzSWNXcHU5RHJuak5zRnBYL3lV?=
- =?utf-8?B?THBkNkFrYjVMTkN2QVFTeWh0bnRzRGdEZ0JJbENnaVNlNU9Lc3l4N3hQcito?=
- =?utf-8?B?WXlXSlpaVXF0RzAydVAzRGdDRytVOEFuNmlzTUxDYjJSeGt1aW9yY2VuYi9W?=
- =?utf-8?Q?5QYH0MfynfCEvI6cs83KnwnaG7NNIa+EdE7ZLJj?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: e730c586-a4b5-4642-3297-08d8cdb1fe02
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4403.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2021 10:52:42.8622
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /h70JJs9A6Evzsnxl3fOT+4RsNHdxqh2LBtMxWi23w8IrZBj2s9I9EYH7TwtzYbxlIBU0nHIFPk4jy1qrTwucA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1610
-X-OriginatorOrg: Nvidia.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1612954378; bh=XoyCDkVxFMW5IEGPNDnX4tj6Kvb9pVf6rwR0O8yY8SA=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:
-         Authentication-Results:Subject:To:CC:References:From:Message-ID:
-         Date:User-Agent:In-Reply-To:Content-Type:Content-Language:
-         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy:
-         MIME-Version:X-MS-Exchange-MessageSentRepresentingType:
-         X-MS-PublicTrafficType:X-MS-Office365-Filtering-Correlation-Id:
-         X-MS-TrafficTypeDiagnostic:X-MS-Exchange-Transport-Forked:
-         X-Microsoft-Antispam-PRVS:X-Header:X-MS-Oob-TLC-OOBClassifiers:
-         X-MS-Exchange-SenderADCheck:X-Microsoft-Antispam:
-         X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-         X-MS-Exchange-AntiSpam-MessageData:
-         X-MS-Exchange-CrossTenant-Network-Message-Id:
-         X-MS-Exchange-CrossTenant-AuthSource:
-         X-MS-Exchange-CrossTenant-AuthAs:
-         X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-         X-MS-Exchange-CrossTenant-FromEntityHeader:
-         X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-         X-MS-Exchange-CrossTenant-UserPrincipalName:
-         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
-        b=or6BSl0RUAeMODas7gnX3uPEn6KwQ1bzjN4SNPM9PihGN3qIeb/jaeYT5bFQxON4c
-         S1Kmq2XlMNmfZEAfRzNfpFMHpgJrieeO1kF0AsgDuyJExiEWyEAS/g1QmplMS2Pb+m
-         oGXfJfN9nsnBowuEvSLT4EEc+rWXYJTRHS0tgfpy/IYJ1gxA/kE9BRV8nbMjFlpq3w
-         YmOhuOavDICaoDvkmyZ2bld5wewbZO56Hu5oGWVL3w+l+a26gGXt1yJM6t9mh+8X/v
-         BWYpwuaZcRQVGThOrXfJesuvE2RXQF2Rjulsrw4RA/Uw0bULesNE8jjCjmHwfHIxqD
-         zi9Q9AYhLvFCQ==
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/02/2021 12:45, Vladimir Oltean wrote:
-> Hi Nikolay,
-> 
-> On Wed, Feb 10, 2021 at 12:31:43PM +0200, Nikolay Aleksandrov wrote:
->> Hi Vladimir,
->> Let's take a step back for a moment and discuss the bridge unlock/lock sequences
->> that come with this set. I'd really like to avoid those as they're a recipe
->> for future problems. The only good way to achieve that currently is to keep
->> the PRE_FLAGS call and do that in unsleepable context but move the FLAGS call
->> after the flags have been changed (if they have changed obviously). That would
->> make the code read much easier since we'll have all our lock/unlock sequences
->> in the same code blocks and won't play games to get sleepable context.
->> Please let's think and work in that direction, rather than having:
->> +	spin_lock_bh(&p->br->lock);
->> +	if (err) {
->> +		netdev_err(p->dev, "%s\n", extack._msg);
->> +		return err;
->>  	}
->> +
->>
->> which immediately looks like a bug even though after some code checking we can
->> verify it's ok. WDYT?
->>
->> I plan to get rid of most of the br->lock since it's been abused for a very long
->> time because it's essentially STP lock, but people have started using it for other
->> things and I plan to fix that when I get more time.
-> 
-> This won't make the sysfs codepath any nicer, will it?
-> 
+Jakub Kicinski <kuba@kernel.org> writes:
 
-Currently we'll have to live with a hack that checks if the flags have changed. I agree
-it won't be pretty, but we won't have to unlock and lock again in the middle of the 
-called function and we'll have all our locking in the same place, easier to verify and
-later easier to remove. Once I get rid of most of the br->lock usage we can revisit
-the drop of PRE_FLAGS if it's a problem. The alternative is to change the flags, then
-send the switchdev notification outside of the lock and revert the flags if it doesn't
-go through which doesn't sound much better.
-I'm open to any other suggestions, but definitely would like to avoid playing locking games.
-Even if it means casing out flag setting from all other store_ functions for sysfs.
+> On Wed, 3 Feb 2021 13:50:59 +0100 Marek Majtyka wrote:
+>> On Tue, Feb 2, 2021 at 8:34 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>> > On Tue, 02 Feb 2021 13:05:34 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wr=
+ote:=20=20
+>> > > Awesome! And sorry for not replying straight away - I hate it when I
+>> > > send out something myself and receive no replies, so I suppose I sho=
+uld
+>> > > get better at not doing that myself :)
+>> > >
+>> > > As for the inclusion of the XDP_BASE / XDP_LIMITED_BASE sets (which I
+>> > > just realised I didn't reply to), I am fine with defining XDP_BASE a=
+s a
+>> > > shortcut for TX/ABORTED/PASS/DROP, but think we should skip
+>> > > XDP_LIMITED_BASE and instead require all new drivers to implement the
+>> > > full XDP_BASE set straight away. As long as we're talking about
+>> > > features *implemented* by the driver, at least; i.e., it should stil=
+l be
+>> > > possible to *deactivate* XDP_TX if you don't want to use the HW
+>> > > resources, but I don't think there's much benefit from defining the
+>> > > LIMITED_BASE set as a shortcut for this mode...=20=20
+>> >
+>> > I still have mixed feelings about these flags. The first step IMO
+>> > should be adding validation tests. I bet^W pray every vendor has
+>> > validation tests but since they are not unified we don't know what
+>> > level of interoperability we're achieving in practice. That doesn't
+>> > matter for trivial feature like base actions, but we'll inevitably
+>> > move on to defining more advanced capabilities and the question of
+>> > "what supporting X actually mean" will come up (3 years later, when
+>> > we don't remember ourselves).=20=20
+>>=20
+>> I am a bit confused now. Did you mean validation tests of those XDP
+>> flags, which I am working on or some other validation tests?
+>> What should these tests verify? Can you please elaborate more on the
+>> topic, please - just a few sentences how are you see it?
+>
+> Conformance tests can be written for all features, whether they have=20
+> an explicit capability in the uAPI or not. But for those that do IMO
+> the tests should be required.
+>
+> Let me give you an example. This set adds a bit that says Intel NICs=20
+> can do XDP_TX and XDP_REDIRECT, yet we both know of the Tx queue
+> shenanigans. So can i40e do XDP_REDIRECT or can it not?
+>
+> If we have exhaustive conformance tests we can confidently answer that
+> question. And the answer may not be "yes" or "no", it may actually be
+> "we need more options because many implementations fall in between".
+>
+> I think readable (IOW not written in some insane DSL) tests can also=20
+> be useful for users who want to check which features their program /
+> deployment will require.
+
+While I do agree that that kind of conformance test would be great, I
+don't think it has to hold up this series (the perfect being the enemy
+of the good, and all that). We have a real problem today that userspace
+can't tell if a given driver implements, say, XDP_REDIRECT, and so
+people try to use it and spend days wondering which black hole their
+packets disappear into. And for things like container migration we need
+to be able to predict whether a given host supports a feature *before*
+we start the migration and try to use it.
+
+I view the feature flags as a list of features *implemented* by the
+driver. Which should be pretty static in a given kernel, but may be
+different than the features currently *enabled* on a given system (due
+to, e.g., the TX queue stuff).
+
+The simple way to expose the latter would be to just have a second set
+of flags indicating the current configured state; and for that I guess
+we should at least agree what "enabled" means; and a conformance test
+would be a way to do this, of course.
+
+I don't see why we can't do this in stages, though; start with the first
+set of flags ('implemented'), move on to the second one ('enabled'), and
+then to things like making the kernel react to the flags by rejecting
+insertion into devmaps for invalid interfaces...
+
+-Toke
 
