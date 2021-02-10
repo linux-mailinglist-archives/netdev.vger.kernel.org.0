@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B40DC316B4F
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 17:33:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B492C316B51
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 17:33:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232713AbhBJQc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 11:32:26 -0500
-Received: from mail-40131.protonmail.ch ([185.70.40.131]:13336 "EHLO
-        mail-40131.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232565AbhBJQbO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 11:31:14 -0500
-Date:   Wed, 10 Feb 2021 16:30:23 +0000
+        id S232813AbhBJQc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 11:32:56 -0500
+Received: from mail-40136.protonmail.ch ([185.70.40.136]:20594 "EHLO
+        mail-40136.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232574AbhBJQbS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 11:31:18 -0500
+Date:   Wed, 10 Feb 2021 16:30:43 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1612974630; bh=OJItbnlO9/miYI8tp2rCg3ReZOArter9GMDQWwcIoz0=;
+        t=1612974648; bh=1ZV3MU5hm/yFjfHuP1nAedRaPlzwJRc6+iABOHDpkjs=;
         h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=pCxz9nMakoYTN7EV8AAK71I0iI+zWLIZQ2vRRCjvIImEmug5z9bgRhNA08/4fIC+J
-         BKBiZmsH+sDQCNHeR7r/tahSzm8/FftqYFQtjRPH63Ji/1VjzYLR6SMrX4Om2Whbgx
-         W/6g5s8x4GmvKkk2+vN/IU6mEdP/9kizjZtc21F7vQmaqEwqWj9Abze9SUsE7notf4
-         3v8zgYV706gfYwE5Gbu4ACElPWyn167lGaSC7G9YVFK74kOPW5LNJd89kBfI6zoyE8
-         qenuWGACsCE4OR7/qdR3S54d0O6Mil3clvnyO3S4pflGNZVOWg4gwqsJbvLYVAAY3D
-         qE/S8XiU8sJkQ==
+        b=Fk22STlnmZbcQinLN0RWEHztMBRSvRCr/YY2hJLvMmnQ4yCcvnjQ7wS2eZLpZ0ZFO
+         Okk/5rqp8eQxwIFo3kZC9+A0KKOOX3ElintYQHYAE94L2TXSwrVpxtyMCPqa3p4rqr
+         JKrpzR6McJfP3snSHtOYJ96D6vhvwKR8O8TUVZsNnte/sjWNfldORZcrCxUoz8SBt1
+         XZheXN+ccIZCuqyf5iUO78V1AlET3KntLwNr5/QwjG6j4Z4T+AiJmQiGqn72pBNQBL
+         rIpzSGNILOprRhNMnmue4lbg804eu3MHeM8sc0D9ZtGFYI/vFNf21PUBAB7+QHzpRK
+         RqIaJoVFdMGSg==
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 From:   Alexander Lobakin <alobakin@pm.me>
@@ -54,8 +54,8 @@ Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
         Edward Cree <ecree.xilinx@gmail.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH v4 net-next 08/11] skbuff: introduce {,__}napi_build_skb() which reuses NAPI cache heads
-Message-ID: <20210210162732.80467-9-alobakin@pm.me>
+Subject: [PATCH v4 net-next 09/11] skbuff: allow to optionally use NAPI cache from __alloc_skb()
+Message-ID: <20210210162732.80467-10-alobakin@pm.me>
 In-Reply-To: <20210210162732.80467-1-alobakin@pm.me>
 References: <20210210162732.80467-1-alobakin@pm.me>
 MIME-Version: 1.0
@@ -70,203 +70,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of just bulk-flushing skbuff_heads queued up through
-napi_consume_skb() or __kfree_skb_defer(), try to reuse them
-on allocation path.
-If the cache is empty on allocation, bulk-allocate the first
-16 elements, which is more efficient than per-skb allocation.
-If the cache is full on freeing, bulk-wipe the second half of
-the cache (32 elements).
-This also includes custom KASAN poisoning/unpoisoning to be
-double sure there are no use-after-free cases.
+Reuse the old and forgotten SKB_ALLOC_NAPI to add an option to get
+an skbuff_head from the NAPI cache instead of inplace allocation
+inside __alloc_skb().
+This implies that the function is called from softirq or BH-off
+context, not for allocating a clone or from a distant node.
 
-To not change current behaviour, introduce a new function,
-napi_build_skb(), to optionally use a new approach later
-in drivers.
-
-Note on selected bulk size, 16:
- - this equals to XDP_BULK_QUEUE_SIZE, DEV_MAP_BULK_SIZE
-   and especially VETH_XDP_BATCH, which is also used to
-   bulk-allocate skbuff_heads and was tested on powerful
-   setups;
- - this also showed the best performance in the actual
-   test series (from the array of {8, 16, 32}).
-
-Suggested-by: Edward Cree <ecree.xilinx@gmail.com> # Divide on two halves
-Suggested-by: Eric Dumazet <edumazet@google.com>   # KASAN poisoning
-Cc: Dmitry Vyukov <dvyukov@google.com>             # Help with KASAN
-Cc: Paolo Abeni <pabeni@redhat.com>                # Reduced batch size
 Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 ---
- include/linux/skbuff.h |  2 +
- net/core/skbuff.c      | 94 ++++++++++++++++++++++++++++++++++++------
- 2 files changed, 83 insertions(+), 13 deletions(-)
+ net/core/skbuff.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 0e0707296098..906122eac82a 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -1087,6 +1087,8 @@ struct sk_buff *build_skb(void *data, unsigned int fr=
-ag_size);
- struct sk_buff *build_skb_around(struct sk_buff *skb,
- =09=09=09=09 void *data, unsigned int frag_size);
-=20
-+struct sk_buff *napi_build_skb(void *data, unsigned int frag_size);
-+
- /**
-  * alloc_skb - allocate a network buffer
-  * @size: size to allocate
 diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 860a9d4f752f..9e1a8ded4acc 100644
+index 9e1a8ded4acc..750fa1825b28 100644
 --- a/net/core/skbuff.c
 +++ b/net/core/skbuff.c
-@@ -120,6 +120,8 @@ static void skb_under_panic(struct sk_buff *skb, unsign=
-ed int sz, void *addr)
- }
+@@ -397,15 +397,20 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t =
+gfp_mask,
+ =09struct sk_buff *skb;
+ =09u8 *data;
+ =09bool pfmemalloc;
++=09bool clone;
 =20
- #define NAPI_SKB_CACHE_SIZE=0964
-+#define NAPI_SKB_CACHE_BULK=0916
-+#define NAPI_SKB_CACHE_HALF=09(NAPI_SKB_CACHE_SIZE / 2)
+-=09cache =3D (flags & SKB_ALLOC_FCLONE)
+-=09=09? skbuff_fclone_cache : skbuff_head_cache;
++=09clone =3D !!(flags & SKB_ALLOC_FCLONE);
++=09cache =3D clone ? skbuff_fclone_cache : skbuff_head_cache;
 =20
- struct napi_alloc_cache {
- =09struct page_frag_cache page;
-@@ -164,6 +166,25 @@ void *__netdev_alloc_frag_align(unsigned int fragsz, u=
-nsigned int align_mask)
- }
- EXPORT_SYMBOL(__netdev_alloc_frag_align);
+ =09if (sk_memalloc_socks() && (flags & SKB_ALLOC_RX))
+ =09=09gfp_mask |=3D __GFP_MEMALLOC;
 =20
-+static struct sk_buff *napi_skb_cache_get(void)
-+{
-+=09struct napi_alloc_cache *nc =3D this_cpu_ptr(&napi_alloc_cache);
-+=09struct sk_buff *skb;
-+
-+=09if (unlikely(!nc->skb_count))
-+=09=09nc->skb_count =3D kmem_cache_alloc_bulk(skbuff_head_cache,
-+=09=09=09=09=09=09      GFP_ATOMIC,
-+=09=09=09=09=09=09      NAPI_SKB_CACHE_BULK,
-+=09=09=09=09=09=09      nc->skb_cache);
-+=09if (unlikely(!nc->skb_count))
-+=09=09return NULL;
-+
-+=09skb =3D nc->skb_cache[--nc->skb_count];
-+=09kasan_unpoison_object_data(skbuff_head_cache, skb);
-+
-+=09return skb;
-+}
-+
- /* Caller must provide SKB that is memset cleared */
- static void __build_skb_around(struct sk_buff *skb, void *data,
- =09=09=09       unsigned int frag_size)
-@@ -265,6 +286,53 @@ struct sk_buff *build_skb_around(struct sk_buff *skb,
- }
- EXPORT_SYMBOL(build_skb_around);
+ =09/* Get the HEAD */
+-=09skb =3D kmem_cache_alloc_node(cache, gfp_mask & ~__GFP_DMA, node);
++=09if (!clone && (flags & SKB_ALLOC_NAPI) &&
++=09    likely(node =3D=3D NUMA_NO_NODE || node =3D=3D numa_mem_id()))
++=09=09skb =3D napi_skb_cache_get();
++=09else
++=09=09skb =3D kmem_cache_alloc_node(cache, gfp_mask & ~GFP_DMA, node);
+ =09if (unlikely(!skb))
+ =09=09return NULL;
+ =09prefetchw(skb);
+@@ -436,7 +441,7 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gf=
+p_mask,
+ =09__build_skb_around(skb, data, 0);
+ =09skb->pfmemalloc =3D pfmemalloc;
 =20
-+/**
-+ * __napi_build_skb - build a network buffer
-+ * @data: data buffer provided by caller
-+ * @frag_size: size of data, or 0 if head was kmalloced
-+ *
-+ * Version of __build_skb() that uses NAPI percpu caches to obtain
-+ * skbuff_head instead of inplace allocation.
-+ *
-+ * Returns a new &sk_buff on success, %NULL on allocation failure.
-+ */
-+static struct sk_buff *__napi_build_skb(void *data, unsigned int frag_size=
-)
-+{
-+=09struct sk_buff *skb;
-+
-+=09skb =3D napi_skb_cache_get();
-+=09if (unlikely(!skb))
-+=09=09return NULL;
-+
-+=09memset(skb, 0, offsetof(struct sk_buff, tail));
-+=09__build_skb_around(skb, data, frag_size);
-+
-+=09return skb;
-+}
-+
-+/**
-+ * napi_build_skb - build a network buffer
-+ * @data: data buffer provided by caller
-+ * @frag_size: size of data, or 0 if head was kmalloced
-+ *
-+ * Version of __napi_build_skb() that takes care of skb->head_frag
-+ * and skb->pfmemalloc when the data is a page or page fragment.
-+ *
-+ * Returns a new &sk_buff on success, %NULL on allocation failure.
-+ */
-+struct sk_buff *napi_build_skb(void *data, unsigned int frag_size)
-+{
-+=09struct sk_buff *skb =3D __napi_build_skb(data, frag_size);
-+
-+=09if (likely(skb) && frag_size) {
-+=09=09skb->head_frag =3D 1;
-+=09=09skb_propagate_pfmemalloc(virt_to_head_page(data), skb);
-+=09}
-+
-+=09return skb;
-+}
-+EXPORT_SYMBOL(napi_build_skb);
-+
- /*
-  * kmalloc_reserve is a wrapper around kmalloc_node_track_caller that tell=
-s
-  * the caller if emergency pfmemalloc reserves are being used. If it is an=
-d
-@@ -838,31 +906,31 @@ void __consume_stateless_skb(struct sk_buff *skb)
- =09kfree_skbmem(skb);
- }
+-=09if (flags & SKB_ALLOC_FCLONE) {
++=09if (clone) {
+ =09=09struct sk_buff_fclones *fclones;
 =20
--static inline void _kfree_skb_defer(struct sk_buff *skb)
-+static void napi_skb_cache_put(struct sk_buff *skb)
- {
- =09struct napi_alloc_cache *nc =3D this_cpu_ptr(&napi_alloc_cache);
-+=09u32 i;
-=20
- =09/* drop skb->head and call any destructors for packet */
- =09skb_release_all(skb);
-=20
--=09/* record skb to CPU local list */
-+=09kasan_poison_object_data(skbuff_head_cache, skb);
- =09nc->skb_cache[nc->skb_count++] =3D skb;
-=20
--#ifdef CONFIG_SLUB
--=09/* SLUB writes into objects when freeing */
--=09prefetchw(skb);
--#endif
--
--=09/* flush skb_cache if it is filled */
- =09if (unlikely(nc->skb_count =3D=3D NAPI_SKB_CACHE_SIZE)) {
--=09=09kmem_cache_free_bulk(skbuff_head_cache, NAPI_SKB_CACHE_SIZE,
--=09=09=09=09     nc->skb_cache);
--=09=09nc->skb_count =3D 0;
-+=09=09for (i =3D NAPI_SKB_CACHE_HALF; i < NAPI_SKB_CACHE_SIZE; i++)
-+=09=09=09kasan_unpoison_object_data(skbuff_head_cache,
-+=09=09=09=09=09=09   nc->skb_cache[i]);
-+
-+=09=09kmem_cache_free_bulk(skbuff_head_cache, NAPI_SKB_CACHE_HALF,
-+=09=09=09=09     nc->skb_cache + NAPI_SKB_CACHE_HALF);
-+=09=09nc->skb_count =3D NAPI_SKB_CACHE_HALF;
- =09}
- }
-+
- void __kfree_skb_defer(struct sk_buff *skb)
- {
--=09_kfree_skb_defer(skb);
-+=09napi_skb_cache_put(skb);
- }
-=20
- void napi_consume_skb(struct sk_buff *skb, int budget)
-@@ -887,7 +955,7 @@ void napi_consume_skb(struct sk_buff *skb, int budget)
- =09=09return;
- =09}
-=20
--=09_kfree_skb_defer(skb);
-+=09napi_skb_cache_put(skb);
- }
- EXPORT_SYMBOL(napi_consume_skb);
-=20
+ =09=09fclones =3D container_of(skb, struct sk_buff_fclones, skb1);
 --=20
 2.30.1
 
