@@ -2,45 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B27B316F1C
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 19:47:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F7BC316F49
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 19:55:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234326AbhBJSqg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 13:46:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54112 "EHLO mail.kernel.org"
+        id S233971AbhBJSyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 13:54:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56256 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234318AbhBJSoL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Feb 2021 13:44:11 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 21D1A64E0D;
-        Wed, 10 Feb 2021 18:43:30 +0000 (UTC)
+        id S234315AbhBJSwh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Feb 2021 13:52:37 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 90C6C64E2E;
+        Wed, 10 Feb 2021 18:51:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612982610;
-        bh=WO0fs6p0dwao0E+r/M0bwkcWzz+fR+hDGQs/UYx+WpA=;
+        s=k20201202; t=1612983106;
+        bh=1s5f/R1DM99wGvEfSEbLPf1XcQJ9YeYe/V1zd/Bm/E4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GST2UoPevzobYunaUrJYRE2jPH08FmtcgIFz+JEExYC1nmBc8kDS/GMV2dHXD9b05
-         YXu0C9WOUSP4WsgvFYNGmu0oIwYYi9rsDOMCb3CRAzpJ0fQsjLYymcll0RBoJSXCue
-         F42pkGL6pDrbrWMiS6Zdpddete5moxdZp+nyoogFmGyGBPmPHDLqF72ZfNCnZ5iLeF
-         y2rihF3Gx/mL25KlScJCmbLYqM1uE1SbIH/qKvtuleuz9dNRr6nkl9zkzb4BjBNFkv
-         2XQhTv7rFMGL1jxjzEqYdmFFC8Wjf+YvU32AQs11m4U8Bok3BnDIW8MDsQsNSz9bat
-         Zh0RFuTt7YUiQ==
-Date:   Wed, 10 Feb 2021 10:43:29 -0800
+        b=WhuXk47CRaiC4PtXeChhe79xiiWvdWtUMXieYJp6bjV/oBEk/1dXp8OyJYK92SANI
+         2PLqw0xsNZkWx5Ek0UQuDrz93wwozj+Dx5cs36BysAw1akXkmfYQ4D3OKYkR8Ra7//
+         lowDJmp8Z0VNTFzs6iDv94gHD86uP9YXfjnJlchWybVhOJsicphh15YIcyHhD4LgZM
+         U0LZSLbAIAZ094fTrHT8AO52CWfgz6gMLJp+6A/OmD0cWJZ6XdPC90Kdc2Xd2ZpgDo
+         YWQPpk9YyqcWP0wswL/4pe6Gvc/JfOv+8mrXxC84KG4K0JrEaMH/wIazG958ZPcCs3
+         1ykyGXC/DoY1A==
+Date:   Wed, 10 Feb 2021 10:51:45 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        "Michal Marek" <michal.lkml@markovi.net>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>
-Subject: Re: [PATCH RFC/RFT 0/2] W=1 by default for Ethernet PHY subsystem
-Message-ID: <20210210104329.3ecf3dd5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210210183917.GA1471624@nvidia.com>
-References: <20200919190258.3673246-1-andrew@lunn.ch>
-        <CAK7LNASY6hTDo8cuH5H_ExciEybBPbAuB3OxsmHbUUgoES94EA@mail.gmail.com>
-        <20200920145351.GB3689762@lunn.ch>
-        <20210210183917.GA1471624@nvidia.com>
+To:     Jacob Keller <jacob.e.keller@intel.com>,
+        Tony Brelinski <tonyx.brelinski@intel.com>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, sassmann@redhat.com
+Subject: Re: [PATCH net-next 04/15] ice: add devlink parameters to read and
+ write minimum security revision
+Message-ID: <20210210105145.4d8a4936@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <e31a1be1-6729-b056-8226-a271a45b381d@intel.com>
+References: <20210129004332.3004826-1-anthony.l.nguyen@intel.com>
+        <20210129004332.3004826-5-anthony.l.nguyen@intel.com>
+        <20210203124112.67a1e1ee@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <c9bfca09-7fc1-08dc-750d-de604fb37e00@intel.com>
+        <20210203180833.7188fbcf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <3d552bf2-0d99-18aa-339a-5a6bd111c15e@intel.com>
+        <e31a1be1-6729-b056-8226-a271a45b381d@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -48,27 +47,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 10 Feb 2021 14:39:17 -0400 Jason Gunthorpe wrote:
-> On Sun, Sep 20, 2020 at 04:53:51PM +0200, Andrew Lunn wrote:
+On Thu, 4 Feb 2021 13:53:34 -0800 Jacob Keller wrote:
+> On 2/4/2021 11:10 AM, Jacob Keller wrote:
+> > I'd rather see the right solution designed here, so if this isn't the
+> > right direction I want to work with the list to figure out what makes
+> > the most sense. (Even if that's "minimum security should update
+> > automatically").
+> >  
+> I want to clarify here based on feedback I received from customer
+> support engineers: We believe it is not acceptable to update this
+> automatically, because not all customers want that behavior and would
+> prefer to have control over when to lock in the minimum security revision.
 > 
-> > How often are new W=1 flags added? My patch exported
-> > KBUILD_CFLAGS_WARN1. How about instead we export
-> > KBUILD_CFLAGS_WARN1_20200920. A subsystem can then sign up to being
-> > W=1 clean as for the 20200920 definition of W=1.  
+> Previous products have behaved this way and we had significant feedback
+> when this occurred that many of our customers were unhappy about this,
+> even after we explained the reasoning.
 > 
-> I think this is a reasonable idea.
-> 
-> I'm hitting exactly the issue this series is trying to solve, Lee
-> invested a lot of effort to make drivers/infiniband/ W=1 clean, but
-> as maintainer I can't sustain this since there is no easy way to have
-> a warning free compile and get all extra warnings.  Also all my
-> submitters are not running with W=1
-> 
-> I need kbuild to get everyone on the same page to be able to sustain
-> the warning clean up. We've already had a regression and it has only
-> been a few weeks :(
+> I do not believe that we can accept an automatic/default update of
+> minimum security revision.
 
-Do you use patchwork? A little bit of automation is all you need,
-really. kbuild bot is too slow, anyway.
+I spent some time reading through various docs, and my main concern 
+now is introduction of an API which does not have any cryptographic
+guarantees.
 
-> Andrew, would you consider respinning this series in the above form?
+An attacker who has infiltrated the OS but did not manage to crack 
+the device yet, can fake the SEV responses and keep the counter from
+ever being bumped until they successfully expoit the device. Is the 
+min SEV counter included in device measurements?
+
+I'm starting to think that distributing separate FW builds with and
+without auto-SEV bump is the best way to fit into the SecBoot infra,
+without additional wrinkles and attack vectors.
+
+WDYT?
