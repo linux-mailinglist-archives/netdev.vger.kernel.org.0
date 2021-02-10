@@ -2,51 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 452BC316F63
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 20:00:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04B2D316F6B
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 20:00:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234329AbhBJS7i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 13:59:38 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57338 "EHLO mail.kernel.org"
+        id S234331AbhBJTAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 14:00:21 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:33128 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234379AbhBJS5d (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Feb 2021 13:57:33 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E7DA364E2E;
-        Wed, 10 Feb 2021 18:56:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612983412;
-        bh=7dRURo6guQkutfOn7ARkrnDb5BWeD+7itxSw/eJUIfQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JzogcPc6hHSJxmasWsUrP6HaFVUgC2s7yvPBcixxydaY7YA6QOdCbyUV8HPvymiCs
-         Op54nB3yCV2YrhDpUIi85XF6MUql8RrzA1ZGPfrCndMvwNCBKRUKUjPi7mGieqAUmf
-         u0mcdnRuUQaIyfxfneL+trkGAEDwXlzzHSUWWBo5Hys6LRngWKgb5EDh/WFWnAvmN4
-         PWGXcpt0b/uMPHPpbCqKYywgBihMm+r5XMIcA0aL2tgMEm1ERR2iZrdxbCF1yQjMLM
-         XQzys8Y8idwptN0r+0Ml/ZYpA/IrxU+L0XAfJH4n2Gemw/46uaOcTqLFFaCLwNnz3G
-         Qc5HpJVPYgKpQ==
-Date:   Wed, 10 Feb 2021 10:56:51 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     wenxu@ucloud.cn
-Cc:     jhs@mojatatu.com, mleitner@redhat.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net v5] net/sched: cls_flower: Reject invalid ct_state
- flags rules
-Message-ID: <20210210105651.61a5c9fd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1612852669-4165-1-git-send-email-wenxu@ucloud.cn>
-References: <1612852669-4165-1-git-send-email-wenxu@ucloud.cn>
+        id S233756AbhBJS6q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Feb 2021 13:58:46 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1l9ugO-005NHt-KI; Wed, 10 Feb 2021 19:57:48 +0100
+Date:   Wed, 10 Feb 2021 19:57:48 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Prasanna Vengateshan Varadharajan 
+        <prasanna.vengateshan@microchip.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
+        robh+dt@kernel.org, kuba@kernel.org, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, davem@davemloft.net,
+        UNGLinuxDriver@microchip.com, Woojung.Huh@microchip.com,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next 1/8] dt-bindings: net: dsa: dt bindings for
+ microchip lan937x
+Message-ID: <YCQsrPNmyRnhp4Mm@lunn.ch>
+References: <20210128064112.372883-1-prasanna.vengateshan@microchip.com>
+ <20210128064112.372883-2-prasanna.vengateshan@microchip.com>
+ <20210130020227.ahiee4goetpp2hb7@skbuf>
+ <6531ab6c7e40b7e2f73a6087b31ecfe0a8f214e4.camel@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6531ab6c7e40b7e2f73a6087b31ecfe0a8f214e4.camel@microchip.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  9 Feb 2021 14:37:49 +0800 wenxu@ucloud.cn wrote:
-> From: wenxu <wenxu@ucloud.cn>
-> 
-> Reject the unsupported and invalid ct_state flags of cls flower rules.
-> 
-> Fixes: e0ace68af2ac ("net/sched: cls_flower: Add matching on conntrack info")
-> Signed-off-by: wenxu <wenxu@ucloud.cn>
+> > > +        ethernet-ports {
+> > > +          #address-cells = <1>;
+> > > +          #size-cells = <0>;
+> > > +          port@0 {
+> > > +            reg = <0>;
+> > > +            label = "lan1";
+> > > +          };
+> > > +          port@1 {
+> > > +            reg = <1>;
+> > > +            label = "lan2";
+> > > +          };
+> > > +          port@2 {
+> > > +            reg = <7>;
+> > 
+> > reg should match node index (port@2), here and everywhere below. As
+> > for
+> > the net device labels, I'm not sure if the mismatch is deliberate
+> > there.
+> reg & port node indexes are different here because to match with the
+>  physical to logical port mapping done in the LAN9374. I realized that
+> the description is missing and that is to be added. However, should reg
+> & port node index match for the net dev? 
+> If it should be the same, then the same can be acheived by renaming a
+> label (lanx) as well.
 
-As long as Cong is okay with the messages:
+The label should match whatever the text on the device case says. So
+it is fine if port 2 says lan3 on the front panel. However, port@2
+should have reg=<2>. Please change it to port@7. This is a generic DT
+requirement, not specific to DSA.
 
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+       Andrew
