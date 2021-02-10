@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 805D4317214
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 22:12:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 601AB317208
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 22:10:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233669AbhBJVLp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 16:11:45 -0500
-Received: from ssl.serverraum.org ([176.9.125.105]:34937 "EHLO
+        id S233070AbhBJVKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 16:10:37 -0500
+Received: from ssl.serverraum.org ([176.9.125.105]:35211 "EHLO
         ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233006AbhBJVJD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 16:09:03 -0500
+        with ESMTP id S233035AbhBJVJC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 16:09:02 -0500
 Received: from mwalle01.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:fa59:71ff:fe9b:b851])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 31EC423E78;
+        by ssl.serverraum.org (Postfix) with ESMTPSA id C928023E79;
         Wed, 10 Feb 2021 22:08:19 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1612991299;
+        t=1612991300;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=NVX+H/KckEk3Q9kbsydiFWuYci0hCbQGEYpv9ujCIzA=;
-        b=oxfaPD2iGqJo8+Mf7yOKXpdPx6jXvNMPhcpnJ3ffHb6VX3LhpCPCe4g8L3yK0tWVgwpbwa
-        rzM+dIezncKhNm3dtjJxRv6J0og+6fZZ8cto/tJBy8Frsv6U0RvjdaqFI0JOzNOVDmROrr
-        XoBAwX7m6WvhySX+wfprakRrXH6SaeI=
+        bh=7SGmR1b124kFMup1lsRUfWs7YWWxzAWy9HWqUpTt6Gk=;
+        b=FTLRFq9B6UtGgBriACGB7lv5SYY7BkFTKU1kRgAqJnisi5igUErwylJZndUuy3z7EfPVsB
+        RGcObMWSsP77tKsudqXCFJmI3LJ9cw2aQpuhpxiDCd83XaL/38kPkqgcVHUIVLgycTfwKk
+        I5RR+NIPKp4pP6TcMg1w7z1IV55KT7s=
 From:   Michael Walle <michael@walle.cc>
 To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -35,9 +35,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next v3 5/9] net: phy: icplus: split IP101A/G driver
-Date:   Wed, 10 Feb 2021 22:08:05 +0100
-Message-Id: <20210210210809.30125-6-michael@walle.cc>
+Subject: [PATCH net-next v3 6/9] net: phy: icplus: don't set APS_EN bit on IP101G
+Date:   Wed, 10 Feb 2021 22:08:06 +0100
+Message-Id: <20210210210809.30125-7-michael@walle.cc>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210210210809.30125-1-michael@walle.cc>
 References: <20210210210809.30125-1-michael@walle.cc>
@@ -47,126 +47,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Unfortunately, the IP101A and IP101G share the same PHY identifier.
-While most of the functions are somewhat backwards compatible, there is
-for example the APS_EN bit on the IP101A but on the IP101G this bit
-reserved. Also, the IP101G has many more functionalities.
-
-Deduce the model by accessing the page select register which - according
-to the datasheet - is not available on the IP101A. If this register is
-writable, assume we have an IP101G.
-
-Split the combined IP101A/G driver into two separate drivers.
+This bit is reserved as 'always-write-1'. While this is not a particular
+error, because we are only setting it, guard it by checking the model to
+prevent errors in the future.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
 Changes since v2:
- - dropped the PHY_BASIC_FEATURES comments as suggested by Heiner
- - converted the ternary operator to a simple comparison as suggested by
-   Heiner
+ - none
 
 Changes since v1:
- - use match_phy_device() as suggested by Heiner
+ - dropped the model check. Instead use two different functions.
 
 Andrew, I've dropped your Reviewed-by because of this.
 
- drivers/net/phy/icplus.c | 69 ++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 66 insertions(+), 3 deletions(-)
+ drivers/net/phy/icplus.c | 27 ++++++++++++++++++++-------
+ 1 file changed, 20 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/phy/icplus.c b/drivers/net/phy/icplus.c
-index 036bac628b11..dee4f4d988a2 100644
+index dee4f4d988a2..bc2b58061507 100644
 --- a/drivers/net/phy/icplus.c
 +++ b/drivers/net/phy/icplus.c
-@@ -44,6 +44,8 @@ MODULE_LICENSE("GPL");
- #define IP101A_G_IRQ_DUPLEX_CHANGE	BIT(1)
- #define IP101A_G_IRQ_LINK_CHANGE	BIT(0)
- 
-+#define IP101G_PAGE_CONTROL				0x14
-+#define IP101G_PAGE_CONTROL_MASK			GENMASK(4, 0)
- #define IP101G_DIGITAL_IO_SPEC_CTRL			0x1d
- #define IP101G_DIGITAL_IO_SPEC_CTRL_SEL_INTR32		BIT(2)
- 
-@@ -301,6 +303,58 @@ static irqreturn_t ip101a_g_handle_interrupt(struct phy_device *phydev)
- 	return IRQ_HANDLED;
+@@ -208,10 +208,10 @@ static int ip101a_g_probe(struct phy_device *phydev)
+ 	return 0;
  }
  
-+static int ip101a_g_has_page_register(struct phy_device *phydev)
-+{
-+	int oldval, val, ret;
-+
-+	oldval = phy_read(phydev, IP101G_PAGE_CONTROL);
-+	if (oldval < 0)
-+		return oldval;
-+
-+	ret = phy_write(phydev, IP101G_PAGE_CONTROL, 0xffff);
-+	if (ret)
-+		return ret;
-+
-+	val = phy_read(phydev, IP101G_PAGE_CONTROL);
-+	if (val < 0)
-+		return val;
-+
-+	ret = phy_write(phydev, IP101G_PAGE_CONTROL, oldval);
-+	if (ret)
-+		return ret;
-+
-+	return val == IP101G_PAGE_CONTROL_MASK;
+-static int ip101a_g_config_init(struct phy_device *phydev)
++static int ip101a_g_config_intr_pin(struct phy_device *phydev)
+ {
+ 	struct ip101a_g_phy_priv *priv = phydev->priv;
+-	int err, c;
++	int err;
+ 
+ 	/* configure the RXER/INTR_32 pin of the 32-pin IP101GR if needed: */
+ 	switch (priv->sel_intr32) {
+@@ -241,11 +241,24 @@ static int ip101a_g_config_init(struct phy_device *phydev)
+ 		break;
+ 	}
+ 
++	return 0;
 +}
 +
-+static int ip101a_g_match_phy_device(struct phy_device *phydev, bool ip101a)
++static int ip101a_config_init(struct phy_device *phydev)
 +{
 +	int ret;
 +
-+	if (phydev->phy_id != IP101A_PHY_ID)
-+		return 0;
-+
-+	/* The IP101A and the IP101G share the same PHY identifier.The IP101G
-+	 * seems to be a successor of the IP101A and implements more functions.
-+	 * Amongst other things there is a page select register, which is not
-+	 * available on the IP101A. Use this to distinguish these two.
-+	 */
-+	ret = ip101a_g_has_page_register(phydev);
-+	if (ret < 0)
+ 	/* Enable Auto Power Saving mode */
+-	c = phy_read(phydev, IP10XX_SPEC_CTRL_STATUS);
+-	c |= IP101A_G_APS_ON;
++	ret = phy_set_bits(phydev, IP10XX_SPEC_CTRL_STATUS, IP101A_G_APS_ON);
++	if (ret)
 +		return ret;
-+
-+	return ip101a == !ret;
+ 
+-	return phy_write(phydev, IP10XX_SPEC_CTRL_STATUS, c);
++	return ip101a_g_config_intr_pin(phydev);
 +}
 +
-+static int ip101a_match_phy_device(struct phy_device *phydev)
++static int ip101g_config_init(struct phy_device *phydev)
 +{
-+	return ip101a_g_match_phy_device(phydev, true);
-+}
-+
-+static int ip101g_match_phy_device(struct phy_device *phydev)
-+{
-+	return ip101a_g_match_phy_device(phydev, false);
-+}
-+
- static struct phy_driver icplus_driver[] = {
- {
- 	PHY_ID_MATCH_MODEL(IP175C_PHY_ID),
-@@ -320,9 +374,18 @@ static struct phy_driver icplus_driver[] = {
- 	.suspend	= genphy_suspend,
- 	.resume		= genphy_resume,
- }, {
--	PHY_ID_MATCH_EXACT(IP101A_PHY_ID),
--	.name		= "ICPlus IP101A/G",
--	/* PHY_BASIC_FEATURES */
-+	.name		= "ICPlus IP101A",
-+	.match_phy_device = ip101a_match_phy_device,
-+	.probe		= ip101a_g_probe,
-+	.config_intr	= ip101a_g_config_intr,
-+	.handle_interrupt = ip101a_g_handle_interrupt,
-+	.config_init	= ip101a_g_config_init,
-+	.soft_reset	= genphy_soft_reset,
-+	.suspend	= genphy_suspend,
-+	.resume		= genphy_resume,
-+}, {
-+	.name		= "ICPlus IP101G",
-+	.match_phy_device = ip101g_match_phy_device,
++	return ip101a_g_config_intr_pin(phydev);
+ }
+ 
+ static int ip101a_g_ack_interrupt(struct phy_device *phydev)
+@@ -379,7 +392,7 @@ static struct phy_driver icplus_driver[] = {
  	.probe		= ip101a_g_probe,
  	.config_intr	= ip101a_g_config_intr,
  	.handle_interrupt = ip101a_g_handle_interrupt,
+-	.config_init	= ip101a_g_config_init,
++	.config_init	= ip101a_config_init,
+ 	.soft_reset	= genphy_soft_reset,
+ 	.suspend	= genphy_suspend,
+ 	.resume		= genphy_resume,
+@@ -389,7 +402,7 @@ static struct phy_driver icplus_driver[] = {
+ 	.probe		= ip101a_g_probe,
+ 	.config_intr	= ip101a_g_config_intr,
+ 	.handle_interrupt = ip101a_g_handle_interrupt,
+-	.config_init	= ip101a_g_config_init,
++	.config_init	= ip101g_config_init,
+ 	.soft_reset	= genphy_soft_reset,
+ 	.suspend	= genphy_suspend,
+ 	.resume		= genphy_resume,
 -- 
 2.20.1
 
