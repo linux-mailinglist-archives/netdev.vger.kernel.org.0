@@ -2,86 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 232A13162A0
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 10:47:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DABC63162A7
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 10:49:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229731AbhBJJqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 04:46:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36726 "EHLO
+        id S229651AbhBJJs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 04:48:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229917AbhBJJon (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 04:44:43 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74B56C0613D6
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 01:44:03 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id f14so2917550ejc.8
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 01:44:03 -0800 (PST)
+        with ESMTP id S229730AbhBJJsB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 04:48:01 -0500
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F0C1C06174A;
+        Wed, 10 Feb 2021 01:47:21 -0800 (PST)
+Received: by mail-lj1-x233.google.com with SMTP id x7so146938ljc.5;
+        Wed, 10 Feb 2021 01:47:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=GVHPNGTldDZ1CaiYnTkoTn8mqIcw28qlZiJxKrQnkfE=;
-        b=W21467626Zavi0rzAxxHmV7MI0Wbicf9+CBLCh9FGT1wB1k2UraP2nnOcroaktxDui
-         VGxVfWj0Fb1MHnQYiSkOjtFSG1Rr3E5SDTd65kooLJ5VWrIj96RfGrnWG0cW94/tsjVf
-         nY/+/T9OVIr8sGpnS2HcXMxwtus2a1CJSH9ffuR1yGgYRSTQA7yvfynKYzpQ9qVjxXNf
-         lsXeLP6/G02KlSaeDBDVt1pzzcXgWjAwQtK1TvbF9PP6fgND0imj3wyp66IbjSUxM4vj
-         K6of3I4WB57d1CMz4H/uTgMfNlsIjEZybTkCzI4PBx+eU28ieN25k2p4QkXCx8EeZeaT
-         U7LA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=X0q5IddP/axEMBWVjCa6ciUtMnAzBD6gUjo6LmKWOyA=;
+        b=b4CofQciXhkczIedysH+ZLGmKXpzF+gUULaXqrTUFr55KzOwzPxPml7MymDUtPRfGf
+         NRXHduCQc+C2/MZrp/XdH0YRTHkTN3cC9Fy5SX/sNWrkyOC85dI9T+6aNH6cy180iZ2m
+         Sdgfylo9V+0Z0zxuat2Eh3K6Qf25Q+cydFiztJpvYWHNGP0/I26v+dCFbT6x8+SMeFXD
+         +U9H80uu9Woh4CL8a0h+1lsclnWHw63ENSJL74TbLufxEk2NULzwIxAYimcKdj6XrIf4
+         yPkSpifxEmq7r4cmorfh4+GziiO3KJo8dm6i+nyw27joV6QRyTKOuop3hIUbh7Q0YOFE
+         R0fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GVHPNGTldDZ1CaiYnTkoTn8mqIcw28qlZiJxKrQnkfE=;
-        b=Pd4AilPOgAjzWAn/I5QOOL5lDyXYf1ON8xXOO99gKeSlwKPLMfYyqQ5Lbz7ggHjfGo
-         Sdozj090DMxSyWKq9r1Uk9/weEUMg6Cm2OTFdXCCxWIPC4OlAzSXKvmHlyiF7OXe/szi
-         8V6crOQLx1dirXEISVrW4UzaBRO5UHpV+bHyyEdjSI15QETEPQyyzK3MhPT1Qs6qYt5a
-         aWvWOb5ZA3e8caBsPUdTwUQedUZ5Y/UoMuq9sSBkK4NtZA9RbKA7otUiYIw5fTBT2ulA
-         s6Rw014UvRf96oXZEbtrM98FWeg4kY4vJTrffYek9/aJcQ066Q9S9XLFKYbU+oP9C9K4
-         LS/A==
-X-Gm-Message-State: AOAM5309x3wjyy75fx2BV7ncpPMDyEjE8bK5cJL0z15BwCrIJvLWiytB
-        0Qr1+nJr/uFldq7cGc+AXNQ=
-X-Google-Smtp-Source: ABdhPJy0V0C6Av1mhxjCU/T9XhiiB1AXb6no3VMlDH0TWoLInAvVZXyompY04chgs/1Cl+FikS5wxQ==
-X-Received: by 2002:a17:906:30c4:: with SMTP id b4mr2096252ejb.456.1612950242204;
-        Wed, 10 Feb 2021 01:44:02 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id h3sm729914ejl.111.2021.02.10.01.44.00
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=X0q5IddP/axEMBWVjCa6ciUtMnAzBD6gUjo6LmKWOyA=;
+        b=UooEAMMxwhFI9/e8vV89pTEZQF19f4RP2IfVHdCndPQERXCNzGImQCjyTT+uof7Yz7
+         B7mEY3TKWYJTtNJ1vA3DY8+I6QGOmHQI3D56BgoQJtN5ZoatSSSfIDDuwrykbHlIQfX7
+         z9fwcGecr8KZeeOQR1hyJiEc4Vc+TwfxChxNz+Yrm3sdjgKZ5VMgExtpZa0V9iYpYOmm
+         vd5wr3tPWUUCkO716lHRTnIntvfSZos2XnmP8i3aOLTHpC2VMxq1nELHMm2AzgrZTW0F
+         65whhUbZs+nNeCI3ACF0DiufttSIgz0h096ZwXyX0MhAj5v2EMaFQTBEGIVvc+uooS6H
+         W/tQ==
+X-Gm-Message-State: AOAM532ycBAsyVQ47Dv3sutA3PQ0N6szRuT7fbjiGHwpBGop4ZVhbIkv
+        A1yUooztAb3Fjq1tj+b2AR8=
+X-Google-Smtp-Source: ABdhPJxBUe1W4KtyWanWkYhS9ph1/WjuiFdQdHuDvLhu/oDL2rpCI+D8GvTt9XiqFehL7A4sVIOvmA==
+X-Received: by 2002:a05:651c:38f:: with SMTP id e15mr1410799ljp.420.1612950439723;
+        Wed, 10 Feb 2021 01:47:19 -0800 (PST)
+Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.gmail.com with ESMTPSA id c23sm229188lfi.241.2021.02.10.01.47.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Feb 2021 01:44:01 -0800 (PST)
-Date:   Wed, 10 Feb 2021 11:44:00 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     George McCollister <george.mccollister@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v3 3/4] net: dsa: add support for offloading HSR
-Message-ID: <20210210094400.h5xtpcimjidzdl5s@skbuf>
-References: <20210210010213.27553-1-george.mccollister@gmail.com>
- <20210210010213.27553-4-george.mccollister@gmail.com>
+        Wed, 10 Feb 2021 01:47:19 -0800 (PST)
+From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Masahiro Yamada <masahiroy@kernel.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
+Subject: [PATCH V4 net-next 1/2] dt-bindings: net: document BCM4908 Ethernet controller
+Date:   Wed, 10 Feb 2021 10:47:01 +0100
+Message-Id: <20210210094702.24348-1-zajec5@gmail.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210209230130.4690-2-zajec5@gmail.com>
+References: <20210209230130.4690-2-zajec5@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210210010213.27553-4-george.mccollister@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 09, 2021 at 07:02:12PM -0600, George McCollister wrote:
-> Add support for offloading of HSR/PRP (IEC 62439-3) tag insertion
-> tag removal, duplicate generation and forwarding on DSA switches.
-> 
-> Add DSA_NOTIFIER_HSR_JOIN and DSA_NOTIFIER_HSR_LEAVE which trigger calls
-> to .port_hsr_join and .port_hsr_leave in the DSA driver for the switch.
-> 
-> The DSA switch driver should then set netdev feature flags for the
-> HSR/PRP operation that it offloads.
->     NETIF_F_HW_HSR_TAG_INS
->     NETIF_F_HW_HSR_TAG_RM
->     NETIF_F_HW_HSR_FWD
->     NETIF_F_HW_HSR_DUP
-> 
-> Signed-off-by: George McCollister <george.mccollister@gmail.com>
-> ---
+From: Rafał Miłecki <rafal@milecki.pl>
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+BCM4908 is a family of SoCs with integrated Ethernet controller.
+
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+---
+V3: Use ethernet-controller.yaml#
+    Rename "compatible" value (use "-")
+    Drop "interrupt-names" until it's needed
+---
+ .../bindings/net/brcm,bcm4908-enet.yaml       | 43 +++++++++++++++++++
+ 1 file changed, 43 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/brcm,bcm4908-enet.yaml
+
+diff --git a/Documentation/devicetree/bindings/net/brcm,bcm4908-enet.yaml b/Documentation/devicetree/bindings/net/brcm,bcm4908-enet.yaml
+new file mode 100644
+index 000000000000..5050974c8550
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/brcm,bcm4908-enet.yaml
+@@ -0,0 +1,43 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/brcm,bcm4908-enet.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Broadcom BCM4908 Ethernet controller
++
++description: Broadcom's Ethernet controller integrated into BCM4908 family SoCs
++
++maintainers:
++  - Rafał Miłecki <rafal@milecki.pl>
++
++allOf:
++  - $ref: ethernet-controller.yaml#
++
++properties:
++  compatible:
++    const: brcm,bcm4908-enet
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    description: RX interrupt
++
++required:
++  - reg
++  - interrupts
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    ethernet@80002000 {
++        compatible = "brcm,bcm4908-enet";
++        reg = <0x80002000 0x1000>;
++
++        interrupts = <GIC_SPI 86 IRQ_TYPE_LEVEL_HIGH>;
++    };
+-- 
+2.26.2
+
