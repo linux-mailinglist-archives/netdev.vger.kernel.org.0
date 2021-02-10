@@ -2,133 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81633316ECE
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 19:37:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6F32316EDD
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 19:37:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234231AbhBJSfw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 13:35:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43254 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234387AbhBJSdY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Feb 2021 13:33:24 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D002064DE0;
-        Wed, 10 Feb 2021 18:31:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612981897;
-        bh=gYL7BBry8rkU7z7MEWHcDU6eN+kvdSAYABlPSp3KfXU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UpS9cPxHtExw3QuFkTrbnT7c9U8Eo/DsYNner4QBtzugnojgObCwT5dQ9693Yrbca
-         0yEQYRRU1JO68w1zxtZy1sZKY99wZSd630YZNVv6UI7nWqycUmoDR7ZjUlf8uyCvXK
-         Ll3VEGIupaYfN5OBai6mTyQwt7/t7BdfTg8bF8e/bvwgJG4BfMHqoazdNlJGJ1vcu5
-         Szn4J84FElTBg67Gw8oVt6zRaeI7oZZJJXNmqRfBcb+TimYtGoJ4TmhrygUtGG28bR
-         o5ELIY1jvQbCmXYNnoeLKGNQDFas7QpGhUtisobILuBiUKX8+vLtv81BLFI/qpOR/h
-         WerMv9e8kPhVQ==
-Date:   Wed, 10 Feb 2021 10:31:35 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Cc:     Marek Majtyka <alardam@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>,
-        David Ahern <dsahern@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, hawk@kernel.org,
-        bpf <bpf@vger.kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        jeffrey.t.kirsher@intel.com
-Subject: Re: [PATCH v2 bpf 1/5] net: ethtool: add xdp properties flag set
-Message-ID: <20210210103135.38921f85@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <874kikry66.fsf@toke.dk>
-References: <20201204102901.109709-1-marekx.majtyka@intel.com>
-        <5fd068c75b92d_50ce20814@john-XPS-13-9370.notmuch>
-        <20201209095454.GA36812@ranger.igk.intel.com>
-        <20201209125223.49096d50@carbon>
-        <e1573338-17c0-48f4-b4cd-28eeb7ce699a@gmail.com>
-        <1e5e044c8382a68a8a547a1892b48fb21d53dbb9.camel@kernel.org>
-        <cb6b6f50-7cf1-6519-a87a-6b0750c24029@gmail.com>
-        <f4eb614ac91ee7623d13ea77ff3c005f678c512b.camel@kernel.org>
-        <d5be0627-6a11-9c1f-8507-cc1a1421dade@gmail.com>
-        <6f8c23d4ac60525830399754b4891c12943b63ac.camel@kernel.org>
-        <CAAOQfrHN1-oHmbOksDv-BKWv4gDF2zHZ5dTew6R_QTh6s_1abg@mail.gmail.com>
-        <87h7mvsr0e.fsf@toke.dk>
-        <CAAOQfrHA+-BsikeQzXYcK_32BZMbm54x5p5YhAiBj==uaZvG1w@mail.gmail.com>
-        <87bld2smi9.fsf@toke.dk>
-        <20210202113456.30cfe21e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAAOQfrGqcsn3wu5oxzHYxtE8iK3=gFdTka5HSh5Fe9Hc6HWRWA@mail.gmail.com>
-        <20210203090232.4a259958@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <874kikry66.fsf@toke.dk>
+        id S234248AbhBJSh2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 13:37:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37940 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232367AbhBJSe6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 13:34:58 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43253C061574;
+        Wed, 10 Feb 2021 10:34:18 -0800 (PST)
+Received: by mail-pl1-x62a.google.com with SMTP id e9so1693705plh.3;
+        Wed, 10 Feb 2021 10:34:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=dj5e+JdQ9inL9MdyTwQAUMaybZD9FtdxxaVKbEntvms=;
+        b=Ub/5H3X0wZ2QMT2YY41+mARnKBQEPOq+YPST8XpKW0Pbcd1aIThNMaFuOFpzOKv7ui
+         gCpXUI6xVEOLJOBkQhRdz7WZ/lC7QDMCa6jTx0SnpWBgHRXA46ADflD43HMcXKowHFBi
+         mvBx2gVx1OwX4RNyp/s51QSzG8v3ZvX1jK2IZnOuDFjeGBeh/8Nk5e2l8RPW2fdBzM6Q
+         /LM1URg4t2WO6LDd9vjfR0S6PcgdNxDfGxTOcOvCtza1XgdI2I174URB291rOU2Akfws
+         F1KvpdIe4wGnxH4AZcTk5gA61Kb97mwu2opyLH64S65Cn2Hz5BVd61lByN4e0OtM/+D2
+         sidA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=dj5e+JdQ9inL9MdyTwQAUMaybZD9FtdxxaVKbEntvms=;
+        b=DWGVaiyo1g1o68l/bqllOEmH96esomib3L/c8xQMv1/RrhNSlraxBR9tJqB3Q4AlF8
+         bZY92TW1Gz+c6qjq73Og3vr6O9dS5QLS1Hdl4gQq32h44LN100UU43PQXVFwLpLhRNZM
+         wa1c2sDPQGjtm9X54ekbvlOjv88a03UOj/UnFBdUrv+wIw8a60YPd7OEq+COYgghRjX7
+         BwjnJDlZ8ovhXHafvFyD0D7tXW5Ughz1PIqnFk/Cog670qi8ug9e1akJKNfM0cWpWWYM
+         V5bRIWxv1B7uhWDFE938TzUqX9B3oCmR94q3KiJUdv6nqIvR85UQdoKQfV6DyA3eqBQp
+         qI7g==
+X-Gm-Message-State: AOAM531s8GUMXXHnqunv2CwrcHRI3to/UPJOszcL//sv+woQBg4sLXS0
+        i3tWaawKmSgeRKx4URaCItgX8jFlkBk=
+X-Google-Smtp-Source: ABdhPJzzfNc3Tgk6r1NRjnnlY4LFIZVY7qJEHNHAxqnO4Rxu2KkTVn41dp8KvzmYQgMfOsYFQ/ngKQ==
+X-Received: by 2002:a17:90a:4148:: with SMTP id m8mr228227pjg.184.1612982057749;
+        Wed, 10 Feb 2021 10:34:17 -0800 (PST)
+Received: from [10.67.49.228] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id d124sm2592077pfa.149.2021.02.10.10.34.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 10 Feb 2021 10:34:17 -0800 (PST)
+Subject: Re: [PATCH net-next] net: phy: introduce phydev->port
+To:     Michael Walle <michael@walle.cc>,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Russell King <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20210209163852.17037-1-michael@walle.cc>
+ <41e4f35c87607e69cb87c4ef421d4a77@walle.cc>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <558e057f-69a4-cb16-ef0f-9e3d005060ea@gmail.com>
+Date:   Wed, 10 Feb 2021 10:34:13 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <41e4f35c87607e69cb87c4ef421d4a77@walle.cc>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 10 Feb 2021 11:53:53 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> >> I am a bit confused now. Did you mean validation tests of those XDP
-> >> flags, which I am working on or some other validation tests?
-> >> What should these tests verify? Can you please elaborate more on the
-> >> topic, please - just a few sentences how are you see it? =20
-> >
-> > Conformance tests can be written for all features, whether they have=20
-> > an explicit capability in the uAPI or not. But for those that do IMO
-> > the tests should be required.
-> >
-> > Let me give you an example. This set adds a bit that says Intel NICs=20
-> > can do XDP_TX and XDP_REDIRECT, yet we both know of the Tx queue
-> > shenanigans. So can i40e do XDP_REDIRECT or can it not?
-> >
-> > If we have exhaustive conformance tests we can confidently answer that
-> > question. And the answer may not be "yes" or "no", it may actually be
-> > "we need more options because many implementations fall in between".
-> >
-> > I think readable (IOW not written in some insane DSL) tests can also=20
-> > be useful for users who want to check which features their program /
-> > deployment will require. =20
->=20
-> While I do agree that that kind of conformance test would be great, I
-> don't think it has to hold up this series (the perfect being the enemy
-> of the good, and all that). We have a real problem today that userspace
-> can't tell if a given driver implements, say, XDP_REDIRECT, and so
-> people try to use it and spend days wondering which black hole their
-> packets disappear into. And for things like container migration we need
-> to be able to predict whether a given host supports a feature *before*
-> we start the migration and try to use it.
+On 2/10/21 3:20 AM, Michael Walle wrote:
+> 
+> Am 2021-02-09 17:38, schrieb Michael Walle:
+>> --- a/drivers/net/phy/phy.c
+>> +++ b/drivers/net/phy/phy.c
+>> @@ -308,7 +308,7 @@ void phy_ethtool_ksettings_get(struct phy_device
+>> *phydev,
+>>      if (phydev->interface == PHY_INTERFACE_MODE_MOCA)
+>>          cmd->base.port = PORT_BNC;
+>>      else
+>> -        cmd->base.port = PORT_MII;
+>> +        cmd->base.port = phydev->port;
+>>      cmd->base.transceiver = phy_is_internal(phydev) ?
+>>                  XCVR_INTERNAL : XCVR_EXTERNAL;
+>>      cmd->base.phy_address = phydev->mdio.addr;
+> 
+> Russell, the phylink has a similiar place where PORT_MII is set. I don't
+> know
+> if we'd have to change that, too.
+> 
+> Also, I wanted to look into the PHY_INTERFACE_MODE_MOCA thing and if we can
+> get rid of the special case here and just set phydev->port to PORT_BNC
+> in the
+> driver. Florian, maybe you have a comment on this?
 
-Unless you have a strong definition of what XDP_REDIRECT means the flag
-itself is not worth much. We're not talking about normal ethtool feature
-flags which are primarily stack-driven, XDP is implemented mostly by
-the driver, each vendor can do their own thing. Maybe I've seen one
-vendor incompatibility too many at my day job to hope for the best...
+For GENET, it's simple because we can do this:
 
-> I view the feature flags as a list of features *implemented* by the
-> driver. Which should be pretty static in a given kernel, but may be
-> different than the features currently *enabled* on a given system (due
-> to, e.g., the TX queue stuff).
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index fcca023f22e5..34cbd008a3af 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -777,6 +777,8 @@ static int bcmgenet_get_link_ksettings(struct
+net_device *dev,
+                return -ENODEV;
 
-Hm, maybe I'm not being clear enough. The way XDP_REDIRECT (your
-example) is implemented across drivers differs in a meaningful ways.=20
-Hence the need for conformance testing. We don't have a golden SW
-standard to fall back on, like we do with HW offloads.
+        phy_ethtool_ksettings_get(dev->phydev, cmd);
++       if (dev->phydev->interface == PHY_INTERFACE_MODE_MOCA)
++               cmd->base.port = PORT_BNC;
 
-Also IDK why those tests are considered such a huge ask. As I said most
-vendors probably already have them, and so I'd guess do good distros.
-So let's work together.
+        return 0;
+ }
 
-> The simple way to expose the latter would be to just have a second set
-> of flags indicating the current configured state; and for that I guess
-> we should at least agree what "enabled" means; and a conformance test
-> would be a way to do this, of course.
->=20
-> I don't see why we can't do this in stages, though; start with the first
-> set of flags ('implemented'), move on to the second one ('enabled'), and
-> then to things like making the kernel react to the flags by rejecting
-> insertion into devmaps for invalid interfaces...
+but for bcm_sf2.c, we would need to add plumbing between the DSA core
+and the DSA driver in order to override the cmd structure with the
+desired port and that would be most likely the only driver needing that,
+should we really bother? There is also potentially a 3rd driver coming
+down the road (bgmac) which would need to report MoCA/BNC.
+
+I don't see this scaling very well nor being such a big issue to have
+that in the PHYLIB and PHYLINK.
+-- 
+Florian
