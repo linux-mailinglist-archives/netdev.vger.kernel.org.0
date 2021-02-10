@@ -2,143 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C8BF316B16
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 17:24:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E4A3316B37
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 17:30:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232343AbhBJQX3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 11:23:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37776 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232164AbhBJQXY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 11:23:24 -0500
-Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40002C061756
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 08:22:44 -0800 (PST)
-Received: by mail-il1-x12f.google.com with SMTP id w1so1186687ilm.12
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 08:22:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JSh8ExYxdty8HZ11KujafrMp7iovLQF4x5Wy4WPKtFY=;
-        b=MqBF5ZEr+daNm21Pgbp5M3xc3FrA2e2xhHAo0Dk1bkOF988nmvj/JIs0ba1jcPJ203
-         rl6mzOsv2xikvam4uDDIWkXM2lxulDO5Pw/Sz92l1FqLWb4bICKwNCirxhULXoxgy6w7
-         RnfuncRvRYQFUiRv98y3Apa/O2gIu6jPfC9xo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=JSh8ExYxdty8HZ11KujafrMp7iovLQF4x5Wy4WPKtFY=;
-        b=emgZtyMrtcNsM2rb4wKcCaUqq393dKczulth269gebvCiNM0L9uOrHc5XA56fUeHSC
-         GHbBhIZe3j/ObqYoVM9MzA+BaTL0lNPgyizYuViXweuHDuAwuGTTjb2mLY2AKl3+liT4
-         L+pnrisBRWwZYsVcQA4ILQQ/qXm9G7HuUFYujLZAJ3G3pXYdRysyf27wZnEkyh5rP1I6
-         aXg4aMjKBcBe06k63iIc2CsQPRkKgzu+rtB2pfgiUFplbnp6YVAVZuRSkOC9voOd+9LV
-         5LwTCeegcSsv05BSmZJ0OucFnK9rEWaIL8MNQ4Xy0Ui6P5F3z6WcUcSUDNnfQi2M956J
-         GuRQ==
-X-Gm-Message-State: AOAM5316HvHR53lZsfPY8e4sogBxB1KB72Nvbll26K4KaqquKIpWCJtK
-        VU2vIGLn17HEqiKJqW+g7VAO4k+6jKC2sg==
-X-Google-Smtp-Source: ABdhPJzXyC8AmV48saKbwVck5pzWW/8Ry9H6e0li1SH7HuPENRqrnsNCXgsFgCru0G3RWsdbnHR4Nw==
-X-Received: by 2002:a92:dcc6:: with SMTP id b6mr1836908ilr.295.1612974163736;
-        Wed, 10 Feb 2021 08:22:43 -0800 (PST)
-Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
-        by smtp.gmail.com with ESMTPSA id k11sm1129540iop.45.2021.02.10.08.22.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Feb 2021 08:22:43 -0800 (PST)
-Subject: Re: [PATCH 2/5] ath10k: fix WARNING: suspicious RCU usage
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <23a1333dfb0367cc69e7177a2e373df0b6d42980.1612915444.git.skhan@linuxfoundation.org>
- <20210210081320.2FBE5C433CA@smtp.codeaurora.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <7230c9e5-2632-b77e-c4f9-10eca557a5bb@linuxfoundation.org>
-Date:   Wed, 10 Feb 2021 09:22:42 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        id S232426AbhBJQ3W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 11:29:22 -0500
+Received: from mail-40136.protonmail.ch ([185.70.40.136]:10676 "EHLO
+        mail-40136.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232366AbhBJQ3N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 11:29:13 -0500
+Date:   Wed, 10 Feb 2021 16:28:17 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1612974508; bh=o4T7iSQYleBEuIFv05CFvm501rCgWuFs++fo+TxXVYs=;
+        h=Date:To:From:Cc:Reply-To:Subject:From;
+        b=FwZtDlvRMPdMCwmp0GVTgOOGQZTCHaeGCYTE2bPjIFoBGKYkvJXpYtN+EExmUwtUk
+         OHU2gvKKZMWsp6wxDC0AaKvQeDHspUgfeUu5hes7ReSdv+rz+X0WzsGNjKxf2hPKHR
+         7zDNRXuCY0+a3C+aujaYKYz0iuvJiORLxSb2ocF+GilyzS1mXFgsBjAwoEH4bRNP+k
+         0Jvaspult0o2PTGOC9J4ZCVulE23cxmwsAa8KW7Uv13ptctKWOUoXeCPT6jM5hnCBt
+         5lyq/MDURpFhlxJHdnt5WOL1ndew4C3jNU9LKXkE9qBxD57kTKOb6B0pjDmb7RvYAz
+         QGXKKWcjTJguA==
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Kevin Hao <haokexin@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        =?utf-8?Q?Bj=C3=B6rn_T=C3=B6pel?= <bjorn@kernel.org>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        Yonghong Song <yhs@fb.com>, zhudi <zhudi21@huawei.com>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Florian Westphal <fw@strlen.de>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: [PATCH v4 net-next 00/11] skbuff: introduce skbuff_heads bulking and reusing
+Message-ID: <20210210162732.80467-1-alobakin@pm.me>
 MIME-Version: 1.0
-In-Reply-To: <20210210081320.2FBE5C433CA@smtp.codeaurora.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/10/21 1:13 AM, Kalle Valo wrote:
-> Shuah Khan <skhan@linuxfoundation.org> wrote:
-> 
->> ieee80211_find_sta_by_ifaddr() must be called under the RCU lock and
->> the resulting pointer is only valid under RCU lock as well.
->>
->> Fix ath10k_wmi_tlv_parse_peer_stats_info() to hold RCU lock before it
->> calls ieee80211_find_sta_by_ifaddr() and release it when the resulting
->> pointer is no longer needed. The log below shows the problem.
->>
->> While at it, fix ath10k_wmi_tlv_op_pull_peer_stats_info() to do the same.
->>
->> =============================
->> WARNING: suspicious RCU usage
->> 5.11.0-rc7+ #20 Tainted: G        W
->> -----------------------------
->> include/linux/rhashtable.h:594 suspicious rcu_dereference_check() usage!
->> other info that might help us debug this:
->>                 rcu_scheduler_active = 2, debug_locks = 1
->> no locks held by ksoftirqd/5/44.
->>
->> stack backtrace:
->> CPU: 5 PID: 44 Comm: ksoftirqd/5 Tainted: G        W         5.11.0-rc7+ #20
->> Hardware name: LENOVO 10VGCTO1WW/3130, BIOS M1XKT45A 08/21/2019
->> Call Trace:
->>   dump_stack+0x7d/0x9f
->>   lockdep_rcu_suspicious+0xdb/0xe5
->>   __rhashtable_lookup+0x1eb/0x260 [mac80211]
->>   ieee80211_find_sta_by_ifaddr+0x5b/0xc0 [mac80211]
->>   ath10k_wmi_tlv_parse_peer_stats_info+0x3e/0x90 [ath10k_core]
->>   ath10k_wmi_tlv_iter+0x6a/0xc0 [ath10k_core]
->>   ? ath10k_wmi_tlv_op_pull_mgmt_tx_bundle_compl_ev+0xe0/0xe0 [ath10k_core]
->>   ath10k_wmi_tlv_op_rx+0x5da/0xda0 [ath10k_core]
->>   ? trace_hardirqs_on+0x54/0xf0
->>   ? ath10k_ce_completed_recv_next+0x4e/0x60 [ath10k_core]
->>   ath10k_wmi_process_rx+0x1d/0x40 [ath10k_core]
->>   ath10k_htc_rx_completion_handler+0x115/0x180 [ath10k_core]
->>   ath10k_pci_process_rx_cb+0x149/0x1b0 [ath10k_pci]
->>   ? ath10k_htc_process_trailer+0x2d0/0x2d0 [ath10k_core]
->>   ? ath10k_pci_sleep.part.0+0x6a/0x80 [ath10k_pci]
->>   ath10k_pci_htc_rx_cb+0x15/0x20 [ath10k_pci]
->>   ath10k_ce_per_engine_service+0x61/0x80 [ath10k_core]
->>   ath10k_ce_per_engine_service_any+0x7d/0xa0 [ath10k_core]
->>   ath10k_pci_napi_poll+0x48/0x120 [ath10k_pci]
->>   net_rx_action+0x136/0x500
->>   __do_softirq+0xc6/0x459
->>   ? smpboot_thread_fn+0x2b/0x1f0
->>   run_ksoftirqd+0x2b/0x60
->>   smpboot_thread_fn+0x116/0x1f0
->>   kthread+0x14b/0x170
->>   ? smpboot_register_percpu_thread+0xe0/0xe0
->>   ? __kthread_bind_mask+0x70/0x70
->>   ret_from_fork+0x22/0x30
->>
->> Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-> 
-> Unlucky timing also on this one, it conflicts with a patch I applied yesterday:
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git/commit/?h=ath-next&id=2615e3cdbd9c0e864f5906279c952a309871d225
-> 
-> Can you redo the patch to only change ath10k_wmi_event_tdls_peer()?
-> 
+Currently, all sorts of skb allocation always do allocate
+skbuff_heads one by one via kmem_cache_alloc().
+On the other hand, we have percpu napi_alloc_cache to store
+skbuff_heads queued up for freeing and flush them by bulks.
 
-Yes. I will send the patch just for ath10k_wmi_event_tdls_peer()
-on top of your patch.
+We can use this cache not only for bulk-wiping, but also to obtain
+heads for new skbs and avoid unconditional allocations, as well as
+for bulk-allocating (like XDP's cpumap code and veth driver already
+do).
 
-> error: patch failed: drivers/net/wireless/ath/ath10k/wmi-tlv.c:240
-> error: drivers/net/wireless/ath/ath10k/wmi-tlv.c: patch does not apply
-> stg import: Diff does not apply cleanly
-> 
-> Patch set to Changes Requested.
-> 
+As this might affect latencies, cache pressure and lots of hardware
+and driver-dependent stuff, this new feature is mostly optional and
+can be issued via:
+ - a new napi_build_skb() function (as a replacement for build_skb());
+ - existing {,__}napi_alloc_skb() and napi_get_frags() functions;
+ - __alloc_skb() with passing SKB_ALLOC_NAPI in flags.
 
-thanks,
--- Shuah
+iperf3 showed 35-70 Mbps bumps for both TCP and UDP while performing
+VLAN NAT on 1.2 GHz MIPS board. The boost is likely to be bigger
+on more powerful hosts and NICs with tens of Mpps.
+
+Note on skbuff_heads from distant slabs or pfmemalloc'ed slabs:
+ - kmalloc()/kmem_cache_alloc() itself allows by default allocating
+   memory from the remote nodes to defragment their slabs. This is
+   controlled by sysctl, but according to this, skbuff_head from a
+   remote node is an OK case;
+ - The easiest way to check if the slab of skbuff_head is remote or
+   pfmemalloc'ed is:
+
+=09if (!dev_page_is_reusable(virt_to_head_page(skb)))
+=09=09/* drop it */;
+
+   ...*but*, regarding that most slabs are built of compound pages,
+   virt_to_head_page() will hit unlikely-branch every single call.
+   This check costed at least 20 Mbps in test scenarios and seems
+   like it'd be better to _not_ do this.
+
+Since v3 [2]:
+ - make the feature mostly optional, so driver developers could
+   decide whether to use it or not (Paolo Abeni).
+   This reuses the old flag for __alloc_skb() and introduces
+   a new napi_build_skb();
+ - reduce bulk-allocation size from 32 to 16 elements (also Paolo).
+   This equals to the value of XDP's devmap and veth batch processing
+   (which were tested a lot) and should be sane enough;
+ - don't waste cycles on explicit in_serving_softirq() check.
+
+Since v2 [1]:
+ - also cover {,__}alloc_skb() and {,__}build_skb() cases (became handy
+   after the changes that pass tiny skbs requests to kmalloc layer);
+ - cover the cache with KASAN instrumentation (suggested by Eric
+   Dumazet, help of Dmitry Vyukov);
+ - completely drop redundant __kfree_skb_flush() (also Eric);
+ - lots of code cleanups;
+ - expand the commit message with NUMA and pfmemalloc points (Jakub).
+
+Since v1 [0]:
+ - use one unified cache instead of two separate to greatly simplify
+   the logics and reduce hotpath overhead (Edward Cree);
+ - new: recycle also GRO_MERGED_FREE skbs instead of immediate
+   freeing;
+ - correct performance numbers after optimizations and performing
+   lots of tests for different use cases.
+
+[0] https://lore.kernel.org/netdev/20210111182655.12159-1-alobakin@pm.me
+[1] https://lore.kernel.org/netdev/20210113133523.39205-1-alobakin@pm.me
+[2] https://lore.kernel.org/netdev/20210209204533.327360-1-alobakin@pm.me
+
+Alexander Lobakin (11):
+  skbuff: move __alloc_skb() next to the other skb allocation functions
+  skbuff: simplify kmalloc_reserve()
+  skbuff: make __build_skb_around() return void
+  skbuff: simplify __alloc_skb() a bit
+  skbuff: use __build_skb_around() in __alloc_skb()
+  skbuff: remove __kfree_skb_flush()
+  skbuff: move NAPI cache declarations upper in the file
+  skbuff: introduce {,__}napi_build_skb() which reuses NAPI cache heads
+  skbuff: allow to optionally use NAPI cache from __alloc_skb()
+  skbuff: allow to use NAPI cache from __napi_alloc_skb()
+  skbuff: queue NAPI_MERGED_FREE skbs into NAPI cache instead of freeing
+
+ include/linux/skbuff.h |   4 +-
+ net/core/dev.c         |  15 +-
+ net/core/skbuff.c      | 429 +++++++++++++++++++++++------------------
+ 3 files changed, 243 insertions(+), 205 deletions(-)
+
+--=20
+2.30.1
+
+
