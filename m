@@ -2,107 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13D8831643D
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 11:50:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 961B5316453
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 11:52:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231271AbhBJKtL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 05:49:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50040 "EHLO
+        id S230217AbhBJKv4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 05:51:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231518AbhBJKqd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 05:46:33 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C49C0613D6;
-        Wed, 10 Feb 2021 02:45:52 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id w2so3194077ejk.13;
-        Wed, 10 Feb 2021 02:45:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1rNLXcvXKP3m/fnPThWaXf4M817aZUPGjPuR43utm5Q=;
-        b=bQRtat1Xo7i63Co4iAOtYmLAkcqeWBNEsuqqBTZC/sdXBIAuIhxW+yEfTW7tMgqXNR
-         NaqrHFZLhkELQZJs+Rxzc6q22fgJ7363f58/IxCP6HhoDlKmUBej3Ud7JVC3V9cSXGem
-         M/20hpLtqmJRy0w3i1zTiJH+zAlGzK3m6GyQGGjRlikreB00qh2GmmGAic23HCI1QYq2
-         7wWLGrtE2dwuCysbP8+AGFZbanuCLPhXOwBiXqaUzPlZkm2CV1xqkaDh9CWquq87io07
-         dKu37qYD14SYEK9H9QJq9UyJdO0odBc/pu/TO6ffraYdMRCrTMr1SUVKvxJ4U+2g8Y/S
-         erXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1rNLXcvXKP3m/fnPThWaXf4M817aZUPGjPuR43utm5Q=;
-        b=rLJXn4303qDi21mTs11T4L1lDHhzNFm+jDk6z5YUylwLqMWm8wUSVeuZhUpeVxKoLT
-         R4A0I2GSrX4zhFoYZdXkxoKBjBvNBEc1SU427Gj8a6ykH/wqMG2PS5Qm3BqYRZR3bc+I
-         zEXf0QVGa8nVr6Q+vgmVJ+QUW/iFF8dQP0cpMvUfKrKPEzM93q8Z/nM4OaLYySXDwIi4
-         SZLAnXx/qlhYTvLh6VQoavjPFaPrKwyVkOCGLcUJ/L5nQIXX5qpwiY//dH04WIwl4siI
-         6oyZUFdLgGBYP9MRM1fEJv+Egyn/bVhmJuVOH1+Fpqw3yXwGohJojG8krddSEm4Eb+Qi
-         IPEQ==
-X-Gm-Message-State: AOAM5309HP132TJpu8WMcYpWhSPCugsKUdG7qkI2c9ziECFuLSM8vGvN
-        dyWJ3z7pRZj5vtMB3uETgda5fGACs8s=
-X-Google-Smtp-Source: ABdhPJxgAXMW3rVTYhwx790W2oXXaFQwqENLDhxih4f/pLVMsP5SR1/Wa7g89TQbRB6Uzekt0BcExQ==
-X-Received: by 2002:a17:906:4eda:: with SMTP id i26mr2229075ejv.467.1612953951473;
-        Wed, 10 Feb 2021 02:45:51 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id c18sm675126edu.20.2021.02.10.02.45.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Feb 2021 02:45:50 -0800 (PST)
-Date:   Wed, 10 Feb 2021 12:45:49 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Nikolay Aleksandrov <nikolay@nvidia.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, Roopa Prabhu <roopa@nvidia.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 00/11] Cleanup in brport flags switchdev
- offload for DSA
-Message-ID: <20210210104549.ga3lgjafn5x3htwj@skbuf>
-References: <20210210091445.741269-1-olteanv@gmail.com>
- <a8e9284b-f0a6-0343-175d-8c323371ef8d@nvidia.com>
+        with ESMTP id S229583AbhBJKtn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 05:49:43 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0744C0613D6;
+        Wed, 10 Feb 2021 02:49:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=oU/bEFbJX+Oxte65uYr1mV6/P3GdOdvC+g8seWSXo/8=; b=PkW9pnhcz2bQaT2e2f49S9QS8
+        XI/QxTxA6tZyiEhCahsP8ny849D65ADCKLuRWOYMfB7gocELzyaoMgjLzQRQWUurVdOUqnspZ1UVj
+        xnB2c/Gi76ibPvDGzMUYwMVbZplXH/ypmUZKSJs7i1XvDfhwxN6cK9JMPt4ZHDD3uetL+HMNPa9da
+        PTfAJbxUmCXCirXksZe4jruOgx1S66bs8PF09M1hkkB81kTxk+X64rEpUuXCbHKeYU9h5pv+YCSVw
+        DaBP44U0W/J9FtM2TqW25yLFaxIXNMGv9+V+6kc2yHYKNRbpmZGiSfIurvFnX5VnCnz0TVtxbMHXB
+        eEd/VU3QA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:41568)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1l9n3N-0004Xk-GD; Wed, 10 Feb 2021 10:49:01 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1l9n3N-000502-09; Wed, 10 Feb 2021 10:49:01 +0000
+Date:   Wed, 10 Feb 2021 10:49:00 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next 7/9] net: phy: icplus: select page before
+ writing control register
+Message-ID: <20210210104900.GS1463@shell.armlinux.org.uk>
+References: <20210209164051.18156-1-michael@walle.cc>
+ <20210209164051.18156-8-michael@walle.cc>
+ <d5672062-c619-02a4-3bbe-dad44371331d@gmail.com>
+ <20210210103059.GR1463@shell.armlinux.org.uk>
+ <d35f726f82c6c743519f3d8a36037dfa@walle.cc>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <a8e9284b-f0a6-0343-175d-8c323371ef8d@nvidia.com>
+In-Reply-To: <d35f726f82c6c743519f3d8a36037dfa@walle.cc>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Nikolay,
-
-On Wed, Feb 10, 2021 at 12:31:43PM +0200, Nikolay Aleksandrov wrote:
-> Hi Vladimir,
-> Let's take a step back for a moment and discuss the bridge unlock/lock sequences
-> that come with this set. I'd really like to avoid those as they're a recipe
-> for future problems. The only good way to achieve that currently is to keep
-> the PRE_FLAGS call and do that in unsleepable context but move the FLAGS call
-> after the flags have been changed (if they have changed obviously). That would
-> make the code read much easier since we'll have all our lock/unlock sequences
-> in the same code blocks and won't play games to get sleepable context.
-> Please let's think and work in that direction, rather than having:
-> +	spin_lock_bh(&p->br->lock);
-> +	if (err) {
-> +		netdev_err(p->dev, "%s\n", extack._msg);
-> +		return err;
->  	}
-> +
+On Wed, Feb 10, 2021 at 11:38:18AM +0100, Michael Walle wrote:
+> Am 2021-02-10 11:30, schrieb Russell King - ARM Linux admin:
+> > On Wed, Feb 10, 2021 at 08:03:07AM +0100, Heiner Kallweit wrote:
+> > > On 09.02.2021 17:40, Michael Walle wrote:
+> > > > +out:
+> > > > +	return phy_restore_page(phydev, oldpage, err);
+> > > 
+> > > If a random page was set before entering config_init, do we actually
+> > > want
+> > > to restore it? Or wouldn't it be better to set the default page as
+> > > part
+> > > of initialization?
+> > 
+> > I think you've missed asking one key question: does the paging on this
+> > PHY affect the standardised registers at 0..15 inclusive, or does it
+> > only affect registers 16..31?
 > 
-> which immediately looks like a bug even though after some code checking we can
-> verify it's ok. WDYT?
-> 
-> I plan to get rid of most of the br->lock since it's been abused for a very long
-> time because it's essentially STP lock, but people have started using it for other
-> things and I plan to fix that when I get more time.
+> For this PHY it affects only registers >=16. But that doesn't invaldiate
+> the point that for other PHYs this might affect all regsisters. Eg. ones
+> where you could select between fiber and copper pages, right?
 
-This won't make the sysfs codepath any nicer, will it?
+You are modifying the code using ip101a_g_* functions, which is only
+used for the IP101A and IP101G PHYs. Do these devices support fiber
+in a way that change the first 16 registers?
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
