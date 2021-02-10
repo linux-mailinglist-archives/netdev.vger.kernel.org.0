@@ -2,94 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4676A31715E
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 21:28:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D835317168
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 21:30:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232284AbhBJU2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 15:28:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34184 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233336AbhBJU2b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 15:28:31 -0500
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88A48C061574;
-        Wed, 10 Feb 2021 12:27:49 -0800 (PST)
-Received: by mail-yb1-xb35.google.com with SMTP id k4so3341689ybp.6;
-        Wed, 10 Feb 2021 12:27:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0Fig8xpbsaW+Bl7CpYvOTWbVnzyDhnErcbBrbtE4md8=;
-        b=mC1zTrBRp7e6tc2p5CkzMoAMGxWerVoGSFpOIEQsvabQtTjUAsyc6/cMDnEp8UtQ5i
-         jaJhYvPARoYpDbhnPQtzKJJG2IMIrmbAfQYXMYKMpeFqa8Qh1+7jlvzr0BC7RM/bwODA
-         jV5XgNqi8LlCGTvOdcQsZFguV5ygj2k2BrIpFMabKZkC3BQPQDsO2J+rLQ+qq43uLMGw
-         e33s9yg5jqSnNuivP/SpUkXPVZaPv/HcJ8VPm0b9eibigG5KL7JOryhA0JBlnsbSK1yQ
-         D9lMgQkFZ1qh8LePy/mZfm2U1MLs/V/ixQf0Hvz8/+ODeHYkWtxQv/2ZyLIQtSxOCEq+
-         0BXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0Fig8xpbsaW+Bl7CpYvOTWbVnzyDhnErcbBrbtE4md8=;
-        b=aiGEy1WmMjGT1JSTAazXMUItbNygayuarh5TwzGytB0oVhHCDkZL++zORIqCp47ins
-         yczQoIkFWDSkCRnIT0ST82zKXmFiE+qL+NIxQl9TsdYQuh8h20YK0l2ama6sVBebxDto
-         6WQujschJTG45nrqnbt3J9gkX53vT2MgGPHjChuer9j3/fngNc6zpH8aJ3TDTjTlXT1b
-         nbW4lbwk5RhY4bLRw6D28PbTC6eU0FNfecJKLrtfkuF2HPs/w3PmOCdbgYzsai1fnsV5
-         2YTGJdmQ58YPuFpuFgHsfRnESKFvR4qHOLwpdGq9/vfu4W25b92YEibor+crZG6bi1hT
-         Tmjg==
-X-Gm-Message-State: AOAM533bUf/ppk0y75QXtHVfEiX/RJjnwauo9Fnj2/gwcYXmlVZC23vz
-        VVkKk7pyBNkTZOI97KCWkT0huYNJX48mgGShmCi4w4pq1FG4Dw==
-X-Google-Smtp-Source: ABdhPJyCFETFmX50Li29uERLQKy0Ge43WuewjW0KIPG1gIPnlvRYh7aRFKsvCsLatnsleTrYyXwZ5ISbcDcwV4wm1JI=
-X-Received: by 2002:a25:c905:: with SMTP id z5mr6617093ybf.260.1612988868917;
- Wed, 10 Feb 2021 12:27:48 -0800 (PST)
+        id S233412AbhBJU35 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 15:29:57 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:23442 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233391AbhBJU3g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 15:29:36 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11AKP9CS020784;
+        Wed, 10 Feb 2021 12:28:51 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=4U9Jc1s/zr4TaeKLtWC0IpludKHTWg4Mk68NSq7NMLA=;
+ b=PMnVjQ1AUZoA0D4drkb1V/NsGpmKJIlrtTHt1nU3njln+mVtZYEnzWMAbFkKQWX1FxCE
+ TKVfO2s0kKTNnaBeucHvOnPT5JppWPdxu4Qn5Zk6L1ohc3a5sGWzFAApK8DnepDf+v88
+ r38+N76woN8DE42NKSM3icZqorOMh4WLvVOAEMSFbhEgbxxMi4qqNT5eVCp/lWYGPV+o
+ YuPyLyMsSwrKMG3Kt4Fgy/ScnTvSV/O6Goa8T0TvR3Jpeq4S3KJURUfR5+SRxByH1mes
+ gobKU4JrMV963aRyDvEJYB4CTGvLJOTNaOovLn3m2d98ZxhYcruiqmS/lUcj3UUxlz1p gA== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 36hugqcwaj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 10 Feb 2021 12:28:47 -0800
+Received: from SC-EXCH02.marvell.com (10.93.176.82) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 10 Feb
+ 2021 12:28:43 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 10 Feb
+ 2021 12:28:42 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 10 Feb 2021 12:28:42 -0800
+Received: from dc5-eodlnx05.marvell.com (dc5-eodlnx05.marvell.com [10.69.113.147])
+        by maili.marvell.com (Postfix) with ESMTP id B44313F7040;
+        Wed, 10 Feb 2021 12:28:42 -0800 (PST)
+From:   Bhaskar Upadhaya <bupadhaya@marvell.com>
+To:     <netdev@vger.kernel.org>, <kuba@kernel.org>, <aelior@marvell.com>,
+        <irusskikh@marvell.com>
+CC:     <davem@davemloft.net>, <bupadhaya@marvell.com>
+Subject: [PATCH v3 net-next 0/3] qede: add netpoll and per-queue coalesce support
+Date:   Wed, 10 Feb 2021 12:28:28 -0800
+Message-ID: <1612988911-10799-1-git-send-email-bupadhaya@marvell.com>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
-References: <20210209193105.1752743-1-kafai@fb.com> <20210209193112.1752976-1-kafai@fb.com>
-In-Reply-To: <20210209193112.1752976-1-kafai@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 10 Feb 2021 12:27:38 -0800
-Message-ID: <CAEf4BzbZmmezSxYLCOdeeA4zW+vdDvQH57wQ-qpFSKiMcE1tVw@mail.gmail.com>
-Subject: Re: [PATCH bpf 2/2] bpf: selftests: Add non function pointer test to struct_ops
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
+ definitions=2021-02-10_10:2021-02-10,2021-02-10 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 9, 2021 at 12:11 PM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> This patch adds a "void *owner" member.  The existing
-> bpf_tcp_ca test will ensure the bpf_cubic.o and bpf_dctcp.o
-> can be loaded.
->
-> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
-> ---
+This is a followup implementation after series
 
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
+https://patchwork.kernel.org/project/netdevbpf/cover/1610701570-29496-1-git-send-email-bupadhaya@marvell.com/
 
-What will happen if BPF code initializes such non-func ptr member?
-Will libbpf complain or just ignore those values? Ignoring initialized
-members isn't great.
+Patch 1: Add net poll controller support to transmit kernel printks
+         over UDP
+Patch 2: QLogic card support multiple queues and each queue can be
+         configured with respective coalescing parameters, this patch
+         add per queue rx-usecs, tx-usecs coalescing parameters
+Patch 3: set default per queue rx-usecs, tx-usecs coalescing parameters and
+         preserve coalesce parameters across interface up and down
 
->  tools/testing/selftests/bpf/bpf_tcp_helpers.h | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/tools/testing/selftests/bpf/bpf_tcp_helpers.h b/tools/testing/selftests/bpf/bpf_tcp_helpers.h
-> index 6a9053162cf2..91f0fac632f4 100644
-> --- a/tools/testing/selftests/bpf/bpf_tcp_helpers.h
-> +++ b/tools/testing/selftests/bpf/bpf_tcp_helpers.h
-> @@ -177,6 +177,7 @@ struct tcp_congestion_ops {
->          * after all the ca_state processing. (optional)
->          */
->         void (*cong_control)(struct sock *sk, const struct rate_sample *rs);
-> +       void *owner;
->  };
->
->  #define min(a, b) ((a) < (b) ? (a) : (b))
-> --
-> 2.24.1
->
+v3: fixed warnings reported by Dan Carpenter
+v2: comments from jakub
+ - p1: remove poll_controller ndo and add budget 0 support in qede_poll
+ - p3: preserve coalesce parameters across interface up and down
+
+Bhaskar Upadhaya (3):
+  qede: add netpoll support for qede driver
+  qede: add per queue coalesce support for qede driver
+  qede: preserve per queue stats across up/down of interface
+
+ drivers/net/ethernet/qlogic/qede/qede.h       |  10 ++
+ .../net/ethernet/qlogic/qede/qede_ethtool.c   | 134 +++++++++++++++++-
+ drivers/net/ethernet/qlogic/qede/qede_fp.c    |   3 +-
+ drivers/net/ethernet/qlogic/qede/qede_main.c  |  29 +++-
+ 4 files changed, 171 insertions(+), 5 deletions(-)
+
+-- 
+2.17.1
+
