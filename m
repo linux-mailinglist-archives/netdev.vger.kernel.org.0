@@ -2,195 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C167315FD5
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 08:04:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6746315FDD
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 08:10:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232148AbhBJHEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 02:04:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58750 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231927AbhBJHD7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 02:03:59 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C469C06174A;
-        Tue,  9 Feb 2021 23:03:19 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id u14so1267952wri.3;
-        Tue, 09 Feb 2021 23:03:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=LBNzGpjovJdmRTyJP+nTC+xvg8GW871RV/9xcC5rQDI=;
-        b=FqK5GGpwnIknffo5W5qv8ABGIuwGLerReoXG1M1L9cMFIUWx/poY4vmbqMwoxO21U/
-         fwFwneaEZ1K5OjjP73KBXjnqrdGXrthRtUdvpEvEJgNjplP7UeX6nseZ4qKXMCfKZx6s
-         JKzBuJ1gSDixo6gxmbsKnKwogkhmGzWthhNT/3mVYOLBI/mMabgpFSPmekVp+XHXTefG
-         pWyV46/BYdm2bBkTs3TQi+B/W0R4Rd+VcZ8qia1qGa/GyPKWXpa9CfU/Xv9yJ0Uxy1Gr
-         tpVzMkNjHxJyzMMNvHUD8x9zsUpFHBJhCwMqsb30YJriQO+Sj4yqbdOjbKXG5v6quovo
-         qnqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=LBNzGpjovJdmRTyJP+nTC+xvg8GW871RV/9xcC5rQDI=;
-        b=QSx8Bl3Q3zUgy1gNhWdBmG6UJGK5kjnolbf5Kp7ZfAfegeenlV+2sVtDoZ5qeSnPPe
-         JJUiVYLiNmtsfuxZcR//4CeH+Lppi9XdT2wejjbM6320MunOn9KS5/9iGiYxWwe9Y1ie
-         2HTzDa2F27yayT3aew/xCdcZyXiQZqa5PWalk5UKLEwF/Nul9XWLyUhZiZEKRu+y+Rf4
-         plh6dupMM3oLeP1XkZ7wrJm6+mvcJi2d1HmKaRG41wN4oA84mqDI9DI3AiiBPyM4CvYD
-         msWFUR7NuiIYjzY93x4s+/eOG1NWx+1gtxBflLhW5UXJPyUGtwtqLukTddW7774Ls4x3
-         a1lw==
-X-Gm-Message-State: AOAM530PGmRSlxKkNXxiZ1VzHCYN65tnmLpdZJTPpiIEgwzgGcNHiALi
-        ynCwV0DndEEo5UXM/7hduGA=
-X-Google-Smtp-Source: ABdhPJxQtDoTHO5G6iFs2FvzMzpR8PjSz/sPLH5W+rUxE8mtOeiNhP5CQYvXUY83iJebpiwQvRC1VA==
-X-Received: by 2002:adf:b64f:: with SMTP id i15mr1833176wre.279.1612940597877;
-        Tue, 09 Feb 2021 23:03:17 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f1f:ad00:b0ff:e539:9460:c978? (p200300ea8f1fad00b0ffe5399460c978.dip0.t-ipconnect.de. [2003:ea:8f1f:ad00:b0ff:e539:9460:c978])
-        by smtp.googlemail.com with ESMTPSA id t7sm1582362wrv.75.2021.02.09.23.03.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Feb 2021 23:03:17 -0800 (PST)
-Subject: Re: [PATCH net-next 7/9] net: phy: icplus: select page before writing
- control register
-To:     Michael Walle <michael@walle.cc>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>, Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20210209164051.18156-1-michael@walle.cc>
- <20210209164051.18156-8-michael@walle.cc>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <d5672062-c619-02a4-3bbe-dad44371331d@gmail.com>
-Date:   Wed, 10 Feb 2021 08:03:07 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        id S232197AbhBJHKf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 02:10:35 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:2584 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231915AbhBJHKe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 02:10:34 -0500
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 11A750LF165135
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 02:09:53 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : mime-version : content-type; s=pp1;
+ bh=MjjUnLdtVJ8XwCoH0isLCFFhUbw1k65w5pl5SMXegiQ=;
+ b=pzh6RFOLy2e+LrsIC/7f+6jrBcq6x8RKjEKVwmX3Zv2X51IWaY1zDrsGRU+Fq73RNuq8
+ ax9kXFsIbUpeB1EH1bo9rRI/+GQifem3TtuwngULdJipbJ++sfUu/XmfBHvE1BedSG8v
+ sRVDV0qKssoPuU+c7EJrUvXDp3HvhRS3/xyLM9va3oSvwPhoTM9ZEUt6FMXvbinPwJ51
+ cRtG8xWLiWKezjvt0rrhpNlYa8jdNlu4quGw4OGtBTsAHeejYH/lDfLcuVnT3fITQUu4
+ 9FM4v1veTlmfhA4K1sXLTh9Nk0bI72yEYf9RT6B4XK0YZ7WlDtkfb09LSOyB5/GILNKh 9w== 
+Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 36mahg0mht-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 02:09:52 -0500
+Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
+        by ppma03dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 11A72jET020293
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 07:09:52 GMT
+Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
+        by ppma03dal.us.ibm.com with ESMTP id 36hjr9bdqy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 07:09:52 +0000
+Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
+        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 11A79pQm20382204
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 07:09:51 GMT
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1E57B6A04D
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 07:09:51 +0000 (GMT)
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E146C6A057
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 07:09:50 +0000 (GMT)
+Received: from suka-w540.localdomain (unknown [9.85.171.114])
+        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 07:09:50 +0000 (GMT)
+Received: by suka-w540.localdomain (Postfix, from userid 1000)
+        id D70432E1070; Tue,  9 Feb 2021 23:09:47 -0800 (PST)
+Date:   Tue, 9 Feb 2021 23:09:47 -0800
+From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     Dany Madden <drt@linux.ibm.com>, Lijun Pan <ljp@linux.ibm.com>,
+        Rick Lindsley <ricklind@linux.ibm.com>, sukadev@linux.ibm.com
+Subject: [PATCH net v3] ibmvnic: fix a race between open and reset
+Message-ID: <20210210070947.GA852317@us.ibm.com>
 MIME-Version: 1.0
-In-Reply-To: <20210209164051.18156-8-michael@walle.cc>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Operating-System: Linux 2.0.32 on an i486
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
+ definitions=2021-02-10_01:2021-02-09,2021-02-10 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 impostorscore=0
+ lowpriorityscore=0 spamscore=0 bulkscore=0 mlxscore=0 adultscore=0
+ suspectscore=0 malwarescore=0 priorityscore=1501 phishscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2102100067
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09.02.2021 17:40, Michael Walle wrote:
-> Registers >= 16 are paged. Be sure to set the page. It seems this was
-> working for now, because the default is correct for the registers used
-> in the driver at the moment. But this will also assume, nobody will
-> change the page select register before linux is started. The page select
-> register is _not_ reset with a soft reset of the PHY.
-> 
-> Add read_page()/write_page() support for the IP101G and use it
-> accordingly.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> ---
->  drivers/net/phy/icplus.c | 50 +++++++++++++++++++++++++++++++---------
->  1 file changed, 39 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/net/phy/icplus.c b/drivers/net/phy/icplus.c
-> index a6e1c7611f15..858b9326a72d 100644
-> --- a/drivers/net/phy/icplus.c
-> +++ b/drivers/net/phy/icplus.c
-> @@ -49,6 +49,8 @@ MODULE_LICENSE("GPL");
->  #define IP101G_DIGITAL_IO_SPEC_CTRL			0x1d
->  #define IP101G_DIGITAL_IO_SPEC_CTRL_SEL_INTR32		BIT(2)
->  
-> +#define IP101G_DEFAULT_PAGE			16
-> +
->  #define IP175C_PHY_ID 0x02430d80
->  #define IP1001_PHY_ID 0x02430d90
->  #define IP101A_PHY_ID 0x02430c54
-> @@ -250,23 +252,25 @@ static int ip101a_g_probe(struct phy_device *phydev)
->  static int ip101a_g_config_init(struct phy_device *phydev)
->  {
->  	struct ip101a_g_phy_priv *priv = phydev->priv;
-> -	int err;
-> +	int oldpage, err;
-> +
-> +	oldpage = phy_select_page(phydev, IP101G_DEFAULT_PAGE);
->  
->  	/* configure the RXER/INTR_32 pin of the 32-pin IP101GR if needed: */
->  	switch (priv->sel_intr32) {
->  	case IP101GR_SEL_INTR32_RXER:
-> -		err = phy_modify(phydev, IP101G_DIGITAL_IO_SPEC_CTRL,
-> -				 IP101G_DIGITAL_IO_SPEC_CTRL_SEL_INTR32, 0);
-> +		err = __phy_modify(phydev, IP101G_DIGITAL_IO_SPEC_CTRL,
-> +				   IP101G_DIGITAL_IO_SPEC_CTRL_SEL_INTR32, 0);
->  		if (err < 0)
-> -			return err;
-> +			goto out;
->  		break;
->  
->  	case IP101GR_SEL_INTR32_INTR:
-> -		err = phy_modify(phydev, IP101G_DIGITAL_IO_SPEC_CTRL,
-> -				 IP101G_DIGITAL_IO_SPEC_CTRL_SEL_INTR32,
-> -				 IP101G_DIGITAL_IO_SPEC_CTRL_SEL_INTR32);
-> +		err = __phy_modify(phydev, IP101G_DIGITAL_IO_SPEC_CTRL,
-> +				   IP101G_DIGITAL_IO_SPEC_CTRL_SEL_INTR32,
-> +				   IP101G_DIGITAL_IO_SPEC_CTRL_SEL_INTR32);
->  		if (err < 0)
-> -			return err;
-> +			goto out;
->  		break;
->  
->  	default:
-> @@ -284,12 +288,14 @@ static int ip101a_g_config_init(struct phy_device *phydev)
->  	 * reserved as 'write-one'.
->  	 */
->  	if (priv->model == IP101A) {
-> -		err = phy_set_bits(phydev, IP10XX_SPEC_CTRL_STATUS, IP101A_G_APS_ON);
-> +		err = __phy_set_bits(phydev, IP10XX_SPEC_CTRL_STATUS,
-> +				     IP101A_G_APS_ON);
->  		if (err)
-> -			return err;
-> +			goto out;
->  	}
->  
-> -	return 0;
-> +out:
-> +	return phy_restore_page(phydev, oldpage, err);
 
-If a random page was set before entering config_init, do we actually want
-to restore it? Or wouldn't it be better to set the default page as part
-of initialization?
+From 0d6616e843973d2f052ea09237c16667802b52e3 Mon Sep 17 00:00:00 2001
+From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Date: Wed, 20 Jan 2021 21:10:15 -0800
+Subject: [PATCH net v3] ibmvnic: fix a race between open and reset
 
->  }
->  
->  static int ip101a_g_ack_interrupt(struct phy_device *phydev)
-> @@ -347,6 +353,26 @@ static irqreturn_t ip101a_g_handle_interrupt(struct phy_device *phydev)
->  	return IRQ_HANDLED;
->  }
->  
-> +static int ip101a_g_read_page(struct phy_device *phydev)
-> +{
-> +	struct ip101a_g_phy_priv *priv = phydev->priv;
-> +
-> +	if (priv->model == IP101A)
-> +		return 0;
-> +
-> +	return __phy_read(phydev, IP101G_PAGE_CONTROL);
-> +}
-> +
-> +static int ip101a_g_write_page(struct phy_device *phydev, int page)
-> +{
-> +	struct ip101a_g_phy_priv *priv = phydev->priv;
-> +
-> +	if (priv->model == IP101A)
-> +		return 0;
-> +
-> +	return __phy_write(phydev, IP101G_PAGE_CONTROL, page);
-> +}
-> +
->  static struct phy_driver icplus_driver[] = {
->  {
->  	PHY_ID_MATCH_MODEL(IP175C_PHY_ID),
-> @@ -373,6 +399,8 @@ static struct phy_driver icplus_driver[] = {
->  	.config_intr	= ip101a_g_config_intr,
->  	.handle_interrupt = ip101a_g_handle_interrupt,
->  	.config_init	= ip101a_g_config_init,
-> +	.read_page	= ip101a_g_read_page,
-> +	.write_page	= ip101a_g_write_page,
->  	.soft_reset	= genphy_soft_reset,
->  	.suspend	= genphy_suspend,
->  	.resume		= genphy_resume,
-> 
+__ibmvnic_reset() currently reads the adapter->state before getting the
+rtnl and saves that state as the "target state" for the reset. If this
+read occurs when adapter is in PROBED state, the target state would be
+PROBED.
+
+Just after the target state is saved, and before the actual reset process
+is started (i.e before rtnl is acquired) if we get an ibmvnic_open() call
+we would move the adapter to OPEN state.
+
+But when the reset is processed (after ibmvnic_open()) drops the rtnl),
+it will leave the adapter in PROBED state even though we already moved
+it to OPEN.
+
+To fix this, use the RTNL to improve the serialization when reading/updating
+the adapter state. i.e determine the target state of a reset only after
+getting the RTNL. And if a reset is in progress during an open, simply
+set the target state of the adapter and let the reset code finish the
+open (like we currently do if failover is pending).
+
+One twist to this serialization is if the adapter state changes when we
+drop the RTNL to update the link state. Account for this by checking if
+there was an intervening open and update the target state for the reset
+accordingly (see new comments in the code). Note that only the reset
+functions and ibmvnic_open() can set the adapter to OPEN state and this
+must happen under rtnl.
+
+Fixes: 7d7195a026ba ("ibmvnic: Do not process device remove during device reset")
+Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Reviewed-by: Dany Madden <drt@linux.ibm.com>
+---
+Changelog[v3]
+        [Jakub Kicinski] Rebase to current net and fix comment style.
+
+Changelog[v2]
+	[Jakub Kicinski] Use ASSERT_RTNL() instead of WARN_ON_ONCE()
+	and rtnl_is_locked());
+---
+ drivers/net/ethernet/ibm/ibmvnic.c | 63 ++++++++++++++++++++++++++----
+ 1 file changed, 55 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index a536fdbf05e1..e51a7f2d00cb 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -1197,12 +1197,25 @@ static int ibmvnic_open(struct net_device *netdev)
+ 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
+ 	int rc;
+ 
+-	/* If device failover is pending, just set device state and return.
+-	 * Device operation will be handled by reset routine.
++	ASSERT_RTNL();
++
++	/* If device failover is pending or we are about to reset, just set
++	 * device state and return. Device operation will be handled by reset
++	 * routine.
++	 *
++	 * It should be safe to overwrite the adapter->state here. Since
++	 * we hold the rtnl, either the reset has not actually started or
++	 * the rtnl got dropped during the set_link_state() in do_reset().
++	 * In the former case, no one else is changing the state (again we
++	 * have the rtnl) and in the latter case, do_reset() will detect and
++	 * honor our setting below.
+ 	 */
+-	if (adapter->failover_pending) {
++	if (adapter->failover_pending || (test_bit(0, &adapter->resetting))) {
++		netdev_dbg(netdev, "[S:%d FOP:%d] Resetting, deferring open\n",
++			   adapter->state, adapter->failover_pending);
+ 		adapter->state = VNIC_OPEN;
+-		return 0;
++		rc = 0;
++		goto out;
+ 	}
+ 
+ 	if (adapter->state != VNIC_CLOSED) {
+@@ -1221,11 +1234,12 @@ static int ibmvnic_open(struct net_device *netdev)
+ 	rc = __ibmvnic_open(netdev);
+ 
+ out:
+-	/*
+-	 * If open fails due to a pending failover, set device state and
+-	 * return. Device operation will be handled by reset routine.
++	/* If open failed and there is a pending failover or in-progress reset,
++	 * set device state and return. Device operation will be handled by
++	 * reset routine. See also comments above regarding rtnl.
+ 	 */
+-	if (rc && adapter->failover_pending) {
++	if (rc &&
++	    (adapter->failover_pending || (test_bit(0, &adapter->resetting)))) {
+ 		adapter->state = VNIC_OPEN;
+ 		rc = 0;
+ 	}
+@@ -2037,6 +2051,14 @@ static int do_reset(struct ibmvnic_adapter *adapter,
+ 	if (rwi->reset_reason == VNIC_RESET_FAILOVER)
+ 		adapter->failover_pending = false;
+ 
++	/* read the state and check (again) after getting rtnl */
++	reset_state = adapter->state;
++
++	if (reset_state == VNIC_REMOVING || reset_state == VNIC_REMOVED) {
++		rc = -EBUSY;
++		goto out;
++	}
++
+ 	netif_carrier_off(netdev);
+ 	adapter->reset_reason = rwi->reset_reason;
+ 
+@@ -2063,7 +2085,24 @@ static int do_reset(struct ibmvnic_adapter *adapter,
+ 		if (rc)
+ 			goto out;
+ 
++		if (adapter->state == VNIC_OPEN) {
++			/* When we dropped rtnl, ibmvnic_open() got
++			 * it and noticed that we are resetting and
++			 * set the adapter state to OPEN. Update our
++			 * new "target" state, and resume the reset
++			 * from VNIC_CLOSING state.
++			 */
++			netdev_dbg(netdev,
++				   "Open changed state from %d, updating.\n",
++				   reset_state);
++			reset_state = VNIC_OPEN;
++			adapter->state = VNIC_CLOSING;
++		}
++
+ 		if (adapter->state != VNIC_CLOSING) {
++			/* If someone else changed the adapter state
++			 * when we dropped the rtnl, fail the reset
++			 */
+ 			rc = -1;
+ 			goto out;
+ 		}
+@@ -2197,6 +2236,14 @@ static int do_hard_reset(struct ibmvnic_adapter *adapter,
+ 	netdev_dbg(adapter->netdev, "Hard resetting driver (%d)\n",
+ 		   rwi->reset_reason);
+ 
++	/* read the state and check (again) after getting rtnl */
++	reset_state = adapter->state;
++
++	if (reset_state == VNIC_REMOVING || reset_state == VNIC_REMOVED) {
++		rc = -EBUSY;
++		goto out;
++	}
++
+ 	netif_carrier_off(netdev);
+ 	adapter->reset_reason = rwi->reset_reason;
+ 
+-- 
+2.26.2
 
