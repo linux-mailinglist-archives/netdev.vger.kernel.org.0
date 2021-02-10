@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE10431736A
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 23:34:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E16F31736F
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 23:36:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233490AbhBJWed (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 17:34:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33108 "EHLO
+        id S233006AbhBJWek (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 17:34:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233255AbhBJWe2 (ORCPT
+        with ESMTP id S233454AbhBJWe2 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 17:34:28 -0500
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC243C06178B
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 14:33:25 -0800 (PST)
-Received: by mail-io1-xd34.google.com with SMTP id z21so2330159iob.7
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 14:33:25 -0800 (PST)
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EED8EC061794
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 14:33:26 -0800 (PST)
+Received: by mail-io1-xd32.google.com with SMTP id e133so3680204iof.8
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 14:33:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=kS/gU6f8FHhPHE8VvojwVRld2jg6RFS0NvtZfg95Sy4=;
-        b=ybH66RtLq3+ZJzCR6tIlv+7xXv+gGzUgrwWkYfyuFs1cyrV3T4poUJu9KPIFpJG1f5
-         4LGLyqScDW+7N7ZwHMALv+1TWI15tkq0mOvOkzP4ZJQrTk83bJLflfxfRrzk6gGTT7mq
-         7n+vV+Jf1pAL/oHxB+IJzh7/U5pBXBhlxwNxULajY8/A0Op77VhycJK5Qt+DDXIOCLsG
-         QQ/k51Cvz52V4Mhuadkc3+U5rnu9UVTgptCvt5y6zmt4m7oG7auhEQAcb5OX688Q6nlM
-         sEsJnCYC+rwF+wELJu19V2rIh/ia8xZBtJvKqri9lcfrZvxcPnVqHoLDtT80Pjt0Zas8
-         ZswA==
+        bh=ebGMA32A3lz4dOPF3atpHHf9aQxnDO22teaa/gzKf7E=;
+        b=TRkL8rpb7xtowbI7NG5qRcVYCoyiVGgNCywcggZ+i3Y5YsMSxdMkcklXAj/HqCbCKp
+         7WjOTC+wEQW658qVbVhEtpD41DsJLrs+9aXyDJL2MwfPgTX1kuk2KK4cghv58MTne353
+         aMnSyVqAIy6gqAOlPrKyK6cuEs07P7AKQLEPfkt+0iAz9f8ZmMzu7uuZZx0c1zlGbhvt
+         I9tAZzgq/7RaMV6AL5F9IO7/YKEXLk418PA+hjOfovJC8SD2W4o8U2ilkFVmlPOqEa8o
+         DYXll+c00hfrCX6KiJUXOBnnOxD8E7OtFAbnXj+SRe28CIr5cZySVb73PVcDhn0keBwl
+         DtjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=kS/gU6f8FHhPHE8VvojwVRld2jg6RFS0NvtZfg95Sy4=;
-        b=NTCG8JYfLUxHwpiRZsrwpYJlbGKLxbqchE1EFPVwKCSC1TsJsuba0jZbtmIWDRFitd
-         LL5aRLxCqrYKGtp+OVXpxO2TqcMllo9thnxE4cIH6taJkGl4jyJPkE8FSw1WvQuQhfYP
-         mQh7BQrGu987xnC0M3OoSOjvMZofDjmKoL/axzyWUCGTvqePWmvSn5AbOGgPD5BlUMor
-         LnaML8RPbJcjlUo4ih8XSPpZ3V0jVI0pZMlN/V1srhp9rZrOcpPIgmEbtm77lEfuXj0/
-         TEuZNzB3NhOJFcTWeiij1Zn7kSfi+Sy+XU2m+zMmN4qLEaH2xxFcYgU/mNvQZIBc5H6t
-         hccg==
-X-Gm-Message-State: AOAM5324sKbqQ3Tb3qP5rJgk79ayVQ8xMlcbz+F9h+npOPb5y0vQzYxT
-        fYzUuVcFWVzzYe4LS1C+dNJH4Q==
-X-Google-Smtp-Source: ABdhPJxl1uhDN2EE0556rEtchpUcIrMm8/d3TsTBfXqBDl9/5+XSK0UCr9FGPxhv908m0FBlaFXRNg==
-X-Received: by 2002:a5d:980c:: with SMTP id a12mr2832889iol.196.1612996405495;
-        Wed, 10 Feb 2021 14:33:25 -0800 (PST)
+        bh=ebGMA32A3lz4dOPF3atpHHf9aQxnDO22teaa/gzKf7E=;
+        b=keZyvcq9CYBvT6gGL7LAjhIe1LBMdBnuSCF15duPjDBo3YE9E3bml4ep/jxB4zRJGc
+         zGK8yq83O4xcR+0Yfe7B1syFU1eGCYF+ZNs9VkXgWABDjUEY5icalPvTKIeqSAsVJ1En
+         0cEj4XJWKiAcr5N+MY/umi39YAYHNbLG4HYj9IOzpJu7BdP5oLhhEqwgf+AShcCGVOVa
+         YaCWFdFOfRh5ZMADW5O38iSTSx1CNgoiaKzkDC/D0u7D3Fy0CD61kZ30/whbuhSmOiX5
+         Eu2coc0VC3ibzJyEFJ90aL1AhRsUKg1sN+RDhxN/PJdIE8IHKA66O2FXPb2EOC18fucb
+         3BXg==
+X-Gm-Message-State: AOAM532oNEYOmdcs2KEw0qof6ZKCP57U8YTBt3XzjdVq8DrQzk4K/UM2
+        uHb2p8BzYulTjqwv20Oevr7KOA==
+X-Google-Smtp-Source: ABdhPJzzApz4CRdzB0M8M/56mIFQy+VD+EC7Q5O0Ksdf8b1eA+vagWh3Ckhsxf+xnr9NQYSzpZMQUA==
+X-Received: by 2002:a5d:81c8:: with SMTP id t8mr2888690iol.38.1612996406423;
+        Wed, 10 Feb 2021 14:33:26 -0800 (PST)
 Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id e23sm1484525ioc.34.2021.02.10.14.33.24
+        by smtp.gmail.com with ESMTPSA id e23sm1484525ioc.34.2021.02.10.14.33.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Feb 2021 14:33:25 -0800 (PST)
+        Wed, 10 Feb 2021 14:33:26 -0800 (PST)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     elder@kernel.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
         cpratapa@codeaurora.org, subashab@codeaurora.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 2/5] net: ipa: don't report EPROBE_DEFER error
-Date:   Wed, 10 Feb 2021 16:33:17 -0600
-Message-Id: <20210210223320.11269-3-elder@linaro.org>
+Subject: [PATCH net-next 3/5] net: ipa: fix register write command validation
+Date:   Wed, 10 Feb 2021 16:33:18 -0600
+Message-Id: <20210210223320.11269-4-elder@linaro.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210210223320.11269-1-elder@linaro.org>
 References: <20210210223320.11269-1-elder@linaro.org>
@@ -64,46 +64,85 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When initializing the IPA core clock and interconnects, it's
-possible we'll get an EPROBE_DEFER error.  This isn't really an
-error, it's just means we need to be re-probed later.
+In ipa_cmd_register_write_valid() we verify that values we will
+supply to a REGISTER_WRITE IPA immediate command will fit in
+the fields that need to hold them.  This patch fixes some issues
+in that function and ipa_cmd_register_write_offset_valid().
 
-Check the return code when initializing these, and if it's
-EPROBE_DEFER, skip printing the error message.
+The dev_err() call in ipa_cmd_register_write_offset_valid() has
+some printf format errors:
+  - The name of the register (corresponding to the string format
+    specifier) was not supplied.
+  - The IPA base offset and offset need to be supplied separately to
+    match the other format specifiers.
+Also make the ~0 constant used there to compute the maximum
+supported offset value explicitly unsigned.
+
+There are two other issues in ipa_cmd_register_write_valid():
+  - There's no need to check the hash flush register for platforms
+    (like IPA v4.2) that do not support hashed tables
+  - The highest possible endpoint number, whose status register
+    offset is computed, is COUNT - 1, not COUNT.
+
+Fix these problems, and add some additional commentary.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa_clock.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/net/ipa/ipa_cmd.c | 30 +++++++++++++++++++++++-------
+ 1 file changed, 23 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ipa/ipa_clock.c b/drivers/net/ipa/ipa_clock.c
-index 354675a643db5..9c845f9bb318e 100644
---- a/drivers/net/ipa/ipa_clock.c
-+++ b/drivers/net/ipa/ipa_clock.c
-@@ -68,8 +68,9 @@ static int ipa_interconnect_init_one(struct device *dev,
- 	if (IS_ERR(path)) {
- 		int ret = PTR_ERR(path);
+diff --git a/drivers/net/ipa/ipa_cmd.c b/drivers/net/ipa/ipa_cmd.c
+index 97b50fee60089..8c832bf2637ab 100644
+--- a/drivers/net/ipa/ipa_cmd.c
++++ b/drivers/net/ipa/ipa_cmd.c
+@@ -244,11 +244,15 @@ static bool ipa_cmd_register_write_offset_valid(struct ipa *ipa,
+ 	if (ipa->version != IPA_VERSION_3_5_1)
+ 		bit_count += hweight32(REGISTER_WRITE_FLAGS_OFFSET_HIGH_FMASK);
+ 	BUILD_BUG_ON(bit_count > 32);
+-	offset_max = ~0 >> (32 - bit_count);
++	offset_max = ~0U >> (32 - bit_count);
  
--		dev_err(dev, "error %d getting %s interconnect\n", ret,
--			data->name);
-+		if (ret != -EPROBE_DEFER)
-+			dev_err(dev, "error %d getting %s interconnect\n", ret,
-+				data->name);
- 
- 		return ret;
- 	}
-@@ -281,7 +282,10 @@ ipa_clock_init(struct device *dev, const struct ipa_clock_data *data)
- 
- 	clk = clk_get(dev, "core");
- 	if (IS_ERR(clk)) {
--		dev_err(dev, "error %ld getting core clock\n", PTR_ERR(clk));
-+		ret = PTR_ERR(clk);
-+		if (ret != -EPROBE_DEFER)
-+			dev_err(dev, "error %d getting core clock\n", ret);
-+
- 		return ERR_CAST(clk);
++	/* Make sure the offset can be represented by the field(s)
++	 * that holds it.  Also make sure the offset is not outside
++	 * the overall IPA memory range.
++	 */
+ 	if (offset > offset_max || ipa->mem_offset > offset_max - offset) {
+ 		dev_err(dev, "%s offset too large 0x%04x + 0x%04x > 0x%04x)\n",
+-				ipa->mem_offset + offset, offset_max);
++			name, ipa->mem_offset, offset, offset_max);
+ 		return false;
  	}
  
+@@ -261,12 +265,24 @@ static bool ipa_cmd_register_write_valid(struct ipa *ipa)
+ 	const char *name;
+ 	u32 offset;
+ 
+-	offset = ipa_reg_filt_rout_hash_flush_offset(ipa->version);
+-	name = "filter/route hash flush";
+-	if (!ipa_cmd_register_write_offset_valid(ipa, name, offset))
+-		return false;
++	/* If hashed tables are supported, ensure the hash flush register
++	 * offset will fit in a register write IPA immediate command.
++	 */
++	if (ipa->version != IPA_VERSION_4_2) {
++		offset = ipa_reg_filt_rout_hash_flush_offset(ipa->version);
++		name = "filter/route hash flush";
++		if (!ipa_cmd_register_write_offset_valid(ipa, name, offset))
++			return false;
++	}
+ 
+-	offset = IPA_REG_ENDP_STATUS_N_OFFSET(IPA_ENDPOINT_COUNT);
++	/* Each endpoint can have a status endpoint associated with it,
++	 * and this is recorded in an endpoint register.  If the modem
++	 * crashes, we reset the status endpoint for all modem endpoints
++	 * using a register write IPA immediate command.  Make sure the
++	 * worst case (highest endpoint number) offset of that endpoint
++	 * fits in the register write command field(s) that must hold it.
++	 */
++	offset = IPA_REG_ENDP_STATUS_N_OFFSET(IPA_ENDPOINT_COUNT - 1);
+ 	name = "maximal endpoint status";
+ 	if (!ipa_cmd_register_write_offset_valid(ipa, name, offset))
+ 		return false;
 -- 
 2.20.1
 
