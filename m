@@ -2,153 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 973E8316303
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 10:58:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A7EB3162C2
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 10:53:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230018AbhBJJ6Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 04:58:24 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:34556 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S230198AbhBJJzz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 04:55:55 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11A9eJ7L004765;
-        Wed, 10 Feb 2021 01:55:00 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=trTaL38XbznzT9IUUOAC9NKqx7g4moL7wbAhK8T6st4=;
- b=PP9vnWgio1yEZ3x8DqmKHHbBispBdARYLwxm0imhU1lw1FD14+woiVS8IS3y0OkqmyBr
- 5PtRpUdggBqwzE1QDCOi0ENLVDM7RvYqe383PiljOHPTuP+dJzDQt3bKGaivHdyZ4Pjw
- HtjDkMPqrLnHKAC/ZaIQp8W+zOUXkpDHpbVIICcqMDYHYGJIuY4TOKuYkffaYQ/3LyDV
- dTjdp3Jr/gJ9YWlq1m8dU88plS0669MY/V5s1uXKsDVr2qeKk9SOiUc+kkIyA4jDrsb8
- xkrYsx2KqiMyqXKnJd6xOh7daiR1XvjEi1/+yNV15up2mbSkw/7FZ/eA000zlbOWtiJo AQ== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 36hsbrkgsa-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 10 Feb 2021 01:55:00 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 10 Feb
- 2021 01:54:59 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 10 Feb 2021 01:54:58 -0800
-Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id 036673F7040;
-        Wed, 10 Feb 2021 01:54:54 -0800 (PST)
-From:   <stefanc@marvell.com>
-To:     <netdev@vger.kernel.org>
-CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
-        <nadavh@marvell.com>, <ymarkman@marvell.com>,
-        <linux-kernel@vger.kernel.org>, <stefanc@marvell.com>,
-        <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
-        <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
-        <atenart@kernel.org>, <devicetree@vger.kernel.org>,
-        <robh+dt@kernel.org>, <sebastian.hesselbarth@gmail.com>,
-        <gregory.clement@bootlin.com>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH v12 net-next 15/15] net: mvpp2: add TX FC firmware check
-Date:   Wed, 10 Feb 2021 11:48:20 +0200
-Message-ID: <1612950500-9682-16-git-send-email-stefanc@marvell.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1612950500-9682-1-git-send-email-stefanc@marvell.com>
-References: <1612950500-9682-1-git-send-email-stefanc@marvell.com>
+        id S230134AbhBJJwe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 04:52:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38000 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229711AbhBJJui (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 04:50:38 -0500
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BA19C061574
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 01:49:58 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id w2so2897760ejk.13
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 01:49:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=1Q5bQyQ8IS37wv39ZHRPDAzN4fI8/qzVcd35DG9rFLY=;
+        b=lJ1TnOkrZv/1PfykX+h78rns7ux6llFRy8IwvtH/wbr3R8iuIU4gYBkYvUtUxtkVK9
+         iisEND+aeMgCY4aRc8+SJNPFvVGgrOxXgVUPEBkWX+MhXyxODFcg7/XBvG6rHznez7Jv
+         iH+n9A5gj6hAvZ13nryx0jGwzsxcazTDeFUMFYTNMZc9F8uMqLUGyaf2kefOT4p3cBbb
+         76SCLgzJzxhANT4+H4PwvFjIMGb5BWRDKD7V8ijf8iUPppTfP1GhO2sjSwIGdVuDqqIm
+         3S/rgPCm84Jdtlfm0OIDkweWahEmyEsqNkH32Bkx8smwbhZONpsf9Jdt9EtXdcezVWVO
+         T1qg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1Q5bQyQ8IS37wv39ZHRPDAzN4fI8/qzVcd35DG9rFLY=;
+        b=htsVR2oC6sSrpcFUt+t2S7E0dSkkWLWLiVecw8sf+zO6HhEMQdknslQyh42hYOJnGE
+         Jnkr4iX02OLK9juHVkBInPCAFyz2kCv7GyMWygUT/wm0vZNx/a/K4feGva7MNUCBxzED
+         qzgowhGtiJpnDE4iqLA6O9T7XQo7KKeFFPRd40LkYAAeeTnkfflBAn5SkOr+Rj5fE2Na
+         0fFzcElfXmrcCaZ9el9C53eant/ROxeeeSEvJ1aofd3Yf01bivtNaDDOGnuZPPvaKP09
+         LiICc7jpEJqhH+cZa+P0/LrbLAJPiUBDX2fPTxhncNTWy86LyxSK5jPXSxjLVcyig8rH
+         WQug==
+X-Gm-Message-State: AOAM531qcKvKySfWBJYkBIrZXGW96T1Tpjl6GeyaW8dfagYIHpcpusX0
+        53uS2EUMgcGGykXbTNs+sp4=
+X-Google-Smtp-Source: ABdhPJyEpTpEfiMAQYkJMkg0ICQkU7f3uCVRI5Rp1fNAbFTw4K0okj1lONBleNoqq/aYLAIAZ3ygOw==
+X-Received: by 2002:a17:906:46ce:: with SMTP id k14mr2187697ejs.480.1612950596784;
+        Wed, 10 Feb 2021 01:49:56 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id c1sm740824eja.81.2021.02.10.01.49.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Feb 2021 01:49:55 -0800 (PST)
+Date:   Wed, 10 Feb 2021 11:49:54 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     George McCollister <george.mccollister@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v3 4/4] net: dsa: xrs700x: add HSR offloading
+ support
+Message-ID: <20210210094954.7fi4bhh6dboa6s5i@skbuf>
+References: <20210210010213.27553-1-george.mccollister@gmail.com>
+ <20210210010213.27553-5-george.mccollister@gmail.com>
+ <f5b361ec-c8a1-22b7-42b3-94fbe4387525@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
- definitions=2021-02-10_03:2021-02-09,2021-02-10 signatures=0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f5b361ec-c8a1-22b7-42b3-94fbe4387525@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefan Chulski <stefanc@marvell.com>
+On Tue, Feb 09, 2021 at 08:11:15PM -0800, Florian Fainelli wrote:
+> 
+> 
+> On 2/9/2021 5:02 PM, George McCollister wrote:
+> > Add offloading for HSR/PRP (IEC 62439-3) tag insertion, tag removal
+> > forwarding and duplication supported by the xrs7000 series switches.
+> > 
+> > Only HSR v1 and PRP v1 are supported by the xrs7000 series switches (HSR
+> > v0 is not).
+> > 
+> > Signed-off-by: George McCollister <george.mccollister@gmail.com>
+> > ---
+> [snip]
+> > +	val &= ~BIT(dsa_upstream_port(ds, port));
+> > +	regmap_write(priv->regmap, XRS_PORT_FWD_MASK(partner->index), val);
+> > +	regmap_write(priv->regmap, XRS_PORT_FWD_MASK(port), val);
+> > +
+> > +	regmap_fields_write(priv->ps_forward, partner->index,
+> > +			    XRS_PORT_FORWARDING);
+> > +	regmap_fields_write(priv->ps_forward, port, XRS_PORT_FORWARDING);
+> > +
+> > +	hsr_pair[0] = port;
+> > +	hsr_pair[1] = partner->index;
+> > +	for (i = 0; i < ARRAY_SIZE(hsr_pair); i++) {
+> > +		slave = dsa_to_port(ds, hsr_pair[i])->slave;
+> > +		slave->features |= XRS7000X_SUPPORTED_HSR_FEATURES;
+> 
+> It's a bit weird to change the supported features while joining, usually
+> you set them ahead of time to indicate what you are capable of doing and
+> those can get toggled by user-space to enable/disable said feature, I
+> suppose the goal here is to influence the HSR data path's decisions to
+> insert or not tags so this may be okay. This does beg several questions:
+> 
+> - should slave->vlan_features also include that feature set somehow (can
+> I have a VLAN upper?)
 
-Patch check that TX FC firmware is running in CM3.
-If not, global TX FC would be disabled.
+hsr_check_dev_ok:
+	if (is_vlan_dev(dev)) {
+		NL_SET_ERR_MSG_MOD(extack, "HSR on top of VLAN is not yet supported in this driver.");
+		return -EINVAL;
+	}
 
-Signed-off-by: Stefan Chulski <stefanc@marvell.com>
-Acked-by: Marcin Wojtas <mw@semihalf.com>
----
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h      |  1 +
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 39 ++++++++++++++++----
- 2 files changed, 33 insertions(+), 7 deletions(-)
+> - should there be a notifier running to advertise NETDEV_FEAT_CHANGE?
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-index b61a1ba..da87152 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-@@ -828,6 +828,7 @@
- 
- #define MSS_THRESHOLD_STOP	768
- #define MSS_THRESHOLD_START	1024
-+#define MSS_FC_MAX_TIMEOUT	5000
- 
- /* RX buffer constants */
- #define MVPP2_SKB_SHINFO_SIZE \
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 4d0a398..ac2f442 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -931,6 +931,34 @@ static void mvpp2_bm_pool_update_fc(struct mvpp2_port *port,
- 	spin_unlock_irqrestore(&port->priv->mss_spinlock, flags);
- }
- 
-+static int mvpp2_enable_global_fc(struct mvpp2 *priv)
-+{
-+	int val, timeout = 0;
-+
-+	/* Enable global flow control. In this stage global
-+	 * flow control enabled, but still disabled per port.
-+	 */
-+	val = mvpp2_cm3_read(priv, MSS_FC_COM_REG);
-+	val |= FLOW_CONTROL_ENABLE_BIT;
-+	mvpp2_cm3_write(priv, MSS_FC_COM_REG, val);
-+
-+	/* Check if Firmware running and disable FC if not*/
-+	val |= FLOW_CONTROL_UPDATE_COMMAND_BIT;
-+	mvpp2_cm3_write(priv, MSS_FC_COM_REG, val);
-+
-+	while (timeout < MSS_FC_MAX_TIMEOUT) {
-+		val = mvpp2_cm3_read(priv, MSS_FC_COM_REG);
-+
-+		if (!(val & FLOW_CONTROL_UPDATE_COMMAND_BIT))
-+			return 0;
-+		usleep_range(10, 20);
-+		timeout++;
-+	}
-+
-+	priv->global_tx_fc = false;
-+	return -EOPNOTSUPP;
-+}
-+
- /* Release buffer to BM */
- static inline void mvpp2_bm_pool_put(struct mvpp2_port *port, int pool,
- 				     dma_addr_t buf_dma_addr,
-@@ -7263,7 +7291,7 @@ static int mvpp2_probe(struct platform_device *pdev)
- 	struct resource *res;
- 	void __iomem *base;
- 	int i, shared;
--	int err, val;
-+	int err;
- 
- 	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
- 	if (!priv)
-@@ -7487,13 +7515,10 @@ static int mvpp2_probe(struct platform_device *pdev)
- 		goto err_port_probe;
- 	}
- 
--	/* Enable global flow control. In this stage global
--	 * flow control enabled, but still disabled per port.
--	 */
- 	if (priv->global_tx_fc && priv->hw_version != MVPP21) {
--		val = mvpp2_cm3_read(priv, MSS_FC_COM_REG);
--		val |= FLOW_CONTROL_ENABLE_BIT;
--		mvpp2_cm3_write(priv, MSS_FC_COM_REG, val);
-+		err = mvpp2_enable_global_fc(priv);
-+		if (err)
-+			dev_warn(&pdev->dev, "Minimum of CM3 firmware 18.09 and chip revision B0 required for flow control\n");
- 	}
- 
- 	mvpp2_dbgfs_init(priv, pdev->name);
--- 
-1.9.1
+I felt it's a bit weird too to toggle the netdev flags just like that
+instead of just enabling them at probe time or something (or have DSA
+set them in dsa_slave_create(), just as it currently checks
+ds->ops->port_vlan_add), but since there's no need for anyone to process
+that notification, and there don't appear to be any strict guidelines, I
+didn't say anything. I guess the current code is just fine for what is
+needed at the moment.
 
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
