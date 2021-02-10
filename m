@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91EF1317197
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 21:45:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46CB6317198
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 21:45:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233322AbhBJUpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 15:45:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37718 "EHLO
+        id S233412AbhBJUpH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 15:45:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233343AbhBJUos (ORCPT
+        with ESMTP id S233353AbhBJUos (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 15:44:48 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBFA6C061788
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 12:43:46 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id c6so4647549ede.0
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 12:43:46 -0800 (PST)
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC440C06178A
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 12:43:47 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id s11so4623750edd.5
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 12:43:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=lNFN8fxT3BHlHEV3hfFYnwQv4HDAZ/cqFw/3w7+Ypno=;
-        b=euqc3Ont53NKpKea5YMJTkC2rr6oWXWI2AHpFOK/FlE8aiKpEiQQq7OcUe7UFa7xei
-         tRfNXEY5DmpJtpJr2eGJJDgPvQSeXVSPWirXzMggc+JwphmQhgtdxAavt53GbqJc9sbS
-         AvoUqEsBaif4y4kfrzK8/8WSveVR6HS/L1laOq8QvUWcVNx0GoTRuo5056r2TJ73AnNK
-         YNpV/LDUFMjfPuhDfjPgPJWsIrhszVdqKVVhYQSb5NNgv3JZROn0RUm6KNQeC4dYAryP
-         kCrOlCFLBJ/1zORlydv9iWVy4Jjrfio4sS2C5pUbwxUc3Ggxsi+HXO3SDeaqXyhiZ2LI
-         izdw==
+        bh=bAD7uqVBt9z/Yn17SCW6bFz5mIqxunvQE9EQMuF/uro=;
+        b=Ui0+I1XqjlmzqGhKevVmLmTbtsIA6Ia2b7as0B0wendmBWiPO6IC8w87wXGtkP70GO
+         el28+sUDxWV57jju4raX2UJfYiAN9+wD5b0gCyKfuwr5RoMi/YWkN3XD0Wi5ilVZX4Bp
+         MMgNIpzGFJzIAWpbN12/EN2U/206jL6+Z4ijTdvnngTSSBR1DJS+vBO04tuqO/LypJII
+         cwPry6dnSAfLXikjMpPjB27q1jfkoGG1qm0b9bY3Ll+W221vjGWs6G3/TuiwHhXRWmQi
+         2CgqdGYCLomdhoD7a9i8SDJE8+Avk/RhYb/GV0KF0e3G7TCQPtVTW8IPNnNhPlqjPvBv
+         uadQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lNFN8fxT3BHlHEV3hfFYnwQv4HDAZ/cqFw/3w7+Ypno=;
-        b=rWEBRGxfopHEpxaA6lv2o4T7lwhRerQ5w4UtTKbvflrNXCVZ5nLzgQ7pM/LWUivGnS
-         OgG3TUze0vH7LypOGkhD+6KI02sCxUBMpW09bP/xOnVB0igY4VY2v1j29yfZiaBMVrKD
-         YQBtLHgJymyIUehdQ0eBEJBjvkQ9WBY3xQmuuiGdPR3iTh3vYWeeBBUEphj9ioO15aAF
-         kIY8mWC/pE0ZIo9fwwk1T7M7fybUrtBhqwRyX6wYimNmLDjCasrpZvlPbR5hTthYk8ak
-         pnI+tuPvqZrZ7L2J1QZQ//z7FFtx8CGHsLDHVpW60qsj1y4sgFOy0saJxaDnRymFXYTs
-         bjFA==
-X-Gm-Message-State: AOAM5301L2a0hFUv0qdybnmmwoGbTh6CBqovLDuVu4Hp98AzA8WHl6E1
-        F6Io/YFM41xr3fQ5uryhQA76Hxv7fTdrcZB35jhJIQ==
-X-Google-Smtp-Source: ABdhPJxbpcEBmovG7jPHzgsYzuWZAUH/mnzOKXsaSsHXsmZwGyTgnIFbIkCAI060O/x/j5rjRPd4Fg==
-X-Received: by 2002:a05:6402:306c:: with SMTP id bs12mr4937940edb.348.1612989825277;
-        Wed, 10 Feb 2021 12:43:45 -0800 (PST)
+        bh=bAD7uqVBt9z/Yn17SCW6bFz5mIqxunvQE9EQMuF/uro=;
+        b=DQuB40YLFgG5DNbIyuKQt4KTuRnbdsvwYajsemhd2y/tuRaqCQ/9kH5/NzkqeK5Nx7
+         2AI7Pu//IjohnZokuesk9v9tRDu+zrlNHpQTUoTOGsqfVjUlNzqvCb/UrFR0Sp4aYv/n
+         Ow9M9lHU4S/keQWUOH10zgbM41aQQ5P+7TOfP8L9EbP+pmQfZ0wkgqpxMtiORCiz8taN
+         9sXsusd6ElJaICeQDthpO52o3PZFWUyIX94AO6Y7iyWh9YbL6omiq/Sk7cjJJUJkoaz9
+         NiCHI1TcxW1I1rALr62Fq1OTu03X6a2naMVt3zkrtL+8tnNPiHCtROj+PV6zhmZdF3Fs
+         voNw==
+X-Gm-Message-State: AOAM5332c7x69oUaMQONzoGCBE+Vi76mi+LUNdlBVJWUWYEIQ0rkwXEr
+        w+ghDNlh+O0FMyabcyw0Rtuw/V0cPEPP76ShnAtgcA==
+X-Google-Smtp-Source: ABdhPJwESpS9Ov7cD4cHYHYl5/B+/pSgPx/pkkpsibP6zLzO/ttMY8KCj1Jk09wrz9gTL5cE/91AMQ==
+X-Received: by 2002:aa7:d149:: with SMTP id r9mr5069247edo.38.1612989826272;
+        Wed, 10 Feb 2021 12:43:46 -0800 (PST)
 Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id l1sm2062655eje.12.2021.02.10.12.43.44
+        by smtp.gmail.com with ESMTPSA id l1sm2062655eje.12.2021.02.10.12.43.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Feb 2021 12:43:44 -0800 (PST)
+        Wed, 10 Feb 2021 12:43:45 -0800 (PST)
 From:   Nikolay Aleksandrov <razor@blackwall.org>
 To:     netdev@vger.kernel.org
 Cc:     roopa@nvidia.com, andy@greyhouse.net, j.vosburgh@gmail.com,
         vfalico@gmail.com, kuba@kernel.org, davem@davemloft.net,
         alexander.duyck@gmail.com, idosch@nvidia.com,
         Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [PATCH net-next v2 2/3] bonding: 3ad: add support for 400G speed
-Date:   Wed, 10 Feb 2021 22:43:32 +0200
-Message-Id: <20210210204333.729603-3-razor@blackwall.org>
+Subject: [PATCH net-next v2 3/3] bonding: 3ad: Print an error for unknown speeds
+Date:   Wed, 10 Feb 2021 22:43:33 +0200
+Message-Id: <20210210204333.729603-4-razor@blackwall.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210210204333.729603-1-razor@blackwall.org>
 References: <20210210204333.729603-1-razor@blackwall.org>
@@ -65,58 +65,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nikolay Aleksandrov <nikolay@nvidia.com>
+From: Ido Schimmel <idosch@nvidia.com>
 
-In order to be able to use 3ad mode with 400G devices we need to extend
-the supported speeds.
+The bond driver needs to be patched to support new ethtool speeds.
+Currently it emits a single warning [1] when it encounters an unknown
+speed. As evident by the two previous patches, this is not explicit
+enough. Instead, promote it to an error.
 
+[1]
+bond10: (slave swp1): unknown ethtool speed (200000) for port 1 (set it to 0)
+
+v2:
+* Use pr_err_once() instead of WARN_ONCE()
+
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 ---
-v2: no changes
-
- drivers/net/bonding/bond_3ad.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/net/bonding/bond_3ad.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
-index 390e877419f3..2e670f68626d 100644
+index 2e670f68626d..6908822d9773 100644
 --- a/drivers/net/bonding/bond_3ad.c
 +++ b/drivers/net/bonding/bond_3ad.c
-@@ -74,6 +74,7 @@ enum ad_link_speed_type {
- 	AD_LINK_SPEED_56000MBPS,
- 	AD_LINK_SPEED_100000MBPS,
- 	AD_LINK_SPEED_200000MBPS,
-+	AD_LINK_SPEED_400000MBPS,
- };
- 
- /* compare MAC addresses */
-@@ -247,6 +248,7 @@ static inline int __check_agg_selection_timer(struct port *port)
-  *     %AD_LINK_SPEED_56000MBPS
-  *     %AD_LINK_SPEED_100000MBPS
-  *     %AD_LINK_SPEED_200000MBPS
-+ *     %AD_LINK_SPEED_400000MBPS
-  */
- static u16 __get_link_speed(struct port *port)
- {
-@@ -318,6 +320,10 @@ static u16 __get_link_speed(struct port *port)
- 			speed = AD_LINK_SPEED_200000MBPS;
- 			break;
- 
-+		case SPEED_400000:
-+			speed = AD_LINK_SPEED_400000MBPS;
-+			break;
-+
+@@ -327,10 +327,10 @@ static u16 __get_link_speed(struct port *port)
  		default:
  			/* unknown speed value from ethtool. shouldn't happen */
  			if (slave->speed != SPEED_UNKNOWN)
-@@ -742,6 +748,9 @@ static u32 __get_agg_bandwidth(struct aggregator *aggregator)
- 		case AD_LINK_SPEED_200000MBPS:
- 			bandwidth = nports * 200000;
+-				pr_warn_once("%s: (slave %s): unknown ethtool speed (%d) for port %d (set it to 0)\n",
+-					     slave->bond->dev->name,
+-					     slave->dev->name, slave->speed,
+-					     port->actor_port_number);
++				pr_err_once("%s: (slave %s): unknown ethtool speed (%d) for port %d (set it to 0)\n",
++					    slave->bond->dev->name,
++					    slave->dev->name, slave->speed,
++					    port->actor_port_number);
+ 			speed = 0;
  			break;
-+		case AD_LINK_SPEED_400000MBPS:
-+			bandwidth = nports * 400000;
-+			break;
- 		default:
- 			bandwidth = 0; /* to silence the compiler */
  		}
 -- 
 2.29.2
