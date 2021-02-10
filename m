@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64DCB3162B0
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 10:51:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 062F23162B1
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 10:51:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229837AbhBJJup (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 04:50:45 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:25706 "EHLO
+        id S229892AbhBJJvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 04:51:03 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:32588 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229562AbhBJJtk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 04:49:40 -0500
+        by vger.kernel.org with ESMTP id S229793AbhBJJty (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 04:49:54 -0500
 Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11A9ePQf013264;
-        Wed, 10 Feb 2021 01:48:31 -0800
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11A9eWnL013304;
+        Wed, 10 Feb 2021 01:49:01 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=974Hly9sCs6t1AhxSUZXS2xJUJdHLMgDC4fXkoSIvkc=;
- b=ch8RJXFgog+0wo4iLxjXZT1S2gl/A+aBqIUDTaxJ63pW5606X1dB0km6cjWGw7UYGrfK
- z/fB0s3DELWp5WCb9ld93t31S8q6yPTHrXPE3pr+3+RVM/Zhiis3Rz5NL9l74ncQDr8l
- rBwFGSmBBrlPcOZ77XnJLpeGl4hhH6UbjgJ2IJYAHXa5Lsho+fIuNv0KU3lw8kXz3ryK
- XMkrIxkv+q96RKlpytP5utkWk9J3PasRiI6F72/qyvHE+3aKDyhPkbYp6kvehSgDK0h5
- 1gLG6Euqb9lPlla0nV7Q8JMT+RFOeHCQbgdYS+XxZ226bMDMjHdh/E8wgSQfrnUrUvVu MA== 
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=pfpt0220; bh=PZMQI6qrDBXVkYRESL4+mOJLgJYdSMTv37arfL6XHfc=;
+ b=UQmTxu8lj4jz/+yNe5x1myNkn2Y7ssJnGrjE5Gj7ANBSN1g18X7/OHRxhO3yIg1R3u/U
+ sxN4w1T6JtAiCog1bvtUMeFYLoHDyN1oS4UN5pE9Ppv+th8EIaEfFEwn/QJfJSS0J/nW
+ RlXmAF/KZIOQSdtxkeK2da0qEf4VTPjIlA+qyresxdUz7jBinMgNUwmoRQ4bloZIdmOy
+ w4ooE1dDmg4OtjQ3Ww1NKwyqygBU45oBORDON7WGuAl/no0t/k/jUrwSzvnA/9pvZLMo
+ 6DgjiWn2nnJwHTSYwGeSff7K0k0PBdK2H5jyYTojMujuftNZeotfq0SElMNgeeWyLvVH 0g== 
 Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 36hugqb90w-1
+        by mx0b-0016f401.pphosted.com with ESMTP id 36hugqb922-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 10 Feb 2021 01:48:31 -0800
-Received: from SC-EXCH01.marvell.com (10.93.176.81) by DC5-EXCH02.marvell.com
+        Wed, 10 Feb 2021 01:49:01 -0800
+Received: from SC-EXCH04.marvell.com (10.93.176.84) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 10 Feb
- 2021 01:48:29 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 10 Feb
- 2021 01:48:28 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 10 Feb 2021 01:48:28 -0800
+ 2021 01:48:59 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 10 Feb
+ 2021 01:48:59 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 10 Feb 2021 01:48:59 -0800
 Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id ACAFD3F703F;
-        Wed, 10 Feb 2021 01:48:24 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id 2B1453F7041;
+        Wed, 10 Feb 2021 01:48:54 -0800 (PST)
 From:   <stefanc@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
@@ -49,10 +49,12 @@ CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
         <robh+dt@kernel.org>, <sebastian.hesselbarth@gmail.com>,
         <gregory.clement@bootlin.com>,
         <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH v12 net-next 00/15] net: mvpp2: Add TX Flow Control support
-Date:   Wed, 10 Feb 2021 11:48:05 +0200
-Message-ID: <1612950500-9682-1-git-send-email-stefanc@marvell.com>
+Subject: [PATCH v12 net-next 01/15] doc: marvell: add CM3 address space and PPv2.3 description
+Date:   Wed, 10 Feb 2021 11:48:06 +0200
+Message-ID: <1612950500-9682-2-git-send-email-stefanc@marvell.com>
 X-Mailer: git-send-email 1.9.1
+In-Reply-To: <1612950500-9682-1-git-send-email-stefanc@marvell.com>
+References: <1612950500-9682-1-git-send-email-stefanc@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
@@ -63,104 +65,47 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Stefan Chulski <stefanc@marvell.com>
 
-Armada hardware has a pause generation mechanism in GOP (MAC).
-The GOP generate flow control frames based on an indication programmed in Ports Control 0 Register. There is a bit per port.
-However assertion of the PortX Pause bits in the ports control 0 register only sends a one time pause.
-To complement the function the GOP has a mechanism to periodically send pause control messages based on periodic counters.
-This mechanism ensures that the pause is effective as long as the Appropriate PortX Pause is asserted.
+Patch adds CM3 address space and PPv2.3 description.
 
-Problem is that Packet Processor that actually can drop packets due to lack of resources not connected to the GOP flow control generation mechanism.
-To solve this issue Armada has firmware running on CM3 CPU dedicated for Flow Control support.
-Firmware monitors Packet Processor resources and asserts XON/XOFF by writing to Ports Control 0 Register.
+Signed-off-by: Stefan Chulski <stefanc@marvell.com>
+Acked-by: Marcin Wojtas <mw@semihalf.com>
+---
+ Documentation/devicetree/bindings/net/marvell-pp2.txt | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-MSS shared SRAM memory used to communicate between CM3 firmware and PP2 driver.
-During init PP2 driver informs firmware about used BM pools, RXQs, congestion and depletion thresholds.
-
-The pause frames are generated whenever congestion or depletion in resources is detected.
-The back pressure is stopped when the resource reaches a sufficient level.
-So the congestion/depletion and sufficient level implement a hysteresis that reduces the XON/XOFF toggle frequency.
-
-Packet Processor v23 hardware introduces support for RX FIFO fill level monitor.
-Patch "add PPv23 version definition" to differ between v23 and v22 hardware.
-Patch "add TX FC firmware check" verifies that CM3 firmware supports Flow Control monitoring.
-
-v11 --> v12
-- Improve warning message in "net: mvpp2: add TX FC firmware check" patch
-
-v10 --> v11
-- Improve "net: mvpp2: add CM3 SRAM memory map" comment
-- Move condition check to 'net: mvpp2: always compare hw-version vs MVPP21' patch
-
-v9 --> v10
-- Add CM3 SRAM description to PPv2 documentation
-
-v8 --> v9
-- Replace generic pool allocation with devm_ioremap_resource
-
-v7 --> v8
-- Reorder "always compare hw-version vs MVPP21" and "add PPv23 version definition" commits
-- Typo fixes
-- Remove condition fix from "add RXQ flow control configurations"
-
-v6 --> v7
-- Reduce patch set from 18 to 15 patches
- - Documentation change combined into a single patch
- - RXQ and BM size change combined into a single patch
- - Ring size change check moved into "add RXQ flow control configurations" commit
-
-v5 --> v6
-- No change
-
-v4 --> v5
-- Add missed Signed-off
-- Fix warnings in patches 3 and 12
-- Add revision requirement to warning message
-- Move mss_spinlock into RXQ flow control configurations patch
-- Improve FCA RXQ non occupied descriptor threshold commit message
-
-v3 --> v4
-- Remove RFC tag
-
-v2 --> v3
-- Remove inline functions
-- Add PPv2.3 description into marvell-pp2.txt
-- Improve mvpp2_interrupts_mask/unmask procedure
-- Improve FC enable/disable procedure
-- Add priv->sram_pool check
-- Remove gen_pool_destroy call
-- Reduce Flow Control timer to x100 faster
-
-v1 --> v2
-- Add memory requirements information
-- Add EPROBE_DEFER if of_gen_pool_get return NULL
-- Move Flow control configuration to mvpp2_mac_link_up callback
-- Add firmware version info with Flow control support
-
-Konstantin Porotchkin (1):
-  dts: marvell: add CM3 SRAM memory to cp11x ethernet device tree
-
-Stefan Chulski (14):
-  doc: marvell: add CM3 address space and PPv2.3 description
-  net: mvpp2: add CM3 SRAM memory map
-  net: mvpp2: always compare hw-version vs MVPP21
-  net: mvpp2: add PPv23 version definition
-  net: mvpp2: increase BM pool and RXQ size
-  net: mvpp2: add FCA periodic timer configurations
-  net: mvpp2: add FCA RXQ non occupied descriptor threshold
-  net: mvpp2: enable global flow control
-  net: mvpp2: add RXQ flow control configurations
-  net: mvpp2: add ethtool flow control configuration support
-  net: mvpp2: add BM protection underrun feature support
-  net: mvpp2: add PPv23 RX FIFO flow control
-  net: mvpp2: set 802.3x GoP Flow Control mode
-  net: mvpp2: add TX FC firmware check
-
- Documentation/devicetree/bindings/net/marvell-pp2.txt |   6 +-
- arch/arm64/boot/dts/marvell/armada-cp11x.dtsi         |   2 +-
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h            | 124 ++++-
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c       | 523 ++++++++++++++++++--
- 4 files changed, 606 insertions(+), 49 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/net/marvell-pp2.txt b/Documentation/devicetree/bindings/net/marvell-pp2.txt
+index b783976..ce15c17 100644
+--- a/Documentation/devicetree/bindings/net/marvell-pp2.txt
++++ b/Documentation/devicetree/bindings/net/marvell-pp2.txt
+@@ -1,5 +1,6 @@
+ * Marvell Armada 375 Ethernet Controller (PPv2.1)
+   Marvell Armada 7K/8K Ethernet Controller (PPv2.2)
++  Marvell CN913X Ethernet Controller (PPv2.3)
+ 
+ Required properties:
+ 
+@@ -12,10 +13,11 @@ Required properties:
+ 	- common controller registers
+ 	- LMS registers
+ 	- one register area per Ethernet port
+-  For "marvell,armada-7k-pp2", must contain the following register
++  For "marvell,armada-7k-pp2" used by 7K/8K and CN913X, must contain the following register
+   sets:
+ 	- packet processor registers
+ 	- networking interfaces registers
++	- CM3 address space used for TX Flow Control
+ 
+ - clocks: pointers to the reference clocks for this device, consequently:
+ 	- main controller clock (for both armada-375-pp2 and armada-7k-pp2)
+@@ -81,7 +83,7 @@ Example for marvell,armada-7k-pp2:
+ 
+ cpm_ethernet: ethernet@0 {
+ 	compatible = "marvell,armada-7k-pp22";
+-	reg = <0x0 0x100000>, <0x129000 0xb000>;
++	reg = <0x0 0x100000>, <0x129000 0xb000>, <0x220000 0x800>;
+ 	clocks = <&cpm_syscon0 1 3>, <&cpm_syscon0 1 9>,
+ 		 <&cpm_syscon0 1 5>, <&cpm_syscon0 1 6>, <&cpm_syscon0 1 18>;
+ 	clock-names = "pp_clk", "gop_clk", "mg_clk", "mg_core_clk", "axi_clk";
 -- 
 1.9.1
 
