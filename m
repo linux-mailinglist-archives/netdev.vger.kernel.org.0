@@ -2,206 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61CF53161D1
+	by mail.lfdr.de (Postfix) with ESMTP id D330D3161D2
 	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 10:12:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230484AbhBJJKc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 04:10:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56382 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230286AbhBJJEs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 04:04:48 -0500
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6AC1C061756;
-        Wed, 10 Feb 2021 01:04:05 -0800 (PST)
-Received: by mail-wm1-x332.google.com with SMTP id w4so1135766wmi.4;
-        Wed, 10 Feb 2021 01:04:05 -0800 (PST)
+        id S230493AbhBJJKq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 04:10:46 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:50142 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S230450AbhBJJGf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 04:06:35 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11A902jd025696;
+        Wed, 10 Feb 2021 01:05:27 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pfpt0220;
+ bh=x8eYnYYgsyVN1Xq2iHF/pbUVdbjIhH+Lj5UmBcebz+o=;
+ b=KM1IOGNTtRP1TS5psbw3QmhLiLQTUn4X/FeXyIb34UX9bwjTrsuBYDvi1G6fzFLBi4gr
+ zITbanJd5xG3mrbvnY30NopKkobl4A/LRqqolEFV6eTKiws6dI8Oc3Rfkb4JalvaJyZX
+ YWRKpgLNcI7M+Gpty6CIT7jMDYE6nzewwUYJOqE3XZk+93TdO7e2EGdvQwVDDGNKD5u5
+ 6L2/U00421wAz8abRku8qJRDvJM8jkniB6xSDHVywJ13XYGJU34pOjInPnW6rXEo/RHr
+ SmEYqWw860US2Z0yNe7od4fN509c+2Z7BHIJHTAw0vV8lXCqJWmVqQM5KrzGx3+cAaQr Gg== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 36hsbrkdrt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 10 Feb 2021 01:05:27 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 10 Feb
+ 2021 01:05:26 -0800
+Received: from NAM02-CY1-obe.outbound.protection.outlook.com (104.47.37.50) by
+ DC5-EXCH02.marvell.com (10.69.176.39) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2 via Frontend Transport; Wed, 10 Feb 2021 01:05:26 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XDTSV6b9je8b46S0jG/bbBqF74QRNJSK17zPLXwD4Z31R7QTBbXG6qJYxTaWlqYK5fLo1nJWq3gu04tfqd4MLuvoLdaEBaKIOlT6BQnT7f3Tac8IRax4IhEOWYWVsaWkYu5BecKQsspwMPiGX2aSHx7lL661AQWKmVkLFyKgU9vA0MT3LotEfo6GSOgEsvJFUIa1l1wOVVLqf6ABrAOUlgxvxtdIj/f3s1KvS8fRe9nf9AtAC88lHNwJbJuErL0uUmaV4FDmZbzwoHx7qsLGmJuYGsvADzj0c2ixtgIjJsC98V3edErJ/C5GMLTVhNsuR0cu15MoncVh5uq0yvlc3g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=x8eYnYYgsyVN1Xq2iHF/pbUVdbjIhH+Lj5UmBcebz+o=;
+ b=gST0XItHm1pAQ/3PBAASphIGVi5lzfk+X3CbTydDMxDZxMrUMF/WbSsx4Pf6ZMyociZBAQ5N1NXjvzC8+N2QZWzMto8LIP3f2iGCpidRP+LRaMopUPc0cTT8rkLeVypOUsCRZFl1rJJSUJQfznvq7rwE3ktse7/dQSEw5SlUSGxHeXJQvjTPKUtYyjouwXI1J//6Ca/DN3EaLvvEAk3QlgzVJnXCXJMqm3BarukBDPrxbIEbfqX4WmQ4T2m3rPTQTaXAX69Ea67OS8qSVQALtkEj07xvS5P3jrXbN/0cLoL9kDRUPbhL9KCyeumhiLN/XKzrCDKdicGTEgI/Wgn7nA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:references:from:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=glEqUJGEBd/fOME9jfBAMFBavuhpbO//etL8K9JgZ4M=;
-        b=oE0vkUeEIh2AmBXcV4iMa7zW7qT4lgH+zrhdIn0ryOjn4Q1ZsLKdQMZltnxL1JfF/h
-         hFIdv1p5Y0nypgZ1MKiqEfDCQaM4lEpgowylHKAkFfsOgJfUXgkl/IfqL+O1UVmbiNVK
-         YXo9gXV0AFz0S3+EyIWep37w2I0uuVKWwTQ7Ril+wVfEHJ7+6OzmUH7bVqRS1Mcp8+Ud
-         vJV8/ry15lhWY8//JSIRiVByl97N8yRSVGtiimV7JuxQaYw2RVDXMm+AgFAiXufkGNIg
-         QqkMZCAUyuoS6+1VefnLChI5iEmeNij2iKlv0KKpv+jWE3t1JzynNQYswMU2Q2uhR0Zk
-         LJMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=glEqUJGEBd/fOME9jfBAMFBavuhpbO//etL8K9JgZ4M=;
-        b=tfUrpF/Xb+EEAADtge1v8GnHRf31bg8USI9AmbS9zmvDKoe9EgEXRbNhqGOiMzZ14L
-         AjTg5qtG4MLH3yH7NrmuzUGhFyuCmYLbmbnHtdZl0qlSBjjIW2qQJy0F+gAL4yGZHdkw
-         3GUMKo0KqUORSM83dUS/7+PxYea0Y0YqRmueaTeIODRG1THad4GI7VvnqbBt0+b1oW7e
-         LWaZJeaIq31qLyKt5IOJBCIjkbLrO0/Pw5Y7mWLPpsYjVVufQnASMDN076CVtR7kGWo7
-         j0xZoGLv6jBKLZjY8tWwxteIOHYDOk8vqRBR06Dt8NDBQ+dkl+vh7lCt8k+GU6gDKi/2
-         y+wA==
-X-Gm-Message-State: AOAM532cuCwPgAC48DkH7HTUZ+3P+E39BqlQ8hEtvxjOCRiU//zhJD5M
-        g3gxSiz90TBl5vNnF+Lp3g0yaLL9r0f3Cw==
-X-Google-Smtp-Source: ABdhPJwF7MaqLyerBnqd14Tw0z+8d2qrsAAbLGJka4YNdKyP1v8Yog66PXNRm0GwCxkvN2+5zUxQQQ==
-X-Received: by 2002:a1c:3cd6:: with SMTP id j205mr1980180wma.166.1612947839023;
-        Wed, 10 Feb 2021 01:03:59 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f1f:ad00:b0ff:e539:9460:c978? (p200300ea8f1fad00b0ffe5399460c978.dip0.t-ipconnect.de. [2003:ea:8f1f:ad00:b0ff:e539:9460:c978])
-        by smtp.googlemail.com with ESMTPSA id d23sm1734510wmd.11.2021.02.10.01.03.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Feb 2021 01:03:58 -0800 (PST)
-To:     Michael Walle <michael@walle.cc>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20210209164051.18156-1-michael@walle.cc>
- <20210209164051.18156-8-michael@walle.cc>
- <d5672062-c619-02a4-3bbe-dad44371331d@gmail.com>
- <e9d26cd6634a8c066809aa92e1481112@walle.cc>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next 7/9] net: phy: icplus: select page before writing
- control register
-Message-ID: <1656b889-12c4-b376-5cdf-38e1dcc500bc@gmail.com>
-Date:   Wed, 10 Feb 2021 10:03:50 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
-MIME-Version: 1.0
-In-Reply-To: <e9d26cd6634a8c066809aa92e1481112@walle.cc>
-Content-Type: text/plain; charset=utf-8
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=x8eYnYYgsyVN1Xq2iHF/pbUVdbjIhH+Lj5UmBcebz+o=;
+ b=P7BVuJbBlJAMeLMtBMQ0MJcxHGzpofFQK1dEvtmfZlq5a46/Sz1/u9bot+K3cqTVYKcedlLzjpZ4djVVKfIyJOKaVEpkJDWctyQGx8oz7IWR4wYQuaUTMgZtmQlIPIhd4Elvov/S38gLxcOUOa7RM+CRzcOt+ZFOYwVKxTPHYOY=
+Received: from CO6PR18MB3873.namprd18.prod.outlook.com (2603:10b6:5:350::23)
+ by MWHPR18MB1216.namprd18.prod.outlook.com (2603:10b6:320:2b::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.26; Wed, 10 Feb
+ 2021 09:05:24 +0000
+Received: from CO6PR18MB3873.namprd18.prod.outlook.com
+ ([fe80::c041:1c61:e57:349a]) by CO6PR18MB3873.namprd18.prod.outlook.com
+ ([fe80::c041:1c61:e57:349a%3]) with mapi id 15.20.3846.025; Wed, 10 Feb 2021
+ 09:05:24 +0000
+From:   Stefan Chulski <stefanc@marvell.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Nadav Haklai <nadavh@marvell.com>,
+        Yan Markman <ymarkman@marvell.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "mw@semihalf.com" <mw@semihalf.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "atenart@kernel.org" <atenart@kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "sebastian.hesselbarth@gmail.com" <sebastian.hesselbarth@gmail.com>,
+        "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: RE: [EXT] Re: [PATCH v11 net-next 15/15] net: mvpp2: add TX FC
+ firmware check
+Thread-Topic: [EXT] Re: [PATCH v11 net-next 15/15] net: mvpp2: add TX FC
+ firmware check
+Thread-Index: AQHW/sBBFbgpQQcn1kKFZbDyaw2oG6pQA9IAgAEWNfA=
+Date:   Wed, 10 Feb 2021 09:05:24 +0000
+Message-ID: <CO6PR18MB3873EB4FE57E1D35531AB5AFB08D9@CO6PR18MB3873.namprd18.prod.outlook.com>
+References: <1612860151-12275-1-git-send-email-stefanc@marvell.com>
+ <1612860151-12275-16-git-send-email-stefanc@marvell.com>
+ <20210209162855.GQ1463@shell.armlinux.org.uk>
+In-Reply-To: <20210209162855.GQ1463@shell.armlinux.org.uk>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: armlinux.org.uk; dkim=none (message not signed)
+ header.d=none;armlinux.org.uk; dmarc=none action=none
+ header.from=marvell.com;
+x-originating-ip: [80.230.78.81]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 8872fd71-fc06-4c5f-b813-08d8cda3006e
+x-ms-traffictypediagnostic: MWHPR18MB1216:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MWHPR18MB121691C9B6FD4612C2D5C229B08D9@MWHPR18MB1216.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 2zAiDVOFctFqurRQuh8d8hI9R/hFVN9htjlCWL4YH73dIqOPdexCOt7sFmUgfEhR4MeH+E0DcXFks/SCrBXc1UWIYoRMpnZHpS4vnRuv5DZ5ECQtj8259YJ9RAxP+cLVTOELK3md6lavCKmI1qwd+39jE2UWY/9r9XjC1RxmG6qwUAotWYx76I1AxUYljvtCrYSju+qnbei+zdSXTekck0O2R7PYyJQH27rnQjgfdCZ4igXAdqpKkiVy0pZiaZay8HYC4xPDw8CAuesrFeGx0Xz8wnPNrxMaL2yBJlLOg1nty04zi1KsZTylgThEPKIrAkwhSwKbqjZGVngdOJXdhJ7lAg84XJMI4hE4p3kZIqfKW+R8XV30zaTtEJkiEzD5WtH+If75tWymWzRt2TeVbBzasMXWxtFvWo77rvHbPqm8nM9ZEbzBy4J5fIXgU4Oo/++9BMMSCqSdZWx6Zz3lH07Ipu13vdkaFjW0OFAnRDw1n/vsZaZKsJNURHsmB2axisqqs67mdTRwXk6MMbRYsQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR18MB3873.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(396003)(376002)(366004)(136003)(346002)(86362001)(76116006)(478600001)(66476007)(66556008)(64756008)(66946007)(66446008)(83380400001)(55016002)(7416002)(6506007)(8936002)(186003)(8676002)(26005)(71200400001)(9686003)(316002)(4744005)(2906002)(5660300002)(6916009)(52536014)(4326008)(7696005)(33656002)(54906003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?3vBeowF7XLmDxLCuh5b8UPtkETEdM6zCsdpbZpFtFJr3BGtsiUfRSJe2Wee9?=
+ =?us-ascii?Q?SZ6UD1njwNAG1qq6ts1JXPMx6rzYf9BIpVEguN76qaMI6x9RIpM1OJuMH2sS?=
+ =?us-ascii?Q?2jOi2mOcecbB8Z42Yv8TiMRtrgDDX/cWSNhk2p9XzAjghR/ubaR7VZhgbEsw?=
+ =?us-ascii?Q?g3yWa4KItI1wWyagZQrNX0KLSWnIeZ1eRFU2mVpQz2nBjJopDuE34Hx2qY2L?=
+ =?us-ascii?Q?2OUk5uyFzquD86RSzy/131rca+kK5S1qsob1/4HmDqQChCiiV6P2KCpD2POp?=
+ =?us-ascii?Q?nXwyg38SgUR2WxA8T4GiJ+VAFFvoZNooy6p14opWg4cqjkJF6gEjwI5VarTy?=
+ =?us-ascii?Q?0ScZ2MEe6UyTFAccU7uK1GA0M8VFzOo5evC0HPoHAvTo6LIIe/NNqF4qb3nj?=
+ =?us-ascii?Q?Jzv7HyVqjHRYu++wtk4NNNCDtATthJe+NuFaVtRrWNs4UCMhxDTvmaBqpbEi?=
+ =?us-ascii?Q?8fFK8i4Dhs0m5TjEQzdvePTgsfLJCiYWgZG94z6O/ZizBWDziBUjUo16dLvU?=
+ =?us-ascii?Q?bXueCbQ3VHLp+d5NbSQBc5l8lgP4Eh1Kr1UEYWgAo6ccprsigSRI47A5GZvi?=
+ =?us-ascii?Q?4ijmgHCurVE4F7KL/cmOtEqIP8s/PycUUwkCIKMLXhQCgG8X8qQ0ovrX/dms?=
+ =?us-ascii?Q?e3cTbnK8UjK4dkxbgY+ZaeihEKAS4d3q/+JgmgFI9XOQeqAiKrX4wxxY2C7c?=
+ =?us-ascii?Q?eORUORQOfT0vqFJcNh4lQosuOYVtKchkYTIb4XCfyodqRWF5JlWFXyGrALkJ?=
+ =?us-ascii?Q?7xM/46luk4bEbkc2Q5WxunX2A2/fxQpINoElihOpkEu4IW8oAPnt3bGt4imq?=
+ =?us-ascii?Q?4MxmRndelWNUBmFj6ca2JfuQSswovoPCSX465YhsMeBy7tEW/U/sWp9temAu?=
+ =?us-ascii?Q?zngHQLbVPIAg6tOWjt6gYNOUAaP26J6+rGQoyqrPQFdHK/vfwl+1XuVHoR5c?=
+ =?us-ascii?Q?JtBwavVejfRMK+mjBd3Job4zNsXoldg+eL4mGlPLVEases/h1l7gUkB/+irQ?=
+ =?us-ascii?Q?BDKwcjXAZGC5K3aSR2N9O04r+5tc1Uo1Zdf7Q34UVKHOMo2U2vkFkYjQNlfp?=
+ =?us-ascii?Q?9fGl2wrjU66OgqoFirNuQCc1PIL4fIZfKJnp1rsCrWetKcnZ4Jt5Ym7/z585?=
+ =?us-ascii?Q?OiK9gF7UTSRi1Kwwy/vg25P8uBiDaHAn/Q4Ru5u3lWSuV1Pe+AO11XImdf0f?=
+ =?us-ascii?Q?5x7+KBdQ+bwKAzC9AryTwze+W2kE+qadX58CQkDod+l3gHQhXyp3PrIJcf56?=
+ =?us-ascii?Q?WC3patLLxxeTmXyIfvZLpClzob/F1lGTvJ3G0KxejfG8xeW1/m7PFy/x4p33?=
+ =?us-ascii?Q?xpg=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR18MB3873.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8872fd71-fc06-4c5f-b813-08d8cda3006e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Feb 2021 09:05:24.2369
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ReLtRws93AeRGMqbaglQ2oar46976EAz8Lnx+ae0AZrdtwhB/fVOlyyk33/6zBtzTvQnLxPkw/C7SdL8PTQW+A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR18MB1216
+X-OriginatorOrg: marvell.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
+ definitions=2021-02-10_02:2021-02-09,2021-02-10 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10.02.2021 09:25, Michael Walle wrote:
-> Hi,
-> 
-> Am 2021-02-10 08:03, schrieb Heiner Kallweit:
->> On 09.02.2021 17:40, Michael Walle wrote:
->>> Registers >= 16 are paged. Be sure to set the page. It seems this was
->>> working for now, because the default is correct for the registers used
->>> in the driver at the moment. But this will also assume, nobody will
->>> change the page select register before linux is started. The page select
->>> register is _not_ reset with a soft reset of the PHY.
->>>
->>> Add read_page()/write_page() support for the IP101G and use it
->>> accordingly.
->>>
->>> Signed-off-by: Michael Walle <michael@walle.cc>
->>> ---
->>>  drivers/net/phy/icplus.c | 50 +++++++++++++++++++++++++++++++---------
->>>  1 file changed, 39 insertions(+), 11 deletions(-)
->>>
->>> diff --git a/drivers/net/phy/icplus.c b/drivers/net/phy/icplus.c
->>> index a6e1c7611f15..858b9326a72d 100644
->>> --- a/drivers/net/phy/icplus.c
->>> +++ b/drivers/net/phy/icplus.c
->>> @@ -49,6 +49,8 @@ MODULE_LICENSE("GPL");
->>>  #define IP101G_DIGITAL_IO_SPEC_CTRL            0x1d
->>>  #define IP101G_DIGITAL_IO_SPEC_CTRL_SEL_INTR32        BIT(2)
->>>
->>> +#define IP101G_DEFAULT_PAGE            16
->>> +
->>>  #define IP175C_PHY_ID 0x02430d80
->>>  #define IP1001_PHY_ID 0x02430d90
->>>  #define IP101A_PHY_ID 0x02430c54
->>> @@ -250,23 +252,25 @@ static int ip101a_g_probe(struct phy_device *phydev)
->>>  static int ip101a_g_config_init(struct phy_device *phydev)
->>>  {
->>>      struct ip101a_g_phy_priv *priv = phydev->priv;
->>> -    int err;
->>> +    int oldpage, err;
->>> +
->>> +    oldpage = phy_select_page(phydev, IP101G_DEFAULT_PAGE);
->>>
->>>      /* configure the RXER/INTR_32 pin of the 32-pin IP101GR if needed: */
->>>      switch (priv->sel_intr32) {
->>>      case IP101GR_SEL_INTR32_RXER:
->>> -        err = phy_modify(phydev, IP101G_DIGITAL_IO_SPEC_CTRL,
->>> -                 IP101G_DIGITAL_IO_SPEC_CTRL_SEL_INTR32, 0);
->>> +        err = __phy_modify(phydev, IP101G_DIGITAL_IO_SPEC_CTRL,
->>> +                   IP101G_DIGITAL_IO_SPEC_CTRL_SEL_INTR32, 0);
->>>          if (err < 0)
->>> -            return err;
->>> +            goto out;
->>>          break;
->>>
->>>      case IP101GR_SEL_INTR32_INTR:
->>> -        err = phy_modify(phydev, IP101G_DIGITAL_IO_SPEC_CTRL,
->>> -                 IP101G_DIGITAL_IO_SPEC_CTRL_SEL_INTR32,
->>> -                 IP101G_DIGITAL_IO_SPEC_CTRL_SEL_INTR32);
->>> +        err = __phy_modify(phydev, IP101G_DIGITAL_IO_SPEC_CTRL,
->>> +                   IP101G_DIGITAL_IO_SPEC_CTRL_SEL_INTR32,
->>> +                   IP101G_DIGITAL_IO_SPEC_CTRL_SEL_INTR32);
->>>          if (err < 0)
->>> -            return err;
->>> +            goto out;
->>>          break;
->>>
->>>      default:
->>> @@ -284,12 +288,14 @@ static int ip101a_g_config_init(struct phy_device *phydev)
->>>       * reserved as 'write-one'.
->>>       */
->>>      if (priv->model == IP101A) {
->>> -        err = phy_set_bits(phydev, IP10XX_SPEC_CTRL_STATUS, IP101A_G_APS_ON);
->>> +        err = __phy_set_bits(phydev, IP10XX_SPEC_CTRL_STATUS,
->>> +                     IP101A_G_APS_ON);
->>>          if (err)
->>> -            return err;
->>> +            goto out;
->>>      }
->>>
->>> -    return 0;
->>> +out:
->>> +    return phy_restore_page(phydev, oldpage, err);
->>
->> If a random page was set before entering config_init, do we actually want
->> to restore it? Or wouldn't it be better to set the default page as part
->> of initialization?
-> 
-> First, I want to convert this to the match_phy_device() and while at it,
-> I noticed that there is this one "problem". Short summary: the IP101A isn't
-> paged, the IP101G has serveral and if page 16 is selected it is more or
-> less compatible with the IP101A. My problem here is now how to share the
-> functions for both PHYs without duplicating all the code. Eg. the IP101A
-> will phy_read/phy_write/phy_modify(), that is, all the locked versions.
-> For the IP101G I'd either need the _paged() versions or the __phy ones
-> which don't take the mdio_bus lock.
-> 
-> Here is what I came up with:
-> (1) provide a common function which uses the __phy ones, then the
->     callback for the A version will take the mdio_bus lock and calls
->     the common one. The G version will use phy_{select,restore}_page().
-> (2) the phy_driver ops for A will also provde a .read/write_page()
->     callback which is just a no-op. So A can just use the G versions.
-> (3) What Heiner mentioned here, just set the default page in
->     config_init().
-> 
-> (1) will still bloat the code; (3) has the disadvantage, that the
-> userspace might fiddle around with the page register and then the
-> whole PHY driver goes awry. I don't know if we have to respect that
-> use case in general. I know there is an API to read/write the PHY
-> registers and it could happen.
-> 
+> >  	if (priv->global_tx_fc && priv->hw_version !=3D MVPP21) {
+> > -		val =3D mvpp2_cm3_read(priv, MSS_FC_COM_REG);
+> > -		val |=3D FLOW_CONTROL_ENABLE_BIT;
+> > -		mvpp2_cm3_write(priv, MSS_FC_COM_REG, val);
+> > +		err =3D mvpp2_enable_global_fc(priv);
+> > +		if (err) {
+> > +			dev_warn(&pdev->dev, "CM3 firmware not running,
+> version should be higher than 18.09 ");
+> > +			dev_warn(&pdev->dev, "and chip revision B0\n");
+> > +			dev_warn(&pdev->dev, "Flow control not
+> supported\n");
+>=20
+> I would much rather this was:
+>=20
+> 			dev_warn(&pdev->dev, "Minimum of CM3 firmware
+> 18.09 and chip revision B0 required for flow control\n");
+>=20
+> rather than trying to split it across several kernel messages.
 
-The potential issue you mention here we have with all PHY's using
-pages. As one example, the genphy functions rely on the PHY being
-set to the default page. In general userspace can write PHY register
-values that break processing, independent of paging.
-I'm not aware of any complaints regarding this behavior, therefore
-wouldn't be too concerned here.
+I would repots v12 with this change soon.
 
-Regarding (2) I'd like to come back to my proposal from yesterday,
-implement match_phy_device to completely decouple the A and G versions.
-Did you consider this option?
-
-> That being said, I'm either fine with (2) and (3) but I'm preferring
-> (2).
-> 
-> BTW, this patch is still missing read/writes to the interrupt status
-> and control registers which is also paged.
-> 
-> -michael
-
-Heiner
+Thanks,
+Stefan.
