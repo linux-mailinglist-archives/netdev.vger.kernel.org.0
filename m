@@ -2,115 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E57CB3166B3
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 13:31:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 266333166C3
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 13:33:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231634AbhBJMbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 07:31:01 -0500
-Received: from aserp2120.oracle.com ([141.146.126.78]:33584 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231650AbhBJM2y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 07:28:54 -0500
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11ACPTsd125196;
-        Wed, 10 Feb 2021 12:28:11 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=V/QQKYhssb1c/ULhEm/h6VOFSy7PGCdB3QzOc3CmcDM=;
- b=Mm2AbRMfuoTWym75vifiQSy9RG7chLOeEhwfWbtMt8BB6hGztxg4UP1fpQVlv/ayC7lM
- dTLD3SEtixhz1I5EJ1mVJgjQUyVzLNavZXXEf+QTJlFVR51srgX5bxKSW/mNvKqIyDXH
- OaTAvLkbWZzeMayb9HSp8fvDudCJapnqRUp3+zmNxYP30uBAM5kU245NzujqFBWwXxQd
- /13GFkkSURCYkLuygU8xdBZY7huHVIqUcnDNu/bPGokUdpRhXSeax/bP+rLJR1/OjU0L
- zZKG4JqTjtJmhXOSt+3qxsyKU7evzbqehsWoQNdLHByPS72/l1/gPH3w++94iKIJM1GJ VA== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by aserp2120.oracle.com with ESMTP id 36m4upsphe-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 10 Feb 2021 12:28:11 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11ACQgb7111385;
-        Wed, 10 Feb 2021 12:28:09 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userp3020.oracle.com with ESMTP id 36j4vsr99h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 10 Feb 2021 12:28:09 +0000
-Received: from abhmp0002.oracle.com (abhmp0002.oracle.com [141.146.116.8])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 11ACS82Y030916;
-        Wed, 10 Feb 2021 12:28:08 GMT
-Received: from kadam (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 10 Feb 2021 04:28:07 -0800
-Date:   Wed, 10 Feb 2021 15:28:01 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     vladbu@nvidia.com, linux-rdma@vger.kernel.org,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: Re: [bug report] net/mlx5e: E-Switch, Maintain vhca_id to vport_num
- mapping
-Message-ID: <20210210122801.GW20820@kadam>
-References: <YCOep5XDMt5IM/PV@mwanda>
- <20210210114820.GA741034@unreal>
+        id S231892AbhBJMc2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 07:32:28 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:25674 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231922AbhBJMaa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 07:30:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1612960133;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=i5wXyy1sPUgnnMqVauVL41jvRX6eG8p4VtBbB9PGUS8=;
+        b=MsfUT2eCEe7E7S5QHVpNXXvhvLFJ28u1ZvxvGawDbz1nxR4GNG9ZQYsD0Th8xjnXM97le2
+        M7GugTtV5Z8YULz5byP6Dur7Y+uWDlEXRSeFI+FwoNq6Oct1widAKhMW+VL3mp2YRxvxPc
+        pOF0qJ5ULobmNDQhdCjEJGKQByC9rgY=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-496-gJBuHSPgOSSn-gzzzpH5Nw-1; Wed, 10 Feb 2021 07:28:51 -0500
+X-MC-Unique: gJBuHSPgOSSn-gzzzpH5Nw-1
+Received: by mail-wm1-f70.google.com with SMTP id u138so890546wmu.8
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 04:28:51 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=i5wXyy1sPUgnnMqVauVL41jvRX6eG8p4VtBbB9PGUS8=;
+        b=V1GBIdQxlhIwdQZ8ntd4H5rZLfDlnH4Bprb/67DhVYHBbTZjqZ5RVQDwKL1fXs7urH
+         m3vDH2SJrmQO8n+l7mz/SlNxknlOlaUJB7FMWJc6TVXztmK3HJuM8+4KoJFBPmnpqhD0
+         KCVaOv0X+DpRurvt0nLRcNP6jvUHKOo/s0bDgmeGFeRt8PAoo79AiJga3aHr3odWPk9U
+         Zibb86RYRyRzR4tbyCyveqLVp0HNcnRBdCT9HTX4/7H+zW39X/cQQljExSw/aEmb/3oJ
+         /rlAnijJ/S/tJN9cTUuk+iZNelx0SB5ZXifLqD4StCs09sWbqfRRZpnGH0Ef9ahnT6xB
+         csbg==
+X-Gm-Message-State: AOAM530cQhITPSzvxKo/dmusHrV526I55zmdihLOOaIjxfnKeOI6WqVA
+        a8+J3S1AVURu3/+x9dVTk425kUZH1kP6pRKeMAJh0+1jXGRuk+F/lMbOe9AWAJZ89vc6b8icJEk
+        I0fDsDXIUh4uM8nMe
+X-Received: by 2002:adf:b611:: with SMTP id f17mr3364769wre.8.1612960129954;
+        Wed, 10 Feb 2021 04:28:49 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx9+xzSxdXFmowIk42Rj2TTfAS5qUcbZY08lcAl1KI09s/LaYklsKwABS3n8zQbgdh+YNgXxg==
+X-Received: by 2002:adf:b611:: with SMTP id f17mr3364759wre.8.1612960129805;
+        Wed, 10 Feb 2021 04:28:49 -0800 (PST)
+Received: from redhat.com (bzq-79-180-2-31.red.bezeqint.net. [79.180.2.31])
+        by smtp.gmail.com with ESMTPSA id i10sm3116755wrp.0.2021.02.10.04.28.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Feb 2021 04:28:49 -0800 (PST)
+Date:   Wed, 10 Feb 2021 07:28:46 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Si-Wei Liu <si-wei.liu@oracle.com>
+Cc:     Eli Cohen <elic@nvidia.com>, jasowang@redhat.com,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 2/3] mlx5_vdpa: fix feature negotiation across device
+ reset
+Message-ID: <20210210072758-mutt-send-email-mst@kernel.org>
+References: <1612614564-4220-1-git-send-email-si-wei.liu@oracle.com>
+ <1612614564-4220-2-git-send-email-si-wei.liu@oracle.com>
+ <20210208053500.GA137517@mtl-vdi-166.wap.labs.mlnx>
+ <061486d5-6235-731b-d036-f5d5e9fac22e@oracle.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210210114820.GA741034@unreal>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-IMR: 1
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9890 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 adultscore=0
- mlxlogscore=999 mlxscore=0 suspectscore=0 malwarescore=0 phishscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102100121
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9890 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 mlxscore=0
- mlxlogscore=999 spamscore=0 impostorscore=0 malwarescore=0 clxscore=1015
- suspectscore=0 adultscore=0 bulkscore=0 lowpriorityscore=0 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2102100121
+In-Reply-To: <061486d5-6235-731b-d036-f5d5e9fac22e@oracle.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 10, 2021 at 01:48:20PM +0200, Leon Romanovsky wrote:
-> On Wed, Feb 10, 2021 at 11:51:51AM +0300, Dan Carpenter wrote:
-> > Hello Vlad Buslov,
-> >
-> > The patch 84ae9c1f29c0: "net/mlx5e: E-Switch, Maintain vhca_id to
-> > vport_num mapping" from Sep 23, 2020, leads to the following static
-> > checker warning:
-> >
-> > 	drivers/net/ethernet/mellanox/mlx5/core/vport.c:1170 mlx5_vport_get_other_func_cap()
-> > 	warn: odd binop '0x0 & 0x1'
-> >
-> > drivers/net/ethernet/mellanox/mlx5/core/vport.c
-> >   1168  int mlx5_vport_get_other_func_cap(struct mlx5_core_dev *dev, u16 function_id, void *out)
-> >   1169  {
-> >   1170          u16 opmod = (MLX5_CAP_GENERAL << 1) | (HCA_CAP_OPMOD_GET_MAX & 0x01);
-> >
-> > HCA_CAP_OPMOD_GET_MAX is zero.  The 0x01 is a magical number.
-> >
-> >   1171          u8 in[MLX5_ST_SZ_BYTES(query_hca_cap_in)] = {};
-> >   1172
-> >   1173          MLX5_SET(query_hca_cap_in, in, opcode, MLX5_CMD_OP_QUERY_HCA_CAP);
-> >   1174          MLX5_SET(query_hca_cap_in, in, op_mod, opmod);
-> >   1175          MLX5_SET(query_hca_cap_in, in, function_id, function_id);
-> >   1176          MLX5_SET(query_hca_cap_in, in, other_function, true);
-> >   1177          return mlx5_cmd_exec_inout(dev, query_hca_cap, in, out);
-> >   1178  }
+On Mon, Feb 08, 2021 at 05:20:11PM -0800, Si-Wei Liu wrote:
 > 
-> Dan,
 > 
-> I'm running smatch which is based on 6193b3b71beb ("extra: fix some error pointer handling")
-> and I don't see this error. Should I run something special?
+> On 2/7/2021 9:35 PM, Eli Cohen wrote:
+> > On Sat, Feb 06, 2021 at 04:29:23AM -0800, Si-Wei Liu wrote:
+> > > The mlx_features denotes the capability for which
+> > > set of virtio features is supported by device. In
+> > > principle, this field needs not be cleared during
+> > > virtio device reset, as this capability is static
+> > > and does not change across reset.
+> > > 
+> > > In fact, the current code may have the assumption
+> > > that mlx_features can be reloaded from firmware
+> > > via the .get_features ops after device is reset
+> > > (via the .set_status ops), which is unfortunately
+> > > not true. The userspace VMM might save a copy
+> > > of backend capable features and won't call into
+> > > kernel again to get it on reset. This causes all
+> > > virtio features getting disabled on newly created
+> > > virtqs after device reset, while guest would hold
+> > > mismatched view of available features. For e.g.,
+> > > the guest may still assume tx checksum offload
+> > > is available after reset and feature negotiation,
+> > > causing frames with bogus (incomplete) checksum
+> > > transmitted on the wire.
+> > > 
+> > > Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
+> > > ---
+> > >   drivers/vdpa/mlx5/net/mlx5_vnet.c | 1 -
+> > >   1 file changed, 1 deletion(-)
+> > > 
+> > > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > index b8416c4..aa6f8cd 100644
+> > > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > @@ -1788,7 +1788,6 @@ static void mlx5_vdpa_set_status(struct vdpa_device *vdev, u8 status)
+> > >   		clear_virtqueues(ndev);
+> > >   		mlx5_vdpa_destroy_mr(&ndev->mvdev);
+> > >   		ndev->mvdev.status = 0;
+> > > -		ndev->mvdev.mlx_features = 0;
+> > >   		++mvdev->generation;
+> > >   		return;
+> > >   	}
+> > Since we assume that device capabilities don't change, I think I would
+> > get the features through a call done in mlx5v_probe after the netdev
+> > object is created and change mlx5_vdpa_get_features() to just return
+> > ndev->mvdev.mlx_features.
+> Yep, it makes sense. Will post a revised patch.
+
+So I'm waiting for v2 of this patchset. Please make sure to post a cover letter
+with an overall description.
+
+> If vdpa tool allows
+> reconfiguration post probing, the code has to be reconciled then.
 > 
-
-This check is too crap to publish.
-
-The heuristic was "a bitwise AND which always results in zero" but a lot
-of code does stuff like:  "data = 0x00 << 0 | 0x04 << 8 | 0x12 << 16;"
-I could never figure out a way to make the check useful enough to
-publish.
-
-regards,
-dan carpenter
+> > 
+> > Did you actually see this issue in action? If you did, can you share
+> > with us how you trigerred this?
+> Issue is indeed seen in action. The mismatched tx-checksum offload as
+> described in the commit message was one of such examples. You would need a
+> guest reboot though (triggering device reset via the .set_status ops and
+> zero'ed mlx_features was loaded to deduce new actual_features for creating
+> the h/w virtq object) for repro.
+> 
+> -Siwei
+> > 
+> > > -- 
+> > > 1.8.3.1
+> > > 
 
