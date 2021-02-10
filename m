@@ -2,77 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2577316BA5
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 17:48:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7A0D316BAC
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 17:50:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232071AbhBJQs0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 11:48:26 -0500
-Received: from mail.baikalelectronics.com ([87.245.175.226]:34650 "EHLO
-        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232974AbhBJQsO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 11:48:14 -0500
-Date:   Wed, 10 Feb 2021 19:47:20 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-CC:     Serge Semin <fancer.lancer@gmail.com>,
+        id S233026AbhBJQtS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 11:49:18 -0500
+Received: from ssl.serverraum.org ([176.9.125.105]:34623 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232236AbhBJQsm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 11:48:42 -0500
+Received: from mwalle01.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:fa59:71ff:fe9b:b851])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 6474522FB3;
+        Wed, 10 Feb 2021 17:47:56 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1612975676;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=taQ9ZDXzhRhp/CcYP3gEH20xljinVs76d11A1gR7cew=;
+        b=X51IBq6MjkTgRAu2HK7S4uFyCiNhixgtuHtzN99mNdXcDajwB4jWOS0F9oL3TXPp6NL94M
+        bibb5KyNtdfg7CHes7KtsCc7aRF1Ez8F33zIQzCzQFrOfS8KchxBYJsizuG8YFUBqpkuC5
+        P8Ai0XFDBkDde6umC9L+nWXSW4l5/Eg=
+From:   Michael Walle <michael@walle.cc>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        <linux-kernel@vger.kernel.org>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Vyacheslav Mitrofanov 
-        <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH 01/20] net: phy: realtek: Fix events detection failure in
- LPI mode
-Message-ID: <20210210164720.migzigazyqsuxwc6@mobilestation>
-References: <20210208140341.9271-1-Sergey.Semin@baikalelectronics.ru>
- <20210208140341.9271-2-Sergey.Semin@baikalelectronics.ru>
- <8300d9ca-b877-860f-a975-731d6d3a93a5@gmail.com>
- <20210209101528.3lf47ouaedfgq74n@mobilestation>
- <a652c69b-94d3-9dc6-c529-1ebc0ed407ac@gmail.com>
- <20210209105646.GP1463@shell.armlinux.org.uk>
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH net-next v2 0/9] net: phy: icplus: cleanups and new features
+Date:   Wed, 10 Feb 2021 17:47:37 +0100
+Message-Id: <20210210164746.26336-1-michael@walle.cc>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20210209105646.GP1463@shell.armlinux.org.uk>
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 09, 2021 at 10:56:46AM +0000, Russell King - ARM Linux admin wrote:
-> On Tue, Feb 09, 2021 at 11:37:29AM +0100, Heiner Kallweit wrote:
-> > Right, adding something like a genphy_{read,write}_mmd() doesn't make
-> > too much sense for now. What I meant is just exporting mmd_phy_indirect().
-> > Then you don't have to open-code the first three steps of a mmd read/write.
-> > And it requires no additional code in phylib.
-> 
-> ... but at the cost that the compiler can no longer inline that code,
-> as I mentioned in my previous reply. (However, the cost of the accesses
-> will be higher.) On the plus side, less I-cache footprint, and smaller
-> kernel code.
+Cleanup the PHY drivers for IPplus devices and add PHY counters and MDIX
+support for the IP101A/G.
 
-Just to note mmd_phy_indirect() isn't defined with inline specifier,
-but just as static and it's used twice in the
-drivers/net/phy/phy-core.c unit. So most likely the compiler won't
-inline the function code in there. Anyway it's up to the PHY
-library maintainers to decide. Please settle the issue with Heiner and
-Andrew then. I am ok with both solutions and will do as you decide.
+Patch 5 adds a model detection based on the behavior of the PHY.
+Unfortunately, the IP101A shares the PHY ID with the IP101G. But the latter
+provides more features. Try to detect the newer model by accessing the page
+selection register. If it is writeable, it is assumed, that it is a IP101G.
 
--Sergey
+With this detection in place, we can now access registers >= 16 in a
+correct way on the IP101G; that is by first selecting the correct page.
+This might previouly worked, because no one ever set another active page
+before booting linux.
 
-> 
-> -- 
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+The last two patches add the new features.
+
+Michael Walle (9):
+  net: phy: icplus: use PHY_ID_MATCH_MODEL() macro
+  net: phy: icplus: use PHY_ID_MATCH_EXACT() for IP101A/G
+  net: phy: icplus: drop address operator for functions
+  net: phy: icplus: use the .soft_reset() of the phy-core
+  net: phy: icplus: split IP101A/G driver
+  net: phy: icplus: don't set APS_EN bit on IP101G
+  net: phy: icplus: fix paged register access
+  net: phy: icplus: add PHY counter for IP101G
+  net: phy: icplus: add MDI/MDIX support for IP101A/G
+
+ drivers/net/phy/icplus.c | 378 ++++++++++++++++++++++++++++++++-------
+ 1 file changed, 318 insertions(+), 60 deletions(-)
+
+-- 
+2.20.1
+
