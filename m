@@ -2,289 +2,390 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CBA0316387
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 11:17:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 866A0316399
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 11:21:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229465AbhBJKRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 05:17:25 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:17040 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230296AbhBJKPQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 05:15:16 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B6023b2090000>; Wed, 10 Feb 2021 02:14:33 -0800
-Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 10 Feb
- 2021 10:14:19 +0000
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.103)
- by HQMAIL111.nvidia.com (172.20.187.18) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Wed, 10 Feb 2021 10:14:19 +0000
+        id S230216AbhBJKVI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 05:21:08 -0500
+Received: from mail-eopbgr80054.outbound.protection.outlook.com ([40.107.8.54]:60071
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230295AbhBJKSx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Feb 2021 05:18:53 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RkM08WrD1nOt2DorU0QZg9mS6xcQyrJN6yslBYzw7FtsLsY/TC4MDImHib4e3V34FfeHZ9dOVPoJyo4XxFO3XVol0jKqn4zu/wT3VPpfLualIadUiGXtZB430XkzLQc6Q5CF5z+1wIOr32A/TlMnjnECVQzps3jLpjHxXNg3Z7Ua49ZQAiZEhA0c0B2ZxvjsuZQQmdAlKE54o+vEtURnbDFzCZlibHwD2Afjcs6XZSbfNnb4RqGj4/70GVnGzSJlrRoOkl7rvYSaLcHnv7X1IqABPGhAFUrHgXb3I9fxtDsG518WnDHaUYy2cbdJ6/RYMNP6V8DexbomrqATQq6pAw==
+ b=h3KfUygKdo/W8oH6ZnUgIAoYGqcD3LDvLkrYimKsnwf0WGmNR5vmJOIFSQ2zodCbNzyCYM3hcbqNAipA/824vX/P7DFn0CZdwKXtJ+vQqJumBtBqOKt3R1w5fghvv9Em1U/JxZLJgBtpX1DviFRkldRS3GaBpUj/qh0pTIfhRn6ivlS/ZNmWPWQFnS18xhOSGC73urj8ZB8G/SlH1Q93J53LKS8bWUC6S7y5tE2b0vDmnQY+38mRGLwZPan0So+isZwthTUjxvsf0WtRnhKkNidv1je4a/gPcCpl4PCIJGpLwdIOSnVZpKrTuxy0+3wV+k/WPZNgkNBzX/LhJb3b9Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zgUy/wru6f2nYcJA3qXWcQJ2f3n/Oyblho3aFWygJk4=;
- b=OMa6MWYam/7koy9Rafo9tGtUQZppGdXMow9xogjXU2EEoEidJ4Sbr4nCvrgHtjkkg8hUB45gdtFwsdA+sYw+mCPInOiwuVlRcqGxTllIjnAkBbtyj0hOpyvLJ7z3eHvqbzFklrmqiZvq1QzfdFiG56GpRVUkxSWkmZrU79m3GgNuNpAWr+LRbav5Ya+VwS/1axYADEsGw+yWbZTKj6+GTbM3sw/JF8UJCa2ladOIc//Qy9Nl//CUKcFCWK6aaU0ExeC6OF6LMHC/KjXTdRtRxndj03EAqBQEpOjjypxodTFT26DZOg9Oh2cVyupwE07DnQoO6bwtTZBlNkAMMA3PBA==
+ bh=AQqkwuGhjNFmZNNnJKe3Hlp7DMCDgZNrDutJq2Gi424=;
+ b=CtaeB6/VgYMBzBeQ9+lbA/T2cdED5/C/TqUcbuhbOpFwMWD28qIQxj6rglQ5uNFf0a4e+9qqF2dVTpGkLGR2NdYJL085LZtP/wsEPpVQXy5kU7Z3+9FIj7DzAyz51wjGE974jMLhTLwex715OE6tM8FJ+f1jjIkNOJzGYevVlUk1zlV5lURC+JK/jnzGfI93F+yMUd8fJTfap1QLzHtpSsENapYiObAJO41+yguzK5TGJcYO7F6e0+Fv5ln7Kmxhd6zivNMKcdmMMGreU67RwW8jlhS+7Rw3qWENkA/wLg88IcdlxU2rwKYxBdqO81c+h71iMAu74NeFY1gEDZvezw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB4403.namprd12.prod.outlook.com (2603:10b6:5:2ab::24)
- by DM5PR12MB1290.namprd12.prod.outlook.com (2603:10b6:3:74::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3825.30; Wed, 10 Feb 2021 10:14:18 +0000
-Received: from DM6PR12MB4403.namprd12.prod.outlook.com
- ([fe80::5c42:cbe:fe28:3a9b]) by DM6PR12MB4403.namprd12.prod.outlook.com
- ([fe80::5c42:cbe:fe28:3a9b%5]) with mapi id 15.20.3846.027; Wed, 10 Feb 2021
- 10:14:18 +0000
-Subject: Re: [PATCH v3 net-next 08/11] net: bridge: put
- SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS on the blocking call chain
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>,
-        "Roopa Prabhu" <roopa@nvidia.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AQqkwuGhjNFmZNNnJKe3Hlp7DMCDgZNrDutJq2Gi424=;
+ b=UG4QyeqINyGvXpUwzhuQTDeMKsVy+VCPWugyat1TRq/COotvpxYmpx5EjkFOhobfl9LN76T/BIlcHxk3MWkrME1IIaBj40haZkwyAxJcMYRTzBFO6OMdFea9JqaSt4jHQtRJjIDj3kAUDKGx/ZiIATczEHe/Xizknkmmw5PWhVQ=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB3965.eurprd04.prod.outlook.com (2603:10a6:803:3e::29) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.17; Wed, 10 Feb
+ 2021 10:18:03 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3df3:2eba:51bb:58d7]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3df3:2eba:51bb:58d7%7]) with mapi id 15.20.3825.030; Wed, 10 Feb 2021
+ 10:18:03 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+CC:     "jiri@resnulli.us" <jiri@resnulli.us>,
+        "ivecera@redhat.com" <ivecera@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "roopa@nvidia.com" <roopa@nvidia.com>,
+        "nikolay@nvidia.com" <nikolay@nvidia.com>,
+        "rasmus.villemoes@prevas.dk" <rasmus.villemoes@prevas.dk>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "Alexandre Belloni" <alexandre.belloni@bootlin.com>,
-        <UNGLinuxDriver@microchip.com>, Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ivan Vecera <ivecera@redhat.com>, <linux-omap@vger.kernel.org>
-References: <20210210091445.741269-1-olteanv@gmail.com>
- <20210210091445.741269-9-olteanv@gmail.com>
-From:   Nikolay Aleksandrov <nikolay@nvidia.com>
-Message-ID: <0208ba7c-601b-de5c-1922-c6d1911501a1@nvidia.com>
-Date:   Wed, 10 Feb 2021 12:14:06 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
-In-Reply-To: <20210210091445.741269-9-olteanv@gmail.com>
-Content-Type: text/plain; charset="utf-8"
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "bridge@lists.linux-foundation.org" 
+        <bridge@lists.linux-foundation.org>
+Subject: Re: [PATCH net-next v3 5/5] net: mscc: ocelot: Add support for MRP
+Thread-Topic: [PATCH net-next v3 5/5] net: mscc: ocelot: Add support for MRP
+Thread-Index: AQHW/yGZdqaCj30jN0m/BawIxR2lh6pRLcMA
+Date:   Wed, 10 Feb 2021 10:18:03 +0000
+Message-ID: <20210210101802.6ztf6c3ifldfa5fw@skbuf>
+References: <20210209202112.2545325-1-horatiu.vultur@microchip.com>
+ <20210209202112.2545325-6-horatiu.vultur@microchip.com>
+In-Reply-To: <20210209202112.2545325-6-horatiu.vultur@microchip.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [213.179.129.39]
-X-ClientProxiedBy: ZR0P278CA0124.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:20::21) To DM6PR12MB4403.namprd12.prod.outlook.com
- (2603:10b6:5:2ab::24)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: microchip.com; dkim=none (message not signed)
+ header.d=none;microchip.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [5.12.227.87]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 963e63e8-1ac6-4a50-8695-08d8cdad268b
+x-ms-traffictypediagnostic: VI1PR04MB3965:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR04MB3965FF3E663D9180E03A9972E08D9@VI1PR04MB3965.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2733;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 1YnUtedK3HGxcAMQ2zCJQ0fY7BByjbTLTUOc3MXGaf8kE6Sw52LDSmZS1FS3OQdLiYlzasLDe9Q4enInpMVFZksJXRQBaG1koxGTI54GjZsm92rx6iMEyYV2ZUmiDW1Bm5VBN/PcMm2XhFmaZlMOJ61LxLObaWLqCuaCLQ4TbVRWWuaDv3spSs5aVulMo59ppYo5lDtV9rJ92TjvTYBGq9IZM4yrSMhFR8F9nA/91H5luVvTWxghTmL/efWBVvE1APtfqZTd2KGzjJiwohxNIBCZc+NHr9RZ1Ee3HB/6l9rhf6oEz4gKJ5eAR6g9icjY7d0sKD4uixisJSsfcSn7JXpnoGAqHNm3SEqSirqRV5IUFHHVan2bcOwutCJu2ZE5qB+7kxn8v6VRRxP99KXxdnfk1c3Sbz52AJIrhT9rWelJz08l35ny2X79gKqAo6bKdTNwD/hcx19Aa2/2PiXn5GubZYXaI/GqU/yHDJQsxC9w+neFAdwnNnYplcT+2IXJ/oBp32IKGJhQmp9/1fKqBA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(346002)(39860400002)(366004)(376002)(136003)(396003)(44832011)(8936002)(7416002)(54906003)(186003)(2906002)(76116006)(66446008)(6486002)(6512007)(478600001)(83380400001)(33716001)(9686003)(6916009)(6506007)(5660300002)(71200400001)(1076003)(66556008)(64756008)(86362001)(66946007)(66476007)(8676002)(26005)(316002)(4326008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?7D7FRo/bE4HBZ/V2jBerlrQ760xo/AVNJ9wTcsPbtggdJYPso4k8eUHjxVor?=
+ =?us-ascii?Q?ShW5W4pyy45BmZenvHffHR6y9WPis3TWI9gbgPFJFt117F2NiwAZfHrciK84?=
+ =?us-ascii?Q?tV6t+KhEtQ88LilbAZICMk3dd+QxiPvc837sgWgq5ZDqTCNwRfk8jh1hxZ06?=
+ =?us-ascii?Q?Hapd6lsQZw8hEdqACJHjb6c9RkkytXj/YtKQi/WIVJZlIh5HFdbqVnb0zZxf?=
+ =?us-ascii?Q?p0VRkyOUW6NQRiApe3V0Eq4LEEHx8p8SRY0TmY+4pqgndYt45Lt4vxl6gUSq?=
+ =?us-ascii?Q?WvOmFHThHqiJe2CERp/1BcGpB3iAa3OWMF5VGptSi/6GkbgWcCLqGg96I1tz?=
+ =?us-ascii?Q?y0YDBGGm+wQ83tx9abo89gct5gHndqNtPrTBseD5HcWM1MhbBlPXnmhLEjtJ?=
+ =?us-ascii?Q?2DG0UEE9udnQzfIXi1iXei+ItOKNPsIoy6abcPKVpyf3j4sfTN9kRGP62m1t?=
+ =?us-ascii?Q?Yq/eB10seEiFL+jCEbHa6zzEKGE2shIJcsE7PqQEtSOLx6kl5PZ+o9Df+w7O?=
+ =?us-ascii?Q?yjh2BzxBnl1f4WE/JGNSBILfOgzlhqzY8wrfn56jUmVg8/oRo+ssFMA/t92V?=
+ =?us-ascii?Q?SjJVNO9/rj2hwuHqM3DYzHbM0mu3/28i7GoVncWVSHgizr5q5DbmO4ybbtC4?=
+ =?us-ascii?Q?2VPnq91jvV+xQNqiBGqe0Qb+eakiVUncElZ7Yq78aGDCU7vRed632E4cdr/f?=
+ =?us-ascii?Q?+XwnTVV7QSIY9ksVykW6TafgyoMgRjZ+brNwZz4JgK2Ijq4FzABIm5KG7Yjv?=
+ =?us-ascii?Q?2YA/n/fWgyYSGkE1nNFerleiczoHBeFq5yDTKSzJGLsxgcbj3teUbc8z26E6?=
+ =?us-ascii?Q?XzC2Bxz+67gXdeB/k/q/R0JnN12DFHAbsFAkZVdxr3BSDBv6xPtPZYoTEzXv?=
+ =?us-ascii?Q?tb8lHt9V20cIloM0EEtrAd/sxCoe8dr1HuPPSBbAYI3vTnFcLW6PpR+1cMai?=
+ =?us-ascii?Q?W/4jJNfA5hSEx+67yIcwO/B/bADEJSvEiABSZQHDcd7ThjY+gwbVTb8bdUy2?=
+ =?us-ascii?Q?hJqv6R7pi1f+N/kvgzp6o848rq7VT/r4O/tPZvgxKkFXdXA31VEVKXy4/as3?=
+ =?us-ascii?Q?Z7WJMDPvrDZQY5HqBRfrWbQt6d0jhaWCkfE8V5wmhllbj7wpQ57VuvhASuuu?=
+ =?us-ascii?Q?dg6iGMgDVfAzDE2hBCPcZW8LtOXwSTgB0WRPoQTeNMyKzUgwi4Tfp/zQvn1V?=
+ =?us-ascii?Q?fB6zotaNZn3YBmBrMK0+3PDgh/27u7X0eVrSb4Yhyg0aseByUgFZjDCs4kEb?=
+ =?us-ascii?Q?A5IheZH3FrSD8C32JJf4pwETQwg76s7qwHaEERHBW8t3BD2r+jCWHvNPzd77?=
+ =?us-ascii?Q?sduEPYNP3idOcqpYbybCCfbo?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <9683A36585C0A94F9DB267C3DCA6B783@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [10.21.241.121] (213.179.129.39) by ZR0P278CA0124.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:20::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.25 via Frontend Transport; Wed, 10 Feb 2021 10:14:12 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8db930d0-a4d2-4b9b-9b11-08d8cdaca028
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1290:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM5PR12MB1290E6FB515D8628CF081902DF8D9@DM5PR12MB1290.namprd12.prod.outlook.com>
-X-Header: ProcessedBy-CMR-outbound
-X-MS-Oob-TLC-OOBClassifiers: OLM:3826;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hOkROhGNBc/c7nswUbrI2fji0e00sMIcX7K1nDTYj0/QfAF2JXeTmGAIUEkyG3zkzAkVqIWkzHiYKZ39ZCxBVL5rIasV+YiXQkV+cvTVpvMD60Ehdwqu0A6tP8ouRpz4yLEmXvHRxOs60D1weNqn+WvSDbM9dsucwcHH8wlY0wXv4MF2KYkYrnUxYT3mCdPgja8TSwhkaKAKLAfGYi24ua0OKoVGCNs0ya2BE5GmdKAmr7saZUYcL6PCaMOOF3UuMjoJTTP9nF7DZ+qwLzvx4ZHlk8Xj9bhSbFnH2hgvw3VEmZgfe/zWkt/DqJYweWSMXxPhW9S8+VndTZnfgyV6efsSruZBergM9mfajP5EOrI20JBe4Ezx4AmhOq2G5Ipp/yehbMGc7rZ2HS9VEqGQa542PDw2D7xQqTTdovHtKI36Ck/0qWfKCNdfD21wVJRGsmtL52toxxAwRBPpQlS9KvmhDdX8NigCkM1g9ko64usNJrX1I8wORfV5w02mHLQrO899YIDirdMewTFb6lunhBbzm9K9pa+WLevvORIrKVQOTCKD96c+unSlVQHKElhQuVD08ixGQGiG9TjwgvNm1wh3aFJ1lkYIVHqUg6tSIC4=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4403.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(136003)(396003)(366004)(39840400004)(376002)(31686004)(26005)(31696002)(2616005)(54906003)(956004)(83380400001)(2906002)(6666004)(8676002)(7416002)(5660300002)(86362001)(53546011)(8936002)(316002)(36756003)(6486002)(16576012)(66946007)(66476007)(110136005)(478600001)(66556008)(186003)(4326008)(16526019)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?aVBCOUdzaUhqcmN0WW15dVRoMjBsZFlTbjZIdTJuZWUvN0xTVlZVU3c0N1Yv?=
- =?utf-8?B?aE5jZFhCUHRZUGlTTEtiblVobjdjSWNpbEpZMFd5Z1pYUjZRU2JxdmNEWVlF?=
- =?utf-8?B?UGZXT21xZXc2TUh4ZlU4UWQrK1FKT2JOa2hROUQ1b28vUkh5STY5TlBhRWM2?=
- =?utf-8?B?aERISHVHaVJJMzRBbk15dkhNdVMrbzlsWG4vYmh4KzJBTUpONk15ZVhLOE5Z?=
- =?utf-8?B?dHBaaGZpd2tyRnR4alc0NzdFS0RoM2hKOFFObldwb3YwbC8yYTZnbW04OEtu?=
- =?utf-8?B?T08wZmZnemN3aTVOUkVEazRWVThJVHgvZUFNQmUydWs0aVd2UmhuQVV5d1hr?=
- =?utf-8?B?VFNtblc2OVJ5MnV2eDRqZzhWSC9xWGhZNmQrRFhEb1BYVXVoYUNrcFdtMlpp?=
- =?utf-8?B?d2xnbC9RTEQ0bVlCeXhMQTU0TGZJMmdXL2kvL0ExSHJEaWcyZy9KSmwxY0lS?=
- =?utf-8?B?aFU2RlRpQ0RiUjNFajJ6K3RadStDQzkxamF4ZFlPMUVhMTFkSm40cExIVGtx?=
- =?utf-8?B?dCt3WGFRNWl0SjJ3bU5DekxuOGprS0gzR3l3cUJPWDJtczRYYTBwcEVBWUJs?=
- =?utf-8?B?d25VdlI0eWYwc2VNZjNCR0F5UDVVRHkvMkFhY1lsRTZiYmgwdmxJcWN1M0Y2?=
- =?utf-8?B?OGdCTUFPRmoyWXhGVmxvcDdYeEZseFIvSGE5b0tzdXJIVlV0a0piZEdISXRH?=
- =?utf-8?B?eXk5RHZmakVFaW0yZUxOSmlvb1JrR2NJZldMZkkrZGRCR3d4eWo1TWZGR1Ew?=
- =?utf-8?B?QU11Zzhmc1lxd2JZcnlvTGwySFgvdkVxcWRvTGk2TmpaSU8xUXQ4YW1mYXhK?=
- =?utf-8?B?cU1RM0FBZGxmdVlLQ3ZnUDJlMm9uZ0pxQ0VXNENDV0JjMmNiY2VjdDFCVDg0?=
- =?utf-8?B?QWJYck9PdEg0MzhLTVF2ZnFBekJ4SmU0RXp4ZzVSK2VHNFZzY3doRzFXOWZz?=
- =?utf-8?B?VStoazFrY2VWaXRLZnZmQWw0eWJreEluanBpREU2emtWVnNCc0FmcW9hbG5h?=
- =?utf-8?B?eFJXRmdOUTlQclQ1R0YwVExkeStsUFZNbmw3bGZCaEUvNDZIdWFLWGJuaXBX?=
- =?utf-8?B?QldSUmIybjhmVnh4RitIWExIbVFMWHg2bHU5UzJaYlFSam95K1dtZ01FakVR?=
- =?utf-8?B?WCsyNzhLdzlpZUhVQ1huNjVtbjF6UE53Zy9WNk56dUQ0Z2E5dmV6aVhScFJ4?=
- =?utf-8?B?OGhqREF3YjRHazlIV1FFTTFDUWw5ckpaSGNCclI5WkFIQllzamhhOXZVZW5F?=
- =?utf-8?B?ajFLRVlvY2szSVl3MWxWZEs2MmJ3MVh5QTFtaHZtYXc1RGRxTkMvbEpBbkZo?=
- =?utf-8?B?bENGS3NPMGo2OEJHTHpDVVByUlprUVNLQWVaM2JOTS85ZUxWR3YvWHBoa0cv?=
- =?utf-8?B?SGt6SnBVdk5JMjlHMmRUV3lEdGJkV3FTeHBSTDh5R3dRUVhvNWFISHU3TVZO?=
- =?utf-8?B?bXBJV1hkMzZMUS9BdHR1MitGeVJsU3l0VE5zTTFwZW83QjhudDFLSUdPd0FK?=
- =?utf-8?B?Q0ZWQWw4cU94SzZidHNmK05sYmozS29PMjlrSWxuYWg0S3laTlNub29xZFlI?=
- =?utf-8?B?cFdmR01Oc093OGVoSGhndlZWSFVWV1JsKzVnOVcxc1N5MytkT1dPem5RSlRY?=
- =?utf-8?B?aVN3QnB6NEVHVENYQkNVMmZnQVdRTHVwTEdVR2NzKzR4Yll2b0pReHcxRHFE?=
- =?utf-8?B?RE14bDVmQ2QvTEJud0FOclZNT20yT2RrbWROb01xTGpONzM4WUhOMFpHaVVT?=
- =?utf-8?Q?ZiUK8E1JfG5bTij1dFtym72i3zIT9uZGNiRYwSe?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8db930d0-a4d2-4b9b-9b11-08d8cdaca028
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4403.namprd12.prod.outlook.com
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2021 10:14:18.1026
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 963e63e8-1ac6-4a50-8695-08d8cdad268b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Feb 2021 10:18:03.1730
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: SatWL5VOKhfhNrhJoTlOOr127tZAcHrzD768BgSmzm5xn6gtEJ0lVyvZkxMkIgUpq+TkMIif+RBtSJVlFzb+pQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1290
-X-OriginatorOrg: Nvidia.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1612952073; bh=zgUy/wru6f2nYcJA3qXWcQJ2f3n/Oyblho3aFWygJk4=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:
-         Authentication-Results:Subject:To:CC:References:From:Message-ID:
-         Date:User-Agent:In-Reply-To:Content-Type:Content-Language:
-         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy:
-         MIME-Version:X-MS-Exchange-MessageSentRepresentingType:
-         X-MS-PublicTrafficType:X-MS-Office365-Filtering-Correlation-Id:
-         X-MS-TrafficTypeDiagnostic:X-MS-Exchange-Transport-Forked:
-         X-Microsoft-Antispam-PRVS:X-Header:X-MS-Oob-TLC-OOBClassifiers:
-         X-MS-Exchange-SenderADCheck:X-Microsoft-Antispam:
-         X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-         X-MS-Exchange-AntiSpam-MessageData:
-         X-MS-Exchange-CrossTenant-Network-Message-Id:
-         X-MS-Exchange-CrossTenant-AuthSource:
-         X-MS-Exchange-CrossTenant-AuthAs:
-         X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-         X-MS-Exchange-CrossTenant-FromEntityHeader:
-         X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-         X-MS-Exchange-CrossTenant-UserPrincipalName:
-         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
-        b=ZtOfmDlfV1Tp7N8HhlFgU4zJwdGshYQQCmepadE+GqO0WjdXzgyrQlQ5KEV/a/sf7
-         zTqggHdYQSa4HVyCs0RgDjmPELGcwDV49Ukl6u7vYWmMeHrRgjQ7D4wVRm/6kjIV84
-         Rps2/5Uk48WpUvBG9czEJv+8CDNqccQ3qS5lLnJ7gp9o0hnoH8kYpywHwXCmgKjl24
-         LY1SiaUvKM60RK6PlQ3UJkj5CJdozIoxbMxsXZHj5GOvfjJH1ZV/QD+Rf5aYhTY/wk
-         nBe/0yCaPB7kksI4amfn7SmngDldSOICG7Y5T4HTBOKhb4sIeSiedesXHGrpgxrrd+
-         rXdkaUbGIY1XA==
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 43MM40FnS1pMm0Pm4QgOs5IiC5Z/D6QXJkX9QnJhxsSGL0tg8PPdtixJoqEzMYJ7io3XoNvUxHQqn9Quw+tvEw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB3965
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/02/2021 11:14, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> Since we would like br_switchdev_set_port_flag to not use an atomic
-> notifier, it should be called from outside spinlock context.
-> 
-> We can temporarily drop br->lock, but that creates some concurrency
-> complications (example below is given for sysfs):
-> - There might be an "echo 1 > multicast_flood" simultaneous with an
->   "echo 0 > multicast_flood". The result of this is nondeterministic
->   either way, so I'm not too concerned as long as the result is
->   consistent (no other flags have changed).
-> - There might be an "echo 1 > multicast_flood" simultaneous with an
->   "echo 0 > learning". My expectation is that none of the two writes are
->   "eaten", and the final flags contain BR_MCAST_FLOOD=1 and BR_LEARNING=0
->   regardless of the order of execution. That is actually possible if, on
->   the commit path, we don't do a trivial "p->flags = flags" which might
->   overwrite bits outside of our mask, but instead we just change the
->   flags corresponding to our mask.
-> 
+Would you mind adding the switchdev MRP support for the DSA driver too,
+and move the code to the common ocelot library? I would like to give it
+a run. I think that's only fair, since I have to keep in sync the
+vsc7514 driver too for features that get added through DSA :)
 
-Not sure I follow here, how do we get any concurrency issues with sysfs or netlink
-when both take rtnl before doing any changes ?
-
-> Now that br_switchdev_set_port_flag is never called from under br->lock,
-> it runs in sleepable context.
-> 
-> All switchdev drivers handle SWITCHDEV_PORT_ATTR_SET as both blocking
-> and atomic, so no changes are needed on that front.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Tue, Feb 09, 2021 at 09:21:12PM +0100, Horatiu Vultur wrote:
+> Add basic support for MRP. The HW will just trap all MRP frames on the
+> ring ports to CPU and allow the SW to process them. In this way it is
+> possible to for this node to behave both as MRM and MRC.
+>=20
+> Current limitations are:
+> - it doesn't support Interconnect roles.
+> - it supports only a single ring.
+> - the HW should be able to do forwarding of MRP Test frames so the SW
+>   will not need to do this. So it would be able to have the role MRC
+>   without SW support.
+>=20
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 > ---
-> Changes in v3:
-> - Drop the br->lock around br_switchdev_set_port_flag in this patch, for
->   both sysfs and netlink.
-> - Only set/restore the masked bits in p->flags to avoid concurrency
->   issues.
-> 
-> Changes in v2:
-> Patch is new.
-> 
->  net/bridge/br_netlink.c   | 10 +++++++---
->  net/bridge/br_switchdev.c |  5 ++---
->  net/bridge/br_sysfs_if.c  | 22 ++++++++++++++--------
->  3 files changed, 23 insertions(+), 14 deletions(-)
-> 
-> diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-> index b7731614c036..8f09106966c4 100644
-> --- a/net/bridge/br_netlink.c
-> +++ b/net/bridge/br_netlink.c
-> @@ -869,7 +869,7 @@ static void br_set_port_flag(struct net_bridge_port *p, struct nlattr *tb[],
->  static int br_setport(struct net_bridge_port *p, struct nlattr *tb[],
->  		      struct netlink_ext_ack *extack)
->  {
-> -	unsigned long old_flags, changed_mask;
-> +	unsigned long flags, old_flags, changed_mask;
->  	bool br_vlan_tunnel_old;
->  	int err;
->  
-> @@ -896,10 +896,14 @@ static int br_setport(struct net_bridge_port *p, struct nlattr *tb[],
->  	br_set_port_flag(p, tb, IFLA_BRPORT_ISOLATED, BR_ISOLATED);
->  
->  	changed_mask = old_flags ^ p->flags;
-> +	flags = p->flags;
->  
-> -	err = br_switchdev_set_port_flag(p, p->flags, changed_mask, extack);
-> +	spin_unlock_bh(&p->br->lock);
-> +	err = br_switchdev_set_port_flag(p, flags, changed_mask, extack);
-> +	spin_lock_bh(&p->br->lock);
->  	if (err) {
-> -		p->flags = old_flags;
-> +		p->flags &= ~changed_mask;
-> +		p->flags |= (old_flags & changed_mask);
->  		goto out;
->  	}
->  
-> diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
-> index dbd94156960f..a79164ee65b9 100644
-> --- a/net/bridge/br_switchdev.c
-> +++ b/net/bridge/br_switchdev.c
-> @@ -79,9 +79,8 @@ int br_switchdev_set_port_flag(struct net_bridge_port *p,
->  	attr.u.brport_flags.val = flags & mask;
->  	attr.u.brport_flags.mask = mask;
->  
-> -	/* We run from atomic context here */
-> -	err = call_switchdev_notifiers(SWITCHDEV_PORT_ATTR_SET, p->dev,
-> -				       &info.info, extack);
-> +	err = call_switchdev_blocking_notifiers(SWITCHDEV_PORT_ATTR_SET, p->dev,
-> +						&info.info, extack);
->  	err = notifier_to_errno(err);
->  	if (err == -EOPNOTSUPP)
->  		return 0;
-> diff --git a/net/bridge/br_sysfs_if.c b/net/bridge/br_sysfs_if.c
-> index 72e92376eef1..3f21fdd1cdaa 100644
-> --- a/net/bridge/br_sysfs_if.c
-> +++ b/net/bridge/br_sysfs_if.c
-> @@ -68,16 +68,22 @@ static int store_flag(struct net_bridge_port *p, unsigned long v,
->  	else
->  		flags &= ~mask;
->  
-> -	if (flags != p->flags) {
-> -		err = br_switchdev_set_port_flag(p, flags, mask, &extack);
-> -		if (err) {
-> -			netdev_err(p->dev, "%s\n", extack._msg);
-> -			return err;
-> -		}
-> +	if (flags == p->flags)
-> +		return 0;
->  
-> -		p->flags = flags;
-> -		br_port_flags_change(p, mask);
-> +	spin_unlock_bh(&p->br->lock);
-> +	err = br_switchdev_set_port_flag(p, flags, mask, &extack);
-> +	spin_lock_bh(&p->br->lock);
-> +	if (err) {
-> +		netdev_err(p->dev, "%s\n", extack._msg);
-> +		return err;
->  	}
-> +
-> +	p->flags &= ~mask;
-> +	p->flags |= (flags & mask);
-> +
-> +	br_port_flags_change(p, mask);
-> +
->  	return 0;
+>  drivers/net/ethernet/mscc/ocelot_net.c     | 154 +++++++++++++++++++++
+>  drivers/net/ethernet/mscc/ocelot_vsc7514.c |   6 +
+>  include/soc/mscc/ocelot.h                  |   6 +
+>  3 files changed, 166 insertions(+)
+>=20
+> diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/etherne=
+t/mscc/ocelot_net.c
+> index 8f12fa45b1b5..65971403e823 100644
+> --- a/drivers/net/ethernet/mscc/ocelot_net.c
+> +++ b/drivers/net/ethernet/mscc/ocelot_net.c
+> @@ -9,7 +9,10 @@
+>   */
+> =20
+>  #include <linux/if_bridge.h>
+> +#include <linux/mrp_bridge.h>
+>  #include <net/pkt_cls.h>
+> +#include <soc/mscc/ocelot_vcap.h>
+> +#include <uapi/linux/mrp_bridge.h>
+>  #include "ocelot.h"
+>  #include "ocelot_vcap.h"
+> =20
+> @@ -1069,6 +1072,139 @@ static int ocelot_port_obj_del_mdb(struct net_dev=
+ice *dev,
+>  	return ocelot_port_mdb_del(ocelot, port, mdb);
 >  }
->  
-> 
+> =20
+> +#if IS_ENABLED(CONFIG_BRIDGE_MRP)
+> +static int ocelot_mrp_del_vcap(struct ocelot *ocelot, int port)
+> +{
+> +	struct ocelot_vcap_block *block_vcap_is2;
+> +	struct ocelot_vcap_filter *filter;
+> +
+> +	block_vcap_is2 =3D &ocelot->block[VCAP_IS2];
+> +	filter =3D ocelot_vcap_block_find_filter_by_id(block_vcap_is2, port,
+> +						     false);
+> +	if (!filter)
+> +		return 0;
+> +
+> +	return ocelot_vcap_filter_del(ocelot, filter);
+> +}
+> +
+> +static int ocelot_add_mrp(struct net_device *dev,
+> +			  const struct switchdev_obj_mrp *mrp)
+> +{
+> +	struct ocelot_port_private *priv =3D netdev_priv(dev);
+> +	struct ocelot_port *ocelot_port =3D &priv->port;
+> +	struct ocelot *ocelot =3D ocelot_port->ocelot;
+> +
+> +	if (mrp->p_port !=3D dev && mrp->s_port !=3D dev)
+> +		return 0;
+> +
+> +	if (ocelot->mrp_ring_id !=3D 0 &&
+> +	    ocelot->mrp_s_port &&
+> +	    ocelot->mrp_p_port)
+> +		return -EINVAL;
+> +
+> +	if (mrp->p_port =3D=3D dev)
+> +		ocelot->mrp_p_port =3D dev;
+> +
+> +	if (mrp->s_port =3D=3D dev)
+> +		ocelot->mrp_s_port =3D dev;
+> +
+> +	ocelot->mrp_ring_id =3D mrp->ring_id;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ocelot_del_mrp(struct net_device *dev,
+> +			  const struct switchdev_obj_mrp *mrp)
+> +{
+> +	struct ocelot_port_private *priv =3D netdev_priv(dev);
+> +	struct ocelot_port *ocelot_port =3D &priv->port;
+> +	struct ocelot *ocelot =3D ocelot_port->ocelot;
+> +
+> +	if (ocelot->mrp_p_port !=3D dev && ocelot->mrp_s_port !=3D dev)
+> +		return 0;
+> +
+> +	if (ocelot->mrp_ring_id =3D=3D 0 &&
+> +	    !ocelot->mrp_s_port &&
+> +	    !ocelot->mrp_p_port)
+> +		return -EINVAL;
+> +
+> +	if (ocelot_mrp_del_vcap(ocelot, priv->chip_port))
+> +		return -EINVAL;
+> +
+> +	if (ocelot->mrp_p_port =3D=3D dev)
+> +		ocelot->mrp_p_port =3D NULL;
+> +
+> +	if (ocelot->mrp_s_port =3D=3D dev)
+> +		ocelot->mrp_s_port =3D NULL;
+> +
+> +	ocelot->mrp_ring_id =3D 0;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ocelot_add_ring_role(struct net_device *dev,
+> +				const struct switchdev_obj_ring_role_mrp *mrp)
+> +{
+> +	struct ocelot_port_private *priv =3D netdev_priv(dev);
+> +	struct ocelot_port *ocelot_port =3D &priv->port;
+> +	struct ocelot *ocelot =3D ocelot_port->ocelot;
+> +	struct ocelot_vcap_filter *filter;
+> +	int err;
+> +
+> +	if (ocelot->mrp_ring_id !=3D mrp->ring_id)
+> +		return -EINVAL;
+> +
+> +	if (!mrp->sw_backup)
+> +		return -EOPNOTSUPP;
+> +
+> +	if (ocelot->mrp_p_port !=3D dev && ocelot->mrp_s_port !=3D dev)
+> +		return 0;
+> +
+> +	filter =3D kzalloc(sizeof(*filter), GFP_KERNEL);
+> +	if (!filter)
+> +		return -ENOMEM;
+> +
+> +	filter->key_type =3D OCELOT_VCAP_KEY_ETYPE;
+> +	filter->prio =3D 1;
+> +	filter->id.cookie =3D priv->chip_port;
+> +	filter->id.tc_offload =3D false;
+> +	filter->block_id =3D VCAP_IS2;
+> +	filter->type =3D OCELOT_VCAP_FILTER_OFFLOAD;
+> +	filter->ingress_port_mask =3D BIT(priv->chip_port);
+> +	*(__be16 *)filter->key.etype.etype.value =3D htons(ETH_P_MRP);
+> +	*(__be16 *)filter->key.etype.etype.mask =3D htons(0xffff);
+> +	filter->action.mask_mode =3D OCELOT_MASK_MODE_PERMIT_DENY;
+> +	filter->action.port_mask =3D 0x0;
+> +	filter->action.cpu_copy_ena =3D true;
+> +	filter->action.cpu_qu_num =3D 0;
+> +
+> +	err =3D ocelot_vcap_filter_add(ocelot, filter, NULL);
+> +	if (err)
+> +		kfree(filter);
+> +
+> +	return err;
+> +}
+> +
+> +static int ocelot_del_ring_role(struct net_device *dev,
+> +				const struct switchdev_obj_ring_role_mrp *mrp)
+> +{
+> +	struct ocelot_port_private *priv =3D netdev_priv(dev);
+> +	struct ocelot_port *ocelot_port =3D &priv->port;
+> +	struct ocelot *ocelot =3D ocelot_port->ocelot;
+> +
+> +	if (ocelot->mrp_ring_id !=3D mrp->ring_id)
+> +		return -EINVAL;
+> +
+> +	if (!mrp->sw_backup)
+> +		return -EOPNOTSUPP;
+> +
+> +	if (ocelot->mrp_p_port !=3D dev && ocelot->mrp_s_port !=3D dev)
+> +		return 0;
+> +
+> +	return ocelot_mrp_del_vcap(ocelot, priv->chip_port);
+> +}
+> +#endif
+> +
 
+Would it make sense for this chunk of conditionally compiled code to
+stay in a separate file like ocelot_mrp.c?
+
+>  static int ocelot_port_obj_add(struct net_device *dev,
+>  			       const struct switchdev_obj *obj,
+>  			       struct netlink_ext_ack *extack)
+> @@ -1083,6 +1219,15 @@ static int ocelot_port_obj_add(struct net_device *=
+dev,
+>  	case SWITCHDEV_OBJ_ID_PORT_MDB:
+>  		ret =3D ocelot_port_obj_add_mdb(dev, SWITCHDEV_OBJ_PORT_MDB(obj));
+>  		break;
+> +#if IS_ENABLED(CONFIG_BRIDGE_MRP)
+> +	case SWITCHDEV_OBJ_ID_MRP:
+> +		ret =3D ocelot_add_mrp(dev, SWITCHDEV_OBJ_MRP(obj));
+> +		break;
+> +	case SWITCHDEV_OBJ_ID_RING_ROLE_MRP:
+> +		ret =3D ocelot_add_ring_role(dev,
+> +					   SWITCHDEV_OBJ_RING_ROLE_MRP(obj));
+> +		break;
+> +#endif
+
+I'm not really sure why SWITCHDEV_OBJ_ID_MRP is conditionally defined.
+If you look at SWITCHDEV_ATTR_ID_BRIDGE_VLAN_FILTERING, that isn't
+conditionally defined, even though it depends on CONFIG_BRIDGE_VLAN_FILTERI=
+NG
+at runtime.
+
+>  	default:
+>  		return -EOPNOTSUPP;
+>  	}
+> @@ -1103,6 +1248,15 @@ static int ocelot_port_obj_del(struct net_device *=
+dev,
+>  	case SWITCHDEV_OBJ_ID_PORT_MDB:
+>  		ret =3D ocelot_port_obj_del_mdb(dev, SWITCHDEV_OBJ_PORT_MDB(obj));
+>  		break;
+> +#if IS_ENABLED(CONFIG_BRIDGE_MRP)
+> +	case SWITCHDEV_OBJ_ID_MRP:
+> +		ret =3D ocelot_del_mrp(dev, SWITCHDEV_OBJ_MRP(obj));
+> +		break;
+> +	case SWITCHDEV_OBJ_ID_RING_ROLE_MRP:
+> +		ret =3D ocelot_del_ring_role(dev,
+> +					   SWITCHDEV_OBJ_RING_ROLE_MRP(obj));
+> +		break;
+> +#endif
+>  	default:
+>  		return -EOPNOTSUPP;
+>  	}
+> diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/eth=
+ernet/mscc/ocelot_vsc7514.c
+> index 6b6eb92149ba..96a9c9f98060 100644
+> --- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
+> +++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
+> @@ -698,6 +698,12 @@ static irqreturn_t ocelot_xtr_irq_handler(int irq, v=
+oid *arg)
+>  			skb->offload_fwd_mark =3D 1;
+> =20
+>  		skb->protocol =3D eth_type_trans(skb, dev);
+> +#if IS_ENABLED(CONFIG_BRIDGE_MRP)
+> +		if (skb->protocol =3D=3D ntohs(ETH_P_MRP) &&
+> +		    (priv->dev =3D=3D ocelot->mrp_p_port ||
+> +		     priv->dev =3D=3D ocelot->mrp_s_port))
+> +			skb->offload_fwd_mark =3D 0;
+> +#endif
+
+I wonder if you could just reserve a certain CPUQ for trapped traffic,
+and just generically check for that, instead of MRP port roles?
+
+>  		if (!skb_defer_rx_timestamp(skb))
+>  			netif_rx(skb);
+>  		dev->stats.rx_bytes +=3D len;
+> diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+> index d0d48e9620fb..d95c019ad84e 100644
+> --- a/include/soc/mscc/ocelot.h
+> +++ b/include/soc/mscc/ocelot.h
+> @@ -682,6 +682,12 @@ struct ocelot {
+>  	/* Protects the PTP clock */
+>  	spinlock_t			ptp_clock_lock;
+>  	struct ptp_pin_desc		ptp_pins[OCELOT_PTP_PINS_NUM];
+> +
+> +#if IS_ENABLED(CONFIG_BRIDGE_MRP)
+> +	u16				mrp_ring_id;
+> +	struct net_device		*mrp_p_port;
+> +	struct net_device		*mrp_s_port;
+> +#endif
+>  };
+> =20
+>  struct ocelot_policer {
+> --=20
+> 2.27.0
+> =
