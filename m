@@ -2,51 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF8213167B8
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 14:16:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 864553167BF
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 14:17:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231583AbhBJNQM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 08:16:12 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:60258 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231553AbhBJNP7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Feb 2021 08:15:59 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1l9pKn-005Jyp-4D; Wed, 10 Feb 2021 14:15:09 +0100
-Date:   Wed, 10 Feb 2021 14:15:09 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: dsa: mv88e6xxx: NET_DSA_MV88E6XXX_PTP should depend
- on NET_DSA_MV88E6XXX
-Message-ID: <YCPcXc6tO7E1806g@lunn.ch>
-References: <20210210081110.1185217-1-geert+renesas@glider.be>
+        id S231668AbhBJNRU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 08:17:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54188 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231626AbhBJNRM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 08:17:12 -0500
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B99EC061574;
+        Wed, 10 Feb 2021 05:16:31 -0800 (PST)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1l9pLY-00054L-Pl; Wed, 10 Feb 2021 14:15:56 +0100
+Date:   Wed, 10 Feb 2021 14:15:56 +0100
+From:   Florian Westphal <fw@strlen.de>
+To:     Alexander Lobakin <alobakin@pm.me>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Kevin Hao <haokexin@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        =?iso-8859-15?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        Yonghong Song <yhs@fb.com>, zhudi <zhudi21@huawei.com>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Edward Cree <ecree.xilinx@gmail.com>
+Subject: Re: [v3 net-next 08/10] skbuff: reuse NAPI skb cache on allocation
+ path (__build_skb())
+Message-ID: <20210210131556.GA2766@breakpoint.cc>
+References: <20210209204533.327360-1-alobakin@pm.me>
+ <20210209204533.327360-9-alobakin@pm.me>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210210081110.1185217-1-geert+renesas@glider.be>
+In-Reply-To: <20210209204533.327360-9-alobakin@pm.me>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 10, 2021 at 09:11:10AM +0100, Geert Uytterhoeven wrote:
-> Making global2 support mandatory removed the Kconfig symbol
-> NET_DSA_MV88E6XXX_GLOBAL2.  This symbol also served as an intermediate
-> symbol to make NET_DSA_MV88E6XXX_PTP depend on NET_DSA_MV88E6XXX.  With
-> the symbol removed, the user is always asked about PTP support for
-> Marvell 88E6xxx switches, even if the latter support is not enabled.
-> 
-> Fix this by reinstating the dependency.
-> 
-> Fixes: 63368a7416df144b ("net: dsa: mv88e6xxx: Make global2 support mandatory")
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Alexander Lobakin <alobakin@pm.me> wrote:
+> we're in such context. This includes: build_skb() (called only
+> from NIC drivers in NAPI Rx context) and {,__}napi_alloc_skb()
+> (called from the same place or from kernel network softirq
+> functions).
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
+build_skb is called from sleepable context in drivers/net/tun.c .
+Perhaps there are other cases.
