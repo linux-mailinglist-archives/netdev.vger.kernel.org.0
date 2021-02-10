@@ -2,196 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5044E315FB9
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 07:50:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7496315FC1
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 07:58:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232159AbhBJGu3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 01:50:29 -0500
-Received: from mail-bn7nam10on2079.outbound.protection.outlook.com ([40.107.92.79]:59616
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230185AbhBJGu1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Feb 2021 01:50:27 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Y04cUwmiZ/OTV5iz0cthQRQsT0JJoyXTE567ubEqGwFbT0tRZ8T2uh5mOad7RnBxnUuSoqlvdwj5kVH93iEc9M0fyjkzQMkur7Rnb3G4kv0EGBa0W6W/aseDftsQj635lq0GgusfcHY8v2z18Mdg/GiEeVR1LRH9xpqZEAX2gAioRIpMaDhs2Wnl2iP9OiyKueraRAq1Od8ym9HsrFqGq2g3GMbP2OXInNkp6aEGsrwOQ3bqMBqlENd5+u6MJkJ6qKRMy69KwcjyxfdA0JhEBVdLUM64JObPwaBMYDbT9s3b5RmUAAOroXYUaxnlpYxdmF17nTVmIfJmLc1FddcIIA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PbV6nW5baTyjEmzuxlXSA8LwDdhJlWEPQRcn+9oiSRA=;
- b=Kcom0pmEDlCEbIZ1+aa/1qy160REz0XRa+/AJ0GG1B2xN2AfWQg7cwJv7EQdUwCGghTnSSVqv/0I303GheOtPQFwe8a/qGcnq/Y5BvmSg7B4GtYzK0kQHDSXG/RsxciD2VtrkODiZMeducYjw+pwXmCbfPGx61oxQfooiSFKM3XniwWBF/e3JfBObSE20MCS0dYT4zjEPlvvJO7mXXa21DNSTZpN2Uu2itxZwkwOQ/CLBF20lFtNfCIrB2mbuto8a1s1khEWuUZMVc7srtVlPuNM67z4awSe8oqC0HNMgvwwExaDP2HCdJc6agoxlqKyo8+ADRcRNnzvHdzIe/WoRQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=synaptics.com; dmarc=pass action=none
- header.from=synaptics.com; dkim=pass header.d=synaptics.com; arc=none
+        id S232178AbhBJG6j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 01:58:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57610 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232169AbhBJG6g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 01:58:36 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA3F8C061574
+        for <netdev@vger.kernel.org>; Tue,  9 Feb 2021 22:57:55 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id 190so885092wmz.0
+        for <netdev@vger.kernel.org>; Tue, 09 Feb 2021 22:57:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=Synaptics.onmicrosoft.com; s=selector2-Synaptics-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PbV6nW5baTyjEmzuxlXSA8LwDdhJlWEPQRcn+9oiSRA=;
- b=P4SpLiKhAeagExrJvYzlWHqoC05SI2JkEHVfcEDuJe0E04szMA+kkU08irTcZhvaa7b8GKXgcdsO1jPzw0NBAPQG3A8vrYIp/8QdomxgjWkIzGSZra3yDOxbfVT5n0RI5ucBhI2xJt7xpqvVi+XJkzJ9+gYXT5j4kVW7pZ9LQZ4=
-Authentication-Results: baikalelectronics.ru; dkim=none (message not signed)
- header.d=none;baikalelectronics.ru; dmarc=none action=none
- header.from=synaptics.com;
-Received: from BN8PR03MB4724.namprd03.prod.outlook.com (2603:10b6:408:96::21)
- by BN6PR03MB2660.namprd03.prod.outlook.com (2603:10b6:404:53::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.25; Wed, 10 Feb
- 2021 06:49:37 +0000
-Received: from BN8PR03MB4724.namprd03.prod.outlook.com
- ([fe80::34cf:5dc3:971:82a7]) by BN8PR03MB4724.namprd03.prod.outlook.com
- ([fe80::34cf:5dc3:971:82a7%5]) with mapi id 15.20.3846.026; Wed, 10 Feb 2021
- 06:49:37 +0000
-Date:   Wed, 10 Feb 2021 14:49:24 +0800
-From:   Jisheng Zhang <Jisheng.Zhang@synaptics.com>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Joao Pinto <jpinto@synopsys.com>,
-        Lars Persson <larper@axis.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Vyacheslav Mitrofanov 
-        <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
-        <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 16/24] net: stmmac: Use optional reset control API to
- work with stmmaceth
-Message-ID: <20210210144924.6b8e7a11@xhacker.debian>
-In-Reply-To: <20210208135609.7685-17-Sergey.Semin@baikalelectronics.ru>
-References: <20210208135609.7685-1-Sergey.Semin@baikalelectronics.ru>
-        <20210208135609.7685-17-Sergey.Semin@baikalelectronics.ru>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.147.44.204]
-X-ClientProxiedBy: BY5PR04CA0025.namprd04.prod.outlook.com
- (2603:10b6:a03:1d0::35) To BN8PR03MB4724.namprd03.prod.outlook.com
- (2603:10b6:408:96::21)
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=hvWJNQ0WW+ohrMDi0UBn0D4SD2EbL8HNBT8NgTjqEXI=;
+        b=YOzCYOrm6pbVHdEJfLMWwnPRVFDYRJt2u91cNT2NRTKLuU9q+SOV5hSjaIf6PvrW/J
+         NUz/AGdBB4c6iQPFSxmZZ3gi8OnJc4MhqJuisct3rAfMay4VsQoGrOdT4jgXdg7J6l4H
+         9ursBy/1QDmOFrmUUDrarbnXb39BkKSHKWLicemY8p9cb7cwkXG6arrwBIRjBDgKCkQZ
+         lf/WdBrDv1ta1PGXAqp5xL+0PxKsT4bec3fBYocxjbodeOqhzSr1unvxiFwNo6Xthc6q
+         68LWnYmdce3tmQhmhaCVSyCVJlx9lL0vYJoVY/K8GJrlZQuepwJoMCvX5jV4wnrfk9kj
+         p5KA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=hvWJNQ0WW+ohrMDi0UBn0D4SD2EbL8HNBT8NgTjqEXI=;
+        b=lGFNOiY5zlk3Cobv4X11x5jW1F6XyD1sJiHWis8Dc0O5oTDkLjWmYr7E/n+10IPAxC
+         MOKVLU/9/Phyf8XqvTPjphSy1IzlFatkRQeeNmTs4gbAjWGuG1CL6dgikKS7ruKpvoHW
+         N3EkqlPglrcjEWv8F6k8k5HN28ghCVRgYfw0lxOQnwjLVkn+YSQ7mKFFvXP7fZDlqWds
+         UC7D185tD6RDY4ziUILzdZ7h7Fv7q7NmknBxvWoW5T2XKbOLDEEYuT9mBPtZGDYLZTzs
+         nCxumkNV709ZLqM6KLpxcCKEMtgPIvaZPSKy1YQMWXr+T8D5YtpjlxnCKH05QGZgmWgL
+         i8jw==
+X-Gm-Message-State: AOAM533DC61R1kfnoS9s52c9OC8tircHkv9QZS3PmMYPzhuO7f0RaOTZ
+        OmqBoAh5eQB1nuc1OnRFUMnEyMvTTaZNFw==
+X-Google-Smtp-Source: ABdhPJw7LaCiET7+cpmucXhAblsagD/4iSaCrk5+WOCF9PwSS1bze1M1U+9TpWo9R+CJ2kcACPIhhw==
+X-Received: by 2002:a1c:7d53:: with SMTP id y80mr1506185wmc.187.1612940274537;
+        Tue, 09 Feb 2021 22:57:54 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f1f:ad00:b0ff:e539:9460:c978? (p200300ea8f1fad00b0ffe5399460c978.dip0.t-ipconnect.de. [2003:ea:8f1f:ad00:b0ff:e539:9460:c978])
+        by smtp.googlemail.com with ESMTPSA id t126sm1330755wmf.3.2021.02.09.22.57.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 Feb 2021 22:57:54 -0800 (PST)
+Subject: Re: Request for feature: force carrier up/on flag
+To:     Anton Hvornum <anton@hvornum.se>
+Cc:     netdev@vger.kernel.org,
+        Stephen Hemminger <stephen@networkplumber.org>
+References: <CAG2iS6oP+8JG=wCueFuE3HwPsnpnkqxhUx8Br84AnL+AoLi1KQ@mail.gmail.com>
+ <20210209163242.7ce62140@hermes.local>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <4fb584a3-5d4d-b6da-0e6a-766273e2a3e7@gmail.com>
+Date:   Wed, 10 Feb 2021 07:57:46 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from xhacker.debian (192.147.44.204) by BY5PR04CA0025.namprd04.prod.outlook.com (2603:10b6:a03:1d0::35) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.25 via Frontend Transport; Wed, 10 Feb 2021 06:49:30 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1a66cb2f-6bb1-4de2-2a86-08d8cd900874
-X-MS-TrafficTypeDiagnostic: BN6PR03MB2660:
-X-Microsoft-Antispam-PRVS: <BN6PR03MB26606B5FB6AE9163D74730B2ED8D9@BN6PR03MB2660.namprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: B8Ytj37ZQUkkx2BbY5EchVa2+3amlGpcZWpLOX073vszfmqP29GpQ+7Po4CStvOJdMkO4c840s+LMwK0rIFQLlvXKFxaFY1Iy8fWkD/4hyzqc3ZFir6OiilZFjIS6PuJmgQjowLNOqws5LgVpYx1MC7qVQgr24DNOyETuxC06Slt1rGWtbBtcTu99o26i9vY+w/mALdJBke8EE6IWR9Xe4mqnqbCT4RymxT+Y+yep7X4GsjFPyzWrPjG1HT1oRWrQiXO+YVOrFf6wyYgbz4GViW9pmJVbFthQxdJJiv0SRr9XD+5F1NdLFIxvG2VOvGA+OtbrtZySej0WoVVn94N7aEzj/hz2fwR3k4MqCTri+Dn4CERP+4pc2cK4h6fcm94Yg9goHkm+UapsovMEFTE5emrjiruXcuLjppmP8vZx0CgFZ2aXSG0vBGTAo/0Bkh/rijkIYpmEfG3NdvgrvKhSntVsq+5XaiHEKp7L0UigX4BSvtIX/SXyga76SZtlIOVk3u5aY38FZ0nQmnHCoKnzg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR03MB4724.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(136003)(366004)(376002)(396003)(39860400002)(6916009)(6506007)(956004)(186003)(6666004)(16526019)(7416002)(86362001)(4326008)(8676002)(9686003)(316002)(55016002)(83380400001)(26005)(478600001)(66946007)(54906003)(1076003)(5660300002)(52116002)(2906002)(7696005)(66476007)(66556008)(8936002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?KDUSGnfrGT/DW3R8hCPzuG0fBRjiLE3wLDqxAKvyahhLdrZGmtCCC+XylVNb?=
- =?us-ascii?Q?kRUvaBTjas1Ag2Hz3Oc8bOsc8d4kiei04oJmGlm0SiuEwwQLPFrUpkSumIVN?=
- =?us-ascii?Q?4u0vyYWOJo/uur4MPBJOmJ+2hZSutM5eezSX31efT3GkZOUWxLB99JSNKfxN?=
- =?us-ascii?Q?2R0/diL/yFmCm2ZETcEC3Hp4I7zESUcvnblZk/5O8C972DOvyxbyHXucuxop?=
- =?us-ascii?Q?emktR6kCAykjIVhg1qCAGE6+heLBl/YodtQ/d0L6inAZ7k6O5Ba9xMesKMYn?=
- =?us-ascii?Q?M1DIun2fdT/V/cPlNcRSAHtvnEC54uX5VNDhdoDcZuiGHX22++kidp/bfPfC?=
- =?us-ascii?Q?eGERhX71djpONja7LbDA/M99gLlEOKXu1tu+4FrKXFKk9GNrtqw0fk6t3F5/?=
- =?us-ascii?Q?XseH+DU8o66aYsY6Y5hfssa92H5HIAujDjrKONGGkG/wSSevlw0Q0l6VwvCk?=
- =?us-ascii?Q?BgL/ubur0X2h8bxzWhaQq1cV8BMoJcB4cYphtM3HPQY8rdKZAAm8N8V1/HfS?=
- =?us-ascii?Q?bbv8Orf97SERClZbPn7tciPEC1rqhwpE1iH1IJThop/PK5/Y+GyD7D+yrvO7?=
- =?us-ascii?Q?0IdKIHFSFaPHwt7qY3hThAbk4G62/fu8lm4AhAz5cWaEcEhEsULvGNzFjB5L?=
- =?us-ascii?Q?792NvbyJsfdVlwqeCmzZg5QbGNNaIvjIEheNzBv0Bt46mSWrrAV57P2t5Uks?=
- =?us-ascii?Q?jxyb6pEL10Mpuuzr0e4htJfA+P8FAqjEPMkyJwiZGmcUsXGwPEZ+ICtFL9Te?=
- =?us-ascii?Q?SbQ84I8JUF3WJpmaWG2FH7VMNBdg5A+MuahEqf6XblvmvPxGeNlAPujiBsXx?=
- =?us-ascii?Q?yQkkFkvr5ugYjo6d1ZS0RfoamxbrXaZUgrWS4Og/L/+yYD1bXIHLGyYxSKJb?=
- =?us-ascii?Q?VXLOJy7qqz0HumIvrpT7SsTdElg7T5ORDk+k/TLgJvAxV0EHQAJYKdC/RbUC?=
- =?us-ascii?Q?kN5ML2xjEe8nHeQCsZZihEhb1EvY7jLIcM1LCxVRslQri0IbanSQuY4vo939?=
- =?us-ascii?Q?f6/xwDrxcgGCXbNgZeByFHXDNE2cxDd8GT8B86QCCR8PSm7i8/r5FC5R4m+u?=
- =?us-ascii?Q?WrD/Kz95AgiRZAkX5hhHqSXc60MdPe/0QOFOsMk9wlbTi6Th+Ptj+lEikXjS?=
- =?us-ascii?Q?U2EDLUh7w2cZ5Ew02bZZMxKYxK7mdl3Q+3eYIddVD+SocnKiaROyUXBmE6jf?=
- =?us-ascii?Q?DSex7HkMT19RN2wcdMlkSNJRZJgNwUbIBYNmmrdunfcfH5/rZy7rwMryiI8E?=
- =?us-ascii?Q?C4T5K8FEUulh6FqPGbqHbLh1kKrL4+eCpQuPObF9SjOT3aTg61+9kG5bgIkF?=
- =?us-ascii?Q?vxNdCwsN6UDvqkaVf+Xj861E?=
-X-OriginatorOrg: synaptics.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1a66cb2f-6bb1-4de2-2a86-08d8cd900874
-X-MS-Exchange-CrossTenant-AuthSource: BN8PR03MB4724.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2021 06:49:37.4610
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 335d1fbc-2124-4173-9863-17e7051a2a0e
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: gAV/9lfUEpc/xkeXpDRa8Snkk+P9mtmqbKLM1fxLJZn5ckEFXaZDd73/fLiko/ij3EVwLebDxadfoQ8PZvYVaw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR03MB2660
+In-Reply-To: <20210209163242.7ce62140@hermes.local>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Mon, 8 Feb 2021 16:56:00 +0300 Serge Semin wrote:
-
-
+On 10.02.2021 01:32, Stephen Hemminger wrote:
+> On Tue, 9 Feb 2021 18:35:54 +0100
+> Anton Hvornum <anton@hvornum.se> wrote:
 > 
-> Since commit bb3222f71b57 ("net: stmmac: platform: use optional clk/reset
-> get APIs") a manual implementation of the optional device reset control
-> functionality has been replaced with using the
-> devm_reset_control_get_optional() method. But for some reason the optional
-> reset control handler usage hasn't been fixed and preserved the
-> NULL-checking statements. There is no need in that in order to perform the
-> reset control assertion/deassertion because the passed NULL will be
-> considered by the reset framework as absent optional reset control handler
-> anyway.
+>> Hi.
+>>
+>> I am a bit new to ethtool, kernel drivers and all the surrounding aspects.
+>> I also recognize that my use case is of low priority and a bit niche,
+>> but any response would be greatly appreciated.
+>>
+>> I'm modifying an existing Intel driver, and I'm looking for a way to
+>> integrate/add another ethtool hook to force call `netif_carrier_on`.
+>> There's plenty of hooks/listeners (not clear as to what you call
+>> these) between the Intel driver and ethtool via C API's today that
+>> allows for ethtool to control the driver. Many of which are for speed,
+>> autonegotiation etc. But I don't see any flags/functions to force a
+>> carrier state to up.
+>>
+>> This would be very useful for many reasons, primarily on fiber optic
+>> setups where you are developing hardware such as switches, routers and
+>> even developing network cards. Or if you've got a passive device such
+>> as IDS or something similar that passively monitors network traffic
+>> and can't/shouldn't send out link requests.
+>> There are commercial products with modified drivers that support this,
+>> but since the Intel hardware in this case seems to support it - just
+>> that there's no way controlling it with the tools that exist today. I
+>> would therefore request a feature for consideration to ethtool that
+>> can force carrier states up/down.
+>>
+>> A intuitive option I think would be:
+>> ethtool --change carrier on
+>>
+>> Assuming that drivers follow suit and allow this. But a first step
+>> would be for the tools to support it in the API so drivers have
+>> something to call/listen for. In the meantime, I can probably
+>> integrate a private flag and go that route, but that feels hacky and
+>> won't foster driver developers to follow suit. My goal is to empower
+>> more open source alternatives to otherwise expensive commercials
+>> solutions.
+>>
+>> Best wishes,
+>> Anton Hvornum
 > 
-> Fixes: bb3222f71b57 ("net: stmmac: platform: use optional clk/reset get APIs")
-
-The patch itself looks good, but the Fix tag isn't necessary since the
-patch is a clean up rather than a bug fix. Can you please drop it in next
-version?
-
-Thanks
-
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> ---
->  .../net/ethernet/stmicro/stmmac/stmmac_main.c | 19 ++++++++-----------
->  1 file changed, 8 insertions(+), 11 deletions(-)
+> Normally, carrier just reflects the state of what the hardware is
+> reporting. Why not set admin down which tells the NIC to take
+> the device offline, and that drops the fiber link.
 > 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> index 4f1bf8f6538b..a8dec219c295 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@ -4935,15 +4935,13 @@ int stmmac_dvr_probe(struct device *device,
->         if ((phyaddr >= 0) && (phyaddr <= 31))
->                 priv->plat->phy_addr = phyaddr;
-> 
-> -       if (priv->plat->stmmac_rst) {
-> -               ret = reset_control_assert(priv->plat->stmmac_rst);
-> -               reset_control_deassert(priv->plat->stmmac_rst);
-> -               /* Some reset controllers have only reset callback instead of
-> -                * assert + deassert callbacks pair.
-> -                */
-> -               if (ret == -ENOTSUPP)
-> -                       reset_control_reset(priv->plat->stmmac_rst);
-> -       }
-> +       ret = reset_control_assert(priv->plat->stmmac_rst);
-> +       reset_control_deassert(priv->plat->stmmac_rst);
-> +       /* Some reset controllers have only reset callback instead of
-> +        * assert + deassert callbacks pair.
-> +        */
-> +       if (ret == -ENOTSUPP)
-> +               reset_control_reset(priv->plat->stmmac_rst);
-> 
->         /* Init MAC and get the capabilities */
->         ret = stmmac_hw_init(priv);
-> @@ -5155,8 +5153,7 @@ int stmmac_dvr_remove(struct device *dev)
->         stmmac_exit_fs(ndev);
->  #endif
->         phylink_destroy(priv->phylink);
-> -       if (priv->plat->stmmac_rst)
-> -               reset_control_assert(priv->plat->stmmac_rst);
-> +       reset_control_assert(priv->plat->stmmac_rst);
->         if (priv->hw->pcs != STMMAC_PCS_TBI &&
->             priv->hw->pcs != STMMAC_PCS_RTBI)
->                 stmmac_mdio_unregister(ndev);
-> --
-> 2.29.2
+> Or maybe what you want is already there.
+> Try writing to /sys/class/net/ethX/carrier which forces a carrier change?
 > 
 
+This attribute uses callback ndo_change_carrier in struct net_device_ops.
+The kerneldoc provides further details.
