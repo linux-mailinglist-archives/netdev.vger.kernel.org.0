@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F909317160
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 21:29:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 996E2317169
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 21:30:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233336AbhBJU3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 15:29:31 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:47022 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S232071AbhBJU30 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 15:29:26 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11AKQEDU017521;
-        Wed, 10 Feb 2021 12:28:44 -0800
+        id S233502AbhBJUaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 15:30:13 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:57806 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233383AbhBJU3g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 15:29:36 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11AKP9CT020784;
+        Wed, 10 Feb 2021 12:28:52 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=HLctQQ4LgVkgmlTxX0z1Ct2VZju4ObFBjVxIZgwodCY=;
- b=WqgC777yjBq676X2Dsi2q4XBT7l+XcvZ99PuDVhdUQZ0FrE3/lbJw3F4V6D7b4GhdgaP
- cWJ63EGX9YAxWZ28ElGbKvaAhTq2szeKdNLw1SW6jqYhULJNl0NDUHd09FavwxNiBIc5
- GMWwb8TZ7oVK+1O/Jd6z+jj8uhYldbStXXN9NR/6qkFB1v1w5xPU263jbsKZHx/RuGYY
- m0ElQVo5uolAfZ06HV4q1UspBLJC2Lo4YtfV4wsZb7qeUlpv2a/daJfpNx4Mk2PBz17F
- vOsp9zhs38e1RZeKVt5FnzVfU+1cRQi/mSR/CB+6w59wZ08D7lSTaU9laBAUtoqnk1yu 8w== 
+ content-type; s=pfpt0220; bh=UkgdiTwRnZdoiNGDO9grsaE7NlXbfwVDnpMYrRoXdLw=;
+ b=M2py7+MGC4/pIrAa1RTZtLLVhLuFzyxrCRU0vnrgySjsGYEFmYty8Lo+V4YeAKPtk7xv
+ NOWYyw8bca2OGTzwHAdHO2MMxkBeevDSZsqy+eRF+ifRI62nMznIzxnSwvpglLOOKLXf
+ x8Pz1hSVtZHAoOkTP4eaMaGHbL2DXMlo7k3dMl3R0f27VR4pzm7OeDMlArvnsfl3Qz5D
+ PKkteVnnUHLCgp3jqrUYIaWgncnw8yk1rr6J0WQH2TeY0NwoEZ2lcnC9xq73B9bz9s49
+ q7GyrlCpVdpUYatsjuIvRahju66SErbDBsUhKaxzhcvvF6g6PJ+jd8U+AlmpeSYhh9bJ 7w== 
 Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 36hsbrn6fc-2
+        by mx0b-0016f401.pphosted.com with ESMTP id 36hugqcwaj-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 10 Feb 2021 12:28:44 -0800
+        Wed, 10 Feb 2021 12:28:52 -0800
 Received: from SC-EXCH03.marvell.com (10.93.176.83) by DC5-EXCH01.marvell.com
  (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 10 Feb
- 2021 12:28:42 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH03.marvell.com
+ 2021 12:28:43 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH03.marvell.com
  (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 10 Feb
  2021 12:28:42 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
  Transport; Wed, 10 Feb 2021 12:28:42 -0800
 Received: from dc5-eodlnx05.marvell.com (dc5-eodlnx05.marvell.com [10.69.113.147])
-        by maili.marvell.com (Postfix) with ESMTP id B90223F7044;
+        by maili.marvell.com (Postfix) with ESMTP id BB01E3F7045;
         Wed, 10 Feb 2021 12:28:42 -0800 (PST)
 From:   Bhaskar Upadhaya <bupadhaya@marvell.com>
 To:     <netdev@vger.kernel.org>, <kuba@kernel.org>, <aelior@marvell.com>,
         <irusskikh@marvell.com>
 CC:     <davem@davemloft.net>, <bupadhaya@marvell.com>
-Subject: [PATCH v3 net-next 2/3] qede: add per queue coalesce support for qede driver
-Date:   Wed, 10 Feb 2021 12:28:30 -0800
-Message-ID: <1612988911-10799-3-git-send-email-bupadhaya@marvell.com>
+Subject: [PATCH v3 net-next 3/3] qede: preserve per queue stats across up/down of interface
+Date:   Wed, 10 Feb 2021 12:28:31 -0800
+Message-ID: <1612988911-10799-4-git-send-email-bupadhaya@marvell.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1612988911-10799-1-git-send-email-bupadhaya@marvell.com>
 References: <1612988911-10799-1-git-send-email-bupadhaya@marvell.com>
@@ -56,166 +56,186 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-per queue coalescing allows better and more finegrained control
-over interrupt rates.
+Here we do the initialization of coalescing values on load.
+per queue coalesce values are also restored across up/down of
+ethernet interface.
 
 Signed-off-by: Bhaskar Upadhaya <bupadhaya@marvell.com>
 Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
 Signed-off-by: Ariel Elior <aelior@marvell.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
 ---
- .../net/ethernet/qlogic/qede/qede_ethtool.c   | 124 ++++++++++++++++++
- 1 file changed, 124 insertions(+)
+ drivers/net/ethernet/qlogic/qede/qede.h       | 10 +++++++
+ .../net/ethernet/qlogic/qede/qede_ethtool.c   | 16 ++++++----
+ drivers/net/ethernet/qlogic/qede/qede_main.c  | 29 +++++++++++++++++--
+ 3 files changed, 48 insertions(+), 7 deletions(-)
 
+diff --git a/drivers/net/ethernet/qlogic/qede/qede.h b/drivers/net/ethernet/qlogic/qede/qede.h
+index 3efc5899f656..2e62a2c4eb63 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede.h
++++ b/drivers/net/ethernet/qlogic/qede/qede.h
+@@ -168,6 +168,12 @@ struct qede_dump_info {
+ 	u32 args[QEDE_DUMP_MAX_ARGS];
+ };
+ 
++struct qede_coalesce {
++	bool isvalid;
++	u16 rxc;
++	u16 txc;
++};
++
+ struct qede_dev {
+ 	struct qed_dev			*cdev;
+ 	struct net_device		*ndev;
+@@ -194,6 +200,7 @@ struct qede_dev {
+ 	((edev)->dev_info.common.dev_type == QED_DEV_TYPE_AH)
+ 
+ 	struct qede_fastpath		*fp_array;
++	struct qede_coalesce            *coal_entry;
+ 	u8				req_num_tx;
+ 	u8				fp_num_tx;
+ 	u8				req_num_rx;
+@@ -581,6 +588,9 @@ int qede_add_tc_flower_fltr(struct qede_dev *edev, __be16 proto,
+ 			    struct flow_cls_offload *f);
+ 
+ void qede_forced_speed_maps_init(void);
++int qede_set_coalesce(struct net_device *dev, struct ethtool_coalesce *coal);
++int qede_set_per_coalesce(struct net_device *dev, u32 queue,
++			  struct ethtool_coalesce *coal);
+ 
+ #define RX_RING_SIZE_POW	13
+ #define RX_RING_SIZE		((u16)BIT(RX_RING_SIZE_POW))
 diff --git a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-index bedbb85a179a..78ed5adee022 100644
+index 78ed5adee022..1560ad3d9290 100644
 --- a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
 +++ b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
-@@ -2105,6 +2105,126 @@ static int qede_get_dump_data(struct net_device *dev,
+@@ -819,8 +819,7 @@ static int qede_get_coalesce(struct net_device *dev,
  	return rc;
  }
  
-+static int qede_set_per_coalesce(struct net_device *dev,
-+				 u32 queue,
-+				 struct ethtool_coalesce *coal)
-+{
-+	struct qede_dev *edev = netdev_priv(dev);
-+	struct qede_fastpath *fp;
-+	u16 rxc, txc;
-+	int rc = 0;
-+
-+	if (coal->rx_coalesce_usecs > QED_COALESCE_MAX ||
-+	    coal->tx_coalesce_usecs > QED_COALESCE_MAX) {
-+		DP_INFO(edev,
-+			"Can't support requested %s coalesce value [max supported value %d]\n",
-+			coal->rx_coalesce_usecs > QED_COALESCE_MAX ? "rx"
-+								   : "tx",
-+			QED_COALESCE_MAX);
-+		return -EINVAL;
+-static int qede_set_coalesce(struct net_device *dev,
+-			     struct ethtool_coalesce *coal)
++int qede_set_coalesce(struct net_device *dev, struct ethtool_coalesce *coal)
+ {
+ 	struct qede_dev *edev = netdev_priv(dev);
+ 	struct qede_fastpath *fp;
+@@ -855,6 +854,8 @@ static int qede_set_coalesce(struct net_device *dev,
+ 					"Set RX coalesce error, rc = %d\n", rc);
+ 				return rc;
+ 			}
++			edev->coal_entry[i].rxc = rxc;
++			edev->coal_entry[i].isvalid = true;
+ 		}
+ 
+ 		if (edev->fp_array[i].type & QEDE_FASTPATH_TX) {
+@@ -874,6 +875,8 @@ static int qede_set_coalesce(struct net_device *dev,
+ 					"Set TX coalesce error, rc = %d\n", rc);
+ 				return rc;
+ 			}
++			edev->coal_entry[i].txc = txc;
++			edev->coal_entry[i].isvalid = true;
+ 		}
+ 	}
+ 
+@@ -2105,9 +2108,8 @@ static int qede_get_dump_data(struct net_device *dev,
+ 	return rc;
+ }
+ 
+-static int qede_set_per_coalesce(struct net_device *dev,
+-				 u32 queue,
+-				 struct ethtool_coalesce *coal)
++int qede_set_per_coalesce(struct net_device *dev, u32 queue,
++			  struct ethtool_coalesce *coal)
+ {
+ 	struct qede_dev *edev = netdev_priv(dev);
+ 	struct qede_fastpath *fp;
+@@ -2150,6 +2152,8 @@ static int qede_set_per_coalesce(struct net_device *dev,
+ 				"Set RX coalesce error, rc = %d\n", rc);
+ 			goto out;
+ 		}
++		edev->coal_entry[queue].rxc = rxc;
++		edev->coal_entry[queue].isvalid = true;
+ 	}
+ 
+ 	if (edev->fp_array[queue].type & QEDE_FASTPATH_TX) {
+@@ -2161,6 +2165,8 @@ static int qede_set_per_coalesce(struct net_device *dev,
+ 				"Set TX coalesce error, rc = %d\n", rc);
+ 			goto out;
+ 		}
++		edev->coal_entry[queue].txc = txc;
++		edev->coal_entry[queue].isvalid = true;
+ 	}
+ out:
+ 	__qede_unlock(edev);
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
+index 4bf94797aac5..4d952036ba82 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_main.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
+@@ -904,6 +904,7 @@ static int qede_alloc_fp_array(struct qede_dev *edev)
+ {
+ 	u8 fp_combined, fp_rx = edev->fp_num_rx;
+ 	struct qede_fastpath *fp;
++	void *mem;
+ 	int i;
+ 
+ 	edev->fp_array = kcalloc(QEDE_QUEUE_CNT(edev),
+@@ -913,6 +914,15 @@ static int qede_alloc_fp_array(struct qede_dev *edev)
+ 		goto err;
+ 	}
+ 
++	mem = krealloc(edev->coal_entry, QEDE_QUEUE_CNT(edev) *
++		       sizeof(*edev->coal_entry), GFP_KERNEL);
++	if (!mem) {
++		DP_ERR(edev, "coalesce entry allocation failed\n");
++		kfree(edev->coal_entry);
++		goto err;
 +	}
++	edev->coal_entry = mem;
 +
-+	rxc = (u16)coal->rx_coalesce_usecs;
-+	txc = (u16)coal->tx_coalesce_usecs;
-+
-+	__qede_lock(edev);
-+	if (queue >= edev->num_queues) {
-+		DP_INFO(edev, "Invalid queue\n");
-+		rc = -EINVAL;
-+		goto out;
+ 	fp_combined = QEDE_QUEUE_CNT(edev) - fp_rx - edev->fp_num_tx;
+ 
+ 	/* Allocate the FP elements for Rx queues followed by combined and then
+@@ -1320,8 +1330,10 @@ static void __qede_remove(struct pci_dev *pdev, enum qede_remove_mode mode)
+ 	 * [e.g., QED register callbacks] won't break anything when
+ 	 * accessing the netdevice.
+ 	 */
+-	if (mode != QEDE_REMOVE_RECOVERY)
++	if (mode != QEDE_REMOVE_RECOVERY) {
++		kfree(edev->coal_entry);
+ 		free_netdev(ndev);
 +	}
+ 
+ 	dev_info(&pdev->dev, "Ending qede_remove successfully\n");
+ }
+@@ -2328,8 +2340,9 @@ static int qede_load(struct qede_dev *edev, enum qede_load_mode mode,
+ 		     bool is_locked)
+ {
+ 	struct qed_link_params link_params;
++	struct ethtool_coalesce coal = {};
+ 	u8 num_tc;
+-	int rc;
++	int rc, i;
+ 
+ 	DP_INFO(edev, "Starting qede load\n");
+ 
+@@ -2390,6 +2403,18 @@ static int qede_load(struct qede_dev *edev, enum qede_load_mode mode,
+ 
+ 	edev->state = QEDE_STATE_OPEN;
+ 
++	coal.rx_coalesce_usecs = QED_DEFAULT_RX_USECS;
++	coal.tx_coalesce_usecs = QED_DEFAULT_TX_USECS;
 +
-+	if (edev->state != QEDE_STATE_OPEN) {
-+		rc = -EINVAL;
-+		goto out;
-+	}
-+
-+	fp = &edev->fp_array[queue];
-+
-+	if (edev->fp_array[queue].type & QEDE_FASTPATH_RX) {
-+		rc = edev->ops->common->set_coalesce(edev->cdev,
-+						     rxc, 0,
-+						     fp->rxq->handle);
-+		if (rc) {
-+			DP_INFO(edev,
-+				"Set RX coalesce error, rc = %d\n", rc);
-+			goto out;
++	for_each_queue(i) {
++		if (edev->coal_entry[i].isvalid) {
++			coal.rx_coalesce_usecs = edev->coal_entry[i].rxc;
++			coal.tx_coalesce_usecs = edev->coal_entry[i].txc;
 +		}
++		__qede_unlock(edev);
++		qede_set_per_coalesce(edev->ndev, i, &coal);
++		__qede_lock(edev);
 +	}
-+
-+	if (edev->fp_array[queue].type & QEDE_FASTPATH_TX) {
-+		rc = edev->ops->common->set_coalesce(edev->cdev,
-+						     0, txc,
-+						     fp->txq->handle);
-+		if (rc) {
-+			DP_INFO(edev,
-+				"Set TX coalesce error, rc = %d\n", rc);
-+			goto out;
-+		}
-+	}
-+out:
-+	__qede_unlock(edev);
-+
-+	return rc;
-+}
-+
-+static int qede_get_per_coalesce(struct net_device *dev,
-+				 u32 queue,
-+				 struct ethtool_coalesce *coal)
-+{
-+	void *rx_handle = NULL, *tx_handle = NULL;
-+	struct qede_dev *edev = netdev_priv(dev);
-+	struct qede_fastpath *fp;
-+	u16 rx_coal, tx_coal;
-+	int rc = 0;
-+
-+	rx_coal = QED_DEFAULT_RX_USECS;
-+	tx_coal = QED_DEFAULT_TX_USECS;
-+
-+	memset(coal, 0, sizeof(struct ethtool_coalesce));
-+
-+	__qede_lock(edev);
-+	if (queue >= edev->num_queues) {
-+		DP_INFO(edev, "Invalid queue\n");
-+		rc = -EINVAL;
-+		goto out;
-+	}
-+
-+	if (edev->state != QEDE_STATE_OPEN) {
-+		rc = -EINVAL;
-+		goto out;
-+	}
-+
-+	fp = &edev->fp_array[queue];
-+
-+	if (fp->type & QEDE_FASTPATH_RX)
-+		rx_handle = fp->rxq->handle;
-+
-+	rc = edev->ops->get_coalesce(edev->cdev, &rx_coal,
-+				     rx_handle);
-+	if (rc) {
-+		DP_INFO(edev, "Read Rx coalesce error\n");
-+		goto out;
-+	}
-+
-+	fp = &edev->fp_array[queue];
-+	if (fp->type & QEDE_FASTPATH_TX)
-+		tx_handle = fp->txq->handle;
-+
-+	rc = edev->ops->get_coalesce(edev->cdev, &tx_coal,
-+				      tx_handle);
-+	if (rc)
-+		DP_INFO(edev, "Read Tx coalesce error\n");
-+
-+out:
-+	__qede_unlock(edev);
-+
-+	coal->rx_coalesce_usecs = rx_coal;
-+	coal->tx_coalesce_usecs = tx_coal;
-+
-+	return rc;
-+}
-+
- static const struct ethtool_ops qede_ethtool_ops = {
- 	.supported_coalesce_params	= ETHTOOL_COALESCE_USECS,
- 	.get_link_ksettings		= qede_get_link_ksettings,
-@@ -2148,6 +2268,8 @@ static const struct ethtool_ops qede_ethtool_ops = {
- 	.set_fecparam			= qede_set_fecparam,
- 	.get_tunable			= qede_get_tunable,
- 	.set_tunable			= qede_set_tunable,
-+	.get_per_queue_coalesce		= qede_get_per_coalesce,
-+	.set_per_queue_coalesce		= qede_set_per_coalesce,
- 	.flash_device			= qede_flash_device,
- 	.get_dump_flag			= qede_get_dump_flag,
- 	.get_dump_data			= qede_get_dump_data,
-@@ -2177,6 +2299,8 @@ static const struct ethtool_ops qede_vf_ethtool_ops = {
- 	.set_rxfh			= qede_set_rxfh,
- 	.get_channels			= qede_get_channels,
- 	.set_channels			= qede_set_channels,
-+	.get_per_queue_coalesce		= qede_get_per_coalesce,
-+	.set_per_queue_coalesce		= qede_set_per_coalesce,
- 	.get_tunable			= qede_get_tunable,
- 	.set_tunable			= qede_set_tunable,
- };
+ 	DP_INFO(edev, "Ending successfully qede load\n");
+ 
+ 	goto out;
 -- 
 2.17.1
 
