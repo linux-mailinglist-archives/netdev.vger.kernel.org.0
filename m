@@ -2,70 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 04B2D316F6B
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 20:00:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CB0D316F7B
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 20:03:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234331AbhBJTAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 14:00:21 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:33128 "EHLO vps0.lunn.ch"
+        id S234064AbhBJTDK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 14:03:10 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:33148 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233756AbhBJS6q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Feb 2021 13:58:46 -0500
+        id S232904AbhBJTCl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Feb 2021 14:02:41 -0500
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1l9ugO-005NHt-KI; Wed, 10 Feb 2021 19:57:48 +0100
-Date:   Wed, 10 Feb 2021 19:57:48 +0100
+        id 1l9ukL-005NMX-Ou; Wed, 10 Feb 2021 20:01:53 +0100
+Date:   Wed, 10 Feb 2021 20:01:53 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Prasanna Vengateshan Varadharajan 
-        <prasanna.vengateshan@microchip.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
-        robh+dt@kernel.org, kuba@kernel.org, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, davem@davemloft.net,
-        UNGLinuxDriver@microchip.com, Woojung.Huh@microchip.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next 1/8] dt-bindings: net: dsa: dt bindings for
- microchip lan937x
-Message-ID: <YCQsrPNmyRnhp4Mm@lunn.ch>
-References: <20210128064112.372883-1-prasanna.vengateshan@microchip.com>
- <20210128064112.372883-2-prasanna.vengateshan@microchip.com>
- <20210130020227.ahiee4goetpp2hb7@skbuf>
- <6531ab6c7e40b7e2f73a6087b31ecfe0a8f214e4.camel@microchip.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>, Arnd Bergmann <arnd@arndb.de>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>
+Subject: Re: [PATCH RFC/RFT 0/2] W=1 by default for Ethernet PHY subsystem
+Message-ID: <YCQtoYFZzfNmGhd/@lunn.ch>
+References: <20200919190258.3673246-1-andrew@lunn.ch>
+ <CAK7LNASY6hTDo8cuH5H_ExciEybBPbAuB3OxsmHbUUgoES94EA@mail.gmail.com>
+ <20200920145351.GB3689762@lunn.ch>
+ <20210210183917.GA1471624@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <6531ab6c7e40b7e2f73a6087b31ecfe0a8f214e4.camel@microchip.com>
+In-Reply-To: <20210210183917.GA1471624@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > +        ethernet-ports {
-> > > +          #address-cells = <1>;
-> > > +          #size-cells = <0>;
-> > > +          port@0 {
-> > > +            reg = <0>;
-> > > +            label = "lan1";
-> > > +          };
-> > > +          port@1 {
-> > > +            reg = <1>;
-> > > +            label = "lan2";
-> > > +          };
-> > > +          port@2 {
-> > > +            reg = <7>;
-> > 
-> > reg should match node index (port@2), here and everywhere below. As
-> > for
-> > the net device labels, I'm not sure if the mismatch is deliberate
-> > there.
-> reg & port node indexes are different here because to match with the
->  physical to logical port mapping done in the LAN9374. I realized that
-> the description is missing and that is to be added. However, should reg
-> & port node index match for the net dev? 
-> If it should be the same, then the same can be acheived by renaming a
-> label (lanx) as well.
+On Wed, Feb 10, 2021 at 02:39:17PM -0400, Jason Gunthorpe wrote:
+> On Sun, Sep 20, 2020 at 04:53:51PM +0200, Andrew Lunn wrote:
+> 
+> > How often are new W=1 flags added? My patch exported
+> > KBUILD_CFLAGS_WARN1. How about instead we export
+> > KBUILD_CFLAGS_WARN1_20200920. A subsystem can then sign up to being
+> > W=1 clean as for the 20200920 definition of W=1.
+> 
+> I think this is a reasonable idea.
+> 
+> I'm hitting exactly the issue this series is trying to solve, Lee
+> invested a lot of effort to make drivers/infiniband/ W=1 clean, but
+> as maintainer I can't sustain this since there is no easy way to have
+> a warning free compile and get all extra warnings.  Also all my
+> submitters are not running with W=1
+> 
+> I need kbuild to get everyone on the same page to be able to sustain
+> the warning clean up. We've already had a regression and it has only
+> been a few weeks :(
+> 
+> Andrew, would you consider respinning this series in the above form?
 
-The label should match whatever the text on the device case says. So
-it is fine if port 2 says lan3 on the front panel. However, port@2
-should have reg=<2>. Please change it to port@7. This is a generic DT
-requirement, not specific to DSA.
+Arnd has worked on the core parts. But i lost track of if his patches
+got merged.
 
-       Andrew
+    Andrew
