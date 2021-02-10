@@ -2,176 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EC2031613C
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 09:46:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54991316106
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 09:31:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229956AbhBJIjq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 03:39:46 -0500
-Received: from 6.mo179.mail-out.ovh.net ([46.105.56.76]:44202 "EHLO
-        6.mo179.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229837AbhBJIgk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 03:36:40 -0500
-X-Greylist: delayed 36310 seconds by postgrey-1.27 at vger.kernel.org; Wed, 10 Feb 2021 03:36:40 EST
-Received: from player773.ha.ovh.net (unknown [10.110.208.22])
-        by mo179.mail-out.ovh.net (Postfix) with ESMTP id 3B77018C4D6
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 08:58:04 +0100 (CET)
-Received: from milecki.pl (ip-194-187-74-233.konfederacka.maverick.com.pl [194.187.74.233])
-        (Authenticated sender: rafal@milecki.pl)
-        by player773.ha.ovh.net (Postfix) with ESMTPSA id 85E8E1AFFF6D6;
-        Wed, 10 Feb 2021 07:57:51 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-104R00586a19810-fc92-4ea2-a265-0e6f67f37ab4,
-                    4D22BEF75CFDE1719A9C318D5396F6FE99F55012) smtp.auth=rafal@milecki.pl
-X-OVh-ClientIp: 194.187.74.233
-Subject: Re: [PATCH V3 net-next 2/2] net: broadcom: bcm4908_enet: add BCM4908
- controller driver
-To:     Andrew Lunn <andrew@lunn.ch>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Masahiro Yamada <masahiroy@kernel.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com
-References: <20210207222632.10981-2-zajec5@gmail.com>
- <20210209230130.4690-1-zajec5@gmail.com>
- <20210209230130.4690-2-zajec5@gmail.com> <YCNHU2g1m4dFahBd@lunn.ch>
-From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-Message-ID: <b13c82b5-49fb-533d-dfd6-dcc2f4c9f90d@milecki.pl>
-Date:   Wed, 10 Feb 2021 08:57:50 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        id S230091AbhBJIaK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 03:30:10 -0500
+Received: from mail29.static.mailgun.info ([104.130.122.29]:43941 "EHLO
+        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229918AbhBJI3q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 03:29:46 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1612945765; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=BQcw0kZHs0UzLmmDYGY+jo88rGm4rVQUuEYLarQue+s=; b=I3By4EIma951xdeUfUAVOrFqzbaaYlwQ3gdUSPrMsBaYOf8vAjF+eoqqrbOQEcBbjOFWSNSD
+ omLOKVEN/L2kH5EAoTiNwnEwNyHYNvEvB8C6Y9XoqkOBItC64EEuZlG5vDA/rIyuFtQzJ+nb
+ t3j8IKMMXlrhJDNPE2g3vKAj7Ls=
+X-Mailgun-Sending-Ip: 104.130.122.29
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
+ 6023994481f6c45dce0f6d5c (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 10 Feb 2021 08:28:52
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 5679CC43469; Wed, 10 Feb 2021 08:28:50 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 5CADDC43461;
+        Wed, 10 Feb 2021 08:28:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 5CADDC43461
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Wen Gong <wgong@codeaurora.org>
+Cc:     Shuah Khan <skhan@linuxfoundation.org>, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ath10k@lists.infradead.org, kuba@kernel.org, davem@davemloft.net
+Subject: Re: [PATCH 5/5] ath10k: reduce invalid ht params rate message noise
+References: <cover.1612915444.git.skhan@linuxfoundation.org>
+        <76a816d983e6c4d636311738396f97971b5523fb.1612915444.git.skhan@linuxfoundation.org>
+        <5c31f6dadbcc3dcb19239ad2b6106773@codeaurora.org>
+Date:   Wed, 10 Feb 2021 10:28:45 +0200
+In-Reply-To: <5c31f6dadbcc3dcb19239ad2b6106773@codeaurora.org> (Wen Gong's
+        message of "Wed, 10 Feb 2021 10:36:23 +0800")
+Message-ID: <87h7mktjgi.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-In-Reply-To: <YCNHU2g1m4dFahBd@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Ovh-Tracer-Id: 10523786433230573199
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgeduledrheeigdduudehucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepuffvfhfhkffffgggjggtgfesthejredttdefjeenucfhrhhomheptfgrfhgrlhcuofhilhgvtghkihcuoehrrghfrghlsehmihhlvggtkhhirdhplheqnecuggftrfgrthhtvghrnhepkeekgeefieeuhfdujeefgeektddujeekledvheehfeelfffhfeekjefhfeehuefhnecukfhppedtrddtrddtrddtpdduleegrddukeejrdejgedrvdeffeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphdqohhuthdphhgvlhhopehplhgrhigvrhejjeefrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheprhgrfhgrlhesmhhilhgvtghkihdrphhlpdhrtghpthhtohepnhgvthguvghvsehvghgvrhdrkhgvrhhnvghlrdhorhhg
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10.02.2021 03:39, Andrew Lunn wrote:
->> +static inline u32 enet_read(struct bcm4908_enet *enet, u16 offset)
->> +{
->> +	return readl(enet->base + offset);
->> +}
-> 
-> No inline functions in C files please. Let the compiler decide.
+Wen Gong <wgong@codeaurora.org> writes:
 
-According to the kernel's coding style (coding-style.rst) inline should
-*not* be used for 3+ LOC functions in general. According to that, I should
-only fix my enet_maskset() which isn't 1 LOC indeed.
+> On 2021-02-10 08:42, Shuah Khan wrote:
+>> ath10k_mac_get_rate_flags_ht() floods dmesg with the following
+>> messages,
+>> when it fails to find a match for mcs=7 and rate=1440.
+>>
+>> supported_ht_mcs_rate_nss2:
+>> {7,  {1300, 2700, 1444, 3000} }
+>>
+>> ath10k_pci 0000:02:00.0: invalid ht params rate 1440 100kbps nss 2
+>> mcs 7
+>>
+>> dev_warn_ratelimited() isn't helping the noise. Use dev_warn_once()
+>> instead.
+>>
+>> Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+>> ---
+>>  drivers/net/wireless/ath/ath10k/mac.c | 5 +++--
+>>  1 file changed, 3 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/net/wireless/ath/ath10k/mac.c
+>> b/drivers/net/wireless/ath/ath10k/mac.c
+>> index 3545ce7dce0a..276321f0cfdd 100644
+>> --- a/drivers/net/wireless/ath/ath10k/mac.c
+>> +++ b/drivers/net/wireless/ath/ath10k/mac.c
+>> @@ -8970,8 +8970,9 @@ static void ath10k_mac_get_rate_flags_ht(struct
+>> ath10k *ar, u32 rate, u8 nss, u8
+>>  		*bw |= RATE_INFO_BW_40;
+>>  		*flags |= RATE_INFO_FLAGS_SHORT_GI;
+>>  	} else {
+>> -		ath10k_warn(ar, "invalid ht params rate %d 100kbps nss %d mcs %d",
+>> -			    rate, nss, mcs);
+>> +		dev_warn_once(ar->dev,
+>> +			      "invalid ht params rate %d 100kbps nss %d mcs %d",
+>> +			      rate, nss, mcs);
+>>  	}
+>>  }
+>
+> The {7,  {1300, 2700, 1444, 3000} } is a correct value.
+> The 1440 is report from firmware, its a wrong value, it has fixed in
+> firmware.
 
-If that Documentation is outdated and/or inaccurate, could you propose a
-change for it, please? That rule comes from 2006 (a771f2b82aa2), so I
-understand it may need updating. We should have that officially documented
-though, to avoid per-tree or per-maintainer rules for stuff like this.
+In what version?
 
-Personally I don't have enough compiler knowledge to propose and/or discuss
-such stuff. That's why I prefer following Documentation written by smarter
-ones ;)
+> If change it to dev_warn_once, then it will have no chance to find the
+> other wrong values which report by firmware, and it indicate
+> a wrong value to mac80211/cfg80211 and lead "iw wlan0 station dump"
+> get a wrong bitrate.
 
+I agree, we should keep this warning. If the firmware still keeps
+sending invalid rates we should add a specific check to ignore the known
+invalid values, but not all of them.
 
->> +static int bcm4908_dma_alloc_buf_descs(struct bcm4908_enet *enet,
->> +				       struct bcm4908_enet_dma_ring *ring)
->> +{
->> +	int size = ring->length * sizeof(struct bcm4908_enet_dma_ring_bd);
->> +	struct device *dev = enet->dev;
->> +
->> +	ring->cpu_addr = dma_alloc_coherent(dev, size, &ring->dma_addr, GFP_KERNEL);
->> +	if (!ring->cpu_addr)
->> +		return -ENOMEM;
->> +
->> +	if (((uintptr_t)ring->cpu_addr) & (0x40 - 1)) {
->> +		dev_err(dev, "Invalid DMA ring alignment\n");
->> +		goto err_free_buf_descs;
->> +	}
->> +
->> +	ring->slots = kzalloc(ring->length * sizeof(*ring->slots), GFP_KERNEL);
->> +	if (!ring->slots)
->> +		goto err_free_buf_descs;
->> +
->> +	memset(ring->cpu_addr, 0, size);
-> 
-> It looks like dma_alloc_coherent() will perform a clear. See __dma_alloc_from_coherent()
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-Thanks!
-
-
->> +static void bcm4908_enet_dma_reset(struct bcm4908_enet *enet)
->> +{
->> +	struct bcm4908_enet_dma_ring *rings[] = { &enet->rx_ring, &enet->tx_ring };
->> +	int i;
->> +
->> +	/* Disable the DMA controller and channel */
->> +	for (i = 0; i < ARRAY_SIZE(rings); i++)
->> +		enet_write(enet, rings[i]->cfg_block + ENET_DMA_CH_CFG, 0);
->> +	enet_maskset(enet, ENET_DMA_CONTROLLER_CFG, ENET_DMA_CTRL_CFG_MASTER_EN, 0);
-> 
-> Is there a need to wait for any in flight DMA transfers to complete
-> before you go further? Or is that what
-> bcm4908_enet_dma_rx_ring_disable() is doing?
-
-bcm4908_enet_dma_rx_ring_disable() checks for DMA to "confirm" it got stopped.
-
-
->> +
->> +	/* Reset channels state */
->> +	for (i = 0; i < ARRAY_SIZE(rings); i++) {
->> +		struct bcm4908_enet_dma_ring *ring = rings[i];
->> +
->> +		enet_write(enet, ring->st_ram_block + ENET_DMA_CH_STATE_RAM_BASE_DESC_PTR, 0);
->> +		enet_write(enet, ring->st_ram_block + ENET_DMA_CH_STATE_RAM_STATE_DATA, 0);
->> +		enet_write(enet, ring->st_ram_block + ENET_DMA_CH_STATE_RAM_DESC_LEN_STATUS, 0);
->> +		enet_write(enet, ring->st_ram_block + ENET_DMA_CH_STATE_RAM_DESC_BASE_BUFPTR, 0);
->> +	}
->> +}
->> +
->> +static void bcm4908_enet_dma_tx_ring_ensable(struct bcm4908_enet *enet,
->> +					     struct bcm4908_enet_dma_ring *ring)
-> 
-> enable not ensable?
-
-Absolutely :)
-
-
->> +static int bcm4908_enet_open(struct net_device *netdev)
->> +{
->> +	struct bcm4908_enet *enet = netdev_priv(netdev);
->> +	struct device *dev = enet->dev;
->> +	int err;
->> +
->> +	err = request_irq(netdev->irq, bcm4908_enet_irq_handler, 0, "enet", enet);
->> +	if (err) {
->> +		dev_err(dev, "Failed to request IRQ %d: %d\n", netdev->irq, err);
->> +		return err;
->> +	}
->> +
->> +	bcm4908_enet_gmac_init(enet);
->> +	bcm4908_enet_dma_reset(enet);
->> +	bcm4908_enet_dma_init(enet);
->> +
->> +	enet_umac_set(enet, UMAC_CMD, CMD_TX_EN | CMD_RX_EN);
->> +
->> +	enet_set(enet, ENET_DMA_CONTROLLER_CFG, ENET_DMA_CTRL_CFG_MASTER_EN);
->> +	enet_maskset(enet, ENET_DMA_CONTROLLER_CFG, ENET_DMA_CTRL_CFG_FLOWC_CH1_EN, 0);
->> +	bcm4908_enet_dma_rx_ring_enable(enet, &enet->rx_ring);
->> +
->> +	napi_enable(&enet->napi);
->> +	netif_carrier_on(netdev);
->> +	netif_start_queue(netdev);
->> +
->> +	bcm4908_enet_intrs_ack(enet);
->> +	bcm4908_enet_intrs_on(enet);
->> +
->> +	return 0;
->> +}
-> 
-> No PHY handling? It would be normal to connect the phy in open.
-
-I believe so, this controller is integrated into SoC and is always connected
-to the (internal) switch port. It uses a fixed link.
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
