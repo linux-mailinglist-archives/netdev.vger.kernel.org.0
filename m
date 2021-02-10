@@ -2,73 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77BD0317457
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 00:26:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84EFA317464
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 00:30:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234005AbhBJX0T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 18:26:19 -0500
-Received: from mga01.intel.com ([192.55.52.88]:20916 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234079AbhBJXZL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Feb 2021 18:25:11 -0500
-IronPort-SDR: pUgLt3sh6bJC3q8WMulLmv2h0GxW5aOEmSHasxiViAZXdWV4L1/FiqeRKkoqWX2ZtN1pMjQ0fV
- Uktxa0DLYJAw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9891"; a="201287991"
-X-IronPort-AV: E=Sophos;i="5.81,169,1610438400"; 
-   d="scan'208";a="201287991"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2021 15:23:45 -0800
-IronPort-SDR: mmEn9ybtKILAVnuFdR2OHfeZxazIwMbtcCeXWLU879bC4ZlGDii7qunPlPzLHPgvnjkI+I5qKc
- J+Dlxyd1l8MA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,169,1610438400"; 
-   d="scan'208";a="361512359"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga007.fm.intel.com with ESMTP; 10 Feb 2021 15:23:45 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Kaixu Xia <kaixuxia@tencent.com>, netdev@vger.kernel.org,
-        sassmann@redhat.com, anthony.l.nguyen@intel.com,
-        Tosk Robot <tencent_os_robot@tencent.com>,
-        Tony Brelinski <tonyx.brelinski@intel.com>
-Subject: [PATCH net-next 7/7] i40e: remove the useless value assignment in i40e_clean_adminq_subtask
-Date:   Wed, 10 Feb 2021 15:24:36 -0800
-Message-Id: <20210210232436.4084373-8-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210210232436.4084373-1-anthony.l.nguyen@intel.com>
-References: <20210210232436.4084373-1-anthony.l.nguyen@intel.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S233633AbhBJXaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 18:30:21 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:47636 "EHLO
+        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233554AbhBJXaN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 18:30:13 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id 6DDA84D25BDAF;
+        Wed, 10 Feb 2021 15:29:30 -0800 (PST)
+Date:   Wed, 10 Feb 2021 15:29:24 -0800 (PST)
+Message-Id: <20210210.152924.767175240247395907.davem@davemloft.net>
+To:     stefanc@marvell.com
+Cc:     netdev@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        nadavh@marvell.com, ymarkman@marvell.com,
+        linux-kernel@vger.kernel.org, kuba@kernel.org,
+        linux@armlinux.org.uk, mw@semihalf.com, andrew@lunn.ch,
+        rmk+kernel@armlinux.org.uk, atenart@kernel.org,
+        devicetree@vger.kernel.org, robh+dt@kernel.org,
+        sebastian.hesselbarth@gmail.com, gregory.clement@bootlin.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v12 net-next 12/15] net: mvpp2: add BM protection
+ underrun feature support
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1612950500-9682-13-git-send-email-stefanc@marvell.com>
+References: <1612950500-9682-1-git-send-email-stefanc@marvell.com>
+        <1612950500-9682-13-git-send-email-stefanc@marvell.com>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Wed, 10 Feb 2021 15:29:31 -0800 (PST)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kaixu Xia <kaixuxia@tencent.com>
+From: <stefanc@marvell.com>
+Date: Wed, 10 Feb 2021 11:48:17 +0200
 
-The variable ret is overwritten by the following call
-i40e_clean_arq_element() and the assignment is useless, so remove it.
+>  
+> +static int bm_underrun_protect = 1;
+> +
+> +module_param(bm_underrun_protect, int, 0444);
+> +MODULE_PARM_DESC(bm_underrun_protect, "Set BM underrun protect feature (0-1), def=1");
 
-Reported-by: Tosk Robot <tencent_os_robot@tencent.com>
-Signed-off-by: Kaixu Xia <kaixuxia@tencent.com>
-Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/i40e/i40e_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index ccddf5ca0644..63e19d2e3301 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -9842,7 +9842,7 @@ static void i40e_clean_adminq_subtask(struct i40e_pf *pf)
- 			dev_dbg(&pf->pdev->dev, "ARQ: Update LLDP MIB event received\n");
- #ifdef CONFIG_I40E_DCB
- 			rtnl_lock();
--			ret = i40e_handle_lldp_event(pf, &event);
-+			i40e_handle_lldp_event(pf, &event);
- 			rtnl_unlock();
- #endif /* CONFIG_I40E_DCB */
- 			break;
--- 
-2.26.2
-
+No new module parameters, please.
