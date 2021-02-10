@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59777316B4A
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 17:33:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4838316B47
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 17:33:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232633AbhBJQbq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 11:31:46 -0500
-Received: from mail-40136.protonmail.ch ([185.70.40.136]:20594 "EHLO
-        mail-40136.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232537AbhBJQae (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 11:30:34 -0500
-Date:   Wed, 10 Feb 2021 16:29:24 +0000
+        id S231186AbhBJQb0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 11:31:26 -0500
+Received: from mail2.protonmail.ch ([185.70.40.22]:41308 "EHLO
+        mail2.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232531AbhBJQaa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 11:30:30 -0500
+Date:   Wed, 10 Feb 2021 16:29:38 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1612974568; bh=vHu/tYcVI950QN5Rrw2gSn3oUyiXAKr/E1pyrHPMHnU=;
+        t=1612974587; bh=9n7R30ez+8NGaLh1O893hoIhJlElIMgk5xtfqPCBjQ8=;
         h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=X2mB14Zre1cBumX33fMkvOTJrgIUhnlZlMNHlZEncYmFJReS5ErVDr0Bp9B0D3mGO
-         7H+gj7Gpe1uh3P+QB8yv5oSLYY2z4oW3xM2BdrpOxRZ5uyZ1S+PiG5dWknocuaqhqJ
-         lUr0uH2xWyo0z8AiHzONnplhpbtJAm0CHHgSimMq+jYz8eFsskMee/B9+HebJe/qYM
-         ArD4Z1m7p06IOoQOeEgSgmzerc9pVnwQjakxYyL7sMkrCvE0sW5cNiS8hhc+g2juD3
-         3p5cU5hh/AoLLWVWAQJn1ae4ciutBOzwdM4DW2p6ao6UylqERj9GDe9G4KCbenhagN
-         TfaNWejyoMgPA==
+        b=fT7wZmVwnEnV9lfYQgwyVu8GDUa8OgXuJ+fkoS7xmEUh4eMzpCEsVr3pOyuvNt+9v
+         JhxUsYBYx0k2BSogdKzo2bsVWA2o5NiiImBJV3B8L0ETuQVZpWTwfbBq+6/fxBSuPU
+         XS1SR3meALsKmBiJBvcuVYYjJIvghqDxKfND7FiCVnoVIARUY0W3P2I1ru7NkfN6N/
+         BobSbHKU/BaOBIMD09My+aLx9kRs4ZMqehiscFSRE1Nxl1XFat5UNHHWYaHEKj1MfQ
+         EMzw4jFC4eDlU92j40B0e/ALMxFHdnJpNK5xmwu34Coe+FuJBSBfwS2oQ5egEa/OlI
+         ZNSht26et4qtA==
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 From:   Alexander Lobakin <alobakin@pm.me>
@@ -54,8 +54,8 @@ Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
         Edward Cree <ecree.xilinx@gmail.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH v4 net-next 04/11] skbuff: simplify __alloc_skb() a bit
-Message-ID: <20210210162732.80467-5-alobakin@pm.me>
+Subject: [PATCH v4 net-next 05/11] skbuff: use __build_skb_around() in __alloc_skb()
+Message-ID: <20210210162732.80467-6-alobakin@pm.me>
 In-Reply-To: <20210210162732.80467-1-alobakin@pm.me>
 References: <20210210162732.80467-1-alobakin@pm.me>
 MIME-Version: 1.0
@@ -70,56 +70,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use unlikely() annotations for skbuff_head and data similarly to the
-two other allocation functions and remove totally redundant goto.
+Just call __build_skb_around() instead of open-coding it.
 
 Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 ---
- net/core/skbuff.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ net/core/skbuff.c | 18 +-----------------
+ 1 file changed, 1 insertion(+), 17 deletions(-)
 
 diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index c7d184e11547..88566de26cd1 100644
+index 88566de26cd1..1c6f6ef70339 100644
 --- a/net/core/skbuff.c
 +++ b/net/core/skbuff.c
-@@ -339,8 +339,8 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gf=
+@@ -326,7 +326,6 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gf=
 p_mask,
+ =09=09=09    int flags, int node)
+ {
+ =09struct kmem_cache *cache;
+-=09struct skb_shared_info *shinfo;
+ =09struct sk_buff *skb;
+ =09u8 *data;
+ =09bool pfmemalloc;
+@@ -366,21 +365,8 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t g=
+fp_mask,
+ =09 * the tail pointer in struct sk_buff!
+ =09 */
+ =09memset(skb, 0, offsetof(struct sk_buff, tail));
+-=09/* Account for allocated memory : skb + skb->head */
+-=09skb->truesize =3D SKB_TRUESIZE(size);
++=09__build_skb_around(skb, data, 0);
+ =09skb->pfmemalloc =3D pfmemalloc;
+-=09refcount_set(&skb->users, 1);
+-=09skb->head =3D data;
+-=09skb->data =3D data;
+-=09skb_reset_tail_pointer(skb);
+-=09skb->end =3D skb->tail + size;
+-=09skb->mac_header =3D (typeof(skb->mac_header))~0U;
+-=09skb->transport_header =3D (typeof(skb->transport_header))~0U;
+-
+-=09/* make sure we initialize shinfo sequentially */
+-=09shinfo =3D skb_shinfo(skb);
+-=09memset(shinfo, 0, offsetof(struct skb_shared_info, dataref));
+-=09atomic_set(&shinfo->dataref, 1);
 =20
- =09/* Get the HEAD */
- =09skb =3D kmem_cache_alloc_node(cache, gfp_mask & ~__GFP_DMA, node);
--=09if (!skb)
--=09=09goto out;
-+=09if (unlikely(!skb))
-+=09=09return NULL;
- =09prefetchw(skb);
-=20
- =09/* We do our best to align skb_shared_info on a separate cache
-@@ -351,7 +351,7 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gf=
+ =09if (flags & SKB_ALLOC_FCLONE) {
+ =09=09struct sk_buff_fclones *fclones;
+@@ -393,8 +379,6 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gf=
 p_mask,
- =09size =3D SKB_DATA_ALIGN(size);
- =09size +=3D SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
- =09data =3D kmalloc_reserve(size, gfp_mask, node, &pfmemalloc);
--=09if (!data)
-+=09if (unlikely(!data))
- =09=09goto nodata;
- =09/* kmalloc(size) might give us more room than requested.
- =09 * Put skb_shared_info exactly at the end of allocated zone,
-@@ -395,12 +395,11 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t =
-gfp_mask,
+ =09=09fclones->skb2.fclone =3D SKB_FCLONE_CLONE;
+ =09}
 =20
- =09skb_set_kcov_handle(skb, kcov_common_handle());
-=20
--out:
+-=09skb_set_kcov_handle(skb, kcov_common_handle());
+-
  =09return skb;
-+
- nodata:
- =09kmem_cache_free(cache, skb);
--=09skb =3D NULL;
--=09goto out;
-+=09return NULL;
- }
- EXPORT_SYMBOL(__alloc_skb);
 =20
+ nodata:
 --=20
 2.30.1
 
