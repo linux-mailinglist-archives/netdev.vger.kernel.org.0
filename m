@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 639D0316036
-	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 08:45:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CCA7316040
+	for <lists+netdev@lfdr.de>; Wed, 10 Feb 2021 08:46:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232801AbhBJHo7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 02:44:59 -0500
-Received: from szxga07-in.huawei.com ([45.249.212.35]:12893 "EHLO
+        id S232895AbhBJHpz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 02:45:55 -0500
+Received: from szxga07-in.huawei.com ([45.249.212.35]:13334 "EHLO
         szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232561AbhBJHoy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 02:44:54 -0500
+        with ESMTP id S232848AbhBJHpg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 02:45:36 -0500
 Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4DbBZ01KmSz7jW5;
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4DbBZ041Hxz7jXY;
         Wed, 10 Feb 2021 15:42:48 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
@@ -21,11 +21,11 @@ From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <salil.mehta@huawei.com>,
         <yisen.zhuang@huawei.com>, <huangdaode@huawei.com>,
-        <linuxarm@openeuler.org>, Peng Li <lipeng321@huawei.com>,
+        <linuxarm@openeuler.org>, Jian Shen <shenjian15@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 05/13] net: hns3: refactor out hclge_set_vf_vlan_common()
-Date:   Wed, 10 Feb 2021 15:43:17 +0800
-Message-ID: <1612943005-59416-6-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 06/13] net: hns3: refactor out hclge_get_rss_tuple()
+Date:   Wed, 10 Feb 2021 15:43:18 +0800
+Message-ID: <1612943005-59416-7-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1612943005-59416-1-git-send-email-tanhuazhong@huawei.com>
 References: <1612943005-59416-1-git-send-email-tanhuazhong@huawei.com>
@@ -37,113 +37,113 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peng Li <lipeng321@huawei.com>
+From: Jian Shen <shenjian15@huawei.com>
 
 To improve code readability and maintainability, separate
-the command handling part and the status parsing part from
-bloated hclge_set_vf_vlan_common().
+the flow type parsing part and the converting part from
+bloated hclge_get_rss_tuple().
 
-Signed-off-by: Peng Li <lipeng321@huawei.com>
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 63 +++++++++++++++-------
- 1 file changed, 44 insertions(+), 19 deletions(-)
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 59 ++++++++++++++--------
+ 1 file changed, 38 insertions(+), 21 deletions(-)
 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index e2c5b8f..4fac22d 100644
+index 4fac22d..f96a800 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -8786,32 +8786,16 @@ static void hclge_enable_vlan_filter(struct hnae3_handle *handle, bool enable)
- 		handle->netdev_flags &= ~HNAE3_VLAN_FLTR;
+@@ -4580,52 +4580,69 @@ static int hclge_set_rss_tuple(struct hnae3_handle *handle,
+ 	return 0;
  }
  
--static int hclge_set_vf_vlan_common(struct hclge_dev *hdev, u16 vfid,
--				    bool is_kill, u16 vlan,
--				    __be16 proto)
-+static int hclge_set_vf_vlan_filter_cmd(struct hclge_dev *hdev, u16 vfid,
-+					bool is_kill, u16 vlan,
-+					struct hclge_desc *desc)
+-static int hclge_get_rss_tuple(struct hnae3_handle *handle,
+-			       struct ethtool_rxnfc *nfc)
++static int hclge_get_vport_rss_tuple(struct hclge_vport *vport, int flow_type,
++				     u8 *tuple_sets)
  {
--	struct hclge_vport *vport = &hdev->vport[vfid];
- 	struct hclge_vlan_filter_vf_cfg_cmd *req0;
- 	struct hclge_vlan_filter_vf_cfg_cmd *req1;
--	struct hclge_desc desc[2];
- 	u8 vf_byte_val;
- 	u8 vf_byte_off;
- 	int ret;
- 
--	/* if vf vlan table is full, firmware will close vf vlan filter, it
--	 * is unable and unnecessary to add new vlan id to vf vlan filter.
--	 * If spoof check is enable, and vf vlan is full, it shouldn't add
--	 * new vlan, because tx packets with these vlan id will be dropped.
--	 */
--	if (test_bit(vfid, hdev->vf_vlan_full) && !is_kill) {
--		if (vport->vf_info.spoofchk && vlan) {
--			dev_err(&hdev->pdev->dev,
--				"Can't add vlan due to spoof check is on and vf vlan table is full\n");
--			return -EPERM;
--		}
--		return 0;
--	}
+-	struct hclge_vport *vport = hclge_get_vport(handle);
+-	u8 tuple_sets;
 -
- 	hclge_cmd_setup_basic_desc(&desc[0],
- 				   HCLGE_OPC_VLAN_FILTER_VF_CFG, false);
- 	hclge_cmd_setup_basic_desc(&desc[1],
-@@ -8841,6 +8825,18 @@ static int hclge_set_vf_vlan_common(struct hclge_dev *hdev, u16 vfid,
- 		return ret;
+-	nfc->data = 0;
+-
+-	switch (nfc->flow_type) {
++	switch (flow_type) {
+ 	case TCP_V4_FLOW:
+-		tuple_sets = vport->rss_tuple_sets.ipv4_tcp_en;
++		*tuple_sets = vport->rss_tuple_sets.ipv4_tcp_en;
+ 		break;
+ 	case UDP_V4_FLOW:
+-		tuple_sets = vport->rss_tuple_sets.ipv4_udp_en;
++		*tuple_sets = vport->rss_tuple_sets.ipv4_udp_en;
+ 		break;
+ 	case TCP_V6_FLOW:
+-		tuple_sets = vport->rss_tuple_sets.ipv6_tcp_en;
++		*tuple_sets = vport->rss_tuple_sets.ipv6_tcp_en;
+ 		break;
+ 	case UDP_V6_FLOW:
+-		tuple_sets = vport->rss_tuple_sets.ipv6_udp_en;
++		*tuple_sets = vport->rss_tuple_sets.ipv6_udp_en;
+ 		break;
+ 	case SCTP_V4_FLOW:
+-		tuple_sets = vport->rss_tuple_sets.ipv4_sctp_en;
++		*tuple_sets = vport->rss_tuple_sets.ipv4_sctp_en;
+ 		break;
+ 	case SCTP_V6_FLOW:
+-		tuple_sets = vport->rss_tuple_sets.ipv6_sctp_en;
++		*tuple_sets = vport->rss_tuple_sets.ipv6_sctp_en;
+ 		break;
+ 	case IPV4_FLOW:
+ 	case IPV6_FLOW:
+-		tuple_sets = HCLGE_S_IP_BIT | HCLGE_D_IP_BIT;
++		*tuple_sets = HCLGE_S_IP_BIT | HCLGE_D_IP_BIT;
+ 		break;
+ 	default:
+ 		return -EINVAL;
  	}
  
+-	if (!tuple_sets)
+-		return 0;
 +	return 0;
 +}
 +
-+static int hclge_check_vf_vlan_cmd_status(struct hclge_dev *hdev, u16 vfid,
-+					  bool is_kill, struct hclge_desc *desc)
++static u64 hclge_convert_rss_tuple(u8 tuple_sets)
 +{
-+	struct hclge_vlan_filter_vf_cfg_cmd *req0;
-+	struct hclge_vlan_filter_vf_cfg_cmd *req1;
-+
-+	req0 = (struct hclge_vlan_filter_vf_cfg_cmd *)desc[0].data;
-+	req1 = (struct hclge_vlan_filter_vf_cfg_cmd *)desc[1].data;
-+
- 	if (!is_kill) {
- #define HCLGE_VF_VLAN_NO_ENTRY	2
- 		if (!req0->resp_code || req0->resp_code == 1)
-@@ -8877,6 +8873,35 @@ static int hclge_set_vf_vlan_common(struct hclge_dev *hdev, u16 vfid,
- 	return -EIO;
- }
++	u64 tuple_data = 0;
  
-+static int hclge_set_vf_vlan_common(struct hclge_dev *hdev, u16 vfid,
-+				    bool is_kill, u16 vlan,
-+				    __be16 proto)
-+{
-+	struct hclge_vport *vport = &hdev->vport[vfid];
-+	struct hclge_desc desc[2];
-+	int ret;
+ 	if (tuple_sets & HCLGE_D_PORT_BIT)
+-		nfc->data |= RXH_L4_B_2_3;
++		tuple_data |= RXH_L4_B_2_3;
+ 	if (tuple_sets & HCLGE_S_PORT_BIT)
+-		nfc->data |= RXH_L4_B_0_1;
++		tuple_data |= RXH_L4_B_0_1;
+ 	if (tuple_sets & HCLGE_D_IP_BIT)
+-		nfc->data |= RXH_IP_DST;
++		tuple_data |= RXH_IP_DST;
+ 	if (tuple_sets & HCLGE_S_IP_BIT)
+-		nfc->data |= RXH_IP_SRC;
++		tuple_data |= RXH_IP_SRC;
 +
-+	/* if vf vlan table is full, firmware will close vf vlan filter, it
-+	 * is unable and unnecessary to add new vlan id to vf vlan filter.
-+	 * If spoof check is enable, and vf vlan is full, it shouldn't add
-+	 * new vlan, because tx packets with these vlan id will be dropped.
-+	 */
-+	if (test_bit(vfid, hdev->vf_vlan_full) && !is_kill) {
-+		if (vport->vf_info.spoofchk && vlan) {
-+			dev_err(&hdev->pdev->dev,
-+				"Can't add vlan due to spoof check is on and vf vlan table is full\n");
-+			return -EPERM;
-+		}
-+		return 0;
-+	}
-+
-+	ret = hclge_set_vf_vlan_filter_cmd(hdev, vfid, is_kill, vlan, desc);
-+	if (ret)
-+		return ret;
-+
-+	return hclge_check_vf_vlan_cmd_status(hdev, vfid, is_kill, desc);
++	return tuple_data;
 +}
 +
- static int hclge_set_port_vlan_filter(struct hclge_dev *hdev, __be16 proto,
- 				      u16 vlan_id, bool is_kill)
- {
++static int hclge_get_rss_tuple(struct hnae3_handle *handle,
++			       struct ethtool_rxnfc *nfc)
++{
++	struct hclge_vport *vport = hclge_get_vport(handle);
++	u8 tuple_sets;
++	int ret;
++
++	nfc->data = 0;
++
++	ret = hclge_get_vport_rss_tuple(vport, nfc->flow_type, &tuple_sets);
++	if (ret || !tuple_sets)
++		return ret;
++
++	nfc->data = hclge_convert_rss_tuple(tuple_sets);
+ 
+ 	return 0;
+ }
 -- 
 2.7.4
 
