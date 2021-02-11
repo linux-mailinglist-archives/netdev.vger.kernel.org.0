@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03A33319660
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 00:11:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08EFF31965E
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 00:11:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230131AbhBKXLB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 18:11:01 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47662 "EHLO mail.kernel.org"
+        id S230054AbhBKXK6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 18:10:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47660 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229997AbhBKXK4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229564AbhBKXK4 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 11 Feb 2021 18:10:56 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 791BE64DFF;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 7D93864DF3;
         Thu, 11 Feb 2021 23:10:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1613085015;
-        bh=hCLyUZbsNpnyDEkMy8y+vxPQWhHD/lh8S3pd0CdsZGI=;
+        bh=3W+NfG/227zgVuVW8j482opu8W0/YdUsj820YcNKt80=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=lVaIPX8NockC5O25q0p4d/jHAEghS3qACYByM+4B7C372ccUnb2es4FGpxTMHptmB
-         KC4Hljpm6Vpa8KlYzDGjubmU5JBAtmMaK1Dfu8mgCQaRqs2UCAZySnMot5oCDh6Dc8
-         OH+tukIhBoJizWomzQsakgCP1Ttz47EYi4mZXE8CVjzFKV7Mc3mhbry6dOv7a58z/B
-         NK+oJcWq5TaMyZZQSaejFXJ85NxPdM+XfpWJRQMVqEcxHMadjzg/5AZlIWd+nFl1bt
-         g6LDQD1SZxeePCyZnuTQuy/ez67P+0ZqBPnfMoccO/281HJRWeEppU6NVbxotmHJCk
-         XoZFBauUkYsLg==
+        b=mH/zODjpiMjsx2rRazPKKToA90rKQ5A/F4P7LoXNXiV6bFcVVNsDFVjWrtlCyrtzO
+         pB0kwnx/sJUCj8zVJ9Cebwl7BMV2qeZg1VLmB9Ijjy+Df04tji4hU7EHhoOcTXSsNz
+         0uDyu90EXzZE32EPTrQN/eCePQxkbAhCyUr0UpT/R7ZwlVtBIRQSdemIbRnuBeDDAJ
+         Ar23wGFQvWPrtkBfW5KLDNUgfb4+MlObdYK0cpQrLqIMdvxgtbv8vu5SmyXc1us3GS
+         uw0d0E+mfSDty+GrkH7qanM7INRkbgHWFRmORrUFBzGYcUEoqw+Z3jHTjtER0TTbWL
+         YMqUNMFQMymrA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 60ECE60A0F;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 6A307609D6;
         Thu, 11 Feb 2021 23:10:15 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next v6 00/14] Add Marvell CN10K support
+Subject: Re: [PATCH net-next 5.12 0/8] bcm4908_enet: post-review fixes
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161308501539.27196.9695165685515441633.git-patchwork-notify@kernel.org>
+Message-Id: <161308501543.27196.4327749060967319260.git-patchwork-notify@kernel.org>
 Date:   Thu, 11 Feb 2021 23:10:15 +0000
-References: <20210211155834.31874-1-gakula@marvell.com>
-In-Reply-To: <20210211155834.31874-1-gakula@marvell.com>
-To:     Geetha sowjanya <gakula@marvell.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-crypto@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        sgoutham@marvell.com, lcherian@marvell.com, hkelam@marvell.com,
-        sbhatta@marvell.com, jerinj@marvell.com, bbrezillon@kernel.org,
-        arno@natisbad.org, schalla@marvell.com
+References: <20210211121239.728-1-zajec5@gmail.com>
+In-Reply-To: <20210211121239.728-1-zajec5@gmail.com>
+To:     =?utf-8?b?UmFmYcWCIE1pxYJlY2tpIDx6YWplYzVAZ21haWwuY29tPg==?=@ci.codeaurora.org
+Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        f.fainelli@gmail.com, rdunlap@infradead.org, masahiroy@kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com, andrew@lunn.ch,
+        rafal@milecki.pl
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -49,47 +49,36 @@ Hello:
 
 This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Thu, 11 Feb 2021 21:28:20 +0530 you wrote:
-> The current admin function (AF) driver and the netdev driver supports
-> OcteonTx2 silicon variants. The same OcteonTx2's
-> Resource Virtualization Unit (RVU) is carried forward to the next-gen
-> silicon ie OcteonTx3, with some changes and feature enhancements.
+On Thu, 11 Feb 2021 13:12:31 +0100 you wrote:
+> From: Rafał Miłecki <rafal@milecki.pl>
 > 
-> This patch set adds support for OcteonTx3 (CN10K) silicon and gets
-> the drivers to the same level as OcteonTx2. No new OcteonTx3 specific
-> features are added.
+> V2 of my BCM4908 Ethernet patchset was applied to the net-next.git and
+> it was later that is received some extra reviews. I'm sending patches
+> that handle pointed out issues.
+> 
+> David: earler I missed that V2 was applied and I sent V3 and V4 of my
+> inital patchset. Sorry for that. I think it's the best to ignore V3 and
+> V4 I sent and proceed with this fixes patchset instead.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v6,01/14] octeontx2-af: cn10k: Add mbox support for CN10K platform
-    https://git.kernel.org/netdev/net-next/c/98c561116360
-  - [net-next,v6,02/14] octeontx2-pf: cn10k: Add mbox support for CN10K
-    https://git.kernel.org/netdev/net-next/c/facede8209ef
-  - [net-next,v6,03/14] octeontx2-af: cn10k: Update NIX/NPA context structure
-    https://git.kernel.org/netdev/net-next/c/30077d210c83
-  - [net-next,v6,04/14] octeontx2-af: cn10k: Update NIX and NPA context in debugfs
-    https://git.kernel.org/netdev/net-next/c/3feac505fb31
-  - [net-next,v6,05/14] octeontx2-pf: cn10k: Initialise NIX context
-    https://git.kernel.org/netdev/net-next/c/d21a857562ad
-  - [net-next,v6,06/14] octeontx2-pf: cn10k: Map LMTST region
-    https://git.kernel.org/netdev/net-next/c/6e8ad4387da5
-  - [net-next,v6,07/14] octeontx2-pf: cn10k: Use LMTST lines for NPA/NIX operations
-    https://git.kernel.org/netdev/net-next/c/4c236d5dc8b8
-  - [net-next,v6,08/14] octeontx2-af: cn10k: Add RPM MAC support
-    https://git.kernel.org/netdev/net-next/c/91c6945ea1f9
-  - [net-next,v6,09/14] octeontx2-af: cn10k: Add support for programmable channels
-    https://git.kernel.org/netdev/net-next/c/242da439214b
-  - [net-next,v6,10/14] octeontx2-af: cn10K: Add MTU configuration
-    https://git.kernel.org/netdev/net-next/c/6e54e1c5399a
-  - [net-next,v6,11/14] octeontx2-pf: cn10k: Get max mtu supported from admin function
-    https://git.kernel.org/netdev/net-next/c/ab58a416c93f
-  - [net-next,v6,12/14] octeontx2-af: cn10k: Add RPM LMAC pause frame support
-    https://git.kernel.org/netdev/net-next/c/1845ada47f6d
-  - [net-next,v6,13/14] octeontx2-af: cn10k: Add RPM Rx/Tx stats support
-    https://git.kernel.org/netdev/net-next/c/ce7a6c3106de
-  - [net-next,v6,14/14] octeontx2-af: cn10k: MAC internal loopback support
-    https://git.kernel.org/netdev/net-next/c/3ad3f8f93c81
+  - [net-next,5.12,1/8] dt-bindings: net: rename BCM4908 Ethernet binding
+    https://git.kernel.org/netdev/net-next/c/6710c5b0674f
+  - [net-next,5.12,2/8] dt-bindings: net: bcm4908-enet: include ethernet-controller.yaml
+    https://git.kernel.org/netdev/net-next/c/f08b5cf1eb1f
+  - [net-next,5.12,3/8] net: broadcom: rename BCM4908 driver & update DT binding
+    https://git.kernel.org/netdev/net-next/c/9d61d138ab30
+  - [net-next,5.12,4/8] net: broadcom: bcm4908_enet: drop unneeded memset()
+    https://git.kernel.org/netdev/net-next/c/af263af64683
+  - [net-next,5.12,5/8] net: broadcom: bcm4908_enet: drop "inline" from C functions
+    https://git.kernel.org/netdev/net-next/c/7b778ae4eb9c
+  - [net-next,5.12,6/8] net: broadcom: bcm4908_enet: fix minor typos
+    https://git.kernel.org/netdev/net-next/c/e39488117203
+  - [net-next,5.12,7/8] net: broadcom: bcm4908_enet: fix received skb length
+    https://git.kernel.org/netdev/net-next/c/195e2d9febfb
+  - [net-next,5.12,8/8] net: broadcom: bcm4908_enet: fix endianness in xmit code
+    https://git.kernel.org/netdev/net-next/c/bdd70b997799
 
 You are awesome, thank you!
 --
