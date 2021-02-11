@@ -2,105 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6056D318452
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 05:23:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C87031846A
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 05:50:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229887AbhBKEXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 23:23:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51738 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229665AbhBKEXL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 23:23:11 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30D4DC061574
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 20:22:31 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id a24so706928plm.11
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 20:22:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=GGFHtm8rSxmupJIyD0hKSnbgWpoKngKPVGpCtg7kAT4=;
-        b=owBUS+qfj8XTsyuDKIQAvo17jQCKunq03AsFyIMQ2qVSDfdPUmMIuzGYlj62Wm/6K/
-         Nbhjc4Hby9QD59UhKrjzfge/5mdwVQ8E3xeO9ZLFhSi1DrhbT205FYQ1JL2eVSaML8nZ
-         mHobSy4an53Lk74tZxE5DM7TQx/hdNVNKtRrLBi4IRQgYbFf2r6qptc6d0JIgU6vVqlP
-         tKueyoR/gxlwwZ0qicZY/2PbZWbIafM2maO7KMYQoiAnbfu8bMjsIA2/36KCSY7LS/XE
-         1V+FQ7zgxvN0pQC9hr1S45i7sG4RYuN9CdLcsEeQTwXdjPh0Ldiw/pg+OhgIaW3sxtcU
-         aeLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=GGFHtm8rSxmupJIyD0hKSnbgWpoKngKPVGpCtg7kAT4=;
-        b=bg4MVkrahh8zq4nd18VBI4piiCzxcyj7z58JCSi9DAcekFavHc2eO93RtD0n8Y5H9q
-         yzOlNBZr8KjCYxmNDeqiriU2KjP/MmRO8bu/2pKKfx0Vgi82WI5PLeHc2MDtNYOielZ4
-         aiOUBBVW7szJ4E4v0P6/1LHSYWCydMEEsdPbQHKP0Jnyouch2U+m/Pq8pt6PFpsFG3/b
-         Yi1mB29zvNPRpvVF/5upSXhOmYVBOr+Tq0Yp9yYiC1QiXfMOBxPOtsDMOc7RnPSelVct
-         VQc63LHI17eHdIHEewq3dme6xWiq+IxABLPdu3lX9Q3TZUpRjvdWz3S+9sdMJzmzj5Y7
-         3OIw==
-X-Gm-Message-State: AOAM530fwIjvkSg3CRJywvMjQffJW9/ui4UmpyMc4YtosjJBcfW5j8WN
-        /ZnlMigUQwKt6+927vgqcvk=
-X-Google-Smtp-Source: ABdhPJy/vXMJY/82zCkJf7gL+BubdGe/6urGRPstYpwo0LPI/7Cf0Ma3XI9LCquEYwKSmXw1O0W4Fw==
-X-Received: by 2002:a17:90a:fd8e:: with SMTP id cx14mr2208058pjb.101.1613017350716;
-        Wed, 10 Feb 2021 20:22:30 -0800 (PST)
-Received: from [10.230.29.30] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id o14sm770147pgh.48.2021.02.10.20.22.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Feb 2021 20:22:30 -0800 (PST)
-Subject: Re: [PATCH net-next] net: ipconfig: avoid use-after-free in
- ic_close_devs
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-References: <20210210235703.1882205-1-olteanv@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <05f04d4d-7c76-979b-852e-0437dd438248@gmail.com>
-Date:   Wed, 10 Feb 2021 20:22:28 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.7.1
+        id S229553AbhBKEua (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 23:50:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41234 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229457AbhBKEu2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 10 Feb 2021 23:50:28 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DFEA464E38;
+        Thu, 11 Feb 2021 04:49:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1613018974;
+        bh=iIgyr2kw0+B80Sc9eFL6ZStoWwHESXfGwPcTfqFuvLA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=K6WdX3Hy3hOKBcxiwD5AvO7kVnsWqHkHj4G473e7yc6octdAN+PFlSAD+EOKC9K87
+         BwwroM6d52A4CNHS5d0Dm+YxfqlXUGUReGFrj8csTRwP0sWnuwIhgqyW8L3oliwWgY
+         SL6/IcBWLN8aqxYjB5TcywCl4/lRe1TSI2BO+9hgBod4gvaez/Q/Apfaevypo5tUbN
+         1aT990gf/zgqM61+J4Hm3NoLfCVlO0UZdLuBrF/K+IEYOG0abZsoF1eMxKpkI25CdE
+         eWc+/EPIdVTLfYrM4+lwCjiurKOQPwMkfmqv5+rw44W6cbBDTbiO4xvDCstX5539rw
+         I/kAOc0HfE1AA==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net-next 00/11] mlx5 for upstream 2021-02-10
+Date:   Wed, 10 Feb 2021 20:49:17 -0800
+Message-Id: <20210211044917.44574-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-In-Reply-To: <20210210235703.1882205-1-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Saeed Mahameed <saeedm@nvidia.com>
 
+Hi Dave, Jakub,
 
-On 2/10/2021 3:57 PM, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> Due to the fact that ic_dev->dev is kept open in ic_close_dev, I had
-> thought that ic_dev will not be freed either. But that is not the case,
-> but instead "everybody dies" when ipconfig cleans up, and just the
-> net_device behind ic_dev->dev remains allocated but not ic_dev itself.
-> 
-> This is a problem because in ic_close_devs, for every net device that
-> we're about to close, we compare it against the list of lower interfaces
-> of ic_dev, to figure out whether we should close it or not. But since
-> ic_dev itself is subject to freeing, this means that at some point in
-> the middle of the list of ipconfig interfaces, ic_dev will have been
-> freed, and we would be still attempting to iterate through its list of
-> lower interfaces while checking whether to bring down the remaining
-> ipconfig interfaces.
-> 
-> There are multiple ways to avoid the use-after-free: we could delay
-> freeing ic_dev until the very end (outside the while loop). Or an even
-> simpler one: we can observe that we don't need ic_dev when iterating
-> through its lowers, only ic_dev->dev, structure which isn't ever freed.
-> So, by keeping ic_dev->dev in a variable assigned prior to freeing
-> ic_dev, we can avoid all use-after-free issues.
-> 
-> Fixes: 46acf7bdbc72 ("Revert "net: ipv4: handle DSA enabled master network devices"")
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+This pull request includes fixups and cleanups for net-next,
+patches in this series were already reviewed on netdev mailing list.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Please pull and let me know if there is any problem.
+
+Thanks,
+Saeed.
+
+---
+The following changes since commit e4b62cf7559f2ef9a022de235e5a09a8d7ded520:
+
+  net: mvpp2: add an entry to skip parser (2021-02-10 15:41:02 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-for-upstream-2021-02-10
+
+for you to fetch changes up to b50c4892cb98417df96b73119c54520da34a3e88:
+
+  net/mlx5: SF, Fix error return code in mlx5_sf_dev_probe() (2021-02-10 20:47:15 -0800)
+
+----------------------------------------------------------------
+mlx5-for-upstream-2021-02-10
+
+Misc cleanups and trivial fixes for net-next
+
+1) spelling mistakes
+2) error path checks fixes
+3) unused includes and struct fields cleanup
+4) build error when MLX5_ESWITCH=no
+
+----------------------------------------------------------------
+Colin Ian King (3):
+      net/mlx5: fix spelling mistake in Kconfig "accelaration" -> "acceleration"
+      net/mlx5e: Fix spelling mistake "channles" -> "channels"
+      net/mlx5e: Fix spelling mistake "Unknouwn" -> "Unknown"
+
+Dan Carpenter (1):
+      net/mlx5: Fix a NULL vs IS_ERR() check
+
+Jiapeng Zhong (1):
+      net/mlx5: Assign boolean values to a bool variable
+
+Leon Romanovsky (1):
+      net/mlx5: Delete device list leftover
+
+Lukas Bulwahn (1):
+      net/mlx5: docs: correct section reference in table of contents
+
+Vlad Buslov (1):
+      net/mlx5e: Fix tc_tun.h to verify MLX5_ESWITCH config
+
+Wei Yongjun (2):
+      net/mlx5e: Fix error return code in mlx5e_tc_esw_init()
+      net/mlx5: SF, Fix error return code in mlx5_sf_dev_probe()
+
+Zou Wei (1):
+      net/mlx5_core: remove unused including <generated/utsrelease.h>
+
+ Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst | 4 ++--
+ drivers/net/ethernet/mellanox/mlx5/core/Kconfig                    | 6 +++---
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.h                | 4 ++++
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c                  | 4 ++--
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c                   | 1 -
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c                    | 6 ++++--
+ drivers/net/ethernet/mellanox/mlx5/core/esw/indir_table.c          | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c                  | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c            | 1 +
+ include/linux/mlx5/driver.h                                        | 1 -
+ 10 files changed, 18 insertions(+), 13 deletions(-)
