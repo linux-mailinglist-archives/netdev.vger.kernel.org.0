@@ -2,163 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 517A1318915
+	by mail.lfdr.de (Postfix) with ESMTP id C31DC318916
 	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 12:10:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231286AbhBKLIr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 06:08:47 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:47374 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231383AbhBKLBy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 06:01:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613041225;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=iQ1CyJDpkuauU8h1mtytMENhHHlIG0UXjEznsE8xviI=;
-        b=Uqi4mSGCswJEOD1o+95r567sb7h9reyLgTZBWFPviySaTbBsMdhisAUj8a/FgNvhoavSPG
-        d7Ljn3N3lVUWiWKMI4KRrL23OOENGUmoCRotfKcebJbaNd6jAEJpRlw6JoYs5RNrsF/8NN
-        krETvsdzGYEORyvRvswOW4DPqz920rA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-406-gHnI95s5M4iCne7udxMfnA-1; Thu, 11 Feb 2021 06:00:20 -0500
-X-MC-Unique: gHnI95s5M4iCne7udxMfnA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B6CD286A060;
-        Thu, 11 Feb 2021 11:00:18 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.45])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 75E5B62953;
-        Thu, 11 Feb 2021 11:00:06 +0000 (UTC)
-Date:   Thu, 11 Feb 2021 12:00:05 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     brouer@redhat.com, Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
-        dust.li@linux.alibaba.com, Marek Majtyka <alardam@gmail.com>
-Subject: Re: [PATCH netdev] virtio-net: support XDP_TX when not more queues
-Message-ID: <20210211120005.04af2c0f@carbon>
-In-Reply-To: <20210210163945-mutt-send-email-mst@kernel.org>
-References: <81abae33fc8dbec37ef0061ff6f6fd696b484a3e.1610523188.git.xuanzhuo@linux.alibaba.com>
-        <20210210163945-mutt-send-email-mst@kernel.org>
+        id S231393AbhBKLJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 06:09:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52270 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231459AbhBKLC4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 06:02:56 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46D70C061788;
+        Thu, 11 Feb 2021 03:02:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=Tpeq1xfIzx+yLHJnjWVC+ZEcy8In7HLI4jkOouPG+0E=; b=wW2d4sMBETKTKCSC6tYt7vWap
+        EC1kgw3o7TrEjQQ5KBBzL0yHvOe8+B92Go4j4hN1V0RNyOlREEbMf7IcyzbvtLbFmFnOmCOsPyy+A
+        Ym9lkL2W+Y3gHqMRMT/6gRYIU2VTh26SJ018QD+/DtJSgc5bZOWQ5LyWBjOPmq+7yG4Wq/Qpm3zs6
+        mBi5KYUdjQqyizUCA6kVfnWlU19Pb+cqwrW7QaySl95QDZ6zbRXtljHdfdbEpkCENC72ZU4pfxoIR
+        B6RWN80NmtYP99HwO4grdy57Ldcq5utgS74WtElVpEo1eYz3kdx1JkGmafxyBZl9t/VCuOITqaGUH
+        YIciXUQVA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:41986)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1lA9jh-00060O-13; Thu, 11 Feb 2021 11:02:13 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1lA9jf-00061D-Kt; Thu, 11 Feb 2021 11:02:11 +0000
+Date:   Thu, 11 Feb 2021 11:02:11 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     stefanc@marvell.com
+Cc:     netdev@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        davem@davemloft.net, nadavh@marvell.com, ymarkman@marvell.com,
+        linux-kernel@vger.kernel.org, kuba@kernel.org, mw@semihalf.com,
+        andrew@lunn.ch, atenart@kernel.org, devicetree@vger.kernel.org,
+        robh+dt@kernel.org, sebastian.hesselbarth@gmail.com,
+        gregory.clement@bootlin.com, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v13 net-next 01/15] doc: marvell: add CM3 address space
+ and PPv2.3 description
+Message-ID: <20210211110211.GZ1463@shell.armlinux.org.uk>
+References: <1613040542-16500-1-git-send-email-stefanc@marvell.com>
+ <1613040542-16500-2-git-send-email-stefanc@marvell.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1613040542-16500-2-git-send-email-stefanc@marvell.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 10 Feb 2021 16:40:41 -0500
-"Michael S. Tsirkin" <mst@redhat.com> wrote:
-
-> On Wed, Jan 13, 2021 at 04:08:57PM +0800, Xuan Zhuo wrote:
-> > The number of queues implemented by many virtio backends is limited,
-> > especially some machines have a large number of CPUs. In this case, it
-> > is often impossible to allocate a separate queue for XDP_TX.
-> > 
-> > This patch allows XDP_TX to run by reuse the existing SQ with
-> > __netif_tx_lock() hold when there are not enough queues.
-
-I'm a little puzzled about the choice of using the netdevice TXQ
-lock __netif_tx_lock() / __netif_tx_unlock().
-Can you explain more about this choice?
-
-> > 
-> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > Reviewed-by: Dust Li <dust.li@linux.alibaba.com>  
+On Thu, Feb 11, 2021 at 12:48:48PM +0200, stefanc@marvell.com wrote:
+> From: Stefan Chulski <stefanc@marvell.com>
 > 
-> I'd like to get some advice on whether this is ok from some
-> XDP experts - previously my understanding was that it is
-> preferable to disable XDP for such devices than
-> use locks on XDP fast path.
+> Patch adds CM3 address space and PPv2.3 description.
+> 
+> Signed-off-by: Stefan Chulski <stefanc@marvell.com>
+> Acked-by: Marcin Wojtas <mw@semihalf.com>
 
-I think it is acceptable, because the ndo_xdp_xmit / virtnet_xdp_xmit
-takes a bulk of packets (currently 16).
+It seems this is missing the ack that you got from Rob in your previous
+posting. Your changelog says that only the module parameter was
+removed, so I guess nothing changed in this patch.
 
-Some drivers already does this.
+Please wait to see if there are further comments before posting another
+revision of this series.
 
-It would have been nice if we could set a feature flag, that allow
-users to see that this driver uses locking in the XDP transmit
-(ndo_xdp_xmit) function call... but it seems like a pipe dream :-P
-
-Code related to the locking
-
-> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > index ba8e637..7a3b2a7 100644
-> > --- a/drivers/net/virtio_net.c
-> > +++ b/drivers/net/virtio_net.c
-[...]
-> > @@ -481,14 +484,34 @@ static int __virtnet_xdp_xmit_one(struct virtnet_info *vi,
-> >  	return 0;
-> >  }
-> >  
-> > -static struct send_queue *virtnet_xdp_sq(struct virtnet_info *vi)
-> > +static struct send_queue *virtnet_get_xdp_sq(struct virtnet_info *vi)
-> >  {
-> >  	unsigned int qp;
-> > +	struct netdev_queue *txq;
-> > +
-> > +	if (vi->curr_queue_pairs > nr_cpu_ids) {
-> > +		qp = vi->curr_queue_pairs - vi->xdp_queue_pairs + smp_processor_id();
-> > +	} else {
-> > +		qp = smp_processor_id() % vi->curr_queue_pairs;
-> > +		txq = netdev_get_tx_queue(vi->dev, qp);
-> > +		__netif_tx_lock(txq, raw_smp_processor_id());
-> > +	}
-> >  
-> > -	qp = vi->curr_queue_pairs - vi->xdp_queue_pairs + smp_processor_id();
-> >  	return &vi->sq[qp];
-> >  }
-> >  
-> > +static void virtnet_put_xdp_sq(struct virtnet_info *vi)
-> > +{
-> > +	unsigned int qp;
-> > +	struct netdev_queue *txq;
-> > +
-> > +	if (vi->curr_queue_pairs <= nr_cpu_ids) {
-> > +		qp = smp_processor_id() % vi->curr_queue_pairs;
-> > +		txq = netdev_get_tx_queue(vi->dev, qp);
-> > +		__netif_tx_unlock(txq);
-> > +	}
-> > +}
-> > +
-> >  static int virtnet_xdp_xmit(struct net_device *dev,
-> >  			    int n, struct xdp_frame **frames, u32 flags)
-> >  {
-> > @@ -512,7 +535,7 @@ static int virtnet_xdp_xmit(struct net_device *dev,
-> >  	if (!xdp_prog)
-> >  		return -ENXIO;
-> >  
-> > -	sq = virtnet_xdp_sq(vi);
-> > +	sq = virtnet_get_xdp_sq(vi);
-> >  
-> >  	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK)) {
-> >  		ret = -EINVAL;
-> > @@ -560,12 +583,13 @@ static int virtnet_xdp_xmit(struct net_device *dev,
-> >  	sq->stats.kicks += kicks;
-> >  	u64_stats_update_end(&sq->stats.syncp);
-> >  
-> > +	virtnet_put_xdp_sq(vi);
-> >  	return ret;
-> >  }
-> >  
-
-
+Thanks.
 
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
