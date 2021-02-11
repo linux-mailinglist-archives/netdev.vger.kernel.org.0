@@ -2,137 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D30B3185AF
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 08:33:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D7633185B6
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 08:34:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229639AbhBKHcA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 02:32:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35374 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229598AbhBKHbx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 02:31:53 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D1CDC061574;
-        Wed, 10 Feb 2021 23:31:13 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id w4so4240425wmi.4;
-        Wed, 10 Feb 2021 23:31:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:references:from:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=XtbI9v4khyRs8JwVyZgW9h25eiZw429zMUcaRL61TSQ=;
-        b=kWFx8ssYRVCx+En/7zNWSC44dqkIVpkDf2fCxIBTwnyr/1SJ18onTW2PqRcAcl6L3q
-         IG/4FwvZXrl1GJWkBWSZnfxcGbTNKl64gbcXUJ42tAmjPuNtK8K4sM1nI+uuFyzXQNm4
-         T1MhabGCxN/NJs0DkOQQGSSSwJgOTSVzudw3JkPQV7ak8P6AvJ5nCJLIgVJ8XCV8x3Za
-         GZm67qgCidrpRXP97jAOxqo//322wykj+D+CgBwvr8Gw/475bD8wnuk+ljGEb63rASxO
-         01rEyM+HfgI8TjGcP/tvZ+N/EwPKIuHro26DKlUMj85F9m2INkvrqIwBtijh6QQD0fGY
-         GY0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=XtbI9v4khyRs8JwVyZgW9h25eiZw429zMUcaRL61TSQ=;
-        b=h4WPz7eSmUzRYq+WxhTOyJZN/hSXzVshi0Rb5pDYqkSDB24yJO/Ra8gPJBEYYUI2ef
-         paSMEmQTWkLAYNhBn56/xCQNe+NtMTCRXRt3QXbpXFSy2cwrPJpaIED/1vigRwQPo9UZ
-         aQiJJSosmbkB/Qb9pwRyuv4uYrnL73+qrepzX3EEYPD8P+Qx2txitw2uTne6yKD8+rQV
-         VC8D423HatwZhBhbs8e7OK44R7YSySE7DYvXp0Ylbeu4xjShEWc/ZwtNino6SmtsWAw9
-         a0RjPVVk4qbD4qTpCV29cvp77F9EXWJnnvU+oiEfMKCEOAG+FKjkgA/IxvsDNuwrjCqp
-         bf4A==
-X-Gm-Message-State: AOAM532L1dtGE4UjuC1ZgaZdjl6u/3kQgfYF23ByRqEkDb+X9F1qiOiU
-        KgMu4YspZRbavpBP2jZeT28=
-X-Google-Smtp-Source: ABdhPJzCfqNKRB+oQof/x/mPTQCgw3Y+8dbzGaVRG8OJj4g4HEIR4zeb3RY4zeVuc7z8fU5aMhjhyQ==
-X-Received: by 2002:a1c:720d:: with SMTP id n13mr3489965wmc.103.1613028671728;
-        Wed, 10 Feb 2021 23:31:11 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f1f:ad00:60ca:853:df03:450e? (p200300ea8f1fad0060ca0853df03450e.dip0.t-ipconnect.de. [2003:ea:8f1f:ad00:60ca:853:df03:450e])
-        by smtp.googlemail.com with ESMTPSA id z185sm9076648wmb.0.2021.02.10.23.31.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Feb 2021 23:31:11 -0800 (PST)
-To:     Saravana Kannan <saravanak@google.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Android Kernel Team <kernel-team@android.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jon Hunter <jonathanh@nvidia.com>
-References: <CAGETcx9YpCUMmHjyydMtOJP9SKBbVsHNB-9SspD9u=txJ12Gug@mail.gmail.com>
- <YCRjmpKjK0pxKTCP@lunn.ch>
- <CAGETcx-tBw_=VPvQVYcpPJBJjgQvp8UASrdMdSbSduahZpJf9w@mail.gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: phy_attach_direct()'s use of device_bind_driver()
-Message-ID: <4f0086ad-1258-063d-0ace-fe4c6c114991@gmail.com>
-Date:   Thu, 11 Feb 2021 08:31:03 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        id S229623AbhBKHe1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 02:34:27 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:14672 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229580AbhBKHd7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 02:33:59 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B6024ddb30001>; Wed, 10 Feb 2021 23:33:07 -0800
+Received: from mtl-vdi-166.wap.labs.mlnx (172.20.145.6) by
+ HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3; Thu, 11 Feb 2021 07:33:04 +0000
+Date:   Thu, 11 Feb 2021 09:33:00 +0200
+From:   Eli Cohen <elic@nvidia.com>
+To:     Si-Wei Liu <si-wei.liu@oracle.com>
+CC:     <mst@redhat.com>, <jasowang@redhat.com>,
+        <linux-kernel@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 2/3] vdpa/mlx5: fix feature negotiation across device
+ reset
+Message-ID: <20210211073300.GA100783@mtl-vdi-166.wap.labs.mlnx>
+References: <1612993680-29454-1-git-send-email-si-wei.liu@oracle.com>
+ <1612993680-29454-3-git-send-email-si-wei.liu@oracle.com>
 MIME-Version: 1.0
-In-Reply-To: <CAGETcx-tBw_=VPvQVYcpPJBJjgQvp8UASrdMdSbSduahZpJf9w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <1612993680-29454-3-git-send-email-si-wei.liu@oracle.com>
+User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1613028787; bh=Jb5vgiCfWSfNtEu95oNyAIE8t6IaV8AzCWh8B39PaLM=;
+        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+         Content-Type:Content-Disposition:In-Reply-To:User-Agent:
+         X-Originating-IP:X-ClientProxiedBy;
+        b=ZQbT/0qHciVcaAPTYedUyNfyCTq1yQySYe7d5cEgMgjbum7Sk5qu8FUKKV/Df/93G
+         dKPVBaXn6b/YoUHFVKDO/DTpNsxwsQh2N6kezZ2ezA1zfRUp5f41qvFRbXb2CE2Am1
+         WLIdgs0X93YKuoMRTCJGH/npjdF56/x59cxQ8mtQQ86ECuia1yLjR56cX84WSnpgGP
+         9GUEoxrslLL9ky/TyYAClb3hMJpkqOWBj5jHt2A2YclxL4UWy+CT6A8WUP9wdzHS7R
+         dNix/4HpOJTmwGv+cUsSmG4+UMnc95qKh8yx6/awmHxAdymrpl1sicbzoyGcL5pssd
+         /C3IxX5MiW8Kg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11.02.2021 00:29, Saravana Kannan wrote:
-> On Wed, Feb 10, 2021 at 2:52 PM Andrew Lunn <andrew@lunn.ch> wrote:
->>
->> On Wed, Feb 10, 2021 at 02:13:48PM -0800, Saravana Kannan wrote:
->>> Hi,
->>>
->>> This email was triggered by this other email[1].
->>>
->>> Why is phy_attach_direct() directly calling device_bind_driver()
->>> instead of using bus_probe_device()?
->>
->> Hi Saravana
->>
->> So this is to do with the generic PHY, which is a special case.
->>
->> First the normal case. The MDIO bus driver registers an MDIO bus using
->> mdiobus_register(). This will enumerate the bus, finding PHYs on
->> it. Each PHY device is registered with the device core, using the
->> usual device_add(). The core will go through the registered PHY
->> drivers and see if one can drive this hardware, based on the ID
->> registers the PHY has at address 2 and 3. If a match is found, the
->> driver probes the device, all in the usual way.
->>
->> Sometime later, the MAC driver wants to make use of the PHY
->> device. This is often in the open() call of the MAC driver, when the
->> interface is configured up. The MAC driver asks phylib to associate a
->> PHY devices to the MAC device. In the normal case, the PHY has been
->> probed, and everything is good to go.
->>
->> However, sometimes, there is no driver for the PHY. There is no driver
->> for that hardware. Or the driver has not been built, or it is not on
->> the disk, etc. So the device core has not been able to probe
->> it. However, IEEE 802.3 clause 22 defines a minimum set of registers a
->> PHY should support. And most PHY devices have this minimum. So there
->> is a fall back driver, the generic PHY driver. It assumes the minimum
->> registers are available, and does its best to drive the hardware. It
->> often works, but not always. So if the MAC asks phylib to connect to a
->> PHY which does not have a driver, we forcefully bind the generic
->> driver to the device, and hope for the best.
+On Wed, Feb 10, 2021 at 01:47:59PM -0800, Si-Wei Liu wrote:
+> The mlx_features denotes the capability for which
+> set of virtio features is supported by device. In
+> principle, this field needs not be cleared during
+> virtio device reset, as this capability is static
+> and does not change across reset.
 > 
-> Thanks for the detailed answer Andrew! I think it gives me enough
-> info/context to come up with a proper fix.
+> In fact, the current code may have the assumption
+> that mlx_features can be reloaded from firmware
+> via the .get_features ops after device is reset
+> (via the .set_status ops), which is unfortunately
+> not true. The userspace VMM might save a copy
+> of backend capable features and won't call into
+> kernel again to get it on reset. This causes all
+> virtio features getting disabled on newly created
+> virtqs after device reset, while guest would hold
+> mismatched view of available features. For e.g.,
+> the guest may still assume tx checksum offload
+> is available after reset and feature negotiation,
+> causing frames with bogus (incomplete) checksum
+> transmitted on the wire.
 > 
->> We don't actually recommend using the generic driver. Use the specific
->> driver for the hardware. But the generic driver can at least get you
->> going, allow you to scp the correct driver onto the system, etc.
-> 
-> I'm not sure if I can control what driver they use. If I can fix this
-> warning, I'll probably try to do that.
-> 
-The genphy driver is a last resort, at least they lose functionality like
-downshift detection and control. Therefore they should go with the
-dedicated Marvell PHY driver.
+> Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
+> Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
 
-But right, this avoids the warning, but the underlying issue (probably
-in device_bind_driver()) still exists. Would be good if you can fix it.
+Acked-by: Eli Cohen <elic@nvidia.com>
 
-> -Saravana
+> ---
+>  drivers/vdpa/mlx5/net/mlx5_vnet.c | 25 +++++++++++++++----------
+>  1 file changed, 15 insertions(+), 10 deletions(-)
 > 
-
-Heiner
+> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> index b8416c4..7c1f789 100644
+> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> @@ -1486,16 +1486,8 @@ static u64 mlx_to_vritio_features(u16 dev_features)
+>  static u64 mlx5_vdpa_get_features(struct vdpa_device *vdev)
+>  {
+>  	struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
+> -	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
+> -	u16 dev_features;
+>  
+> -	dev_features = MLX5_CAP_DEV_VDPA_EMULATION(mvdev->mdev, device_features_bits_mask);
+> -	ndev->mvdev.mlx_features = mlx_to_vritio_features(dev_features);
+> -	if (MLX5_CAP_DEV_VDPA_EMULATION(mvdev->mdev, virtio_version_1_0))
+> -		ndev->mvdev.mlx_features |= BIT_ULL(VIRTIO_F_VERSION_1);
+> -	ndev->mvdev.mlx_features |= BIT_ULL(VIRTIO_F_ACCESS_PLATFORM);
+> -	print_features(mvdev, ndev->mvdev.mlx_features, false);
+> -	return ndev->mvdev.mlx_features;
+> +	return mvdev->mlx_features;
+>  }
+>  
+>  static int verify_min_features(struct mlx5_vdpa_dev *mvdev, u64 features)
+> @@ -1788,7 +1780,6 @@ static void mlx5_vdpa_set_status(struct vdpa_device *vdev, u8 status)
+>  		clear_virtqueues(ndev);
+>  		mlx5_vdpa_destroy_mr(&ndev->mvdev);
+>  		ndev->mvdev.status = 0;
+> -		ndev->mvdev.mlx_features = 0;
+>  		++mvdev->generation;
+>  		return;
+>  	}
+> @@ -1907,6 +1898,19 @@ static int mlx5_get_vq_irq(struct vdpa_device *vdv, u16 idx)
+>  	.free = mlx5_vdpa_free,
+>  };
+>  
+> +static void query_virtio_features(struct mlx5_vdpa_net *ndev)
+> +{
+> +	struct mlx5_vdpa_dev *mvdev = &ndev->mvdev;
+> +	u16 dev_features;
+> +
+> +	dev_features = MLX5_CAP_DEV_VDPA_EMULATION(mvdev->mdev, device_features_bits_mask);
+> +	mvdev->mlx_features = mlx_to_vritio_features(dev_features);
+> +	if (MLX5_CAP_DEV_VDPA_EMULATION(mvdev->mdev, virtio_version_1_0))
+> +		mvdev->mlx_features |= BIT_ULL(VIRTIO_F_VERSION_1);
+> +	mvdev->mlx_features |= BIT_ULL(VIRTIO_F_ACCESS_PLATFORM);
+> +	print_features(mvdev, mvdev->mlx_features, false);
+> +}
+> +
+>  static int query_mtu(struct mlx5_core_dev *mdev, u16 *mtu)
+>  {
+>  	u16 hw_mtu;
+> @@ -2005,6 +2009,7 @@ static int mlx5v_probe(struct auxiliary_device *adev,
+>  	init_mvqs(ndev);
+>  	mutex_init(&ndev->reslock);
+>  	config = &ndev->config;
+> +	query_virtio_features(ndev);
+>  	err = query_mtu(mdev, &ndev->mtu);
+>  	if (err)
+>  		goto err_mtu;
+> -- 
+> 1.8.3.1
+> 
