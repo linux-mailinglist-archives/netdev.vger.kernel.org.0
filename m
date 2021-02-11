@@ -2,64 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F26353195F1
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 23:41:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A052319605
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 23:50:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229959AbhBKWkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 17:40:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43592 "EHLO mail.kernel.org"
+        id S229903AbhBKWut (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 17:50:49 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44888 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229895AbhBKWks (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Feb 2021 17:40:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 1A52964E45;
-        Thu, 11 Feb 2021 22:40:08 +0000 (UTC)
+        id S229678AbhBKWus (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Feb 2021 17:50:48 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id CDB5164E3E;
+        Thu, 11 Feb 2021 22:50:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613083208;
-        bh=pr3FcFwfXX8h0np/PTmJ2QB0rRnCCEPljpp9g+1UNpg=;
+        s=k20201202; t=1613083807;
+        bh=IXiqdLyl39Ag/iyN3ITxDWKAB3xKcTcBvC50xBOKw2I=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=vPtrs/RvlcCVqr/Rwpa20xcn/YP9ZWevncGqhNm2b8Rgs9j0MNaajtL1Hh5CO9EDP
-         jgHh4/ujYti/6QHe+QzSCFw1Ku++Knlku+W66wDEm/ONwvE/l1AWitVvdoKti2/a3S
-         qADW19rTCFhsnggANZikKmM3f1Jq342Hdap/eMy7RNA/pvWzR9IY3oGvvI4a8cOR4T
-         OYN/k5t9uAierr/OzGif7SuOChljObpC4WVxZnWxQ2s7M+qn4ScJ1XckP052ey4/ac
-         oQ/3jJ1+vzxWD0PfCAE/HTn9kVI8b5WShq2EShtsiWpyOVk/SYuxZe3b413zfb5eWG
-         7tyRzQ00CdDQQ==
+        b=WygIxQp8JN72NNc1SyNDWXoRJjs3vHFA87RwIbXaYVsERdIWnWc+LYZABsMCF415V
+         jQQ0gAsgQWA8vhxfJ4Mylwmd/Y7BKIvy91cUoirl0eudTD9M62H5E0efscixhN9yQt
+         p2EPx147P/D1aSN9QpqHmpndqvugLEDNcrYd4Y7palAXezcMbGX+tLZqQovUQOdtjZ
+         7AJzIa3H8sm/z0iLp4YFtyAjjjBfVg5z9J5hiAYrE843aPuRisrnQZfTOOh1MabU88
+         Ea9vWAb+JiZR1R7yRSbMr65ck3WBB915JNwKbo45BfzyeilLaoIKocp62zEYL1Ekxw
+         MDdqkv9pPLF2g==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 0C9C4609D6;
-        Thu, 11 Feb 2021 22:40:08 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C0856600E8;
+        Thu, 11 Feb 2021 22:50:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: ipconfig: avoid use-after-free in ic_close_devs
+Subject: Re: [PATCH net 0/2] bnxt_en: 2 bug fixes.
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161308320804.12386.4198662249809519897.git-patchwork-notify@kernel.org>
-Date:   Thu, 11 Feb 2021 22:40:08 +0000
-References: <20210210235703.1882205-1-olteanv@gmail.com>
-In-Reply-To: <20210210235703.1882205-1-olteanv@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        yoshfuji@linux-ipv6.org
+Message-Id: <161308380778.17877.14244262768593051573.git-patchwork-notify@kernel.org>
+Date:   Thu, 11 Feb 2021 22:50:07 +0000
+References: <1613028264-20306-1-git-send-email-michael.chan@broadcom.com>
+In-Reply-To: <1613028264-20306-1-git-send-email-michael.chan@broadcom.com>
+To:     Michael Chan <michael.chan@broadcom.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        gospo@broadcom.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This series was applied to netdev/net.git (refs/heads/master):
 
-On Thu, 11 Feb 2021 01:57:03 +0200 you wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Thu, 11 Feb 2021 02:24:22 -0500 you wrote:
+> Two unrelated fixes.  The first one fixes intermittent false TX timeouts
+> during ring reconfigurations.  The second one fixes a formatting
+> discrepancy between the stored and the running FW versions.
 > 
-> Due to the fact that ic_dev->dev is kept open in ic_close_dev, I had
-> thought that ic_dev will not be freed either. But that is not the case,
-> but instead "everybody dies" when ipconfig cleans up, and just the
-> net_device behind ic_dev->dev remains allocated but not ic_dev itself.
+> Please also queue these for -stable.  Thanks.
+> 
+> Edwin Peer (1):
+>   bnxt_en: reverse order of TX disable and carrier off
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] net: ipconfig: avoid use-after-free in ic_close_devs
-    https://git.kernel.org/netdev/net-next/c/f68cbaed67cb
+  - [net,1/2] bnxt_en: reverse order of TX disable and carrier off
+    https://git.kernel.org/netdev/net/c/132e0b65dc2b
+  - [net,2/2] bnxt_en: Fix devlink info's stored fw.psid version format.
+    https://git.kernel.org/netdev/net/c/db28b6c77f40
 
 You are awesome, thank you!
 --
