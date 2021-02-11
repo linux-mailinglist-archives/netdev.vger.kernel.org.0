@@ -2,41 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D0E9318D25
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 15:20:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 315CA318CD7
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 15:01:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232168AbhBKOQT convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 11 Feb 2021 09:16:19 -0500
-Received: from mail.pronor.es ([195.55.45.130]:49504 "EHLO pronor.es"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231748AbhBKONt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Feb 2021 09:13:49 -0500
-Received: from YdeaPad.home ([82.158.192.164] RDNS failed) by pronor.es with Microsoft SMTPSVC(6.0.3790.4675);
-         Thu, 11 Feb 2021 06:39:42 +0100
-Content-Type: text/plain; charset="iso-8859-1"
+        id S232011AbhBKOAq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 09:00:46 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:34866 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231425AbhBKN6P (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Feb 2021 08:58:15 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lACT7-005aPt-7q; Thu, 11 Feb 2021 14:57:17 +0100
+Date:   Thu, 11 Feb 2021 14:57:17 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Android Kernel Team <kernel-team@android.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jon Hunter <jonathanh@nvidia.com>
+Subject: Re: phy_attach_direct()'s use of device_bind_driver()
+Message-ID: <YCU3vaZ51XpksIpc@lunn.ch>
+References: <CAGETcx9YpCUMmHjyydMtOJP9SKBbVsHNB-9SspD9u=txJ12Gug@mail.gmail.com>
+ <YCRjmpKjK0pxKTCP@lunn.ch>
+ <CAGETcx-tBw_=VPvQVYcpPJBJjgQvp8UASrdMdSbSduahZpJf9w@mail.gmail.com>
+ <4f0086ad-1258-063d-0ace-fe4c6c114991@gmail.com>
+ <CAGETcx_9bmeLzOvDp8eCGdWtfwZNajCBCNSbyx7a_0T=FcSvwA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Description: Mail message body
-Subject: APPLY FOR LOAN NOW?
-To:     Recipients <office@quinnlncompanyltd.com>
-From:   "MRS.MARIA RICARDO" <office@quinnlncompanyltd.com>
-Date:   Thu, 11 Feb 2021 06:39:42 +0100
-Reply-To: office@quinnlncompanyltd.com
-Message-ID: <PRONORMAILxc1o8yfog00001927@pronor.es>
-X-OriginalArrivalTime: 11 Feb 2021 05:39:42.0656 (UTC) FILETIME=[4C27BC00:01D70038]
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGETcx_9bmeLzOvDp8eCGdWtfwZNajCBCNSbyx7a_0T=FcSvwA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Ladies and Gentlemen
+> Yeah, I plan to fix this. So I have a few more questions. In the
+> example I gave, what should happen if the gpios listed in the phy's DT
+> node aren't ready yet?
 
-Are you tired of messing around with banks or financial service providers for a loan? Need collateral to secure the loan 150%? Do you need a loan to make an investment, convert short term debt into medium to long term?
-Yes, but security, confidentiality and transparency are important to you. Then we can help you. We are an England-based company that specializes in making loans to individuals and companies easy.
-The interest rates and maturities are very attractive (2%) and we limit ourselves to the absolute minimum when it comes to security.
-Interested? Then contact us for further information by e-mail: office@quinnlncompanyltd.com
-We are happy to hear from them.
-Security, trust and transparency are the pillars of our business.
-Best regards
-MRS,Vivian m,Fox
-Accounting & Management
-Quinn loan company limited
+There are four different use cases for GPIO.
+
+1) The GPIO is used to reset all devices on the MDIO bus. When the bus
+is registered with the core, the core will try to get this GPIO. If we
+get EPROBE_DEFER, the registration of the bus is deferred and tried
+again later. If the MAC driver tries to get the PHY device before the
+MDIO bus is enumerated, it should also get EPROBE_DEFER, and in the
+end everything should work.
+
+2) The GPIO is for a specific PHY. Here we have an oddity in the
+code. If the PHY responds to bus enumeration, before we start doing
+anything with the reset GPIO, it will be discovered on the bus. At
+this point, we try to get the GPIO. If that fails with EPROBE_DEFER,
+all the PHYs on the bus are unregistered, and the bus registration
+process fails with EPROBE_DEFER.
+
+3) The GPIO is for a specific PHY. However, the device does not
+respond to enumeration, because it is held in reset. You can get
+around this by placing the ID values into device tree. The bus is
+first enumerated in the normal way. And then devices which are listed
+in DT, but have not been found, and have ID registers are registered
+to the bus. This follows pretty much the same path as for a device
+which is discovered. Before the device is registered with the device
+core, we get the GPIOs, and handle the EPROBE_DEFER, unwinding
+everything.
+
+4) The GPIO does not use the normal name in DT. Or the PHY has some
+other resource, which phylib does nothing with. The driver specific to
+the hardware has code to handle the resource. It should try to get
+those resources during probe. If probe returns EPROBE_DEFER, the probe
+will be retried later. And when the MAC driver tries to find the PHY,
+it should also get EPROBE_DEFER.
+
+In case 4, the fallback driver has no idea about these PHY devices
+specific properties. They are not part of 802.3 clause 22. So it will
+ignore them. Probably the PHY will not work, because it is missing a
+reset, or a clock, or a regulator. But we don't really care about
+that. In order that the DT was accepted into the kernel, there must be
+a device specific driver which uses those properties. So the kernel
+installation is broken, that hardware specific driver is missing.
+
+	Andrew
