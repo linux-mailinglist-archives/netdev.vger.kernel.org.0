@@ -2,71 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37BD6318E95
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 16:32:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 153E6318E9C
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 16:32:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230253AbhBKP3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 10:29:40 -0500
-Received: from mail-wr1-f50.google.com ([209.85.221.50]:33562 "EHLO
-        mail-wr1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230365AbhBKPYx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 10:24:53 -0500
-Received: by mail-wr1-f50.google.com with SMTP id 7so4601782wrz.0;
-        Thu, 11 Feb 2021 07:24:37 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=r73cmlC1j2cHDWraNmDzLtHimsKfOTe23uRKBUQvTXY=;
-        b=RZQN5nMovh/qjggaZkLfWtEGAYH+4Hhxg+uE++JXkd71lRZPbj7QwqaUMeRscBeDwu
-         FfEvBKXTDVnQ7SfEzgjIU+vFYVxLbPvPoMbsk2ur2J0MyJj2jT3dn4TvZirSpjGP4yQ+
-         Qbf4eJUqBls4KnpkkwUNT/Ted3iluR2MiZV9Pf64V3DYq03QvBjLcFRd5GvCzhHucLse
-         zmKC5DZYOxPI8uLW18nTWk4yeW6u3OEY64cU7nwFcod1R72uMEbdT1D1CqRBy17JcFhe
-         RwIjoeGHYYVz3N3A6wIgrIIGfyu4TUefYr3JFHNMHPCPt8Ns0qd+x0eyTuRTJYV3SuFN
-         oogQ==
-X-Gm-Message-State: AOAM532+FqK66rpCooZ0PxjDbQsxyGHnJAQns+nx0gIEsSwl5j3mSBWT
-        3hNwiAGEc90IszEX63AbKY8XW7Ihx3Y=
-X-Google-Smtp-Source: ABdhPJw0ZNLx6cIm1oi5TPu/ZBGpav6tW7wPmN3XoUi4E90WuF9Eo8rynhy/JWMbDVpCiMzyDv1snA==
-X-Received: by 2002:adf:9bcf:: with SMTP id e15mr6042718wrc.276.1613057051742;
-        Thu, 11 Feb 2021 07:24:11 -0800 (PST)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id c5sm5469871wrn.77.2021.02.11.07.24.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Feb 2021 07:24:11 -0800 (PST)
-Date:   Thu, 11 Feb 2021 15:24:09 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Juergen Gross <jgross@suse.com>
-Cc:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Wei Liu <wei.liu@kernel.org>,
-        Paul Durrant <paul@xen.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH v2 4/8] xen/netback: fix spurious event detection for
- common event case
-Message-ID: <20210211152409.knullq66jv3bkis2@liuwe-devbox-debian-v2>
-References: <20210211101616.13788-1-jgross@suse.com>
- <20210211101616.13788-5-jgross@suse.com>
+        id S230468AbhBKPax (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 10:30:53 -0500
+Received: from www62.your-server.de ([213.133.104.62]:35602 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230256AbhBKP1w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 10:27:52 -0500
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lADrf-0005Ul-Ur; Thu, 11 Feb 2021 16:26:43 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lADrf-000J5I-NF; Thu, 11 Feb 2021 16:26:43 +0100
+Subject: Re: [PATCH/v2] bpf: add bpf_skb_adjust_room flag
+ BPF_F_ADJ_ROOM_ENCAP_L2_ETH
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        huangxuesen <hxseverything@gmail.com>
+Cc:     David Miller <davem@davemloft.net>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        huangxuesen <huangxuesen@kuaishou.com>,
+        Willem de Bruijn <willemb@google.com>,
+        chengzhiyong <chengzhiyong@kuaishou.com>,
+        wangli <wangli09@kuaishou.com>,
+        Alan Maguire <alan.maguire@oracle.com>
+References: <20210210065925.22614-1-hxseverything@gmail.com>
+ <CAF=yD-LLzAheej1upLdBOeJc9d0RUXMrL9f9+QVC-4thj1EG5Q@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <29b5395f-daff-99f2-4a4b-6d462623a9fe@iogearbox.net>
+Date:   Thu, 11 Feb 2021 16:26:43 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210211101616.13788-5-jgross@suse.com>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <CAF=yD-LLzAheej1upLdBOeJc9d0RUXMrL9f9+QVC-4thj1EG5Q@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26077/Thu Feb 11 13:18:43 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 11, 2021 at 11:16:12AM +0100, Juergen Gross wrote:
-> In case of a common event for rx and tx queue the event should be
-> regarded to be spurious if no rx and no tx requests are pending.
+On 2/10/21 3:50 PM, Willem de Bruijn wrote:
+> On Wed, Feb 10, 2021 at 1:59 AM huangxuesen <hxseverything@gmail.com> wrote:
+>>
+>> From: huangxuesen <huangxuesen@kuaishou.com>
+>>
+>> bpf_skb_adjust_room sets the inner_protocol as skb->protocol for packets
+>> encapsulation. But that is not appropriate when pushing Ethernet header.
+>>
+>> Add an option to further specify encap L2 type and set the inner_protocol
+>> as ETH_P_TEB.
+>>
+>> Suggested-by: Willem de Bruijn <willemb@google.com>
+>> Signed-off-by: huangxuesen <huangxuesen@kuaishou.com>
+>> Signed-off-by: chengzhiyong <chengzhiyong@kuaishou.com>
+>> Signed-off-by: wangli <wangli09@kuaishou.com>
 > 
-> Unfortunately the condition for testing that is wrong causing to
-> decide a event being spurious if no rx OR no tx requests are
-> pending.
+> Thanks, this is exactly what I meant.
 > 
-> Fix that plus using local variables for rx/tx pending indicators in
-> order to split function calls and if condition.
+> Acked-by: Willem de Bruijn <willemb@google.com>
 > 
-> Fixes: 23025393dbeb3b ("xen/netback: use lateeoi irq binding")
-> Signed-off-by: Juergen Gross <jgross@suse.com>
+> One small point regarding Signed-off-by: It is customary to capitalize
+> family and given names.
 
-Reviewed-by: Wei Liu <wl@xen.org>
++1, huangxuesen, would be great if you could resubmit with capitalized names in
+your SoB as well as From (both seem affected).
+
+Thanks,
+Daniel
