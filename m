@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D1BF3192A1
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 19:59:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B39683192A3
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 19:59:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231592AbhBKS5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 13:57:32 -0500
-Received: from mail-40136.protonmail.ch ([185.70.40.136]:49918 "EHLO
-        mail-40136.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231274AbhBKSzq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 13:55:46 -0500
-Date:   Thu, 11 Feb 2021 18:54:57 +0000
+        id S231655AbhBKS55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 13:57:57 -0500
+Received: from mail-40133.protonmail.ch ([185.70.40.133]:16612 "EHLO
+        mail-40133.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231264AbhBKSz6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 13:55:58 -0500
+Date:   Thu, 11 Feb 2021 18:55:10 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1613069704; bh=qPQcxPN1Q43SY2WoV1Q6WuT37zpt1UbANMJCgrZmA8M=;
+        t=1613069716; bh=wCw8cavtLqeebztLIscnnEE229I5U5y2doZiTxqDwrI=;
         h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=mFZGK9DqkMzDxBvGEhde2DTkEr1oebfk3zuZk4wy9nGQJ++vDr2MfT//zJDpO2fIg
-         kyHcmbdskJfgW9hvxcIhVMyYgZRfJajM+cdnHzUPUgn+cymioddjITy8K+CTMhMh/p
-         dBAzoess7TsA7HtxsqT2+JxrNgdihQo80CAvN4uSHWUScuvQfrrJSY2nPq5wQMMEyY
-         EbIQ70RouwDCrNjdMm+kfINatpt8bA2h5n53pgjGK+StIUD4fRaLtcOJZdzFB+FZjf
-         FkdhqYk8A7VYS0T3j1Il0LgrfEDnIS2zayx1gunpuplpXkTyXEy+F5nLPwBhlqVpfa
-         NrwADqks2dBOg==
+        b=IutA6USnGqplNzr+dTRVaNvChrYr47gEhWFo7H+RX68nTRzH+wJLQMxYt6H59KX/6
+         6VfbgF9bGDEjPg+z8QlBgvDwuNGwr/OGyV0qUaPsit7LtMI9eLyOr5qJz4e/izHYw3
+         PNwT700hI1K3Wb9Zp9edwI03AIyZJyjE8S4cvUOCelbWJeN153CviVwYlMljTHgck/
+         F8yeBU8xWjjYSgntMQe4LtX+qgpT+XAUHT91b0seU97euBmjHlqeYvEq8E9aV9W71R
+         TCSE3yK3XI8Q3DEfS6CNufRxgG8d/S6t35wNhURixpKFixbyQpdfqXIFwWslvwmYQQ
+         7BBiRVGWA6v4Q==
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 From:   Alexander Lobakin <alobakin@pm.me>
@@ -55,8 +55,8 @@ Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
         Edward Cree <ecree.xilinx@gmail.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH v5 net-next 09/11] skbuff: allow to optionally use NAPI cache from __alloc_skb()
-Message-ID: <20210211185220.9753-10-alobakin@pm.me>
+Subject: [PATCH v5 net-next 10/11] skbuff: allow to use NAPI cache from __napi_alloc_skb()
+Message-ID: <20210211185220.9753-11-alobakin@pm.me>
 In-Reply-To: <20210211185220.9753-1-alobakin@pm.me>
 References: <20210211185220.9753-1-alobakin@pm.me>
 MIME-Version: 1.0
@@ -71,56 +71,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reuse the old and forgotten SKB_ALLOC_NAPI to add an option to get
-an skbuff_head from the NAPI cache instead of inplace allocation
-inside __alloc_skb().
-This implies that the function is called from softirq or BH-off
-context, not for allocating a clone or from a distant node.
+{,__}napi_alloc_skb() is mostly used either for optional non-linear
+receive methods (usually controlled via Ethtool private flags and off
+by default) and/or for Rx copybreaks.
+Use __napi_build_skb() here for obtaining skbuff_heads from NAPI cache
+instead of inplace allocations. This includes both kmalloc and page
+frag paths.
 
 Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 ---
- net/core/skbuff.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ net/core/skbuff.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 9e1a8ded4acc..a0b457ae87c2 100644
+index a0b457ae87c2..c8f3ea1d9fbb 100644
 --- a/net/core/skbuff.c
 +++ b/net/core/skbuff.c
-@@ -397,15 +397,20 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t =
-gfp_mask,
- =09struct sk_buff *skb;
- =09u8 *data;
- =09bool pfmemalloc;
-+=09bool clone;
-=20
--=09cache =3D (flags & SKB_ALLOC_FCLONE)
--=09=09? skbuff_fclone_cache : skbuff_head_cache;
-+=09clone =3D !!(flags & SKB_ALLOC_FCLONE);
-+=09cache =3D clone ? skbuff_fclone_cache : skbuff_head_cache;
-=20
- =09if (sk_memalloc_socks() && (flags & SKB_ALLOC_RX))
- =09=09gfp_mask |=3D __GFP_MEMALLOC;
-=20
- =09/* Get the HEAD */
--=09skb =3D kmem_cache_alloc_node(cache, gfp_mask & ~__GFP_DMA, node);
-+=09if ((flags & SKB_ALLOC_NAPI) && !clone &&
-+=09    likely(node =3D=3D NUMA_NO_NODE || node =3D=3D numa_mem_id()))
-+=09=09skb =3D napi_skb_cache_get();
-+=09else
-+=09=09skb =3D kmem_cache_alloc_node(cache, gfp_mask & ~GFP_DMA, node);
- =09if (unlikely(!skb))
+@@ -563,7 +563,8 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *na=
+pi, unsigned int len,
+ =09if (len <=3D SKB_WITH_OVERHEAD(1024) ||
+ =09    len > SKB_WITH_OVERHEAD(PAGE_SIZE) ||
+ =09    (gfp_mask & (__GFP_DIRECT_RECLAIM | GFP_DMA))) {
+-=09=09skb =3D __alloc_skb(len, gfp_mask, SKB_ALLOC_RX, NUMA_NO_NODE);
++=09=09skb =3D __alloc_skb(len, gfp_mask, SKB_ALLOC_RX | SKB_ALLOC_NAPI,
++=09=09=09=09  NUMA_NO_NODE);
+ =09=09if (!skb)
+ =09=09=09goto skb_fail;
+ =09=09goto skb_success;
+@@ -580,7 +581,7 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *na=
+pi, unsigned int len,
+ =09if (unlikely(!data))
  =09=09return NULL;
- =09prefetchw(skb);
-@@ -436,7 +441,7 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gf=
-p_mask,
- =09__build_skb_around(skb, data, 0);
- =09skb->pfmemalloc =3D pfmemalloc;
 =20
--=09if (flags & SKB_ALLOC_FCLONE) {
-+=09if (clone) {
- =09=09struct sk_buff_fclones *fclones;
-=20
- =09=09fclones =3D container_of(skb, struct sk_buff_fclones, skb1);
+-=09skb =3D __build_skb(data, len);
++=09skb =3D __napi_build_skb(data, len);
+ =09if (unlikely(!skb)) {
+ =09=09skb_free_frag(data);
+ =09=09return NULL;
 --=20
 2.30.1
 
