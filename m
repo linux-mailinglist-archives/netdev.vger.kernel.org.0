@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B05F3194F8
+	by mail.lfdr.de (Postfix) with ESMTP id D50533194F9
 	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 22:16:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230332AbhBKVOs convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 11 Feb 2021 16:14:48 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:9282 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230176AbhBKVMj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 16:12:39 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B60259d9c0000>; Thu, 11 Feb 2021 13:11:56 -0800
-Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL101.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 11 Feb
- 2021 21:11:48 +0000
+        id S229674AbhBKVO6 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 11 Feb 2021 16:14:58 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:18991 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230206AbhBKVNI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 16:13:08 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B60259da50000>; Thu, 11 Feb 2021 13:12:05 -0800
+Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL111.nvidia.com
+ (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 11 Feb
+ 2021 21:11:54 +0000
 Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
  (172.20.187.15) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 11 Feb 2021 21:11:44 +0000
+ Transport; Thu, 11 Feb 2021 21:11:49 +0000
 From:   Boris Pismenny <borisp@mellanox.com>
 To:     <dsahern@gmail.com>, <kuba@kernel.org>, <davem@davemloft.net>,
         <saeedm@nvidia.com>, <hch@lst.de>, <sagi@grimberg.me>,
@@ -28,11 +28,12 @@ CC:     <boris.pismenny@gmail.com>, <linux-nvme@lists.infradead.org>,
         <netdev@vger.kernel.org>, <benishay@nvidia.com>,
         <ogerlitz@nvidia.com>, <yorayz@nvidia.com>,
         Boris Pismenny <borisp@mellanox.com>,
+        Ben Ben-Ishay <benishay@mellanox.com>,
         Or Gerlitz <ogerlitz@mellanox.com>,
         Yoray Zack <yorayz@mellanox.com>
-Subject: [PATCH v4 net-next  11/21] net/mlx5: Add 128B CQE for NVMEoTCP offload
-Date:   Thu, 11 Feb 2021 23:10:34 +0200
-Message-ID: <20210211211044.32701-12-borisp@mellanox.com>
+Subject: [PATCH v4 net-next  12/21] net/mlx5e: TCP flow steering for nvme-tcp
+Date:   Thu, 11 Feb 2021 23:10:35 +0200
+Message-ID: <20210211211044.32701-13-borisp@mellanox.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20210211211044.32701-1-borisp@mellanox.com>
 References: <20210211211044.32701-1-borisp@mellanox.com>
@@ -43,79 +44,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ben Ben-ishay <benishay@nvidia.com>
+Both nvme-tcp and tls require tcp flow steering. Compile it for both of
+them. Additionally, use reference counting to allocate/free TCP flow
+steering.
 
-Add the NVMEoTCP offload definition and access functions for 128B CQEs.
-
-Signed-off-by: Ben Ben-ishay <benishay@nvidia.com>
 Signed-off-by: Boris Pismenny <borisp@mellanox.com>
+Signed-off-by: Ben Ben-Ishay <benishay@mellanox.com>
 Signed-off-by: Or Gerlitz <ogerlitz@mellanox.com>
 Signed-off-by: Yoray Zack <yorayz@mellanox.com>
 ---
- include/linux/mlx5/device.h | 36 +++++++++++++++++++++++++++++++++++-
- 1 file changed, 35 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/fs.h        |  4 ++--
+ .../net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c  | 10 ++++++++++
+ .../net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.h  |  2 +-
+ 3 files changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/mlx5/device.h b/include/linux/mlx5/device.h
-index ab04959188b9..f6548c255290 100644
---- a/include/linux/mlx5/device.h
-+++ b/include/linux/mlx5/device.h
-@@ -791,7 +791,7 @@ struct mlx5_err_cqe {
- 
- struct mlx5_cqe64 {
- 	u8		tls_outer_l3_tunneled;
--	u8		rsvd0;
-+	u8		nvmetcp;
- 	__be16		wqe_id;
- 	u8		lro_tcppsh_abort_dupack;
- 	u8		lro_min_ttl;
-@@ -824,6 +824,19 @@ struct mlx5_cqe64 {
- 	u8		op_own;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h b/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h
+index a16297e7e2ac..a7fe3a6358ea 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h
+@@ -137,7 +137,7 @@ enum {
+ 	MLX5E_L2_FT_LEVEL,
+ 	MLX5E_TTC_FT_LEVEL,
+ 	MLX5E_INNER_TTC_FT_LEVEL,
+-#ifdef CONFIG_MLX5_EN_TLS
++#if defined(CONFIG_MLX5_EN_TLS) || defined(CONFIG_MLX5_EN_NVMEOTCP)
+ 	MLX5E_ACCEL_FS_TCP_FT_LEVEL,
+ #endif
+ #ifdef CONFIG_MLX5_EN_ARFS
+@@ -256,7 +256,7 @@ struct mlx5e_flow_steering {
+ #ifdef CONFIG_MLX5_EN_ARFS
+ 	struct mlx5e_arfs_tables        arfs;
+ #endif
+-#ifdef CONFIG_MLX5_EN_TLS
++#if defined(CONFIG_MLX5_EN_TLS) || defined(CONFIG_MLX5_EN_NVMEOTCP)
+ 	struct mlx5e_accel_fs_tcp      *accel_tcp;
+ #endif
+ };
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c
+index e51f60b55daa..21341a92f355 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c
+@@ -14,6 +14,7 @@ enum accel_fs_tcp_type {
+ struct mlx5e_accel_fs_tcp {
+ 	struct mlx5e_flow_table tables[ACCEL_FS_TCP_NUM_TYPES];
+ 	struct mlx5_flow_handle *default_rules[ACCEL_FS_TCP_NUM_TYPES];
++	refcount_t		ref_count;
  };
  
-+struct mlx5e_cqe128 {
-+	__be16		cclen;
-+	__be16		hlen;
-+	union {
-+		__be32		resync_tcp_sn;
-+		__be32		ccoff;
-+	};
-+	__be16		ccid;
-+	__be16		rsvd8;
-+	u8		rsvd12[52];
-+	struct mlx5_cqe64 cqe64;
-+};
-+
- struct mlx5_mini_cqe8 {
- 	union {
- 		__be32 rx_hash_result;
-@@ -854,6 +867,27 @@ enum {
+ static enum mlx5e_traffic_types fs_accel2tt(enum accel_fs_tcp_type i)
+@@ -337,6 +338,7 @@ static int accel_fs_tcp_enable(struct mlx5e_priv *priv)
+ 			return err;
+ 		}
+ 	}
++	refcount_set(&priv->fs.accel_tcp->ref_count, 1);
+ 	return 0;
+ }
  
- #define MLX5_MINI_CQE_ARRAY_SIZE 8
+@@ -360,6 +362,9 @@ void mlx5e_accel_fs_tcp_destroy(struct mlx5e_priv *priv)
+ 	if (!priv->fs.accel_tcp)
+ 		return;
  
-+static inline bool cqe_is_nvmeotcp_resync(struct mlx5_cqe64 *cqe)
-+{
-+	return ((cqe->nvmetcp >> 6) & 0x1);
-+}
++	if (!refcount_dec_and_test(&priv->fs.accel_tcp->ref_count))
++		return;
 +
-+static inline bool cqe_is_nvmeotcp_crcvalid(struct mlx5_cqe64 *cqe)
-+{
-+	return ((cqe->nvmetcp >> 5) & 0x1);
-+}
+ 	accel_fs_tcp_disable(priv);
+ 
+ 	for (i = 0; i < ACCEL_FS_TCP_NUM_TYPES; i++)
+@@ -376,6 +381,11 @@ int mlx5e_accel_fs_tcp_create(struct mlx5e_priv *priv)
+ 	if (!MLX5_CAP_FLOWTABLE_NIC_RX(priv->mdev, ft_field_support.outer_ip_version))
+ 		return -EOPNOTSUPP;
+ 
++	if (priv->fs.accel_tcp) {
++		refcount_inc(&priv->fs.accel_tcp->ref_count);
++		return 0;
++	}
 +
-+static inline bool cqe_is_nvmeotcp_zc(struct mlx5_cqe64 *cqe)
-+{
-+	return ((cqe->nvmetcp >> 4) & 0x1);
-+}
-+
-+/* check if cqe is zc or crc or resync */
-+static inline bool cqe_is_nvmeotcp(struct mlx5_cqe64 *cqe)
-+{
-+	return ((cqe->nvmetcp >> 4) & 0x7);
-+}
-+
- static inline u8 mlx5_get_cqe_format(struct mlx5_cqe64 *cqe)
- {
- 	return (cqe->op_own >> 2) & 0x3;
+ 	priv->fs.accel_tcp = kzalloc(sizeof(*priv->fs.accel_tcp), GFP_KERNEL);
+ 	if (!priv->fs.accel_tcp)
+ 		return -ENOMEM;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.h
+index 589235824543..8aff9298183c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.h
+@@ -6,7 +6,7 @@
+ 
+ #include "en.h"
+ 
+-#ifdef CONFIG_MLX5_EN_TLS
++#if defined(CONFIG_MLX5_EN_TLS) || defined(CONFIG_MLX5_EN_NVMEOTCP)
+ int mlx5e_accel_fs_tcp_create(struct mlx5e_priv *priv);
+ void mlx5e_accel_fs_tcp_destroy(struct mlx5e_priv *priv);
+ struct mlx5_flow_handle *mlx5e_accel_fs_add_sk(struct mlx5e_priv *priv,
 -- 
 2.24.1
 
