@@ -2,166 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0E9D3182E4
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 02:08:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4D1F31831E
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 02:43:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230001AbhBKBIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 20:08:06 -0500
-Received: from mail-dm6nam08on2133.outbound.protection.outlook.com ([40.107.102.133]:44032
-        "EHLO NAM04-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229601AbhBKBIE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 10 Feb 2021 20:08:04 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VHa0NZ5a4hAVkfxwBsCQFxwakwfvqhvBSfDjebOpkDA4vv/j7CLHN2sS74RU88jryTSXZ2cg31kMpI23bLAT7LXNzo56RVjeKpiaMHaLC+Zva14X1jK2p8GXFAiB1802/of6F7ClY1bURJnEVmem+ao8psjSb7qPKrB6jpzeXhDHYYftK3djWicZ/JRMOh5U6pE7PG0UAIywVvvR5UB5w8yzpflDkBhI1xWajIqSLRR+jEH7ATLUqlcEjqyGAk5mLuaL+rOp7n2ooVyJvpnBXy+/+zea37DgdNPIbTBNQ4zDrsNm3bBD46i5CvZUsQ1omxb9sueLxb26irO0kWzpTQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=x41W0CSCdL6MRw8QeNQV7l1qLB18F9bo/205dL6fLfM=;
- b=gJk9xr5zv3x0FE6F281AboCPtdecQu5wvHJakdcNzr3x1wSHgIKQqAvIsPF7+p6nvIw/HXgf5Q1j6CeXFgDLlBjHBELzYy7sni2Q5qcSslgOBOIldQwuUtr88VtBuTooaeLJttUn67dTBBFWmxkhRaLaRFXqPapoRxwr8SD7ItXO/YDt7GwEm/0gn//sNXRiVug+/FevVA3n6am4BBbCIvOBU9P0usL02CF6aZNje8lxeK3V28if5O6umZnu8W2JovO3qlGhu2I2EbneQhAqrOSC3BSbDAfcavLOuAhCMgFkYbcRbRoLrBVERTS8X/YzC8HSsrgsK+7hi4T5ezru/A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=hammerspace.com; dmarc=pass action=none
- header.from=hammerspace.com; dkim=pass header.d=hammerspace.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hammerspace.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=x41W0CSCdL6MRw8QeNQV7l1qLB18F9bo/205dL6fLfM=;
- b=JxwQk9G1tEDtSqGVh5BgvvvJLWeCzmZzTUqx4TNytFdvdw6HsrbBgjs2joIuDWrxh+OLBeeZ8GSDuyQGX4qCPgsJLvgONlwDcnlwlg8KCoA6u6o2YrXsEGK3qOZO8VmT58hu91/UFfEFV5WETt1Jmu8P6GzmGUYvdf2i2s5a4/A=
-Received: from CH2PR13MB3525.namprd13.prod.outlook.com (2603:10b6:610:21::29)
- by CH2PR13MB3654.namprd13.prod.outlook.com (2603:10b6:610:94::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3868.11; Thu, 11 Feb
- 2021 01:07:10 +0000
-Received: from CH2PR13MB3525.namprd13.prod.outlook.com
- ([fe80::f453:2dd2:675:d063]) by CH2PR13MB3525.namprd13.prod.outlook.com
- ([fe80::f453:2dd2:675:d063%3]) with mapi id 15.20.3868.011; Thu, 11 Feb 2021
- 01:07:10 +0000
-From:   Trond Myklebust <trondmy@hammerspace.com>
-To:     "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "chuck.lever@oracle.com" <chuck.lever@oracle.com>,
-        "syzbot+f3a0fa110fd630ab56c8@syzkaller.appspotmail.com" 
-        <syzbot+f3a0fa110fd630ab56c8@syzkaller.appspotmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bfields@fieldses.org" <bfields@fieldses.org>,
-        "anna.schumaker@netapp.com" <anna.schumaker@netapp.com>,
-        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
-        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>
-Subject: Re: UBSAN: shift-out-of-bounds in xprt_do_reserve
-Thread-Topic: UBSAN: shift-out-of-bounds in xprt_do_reserve
-Thread-Index: AQHW/0t2+5dQHLeS4UOD/bE63bVR7KpSIbQAgAAEJoA=
-Date:   Thu, 11 Feb 2021 01:07:10 +0000
-Message-ID: <d3a0733144edccb0842a39d9eb54da6cd1662ea5.camel@hammerspace.com>
-References: <0000000000000f622105baf14335@google.com>
-         <258ca358-d4ea-2bc0-9b0d-1d659eec04f7@infradead.org>
-In-Reply-To: <258ca358-d4ea-2bc0-9b0d-1d659eec04f7@infradead.org>
-Accept-Language: en-US, en-GB
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: infradead.org; dkim=none (message not signed)
- header.d=none;infradead.org; dmarc=none action=none
- header.from=hammerspace.com;
-x-originating-ip: [68.36.133.222]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9179be86-6aed-4896-d7e1-08d8ce295c09
-x-ms-traffictypediagnostic: CH2PR13MB3654:
-x-microsoft-antispam-prvs: <CH2PR13MB3654F9A0BCED37418FEFBBAEB88C9@CH2PR13MB3654.namprd13.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4125;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: LK5pOOqJNiwd7Z3cMe2FA0q2A0/o6EKcJl2PMheuWVL7s0AH3TeFEL1pDs9ol0VwROWOLV/yPOlcbTVjMDDbbnabZlUSiNCil8zyYHYLvOs6aUiMTxfRPMDhZ5gUBMoTUVTJtgX3S+k+whdiJI1Wbjd6GLnqX+ALh0OZ+Ua01VOrtzRRZrm4zCTEk89hFsoLZqvdhebS2T59eoHfoUbsJGCBDDtSvfj+Dh8Vade1xfm65WT4i1NQfQH9JcLicU/kQVtVQh+PB41apmKI++zZRflKvvkkeAX3hF786Af78EMf+kWW99P3qz6ntGZXKL+m59jt+woyyTtLA0frd/t6O6GrEMKjhu7qaECvn5YXE9b73PNmwyNpqwF0FKE7hGQYOwVeZfR2e7dpLnV8/tPf0Uv4wpE5t6oD9+a+U7GVjcwR542L936F6JwM1bu+NouYEnN+y0Y9HphXb0UkBNTcsrr2dB40Y9Z0rYLTqs3k2Nl1LpGCMXWX8lhsbjIFNw6QSv54U0Tlc/MNE9xWQjaisLRX9os6NF/edZrC++FhP2+MfO6n8AnbFnUoEjJWdQ4QLSxfosvF1Fs90AlCKvEua1pvex9Ew/rpcG265rukbByGwhXOsXnUTJRFq1xyhWWcZV18qTyN0L9mSwFMQfOVegvbhiWZaU2O+ZKr+PgTSRs=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR13MB3525.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(366004)(346002)(39840400004)(396003)(376002)(26005)(53546011)(6506007)(966005)(478600001)(2616005)(2906002)(76116006)(66946007)(7416002)(66556008)(8936002)(86362001)(66446008)(64756008)(66476007)(186003)(8676002)(6512007)(316002)(6486002)(71200400001)(110136005)(5660300002)(921005)(36756003)(99710200001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?utf-8?B?cWVBQVVCbnFMZUhKUXlIclRqaDJ2TitYY3NHekQ1Z3ZsNUUxTGwvWWlUNEdh?=
- =?utf-8?B?eUxKVHozT0FlZ2hlMks0Y1hCNytHT3RQUWJHcFh4b2dLSEgrOGJNNUd6NlJn?=
- =?utf-8?B?WWpiMUtoN3pRVGdiQWk1SElnVFFRZzJyaEI0ZVJsUVlNanM0TGxXc0RselZW?=
- =?utf-8?B?eVRtWXUwU0thcnhiendETlp3U0ZscXdPVThOREdyczRXamJGZ1E3SUZLUnpR?=
- =?utf-8?B?RUFsdytBZ3lCdE01YzN1WnE1SDNOQlh6Qm4vYXdCK1ZpMjJxa2xVNVFBVFZn?=
- =?utf-8?B?UjFnWXVJV0l6WmZBV25YQWZOQTdCWFp0YnBMWkZsV1E2NnlOcHBnUldOL0g2?=
- =?utf-8?B?QWsyZDlzbE9KOTJBMXBHMkxkSXJWbFNSMHE4d0VRK2orUHVDci9EaFRGN2xD?=
- =?utf-8?B?aGZiaTBNREptcGRSUDJ5K1JXcXpYY1hsSUlpdUdpMnlsODZBUXg3QlBYV0Zn?=
- =?utf-8?B?Mm1aL1NFTnlpeWQ5bE1sdXZmMWpqNjdnV1lDYWM1RXJ0R25NMVROMjA0d1lX?=
- =?utf-8?B?S2JRcGplWm5GZVRRSHBOSUMyQkFaMDhYcGhEaERvVUZjTnppTmNlczBlTnNW?=
- =?utf-8?B?RDQ0TjJOSUx1RFFBVHBZaU1Pd0RIN0hucGp2MTNMVktWN3FES1RXL0pWdTlG?=
- =?utf-8?B?VTBQcTRTZHJwck90cysvK0ZJNkxSamhXK2NDVjZJbzZ6S05SaFpnd3ZHYXEv?=
- =?utf-8?B?T1I1QzcwMVFSYmxad3RNUzRqdlAxc21ISjQyejgxSEpnaU8vVHE1VTlpRXlE?=
- =?utf-8?B?bURRYkoyZXhGcUtld2p1MWVyaVFZWHZOOE1XZEZ6QkVHellJeFFOK3NpZnY0?=
- =?utf-8?B?Rm1CYUwyMS9uWDhvY2p5R0d6QktGQ1pDNk9RRGhRc3dRTUhOUDZGWURNSDB5?=
- =?utf-8?B?empHNVk3WEpYZHVwNUNQZGZMWkxzbmVKUlptMkZ4b01iNTY3eE94UmltZW1y?=
- =?utf-8?B?T0QwdU5vditCaFpOd0g1cHFWNXUxSlNoc3p4eUdsSFdjOFVGV3dHNkF1dTdo?=
- =?utf-8?B?ZWRoSGdWdEFIQ1djNFgveEpwRVBpNWJLWFVBQnpqU2Fab0pKcWVDMGVrNFhE?=
- =?utf-8?B?Ymh1ZnhhMnI5MW40Y3lwMml4amZpbjBxK0NzRVVHU2lWL2N5amhNbGl6ODdm?=
- =?utf-8?B?WWozay9mZHhMeGFkZTlxUys1Y0FWeWdNMHpqMm1SV292QmZPUVU1RUd6N2gv?=
- =?utf-8?B?QUozSDg3VTN3YVpmVm9CdC8wWmo2dG5WSEROYzMvVjBjUEtTeG0wTE5EV2RF?=
- =?utf-8?B?NHJ1UmdCMC9yZm5xR1VGWi9XcG9HbExRNXY3SHg1TzdidEwvazdqRmxlaTlO?=
- =?utf-8?B?ZjdLWmI4ZEYzWlR3MlNacHZ3OVhUaEgraGFtOFdzWDd1dENWTm9mcDhyM0o0?=
- =?utf-8?B?VmJ4V3Q4bzBlQWRrVmJZWkZjdzUrK25RU0NobDAxK1pHSG5PRTRvVlFVK01R?=
- =?utf-8?B?L0ZFOGVZUFpNcEdRZVkyeEVqVFpMTzNaYVExMWdubldzT1lMcFZQNERCSnhW?=
- =?utf-8?B?eElFZ05KUzlLaThSTTdoM0MxRWhyblR0dDNBMWhRTGhGV280YURPZXpDajRu?=
- =?utf-8?B?UkNFbXUyd3ZPSEQxU0hoZXYzdmpDNXNoZFdySWpGU2x3MWEvTDY2K3M2d1Jx?=
- =?utf-8?B?MkJKUFFYMUpvWUNadUVRdVRUN0NPbWRldzg1dTMrV3dZZVkzdmcxYi9KZUdx?=
- =?utf-8?B?WFhTdFNIMHhlZUJ3L0pJdlFHRkxmMXhqeVkyZGRpMDRqWUlMYXBWSVNCZzNS?=
- =?utf-8?Q?DIUc6CBldHPJtXLhyuTOIUgojkVDmbjOik1jcnt?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <38CB1D0A0B95E949B066C6D769CE3FAB@namprd13.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S229972AbhBKBma (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 20:42:30 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:42734 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229584AbhBKBm2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 20:42:28 -0500
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 11B1cOZ1059576
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 20:41:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=ArLfCy1BhkKXzO7KodNCjof7pUH03Oeafg3by3p3SCc=;
+ b=f6B3VtCDADikkp/JIs0+tnnV3U4I/VBWzRRrwSbwh2ZrWMrfagiCkPY/ysj4CechQsOb
+ 0CFXE2RP/GnHst5CUCA9LidIYkM+odXJt69TWdywmp5alRhskh6l2466Ax5sbrj+QP+v
+ eZhYOlUVg3Qx64u0YWl2XSJpDnUBpRhTbU4Asl6lq58kVANWI7gM4T+nKUOfnnr+s4pP
+ Buza0QVDBITDr5UQhUkeU+T9iyjuSDijZt9N6mTX3NICelIqzhBPfgIgi9hD8sRAtdVV
+ 7ARIfvNwnIOBbe6jIeCIaF/rSZMjYuo4wgxtfuFEsTsTLrPZBaKL2+1m/ZxS0D2roE6/ 6Q== 
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 36mtqy8d8g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 20:41:48 -0500
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 11B1SLNG015039
+        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 01:41:47 GMT
+Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
+        by ppma02dal.us.ibm.com with ESMTP id 36hjraay77-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 01:41:47 +0000
+Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
+        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 11B1fjNg27590966
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 11 Feb 2021 01:41:45 GMT
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8A82D112063;
+        Thu, 11 Feb 2021 01:41:45 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B3F32112061;
+        Thu, 11 Feb 2021 01:41:44 +0000 (GMT)
+Received: from suka-w540.ibmuc.com (unknown [9.85.134.9])
+        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
+        Thu, 11 Feb 2021 01:41:44 +0000 (GMT)
+From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     Dany Madden <drt@linux.ibm.com>, Lijun Pan <ljp@linux.ibm.com>,
+        Rick Lindsley <ricklind@linux.ibm.com>, abdhalee@in.ibm.com,
+        sukadev@linux.ibm.com
+Subject: [PATCH 1/1] ibmvnic: Set to CLOSED state even on error
+Date:   Wed, 10 Feb 2021 17:41:43 -0800
+Message-Id: <20210211014144.881861-1-sukadev@linux.ibm.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-X-OriginatorOrg: hammerspace.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CH2PR13MB3525.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9179be86-6aed-4896-d7e1-08d8ce295c09
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Feb 2021 01:07:10.4795
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 0d4fed5c-3a70-46fe-9430-ece41741f59e
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: KFomlHDH8m4HtxRXb7FxWcjR0uM7OCQMIVLtOYP4QiAdccgYPgZWjYij6FnU+TyoyUwXJyjjwgXqvx5MUuQwPg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR13MB3654
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
+ definitions=2021-02-10_11:2021-02-10,2021-02-10 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 spamscore=0
+ suspectscore=0 mlxlogscore=943 bulkscore=0 priorityscore=1501
+ malwarescore=0 lowpriorityscore=0 mlxscore=0 impostorscore=0 phishscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2102110005
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgUmFuZHksDQoNCk9uIFdlZCwgMjAyMS0wMi0xMCBhdCAxNjo1MiAtMDgwMCwgUmFuZHkgRHVu
-bGFwIHdyb3RlOg0KPiBPbiAyLzkvMjEgNToyNCBQTSwgc3l6Ym90IHdyb3RlOg0KPiA+IEhlbGxv
-LA0KPiA+IA0KPiA+IHN5emJvdCBmb3VuZCB0aGUgZm9sbG93aW5nIGlzc3VlIG9uOg0KPiA+IA0K
-PiA+IEhFQUQgY29tbWl0OsKgwqDCoCBkZDg2ZTdmYSBNZXJnZSB0YWcgJ3BjaS12NS4xMS1maXhl
-cy0yJyBvZg0KPiA+IGdpdDovL2dpdC5rZXJuZWwuLg0KPiA+IGdpdCB0cmVlOsKgwqDCoMKgwqDC
-oCB1cHN0cmVhbQ0KPiA+IGNvbnNvbGUgb3V0cHV0Og0KPiA+IGh0dHBzOi8vc3l6a2FsbGVyLmFw
-cHNwb3QuY29tL3gvbG9nLnR4dD94PTEwNTkzMGM0ZDAwMDAwDQo+ID4ga2VybmVsIGNvbmZpZzrC
-oA0KPiA+IGh0dHBzOi8vc3l6a2FsbGVyLmFwcHNwb3QuY29tL3gvLmNvbmZpZz94PTI2NmE1MzYy
-Yzg5YzgxMjcNCj4gPiBkYXNoYm9hcmQgbGluazoNCj4gPiBodHRwczovL3N5emthbGxlci5hcHBz
-cG90LmNvbS9idWc/ZXh0aWQ9ZjNhMGZhMTEwZmQ2MzBhYjU2YzgNCj4gPiBjb21waWxlcjrCoMKg
-wqDCoMKgwqAgRGViaWFuIGNsYW5nIHZlcnNpb24gMTEuMC4xLTINCj4gPiBzeXogcmVwcm86wqDC
-oMKgwqDCoA0KPiA+IGh0dHBzOi8vc3l6a2FsbGVyLmFwcHNwb3QuY29tL3gvcmVwcm8uc3l6P3g9
-MTdiYTMwMzhkMDAwMDANCj4gPiBDIHJlcHJvZHVjZXI6wqDCoA0KPiA+IGh0dHBzOi8vc3l6a2Fs
-bGVyLmFwcHNwb3QuY29tL3gvcmVwcm8uYz94PTE1Y2YwZDY0ZDAwMDAwDQo+ID4gDQo+ID4gSU1Q
-T1JUQU5UOiBpZiB5b3UgZml4IHRoZSBpc3N1ZSwgcGxlYXNlIGFkZCB0aGUgZm9sbG93aW5nIHRh
-ZyB0bw0KPiA+IHRoZSBjb21taXQ6DQo+ID4gUmVwb3J0ZWQtYnk6IHN5emJvdCtmM2EwZmExMTBm
-ZDYzMGFiNTZjOEBzeXprYWxsZXIuYXBwc3BvdG1haWwuY29tDQo+IA0KPiAjc3l6IGR1cDogVUJT
-QU46IHNoaWZ0LW91dC1vZi1ib3VuZHMgaW4geHBydF9jYWxjX21ham9ydGltZW8NCj4gDQo+ID4g
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PQ0KPiA+ID09PT09PT09PT09PT0NCj4gPiBVQlNBTjogc2hpZnQtb3V0LW9mLWJv
-dW5kcyBpbiBuZXQvc3VucnBjL3hwcnQuYzo2NTg6MTQNCj4gPiBzaGlmdCBleHBvbmVudCA1MzY4
-NzA5NzYgaXMgdG9vIGxhcmdlIGZvciA2NC1iaXQgdHlwZSAndW5zaWduZWQNCj4gPiBsb25nJw0K
-PiA+IENQVTogMSBQSUQ6IDg0MTEgQ29tbTogc3l6LWV4ZWN1dG9yOTAyIE5vdCB0YWludGVkIDUu
-MTEuMC1yYzYtDQo+ID4gc3l6a2FsbGVyICMwDQo+ID4gSGFyZHdhcmUgbmFtZTogR29vZ2xlIEdv
-b2dsZSBDb21wdXRlIEVuZ2luZS9Hb29nbGUgQ29tcHV0ZSBFbmdpbmUsDQo+ID4gQklPUyBHb29n
-bGUgMDEvMDEvMjAxMQ0KPiA+IENhbGwgVHJhY2U6DQo+ID4gwqBfX2R1bXBfc3RhY2sgbGliL2R1
-bXBfc3RhY2suYzo3OSBbaW5saW5lXQ0KPiA+IMKgZHVtcF9zdGFjaysweDEzNy8weDFiZSBsaWIv
-ZHVtcF9zdGFjay5jOjEyMA0KPiA+IMKgdWJzYW5fZXBpbG9ndWUgbGliL3Vic2FuLmM6MTQ4IFtp
-bmxpbmVdDQo+ID4gwqBfX3Vic2FuX2hhbmRsZV9zaGlmdF9vdXRfb2ZfYm91bmRzKzB4NDMyLzB4
-NGQwIGxpYi91YnNhbi5jOjM5NQ0KPiA+IMKgeHBydF9jYWxjX21ham9ydGltZW8gbmV0L3N1bnJw
-Yy94cHJ0LmM6NjU4IFtpbmxpbmVdDQo+ID4gwqB4cHJ0X2luaXRfbWFqb3J0aW1lbyBuZXQvc3Vu
-cnBjL3hwcnQuYzo2ODYgW2lubGluZV0NCj4gDQo+IA0KDQpTbywgZmlyc3RseSwgdGhpcyBpcyBh
-IGNhc2Ugb2YgJ2RvY3RvciBpdCBodXJ0cyB3aGVuIEkgZG8gdGhpcy4uLicgc28NCml0IGlzbid0
-IGEgY3JpdGNhbCBpc3N1ZS4gSXQgaXMgYSBjYXNlIHdoZXJlIGdhcmJhZ2UgbW91bnQgb3B0aW9u
-cw0KcHJvZHVjZXMgZ2FyYmFnZSB0aW1lb3V0IHZhbHVlcy4NCkhvd2V2ZXIsIG1vcmUgaW1wb3J0
-YW50bHksIGl0IGlzIGEgY2FzZSB3aGVyZSB3ZSBjb3VsZCBlYXNpbHkgYmUNCmNoZWNraW5nIHRo
-ZXNlIHZhbHVlcyBvbmNlIGF0IG1vdW50IHRpbWUgaW5zdGVhZCBvZiBhZGRpbmcgcnVudGltZQ0K
-Y2hlY2tzIHRoYXQgY2FuIGVuZCB1cCBiZWluZyBjYWxsZWQgc2V2ZXJhbCB0aW1lcyBwZXIgUlBD
-IGNhbGwuDQoNCkNoZWVycw0KICBUcm9uZA0KLS0gDQpUcm9uZCBNeWtsZWJ1c3QNCkxpbnV4IE5G
-UyBjbGllbnQgbWFpbnRhaW5lciwgSGFtbWVyc3BhY2UNCnRyb25kLm15a2xlYnVzdEBoYW1tZXJz
-cGFjZS5jb20NCg0KDQo=
+If set_link_state() fails for any reason, we still cleanup the adapter
+state and cannot recover from a partial close anyway. So set the adapter
+to CLOSED state. That way if a new soft/hard reset is processed, the
+adapter will remain in the CLOSED state until the next ibmvnic_open().
+
+Fixes: 01d9bd792d16 ("ibmvnic: Reorganize device close")
+Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Reported-by: Abdul Haleem <abdhalee@in.ibm.com>
+---
+ drivers/net/ethernet/ibm/ibmvnic.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index 96c2b0985484..ce6b1cb0b0f9 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -1367,10 +1367,8 @@ static int __ibmvnic_close(struct net_device *netdev)
+ 
+ 	adapter->state = VNIC_CLOSING;
+ 	rc = set_link_state(adapter, IBMVNIC_LOGICAL_LNK_DN);
+-	if (rc)
+-		return rc;
+ 	adapter->state = VNIC_CLOSED;
+-	return 0;
++	return rc;
+ }
+ 
+ static int ibmvnic_close(struct net_device *netdev)
+-- 
+2.26.2
+
