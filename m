@@ -2,166 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2344318BF4
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 14:27:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1636318BFA
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 14:27:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230238AbhBKNXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 08:23:44 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:41816 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231408AbhBKNUk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 08:20:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613049550;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Hmk14exEuAu1KNsA1eN9M3YU73ik9B3Wqe10eKOKhmo=;
-        b=eH7uNJNTrHC/2bUAM5UTu2sM0WL4Zb9uF6dBNwE/fKDKXspPXbZJ1s3HVPybNgRfGzcdP4
-        F9lzOhUTcrFUY81g9gfOyeW4U9JzfMKVm91Mm/tRTI66Z/FzyHStow1pZhUbv6fK+5W9za
-        yH0Yk53JhDLB43xLDH24Bo3zKy66KW0=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-265-Cq2LfBN7MiK0oj-DsN1eRw-1; Thu, 11 Feb 2021 08:19:08 -0500
-X-MC-Unique: Cq2LfBN7MiK0oj-DsN1eRw-1
-Received: by mail-ej1-f72.google.com with SMTP id yh28so4829475ejb.11
-        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 05:19:08 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Hmk14exEuAu1KNsA1eN9M3YU73ik9B3Wqe10eKOKhmo=;
-        b=PEUjwBZPYyXzN8DjYc1dNkwTpbaiBSupB1NmzUm8lYvGaziczdMhOTH/HZEgzZcBOd
-         JBRcvkxZ1Szc6R4UnMaGBaFNLIGXvRCGtHYdBp3gcdOTHf+C2DCevF0onOOZBYbhKA1W
-         cZYdZ8VEGF2GHUlY1/1+Gf2k/IlG2f/+jwq/K2oE0wdB6ex0Cqpfla1rTZbcJ3gUnRj5
-         hKEEIA+ymFZFEnkTuQSeYJbrarMc1FC/GJ872spQPVrzK1svsiDJFRrWZBL7H0AYsaKo
-         vgPGIoD7YwAP4dkLjzJORbgDqpD8gyls4akQLIJAx1eNLDJkp4bls5zKXX2h7Azsg2/V
-         Ka6g==
-X-Gm-Message-State: AOAM532hFLbf5GLckvwfPLqe2syWMqy9fHJ5iVxDxeHB4nmMVLg++alz
-        c1B53+3eX82VYFcOniDM/NA/j6y+af/YhbkP09nqAgoNmYkxtnuaKLnVKAvO5GIZIEhkKBeTcxw
-        JVUdq3VwiIIcif0j3
-X-Received: by 2002:a17:907:210d:: with SMTP id qn13mr8293110ejb.377.1613049547482;
-        Thu, 11 Feb 2021 05:19:07 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyxJgriiJCTazbhHBmTN5Qv/1jX0/Iyqy0dukmtptWSTg97rk7GMZLbA0+lOCu+wbSRGVi5hg==
-X-Received: by 2002:a17:907:210d:: with SMTP id qn13mr8293081ejb.377.1613049547302;
-        Thu, 11 Feb 2021 05:19:07 -0800 (PST)
-Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
-        by smtp.gmail.com with ESMTPSA id g22sm4356281ejw.31.2021.02.11.05.19.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Feb 2021 05:19:06 -0800 (PST)
-Date:   Thu, 11 Feb 2021 14:19:04 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Jeff Vander Stoep <jeffv@google.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stsp2@yandex.ru, oxffffaa@gmail.com
-Subject: Re: [RFC PATCH v4 08/17] af_vsock: update comments for stream sockets
-Message-ID: <20210211131904.ejkq3gltlqcffduq@steredhat>
-References: <20210207151259.803917-1-arseny.krasnov@kaspersky.com>
- <20210207151632.805240-1-arseny.krasnov@kaspersky.com>
+        id S231755AbhBKN0A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 08:26:00 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:31014 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231263AbhBKNXl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 08:23:41 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11BDL1mv024341;
+        Thu, 11 Feb 2021 05:22:39 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pfpt0220;
+ bh=2HyTsUGCmFfltqOPVq8tEFJxc+3vZDtCgoq9k+A1q5Y=;
+ b=ATsnasUSO1QFqwVU1hPQZvmXGD0dpTJwm0lKoh9+XGXNjc9ZtBqRrJLKDEkHp5e/YhN8
+ CEV32UpqizFkyHGlTU6av1DckDBJ21w3a5dOyNiql2URxv5bTYNjDIqqhr9ZSS2KVuzj
+ ZtF1fAXUGxTFNdLI20l6sRjpmWW0osQBE1PwfrYQ5DbjgxMKTiouHpgfE0TZMXJCIG9M
+ 0UHrcd7njsEI+Ik7wmZQYmYIU103WJyZGKPm1f0EAqiAacAP7OJ15NrF4Cx/miYztsxm
+ YjqXlKsYJlFP18Rnf4YgbsjCn6pZ5jjiLT6tNovZ7HDmO+oRf/mGBEIiKK+VlbRXGL5a jw== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0a-0016f401.pphosted.com with ESMTP id 36hsbrq3aq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 11 Feb 2021 05:22:39 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 11 Feb
+ 2021 05:22:37 -0800
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.168)
+ by DC5-EXCH02.marvell.com (10.69.176.39) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2 via Frontend Transport; Thu, 11 Feb 2021 05:22:37 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=glc6mZS7FAuICk2B4HuvwQDGG/g6WA916FAxsHuNJrDIuw8N45O3dmIOluBZEGWuO+jDAf7fBaNlAqYBzL4YSuNJBSb7cqk38F/YUxQSVCbrVXqlhjdb7khZwFN7UAMDWTug+J7/vFubUauhYV2bhsRYpJWObolUmNudLfwDLRNHxSlbkix7fv62yJLGpAH0wJZoLG5GQ9ZtBNjG7x1+bIAwPasOBpspdqDqfEsrud3eutopV/O+827m8OHH+nTMTetNJduCZ/p7znZrjSrIOfIyQE09nggdTYtQCE7nHwKnY8O1rlyRynUi15L8+y+Em44CiHzehaIMUM65GuU3/g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2HyTsUGCmFfltqOPVq8tEFJxc+3vZDtCgoq9k+A1q5Y=;
+ b=mJ9W8AiHp76iMA6er4tO+lM6r0OO7tvrGPk3HZX+1ibVM+bE7ncV9H5t83rA8MAxng948NX0q3K5E/4qMkNGodkYeEaDVlmZkGWySC8GLJu204K8t4JuCqu3/R/WF6s2jmog4S/TaXZGfHOne5C9N8Jpp1XHp10ZuwYJ+FqQ0xVwaLfM+UXMNEKK42Q/qv5uihvboAyizWZVxsz76kASCjx4GxLiGg4vR/XYyNfMpgI8eCHd6iw03a5c5SZTDU5jwm4gOWNPWJtdVvzrl8DbH3pPy1iB+miXIXfcD9NJEwLMFDrAsDQlCx5aFgsqfVwH1UMxcnk53RmBUwjgVc4z6g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2HyTsUGCmFfltqOPVq8tEFJxc+3vZDtCgoq9k+A1q5Y=;
+ b=n5zaaMcdmBbhrlRpiNADyrKyib4NbPSCHiHHAbUvaMpkjqmfZ0unu19LJXZR1hQCAT/O5QvjMJ6bUortgKYwQUX5IeQYlmScb/dEAxQ+h2nWzLSP1odI2MzHMpMrOtctbAo5Tw1/Bjihq+O/FENjevtJPe9OHU3Xq7PBLjJhg4E=
+Received: from CO6PR18MB3873.namprd18.prod.outlook.com (2603:10b6:5:350::23)
+ by MW2PR18MB2188.namprd18.prod.outlook.com (2603:10b6:907:d::31) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.25; Thu, 11 Feb
+ 2021 13:22:35 +0000
+Received: from CO6PR18MB3873.namprd18.prod.outlook.com
+ ([fe80::c041:1c61:e57:349a]) by CO6PR18MB3873.namprd18.prod.outlook.com
+ ([fe80::c041:1c61:e57:349a%3]) with mapi id 15.20.3846.025; Thu, 11 Feb 2021
+ 13:22:35 +0000
+From:   Stefan Chulski <stefanc@marvell.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Nadav Haklai <nadavh@marvell.com>,
+        Yan Markman <ymarkman@marvell.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "mw@semihalf.com" <mw@semihalf.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "atenart@kernel.org" <atenart@kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "sebastian.hesselbarth@gmail.com" <sebastian.hesselbarth@gmail.com>,
+        "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: RE: [EXT] Re: [PATCH v13 net-next 08/15] net: mvpp2: add FCA RXQ non
+ occupied descriptor threshold
+Thread-Topic: [EXT] Re: [PATCH v13 net-next 08/15] net: mvpp2: add FCA RXQ non
+ occupied descriptor threshold
+Thread-Index: AQHXAGQGVCHIIa4Rvk6qmqO01DA+oapS6BOAgAAGwfA=
+Date:   Thu, 11 Feb 2021 13:22:35 +0000
+Message-ID: <CO6PR18MB387356072132F306EBB1C9C2B08C9@CO6PR18MB3873.namprd18.prod.outlook.com>
+References: <1613040542-16500-1-git-send-email-stefanc@marvell.com>
+ <1613040542-16500-9-git-send-email-stefanc@marvell.com>
+ <20210211125009.GF1463@shell.armlinux.org.uk>
+In-Reply-To: <20210211125009.GF1463@shell.armlinux.org.uk>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: armlinux.org.uk; dkim=none (message not signed)
+ header.d=none;armlinux.org.uk; dmarc=none action=none
+ header.from=marvell.com;
+x-originating-ip: [80.230.25.16]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: b67e9eaf-9371-4743-dda7-08d8ce901857
+x-ms-traffictypediagnostic: MW2PR18MB2188:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MW2PR18MB218897E21460A11F1482247BB08C9@MW2PR18MB2188.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: hV45z+H7t+Lsw+gDskAH1iymAj4a/zGYmBF94f8SH9tlD3tZex7pSafwdyAfzurEEog7Qh6kK6EFVentNQUtTqaDsWoqjHf4PBbsCbYJLSeNG65VkdcRCAhwMW6OQvgbZC5AXGVINQM46g5kmh+rBW4wl/dRqhQFbfhO/aG+4Sitia/CCrGpxUICF9yxRRqobUBJl6yJEG03T1Wv93oi44iPiCWpyglbWK69ecYuDFwRHGef+vY+axLAepV6RNKd2aWCyjc5Qk2XBBGpzfMxLK62QFxK2WpMh1BpEd/jYspZjVHFKEW30y3sZczyFww3jFDBctzDILn8CiE7fHf6lvFk/KY4XMNQkgdZyZan9cg4LhcR6OstsEmLcqGaSBims2oB9E9msKQyrrYfaWTgWRn1dULtCOrHSRguxcH6KZfccQw0o0IYs1Bw4QCt/FyrPoskKDpaYwBpfFzARpxYac1Im5443myEDuclGZkzp4+JH4g93lKSQFnbG77CtQOErm+6Pi89FBc+/BfgSMF3jA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR18MB3873.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(39860400002)(376002)(136003)(346002)(366004)(86362001)(478600001)(26005)(5660300002)(7696005)(76116006)(186003)(9686003)(4744005)(8936002)(66946007)(6916009)(55016002)(316002)(4326008)(52536014)(71200400001)(8676002)(2906002)(6506007)(7416002)(64756008)(66476007)(66556008)(54906003)(33656002)(66446008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?NN6b0OdIDr/R6XHXGK12svWgm4FUsiTBGNBwBuZAoQc6NoTxISkEn8N8abwL?=
+ =?us-ascii?Q?m2VaaOQRZHlUD3bxQxFbEw+HtdlS/b5G5Thl4yDef4RS2sjBFDZr9uc7SMAl?=
+ =?us-ascii?Q?zBjQaleTXVHi62kvmYELg+iyYDVpKXNBqqS0306jXZt6nZ+JvaaotniCWlsW?=
+ =?us-ascii?Q?JTH4ImQiV915ThPXbTJjGP2vufAAcwRnQcQxaCMbs22PhNh6aJylIjeEb4m9?=
+ =?us-ascii?Q?dg4W8aeVhdDlHEvahl0JXKCrf/181jWrHjT/AnpvsyesmHSBhgtsgkT/Kwqt?=
+ =?us-ascii?Q?GJUl8k2E0RY82WgKavStFax/rbjOs1H8r/B94zYZ43e22L3VjKoS086lwfSD?=
+ =?us-ascii?Q?ZegS9FKhWvLwePQqWKvSJ71Mcr5aMAO62XFP+s5iWtYjviON4jr0Pwd3gnGK?=
+ =?us-ascii?Q?EIlYJPNE8JHntLq/wwkGXPt7bWOgvHNvRDK3lfhmr+kg/QNpEXta1iq3ODDA?=
+ =?us-ascii?Q?AGjy0qJuXp5nIZ91FfESgP/JHm2aaE+rRIDOgqq49TNhBHKOT2GjJe4IVQNO?=
+ =?us-ascii?Q?JuriHsRCfC8AfP2L2h2OgzG3jvxYH0ByoCe846XVOIvpQUPt9H3CImFLtrSw?=
+ =?us-ascii?Q?juSBXgWM3yh+kjkx72KH0fJzxX4oqljWbJGufPhFKMKPrt5AT27rumX6fJOM?=
+ =?us-ascii?Q?GfK8xBJInh6N/xMRKv77PeXPOFhu3VO37B+gP6O1nMbVn3QR5aVTx4S5sWp7?=
+ =?us-ascii?Q?101asDLfkyc+nO6vF/YztvS+6XA5bDwLbdkr8rqZN6PCd2TyWR0CyK+5lbXn?=
+ =?us-ascii?Q?VVdZ8Jpua6zsqSg7AaIyX48jnV/kRE2Kh2pUIaCPsU/tlsCTQnIjci8Yh+qy?=
+ =?us-ascii?Q?B/Gyz6aqk0q1sG28b/ASpy0djOMYsOPsZF9gotq4yRjlGwPCp/I5S4zz1yCF?=
+ =?us-ascii?Q?TsrAWNCC/K0UxPXEZj2NGgH45ePtS623bTLFq5JNl+IeQ6NGLgtUXA+gHKnv?=
+ =?us-ascii?Q?4HQg3MR2kJ4KSQnMdI/f7i2rRcQ45MFpkHbnBjso5SuMgiAwakcRkfT6fy7v?=
+ =?us-ascii?Q?HAbHKHpN7CTzZNbjN5JMjuUGBfcv0/G6vhZnKiL6Tqj05vAmeS6pzuoaGDzs?=
+ =?us-ascii?Q?rvqlmR3QBrIMaS93HoKMTQ8nHcJoAt23fvJ/em0NcGoF2e3FsroGAuQ3j5BX?=
+ =?us-ascii?Q?tz0/bvjdh5zCrEMt1QHtiIoTC/IVDoFYGCRWKXAw7JLYifNR37VT2Ej90BRK?=
+ =?us-ascii?Q?Mnsiealx+QCDrVpTGmkOKQIptRuVEA834A3LcRCxTCmF6ELuZ32Lvz0G5nVM?=
+ =?us-ascii?Q?RcOancrX9/jCq0dFQcmppPPfhlDNTUpbiM+pyBaw/6JCo1qgzlVsc4WzPHLi?=
+ =?us-ascii?Q?C9o=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20210207151632.805240-1-arseny.krasnov@kaspersky.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR18MB3873.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b67e9eaf-9371-4743-dda7-08d8ce901857
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Feb 2021 13:22:35.0296
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: tU4huem5sVdG4qLgBx0Z/UxGXeU9Oe7TRVKYVbxbAU1U1Nj/Qhi5n2yZJXshlJFQY94GTZdQcvUD2P1mS3nDHQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR18MB2188
+X-OriginatorOrg: marvell.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
+ definitions=2021-02-11_06:2021-02-10,2021-02-11 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 07, 2021 at 06:16:29PM +0300, Arseny Krasnov wrote:
->This replaces 'stream' to 'connect oriented' in comments as SEQPACKET is
->also connect oriented.
+> Ditto.
+>=20
+> I don't think these need to be fixed in the net tree, but it would still =
+be nice
+> to fix the problem. Please do so, as an initial patch in your series - so=
+ we can
+> then backport if it turns out to eventually be necessary.
+>=20
+> Thanks.
 
-I'm not a native speaker but maybe is better 'connection oriented' or 
-looking at socket(2) man page 'connection-based' is also fine.
+My series already has 15 patches and patchwork not happy about series with =
+over 15 patches.
+Maybe I can send this as separate patch to net-next(or net) first and base =
+this series on this net-next tree with this patch?
 
-Thanks,
-Stefano
-
->
->Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
->---
-> net/vmw_vsock/af_vsock.c | 31 +++++++++++++++++--------------
-> 1 file changed, 17 insertions(+), 14 deletions(-)
->
->diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
->index c77998a14018..6e5e192cb703 100644
->--- a/net/vmw_vsock/af_vsock.c
->+++ b/net/vmw_vsock/af_vsock.c
->@@ -415,8 +415,8 @@ static void vsock_deassign_transport(struct vsock_sock *vsk)
->
-> /* Assign a transport to a socket and call the .init transport callback.
->  *
->- * Note: for stream socket this must be called when vsk->remote_addr is set
->- * (e.g. during the connect() or when a connection request on a listener
->+ * Note: for connect oriented socket this must be called when vsk->remote_addr
->+ * is set (e.g. during the connect() or when a connection request on a listener
->  * socket is received).
->  * The vsk->remote_addr is used to decide which transport to use:
->  *  - remote CID == VMADDR_CID_LOCAL or g2h->local_cid or VMADDR_CID_HOST if
->@@ -479,10 +479,10 @@ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
-> 			return 0;
->
-> 		/* transport->release() must be called with sock lock acquired.
->-		 * This path can only be taken during vsock_stream_connect(),
->-		 * where we have already held the sock lock.
->-		 * In the other cases, this function is called on a new socket
->-		 * which is not assigned to any transport.
->+		 * This path can only be taken during vsock_connect(), where we
->+		 * have already held the sock lock. In the other cases, this
->+		 * function is called on a new socket which is not assigned to
->+		 * any transport.
-> 		 */
-> 		vsk->transport->release(vsk);
-> 		vsock_deassign_transport(vsk);
->@@ -659,9 +659,10 @@ static int __vsock_bind_connectible(struct vsock_sock *vsk,
->
-> 	vsock_addr_init(&vsk->local_addr, new_addr.svm_cid, new_addr.svm_port);
->
->-	/* Remove stream sockets from the unbound list and add them to the hash
->-	 * table for easy lookup by its address.  The unbound list is simply an
->-	 * extra entry at the end of the hash table, a trick used by AF_UNIX.
->+	/* Remove connect oriented sockets from the unbound list and add them
->+	 * to the hash table for easy lookup by its address.  The unbound list
->+	 * is simply an extra entry at the end of the hash table, a trick used
->+	 * by AF_UNIX.
-> 	 */
-> 	__vsock_remove_bound(vsk);
-> 	__vsock_insert_bound(vsock_bound_sockets(&vsk->local_addr), vsk);
->@@ -952,10 +953,10 @@ static int vsock_shutdown(struct socket *sock, int mode)
-> 	if ((mode & ~SHUTDOWN_MASK) || !mode)
-> 		return -EINVAL;
->
->-	/* If this is a STREAM socket and it is not connected then bail out
->-	 * immediately.  If it is a DGRAM socket then we must first kick the
->-	 * socket so that it wakes up from any sleeping calls, for example
->-	 * recv(), and then afterwards return the error.
->+	/* If this is a connect oriented socket and it is not connected then
->+	 * bail out immediately.  If it is a DGRAM socket then we must first
->+	 * kick the socket so that it wakes up from any sleeping calls, for
->+	 * example recv(), and then afterwards return the error.
-> 	 */
->
-> 	sk = sock->sk;
->@@ -1786,7 +1787,9 @@ static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
->
-> 	transport = vsk->transport;
->
->-	/* Callers should not provide a destination with stream sockets. */
->+	/* Callers should not provide a destination with connect oriented
->+	 * sockets.
->+	 */
-> 	if (msg->msg_namelen) {
-> 		err = sk->sk_state == TCP_ESTABLISHED ? -EISCONN : -EOPNOTSUPP;
-> 		goto out;
->-- 
->2.25.1
->
-
+Regards,
+Stefan.
