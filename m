@@ -2,80 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87EC331880E
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 11:24:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B86E318822
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 11:28:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230349AbhBKKY3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 05:24:29 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:10430 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230138AbhBKKVy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 05:21:54 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B602505140000>; Thu, 11 Feb 2021 02:21:08 -0800
-Received: from [10.26.49.8] (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 11 Feb
- 2021 10:21:05 +0000
-Subject: Re: phy_attach_direct()'s use of device_bind_driver()
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Saravana Kannan <saravanak@google.com>
-CC:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Android Kernel Team <kernel-team@android.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Thierry Reding" <treding@nvidia.com>
-References: <CAGETcx9YpCUMmHjyydMtOJP9SKBbVsHNB-9SspD9u=txJ12Gug@mail.gmail.com>
- <YCRkidArVGlesPfy@lunn.ch>
-From:   Jon Hunter <jonathanh@nvidia.com>
-Message-ID: <5176f496-facb-d7b0-9f4e-a9e4b8974178@nvidia.com>
-Date:   Thu, 11 Feb 2021 10:21:03 +0000
+        id S230051AbhBKK2O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 05:28:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44316 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230191AbhBKK0B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 05:26:01 -0500
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 564A6C0613D6
+        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 02:25:21 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id m1so5189845wml.2
+        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 02:25:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=bOALI3AfEhN0OdnOwb9mqvaoG4hH1rxWibCocU9mbUo=;
+        b=bLHJPK44nV6T79NQt72EBQkPXFXXBXBQ5dW8yPcyPca10peOzQwktl+a3cGT/p8wEv
+         rVYjC4Yd41V31QonCMdPGFQGZf6UMYaGG9O0pbJJrzALAxd+PEV/ZkykeXo/KaeC4oYn
+         mwGDDVyq841S52uCnbs/pGM4qrnj9rMfOhUtLSKopNZLntvHDVzmHSfZVR6y31DDHOkc
+         Dd+gF5toznfKWrOpVLYYKC7UhgAm8y+O5tuDbM6S5AphJHGtpzhlJCB8EYtklhmLSMi7
+         9eVYrap13RHJZoi16NkhkvBA6b5V6mrm8Gm0ZoI1Om3tN9vpu6M8VLzX5TJziQt6c4cS
+         zHoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :organization:message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=bOALI3AfEhN0OdnOwb9mqvaoG4hH1rxWibCocU9mbUo=;
+        b=gn2GmWNh8RD9urNnvawA5Jddtoqfd3xkKJnsyhfpO/RYGG7tk+itJNtbgqXYj/NaHs
+         5rPsdBqv8/NVOFwSlMgFOs46yi8NCGdx/UiDbvQJ4yJphgpHaXd1yhbIvXW3ED8RJQIa
+         Q2It1mVP/SVeHiU6guGKwGdVcuH8byUCaNFnXr5QB6AVV41ZjhOE8HUq62qIxSs+QgIC
+         piev+RYcO8APKdqL+WdYuSDgnMhJS+x6kAcipEfjv9ma5zQU5ackNqdwDdJtmiJfYAml
+         S+mQ3e+z9IiN469eM0xs1ya09S8RjRSg3atfhzY71I4//kgcM7Pde/x695E8dtPHwsKB
+         taOQ==
+X-Gm-Message-State: AOAM533XGgMbhU8LFUYJaYALEfU2ifBmhY8cmQOxVmzvCobZ5WGgp5TW
+        96dSgLjaUPMNC5zxb9gm2r7X1A==
+X-Google-Smtp-Source: ABdhPJy76vVe/k0BOSe3/IU7XWa6ypcZ5ufkwCji+VreSgsDeXcc7UrCjkoULoIlY+GOsbLjDqCoJw==
+X-Received: by 2002:a1c:e905:: with SMTP id q5mr4388977wmc.84.1613039120051;
+        Thu, 11 Feb 2021 02:25:20 -0800 (PST)
+Received: from ?IPv6:2a01:e0a:410:bb00:64f8:1d8e:bcd3:9707? ([2a01:e0a:410:bb00:64f8:1d8e:bcd3:9707])
+        by smtp.gmail.com with ESMTPSA id o13sm9649050wmh.2.2021.02.11.02.25.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 11 Feb 2021 02:25:19 -0800 (PST)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH net-next v2 0/3] bonding: 3ad: support for 200G/400G ports
+ and more verbose warning
+To:     Nikolay Aleksandrov <razor@blackwall.org>, netdev@vger.kernel.org
+Cc:     roopa@nvidia.com, andy@greyhouse.net, j.vosburgh@gmail.com,
+        vfalico@gmail.com, kuba@kernel.org, davem@davemloft.net,
+        alexander.duyck@gmail.com, idosch@nvidia.com,
+        Nikolay Aleksandrov <nikolay@nvidia.com>
+References: <20210210204333.729603-1-razor@blackwall.org>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <c86ba0ea-23b5-2aaf-6f1a-c25b2b2488ac@6wind.com>
+Date:   Thu, 11 Feb 2021 11:25:18 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <YCRkidArVGlesPfy@lunn.ch>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20210210204333.729603-1-razor@blackwall.org>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1613038868; bh=SljrkEVHDmi6xA8MKmgtTpSTzDd2Vz3b1ust/JTNqig=;
-        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
-         MIME-Version:In-Reply-To:Content-Type:Content-Language:
-         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
-        b=MMLGArFdzoF7FHQjCanG/GBKSJ8WlQ7YLkM32dEFhchpZoW9/o101ST5rm75hv+L9
-         kpnX0wl0z1rcR24xBTLWbP1IPfRFZ3NPSn5uWW3SU4q6T8stbnSXoSFS3U7sBKkgwp
-         3XER6VJFs/QntXgvrayXvvhvWfjnxMObN3mzLj6Z973RkR2QfFkBdAGmDRtYLYZqRy
-         43zKexpg8HdHEz7aqtaltdd8KVmkg/1yPetg/56/sRGDSVKe3UnlagVLVYRfBAY0gs
-         d2hVqjzoP/Cj7H2soWLdM3Gk3Wd1XocsYQd/llYk+hn8d6Igk5NkU4tXV9QHsqDI9i
-         8Q8OxTYNZ+giw==
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 10/02/2021 22:56, Andrew Lunn wrote:
-> On Wed, Feb 10, 2021 at 02:13:48PM -0800, Saravana Kannan wrote:
->> Hi,
->>
->> This email was triggered by this other email[1].
+Le 10/02/2021 à 21:43, Nikolay Aleksandrov a écrit :
+> From: Nikolay Aleksandrov <nikolay@nvidia.com>
 > 
-> And it appears the Tegra194 Jetson Xavier uses the Marvell 88E1512
-> PHY. So ensure the Marvell driver is available, and it should get
-> probed in the usual way, the fallback driver will not be needed.
-
-
-Yes that is correct. Enabling the Marvell PHY does fix this indeed and
-so I can enable that as part of our testsuite. We were seeing the same
-warning on Tegra186 Jetson TX2 and enabling the BRCM PHY resolves that
-as well. I will ensure that these are enabled going forward.
-
-Cheers
-Jon
-
--- 
-nvpublic
+> Hi,
+> We'd like to have proper 200G and 400G support with 3ad bond mode, so we
+> need to add new definitions for them in order to have separate oper keys,
+> aggregated bandwidth and proper operation (patches 01 and 02). In
+> patch 03 Ido changes the code to use pr_err_once instead of
+> pr_warn_once which would help future detection of unsupported speeds.
+> 
+> v2: patch 03: use pr_err_once instead of WARN_ONCE
+> 
+> Thanks,
+>  Nik
+> 
+> Ido Schimmel (1):
+>   bonding: 3ad: Print an error for unknown speeds
+> 
+> Nikolay Aleksandrov (2):
+>   bonding: 3ad: add support for 200G speed
+>   bonding: 3ad: add support for 400G speed
+> 
+>  drivers/net/bonding/bond_3ad.c | 26 ++++++++++++++++++++++----
+>  1 file changed, 22 insertions(+), 4 deletions(-)
+> 
+Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
