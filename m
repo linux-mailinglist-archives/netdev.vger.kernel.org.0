@@ -2,159 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6CAF318284
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 01:14:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7DA0318282
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 01:14:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233926AbhBKAOG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 19:14:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54756 "EHLO
+        id S233639AbhBKAN5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 19:13:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233743AbhBKAN6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 19:13:58 -0500
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B292C06174A
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 16:13:18 -0800 (PST)
-Received: by mail-yb1-xb33.google.com with SMTP id b187so3867582ybg.9
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 16:13:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=chlkKVNTVPk0zWoGvuSGI8o+POtpyt8MtzzSG0MNV6Y=;
-        b=K/FCFAYh0Qv4g9qx0haGFM/glLWO3k1AoqYnivlhCLV9WIQ7xvA/a95+c3e3rMAgQQ
-         q6lDeyq/Y+3r8opcet1IP1jXZCX+JSkiWwXUYPMiTBeZdjWtG+r3oI2x5Eb3lzIswGMB
-         P3Ds678KT+rAr33EJZPiqJw1rOOGIA/tnfVN0A4nAlsHaiDTnHtqY2GNjbgfBYkQFVZE
-         2TebyjJdMLPkvQWLf4dOErfc1bL3lprkkDMrIhkLAR9qr2rx5H+BH64CJaGwXvd2GAtf
-         NGZc/VYG4Sw2eLkAb+heT5+QOSir0AT4ZwIrTdCOrSji+upRHiPCsu5yO6A7QFYCIkhh
-         UDQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=chlkKVNTVPk0zWoGvuSGI8o+POtpyt8MtzzSG0MNV6Y=;
-        b=U2BDtNwhrokOp/OZ9htA3ibqanO+2uBwaP+PVQP5uDC5mORoBg7gD4bY7fvu31PUhA
-         h02Wc5VG6Dqc2C6L5n2P5/vVuflt2wm1jIwgFjz17Zs6tcnVMuaBewCF8HRt5f4yhMqN
-         n9LvQec84NtevOwp6PomM9rOrr0fxvvbfKzVNa4ynQJLM5KdmrBNn494COzyscLtYskH
-         g+/0B3F2GXTfQBa0gawopEHFbGfbDbcZ85TJfLC15/9zSlEqcC4KCQkWGX7QCN6gBcjD
-         R1ag67Ad+JQDf3YSWQum7OAOklBjWDQc8w6ATF9L9xpdMs3gO/iZHHJw7fJbYt3zACJ5
-         pzCQ==
-X-Gm-Message-State: AOAM531MqaVmang/IJBWmIHIH6bLBX8Oh1FCRt7maU2ZU/4sYXFjxdwU
-        nie98g4vMlaos5iNBflv3+2IqNoQgZRh8p5040WWUw==
-X-Google-Smtp-Source: ABdhPJzdZNmEzEhSUZL1ZHMO7BvbclVRlL2jffCOQHICa7aGcxKRSnj1W3HmOslPWgZw0DOgy7bISju6p+ibJ0/2PbM=
-X-Received: by 2002:a25:d016:: with SMTP id h22mr7312725ybg.278.1613002397125;
- Wed, 10 Feb 2021 16:13:17 -0800 (PST)
+        with ESMTP id S231897AbhBKANz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 19:13:55 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD7F0C061574;
+        Wed, 10 Feb 2021 16:13:14 -0800 (PST)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id C6E7522FB3;
+        Thu, 11 Feb 2021 01:13:09 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1613002390;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DLT8VsCntAhpKyDFPuMSD2aNsIzvlJkJkWBECi0YBko=;
+        b=oo+EtC09SjAhLB9bHIoG2mfRDLNeN95/ugGY0QMB6PAqjRNQx4gzN2ZR+ho48aw9o0t1wK
+        IIgCxVVGlQOblLjdm8wjeit0EY6zpT3Ey30uQhneEvhfLQ1dtB66uiXSMgIJmhSDijGmRE
+        ic8QWT2dbqkfTU+z552yV3+qmWqGoMg=
 MIME-Version: 1.0
-References: <CAF=yD-+aPBF2RaCR8L5orTM37bf7Z4Z8Qko2D2LZjOz0khHTUg@mail.gmail.com>
- <3a3e005d-f9b2-c16a-5ada-6e04242c618e@redhat.com> <CAF=yD-+NVKiwS6P2=cS=gk2nLcsWP1anMyy4ghdPiNrhOmLRDw@mail.gmail.com>
- <9b0b8f2a-8476-697e-9002-e9947e3eab63@redhat.com> <CA+FuTScVOuoHKtrdrRFswjA3Zq1-7sgMVhnP2iMB5sYFFS8NFg@mail.gmail.com>
- <50ae0b71-df87-f26c-8b4d-8035f9f6a58d@redhat.com> <CAF=yD-J5-60D=JDwvpecjaO6J03SZHoHJyCsR3B1HbP1-jbqng@mail.gmail.com>
- <00de1b0f-f2aa-de54-9c7e-472643400417@redhat.com> <CAF=yD-K9xTBStGR5BEiS6WZd=znqM_ENcj9_nb=rrpcMORqE8g@mail.gmail.com>
- <CAEA6p_Bi1OMTas0W4VuxAMz8Frf+vBNc8c7xCDUxb_uwUy8Zgw@mail.gmail.com> <20210210040802-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20210210040802-mutt-send-email-mst@kernel.org>
-From:   Wei Wang <weiwan@google.com>
-Date:   Wed, 10 Feb 2021 16:13:06 -0800
-Message-ID: <CAEA6p_A+wYSdz+NwVEcJk-9pGs7X0tyZyAL_QvEB4E1+vYeiyw@mail.gmail.com>
-Subject: Re: [PATCH net] virtio-net: suppress bad irq warning for tx napi
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Jason Wang <jasowang@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        virtualization@lists.linux-foundation.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 11 Feb 2021 01:13:09 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next v3 9/9] net: phy: icplus: add MDI/MDIX support
+ for IP101A/G
+In-Reply-To: <20210210210809.30125-10-michael@walle.cc>
+References: <20210210210809.30125-1-michael@walle.cc>
+ <20210210210809.30125-10-michael@walle.cc>
+User-Agent: Roundcube Webmail/1.4.10
+Message-ID: <79770e24d2442ad5f2169ca5abc26fae@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 10, 2021 at 1:14 AM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Tue, Feb 09, 2021 at 10:00:22AM -0800, Wei Wang wrote:
-> > On Tue, Feb 9, 2021 at 6:58 AM Willem de Bruijn
-> > <willemdebruijn.kernel@gmail.com> wrote:
-> > >
-> > > > >>> I have no preference. Just curious, especially if it complicates the patch.
-> > > > >>>
-> > > > >> My understanding is that. It's probably ok for net. But we probably need
-> > > > >> to document the assumptions to make sure it was not abused in other drivers.
-> > > > >>
-> > > > >> Introduce new parameters for find_vqs() can help to eliminate the subtle
-> > > > >> stuffs but I agree it looks like a overkill.
-> > > > >>
-> > > > >> (Btw, I forget the numbers but wonder how much difference if we simple
-> > > > >> remove the free_old_xmits() from the rx NAPI path?)
-> > > > > The committed patchset did not record those numbers, but I found them
-> > > > > in an earlier iteration:
-> > > > >
-> > > > >    [PATCH net-next 0/3] virtio-net tx napi
-> > > > >    https://lists.openwall.net/netdev/2017/04/02/55
-> > > > >
-> > > > > It did seem to significantly reduce compute cycles ("Gcyc") at the
-> > > > > time. For instance:
-> > > > >
-> > > > >      TCP_RR Latency (us):
-> > > > >      1x:
-> > > > >        p50              24       24       21
-> > > > >        p99              27       27       27
-> > > > >        Gcycles         299      432      308
-> > > > >
-> > > > > I'm concerned that removing it now may cause a regression report in a
-> > > > > few months. That is higher risk than the spurious interrupt warning
-> > > > > that was only reported after years of use.
-> > > >
-> > > >
-> > > > Right.
-> > > >
-> > > > So if Michael is fine with this approach, I'm ok with it. But we
-> > > > probably need to a TODO to invent the interrupt handlers that can be
-> > > > used for more than one virtqueues. When MSI-X is enabled, the interrupt
-> > > > handler (vring_interrup()) assumes the interrupt is used by a single
-> > > > virtqueue.
-> > >
-> > > Thanks.
-> > >
-> > > The approach to schedule tx-napi from virtnet_poll_cleantx instead of
-> > > cleaning directly in this rx-napi function was not effective at
-> > > suppressing the warning, I understand.
-> >
-> > Correct. I tried the approach to schedule tx napi instead of directly
-> > do free_old_xmit_skbs() in virtnet_poll_cleantx(). But the warning
-> > still happens.
->
-> Two questions here: is the device using packed or split vqs?
-> And is event index enabled?
->
+Am 2021-02-10 22:08, schrieb Michael Walle:
+> Implement the operations to set desired mode and retrieve the current
+> mode.
+> 
+> This feature was tested with an IP101G.
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> ---
+> Changes since v2:
+>  - none
+> 
+> Changes since v1:
+>  - none, except that the callbacks are register for both IP101A and 
+> IP101G
+>    PHY drivers
+> 
+>  drivers/net/phy/icplus.c | 93 ++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 93 insertions(+)
+> 
+> diff --git a/drivers/net/phy/icplus.c b/drivers/net/phy/icplus.c
+> index 96e9d1d12992..cc5b25714002 100644
+> --- a/drivers/net/phy/icplus.c
+> +++ b/drivers/net/phy/icplus.c
+> @@ -37,12 +37,17 @@ MODULE_LICENSE("GPL");
+>  #define IP1001_SPEC_CTRL_STATUS_2	20	/* IP1001 Spec. Control Reg 2 */
+>  #define IP1001_APS_ON			11	/* IP1001 APS Mode  bit */
+>  #define IP101A_G_APS_ON			BIT(1)	/* IP101A/G APS Mode bit */
+> +#define IP101A_G_AUTO_MDIX_DIS		BIT(11)
+>  #define IP101A_G_IRQ_CONF_STATUS	0x11	/* Conf Info IRQ & Status Reg */
+>  #define	IP101A_G_IRQ_PIN_USED		BIT(15) /* INTR pin used */
+>  #define IP101A_G_IRQ_ALL_MASK		BIT(11) /* IRQ's inactive */
+>  #define IP101A_G_IRQ_SPEED_CHANGE	BIT(2)
+>  #define IP101A_G_IRQ_DUPLEX_CHANGE	BIT(1)
+>  #define IP101A_G_IRQ_LINK_CHANGE	BIT(0)
+> +#define IP101A_G_PHY_STATUS		18
+> +#define IP101A_G_MDIX			BIT(9)
+> +#define IP101A_G_PHY_SPEC_CTRL		30
+> +#define IP101A_G_FORCE_MDIX		BIT(3)
+> 
+>  #define IP101G_PAGE_CONTROL				0x14
+>  #define IP101G_PAGE_CONTROL_MASK			GENMASK(4, 0)
+> @@ -297,6 +302,90 @@ static int ip101g_config_init(struct phy_device 
+> *phydev)
+>  	return ip101a_g_config_intr_pin(phydev);
+>  }
+> 
+> +static int ip101a_g_read_status(struct phy_device *phydev)
+> +{
+> +	int oldpage, ret, stat1, stat2;
+> +
+> +	ret = genphy_read_status(phydev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	oldpage = phy_select_page(phydev, IP101G_DEFAULT_PAGE);
 
-The device is indeed using split vqs with event index enabled.
+same here, missing return code check, will be fixed in v4
 
-> I think one issue is that at the moment with split and event index we
-> don't actually disable events at all.
->
-You mean we don't disable 'interrupts' right?
-What is the reason for that?
+> +
+> +	ret = __phy_read(phydev, IP10XX_SPEC_CTRL_STATUS);
+> +	if (ret < 0)
+> +		goto out;
+> +	stat1 = ret;
+> +
+> +	ret = __phy_read(phydev, IP101A_G_PHY_SPEC_CTRL);
+> +	if (ret < 0)
+> +		goto out;
+> +	stat2 = ret;
+> +
+> +	if (stat1 & IP101A_G_AUTO_MDIX_DIS) {
+> +		if (stat2 & IP101A_G_FORCE_MDIX)
+> +			phydev->mdix_ctrl = ETH_TP_MDI_X;
+> +		else
+> +			phydev->mdix_ctrl = ETH_TP_MDI;
+> +	} else {
+> +		phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
+> +	}
+> +
+> +	if (stat2 & IP101A_G_MDIX)
+> +		phydev->mdix = ETH_TP_MDI_X;
+> +	else
+> +		phydev->mdix = ETH_TP_MDI;
+> +
+> +	ret = 0;
+> +
+> +out:
+> +	return phy_restore_page(phydev, oldpage, ret);
+> +}
+> +
+> +static int ip101a_g_config_mdix(struct phy_device *phydev)
+> +{
+> +	u16 ctrl = 0, ctrl2 = 0;
+> +	int oldpage, ret;
+> +
+> +	switch (phydev->mdix_ctrl) {
+> +	case ETH_TP_MDI:
+> +		ctrl = IP101A_G_AUTO_MDIX_DIS;
+> +		break;
+> +	case ETH_TP_MDI_X:
+> +		ctrl = IP101A_G_AUTO_MDIX_DIS;
+> +		ctrl2 = IP101A_G_FORCE_MDIX;
+> +		break;
+> +	case ETH_TP_MDI_AUTO:
+> +		break;
+> +	default:
+> +		return 0;
+> +	}
+> +
+> +	oldpage = phy_select_page(phydev, IP101G_DEFAULT_PAGE);
 
-> static void virtqueue_disable_cb_split(struct virtqueue *_vq)
-> {
->         struct vring_virtqueue *vq = to_vvq(_vq);
->
->         if (!(vq->split.avail_flags_shadow & VRING_AVAIL_F_NO_INTERRUPT)) {
->                 vq->split.avail_flags_shadow |= VRING_AVAIL_F_NO_INTERRUPT;
->                 if (!vq->event)
->                         vq->split.vring.avail->flags =
->                                 cpu_to_virtio16(_vq->vdev,
->                                                 vq->split.avail_flags_shadow);
->         }
-> }
->
-> Can you try your napi patch + disable event index?
->
+dito
 
-Thanks for the suggestion.
-I've run the reproducer with  napi patch + disable event index, and so
-far, I did not see the warning getting triggered. Will keep it running
-for a bit longer.
+-michael
 
->
-> --
-> MST
->
+> +
+> +	ret = __phy_modify(phydev, IP10XX_SPEC_CTRL_STATUS,
+> +			   IP101A_G_AUTO_MDIX_DIS, ctrl);
+> +	if (ret)
+> +		goto out;
+> +
+> +	ret = __phy_modify(phydev, IP101A_G_PHY_SPEC_CTRL,
+> +			   IP101A_G_FORCE_MDIX, ctrl2);
+> +
+> +out:
+> +	return phy_restore_page(phydev, oldpage, ret);
+> +}
+> +
+> +static int ip101a_g_config_aneg(struct phy_device *phydev)
+> +{
+> +	int ret;
+> +
+> +	ret = ip101a_g_config_mdix(phydev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return genphy_config_aneg(phydev);
+> +}
+> +
+>  static int ip101a_g_ack_interrupt(struct phy_device *phydev)
+>  {
+>  	int err;
+> @@ -502,6 +591,8 @@ static struct phy_driver icplus_driver[] = {
+>  	.config_intr	= ip101a_g_config_intr,
+>  	.handle_interrupt = ip101a_g_handle_interrupt,
+>  	.config_init	= ip101a_config_init,
+> +	.config_aneg	= ip101a_g_config_aneg,
+> +	.read_status	= ip101a_g_read_status,
+>  	.soft_reset	= genphy_soft_reset,
+>  	.suspend	= genphy_suspend,
+>  	.resume		= genphy_resume,
+> @@ -514,6 +605,8 @@ static struct phy_driver icplus_driver[] = {
+>  	.config_intr	= ip101a_g_config_intr,
+>  	.handle_interrupt = ip101a_g_handle_interrupt,
+>  	.config_init	= ip101g_config_init,
+> +	.config_aneg	= ip101a_g_config_aneg,
+> +	.read_status	= ip101a_g_read_status,
+>  	.soft_reset	= genphy_soft_reset,
+>  	.get_sset_count = ip101g_get_sset_count,
+>  	.get_strings	= ip101g_get_strings,
