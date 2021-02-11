@@ -2,100 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BCA53185B8
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 08:34:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A520C3185FB
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 09:00:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229737AbhBKHeb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 02:34:31 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:18482 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229533AbhBKHeC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 02:34:02 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B6024ddbf0000>; Wed, 10 Feb 2021 23:33:19 -0800
-Received: from mtl-vdi-166.wap.labs.mlnx (172.20.145.6) by
- HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3; Thu, 11 Feb 2021 07:33:17 +0000
-Date:   Thu, 11 Feb 2021 09:33:14 +0200
-From:   Eli Cohen <elic@nvidia.com>
-To:     Si-Wei Liu <si-wei.liu@oracle.com>
-CC:     <mst@redhat.com>, <jasowang@redhat.com>,
-        <linux-kernel@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2 3/3] vdpa/mlx5: defer clear_virtqueues to until
- DRIVER_OK
-Message-ID: <20210211073314.GB100783@mtl-vdi-166.wap.labs.mlnx>
-References: <1612993680-29454-1-git-send-email-si-wei.liu@oracle.com>
- <1612993680-29454-4-git-send-email-si-wei.liu@oracle.com>
+        id S229809AbhBKH6S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 02:58:18 -0500
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:40983 "EHLO
+        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229923AbhBKH4c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 02:56:32 -0500
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailnew.nyi.internal (Postfix) with ESMTP id C578758030D;
+        Thu, 11 Feb 2021 02:44:49 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Thu, 11 Feb 2021 02:44:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=Jhw14S
+        7gzUfxDfXY3MFGd9GM2K8HzhgZoqO1xwIOyI8=; b=XSA4aEVKrOLqFVMFHen/+J
+        U6nQ81UiLHi0PhCffPAtMnqtR1/rCMIfmRJbmPNSy8se+SAE7G63ax9MF9SFqpLT
+        sn6CTKZuxpKMPXvQMoPn9vLkdFxjX60R1z/i3pdTXMjwpH42p+qul+A3SnieudiI
+        3itCJCzG0MqIt7OE4kxR/Jqdh6wFdoSv/T6CL9s7YadNkQnZQAfHOyqSB2e3zJeX
+        QWhcFKvqeRm6q2U4LWmaZI/w8QL65WN1jFdXcgh4DrM36gdF356OUxm1Q89jmnET
+        x6z8U6R5h2Zn+S5a3Q++JIgjf4qXQBea/V9daTppn5u1VtuXNtwJWWZd/vOGRpyg
+        ==
+X-ME-Sender: <xms:b-AkYAMT1j4HNRQ-BurfrnoTDv70mzZxO5Ud5his7QQvby5VT91u5g>
+    <xme:b-AkYJiqsmkOHwMT_KQrMja17-n7M7OPxKF7PAt_PAVAxU4zr9PIBRUTou9sT51-M
+    y1UZbML_7caRRM>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrheekgdduudduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
+    teenucfkphepkeegrddvvdelrdduheefrdeggeenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:b-AkYK4HlSG3at4b4cix3E1iR-_7guQgfUiGUVYxOensYBobT8fGQA>
+    <xmx:b-AkYI1OTzd3KB2adCAPQ4fRkUdagHg8g-TaKwd7AO5sECOfhpcwYw>
+    <xmx:b-AkYNtP0_531KU-LKWbvRAtq2lKgAn-71cyZT4PFyfdlyPQ_fYFCw>
+    <xmx:ceAkYHfZxfFxLmfOSYd3z20Ju2JoE1bgRrE6DyOzRoIuhY1ilU2AeA>
+Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 2CE6324005D;
+        Thu, 11 Feb 2021 02:44:46 -0500 (EST)
+Date:   Thu, 11 Feb 2021 09:44:43 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org
+Subject: Re: [PATCH v2 net-next 04/11] net: bridge: offload initial and final
+ port flags through switchdev
+Message-ID: <20210211074443.GB324421@shredder.lan>
+References: <20210209151936.97382-1-olteanv@gmail.com>
+ <20210209151936.97382-5-olteanv@gmail.com>
+ <20210209185100.GA266253@shredder.lan>
+ <20210209202045.obayorcud4fg2qqb@skbuf>
+ <20210209220124.GA271860@shredder.lan>
+ <20210209225153.j7u6zwnpdgskvr2v@skbuf>
+ <20210210105949.GB287766@shredder.lan>
+ <20210210232352.m7nqzvs2g4i74rx4@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1612993680-29454-4-git-send-email-si-wei.liu@oracle.com>
-User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1613028799; bh=z+7b0JpDsftoI1h/7FD7ibwsJMwxhNgGdxyNnKVYs1Q=;
-        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-         Content-Type:Content-Disposition:In-Reply-To:User-Agent:
-         X-Originating-IP:X-ClientProxiedBy;
-        b=cjXXfxsVNlHxQ5FESuyuXLGg6E875SKaGfvVURvxIy1314hOsrCPR1gdvEGgZhvZe
-         /kRv6TV1tJC+Chh2VeqmLCcYVRhB14+4JY1jbVjeaDBrw/M4mQXUqAVDOUiu9u2U3D
-         uPYLVWmAHA8rov1B9zsytQHer9Ps7+rJTHSNEP0AVo8RczhD0nXdnRFDOKM9DHqP4W
-         AKJCdFRSqvqgpXPwp726h8oJGA0dlMHbatynlVtg0RFGC5JUAAwgBdeMjRHx5tisol
-         boTPkmn2WegcvLnrHp9yEcejqquVr+afZ9mo4EkGTrgQBabNhGNI6F9JTtlPIu9x9Q
-         Hkelr8xSkInvA==
+In-Reply-To: <20210210232352.m7nqzvs2g4i74rx4@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 10, 2021 at 01:48:00PM -0800, Si-Wei Liu wrote:
-> While virtq is stopped,  get_vq_state() is supposed to
-> be  called to  get  sync'ed  with  the latest internal
-> avail_index from device. The saved avail_index is used
-> to restate  the virtq  once device is started.  Commit
-> b35ccebe3ef7 introduced the clear_virtqueues() routine
-> to  reset  the saved  avail_index,  however, the index
-> gets cleared a bit earlier before get_vq_state() tries
-> to read it. This would cause consistency problems when
-> virtq is restarted, e.g. through a series of link down
-> and link up events. We  could  defer  the  clearing of
-> avail_index  to  until  the  device  is to be started,
-> i.e. until  VIRTIO_CONFIG_S_DRIVER_OK  is set again in
-> set_status().
+On Thu, Feb 11, 2021 at 01:23:52AM +0200, Vladimir Oltean wrote:
+> On Wed, Feb 10, 2021 at 12:59:49PM +0200, Ido Schimmel wrote:
+> > > > The reverse, during unlinking, would be to refuse unlinking if the upper
+> > > > has uppers of its own. netdev_upper_dev_unlink() needs to learn to
+> > > > return an error and callers such as team/bond need to learn to handle
+> > > > it, but it seems patchable.
+> > >
+> > > Again, this was treated prior to my deletion in this series and not by
+> > > erroring out, I just really didn't think it through.
+> > >
+> > > So you're saying that if we impose that all switchdev drivers restrict
+> > > the house of cards to be constructed from the bottom up, and destructed
+> > > from the top down, then the notification of bridge port flags can stay
+> > > in the bridge layer?
+> >
+> > I actually don't think it's a good idea to have this in the bridge in
+> > any case. I understand that it makes sense for some devices where
+> > learning, flooding, etc are port attributes, but in other devices these
+> > can be {port,vlan} attributes and then you need to take care of them
+> > when a vlan is added / deleted and not only when a port is removed from
+> > the bridge. So for such devices this really won't save anything. I would
+> > thus leave it to the lower levels to decide.
 > 
-> Fixes: b35ccebe3ef7 ("vdpa/mlx5: Restore the hardware used index after change map")
-> Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
-> Acked-by: Jason Wang <jasowang@redhat.com>
+> Just for my understanding, how are per-{port,vlan} attributes such as
+> learning and flooding managed by the Linux bridge? How can I disable
+> flooding only in a certain VLAN?
 
-Acked-by: Eli Cohen <elic@nvidia.com>
-
-> ---
->  drivers/vdpa/mlx5/net/mlx5_vnet.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> index 7c1f789..ce6aae8 100644
-> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> @@ -1777,7 +1777,6 @@ static void mlx5_vdpa_set_status(struct vdpa_device *vdev, u8 status)
->  	if (!status) {
->  		mlx5_vdpa_info(mvdev, "performing device reset\n");
->  		teardown_driver(ndev);
-> -		clear_virtqueues(ndev);
->  		mlx5_vdpa_destroy_mr(&ndev->mvdev);
->  		ndev->mvdev.status = 0;
->  		++mvdev->generation;
-> @@ -1786,6 +1785,7 @@ static void mlx5_vdpa_set_status(struct vdpa_device *vdev, u8 status)
->  
->  	if ((status ^ ndev->mvdev.status) & VIRTIO_CONFIG_S_DRIVER_OK) {
->  		if (status & VIRTIO_CONFIG_S_DRIVER_OK) {
-> +			clear_virtqueues(ndev);
->  			err = setup_driver(ndev);
->  			if (err) {
->  				mlx5_vdpa_warn(mvdev, "failed to setup driver\n");
-> -- 
-> 1.8.3.1
-> 
+You can't (currently). But it does not change the fact that in some
+devices these are {port,vlan} attributes and we are talking here about
+the interface towards these devices. Having these as {port,vlan}
+attributes allows you to support use cases such as a port being enslaved
+to a VLAN-aware bridge and its VLAN upper(s) enslaved to VLAN unaware
+bridge(s). Obviously you need to ensure there is no conflict between the
+VLANs used by the VLAN-aware bridge and the VLAN device(s).
