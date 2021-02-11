@@ -2,113 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B77131871B
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 10:30:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CBC131872A
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 10:36:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229954AbhBKJ3x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 04:29:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60090 "EHLO
+        id S230029AbhBKJcc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 04:32:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229803AbhBKJ1d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 04:27:33 -0500
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61A20C061786
-        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 01:26:52 -0800 (PST)
-Received: by mail-oi1-x229.google.com with SMTP id h6so5373031oie.5
-        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 01:26:52 -0800 (PST)
+        with ESMTP id S229997AbhBKJaO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 04:30:14 -0500
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33D31C0617A9;
+        Thu, 11 Feb 2021 01:29:20 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id i8so8974629ejc.7;
+        Thu, 11 Feb 2021 01:29:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=aleksander-es.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jsCRFes+iNIOcA6nuOPlPmxykHMWcGsGKAHRk6OtZ4g=;
-        b=CTHYiCAbf+o6JC9kn+qEUxdqKhPrVEV3YHNVIaKlDvhW6HYWNLZ1W3A4T48m22bJi3
-         mn3k02g7hun/GzF2Qv1AupXiGmP1A0Pp7t86Njpka0mvNRuEeYmUkZTG7Y4pqSSpaHOh
-         IST7SBiMiLkIKs8YD/FXWIX0evIZ8d2xDIr7cUv3XSky7rvPzP/QJQr4dpegaUm0lZDg
-         VF6Zm9+DXPlobw9KtY9X+0+LAYD5Hih9mkOLjQ67XV6heoyAekh2xHbN6sNp6X3Zdn9r
-         UM5CjPi+sc8e05LPoYBM6GNO3GPlMbSBkFlfXlo5igoLlZSeV/KyOMFpgPeSxce05Qht
-         4WkA==
+        d=gmail.com; s=20161025;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=i1O66Ccjl4B43kYPV7+BV+8IE3O9O9r+dKZxev6XqqY=;
+        b=hFN/6x07i6rQCx8/3+ZvH9dIIjXAhCz2Nozp4CxECTqUedtUfWZMlXyW6/BG/s5Bsn
+         Z0xWfdnQISSGc7iBT7y2I1IMGJ82Zobryuk02p/A9Y5cns46kUR8E+2az0ZjzXJdhefR
+         bXGNsbfIrN7Ui3MkoTp5gheC2gb+sGPO/c7YOPNKJHooKmCGw2vCm9tNFTTqGLx1KKt8
+         jTTMAp6Q6yE+jrkq2p8gIQRbAAcfqfdhmC9VTT4KU7FCbt7vE77fRbEiv3efz4UvGqcI
+         2Q1mkZhVMBExNilFnbPb51yPma5ioav+0wTEod1sbbxI1G7bcxsidB9fZIFtY3vM+Se/
+         Y6fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jsCRFes+iNIOcA6nuOPlPmxykHMWcGsGKAHRk6OtZ4g=;
-        b=i9yulJbbPlGr8Ozr3OgXwgCw2D5sYKIhYNdWfuozzbXZn9NJZ4qB+lRg6bKQ/aFj53
-         pfBRCsrtIF3GgUjVwTdV5CGd9a9NIxr8K6kf/AaMTjrxD6vxcxzlOV9tK2XGw7CUTDpA
-         XZDuhD1mmHikk0Ql4yi4NO2voryrfyfPY405RJJyFbLq/gYEhvGdn1hG+MByq6PqSfKu
-         MSt2xraJZEnWXbIpntCWq/jDA9VZbzIgG92L+4V65vbGmcuH9+4tgt2fLqSzgZLdRR3w
-         w5ddN80XNiQsQQFIVSma8kBAPlwyAxDwxRykhLy9j3DAtR6Ef/zhvlYLzt2Fmq3C5iol
-         /45w==
-X-Gm-Message-State: AOAM531XZOAJcnYi2WCK0FyC+9l75iyLY054U+zrgqIOlpvHZ5LA3bF0
-        IehNpoN/mDrm8GKSPQM7KrPtvuqG4fir9VHYDZs8S+hi1nGcT9Po
-X-Google-Smtp-Source: ABdhPJxGM+df1a7ssbuK/9sS4Nwt+ETuRDz+SyJX9bnygZ54cEdli2nkn1V9NZXjSzOez+Ij/NdOZz87tIt/ywTNQfk=
-X-Received: by 2002:aca:e108:: with SMTP id y8mr2194310oig.114.1613035611589;
- Thu, 11 Feb 2021 01:26:51 -0800 (PST)
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=i1O66Ccjl4B43kYPV7+BV+8IE3O9O9r+dKZxev6XqqY=;
+        b=gNI4iNEh9t5SBPJHZhdsTKkwhgUn2PnoCGFVUiBx2V+JCyhH7FyGHhsJr5gthORb0U
+         rpxYpjb5EQTQOYcFrrqaYo/qqhEEriW4fXR7BzoHpU3DU8+bEKuM3mjK2zYpOzUI7LrN
+         0gOQpBkQAB5jPw2Jl9V2Uv6ix1bYptnvaR/Sd9JPuZ3Y8LOt5BF+8/PcPxVejGtUUziR
+         hdQuVUzC4KJLXAZIpCDlz0VsbwgDab/81Vje3so4Npbxy3kRxjeyV6VaSeYrthKvIIxW
+         pb9fZmXxf28VptdRW2YUXNvz3hjgRrq+PmJT9lp84o4qbrKMMD6AdavUL2fQi5/24WM/
+         PERw==
+X-Gm-Message-State: AOAM532/hAZw40Q9HxFeZhBtY6c54kL1bnZjU6J35uvZgfpHrhgpshC1
+        ZLBNsHssQVFnj+FxJF3RmlE=
+X-Google-Smtp-Source: ABdhPJwJMZ3mfrU7uAqpt2HceMgbtn6CQVzpynHlLmv6gQ+WoYZJBethIo3AH+fvGtqvDFsGVNFv3g==
+X-Received: by 2002:a17:906:7687:: with SMTP id o7mr7664153ejm.209.1613035758926;
+        Thu, 11 Feb 2021 01:29:18 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f1f:ad00:60ca:853:df03:450e? (p200300ea8f1fad0060ca0853df03450e.dip0.t-ipconnect.de. [2003:ea:8f1f:ad00:60ca:853:df03:450e])
+        by smtp.googlemail.com with ESMTPSA id u21sm3728257ejj.120.2021.02.11.01.29.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 11 Feb 2021 01:29:18 -0800 (PST)
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Android Kernel Team <kernel-team@android.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jon Hunter <jonathanh@nvidia.com>
+References: <CAGETcx9YpCUMmHjyydMtOJP9SKBbVsHNB-9SspD9u=txJ12Gug@mail.gmail.com>
+ <YCRjmpKjK0pxKTCP@lunn.ch>
+ <CAGETcx-tBw_=VPvQVYcpPJBJjgQvp8UASrdMdSbSduahZpJf9w@mail.gmail.com>
+ <4f0086ad-1258-063d-0ace-fe4c6c114991@gmail.com>
+ <CAGETcx_9bmeLzOvDp8eCGdWtfwZNajCBCNSbyx7a_0T=FcSvwA@mail.gmail.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: phy_attach_direct()'s use of device_bind_driver()
+Message-ID: <2c5c95d8-07f3-1617-f98e-8b0a57dd1c97@gmail.com>
+Date:   Thu, 11 Feb 2021 10:29:07 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-References: <YBfi573Bdfxy0GBt@kroah.com> <20210201121322.GC108653@thinkpad>
- <20210202042208.GB840@work> <20210202201008.274209f9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <835B2E08-7B84-4A02-B82F-445467D69083@linaro.org> <20210203100508.1082f73e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAMZdPi8o44RPTGcLSvP0nptmdUEmJWFO4HkCB_kjJvfPDgchhQ@mail.gmail.com>
- <20210203104028.62d41962@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAAP7ucLZ5jKbKriSp39OtDLotbv72eBWKFCfqCbAF854kCBU8w@mail.gmail.com>
- <20210209081744.43eea7b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210210062531.GA13668@work> <20210210104128.2166e506@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210210104128.2166e506@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Aleksander Morgado <aleksander@aleksander.es>
-Date:   Thu, 11 Feb 2021 10:26:40 +0100
-Message-ID: <CAAP7uc+cEeD=G4H-2+Jbt3j15tuak6PruVnAbJhhbeUsizwhYA@mail.gmail.com>
-Subject: Re: [RESEND PATCH v18 0/3] userspace MHI client interface driver
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        David Miller <davem@davemloft.net>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Jeffrey Hugo <jhugo@codeaurora.org>,
-        Bhaumik Bhatt <bbhatt@codeaurora.org>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAGETcx_9bmeLzOvDp8eCGdWtfwZNajCBCNSbyx7a_0T=FcSvwA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> What bothers me is maintaining shim drivers which just shuttle opaque
-> messages between user space and firmware. One of which definitely is,
-> and the other may well be, proprietary. This is an open source project,
-> users are supposed to be able to meaningfully change the behavior of
-> the system.
+On 11.02.2021 09:57, Saravana Kannan wrote:
+> On Wed, Feb 10, 2021 at 11:31 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+>>
+>> On 11.02.2021 00:29, Saravana Kannan wrote:
+>>> On Wed, Feb 10, 2021 at 2:52 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>>>>
+>>>> On Wed, Feb 10, 2021 at 02:13:48PM -0800, Saravana Kannan wrote:
+>>>>> Hi,
+>>>>>
+>>>>> This email was triggered by this other email[1].
+>>>>>
+>>>>> Why is phy_attach_direct() directly calling device_bind_driver()
+>>>>> instead of using bus_probe_device()?
+>>>>
+>>>> Hi Saravana
+>>>>
+>>>> So this is to do with the generic PHY, which is a special case.
+>>>>
+>>>> First the normal case. The MDIO bus driver registers an MDIO bus using
+>>>> mdiobus_register(). This will enumerate the bus, finding PHYs on
+>>>> it. Each PHY device is registered with the device core, using the
+>>>> usual device_add(). The core will go through the registered PHY
+>>>> drivers and see if one can drive this hardware, based on the ID
+>>>> registers the PHY has at address 2 and 3. If a match is found, the
+>>>> driver probes the device, all in the usual way.
+>>>>
+>>>> Sometime later, the MAC driver wants to make use of the PHY
+>>>> device. This is often in the open() call of the MAC driver, when the
+>>>> interface is configured up. The MAC driver asks phylib to associate a
+>>>> PHY devices to the MAC device. In the normal case, the PHY has been
+>>>> probed, and everything is good to go.
+>>>>
+>>>> However, sometimes, there is no driver for the PHY. There is no driver
+>>>> for that hardware. Or the driver has not been built, or it is not on
+>>>> the disk, etc. So the device core has not been able to probe
+>>>> it. However, IEEE 802.3 clause 22 defines a minimum set of registers a
+>>>> PHY should support. And most PHY devices have this minimum. So there
+>>>> is a fall back driver, the generic PHY driver. It assumes the minimum
+>>>> registers are available, and does its best to drive the hardware. It
+>>>> often works, but not always. So if the MAC asks phylib to connect to a
+>>>> PHY which does not have a driver, we forcefully bind the generic
+>>>> driver to the device, and hope for the best.
+>>>
+>>> Thanks for the detailed answer Andrew! I think it gives me enough
+>>> info/context to come up with a proper fix.
+>>>
+>>>> We don't actually recommend using the generic driver. Use the specific
+>>>> driver for the hardware. But the generic driver can at least get you
+>>>> going, allow you to scp the correct driver onto the system, etc.
+>>>
+>>> I'm not sure if I can control what driver they use. If I can fix this
+>>> warning, I'll probably try to do that.
+>>>
+>> The genphy driver is a last resort, at least they lose functionality like
+>> downshift detection and control. Therefore they should go with the
+>> dedicated Marvell PHY driver.
+>>
+>> But right, this avoids the warning, but the underlying issue (probably
+>> in device_bind_driver()) still exists. Would be good if you can fix it.
+> 
+> Yeah, I plan to fix this. So I have a few more questions. In the
+> example I gave, what should happen if the gpios listed in the phy's DT
+> node aren't ready yet? The generic phy driver itself probably isn't
+> using any GPIO? But will the phy work without the GPIO hardware being
+> initialized? The reason I'm asking this question is, if the phy is
+> linked to a supplier and the supplier is not ready, should the
+> device_bind_driver() succeed or not?
+> 
 
-libqmi is an open source library under the LGPL; so all the messages
-that are passed between e.g. ModemManager and the modem firmware can
-be easily inspected by anyone. It is true, though, that libqmi may
-also allow passing "unknown" messages between other proprietary third
-party applications and the firmware, but that is very much like any
-other modem control port that we already have; be it a plain tty, or a
-ttyUSB or a ttyACM or a cdc-wdm port. The kernel drivers are passing
-unknown stuff between modem firmware and userspace; I don't see how
-the kernel driver would be interested in any other thing really. QMI
-and MBIM are just 2 binary protocols (and we have libqmi and libmbim),
-and there's a generic 3GPP AT command set, but every vendor then has
-its own interpretation of that AT command set, and vendor-specific AT
-commands, and what not. From my point of view, it's not like the
-kernel should know or have much to say on what's being passed to the
-modem.
+There may be situations where the gpio is used for the PHY reset and
+default state is "reset assigned". If we can't control the reset signal
+then PHY isn't usable. Therefore I'm inclined to say we should not
+succeed. Let's see which opinions Andrew and Russell have.
 
->
-> What bothers me is that we have 3 WWAN vendors all doing their own
-> thing and no common Linux API for WWAN. It may have been fine 10 years
-> ago, but WWAN is increasingly complex and important.
->
+However I have a little bit of a hard time to imagine how this scenario
+can happen. device_bind_driver(), as part of phy_attach_direct(),
+is typically called from ndo_open() of the net device, like in
+your stmmac case. Means user space would open the network interface
+before the gpio controller has even been probed.
 
-A WWAN modem is nowadays a complete Linux system itself with tons of
-features, and if there is sometime a generic WWAN system in the kernel
-providing API/ABI for generic features (e.g. data connection), that
-API/ABI should anyway provide access to pass messages (be it binary,
-or text AT commands) between firmware and userspace, for all the other
-side features for which no generic API/ABI is provided by that
-hypothetical generic WWAN system. Unless we don't want any of those
-side features... like Voice call management, SMS, USSD, GNSS, SAR,
-OMA-DM, carrier config selection, multi-SIM setups...
+> -Saravana
+> 
 
--- 
-Aleksander
