@@ -2,104 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22A56318486
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 06:20:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E7C6318503
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 06:57:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229505AbhBKFSw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 00:18:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35370 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbhBKFSv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 00:18:51 -0500
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8867C061574
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 21:18:11 -0800 (PST)
-Received: by mail-pf1-x434.google.com with SMTP id t29so2989524pfg.11
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 21:18:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=nathanrossi.com; s=google;
-        h=date:message-id:from:to:cc:subject:content-transfer-encoding
-         :mime-version;
-        bh=gOPNDZq8HYpauMOR0hyqdiQ38cvLLe/eZD4jYmPJ3zQ=;
-        b=U0N+9+NiY/fuXDf9mJUfuRCyhqpgm5tB+gRngmfmsOSRL37TaU/A96DN8KU2XS+GFt
-         IxCR2xwS1KkUbKYhKcPdZV3uPTBMnyhyhFNg7N59sPar/L1AbefIUL4u158b4AGx1EfE
-         6leJrzHgL/CMMBAkhVo5spWrH6GXHe0zOUe5ErThGN0l3XjGNYbGY2jLylOKZ3hQMWNo
-         Cv3w+opfZ9Ki7GFihx/O5jGTg5lWP53C3qCqHx2rMK7IC3b8097a9r/TjB2EdzRVH4VX
-         eoCeuIV9nsReO9O+nNqQpyCpRINYcxJOar/FDGYDxU4pi0fRIwhpbj32FDG87u2trrYR
-         LbYQ==
+        id S229517AbhBKFyC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 00:54:02 -0500
+Received: from mail-il1-f200.google.com ([209.85.166.200]:44560 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229457AbhBKFyB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 00:54:01 -0500
+Received: by mail-il1-f200.google.com with SMTP id a9so5153158ilm.11
+        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 21:53:45 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject
-         :content-transfer-encoding:mime-version;
-        bh=gOPNDZq8HYpauMOR0hyqdiQ38cvLLe/eZD4jYmPJ3zQ=;
-        b=O97iUDZmlqEVkoYg1b/Jv6u39b0S/QBTny1fYzzVhCr0HUxRgeYs51MZSL9IpE9Tcw
-         fLLDv1ZYLMwKgsf581M0WeSRtRq1R97OesIhVm17wun8DdchiKfMmVir/Cga6Hgd1RnX
-         +EcEaAFq/+jUjgIXW7fKW7+7sdfoGLJ58Jw4NumFB1TvIBMd5Hhlu0iFDNdKAdA/mrZs
-         XcW0Pgeq6mjGxNhr4hGxq+PhVRA+BNAZHlbksASm5Q63fRhrKp5AXaFnBkFQ0FNqrhzW
-         p2UDfMiKgrq74QxnvFll6m7uCW0rdU4N0wpbOjpkKre1ajPxcHA+AtU1z3Py92nyhRQ1
-         yoAA==
-X-Gm-Message-State: AOAM532hD66OvrtG1pQ5/GBbog/cC3U/ZVNO2SbpUZKiM9W8ba8mFUb7
-        pPIfuFtm2Y4dQrbn48G2cDH8Ww==
-X-Google-Smtp-Source: ABdhPJyyy6uu1MOJntTeklX5gXHOyn1y3901O3Tt2gPHuymkg7bFVHh6AKyLXGW9VtwgIlgEuKrEKg==
-X-Received: by 2002:a63:289:: with SMTP id 131mr6288883pgc.366.1613020691260;
-        Wed, 10 Feb 2021 21:18:11 -0800 (PST)
-Received: from [127.0.1.1] (117-20-70-209.751446.bne.nbn.aussiebb.net. [117.20.70.209])
-        by smtp.gmail.com with UTF8SMTPSA id w3sm3730983pjb.2.2021.02.10.21.18.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Feb 2021 21:18:10 -0800 (PST)
-Date:   Thu, 11 Feb 2021 05:17:57 +0000
-Message-Id: <20210211051757.1051950-1-nathan@nathanrossi.com>
-From:   Nathan Rossi <nathan@nathanrossi.com>
-To:     netdev@vger.kernel.org
-Cc:     Nathan Rossi <nathan@nathanrossi.com>,
-        Nathan Rossi <nathan.rossi@digi.com>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH] net: ethernet: aquantia: Handle error cleanup of start on open
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=Wkq911BJFvp1tS//mvCstSI7Y+mPtfptFUT/RZukAV4=;
+        b=t9CO0ggZF2Yed+feoVMAXwA2gojPYEPCARujjL4TbR6eyzxzYPZQ9oF1bLA6R9Jvi1
+         zO1ahzFjGLMdoSdZtrHBm+KYmEUtPHxK0160x+y0aY0mYmpbEAIU2fzK11llLi5FsCQq
+         fu/MxP5+F/2xDlB6y13g+Bq+Gxzrgv2GE2R7xoLA5mj2V1qk5A5SnODI3YeYlWBLHVCz
+         KI4feD2URNksUzygiwQsGSRYLjrjnzP7hOhXxC5wV6yhYdEncX7xFLAZwYTiqC9FlwYh
+         bCDtl7sD27aEvF8SosH9++bd8Gnujg5XVSjuSPYVhzr98YK+5urrYwV/ePD0Ssp/IfWe
+         +aUw==
+X-Gm-Message-State: AOAM532wbyqkAdovUC7e0VHDiRJzL3EyDWgsRphGVZbdAmwqpEAk2RfH
+        wAhSq1IATTng17H/ApllpXHHNrPMOFbyizYSN6to57cJRr8j
+X-Google-Smtp-Source: ABdhPJx7oqpHj50ldn6lnChFwjAb7y4NQ+j7E1KudbURX6pUSb+1PWg/BH9leyWa3+aiTAQbgFs3sfOezf5YH8oTI5DUooStBY3r
 MIME-Version: 1.0
+X-Received: by 2002:a05:6638:40b:: with SMTP id q11mr6918081jap.133.1613022800439;
+ Wed, 10 Feb 2021 21:53:20 -0800 (PST)
+Date:   Wed, 10 Feb 2021 21:53:20 -0800
+In-Reply-To: <0000000000005243f805b05abc7c@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000008f12905bb0923e0@google.com>
+Subject: Re: KASAN: null-ptr-deref Read in tcf_idrinfo_destroy
+From:   syzbot <syzbot+151e3e714d34ae4ce7e8@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nathan Rossi <nathan.rossi@digi.com>
+syzbot has found a reproducer for the following issue on:
 
-The aq_nic_start function can fail in a variety of cases which leaves
-the device in broken state.
+HEAD commit:    291009f6 Merge tag 'pm-5.11-rc8' of git://git.kernel.org/p..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=14470d18d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a53fd47f16f22f8c
+dashboard link: https://syzkaller.appspot.com/bug?extid=151e3e714d34ae4ce7e8
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15f45814d00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15f4aff8d00000
 
-An example case where the start function fails is the
-request_threaded_irq which can be interrupted, resulting in a EINTR
-result. This can be manually triggered by bringing the link up (e.g. ip
-link set up) and triggering a SIGINT on the initiating process (e.g.
-Ctrl+C). This would put the device into a half configured state.
-Subsequently bringing the link up again would cause the napi_enable to
-BUG.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+151e3e714d34ae4ce7e8@syzkaller.appspotmail.com
 
-In order to correctly clean up the failed attempt to start a device call
-aq_nic_stop.
+==================================================================
+BUG: KASAN: null-ptr-deref in instrument_atomic_read include/linux/instrumented.h:71 [inline]
+BUG: KASAN: null-ptr-deref in atomic_read include/asm-generic/atomic-instrumented.h:27 [inline]
+BUG: KASAN: null-ptr-deref in __tcf_idr_release net/sched/act_api.c:178 [inline]
+BUG: KASAN: null-ptr-deref in tcf_idrinfo_destroy+0x129/0x1d0 net/sched/act_api.c:598
+Read of size 4 at addr 0000000000000010 by task kworker/u4:5/204
 
-Signed-off-by: Nathan Rossi <nathan.rossi@digi.com>
----
- drivers/net/ethernet/aquantia/atlantic/aq_main.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+CPU: 0 PID: 204 Comm: kworker/u4:5 Not tainted 5.11.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: netns cleanup_net
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x107/0x163 lib/dump_stack.c:120
+ __kasan_report mm/kasan/report.c:400 [inline]
+ kasan_report.cold+0x5f/0xd5 mm/kasan/report.c:413
+ check_memory_region_inline mm/kasan/generic.c:179 [inline]
+ check_memory_region+0x13d/0x180 mm/kasan/generic.c:185
+ instrument_atomic_read include/linux/instrumented.h:71 [inline]
+ atomic_read include/asm-generic/atomic-instrumented.h:27 [inline]
+ __tcf_idr_release net/sched/act_api.c:178 [inline]
+ tcf_idrinfo_destroy+0x129/0x1d0 net/sched/act_api.c:598
+ tc_action_net_exit include/net/act_api.h:151 [inline]
+ police_exit_net+0x168/0x360 net/sched/act_police.c:390
+ ops_exit_list+0x10d/0x160 net/core/net_namespace.c:190
+ cleanup_net+0x4ea/0xb10 net/core/net_namespace.c:604
+ process_one_work+0x98d/0x15f0 kernel/workqueue.c:2275
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2421
+ kthread+0x3b1/0x4a0 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+==================================================================
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 0 PID: 204 Comm: kworker/u4:5 Tainted: G    B             5.11.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: netns cleanup_net
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x107/0x163 lib/dump_stack.c:120
+ panic+0x306/0x73d kernel/panic.c:231
+ end_report+0x58/0x5e mm/kasan/report.c:100
+ __kasan_report mm/kasan/report.c:403 [inline]
+ kasan_report.cold+0x67/0xd5 mm/kasan/report.c:413
+ check_memory_region_inline mm/kasan/generic.c:179 [inline]
+ check_memory_region+0x13d/0x180 mm/kasan/generic.c:185
+ instrument_atomic_read include/linux/instrumented.h:71 [inline]
+ atomic_read include/asm-generic/atomic-instrumented.h:27 [inline]
+ __tcf_idr_release net/sched/act_api.c:178 [inline]
+ tcf_idrinfo_destroy+0x129/0x1d0 net/sched/act_api.c:598
+ tc_action_net_exit include/net/act_api.h:151 [inline]
+ police_exit_net+0x168/0x360 net/sched/act_police.c:390
+ ops_exit_list+0x10d/0x160 net/core/net_namespace.c:190
+ cleanup_net+0x4ea/0xb10 net/core/net_namespace.c:604
+ process_one_work+0x98d/0x15f0 kernel/workqueue.c:2275
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2421
+ kthread+0x3b1/0x4a0 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_main.c b/drivers/net/ethernet/aquantia/atlantic/aq_main.c
-index 8f70a39099..4af0cd9530 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_main.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_main.c
-@@ -71,8 +71,10 @@ static int aq_ndev_open(struct net_device *ndev)
- 		goto err_exit;
- 
- 	err = aq_nic_start(aq_nic);
--	if (err < 0)
-+	if (err < 0) {
-+		aq_nic_stop(aq_nic);
- 		goto err_exit;
-+	}
- 
- err_exit:
- 	if (err < 0)
----
-2.30.0
