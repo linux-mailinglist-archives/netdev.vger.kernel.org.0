@@ -2,153 +2,281 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F2EA3188F7
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 12:09:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 795803188FA
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 12:09:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231477AbhBKLDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 06:03:02 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:57188 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231135AbhBKKzK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 05:55:10 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11BAp92r017018;
-        Thu, 11 Feb 2021 02:54:10 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=DXjQatTR+FYo0xK3DvzCV6/Fj5dqhPmz90uDt3zfAlI=;
- b=T0z38p58ZfNWJKIsk/ro78YP5sq7SnOQsdpKLvye0EdyKvSq7DeREFEWCFpxFYTs+ceg
- ROp3ZteGIdDQSYdtEPnP2ozuxmReWaZJfZ2U6a8OJc8Qa5fWBrT7UfzGDQU2S9WKcruY
- InDVGrBgt2GsWYZj1n6M/VRGOJFyEa91Am5SH6MIpAkAgj/JSGpyYPjJsXuht4qt1hz4
- aW3YDLWHaxIjzRIySui4FPocLq05CGKTMj7SYhJpZ6Qwg7beODi7r6xHDi9J7ynDW0jE
- aitj7HuzD9f7wgnpUb4mlq4eHPIBa6Lyb/0S0ziMBOG9iePxsSetezoC2WgPINrMaReC sg== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com with ESMTP id 36hugqefhk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 11 Feb 2021 02:54:10 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 11 Feb
- 2021 02:54:08 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 11 Feb 2021 02:54:08 -0800
-Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id A925F3F7041;
-        Thu, 11 Feb 2021 02:54:04 -0800 (PST)
-From:   <stefanc@marvell.com>
-To:     <netdev@vger.kernel.org>
-CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
-        <nadavh@marvell.com>, <ymarkman@marvell.com>,
-        <linux-kernel@vger.kernel.org>, <stefanc@marvell.com>,
-        <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
-        <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
-        <atenart@kernel.org>, <devicetree@vger.kernel.org>,
-        <robh+dt@kernel.org>, <sebastian.hesselbarth@gmail.com>,
-        <gregory.clement@bootlin.com>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH v13 net-next 15/15] net: mvpp2: add TX FC firmware check
-Date:   Thu, 11 Feb 2021 12:49:02 +0200
-Message-ID: <1613040542-16500-16-git-send-email-stefanc@marvell.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1613040542-16500-1-git-send-email-stefanc@marvell.com>
-References: <1613040542-16500-1-git-send-email-stefanc@marvell.com>
+        id S231533AbhBKLDS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 06:03:18 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:37369 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231128AbhBKKyH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 05:54:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1613040755;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=c6JIyxLiRHESwY6rJeK+rsmJNAoxnfQJq+AkTGikyDY=;
+        b=gKi4hz7cnY6rmBf7RnSpVJLsJQT3TLOW50w6cAZC6rzhYjmc0evEVzXPj88ipov2A7g/aC
+        bM1nb/hMYRYwfGgxjGgscxCFL/lS32JIrC8fi5dx0WWzGOZrlq5W3/MYgoWPoN/RU10lZ9
+        i0/hKJaOaNFpjwQ8jGDabPUIOnlhqk4=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-539-L5uYiRE5NROxkTm3IePXEA-1; Thu, 11 Feb 2021 05:52:34 -0500
+X-MC-Unique: L5uYiRE5NROxkTm3IePXEA-1
+Received: by mail-ed1-f71.google.com with SMTP id w23so4396590edr.15
+        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 02:52:34 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=c6JIyxLiRHESwY6rJeK+rsmJNAoxnfQJq+AkTGikyDY=;
+        b=EMyErvEgrlmfxH6Etz6WC38GwjNbxRMcbOJfGX7mAsEVFgj7JR84hPTysGxCiwgLI1
+         /fFopcPgJbhRwCk3dXuxihcHnAW+dGhsunJy2uuBmujhM+9f4QxuTlBfqZplryYv2mPw
+         QSb8oZ7BrVBheFuNPoysEfauSToLzg3Dbl6yUJSB4daJaEFVN5w5JFQEP1GC7Gx0uamI
+         mkOumX58UT8xFccvmtVnT/nZsQvjCVaxTwVffPJCP5Tl5PjSldC8sFHo7t6DvA+zJiRy
+         ssD/gbodV90MmunE3nb2UbqjxSyVljwxdXvINFk4C6iqwACEXUq/ZsCkw8R54VgQdjaw
+         DofA==
+X-Gm-Message-State: AOAM531M57AY05r/nfHiQfu07v3bD+A7SYTUnSWvXSXnva0opj2Cv+i7
+        puJPIFrEZKCBj3PnY+StvM30M9wMyUVq5Q60TJjZ6gdxSkzoQCedc5aGj11H92zbl7rx/Kn75zO
+        qIJ6FMUNDayfZk2MU
+X-Received: by 2002:a50:b765:: with SMTP id g92mr7847354ede.317.1613040752990;
+        Thu, 11 Feb 2021 02:52:32 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw4L+tgVkXdxNZfo4WOdRQsyzuiJJ+oUQSD+Mof1i2r3UcuhRlRZ20qv++UXJ9lCcDs9kLlIA==
+X-Received: by 2002:a50:b765:: with SMTP id g92mr7847336ede.317.1613040752718;
+        Thu, 11 Feb 2021 02:52:32 -0800 (PST)
+Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
+        by smtp.gmail.com with ESMTPSA id l12sm3613142edn.83.2021.02.11.02.52.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Feb 2021 02:52:32 -0800 (PST)
+Date:   Thu, 11 Feb 2021 11:52:29 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Jeff Vander Stoep <jeffv@google.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stsp2@yandex.ru, oxffffaa@gmail.com
+Subject: Re: [RFC PATCH v4 01/17] af_vsock: update functions for connectible
+ socket
+Message-ID: <20210211105229.fmdonwqe3swhq6lb@steredhat>
+References: <20210207151259.803917-1-arseny.krasnov@kaspersky.com>
+ <20210207151426.804348-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
- definitions=2021-02-11_05:2021-02-10,2021-02-11 signatures=0
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20210207151426.804348-1-arseny.krasnov@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefan Chulski <stefanc@marvell.com>
+On Sun, Feb 07, 2021 at 06:14:23PM +0300, Arseny Krasnov wrote:
+>This prepares af_vsock.c for SEQPACKET support: some functions such
+>as setsockopt(), getsockopt(), connect(), recvmsg(), sendmsg() are
+>shared between both types of sockets, so rename them in general
+>manner.
+>
+>Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+>---
+> net/vmw_vsock/af_vsock.c | 64 +++++++++++++++++++++-------------------
+> 1 file changed, 34 insertions(+), 30 deletions(-)
 
-Patch check that TX FC firmware is running in CM3.
-If not, global TX FC would be disabled.
+This patch LGTM:
 
-Signed-off-by: Stefan Chulski <stefanc@marvell.com>
-Acked-by: Marcin Wojtas <mw@semihalf.com>
----
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h      |  1 +
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 39 ++++++++++++++++----
- 2 files changed, 33 insertions(+), 7 deletions(-)
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-index b61a1ba..da87152 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-@@ -828,6 +828,7 @@
- 
- #define MSS_THRESHOLD_STOP	768
- #define MSS_THRESHOLD_START	1024
-+#define MSS_FC_MAX_TIMEOUT	5000
- 
- /* RX buffer constants */
- #define MVPP2_SKB_SHINFO_SIZE \
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 883d742..4ff195a 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -924,6 +924,34 @@ static void mvpp2_bm_pool_update_fc(struct mvpp2_port *port,
- 	spin_unlock_irqrestore(&port->priv->mss_spinlock, flags);
- }
- 
-+static int mvpp2_enable_global_fc(struct mvpp2 *priv)
-+{
-+	int val, timeout = 0;
-+
-+	/* Enable global flow control. In this stage global
-+	 * flow control enabled, but still disabled per port.
-+	 */
-+	val = mvpp2_cm3_read(priv, MSS_FC_COM_REG);
-+	val |= FLOW_CONTROL_ENABLE_BIT;
-+	mvpp2_cm3_write(priv, MSS_FC_COM_REG, val);
-+
-+	/* Check if Firmware running and disable FC if not*/
-+	val |= FLOW_CONTROL_UPDATE_COMMAND_BIT;
-+	mvpp2_cm3_write(priv, MSS_FC_COM_REG, val);
-+
-+	while (timeout < MSS_FC_MAX_TIMEOUT) {
-+		val = mvpp2_cm3_read(priv, MSS_FC_COM_REG);
-+
-+		if (!(val & FLOW_CONTROL_UPDATE_COMMAND_BIT))
-+			return 0;
-+		usleep_range(10, 20);
-+		timeout++;
-+	}
-+
-+	priv->global_tx_fc = false;
-+	return -EOPNOTSUPP;
-+}
-+
- /* Release buffer to BM */
- static inline void mvpp2_bm_pool_put(struct mvpp2_port *port, int pool,
- 				     dma_addr_t buf_dma_addr,
-@@ -7256,7 +7284,7 @@ static int mvpp2_probe(struct platform_device *pdev)
- 	struct resource *res;
- 	void __iomem *base;
- 	int i, shared;
--	int err, val;
-+	int err;
- 
- 	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
- 	if (!priv)
-@@ -7480,13 +7508,10 @@ static int mvpp2_probe(struct platform_device *pdev)
- 		goto err_port_probe;
- 	}
- 
--	/* Enable global flow control. In this stage global
--	 * flow control enabled, but still disabled per port.
--	 */
- 	if (priv->global_tx_fc && priv->hw_version != MVPP21) {
--		val = mvpp2_cm3_read(priv, MSS_FC_COM_REG);
--		val |= FLOW_CONTROL_ENABLE_BIT;
--		mvpp2_cm3_write(priv, MSS_FC_COM_REG, val);
-+		err = mvpp2_enable_global_fc(priv);
-+		if (err)
-+			dev_warn(&pdev->dev, "Minimum of CM3 firmware 18.09 and chip revision B0 required for flow control\n");
- 	}
- 
- 	mvpp2_dbgfs_init(priv, pdev->name);
--- 
-1.9.1
+Thanks,
+Stefano
+
+>
+>diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+>index 6894f21dc147..f4fabec50650 100644
+>--- a/net/vmw_vsock/af_vsock.c
+>+++ b/net/vmw_vsock/af_vsock.c
+>@@ -604,8 +604,8 @@ static void vsock_pending_work(struct work_struct *work)
+>
+> /**** SOCKET OPERATIONS ****/
+>
+>-static int __vsock_bind_stream(struct vsock_sock *vsk,
+>-			       struct sockaddr_vm *addr)
+>+static int __vsock_bind_connectible(struct vsock_sock *vsk,
+>+				    struct sockaddr_vm *addr)
+> {
+> 	static u32 port;
+> 	struct sockaddr_vm new_addr;
+>@@ -685,7 +685,7 @@ static int __vsock_bind(struct sock *sk, struct sockaddr_vm *addr)
+> 	switch (sk->sk_socket->type) {
+> 	case SOCK_STREAM:
+> 		spin_lock_bh(&vsock_table_lock);
+>-		retval = __vsock_bind_stream(vsk, addr);
+>+		retval = __vsock_bind_connectible(vsk, addr);
+> 		spin_unlock_bh(&vsock_table_lock);
+> 		break;
+>
+>@@ -767,6 +767,11 @@ static struct sock *__vsock_create(struct net *net,
+> 	return sk;
+> }
+>
+>+static bool sock_type_connectible(u16 type)
+>+{
+>+	return type == SOCK_STREAM;
+>+}
+>+
+> static void __vsock_release(struct sock *sk, int level)
+> {
+> 	if (sk) {
+>@@ -785,7 +790,7 @@ static void __vsock_release(struct sock *sk, int level)
+>
+> 		if (vsk->transport)
+> 			vsk->transport->release(vsk);
+>-		else if (sk->sk_type == SOCK_STREAM)
+>+		else if (sock_type_connectible(sk->sk_type))
+> 			vsock_remove_sock(vsk);
+>
+> 		sock_orphan(sk);
+>@@ -945,7 +950,7 @@ static int vsock_shutdown(struct socket *sock, int mode)
+> 	sk = sock->sk;
+> 	if (sock->state == SS_UNCONNECTED) {
+> 		err = -ENOTCONN;
+>-		if (sk->sk_type == SOCK_STREAM)
+>+		if (sock_type_connectible(sk->sk_type))
+> 			return err;
+> 	} else {
+> 		sock->state = SS_DISCONNECTING;
+>@@ -960,7 +965,7 @@ static int vsock_shutdown(struct socket *sock, int mode)
+> 		sk->sk_state_change(sk);
+> 		release_sock(sk);
+>
+>-		if (sk->sk_type == SOCK_STREAM) {
+>+		if (sock_type_connectible(sk->sk_type)) {
+> 			sock_reset_flag(sk, SOCK_DONE);
+> 			vsock_send_shutdown(sk, mode);
+> 		}
+>@@ -1013,7 +1018,7 @@ static __poll_t vsock_poll(struct file *file, struct socket *sock,
+> 		if (!(sk->sk_shutdown & SEND_SHUTDOWN))
+> 			mask |= EPOLLOUT | EPOLLWRNORM | EPOLLWRBAND;
+>
+>-	} else if (sock->type == SOCK_STREAM) {
+>+	} else if (sock_type_connectible(sk->sk_type)) {
+> 		const struct vsock_transport *transport;
+>
+> 		lock_sock(sk);
+>@@ -1263,8 +1268,8 @@ static void vsock_connect_timeout(struct work_struct *work)
+> 	sock_put(sk);
+> }
+>
+>-static int vsock_stream_connect(struct socket *sock, struct sockaddr *addr,
+>-				int addr_len, int flags)
+>+static int vsock_connect(struct socket *sock, struct sockaddr *addr,
+>+			 int addr_len, int flags)
+> {
+> 	int err;
+> 	struct sock *sk;
+>@@ -1414,7 +1419,7 @@ static int vsock_accept(struct socket *sock, struct socket *newsock, int flags,
+>
+> 	lock_sock(listener);
+>
+>-	if (sock->type != SOCK_STREAM) {
+>+	if (!sock_type_connectible(sock->type)) {
+> 		err = -EOPNOTSUPP;
+> 		goto out;
+> 	}
+>@@ -1491,7 +1496,7 @@ static int vsock_listen(struct socket *sock, int backlog)
+>
+> 	lock_sock(sk);
+>
+>-	if (sock->type != SOCK_STREAM) {
+>+	if (!sock_type_connectible(sk->sk_type)) {
+> 		err = -EOPNOTSUPP;
+> 		goto out;
+> 	}
+>@@ -1535,11 +1540,11 @@ static void vsock_update_buffer_size(struct vsock_sock *vsk,
+> 	vsk->buffer_size = val;
+> }
+>
+>-static int vsock_stream_setsockopt(struct socket *sock,
+>-				   int level,
+>-				   int optname,
+>-				   sockptr_t optval,
+>-				   unsigned int optlen)
+>+static int vsock_connectible_setsockopt(struct socket *sock,
+>+					int level,
+>+					int optname,
+>+					sockptr_t optval,
+>+					unsigned int optlen)
+> {
+> 	int err;
+> 	struct sock *sk;
+>@@ -1617,10 +1622,10 @@ static int vsock_stream_setsockopt(struct socket *sock,
+> 	return err;
+> }
+>
+>-static int vsock_stream_getsockopt(struct socket *sock,
+>-				   int level, int optname,
+>-				   char __user *optval,
+>-				   int __user *optlen)
+>+static int vsock_connectible_getsockopt(struct socket *sock,
+>+					int level, int optname,
+>+					char __user *optval,
+>+					int __user *optlen)
+> {
+> 	int err;
+> 	int len;
+>@@ -1688,8 +1693,8 @@ static int vsock_stream_getsockopt(struct socket *sock,
+> 	return 0;
+> }
+>
+>-static int vsock_stream_sendmsg(struct socket *sock, struct msghdr *msg,
+>-				size_t len)
+>+static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
+>+				     size_t len)
+> {
+> 	struct sock *sk;
+> 	struct vsock_sock *vsk;
+>@@ -1828,10 +1833,9 @@ static int vsock_stream_sendmsg(struct socket *sock, struct msghdr *msg,
+> 	return err;
+> }
+>
+>-
+> static int
+>-vsock_stream_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+>-		     int flags)
+>+vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+>+			  int flags)
+> {
+> 	struct sock *sk;
+> 	struct vsock_sock *vsk;
+>@@ -2007,7 +2011,7 @@ static const struct proto_ops vsock_stream_ops = {
+> 	.owner = THIS_MODULE,
+> 	.release = vsock_release,
+> 	.bind = vsock_bind,
+>-	.connect = vsock_stream_connect,
+>+	.connect = vsock_connect,
+> 	.socketpair = sock_no_socketpair,
+> 	.accept = vsock_accept,
+> 	.getname = vsock_getname,
+>@@ -2015,10 +2019,10 @@ static const struct proto_ops vsock_stream_ops = {
+> 	.ioctl = sock_no_ioctl,
+> 	.listen = vsock_listen,
+> 	.shutdown = vsock_shutdown,
+>-	.setsockopt = vsock_stream_setsockopt,
+>-	.getsockopt = vsock_stream_getsockopt,
+>-	.sendmsg = vsock_stream_sendmsg,
+>-	.recvmsg = vsock_stream_recvmsg,
+>+	.setsockopt = vsock_connectible_setsockopt,
+>+	.getsockopt = vsock_connectible_getsockopt,
+>+	.sendmsg = vsock_connectible_sendmsg,
+>+	.recvmsg = vsock_connectible_recvmsg,
+> 	.mmap = sock_no_mmap,
+> 	.sendpage = sock_no_sendpage,
+> };
+>-- 
+>2.25.1
+>
 
