@@ -2,164 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AEB6431863B
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 09:19:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E990931863E
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 09:22:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229617AbhBKIT2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 03:19:28 -0500
-Received: from mga09.intel.com ([134.134.136.24]:9311 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229538AbhBKITU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Feb 2021 03:19:20 -0500
-IronPort-SDR: b0oUlOtMgpirWqUbl/UhNW/2zrBjKpBudwued+8ppWeXg1NGQTaSrkGiZEpv/SXn5FqU4G3Wy/
- 396gKt4J/jyw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9891"; a="182343338"
-X-IronPort-AV: E=Sophos;i="5.81,169,1610438400"; 
-   d="scan'208";a="182343338"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2021 00:18:35 -0800
-IronPort-SDR: +31Jgtckbh5cjsD0pHzixfSsQWk9nimeBFEdFb9qImNA0Bym3ntKHCcZIqW7zIra97z1ffIiLk
- Es2PQKsrC+Gw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,169,1610438400"; 
-   d="scan'208";a="380501211"
-Received: from irsmsx606.ger.corp.intel.com ([163.33.146.139])
-  by fmsmga008.fm.intel.com with ESMTP; 11 Feb 2021 00:18:34 -0800
-Received: from irsmsx604.ger.corp.intel.com (163.33.146.137) by
- IRSMSX606.ger.corp.intel.com (163.33.146.139) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Thu, 11 Feb 2021 08:18:33 +0000
-Received: from irsmsx604.ger.corp.intel.com ([163.33.146.137]) by
- IRSMSX604.ger.corp.intel.com ([163.33.146.137]) with mapi id 15.01.2106.002;
- Thu, 11 Feb 2021 08:18:33 +0000
-From:   "Loftus, Ciara" <ciara.loftus@intel.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-CC:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        "Janjua, Weqaar A" <weqaar.a.janjua@intel.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "song@kernel.org" <song@kernel.org>
-Subject: RE: [PATCH bpf-next v5 0/6] AF_XDP Packet Drop Tracing
-Thread-Topic: [PATCH bpf-next v5 0/6] AF_XDP Packet Drop Tracing
-Thread-Index: AQHW/f3Hhwi0h4mCKUCb/nGQApo4ZKpSnNwAgAACLAA=
-Date:   Thu, 11 Feb 2021 08:18:33 +0000
-Message-ID: <0cd88199e7f74230bef42e9a469c256f@intel.com>
-References: <20210208090530.5032-1-ciara.loftus@intel.com>
- <CAJ8uoz3xr=SRjvKKhxuoRDSvQ_s4DYPHYT5V0ZOZ7zGWV95=SA@mail.gmail.com>
-In-Reply-To: <CAJ8uoz3xr=SRjvKKhxuoRDSvQ_s4DYPHYT5V0ZOZ7zGWV95=SA@mail.gmail.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-x-originating-ip: [163.33.253.164]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S229713AbhBKIVp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 03:21:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46034 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229679AbhBKIVn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 03:21:43 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70CF6C061574;
+        Thu, 11 Feb 2021 00:21:03 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id m22so6914936lfg.5;
+        Thu, 11 Feb 2021 00:21:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D8VsKTsNEuZP6ZxpKofqGw/kZ1i+lqPcBD6ub/pSfiM=;
+        b=vcUqTSaTWOwECmpxABRkAgSesfrI9GmRSnYyG05orb1SNIVz8YZPYXjlmtNre5c5i0
+         F9u0dIvVuBciXMrYoLTm9fTcB1cs9ZN3Elg5tUfEIrhjBTO7L/w8Y97DIpGBwS19nDmk
+         o2MAQwmXSaTRSgwHfKSAroVk/018s9/EjVIdpfvHpXsMu2sY6LRTeI4RCx9YBY7GlrCE
+         PJmmCHkJ5jpDRqV6CzqcDQYjfsR7OpMmbiCHNWo6UuMh+doz2bcM/EVO6vT8+tcmqa20
+         lkWHLyUr7MLBUbY8NpKVsk+Gp2h9tB0S3ajyG3BgFcd1h/CVw3AK2hWPaDgfB6CxSizb
+         fRRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=D8VsKTsNEuZP6ZxpKofqGw/kZ1i+lqPcBD6ub/pSfiM=;
+        b=l5TDiDhLz9pRxvHJBNhUZYBRJLk4qOA+iPkFu3ULfFShKyTFb6RfHNygArqx0vO3nV
+         44qvGy8rjxRJ3KCbQtIoN26diuMMDlmC1Bhd06kOmvJF8/lu0nW7iNje81sfH3jd26XK
+         epOY224RatAJCrhsnnxgVNNkT58BdUqDh99ogByv9c8DPVe6iGF+rmaRVHJivNIxzf8K
+         5qBg3G+pIgQvTmuXkflXuGTZSbNFIOyw7nejqDkePUONDpWluMiwKA1KFobF9OxzbGrB
+         Nyme45Zvr0jkPw4okpL6K8jsN0v5DyvilZeeDkTqLesvO/KwMua1OTwyravYsfyVh3LY
+         mpFg==
+X-Gm-Message-State: AOAM531KygDpjodp1O7651JSoAqv2iRGlFxUG/s8BuMuic3ej/tGoQEc
+        iFQa3cEQmwakGq6Y9+iyOoM=
+X-Google-Smtp-Source: ABdhPJxCZgafsiYM/5b7TRQ/D2LTMzVfjB0If5VCCDfzYTQ3F30N/W9Fg1oM1VBmcSgZy5FVkv+rvQ==
+X-Received: by 2002:a05:6512:453:: with SMTP id y19mr3606129lfk.329.1613031661936;
+        Thu, 11 Feb 2021 00:21:01 -0800 (PST)
+Received: from btopel-mobl.ger.intel.com (c213-102-90-208.bredband.comhem.se. [213.102.90.208])
+        by smtp.gmail.com with ESMTPSA id k16sm585285lfm.39.2021.02.11.00.21.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Feb 2021 00:21:01 -0800 (PST)
+From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
+        u9012063@gmail.com, rdunlap@infradead.org,
+        andrii.nakryiko@gmail.com, Andrii Nakryiko <andrii@kernel.org>
+Subject: [PATCH bpf v4] selftests/bpf: convert test_xdp_redirect.sh to bash
+Date:   Thu, 11 Feb 2021 09:20:29 +0100
+Message-Id: <20210211082029.1687666-1-bjorn.topel@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiA+DQo+ID4gVGhpcyBzZXJpZXMgaW50cm9kdWNlcyB0cmFjaW5nIGluZnJhc3RydWN0dXJlIGZv
-ciBBRl9YRFAgc29ja2V0cyAoeHNrKS4NCj4gPiBBIHRyYWNlIGV2ZW50ICd4c2tfcGFja2V0X2Ry
-b3AnIGlzIGNyZWF0ZWQgd2hpY2ggY2FuIGJlIGVuYWJsZWQgYnkNCj4gdG9nZ2xpbmcNCj4gPg0K
-PiA+IC9zeXMva2VybmVsL2RlYnVnL3RyYWNpbmcvZXZlbnRzL3hzay94c2tfcGFja2V0X2Ryb3Av
-ZW5hYmxlDQo+ID4NCj4gPiBXaGVuIGVuYWJsZWQgYW5kIHBhY2tldHMgb3IgZW1wdHkgcGFja2V0
-IGJ1ZmZlcnMgYXJlIGRyb3BwZWQgaW4gdGhlDQo+IGtlcm5lbCwNCj4gPiB0cmFjZXMgYXJlIGdl
-bmVyYXRlZCB3aGljaCBkZXNjcmliZSB0aGUgcmVhc29uIGZvciB0aGUgcGFja2V0IGRyb3AsIHRo
-ZQ0KPiBuZXRkZXYNCj4gPiBhbmQgcWlkIGluZm9ybWF0aW9uIG9mIHRoZSB4c2sgd2hpY2ggZW5j
-b3VudGVyZWQgdGhlIGRyb3AsIGFuZCBzb21lDQo+IG1vcmUNCj4gPiBpbmZvcm1hdGlvbiBkZXBl
-bmRpbmcgb24gd2hhdCB0eXBlIG9mIGRyb3Agd2FzIGVuY291bnRlcmVkIHRoYXQgd2lsbCB0ZWxs
-DQo+ID4gdGhlIHVzZXIgd2h5IHRoZSBwYWNrZXQgd2FzIGRyb3BwZWQuICBUaGlzIGluZm9ybWF0
-aW9uIHNob3VsZCBoZWxwIGEgdXNlcg0KPiA+IHRyb3VibGVzaG9vdCBwYWNrZXQgZHJvcHMgYnkg
-cHJvdmlkaW5nIGFuIGV4dHJhIGxldmVsIG9mIGRldGFpbCB3aGljaCBpcyBub3QNCj4gPiBhdmFp
-bGFibGUgdGhyb3VnaCB1c2Ugb2Ygc2ltcGxlIGNvdW50ZXJzDQo+ID4NCj4gPiBFeGFtcGxlIHRy
-YWNlczoNCj4gPiB4c2tfcGFja2V0X2Ryb3A6IG5ldGRldjogdmUzMjEzIHFpZCAwIHJlYXNvbjog
-cGFja2V0IHRvbyBiaWc6IGxlbiAzMDAwDQo+IG1heCAyMDQ4IG5vdF91c2VkIDANCj4gPiB4c2tf
-cGFja2V0X2Ryb3A6IG5ldGRldjogdmUzMjEzIHFpZCAwIHJlYXNvbjogaW52YWxpZCBmaWxsIGFk
-ZHI6IGFkZHIgNTIwMTkyDQo+IG5vdF91c2VkIDAgbm90X3VzZWQgMA0KPiA+IHhza19wYWNrZXRf
-ZHJvcDogbmV0ZGV2OiB2ZTkyNjYgcWlkIDAgcmVhc29uOiBpbnZhbGlkIHR4IGRlc2M6IGFkZHIg
-MCBsZW4NCj4gNDA5NyBvcHRpb25zIDANCj4gPg0KPiA+IEl0IHdhcyBkZWNpZGVkIHRvIHVzZSBh
-IHNpbmdsZSBldmVudCAneHNrX3BhY2tldF9kcm9wJyB0byBjYXB0dXJlIHRoZXNlDQo+IHRocmVl
-DQo+ID4gZHJvcCB0eXBlcy4gVGhpcyBtZWFucyB0aGF0IGZvciBzb21lIG9mIHRoZW0sIHRoZXJl
-IGlzIHNvbWUgcmVkdW5kYW50DQo+IGluZm9ybWF0aW9uDQo+ID4gaW4gdGhlIHRyYWNlIG1hcmtl
-ZCBhcyAnbm90X3VzZWQnLiBBbiBhbHRlcm5hdGl2ZSB0byB0aGlzIHdvdWxkIGJlIHRvDQo+IGlu
-dHJvZHVjZSAzDQo+ID4gc2VwYXJhdGUgZXZlbnQgdHlwZXMgdW5kZXIgeHNrLCBlYWNoIHdpdGgg
-dGhlaXIgb3duIGFwcHJvcHJpYXRlIHRyYWNlDQo+IGZvcm1hdC4NCj4gPiBTdWdnZXN0aW9ucyBh
-cmUgd2VsY29tZSBvbiB3aGljaCBhcHByb2FjaCB3b3VsZCBiZSBiZXR0ZXIgdG8gdGFrZS4NCj4g
-Pg0KPiA+IFRoZSBldmVudCBjYW4gYmUgbW9uaXRvcmVkIHVzaW5nIHBlcmY6DQo+ID4gcGVyZiBz
-dGF0IC1hIC1lIHhzazp4c2tfcGFja2V0X2Ryb3ANCj4gPg0KPiA+IEEgc2VsZnRlc3QgaXMgYWRk
-ZWQgZm9yIGVhY2ggZHJvcCB0eXBlLiBUaGVzZSB0ZXN0cyBwcm92aWRlIHRoZSBjb25kaXRpb25z
-DQo+IHRvDQo+ID4gdHJpZ2dlciB0aGUgdHJhY2VzIGFuZCBlbnN1cmUgdGhhdCB0aGUgYXBwcm9w
-cmlhdGUgdHJhY2VzIGFyZSBnZW5lcmF0ZWQuDQo+IA0KPiBTbyB3aGF0IHlvdSBoYXZlIGRvbmUg
-bm93IGlzIHRvIHJlbW92ZSBhbGwgdGhlIHRyYWNlIHBvaW50cyB0aGF0DQo+IHByb3ZpZGVkIG5v
-IGFkZGVkIGluZm9ybWF0aW9uIG9uIHRvcCBvZiB0aGUgc3RhdHMgY291bnRlcnMuIFRoZSBvbmVz
-DQo+IHlvdSBoYXZlIGxlZnQsIHByb3ZpZGUgZXh0cmEgaW5mb3JtYXRpb24uIFRoZSB0d28gIFhT
-S19UUkFDRV9JTlZBTElEXyoNCj4gcG9pbnRzIHByb3ZpZGUgdGhlIHJlYXNvbiB3aHkgdGhlIGRl
-c2NyaXB0b3Igd2FzIGRyb3BwZWQgYW5kDQo+IFhTS19UUkFDRV9EUk9QX1BLVF9UT09fQklHIHBy
-b3ZpZGVzIHRoZSBzaXplIG9mIHRoZSBwYWNrZXQgdGhhdCB3YXMNCj4gZHJvcHBlZC4NCj4gDQo+
-IEhvd2V2ZXIsIHRoZSBYU0tfVFJBQ0VfSU5WQUxJRCBjaGVja3MgY291bGQgYmUgcGVyZm9ybWVk
-IGZyb20gdXNlcg0KPiBzcGFjZSBhbmQgdGhlIHNhbWUgZGF0YSBjb3VsZCBiZSBwcmludGVkIG91
-dCBmcm9tIHRoZXJlLiBBIGRldmVsb3Blcg0KPiBjb3VsZCBhZGQgdGhpcywgb3Igd2UgY291bGQg
-aGF2ZSBhIHZlcmlmaWNhdGlvbiBtb2RlIGluIHRoZSByaW5nDQo+IGFjY2VzcyBmdW5jdGlvbnMg
-aW4gbGliYnBmIHRoYXQgY291bGQgYmUgdHVybmVkIG9uIGJ5IHRoZSBkZXZlbG9wZXIgaWYNCj4g
-aGUgc2VlcyB0aGUgZXJyb3IgY291bnRlcnMgaW4gdGhlIGtlcm5lbCBiZWluZyBpbmNyZWFzZWQu
-IFRoYXQgb25seQ0KPiBsZWF2ZXMgdXMgd2l0aCBYU0tfVFJBQ0VfRFJPUF9QS1RfVE9PX0JJRyB3
-aGljaCBjYW5ub3QgYmUgdGVzdGVkIGJ5DQo+IHVzZXIgc3BhY2Ugc2luY2UgdGhlIGluZ3Jlc3Mg
-cGFja2V0IGlzIGJlaW5nIGRyb3BwZWQgYnkgdGhlIGtlcm5lbC4NCj4gQnV0IHRoaXMgaXMgdW5m
-b3J0dW5hdGVseSBub3QgZW5vdWdoIHRvIHdhcnJhbnQgdGhpcyB0cmFjZQ0KPiBpbmZyYXN0cnVj
-dHVyZSBvbiBpdHMgb3duLCBzbyBJIHRoaW5rIHdlIHNob3VsZCBkcm9wIHRoaXMgcGF0Y2ggc2V0
-Lg0KPiANCj4gQnV0IEkgd291bGQgcmVhbGx5IGxpa2UgdG8gc2FsdmFnZSBhbGwgeW91ciB0ZXN0
-cywgYmVjYXVzZSB0aGV5IGFyZQ0KPiBuZWVkZWQuIEluc3RlYWQgb2YgdmVyaWZ5aW5nIHRoZSB0
-cmFjZSwgY291bGQgeW91IHBsZWFzZSB2ZXJpZnkgdGhlDQo+IHN0YXRzIGNvdW50ZXJzIHRoYXQg
-YXJlIGFscmVhZHkgdGhlcmU/IEEgbG90IG9mIHlvdXIgY29kZSB3aWxsIGJlDQo+IGFwcGxpY2Fi
-bGUgZm9yIHRoYXQgY2FzZSB0b28uIFNvIG15IHN1Z2dlc3Rpb24gaXMgdGhhdCB5b3UgZHJvcCB0
-aGlzDQo+IHBhdGNoIHNldCBhbmQgIHByb2R1Y2UgYSBuZXcgb25lIHRoYXQgb25seSBmb2N1c2Vz
-IG9uIHNlbGZ0ZXN0cyBmb3INCj4gdGhlIFhEUF9TVEFUSVNUSUNTIGdldHNvY2tvcHQuIFlvdSBj
-YW4gYWRkIHNvbWUgb2YgdGhlIHRlc3RzIHlvdSBoYWQNCj4gaW4geW91ciB2Mi4gV2hhdCBkbyB5
-b3UgdGhpbms/DQoNClRoYW5rcyBmb3IgeW91ciBmZWVkYmFjayBNYWdudXMuIEkgc2VlIHlvdXIg
-cG9pbnQuIElmIGl0J3MgcG9zc2libGUgdG8gZG8gdGhlIGludmFsaWQgZGVzYyBjaGVja2luZyBp
-biB1c2Vyc3BhY2UgdGhlbiB0aGlzIHByb2JhYmx5IGRvZXNuJ3QgYmVsb25nIGluIHRoZSBrZXJu
-ZWwsIGFuZCBrZWVwaW5nIHRoZSBlbnRpcmUgdHJhY2luZyBpbmZyYXN0cnVjdHVyZSBqdXN0IGZv
-ciBvbmUgdHJhY2Ugd291bGQgYmUgdG9vIGhlYXZ5Lg0KDQpJIGxpa2UgeW91ciBzdWdnZXN0aW9u
-IHJlIHN0YXRzIHNlbGZ0ZXN0cy4gSSdsbCBzdWJtaXQgc29tZXRoaW5nIGFsb25nIHRob3NlIGxp
-bmVzLg0KDQpUaGFua3MsDQpDaWFyYQ0KDQo+IA0KPiBUaGFuayB5b3UuDQo+IA0KPiA+IHY0LT52
-NToNCj4gPiAqIFJlbW92ZWQgd2hpdGVzcGFjZSBhbmQgcmVuYW1lZCBzdHJ1Y3QgbmFtZSBpbiBp
-Zl94ZHAuaCBhcyBzdWdnZXN0ZWQNCj4gYnkgU29uZy4NCj4gPg0KPiA+IHYzLT52NDoNCj4gPiAq
-IEZpeGVkIHNlbGZ0ZXN0IGNvbW1pdHMgd2l0aCBjb3JyZWN0IGxvZ3MNCj4gPiAqIEZpeGVkIHdh
-cm5pbmdzIHJlcG9ydGVkIGJ5IFc9MSBidWlsZDogdHJhY2UgYXJndW1lbnQgdHlwZXMgYW5kIHBy
-aW50DQo+IGZvcm1hdHRpbmcNCj4gPg0KPiA+IHYyLT52MzoNCj4gPiAqIFJlbW92ZWQgc29tZSB0
-cmFjZXMgd2hpY2ggdHJhY2VkIGV2ZW50cyB3aGljaCB3ZXJlIG5vdCB0ZWNobmljYWxseQ0KPiBk
-cm9wcyBlZy4NCj4gPiB3aGVuIHRoZSByeHEgaXMgZnVsbC4NCj4gPiAqIEludHJvZHVjZWQgdHJh
-Y2VzIGZvciBkZXNjcmlwdG9yIHZhbGlkYXRpb24gb24gUlggYW5kIFRYIGFuZCBzZWxmdGVzdHMg
-Zm9yDQo+IGJvdGgNCj4gPg0KPiA+IHYxLT52MjoNCj4gPiAqIFJlYmFzZSBvbiB0b3Agb2YgQmrD
-tnJuJ3MgY2xlYW51cCBzZXJpZXMuDQo+ID4gKiBGaXhlZCBwYWNrZXQgY291bnQgZm9yIHRyYWNl
-IHRlc3RzIHdoaWNoIGRvbid0IG5lZWQgRU9UIGZyYW1lLg0KPiA+DQo+ID4gVGhpcyBzZXJpZXMg
-YXBwbGllcyBvbiBjb21taXQNCj4gMjNhMmQ3MGM3YTJmMjhlYjFhOGY2YmMxOWQ2OGQyMzk2OGNh
-ZDBjZQ0KPiA+DQo+ID4gQ2lhcmEgTG9mdHVzICg2KToNCj4gPiAgIHhzazogYWRkIHRyYWNlcG9p
-bnRzIGZvciBwYWNrZXQgZHJvcHMNCj4gPiAgIHNlbGZ0ZXN0cy9icGY6IHJlc3RydWN0dXJlIHNl
-dHRpbmcgdGhlIHBhY2tldCBjb3VudA0KPiA+ICAgc2VsZnRlc3RzL2JwZjogYWRkIGZyYW1ld29y
-ayBmb3IgeHNrIHNlbGZ0ZXN0cw0KPiA+ICAgc2VsZnRlc3RzL2JwZjogWFNLX1RSQUNFX0RST1Bf
-UEtUX1RPT19CSUcgdGVzdA0KPiA+ICAgc2VsZnRlc3RzL2JwZjogWFNLX1RSQUNFX0lOVkFMSURf
-RklMTEFERFIgdGVzdA0KPiA+ICAgc2VsZnRlc3RzL2JwZjogWFNLX1RSQUNFX0lOVkFMSURfREVT
-Q19UWCB0ZXN0DQo+ID4NCj4gPiAgTUFJTlRBSU5FUlMgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgIHwgICAxICsNCj4gPiAgaW5jbHVkZS9saW51eC9icGZfdHJhY2UuaCAgICAgICAgICAg
-ICAgICAgIHwgICAxICsNCj4gPiAgaW5jbHVkZS90cmFjZS9ldmVudHMveHNrLmggICAgICAgICAg
-ICAgICAgIHwgIDcxICsrKysrKysNCj4gPiAgaW5jbHVkZS91YXBpL2xpbnV4L2lmX3hkcC5oICAg
-ICAgICAgICAgICAgIHwgICA2ICsNCj4gPiAga2VybmVsL2JwZi9jb3JlLmMgICAgICAgICAgICAg
-ICAgICAgICAgICAgIHwgICAxICsNCj4gPiAgbmV0L3hkcC94c2suYyAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgIHwgICA3ICstDQo+ID4gIG5ldC94ZHAveHNrX2J1ZmZfcG9vbC5jICAgICAg
-ICAgICAgICAgICAgICB8ICAgMyArDQo+ID4gIG5ldC94ZHAveHNrX3F1ZXVlLmggICAgICAgICAg
-ICAgICAgICAgICAgICB8ICAgNCArDQo+ID4gIHRvb2xzL2luY2x1ZGUvdWFwaS9saW51eC9pZl94
-ZHAuaCAgICAgICAgICB8ICAgNiArDQo+ID4gIHRvb2xzL3Rlc3Rpbmcvc2VsZnRlc3RzL2JwZi90
-ZXN0X3hzay5zaCAgICB8ICA5MCArKysrKysrKy0NCj4gPiAgdG9vbHMvdGVzdGluZy9zZWxmdGVz
-dHMvYnBmL3hkcHhjZWl2ZXIuYyAgIHwgMjA2ICsrKysrKysrKysrKysrKysrKystLQ0KPiA+ICB0
-b29scy90ZXN0aW5nL3NlbGZ0ZXN0cy9icGYveGRweGNlaXZlci5oICAgfCAgIDkgKw0KPiA+ICB0
-b29scy90ZXN0aW5nL3NlbGZ0ZXN0cy9icGYveHNrX3ByZXJlcXMuc2ggfCAgIDMgKy0NCj4gPiAg
-MTMgZmlsZXMgY2hhbmdlZCwgMzc5IGluc2VydGlvbnMoKyksIDI5IGRlbGV0aW9ucygtKQ0KPiA+
-ICBjcmVhdGUgbW9kZSAxMDA2NDQgaW5jbHVkZS90cmFjZS9ldmVudHMveHNrLmgNCj4gPg0KPiA+
-IC0tDQo+ID4gMi4xNy4xDQo+ID4NCg==
+From: Björn Töpel <bjorn.topel@intel.com>
+
+The test_xdp_redirect.sh script uses a bash feature, '&>'. On systems,
+e.g. Debian, where '/bin/sh' is dash, this will not work as
+expected. Use bash in the shebang to get the expected behavior.
+
+Further, using 'set -e' means that the error of a command cannot be
+captured without the command being executed with '&&' or '||'. Let us
+restructure the ping-commands, and use them as an if-expression, so
+that we can capture the return value.
+
+v4: Added missing Fixes:, and removed local variables. (Andrii)
+v3: Reintroduced /bin/bash, and kept 'set -e'. (Andrii)
+v2: Kept /bin/sh and removed bashisms. (Randy)
+
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Fixes: 996139e801fd ("selftests: bpf: add a test for XDP redirect")
+Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+---
+ tools/testing/selftests/bpf/test_xdp_redirect.sh | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
+
+diff --git a/tools/testing/selftests/bpf/test_xdp_redirect.sh b/tools/testing/selftests/bpf/test_xdp_redirect.sh
+index dd80f0c84afb..c033850886f4 100755
+--- a/tools/testing/selftests/bpf/test_xdp_redirect.sh
++++ b/tools/testing/selftests/bpf/test_xdp_redirect.sh
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ # Create 2 namespaces with two veth peers, and
+ # forward packets in-between using generic XDP
+ #
+@@ -57,12 +57,8 @@ test_xdp_redirect()
+ 	ip link set dev veth1 $xdpmode obj test_xdp_redirect.o sec redirect_to_222 &> /dev/null
+ 	ip link set dev veth2 $xdpmode obj test_xdp_redirect.o sec redirect_to_111 &> /dev/null
+ 
+-	ip netns exec ns1 ping -c 1 10.1.1.22 &> /dev/null
+-	local ret1=$?
+-	ip netns exec ns2 ping -c 1 10.1.1.11 &> /dev/null
+-	local ret2=$?
+-
+-	if [ $ret1 -eq 0 -a $ret2 -eq 0 ]; then
++	if ip netns exec ns1 ping -c 1 10.1.1.22 &> /dev/null &&
++	   ip netns exec ns2 ping -c 1 10.1.1.11 &> /dev/null; then
+ 		echo "selftests: test_xdp_redirect $xdpmode [PASS]";
+ 	else
+ 		ret=1
+
+base-commit: 291009f656e8eaebbdfd3a8d99f6b190a9ce9deb
+-- 
+2.27.0
+
