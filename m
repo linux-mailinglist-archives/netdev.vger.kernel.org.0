@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB2E931957A
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 23:01:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A1F8319597
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 23:13:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229626AbhBKWAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 17:00:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38528 "EHLO mail.kernel.org"
+        id S229793AbhBKWKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 17:10:51 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40978 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229469AbhBKWAs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Feb 2021 17:00:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 15AE864DEE;
-        Thu, 11 Feb 2021 22:00:08 +0000 (UTC)
+        id S229678AbhBKWKt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Feb 2021 17:10:49 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 48BE964E2F;
+        Thu, 11 Feb 2021 22:10:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613080808;
-        bh=Eh+d0Fg9CEUYXI9ZS5DPAtDRJV4pM5Lhvl59b/LQM0g=;
+        s=k20201202; t=1613081409;
+        bh=7gyYGGGjTFOZrySHpAo0w8FD7+7axG/GlhZCEDGVWOA=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=JhJDaHhWhKDamw7uhLfAF0uOaD9yeMITFxcGnJTV0uBHFZOb5pxNiuUkXEqCaeJM2
-         Jtw8ZeQEqxVX0MfDIRJqVJ+2HIVZ9FzKJUVKtfAjy1NDEr8XBV2cebHBp87UXkC5yQ
-         Hif4X+bP/B0PxUr7XP0B3QojjlVZADP8IOooaEVKr9yq3e3yoyAi+mFsgLyUoJaEEu
-         aiwU8UQfJmzpPUy1Y1ZfPEVg3Df5bFLn6xd9QFmMAS2EKtFefrTWZAtu8oAIpE0KjI
-         XXRNYB1o4KHTwVJ+E4uBNECw0SZ86iX7hZjov62FC9pVi+J8fRCCAENhoRsw8yVJry
-         7MyCUFcNv3mMw==
+        b=AIdQ9/3oxgblYyE+6shLVQTkBwPLKJykoqh4VtjyVpcJTnNt431LZSTpObRz5hmIw
+         SnWWrSjnEyHtyh4prjd4vAFrBE7amNkzcJaDVeqxj3r6uSshnOdJrvc6Ur569fsEM8
+         CE3N05k5Cog0QHo46My43PfPiCA3NOhTcPkh+59rtGTkCqR3QTrTDV/FUtCneNgJNa
+         WEy2oPqwoT0QtOx9m/Nw3nSg46F/Pi2OUoFf7HIuH/E+AJZGw8G+FIaAziLe4L1c4S
+         qisGnUU2sY3gaJS3MNoh6xUVCcz4AWT/OINmVNgaq5QCFl+BpJndxxpSwQywCZ/AC0
+         0KcOP55Oh2EHg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 01885609D6;
-        Thu, 11 Feb 2021 22:00:08 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 33A8F600E8;
+        Thu, 11 Feb 2021 22:10:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v3 0/4] add HSR offloading support for DSA switches
+Subject: Re: [PATCH net-next v4 0/9] net: phy: icplus: cleanups and new features
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161308080800.27128.4389313712067341849.git-patchwork-notify@kernel.org>
-Date:   Thu, 11 Feb 2021 22:00:08 +0000
-References: <20210210010213.27553-1-george.mccollister@gmail.com>
-In-Reply-To: <20210210010213.27553-1-george.mccollister@gmail.com>
-To:     George McCollister <george.mccollister@gmail.com>
-Cc:     kuba@kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, tobias@waldekranz.com,
-        corbet@lwn.net, netdev@vger.kernel.org
+Message-Id: <161308140920.31051.202179851153917362.git-patchwork-notify@kernel.org>
+Date:   Thu, 11 Feb 2021 22:10:09 +0000
+References: <20210211074750.28674-1-michael@walle.cc>
+In-Reply-To: <20210211074750.28674-1-michael@walle.cc>
+To:     Michael Walle <michael@walle.cc>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -47,25 +47,36 @@ Hello:
 
 This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue,  9 Feb 2021 19:02:09 -0600 you wrote:
-> Add support for offloading HSR/PRP (IEC 62439-3) tag insertion, tag
-> removal, forwarding and duplication on DSA switches.
-> This series adds offloading to the xrs700x DSA driver.
+On Thu, 11 Feb 2021 08:47:41 +0100 you wrote:
+> Cleanup the PHY drivers for IPplus devices and add PHY counters and MDIX
+> support for the IP101A/G.
 > 
-> Changes since RFC:
->  * Split hsr and dsa patches. (Florian Fainelli)
+> Patch 5 adds a model detection based on the behavior of the PHY.
+> Unfortunately, the IP101A shares the PHY ID with the IP101G. But the latter
+> provides more features. Try to detect the newer model by accessing the page
+> selection register. If it is writeable, it is assumed, that it is a IP101G.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v3,1/4] net: hsr: generate supervision frame without HSR/PRP tag
-    https://git.kernel.org/netdev/net-next/c/78be9217c401
-  - [net-next,v3,2/4] net: hsr: add offloading support
-    https://git.kernel.org/netdev/net-next/c/dcf0cd1cc58b
-  - [net-next,v3,3/4] net: dsa: add support for offloading HSR
-    https://git.kernel.org/netdev/net-next/c/18596f504a3e
-  - [net-next,v3,4/4] net: dsa: xrs700x: add HSR offloading support
-    https://git.kernel.org/netdev/net-next/c/bd62e6f5e6a9
+  - [net-next,v4,1/9] net: phy: icplus: use PHY_ID_MATCH_MODEL() macro
+    https://git.kernel.org/netdev/net-next/c/2ad4758cec48
+  - [net-next,v4,2/9] net: phy: icplus: use PHY_ID_MATCH_EXACT() for IP101A/G
+    https://git.kernel.org/netdev/net-next/c/7360a4de36a4
+  - [net-next,v4,3/9] net: phy: icplus: drop address operator for functions
+    https://git.kernel.org/netdev/net-next/c/8edf206cc2b5
+  - [net-next,v4,4/9] net: phy: icplus: use the .soft_reset() of the phy-core
+    https://git.kernel.org/netdev/net-next/c/df22de9a6f13
+  - [net-next,v4,5/9] net: phy: icplus: split IP101A/G driver
+    https://git.kernel.org/netdev/net-next/c/675115bf8c3d
+  - [net-next,v4,6/9] net: phy: icplus: don't set APS_EN bit on IP101G
+    https://git.kernel.org/netdev/net-next/c/eeac7d43d4dd
+  - [net-next,v4,7/9] net: phy: icplus: fix paged register access
+    https://git.kernel.org/netdev/net-next/c/f9bc51e6cce2
+  - [net-next,v4,8/9] net: phy: icplus: add PHY counter for IP101G
+    https://git.kernel.org/netdev/net-next/c/a0750d42e951
+  - [net-next,v4,9/9] net: phy: icplus: add MDI/MDIX support for IP101A/G
+    https://git.kernel.org/netdev/net-next/c/32ab60e53920
 
 You are awesome, thank you!
 --
