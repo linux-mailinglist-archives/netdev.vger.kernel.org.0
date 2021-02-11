@@ -2,74 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7866D319321
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 20:32:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 300C6319325
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 20:32:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230379AbhBKTau (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 14:30:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50790 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229882AbhBKTar (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Feb 2021 14:30:47 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id CBB6264E42;
-        Thu, 11 Feb 2021 19:30:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613071806;
-        bh=tZZCBz4Kktiv1zTVTF0hcFeqZ3MUADme97t/fKlwNwI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=qW4yukOGlsTeWDuCr/nNI2lBPDj+yzMHF7TjePrO7VMOMmSe767xF5bhLFDAMzsDf
-         y9twpZt3W/+Asq5PXqi6Ua5X6wWaVEQdH55paHKgG2oTcrbUa3R3tj5DFCLYlaNMrH
-         lNZo7SNQQhiayZi2/9x2NuZqRceEomfYz/hKqPosZNrZt7XM2StnlRRVeyUffYt4W1
-         UCg/gPGut3kSlzybdn6Q9Nn3M4YszW8G0VOC01blpgKzuEhLwuouAaprZEePSaGy8V
-         HvWJHAeittavb3pJHD74k2MKaRg1dnC3OOvAOE2jcDIR76BV41F9Vx7lKjrfa2qkmi
-         glaCO9C/aMBnA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B5C1E600E8;
-        Thu, 11 Feb 2021 19:30:06 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S229873AbhBKTcO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 14:32:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48518 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230436AbhBKTcK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 14:32:10 -0500
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D08C0613D6;
+        Thu, 11 Feb 2021 11:31:30 -0800 (PST)
+Received: by mail-yb1-xb2e.google.com with SMTP id p186so6746222ybg.2;
+        Thu, 11 Feb 2021 11:31:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=B2hqDBYN7cQp7+g4S9dE/2ZF4z47f6o1qL/EGha7wOU=;
+        b=uVhId0RBVVZBUZ1tvS4fZPBSDZuNAmO6t3ieIx5KdOQxjORG4DjfzVRYi/O/DsMiKa
+         KGo+eoduaecDYzAer2tRaDe0QT58Iw2ZHCoWD5a4Jd9D1X5Z2EXoXlk2KvRoG9tHzAfQ
+         GqIvinB9k6RPxjxPS1h27aFiKkMyvjB3sTJTu/EGzB5VPHFvnXq2Bemndp1gyr6nMgZR
+         K3u6CjRLw4oPMscShwUh4e6Y1PhAj5jzLHOdRyYMA0LkAlGz/F3dawGB4IbmRj83sE+z
+         7mARDq/uaTp7HLFYd4yke+qi80Po28FerC/3+7pY7gpx8/B1zj2/eELPNYd9+goPFZX4
+         w+LQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=B2hqDBYN7cQp7+g4S9dE/2ZF4z47f6o1qL/EGha7wOU=;
+        b=ZRTQU2HmehU5p3kAaobm7wDQBAHKkmM1qkxlUiwWFQE+as0W6thZWr6TJKrA6fnSjf
+         QJOKkFMZsPwKH7AirWZoKqPzRh3XIQ/pRlJPxapJZaOO80jkOd0fyw0MMHkNa6tFIpul
+         Yz/XEigtNMomevMGusWYCy4vXPQwDAcjtkkyiUVIwsPdT+0DCRv5s4y1A2JeJLJ96mBZ
+         HlLw/hVvL4uRMl5qYqtGc3im1rCo4RLXoVMFwkVZqm6+SrIUjdThkkDYi4KpA6Vg4yan
+         iR6HUnUE4cd9SJuNm0c0wgTjTaHQaSjjSahfTmlyv1sTyJcgY29HHvklN99ONejc9nO0
+         5TAA==
+X-Gm-Message-State: AOAM532b2VyRgULuGofCPsm/7MeeyFtkCrWZVrrvl/mUlthCm9Ka2b9K
+        nCQCXqCaBXtLq6/TpKQdW8OT84G3f9dA7Oevb9RhbvZjJLw=
+X-Google-Smtp-Source: ABdhPJy78OQm4nyMwLkArXdnJ8o62AmyO81Sr2NdyRnwWmktcXYQZew7pk0Yv4UbrTMOgUCxcsakkmJPFvbIUuEhtWY=
+X-Received: by 2002:a25:3805:: with SMTP id f5mr13518485yba.27.1613071889515;
+ Thu, 11 Feb 2021 11:31:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next] kbuild: Do not clean resolve_btfids if the output
- does not exist
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161307180674.24457.7910798840196422022.git-patchwork-notify@kernel.org>
-Date:   Thu, 11 Feb 2021 19:30:06 +0000
-References: <20210211124004.1144344-1-jolsa@kernel.org>
-In-Reply-To: <20210211124004.1144344-1-jolsa@kernel.org>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andriin@fb.com,
-        nathan@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@chromium.org,
-        masahiroy@kernel.org, michal.lkml@markovi.net,
-        linux-kbuild@vger.kernel.org
+References: <20210209193105.1752743-1-kafai@fb.com> <20210209193112.1752976-1-kafai@fb.com>
+ <CAEf4BzbZmmezSxYLCOdeeA4zW+vdDvQH57wQ-qpFSKiMcE1tVw@mail.gmail.com>
+ <20210210211735.4snmhc7gofo6zrp5@kafai-mbp.dhcp.thefacebook.com>
+ <CAEf4BzbhBng6k5e_=p0+mFSpQS7=BM_ute9eskViw-VCMTcYYA@mail.gmail.com>
+ <20210211015510.zd7tn6efiimfel3v@kafai-mbp.dhcp.thefacebook.com>
+ <CAEf4Bza_cNDTuu8jQ3K4qeb3e_nMEasmGqZqePy4B=XJqyXuMg@mail.gmail.com> <20210211024201.3uz4yhxfqdzhqa35@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20210211024201.3uz4yhxfqdzhqa35@kafai-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 11 Feb 2021 11:31:18 -0800
+Message-ID: <CAEf4Bzbw7JT8n1j1hCfH2Z+LWQY=w3fGrXNE4He3LR_X_5qsUw@mail.gmail.com>
+Subject: Re: [PATCH bpf 2/2] bpf: selftests: Add non function pointer test to struct_ops
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Wed, Feb 10, 2021 at 6:42 PM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> On Wed, Feb 10, 2021 at 06:07:04PM -0800, Andrii Nakryiko wrote:
+> > On Wed, Feb 10, 2021 at 5:55 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> > >
+> > > On Wed, Feb 10, 2021 at 02:54:40PM -0800, Andrii Nakryiko wrote:
+> > > > On Wed, Feb 10, 2021 at 1:17 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> > > > >
+> > > > > On Wed, Feb 10, 2021 at 12:27:38PM -0800, Andrii Nakryiko wrote:
+> > > > > > On Tue, Feb 9, 2021 at 12:11 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> > > > > > >
+> > > > > > > This patch adds a "void *owner" member.  The existing
+> > > > > > > bpf_tcp_ca test will ensure the bpf_cubic.o and bpf_dctcp.o
+> > > > > > > can be loaded.
+> > > > > > >
+> > > > > > > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> > > > > > > ---
+> > > > > >
+> > > > > > Acked-by: Andrii Nakryiko <andrii@kernel.org>
+> > > > > >
+> > > > > > What will happen if BPF code initializes such non-func ptr member?
+> > > > > > Will libbpf complain or just ignore those values? Ignoring initialized
+> > > > > > members isn't great.
+> > > > > The latter. libbpf will ignore non-func ptr member.  The non-func ptr
+> > > > > member stays zero when it is passed to the kernel.
+> > > > >
+> > > > > libbpf can be changed to copy this non-func ptr value.
+> > > > > The kernel will decide what to do with it.  It will
+> > > > > then be consistent with int/array member like ".name"
+> > > > > and ".flags" where the kernel will verify the value.
+> > > > > I can spin v2 to do that.
+> > > >
+> > > > I was thinking about erroring out on non-zero fields, but if you think
+> > > > it's useful to pass through values, it could be done, but will require
+> > > > more and careful code, probably. So, basically, don't feel obligated
+> > > > to do this in this patch set.
+> > > You meant it needs different handling in copying ptr value
+> > > than copying int/char[]?
+> >
+> > Hm.. If we are talking about copying pointer values, then I don't see
+> > how you can provide a valid kernel pointer from the BPF program?...
+> I am thinking the kernel is already rejecting members that is supposed
+> to be zero (e.g. non func ptr here), so there is no need to add codes
+> to libbpf to do this again.
+>
+> > But if we are talking about copying field values in general, then
+> > you'll need to handle enums, struct/union, etc, no? If int/char[] is
+> > supported (I probably missed that it is), that might be the only
+> > things you'd need to support. So for non function pointers, I'd just
+> > enforce zeroes.
+> Sure, we can reject everything else for non zero in libbpf.
+> I think we can use a different patch set for that?
 
-This patch was applied to bpf/bpf-next.git (refs/heads/master):
-
-On Thu, 11 Feb 2021 13:40:04 +0100 you wrote:
-> Nathan reported issue with cleaning empty build directory:
-> 
->   $ make -s O=build distclean
->   ../../scripts/Makefile.include:4: *** \
->   O=/ho...build/tools/bpf/resolve_btfids does not exist.  Stop.
-> 
-> The problem that tools scripts require existing output
-> directory, otherwise it fails.
-> 
-> [...]
-
-Here is the summary with links:
-  - [bpf-next] kbuild: Do not clean resolve_btfids if the output does not exist
-    https://git.kernel.org/bpf/bpf-next/c/0e1aa629f1ce
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Sure. My original point was that if someone initialized, say, owner
+field with some meaningless number, it would be nice for libbpf to
+reject this with error instead of ignoring. It's unlikely, though, so
+no big deal.
