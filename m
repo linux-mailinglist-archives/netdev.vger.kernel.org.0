@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B38D319173
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 18:50:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D7EE31917F
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 18:51:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232435AbhBKRrq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 12:47:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53352 "EHLO
+        id S232528AbhBKRtR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 12:49:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232474AbhBKRpV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 12:45:21 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA3CBC061793;
-        Thu, 11 Feb 2021 09:45:06 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id s15so3696009plr.9;
-        Thu, 11 Feb 2021 09:45:06 -0800 (PST)
+        with ESMTP id S232181AbhBKRqN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 12:46:13 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89E7EC061756;
+        Thu, 11 Feb 2021 09:45:33 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id u143so4127659pfc.7;
+        Thu, 11 Feb 2021 09:45:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=s9pq4edY7gWbLeTk+7x2ZZ+ePQJDzJPzGh/lFv1+wbM=;
-        b=JCvH0n0+1+JC0gagmSi3TKcRz0LMSrV5Q7hv/bQXoc+W10VQMVHcgk4vW9g+j1icLo
-         1rd6pZ9a+FuJfTQapnLOF/ISAz5TfJYIAylSfbXPqu9JyMxQHrM4Ajwuo047zMYp1Fmz
-         4Jw9/v9HAcEhyLdz4ZKgSHotJgiDd/9/bl/KTfoTlbjCCHRKpOEDdlPYkwQ0c7kMq39A
-         jRgqO+VasZZWAzPVh0RIybvOGT4psxKAZoQYEzE9bDysiusnnK7XzuRjpKftauIkS/Tk
-         y8kf7sLq/5eGmETkZ+LFc0d1vqmRnhIOVD3rZbMQ/hdU8Ptr2y02ISmiuG1Z8hpLOCKj
-         Ok9w==
+        bh=t8khqbSHitVCfGIKd8Bz5tu6J0ScOTByjn052h+VjpA=;
+        b=QMdRliDRxq+YbEj5J4u7bhTLvEYGd1tI0+gDxRsctRrts94jIctzyNImSxmC7wJXcR
+         lCYZux6MkZ3pAIHg7zCyuVoeJlz9nXAYf7z5GWTb2XfGnpifjJ/+f25O9UGKwL9D9hLa
+         F7WHDMkRN2CdyZb9GmT8McozPV8blJT69VkGKd0o6QC844t+SCoer9hQWZ0YIje5+ATL
+         4GL8L5yVk8XILFdR10aTfU7rPt6dT6BMriJwio7ShpV3gghRXn6KmJ7uku/9GHArL1dA
+         Nr8Eg6xwvB6THPJDLlVWiIKRqo75MBpzsZwQbQw8/sNq78dEJTCOnNlShlop4oK9GlL8
+         nrTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=s9pq4edY7gWbLeTk+7x2ZZ+ePQJDzJPzGh/lFv1+wbM=;
-        b=FZNpKgYAdoM8AHhVEOt/UBGnCUWcKKcl9Qh17xAiOfQom1X9IBKdLD8dC3EoSFV5TA
-         hxt/i81GHQ//hx7ZrfMgoL3FefUiHFyX3vwBMdWDmurIgqJsa+G9HB1m99bivNiAfnR2
-         rPQpTEjhRLnk0RD66y9f4HqRiUNrbUFq9j+mfoOD7u4gv+RnZleZK23XRtsOmjtHNlWx
-         TNS5CE4dgyaYj21zX64vQQdPQmN48b9eiCcLekbp5V7q8k2F9kGno7sylDPTMPjJublP
-         A7jj5Guew/GHaq+o5zdChYuakIk0LVD3YGSraYrkSgGlg+JSzBDVIFoYHgvysFU9Erit
-         25mg==
-X-Gm-Message-State: AOAM533khGTP8aCCGslxBG39LMkDcMAQquy0P4xnoiH5r7hILbEFTSU8
-        y3/ZaSLskX1fGgBu3hs1b38=
-X-Google-Smtp-Source: ABdhPJxQNsCNT3aUhEgGjqnlKaLaobOh9B/Hp/5hG3NkYNPQApW/o7inax/qtuJazyhZk2VA/9aIlA==
-X-Received: by 2002:a17:90a:2b4a:: with SMTP id y10mr5038453pjc.118.1613065506281;
-        Thu, 11 Feb 2021 09:45:06 -0800 (PST)
+        bh=t8khqbSHitVCfGIKd8Bz5tu6J0ScOTByjn052h+VjpA=;
+        b=HT9CzoPDUukWd1wr8pBl1VU+IgRZRWYHhpkc1FFz8QnFd8UirGL7TCIIiRP2gB/+te
+         p10XNdqNNEE7K3Aad+00V5EMrfeWfTmLYsaL2e6oSCXgrgUcCpslQb0JsOgZF06BvBN3
+         tnhx6AB7jOquWRZECpgZwefg/Vc7HeWbph/RbP7wqVe2pulxmwlXx8tekS0Xdt4Y75Ws
+         gx05P5q88vsGucKyjyQ6Zbuh8b3hBpdHcdjKgk8xLBpG3nWVX9XqaRdPkz0mTr+9AZ7a
+         YJ4cSJMTy72C+0eTePTj7PB5EI61IsOCIn2T7j1yGuk7cKVu73tCUJ3ZrZ3eRJ/POuJ1
+         F4ZQ==
+X-Gm-Message-State: AOAM532KRPGIdkSlUfK7CgrlWk8wafZKZ6nlzGx6ITm1W97bTKT6Qw2f
+        zxI1fkikqHmSLPx5LpYeN7k=
+X-Google-Smtp-Source: ABdhPJwQs/QgG6cleEklBbECRuZxLkGjnib5joMkOpOylylH5vw9WrMMyQZbTMoqczeo8X2tQ28mTg==
+X-Received: by 2002:a63:f404:: with SMTP id g4mr9196506pgi.114.1613065533045;
+        Thu, 11 Feb 2021 09:45:33 -0800 (PST)
 Received: from [10.67.49.228] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id t189sm6058520pfb.104.2021.02.11.09.45.04
+        by smtp.googlemail.com with ESMTPSA id j22sm6230950pff.57.2021.02.11.09.45.31
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 11 Feb 2021 09:45:05 -0800 (PST)
-Subject: Re: [PATCH net-next 5.12 4/8] net: broadcom: bcm4908_enet: drop
- unneeded memset()
+        Thu, 11 Feb 2021 09:45:31 -0800 (PST)
+Subject: Re: [PATCH net-next 5.12 5/8] net: broadcom: bcm4908_enet: drop
+ "inline" from C functions
 To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -61,7 +61,7 @@ Cc:     Randy Dunlap <rdunlap@infradead.org>,
         =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
 References: <20210209230130.4690-2-zajec5@gmail.com>
  <20210211121239.728-1-zajec5@gmail.com>
- <20210211121239.728-5-zajec5@gmail.com>
+ <20210211121239.728-6-zajec5@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -117,12 +117,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <1366ae8f-d87d-7f17-9d05-f83c424340d0@gmail.com>
-Date:   Thu, 11 Feb 2021 09:45:04 -0800
+Message-ID: <e2704a6f-ea21-2085-4481-56510ff9fbfd@gmail.com>
+Date:   Thu, 11 Feb 2021 09:45:30 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20210211121239.728-5-zajec5@gmail.com>
+In-Reply-To: <20210211121239.728-6-zajec5@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -133,7 +133,8 @@ X-Mailing-List: netdev@vger.kernel.org
 On 2/11/21 4:12 AM, Rafał Miłecki wrote:
 > From: Rafał Miłecki <rafal@milecki.pl>
 > 
-> dma_alloc_coherent takes care of zeroing allocated memory
+> It seems preferred to let compiler optimize code if applicable.
+> While at it drop unused enet_umac_maskset().
 > 
 > Suggested-by: Andrew Lunn <andrew@lunn.ch>
 > Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
