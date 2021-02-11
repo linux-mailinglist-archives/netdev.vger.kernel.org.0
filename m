@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC778318FC2
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 17:22:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1641C318FC4
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 17:22:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231748AbhBKQVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 11:21:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35290 "EHLO
+        id S230420AbhBKQVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 11:21:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231842AbhBKQTR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 11:19:17 -0500
-Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92DEFC061793;
-        Thu, 11 Feb 2021 08:18:36 -0800 (PST)
-Received: by mail-il1-x12d.google.com with SMTP id e1so5587793ilu.0;
-        Thu, 11 Feb 2021 08:18:36 -0800 (PST)
+        with ESMTP id S231843AbhBKQTT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 11:19:19 -0500
+Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1392C061794;
+        Thu, 11 Feb 2021 08:18:37 -0800 (PST)
+Received: by mail-il1-x131.google.com with SMTP id e1so5587860ilu.0;
+        Thu, 11 Feb 2021 08:18:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=3JhYbeminedAPFen2Lv7pKC466eaYWgZBJCcItxz8ow=;
-        b=qyeao1talBnb/refwHkIwD5A6kxZJja/H9P4w+3pn5V2tArxglMY7n0R/xGdHyTa9H
-         GBtTrucZydEOOfZtC5kZjk2x6gjjvs0QoP0W4m9apuIVkk51pqlNmCTHfvfOpG+CQxWO
-         hAHQuuLpU/wjA1Skke4BqBC69h6giIiu9OUg22Bb4BQWoh1GomGl9erivQHNPL3pQX9A
-         hENB6QmBxzk+dtwmTFGRVc3rk/TA5TLXyMAqOvWf4FvAtAiE8TQrhqXbXmIhCacaLAa9
-         LSccrppwnpfuFUpPWBeFTPSBaFyuid9PSFq+ocX6cQ3BhTr6er8oo87E8VYq1mR6VRD+
-         17wQ==
+        bh=Xp4N40JfQ3VVDOWjhEqow9AAoJ4Ma4pLuM+YDtd7UgM=;
+        b=mtj2EYF6jZubD9FqRDnVGO9Nzrt3asJMR6eRmNxbiQmeLXJ41KzQgcAiw75aFbcaIO
+         XPth5rq7hMm1y17IJJZ+zMgqgt2YmiL0V+BsYh+gdSQYKEo7E8/3F+aQY0ktGOEqe/px
+         pFbs9oljojdEg3MJTwUVjVE2TMW3nEH6TxWItZ64TK/v+wpK1FAQmHvvamESNccCdmbU
+         FfYnEFQN9BpDwxA70u2lW30+BCL3OtmUpnEzHJGDHc6vgXwrCFRrv5vnFWEBn3Ya8NEH
+         3e22qb+GPWZDHlWpSBB8NPYsZGPJdtS3opt+wylkai8fTrVcCOsOgHcaaTsEvLssb7Qi
+         AT/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=3JhYbeminedAPFen2Lv7pKC466eaYWgZBJCcItxz8ow=;
-        b=JzVL6E2JeyJXd1+3gWL659oaNfMuYms3bqWzSzGJ29BsmL2ghT1iL402dYx2LfomYE
-         bXCYC13a6bRnOe3rDu/IUT2maIaR8NbREDwKlc1eG0XWGjlt3xqrYn4xqbRIazz06/yQ
-         BUQaJUIXLt1KZXq2Tx5D/JiIBtKdR2CX+wrK2qQZ6HOiV1tzso7pFttW33aDNFRC5RC0
-         WfJ4Dh0j+OMxHkxwgAidb2vuglc5JEsx1Hem7b5qipYXJFPfhayVsij/6uAL0CCt2XF6
-         P60xIj8KQcbiAlOp8s39fYeZiW7aI6isBj6owuyVIdWXVwTyPnlbG7LTX+iey9FCkqco
-         AFxw==
-X-Gm-Message-State: AOAM532o8EoRiggGD2FoPtgp1kRR55ArRi0cTCY4GmZ50wp7VdtQGpLc
-        tX10GbAeMiianrc3Fni7bh8=
-X-Google-Smtp-Source: ABdhPJwuZMS5FBmEFEBSFxaDC0pdT6ucstu/IrcREtNrbhF92av4AZRK8pQzNeWXPj3wT+Dd29dk+g==
-X-Received: by 2002:a92:6e0b:: with SMTP id j11mr6352837ilc.184.1613060315764;
-        Thu, 11 Feb 2021 08:18:35 -0800 (PST)
+        bh=Xp4N40JfQ3VVDOWjhEqow9AAoJ4Ma4pLuM+YDtd7UgM=;
+        b=MDo/e9agMYa9sXfMRgrdmcaQ2OGWL3LltQQAVhES0C2q3CDtvOP0NIktM+oDooEFmj
+         YgumdcgiI9ADxuRevlNzn5j4GjlQLzBg7DODb72++dn1gD9Uz8XqBkoDW0sKIzfCA0ZX
+         BAP5zWe7SdyDJkZTilEDDE3saM6DRCc8xE8QPayHS4k3ZLk1hNaSk6SKYSw5FypOZOY7
+         h9Zx37m3uJXAmDaK9GcUbLJH/oVNCbfvYA3SHnPHHNnMIrjrZCWxdTLXYutiBVf65aUy
+         bjsB1ReK8XI44T2dYjtOVXSir+BCTZ7tzXInNaIYzdKeBYaYcSJNJLWmWxu8m/eMXzBe
+         dUAw==
+X-Gm-Message-State: AOAM533gRNyb9HPkL07hI4ZVHq1NmxZ1dcNWbX8TA7lEe7qIyLNehYFv
+        qra1uswVInyLFQlGOvJdgfw=
+X-Google-Smtp-Source: ABdhPJyiRlMHOsnmLmk554WUf5bF1KkI+XEFPfqpzLjvZdMmtjUIkeHE6mkOmWAVM76TZBe0rVi15w==
+X-Received: by 2002:a92:c00f:: with SMTP id q15mr6330193ild.62.1613060316991;
+        Thu, 11 Feb 2021 08:18:36 -0800 (PST)
 Received: from localhost.localdomain ([198.52.185.246])
-        by smtp.gmail.com with ESMTPSA id d135sm2729913iog.35.2021.02.11.08.18.34
+        by smtp.gmail.com with ESMTPSA id d135sm2729913iog.35.2021.02.11.08.18.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Feb 2021 08:18:35 -0800 (PST)
+        Thu, 11 Feb 2021 08:18:36 -0800 (PST)
 From:   Sven Van Asbroeck <thesven73@gmail.com>
 X-Google-Original-From: Sven Van Asbroeck <TheSven73@gmail.com>
 To:     Bryan Whitehead <bryan.whitehead@microchip.com>,
@@ -62,9 +62,9 @@ Cc:     Sven Van Asbroeck <thesven73@gmail.com>,
         Christoph Hellwig <hch@lst.de>,
         Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 1/5] lan743x: boost performance on cpu archs w/o dma cache snooping
-Date:   Thu, 11 Feb 2021 11:18:26 -0500
-Message-Id: <20210211161830.17366-2-TheSven73@gmail.com>
+Subject: [PATCH net-next v2 2/5] lan743x: sync only the received area of an rx ring buffer
+Date:   Thu, 11 Feb 2021 11:18:27 -0500
+Message-Id: <20210211161830.17366-3-TheSven73@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210211161830.17366-1-TheSven73@gmail.com>
 References: <20210211161830.17366-1-TheSven73@gmail.com>
@@ -77,43 +77,12 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sven Van Asbroeck <thesven73@gmail.com>
 
-The buffers in the lan743x driver's receive ring are always 9K,
-even when the largest packet that can be received (the mtu) is
-much smaller. This performs particularly badly on cpu archs
-without dma cache snooping (such as ARM): each received packet
-results in a 9K dma_{map|unmap} operation, which is very expensive
-because cpu caches need to be invalidated.
+On cpu architectures w/o dma cache snooping, dma_unmap() is a
+is a very expensive operation, because its resulting sync
+needs to invalidate cpu caches.
 
-Careful measurement of the driver rx path on armv7 reveals that
-the cpu spends the majority of its time waiting for cache
-invalidation.
-
-Optimize by keeping the rx ring buffer size as close as possible
-to the mtu. This limits the amount of cache that requires
-invalidation.
-
-This optimization would normally force us to re-allocate all
-ring buffers when the mtu is changed - a disruptive event,
-because it can only happen when the network interface is down.
-
-Remove the need to re-allocate all ring buffers by adding support
-for multi-buffer frames. Now any combination of mtu and ring
-buffer size will work. When the mtu changes from mtu1 to mtu2,
-consumed buffers of size mtu1 are lazily replaced by newly
-allocated buffers of size mtu2.
-
-These optimizations double the rx performance on armv7.
-Third parties report 3x rx speedup on armv8.
-
-Tested with iperf3 on a freescale imx6qp + lan7430, both sides
-set to mtu 1500 bytes, measure rx performance:
-
-Before:
-[ ID] Interval           Transfer     Bandwidth       Retr
-[  4]   0.00-20.00  sec   550 MBytes   231 Mbits/sec    0
-After:
-[ ID] Interval           Transfer     Bandwidth       Retr
-[  4]   0.00-20.00  sec  1.33 GBytes   570 Mbits/sec    0
+Increase efficiency/performance by syncing only those sections
+of the lan743x's rx ring buffers that are actually in use.
 
 Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
 ---
@@ -133,440 +102,72 @@ Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
 Cc: netdev@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 
- drivers/net/ethernet/microchip/lan743x_main.c | 325 ++++++++----------
- drivers/net/ethernet/microchip/lan743x_main.h |   5 +-
- 2 files changed, 149 insertions(+), 181 deletions(-)
+ drivers/net/ethernet/microchip/lan743x_main.c | 32 +++++++++++++------
+ 1 file changed, 23 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-index f1f6eba4ace4..0c48bb559719 100644
+index 0c48bb559719..36cc67c72851 100644
 --- a/drivers/net/ethernet/microchip/lan743x_main.c
 +++ b/drivers/net/ethernet/microchip/lan743x_main.c
-@@ -1955,15 +1955,6 @@ static int lan743x_rx_next_index(struct lan743x_rx *rx, int index)
- 	return ((++index) % rx->ring_size);
- }
- 
--static struct sk_buff *lan743x_rx_allocate_skb(struct lan743x_rx *rx)
--{
--	int length = 0;
--
--	length = (LAN743X_MAX_FRAME_SIZE + ETH_HLEN + 4 + RX_HEAD_PADDING);
--	return __netdev_alloc_skb(rx->adapter->netdev,
--				  length, GFP_ATOMIC | GFP_DMA);
--}
--
- static void lan743x_rx_update_tail(struct lan743x_rx *rx, int index)
- {
- 	/* update the tail once per 8 descriptors */
-@@ -1972,36 +1963,40 @@ static void lan743x_rx_update_tail(struct lan743x_rx *rx, int index)
- 				  index);
- }
- 
--static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index,
--					struct sk_buff *skb)
-+static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index)
- {
-+	struct net_device *netdev = rx->adapter->netdev;
-+	struct device *dev = &rx->adapter->pdev->dev;
+@@ -1968,35 +1968,49 @@ static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index)
+ 	struct net_device *netdev = rx->adapter->netdev;
+ 	struct device *dev = &rx->adapter->pdev->dev;
  	struct lan743x_rx_buffer_info *buffer_info;
++	unsigned int buffer_length, packet_length;
  	struct lan743x_rx_descriptor *descriptor;
--	int length = 0;
-+	struct sk_buff *skb;
-+	dma_addr_t dma_ptr;
-+	int length;
-+
-+	length = netdev->mtu + ETH_HLEN + 4 + RX_HEAD_PADDING;
+ 	struct sk_buff *skb;
+ 	dma_addr_t dma_ptr;
+-	int length;
  
--	length = (LAN743X_MAX_FRAME_SIZE + ETH_HLEN + 4 + RX_HEAD_PADDING);
+-	length = netdev->mtu + ETH_HLEN + 4 + RX_HEAD_PADDING;
++	buffer_length = netdev->mtu + ETH_HLEN + 4 + RX_HEAD_PADDING;
+ 
  	descriptor = &rx->ring_cpu_ptr[index];
  	buffer_info = &rx->buffer_info[index];
--	buffer_info->skb = skb;
--	if (!(buffer_info->skb))
-+	skb = __netdev_alloc_skb(netdev, length, GFP_ATOMIC | GFP_DMA);
-+	if (!skb)
+-	skb = __netdev_alloc_skb(netdev, length, GFP_ATOMIC | GFP_DMA);
++	skb = __netdev_alloc_skb(netdev, buffer_length, GFP_ATOMIC | GFP_DMA);
+ 	if (!skb)
  		return -ENOMEM;
--	buffer_info->dma_ptr = dma_map_single(&rx->adapter->pdev->dev,
--					      buffer_info->skb->data,
--					      length,
--					      DMA_FROM_DEVICE);
--	if (dma_mapping_error(&rx->adapter->pdev->dev,
--			      buffer_info->dma_ptr)) {
--		buffer_info->dma_ptr = 0;
-+	dma_ptr = dma_map_single(dev, skb->data, length, DMA_FROM_DEVICE);
-+	if (dma_mapping_error(dev, dma_ptr)) {
-+		dev_kfree_skb_any(skb);
+-	dma_ptr = dma_map_single(dev, skb->data, length, DMA_FROM_DEVICE);
++	dma_ptr = dma_map_single(dev, skb->data, buffer_length, DMA_FROM_DEVICE);
+ 	if (dma_mapping_error(dev, dma_ptr)) {
+ 		dev_kfree_skb_any(skb);
  		return -ENOMEM;
  	}
-+	if (buffer_info->dma_ptr)
-+		dma_unmap_single(dev, buffer_info->dma_ptr,
-+				 buffer_info->buffer_length, DMA_FROM_DEVICE);
+-	if (buffer_info->dma_ptr)
+-		dma_unmap_single(dev, buffer_info->dma_ptr,
+-				 buffer_info->buffer_length, DMA_FROM_DEVICE);
++	if (buffer_info->dma_ptr) {
++		/* unmap from dma */
++		packet_length = RX_DESC_DATA0_FRAME_LENGTH_GET_
++				(le32_to_cpu(descriptor->data0));
++		if (packet_length == 0 ||
++		    packet_length > buffer_info->buffer_length)
++			/* buffer is part of multi-buffer packet: fully used */
++			packet_length = buffer_info->buffer_length;
++		/* sync used part of buffer only */
++		dma_sync_single_for_cpu(dev, buffer_info->dma_ptr,
++					packet_length,
++					DMA_FROM_DEVICE);
++		dma_unmap_single_attrs(dev, buffer_info->dma_ptr,
++				       buffer_info->buffer_length,
++				       DMA_FROM_DEVICE,
++				       DMA_ATTR_SKIP_CPU_SYNC);
++	}
  
-+	buffer_info->skb = skb;
-+	buffer_info->dma_ptr = dma_ptr;
- 	buffer_info->buffer_length = length;
+ 	buffer_info->skb = skb;
+ 	buffer_info->dma_ptr = dma_ptr;
+-	buffer_info->buffer_length = length;
++	buffer_info->buffer_length = buffer_length;
  	descriptor->data1 = cpu_to_le32(DMA_ADDR_LOW32(buffer_info->dma_ptr));
  	descriptor->data2 = cpu_to_le32(DMA_ADDR_HIGH32(buffer_info->dma_ptr));
  	descriptor->data3 = 0;
  	descriptor->data0 = cpu_to_le32((RX_DESC_DATA0_OWN_ |
- 			    (length & RX_DESC_DATA0_BUF_LENGTH_MASK_)));
--	skb_reserve(buffer_info->skb, RX_HEAD_PADDING);
+-			    (length & RX_DESC_DATA0_BUF_LENGTH_MASK_)));
++			    (buffer_length & RX_DESC_DATA0_BUF_LENGTH_MASK_)));
  	lan743x_rx_update_tail(rx, index);
  
  	return 0;
-@@ -2050,16 +2045,32 @@ static void lan743x_rx_release_ring_element(struct lan743x_rx *rx, int index)
- 	memset(buffer_info, 0, sizeof(*buffer_info));
- }
- 
--static int lan743x_rx_process_packet(struct lan743x_rx *rx)
-+static struct sk_buff *
-+lan743x_rx_trim_skb(struct sk_buff *skb, int frame_length)
-+{
-+	if (skb_linearize(skb)) {
-+		dev_kfree_skb_irq(skb);
-+		return NULL;
-+	}
-+	frame_length = max_t(int, 0, frame_length - RX_HEAD_PADDING - 2);
-+	if (skb->len > frame_length) {
-+		skb->tail -= skb->len - frame_length;
-+		skb->len = frame_length;
-+	}
-+	return skb;
-+}
-+
-+static int lan743x_rx_process_buffer(struct lan743x_rx *rx)
- {
--	struct skb_shared_hwtstamps *hwtstamps = NULL;
--	int result = RX_PROCESS_RESULT_NOTHING_TO_DO;
- 	int current_head_index = le32_to_cpu(*rx->head_cpu_ptr);
-+	struct lan743x_rx_descriptor *descriptor, *desc_ext;
-+	struct net_device *netdev = rx->adapter->netdev;
-+	int result = RX_PROCESS_RESULT_NOTHING_TO_DO;
- 	struct lan743x_rx_buffer_info *buffer_info;
--	struct lan743x_rx_descriptor *descriptor;
-+	int frame_length, buffer_length;
- 	int extension_index = -1;
--	int first_index = -1;
--	int last_index = -1;
-+	bool is_last, is_first;
-+	struct sk_buff *skb;
- 
- 	if (current_head_index < 0 || current_head_index >= rx->ring_size)
- 		goto done;
-@@ -2067,163 +2078,121 @@ static int lan743x_rx_process_packet(struct lan743x_rx *rx)
- 	if (rx->last_head < 0 || rx->last_head >= rx->ring_size)
- 		goto done;
- 
--	if (rx->last_head != current_head_index) {
--		descriptor = &rx->ring_cpu_ptr[rx->last_head];
--		if (le32_to_cpu(descriptor->data0) & RX_DESC_DATA0_OWN_)
--			goto done;
-+	if (rx->last_head == current_head_index)
-+		goto done;
- 
--		if (!(le32_to_cpu(descriptor->data0) & RX_DESC_DATA0_FS_))
--			goto done;
-+	descriptor = &rx->ring_cpu_ptr[rx->last_head];
-+	if (le32_to_cpu(descriptor->data0) & RX_DESC_DATA0_OWN_)
-+		goto done;
-+	buffer_info = &rx->buffer_info[rx->last_head];
- 
--		first_index = rx->last_head;
--		if (le32_to_cpu(descriptor->data0) & RX_DESC_DATA0_LS_) {
--			last_index = rx->last_head;
--		} else {
--			int index;
--
--			index = lan743x_rx_next_index(rx, first_index);
--			while (index != current_head_index) {
--				descriptor = &rx->ring_cpu_ptr[index];
--				if (le32_to_cpu(descriptor->data0) & RX_DESC_DATA0_OWN_)
--					goto done;
--
--				if (le32_to_cpu(descriptor->data0) & RX_DESC_DATA0_LS_) {
--					last_index = index;
--					break;
--				}
--				index = lan743x_rx_next_index(rx, index);
--			}
--		}
--		if (last_index >= 0) {
--			descriptor = &rx->ring_cpu_ptr[last_index];
--			if (le32_to_cpu(descriptor->data0) & RX_DESC_DATA0_EXT_) {
--				/* extension is expected to follow */
--				int index = lan743x_rx_next_index(rx,
--								  last_index);
--				if (index != current_head_index) {
--					descriptor = &rx->ring_cpu_ptr[index];
--					if (le32_to_cpu(descriptor->data0) &
--					    RX_DESC_DATA0_OWN_) {
--						goto done;
--					}
--					if (le32_to_cpu(descriptor->data0) &
--					    RX_DESC_DATA0_EXT_) {
--						extension_index = index;
--					} else {
--						goto done;
--					}
--				} else {
--					/* extension is not yet available */
--					/* prevent processing of this packet */
--					first_index = -1;
--					last_index = -1;
--				}
--			}
--		}
--	}
--	if (first_index >= 0 && last_index >= 0) {
--		int real_last_index = last_index;
--		struct sk_buff *skb = NULL;
--		u32 ts_sec = 0;
--		u32 ts_nsec = 0;
--
--		/* packet is available */
--		if (first_index == last_index) {
--			/* single buffer packet */
--			struct sk_buff *new_skb = NULL;
--			int packet_length;
--
--			new_skb = lan743x_rx_allocate_skb(rx);
--			if (!new_skb) {
--				/* failed to allocate next skb.
--				 * Memory is very low.
--				 * Drop this packet and reuse buffer.
--				 */
--				lan743x_rx_reuse_ring_element(rx, first_index);
--				goto process_extension;
--			}
-+	is_last = le32_to_cpu(descriptor->data0) & RX_DESC_DATA0_LS_;
-+	is_first = le32_to_cpu(descriptor->data0) & RX_DESC_DATA0_FS_;
- 
--			buffer_info = &rx->buffer_info[first_index];
--			skb = buffer_info->skb;
--			descriptor = &rx->ring_cpu_ptr[first_index];
--
--			/* unmap from dma */
--			if (buffer_info->dma_ptr) {
--				dma_unmap_single(&rx->adapter->pdev->dev,
--						 buffer_info->dma_ptr,
--						 buffer_info->buffer_length,
--						 DMA_FROM_DEVICE);
--				buffer_info->dma_ptr = 0;
--				buffer_info->buffer_length = 0;
--			}
--			buffer_info->skb = NULL;
--			packet_length =	RX_DESC_DATA0_FRAME_LENGTH_GET_
--					(le32_to_cpu(descriptor->data0));
--			skb_put(skb, packet_length - 4);
--			skb->protocol = eth_type_trans(skb,
--						       rx->adapter->netdev);
--			lan743x_rx_init_ring_element(rx, first_index, new_skb);
--		} else {
--			int index = first_index;
-+	if (is_last && le32_to_cpu(descriptor->data0) & RX_DESC_DATA0_EXT_) {
-+		/* extension is expected to follow */
-+		int index = lan743x_rx_next_index(rx, rx->last_head);
- 
--			/* multi buffer packet not supported */
--			/* this should not happen since
--			 * buffers are allocated to be at least jumbo size
--			 */
-+		if (index == current_head_index)
-+			/* extension not yet available */
-+			goto done;
-+		desc_ext = &rx->ring_cpu_ptr[index];
-+		if (le32_to_cpu(desc_ext->data0) & RX_DESC_DATA0_OWN_)
-+			/* extension not yet available */
-+			goto done;
-+		if (!(le32_to_cpu(desc_ext->data0) & RX_DESC_DATA0_EXT_))
-+			goto move_forward;
-+		extension_index = index;
-+	}
- 
--			/* clean up buffers */
--			if (first_index <= last_index) {
--				while ((index >= first_index) &&
--				       (index <= last_index)) {
--					lan743x_rx_reuse_ring_element(rx,
--								      index);
--					index = lan743x_rx_next_index(rx,
--								      index);
--				}
--			} else {
--				while ((index >= first_index) ||
--				       (index <= last_index)) {
--					lan743x_rx_reuse_ring_element(rx,
--								      index);
--					index = lan743x_rx_next_index(rx,
--								      index);
--				}
--			}
--		}
-+	/* Only the last buffer in a multi-buffer frame contains the total frame
-+	 * length. All other buffers have a zero frame length. The chip
-+	 * occasionally sends more buffers than strictly required to reach the
-+	 * total frame length.
-+	 * Handle this by adding all buffers to the skb in their entirety.
-+	 * Once the real frame length is known, trim the skb.
-+	 */
-+	frame_length =
-+		RX_DESC_DATA0_FRAME_LENGTH_GET_(le32_to_cpu(descriptor->data0));
-+	buffer_length = buffer_info->buffer_length;
-+
-+	netdev_dbg(netdev, "%s%schunk: %d/%d",
-+		   is_first ? "first " : "      ",
-+		   is_last  ? "last  " : "      ",
-+		   frame_length, buffer_length);
-+
-+	/* save existing skb, allocate new skb and map to dma */
-+	skb = buffer_info->skb;
-+	if (lan743x_rx_init_ring_element(rx, rx->last_head)) {
-+		/* failed to allocate next skb.
-+		 * Memory is very low.
-+		 * Drop this packet and reuse buffer.
-+		 */
-+		lan743x_rx_reuse_ring_element(rx, rx->last_head);
-+		/* drop packet that was being assembled */
-+		dev_kfree_skb_irq(rx->skb_head);
-+		rx->skb_head = NULL;
-+		goto process_extension;
-+	}
-+
-+	/* add buffers to skb via skb->frag_list */
-+	if (is_first) {
-+		skb_reserve(skb, RX_HEAD_PADDING);
-+		skb_put(skb, buffer_length - RX_HEAD_PADDING);
-+		if (rx->skb_head)
-+			dev_kfree_skb_irq(rx->skb_head);
-+		rx->skb_head = skb;
-+	} else if (rx->skb_head) {
-+		skb_put(skb, buffer_length);
-+		if (skb_shinfo(rx->skb_head)->frag_list)
-+			rx->skb_tail->next = skb;
-+		else
-+			skb_shinfo(rx->skb_head)->frag_list = skb;
-+		rx->skb_tail = skb;
-+		rx->skb_head->len += skb->len;
-+		rx->skb_head->data_len += skb->len;
-+		rx->skb_head->truesize += skb->truesize;
-+	} else {
-+		/* packet to assemble has already been dropped because one or
-+		 * more of its buffers could not be allocated
-+		 */
-+		netdev_dbg(netdev, "drop buffer intended for dropped packet");
-+		dev_kfree_skb_irq(skb);
-+	}
- 
- process_extension:
--		if (extension_index >= 0) {
--			descriptor = &rx->ring_cpu_ptr[extension_index];
--			buffer_info = &rx->buffer_info[extension_index];
--
--			ts_sec = le32_to_cpu(descriptor->data1);
--			ts_nsec = (le32_to_cpu(descriptor->data2) &
--				  RX_DESC_DATA2_TS_NS_MASK_);
--			lan743x_rx_reuse_ring_element(rx, extension_index);
--			real_last_index = extension_index;
--		}
-+	if (extension_index >= 0) {
-+		u32 ts_sec;
-+		u32 ts_nsec;
- 
--		if (!skb) {
--			result = RX_PROCESS_RESULT_PACKET_DROPPED;
--			goto move_forward;
--		}
-+		ts_sec = le32_to_cpu(desc_ext->data1);
-+		ts_nsec = (le32_to_cpu(desc_ext->data2) &
-+			  RX_DESC_DATA2_TS_NS_MASK_);
-+		if (rx->skb_head)
-+			skb_hwtstamps(rx->skb_head)->hwtstamp =
-+				ktime_set(ts_sec, ts_nsec);
-+		lan743x_rx_reuse_ring_element(rx, extension_index);
-+		rx->last_head = extension_index;
-+		netdev_dbg(netdev, "process extension");
-+	}
- 
--		if (extension_index < 0)
--			goto pass_packet_to_os;
--		hwtstamps = skb_hwtstamps(skb);
--		if (hwtstamps)
--			hwtstamps->hwtstamp = ktime_set(ts_sec, ts_nsec);
-+	if (is_last && rx->skb_head)
-+		rx->skb_head = lan743x_rx_trim_skb(rx->skb_head, frame_length);
- 
--pass_packet_to_os:
--		/* pass packet to OS */
--		napi_gro_receive(&rx->napi, skb);
--		result = RX_PROCESS_RESULT_PACKET_RECEIVED;
-+	if (is_last && rx->skb_head) {
-+		rx->skb_head->protocol = eth_type_trans(rx->skb_head,
-+							rx->adapter->netdev);
-+		netdev_dbg(netdev, "sending %d byte frame to OS",
-+			   rx->skb_head->len);
-+		napi_gro_receive(&rx->napi, rx->skb_head);
-+		rx->skb_head = NULL;
-+	}
- 
- move_forward:
--		/* push tail and head forward */
--		rx->last_tail = real_last_index;
--		rx->last_head = lan743x_rx_next_index(rx, real_last_index);
--	}
-+	/* push tail and head forward */
-+	rx->last_tail = rx->last_head;
-+	rx->last_head = lan743x_rx_next_index(rx, rx->last_head);
-+	result = RX_PROCESS_RESULT_BUFFER_RECEIVED;
- done:
- 	return result;
- }
-@@ -2242,12 +2211,12 @@ static int lan743x_rx_napi_poll(struct napi_struct *napi, int weight)
- 				  DMAC_INT_BIT_RXFRM_(rx->channel_number));
- 	}
- 	for (count = 0; count < weight; count++) {
--		result = lan743x_rx_process_packet(rx);
-+		result = lan743x_rx_process_buffer(rx);
- 		if (result == RX_PROCESS_RESULT_NOTHING_TO_DO)
- 			break;
- 	}
- 	rx->frame_count += count;
--	if (count == weight || result == RX_PROCESS_RESULT_PACKET_RECEIVED)
-+	if (count == weight || result == RX_PROCESS_RESULT_BUFFER_RECEIVED)
- 		return weight;
- 
- 	if (!napi_complete_done(napi, count))
-@@ -2359,9 +2328,7 @@ static int lan743x_rx_ring_init(struct lan743x_rx *rx)
- 
- 	rx->last_head = 0;
- 	for (index = 0; index < rx->ring_size; index++) {
--		struct sk_buff *new_skb = lan743x_rx_allocate_skb(rx);
--
--		ret = lan743x_rx_init_ring_element(rx, index, new_skb);
-+		ret = lan743x_rx_init_ring_element(rx, index);
- 		if (ret)
- 			goto cleanup;
- 	}
-diff --git a/drivers/net/ethernet/microchip/lan743x_main.h b/drivers/net/ethernet/microchip/lan743x_main.h
-index 751f2bc9ce84..40dfb564c4f7 100644
---- a/drivers/net/ethernet/microchip/lan743x_main.h
-+++ b/drivers/net/ethernet/microchip/lan743x_main.h
-@@ -698,6 +698,8 @@ struct lan743x_rx {
- 	struct napi_struct napi;
- 
- 	u32		frame_count;
-+
-+	struct sk_buff *skb_head, *skb_tail;
- };
- 
- struct lan743x_adapter {
-@@ -831,8 +833,7 @@ struct lan743x_rx_buffer_info {
- #define LAN743X_RX_RING_SIZE        (65)
- 
- #define RX_PROCESS_RESULT_NOTHING_TO_DO     (0)
--#define RX_PROCESS_RESULT_PACKET_RECEIVED   (1)
--#define RX_PROCESS_RESULT_PACKET_DROPPED    (2)
-+#define RX_PROCESS_RESULT_BUFFER_RECEIVED   (1)
- 
- u32 lan743x_csr_read(struct lan743x_adapter *adapter, int offset);
- void lan743x_csr_write(struct lan743x_adapter *adapter, int offset, u32 data);
 -- 
 2.17.1
 
