@@ -2,42 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 76C233188E1
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 12:01:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15C513188F3
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 12:09:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231196AbhBKK70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 05:59:26 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:43976 "EHLO
+        id S231253AbhBKLBT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 06:01:19 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:62726 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231280AbhBKKyQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 05:54:16 -0500
+        by vger.kernel.org with ESMTP id S231288AbhBKKyq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 05:54:46 -0500
 Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11BAp4Lt017003;
-        Thu, 11 Feb 2021 02:53:17 -0800
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11BApK5g017036;
+        Thu, 11 Feb 2021 02:53:28 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=Uutl3RiVLPkBW3EkdjNAwEv5Xt9caltmG1AWWnEfoRk=;
- b=N+6y/MR1pW/zUFiWlDjFlVdrcl/D8FRhhFDZXwIF6bTiurwKF9KJ7HTjfAxt6hVnO0B3
- Nn23SN0QkixUsCZVAa5oQPia8R6mxGmsLrHwoLNC5a4VLplEv5Qtps2cLjYp2OXwe46y
- siVrY8/inhjBm3yoLWsw9XZlhXBQiEs0/MWLZfNJylW7+cuzArFJnpqEkwvlADeMohtB
- QJFiip6EtOyGSEaBbh/EHsU+KLAnOvRoY7GTKj5StOdykL2/Sr+++px+rwStvNuWt8ZU
- vJg/MhcEHxNvS+lzRPOw2AABFjW0nvz92Ch05fxumRSFGf8mRBl4fveXEGprnwNmHBm0 fg== 
+ content-type; s=pfpt0220; bh=kibyRIO/feslyfagTjuGXg398CY47q8XHSH9+KaIMgY=;
+ b=g9gHAWV5Zh+8QflOFw2EUxqJ+7CKh+6op3b9i/Cg6VFD+YKW1QQEObN31nz2r+oJlLV3
+ kREFH3aZ9AXF92j1IP6s8/CYreurrscWq2SMixhOVy7XiHKPCqJO4XlW4VjCtdth9IzZ
+ WBwQ8KDuOecMdgfFZy2OmWC/+8nJkMMMe2zsQDlILe9dfoP6LOpYihw2VW3LlFUHAgoS
+ 0g3cgd6pmOOesxtS1/gG/diBHWA6WggOXFW5a1IL19+UoLHtZeH5NXqL3nmusFM0l9mL
+ iZLyEHGQ/u/AxOX/4bP+mLCNhVPKdV5MJSK9plPyD9mr/gcxdwYAxJydAzncw6xahdjj Iw== 
 Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com with ESMTP id 36hugqeffq-1
+        by mx0b-0016f401.pphosted.com with ESMTP id 36hugqefgf-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 11 Feb 2021 02:53:17 -0800
-Received: from SC-EXCH02.marvell.com (10.93.176.82) by DC5-EXCH01.marvell.com
+        Thu, 11 Feb 2021 02:53:28 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
  (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 11 Feb
- 2021 02:53:15 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 11 Feb
- 2021 02:53:15 -0800
+ 2021 02:53:26 -0800
 Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
  (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 11 Feb 2021 02:53:14 -0800
+ Transport; Thu, 11 Feb 2021 02:53:26 -0800
 Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id 0B01D3F7041;
-        Thu, 11 Feb 2021 02:53:10 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id 85F793F703F;
+        Thu, 11 Feb 2021 02:53:22 -0800 (PST)
 From:   <stefanc@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
@@ -49,9 +46,9 @@ CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
         <robh+dt@kernel.org>, <sebastian.hesselbarth@gmail.com>,
         <gregory.clement@bootlin.com>,
         <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH v13 net-next 11/15] net: mvpp2: add ethtool flow control configuration support
-Date:   Thu, 11 Feb 2021 12:48:58 +0200
-Message-ID: <1613040542-16500-12-git-send-email-stefanc@marvell.com>
+Subject: [PATCH v13 net-next 12/15] net: mvpp2: add BM protection underrun feature support
+Date:   Thu, 11 Feb 2021 12:48:59 +0200
+Message-ID: <1613040542-16500-13-git-send-email-stefanc@marvell.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1613040542-16500-1-git-send-email-stefanc@marvell.com>
 References: <1613040542-16500-1-git-send-email-stefanc@marvell.com>
@@ -65,182 +62,100 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Stefan Chulski <stefanc@marvell.com>
 
-This patch add ethtool flow control configuration support.
-
-Tx flow control retrieved correctly by ethtool get function.
-FW per port ethtool configuration capability added.
-
-Patch also takes care about mtu change procedure, if PPv2 switch
-BM pools during mtu change.
+The PP2v23 hardware supports a feature allowing to double the
+size of BPPI by decreasing number of pools from 16 to 8.
+Increasing of BPPI size protect BM drop from BPPI underrun.
+Underrun could occurred due to stress on DDR and as result slow buffer
+transition from BPPE to BPPI.
+New BPPI threshold recommended by spec is:
+BPPI low threshold - 640 buffers
+BPPI high threshold - 832 buffers
+Supported only in PPv23.
 
 Signed-off-by: Stefan Chulski <stefanc@marvell.com>
 Acked-by: Marcin Wojtas <mw@semihalf.com>
 ---
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h      | 13 +++
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 98 ++++++++++++++++++++
- 2 files changed, 111 insertions(+)
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h      |  8 ++++++
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 26 ++++++++++++++++++++
+ 2 files changed, 34 insertions(+)
 
 diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-index 0010a3e9..0731dc7 100644
+index 0731dc7..9b525b60 100644
 --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
 +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-@@ -774,6 +774,19 @@
- #define MSS_RXQ_TRESH_REG(q, fq)	(MSS_RXQ_TRESH_BASE + (((q) + (fq)) \
- 					* MSS_RXQ_TRESH_OFFS))
+@@ -324,6 +324,10 @@
+ #define     MVPP2_BM_HIGH_THRESH_MASK		0x7f0000
+ #define     MVPP2_BM_HIGH_THRESH_VALUE(val)	((val) << \
+ 						MVPP2_BM_HIGH_THRESH_OFFS)
++#define     MVPP2_BM_BPPI_HIGH_THRESH		0x1E
++#define     MVPP2_BM_BPPI_LOW_THRESH		0x1C
++#define     MVPP23_BM_BPPI_HIGH_THRESH		0x34
++#define     MVPP23_BM_BPPI_LOW_THRESH		0x28
+ #define MVPP2_BM_INTR_CAUSE_REG(pool)		(0x6240 + ((pool) * 4))
+ #define     MVPP2_BM_RELEASED_DELAY_MASK	BIT(0)
+ #define     MVPP2_BM_ALLOC_FAILED_MASK		BIT(1)
+@@ -352,6 +356,10 @@
+ #define MVPP2_OVERRUN_ETH_DROP			0x7000
+ #define MVPP2_CLS_ETH_DROP			0x7020
  
-+#define MSS_BUF_POOL_BASE		0x40
-+#define MSS_BUF_POOL_OFFS		4
-+#define MSS_BUF_POOL_REG(id)		(MSS_BUF_POOL_BASE		\
-+					+ (id) * MSS_BUF_POOL_OFFS)
++#define MVPP22_BM_POOL_BASE_ADDR_HIGH_REG	0x6310
++#define     MVPP22_BM_POOL_BASE_ADDR_HIGH_MASK	0xff
++#define     MVPP23_BM_8POOL_MODE		BIT(8)
 +
-+#define MSS_BUF_POOL_STOP_MASK		0xFFF
-+#define MSS_BUF_POOL_START_MASK		(0xFFF << MSS_BUF_POOL_START_OFFS)
-+#define MSS_BUF_POOL_START_OFFS		12
-+#define MSS_BUF_POOL_PORTS_MASK		(0xF << MSS_BUF_POOL_PORTS_OFFS)
-+#define MSS_BUF_POOL_PORTS_OFFS		24
-+#define MSS_BUF_POOL_PORT_OFFS(id)	(0x1 <<				\
-+					((id) + MSS_BUF_POOL_PORTS_OFFS))
-+
- #define MSS_RXQ_TRESH_START_MASK	0xFFFF
- #define MSS_RXQ_TRESH_STOP_MASK		(0xFFFF << MSS_RXQ_TRESH_STOP_OFFS)
- #define MSS_RXQ_TRESH_STOP_OFFS		16
+ /* Hit counters registers */
+ #define MVPP2_CTRS_IDX				0x7040
+ #define     MVPP22_CTRS_TX_CTR(port, txq)	((txq) | ((port) << 3) | BIT(7))
 diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index f1770e5..90c9265 100644
+index 90c9265..9226d2f 100644
 --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
 +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -845,6 +845,59 @@ static void mvpp2_rxq_disable_fc(struct mvpp2_port *port)
- 	spin_unlock_irqrestore(&port->priv->mss_spinlock, flags);
+@@ -423,6 +423,19 @@ static int mvpp2_bm_pool_create(struct device *dev, struct mvpp2 *priv,
+ 
+ 	val = mvpp2_read(priv, MVPP2_BM_POOL_CTRL_REG(bm_pool->id));
+ 	val |= MVPP2_BM_START_MASK;
++
++	val &= ~MVPP2_BM_LOW_THRESH_MASK;
++	val &= ~MVPP2_BM_HIGH_THRESH_MASK;
++
++	/* Set 8 Pools BPPI threshold for MVPP23 */
++	if (priv->hw_version == MVPP23) {
++		val |= MVPP2_BM_LOW_THRESH_VALUE(MVPP23_BM_BPPI_LOW_THRESH);
++		val |= MVPP2_BM_HIGH_THRESH_VALUE(MVPP23_BM_BPPI_HIGH_THRESH);
++	} else {
++		val |= MVPP2_BM_LOW_THRESH_VALUE(MVPP2_BM_BPPI_LOW_THRESH);
++		val |= MVPP2_BM_HIGH_THRESH_VALUE(MVPP2_BM_BPPI_HIGH_THRESH);
++	}
++
+ 	mvpp2_write(priv, MVPP2_BM_POOL_CTRL_REG(bm_pool->id), val);
+ 
+ 	bm_pool->size = size;
+@@ -591,6 +604,16 @@ static int mvpp2_bm_pools_init(struct device *dev, struct mvpp2 *priv)
+ 	return err;
  }
  
-+/* Routine disable/enable flow control for BM pool condition */
-+static void mvpp2_bm_pool_update_fc(struct mvpp2_port *port,
-+				    struct mvpp2_bm_pool *pool,
-+				    bool en)
++/* Routine enable PPv23 8 pool mode */
++static void mvpp23_bm_set_8pool_mode(struct mvpp2 *priv)
 +{
-+	int val, cm3_state;
-+	unsigned long flags;
++	int val;
 +
-+	spin_lock_irqsave(&port->priv->mss_spinlock, flags);
-+
-+	/* Remove Flow control enable bit to prevent race between FW and Kernel
-+	 * If Flow control were enabled, it would be re-enabled.
-+	 */
-+	val = mvpp2_cm3_read(port->priv, MSS_FC_COM_REG);
-+	cm3_state = (val & FLOW_CONTROL_ENABLE_BIT);
-+	val &= ~FLOW_CONTROL_ENABLE_BIT;
-+	mvpp2_cm3_write(port->priv, MSS_FC_COM_REG, val);
-+
-+	/* Check if BM pool should be enabled/disable */
-+	if (en) {
-+		/* Set BM pool start and stop thresholds per port */
-+		val = mvpp2_cm3_read(port->priv, MSS_BUF_POOL_REG(pool->id));
-+		val |= MSS_BUF_POOL_PORT_OFFS(port->id);
-+		val &= ~MSS_BUF_POOL_START_MASK;
-+		val |= (MSS_THRESHOLD_START << MSS_BUF_POOL_START_OFFS);
-+		val &= ~MSS_BUF_POOL_STOP_MASK;
-+		val |= MSS_THRESHOLD_STOP;
-+		mvpp2_cm3_write(port->priv, MSS_BUF_POOL_REG(pool->id), val);
-+	} else {
-+		/* Remove BM pool from the port */
-+		val = mvpp2_cm3_read(port->priv, MSS_BUF_POOL_REG(pool->id));
-+		val &= ~MSS_BUF_POOL_PORT_OFFS(port->id);
-+
-+		/* Zero BM pool start and stop thresholds to disable pool
-+		 * flow control if pool empty (not used by any port)
-+		 */
-+		if (!pool->buf_num) {
-+			val &= ~MSS_BUF_POOL_START_MASK;
-+			val &= ~MSS_BUF_POOL_STOP_MASK;
-+		}
-+
-+		mvpp2_cm3_write(port->priv, MSS_BUF_POOL_REG(pool->id), val);
-+	}
-+
-+	/* Notify Firmware that Flow control config space ready for update */
-+	val = mvpp2_cm3_read(port->priv, MSS_FC_COM_REG);
-+	val |= FLOW_CONTROL_UPDATE_COMMAND_BIT;
-+	val |= cm3_state;
-+	mvpp2_cm3_write(port->priv, MSS_FC_COM_REG, val);
-+
-+	spin_unlock_irqrestore(&port->priv->mss_spinlock, flags);
++	val = mvpp2_read(priv, MVPP22_BM_POOL_BASE_ADDR_HIGH_REG);
++	val |= MVPP23_BM_8POOL_MODE;
++	mvpp2_write(priv, MVPP22_BM_POOL_BASE_ADDR_HIGH_REG, val);
 +}
 +
- /* Release buffer to BM */
- static inline void mvpp2_bm_pool_put(struct mvpp2_port *port, int pool,
- 				     dma_addr_t buf_dma_addr,
-@@ -1175,6 +1228,16 @@ static int mvpp2_bm_update_mtu(struct net_device *dev, int mtu)
- 		new_long_pool = MVPP2_BM_LONG;
- 
- 	if (new_long_pool != port->pool_long->id) {
-+		if (port->tx_fc) {
-+			if (pkt_size > MVPP2_BM_LONG_PKT_SIZE)
-+				mvpp2_bm_pool_update_fc(port,
-+							port->pool_short,
-+							false);
-+			else
-+				mvpp2_bm_pool_update_fc(port, port->pool_long,
-+							false);
-+		}
-+
- 		/* Remove port from old short & long pool */
- 		port->pool_long = mvpp2_bm_pool_use(port, port->pool_long->id,
- 						    port->pool_long->pkt_size);
-@@ -1192,6 +1255,25 @@ static int mvpp2_bm_update_mtu(struct net_device *dev, int mtu)
- 		mvpp2_swf_bm_pool_init(port);
- 
- 		mvpp2_set_hw_csum(port, new_long_pool);
-+
-+		if (port->tx_fc) {
-+			if (pkt_size > MVPP2_BM_LONG_PKT_SIZE)
-+				mvpp2_bm_pool_update_fc(port, port->pool_long,
-+							true);
-+			else
-+				mvpp2_bm_pool_update_fc(port, port->pool_short,
-+							true);
-+		}
-+
-+		/* Update L4 checksum when jumbo enable/disable on port */
-+		if (new_long_pool == MVPP2_BM_JUMBO && port->id != 0) {
-+			dev->features &= ~(NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM);
-+			dev->hw_features &= ~(NETIF_F_IP_CSUM |
-+					      NETIF_F_IPV6_CSUM);
-+		} else {
-+			dev->features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
-+			dev->hw_features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
-+		}
- 	}
- 
- out_set:
-@@ -6357,6 +6439,7 @@ static void mvpp2_mac_link_up(struct phylink_config *config,
+ static int mvpp2_bm_init(struct device *dev, struct mvpp2 *priv)
  {
- 	struct mvpp2_port *port = mvpp2_phylink_to_port(config);
- 	u32 val;
-+	int i;
+ 	enum dma_data_direction dma_dir = DMA_FROM_DEVICE;
+@@ -644,6 +667,9 @@ static int mvpp2_bm_init(struct device *dev, struct mvpp2 *priv)
+ 	if (!priv->bm_pools)
+ 		return -ENOMEM;
  
- 	if (mvpp2_is_xlg(interface)) {
- 		if (!phylink_autoneg_inband(mode)) {
-@@ -6407,6 +6490,21 @@ static void mvpp2_mac_link_up(struct phylink_config *config,
- 			     val);
- 	}
- 
-+	if (port->priv->global_tx_fc) {
-+		port->tx_fc = tx_pause;
-+		if (tx_pause)
-+			mvpp2_rxq_enable_fc(port);
-+		else
-+			mvpp2_rxq_disable_fc(port);
-+		if (port->priv->percpu_pools) {
-+			for (i = 0; i < port->nrxqs; i++)
-+				mvpp2_bm_pool_update_fc(port, &port->priv->bm_pools[i], tx_pause);
-+		} else {
-+			mvpp2_bm_pool_update_fc(port, port->pool_long, tx_pause);
-+			mvpp2_bm_pool_update_fc(port, port->pool_short, tx_pause);
-+		}
-+	}
++	if (priv->hw_version == MVPP23)
++		mvpp23_bm_set_8pool_mode(priv);
 +
- 	mvpp2_port_enable(port);
- 
- 	mvpp2_egress_enable(port);
+ 	err = mvpp2_bm_pools_init(dev, priv);
+ 	if (err < 0)
+ 		return err;
 -- 
 1.9.1
 
