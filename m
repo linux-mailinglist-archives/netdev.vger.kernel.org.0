@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62A9A31917C
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 18:51:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B38D319173
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 18:50:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231249AbhBKRsx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 12:48:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53832 "EHLO
+        id S232435AbhBKRrq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 12:47:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232521AbhBKRpb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 12:45:31 -0500
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CA46C06178C;
-        Thu, 11 Feb 2021 09:44:51 -0800 (PST)
-Received: by mail-pf1-x435.google.com with SMTP id j12so4111452pfj.12;
-        Thu, 11 Feb 2021 09:44:51 -0800 (PST)
+        with ESMTP id S232474AbhBKRpV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 12:45:21 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA3CBC061793;
+        Thu, 11 Feb 2021 09:45:06 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id s15so3696009plr.9;
+        Thu, 11 Feb 2021 09:45:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=h9KJGecz6tNqWOWMr9DCp1mCnmYY4W1Pw4EakXfszAM=;
-        b=lEPaV7lDoD7g11d+GJzPg9X4Y154BpvLJ/WRKblJoB9g67PPLSRUyBVl6HdVy4VeV1
-         nYYnt+S1myD2iVyvBP22q/uF510IqtbEb5Auh/xHv7lXzdHGN4Vpj4rL7ZbIiiXMTZyF
-         pQv7y0MZs1yiUU/XNKAT2l5sno8zpVi+qxmShzxdh4/DLcf5My+TYefM2oCrQIfUgZjM
-         +qBwuesheSvJ0q0zzvp0B8zL/46alcHMYkLKpMKO7X3xGtuS7ZFU6FNwCMoE0LWwxEsA
-         HF/vlMGACjQrBnxG/Fg+zxvyHxD1bfi382bYC8noySLRd2px3/8xhxiOmCKaYAXVV9an
-         T9rQ==
+        bh=s9pq4edY7gWbLeTk+7x2ZZ+ePQJDzJPzGh/lFv1+wbM=;
+        b=JCvH0n0+1+JC0gagmSi3TKcRz0LMSrV5Q7hv/bQXoc+W10VQMVHcgk4vW9g+j1icLo
+         1rd6pZ9a+FuJfTQapnLOF/ISAz5TfJYIAylSfbXPqu9JyMxQHrM4Ajwuo047zMYp1Fmz
+         4Jw9/v9HAcEhyLdz4ZKgSHotJgiDd/9/bl/KTfoTlbjCCHRKpOEDdlPYkwQ0c7kMq39A
+         jRgqO+VasZZWAzPVh0RIybvOGT4psxKAZoQYEzE9bDysiusnnK7XzuRjpKftauIkS/Tk
+         y8kf7sLq/5eGmETkZ+LFc0d1vqmRnhIOVD3rZbMQ/hdU8Ptr2y02ISmiuG1Z8hpLOCKj
+         Ok9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=h9KJGecz6tNqWOWMr9DCp1mCnmYY4W1Pw4EakXfszAM=;
-        b=Dvg/RZ8qLI/4OXeBCmy+Wuc+gSf5D3vIjEAC5i54z39jVcY4/NoUXlOxdeh53N2/pK
-         usLt3INdYe7XPV/YyqOfoJiDKH3e7s8nR5QR5OCHZF7NmGWA/ugmrhaegiUGX82//yie
-         nxmXL5IWr7unwamVChujNzz0ZUkezkpvGniD+w7Pg+6/PjVOZfPQrYK027LVCLtuhUaU
-         gjIGCN/7tueoAdke3zp9wmDNDuu+710QXPbAC13yNSAag9Ppn69bOx4FHZkReYkbcxze
-         NqiGZ/KjqmnpNIvl3xvBmOy60XBkiTlsh4n6NWUCFghxfQpduZ4gKdnazWOQ4uCq/mD3
-         0DBQ==
-X-Gm-Message-State: AOAM531hCPSSeXzO+BHmcG4zI1aBwevT5mazzCFtNnG5IGdT0ORQ7/cc
-        c+MDcn9cvJXqq29CjFVA0SuBXH9hSZc=
-X-Google-Smtp-Source: ABdhPJwjJlBQsKOZ8uZ3XXG4dxz0qoxc9ZpQ+mwBfYeVxC/wx6wsevKu92E0nmIKFM7yYBGEjJ9PbA==
-X-Received: by 2002:a05:6a00:787:b029:1da:643b:6d41 with SMTP id g7-20020a056a000787b02901da643b6d41mr9290353pfu.31.1613065490568;
-        Thu, 11 Feb 2021 09:44:50 -0800 (PST)
+        bh=s9pq4edY7gWbLeTk+7x2ZZ+ePQJDzJPzGh/lFv1+wbM=;
+        b=FZNpKgYAdoM8AHhVEOt/UBGnCUWcKKcl9Qh17xAiOfQom1X9IBKdLD8dC3EoSFV5TA
+         hxt/i81GHQ//hx7ZrfMgoL3FefUiHFyX3vwBMdWDmurIgqJsa+G9HB1m99bivNiAfnR2
+         rPQpTEjhRLnk0RD66y9f4HqRiUNrbUFq9j+mfoOD7u4gv+RnZleZK23XRtsOmjtHNlWx
+         TNS5CE4dgyaYj21zX64vQQdPQmN48b9eiCcLekbp5V7q8k2F9kGno7sylDPTMPjJublP
+         A7jj5Guew/GHaq+o5zdChYuakIk0LVD3YGSraYrkSgGlg+JSzBDVIFoYHgvysFU9Erit
+         25mg==
+X-Gm-Message-State: AOAM533khGTP8aCCGslxBG39LMkDcMAQquy0P4xnoiH5r7hILbEFTSU8
+        y3/ZaSLskX1fGgBu3hs1b38=
+X-Google-Smtp-Source: ABdhPJxQNsCNT3aUhEgGjqnlKaLaobOh9B/Hp/5hG3NkYNPQApW/o7inax/qtuJazyhZk2VA/9aIlA==
+X-Received: by 2002:a17:90a:2b4a:: with SMTP id y10mr5038453pjc.118.1613065506281;
+        Thu, 11 Feb 2021 09:45:06 -0800 (PST)
 Received: from [10.67.49.228] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id p9sm5538285pja.51.2021.02.11.09.44.49
+        by smtp.googlemail.com with ESMTPSA id t189sm6058520pfb.104.2021.02.11.09.45.04
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 11 Feb 2021 09:44:50 -0800 (PST)
-Subject: Re: [PATCH net-next 5.12 3/8] net: broadcom: rename BCM4908 driver &
- update DT binding
+        Thu, 11 Feb 2021 09:45:05 -0800 (PST)
+Subject: Re: [PATCH net-next 5.12 4/8] net: broadcom: bcm4908_enet: drop
+ unneeded memset()
 To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -61,7 +61,7 @@ Cc:     Randy Dunlap <rdunlap@infradead.org>,
         =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
 References: <20210209230130.4690-2-zajec5@gmail.com>
  <20210211121239.728-1-zajec5@gmail.com>
- <20210211121239.728-4-zajec5@gmail.com>
+ <20210211121239.728-5-zajec5@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -117,12 +117,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <ec60550d-2fdf-d88e-4c03-13406d7e68b5@gmail.com>
-Date:   Thu, 11 Feb 2021 09:44:48 -0800
+Message-ID: <1366ae8f-d87d-7f17-9d05-f83c424340d0@gmail.com>
+Date:   Thu, 11 Feb 2021 09:45:04 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20210211121239.728-4-zajec5@gmail.com>
+In-Reply-To: <20210211121239.728-5-zajec5@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -133,10 +133,11 @@ X-Mailing-List: netdev@vger.kernel.org
 On 2/11/21 4:12 AM, Rafał Miłecki wrote:
 > From: Rafał Miłecki <rafal@milecki.pl>
 > 
-> compatible string was updated to match normal naming convention so
-> update driver as well
+> dma_alloc_coherent takes care of zeroing allocated memory
 > 
+> Suggested-by: Andrew Lunn <andrew@lunn.ch>
 > Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
