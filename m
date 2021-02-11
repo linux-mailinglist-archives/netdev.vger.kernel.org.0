@@ -2,112 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 264E6318D2F
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 15:20:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C053318D3F
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 15:24:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232085AbhBKOTL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 09:19:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37336 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231425AbhBKORR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 09:17:17 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06D4BC0613D6;
-        Thu, 11 Feb 2021 06:16:36 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id y134so5914484wmd.3;
-        Thu, 11 Feb 2021 06:16:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:reply-to:to:cc:references:in-reply-to:subject:date:message-id
-         :mime-version:content-transfer-encoding:content-language
-         :thread-index;
-        bh=Cy7wIsuzTgl3aboWz/KovEJxl9QgfW9V5yGGjiDAWYM=;
-        b=ceGtK16iiqXY4tgCK1vcKqBj4841jW8joof8S5SVv23VqEhPPrve3dH08MDFnAW8gT
-         eDso9WyJXR0PA6bWE6qzadYTP4IRUv2MiuarZWCROw9k+VeyhRDA9lUEiPOqTwWyHTiA
-         8oFIew0jN2w50DFl/edAVtXnvBA8T6ELRsB0yHtWmRNqXdKBax/B6dt4/+sVOkYxBuJZ
-         ygiiDkEQOfvXTthd+sIy5RKUovNOzFQ/jzmU/xL8cASUcfaooC4EmBjuVYOfE6UNP6ID
-         gzhTYcoWpGzDsu9Fs4152wzszrgjUAZMBh9fNIHMRM4cKAO+x5jqAZUbhdbwVgvcQxl3
-         ks5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:reply-to:to:cc:references:in-reply-to
-         :subject:date:message-id:mime-version:content-transfer-encoding
-         :content-language:thread-index;
-        bh=Cy7wIsuzTgl3aboWz/KovEJxl9QgfW9V5yGGjiDAWYM=;
-        b=l1aeu8yDne118Q5JPQiKaxceFj72JYrdu/koeFQhSCWGz1/pUUTHpXum5aBNsqNmdi
-         skTIsyiYtBtNy5KdHTgtrHl+kZyCemtb7ymPTO1sdg9NuCFte7biaNTHgATcfiKTSmO7
-         GQrshDna4JUsWkcEawzX6pJwhi7QXeX2UVWQKMoJ8JqpdR/sovrwGGiqx/8XrA7ZlVWo
-         ZrA/o3hxiH7BtjgPWJkSbC2KyHZH29DqUoiBiMDHfwGyRD5kwUQiCpUOJcAgOsAPClfr
-         J87AmvzBuaMVzz6istjKnogzBLdtSJ8hoE0GVxE2ePR/QbGKF42ykcYqh5j9PoSqicL+
-         qNuA==
-X-Gm-Message-State: AOAM531rkhxwnDyzlBBHE5o0bZwg+MCirDIJ/sY7E/jAgI08Vkl7apxQ
-        YDRkmZE/boeItRbkCdYKE18=
-X-Google-Smtp-Source: ABdhPJxTbARAJSnDj9FS90ZX4jupockoPgBhbigpLeuBQY+mCo7W/pQ+NNyaOiH3hCn1BLn43MXmKg==
-X-Received: by 2002:a05:600c:2d44:: with SMTP id a4mr5294978wmg.95.1613052994868;
-        Thu, 11 Feb 2021 06:16:34 -0800 (PST)
-Received: from CBGR90WXYV0 ([2a00:23c5:5785:9a01:f088:412:4748:4eb1])
-        by smtp.gmail.com with ESMTPSA id z8sm5045343wrr.55.2021.02.11.06.16.33
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 11 Feb 2021 06:16:34 -0800 (PST)
-From:   Paul Durrant <xadimgnik@gmail.com>
-X-Google-Original-From: "Paul Durrant" <paul@xen.org>
-Reply-To: <paul@xen.org>
-To:     "'Juergen Gross'" <jgross@suse.com>,
-        <xen-devel@lists.xenproject.org>, <linux-block@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-scsi@vger.kernel.org>
-Cc:     "'Konrad Rzeszutek Wilk'" <konrad.wilk@oracle.com>,
-        =?utf-8?Q?'Roger_Pau_Monn=C3=A9'?= <roger.pau@citrix.com>,
-        "'Jens Axboe'" <axboe@kernel.dk>, "'Wei Liu'" <wei.liu@kernel.org>,
-        "'David S. Miller'" <davem@davemloft.net>,
-        "'Jakub Kicinski'" <kuba@kernel.org>,
-        "'Boris Ostrovsky'" <boris.ostrovsky@oracle.com>,
-        "'Stefano Stabellini'" <sstabellini@kernel.org>
-References: <20210211101616.13788-1-jgross@suse.com> <20210211101616.13788-6-jgross@suse.com>
-In-Reply-To: <20210211101616.13788-6-jgross@suse.com>
-Subject: RE: [PATCH v2 5/8] xen/events: link interdomain events to associated xenbus device
-Date:   Thu, 11 Feb 2021 14:16:33 -0000
-Message-ID: <001e01d70080$80afd5a0$820f80e0$@xen.org>
+        id S232140AbhBKOWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 09:22:24 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:34938 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232218AbhBKOUL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Feb 2021 09:20:11 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lACoV-005aey-Jy; Thu, 11 Feb 2021 15:19:23 +0100
+Date:   Thu, 11 Feb 2021 15:19:23 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Stefan Chulski <stefanc@marvell.com>
+Cc:     David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
+        Nadav Haklai <nadavh@marvell.com>,
+        Yan Markman <ymarkman@marvell.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "mw@semihalf.com" <mw@semihalf.com>,
+        "rmk+kernel@armlinux.org.uk" <rmk+kernel@armlinux.org.uk>,
+        "atenart@kernel.org" <atenart@kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "sebastian.hesselbarth@gmail.com" <sebastian.hesselbarth@gmail.com>,
+        "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [EXT] Re: [PATCH v12 net-next 12/15] net: mvpp2: add BM
+ protection underrun feature support
+Message-ID: <YCU864+AH6UioNwQ@lunn.ch>
+References: <1612950500-9682-1-git-send-email-stefanc@marvell.com>
+ <1612950500-9682-13-git-send-email-stefanc@marvell.com>
+ <20210210.152924.767175240247395907.davem@davemloft.net>
+ <CO6PR18MB3873D8B7BE3AE28A1407C05BB08C9@CO6PR18MB3873.namprd18.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-X-Mailer: Microsoft Outlook 16.0
-Content-Language: en-gb
-Thread-Index: AQJuRSjpYwlLGVvLkRJGigHTv/cnpwH8bIuTqRSTGoA=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CO6PR18MB3873D8B7BE3AE28A1407C05BB08C9@CO6PR18MB3873.namprd18.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Juergen Gross <jgross@suse.com>
-> Sent: 11 February 2021 10:16
-> To: xen-devel@lists.xenproject.org; linux-block@vger.kernel.org; =
-linux-kernel@vger.kernel.org;
-> netdev@vger.kernel.org; linux-scsi@vger.kernel.org
-> Cc: Juergen Gross <jgross@suse.com>; Konrad Rzeszutek Wilk =
-<konrad.wilk@oracle.com>; Roger Pau Monn=C3=A9
-> <roger.pau@citrix.com>; Jens Axboe <axboe@kernel.dk>; Wei Liu =
-<wei.liu@kernel.org>; Paul Durrant
-> <paul@xen.org>; David S. Miller <davem@davemloft.net>; Jakub Kicinski =
-<kuba@kernel.org>; Boris
-> Ostrovsky <boris.ostrovsky@oracle.com>; Stefano Stabellini =
-<sstabellini@kernel.org>
-> Subject: [PATCH v2 5/8] xen/events: link interdomain events to =
-associated xenbus device
->=20
-> In order to support the possibility of per-device event channel
-> settings (e.g. lateeoi spurious event thresholds) add a xenbus device
-> pointer to struct irq_info() and modify the related event channel
-> binding interfaces to take the pointer to the xenbus device as a
-> parameter instead of the domain id of the other side.
->=20
-> While at it remove the stale prototype of =
-bind_evtchn_to_irq_lateeoi().
->=20
-> Signed-off-by: Juergen Gross <jgross@suse.com>
-> Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-> Reviewed-by: Wei Liu <wei.liu@kernel.org>
+On Thu, Feb 11, 2021 at 08:22:19AM +0000, Stefan Chulski wrote:
+> 
+> > 
+> > ----------------------------------------------------------------------
+> > From: <stefanc@marvell.com>
+> > Date: Wed, 10 Feb 2021 11:48:17 +0200
+> > 
+> > >
+> > > +static int bm_underrun_protect = 1;
+> > > +
+> > > +module_param(bm_underrun_protect, int, 0444);
+> > > +MODULE_PARM_DESC(bm_underrun_protect, "Set BM underrun protect
+> > > +feature (0-1), def=1");
+> > 
+> > No new module parameters, please.
+> 
+> Ok, I would remove new module parameters.
+> By the way why new module parameters forbitten?
 
-Reviewed-by: Paul Durrant <paul@xen.org>
+Historically, module parameters are a bad interface for
+configuration. Vendors have stuffed all sorts of random junk into
+module parameters. There is little documentation. Different drivers
+can have similar looking module parameters which do different
+things. Or different module parameters, which actually do the same
+thing. But maybe with slightly different parameters.
 
+We get a much better overall result if you stop and think for a
+while. How can this be made a generic configuration knob which
+multiple vendors could use? And then add it to ethtool. Extend the
+ethtool -h text and the man page. Maybe even hack some other vendors
+driver to make use of it.
+
+Or we have also found out, that pushing back on parameters like this,
+the developers goes back and looks at the code, and sometimes figures
+out a way to automatically do the right thing, removing the
+configuration knob, and just making it all simpler for the user to
+use.
+
+       Andrew
