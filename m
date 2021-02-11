@@ -2,154 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCA09318A55
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 13:21:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71992318A4E
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 13:21:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231906AbhBKMVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 07:21:35 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:33582 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231838AbhBKMSg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 07:18:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613045828;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=E1yuAMx44/76bqf49DYn2JPHR26BQBuYBzfgeTpXepM=;
-        b=KWiWyuSznwEJ9pJGtsD9tGKV8TGI+4qn/cUyC/lvausgwslgVPE6aAOiqAvlkwZ673NLX+
-        x7MAX2RBir7Ax0wgfP/pc/6B+12nm5/raX/fRppMSbJ6K5l5L7NrRKcBZzlZuViA4Jpsyw
-        9cw5e3UdrhpPZnrNuvs9eSii0L6ugRM=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-102-_2rn86xbPlWDyd7cIvyCkA-1; Thu, 11 Feb 2021 07:17:06 -0500
-X-MC-Unique: _2rn86xbPlWDyd7cIvyCkA-1
-Received: by mail-ej1-f69.google.com with SMTP id 7so4734617ejh.10
-        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 04:17:06 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=E1yuAMx44/76bqf49DYn2JPHR26BQBuYBzfgeTpXepM=;
-        b=NChsP62bLGGKkJ0Kpw4gcYkz/BWFJVE+c3fPMtRZ6g7eii4l/7GqESI1uJR5tjIDIB
-         ceK7S1ax8+P6QYYjjPuexNJKE0NJ2L1LhZP1rbbNolmN60Q7gC6+J7URwyiD9W5nhaa2
-         4NpM1zPDh3fAm6jZxkDylO0OXicZ5mb25zxwl4D7hsNwwXwp5z3jq7V/2vhuRzQ3FGHH
-         XWqfheY7Xk+9eRwICZRgRBqFG8HWObky6T+W/QIFiYPjyJiYZY0nEtKdLkLK2R1wIFKj
-         SQHB8l4fenD27+4T49Z/gJzEGigyubO776kYB22f3g8CnBEVBmkOiagFPn5OGv+GTWNA
-         VZFg==
-X-Gm-Message-State: AOAM531m3txRnKQwqL95LQQE3/rQ/Tai4AEWA8OP8fm7YstEuvKsLe9R
-        ZT3M8od9tRvlIyXD/Z6WU0pNv6kF5YxYl/sHwiHch9tDn7ytfl+TiVgfvTe379HsL6nPBXIFV/O
-        EP5wuVBjYAyqPTEPS
-X-Received: by 2002:aa7:d6c2:: with SMTP id x2mr8057402edr.225.1613045825262;
-        Thu, 11 Feb 2021 04:17:05 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxarfD0dC+o1lTaNaYi8iRDZFDf94i0xlVO9sO1P+pAXgRHpADAlujD3wU7pg5278zwtG18ww==
-X-Received: by 2002:aa7:d6c2:: with SMTP id x2mr8057363edr.225.1613045825000;
-        Thu, 11 Feb 2021 04:17:05 -0800 (PST)
-Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
-        by smtp.gmail.com with ESMTPSA id hr31sm4057322ejc.125.2021.02.11.04.17.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Feb 2021 04:17:04 -0800 (PST)
-Date:   Thu, 11 Feb 2021 13:17:01 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Jeff Vander Stoep <jeffv@google.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stsp2@yandex.ru, oxffffaa@gmail.com
-Subject: Re: [RFC PATCH v4 06/17] af_vsock: implement send logic for SEQPACKET
-Message-ID: <20210211121701.4em23vgsqfdkdp5j@steredhat>
-References: <20210207151259.803917-1-arseny.krasnov@kaspersky.com>
- <20210207151600.804998-1-arseny.krasnov@kaspersky.com>
+        id S231842AbhBKMVU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 07:21:20 -0500
+Received: from jabberwock.ucw.cz ([46.255.230.98]:36570 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231807AbhBKMSO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 07:18:14 -0500
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 7EDFD1C0B8A; Thu, 11 Feb 2021 13:17:02 +0100 (CET)
+Date:   Thu, 11 Feb 2021 13:17:02 +0100
+From:   Pavel Machek <pavel@ucw.cz>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Claudiu.Beznea@microchip.com, linux@armlinux.org.uk,
+        andrew@lunn.ch, davem@davemloft.net, kuba@kernel.org,
+        rjw@rjwysocki.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
+Subject: Re: [PATCH] net: phy: micrel: reconfigure the phy on resume
+Message-ID: <20210211121701.GA31708@amd>
+References: <1610120754-14331-1-git-send-email-claudiu.beznea@microchip.com>
+ <25ec943f-ddfc-9bcd-ef30-d0baf3c6b2a2@gmail.com>
+ <ce20d4f3-3e43-154a-0f57-2c2d42752597@microchip.com>
+ <ee0fd287-c737-faa5-eee1-99ffa120540a@gmail.com>
+ <ae4e73e9-109f-fdb9-382c-e33513109d1c@microchip.com>
+ <7976f7df-c22f-d444-c910-b0462b3d7f61@gmail.com>
+ <d9fcf8da-c0b0-0f18-48e9-a7534948bc93@microchip.com>
+ <20210114102508.GO1551@shell.armlinux.org.uk>
+ <fe4c31a0-b807-0eb2-1223-c07d7580e1fc@microchip.com>
+ <56366231-4a1f-48c3-bc29-6421ed834bdf@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="zYM0uCDKw75PZbzx"
 Content-Disposition: inline
-In-Reply-To: <20210207151600.804998-1-arseny.krasnov@kaspersky.com>
+In-Reply-To: <56366231-4a1f-48c3-bc29-6421ed834bdf@gmail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 07, 2021 at 06:15:57PM +0300, Arseny Krasnov wrote:
->This adds some logic to current stream enqueue function for SEQPACKET
->support:
->1) Send record's begin/end marker.
->2) Return value from enqueue function is whole record length or error
->   for SOCK_SEQPACKET.
->
->Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
->---
-> include/net/af_vsock.h   |  2 ++
-> net/vmw_vsock/af_vsock.c | 22 ++++++++++++++++++++--
-> 2 files changed, 22 insertions(+), 2 deletions(-)
->
->diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
->index 19f6f22821ec..198d58c4c7ee 100644
->--- a/include/net/af_vsock.h
->+++ b/include/net/af_vsock.h
->@@ -136,6 +136,8 @@ struct vsock_transport {
-> 	bool (*stream_allow)(u32 cid, u32 port);
->
-> 	/* SEQ_PACKET. */
->+	int (*seqpacket_seq_send_len)(struct vsock_sock *, size_t len, int flags);
->+	int (*seqpacket_seq_send_eor)(struct vsock_sock *, int flags);
 
-As before, we could add the identifier of the parameters.
+--zYM0uCDKw75PZbzx
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Other than that, the patch LGTM.
+On Thu 2021-01-14 12:05:21, Heiner Kallweit wrote:
+> On 14.01.2021 11:41, Claudiu.Beznea@microchip.com wrote:
+> >=20
+> >=20
+> > On 14.01.2021 12:25, Russell King - ARM Linux admin wrote:
+> >>
+> >> As I've said, if phylib/PHY driver is not restoring the state of the
+> >> PHY on resume from suspend-to-ram, then that's an issue with phylib
+> >> and/or the phy driver.
+> >=20
+> > In the patch I proposed in this thread the restoring is done in PHY dri=
+ver.
+> > Do you think I should continue the investigation and check if something
+> > should be done from the phylib itself?
+> >=20
+> It was the right move to approach the PM maintainers to clarify whether
+> the resume PM callback has to assume that power had been cut off and
+> it has to completely reconfigure the device. If they confirm this
+> understanding, then:
 
-Stefano
+Power to some devices can be cut during s2ram, yes.
 
-> 	size_t (*seqpacket_seq_get_len)(struct vsock_sock *);
-> 	int (*seqpacket_dequeue)(struct vsock_sock *, struct msghdr *,
-> 				     int flags, bool *msg_ready);
->diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
->index ea99261e88ac..a033d3340ac4 100644
->--- a/net/vmw_vsock/af_vsock.c
->+++ b/net/vmw_vsock/af_vsock.c
->@@ -1806,6 +1806,12 @@ static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
-> 	if (err < 0)
-> 		goto out;
->
->+	if (sk->sk_type == SOCK_SEQPACKET) {
->+		err = transport->seqpacket_seq_send_len(vsk, len, msg->msg_flags);
->+		if (err < 0)
->+			goto out;
->+	}
->+
-> 	while (total_written < len) {
-> 		ssize_t written;
->
->@@ -1852,9 +1858,21 @@ static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
->
-> 	}
->
->+	if (sk->sk_type == SOCK_SEQPACKET) {
->+		err = transport->seqpacket_seq_send_eor(vsk, msg->msg_flags);
->+		if (err < 0)
->+			goto out;
->+	}
->+
-> out_err:
->-	if (total_written > 0)
->-		err = total_written;
->+	if (total_written > 0) {
->+		/* Return number of written bytes only if:
->+		 * 1) SOCK_STREAM socket.
->+		 * 2) SOCK_SEQPACKET socket when whole buffer is sent.
->+		 */
->+		if (sk->sk_type == SOCK_STREAM || total_written == len)
->+			err = total_written;
->+	}
-> out:
-> 	release_sock(sk);
-> 	return err;
->-- 
->2.25.1
->
+> - the general question remains why there's separate resume and restore
+>   callbacks, and what restore is supposed to do that resume doesn't
+>   have to do
 
+You'll often have same implementation, yes.
+
+> - it should be sufficient to use mdio_bus_phy_restore also as resume
+>   callback (instead of changing each and every PHY driver's resume),
+>   because we can expect that somebody cutting off power to the PHY
+>   properly suspends the MDIO bus before
+
+If restore works with power cut and power not cut then yes, you should
+get away with that.
+
+Best regards,
+								Pavel
+--=20
+http://www.livejournal.com/~pavelmachek
+
+--zYM0uCDKw75PZbzx
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAmAlID0ACgkQMOfwapXb+vIv2QCgi63lZx/G4VQq5XuwoAFXDZNf
+YVoAoJmUbtI7+OYCqXQ1Lww9/y/ctYcK
+=UH1n
+-----END PGP SIGNATURE-----
+
+--zYM0uCDKw75PZbzx--
