@@ -2,100 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B86E318822
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 11:28:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F216231887A
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 11:48:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230051AbhBKK2O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 05:28:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44316 "EHLO
+        id S230130AbhBKKn2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 05:43:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230191AbhBKK0B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 05:26:01 -0500
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 564A6C0613D6
-        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 02:25:21 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id m1so5189845wml.2
-        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 02:25:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=bOALI3AfEhN0OdnOwb9mqvaoG4hH1rxWibCocU9mbUo=;
-        b=bLHJPK44nV6T79NQt72EBQkPXFXXBXBQ5dW8yPcyPca10peOzQwktl+a3cGT/p8wEv
-         rVYjC4Yd41V31QonCMdPGFQGZf6UMYaGG9O0pbJJrzALAxd+PEV/ZkykeXo/KaeC4oYn
-         mwGDDVyq841S52uCnbs/pGM4qrnj9rMfOhUtLSKopNZLntvHDVzmHSfZVR6y31DDHOkc
-         Dd+gF5toznfKWrOpVLYYKC7UhgAm8y+O5tuDbM6S5AphJHGtpzhlJCB8EYtklhmLSMi7
-         9eVYrap13RHJZoi16NkhkvBA6b5V6mrm8Gm0ZoI1Om3tN9vpu6M8VLzX5TJziQt6c4cS
-         zHoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=bOALI3AfEhN0OdnOwb9mqvaoG4hH1rxWibCocU9mbUo=;
-        b=gn2GmWNh8RD9urNnvawA5Jddtoqfd3xkKJnsyhfpO/RYGG7tk+itJNtbgqXYj/NaHs
-         5rPsdBqv8/NVOFwSlMgFOs46yi8NCGdx/UiDbvQJ4yJphgpHaXd1yhbIvXW3ED8RJQIa
-         Q2It1mVP/SVeHiU6guGKwGdVcuH8byUCaNFnXr5QB6AVV41ZjhOE8HUq62qIxSs+QgIC
-         piev+RYcO8APKdqL+WdYuSDgnMhJS+x6kAcipEfjv9ma5zQU5ackNqdwDdJtmiJfYAml
-         S+mQ3e+z9IiN469eM0xs1ya09S8RjRSg3atfhzY71I4//kgcM7Pde/x695E8dtPHwsKB
-         taOQ==
-X-Gm-Message-State: AOAM533XGgMbhU8LFUYJaYALEfU2ifBmhY8cmQOxVmzvCobZ5WGgp5TW
-        96dSgLjaUPMNC5zxb9gm2r7X1A==
-X-Google-Smtp-Source: ABdhPJy76vVe/k0BOSe3/IU7XWa6ypcZ5ufkwCji+VreSgsDeXcc7UrCjkoULoIlY+GOsbLjDqCoJw==
-X-Received: by 2002:a1c:e905:: with SMTP id q5mr4388977wmc.84.1613039120051;
-        Thu, 11 Feb 2021 02:25:20 -0800 (PST)
-Received: from ?IPv6:2a01:e0a:410:bb00:64f8:1d8e:bcd3:9707? ([2a01:e0a:410:bb00:64f8:1d8e:bcd3:9707])
-        by smtp.gmail.com with ESMTPSA id o13sm9649050wmh.2.2021.02.11.02.25.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 11 Feb 2021 02:25:19 -0800 (PST)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH net-next v2 0/3] bonding: 3ad: support for 200G/400G ports
- and more verbose warning
-To:     Nikolay Aleksandrov <razor@blackwall.org>, netdev@vger.kernel.org
-Cc:     roopa@nvidia.com, andy@greyhouse.net, j.vosburgh@gmail.com,
-        vfalico@gmail.com, kuba@kernel.org, davem@davemloft.net,
-        alexander.duyck@gmail.com, idosch@nvidia.com,
-        Nikolay Aleksandrov <nikolay@nvidia.com>
-References: <20210210204333.729603-1-razor@blackwall.org>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <c86ba0ea-23b5-2aaf-6f1a-c25b2b2488ac@6wind.com>
-Date:   Thu, 11 Feb 2021 11:25:18 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        with ESMTP id S230139AbhBKKkn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 05:40:43 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D44C061574;
+        Thu, 11 Feb 2021 02:40:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=KqKL6U54aCC0e44bsyZEz0rjpqJM8TsWEFnpO14j4I0=; b=V/XKeJOwhiGwwPrOF/Ejk+2gU
+        RUlWQlS7edN8olo8oHfkWd7OfyKxmdav9/717Ou8/3rJweQCj8FWraj7NC3ofElWgR/b4oP6+WMMr
+        9a6hKi+G955sI6tWlouZKrxpPC8XUR76WOdOJ7GzpQMLIZYAq9QhR4Gft4GC+SCGyDO92arJJlhSf
+        SYq2lujQBwQBLKiUqZjSmC/AE+yGH2LlB7IswQNlqGwT0933GByZGtJxQcwhaQzqPW/Zf7zRfBtxv
+        Q+LGWnwyD68v1Wb0WX2gCJT+wrc9HRham/g+Z5QSbb4v99b9BTVrItcQ+y1GLxpsijl5mnPkx+Ci8
+        gF9YWi+SQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:41972)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1lA9Nz-0005vP-Cw; Thu, 11 Feb 2021 10:39:47 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1lA9Nt-00060X-RR; Thu, 11 Feb 2021 10:39:41 +0000
+Date:   Thu, 11 Feb 2021 10:39:41 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Serge Semin <fancer.lancer@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Joao Pinto <Joao.Pinto@synopsys.com>,
+        linux-kernel@vger.kernel.org,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Vyacheslav Mitrofanov 
+        <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 01/20] net: phy: realtek: Fix events detection failure in
+ LPI mode
+Message-ID: <20210211103941.GW1463@shell.armlinux.org.uk>
+References: <20210208140341.9271-1-Sergey.Semin@baikalelectronics.ru>
+ <20210208140341.9271-2-Sergey.Semin@baikalelectronics.ru>
+ <8300d9ca-b877-860f-a975-731d6d3a93a5@gmail.com>
+ <20210209101528.3lf47ouaedfgq74n@mobilestation>
+ <a652c69b-94d3-9dc6-c529-1ebc0ed407ac@gmail.com>
+ <20210209105646.GP1463@shell.armlinux.org.uk>
+ <20210210164720.migzigazyqsuxwc6@mobilestation>
 MIME-Version: 1.0
-In-Reply-To: <20210210204333.729603-1-razor@blackwall.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210210164720.migzigazyqsuxwc6@mobilestation>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 10/02/2021 à 21:43, Nikolay Aleksandrov a écrit :
-> From: Nikolay Aleksandrov <nikolay@nvidia.com>
+On Wed, Feb 10, 2021 at 07:47:20PM +0300, Serge Semin wrote:
+> On Tue, Feb 09, 2021 at 10:56:46AM +0000, Russell King - ARM Linux admin wrote:
+> > On Tue, Feb 09, 2021 at 11:37:29AM +0100, Heiner Kallweit wrote:
+> > > Right, adding something like a genphy_{read,write}_mmd() doesn't make
+> > > too much sense for now. What I meant is just exporting mmd_phy_indirect().
+> > > Then you don't have to open-code the first three steps of a mmd read/write.
+> > > And it requires no additional code in phylib.
+> > 
+> > ... but at the cost that the compiler can no longer inline that code,
+> > as I mentioned in my previous reply. (However, the cost of the accesses
+> > will be higher.) On the plus side, less I-cache footprint, and smaller
+> > kernel code.
 > 
-> Hi,
-> We'd like to have proper 200G and 400G support with 3ad bond mode, so we
-> need to add new definitions for them in order to have separate oper keys,
-> aggregated bandwidth and proper operation (patches 01 and 02). In
-> patch 03 Ido changes the code to use pr_err_once instead of
-> pr_warn_once which would help future detection of unsupported speeds.
-> 
-> v2: patch 03: use pr_err_once instead of WARN_ONCE
-> 
-> Thanks,
->  Nik
-> 
-> Ido Schimmel (1):
->   bonding: 3ad: Print an error for unknown speeds
-> 
-> Nikolay Aleksandrov (2):
->   bonding: 3ad: add support for 200G speed
->   bonding: 3ad: add support for 400G speed
-> 
->  drivers/net/bonding/bond_3ad.c | 26 ++++++++++++++++++++++----
->  1 file changed, 22 insertions(+), 4 deletions(-)
-> 
-Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+> Just to note mmd_phy_indirect() isn't defined with inline specifier,
+> but just as static and it's used twice in the
+> drivers/net/phy/phy-core.c unit. So most likely the compiler won't
+> inline the function code in there.
+
+You can't always tell whether the compiler will inline a static function
+or not.
+
+> Anyway it's up to the PHY
+> library maintainers to decide. Please settle the issue with Heiner and
+> Andrew then. I am ok with both solutions and will do as you decide.
+
+FYI, *I* am one of the phylib maintainers.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
