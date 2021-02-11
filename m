@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59F8B3194E3
+	by mail.lfdr.de (Postfix) with ESMTP id F42053194E4
 	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 22:12:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229994AbhBKVLo convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 11 Feb 2021 16:11:44 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:18832 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229694AbhBKVLk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 16:11:40 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B60259d630001>; Thu, 11 Feb 2021 13:10:59 -0800
-Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 11 Feb
- 2021 21:10:52 +0000
+        id S230074AbhBKVLr convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 11 Feb 2021 16:11:47 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:14656 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230039AbhBKVLp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 16:11:45 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B60259d680002>; Thu, 11 Feb 2021 13:11:04 -0800
+Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 11 Feb
+ 2021 21:10:57 +0000
 Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
  (172.20.187.15) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 11 Feb 2021 21:10:47 +0000
+ Transport; Thu, 11 Feb 2021 21:10:52 +0000
 From:   Boris Pismenny <borisp@mellanox.com>
 To:     <dsahern@gmail.com>, <kuba@kernel.org>, <davem@davemloft.net>,
         <saeedm@nvidia.com>, <hch@lst.de>, <sagi@grimberg.me>,
@@ -27,11 +27,16 @@ To:     <dsahern@gmail.com>, <kuba@kernel.org>, <davem@davemloft.net>,
 CC:     <boris.pismenny@gmail.com>, <linux-nvme@lists.infradead.org>,
         <netdev@vger.kernel.org>, <benishay@nvidia.com>,
         <ogerlitz@nvidia.com>, <yorayz@nvidia.com>,
-        Boris Pismenny <borisp@mellanox.com>
-Subject: [PATCH v4 net-next  00/21] nvme-tcp receive offloads
-Date:   Thu, 11 Feb 2021 23:10:23 +0200
-Message-ID: <20210211211044.32701-1-borisp@mellanox.com>
+        Boris Pismenny <borisp@mellanox.com>,
+        Ben Ben-Ishay <benishay@mellanox.com>,
+        Or Gerlitz <ogerlitz@mellanox.com>,
+        Yoray Zack <yorayz@mellanox.com>
+Subject: [PATCH v4 net-next  01/21] net: Introduce direct data placement tcp offload
+Date:   Thu, 11 Feb 2021 23:10:24 +0200
+Message-ID: <20210211211044.32701-2-borisp@mellanox.com>
 X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20210211211044.32701-1-borisp@mellanox.com>
+References: <20210211211044.32701-1-borisp@mellanox.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8BIT
 Content-Type: text/plain
@@ -39,268 +44,391 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Changes since v3:
-=========================================
-* Use DDP_TCP ifdefs in iov_iter and skb iterators to minimize impact
-when compiled out (Christoph)
-* Simplify netdev references and reduce the use of
-get_netdev_for_sock (Sagi)
-* Avoid "static" in it's own line, move it one line down (Christoph)
-* Pass (queue, skb, *offset) and retrieve the pdu_seq in
-nvme_tcp_resync_response (Sagi)
-* Add missing assignment of offloading_netdev to null in offload_limits
-error case (Sagi)
-* Set req->offloaded = false once -- the lifetime rules are:
-set to false on cmd_setup / set to true when ddp setup succeeds (Sagi)
-* Replace pr_info_ratelimited with dev_info_ratelimited (Sagi)
-* Add nvme_tcp_complete_request and invoke it from two similar call
-sites (Sagi)
-* Introduce nvme_tcp_req_map_sg earlier in the series (Sagi)
-* Add nvme_tcp_consume_skb and put into it a hunk from
-nvme_tcp_recv_data to handle copy with and without offload
+This commit introduces direct data placement offload for TCP.
+This capability is accompanied by new net_device operations that
+configure hardware contexts. There is a context per socket, and a context per DDP
+opreation. Additionally, a resynchronization routine is used to assist
+hardware handle TCP OOO, and continue the offload.
+Furthermore, we let the offloading driver advertise what is the max hw
+sectors/segments.
 
-Changes since v2:
-=========================================
-* Use skb->ddp_crc for copy offload to avoid skb_condense
-* Default mellanox driver support to no (experimental feature)
-* In iov_iter use non-ddp functions for kvec and iovec
-* Remove typecasting in nvme-tcp
+Using this interface, the NIC hardware will scatter TCP payload directly
+to the BIO pages according to the command_id.
+To maintain the correctness of the network stack, the driver is expected
+to construct SKBs that point to the BIO pages.
 
-Changes since v1:
-=========================================
-* Rework iov_iter copy skip if src==dst to be less intrusive (David Ahern)
-* Add tcp-ddp documentation (David Ahern)
-* Refactor mellanox driver patches into more patches (Saeed Mahameed)
-* Avoid pointer casting (David Ahern)
-* Rename nvme-tcp offload flags (Shai Malin)
-* Update cover-letter according to the above
+The SKB passed to the network stack from the driver
+represents data as it is on the wire, while it is pointing
+directly to data in destination buffers.
+As a result, data from page frags should not be copied out to
+the linear part. To avoid needless copies, such as when using
+skb_condense, we mark the skb->ddp_crc bit. This bit will be
+used to indicate both ddp and crc offload (next patch in series).
 
-Changes since RFC v1:
-=========================================
-* Split mlx5 driver patches to several commits
-* Fix nvme-tcp handling of recovery flows. In particular, move queue offlaod
-  init/teardown to the start/stop functions.
+A follow-up patch will use this interface for DDP in NVMe-TCP.
 
-Overview
-=========================================
-This series adds support for nvme-tcp receive offloads
-which do not mandate the offload of the network stack to the device.
-Instead, these work together with TCP to offload:
-1. copy from SKB to the block layer buffers
-2. CRC verification for received PDU
-
-The series implements these as a generic offload infrastructure for storage
-protocols, which we call TCP Direct Data Placement (TCP_DDP) and TCP DDP CRC,
-respectively. We use this infrastructure to implement NVMe-TCP offload for copy
-and CRC. Future implementations can reuse the same infrastructure for other
-protcols such as iSCSI.
-
-Note:
-These offloads are similar in nature to the packet-based NIC TLS offloads,
-which are already upstream (see net/tls/tls_device.c).
-You can read more about TLS offload here:
-https://www.kernel.org/doc/html/latest/networking/tls-offload.html
-
-Initialization and teardown:
-=========================================
-The offload for IO queues is initialized after the handshake of the
-NVMe-TCP protocol is finished by calling `nvme_tcp_offload_socket`
-with the tcp socket of the nvme_tcp_queue:
-This operation sets all relevant hardware contexts in
-hardware. If it fails, then the IO queue proceeds as usually with no offload.
-If it succeeds then `nvme_tcp_setup_ddp` and `nvme_tcp_teardown_ddp` may be
-called to perform copy offload, and crc offload will be used.
-This initialization does not change the normal operation of nvme-tcp in any
-way besides adding the option to call the above mentioned NDO operations.
-
-For the admin queue, nvme-tcp does not initialize the offload.
-Instead, nvme-tcp calls the driver to configure limits for the controller,
-such as max_hw_sectors and max_segments; these must be limited to accomodate
-potential HW resource limits, and to improve performance.
-
-If some error occured, and the IO queue must be closed or reconnected, then
-offload is teardown and initialized again. Additionally, we handle netdev
-down events via the existing error recovery flow.
-
-Copy offload works as follows:
-=========================================
-The nvme-tcp layer calls the NIC drive to map block layer buffers to ccid using
-`nvme_tcp_setup_ddp` before sending the read request. When the repsonse is
-received, then the NIC HW will write the PDU payload directly into the
-designated buffer, and build an SKB such that it points into the destination
-buffer; this SKB represents the entire packet received on the wire, but it
-points to the block layer buffers. Once nvme-tcp attempts to copy data from
-this SKB to the block layer buffer it can skip the copy by checking in the
-copying function (memcpy_to_page):
-if (src == dst) -> skip copy
-Finally, when the PDU has been processed to completion, the nvme-tcp layer
-releases the NIC HW context be calling `nvme_tcp_teardown_ddp` which
-asynchronously unmaps the buffers from NIC HW.
-
-As the copy skip change is in a sensative function, we are careful to avoid
-changing it. To that end, we create alternative skb copy and hash iterators
-that skip copy/hash if (src == dst). Nvme-tcp is the first user for these.
-
-Asynchronous completion:
-=========================================
-The NIC must release its mapping between command IDs and the target buffers.
-This mapping is released when NVMe-TCP calls the NIC
-driver (`nvme_tcp_offload_socket`).
-As completing IOs is performance criticial, we introduce asynchronous
-completions for NVMe-TCP, i.e. NVMe-TCP calls the NIC, which will later
-call NVMe-TCP to complete the IO (`nvme_tcp_ddp_teardown_done`).
-
-An alternative approach is to move all the functions related to coping from
-SKBs to the block layer buffers inside the nvme-tcp code - about 200 LOC.
-
-CRC offload works as follows:
-=========================================
-After offload is initialized, we use the SKB's ddp_crc bit to indicate that:
-"there was no problem with the verification of all CRC fields in this packet's
-payload". The bit is set to zero if there was an error, or if HW skipped
-offload for some reason. If *any* SKB in a PDU has (ddp_crc != 1), then software
-must compute the CRC, and check it. We perform this check, and
-accompanying software fallback at the end of the processing of a received PDU.
-
-SKB changes:
-=========================================
-The CRC offload requires an additional bit in the SKB, which is useful for
-preventing the coalescing of SKB with different crc offload values. This bit
-is similar in concept to the "decrypted" bit. 
-
-Performance:
-=========================================
-The expected performance gain from this offload varies with the block size.
-We perform a CPU cycles breakdown of the copy/CRC operations in nvme-tcp
-fio random read workloads:
-For 4K blocks we see up to 11% improvement for a 100% read fio workload,
-while for 128K blocks we see upto 52%. If we run nvme-tcp, and skip these
-operations, then we observe a gain of about 1.1x and 2x respectively.
-
-Resynchronization:
-=========================================
-The resynchronization flow is performed to reset the hardware tracking of
-NVMe-TCP PDUs within the TCP stream. The flow consists of a request from
-the driver, regarding a possible location of a PDU header. Followed by
-a response from the nvme-tcp driver.
-
-This flow is rare, and it should happen only after packet loss or
-reordering events that involve nvme-tcp PDU headers.
-
-The patches are organized as follows:
-=========================================
-Patch 1         the iov_iter change to skip copy if (src == dst).
-Patches 2-4     the infrastructure for all TCP DDP.
-                and TCP DDP CRC offloads, respectively.
-Patch 5         exposes the get_netdev_for_sock function from TLS.
-Patch 6         NVMe-TCP changes to call NIC driver on queue init/teardown.
-Patches 7       NVMe-TCP changes to call NIC driver on IO operation.
-                setup/teardown, and support async completions.
-Patches 8       NVMe-TCP changes to support CRC offload on receive.
-                Also, this patch moves CRC calculation to the end of PDU
-                in case offload requires software fallback.
-Patches 9       NVMe-TCP handling of netdev events: stop the offload if
-                netdev is going down.
-Patches 10-20   implement support for NVMe-TCP copy and CRC offload in
-                the mlx5 NIC driver as the first user.
-Patches 21      Document TCP DDP offload.
-
-Testing:
-=========================================
-This series was tested using fio with various configurations of IO sizes,
-depths, MTUs, and with both the SPDK and kernel NVMe-TCP targets.
-Also, we have used QEMU and gate-level simulation to verify these patches.
-
-Future work:
-=========================================
-A follow-up series will introduce support for transmit side CRC. Then,
-we will work on adding support for TLS in NVMe-TCP and combining the
-two offloads.
-
-Ben Ben-Ishay (8):
-  net/mlx5e: NVMEoTCP offload initialization
-  net/mlx5e: KLM UMR helper macros
-  net/mlx5e: NVMEoTCP use KLM UMRs
-  net/mlx5e: NVMEoTCP queue init/teardown
-  net/mlx5e: NVMEoTCP async ddp invalidation
-  net/mlx5e: NVMEoTCP ddp setup and resync
-  net/mlx5e: NVMEoTCP, data-path for DDP+CRC offload
-  net/mlx5e: NVMEoTCP statistics
-
-Ben Ben-ishay (2):
-  net/mlx5: Header file changes for nvme-tcp offload
-  net/mlx5: Add 128B CQE for NVMEoTCP offload
-
-Boris Pismenny (9):
-  net: Introduce direct data placement tcp offload
-  net: Introduce crc offload for tcp ddp ulp
-  iov_iter: DDP copy to iter/pages
-  net: skb copy(+hash) iterators for DDP offloads
-  net/tls: expose get_netdev_for_sock
-  nvme-tcp: Add DDP offload control path
-  nvme-tcp: Add DDP data-path
-  net/mlx5e: TCP flow steering for nvme-tcp
-  Documentation: add TCP DDP offload documentation
-
-Or Gerlitz (1):
-  nvme-tcp: Deal with netdevice DOWN events
-
-Yoray Zack (1):
-  nvme-tcp: RX CRC offload
-
- Documentation/networking/index.rst            |    1 +
- Documentation/networking/tcp-ddp-offload.rst  |  296 +++++
- .../net/ethernet/mellanox/mlx5/core/Kconfig   |   10 +
- .../net/ethernet/mellanox/mlx5/core/Makefile  |    2 +
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |   31 +-
- .../net/ethernet/mellanox/mlx5/core/en/fs.h   |    4 +-
- .../ethernet/mellanox/mlx5/core/en/params.h   |    1 +
- .../net/ethernet/mellanox/mlx5/core/en/txrx.h |   13 +
- .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   |    1 +
- .../ethernet/mellanox/mlx5/core/en/xsk/rx.h   |    1 +
- .../mellanox/mlx5/core/en_accel/en_accel.h    |    9 +-
- .../mellanox/mlx5/core/en_accel/fs_tcp.c      |   10 +
- .../mellanox/mlx5/core/en_accel/fs_tcp.h      |    2 +-
- .../mellanox/mlx5/core/en_accel/nvmeotcp.c    | 1015 +++++++++++++++++
- .../mellanox/mlx5/core/en_accel/nvmeotcp.h    |  120 ++
- .../mlx5/core/en_accel/nvmeotcp_rxtx.c        |  264 +++++
- .../mlx5/core/en_accel/nvmeotcp_rxtx.h        |   43 +
- .../mlx5/core/en_accel/nvmeotcp_utils.h       |   80 ++
- .../net/ethernet/mellanox/mlx5/core/en_main.c |   40 +-
- .../net/ethernet/mellanox/mlx5/core/en_rx.c   |   66 +-
- .../ethernet/mellanox/mlx5/core/en_stats.c    |   37 +
- .../ethernet/mellanox/mlx5/core/en_stats.h    |   24 +
- .../net/ethernet/mellanox/mlx5/core/en_txrx.c |   17 +
- drivers/net/ethernet/mellanox/mlx5/core/fw.c  |    6 +
- drivers/nvme/host/tcp.c                       |  448 +++++++-
- include/linux/mlx5/device.h                   |   44 +-
- include/linux/mlx5/mlx5_ifc.h                 |  101 +-
- include/linux/mlx5/qp.h                       |    1 +
- include/linux/netdev_features.h               |    4 +
- include/linux/netdevice.h                     |    5 +
- include/linux/skbuff.h                        |   13 +
- include/linux/uio.h                           |   17 +
- include/net/inet_connection_sock.h            |    4 +
- include/net/sock.h                            |   17 +
- include/net/tcp_ddp.h                         |  136 +++
- lib/iov_iter.c                                |   53 +
- net/Kconfig                                   |   17 +
- net/core/datagram.c                           |   48 +
- net/core/skbuff.c                             |    8 +-
- net/ethtool/common.c                          |    2 +
- net/ipv4/tcp_input.c                          |    8 +
- net/ipv4/tcp_ipv4.c                           |    3 +
- net/ipv4/tcp_offload.c                        |    3 +
- net/tls/tls_device.c                          |   20 +-
- 44 files changed, 2985 insertions(+), 60 deletions(-)
- create mode 100644 Documentation/networking/tcp-ddp-offload.rst
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.c
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.h
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_rxtx.c
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_rxtx.h
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_utils.h
+Signed-off-by: Boris Pismenny <borisp@mellanox.com>
+Signed-off-by: Ben Ben-Ishay <benishay@mellanox.com>
+Signed-off-by: Or Gerlitz <ogerlitz@mellanox.com>
+Signed-off-by: Yoray Zack <yorayz@mellanox.com>
+---
+ include/linux/netdev_features.h    |   2 +
+ include/linux/netdevice.h          |   5 ++
+ include/linux/skbuff.h             |   4 +
+ include/net/inet_connection_sock.h |   4 +
+ include/net/tcp_ddp.h              | 136 +++++++++++++++++++++++++++++
+ net/Kconfig                        |   9 ++
+ net/core/skbuff.c                  |   8 +-
+ net/ethtool/common.c               |   1 +
+ net/ipv4/tcp_input.c               |   8 ++
+ net/ipv4/tcp_ipv4.c                |   3 +
+ net/ipv4/tcp_offload.c             |   3 +
+ 11 files changed, 182 insertions(+), 1 deletion(-)
  create mode 100644 include/net/tcp_ddp.h
 
+diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
+index c06d6aaba9df..7977371d2dd1 100644
+--- a/include/linux/netdev_features.h
++++ b/include/linux/netdev_features.h
+@@ -85,6 +85,7 @@ enum {
+ 
+ 	NETIF_F_HW_MACSEC_BIT,		/* Offload MACsec operations */
+ 	NETIF_F_GRO_UDP_FWD_BIT,	/* Allow UDP GRO for forwarding */
++	NETIF_F_HW_TCP_DDP_BIT,		/* TCP direct data placement offload */
+ 
+ 	/*
+ 	 * Add your fresh new feature above and remember to update
+@@ -159,6 +160,7 @@ enum {
+ #define NETIF_F_GSO_FRAGLIST	__NETIF_F(GSO_FRAGLIST)
+ #define NETIF_F_HW_MACSEC	__NETIF_F(HW_MACSEC)
+ #define NETIF_F_GRO_UDP_FWD	__NETIF_F(GRO_UDP_FWD)
++#define NETIF_F_HW_TCP_DDP	__NETIF_F(HW_TCP_DDP)
+ 
+ /* Finds the next feature with the highest number of the range of start till 0.
+  */
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index e9e7ada07ea1..bd28520e30f2 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -941,6 +941,7 @@ struct dev_ifalias {
+ 
+ struct devlink;
+ struct tlsdev_ops;
++struct tcp_ddp_dev_ops;
+ 
+ struct netdev_name_node {
+ 	struct hlist_node hlist;
+@@ -1942,6 +1943,10 @@ struct net_device {
+ 	const struct tlsdev_ops *tlsdev_ops;
+ #endif
+ 
++#ifdef CONFIG_TCP_DDP
++	const struct tcp_ddp_dev_ops *tcp_ddp_ops;
++#endif
++
+ 	const struct header_ops *header_ops;
+ 
+ 	unsigned char		operstate;
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 0a4e91a2f873..c7c88b2d0d47 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -684,6 +684,7 @@ typedef unsigned char *sk_buff_data_t;
+  *		CHECKSUM_UNNECESSARY (max 3)
+  *	@dst_pending_confirm: need to confirm neighbour
+  *	@decrypted: Decrypted SKB
++ *	@ddp_crc: DDP or CRC offloaded
+  *	@napi_id: id of the NAPI struct this skb came from
+  *	@sender_cpu: (aka @napi_id) source CPU in XPS
+  *	@secmark: security marking
+@@ -860,6 +861,9 @@ struct sk_buff {
+ #ifdef CONFIG_TLS_DEVICE
+ 	__u8			decrypted:1;
+ #endif
++#ifdef CONFIG_TCP_DDP
++	__u8                    ddp_crc:1;
++#endif
+ 
+ #ifdef CONFIG_NET_SCHED
+ 	__u16			tc_index;	/* traffic control index */
+diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
+index 10a625760de9..cb29417e8fd1 100644
+--- a/include/net/inet_connection_sock.h
++++ b/include/net/inet_connection_sock.h
+@@ -66,6 +66,8 @@ struct inet_connection_sock_af_ops {
+  * @icsk_ulp_ops	   Pluggable ULP control hook
+  * @icsk_ulp_data	   ULP private data
+  * @icsk_clean_acked	   Clean acked data hook
++ * @icsk_ulp_ddp_ops	   Pluggable ULP direct data placement control hook
++ * @icsk_ulp_ddp_data	   ULP direct data placement private data
+  * @icsk_listen_portaddr_node	hash to the portaddr listener hashtable
+  * @icsk_ca_state:	   Congestion control state
+  * @icsk_retransmits:	   Number of unrecovered [RTO] timeouts
+@@ -96,6 +98,8 @@ struct inet_connection_sock {
+ 	const struct tcp_ulp_ops  *icsk_ulp_ops;
+ 	void __rcu		  *icsk_ulp_data;
+ 	void (*icsk_clean_acked)(struct sock *sk, u32 acked_seq);
++	const struct tcp_ddp_ulp_ops  *icsk_ulp_ddp_ops;
++	void __rcu		  *icsk_ulp_ddp_data;
+ 	struct hlist_node         icsk_listen_portaddr_node;
+ 	unsigned int		  (*icsk_sync_mss)(struct sock *sk, u32 pmtu);
+ 	__u8			  icsk_ca_state:5,
+diff --git a/include/net/tcp_ddp.h b/include/net/tcp_ddp.h
+new file mode 100644
+index 000000000000..31e5b1a16d0f
+--- /dev/null
++++ b/include/net/tcp_ddp.h
+@@ -0,0 +1,136 @@
++/* SPDX-License-Identifier: GPL-2.0
++ *
++ * tcp_ddp.h
++ *	Author:	Boris Pismenny <borisp@mellanox.com>
++ *	Copyright (C) 2021 Mellanox Technologies.
++ */
++#ifndef _TCP_DDP_H
++#define _TCP_DDP_H
++
++#include <linux/netdevice.h>
++#include <net/inet_connection_sock.h>
++#include <net/sock.h>
++
++/* limits returned by the offload driver, zero means don't care */
++struct tcp_ddp_limits {
++	int	 max_ddp_sgl_len;
++};
++
++enum tcp_ddp_type {
++	TCP_DDP_NVME = 1,
++};
++
++/**
++ * struct tcp_ddp_config - Generic tcp ddp configuration: tcp ddp IO queue
++ * config implementations must use this as the first member.
++ * Add new instances of tcp_ddp_config below (nvme-tcp, etc.).
++ */
++struct tcp_ddp_config {
++	enum tcp_ddp_type    type;
++	unsigned char        buf[];
++};
++
++/**
++ * struct nvme_tcp_ddp_config - nvme tcp ddp configuration for an IO queue
++ *
++ * @pfv:        pdu version (e.g., NVME_TCP_PFV_1_0)
++ * @cpda:       controller pdu data alignmend (dwords, 0's based)
++ * @dgst:       digest types enabled.
++ *              The netdev will offload crc if ddp_crc is supported.
++ * @queue_size: number of nvme-tcp IO queue elements
++ * @queue_id:   queue identifier
++ * @cpu_io:     cpu core running the IO thread for this queue
++ */
++struct nvme_tcp_ddp_config {
++	struct tcp_ddp_config   cfg;
++
++	u16			pfv;
++	u8			cpda;
++	u8			dgst;
++	int			queue_size;
++	int			queue_id;
++	int			io_cpu;
++};
++
++/**
++ * struct tcp_ddp_io - tcp ddp configuration for an IO request.
++ *
++ * @command_id:  identifier on the wire associated with these buffers
++ * @nents:       number of entries in the sg_table
++ * @sg_table:    describing the buffers for this IO request
++ * @first_sgl:   first SGL in sg_table
++ */
++struct tcp_ddp_io {
++	u32			command_id;
++	int			nents;
++	struct sg_table		sg_table;
++	struct scatterlist	first_sgl[SG_CHUNK_SIZE];
++};
++
++/* struct tcp_ddp_dev_ops - operations used by an upper layer protocol to configure ddp offload
++ *
++ * @tcp_ddp_limits:    limit the number of scatter gather entries per IO.
++ *                     the device driver can use this to limit the resources allocated per queue.
++ * @tcp_ddp_sk_add:    add offload for the queue represennted by the socket+config pair.
++ *                     this function is used to configure either copy, crc or both offloads.
++ * @tcp_ddp_sk_del:    remove offload from the socket, and release any device related resources.
++ * @tcp_ddp_setup:     request copy offload for buffers associated with a command_id in tcp_ddp_io.
++ * @tcp_ddp_teardown:  release offload resources association between buffers and command_id in
++ *                     tcp_ddp_io.
++ * @tcp_ddp_resync:    respond to the driver's resync_request. Called only if resync is successful.
++ */
++struct tcp_ddp_dev_ops {
++	int (*tcp_ddp_limits)(struct net_device *netdev,
++			      struct tcp_ddp_limits *limits);
++	int (*tcp_ddp_sk_add)(struct net_device *netdev,
++			      struct sock *sk,
++			      struct tcp_ddp_config *config);
++	void (*tcp_ddp_sk_del)(struct net_device *netdev,
++			       struct sock *sk);
++	int (*tcp_ddp_setup)(struct net_device *netdev,
++			     struct sock *sk,
++			     struct tcp_ddp_io *io);
++	int (*tcp_ddp_teardown)(struct net_device *netdev,
++				struct sock *sk,
++				struct tcp_ddp_io *io,
++				void *ddp_ctx);
++	void (*tcp_ddp_resync)(struct net_device *netdev,
++			       struct sock *sk, u32 seq);
++};
++
++#define TCP_DDP_RESYNC_REQ BIT(0)
++
++/**
++ * struct tcp_ddp_ulp_ops - Interface to register uppper layer Direct Data Placement (DDP) TCP offload
++ */
++struct tcp_ddp_ulp_ops {
++	/* NIC requests ulp to indicate if @seq is the start of a message */
++	bool (*resync_request)(struct sock *sk, u32 seq, u32 flags);
++	/* NIC driver informs the ulp that ddp teardown is done - used for async completions*/
++	void (*ddp_teardown_done)(void *ddp_ctx);
++};
++
++/**
++ * struct tcp_ddp_ctx - Generic tcp ddp context: device driver per queue contexts must
++ * use this as the first member.
++ */
++struct tcp_ddp_ctx {
++	enum tcp_ddp_type    type;
++	unsigned char        buf[];
++};
++
++static inline struct tcp_ddp_ctx *tcp_ddp_get_ctx(const struct sock *sk)
++{
++	struct inet_connection_sock *icsk = inet_csk(sk);
++
++	return (__force struct tcp_ddp_ctx *)icsk->icsk_ulp_ddp_data;
++}
++
++static inline void tcp_ddp_set_ctx(struct sock *sk, void *ctx)
++{
++	struct inet_connection_sock *icsk = inet_csk(sk);
++
++	rcu_assign_pointer(icsk->icsk_ulp_ddp_data, ctx);
++}
++
++#endif //_TCP_DDP_H
+diff --git a/net/Kconfig b/net/Kconfig
+index f4c32d982af6..3876861cdc90 100644
+--- a/net/Kconfig
++++ b/net/Kconfig
+@@ -457,6 +457,15 @@ config ETHTOOL_NETLINK
+ 	  netlink. It provides better extensibility and some new features,
+ 	  e.g. notification messages.
+ 
++config TCP_DDP
++	bool "TCP direct data placement offload"
++	default n
++	help
++	  Direct Data Placement (DDP) offload for TCP enables ULP, such as
++	  NVMe-TCP/iSCSI, to request the NIC to place TCP payload data
++	  of a command response directly into kernel pages.
++
++
+ endif   # if NET
+ 
+ # Used by archs to tell that they support BPF JIT compiler plus which flavour.
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index d380c7b5a12d..78472520eb82 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -69,6 +69,7 @@
+ #include <net/xfrm.h>
+ #include <net/mpls.h>
+ #include <net/mptcp.h>
++#include <net/tcp_ddp.h>
+ 
+ #include <linux/uaccess.h>
+ #include <trace/events/skb.h>
+@@ -6191,9 +6192,14 @@ EXPORT_SYMBOL(pskb_extract);
+  */
+ void skb_condense(struct sk_buff *skb)
+ {
++	bool is_ddp = false;
++
++#ifdef CONFIG_TCP_DDP
++	is_ddp = skb->ddp_crc;
++#endif
+ 	if (skb->data_len) {
+ 		if (skb->data_len > skb->end - skb->tail ||
+-		    skb_cloned(skb))
++		    skb_cloned(skb) || is_ddp)
+ 			return;
+ 
+ 		/* Nice, we can free page frag(s) right now */
+diff --git a/net/ethtool/common.c b/net/ethtool/common.c
+index 835b9bba3e7e..2878a5613e72 100644
+--- a/net/ethtool/common.c
++++ b/net/ethtool/common.c
+@@ -69,6 +69,7 @@ const char netdev_features_strings[NETDEV_FEATURE_COUNT][ETH_GSTRING_LEN] = {
+ 	[NETIF_F_GRO_FRAGLIST_BIT] =	 "rx-gro-list",
+ 	[NETIF_F_HW_MACSEC_BIT] =	 "macsec-hw-offload",
+ 	[NETIF_F_GRO_UDP_FWD_BIT] =	 "rx-udp-gro-forwarding",
++	[NETIF_F_HW_TCP_DDP_BIT] =	 "tcp-ddp-offload",
+ };
+ 
+ const char
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index a8f8f9815953..0ae1ffca090d 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -5149,6 +5149,9 @@ tcp_collapse(struct sock *sk, struct sk_buff_head *list, struct rb_root *root,
+ 		memcpy(nskb->cb, skb->cb, sizeof(skb->cb));
+ #ifdef CONFIG_TLS_DEVICE
+ 		nskb->decrypted = skb->decrypted;
++#endif
++#ifdef CONFIG_TCP_DDP
++		nskb->ddp_crc = skb->ddp_crc;
+ #endif
+ 		TCP_SKB_CB(nskb)->seq = TCP_SKB_CB(nskb)->end_seq = start;
+ 		if (list)
+@@ -5182,6 +5185,11 @@ tcp_collapse(struct sock *sk, struct sk_buff_head *list, struct rb_root *root,
+ #ifdef CONFIG_TLS_DEVICE
+ 				if (skb->decrypted != nskb->decrypted)
+ 					goto end;
++#endif
++#ifdef CONFIG_TCP_DDP
++
++				if (skb->ddp_crc != nskb->ddp_crc)
++					goto end;
+ #endif
+ 			}
+ 		}
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 611039207d30..676bc1584356 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1813,6 +1813,9 @@ bool tcp_add_backlog(struct sock *sk, struct sk_buff *skb)
+ 	      TCP_SKB_CB(skb)->tcp_flags) & (TCPHDR_ECE | TCPHDR_CWR)) ||
+ #ifdef CONFIG_TLS_DEVICE
+ 	    tail->decrypted != skb->decrypted ||
++#endif
++#ifdef CONFIG_TCP_DDP
++	    tail->ddp_crc != skb->ddp_crc ||
+ #endif
+ 	    thtail->doff != th->doff ||
+ 	    memcmp(thtail + 1, th + 1, hdrlen - sizeof(*th)))
+diff --git a/net/ipv4/tcp_offload.c b/net/ipv4/tcp_offload.c
+index e09147ac9a99..3ce196375d94 100644
+--- a/net/ipv4/tcp_offload.c
++++ b/net/ipv4/tcp_offload.c
+@@ -262,6 +262,9 @@ struct sk_buff *tcp_gro_receive(struct list_head *head, struct sk_buff *skb)
+ #ifdef CONFIG_TLS_DEVICE
+ 	flush |= p->decrypted ^ skb->decrypted;
+ #endif
++#ifdef CONFIG_TCP_DDP
++	flush |= p->ddp_crc ^ skb->ddp_crc;
++#endif
+ 
+ 	if (flush || skb_gro_receive(p, skb)) {
+ 		mss = 1;
 -- 
 2.24.1
 
