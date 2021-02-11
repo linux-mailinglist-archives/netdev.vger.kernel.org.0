@@ -2,130 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB13E318A62
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 13:26:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A3EA318AC3
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 13:35:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230209AbhBKMWG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 07:22:06 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:31803 "EHLO
+        id S230242AbhBKMfJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 07:35:09 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:49682 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231665AbhBKMTE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 07:19:04 -0500
+        by vger.kernel.org with ESMTP id S229649AbhBKM2u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 07:28:50 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613045853;
+        s=mimecast20190719; t=1613046440;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=ozgmNa0s/jCCWPiNNn97SiT5a4Tuwh+Z12DZS0v6G/c=;
-        b=Br+uh5quLvmnZ8dqyoMB3x2SJOg4MdTW7H/OwxOeIb3SNZYNFYIIuoO8aYbWptpuZg/ydv
-        aDwuFDfpXf7uWItvw35Y7DLTH9DAXdulqyiIxjGV85IpEWRUIkwEU7bV8Z1+8TZHBW3Gzl
-        3avokzHKmqXKnb1kkm/kbgYBjtD5KvU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-288-n8LZrXUAM7yA5NszzYeHyA-1; Thu, 11 Feb 2021 07:17:29 -0500
-X-MC-Unique: n8LZrXUAM7yA5NszzYeHyA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0A88A85C87E;
-        Thu, 11 Feb 2021 12:17:27 +0000 (UTC)
-Received: from krava (unknown [10.40.195.165])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 4FE955D9E8;
-        Thu, 11 Feb 2021 12:17:23 +0000 (UTC)
-Date:   Thu, 11 Feb 2021 13:17:22 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 4/4] kbuild: Add resolve_btfids clean to root
- clean target
-Message-ID: <YCUgUlCDGTS85MCO@krava>
-References: <20210205124020.683286-1-jolsa@kernel.org>
- <20210205124020.683286-5-jolsa@kernel.org>
- <20210210174451.GA1943051@ubuntu-m3-large-x86>
- <CAEf4BzZvz4-STv3OQxyNDiFKkrFM-+GOM-yXURzoDtXiRiuT_g@mail.gmail.com>
- <20210210180215.GA2374611@ubuntu-m3-large-x86>
- <YCQmCwBSQuj+bi4q@krava>
- <CAEf4BzbwwtqerxRrNZ75WLd2aHLdnr7wUrKahfT7_6bjBgJ0xQ@mail.gmail.com>
+        bh=HMz6zYsvhAUacFy6he/Ff5pa+8L4MB4YjmA0Jw1xjYQ=;
+        b=iQr6ock4ozX6Qc1vCQmUbkw4AjYbn5tMI13JXOfNFb87+Z5DYnli3FIcNY8alu1g5AcXw6
+        8e+bM+zmzvnTlt5AZaJW8um81LGE3KDFAm4BROc9Z/QJbjUBjmhKVbk/DTgeISEHUH571t
+        bB9OxsfjB6StnCO3ru/CxR8EQRg4jdk=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-559-rNM7g0u4Mn-oZ2iCsh8lSw-1; Thu, 11 Feb 2021 07:27:18 -0500
+X-MC-Unique: rNM7g0u4Mn-oZ2iCsh8lSw-1
+Received: by mail-ed1-f71.google.com with SMTP id g6so4573991edy.9
+        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 04:27:18 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=HMz6zYsvhAUacFy6he/Ff5pa+8L4MB4YjmA0Jw1xjYQ=;
+        b=ZxIlQ/XPGtdQd5N0ZgCDhEKZMibhnJjfsVKntQP8r5GHG+rH/JwlPowTBRh+zsEqeU
+         8jEivPcQiW4/l/sRP7L+w7qWzFBcabwOXoW+FU2xIkng+yExrSl7BYcMNUYjz2foYLM+
+         FhEpElBFCBdVD4wseoAhd+AQ2BWtXlIot0x0fYgSqEhr1HCxcN9ClqDJX6E8hOdoI6hp
+         kXkWnE48Y3Xej47lJOXyc3W3CIx1wyBEha594FTT275/PDLarXuoYINS/5/ske/zbMKI
+         uLhxee/CbeRQmsMgxRoyqYMWdhu9HKffE8bnB11g/C4+6XNOgprm3PZd5OOalyZQFlKg
+         bJYg==
+X-Gm-Message-State: AOAM5323v2Fo3Ecwzv8MSRk9eQpGhkXRY0io7c9ZvldkZp9YZbOTYi00
+        sRQwoM4MSzfMTAsJDpbK50ZiGcdCkOvkp6CxpCDEsie/DjT9YOTLU4xazG35n5TclA3pTF17F2V
+        3I3kvwBxlbHfUiPRZ
+X-Received: by 2002:a17:906:2747:: with SMTP id a7mr8529854ejd.250.1613046437362;
+        Thu, 11 Feb 2021 04:27:17 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyk6B6DSr3e6B0w/xlbcUeWXisr2RXOx2YRDpQHkAnrdl/RyyOhCzJ+iUDi0A/EsFUj4H9p5g==
+X-Received: by 2002:a17:906:2747:: with SMTP id a7mr8529844ejd.250.1613046437196;
+        Thu, 11 Feb 2021 04:27:17 -0800 (PST)
+Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
+        by smtp.gmail.com with ESMTPSA id bo24sm3698134edb.51.2021.02.11.04.27.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Feb 2021 04:27:16 -0800 (PST)
+Date:   Thu, 11 Feb 2021 13:27:14 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Jeff Vander Stoep <jeffv@google.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stsp2@yandex.ru, oxffffaa@gmail.com
+Subject: Re: [RFC PATCH v4 07/17] af_vsock: rest of SEQPACKET support
+Message-ID: <20210211122714.rqiwg3qp3kuprktb@steredhat>
+References: <20210207151259.803917-1-arseny.krasnov@kaspersky.com>
+ <20210207151615.805115-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <CAEf4BzbwwtqerxRrNZ75WLd2aHLdnr7wUrKahfT7_6bjBgJ0xQ@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+In-Reply-To: <20210207151615.805115-1-arseny.krasnov@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 10, 2021 at 11:26:28AM -0800, Andrii Nakryiko wrote:
+On Sun, Feb 07, 2021 at 06:16:12PM +0300, Arseny Krasnov wrote:
+>This does rest of SOCK_SEQPACKET support:
+>1) Adds socket ops for SEQPACKET type.
+>2) Allows to create socket with SEQPACKET type.
+>
+>Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+>---
+> net/vmw_vsock/af_vsock.c | 37 ++++++++++++++++++++++++++++++++++++-
+> 1 file changed, 36 insertions(+), 1 deletion(-)
+>
+>diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+>index a033d3340ac4..c77998a14018 100644
+>--- a/net/vmw_vsock/af_vsock.c
+>+++ b/net/vmw_vsock/af_vsock.c
+>@@ -452,6 +452,7 @@ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
+> 		new_transport = transport_dgram;
+> 		break;
+> 	case SOCK_STREAM:
+>+	case SOCK_SEQPACKET:
+> 		if (vsock_use_local_transport(remote_cid))
+> 			new_transport = transport_local;
+> 		else if (remote_cid <= VMADDR_CID_HOST || !transport_h2g ||
+>@@ -459,6 +460,15 @@ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
+> 			new_transport = transport_g2h;
+> 		else
+> 			new_transport = transport_h2g;
+>+
+>+		if (sk->sk_type == SOCK_SEQPACKET) {
+>+			if (!new_transport ||
+>+			    !new_transport->seqpacket_seq_send_len ||
+>+			    !new_transport->seqpacket_seq_send_eor ||
+>+			    !new_transport->seqpacket_seq_get_len ||
+>+			    !new_transport->seqpacket_dequeue)
+>+				return -ESOCKTNOSUPPORT;
+>+		}
 
-SNIP
+Maybe we should move this check after the try_module_get() call, since 
+the memory pointed by 'new_transport' pointer can be deallocated in the 
+meantime.
 
-> > > > Can't reproduce it. It works in all kinds of variants (relative and
-> > > > absolute O=, clean and not clean trees, etc). Jiri, please check as
-> > > > well.
-> > > >
-> > >
-> > > Odd, this reproduces for me on a completely clean checkout of bpf-next:
-> > >
-> > > $ git clone --depth=1 https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/
-> > >
-> > > $ cd bpf-next
-> > >
-> > > $ make -s O=build distclean
-> > > ../../scripts/Makefile.include:4: *** O=/tmp/bpf-next/build/tools/bpf/resolve_btfids does not exist.  Stop.
-> > >
-> > > I do not really see how this could be environment related. It seems like
-> > > this comes from tools/scripts/Makefile.include, where there is no
-> > > guarantee that $(O) is created before being used like in the main
-> > > Makefile?
-> >
-> > right, we need to handle the case where tools/bpf/resolve_btfids
-> > does not exist, patch below fixes it for me
-> >
-> > jirka
-> >
-> 
-> Looks good to me, please send it as a proper patch to bpf-next.
-> 
-> But I'm curious, why is objtool not doing something like that? Is it
-> not doing clean at all? Or does it do it in some different way?
+Also, if the socket had a transport before, we should deassign it before 
+returning an error.
 
-yes, it's not connected to global make clean
-
-> 
-> >
-> > ---
-> > diff --git a/Makefile b/Makefile
-> > index 159d9592b587..ce9685961abe 100644
-> > --- a/Makefile
-> > +++ b/Makefile
-> > @@ -1088,8 +1088,14 @@ endif
-> >
-> >  PHONY += resolve_btfids_clean
-> >
-> > +resolve_btfids_O = $(abspath $(objtree))/tools/bpf/resolve_btfids
-> > +
-> > +# tools/bpf/resolve_btfids directory might not exist
-> > +# in output directory, skip its clean in that case
-> >  resolve_btfids_clean:
-> > -       $(Q)$(MAKE) -sC $(srctree)/tools/bpf/resolve_btfids O=$(abspath $(objtree))/tools/bpf/resolve_btfids clean
-> > +ifneq (,$(wildcard $(resolve_btfids_O)))
-> 
-> nit: kind of backwards, usually it's in a `ifneq($var,)` form
-
-ok
-
-thanks,
-jirka
+> 		break;
+> 	default:
+> 		return -ESOCKTNOSUPPORT;
+>@@ -684,6 +694,7 @@ static int __vsock_bind(struct sock *sk, struct sockaddr_vm *addr)
+>
+> 	switch (sk->sk_socket->type) {
+> 	case SOCK_STREAM:
+>+	case SOCK_SEQPACKET:
+> 		spin_lock_bh(&vsock_table_lock);
+> 		retval = __vsock_bind_connectible(vsk, addr);
+> 		spin_unlock_bh(&vsock_table_lock);
+>@@ -769,7 +780,7 @@ static struct sock *__vsock_create(struct net *net,
+>
+> static bool sock_type_connectible(u16 type)
+> {
+>-	return type == SOCK_STREAM;
+>+	return (type == SOCK_STREAM) || (type == SOCK_SEQPACKET);
+> }
+>
+> static void __vsock_release(struct sock *sk, int level)
+>@@ -2199,6 +2210,27 @@ static const struct proto_ops vsock_stream_ops = {
+> 	.sendpage = sock_no_sendpage,
+> };
+>
+>+static const struct proto_ops vsock_seqpacket_ops = {
+>+	.family = PF_VSOCK,
+>+	.owner = THIS_MODULE,
+>+	.release = vsock_release,
+>+	.bind = vsock_bind,
+>+	.connect = vsock_connect,
+>+	.socketpair = sock_no_socketpair,
+>+	.accept = vsock_accept,
+>+	.getname = vsock_getname,
+>+	.poll = vsock_poll,
+>+	.ioctl = sock_no_ioctl,
+>+	.listen = vsock_listen,
+>+	.shutdown = vsock_shutdown,
+>+	.setsockopt = vsock_connectible_setsockopt,
+>+	.getsockopt = vsock_connectible_getsockopt,
+>+	.sendmsg = vsock_connectible_sendmsg,
+>+	.recvmsg = vsock_connectible_recvmsg,
+>+	.mmap = sock_no_mmap,
+>+	.sendpage = sock_no_sendpage,
+>+};
+>+
+> static int vsock_create(struct net *net, struct socket *sock,
+> 			int protocol, int kern)
+> {
+>@@ -2219,6 +2251,9 @@ static int vsock_create(struct net *net, struct socket *sock,
+> 	case SOCK_STREAM:
+> 		sock->ops = &vsock_stream_ops;
+> 		break;
+>+	case SOCK_SEQPACKET:
+>+		sock->ops = &vsock_seqpacket_ops;
+>+		break;
+> 	default:
+> 		return -ESOCKTNOSUPPORT;
+> 	}
+>-- 
+>2.25.1
+>
 
