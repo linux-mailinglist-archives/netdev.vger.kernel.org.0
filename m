@@ -2,117 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE5D5318F9D
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 17:14:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E80F5318FA1
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 17:14:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231768AbhBKQLa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 11:11:30 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:31335 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231432AbhBKQJD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 11:09:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613059651;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=U5PLl0pnoPm3WuHY1EjyZO2JoihwnMKEwl2Dz7ozuvg=;
-        b=botdyEwQdeQLdWKIRIYVLq4kSQjFkyrpA3ZrxmouJFynfKqLN8YkTorNST1FL7fsOwG/Fk
-        20yWzRUU2UHRmaxRGxucHXITfD9B5RyONvuGBoPpXGmAIIVbBd+n6d3rTQlulN7Yh0Ar32
-        U4gEW/8G6+E5u9bmeQXryhMGYwC2qKA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-55-e7neWtIkMRGbf99CUcnwAQ-1; Thu, 11 Feb 2021 11:07:27 -0500
-X-MC-Unique: e7neWtIkMRGbf99CUcnwAQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A13BA107ACC7;
-        Thu, 11 Feb 2021 16:07:24 +0000 (UTC)
-Received: from krava (unknown [10.40.192.105])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 5EEEC5D9D2;
-        Thu, 11 Feb 2021 16:07:21 +0000 (UTC)
-Date:   Thu, 11 Feb 2021 17:07:20 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Sedat Dilek <sedat.dilek@gmail.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Veronika Kabatova <vkabatov@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>
-Subject: Re: FAILED unresolved symbol vfs_truncate on arm64 with LLVM
-Message-ID: <YCVWONQEBLfO/i2z@krava>
-References: <YCKB1TF5wz93EIBK@krava>
- <YCKlrLkTQXc4Cyx7@krava>
- <CAEf4BzaL=qsSyDc8OxeN4pr7+Lvv+de4f+hM5a56LY8EABAk3w@mail.gmail.com>
- <YCMEucGZVPPQuxWw@krava>
- <CAEf4BzacQrkSMnmeO3sunOs7sfhX1ZoD_Hnk4-cFUK-TpLNqUA@mail.gmail.com>
- <YCPfEzp3ogCBTBaS@krava>
- <CAEf4BzbzquqsA5=_UqDukScuoGLfDhZiiXs_sgYBuNUvTBuV6w@mail.gmail.com>
- <YCQ+d0CVgIclDwng@krava>
- <YCVIWzq0quDQm6bn@krava>
- <CA+icZUXdWHrNh-KoHtX2jC-4yjnMTtA0CjwzsjaXfCUpHgYJtg@mail.gmail.com>
+        id S230364AbhBKQNP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 11:13:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33418 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231602AbhBKQKh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 11:10:37 -0500
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 564C5C061574;
+        Thu, 11 Feb 2021 08:09:53 -0800 (PST)
+Received: by mail-qt1-x835.google.com with SMTP id w20so4532544qta.0;
+        Thu, 11 Feb 2021 08:09:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nYkfx6kQ9UjotrPeVcc6dCj9wqjxlvymee7hnOlUZc4=;
+        b=LVPVjtQgeneusnFr+M9czDicODB7ZIFrKpMTHljq/lc7hUOyQL0+w0uTOocM+uDr6n
+         tD/74boY67io539d5+uyKYY+fj+t0QDS5O7JsF6kMnqFZ/WJ/o25Eid7BGiwRvgIvk8u
+         hE004LAgJJ7KP9zdeqI1HF63wvVlGp1ML7GxTUEVQzmvbj4buNdr2enfI8b+gSn7uygo
+         XBGhyAyA/VEjDRWsnlyovv7o87+gzhQT4gz6CB5EaXJsDgLCy5sryboB+ieWHppu8Fan
+         2beGzI6B4F+Go42Y+zQUM1PnAd0uEKVUtezK+pPWvPcYfj6SjvdBMM6OzOBLwi3hHgUh
+         lLnA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nYkfx6kQ9UjotrPeVcc6dCj9wqjxlvymee7hnOlUZc4=;
+        b=fvYo2yjNaie0KMTFmzEHUOui3EeR24D08rk0kNs1janN4lbVke4waxM7FX9A3IQIAK
+         q8x+/a4UqdeayqdMWY9f3Kk3CRLWmPeRMDZC9FKQq71Wpo0EsPNxbAPosOMsU6D+gxFc
+         r4MPVwWeavUGYCxqaCzmh4vO0cVYDbxP502qzoWjYFj8IvAYl/ZuCz2Tl2GOxoz/+3o9
+         eoTLPIsE9TFMGpci9rx6w9EhjplSSCKUOnCFovThW86G4MmUOMC+oVyBjCMIcOOwnIv9
+         VmsXvg7gIsTA89ywXHi6VgNldEv5cAN8TD1TaYbEmSCtoT8lUErLSKRb0lWjyRyLUgmy
+         SawQ==
+X-Gm-Message-State: AOAM531PULGXbt9AGVqyumS24G/Gchf4ZkIEfnXu8FaN2ssu/pS5lMeI
+        RUoyuBiAAj+5qCMzbanvPbk=
+X-Google-Smtp-Source: ABdhPJxmo/BeMr4MJyAWSiHztW3MAQ9KoIYjGqXNHnjcFfYgB4/zjZZ/XYKsG5cITco9hyjR02FbnA==
+X-Received: by 2002:aed:2022:: with SMTP id 31mr8161328qta.85.1613059792402;
+        Thu, 11 Feb 2021 08:09:52 -0800 (PST)
+Received: from tong-desktop.local ([2601:5c0:c200:27c6:d9d4:9919:4b2f:f800])
+        by smtp.googlemail.com with ESMTPSA id p188sm4223296qkf.40.2021.02.11.08.09.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Feb 2021 08:09:52 -0800 (PST)
+From:   Tong Zhang <ztong0001@gmail.com>
+To:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     ztong0001@gmail.com
+Subject: [PATCH] enetc: auto select PHYLIB and MDIO_DEVRES
+Date:   Thu, 11 Feb 2021 11:09:30 -0500
+Message-Id: <20210211160930.1231035-1-ztong0001@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+icZUXdWHrNh-KoHtX2jC-4yjnMTtA0CjwzsjaXfCUpHgYJtg@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 11, 2021 at 04:43:48PM +0100, Sedat Dilek wrote:
+FSL_ENETC_MDIO use symbols from PHYLIB and MDIO_DEVRES, however they are
+not auto selected.
 
-SNIP
+ERROR: modpost: "__mdiobus_register" [drivers/net/ethernet/freescale/enetc/fsl-enetc-mdio.ko] undefined!
+ERROR: modpost: "mdiobus_unregister" [drivers/net/ethernet/freescale/enetc/fsl-enetc-mdio.ko] undefined!
+ERROR: modpost: "devm_mdiobus_alloc_size" [drivers/net/ethernet/freescale/enetc/fsl-enetc-mdio.ko] undefined!
 
-> > > filled with elf functions start/end values, right?
-> > >
-> > > >                         /*
-> > > >                          * We iterate over sorted array, so we can easily skip
-> > > >                          * not valid item and move following valid field into
-> > > >
-> > > >
-> > > > So the idea is to use address segments and check whether there is a
-> > > > segment that overlaps with a given address by first binary searching
-> > > > for a segment with the largest starting address that is <= addr. And
-> > > > then just confirming that segment does overlap with the requested
-> > > > address.
-> > > >
-> > > > WDYT?
-> >
-> > heya,
-> > with your approach I ended up with change below, it gives me same
-> > results as with the previous change
-> >
-> > I think I'll separate the kmod bool address computation later on,
-> > but I did not want to confuse this change for now
-> >
-> 
-> I have applied your diff on top of pahole-v1.20 with Yonghong Son's
-> "btf_encoder: sanitize non-regular int base type" applied.
-> This is on x86-64 with LLVM-12, so I am not directly affected.
-> If it is out of interest I can offer vmlinux (or .*btf* files) w/ and
-> w/o your diff.
+auto select MDIO_DEVRES and PHYLIB when FSL_ENETC_MDIO is selected.
 
-if you could run your tests/workloads and check the new change does not
-break your stuff, that'd be great
+Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+---
+ drivers/net/ethernet/freescale/enetc/Kconfig | 2 ++
+ 1 file changed, 2 insertions(+)
 
-we need soem testsuite ;-) I have some stupid test script which runs over
-few vmlinux binaries and check the diff in BTF data.. problem is that these
-vmlinux binaries are ~300M each, so it's not great for sharing
-
-also I was checking if we could use BPF_BTF_LOAD syscall and load BTF in
-kernel and back at the end of pahole processing to check it's valid ;-)
-
-thanks,
-jirka
+diff --git a/drivers/net/ethernet/freescale/enetc/Kconfig b/drivers/net/ethernet/freescale/enetc/Kconfig
+index d99ea0f4e4a6..2ec3f8065e6d 100644
+--- a/drivers/net/ethernet/freescale/enetc/Kconfig
++++ b/drivers/net/ethernet/freescale/enetc/Kconfig
+@@ -28,6 +28,8 @@ config FSL_ENETC_VF
+ config FSL_ENETC_MDIO
+ 	tristate "ENETC MDIO driver"
+ 	depends on PCI
++	select MDIO_DEVRES
++	select PHYLIB
+ 	help
+ 	  This driver supports NXP ENETC Central MDIO controller as a PCIe
+ 	  physical function (PF) device.
+-- 
+2.25.1
 
