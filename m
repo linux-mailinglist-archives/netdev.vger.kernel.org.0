@@ -2,94 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81E8631944C
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 21:21:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73FC0319473
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 21:28:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230027AbhBKUVb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 15:21:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59070 "EHLO
+        id S231901AbhBKU1u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 15:27:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230077AbhBKUU6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 15:20:58 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D169C061574
-        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 12:20:18 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id l12so5457022wry.2
-        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 12:20:18 -0800 (PST)
+        with ESMTP id S231815AbhBKU1p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 15:27:45 -0500
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C859C061756
+        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 12:27:04 -0800 (PST)
+Received: by mail-il1-x130.google.com with SMTP id g9so6293086ilc.3
+        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 12:27:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=qUZPPTjxypuIsOSEwHiV1oADSOUC3Aajk7rQCjLylg8=;
-        b=IMFFu2GIuGkBf3laXfXuM7qEF5I3e1BNnAxKjiPP2nJc9+FIAeTNFFaoRq9/9b+y6Z
-         LI0O9Rr4LyTU5V0xeCYcxIPcqmAr7FaXwHZx0WgR8DYyXyWEN/nHSRNeBKv0tPbr46Zj
-         TjT84pdXpLHCc/TQhpiDcpgkdeZEK2+tJNd1qUs6qvqKHyi2ym2mHmwTBOeTFvPraTbq
-         mVdXDBLTdWtj34qcbaeqMlJ20lckL12qX2J6Tu6bkBUlLDOoE7qgNDQJoMVdj2BWxlbd
-         pykDtgGZnJy1kqG21qY52ywTaOUVC5rO3Ql1Y4U+bxzzGAKuYnLZZn+sRGDmTxBT/EnZ
-         OZ3Q==
+        d=ieee.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=BhGQshN1SJ6FzYvK/Ylak5i6bTCB8ww2nvYRmIy1Hhg=;
+        b=dB8jc5NwlVjd5jAbswz4S6tGscnbR1vlEnvWXzmI5VGKQxt92AINve6Ax5LT703TnI
+         HX50/z+Qhm+1paetK0Na84hXoIqb6Up1iN8socEjg9gbMDWyCcb87Rbykh1peungcU2T
+         Ei0LSx02rQCMLWO3IolI/80HT2YrDpmKhTBWM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=qUZPPTjxypuIsOSEwHiV1oADSOUC3Aajk7rQCjLylg8=;
-        b=hHpddispClhkMvMWr0MJBaiy0Vvy5z2pSjJhWP9jK7RpreXnpk7B54KHPKz5Abwlpc
-         UZwbS4Xz+X+xrx7LlJfKbAMsLXtSUP2YUA97k2J5bpQBJTdw/b/mqTW8YDOKn4/J+7NI
-         PinIxhNG6dXCsO3WdeDbWvNkHV6QnEZuAxf6A1FNFtPpVpNlWLG7AABbB9J6Oh4YnjG5
-         2Ov4LRMMhRL8Uk6YillGXw8chzEiLYOXHv1GzI4AuLAk+eaMvU52SmjhacYAtTBbcJiP
-         RF1+bF8wpPLTQz6ZmMmHiP2+G2fWCiLV7pgdoYjZ8QaCAukwB3FoeroONn5fyqbFKLAb
-         xK8g==
-X-Gm-Message-State: AOAM531rvexdbpkW25DxSDqefsGT5toWJhno+f+KfLtyK6FFOLs3A2VP
-        3h5ZWnH1s9VVpkh96wYp9W2wGFz9ANmx+w==
-X-Google-Smtp-Source: ABdhPJyKwI0Vv7ZHwbT1BYaeqhmq7PjI58nCEQY/1QxjALvsYL+yP7AL4IwKGrusdFCtBBbu0eQyfQ==
-X-Received: by 2002:a5d:6c66:: with SMTP id r6mr7233202wrz.86.1613074816665;
-        Thu, 11 Feb 2021 12:20:16 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f1f:ad00:1524:b28c:2a1c:169e? (p200300ea8f1fad001524b28c2a1c169e.dip0.t-ipconnect.de. [2003:ea:8f1f:ad00:1524:b28c:2a1c:169e])
-        by smtp.googlemail.com with ESMTPSA id c11sm6499849wrs.28.2021.02.11.12.20.13
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=BhGQshN1SJ6FzYvK/Ylak5i6bTCB8ww2nvYRmIy1Hhg=;
+        b=F3hAG2lNjR7ce5H1TMDwZ1Pg0kaXm3Y8lJ2G66iT/aHwO8r7dpxUOOjNoy08kLsKC9
+         0XyG6v8CxvCH6Jyknmjqt1RDZYp+iQcjMP9plii6MpFjGGooNlVTzFRgIOlHjCQfaas6
+         oyX8KZ7sirPd1uGnN4m6OJWfrLHlLywS6VIibCBcRtkeDMsj3XSSaADiHivoluEQGp8R
+         dBT4723DAULw0YECBaO8UOYcgn+5IoDbxwOEqCbHkMam0RhjJTJ7FsvnLvzQuGFBPoib
+         K5ykKJMadUT88Ymi09QGykDNqThtHPiw6Jh5kbEWkiIzw6zW7X6sGpS2r4y9yLEz1Joj
+         +CFQ==
+X-Gm-Message-State: AOAM5311gvN9KBgMw6Om1xPZMm5ZrqrxBoU5VipIY3ZDiH3TlVwqdxEW
+        XfrM1FsVmFmSgCSoRBYEIsLojw==
+X-Google-Smtp-Source: ABdhPJzMlL6cxuNZc0DR632e+CNV3R+bRT9mM+nrr2xk1U1V2+1gi/DwvLGaJVPrlE7F5QiYXbEqsA==
+X-Received: by 2002:a92:730a:: with SMTP id o10mr7310122ilc.160.1613075223595;
+        Thu, 11 Feb 2021 12:27:03 -0800 (PST)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id h2sm3009479ioh.6.2021.02.11.12.27.02
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 11 Feb 2021 12:20:16 -0800 (PST)
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: [PATCH net-next] r8169: handle tx before rx in napi poll
-Message-ID: <5ef5322d-cc83-747b-5995-2e60f2c39d93@gmail.com>
-Date:   Thu, 11 Feb 2021 21:20:08 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        Thu, 11 Feb 2021 12:27:03 -0800 (PST)
+Subject: Re: [PATCH v1 0/7] Add support for IPA v3.1, GSI v1.0, MSM8998 IPA
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>, elder@kernel.org
+Cc:     bjorn.andersson@linaro.org, agross@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, linux-arm-msm@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, konrad.dybcio@somainline.org,
+        marijn.suijten@somainline.org, phone-devel@vger.kernel.org
+References: <20210211175015.200772-1-angelogioacchino.delregno@somainline.org>
+From:   Alex Elder <elder@ieee.org>
+Message-ID: <3a596fce-9aa3-e2eb-7920-4ada65f8d2ee@ieee.org>
+Date:   Thu, 11 Feb 2021 14:27:01 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20210211175015.200772-1-angelogioacchino.delregno@somainline.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cleaning up tx descriptors first increases the chance that
-rtl_rx() can allocate new skb's from the cache.
+On 2/11/21 11:50 AM, AngeloGioacchino Del Regno wrote:
+> Hey all!
+> 
+> This time around I thought that it would be nice to get some modem
+> action going on. We have it, it's working (ish), so just.. why not.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Thank you for the patches!
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index de439db75..44a438bad 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -4588,10 +4588,10 @@ static int rtl8169_poll(struct napi_struct *napi, int budget)
- 	struct net_device *dev = tp->dev;
- 	int work_done;
- 
--	work_done = rtl_rx(dev, tp, budget);
--
- 	rtl_tx(dev, tp, budget);
- 
-+	work_done = rtl_rx(dev, tp, budget);
-+
- 	if (work_done < budget && napi_complete_done(napi, work_done))
- 		rtl_irq_enable(tp);
- 
--- 
-2.30.1
+I would like to review these carefully but I'm sorry
+I won't be able to get to it today, and possibly not
+for a few days.  But I *will* review them.
+
+I just want you to know I'm paying attention, though
+I'm sort of buried in an important issue right now.
+
+I'm very impressed at how small the patches are though.
+
+					-Alex
+
+> This series adds support for IPA v3.1 (featuring GSI v1.0) and also
+> takes account for some bits that are shared with other unimplemented
+> IPA v3 variants and it is specifically targeting MSM8998, for which
+> support is added.
+> 
+> Since the userspace isn't entirely ready (as far as I can see) for
+> data connection (3g/lte/whatever) through the modem, it was possible
+> to only partially test this series.
+> Specifically, loading the IPA firmware and setting up the interface
+> went just fine, along with a basic setup of the network interface
+> that got exposed by this driver.
+> 
+> With this series, the benefits that I see are:
+>   1. The modem doesn't crash anymore when trying to setup a data
+>      connection, as now the modem firmware seems to be happy with
+>      having IPA initialized and ready;
+>   2. Other random modem crashes while picking up LTE home network
+>      signal (even just for calling, nothing fancy) seem to be gone.
+> 
+> These are the reasons why I think that this series is ready for
+> upstream action. It's *at least* stabilizing the platform when
+> the modem is up.
+> 
+> This was tested on the F(x)Tec Pro 1 (MSM8998) smartphone.
+> 
+> AngeloGioacchino Del Regno (7):
+>    net: ipa: Add support for IPA v3.1 with GSI v1.0
+>    net: ipa: endpoint: Don't read unexistant register on IPAv3.1
+>    net: ipa: gsi: Avoid some writes during irq setup for older IPA
+>    net: ipa: gsi: Use right masks for GSI v1.0 channels hw param
+>    net: ipa: Add support for IPA on MSM8998
+>    dt-bindings: net: qcom-ipa: Document qcom,sc7180-ipa compatible
+>    dt-bindings: net: qcom-ipa: Document qcom,msm8998-ipa compatible
+> 
+>   .../devicetree/bindings/net/qcom,ipa.yaml     |   7 +-
+>   drivers/net/ipa/Makefile                      |   3 +-
+>   drivers/net/ipa/gsi.c                         |  33 +-
+>   drivers/net/ipa/gsi_reg.h                     |   5 +
+>   drivers/net/ipa/ipa_data-msm8998.c            | 407 ++++++++++++++++++
+>   drivers/net/ipa/ipa_data.h                    |   5 +
+>   drivers/net/ipa/ipa_endpoint.c                |  26 +-
+>   drivers/net/ipa/ipa_main.c                    |  12 +-
+>   drivers/net/ipa/ipa_reg.h                     |   3 +
+>   drivers/net/ipa/ipa_version.h                 |   1 +
+>   10 files changed, 480 insertions(+), 22 deletions(-)
+>   create mode 100644 drivers/net/ipa/ipa_data-msm8998.c
+> 
 
