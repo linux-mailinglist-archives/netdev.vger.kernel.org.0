@@ -2,95 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77D4C3188D5
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 11:59:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40BEB3188DC
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 12:00:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231342AbhBKK6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 05:58:14 -0500
-Received: from mail.baikalelectronics.com ([87.245.175.226]:36896 "EHLO
-        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230305AbhBKKx4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 05:53:56 -0500
-Date:   Thu, 11 Feb 2021 13:52:42 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-CC:     Serge Semin <fancer.lancer@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        <linux-kernel@vger.kernel.org>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Vyacheslav Mitrofanov 
-        <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
+        id S231246AbhBKK6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 05:58:41 -0500
+Received: from mx2.suse.de ([195.135.220.15]:53348 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231273AbhBKKyK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Feb 2021 05:54:10 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1613040804; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=P9xCMOru1/Zj81RD4aoWE/w0ZfHdvMe1Cb500/kNnBc=;
+        b=s0OmhzXzKBbfO921BFeUxxT/ihk9SFXl7epMlPgOjbgR6yN2M4AUqSnSyTjwhH7Dd3Fp7s
+        FeDSPBTOPkers18yXi01hmlp6e518rfVmCeJGbzmmAeEgqMq+vGDAIo5LvC7A+YVKAVxbC
+        Y9vMsgVC9OJaTxyCYqIQ2pnYd+vRDiw=
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 8840DB11A;
+        Thu, 11 Feb 2021 10:53:23 +0000 (UTC)
+Subject: Re: [PATCH v2 4/8] xen/netback: fix spurious event detection for
+ common event case
+To:     Juergen Gross <jgross@suse.com>
+Cc:     Wei Liu <wei.liu@kernel.org>, Paul Durrant <paul@xen.org>,
         "David S. Miller" <davem@davemloft.net>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH 01/20] net: phy: realtek: Fix events detection failure in
- LPI mode
-Message-ID: <20210211105242.xqdxdcnxrsgwbcvx@mobilestation>
-References: <20210208140341.9271-1-Sergey.Semin@baikalelectronics.ru>
- <20210208140341.9271-2-Sergey.Semin@baikalelectronics.ru>
- <8300d9ca-b877-860f-a975-731d6d3a93a5@gmail.com>
- <20210209101528.3lf47ouaedfgq74n@mobilestation>
- <a652c69b-94d3-9dc6-c529-1ebc0ed407ac@gmail.com>
- <20210209105646.GP1463@shell.armlinux.org.uk>
- <20210210164720.migzigazyqsuxwc6@mobilestation>
- <20210211103941.GW1463@shell.armlinux.org.uk>
+        Jakub Kicinski <kuba@kernel.org>,
+        xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210211101616.13788-1-jgross@suse.com>
+ <20210211101616.13788-5-jgross@suse.com>
+From:   Jan Beulich <jbeulich@suse.com>
+Message-ID: <c164ff57-69f2-8a5f-43f4-ec170bd99c22@suse.com>
+Date:   Thu, 11 Feb 2021 11:53:17 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20210211103941.GW1463@shell.armlinux.org.uk>
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+In-Reply-To: <20210211101616.13788-5-jgross@suse.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 11, 2021 at 10:39:41AM +0000, Russell King - ARM Linux admin wrote:
-> On Wed, Feb 10, 2021 at 07:47:20PM +0300, Serge Semin wrote:
-> > On Tue, Feb 09, 2021 at 10:56:46AM +0000, Russell King - ARM Linux admin wrote:
-> > > On Tue, Feb 09, 2021 at 11:37:29AM +0100, Heiner Kallweit wrote:
-> > > > Right, adding something like a genphy_{read,write}_mmd() doesn't make
-> > > > too much sense for now. What I meant is just exporting mmd_phy_indirect().
-> > > > Then you don't have to open-code the first three steps of a mmd read/write.
-> > > > And it requires no additional code in phylib.
-> > > 
-> > > ... but at the cost that the compiler can no longer inline that code,
-> > > as I mentioned in my previous reply. (However, the cost of the accesses
-> > > will be higher.) On the plus side, less I-cache footprint, and smaller
-> > > kernel code.
-> > 
-> > Just to note mmd_phy_indirect() isn't defined with inline specifier,
-> > but just as static and it's used twice in the
-> > drivers/net/phy/phy-core.c unit. So most likely the compiler won't
-> > inline the function code in there.
-> 
-> You can't always tell whether the compiler will inline a static function
-> or not.
-> 
-> > Anyway it's up to the PHY
-> > library maintainers to decide. Please settle the issue with Heiner and
-> > Andrew then. I am ok with both solutions and will do as you decide.
+On 11.02.2021 11:16, Juergen Gross wrote:
+> --- a/drivers/net/xen-netback/interface.c
+> +++ b/drivers/net/xen-netback/interface.c
+> @@ -162,13 +162,15 @@ irqreturn_t xenvif_interrupt(int irq, void *dev_id)
+>  {
+>  	struct xenvif_queue *queue = dev_id;
+>  	int old;
+> +	bool has_rx, has_tx;
+>  
+>  	old = atomic_fetch_or(NETBK_COMMON_EOI, &queue->eoi_pending);
+>  	WARN(old, "Interrupt while EOI pending\n");
+>  
+> -	/* Use bitwise or as we need to call both functions. */
+> -	if ((!xenvif_handle_tx_interrupt(queue) |
+> -	     !xenvif_handle_rx_interrupt(queue))) {
+> +	has_tx = xenvif_handle_tx_interrupt(queue);
+> +	has_rx = xenvif_handle_rx_interrupt(queue);
+> +
+> +	if (!has_rx && !has_tx) {
+>  		atomic_andnot(NETBK_COMMON_EOI, &queue->eoi_pending);
+>  		xen_irq_lateeoi(irq, XEN_EOI_FLAG_SPURIOUS);
+>  	}
 > 
 
-> FYI, *I* am one of the phylib maintainers.
+Ah yes, what was originally meant really was
 
-Of course I saw you in the list of maintainers. My message was that
-currently two maintainers claims contradicting requests. Thus in order
-to go further with this patch first you need to get to some agreement
-between yourself. That's why we need to have a response from Hainer
-about your arguments against his suggestion.
+	if (!(xenvif_handle_tx_interrupt(queue) |
+	      xenvif_handle_rx_interrupt(queue))) {
 
--Sergey
+(also hinted at by the otherwise pointless inner parentheses),
+which you simply write in an alternative way.
 
-> 
-> -- 
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
+
+Jan
