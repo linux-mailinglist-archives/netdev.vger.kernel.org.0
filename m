@@ -2,106 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F216231887A
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 11:48:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47BC631888D
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 11:48:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230130AbhBKKn2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 05:43:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47488 "EHLO
+        id S230418AbhBKKsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 05:48:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230139AbhBKKkn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 05:40:43 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D44C061574;
-        Thu, 11 Feb 2021 02:40:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=KqKL6U54aCC0e44bsyZEz0rjpqJM8TsWEFnpO14j4I0=; b=V/XKeJOwhiGwwPrOF/Ejk+2gU
-        RUlWQlS7edN8olo8oHfkWd7OfyKxmdav9/717Ou8/3rJweQCj8FWraj7NC3ofElWgR/b4oP6+WMMr
-        9a6hKi+G955sI6tWlouZKrxpPC8XUR76WOdOJ7GzpQMLIZYAq9QhR4Gft4GC+SCGyDO92arJJlhSf
-        SYq2lujQBwQBLKiUqZjSmC/AE+yGH2LlB7IswQNlqGwT0933GByZGtJxQcwhaQzqPW/Zf7zRfBtxv
-        Q+LGWnwyD68v1Wb0WX2gCJT+wrc9HRham/g+Z5QSbb4v99b9BTVrItcQ+y1GLxpsijl5mnPkx+Ci8
-        gF9YWi+SQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:41972)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1lA9Nz-0005vP-Cw; Thu, 11 Feb 2021 10:39:47 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1lA9Nt-00060X-RR; Thu, 11 Feb 2021 10:39:41 +0000
-Date:   Thu, 11 Feb 2021 10:39:41 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Serge Semin <fancer.lancer@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        linux-kernel@vger.kernel.org,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Vyacheslav Mitrofanov 
-        <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 01/20] net: phy: realtek: Fix events detection failure in
- LPI mode
-Message-ID: <20210211103941.GW1463@shell.armlinux.org.uk>
-References: <20210208140341.9271-1-Sergey.Semin@baikalelectronics.ru>
- <20210208140341.9271-2-Sergey.Semin@baikalelectronics.ru>
- <8300d9ca-b877-860f-a975-731d6d3a93a5@gmail.com>
- <20210209101528.3lf47ouaedfgq74n@mobilestation>
- <a652c69b-94d3-9dc6-c529-1ebc0ed407ac@gmail.com>
- <20210209105646.GP1463@shell.armlinux.org.uk>
- <20210210164720.migzigazyqsuxwc6@mobilestation>
+        with ESMTP id S230386AbhBKKqG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 05:46:06 -0500
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 138CBC061756
+        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 02:45:26 -0800 (PST)
+Received: by mail-ej1-x635.google.com with SMTP id y9so9264173ejp.10
+        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 02:45:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=F+cbGLM7dfdWvPqKxabwNSPUJ7stDmDMMES5aE2wPOQ=;
+        b=Q2yaMwk+aQzCDFzJkAOYdBiIiMPUut8MXDswHc8P1OZi/9Od7nreXz41ANZ2nvZ7a7
+         Us2l0uxc2Ou4z+dBwhZfTtc7Q+YALLC88/LfSIPd+R7XLDSKrodwJZOidfjeg2slTneN
+         D4mBK7bYKsEwVCM1un9Bg4D50aphytcONDkgt2n5yaehER1MHGU5j3M3F3Fmpwocu/+o
+         zlhiVMv619kwkBKd04TWPM+J0IBbGlbTF83aoNXX2Gzg6qp8tpPKNdPaW1M7Mv6qSFH0
+         vA8Hx/fhCbZ2tcDroKLFmuDPgVjjKL1UhbBxCF1sdOUCqNuKPa7BYCB3nqbLse7xEkjk
+         OAiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=F+cbGLM7dfdWvPqKxabwNSPUJ7stDmDMMES5aE2wPOQ=;
+        b=nMar5ZECfqajpGrxmECiVPEjwZuHv3Vsd3yTSd8Fqi3PSw/iOyO9nMem4h8MYZ6FTx
+         F7c4vb8FJ61nhD4Z9H8p/dIho1Hb0xgNgN0nNhedkHUiXygv3U0LDnqr8mEuXgtYFBaw
+         wKeG9bH4NMSf7MfjQgmWygF81rouDTNPXrg1IwL7asrQ8aDZntKgqt5lAVBoiCSCL/qW
+         Ha84ulBFQzAlrHxW1BpQs9es1nPvHmr5Aq1f8Cg3R3tNOflWWW1N7nIGMRWJI89ndX42
+         /GmtE1rZCHAZoARF0/g7JzvXQHroIVgwy8pgeT0DZdMeeQ24unsV4N27WXGGA2bv6tQ5
+         u4IA==
+X-Gm-Message-State: AOAM5336MmNlmf40yAYUWzKyUyJlr9JkCNRFhjTrd6xW873wY38aLTNb
+        kLmBHOXp6jGDc9qTHrLDheI=
+X-Google-Smtp-Source: ABdhPJwpgfDsjnGnN6dNcjPtcd6mT1uxsJThP13Ysn4Vu0LG565RHk+hHJEFFGEkzfJyeLIuZqcYTg==
+X-Received: by 2002:a17:906:35cf:: with SMTP id p15mr7748022ejb.20.1613040324813;
+        Thu, 11 Feb 2021 02:45:24 -0800 (PST)
+Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id l1sm3815458eje.12.2021.02.11.02.45.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Feb 2021 02:45:24 -0800 (PST)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: [PATCH iproute2 0/6] Clarifications to bridge man page
+Date:   Thu, 11 Feb 2021 12:44:56 +0200
+Message-Id: <20210211104502.2081443-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210210164720.migzigazyqsuxwc6@mobilestation>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 10, 2021 at 07:47:20PM +0300, Serge Semin wrote:
-> On Tue, Feb 09, 2021 at 10:56:46AM +0000, Russell King - ARM Linux admin wrote:
-> > On Tue, Feb 09, 2021 at 11:37:29AM +0100, Heiner Kallweit wrote:
-> > > Right, adding something like a genphy_{read,write}_mmd() doesn't make
-> > > too much sense for now. What I meant is just exporting mmd_phy_indirect().
-> > > Then you don't have to open-code the first three steps of a mmd read/write.
-> > > And it requires no additional code in phylib.
-> > 
-> > ... but at the cost that the compiler can no longer inline that code,
-> > as I mentioned in my previous reply. (However, the cost of the accesses
-> > will be higher.) On the plus side, less I-cache footprint, and smaller
-> > kernel code.
-> 
-> Just to note mmd_phy_indirect() isn't defined with inline specifier,
-> but just as static and it's used twice in the
-> drivers/net/phy/phy-core.c unit. So most likely the compiler won't
-> inline the function code in there.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-You can't always tell whether the compiler will inline a static function
-or not.
+There are several explanations missing in the bridge man page which have
+led people in the past to make incorrect assumptions. Try to improve the
+situation a little bit.
 
-> Anyway it's up to the PHY
-> library maintainers to decide. Please settle the issue with Heiner and
-> Andrew then. I am ok with both solutions and will do as you decide.
+Vladimir Oltean (6):
+  man8/bridge.8: document the "permanent" flag for "bridge fdb add"
+  man8/bridge.8: document that "local" is default for "bridge fdb add"
+  man8/bridge.8: explain what a local FDB entry is
+  man8/bridge.8: fix which one of self/master is default for "bridge
+    fdb"
+  man8/bridge.8: explain self vs master for "bridge fdb add"
+  man8/bridge.8: be explicit that "flood" is an egress setting
 
-FYI, *I* am one of the phylib maintainers.
+ man/man8/bridge.8 | 30 ++++++++++++++++++++++++------
+ 1 file changed, 24 insertions(+), 6 deletions(-)
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.25.1
+
