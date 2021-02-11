@@ -2,99 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4760318EA4
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 16:32:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 37BD6318E95
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 16:32:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231352AbhBKPbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 10:31:19 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:6904 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231180AbhBKP2C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 10:28:02 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11BF55bR011612;
-        Thu, 11 Feb 2021 07:13:43 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=bOUPWd7NjerE0DDO/8OeF9/+j6LpVJxLpVk7ndXZwIE=;
- b=eTCzgReFZGVOnm08YKQ47oNagyMvzz2SS4JoVDdztb7+Yx01jgrioTHsQ3S+Bhp6dC53
- mKQffuNw7AFARXcPKtarno3+4h3N9qA4pIP1dHN70/rM8yx+kKoiLCgS8PRFdolbPXdi
- ckIFCvTkISbs+NWRUcD9Ebu96vrV/F2cV7zw0RrrsWlTYhtQbFZEptWj0R1Fp3WEJWnM
- t9SbFBi3LBLHwCZzqU42nk2vJ67T3Ok4hAzX0Q3CCh0wEXrhSnWsJ/uQPjUuPrmal0aw
- 0M9Lm9MR4cVIh7vh6qxHxLsW+BF3huSrz6SIZtbR51yyZj3cTijP7bCt7RdnkBt2tpJ8 pw== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 36hugqf3xx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 11 Feb 2021 07:13:43 -0800
-Received: from SC-EXCH03.marvell.com (10.93.176.83) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 11 Feb
- 2021 07:13:41 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 11 Feb
- 2021 07:13:40 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 11 Feb 2021 07:13:40 -0800
-Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id AAE213F7040;
-        Thu, 11 Feb 2021 07:13:37 -0800 (PST)
-From:   <stefanc@marvell.com>
-To:     <netdev@vger.kernel.org>
-CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
-        <nadavh@marvell.com>, <ymarkman@marvell.com>,
-        <linux-kernel@vger.kernel.org>, <stefanc@marvell.com>,
-        <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
-        <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
-        <atenart@kernel.org>
-Subject: [net-next] net: mvpp2: fix interrupt mask/unmask skip condition
-Date:   Thu, 11 Feb 2021 17:13:19 +0200
-Message-ID: <1613056399-18730-1-git-send-email-stefanc@marvell.com>
-X-Mailer: git-send-email 1.9.1
+        id S230253AbhBKP3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 10:29:40 -0500
+Received: from mail-wr1-f50.google.com ([209.85.221.50]:33562 "EHLO
+        mail-wr1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230365AbhBKPYx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 10:24:53 -0500
+Received: by mail-wr1-f50.google.com with SMTP id 7so4601782wrz.0;
+        Thu, 11 Feb 2021 07:24:37 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=r73cmlC1j2cHDWraNmDzLtHimsKfOTe23uRKBUQvTXY=;
+        b=RZQN5nMovh/qjggaZkLfWtEGAYH+4Hhxg+uE++JXkd71lRZPbj7QwqaUMeRscBeDwu
+         FfEvBKXTDVnQ7SfEzgjIU+vFYVxLbPvPoMbsk2ur2J0MyJj2jT3dn4TvZirSpjGP4yQ+
+         Qbf4eJUqBls4KnpkkwUNT/Ted3iluR2MiZV9Pf64V3DYq03QvBjLcFRd5GvCzhHucLse
+         zmKC5DZYOxPI8uLW18nTWk4yeW6u3OEY64cU7nwFcod1R72uMEbdT1D1CqRBy17JcFhe
+         RwIjoeGHYYVz3N3A6wIgrIIGfyu4TUefYr3JFHNMHPCPt8Ns0qd+x0eyTuRTJYV3SuFN
+         oogQ==
+X-Gm-Message-State: AOAM532+FqK66rpCooZ0PxjDbQsxyGHnJAQns+nx0gIEsSwl5j3mSBWT
+        3hNwiAGEc90IszEX63AbKY8XW7Ihx3Y=
+X-Google-Smtp-Source: ABdhPJw0ZNLx6cIm1oi5TPu/ZBGpav6tW7wPmN3XoUi4E90WuF9Eo8rynhy/JWMbDVpCiMzyDv1snA==
+X-Received: by 2002:adf:9bcf:: with SMTP id e15mr6042718wrc.276.1613057051742;
+        Thu, 11 Feb 2021 07:24:11 -0800 (PST)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id c5sm5469871wrn.77.2021.02.11.07.24.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Feb 2021 07:24:11 -0800 (PST)
+Date:   Thu, 11 Feb 2021 15:24:09 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     Juergen Gross <jgross@suse.com>
+Cc:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Wei Liu <wei.liu@kernel.org>,
+        Paul Durrant <paul@xen.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH v2 4/8] xen/netback: fix spurious event detection for
+ common event case
+Message-ID: <20210211152409.knullq66jv3bkis2@liuwe-devbox-debian-v2>
+References: <20210211101616.13788-1-jgross@suse.com>
+ <20210211101616.13788-5-jgross@suse.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
- definitions=2021-02-11_06:2021-02-10,2021-02-11 signatures=0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210211101616.13788-5-jgross@suse.com>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefan Chulski <stefanc@marvell.com>
+On Thu, Feb 11, 2021 at 11:16:12AM +0100, Juergen Gross wrote:
+> In case of a common event for rx and tx queue the event should be
+> regarded to be spurious if no rx and no tx requests are pending.
+> 
+> Unfortunately the condition for testing that is wrong causing to
+> decide a event being spurious if no rx OR no tx requests are
+> pending.
+> 
+> Fix that plus using local variables for rx/tx pending indicators in
+> order to split function calls and if condition.
+> 
+> Fixes: 23025393dbeb3b ("xen/netback: use lateeoi irq binding")
+> Signed-off-by: Juergen Gross <jgross@suse.com>
 
-The condition should be skipped if CPU ID equal to nthreads.
-The patch doesn't fix any actual issue since
-nthreads = min_t(unsigned int, num_present_cpus(), MVPP2_MAX_THREADS).
-On all current Armada platforms, the number of CPU's is
-less than MVPP2_MAX_THREADS.
-
-Fixes: e531f76757eb ("net: mvpp2: handle cases where more CPUs are available than s/w threads")
-Reported-by: Russell King <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Stefan Chulski <stefanc@marvell.com>
----
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index a07cf60..74613d3 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -1135,7 +1135,7 @@ static void mvpp2_interrupts_mask(void *arg)
- 	struct mvpp2_port *port = arg;
- 
- 	/* If the thread isn't used, don't do anything */
--	if (smp_processor_id() > port->priv->nthreads)
-+	if (smp_processor_id() >= port->priv->nthreads)
- 		return;
- 
- 	mvpp2_thread_write(port->priv,
-@@ -1153,7 +1153,7 @@ static void mvpp2_interrupts_unmask(void *arg)
- 	u32 val;
- 
- 	/* If the thread isn't used, don't do anything */
--	if (smp_processor_id() > port->priv->nthreads)
-+	if (smp_processor_id() >= port->priv->nthreads)
- 		return;
- 
- 	val = MVPP2_CAUSE_MISC_SUM_MASK |
--- 
-1.9.1
-
+Reviewed-by: Wei Liu <wl@xen.org>
