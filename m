@@ -2,234 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4218131831F
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 02:43:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6D30318325
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 02:48:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230093AbhBKBmc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 20:42:32 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:59640 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229743AbhBKBma (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 20:42:30 -0500
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 11B1XWxp157185
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 20:41:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=DKgAGJvV06mRSSZPmejwf38LBA4q3Von4apMDLko8Eg=;
- b=fGgEE9rYQdfFXW3Jef0Vc6KLbZgBFAkjdtzEMKIcSwCCxr5S86VKewwZeu6JVpHq5SVz
- ciozLU8GGjLXL1/Q0TU/qTaM6Lo8qSADZYmlLo/4+7K4v8ViYIVw++mp+QbVLMpDYwww
- 95hX2WNREyg40dyTnCl4CsXXWxDEjbknjY3LlY8whtfo2ehKwV5ESFR+LbPPoOOU4CZV
- Sdn+jcShuQKiehtGVwKmYGSFYBOvRNxBcjnze6pTFenhjGtizec7hWw06wCRlVnMGP6H
- XXMt5gyr2bRga/zZK5KVppaiV7MoaIo0xGKry08TU3rM2Fs88Y+yuSsuCCgXOny+hW4o ZQ== 
-Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 36mu13r8qs-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 20:41:49 -0500
-Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
-        by ppma02dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 11B1SIhB015022
-        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 01:41:48 GMT
-Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
-        by ppma02dal.us.ibm.com with ESMTP id 36hjraay7f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 01:41:48 +0000
-Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
-        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 11B1fkNi3015586
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 11 Feb 2021 01:41:46 GMT
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 87267112062;
-        Thu, 11 Feb 2021 01:41:46 +0000 (GMT)
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BDA2F112065;
-        Thu, 11 Feb 2021 01:41:45 +0000 (GMT)
-Received: from suka-w540.ibmuc.com (unknown [9.85.134.9])
-        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
-        Thu, 11 Feb 2021 01:41:45 +0000 (GMT)
-From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     Dany Madden <drt@linux.ibm.com>, Lijun Pan <ljp@linux.ibm.com>,
-        Rick Lindsley <ricklind@linux.ibm.com>, abdhalee@in.ibm.com,
-        sukadev@linux.ibm.com
-Subject: [PATCH 1/1] ibmvnic: fix a race between open and reset
-Date:   Wed, 10 Feb 2021 17:41:44 -0800
-Message-Id: <20210211014144.881861-2-sukadev@linux.ibm.com>
-X-Mailer: git-send-email 2.26.2
+        id S229678AbhBKBrr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 20:47:47 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:12014 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229564AbhBKBrp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 20:47:45 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11B1kgKj000429;
+        Wed, 10 Feb 2021 17:46:59 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=gs6fyn9yfF9dI/JDXWijLIK39SNU6Aw87aWCNNpRHU0=;
+ b=bYJ3su/hlGpEMUhNca6TwrHXFO1qJiPz5+7zKTVzKHz7qBpiDS7euJw3bCU40PZS49XJ
+ HU5SYM6s11Hwd7a93HueqQdVBhtGzP0HqI324SmWxPtnfnrWXFW2zBDPR2XqZOMw3MfX
+ /4qzI+xyw9n3NUg5qp+e8A004GokDRQYXP4h6lVBp1ISRvgc6Zaxrs+tD0XWBkD45htn
+ FtOZn4DRpwxNYDmCpzhIUmLPOaXb9isFOsJh3lv5FUf35J6PA4mu7NJqtWv897+M/F2W
+ 7e7iS1S2pW9xnv6dZOwQXrIsDvOGTF8u/zZ/SslDlfo3qLRhHHp0WE+p6PlFWhkvYlmp VQ== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 36hugqdhb1-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 10 Feb 2021 17:46:59 -0800
+Received: from SC-EXCH04.marvell.com (10.93.176.84) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 10 Feb
+ 2021 17:46:58 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 10 Feb
+ 2021 17:46:57 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 10 Feb 2021 17:46:57 -0800
+Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
+        by maili.marvell.com (Postfix) with ESMTP id D3DEA3F7040;
+        Wed, 10 Feb 2021 17:46:53 -0800 (PST)
+From:   Geetha sowjanya <gakula@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-crypto@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <sgoutham@marvell.com>,
+        <lcherian@marvell.com>, <hkelam@marvell.com>,
+        <sbhatta@marvell.com>, <jerinj@marvell.com>,
+        <bbrezillon@kernel.org>, <arno@natisbad.org>,
+        <schalla@marvell.com>, Geetha sowjanya <gakula@marvell.com>
+Subject: [net-next v5 00/14] Add Marvell CN10K support
+Date:   Thu, 11 Feb 2021 07:16:17 +0530
+Message-ID: <20210211014631.9578-1-gakula@marvell.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
+Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
  definitions=2021-02-10_11:2021-02-10,2021-02-10 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
- priorityscore=1501 mlxlogscore=999 clxscore=1015 spamscore=0 mlxscore=0
- lowpriorityscore=0 malwarescore=0 bulkscore=0 impostorscore=0
- suspectscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2009150000 definitions=main-2102110004
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-__ibmvnic_reset() currently reads the adapter->state before getting the
-rtnl and saves that state as the "target state" for the reset. If this
-read occurs when adapter is in PROBED state, the target state would be
-PROBED.
+The current admin function (AF) driver and the netdev driver supports
+OcteonTx2 silicon variants. The same OcteonTx2's
+Resource Virtualization Unit (RVU) is carried forward to the next-gen
+silicon ie OcteonTx3, with some changes and feature enhancements.
 
-Just after the target state is saved, and before the actual reset process
-is started (i.e before rtnl is acquired) if we get an ibmvnic_open() call
-we would move the adapter to OPEN state.
+This patch set adds support for OcteonTx3 (CN10K) silicon and gets
+the drivers to the same level as OcteonTx2. No new OcteonTx3 specific
+features are added.
 
-But when the reset is processed (after ibmvnic_open()) drops the rtnl),
-it will leave the adapter in PROBED state even though we already moved
-it to OPEN.
+Changes cover below HW level differences
+- PCIe BAR address changes wrt shared mailbox memory region
+- Receive buffer freeing to HW
+- Transmit packet's descriptor submission to HW
+- Programmable HW interface identifiers (channels)
+- Increased MTU support
+- A Serdes MAC block (RPM) configuration
 
-To fix this, use the RTNL to improve the serialization when reading/updating
-the adapter state. i.e determine the target state of a reset only after
-getting the RTNL. And if a reset is in progress during an open, simply
-set the target state of the adapter and let the reset code finish the
-open (like we currently do if failover is pending).
+v4-v5
+Fixed sparse warnings.
 
-One twist to this serialization is if the adapter state changes when we
-drop the RTNL to update the link state. Account for this by checking if
-there was an intervening open and update the target state for the reset
-accordingly (see new comments in the code). Note that only the reset
-functions and ibmvnic_open() can set the adapter to OPEN state and this
-must happen under rtnl.
+v3-v4
+Fixed compiler warnings.
 
-Fixes: 7d7195a026ba ("ibmvnic: Do not process device remove during device reset")
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Reviewed-by: Dany Madden <drt@linux.ibm.com>
----
-Changelog[v3]
-        [Jakub Kicinski] Rebase to current net and fix comment style.
+v2-v3
+Reposting as a single thread.
+Rebased on top latest net-next branch.
 
-Changelog[v2]
-        [Jakub Kicinski] Use ASSERT_RTNL() instead of WARN_ON_ONCE()
-        and rtnl_is_locked());
----
- drivers/net/ethernet/ibm/ibmvnic.c | 71 ++++++++++++++++++++++++++----
- 1 file changed, 63 insertions(+), 8 deletions(-)
+v1-v2
+Fixed check-patch reported issues.
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index a536fdbf05e1..96c2b0985484 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -1197,12 +1197,25 @@ static int ibmvnic_open(struct net_device *netdev)
- 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
- 	int rc;
- 
--	/* If device failover is pending, just set device state and return.
--	 * Device operation will be handled by reset routine.
-+	ASSERT_RTNL();
-+
-+	/* If device failover is pending or we are about to reset, just set
-+	 * device state and return. Device operation will be handled by reset
-+	 * routine.
-+	 *
-+	 * It should be safe to overwrite the adapter->state here. Since
-+	 * we hold the rtnl, either the reset has not actually started or
-+	 * the rtnl got dropped during the set_link_state() in do_reset().
-+	 * In the former case, no one else is changing the state (again we
-+	 * have the rtnl) and in the latter case, do_reset() will detect and
-+	 * honor our setting below.
- 	 */
--	if (adapter->failover_pending) {
-+	if (adapter->failover_pending || (test_bit(0, &adapter->resetting))) {
-+		netdev_dbg(netdev, "[S:%d FOP:%d] Resetting, deferring open\n",
-+			   adapter->state, adapter->failover_pending);
- 		adapter->state = VNIC_OPEN;
--		return 0;
-+		rc = 0;
-+		goto out;
- 	}
- 
- 	if (adapter->state != VNIC_CLOSED) {
-@@ -1221,11 +1234,12 @@ static int ibmvnic_open(struct net_device *netdev)
- 	rc = __ibmvnic_open(netdev);
- 
- out:
--	/*
--	 * If open fails due to a pending failover, set device state and
--	 * return. Device operation will be handled by reset routine.
-+	/* If open failed and there is a pending failover or in-progress reset,
-+	 * set device state and return. Device operation will be handled by
-+	 * reset routine. See also comments above regarding rtnl.
- 	 */
--	if (rc && adapter->failover_pending) {
-+	if (rc &&
-+	    (adapter->failover_pending || (test_bit(0, &adapter->resetting)))) {
- 		adapter->state = VNIC_OPEN;
- 		rc = 0;
- 	}
-@@ -1939,6 +1953,14 @@ static int do_change_param_reset(struct ibmvnic_adapter *adapter,
- 	netdev_dbg(adapter->netdev, "Change param resetting driver (%d)\n",
- 		   rwi->reset_reason);
- 
-+	/* read the state and check (again) after getting rtnl */
-+	reset_state = adapter->state;
-+
-+	if (reset_state == VNIC_REMOVING || reset_state == VNIC_REMOVED) {
-+		rc = -EBUSY;
-+		goto out;
-+	}
-+
- 	netif_carrier_off(netdev);
- 	adapter->reset_reason = rwi->reset_reason;
- 
-@@ -2037,6 +2059,14 @@ static int do_reset(struct ibmvnic_adapter *adapter,
- 	if (rwi->reset_reason == VNIC_RESET_FAILOVER)
- 		adapter->failover_pending = false;
- 
-+	/* read the state and check (again) after getting rtnl */
-+	reset_state = adapter->state;
-+
-+	if (reset_state == VNIC_REMOVING || reset_state == VNIC_REMOVED) {
-+		rc = -EBUSY;
-+		goto out;
-+	}
-+
- 	netif_carrier_off(netdev);
- 	adapter->reset_reason = rwi->reset_reason;
- 
-@@ -2063,7 +2093,24 @@ static int do_reset(struct ibmvnic_adapter *adapter,
- 		if (rc)
- 			goto out;
- 
-+		if (adapter->state == VNIC_OPEN) {
-+			/* When we dropped rtnl, ibmvnic_open() got
-+			 * it and noticed that we are resetting and
-+			 * set the adapter state to OPEN. Update our
-+			 * new "target" state, and resume the reset
-+			 * from VNIC_CLOSING state.
-+			 */
-+			netdev_dbg(netdev,
-+				   "Open changed state from %d, updating.\n",
-+				   reset_state);
-+			reset_state = VNIC_OPEN;
-+			adapter->state = VNIC_CLOSING;
-+		}
-+
- 		if (adapter->state != VNIC_CLOSING) {
-+			/* If someone else changed the adapter state
-+			 * when we dropped the rtnl, fail the reset
-+			 */
- 			rc = -1;
- 			goto out;
- 		}
-@@ -2197,6 +2244,14 @@ static int do_hard_reset(struct ibmvnic_adapter *adapter,
- 	netdev_dbg(adapter->netdev, "Hard resetting driver (%d)\n",
- 		   rwi->reset_reason);
- 
-+	/* read the state and check (again) after getting rtnl */
-+	reset_state = adapter->state;
-+
-+	if (reset_state == VNIC_REMOVING || reset_state == VNIC_REMOVED) {
-+		rc = -EBUSY;
-+		goto out;
-+	}
-+
- 	netif_carrier_off(netdev);
- 	adapter->reset_reason = rwi->reset_reason;
- 
+
+Geetha sowjanya (5):
+  octeontx2-af: cn10k: Update NIX/NPA context structure
+  octeontx2-af: cn10k: Update NIX and NPA context in debugfs
+  octeontx2-pf: cn10k: Initialise NIX context
+  octeontx2-pf: cn10k: Map LMTST region
+  octeontx2-pf: cn10k: Use LMTST lines for NPA/NIX operations
+
+Hariprasad Kelam (5):
+  octeontx2-af: cn10k: Add RPM MAC support
+  octeontx2-af: cn10K: Add MTU configuration
+  octeontx2-pf: cn10k: Get max mtu supported from admin function
+  octeontx2-af: cn10k: Add RPM Rx/Tx stats support
+  octeontx2-af: cn10k: MAC internal loopback support
+
+Rakesh Babu (1):
+  octeontx2-af: cn10k: Add RPM LMAC pause frame support
+
+Subbaraya Sundeep (3):
+  octeontx2-af: cn10k: Add mbox support for CN10K platform
+  octeontx2-pf: cn10k: Add mbox support for CN10K
+  octeontx2-af: cn10k: Add support for programmable channels
+
+ MAINTAINERS                                   |   2 +
+ .../ethernet/marvell/octeontx2/af/Makefile    |  10 +-
+ .../net/ethernet/marvell/octeontx2/af/cgx.c   | 315 ++++++---
+ .../net/ethernet/marvell/octeontx2/af/cgx.h   |  15 +-
+ .../ethernet/marvell/octeontx2/af/cgx_fw_if.h |   1 +
+ .../ethernet/marvell/octeontx2/af/common.h    |   5 +
+ .../marvell/octeontx2/af/lmac_common.h        | 131 ++++
+ .../net/ethernet/marvell/octeontx2/af/mbox.c  |  59 +-
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  |  70 +-
+ .../net/ethernet/marvell/octeontx2/af/ptp.c   |  12 +
+ .../net/ethernet/marvell/octeontx2/af/rpm.c   | 272 ++++++++
+ .../net/ethernet/marvell/octeontx2/af/rpm.h   |  57 ++
+ .../net/ethernet/marvell/octeontx2/af/rvu.c   | 159 ++++-
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |  71 ++
+ .../ethernet/marvell/octeontx2/af/rvu_cgx.c   | 134 +++-
+ .../ethernet/marvell/octeontx2/af/rvu_cn10k.c | 261 ++++++++
+ .../marvell/octeontx2/af/rvu_debugfs.c        | 339 +++++++++-
+ .../ethernet/marvell/octeontx2/af/rvu_nix.c   | 112 +++-
+ .../ethernet/marvell/octeontx2/af/rvu_npc.c   |   4 +-
+ .../ethernet/marvell/octeontx2/af/rvu_reg.h   |  24 +
+ .../marvell/octeontx2/af/rvu_struct.h         | 604 ++++++------------
+ .../ethernet/marvell/octeontx2/nic/Makefile   |  10 +-
+ .../ethernet/marvell/octeontx2/nic/cn10k.c    | 182 ++++++
+ .../ethernet/marvell/octeontx2/nic/cn10k.h    |  17 +
+ .../marvell/octeontx2/nic/otx2_common.c       | 147 +++--
+ .../marvell/octeontx2/nic/otx2_common.h       | 111 +++-
+ .../ethernet/marvell/octeontx2/nic/otx2_pf.c  |  73 ++-
+ .../ethernet/marvell/octeontx2/nic/otx2_reg.h |   4 +
+ .../marvell/octeontx2/nic/otx2_struct.h       |  10 +-
+ .../marvell/octeontx2/nic/otx2_txrx.c         |  72 ++-
+ .../marvell/octeontx2/nic/otx2_txrx.h         |   8 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_vf.c  |  52 +-
+ include/linux/soc/marvell/octeontx2/asm.h     |   8 +
+ 33 files changed, 2612 insertions(+), 739 deletions(-)
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rpm.c
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rpm.h
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_cn10k.c
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/cn10k.h
+
 -- 
-2.26.2
+2.17.1
 
