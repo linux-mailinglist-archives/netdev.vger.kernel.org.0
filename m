@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80BB0318A3D
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 13:17:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22FC6318A40
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 13:18:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231594AbhBKMRI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 07:17:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39128 "EHLO
+        id S231613AbhBKMRb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 07:17:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231362AbhBKMNk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 07:13:40 -0500
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A9EBC0613D6;
-        Thu, 11 Feb 2021 04:12:57 -0800 (PST)
-Received: by mail-lf1-x12e.google.com with SMTP id w36so7765424lfu.4;
-        Thu, 11 Feb 2021 04:12:57 -0800 (PST)
+        with ESMTP id S231665AbhBKMNn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 07:13:43 -0500
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22690C061786;
+        Thu, 11 Feb 2021 04:13:03 -0800 (PST)
+Received: by mail-lf1-x131.google.com with SMTP id m22so7781951lfg.5;
+        Thu, 11 Feb 2021 04:13:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=cNV9PIpRM97w5EUj5LEBMerf9M/CsAl4IPaukAHNjGI=;
-        b=ECL7XQKbNY57jk9I4nznwVWNOUXaqO1kR4hnSj2AFyl2mv59NpaEJEBtVFfvaISV0q
-         ox2Y4961Sb8d8h2JqDzuDf4q99InLrlHuv0eBwYqnUYUQEg4z7Q+45QdfjpKQkYfXQiO
-         XXDp3N/B8UvTqA50qVIvmFMtD2vnzY1AQmZgYj34Or5CeI6L4djLi2MN56YmnXhz0BEf
-         NbeMKJyybkGZbYFx38rEXzMb8gdAp7gxBh0H63pdI4HoaXbnjUxi9yhIBVlDOWVNY/0r
-         mEs2ZSO29/FpsuLJcJJ1a7Tr0ToCUafdXPOBeadaqvhStnbg1TVV+XZV0EaiKujRMyGc
-         KNSg==
+        bh=lAf/efFvJkR44ix7CEFq+qMsVF4H4ZJn+sIO16zj+qo=;
+        b=plx65wUlIOmKbBNLUGuKE88slSV8xTw6TYqfaWs5egF+aABaBhKNUrvzg9KGXESOv5
+         eDhXyR+RoTHL4PDWRvNkLoZ7UzppLOJGdOBgpf9NMjtQ5U0HlOqHL6fpwpIN+qfskSO3
+         t/y3ZwT6omKIpAC0USAfRl8Hz6u4B2NckU/em4IDMXJVKm4DwknT/aGXS5cbdDFOGnGw
+         7g9PEdWP51PKbPVZoyUYmD9rInryR+1OBgz/G3nCfljbUTCXVU4N+CMhgok43M5lJAXv
+         otNu1WiscoabES9fRdHhbCz0u9UyEiZUor4U/DMMilNw5jYfRaCMCQjTquZviO2coUJt
+         5Hig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=cNV9PIpRM97w5EUj5LEBMerf9M/CsAl4IPaukAHNjGI=;
-        b=M3rg1niJ7tK1XUMeJxvtqiAG6QUYRc/8xchYzSna19xG7TIdPIq5tZmWQQnNFbQmnn
-         0D6EiQ6jIzq1YlmWKj+N+3xaN4WTcb3uA2jEqdlyNzR4YKkZvsXjG1U+ZL+bSJH4hHI9
-         Ft57SQ+YiXNNv0/j5g5b/8Ixu23c01p4yawlvRKEeEdrZzqSCHL/iAhk3TqzhS1ApbMF
-         p5GUIZMBC/QBr0bmPx/C78xLLJggr0z5fkq8IY91ACTosxE87/KQ2+j3DmT9t1pV1HFq
-         1HKFnUbCY782UCy7Ql2taTv7lMDI3kn8391jVFUoHCRLIgUKqieaxtBL0VZIT4FFzUGd
-         4DEg==
-X-Gm-Message-State: AOAM532UUa0W53WAfguV5vc68WY6V9fDlRfuYZUDKG4fgEKgmoPz/pUu
-        PtDGZJFZff4CnW59qj3Huog=
-X-Google-Smtp-Source: ABdhPJzMYy/J3st2yAjzLP2T5iat/YkBWSiBqTkgop0Rkeh/bki4BT39t/D4pjwv198KhBqTtUt2uw==
-X-Received: by 2002:a19:7f95:: with SMTP id a143mr4014313lfd.419.1613045576164;
-        Thu, 11 Feb 2021 04:12:56 -0800 (PST)
+        bh=lAf/efFvJkR44ix7CEFq+qMsVF4H4ZJn+sIO16zj+qo=;
+        b=b5HjjeCSjEDp9Sk8KB5RtZ5SBkVuJsABbW3OT7lV+XVVg0/vyxMtfna3pfxGYlkBkW
+         ohvdNNekNAiepv5O3oYsmFPyXrtgngOtaypoY9LbnKehte/w35owEOG7UnkPPTBBmwAt
+         zwRpAnqLhzlS4TiChPitrPSCoqtgCjGdfPbkFlVqNukpafypW9G1TaoMvxED8KAqEbGr
+         jfD4V7D+83hLJy5rr2Mvc5S86yfoIgQ5OxeYp5Ah5CBpuShkuC23pwlC8HX1QqsmE8ad
+         F/TY/UnLb+fGG/Ct2r/YWavdaeSYnMMoXCbwGdeX+QTktEr+7NrYoulZIlASHqM3szsA
+         2kqw==
+X-Gm-Message-State: AOAM532dsg7WQTspttT6bCd2n5F5+zMIsr1xCbMEADR9C/W/mDhJIXkg
+        DkS6kVCeQGqD9O5SuNgLzQI=
+X-Google-Smtp-Source: ABdhPJy7N8QFA/x3WOXkKZScEMrOMQ7zLrV2EK0bpjcvZUQLMue91Xazizt6AGm68o9gvkKTcH1XCw==
+X-Received: by 2002:a19:48c2:: with SMTP id v185mr1730985lfa.375.1613045581569;
+        Thu, 11 Feb 2021 04:13:01 -0800 (PST)
 Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id f23sm834783ljn.131.2021.02.11.04.12.54
+        by smtp.gmail.com with ESMTPSA id f23sm834783ljn.131.2021.02.11.04.13.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Feb 2021 04:12:55 -0800 (PST)
+        Thu, 11 Feb 2021 04:13:01 -0800 (PST)
 From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -56,13 +56,15 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Masahiro Yamada <masahiroy@kernel.org>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
         Andrew Lunn <andrew@lunn.ch>,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
-Subject: [PATCH net-next 5.12 0/8] bcm4908_enet: post-review fixes
-Date:   Thu, 11 Feb 2021 13:12:31 +0100
-Message-Id: <20210211121239.728-1-zajec5@gmail.com>
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH net-next 5.12 1/8] dt-bindings: net: rename BCM4908 Ethernet binding
+Date:   Thu, 11 Feb 2021 13:12:32 +0100
+Message-Id: <20210211121239.728-2-zajec5@gmail.com>
 X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210209230130.4690-2-zajec5@gmail.com>
+In-Reply-To: <20210211121239.728-1-zajec5@gmail.com>
 References: <20210209230130.4690-2-zajec5@gmail.com>
+ <20210211121239.728-1-zajec5@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -72,35 +74,64 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Rafał Miłecki <rafal@milecki.pl>
 
-V2 of my BCM4908 Ethernet patchset was applied to the net-next.git and
-it was later that is received some extra reviews. I'm sending patches
-that handle pointed out issues.
+Rob pointed out that a normal convention is "brcm,bcm4908-enet" so
+update whole binding to match it.
 
-David: earler I missed that V2 was applied and I sent V3 and V4 of my
-inital patchset. Sorry for that. I think it's the best to ignore V3 and
-V4 I sent and proceed with this fixes patchset instead.
+Suggested-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+---
+ .../net/{brcm,bcm4908enet.yaml => brcm,bcm4908-enet.yaml}   | 6 +++---
+ MAINTAINERS                                                 | 2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+ rename Documentation/devicetree/bindings/net/{brcm,bcm4908enet.yaml => brcm,bcm4908-enet.yaml} (85%)
 
-Rafał Miłecki (8):
-  dt-bindings: net: rename BCM4908 Ethernet binding
-  dt-bindings: net: bcm4908-enet: include ethernet-controller.yaml
-  net: broadcom: rename BCM4908 driver & update DT binding
-  net: broadcom: bcm4908_enet: drop unneeded memset()
-  net: broadcom: bcm4908_enet: drop "inline" from C functions
-  net: broadcom: bcm4908_enet: fix minor typos
-  net: broadcom: bcm4908_enet: fix received skb length
-  net: broadcom: bcm4908_enet: fix endianness in xmit code
-
- ...cm4908enet.yaml => brcm,bcm4908-enet.yaml} |   9 +-
- MAINTAINERS                                   |   4 +-
- drivers/net/ethernet/broadcom/Kconfig         |   2 +-
- drivers/net/ethernet/broadcom/Makefile        |   2 +-
- .../{bcm4908enet.c => bcm4908_enet.c}         | 228 +++++++++---------
- .../{bcm4908enet.h => bcm4908_enet.h}         |   4 +-
- 6 files changed, 123 insertions(+), 126 deletions(-)
- rename Documentation/devicetree/bindings/net/{brcm,bcm4908enet.yaml => brcm,bcm4908-enet.yaml} (81%)
- rename drivers/net/ethernet/broadcom/{bcm4908enet.c => bcm4908_enet.c} (67%)
- rename drivers/net/ethernet/broadcom/{bcm4908enet.h => bcm4908_enet.h} (98%)
-
+diff --git a/Documentation/devicetree/bindings/net/brcm,bcm4908enet.yaml b/Documentation/devicetree/bindings/net/brcm,bcm4908-enet.yaml
+similarity index 85%
+rename from Documentation/devicetree/bindings/net/brcm,bcm4908enet.yaml
+rename to Documentation/devicetree/bindings/net/brcm,bcm4908-enet.yaml
+index 5f12f51c5b19..c70f222365c0 100644
+--- a/Documentation/devicetree/bindings/net/brcm,bcm4908enet.yaml
++++ b/Documentation/devicetree/bindings/net/brcm,bcm4908-enet.yaml
+@@ -1,7 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+ %YAML 1.2
+ ---
+-$id: http://devicetree.org/schemas/net/brcm,bcm4908enet.yaml#
++$id: http://devicetree.org/schemas/net/brcm,bcm4908-enet.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+ title: Broadcom BCM4908 Ethernet controller
+@@ -13,7 +13,7 @@ maintainers:
+ 
+ properties:
+   compatible:
+-    const: brcm,bcm4908enet
++    const: brcm,bcm4908-enet
+ 
+   reg:
+     maxItems: 1
+@@ -37,7 +37,7 @@ examples:
+     #include <dt-bindings/interrupt-controller/arm-gic.h>
+ 
+     ethernet@80002000 {
+-        compatible = "brcm,bcm4908enet";
++        compatible = "brcm,bcm4908-enet";
+         reg = <0x80002000 0x1000>;
+ 
+         interrupts = <GIC_SPI 86 IRQ_TYPE_LEVEL_HIGH>;
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 0bbd95b73c39..63fb312dedcf 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -3450,7 +3450,7 @@ M:	Rafał Miłecki <rafal@milecki.pl>
+ M:	bcm-kernel-feedback-list@broadcom.com
+ L:	netdev@vger.kernel.org
+ S:	Maintained
+-F:	Documentation/devicetree/bindings/net/brcm,bcm4908enet.yaml
++F:	Documentation/devicetree/bindings/net/brcm,bcm4908-enet.yaml
+ F:	drivers/net/ethernet/broadcom/bcm4908enet.*
+ F:	drivers/net/ethernet/broadcom/unimac.h
+ 
 -- 
 2.26.2
 
