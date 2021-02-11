@@ -2,259 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 876BF318352
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 02:57:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E684A31835D
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 03:03:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229587AbhBKB4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 20:56:34 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:35868 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230179AbhBKBtL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 20:49:11 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11B1kgKx000423;
-        Wed, 10 Feb 2021 17:48:26 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=0M0SD2wSsN0orD4MfhmK710/UXhQIgcHGsLyie1jkZI=;
- b=SzUSjUvbaYtAblM2tWgxLB4AbyphxEdnU7xod8xfCf48IG2uju/NjzdD7hFYWE4ggb6l
- d4UX3mh5JfZ7VJw7kemoQQ3bKTHuViqF+zvFBvuvHUekmRQRjRdt0iSZ+qgQgUWtsRUl
- 2QeXjpSNQ4ui4MvBCbtGiW8ZRbvfZ8tQZPuflI/OWoY+OQOU9dLDTIy2Hmk4F6XyKtOJ
- wYMmP9yeZF/DFIMVmHpTEAX1fHE2dOqomyPs42Uq2wRHOI/6z9Sh8gNmcOcAdPz3VQWp
- ZXDZ6D8qhi+hze7TNzfOs9J+tB0tFU9FjcxKwXfrR++4weeiVF6FwImRtAafZWJFtUM7 Qg== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 36hugqdhdy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 10 Feb 2021 17:48:26 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 10 Feb
- 2021 17:48:24 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 10 Feb 2021 17:48:24 -0800
-Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-        by maili.marvell.com (Postfix) with ESMTP id 761B53F703F;
-        Wed, 10 Feb 2021 17:48:20 -0800 (PST)
-From:   Geetha sowjanya <gakula@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-crypto@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <sgoutham@marvell.com>,
-        <lcherian@marvell.com>, <hkelam@marvell.com>,
-        <sbhatta@marvell.com>, <jerinj@marvell.com>,
-        <bbrezillon@kernel.org>, <arno@natisbad.org>,
-        <schalla@marvell.com>, Geetha sowjanya <gakula@marvell.com>
-Subject: [net-next v5 14/14] octeontx2-af: cn10k: MAC internal loopback support
-Date:   Thu, 11 Feb 2021 07:16:31 +0530
-Message-ID: <20210211014631.9578-15-gakula@marvell.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210211014631.9578-1-gakula@marvell.com>
-References: <20210211014631.9578-1-gakula@marvell.com>
+        id S229918AbhBKB74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 20:59:56 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:16696 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229969AbhBKB4a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 20:56:30 -0500
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11B1tCB0023422;
+        Wed, 10 Feb 2021 17:55:23 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=UKI/kYECJ/4kwhbcDFKxcMH8xP7IgNsrgA6y9Jz/n2Q=;
+ b=EVQACXqf4OZ0ROMcRUxLm40LW3iAWZLn8G29cX5PDCrSqrg7BrOwBSxXUV/+dp6k/jwp
+ wU0YE8MfN4rg9YT9KjidBg4IodPjJWdD8m+QpUx45hXFqD5WOXhKKZiBmhTLgUjSM/fy
+ pIRLWUXOGlRDkcqkhA+GDMwdA2XmwEY+zp8= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 36m5hyemrd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 10 Feb 2021 17:55:23 -0800
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 10 Feb 2021 17:55:22 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kUstKe7OO0qVKvU63ehdzJDkmU/4181/aCzlgs4Wo9Pny/p8yAkPqG/tMf/0mdNBKDC//ZmXXaaowzquw7+JQ1ij7ydRW1SliXkY0NEqobKeQ9kH0KKjYgA/iuzwzrJaD/Ybh3a91YUYgKv/Ubi2cvEj9TmS8hK1GnUvVDteDNlrtwUHngCw15fikK68R7YGCN+THFSYxR98qaALj3ZbNLgQMSNpPrDgqANI1LutLduZACYNDFA3ep0gaLxtD7y1l4Nai4qGn34ywAEhIztH/rDmBMOZscvIsojIJ0wWmqq4fwV379MqgAvcYUxDLapU9m1JhwfE4owgw3hJU6lAOg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UKI/kYECJ/4kwhbcDFKxcMH8xP7IgNsrgA6y9Jz/n2Q=;
+ b=dwN1GOdcA8yFKAmM8hTngtRGEW6/AW4TCIdDcj3RS0HMAUGFfZPhlJuCM0eHzUQxdgSIaxgUaGt+1nf7MV/SD6IUNGLTzW9WDnLZrBl63UqbHYL8IztL8QV2EKci/Eo9+ity51fP9mf3PLiewqdvn5lX3ghlywDwzG7hBh0hyOPbf6G6o+Hu37YX8U3EucpmTj/fHHPQgs6DW2PaShrx1Q0M4gnjwg/q2aXJPtgiZQWFZMEYo9ekq/K2i/A2fEz82/jrMWvj/6oRjXa0JVi/Hx3zrvA2sZUCfdu8D8yVVnH7QF5eJKLf9iHHvoiAmU/CqLnkizyM9JvXwjslwkBRRg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+ by BYAPR15MB3048.namprd15.prod.outlook.com (2603:10b6:a03:fc::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.19; Thu, 11 Feb
+ 2021 01:55:17 +0000
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::c585:b877:45fe:4e3f]) by BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::c585:b877:45fe:4e3f%7]) with mapi id 15.20.3825.030; Thu, 11 Feb 2021
+ 01:55:17 +0000
+Date:   Wed, 10 Feb 2021 17:55:10 -0800
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
+Subject: Re: [PATCH bpf 2/2] bpf: selftests: Add non function pointer test to
+ struct_ops
+Message-ID: <20210211015510.zd7tn6efiimfel3v@kafai-mbp.dhcp.thefacebook.com>
+References: <20210209193105.1752743-1-kafai@fb.com>
+ <20210209193112.1752976-1-kafai@fb.com>
+ <CAEf4BzbZmmezSxYLCOdeeA4zW+vdDvQH57wQ-qpFSKiMcE1tVw@mail.gmail.com>
+ <20210210211735.4snmhc7gofo6zrp5@kafai-mbp.dhcp.thefacebook.com>
+ <CAEf4BzbhBng6k5e_=p0+mFSpQS7=BM_ute9eskViw-VCMTcYYA@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzbhBng6k5e_=p0+mFSpQS7=BM_ute9eskViw-VCMTcYYA@mail.gmail.com>
+X-Originating-IP: [2620:10d:c090:400::5:3dd9]
+X-ClientProxiedBy: MWHPR15CA0063.namprd15.prod.outlook.com
+ (2603:10b6:301:4c::25) To BY5PR15MB3571.namprd15.prod.outlook.com
+ (2603:10b6:a03:1f6::32)
 MIME-Version: 1.0
-Content-Type: text/plain
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:3dd9) by MWHPR15CA0063.namprd15.prod.outlook.com (2603:10b6:301:4c::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.25 via Frontend Transport; Thu, 11 Feb 2021 01:55:15 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e744d380-dc8c-4a45-7fd8-08d8ce301408
+X-MS-TrafficTypeDiagnostic: BYAPR15MB3048:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB3048FD2CDBB7C1B84E67BA35D58C9@BYAPR15MB3048.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: q4mn+YVgv8TeSmTJQ22V7rlOA0vGuWs16SMgmI8h3n0fsh3WA1AkWgSiY5faxfBp313Sa/Flbt9q/iy5FVAtMe7r4+2TdVPvx/JCUc8K/dO8qIGfVL8F4uaMTMLUAaQ67lRHr6slklpZLYy5ZTIOAHRF8lSL+57x88jeu1Bwk5FYqZGt839f96s98mRUm8uBnE7b9quwqCdfAxRBmrTb9HNcdZN6iBPBoXejExZbl0qjN///ELzTXMN4/9nSjJj7RUePjFw4SDnFD3IcCjFd5vomahqoz2GgxPm6ZYk6TMyqZPWp9lLa1dDDyevzSdAn+BqDpZQ6/eOOd8JHhlIXZJiuUUK1hyX74imJa0cnkzNYRnWimD8twasS+BM0EAKjG9ZJr8G2I75dxPsSVyJSM7S1JiXrMFDt3bh3V2dUuQ6LSb+NHafyPtWGA7n3hCa2c+Z1YG4GOEiqwE6FpBOLcfVor92HoD8GW7Hh6eY707t597q0EUa56mYcs0GBo7eiknUIXZgYpcJyA2QBY5BcQw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(346002)(136003)(366004)(396003)(376002)(316002)(4326008)(16526019)(8936002)(186003)(478600001)(54906003)(8676002)(7696005)(66556008)(5660300002)(1076003)(9686003)(6506007)(86362001)(55016002)(53546011)(6916009)(6666004)(66476007)(83380400001)(2906002)(52116002)(66946007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?QcXUq2gtwDyqYT30SSW/Tij/VDIQLPPWEVWoWb5direEQyLR82b9w0rUbPfY?=
+ =?us-ascii?Q?JzO072RYyp0gnm1Re8Z0ALOUS4VMMnNXBzR/bfDgyukc7EkpMPOzNN68LU3g?=
+ =?us-ascii?Q?dnf+34L8kPTBLmrHMdbp/P/8XvoLDIGvxh1nidZKhYUqhVCozkfZWePLP0vy?=
+ =?us-ascii?Q?iUObIroInKpc2xHgZakcxQYfpKBo67/jm/VZxJkvgB2DvL3C9U72wzv0Uy2/?=
+ =?us-ascii?Q?kERlzl65dxn6Ayc3ttus/rEVX++7lNWWcZrpvmtu1pY9L7kA93MaUoMRMpMC?=
+ =?us-ascii?Q?9imufvDK00Rwg4pvpTF1Zo8MMwMK303PP5DKSGhH9nIGSolcB17hRZ6X8bQp?=
+ =?us-ascii?Q?VSGX5wh1YiFj9Zs1oyoVRbkIw6H809CgCfFcn3ibQIoftJkOIacWP4bAQHo6?=
+ =?us-ascii?Q?9khTCBetGL3y9xatuTqyxDVLkRPkpmg/KO21ziM5TrRU5pfaQTAI2COGrWPX?=
+ =?us-ascii?Q?659qM7WDC+qM4rqAGJnqIeeHujGBiiu+thSMaoD47d4EpOG5vSowXFhitzAA?=
+ =?us-ascii?Q?XGVk8XvuKe8WegfiHF5nGx9M1Y5SLHQ9BRK3I5jy49PReZbckaH998yto/qp?=
+ =?us-ascii?Q?6EwN334I9X861Q/S6Aq1RvwXwu7X1S9gInDyG17wbBo49hMn34ltMHIMsHoj?=
+ =?us-ascii?Q?qV1l/eOhHGcC5WdVJ+pkk6SjijHUvFbgnoTcVLe0eYJf1Lsrhzuq+Qffy6bn?=
+ =?us-ascii?Q?G0BsqNOg1ED/3chBbPXrmlu+KxvLDIi45tHxKS4YFQP9p7MC7TvZ708VF9nN?=
+ =?us-ascii?Q?GHndlNGjJzpX4ckAvHkDfIORbTlKR8upwntEUKEPsoL/psjsf9tM3mc+X3OF?=
+ =?us-ascii?Q?BxlysYjAmSzz7GTOIsYNwFE2R4xRWac1Tx3I6XCJmw3hZ38Mdjam0p1Sc7ZI?=
+ =?us-ascii?Q?0idK2Tnvpy6XMlkC3FK8b4lHA5JWl15O5dsVRr+DVN6dEVo9zX2KXKgR2L2e?=
+ =?us-ascii?Q?SH+kTKKpu/LWJDyo1p4V6DRK4W42G7vzBu/hqdK1N8XNmzENTzFiAxAGeFRj?=
+ =?us-ascii?Q?1UBrVkciafY2O/eZiXDdicCo2Sme8Fhf3bmm1CXYPt0+SkEl2eDSqZ4fGENw?=
+ =?us-ascii?Q?dRKHoGyBkKKzVvNApsp0H223RJfPcndifiwKFXQNVXoX1FoIrew/FQ0y0V8o?=
+ =?us-ascii?Q?JGZfw+1xMQpdwdJy97egdy8aKbco6VwSCM+0yiPMgJojIsGtf0Aae3uNSt3H?=
+ =?us-ascii?Q?jSnFiOWdf9Et7153kgB+iPjbFUi6kk3vHWWG+HrYp5OrShKdgHJRc898IAco?=
+ =?us-ascii?Q?oD0DxnRh7RzrwkhXKesulFqn0OP+dEH7VH5+GfDP0n7wp3dMGUBVmgUV7v1t?=
+ =?us-ascii?Q?zYLk4UMMlXqFbJIqB3xYAtUa6EW5h6rCGLMvGIvj32Nhmw=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: e744d380-dc8c-4a45-7fd8-08d8ce301408
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Feb 2021 01:55:17.1053
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: WRmD2enK3DNZcx9pSnE9grSOgfLd/PC4IB2Fj8BSIMt1PPvo4OcnzFsEiBlusGsY
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3048
+X-OriginatorOrg: fb.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
  definitions=2021-02-10_11:2021-02-10,2021-02-10 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 spamscore=0
+ suspectscore=0 impostorscore=0 phishscore=0 adultscore=0
+ lowpriorityscore=0 mlxscore=0 mlxlogscore=617 clxscore=1015
+ priorityscore=1501 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2009150000 definitions=main-2102110009
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hariprasad Kelam <hkelam@marvell.com>
-
-MAC on CN10K silicon support loopback for selftest or debug purposes.
-This patch does necessary configuration to loopback packets upon receiving
-request from LMAC mapped RVU PF's netdev via mailbox.
-
-Also MAC (CGX) on OcteonTx2 silicon variants and MAC (RPM) on
-OcteonTx3 CN10K are different and loopback needs to be configured
-differently. Upper layer interface between RVU AF and PF netdev is
-kept same. Based on silicon variant appropriate fn() pointer is
-called to config the MAC.
-
-Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
-Signed-off-by: Geetha sowjanya <gakula@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
----
- .../net/ethernet/marvell/octeontx2/af/cgx.c   |  9 ++--
- .../ethernet/marvell/octeontx2/af/cgx_fw_if.h |  1 +
- .../marvell/octeontx2/af/lmac_common.h        |  4 +-
- .../net/ethernet/marvell/octeontx2/af/rpm.c   | 44 +++++++++++++++++++
- .../net/ethernet/marvell/octeontx2/af/rpm.h   |  5 +++
- .../ethernet/marvell/octeontx2/af/rvu_cgx.c   |  6 +--
- 6 files changed, 62 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-index 7b03234567ca..fefefa4db726 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-@@ -228,8 +228,9 @@ int cgx_set_pkind(void *cgxd, u8 lmac_id, int pkind)
- 	return 0;
- }
- 
--static inline u8 cgx_get_lmac_type(struct cgx *cgx, int lmac_id)
-+static u8 cgx_get_lmac_type(void *cgxd, int lmac_id)
- {
-+	struct cgx *cgx = cgxd;
- 	u64 cfg;
- 
- 	cfg = cgx_read(cgx, lmac_id, CGXX_CMRX_CFG);
-@@ -246,7 +247,7 @@ int cgx_lmac_internal_loopback(void *cgxd, int lmac_id, bool enable)
- 	if (!is_lmac_valid(cgx, lmac_id))
- 		return -ENODEV;
- 
--	lmac_type = cgx_get_lmac_type(cgx, lmac_id);
-+	lmac_type = cgx->mac_ops->get_lmac_type(cgx, lmac_id);
- 	if (lmac_type == LMAC_MODE_SGMII || lmac_type == LMAC_MODE_QSGMII) {
- 		cfg = cgx_read(cgx, lmac_id, CGXX_GMP_PCS_MRX_CTL);
- 		if (enable)
-@@ -637,7 +638,7 @@ static inline void link_status_user_format(u64 lstat,
- 	linfo->link_up = FIELD_GET(RESP_LINKSTAT_UP, lstat);
- 	linfo->full_duplex = FIELD_GET(RESP_LINKSTAT_FDUPLEX, lstat);
- 	linfo->speed = cgx_speed_mbps[FIELD_GET(RESP_LINKSTAT_SPEED, lstat)];
--	linfo->lmac_type_id = cgx_get_lmac_type(cgx, lmac_id);
-+	linfo->lmac_type_id = FIELD_GET(RESP_LINKSTAT_LMAC_TYPE, lstat);
- 	lmac_string = cgx_lmactype_string[linfo->lmac_type_id];
- 	strncpy(linfo->lmac_type, lmac_string, LMACTYPE_STR_LEN - 1);
- }
-@@ -1046,6 +1047,8 @@ static struct mac_ops	cgx_mac_ops    = {
- 	.rx_stats_cnt   =       9,
- 	.tx_stats_cnt   =       18,
- 	.get_nr_lmacs	=	cgx_get_nr_lmacs,
-+	.get_lmac_type  =       cgx_get_lmac_type,
-+	.mac_lmac_intl_lbk =    cgx_lmac_internal_loopback,
- 	.mac_get_rx_stats  =	cgx_get_rx_stats,
- 	.mac_get_tx_stats  =	cgx_get_tx_stats,
- 	.mac_enadis_rx_pause_fwding =	cgx_lmac_enadis_rx_pause_fwding,
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx_fw_if.h b/drivers/net/ethernet/marvell/octeontx2/af/cgx_fw_if.h
-index c3702fa58b6b..c07a96ed6c61 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/cgx_fw_if.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx_fw_if.h
-@@ -154,6 +154,7 @@ enum cgx_cmd_own {
-  * CGX_STAT_SUCCESS
-  */
- #define RESP_FWD_BASE		GENMASK_ULL(56, 9)
-+#define RESP_LINKSTAT_LMAC_TYPE                GENMASK_ULL(35, 28)
- 
- /* Response to cmd ID - CGX_CMD_LINK_BRING_UP/DOWN, event ID CGX_EVT_LINK_CHANGE
-  * status can be either CGX_STAT_FAIL or CGX_STAT_SUCCESS
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h b/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
-index fea230393782..45706fd87120 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/lmac_common.h
-@@ -70,7 +70,9 @@ struct mac_ops {
- 	 * number of setbits in lmac_exist tells number of lmacs
- 	 */
- 	int			(*get_nr_lmacs)(void *cgx);
--
-+	u8                      (*get_lmac_type)(void *cgx, int lmac_id);
-+	int                     (*mac_lmac_intl_lbk)(void *cgx, int lmac_id,
-+						     bool enable);
- 	/* Register Stats related functions */
- 	int			(*mac_get_rx_stats)(void *cgx, int lmac_id,
- 						    int idx, u64 *rx_stat);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-index 3870cd436683..a91ccdc59403 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-@@ -21,6 +21,8 @@ static struct mac_ops	rpm_mac_ops   = {
- 	.rx_stats_cnt   =       43,
- 	.tx_stats_cnt   =       34,
- 	.get_nr_lmacs	=	rpm_get_nr_lmacs,
-+	.get_lmac_type  =       rpm_get_lmac_type,
-+	.mac_lmac_intl_lbk =    rpm_lmac_internal_loopback,
- 	.mac_get_rx_stats  =	rpm_get_rx_stats,
- 	.mac_get_tx_stats  =	rpm_get_tx_stats,
- 	.mac_enadis_rx_pause_fwding =	rpm_lmac_enadis_rx_pause_fwding,
-@@ -226,3 +228,45 @@ int rpm_get_tx_stats(void *rpmd, int lmac_id, int idx, u64 *tx_stat)
- 	mutex_unlock(&rpm->lock);
- 	return 0;
- }
-+
-+u8 rpm_get_lmac_type(void *rpmd, int lmac_id)
-+{
-+	rpm_t *rpm = rpmd;
-+	u64 req = 0, resp;
-+	int err;
-+
-+	req = FIELD_SET(CMDREG_ID, CGX_CMD_GET_LINK_STS, req);
-+	err = cgx_fwi_cmd_generic(req, &resp, rpm, 0);
-+	if (!err)
-+		return FIELD_GET(RESP_LINKSTAT_LMAC_TYPE, resp);
-+	return err;
-+}
-+
-+int rpm_lmac_internal_loopback(void *rpmd, int lmac_id, bool enable)
-+{
-+	rpm_t *rpm = rpmd;
-+	u8 lmac_type;
-+	u64 cfg;
-+
-+	if (!rpm || lmac_id >= rpm->lmac_count)
-+		return -ENODEV;
-+	lmac_type = rpm->mac_ops->get_lmac_type(rpm, lmac_id);
-+	if (lmac_type == LMAC_MODE_100G_R) {
-+		cfg = rpm_read(rpm, lmac_id, RPMX_MTI_PCS100X_CONTROL1);
-+
-+		if (enable)
-+			cfg |= RPMX_MTI_PCS_LBK;
-+		else
-+			cfg &= ~RPMX_MTI_PCS_LBK;
-+		rpm_write(rpm, lmac_id, RPMX_MTI_PCS100X_CONTROL1, cfg);
-+	} else {
-+		cfg = rpm_read(rpm, lmac_id, RPMX_MTI_LPCSX_CONTROL1);
-+		if (enable)
-+			cfg |= RPMX_MTI_PCS_LBK;
-+		else
-+			cfg &= ~RPMX_MTI_PCS_LBK;
-+		rpm_write(rpm, lmac_id, RPMX_MTI_LPCSX_CONTROL1, cfg);
-+	}
-+
-+	return 0;
-+}
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-index c939302308b5..d32e74bd5964 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-@@ -18,6 +18,9 @@
- #define RPMX_CMRX_SW_INT_W1S            0x188
- #define RPMX_CMRX_SW_INT_ENA_W1S        0x198
- #define RPMX_CMRX_LINK_CFG		0x1070
-+#define RPMX_MTI_PCS100X_CONTROL1       0x20000
-+#define RPMX_MTI_LPCSX_CONTROL1         0x30000
-+#define RPMX_MTI_PCS_LBK                BIT_ULL(14)
- #define RPMX_MTI_LPCSX_CONTROL(id)     (0x30000 | ((id) * 0x100))
- 
- #define RPMX_CMRX_LINK_RANGE_MASK	GENMASK_ULL(19, 16)
-@@ -41,6 +44,8 @@
- 
- /* Function Declarations */
- int rpm_get_nr_lmacs(void *rpmd);
-+u8 rpm_get_lmac_type(void *rpmd, int lmac_id);
-+int rpm_lmac_internal_loopback(void *rpmd, int lmac_id, bool enable);
- void rpm_lmac_enadis_rx_pause_fwding(void *rpmd, int lmac_id, bool enable);
- int rpm_lmac_get_pause_frm_status(void *cgxd, int lmac_id, u8 *tx_pause,
- 				  u8 *rx_pause);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-index e0f9414f8358..b3dd89a4c322 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-@@ -706,15 +706,15 @@ u32 rvu_cgx_get_fifolen(struct rvu *rvu)
- 
- static int rvu_cgx_config_intlbk(struct rvu *rvu, u16 pcifunc, bool en)
- {
--	int pf = rvu_get_pf(pcifunc);
-+	struct mac_ops *mac_ops;
- 	u8 cgx_id, lmac_id;
- 
- 	if (!is_cgx_config_permitted(rvu, pcifunc))
- 		return -EPERM;
- 
--	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
-+	mac_ops = get_mac_ops(rvu_cgx_pdata(cgx_id, rvu));
- 
--	return cgx_lmac_internal_loopback(rvu_cgx_pdata(cgx_id, rvu),
-+	return mac_ops->mac_lmac_intl_lbk(rvu_cgx_pdata(cgx_id, rvu),
- 					  lmac_id, en);
- }
- 
--- 
-2.17.1
-
+On Wed, Feb 10, 2021 at 02:54:40PM -0800, Andrii Nakryiko wrote:
+> On Wed, Feb 10, 2021 at 1:17 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> >
+> > On Wed, Feb 10, 2021 at 12:27:38PM -0800, Andrii Nakryiko wrote:
+> > > On Tue, Feb 9, 2021 at 12:11 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> > > >
+> > > > This patch adds a "void *owner" member.  The existing
+> > > > bpf_tcp_ca test will ensure the bpf_cubic.o and bpf_dctcp.o
+> > > > can be loaded.
+> > > >
+> > > > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> > > > ---
+> > >
+> > > Acked-by: Andrii Nakryiko <andrii@kernel.org>
+> > >
+> > > What will happen if BPF code initializes such non-func ptr member?
+> > > Will libbpf complain or just ignore those values? Ignoring initialized
+> > > members isn't great.
+> > The latter. libbpf will ignore non-func ptr member.  The non-func ptr
+> > member stays zero when it is passed to the kernel.
+> >
+> > libbpf can be changed to copy this non-func ptr value.
+> > The kernel will decide what to do with it.  It will
+> > then be consistent with int/array member like ".name"
+> > and ".flags" where the kernel will verify the value.
+> > I can spin v2 to do that.
+> 
+> I was thinking about erroring out on non-zero fields, but if you think
+> it's useful to pass through values, it could be done, but will require
+> more and careful code, probably. So, basically, don't feel obligated
+> to do this in this patch set.
+You meant it needs different handling in copying ptr value
+than copying int/char[]?
