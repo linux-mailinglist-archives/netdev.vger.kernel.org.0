@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05A8A318FCD
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 17:25:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 53398318FCB
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 17:25:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230187AbhBKQWh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 11:22:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35318 "EHLO
+        id S231855AbhBKQWV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 11:22:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231860AbhBKQTb (ORCPT
+        with ESMTP id S231857AbhBKQTb (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 11:19:31 -0500
-Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09E21C061797;
-        Thu, 11 Feb 2021 08:18:39 -0800 (PST)
-Received: by mail-il1-x129.google.com with SMTP id m20so5514358ilj.13;
-        Thu, 11 Feb 2021 08:18:39 -0800 (PST)
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C64FC0617A7;
+        Thu, 11 Feb 2021 08:18:40 -0800 (PST)
+Received: by mail-io1-xd2f.google.com with SMTP id u8so6209631ior.13;
+        Thu, 11 Feb 2021 08:18:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=C5Y/YYGLT27TTbQWPy2GuX5CRZJc9WquBjUOYm1/AT0=;
-        b=tWkwSUdxV+qF50Lxp8/LWfJ3wIhNLj8xz5PO9Ww/WuKme3jF8nb6obAf7sdaGQdmBr
-         SQeKvfrELao/Fkxc7bxIxrzkWHhhoK+qf83bD5cDgUBMUzMTQ6bSxzyrQrNG/ZP1Bg+k
-         SAT/YJp0Ux6n6OyuiBZbYfdiZPpu2IAA21BMaEglT/Ou9IPHyWLT4/hnl2bI4cRfSCwP
-         WSOvn/WkxF+FIQ0+g2Oux2BoF5iCFDJFaXskJlPp124uNBe47dI2R87mjGU3W0rEPVtd
-         aRzFzZXgcM4JdwZTfnIO9CiKf1UY2PELT5KywmoZNaKchC4+g6n7WNJOpbyy+aKkfz6/
-         pE9Q==
+        bh=n9Lhs45v53vKs8blqT5xx3avh0Ky4AFVSwRqrogf4Kc=;
+        b=QjgIxtA4Y8mhJo/VAl/qdtaXPMK1H4QqSEx/YPmco/Z4H0okgU6lXaSona8jWzYyRb
+         lwksMVAhj92wSO8wkBqc8l8tRIoCTgGLzDLX9nM2+9cBGvR7y4e0fdJIPubtIBhbWQ0J
+         VxQnN469xBCne+EAjgk2wTwCfFZsXGlDxZA6UoBtR8T+JRGXCstKpbdFwb/6X4EW8ccx
+         Ub+qZChiZr9qytPhO7X2ITT8WJlUuEuqwPDbEtU6wuGQh6qHxDu5ZVOWw1jCjMGcksYT
+         MGZgNyTqlLWy2Vhj1mwmjHF19CnfQxku/EhUcRxAl+FX1myupTO/+v5GL2OHS0ae4ieG
+         jLIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=C5Y/YYGLT27TTbQWPy2GuX5CRZJc9WquBjUOYm1/AT0=;
-        b=HDGArOKZ6GY+Q/BRInP4yyMYxqSNEbif1tmGUGjh54FuUWz9V3qCN+YQdGd4tpAPcC
-         WucNaoica3qy6NUoPoLgnPuqWTIsBn0VoXqhnOEZxfApYLWVWwhxyG7HUopOFeIGeGL6
-         YMMopB6FNTLPMKV+VPIE8BGasfTX0jhIDSmCFvlfRTUSgzRIM2fIt77ogP7NpicDr1sd
-         /G0hxlrR1W4DIROMF16syu96cvF9jI2KwtO2cTw1gKiCySgK0R3vnNBCW4ERuAJ3u+Vu
-         HXHj6YWBVOyQ6RjOQc9GXp+GTFQiEp2fFeUqIvAJjk8H+utEc3WWns3Om8qs0lbQJuxl
-         p1Pg==
-X-Gm-Message-State: AOAM532eDMTo9vjOQBWEKfvptA5nr4b2DjzxrJ4y2qotyNGHop7GuHXu
-        tYFsIJA+wHAbd3aSs/hh1p4=
-X-Google-Smtp-Source: ABdhPJz9J4p6111K+XvJ3TS0WDuNYQjoJfMUq5OIN8RVwWi64WwGIBLWvIo51OF4Y+9XdfBlfyMWPg==
-X-Received: by 2002:a92:c781:: with SMTP id c1mr6310007ilk.74.1613060318313;
-        Thu, 11 Feb 2021 08:18:38 -0800 (PST)
+        bh=n9Lhs45v53vKs8blqT5xx3avh0Ky4AFVSwRqrogf4Kc=;
+        b=G94NaEfkbYfQc8eesVPQCpxFVg9msE/5/AWj0FBZxHMZtotYeSzbBh/+TggCqYYwuy
+         C79SrN+TYvF8dNZsvxmqrnF1hANci2saNqAmfAHHhVucmjrepUM+pK0D13w9dnGRZhkM
+         YLdsHsDHsbJahvzWW4TyPwwFViqGqUSpSZrKYbkc5CD7sDraRDTVXFH00FJxscgRmG29
+         JvRaVbRhw7Zr2STVneDp+mCslEAd/d+JAl50D5l0kzHIO2tNWwxm4ihz0A9EaD9hB5Ln
+         soP4GAbYp+2P1a1yUrJcWFhIMZykEXnpkgd0odDZfQ4/N5ISEIwv8HGX2xlpju+y/K5J
+         NJhQ==
+X-Gm-Message-State: AOAM531rAO0BvYh/3OEN7xtYg1MXYrF3S4tL1RQE1VuOSqD6zqRGTsvg
+        rs3eJsRJolhFMMZzjehOiz4=
+X-Google-Smtp-Source: ABdhPJwDwAcCh8k+TeG2+JSo9wEcbcl6UCYhwtkL2cOwP/izDt8c0Odwx6rKjeaTrJ3xoHyl0+BsWA==
+X-Received: by 2002:a05:6602:24c4:: with SMTP id h4mr6265993ioe.7.1613060319554;
+        Thu, 11 Feb 2021 08:18:39 -0800 (PST)
 Received: from localhost.localdomain ([198.52.185.246])
-        by smtp.gmail.com with ESMTPSA id d135sm2729913iog.35.2021.02.11.08.18.37
+        by smtp.gmail.com with ESMTPSA id d135sm2729913iog.35.2021.02.11.08.18.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Feb 2021 08:18:37 -0800 (PST)
+        Thu, 11 Feb 2021 08:18:39 -0800 (PST)
 From:   Sven Van Asbroeck <thesven73@gmail.com>
 X-Google-Original-From: Sven Van Asbroeck <TheSven73@gmail.com>
 To:     Bryan Whitehead <bryan.whitehead@microchip.com>,
@@ -62,9 +62,9 @@ Cc:     Sven Van Asbroeck <thesven73@gmail.com>,
         Christoph Hellwig <hch@lst.de>,
         Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 3/5] TEST ONLY: lan743x: limit rx ring buffer size to 500 bytes
-Date:   Thu, 11 Feb 2021 11:18:28 -0500
-Message-Id: <20210211161830.17366-4-TheSven73@gmail.com>
+Subject: [PATCH net-next v2 4/5] TEST ONLY: lan743x: skb_alloc failure test
+Date:   Thu, 11 Feb 2021 11:18:29 -0500
+Message-Id: <20210211161830.17366-5-TheSven73@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210211161830.17366-1-TheSven73@gmail.com>
 References: <20210211161830.17366-1-TheSven73@gmail.com>
@@ -76,6 +76,9 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Sven Van Asbroeck <thesven73@gmail.com>
+
+Simulate low-memory in lan743x_rx_allocate_skb(): fail 10
+allocations in a row in every 100.
 
 Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
 ---
@@ -95,22 +98,62 @@ Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
 Cc: netdev@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 
- drivers/net/ethernet/microchip/lan743x_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/microchip/lan743x_main.c | 21 +++++++++++++++----
+ 1 file changed, 17 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-index 36cc67c72851..90d49231494d 100644
+index 90d49231494d..0094ecac5741 100644
 --- a/drivers/net/ethernet/microchip/lan743x_main.c
 +++ b/drivers/net/ethernet/microchip/lan743x_main.c
-@@ -1973,7 +1973,7 @@ static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index)
- 	struct sk_buff *skb;
- 	dma_addr_t dma_ptr;
+@@ -1963,7 +1963,20 @@ static void lan743x_rx_update_tail(struct lan743x_rx *rx, int index)
+ 				  index);
+ }
  
--	buffer_length = netdev->mtu + ETH_HLEN + 4 + RX_HEAD_PADDING;
-+	buffer_length = 500 + ETH_HLEN + 4 + RX_HEAD_PADDING;
+-static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index)
++static struct sk_buff *
++lan743x_alloc_skb(struct net_device *netdev, int length, bool can_fail)
++{
++	static int rx_alloc;
++	int counter = rx_alloc++ % 100;
++
++	if (can_fail && counter >= 20 && counter < 30)
++		return NULL;
++
++	return __netdev_alloc_skb(netdev, length, GFP_ATOMIC | GFP_DMA);
++}
++
++static int
++lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index, bool can_fail)
+ {
+ 	struct net_device *netdev = rx->adapter->netdev;
+ 	struct device *dev = &rx->adapter->pdev->dev;
+@@ -1977,7 +1990,7 @@ static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index)
  
  	descriptor = &rx->ring_cpu_ptr[index];
  	buffer_info = &rx->buffer_info[index];
+-	skb = __netdev_alloc_skb(netdev, buffer_length, GFP_ATOMIC | GFP_DMA);
++	skb = lan743x_alloc_skb(netdev, buffer_length, can_fail);
+ 	if (!skb)
+ 		return -ENOMEM;
+ 	dma_ptr = dma_map_single(dev, skb->data, buffer_length, DMA_FROM_DEVICE);
+@@ -2137,7 +2150,7 @@ static int lan743x_rx_process_buffer(struct lan743x_rx *rx)
+ 
+ 	/* save existing skb, allocate new skb and map to dma */
+ 	skb = buffer_info->skb;
+-	if (lan743x_rx_init_ring_element(rx, rx->last_head)) {
++	if (lan743x_rx_init_ring_element(rx, rx->last_head, true)) {
+ 		/* failed to allocate next skb.
+ 		 * Memory is very low.
+ 		 * Drop this packet and reuse buffer.
+@@ -2342,7 +2355,7 @@ static int lan743x_rx_ring_init(struct lan743x_rx *rx)
+ 
+ 	rx->last_head = 0;
+ 	for (index = 0; index < rx->ring_size; index++) {
+-		ret = lan743x_rx_init_ring_element(rx, index);
++		ret = lan743x_rx_init_ring_element(rx, index, false);
+ 		if (ret)
+ 			goto cleanup;
+ 	}
 -- 
 2.17.1
 
