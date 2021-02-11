@@ -2,63 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C1B63191C8
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 19:06:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 661DE31923E
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 19:30:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231947AbhBKSDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 13:03:51 -0500
-Received: from relay01.th.seeweb.it ([5.144.164.162]:59581 "EHLO
-        relay01.th.seeweb.it" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231288AbhBKSBk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 13:01:40 -0500
-X-Greylist: delayed 609 seconds by postgrey-1.27 at vger.kernel.org; Thu, 11 Feb 2021 13:01:39 EST
-Received: from IcarusMOD.eternityproject.eu (unknown [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        id S232078AbhBKS3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 13:29:12 -0500
+Received: from so15.mailgun.net ([198.61.254.15]:46776 "EHLO so15.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232735AbhBKS1l (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Feb 2021 13:27:41 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1613068044; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=XQMYp79ftc2CD2w0g/sVHwqX5MSlVZ7BvVff5QTyZow=;
+ b=gG6YE761Xza+JRIp3WykNBjiY+f30m7fCovm64w6MV6l1yV5yBz7UBg4eV7r6yhDPplSoH/r
+ vBqH9rr67gze/YGahwUJv7fZs6XD9gz5Se8x1A2hdNl7lwLxLn/d+8lewA7tRNwEB31+i2UU
+ EsLBvB1JcgE/m+ZsWOaHSWQ3nck=
+X-Mailgun-Sending-Ip: 198.61.254.15
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
+ 602576eb830f898bac351cf7 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 11 Feb 2021 18:26:51
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id B6B85C433ED; Thu, 11 Feb 2021 18:26:50 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by m-r1.th.seeweb.it (Postfix) with ESMTPSA id 9FD0D1F8EA;
-        Thu, 11 Feb 2021 18:50:19 +0100 (CET)
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>
-To:     elder@kernel.org
-Cc:     bjorn.andersson@linaro.org, agross@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, linux-arm-msm@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, konrad.dybcio@somainline.org,
-        marijn.suijten@somainline.org, phone-devel@vger.kernel.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>
-Subject: [PATCH v1 7/7] dt-bindings: net: qcom-ipa: Document qcom,msm8998-ipa compatible
-Date:   Thu, 11 Feb 2021 18:50:15 +0100
-Message-Id: <20210211175015.200772-8-angelogioacchino.delregno@somainline.org>
-X-Mailer: git-send-email 2.30.0
-In-Reply-To: <20210211175015.200772-1-angelogioacchino.delregno@somainline.org>
-References: <20210211175015.200772-1-angelogioacchino.delregno@somainline.org>
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 08C17C433C6;
+        Thu, 11 Feb 2021 18:26:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 08C17C433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v2] ath10k: hold RCU lock when calling
+ ieee80211_find_sta_by_ifaddr()
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20210210212107.40373-1-skhan@linuxfoundation.org>
+References: <20210210212107.40373-1-skhan@linuxfoundation.org>
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20210211182650.B6B85C433ED@smtp.codeaurora.org>
+Date:   Thu, 11 Feb 2021 18:26:50 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-MSM8998 support has been added: document the new compatible.
+Shuah Khan <skhan@linuxfoundation.org> wrote:
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
----
- Documentation/devicetree/bindings/net/qcom,ipa.yaml | 1 +
- 1 file changed, 1 insertion(+)
+> ieee80211_find_sta_by_ifaddr() must be called under the RCU lock and
+> the resulting pointer is only valid under RCU lock as well.
+> 
+> Fix ath10k_wmi_tlv_op_pull_peer_stats_info() to hold RCU lock before it
+> calls ieee80211_find_sta_by_ifaddr() and release it when the resulting
+> pointer is no longer needed.
+> 
+> This problem was found while reviewing code to debug RCU warn from
+> ath10k_wmi_tlv_parse_peer_stats_info().
+> 
+> Link: https://lore.kernel.org/linux-wireless/7230c9e5-2632-b77e-c4f9-10eca557a5bb@linuxfoundation.org/
+> Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-diff --git a/Documentation/devicetree/bindings/net/qcom,ipa.yaml b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
-index b063c6c1077a..9dacd224b606 100644
---- a/Documentation/devicetree/bindings/net/qcom,ipa.yaml
-+++ b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
-@@ -46,6 +46,7 @@ properties:
-     oneOf:
-       - items:
-           - enum:
-+              - "qcom,msm8998-ipa"
-               - "qcom,sdm845-ipa"
-               - "qcom,sc7180-ipa"
- 
+Patch applied to ath-next branch of ath.git, thanks.
+
+09078368d516 ath10k: hold RCU lock when calling ieee80211_find_sta_by_ifaddr()
+
 -- 
-2.30.0
+https://patchwork.kernel.org/project/linux-wireless/patch/20210210212107.40373-1-skhan@linuxfoundation.org/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
