@@ -2,33 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDD943185DD
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 08:53:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 544203185DE
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 08:53:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229768AbhBKHvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 02:51:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39786 "EHLO
+        id S229824AbhBKHwa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 02:52:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229665AbhBKHvr (ORCPT
+        with ESMTP id S229628AbhBKHvr (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 02:51:47 -0500
 Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22C6EC06178C;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E797C06178A;
         Wed, 10 Feb 2021 23:51:49 -0800 (PST)
 Received: from mwalle01.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:fa59:71ff:fe9b:b851])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id C48FE23E78;
-        Thu, 11 Feb 2021 08:47:55 +0100 (CET)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 7112323E79;
+        Thu, 11 Feb 2021 08:47:57 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
         t=1613029677;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=LTZJD4ma6sWCmPqIisuAl5RzMUcb5Efd+URGB+ho9QI=;
-        b=cyFZfAVrnb+hW9wUax4YAquNX5EK+Xkyd6c0Pjdwtr5piNniApq6wlbF20IXlNWb4XkCbM
-        cElndYfy9I9kJqjCJuEX87uMXHlZA5fvGukTYWzac0niBYzApBIPUP+WRsxrg1THw5bHEp
-        P5kgkSBovhxCrP9WGe/1qFwH2Vb16rc=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XzA2UDtjMAp2WADNFNBlcruVrbOpREvGVH4+JCnwQGg=;
+        b=EtO5/sAHdIf1POh03A2fAjspJxyCVsHwnGoQWbKFAEOVpG+IK7xKdFieLdbi974BHKUzdE
+        4hpUWGes4z7SpAqsr6VyFIub0FxmY5U5EDUaZBfHzFTkgy3O8d7NnWLR25b9I8fLHz2nzH
+        qruG94FtXlsPxyQB1CsgM20cPiB3xU8=
 From:   Michael Walle <michael@walle.cc>
 To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -37,45 +38,95 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next v4 0/9] net: phy: icplus: cleanups and new features
-Date:   Thu, 11 Feb 2021 08:47:41 +0100
-Message-Id: <20210211074750.28674-1-michael@walle.cc>
+Subject: [PATCH net-next v4 1/9] net: phy: icplus: use PHY_ID_MATCH_MODEL() macro
+Date:   Thu, 11 Feb 2021 08:47:42 +0100
+Message-Id: <20210211074750.28674-2-michael@walle.cc>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20210211074750.28674-1-michael@walle.cc>
+References: <20210211074750.28674-1-michael@walle.cc>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cleanup the PHY drivers for IPplus devices and add PHY counters and MDIX
-support for the IP101A/G.
+Simpify the initializations of the structures. There is no functional
+change.
 
-Patch 5 adds a model detection based on the behavior of the PHY.
-Unfortunately, the IP101A shares the PHY ID with the IP101G. But the latter
-provides more features. Try to detect the newer model by accessing the page
-selection register. If it is writeable, it is assumed, that it is a IP101G.
+Signed-off-by: Michael Walle <michael@walle.cc>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+---
+Changes since v3:
+ - none
 
-With this detection in place, we can now access registers >= 16 in a
-correct way on the IP101G; that is by first selecting the correct page.
-This might previouly worked, because no one ever set another active page
-before booting linux.
+Changes since v2:
+ - none
 
-The last two patches add the new features.
+Changes since v1:
+ - none
 
-Michael Walle (9):
-  net: phy: icplus: use PHY_ID_MATCH_MODEL() macro
-  net: phy: icplus: use PHY_ID_MATCH_EXACT() for IP101A/G
-  net: phy: icplus: drop address operator for functions
-  net: phy: icplus: use the .soft_reset() of the phy-core
-  net: phy: icplus: split IP101A/G driver
-  net: phy: icplus: don't set APS_EN bit on IP101G
-  net: phy: icplus: fix paged register access
-  net: phy: icplus: add PHY counter for IP101G
-  net: phy: icplus: add MDI/MDIX support for IP101A/G
+ drivers/net/phy/icplus.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
 
- drivers/net/phy/icplus.c | 384 ++++++++++++++++++++++++++++++++-------
- 1 file changed, 323 insertions(+), 61 deletions(-)
-
+diff --git a/drivers/net/phy/icplus.c b/drivers/net/phy/icplus.c
+index b632947cbcdf..4407b1eb1a3d 100644
+--- a/drivers/net/phy/icplus.c
++++ b/drivers/net/phy/icplus.c
+@@ -47,6 +47,10 @@ MODULE_LICENSE("GPL");
+ #define IP101G_DIGITAL_IO_SPEC_CTRL			0x1d
+ #define IP101G_DIGITAL_IO_SPEC_CTRL_SEL_INTR32		BIT(2)
+ 
++#define IP175C_PHY_ID 0x02430d80
++#define IP1001_PHY_ID 0x02430d90
++#define IP101A_PHY_ID 0x02430c54
++
+ /* The 32-pin IP101GR package can re-configure the mode of the RXER/INTR_32 pin
+  * (pin number 21). The hardware default is RXER (receive error) mode. But it
+  * can be configured to interrupt mode manually.
+@@ -329,9 +333,8 @@ static irqreturn_t ip101a_g_handle_interrupt(struct phy_device *phydev)
+ 
+ static struct phy_driver icplus_driver[] = {
+ {
+-	.phy_id		= 0x02430d80,
++	PHY_ID_MATCH_MODEL(IP175C_PHY_ID),
+ 	.name		= "ICPlus IP175C",
+-	.phy_id_mask	= 0x0ffffff0,
+ 	/* PHY_BASIC_FEATURES */
+ 	.config_init	= &ip175c_config_init,
+ 	.config_aneg	= &ip175c_config_aneg,
+@@ -339,17 +342,15 @@ static struct phy_driver icplus_driver[] = {
+ 	.suspend	= genphy_suspend,
+ 	.resume		= genphy_resume,
+ }, {
+-	.phy_id		= 0x02430d90,
++	PHY_ID_MATCH_MODEL(IP1001_PHY_ID),
+ 	.name		= "ICPlus IP1001",
+-	.phy_id_mask	= 0x0ffffff0,
+ 	/* PHY_GBIT_FEATURES */
+ 	.config_init	= &ip1001_config_init,
+ 	.suspend	= genphy_suspend,
+ 	.resume		= genphy_resume,
+ }, {
+-	.phy_id		= 0x02430c54,
++	PHY_ID_MATCH_MODEL(IP101A_PHY_ID),
+ 	.name		= "ICPlus IP101A/G",
+-	.phy_id_mask	= 0x0ffffff0,
+ 	/* PHY_BASIC_FEATURES */
+ 	.probe		= ip101a_g_probe,
+ 	.config_intr	= ip101a_g_config_intr,
+@@ -362,9 +363,9 @@ static struct phy_driver icplus_driver[] = {
+ module_phy_driver(icplus_driver);
+ 
+ static struct mdio_device_id __maybe_unused icplus_tbl[] = {
+-	{ 0x02430d80, 0x0ffffff0 },
+-	{ 0x02430d90, 0x0ffffff0 },
+-	{ 0x02430c54, 0x0ffffff0 },
++	{ PHY_ID_MATCH_MODEL(IP175C_PHY_ID) },
++	{ PHY_ID_MATCH_MODEL(IP1001_PHY_ID) },
++	{ PHY_ID_MATCH_MODEL(IP101A_PHY_ID) },
+ 	{ }
+ };
+ 
 -- 
 2.20.1
 
