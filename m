@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBCA731916D
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 18:50:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2993A319170
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 18:50:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232157AbhBKRrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 12:47:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53678 "EHLO
+        id S230150AbhBKRr2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 12:47:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232345AbhBKRos (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 12:44:48 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEB84C06178A;
-        Thu, 11 Feb 2021 09:44:08 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id cv23so3804012pjb.5;
-        Thu, 11 Feb 2021 09:44:08 -0800 (PST)
+        with ESMTP id S232403AbhBKRpD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 12:45:03 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3101C06178B;
+        Thu, 11 Feb 2021 09:44:23 -0800 (PST)
+Received: by mail-pl1-x62a.google.com with SMTP id e12so3704043pls.4;
+        Thu, 11 Feb 2021 09:44:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=YflQIkWsUnrOpomFAHTwWWA7fpswpUtiePxAPrSrWXA=;
-        b=u5RWH//eoV5ngrqRO2841JUgWzxXKDHXFqr6gbJmka9JsCCLBABUPAqYaGRUO6PLaB
-         nns6PQ1IslxFkWlDKPxBzFjZHDTPqK9mvg+OHwXqZkBKWfVmTiKPWLmZd+n6gq9XfC+h
-         egrlCa9aDE/332Z0+8i4/xKURtzdZocSA8A1embQs/XaUGOFGNJ4d5saIZbOSi4ANa6u
-         zi5C0043DcGlaS+ke5oWgn8HV6WcQo9aOc4G9YePVkZMuCyvAvUVWrM5734V7q8G3McH
-         qox1SzlAipeCh8qXVw14mEkrNkzQ5wc+ht2rIHyDjjd45yQOxAD53Dk9sxXuWobHn9q5
-         BfOw==
+        bh=V9KD6tksEtfaQWXiYBzgs2ZIiTdxckn7K/IPovXg0pU=;
+        b=dJHxuyLiwzHeFHoLGAD2sT/lvZgfMyoa7M6kniY/u+yMD/4Jq9D3vZPgu9uwj6CmhA
+         I8zj9Qf+E1rdFQW0w0Zu1g3XFoZSLcmu5duftuL2rk3rEd8tg4F+xJcAzYw3ejFct1A8
+         oh4ndzoKxz+Yn2UmM0qbG+GO/CYfxshgTZxBNIJxRAA3wNGxIf9FmkHddAPR+uerZC7h
+         oQ1ueLk4TJG/MB6CtkBR1yiN+9O20KSURRwzssoQ82a1ua1FcfJYGQKdYqwqvjIHTKoR
+         wuMx6Z2qKRH57b8YY5//Yv+xhiFUD6RqMpp+H9qtjPk5sdpshNvt8edO3U2qq8VMgDqR
+         CjDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=YflQIkWsUnrOpomFAHTwWWA7fpswpUtiePxAPrSrWXA=;
-        b=BRsFK4Nkr2iPCJYDE/Qcj1RItwFVSguJ6s8lEdf6OjiuTVV2D2ufMJIhw+H30ohosa
-         dGAYdcpbo6W9H2O39FsiFy4uvavEZT7V4UNMdQjJD2g8Cd+HXnF7+H4CPVKb3bey02SE
-         r4fjWgf9IuhClMxrbimlXXgLQm68AEx6rDoxZgqmsSzS0C5NMkK1+fOWfBPArys/82vP
-         kUESKJLhFPoROv3I4ApnPqtzu9u1wq/jZWTtElwGaI6kaDZiIk2mButcge0IBxR8qwnV
-         0aof3ijO5pC+AFUNF7/EyntrvZw4EKiJNY8qXKfxqQjCF31ZCprEVaYbC9jZQHs2Rbjz
-         TYpg==
-X-Gm-Message-State: AOAM533PTJ7ZPhZ7hhwEpFMS+K1KAg4vpaaq7uRYxswIhwxLnRNkRPja
-        G7FBc9WEXfcK8pT2q9qW4qsUctUNVHU=
-X-Google-Smtp-Source: ABdhPJy1bmKTwoRDEc2/oQ3AbRC791lkpZ1HZYP3+ISbpfPEzinGXizVNlyKqnmSyPSaMNE1LlRQKQ==
-X-Received: by 2002:a17:902:ea93:b029:e2:b3fb:caac with SMTP id x19-20020a170902ea93b02900e2b3fbcaacmr8845597plb.2.1613065447343;
-        Thu, 11 Feb 2021 09:44:07 -0800 (PST)
+        bh=V9KD6tksEtfaQWXiYBzgs2ZIiTdxckn7K/IPovXg0pU=;
+        b=bcfFH5JVefFfrHaMAZXvbG8JnBNYZzCvvfT0kySw+7s07RDuNw0AVuOZyTx+BuOddF
+         SPyKV5PQwLN3O3QYz4ESOUljEpYR+H9GCZ5SYPSzHuQltJ6T6xaTa8E0TsfiqGehKjVw
+         cOjC71WlNjVUvs2F3/xSVBc3v84TQ2uwT2AakkfIrSOWiGg2oItydy0rjx1JSSOWq8kY
+         tl5nAxf4GKip7ISDgDJgEnmoMwpMZ2cd1RJzIIlTXhhTcK5KmwQ+UkSlacbrk8Pn1kfC
+         0te5JUFppX3+9RFvr2n/Tht1UKzVXHFu/vFgV1FSYNPCJ8+dtl/VexkrXtHwWF3hZiuO
+         DQkQ==
+X-Gm-Message-State: AOAM533YmEUfXTpDdBl7Uu5DWOaRnJzu2ZHKbTaPzJlshfM+7I0P1d/B
+        4BMj5/m1YHamJ9j6lDE28bE=
+X-Google-Smtp-Source: ABdhPJzs3V13krN2gdVKXno+Iq8+uxeJ0tsVYtH6tKB4XVg26nrT9vLAuRPn202FRlC9WP+NaQWVfw==
+X-Received: by 2002:a17:902:46d:b029:e1:7783:4898 with SMTP id 100-20020a170902046db02900e177834898mr8666648ple.60.1613065463285;
+        Thu, 11 Feb 2021 09:44:23 -0800 (PST)
 Received: from [10.67.49.228] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id e4sm5793298pjt.38.2021.02.11.09.44.05
+        by smtp.googlemail.com with ESMTPSA id z31sm5525807pjj.47.2021.02.11.09.44.21
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 11 Feb 2021 09:44:06 -0800 (PST)
-Subject: Re: [PATCH net-next 5.12 1/8] dt-bindings: net: rename BCM4908
- Ethernet binding
+        Thu, 11 Feb 2021 09:44:22 -0800 (PST)
+Subject: Re: [PATCH net-next 5.12 2/8] dt-bindings: net: bcm4908-enet: include
+ ethernet-controller.yaml
 To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -62,7 +62,7 @@ Cc:     Randy Dunlap <rdunlap@infradead.org>,
         Rob Herring <robh@kernel.org>
 References: <20210209230130.4690-2-zajec5@gmail.com>
  <20210211121239.728-1-zajec5@gmail.com>
- <20210211121239.728-2-zajec5@gmail.com>
+ <20210211121239.728-3-zajec5@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -118,12 +118,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <d2b4a33e-bb2b-12be-d953-cddb83d9c167@gmail.com>
-Date:   Thu, 11 Feb 2021 09:44:04 -0800
+Message-ID: <c340ee13-edde-8360-f2f4-a71abf197160@gmail.com>
+Date:   Thu, 11 Feb 2021 09:44:19 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20210211121239.728-2-zajec5@gmail.com>
+In-Reply-To: <20210211121239.728-3-zajec5@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -134,8 +134,8 @@ X-Mailing-List: netdev@vger.kernel.org
 On 2/11/21 4:12 AM, Rafał Miłecki wrote:
 > From: Rafał Miłecki <rafal@milecki.pl>
 > 
-> Rob pointed out that a normal convention is "brcm,bcm4908-enet" so
-> update whole binding to match it.
+> It should be /included/ by every Ethernet controller binding. It adds
+> support for various generic properties.
 > 
 > Suggested-by: Rob Herring <robh@kernel.org>
 > Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
