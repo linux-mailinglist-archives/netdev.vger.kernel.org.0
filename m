@@ -2,145 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D27A31868C
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 09:57:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A15D31868F
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 09:57:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229741AbhBKIyy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 03:54:54 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39824 "EHLO mail.kernel.org"
+        id S229806AbhBKIzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 03:55:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39860 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229626AbhBKIym (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Feb 2021 03:54:42 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E2D5464E9C;
-        Thu, 11 Feb 2021 08:55:26 +0000 (UTC)
+        id S229794AbhBKIzI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Feb 2021 03:55:08 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 620E764E7D;
+        Thu, 11 Feb 2021 08:55:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613033727;
-        bh=eObln2SiLMPgRT0fsDptYhW1B99SRfGvF8pf8uhCqf4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=b8IIO8yB5y2perK8+FqKalz0KRHI01rUvmzjXy/n5e6ZP+8y/MjeZdcdG05m5+2j9
-         S/bF640BwJM66R77ZjJJQhmmvEWj/F0aqcFOguEXC4N9zAdp2Eek/m7y1ox/VSA24e
-         s4+dtxp18e8uyKM6wv7DvJ9isuVYSpCVP83v4jTcOjRnVuRM3aD8j1UOq+8lzXfTds
-         B12CW9T5xKh9xr6AY9xswPXXzsRGorI7ZODPHeXT2Ry6JjdTNvhJaK7loeqlzg7OHr
-         AJht3BoO5BmloMG8+29bR70imHIBlfjNAKxodhrfXe8/3T8L+M4EHf6zaxepnB9I12
-         xAtbkccAdl5RQ==
-Date:   Thu, 11 Feb 2021 09:55:22 +0100
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Colin Ian King <colin.king@canonical.com>
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Soul Huang <Soul.Huang@mediatek.com>,
-        Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>
-Subject: Re: mt76: mt7921: add MCU support
-Message-ID: <YCTw+rM60BaiTOLh@lore-desk>
-References: <57068965-649f-ef8e-0dd2-9d25b8bec1c7@canonical.com>
+        s=k20201202; t=1613033754;
+        bh=8NBJxHBxVv0WCKh+7BdNwNIuaByUtC+9YiMRt+ZjXjo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=IJMk7wZmj6fvu6Xcu5iZ4FWjWoFKEoOLbFeOriPpNAYo5O3qPVY1uq5mL1jpkpnNu
+         KZxig/47KYCGMJrMBtkXdiIHxKUTytnk60IsVzKtEz33SZxFUB2rNtf5QniIxL0s2/
+         1B1a28vx7uFyWswpJ36CNKqg1fu700gwSksu4AcALJYKbSAvtVnGZiiGfaLLhl0YB+
+         sYiANjHrYWMAIPVBRAsKaLbwxRcAiLfE40o19n+Kout48sxq5dWDWEZoiOgIJUi8T9
+         SKGcAoJSZDmOAFLMJ/oli6ILsJG9Ihg+RhCgad57jdMcz9Mk3SLD6yieUy5WvbLUpL
+         s8ZUyLBSjttlw==
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Tal Gilboa <talgi@nvidia.com>, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH mlx5-next] RDMA/mlx5: Allow CQ creation without attached EQs
+Date:   Thu, 11 Feb 2021 10:55:49 +0200
+Message-Id: <20210211085549.1277674-1-leon@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="+ingo0Z0BCUaxCET"
-Content-Disposition: inline
-In-Reply-To: <57068965-649f-ef8e-0dd2-9d25b8bec1c7@canonical.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Tal Gilboa <talgi@nvidia.com>
 
---+ingo0Z0BCUaxCET
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The traditional DevX CQ creation flow goes through mlx5_core_create_cq()
+which checks that the given EQN corresponds to an existing EQ. For some
+mlx5 devices this behaviour is too strict, they expect EQN assignment
+during modify CQ stage.
 
-> Hi,
->=20
+Allow them to create CQ through general command interface.
 
-Hi Colin,
+Signed-off-by: Tal Gilboa <talgi@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+---
+ drivers/infiniband/hw/mlx5/devx.c | 13 ++++++++++++-
+ include/linux/mlx5/mlx5_ifc.h     |  5 +++--
+ 2 files changed, 15 insertions(+), 3 deletions(-)
 
-a fix for this issue has been already posted upstream:
+diff --git a/drivers/infiniband/hw/mlx5/devx.c b/drivers/infiniband/hw/mlx5/devx.c
+index 526057a33edb..8152d0ddac2d 100644
+--- a/drivers/infiniband/hw/mlx5/devx.c
++++ b/drivers/infiniband/hw/mlx5/devx.c
+@@ -1439,6 +1439,16 @@ static void devx_cq_comp(struct mlx5_core_cq *mcq, struct mlx5_eqe *eqe)
+ 	rcu_read_unlock();
+ }
 
-https://patchwork.kernel.org/project/linux-wireless/patch/857ff74f736d4e593=
-f5ad602cee7ac67ebfca5ca.1612867656.git.lorenzo@kernel.org/
++static bool is_apu_thread_cq(struct mlx5_ib_dev *dev, const void *in)
++{
++	if (!MLX5_CAP_GEN(dev->mdev, apu) ||
++	    !MLX5_GET(cqc, MLX5_ADDR_OF(create_cq_in, in, cq_context),
++		      apu_thread_cq))
++		return false;
++
++	return true;
++}
++
+ static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_OBJ_CREATE)(
+ 	struct uverbs_attr_bundle *attrs)
+ {
+@@ -1492,7 +1502,8 @@ static int UVERBS_HANDLER(MLX5_IB_METHOD_DEVX_OBJ_CREATE)(
+ 		obj->flags |= DEVX_OBJ_FLAGS_DCT;
+ 		err = mlx5_core_create_dct(dev, &obj->core_dct, cmd_in,
+ 					   cmd_in_len, cmd_out, cmd_out_len);
+-	} else if (opcode == MLX5_CMD_OP_CREATE_CQ) {
++	} else if (opcode == MLX5_CMD_OP_CREATE_CQ &&
++		   !is_apu_thread_cq(dev, cmd_in)) {
+ 		obj->flags |= DEVX_OBJ_FLAGS_CQ;
+ 		obj->core_cq.comp = devx_cq_comp;
+ 		err = mlx5_core_create_cq(dev->mdev, &obj->core_cq,
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index ffe2c7231ae4..816893f34e79 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -1659,7 +1659,8 @@ struct mlx5_ifc_cmd_hca_cap_bits {
+ 	u8         sf_set_partition[0x1];
+ 	u8         reserved_at_682[0x1];
+ 	u8         log_max_sf[0x5];
+-	u8         reserved_at_688[0x8];
++	u8         apu[0x1];
++	u8         reserved_at_689[0x7];
+ 	u8         log_min_sf_size[0x8];
+ 	u8         max_num_sf_partitions[0x8];
 
-Regards,
-Lorenzo
+@@ -3874,7 +3875,7 @@ struct mlx5_ifc_cqc_bits {
+ 	u8         status[0x4];
+ 	u8         reserved_at_4[0x2];
+ 	u8         dbr_umem_valid[0x1];
+-	u8         reserved_at_7[0x1];
++	u8         apu_thread_cq[0x1];
+ 	u8         cqe_sz[0x3];
+ 	u8         cc[0x1];
+ 	u8         reserved_at_c[0x1];
+--
+2.29.2
 
-> Static analysis with Coverity on linux-next has found an issue with the
-> following commit:
->=20
-> commit 1c099ab44727c8e42fe4de4d91b53cec3ef02860
-> Author: Sean Wang <sean.wang@mediatek.com>
-> Date:   Thu Jan 28 03:33:39 2021 +0800
->=20
->     mt76: mt7921: add MCU support
->=20
-> The analysis is as follows:
->=20
-> 390 static void
-> 391 mt7921_mcu_tx_rate_report(struct mt7921_dev *dev, struct sk_buff *skb,
-> 392                          u16 wlan_idx)
-> 393 {
-> 394        struct mt7921_mcu_wlan_info_event *wtbl_info =3D
-> 395                (struct mt7921_mcu_wlan_info_event *)(skb->data);
-> 396        struct rate_info rate =3D {};
-> 397        u8 curr_idx =3D wtbl_info->rate_info.rate_idx;
-> 398        u16 curr =3D le16_to_cpu(wtbl_info->rate_info.rate[curr_idx]);
-> 399        struct mt7921_mcu_peer_cap peer =3D wtbl_info->peer_cap;
-> 400        struct mt76_phy *mphy =3D &dev->mphy;
->=20
->    1. var_decl: Declaring variable stats without initializer.
->=20
-> 401        struct mt7921_sta_stats *stats;
-> 402        struct mt7921_sta *msta;
-> 403        struct mt76_wcid *wcid;
-> 404
->=20
->    2. Condition wlan_idx >=3D 288, taking false branch.
->=20
-> 405        if (wlan_idx >=3D MT76_N_WCIDS)
-> 406                return;
->=20
->    3. Condition 0 /* !((((sizeof ((*dev).mt76.wcid[wlan_idx]) =3D=3D size=
-of
-> (char) || sizeof ((*dev).mt76.wcid[wlan_idx]) =3D=3D sizeof (short)) ||
-> sizeof ((*dev).mt76.wcid[wlan_idx]) =3D=3D sizeof (int)) || sizeof
-> ((*dev).mt76.wcid[wlan_idx]) =3D=3D sizeof (long)) || sizeof
-> ((*dev).mt76.wcid[wlan_idx]) =3D=3D sizeof (long long)) */, taking false =
-branch.
->=20
->    4. Condition debug_lockdep_rcu_enabled(), taking true branch.
->    5. Condition !__warned, taking true branch.
->    6. Condition 0, taking false branch.
->    7. Condition rcu_read_lock_held(), taking false branch.
-> 407        wcid =3D rcu_dereference(dev->mt76.wcid[wlan_idx]);
->    8. Condition !wcid, taking true branch.
-> 408        if (!wcid) {
->=20
-> Uninitialized pointer write (UNINIT)
->    9. uninit_use: Using uninitialized value stats.
->=20
-> 409                stats->tx_rate =3D rate;
-> 410                return;
-> 411        }
->=20
-> Line 409 dereferences pointer stats, however, this pointer has not yet
-> been initialized.  The initialization occurs later:
->=20
-> 413        msta =3D container_of(wcid, struct mt7921_sta, wcid);
-> 414        stats =3D &msta->stats;
->=20
-> Colin
-
---+ingo0Z0BCUaxCET
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYCTw9gAKCRA6cBh0uS2t
-rDLDAQDP4xryemYC6dcqG8FDYTYQfWlDd26K7aFnk63f4Z7lEAD+Le3fknh0PulR
-h0z38yNlsbA7otids7O1+3KkfyI7fA8=
-=1xcX
------END PGP SIGNATURE-----
-
---+ingo0Z0BCUaxCET--
