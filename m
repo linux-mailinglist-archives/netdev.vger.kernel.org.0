@@ -2,307 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56764318F16
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 16:49:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D34A1318F4A
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 17:01:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231286AbhBKPqr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 10:46:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56114 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230107AbhBKPon (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 10:44:43 -0500
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B518EC061574;
-        Thu, 11 Feb 2021 07:44:02 -0800 (PST)
-Received: by mail-io1-xd2b.google.com with SMTP id u8so6080708ior.13;
-        Thu, 11 Feb 2021 07:44:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=9Y2iwdGlM2f9mV90+obGKj1JMOAhLAylpH7oBZhbyto=;
-        b=ZJ4qqgORIwfhGKEM80MSNXbOW4/DsmTrlHrrzhea8OZSXg8EmH5N1NGTNClhm0bYGb
-         WLoOFWOHotP6An4ymRJNi90mjdE+hqaN2xatTFT0LE7lpX1cXPsf388vDRvaoDSWDDXt
-         4uxv1B7lX4phsbaOcSfxLCFSTAfRij5uvHU9fYrFOZuHtZYkf3QS5Cs0ctYK9lqBmmdm
-         1nW0SaT52NGotu/9Sb/6cb2eOey+2wkl2+ud6GGee1MLdtZdgI7ogpE9t7AzNFYUq4ic
-         vHOliTy3t3ZI9mXwYGsicPqyMmGjGvm6q26+k/FdCv9gNMszi0CMXulKqpcJHWHyXIzR
-         hTLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=9Y2iwdGlM2f9mV90+obGKj1JMOAhLAylpH7oBZhbyto=;
-        b=WgnGvAbsACZQ03t2iNP/Dt3sKQtUU/1rc/XL8421rCXd4DrCLXdt0/tVhDGQqFeq6P
-         IH865FDMPbfLGOmg6teN8x7aCE+Fp5Dzka5c8NSTMGhOdwO6bEcvyOeEIHXT4XMPn3YS
-         ZjgNPPK9J6e9NM9eRTgw9FFOORRBsklSgiiISXVuiFiT3daTEcZKBMUIhFN7K40r6/h1
-         lP2AD6oiRSsU0+0ROlPKKPlwpxR/lQyHFf83Uq5txXrUbJWUFH7t0yfCdl4ifG8xD3BX
-         ZCioCo3bLtBDuHUtSU0JvXjHQlO3yl/o1yGzKuK4GQ91lF+mce52+l4ASMzu5ojkwx7n
-         0WCQ==
-X-Gm-Message-State: AOAM533Dh+eCir+dwpOaSPeYBpEe52CDAwe+7M8ht0DbHG4xDyq1KaKx
-        eFv7rtvpIkdOITUtHVUayVf1P2+DAd7Qoi4OiRXFphnLhpJ5vA==
-X-Google-Smtp-Source: ABdhPJxgIhKtlgkBmovP8TrsWE5lUmncV4gSZtLzpXYisnzVD8nEtx3PiOb92hh8+B+azNaV+t343QBVcxdkBYG3YGE=
-X-Received: by 2002:a05:6602:1541:: with SMTP id h1mr5723774iow.171.1613058241969;
- Thu, 11 Feb 2021 07:44:01 -0800 (PST)
+        id S231610AbhBKP7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 10:59:40 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:60972 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230272AbhBKP53 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 10:57:29 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11BFtDtw004399;
+        Thu, 11 Feb 2021 07:56:38 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=S82q/aTj7WZR4BXZZ08CDyeqw2IQ51C0ttMTFxEHBAk=;
+ b=gfGvWOiK8+3pp6TggOjLIpusf1xro7xHHPFArx/dDUPp8IAjMi+UEayF05pycg/C4Tnp
+ OwXREuU6mZjlLana87gZoYLe8fM4NP8c0pr4U35b8gXqwYgCt44s3HPGgTxgXyhfh4Bk
+ np9DMHiAIWzCZX3qm6BSk7VI0xFdzJE9SESHy3WfE8knjBnDgxMbOOjxcF1NuiCIUsUC
+ I1pjgOFKsRUHrjvEuP11C2mDwPINN22ZEUV9kcLBRS+jpS9YNlMBZ/n8GAh/mCG15SKm
+ ukdT+M7FI76Zb8qEuk6coQYSsZzPWzlK+XnMSMFkyl2FkSPB/zdpn2K7y6PhRtYJSl8v sQ== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 36hugqf953-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 11 Feb 2021 07:56:37 -0800
+Received: from SC-EXCH04.marvell.com (10.93.176.84) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 11 Feb
+ 2021 07:56:36 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 11 Feb
+ 2021 07:56:35 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 11 Feb 2021 07:56:35 -0800
+Received: from EL-LT0043.marvell.com (unknown [10.193.38.106])
+        by maili.marvell.com (Postfix) with ESMTP id 710E63F7041;
+        Thu, 11 Feb 2021 07:56:34 -0800 (PST)
+From:   Igor Russkikh <irusskikh@marvell.com>
+To:     <netdev@vger.kernel.org>
+CC:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Igor Russkikh <irusskikh@marvell.com>
+Subject: [PATCH v2 net-next 0/2] pktgen: scripts improvements
+Date:   Thu, 11 Feb 2021 16:56:24 +0100
+Message-ID: <20210211155626.25213-1-irusskikh@marvell.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <CAEf4Bzax90hn_5axpnCpW+E6gVc1mtUgCXWqmxV0tJ4Ud7bsaA@mail.gmail.com>
- <20210209074904.GA286822@ubuntu-m3-large-x86> <YCKB1TF5wz93EIBK@krava>
- <YCKlrLkTQXc4Cyx7@krava> <CAEf4BzaL=qsSyDc8OxeN4pr7+Lvv+de4f+hM5a56LY8EABAk3w@mail.gmail.com>
- <YCMEucGZVPPQuxWw@krava> <CAEf4BzacQrkSMnmeO3sunOs7sfhX1ZoD_Hnk4-cFUK-TpLNqUA@mail.gmail.com>
- <YCPfEzp3ogCBTBaS@krava> <CAEf4BzbzquqsA5=_UqDukScuoGLfDhZiiXs_sgYBuNUvTBuV6w@mail.gmail.com>
- <YCQ+d0CVgIclDwng@krava> <YCVIWzq0quDQm6bn@krava>
-In-Reply-To: <YCVIWzq0quDQm6bn@krava>
-Reply-To: sedat.dilek@gmail.com
-From:   Sedat Dilek <sedat.dilek@gmail.com>
-Date:   Thu, 11 Feb 2021 16:43:48 +0100
-Message-ID: <CA+icZUXdWHrNh-KoHtX2jC-4yjnMTtA0CjwzsjaXfCUpHgYJtg@mail.gmail.com>
-Subject: Re: FAILED unresolved symbol vfs_truncate on arm64 with LLVM
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Veronika Kabatova <vkabatov@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
+ definitions=2021-02-11_07:2021-02-11,2021-02-11 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 11, 2021 at 4:08 PM Jiri Olsa <jolsa@redhat.com> wrote:
->
-> On Wed, Feb 10, 2021 at 09:13:47PM +0100, Jiri Olsa wrote:
-> > On Wed, Feb 10, 2021 at 10:20:20AM -0800, Andrii Nakryiko wrote:
-> >
-> > SNIP
-> >
-> > > > but below is change for checking that ftrace addrs are within elf functions
-> > > >
-> > > > seems to work in my tests, I'll run some more tests and send full patch
-> > >
-> > > It seems unnecessarily convoluted. I was thinking about something like
-> > > this (the diff will totally be screwed up by gmail, and I haven't even
-> > > compiled it):
-> > >
-> > > diff --git a/btf_encoder.c b/btf_encoder.c
-> > > index b124ec20a689..8162b238bd43 100644
-> > > --- a/btf_encoder.c
-> > > +++ b/btf_encoder.c
-> > > @@ -236,6 +236,23 @@ get_kmod_addrs(struct btf_elf *btfe, __u64
-> > > **paddrs, __u64 *pcount)
-> > >         return 0;
-> > >  }
-> > >
-> > > +struct func_seg { __u64 start; __u64 end; };
-> > > +
-> > > +static int func_exists(struct func_seg *segs, size_t len, __u64 addr)
-> > > +{
-> > > +       size_t l = 0, r = len - 1, m;
-> > > +
-> > > +       while (l < r) {
-> > > +               m = l + (r - l + 1) / 2;
-> > > +               if (segs[m].start <= addr)
-> > > +                       l = m;
-> > > +               else
-> > > +                       r = m - 1;
-> > > +       }
-> > > +
-> > > +       return segs[l].start <= addr && addr < segs[l].end;
-> > > +}
-> > > +
-> > >  static int setup_functions(struct btf_elf *btfe, struct funcs_layout *fl)
-> > >  {
-> > >         __u64 *addrs, count, i;
-> > > @@ -286,7 +303,7 @@ static int setup_functions(struct btf_elf *btfe,
-> > > struct funcs_layout *fl)
-> > >                 __u64 addr = kmod ? func->addr + func->sh_addr : func->addr;
-> > >
-> > >                 /* Make sure function is within ftrace addresses. */
-> > > -               if (bsearch(&addr, addrs, count, sizeof(addrs[0]), addrs_cmp)) {
-> > > +               if (func_exists(addrs, count, addr))
-> >
-> > you pass addrs in here, but you mean func_seg array
-> > filled with elf functions start/end values, right?
-> >
-> > >                         /*
-> > >                          * We iterate over sorted array, so we can easily skip
-> > >                          * not valid item and move following valid field into
-> > >
-> > >
-> > > So the idea is to use address segments and check whether there is a
-> > > segment that overlaps with a given address by first binary searching
-> > > for a segment with the largest starting address that is <= addr. And
-> > > then just confirming that segment does overlap with the requested
-> > > address.
-> > >
-> > > WDYT?
->
-> heya,
-> with your approach I ended up with change below, it gives me same
-> results as with the previous change
->
-> I think I'll separate the kmod bool address computation later on,
-> but I did not want to confuse this change for now
->
+Hello netdev community,
 
-I have applied your diff on top of pahole-v1.20 with Yonghong Son's
-"btf_encoder: sanitize non-regular int base type" applied.
-This is on x86-64 with LLVM-12, so I am not directly affected.
-If it is out of interest I can offer vmlinux (or .*btf* files) w/ and
-w/o your diff.
+Please consider small improvements to pktgen scripts we use in our environment.
 
-- Sedat -
+Adding delay parameter through command line,
+Adding new -a (append) parameter to make flex runs
 
-> jirka
->
->
-> ---
-> diff --git a/btf_encoder.c b/btf_encoder.c
-> index b124ec20a689..34df08f2fb4e 100644
-> --- a/btf_encoder.c
-> +++ b/btf_encoder.c
-> @@ -36,6 +36,7 @@ struct funcs_layout {
->  struct elf_function {
->         const char      *name;
->         unsigned long    addr;
-> +       unsigned long    end;
->         unsigned long    sh_addr;
->         bool             generated;
->  };
-> @@ -44,7 +45,7 @@ static struct elf_function *functions;
->  static int functions_alloc;
->  static int functions_cnt;
->
-> -static int functions_cmp(const void *_a, const void *_b)
-> +static int functions_cmp_name(const void *_a, const void *_b)
->  {
->         const struct elf_function *a = _a;
->         const struct elf_function *b = _b;
-> @@ -52,6 +53,16 @@ static int functions_cmp(const void *_a, const void *_b)
->         return strcmp(a->name, b->name);
->  }
->
-> +static int functions_cmp_addr(const void *_a, const void *_b)
-> +{
-> +       const struct elf_function *a = _a;
-> +       const struct elf_function *b = _b;
-> +
-> +       if (a->addr == b->addr)
-> +               return 0;
-> +       return a->addr < b->addr ? -1 : 1;
-> +}
-> +
->  static void delete_functions(void)
->  {
->         free(functions);
-> @@ -98,6 +109,7 @@ static int collect_function(struct btf_elf *btfe, GElf_Sym *sym,
->
->         functions[functions_cnt].name = name;
->         functions[functions_cnt].addr = elf_sym__value(sym);
-> +       functions[functions_cnt].end = (__u64) -1;
->         functions[functions_cnt].sh_addr = sh.sh_addr;
->         functions[functions_cnt].generated = false;
->         functions_cnt++;
-> @@ -236,6 +248,40 @@ get_kmod_addrs(struct btf_elf *btfe, __u64 **paddrs, __u64 *pcount)
->         return 0;
->  }
->
-> +static int is_ftrace_func(struct elf_function *func, __u64 *addrs,
-> +                         __u64 count, bool kmod)
-> +{
-> +       /*
-> +        * For vmlinux image both addrs[x] and functions[x]::addr
-> +        * values are final address and are comparable.
-> +        *
-> +        * For kernel module addrs[x] is final address, but
-> +        * functions[x]::addr is relative address within section
-> +        * and needs to be relocated by adding sh_addr.
-> +        */
-> +       __u64 start = kmod ? func->addr + func->sh_addr : func->addr;
-> +       __u64 end   = kmod ? func->end + func->sh_addr : func->end;
-> +
-> +       size_t l = 0, r = count - 1, m;
-> +       __u64 addr = 0;
-> +
-> +       while (l < r) {
-> +               m = l + (r - l + 1) / 2;
-> +               addr = addrs[m];
-> +
-> +               if (start <= addr && addr < end)
-> +                       return true;
-> +
-> +               if (start <= addr)
-> +                       r = m - 1;
-> +               else
-> +                       l = m;
-> +       }
-> +
-> +       addr = addrs[l];
-> +       return start <= addr && addr < end;
-> +}
-> +
->  static int setup_functions(struct btf_elf *btfe, struct funcs_layout *fl)
->  {
->         __u64 *addrs, count, i;
-> @@ -267,7 +313,7 @@ static int setup_functions(struct btf_elf *btfe, struct funcs_layout *fl)
->         }
->
->         qsort(addrs, count, sizeof(addrs[0]), addrs_cmp);
-> -       qsort(functions, functions_cnt, sizeof(functions[0]), functions_cmp);
-> +       qsort(functions, functions_cnt, sizeof(functions[0]), functions_cmp_addr);
->
->         /*
->          * Let's got through all collected functions and filter
-> @@ -275,18 +321,12 @@ static int setup_functions(struct btf_elf *btfe, struct funcs_layout *fl)
->          */
->         for (i = 0; i < functions_cnt; i++) {
->                 struct elf_function *func = &functions[i];
-> -               /*
-> -                * For vmlinux image both addrs[x] and functions[x]::addr
-> -                * values are final address and are comparable.
-> -                *
-> -                * For kernel module addrs[x] is final address, but
-> -                * functions[x]::addr is relative address within section
-> -                * and needs to be relocated by adding sh_addr.
-> -                */
-> -               __u64 addr = kmod ? func->addr + func->sh_addr : func->addr;
-> +
-> +               if (i + 1 < functions_cnt)
-> +                       func->end = functions[i + 1].addr;
->
->                 /* Make sure function is within ftrace addresses. */
-> -               if (bsearch(&addr, addrs, count, sizeof(addrs[0]), addrs_cmp)) {
-> +               if (is_ftrace_func(func, addrs, count, kmod)) {
->                         /*
->                          * We iterate over sorted array, so we can easily skip
->                          * not valid item and move following valid field into
-> @@ -303,6 +343,8 @@ static int setup_functions(struct btf_elf *btfe, struct funcs_layout *fl)
->
->         if (btf_elf__verbose)
->                 printf("Found %d functions!\n", functions_cnt);
-> +
-> +       qsort(functions, functions_cnt, sizeof(functions[0]), functions_cmp_name);
->         return 0;
->  }
->
-> @@ -312,7 +354,7 @@ static struct elf_function *find_function(const struct btf_elf *btfe,
->         struct elf_function key = { .name = name };
->
->         return bsearch(&key, functions, functions_cnt, sizeof(functions[0]),
-> -                      functions_cmp);
-> +                      functions_cmp_name);
->  }
->
->  static bool btf_name_char_ok(char c, bool first)
->
-> --
-> You received this message because you are subscribed to the Google Groups "Clang Built Linux" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to clang-built-linux+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/clang-built-linux/YCVIWzq0quDQm6bn%40krava.
+v2: Review comments from Jesper
+
+CC: Jesper Dangaard Brouer <brouer@redhat.com>
+
+Igor Russkikh (2):
+  samples: pktgen: allow to specify delay parameter via new opt
+  samples: pktgen: new append mode
+
+ samples/pktgen/README.rst                     | 18 +++++++++++
+ samples/pktgen/functions.sh                   |  7 ++++-
+ samples/pktgen/parameters.sh                  | 15 ++++++++-
+ .../pktgen_bench_xmit_mode_netif_receive.sh   |  3 --
+ .../pktgen_bench_xmit_mode_queue_xmit.sh      |  3 --
+ samples/pktgen/pktgen_sample01_simple.sh      | 25 ++++++++-------
+ samples/pktgen/pktgen_sample02_multiqueue.sh  | 29 +++++++++--------
+ .../pktgen_sample03_burst_single_flow.sh      | 15 ++++-----
+ samples/pktgen/pktgen_sample04_many_flows.sh  | 17 +++++-----
+ .../pktgen/pktgen_sample05_flow_per_thread.sh | 17 +++++-----
+ ...sample06_numa_awared_queue_irq_affinity.sh | 31 ++++++++++---------
+ 11 files changed, 110 insertions(+), 70 deletions(-)
+
+-- 
+2.25.1
+
