@@ -2,305 +2,252 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1565331953A
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 22:37:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CC4B319560
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 22:49:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229809AbhBKVhP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 16:37:15 -0500
-Received: from mail29.static.mailgun.info ([104.130.122.29]:58566 "EHLO
-        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229936AbhBKVhF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 16:37:05 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1613079400; h=References: In-Reply-To: Message-Id: Date:
- Subject: Cc: To: From: Sender;
- bh=0fi/SREHhK8B8/7esa/dEqv88WxqMKR906kSR1woiPM=; b=Nq3py2Yj4PfGpna2xrYmzP0jM6dGiSPINdDHGezQHAULfXRwdYEHjkaJR+FtzdqFsgYtcAoK
- mm3Q0f59+lKq/OV7+wodPdgQLrqEQSiv6YMMhjISXvnC9aeOToUgHqrSiNmRtIsdHyCzv6I6
- LcnGgXMpdF44pDtkRPuiw5oqtFw=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
- 6025a34c830f898bacd2d643 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 11 Feb 2021 21:36:12
- GMT
-Sender: sharathv=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 9D2FBC433CA; Thu, 11 Feb 2021 21:36:12 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from svurukal-linux.qualcomm.com (unknown [202.46.22.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        id S229478AbhBKVsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 16:48:54 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:20253 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229469AbhBKVsu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 16:48:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1613080042;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=erw+oRuJIWU+Lcuv3JLHAsQxLRO/3TX9GolXrQOQEC8=;
+        b=e/kMwIxt1LT2y4a50ozM+nE4lfHO0TUrXc1UdkefuJatTp5IaTiOkwbhh3ujOQ/tk2zziD
+        MV67GGx3X2QBKuCsEn4aZJGqw+nWHLbbDKF2Ot5iBlGX5Q9q30YwwwzbfmP/PfrXeJ4Nkt
+        DLMVni8eaVadhIq0WoxMk7a66akt2IQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-246-vAjmXrMBMfm9GakvVaaAHQ-1; Thu, 11 Feb 2021 16:47:20 -0500
+X-MC-Unique: vAjmXrMBMfm9GakvVaaAHQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: sharathv)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id DC1B4C433C6;
-        Thu, 11 Feb 2021 21:36:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org DC1B4C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=sharathv@codeaurora.org
-From:   Sharath Chandra Vurukala <sharathv@codeaurora.org>
-To:     davem@davemloft.net, kuba@kernel.org, elder@kernel.org,
-        cpratapa@codeaurora.org, subashab@codeaurora.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Sharath Chandra Vurukala <sharathv@codeaurora.org>
-Subject: [PATCH 3/3] net:ethernet:rmnet: Add support for Mapv5 Uplink packet
-Date:   Fri, 12 Feb 2021 03:05:24 +0530
-Message-Id: <1613079324-20166-4-git-send-email-sharathv@codeaurora.org>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1613079324-20166-1-git-send-email-sharathv@codeaurora.org>
-References: <1613079324-20166-1-git-send-email-sharathv@codeaurora.org>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 03B541937FD2;
+        Thu, 11 Feb 2021 21:47:10 +0000 (UTC)
+Received: from krava (unknown [10.40.192.118])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 86E2D6F99D;
+        Thu, 11 Feb 2021 21:47:06 +0000 (UTC)
+Date:   Thu, 11 Feb 2021 22:47:05 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        Veronika Kabatova <vkabatov@redhat.com>,
+        Jiri Olsa <jolsa@kernel.org>
+Subject: Re: FAILED unresolved symbol vfs_truncate on arm64 with LLVM
+Message-ID: <YCWl2YHTSZSRkiQW@krava>
+References: <YCKB1TF5wz93EIBK@krava>
+ <YCKlrLkTQXc4Cyx7@krava>
+ <CAEf4BzaL=qsSyDc8OxeN4pr7+Lvv+de4f+hM5a56LY8EABAk3w@mail.gmail.com>
+ <YCMEucGZVPPQuxWw@krava>
+ <CAEf4BzacQrkSMnmeO3sunOs7sfhX1ZoD_Hnk4-cFUK-TpLNqUA@mail.gmail.com>
+ <YCPfEzp3ogCBTBaS@krava>
+ <CAEf4BzbzquqsA5=_UqDukScuoGLfDhZiiXs_sgYBuNUvTBuV6w@mail.gmail.com>
+ <YCQ+d0CVgIclDwng@krava>
+ <YCVIWzq0quDQm6bn@krava>
+ <CAEf4Bzbt2-Mn4+y0c+sSZWUSrP705c_e3SxedjV_xYGPQL79=w@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4Bzbt2-Mn4+y0c+sSZWUSrP705c_e3SxedjV_xYGPQL79=w@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding Support for Mapv5 uplink packet.
-Based on the configuration Request HW for csum offload
-by setting the csum_valid_required of Mapv5 packet.
+On Thu, Feb 11, 2021 at 11:59:02AM -0800, Andrii Nakryiko wrote:
 
-Signed-off-by: Sharath Chandra Vurukala <sharathv@codeaurora.org>
----
- drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h |  3 +-
- .../net/ethernet/qualcomm/rmnet/rmnet_handlers.c   | 17 +++-
- drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h    |  4 +-
- .../net/ethernet/qualcomm/rmnet/rmnet_map_data.c   | 92 ++++++++++++++++++++--
- include/uapi/linux/if_link.h                       |  1 +
- 5 files changed, 105 insertions(+), 12 deletions(-)
+SNIP
 
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h
-index d4d61471..8e64ca9 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.h
-@@ -1,5 +1,5 @@
- /* SPDX-License-Identifier: GPL-2.0-only */
--/* Copyright (c) 2013-2014, 2016-2018 The Linux Foundation.
-+/* Copyright (c) 2013-2014, 2016-2018, 2021 The Linux Foundation.
-  * All rights reserved.
-  *
-  * RMNET Data configuration engine
-@@ -57,6 +57,7 @@ struct rmnet_priv_stats {
- 	u64 csum_fragmented_pkt;
- 	u64 csum_skipped;
- 	u64 csum_sw;
-+	u64 csum_hw;
- };
- 
- struct rmnet_priv {
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
-index 70ad6a7..870be09 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_handlers.c
-@@ -131,8 +131,9 @@ static int rmnet_map_egress_handler(struct sk_buff *skb,
- 				    struct rmnet_port *port, u8 mux_id,
- 				    struct net_device *orig_dev)
- {
--	int required_headroom, additional_header_len;
-+	int required_headroom, additional_header_len, csum_type;
- 	struct rmnet_map_header *map_header;
-+	csum_type = 0;
- 
- 	additional_header_len = 0;
- 	required_headroom = sizeof(struct rmnet_map_header);
-@@ -140,17 +141,25 @@ static int rmnet_map_egress_handler(struct sk_buff *skb,
- 	if (port->data_format & RMNET_FLAGS_EGRESS_MAP_CKSUMV4) {
- 		additional_header_len = sizeof(struct rmnet_map_ul_csum_header);
- 		required_headroom += additional_header_len;
-+		csum_type = RMNET_FLAGS_EGRESS_MAP_CKSUMV4;
-+	} else if (port->data_format & RMNET_FLAGS_EGRESS_MAP_CKSUMV5) {
-+		additional_header_len = sizeof(struct rmnet_map_v5_csum_header);
-+		csum_type = RMNET_FLAGS_EGRESS_MAP_CKSUMV5;
- 	}
- 
-+	required_headroom += additional_header_len;
-+
- 	if (skb_headroom(skb) < required_headroom) {
- 		if (pskb_expand_head(skb, required_headroom, 0, GFP_ATOMIC))
- 			return -ENOMEM;
- 	}
- 
--	if (port->data_format & RMNET_FLAGS_EGRESS_MAP_CKSUMV4)
--		rmnet_map_checksum_uplink_packet(skb, orig_dev);
-+	if (csum_type) {
-+		rmnet_map_checksum_uplink_packet(skb, port, orig_dev,
-+						 csum_type);
-+	}
- 
--	map_header = rmnet_map_add_map_header(skb, additional_header_len, 0);
-+	map_header = rmnet_map_add_map_header(skb, additional_header_len, port, 0);
- 	if (!map_header)
- 		return -ENOMEM;
- 
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
-index 55d293c..9b2aef0 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map.h
-@@ -70,7 +70,9 @@ struct rmnet_map_header *rmnet_map_add_map_header(struct sk_buff *skb,
- void rmnet_map_command(struct sk_buff *skb, struct rmnet_port *port);
- int rmnet_map_checksum_downlink_packet(struct sk_buff *skb, u16 len);
- void rmnet_map_checksum_uplink_packet(struct sk_buff *skb,
--				      struct net_device *orig_dev);
-+				      struct rmnet_port *port,
-+				      struct net_device *orig_dev,
-+				      int csum_type);
- int rmnet_map_process_next_hdr_packet(struct sk_buff *skb, u16 len);
- 
- static u8 rmnet_map_get_next_hdr_type(struct sk_buff *skb)
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-index 3d7e03f..600b9a2 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_map_data.c
-@@ -263,12 +263,68 @@ rmnet_map_ipv6_ul_csum_header(void *ip6hdr,
- }
- #endif
- 
-+void rmnet_map_v5_checksum_uplink_packet(struct sk_buff *skb,
-+					 struct rmnet_port *port,
-+					 struct net_device *orig_dev)
-+{
-+	struct rmnet_priv *priv = netdev_priv(orig_dev);
-+	struct rmnet_map_v5_csum_header *ul_header;
-+
-+	if (!(port->data_format & RMNET_FLAGS_EGRESS_MAP_CKSUMV5))
-+		return;
-+
-+	ul_header = (struct rmnet_map_v5_csum_header *)
-+		    skb_push(skb, sizeof(*ul_header));
-+	memset(ul_header, 0, sizeof(*ul_header));
-+	ul_header->header_type = RMNET_MAP_HEADER_TYPE_CSUM_OFFLOAD;
-+
-+	if (skb->ip_summed == CHECKSUM_PARTIAL) {
-+		void *iph = (char *)ul_header + sizeof(*ul_header);
-+		__sum16 *check;
-+		void *trans;
-+		u8 proto;
-+
-+		if (skb->protocol == htons(ETH_P_IP)) {
-+			u16 ip_len = ((struct iphdr *)iph)->ihl * 4;
-+
-+			proto = ((struct iphdr *)iph)->protocol;
-+			trans = iph + ip_len;
-+		}
-+#if IS_ENABLED(CONFIG_IPV6)
-+		else if (skb->protocol == htons(ETH_P_IPV6)) {
-+			u16 ip_len = sizeof(struct ipv6hdr);
-+
-+			proto = ((struct ipv6hdr *)iph)->nexthdr;
-+			trans = iph + ip_len;
-+		}
-+#endif /* CONFIG_IPV6 */
-+		else {
-+			priv->stats.csum_err_invalid_ip_version++;
-+			goto sw_csum;
-+		}
-+
-+		check = rmnet_map_get_csum_field(proto, trans);
-+		if (check) {
-+			skb->ip_summed = CHECKSUM_NONE;
-+			/* Ask for checksum offloading */
-+			ul_header->csum_valid_required = 1;
-+			priv->stats.csum_hw++;
-+			return;
-+		}
-+	}
-+
-+sw_csum:
-+	priv->stats.csum_sw++;
-+}
-+
- /* Adds MAP header to front of skb->data
-  * Padding is calculated and set appropriately in MAP header. Mux ID is
-  * initialized to 0.
-  */
- struct rmnet_map_header *rmnet_map_add_map_header(struct sk_buff *skb,
--						  int hdrlen, int pad)
-+						  int hdrlen,
-+						  struct rmnet_port *port,
-+						  int pad)
- {
- 	struct rmnet_map_header *map_header;
- 	u32 padding, map_datalen;
-@@ -279,6 +335,11 @@ struct rmnet_map_header *rmnet_map_add_map_header(struct sk_buff *skb,
- 			skb_push(skb, sizeof(struct rmnet_map_header));
- 	memset(map_header, 0, sizeof(struct rmnet_map_header));
- 
-+	/* Set next_hdr bit for csum offload packets */
-+	if (port->data_format & RMNET_FLAGS_EGRESS_MAP_CKSUMV5) {
-+		map_header->next_hdr = 1;
-+	}
-+
- 	if (pad == RMNET_MAP_NO_PAD_BYTES) {
- 		map_header->pkt_len = htons(map_datalen);
- 		return map_header;
-@@ -395,11 +456,8 @@ int rmnet_map_checksum_downlink_packet(struct sk_buff *skb, u16 len)
- 	return 0;
- }
- 
--/* Generates UL checksum meta info header for IPv4 and IPv6 over TCP and UDP
-- * packets that are supported for UL checksum offload.
-- */
--void rmnet_map_checksum_uplink_packet(struct sk_buff *skb,
--				      struct net_device *orig_dev)
-+void rmnet_map_v4_checksum_uplink_packet(struct sk_buff *skb,
-+					 struct net_device *orig_dev)
- {
- 	struct rmnet_priv *priv = netdev_priv(orig_dev);
- 	struct rmnet_map_ul_csum_header *ul_header;
-@@ -418,10 +476,12 @@ void rmnet_map_checksum_uplink_packet(struct sk_buff *skb,
- 
- 		if (skb->protocol == htons(ETH_P_IP)) {
- 			rmnet_map_ipv4_ul_csum_header(iphdr, ul_header, skb);
-+			priv->stats.csum_hw++;
- 			return;
- 		} else if (skb->protocol == htons(ETH_P_IPV6)) {
- #if IS_ENABLED(CONFIG_IPV6)
- 			rmnet_map_ipv6_ul_csum_header(iphdr, ul_header, skb);
-+			priv->stats.csum_hw++;
- 			return;
- #else
- 			priv->stats.csum_err_invalid_ip_version++;
-@@ -441,6 +501,26 @@ void rmnet_map_checksum_uplink_packet(struct sk_buff *skb,
- 	priv->stats.csum_sw++;
- }
- 
-+/* Generates UL checksum meta info header for IPv4 and IPv6 over TCP and UDP
-+ * packets that are supported for UL checksum offload.
-+ */
-+void rmnet_map_checksum_uplink_packet(struct sk_buff *skb,
-+				      struct rmnet_port *port,
-+				      struct net_device *orig_dev,
-+				      int csum_type)
-+{
-+	switch (csum_type) {
-+	case RMNET_FLAGS_EGRESS_MAP_CKSUMV4:
-+		rmnet_map_v4_checksum_uplink_packet(skb, orig_dev);
-+		break;
-+	case RMNET_FLAGS_EGRESS_MAP_CKSUMV5:
-+		rmnet_map_v5_checksum_uplink_packet(skb, port, orig_dev);
-+		break;
-+	default:
-+		break;
-+	}
-+}
-+
- /* Process a MAPv5 packet header */
- int rmnet_map_process_next_hdr_packet(struct sk_buff *skb,
- 				      u16 len)
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index 838bd29..319865f 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -1234,6 +1234,7 @@ enum {
- #define RMNET_FLAGS_INGRESS_MAP_CKSUMV4           (1U << 2)
- #define RMNET_FLAGS_EGRESS_MAP_CKSUMV4            (1U << 3)
- #define RMNET_FLAGS_INGRESS_MAP_CKSUMV5           (1U << 4)
-+#define RMNET_FLAGS_EGRESS_MAP_CKSUMV5            (1U << 5)
- 
- enum {
- 	IFLA_RMNET_UNSPEC,
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+> >         return strcmp(a->name, b->name);
+> >  }
+> >
+> > +static int functions_cmp_addr(const void *_a, const void *_b)
+> > +{
+> > +       const struct elf_function *a = _a;
+> > +       const struct elf_function *b = _b;
+> > +
+> > +       if (a->addr == b->addr)
+> > +               return 0;
+> > +       return a->addr < b->addr ? -1 : 1;
+> > +}
+> > +
+> >  static void delete_functions(void)
+> >  {
+> >         free(functions);
+> > @@ -98,6 +109,7 @@ static int collect_function(struct btf_elf *btfe, GElf_Sym *sym,
+> >
+> >         functions[functions_cnt].name = name;
+> >         functions[functions_cnt].addr = elf_sym__value(sym);
+> > +       functions[functions_cnt].end = (__u64) -1;
+> >         functions[functions_cnt].sh_addr = sh.sh_addr;
+> >         functions[functions_cnt].generated = false;
+> >         functions_cnt++;
+> > @@ -236,6 +248,40 @@ get_kmod_addrs(struct btf_elf *btfe, __u64 **paddrs, __u64 *pcount)
+> >         return 0;
+> >  }
+> >
+> > +static int is_ftrace_func(struct elf_function *func, __u64 *addrs,
+> 
+> return bool, not int?
+
+yep
+
+> 
+> > +                         __u64 count, bool kmod)
+> > +{
+> > +       /*
+> > +        * For vmlinux image both addrs[x] and functions[x]::addr
+> > +        * values are final address and are comparable.
+> > +        *
+> > +        * For kernel module addrs[x] is final address, but
+> > +        * functions[x]::addr is relative address within section
+> > +        * and needs to be relocated by adding sh_addr.
+> > +        */
+> > +       __u64 start = kmod ? func->addr + func->sh_addr : func->addr;
+> > +       __u64 end   = kmod ? func->end + func->sh_addr : func->end;
+> > +
+> > +       size_t l = 0, r = count - 1, m;
+> > +       __u64 addr = 0;
+> > +
+> > +       while (l < r) {
+> > +               m = l + (r - l + 1) / 2;
+> > +               addr = addrs[m];
+> > +
+> > +               if (start <= addr && addr < end)
+> > +                       return true;
+> 
+> this extra check on each step shouldn't be necessary
+> 
+> > +
+> > +               if (start <= addr)
+> 
+> I don't think this is correct, start == addr is actually a good case,
+> but you'll do r = m - 1, skipping it. See below about invariants.
+
+the == case is covered in the check above, but yes it should be <
+
+> 
+> > +                       r = m - 1;
+> > +               else
+> > +                       l = m;
+> 
+> So in my previous example I assumed we have address ranges for ftrace
+> section, which is exactly the opposite from what we have. So this
+> binary search should be a bit different. start <= addr seems wrong
+> here as well.
+> 
+> The invariant here should be that addr[r] is the smallest address that
+> is >= than function start addr, right? Except the corner case where
+> there is no such r, but for that we have a final check in the return
+> below. If you wanted to use index l, you'd need to change the
+> invariant to find the largest addr, such that it is < end, but that
+> seems a bit convoluted.
+> 
+> So, with that, I think it should be like this:
+> 
+> size_t l = 0, r = count - 1, m;
+> 
+> /* make sure we don't use invalid r */
+> if (count == 0) return false;
+> 
+> while (l < r) {
+>     /* note no +1 in this case, it's so that at the end, when you
+>      * have, say, l = 0, and r = 1, you try l first, not r.
+>      * Otherwise you might end in in the infinite loop when r never == l.
+>      */
+
+nice catch, did not see that
+
+>     m = l + (r - l) / 2;
+>     addr = addrs[m];
+> 
+>     if (addr >= start)
+>         /* we satisfy invariant, so tighten r */
+>         r = m;
+>     else
+>         /* m is not good enough as l, maybe m + 1 will be */
+>         l = m + 1;
+> }
+> 
+> return start <= addrs[r] && addrs[r] < end;
+> 
+> 
+> So, basically, r is maintained as a valid index always, while we
+> constantly try to tighten the l.
+> 
+> Does this make sense?
+
+I did not see the possibility to let the search go through
+all the way to l == r and that 'extra' check allowed me to split
+the interval, without caring about invariant
+
+but I think your solution is cleaner, I'll send new version
+
+> 
+> 
+> > +       }
+> > +
+> > +       addr = addrs[l];
+> > +       return start <= addr && addr < end;
+> > +}
+> > +
+> >  static int setup_functions(struct btf_elf *btfe, struct funcs_layout *fl)
+> >  {
+> >         __u64 *addrs, count, i;
+> > @@ -267,7 +313,7 @@ static int setup_functions(struct btf_elf *btfe, struct funcs_layout *fl)
+> >         }
+> >
+> >         qsort(addrs, count, sizeof(addrs[0]), addrs_cmp);
+> > -       qsort(functions, functions_cnt, sizeof(functions[0]), functions_cmp);
+> > +       qsort(functions, functions_cnt, sizeof(functions[0]), functions_cmp_addr);
+> 
+> See below assumptions about function end. If we get it from ELF, you
+> don't need to do this extra sort, right?
+
+I had the same assumption and was surprised why my code is not working ;-)
+
+> 
+> >
+> >         /*
+> >          * Let's got through all collected functions and filter
+> > @@ -275,18 +321,12 @@ static int setup_functions(struct btf_elf *btfe, struct funcs_layout *fl)
+> >          */
+> >         for (i = 0; i < functions_cnt; i++) {
+> >                 struct elf_function *func = &functions[i];
+> > -               /*
+> > -                * For vmlinux image both addrs[x] and functions[x]::addr
+> > -                * values are final address and are comparable.
+> > -                *
+> > -                * For kernel module addrs[x] is final address, but
+> > -                * functions[x]::addr is relative address within section
+> > -                * and needs to be relocated by adding sh_addr.
+> > -                */
+> > -               __u64 addr = kmod ? func->addr + func->sh_addr : func->addr;
+> > +
+> > +               if (i + 1 < functions_cnt)
+> > +                       func->end = functions[i + 1].addr;
+> 
+> This makes a bunch of unnecessary assumptions about functions layout.
+> But why, if we have STT_FUNC symbol with function size, so that we
+> know the function end right when we collect function info.
+
+ugh forgot about the st_size for STT_FUNC
+
+thanks,
+jirka
 
