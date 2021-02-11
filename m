@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2226631889A
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 11:53:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FD22318892
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 11:52:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230453AbhBKKuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 05:50:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48660 "EHLO
+        id S230242AbhBKKsn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 05:48:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230468AbhBKKqd (ORCPT
+        with ESMTP id S230469AbhBKKqd (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 05:46:33 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FEE1C06178A
-        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 02:45:30 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id i8so9312124ejc.7
-        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 02:45:30 -0800 (PST)
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 937C0C06178B
+        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 02:45:31 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id t5so6402317eds.12
+        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 02:45:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=JPhnCoGgJ5HsL07+WIpZ2VAVa8xMb9ssCIEdiBXb2HM=;
-        b=Q4pwV6qLqRpbI+INpT3umC4BLNutFCLtcWuH/68u4Y6nLYM9YFL8IfyorSwT+SsEO5
-         LwGCj7B34ZWk0SkMHtENSoBSkjS0PKR2Mz3HHVZjmFAZcM7s3FP4qmS/dQiQK1TlsNcb
-         ppWcRDWq0odKURh+7e7wZiMD2ot7koFQLSsWKoVlZssEAfIxmgPD3tHYkNZZzYvYXGW2
-         eySOeui32IkelFHAVotULKc2BJC/dk3r2MVkjg+uTP1k0OUIVVmT8M4rZjiEtg9bx1ho
-         zlsl6LflwzKf+UY04F+D3F9LGTATBwCCzZRn6BgzS/mpd2zbzA5X/Uu8iCb2TbUfw1gA
-         +RHw==
+        bh=ffIX1Q9gvmYguUHbVNgZRrb4xzzJo83lCHTV+IvAs+s=;
+        b=UBUJvi2zi6Qb/FOFKlSmYdKoWGMXf9tN07BdchV1gH6gUHJCtHkXeZe6RMxJcebI3f
+         IXi7UXRSCJCnHsaxmrFyYqeU1WRJdWisXneZowDcCLZxkNjVaa3z1Qi57aH4YBd9eNCk
+         2b+s37zWuBFxBWIzGWJEv9jqvXPQq1vK3abiBDXig+4urvqmeVlu8Ik4Jy9/RWzGdaqY
+         +7OApFZF1ZeTT+P9z3Zfgtf4zcUO5XdI1hzxYfNRFBt0qwOTHAWO23CB+u0eee/tPR8h
+         SHEjZyt680NK8nYhHjU9PkC9fLLfu0PuoyXQDk6nHQpgURwn3kWsJ7ms8IM2IT0e4tnN
+         KfTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=JPhnCoGgJ5HsL07+WIpZ2VAVa8xMb9ssCIEdiBXb2HM=;
-        b=HyWWOFKcQTv27nTBmoNgp6XLLSmAyFJtCuuX5dDhjWKnbcf+AiUFEeNGHczb1QQsnD
-         DRTSx8GYBQM/CPTKKhrbfGluBtp8N/GXWBkyU9DFSIWxCaDxrqu2TeN+HQr3cBtQORV2
-         ARYO1U/l/TZ1nvPasSieC3U649Wov3rIvjdtaH3u87DsGoa1/iDurLA50d9/QigON6Jx
-         W5xA7AY+Op3u8pgIO20lzuAuci/7xx03VmfgfBemWi/kK30+vSLLl/+haAQIA5gQr8U7
-         CSh8/6wkIBJLlZA+yf1kos1MGcmUZ2QpVTrXEUOQR06hXaZE7ErXnJC/oS1GpM19hMBQ
-         aQCA==
-X-Gm-Message-State: AOAM531Z9sL7rdL2KGSsiHZPqL4a8xsjAk26PKc+sSFRR44+bZYxe+x3
-        9mto1CeyZs9gk7QudHmSY1e90hHWLc8=
-X-Google-Smtp-Source: ABdhPJyoo5FT+XhlLNRxzKBzPmgltJKCFvz+ygKkRp54JHnoBomcSN05Xd2HEJ8O8kxkxkFmQ+zQ8g==
-X-Received: by 2002:a17:907:7605:: with SMTP id jx5mr8085554ejc.340.1613040329285;
-        Thu, 11 Feb 2021 02:45:29 -0800 (PST)
+        bh=ffIX1Q9gvmYguUHbVNgZRrb4xzzJo83lCHTV+IvAs+s=;
+        b=EBfvqYd1i14zV4Fe7VAUUcit9ekGlpDuoV7I8JFM3sDwx2audQIkqgEY4LUAip06b1
+         Wb+GpBwmWMFQ/arZu3KlmbaYipSEAurRKGw59cRg3N7hE0tbOT7POoad5pPwFgLAIqbq
+         EzUAMZ60HUQ4GT3bgCqfvtf/+5jMAwjrwPC/6dFru99l9p2+vlkN2410JriUC3JKd6va
+         I/e6/ntostcDkKaf0zqdfWkjs0fYrdyChVtg/XYt9BjeaO+Bybeyy+aIQcbHG6NEOXXC
+         hR6JHOaFsJOc90+9gWKh1Js4UIhIWd9pC3vEUgGQxRAVMm7eKwXf2lbHRUnOWGm/N1Re
+         HIIg==
+X-Gm-Message-State: AOAM533AFnwxana1zfuCcPZpfImbn4eFlqW4dkCr6eIXczVTrMdoBjrG
+        adIYO7GFYkhFxDggibMvxdE=
+X-Google-Smtp-Source: ABdhPJwad9D3MEcnPdmzoE8K+2kSqtpMy20cYcoHR69S3YNpDeTf5SsCDIKgWU/HvONGTK6A/1L+0Q==
+X-Received: by 2002:a05:6402:21c3:: with SMTP id bi3mr6102236edb.68.1613040330321;
+        Thu, 11 Feb 2021 02:45:30 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id l1sm3815458eje.12.2021.02.11.02.45.28
+        by smtp.gmail.com with ESMTPSA id l1sm3815458eje.12.2021.02.11.02.45.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Feb 2021 02:45:28 -0800 (PST)
+        Thu, 11 Feb 2021 02:45:30 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -59,9 +59,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Roopa Prabhu <roopa@nvidia.com>,
         Nikolay Aleksandrov <nikolay@nvidia.com>,
         Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH iproute2 4/6] man8/bridge.8: fix which one of self/master is default for "bridge fdb"
-Date:   Thu, 11 Feb 2021 12:45:00 +0200
-Message-Id: <20210211104502.2081443-5-olteanv@gmail.com>
+Subject: [PATCH iproute2 5/6] man8/bridge.8: explain self vs master for "bridge fdb add"
+Date:   Thu, 11 Feb 2021 12:45:01 +0200
+Message-Id: <20210211104502.2081443-6-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210211104502.2081443-1-olteanv@gmail.com>
 References: <20210211104502.2081443-1-olteanv@gmail.com>
@@ -73,37 +73,40 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The bridge program does:
-
-fdb_modify:
-	/* Assume self */
-	if (!(req.ndm.ndm_flags&(NTF_SELF|NTF_MASTER)))
-		req.ndm.ndm_flags |= NTF_SELF;
-
-which is clearly against the documented behavior. The only thing we can
-do, sadly, is update the documentation.
+The "usually hardware" and "usually software" distinctions make no
+sense, try to clarify what these do based on the actual kernel behavior.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- man/man8/bridge.8 | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ man/man8/bridge.8 | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
 diff --git a/man/man8/bridge.8 b/man/man8/bridge.8
-index b629c52b8341..1dc0aec83f09 100644
+index 1dc0aec83f09..d0bcd708bb61 100644
 --- a/man/man8/bridge.8
 +++ b/man/man8/bridge.8
-@@ -533,11 +533,12 @@ specified.
+@@ -533,12 +533,21 @@ specified.
  .sp
  
  .B self
--- the address is associated with the port drivers fdb. Usually hardware.
-+- the address is associated with the port drivers fdb. Usually hardware
-+  (default).
+-- the address is associated with the port drivers fdb. Usually hardware
+-  (default).
++- the operation is fulfilled directly by the driver for the specified network
++device. If the network device belongs to a master like a bridge, then the
++bridge is bypassed and not notified of this operation (and if the device does
++notify the bridge, it is driver-specific behavior and not mandated by this
++flag, check the driver for more details). The "bridge fdb add" command can also
++be used on the bridge device itself, and in this case, the added fdb entries
++will be locally terminated (not forwarded). In the latter case, the "self" flag
++is mandatory. The flag is set by default if "master" is not specified.
  .sp
  
  .B master
--- the address is associated with master devices fdb. Usually software (default).
-+- the address is associated with master devices fdb. Usually software.
+-- the address is associated with master devices fdb. Usually software.
++- if the specified network device is a port that belongs to a master device
++such as a bridge, the operation is fulfilled by the master device's driver,
++which may in turn notify the port driver too of the address. If the specified
++device is a master itself, such as a bridge, this flag is invalid.
  .sp
  
  .B router
