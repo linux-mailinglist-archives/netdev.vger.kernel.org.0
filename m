@@ -2,181 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A3EA318AC3
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 13:35:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AAE1D318AFD
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 13:41:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230242AbhBKMfJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 07:35:09 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:49682 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229649AbhBKM2u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 07:28:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613046440;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=HMz6zYsvhAUacFy6he/Ff5pa+8L4MB4YjmA0Jw1xjYQ=;
-        b=iQr6ock4ozX6Qc1vCQmUbkw4AjYbn5tMI13JXOfNFb87+Z5DYnli3FIcNY8alu1g5AcXw6
-        8e+bM+zmzvnTlt5AZaJW8um81LGE3KDFAm4BROc9Z/QJbjUBjmhKVbk/DTgeISEHUH571t
-        bB9OxsfjB6StnCO3ru/CxR8EQRg4jdk=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-559-rNM7g0u4Mn-oZ2iCsh8lSw-1; Thu, 11 Feb 2021 07:27:18 -0500
-X-MC-Unique: rNM7g0u4Mn-oZ2iCsh8lSw-1
-Received: by mail-ed1-f71.google.com with SMTP id g6so4573991edy.9
-        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 04:27:18 -0800 (PST)
+        id S230191AbhBKMks (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 07:40:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44150 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231406AbhBKMhF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 07:37:05 -0500
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8236C061574;
+        Thu, 11 Feb 2021 04:36:24 -0800 (PST)
+Received: by mail-wm1-x332.google.com with SMTP id n10so3710402wmq.0;
+        Thu, 11 Feb 2021 04:36:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=wvId9QB5MA8DN7Z/Wwn99KHW4uDuXdx8aL5nWnOvqUI=;
+        b=KWhn7mo93wQSGNpPerkogAeENqdhj/Jet54/l8HJ9cnyHNJoun/Itg4shkO9w6bbO9
+         AYTTuNp8NJbNHMJt0wK2qScEnSjM+rkNgck/SoibYkFKX+yutXwZWpIN7Z3EQaCE6wAh
+         xTs36xzMGtlIRCYLZA+ADwd0BBWH3md3eozN/aDxSqfDtKIG7zDLm3dLIJaN5fNunFMm
+         66gBFbaXnbHGFsIWEuRiwEjHLbVwuhmfgl2WyP1ld5/DCkMqYhE5sw8klLSZCWsbBl6O
+         /T6keqTEASsJ4VKX7Se6Mi/bGFmHsC/fpU3qC/LDtTOOHJJs3K/Ky4Z6G1zUsfSwQCAu
+         46eA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=HMz6zYsvhAUacFy6he/Ff5pa+8L4MB4YjmA0Jw1xjYQ=;
-        b=ZxIlQ/XPGtdQd5N0ZgCDhEKZMibhnJjfsVKntQP8r5GHG+rH/JwlPowTBRh+zsEqeU
-         8jEivPcQiW4/l/sRP7L+w7qWzFBcabwOXoW+FU2xIkng+yExrSl7BYcMNUYjz2foYLM+
-         FhEpElBFCBdVD4wseoAhd+AQ2BWtXlIot0x0fYgSqEhr1HCxcN9ClqDJX6E8hOdoI6hp
-         kXkWnE48Y3Xej47lJOXyc3W3CIx1wyBEha594FTT275/PDLarXuoYINS/5/ske/zbMKI
-         uLhxee/CbeRQmsMgxRoyqYMWdhu9HKffE8bnB11g/C4+6XNOgprm3PZd5OOalyZQFlKg
-         bJYg==
-X-Gm-Message-State: AOAM5323v2Fo3Ecwzv8MSRk9eQpGhkXRY0io7c9ZvldkZp9YZbOTYi00
-        sRQwoM4MSzfMTAsJDpbK50ZiGcdCkOvkp6CxpCDEsie/DjT9YOTLU4xazG35n5TclA3pTF17F2V
-        3I3kvwBxlbHfUiPRZ
-X-Received: by 2002:a17:906:2747:: with SMTP id a7mr8529854ejd.250.1613046437362;
-        Thu, 11 Feb 2021 04:27:17 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyk6B6DSr3e6B0w/xlbcUeWXisr2RXOx2YRDpQHkAnrdl/RyyOhCzJ+iUDi0A/EsFUj4H9p5g==
-X-Received: by 2002:a17:906:2747:: with SMTP id a7mr8529844ejd.250.1613046437196;
-        Thu, 11 Feb 2021 04:27:17 -0800 (PST)
-Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
-        by smtp.gmail.com with ESMTPSA id bo24sm3698134edb.51.2021.02.11.04.27.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Feb 2021 04:27:16 -0800 (PST)
-Date:   Thu, 11 Feb 2021 13:27:14 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Jeff Vander Stoep <jeffv@google.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stsp2@yandex.ru, oxffffaa@gmail.com
-Subject: Re: [RFC PATCH v4 07/17] af_vsock: rest of SEQPACKET support
-Message-ID: <20210211122714.rqiwg3qp3kuprktb@steredhat>
-References: <20210207151259.803917-1-arseny.krasnov@kaspersky.com>
- <20210207151615.805115-1-arseny.krasnov@kaspersky.com>
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=wvId9QB5MA8DN7Z/Wwn99KHW4uDuXdx8aL5nWnOvqUI=;
+        b=t2zqzdBEtNr7WPav7RamrpsK7lIMNZOwgwfSlRiEgmGk3xArCbiQ9wsoa5AAvIY+N7
+         yRtuVjV0ushnSzmgJgb5VtF7NhUm49VrNkTrv4MMsfeEoPkFFZm+8s5vi1NvU6dsIPek
+         7WjbkH09nua6D1Hte6vAhZSGIvlFkwVCXUrD0GJfnWOWAW3zHlbdip8HYaYzxJ5uORGT
+         QKaNLvC1WFfy0tdhHXv3LlToIRu+IvjKOGx6PPR6U17J1LmXAq2RSTZ5zqcmAuIcbQzl
+         zkh/uQvMZjx8inH+D78mT7RJ5O/kyWNSpJb+uYRdOjnwYErEFS6LMbTV93Ok1L1xZGnq
+         0AwA==
+X-Gm-Message-State: AOAM530In2h5mIAYLOA48GgS9sYZLRFFy1R5I245018d1lKnDyUyoqgZ
+        NcKGt4a+Zugkzf5ub5MbRqW46A8wlB1tsg==
+X-Google-Smtp-Source: ABdhPJx8T464XDkRhixA0ExWSElblHccGwg/e0x7g0npu1eXjQzPj58qbi9uNN18U0FArKY6ORwT0w==
+X-Received: by 2002:a1c:6002:: with SMTP id u2mr4868870wmb.83.1613046983117;
+        Thu, 11 Feb 2021 04:36:23 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f1f:ad00:60ca:853:df03:450e? (p200300ea8f1fad0060ca0853df03450e.dip0.t-ipconnect.de. [2003:ea:8f1f:ad00:60ca:853:df03:450e])
+        by smtp.googlemail.com with ESMTPSA id u3sm5228983wre.54.2021.02.11.04.36.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 11 Feb 2021 04:36:22 -0800 (PST)
+To:     Pavel Machek <pavel@ucw.cz>
+Cc:     Claudiu.Beznea@microchip.com, linux@armlinux.org.uk,
+        andrew@lunn.ch, davem@davemloft.net, kuba@kernel.org,
+        rjw@rjwysocki.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
+References: <1610120754-14331-1-git-send-email-claudiu.beznea@microchip.com>
+ <25ec943f-ddfc-9bcd-ef30-d0baf3c6b2a2@gmail.com>
+ <ce20d4f3-3e43-154a-0f57-2c2d42752597@microchip.com>
+ <ee0fd287-c737-faa5-eee1-99ffa120540a@gmail.com>
+ <ae4e73e9-109f-fdb9-382c-e33513109d1c@microchip.com>
+ <7976f7df-c22f-d444-c910-b0462b3d7f61@gmail.com>
+ <d9fcf8da-c0b0-0f18-48e9-a7534948bc93@microchip.com>
+ <20210114102508.GO1551@shell.armlinux.org.uk>
+ <fe4c31a0-b807-0eb2-1223-c07d7580e1fc@microchip.com>
+ <56366231-4a1f-48c3-bc29-6421ed834bdf@gmail.com> <20210211121701.GA31708@amd>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH] net: phy: micrel: reconfigure the phy on resume
+Message-ID: <0ac6414e-b785-1f82-94a2-9aa26b357d02@gmail.com>
+Date:   Thu, 11 Feb 2021 13:36:16 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20210207151615.805115-1-arseny.krasnov@kaspersky.com>
+In-Reply-To: <20210211121701.GA31708@amd>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 07, 2021 at 06:16:12PM +0300, Arseny Krasnov wrote:
->This does rest of SOCK_SEQPACKET support:
->1) Adds socket ops for SEQPACKET type.
->2) Allows to create socket with SEQPACKET type.
->
->Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
->---
-> net/vmw_vsock/af_vsock.c | 37 ++++++++++++++++++++++++++++++++++++-
-> 1 file changed, 36 insertions(+), 1 deletion(-)
->
->diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
->index a033d3340ac4..c77998a14018 100644
->--- a/net/vmw_vsock/af_vsock.c
->+++ b/net/vmw_vsock/af_vsock.c
->@@ -452,6 +452,7 @@ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
-> 		new_transport = transport_dgram;
-> 		break;
-> 	case SOCK_STREAM:
->+	case SOCK_SEQPACKET:
-> 		if (vsock_use_local_transport(remote_cid))
-> 			new_transport = transport_local;
-> 		else if (remote_cid <= VMADDR_CID_HOST || !transport_h2g ||
->@@ -459,6 +460,15 @@ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
-> 			new_transport = transport_g2h;
-> 		else
-> 			new_transport = transport_h2g;
->+
->+		if (sk->sk_type == SOCK_SEQPACKET) {
->+			if (!new_transport ||
->+			    !new_transport->seqpacket_seq_send_len ||
->+			    !new_transport->seqpacket_seq_send_eor ||
->+			    !new_transport->seqpacket_seq_get_len ||
->+			    !new_transport->seqpacket_dequeue)
->+				return -ESOCKTNOSUPPORT;
->+		}
+On 11.02.2021 13:17, Pavel Machek wrote:
+> On Thu 2021-01-14 12:05:21, Heiner Kallweit wrote:
+>> On 14.01.2021 11:41, Claudiu.Beznea@microchip.com wrote:
+>>>
+>>>
+>>> On 14.01.2021 12:25, Russell King - ARM Linux admin wrote:
+>>>>
+>>>> As I've said, if phylib/PHY driver is not restoring the state of the
+>>>> PHY on resume from suspend-to-ram, then that's an issue with phylib
+>>>> and/or the phy driver.
+>>>
+>>> In the patch I proposed in this thread the restoring is done in PHY driver.
+>>> Do you think I should continue the investigation and check if something
+>>> should be done from the phylib itself?
+>>>
+>> It was the right move to approach the PM maintainers to clarify whether
+>> the resume PM callback has to assume that power had been cut off and
+>> it has to completely reconfigure the device. If they confirm this
+>> understanding, then:
+> 
+> Power to some devices can be cut during s2ram, yes.
+> 
+Thanks for the confirmation.
 
-Maybe we should move this check after the try_module_get() call, since 
-the memory pointed by 'new_transport' pointer can be deallocated in the 
-meantime.
+>> - the general question remains why there's separate resume and restore
+>>   callbacks, and what restore is supposed to do that resume doesn't
+>>   have to do
+> 
+> You'll often have same implementation, yes.
+> 
 
-Also, if the socket had a transport before, we should deassign it before 
-returning an error.
+If resume and restore both have to assume that power was cut off,
+then they have to fully re-initialize the device. Therefore it's still
+not clear to me when you would have differing implementations for both
+callbacks.
 
-> 		break;
-> 	default:
-> 		return -ESOCKTNOSUPPORT;
->@@ -684,6 +694,7 @@ static int __vsock_bind(struct sock *sk, struct sockaddr_vm *addr)
->
-> 	switch (sk->sk_socket->type) {
-> 	case SOCK_STREAM:
->+	case SOCK_SEQPACKET:
-> 		spin_lock_bh(&vsock_table_lock);
-> 		retval = __vsock_bind_connectible(vsk, addr);
-> 		spin_unlock_bh(&vsock_table_lock);
->@@ -769,7 +780,7 @@ static struct sock *__vsock_create(struct net *net,
->
-> static bool sock_type_connectible(u16 type)
-> {
->-	return type == SOCK_STREAM;
->+	return (type == SOCK_STREAM) || (type == SOCK_SEQPACKET);
-> }
->
-> static void __vsock_release(struct sock *sk, int level)
->@@ -2199,6 +2210,27 @@ static const struct proto_ops vsock_stream_ops = {
-> 	.sendpage = sock_no_sendpage,
-> };
->
->+static const struct proto_ops vsock_seqpacket_ops = {
->+	.family = PF_VSOCK,
->+	.owner = THIS_MODULE,
->+	.release = vsock_release,
->+	.bind = vsock_bind,
->+	.connect = vsock_connect,
->+	.socketpair = sock_no_socketpair,
->+	.accept = vsock_accept,
->+	.getname = vsock_getname,
->+	.poll = vsock_poll,
->+	.ioctl = sock_no_ioctl,
->+	.listen = vsock_listen,
->+	.shutdown = vsock_shutdown,
->+	.setsockopt = vsock_connectible_setsockopt,
->+	.getsockopt = vsock_connectible_getsockopt,
->+	.sendmsg = vsock_connectible_sendmsg,
->+	.recvmsg = vsock_connectible_recvmsg,
->+	.mmap = sock_no_mmap,
->+	.sendpage = sock_no_sendpage,
->+};
->+
-> static int vsock_create(struct net *net, struct socket *sock,
-> 			int protocol, int kern)
-> {
->@@ -2219,6 +2251,9 @@ static int vsock_create(struct net *net, struct socket *sock,
-> 	case SOCK_STREAM:
-> 		sock->ops = &vsock_stream_ops;
-> 		break;
->+	case SOCK_SEQPACKET:
->+		sock->ops = &vsock_seqpacket_ops;
->+		break;
-> 	default:
-> 		return -ESOCKTNOSUPPORT;
-> 	}
->-- 
->2.25.1
->
+>> - it should be sufficient to use mdio_bus_phy_restore also as resume
+>>   callback (instead of changing each and every PHY driver's resume),
+>>   because we can expect that somebody cutting off power to the PHY
+>>   properly suspends the MDIO bus before
+> 
+> If restore works with power cut and power not cut then yes, you should
+> get away with that.
+> 
+> Best regards,
+> 								Pavel
+> 
 
+Heiner
