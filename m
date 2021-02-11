@@ -2,184 +2,285 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7182318DD9
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 16:14:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4430318DF0
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 16:19:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230054AbhBKPHS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 10:07:18 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:33350 "EHLO
+        id S229892AbhBKPRv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 10:17:51 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:44382 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229553AbhBKO6g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 09:58:36 -0500
+        by vger.kernel.org with ESMTP id S230198AbhBKPNk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 10:13:40 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613055427;
+        s=mimecast20190719; t=1613056324;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=gFCDuYQ0NJSVtwITqtQ+46tToq+Osod385U12POaAjM=;
-        b=bz9mp7lU9zeLDnkyFhxsGwnA/RusrisblVYXYbts6C29OBYFWkeuSEs0s5HkxvDctZnKHK
-        nl2wA94pe5Z65zMMKzbkoX1N9wYIOZcZv2Ix544wLjTnPdwte8fgwQCchEsWq9a+zrmxVV
-        Kr4r2NqK1+p6gwXVS05TfCZPCDBNjaI=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-306-RZRtoAbfMja7IJR2eBBkqw-1; Thu, 11 Feb 2021 09:57:05 -0500
-X-MC-Unique: RZRtoAbfMja7IJR2eBBkqw-1
-Received: by mail-ed1-f69.google.com with SMTP id x13so4754290edi.7
-        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 06:57:05 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gFCDuYQ0NJSVtwITqtQ+46tToq+Osod385U12POaAjM=;
-        b=FTOatXLo7P0WRlle7p3p6iwdnjEmanYkrvG1PEf6HiZnBSc4xuqz/BzCpL1/88pxin
-         PZyW8mRAc3rCqpbfYAwkpnhOz/ooaLbXnODqeoFfq940fQesbhProTzO45WXYbqTSJGt
-         OMVMeuDnAAg/+/BiCHPEkm26X7cDcD7leKpHuq2M21pqbu0qi44ozDn9iSfERi4Qrksf
-         RNbIYCPcZlgOLbJwXEHz+cq5YzA9n5GZHDEzowagvX+udayoORaoNU9wRCackNZylKhe
-         H2vp01P2E29cBAmJkGNTtXEOIp6PkVWyHiULFRn3jR0DoToCjgAUsiY6QwwfB62fRujq
-         vmUw==
-X-Gm-Message-State: AOAM532EWdIR2JhiuK064BIH9ZbZifP3YjsB9GbB6Gd50CJVjo7SVbtC
-        UePKj3QgMZhLbtLSKsPS1hnOOTOmbt9y+WNz6TvY219SgAFaEITMxeShGSxdZ9uk2uYH9e6VaLA
-        NGHwVXFBjZYnB1B2l
-X-Received: by 2002:a17:906:af15:: with SMTP id lx21mr8842903ejb.139.1613055424619;
-        Thu, 11 Feb 2021 06:57:04 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyeH4FkCLGBkXk194sjR+p03o5Zq0FzJ5zSMRQEIg/gWSDHV6WIdPXXz75vHhwbeQrmSsX0sg==
-X-Received: by 2002:a17:906:af15:: with SMTP id lx21mr8842889ejb.139.1613055424403;
-        Thu, 11 Feb 2021 06:57:04 -0800 (PST)
-Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
-        by smtp.gmail.com with ESMTPSA id b11sm4582514eja.115.2021.02.11.06.57.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Feb 2021 06:57:03 -0800 (PST)
-Date:   Thu, 11 Feb 2021 15:57:01 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Alexander Popov <alex.popov@linux.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stsp2@yandex.ru" <stsp2@yandex.ru>,
-        "oxffffaa@gmail.com" <oxffffaa@gmail.com>
-Subject: Re: [RFC PATCH v4 00/17] virtio/vsock: introduce SOCK_SEQPACKET
- support
-Message-ID: <20210211145701.qikgx5czosdwx3mm@steredhat>
-References: <20210207151259.803917-1-arseny.krasnov@kaspersky.com>
- <20210207111954-mutt-send-email-mst@kernel.org>
- <8bd3789c-8df1-4383-f233-b4b854b30970@kaspersky.com>
+        bh=IJk4z6TuxNr4nNxcX9hDO3Ok0FW7l/jb6b2/xDt4SXU=;
+        b=Gs2+atYUV7O0QB1GEygYPEDxe9Gqdautn2+ZmDMNxyz8pZWk827SThoiRKmW1XwgG2aJ8w
+        mff2ivOMYh7VBqkRsWUVdKeM/UzRlcidkwj3jmKaTLAnj0LfN4P61W1kFsPVppTHNW809j
+        ZscdAk7FJcfY6bbyT8irZS1zCUSAmNc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-546-18QqE7EhPyWamxk0Tq_6UA-1; Thu, 11 Feb 2021 10:08:18 -0500
+X-MC-Unique: 18QqE7EhPyWamxk0Tq_6UA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7B4B51005501;
+        Thu, 11 Feb 2021 15:08:15 +0000 (UTC)
+Received: from krava (unknown [10.40.192.105])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 5AE1A60636;
+        Thu, 11 Feb 2021 15:08:12 +0000 (UTC)
+Date:   Thu, 11 Feb 2021 16:08:11 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        Veronika Kabatova <vkabatov@redhat.com>,
+        Jiri Olsa <jolsa@kernel.org>
+Subject: Re: FAILED unresolved symbol vfs_truncate on arm64 with LLVM
+Message-ID: <YCVIWzq0quDQm6bn@krava>
+References: <CAEf4Bzax90hn_5axpnCpW+E6gVc1mtUgCXWqmxV0tJ4Ud7bsaA@mail.gmail.com>
+ <20210209074904.GA286822@ubuntu-m3-large-x86>
+ <YCKB1TF5wz93EIBK@krava>
+ <YCKlrLkTQXc4Cyx7@krava>
+ <CAEf4BzaL=qsSyDc8OxeN4pr7+Lvv+de4f+hM5a56LY8EABAk3w@mail.gmail.com>
+ <YCMEucGZVPPQuxWw@krava>
+ <CAEf4BzacQrkSMnmeO3sunOs7sfhX1ZoD_Hnk4-cFUK-TpLNqUA@mail.gmail.com>
+ <YCPfEzp3ogCBTBaS@krava>
+ <CAEf4BzbzquqsA5=_UqDukScuoGLfDhZiiXs_sgYBuNUvTBuV6w@mail.gmail.com>
+ <YCQ+d0CVgIclDwng@krava>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <8bd3789c-8df1-4383-f233-b4b854b30970@kaspersky.com>
+In-Reply-To: <YCQ+d0CVgIclDwng@krava>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Arseny,
+On Wed, Feb 10, 2021 at 09:13:47PM +0100, Jiri Olsa wrote:
+> On Wed, Feb 10, 2021 at 10:20:20AM -0800, Andrii Nakryiko wrote:
+> 
+> SNIP
+> 
+> > > but below is change for checking that ftrace addrs are within elf functions
+> > >
+> > > seems to work in my tests, I'll run some more tests and send full patch
+> > 
+> > It seems unnecessarily convoluted. I was thinking about something like
+> > this (the diff will totally be screwed up by gmail, and I haven't even
+> > compiled it):
+> > 
+> > diff --git a/btf_encoder.c b/btf_encoder.c
+> > index b124ec20a689..8162b238bd43 100644
+> > --- a/btf_encoder.c
+> > +++ b/btf_encoder.c
+> > @@ -236,6 +236,23 @@ get_kmod_addrs(struct btf_elf *btfe, __u64
+> > **paddrs, __u64 *pcount)
+> >         return 0;
+> >  }
+> > 
+> > +struct func_seg { __u64 start; __u64 end; };
+> > +
+> > +static int func_exists(struct func_seg *segs, size_t len, __u64 addr)
+> > +{
+> > +       size_t l = 0, r = len - 1, m;
+> > +
+> > +       while (l < r) {
+> > +               m = l + (r - l + 1) / 2;
+> > +               if (segs[m].start <= addr)
+> > +                       l = m;
+> > +               else
+> > +                       r = m - 1;
+> > +       }
+> > +
+> > +       return segs[l].start <= addr && addr < segs[l].end;
+> > +}
+> > +
+> >  static int setup_functions(struct btf_elf *btfe, struct funcs_layout *fl)
+> >  {
+> >         __u64 *addrs, count, i;
+> > @@ -286,7 +303,7 @@ static int setup_functions(struct btf_elf *btfe,
+> > struct funcs_layout *fl)
+> >                 __u64 addr = kmod ? func->addr + func->sh_addr : func->addr;
+> > 
+> >                 /* Make sure function is within ftrace addresses. */
+> > -               if (bsearch(&addr, addrs, count, sizeof(addrs[0]), addrs_cmp)) {
+> > +               if (func_exists(addrs, count, addr))
+> 
+> you pass addrs in here, but you mean func_seg array
+> filled with elf functions start/end values, right?
+> 
+> >                         /*
+> >                          * We iterate over sorted array, so we can easily skip
+> >                          * not valid item and move following valid field into
+> > 
+> > 
+> > So the idea is to use address segments and check whether there is a
+> > segment that overlaps with a given address by first binary searching
+> > for a segment with the largest starting address that is <= addr. And
+> > then just confirming that segment does overlap with the requested
+> > address.
+> > 
+> > WDYT?
 
-On Mon, Feb 08, 2021 at 09:32:59AM +0300, Arseny Krasnov wrote:
->
->On 07.02.2021 19:20, Michael S. Tsirkin wrote:
->> On Sun, Feb 07, 2021 at 06:12:56PM +0300, Arseny Krasnov wrote:
->>> 	This patchset impelements support of SOCK_SEQPACKET for virtio
->>> transport.
->>> 	As SOCK_SEQPACKET guarantees to save record boundaries, so to
->>> do it, two new packet operations were added: first for start of record
->>>  and second to mark end of record(SEQ_BEGIN and SEQ_END later). Also,
->>> both operations carries metadata - to maintain boundaries and payload
->>> integrity. Metadata is introduced by adding special header with two
->>> fields - message count and message length:
->>>
->>> 	struct virtio_vsock_seq_hdr {
->>> 		__le32  msg_cnt;
->>> 		__le32  msg_len;
->>> 	} __attribute__((packed));
->>>
->>> 	This header is transmitted as payload of SEQ_BEGIN and SEQ_END
->>> packets(buffer of second virtio descriptor in chain) in the same way as
->>> data transmitted in RW packets. Payload was chosen as buffer for this
->>> header to avoid touching first virtio buffer which carries header of
->>> packet, because someone could check that size of this buffer is equal
->>> to size of packet header. To send record, packet with start marker is
->>> sent first(it's header contains length of record and counter), then
->>> counter is incremented and all data is sent as usual 'RW' packets and
->>> finally SEQ_END is sent(it also carries counter of message, which is
->>> counter of SEQ_BEGIN + 1), also after sedning SEQ_END counter is
->>> incremented again. On receiver's side, length of record is known from
->>> packet with start record marker. To check that no packets were dropped
->>> by transport, counters of two sequential SEQ_BEGIN and SEQ_END are
->>> checked(counter of SEQ_END must be bigger that counter of SEQ_BEGIN by
->>> 1) and length of data between two markers is compared to length in
->>> SEQ_BEGIN header.
->>> 	Now as  packets of one socket are not reordered neither on
->>> vsock nor on vhost transport layers, such markers allows to restore
->>> original record on receiver's side. If user's buffer is smaller that
->>> record length, when all out of size data is dropped.
->>> 	Maximum length of datagram is not limited as in stream socket,
->>> because same credit logic is used. Difference with stream socket is
->>> that user is not woken up until whole record is received or error
->>> occurred. Implementation also supports 'MSG_EOR' and 'MSG_TRUNC' flags.
->>> 	Tests also implemented.
->>>
->>>  Arseny Krasnov (17):
->>>   af_vsock: update functions for connectible socket
->>>   af_vsock: separate wait data loop
->>>   af_vsock: separate receive data loop
->>>   af_vsock: implement SEQPACKET receive loop
->>>   af_vsock: separate wait space loop
->>>   af_vsock: implement send logic for SEQPACKET
->>>   af_vsock: rest of SEQPACKET support
->>>   af_vsock: update comments for stream sockets
->>>   virtio/vsock: dequeue callback for SOCK_SEQPACKET
->>>   virtio/vsock: fetch length for SEQPACKET record
->>>   virtio/vsock: add SEQPACKET receive logic
->>>   virtio/vsock: rest of SOCK_SEQPACKET support
->>>   virtio/vsock: setup SEQPACKET ops for transport
->>>   vhost/vsock: setup SEQPACKET ops for transport
->>>   vsock_test: add SOCK_SEQPACKET tests
->>>   loopback/vsock: setup SEQPACKET ops for transport
->>>   virtio/vsock: simplify credit update function API
->>>
->>>  drivers/vhost/vsock.c                   |   8 +-
->>>  include/linux/virtio_vsock.h            |  15 +
->>>  include/net/af_vsock.h                  |   9 +
->>>  include/uapi/linux/virtio_vsock.h       |  16 +
->>>  net/vmw_vsock/af_vsock.c                | 588 +++++++++++++++-------
->>>  net/vmw_vsock/virtio_transport.c        |   5 +
->>>  net/vmw_vsock/virtio_transport_common.c | 316 ++++++++++--
->>>  net/vmw_vsock/vsock_loopback.c          |   5 +
->>>  tools/testing/vsock/util.c              |  32 +-
->>>  tools/testing/vsock/util.h              |   3 +
->>>  tools/testing/vsock/vsock_test.c        | 126 +++++
->>>  11 files changed, 895 insertions(+), 228 deletions(-)
->>>
->>>  TODO:
->>>  - What to do, when server doesn't support SOCK_SEQPACKET. In current
->>>    implementation RST is replied in the same way when listening port
->>>    is not found. I think that current RST is enough,because case when
->>>    server doesn't support SEQ_PACKET is same when listener missed(e.g.
->>>    no listener in both cases).
+heya,
+with your approach I ended up with change below, it gives me same
+results as with the previous change
 
-I think is fine.
+I think I'll separate the kmod bool address computation later on,
+but I did not want to confuse this change for now
 
->>    - virtio spec patch
->Ok
+jirka
 
-Yes, please prepare a patch to discuss the VIRTIO spec changes.
 
-For example for 'virtio_vsock_seq_hdr', I left a comment about 'msg_cnt' 
-naming that should be better to discuss with virtio guys.
-
-Anyway, I reviewed this series and I left some comments.
-I think we are in a good shape :-)
-
-Thanks,
-Stefano
+---
+diff --git a/btf_encoder.c b/btf_encoder.c
+index b124ec20a689..34df08f2fb4e 100644
+--- a/btf_encoder.c
++++ b/btf_encoder.c
+@@ -36,6 +36,7 @@ struct funcs_layout {
+ struct elf_function {
+ 	const char	*name;
+ 	unsigned long	 addr;
++	unsigned long	 end;
+ 	unsigned long	 sh_addr;
+ 	bool		 generated;
+ };
+@@ -44,7 +45,7 @@ static struct elf_function *functions;
+ static int functions_alloc;
+ static int functions_cnt;
+ 
+-static int functions_cmp(const void *_a, const void *_b)
++static int functions_cmp_name(const void *_a, const void *_b)
+ {
+ 	const struct elf_function *a = _a;
+ 	const struct elf_function *b = _b;
+@@ -52,6 +53,16 @@ static int functions_cmp(const void *_a, const void *_b)
+ 	return strcmp(a->name, b->name);
+ }
+ 
++static int functions_cmp_addr(const void *_a, const void *_b)
++{
++	const struct elf_function *a = _a;
++	const struct elf_function *b = _b;
++
++	if (a->addr == b->addr)
++		return 0;
++	return a->addr < b->addr ? -1 : 1;
++}
++
+ static void delete_functions(void)
+ {
+ 	free(functions);
+@@ -98,6 +109,7 @@ static int collect_function(struct btf_elf *btfe, GElf_Sym *sym,
+ 
+ 	functions[functions_cnt].name = name;
+ 	functions[functions_cnt].addr = elf_sym__value(sym);
++	functions[functions_cnt].end = (__u64) -1;
+ 	functions[functions_cnt].sh_addr = sh.sh_addr;
+ 	functions[functions_cnt].generated = false;
+ 	functions_cnt++;
+@@ -236,6 +248,40 @@ get_kmod_addrs(struct btf_elf *btfe, __u64 **paddrs, __u64 *pcount)
+ 	return 0;
+ }
+ 
++static int is_ftrace_func(struct elf_function *func, __u64 *addrs,
++			  __u64 count, bool kmod)
++{
++	/*
++	 * For vmlinux image both addrs[x] and functions[x]::addr
++	 * values are final address and are comparable.
++	 *
++	 * For kernel module addrs[x] is final address, but
++	 * functions[x]::addr is relative address within section
++	 * and needs to be relocated by adding sh_addr.
++	 */
++	__u64 start = kmod ? func->addr + func->sh_addr : func->addr;
++	__u64 end   = kmod ? func->end + func->sh_addr : func->end;
++
++	size_t l = 0, r = count - 1, m;
++	__u64 addr = 0;
++
++	while (l < r) {
++		m = l + (r - l + 1) / 2;
++		addr = addrs[m];
++
++		if (start <= addr && addr < end)
++			return true;
++
++		if (start <= addr)
++			r = m - 1;
++		else
++			l = m;
++	}
++
++	addr = addrs[l];
++	return start <= addr && addr < end;
++}
++
+ static int setup_functions(struct btf_elf *btfe, struct funcs_layout *fl)
+ {
+ 	__u64 *addrs, count, i;
+@@ -267,7 +313,7 @@ static int setup_functions(struct btf_elf *btfe, struct funcs_layout *fl)
+ 	}
+ 
+ 	qsort(addrs, count, sizeof(addrs[0]), addrs_cmp);
+-	qsort(functions, functions_cnt, sizeof(functions[0]), functions_cmp);
++	qsort(functions, functions_cnt, sizeof(functions[0]), functions_cmp_addr);
+ 
+ 	/*
+ 	 * Let's got through all collected functions and filter
+@@ -275,18 +321,12 @@ static int setup_functions(struct btf_elf *btfe, struct funcs_layout *fl)
+ 	 */
+ 	for (i = 0; i < functions_cnt; i++) {
+ 		struct elf_function *func = &functions[i];
+-		/*
+-		 * For vmlinux image both addrs[x] and functions[x]::addr
+-		 * values are final address and are comparable.
+-		 *
+-		 * For kernel module addrs[x] is final address, but
+-		 * functions[x]::addr is relative address within section
+-		 * and needs to be relocated by adding sh_addr.
+-		 */
+-		__u64 addr = kmod ? func->addr + func->sh_addr : func->addr;
++
++		if (i + 1 < functions_cnt)
++			func->end = functions[i + 1].addr;
+ 
+ 		/* Make sure function is within ftrace addresses. */
+-		if (bsearch(&addr, addrs, count, sizeof(addrs[0]), addrs_cmp)) {
++		if (is_ftrace_func(func, addrs, count, kmod)) {
+ 			/*
+ 			 * We iterate over sorted array, so we can easily skip
+ 			 * not valid item and move following valid field into
+@@ -303,6 +343,8 @@ static int setup_functions(struct btf_elf *btfe, struct funcs_layout *fl)
+ 
+ 	if (btf_elf__verbose)
+ 		printf("Found %d functions!\n", functions_cnt);
++
++	qsort(functions, functions_cnt, sizeof(functions[0]), functions_cmp_name);
+ 	return 0;
+ }
+ 
+@@ -312,7 +354,7 @@ static struct elf_function *find_function(const struct btf_elf *btfe,
+ 	struct elf_function key = { .name = name };
+ 
+ 	return bsearch(&key, functions, functions_cnt, sizeof(functions[0]),
+-		       functions_cmp);
++		       functions_cmp_name);
+ }
+ 
+ static bool btf_name_char_ok(char c, bool first)
 
