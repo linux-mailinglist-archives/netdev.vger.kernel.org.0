@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77333319189
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 18:51:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 821B6319190
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 18:55:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232631AbhBKRu4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 12:50:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54182 "EHLO
+        id S232670AbhBKRvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 12:51:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232377AbhBKRrI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 12:47:08 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B21BAC0613D6;
-        Thu, 11 Feb 2021 09:46:27 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id gx20so3828080pjb.1;
-        Thu, 11 Feb 2021 09:46:27 -0800 (PST)
+        with ESMTP id S232433AbhBKRrY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 12:47:24 -0500
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D989C061786;
+        Thu, 11 Feb 2021 09:46:44 -0800 (PST)
+Received: by mail-pf1-x42f.google.com with SMTP id j12so4114921pfj.12;
+        Thu, 11 Feb 2021 09:46:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Ivr1YRUQ9uGpdJiImT1x0JeqP48gkopDmQIPmZXpoI4=;
-        b=sj4SDIG3ar6LNlMcBj4Rwfkw0MfCMTvtgUcZ/T1nAM8iZTi0lYHRbkU2BjbdHwkyCx
-         x82PTyzdx8OEqMImDSEqSkUtrNqxu3gbUaCy3Y5jMRPkCn0xippLGXGnili0Z7kfoQmG
-         hzYyqU2GECIuPDMK2k9rLDc79dUQM3NWnIo92kcBAXWljZENHIhtL2YVKnAVx+u0KGGi
-         KWB9YPRjTlRtTl8osdkAv4pfxB9hSER0QCc1EhpXe8b9/2gVilchrHL9bJt6ldgoVDIx
-         WZ6ns7z/XgZNI3OSc7w1iBc52/ZnxECSNVRJhFv5BWPU5EIotq6suxCgY/TreMawBvtf
-         tUrw==
+        bh=GAhCupiNYfCb1kxYFMJm4TWYuWvuB8IqJZkLe1cS8Ks=;
+        b=OSZQqEdm3XgyVGiudQHef9AQAeNYJ+QDEaezPm/SX8dD6XSyPc5xyoyceclR4COExG
+         8yeJKsWHTewDOz45z4sdO79U+M4gvSWjSP8sKFVsafsov3JdWkuzNjYqbHmthQpalufI
+         ITDvB6Z82e/wMZgh9m2f5J96i8v2SWkLG2m6bS2pp4NU8Xc21bIrzK+O4ZsLLQWJ0jDa
+         DzaZue9O/xf2JYO1QIeq/xHt9ON8fjvz42wVsoQ+VsaDdJmBi4QDevwXIMJpZ9wobnMU
+         vWWWGlEaqcS8PiIK8vkSYlmXdlZdo/RLd3QQhMuvUtRZoBgi0rwfUhOuH6zpPl4WqWXt
+         9UZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=Ivr1YRUQ9uGpdJiImT1x0JeqP48gkopDmQIPmZXpoI4=;
-        b=T6S1OJquE2wAYTtkEe1oQwELM5kGMwFlqMFHe4PYwr26a9a3Gj+w6lBt6wAPVW3SNk
-         A7gHgkNKWWY2zm8L+DTmjytiL3sXYzZajqpqrLLyxwc2eg344qblcxlODyk+M/R3e7Zh
-         oauX/qXf/1Inf4gtjQOXWmDxljIj0ht5WNfvyY9SpwTfCcxWp7sbw8GK1Vgo0E+xqoki
-         875QPWDTr0auTUegc+0jynOcYKlDDHW9fm+L8ts6YF+KOYZgGwloZx61vk7Z3G6INszQ
-         ZbOXKA5d9jlA9mO4y8bF7vZJQ1OMIPQeBPMXE2eIOIi8uVZgT0VLd+ruWSHVlYc2KKcZ
-         +ePw==
-X-Gm-Message-State: AOAM532rUOBsbiSpbJz+rucrlYEZ628KOLEGPcIPuYr/Me3lhArWIWNu
-        tO8RyJVpA7FjyIlyu6YTuFA=
-X-Google-Smtp-Source: ABdhPJwZsWlucLLeOP6WQ/acEpg+fiAwcTUgCfgzD5SYfpXFHP5nv3r54c3TPH+u7WPLXEsq6yN2RQ==
-X-Received: by 2002:a17:90a:80c5:: with SMTP id k5mr4844341pjw.217.1613065587331;
-        Thu, 11 Feb 2021 09:46:27 -0800 (PST)
+        bh=GAhCupiNYfCb1kxYFMJm4TWYuWvuB8IqJZkLe1cS8Ks=;
+        b=eKtgowvCS7ogDaD5lt0+qzjVLK4YRQMCoUASuW7BnqxxHHQE863lBYmXzmciop47qE
+         vs6REbgTO3Wxco17okTkXIVvMwNIekHZWnohRFNhrmUFDAAXx8/UQlqvNRKPzCrhXLM9
+         PkiEToHaL9ul5J4RyUq+1u/rGbws71zmopkSKiz+6mzu1VQxeGtyjLCkejMLx2nMUmIs
+         XJp2DfaptBn/F5NhfO4VaDgoHfp8yn1/BskfhyjLSLLrfP4ZhSrms5WwPiFSGgMq+sqW
+         wOaceWl7ZClG/o5a9XSUlDSm30F5eScGJZaOfZhJ6P3Ume8tJOagfDmIelmOomFaXI4R
+         /E+A==
+X-Gm-Message-State: AOAM533rxBAs7OFGeJR9N/1aTWMY1v4zGom0/LPJS/EygQANOVTD061s
+        EaPo7zoi9cwPJ1kvqrKqx8w=
+X-Google-Smtp-Source: ABdhPJyg+wAQt2aaBKJVRfkfIhZviaNMBNwJBcPZhjG0wFit45ZN1gi1kGrDcmD1hoO4wY0vzxdj2g==
+X-Received: by 2002:a65:43c4:: with SMTP id n4mr8992316pgp.278.1613065603858;
+        Thu, 11 Feb 2021 09:46:43 -0800 (PST)
 Received: from [10.67.49.228] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id b5sm5664783pjw.52.2021.02.11.09.46.26
+        by smtp.googlemail.com with ESMTPSA id 9sm6219785pfw.48.2021.02.11.09.46.42
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 11 Feb 2021 09:46:26 -0800 (PST)
-Subject: Re: [PATCH net-next 5.12 7/8] net: broadcom: bcm4908_enet: fix
- received skb length
+        Thu, 11 Feb 2021 09:46:43 -0800 (PST)
+Subject: Re: [PATCH net-next 5.12 8/8] net: broadcom: bcm4908_enet: fix
+ endianness in xmit code
 To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -61,7 +61,7 @@ Cc:     Randy Dunlap <rdunlap@infradead.org>,
         =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
 References: <20210209230130.4690-2-zajec5@gmail.com>
  <20210211121239.728-1-zajec5@gmail.com>
- <20210211121239.728-8-zajec5@gmail.com>
+ <20210211121239.728-9-zajec5@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -117,12 +117,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <d33669c8-4a00-d87d-c9d6-a40d878dc550@gmail.com>
-Date:   Thu, 11 Feb 2021 09:46:25 -0800
+Message-ID: <036f5632-5a9d-ca0b-8768-5ec7c9f6165a@gmail.com>
+Date:   Thu, 11 Feb 2021 09:46:41 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20210211121239.728-8-zajec5@gmail.com>
+In-Reply-To: <20210211121239.728-9-zajec5@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -133,7 +133,7 @@ X-Mailing-List: netdev@vger.kernel.org
 On 2/11/21 4:12 AM, Rafał Miłecki wrote:
 > From: Rafał Miłecki <rafal@milecki.pl>
 > 
-> Use ETH_FCS_LEN instead of magic value and drop incorrect + 2
+> Use le32_to_cpu() for reading __le32 struct field filled by hw.
 > 
 > Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
 
