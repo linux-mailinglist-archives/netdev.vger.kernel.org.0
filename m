@@ -2,79 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD45331836E
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 03:07:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 24971318370
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 03:10:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229713AbhBKCHY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Feb 2021 21:07:24 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:35139 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbhBKCHQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 21:07:16 -0500
-Received: from 1.general.jvosburgh.us.vpn ([10.172.68.206] helo=famine.localdomain)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <jay.vosburgh@canonical.com>)
-        id 1lA1ND-0000x3-UJ; Thu, 11 Feb 2021 02:06:28 +0000
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id BA7DA5FEE7; Wed, 10 Feb 2021 18:06:25 -0800 (PST)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id B26759FAC3;
-        Wed, 10 Feb 2021 18:06:25 -0800 (PST)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Nikolay Aleksandrov <razor@blackwall.org>
-cc:     netdev@vger.kernel.org, roopa@nvidia.com, andy@greyhouse.net,
-        vfalico@gmail.com, kuba@kernel.org, davem@davemloft.net,
-        alexander.duyck@gmail.com, idosch@nvidia.com,
-        Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: Re: [PATCH net-next v2 0/3] bonding: 3ad: support for 200G/400G ports and more verbose warning
-In-reply-to: <20210210204333.729603-1-razor@blackwall.org>
-References: <20210210204333.729603-1-razor@blackwall.org>
-Comments: In-reply-to Nikolay Aleksandrov <razor@blackwall.org>
-   message dated "Wed, 10 Feb 2021 22:43:30 +0200."
-X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+        id S229829AbhBKCID (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Feb 2021 21:08:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51118 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229750AbhBKCH4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Feb 2021 21:07:56 -0500
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E4CDC061574;
+        Wed, 10 Feb 2021 18:07:16 -0800 (PST)
+Received: by mail-yb1-xb33.google.com with SMTP id v5so4108387ybi.3;
+        Wed, 10 Feb 2021 18:07:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=asgTdyriWT2fI9Zyqcc8Nzc7uivOy6Y7UCwzlHhmiX4=;
+        b=WuLdy7/DQDl8ThsrSxJLujCcXcs6AMRegcBGj3rLCrFMluKHXsAyT9o6pWBZ2yUaAs
+         /CS2qqvOYjGACVBWTL9pluAbhoM/BrRG3Qsb8PeOHT2yKjrl76gKs32/lCsekvnIQl73
+         H/Verwt4MYtVkCoezQUMCSIV3pT7wGcRn2QfARfLnr0jk9e7GZIFj3UZ55sGDX3dC2bT
+         PKkETQNONXYdDyg6Xqi8xmikezXfslssWY+0GWNVts0j8nPjyYGeFj/5nXA7A57LR7Mo
+         jJVeHd1swE+FcjIhFSiy0lfyJUhw7JbLxjKAFw5AL2d0hDpnQjw9TGh5Tva178WBfHy1
+         Ek8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=asgTdyriWT2fI9Zyqcc8Nzc7uivOy6Y7UCwzlHhmiX4=;
+        b=sRyd8el46Egv8mf5wng+qAcdUVdh/y5d0xTdd6LqovmtyGRutSud0otdqg3v2+48BG
+         sRDgqG9FwkfjE2l3hScyy2avuKA6PnaOiEezYGDfPcyDcfzsiFGhqQqXgsoO/6au6RwN
+         LIZZHmKXXQGh35S3K2MmZu0J1OUmu1NbWPAe9aCR8Gam5kaKhzTTbteezB+PglOg9oPs
+         hgeza5UGMh3lqmJy1NLcHsCi77s8Ls/1Uu1JI6PBK8LeIBveV818Ny/eTQ/k4TnrpI61
+         kqujgdbw37URthJp0Fw81kqrf2qDcnHccC+zTO6pbEoYTBjXnPRKZxgEWMC5M5n2ao0h
+         BlSA==
+X-Gm-Message-State: AOAM531SAHyIthWrTDlXEecka0BSASvAttYZJosOz9Eye7tsgsteWJsK
+        sutCq2DT5R96Vm12iWYlXC3C9qpSsyOw8GQdxltq5srPM3g=
+X-Google-Smtp-Source: ABdhPJy9MbkpnZmkTomU5wvsCF/4u9h9B5x28LF+DlPKwXL55Z9dZxUBbyu3bVI22TfIVI3hjj6UV8iOpyMuX10+jtA=
+X-Received: by 2002:a25:4b86:: with SMTP id y128mr8045350yba.403.1613009235546;
+ Wed, 10 Feb 2021 18:07:15 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <9752.1613009185.1@famine>
-Date:   Wed, 10 Feb 2021 18:06:25 -0800
-Message-ID: <9753.1613009185@famine>
+References: <20210209193105.1752743-1-kafai@fb.com> <20210209193112.1752976-1-kafai@fb.com>
+ <CAEf4BzbZmmezSxYLCOdeeA4zW+vdDvQH57wQ-qpFSKiMcE1tVw@mail.gmail.com>
+ <20210210211735.4snmhc7gofo6zrp5@kafai-mbp.dhcp.thefacebook.com>
+ <CAEf4BzbhBng6k5e_=p0+mFSpQS7=BM_ute9eskViw-VCMTcYYA@mail.gmail.com> <20210211015510.zd7tn6efiimfel3v@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20210211015510.zd7tn6efiimfel3v@kafai-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 10 Feb 2021 18:07:04 -0800
+Message-ID: <CAEf4Bza_cNDTuu8jQ3K4qeb3e_nMEasmGqZqePy4B=XJqyXuMg@mail.gmail.com>
+Subject: Re: [PATCH bpf 2/2] bpf: selftests: Add non function pointer test to struct_ops
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Nikolay Aleksandrov <razor@blackwall.org> wrote:
+On Wed, Feb 10, 2021 at 5:55 PM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> On Wed, Feb 10, 2021 at 02:54:40PM -0800, Andrii Nakryiko wrote:
+> > On Wed, Feb 10, 2021 at 1:17 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> > >
+> > > On Wed, Feb 10, 2021 at 12:27:38PM -0800, Andrii Nakryiko wrote:
+> > > > On Tue, Feb 9, 2021 at 12:11 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> > > > >
+> > > > > This patch adds a "void *owner" member.  The existing
+> > > > > bpf_tcp_ca test will ensure the bpf_cubic.o and bpf_dctcp.o
+> > > > > can be loaded.
+> > > > >
+> > > > > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> > > > > ---
+> > > >
+> > > > Acked-by: Andrii Nakryiko <andrii@kernel.org>
+> > > >
+> > > > What will happen if BPF code initializes such non-func ptr member?
+> > > > Will libbpf complain or just ignore those values? Ignoring initialized
+> > > > members isn't great.
+> > > The latter. libbpf will ignore non-func ptr member.  The non-func ptr
+> > > member stays zero when it is passed to the kernel.
+> > >
+> > > libbpf can be changed to copy this non-func ptr value.
+> > > The kernel will decide what to do with it.  It will
+> > > then be consistent with int/array member like ".name"
+> > > and ".flags" where the kernel will verify the value.
+> > > I can spin v2 to do that.
+> >
+> > I was thinking about erroring out on non-zero fields, but if you think
+> > it's useful to pass through values, it could be done, but will require
+> > more and careful code, probably. So, basically, don't feel obligated
+> > to do this in this patch set.
+> You meant it needs different handling in copying ptr value
+> than copying int/char[]?
 
->From: Nikolay Aleksandrov <nikolay@nvidia.com>
->
->Hi,
->We'd like to have proper 200G and 400G support with 3ad bond mode, so we
->need to add new definitions for them in order to have separate oper keys,
->aggregated bandwidth and proper operation (patches 01 and 02). In
->patch 03 Ido changes the code to use pr_err_once instead of
->pr_warn_once which would help future detection of unsupported speeds.
->
->v2: patch 03: use pr_err_once instead of WARN_ONCE
->
->Thanks,
-> Nik
->
->Ido Schimmel (1):
->  bonding: 3ad: Print an error for unknown speeds
->
->Nikolay Aleksandrov (2):
->  bonding: 3ad: add support for 200G speed
->  bonding: 3ad: add support for 400G speed
->
-> drivers/net/bonding/bond_3ad.c | 26 ++++++++++++++++++++++----
-> 1 file changed, 22 insertions(+), 4 deletions(-)
-
-	Patches 1 and 2 could have been one patch, I suppose, but not
-really a big deal.  I'm in agreement about pr_err_once instead of
-WARN_ONCE.
-
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-
-	-J
-
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+Hm.. If we are talking about copying pointer values, then I don't see
+how you can provide a valid kernel pointer from the BPF program?...
+But if we are talking about copying field values in general, then
+you'll need to handle enums, struct/union, etc, no? If int/char[] is
+supported (I probably missed that it is), that might be the only
+things you'd need to support. So for non function pointers, I'd just
+enforce zeroes.
