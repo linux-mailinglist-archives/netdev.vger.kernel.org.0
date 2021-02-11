@@ -2,91 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B942E318550
-	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 07:47:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E92C318553
+	for <lists+netdev@lfdr.de>; Thu, 11 Feb 2021 07:47:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229714AbhBKGpy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 01:45:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53624 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229665AbhBKGox (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 01:44:53 -0500
-Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CB5FC06178C
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 22:43:50 -0800 (PST)
-Received: by mail-ot1-x332.google.com with SMTP id s107so4246758otb.8
-        for <netdev@vger.kernel.org>; Wed, 10 Feb 2021 22:43:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=gr0eKrk4K/BYOP1u+/BzgsKv0MAbRZ7OTW4YmnTfTpo=;
-        b=PgaObfFFeiEuMUsIhUiMBBsan4v1M0PI7funcgfHEECv11tDFJfX+J6TFt/Q7TGCwS
-         J+zxvsNHOf2ymMcvx0gxbh2MeXx9XzhrIKzImjI/aVkvU018in9YEtbXgYUaAGj7Aygu
-         b1YJe6SCvKAncDwJDnYk1jZqJOT+DF6QYdS+kZNGJ/J5vJ6+ibpMx/GMCMl66WePfTEO
-         A7ExIRU0Uc77Tw27CvSfMK1wFcaQGkXahm9+eYs7mVkfASrjVC79p02DEWh5HWan2Zxm
-         69624dn+hO6nPK40Omuhk2xM2Kz1KmYbHJVzAT10gmB6JTPxF4I0dxMbleYCH/OK/UIZ
-         jH+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=gr0eKrk4K/BYOP1u+/BzgsKv0MAbRZ7OTW4YmnTfTpo=;
-        b=cVPuBkxyKAebTWiZYZKmhtXGHvVKgbpbstArW3DwPylh7Nqcym2AqV9Ba1IN9IQoQh
-         aPdlJcdBdN1h55b4Hfgyi1Jr2fqLW+1JRxxLKbfFYvvS3qv4Z5+o1xpbALn5jWvkyCM/
-         ev2TPHvK1rA/L5b4Bj02qhHb7sQDMaWKRzIs1MciplqLPIr3fPWZMVKTgD6A6pCie+Hu
-         8CVWverkFfQXAMTDiDr1aCAbPLYg0rnqhwLD3hQctYYSoDONjyJYctcDtfigw4DFiKuJ
-         j7p0wvY25mvO6BUHIDF4ullBmiS4N2Rigk6jVSfQtj6kzgUzGZFZRda0sGEHWFXjE9ib
-         EpVQ==
-X-Gm-Message-State: AOAM531RxtaLdQZupX3tDnuMoZqHI8PLhZ8DJYAYw4OnYR0CLLypMywE
-        q1spaHyuXW+SFBRHpSalkBp7wxhvk7A=
-X-Google-Smtp-Source: ABdhPJwp0+ysAWLR45EfHY2LZA5ls6JeqwQyVvbTyL5YVCFTUwXxVo20TNi69t9Q2n4Zefb/X5wYAg==
-X-Received: by 2002:a05:6830:2106:: with SMTP id i6mr4707996otc.260.1613025829737;
-        Wed, 10 Feb 2021 22:43:49 -0800 (PST)
-Received: from pear.attlocal.net ([2600:1700:271:1a80:302d:c724:5317:9751])
-        by smtp.gmail.com with ESMTPSA id y65sm993375oie.50.2021.02.10.22.43.48
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 10 Feb 2021 22:43:49 -0800 (PST)
-From:   Lijun Pan <lijunp213@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Lijun Pan <lijunp213@gmail.com>
-Subject: [PATCH net-next v2 8/8] ibmvnic: prefer strscpy over strlcpy
-Date:   Thu, 11 Feb 2021 00:43:25 -0600
-Message-Id: <20210211064325.80591-9-lijunp213@gmail.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20210211064325.80591-1-lijunp213@gmail.com>
-References: <20210211064325.80591-1-lijunp213@gmail.com>
+        id S229469AbhBKGrA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 01:47:00 -0500
+Received: from so15.mailgun.net ([198.61.254.15]:55347 "EHLO so15.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229750AbhBKGqm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Feb 2021 01:46:42 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1613025976; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=DDsym//m5jdussff3Wt86VkIsApiHoTnfYkkw8P6hCw=;
+ b=CUThMcmxdeFhbBWs99STPaW48aUs7QDqWZ8CIuYXoWNniJeuihwyLkjkWT73SqHiGhXVlcdX
+ /Ku4OcLfyVPV/Mon7FsmzhSl2UAkWJ86Uy/tdASoCJKjLq+wwMra71f3ohGppGpFUev/ua3I
+ Bx7s1nhBRRtnsIsPngPvwb48d/c=
+X-Mailgun-Sending-Ip: 198.61.254.15
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
+ 6024d2838e43a988b701b109 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 11 Feb 2021 06:45:23
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id F0F89C43461; Thu, 11 Feb 2021 06:45:22 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id C146CC433C6;
+        Thu, 11 Feb 2021 06:45:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org C146CC433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+Subject: Re: brcmsmac: Fix the spelling configation to configuration in the
+ file d11.h
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20210209232921.1255425-1-unixbhaskar@gmail.com>
+References: <20210209232921.1255425-1-unixbhaskar@gmail.com>
+To:     Bhaskar Chowdhury <unixbhaskar@gmail.com>
+Cc:     kuba@kernel.org, davem@davemloft.net,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, rdunlap@infradead.org,
+        Bhaskar Chowdhury <unixbhaskar@gmail.com>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20210211064522.F0F89C43461@smtp.codeaurora.org>
+Date:   Thu, 11 Feb 2021 06:45:22 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix this warning:
-WARNING: Prefer strscpy over strlcpy - see: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
+Bhaskar Chowdhury <unixbhaskar@gmail.com> wrote:
 
-Signed-off-by: Lijun Pan <lijunp213@gmail.com>
----
- drivers/net/ethernet/ibm/ibmvnic.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+> s/configation/configuration/
+> 
+> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+> Acked-by: Randy Dunlap <rdunlap@infradead.org>
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 778e56e05cd7..1774fbaab146 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -2633,9 +2633,9 @@ static void ibmvnic_get_drvinfo(struct net_device *netdev,
- {
- 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
- 
--	strlcpy(info->driver, ibmvnic_driver_name, sizeof(info->driver));
--	strlcpy(info->version, IBMVNIC_DRIVER_VERSION, sizeof(info->version));
--	strlcpy(info->fw_version, adapter->fw_version,
-+	strscpy(info->driver, ibmvnic_driver_name, sizeof(info->driver));
-+	strscpy(info->version, IBMVNIC_DRIVER_VERSION, sizeof(info->version));
-+	strscpy(info->fw_version, adapter->fw_version,
- 		sizeof(info->fw_version));
- }
- 
+Patch applied to wireless-drivers-next.git, thanks.
+
+1899e49385fd brcmsmac: Fix the spelling configation to configuration in the file d11.h
+
 -- 
-2.23.0
+https://patchwork.kernel.org/project/linux-wireless/patch/20210209232921.1255425-1-unixbhaskar@gmail.com/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
