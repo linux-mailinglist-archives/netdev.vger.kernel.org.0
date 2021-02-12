@@ -2,509 +2,429 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35EE531A051
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 15:10:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F22C131A054
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 15:10:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230518AbhBLOHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 09:07:36 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:14490 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230182AbhBLOHd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 09:07:33 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B60268b7b0001>; Fri, 12 Feb 2021 06:06:51 -0800
-Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 12 Feb
- 2021 14:06:45 +0000
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.43) by
- HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2 via Frontend Transport; Fri, 12 Feb 2021 14:06:45 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YHEmR4IMSMXRZa45BtXaLW0x6itrG/MtHgXDg+lCr8rKWVqcGYHMTp586PQ9RSjI6jxU2/uTbtprHwBWRW/CtZ/yytPWtvDCB1mGl2kkwDnhJHPNU+3AV5DzHNaijouTGnD7/1zIKQIigX6nzB+WdNHb6KsIMH3E90IjfsghjPmZkltw67uRZwr5oNs8XdT7RiRkNoiPjoPopqRDEy3jMpduUGx9i44WuIBxDVB9kIRgdT9hjxxJpdc6Y0LRQEmGoj2uyYmsFmABfESHJjdYeErscEkB6nvSo2vWpeNtfDuoMoPm2cic872mumy7a4TZkVnyjjWCT0nxa6PNOX8rWQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iuIbeQKc6ubOGNkSHhm77VsT8/QbxDHT61adHE0lDro=;
- b=DfKUUWKF4kV9D9p0vD/f5uL5qoW7/5rytuLVOvLKCs3IjMqA/QLeCoMdmu+Ubxi+Gl7jm64vNIG8g0c7onCV6qHUHwmeKI7rnmC27mMckqYNWCdn+JfseXf/aWeFmOO6jB6iW3TrPNvlV25WgjDM7N/aFYC3g2PY5ttIHTWkAId+W9s2fj7pEF8pyFx+qAAhIPMTghGyeMONVcJczbrYEWl6Fm7GFYIEJNIdvOqAIW9Q7H7PXAMXRHDgzUlpo8YIJztizWxv20ZnsgaD+yTYbRQ4DGaiRT4wylxqMaQ9A1O7RN0jjhFj7QxX2kzVlQeknevm6DvJmgTjk4qQ8pnM1g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Authentication-Results: mellanox.com; dkim=none (message not signed)
- header.d=none;mellanox.com; dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB4403.namprd12.prod.outlook.com (2603:10b6:5:2ab::24)
- by DM5PR12MB1849.namprd12.prod.outlook.com (2603:10b6:3:107::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.29; Fri, 12 Feb
- 2021 14:06:43 +0000
-Received: from DM6PR12MB4403.namprd12.prod.outlook.com
- ([fe80::5c42:cbe:fe28:3a9b]) by DM6PR12MB4403.namprd12.prod.outlook.com
- ([fe80::5c42:cbe:fe28:3a9b%5]) with mapi id 15.20.3846.027; Fri, 12 Feb 2021
- 14:06:43 +0000
-Subject: Re: [PATCH v4 net-next 21/21] Documentation: add TCP DDP offload
- documentation
-To:     Boris Pismenny <borisp@mellanox.com>, <dsahern@gmail.com>,
-        <kuba@kernel.org>, <davem@davemloft.net>, <saeedm@nvidia.com>,
-        <hch@lst.de>, <sagi@grimberg.me>, <axboe@fb.com>,
-        <kbusch@kernel.org>, <viro@zeniv.linux.org.uk>,
-        <edumazet@google.com>, <smalin@marvell.com>
-CC:     <boris.pismenny@gmail.com>, <linux-nvme@lists.infradead.org>,
-        <netdev@vger.kernel.org>, <benishay@nvidia.com>,
-        <ogerlitz@nvidia.com>, <yorayz@nvidia.com>,
-        Ben Ben-Ishay <benishay@mellanox.com>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Yoray Zack <yorayz@mellanox.com>
-References: <20210212052031.18123-1-borisp@mellanox.com>
-From:   Nikolay Aleksandrov <nikolay@nvidia.com>
-Message-ID: <a18aaeec-049e-72c1-f981-3e18381b0f49@nvidia.com>
-Date:   Fri, 12 Feb 2021 16:06:32 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
-In-Reply-To: <20210212052031.18123-1-borisp@mellanox.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [213.179.129.39]
-X-ClientProxiedBy: ZR0P278CA0080.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:22::13) To DM6PR12MB4403.namprd12.prod.outlook.com
- (2603:10b6:5:2ab::24)
+        id S231603AbhBLOIa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 09:08:30 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:33043 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231618AbhBLOI0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 09:08:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1613138906; x=1644674906;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=sbCpJdYyppCUErNc+J1AiKE64mDOTNNuoDDrq31UR0U=;
+  b=bv1RxITCimWGmb5cMyLyahZcq1vIXoRZ4ElYt8xb355XO8LJl5/2pNiT
+   z5Uuvweji1binaXZVL/CG4REMEbOsVSbRNn5428Cxc5l3qZc6F5DkaO2C
+   eimoBQKvXaUrAi5nGabtay3h7kQxCdqlBE4p/wTDoI8mEDrfr7mJUXYly
+   fWG279Gwus2pM4EjoZBLR+DNUbNL17uCv/cUKhJmclzv1REe1B3GZXSSG
+   bdA7rgUP2zBq6hcRncNh7xMuXW/Kjl1PnOA+ZI4z5dT+UcgfZKUTUoXi1
+   7cF6p95j2Pk1HkcfwT6LvaQ+SJqemJv6zwPvF7BgqXfFq6MC2kcP0Adgv
+   Q==;
+IronPort-SDR: ORBfvPlSjRZt2SEEnlWW2uxh/ebuCGCNg5dgn4An7yP+PGio79z9VbTda8BB1g8AzVanzOfkB8
+ +UuPDpZ2sLGrrLRyAifWO4hpiyU8b+Ro40GmyGFOaXTxtH+7fBXlfEvsYOp+pCRG5CcA7h3Jc6
+ JwbRlZWBDCcDF/NkV1GCXVNqsvYi/yokmtH3ZBwO+hkVR7+Q5LFXoBV6JnJd8s9NCxrX1hQhq9
+ RcEC6AxVl8dgHwjsRcHxspKm0LWlnVecNo7FD8sM4Kh1U17qSA75MrCevgboYkkFw2rdBIA816
+ jnk=
+X-IronPort-AV: E=Sophos;i="5.81,173,1610434800"; 
+   d="scan'208";a="108995153"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Feb 2021 07:07:08 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 12 Feb 2021 07:07:27 -0700
+Received: from soft-dev2.microsemi.net (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.1979.3 via Frontend Transport; Fri, 12 Feb 2021 07:07:24 -0700
+From:   Bjarni Jonasson <bjarni.jonasson@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Antoine Tenart <atenart@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "Vladimir Oltean" <vladimir.oltean@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+CC:     Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Steen Hegelund <steen.hegelund@microchip.com>
+Subject: [PATCH net v1 1/3] net: phy: mscc: adding LCPLL reset to VSC8514
+Date:   Fri, 12 Feb 2021 15:06:41 +0100
+Message-ID: <20210212140643.23436-1-bjarni.jonasson@microchip.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [10.21.241.151] (213.179.129.39) by ZR0P278CA0080.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:22::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.26 via Frontend Transport; Fri, 12 Feb 2021 14:06:38 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9d6bd300-e865-494e-38f9-08d8cf5f6cf3
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1849:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM5PR12MB1849AAC9A842BDA013ABD901DF8B9@DM5PR12MB1849.namprd12.prod.outlook.com>
-X-Header: ProcessedBy-CMR-outbound
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: p4RRxEH30Cq9sutWwm2847NJGKYKQegE47xioQEnqVvn8K0w+hWVCJVnJVM+xNYKAO1CEx9lPG+FjT3BRhesNUNKZzblRjcPlWs1ahC+tPJJHIdS+MlTYxHgn62ZGDv4VCqVJT1ERIW8gkgUp48bhhEvFQXZ5ZWMvEe57kbX74odIJnElUzM5x2qsvg3H0n427uCEG53U2zJilQKFWElIfp5hYCOz70bHSVeFEW1/Kf+Xo6hNMu5+qpnC4GWv9cHBRU1gfH/EvXtH6kvciEt0LfO/GcrKAffIKnkNxYvGKANEA31xfmYtYPHCi0CZmrxalB+605q27INSOJJkelkh5/mcXHrpF++dA/oZrxzYaIzP1VbdgYD2MBKrbeEc7tv8XXyx2xSh+w8UAqmII1C4H50ZHbf5eGpteAP7PSqs5VgblkIlNQycQkJaaiTaK41g5hyMNKVFC0hHm9mlLdqcXqdnwJun3FxJIt90QmmuRGTWWEr9vxIn9Bpsx0D5fItEC1F/C3heBC3wKdEG0DAaYw3wH2SluGAvdW4LJGImdwXncAst8kdKBt6uvCpKewgZ+MfoGxiMYYjfwPv66/HFrPqAsFivDkyzC2ZAEd0mJz+AEO0rwVAd6eqGzGxHTgp
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4403.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(376002)(136003)(39860400002)(396003)(346002)(186003)(107886003)(31686004)(26005)(921005)(53546011)(16526019)(6486002)(83380400001)(6666004)(956004)(2906002)(2616005)(7416002)(8676002)(478600001)(8936002)(66556008)(36756003)(66476007)(66946007)(54906003)(86362001)(16576012)(316002)(4326008)(31696002)(5660300002)(30864003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?c0VlaVlFT0pZMTRIZFIxMXNzVHpPSlRrRlBLdEcrbTNvVzNWaC9iTndhWXVt?=
- =?utf-8?B?UVlVSmlYUGNuUitMUGxZRXdKanhIYmxYK2RCZklNazRiMHJ3SW1WaUwzUTFz?=
- =?utf-8?B?bDkrdmtiYWRZTEYwSThUMldjdGJUbGpibE9zMUNtcmFYWkdmdUpsTkR5bHFD?=
- =?utf-8?B?L2ZBQzBpNFIzVk9tRFpnQTQ1b1EyaFR5amZRVWZaQWhOYWxNTjVLUDh4TkJJ?=
- =?utf-8?B?OGFGVGNRd2J4UmhqdHhMOVhrZUxpamFPSy9ROGZHSHBVWnQxYmNNZDNkaGk1?=
- =?utf-8?B?SVdKcXRLNzE3bkgyOHJ5RlFiV243V0NBWUkwdFFYRWQ2dHlRNjhZNzBiMXBk?=
- =?utf-8?B?WjFEY0FkSGVMTnRSVUQ3NXRKOXVIYkk2dWRLdXpJM2lOOU9LTGZ5U2MrYkJU?=
- =?utf-8?B?dkVObmttM0tMSGQ3M25xNElBZjJlcEFncjR4eTNHVUN1dWJsZGFrdy92d1FD?=
- =?utf-8?B?TmZJQ0ZZY3gyZVVWclN6VFE5cTdzM2NXdFhVTzZ0djJoSHZ5bEJFVFk2WlBq?=
- =?utf-8?B?VnRxQXNKVWVuZ3lDTXlHOXh1U2d6V20xa1BjS2N5d1ZoSk9xMkhTajlLQWh6?=
- =?utf-8?B?VEdjTTRNcGtsYXN5cEJTWGgwV2lWQnZVMTRXMkV4bGlYWVVJQ3JEOUk2Nm5t?=
- =?utf-8?B?Z0RQcXNFR3luTkExTFFZcmdKN2FHUmw5NEJ0ZCtuMjZKZFNzb0o3WFpyLzBr?=
- =?utf-8?B?Q0s0SHdJSjB5YitEajRseEZBL05LdncvTnBBbXp6eEVGcGxtbWJnOEk3RnE4?=
- =?utf-8?B?VnlLeEhyNVNCRTRaWkxuWUM2Q1lxSytEYUY4ZkJNcFlieEQ0eCtwOWd4NGF0?=
- =?utf-8?B?TGg0WDVvSFg2UDNJdThUQ3d5V2g5QkJaNkd1cmxmenRxd3F5endOZ0dlWm1W?=
- =?utf-8?B?aGZ6TVNuOWpSR2xoMGVTRTRmbjAzN3ZDVXFnb2hnNzdieFh1QysxT2xkK2VI?=
- =?utf-8?B?VEJ6UnlpbENxdmxYU0dPeEJSUDFVc2wwcEdQTjR3ZU1YWGtBOW9pSzFLdHpD?=
- =?utf-8?B?WWUxY2hTWFlnR3JZa0xlL1QwbVYyOEtKcjVBMGQ3ankxV21IbGp0emI0RDBY?=
- =?utf-8?B?MDdnanJsRnJIQnJRVUpuN2t3clg5WHFLZGVUS1BpL2NpK0pBVUdIaGREbGZQ?=
- =?utf-8?B?SWlBeVAzYVNVaDFNYU9NVzRucjRzRzBxOVZvcXVidVFwUUtmam00K2JtNjFE?=
- =?utf-8?B?cTFadFhLWUV3bXdDTlpNSXEwTXRSTmt0ODhVV1pYUDRLY2h6OGZQeUNMNkts?=
- =?utf-8?B?U2dEZHh0MTVLbkJmQmROMnVuQ1VqdUFYL2VHdHBMc3JNV016OWpQS3lLVUV6?=
- =?utf-8?B?TmUvMHdXMm1RcDQ3enJINTB1S3I0ZmtZV3VmWVIxN0VXZkFyOUFrb1BVVWla?=
- =?utf-8?B?VWZobmxDbkFKaUxyME9aTUF0M01kR00yQlBkMlFucWJOdGNjK05SbEpzKzFv?=
- =?utf-8?B?dkJtR2g5b0tFVlB1K0JwTHhpMW5SaDc5OW5yQURocCsxRnpJb2NhWGFaQ2cy?=
- =?utf-8?B?YmNZRkRwSjVrT1pPamJuRXVsZW1HWUVKSVl6MFpZTmwvUWtGcFVmREdGWGdB?=
- =?utf-8?B?eno5ZG1nYkhzamNIUUQ5cnlOb09jWXg3eUN0NmF2Q05MYXFudHlLdVFmV3RE?=
- =?utf-8?B?TXFKWGhlcTR5YVJaQlJUUXRlNmRLd3dHZGxJNkNWdGJvb1g0M2tyRElmNnpB?=
- =?utf-8?B?a2ZET2pMV29uUFZUSm1HbjBMTnRySGc0MkZ1MFBrRkFaL2xSZG40ZGlXQjZv?=
- =?utf-8?Q?1oKbYVFe5+XNjLt2KtF7q6yiC0387LYYXGn0hGc?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9d6bd300-e865-494e-38f9-08d8cf5f6cf3
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4403.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Feb 2021 14:06:43.1976
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3rcapf/jrhAwiHB5cSfEfMpjcVLBN7pJ3vW0lPmnxlyNHAK7A5LPjzYdVcZoQ0UP7ZcHWg6j2iWvbO+S9NRdMw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1849
-X-OriginatorOrg: Nvidia.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1613138811; bh=iuIbeQKc6ubOGNkSHhm77VsT8/QbxDHT61adHE0lDro=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:
-         Authentication-Results:Subject:To:CC:References:From:Message-ID:
-         Date:User-Agent:In-Reply-To:Content-Type:Content-Language:
-         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy:
-         MIME-Version:X-MS-Exchange-MessageSentRepresentingType:
-         X-MS-PublicTrafficType:X-MS-Office365-Filtering-Correlation-Id:
-         X-MS-TrafficTypeDiagnostic:X-MS-Exchange-Transport-Forked:
-         X-Microsoft-Antispam-PRVS:X-Header:X-MS-Oob-TLC-OOBClassifiers:
-         X-MS-Exchange-SenderADCheck:X-Microsoft-Antispam:
-         X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-         X-MS-Exchange-AntiSpam-MessageData:
-         X-MS-Exchange-CrossTenant-Network-Message-Id:
-         X-MS-Exchange-CrossTenant-AuthSource:
-         X-MS-Exchange-CrossTenant-AuthAs:
-         X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-         X-MS-Exchange-CrossTenant-FromEntityHeader:
-         X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-         X-MS-Exchange-CrossTenant-UserPrincipalName:
-         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
-        b=NRov8eZJBarj7cUVKJZ71YpBm5lnM12qutoQgF7ArtmveToSsRUvTWjEsEveSPPzm
-         XfR5qnmxznkPyLewxvWjrVzNhIRgeoZPfDLFtOOoKZf5LdXfoWvLBfgF0P2qq64+wh
-         y1BPJCKhJ6yXDR1uvTyR6XGt6MYIjpEyBfRGdvZRpwV03iNhpkGSahNEWUVNQyUNAy
-         qRzJto6Uoq7EZMssuO05VSIcuVyD0Qw5jdKXOs22JykX9pjcfATAnrczbeWTv4zKzN
-         lp0lhqB9tQ9tk4CmIXc6ZA334nFYuhCRfjX4t2XoHr+t33PRrfI1z81hQEFXQSlbOo
-         1jGF3m6S+BRqg==
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/02/2021 07:20, Boris Pismenny wrote:
-> Signed-off-by: Boris Pismenny <borisp@mellanox.com>
-> Signed-off-by: Ben Ben-Ishay <benishay@mellanox.com>
-> Signed-off-by: Or Gerlitz <ogerlitz@mellanox.com>
-> Signed-off-by: Yoray Zack <yorayz@mellanox.com>
-> ---
->  Documentation/networking/index.rst           |   1 +
->  Documentation/networking/tcp-ddp-offload.rst | 296 +++++++++++++++++++
->  2 files changed, 297 insertions(+)
->  create mode 100644 Documentation/networking/tcp-ddp-offload.rst
-> 
+At Power-On Reset, transients may cause the LCPLL to lock onto a
+clock that is momentarily unstable. This is normally seen in QSGMII
+setups where the higher speed 6G SerDes is being used.
+This patch adds an initial LCPLL Reset to the PHY (first instance)
+to avoid this issue.
 
-Hi Boris,
-I got interested and read through the doc, there are a few typos below.
+Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+Signed-off-by: Bjarni Jonasson <bjarni.jonasson@microchip.com>
+Fixes: e4f9ba642f0b ("net: phy: mscc: add support for VSC8514 PHY.")
+---
+ drivers/net/phy/mscc/mscc.h      |  22 ++++
+ drivers/net/phy/mscc/mscc_main.c | 181 +++++++++++++++++++++++++------
+ 2 files changed, 170 insertions(+), 33 deletions(-)
 
-> diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
-> index b8a29997d433..99644159a0cc 100644
-> --- a/Documentation/networking/index.rst
-> +++ b/Documentation/networking/index.rst
-> @@ -99,6 +99,7 @@ Contents:
->     sysfs-tagging
->     tc-actions-env-rules
->     tcp-thin
-> +   tcp-ddp-offload
->     team
->     timestamping
->     tipc
-> diff --git a/Documentation/networking/tcp-ddp-offload.rst b/Documentation/networking/tcp-ddp-offload.rst
-> new file mode 100644
-> index 000000000000..109810e447bf
-> --- /dev/null
-> +++ b/Documentation/networking/tcp-ddp-offload.rst
-> @@ -0,0 +1,296 @@
-> +.. SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +
-> +=================================
-> +TCP direct data placement offload
-> +=================================
-> +
-> +Overview
-> +========
-> +
-> +The Linux kernel TCP direct data placement (DDP) offload infrastructure
-> +provides tagged request-response protocols, such as NVMe-TCP, the ability to
-> +place response data directly in pre-registered buffers according to header
-> +tags. DDP is particularly useful for data-intensive pipelined protocols whose
-> +responses may be reordered.
-> +
-> +For example, in NVMe-TCP numerous read requests are sent together and each
-> +request is tagged using the PDU header CID field. Receiving servers process
-> +requests as fast as possible and sometimes responses for smaller requests
-> +bypasses responses to larger requests, i.e., read 4KB bypasses read 1GB.
-> +Thereafter, clients corrleate responses to requests using PDU header CID tags.
-
-s/corrleate/correlate/
-
-> +The processing of each response requires copying data from SKBs to read
-> +request destination buffers; The offload avoids this copy. The offload is
-> +oblivious to destination buffers which can reside either in userspace
-> +(O_DIRECT) or in kernel pagecache.
-> +
-> +Request TCP byte-stream:
-> +
-> +.. parsed-literal::
-> +
-> + +---------------+-------+---------------+-------+---------------+-------+
-> + | PDU hdr CID=1 | Req 1 | PDU hdr CID=2 | Req 2 | PDU hdr CID=3 | Req 3 |
-> + +---------------+-------+---------------+-------+---------------+-------+
-> +
-> +Response TCP byte-stream:
-> +
-> +.. parsed-literal::
-> +
-> + +---------------+--------+---------------+--------+---------------+--------+
-> + | PDU hdr CID=2 | Resp 2 | PDU hdr CID=3 | Resp 3 | PDU hdr CID=1 | Resp 1 |
-> + +---------------+--------+---------------+--------+---------------+--------+
-> +
-> +Offloading requires no new SKB bits. Instead, the driver builds SKB page
-> +fragments that point destination buffers. Consequently, SKBs represent the
-> +original data on the wire, which enables *transparent* inter-operation with the
-> +network stack.  To avoid copies between SKBs and destination buffers, the
-> +layer-5 protocol (L5P) will check ``if (src == dst)`` for SKB page fragments,
-> +success indicates that data is already placed there by NIC hardware and copy
-> +should be skipped.
-> +
-> +Offloading does require NIC hardware to track L5P procotol framing, similarly
-
-s/procotol/protocol/
-
-> +to RX TLS offload (see documentation at
-> +:ref:`Documentation/networking/tls-offload.rst <tls_offload>`).  NIC hardware
-> +will parse PDU headers extract fields such as operation type, length, ,tag
-> +identifier, etc. and offload only segments that correspond to tags registered
-> +with the NIC, see the :ref:`buf_reg` section.
-> +
-> +Device configuration
-> +====================
-> +
-> +During driver initialization the device sets the ``NETIF_F_HW_TCP_DDP`` and
-> +feature and installs its
-> +:c:type:`struct tcp_ddp_ops <tcp_ddp_ops>`
-> +pointer in the :c:member:`tcp_ddp_ops` member of the
-> +:c:type:`struct net_device <net_device>`.
-> +
-> +Later, after the L5P completes its handshake offload is installed on the socket.
-> +If offload installation fails, then the connection is handled by software as if
-> +offload was not attempted. Offload installation should configure
-> +
-> +To request offload for a socket `sk`, the L5P calls :c:member:`tcp_ddp_sk_add`:
-> +
-> +.. code-block:: c
-> +
-> + int (*tcp_ddp_sk_add)(struct net_device *netdev,
-> +		      struct sock *sk,
-> +		      struct tcp_ddp_config *config);
-> +
-> +The function return 0 for success. In case of failure, L5P software should
-> +fallback to normal non-offloaded operation.  The `config` parameter indicates
-> +the L5P type and any metadata relevant for that protocol. For example, in
-> +NVMe-TCP the following config is used:
-> +
-> +.. code-block:: c
-> +
-> + /**
-> +  * struct nvme_tcp_ddp_config - nvme tcp ddp configuration for an IO queue
-> +  *
-> +  * @pfv:        pdu version (e.g., NVME_TCP_PFV_1_0)
-> +  * @cpda:       controller pdu data alignmend (dwords, 0's based)
-
-s/alignmend/alignment/
-
-> +  * @dgst:       digest types enabled.
-> +  *              The netdev will offload crc if ddp_crc is supported.
-> +  * @queue_size: number of nvme-tcp IO queue elements
-> +  * @queue_id:   queue identifier
-> +  * @cpu_io:     cpu core running the IO thread for this queue
-> +  */
-> + struct nvme_tcp_ddp_config {
-> +	struct tcp_ddp_config   cfg;
-> +
-> +	u16			pfv;
-> +	u8			cpda;
-> +	u8			dgst;
-> +	int			queue_size;
-> +	int			queue_id;
-> +	int			io_cpu;
-> + };
-> +
-> +When offload is not needed anymore, e.g., the socket is being released, the L5P
-> +calls :c:member:`tcp_ddp_sk_del` to release device contexts:
-> +
-> +.. code-block:: c
-> +
-> + void (*tcp_ddp_sk_del)(struct net_device *netdev,
-> +		        struct sock *sk);
-> +
-> +Normal operation
-> +================
-> +
-> +At the very least, the device maintains the following state for each connection:
-> +
-> + * 5-tuple
-> + * expected TCP sequence number
-> + * mapping between tags and corresponding buffers
-> + * current offset within PDU, PDU length, current PDU tag
-> +
-> +NICs should not assume any correleation between PDUs and TCP packets.  Assuming
-
-s/correleation/correlation/
-
-> +that TCP packets arrive in-order, offload will place PDU payload directly
-> +inside corresponding registered buffers. No packets are to be delayed by NIC
-> +offload. If offload is not possible, than the packet is to be passed as-is to
-> +software. To perform offload on incoming packets without buffering packets in
-> +the NIC, the NIC stores some inter-packet state, such as partial PDU headers.
-> +
-> +RX data-path
-> +------------
-> +
-> +After the device validates TCP checksums, it can perform DDP offload.  The
-> +packet is steered to the DDP offload context according to the 5-tuple.
-> +Thereafter, the expected TCP sequence number is checked against the packet's
-> +TCP sequence number. If there's a match, then offload is performed: PDU payload
-> +is DMA written to corresponding destination buffer according to the PDU header
-> +tag.  The data should be DMAed only once, and the NIC receive ring will only
-> +store the remaining TCP and PDU headers.
-> +
-> +We remark that a single TCP packet may have numerous PDUs embedded inside. NICs
-> +can choose to offload one or more of these PDUs according to various
-> +trade-offs. Possibly, offloading such small PDUs is of little value, and it is
-> +better to leave it to software.
-> +
-> +Upon receiving a DDP offloaded packet, the driver reconstructs the original SKB
-> +using page frags, while pointing to the destination buffers whenever possible.
-> +This method enables seemless integration with the network stack, which can
-
-s/seemless/seamless/
-
-> +inspect and modify packet fields transperently to the offload.
-
-s/transperently/transparently/
-
-> +
-> +.. _buf_reg:
-> +
-> +Destination buffer registration
-> +-------------------------------
-> +
-> +To register the mapping betwteen tags and destination buffers for a socket
-
-s/betwteen/between/
-
-> +`sk`, the L5P calls :c:member:`tcp_ddp_setup` of :c:type:`struct tcp_ddp_ops
-> +<tcp_ddp_ops>`:
-> +
-> +.. code-block:: c
-> +
-> + int (*tcp_ddp_setup)(struct net_device *netdev,
-> +		     struct sock *sk,
-> +		     struct tcp_ddp_io *io);
-> +
-> +
-> +The `io` provides the buffer via scatter-gather list (`sg_table`) and
-> +corresponding tag (`command_id`):
-> +
-> +.. code-block:: c
-> + /**
-> +  * struct tcp_ddp_io - tcp ddp configuration for an IO request.
-> +  *
-> +  * @command_id:  identifier on the wire associated with these buffers
-> +  * @nents:       number of entries in the sg_table
-> +  * @sg_table:    describing the buffers for this IO request
-> +  * @first_sgl:   first SGL in sg_table
-> +  */
-> + struct tcp_ddp_io {
-> +	u32			command_id;
-> +	int			nents;
-> +	struct sg_table		sg_table;
-> +	struct scatterlist	first_sgl[SG_CHUNK_SIZE];
-> + };
-> +
-> +After the buffers have been consumed by the L5P, to release the NIC mapping of
-> +buffers the L5P calls :c:member:`tcp_ddp_teardown` of :c:type:`struct
-> +tcp_ddp_ops <tcp_ddp_ops>`:
-> +
-> +.. code-block:: c
-> +
-> + int (*tcp_ddp_teardown)(struct net_device *netdev,
-> +			struct sock *sk,
-> +			struct tcp_ddp_io *io,
-> +			void *ddp_ctx);
-> +
-> +`tcp_ddp_teardown` receives the same `io` context and an additional opaque
-> +`ddp_ctx` that is used for asynchronous teardown, see the :ref:`async_release`
-> +section.
-> +
-> +.. _async_release:
-> +
-> +Asynchronous teardown
-> +---------------------
-> +
-> +To teardown the association between tags and buffers and allow tag reuse NIC HW
-> +is called by the NIC driver during `tcp_ddp_teardown`. This operation may be
-> +performed either synchronously or asynchronously. In asynchronous teardown,
-> +`tcp_ddp_teardown` returns immediately without unmapping NIC HW buffers. Later,
-> +when the unmapping completes by NIC HW, the NIC driver will call up to L5P
-> +using :c:member:`ddp_teardown_done` of :c:type:`struct tcp_ddp_ulp_ops`:
-> +
-> +.. code-block:: c
-> +
-> + void (*ddp_teardown_done)(void *ddp_ctx);
-> +
-> +The `ddp_ctx` parameter passed in `ddp_teardown_done` is the same on provided
-> +in `tcp_ddp_teardown` and it is used to carry some context about the buffers
-> +and tags that are released.
-> +
-> +Resync handling
-> +===============
-> +
-> +In presence of packet drops or network packet reordering, the device may lose
-> +synchronization between the TCP stream and the L5P framing, and require a
-> +resync with the kernel's TCP stack. When the device is out of sync, no offload
-> +takes place, and packets are passed as-is to software. (resync is very similar
-> +to TLS offload (see documentation at
-> +:ref:`Documentation/networking/tls-offload.rst <tls_offload>`)
-> +
-> +If only packets with L5P data are lost or reordered, then resynchronization may
-> +be avoided by NIC HW that keeps tracking PDU headers. If, however, PDU headers
-> +are reordered, then resynchronization is necessary.
-> +
-> +To resynchronize hardware during traffic, we use a handshake between hardware
-> +and software. The NIC HW searches for a sequence of bytes that identifies L5P
-> +headers (i.e., magic pattern).  For example, in NVMe-TCP, the PDU operation
-> +type can be used for this purpose.  Using the PDU header length field, the NIC
-> +HW will continue to find and match magic patterns in subsequent PDU headers. If
-> +the pattern is missing in an expected position, then searching for the pattern
-> +starts anew.
-> +
-> +The NIC will not resume offload when the magic pattern is first identified.
-> +Instead, it will request L5P software to confirm that indeed this is a PDU
-> +header. To request confirmation the NIC driver calls up to L5P using
-> +:c:member:`*resync_request` of :c:type:`struct tcp_ddp_ulp_ops`:
-> +
-> +.. code-block:: c
-> +
-> +  bool (*resync_request)(struct sock *sk, u32 seq, u32 flags);
-> +
-> +The `seq` field contains the TCP sequence of the last byte in the PDU header.
-> +L5P software will respond to this request after observing the packet containing
-> +TCP sequence `seq` in-order. If the PDU header is indeed there, then L5P
-> +software calls the NIC driver using the :c:member:`tcp_ddp_resync` function of
-> +the :c:type:`struct tcp_ddp_ops <tcp_ddp_ops>` inside the :c:type:`struct
-> +net_device <net_device>` while passing the same `seq` to confirm it is a PDU
-> +header.
-> +
-> +.. code-block:: c
-> +
-> + void (*tcp_ddp_resync)(struct net_device *netdev,
-> +		       struct sock *sk, u32 seq);
-> +
-> +Statistics
-> +==========
-> +
-> +Per L5P protocol, the following NIC driver must report statistics for the above
-> +netdevice operations and packets processed by offload. For example, NVMe-TCP
-> +offload reports:
-> +
-> + * ``rx_nvmeotcp_queue_init`` - number of NVMe-TCP offload contexts created.
-> + * ``rx_nvmeotcp_queue_teardown`` - number of NVMe-TCP offload contexts
-> +   destroyed.
-> + * ``rx_nvmeotcp_ddp_setup`` - number of DDP buffers mapped.
-> + * ``rx_nvmeotcp_ddp_setup_fail`` - number of DDP buffers mapping that failed.
-> + * ``rx_nvmeotcp_ddp_teardown`` - number of DDP buffers unmapped.
-> + * ``rx_nvmeotcp_drop`` - number of packets dropped in the driver due to fatal
-> +   errors.
-> + * ``rx_nvmeotcp_resync`` - number of packets with resync requests.
-> + * ``rx_nvmeotcp_offload_packets`` - number of packets that used offload.
-> + * ``rx_nvmeotcp_offload_bytes`` - number of bytes placed in DDP buffers.
-> +
-> +NIC requirements
-> +================
-> +
-> +NIC hardware should meet the following requirements to provide this offload:
-> +
-> + * Offload must never buffer TCP packets.
-> + * Offload must never modify TCP packet headers.
-> + * Offload must never reorder TCP packets within a flow.
-> + * Offload must never drop TCP packets.
-> + * Offload must not depend on any TCP fields beyond the
-> +   5-tuple and TCP sequence number.
-> 
-
-Cheers,
- Nik
+diff --git a/drivers/net/phy/mscc/mscc.h b/drivers/net/phy/mscc/mscc.h
+index 9481bce94c2e..6343fd49171a 100644
+--- a/drivers/net/phy/mscc/mscc.h
++++ b/drivers/net/phy/mscc/mscc.h
+@@ -102,6 +102,7 @@ enum rgmii_clock_delay {
+ #define PHY_MCB_S6G_READ		  BIT(30)
+ 
+ #define PHY_S6G_PLL5G_CFG0		  0x06
++#define PHY_S6G_PLL5G_CFG2		  0x08
+ #define PHY_S6G_LCPLL_CFG		  0x11
+ #define PHY_S6G_PLL_CFG			  0x2b
+ #define PHY_S6G_COMMON_CFG		  0x2c
+@@ -121,6 +122,9 @@ enum rgmii_clock_delay {
+ #define PHY_S6G_PLL_FSM_CTRL_DATA_POS	  8
+ #define PHY_S6G_PLL_FSM_ENA_POS		  7
+ 
++#define PHY_S6G_CFG2_FSM_DIS              1
++#define PHY_S6G_CFG2_FSM_CLK_BP          23
++
+ #define MSCC_EXT_PAGE_ACCESS		  31
+ #define MSCC_PHY_PAGE_STANDARD		  0x0000 /* Standard registers */
+ #define MSCC_PHY_PAGE_EXTENDED		  0x0001 /* Extended registers */
+@@ -412,6 +416,24 @@ struct vsc8531_edge_rate_table {
+ };
+ #endif /* CONFIG_OF_MDIO */
+ 
++enum csr_target {
++	FC_BUFFER   = 0x04,
++	HOST_MAC    = 0x05,
++	LINE_MAC    = 0x06,
++	MACRO_CTRL  = 0x07,
++	ANA0_INGR   = 0x08,
++	ANA0_EGR    = 0x09,
++	ANA1_INGR   = 0x0A,
++	ANA1_EGR    = 0x0B,
++	ANA2_INGR   = 0x0C,
++	ANA2_EGR    = 0x0D,
++	PROC_0      = 0x0E,
++	PROC_2      = 0x0F,
++	MACSEC_INGR = 0x38,
++	MACSEC_EGR  = 0x3C,
++	SPI_IO      = 0x40,
++};
++
+ #if IS_ENABLED(CONFIG_MACSEC)
+ int vsc8584_macsec_init(struct phy_device *phydev);
+ void vsc8584_handle_macsec_interrupt(struct phy_device *phydev);
+diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
+index 2f2157e3deab..12c4c1de6001 100644
+--- a/drivers/net/phy/mscc/mscc_main.c
++++ b/drivers/net/phy/mscc/mscc_main.c
+@@ -107,6 +107,11 @@ static const struct vsc8531_edge_rate_table edge_table[] = {
+ };
+ #endif
+ 
++static u32 vsc85xx_csr_read(struct phy_device *phydev,
++			    enum csr_target target, u32 reg);
++static int vsc85xx_csr_write(struct phy_device *phydev,
++			     enum csr_target target, u32 reg, u32 val);
++
+ static int vsc85xx_phy_read_page(struct phy_device *phydev)
+ {
+ 	return __phy_read(phydev, MSCC_EXT_PAGE_ACCESS);
+@@ -1131,6 +1136,96 @@ static int vsc8574_config_pre_init(struct phy_device *phydev)
+ 	return ret;
+ }
+ 
++/* Access LCPLL Cfg_2 */
++static void vsc8584_pll5g_cfg2_wr(struct phy_device *phydev,
++				  bool disable_fsm, bool ena_clk_bypass)
++{
++	u32 rd_dat;
++
++	rd_dat = vsc85xx_csr_read(phydev, MACRO_CTRL, PHY_S6G_PLL5G_CFG2);
++	rd_dat &= ~(BIT(PHY_S6G_CFG2_FSM_CLK_BP) | BIT(PHY_S6G_CFG2_FSM_DIS));
++	rd_dat |= (disable_fsm << PHY_S6G_CFG2_FSM_DIS) |
++		  (ena_clk_bypass << PHY_S6G_CFG2_FSM_CLK_BP);
++	vsc85xx_csr_write(phydev, MACRO_CTRL, PHY_S6G_PLL5G_CFG2, rd_dat);
++}
++
++/* trigger a read to the spcified MCB */
++static int vsc8584_mcb_rd_trig(struct phy_device *phydev,
++			       u32 mcb_reg_addr, u8 mcb_slave_num)
++{
++	u32 rd_dat = 0;
++
++	/* read MCB */
++	vsc85xx_csr_write(phydev, MACRO_CTRL, mcb_reg_addr,
++			  (0x40000000 | (1L << mcb_slave_num)));
++
++	return read_poll_timeout(vsc85xx_csr_read, rd_dat,
++				 !(rd_dat & 0x40000000),
++				 4000, 200000, 0,
++				 phydev, MACRO_CTRL, mcb_reg_addr);
++}
++
++/* trigger a write to the spcified MCB */
++static int vsc8584_mcb_wr_trig(struct phy_device *phydev,
++			       u32 mcb_reg_addr,
++			       u8 mcb_slave_num)
++{
++	u32 rd_dat = 0;
++
++	/* write back MCB */
++	vsc85xx_csr_write(phydev, MACRO_CTRL, mcb_reg_addr,
++			  (0x80000000 | (1L << mcb_slave_num)));
++
++	return read_poll_timeout(vsc85xx_csr_read, rd_dat,
++				 !(rd_dat & 0x80000000),
++				 4000, 200000, 0,
++				 phydev, MACRO_CTRL, mcb_reg_addr);
++}
++
++/* Sequence to Reset LCPLL for the VIPER and ELISE PHY */
++static int vsc8584_pll5g_reset(struct phy_device *phydev)
++{
++	bool dis_fsm;
++	bool ena_clk_bypass;
++	int ret = 0;
++
++	ret = vsc8584_mcb_rd_trig(phydev, 0x11, 0);
++	if (ret < 0)
++		goto done;
++	dis_fsm = 1;
++	ena_clk_bypass = 0;
++
++	/* Reset LCPLL */
++	vsc8584_pll5g_cfg2_wr(phydev, dis_fsm, ena_clk_bypass);
++
++	/* write back LCPLL MCB */
++	ret = vsc8584_mcb_wr_trig(phydev, 0x11, 0);
++	if (ret < 0)
++		goto done;
++
++	/* 10 mSec sleep while LCPLL is hold in reset */
++	usleep_range(10000, 20000);
++
++	/* read LCPLL MCB into CSRs */
++	ret = vsc8584_mcb_rd_trig(phydev, 0x11, 0);
++	if (ret < 0)
++		goto done;
++	dis_fsm = 0;
++	ena_clk_bypass = 0;
++
++	/* Release the Reset of LCPLL */
++	vsc8584_pll5g_cfg2_wr(phydev, dis_fsm, ena_clk_bypass);
++
++	/* write back LCPLL MCB */
++	ret = vsc8584_mcb_wr_trig(phydev, 0x11, 0);
++	if (ret < 0)
++		goto done;
++
++	usleep_range(110000, 200000);
++done:
++	return ret;
++}
++
+ /* bus->mdio_lock should be locked when using this function */
+ static int vsc8584_config_pre_init(struct phy_device *phydev)
+ {
+@@ -1569,8 +1664,16 @@ static int vsc8514_config_pre_init(struct phy_device *phydev)
+ 		{0x16b2, 0x00007000},
+ 		{0x16b4, 0x00000814},
+ 	};
++	struct device *dev = &phydev->mdio.dev;
+ 	unsigned int i;
+ 	u16 reg;
++	int ret;
++
++	ret = vsc8584_pll5g_reset(phydev);
++	if (ret < 0) {
++		dev_err(dev, "failed LCPLL reset, ret: %d\n", ret);
++		return ret;
++	}
+ 
+ 	phy_base_write(phydev, MSCC_EXT_PAGE_ACCESS, MSCC_PHY_PAGE_STANDARD);
+ 
+@@ -1605,8 +1708,8 @@ static int vsc8514_config_pre_init(struct phy_device *phydev)
+ 	return 0;
+ }
+ 
+-static u32 vsc85xx_csr_ctrl_phy_read(struct phy_device *phydev,
+-				     u32 target, u32 reg)
++static u32 vsc85xx_csr_read(struct phy_device *phydev,
++			    enum csr_target target, u32 reg)
+ {
+ 	unsigned long deadline;
+ 	u32 val, val_l, val_h;
+@@ -1624,11 +1727,17 @@ static u32 vsc85xx_csr_ctrl_phy_read(struct phy_device *phydev,
+ 	phy_base_write(phydev, MSCC_EXT_PAGE_CSR_CNTL_20,
+ 		       MSCC_PHY_CSR_CNTL_20_TARGET(target >> 2));
+ 
++	if ((target >> 2 == 0x1) || (target >> 2 == 0x3))
++		/* non-MACsec access */
++		target &= 0x3;
++	else
++		target = 0;
++
+ 	/* Trigger CSR Action - Read into the CSR's */
+ 	phy_base_write(phydev, MSCC_EXT_PAGE_CSR_CNTL_19,
+ 		       MSCC_PHY_CSR_CNTL_19_CMD | MSCC_PHY_CSR_CNTL_19_READ |
+ 		       MSCC_PHY_CSR_CNTL_19_REG_ADDR(reg) |
+-		       MSCC_PHY_CSR_CNTL_19_TARGET(target & 0x3));
++		       MSCC_PHY_CSR_CNTL_19_TARGET(target));
+ 
+ 	/* Wait for register access*/
+ 	deadline = jiffies + msecs_to_jiffies(PROC_CMD_NCOMPLETED_TIMEOUT_MS);
+@@ -1653,8 +1762,8 @@ static u32 vsc85xx_csr_ctrl_phy_read(struct phy_device *phydev,
+ 	return (val_h << 16) | val_l;
+ }
+ 
+-static int vsc85xx_csr_ctrl_phy_write(struct phy_device *phydev,
+-				      u32 target, u32 reg, u32 val)
++static int vsc85xx_csr_write(struct phy_device *phydev,
++			     enum csr_target target, u32 reg, u32 val)
+ {
+ 	unsigned long deadline;
+ 
+@@ -1677,11 +1786,17 @@ static int vsc85xx_csr_ctrl_phy_write(struct phy_device *phydev,
+ 	/* Write the Most Significant Word (MSW) (18) */
+ 	phy_base_write(phydev, MSCC_EXT_PAGE_CSR_CNTL_18, (u16)(val >> 16));
+ 
++	if ((target >> 2 == 0x1) || (target >> 2 == 0x3))
++		/* non-MACsec access */
++		target &= 0x3;
++	else
++		target = 0;
++
+ 	/* Trigger CSR Action - Write into the CSR's */
+ 	phy_base_write(phydev, MSCC_EXT_PAGE_CSR_CNTL_19,
+ 		       MSCC_PHY_CSR_CNTL_19_CMD |
+ 		       MSCC_PHY_CSR_CNTL_19_REG_ADDR(reg) |
+-		       MSCC_PHY_CSR_CNTL_19_TARGET(target & 0x3));
++		       MSCC_PHY_CSR_CNTL_19_TARGET(target));
+ 
+ 	/* Wait for register access */
+ 	deadline = jiffies + msecs_to_jiffies(PROC_CMD_NCOMPLETED_TIMEOUT_MS);
+@@ -1707,15 +1822,15 @@ static int __phy_write_mcb_s6g(struct phy_device *phydev, u32 reg, u8 mcb,
+ 	u32 val;
+ 	int ret;
+ 
+-	ret = vsc85xx_csr_ctrl_phy_write(phydev, PHY_MCB_TARGET, reg,
+-					 op | (1 << mcb));
++	ret = vsc85xx_csr_write(phydev, PHY_MCB_TARGET, reg,
++				op | (1 << mcb));
+ 	if (ret)
+ 		return -EINVAL;
+ 
+ 	deadline = jiffies + msecs_to_jiffies(PROC_CMD_NCOMPLETED_TIMEOUT_MS);
+ 	do {
+ 		usleep_range(500, 1000);
+-		val = vsc85xx_csr_ctrl_phy_read(phydev, PHY_MCB_TARGET, reg);
++		val = vsc85xx_csr_read(phydev, PHY_MCB_TARGET, reg);
+ 
+ 		if (val == 0xffffffff)
+ 			return -EIO;
+@@ -1796,41 +1911,41 @@ static int vsc8514_config_init(struct phy_device *phydev)
+ 	/* lcpll mcb */
+ 	phy_update_mcb_s6g(phydev, PHY_S6G_LCPLL_CFG, 0);
+ 	/* pll5gcfg0 */
+-	ret = vsc85xx_csr_ctrl_phy_write(phydev, PHY_MCB_TARGET,
+-					 PHY_S6G_PLL5G_CFG0, 0x7036f145);
++	ret = vsc85xx_csr_write(phydev, PHY_MCB_TARGET,
++				PHY_S6G_PLL5G_CFG0, 0x7036f145);
+ 	if (ret)
+ 		goto err;
+ 
+ 	phy_commit_mcb_s6g(phydev, PHY_S6G_LCPLL_CFG, 0);
+ 	/* pllcfg */
+-	ret = vsc85xx_csr_ctrl_phy_write(phydev, PHY_MCB_TARGET,
+-					 PHY_S6G_PLL_CFG,
+-					 (3 << PHY_S6G_PLL_ENA_OFFS_POS) |
+-					 (120 << PHY_S6G_PLL_FSM_CTRL_DATA_POS)
+-					 | (0 << PHY_S6G_PLL_FSM_ENA_POS));
++	ret = vsc85xx_csr_write(phydev, PHY_MCB_TARGET,
++				PHY_S6G_PLL_CFG,
++				(3 << PHY_S6G_PLL_ENA_OFFS_POS) |
++				(120 << PHY_S6G_PLL_FSM_CTRL_DATA_POS)
++				| (0 << PHY_S6G_PLL_FSM_ENA_POS));
+ 	if (ret)
+ 		goto err;
+ 
+ 	/* commoncfg */
+-	ret = vsc85xx_csr_ctrl_phy_write(phydev, PHY_MCB_TARGET,
+-					 PHY_S6G_COMMON_CFG,
+-					 (0 << PHY_S6G_SYS_RST_POS) |
+-					 (0 << PHY_S6G_ENA_LANE_POS) |
+-					 (0 << PHY_S6G_ENA_LOOP_POS) |
+-					 (0 << PHY_S6G_QRATE_POS) |
+-					 (3 << PHY_S6G_IF_MODE_POS));
++	ret = vsc85xx_csr_write(phydev, PHY_MCB_TARGET,
++				PHY_S6G_COMMON_CFG,
++				(0 << PHY_S6G_SYS_RST_POS) |
++				(0 << PHY_S6G_ENA_LANE_POS) |
++				(0 << PHY_S6G_ENA_LOOP_POS) |
++				(0 << PHY_S6G_QRATE_POS) |
++				(3 << PHY_S6G_IF_MODE_POS));
+ 	if (ret)
+ 		goto err;
+ 
+ 	/* misccfg */
+-	ret = vsc85xx_csr_ctrl_phy_write(phydev, PHY_MCB_TARGET,
+-					 PHY_S6G_MISC_CFG, 1);
++	ret = vsc85xx_csr_write(phydev, PHY_MCB_TARGET,
++				PHY_S6G_MISC_CFG, 1);
+ 	if (ret)
+ 		goto err;
+ 
+ 	/* gpcfg */
+-	ret = vsc85xx_csr_ctrl_phy_write(phydev, PHY_MCB_TARGET,
+-					 PHY_S6G_GPC_CFG, 768);
++	ret = vsc85xx_csr_write(phydev, PHY_MCB_TARGET,
++				PHY_S6G_GPC_CFG, 768);
+ 	if (ret)
+ 		goto err;
+ 
+@@ -1841,8 +1956,8 @@ static int vsc8514_config_init(struct phy_device *phydev)
+ 		usleep_range(500, 1000);
+ 		phy_update_mcb_s6g(phydev, PHY_MCB_S6G_CFG,
+ 				   0); /* read 6G MCB into CSRs */
+-		reg = vsc85xx_csr_ctrl_phy_read(phydev, PHY_MCB_TARGET,
+-						PHY_S6G_PLL_STATUS);
++		reg = vsc85xx_csr_read(phydev, PHY_MCB_TARGET,
++				       PHY_S6G_PLL_STATUS);
+ 		if (reg == 0xffffffff) {
+ 			phy_unlock_mdio_bus(phydev);
+ 			return -EIO;
+@@ -1856,8 +1971,8 @@ static int vsc8514_config_init(struct phy_device *phydev)
+ 	}
+ 
+ 	/* misccfg */
+-	ret = vsc85xx_csr_ctrl_phy_write(phydev, PHY_MCB_TARGET,
+-					 PHY_S6G_MISC_CFG, 0);
++	ret = vsc85xx_csr_write(phydev, PHY_MCB_TARGET,
++				PHY_S6G_MISC_CFG, 0);
+ 	if (ret)
+ 		goto err;
+ 
+@@ -1868,8 +1983,8 @@ static int vsc8514_config_init(struct phy_device *phydev)
+ 		usleep_range(500, 1000);
+ 		phy_update_mcb_s6g(phydev, PHY_MCB_S6G_CFG,
+ 				   0); /* read 6G MCB into CSRs */
+-		reg = vsc85xx_csr_ctrl_phy_read(phydev, PHY_MCB_TARGET,
+-						PHY_S6G_IB_STATUS0);
++		reg = vsc85xx_csr_read(phydev, PHY_MCB_TARGET,
++				       PHY_S6G_IB_STATUS0);
+ 		if (reg == 0xffffffff) {
+ 			phy_unlock_mdio_bus(phydev);
+ 			return -EIO;
+-- 
+2.17.1
 
