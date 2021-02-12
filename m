@@ -2,166 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94E7331A0A8
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 15:34:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EB5331A0AF
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 15:36:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229961AbhBLOdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 09:33:46 -0500
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:36376 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229647AbhBLOdl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 09:33:41 -0500
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 11CEVf9t111660;
-        Fri, 12 Feb 2021 08:31:41 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1613140301;
-        bh=lUakNV+CV5NffMQmGC2Drd4lNwe79cgtFz1V4jCRJcY=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=lbseuewDdWlwxmebUNQ0jeNXKuGvUuIfQVSJjNLEKm1S8j+KqXF7lDUpoaMmbawQt
-         rkyu1MpMhaWm3RagWE/UhEIr4fK9IH6SlrSTnPvJylIoigO+WYMygLn6vOTTVByei5
-         Lt3+0OIbkUVogWqSTMckQZguGd7RM9DKNpY34SXE=
-Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 11CEVfNa091029
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 12 Feb 2021 08:31:41 -0600
-Received: from DLEE112.ent.ti.com (157.170.170.23) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Fri, 12
- Feb 2021 08:31:41 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Fri, 12 Feb 2021 08:31:41 -0600
-Received: from [10.250.234.120] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 11CEVYtG076171;
-        Fri, 12 Feb 2021 08:31:35 -0600
-Subject: Re: [PATCH v4 net-next 0/9] Cleanup in brport flags switchdev offload
- for DSA
-To:     Grygorii Strashko <grygorii.strashko@ti.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        <UNGLinuxDriver@microchip.com>, Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ivan Vecera <ivecera@redhat.com>, <linux-omap@vger.kernel.org>
-References: <20210212010531.2722925-1-olteanv@gmail.com>
- <97ae293a-f59d-cc7c-21a6-f83880c69c71@ti.com>
-From:   Vignesh Raghavendra <vigneshr@ti.com>
-Message-ID: <ba7350f1-f9ff-b77e-65c9-cd5a4ae652d8@ti.com>
-Date:   Fri, 12 Feb 2021 20:01:33 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S230489AbhBLOfG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 09:35:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38996 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229737AbhBLOes (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 09:34:48 -0500
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81619C061756
+        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 06:34:07 -0800 (PST)
+Received: by mail-io1-xd2c.google.com with SMTP id f6so9473073ioz.5
+        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 06:34:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GbtpEIXRgUa1i5gUQDSm0FSLWtb7T5/l4I8yduAZ2+8=;
+        b=mBe7FwHYOyERl0kSHyu8x2WTruC+mSGQOqSJs/otfdn320EwDaKj09QJaU/Obj/hPv
+         4OShkbtw0mQjuIQWU/uOKi8kAnjc1AaeFDtMd/XF1rqi0y+DdhB9ydtwx0eFSfkhFyED
+         E+XOaz9UgHGXsXA8aWkGXt2Vxdm1Xkav2P2tROpfKMAia/NDMkdfOLfbf8j4qRn/Jo1O
+         Mo+iwdee6uQK3j/l2M+2rGQUdad+doGvvpA0xrvVDrz8x6H/nL74NBdZrRoJ/rFlZCGZ
+         uSDq1Qetf8sswWKf0GekXdItRBX4OHVhs+5RcAogbKs08v3vxJhr8h3+ajURMAQBMhaL
+         0FfA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GbtpEIXRgUa1i5gUQDSm0FSLWtb7T5/l4I8yduAZ2+8=;
+        b=B6f1SO6gmnrwJuaLYWEjolngFxABwhxrNadqUCcYT+oxDelyevTXxI9W1h5HK+Trt0
+         cSQ3wLj0rA1cC7Td2/xHyc37ybRqwBOM4ZeaMdHfk4VxEmDd7F24G7mkSgIUSvh9Hncn
+         ggCi6eFg85Fq6lHEt3NLZvfvPLKNhdu4c98bHTdoXA+ne45cR2gTt8m/HufvwJJJArTa
+         pqfLsjwZFIwT5no6dph842wrr0sTpLGvx6f+IrLqolsJ6Vl4h34tUVv4uIOd1B/cewtD
+         +iYGUxettL6rrEnbUAAY36IBMv/cbnKAP6OLJRrju+tbb/hy6ZlUadwGpP8Ny/Ll+Fv7
+         4VCQ==
+X-Gm-Message-State: AOAM533hOHFFPKXJxKGsduMipmmjLmdi0rv9V8D+LgkcpXO7Gi5zcCvI
+        H+ld6ieXtUsq4XT07XGouMA+Hw==
+X-Google-Smtp-Source: ABdhPJz1/D8YRow1IawV2B9z3/U3YlcL82UH6EHnnPVC50wzq+AHgUwC2tGw7mMYnplAfTNFck3tyg==
+X-Received: by 2002:a02:a90a:: with SMTP id n10mr3007078jam.7.1613140446931;
+        Fri, 12 Feb 2021 06:34:06 -0800 (PST)
+Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id j12sm4387878ila.75.2021.02.12.06.34.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Feb 2021 06:34:06 -0800 (PST)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     elder@kernel.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 net-next 0/5] net: ipa: some more cleanup
+Date:   Fri, 12 Feb 2021 08:33:57 -0600
+Message-Id: <20210212143402.2691-1-elder@linaro.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <97ae293a-f59d-cc7c-21a6-f83880c69c71@ti.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vladimir,
+Version 3 of this series uses dev_err_probe() in the second patch,
+as suggested by Heiner Kallweit.
 
-On 2/12/21 7:47 PM, Grygorii Strashko wrote:
-> 
-> 
-> On 12/02/2021 03:05, Vladimir Oltean wrote:
->> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-[...]
-> 
-> Sorry, but we seems just added more work for you.
-> https://lore.kernel.org/patchwork/cover/1379380/
-> 
+Version 2 was sent to ensure the series was based on current
+net-next/master, and added copyright updates to files touched.
 
-Could you squash these when you post new version:
-Sorry for not noticing earlier.
+The original introduction is below.
 
--- >8 --
+					-Alex
 
-From 69f3a1ff1ea0777f5deceefdb0e79ce625e6488a Mon Sep 17 00:00:00 2001
-From: Vignesh Raghavendra <vigneshr@ti.com>
-Date: Fri, 12 Feb 2021 19:34:46 +0530
-Subject: [PATCH 1/2] fixup! net: switchdev: propagate extack to port
- attributes
+This is another fairly innocuous set of cleanup patches.
 
----
- drivers/net/ethernet/ti/am65-cpsw-switchdev.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+The first was motivated by a bug found that would affect IPA v4.5.
+It maintain a new GSI address pointer; one is the "raw" (original
+mapped) address, and the other will have been adjusted if necessary
+for use on newer platforms.
 
-diff --git a/drivers/net/ethernet/ti/am65-cpsw-switchdev.c b/drivers/net/ethernet/ti/am65-cpsw-switchdev.c
-index 1067e7772dbf..314825acf0a0 100644
---- a/drivers/net/ethernet/ti/am65-cpsw-switchdev.c
-+++ b/drivers/net/ethernet/ti/am65-cpsw-switchdev.c
-@@ -81,7 +81,8 @@ static int am65_cpsw_port_attr_br_flags_pre_set(struct net_device *netdev,
- }
- 
- static int am65_cpsw_port_attr_set(struct net_device *ndev,
--				   const struct switchdev_attr *attr)
-+				   const struct switchdev_attr *attr,
-+				   struct netlink_ext_ack *extack)
- {
- 	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
- 	int ret;
+The second just quiets some unnecessary noise during early probe.
 
+The third fixes some errors that show up when IPA_VALIDATION is
+enabled.
 
--- >8 --
+The last two just create helper functions to improve readability.
 
-From 7d7fdb79a8b255a1e9fe5d205b0ff1824a16ce56 Mon Sep 17 00:00:00 2001
-From: Vignesh Raghavendra <vigneshr@ti.com>
-Date: Fri, 12 Feb 2021 19:40:48 +0530
-Subject: [PATCH 2/2] fixup! net: switchdev: pass flags and mask to both
- {PRE_,}BRIDGE_FLAGS attributes
+					-Alex
 
----
- drivers/net/ethernet/ti/am65-cpsw-switchdev.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Alex Elder (5):
+  net: ipa: use a separate pointer for adjusted GSI memory
+  net: ipa: use dev_err_probe() in ipa_clock.c
+  net: ipa: fix register write command validation
+  net: ipa: introduce ipa_table_hash_support()
+  net: ipa: introduce gsi_channel_initialized()
 
-diff --git a/drivers/net/ethernet/ti/am65-cpsw-switchdev.c b/drivers/net/ethernet/ti/am65-cpsw-switchdev.c
-index 314825acf0a0..03c7a012f5c5 100644
---- a/drivers/net/ethernet/ti/am65-cpsw-switchdev.c
-+++ b/drivers/net/ethernet/ti/am65-cpsw-switchdev.c
-@@ -55,12 +55,12 @@ static int am65_cpsw_port_stp_state_set(struct am65_cpsw_port *port, u8 state)
- 
- static int am65_cpsw_port_attr_br_flags_set(struct am65_cpsw_port *port,
- 					    struct net_device *orig_dev,
--					    unsigned long brport_flags)
-+					    struct switchdev_brport_flags flags)
- {
- 	struct am65_cpsw_common *cpsw = port->common;
- 	bool unreg_mcast_add = false;
- 
--	if (brport_flags & BR_MCAST_FLOOD)
-+	if (flags.mask & BR_MCAST_FLOOD)
- 		unreg_mcast_add = true;
- 	netdev_dbg(port->ndev, "BR_MCAST_FLOOD: %d port %u\n",
- 		   unreg_mcast_add, port->port_id);
-@@ -72,9 +72,9 @@ static int am65_cpsw_port_attr_br_flags_set(struct am65_cpsw_port *port,
- }
- 
- static int am65_cpsw_port_attr_br_flags_pre_set(struct net_device *netdev,
--						unsigned long flags)
-+						struct switchdev_brport_flags flags)
- {
--	if (flags & ~(BR_LEARNING | BR_MCAST_FLOOD))
-+	if (flags.mask & ~(BR_LEARNING | BR_MCAST_FLOOD))
- 		return -EINVAL;
- 
- 	return 0;
+ drivers/net/ipa/gsi.c       | 50 +++++++++++++++++++------------------
+ drivers/net/ipa/gsi.h       |  5 ++--
+ drivers/net/ipa/gsi_reg.h   | 21 ++++++++++------
+ drivers/net/ipa/ipa_clock.c |  9 ++++---
+ drivers/net/ipa/ipa_cmd.c   | 32 ++++++++++++++++++------
+ drivers/net/ipa/ipa_table.c | 16 ++++++------
+ drivers/net/ipa/ipa_table.h |  8 +++++-
+ 7 files changed, 87 insertions(+), 54 deletions(-)
+
 -- 
-2.30.0
-
+2.20.1
 
