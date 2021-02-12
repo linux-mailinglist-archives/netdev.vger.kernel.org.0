@@ -2,119 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64553319E5D
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 13:27:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8970F319E59
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 13:27:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231432AbhBLMZy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 07:25:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39250 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230332AbhBLMXy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 07:23:54 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E853C061574;
-        Fri, 12 Feb 2021 04:23:13 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id hs11so15233230ejc.1;
-        Fri, 12 Feb 2021 04:23:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=oAkh6JJVyX7ngecxDdQvglBOLyHNnX0FyZZLG8idRao=;
-        b=UNezosfMr9+hm0SI9j2bJhhnYuMnPZDZ7UXSFalWY20RPpK4uA+3gwLA+agW5jDe0o
-         eXwRsUHVsu6fiFM/z9zkRbkk0qZKWuQTaJzA3McH6mSAgk1C2whm7x2pbcXYOA7ozgNE
-         BD40S3X4M56Zry8V7WdWrV7gn1Nd8dE+Lp8t2dwuPr3iw3LqSiLVqNR4jiJbj3d+9A4f
-         SOI7PWSpK7o3CDevo7JIWOSIcBtWpsJxciXYan3BS6GytZxqWvyg3ce1xxDoVh5q8Pg6
-         kdg3mvRzsawZ+MX3PXBpiGi2HZ51TkHeTx46j86WTzPsaPsRs/H+c2dORSJjRvi1Q81q
-         jFNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=oAkh6JJVyX7ngecxDdQvglBOLyHNnX0FyZZLG8idRao=;
-        b=MbXbwBGGf3L1Jya32e2ZePAzj5Gz6AXRFicYyPyjn3ihtxOADQPdhZhJUCnE7m5o7c
-         3jypCPhAb/xu/wt/Gr2NHL7Sv6a+Qy5JC0Hj9a2zsBWYlp+fEMKt8z/ctYqKIwLB0ovA
-         q/bAHgbhpgE9ZbTpnno0OTtDPECdpsjTinvKkdkC5tQZ87hy2AiV9hMLgIk3TIWRereV
-         dy02zNdJPJFXvlTXr1qTey97ORSYPOQP12ZDs4vGsvmaVIj08YR2iFklMOi4RdWFl74n
-         zD66yZ6KwgYniun4upX9Faz2vFpqEE4TlqspvKFLLGMc8O43d0OYWxly1uri4NANLL+8
-         HuyQ==
-X-Gm-Message-State: AOAM5316RTFdJiN+Ozpme0pDodLhdz997azgWUZ80MzM9nrbaqW9GKfQ
-        aEmUGwxQ25o2Wfr6Tu917E0=
-X-Google-Smtp-Source: ABdhPJxCV/uDu+B1aZTDEIW0K0r5Aqr9vysmDwZG09Mi9VVfNGYjX2uN5Vt6fOUAEG8Dybn0iNzzbw==
-X-Received: by 2002:a17:906:755:: with SMTP id z21mr2810355ejb.514.1613132592317;
-        Fri, 12 Feb 2021 04:23:12 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id l25sm464065eja.82.2021.02.12.04.23.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Feb 2021 04:23:10 -0800 (PST)
-Date:   Fri, 12 Feb 2021 14:23:09 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 7/9] net: mscc: ocelot: use separate flooding
- PGID for broadcast
-Message-ID: <20210212122309.ffv6zuhscwtvrhjk@skbuf>
-References: <20210212010531.2722925-1-olteanv@gmail.com>
- <20210212010531.2722925-8-olteanv@gmail.com>
+        id S231197AbhBLMY6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 07:24:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52392 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230249AbhBLMXy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Feb 2021 07:23:54 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D2E2464E13;
+        Fri, 12 Feb 2021 12:23:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1613132593;
+        bh=hcZRkQSjgnShWQZ1idUAkK6Rpsxk85/eOREJlPAgw9Y=;
+        h=Date:From:To:Cc:Subject:From;
+        b=KBBPfYYPR2jxf/k+MfdxvacCYEV5z9Ds9nL5QZ6Mm7zqzGzflAdDqZ4bZD/L7ioCF
+         7bgFKHQXQqkWEdOme840w8fH1mkVN8oZzCpViPs9PH+y5QFb59PQmrBnAMheGRVwmu
+         BlJVSrtGfHNoQQmXhTsz5x6EsJ7r0rW0bo4+5XjWkP7KXrFWz5ORch09+a7up3ALVI
+         yR2d03SA0boHzMgPvImJ7rDHIzF9zJB1CKNa92ypU6tR8A36ihC/YYW2khEtVK/5VS
+         zJlg7Dmf2UQdk1If9G5zcVznxKYOZon5zY/MmQhjTnBy0iF/VPw2/gu0cyagIgkciT
+         Cr7J6100nlHaA==
+Date:   Fri, 12 Feb 2021 06:23:10 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Sunil Goutham <sgoutham@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        hariprasad <hkelam@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Christina Jacob <cjacob@marvell.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] octeontx2-pf: Fix out-of-bounds read in
+ otx2_get_fecparam()
+Message-ID: <20210212122310.GA262609@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210212010531.2722925-8-olteanv@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 12, 2021 at 03:05:29AM +0200, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> In preparation of offloading the bridge port flags which have
-> independent settings for unknown multicast and for broadcast, we should
-> also start reserving one destination Port Group ID for the flooding of
-> broadcast packets, to allow configuring it individually.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
+Code at line 967 implies that rsp->fwdata.supported_fec may be up to 4:
 
-After more testing with the ocelot-8021q tagger too, not just the
-default NPI-based one, I noticed that I introduced a regression.
+ 967: if (rsp->fwdata.supported_fec <= FEC_MAX_INDEX)
 
-devlink-sb tells me that broadcast packets remain stuck in the ingress
-queues of the front-panel ports instead of being forwarded to the CPU.
-This is because I forgot this:
+If rsp->fwdata.supported_fec evaluates to 4, then there is an
+out-of-bounds read at line 971 because fec is an array with
+a maximum of 4 elements:
 
------------------------------[cut here]-----------------------------
- drivers/net/dsa/ocelot/felix.c | 1 +
- 1 file changed, 1 insertion(+)
+ 954         const int fec[] = {
+ 955                 ETHTOOL_FEC_OFF,
+ 956                 ETHTOOL_FEC_BASER,
+ 957                 ETHTOOL_FEC_RS,
+ 958                 ETHTOOL_FEC_BASER | ETHTOOL_FEC_RS};
+ 959 #define FEC_MAX_INDEX 4
 
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 96d9d13c5ae0..2771560cef61 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -299,6 +299,7 @@ static int felix_setup_tag_8021q(struct dsa_switch *ds, int cpu)
- 	cpu_flood = ANA_PGID_PGID_PGID(BIT(ocelot->num_phys_ports));
- 	ocelot_rmw_rix(ocelot, 0, cpu_flood, ANA_PGID_PGID, PGID_UC);
- 	ocelot_rmw_rix(ocelot, 0, cpu_flood, ANA_PGID_PGID, PGID_MC);
-+	ocelot_rmw_rix(ocelot, 0, cpu_flood, ANA_PGID_PGID, PGID_BC);
- 
- 	felix->dsa_8021q_ctx = kzalloc(sizeof(*felix->dsa_8021q_ctx),
- 				       GFP_KERNEL);
------------------------------[cut here]-----------------------------
+ 971: fecparam->fec = fec[rsp->fwdata.supported_fec];
 
-If there is no other feedback on this series, can I send this as a
-follow-up fixup? Thanks.
+Fix this by properly indexing fec[] with rsp->fwdata.supported_fec - 1.
+In this case the proper indexes 0 to 3 are used when
+rsp->fwdata.supported_fec evaluates to a range of 1 to 4, correspondingly.
+
+Fixes: d0cf9503e908 ("octeontx2-pf: ethtool fec mode support")
+Addresses-Coverity-ID: 1501722 ("Out-of-bounds read")
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
+index 237e5d3321d4..f7e8ada32a26 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
+@@ -968,7 +968,7 @@ static int otx2_get_fecparam(struct net_device *netdev,
+ 		if (!rsp->fwdata.supported_fec)
+ 			fecparam->fec = ETHTOOL_FEC_NONE;
+ 		else
+-			fecparam->fec = fec[rsp->fwdata.supported_fec];
++			fecparam->fec = fec[rsp->fwdata.supported_fec - 1];
+ 	}
+ 	return 0;
+ }
+-- 
+2.27.0
+
