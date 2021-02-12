@@ -2,85 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C895031A119
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 16:08:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A1B631A139
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 16:14:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229974AbhBLPHH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 10:07:07 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51852 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229451AbhBLPHC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Feb 2021 10:07:02 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4033864E57;
-        Fri, 12 Feb 2021 15:06:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613142382;
-        bh=+58RbCPiJB8EXWGJM6hswdH+l8A8JJomt4JiGJkJpwI=;
-        h=Date:From:To:Cc:Subject:From;
-        b=t+1GckfJb1v1HFUpMTZXqEas7UNTkv2yktCxnKt6sI1GFQ+83oQafQq92spELRx78
-         esbPcncVQ8FteWFJw+M8hPWqqjoA9Xmf6TOSdvxyxIH+IB2gn/2xRX0QS4DLyIUSsJ
-         oo2raWUbpWqnALDEbsYOAfg2UZ4hmJdcJkt0H+7oeu73RrHKxFp0ADs4z9ua808UXO
-         SDaxGO+cOT0fOEOaYUFHdGRYZBnGyPKThrpT6dGzqQpVvVzpJt/xD0EmEwHW+Hj8NX
-         0PTAMB1rL1W2+Rb6ZxYH5ywxaDeTbioMlOE90jcpXsL0ppJ6RerYXGlKeL8cS23xrL
-         AnhcVcZEf6rfQ==
-Date:   Fri, 12 Feb 2021 09:06:19 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Sunil Goutham <sgoutham@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        hariprasad <hkelam@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Christina Jacob <cjacob@marvell.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: [PATCH v2][next] octeontx2-pf: Fix out-of-bounds read warning in
- otx2_get_fecparam()
-Message-ID: <20210212150619.GA269482@embeddedor>
+        id S230286AbhBLPN0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 10:13:26 -0500
+Received: from relay11.mail.gandi.net ([217.70.178.231]:57605 "EHLO
+        relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229965AbhBLPNQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 10:13:16 -0500
+Received: from pc-2.home (apoitiers-259-1-26-122.w90-55.abo.wanadoo.fr [90.55.97.122])
+        (Authenticated sender: maxime.chevallier@bootlin.com)
+        by relay11.mail.gandi.net (Postfix) with ESMTPSA id BE1E410000E;
+        Fri, 12 Feb 2021 15:12:28 +0000 (UTC)
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     davem@davemloft.net
+Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        thomas.petazzoni@bootlin.com, gregory.clement@bootlin.com
+Subject: [PATCH net-next 0/2] net: mvneta: Implement basic MQPrio support
+Date:   Fri, 12 Feb 2021 16:12:18 +0100
+Message-Id: <20210212151220.84106-1-maxime.chevallier@bootlin.com>
+X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Line at 967 implies that rsp->fwdata.supported_fec may be up to 4:
+Hi everyone,
 
-if (rsp->fwdata.supported_fec <= FEC_MAX_INDEX)
+This small series adds basic support for mqprio offloading, by having
+the rx queueing mirroring the TCs based on VLAN prio fields.
 
-which would cause an out-of-bounds read at line 971:
+This was tested on Armada 3700, and proves useful to make sure
+high-priority traffic has a better chance not getting dropped when
+there's lots of packets incoming.
 
-fecparam->fec = fec[rsp->fwdata.supported_fec];
+The first patch of the series deals with the per-cpu interrupts on the
+armada 3700. Since they don't work, there were already some patches
+applied to keep all queue mappings to CPU0, but there still were some
+remaining mappings left to be dealt with.
 
-However, the range of values for rsp->fwdata.supported_fec is
-0 to 3. Fix the if condition at line 967, accordingly.
+The second patch implements the MQPrio offloading for the receive path.
 
-Link: https://lore.kernel.org/lkml/MWHPR18MB142173B5F0541ABD3D59860CDE8B9@MWHPR18MB1421.namprd18.prod.outlook.com/
-Fixes: d0cf9503e908 ("octeontx2-pf: ethtool fec mode support")
-Addresses-Coverity-ID: 1501722 ("Out-of-bounds read")
-Suggested-by: Hariprasad Kelam <hkelam@marvell.com>
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
-Changes in v2:
- - Fix if condition.
+Thanks !
 
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Maxime
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-index 237e5d3321d4..f4962a97a075 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-@@ -964,7 +964,7 @@ static int otx2_get_fecparam(struct net_device *netdev,
- 	if (IS_ERR(rsp))
- 		return PTR_ERR(rsp);
- 
--	if (rsp->fwdata.supported_fec <= FEC_MAX_INDEX) {
-+	if (rsp->fwdata.supported_fec < FEC_MAX_INDEX) {
- 		if (!rsp->fwdata.supported_fec)
- 			fecparam->fec = ETHTOOL_FEC_NONE;
- 		else
+
+
+Maxime Chevallier (2):
+  net: mvneta: Remove per-cpu queue mapping for Armada 3700
+  net: mvneta: Implement mqprio support
+
+ drivers/net/ethernet/marvell/mvneta.c | 74 ++++++++++++++++++++++++++-
+ 1 file changed, 73 insertions(+), 1 deletion(-)
+
 -- 
-2.27.0
+2.25.4
 
