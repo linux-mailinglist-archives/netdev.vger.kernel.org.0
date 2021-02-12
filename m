@@ -2,158 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E1A43198A9
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 04:19:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 866B83198AD
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 04:21:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229611AbhBLDTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 22:19:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35806 "EHLO
+        id S229674AbhBLDVU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 22:21:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbhBLDTh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 22:19:37 -0500
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47D48C061574;
-        Thu, 11 Feb 2021 19:18:57 -0800 (PST)
-Received: by mail-io1-xd30.google.com with SMTP id e133so7938646iof.8;
-        Thu, 11 Feb 2021 19:18:57 -0800 (PST)
+        with ESMTP id S229457AbhBLDVS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 22:21:18 -0500
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D14C061574;
+        Thu, 11 Feb 2021 19:20:37 -0800 (PST)
+Received: by mail-pl1-x631.google.com with SMTP id u11so4393865plg.13;
+        Thu, 11 Feb 2021 19:20:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gC9STVbE2ob8taGqJ2B3Q5LeUbYPwP+eNdSIa6spCUM=;
-        b=ZEzsEWpPR2rbQ/c2UL8vEy2CL3CFEoUUQbesWOu8YYUGQq6GxgsJNHxxC8xsHeoaoO
-         SjGIH6pSEGa4AurfM3zAoRjBViezGTJkyGYCQRaGYW0jAcJsRJ0q76H8EFddgGxlH6wQ
-         MnsP+7rYdacYXQi3PWDpFbd2RW9qV1tLvUn4WNy+pldFW6fEUt9eMX8XtnwFBEPaw+2y
-         xE69CwXIe1e7bp16lZQWA9ETxUx8ZV8/++SYpsjcobmpuMtliwnDm+q9wQ5y7Z8gmWBf
-         /ZnVSeLs8wRvS1iQ7Z5p4AiBn2Jc4Oizte1PLsQ+hB8Ccx94dA571Ze6uH/XuGuiyUmX
-         oDJQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=KX9BczQ7HP081Zb6fQayQzqKfWFTa3oP2nKnpxD0UUU=;
+        b=dobcntpA4hP7ES4I7J3tbO+Dq/F2O2WJKrVGbRVjnR+nJkpwvHXlG5hFMOfyDKoLj6
+         bQ51oQqQRYgJW+y00/jFsqUqSc+dYvdqM2Al1jDQxxYhv7mxHDb/OOaHiVpie75VlH/j
+         giYQvWVZx9vsnBCC0g8f96MRmsPPJ+X4JIUCxvbg0RkTR/7CGjsSdU4U4ChmzspeFt3t
+         BbebdtgH31J6iTgcWIzke6pj4RT3+x57OPpJxCLi3NDZ3LEEHJ3m5YN7FFK8aull5xiW
+         ugo241axW1+tn5MHnPbI4ti49BIoNxgCa9c36t3P0naug02hrgeyS0sKSWiav0rAYfTR
+         qFBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gC9STVbE2ob8taGqJ2B3Q5LeUbYPwP+eNdSIa6spCUM=;
-        b=ECnRNuq4/zHU0nVyM7nmWIBmTWO2s+ORwgpgJTjTq6yXRTyVhVWA3Kio26DXWinOpN
-         FC0RUU/MATHzUSpNBJwYT9rmF+liOgG59C2llKyZdegUbiAwP/psgbHDV5jxUsXgFStJ
-         rDojx00rLVBGBAlKMPRHDB5q/aul+xONdOwsU9DG4vQQTKg5C0d0kl00VGxurcOgB3wm
-         /TqXOFlwuloHqimyjsuRHrLxDjXMNkESUwZqOsdAgSc36x3UrytFa6k73gy5Wcnnontt
-         HFhBXH0TFxz5tEKLDXSMzlA8m7SPATz2J5NumVyBVb+8vthAFwYFxPpXLE3JBOlZVDAn
-         46LA==
-X-Gm-Message-State: AOAM530ZMgGrksLzuRkzK7HjZyqbEjOdz58wSepcdm1yHr3GZO64gyvl
-        cymqnu4yYRiL8acRTc3vDCiWLOuBs95H+JTIA8s=
-X-Google-Smtp-Source: ABdhPJxrKJnsXZXzvSEHPa0vNE78OHxSq8C2jRwzawbDEc8S9S0mm3QUIAEUfkweYLJCBPFZanXUiHOhm6umU63vo8Y=
-X-Received: by 2002:a05:6638:11a:: with SMTP id x26mr858514jao.121.1613099936449;
- Thu, 11 Feb 2021 19:18:56 -0800 (PST)
-MIME-Version: 1.0
-References: <20210211185220.9753-1-alobakin@pm.me> <20210211185220.9753-10-alobakin@pm.me>
-In-Reply-To: <20210211185220.9753-10-alobakin@pm.me>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Thu, 11 Feb 2021 19:18:45 -0800
-Message-ID: <CAKgT0UejU=YC-3xnORHh8uj_uuf79yYMGTdFvo9o7aY03eGeqA@mail.gmail.com>
-Subject: Re: [PATCH v5 net-next 09/11] skbuff: allow to optionally use NAPI
- cache from __alloc_skb()
-To:     Alexander Lobakin <alobakin@pm.me>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=KX9BczQ7HP081Zb6fQayQzqKfWFTa3oP2nKnpxD0UUU=;
+        b=YKKK2LbrjBiib+zlMN9o3B4bnaFFnkvaIqd0o9oCW4dwzzgEYDeEgaSDfK2z1gWxAh
+         Iuk3LRlQxvWYrHOI3WpbwZIrVQCdlD63k/aeEFFTBI1kkhQbDGdQYW5qCyssAwWUIuZN
+         CQsab+QFQnlXeif0NGxiFoWlYt7ZmU39CY7Ez5ghI3qGyC6JVYMkLsg7l7BRetkoTsiR
+         Tvx2lfUdeP15wIAs399zv1Gd6LtuKWWz3MCDpaMK26Oo17GJ9/BLvYCz0yvXIEG4Hcx5
+         CQlm+xsWR0Fa1ZNRF9kWbNVi53Ccg0VcwTlM64azXQnLvVjflhTRQHfCs+b1CTbcrYEN
+         KLVA==
+X-Gm-Message-State: AOAM532g4icqnEIzWHsoFbHUK+2XZup/yDBSXOUZ1s5l02fxW92UxPxH
+        aupyJcKCKLGg4n0e54Ezvzajk+Bb5xY=
+X-Google-Smtp-Source: ABdhPJzNneNORHrgdUQm8rKm5aRrrnkJf1b/jkUvfdeWboyI7AvVfit3Z4uc9I9P3zJ8TNUQY+bymQ==
+X-Received: by 2002:a17:90a:da01:: with SMTP id e1mr910471pjv.22.1613100036860;
+        Thu, 11 Feb 2021 19:20:36 -0800 (PST)
+Received: from [10.230.29.30] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id u20sm6701624pjy.36.2021.02.11.19.20.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 11 Feb 2021 19:20:36 -0800 (PST)
+Subject: Re: [PATCH v4 net-next 1/9] net: switchdev: propagate extack to port
+ attributes
+To:     Vladimir Oltean <olteanv@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Kevin Hao <haokexin@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        Yonghong Song <yhs@fb.com>, zhudi <zhudi21@huawei.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Florian Westphal <fw@strlen.de>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org
+References: <20210212010531.2722925-1-olteanv@gmail.com>
+ <20210212010531.2722925-2-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <c559a6fc-b436-fc6f-7226-76490033d94c@gmail.com>
+Date:   Thu, 11 Feb 2021 19:20:33 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.7.1
+MIME-Version: 1.0
+In-Reply-To: <20210212010531.2722925-2-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 11, 2021 at 11:00 AM Alexander Lobakin <alobakin@pm.me> wrote:
->
-> Reuse the old and forgotten SKB_ALLOC_NAPI to add an option to get
-> an skbuff_head from the NAPI cache instead of inplace allocation
-> inside __alloc_skb().
-> This implies that the function is called from softirq or BH-off
-> context, not for allocating a clone or from a distant node.
->
-> Signed-off-by: Alexander Lobakin <alobakin@pm.me>
-> ---
->  net/core/skbuff.c | 13 +++++++++----
->  1 file changed, 9 insertions(+), 4 deletions(-)
->
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index 9e1a8ded4acc..a0b457ae87c2 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -397,15 +397,20 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
->         struct sk_buff *skb;
->         u8 *data;
->         bool pfmemalloc;
-> +       bool clone;
->
-> -       cache = (flags & SKB_ALLOC_FCLONE)
-> -               ? skbuff_fclone_cache : skbuff_head_cache;
-> +       clone = !!(flags & SKB_ALLOC_FCLONE);
 
-The boolean conversion here is probably unnecessary. I would make
-clone an int like flags and work with that. I suspect the compiler is
-doing it already, but it is better to be explicit.
 
-> +       cache = clone ? skbuff_fclone_cache : skbuff_head_cache;
->
->         if (sk_memalloc_socks() && (flags & SKB_ALLOC_RX))
->                 gfp_mask |= __GFP_MEMALLOC;
->
->         /* Get the HEAD */
-> -       skb = kmem_cache_alloc_node(cache, gfp_mask & ~__GFP_DMA, node);
-> +       if ((flags & SKB_ALLOC_NAPI) && !clone &&
+On 2/11/2021 5:05 PM, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> When a struct switchdev_attr is notified through switchdev, there is no
+> way to report informational messages, unlike for struct switchdev_obj.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 
-Rather than having to do two checks you could just check for
-SKB_ALLOC_NAPI and SKB_ALLOC_FCLONE in a single check. You could just
-do something like:
-    if ((flags & (SKB_ALLOC_FCLONE | SKB_ALLOC_NAPI) == SKB_ALLOC_NAPI)
-
-That way you can avoid the extra conditional jumps and can start
-computing the flags value sooner.
-
-> +           likely(node == NUMA_NO_NODE || node == numa_mem_id()))
-> +               skb = napi_skb_cache_get();
-> +       else
-> +               skb = kmem_cache_alloc_node(cache, gfp_mask & ~GFP_DMA, node);
->         if (unlikely(!skb))
->                 return NULL;
->         prefetchw(skb);
-> @@ -436,7 +441,7 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
->         __build_skb_around(skb, data, 0);
->         skb->pfmemalloc = pfmemalloc;
->
-> -       if (flags & SKB_ALLOC_FCLONE) {
-> +       if (clone) {
->                 struct sk_buff_fclones *fclones;
->
->                 fclones = container_of(skb, struct sk_buff_fclones, skb1);
-> --
-> 2.30.1
->
->
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
