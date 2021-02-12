@@ -2,105 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66B9131A43E
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 19:08:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC4D331A448
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 19:11:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231720AbhBLSIB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 13:08:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56458 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231317AbhBLSH6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 13:07:58 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB0A5C061574;
-        Fri, 12 Feb 2021 10:07:18 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id m6so9044pfk.1;
-        Fri, 12 Feb 2021 10:07:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=jzL26zkMdAnOD2IACVtEn2EhF+H59r0z5RTwLn52Y3M=;
-        b=GGYIq9OqvYpdw/0qjHnAVD0LJTXFfZcF0KciroJWpaauQnVLdTBpp/glr+Vy5rULBz
-         9VQOkY+RSQu4SXh0pD54mneZPEI8+KptrYQxXK2wDgIv7dRYwDkvBbXidHT29ddo2i9u
-         QMWmiWE3Clmpx/3DFGzuaaDPXA8xVqFM8kqIKuoDLbSdppwy39dQhLw6H33A/7tjNqRf
-         0rrqJegRUUHMsrSQu0qKnuVbRY376nmZlbdGeyrM4WjUol11Z91O6oXU8BJKwaOIkEeT
-         IhbGpgQV/Ev8g2EZ5l6XtPPUyZU1vOrrxCilIU3WEk6hoi9TFj5Gs0+sBMLGJyD7GuOM
-         9pEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=jzL26zkMdAnOD2IACVtEn2EhF+H59r0z5RTwLn52Y3M=;
-        b=pyndGLkzRYUFjGWiYmcO1t/RthGX9uadM0M8VBYQue9aPDVGPoz3oFRA9j+8/ECG76
-         nFiC2sd022yPVMdgwyYMJcUdwmhn3Fp7o0UvLWInNNJqZvdekew2z/cgG/Sc8b7Mc6Dk
-         JK8rXtA4ErB4Z8osaCwk4/cGkAdtTmrlNmuA2oo4RjhSOj61kt6ZmmmNGulFApvOwQMz
-         iesEkidxiROPr6JJtDKycaICqiwh2ghjnME+C6OB5Fe2nd6MYTvhPiYDeRfzzcaIOt80
-         o0hTQuCT/4+KghiqUb7zQTlzI+RwSDQgccQNsChQsClE/qxw0MKN42ibdnaNyAUZSmk1
-         Y8pw==
-X-Gm-Message-State: AOAM532RJMPw2Eio/Ol0byTBHkd5SXMC6NWVFn9ITHNPJZv3zpieV8XN
-        kjYv3nRzZn5A9Cx9uWeD46EuKv2tHT8=
-X-Google-Smtp-Source: ABdhPJwEtkuYl4IEjrY3K94aY/JomFbslkQgXIBduPK1tbo89twwiU07e/yZ3gbwrmhbKdxwSu/FAw==
-X-Received: by 2002:a63:4405:: with SMTP id r5mr4272320pga.168.1613153237967;
-        Fri, 12 Feb 2021 10:07:17 -0800 (PST)
-Received: from [10.230.29.30] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id e21sm9422315pgv.74.2021.02.12.10.07.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Feb 2021 10:07:17 -0800 (PST)
-Subject: Re: [PATCH v5 net-next 03/10] net: bridge: don't print in
- br_switchdev_set_port_flag
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org
-References: <20210212151600.3357121-1-olteanv@gmail.com>
- <20210212151600.3357121-4-olteanv@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <6097810e-9b74-df81-ccc4-3a4b47b94b67@gmail.com>
-Date:   Fri, 12 Feb 2021 10:07:14 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.7.1
+        id S231828AbhBLSJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 13:09:03 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:5577 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230240AbhBLSIm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 13:08:42 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B6026c4010000>; Fri, 12 Feb 2021 10:08:01 -0800
+Received: from HKMAIL101.nvidia.com (10.18.16.10) by HQMAIL111.nvidia.com
+ (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 12 Feb
+ 2021 18:08:00 +0000
+Received: from HKMAIL103.nvidia.com (10.18.16.12) by HKMAIL101.nvidia.com
+ (10.18.16.10) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 12 Feb
+ 2021 18:07:58 +0000
+Received: from NAM02-BL2-obe.outbound.protection.outlook.com (104.47.38.53) by
+ HKMAIL103.nvidia.com (10.18.16.12) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2 via Frontend Transport; Fri, 12 Feb 2021 18:07:58 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UPsdQ3OhxmFCJlMRmJQCbeM7duvQ7xQCxsv6F8jKHotFuE/N55t7w19wvCCTiztXiFYve33Rneor0iKR0na85MclNYbeNlCTq4Mu/SypMEORV7kChJrR0QbhTzhkPsRRW1t3bEJbhnWKsqcGYGqtPgzAnWTdAQRHkUAe4CuZ1JXDGoKgiel2KN3/Zrbs9OJ5DpavAwKBFt2t13NaEHUJscA66iKLK77uYcPxZH6/JG7L5NV8JdAMBg4926e+bigxpwLM/NMMY+3ncYWIM/etUsYCjwWjWgl3LOK/aenwnnJLNwMTF9DTDDIuifZJJckT04HbT8PnOTIyPSVSxycwjg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LL/JEAr54owFaJAblqfnbFelGqRAHtmhJzGX7/PNG00=;
+ b=nIWshRl0JtSdcEihaG+EfpgZtGLEBKCTUXczTcEJw5ZuYQLR5su3EM/DPFusSi57e/JGosvywd1h8Z2hWW57cPX8ssxWcRZAz0NGge+h41NqZBqWeblLFClaqbqsYa/s4g5Dark2/tdK2YWg9PoiZdwgZE44z9mzKGWVcI9HqsJ/NM8btEMLVdP7AcqLaXU96+QTEPxQYrF6nGjhPUJ1GO+DJN2tj5zk98kFf/KWfOx9JB/+qrhblfxy04rTvw3XeDmQFszCRTObid9zk5SshnQ5TPLRqcCC/aKf1xFjzgwxyMx2vsPDylBHY42/sHmQPZfgAG4Vhkw9iZbN+OuzHQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM6PR12MB4356.namprd12.prod.outlook.com (2603:10b6:5:2aa::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.30; Fri, 12 Feb
+ 2021 18:07:56 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::d6b:736:fa28:5e4]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::d6b:736:fa28:5e4%7]) with mapi id 15.20.3846.030; Fri, 12 Feb 2021
+ 18:07:55 +0000
+Date:   Fri, 12 Feb 2021 14:07:53 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     Doug Ledford <dledford@redhat.com>, Tal Gilboa <talgi@nvidia.com>,
+        <linux-rdma@vger.kernel.org>, <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Meir Lichtinger <meirl@nvidia.com>
+Subject: Re: [PATCH mlx5-next] RDMA/mlx5: Allow CQ creation without attached
+ EQs
+Message-ID: <20210212180753.GA1737478@nvidia.com>
+References: <20210211085549.1277674-1-leon@kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20210211085549.1277674-1-leon@kernel.org>
+X-ClientProxiedBy: MN2PR18CA0028.namprd18.prod.outlook.com
+ (2603:10b6:208:23c::33) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
 MIME-Version: 1.0
-In-Reply-To: <20210212151600.3357121-4-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.162.115.133) by MN2PR18CA0028.namprd18.prod.outlook.com (2603:10b6:208:23c::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.25 via Frontend Transport; Fri, 12 Feb 2021 18:07:55 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1lAcrB-007I6G-C1; Fri, 12 Feb 2021 14:07:53 -0400
+X-Header: ProcessedBy-CMR-outbound
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1613153281; bh=LL/JEAr54owFaJAblqfnbFelGqRAHtmhJzGX7/PNG00=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+         From:To:CC:Subject:Message-ID:References:Content-Type:
+         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+         X-MS-Exchange-MessageSentRepresentingType:X-Header;
+        b=k+C5lz3VGxjdEU/bvJkJe1O+See5R22YkD0XgqB8htHy8H4xR9+Eia9p9nlWVUWNz
+         KR6QVeCLANYQVoTfKdS+0BkjKc81XI5mWdnui5IFKY131F9ETKjttkXuMSs2vLIOcS
+         i0287z2zWVRbKh0nR5aCczW5ei/gaXUHuv1w7EeYyh3GguFo4Kz/5XjoQjSvY+qOuW
+         8+9JJnx4A+sIW/0yZPJCmvbQjgDMqpjWsD1su0tMWN+PYS/NeOeoxxiNzaxx9mt1id
+         sQh8kAQgwNa+jAYy5/rpWB06JrHTbS6z+pm5SDjpaAoB3dfdP4913nRFtM6p6podnd
+         cv3vIsmOrzlyQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2/12/2021 7:15 AM, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Thu, Feb 11, 2021 at 10:55:49AM +0200, Leon Romanovsky wrote:
+> From: Tal Gilboa <talgi@nvidia.com>
 > 
-> For the netlink interface, propagate errors through extack rather than
-> simply printing them to the console. For the sysfs interface, we still
-> print to the console, but at least that's one layer higher than in
-> switchdev, which also allows us to silently ignore the offloading of
-> flags if that is ever needed in the future.
+> The traditional DevX CQ creation flow goes through mlx5_core_create_cq()
+> which checks that the given EQN corresponds to an existing EQ. For some
+> mlx5 devices this behaviour is too strict, they expect EQN assignment
+> during modify CQ stage.
 > 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Allow them to create CQ through general command interface.
+> 
+> Signed-off-by: Tal Gilboa <talgi@nvidia.com>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+>  drivers/infiniband/hw/mlx5/devx.c | 13 ++++++++++++-
+>  include/linux/mlx5/mlx5_ifc.h     |  5 +++--
+>  2 files changed, 15 insertions(+), 3 deletions(-)
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Applied to for-next
 
-I suppose the slight "loss" of information on which port failed the
-operation is okay since it was implied by either the path (sysfs) or the
-bridge command.
--- 
-Florian
+Thanks,
+Jason
