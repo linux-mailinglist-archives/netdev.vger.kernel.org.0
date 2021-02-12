@@ -2,73 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0EF231A022
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 14:57:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9480E31A026
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 14:57:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231282AbhBLNxn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 08:53:43 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:36838 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230515AbhBLNxk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Feb 2021 08:53:40 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lAYsO-005py6-6x; Fri, 12 Feb 2021 14:52:52 +0100
-Date:   Fri, 12 Feb 2021 14:52:52 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     Stefan Chulski <stefanc@marvell.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        Nadav Haklai <nadavh@marvell.com>,
-        Yan Markman <ymarkman@marvell.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "rmk+kernel@armlinux.org.uk" <rmk+kernel@armlinux.org.uk>,
-        "atenart@kernel.org" <atenart@kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "sebastian.hesselbarth@gmail.com" <sebastian.hesselbarth@gmail.com>,
-        "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [EXT] Re: [PATCH v12 net-next 12/15] net: mvpp2: add BM
- protection underrun feature support
-Message-ID: <YCaINEHqrz2QDGJb@lunn.ch>
-References: <1612950500-9682-1-git-send-email-stefanc@marvell.com>
- <1612950500-9682-13-git-send-email-stefanc@marvell.com>
- <20210210.152924.767175240247395907.davem@davemloft.net>
- <CO6PR18MB3873D8B7BE3AE28A1407C05BB08C9@CO6PR18MB3873.namprd18.prod.outlook.com>
- <YCU864+AH6UioNwQ@lunn.ch>
- <CAPv3WKd48fiZmdnP+NN_FRCT1h6xmu9zO4BWAz_pgTXW2fQt9w@mail.gmail.com>
+        id S230494AbhBLN4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 08:56:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59090 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230194AbhBLN4h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 08:56:37 -0500
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C269C061574;
+        Fri, 12 Feb 2021 05:55:57 -0800 (PST)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1lAYvL-001riz-OT; Fri, 12 Feb 2021 14:55:55 +0100
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     netdev@vger.kernel.org
+Cc:     linux-wireless@vger.kernel.org
+Subject: pull-request: mac80211-next 2021-02-12
+Date:   Fri, 12 Feb 2021 14:55:50 +0100
+Message-Id: <20210212135551.49439-1-johannes@sipsolutions.net>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAPv3WKd48fiZmdnP+NN_FRCT1h6xmu9zO4BWAz_pgTXW2fQt9w@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Or we have also found out, that pushing back on parameters like this,
-> > the developers goes back and looks at the code, and sometimes figures
-> > out a way to automatically do the right thing, removing the
-> > configuration knob, and just making it all simpler for the user to
-> > use.
-> 
-> I think of 2 alternatives:
-> * `ethtool --set-priv-flags` - in such case there is a question if
-> switching this particular feature in runtime is a good idea.
-> * New DT/ACPI property - it is a hardware feature after all, so maybe
-> let the user decide whether to enable it on the platform description
-> level.
+Hi,
 
-Does this even need to be configurable? What is the cost of turning it
-on? How does having less pools affect the system? Does average latency
-go up?  When would i consider an underrun actually a good thing?
+This is almost certainly a last update for net-next, and
+it's not very big - the biggest chunk here is minstrel
+improvements from Felix, to lower overhead.
 
-Maybe it should just be hard coded on? Or we should try to detect when
-underruns are happening a lot, and dynamically turn it on for a while?
+Please pull and let me know if there's any problem.
 
-	  Andrew
+Thanks,
+johannes
+
+
+
+The following changes since commit 3c5a2fd042d0bfac71a2dfb99515723d318df47b:
+
+  tcp: Sanitize CMSG flags and reserved args in tcp_zerocopy_receive. (2021-02-11 18:25:05 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git tags/mac80211-next-for-net-next-2021-02-12
+
+for you to fetch changes up to 735a48481cca453525d9199772f9c3733a47cff4:
+
+  nl80211: add documentation for HT/VHT/HE disable attributes (2021-02-12 11:00:07 +0100)
+
+----------------------------------------------------------------
+Last set of updates:
+ * more minstrel work from Felix to reduce the
+   probing overhead
+ * QoS for nl80211 control port frames
+ * STBC injection support
+ * and a couple of small fixes
+
+----------------------------------------------------------------
+Ben Greear (1):
+      cfg80211/mac80211: Support disabling HE mode
+
+Colin Ian King (1):
+      mac80211: fix potential overflow when multiplying to u32 integers
+
+Felix Fietkau (6):
+      mac80211: minstrel_ht: use bitfields to encode rate indexes
+      mac80211: minstrel_ht: update total packets counter in tx status path
+      mac80211: minstrel_ht: reduce the need to sample slower rates
+      mac80211: minstrel_ht: significantly redesign the rate probing strategy
+      mac80211: minstrel_ht: show sampling rates in debugfs
+      mac80211: minstrel_ht: remove sample rate switching code for constrained devices
+
+Johannes Berg (1):
+      nl80211: add documentation for HT/VHT/HE disable attributes
+
+Luca Coelho (1):
+      cfg80211: initialize reg_rule in __freq_reg_info()
+
+Markus Theil (1):
+      mac80211: enable QoS support for nl80211 ctrl port
+
+Matteo Croce (1):
+      cfg80211: remove unused callback
+
+Philipp Borgers (1):
+      mac80211: add STBC encoding to ieee80211_parse_tx_radiotap
+
+ include/net/cfg80211.h                     |   2 +
+ include/uapi/linux/nl80211.h               |  13 +-
+ net/mac80211/mesh_hwmp.c                   |   2 +-
+ net/mac80211/mlme.c                        |   3 +
+ net/mac80211/rc80211_minstrel_ht.c         | 766 ++++++++++++++---------------
+ net/mac80211/rc80211_minstrel_ht.h         |  47 +-
+ net/mac80211/rc80211_minstrel_ht_debugfs.c |  22 +-
+ net/mac80211/status.c                      |   8 +-
+ net/mac80211/tx.c                          |  34 +-
+ net/wireless/nl80211.c                     |   7 +
+ net/wireless/reg.c                         |   2 +-
+ net/wireless/sysfs.c                       |   7 -
+ 12 files changed, 486 insertions(+), 427 deletions(-)
+
