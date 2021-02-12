@@ -2,152 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D493831A13E
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 16:14:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F317031A15D
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 16:17:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231307AbhBLPOI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 10:14:08 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:20672 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229531AbhBLPOG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 10:14:06 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613142759;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=tykDJXTF6tQlVdZA5daY3Vzagei97L9VD1bsXIDcrSo=;
-        b=J3huR3Vv2mQiYdvrh+H8jeZOB038MPWaEe3x88P9fjUQJMjmAzWzb6sehbmlLk4US2JxFV
-        Qomlcdi+YOCfRAwTkx/cdiOohfEpvn3I1z9RCE/Pmuh+Zq1ipIIdQnudZUmO5pNEfmEK3z
-        3EdE58UGIFq7HkP1Ielmw9nUgwT3cLw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-174-mdd1je6FOF6r7Xj3uurZWA-1; Fri, 12 Feb 2021 10:12:36 -0500
-X-MC-Unique: mdd1je6FOF6r7Xj3uurZWA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A9FBB10066EF;
-        Fri, 12 Feb 2021 15:12:34 +0000 (UTC)
-Received: from computer-6.redhat.com (unknown [10.40.193.147])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2365C60BE5;
-        Fri, 12 Feb 2021 15:12:32 +0000 (UTC)
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org
-Cc:     shuali@redhat.com
-Subject: [PATCH net] flow_dissector: fix TTL and TOS dissection on IPv4 fragments
-Date:   Fri, 12 Feb 2021 16:12:25 +0100
-Message-Id: <a33c38298e722bc1d2ce4ecd13bb5f42d6859709.1613142439.git.dcaratti@redhat.com>
+        id S231590AbhBLPRC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 10:17:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48040 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230043AbhBLPQu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 10:16:50 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D00BC061574;
+        Fri, 12 Feb 2021 07:16:10 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id y9so16166792ejp.10;
+        Fri, 12 Feb 2021 07:16:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9js+f0qftXEjk3IJleRBb/QBgSDgHgl8iRdUuTKast8=;
+        b=of3rK2160oByIIF+kBqqx46rjK0WSMxkO7kPEe6tJr4iA+dDvK7Dzat72AyCT5iI8v
+         Da+pwi6/NfrUoK2avV2XFp4k0z0B6ji1v7rSzNfCPaV4NgExTJRU3yPmaJExppN4amXG
+         eHFlLGmi9nfNtqBrAsPkrdL4TBoHHrGw21fa3WsMi14HyyHWrAEAXyuByn40KFvmZNX9
+         ZpTkhmXIDolxrmpb/CvmI0wXf3OlnH7CzSsoW2secyyyHugLLTnhm+0Y6c4zGRAQJvNB
+         CER3Gr9IuoTxnuUll2AurDx22ml2btXEag6zrEJ9AXat8AZLhwEgDuIEMsdNrulqOPCl
+         M6GQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9js+f0qftXEjk3IJleRBb/QBgSDgHgl8iRdUuTKast8=;
+        b=tYZi3p68qLO9KmyrNghKU+QSjMQx9Db2mNGW/HKmVMbr+A9gdoRrSJ2rS6uy8OHJqy
+         NcL3FRzUMUpDTsd72QjFQ8JIljg16lU8/+Ki5/HltCSH5+6HfgYnhmTOqkMFfhCKKGUq
+         WQU2Cknav85a6GlyvcPfcb/sxY1391wxvx8zK+4QxXxRNnpQmwhNV4MBc9Z2FBGotUOR
+         fuoogFIfC7buswI2S9vQ5200FnbqR4l3IyFnudfacT9RAN6vRoMfKdChTl52iEpQ4N8n
+         e4oOYsQ48gL28QtuB+4IgQCvRCSeyNTix+pNlFLLsiuU7hqr5GwkK/sB57YZVz0piZ0X
+         Gt6Q==
+X-Gm-Message-State: AOAM531MY3MEpCtjnzpKCC+Sm+DfxazYsrnPMN/ry4aA4SnekrHl79Ip
+        /JNxOE0xftNa6PhtmpRWTpk=
+X-Google-Smtp-Source: ABdhPJzAZJbg31w/pvGoxHoKvxji6eJsGt8VTGpKu8R1ebmr7OBUW/jKTDmRDYVrYpts1s0tIeDwEw==
+X-Received: by 2002:a17:906:2e4f:: with SMTP id r15mr3452573eji.407.1613142969032;
+        Fri, 12 Feb 2021 07:16:09 -0800 (PST)
+Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id z19sm6515456edr.69.2021.02.12.07.16.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Feb 2021 07:16:08 -0800 (PST)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org
+Subject: [PATCH v5 net-next 00/10] Cleanup in brport flags switchdev offload for DSA
+Date:   Fri, 12 Feb 2021 17:15:50 +0200
+Message-Id: <20210212151600.3357121-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-the following command:
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
- # tc filter add dev $h2 ingress protocol ip pref 1 handle 101 flower \
-   $tcflags dst_ip 192.0.2.2 ip_ttl 63 action drop
+The initial goal of this series was to have better support for
+standalone ports mode on the DSA drivers like ocelot/felix and sja1105.
+This turned out to require some API adjustments in both directions:
+to the information presented to and by the switchdev notifier, and to
+the API presented to the switch drivers by the DSA layer.
 
-doesn't drop all IPv4 packets that match the configured TTL / destination
-address. In particular, if "fragment offset" or "more fragments" have non
-zero value in the IPv4 header, setting of FLOW_DISSECTOR_KEY_IP is simply
-ignored. Fix this dissecting IPv4 TTL and TOS before fragment info; while
-at it, add a selftest for tc flower's match on 'ip_ttl' that verifies the
-correct behavior.
+Vladimir Oltean (10):
+  net: switchdev: propagate extack to port attributes
+  net: bridge: offload all port flags at once in br_setport
+  net: bridge: don't print in br_switchdev_set_port_flag
+  net: dsa: configure better brport flags when ports leave the bridge
+  net: switchdev: pass flags and mask to both {PRE_,}BRIDGE_FLAGS
+    attributes
+  net: dsa: act as passthrough for bridge port flags
+  net: dsa: felix: restore multicast flood to CPU when NPI tagger
+    reinitializes
+  net: mscc: ocelot: use separate flooding PGID for broadcast
+  net: mscc: ocelot: offload bridge port flags to device
+  net: dsa: sja1105: offload bridge port flags to device
 
-Fixes: 518d8a2e9bad ("net/flow_dissector: add support for dissection of misc ip header fields")
-Reported-by: Shuang Li <shuali@redhat.com>
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
----
- net/core/flow_dissector.c                     |  6 +--
- .../selftests/net/forwarding/tc_flower.sh     | 38 ++++++++++++++++++-
- 2 files changed, 40 insertions(+), 4 deletions(-)
+ drivers/net/dsa/b53/b53_common.c              |  91 ++++---
+ drivers/net/dsa/b53/b53_priv.h                |   2 -
+ drivers/net/dsa/mv88e6xxx/chip.c              | 163 ++++++++++---
+ drivers/net/dsa/mv88e6xxx/chip.h              |   6 +-
+ drivers/net/dsa/mv88e6xxx/port.c              |  52 ++--
+ drivers/net/dsa/mv88e6xxx/port.h              |  19 +-
+ drivers/net/dsa/ocelot/felix.c                |  25 ++
+ drivers/net/dsa/sja1105/sja1105.h             |   2 +
+ drivers/net/dsa/sja1105/sja1105_main.c        | 222 +++++++++++++++++-
+ drivers/net/dsa/sja1105/sja1105_spi.c         |   6 +
+ .../marvell/prestera/prestera_switchdev.c     |  26 +-
+ .../mellanox/mlxsw/spectrum_switchdev.c       |  53 +++--
+ drivers/net/ethernet/mscc/ocelot.c            | 100 +++++++-
+ drivers/net/ethernet/mscc/ocelot_net.c        |  52 +++-
+ drivers/net/ethernet/rocker/rocker_main.c     |  10 +-
+ drivers/net/ethernet/ti/am65-cpsw-switchdev.c |  27 ++-
+ drivers/net/ethernet/ti/cpsw_switchdev.c      |  27 ++-
+ drivers/staging/fsl-dpaa2/ethsw/ethsw.c       |  34 ++-
+ include/net/dsa.h                             |  10 +-
+ include/net/switchdev.h                       |  13 +-
+ include/soc/mscc/ocelot.h                     |  20 +-
+ net/bridge/br_netlink.c                       | 116 +++------
+ net/bridge/br_private.h                       |   6 +-
+ net/bridge/br_switchdev.c                     |  23 +-
+ net/bridge/br_sysfs_if.c                      |   7 +-
+ net/dsa/dsa_priv.h                            |  11 +-
+ net/dsa/port.c                                |  76 ++++--
+ net/dsa/slave.c                               |  10 +-
+ net/switchdev/switchdev.c                     |  11 +-
+ 29 files changed, 889 insertions(+), 331 deletions(-)
 
-diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
-index 6f1adba6695f..0b4f536bc32d 100644
---- a/net/core/flow_dissector.c
-+++ b/net/core/flow_dissector.c
-@@ -1050,6 +1050,9 @@ bool __skb_flow_dissect(const struct net *net,
- 			key_control->addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
- 		}
- 
-+		__skb_flow_dissect_ipv4(skb, flow_dissector,
-+					target_container, data, iph);
-+
- 		if (ip_is_fragment(iph)) {
- 			key_control->flags |= FLOW_DIS_IS_FRAGMENT;
- 
-@@ -1066,9 +1069,6 @@ bool __skb_flow_dissect(const struct net *net,
- 			}
- 		}
- 
--		__skb_flow_dissect_ipv4(skb, flow_dissector,
--					target_container, data, iph);
--
- 		break;
- 	}
- 	case htons(ETH_P_IPV6): {
-diff --git a/tools/testing/selftests/net/forwarding/tc_flower.sh b/tools/testing/selftests/net/forwarding/tc_flower.sh
-index 058c746ee300..b11d8e6b5bc1 100755
---- a/tools/testing/selftests/net/forwarding/tc_flower.sh
-+++ b/tools/testing/selftests/net/forwarding/tc_flower.sh
-@@ -3,7 +3,7 @@
- 
- ALL_TESTS="match_dst_mac_test match_src_mac_test match_dst_ip_test \
- 	match_src_ip_test match_ip_flags_test match_pcp_test match_vlan_test \
--	match_ip_tos_test match_indev_test"
-+	match_ip_tos_test match_indev_test match_ip_ttl_test"
- NUM_NETIFS=2
- source tc_common.sh
- source lib.sh
-@@ -310,6 +310,42 @@ match_ip_tos_test()
- 	log_test "ip_tos match ($tcflags)"
- }
- 
-+match_ip_ttl_test()
-+{
-+	RET=0
-+
-+	tc filter add dev $h2 ingress protocol ip pref 1 handle 101 flower \
-+		$tcflags dst_ip 192.0.2.2 ip_ttl 63 action drop
-+	tc filter add dev $h2 ingress protocol ip pref 2 handle 102 flower \
-+		$tcflags dst_ip 192.0.2.2 action drop
-+
-+	$MZ $h1 -c 1 -p 64 -a $h1mac -b $h2mac -A 192.0.2.1 -B 192.0.2.2 \
-+		-t ip "ttl=63" -q
-+
-+	$MZ $h1 -c 1 -p 64 -a $h1mac -b $h2mac -A 192.0.2.1 -B 192.0.2.2 \
-+		-t ip "ttl=63,mf,frag=256" -q
-+
-+	tc_check_packets "dev $h2 ingress" 102 1
-+	check_fail $? "Matched on the wrong filter (no check on ttl)"
-+
-+	tc_check_packets "dev $h2 ingress" 101 2
-+	check_err $? "Did not match on correct filter (ttl=63)"
-+
-+	$MZ $h1 -c 1 -p 64 -a $h1mac -b $h2mac -A 192.0.2.1 -B 192.0.2.2 \
-+		-t ip "ttl=255" -q
-+
-+	tc_check_packets "dev $h2 ingress" 101 3
-+	check_fail $? "Matched on a wrong filter (ttl=63)"
-+
-+	tc_check_packets "dev $h2 ingress" 102 1
-+	check_err $? "Did not match on correct filter (no check on ttl)"
-+
-+	tc filter del dev $h2 ingress protocol ip pref 2 handle 102 flower
-+	tc filter del dev $h2 ingress protocol ip pref 1 handle 101 flower
-+
-+	log_test "ip_ttl match ($tcflags)"
-+}
-+
- match_indev_test()
- {
- 	RET=0
 -- 
-2.29.2
+2.25.1
 
