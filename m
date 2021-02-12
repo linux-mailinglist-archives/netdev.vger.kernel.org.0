@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1B293197CC
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 02:07:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AC113197D0
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 02:07:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230132AbhBLBGy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 20:06:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35578 "EHLO
+        id S230170AbhBLBHF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 20:07:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229951AbhBLBGc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 20:06:32 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15958C06178A;
-        Thu, 11 Feb 2021 17:05:52 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id jj19so13064384ejc.4;
-        Thu, 11 Feb 2021 17:05:52 -0800 (PST)
+        with ESMTP id S229994AbhBLBGe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 20:06:34 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B28F0C06178B;
+        Thu, 11 Feb 2021 17:05:53 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id c6so9025176ede.0;
+        Thu, 11 Feb 2021 17:05:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=cSIWjlM+uUUZccQnLbiLxfGaU8rBoH7Rff7Py/C030s=;
-        b=aNeR/bS5OaakoCZWi1Ocr+xcLSweDhPj5jiTnkSsDx5XhunaO/OV2ZqxvKKclZK9Jb
-         lMqK/l2oT8gKGB+Fcd2xg8uT9DHcW1LSKcqftGWKYISvDovIN/J0Oe+RmIncT3UArbom
-         CHu74j1v9+6A7XnBlNWoa1nt4KFZ8Z96aHvAHEwCzHhOEM0MFgRlZqlFaRgAQkUjc68G
-         OntgTKYGMa+i5PHL9TMfnym/1JjTlM558hieEbWJqrD66xLeaX4dTiv9B3/N0Req8hIr
-         PEdjLIbfOfGEssPYXXquas6qBWK/kNMPUPMPDuE+DmXlMfYqMyupDseoyR6/jfAAWmXW
-         /gVQ==
+        bh=lNxJ07j4GT8ECrTife6XCumQKl8V4cgYVPKmnI/2AIQ=;
+        b=DymFO83VD0kTbOtbDhq+va6XCmX1+jcz+7BQJ2Qd+Qov6j+NeVF/PWIEl6xnGL7IfV
+         2vbN8KmOiYW7SyXkWT44tMLdECF6+oRRC9TPRZg1voCeGvRkT8VL1+BJ2aaB5CpwBje/
+         89JvivebxLqm/nlxOvW+iQvbLoNt2sWbWlaFmvILciNslkfs42r46Y8vod9DWx3Mz1/z
+         RhpahbcseKzYXSy6fAyAMK0RQeQrzlhaMrhRnmXgLTmjDLC4I5I+OYRNR5PysybeLu1Q
+         HD0FDnXZDfDJDC2zvKBVpaM5xMlAShJe9ph3Z8gVvw2YL229A4BJbZdQCxjznsnpkNJi
+         W3+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=cSIWjlM+uUUZccQnLbiLxfGaU8rBoH7Rff7Py/C030s=;
-        b=UB+I190weHIIS07fzUPYra4MKPAn55Ff4pppY7PD6cobjvNFw/OB2pv+ooxv11O0ji
-         lmKhd6Rspu1+wCJRpHy/oqU5tkZCRXBrsY332lVaWVMavKtNkyfvbWhoErvLpatkxIad
-         bY2hJGepQ9lhX0/MKvc9JpekRmb2u4jH9wQdZVcIe9p8vm2xijE4SxWLdFpuzH1k6kVC
-         n7y/S+cXJFjA+wmTQqHx9pxk/EWOfaPCJ7us4IFb6eyPZ5AI1IxDoarrBB4yzEcTMi32
-         /n5cqnGBTu/iaB1sQYEmP0jOzTf42xA4cLG2eTg/H8K8O/ICGezrs8k9nmLA4/Qv9aCg
-         CPtQ==
-X-Gm-Message-State: AOAM530Wiqf82UHcX3s82BAIUmMWbhuRlswmqVPxdrGdaoAJHBDW0s3u
-        Ic3ZqwJibmH26q9rvHeKs60=
-X-Google-Smtp-Source: ABdhPJzHNs4anrNt7RqqnKob2xF4wYsXP4YBL2CAvljshjsnhCOrdMK8VNFFhwGTBbEpqwei3WJTLQ==
-X-Received: by 2002:a17:906:c08a:: with SMTP id f10mr502507ejz.52.1613091950779;
-        Thu, 11 Feb 2021 17:05:50 -0800 (PST)
+        bh=lNxJ07j4GT8ECrTife6XCumQKl8V4cgYVPKmnI/2AIQ=;
+        b=aJ8HVrUm8Ja3DijlSzqMD/6rFPuPg3x+9ZsOV2Z9DMJBh+0zh+9qJ7IWXasM/lNAiV
+         JQ7V7o9ibK+mxtuj9ndQPAphgfUQ5iUqvvIgqUP0MMOqRRP3vs6StXeCN7+KVnNuUz2C
+         aqBFta9MB1ai8Sp5kwN5LY4I9QsLqSafFgGDVeru5vHZtTQS3po+zMU3+GuFvV9rQYfJ
+         t34yaD+GTY3tlnW6yrfgqY/rgDBtpjR6RIIrE2q7MkQlIM0eJPriDXfM5/KhDV34XClB
+         CaQMDr2QcwkNEABcjgjudcDfwM5gLa2HOZVrnOrNNmDVa8sUhFjXbwE0A1v6Nfb8PImP
+         Q/OQ==
+X-Gm-Message-State: AOAM533mdawLBRte3I1soK1/nYGlnPN5eQpZP9S3hvAKuE3Sg6Ev9unF
+        EEHHIlI6WHw6gOO5UtA/6P4=
+X-Google-Smtp-Source: ABdhPJzNVtO3Dh5vMhQnSYSbxHMDOPqDcVGNqs2l8ECqxm7gn+mPbhQFkNThZNfDTwgjKm7hIcF4vQ==
+X-Received: by 2002:a05:6402:3590:: with SMTP id y16mr868311edc.21.1613091952218;
+        Thu, 11 Feb 2021 17:05:52 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id z13sm5019580edc.73.2021.02.11.17.05.49
+        by smtp.gmail.com with ESMTPSA id z13sm5019580edc.73.2021.02.11.17.05.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Feb 2021 17:05:50 -0800 (PST)
+        Thu, 11 Feb 2021 17:05:51 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
@@ -65,9 +65,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Grygorii Strashko <grygorii.strashko@ti.com>,
         Ioana Ciornei <ioana.ciornei@nxp.com>,
         Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org
-Subject: [PATCH v4 net-next 5/9] net: switchdev: pass flags and mask to both {PRE_,}BRIDGE_FLAGS attributes
-Date:   Fri, 12 Feb 2021 03:05:27 +0200
-Message-Id: <20210212010531.2722925-6-olteanv@gmail.com>
+Subject: [PATCH v4 net-next 6/9] net: dsa: act as ass passthrough for bridge port flags
+Date:   Fri, 12 Feb 2021 03:05:28 +0200
+Message-Id: <20210212010531.2722925-7-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210212010531.2722925-1-olteanv@gmail.com>
 References: <20210212010531.2722925-1-olteanv@gmail.com>
@@ -79,464 +79,905 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-This switchdev attribute offers a counterproductive API for a driver
-writer, because although br_switchdev_set_port_flag gets passed a
-"flags" and a "mask", those are passed piecemeal to the driver, so while
-the PRE_BRIDGE_FLAGS listener knows what changed because it has the
-"mask", the BRIDGE_FLAGS listener doesn't, because it only has the final
-value. But certain drivers can offload only certain combinations of
-settings, like for example they cannot change unicast flooding
-independently of multicast flooding - they must be both on or both off.
-The way the information is passed to switchdev makes drivers not
-expressive enough, and unable to reject this request ahead of time, in
-the PRE_BRIDGE_FLAGS notifier, so they are forced to reject it during
-the deferred BRIDGE_FLAGS attribute, where the rejection is currently
-ignored.
+There are multiple ways in which a PORT_BRIDGE_FLAGS attribute can be
+expressed by the bridge through switchdev, and not all of them can be
+emulated by DSA mid-layer API at the same time.
 
-This patch also changes drivers to make use of the "mask" field for edge
-detection when possible.
+One possible configuration is when the bridge offloads the port flags
+using a mask that has a single bit set - therefore only one feature
+should change. However, DSA currently groups together unicast and
+multicast flooding in the .port_egress_floods method, which limits our
+options when we try to add support for turning off broadcast flooding:
+do we extend .port_egress_floods with a third parameter which b53 and
+mv88e6xxx will ignore? But that means that the DSA layer, which
+currently implements the PRE_BRIDGE_FLAGS attribute all by itself, will
+see that .port_egress_floods is implemented, and will report that all 3
+types of flooding are supported - not necessarily true.
+
+Another configuration is when the user specifies more than one flag at
+the same time, in the same netlink message. If we were to create one
+individual function per offloadable bridge port flag, we would limit the
+expressiveness of the switch driver of refusing certain combinations of
+flag values. For example, a switch may not have an explicit knob for
+flooding of unknown multicast, just for flooding in general. In that
+case, the only correct thing to do is to allow changes to BR_FLOOD and
+BR_MCAST_FLOOD in tandem, and never allow mismatched values. But having
+a separate .port_set_unicast_flood and .port_set_multicast_flood would
+not allow the driver to possibly reject that.
+
+Also, DSA doesn't consider it necessary to inform the driver that a
+SWITCHDEV_ATTR_ID_BRIDGE_MROUTER attribute was offloaded, because it
+just calls .port_egress_floods for the CPU port. When we'll add support
+for the plain SWITCHDEV_ATTR_ID_PORT_MROUTER, that will become a real
+problem because the flood settings will need to be held statefully in
+the DSA middle layer, otherwise changing the mrouter port attribute will
+impact the flooding attribute. And that's _assuming_ that the underlying
+hardware doesn't have anything else to do when a multicast router
+attaches to a port than flood unknown traffic to it.  If it does, there
+will need to be a dedicated .port_set_mrouter anyway.
+
+So we need to let the DSA drivers see the exact form that the bridge
+passes this switchdev attribute in, otherwise we are standing in the
+way. Therefore we also need to use this form of language when
+communicating to the driver that it needs to configure its initial
+(before bridge join) and final (after bridge leave) port flags.
+
+The b53 and mv88e6xxx drivers are converted to the passthrough API and
+their implementation of .port_egress_floods is split into two: a
+function that configures unicast flooding and another for multicast.
+The mv88e6xxx implementation is quite hairy, and it turns out that
+the implementations of unknown unicast flooding are actually the same
+for 6185 and for 6352:
+
+behind the confusing names actually lie two individual bits:
+NO_UNKNOWN_MC -> FLOOD_UC = 0x4 = BIT(2)
+NO_UNKNOWN_UC -> FLOOD_MC = 0x8 = BIT(3)
+
+so there was no reason to entangle them in the first place.
+
+Whereas the 6185 writes to MV88E6185_PORT_CTL0_FORWARD_UNKNOWN of
+PORT_CTL0, which has the exact same bit index. I have left the
+implementations separate though, for the only reason that the names are
+different enough to confuse me, since I am not able to double-check with
+a user manual. The multicast flooding setting for 6185 is in a different
+register than for 6352 though.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- .../marvell/prestera/prestera_switchdev.c     | 23 +++++----
- .../mellanox/mlxsw/spectrum_switchdev.c       | 50 +++++++++++--------
- drivers/net/ethernet/rocker/rocker_main.c     | 10 ++--
- drivers/net/ethernet/ti/cpsw_switchdev.c      | 24 +++++----
- drivers/staging/fsl-dpaa2/ethsw/ethsw.c       | 34 ++++++++-----
- include/net/switchdev.h                       |  7 ++-
- net/bridge/br_switchdev.c                     |  6 +--
- net/dsa/dsa_priv.h                            |  6 ++-
- net/dsa/port.c                                | 34 +++++++------
- 9 files changed, 115 insertions(+), 79 deletions(-)
+Changes in v4:
+- Adjust commit title and message.
+- Reintroduce the .port_pre_bridge_flags method.
+- Split the unicast and multicast flooding settings in mv88e6xxx and b53.
 
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c b/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
-index 2c1619715a4b..49e052273f30 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
-@@ -581,7 +581,7 @@ int prestera_bridge_port_event(struct net_device *dev, unsigned long event,
+Changes in v3:
+- Pass extack through the newly introduce dsa_port_change_brport_flags.
+
+Changes in v2:
+- Reordered with previous patch such that we don't need to introduce
+  .port_pre_bridge_flags
+- Pass extack to drivers.
+
+ drivers/net/dsa/b53/b53_common.c |  91 ++++++++++++-----
+ drivers/net/dsa/b53/b53_priv.h   |   2 -
+ drivers/net/dsa/mv88e6xxx/chip.c | 163 ++++++++++++++++++++++++-------
+ drivers/net/dsa/mv88e6xxx/chip.h |   6 +-
+ drivers/net/dsa/mv88e6xxx/port.c |  52 +++++-----
+ drivers/net/dsa/mv88e6xxx/port.h |  19 ++--
+ include/net/dsa.h                |  10 +-
+ net/dsa/dsa_priv.h               |   9 +-
+ net/dsa/port.c                   |  31 +++---
+ net/dsa/slave.c                  |   7 +-
+ 10 files changed, 263 insertions(+), 127 deletions(-)
+
+diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
+index 23fc7225c8d1..72c75c7bdb65 100644
+--- a/drivers/net/dsa/b53/b53_common.c
++++ b/drivers/net/dsa/b53/b53_common.c
+@@ -510,6 +510,39 @@ void b53_imp_vlan_setup(struct dsa_switch *ds, int cpu_port)
+ }
+ EXPORT_SYMBOL(b53_imp_vlan_setup);
  
- static int prestera_port_attr_br_flags_set(struct prestera_port *port,
- 					   struct net_device *dev,
--					   unsigned long flags)
-+					   struct switchdev_brport_flags flags)
++static void b53_port_set_ucast_flood(struct b53_device *dev, int port,
++				     bool unicast)
++{
++	u16 uc;
++
++	b53_read16(dev, B53_CTRL_PAGE, B53_UC_FLOOD_MASK, &uc);
++	if (unicast)
++		uc |= BIT(port);
++	else
++		uc &= ~BIT(port);
++	b53_write16(dev, B53_CTRL_PAGE, B53_UC_FLOOD_MASK, uc);
++}
++
++static void b53_port_set_mcast_flood(struct b53_device *dev, int port,
++				     bool multicast)
++{
++	u16 mc;
++
++	b53_read16(dev, B53_CTRL_PAGE, B53_MC_FLOOD_MASK, &mc);
++	if (multicast)
++		mc |= BIT(port);
++	else
++		mc &= ~BIT(port);
++	b53_write16(dev, B53_CTRL_PAGE, B53_MC_FLOOD_MASK, mc);
++
++	b53_read16(dev, B53_CTRL_PAGE, B53_IPMC_FLOOD_MASK, &mc);
++	if (multicast)
++		mc |= BIT(port);
++	else
++		mc &= ~BIT(port);
++	b53_write16(dev, B53_CTRL_PAGE, B53_IPMC_FLOOD_MASK, mc);
++}
++
+ int b53_enable_port(struct dsa_switch *ds, int port, struct phy_device *phy)
  {
- 	struct prestera_bridge_port *br_port;
- 	int err;
-@@ -590,15 +590,20 @@ static int prestera_port_attr_br_flags_set(struct prestera_port *port,
- 	if (!br_port)
- 		return 0;
+ 	struct b53_device *dev = ds->priv;
+@@ -522,7 +555,8 @@ int b53_enable_port(struct dsa_switch *ds, int port, struct phy_device *phy)
  
--	err = prestera_hw_port_flood_set(port, flags & BR_FLOOD);
--	if (err)
--		return err;
-+	if (flags.mask & BR_FLOOD) {
-+		err = prestera_hw_port_flood_set(port, flags.val & BR_FLOOD);
+ 	cpu_port = dsa_to_port(ds, port)->cpu_dp->index;
+ 
+-	b53_br_egress_floods(ds, port, true, true);
++	b53_port_set_ucast_flood(dev, port, true);
++	b53_port_set_mcast_flood(dev, port, true);
+ 
+ 	if (dev->ops->irq_enable)
+ 		ret = dev->ops->irq_enable(dev, port);
+@@ -655,7 +689,8 @@ static void b53_enable_cpu_port(struct b53_device *dev, int port)
+ 
+ 	b53_brcm_hdr_setup(dev->ds, port);
+ 
+-	b53_br_egress_floods(dev->ds, port, true, true);
++	b53_port_set_ucast_flood(dev, port, true);
++	b53_port_set_mcast_flood(dev, port, true);
+ }
+ 
+ static void b53_enable_mib(struct b53_device *dev)
+@@ -1916,37 +1951,37 @@ void b53_br_fast_age(struct dsa_switch *ds, int port)
+ }
+ EXPORT_SYMBOL(b53_br_fast_age);
+ 
+-int b53_br_egress_floods(struct dsa_switch *ds, int port,
+-			 bool unicast, bool multicast)
++static int b53_br_flags_pre(struct dsa_switch *ds, int port,
++			    struct switchdev_brport_flags flags,
++			    struct netlink_ext_ack *extack)
+ {
+-	struct b53_device *dev = ds->priv;
+-	u16 uc, mc;
+-
+-	b53_read16(dev, B53_CTRL_PAGE, B53_UC_FLOOD_MASK, &uc);
+-	if (unicast)
+-		uc |= BIT(port);
+-	else
+-		uc &= ~BIT(port);
+-	b53_write16(dev, B53_CTRL_PAGE, B53_UC_FLOOD_MASK, uc);
++	if (flags.mask & ~(BR_FLOOD | BR_MCAST_FLOOD))
++		return -EINVAL;
+ 
+-	b53_read16(dev, B53_CTRL_PAGE, B53_MC_FLOOD_MASK, &mc);
+-	if (multicast)
+-		mc |= BIT(port);
+-	else
+-		mc &= ~BIT(port);
+-	b53_write16(dev, B53_CTRL_PAGE, B53_MC_FLOOD_MASK, mc);
++	return 0;
++}
+ 
+-	b53_read16(dev, B53_CTRL_PAGE, B53_IPMC_FLOOD_MASK, &mc);
+-	if (multicast)
+-		mc |= BIT(port);
+-	else
+-		mc &= ~BIT(port);
+-	b53_write16(dev, B53_CTRL_PAGE, B53_IPMC_FLOOD_MASK, mc);
++static int b53_br_flags(struct dsa_switch *ds, int port,
++			struct switchdev_brport_flags flags,
++			struct netlink_ext_ack *extack)
++{
++	if (flags.mask & BR_FLOOD)
++		b53_port_set_ucast_flood(ds->priv, port,
++					 !!(flags.val & BR_FLOOD));
++	if (flags.mask & BR_MCAST_FLOOD)
++		b53_port_set_mcast_flood(ds->priv, port,
++					 !!(flags.val & BR_MCAST_FLOOD));
+ 
+ 	return 0;
++}
+ 
++static int b53_set_mrouter(struct dsa_switch *ds, int port, bool mrouter,
++			   struct netlink_ext_ack *extack)
++{
++	b53_port_set_mcast_flood(ds->priv, port, mrouter);
++
++	return 0;
+ }
+-EXPORT_SYMBOL(b53_br_egress_floods);
+ 
+ static bool b53_possible_cpu_port(struct dsa_switch *ds, int port)
+ {
+@@ -2187,9 +2222,11 @@ static const struct dsa_switch_ops b53_switch_ops = {
+ 	.set_mac_eee		= b53_set_mac_eee,
+ 	.port_bridge_join	= b53_br_join,
+ 	.port_bridge_leave	= b53_br_leave,
++	.port_pre_bridge_flags	= b53_br_flags_pre,
++	.port_bridge_flags	= b53_br_flags,
++	.port_set_mrouter	= b53_set_mrouter,
+ 	.port_stp_state_set	= b53_br_set_stp_state,
+ 	.port_fast_age		= b53_br_fast_age,
+-	.port_egress_floods	= b53_br_egress_floods,
+ 	.port_vlan_filtering	= b53_vlan_filtering,
+ 	.port_vlan_add		= b53_vlan_add,
+ 	.port_vlan_del		= b53_vlan_del,
+diff --git a/drivers/net/dsa/b53/b53_priv.h b/drivers/net/dsa/b53/b53_priv.h
+index 0d2cc0453bef..ae72ef46b0b6 100644
+--- a/drivers/net/dsa/b53/b53_priv.h
++++ b/drivers/net/dsa/b53/b53_priv.h
+@@ -326,8 +326,6 @@ int b53_br_join(struct dsa_switch *ds, int port, struct net_device *bridge);
+ void b53_br_leave(struct dsa_switch *ds, int port, struct net_device *bridge);
+ void b53_br_set_stp_state(struct dsa_switch *ds, int port, u8 state);
+ void b53_br_fast_age(struct dsa_switch *ds, int port);
+-int b53_br_egress_floods(struct dsa_switch *ds, int port,
+-			 bool unicast, bool multicast);
+ int b53_setup_devlink_resources(struct dsa_switch *ds);
+ void b53_port_event(struct dsa_switch *ds, int port);
+ void b53_phylink_validate(struct dsa_switch *ds, int port,
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index ae0b490f00cd..0ef1fadfec68 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -2434,12 +2434,20 @@ static int mv88e6xxx_setup_egress_floods(struct mv88e6xxx_chip *chip, int port)
+ {
+ 	struct dsa_switch *ds = chip->ds;
+ 	bool flood;
++	int err;
+ 
+ 	/* Upstream ports flood frames with unknown unicast or multicast DA */
+ 	flood = dsa_is_cpu_port(ds, port) || dsa_is_dsa_port(ds, port);
+-	if (chip->info->ops->port_set_egress_floods)
+-		return chip->info->ops->port_set_egress_floods(chip, port,
+-							       flood, flood);
++	if (chip->info->ops->port_set_ucast_flood) {
++		err = chip->info->ops->port_set_ucast_flood(chip, port, flood);
 +		if (err)
 +			return err;
 +	}
- 
--	err = prestera_hw_port_learning_set(port, flags & BR_LEARNING);
--	if (err)
--		return err;
-+	if (flags.mask & BR_LEARNING) {
-+		err = prestera_hw_port_learning_set(port,
-+						    flags.val & BR_LEARNING);
++	if (chip->info->ops->port_set_mcast_flood) {
++		err = chip->info->ops->port_set_mcast_flood(chip, port, flood);
 +		if (err)
 +			return err;
 +	}
- 
--	memcpy(&br_port->flags, &flags, sizeof(flags));
-+	memcpy(&br_port->flags, &flags.val, sizeof(flags.val));
  
  	return 0;
  }
-@@ -707,7 +712,7 @@ static int prestera_port_obj_attr_set(struct net_device *dev,
- 						       attr->u.stp_state);
- 		break;
- 	case SWITCHDEV_ATTR_ID_PORT_PRE_BRIDGE_FLAGS:
--		if (attr->u.brport_flags &
-+		if (attr->u.brport_flags.mask &
- 		    ~(BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD))
- 			err = -EINVAL;
- 		break;
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-index 18e4f1cd5587..23b7e8d6386b 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-@@ -653,11 +653,11 @@ mlxsw_sp_bridge_port_learning_set(struct mlxsw_sp_port *mlxsw_sp_port,
- 	return err;
+@@ -3239,7 +3247,8 @@ static const struct mv88e6xxx_ops mv88e6085_ops = {
+ 	.port_set_speed_duplex = mv88e6185_port_set_speed_duplex,
+ 	.port_tag_remap = mv88e6095_port_tag_remap,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+-	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
++	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
++	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
+ 	.port_set_ether_type = mv88e6351_port_set_ether_type,
+ 	.port_egress_rate_limiting = mv88e6097_port_egress_rate_limiting,
+ 	.port_pause_limit = mv88e6097_port_pause_limit,
+@@ -3278,7 +3287,8 @@ static const struct mv88e6xxx_ops mv88e6095_ops = {
+ 	.port_sync_link = mv88e6185_port_sync_link,
+ 	.port_set_speed_duplex = mv88e6185_port_set_speed_duplex,
+ 	.port_set_frame_mode = mv88e6085_port_set_frame_mode,
+-	.port_set_egress_floods = mv88e6185_port_set_egress_floods,
++	.port_set_ucast_flood = mv88e6185_port_set_forward_unknown,
++	.port_set_mcast_flood = mv88e6185_port_set_default_forward,
+ 	.port_set_upstream_port = mv88e6095_port_set_upstream_port,
+ 	.port_get_cmode = mv88e6185_port_get_cmode,
+ 	.port_setup_message_port = mv88e6xxx_setup_message_port,
+@@ -3313,7 +3323,8 @@ static const struct mv88e6xxx_ops mv88e6097_ops = {
+ 	.port_set_speed_duplex = mv88e6185_port_set_speed_duplex,
+ 	.port_tag_remap = mv88e6095_port_tag_remap,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+-	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
++	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
++	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
+ 	.port_set_ether_type = mv88e6351_port_set_ether_type,
+ 	.port_egress_rate_limiting = mv88e6095_port_egress_rate_limiting,
+ 	.port_pause_limit = mv88e6097_port_pause_limit,
+@@ -3357,7 +3368,8 @@ static const struct mv88e6xxx_ops mv88e6123_ops = {
+ 	.port_sync_link = mv88e6xxx_port_sync_link,
+ 	.port_set_speed_duplex = mv88e6185_port_set_speed_duplex,
+ 	.port_set_frame_mode = mv88e6085_port_set_frame_mode,
+-	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
++	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
++	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
+ 	.port_disable_learn_limit = mv88e6xxx_port_disable_learn_limit,
+ 	.port_disable_pri_override = mv88e6xxx_port_disable_pri_override,
+ 	.port_get_cmode = mv88e6185_port_get_cmode,
+@@ -3393,7 +3405,8 @@ static const struct mv88e6xxx_ops mv88e6131_ops = {
+ 	.port_set_speed_duplex = mv88e6185_port_set_speed_duplex,
+ 	.port_tag_remap = mv88e6095_port_tag_remap,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+-	.port_set_egress_floods = mv88e6185_port_set_egress_floods,
++	.port_set_ucast_flood = mv88e6185_port_set_forward_unknown,
++	.port_set_mcast_flood = mv88e6185_port_set_default_forward,
+ 	.port_set_ether_type = mv88e6351_port_set_ether_type,
+ 	.port_set_upstream_port = mv88e6095_port_set_upstream_port,
+ 	.port_set_jumbo_size = mv88e6165_port_set_jumbo_size,
+@@ -3437,7 +3450,8 @@ static const struct mv88e6xxx_ops mv88e6141_ops = {
+ 	.port_max_speed_mode = mv88e6341_port_max_speed_mode,
+ 	.port_tag_remap = mv88e6095_port_tag_remap,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+-	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
++	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
++	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
+ 	.port_set_ether_type = mv88e6351_port_set_ether_type,
+ 	.port_set_jumbo_size = mv88e6165_port_set_jumbo_size,
+ 	.port_egress_rate_limiting = mv88e6097_port_egress_rate_limiting,
+@@ -3487,7 +3501,8 @@ static const struct mv88e6xxx_ops mv88e6161_ops = {
+ 	.port_set_speed_duplex = mv88e6185_port_set_speed_duplex,
+ 	.port_tag_remap = mv88e6095_port_tag_remap,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+-	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
++	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
++	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
+ 	.port_set_ether_type = mv88e6351_port_set_ether_type,
+ 	.port_set_jumbo_size = mv88e6165_port_set_jumbo_size,
+ 	.port_egress_rate_limiting = mv88e6097_port_egress_rate_limiting,
+@@ -3565,7 +3580,8 @@ static const struct mv88e6xxx_ops mv88e6171_ops = {
+ 	.port_set_speed_duplex = mv88e6185_port_set_speed_duplex,
+ 	.port_tag_remap = mv88e6095_port_tag_remap,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+-	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
++	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
++	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
+ 	.port_set_ether_type = mv88e6351_port_set_ether_type,
+ 	.port_set_jumbo_size = mv88e6165_port_set_jumbo_size,
+ 	.port_egress_rate_limiting = mv88e6097_port_egress_rate_limiting,
+@@ -3609,7 +3625,8 @@ static const struct mv88e6xxx_ops mv88e6172_ops = {
+ 	.port_tag_remap = mv88e6095_port_tag_remap,
+ 	.port_set_policy = mv88e6352_port_set_policy,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+-	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
++	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
++	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
+ 	.port_set_ether_type = mv88e6351_port_set_ether_type,
+ 	.port_set_jumbo_size = mv88e6165_port_set_jumbo_size,
+ 	.port_egress_rate_limiting = mv88e6097_port_egress_rate_limiting,
+@@ -3660,7 +3677,8 @@ static const struct mv88e6xxx_ops mv88e6175_ops = {
+ 	.port_set_speed_duplex = mv88e6185_port_set_speed_duplex,
+ 	.port_tag_remap = mv88e6095_port_tag_remap,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+-	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
++	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
++	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
+ 	.port_set_ether_type = mv88e6351_port_set_ether_type,
+ 	.port_set_jumbo_size = mv88e6165_port_set_jumbo_size,
+ 	.port_egress_rate_limiting = mv88e6097_port_egress_rate_limiting,
+@@ -3704,7 +3722,8 @@ static const struct mv88e6xxx_ops mv88e6176_ops = {
+ 	.port_tag_remap = mv88e6095_port_tag_remap,
+ 	.port_set_policy = mv88e6352_port_set_policy,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+-	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
++	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
++	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
+ 	.port_set_ether_type = mv88e6351_port_set_ether_type,
+ 	.port_set_jumbo_size = mv88e6165_port_set_jumbo_size,
+ 	.port_egress_rate_limiting = mv88e6097_port_egress_rate_limiting,
+@@ -3755,7 +3774,8 @@ static const struct mv88e6xxx_ops mv88e6185_ops = {
+ 	.port_sync_link = mv88e6185_port_sync_link,
+ 	.port_set_speed_duplex = mv88e6185_port_set_speed_duplex,
+ 	.port_set_frame_mode = mv88e6085_port_set_frame_mode,
+-	.port_set_egress_floods = mv88e6185_port_set_egress_floods,
++	.port_set_ucast_flood = mv88e6185_port_set_forward_unknown,
++	.port_set_mcast_flood = mv88e6185_port_set_default_forward,
+ 	.port_egress_rate_limiting = mv88e6095_port_egress_rate_limiting,
+ 	.port_set_upstream_port = mv88e6095_port_set_upstream_port,
+ 	.port_set_pause = mv88e6185_port_set_pause,
+@@ -3800,7 +3820,8 @@ static const struct mv88e6xxx_ops mv88e6190_ops = {
+ 	.port_tag_remap = mv88e6390_port_tag_remap,
+ 	.port_set_policy = mv88e6352_port_set_policy,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+-	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
++	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
++	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
+ 	.port_set_ether_type = mv88e6351_port_set_ether_type,
+ 	.port_set_jumbo_size = mv88e6165_port_set_jumbo_size,
+ 	.port_pause_limit = mv88e6390_port_pause_limit,
+@@ -3860,7 +3881,8 @@ static const struct mv88e6xxx_ops mv88e6190x_ops = {
+ 	.port_tag_remap = mv88e6390_port_tag_remap,
+ 	.port_set_policy = mv88e6352_port_set_policy,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+-	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
++	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
++	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
+ 	.port_set_ether_type = mv88e6351_port_set_ether_type,
+ 	.port_set_jumbo_size = mv88e6165_port_set_jumbo_size,
+ 	.port_pause_limit = mv88e6390_port_pause_limit,
+@@ -3919,7 +3941,8 @@ static const struct mv88e6xxx_ops mv88e6191_ops = {
+ 	.port_max_speed_mode = mv88e6390_port_max_speed_mode,
+ 	.port_tag_remap = mv88e6390_port_tag_remap,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+-	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
++	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
++	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
+ 	.port_set_ether_type = mv88e6351_port_set_ether_type,
+ 	.port_pause_limit = mv88e6390_port_pause_limit,
+ 	.port_disable_learn_limit = mv88e6xxx_port_disable_learn_limit,
+@@ -3979,7 +4002,8 @@ static const struct mv88e6xxx_ops mv88e6240_ops = {
+ 	.port_tag_remap = mv88e6095_port_tag_remap,
+ 	.port_set_policy = mv88e6352_port_set_policy,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+-	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
++	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
++	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
+ 	.port_set_ether_type = mv88e6351_port_set_ether_type,
+ 	.port_set_jumbo_size = mv88e6165_port_set_jumbo_size,
+ 	.port_egress_rate_limiting = mv88e6097_port_egress_rate_limiting,
+@@ -4037,7 +4061,8 @@ static const struct mv88e6xxx_ops mv88e6250_ops = {
+ 	.port_set_speed_duplex = mv88e6250_port_set_speed_duplex,
+ 	.port_tag_remap = mv88e6095_port_tag_remap,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+-	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
++	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
++	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
+ 	.port_set_ether_type = mv88e6351_port_set_ether_type,
+ 	.port_egress_rate_limiting = mv88e6097_port_egress_rate_limiting,
+ 	.port_pause_limit = mv88e6097_port_pause_limit,
+@@ -4077,7 +4102,8 @@ static const struct mv88e6xxx_ops mv88e6290_ops = {
+ 	.port_tag_remap = mv88e6390_port_tag_remap,
+ 	.port_set_policy = mv88e6352_port_set_policy,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+-	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
++	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
++	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
+ 	.port_set_ether_type = mv88e6351_port_set_ether_type,
+ 	.port_pause_limit = mv88e6390_port_pause_limit,
+ 	.port_disable_learn_limit = mv88e6xxx_port_disable_learn_limit,
+@@ -4136,7 +4162,8 @@ static const struct mv88e6xxx_ops mv88e6320_ops = {
+ 	.port_set_speed_duplex = mv88e6185_port_set_speed_duplex,
+ 	.port_tag_remap = mv88e6095_port_tag_remap,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+-	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
++	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
++	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
+ 	.port_set_ether_type = mv88e6351_port_set_ether_type,
+ 	.port_set_jumbo_size = mv88e6165_port_set_jumbo_size,
+ 	.port_egress_rate_limiting = mv88e6097_port_egress_rate_limiting,
+@@ -4179,7 +4206,8 @@ static const struct mv88e6xxx_ops mv88e6321_ops = {
+ 	.port_set_speed_duplex = mv88e6185_port_set_speed_duplex,
+ 	.port_tag_remap = mv88e6095_port_tag_remap,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+-	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
++	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
++	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
+ 	.port_set_ether_type = mv88e6351_port_set_ether_type,
+ 	.port_set_jumbo_size = mv88e6165_port_set_jumbo_size,
+ 	.port_egress_rate_limiting = mv88e6097_port_egress_rate_limiting,
+@@ -4222,7 +4250,8 @@ static const struct mv88e6xxx_ops mv88e6341_ops = {
+ 	.port_max_speed_mode = mv88e6341_port_max_speed_mode,
+ 	.port_tag_remap = mv88e6095_port_tag_remap,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+-	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
++	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
++	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
+ 	.port_set_ether_type = mv88e6351_port_set_ether_type,
+ 	.port_set_jumbo_size = mv88e6165_port_set_jumbo_size,
+ 	.port_egress_rate_limiting = mv88e6097_port_egress_rate_limiting,
+@@ -4275,7 +4304,8 @@ static const struct mv88e6xxx_ops mv88e6350_ops = {
+ 	.port_set_speed_duplex = mv88e6185_port_set_speed_duplex,
+ 	.port_tag_remap = mv88e6095_port_tag_remap,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+-	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
++	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
++	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
+ 	.port_set_ether_type = mv88e6351_port_set_ether_type,
+ 	.port_set_jumbo_size = mv88e6165_port_set_jumbo_size,
+ 	.port_egress_rate_limiting = mv88e6097_port_egress_rate_limiting,
+@@ -4316,7 +4346,8 @@ static const struct mv88e6xxx_ops mv88e6351_ops = {
+ 	.port_set_speed_duplex = mv88e6185_port_set_speed_duplex,
+ 	.port_tag_remap = mv88e6095_port_tag_remap,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+-	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
++	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
++	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
+ 	.port_set_ether_type = mv88e6351_port_set_ether_type,
+ 	.port_set_jumbo_size = mv88e6165_port_set_jumbo_size,
+ 	.port_egress_rate_limiting = mv88e6097_port_egress_rate_limiting,
+@@ -4362,7 +4393,8 @@ static const struct mv88e6xxx_ops mv88e6352_ops = {
+ 	.port_tag_remap = mv88e6095_port_tag_remap,
+ 	.port_set_policy = mv88e6352_port_set_policy,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+-	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
++	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
++	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
+ 	.port_set_ether_type = mv88e6351_port_set_ether_type,
+ 	.port_set_jumbo_size = mv88e6165_port_set_jumbo_size,
+ 	.port_egress_rate_limiting = mv88e6097_port_egress_rate_limiting,
+@@ -4424,7 +4456,8 @@ static const struct mv88e6xxx_ops mv88e6390_ops = {
+ 	.port_tag_remap = mv88e6390_port_tag_remap,
+ 	.port_set_policy = mv88e6352_port_set_policy,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+-	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
++	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
++	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
+ 	.port_set_ether_type = mv88e6351_port_set_ether_type,
+ 	.port_set_jumbo_size = mv88e6165_port_set_jumbo_size,
+ 	.port_egress_rate_limiting = mv88e6097_port_egress_rate_limiting,
+@@ -4488,7 +4521,8 @@ static const struct mv88e6xxx_ops mv88e6390x_ops = {
+ 	.port_tag_remap = mv88e6390_port_tag_remap,
+ 	.port_set_policy = mv88e6352_port_set_policy,
+ 	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
+-	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
++	.port_set_ucast_flood = mv88e6352_port_set_ucast_flood,
++	.port_set_mcast_flood = mv88e6352_port_set_mcast_flood,
+ 	.port_set_ether_type = mv88e6351_port_set_ether_type,
+ 	.port_set_jumbo_size = mv88e6165_port_set_jumbo_size,
+ 	.port_egress_rate_limiting = mv88e6097_port_egress_rate_limiting,
+@@ -5364,17 +5398,72 @@ static void mv88e6xxx_port_mirror_del(struct dsa_switch *ds, int port,
+ 	mutex_unlock(&chip->reg_lock);
  }
  
--static int mlxsw_sp_port_attr_br_pre_flags_set(struct mlxsw_sp_port
--					       *mlxsw_sp_port,
--					       unsigned long brport_flags)
-+static int
-+mlxsw_sp_port_attr_br_pre_flags_set(struct mlxsw_sp_port *mlxsw_sp_port,
-+				    struct switchdev_brport_flags flags)
+-static int mv88e6xxx_port_egress_floods(struct dsa_switch *ds, int port,
+-					 bool unicast, bool multicast)
++static int mv88e6xxx_port_pre_bridge_flags(struct dsa_switch *ds, int port,
++					   struct switchdev_brport_flags flags,
++					   struct netlink_ext_ack *extack)
++{
++	struct mv88e6xxx_chip *chip = ds->priv;
++	const struct mv88e6xxx_ops *ops;
++
++	if (flags.mask & ~(BR_FLOOD | BR_MCAST_FLOOD))
++		return -EINVAL;
++
++	ops = chip->info->ops;
++
++	if ((flags.mask & BR_FLOOD) && !ops->port_set_ucast_flood)
++		return -EINVAL;
++
++	if ((flags.mask & BR_MCAST_FLOOD) && !ops->port_set_mcast_flood)
++		return -EINVAL;
++
++	return 0;
++}
++
++static int mv88e6xxx_port_bridge_flags(struct dsa_switch *ds, int port,
++				       struct switchdev_brport_flags flags,
++				       struct netlink_ext_ack *extack)
  {
--	if (brport_flags & ~(BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD))
-+	if (flags.mask & ~(BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD))
- 		return -EINVAL;
+ 	struct mv88e6xxx_chip *chip = ds->priv;
+ 	int err = -EOPNOTSUPP;
  
- 	return 0;
-@@ -665,7 +665,7 @@ static int mlxsw_sp_port_attr_br_pre_flags_set(struct mlxsw_sp_port
- 
- static int mlxsw_sp_port_attr_br_flags_set(struct mlxsw_sp_port *mlxsw_sp_port,
- 					   struct net_device *orig_dev,
--					   unsigned long brport_flags)
-+					   struct switchdev_brport_flags flags)
- {
- 	struct mlxsw_sp_bridge_port *bridge_port;
- 	int err;
-@@ -675,29 +675,37 @@ static int mlxsw_sp_port_attr_br_flags_set(struct mlxsw_sp_port *mlxsw_sp_port,
- 	if (!bridge_port)
- 		return 0;
- 
--	err = mlxsw_sp_bridge_port_flood_table_set(mlxsw_sp_port, bridge_port,
--						   MLXSW_SP_FLOOD_TYPE_UC,
--						   brport_flags & BR_FLOOD);
--	if (err)
--		return err;
+ 	mv88e6xxx_reg_lock(chip);
+-	if (chip->info->ops->port_set_egress_floods)
+-		err = chip->info->ops->port_set_egress_floods(chip, port,
+-							      unicast,
+-							      multicast);
++
 +	if (flags.mask & BR_FLOOD) {
-+		err = mlxsw_sp_bridge_port_flood_table_set(mlxsw_sp_port,
-+							   bridge_port,
-+							   MLXSW_SP_FLOOD_TYPE_UC,
-+							   flags.val & BR_FLOOD);
++		bool unicast = !!(flags.val & BR_FLOOD);
++
++		err = chip->info->ops->port_set_ucast_flood(chip, port,
++							    unicast);
 +		if (err)
-+			return err;
++			goto out;
 +	}
- 
--	err = mlxsw_sp_bridge_port_learning_set(mlxsw_sp_port, bridge_port,
--						brport_flags & BR_LEARNING);
--	if (err)
--		return err;
-+	if (flags.mask & BR_LEARNING) {
-+		err = mlxsw_sp_bridge_port_learning_set(mlxsw_sp_port,
-+							bridge_port,
-+							flags.val & BR_LEARNING);
-+		if (err)
-+			return err;
-+	}
- 
- 	if (bridge_port->bridge_device->multicast_enabled)
- 		goto out;
- 
--	err = mlxsw_sp_bridge_port_flood_table_set(mlxsw_sp_port, bridge_port,
--						   MLXSW_SP_FLOOD_TYPE_MC,
--						   brport_flags &
--						   BR_MCAST_FLOOD);
--	if (err)
--		return err;
++
 +	if (flags.mask & BR_MCAST_FLOOD) {
-+		err = mlxsw_sp_bridge_port_flood_table_set(mlxsw_sp_port,
-+							   bridge_port,
-+							   MLXSW_SP_FLOOD_TYPE_MC,
-+							   flags.val & BR_MCAST_FLOOD);
++		bool multicast = !!(flags.val & BR_MCAST_FLOOD);
++
++		err = chip->info->ops->port_set_mcast_flood(chip, port,
++							    multicast);
 +		if (err)
-+			return err;
++			goto out;
 +	}
++
++out:
++	mv88e6xxx_reg_unlock(chip);
++
++	return err;
++}
++
++static int mv88e6xxx_port_set_mrouter(struct dsa_switch *ds, int port,
++				      bool mrouter,
++				      struct netlink_ext_ack *extack)
++{
++	struct mv88e6xxx_chip *chip = ds->priv;
++	int err;
++
++	if (!chip->info->ops->port_set_mcast_flood)
++		return -EOPNOTSUPP;
++
++	mv88e6xxx_reg_lock(chip);
++	err = chip->info->ops->port_set_mcast_flood(chip, port, mrouter);
+ 	mv88e6xxx_reg_unlock(chip);
  
- out:
--	memcpy(&bridge_port->flags, &brport_flags, sizeof(brport_flags));
-+	memcpy(&bridge_port->flags, &flags.val, sizeof(flags.val));
- 	return 0;
+ 	return err;
+@@ -5678,7 +5767,9 @@ static const struct dsa_switch_ops mv88e6xxx_switch_ops = {
+ 	.set_ageing_time	= mv88e6xxx_set_ageing_time,
+ 	.port_bridge_join	= mv88e6xxx_port_bridge_join,
+ 	.port_bridge_leave	= mv88e6xxx_port_bridge_leave,
+-	.port_egress_floods	= mv88e6xxx_port_egress_floods,
++	.port_pre_bridge_flags	= mv88e6xxx_port_pre_bridge_flags,
++	.port_bridge_flags	= mv88e6xxx_port_bridge_flags,
++	.port_set_mrouter	= mv88e6xxx_port_set_mrouter,
+ 	.port_stp_state_set	= mv88e6xxx_port_stp_state_set,
+ 	.port_fast_age		= mv88e6xxx_port_fast_age,
+ 	.port_vlan_filtering	= mv88e6xxx_port_vlan_filtering,
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
+index 788b3f585ef3..a57c8886f3ac 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.h
++++ b/drivers/net/dsa/mv88e6xxx/chip.h
+@@ -454,8 +454,10 @@ struct mv88e6xxx_ops {
+ 
+ 	int (*port_set_frame_mode)(struct mv88e6xxx_chip *chip, int port,
+ 				   enum mv88e6xxx_frame_mode mode);
+-	int (*port_set_egress_floods)(struct mv88e6xxx_chip *chip, int port,
+-				      bool unicast, bool multicast);
++	int (*port_set_ucast_flood)(struct mv88e6xxx_chip *chip, int port,
++				    bool unicast);
++	int (*port_set_mcast_flood)(struct mv88e6xxx_chip *chip, int port,
++				    bool multicast);
+ 	int (*port_set_ether_type)(struct mv88e6xxx_chip *chip, int port,
+ 				   u16 etype);
+ 	int (*port_set_jumbo_size)(struct mv88e6xxx_chip *chip, int port,
+diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
+index 4b46e10a2dde..4561f289ab76 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.c
++++ b/drivers/net/dsa/mv88e6xxx/port.c
+@@ -789,8 +789,8 @@ int mv88e6351_port_set_frame_mode(struct mv88e6xxx_chip *chip, int port,
+ 	return mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_CTL0, reg);
  }
  
-diff --git a/drivers/net/ethernet/rocker/rocker_main.c b/drivers/net/ethernet/rocker/rocker_main.c
-index 740a715c49c6..3473d296b2e2 100644
---- a/drivers/net/ethernet/rocker/rocker_main.c
-+++ b/drivers/net/ethernet/rocker/rocker_main.c
-@@ -1576,7 +1576,7 @@ rocker_world_port_attr_bridge_flags_support_get(const struct rocker_port *
- 
- static int
- rocker_world_port_attr_pre_bridge_flags_set(struct rocker_port *rocker_port,
--					    unsigned long brport_flags)
-+					    struct switchdev_brport_flags flags)
+-static int mv88e6185_port_set_forward_unknown(struct mv88e6xxx_chip *chip,
+-					      int port, bool unicast)
++int mv88e6185_port_set_forward_unknown(struct mv88e6xxx_chip *chip,
++				       int port, bool unicast)
  {
- 	struct rocker_world_ops *wops = rocker_port->rocker->wops;
- 	unsigned long brport_flags_s;
-@@ -1590,7 +1590,7 @@ rocker_world_port_attr_pre_bridge_flags_set(struct rocker_port *rocker_port,
+ 	int err;
+ 	u16 reg;
+@@ -807,8 +807,8 @@ static int mv88e6185_port_set_forward_unknown(struct mv88e6xxx_chip *chip,
+ 	return mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_CTL0, reg);
+ }
+ 
+-int mv88e6352_port_set_egress_floods(struct mv88e6xxx_chip *chip, int port,
+-				     bool unicast, bool multicast)
++int mv88e6352_port_set_ucast_flood(struct mv88e6xxx_chip *chip, int port,
++				   bool unicast)
+ {
+ 	int err;
+ 	u16 reg;
+@@ -817,16 +817,28 @@ int mv88e6352_port_set_egress_floods(struct mv88e6xxx_chip *chip, int port,
  	if (err)
  		return err;
  
--	if (brport_flags & ~brport_flags_s)
-+	if (flags.mask & ~brport_flags_s)
- 		return -EINVAL;
- 
- 	return 0;
-@@ -1598,14 +1598,14 @@ rocker_world_port_attr_pre_bridge_flags_set(struct rocker_port *rocker_port,
- 
- static int
- rocker_world_port_attr_bridge_flags_set(struct rocker_port *rocker_port,
--					unsigned long brport_flags)
-+					struct switchdev_brport_flags flags)
- {
- 	struct rocker_world_ops *wops = rocker_port->rocker->wops;
- 
- 	if (!wops->port_attr_bridge_flags_set)
- 		return -EOPNOTSUPP;
- 
--	return wops->port_attr_bridge_flags_set(rocker_port, brport_flags);
-+	return wops->port_attr_bridge_flags_set(rocker_port, flags.val);
- }
- 
- static int
-@@ -2058,7 +2058,7 @@ static int rocker_port_attr_set(struct net_device *dev,
- 		break;
- 	case SWITCHDEV_ATTR_ID_PORT_PRE_BRIDGE_FLAGS:
- 		err = rocker_world_port_attr_pre_bridge_flags_set(rocker_port,
--							      attr->u.brport_flags);
-+								  attr->u.brport_flags);
- 		break;
- 	case SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS:
- 		err = rocker_world_port_attr_bridge_flags_set(rocker_port,
-diff --git a/drivers/net/ethernet/ti/cpsw_switchdev.c b/drivers/net/ethernet/ti/cpsw_switchdev.c
-index 13524cbaa8b6..a72bb570756f 100644
---- a/drivers/net/ethernet/ti/cpsw_switchdev.c
-+++ b/drivers/net/ethernet/ti/cpsw_switchdev.c
-@@ -57,26 +57,30 @@ static int cpsw_port_stp_state_set(struct cpsw_priv *priv, u8 state)
- 
- static int cpsw_port_attr_br_flags_set(struct cpsw_priv *priv,
- 				       struct net_device *orig_dev,
--				       unsigned long brport_flags)
-+				       struct switchdev_brport_flags flags)
- {
- 	struct cpsw_common *cpsw = priv->cpsw;
--	bool unreg_mcast_add = false;
- 
--	if (brport_flags & BR_MCAST_FLOOD)
--		unreg_mcast_add = true;
--	dev_dbg(priv->dev, "BR_MCAST_FLOOD: %d port %u\n",
--		unreg_mcast_add, priv->emac_port);
-+	if (flags.mask & BR_MCAST_FLOOD) {
-+		bool unreg_mcast_add = false;
- 
--	cpsw_ale_set_unreg_mcast(cpsw->ale, BIT(priv->emac_port),
--				 unreg_mcast_add);
-+		if (flags.val & BR_MCAST_FLOOD)
-+			unreg_mcast_add = true;
+-	reg &= ~MV88E6352_PORT_CTL0_EGRESS_FLOODS_MASK;
++	if (unicast)
++		reg |= MV88E6352_PORT_CTL0_EGRESS_FLOODS_UC;
++	else
++		reg &= ~MV88E6352_PORT_CTL0_EGRESS_FLOODS_UC;
 +
-+		dev_dbg(priv->dev, "BR_MCAST_FLOOD: %d port %u\n",
-+			unreg_mcast_add, priv->emac_port);
++	return mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_CTL0, reg);
++}
 +
-+		cpsw_ale_set_unreg_mcast(cpsw->ale, BIT(priv->emac_port),
-+					 unreg_mcast_add);
-+	}
++int mv88e6352_port_set_mcast_flood(struct mv88e6xxx_chip *chip, int port,
++				   bool multicast)
++{
++	int err;
++	u16 reg;
++
++	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_CTL0, &reg);
++	if (err)
++		return err;
  
- 	return 0;
+-	if (unicast && multicast)
+-		reg |= MV88E6352_PORT_CTL0_EGRESS_FLOODS_ALL_UNKNOWN_DA;
+-	else if (unicast)
+-		reg |= MV88E6352_PORT_CTL0_EGRESS_FLOODS_NO_UNKNOWN_MC_DA;
+-	else if (multicast)
+-		reg |= MV88E6352_PORT_CTL0_EGRESS_FLOODS_NO_UNKNOWN_UC_DA;
++	if (multicast)
++		reg |= MV88E6352_PORT_CTL0_EGRESS_FLOODS_MC;
+ 	else
+-		reg |= MV88E6352_PORT_CTL0_EGRESS_FLOODS_NO_UNKNOWN_DA;
++		reg &= ~MV88E6352_PORT_CTL0_EGRESS_FLOODS_MC;
+ 
+ 	return mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_CTL0, reg);
  }
- 
- static int cpsw_port_attr_br_flags_pre_set(struct net_device *netdev,
--					   unsigned long flags)
-+					   struct switchdev_brport_flags flags)
- {
--	if (flags & ~(BR_LEARNING | BR_MCAST_FLOOD))
-+	if (flags.mask & ~(BR_LEARNING | BR_MCAST_FLOOD))
- 		return -EINVAL;
- 
- 	return 0;
-diff --git a/drivers/staging/fsl-dpaa2/ethsw/ethsw.c b/drivers/staging/fsl-dpaa2/ethsw/ethsw.c
-index ca3d07fe7f58..703055e063ff 100644
---- a/drivers/staging/fsl-dpaa2/ethsw/ethsw.c
-+++ b/drivers/staging/fsl-dpaa2/ethsw/ethsw.c
-@@ -908,31 +908,39 @@ static int dpaa2_switch_port_attr_stp_state_set(struct net_device *netdev,
- 	return dpaa2_switch_port_set_stp_state(port_priv, state);
- }
- 
--static int dpaa2_switch_port_attr_br_flags_pre_set(struct net_device *netdev,
--						   unsigned long flags)
-+static int
-+dpaa2_switch_port_attr_br_flags_pre_set(struct net_device *netdev,
-+					struct switchdev_brport_flags flags)
- {
--	if (flags & ~(BR_LEARNING | BR_FLOOD))
-+	if (flags.mask & ~(BR_LEARNING | BR_FLOOD))
- 		return -EINVAL;
- 
- 	return 0;
- }
- 
--static int dpaa2_switch_port_attr_br_flags_set(struct net_device *netdev,
--					       unsigned long flags)
-+static int
-+dpaa2_switch_port_attr_br_flags_set(struct net_device *netdev,
-+				    struct switchdev_brport_flags flags)
- {
- 	struct ethsw_port_priv *port_priv = netdev_priv(netdev);
- 	int err = 0;
- 
--	/* Learning is enabled per switch */
--	err = dpaa2_switch_set_learning(port_priv->ethsw_data,
--					!!(flags & BR_LEARNING));
--	if (err)
--		goto exit;
-+	if (flags.mask & BR_LEARNING) {
-+		/* Learning is enabled per switch */
-+		err = dpaa2_switch_set_learning(port_priv->ethsw_data,
-+						!!(flags.val & BR_LEARNING));
-+		if (err)
-+			return err;
-+	}
- 
--	err = dpaa2_switch_port_set_flood(port_priv, !!(flags & BR_FLOOD));
-+	if (flags.mask & BR_FLOOD) {
-+		err = dpaa2_switch_port_set_flood(port_priv,
-+						  !!(flags.val & BR_FLOOD));
-+		if (err)
-+			return err;
-+	}
- 
--exit:
--	return err;
-+	return 0;
- }
- 
- static int dpaa2_switch_port_attr_set(struct net_device *netdev,
-diff --git a/include/net/switchdev.h b/include/net/switchdev.h
-index 9279d4245bab..25d9e4570934 100644
---- a/include/net/switchdev.h
-+++ b/include/net/switchdev.h
-@@ -32,6 +32,11 @@ enum switchdev_attr_id {
- #endif
+@@ -1013,8 +1025,8 @@ static const char * const mv88e6xxx_port_8021q_mode_names[] = {
+ 	[MV88E6XXX_PORT_CTL2_8021Q_MODE_SECURE] = "Secure",
  };
  
-+struct switchdev_brport_flags {
-+	unsigned long val;
-+	unsigned long mask;
-+};
-+
- struct switchdev_attr {
- 	struct net_device *orig_dev;
- 	enum switchdev_attr_id id;
-@@ -40,7 +45,7 @@ struct switchdev_attr {
- 	void (*complete)(struct net_device *dev, int err, void *priv);
- 	union {
- 		u8 stp_state;				/* PORT_STP_STATE */
--		unsigned long brport_flags;		/* PORT_{PRE}_BRIDGE_FLAGS */
-+		struct switchdev_brport_flags brport_flags; /* PORT_BRIDGE_FLAGS */
- 		bool mrouter;				/* PORT_MROUTER */
- 		clock_t ageing_time;			/* BRIDGE_AGEING_TIME */
- 		bool vlan_filtering;			/* BRIDGE_VLAN_FILTERING */
-diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
-index bb21dd35ae85..184cf4c8b06d 100644
---- a/net/bridge/br_switchdev.c
-+++ b/net/bridge/br_switchdev.c
-@@ -65,7 +65,6 @@ int br_switchdev_set_port_flag(struct net_bridge_port *p,
+-static int mv88e6185_port_set_default_forward(struct mv88e6xxx_chip *chip,
+-					      int port, bool multicast)
++int mv88e6185_port_set_default_forward(struct mv88e6xxx_chip *chip,
++				       int port, bool multicast)
  {
- 	struct switchdev_attr attr = {
- 		.orig_dev = p->dev,
--		.id = SWITCHDEV_ATTR_ID_PORT_PRE_BRIDGE_FLAGS,
- 	};
- 	struct switchdev_notifier_port_attr_info info = {
- 		.attr = &attr,
-@@ -76,7 +75,9 @@ int br_switchdev_set_port_flag(struct net_bridge_port *p,
- 	if (!mask)
- 		return 0;
+ 	int err;
+ 	u16 reg;
+@@ -1031,18 +1043,6 @@ static int mv88e6185_port_set_default_forward(struct mv88e6xxx_chip *chip,
+ 	return mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_CTL2, reg);
+ }
  
--	attr.u.brport_flags = mask;
-+	attr.id = SWITCHDEV_ATTR_ID_PORT_PRE_BRIDGE_FLAGS;
-+	attr.u.brport_flags.val = flags;
-+	attr.u.brport_flags.mask = mask;
+-int mv88e6185_port_set_egress_floods(struct mv88e6xxx_chip *chip, int port,
+-				     bool unicast, bool multicast)
+-{
+-	int err;
+-
+-	err = mv88e6185_port_set_forward_unknown(chip, port, unicast);
+-	if (err)
+-		return err;
+-
+-	return mv88e6185_port_set_default_forward(chip, port, multicast);
+-}
+-
+ int mv88e6095_port_set_upstream_port(struct mv88e6xxx_chip *chip, int port,
+ 				     int upstream_port)
+ {
+diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
+index a729bba050df..e6d0eaa6aa1d 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.h
++++ b/drivers/net/dsa/mv88e6xxx/port.h
+@@ -154,11 +154,8 @@
+ #define MV88E6185_PORT_CTL0_USE_IP				0x0020
+ #define MV88E6185_PORT_CTL0_USE_TAG				0x0010
+ #define MV88E6185_PORT_CTL0_FORWARD_UNKNOWN			0x0004
+-#define MV88E6352_PORT_CTL0_EGRESS_FLOODS_MASK			0x000c
+-#define MV88E6352_PORT_CTL0_EGRESS_FLOODS_NO_UNKNOWN_DA		0x0000
+-#define MV88E6352_PORT_CTL0_EGRESS_FLOODS_NO_UNKNOWN_MC_DA	0x0004
+-#define MV88E6352_PORT_CTL0_EGRESS_FLOODS_NO_UNKNOWN_UC_DA	0x0008
+-#define MV88E6352_PORT_CTL0_EGRESS_FLOODS_ALL_UNKNOWN_DA	0x000c
++#define MV88E6352_PORT_CTL0_EGRESS_FLOODS_UC			0x0004
++#define MV88E6352_PORT_CTL0_EGRESS_FLOODS_MC			0x0008
+ #define MV88E6XXX_PORT_CTL0_STATE_MASK				0x0003
+ #define MV88E6XXX_PORT_CTL0_STATE_DISABLED			0x0000
+ #define MV88E6XXX_PORT_CTL0_STATE_BLOCKING			0x0001
+@@ -343,10 +340,14 @@ int mv88e6085_port_set_frame_mode(struct mv88e6xxx_chip *chip, int port,
+ 				  enum mv88e6xxx_frame_mode mode);
+ int mv88e6351_port_set_frame_mode(struct mv88e6xxx_chip *chip, int port,
+ 				  enum mv88e6xxx_frame_mode mode);
+-int mv88e6185_port_set_egress_floods(struct mv88e6xxx_chip *chip, int port,
+-				     bool unicast, bool multicast);
+-int mv88e6352_port_set_egress_floods(struct mv88e6xxx_chip *chip, int port,
+-				     bool unicast, bool multicast);
++int mv88e6185_port_set_forward_unknown(struct mv88e6xxx_chip *chip,
++				       int port, bool unicast);
++int mv88e6185_port_set_default_forward(struct mv88e6xxx_chip *chip,
++				       int port, bool multicast);
++int mv88e6352_port_set_ucast_flood(struct mv88e6xxx_chip *chip, int port,
++				   bool unicast);
++int mv88e6352_port_set_mcast_flood(struct mv88e6xxx_chip *chip, int port,
++				   bool multicast);
+ int mv88e6352_port_set_policy(struct mv88e6xxx_chip *chip, int port,
+ 			      enum mv88e6xxx_policy_mapping mapping,
+ 			      enum mv88e6xxx_policy_action action);
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index 60acb9fca124..b03586f5c60c 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -621,8 +621,14 @@ struct dsa_switch_ops {
+ 	void	(*port_stp_state_set)(struct dsa_switch *ds, int port,
+ 				      u8 state);
+ 	void	(*port_fast_age)(struct dsa_switch *ds, int port);
+-	int	(*port_egress_floods)(struct dsa_switch *ds, int port,
+-				      bool unicast, bool multicast);
++	int	(*port_pre_bridge_flags)(struct dsa_switch *ds, int port,
++					 struct switchdev_brport_flags flags,
++					 struct netlink_ext_ack *extack);
++	int	(*port_bridge_flags)(struct dsa_switch *ds, int port,
++				     struct switchdev_brport_flags flags,
++				     struct netlink_ext_ack *extack);
++	int	(*port_set_mrouter)(struct dsa_switch *ds, int port, bool mrouter,
++				    struct netlink_ext_ack *extack);
  
- 	/* We run from atomic context here */
- 	err = call_switchdev_notifiers(SWITCHDEV_PORT_ATTR_SET, p->dev,
-@@ -94,7 +95,6 @@ int br_switchdev_set_port_flag(struct net_bridge_port *p,
- 
- 	attr.id = SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS;
- 	attr.flags = SWITCHDEV_F_DEFER;
--	attr.u.brport_flags = flags;
- 
- 	err = switchdev_port_attr_set(p->dev, &attr);
- 	if (err) {
+ 	/*
+ 	 * VLAN support
 diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 8a1bcb2b4208..0e38f57dd648 100644
+index 0e38f57dd648..d5cf86098849 100644
 --- a/net/dsa/dsa_priv.h
 +++ b/net/dsa/dsa_priv.h
-@@ -174,8 +174,10 @@ int dsa_port_mdb_add(const struct dsa_port *dp,
- 		     const struct switchdev_obj_port_mdb *mdb);
+@@ -175,10 +175,13 @@ int dsa_port_mdb_add(const struct dsa_port *dp,
  int dsa_port_mdb_del(const struct dsa_port *dp,
  		     const struct switchdev_obj_port_mdb *mdb);
--int dsa_port_pre_bridge_flags(const struct dsa_port *dp, unsigned long flags);
--int dsa_port_bridge_flags(const struct dsa_port *dp, unsigned long flags);
-+int dsa_port_pre_bridge_flags(const struct dsa_port *dp,
-+			      struct switchdev_brport_flags flags);
-+int dsa_port_bridge_flags(const struct dsa_port *dp,
-+			  struct switchdev_brport_flags flags);
- int dsa_port_mrouter(struct dsa_port *dp, bool mrouter);
+ int dsa_port_pre_bridge_flags(const struct dsa_port *dp,
+-			      struct switchdev_brport_flags flags);
++			      struct switchdev_brport_flags flags,
++			      struct netlink_ext_ack *extack);
+ int dsa_port_bridge_flags(const struct dsa_port *dp,
+-			  struct switchdev_brport_flags flags);
+-int dsa_port_mrouter(struct dsa_port *dp, bool mrouter);
++			  struct switchdev_brport_flags flags,
++			  struct netlink_ext_ack *extack);
++int dsa_port_mrouter(struct dsa_port *dp, bool mrouter,
++		     struct netlink_ext_ack *extack);
  int dsa_port_vlan_add(struct dsa_port *dp,
  		      const struct switchdev_obj_port_vlan *vlan);
+ int dsa_port_vlan_del(struct dsa_port *dp,
 diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 9f65ba11ad00..5a4f4e1cf75e 100644
+index 5a4f4e1cf75e..48a4e3966039 100644
 --- a/net/dsa/port.c
 +++ b/net/dsa/port.c
-@@ -125,21 +125,22 @@ void dsa_port_disable(struct dsa_port *dp)
- static void dsa_port_change_brport_flags(struct dsa_port *dp,
- 					 bool bridge_offload)
- {
--	unsigned long mask, flags;
--	int flag, err;
-+	struct switchdev_brport_flags flags;
-+	int flag;
+@@ -140,7 +140,7 @@ static void dsa_port_change_brport_flags(struct dsa_port *dp,
+ 		tmp.val = flags.val & BIT(flag);
+ 		tmp.mask = BIT(flag);
  
--	mask = BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD | BR_BCAST_FLOOD;
-+	flags.mask = BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD | BR_BCAST_FLOOD;
- 	if (bridge_offload)
--		flags = mask;
-+		flags.val = flags.mask;
- 	else
--		flags = mask & ~BR_LEARNING;
-+		flags.val = flags.mask & ~BR_LEARNING;
- 
--	for_each_set_bit(flag, &mask, 32) {
--		err = dsa_port_pre_bridge_flags(dp, BIT(flag));
--		if (err)
--			continue;
-+	for_each_set_bit(flag, &flags.mask, 32) {
-+		struct switchdev_brport_flags tmp;
-+
-+		tmp.val = flags.val & BIT(flag);
-+		tmp.mask = BIT(flag);
- 
--		dsa_port_bridge_flags(dp, flags & BIT(flag));
-+		dsa_port_bridge_flags(dp, tmp);
+-		dsa_port_bridge_flags(dp, tmp);
++		dsa_port_bridge_flags(dp, tmp, NULL);
  	}
  }
  
-@@ -423,26 +424,29 @@ int dsa_port_ageing_time(struct dsa_port *dp, clock_t ageing_clock)
- 	return 0;
+@@ -425,41 +425,38 @@ int dsa_port_ageing_time(struct dsa_port *dp, clock_t ageing_clock)
  }
  
--int dsa_port_pre_bridge_flags(const struct dsa_port *dp, unsigned long flags)
-+int dsa_port_pre_bridge_flags(const struct dsa_port *dp,
-+			      struct switchdev_brport_flags flags)
+ int dsa_port_pre_bridge_flags(const struct dsa_port *dp,
+-			      struct switchdev_brport_flags flags)
++			      struct switchdev_brport_flags flags,
++			      struct netlink_ext_ack *extack)
  {
  	struct dsa_switch *ds = dp->ds;
  
- 	if (!ds->ops->port_egress_floods ||
--	    (flags & ~(BR_FLOOD | BR_MCAST_FLOOD)))
-+	    (flags.mask & ~(BR_FLOOD | BR_MCAST_FLOOD)))
+-	if (!ds->ops->port_egress_floods ||
+-	    (flags.mask & ~(BR_FLOOD | BR_MCAST_FLOOD)))
++	if (!ds->ops->port_pre_bridge_flags)
  		return -EINVAL;
  
- 	return 0;
+-	return 0;
++	return ds->ops->port_pre_bridge_flags(ds, dp->index, flags, extack);
  }
  
--int dsa_port_bridge_flags(const struct dsa_port *dp, unsigned long flags)
-+int dsa_port_bridge_flags(const struct dsa_port *dp,
-+			  struct switchdev_brport_flags flags)
+ int dsa_port_bridge_flags(const struct dsa_port *dp,
+-			  struct switchdev_brport_flags flags)
++			  struct switchdev_brport_flags flags,
++			  struct netlink_ext_ack *extack)
  {
  	struct dsa_switch *ds = dp->ds;
- 	int port = dp->index;
- 	int err = 0;
+-	int port = dp->index;
+-	int err = 0;
  
- 	if (ds->ops->port_egress_floods)
--		err = ds->ops->port_egress_floods(ds, port, flags & BR_FLOOD,
--						  flags & BR_MCAST_FLOOD);
-+		err = ds->ops->port_egress_floods(ds, port,
-+						  flags.val & BR_FLOOD,
-+						  flags.val & BR_MCAST_FLOOD);
+-	if (ds->ops->port_egress_floods)
+-		err = ds->ops->port_egress_floods(ds, port,
+-						  flags.val & BR_FLOOD,
+-						  flags.val & BR_MCAST_FLOOD);
++	if (!ds->ops->port_bridge_flags)
++		return -EINVAL;
  
- 	return err;
+-	return err;
++	return ds->ops->port_bridge_flags(ds, dp->index, flags, extack);
  }
+ 
+-int dsa_port_mrouter(struct dsa_port *dp, bool mrouter)
++int dsa_port_mrouter(struct dsa_port *dp, bool mrouter,
++		     struct netlink_ext_ack *extack)
+ {
+ 	struct dsa_switch *ds = dp->ds;
+-	int port = dp->index;
+ 
+-	if (!ds->ops->port_egress_floods)
++	if (!ds->ops->port_set_mrouter)
+ 		return -EOPNOTSUPP;
+ 
+-	return ds->ops->port_egress_floods(ds, port, true, mrouter);
++	return ds->ops->port_set_mrouter(ds, dp->index, mrouter, extack);
+ }
+ 
+ int dsa_port_mtu_change(struct dsa_port *dp, int new_mtu,
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 8f4c7c232e2c..c0ca757cc063 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -291,13 +291,14 @@ static int dsa_slave_port_attr_set(struct net_device *dev,
+ 		ret = dsa_port_ageing_time(dp, attr->u.ageing_time);
+ 		break;
+ 	case SWITCHDEV_ATTR_ID_PORT_PRE_BRIDGE_FLAGS:
+-		ret = dsa_port_pre_bridge_flags(dp, attr->u.brport_flags);
++		ret = dsa_port_pre_bridge_flags(dp, attr->u.brport_flags,
++						extack);
+ 		break;
+ 	case SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS:
+-		ret = dsa_port_bridge_flags(dp, attr->u.brport_flags);
++		ret = dsa_port_bridge_flags(dp, attr->u.brport_flags, extack);
+ 		break;
+ 	case SWITCHDEV_ATTR_ID_BRIDGE_MROUTER:
+-		ret = dsa_port_mrouter(dp->cpu_dp, attr->u.mrouter);
++		ret = dsa_port_mrouter(dp->cpu_dp, attr->u.mrouter, extack);
+ 		break;
+ 	default:
+ 		ret = -EOPNOTSUPP;
 -- 
 2.25.1
 
