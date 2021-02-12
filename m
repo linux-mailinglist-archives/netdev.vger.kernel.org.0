@@ -2,77 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 422DF319875
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 04:00:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D8B8319884
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 04:02:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229969AbhBLDAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 22:00:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50002 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229907AbhBLC7B (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Feb 2021 21:59:01 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3AD0764E8A;
-        Fri, 12 Feb 2021 02:57:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613098648;
-        bh=b4p0hOcA8hHH3Hmk0YMlVTChchwkig3KDaK0s46Gfdo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GoQQfQ3AXOjRdNKRNmTGdkGJVNnvkaKxdsladSsvcRliQL82y8GMgjX0J7IHyukJG
-         eiKIAjRnoB+/egtVIps9hiAup+gBLbrC1W1deIKF6l8mKNVpJBcBUxfiFx77KPEIuD
-         JgA7PUUPi7hwBkKM7cuddUd2HBjDSH2pbUFDbsMVL6JY74llcY+mpiZ77gnhdlxWWL
-         ZNYzMJVZwZ3H6w1O4rF2kLleTktu10SBTzBTXtsaCzPnXTZRcstehot3qpM8t9rVsd
-         GUkJx/WMyAwc/7YBr6vCeZF0jxJDvXRsoyY19Pr/binJcFEn7zFg4aAGVCNXSsRjCC
-         xdqCA3x8Q092A==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Moshe Shemesh <moshe@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 15/15] net/mlx5e: Check tunnel offload is required before setting SWP
-Date:   Thu, 11 Feb 2021 18:56:41 -0800
-Message-Id: <20210212025641.323844-16-saeed@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210212025641.323844-1-saeed@kernel.org>
-References: <20210212025641.323844-1-saeed@kernel.org>
+        id S230144AbhBLDBu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 22:01:50 -0500
+Received: from mo-csw1515.securemx.jp ([210.130.202.154]:32832 "EHLO
+        mo-csw.securemx.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230018AbhBLDBF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 22:01:05 -0500
+Received: by mo-csw.securemx.jp (mx-mo-csw1515) id 11C2wKej016608; Fri, 12 Feb 2021 11:58:20 +0900
+X-Iguazu-Qid: 34tKUV8MihhtQgcHLv
+X-Iguazu-QSIG: v=2; s=0; t=1613098700; q=34tKUV8MihhtQgcHLv; m=gpvUeawsXclZN4YQhPpKttHVr6pf75YS4CpRjjvDrSA=
+Received: from imx2.toshiba.co.jp (imx2.toshiba.co.jp [106.186.93.51])
+        by relay.securemx.jp (mx-mr1510) id 11C2wIiT024951;
+        Fri, 12 Feb 2021 11:58:19 +0900
+Received: from enc01.toshiba.co.jp ([106.186.93.100])
+        by imx2.toshiba.co.jp  with ESMTP id 11C2wIIM017954;
+        Fri, 12 Feb 2021 11:58:18 +0900 (JST)
+Received: from hop001.toshiba.co.jp ([133.199.164.63])
+        by enc01.toshiba.co.jp  with ESMTP id 11C2wIhW003971;
+        Fri, 12 Feb 2021 11:58:18 +0900
+From:   Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, punit1.agrawal@toshiba.co.jp,
+        yuji2.ishikawa@toshiba.co.jp, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+Subject: [PATCH v2 0/4] net: stmmac: Add Toshiba Visconti SoCs glue driver
+Date:   Fri, 12 Feb 2021 11:58:02 +0900
+X-TSB-HOP: ON
+Message-Id: <20210212025806.556217-1-nobuhiro1.iwamatsu@toshiba.co.jp>
+X-Mailer: git-send-email 2.30.0.rc2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Moshe Shemesh <moshe@nvidia.com>
+Hi,
 
-Check that tunnel offload is required before setting Software Parser
-offsets to get Geneve HW offload. In case of Geneve packet we check HW
-offload support of SWP in mlx5e_tunnel_features_check() and set features
-accordingly, this should be reflected in skb offload requested by the
-kernel and we should add the Software Parser offsets only if requested.
-Otherwise, in case HW doesn't support SWP for Geneve, data path will
-mistakenly try to offload Geneve SKBs with skb->encapsulation set,
-regardless of whether offload was requested or not on this specific SKB.
+This series is the ethernet driver for Toshiba's ARM SoC, Visconti[0].
+This provides DT binding documentation, device driver, MAINTAINER files, and updates to DT files.
 
-Fixes: e3cfc7e6b7bd ("net/mlx5e: TX, Add geneve tunnel stateless offload support")
-Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Best regards,
+  Nobuhiro
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h
-index 1fae7fab8297..ff81b69a59a9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h
-@@ -173,7 +173,7 @@ static inline bool mlx5e_accel_tx_eseg(struct mlx5e_priv *priv,
- #endif
- 
- #if IS_ENABLED(CONFIG_GENEVE)
--	if (skb->encapsulation)
-+	if (skb->encapsulation && skb->ip_summed == CHECKSUM_PARTIAL)
- 		mlx5e_tx_tunnel_accel(skb, eseg, ihs);
- #endif
- 
+[0]: https://toshiba.semicon-storage.com/ap-en/semiconductor/product/image-recognition-processors-visconti.htmli
+
+Updates:
+
+  dt-bindings: net: Add DT bindings for Toshiba Visconti TMPV7700 SoC
+    v1 -> v2: No update.
+
+  net: stmmac: Add Toshiba Visconti SoCs glue driver
+    v1 -> v2: Use reverse christmas tree ordering for local variable declarations.
+
+  MAINTAINERS: Add entries for Toshiba Visconti ethernet controller
+    v1 -> v2: No update.
+
+  arm: dts: visconti: Add DT support for Toshiba Visconti5 ethernet controller
+    v1 -> v2: No update.
+
+Nobuhiro Iwamatsu (4):
+  dt-bindings: net: Add DT bindings for Toshiba Visconti TMPV7700 SoC
+  net: stmmac: Add Toshiba Visconti SoCs glue driver
+  MAINTAINERS: Add entries for Toshiba Visconti ethernet controller
+  arm: dts: visconti: Add DT support for Toshiba Visconti5 ethernet
+    controller
+
+ .../bindings/net/toshiba,visconti-dwmac.yaml  |  87 ++++++
+ MAINTAINERS                                   |   2 +
+ .../boot/dts/toshiba/tmpv7708-rm-mbrc.dts     |  18 ++
+ arch/arm64/boot/dts/toshiba/tmpv7708.dtsi     |  24 ++
+ drivers/net/ethernet/stmicro/stmmac/Kconfig   |   8 +
+ drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
+ .../ethernet/stmicro/stmmac/dwmac-visconti.c  | 288 ++++++++++++++++++
+ 7 files changed, 428 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/toshiba,visconti-dwmac.yaml
+ create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
+
 -- 
-2.29.2
-
+2.30.0.rc2
