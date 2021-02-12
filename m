@@ -2,139 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D3EB31A423
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 19:02:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E58F731A438
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 19:08:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231396AbhBLSBw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 13:01:52 -0500
-Received: from mail-mw2nam10on2073.outbound.protection.outlook.com ([40.107.94.73]:11840
-        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231131AbhBLSBv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Feb 2021 13:01:51 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WWQZi3QUa2xeKKVAnd+LFwv6d8Rhv5rZ7q1sdhMkioIMpO9O3TuItxFgpvGRk39Z9EeG9OlkK/wp8iy+3VJexDT/7Rc9yWqnc9WmEaGDUyAvUDax4gcFV6tCuShjOSUzftG7ZNkEB2qKgiqW+aRocyzsE5NfSv4vEiVONSzIOPQ1YsLliu1XkxE/zkxQLFY+7Uo6Zcz2uYILtISwT5VRKOKv+DJUyWVmSpCvFrmXBCK8+4lNlUa6svK442dGj4cHfDR9B8rquyvGarUIKilwYEEKeI2W/Hks2Kq0iapGIuHFtFNx5UyxajBhopIbImttUxSQiw6oPhkXcWAOv9WWIQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XqwXqrKLzKGS9LSaWbxj3tjzZqGxcvqKh2pjXHS9cJ0=;
- b=HwjnkQojSDitSw4Ix9pOdFPyiuMOx++IdSaFa4CBwYTAifoBH+FeCi268WxbNFy0aEOp63O9jmulVKByvcZOr3QeRb08J0ASPw2rEHvIY4ROqdptaM2Ns/nV9khw3XOSfAgiJc9MSolIkk6dufh4UMakQExe5ASGpyReuKjOFnQg3cWyitgLdYFgRAW9jcQZwyMhdztaXPpRwdfx/D9TSwfRjHYVutBAmxdJ/r9iIrETON1e1j1Vg4kv7lKCrkEppZ6IJPtGRlZFEJ7a9jTZR6jo7A+OuphVRgyhNI/4W6Lgj+W8uwz+QurwBdUj/wDepIbmut1eebHIHoBrIyiOHw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XqwXqrKLzKGS9LSaWbxj3tjzZqGxcvqKh2pjXHS9cJ0=;
- b=v+hZ6tvg1d8U7qDDx+R4jU4t6mD+5aMhTMCoiRZDrTeFavpNkSeieHss3NMSOyri2ins5GM+vQxHkcHdEviqtfTvdZBBux9tX80yJpx1zKSjBA3wZV4iX63gUjq0ypEky3WZsnRp3/jlyiY5mnp8X/rd6jOwA0H5fjHU00ZUQN8=
-Authentication-Results: amd.com; dkim=none (message not signed)
- header.d=none;amd.com; dmarc=none action=none header.from=amd.com;
-Received: from SN1PR12MB2495.namprd12.prod.outlook.com (2603:10b6:802:32::17)
- by SA0PR12MB4397.namprd12.prod.outlook.com (2603:10b6:806:93::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.26; Fri, 12 Feb
- 2021 18:01:00 +0000
-Received: from SN1PR12MB2495.namprd12.prod.outlook.com
- ([fe80::319c:4e6a:99f1:e451]) by SN1PR12MB2495.namprd12.prod.outlook.com
- ([fe80::319c:4e6a:99f1:e451%3]) with mapi id 15.20.3846.027; Fri, 12 Feb 2021
- 18:01:00 +0000
-From:   Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
-To:     Tom Lendacky <thomas.lendacky@amd.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Sudheesh.Mavila@amd.com,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        Sudheesh Mavila <sudheesh.mavila@amd.com>
-Subject: [PATCH 4/4] amd-xgbe: Fix network fluctuations when using 1G BELFUSE SFP
-Date:   Fri, 12 Feb 2021 23:30:10 +0530
-Message-Id: <20210212180010.221129-5-Shyam-sundar.S-k@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210212180010.221129-1-Shyam-sundar.S-k@amd.com>
-References: <20210212180010.221129-1-Shyam-sundar.S-k@amd.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [165.204.156.251]
-X-ClientProxiedBy: MAXPR01CA0089.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:a00:49::31) To SN1PR12MB2495.namprd12.prod.outlook.com
- (2603:10b6:802:32::17)
+        id S231348AbhBLSGC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 13:06:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56032 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230240AbhBLSF7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 13:05:59 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2DC2C061574;
+        Fri, 12 Feb 2021 10:05:20 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id a24so245379plm.11;
+        Fri, 12 Feb 2021 10:05:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=e7FvX3805mVbi8rUejyIm26agQLfcgUZJrMWSiLjNGs=;
+        b=lNMCouqv+fTjmMB6cirFrl9lgwfiYme91mERyye0MrSQwDCWRBAA8nxOyadU0JP1GM
+         2+78codzGdNu57tEuXnoFu7IobxUP2aYirkbJr28Dm7BWbmrvwUwjBcmrPiAYh+qBgtO
+         2oi4c6DHF22Kn9p7hWKmzSLq3BrbDfp1snMMHl4gbxbz70OOyBegaRybHK+9kTsuJelI
+         sX9n3adDZpn2lvnhNC9ZnBin4UlcBYC1LTzYqPV9XqtyKQVe7EUeGDgd/KTQlJ0iZiLp
+         fwm/Zs1QqxP+LnnLT9T4qzF2MEyxwZGEGwECPkLtovPlelRmrQOiI2Cl779Kna3slRjJ
+         PNBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=e7FvX3805mVbi8rUejyIm26agQLfcgUZJrMWSiLjNGs=;
+        b=h88VgQjiww7lonaGjvTneYaRQ1whgucgiy2sUobkOJBatsodP57ggqhLTvIriZbaMI
+         FgiOjOWh7ZEZ1Rnjg+weFBseQGvocmrXoX5892Pm9eTbYHXTXptG9sg+UAPO/T+oG0op
+         n/3MvrZUYscvRndUTnhjWV0BphhsLCJyPmfvhter5zOqDnxl99GmKNyI9o4CNq7Rtxsf
+         7ll8HmlgibQjS92QYewBgpgWIumAC1PPL9xunmn34XcESagtZjkc6zvR2lt+9EQ1TurB
+         MNihg0UUkviyNKWwJnyxcOLMVyawQsbrxmc9X+ElRiAKUpciauJYepqez1TJ10nvlHV9
+         oxkg==
+X-Gm-Message-State: AOAM533HHK29Pu3wFAjGm8RVgtC3l1IXl7E+BgEISnEdN6hQE7d2rMXF
+        jzOr9Oe7o5GxDFfmywu7ibCdZmy5bGs=
+X-Google-Smtp-Source: ABdhPJxbX9H47ViGLWUpCf4ZDXGVxxJ2XlKtdlv42d9ua1WR5Bsy0WUcnV+kUq8ziygwgtpEbfgKww==
+X-Received: by 2002:a17:90a:ad09:: with SMTP id r9mr3793493pjq.51.1613153119543;
+        Fri, 12 Feb 2021 10:05:19 -0800 (PST)
+Received: from [10.230.29.30] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id r13sm10104082pfc.198.2021.02.12.10.05.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 12 Feb 2021 10:05:19 -0800 (PST)
+Subject: Re: [PATCH v5 net-next 02/10] net: bridge: offload all port flags at
+ once in br_setport
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org
+References: <20210212151600.3357121-1-olteanv@gmail.com>
+ <20210212151600.3357121-3-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <ce3cd74e-2f58-e368-e108-fd148d69d4cb@gmail.com>
+Date:   Fri, 12 Feb 2021 10:05:15 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.7.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from jatayu.amd.com (165.204.156.251) by MAXPR01CA0089.INDPRD01.PROD.OUTLOOK.COM (2603:1096:a00:49::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.27 via Frontend Transport; Fri, 12 Feb 2021 18:00:57 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 6d378727-f3c1-4b58-7ea2-08d8cf802784
-X-MS-TrafficTypeDiagnostic: SA0PR12MB4397:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <SA0PR12MB4397D10C7A8E02B516452A379A8B9@SA0PR12MB4397.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: T3J6JpR81Qxy5rkGEZ7DvMBqQDz2MakSsAZ3a3vndiTWtyNr7Uc69jEO16/hBCRhkS6isvkKGXf0EmWfpDALxHaTTL04RP0gpGsdUNmoT67HmnlQ7B3ExpXEH3FEo9PFRjB6GzISMErv/YOHdeJXYEbxQ4RSOJw1CLOhybwFtRsApXI3+d0wvk0SQ5zlTxariM/Dybqkd8NHNu8TIf4uq5+Qi0T8igEfl2ytNlplxVg1WPMaEwnt6sAaBO77j8Bi6IFD3VyYE8k5jowxVqoujjfLS8oNAvuzq0EHyGbCSupjL/hLVQh9R162GKQxZyVfg6+pi82MnF715uM1glKIyKAF37co5SqJTGBnoX3fgyadArG/YH2Wy+8KvWBo/pSFE++stqsicY3F2rTOCKNZQCqseqTomGQamHDgFQHT1aYKuRQreiqRP571akqM3XVdDuhJZ+GIhoVluEizYduKqz3tE7vT2cNM+/evRldBmCobA2EVpzNOLJ9bfAo3r6s5YPC03SfMvOmXdOEHnIFjlw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN1PR12MB2495.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(346002)(376002)(136003)(396003)(366004)(5660300002)(8936002)(8676002)(52116002)(956004)(26005)(2616005)(7696005)(110136005)(6666004)(16526019)(478600001)(2906002)(66476007)(86362001)(6486002)(1076003)(186003)(316002)(66556008)(54906003)(36756003)(4326008)(66946007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?2QlhjpoXb7n/b7UpvwX7psGVDG6zL35XB3VVpuDsT/L4auzxKS9pQbWzMzno?=
- =?us-ascii?Q?ySQ+rrwALr9pJIzxKLTnx1n5CELnjQSKTBq2DAM9pZGW9EsJ7MNGGHTaYjn8?=
- =?us-ascii?Q?N5LuzOXuco35Qj3PvO3Htrul1ArsFujKo0WJBekdDMkYNtmnhJSUs7N/iiwz?=
- =?us-ascii?Q?8sr0V7q9YV56KU4MrqiNDuAUkzdpitePyNzgGj0pn24n1YqtbO7Wy0oMiXoF?=
- =?us-ascii?Q?hQLJrD9k6FJI7NWYz1wnS0lV4ZB8zqfk8GP5GoMfll+bJ0HsW+KNmovWTlck?=
- =?us-ascii?Q?ywP3DgUK+heluQfa70F76o3dw5VhC8G8cIGHAg1xz2wDr+EHH4L5E+VRAq/F?=
- =?us-ascii?Q?POwKtY5uz0RlG5dRZsvIHh/lG5OI0MuUgsv0GIwlXZVyrndbkAJoE7xP6mtR?=
- =?us-ascii?Q?crTXtb8DAhMfDkqdn3V3FbXK/8kyAdKh7n2usmCe2/Mq/zrKwFYiMFQHeYO8?=
- =?us-ascii?Q?Q4Sz8F/Ue27wMFXgcl+FjpVUZmZBHN1LHWQ1Uq2lP8uxO4yKtARQZZt8eYJC?=
- =?us-ascii?Q?43z/Fo4MXz9k4evVRuLkvivbkWBmL3lqYvqvwEIbvKmta6flk+r+UCRlaIvh?=
- =?us-ascii?Q?+z4E17I/EPb2qlHC8AWd99S4XDkPvuayTkvw8T8YyxRGZe8ne7NWDyTERMSI?=
- =?us-ascii?Q?VPrMFbNj+xE9yr1e41EgWeoGtZjaL7UZ9Chn4+s1w0fjWRM/ZGLzvXOQ/yyS?=
- =?us-ascii?Q?Xp+3EPfOe8M3efr1oViJx+sD8Z3Ib7S1qMXkE+miWkxDTIqQMIc4BWN6siCC?=
- =?us-ascii?Q?jAQPhXuED374Mq3LazWX5oUGj3GOwz2VOrPJNIfdC6DWG3ZL1K2lgdT7OcFG?=
- =?us-ascii?Q?zYZotHMA2A+HIDKP8NB4T9SGdEKnmxAgsUqB9m8I7UOpT57muG+Cxwm8ADdL?=
- =?us-ascii?Q?mVORNmmH8Adx5BK3FAqQiuO3usEKGX4npqoWJMpLyt4W92lBP1tRr0p9L9wQ?=
- =?us-ascii?Q?J1XyQVogs2Nz1uZs3KiLGa0MvryNgJk8HXNIkimdd3euZG2zl/tahvvYP+z4?=
- =?us-ascii?Q?ps2pzXNUUaS4RjirN+pL4siVEqoSi6CGIo2r8t0aKNlyW4u3Z/a4pyM0fqwM?=
- =?us-ascii?Q?O0vZCjVa14d1t3DFFl1DkAsFoOd6dVfmk3+KWUpQ9ycKK48b44I1akt0tsi/?=
- =?us-ascii?Q?+dPBhoqa3yMWyBjBE5NE60WGrRFf9Eiz3b5aa2NolwB7DaGbatYKXK/KlkDn?=
- =?us-ascii?Q?TZMzQ2iUDbo83O09w3Cx4i2TDziLoFA0X6G/neoS6FPSVXsEAGlIYgDDL1pc?=
- =?us-ascii?Q?zf6Rm1fChePzqW5eSDN37hP9VBuRV5mu/etzTb7cSn7fpj+tOpuiAeovTy9N?=
- =?us-ascii?Q?Qp2HrFKIod5tk8ha9z3i6oew?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6d378727-f3c1-4b58-7ea2-08d8cf802784
-X-MS-Exchange-CrossTenant-AuthSource: SN1PR12MB2495.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Feb 2021 18:01:00.2651
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: e5bipoY0TQTi+M55XVQhaXg6KBo6vtUJaBbpeJmh7nVAgrQ0in6NtRrX/J5I2TP8JU14IIemPWJeBUR8dgFMzw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4397
+In-Reply-To: <20210212151600.3357121-3-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Frequent link up/down events can happen when a Bel Fuse SFP part is
-connected to the amd-xgbe device. Try to avoid the frequent link
-issues by resetting the PHY as documented in Bel Fuse SFP datasheets.
 
-Signed-off-by: Sudheesh Mavila <sudheesh.mavila@amd.com>
-Signed-off-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
----
- drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c | 6 ++++++
- 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-index 1bb468ac9635..e328fd9bd294 100644
---- a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-@@ -922,6 +922,12 @@ static bool xgbe_phy_belfuse_phy_quirks(struct xgbe_prv_data *pdata)
- 	if ((phy_id & 0xfffffff0) != 0x03625d10)
- 		return false;
- 
-+	/* Reset PHY - wait for self-clearing reset bit to clear */
-+	reg = phy_read(phy_data->phydev, 0x00);
-+	phy_write(phy_data->phydev, 0x00, reg | 0x8000);
-+	read_poll_timeout(phy_read, reg, !(reg & 0x8000) || reg < 0,
-+			  10000, 50000, true, phy_data->phydev, 0x0);
-+
- 	/* Disable RGMII mode */
- 	phy_write(phy_data->phydev, 0x18, 0x7007);
- 	reg = phy_read(phy_data->phydev, 0x18);
+On 2/12/2021 7:15 AM, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> If for example this command:
+> 
+> ip link set swp0 type bridge_slave flood off mcast_flood off learning off
+> 
+> succeeded at configuring BR_FLOOD and BR_MCAST_FLOOD but not at
+> BR_LEARNING, there would be no attempt to revert the partial state in
+> any way. Arguably, if the user changes more than one flag through the
+> same netlink command, this one _should_ be all or nothing, which means
+> it should be passed through switchdev as all or nothing.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.25.1
-
+Florian
