@@ -2,132 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16BF531A31A
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 17:52:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7E0B31A346
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 18:07:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229745AbhBLQvo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 11:51:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40142 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbhBLQvl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 11:51:41 -0500
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02286C061574;
-        Fri, 12 Feb 2021 08:51:01 -0800 (PST)
-Received: by mail-ej1-x62f.google.com with SMTP id f14so231285ejc.8;
-        Fri, 12 Feb 2021 08:51:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=kuyIAN6ynILC6Lb1Ej4zOAFFZL68p0m+Z5l76VYpdI4=;
-        b=pQ6KJ66aU4m9vG+s3RKS3nIO1REYUCD/HIfeBWb/ray8H2l25s8Q6t8eeBvC81VOwj
-         JgmxhAqZFLNd9LndP8r/4EQQfM39a5bexDTvN8dhRfzNQRtrty9Ges2pArAFSN4IlMqB
-         E50vDhmSB87YjNOo9c56Ad835Zxsd2FkW/gWgIPWJQszMui8KRlOvsEPLHQGjxG2iMhZ
-         8UA8Dy4rSA4jK5+Wgfyhob65xkiJWNyWnEnw+U0b5clkgFlyrLNbkG1OrTzmQebnblOk
-         SEAl6Kg6u42jsJlDQyXMX+7qjJMdZTmpQOJAuqvSrXbEHrrQWG5GXJ6lYqQe+I7EnXqn
-         KbSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=kuyIAN6ynILC6Lb1Ej4zOAFFZL68p0m+Z5l76VYpdI4=;
-        b=tVWu3rEGvPo7/0HcCadGdijSc5/zV+iRsDnq0lnj1THiC2Hp4a2O8ivcHN7mb3qPeg
-         hNW28Dg+1Z18dbGQERLqnMRzTPC+bhXQsLEium1uUYmmHr71dGCONw3v9rKz+0oRjewl
-         62Myijgi4ZhoTBzg99xU7aKU41aCzc3sdKNeGGO/UThpG3DawyQhHzMjh30D3KTg0Dol
-         R+Z0W9pzz7w729AYMB9YgpxFwamQQbulQJ/5AtXV48dJzKGeSkj/JkpHKnUvsKGsKCpc
-         OYooB847Aezk7dFIFkwQNrgqWI93wcrMrbKeAo3JUocctuv6itcWdAggbN4B4wxGD6R3
-         McVA==
-X-Gm-Message-State: AOAM5304xLwkuH/2GTA+jg1P1FaOyNAQEDDZ8YYRgEoc6AWRCwmgDXiS
-        nIkQvSfvaKMzLlKuYlxkgcvScza+t+Vzw/wP
-X-Google-Smtp-Source: ABdhPJw+9EQuVkXn16atquT/DdvsnrytGuk42nwp9fu3inZ/k5/jDBeVUF+gk6tK8IDbBYAMCLQMaw==
-X-Received: by 2002:a17:906:364b:: with SMTP id r11mr3850258ejb.447.1613148659299;
-        Fri, 12 Feb 2021 08:50:59 -0800 (PST)
-Received: from anparri (host-95-239-64-41.retail.telecomitalia.it. [95.239.64.41])
-        by smtp.gmail.com with ESMTPSA id lo3sm580481ejb.106.2021.02.12.08.50.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Feb 2021 08:50:58 -0800 (PST)
-Date:   Fri, 12 Feb 2021 17:50:50 +0100
-From:   Andrea Parri <parri.andrea@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, mikelley@microsoft.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, davem@davemloft.net, kuba@kernel.org,
-        linux-hyperv@vger.kernel.org, linux-scsi@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Regressions with VMBus/VSCs hardening changes
-Message-ID: <20210212165050.GA11906@anparri>
+        id S230421AbhBLRGP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 12:06:15 -0500
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:51090 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231264AbhBLRFx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 12:05:53 -0500
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 11CH3p59044501;
+        Fri, 12 Feb 2021 11:03:51 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1613149431;
+        bh=Z3TcTypt+Mt5FAf3Iq7QLSvCNUViIN7BJJlQSIOTRD8=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=bApGhzs/wsXy2YufD9ZW9l+z7nBZf2YNSQdfdC1FaAKSr0UiM6bYTuVvBZRRIXMIg
+         inYbJ/ZK48K1YECAa3Nus0j+mcFKAOIg0JnYOT3/MCSI3UlVuhu9+lojhYPtE2ihyP
+         zcpzi3ARqT7Yo/Id/jbjYaEnJyCXaWIbrn6iv9Ls=
+Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 11CH3ovR058671
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 12 Feb 2021 11:03:50 -0600
+Received: from DLEE114.ent.ti.com (157.170.170.25) by DLEE112.ent.ti.com
+ (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Fri, 12
+ Feb 2021 11:03:50 -0600
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Fri, 12 Feb 2021 11:03:50 -0600
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 11CH3iPe083194;
+        Fri, 12 Feb 2021 11:03:45 -0600
+Subject: Re: [PATCH v5 net-next 01/10] net: switchdev: propagate extack to
+ port attributes
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+CC:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <bridge@lists.linux-foundation.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        <UNGLinuxDriver@microchip.com>, Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ivan Vecera <ivecera@redhat.com>, <linux-omap@vger.kernel.org>
+References: <20210212151600.3357121-1-olteanv@gmail.com>
+ <20210212151600.3357121-2-olteanv@gmail.com>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Message-ID: <0765d09e-2088-247e-7053-86e73abcceef@ti.com>
+Date:   Fri, 12 Feb 2021 19:03:42 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In-Reply-To: <20210212151600.3357121-2-olteanv@gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
 
-I'm reporting two regressions following certain VMBus/VSCs hardening changes
-we've been discussing 'recently', unfortunately the first regression already
-touched/affects mainline while the second one is in hyperv-next:
 
-1) [mainline]
+On 12/02/2021 17:15, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> When a struct switchdev_attr is notified through switchdev, there is no
+> way to report informational messages, unlike for struct switchdev_obj.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
+> Changes in v5:
+> Rebased on top of AM65 CPSW driver merge.
+> 
+> Changes in v4:
+> None.
+> 
+> Changes in v3:
+> None.
+> 
+> Changes in v2:
+> Patch is new.
+> 
+>   .../ethernet/marvell/prestera/prestera_switchdev.c    |  3 ++-
+>   .../net/ethernet/mellanox/mlxsw/spectrum_switchdev.c  |  3 ++-
+>   drivers/net/ethernet/mscc/ocelot_net.c                |  3 ++-
+>   drivers/net/ethernet/ti/am65-cpsw-switchdev.c         |  3 ++-
+>   drivers/net/ethernet/ti/cpsw_switchdev.c              |  3 ++-
+>   include/net/switchdev.h                               |  6 ++++--
+>   net/dsa/slave.c                                       |  3 ++-
+>   net/switchdev/switchdev.c                             | 11 ++++++++---
+>   8 files changed, 24 insertions(+), 11 deletions(-)
+> 
 
-The first regression manifests with the following message (several):
+Reviewed-by: Grygorii Strashko <grygorii.strashko@ti.com>
 
-  hv_vmbus: No request id available
-
-I could reliably reproduce such message/behavior by running the command:
-
-  fio --name=seqwrite --rw=read --direct=1 --ioengine=libaio --bs=32k --numjobs=4 --size=2G --runtime=60
-
-(the message is triggered when files are being created).
-
-I've bisected this regression to commit:
-
-  453de21c2b8281 ("scsi: storvsc: Use vmbus_requestor to generate transaction IDs for VMBus hardening")
-
-2) [hyperv-next]
-
-The second regression manifests with various messages including:
-
-  hv_netvsc 9c5f5000-0499-4b18-b2eb-a8d5c57c8774 eth0: Unknown nvsp packet type received 51966
-
-  hv_netvsc 9c5f5000-0499-4b18-b2eb-a8d5c57c8774 eth0: unhandled packet type 0, tid 0
-
-  hv_netvsc 9c5f5000-0499-4b18-b2eb-a8d5c57c8774 eth0: Incorrect transaction id
-
-  hv_netvsc 9c5f5000-0499-4b18-b2eb-a8d5c57c8774 eth0: Invalid rndis_msg (buflen: 262, msg_len: 1728)
-
-The connection was then typically lost/reset by the peer.
-
-I could reproduce such behavior/messages by running the test:
-
-  ntttcp -r -m 8,*,<receiver IP address> # receiver
-
-  ntttcp -s -m 8,*,<receiver IP address> -ns -t 60 # sender
-
-I bisected this regression to commit:
-
-  a8c3209998afb5 ("Drivers: hv: vmbus: Copy packets sent by Hyper-V out of the ring buffer")
-
----
-I am investigating but don't have fixes for these regressions now: given the
-'timing' (-rc7 with the next merge window at the door...) I would propose to
-revert/drop the interested changes:
-
-1) 453de21c2b8281 is part of the so called 'vmbus_requestor' series that was
-   applied during the merge window for 5.11:
-
-  e8b7db38449ac5 ("Drivers: hv: vmbus: Add vmbus_requestor data structure for VMBus hardening")
-  453de21c2b8281 ("scsi: storvsc: Use vmbus_requestor to generate transaction IDs for VMBus hardening")
-  4d18fcc95f5095 ("hv_netvsc: Use vmbus_requestor to generate transaction IDs for VMBus hardening")
-
-  I could prepare/submit patches to revert such commits (asap but likely not
-  before tomorrow/late Saturday - EU time).
-
-2) IIUC a8c3209998afb5 could be dropped (after rebase) without further modi-
-   fications to hyperv-next.
-
-Other suggestions/thoughts?
-
-Thanks,
-  Andrea
+-- 
+Best regards,
+grygorii
