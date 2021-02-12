@@ -2,72 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6339A31A376
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 18:22:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7537431A374
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 18:22:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231304AbhBLRVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 12:21:18 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:27587 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230249AbhBLRVQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 12:21:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613150389;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8rCxQNN16+K2hzoj5STU9hRYBNBsx6KVBdYVkcZbJGs=;
-        b=OLAD5Cw4MnPh8Po3z1NCyTI2Ghj9EEiStzD/Gj8SP7dq5JIhPVp7ZbUMzGrUiyrm6bsjJg
-        APCAL4lQrhIuANy/Y3BLwewK8AmCD9HyHCDNzy3JgW+ANtHuqeUaXUzm+2hyifnF6g//L/
-        SowR+s/EumIzmc3oaRRAn5ZZzqqBSzw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-543-qjC43fPzP16zOc5K_U-V8g-1; Fri, 12 Feb 2021 12:19:45 -0500
-X-MC-Unique: qjC43fPzP16zOc5K_U-V8g-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E1BD5835E24;
-        Fri, 12 Feb 2021 17:19:38 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-119-68.rdu2.redhat.com [10.10.119.68])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7BE9C1B473;
-        Fri, 12 Feb 2021 17:19:37 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20210212104814.21452-1-vfedorenko@novek.ru>
-References: <20210212104814.21452-1-vfedorenko@novek.ru>
-To:     Vadim Fedorenko <vfedorenko@novek.ru>
-Cc:     dhowells@redhat.com, Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [RESEND net-next] rxrpc: Fix dependency on IPv6 in udp tunnel config
+        id S230199AbhBLRVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 12:21:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46470 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229465AbhBLRVK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 12:21:10 -0500
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3736C061574
+        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 09:20:29 -0800 (PST)
+Received: by mail-il1-x12b.google.com with SMTP id g9so8844853ilc.3
+        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 09:20:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=n9DaPQNZ9ApDhbjk3lpcweLqgl0plvUaf017MPEDmY4=;
+        b=bH7T+IP0hxSM4qnABSsyIGH8bQIX8SeAq5MeI+UJbArLYzuYwzj4s+w0R6hYaioIv3
+         5l8j7hmD5TJxLVvpuP9gkfBDhs+RBXF6Esk6LyXnY2p0jkIUh3NI6cZMM2GEBxLC7yHF
+         wWvueSO5T3GxMWuJGZN82vxNXh9J8KLIu3LUc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=n9DaPQNZ9ApDhbjk3lpcweLqgl0plvUaf017MPEDmY4=;
+        b=T8CIjTy8IlWa8xC8wDtmVYJLuftNqXdqar7CDVQ7OoUV0aPB+R8fLtibChdf6dNHVA
+         P/xVTTkscBdz1EGFeWn1dA/FsUbwHtFHFbuFaTFnaBPIoLbVJXt8YuZpboh8QqE4wcPf
+         mwN3rLzlVzCdbmmTNfSXniiBCk+/TJlsNufKbR9nOcJ7cXncYfOAbpA+k78eJo7BSjhu
+         AOzQim1YunYIYkL0k6OrVroBGMZE4LcMMD/hM2lTG3HGxW6O4yHXC/VYmKbCVdZOA9xa
+         WB4SQWxLx6sfmD6RsC1HoIFFq3DfH/rRxYJBx58Ur2pXVozCHJWvEDlHYGV2lOM/9gip
+         uttA==
+X-Gm-Message-State: AOAM532NFF3bTsj3ra/JmfsMxgrLG/xR+XqhVz2pvcVjLM2LkfPHbmiv
+        ipBrF2PqUQd+vVpboE83+p3ubA==
+X-Google-Smtp-Source: ABdhPJy5u1pyxefeNefBUn+dDMHhvH9gQ1EoCBGDLyeSaQPbgvcoJetHzEOChfwu19Om76iN6cmLzQ==
+X-Received: by 2002:a92:b749:: with SMTP id c9mr2906435ilm.199.1613150429332;
+        Fri, 12 Feb 2021 09:20:29 -0800 (PST)
+Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
+        by smtp.gmail.com with ESMTPSA id o131sm4632861ila.5.2021.02.12.09.20.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 12 Feb 2021 09:20:28 -0800 (PST)
+Subject: Re: [PATCH] mt76: hold RCU lock when calling
+ ieee80211_find_sta_by_ifaddr()
+To:     Felix Fietkau <nbd@nbd.name>, lorenzo.bianconi83@gmail.com,
+        ryder.lee@mediatek.com, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org, matthias.bgg@gmail.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <cover.1613090339.git.skhan@linuxfoundation.org>
+ <1cfa036227cfa9fdd04316c01e1d754f13a70d9e.1613090339.git.skhan@linuxfoundation.org>
+ <20210212021312.40486-1-skhan@linuxfoundation.org>
+ <3949e1fc-c050-73e0-d02f-63a25c4821ef@nbd.name>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <61994394-0d95-39eb-2a11-487ca7c6c37b@linuxfoundation.org>
+Date:   Fri, 12 Feb 2021 10:20:27 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <133916.1613150376.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date:   Fri, 12 Feb 2021 17:19:36 +0000
-Message-ID: <133917.1613150376@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+In-Reply-To: <3949e1fc-c050-73e0-d02f-63a25c4821ef@nbd.name>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vadim Fedorenko <vfedorenko@novek.ru> wrote:
+On 2/11/21 10:36 PM, Felix Fietkau wrote:
+> 
+> On 2021-02-12 03:13, Shuah Khan wrote:
+>> ieee80211_find_sta_by_ifaddr() must be called under the RCU lock and
+>> the resulting pointer is only valid under RCU lock as well.
+>>
+>> Fix mt76_check_sta() to hold RCU read lock before it calls
+>> ieee80211_find_sta_by_ifaddr() and release it when the resulting
+>> pointer is no longer needed.
+>>
+>> This problem was found while reviewing code to debug RCU warn from
+>> ath10k_wmi_tlv_parse_peer_stats_info() and a subsequent manual audit
+>> of other callers of ieee80211_find_sta_by_ifaddr() that don't hold
+>> RCU read lock.
+>>
+>> Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+> If I'm not mistaken, this patch is unnecessary. mt76_check_sta is only
+> called from mt76_rx_poll_complete, which itself is only called under RCU
+> lock.
+> 
 
-> As udp_port_cfg struct changes its members with dependency on IPv6
-> configuration, the code in rxrpc should also check for IPv6.
-> =
+Yes. You are right. I checked the caller of this routine and didn't
+go further up. :)
 
-> Fixes: 1a9b86c9fd95 ("rxrpc: use udp tunnel APIs instead of open code in=
- rxrpc_open_socket")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
-
-Looks reasonable.
-
-Acked-by: David Howells <dhowells@redhat.com>
+thanks,
+-- Shuah
 
