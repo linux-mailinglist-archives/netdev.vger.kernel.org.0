@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3B5631A428
+	by mail.lfdr.de (Postfix) with ESMTP id 336EB31A427
 	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 19:02:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231426AbhBLSC0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 13:02:26 -0500
-Received: from mail-co1nam11on2068.outbound.protection.outlook.com ([40.107.220.68]:1697
+        id S231578AbhBLSCF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 13:02:05 -0500
+Received: from mail-co1nam11on2056.outbound.protection.outlook.com ([40.107.220.56]:30048
         "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231590AbhBLSCS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Feb 2021 13:02:18 -0500
+        id S231426AbhBLSB5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Feb 2021 13:01:57 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UJEWvJLcrDi4fmb2I+zeoDTWeuBM7BLS+CQGQHqL/0HRoqSMB0EVGrjYDUZnt+gaoQ0Q0bKti0EIRfcJPLVyaEu2jsCpZtbfaGCzs8GoEPnhVXC87lJ22zLaitpWMaYBrQ2nhq9WknaEtu2Od+o410rLD8q3baBhU2BjlspPVfi7Bt+UbJo0YS1976Hr5MOAZt8xnt99KXPWvHX4lWm/I7tHJuw1EN92XPtMThZ2/9l6uuQ66Iky+zOb2wAxtDnV0nl+v2VJJ6/P6h0qdXO5hnJJQCaTRBbPEIFvNbz6NUa+lyzo88HflXeLvvZgNhCiNcGTRUvc/MjEsQg9Wyvf3Q==
+ b=Gh2WM+oBzZs8UX5y1yTUCOy67JvjHkGwxyXCn75I18LWSEQrPz+NDMix6Ow51BQNTDUNJvOvCOIAVfWjHx6v2F3L5sT2607I6k2Ts1FavGfWLSaZB1/ZLL88Up38zAbZIn5rPpdw1MhIJNEIO9qYYmHUPMpCXxuUAS4RpYgnPOlO+BBTjYcqudCyDumakS2bnoFdT0O1qYUoc+8B5VZOP0ja9t43JE35BIAGhmvQSkaQ3AA6fe1WTW8eMyEZcPXDI7MJPn2zMO6NN4LLt9MgHkJJztwFTJlYQIOMrlwT+nu4fl1fHG6E2MtdJvcw68isajRXVvKDOYuhtvQ34kcRGg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vdcj9sjByJulyGiDN0AdJ4wKQMhaXHMtTM6QLGMpsVg=;
- b=XceoEDIR59liZuFvU3wI8g53wiIhbfHnr+c8wuDAFjYyeYOGdKBf/Tr2iwCRvq7HowubO+zWF4BBK1hWbzNh3MYzdlh8ay/IXVt+GKI9ey6uOFcYvKcG11QE0gfFLlSRkj272Cu+kQpo5HdgZva2ZyIgjFXEffd35Z4wmqJNlhRNmLnYtEeyaG3PKZm3t9bsTw6M8f1V1SEyRvN55OQ2lfoN+WaiG3S69M/OAogNmcXSRqpT98GVYzVPuWgznmgy/1lhDU/yeOait6VQSd8benKIUhAQ/22hE5bnZark134donjhpRQjnKD/lOx4FdNqVMgPTVrmBBybckvIGCnbtg==
+ bh=L46BZZxPmuYL0WFZfhKTvLKYZ4PAM1AK28xpONHR+3M=;
+ b=oZydRQ41e/DnjDRi4Ia4QT/n6CPNyIuPKYDMV7gqAsC8GY5FDHHl1oeVqZlTPJIkVYY/NpLwoPMYzW7qgdqMOygWXX2L+Q4RtO6ipQeOqD/7ikBSzH00BGK1NtfCZTaPKw0h2lrXeaLp8XfUzOU+OefsosYJ5xZNhcpmwvxXaxEABS0C5os8XFOZEjogyIw03xYffPkJ3er/5nAgS4cHTxz1MJNCfmGDdAk3C6925Lmo3BEOXpqZV/HQ6OwDh/3WWQat0TNBoz2qUqvO1AjN3f2GJGYQ22m7HSqtx5f+FJgf+YzO+8jbCIFp1l2Mpy5cEQxVvk4PlBZYwlyKlnQcKg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
  header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vdcj9sjByJulyGiDN0AdJ4wKQMhaXHMtTM6QLGMpsVg=;
- b=Au3emJT9H7GU8dz4M230V0tBxAmRwl//w7khJrecccpzfFVZQ5A07qe6H1lwpIJ1z5ZjZ8WYBNCSNVyjHL7ZeLpjQ4Au6TswyJM4Ofy/6XNmKrOQOwRXEkLvhIjvfW8ADleTIVkbEoi+S/he3CDHg2oIE6o1dwMLdF7WlvWkrUs=
+ bh=L46BZZxPmuYL0WFZfhKTvLKYZ4PAM1AK28xpONHR+3M=;
+ b=lZRmkEkHe6Ud7MxGcdpdi3kwO69G/blsR2heuckQQiOn7ILoQ2Kg9Z5PXp0UlFQXBuw8zEDFsierZ0rTn/quRJHzhARmq3c7snTANzpVn5INyKpDjepfrvELbqfvmXFVzr4V9EfkYwlptelFLtyYoUapD9t85cra4Zh8/Lgrk3o=
 Authentication-Results: amd.com; dkim=none (message not signed)
  header.d=none;amd.com; dmarc=none action=none header.from=amd.com;
 Received: from SN1PR12MB2495.namprd12.prod.outlook.com (2603:10b6:802:32::17)
  by SN1PR12MB2399.namprd12.prod.outlook.com (2603:10b6:802:2b::20) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.29; Fri, 12 Feb
- 2021 18:00:47 +0000
+ 2021 18:00:52 +0000
 Received: from SN1PR12MB2495.namprd12.prod.outlook.com
  ([fe80::319c:4e6a:99f1:e451]) by SN1PR12MB2495.namprd12.prod.outlook.com
  ([fe80::319c:4e6a:99f1:e451%3]) with mapi id 15.20.3846.027; Fri, 12 Feb 2021
- 18:00:47 +0000
+ 18:00:51 +0000
 From:   Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
 To:     Tom Lendacky <thomas.lendacky@amd.com>,
         "David S . Miller" <davem@davemloft.net>,
@@ -44,9 +44,9 @@ To:     Tom Lendacky <thomas.lendacky@amd.com>,
 Cc:     Sudheesh.Mavila@amd.com,
         Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
         Sudheesh Mavila <sudheesh.mavila@amd.com>
-Subject: [PATCH 1/4] amd-xgbe: Reset the PHY rx data path when mailbox command timeout
-Date:   Fri, 12 Feb 2021 23:30:07 +0530
-Message-Id: <20210212180010.221129-2-Shyam-sundar.S-k@amd.com>
+Subject: [PATCH 2/4] amd-xgbe: Fix NETDEV WATCHDOG transmit queue timeout warning
+Date:   Fri, 12 Feb 2021 23:30:08 +0530
+Message-Id: <20210212180010.221129-3-Shyam-sundar.S-k@amd.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210212180010.221129-1-Shyam-sundar.S-k@amd.com>
 References: <20210212180010.221129-1-Shyam-sundar.S-k@amd.com>
@@ -58,162 +58,117 @@ X-ClientProxiedBy: MAXPR01CA0089.INDPRD01.PROD.OUTLOOK.COM
  (2603:10b6:802:32::17)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from jatayu.amd.com (165.204.156.251) by MAXPR01CA0089.INDPRD01.PROD.OUTLOOK.COM (2603:1096:a00:49::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.27 via Frontend Transport; Fri, 12 Feb 2021 18:00:45 +0000
+Received: from jatayu.amd.com (165.204.156.251) by MAXPR01CA0089.INDPRD01.PROD.OUTLOOK.COM (2603:1096:a00:49::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.27 via Frontend Transport; Fri, 12 Feb 2021 18:00:49 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: afefe9b9-511a-40a4-7d5c-08d8cf802008
+X-MS-Office365-Filtering-Correlation-Id: 89f88554-7dfa-477f-73f3-08d8cf8022ab
 X-MS-TrafficTypeDiagnostic: SN1PR12MB2399:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <SN1PR12MB2399FA0BF4EFAB2D57FDCA849A8B9@SN1PR12MB2399.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3826;
+X-Microsoft-Antispam-PRVS: <SN1PR12MB23990E69A1D086FD9D0C2D2A9A8B9@SN1PR12MB2399.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: s2ahhaJVsypYDPv6Dc4d9NXLX5VaIrbYMSmTL5xYcFywahNBVGIW9i6lXj2WfB3zWmnhN7uUsxTQSruBrzLYzc4A704bvqqpt8lbFc416M0vyCAyDxM8ScZ+dpoZ5ch10e6w4zBrStjZDcyvFTwSlD1s1YvtJejix1ch1/JtLneRe3aiUupH01iP6ZcpoGZ19xF6wmQLvKhSOU2jTgiHThY9AwI4pTqkJiiaLK/ti+lX9Pz6gu+Xu34G2prTVqeiP35aNCdgB9fRLMDQWnpMUAOAmR4X11flwdmuaxcPBpfmcU83E+wAn9zN+5g8wvxrOnAWJYfLbpdpG/8ze/PTfsHu1CGwG8uOZiUpiFwM13elE2qpYGKGVlOBtwD8a6LBUlWP5mc9zZKaxt0sh9kW4c9wBQONONeCkbn8+iX4kxhQcytw1n3a+WXxNuSNXTqhpTZnlbomrxWTKa50V8sZpBgVtYxpuEiQAJsnQ3HSIzGPLCpwSwEe4dGbtDzpJmNxGkkUmRjmj5vouUiXAZTrFQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN1PR12MB2495.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(366004)(136003)(39860400002)(346002)(376002)(66476007)(66556008)(66946007)(956004)(2906002)(6486002)(36756003)(54906003)(52116002)(4326008)(2616005)(186003)(316002)(16526019)(110136005)(6666004)(26005)(86362001)(83380400001)(15650500001)(7696005)(5660300002)(1076003)(8936002)(8676002)(478600001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?qbY0nVmHi7u6l5z9RaJ9s0k/JgeHfIT1GMdmSBXkIM9cWTeRvy9LOLBYyId9?=
- =?us-ascii?Q?ai3WQnkMW4gB3iGknDUpy9zuoG0AR9P/ktv22JsawobCEHuE0NiRj+wS9fyt?=
- =?us-ascii?Q?PbnIkiRQNsFa03dwF5WEG23e9404Q47q70FPZeIQN2ql8qt2h63nDd5/ZaF+?=
- =?us-ascii?Q?z00rqWj1mCEv8pqoyJXutDfVekxzwgeQXxROH2nGBLdNhQfx7C1nO6SzlJLi?=
- =?us-ascii?Q?25J2TQXZPHdEKFFS7w5xSt9+sovYV9PENQ5xaPggh/s9wu8CQ5tvOLG1BEW8?=
- =?us-ascii?Q?l/d9nDWPDgLiNI72RNoWaw2oO+tgfiNKU7phMIpsplzqKZakdki/2UmIY1xh?=
- =?us-ascii?Q?kOmdcl8yd+fH5B2WmZ4kA60g738I9oc60NlLq80vBcAHozaWqRyS5EGaWRcW?=
- =?us-ascii?Q?Q+YjRo8Zhb3rucBpkAWwW2TKPa0Xs2EuRmzuQbwgJdIxZ9oUUkAY5eG5Koyi?=
- =?us-ascii?Q?2IntGtiSSHIj0EWLRi4mWHLFdyqWA/zSHGgYIRcD57XgydMWKD/RgmG/5M0q?=
- =?us-ascii?Q?FZYN7YbQS2yPyYH6oX8df3FB+HeB65tNyGdtgRSfpXHbvs/p2nQigRR6aMEo?=
- =?us-ascii?Q?FgWJfCuhVPXM2U2L8mYdHVPUNVr01m3YmCy+NxoZn+NrYTt8cooQDib+W81v?=
- =?us-ascii?Q?TfmYmCG8BhhE+KrbfOMf0cJssod+BESLNXK45fnwNW44iNM0Ef0CfVVdMHJ8?=
- =?us-ascii?Q?Xjxk2axK96+DCHHGGSShzP5QVid+HnpXuQb0PYWaaDvmm6c306EMRmApjh3I?=
- =?us-ascii?Q?37F2k5QtdJXJRPrnaognUZDSuMjEEhip5rcI4xTWca140/oSS8r37fwYxEXm?=
- =?us-ascii?Q?sTDqlj3VO2UTiJA/LzX0T4ChgSZHp23EhppvAmak9dRVznVSfEKGyez+X1HT?=
- =?us-ascii?Q?mFi6VWaHf7ISt7yi6z2aBw6rT3LPXh9c4y8e4QnkuwRx9n4CqLYQdiMQ+UG2?=
- =?us-ascii?Q?u4CqdRVZIvX4CrXKdTKUCt7lJB/5FiN23k/NG17bvBVifbxi0CW54fWkKB/J?=
- =?us-ascii?Q?9bs5ZgeA5+cxGGhtAOl9a+Ou/EATokedIc7bYBCYWwDtYk34HWhYVW8FVc0L?=
- =?us-ascii?Q?rY9nHBRiV45D2jducJiyYe4Ijg1CDpcWYHYNqFLXWkkii/3IYlIVJw7ThCh0?=
- =?us-ascii?Q?iI57+PFPxac/jl4rYm5h7DkZbF6DNiJa1Jilv5vneFG9z2x8R5L9fIa5yJVB?=
- =?us-ascii?Q?fa/q212wUDLxdwHinRm8tg7PJM1pte4DF3RYFU6LNFF76ekchzVfpJCg6TNW?=
- =?us-ascii?Q?ZAujYhWILyMtQmSWTbl3E9mt/rKMIciFk1whbOdmlRiFPMVA1F/PnAfrt5Bd?=
- =?us-ascii?Q?nPe7Dh0QlxE8JAnZM5Z2iv/jvMQurOyfeb+cCnaCxdt9IA=3D=3D?=
+X-Microsoft-Antispam-Message-Info: MPhfdlC845Kp+qwC7lxPP7TFR1aOdRHupBAsq0u4eO6pSs410FcSQWc5IPSvY66wWTds9IqVNy18I2t3GlN2oEKjgjzTxEr8vReBSXvhSOHxT+aviBxyD1qbUO/IC8s0wl5LCv9tMLE0qllTG7iJfYJLa/Po5GNhubF5rkp0QtzPo+FwJ87C7CHXrhSw6QIeUtY5tJys5VASZwZwMJw6Mmk/zuGIqKdv1ARMpTXf7KBzHMnIWJ4+DMvrbM1ZC139QKNGw+DtCXq0bkRKB+CtkOHWvJp+nmXQEZ1bqw/NWiIm9oWFYHdIGjHuhbM86IOPqi+O5BOLmfQgIC+CF01EWE+XF7SJpaL78+wln7G8EBlsFsdtZSwbht3K0wnJs0SMykF/FFNL4YV4vQDBbw+AxUkCVpLmiSyY75JgLr1UsReAHABoAQvQqko/y57rvlmA+uTsmsTiMqIGlrtgeHHGD+uXT2LGiWv9RNF131PmFFVt/c73kI+NxKGP+RmtZXV5GlfESV7iwaxP5l1WWHHuFA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN1PR12MB2495.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(366004)(136003)(39860400002)(346002)(376002)(66476007)(66556008)(66946007)(956004)(2906002)(45080400002)(6486002)(36756003)(54906003)(52116002)(4326008)(2616005)(186003)(316002)(16526019)(110136005)(6666004)(26005)(86362001)(83380400001)(7696005)(5660300002)(1076003)(8936002)(8676002)(478600001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?rERYYpmyU+P9mitv39hHDRPdh1mNvKF5s2H7mn11s94I0I7kiP8sANbwRMDQ?=
+ =?us-ascii?Q?/X7dhvOJHOyltvxY7aeuPHcacq85R9RNTIg3XrqhyuHniG92hHpoTdlebzS4?=
+ =?us-ascii?Q?APA+uQadWRdqYmajd0zFYUmxHalOESO9tqxfaywmEdwOCY31C5vTwkI2Ke27?=
+ =?us-ascii?Q?ulqPjbzJI7PLMMHkHI+XxebkoGpRExmtoqpAInR4vssuFrIa28O/6VlUdw2Q?=
+ =?us-ascii?Q?imLNlsqzQNZ52ToMzeLuDbJCV0q5d6s/D/RKZjALIbOoPrzicQqZ8CCpqR3X?=
+ =?us-ascii?Q?gZoXyLJwyz1y0o3VUerwwlS43uD0mtmZcedIoru+sRCQTOjxDzC91GPpI/+p?=
+ =?us-ascii?Q?9gMPqlQ205DOioHlN80ig+uxO+jFjqJA1nqalJ0OK7MzdOJpQA90UVyjl4Ee?=
+ =?us-ascii?Q?tLibfoNbi4UOevFwGdOnghL7RdHgUM3GiPQD6d0c6mdZ2nLceuP3m9cMMuVB?=
+ =?us-ascii?Q?pPRrNOxH4Bzi2Qpb3mvOb5i7NQCSlEU6wE5plO9mebVxRFpTXC6uSCL+Abdd?=
+ =?us-ascii?Q?m5jDp8ubQyJTzXu8NuulzWMNgyCEsj8onazYkh2cttoRs2xXigglevmGf3uE?=
+ =?us-ascii?Q?AE4En8oucucqIbbzRSAC1NkHvqZwjLWKqCBk1GRaR6bXKSQaWKXpEqRUv5Yc?=
+ =?us-ascii?Q?g1H/ck3o1JXviKRDFIoCENCIJZ4hGBGXgEjFP26fAIF7Iha3LX0IiszVWvEl?=
+ =?us-ascii?Q?DozOupyk9xYCgWu2eHIUUxOJzVkA+xJGMS5yrBvbPDoh/q+Fgke4nac0Tq1D?=
+ =?us-ascii?Q?hcTjgJD4nRisUDgJCLEw2E8Nh/YI5FfAx75PfqZ0/aDa0Sg5qMfbI2BxP4DP?=
+ =?us-ascii?Q?XzVEBvwn+ioVwBC7/eMN3d4ZI/9xWYXgLlTgRsYAd0i3d5WvzDGt+lcFshZK?=
+ =?us-ascii?Q?HwU7Ud/yurg5S6CXsAjGQ74YiOjRNumN0AzvR0W2nbd+dyUzR4dSMY9V1iAZ?=
+ =?us-ascii?Q?ujr9uo/AR04K9vUkCRIIEcQk1Il5Ev0aYX6hBcJUGByaYxUbGWrGdmtBUSIj?=
+ =?us-ascii?Q?J7Tw3GwzJ8cREWiO0j7o/WIlCj6ilwOqti1EpQHWB/CIMpyCAmnhAmo7Ip5M?=
+ =?us-ascii?Q?dce5wbJyKquIWNCQiJA8EDVm4XVKg+R4Qi/1nusIeIEoEGexuG716Dh2GAG4?=
+ =?us-ascii?Q?5JJ5lY3X9aVYXdxbGzUDM6S1+svXCuqMP8ocAlBkMHNsH5fPtGE66s1mh6yY?=
+ =?us-ascii?Q?zGrldNmqvMKHdladsuT7p6Y86gt/fiqPknb8k+1xiKkFRs07aHH9rwj1fmKX?=
+ =?us-ascii?Q?QJORn9CX0oLbidN6IWkHmL+EnGh9mtQWGzprBkEf21YVv6yhk0UDTSiTGAiT?=
+ =?us-ascii?Q?vZcMMLltYYsbTmQfqX9vBhEmE8DUAbC2yUHd3uvRmCxveQ=3D=3D?=
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: afefe9b9-511a-40a4-7d5c-08d8cf802008
+X-MS-Exchange-CrossTenant-Network-Message-Id: 89f88554-7dfa-477f-73f3-08d8cf8022ab
 X-MS-Exchange-CrossTenant-AuthSource: SN1PR12MB2495.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Feb 2021 18:00:47.4535
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Feb 2021 18:00:51.8849
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0WpI3zISBF7W7SiFDsmnnwSpBp9B0yhmNufVLXEO7Mo+QxRE7NUbcdA0njUV4l520MHLXVWU2aD0BjkzAZahWw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: aytCE2JIqEtQ+eslXJrTqls5iycybytERmcp8UEQFjy+faz68SjORbLd/n+ZBZotX/Onk3snhhGW1nN6WY/EqQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN1PR12MB2399
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sometimes mailbox commands timeout when the RX data path becomes
-unresponsive. This prevents the submission of new mailbox commands to DXIO.
-This patch identifies the timeout and resets the RX data path so that the
-next message can be submitted properly.
+Current driver calls the netif_carrier_off() during the later point in
+time to tear down the link which causes the netdev watchdog to timeout.
+
+Calling netif_carrier_off() immediately after netif_tx_stop_all_queues()
+would avoids the warning.
+
+ ------------[ cut here ]------------
+ NETDEV WATCHDOG: enp3s0f2 (amd-xgbe): transmit queue 0 timed out
+ WARNING: CPU: 3 PID: 0 at net/sched/sch_generic.c:461 dev_watchdog+0x20d/0x220
+ Modules linked in: amd_xgbe(E)  amd-xgbe 0000:03:00.2 enp3s0f2: Link is Down
+ CPU: 3 PID: 0 Comm: swapper/3 Tainted: G            E
+ Hardware name: AMD Bilby-RV2/Bilby-RV2, BIOS RBB1202A 10/18/2019
+ RIP: 0010:dev_watchdog+0x20d/0x220
+ Code: 00 49 63 4e e0 eb 92 4c 89 e7 c6 05 c6 e2 c1 00 01 e8 e7 ce fc ff 89 d9 48
+ RSP: 0018:ffff90cfc28c3e88 EFLAGS: 00010286
+ RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000006
+ RDX: 0000000000000007 RSI: 0000000000000086 RDI: ffff90cfc28d63c0
+ RBP: ffff90cfb977845c R08: 0000000000000050 R09: 0000000000196018
+ R10: ffff90cfc28c3ef8 R11: 0000000000000000 R12: ffff90cfb9778000
+ R13: 0000000000000003 R14: ffff90cfb9778480 R15: 0000000000000010
+ FS:  0000000000000000(0000) GS:ffff90cfc28c0000(0000) knlGS:0000000000000000
+ CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ CR2: 00007f240ff2d9d0 CR3: 00000001e3e0a000 CR4: 00000000003406e0
+ Call Trace:
+  <IRQ>
+  ? pfifo_fast_reset+0x100/0x100
+  call_timer_fn+0x2b/0x130
+  run_timer_softirq+0x3e8/0x440
+  ? enqueue_hrtimer+0x39/0x90
 
 Signed-off-by: Sudheesh Mavila <sudheesh.mavila@amd.com>
 Signed-off-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
 ---
- drivers/net/ethernet/amd/xgbe/xgbe-common.h | 13 +++++++++++
- drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c | 25 ++++++++++++++++++++-
- 2 files changed, 37 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/amd/xgbe/xgbe-drv.c  | 1 +
+ drivers/net/ethernet/amd/xgbe/xgbe-mdio.c | 1 -
+ 2 files changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-common.h b/drivers/net/ethernet/amd/xgbe/xgbe-common.h
-index b40d4377cc71..318817450fbd 100644
---- a/drivers/net/ethernet/amd/xgbe/xgbe-common.h
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-common.h
-@@ -1279,10 +1279,18 @@
- #define MDIO_PMA_10GBR_FECCTRL		0x00ab
- #endif
+diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
+index 2709a2db5657..395eb0b52680 100644
+--- a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
++++ b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
+@@ -1368,6 +1368,7 @@ static void xgbe_stop(struct xgbe_prv_data *pdata)
+ 		return;
  
-+#ifndef MDIO_PMA_RX_CTRL1
-+#define MDIO_PMA_RX_CTRL1		0x8051
-+#endif
-+
- #ifndef MDIO_PCS_DIG_CTRL
- #define MDIO_PCS_DIG_CTRL		0x8000
- #endif
+ 	netif_tx_stop_all_queues(netdev);
++	netif_carrier_off(pdata->netdev);
  
-+#ifndef MDIO_PCS_DIGITAL_STAT
-+#define MDIO_PCS_DIGITAL_STAT		0x8010
-+#endif
-+
- #ifndef MDIO_AN_XNP
- #define MDIO_AN_XNP			0x0016
- #endif
-@@ -1358,6 +1366,7 @@
- #define XGBE_KR_TRAINING_ENABLE		BIT(1)
+ 	xgbe_stop_timers(pdata);
+ 	flush_workqueue(pdata->dev_workqueue);
+diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-mdio.c b/drivers/net/ethernet/amd/xgbe/xgbe-mdio.c
+index 93ef5a30cb8d..19ee4db0156d 100644
+--- a/drivers/net/ethernet/amd/xgbe/xgbe-mdio.c
++++ b/drivers/net/ethernet/amd/xgbe/xgbe-mdio.c
+@@ -1396,7 +1396,6 @@ static void xgbe_phy_stop(struct xgbe_prv_data *pdata)
+ 	pdata->phy_if.phy_impl.stop(pdata);
  
- #define XGBE_PCS_CL37_BP		BIT(12)
-+#define XGBE_PCS_PSEQ_STATE_BIT		0x10
+ 	pdata->phy.link = 0;
+-	netif_carrier_off(pdata->netdev);
  
- #define XGBE_AN_CL37_INT_CMPLT		BIT(0)
- #define XGBE_AN_CL37_INT_MASK		0x01
-@@ -1375,6 +1384,10 @@
- #define XGBE_PMA_CDR_TRACK_EN_OFF	0x00
- #define XGBE_PMA_CDR_TRACK_EN_ON	0x01
- 
-+#define XGBE_PMA_RX_RST_0_MASK		BIT(4)
-+#define XGBE_PMA_RX_RST_0_RESET_ON	0x10
-+#define XGBE_PMA_RX_RST_0_RESET_OFF	0x00
-+
- /* Bit setting and getting macros
-  *  The get macro will extract the current bit field value from within
-  *  the variable
-diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-index 859ded0c06b0..489f1f86df99 100644
---- a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
-@@ -1953,6 +1953,24 @@ static void xgbe_phy_set_redrv_mode(struct xgbe_prv_data *pdata)
- 	xgbe_phy_put_comm_ownership(pdata);
+ 	xgbe_phy_adjust_link(pdata);
  }
- 
-+static void xgbe_phy_rx_reset(struct xgbe_prv_data *pdata)
-+{
-+	int reg;
-+
-+	reg = XMDIO_READ(pdata, MDIO_MMD_PCS, MDIO_PCS_DIGITAL_STAT);
-+	if (reg & XGBE_PCS_PSEQ_STATE_BIT) {
-+		/* mailbox command timed out, reset Rx block */
-+		/* Assert reset bit for 8ns and wait for 40us */
-+		XMDIO_WRITE_BITS(pdata, MDIO_MMD_PMAPMD, MDIO_PMA_RX_CTRL1,
-+				 XGBE_PMA_RX_RST_0_MASK, XGBE_PMA_RX_RST_0_RESET_ON);
-+		ndelay(20);
-+		XMDIO_WRITE_BITS(pdata, MDIO_MMD_PMAPMD, MDIO_PMA_RX_CTRL1,
-+				 XGBE_PMA_RX_RST_0_MASK, XGBE_PMA_RX_RST_0_RESET_OFF);
-+		usleep_range(40, 50);
-+		netif_err(pdata, link, pdata->netdev, "firmware mailbox reset performed\n");
-+	}
-+}
-+
- static void xgbe_phy_perform_ratechange(struct xgbe_prv_data *pdata,
- 					unsigned int cmd, unsigned int sub_cmd)
- {
-@@ -1960,9 +1978,11 @@ static void xgbe_phy_perform_ratechange(struct xgbe_prv_data *pdata,
- 	unsigned int wait;
- 
- 	/* Log if a previous command did not complete */
--	if (XP_IOREAD_BITS(pdata, XP_DRIVER_INT_RO, STATUS))
-+	if (XP_IOREAD_BITS(pdata, XP_DRIVER_INT_RO, STATUS)) {
- 		netif_dbg(pdata, link, pdata->netdev,
- 			  "firmware mailbox not ready for command\n");
-+			xgbe_phy_rx_reset(pdata);
-+	}
- 
- 	/* Construct the command */
- 	XP_SET_BITS(s0, XP_DRIVER_SCRATCH_0, COMMAND, cmd);
-@@ -1984,6 +2004,9 @@ static void xgbe_phy_perform_ratechange(struct xgbe_prv_data *pdata,
- 
- 	netif_dbg(pdata, link, pdata->netdev,
- 		  "firmware mailbox command did not complete\n");
-+
-+	/* Reset on error */
-+	xgbe_phy_rx_reset(pdata);
- }
- 
- static void xgbe_phy_rrc(struct xgbe_prv_data *pdata)
 -- 
 2.25.1
 
