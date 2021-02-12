@@ -2,144 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EBCC31A6CF
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 22:24:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D513931A6E9
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 22:31:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231923AbhBLVWu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 16:22:50 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:15699 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229718AbhBLVWo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 16:22:44 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B6026f1740000>; Fri, 12 Feb 2021 13:21:56 -0800
-Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL101.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 12 Feb
- 2021 21:21:56 +0000
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.103)
- by HQMAIL109.nvidia.com (172.20.187.15) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2 via Frontend Transport; Fri, 12 Feb 2021 21:21:56 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oJKK1A20OvtIspvj2e0PHu7Ggo1puP66rQVsjgjUK6mTmiOtGlUwTMiTj4+Bj4Ia5fNSddqkGUSBVVHDT6NS0D7T8rjLeiSa3I7iheZQK90tWDfIBVZ6QqXUN7O1Mc1iXE9HUcILjRiN5DgI5FXJicvoe5F6a2MwrKvMdvlahnbMkz3cxDR7Ac+X1iDoTVnkYa65wwzQGQfSgH01/r+zalHR5eyPBnlPDfON+utpvTUXJIlXhCAlvBkdahmKP8LynNlsBKsjAxUjaHgxYwJN9p1gBGZPGh4wXwOPke/9NZbUo4i36zJ+AayBGP7GaTo5m5v2OCEXr5ub4DX9AlaHAQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VszTAWIeCU+N7ccOI1hiLhPuJdLAetxbENJstAHF74Y=;
- b=KDoB4ghG385ANzKcT0PypfbT8h+0Qs1+Gz3F5hEuvPqJK5bJ5qEd+GrN+cXVfKdtq9zP2ON9yXOhBU4hMe22jwpZvVvPWR4T2QUdxRB+Xsf0JfRxPbywJ2RYZaX5rnExoNRMM/Y3SAATDskXH0Co0/semlB+96O7Z+iy59jM/+m0q1ZIX6+ioY+Wl5Ac005aEpIvM/RdWgmQ1hxkxhS8eIShPbmW41rBRVMrlKnOVaT8MnbDhfzr1FXIITjwhqd58a+mIQVknMPt6HeVJzRjwk471bTzILAaRnqZXQo4miA1Rc7awpL++XupV3iioA5mx4yzb5nolXYnzf9RgUogrA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB3514.namprd12.prod.outlook.com (2603:10b6:5:183::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.27; Fri, 12 Feb
- 2021 21:21:55 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::d6b:736:fa28:5e4]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::d6b:736:fa28:5e4%7]) with mapi id 15.20.3846.030; Fri, 12 Feb 2021
- 21:21:55 +0000
-Date:   Fri, 12 Feb 2021 17:21:53 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Saeed Mahameed <saeed@kernel.org>
-CC:     Leon Romanovsky <leon@kernel.org>,
-        Doug Ledford <dledford@redhat.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Aharon Landau <aharonl@nvidia.com>,
-        <linux-rdma@vger.kernel.org>, Maor Gottlieb <maorg@nvidia.com>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH rdma-next 0/2] Real time/free running timestamp support
-Message-ID: <20210212212153.GX4247@nvidia.com>
-References: <20210209131107.698833-1-leon@kernel.org>
- <20210212181056.GB1737478@nvidia.com>
- <5d4731e2394049ca66012f82e1645bdec51aca78.camel@kernel.org>
- <20210212211408.GA1860468@nvidia.com>
- <53a97eb379af167c0221408a07c9bddc6624027d.camel@kernel.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <53a97eb379af167c0221408a07c9bddc6624027d.camel@kernel.org>
-X-ClientProxiedBy: BL1PR13CA0070.namprd13.prod.outlook.com
- (2603:10b6:208:2b8::15) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+        id S231829AbhBLVa4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 16:30:56 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:27983 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231501AbhBLVaz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 16:30:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1613165368;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0maAmKJ5LszuYenhjRQmxflXMdoznBGG5sX99MzX/5k=;
+        b=LTklSNe1PWZnqP8fDpmpybi5dynMrMRG55Jzc32m2nfEaCfh98eYbebwH5uJAlMPZyOFi+
+        4DdfBAuUjzK2uPaZqgNpN5uCg276q0Fx07xRAjYFtibLVsa0kmJzShto3fJVNLPPR2rnDd
+        KvbUiSXuhve0Gbg/P7dcSQigWRe2sUQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-472-tN_QltxJMeq54MN7TIBKnw-1; Fri, 12 Feb 2021 16:29:24 -0500
+X-MC-Unique: tN_QltxJMeq54MN7TIBKnw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 838C0801965;
+        Fri, 12 Feb 2021 21:29:22 +0000 (UTC)
+Received: from krava (unknown [10.40.193.141])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 7298250A8B;
+        Fri, 12 Feb 2021 21:29:19 +0000 (UTC)
+Date:   Fri, 12 Feb 2021 22:29:18 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        Veronika Kabatova <vkabatov@redhat.com>,
+        Jiri Olsa <jolsa@kernel.org>
+Subject: Re: FAILED unresolved symbol vfs_truncate on arm64 with LLVM
+Message-ID: <YCbzLrtukxH3r4Hf@krava>
+References: <CAEf4BzaL=qsSyDc8OxeN4pr7+Lvv+de4f+hM5a56LY8EABAk3w@mail.gmail.com>
+ <YCMEucGZVPPQuxWw@krava>
+ <CAEf4BzacQrkSMnmeO3sunOs7sfhX1ZoD_Hnk4-cFUK-TpLNqUA@mail.gmail.com>
+ <YCPfEzp3ogCBTBaS@krava>
+ <CAEf4BzbzquqsA5=_UqDukScuoGLfDhZiiXs_sgYBuNUvTBuV6w@mail.gmail.com>
+ <YCQ+d0CVgIclDwng@krava>
+ <YCVIWzq0quDQm6bn@krava>
+ <CAEf4Bzbt2-Mn4+y0c+sSZWUSrP705c_e3SxedjV_xYGPQL79=w@mail.gmail.com>
+ <YCavItKm0mKxcVQD@krava>
+ <CAEf4BzaJkfVYLU+zA6kmJRNd5uqGyk2B8G6BT22pKjMt7RqpSg@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (142.162.115.133) by BL1PR13CA0070.namprd13.prod.outlook.com (2603:10b6:208:2b8::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3868.11 via Frontend Transport; Fri, 12 Feb 2021 21:21:55 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1lAfsv-007oA6-DV; Fri, 12 Feb 2021 17:21:53 -0400
-X-Header: ProcessedBy-CMR-outbound
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1613164916; bh=waMQ+oR2qEe4LrSLjX8qppaZjsxesXUE53Ckt82bD0Y=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
-         From:To:CC:Subject:Message-ID:References:Content-Type:
-         Content-Disposition:Content-Transfer-Encoding:In-Reply-To:
-         X-ClientProxiedBy:MIME-Version:
-         X-MS-Exchange-MessageSentRepresentingType:X-Header;
-        b=AULvgVQw7ydhZY4WGvXxdlcIzQpVxoAS4MawKO0QNLOUH07kiz/FEoUnBHdWBIlRR
-         gEunHy/OMEReG8iPOd/C7skOL8ukoNyAlm3MBZjB9luwQyFeet8kZpyPznu4kLUOVB
-         VN0+hkvJ78yhQSkHoP4YG4uvi6pd0s0JO0C3SofwsD56+TKAduZ0ZrJ558EJO3/TMv
-         aHTu+Rm1OE5/J/WGY/Ck3zf4zBFAs3yIQQuWuE4xITMKpttUYXPOeQnKKHzs+G2Lrb
-         L9r6T6ca0VWhekd8v2g/uphGspO3/o0WcQ8jzZpawAsHHi4eKDjQ4J27PEUoYqWG/6
-         IAbCREVxG+ARQ==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzaJkfVYLU+zA6kmJRNd5uqGyk2B8G6BT22pKjMt7RqpSg@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 12, 2021 at 01:19:09PM -0800, Saeed Mahameed wrote:
-> On Fri, 2021-02-12 at 17:14 -0400, Jason Gunthorpe wrote:
-> > On Fri, Feb 12, 2021 at 01:09:20PM -0800, Saeed Mahameed wrote:
-> > > On Fri, 2021-02-12 at 14:10 -0400, Jason Gunthorpe wrote:
-> > > > On Tue, Feb 09, 2021 at 03:11:05PM +0200, Leon Romanovsky wrote:
-> > > > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > > >=20
-> > > > > Add an extra timestamp format for mlx5_ib device.
-> > > > >=20
-> > > > > Thanks
-> > > > >=20
-> > > > > Aharon Landau (2):
-> > > > > =C2=A0 net/mlx5: Add new timestamp mode bits
-> > > > > =C2=A0 RDMA/mlx5: Fail QP creation if the device can not support =
-the
-> > > > > CQE
-> > > > > TS
-> > > > >=20
-> > > > > =C2=A0drivers/infiniband/hw/mlx5/qp.c | 104
-> > > > > +++++++++++++++++++++++++++++---
-> > > > > =C2=A0include/linux/mlx5/mlx5_ifc.h=C2=A0=C2=A0 |=C2=A0 54 ++++++=
-+++++++++--
-> > > > > =C2=A02 files changed, 145 insertions(+), 13 deletions(-)
-> > > >=20
-> > > > Since this is a rdma series, and we are at the end of the cycle,
-> > > > I
-> > > > took the IFC file directly to the rdma tree instead of through
-> > > > the
-> > > > shared branch.
-> > > >=20
-> > > > Applied to for-next, thanks
-> > > >=20
-> > >=20
-> > > mmm, i was planing to resubmit this patch with the netdev real time
-> > > support series, since the uplink representor is getting delayed, I
-> > > thought I could submit the real time stuff today. can you wait on
-> > > the
-> > > ifc patch, i will re-send it today if you will, but it must go
-> > > through
-> > > the shared branch
-> >=20
-> > Friday of rc7 is a bit late to be sending new patches for the first
-> > time, isn't it??
->=20
-> I know, uplink representor last minute mess !
->=20
-> >=20
-> > But sure, if you update the shared branch right now I'll fix up
-> > rdma.git
-> >=20
->=20
-> I can't put it in the shared brach without review, i will post it to
-> the netdev/rdma lists for two days at least for review and feedback.
+On Fri, Feb 12, 2021 at 11:22:41AM -0800, Andrii Nakryiko wrote:
 
-Well, I'm not going to take any different patches beyond right now
-unless Linus does a rc8??
+SNIP
 
-Just move this one IFC patch to the shared branch, it is obviously OK
+> > +static int is_ftrace_func(struct elf_function *func, __u64 *addrs,
+> > +                         __u64 count, bool kmod)
+> > +{
+> > +       /*
+> > +        * For vmlinux image both addrs[x] and functions[x]::addr
+> > +        * values are final address and are comparable.
+> > +        *
+> > +        * For kernel module addrs[x] is final address, but
+> > +        * functions[x]::addr is relative address within section
+> > +        * and needs to be relocated by adding sh_addr.
+> > +        */
+> > +       __u64 start = kmod ? func->addr + func->sh_addr : func->addr;
+> > +       __u64 addr, end = func->addr + func->size;
+> > +
+> > +       /*
+> > +        * The invariant here is addr[r] that is the smallest address
+> > +        * that is >= than function start addr. Except the corner case
+> > +        * where there is no such r, but for that we have a final check
+> > +        * in the return.
+> > +        */
+> > +       size_t l = 0, r = count - 1, m;
+> > +
+> > +       /* make sure we don't use invalid r */
+> > +       if (count == 0)
+> > +               return false;
+> > +
+> > +       while (l < r) {
+> > +               m = l + (r - l) / 2;
+> > +               addr = addrs[m];
+> > +
+> > +               if (addr >= start) {
+> > +                       /* we satisfy invariant, so tighten r */
+> > +                       r = m;
+> > +               } else {
+> > +                       /* m is not good enough as l, maybe m + 1 will be */
+> > +                       l = m + 1;
+> > +               }
+> > +       }
+> > +
+> > +       return start <= addrs[r] && addrs[r] < end;
+> > +}
+> > +
+> >  static int setup_functions(struct btf_elf *btfe, struct funcs_layout *fl)
+> >  {
+> >         __u64 *addrs, count, i;
+> > @@ -267,7 +321,7 @@ static int setup_functions(struct btf_elf *btfe, struct funcs_layout *fl)
+> >         }
+> >
+> >         qsort(addrs, count, sizeof(addrs[0]), addrs_cmp);
+> > -       qsort(functions, functions_cnt, sizeof(functions[0]), functions_cmp);
+> > +       qsort(functions, functions_cnt, sizeof(functions[0]), functions_cmp_addr);
+> 
+> All looks good except this. We don't rely on functions being sorted in
+> ascending start addr order, do we? If not, just drop this, no need to
+> slow down the process.
 
-Jason
+right, it's not needed when we use st_size for function size
+
+thanks,
+jirka
+
