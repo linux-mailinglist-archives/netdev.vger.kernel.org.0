@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14A44319871
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 04:00:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B69B319873
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 04:00:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229928AbhBLC7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 21:59:31 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50014 "EHLO mail.kernel.org"
+        id S229521AbhBLDAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 22:00:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50016 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229829AbhBLC6n (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229837AbhBLC6n (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 11 Feb 2021 21:58:43 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4B6A164E70;
-        Fri, 12 Feb 2021 02:57:26 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1C30664E7E;
+        Fri, 12 Feb 2021 02:57:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613098646;
-        bh=a6gPRPl7rLNezkzZYWfAWfGR46aniDGKwMeyIgQDxns=;
+        s=k20201202; t=1613098647;
+        bh=69WY3t5m/esoqjxtqw864acej/9lZGJEhVUzRdDtmrg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jQSI7XvesYUhNmvAYOnT/yUwXc/keAIn9Bck7kdiEoQh9pO2VUbBleZAc7tXCQuz6
-         +o3tKK8LwiBJU9RzJXCKWFt22FCsbvusKcytZP4ihIcCq1EzHswL4gT3qE0bK0c/vL
-         +e49vA2l9NUbY6QqTdkUAu28ijKQVqtE+bUSrOknAq+Bd2yqgS/NygbvCKHIa1WsJp
-         rod9q3HbU2YrRghpr4WQpQ73EN5pjGk/qcxZw4lck557SQei+6oJkWh+3Ql0imm2K8
-         XIUUF64nN4uSB4gI2U12t1hZ0tRvqd7nOP1qb+EyZ92PrPaxlTfpGev097dbIac9E8
-         VmgfEk8RcDewQ==
+        b=M2BJZUNijcbWqu5csWIig4ug3tWkc6DiiMQtcqCsW8W/7/Y0CUr/El6KwHUXIK9BQ
+         JWKBWyNdGRFdXmufdlrL19HkaE1DQ2xwP2lnU7lDw0A/YOfDy9kgo42PVlmTgG1v4L
+         p5XJbSKdBO97Z1adTRJdToIJOjt3XrayHLU7hS4RbjPyAPpO9Rci7UzCNsgZ45vRvF
+         M5lZHoQTlpz9gAHZHzwrYWTwL5CKU+oxRg7lI88HzgAbxdEkFsh1K+zTvVc/Ew6T2e
+         oh8GUDK80bBCpgfV+VxlbeoqDNWIEad0mt0LagbccvddBM/ACsy059ABp2tVS7Hl+W
+         4QHIDnKhnTjxw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Shay Drory <shayd@nvidia.com>,
         Moshe Shemesh <moshe@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 12/15] net/mlx5: Disallow RoCE on lag device
-Date:   Thu, 11 Feb 2021 18:56:38 -0800
-Message-Id: <20210212025641.323844-13-saeed@kernel.org>
+Subject: [net 13/15] net/mlx5: Disable devlink reload for lag devices
+Date:   Thu, 11 Feb 2021 18:56:39 -0800
+Message-Id: <20210212025641.323844-14-saeed@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210212025641.323844-1-saeed@kernel.org>
 References: <20210212025641.323844-1-saeed@kernel.org>
@@ -43,33 +43,35 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Shay Drory <shayd@nvidia.com>
 
-In lag mode, setting roce enabled/disable of lag device have no effect.
-e.g.: bond device (roce/vf_lag) roce status remain unchanged.
-Therefore disable it and add an error message.
+Devlink reload can't be allowed on lag devices since reloading one lag
+device will cause traffic on the bond to get stucked.
+Users who wish to reload a lag device, need to remove the device from
+the bond, and only then reload it.
 
-Fixes: cc9defcbb8fa ("net/mlx5: Handle "enable_roce" devlink param")
+Fixes: 4383cfcc65e7 ("net/mlx5: Add devlink reload")
 Signed-off-by: Shay Drory <shayd@nvidia.com>
 Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/devlink.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/devlink.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-index 317ce6b80b23..c7073193db14 100644
+index c7073193db14..41474e42a819 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-@@ -273,8 +273,8 @@ static int mlx5_devlink_enable_roce_validate(struct devlink *devlink, u32 id,
- 		NL_SET_ERR_MSG_MOD(extack, "Device doesn't support RoCE");
- 		return -EOPNOTSUPP;
- 	}
--	if (mlx5_core_is_mp_slave(dev)) {
--		NL_SET_ERR_MSG_MOD(extack, "Multi port slave device can't configure RoCE");
-+	if (mlx5_core_is_mp_slave(dev) || mlx5_lag_is_active(dev)) {
-+		NL_SET_ERR_MSG_MOD(extack, "Multi port slave/Lag device can't configure RoCE");
- 		return -EOPNOTSUPP;
- 	}
+@@ -128,6 +128,11 @@ static int mlx5_devlink_reload_down(struct devlink *devlink, bool netns_change,
+ {
+ 	struct mlx5_core_dev *dev = devlink_priv(devlink);
  
++	if (mlx5_lag_is_active(dev)) {
++		NL_SET_ERR_MSG_MOD(extack, "reload is unsupported in Lag mode\n");
++		return -EOPNOTSUPP;
++	}
++
+ 	switch (action) {
+ 	case DEVLINK_RELOAD_ACTION_DRIVER_REINIT:
+ 		mlx5_unload_one(dev, false);
 -- 
 2.29.2
 
