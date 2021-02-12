@@ -2,133 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E75B731A38A
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 18:25:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4992831A40F
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 18:53:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231292AbhBLRZs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 12:25:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47396 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231546AbhBLRZ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 12:25:28 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 377FEC0613D6
-        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 09:24:48 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id y18so551537edw.13
-        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 09:24:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Bh0BqV3JwCvPqAI5uWtLopwKQ8wNwNF0Xbt77Fqb3FA=;
-        b=fgYRXdXY33swqusM2bbQp1Hpi/TQy2LfxVUoJ8186Hm/aISCaIvZ+52z6jT5tX6mkl
-         tfPMaSSdGNulfd7vnObIcRLN5NtbhKFfQLyB4A9UgPpVhxPr4r5AVwWmf+1W4tRLeoDG
-         uW+5io9y9OEgboG1Q/Dp8XMhpDd3pm6V5AYSXbiYzeupKyptX+fLCBjOzH4FJN72Seya
-         b5Bk+0647twYiXDwlH0NJ9KdqUYq5R260Rv8kuXQ933mBurX3PIVdbuI/DF6CPS/m6Pv
-         52sjiv92Jvl8qrH4hf6douaVXttLfqnaYwD7d1uZg1ofyJEVffNwnfuoSxbpXXsqV1P8
-         Dw1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Bh0BqV3JwCvPqAI5uWtLopwKQ8wNwNF0Xbt77Fqb3FA=;
-        b=JONA4aeN5dQqvUkiEBysIy1ISXmujwkfrl+7gQjr28kfL5vhotWMda73Ec2Rui9j4K
-         //Mhr6OHzzdqgbyM20ncTND46XQZhR0agH1dvMU84cF7VuM+WI1vgj8g5IvwRamU8xHF
-         EyaNkKAtwaIMU9beOSDlDKg3wiMk+/oNTOEr8OMVezyAPaoOUyGO1WgZ33oiYW6DHR0w
-         BZ5bJi2zX3n84m6/tpk467O/iAref7qW8b5yfRE8IwQJJynCSQEcWBNUvRJp6XTcPH2a
-         Kwv6LVb0eb/JHn7BINI0oTUKARKK7gP7PQpMvI/5u8tZpXAjNAeR8lrhd07n2NnZaNkO
-         fbug==
-X-Gm-Message-State: AOAM53058pMN1of4uA0vbvPlyPcAvjfmX1oMHD4Bre+4gmlFBJWWqiH3
-        a7g27tEI+vsI4nDu3CsBkVQ=
-X-Google-Smtp-Source: ABdhPJxCnWVNR9VfJrXHiyiVZcVQzcpWndkGrHYLDYPpD2uq//mU8zNmMfrfGxIuMlD6AGwjZRc/mw==
-X-Received: by 2002:a05:6402:1c0f:: with SMTP id ck15mr4308573edb.16.1613150686998;
-        Fri, 12 Feb 2021 09:24:46 -0800 (PST)
-Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id x25sm6061616edv.65.2021.02.12.09.24.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Feb 2021 09:24:46 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Antoine Tenart <atenart@kernel.org>,
-        Quentin Schulz <quentin.schulz@bootlin.com>,
-        Michael Walle <michael@walle.cc>, netdev@vger.kernel.org,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com
-Subject: [PATCH net-next 2/2] net: phy: mscc: configure in-band auto-negotiation for VSC8514
-Date:   Fri, 12 Feb 2021 19:23:41 +0200
-Message-Id: <20210212172341.3489046-3-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210212172341.3489046-1-olteanv@gmail.com>
-References: <20210212172341.3489046-1-olteanv@gmail.com>
+        id S231717AbhBLRun (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 12:50:43 -0500
+Received: from so15.mailgun.net ([198.61.254.15]:51508 "EHLO so15.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231603AbhBLRul (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Feb 2021 12:50:41 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1613152219; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=ZV7o/l5i92iIubII/VeD5vu9RAbY/6LR/SqAIkDMvEw=;
+ b=mTef7g85Hjs2y9HtxYwQSQdGOOoLBxILz5Adhrxrc9AWGNKyo3892DmsX7iCihnTVrM6IlPA
+ 7rGP2EIDv5mq5cDpgt/xWnxJhsfTXNM1A2VWxEBPRmaTCzIVDamcHpOMKozCpLYtsdb+1k5j
+ 9AiYm6egdXjmYoGULsRyJokvzmA=
+X-Mailgun-Sending-Ip: 198.61.254.15
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
+ 6026bfbe8e43a988b75b522a (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 12 Feb 2021 17:49:50
+ GMT
+Sender: subashab=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 2A263C43462; Fri, 12 Feb 2021 17:49:50 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: subashab)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 9F598C433C6;
+        Fri, 12 Feb 2021 17:49:49 +0000 (UTC)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Fri, 12 Feb 2021 10:49:49 -0700
+From:   subashab@codeaurora.org
+To:     Alex Elder <elder@ieee.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Sharath Chandra Vurukala <sharathv@codeaurora.org>,
+        davem@davemloft.net, elder@kernel.org, cpratapa@codeaurora.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/3] net:ethernet:rmnet:Support for downlink MAPv5 csum
+ offload
+In-Reply-To: <1c4e21bf-5903-bc45-6d6e-64b68e494542@ieee.org>
+References: <1613079324-20166-1-git-send-email-sharathv@codeaurora.org>
+ <1613079324-20166-3-git-send-email-sharathv@codeaurora.org>
+ <20210211180459.500654b4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <1c4e21bf-5903-bc45-6d6e-64b68e494542@ieee.org>
+Message-ID: <4694227d4e5a357f299df7f5444807b5@codeaurora.org>
+X-Sender: subashab@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On 2021-02-12 07:01, Alex Elder wrote:
+> On 2/11/21 8:04 PM, Jakub Kicinski wrote:
+>> On Fri, 12 Feb 2021 03:05:23 +0530 Sharath Chandra Vurukala wrote:
+>>> +/* MAP CSUM headers */
+>>> +struct rmnet_map_v5_csum_header {
+>>> +	u8  next_hdr:1;
+>>> +	u8  header_type:7;
+>>> +	u8  hw_reserved:5;
+>>> +	u8  priority:1;
+>>> +	u8  hw_reserved_bit:1;
+>>> +	u8  csum_valid_required:1;
+>>> +	__be16 reserved;
+>>> +} __aligned(1);
+>> 
+>> Will this work on big endian?
+> 
+> Sort of related to this point...
+> 
+> I'm sure the response to this will be to add two versions
+> of the definition, surrounded __LITTLE_ENDIAN_BITFIELD
+> and __BIG_ENDIAN_BITFIELD tests.
+> 
+> I really find this non-intuitive, and every time I
+> look at it I have to think about it a bit to figure
+> out where the bits actually lie in the word.
+> 
+> I know this pattern is used elsewhere in the networking
+> code, but that doesn't make it any easier for me to
+> understand...
+> 
+> Can we used mask, defined in host byte order, to
+> specify the positions of these fields?
+> 
+> I proposed a change at one time that did this and
+> this *_ENDIAN_BITFIELD thing was used instead.
+> 
+> I will gladly implement this change (completely
+> separate from what's being done here), but thought
+> it might be best to see what people think about it
+> before doing that work.
+> 
+> 					-Alex
 
-Add the in-band configuration knob for the VSC8514 quad PHY. Tested with
-QSGMII in-band AN both on and off on NXP LS1028A-RDB and T1040-RDB.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/phy/mscc/mscc.h      |  2 ++
- drivers/net/phy/mscc/mscc_main.c | 13 +++++++++++++
- 2 files changed, 15 insertions(+)
-
-diff --git a/drivers/net/phy/mscc/mscc.h b/drivers/net/phy/mscc/mscc.h
-index 9481bce94c2e..44d1d8f28481 100644
---- a/drivers/net/phy/mscc/mscc.h
-+++ b/drivers/net/phy/mscc/mscc.h
-@@ -187,6 +187,8 @@ enum rgmii_clock_delay {
- #define MSCC_PHY_EXTENDED_INT_MS_EGR	  BIT(9)
- 
- /* Extended Page 3 Registers */
-+#define MSCC_PHY_SERDES_PCS_CTRL	  16
-+#define MSCC_PHY_SERDES_ANEG		  BIT(7)
- #define MSCC_PHY_SERDES_TX_VALID_CNT	  21
- #define MSCC_PHY_SERDES_TX_CRC_ERR_CNT	  22
- #define MSCC_PHY_SERDES_RX_VALID_CNT	  28
-diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
-index 2f2157e3deab..2951ed216620 100644
---- a/drivers/net/phy/mscc/mscc_main.c
-+++ b/drivers/net/phy/mscc/mscc_main.c
-@@ -1986,6 +1986,18 @@ static int vsc85xx_read_status(struct phy_device *phydev)
- 	return genphy_read_status(phydev);
- }
- 
-+static int vsc8514_config_inband_aneg(struct phy_device *phydev, bool enabled)
-+{
-+	int reg_val = 0;
-+
-+	if (enabled)
-+		reg_val = MSCC_PHY_SERDES_ANEG;
-+
-+	return phy_modify_paged(phydev, MSCC_PHY_PAGE_EXTENDED_3,
-+				MSCC_PHY_SERDES_PCS_CTRL, MSCC_PHY_SERDES_ANEG,
-+				reg_val);
-+}
-+
- static int vsc8514_probe(struct phy_device *phydev)
- {
- 	struct vsc8531_private *vsc8531;
-@@ -2176,6 +2188,7 @@ static struct phy_driver vsc85xx_driver[] = {
- 	.phy_id_mask	= 0xfffffff0,
- 	.soft_reset	= &genphy_soft_reset,
- 	.config_init    = &vsc8514_config_init,
-+	.config_inband_aneg = vsc8514_config_inband_aneg,
- 	.config_aneg    = &vsc85xx_config_aneg,
- 	.read_status	= &vsc85xx_read_status,
- 	.handle_interrupt = vsc85xx_handle_interrupt,
--- 
-2.25.1
-
+Our preference is to stick with __LITTLE_ENDIAN_BITFIELD
+& __BIG_ENDIAN_BITFIELD definitions similar to other
+networking definitions.
