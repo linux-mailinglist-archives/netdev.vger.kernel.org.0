@@ -2,125 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4445831A503
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 20:09:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE9A631A514
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 20:12:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231993AbhBLTHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 14:07:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40996 "EHLO
+        id S231756AbhBLTKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 14:10:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231720AbhBLTHi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 14:07:38 -0500
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 442C1C061574
-        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 11:06:58 -0800 (PST)
-Received: by mail-il1-x134.google.com with SMTP id q5so136759ilc.10
-        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 11:06:58 -0800 (PST)
+        with ESMTP id S232054AbhBLTJy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 14:09:54 -0500
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 840F5C061574;
+        Fri, 12 Feb 2021 11:09:14 -0800 (PST)
+Received: by mail-pl1-x62d.google.com with SMTP id d15so354192plh.4;
+        Fri, 12 Feb 2021 11:09:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ieee.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=41R6qCDY/8NfbYuCG9FTh5tckGwo/C1ROCg7V+WW60I=;
-        b=OaT7xFwBOZ0+5R5EzoiY52m0tMQujyW6KpViVkm/xpfriImjxyevrCWMW60cglSXgx
-         Sw2R9nNDnUMALq9grjb6+lviTsauWlQa+PgW5PGMpnFB6wHKq02Dh+uB1CHUYjKfJypV
-         qwJpTcmdeP+hJ8m2VrybqYdmnzrVbhW5hxhrc=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XTjy0dgeoHsEd0mGLVX1SE8z/D5vjwKGcESeectcBLc=;
+        b=rj5BszzM2au4AQ+Otsuxp31NRq0tpKkqaTIIJ8y4nPBuWliKAZjLfYi0e2bf2/dQOr
+         9cdKsKi8f+71jJoe9SBywDimkV8638aEAes7XUH3kNOY/4sbhWlbC48xnM51Pcpj3nGY
+         R5dVuDnhGV9UxrGu6ynm/gslXLXskQ+42dHk6caIm+rYvbiomEkZDp15mA7W0NJXIwV3
+         8mGNk4jUYu79XasALeGHKvpNw7ZGuno17UsKZZIp/gymRRErPomTEVKoJ7Nvfb9G1jW0
+         bijnWC5yZriBY/Bj6ED1ZcbCNBRMtzGQbCI6Y0P0vSOU5om+9UV1SMvwHJqOoTwD5Sue
+         WFPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=41R6qCDY/8NfbYuCG9FTh5tckGwo/C1ROCg7V+WW60I=;
-        b=cQHZeO4A3iC0Kr9xQiY7887fVm9usntCkWWpkT3KPFm1drNr5vngSkonjA3ZTvXRmL
-         NhbDtfiN1InF2rN3UO/njfJQYNwldNJGJiGw+ubnoX3LG0yIQUh6SgkAPT980jr8srhg
-         zc9oF09piwD8Xljn7vTymDKvG10/m8yNLgo/GKLyLCdvd0A5mb3iE+qIuQctG343BfNJ
-         TSxS095JVS/ls7raChtehZrc8OrgWzYIop3feZER+VZegVXDWoIRXThe1G9lsm9e8eEj
-         UfripPn2HmBWIOP4X8XT9pbopt6E6+vXCx+h69LytdessmyYJrFwecEhc2wSNne2VDti
-         4Kdg==
-X-Gm-Message-State: AOAM533rEIN6Nsmhz9QTFx4vHF9jnxH6kb9DJYcgdPSpZ9rTs4qlVr+0
-        H+Sq9J2llpbTkzplv9D2K6V4I68yVKHVVQ==
-X-Google-Smtp-Source: ABdhPJzCLf67dxyoG6GNwbCZwq3WTq4i0gvkUrWAjINmoMjda0GmQBM+BnH61HfpcwpotGr/AOknOA==
-X-Received: by 2002:a92:d351:: with SMTP id a17mr3455278ilh.59.1613156817784;
-        Fri, 12 Feb 2021 11:06:57 -0800 (PST)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id e9sm4470134iob.43.2021.02.12.11.06.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Feb 2021 11:06:57 -0800 (PST)
-Subject: Re: [PATCH 2/3] net:ethernet:rmnet:Support for downlink MAPv5 csum
- offload
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Sharath Chandra Vurukala <sharathv@codeaurora.org>,
-        davem@davemloft.net, elder@kernel.org, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1613079324-20166-1-git-send-email-sharathv@codeaurora.org>
- <1613079324-20166-3-git-send-email-sharathv@codeaurora.org>
- <20210211180459.500654b4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <1c4e21bf-5903-bc45-6d6e-64b68e494542@ieee.org>
- <20210212105120.01b04172@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Alex Elder <elder@ieee.org>
-Message-ID: <dfa87271-0ade-f8b5-b41f-1128353b3248@ieee.org>
-Date:   Fri, 12 Feb 2021 13:06:56 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XTjy0dgeoHsEd0mGLVX1SE8z/D5vjwKGcESeectcBLc=;
+        b=bcrrRqSSsFLqdDX/gbx+RkSJLDCdUERvjR0/Jv4HKj9YDVdBJDIR10klmvz3InNEHD
+         scKbBfb7FyvvWelYgxW2v2eUicG8PK3JRzyu5T58ZjtTzfrKWqYaV8CsZz8Ac6fkebpT
+         BYqwfBiPDadv8OFk1FR5Euf8pLSbgIGxofMig3Q1lDw5ln4LoXluJ+ePM46BGId+05jk
+         9rnrH/+OHUMgPHOHcTZWui58NDXrNL+e6asXKg1LiSWlenRcH5Wo+WUfT5IWh/25mdYT
+         mTjAC+/JasEW7o4CJI+IKw3ESkiRZ7sGCNUKRRaFmeEc37FN1IuTpCElgZhXBHyY78Qg
+         uAvw==
+X-Gm-Message-State: AOAM533q1IA6occ1iqNuzfdak7OFhlnhIRwJ2hEeMseaBkA8+x94I3zw
+        HBYfRJ9sG03P3ISvq4tOHXT59U5ZuswW+G+UqG/Aa2Ovv2tGVw==
+X-Google-Smtp-Source: ABdhPJyxzKOmIQEC+MNX1nqq/ivhjMyrY5qmBW/373VwjwCZRtvvTt2mrOtf5Enq/U9h7jZvFczS/A1mUwD3zCy5/0A=
+X-Received: by 2002:a17:90a:bc4b:: with SMTP id t11mr2880835pjv.52.1613156954045;
+ Fri, 12 Feb 2021 11:09:14 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210212105120.01b04172@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210210022136.146528-1-xiyou.wangcong@gmail.com>
+ <20210210022136.146528-3-xiyou.wangcong@gmail.com> <CACAyw98HxkT99rA-PDSGqOyRgSxGoye_LQqR2FmK8M3KwgY+JQ@mail.gmail.com>
+In-Reply-To: <CACAyw98HxkT99rA-PDSGqOyRgSxGoye_LQqR2FmK8M3KwgY+JQ@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Fri, 12 Feb 2021 11:09:03 -0800
+Message-ID: <CAM_iQpUvaFry3Pj+tWoM9npMrARfQ=O=tmg7SkwC+m54G0T6Yg@mail.gmail.com>
+Subject: Re: [Patch bpf-next v2 2/5] skmsg: get rid of struct sk_psock_parser
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        duanxiongchun@bytedance.com,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        jiang.wang@bytedance.com, Cong Wang <cong.wang@bytedance.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/12/21 12:51 PM, Jakub Kicinski wrote:
-> On Fri, 12 Feb 2021 08:01:15 -0600 Alex Elder wrote:
->> On 2/11/21 8:04 PM, Jakub Kicinski wrote:
->>> On Fri, 12 Feb 2021 03:05:23 +0530 Sharath Chandra Vurukala wrote:
->>>> +/* MAP CSUM headers */
->>>> +struct rmnet_map_v5_csum_header {
->>>> +	u8  next_hdr:1;
->>>> +	u8  header_type:7;
->>>> +	u8  hw_reserved:5;
->>>> +	u8  priority:1;
->>>> +	u8  hw_reserved_bit:1;
->>>> +	u8  csum_valid_required:1;
->>>> +	__be16 reserved;
->>>> +} __aligned(1);
->>>
->>> Will this work on big endian?
->>
->> Sort of related to this point...
->>
->> I'm sure the response to this will be to add two versions
->> of the definition, surrounded __LITTLE_ENDIAN_BITFIELD
->> and __BIG_ENDIAN_BITFIELD tests.
->>
->> I really find this non-intuitive, and every time I
->> look at it I have to think about it a bit to figure
->> out where the bits actually lie in the word.
->>
->> I know this pattern is used elsewhere in the networking
->> code, but that doesn't make it any easier for me to
->> understand...
->>
->> Can we used mask, defined in host byte order, to
->> specify the positions of these fields?
->>
->> I proposed a change at one time that did this and
->> this *_ENDIAN_BITFIELD thing was used instead.
->>
->> I will gladly implement this change (completely
->> separate from what's being done here), but thought
->> it might be best to see what people think about it
->> before doing that work.
-> 
-> Most definitely agree, please convert.
+On Fri, Feb 12, 2021 at 2:56 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
+>
+> On Wed, 10 Feb 2021 at 02:21, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> >
+> > From: Cong Wang <cong.wang@bytedance.com>
+> >
+> > struct sk_psock_parser is embedded in sk_psock, it is
+> > unnecessary as skb verdict also uses ->saved_data_ready.
+> > We can simply fold these fields into sk_psock, and get rid
+> > of ->enabled.
+>
+> Looks nice, can you use sk_psock_strp_enabled() more? There are a
+> couple places in sock_map.c which test psock->saved_data_ready
+> directly.
 
-KS, would you like me to do this to the existing code
-first?
+Its name tells it is for stream parser, so not suitable for others.
 
-I don't think it will take me very long.  If it were
-a priority I could probably get it done by the end of
-today, but I'd want to ensure the result worked for
-the testing you do.
+Are you suggesting to rename it to sk_psock_enabled() and use
+it? Note it still has an additional !psock test, but I think that is fine
+for slow paths.
 
-					-Alex
+Thanks.
