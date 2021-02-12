@@ -2,86 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DD79319A1C
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 08:13:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E655E319A9B
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 08:41:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229712AbhBLHL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 02:11:27 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:43077 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229598AbhBLHLZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 02:11:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613113777;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8mhZkZKs20diLxFUzToHk7jnGcTrrMDi8W9COCWFWPI=;
-        b=gRyiIMFfypXdP5OgiwUqpTWzuiAdVf9p9MK53pVLy7AVojCT9zC8cnr9PK/OfLoiGF3XU7
-        yJfmSRDzQKXlzpd9M+go0TXiegio4HJ0OrY/bIr33gNbYW6Ffp9WXB78d5tBczpcixfp7h
-        PWFmZSPTAW9vJ4NNlyBxZcmsr78Q+l8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-207-Ez5cxZ2cNsejTNSpLWHGAg-1; Fri, 12 Feb 2021 02:09:34 -0500
-X-MC-Unique: Ez5cxZ2cNsejTNSpLWHGAg-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 91510192AB79;
-        Fri, 12 Feb 2021 07:09:33 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.45])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C3ABD7093A;
-        Fri, 12 Feb 2021 07:09:28 +0000 (UTC)
-Date:   Fri, 12 Feb 2021 08:09:27 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Igor Russkikh <irusskikh@marvell.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>, brouer@redhat.com,
-        "Daniel T. Lee" <danieltimlee@gmail.com>
-Subject: Re: [EXT] Re: [PATCH v2 net-next 1/2] samples: pktgen: allow to
- specify delay parameter via new opt
-Message-ID: <20210212080927.008fd4c8@carbon>
-In-Reply-To: <CY4PR1801MB1816E10B20760B287BF27DC8B78C9@CY4PR1801MB1816.namprd18.prod.outlook.com>
-References: <20210211155626.25213-1-irusskikh@marvell.com>
-        <20210211155626.25213-2-irusskikh@marvell.com>
-        <20210211181211.5c2d61b0@carbon>
-        <CY4PR1801MB1816E10B20760B287BF27DC8B78C9@CY4PR1801MB1816.namprd18.prod.outlook.com>
+        id S229690AbhBLHgL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 02:36:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44358 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230005AbhBLHe5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Feb 2021 02:34:57 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D2F6E64DDF;
+        Fri, 12 Feb 2021 07:34:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1613115251;
+        bh=neLigVsdoN+CYxyJjxX/qAVzIuWLkdZyDMtjMwYqrLI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=HXxvvzoLkjPDeR3JvcBQ0yM6umQwZkmsCLbD2ensoMiDSwJ12mr5vWKrB0DrZiHW7
+         Gekvt4dNU/S+p5AIGSg4dt+0WYDyTcu/6XVXII5HxZO1gqLk/3yDI3Wlulmpn0zOJp
+         7rgsu6cSkxMG72w51fu99lYoEdiG5ZacmY648UG0=
+Date:   Fri, 12 Feb 2021 08:34:09 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        devicetree@vger.kernel.org, Paul Mackerras <paulus@samba.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Patrice Chotard <patrice.chotard@st.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Julia Lawall <Julia.Lawall@inria.fr>,
+        Gilles Muller <Gilles.Muller@inria.fr>,
+        Nicolas Palix <nicolas.palix@imag.fr>,
+        Michal Marek <michal.lkml@markovi.net>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-usb@vger.kernel.org, cocci@systeme.lip6.fr,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Subject: Re: [PATCH v2 0/2] of: of_device.h cleanups
+Message-ID: <YCYvcUNiPoG/ipyj@kroah.com>
+References: <20210211232745.1498137-1-robh@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210211232745.1498137-1-robh@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 11 Feb 2021 17:39:35 +0000
-Igor Russkikh <irusskikh@marvell.com> wrote:
+On Thu, Feb 11, 2021 at 05:27:43PM -0600, Rob Herring wrote:
+> This is a couple of cleanups for of_device.h. They fell out from my
+> attempt at decoupling of_device.h and of_platform.h which is a mess
+> and I haven't finished, but there's no reason to wait on these.
 
-> >> +    echo "  -w : (\$DELAY)     Tx Delay value (us)"  
-> >This is not in "us" it is in "ns" (nanosec). (Like I pointed out last time...)  
-> 
-> Ah, sorry lost that. Will fix.
-
-Also remember that you made similar mistake in next patch.
-When adding documentation in samples/pktgen/README.rst.
-Strictly speaking, the doc update for DELAY belongs in patch-1.
-
-
-> One extra thing I wanted to raise is "set -o errexit" in functions.sh.
-> It basically contradicts with the usecase I'm using (doing source ./functions.sh).
-> After that, any error in current shell makes it to quit.
-
-Cc. Daniel T. Lee, can you remember why this 'errexit' was added?
-
-> Honestly, for my tests, I do always disable that line.
-
-In your shell script, using "append", you can disable that shell
-feature in your script (instead of removing the line from functions.sh).
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
