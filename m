@@ -2,83 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE16E319B20
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 09:22:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93C1A319B4D
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 09:39:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230002AbhBLIVm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 03:21:42 -0500
-Received: from ozlabs.org ([203.11.71.1]:38277 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229965AbhBLIVW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Feb 2021 03:21:22 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4DcRJl6cDgz9sB4;
-        Fri, 12 Feb 2021 19:20:39 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ozlabs.org; s=201707;
-        t=1613118040; bh=5MaJGvBp35LQnuv/WVy3idsdObN11F6uoStWZVNU/UI=;
-        h=Subject:From:To:Cc:Date:From;
-        b=XaDGk5uIbxaWhSzEJt36kiLPkmiWMSWiVkeF+4aukmx1DY5TiNdhV6fvx5GgtmtZA
-         8Ud9mo9FC5ZT9LFHj024lLLsth5rO5RzVdkxxdKy4O4RR9/bMPYGQkH0xcgANUBCY7
-         vyfj35OGztexp/f13vsbHcYXJzcNVq8YQuGIQJyDMM7B/2x7sJho7SIRmeNidgdtpU
-         OVOZNk7EpJ8kKfF+RGqlbqB9m1ceTPPkEsbhfQffhGQujPVs9kHRR76owtBcc9yhaG
-         tISKemoQv4IRQZifiGgJ78U2lWlq86avkj1iwf9UjFfBoBLcgOwQPW8ASjItOdsmao
-         pH01HNJAO6pxw==
-Message-ID: <98cea51e699d405ebe9a6d475e51608f318a4209.camel@ozlabs.org>
-Subject: Proposal for a new protocol family - AF_MCTP
-From:   Jeremy Kerr <jk@ozlabs.org>
-To:     netdev@vger.kernel.org
-Cc:     linux-can@vger.kernel.org
-Date:   Fri, 12 Feb 2021 16:20:39 +0800
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        id S230077AbhBLIgz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 03:36:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47120 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229771AbhBLIgv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 03:36:51 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59309C061574;
+        Fri, 12 Feb 2021 00:36:10 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id bl23so14253996ejb.5;
+        Fri, 12 Feb 2021 00:36:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ezkeluSd4BagWsILaf5/hUzcBicqZlpvmIkdsGSPDRo=;
+        b=at4BigjysdRTlvmAHpGvKMJOJyedyTJmIQVo3VlJXyd8c55IC1lqPE1agEyURsnTix
+         A/8NnmTmCO4a+Hh8fSs+cSQnMEtM3iviPtUHmSpf10z2YyJQdxYuzrG07CwK9GkXoZ9V
+         uB/0W8OLbrh3RjKaHWLIDBaNz/v2YBUINgodO3/Vy6Qz2eFoQ9+CKU1OBhahM20tESVG
+         GF74+8TVi1J71NzdSiTR+C3ksWnL6DYbx9oJkTZoae4bSsAdkYhnnM29ghemS2SNdsT9
+         //7MzaTi5ht9BMOnTiIqt59NH3ez7SXUkX+nwwei/hxh3ieT7B4ABZHND5N3lgRZLLH6
+         xj1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ezkeluSd4BagWsILaf5/hUzcBicqZlpvmIkdsGSPDRo=;
+        b=UIBFKHP7IkJ8QqqWxWHGIF20MNN2kVw2gHCwqu+s8qodX2hvCmWUBtMxXiInVPzE2S
+         WJDJMA4sS0rmqdEnKUmiJpx75faoVckiNJNRsF4TXQ3jT6ahOKaSYy8m/ln49bVUvs3M
+         KZmfuCADwJ6Xfn5zcMZwz8qncHaXJfPfMyvEJ6MvdGYBYSi11lS6o2xjTVRDv6qnKzDf
+         N+hu95XfhGmfjhNaIs31CQBhL9jLEq1GR/JmWekL3f/BvxqYvpsd8QDh+Gkl3HltVFa1
+         WRuWfLboqSbQ3UCS7jbZBgKUeUpOQKGOOU69/uJF98hxwzpGShZ2mPp9PNM+a64EQuPJ
+         9J+w==
+X-Gm-Message-State: AOAM5326WD2FzDjhkDKcIx2radSUix19swpHMHaGeVcj+fx4JJkMIJxt
+        riPAf6bQ9bIOho5eNC1D7O8=
+X-Google-Smtp-Source: ABdhPJy/HltcIda+pT8wJyJl+7I+N7SBnqR6xSW2Hl3W57Qa0EfEmJya9dDHfQXYJgqT5EQ5FAtrsw==
+X-Received: by 2002:a17:906:2993:: with SMTP id x19mr1840796eje.409.1613118968909;
+        Fri, 12 Feb 2021 00:36:08 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id m10sm5688975edi.54.2021.02.12.00.36.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Feb 2021 00:36:08 -0800 (PST)
+Date:   Fri, 12 Feb 2021 10:36:06 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org
+Subject: Re: [PATCH v4 net-next 6/9] net: dsa: act as ass passthrough for
+ bridge port flags
+Message-ID: <20210212083606.by43rrib65uuxxlu@skbuf>
+References: <20210212010531.2722925-1-olteanv@gmail.com>
+ <20210212010531.2722925-7-olteanv@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210212010531.2722925-7-olteanv@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+On Fri, Feb 12, 2021 at 03:05:28AM +0200, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> There are multiple ways in which a PORT_BRIDGE_FLAGS attribute can be
+> expressed by the bridge through switchdev, and not all of them can be
+> emulated by DSA mid-layer API at the same time.
 
-I'm currently working on implementing support for the Management
-Controller Transport Protocol (MCTP). Briefly, MCTP is a protocol for
-intra-system communication between a management controller (typically a
-BMC), and the devices it manages. If you're after the full details, the
-DMTF have a specification (DSP0236) up at:
-
-  https://www.dmtf.org/standards/pmci
-
-In short, this involves adding a new protocol / address family
-("AF_MCTP"), the supporting types for a sockets API, and netlink
-protocol definitions.
-
-At the moment, I'm currently at the design & prototyping stage - so no
-patches to send just yet! However, if you're super keen, you can have a
-review of the design outline for the OpenBMC project, up at:
-
-  https://github.com/jk-ozlabs/openbmc-docs/blob/mctp/designs/mctp/mctp-kernel.md
-
-If you'd like to send feedback on any aspects of that, I'm keen to hear
-them. You can either respond to me via email, or participate in the
-gerrit review of that document, which is at:
-
-  https://gerrit.openbmc-project.xyz/c/openbmc/docs/+/40514
-
-Otherwise, if you prefer to review as code instead, I'll be sending
-patches to netdev once we've done a few passes of the design doc with
-the OpenBMC community.
-
-linux-can folks: the structure of MCTP is a little similar to CAN, and
-I've been referring to net/can/ a little for the mctp implementation,
-hence including the list here. If you have any particular hindsight you
-have from your work, I'd be keen to hear about it too.
-
-Cheers,
-
-
-Jeremy
- 
-
-
+Oops, odd typo in the commit title. I only remember something was not
+right, I had noticed the "as" word was missing so I added it, but I
+apparently did not notice why it was missing...
