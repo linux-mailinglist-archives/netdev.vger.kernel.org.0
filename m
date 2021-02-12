@@ -2,352 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10060319816
+	by mail.lfdr.de (Postfix) with ESMTP id 80E82319817
 	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 02:45:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229806AbhBLBny (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 20:43:54 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:34968 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229766AbhBLBnj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 20:43:39 -0500
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11C1YQ17003064
-        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 17:42:56 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=6k5p8fI0Eb212HCVleSZlPSaClMAxV4uoYNXUBS0y+g=;
- b=CsJpDYLwHlII87GZ3wqvHNmwYhSwuzhunpzqAOfYmwUlFH7rux5wYjXsa6YkFSnsjLJd
- Xf6OhE0h882J9t6p11q35X0kJuaeUmmGvQbnWdnl6YmVCaOMl7DLGo5s7lMkt15jWO3Z
- 5VrdZ/tyn81caj8QG9CNSNEQNSTqB0+6GwI= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 36mj9x1xjw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 17:42:56 -0800
-Received: from intmgw001.06.ash9.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 11 Feb 2021 17:42:55 -0800
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id B282562E0B5D; Thu, 11 Feb 2021 17:42:49 -0800 (PST)
-From:   Song Liu <songliubraving@fb.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-mm@kvack.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        <akpm@linux-foundation.org>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>
-Subject: [PATCH v6 bpf-next 4/4] selftests/bpf: add test for bpf_iter_task_vma
-Date:   Thu, 11 Feb 2021 17:42:32 -0800
-Message-ID: <20210212014232.414643-5-songliubraving@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20210212014232.414643-1-songliubraving@fb.com>
-References: <20210212014232.414643-1-songliubraving@fb.com>
+        id S229870AbhBLBo4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 20:44:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43770 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229647AbhBLBoy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 20:44:54 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E21BC061756
+        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 17:44:14 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id v5so10937337lft.13
+        for <netdev@vger.kernel.org>; Thu, 11 Feb 2021 17:44:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3Klai6ijiXMah8c4iiQZHxcS1VG4bowOMH7Gp0E8ik8=;
+        b=kRmF6dU+1uEN05IVZ4HPJGHmcvnd+Pl1TeatcZzGYWMf0x4JPqUqLDN9ywVpJCtW0E
+         6CzjaWcPWZru6I6T+JHaFlFGABChCGPX2XCb5fxfHoAI10s7Ns8ZeLOszS6/iYCCgHCz
+         S9L/2c6Qtr1/LY5rrgWhS8OKojvKLmVMCWWQbz/d0sCJ+DFhN+kwIBILoW3bSaGbHLnN
+         heBqwZ9HiR+uJG1aKVLhWxbqdzG7MSkEonPH4n7U/xDhxeiN/edJxdyz9L5qMMRIuWOw
+         SaiQF3gFtjykPxzIuT+GzX0euv76k4cwajtNij5X1xruVgVbC1e0BB9594IlNhdE28G2
+         bXsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3Klai6ijiXMah8c4iiQZHxcS1VG4bowOMH7Gp0E8ik8=;
+        b=Nuy6DiQrpEWtj9I9uOlAurIXfj46Nf0OlIdmObmue+WtHBUYEl3J63oDDTQ5J5ur+8
+         jeW89rw/L7tUoMwBj2tLItmlsujfwLOYXH8HYcDtfdOnqM74pNacxGrdxIiTdidM/CmO
+         pY28I3F8jKEhzF4Dxj+yJwaKTS7zlKkneiDFoEUcqaH7G32FYDnrbGwMngNHOYli8C19
+         UE8lFEMdjztkuc0bN7qwZdjQX8/JceM2MDL/KJ8xMtewNRWohTbMnQDrRkmFtrKfFh+O
+         BgBS/+AlRAMUuY0v8zAxaTMKU2WkEwxbVdvKg1pZrIgo+YAHSHFgkuQLlVTT+xzvYGjL
+         x3bQ==
+X-Gm-Message-State: AOAM5336xVJWmAvpfS3PAGDReskf8xOoI+OVcvQ/gCal3MUSrhu2V34L
+        OY4R9UiEhyZWN1gRte1a4a1USscst8AbNQYadDU=
+X-Google-Smtp-Source: ABdhPJz7auQ8Qd1W571v7dzv2ApGMyLmGVLSRLOLICV6as23BmoyGt/RK/et9xdl1/hHe5Lgu+V/USeQA0hA2cjBJbg=
+X-Received: by 2002:a19:6d07:: with SMTP id i7mr403339lfc.75.1613094252578;
+ Thu, 11 Feb 2021 17:44:12 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
- definitions=2021-02-11_07:2021-02-11,2021-02-11 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
- priorityscore=1501 impostorscore=0 suspectscore=0 spamscore=0
- malwarescore=0 clxscore=1015 mlxscore=0 mlxlogscore=999 adultscore=0
- lowpriorityscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2009150000 definitions=main-2102120008
-X-FB-Internal: deliver
+References: <ca64de092db5a2ac80d22eaa9d662520@codeaurora.org>
+ <56e72b72-685f-925d-db2d-d245c1557987@gmail.com> <CAEA6p_D+diS7jnpoGk6cncWL8qiAGod2EAp=Vcnc-zWNPg04Jg@mail.gmail.com>
+ <307c2de1a2ddbdcd0a346c57da88b394@codeaurora.org> <CAEA6p_ArQdNp=hQCjrsnAo-Xy22d44b=2KdLp7zO7E7XDA4Fog@mail.gmail.com>
+ <f10c733a-09f8-2c72-c333-41f9d53e1498@gmail.com> <6a314f7da0f41c899926d9e7ba996337@codeaurora.org>
+ <839f0ad6-83c1-1df6-c34d-b844c52ba771@gmail.com> <9f25d75823a73c6f0f556f0905f931d1@codeaurora.org>
+ <5905440c-163a-d13e-933e-c9273445a6ed@gmail.com> <CAEA6p_CfmJZuYy7msGm0hi813q92hO2daC_zEZhhj0y3FYJ4LA@mail.gmail.com>
+ <CAADnVQ+AbH0Xs_fF5mESb2i-TCL0T-inpAX+gtggDbHhA+9djA@mail.gmail.com> <20210211172856.3d913519@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210211172856.3d913519@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 11 Feb 2021 17:44:01 -0800
+Message-ID: <CAADnVQL4PSQd79fjkwWnq0C_1rLT3rwUOs4aWK67i9DVHuysWA@mail.gmail.com>
+Subject: Re: Refcount mismatch when unregistering netdevice from kernel
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Wei Wang <weiwan@google.com>, David Ahern <dsahern@gmail.com>,
+        stranche@codeaurora.org, Eric Dumazet <eric.dumazet@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The test dumps information similar to /proc/pid/maps. The first line of
-the output is compared against the /proc file to make sure they match.
+On Thu, Feb 11, 2021 at 5:28 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Thu, 11 Feb 2021 11:21:26 -0800 Alexei Starovoitov wrote:
+> > On Tue, Jan 5, 2021 at 11:11 AM Wei Wang <weiwan@google.com> wrote:
+> > > On Mon, Jan 4, 2021 at 8:58 PM David Ahern <dsahern@gmail.com> wrote:
+> > > > On 1/4/21 8:05 PM, stranche@codeaurora.org wrote:
+> > > Ah, I see now. rt6_flush_exceptions is called by fib6_del_route, but
+> > > > that won't handle replace.
+> > > >
+> > > > If you look at fib6_purge_rt it already has a call to remove pcpu
+> > > > entries. This call to flush exceptions should go there and the existing
+> > > > one in fib6_del_route can be removed.
+> > > >
+> > > Thanks for catching this!
+> > > Agree with this proposed fix.
+> >
+> > Looks like this fix never landed?
+> > Is it still needed or there was an alternative fix merged?
+>
+> Wasn't it:
+>
+> d8f5c29653c3 ("net: ipv6: fib: flush exceptions when purging route")
+>
+> ?
 
-Acked-by: Yonghong Song <yhs@fb.com>
-Signed-off-by: Song Liu <songliubraving@fb.com>
----
- .../selftests/bpf/prog_tests/bpf_iter.c       | 118 ++++++++++++++++--
- tools/testing/selftests/bpf/progs/bpf_iter.h  |   8 ++
- .../selftests/bpf/progs/bpf_iter_task_vma.c   |  58 +++++++++
- 3 files changed, 174 insertions(+), 10 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/progs/bpf_iter_task_vma.c
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c b/tools/te=
-sting/selftests/bpf/prog_tests/bpf_iter.c
-index 0e586368948dd..74c45d557a2b7 100644
---- a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
-+++ b/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
-@@ -7,6 +7,7 @@
- #include "bpf_iter_task.skel.h"
- #include "bpf_iter_task_stack.skel.h"
- #include "bpf_iter_task_file.skel.h"
-+#include "bpf_iter_task_vma.skel.h"
- #include "bpf_iter_task_btf.skel.h"
- #include "bpf_iter_tcp4.skel.h"
- #include "bpf_iter_tcp6.skel.h"
-@@ -64,6 +65,22 @@ static void do_dummy_read(struct bpf_program *prog)
- 	bpf_link__destroy(link);
- }
-=20
-+static int read_fd_into_buffer(int fd, char *buf, int size)
-+{
-+	int bufleft =3D size;
-+	int len;
-+
-+	do {
-+		len =3D read(fd, buf, bufleft);
-+		if (len > 0) {
-+			buf +=3D len;
-+			bufleft -=3D len;
-+		}
-+	} while (len > 0);
-+
-+	return len < 0 ? len : size - bufleft;
-+}
-+
- static void test_ipv6_route(void)
- {
- 	struct bpf_iter_ipv6_route *skel;
-@@ -177,7 +194,7 @@ static int do_btf_read(struct bpf_iter_task_btf *skel=
-)
- {
- 	struct bpf_program *prog =3D skel->progs.dump_task_struct;
- 	struct bpf_iter_task_btf__bss *bss =3D skel->bss;
--	int iter_fd =3D -1, len =3D 0, bufleft =3D TASKBUFSZ;
-+	int iter_fd =3D -1, err;
- 	struct bpf_link *link;
- 	char *buf =3D taskbuf;
- 	int ret =3D 0;
-@@ -190,14 +207,7 @@ static int do_btf_read(struct bpf_iter_task_btf *ske=
-l)
- 	if (CHECK(iter_fd < 0, "create_iter", "create_iter failed\n"))
- 		goto free_link;
-=20
--	do {
--		len =3D read(iter_fd, buf, bufleft);
--		if (len > 0) {
--			buf +=3D len;
--			bufleft -=3D len;
--		}
--	} while (len > 0);
--
-+	err =3D read_fd_into_buffer(iter_fd, buf, TASKBUFSZ);
- 	if (bss->skip) {
- 		printf("%s:SKIP:no __builtin_btf_type_id\n", __func__);
- 		ret =3D 1;
-@@ -205,7 +215,7 @@ static int do_btf_read(struct bpf_iter_task_btf *skel=
-)
- 		goto free_link;
- 	}
-=20
--	if (CHECK(len < 0, "read", "read failed: %s\n", strerror(errno)))
-+	if (CHECK(err < 0, "read", "read failed: %s\n", strerror(errno)))
- 		goto free_link;
-=20
- 	CHECK(strstr(taskbuf, "(struct task_struct)") =3D=3D NULL,
-@@ -1133,6 +1143,92 @@ static void test_buf_neg_offset(void)
- 		bpf_iter_test_kern6__destroy(skel);
- }
-=20
-+#define CMP_BUFFER_SIZE 1024
-+static char task_vma_output[CMP_BUFFER_SIZE];
-+static char proc_maps_output[CMP_BUFFER_SIZE];
-+
-+/* remove \0 and \t from str, and only keep the first line */
-+static void str_strip_first_line(char *str)
-+{
-+	char *dst =3D str, *src =3D str;
-+
-+	do {
-+		if (*src =3D=3D ' ' || *src =3D=3D '\t')
-+			src++;
-+		else
-+			*(dst++) =3D *(src++);
-+
-+	} while (*src !=3D '\0' && *src !=3D '\n');
-+
-+	*dst =3D '\0';
-+}
-+
-+#define min(a, b) ((a) < (b) ? (a) : (b))
-+
-+static void test_task_vma(void)
-+{
-+	int err, iter_fd =3D -1, proc_maps_fd =3D -1;
-+	struct bpf_iter_task_vma *skel;
-+	int len, read_size =3D 4;
-+	char maps_path[64];
-+
-+	skel =3D bpf_iter_task_vma__open();
-+	if (CHECK(!skel, "bpf_iter_task_vma__open", "skeleton open failed\n"))
-+		return;
-+
-+	skel->bss->pid =3D getpid();
-+
-+	err =3D bpf_iter_task_vma__load(skel);
-+	if (CHECK(err, "bpf_iter_task_vma__load", "skeleton load failed\n"))
-+		goto out;
-+
-+	skel->links.proc_maps =3D bpf_program__attach_iter(
-+		skel->progs.proc_maps, NULL);
-+
-+	if (CHECK(IS_ERR(skel->links.proc_maps), "bpf_program__attach_iter",
-+		  "attach iterator failed\n")) {
-+		skel->links.proc_maps =3D NULL;
-+		goto out;
-+	}
-+
-+	iter_fd =3D bpf_iter_create(bpf_link__fd(skel->links.proc_maps));
-+	if (CHECK(iter_fd < 0, "create_iter", "create_iter failed\n"))
-+		goto out;
-+
-+	/* Read CMP_BUFFER_SIZE (1kB) from bpf_iter. Read in small chunks
-+	 * to trigger seq_file corner cases. The expected output is much
-+	 * longer than 1kB, so the while loop will terminate.
-+	 */
-+	len =3D 0;
-+	while (len < CMP_BUFFER_SIZE) {
-+		err =3D read_fd_into_buffer(iter_fd, task_vma_output + len,
-+					  min(read_size, CMP_BUFFER_SIZE - len));
-+		if (CHECK(err < 0, "read_iter_fd", "read_iter_fd failed\n"))
-+			goto out;
-+		len +=3D err;
-+	}
-+
-+	/* read CMP_BUFFER_SIZE (1kB) from /proc/pid/maps */
-+	snprintf(maps_path, 64, "/proc/%u/maps", skel->bss->pid);
-+	proc_maps_fd =3D open(maps_path, O_RDONLY);
-+	if (CHECK(proc_maps_fd < 0, "open_proc_maps", "open_proc_maps failed\n"=
-))
-+		goto out;
-+	err =3D read_fd_into_buffer(proc_maps_fd, proc_maps_output, CMP_BUFFER_=
-SIZE);
-+	if (CHECK(err < 0, "read_prog_maps_fd", "read_prog_maps_fd failed\n"))
-+		goto out;
-+
-+	/* strip and compare the first line of the two files */
-+	str_strip_first_line(task_vma_output);
-+	str_strip_first_line(proc_maps_output);
-+
-+	CHECK(strcmp(task_vma_output, proc_maps_output), "compare_output",
-+	      "found mismatch\n");
-+out:
-+	close(proc_maps_fd);
-+	close(iter_fd);
-+	bpf_iter_task_vma__destroy(skel);
-+}
-+
- void test_bpf_iter(void)
- {
- 	if (test__start_subtest("btf_id_or_null"))
-@@ -1149,6 +1245,8 @@ void test_bpf_iter(void)
- 		test_task_stack();
- 	if (test__start_subtest("task_file"))
- 		test_task_file();
-+	if (test__start_subtest("task_vma"))
-+		test_task_vma();
- 	if (test__start_subtest("task_btf"))
- 		test_task_btf();
- 	if (test__start_subtest("tcp4"))
-diff --git a/tools/testing/selftests/bpf/progs/bpf_iter.h b/tools/testing=
-/selftests/bpf/progs/bpf_iter.h
-index 6a1255465fd6d..3d83b185c4bcb 100644
---- a/tools/testing/selftests/bpf/progs/bpf_iter.h
-+++ b/tools/testing/selftests/bpf/progs/bpf_iter.h
-@@ -7,6 +7,7 @@
- #define bpf_iter__netlink bpf_iter__netlink___not_used
- #define bpf_iter__task bpf_iter__task___not_used
- #define bpf_iter__task_file bpf_iter__task_file___not_used
-+#define bpf_iter__task_vma bpf_iter__task_vma___not_used
- #define bpf_iter__tcp bpf_iter__tcp___not_used
- #define tcp6_sock tcp6_sock___not_used
- #define bpf_iter__udp bpf_iter__udp___not_used
-@@ -26,6 +27,7 @@
- #undef bpf_iter__netlink
- #undef bpf_iter__task
- #undef bpf_iter__task_file
-+#undef bpf_iter__task_vma
- #undef bpf_iter__tcp
- #undef tcp6_sock
- #undef bpf_iter__udp
-@@ -67,6 +69,12 @@ struct bpf_iter__task_file {
- 	struct file *file;
- } __attribute__((preserve_access_index));
-=20
-+struct bpf_iter__task_vma {
-+	struct bpf_iter_meta *meta;
-+	struct task_struct *task;
-+	struct vm_area_struct *vma;
-+} __attribute__((preserve_access_index));
-+
- struct bpf_iter__bpf_map {
- 	struct bpf_iter_meta *meta;
- 	struct bpf_map *map;
-diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_task_vma.c b/tool=
-s/testing/selftests/bpf/progs/bpf_iter_task_vma.c
-new file mode 100644
-index 0000000000000..d789e32cdb16c
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/bpf_iter_task_vma.c
-@@ -0,0 +1,58 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2020 Facebook */
-+#include "bpf_iter.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+char _license[] SEC("license") =3D "GPL";
-+
-+/* Copied from mm.h */
-+#define VM_READ		0x00000001
-+#define VM_WRITE	0x00000002
-+#define VM_EXEC		0x00000004
-+#define VM_MAYSHARE	0x00000080
-+
-+/* Copied from kdev_t.h */
-+#define MINORBITS	20
-+#define MINORMASK	((1U << MINORBITS) - 1)
-+#define MAJOR(dev)	((unsigned int) ((dev) >> MINORBITS))
-+#define MINOR(dev)	((unsigned int) ((dev) & MINORMASK))
-+
-+#define D_PATH_BUF_SIZE 1024
-+char d_path_buf[D_PATH_BUF_SIZE] =3D {};
-+__u32 pid =3D 0;
-+
-+SEC("iter.s/task_vma") int proc_maps(struct bpf_iter__task_vma *ctx)
-+{
-+	struct vm_area_struct *vma =3D ctx->vma;
-+	struct seq_file *seq =3D ctx->meta->seq;
-+	struct task_struct *task =3D ctx->task;
-+	struct file *file;
-+	char perm_str[] =3D "----";
-+
-+	if (task =3D=3D (void *)0 || vma =3D=3D (void *)0)
-+		return 0;
-+
-+	file =3D vma->vm_file;
-+	if (task->tgid !=3D pid)
-+		return 0;
-+	perm_str[0] =3D (vma->vm_flags & VM_READ) ? 'r' : '-';
-+	perm_str[1] =3D (vma->vm_flags & VM_WRITE) ? 'w' : '-';
-+	perm_str[2] =3D (vma->vm_flags & VM_EXEC) ? 'x' : '-';
-+	perm_str[3] =3D (vma->vm_flags & VM_MAYSHARE) ? 's' : 'p';
-+	BPF_SEQ_PRINTF(seq, "%08llx-%08llx %s ", vma->vm_start, vma->vm_end, pe=
-rm_str);
-+
-+	if (file) {
-+		__u32 dev =3D file->f_inode->i_sb->s_dev;
-+
-+		bpf_d_path(&file->f_path, d_path_buf, D_PATH_BUF_SIZE);
-+
-+		BPF_SEQ_PRINTF(seq, "%08llx ", vma->vm_pgoff << 12);
-+		BPF_SEQ_PRINTF(seq, "%02x:%02x %u", MAJOR(dev), MINOR(dev),
-+			       file->f_inode->i_ino);
-+		BPF_SEQ_PRINTF(seq, "\t%s\n", d_path_buf);
-+	} else {
-+		BPF_SEQ_PRINTF(seq, "%08llx 00:00 0\n", 0ULL);
-+	}
-+	return 0;
-+}
---=20
-2.24.1
-
+Ahh. Thanks!
