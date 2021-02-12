@@ -2,112 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E862E31A686
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 22:07:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC59331A68F
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 22:10:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231613AbhBLVG7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 16:06:59 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:36809 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231564AbhBLVG6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 16:06:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613163932;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=VkCFWgsVdbCJFgmn7lqkOYZrSO4z9ILv0OvVw1jaBIk=;
-        b=bJj2v+nEvQ5LY+gMUbsVlO+0u4JeeZJkphR9o7tmLkzFw7NBzaPlB2uWhoZEfvwcQDdmKD
-        7ZaMAPVFt4MCfWbZbxIPKUBr37n43/nzOvLKdPaWe87uTW1S6T04s5h27pMr0dt+sC9Exd
-        ZRIZ21O7PqRfF64LlYB8Dyyro9Yk0Dk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-344-i34ecyWmOuWSWyRXTzGdiw-1; Fri, 12 Feb 2021 16:05:28 -0500
-X-MC-Unique: i34ecyWmOuWSWyRXTzGdiw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 21CDB801965;
-        Fri, 12 Feb 2021 21:05:27 +0000 (UTC)
-Received: from krava (unknown [10.40.193.141])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 747535C277;
-        Fri, 12 Feb 2021 21:05:25 +0000 (UTC)
-Date:   Fri, 12 Feb 2021 22:05:23 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, jolsa@kernel.org
-Subject: Re: [PATCH bpf-next] tools/resolve_btfids: add /libbpf to .gitignore
-Message-ID: <YCbtk70AX14hjsyn@krava>
-References: <20210212010053.668700-1-sdf@google.com>
- <CAEf4BzZ60LNPpWL6z566hCCF1JkJC=-nZpqg7JQGaHp0rJYGhg@mail.gmail.com>
- <CAKH8qBuRvmW6wyGR4_8xRNY9Bhm-eMN-duKGp14X8ejk1gvsDw@mail.gmail.com>
+        id S232010AbhBLVKG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 16:10:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58928 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229798AbhBLVKC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Feb 2021 16:10:02 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 693DA64DEC;
+        Fri, 12 Feb 2021 21:09:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1613164161;
+        bh=gLwKAPwAdqi/hJ+fFYRRy+fQTJxn5OfnSVzRIlYP7mE=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=I8i+mZDuEW9SvFUwKXYXYCSgq6zKOs7Hue+RqkwDeAUNSqI2q+tbu5KVQeI7GjJpm
+         6R9KDL0hIINm2TZbCs96FbHyKabh5Ejt56LxcyYTlHS3Xig0IjEfD2RSMFRygihr0Y
+         VmStungunuwLusGXbS3KLBns8noiw74ydWZaJQBMrjm006UVH6a75pcZ8hp++Qy6jz
+         RkdV5GxF6PqxIgH6g9SsKmQiOuKxD8HkFDIqDx245TO8ykubS1S9iFDMtLVHXwjQ+C
+         EuJUNxnjEwYg/C4S3VxmtQ7GCkzUltvUTf5GbeSv8CnNcXbEx2Li5Q+Cpn7szWabU6
+         u9xUmI7SNrOYQ==
+Message-ID: <5d4731e2394049ca66012f82e1645bdec51aca78.camel@kernel.org>
+Subject: Re: [PATCH rdma-next 0/2] Real time/free running timestamp support
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>, Leon Romanovsky <leon@kernel.org>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Aharon Landau <aharonl@nvidia.com>, linux-rdma@vger.kernel.org,
+        Maor Gottlieb <maorg@nvidia.com>, netdev@vger.kernel.org
+Date:   Fri, 12 Feb 2021 13:09:20 -0800
+In-Reply-To: <20210212181056.GB1737478@nvidia.com>
+References: <20210209131107.698833-1-leon@kernel.org>
+         <20210212181056.GB1737478@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3 (3.38.3-1.fc33) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKH8qBuRvmW6wyGR4_8xRNY9Bhm-eMN-duKGp14X8ejk1gvsDw@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 12, 2021 at 11:56:29AM -0800, Stanislav Fomichev wrote:
-> On Fri, Feb 12, 2021 at 11:48 AM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Thu, Feb 11, 2021 at 5:07 PM Stanislav Fomichev <sdf@google.com> wrote:
-> > >
-> > > There is what I see after compiling the kernel:
-> >
-> > typo: This?
-> Yes, sure.
+On Fri, 2021-02-12 at 14:10 -0400, Jason Gunthorpe wrote:
+> On Tue, Feb 09, 2021 at 03:11:05PM +0200, Leon Romanovsky wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> > 
+> > Add an extra timestamp format for mlx5_ib device.
+> > 
+> > Thanks
+> > 
+> > Aharon Landau (2):
+> >   net/mlx5: Add new timestamp mode bits
+> >   RDMA/mlx5: Fail QP creation if the device can not support the CQE
+> > TS
+> > 
+> >  drivers/infiniband/hw/mlx5/qp.c | 104
+> > +++++++++++++++++++++++++++++---
+> >  include/linux/mlx5/mlx5_ifc.h   |  54 +++++++++++++++--
+> >  2 files changed, 145 insertions(+), 13 deletions(-)
 > 
+> Since this is a rdma series, and we are at the end of the cycle, I
+> took the IFC file directly to the rdma tree instead of through the
+> shared branch.
 > 
-> > >  # bpf-next...bpf-next/master
-> > >  ?? tools/bpf/resolve_btfids/libbpf/
-> > >
-> > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > > ---
-> >
-> > Jiri,
-> >
-> > Is this
-> >
-> > Fixes: fc6b48f692f8 ("tools/resolve_btfids: Build libbpf and libsubcmd
-> > in separate directories")
-> >
-> > ?
-> >
-> > Do we need similar stuff for libsubcmd (what's that, btw?)
-> It's probably not needed because it has only .o files in there (.o are
-> ignored in the root .gitignore).
-> I assume libbpf/ has an issue because there is bpf_helper_defs.h in
-> that libbpf/ directory.
-> Not sure why it was removed in fc6b48f692f8 rather than being prefixed
-> with libbpf/ directory.
-> I'll leave it up to Jiri to comment.
+> Applied to for-next, thanks
+> 
 
-you're right, thanks for the fix
+mmm, i was planing to resubmit this patch with the netdev real time
+support series, since the uplink representor is getting delayed, I
+thought I could submit the real time stuff today. can you wait on the
+ifc patch, i will re-send it today if you will, but it must go through
+the shared branch
 
-jirka
+Thanks.
 
-> 
-> 
-> > >  tools/bpf/resolve_btfids/.gitignore | 1 +
-> > >  1 file changed, 1 insertion(+)
-> > >
-> > > diff --git a/tools/bpf/resolve_btfids/.gitignore b/tools/bpf/resolve_btfids/.gitignore
-> > > index 25f308c933cc..16913fffc985 100644
-> > > --- a/tools/bpf/resolve_btfids/.gitignore
-> > > +++ b/tools/bpf/resolve_btfids/.gitignore
-> > > @@ -1,2 +1,3 @@
-> > >  /fixdep
-> > >  /resolve_btfids
-> > > +/libbpf/
-> > > --
-> > > 2.30.0.478.g8a0d178c01-goog
-> > >
-> 
 
