@@ -2,104 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D1B031A681
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 22:07:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3A9431A67E
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 22:06:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229796AbhBLVGa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 16:06:30 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:33105 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229583AbhBLVGW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 16:06:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613163896;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=g3qIn1qSnjfoN5aaYRdKn5QvyrYa2jYBaUe7hvAylkY=;
-        b=BOvW/c7CwtLh6gXTAvNrO8V0X6R49L5e2CXTLeknw82FeHgs5L+qgYYHffPcIjBD7loCXu
-        8odAvNHZolzlU0d0555bZYu9Obr1vFtycgBko6uz3vNiPFotdLnHn9JIrymElqvKGqt6x5
-        M0me/8VCQdBym+0Zj8feEy2Lv9erfv4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-335-W-vFUccVNYyvXImWxd0ybA-1; Fri, 12 Feb 2021 16:04:54 -0500
-X-MC-Unique: W-vFUccVNYyvXImWxd0ybA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 29D976EE2C;
-        Fri, 12 Feb 2021 21:04:53 +0000 (UTC)
-Received: from krava (unknown [10.40.193.141])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 822CE19811;
-        Fri, 12 Feb 2021 21:04:51 +0000 (UTC)
-Date:   Fri, 12 Feb 2021 22:04:50 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: Re: [PATCH bpf-next] tools/resolve_btfids: add /libbpf to .gitignore
-Message-ID: <YCbtcjR87iWWTVGx@krava>
-References: <20210212010053.668700-1-sdf@google.com>
- <CAEf4BzZ60LNPpWL6z566hCCF1JkJC=-nZpqg7JQGaHp0rJYGhg@mail.gmail.com>
+        id S231446AbhBLVFv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 16:05:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38084 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230263AbhBLVFu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 16:05:50 -0500
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 335DAC061574;
+        Fri, 12 Feb 2021 13:05:10 -0800 (PST)
+Received: by mail-lj1-x232.google.com with SMTP id b16so611311lji.13;
+        Fri, 12 Feb 2021 13:05:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sbjxvXETQ6j1I+XE78CycXkHwpX2+wbGS1inRasjIr8=;
+        b=Al/iMWmOf7Gd9oFlnEXwvenLfFIsVMK4Ry7fXXndiMOM82g1G9FlGVgp5SVX0+mvGs
+         WYJXgl7thHsaalmZRlJ/ar1b1A54ekTvFlQpsGO78qxDH1iY+sD72PF34Ddsm9d7bPV4
+         l5pJKgBOXZ8uibbPiqdUkuLBRtYbZhtLsZ2db7YE64odxEeO+4NIPXTdAPaO28v6Xo18
+         7grwkYotKThMyPsVmbv1sRMpNBTj6g+AOpsfMSYyq9+fNzoAcQ3JJlOl/kjWlxH4RtRE
+         JG/Jn9SnfYC0T3PCQv9e1M88rDovWpB52fI7nBS7cNykXPAqFbJdBEzkzZ0TUgmsjxpL
+         zH0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sbjxvXETQ6j1I+XE78CycXkHwpX2+wbGS1inRasjIr8=;
+        b=O0+XZaT9NwvvBtxhHnzeiOpclUzTkWFG94jEJ0HsX/DY0QGTYThL/ii/HgSYuvn9on
+         yqN1sTjHesCROzcruku0H2uqnVa0ZPj1Ty/t/QzYlDxjnha9gDJ8d+1fivzspgG9vd5O
+         5I2u++b4+FDAxElfJKjG2pvWDWLns0sMimBPqoT3pioSx5qw0gF6SRxsSarJ0dvvRWay
+         DUZJJGGOXCjeUP9H4quiXASV3wwcKyi3kR59pZPmZJ3L0EBi+ro71dyiHqx6hkttMK7A
+         v+nL0ADO41m4VBo33afWd2Kd2x7g4MlxlkWGIwrv8rNzZFaHLTwWxdhYunqJBOjMjhN/
+         9cpw==
+X-Gm-Message-State: AOAM530GIWrhgLmjNKpZKm1Q98uw5BqNiRRNNHgOr6rEVF8tZSrUQCkS
+        9XfXfYv37eofTTtL43tz9mZIX0mMaxHpSJvmM54=
+X-Google-Smtp-Source: ABdhPJxt7EFnIwL+LdVfknDOokIu3H1OBKy7uZzacZS8PnSHmFx6tCyCijFpf5OcXDQzHrvbB5Nz18inr1afODxxbsg=
+X-Received: by 2002:a2e:9655:: with SMTP id z21mr1557918ljh.486.1613163908673;
+ Fri, 12 Feb 2021 13:05:08 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzZ60LNPpWL6z566hCCF1JkJC=-nZpqg7JQGaHp0rJYGhg@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+References: <20210212183107.50963-1-songliubraving@fb.com>
+In-Reply-To: <20210212183107.50963-1-songliubraving@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 12 Feb 2021 13:04:56 -0800
+Message-ID: <CAADnVQKz8fzvVfqozE2QePjXk4bG8gyTow8Nm+CRYcWM7pf6DA@mail.gmail.com>
+Subject: Re: [PATCH v7 bpf-next 0/3] introduce bpf_iter for task_vma
+To:     Song Liu <songliubraving@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-mm <linux-mm@kvack.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 12, 2021 at 11:48:46AM -0800, Andrii Nakryiko wrote:
-> On Thu, Feb 11, 2021 at 5:07 PM Stanislav Fomichev <sdf@google.com> wrote:
-> >
-> > There is what I see after compiling the kernel:
-> 
-> typo: This?
-> 
-> >
-> >  # bpf-next...bpf-next/master
-> >  ?? tools/bpf/resolve_btfids/libbpf/
-> >
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > ---
-> 
-> Jiri,
-> 
-> Is this
-> 
-> Fixes: fc6b48f692f8 ("tools/resolve_btfids: Build libbpf and libsubcmd
-> in separate directories")
+On Fri, Feb 12, 2021 at 10:31 AM Song Liu <songliubraving@fb.com> wrote:
+>
+> This set introduces bpf_iter for task_vma, which can be used to generate
+> information similar to /proc/pid/maps. Patch 4/4 adds an example that
+> mimics /proc/pid/maps.
+>
+> Current /proc/<pid>/maps and /proc/<pid>/smaps provide information of
+> vma's of a process. However, these information are not flexible enough to
+> cover all use cases. For example, if a vma cover mixed 2MB pages and 4kB
+> pages (x86_64), there is no easy way to tell which address ranges are
+> backed by 2MB pages. task_vma solves the problem by enabling the user to
+> generate customize information based on the vma (and vma->vm_mm,
+> vma->vm_file, etc.).
+>
+> Changes v6 => v7:
+>   1. Let BPF iter program use bpf_d_path without specifying sleepable.
+>      (Alexei)
 
-yes
-
-> 
-> ?
-> 
-> Do we need similar stuff for libsubcmd (what's that, btw?)
-
-as Stanislav said it's only .o files in there, so there's no need
-
-it provides the parse_options functionality
-
-jirka
-
-> 
-> >  tools/bpf/resolve_btfids/.gitignore | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/tools/bpf/resolve_btfids/.gitignore b/tools/bpf/resolve_btfids/.gitignore
-> > index 25f308c933cc..16913fffc985 100644
-> > --- a/tools/bpf/resolve_btfids/.gitignore
-> > +++ b/tools/bpf/resolve_btfids/.gitignore
-> > @@ -1,2 +1,3 @@
-> >  /fixdep
-> >  /resolve_btfids
-> > +/libbpf/
-> > --
-> > 2.30.0.478.g8a0d178c01-goog
-> >
-> 
-
+Applied. Thanks!
