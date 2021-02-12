@@ -2,198 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 853DD3198C9
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 04:30:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E8A83198D3
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 04:33:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229675AbhBLD3s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 22:29:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37960 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbhBLD3o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 22:29:44 -0500
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F706C061574;
-        Thu, 11 Feb 2021 19:29:04 -0800 (PST)
-Received: by mail-il1-x12a.google.com with SMTP id d20so2351601ilo.4;
-        Thu, 11 Feb 2021 19:29:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zSg4XYUt1siEzVhspRTj8dvyyaA+pI87iLzXyWW27do=;
-        b=sItZz8TXTChk3BA9ltftZXjWaz5WwLm6OWAZuIP7kETvC59u2SgL0xy3dlzPLVU7GV
-         9zwmhzcIk5+25r/9sAgUcVWY0/gFvvkx9viMX4HF0EznNd827B9SL54D0Sd06y+fzfeo
-         6I9BhYtcOUalbD/fyS4XI6Usbjf5aMmZCixvh6/UjA2Wqwcf6TH2oJKMPlCEyRB3Klbg
-         gwIa8/gM0+0+B9mbri3Ebo3ftHJ1X0aCTBDblHdAEDrHGcejjaUQwucvN644u2pOXMox
-         BRDg32tVuogfehoYmrxiI6uoFq5P0bMHnRuj0XICeDTdOPcwPFvm9IzDhpx288dsoWj6
-         GMkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zSg4XYUt1siEzVhspRTj8dvyyaA+pI87iLzXyWW27do=;
-        b=dgJmWyU0y6dH2TIJG70QC1ytv3NoLfoG+waZlBTBXlGwc90F/8jgeUZAjLmGXFTUp7
-         ORgYEJ1kMFMHL8eTdqoniu7MOLyxGMdRxV5k6EHdczE/bK1u5+EcC2gDA+KimCkf426a
-         6JOlA3vWZDpSK/AlebD0YHmHAF9KIE3Pr5ZBU92iFOjFqYeQvUyj5xoGC97SHZkVo965
-         0pe6myY93zU2HA7kmjLo3e5yCayq9S2lAeANrn7a0bciqvT2PxiZR95IQF3Mm6+rWcWj
-         h+MZbT41ai8cy8danqKK3OeQQxN2CnKBbtaCvtap6xOxTdfLCABfYZoatBjqlf8uJk+r
-         fLcw==
-X-Gm-Message-State: AOAM53210hForYj2GTtm7rXnlEzdtLdGiseJHD9MFIZG2YSVJfjBN4nd
-        /85hfH6klkpcxTb8YOuwWD66i/KvxDoUBBbtNSc=
-X-Google-Smtp-Source: ABdhPJxT63/7e1Pd7W2/NgRcjFzCOTJLCfMRi4p9vc8hw9LCknJvssFboeQFuSsLC8IiwGuLhjLOtw2NngKM4X393nc=
-X-Received: by 2002:a05:6e02:f48:: with SMTP id y8mr900509ilj.97.1613100543408;
- Thu, 11 Feb 2021 19:29:03 -0800 (PST)
+        id S229894AbhBLDce (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 22:32:34 -0500
+Received: from conssluserg-02.nifty.com ([210.131.2.81]:43160 "EHLO
+        conssluserg-02.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229872AbhBLDc2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 22:32:28 -0500
+Received: from mail-pg1-f173.google.com (mail-pg1-f173.google.com [209.85.215.173]) (authenticated)
+        by conssluserg-02.nifty.com with ESMTP id 11C3VMuq032592;
+        Fri, 12 Feb 2021 12:31:22 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 11C3VMuq032592
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1613100683;
+        bh=UgXhTmEgG78gZGSkfIhvjRiMvprjydlQULXYBgmgRwY=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=huMkwvVBD8rZZGjJgDfZa5Qm+6rA8WYCWlrIa6/dOk3qdbXyHswyd7cmB/gkDddum
+         Ab18lmAwNlHkhZzXurK+ODrtl5znS6XOmfbFuT64KaJHLAtk24mPyeTX+T3A5wCfZN
+         iDSI8e8nnkdEEWa/9X4o7paYgaPE1N0kAK3Z0WX3rjXkoiSaTNXsN6/xTxx6NW1ldi
+         ttxfoMqfo/86LToMCpzwekpawvbmyUb0IPMOa4e67qC1HX4v1sDXPAP3ef8GN9+HSk
+         VF1yfwNK/ny8vlpg3fHZ9ReJGzvLm51aqdPN3qFVrt0GlGYmYaI4X4Tl7j5yWNRCNo
+         opA2GYbyet7vg==
+X-Nifty-SrcIP: [209.85.215.173]
+Received: by mail-pg1-f173.google.com with SMTP id t26so5372451pgv.3;
+        Thu, 11 Feb 2021 19:31:22 -0800 (PST)
+X-Gm-Message-State: AOAM532777x5f8fooT6ruxDCCY29MtfBQf0TcPYFwsPgR/yJ23+QZzsb
+        sPSagyoU+2Fkw7kuR3H1iF9nu7AXkp7qi0Kf9v0=
+X-Google-Smtp-Source: ABdhPJzzPWMVs2TMBJxt0OrXv6GM+B92F7SYM/zwhAicTpz6p2nlB61o0LHKIxVeIwCY/unsmK2MhT1uYOZTlte/LsQ=
+X-Received: by 2002:a63:575e:: with SMTP id h30mr1256230pgm.7.1613100681957;
+ Thu, 11 Feb 2021 19:31:21 -0800 (PST)
 MIME-Version: 1.0
-References: <20210211185220.9753-1-alobakin@pm.me> <20210211185220.9753-7-alobakin@pm.me>
-In-Reply-To: <20210211185220.9753-7-alobakin@pm.me>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Thu, 11 Feb 2021 19:28:52 -0800
-Message-ID: <CAKgT0Uc=_VereGioEPrvfT8-eL6odvs9PwNxywu4=UC1DPvRNQ@mail.gmail.com>
-Subject: Re: [PATCH v5 net-next 06/11] skbuff: remove __kfree_skb_flush()
-To:     Alexander Lobakin <alobakin@pm.me>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Kevin Hao <haokexin@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
+References: <20210205124020.683286-1-jolsa@kernel.org> <20210205124020.683286-5-jolsa@kernel.org>
+ <20210210174451.GA1943051@ubuntu-m3-large-x86> <CAEf4BzZvz4-STv3OQxyNDiFKkrFM-+GOM-yXURzoDtXiRiuT_g@mail.gmail.com>
+ <20210210180215.GA2374611@ubuntu-m3-large-x86> <YCQmCwBSQuj+bi4q@krava>
+ <CAEf4BzbwwtqerxRrNZ75WLd2aHLdnr7wUrKahfT7_6bjBgJ0xQ@mail.gmail.com> <YCUgUlCDGTS85MCO@krava>
+In-Reply-To: <YCUgUlCDGTS85MCO@krava>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Fri, 12 Feb 2021 12:30:45 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAT8oTvLJ9FRsrRB5GUS2K+y2QY36Wshb9x1YE5d=ZyA5g@mail.gmail.com>
+Message-ID: <CAK7LNAT8oTvLJ9FRsrRB5GUS2K+y2QY36Wshb9x1YE5d=ZyA5g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 4/4] kbuild: Add resolve_btfids clean to root
+ clean target
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andriin@fb.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        Yonghong Song <yhs@fb.com>, zhudi <zhudi21@huawei.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Florian Westphal <fw@strlen.de>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
+        Song Liu <songliubraving@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 11, 2021 at 10:57 AM Alexander Lobakin <alobakin@pm.me> wrote:
+On Thu, Feb 11, 2021 at 9:17 PM Jiri Olsa <jolsa@redhat.com> wrote:
 >
-> This function isn't much needed as NAPI skb queue gets bulk-freed
-> anyway when there's no more room, and even may reduce the efficiency
-> of bulk operations.
-> It will be even less needed after reusing skb cache on allocation path,
-> so remove it and this way lighten network softirqs a bit.
+> On Wed, Feb 10, 2021 at 11:26:28AM -0800, Andrii Nakryiko wrote:
 >
-> Suggested-by: Eric Dumazet <edumazet@google.com>
-> Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+> SNIP
+>
+> > > > > Can't reproduce it. It works in all kinds of variants (relative and
+> > > > > absolute O=, clean and not clean trees, etc). Jiri, please check as
+> > > > > well.
+> > > > >
+> > > >
+> > > > Odd, this reproduces for me on a completely clean checkout of bpf-next:
+> > > >
+> > > > $ git clone --depth=1 https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/
+> > > >
+> > > > $ cd bpf-next
+> > > >
+> > > > $ make -s O=build distclean
+> > > > ../../scripts/Makefile.include:4: *** O=/tmp/bpf-next/build/tools/bpf/resolve_btfids does not exist.  Stop.
+> > > >
+> > > > I do not really see how this could be environment related. It seems like
+> > > > this comes from tools/scripts/Makefile.include, where there is no
+> > > > guarantee that $(O) is created before being used like in the main
+> > > > Makefile?
+> > >
+> > > right, we need to handle the case where tools/bpf/resolve_btfids
+> > > does not exist, patch below fixes it for me
+> > >
+> > > jirka
+> > >
+> >
+> > Looks good to me, please send it as a proper patch to bpf-next.
+> >
+> > But I'm curious, why is objtool not doing something like that? Is it
+> > not doing clean at all? Or does it do it in some different way?
+>
+> yes, it's not connected to global make clean
+>
+> >
+> > >
+> > > ---
+> > > diff --git a/Makefile b/Makefile
+> > > index 159d9592b587..ce9685961abe 100644
+> > > --- a/Makefile
+> > > +++ b/Makefile
+> > > @@ -1088,8 +1088,14 @@ endif
+> > >
+> > >  PHONY += resolve_btfids_clean
+> > >
+> > > +resolve_btfids_O = $(abspath $(objtree))/tools/bpf/resolve_btfids
+> > > +
+> > > +# tools/bpf/resolve_btfids directory might not exist
+> > > +# in output directory, skip its clean in that case
+> > >  resolve_btfids_clean:
+> > > -       $(Q)$(MAKE) -sC $(srctree)/tools/bpf/resolve_btfids O=$(abspath $(objtree))/tools/bpf/resolve_btfids clean
+> > > +ifneq (,$(wildcard $(resolve_btfids_O)))
+> >
+> > nit: kind of backwards, usually it's in a `ifneq($var,)` form
+>
+> ok
+>
+> thanks,
+> jirka
+>
 
-I'm wondering if you have any actual gains to show from this patch?
 
-The reason why I ask is because the flushing was happening at the end
-of the softirq before the system basically gave control back over to
-something else. As such there is a good chance for the memory to be
-dropped from the cache by the time we come back to it. So it may be
-just as expensive if not more so than accessing memory that was just
-freed elsewhere and placed in the slab cache.
+I expected this kind of mess
+when I saw 33a57ce0a54d498275f432db04850001175dfdfa
 
-> ---
->  include/linux/skbuff.h |  1 -
->  net/core/dev.c         |  7 +------
->  net/core/skbuff.c      | 12 ------------
->  3 files changed, 1 insertion(+), 19 deletions(-)
->
-> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> index 0a4e91a2f873..0e0707296098 100644
-> --- a/include/linux/skbuff.h
-> +++ b/include/linux/skbuff.h
-> @@ -2919,7 +2919,6 @@ static inline struct sk_buff *napi_alloc_skb(struct napi_struct *napi,
->  }
->  void napi_consume_skb(struct sk_buff *skb, int budget);
->
-> -void __kfree_skb_flush(void);
->  void __kfree_skb_defer(struct sk_buff *skb);
->
->  /**
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 321d41a110e7..4154d4683bb9 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -4944,8 +4944,6 @@ static __latent_entropy void net_tx_action(struct softirq_action *h)
->                         else
->                                 __kfree_skb_defer(skb);
->                 }
-> -
-> -               __kfree_skb_flush();
->         }
->
->         if (sd->output_queue) {
-> @@ -7012,7 +7010,6 @@ static int napi_threaded_poll(void *data)
->                         __napi_poll(napi, &repoll);
->                         netpoll_poll_unlock(have);
->
-> -                       __kfree_skb_flush();
->                         local_bh_enable();
->
->                         if (!repoll)
 
-So it looks like this is the one exception to my comment above. Here
-we should probably be adding a "if (!repoll)" before calling
-__kfree_skb_flush().
+The tools/ directory is a completely different world
+governed by a different build system
+(no, not a build system, but a collection of adhoc makefile code)
 
-> @@ -7042,7 +7039,7 @@ static __latent_entropy void net_rx_action(struct softirq_action *h)
->
->                 if (list_empty(&list)) {
->                         if (!sd_has_rps_ipi_waiting(sd) && list_empty(&repoll))
-> -                               goto out;
-> +                               return;
->                         break;
->                 }
->
-> @@ -7069,8 +7066,6 @@ static __latent_entropy void net_rx_action(struct softirq_action *h)
->                 __raise_softirq_irqoff(NET_RX_SOFTIRQ);
->
->         net_rps_action_and_irq_enable(sd);
-> -out:
-> -       __kfree_skb_flush();
->  }
->
->  struct netdev_adjacent {
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index 1c6f6ef70339..4be2bb969535 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -838,18 +838,6 @@ void __consume_stateless_skb(struct sk_buff *skb)
->         kfree_skbmem(skb);
->  }
->
-> -void __kfree_skb_flush(void)
-> -{
-> -       struct napi_alloc_cache *nc = this_cpu_ptr(&napi_alloc_cache);
-> -
-> -       /* flush skb_cache if containing objects */
-> -       if (nc->skb_count) {
-> -               kmem_cache_free_bulk(skbuff_head_cache, nc->skb_count,
-> -                                    nc->skb_cache);
-> -               nc->skb_count = 0;
-> -       }
-> -}
-> -
->  static inline void _kfree_skb_defer(struct sk_buff *skb)
->  {
->         struct napi_alloc_cache *nc = this_cpu_ptr(&napi_alloc_cache);
-> --
-> 2.30.1
->
->
+
+All the other programs used during the kernel build
+are located under scripts/, and can be built with
+a simple syntax, and cleaned up correctly.
+It is simple, clean and robust.
+
+objtool is the first alien that opt out Kbuild,
+and this is the second one.
+
+
+It is scary to mix up two different things,
+which run in different working directories.
+
+See, this is wired up in the top Makefile
+in an ugly way, and you are struggling
+in suppressing issues, where you can never
+do it in the right way.
+
+
+
+-- 
+Best Regards
+Masahiro Yamada
