@@ -2,232 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 270A7319F78
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 14:12:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96100319FF7
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 14:38:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232045AbhBLNHH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 08:07:07 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:24972 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232021AbhBLNG5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 08:06:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1613135216; x=1644671216;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=wem8VWP1r4deBj6bYzYai383jsYUEwEf4qxZfo8ZsX4=;
-  b=D+WjCn7o3q/Bo8qyl1GqZU2Ogro3YHmEJJySzYKgqVrY2Nj3tC0hgL+N
-   dyJFsAp4gCL+Xh0pQRQBC3NW1Gk5lkYF8xCMABbhnz0nzbYkM0+t5q8iN
-   q/8AkeB6GqtLDUHdcTEn0LWf/1RITWP3EwJiTO73U559XRMof/EzEjLS3
-   2W24enpIfnjfgas/jMoWefpl65JhAHhZICgrB9hn2uLiVysTJbAK1frXC
-   Y7aRhHVSnwRz7UXJb2ltTRgw720EmXvXSOCSJkNYq963D3GSKRHehGgtK
-   0pAY51oUp3a0WLiFp3TNuGlexjhFEAA/AWS9DoSjv1IGH99QO9Ko4RMMQ
-   A==;
-IronPort-SDR: UA3b4W1c0SlI9aKmkIjd+jY1LFF7qGeq/5N6cNleHFkJgTI1Nb3gEtW7qkr6vL3LEHB1m1e2q+
- l8+EMK1xP6dLCDqD5pYM9dr1wfDNACiJC/ri3+nnnXR0iTDLi3V+1xFoIvsX/lys01UfEPsjQp
- FrgHn542jIcnh7IEToG5oMrQcL5bTaCxLbArIzatyNusIODdO4FZ4fpM81S77KPdLl7eXUR+G0
- mTAVDFveQmMGjQ5/OrnluvmIvgLBoGWMWFy0zFT03elcI/R9fPGpktLjhBvcD8sW6pylNzOkCs
- 7dY=
-X-IronPort-AV: E=Sophos;i="5.81,173,1610434800"; 
-   d="scan'208";a="103556667"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Feb 2021 06:05:38 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Fri, 12 Feb 2021 06:06:00 -0700
-Received: from tyr.hegelund-hansen.dk (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Fri, 12 Feb 2021 06:05:58 -0700
-Message-ID: <ffa00a2bf83ffa21ffdc61b380ab800c31f8cf28.camel@microchip.com>
-Subject: Re: [PATCH v14 2/4] phy: Add media type and speed serdes
- configuration interfaces
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>
-CC:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>
-Date:   Fri, 12 Feb 2021 14:05:35 +0100
-In-Reply-To: <04d91f6b-775a-8389-b813-31f7b4a778cb@ti.com>
-References: <20210210085255.2006824-1-steen.hegelund@microchip.com>
-         <20210210085255.2006824-3-steen.hegelund@microchip.com>
-         <04d91f6b-775a-8389-b813-31f7b4a778cb@ti.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3 
+        id S230489AbhBLNhB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 08:37:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:58120 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230228AbhBLNgz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 08:36:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1613136929;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1jHhLaAcfBJzCxQfHqIyt8BMsidiqhhT7lJSyine56A=;
+        b=cUq2utq53ifSG8/ZgOP5GIBOXDYrCbiMIIybgbxoE9zQFVdCmvq8NtiTBc8tG9kdPo0f3/
+        g5iBV9S+HD5gMn4OLPtAx6zeqBOf6lNWXxKEjK0AKour1EFWIttOmjwnZ9vq85dYtcCqP0
+        b+zo2JX7d+oZmZgeylsB5qoDMLnFKKk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-487-UuitoUt1PK-9I8akoSXVmw-1; Fri, 12 Feb 2021 08:35:25 -0500
+X-MC-Unique: UuitoUt1PK-9I8akoSXVmw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 150E4835E3B;
+        Fri, 12 Feb 2021 13:35:23 +0000 (UTC)
+Received: from krava (unknown [10.40.193.141])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 90C1319CB6;
+        Fri, 12 Feb 2021 13:35:19 +0000 (UTC)
+Date:   Fri, 12 Feb 2021 14:35:18 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+Subject: Re: [PATCH bpf-next 4/4] kbuild: Add resolve_btfids clean to root
+ clean target
+Message-ID: <YCaEFgWgNArKfCkQ@krava>
+References: <20210205124020.683286-1-jolsa@kernel.org>
+ <20210205124020.683286-5-jolsa@kernel.org>
+ <20210210174451.GA1943051@ubuntu-m3-large-x86>
+ <CAEf4BzZvz4-STv3OQxyNDiFKkrFM-+GOM-yXURzoDtXiRiuT_g@mail.gmail.com>
+ <20210210180215.GA2374611@ubuntu-m3-large-x86>
+ <YCQmCwBSQuj+bi4q@krava>
+ <CAEf4BzbwwtqerxRrNZ75WLd2aHLdnr7wUrKahfT7_6bjBgJ0xQ@mail.gmail.com>
+ <YCUgUlCDGTS85MCO@krava>
+ <CAK7LNAT8oTvLJ9FRsrRB5GUS2K+y2QY36Wshb9x1YE5d=ZyA5g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK7LNAT8oTvLJ9FRsrRB5GUS2K+y2QY36Wshb9x1YE5d=ZyA5g@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Kishon,
+On Fri, Feb 12, 2021 at 12:30:45PM +0900, Masahiro Yamada wrote:
 
-On Fri, 2021-02-12 at 17:02 +0530, Kishon Vijay Abraham I wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you
-> know the content is safe
-> 
-> Hi Steen,
-> 
-> On 10/02/21 2:22 pm, Steen Hegelund wrote:
-> > Provide new phy configuration interfaces for media type and speed
-> > that
-> > allows allows e.g. PHYs used for ethernet to be configured with
-> > this
-> > information.
-> > 
-> > Signed-off-by: Lars Povlsen <lars.povlsen@microchip.com>
-> > Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
-> > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> > Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> > ---
-> >  drivers/phy/phy-core.c  | 30 ++++++++++++++++++++++++++++++
-> >  include/linux/phy/phy.h | 26 ++++++++++++++++++++++++++
-> >  2 files changed, 56 insertions(+)
-> > 
-> > diff --git a/drivers/phy/phy-core.c b/drivers/phy/phy-core.c
-> > index 71cb10826326..ccb575b13777 100644
-> > --- a/drivers/phy/phy-core.c
-> > +++ b/drivers/phy/phy-core.c
-> > @@ -373,6 +373,36 @@ int phy_set_mode_ext(struct phy *phy, enum
-> > phy_mode mode, int submode)
-> >  }
-> >  EXPORT_SYMBOL_GPL(phy_set_mode_ext);
-> > 
-> > +int phy_set_media(struct phy *phy, enum phy_media media)
-> > +{
-> > +     int ret;
-> > +
-> > +     if (!phy || !phy->ops->set_media)
-> > +             return 0;
-> > +
-> > +     mutex_lock(&phy->mutex);
-> > +     ret = phy->ops->set_media(phy, media);
-> > +     mutex_unlock(&phy->mutex);
-> > +
-> > +     return ret;
-> > +}
-> > +EXPORT_SYMBOL_GPL(phy_set_media);
-> > +
-> > +int phy_set_speed(struct phy *phy, int speed)
-> > +{
-> > +     int ret;
-> > +
-> > +     if (!phy || !phy->ops->set_speed)
-> > +             return 0;
-> > +
-> > +     mutex_lock(&phy->mutex);
-> > +     ret = phy->ops->set_speed(phy, speed);
-> > +     mutex_unlock(&phy->mutex);
-> > +
-> > +     return ret;
-> > +}
-> > +EXPORT_SYMBOL_GPL(phy_set_speed);
-> 
-> Can't speed derived from mode? Do we need a separate set_speed
-> function?
-> 
-> Thanks
-> Kishon
-
-Yes the client will need to be able to choose the speed as needed: 
-e.g. lower than the serdes mode supports, in case the the media or the
-other end is not capable of running that speed.  
-
-An example is a 10G and 25G serdes connected via DAC and as there is no
-inband autoneg, the 25G client would have to manually select 10G speed
-to communicate with its partner.
+SNIP
 
 > 
-> > +
-> >  int phy_reset(struct phy *phy)
-> >  {
-> >       int ret;
-> > diff --git a/include/linux/phy/phy.h b/include/linux/phy/phy.h
-> > index e435bdb0bab3..e4fd69a1faa7 100644
-> > --- a/include/linux/phy/phy.h
-> > +++ b/include/linux/phy/phy.h
-> > @@ -44,6 +44,12 @@ enum phy_mode {
-> >       PHY_MODE_DP
-> >  };
-> > 
-> > +enum phy_media {
-> > +     PHY_MEDIA_DEFAULT,
-> > +     PHY_MEDIA_SR,
-> > +     PHY_MEDIA_DAC,
-> > +};
-> > +
-> >  /**
-> >   * union phy_configure_opts - Opaque generic phy configuration
-> >   *
-> > @@ -64,6 +70,8 @@ union phy_configure_opts {
-> >   * @power_on: powering on the phy
-> >   * @power_off: powering off the phy
-> >   * @set_mode: set the mode of the phy
-> > + * @set_media: set the media type of the phy (optional)
-> > + * @set_speed: set the speed of the phy (optional)
-> >   * @reset: resetting the phy
-> >   * @calibrate: calibrate the phy
-> >   * @release: ops to be performed while the consumer relinquishes
-> > the PHY
-> > @@ -75,6 +83,8 @@ struct phy_ops {
-> >       int     (*power_on)(struct phy *phy);
-> >       int     (*power_off)(struct phy *phy);
-> >       int     (*set_mode)(struct phy *phy, enum phy_mode mode, int
-> > submode);
-> > +     int     (*set_media)(struct phy *phy, enum phy_media media);
-> > +     int     (*set_speed)(struct phy *phy, int speed);
-> > 
-> >       /**
-> >        * @configure:
-> > @@ -215,6 +225,8 @@ int phy_power_off(struct phy *phy);
-> >  int phy_set_mode_ext(struct phy *phy, enum phy_mode mode, int
-> > submode);
-> >  #define phy_set_mode(phy, mode) \
-> >       phy_set_mode_ext(phy, mode, 0)
-> > +int phy_set_media(struct phy *phy, enum phy_media media);
-> > +int phy_set_speed(struct phy *phy, int speed);
-> >  int phy_configure(struct phy *phy, union phy_configure_opts
-> > *opts);
-> >  int phy_validate(struct phy *phy, enum phy_mode mode, int submode,
-> >                union phy_configure_opts *opts);
-> > @@ -344,6 +356,20 @@ static inline int phy_set_mode_ext(struct phy
-> > *phy, enum phy_mode mode,
-> >  #define phy_set_mode(phy, mode) \
-> >       phy_set_mode_ext(phy, mode, 0)
-> > 
-> > +static inline int phy_set_media(struct phy *phy, enum phy_media
-> > media)
-> > +{
-> > +     if (!phy)
-> > +             return 0;
-> > +     return -ENOSYS;
-> > +}
-> > +
-> > +static inline int phy_set_speed(struct phy *phy, int speed)
-> > +{
-> > +     if (!phy)
-> > +             return 0;
-> > +     return -ENOSYS;
-> > +}
-> > +
-> >  static inline enum phy_mode phy_get_mode(struct phy *phy)
-> >  {
-> >       return PHY_MODE_INVALID;
-> > 
+> I expected this kind of mess
+> when I saw 33a57ce0a54d498275f432db04850001175dfdfa
+> 
+> 
+> The tools/ directory is a completely different world
+> governed by a different build system
+> (no, not a build system, but a collection of adhoc makefile code)
+> 
+> 
+> All the other programs used during the kernel build
+> are located under scripts/, and can be built with
+> a simple syntax, and cleaned up correctly.
+> It is simple, clean and robust.
+> 
+> objtool is the first alien that opt out Kbuild,
+> and this is the second one.
+> 
+> 
+> It is scary to mix up two different things,
+> which run in different working directories.
 
+would you see any way out? apart from changing resolve_btfids
+to use Kbuild.. there are some dependencies we'd need to change
+as well and they are used by other tools.. probably it'd end up
+with all or nothing scenario
 
-Thanks for your comments.
+> 
+> See, this is wired up in the top Makefile
+> in an ugly way, and you are struggling
+> in suppressing issues, where you can never
+> do it in the right way.
 
+maybe we could move it out of top makefile into separate one,
+that would handle all the related mess
 
--- 
-BR
-Steen
-
--=-=-=-=-=-=-=-=-=-=-=-=-=-=
-steen.hegelund@microchip.com
+jirka
 
