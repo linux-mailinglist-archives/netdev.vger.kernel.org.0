@@ -2,152 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C236231A80E
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 23:55:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 029F331A7F8
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 23:55:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232660AbhBLWuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 17:50:04 -0500
-Received: from mga02.intel.com ([134.134.136.20]:44262 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232166AbhBLWrc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Feb 2021 17:47:32 -0500
-IronPort-SDR: qmuU+vgelqmtB9ZMA25xYfG42Od6QpQciLTxyNNZhD8nfYrXH6UkenTVorYE7TzsuosohEGvzx
- cHGqQfrbYIJA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9893"; a="169617172"
-X-IronPort-AV: E=Sophos;i="5.81,174,1610438400"; 
-   d="scan'208";a="169617172"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2021 14:39:02 -0800
-IronPort-SDR: CP7Uq27XwNJ9s3k4UEBeQBDf/VePgriPpWXq9BHFedMiEwekHFMOuKckhdAUhTl/A+om2kfnvs
- +wsPl6GUM7mQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,174,1610438400"; 
-   d="scan'208";a="381885389"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga008.fm.intel.com with ESMTP; 12 Feb 2021 14:39:02 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        netdev@vger.kernel.org, sassmann@redhat.com,
-        anthony.l.nguyen@intel.com, bjorn.topel@intel.com,
-        magnus.karlsson@intel.com,
-        Tony Brelinski <tonyx.brelinski@intel.com>
-Subject: [PATCH net-next 11/11] ixgbe: store the result of ixgbe_rx_offset() onto ixgbe_ring
-Date:   Fri, 12 Feb 2021 14:39:52 -0800
-Message-Id: <20210212223952.1172568-12-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210212223952.1172568-1-anthony.l.nguyen@intel.com>
-References: <20210212223952.1172568-1-anthony.l.nguyen@intel.com>
+        id S232345AbhBLWog (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 17:44:36 -0500
+Received: from ssl.serverraum.org ([176.9.125.105]:34535 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232355AbhBLWmA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 17:42:00 -0500
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id CCD5D22802;
+        Fri, 12 Feb 2021 23:40:59 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1613169663;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mEr7rFtIl92i4XGkwR8MY7Q+brTQSUvCVEW26gGEDYU=;
+        b=YQZPWoQHQutDr1xgDMibQPpfTciFnC89xMjtXTjJrflBz52lwGfAuJrTtv+A4XhGdbYw3w
+        rdkFSgNSS0I7pVnvyWPiTPC0F9YRrmr2r9CtlC7F+QwGMRfoLJ7dMmGx04AoKJcxEyX4n/
+        IHhQr1foLW0sQfQUUkzYn39mu3E7aaU=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Fri, 12 Feb 2021 23:40:59 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Antoine Tenart <atenart@kernel.org>,
+        Quentin Schulz <quentin.schulz@bootlin.com>,
+        netdev@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next 1/2] net: phylink: explicitly configure in-band
+ autoneg for PHYs that support it
+In-Reply-To: <20210212172341.3489046-2-olteanv@gmail.com>
+References: <20210212172341.3489046-1-olteanv@gmail.com>
+ <20210212172341.3489046-2-olteanv@gmail.com>
+User-Agent: Roundcube Webmail/1.4.10
+Message-ID: <eb7b911f4fe008e1412058f219623ee2@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Am 2021-02-12 18:23, schrieb Vladimir Oltean:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> Currently Linux has no control over whether a MAC-to-PHY interface uses
+> in-band signaling or not, even though phylink has the
+> 	managed = "in-band-status";
+> property which denotes that the MAC expects in-band signaling to be 
+> used.
+> 
+> The problem is really that if the in-band signaling is configurable in
+> both the PHY and the MAC, there is a risk that they are out of sync
+> unless phylink manages them both. Most if not all in-band autoneg state
+> machines follow IEEE 802.3 clause 37, which means that they will not
+> change the operating mode of the SERDES lane from control to data mode
+> unless in-band AN completed successfully. Therefore traffic will not
+> work.
+> 
+> It is particularly unpleasant that currently, we assume that PHYs which
+> have configurable in-band AN come pre-configured from a prior boot 
+> stage
+> such as U-Boot, because once the bootloader changes, all bets are off.
 
-Output of ixgbe_rx_offset() is based on ethtool's priv flag setting, which
-when changed, causes PF reset (disables napi, frees irqs, loads
-different Rx mem model, etc.). This means that within napi its result is
-constant and there is no reason to call it per each processed frame.
+Fun fact, now it may be the other way around. If the bootloader doesn't
+configure it and the PHY isn't reset by the hardware, it won't work in
+the bootloader after a reboot ;)
 
-Add new 'rx_offset' field to ixgbe_ring that is meant to hold the
-ixgbe_rx_offset() result and use it within ixgbe_clean_rx_irq().
-Furthermore, use it within ixgbe_alloc_mapped_page().
+> Let's introduce a new PHY driver method for configuring in-band 
+> autoneg,
+> and make phylink be its first user. The main PHY library does not call
+> phy_config_inband_autoneg, because it does not know what to configure 
+> it
+> to. Presumably, non-phylink drivers can also call 
+> phy_config_inband_autoneg
+> individually.
 
-Last but not least, un-inline the function of interest as it lives in .c
-file so let compiler do the decision about the inlining.
+If you disable aneg between MAC and PHY, what would be the actual speed
+setting/duplex mode then? I guess it have to match the external speed?
 
-Reviewed-by: Björn Töpel <bjorn.topel@intel.com>
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ixgbe/ixgbe.h      |  1 +
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 15 ++++++++-------
- 2 files changed, 9 insertions(+), 7 deletions(-)
+I'm trying this on the AT8031. I've removed 'managed = 
+"in-band-status";'
+for the PHY. Confirmed that it won't work and then I've implemented your
+new callback. That will disable the SGMII aneg (which is done via the
+BMCR of fiber page if I'm not entirely mistaken); ethernet will then
+work again. But only for gigabit. I presume because the speed setting
+of the SGMII link is set to gigabit.
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe.h b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-index de0fc6ecf491..a604552fa634 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-@@ -349,6 +349,7 @@ struct ixgbe_ring {
- 		struct ixgbe_tx_queue_stats tx_stats;
- 		struct ixgbe_rx_queue_stats rx_stats;
- 	};
-+	u16 rx_offset;
- 	struct xdp_rxq_info xdp_rxq;
- 	struct xsk_buff_pool *xsk_pool;
- 	u16 ring_idx;		/* {rx,tx,xdp}_ring back reference idx */
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index 237e09342f28..fae84202d870 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -1520,7 +1520,7 @@ static inline void ixgbe_rx_checksum(struct ixgbe_ring *ring,
- 	}
- }
- 
--static inline unsigned int ixgbe_rx_offset(struct ixgbe_ring *rx_ring)
-+static unsigned int ixgbe_rx_offset(struct ixgbe_ring *rx_ring)
- {
- 	return ring_uses_build_skb(rx_ring) ? IXGBE_SKB_PAD : 0;
- }
-@@ -1561,7 +1561,7 @@ static bool ixgbe_alloc_mapped_page(struct ixgbe_ring *rx_ring,
- 
- 	bi->dma = dma;
- 	bi->page = page;
--	bi->page_offset = ixgbe_rx_offset(rx_ring);
-+	bi->page_offset = rx_ring->rx_offset;
- 	page_ref_add(page, USHRT_MAX - 1);
- 	bi->pagecnt_bias = USHRT_MAX;
- 	rx_ring->rx_stats.alloc_rx_page++;
-@@ -2001,8 +2001,8 @@ static void ixgbe_add_rx_frag(struct ixgbe_ring *rx_ring,
- #if (PAGE_SIZE < 8192)
- 	unsigned int truesize = ixgbe_rx_pg_size(rx_ring) / 2;
- #else
--	unsigned int truesize = ring_uses_build_skb(rx_ring) ?
--				SKB_DATA_ALIGN(IXGBE_SKB_PAD + size) :
-+	unsigned int truesize = rx_ring->rx_offset ?
-+				SKB_DATA_ALIGN(rx_ring->rx_offset + size) :
- 				SKB_DATA_ALIGN(size);
- #endif
- 	skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags, rx_buffer->page,
-@@ -2249,8 +2249,8 @@ static unsigned int ixgbe_rx_frame_truesize(struct ixgbe_ring *rx_ring,
- #if (PAGE_SIZE < 8192)
- 	truesize = ixgbe_rx_pg_size(rx_ring) / 2; /* Must be power-of-2 */
- #else
--	truesize = ring_uses_build_skb(rx_ring) ?
--		SKB_DATA_ALIGN(IXGBE_SKB_PAD + size) +
-+	truesize = rx_ring->rx_offset ?
-+		SKB_DATA_ALIGN(rx_ring->rx_offset + size) +
- 		SKB_DATA_ALIGN(sizeof(struct skb_shared_info)) :
- 		SKB_DATA_ALIGN(size);
- #endif
-@@ -2293,6 +2293,7 @@ static int ixgbe_clean_rx_irq(struct ixgbe_q_vector *q_vector,
- 	unsigned int mss = 0;
- #endif /* IXGBE_FCOE */
- 	u16 cleaned_count = ixgbe_desc_unused(rx_ring);
-+	unsigned int offset = rx_ring->rx_offset;
- 	unsigned int xdp_xmit = 0;
- 	struct xdp_buff xdp;
- 
-@@ -2330,7 +2331,6 @@ static int ixgbe_clean_rx_irq(struct ixgbe_q_vector *q_vector,
- 
- 		/* retrieve a buffer from the ring */
- 		if (!skb) {
--			unsigned int offset = ixgbe_rx_offset(rx_ring);
- 			unsigned char *hard_start;
- 
- 			hard_start = page_address(rx_buffer->page) +
-@@ -6578,6 +6578,7 @@ int ixgbe_setup_rx_resources(struct ixgbe_adapter *adapter,
- 
- 	rx_ring->next_to_clean = 0;
- 	rx_ring->next_to_use = 0;
-+	rx_ring->rx_offset = ixgbe_rx_offset(rx_ring);
- 
- 	/* XDP RX-queue info */
- 	if (xdp_rxq_info_reg(&rx_ring->xdp_rxq, adapter->netdev,
--- 
-2.26.2
-
+-michael
