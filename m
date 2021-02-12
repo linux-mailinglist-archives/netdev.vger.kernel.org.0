@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F423831A65E
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 22:00:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B5A331A669
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 22:00:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231892AbhBLU6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 15:58:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36430 "EHLO
+        id S232080AbhBLU7Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 15:59:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230047AbhBLU6I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 15:58:08 -0500
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1F96C061574;
-        Fri, 12 Feb 2021 12:57:27 -0800 (PST)
-Received: by mail-pl1-x62d.google.com with SMTP id d13so491033plg.0;
-        Fri, 12 Feb 2021 12:57:27 -0800 (PST)
+        with ESMTP id S231865AbhBLU60 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 15:58:26 -0500
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D19AC061756;
+        Fri, 12 Feb 2021 12:57:46 -0800 (PST)
+Received: by mail-pl1-x634.google.com with SMTP id x9so477863plb.5;
+        Fri, 12 Feb 2021 12:57:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DEUkvm57SUfZ67LkdaZx+i3F1trO96ZGOnr2uOFwqVY=;
-        b=ss6Apm3cg6mbHhc6Hm7Lwt419zpbPZRXJAPmFYAwyHAGq4A3iJklE/7wMZSIMzBnjy
-         iM1T8LWVZAw/c5G0ICTq3W4bit+D7JOtHLVKA2wqJAZ7GS42+hCHB7PBaqWoxe5BHePU
-         P6QKiMf6ndA888cxvF2GLfETG/0C2MBhEuEjlqkXMWeHvtvA6pMX67XLZJcjVyQApdSM
-         9hd5rUeZkIlnac+gLLnygC7PGW3vz1ZhwTJLV21VkWhNezXhrjcTcEmrZWN8qJ8thfCb
-         s4uYRz64ejU9GU78px7OjoNJi6F24B1QIwasWX2lcHqXXc4NX/0L0C5fYrm1KTiX1rF2
-         7C3w==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=dwmciB3pTNwaIWJFsxZaCQR8SUWVkirrLZDjakBcESE=;
+        b=ZipO9dHyac6j5wc6ijVotyxnuKsojDI+CYsjl0YR1C17ksYUpSc+RNSk6Jhsxlpe7L
+         Ng4qsNjEVbavsvu/gUrd/92lagnrgAJJdeS/IX8eYSBbRyxWcAEMa6pmSXvwNkNjgYCj
+         1t4/WB/88nGTzb/cVHZAe53loIvuZ5dFwb7CbneMDzbDh0Oae4sbQHm/cuO6D1czNEgd
+         hYbJC9IoYz0ZKNgu7DpjMXKQQ7NgRGtJLtwcFaE6SvgTocFy4NYT89BPVm/3W2DXx8nY
+         H4/ZfF0Umdjou07AK8U37tkHwUW77QkT1kA/xNIwabKaLBw56YMhn0osrrNAqrYV08FS
+         gJfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DEUkvm57SUfZ67LkdaZx+i3F1trO96ZGOnr2uOFwqVY=;
-        b=Ys66YNhNbTqcecXl8mkKTvSr2XFwahzUpwr7WB69HiYDHhYtCty5bNkMnNM0lNgsrq
-         qK9sc7FF6wYo3rPKMuAe1Gcyv1jtLYiAqCaS0nAhqrIgAGOUD6Siv6pFfp4OfauRIrHc
-         To2G0G4+eNqCyi5idmvAYZ3THl26ZZ5owzkOv7aeuw02jtyXOhZANuWV9GCa+A14m6kV
-         ka4uP7wSETbuoFV0gUdbj7RQdn9Fd20w+igS9twQEm6BiDgySfD/ach7TpUtIJeW2B5h
-         Hb7conef0H66mrbVDoyhOdU9KIddtKToWoJLspGL/yMPj/sTlCCdWt4ge1lLSHMiiYzY
-         c/XQ==
-X-Gm-Message-State: AOAM5325EBQp1ZsPnjSVG/06r89ZBXHVvIhqjh6l3rllAMUbBX2LxqL4
-        s/m6M8dKwrljLqcLR0OiSMMt4jdzyok=
-X-Google-Smtp-Source: ABdhPJzBHsu05uhppEkdg7JIPB8izrs0CVVL6kh0Or7j6BXRMc5kczp/fxp/0w3gTk9PuFZGuAsm3Q==
-X-Received: by 2002:a17:90a:3905:: with SMTP id y5mr3702891pjb.203.1613163447137;
-        Fri, 12 Feb 2021 12:57:27 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=dwmciB3pTNwaIWJFsxZaCQR8SUWVkirrLZDjakBcESE=;
+        b=ZoD8h/IEKJ1eWkcw5CE6PfGa8o1D6jngGlUtR9SFvRAoA+ae4Qkma3p+GGQa1ZNipn
+         Nh6gPSKFF8lROwvb143f8hEDxJR7b7ONuRkJHsxxLttmWlMzaza8hfOVMzYFMgEaxrXc
+         xHcI53ZCRJzKNAj1xOUlyZnEyuEmNGb83gKShVkIhUHIOn7ql+OTjXxOTFkCqmjAYfA1
+         WIfuRt0tg8II8hAr3GuubSpeybqyXJqTvXW/vZwIK1EsecTaPj3iTmi9Mi2Tk5oDgnN8
+         3MJ0SyTDAkOOxz0vhiOl5QqVkd2KDvsZggzwpbjUp9mUMz+HAOhz/lG7uj3sBwc8vyB9
+         5duA==
+X-Gm-Message-State: AOAM531dwVIqlyimdeARwCrzzqUn6WKs4BcHKuI+awTcP2LPCTco8aGz
+        B8nBRXyMntvtEeCnWUtvbZuS3hy2Huc=
+X-Google-Smtp-Source: ABdhPJxKLchfNaCa0OZyevwo53CBHBtpJROnAgssY4gVPrWZiARfvtxtGOEsECETqWc1EUu4NVl9kw==
+X-Received: by 2002:a17:90a:67ca:: with SMTP id g10mr4159160pjm.166.1613163455250;
+        Fri, 12 Feb 2021 12:57:35 -0800 (PST)
 Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id a141sm9891628pfa.189.2021.02.12.12.57.25
+        by smtp.gmail.com with ESMTPSA id a141sm9891628pfa.189.2021.02.12.12.57.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Feb 2021 12:57:26 -0800 (PST)
+        Fri, 12 Feb 2021 12:57:28 -0800 (PST)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -59,31 +59,61 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         bcm-kernel-feedback-list@broadcom.com (open list:BROADCOM ETHERNET PHY
         DRIVERS), linux-kernel@vger.kernel.org (open list),
         olteanv@gmail.com, michael@walle.cc
-Subject: [PATCH net-next 0/3] net: phy: broadcom: APD improvements
-Date:   Fri, 12 Feb 2021 12:57:18 -0800
-Message-Id: <20210212205721.2406849-1-f.fainelli@gmail.com>
+Subject: [PATCH net-next 1/3] net: phy: broadcom: Remove unused flags
+Date:   Fri, 12 Feb 2021 12:57:19 -0800
+Message-Id: <20210212205721.2406849-2-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210212205721.2406849-1-f.fainelli@gmail.com>
+References: <20210212205721.2406849-1-f.fainelli@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series cleans up the brcmphy.h header and its numerous unused
-phydev->dev_flags, fixes the RXC/TXC clock disabling bit and allows the
-BCM54210E PHY to utilize APD.
+We have a number of unused flags defined today and since we are scarce
+on space and may need to introduce new flags in the future remove and
+shift every existing flag down into a contiguous assignment. No
+functional change.
 
-Thanks!
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ include/linux/brcmphy.h | 22 +++++++++-------------
+ 1 file changed, 9 insertions(+), 13 deletions(-)
 
-Florian Fainelli (3):
-  net: phy: broadcom: Remove unused flags
-  net: phy: broadcom: Fix RXC/TXC auto disabling
-  net: phy: broadcom: Allow BCM54210E to configure APD
-
- drivers/net/phy/broadcom.c |  1 +
- include/linux/brcmphy.h    | 24 ++++++++++--------------
- 2 files changed, 11 insertions(+), 14 deletions(-)
-
+diff --git a/include/linux/brcmphy.h b/include/linux/brcmphy.h
+index de9430d55c90..da7bf9dfef5b 100644
+--- a/include/linux/brcmphy.h
++++ b/include/linux/brcmphy.h
+@@ -61,19 +61,15 @@
+ #define PHY_BCM_OUI_5			0x03625e00
+ #define PHY_BCM_OUI_6			0xae025000
+ 
+-#define PHY_BCM_FLAGS_MODE_COPPER	0x00000001
+-#define PHY_BCM_FLAGS_MODE_1000BX	0x00000002
+-#define PHY_BCM_FLAGS_INTF_SGMII	0x00000010
+-#define PHY_BCM_FLAGS_INTF_XAUI		0x00000020
+-#define PHY_BRCM_WIRESPEED_ENABLE	0x00000100
+-#define PHY_BRCM_AUTO_PWRDWN_ENABLE	0x00000200
+-#define PHY_BRCM_RX_REFCLK_UNUSED	0x00000400
+-#define PHY_BRCM_STD_IBND_DISABLE	0x00000800
+-#define PHY_BRCM_EXT_IBND_RX_ENABLE	0x00001000
+-#define PHY_BRCM_EXT_IBND_TX_ENABLE	0x00002000
+-#define PHY_BRCM_CLEAR_RGMII_MODE	0x00004000
+-#define PHY_BRCM_DIS_TXCRXC_NOENRGY	0x00008000
+-#define PHY_BRCM_EN_MASTER_MODE		0x00010000
++#define PHY_BCM_FLAGS_MODE_1000BX	0x00000001
++#define PHY_BRCM_AUTO_PWRDWN_ENABLE	0x00000002
++#define PHY_BRCM_RX_REFCLK_UNUSED	0x00000004
++#define PHY_BRCM_STD_IBND_DISABLE	0x00000008
++#define PHY_BRCM_EXT_IBND_RX_ENABLE	0x00000010
++#define PHY_BRCM_EXT_IBND_TX_ENABLE	0x00000020
++#define PHY_BRCM_CLEAR_RGMII_MODE	0x00000040
++#define PHY_BRCM_DIS_TXCRXC_NOENRGY	0x00000080
++#define PHY_BRCM_EN_MASTER_MODE		0x00000100
+ 
+ /* Broadcom BCM7xxx specific workarounds */
+ #define PHY_BRCM_7XXX_REV(x)		(((x) >> 8) & 0xff)
 -- 
 2.25.1
 
