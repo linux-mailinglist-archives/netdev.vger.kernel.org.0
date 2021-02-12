@@ -2,43 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B15731982A
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 03:02:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C90A231982D
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 03:06:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229647AbhBLCCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 21:02:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40302 "EHLO mail.kernel.org"
+        id S229674AbhBLCFm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 21:05:42 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40430 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229547AbhBLCCG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 11 Feb 2021 21:02:06 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A984D64DB1;
-        Fri, 12 Feb 2021 02:01:24 +0000 (UTC)
+        id S229469AbhBLCFl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Feb 2021 21:05:41 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7218D64DD1;
+        Fri, 12 Feb 2021 02:05:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613095285;
-        bh=bjSmt4LcyaNgriplnN4Wf43bH+zYvXujX+y93awse0E=;
+        s=k20201202; t=1613095500;
+        bh=dUQnAWDXK2sSMA87bJerv0/skVCkMl0cu43LXgrw0Ws=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=e32EY8WIPUY9JdiSsg5LSGBrQ5ZFlFW2jq90sEbbmhvEyDpEUyYyTfTHNLrYlY7nl
-         CPLka4ZEwq5A3R1RvWjtWcvCTQrcfI+90z8JYi44SES3zLo5sIJy5/AeYBM1iblWmW
-         P3j6qkrl+AbJ9wvLDGwdvcRkszrSnboCoGG/a8dUcrF/KuddJTxrQbCHAiAuH246GS
-         S9Quy+KltMZ+Ix/AtgvnYM4gMlV9T/ih0jq/UTrvm336PgcPy7Ef/ljlGfBQhmyydL
-         0/F4Gh4HMBYMFy2yCwK6lv3qSBKiTOWUixN0IOT2ZWJfzTzt0MEa0hFpWkVPfirU+I
-         SUzwPuQk/aRvQ==
-Date:   Thu, 11 Feb 2021 18:01:23 -0800
+        b=rWPCwnEx7g1zHU0S+nJcaKczyAIuMBb3z615Ba1SvdFxjO0T3Cj1MSHw7uNNj5cmi
+         A8AnGwfTNun1vwJrZdCruYkaPf9lOcMwAdOXqpwrPKRoRhnbLPoYO/imHPNiHGBbqf
+         xzP1BsQtnA6LO2vd3idzFOi4sNS2wL3y4i8wGRNnHSLwJsHbvusJs73LqjMGPfRo5v
+         vZFC2w1WpjqrYIHA8+sF12HEp/QZ0TqoOKZIF53wrVU5q8SMRh0Kag+j2UTf0QmcgL
+         QOHL0srZPv1iPObXidm2Ck4ABgnAhH0vzb8oAQOHxA+lcWoP/Xuk8QnysdEqq7Tb31
+         2bs6M5C3gCx9A==
+Date:   Thu, 11 Feb 2021 18:04:59 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tariq Toukan <tariqt@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Boris Pismenny <borisp@nvidia.com>, <netdev@vger.kernel.org>,
-        Tariq Toukan <ttoukan.linux@gmail.com>,
-        Moshe Shemesh <moshe@nvidia.com>,
-        "Maxim Mikityanskiy" <maximmi@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        "John Fastabend" <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: Re: [PATCH net-next 0/3] Compile-flag for sock RX queue mapping
-Message-ID: <20210211180123.12f508b4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210211113553.8211-1-tariqt@nvidia.com>
-References: <20210211113553.8211-1-tariqt@nvidia.com>
+To:     Sharath Chandra Vurukala <sharathv@codeaurora.org>
+Cc:     davem@davemloft.net, elder@kernel.org, cpratapa@codeaurora.org,
+        subashab@codeaurora.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/3] net:ethernet:rmnet:Support for downlink MAPv5 csum
+ offload
+Message-ID: <20210211180459.500654b4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1613079324-20166-3-git-send-email-sharathv@codeaurora.org>
+References: <1613079324-20166-1-git-send-email-sharathv@codeaurora.org>
+        <1613079324-20166-3-git-send-email-sharathv@codeaurora.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -46,11 +42,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 11 Feb 2021 13:35:50 +0200 Tariq Toukan wrote:
-> Socket's RX queue mapping logic is useful also for non-XPS use cases.
-> This series breaks the dependency between the two, introducing a new
-> kernel config flag SOCK_RX_QUEUE_MAPPING.
-> 
-> Here we select this new kernel flag from TLS_DEVICE, as well as XPS.
+On Fri, 12 Feb 2021 03:05:23 +0530 Sharath Chandra Vurukala wrote:
+> +/* MAP CSUM headers */
+> +struct rmnet_map_v5_csum_header {
+> +	u8  next_hdr:1;
+> +	u8  header_type:7;
+> +	u8  hw_reserved:5;
+> +	u8  priority:1;
+> +	u8  hw_reserved_bit:1;
+> +	u8  csum_valid_required:1;
+> +	__be16 reserved;
+> +} __aligned(1);
 
-Acked-by: Jakub Kicinski <kuba@kernel.org>
+Will this work on big endian?
