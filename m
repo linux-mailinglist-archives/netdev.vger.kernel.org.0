@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67A5831A2A4
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 17:27:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BB5331A2D0
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 17:37:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230182AbhBLQZt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 11:25:49 -0500
-Received: from mail-eopbgr20076.outbound.protection.outlook.com ([40.107.2.76]:39985
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        id S231210AbhBLQg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 11:36:27 -0500
+Received: from mail-eopbgr70058.outbound.protection.outlook.com ([40.107.7.58]:30947
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230053AbhBLQZ0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Feb 2021 11:25:26 -0500
+        id S229602AbhBLQeW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Feb 2021 11:34:22 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fnb9bMQfB9wx1ouWumo3hH3PKxlejyh5N6cnrdD2amoQthI7tn9qrfhNoTM25Y6LfALHLNwq9sV/m/YU08rbzTuX3v4AETuJxabtYn0UkNAYZrBYfXmE5mcEIntkfrMtqfSF0Yrcu99JS15UL5Pu3vYtpBs7MwAYAOZA7MLc40aJ1uk7+0hzEZLTuPJOGrT86KWSr7W4Rjzq78QHeuWKF8OmCfQOiaixNdmJNvrebBckTx6rdDoVucPCx2C3hN/AFQars5uf47XfREoum6le+T8dhQEv85nvRQotFpd0PHinhwjcPk5eiSKe1Q6fdmI+wDDeTUGR6VVg8lCCoAaiPA==
+ b=YCjHkvLQ63jf3XYh8E1VjlX9ysfiM8TmdIgRDM0ra6jrxITus/42NeWw/aG49z0tQ9piTJCU2obiQefeXNTSexalKiqywt/2n1AE97jfU27MVKSPRbw5O3hsN4c3PN9swZINr9TJtgOvXhsg7HeT/UGbamdDSIIlIAde6pCdfE71xSMatRfliI+7EudnbUBUGUtlX5vcVL+B1MJPQ7Z9CXE5d5F0CZ99Mocwnj105jPJl9O08JUbg9HjDkAIlLEOJv30WLQ6fsGevP/QmXAqTWBFXq9H3T8mo7iPtbftR+dbBVFrBqPTREZvgV6HCYqV/l3VipM8QuNVsyX9gNwk7g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aIYUw4gS86+eyIxNhl7/Bp42sAfmzvRZWXnZ393SVWI=;
- b=gDKXuZ6n6CTOlkZIO4d5xy4YRV/oBoe6JQYQD5+RVGQEHkhHkvDdXAJQPAYdhLOhvypDoeAN8AZm7upLyKGyWxDirxl/cQi5KCxDtrARAGtpbak4sawFcUit5PMdqm5j9d1ep9NFJxrav5viMLkLBSiYM3VWnmP3NAJESIvuo2djI5msy37Owh6DNLAvAjYQMFqb0eq0p0A8xQz6wiJb56HTSK5Taht947MwanaFToGOyrbrhi3shWwBITNWbgxO+kyf6TnGPZBktRAfENbJk9cuUSnDPnlXtze122c16SULaxLwEDqazxm12PjLDgefmzqXAb1w4vnYIr2yiCl/qg==
+ bh=uFXlEjGDjw+/NgrWW6rUIoZ+ml8+DpBPQVhHMRUPv7w=;
+ b=MFSISoeGgPtDjElnP/MO1kxpyPiIZn79QeJRyWDfM3CjmXrrGi+kZTK853PBVVg+piDvaBEyjQyw+zBCYxCdec2OKnmXeMHHor9b/CjqWIob+Bjm1YBazj2AFvrx4NRMXmcADWoYFbYB2Zt4vyy5wrFjGvD9TdpI3Ez+BrOo3dmlAe8yWvUUQ/GiTld/hoGEbwb0wafXS6b1VfSVCkkF2xzU28cJWu31zsn6yzGheTzmu+asnUEJCxGyNNHd0Au9ilfti1uQreO4J7XiImLHv+WTdtmKPfNhToTeoMUk7W6B33aP0RDm0kUJpkE7SwcWjgJcS1xk782esrVXg0qZqg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aIYUw4gS86+eyIxNhl7/Bp42sAfmzvRZWXnZ393SVWI=;
- b=FLv6qGg8KbAbNGK1L0Xi91QPg1rfOUUSqSAC1EQUsMa+cGMRwwbm7ux5bsPYdkD4KJL5dmZx1fr+TLO71nfpc71fXzd5lH2JdqdP/uPa1IEpurWj3v+kJz9kDSXStj2SbkJML284H2TIP7INYfQglSgIN2XyJx6GkowSPScuftM=
+ bh=uFXlEjGDjw+/NgrWW6rUIoZ+ml8+DpBPQVhHMRUPv7w=;
+ b=NmqmyGUVjTXIryuzGR/mb3IZV7/7mC5avRVyYXC03dxBIuxluvDV+Ly5EJo3n3dtClPHcsjA1YXPIFzMxigu3cPS36RFZuZjYbYOiQ7IACFt4Xwm8v67MEXetdWj/qofVU+MbYBYn0iu2ltbiqo+0g7TxC2Kto3Bwu7l/GV608o=
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VE1PR04MB6638.eurprd04.prod.outlook.com (2603:10a6:803:119::15) with
+ by VI1PR04MB5854.eurprd04.prod.outlook.com (2603:10a6:803:e2::23) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.29; Fri, 12 Feb
- 2021 16:24:37 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.30; Fri, 12 Feb
+ 2021 16:32:42 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3df3:2eba:51bb:58d7]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3df3:2eba:51bb:58d7%7]) with mapi id 15.20.3846.029; Fri, 12 Feb 2021
- 16:24:37 +0000
+ 16:32:42 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     Bjarni Jonasson <bjarni.jonasson@microchip.com>
 CC:     Andrew Lunn <andrew@lunn.ch>,
@@ -48,16 +48,15 @@ CC:     Andrew Lunn <andrew@lunn.ch>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         Steen Hegelund <steen.hegelund@microchip.com>
-Subject: Re: [PATCH net v1 2/3] net: phy: mscc: improved serdes calibration
- applied to VSC8514
-Thread-Topic: [PATCH net v1 2/3] net: phy: mscc: improved serdes calibration
- applied to VSC8514
-Thread-Index: AQHXAUhgxOfe/xZjIkSaIpt8gbo4p6pUtIoA
-Date:   Fri, 12 Feb 2021 16:24:37 +0000
-Message-ID: <20210212162436.querlrgmhwy3u2rk@skbuf>
+Subject: Re: [PATCH net v1 3/3] net: phy: mscc: coma mode disabled for VSC8514
+Thread-Topic: [PATCH net v1 3/3] net: phy: mscc: coma mode disabled for
+ VSC8514
+Thread-Index: AQHXAUhluUesuHE2zUKvpf4QrFwfPKpUtsyA
+Date:   Fri, 12 Feb 2021 16:32:42 +0000
+Message-ID: <20210212163241.kbx5eqyaa32js7mp@skbuf>
 References: <20210212140643.23436-1-bjarni.jonasson@microchip.com>
- <20210212140643.23436-2-bjarni.jonasson@microchip.com>
-In-Reply-To: <20210212140643.23436-2-bjarni.jonasson@microchip.com>
+ <20210212140643.23436-3-bjarni.jonasson@microchip.com>
+In-Reply-To: <20210212140643.23436-3-bjarni.jonasson@microchip.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -67,70 +66,126 @@ authentication-results: microchip.com; dkim=none (message not signed)
 x-originating-ip: [5.12.227.87]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 4dceb86a-31eb-4ef2-59e4-08d8cf72b108
-x-ms-traffictypediagnostic: VE1PR04MB6638:
+x-ms-office365-filtering-correlation-id: b22b669a-26c6-45ab-e782-08d8cf73d1db
+x-ms-traffictypediagnostic: VI1PR04MB5854:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VE1PR04MB6638584660F6DAF325D9F647E08B9@VE1PR04MB6638.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-microsoft-antispam-prvs: <VI1PR04MB5854B004489D154D3729C65BE08B9@VI1PR04MB5854.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: HtIjvZTdKKLxnVquOMcgeZXXkPOOO7cJo0pXU+QERINkw9GSaavFZw625uNWhGmbgPrJkuDdkbedCmThzPZFGZYc8G6WxEvd7fl4JW6c/mGiIOozzAqhcTkCDWZHrFklmxMp8+ZoYAwW7+V4C/gttujg7A6qK4CVMp2zo+kQkZuT3DQMMruSCm68by4W6dVWAx6wgILu7Iom0zIJhB49g8qwbEnzQbG+aDwtEgEPZZKZydM4ybqZyqvSyBzSV119zrSaHvqfpgU1ft+9FXJWYsgEyl/PTSlIhhSNXyAI3FuyzQibyXG6kIsQpz398pjsKHPwT6ml31t1Xe8M3cIHlsO+d18bNQ0lJ391oYso3/P+Pc6/gVZIldqfoQDWu3HBeZedF0OEZBfKNhVkeBte7hwBqIqvOCosP3zTGfVK42sI8nLMYyYBiCVA2tKbegmAuNb4EH9CYVrWii4EoXjx9CMFg1qity9U8LQ30IBsrsN11KuSAick/ZL6rGLzKt6h6lRp3yxRgJhvSxUmsEDa+w==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(396003)(136003)(39860400002)(366004)(376002)(346002)(5660300002)(4326008)(26005)(4744005)(54906003)(91956017)(66446008)(66476007)(7416002)(66556008)(33716001)(76116006)(64756008)(66946007)(71200400001)(186003)(2906002)(6486002)(6916009)(6512007)(478600001)(9686003)(316002)(86362001)(44832011)(8936002)(6506007)(1076003)(8676002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?u/RPkkjcPcTImOGCiTVaGkaMWIMA/cxLh186uAZ33f+4W5sOvq4wKc2aLTSL?=
- =?us-ascii?Q?stlFwDnnI/vJws0L33uCg+/Zwwd+EU+vsMXmax0lO6Aqb1TlFXzojqnHWAp5?=
- =?us-ascii?Q?6cWCqPHP0UMaobqN9NxgNzHK3vXmdrcWcFoZALQ5TRKFw9wjbTMkh/BTxpG/?=
- =?us-ascii?Q?sEstEvcgv1Frt7fhOJUl74nG7QdWZPNSnu1Wnw7nxzOyc1kgYt9V0/4wHuha?=
- =?us-ascii?Q?EbfE46vPXUMU2wYO9NI4Ho8AiEZRoJ/RJS9GObMUFCRIgRd1Bk+/kffCkjZM?=
- =?us-ascii?Q?Ru6XSYBp+LvtorRlKTYbTNBRoBD4ZxhRNhF95hSA2WTSl8P6dpwea7vK3DnZ?=
- =?us-ascii?Q?F6w9sNaJw0efXFlyNk9Oy2k/vtb8y3ZIKV8VMC3Pynn9uYNESobAw4+oqWD7?=
- =?us-ascii?Q?gWkK/JSjRUkiB1aI0mEuUY1C0n9cDAtD+BSq89H1mIM82VEBCRfACzO/ViVV?=
- =?us-ascii?Q?eLklLPFTCtjXTNoiO+3Hse4HAWBDGSYLmBY49wm+dhUNWJLOMi3GfTpECf8N?=
- =?us-ascii?Q?oaOZ04l+QU1joZp3M29WSHVRqcQ2QpCB9hnnwK7UTUIrlai9hu/g77/m5IkJ?=
- =?us-ascii?Q?vmn+eVA1Y02kE4kkOF3tgAkqRrKDelLJoBE4qNiiFL0IEIbic9xsJuHGuqvJ?=
- =?us-ascii?Q?Rt0HQCUBhqR0AmOcedgbl+3FiQ4ua6jGCobi38yari+gT2tIeJpktb/EncRR?=
- =?us-ascii?Q?Fu5K/dZOb8wPsonEOLHpt0zJNWJdEGdoZUueaZ4jzVs96vjrOsus493e6BY8?=
- =?us-ascii?Q?aLjWVfNtcxgnBok5rYfdtYz0OafuOdO4z52CPauxsExGZqswsTyLA3ueTs55?=
- =?us-ascii?Q?4NeUeBQgWG9/zPLyYqzJrLPvFZPnCPENT56lXq1ytJkabi7PaAJC19Xk95tZ?=
- =?us-ascii?Q?yWYIvNRHY5Qdg2AmIL6jV0eOw9JkwT1ssTGdWm73OGnHgqY4iJndPyJVnmr1?=
- =?us-ascii?Q?wQeTEboJ4nhgcdvYhvC4aLYZ65NJIUzK8Nqw5zyxBSvzLj2bgXoomPM5UeQY?=
- =?us-ascii?Q?mdxrtt7MtDUjj5pqu4uM1AfQGm3yDQeu1sfwRH81un79WcFS8X+kA2mlUs0u?=
- =?us-ascii?Q?fNyYqtJDWUeTjN8oJnXAUq6y7XDDWnYOEgWHWJd38XsLdn7mCyoDvz5Mg2Rb?=
- =?us-ascii?Q?aubZIkOfN5nHDUswVh7Qz2a9OCg3xp1AonZvE8GpF7Hkj8bRNvNAf+nWCS5V?=
- =?us-ascii?Q?inSiri4Tw2Cy+SPML1cKk0qTIlmVGGJUJ4VTUZiBvrXf6yaeTCLZ2cODPXap?=
- =?us-ascii?Q?sy95HJvnM6wu2QV9vFwamLSGHA+Qm8qK3hHci8Jh1t09kkvZfDflK5lJK67P?=
- =?us-ascii?Q?408zwnybQmdQ2Bvr2oujnUEk?=
+x-microsoft-antispam-message-info: UcSursQ3Sidb6fy55B1kTI4FhLa7QQP7rspU0/G/qwhiW04LoiNuhUkJ41PMysqW1TpMF9x9qTdYelKrlrCBSOirHR8oS0Y9honlrXY07dqNgY1r8qGFLzmhEJElUS4UYiS0TRdxR3b07+I+LeY/6gehpxhyVMjZiaGX/yESiZd3Y0nrmS1guKKSZ98hAZ2VBGLIZCs1XeIdLRDxLSjvgerHTKxDmiKiGuMYkEnnDYcKy1ForwYuKCwhws6pcrqMMXyr2zip+iSjSrAasNyHIxnRsdAboOFWD1PDTInrt/CfvIFr0mHnshXpiH9sUuUxR90IoGByOVAl0b4bIlORrmAGtndbuSoIYU5H9Bj7cwVgqINRcOSfk4qQ0NNFPPUeeg+lO3NS8KK/vHsEOTPJeAZCjIhb8PiV6naEfFELzr7TTmy907V24DpNhqSXeFK32mTMj0FMbJ2d8svMczxmLtaIPtHSQWgb22Op95rWix5TpBiGjFmejHYglNZiYvLmTm4IkGmLLP0VMQvqIgVq2g==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(346002)(366004)(396003)(376002)(136003)(39860400002)(8936002)(316002)(66476007)(186003)(66446008)(54906003)(4326008)(2906002)(26005)(66556008)(64756008)(76116006)(1076003)(6916009)(71200400001)(66946007)(7416002)(83380400001)(8676002)(91956017)(5660300002)(86362001)(478600001)(6486002)(44832011)(33716001)(6506007)(6512007)(9686003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?V3gPboX7CoJIpqMk46eVtofh7QkAKiH+Br8w6tYk1hD8zLczVEOCSBdNh8tO?=
+ =?us-ascii?Q?CBU/w0zOehTBp6PHvopTgl3dbDPJXUsjUyjontXqQcYJEJD2Uz13/heE7Rqo?=
+ =?us-ascii?Q?IxIenza+S8otZqUmF39vpdfuYwEndUKDyyQ8IqEdsrxDeB1bnXLlhXhHfz8g?=
+ =?us-ascii?Q?xVqFpGH2lYXES1Wvbl1oiwIEji3PcWccYZgyenT+0a3Z/3c0l1Oz38HIaYAS?=
+ =?us-ascii?Q?QsVyb9VmKKWEn/rdEakiFIj6fYNiJTxVqDX0bL9FPY/GoZZK4JssE7j0nsj+?=
+ =?us-ascii?Q?GFLtkTGWEiAQRtjquHlZYyulaReNTZjS/b+BO7Cq1C+C0QL2RKT3P7q1HTiV?=
+ =?us-ascii?Q?t5bQIbv/opRKT+MoqrSnej+gE9JKH1X80U7TDHOoJXxeUS07RdvnJf8Ii7oE?=
+ =?us-ascii?Q?NT+VGjStgreDJS3tlbm2TGYeKzUvgJRBZLnOthvWIjKbVQPfKXB3fhT7XSOZ?=
+ =?us-ascii?Q?ekSjW/S5ny4wsabYKlyi+LqffcPfMBM41kj7K/H2Hu2hjdwSKAyXJaY1XEVV?=
+ =?us-ascii?Q?LAjstb7XL8V9fPZ0WdLPtpTjfc2i7eK+GQCkMtSlnhjgt0dhqkSXUiWIj2w5?=
+ =?us-ascii?Q?exYmors8EWzX714z1jmlU3W8cmnBIjV/M2W6IV925W94rHbSmlJ4941dqltE?=
+ =?us-ascii?Q?AVJF+NtWTA81uIcgQ7JGp5aRvUH5t6P1knb3LUr3FQkXjTTn7HW9OY5ngWKD?=
+ =?us-ascii?Q?xsYQOuxjZ1qaQZ5XVCiqzu6YyR1hIzfcwd/BY7/0EteXNRnwyRp92Zbr47hu?=
+ =?us-ascii?Q?u7vWn3xdy2kFFOiqJxqXRdIj6OkpfgUM9N2pMFSBOtteWywH2p7Tc4S93CcM?=
+ =?us-ascii?Q?dYhFlwhQzfhUGzZjrYkc6bKUMDnadorSDtkHWIukTTI4O1x1LuSjr3HtDIp7?=
+ =?us-ascii?Q?wa7MxbEhTw3agWdlZMaC6XQNT4HG8E7/k6/Nbxg3bLxYGAuLO2uI9hG+rrZm?=
+ =?us-ascii?Q?dOJoDCt7GZ+bQpsuJJArKX4dvMu6thLHMlwergzwxxXCJzhIp8JWuM1m4/+0?=
+ =?us-ascii?Q?sJPZBtp7j+yIj/Q9zcFBJIiLQKXXkG3csQsKBHSO8SePKQBjyFW35AOc1uIa?=
+ =?us-ascii?Q?TZAdpCf8et5MkIGP4XAjN7YRETJhQqiyaFFFku1Al6JkJHXbAIq49OcHQoM1?=
+ =?us-ascii?Q?0O87EdEawX33Xk9kX62X1EVzg2V+afgJiOna1kGYnkIzRTKvdbSmjGyuJ5z7?=
+ =?us-ascii?Q?RCdlFrsua1GQFqPWw2U0WfJ9Cty9P3LNFiYODdgx9aakRyp0kWnT69TjE6HB?=
+ =?us-ascii?Q?+y8P1dw+yT1fUMZAbK+vKjqej/1kkU4uxuHzxlh6U6OaaIplDHtdNT2+JWm7?=
+ =?us-ascii?Q?ppdAkaPbhsV+mV/GL3Cv4Fbb?=
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <F00B5665B18FD746A99B164E00C48B5B@eurprd04.prod.outlook.com>
+Content-ID: <9C89C197BF28B24FADF2FDF9F452D43C@eurprd04.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4dceb86a-31eb-4ef2-59e4-08d8cf72b108
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Feb 2021 16:24:37.5431
+X-MS-Exchange-CrossTenant-Network-Message-Id: b22b669a-26c6-45ab-e782-08d8cf73d1db
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Feb 2021 16:32:42.1383
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: VAkXjEwT+kmdQNei6CnE7H0YJwxRhoZv1Bhwh2sJqTnw3RWnfXUitybgqNVK4CsqYmQ3W4AQTNmajDaZBtupVg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6638
+X-MS-Exchange-CrossTenant-userprincipalname: kticSPGaIZyhJbmANweyEu1VcLLqX+K00kdceaK6VN5rqkPPKhuhWNh3Mtc7/Ynv50v+zre++CjZfPjXExBTBw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5854
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 12, 2021 at 03:06:42PM +0100, Bjarni Jonasson wrote:
-> The current IB serdes calibration algorithm (performed by the onboard 805=
-1)
-> has proven to be unstable for the VSC8514 QSGMII phy.
-> A new algorithm has been developed based on
-> 'Frequency-offset Jittered-Injection' or 'FoJi' method which solves
-> all known issues.  This patch disables the 8051 algorithm and
-> replaces it with the new FoJi algorithm.
-> The calibration is now performed in the driver.
+On Fri, Feb 12, 2021 at 03:06:43PM +0100, Bjarni Jonasson wrote:
+> The 'coma mode' (configurable through sw or hw) provides an
+> optional feature that may be used to control when the PHYs become active.
+> The typical usage is to synchronize the link-up time across
+> all PHY instances. This patch releases coma mode if not done by hardware,
+> otherwise the phys will not link-up.
 >=20
 > Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
 > Signed-off-by: Bjarni Jonasson <bjarni.jonasson@microchip.com>
 > Fixes: e4f9ba642f0b ("net: phy: mscc: add support for VSC8514 PHY.")
 > ---
+>  drivers/net/phy/mscc/mscc_main.c | 13 +++++++++++++
+>  1 file changed, 13 insertions(+)
+>=20
+> diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc=
+_main.c
+> index 7546d9cc3abd..0600b592618b 100644
+> --- a/drivers/net/phy/mscc/mscc_main.c
+> +++ b/drivers/net/phy/mscc/mscc_main.c
+> @@ -1418,6 +1418,18 @@ static void vsc8584_get_base_addr(struct phy_devic=
+e *phydev)
+>  	vsc8531->addr =3D addr;
+>  }
+> =20
+> +static void vsc85xx_coma_mode_release(struct phy_device *phydev)
+> +{
+> +	/* The coma mode (pin or reg) provides an optional feature that
+> +	 * may be used to control when the PHYs become active.
+> +	 * Alternatively the COMA_MODE pin may be connected low
+> +	 * so that the PHYs are fully active once out of reset.
+> +	 */
+> +	__phy_write(phydev, MSCC_EXT_PAGE_ACCESS, MSCC_PHY_PAGE_EXTENDED_GPIO);
+> +	__phy_write(phydev, MSCC_PHY_GPIO_CONTROL_2, 0x0600);
+> +	__phy_write(phydev, MSCC_EXT_PAGE_ACCESS, MSCC_PHY_PAGE_STANDARD);
 
-Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com> # for regressions=
+Can you please do:
+	phy_write_paged(phydev, MSCC_PHY_PAGE_EXTENDED_GPIO,
+			MSCC_PHY_GPIO_CONTROL_2, 0x0600);
+
+And can you please provide some definitions for what 0x0600 is?
+My reference manual says that:
+
+Bit 13:
+COMA_MODE output enable (active low)
+Bit 12:
+COMA_MODE output data
+Bit 11:
+COMA_MODE input data
+Bit 10:
+Reserved
+Bit 9:
+Tri-state enable for LEDs
+
+0x600 is BIT(10) | BIT(9). But BIT(10) is reserved. Sure this is correct?
+
+> +}
+> +
+>  static int vsc8584_config_init(struct phy_device *phydev)
+>  {
+>  	struct vsc8531_private *vsc8531 =3D phydev->priv;
+> @@ -2610,6 +2622,7 @@ static int vsc8514_config_init(struct phy_device *p=
+hydev)
+>  		ret =3D vsc8514_config_host_serdes(phydev);
+>  		if (ret)
+>  			goto err;
+> +		vsc85xx_coma_mode_release(phydev);
+>  	}
+> =20
+>  	phy_unlock_mdio_bus(phydev);
+> --=20
+> 2.17.1
+> =
