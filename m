@@ -2,105 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E58F731A438
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 19:08:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A024831A442
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 19:08:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231348AbhBLSGC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 13:06:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56032 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230240AbhBLSF7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 13:05:59 -0500
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2DC2C061574;
-        Fri, 12 Feb 2021 10:05:20 -0800 (PST)
-Received: by mail-pl1-x635.google.com with SMTP id a24so245379plm.11;
-        Fri, 12 Feb 2021 10:05:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=e7FvX3805mVbi8rUejyIm26agQLfcgUZJrMWSiLjNGs=;
-        b=lNMCouqv+fTjmMB6cirFrl9lgwfiYme91mERyye0MrSQwDCWRBAA8nxOyadU0JP1GM
-         2+78codzGdNu57tEuXnoFu7IobxUP2aYirkbJr28Dm7BWbmrvwUwjBcmrPiAYh+qBgtO
-         2oi4c6DHF22Kn9p7hWKmzSLq3BrbDfp1snMMHl4gbxbz70OOyBegaRybHK+9kTsuJelI
-         sX9n3adDZpn2lvnhNC9ZnBin4UlcBYC1LTzYqPV9XqtyKQVe7EUeGDgd/KTQlJ0iZiLp
-         fwm/Zs1QqxP+LnnLT9T4qzF2MEyxwZGEGwECPkLtovPlelRmrQOiI2Cl779Kna3slRjJ
-         PNBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=e7FvX3805mVbi8rUejyIm26agQLfcgUZJrMWSiLjNGs=;
-        b=h88VgQjiww7lonaGjvTneYaRQ1whgucgiy2sUobkOJBatsodP57ggqhLTvIriZbaMI
-         FgiOjOWh7ZEZ1Rnjg+weFBseQGvocmrXoX5892Pm9eTbYHXTXptG9sg+UAPO/T+oG0op
-         n/3MvrZUYscvRndUTnhjWV0BphhsLCJyPmfvhter5zOqDnxl99GmKNyI9o4CNq7Rtxsf
-         7ll8HmlgibQjS92QYewBgpgWIumAC1PPL9xunmn34XcESagtZjkc6zvR2lt+9EQ1TurB
-         MNihg0UUkviyNKWwJnyxcOLMVyawQsbrxmc9X+ElRiAKUpciauJYepqez1TJ10nvlHV9
-         oxkg==
-X-Gm-Message-State: AOAM533HHK29Pu3wFAjGm8RVgtC3l1IXl7E+BgEISnEdN6hQE7d2rMXF
-        jzOr9Oe7o5GxDFfmywu7ibCdZmy5bGs=
-X-Google-Smtp-Source: ABdhPJxbX9H47ViGLWUpCf4ZDXGVxxJ2XlKtdlv42d9ua1WR5Bsy0WUcnV+kUq8ziygwgtpEbfgKww==
-X-Received: by 2002:a17:90a:ad09:: with SMTP id r9mr3793493pjq.51.1613153119543;
-        Fri, 12 Feb 2021 10:05:19 -0800 (PST)
-Received: from [10.230.29.30] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id r13sm10104082pfc.198.2021.02.12.10.05.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Feb 2021 10:05:19 -0800 (PST)
-Subject: Re: [PATCH v5 net-next 02/10] net: bridge: offload all port flags at
- once in br_setport
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org
-References: <20210212151600.3357121-1-olteanv@gmail.com>
- <20210212151600.3357121-3-olteanv@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <ce3cd74e-2f58-e368-e108-fd148d69d4cb@gmail.com>
-Date:   Fri, 12 Feb 2021 10:05:15 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.7.1
+        id S231752AbhBLSId (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 13:08:33 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:35320 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231304AbhBLSIP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 13:08:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1613153208;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=IsKCNOETLXXhO0vv4Uv4utq9x/Y2rRSM/dS8wn5MRYQ=;
+        b=ZqQGLAIJQ1Ttd7dRUy/DX83Ex42HwM62MFsJPzUzhQ5udmgXzsMkEY2RQHmmZZA0kEq36r
+        rIQNZ1fFCpssqv9oCuXYTYMp7FisoyPrZmdwawNozj0m4EZIexMcPv/m+pDEVv+mAeWfAM
+        WVPl58yxuhNWcqOCMlNfApcqO/odCSM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-410-R1WhqZ39Npi4u-1T5zwSEw-1; Fri, 12 Feb 2021 13:06:44 -0500
+X-MC-Unique: R1WhqZ39Npi4u-1T5zwSEw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2FB5D1934104;
+        Fri, 12 Feb 2021 18:06:42 +0000 (UTC)
+Received: from localhost (ovpn-114-86.phx2.redhat.com [10.3.114.86])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 40A4F19D6C;
+        Fri, 12 Feb 2021 18:06:41 +0000 (UTC)
+Date:   Fri, 12 Feb 2021 10:06:39 -0800
+From:   Chris Leech <cleech@redhat.com>
+To:     Shai Malin <smalin@marvell.com>
+Cc:     netdev@vger.kernel.org, linux-nvme@lists.infradead.org,
+        sagi@grimberg.me, aelior@marvell.com, mkalderon@marvell.com,
+        nassa@marvell.com, malin1024@gmail.com, Douglas.Farley@dell.com,
+        Erik.Smith@dell.com, kuba@kernel.org, pkushwaha@marvell.com,
+        davem@davemloft.net
+Subject: Re: [RFC PATCH v3 00/11] NVMeTCP Offload ULP and QEDN Device Driver
+Message-ID: <20210212180639.GA511742@localhost>
+References: <20210207181324.11429-1-smalin@marvell.com>
 MIME-Version: 1.0
-In-Reply-To: <20210212151600.3357121-3-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210207181324.11429-1-smalin@marvell.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, Feb 07, 2021 at 08:13:13PM +0200, Shai Malin wrote:
+> Queue Initialization:
+> =====================
+> The nvme-tcp-offload ULP module shall register with the existing 
+> nvmf_transport_ops (.name = "tcp_offload"), nvme_ctrl_ops and blk_mq_ops.
+> The nvme-tcp-offload vendor driver shall register to nvme-tcp-offload ULP
+> with the following ops:
+>  - claim_dev() - in order to resolve the route to the target according to
+>                  the net_dev.
+>  - create_queue() - in order to create offloaded nvme-tcp queue.
+> 
+> The nvme-tcp-offload ULP module shall manage all the controller level
+> functionalities, call claim_dev and based on the return values shall call
+> the relevant module create_queue in order to create the admin queue and
+> the IO queues.
 
+Hi Shai,
 
-On 2/12/2021 7:15 AM, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> If for example this command:
-> 
-> ip link set swp0 type bridge_slave flood off mcast_flood off learning off
-> 
-> succeeded at configuring BR_FLOOD and BR_MCAST_FLOOD but not at
-> BR_LEARNING, there would be no attempt to revert the partial state in
-> any way. Arguably, if the user changes more than one flag through the
-> same netlink command, this one _should_ be all or nothing, which means
-> it should be passed through switchdev as all or nothing.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+How well does this claim_dev approach work with multipathing?  Is it
+expected that providing HOST_TRADDR is sufficient control over which
+offload device will be used with multiple valid paths to the controller?
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+- Chris
+
