@@ -2,492 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C4F93197DA
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 02:13:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16D0D3197F6
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 02:27:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230334AbhBLBIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Feb 2021 20:08:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35702 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230172AbhBLBHF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Feb 2021 20:07:05 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00F9EC061794;
-        Thu, 11 Feb 2021 17:05:58 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id q2so9009670edi.4;
-        Thu, 11 Feb 2021 17:05:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=RKakjanRpzIR5MAQb4Sd3TvOnPPsCGh4dNfLAeJvo8c=;
-        b=FwM2Std1N0j9sHa58uQxErecyyMLwYN4b3dT5b/MywugYbHc8Aa36am5sRuJNc3z/q
-         p3HiODGAVwDonkWRbd4UTySrM+T3DYVrX7OCZdLacvlF7hNHppucXmW5vLmOmIx6Smaw
-         PsHXdAwtg2PtaOkDK149ctMvWe+IzfEdWMh8Ksr38PQAI270bYo+R7wTLG2G6Dls4UQz
-         9sTbD87YWnADn8rspKBrzxdcH7NRTMTF3IR2Zr3m+OPxv6fZPRIYLR8Z5RExhoMb/gqG
-         tfVyvJbyNgaeaK0RtNXnZmpljjMvowsvdh1KTMA61po0AzTcJwwwFBdOtbPdYUAhHfU9
-         cO2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=RKakjanRpzIR5MAQb4Sd3TvOnPPsCGh4dNfLAeJvo8c=;
-        b=EdsLcRihr18N31fTZ1q72G5k3cbYt66EnQc0qKu6If6o1Z74VVvj8e0kUKJ8W3m7C7
-         /zjMfFieBzugb5a4ZhtX33EoVYpNJoSsXqzmGYvdQ+9oIBztHKea/9T8ymBv74AZNnMv
-         5lmYAZGoDiEEF71ukqo4KKO5Duib7VjtlWk85Eyc8Si6Z8vMmzOWHrCs/4up01kLNKJy
-         sEqbjyi2pEqCMXwP3m998PoMqiW0xcIIHPlnuyAZAbBVuZHO8WVPVyGrRdB1DYed8XLj
-         czhW0abTHXjGuwayGWGqZbY2vbgeNiRFEJx+UHov6AQm0A5qty8+qSTVZ6QiVsO7WuKw
-         PwEA==
-X-Gm-Message-State: AOAM533J1LCx+OX/sQrTdZ/NEVBWzbNSwUHHsccYFShQvje8XES6bZQc
-        La5jgH4KuVoKF8B0bp1s35Y=
-X-Google-Smtp-Source: ABdhPJxz/Wqnk5GJjhE/LiNuGe1IcGrsAJDpZA7zWp0EsxAwCQZe5q0oSj/EGz+7LgVZdykI3jZaew==
-X-Received: by 2002:aa7:cd62:: with SMTP id ca2mr870615edb.94.1613091956625;
-        Thu, 11 Feb 2021 17:05:56 -0800 (PST)
-Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id z13sm5019580edc.73.2021.02.11.17.05.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Feb 2021 17:05:56 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ivan Vecera <ivecera@redhat.com>, linux-omap@vger.kernel.org
-Subject: [PATCH v4 net-next 9/9] net: dsa: sja1105: offload bridge port flags to device
-Date:   Fri, 12 Feb 2021 03:05:31 +0200
-Message-Id: <20210212010531.2722925-10-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210212010531.2722925-1-olteanv@gmail.com>
-References: <20210212010531.2722925-1-olteanv@gmail.com>
+        id S229674AbhBLB0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Feb 2021 20:26:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37894 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229475AbhBLB0q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 11 Feb 2021 20:26:46 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CBE4764E3B;
+        Fri, 12 Feb 2021 01:26:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1613093165;
+        bh=wilJ8lskA8dshMWOY4eOP0upu6a6phBxe5ABOy25GUU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=r++H1etXUpaC4HUoLGcIw4A412v8aSTChbUopnOUL49MZXsv8ZTPRGLS2Zm51XgYD
+         Rt6dNUiI3/0BI3Hm+cZx8DpfQH6PoW7uubdJJEcTuWk7XOjde49x9h8X5RC3mzFyln
+         pdRqmZlQNhRZxcjYd3ykEXkmCzvBxedQAlLqwDBF6UkLvVCMbywlZuM+itpRHDeMml
+         jq4NIji9R3Q/I+D13FzaVcZej4hxUzsKGAlornXIGyMgO6dXuC75vgQEM1iAO4qw0q
+         p16cAuhTLqVccK1517Kra2Vu67eI4i96PmNXJYfW0L8AgrIEsawnyFGfu0pk+arziH
+         kVxk30TiZnmLg==
+Date:   Thu, 11 Feb 2021 17:26:03 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Cc:     Marek Majtyka <alardam@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        David Ahern <dsahern@gmail.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, hawk@kernel.org,
+        bpf <bpf@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        jeffrey.t.kirsher@intel.com
+Subject: Re: [PATCH v2 bpf 1/5] net: ethtool: add xdp properties flag set
+Message-ID: <20210211172603.17d6a8f6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <87czx7r0w8.fsf@toke.dk>
+References: <20201204102901.109709-1-marekx.majtyka@intel.com>
+        <20201209125223.49096d50@carbon>
+        <e1573338-17c0-48f4-b4cd-28eeb7ce699a@gmail.com>
+        <1e5e044c8382a68a8a547a1892b48fb21d53dbb9.camel@kernel.org>
+        <cb6b6f50-7cf1-6519-a87a-6b0750c24029@gmail.com>
+        <f4eb614ac91ee7623d13ea77ff3c005f678c512b.camel@kernel.org>
+        <d5be0627-6a11-9c1f-8507-cc1a1421dade@gmail.com>
+        <6f8c23d4ac60525830399754b4891c12943b63ac.camel@kernel.org>
+        <CAAOQfrHN1-oHmbOksDv-BKWv4gDF2zHZ5dTew6R_QTh6s_1abg@mail.gmail.com>
+        <87h7mvsr0e.fsf@toke.dk>
+        <CAAOQfrHA+-BsikeQzXYcK_32BZMbm54x5p5YhAiBj==uaZvG1w@mail.gmail.com>
+        <87bld2smi9.fsf@toke.dk>
+        <20210202113456.30cfe21e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAAOQfrGqcsn3wu5oxzHYxtE8iK3=gFdTka5HSh5Fe9Hc6HWRWA@mail.gmail.com>
+        <20210203090232.4a259958@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <874kikry66.fsf@toke.dk>
+        <20210210103135.38921f85@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <87czx7r0w8.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Wed, 10 Feb 2021 23:52:39 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> Jakub Kicinski <kuba@kernel.org> writes:
+> > On Wed, 10 Feb 2021 11:53:53 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wro=
+te: =20
+> >> While I do agree that that kind of conformance test would be great, I
+> >> don't think it has to hold up this series (the perfect being the enemy
+> >> of the good, and all that). We have a real problem today that userspace
+> >> can't tell if a given driver implements, say, XDP_REDIRECT, and so
+> >> people try to use it and spend days wondering which black hole their
+> >> packets disappear into. And for things like container migration we need
+> >> to be able to predict whether a given host supports a feature *before*
+> >> we start the migration and try to use it. =20
+> >
+> > Unless you have a strong definition of what XDP_REDIRECT means the flag
+> > itself is not worth much. We're not talking about normal ethtool feature
+> > flags which are primarily stack-driven, XDP is implemented mostly by
+> > the driver, each vendor can do their own thing. Maybe I've seen one
+> > vendor incompatibility too many at my day job to hope for the best... =
+=20
+>=20
+> I'm totally on board with documenting what a feature means.
 
-The chip can configure unicast flooding, broadcast flooding and learning.
-Learning is per port, while flooding is per {ingress, egress} port pair
-and we need to configure the same value for all possible ingress ports
-towards the requested one.
+We're trying documentation in devlink etc. and it's not that great.
+It's never clear and comprehensive enough, barely anyone reads it.
 
-While multicast flooding is not officially supported, we can hack it by
-using a feature of the second generation (P/Q/R/S) devices, which is that
-FDB entries are maskable, and multicast addresses always have an odd
-first octet. So by putting a match-all for 00:01:00:00:00:00 addr and
-00:01:00:00:00:00 mask at the end of the FDB, we make sure that it is
-always checked last, and does not take precedence in front of any other
-MDB. So it behaves effectively as an unknown multicast entry.
+> E.g., for
+> XDP_REDIRECT, whether it's acceptable to fail the redirect in some
+> situations even when it's active, or if there should always be a
+> slow-path fallback.
+>=20
+> But I disagree that the flag is worthless without it. People are running
+> into real issues with trying to run XDP_REDIRECT programs on a driver
+> that doesn't support it at all, and it's incredibly confusing. The
+> latest example popped up literally yesterday:
+>=20
+> https://lore.kernel.org/xdp-newbies/CAM-scZPPeu44FeCPGO=3DQz=3D03CrhhfB1G=
+dJ8FNEpPqP_G27c6mQ@mail.gmail.com/
 
-For the first generation switches, this feature is not available, so
-unknown multicast will always be treated the same as unknown unicast.
-So the only thing we can do is request the user to offload the settings
-for these 2 flags in tandem, i.e.
+To help such confusion we'd actually have to validate the program
+against the device caps. But perhaps I'm less concerned about a
+newcomer not knowing how to use things and more concerned about
+providing abstractions which will make programs dependably working
+across vendors and HW generations.
 
-ip link set swp2 type bridge_slave flood off
-Error: sja1105: This chip cannot configure multicast flooding independently of unicast.
-ip link set swp2 type bridge_slave flood off mcast_flood off
-ip link set swp2 type bridge_slave mcast_flood on
-Error: sja1105: This chip cannot configure multicast flooding independently of unicast.
+> >> I view the feature flags as a list of features *implemented* by the
+> >> driver. Which should be pretty static in a given kernel, but may be
+> >> different than the features currently *enabled* on a given system (due
+> >> to, e.g., the TX queue stuff). =20
+> >
+> > Hm, maybe I'm not being clear enough. The way XDP_REDIRECT (your
+> > example) is implemented across drivers differs in a meaningful ways.=20
+> > Hence the need for conformance testing. We don't have a golden SW
+> > standard to fall back on, like we do with HW offloads. =20
+>=20
+> I'm not disagreeing that we need to harmonise what "implementing a
+> feature" means. Maybe I'm just not sure what you mean by "conformance
+> testing"? What would that look like, specifically?=20
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
-Changes in v4:
-Move the restrictions to .port_pre_bridge_flags.
+We developed a pretty good set of tests at my previous job for testing
+driver XDP as well as checking that the offload conforms to the SW
+behavior. I assume any vendor who takes quality seriously has
+comprehensive XDP tests.
 
-Changes in v3:
-None.
+If those tests were upstream / common so that we could run them
+against every implementation - the features which are supported by=20
+a driver fall out naturally out of the set of tests which passed.
+And the structure of the capability API could be based on what the
+tests need to know to make a SKIP vs FAIL decision.
 
-Changes in v2:
-Patch is new.
+Common tests would obviously also ease the validation burden, burden of
+writing tests on vendors and make it far easier for new implementations
+to be confidently submitted.
 
- drivers/net/dsa/sja1105/sja1105.h      |   2 +
- drivers/net/dsa/sja1105/sja1105_main.c | 222 +++++++++++++++++++++++--
- drivers/net/dsa/sja1105/sja1105_spi.c  |   6 +
- 3 files changed, 219 insertions(+), 11 deletions(-)
+> A script in selftest that sets up a redirect between two interfaces
+> that we tell people to run? Or what? How would you catch, say, that
+> issue where if a machine has more CPUs than the NIC has TXQs things
+> start falling apart?
 
-diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
-index d582308c2401..15a0893d0ff1 100644
---- a/drivers/net/dsa/sja1105/sja1105.h
-+++ b/drivers/net/dsa/sja1105/sja1105.h
-@@ -94,6 +94,7 @@ struct sja1105_info {
- 	 * pop it when it's equal to TPID2.
- 	 */
- 	u16 qinq_tpid;
-+	bool can_limit_mcast_flood;
- 	int (*reset_cmd)(struct dsa_switch *ds);
- 	int (*setup_rgmii_delay)(const void *ctx, int port);
- 	/* Prototypes from include/net/dsa.h */
-@@ -204,6 +205,7 @@ struct sja1105_private {
- 	bool rgmii_rx_delay[SJA1105_NUM_PORTS];
- 	bool rgmii_tx_delay[SJA1105_NUM_PORTS];
- 	bool best_effort_vlan_filtering;
-+	unsigned long learn_ena;
- 	const struct sja1105_info *info;
- 	struct gpio_desc *reset_gpio;
- 	struct spi_device *spidev;
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 282253543f3b..1dad94540cc9 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -25,6 +25,8 @@
- #include "sja1105_sgmii.h"
- #include "sja1105_tas.h"
- 
-+#define SJA1105_UNKNOWN_MULTICAST	0x010000000000ull
-+
- static const struct dsa_switch_ops sja1105_switch_ops;
- 
- static void sja1105_hw_reset(struct gpio_desc *gpio, unsigned int pulse_len,
-@@ -42,15 +44,10 @@ static void
- sja1105_port_allow_traffic(struct sja1105_l2_forwarding_entry *l2_fwd,
- 			   int from, int to, bool allow)
- {
--	if (allow) {
--		l2_fwd[from].bc_domain  |= BIT(to);
-+	if (allow)
- 		l2_fwd[from].reach_port |= BIT(to);
--		l2_fwd[from].fl_domain  |= BIT(to);
--	} else {
--		l2_fwd[from].bc_domain  &= ~BIT(to);
-+	else
- 		l2_fwd[from].reach_port &= ~BIT(to);
--		l2_fwd[from].fl_domain  &= ~BIT(to);
--	}
- }
- 
- /* Structure used to temporarily transport device tree
-@@ -220,17 +217,43 @@ static int sja1105_init_mii_settings(struct sja1105_private *priv,
- 
- static int sja1105_init_static_fdb(struct sja1105_private *priv)
- {
-+	struct sja1105_l2_lookup_entry *l2_lookup;
- 	struct sja1105_table *table;
-+	int port;
- 
- 	table = &priv->static_config.tables[BLK_IDX_L2_LOOKUP];
- 
--	/* We only populate the FDB table through dynamic
--	 * L2 Address Lookup entries
-+	/* We only populate the FDB table through dynamic L2 Address Lookup
-+	 * entries, except for a special entry at the end which is a catch-all
-+	 * for unknown multicast and will be used to control flooding domain.
- 	 */
- 	if (table->entry_count) {
- 		kfree(table->entries);
- 		table->entry_count = 0;
- 	}
-+
-+	if (!priv->info->can_limit_mcast_flood)
-+		return 0;
-+
-+	table->entries = kcalloc(1, table->ops->unpacked_entry_size,
-+				 GFP_KERNEL);
-+	if (!table->entries)
-+		return -ENOMEM;
-+
-+	table->entry_count = 1;
-+	l2_lookup = table->entries;
-+
-+	/* All L2 multicast addresses have an odd first octet */
-+	l2_lookup[0].macaddr = SJA1105_UNKNOWN_MULTICAST;
-+	l2_lookup[0].mask_macaddr = SJA1105_UNKNOWN_MULTICAST;
-+	l2_lookup[0].lockeds = true;
-+	l2_lookup[0].index = SJA1105_MAX_L2_LOOKUP_COUNT - 1;
-+
-+	/* Flood multicast to every port by default */
-+	for (port = 0; port < priv->ds->num_ports; port++)
-+		if (!dsa_is_unused_port(priv->ds, port))
-+			l2_lookup[0].destports |= BIT(port);
-+
- 	return 0;
- }
- 
-@@ -390,6 +413,12 @@ static int sja1105_init_l2_forwarding(struct sja1105_private *priv)
- 
- 		sja1105_port_allow_traffic(l2fwd, i, upstream, true);
- 		sja1105_port_allow_traffic(l2fwd, upstream, i, true);
-+
-+		l2fwd[i].bc_domain = BIT(upstream);
-+		l2fwd[i].fl_domain = BIT(upstream);
-+
-+		l2fwd[upstream].bc_domain |= BIT(i);
-+		l2fwd[upstream].fl_domain |= BIT(i);
- 	}
- 	/* Next 8 entries define VLAN PCP mapping from ingress to egress.
- 	 * Create a one-to-one mapping.
-@@ -1514,6 +1543,12 @@ static int sja1105_fdb_dump(struct dsa_switch *ds, int port,
- 		 */
- 		if (!(l2_lookup.destports & BIT(port)))
- 			continue;
-+
-+		/* We need to hide the FDB entry for unknown multicast */
-+		if (l2_lookup.macaddr == SJA1105_UNKNOWN_MULTICAST &&
-+		    l2_lookup.mask_macaddr == SJA1105_UNKNOWN_MULTICAST)
-+			continue;
-+
- 		u64_to_ether_addr(l2_lookup.macaddr, macaddr);
- 
- 		/* We need to hide the dsa_8021q VLANs from the user. */
-@@ -1605,12 +1640,12 @@ static void sja1105_bridge_stp_state_set(struct dsa_switch *ds, int port,
- 	case BR_STATE_LEARNING:
- 		mac[port].ingress   = true;
- 		mac[port].egress    = false;
--		mac[port].dyn_learn = true;
-+		mac[port].dyn_learn = !!(priv->learn_ena & BIT(port));
- 		break;
- 	case BR_STATE_FORWARDING:
- 		mac[port].ingress   = true;
- 		mac[port].egress    = true;
--		mac[port].dyn_learn = true;
-+		mac[port].dyn_learn = !!(priv->learn_ena & BIT(port));
- 		break;
- 	default:
- 		dev_err(ds->dev, "invalid STP state: %d\n", state);
-@@ -3239,6 +3274,169 @@ static void sja1105_port_policer_del(struct dsa_switch *ds, int port)
- 	sja1105_static_config_reload(priv, SJA1105_BEST_EFFORT_POLICING);
- }
- 
-+static int sja1105_port_set_learning(struct sja1105_private *priv, int port,
-+				     bool enabled)
-+{
-+	struct sja1105_mac_config_entry *mac;
-+	int rc;
-+
-+	mac = priv->static_config.tables[BLK_IDX_MAC_CONFIG].entries;
-+
-+	mac[port].dyn_learn = !!(priv->learn_ena & BIT(port));
-+
-+	rc = sja1105_dynamic_config_write(priv, BLK_IDX_MAC_CONFIG, port,
-+					  &mac[port], true);
-+	if (rc)
-+		return rc;
-+
-+	if (enabled)
-+		priv->learn_ena |= BIT(port);
-+	else
-+		priv->learn_ena &= ~BIT(port);
-+
-+	return 0;
-+}
-+
-+/* Common function for unicast and broadcast flood configuration.
-+ * Flooding is configured between each {ingress, egress} port pair, and since
-+ * the bridge's semantics are those of "egress flooding", it means we must
-+ * enable flooding towards this port from all ingress ports that are in the
-+ * same bridge. In practice, we just enable flooding from all possible ingress
-+ * ports regardless of whether they're in the same bridge or not, since the
-+ * reach_port configuration will not allow flooded frames to leak across
-+ * bridging domains anyway.
-+ */
-+static int sja1105_port_ucast_bcast_flood(struct sja1105_private *priv, int to,
-+					  struct switchdev_brport_flags flags)
-+{
-+	struct sja1105_l2_forwarding_entry *l2_fwd;
-+	int from, rc;
-+
-+	l2_fwd = priv->static_config.tables[BLK_IDX_L2_FORWARDING].entries;
-+
-+	for (from = 0; from < priv->ds->num_ports; from++) {
-+		if (dsa_is_unused_port(priv->ds, from))
-+			continue;
-+		if (from == to)
-+			continue;
-+
-+		/* Unicast */
-+		if (flags.mask & BR_FLOOD) {
-+			if (flags.val & BR_FLOOD)
-+				l2_fwd[from].fl_domain |= BIT(to);
-+			else
-+				l2_fwd[from].fl_domain &= ~BIT(to);
-+		}
-+		/* Broadcast */
-+		if (flags.mask & BR_BCAST_FLOOD) {
-+			if (flags.val & BR_BCAST_FLOOD)
-+				l2_fwd[from].bc_domain |= BIT(to);
-+			else
-+				l2_fwd[from].bc_domain &= ~BIT(to);
-+		}
-+
-+		rc = sja1105_dynamic_config_write(priv, BLK_IDX_L2_FORWARDING,
-+						  from, &l2_fwd[from], true);
-+		if (rc < 0)
-+			return rc;
-+	}
-+
-+	return 0;
-+}
-+
-+static int sja1105_port_mcast_flood(struct sja1105_private *priv, int to,
-+				    struct switchdev_brport_flags flags,
-+				    struct netlink_ext_ack *extack)
-+{
-+	struct sja1105_l2_lookup_entry *l2_lookup;
-+	struct sja1105_table *table;
-+	int match;
-+
-+	table = &priv->static_config.tables[BLK_IDX_L2_LOOKUP];
-+	l2_lookup = table->entries;
-+
-+	for (match = 0; match < table->entry_count; match++)
-+		if (l2_lookup[match].macaddr == SJA1105_UNKNOWN_MULTICAST &&
-+		    l2_lookup[match].mask_macaddr == SJA1105_UNKNOWN_MULTICAST)
-+			break;
-+
-+	if (match == table->entry_count) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Could not find FDB entry for unknown multicast");
-+		return -ENOSPC;
-+	}
-+
-+	if (flags.val & BR_MCAST_FLOOD)
-+		l2_lookup[match].destports |= BIT(to);
-+	else
-+		l2_lookup[match].destports &= ~BIT(to);
-+
-+	return sja1105_dynamic_config_write(priv, BLK_IDX_L2_LOOKUP,
-+					    l2_lookup[match].index,
-+					    &l2_lookup[match],
-+					    true);
-+}
-+
-+static int sja1105_port_pre_bridge_flags(struct dsa_switch *ds, int port,
-+					 struct switchdev_brport_flags flags,
-+					 struct netlink_ext_ack *extack)
-+{
-+	struct sja1105_private *priv = ds->priv;
-+
-+	if (flags.mask & ~(BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD |
-+			   BR_BCAST_FLOOD))
-+		return -EINVAL;
-+
-+	if (flags.mask & (BR_FLOOD | BR_MCAST_FLOOD) &&
-+	    !priv->info->can_limit_mcast_flood) {
-+		bool multicast = !!(flags.val & BR_MCAST_FLOOD);
-+		bool unicast = !!(flags.val & BR_FLOOD);
-+
-+		if (unicast != multicast) {
-+			NL_SET_ERR_MSG_MOD(extack,
-+					   "This chip cannot configure multicast flooding independently of unicast");
-+			return -EINVAL;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static int sja1105_port_bridge_flags(struct dsa_switch *ds, int port,
-+				     struct switchdev_brport_flags flags,
-+				     struct netlink_ext_ack *extack)
-+{
-+	struct sja1105_private *priv = ds->priv;
-+	int rc;
-+
-+	if (flags.mask & BR_LEARNING) {
-+		bool learn_ena = !!(flags.val & BR_LEARNING);
-+
-+		rc = sja1105_port_set_learning(priv, port, learn_ena);
-+		if (rc)
-+			return rc;
-+	}
-+
-+	if (flags.mask & (BR_FLOOD | BR_BCAST_FLOOD)) {
-+		rc = sja1105_port_ucast_bcast_flood(priv, port, flags);
-+		if (rc)
-+			return rc;
-+	}
-+
-+	/* For chips that can't offload BR_MCAST_FLOOD independently, there
-+	 * is nothing to do here, we ensured the configuration is in sync by
-+	 * offloading BR_FLOOD.
-+	 */
-+	if (flags.mask & BR_MCAST_FLOOD && priv->info->can_limit_mcast_flood) {
-+		rc = sja1105_port_mcast_flood(priv, port, flags,
-+					      extack);
-+		if (rc)
-+			return rc;
-+	}
-+
-+	return 0;
-+}
-+
- static const struct dsa_switch_ops sja1105_switch_ops = {
- 	.get_tag_protocol	= sja1105_get_tag_protocol,
- 	.setup			= sja1105_setup,
-@@ -3262,6 +3460,8 @@ static const struct dsa_switch_ops sja1105_switch_ops = {
- 	.port_fdb_del		= sja1105_fdb_del,
- 	.port_bridge_join	= sja1105_bridge_join,
- 	.port_bridge_leave	= sja1105_bridge_leave,
-+	.port_pre_bridge_flags	= sja1105_port_pre_bridge_flags,
-+	.port_bridge_flags	= sja1105_port_bridge_flags,
- 	.port_stp_state_set	= sja1105_bridge_stp_state_set,
- 	.port_vlan_filtering	= sja1105_vlan_filtering,
- 	.port_vlan_add		= sja1105_vlan_add,
-diff --git a/drivers/net/dsa/sja1105/sja1105_spi.c b/drivers/net/dsa/sja1105/sja1105_spi.c
-index 591c5734747d..f7a1514f81e8 100644
---- a/drivers/net/dsa/sja1105/sja1105_spi.c
-+++ b/drivers/net/dsa/sja1105/sja1105_spi.c
-@@ -512,6 +512,7 @@ const struct sja1105_info sja1105e_info = {
- 	.static_ops		= sja1105e_table_ops,
- 	.dyn_ops		= sja1105et_dyn_ops,
- 	.qinq_tpid		= ETH_P_8021Q,
-+	.can_limit_mcast_flood	= false,
- 	.ptp_ts_bits		= 24,
- 	.ptpegr_ts_bytes	= 4,
- 	.num_cbs_shapers	= SJA1105ET_MAX_CBS_COUNT,
-@@ -529,6 +530,7 @@ const struct sja1105_info sja1105t_info = {
- 	.static_ops		= sja1105t_table_ops,
- 	.dyn_ops		= sja1105et_dyn_ops,
- 	.qinq_tpid		= ETH_P_8021Q,
-+	.can_limit_mcast_flood	= false,
- 	.ptp_ts_bits		= 24,
- 	.ptpegr_ts_bytes	= 4,
- 	.num_cbs_shapers	= SJA1105ET_MAX_CBS_COUNT,
-@@ -546,6 +548,7 @@ const struct sja1105_info sja1105p_info = {
- 	.static_ops		= sja1105p_table_ops,
- 	.dyn_ops		= sja1105pqrs_dyn_ops,
- 	.qinq_tpid		= ETH_P_8021AD,
-+	.can_limit_mcast_flood	= true,
- 	.ptp_ts_bits		= 32,
- 	.ptpegr_ts_bytes	= 8,
- 	.num_cbs_shapers	= SJA1105PQRS_MAX_CBS_COUNT,
-@@ -564,6 +567,7 @@ const struct sja1105_info sja1105q_info = {
- 	.static_ops		= sja1105q_table_ops,
- 	.dyn_ops		= sja1105pqrs_dyn_ops,
- 	.qinq_tpid		= ETH_P_8021AD,
-+	.can_limit_mcast_flood	= true,
- 	.ptp_ts_bits		= 32,
- 	.ptpegr_ts_bytes	= 8,
- 	.num_cbs_shapers	= SJA1105PQRS_MAX_CBS_COUNT,
-@@ -582,6 +586,7 @@ const struct sja1105_info sja1105r_info = {
- 	.static_ops		= sja1105r_table_ops,
- 	.dyn_ops		= sja1105pqrs_dyn_ops,
- 	.qinq_tpid		= ETH_P_8021AD,
-+	.can_limit_mcast_flood	= true,
- 	.ptp_ts_bits		= 32,
- 	.ptpegr_ts_bytes	= 8,
- 	.num_cbs_shapers	= SJA1105PQRS_MAX_CBS_COUNT,
-@@ -601,6 +606,7 @@ const struct sja1105_info sja1105s_info = {
- 	.dyn_ops		= sja1105pqrs_dyn_ops,
- 	.regs			= &sja1105pqrs_regs,
- 	.qinq_tpid		= ETH_P_8021AD,
-+	.can_limit_mcast_flood	= true,
- 	.ptp_ts_bits		= 32,
- 	.ptpegr_ts_bytes	= 8,
- 	.num_cbs_shapers	= SJA1105PQRS_MAX_CBS_COUNT,
--- 
-2.25.1
+selftests should be a good place, but I don't mind the location.
+The point is having tests which anyone (vendors and users) can run
+to test their platforms. One of the tests should indeed test if every
+CPU in the platform can XDP_REDIRECT. Shouldn't it be a rather trivial
+combination of tun/veth, mh and taskset?
 
+> > Also IDK why those tests are considered such a huge ask. As I said most
+> > vendors probably already have them, and so I'd guess do good distros.
+> > So let's work together. =20
+>=20
+> I guess what I'm afraid of is that this will end up delaying or stalling
+> a fix for a long-standing issue (which is what I consider this series as
+> shown by the example above). Maybe you can alleviate that by expanding a
+> bit on what you mean?
+
+I hope what I wrote helps a little. I'm not good at explaining.=20
+
+Perhaps I had seen one too many vendor incompatibility to trust that
+adding a driver API without a validation suite will result in something
+usable in production settings.=20
