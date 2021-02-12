@@ -2,98 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F9B131A5A1
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 20:50:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BB3231A5A2
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 20:52:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231756AbhBLTtl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 14:49:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49950 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbhBLTth (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 14:49:37 -0500
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9B2EC061574;
-        Fri, 12 Feb 2021 11:48:57 -0800 (PST)
-Received: by mail-yb1-xb32.google.com with SMTP id f4so549100ybk.11;
-        Fri, 12 Feb 2021 11:48:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3EqKnqrU/i6v/GDs28Mbmk0UZvSParAnnToFTrhknXs=;
-        b=BgH/1x4lwQnf0O41USw4Be60GySMKUa4KoRGPGxqD2EKTlLT91KLSOgAq6nH4/sUKV
-         dzGTT4n5ziGmZgESJHBYOgKGLNvL0fcu2Fat1uB821IaQfOTeyNn6aRusHqJ+PnX1C5k
-         64EL8tYAsRm3gxMkOxQrvtnUwX2MNi55m9rhxROhm2c0kwM5jR4gprSw+MN01MGDRBPz
-         n3qyJGbl+SLrYGuONL6DACMfUcttua4h0QfP4vHQ3+Vi0Dp22UL0liYJaGLAb0p9j5w/
-         MU/ynzPDxmebtB2VCeQ8f19Ul25R479EObMSo7UVaEOwuxp6BIvfzADnS1Kl/RUBstt8
-         5alw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3EqKnqrU/i6v/GDs28Mbmk0UZvSParAnnToFTrhknXs=;
-        b=IXo4WcMAAkhDW6DRd2Ek8PxHE/8B8iRTT0HmQAa+ioS+qBKu6t4ZSR4FIeVtMBs9YJ
-         jt4oLVu2VNnoCCwpdjPZdN2mPM37dgMCrg8kCVn7vrUzQ3gEvShhrZSpaZW7yEs2Tfy3
-         ymDCheXLZBwgY9nN+GluKjXCfKRgg9hHBKWUqUmtf9YgEl0koI5ruLtGcI8IDZzGho7Y
-         T70zc2g7x/VBCB44eOmES8TkRu3G1JsDD2pbZrwu+ICVzJs4ZD/bsEVOeC6+l4KvLYuZ
-         vholjHN2lDCCSmCWhFjUz3maJK6e0YI8Xakkqdd69wS3TGkn1In0udPWQ/HGf7hvdN3F
-         56vw==
-X-Gm-Message-State: AOAM532P2fatyU8HDE4taWmnzSxJzsVLZXP3zKmV461AMGmGoF8Gx53s
-        EbKKdbW2sqoNF5YyLBGlFN/ViI2n544P8OV9yy4=
-X-Google-Smtp-Source: ABdhPJzkdS1rMTxV+y5XhjxG8xTJ4BNXysyH03peCWmMTT8/gb2Au4KTKSXskIy6FUySWR6pPIeeV5r3pf98PF79f2A=
-X-Received: by 2002:a25:9882:: with SMTP id l2mr5836218ybo.425.1613159336975;
- Fri, 12 Feb 2021 11:48:56 -0800 (PST)
+        id S231290AbhBLTvj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 14:51:39 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48582 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229451AbhBLTvh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Feb 2021 14:51:37 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5306C64E2B;
+        Fri, 12 Feb 2021 19:50:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1613159456;
+        bh=+jZNSXASRKJbVihU0PCI0TJ9OGQXrg2LKG1WrjZJIgs=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=JhtBFXoGZUHWLOqWkA5XyPMUhsah0NvARU8luvp2B85iaT8O2dHlbbQtIEi/q/QVR
+         mzwhMSsKUd8fJ9h7B88cz7n03dKtwUI01NsHni8p8eLkF4Ei18CUXNl+C4GF8YO6TM
+         Ls3bnSUnKb8ZxJTt/VyZxNO/40fhrWr9KlUaRSaeLgDjJw9fZBbhiXIQge2CQfTJ4Z
+         ay84UME2iq9K1PMYwI/4EFBrcSP8HQogW3HZXZ2OYSpiQZ1P/SwPMN/mSjM4HYIIIB
+         omGYSpHaGlPZ5pqWOuimBT8lgbQU1CYCcngQ+ENn6tVqYgvIjQZpggN77U5dq0rqDV
+         heiRtjyotwkaA==
+Received: by mail-oi1-f176.google.com with SMTP id d20so858070oiw.10;
+        Fri, 12 Feb 2021 11:50:56 -0800 (PST)
+X-Gm-Message-State: AOAM530YBdEvpvfE+IFP0+B9p6U4JblzpKd8i7IRktvkpwFBj85xnNM2
+        1Z+7UGBwFSPFwIpEK7ShEVwAKj9LGfQGUjTd898=
+X-Google-Smtp-Source: ABdhPJxZ6eS625gu7tCP3jyhoqzsmf/FtIBFwRQIDAEQc4KaCDOmL6Ivz2W9OCHRIBdzssaLb91SOBuyyD32FdF0usg=
+X-Received: by 2002:aca:d908:: with SMTP id q8mr749970oig.67.1613159455601;
+ Fri, 12 Feb 2021 11:50:55 -0800 (PST)
 MIME-Version: 1.0
-References: <20210212010053.668700-1-sdf@google.com>
-In-Reply-To: <20210212010053.668700-1-sdf@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 12 Feb 2021 11:48:46 -0800
-Message-ID: <CAEf4BzZ60LNPpWL6z566hCCF1JkJC=-nZpqg7JQGaHp0rJYGhg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] tools/resolve_btfids: add /libbpf to .gitignore
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
+References: <1613012611-8489-1-git-send-email-min.li.xe@renesas.com>
+ <CAK8P3a3YhAGEfrvmi4YhhnG_3uWZuQi0ChS=0Cu9c4XCf5oGdw@mail.gmail.com>
+ <OSBPR01MB47732017A97D5C911C4528F0BA8B9@OSBPR01MB4773.jpnprd01.prod.outlook.com>
+ <CAK8P3a2KDO4HutsXNJzjmRJTvW1QW4Kt8H7U53_QqpmgvZtd3A@mail.gmail.com> <OSBPR01MB4773B22EA094A362DD807F83BA8B9@OSBPR01MB4773.jpnprd01.prod.outlook.com>
+In-Reply-To: <OSBPR01MB4773B22EA094A362DD807F83BA8B9@OSBPR01MB4773.jpnprd01.prod.outlook.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Fri, 12 Feb 2021 20:50:39 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a3k5dAF=X3_NrYAAp5gPJ_uvF3XfmC4rKz0oGTrGRriCw@mail.gmail.com>
+Message-ID: <CAK8P3a3k5dAF=X3_NrYAAp5gPJ_uvF3XfmC4rKz0oGTrGRriCw@mail.gmail.com>
+Subject: Re: [PATCH net-next] misc: Add Renesas Synchronization Management
+ Unit (SMU) support
+To:     Min Li <min.li.xe@renesas.com>
+Cc:     Derek Kiernan <derek.kiernan@xilinx.com>,
+        Dragan Cvetic <dragan.cvetic@xilinx.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        gregkh <gregkh@linuxfoundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 11, 2021 at 5:07 PM Stanislav Fomichev <sdf@google.com> wrote:
+On Fri, Feb 12, 2021 at 5:19 PM Min Li <min.li.xe@renesas.com> wrote:
 >
-> There is what I see after compiling the kernel:
-
-typo: This?
-
+> >
+> > Ah, so if this is for a PTP related driver, it should probably be integrated into
+> > the PTP subsystem rather than being a separate class.
+> >
 >
->  # bpf-next...bpf-next/master
->  ?? tools/bpf/resolve_btfids/libbpf/
+> I was trying to add these functions to PHC subsystem but was not accepted because the functions
+> are specific to Renesas device and there is no place for those functions in PHC driver.
+
+It would be useful to explain that in the patch description and link
+to the original
+discussion there. What exactly was the objection?
+
+> > > > This tells me that you got the abstraction the wrong way: the common
+> > > > files should not need to know anything about the specific
+> > implementations.
+> > > >
+> > > > Instead, these should be in separate modules that call exported
+> > > > functions from the common code.
+> > > >
+> > > >
+> > >
+> > > I got what you mean. But so far it only supports small set of
+> > > functions, which is why I don't feet it is worth the effort to over abstract
+> > things.
+> >
+> > Then maybe pick one of the two hardware variants and drop the abstraction
+> > you have. You can then add more features before you add a proper
+> > abstraction layer and then the second driver.
+> >
 >
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> ---
+> If I come up with a new file and move all the abstraction code there,
+> does that work?
 
-Jiri,
+I think so, but it's more important to figure out a good user space
+interface first. The ioctl interfaces should be written on a higher-level
+abstraction, to ensure they can work with any hardware implementation
+and are not specific to Renesas devices.
 
-Is this
+Can you describe on an abstract level how a user would use the
+character device, and what they achieve by that?
 
-Fixes: fc6b48f692f8 ("tools/resolve_btfids: Build libbpf and libsubcmd
-in separate directories")
-
-?
-
-Do we need similar stuff for libsubcmd (what's that, btw?)
-
->  tools/bpf/resolve_btfids/.gitignore | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/tools/bpf/resolve_btfids/.gitignore b/tools/bpf/resolve_btfids/.gitignore
-> index 25f308c933cc..16913fffc985 100644
-> --- a/tools/bpf/resolve_btfids/.gitignore
-> +++ b/tools/bpf/resolve_btfids/.gitignore
-> @@ -1,2 +1,3 @@
->  /fixdep
->  /resolve_btfids
-> +/libbpf/
-> --
-> 2.30.0.478.g8a0d178c01-goog
->
+       Arnd
