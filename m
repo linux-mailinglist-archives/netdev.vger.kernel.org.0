@@ -2,267 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 704DE31A2FC
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 17:43:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16BF531A31A
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 17:52:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231184AbhBLQmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 11:42:09 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:44819 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229989AbhBLQkp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 11:40:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613147949;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=U4WyzaFVGJo5ke7IZuHExhC34PtdB0ost6FmcFZqD6o=;
-        b=Skv5Kyv6Id+hQVC7nzJwjrIqxXff4YZUghT0heTnTYZZ7wSHZ1d3et6n1i6hm28MeiJy3E
-        4wA0fkXHtj210XFxGdD96ogUwEEQV/KvrCt8KuFGEt0oO251pxSxWy5EhJ9LrYEITd2OTH
-        5naHAltvCEx50519HL3JC1MQ0XpPpCE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-20-c3Hmb8OLMNuFqTJzA6W-PQ-1; Fri, 12 Feb 2021 11:39:04 -0500
-X-MC-Unique: c3Hmb8OLMNuFqTJzA6W-PQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 74D39AFA81;
-        Fri, 12 Feb 2021 16:39:02 +0000 (UTC)
-Received: from krava (unknown [10.40.193.141])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 2D2D819D6C;
-        Fri, 12 Feb 2021 16:38:59 +0000 (UTC)
-Date:   Fri, 12 Feb 2021 17:38:58 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Veronika Kabatova <vkabatov@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>
-Subject: Re: FAILED unresolved symbol vfs_truncate on arm64 with LLVM
-Message-ID: <YCavItKm0mKxcVQD@krava>
-References: <YCKB1TF5wz93EIBK@krava>
- <YCKlrLkTQXc4Cyx7@krava>
- <CAEf4BzaL=qsSyDc8OxeN4pr7+Lvv+de4f+hM5a56LY8EABAk3w@mail.gmail.com>
- <YCMEucGZVPPQuxWw@krava>
- <CAEf4BzacQrkSMnmeO3sunOs7sfhX1ZoD_Hnk4-cFUK-TpLNqUA@mail.gmail.com>
- <YCPfEzp3ogCBTBaS@krava>
- <CAEf4BzbzquqsA5=_UqDukScuoGLfDhZiiXs_sgYBuNUvTBuV6w@mail.gmail.com>
- <YCQ+d0CVgIclDwng@krava>
- <YCVIWzq0quDQm6bn@krava>
- <CAEf4Bzbt2-Mn4+y0c+sSZWUSrP705c_e3SxedjV_xYGPQL79=w@mail.gmail.com>
+        id S229745AbhBLQvo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 11:51:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40142 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229451AbhBLQvl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 11:51:41 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02286C061574;
+        Fri, 12 Feb 2021 08:51:01 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id f14so231285ejc.8;
+        Fri, 12 Feb 2021 08:51:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=kuyIAN6ynILC6Lb1Ej4zOAFFZL68p0m+Z5l76VYpdI4=;
+        b=pQ6KJ66aU4m9vG+s3RKS3nIO1REYUCD/HIfeBWb/ray8H2l25s8Q6t8eeBvC81VOwj
+         JgmxhAqZFLNd9LndP8r/4EQQfM39a5bexDTvN8dhRfzNQRtrty9Ges2pArAFSN4IlMqB
+         E50vDhmSB87YjNOo9c56Ad835Zxsd2FkW/gWgIPWJQszMui8KRlOvsEPLHQGjxG2iMhZ
+         8UA8Dy4rSA4jK5+Wgfyhob65xkiJWNyWnEnw+U0b5clkgFlyrLNbkG1OrTzmQebnblOk
+         SEAl6Kg6u42jsJlDQyXMX+7qjJMdZTmpQOJAuqvSrXbEHrrQWG5GXJ6lYqQe+I7EnXqn
+         KbSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=kuyIAN6ynILC6Lb1Ej4zOAFFZL68p0m+Z5l76VYpdI4=;
+        b=tVWu3rEGvPo7/0HcCadGdijSc5/zV+iRsDnq0lnj1THiC2Hp4a2O8ivcHN7mb3qPeg
+         hNW28Dg+1Z18dbGQERLqnMRzTPC+bhXQsLEium1uUYmmHr71dGCONw3v9rKz+0oRjewl
+         62Myijgi4ZhoTBzg99xU7aKU41aCzc3sdKNeGGO/UThpG3DawyQhHzMjh30D3KTg0Dol
+         R+Z0W9pzz7w729AYMB9YgpxFwamQQbulQJ/5AtXV48dJzKGeSkj/JkpHKnUvsKGsKCpc
+         OYooB847Aezk7dFIFkwQNrgqWI93wcrMrbKeAo3JUocctuv6itcWdAggbN4B4wxGD6R3
+         McVA==
+X-Gm-Message-State: AOAM5304xLwkuH/2GTA+jg1P1FaOyNAQEDDZ8YYRgEoc6AWRCwmgDXiS
+        nIkQvSfvaKMzLlKuYlxkgcvScza+t+Vzw/wP
+X-Google-Smtp-Source: ABdhPJw+9EQuVkXn16atquT/DdvsnrytGuk42nwp9fu3inZ/k5/jDBeVUF+gk6tK8IDbBYAMCLQMaw==
+X-Received: by 2002:a17:906:364b:: with SMTP id r11mr3850258ejb.447.1613148659299;
+        Fri, 12 Feb 2021 08:50:59 -0800 (PST)
+Received: from anparri (host-95-239-64-41.retail.telecomitalia.it. [95.239.64.41])
+        by smtp.gmail.com with ESMTPSA id lo3sm580481ejb.106.2021.02.12.08.50.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Feb 2021 08:50:58 -0800 (PST)
+Date:   Fri, 12 Feb 2021 17:50:50 +0100
+From:   Andrea Parri <parri.andrea@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, mikelley@microsoft.com, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, davem@davemloft.net, kuba@kernel.org,
+        linux-hyperv@vger.kernel.org, linux-scsi@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Regressions with VMBus/VSCs hardening changes
+Message-ID: <20210212165050.GA11906@anparri>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAEf4Bzbt2-Mn4+y0c+sSZWUSrP705c_e3SxedjV_xYGPQL79=w@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 11, 2021 at 11:59:02AM -0800, Andrii Nakryiko wrote:
+Hi all,
 
-SNIP
+I'm reporting two regressions following certain VMBus/VSCs hardening changes
+we've been discussing 'recently', unfortunately the first regression already
+touched/affects mainline while the second one is in hyperv-next:
 
-> 
-> So in my previous example I assumed we have address ranges for ftrace
-> section, which is exactly the opposite from what we have. So this
-> binary search should be a bit different. start <= addr seems wrong
-> here as well.
-> 
-> The invariant here should be that addr[r] is the smallest address that
-> is >= than function start addr, right? Except the corner case where
-> there is no such r, but for that we have a final check in the return
-> below. If you wanted to use index l, you'd need to change the
-> invariant to find the largest addr, such that it is < end, but that
-> seems a bit convoluted.
-> 
-> So, with that, I think it should be like this:
-> 
-> size_t l = 0, r = count - 1, m;
-> 
-> /* make sure we don't use invalid r */
-> if (count == 0) return false;
-> 
-> while (l < r) {
->     /* note no +1 in this case, it's so that at the end, when you
->      * have, say, l = 0, and r = 1, you try l first, not r.
->      * Otherwise you might end in in the infinite loop when r never == l.
->      */
->     m = l + (r - l) / 2;
->     addr = addrs[m];
-> 
->     if (addr >= start)
->         /* we satisfy invariant, so tighten r */
->         r = m;
->     else
->         /* m is not good enough as l, maybe m + 1 will be */
->         l = m + 1;
-> }
-> 
-> return start <= addrs[r] && addrs[r] < end;
-> 
-> 
-> So, basically, r is maintained as a valid index always, while we
-> constantly try to tighten the l.
-> 
-> Does this make sense?
+1) [mainline]
 
-another take ;-)
+The first regression manifests with the following message (several):
 
-jirka
+  hv_vmbus: No request id available
 
+I could reliably reproduce such message/behavior by running the command:
+
+  fio --name=seqwrite --rw=read --direct=1 --ioengine=libaio --bs=32k --numjobs=4 --size=2G --runtime=60
+
+(the message is triggered when files are being created).
+
+I've bisected this regression to commit:
+
+  453de21c2b8281 ("scsi: storvsc: Use vmbus_requestor to generate transaction IDs for VMBus hardening")
+
+2) [hyperv-next]
+
+The second regression manifests with various messages including:
+
+  hv_netvsc 9c5f5000-0499-4b18-b2eb-a8d5c57c8774 eth0: Unknown nvsp packet type received 51966
+
+  hv_netvsc 9c5f5000-0499-4b18-b2eb-a8d5c57c8774 eth0: unhandled packet type 0, tid 0
+
+  hv_netvsc 9c5f5000-0499-4b18-b2eb-a8d5c57c8774 eth0: Incorrect transaction id
+
+  hv_netvsc 9c5f5000-0499-4b18-b2eb-a8d5c57c8774 eth0: Invalid rndis_msg (buflen: 262, msg_len: 1728)
+
+The connection was then typically lost/reset by the peer.
+
+I could reproduce such behavior/messages by running the test:
+
+  ntttcp -r -m 8,*,<receiver IP address> # receiver
+
+  ntttcp -s -m 8,*,<receiver IP address> -ns -t 60 # sender
+
+I bisected this regression to commit:
+
+  a8c3209998afb5 ("Drivers: hv: vmbus: Copy packets sent by Hyper-V out of the ring buffer")
 
 ---
-diff --git a/btf_encoder.c b/btf_encoder.c
-index b124ec20a689..20a93ed60e52 100644
---- a/btf_encoder.c
-+++ b/btf_encoder.c
-@@ -36,6 +36,7 @@ struct funcs_layout {
- struct elf_function {
- 	const char	*name;
- 	unsigned long	 addr;
-+	unsigned long	 size;
- 	unsigned long	 sh_addr;
- 	bool		 generated;
- };
-@@ -44,7 +45,7 @@ static struct elf_function *functions;
- static int functions_alloc;
- static int functions_cnt;
- 
--static int functions_cmp(const void *_a, const void *_b)
-+static int functions_cmp_name(const void *_a, const void *_b)
- {
- 	const struct elf_function *a = _a;
- 	const struct elf_function *b = _b;
-@@ -52,6 +53,16 @@ static int functions_cmp(const void *_a, const void *_b)
- 	return strcmp(a->name, b->name);
- }
- 
-+static int functions_cmp_addr(const void *_a, const void *_b)
-+{
-+	const struct elf_function *a = _a;
-+	const struct elf_function *b = _b;
-+
-+	if (a->addr == b->addr)
-+		return 0;
-+	return a->addr < b->addr ? -1 : 1;
-+}
-+
- static void delete_functions(void)
- {
- 	free(functions);
-@@ -98,6 +109,7 @@ static int collect_function(struct btf_elf *btfe, GElf_Sym *sym,
- 
- 	functions[functions_cnt].name = name;
- 	functions[functions_cnt].addr = elf_sym__value(sym);
-+	functions[functions_cnt].size = elf_sym__size(sym);
- 	functions[functions_cnt].sh_addr = sh.sh_addr;
- 	functions[functions_cnt].generated = false;
- 	functions_cnt++;
-@@ -236,6 +248,48 @@ get_kmod_addrs(struct btf_elf *btfe, __u64 **paddrs, __u64 *pcount)
- 	return 0;
- }
- 
-+static int is_ftrace_func(struct elf_function *func, __u64 *addrs,
-+			  __u64 count, bool kmod)
-+{
-+	/*
-+	 * For vmlinux image both addrs[x] and functions[x]::addr
-+	 * values are final address and are comparable.
-+	 *
-+	 * For kernel module addrs[x] is final address, but
-+	 * functions[x]::addr is relative address within section
-+	 * and needs to be relocated by adding sh_addr.
-+	 */
-+	__u64 start = kmod ? func->addr + func->sh_addr : func->addr;
-+	__u64 addr, end = func->addr + func->size;
-+
-+	/*
-+	 * The invariant here is addr[r] that is the smallest address
-+	 * that is >= than function start addr. Except the corner case
-+	 * where there is no such r, but for that we have a final check
-+	 * in the return.
-+	 */
-+	size_t l = 0, r = count - 1, m;
-+
-+	/* make sure we don't use invalid r */
-+	if (count == 0)
-+		return false;
-+
-+	while (l < r) {
-+		m = l + (r - l) / 2;
-+		addr = addrs[m];
-+
-+		if (addr >= start) {
-+			/* we satisfy invariant, so tighten r */
-+			r = m;
-+		} else {
-+			/* m is not good enough as l, maybe m + 1 will be */
-+			l = m + 1;
-+		}
-+	}
-+
-+	return start <= addrs[r] && addrs[r] < end;
-+}
-+
- static int setup_functions(struct btf_elf *btfe, struct funcs_layout *fl)
- {
- 	__u64 *addrs, count, i;
-@@ -267,7 +321,7 @@ static int setup_functions(struct btf_elf *btfe, struct funcs_layout *fl)
- 	}
- 
- 	qsort(addrs, count, sizeof(addrs[0]), addrs_cmp);
--	qsort(functions, functions_cnt, sizeof(functions[0]), functions_cmp);
-+	qsort(functions, functions_cnt, sizeof(functions[0]), functions_cmp_addr);
- 
- 	/*
- 	 * Let's got through all collected functions and filter
-@@ -275,18 +329,9 @@ static int setup_functions(struct btf_elf *btfe, struct funcs_layout *fl)
- 	 */
- 	for (i = 0; i < functions_cnt; i++) {
- 		struct elf_function *func = &functions[i];
--		/*
--		 * For vmlinux image both addrs[x] and functions[x]::addr
--		 * values are final address and are comparable.
--		 *
--		 * For kernel module addrs[x] is final address, but
--		 * functions[x]::addr is relative address within section
--		 * and needs to be relocated by adding sh_addr.
--		 */
--		__u64 addr = kmod ? func->addr + func->sh_addr : func->addr;
- 
- 		/* Make sure function is within ftrace addresses. */
--		if (bsearch(&addr, addrs, count, sizeof(addrs[0]), addrs_cmp)) {
-+		if (is_ftrace_func(func, addrs, count, kmod)) {
- 			/*
- 			 * We iterate over sorted array, so we can easily skip
- 			 * not valid item and move following valid field into
-@@ -303,6 +348,8 @@ static int setup_functions(struct btf_elf *btfe, struct funcs_layout *fl)
- 
- 	if (btf_elf__verbose)
- 		printf("Found %d functions!\n", functions_cnt);
-+
-+	qsort(functions, functions_cnt, sizeof(functions[0]), functions_cmp_name);
- 	return 0;
- }
- 
-@@ -312,7 +359,7 @@ static struct elf_function *find_function(const struct btf_elf *btfe,
- 	struct elf_function key = { .name = name };
- 
- 	return bsearch(&key, functions, functions_cnt, sizeof(functions[0]),
--		       functions_cmp);
-+		       functions_cmp_name);
- }
- 
- static bool btf_name_char_ok(char c, bool first)
+I am investigating but don't have fixes for these regressions now: given the
+'timing' (-rc7 with the next merge window at the door...) I would propose to
+revert/drop the interested changes:
 
+1) 453de21c2b8281 is part of the so called 'vmbus_requestor' series that was
+   applied during the merge window for 5.11:
+
+  e8b7db38449ac5 ("Drivers: hv: vmbus: Add vmbus_requestor data structure for VMBus hardening")
+  453de21c2b8281 ("scsi: storvsc: Use vmbus_requestor to generate transaction IDs for VMBus hardening")
+  4d18fcc95f5095 ("hv_netvsc: Use vmbus_requestor to generate transaction IDs for VMBus hardening")
+
+  I could prepare/submit patches to revert such commits (asap but likely not
+  before tomorrow/late Saturday - EU time).
+
+2) IIUC a8c3209998afb5 could be dropped (after rebase) without further modi-
+   fications to hyperv-next.
+
+Other suggestions/thoughts?
+
+Thanks,
+  Andrea
