@@ -2,112 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4992831A40F
-	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 18:53:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5059031A412
+	for <lists+netdev@lfdr.de>; Fri, 12 Feb 2021 18:53:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231717AbhBLRun (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 12:50:43 -0500
-Received: from so15.mailgun.net ([198.61.254.15]:51508 "EHLO so15.mailgun.net"
+        id S231952AbhBLRwq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 12:52:46 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49470 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231603AbhBLRul (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Feb 2021 12:50:41 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1613152219; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=ZV7o/l5i92iIubII/VeD5vu9RAbY/6LR/SqAIkDMvEw=;
- b=mTef7g85Hjs2y9HtxYwQSQdGOOoLBxILz5Adhrxrc9AWGNKyo3892DmsX7iCihnTVrM6IlPA
- 7rGP2EIDv5mq5cDpgt/xWnxJhsfTXNM1A2VWxEBPRmaTCzIVDamcHpOMKozCpLYtsdb+1k5j
- 9AiYm6egdXjmYoGULsRyJokvzmA=
-X-Mailgun-Sending-Ip: 198.61.254.15
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
- 6026bfbe8e43a988b75b522a (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 12 Feb 2021 17:49:50
- GMT
-Sender: subashab=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 2A263C43462; Fri, 12 Feb 2021 17:49:50 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: subashab)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 9F598C433C6;
-        Fri, 12 Feb 2021 17:49:49 +0000 (UTC)
+        id S231396AbhBLRwi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Feb 2021 12:52:38 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 680CB64E9A;
+        Fri, 12 Feb 2021 17:51:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1613152319;
+        bh=wGwQsAwZ1k9v0j7Vwt7Ai/MM+Mhs0Gb0UbBLuunFHmw=;
+        h=Date:From:To:Cc:Subject:From;
+        b=gH3Zai2URZXYsRqakW4Y6fB3mT8S9CSi+XFeBAkURA00RCfGQEpFg88m8R8ljt7Ex
+         C8/Z92H9PyaLBwwPV3aRoxPc3CCLSyZhkZuBUTv10A17bJ/TOwbHxE6TZQh9BvNWph
+         zapAvuyCO6JlcTjR94A875uR+fyLSlGdM9KzGj/osi3naJtS/VnEIrB5fB5Uyu7ZtI
+         wonhMCVAlG9q3e3yn/PDReZZpnCiCAZDvBfraAm7qpr9ps9h+K+YK8DS4BkKxw8G75
+         XKW+DB36xbFWzANrFJtGlWcT/m1JLzDkYf8rr+3FwvTnDzAVJCa83e/bMUuQpdjwcL
+         pdJlGbkH5cppg==
+Date:   Fri, 12 Feb 2021 11:51:56 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: [PATCH][next] i40e: Fix incorrect argument in call to ipv6_addr_any()
+Message-ID: <20210212175156.GA277354@embeddedor>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Fri, 12 Feb 2021 10:49:49 -0700
-From:   subashab@codeaurora.org
-To:     Alex Elder <elder@ieee.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Sharath Chandra Vurukala <sharathv@codeaurora.org>,
-        davem@davemloft.net, elder@kernel.org, cpratapa@codeaurora.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] net:ethernet:rmnet:Support for downlink MAPv5 csum
- offload
-In-Reply-To: <1c4e21bf-5903-bc45-6d6e-64b68e494542@ieee.org>
-References: <1613079324-20166-1-git-send-email-sharathv@codeaurora.org>
- <1613079324-20166-3-git-send-email-sharathv@codeaurora.org>
- <20210211180459.500654b4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <1c4e21bf-5903-bc45-6d6e-64b68e494542@ieee.org>
-Message-ID: <4694227d4e5a357f299df7f5444807b5@codeaurora.org>
-X-Sender: subashab@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-02-12 07:01, Alex Elder wrote:
-> On 2/11/21 8:04 PM, Jakub Kicinski wrote:
->> On Fri, 12 Feb 2021 03:05:23 +0530 Sharath Chandra Vurukala wrote:
->>> +/* MAP CSUM headers */
->>> +struct rmnet_map_v5_csum_header {
->>> +	u8  next_hdr:1;
->>> +	u8  header_type:7;
->>> +	u8  hw_reserved:5;
->>> +	u8  priority:1;
->>> +	u8  hw_reserved_bit:1;
->>> +	u8  csum_valid_required:1;
->>> +	__be16 reserved;
->>> +} __aligned(1);
->> 
->> Will this work on big endian?
-> 
-> Sort of related to this point...
-> 
-> I'm sure the response to this will be to add two versions
-> of the definition, surrounded __LITTLE_ENDIAN_BITFIELD
-> and __BIG_ENDIAN_BITFIELD tests.
-> 
-> I really find this non-intuitive, and every time I
-> look at it I have to think about it a bit to figure
-> out where the bits actually lie in the word.
-> 
-> I know this pattern is used elsewhere in the networking
-> code, but that doesn't make it any easier for me to
-> understand...
-> 
-> Can we used mask, defined in host byte order, to
-> specify the positions of these fields?
-> 
-> I proposed a change at one time that did this and
-> this *_ENDIAN_BITFIELD thing was used instead.
-> 
-> I will gladly implement this change (completely
-> separate from what's being done here), but thought
-> it might be best to see what people think about it
-> before doing that work.
-> 
-> 					-Alex
+It seems that the right argument to be passed is &tcp_ip6_spec->ip6dst,
+not &tcp_ip6_spec->ip6src, when calling function ipv6_addr_any().
 
-Our preference is to stick with __LITTLE_ENDIAN_BITFIELD
-& __BIG_ENDIAN_BITFIELD definitions similar to other
-networking definitions.
+Addresses-Coverity-ID: 1501734 ("Copy-paste error")
+Fixes: efca91e89b67 ("i40e: Add flow director support for IPv6")
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/net/ethernet/intel/i40e/i40e_ethtool.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
+index 8a4dd77a12da..a8a2b5f683a2 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
+@@ -4250,7 +4250,7 @@ static int i40e_check_fdir_input_set(struct i40e_vsi *vsi,
+ 				    (struct in6_addr *)&ipv6_full_mask))
+ 			new_mask |= I40E_L3_V6_DST_MASK;
+ 		else if (ipv6_addr_any((struct in6_addr *)
+-				       &tcp_ip6_spec->ip6src))
++				       &tcp_ip6_spec->ip6dst))
+ 			new_mask &= ~I40E_L3_V6_DST_MASK;
+ 		else
+ 			return -EOPNOTSUPP;
+-- 
+2.27.0
+
