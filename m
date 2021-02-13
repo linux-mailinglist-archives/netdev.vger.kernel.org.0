@@ -2,134 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C14B731A929
-	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 02:00:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7CC231A8CD
+	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 01:32:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232291AbhBMA6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 19:58:47 -0500
-Received: from mx0d-0054df01.pphosted.com ([67.231.150.19]:61434 "EHLO
-        mx0d-0054df01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232486AbhBMA5O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 19:57:14 -0500
-Received: from pps.filterd (m0209000.ppops.net [127.0.0.1])
-        by mx0c-0054df01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11D0RrRo014057;
-        Fri, 12 Feb 2021 19:28:51 -0500
-Received: from can01-to1-obe.outbound.protection.outlook.com (mail-to1can01lp2052.outbound.protection.outlook.com [104.47.61.52])
-        by mx0c-0054df01.pphosted.com with ESMTP id 36hrw92s7g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 12 Feb 2021 19:28:51 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Hl299JaJ4Wwq+neV1aMAJCsJMrqWa69tJWWBit4T8NNNpPaGfVu+VngNLq8ME8tbfXu7Od8qLYdI6eko88Gvr29NzCpWBbriJOn/aDA8oMBtbb0rmuVM1KJZWIm5NEDIsY4+K9IY0Oiz1nnAKBxSBIAXkGg6Rxf8C+rai33WdO2J1khq24ZyFxWv45gbh2E1OdUmiDzlhkz8IJMgvCHvaiRLJzErRAmlq4/63mmg8n6NBIwyTvZMn61woHh38yhLMNqybgk73rho2QJRRRVO3Zu0R7KGMxGqBcieP7dja9JJ8d95kJKmA1uc9wVU3Jtle8p1Mie+AUIBtYQTNjp+2w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tTwXFyEGjt6RVFJQWD7KH82azsq8YGkmYhZJRSXzCYU=;
- b=TMpL3lWSmqfK7HWUDHVCDfrz+9fK/Y6FJ6nSYHsgUlRdB6N8+nRKxS676lhwixgNo/T3eepyufQaoe8noeBloRfAEcHVKBwHWK05wNMenZ0dPxj2DWlG3NMZ1Ny8fyDTefqrNEF6n9Tkkr8Gb4S04N1tXFYMEabCXyNcQOjlfrgNQkJCjZ5BnkecLq297ay2/H+EBg2AtsHIfImwz75H3XUmHqPKarkEqDWxnS842NyTqkTzg04V/RGIGYN2jyEA7PW58mgQVapIHOopYpa7eojQUxXsj8AeUPSwkoFJmUQPLClHLubJ1ybsnouCX0JHTibo9G/WkB/gU8MAmOBPYg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=calian.com; dmarc=pass action=none header.from=calian.com;
- dkim=pass header.d=calian.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=calian.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tTwXFyEGjt6RVFJQWD7KH82azsq8YGkmYhZJRSXzCYU=;
- b=rcKnSIyEGY53DuEs8QRHAslS0uKG/fB5GiHEASoXECAoK5dKapjeNg8nP4+3vMbUG9ni+rIPqEEiSHf0iwFOF0p0OBdRITmY9n8VXcFkdUwsXAVBdPZm1kpan2I6729CZdVLCeZO3+5+uTHI+2buq3NGz2TwvgeX1cdSSYPbBXk=
-Authentication-Results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=calian.com;
-Received: from YTBPR01MB3551.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:1d::17)
- by YT1PR01MB3564.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:f::26) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.30; Sat, 13 Feb
- 2021 00:28:50 +0000
-Received: from YTBPR01MB3551.CANPRD01.PROD.OUTLOOK.COM
- ([fe80::3451:fadd:bf82:128]) by YTBPR01MB3551.CANPRD01.PROD.OUTLOOK.COM
- ([fe80::3451:fadd:bf82:128%6]) with mapi id 15.20.3825.034; Sat, 13 Feb 2021
- 00:28:50 +0000
-From:   Robert Hancock <robert.hancock@calian.com>
-To:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     f.fainelli@gmail.com, linux@armlinux.org.uk,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        Robert Hancock <robert.hancock@calian.com>
-Subject: [PATCH net-next 0/2] Broadcom PHY driver updates
-Date:   Fri, 12 Feb 2021 18:28:23 -0600
-Message-Id: <20210213002825.2557444-1-robert.hancock@calian.com>
-X-Mailer: git-send-email 2.27.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [204.83.154.189]
-X-ClientProxiedBy: DM5PR11CA0010.namprd11.prod.outlook.com
- (2603:10b6:3:115::20) To YTBPR01MB3551.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:1d::17)
+        id S231394AbhBMAb1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 19:31:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53778 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231273AbhBMAb0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 19:31:26 -0500
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45BADC061756
+        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 16:30:46 -0800 (PST)
+Received: by mail-yb1-xb29.google.com with SMTP id x19so1240785ybe.0
+        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 16:30:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IYJHUadxdcfyiyhZB/DfXUj2HmgRewPwBHaeQomePTs=;
+        b=XeLKpshA4DQ9HxG/JkWg378YsbCSEne299DGxtiyoN1RoymRuaGL+x+hcftXSvU0o3
+         Od61pQ5TIqLqIYCYo88567YPbbiBK0NgDe8FvcV9RpJ9nygow42f6hTRFd+u13nXc178
+         SOcPDbP+CZjGgs7NZH+MAuvqAgWq4pBoC0WwgRikVv149HBIlHYHBT41yPtsR0S3CAtg
+         cdqYqTKHUYz4KMrDY40BUCqOAhEl9FezuIRTNOefjm+vZebzkpgkZain116vBe/7oP0j
+         YSvwQtIvoM2GK74RZIIiCS6koUgDwnRBI9kqN9zXFsqr8yzaE3eX8w2r5khjwuRnW8A/
+         vTKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IYJHUadxdcfyiyhZB/DfXUj2HmgRewPwBHaeQomePTs=;
+        b=Opj3tDH+NrUWseInBYr8HphZyN6qYMZUXtgrXgH5yphDhFw0wmPtUXAPKvT0i/iF6P
+         H88L00RkaCNFFZqc5ONx9xXp3gD5HjPW6DthAduVpVN0e9gr7GmPSyr3FQEXIPEzDm3O
+         ruEybk+sx6Y2BX+QB+7hThJ9a75Gd+LPDDemFR0sLnQwcdFYni9+43MV25GElnQd7f4U
+         2Hj9PVrSTkOh3KVvxhE0nYyb+LtRUA5VV+WY5nhDB2BHWvVDzpSxcAQ4kPimBzGGvVzG
+         uszGClb+aRaT0bgBnMOx5VYt7JH/wFw5dtUqZGXLUv71Vj7g5RiyDPgFJlLvxK1tGyfn
+         VwCQ==
+X-Gm-Message-State: AOAM530OQy8AOgVTaVs5eXSdYYQlTJ5Hlql1phUlGC6OuomdApnaXl/u
+        w9e7KfWQb5OZ0Q78TqwHLE5/d1gUMar9KDYJhp92xA==
+X-Google-Smtp-Source: ABdhPJy2lOTWqpgU49wvYNXsJGYcVqPDEaVo82nSzZ7LqD4mG+Nx4QfLG9jqlz9UWFqIDq/16PWtLwlUIhJTssil9jw=
+X-Received: by 2002:a25:4981:: with SMTP id w123mr7301730yba.123.1613176245292;
+ Fri, 12 Feb 2021 16:30:45 -0800 (PST)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (204.83.154.189) by DM5PR11CA0010.namprd11.prod.outlook.com (2603:10b6:3:115::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.25 via Frontend Transport; Sat, 13 Feb 2021 00:28:49 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3050054e-72fa-4bd8-f828-08d8cfb655ce
-X-MS-TrafficTypeDiagnostic: YT1PR01MB3564:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <YT1PR01MB3564E7B594C26562E5AF25D4EC8A9@YT1PR01MB3564.CANPRD01.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LpehQHUpU0pdfyBKiwdQu06wsDxrFkXF7BlL9kfHHAfeuxDVqI2jYoj8ezuUCQubZrB/Nf9BCSh+r8GbITehs6GsgTnx46wBtBFDXg/qjqYCL3HEiIHZIrO2rs3IhF7LgwyNdNExvvO2n0EwU34jmJxXzeAG5PYoJj5WdeZfSmoaF9pVrxVXFDZyKu6FzzS5z0Gj9jxdfFGEnlV2RFOVzWCAQOFOaKGC4bBdzti+SSa/80or1sgrXgdNiGOW4zjSXHG2VjekKbggheR2938ORf5wUq0ds45+oRluH8G42z1p0xZOVWTgOCIFy5CdC+BIOEzwa0ZPMMMe6RNpgz6rOOl7geZnKZvL6K0sLnVABPzHwb9EqVRDpsWEXmptT217keJ3lZkvitVKoXm0cZPjJeMP5/azl1WXMhmBigMeDY4PIGfswaf3gLkz2ClDtNuFbZX5RvpCk6t6jw/alR7AGHL96v0XVuuLP1xjQI1K9eO3RHoeYVrzgL/3pdjke3neCgsZLMa778v2HFZ1jikoZGvitV4a9E0uH9bVqQJyifBb6VTbb7jMjd//el0779iweF8e617j+jbowAZaSPIkOA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YTBPR01MB3551.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(396003)(39850400004)(136003)(366004)(346002)(376002)(4744005)(1076003)(6512007)(52116002)(4326008)(478600001)(66556008)(66476007)(66946007)(2906002)(8676002)(44832011)(2616005)(107886003)(6486002)(5660300002)(69590400012)(316002)(956004)(15650500001)(83380400001)(16526019)(8936002)(6666004)(6506007)(26005)(36756003)(86362001)(186003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?CGryoYIZshe0tzQBOCakqJH27U0MuNADHEgTpSblx/84Jg7ahuxTr+bEGi/L?=
- =?us-ascii?Q?PzSR4unLHgwtrLCUcjkjrlzPYItrpSMFr2F11zHJ9Gi4Y/1mPFHUewX82+xy?=
- =?us-ascii?Q?OL/avmzkuoa7o3HyfgRQtR2JbBpcfHoMHB0FZT8mV7Ob3kJZ4XH1q50o9+gP?=
- =?us-ascii?Q?5dgfW61dE8b3mOIJgHk8TBF4RR8/Vr34XAG8PGmn1U88zq9UMpPxKJowQz5/?=
- =?us-ascii?Q?ZgsjkT6tT2kUzGn44mchVAFmSZOnU/r0rdpO5+fgpSNF4MMnSWWTRgI3b/8x?=
- =?us-ascii?Q?jQMHnvcdwBWGZolcNxCdhlQo+7LH2y+dyoGAf9HNULbHjoFJ5XcCNl7BYOJJ?=
- =?us-ascii?Q?DedFoedaehXe7dLpfBB0WJPDChr5Aka1PM4eK2Z1CrK9J99fWBJWIqmVT/kp?=
- =?us-ascii?Q?WQfegGm0FaqlwfC+0A8kybA9VYs+d3hFSI7iETxoazc21XC5FJ5Htpi7iliO?=
- =?us-ascii?Q?8bzS+7VqqahIk0yLi7KrXtegjuzNzioZxSQFK2oQ7JeL4/nCLierpV0G6k5O?=
- =?us-ascii?Q?tJi2uqkrL3TLpcIotLLNQ7WH+dja7/Zx7bir/5HgEXqQeUWOu7n7ncqAqyUx?=
- =?us-ascii?Q?HaEDZPk1fP3XhfKngKLu4VhPUXJPC0XmF9KsD/KfQCu5iX5KsAiHpbVSiu0U?=
- =?us-ascii?Q?FuN9lEAcwYgGeL+HXBXUKPeFmVsUQO/RHtYnGCKLqL45DNDufMDB7IjteMUO?=
- =?us-ascii?Q?qa4KPvYtUyUjUP5n3X+2XSO6/S4Wto7HTf9vf27jMM8Rhf/OiOU9h1vLAyuJ?=
- =?us-ascii?Q?pv8FGQJCYNgrs8ZtQe6YtAfdTYSCTcJsG7ZckU8JlQzEShzbnwYsWIWSq0zx?=
- =?us-ascii?Q?z6UGIysANOiylkbqoJxC4W2cMyeHw0zaEOOiv+POmr+ocZI0dQfh7v3/i3Hj?=
- =?us-ascii?Q?9t4CIElkleVeKVgWvuZQGSzZf4RoXw/1Dmhh5YIngv7lx58GpdVmF6l7VHnH?=
- =?us-ascii?Q?4W1b+r71hFElBsQZcnpeqQJPd0vqfaNc/IsKYNkCeEc9CBszbRmVyU7QbqCQ?=
- =?us-ascii?Q?GyJiTgzUVvKXQdZ6/Ul6mqlarSvvD7O5dpeJXUUvTnqJ/OV3csM4+fkOI5cN?=
- =?us-ascii?Q?/A7J5WseVYrWN3DAiVSV568hpCyl/Inn15Npv9pPTK0UyLYFJv1Hf/DkUlX7?=
- =?us-ascii?Q?6Wn8HFOGyzA4koK+eRyB9nP+0NtX+O/HPTp+aOjqFW7yAzblKsXXLW8/jRUD?=
- =?us-ascii?Q?nsAnm5wqFLrrnpCukAcS8Ohnp7fqMaSkhELkkhlLHkpkUFgNjOPN6r0ZLYYV?=
- =?us-ascii?Q?WdIP3r9H4Cga9yfl9HOf6EYIibqgoqmTE21a4R2C7NWWIHbko04TvxDd717U?=
- =?us-ascii?Q?ovyCptrHcLZP9jqYiixB1oCE?=
-X-OriginatorOrg: calian.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3050054e-72fa-4bd8-f828-08d8cfb655ce
-X-MS-Exchange-CrossTenant-AuthSource: YTBPR01MB3551.CANPRD01.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Feb 2021 00:28:50.5139
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 23b57807-562f-49ad-92c4-3bb0f07a1fdf
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sRJvMojJvnDnoypFN+9ixGOK6OF3OztdOE59nZsIvkQlhfrJrapuIQRLPgZEPAfUTDOOyHfqg7wCEV6tkwQznwY0Gl6DW8ZziOER1tNl/aU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: YT1PR01MB3564
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
- definitions=2021-02-12_10:2021-02-12,2021-02-12 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxscore=0
- phishscore=0 lowpriorityscore=0 spamscore=0 clxscore=1011
- priorityscore=1501 impostorscore=0 suspectscore=0 bulkscore=0
- mlxlogscore=721 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2009150000 definitions=main-2102130002
+References: <20210212232214.2869897-1-eric.dumazet@gmail.com> <20210212232214.2869897-3-eric.dumazet@gmail.com>
+In-Reply-To: <20210212232214.2869897-3-eric.dumazet@gmail.com>
+From:   Wei Wang <weiwan@google.com>
+Date:   Fri, 12 Feb 2021 16:30:33 -0800
+Message-ID: <CAEA6p_A0g-7WMfyQbw55wdAKkFkEbW2A-XwTNziP9XyD3MjmCA@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/2] tcp: factorize logic into tcp_epollin_ready()
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Arjun Roy <arjunroy@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Updates to the Broadcom PHY driver related to use with copper SFP modules.
+On Fri, Feb 12, 2021 at 3:22 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+> From: Eric Dumazet <edumazet@google.com>
+>
+> Both tcp_data_ready() and tcp_stream_is_readable() share the same logic.
+>
+> Add tcp_epollin_ready() helper to avoid duplication.
+>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Arjun Roy <arjunroy@google.com>
+> Cc: Wei Wang <weiwan@google.com>
+> ---
+>  include/net/tcp.h    | 12 ++++++++++++
+>  net/ipv4/tcp.c       | 16 ++++------------
+>  net/ipv4/tcp_input.c | 11 ++---------
+>  3 files changed, 18 insertions(+), 21 deletions(-)
+>
+> diff --git a/include/net/tcp.h b/include/net/tcp.h
+> index 244208f6f6c2ace87920b633e469421f557427a6..484eb2362645fd478f59b26b42457ecf4510eb14 100644
+> --- a/include/net/tcp.h
+> +++ b/include/net/tcp.h
+> @@ -1442,6 +1442,18 @@ static inline bool tcp_rmem_pressure(const struct sock *sk)
+>         return atomic_read(&sk->sk_rmem_alloc) > threshold;
+>  }
+>
+> +static inline bool tcp_epollin_ready(const struct sock *sk, int target)
+> +{
+> +       const struct tcp_sock *tp = tcp_sk(sk);
+> +       int avail = READ_ONCE(tp->rcv_nxt) - READ_ONCE(tp->copied_seq);
+> +
+> +       if (avail <= 0)
+> +               return false;
+> +
+> +       return (avail >= target) || tcp_rmem_pressure(sk) ||
+> +              (tcp_receive_window(tp) <= inet_csk(sk)->icsk_ack.rcv_mss);
+> +}
+> +
+>  extern void tcp_openreq_init_rwin(struct request_sock *req,
+>                                   const struct sock *sk_listener,
+>                                   const struct dst_entry *dst);
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index 9896ca10bb340924b779cb6a7606d57fdd5c3357..7a6b58ae408d1fb1e5536ccfed8215be123f3b57 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -481,19 +481,11 @@ static void tcp_tx_timestamp(struct sock *sk, u16 tsflags)
+>         }
+>  }
+>
+> -static inline bool tcp_stream_is_readable(const struct tcp_sock *tp,
+> -                                         int target, struct sock *sk)
+> +static bool tcp_stream_is_readable(struct sock *sk, int target)
+>  {
+> -       int avail = READ_ONCE(tp->rcv_nxt) - READ_ONCE(tp->copied_seq);
+> +       if (tcp_epollin_ready(sk, target))
+> +               return true;
+>
+> -       if (avail > 0) {
+> -               if (avail >= target)
+> -                       return true;
+> -               if (tcp_rmem_pressure(sk))
+> -                       return true;
+> -               if (tcp_receive_window(tp) <= inet_csk(sk)->icsk_ack.rcv_mss)
+> -                       return true;
+> -       }
+>         if (sk->sk_prot->stream_memory_read)
+>                 return sk->sk_prot->stream_memory_read(sk);
+>         return false;
+> @@ -568,7 +560,7 @@ __poll_t tcp_poll(struct file *file, struct socket *sock, poll_table *wait)
+>                     tp->urg_data)
+>                         target++;
+>
+> -               if (tcp_stream_is_readable(tp, target, sk))
+> +               if (tcp_stream_is_readable(sk, target))
+>                         mask |= EPOLLIN | EPOLLRDNORM;
+>
+>                 if (!(sk->sk_shutdown & SEND_SHUTDOWN)) {
+> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+> index a8f8f98159531e5d1c80660972148986f6acd20a..e32a7056cb7640c67ef2d6a4d9484684d2602fcd 100644
+> --- a/net/ipv4/tcp_input.c
+> +++ b/net/ipv4/tcp_input.c
+> @@ -4924,15 +4924,8 @@ int tcp_send_rcvq(struct sock *sk, struct msghdr *msg, size_t size)
+>
+>  void tcp_data_ready(struct sock *sk)
+>  {
+> -       const struct tcp_sock *tp = tcp_sk(sk);
+> -       int avail = tp->rcv_nxt - tp->copied_seq;
+> -
+> -       if (avail < sk->sk_rcvlowat && !tcp_rmem_pressure(sk) &&
+> -           !sock_flag(sk, SOCK_DONE) &&
 
-Robert Hancock (2):
-  net: phy: broadcom: Set proper 1000BaseX/SGMII interface mode for
-    BCM54616S
-  net: phy: broadcom: Do not modify LED configuration for SFP module
-    PHYs
+Seems "!sock_flag(sk, SOCK_DONE)" is not checked in
+tcp_epollin_read(). Does it matter?
 
- drivers/net/phy/broadcom.c | 109 ++++++++++++++++++++++++++++++-------
- include/linux/brcmphy.h    |   4 ++
- 2 files changed, 92 insertions(+), 21 deletions(-)
-
--- 
-2.27.0
-
+> -           tcp_receive_window(tp) > inet_csk(sk)->icsk_ack.rcv_mss)
+> -               return;
+> -
+> -       sk->sk_data_ready(sk);
+> +       if (tcp_epollin_ready(sk, sk->sk_rcvlowat))
+> +               sk->sk_data_ready(sk);
+>  }
+>
+>  static void tcp_data_queue(struct sock *sk, struct sk_buff *skb)
+> --
+> 2.30.0.478.g8a0d178c01-goog
+>
