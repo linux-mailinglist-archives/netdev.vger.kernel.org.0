@@ -2,104 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B863231A8BB
-	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 01:19:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E752731A8BD
+	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 01:21:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230270AbhBMATM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 19:19:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51162 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229980AbhBMATH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 19:19:07 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49709C061574
-        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 16:18:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=SRYockgpuvIyHm/YFs0cpym/SnCSJbFanYtLei8SK9Y=; b=C9m3QOu8vNVhqWh1ZuitFj659
-        tVUi6Q/lAWCU2l4wnqXtHhYg8exRClZ5bAmIJ3MQbIW4O2uvoq0AVmHV4KvafSQQu2bDiQx0/ZZZq
-        sCa7SOLbdGKVprAf1F5FzHpE42G6D+dlmSQO4L95oxy9VMNen0CoEqe5KUGl8+3gxrgyT1sbJ7vC4
-        GTPFY/5hOYc6RtdtUuGqzPT7kHyJVNJrrhedJAthoxFxwDWNvPB45thg10uHD57vGJALXvKSicDXz
-        3MVUP6OnS0UakA9Jb5Vmx/5C6zvZZdjexndRXkqSwrkIfzoFUjYvk0BWy10n8VwPPQd6WFiIldMz8
-        XJFEzbJDw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:42650)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1lAidY-0007no-3k; Sat, 13 Feb 2021 00:18:12 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1lAidU-0007Xw-Ka; Sat, 13 Feb 2021 00:18:08 +0000
-Date:   Sat, 13 Feb 2021 00:18:08 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Antoine Tenart <atenart@kernel.org>,
-        Quentin Schulz <quentin.schulz@bootlin.com>,
-        netdev@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net-next 1/2] net: phylink: explicitly configure in-band
- autoneg for PHYs that support it
-Message-ID: <20210213001808.GN1463@shell.armlinux.org.uk>
-References: <20210212172341.3489046-1-olteanv@gmail.com>
- <20210212172341.3489046-2-olteanv@gmail.com>
- <eb7b911f4fe008e1412058f219623ee2@walle.cc>
+        id S231706AbhBMAUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 19:20:51 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54562 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229903AbhBMAUu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Feb 2021 19:20:50 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 455DD64EA0;
+        Sat, 13 Feb 2021 00:20:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1613175609;
+        bh=A4jer86Cc9fL9qc19r8SQiSGOBNrgfoe3WMMmyDsMVg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=bO6ONXXco2qEOxK+ow7/pa66iZ/5Z/fuwfwbDS/zeWaJi040i6XwW/nUYq7eSEwoS
+         318f2PbOjEyaKVfd678pSCvhT6rfHrQGOZrepy8NQnWbPhB/cfwoHgkN5gJkq9Rcx9
+         750wUYivI00IKn5bSzraSUhuFxC2WPm/yHY+z0bjeFaUSmZa84G81MiSX6FbYTnwhu
+         lC/ZHtysjwzkomB2hBG5BqLi1+YwDumH1DzP5KpAWOHPK+nAe7jSyMC3WPb95EHLzN
+         KUOhOurvDM0TqSynbyNnUhYbokKgeH4F8mUzHwdjdqzDayUk3Xq3iVOhsdB/dZdVmY
+         PF4TBi04AclzA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3784160A2A;
+        Sat, 13 Feb 2021 00:20:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <eb7b911f4fe008e1412058f219623ee2@walle.cc>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next V16 0/7] bpf: New approach for BPF MTU handling
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161317560922.26527.12147444743341964387.git-patchwork-notify@kernel.org>
+Date:   Sat, 13 Feb 2021 00:20:09 +0000
+References: <161287779408.790810.15631860742170694244.stgit@firesoul>
+In-Reply-To: <161287779408.790810.15631860742170694244.stgit@firesoul>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        borkmann@iogearbox.net, alexei.starovoitov@gmail.com,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        lorenzo@kernel.org, marek@cloudflare.com, john.fastabend@gmail.com,
+        kuba@kernel.org, eyal.birger@gmail.com, colrack@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 12, 2021 at 11:40:59PM +0100, Michael Walle wrote:
-> Fun fact, now it may be the other way around. If the bootloader doesn't
-> configure it and the PHY isn't reset by the hardware, it won't work in
-> the bootloader after a reboot ;)
+Hello:
 
-If we start messing around with the configuration of PHYs in that
-regard, we could be opening ourselves up for a world of pain...
+This series was applied to bpf/bpf-next.git (refs/heads/master):
 
-> If you disable aneg between MAC and PHY, what would be the actual speed
-> setting/duplex mode then? I guess it have to match the external speed?
+On Tue, 09 Feb 2021 14:38:04 +0100 you wrote:
+> This patchset drops all the MTU checks in TC BPF-helpers that limits
+> growing the packet size. This is done because these BPF-helpers doesn't
+> take redirect into account, which can result in their MTU check being done
+> against the wrong netdev.
+> 
+> The new approach is to give BPF-programs knowledge about the MTU on a
+> netdev (via ifindex) and fib route lookup level. Meaning some BPF-helpers
+> are added and extended to make it possible to do MTU checks in the
+> BPF-code.
+> 
+> [...]
 
-That is a function of the interface mode and the PHY capabilities.
+Here is the summary with links:
+  - [bpf-next,V16,1/7] bpf: Remove MTU check in __bpf_skb_max_len
+    https://git.kernel.org/bpf/bpf-next/c/6306c1189e77
+  - [bpf-next,V16,2/7] bpf: fix bpf_fib_lookup helper MTU check for SKB ctx
+    https://git.kernel.org/bpf/bpf-next/c/2c0a10af688c
+  - [bpf-next,V16,3/7] bpf: bpf_fib_lookup return MTU value as output when looked up
+    https://git.kernel.org/bpf/bpf-next/c/e1850ea9bd9e
+  - [bpf-next,V16,4/7] bpf: add BPF-helper for MTU checking
+    https://git.kernel.org/bpf/bpf-next/c/34b2021cc616
+  - [bpf-next,V16,5/7] bpf: drop MTU check when doing TC-BPF redirect to ingress
+    https://git.kernel.org/bpf/bpf-next/c/5f7d57280c19
+  - [bpf-next,V16,6/7] selftests/bpf: use bpf_check_mtu in selftest test_cls_redirect
+    https://git.kernel.org/bpf/bpf-next/c/6b8838be7e21
+  - [bpf-next,V16,7/7] selftests/bpf: tests using bpf_check_mtu BPF-helper
+    https://git.kernel.org/bpf/bpf-next/c/b62eba563229
 
-1) if the PHY supports rate adaption, and is programmed for that, then
-   the PHY link normally operates at a fixed speed (e.g. 1G for SGMII)
-   and the PHY converts to the appropriate speed.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-   We don't actually support this per se, since the parameters we give
-   to the MAC via mac_link_up() are the media side parameters, not the
-   link parameters.
 
-2) if the PHY does not support rate adaption, then the MAC to PHY link
-   needs to follow the media speed and duplex. phylink will be in "PHY"
-   mode, where it passes the media side negotiation results to the MAC
-   just like phylib would, and the MAC should be programmed
-   appropriately. In the case of a SGMII link, the link needs to be
-   programmed to do the appropriate symbol repetition for 100M and 10M
-   speeds. The PHY /should/ do that automatically, but if it doesn't,
-   then the PHY also needs to be programmed to conform. (since if
-   there's no rate adaption in the PHY, the MAC side and the media side
-   must match.)
-
-Hope that helps.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
