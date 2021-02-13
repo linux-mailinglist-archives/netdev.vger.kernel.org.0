@@ -2,137 +2,285 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAF1231A8C1
-	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 01:25:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01B7431A8CA
+	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 01:30:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231337AbhBMAZG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 19:25:06 -0500
-Received: from mx0c-0054df01.pphosted.com ([67.231.159.91]:6520 "EHLO
+        id S229903AbhBMA3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 19:29:46 -0500
+Received: from mx0c-0054df01.pphosted.com ([67.231.159.91]:35951 "EHLO
         mx0c-0054df01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229650AbhBMAZF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 19:25:05 -0500
-X-Greylist: delayed 356 seconds by postgrey-1.27 at vger.kernel.org; Fri, 12 Feb 2021 19:25:04 EST
+        by vger.kernel.org with ESMTP id S229602AbhBMA3p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 19:29:45 -0500
 Received: from pps.filterd (m0208999.ppops.net [127.0.0.1])
-        by mx0c-0054df01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11D0LdrN023847;
-        Fri, 12 Feb 2021 19:24:16 -0500
-Received: from can01-to1-obe.outbound.protection.outlook.com (mail-to1can01lp2059.outbound.protection.outlook.com [104.47.61.59])
-        by mx0c-0054df01.pphosted.com with ESMTP id 36hq424ak3-1
+        by mx0c-0054df01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11D0QYSK028661;
+        Fri, 12 Feb 2021 19:28:55 -0500
+Received: from can01-to1-obe.outbound.protection.outlook.com (mail-to1can01lp2051.outbound.protection.outlook.com [104.47.61.51])
+        by mx0c-0054df01.pphosted.com with ESMTP id 36hq424anc-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 12 Feb 2021 19:24:16 -0500
+        Fri, 12 Feb 2021 19:28:55 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aPN1sH9wy/Kgk6drb1xjVX+jAPefZyZKgWRwBtHhAobj7M0GzPAxYwHfwqAlDjrGGUSvOCUQ9+jWxcvspUp6KuAx8ino71Nu5O9RWcm+/DHhYm9Fe/Ot5QW1KBQ8hjfJww22pkyA9qeUnQpsTqmL6CDem7LpFoSVzQI99geYi7oVavsnTEi0q+N6x7SrpLhhvxSQY/hnUd8is0qhmhzHBZbKykVgfmUMDXMIAVr5oM4ueEzKCRYu3LjEeYtVY812Qylzj8VDgr1XV2kv5K5EGDUtzBBuiUh8czh0Zn3VClhvvl0ZwUU+966s8cSm0+nOtYjzpN5jYhEqsIexbylIAw==
+ b=BsJe4B4XaOOLd/nO4qj5inrQ5pHItbvjyS8vJo0xrLsBew24+emywr9u3cE3zTglICBjvn++9sbgW/cTp2JcJJryh7o7O7qX6whv49uDbJfbg8D+hYDNGevGCeicre6UX/MpDhe/PE9luVZF4haezL7JOpemMJuI8c8B1t3VvvkVju++dSUVgxxtA2kP4uK+HS/H/lSRiZkq3XCovHKs3FZe9HojCD7DVRCa7XGqBhonc8Yqg+hGe5LNhNBptx30Gp2c8svsCqw5DVqpFX+hr+OCl5GFJNTkJub6TtB1zmLsNc6mnaS4TE9ccvhk5r6VzNb/7nOH+1YnSAhl6GJMuw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Bu99Bsvt15ACcTW6RDBzRhCGbPtCDBfUOJIXRCbmJ6M=;
- b=hME6qcDUck+nu9TcfPafNZmlzdf6GSmQp1nWe5boSjHPa5WNobA0YnjVd+F1zkFM3rykS4sMLWRgdTLZ/+BmQ1jnX0SDrgvK3cMVWrlmQCm37LLhO2lA8fx7zESIcd3vMH+dgAJUH8ckpYFLceaHaf7DnOjx203WI+xf04DTlKAz4saNfOSzaVHSPbTdEjZquSvCJYbJ4YI7DcesFAbRGjQ8VU8y/3UsCKxiOD+kiG2qb+IE32YlL7MnbcZl8XFomB0NcOC0BLTdqWT3ZW8ta/9aA32oBQotsOfz4oUKhqJaZ5AMYLlIoEBvxhiVaff9e9ecWQ12qDY5E0/9xPasVA==
+ bh=THCDourCgtXkQwsrIBj4gZLd/pDckroFVKtCrxEszK0=;
+ b=dAVw3HMHorerz+689LBdRgMRSWnS3JahIfHHbCXpIQ07k5yQp6Ny6LLwzWNi3GayS2pugFOgCfMoD6+PSIyBbGH2OB4KLzxKMzULC07fcSUg6+IiNoDwqnH1By/kyFR1EXc4JkGwKnzT1HV4bNab9ZBC0c41AJtC6SXdO3Z/XKr2c0S6k2X0kcXG489LkP9jr2G13Tx0bICINCMcCc3Tw1pLGEmovFB5FSq4tGjvtYow8OcwT3/d6qyJSxgPQzKoryTEx8hWDMOAM/QEGhm+/xdnpjTchMNXB3V3BTRJHKJiJb1xoCsR1wQ5RaOHgr8OxTWTeexUJ55UHRVEDynQ6w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=calian.com; dmarc=pass action=none header.from=calian.com;
  dkim=pass header.d=calian.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=calian.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Bu99Bsvt15ACcTW6RDBzRhCGbPtCDBfUOJIXRCbmJ6M=;
- b=bxUSrPVNXG9FpK9w7QHGNJ6vmzwDxJ1PSUcvKlOYtns6Wa+v1pDZNPRj0rxPbER57Iphnkzm9oOPQDAcuJw4GgmRigb8UxPQrf9R83NQSE05sSPpKifHHr2Z+00QST88i4hKW97Ch7gmuqhrCd7KRi99Uek0W47PtlOCDqTpuLw=
-Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=calian.com;
+ bh=THCDourCgtXkQwsrIBj4gZLd/pDckroFVKtCrxEszK0=;
+ b=Yq4aqGyjUsuvuX7z23qUhdW3KcKBrnxbksWS3qTMjPK6iKDdIGA3Ujl/6N/4AVfSixaTk1le4NOU8SlUehTvAyFWrQ9ksozbDmPFzRMmsTnE3MhmJJAsk31QClfwhZuT/98N23qdG8sQJs6O3VV6Hl4Fp+2/0529ZYCPcn7Dl+8=
+Authentication-Results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=calian.com;
 Received: from YTBPR01MB3551.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:1d::17)
- by YT1PR01MB3564.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:f::26) with
+ by YTOPR0101MB2091.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b00:1d::20) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.30; Sat, 13 Feb
- 2021 00:24:14 +0000
+ 2021 00:28:53 +0000
 Received: from YTBPR01MB3551.CANPRD01.PROD.OUTLOOK.COM
  ([fe80::3451:fadd:bf82:128]) by YTBPR01MB3551.CANPRD01.PROD.OUTLOOK.COM
  ([fe80::3451:fadd:bf82:128%6]) with mapi id 15.20.3825.034; Sat, 13 Feb 2021
- 00:24:14 +0000
+ 00:28:53 +0000
 From:   Robert Hancock <robert.hancock@calian.com>
-To:     davem@davemloft.net, kuba@kernel.org,
-        radhey.shyam.pandey@xilinx.com
-Cc:     linux@armlinux.org.uk, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org,
+To:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     f.fainelli@gmail.com, linux@armlinux.org.uk,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
         Robert Hancock <robert.hancock@calian.com>
-Subject: [PATCH net-next 0/3] Xilinx axienet updates
-Date:   Fri, 12 Feb 2021 18:23:53 -0600
-Message-Id: <20210213002356.2557207-1-robert.hancock@calian.com>
+Subject: [PATCH net-next 1/2] net: phy: broadcom: Set proper 1000BaseX/SGMII interface mode for BCM54616S
+Date:   Fri, 12 Feb 2021 18:28:24 -0600
+Message-Id: <20210213002825.2557444-2-robert.hancock@calian.com>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20210213002825.2557444-1-robert.hancock@calian.com>
+References: <20210213002825.2557444-1-robert.hancock@calian.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Originating-IP: [204.83.154.189]
-X-ClientProxiedBy: DM6PR07CA0080.namprd07.prod.outlook.com
- (2603:10b6:5:337::13) To YTBPR01MB3551.CANPRD01.PROD.OUTLOOK.COM
+X-ClientProxiedBy: DM5PR11CA0010.namprd11.prod.outlook.com
+ (2603:10b6:3:115::20) To YTBPR01MB3551.CANPRD01.PROD.OUTLOOK.COM
  (2603:10b6:b01:1d::17)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (204.83.154.189) by DM6PR07CA0080.namprd07.prod.outlook.com (2603:10b6:5:337::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.25 via Frontend Transport; Sat, 13 Feb 2021 00:24:13 +0000
+Received: from localhost.localdomain (204.83.154.189) by DM5PR11CA0010.namprd11.prod.outlook.com (2603:10b6:3:115::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.25 via Frontend Transport; Sat, 13 Feb 2021 00:28:52 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6f8ea1f7-eb6a-48e5-5b84-08d8cfb5b112
-X-MS-TrafficTypeDiagnostic: YT1PR01MB3564:
+X-MS-Office365-Filtering-Correlation-Id: 0969a72f-a47c-4a98-e492-08d8cfb65781
+X-MS-TrafficTypeDiagnostic: YTOPR0101MB2091:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <YT1PR01MB35641B9AFD8DB4F5E2B384C9EC8A9@YT1PR01MB3564.CANPRD01.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
+X-Microsoft-Antispam-PRVS: <YTOPR0101MB20916067A98092C92D118CC1EC8A9@YTOPR0101MB2091.CANPRD01.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8ZwG5mCzH5lMY7bSQRCd0Oyh9YIg+kzDl4BMZoXPOAuAERkEdA/JXaTyPLQDnoEzV4syLmnA0k2SqS4tkvQpvVLREEQEMr+wm/v3knv3wsNZ4B6T5PNBdTBq4ovyv1UhM0ZkxQYRxUq6u7JXafvwF7eKPYqp0CwXLq/CEkAm0qEiJ1EUKQJzDpV60pINUWXUhmov6/wvcdozdrIcd2NBcaaRLJ4iUo7VtbYgAp2+z9KA7xitEjrSFDHbP+aGSif6Vup8OUSxk2g+cZ3ZoGvomx72GFRqcPY5qlqfZb/0CaJkrEyr6UlnPZ+LKRTBNaBV65RoAgFzMyv9QExabU9Qas56oSEu/nPqBwDLRxfT01tzbHPxrAsUHDRvSuwGeDM0cniC7/uhBbJKLTz59p5Fw2pdH+h50cNYVBA3RQAHyJZt5Tug2VtW5JUSfT2wF6TQsmUYIf+FwYiB/xKHELMEzf5kEWJ2RXhTbwbF8kSC4wfC6waN3SCpyP9zZRt5BSn6ZeBqfcx/qWjwi9qsw7AqAKAqC9lWtjtCbb+by9WF11hN1Mtj1AxtPY4n4/IRWNHuXMuhbH3jIKuJV9rcUS+Qkw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YTBPR01MB3551.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(396003)(39850400004)(136003)(366004)(346002)(376002)(4744005)(1076003)(6512007)(52116002)(4326008)(478600001)(66556008)(66476007)(66946007)(2906002)(8676002)(44832011)(2616005)(107886003)(6486002)(5660300002)(69590400012)(316002)(956004)(15650500001)(83380400001)(16526019)(8936002)(6666004)(6506007)(26005)(36756003)(86362001)(186003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?yXqrHQOLQ3CSDggW5ATsWKpYFFle/C2Kf/asFpXtVQPLRz7PXUiLOE60T/4U?=
- =?us-ascii?Q?FpiFNV3TqD7kNZr6LftTd0A/G0qPX3M120/yskJCk/yXR7z/k3oVANIfGjbf?=
- =?us-ascii?Q?gSgpK8TJww2hiaTNDrWDY2Cr8V9kFi9WOYN1MwC9kivkm0eWXBaIsS1I9nUy?=
- =?us-ascii?Q?G7Gp3Y0bN9gjGtBWpkhOkXeoa0/hPZRI0oJkjsXpDS1fCXUJipIEjkG75AKq?=
- =?us-ascii?Q?X0+krtNUALINDPhRZslo92BoV/P9jj19HJG+kurRKX54/OElW+2wxSOqNmq4?=
- =?us-ascii?Q?SQpvZDzOP3jNLFNozRcnIBwflk1QVWwtuhGlrapArFDQT1qK4ey6MarCChPQ?=
- =?us-ascii?Q?KVFcCFATEenmya9NURmFthPJtB2PnBtEIZ7SZrAihbIa6N4wXYNU4XweTK0X?=
- =?us-ascii?Q?8Gdpa5QW8+hjYqk2MjsjDog0v3XmbJLleOS0hUesWkZ3R3PJ/F/nEK6uchCn?=
- =?us-ascii?Q?o9XLCfSjh3yFOFStXiQrrmw8RLBc2j19wIh1Nejy6XYR+zCm5+hkCrbTRqbX?=
- =?us-ascii?Q?bAZudjpvblHzCvfWL4LWy1dEbfkz/Bm7e9NH7bU8x/JixrZFix5Au3zqk5tu?=
- =?us-ascii?Q?YjJRhRDoiBJe4LGzVPf7VD4foRQgEHct6+nm3w+fGLN9HMWS5Wh6OMrZz6rn?=
- =?us-ascii?Q?7snSaa7ATBhWYf8/O5zbcs0S4WIMKzaRlCy8hcT53VDFwuoWYcSv0qeCh+vj?=
- =?us-ascii?Q?xyXazawThGMxsoW3rAvE1wrgfIfC80t8v87mp14jciA+5CV1ezHUp82T/O+n?=
- =?us-ascii?Q?th+t9QWm4sczUxrpgE0VwkKd5VE5naSBcWtcsh+TiZmEAk2qiITqF2C8aLd3?=
- =?us-ascii?Q?Dh0uGYZEYQ33i49bYdbhUSSn1fx3UbR4xFNtljCajAAU/6UUryTIdWEWje1Q?=
- =?us-ascii?Q?e/jW1699CnHoMq5MdL65SHnYaKKLYJRZBHmUeecOTOyK7ftD/Be20aiXwCK7?=
- =?us-ascii?Q?/TPXt0bycg+fMGFqQ2/9JLl6vlFq6qa4CT7zFhSycV8wTENLDyGrZiO26yF/?=
- =?us-ascii?Q?x6d54x6nBiWghz7xU9M+rXVEH9iAplmKnaVUHVatMiWKAF0CP+L28LTRucrq?=
- =?us-ascii?Q?C/rzB9rJR2N0UV/cad4baBrJp6y9/Nz0iQEliYPxIG3xgUmbxIewlcUlhlzs?=
- =?us-ascii?Q?3+VDcfJlklitlhNDnsJmjbD1+bFkGDAVUud4OZU1lDksmY3fPWMFl9RARo0a?=
- =?us-ascii?Q?0pTfLzrr4bY6T0DHIfgM7Lt5SLGrW2evj/wDEL4nDgTbsRvO8dMRm4UeL2Fh?=
- =?us-ascii?Q?RcY4lsCcpTjHH88q+73LfuV6fUE+ceqeg0CjnTRpGBoD0lsu/kEIu+6iZsKx?=
- =?us-ascii?Q?MSp/z74RO4VBAT75pQ7l1y3g?=
+X-Microsoft-Antispam-Message-Info: ZvZpKQaK45VGw302cDhF9UC++mEqPG1K9zFaGdXKIZfQ5av/F3E4LiNMiZbu7OGbTrCq6IskBiqQPwjUi/vi1Rg9j0s7Cg0Vs9wJoiFGXlkp4P2q/+46xBQiE+9OniyFGtDfn/cXtpYhGMrEbL9hIMCAjYvwOCK4+LkssI8wzKPfhjJARbZYphcuti4uZ63OJCDxY2xsdFSNGscvhvSQ7afs4m0NbAKpnjgLfd3LKKCgVF/c6xCXLbTGA/FdTm60bel2RfwssqYEuTvSWXINrNs31JyVI4mQBPq4RlVww/luifTDElBMlJPffhoXDObSPSsBah8GDFAOSnTHWyFTl0t6o6tNOe10hIWtJSnPKeZp5UDUqC8tqRZZWjyW9/MGszO8HQDP4OKZvrDz9BCVphY0dk6j2b469tz2jFGOAumLGw4GYjPddh8i/MyQLHm8le3jFTJO41wjqIBwOwVmzsBCjvrIjxRiyiop+/i89I2oP2rzHFAaD3ENGubLYcOWXYqNpZV0aLBkpJllYo7ttMcwox/3rckjWXc4MhyvuEPEjmGg8R9EF+EldABks47hZxkJY8xUboFg9ifoonYUZBRYYciR2QlFhe/qK70ZA7dPlbcHNPL3O+5kTufd4VHZfl3NNmNc4h5gO+CIi1MRIQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YTBPR01MB3551.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(136003)(39850400004)(366004)(346002)(376002)(396003)(478600001)(966005)(8936002)(36756003)(66476007)(16526019)(6666004)(4326008)(69590400012)(52116002)(6506007)(186003)(26005)(5660300002)(107886003)(66946007)(956004)(86362001)(2906002)(8676002)(6512007)(2616005)(6486002)(44832011)(316002)(83380400001)(66556008)(1076003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?i47r6bBGog7gDJFoLX/xABV/hEUEY+4FXGl7YdPN0OzDlIFVoqbpbh7O4iqb?=
+ =?us-ascii?Q?q0SG0CZWgxkd8nYkHfhZ4+uOrmmhsksLmaWAPtF8ACQwOWLi2q2g4dAGkMOj?=
+ =?us-ascii?Q?vrjknKb+M5ccPGDr5ZjOJgbdsX1bhFdJ4+XZoHCR8UX7M2Ed6eaNdexBXNTt?=
+ =?us-ascii?Q?4sL3DTaaDS9dBx5S1ot9TQ6pzv93fHRa8c6GGvx7opGFepoPXxqq0lj0PIPr?=
+ =?us-ascii?Q?DZVXZNLUCsRU1CJoStsbuO/7C/lGdNerY2OkjmwnS92SCII+7mHFMRsbrOu1?=
+ =?us-ascii?Q?ePEhEgs6bNYrApxP8nroGNOu2fF1+NU0553OlsLlgDRoVcdMhbi5o8BB/LPP?=
+ =?us-ascii?Q?LHUZdbHlKrYa0GqpdIYFopghemHec/yFUE3Dn1d9qmfrQG89TzP+TehHhXwx?=
+ =?us-ascii?Q?uFOUuutLmSICqHcjrP/t1nfQdr8palqOT4xE2rFlNm2f9r4TMe1GOAteaH3l?=
+ =?us-ascii?Q?bokFgonmxBrFyJ/DzHH+fAR6BmJVGT4yeEsX5zBbpn6exoa+z+z8N+AOFnCz?=
+ =?us-ascii?Q?VLNws62H0AWjyhOdFMBaALXWIVcoiKcYXZPU5DWseBFPTY2/UqKb4Z363pC+?=
+ =?us-ascii?Q?9xJbn7BO+eYJSuJF6WyDfDLttSUPcfkzwIVYSDlWanxcNJi5AxTrVktCiFHY?=
+ =?us-ascii?Q?X8KTd+X4tWPkJ/bUnMGtnB6uhboX9845oe1kgdXpBHhnKJ53yUPdm6+LslTo?=
+ =?us-ascii?Q?vhuDkKq78/cTbBka2H8/hPLlYMoJWSFsBxDLjUTcRYy/9dYZAFGeTC71olCL?=
+ =?us-ascii?Q?igQPLXK1yKlxeSW9TWHBsoNBgDI7l4FQJ8jKzSw0Lhgyu1zQHXLlCTwjdJsT?=
+ =?us-ascii?Q?vFxgFBJ/UVomaLnJsEG1e2vjN+Aek/VNYxupCd3ejOKML1Zm9fDks9ya5qCL?=
+ =?us-ascii?Q?KptCUFgyS7F2PKaXMXVy+ayfDGwlVPnXPmaJ3k4hJgml6k9LKwVn43Ga4jx8?=
+ =?us-ascii?Q?xCh9RoFNk5buCaWoQ8aWxP477dKmZCHPnoz+4g7+szZba1ZdzLdVPRu9hpcw?=
+ =?us-ascii?Q?FM6I24GKx2LElFkaxy6yGaWWd3h3a+PnkdOOdduGu9pbl/MPBEWEj6jQ3uze?=
+ =?us-ascii?Q?eKjWrv9srOdml1xy8qnWkXvjsj2mRRyT0fqI8KLaZrpdlZUVvw91r6abT/RB?=
+ =?us-ascii?Q?FBAxrgeNYt5KPsmB4yPaCqqjJQZrkCJeLVgM6wqNOnQNhDwQXHjRmzDm5IT4?=
+ =?us-ascii?Q?/STSSWLIqBTbU+e347vqwOGl5G1u/BMsjeMPTYBwiiMc7SZCH6r+HO9liJtL?=
+ =?us-ascii?Q?5L3zBtC9MWKpoeJoOZA+t+7UMt2tc4wD24P3yobEDIGaA4zrzLlGrvpkUzGz?=
+ =?us-ascii?Q?07tUE8H8e1olpnk34U5w/aod?=
 X-OriginatorOrg: calian.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6f8ea1f7-eb6a-48e5-5b84-08d8cfb5b112
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0969a72f-a47c-4a98-e492-08d8cfb65781
 X-MS-Exchange-CrossTenant-AuthSource: YTBPR01MB3551.CANPRD01.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Feb 2021 00:24:14.1434
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Feb 2021 00:28:53.3642
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 23b57807-562f-49ad-92c4-3bb0f07a1fdf
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: gNHk1154bVUXrzqZaODIGIYnxJv0Ay5XQmAad1xhYmyh7pe0MmfN2BJaqyODR5N1xdTKWDnDqYHVz3W6radqo0AXhAULSNbQ4R6q6JxdRHc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: YT1PR01MB3564
+X-MS-Exchange-CrossTenant-UserPrincipalName: ucziP7Av6YAsIk8hbY3NP1PtTcsBQ/KwHtCE0wDLL6zbrV7SUubZaCFqZZ7cYnuVgIl8WNu9LBuGnd0JSXpBHqe9x38ct72H+GDfstOoyFI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: YTOPR0101MB2091
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
  definitions=2021-02-12_10:2021-02-12,2021-02-12 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 clxscore=1011
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 clxscore=1015
  impostorscore=0 adultscore=0 malwarescore=0 phishscore=0 suspectscore=0
- mlxlogscore=615 spamscore=0 priorityscore=1501 bulkscore=0
+ mlxlogscore=999 spamscore=0 priorityscore=1501 bulkscore=0
  lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102130001
+ engine=8.12.0-2009150000 definitions=main-2102130002
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Updates to the Xilinx AXI Ethernet driver to add support for an additional
-ethtool operation, and to support dynamic switching between 1000BaseX and
-SGMII interface modes.
+The default configuration for the BCM54616S PHY may not match the desired
+mode when using 1000BaseX or SGMII interface modes, such as when it is on
+an SFP module. Add code to explicitly set the correct mode using
+programming sequences provided by Bel-Fuse:
 
-Robert Hancock (3):
-  net: axienet: hook up nway_reset ethtool operation
-  dt-bindings: net: xilinx_axienet: add xlnx,switch-x-sgmii attribute
-  net: axienet: Support dynamic switching between 1000BaseX and SGMII
+https://www.belfuse.com/resources/datasheets/powersolutions/ds-bps-sfp-1gbt-05-series.pdf
+https://www.belfuse.com/resources/datasheets/powersolutions/ds-bps-sfp-1gbt-06-series.pdf
 
- .../bindings/net/xilinx_axienet.txt           |  4 ++
- drivers/net/ethernet/xilinx/xilinx_axienet.h  | 29 +++++---
- .../net/ethernet/xilinx/xilinx_axienet_main.c | 68 +++++++++++++++++--
- 3 files changed, 83 insertions(+), 18 deletions(-)
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+---
+ drivers/net/phy/broadcom.c | 83 ++++++++++++++++++++++++++++++++------
+ include/linux/brcmphy.h    |  4 ++
+ 2 files changed, 75 insertions(+), 12 deletions(-)
 
+diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
+index 0472b3470c59..78542580f2b2 100644
+--- a/drivers/net/phy/broadcom.c
++++ b/drivers/net/phy/broadcom.c
+@@ -64,6 +64,63 @@ static int bcm54612e_config_init(struct phy_device *phydev)
+ 	return 0;
+ }
+ 
++static int bcm54616s_config_init(struct phy_device *phydev)
++{
++	int rc, val;
++
++	if (phydev->interface == PHY_INTERFACE_MODE_SGMII ||
++	    phydev->interface == PHY_INTERFACE_MODE_1000BASEX) {
++		/* Ensure proper interface mode is selected. */
++		/* Disable RGMII mode */
++		val = bcm54xx_auxctl_read(phydev, MII_BCM54XX_AUXCTL_SHDWSEL_MISC);
++		if (val < 0)
++			return val;
++		val &= ~MII_BCM54XX_AUXCTL_SHDWSEL_MISC_RGMII_EN;
++		rc = bcm54xx_auxctl_write(phydev, MII_BCM54XX_AUXCTL_SHDWSEL_MISC,
++					  val);
++		if (rc < 0)
++			return rc;
++
++		/* Select 1000BASE-X register set (primary SerDes) */
++		val = bcm_phy_read_shadow(phydev, BCM54XX_SHD_MODE);
++		if (val < 0)
++			return val;
++		val |= BCM54XX_SHD_MODE_1000BX;
++		rc = bcm_phy_write_shadow(phydev, BCM54XX_SHD_MODE, val);
++		if (rc < 0)
++			return rc;
++
++		/* Power down SerDes interface */
++		rc = phy_set_bits(phydev, MII_BMCR, BMCR_PDOWN);
++		if (rc < 0)
++			return rc;
++
++		/* Select proper interface mode */
++		val &= ~BCM54XX_SHD_INTF_SEL_MASK;
++		val |= phydev->interface == PHY_INTERFACE_MODE_SGMII ?
++			BCM54XX_SHD_INTF_SEL_SGMII :
++			BCM54XX_SHD_INTF_SEL_GBIC;
++		rc = bcm_phy_write_shadow(phydev, BCM54XX_SHD_MODE, val);
++		if (rc < 0)
++			return rc;
++
++		/* Power up SerDes interface */
++		rc = phy_clear_bits(phydev, MII_BMCR, BMCR_PDOWN);
++		if (rc < 0)
++			return rc;
++
++		/* Select copper register set */
++		val &= ~BCM54XX_SHD_MODE_1000BX;
++		rc = bcm_phy_write_shadow(phydev, BCM54XX_SHD_MODE, val);
++		if (rc < 0)
++			return rc;
++
++		/* Power up copper interface */
++		return phy_clear_bits(phydev, MII_BMCR, BMCR_PDOWN);
++	}
++	return 0;
++}
++
+ static int bcm54xx_config_clock_delay(struct phy_device *phydev)
+ {
+ 	int rc, val;
+@@ -283,15 +340,17 @@ static int bcm54xx_config_init(struct phy_device *phydev)
+ 
+ 	bcm54xx_adjust_rxrefclk(phydev);
+ 
+-	if (BRCM_PHY_MODEL(phydev) == PHY_ID_BCM54210E) {
++	switch (BRCM_PHY_MODEL(phydev)) {
++	case PHY_ID_BCM54210E:
+ 		err = bcm54210e_config_init(phydev);
+-		if (err)
+-			return err;
+-	} else if (BRCM_PHY_MODEL(phydev) == PHY_ID_BCM54612E) {
++		break;
++	case PHY_ID_BCM54612E:
+ 		err = bcm54612e_config_init(phydev);
+-		if (err)
+-			return err;
+-	} else if (BRCM_PHY_MODEL(phydev) == PHY_ID_BCM54810) {
++		break;
++	case PHY_ID_BCM54616S:
++		err = bcm54616s_config_init(phydev);
++		break;
++	case PHY_ID_BCM54810:
+ 		/* For BCM54810, we need to disable BroadR-Reach function */
+ 		val = bcm_phy_read_exp(phydev,
+ 				       BCM54810_EXP_BROADREACH_LRE_MISC_CTL);
+@@ -299,9 +358,10 @@ static int bcm54xx_config_init(struct phy_device *phydev)
+ 		err = bcm_phy_write_exp(phydev,
+ 					BCM54810_EXP_BROADREACH_LRE_MISC_CTL,
+ 					val);
+-		if (err < 0)
+-			return err;
++		break;
+ 	}
++	if (err)
++		return err;
+ 
+ 	bcm54xx_phydsp_config(phydev);
+ 
+@@ -385,7 +445,7 @@ static int bcm5481_config_aneg(struct phy_device *phydev)
+ 
+ static int bcm54616s_probe(struct phy_device *phydev)
+ {
+-	int val, intf_sel;
++	int val;
+ 
+ 	val = bcm_phy_read_shadow(phydev, BCM54XX_SHD_MODE);
+ 	if (val < 0)
+@@ -397,8 +457,7 @@ static int bcm54616s_probe(struct phy_device *phydev)
+ 	 * RGMII-1000Base-X is properly supported, but RGMII-100Base-FX
+ 	 * support is still missing as of now.
+ 	 */
+-	intf_sel = (val & BCM54XX_SHD_INTF_SEL_MASK) >> 1;
+-	if (intf_sel == 1) {
++	if ((val & BCM54XX_SHD_INTF_SEL_MASK) == BCM54XX_SHD_INTF_SEL_RGMII) {
+ 		val = bcm_phy_read_shadow(phydev, BCM54616S_SHD_100FX_CTRL);
+ 		if (val < 0)
+ 			return val;
+diff --git a/include/linux/brcmphy.h b/include/linux/brcmphy.h
+index de9430d55c90..b0a73b91d5ba 100644
+--- a/include/linux/brcmphy.h
++++ b/include/linux/brcmphy.h
+@@ -137,6 +137,7 @@
+ 
+ #define MII_BCM54XX_AUXCTL_SHDWSEL_MISC			0x07
+ #define MII_BCM54XX_AUXCTL_SHDWSEL_MISC_WIRESPEED_EN	0x0010
++#define MII_BCM54XX_AUXCTL_SHDWSEL_MISC_RGMII_EN	0x0080
+ #define MII_BCM54XX_AUXCTL_SHDWSEL_MISC_RGMII_SKEW_EN	0x0100
+ #define MII_BCM54XX_AUXCTL_MISC_FORCE_AMDIX		0x0200
+ #define MII_BCM54XX_AUXCTL_MISC_WREN			0x8000
+@@ -223,6 +224,9 @@
+ /* 11111: Mode Control Register */
+ #define BCM54XX_SHD_MODE		0x1f
+ #define BCM54XX_SHD_INTF_SEL_MASK	GENMASK(2, 1)	/* INTERF_SEL[1:0] */
++#define BCM54XX_SHD_INTF_SEL_RGMII	0x02
++#define BCM54XX_SHD_INTF_SEL_SGMII	0x04
++#define BCM54XX_SHD_INTF_SEL_GBIC	0x06
+ #define BCM54XX_SHD_MODE_1000BX		BIT(0)	/* Enable 1000-X registers */
+ 
+ /*
 -- 
 2.27.0
 
