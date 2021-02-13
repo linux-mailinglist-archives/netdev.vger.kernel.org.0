@@ -2,152 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36F2E31A978
-	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 02:23:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2CEC31A97B
+	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 02:27:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232105AbhBMBWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 20:22:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36544 "EHLO
+        id S229918AbhBMB0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 20:26:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229650AbhBMBWM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 20:22:12 -0500
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 124AEC061574
-        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 17:21:32 -0800 (PST)
-Received: by mail-io1-xd2a.google.com with SMTP id q7so1149174iob.0
-        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 17:21:32 -0800 (PST)
+        with ESMTP id S229648AbhBMB0q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 20:26:46 -0500
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79206C0613D6
+        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 17:26:06 -0800 (PST)
+Received: by mail-pg1-x535.google.com with SMTP id n10so750972pgl.10
+        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 17:26:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=blZ+p+C8DT5ov77/Ew+JJEfXNzCZtorrWutT02ymjIE=;
-        b=JlscEiD/ytW8ZxdBwYXx0URpmKMRpn+wtglQfgQanzBoQOKsNgiG+XyhzplARlY+K4
-         K+c8gbbjOjDkT07nz7Ti6yqZ2GZNHko52Gys3vV29+QD2UD3TTxX8uv3LQatszW6s5Py
-         6kgeD0NbSu10IFmlB13i4hNOwHeW2aW+THhzM2M16ACNgSt4BWHwVw/NZ632KD/gomul
-         lWLweTvLFrjRnTgmNyLc5gUFalSYnyZZUsYTvAQa3EpmjTVhAEjXvE8Z/JxBkuu4D57F
-         ZCG5nZZ66bAE0uANUfnWc4s/0tEbKdv9JyUupNUdGzuH3vls6hpsJCRT9862ilPhqXog
-         +eMQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=xmXCa4C38cKT7LC1TpReePlpIFPT9Sv2aTdmiURYn/Q=;
+        b=Q6ppK7wdUqjdFZ0Ki3ocVRAlGGXFmU6jR2yG9oXFfO6Ffe4u3MERQFop4oaIj5GakY
+         AJlNCXDBf+HpMFrjX42Pk0j7iAaXyULudQAWzHwOOKhC9QL7DbB3KacXUzmo1MUOJdy4
+         Yw46T2jjfMhgkxr3FL70DNrlTozlhshQACWnjODomiKLf7knUfRqO6eoA/7cxRdB3rJc
+         3oU4229hHBcuefnouZkgZI1mgkouW8RGyxrDEBOKOrqk/y9TbZa6Dbv6BGHC1LUhofT3
+         8AUhHzxwGcZtyatoSIFMq/8XUrROvkHeQSX6qrzb/5vtdup1A5t0bXg1Ntq7z06aHEO4
+         ZKgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=blZ+p+C8DT5ov77/Ew+JJEfXNzCZtorrWutT02ymjIE=;
-        b=mUx4bVi4YWW7i/ucAU1uinvR/sPVN2sSO+7tbbK5c8MJEfASXGrlC3Tx8YyOxBAlZl
-         +42VZRp4V1Xp3p2VsCGCG8q8YyFu3yt/NHhRi55b3bpV/YkrCHtnuM4acgraeqLv123n
-         8DpqKjDkoiXsJOhK+H15cnyS2Fu8Hi2cfjZh2l4i/380yktb0fwmhbIyLKrypwz7LDGG
-         neU6fEISuQiRYEZ7MaCzBXRvzO1zQ6e71xq1JAE3JstFnFO/EU4p0diAluh9CZA0vMpa
-         R1rfmW4fM6/Q9yZ3A5TRWEZQY6Y85HzGWN0mnUfXRDQMR9RTjI2tB4hZW4tmRE8vyD5u
-         C5Hw==
-X-Gm-Message-State: AOAM531plQz0cwClua2uDBoycQMtHdfGnN24Su9fFirPbBu6IAsi+ISB
-        G0wIL6UrlFDjD179Mu1ts2FutUaJwFQeEdvFggcu/GdPJJs=
-X-Google-Smtp-Source: ABdhPJwESNSvXMoWNQV4A+yDfrG/mNPWGCWTwjC5a3NUwM0NI+BVWKNPL1qFeJq7adHTKkTCkHwmtvef+26mq8UGAm4=
-X-Received: by 2002:a05:6638:b12:: with SMTP id a18mr5170344jab.114.1613179291362;
- Fri, 12 Feb 2021 17:21:31 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=xmXCa4C38cKT7LC1TpReePlpIFPT9Sv2aTdmiURYn/Q=;
+        b=Fmvagf5L79RGFrGaBcYVZbX5rpTNsuyDjfEjy/5X78XutQ9cYSj2yHPaLYSEOxN6Tw
+         zqedgq//2SoSc0kbPoW1FbC2hF6YFftQmh4tjCM9DeoWBB7Z10JfxTT+EfSy+3Goo2M4
+         lfp8FvZIU6Bkdfz5ijXMknG77LeQXpu0S3zkny9i1oovi/ixryMp3SSE/Dcq6YJqUf1V
+         DwXyZNc7YYh7EkzXM7Ov1jBQwQWgq+JJaTk3JzH7nGcZO1tbBG7z2tbz10PMyle5moVF
+         IXxfU/dUY3xnylckqCfF8+PmCMn2pEtDo/tiGQprmT/ZtWOuWACL5KYYOZS/3VNcrYat
+         F30g==
+X-Gm-Message-State: AOAM532R+waRbNikVgwKR1+vay020Q8KHR3FK5f8pPnbwn9pxeXTDkY4
+        71rCzM/3syx/IBX5p9t4Gcd0qcqaSNk=
+X-Google-Smtp-Source: ABdhPJz6aq884+puuV3zPOG2D9PIp9rUNTy/2YOf066AAQHfjqZru0CHavaZSWF89WkJtUDqk1o43A==
+X-Received: by 2002:aa7:8184:0:b029:1e5:1e7a:bcc0 with SMTP id g4-20020aa781840000b02901e51e7abcc0mr5511441pfi.73.1613179565389;
+        Fri, 12 Feb 2021 17:26:05 -0800 (PST)
+Received: from [10.230.29.30] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id 141sm9623300pfa.65.2021.02.12.17.26.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 12 Feb 2021 17:26:04 -0800 (PST)
+Subject: Re: [PATCH net-next 1/2] net: phy: broadcom: Set proper
+ 1000BaseX/SGMII interface mode for BCM54616S
+To:     Robert Hancock <robert.hancock@calian.com>, andrew@lunn.ch,
+        hkallweit1@gmail.com, davem@davemloft.net, kuba@kernel.org
+Cc:     f.fainelli@gmail.com, linux@armlinux.org.uk,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
+References: <20210213002825.2557444-1-robert.hancock@calian.com>
+ <20210213002825.2557444-2-robert.hancock@calian.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <87f06cb4-3bee-3ccb-bb21-ce6943e75336@gmail.com>
+Date:   Fri, 12 Feb 2021 17:26:02 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.7.1
 MIME-Version: 1.0
-References: <20210212223952.1172568-1-anthony.l.nguyen@intel.com> <20210212223952.1172568-3-anthony.l.nguyen@intel.com>
-In-Reply-To: <20210212223952.1172568-3-anthony.l.nguyen@intel.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Fri, 12 Feb 2021 17:21:20 -0800
-Message-ID: <CAKgT0Uf+f5+MdN0c0uiHByRCXD_mAiQQOC5W9+TgPxuwo3zLsg@mail.gmail.com>
-Subject: Re: [PATCH net-next 02/11] i40e: drop misleading function comments
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Stefan Assmann <sassmann@redhat.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Tony Brelinski <tonyx.brelinski@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20210213002825.2557444-2-robert.hancock@calian.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 12, 2021 at 2:46 PM Tony Nguyen <anthony.l.nguyen@intel.com> wr=
-ote:
->
-> From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
->
-> i40e_cleanup_headers has a statement about check against skb being
-> linear or not which is not relevant anymore, so let's remove it.
->
-> Same case for i40e_can_reuse_rx_page, it references things that are not
-> present there anymore.
->
-> Reviewed-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
-> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+
+
+On 2/12/2021 4:28 PM, 'Robert Hancock' via BCM-KERNEL-FEEDBACK-LIST,PDL
+wrote:
+> The default configuration for the BCM54616S PHY may not match the desired
+> mode when using 1000BaseX or SGMII interface modes, such as when it is on
+> an SFP module. Add code to explicitly set the correct mode using
+> programming sequences provided by Bel-Fuse:
+> 
+> https://www.belfuse.com/resources/datasheets/powersolutions/ds-bps-sfp-1gbt-05-series.pdf
+> https://www.belfuse.com/resources/datasheets/powersolutions/ds-bps-sfp-1gbt-06-series.pdf
+> 
+> Signed-off-by: Robert Hancock <robert.hancock@calian.com>
 > ---
->  drivers/net/ethernet/intel/i40e/i40e_txrx.c | 33 ++++-----------------
->  1 file changed, 6 insertions(+), 27 deletions(-)
->
-> diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/et=
-hernet/intel/i40e/i40e_txrx.c
-> index 3d24c6032616..5f6aa13e85ca 100644
-> --- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-> +++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-> @@ -1963,9 +1963,6 @@ void i40e_process_skb_fields(struct i40e_ring *rx_r=
-ing,
->   * @skb: pointer to current skb being fixed
->   * @rx_desc: pointer to the EOP Rx descriptor
->   *
-> - * Also address the case where we are pulling data in on pages only
-> - * and as such no data is present in the skb header.
-> - *
->   * In addition if skb is not at least 60 bytes we need to pad it so that
->   * it is large enough to qualify as a valid Ethernet frame.
->   *
-> @@ -1998,33 +1995,15 @@ static bool i40e_cleanup_headers(struct i40e_ring=
- *rx_ring, struct sk_buff *skb,
+>  drivers/net/phy/broadcom.c | 83 ++++++++++++++++++++++++++++++++------
+>  include/linux/brcmphy.h    |  4 ++
+>  2 files changed, 75 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
+> index 0472b3470c59..78542580f2b2 100644
+> --- a/drivers/net/phy/broadcom.c
+> +++ b/drivers/net/phy/broadcom.c
+> @@ -64,6 +64,63 @@ static int bcm54612e_config_init(struct phy_device *phydev)
+>  	return 0;
 >  }
->
->  /**
-> - * i40e_can_reuse_rx_page - Determine if this page can be reused by
-> - * the adapter for another receive
-> - *
-> + * i40e_can_reuse_rx_page - Determine if page can be reused for another =
-Rx
->   * @rx_buffer: buffer containing the page
->   * @rx_buffer_pgcnt: buffer page refcount pre xdp_do_redirect() call
->   *
-> - * If page is reusable, rx_buffer->page_offset is adjusted to point to
-> - * an unused region in the page.
-> - *
-> - * For small pages, @truesize will be a constant value, half the size
-> - * of the memory at page.  We'll attempt to alternate between high and
-> - * low halves of the page, with one half ready for use by the hardware
-> - * and the other half being consumed by the stack.  We use the page
-> - * ref count to determine whether the stack has finished consuming the
-> - * portion of this page that was passed up with a previous packet.  If
-> - * the page ref count is >1, we'll assume the "other" half page is
-> - * still busy, and this page cannot be reused.
-> - *
-> - * For larger pages, @truesize will be the actual space used by the
-> - * received packet (adjusted upward to an even multiple of the cache
-> - * line size).  This will advance through the page by the amount
-> - * actually consumed by the received packets while there is still
-> - * space for a buffer.  Each region of larger pages will be used at
-> - * most once, after which the page will not be reused.
-> - *
-> - * In either case, if the page is reusable its refcount is increased.
-> - **/
-> + * If page is reusable, we have a green light for calling i40e_reuse_rx_=
-page,
-> + * which will assign the current buffer to the buffer that next_to_alloc=
- is
-> + * pointing to; otherwise, the DMA mapping needs to be destroyed and
-> + * page freed
-> + */
->  static bool i40e_can_reuse_rx_page(struct i40e_rx_buffer *rx_buffer,
->                                    int rx_buffer_pgcnt)
->  {
+>  
+> +static int bcm54616s_config_init(struct phy_device *phydev)
+> +{
+> +	int rc, val;
+> +
+> +	if (phydev->interface == PHY_INTERFACE_MODE_SGMII ||
+> +	    phydev->interface == PHY_INTERFACE_MODE_1000BASEX) {
 
-So this lost all of the context for why or how the function works.
+Can you reverse the condition so as to save a level of identation?
 
-You should probably call out that for 4K pages it is using a simple
-page count where if the count hits 2 we have to return false, and if
-the page is bigger than 4K we have to check the remaining unused
-buffer to determine if we will fail or not.
+> +		/* Ensure proper interface mode is selected. */
+> +		/* Disable RGMII mode */
+> +		val = bcm54xx_auxctl_read(phydev, MII_BCM54XX_AUXCTL_SHDWSEL_MISC);
+> +		if (val < 0)
+> +			return val;
+> +		val &= ~MII_BCM54XX_AUXCTL_SHDWSEL_MISC_RGMII_EN;
+> +		rc = bcm54xx_auxctl_write(phydev, MII_BCM54XX_AUXCTL_SHDWSEL_MISC,
+> +					  val);
+> +		if (rc < 0)
+> +			return rc;
+
+I don't think this write is making it through since you are not setting
+MII_BCM54XX_AUXCTL_MISC_WREN in val, I know this is an annoying detail,
+and we could probably fold that to be within bcm54xx_auxctl_write()
+directly, similarly to what bcm_phy_write_shadow() does.
+
+The reset of the sequence and changes looks fine to me.
+-- 
+Florian
