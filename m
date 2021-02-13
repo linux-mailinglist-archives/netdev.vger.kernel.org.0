@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7004331AE03
-	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 21:47:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1057431AE04
+	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 21:47:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229759AbhBMUoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Feb 2021 15:44:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57820 "EHLO
+        id S229775AbhBMUpH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Feb 2021 15:45:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229730AbhBMUop (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 15:44:45 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADB11C0613D6
-        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 12:44:04 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id hs11so5232785ejc.1
-        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 12:44:04 -0800 (PST)
+        with ESMTP id S229653AbhBMUoq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 15:44:46 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D12CC061788
+        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 12:44:06 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id y26so5104481eju.13
+        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 12:44:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=jWnLJXpmgnqKhxCvRRQzAj55lRwiX8jco9PWVDXLMCM=;
-        b=VCgRix+IX9569fHtwZH0m6KlclicqOeSx9vZNoHE+jyZu0AsvmpVpLUc7WG89JYHY+
-         PhBkSTnVMBbnEpcTyIPDicMctLCIFYclSYskxWun07LrwlDSMYOZern9DpmE7Y/dMetY
-         xdxNyDybX9lGDA9VNu8jU32pM9d6LkBthXpt+NN4mJJXj3IsgOSLLHQH0uZwOA7KIPlk
-         ZBZM4TQhNGM180IiKs2stcjmynHuaLSzkXeQ3+VaM6G20TlgCigKYox+W+YhWV98DjBt
-         v7WtZo4XKS0YhG2RSqwLQahYYt/1sra0E4DAS3IzqhS6IJNfM/P7jEWcTkka7iQgIyFg
-         95aw==
+        bh=5otiRITfUSDFhL8v2p9+r/9akVLxGn6AUnyIgMzEmv8=;
+        b=hv2HeENMeaYG+kUIgFt1NLFFKVMcPOb7vxoBAM4yZy1scne/JQRpoQLTJOLHzaNFEI
+         LV+lfBYJQA18OoC0sooX6+9OYTU2uqqdyEcSODz09qSy8LtcMDQbW14zRr4tKN8Jyp5w
+         wOIrlXCT2ZPN3FgTPQWm22ZRFhlkRJTlTxjhBmx+8lZIF94tn5QH3u39ZCMVgFDEBGOs
+         EZ0NyQrcKFmVqhyWgx4TQkrhXNfd90pVt8tyglxz+pIMbqj+6qB1CMpQUjl3X5cF8rju
+         MY6ahptgXfWvCjoRc8kigcsDO4k6KYbCSebQA6K2/V4tA6RTWe9xQCFjMPHp+5p60xaK
+         bvJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=jWnLJXpmgnqKhxCvRRQzAj55lRwiX8jco9PWVDXLMCM=;
-        b=eDsudpTNjhcQi9VrIEIaJg+FDUz3u8CEqAi+dtprZp4c233CFOTgkDevBkCs0o1t6D
-         SeGoATP1aiWEPS2W9NbF/C1WSQTg4Ej/Qc0yUevduhQxDy2R5r4ikZP/3D9ZJJ5QbwUk
-         9JfOJVeg/CwTyppfdvaLFKv1fhwBU/cu1q9T4q66y6Pbi4HrN2blU2e2A2oUKorVkb/g
-         A7Eq2mJMnJVXfGe/TnBdn54rGhQDJGkWKFG2hzkWTVvxrjvT1ba3IZJQwv5wIjb8jzgl
-         fKv+O/CMf3975+6qXll2I+YI4Xy86LfZORFGivg1SAJkqALmiML0dumic1kBt3pJ+mhM
-         J1qw==
-X-Gm-Message-State: AOAM5303HVh47aoMFfUrjcgYW61e8JfhtF2OjuT+QdQPzaS2nmAVkMsH
-        2mxwrOVLEumeDc3OW+doeZ4=
-X-Google-Smtp-Source: ABdhPJwmkjdhAWNAFac+gdXrQ7zrO1JrxOs8NiHmhq4a7qoTvoaEFr+cL7RZq7ZRwDBXFj5Ts0dTWw==
-X-Received: by 2002:a17:906:80b:: with SMTP id e11mr8698852ejd.269.1613249043385;
-        Sat, 13 Feb 2021 12:44:03 -0800 (PST)
+        bh=5otiRITfUSDFhL8v2p9+r/9akVLxGn6AUnyIgMzEmv8=;
+        b=covv9hdl6DI82fkIzbiHbJ7fOXyG5uv8+r++WymjadaUzJS78DbrY8ykUyef+XzGX1
+         p3XCHprn7jkJRw5rNVA3o3Qy5Onveg09oni9nAv6kjg2YE8sFFCh1bAQHdd83cnljwL3
+         Gdgx0w1gihQN9sIGADYv31eUVfvIOmiR7FKd6ws3USUs71GmFPHQNmi5SQ/Xl9vsalBB
+         mWwQobNmgmRPjN/4Zb6L9FNL2RhC2cviyXmtEGOms9XriJzYmGVdp2sWgrb0XgV2sCjk
+         cVu8APb+5+uWDHawY5sGv2t4GtTU5/UfCC0+6gZ3LK3DkzCZ21sF3F/Y6FGi2ipzOcUz
+         NxSg==
+X-Gm-Message-State: AOAM533SLARWIv0ZfTIxadcEm8GbWcZ8DS2a9VPjUZwW8mtatnypVZIV
+        obefGbpHslBsKaUOMKhNUyA=
+X-Google-Smtp-Source: ABdhPJz32Lbufgf6Ktfxu+QeQ7pXgsuI0+5VAdVBfDyy9G29J5QAZtmNHHQ2EQPBxmk1o1/1CgVW5A==
+X-Received: by 2002:a17:906:d0cd:: with SMTP id bq13mr8697351ejb.75.1613249044693;
+        Sat, 13 Feb 2021 12:44:04 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id p6sm2363937ejw.79.2021.02.13.12.44.02
+        by smtp.gmail.com with ESMTPSA id p6sm2363937ejw.79.2021.02.13.12.44.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 13 Feb 2021 12:44:02 -0800 (PST)
+        Sat, 13 Feb 2021 12:44:04 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -63,9 +63,9 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Nikolay Aleksandrov <nikolay@nvidia.com>,
         DENG Qingfang <dqfext@gmail.com>,
         Ido Schimmel <idosch@idosch.org>
-Subject: [PATCH net-next 2/5] net: bridge: propagate extack through store_bridge_parm
-Date:   Sat, 13 Feb 2021 22:43:16 +0200
-Message-Id: <20210213204319.1226170-3-olteanv@gmail.com>
+Subject: [PATCH net-next 3/5] net: bridge: propagate extack through switchdev_port_attr_set
+Date:   Sat, 13 Feb 2021 22:43:17 +0200
+Message-Id: <20210213204319.1226170-4-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210213204319.1226170-1-olteanv@gmail.com>
 References: <20210213204319.1226170-1-olteanv@gmail.com>
@@ -77,556 +77,284 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The bridge sysfs interface stores parameters for the STP, VLAN,
-multicast etc subsystems using a predefined function prototype.
-Sometimes the underlying function being called supports a netlink
-extended ack message, and we ignore it.
-
-Let's expand the store_bridge_parm function prototype to include the
-extack, and just print it to console, but at least propagate it where
-applicable. Where not applicable, create a shim function in the
-br_sysfs_br.c file that discards the extra function argument.
-
-This patch allows us to propagate the extack argument to
-br_vlan_set_default_pvid, br_vlan_set_proto and br_vlan_filter_toggle,
-and from there, further up in br_changelink from br_netlink.c.
+The benefit is the ability to propagate errors from switchdev drivers
+for the SWITCHDEV_ATTR_ID_BRIDGE_VLAN_FILTERING and
+SWITCHDEV_ATTR_ID_BRIDGE_VLAN_PROTOCOL attributes.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/bridge/br_netlink.c  |   2 +-
- net/bridge/br_private.h  |   9 ++-
- net/bridge/br_sysfs_br.c | 166 ++++++++++++++++++++++++++++++---------
- net/bridge/br_vlan.c     |  11 ++-
- 4 files changed, 142 insertions(+), 46 deletions(-)
+ include/net/switchdev.h       |  3 ++-
+ net/bridge/br_mrp_switchdev.c |  4 ++--
+ net/bridge/br_multicast.c     |  6 +++---
+ net/bridge/br_netlink.c       |  2 +-
+ net/bridge/br_private.h       |  3 ++-
+ net/bridge/br_stp.c           |  4 ++--
+ net/bridge/br_switchdev.c     |  6 ++++--
+ net/bridge/br_vlan.c          | 13 +++++++------
+ net/switchdev/switchdev.c     | 19 ++++++++++++-------
+ 9 files changed, 35 insertions(+), 25 deletions(-)
 
+diff --git a/include/net/switchdev.h b/include/net/switchdev.h
+index 25d9e4570934..195f62672cc4 100644
+--- a/include/net/switchdev.h
++++ b/include/net/switchdev.h
+@@ -247,7 +247,8 @@ switchdev_notifier_info_to_extack(const struct switchdev_notifier_info *info)
+ 
+ void switchdev_deferred_process(void);
+ int switchdev_port_attr_set(struct net_device *dev,
+-			    const struct switchdev_attr *attr);
++			    const struct switchdev_attr *attr,
++			    struct netlink_ext_ack *extack);
+ int switchdev_port_obj_add(struct net_device *dev,
+ 			   const struct switchdev_obj *obj,
+ 			   struct netlink_ext_ack *extack);
+diff --git a/net/bridge/br_mrp_switchdev.c b/net/bridge/br_mrp_switchdev.c
+index 75a7e8d0a268..3c9a4abcf4ee 100644
+--- a/net/bridge/br_mrp_switchdev.c
++++ b/net/bridge/br_mrp_switchdev.c
+@@ -178,7 +178,7 @@ int br_mrp_port_switchdev_set_state(struct net_bridge_port *p, u32 state)
+ 	};
+ 	int err;
+ 
+-	err = switchdev_port_attr_set(p->dev, &attr);
++	err = switchdev_port_attr_set(p->dev, &attr, NULL);
+ 	if (err && err != -EOPNOTSUPP)
+ 		br_warn(p->br, "error setting offload MRP state on port %u(%s)\n",
+ 			(unsigned int)p->port_no, p->dev->name);
+@@ -196,7 +196,7 @@ int br_mrp_port_switchdev_set_role(struct net_bridge_port *p,
+ 	};
+ 	int err;
+ 
+-	err = switchdev_port_attr_set(p->dev, &attr);
++	err = switchdev_port_attr_set(p->dev, &attr, NULL);
+ 	if (err && err != -EOPNOTSUPP)
+ 		return err;
+ 
+diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
+index bf10ef5bbcd9..9d265447d654 100644
+--- a/net/bridge/br_multicast.c
++++ b/net/bridge/br_multicast.c
+@@ -1381,7 +1381,7 @@ static void br_mc_router_state_change(struct net_bridge *p,
+ 		.u.mrouter = is_mc_router,
+ 	};
+ 
+-	switchdev_port_attr_set(p->dev, &attr);
++	switchdev_port_attr_set(p->dev, &attr, NULL);
+ }
+ 
+ static void br_multicast_local_router_expired(struct timer_list *t)
+@@ -1602,7 +1602,7 @@ static void br_mc_disabled_update(struct net_device *dev, bool value)
+ 		.u.mc_disabled = !value,
+ 	};
+ 
+-	switchdev_port_attr_set(dev, &attr);
++	switchdev_port_attr_set(dev, &attr, NULL);
+ }
+ 
+ int br_multicast_add_port(struct net_bridge_port *port)
+@@ -2645,7 +2645,7 @@ static void br_port_mc_router_state_change(struct net_bridge_port *p,
+ 		.u.mrouter = is_mc_router,
+ 	};
+ 
+-	switchdev_port_attr_set(p->dev, &attr);
++	switchdev_port_attr_set(p->dev, &attr, NULL);
+ }
+ 
+ /*
 diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-index a12bbbdacb9b..3f5dc6fcc980 100644
+index 3f5dc6fcc980..f2b1343f8332 100644
 --- a/net/bridge/br_netlink.c
 +++ b/net/bridge/br_netlink.c
-@@ -1212,7 +1212,7 @@ static int br_changelink(struct net_device *brdev, struct nlattr *tb[],
- 	if (data[IFLA_BR_VLAN_FILTERING]) {
- 		u8 vlan_filter = nla_get_u8(data[IFLA_BR_VLAN_FILTERING]);
+@@ -1221,7 +1221,7 @@ static int br_changelink(struct net_device *brdev, struct nlattr *tb[],
+ 	if (data[IFLA_BR_VLAN_PROTOCOL]) {
+ 		__be16 vlan_proto = nla_get_be16(data[IFLA_BR_VLAN_PROTOCOL]);
  
--		err = br_vlan_filter_toggle(br, vlan_filter);
-+		err = br_vlan_filter_toggle(br, vlan_filter, extack);
+-		err = __br_vlan_set_proto(br, vlan_proto);
++		err = __br_vlan_set_proto(br, vlan_proto, extack);
  		if (err)
  			return err;
  	}
 diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 0281de20212e..a8d483325476 100644
+index a8d483325476..da71e71fcddc 100644
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
-@@ -1085,13 +1085,16 @@ int br_vlan_delete(struct net_bridge *br, u16 vid);
- void br_vlan_flush(struct net_bridge *br);
- struct net_bridge_vlan *br_vlan_find(struct net_bridge_vlan_group *vg, u16 vid);
+@@ -1087,7 +1087,8 @@ struct net_bridge_vlan *br_vlan_find(struct net_bridge_vlan_group *vg, u16 vid);
  void br_recalculate_fwd_mask(struct net_bridge *br);
--int br_vlan_filter_toggle(struct net_bridge *br, unsigned long val);
-+int br_vlan_filter_toggle(struct net_bridge *br, unsigned long val,
-+			  struct netlink_ext_ack *extack);
- int __br_vlan_set_proto(struct net_bridge *br, __be16 proto);
--int br_vlan_set_proto(struct net_bridge *br, unsigned long val);
-+int br_vlan_set_proto(struct net_bridge *br, unsigned long val,
-+		      struct netlink_ext_ack *extack);
+ int br_vlan_filter_toggle(struct net_bridge *br, unsigned long val,
+ 			  struct netlink_ext_ack *extack);
+-int __br_vlan_set_proto(struct net_bridge *br, __be16 proto);
++int __br_vlan_set_proto(struct net_bridge *br, __be16 proto,
++			struct netlink_ext_ack *extack);
+ int br_vlan_set_proto(struct net_bridge *br, unsigned long val,
+ 		      struct netlink_ext_ack *extack);
  int br_vlan_set_stats(struct net_bridge *br, unsigned long val);
- int br_vlan_set_stats_per_port(struct net_bridge *br, unsigned long val);
- int br_vlan_init(struct net_bridge *br);
--int br_vlan_set_default_pvid(struct net_bridge *br, unsigned long val);
-+int br_vlan_set_default_pvid(struct net_bridge *br, unsigned long val,
-+			     struct netlink_ext_ack *extack);
- int __br_vlan_set_default_pvid(struct net_bridge *br, u16 pvid,
- 			       struct netlink_ext_ack *extack);
- int nbp_vlan_add(struct net_bridge_port *port, u16 vid, u16 flags,
-diff --git a/net/bridge/br_sysfs_br.c b/net/bridge/br_sysfs_br.c
-index 71f0f671c4ef..072e29840082 100644
---- a/net/bridge/br_sysfs_br.c
-+++ b/net/bridge/br_sysfs_br.c
-@@ -30,11 +30,13 @@
-  */
- static ssize_t store_bridge_parm(struct device *d,
- 				 const char *buf, size_t len,
--				 int (*set)(struct net_bridge *, unsigned long))
-+				 int (*set)(struct net_bridge *br, unsigned long val,
-+					    struct netlink_ext_ack *extack))
- {
- 	struct net_bridge *br = to_bridge(d);
--	char *endp;
-+	struct netlink_ext_ack extack = {0};
- 	unsigned long val;
-+	char *endp;
+diff --git a/net/bridge/br_stp.c b/net/bridge/br_stp.c
+index a3a5745660dd..21c6781906aa 100644
+--- a/net/bridge/br_stp.c
++++ b/net/bridge/br_stp.c
+@@ -43,7 +43,7 @@ void br_set_state(struct net_bridge_port *p, unsigned int state)
+ 		return;
+ 
+ 	p->state = state;
+-	err = switchdev_port_attr_set(p->dev, &attr);
++	err = switchdev_port_attr_set(p->dev, &attr, NULL);
+ 	if (err && err != -EOPNOTSUPP)
+ 		br_warn(p->br, "error setting offload STP state on port %u(%s)\n",
+ 				(unsigned int) p->port_no, p->dev->name);
+@@ -591,7 +591,7 @@ int __set_ageing_time(struct net_device *dev, unsigned long t)
+ 	};
  	int err;
  
- 	if (!ns_capable(dev_net(br->dev)->user_ns, CAP_NET_ADMIN))
-@@ -47,9 +49,15 @@ static ssize_t store_bridge_parm(struct device *d,
- 	if (!rtnl_trylock())
- 		return restart_syscall();
+-	err = switchdev_port_attr_set(dev, &attr);
++	err = switchdev_port_attr_set(dev, &attr, NULL);
+ 	if (err && err != -EOPNOTSUPP)
+ 		return err;
  
--	err = (*set)(br, val);
-+	err = (*set)(br, val, &extack);
- 	if (!err)
- 		netdev_state_change(br->dev);
-+	if (extack._msg) {
-+		if (err)
-+			br_err(br, "%s\n", extack._msg);
-+		else
-+			br_warn(br, "%s\n", extack._msg);
-+	}
- 	rtnl_unlock();
+diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
+index 184cf4c8b06d..b89503832fcc 100644
+--- a/net/bridge/br_switchdev.c
++++ b/net/bridge/br_switchdev.c
+@@ -96,9 +96,11 @@ int br_switchdev_set_port_flag(struct net_bridge_port *p,
+ 	attr.id = SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS;
+ 	attr.flags = SWITCHDEV_F_DEFER;
  
- 	return err ? err : len;
-@@ -63,11 +71,17 @@ static ssize_t forward_delay_show(struct device *d,
- 	return sprintf(buf, "%lu\n", jiffies_to_clock_t(br->forward_delay));
- }
+-	err = switchdev_port_attr_set(p->dev, &attr);
++	err = switchdev_port_attr_set(p->dev, &attr, extack);
+ 	if (err) {
+-		NL_SET_ERR_MSG_MOD(extack, "error setting offload flag on port");
++		if (extack && !extack->_msg)
++			NL_SET_ERR_MSG_MOD(extack,
++					   "error setting offload flag on port");
+ 		return err;
+ 	}
  
-+static int set_forward_delay(struct net_bridge *br, unsigned long val,
-+			     struct netlink_ext_ack *extack)
-+{
-+	return br_set_forward_delay(br, val);
-+}
-+
- static ssize_t forward_delay_store(struct device *d,
- 				   struct device_attribute *attr,
- 				   const char *buf, size_t len)
- {
--	return store_bridge_parm(d, buf, len, br_set_forward_delay);
-+	return store_bridge_parm(d, buf, len, set_forward_delay);
- }
- static DEVICE_ATTR_RW(forward_delay);
- 
-@@ -78,11 +92,17 @@ static ssize_t hello_time_show(struct device *d, struct device_attribute *attr,
- 		       jiffies_to_clock_t(to_bridge(d)->hello_time));
- }
- 
-+static int set_hello_time(struct net_bridge *br, unsigned long val,
-+			  struct netlink_ext_ack *extack)
-+{
-+	return br_set_hello_time(br, val);
-+}
-+
- static ssize_t hello_time_store(struct device *d,
- 				struct device_attribute *attr, const char *buf,
- 				size_t len)
- {
--	return store_bridge_parm(d, buf, len, br_set_hello_time);
-+	return store_bridge_parm(d, buf, len, set_hello_time);
- }
- static DEVICE_ATTR_RW(hello_time);
- 
-@@ -93,10 +113,16 @@ static ssize_t max_age_show(struct device *d, struct device_attribute *attr,
- 		       jiffies_to_clock_t(to_bridge(d)->max_age));
- }
- 
-+static int set_max_age(struct net_bridge *br, unsigned long val,
-+		       struct netlink_ext_ack *extack)
-+{
-+	return br_set_max_age(br, val);
-+}
-+
- static ssize_t max_age_store(struct device *d, struct device_attribute *attr,
- 			     const char *buf, size_t len)
- {
--	return store_bridge_parm(d, buf, len, br_set_max_age);
-+	return store_bridge_parm(d, buf, len, set_max_age);
- }
- static DEVICE_ATTR_RW(max_age);
- 
-@@ -107,7 +133,8 @@ static ssize_t ageing_time_show(struct device *d,
- 	return sprintf(buf, "%lu\n", jiffies_to_clock_t(br->ageing_time));
- }
- 
--static int set_ageing_time(struct net_bridge *br, unsigned long val)
-+static int set_ageing_time(struct net_bridge *br, unsigned long val,
-+			   struct netlink_ext_ack *extack)
- {
- 	return br_set_ageing_time(br, val);
- }
-@@ -128,9 +155,10 @@ static ssize_t stp_state_show(struct device *d,
- }
- 
- 
--static int set_stp_state(struct net_bridge *br, unsigned long val)
-+static int set_stp_state(struct net_bridge *br, unsigned long val,
-+			 struct netlink_ext_ack *extack)
- {
--	return br_stp_set_enabled(br, val, NULL);
-+	return br_stp_set_enabled(br, val, extack);
- }
- 
- static ssize_t stp_state_store(struct device *d,
-@@ -149,7 +177,8 @@ static ssize_t group_fwd_mask_show(struct device *d,
- 	return sprintf(buf, "%#x\n", br->group_fwd_mask);
- }
- 
--static int set_group_fwd_mask(struct net_bridge *br, unsigned long val)
-+static int set_group_fwd_mask(struct net_bridge *br, unsigned long val,
-+			      struct netlink_ext_ack *extack)
- {
- 	if (val & BR_GROUPFWD_RESTRICTED)
- 		return -EINVAL;
-@@ -176,7 +205,8 @@ static ssize_t priority_show(struct device *d, struct device_attribute *attr,
- 		       (br->bridge_id.prio[0] << 8) | br->bridge_id.prio[1]);
- }
- 
--static int set_priority(struct net_bridge *br, unsigned long val)
-+static int set_priority(struct net_bridge *br, unsigned long val,
-+			struct netlink_ext_ack *extack)
- {
- 	br_stp_set_bridge_priority(br, (u16) val);
- 	return 0;
-@@ -312,7 +342,8 @@ static ssize_t group_addr_store(struct device *d,
- 
- static DEVICE_ATTR_RW(group_addr);
- 
--static int set_flush(struct net_bridge *br, unsigned long val)
-+static int set_flush(struct net_bridge *br, unsigned long val,
-+		     struct netlink_ext_ack *extack)
- {
- 	br_fdb_flush(br);
- 	return 0;
-@@ -334,9 +365,10 @@ static ssize_t no_linklocal_learn_show(struct device *d,
- 	return sprintf(buf, "%d\n", br_boolopt_get(br, BR_BOOLOPT_NO_LL_LEARN));
- }
- 
--static int set_no_linklocal_learn(struct net_bridge *br, unsigned long val)
-+static int set_no_linklocal_learn(struct net_bridge *br, unsigned long val,
-+				  struct netlink_ext_ack *extack)
- {
--	return br_boolopt_toggle(br, BR_BOOLOPT_NO_LL_LEARN, !!val, NULL);
-+	return br_boolopt_toggle(br, BR_BOOLOPT_NO_LL_LEARN, !!val, extack);
- }
- 
- static ssize_t no_linklocal_learn_store(struct device *d,
-@@ -355,11 +387,17 @@ static ssize_t multicast_router_show(struct device *d,
- 	return sprintf(buf, "%d\n", br->multicast_router);
- }
- 
-+static int set_multicast_router(struct net_bridge *br, unsigned long val,
-+				struct netlink_ext_ack *extack)
-+{
-+	return br_multicast_set_router(br, val);
-+}
-+
- static ssize_t multicast_router_store(struct device *d,
- 				      struct device_attribute *attr,
- 				      const char *buf, size_t len)
- {
--	return store_bridge_parm(d, buf, len, br_multicast_set_router);
-+	return store_bridge_parm(d, buf, len, set_multicast_router);
- }
- static DEVICE_ATTR_RW(multicast_router);
- 
-@@ -371,11 +409,17 @@ static ssize_t multicast_snooping_show(struct device *d,
- 	return sprintf(buf, "%d\n", br_opt_get(br, BROPT_MULTICAST_ENABLED));
- }
- 
-+static int toggle_multicast(struct net_bridge *br, unsigned long val,
-+			    struct netlink_ext_ack *extack)
-+{
-+	return br_multicast_toggle(br, val);
-+}
-+
- static ssize_t multicast_snooping_store(struct device *d,
- 					struct device_attribute *attr,
- 					const char *buf, size_t len)
- {
--	return store_bridge_parm(d, buf, len, br_multicast_toggle);
-+	return store_bridge_parm(d, buf, len, toggle_multicast);
- }
- static DEVICE_ATTR_RW(multicast_snooping);
- 
-@@ -388,7 +432,8 @@ static ssize_t multicast_query_use_ifaddr_show(struct device *d,
- 		       br_opt_get(br, BROPT_MULTICAST_QUERY_USE_IFADDR));
- }
- 
--static int set_query_use_ifaddr(struct net_bridge *br, unsigned long val)
-+static int set_query_use_ifaddr(struct net_bridge *br, unsigned long val,
-+				struct netlink_ext_ack *extack)
- {
- 	br_opt_toggle(br, BROPT_MULTICAST_QUERY_USE_IFADDR, !!val);
- 	return 0;
-@@ -411,11 +456,17 @@ static ssize_t multicast_querier_show(struct device *d,
- 	return sprintf(buf, "%d\n", br_opt_get(br, BROPT_MULTICAST_QUERIER));
- }
- 
-+static int set_multicast_querier(struct net_bridge *br, unsigned long val,
-+				 struct netlink_ext_ack *extack)
-+{
-+	return br_multicast_set_querier(br, val);
-+}
-+
- static ssize_t multicast_querier_store(struct device *d,
- 				       struct device_attribute *attr,
- 				       const char *buf, size_t len)
- {
--	return store_bridge_parm(d, buf, len, br_multicast_set_querier);
-+	return store_bridge_parm(d, buf, len, set_multicast_querier);
- }
- static DEVICE_ATTR_RW(multicast_querier);
- 
-@@ -425,10 +476,12 @@ static ssize_t hash_elasticity_show(struct device *d,
- 	return sprintf(buf, "%u\n", RHT_ELASTICITY);
- }
- 
--static int set_elasticity(struct net_bridge *br, unsigned long val)
-+static int set_elasticity(struct net_bridge *br, unsigned long val,
-+			  struct netlink_ext_ack *extack)
- {
--	br_warn(br, "the hash_elasticity option has been deprecated and is always %u\n",
--		RHT_ELASTICITY);
-+	/* 16 is RHT_ELASTICITY */
-+	NL_SET_ERR_MSG_MOD(extack,
-+			   "the hash_elasticity option has been deprecated and is always 16");
- 	return 0;
- }
- 
-@@ -447,7 +500,8 @@ static ssize_t hash_max_show(struct device *d, struct device_attribute *attr,
- 	return sprintf(buf, "%u\n", br->hash_max);
- }
- 
--static int set_hash_max(struct net_bridge *br, unsigned long val)
-+static int set_hash_max(struct net_bridge *br, unsigned long val,
-+			struct netlink_ext_ack *extack)
- {
- 	br->hash_max = val;
- 	return 0;
-@@ -469,11 +523,17 @@ static ssize_t multicast_igmp_version_show(struct device *d,
- 	return sprintf(buf, "%u\n", br->multicast_igmp_version);
- }
- 
-+static int set_multicast_igmp_version(struct net_bridge *br, unsigned long val,
-+				      struct netlink_ext_ack *extack)
-+{
-+	return br_multicast_set_igmp_version(br, val);
-+}
-+
- static ssize_t multicast_igmp_version_store(struct device *d,
- 					    struct device_attribute *attr,
- 					    const char *buf, size_t len)
- {
--	return store_bridge_parm(d, buf, len, br_multicast_set_igmp_version);
-+	return store_bridge_parm(d, buf, len, set_multicast_igmp_version);
- }
- static DEVICE_ATTR_RW(multicast_igmp_version);
- 
-@@ -485,7 +545,8 @@ static ssize_t multicast_last_member_count_show(struct device *d,
- 	return sprintf(buf, "%u\n", br->multicast_last_member_count);
- }
- 
--static int set_last_member_count(struct net_bridge *br, unsigned long val)
-+static int set_last_member_count(struct net_bridge *br, unsigned long val,
-+				 struct netlink_ext_ack *extack)
- {
- 	br->multicast_last_member_count = val;
- 	return 0;
-@@ -506,7 +567,8 @@ static ssize_t multicast_startup_query_count_show(
- 	return sprintf(buf, "%u\n", br->multicast_startup_query_count);
- }
- 
--static int set_startup_query_count(struct net_bridge *br, unsigned long val)
-+static int set_startup_query_count(struct net_bridge *br, unsigned long val,
-+				   struct netlink_ext_ack *extack)
- {
- 	br->multicast_startup_query_count = val;
- 	return 0;
-@@ -528,7 +590,8 @@ static ssize_t multicast_last_member_interval_show(
- 		       jiffies_to_clock_t(br->multicast_last_member_interval));
- }
- 
--static int set_last_member_interval(struct net_bridge *br, unsigned long val)
-+static int set_last_member_interval(struct net_bridge *br, unsigned long val,
-+				    struct netlink_ext_ack *extack)
- {
- 	br->multicast_last_member_interval = clock_t_to_jiffies(val);
- 	return 0;
-@@ -550,7 +613,8 @@ static ssize_t multicast_membership_interval_show(
- 		       jiffies_to_clock_t(br->multicast_membership_interval));
- }
- 
--static int set_membership_interval(struct net_bridge *br, unsigned long val)
-+static int set_membership_interval(struct net_bridge *br, unsigned long val,
-+				   struct netlink_ext_ack *extack)
- {
- 	br->multicast_membership_interval = clock_t_to_jiffies(val);
- 	return 0;
-@@ -573,7 +637,8 @@ static ssize_t multicast_querier_interval_show(struct device *d,
- 		       jiffies_to_clock_t(br->multicast_querier_interval));
- }
- 
--static int set_querier_interval(struct net_bridge *br, unsigned long val)
-+static int set_querier_interval(struct net_bridge *br, unsigned long val,
-+				struct netlink_ext_ack *extack)
- {
- 	br->multicast_querier_interval = clock_t_to_jiffies(val);
- 	return 0;
-@@ -596,7 +661,8 @@ static ssize_t multicast_query_interval_show(struct device *d,
- 		       jiffies_to_clock_t(br->multicast_query_interval));
- }
- 
--static int set_query_interval(struct net_bridge *br, unsigned long val)
-+static int set_query_interval(struct net_bridge *br, unsigned long val,
-+			      struct netlink_ext_ack *extack)
- {
- 	br->multicast_query_interval = clock_t_to_jiffies(val);
- 	return 0;
-@@ -619,7 +685,8 @@ static ssize_t multicast_query_response_interval_show(
- 		jiffies_to_clock_t(br->multicast_query_response_interval));
- }
- 
--static int set_query_response_interval(struct net_bridge *br, unsigned long val)
-+static int set_query_response_interval(struct net_bridge *br, unsigned long val,
-+				       struct netlink_ext_ack *extack)
- {
- 	br->multicast_query_response_interval = clock_t_to_jiffies(val);
- 	return 0;
-@@ -642,7 +709,8 @@ static ssize_t multicast_startup_query_interval_show(
- 		jiffies_to_clock_t(br->multicast_startup_query_interval));
- }
- 
--static int set_startup_query_interval(struct net_bridge *br, unsigned long val)
-+static int set_startup_query_interval(struct net_bridge *br, unsigned long val,
-+				      struct netlink_ext_ack *extack)
- {
- 	br->multicast_startup_query_interval = clock_t_to_jiffies(val);
- 	return 0;
-@@ -666,7 +734,8 @@ static ssize_t multicast_stats_enabled_show(struct device *d,
- 		       br_opt_get(br, BROPT_MULTICAST_STATS_ENABLED));
- }
- 
--static int set_stats_enabled(struct net_bridge *br, unsigned long val)
-+static int set_stats_enabled(struct net_bridge *br, unsigned long val,
-+			     struct netlink_ext_ack *extack)
- {
- 	br_opt_toggle(br, BROPT_MULTICAST_STATS_ENABLED, !!val);
- 	return 0;
-@@ -691,11 +760,17 @@ static ssize_t multicast_mld_version_show(struct device *d,
- 	return sprintf(buf, "%u\n", br->multicast_mld_version);
- }
- 
-+static int set_multicast_mld_version(struct net_bridge *br, unsigned long val,
-+				     struct netlink_ext_ack *extack)
-+{
-+	return br_multicast_set_mld_version(br, val);
-+}
-+
- static ssize_t multicast_mld_version_store(struct device *d,
- 					   struct device_attribute *attr,
- 					   const char *buf, size_t len)
- {
--	return store_bridge_parm(d, buf, len, br_multicast_set_mld_version);
-+	return store_bridge_parm(d, buf, len, set_multicast_mld_version);
- }
- static DEVICE_ATTR_RW(multicast_mld_version);
- #endif
-@@ -708,7 +783,8 @@ static ssize_t nf_call_iptables_show(
- 	return sprintf(buf, "%u\n", br_opt_get(br, BROPT_NF_CALL_IPTABLES));
- }
- 
--static int set_nf_call_iptables(struct net_bridge *br, unsigned long val)
-+static int set_nf_call_iptables(struct net_bridge *br, unsigned long val,
-+				struct netlink_ext_ack *extack)
- {
- 	br_opt_toggle(br, BROPT_NF_CALL_IPTABLES, !!val);
- 	return 0;
-@@ -729,7 +805,8 @@ static ssize_t nf_call_ip6tables_show(
- 	return sprintf(buf, "%u\n", br_opt_get(br, BROPT_NF_CALL_IP6TABLES));
- }
- 
--static int set_nf_call_ip6tables(struct net_bridge *br, unsigned long val)
-+static int set_nf_call_ip6tables(struct net_bridge *br, unsigned long val,
-+				 struct netlink_ext_ack *extack)
- {
- 	br_opt_toggle(br, BROPT_NF_CALL_IP6TABLES, !!val);
- 	return 0;
-@@ -750,7 +827,8 @@ static ssize_t nf_call_arptables_show(
- 	return sprintf(buf, "%u\n", br_opt_get(br, BROPT_NF_CALL_ARPTABLES));
- }
- 
--static int set_nf_call_arptables(struct net_bridge *br, unsigned long val)
-+static int set_nf_call_arptables(struct net_bridge *br, unsigned long val,
-+				 struct netlink_ext_ack *extack)
- {
- 	br_opt_toggle(br, BROPT_NF_CALL_ARPTABLES, !!val);
- 	return 0;
-@@ -821,11 +899,17 @@ static ssize_t vlan_stats_enabled_show(struct device *d,
- 	return sprintf(buf, "%u\n", br_opt_get(br, BROPT_VLAN_STATS_ENABLED));
- }
- 
-+static int set_vlan_stats_enabled(struct net_bridge *br, unsigned long val,
-+				  struct netlink_ext_ack *extack)
-+{
-+	return br_vlan_set_stats(br, val);
-+}
-+
- static ssize_t vlan_stats_enabled_store(struct device *d,
- 					struct device_attribute *attr,
- 					const char *buf, size_t len)
- {
--	return store_bridge_parm(d, buf, len, br_vlan_set_stats);
-+	return store_bridge_parm(d, buf, len, set_vlan_stats_enabled);
- }
- static DEVICE_ATTR_RW(vlan_stats_enabled);
- 
-@@ -837,11 +921,17 @@ static ssize_t vlan_stats_per_port_show(struct device *d,
- 	return sprintf(buf, "%u\n", br_opt_get(br, BROPT_VLAN_STATS_PER_PORT));
- }
- 
-+static int set_vlan_stats_per_port(struct net_bridge *br, unsigned long val,
-+				   struct netlink_ext_ack *extack)
-+{
-+	return br_vlan_set_stats_per_port(br, val);
-+}
-+
- static ssize_t vlan_stats_per_port_store(struct device *d,
- 					 struct device_attribute *attr,
- 					 const char *buf, size_t len)
- {
--	return store_bridge_parm(d, buf, len, br_vlan_set_stats_per_port);
-+	return store_bridge_parm(d, buf, len, set_vlan_stats_per_port);
- }
- static DEVICE_ATTR_RW(vlan_stats_per_port);
- #endif
 diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
-index 26e7e06b6a0d..c4a51095850a 100644
+index c4a51095850a..8829f621b8ec 100644
 --- a/net/bridge/br_vlan.c
 +++ b/net/bridge/br_vlan.c
-@@ -806,7 +806,8 @@ void br_recalculate_fwd_mask(struct net_bridge *br)
- 					      ~(1u << br->group_addr[5]);
- }
+@@ -820,7 +820,7 @@ int br_vlan_filter_toggle(struct net_bridge *br, unsigned long val,
+ 	if (br_opt_get(br, BROPT_VLAN_ENABLED) == !!val)
+ 		return 0;
  
--int br_vlan_filter_toggle(struct net_bridge *br, unsigned long val)
-+int br_vlan_filter_toggle(struct net_bridge *br, unsigned long val,
-+			  struct netlink_ext_ack *extack)
+-	err = switchdev_port_attr_set(br->dev, &attr);
++	err = switchdev_port_attr_set(br->dev, &attr, extack);
+ 	if (err && err != -EOPNOTSUPP)
+ 		return err;
+ 
+@@ -850,7 +850,8 @@ int br_vlan_get_proto(const struct net_device *dev, u16 *p_proto)
+ }
+ EXPORT_SYMBOL_GPL(br_vlan_get_proto);
+ 
+-int __br_vlan_set_proto(struct net_bridge *br, __be16 proto)
++int __br_vlan_set_proto(struct net_bridge *br, __be16 proto,
++			struct netlink_ext_ack *extack)
  {
  	struct switchdev_attr attr = {
  		.orig_dev = br->dev,
-@@ -910,7 +911,8 @@ int __br_vlan_set_proto(struct net_bridge *br, __be16 proto)
- 	return err;
- }
+@@ -867,7 +868,7 @@ int __br_vlan_set_proto(struct net_bridge *br, __be16 proto)
+ 	if (br->vlan_proto == proto)
+ 		return 0;
  
--int br_vlan_set_proto(struct net_bridge *br, unsigned long val)
-+int br_vlan_set_proto(struct net_bridge *br, unsigned long val,
-+		      struct netlink_ext_ack *extack)
- {
+-	err = switchdev_port_attr_set(br->dev, &attr);
++	err = switchdev_port_attr_set(br->dev, &attr, extack);
+ 	if (err && err != -EOPNOTSUPP)
+ 		return err;
+ 
+@@ -897,7 +898,7 @@ int __br_vlan_set_proto(struct net_bridge *br, __be16 proto)
+ 
+ err_filt:
+ 	attr.u.vlan_protocol = ntohs(oldproto);
+-	switchdev_port_attr_set(br->dev, &attr);
++	switchdev_port_attr_set(br->dev, &attr, NULL);
+ 
+ 	list_for_each_entry_continue_reverse(vlan, &vg->vlan_list, vlist)
+ 		vlan_vid_del(p->dev, proto, vlan->vid);
+@@ -917,7 +918,7 @@ int br_vlan_set_proto(struct net_bridge *br, unsigned long val,
  	if (!eth_type_vlan(htons(val)))
  		return -EPROTONOSUPPORT;
-@@ -1095,7 +1097,8 @@ int __br_vlan_set_default_pvid(struct net_bridge *br, u16 pvid,
- 	goto out;
+ 
+-	return __br_vlan_set_proto(br, htons(val));
++	return __br_vlan_set_proto(br, htons(val), extack);
  }
  
--int br_vlan_set_default_pvid(struct net_bridge *br, unsigned long val)
-+int br_vlan_set_default_pvid(struct net_bridge *br, unsigned long val,
-+			     struct netlink_ext_ack *extack)
- {
- 	u16 pvid = val;
- 	int err = 0;
-@@ -1112,7 +1115,7 @@ int br_vlan_set_default_pvid(struct net_bridge *br, unsigned long val)
- 		err = -EPERM;
+ int br_vlan_set_stats(struct net_bridge *br, unsigned long val)
+@@ -1165,7 +1166,7 @@ int nbp_vlan_init(struct net_bridge_port *p, struct netlink_ext_ack *extack)
+ 	if (!vg)
  		goto out;
- 	}
--	err = __br_vlan_set_default_pvid(br, pvid, NULL);
-+	err = __br_vlan_set_default_pvid(br, pvid, extack);
- out:
- 	return err;
+ 
+-	ret = switchdev_port_attr_set(p->dev, &attr);
++	ret = switchdev_port_attr_set(p->dev, &attr, extack);
+ 	if (ret && ret != -EOPNOTSUPP)
+ 		goto err_vlan_enabled;
+ 
+diff --git a/net/switchdev/switchdev.c b/net/switchdev/switchdev.c
+index 0b84f076591e..89a36db47ab4 100644
+--- a/net/switchdev/switchdev.c
++++ b/net/switchdev/switchdev.c
+@@ -100,7 +100,8 @@ static int switchdev_deferred_enqueue(struct net_device *dev,
+ 
+ static int switchdev_port_attr_notify(enum switchdev_notifier_type nt,
+ 				      struct net_device *dev,
+-				      const struct switchdev_attr *attr)
++				      const struct switchdev_attr *attr,
++				      struct netlink_ext_ack *extack)
+ {
+ 	int err;
+ 	int rc;
+@@ -111,7 +112,7 @@ static int switchdev_port_attr_notify(enum switchdev_notifier_type nt,
+ 	};
+ 
+ 	rc = call_switchdev_blocking_notifiers(nt, dev,
+-					       &attr_info.info, NULL);
++					       &attr_info.info, extack);
+ 	err = notifier_to_errno(rc);
+ 	if (err) {
+ 		WARN_ON(!attr_info.handled);
+@@ -125,9 +126,11 @@ static int switchdev_port_attr_notify(enum switchdev_notifier_type nt,
  }
+ 
+ static int switchdev_port_attr_set_now(struct net_device *dev,
+-				       const struct switchdev_attr *attr)
++				       const struct switchdev_attr *attr,
++				       struct netlink_ext_ack *extack)
+ {
+-	return switchdev_port_attr_notify(SWITCHDEV_PORT_ATTR_SET, dev, attr);
++	return switchdev_port_attr_notify(SWITCHDEV_PORT_ATTR_SET, dev, attr,
++					  extack);
+ }
+ 
+ static void switchdev_port_attr_set_deferred(struct net_device *dev,
+@@ -136,7 +139,7 @@ static void switchdev_port_attr_set_deferred(struct net_device *dev,
+ 	const struct switchdev_attr *attr = data;
+ 	int err;
+ 
+-	err = switchdev_port_attr_set_now(dev, attr);
++	err = switchdev_port_attr_set_now(dev, attr, NULL);
+ 	if (err && err != -EOPNOTSUPP)
+ 		netdev_err(dev, "failed (err=%d) to set attribute (id=%d)\n",
+ 			   err, attr->id);
+@@ -156,17 +159,19 @@ static int switchdev_port_attr_set_defer(struct net_device *dev,
+  *
+  *	@dev: port device
+  *	@attr: attribute to set
++ *	@extack: netlink extended ack, for error message propagation
+  *
+  *	rtnl_lock must be held and must not be in atomic section,
+  *	in case SWITCHDEV_F_DEFER flag is not set.
+  */
+ int switchdev_port_attr_set(struct net_device *dev,
+-			    const struct switchdev_attr *attr)
++			    const struct switchdev_attr *attr,
++			    struct netlink_ext_ack *extack)
+ {
+ 	if (attr->flags & SWITCHDEV_F_DEFER)
+ 		return switchdev_port_attr_set_defer(dev, attr);
+ 	ASSERT_RTNL();
+-	return switchdev_port_attr_set_now(dev, attr);
++	return switchdev_port_attr_set_now(dev, attr, extack);
+ }
+ EXPORT_SYMBOL_GPL(switchdev_port_attr_set);
+ 
 -- 
 2.25.1
 
