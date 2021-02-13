@@ -2,212 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0447E31AD0A
-	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 17:17:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 413A831AD10
+	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 17:22:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229697AbhBMQRy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Feb 2021 11:17:54 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:25690 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229660AbhBMQRx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 11:17:53 -0500
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 11DG2rwY081351;
-        Sat, 13 Feb 2021 11:17:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=mime-version :
- content-type : content-transfer-encoding : date : from : to : cc : subject
- : in-reply-to : references : message-id; s=pp1;
- bh=NcVryV/iLSt9oqvaVESlezE8WOVevaYQ5XG5GJnfAAk=;
- b=GFAevWsHUW062h+bfV2ZeiI8BTa5C/GdFwoqt0vncM7244Z8LKGJMiMHQrqHBLf16IM/
- a7ycwa/I/LijGuAxjw3CLn7CKr6lvTUIM6AwOPw23Nvk+M/iuMkCRaGZNfRduNAjH/bQ
- bQTcLJoZuw+PO2QoMMyoj967SmgQ9+HzIjqLAQCqsphkh0zzqBWoVPVjjoatarEo0zAK
- 76z9IaNgybJ2K0ruMHmhG7rHsfdlxzgGEPAFAG8q63Pj9KK07dSNbK7sCK+h+t79pR6n
- p0gKaVJU2QB9lnj6bqDD5i6XHbFzAC8d94LtmhbOFSXVPnEF7BNfaEiBL19cHE7EAiba gQ== 
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 36phxm8b07-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 13 Feb 2021 11:17:08 -0500
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 11DG7ktf029144;
-        Sat, 13 Feb 2021 16:17:07 GMT
-Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
-        by ppma04dal.us.ibm.com with ESMTP id 36p6d8m8jf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 13 Feb 2021 16:17:07 +0000
-Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
-        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 11DGH6Wi28573974
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 13 Feb 2021 16:17:06 GMT
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 747FB112061;
-        Sat, 13 Feb 2021 16:17:06 +0000 (GMT)
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1B4AE112062;
-        Sat, 13 Feb 2021 16:17:06 +0000 (GMT)
-Received: from ltc.linux.ibm.com (unknown [9.10.229.42])
-        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
-        Sat, 13 Feb 2021 16:17:05 +0000 (GMT)
+        id S229660AbhBMQWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Feb 2021 11:22:09 -0500
+Received: from mail.thelounge.net ([91.118.73.15]:52933 "EHLO
+        mail.thelounge.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229574AbhBMQWH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 11:22:07 -0500
+Received: from srv-rhsoft.rhsoft.net (rh.vpn.thelounge.net [10.10.10.2])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-256))
+        (No client certificate requested)
+        (Authenticated sender: h.reindl@thelounge.net)
+        by mail.thelounge.net (THELOUNGE MTA) with ESMTPSA id 4DdFx00LMGzXRq;
+        Sat, 13 Feb 2021 17:21:24 +0100 (CET)
+Subject: Re: [PATCH net 1/4] netfilter: xt_recent: Fix attempt to update
+ deleted entry
+From:   Reindl Harald <h.reindl@thelounge.net>
+To:     Jozsef Kadlecsik <kadlec@netfilter.org>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, kuba@kernel.org
+References: <20210205001727.2125-1-pablo@netfilter.org>
+ <20210205001727.2125-2-pablo@netfilter.org>
+ <69957353-7fe0-9faa-4ddd-1ac44d5386a5@thelounge.net>
+ <alpine.DEB.2.23.453.2102051448220.10405@blackhole.kfki.hu>
+ <a51d867a-3ca9-fd36-528a-353aa6c42f42@thelounge.net>
+ <3018f068-62b1-6dae-2dde-39d1a62fbcb2@thelounge.net>
+ <alpine.DEB.2.23.453.2102072036220.16338@blackhole.kfki.hu>
+ <303fdd83-a324-5d0c-b45e-9584ea0c9cd5@thelounge.net>
+ <9e18d3b2-e0d2-489e-43ae-c27c160df221@thelounge.net>
+Organization: the lounge interactive design
+Message-ID: <fd8829e7-61ff-025e-6a73-b92dba1a2a9b@thelounge.net>
+Date:   Sat, 13 Feb 2021 17:21:23 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
+In-Reply-To: <9e18d3b2-e0d2-489e-43ae-c27c160df221@thelounge.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-Date:   Sat, 13 Feb 2021 08:17:05 -0800
-From:   Dany Madden <drt@linux.ibm.com>
-To:     Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Cc:     netdev@vger.kernel.org, Lijun Pan <ljp@linux.ibm.com>,
-        Rick Lindsley <ricklind@linux.ibm.com>, uwe@kleine-koenig.org,
-        saeed@kernel.org
-Subject: Re: [PATCH net 1/1] ibmvnic: serialize access to work queue on remove
-In-Reply-To: <20210213044250.960317-1-sukadev@linux.ibm.com>
-References: <20210213044250.960317-1-sukadev@linux.ibm.com>
-Message-ID: <1bd774566df5d634d58d49a064e5ca34@imap.linux.ibm.com>
-X-Sender: drt@linux.ibm.com
-User-Agent: Roundcube Webmail/1.1.12
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
- definitions=2021-02-13_02:2021-02-12,2021-02-13 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- lowpriorityscore=0 adultscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999
- phishscore=0 suspectscore=0 bulkscore=0 malwarescore=0 clxscore=1011
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102130145
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-02-12 20:42, Sukadev Bhattiprolu wrote:
-> The work queue is used to queue reset requests like CHANGE-PARAM or
-> FAILOVER resets for the worker thread. When the adapter is being 
-> removed
-> the adapter state is set to VNIC_REMOVING and the work queue is flushed
-> so no new work is added. However the check for adapter being removed is
-> racy in that the adapter can go into REMOVING state just after we check
-> and we might end up adding work just as it is being flushed (or after).
-> 
-> The ->rwi_lock is already being used to serialize queue/dequeue work.
-> Extend its usage ensure there is no race when scheduling/flushing work.
-> 
-> Fixes: 6954a9e4192b ("ibmvnic: Flush existing work items before device 
-> removal")
-> Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 
-Reviewed-by: Dany Madden <drt@linux.ibm.com>
 
-> Cc:Uwe Kleine-König <uwe@kleine-koenig.org>
-> Cc:Saeed Mahameed <saeed@kernel.org>
-> ---
-> Changelog
-> 	An earlier version was reviewed by Saeed Mahmeed. But I have deferred
-> 	some earlier patches in that set. Also, now extend the use of 
-> ->rwi_lock
-> 	rather than defining a new lock.
-> ---
->  drivers/net/ethernet/ibm/ibmvnic.c | 27 ++++++++++++++++++++-------
->  drivers/net/ethernet/ibm/ibmvnic.h |  5 ++++-
->  2 files changed, 24 insertions(+), 8 deletions(-)
+Am 13.02.21 um 17:09 schrieb Reindl Harald:
 > 
-> diff --git a/drivers/net/ethernet/ibm/ibmvnic.c
-> b/drivers/net/ethernet/ibm/ibmvnic.c
-> index ce6b1cb0b0f9..004565b18a03 100644
-> --- a/drivers/net/ethernet/ibm/ibmvnic.c
-> +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-> @@ -2442,6 +2442,8 @@ static int ibmvnic_reset(struct ibmvnic_adapter 
-> *adapter,
->  	unsigned long flags;
->  	int ret;
 > 
-> +	spin_lock_irqsave(&adapter->rwi_lock, flags);
-> +
->  	/*
->  	 * If failover is pending don't schedule any other reset.
->  	 * Instead let the failover complete. If there is already a
-> @@ -2462,14 +2464,11 @@ static int ibmvnic_reset(struct
-> ibmvnic_adapter *adapter,
->  		goto err;
->  	}
+> Am 10.02.21 um 11:34 schrieb Reindl Harald:
+>>
+>>
+>> Am 07.02.21 um 20:38 schrieb Jozsef Kadlecsik:
+>>> On Sun, 7 Feb 2021, Reindl Harald wrote:
+>>>
+>>>>> well, the most important thing is that the firewall-vm stops to
+>>>>> kernel-panic
+>>>>
+>>>> why is that still not part of 5.10.14 given how old that issue is :-(
+>>>>
+>>>> https://cdn.kernel.org/pub/linux/kernel/v5.x/ChangeLog-5.10.14
+>>>
+>>> Probably we missed the window when patches were accepted for the new
+>>> release. That's all
+>>
+>> probably something is broken in the whole process given that 5.10.15 
+>> still don't contain the fix while i am tired of a new "stable release" 
+>> every few days and 5.10.x like every LTS release in the past few years 
+>> has a peak of it
+>>
+>> https://cdn.kernel.org/pub/linux/kernel/v5.x/ChangeLog-5.10.15
+
+https://cdn.kernel.org/pub/linux/kernel/v5.x/ChangeLog-5.10.16
+
+again no "netfilter" or "xt_recent"
+
+what is the point of new kernel releases every second day without fixing 
+months old issues where a pacth exists?
+
+> and another useless crash of something which has a ready patch from 
+> before 5.10.14
 > 
-> -	spin_lock_irqsave(&adapter->rwi_lock, flags);
-> -
->  	list_for_each(entry, &adapter->rwi_list) {
->  		tmp = list_entry(entry, struct ibmvnic_rwi, list);
->  		if (tmp->reset_reason == reason) {
->  			netdev_dbg(netdev, "Skipping matching reset, reason=%d\n",
->  				   reason);
-> -			spin_unlock_irqrestore(&adapter->rwi_lock, flags);
->  			ret = EBUSY;
->  			goto err;
->  		}
-> @@ -2477,8 +2476,6 @@ static int ibmvnic_reset(struct ibmvnic_adapter 
-> *adapter,
-> 
->  	rwi = kzalloc(sizeof(*rwi), GFP_ATOMIC);
->  	if (!rwi) {
-> -		spin_unlock_irqrestore(&adapter->rwi_lock, flags);
-> -		ibmvnic_close(netdev);
->  		ret = ENOMEM;
->  		goto err;
->  	}
-> @@ -2491,12 +2488,17 @@ static int ibmvnic_reset(struct
-> ibmvnic_adapter *adapter,
->  	}
->  	rwi->reset_reason = reason;
->  	list_add_tail(&rwi->list, &adapter->rwi_list);
-> -	spin_unlock_irqrestore(&adapter->rwi_lock, flags);
->  	netdev_dbg(adapter->netdev, "Scheduling reset (reason %d)\n", 
-> reason);
->  	schedule_work(&adapter->ibmvnic_reset);
-> 
-> -	return 0;
-> +	ret = 0;
->  err:
-> +	/* ibmvnic_close() below can block, so drop the lock first */
-> +	spin_unlock_irqrestore(&adapter->rwi_lock, flags);
-> +
-> +	if (ret == ENOMEM)
-> +		ibmvnic_close(netdev);
-> +
->  	return -ret;
->  }
-> 
-> @@ -5512,7 +5514,18 @@ static int ibmvnic_remove(struct vio_dev *dev)
->  	unsigned long flags;
-> 
->  	spin_lock_irqsave(&adapter->state_lock, flags);
-> +
-> +	/* If ibmvnic_reset() is scheduling a reset, wait for it to
-> +	 * finish. Then, set the state to REMOVING to prevent it from
-> +	 * scheduling any more work and to have reset functions ignore
-> +	 * any resets that have already been scheduled. Drop the lock
-> +	 * after setting state, so __ibmvnic_reset() which is called
-> +	 * from the flush_work() below, can make progress.
-> +	 */
-> +	spin_lock_irqsave(&adapter->rwi_lock, flags);
->  	adapter->state = VNIC_REMOVING;
-> +	spin_unlock_irqrestore(&adapter->rwi_lock, flags);
-> +
->  	spin_unlock_irqrestore(&adapter->state_lock, flags);
-> 
->  	flush_work(&adapter->ibmvnic_reset);
-> diff --git a/drivers/net/ethernet/ibm/ibmvnic.h
-> b/drivers/net/ethernet/ibm/ibmvnic.h
-> index c09c3f6bba9f..3cccbba70365 100644
-> --- a/drivers/net/ethernet/ibm/ibmvnic.h
-> +++ b/drivers/net/ethernet/ibm/ibmvnic.h
-> @@ -1081,6 +1081,7 @@ struct ibmvnic_adapter {
->  	struct tasklet_struct tasklet;
->  	enum vnic_state state;
->  	enum ibmvnic_reset_reason reset_reason;
-> +	/* when taking both state and rwi locks, take state lock first */
->  	spinlock_t rwi_lock;
->  	struct list_head rwi_list;
->  	struct work_struct ibmvnic_reset;
-> @@ -1097,6 +1098,8 @@ struct ibmvnic_adapter {
->  	struct ibmvnic_tunables desired;
->  	struct ibmvnic_tunables fallback;
-> 
-> -	/* Used for serializatin of state field */
-> +	/* Used for serialization of state field. When taking both state
-> +	 * and rwi locks, take state lock first.
-> +	 */
->  	spinlock_t state_lock;
->  };
+> [165940.842226] kernel BUG at lib/list_debug.c:45!
+> [165940.874769] invalid opcode: 0000 [#1] SMP NOPTI
+> [165940.876680] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 
+> 5.10.15-100.fc32.x86_64 #1
+> [165940.880198] Hardware name: VMware, Inc. VMware Virtual 
+> Platform/440BX Desktop Reference Platform, BIOS 6.00 12/12/2018
+> [165940.885314] RIP: 0010:__list_del_entry_valid.cold+0xf/0x47
+> [165940.886202] Code: fe ff 0f 0b 48 89 d1 4c 89 c6 4c 89 ca 48 c7 c7 60 
+> 88 40 b2 e8 cf 45 fe ff 0f 0b 48 89 fe 48 c7 c7 f0 88 40 b2 e8 be 45 fe 
+> ff <0f> 0b 48 c7 c7 a0 89 40 b2 e8 b0 45 fe ff 0f 0b 48 89 f2 48 89 fe
+> [165940.889107] RSP: 0018:ffffaf0480003928 EFLAGS: 00010282
+> [165940.889943] RAX: 000000000000004e RBX: ffff9fa911148000 RCX: 
+> 0000000000000000
+> [165940.891066] RDX: ffff9fa99d4269e0 RSI: ffff9fa99d418a80 RDI: 
+> 0000000000000300
+> [165940.892190] RBP: ffffaf04800039a0 R08: 0000000000000000 R09: 
+> ffffaf0480003760
+> [165940.893313] R10: ffffaf0480003758 R11: ffffffffb2b44748 R12: 
+> ffff9fa9046000f8
+> [165940.894441] R13: ffff9fa911148010 R14: ffff9fa903329400 R15: 
+> ffff9fa904600000
+> [165940.895573] FS:  0000000000000000(0000) GS:ffff9fa99d400000(0000) 
+> knlGS:0000000000000000
+> [165940.896856] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [165940.897789] CR2: 00007fb9442e5000 CR3: 00000000030a0006 CR4: 
+> 00000000003706f0
+> [165940.898954] Call Trace:
+> [165940.899400]  <IRQ>
+> [165940.899757]  recent_mt+0x1b5/0x39b [xt_recent]
+> [165940.900492]  ? set_match_v4+0x92/0xb0 [xt_set]
+> [165940.901236]  nft_match_large_eval+0x34/0x60 [nft_compat]
+> [165940.902104]  nft_do_chain+0x141/0x4e0 [nf_tables]
+> [165940.902869]  ? fib_validate_source+0x47/0xf0
+> [165940.903564]  ? ip_route_input_slow+0x722/0xaa0
+> [165940.904282]  nft_do_chain_ipv4+0x56/0x60 [nf_tables]
+> [165940.905086]  nf_hook_slow+0x3f/0xb0
+> [165940.905658]  ip_forward+0x441/0x480
+> [165940.906230]  ? ip4_key_hashfn+0xb0/0xb0
+> [165940.906856]  __netif_receive_skb_one_core+0x67/0x70
+> [165940.907639]  netif_receive_skb+0x35/0x110
+> [165940.908295]  br_handle_frame_finish+0x17a/0x450 [bridge]
+> [165940.909143]  ? ip_finish_output2+0x19b/0x560
+> [165940.909842]  ? br_handle_frame_finish+0x450/0x450 [bridge]
+> [165940.910718]  br_handle_frame+0x292/0x350 [bridge]
+> [165940.911483]  ? ip_sublist_rcv_finish+0x57/0x70
+> [165940.912199]  ? ___slab_alloc+0x127/0x5b0
+> [165940.912835]  __netif_receive_skb_core+0x196/0xf70
+> [165940.913590]  ? ip_list_rcv+0x125/0x140
+> [165940.914201]  __netif_receive_skb_list_core+0x12f/0x2b0
+> [165940.915024]  netif_receive_skb_list_internal+0x1bc/0x2e0
+> [165940.915873]  ? vmxnet3_rq_rx_complete+0x8bd/0xde0 [vmxnet3]
+> [165940.916769]  napi_complete_done+0x6f/0x190
+> [165940.917439]  vmxnet3_poll_rx_only+0x7b/0xa0 [vmxnet3]
+> [165940.918249]  net_rx_action+0x135/0x3b0
+> [165940.918863]  __do_softirq+0xca/0x288
+> [165940.919451]  asm_call_irq_on_stack+0xf/0x20
+> [165940.920146]  </IRQ>
+> [165940.920508]  do_softirq_own_stack+0x37/0x40
+> [165940.921187]  irq_exit_rcu+0xc2/0x100
+> [165940.921772]  common_interrupt+0x74/0x130
+> [165940.922410]  asm_common_interrupt+0x1e/0x40
