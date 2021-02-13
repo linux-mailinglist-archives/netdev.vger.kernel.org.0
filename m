@@ -2,85 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E752731A8BD
-	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 01:21:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9C3C31A8BF
+	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 01:24:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231706AbhBMAUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 19:20:51 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54562 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229903AbhBMAUu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Feb 2021 19:20:50 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 455DD64EA0;
-        Sat, 13 Feb 2021 00:20:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613175609;
-        bh=A4jer86Cc9fL9qc19r8SQiSGOBNrgfoe3WMMmyDsMVg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=bO6ONXXco2qEOxK+ow7/pa66iZ/5Z/fuwfwbDS/zeWaJi040i6XwW/nUYq7eSEwoS
-         318f2PbOjEyaKVfd678pSCvhT6rfHrQGOZrepy8NQnWbPhB/cfwoHgkN5gJkq9Rcx9
-         750wUYivI00IKn5bSzraSUhuFxC2WPm/yHY+z0bjeFaUSmZa84G81MiSX6FbYTnwhu
-         lC/ZHtysjwzkomB2hBG5BqLi1+YwDumH1DzP5KpAWOHPK+nAe7jSyMC3WPb95EHLzN
-         KUOhOurvDM0TqSynbyNnUhYbokKgeH4F8mUzHwdjdqzDayUk3Xq3iVOhsdB/dZdVmY
-         PF4TBi04AclzA==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 3784160A2A;
-        Sat, 13 Feb 2021 00:20:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S229918AbhBMAYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 19:24:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52212 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229602AbhBMAYG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 19:24:06 -0500
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0219C061574
+        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 16:23:25 -0800 (PST)
+Received: by mail-yb1-xb32.google.com with SMTP id q12so1167212ybm.8
+        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 16:23:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xcJWxqqy7o4h7faRAD+/kVaukl57wU7Ig26/EiyGDro=;
+        b=BbAu3TJ3DMzv97qyMlzj2mZrFpPe09KTJrw72ZjJpWt8/w9cotSPAnekDkWCGu/Bp9
+         nZ3pbQN9+Pj4imrUVdLvwGKXjo2Pz8nuqFyyTff63drWJtClgRtOs9/pU/baosu7abyS
+         1Eli9tJPsJCxqwvidPMl+BIGFTkoyexxzH1T3Gmca4Am/pzo5fwSyxTE/PY27c3Ja39m
+         Dwc/0vE2R1994Tn2q1maVTwZWX+JxC5N4FzMWQyI70Y6H37mKxvCrK+LFGzGoMVVUmQ5
+         1+bbSBPBnNrdUYv2lHMxvSX2uWSPih51z0gXek2s2uyLrbyReCFVg5OnIL9dL49e2eP0
+         HXIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xcJWxqqy7o4h7faRAD+/kVaukl57wU7Ig26/EiyGDro=;
+        b=DIB6dwdvSQkIik63/KSN2FRePO2BFpgRFgRatOiKQkyzTtjQtDLx9xo6gDAG86Gwc9
+         9Ui45IunaWpW2XwzNYNxGyDlyDwgXvK+626/TfLXdPTLlnOYaQyI0Gf7SX9na8iI4de4
+         ILSLUEvw7hgeBFA5pcGOUOJJmKEt5ftIJUdZZA8mxJxrF5dyfqNE3PabKhuFWedRFIkU
+         Q2uqt1R3ChkIMmzv+nnqy8KIBeKGtWk4LF+5n8JCTLJMWg8/O1Q2y1gSB1Ss2r+Aeavc
+         n/dMBm1XzeNPxrLN0c51f+UZjBlWm5F3fnLJlsRqeWndBWmgCxh1HLOV3Ex9QEntPFvO
+         xaWg==
+X-Gm-Message-State: AOAM533A1K9MYcAhDhy+ITrQXKGE/dkOPc6kaxeh+VeENQRYTPtJ/EMy
+        Mt85dwWG8IpP9q+j+G1BImefgIyN0a/mP22eVtQRFXbciE0=
+X-Google-Smtp-Source: ABdhPJxiIsi+P5ppcEHQ+1gAasF/c77pJKP78fdrfMto4HTZ6x3J3770fjY1ygBxnhM6XUriYX+SXJOIt1x12dzc1dg=
+X-Received: by 2002:a25:2206:: with SMTP id i6mr7261333ybi.351.1613175804711;
+ Fri, 12 Feb 2021 16:23:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next V16 0/7] bpf: New approach for BPF MTU handling
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161317560922.26527.12147444743341964387.git-patchwork-notify@kernel.org>
-Date:   Sat, 13 Feb 2021 00:20:09 +0000
-References: <161287779408.790810.15631860742170694244.stgit@firesoul>
-In-Reply-To: <161287779408.790810.15631860742170694244.stgit@firesoul>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        borkmann@iogearbox.net, alexei.starovoitov@gmail.com,
-        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
-        lorenzo@kernel.org, marek@cloudflare.com, john.fastabend@gmail.com,
-        kuba@kernel.org, eyal.birger@gmail.com, colrack@gmail.com
+References: <20210212232214.2869897-1-eric.dumazet@gmail.com> <20210212232214.2869897-2-eric.dumazet@gmail.com>
+In-Reply-To: <20210212232214.2869897-2-eric.dumazet@gmail.com>
+From:   Wei Wang <weiwan@google.com>
+Date:   Fri, 12 Feb 2021 16:23:13 -0800
+Message-ID: <CAEA6p_Dhj+N7RDCXRX8-dVXU+9jfDeuedJ=iU9wQ8xAr5Wt_9g@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/2] tcp: fix SO_RCVLOWAT related hangs under mem pressure
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Arjun Roy <arjunroy@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Fri, Feb 12, 2021 at 3:22 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+> From: Eric Dumazet <edumazet@google.com>
+>
+> While commit 24adbc1676af ("tcp: fix SO_RCVLOWAT hangs with fat skbs")
+> fixed an issue vs too small sk_rcvbuf for given sk_rcvlowat constraint,
+> it missed to address issue caused by memory pressure.
+>
+> 1) If we are under memory pressure and socket receive queue is empty.
+> First incoming packet is allowed to be queued, after commit
+> 76dfa6082032 ("tcp: allow one skb to be received per socket under memory pressure")
+>
+> But we do not send EPOLLIN yet, in case tcp_data_ready() sees sk_rcvlowat
+> is bigger than skb length.
+>
+> 2) Then, when next packet comes, it is dropped, and we directly
+> call sk->sk_data_ready().
+>
+> 3) If application is using poll(), tcp_poll() will then use
+> tcp_stream_is_readable() and decide the socket receive queue is
+> not yet filled, so nothing will happen.
+>
+> Even when sender retransmits packets, phases 2) & 3) repeat
+> and flow is effectively frozen, until memory pressure is off.
+>
+> Fix is to consider tcp_under_memory_pressure() to take care
+> of global memory pressure or memcg pressure.
+>
+> Fixes: 24adbc1676af ("tcp: fix SO_RCVLOWAT hangs with fat skbs")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Reported-by: Arjun Roy <arjunroy@google.com>
+> Suggested-by: Wei Wang <weiwan@google.com>
+> ---
+Nice description in the commit msg!
 
-This series was applied to bpf/bpf-next.git (refs/heads/master):
+Reviewed-by: Wei Wang <weiwan@google.com>
 
-On Tue, 09 Feb 2021 14:38:04 +0100 you wrote:
-> This patchset drops all the MTU checks in TC BPF-helpers that limits
-> growing the packet size. This is done because these BPF-helpers doesn't
-> take redirect into account, which can result in their MTU check being done
-> against the wrong netdev.
-> 
-> The new approach is to give BPF-programs knowledge about the MTU on a
-> netdev (via ifindex) and fib route lookup level. Meaning some BPF-helpers
-> are added and extended to make it possible to do MTU checks in the
-> BPF-code.
-> 
-> [...]
-
-Here is the summary with links:
-  - [bpf-next,V16,1/7] bpf: Remove MTU check in __bpf_skb_max_len
-    https://git.kernel.org/bpf/bpf-next/c/6306c1189e77
-  - [bpf-next,V16,2/7] bpf: fix bpf_fib_lookup helper MTU check for SKB ctx
-    https://git.kernel.org/bpf/bpf-next/c/2c0a10af688c
-  - [bpf-next,V16,3/7] bpf: bpf_fib_lookup return MTU value as output when looked up
-    https://git.kernel.org/bpf/bpf-next/c/e1850ea9bd9e
-  - [bpf-next,V16,4/7] bpf: add BPF-helper for MTU checking
-    https://git.kernel.org/bpf/bpf-next/c/34b2021cc616
-  - [bpf-next,V16,5/7] bpf: drop MTU check when doing TC-BPF redirect to ingress
-    https://git.kernel.org/bpf/bpf-next/c/5f7d57280c19
-  - [bpf-next,V16,6/7] selftests/bpf: use bpf_check_mtu in selftest test_cls_redirect
-    https://git.kernel.org/bpf/bpf-next/c/6b8838be7e21
-  - [bpf-next,V16,7/7] selftests/bpf: tests using bpf_check_mtu BPF-helper
-    https://git.kernel.org/bpf/bpf-next/c/b62eba563229
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+>  include/net/tcp.h | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
+>
+> diff --git a/include/net/tcp.h b/include/net/tcp.h
+> index 25bbada379c46add16fb7239733bd6571f10f680..244208f6f6c2ace87920b633e469421f557427a6 100644
+> --- a/include/net/tcp.h
+> +++ b/include/net/tcp.h
+> @@ -1431,8 +1431,13 @@ void tcp_cleanup_rbuf(struct sock *sk, int copied);
+>   */
+>  static inline bool tcp_rmem_pressure(const struct sock *sk)
+>  {
+> -       int rcvbuf = READ_ONCE(sk->sk_rcvbuf);
+> -       int threshold = rcvbuf - (rcvbuf >> 3);
+> +       int rcvbuf, threshold;
+> +
+> +       if (tcp_under_memory_pressure(sk))
+> +               return true;
+> +
+> +       rcvbuf = READ_ONCE(sk->sk_rcvbuf);
+> +       threshold = rcvbuf - (rcvbuf >> 3);
+>
+>         return atomic_read(&sk->sk_rmem_alloc) > threshold;
+>  }
+> --
+> 2.30.0.478.g8a0d178c01-goog
+>
