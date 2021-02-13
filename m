@@ -2,88 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5F8D31ADA1
-	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 19:59:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83C9F31ADAD
+	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 20:08:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229742AbhBMS5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Feb 2021 13:57:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35082 "EHLO
+        id S229787AbhBMTH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Feb 2021 14:07:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229574AbhBMS5p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 13:57:45 -0500
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B20DDC061756
-        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 10:57:05 -0800 (PST)
-Received: by mail-io1-xd2a.google.com with SMTP id e133so2721568iof.8
-        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 10:57:05 -0800 (PST)
+        with ESMTP id S229574AbhBMTH4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 14:07:56 -0500
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D20E2C061574
+        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 11:07:16 -0800 (PST)
+Received: by mail-pl1-x633.google.com with SMTP id g20so1562044plo.2
+        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 11:07:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=SSiIY9/WEeGpnjVB1oQnPOEx9ruzX3c6uw+HsdoUSRc=;
-        b=KHHUYgRyUTtNuek5q7vcr5ntC7dzmxtDlsbFZL2eed2waujqYKU38YiHaLhc8BKIQx
-         VUjNJW20LeQdZ5h4Y2qEmNGW0U7qlrrspm/DSHc0qquxUeyiP1kF1S8lysfdhNCxbeEc
-         y/PSD1A1p0ciFK8DF7VeHEx7voqybsXfTOzX24YukAm5L3OOAPokoAfiAWQdwTce5LDe
-         iCaL+082+LJNSbGxQmRYcgaayJUz9EsPYy1J13vEGZuRE1Yth6T7WLbee0M3oRzW48I3
-         n8QHiu3YBbwnUpM6OcjA1qhHHl/inIN6k2/8h+XeR4FVsWnXVlb9zT71xs4e6l5FRFFj
-         iIaQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Sf+i8UilWHuNdXhKLt5nECVc3QzpqeLib8z+MQ40yGo=;
+        b=r5BghT7cju+thWZldWKo6FNlFXNaOZtlkHSzCmYehubf6MwUdltII6JXfaKwSokYUN
+         pGWpTXL6bCcyBApYjfARy/xt59PK+M+JMwJ1OwL2e3tpXBbuw/Csy4i7uxy6pj+0mkaO
+         gvqzK9tHoZ2HnkaUa/nlB1fjmZRXiZ/mpT5Dmdxtd/Lpxd1HCFaWxDQEoZ+/lIx48yNH
+         ckk1o79N+5h+0Kbhg6ScXbyweRt4fqPNbp4Wt7H0vSsWdNaDig5te35usI2t2GlhUp4t
+         Kgnu9tLYNkm6szotUg80qUfN9Qt//2cU0YGdQ5Wpsdqz60D/D/pdNM+a/27+qBMNLB72
+         P1PQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=SSiIY9/WEeGpnjVB1oQnPOEx9ruzX3c6uw+HsdoUSRc=;
-        b=bXFAvjKvMKTjJYqSN/21RImUNS1ZmfaZQxiRk5M1yUoaX7xQQPldpcOUGV2YgQx9Jk
-         Kws8aG1EzIJsMI8n+bNc2e7LFZ7uqE648xxF9Ura9QTdFVZSCs8FZn8hPXjxojlFyGH8
-         i1zuhCyFbn+mdArrdksVnrm1vMnWc+pKWAGn4JdZHibaNAjskL/YFtOt6J6yrRZdmPgo
-         mbrwqgtIP8O6HO11gQZvGiB7jgtDG7iAUdfkJ5uEfD2DtR+myp2KTv2+9A75p6YYdMTY
-         7LwOc54JQp5Z9E/NctXiD4X5SwgvbQCeXMRcJF4YikZbR75hbRLX0iTJnV5cfKgQUCmn
-         Eb2w==
-X-Gm-Message-State: AOAM533ywlIcvKBKVMXeXflXSFT3AvXX0rO8NKmEC7glSqVNX/0hjJzP
-        KiIEK2lKWGL1MFsIeBdCO2o=
-X-Google-Smtp-Source: ABdhPJyNxH2y9OCayIbLpqOF0Ggj+/+u3onCSXHwnV41cbEQSsTUlxNBS4AhmZ1VyK6lZLZrT4vE/Q==
-X-Received: by 2002:a02:83ca:: with SMTP id j10mr8032436jah.129.1613242625292;
-        Sat, 13 Feb 2021 10:57:05 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.33])
-        by smtp.googlemail.com with ESMTPSA id c4sm6423683ilm.21.2021.02.13.10.57.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 13 Feb 2021 10:57:04 -0800 (PST)
-Subject: Re: [RFC PATCH 00/13] nexthop: Resilient next-hop groups
-To:     Petr Machata <petrm@nvidia.com>, netdev@vger.kernel.org
-Cc:     David Ahern <dsahern@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>
-References: <cover.1612815057.git.petrm@nvidia.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <e15bfcec-7d1f-baea-6a9d-7bcc77104d8e@gmail.com>
-Date:   Sat, 13 Feb 2021 11:57:03 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.7.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Sf+i8UilWHuNdXhKLt5nECVc3QzpqeLib8z+MQ40yGo=;
+        b=JNrkJCZJn2le20F8bxEhwPObE2L5fZF3kwBZOtA+oU+jX+USqDSjHg8wSBc5S7QXMt
+         LxA8N7x+eWpK2OHeDm/cisci2vvt5WUL0KRYJQy5yyuxn225T9tWJLDb8XQKfflHuLal
+         UwkWw/11RBSvwlHt43e0tpPdJR8yZxxHgG4VFCqwt/1C/tD7qVSycyK5KCKxI1Mxpgn3
+         d2IfgNSK2ZD0QYZO01C432CFJCHfqkU4QNk8++90PxKxF+wZapVMIpUFhK2NkV/Z/Sgh
+         f6V5OUh/lxtMk1AFkaaWwx36cvxhoFuDnPoQLzzZyxGdHxCmvzWyXa69wNqyW5/VmVA2
+         BCWA==
+X-Gm-Message-State: AOAM530f441hneepcME9SUPydzQA2o/5JBaCNTaM8FUVkOTZ1JP6Qb5y
+        2nsmFZycFI5Q65QSTgfiFta7l1rx7U8iOvVhGy8=
+X-Google-Smtp-Source: ABdhPJza5tLVc5WgS+7OqIenW9D5Im1vP9h8QqL+LLQaZJP1p5hzVRNZeKbf4p52lyni8C9ZXrJLws7874DGT4mmXl0=
+X-Received: by 2002:a17:902:c282:b029:e3:45a0:a8a6 with SMTP id
+ i2-20020a170902c282b02900e345a0a8a6mr1350911pld.10.1613243236220; Sat, 13 Feb
+ 2021 11:07:16 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <cover.1612815057.git.petrm@nvidia.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210213175102.28227-1-ap420073@gmail.com>
+In-Reply-To: <20210213175102.28227-1-ap420073@gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Sat, 13 Feb 2021 11:07:04 -0800
+Message-ID: <CAM_iQpXLMk+4VuHr8WyLE1fxNV5hsN7JvA2PoDOmnZ4beJOH7Q@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 1/7] mld: convert from timer to delayed work
+To:     Taehee Yoo <ap420073@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        jwi@linux.ibm.com, kgraul@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, borntraeger@de.ibm.com,
+        Marek Lindner <mareklindner@neomailbox.ch>,
+        sw@simonwunderlich.de, a@unstable.cc, sven@narfation.org,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>, dsahern@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/8/21 1:42 PM, Petr Machata wrote:
-> To illustrate the usage, consider the following commands:
-> 
->  # ip nexthop add id 1 via 192.0.2.2 dev dummy1
->  # ip nexthop add id 2 via 192.0.2.3 dev dummy1
->  # ip nexthop add id 10 group 1/2 type resilient \
-> 	buckets 8 idle_timer 60 unbalanced_timer 300
-> 
-> The last command creates a resilient next hop group. It will have 8
-> buckets, each bucket will be considered idle when no traffic hits it for at
-> least 60 seconds, and if the table remains out of balance for 300 seconds,
-> it will be forcefully brought into balance. (If not present in netlink
-> message, the idle timer defaults to 120 seconds, and there is no unbalanced
-> timer, meaning the group may remain unbalanced indefinitely.)
+On Sat, Feb 13, 2021 at 9:51 AM Taehee Yoo <ap420073@gmail.com> wrote:
+> -static void mld_dad_start_timer(struct inet6_dev *idev, unsigned long delay)
+> +static void mld_dad_start_work(struct inet6_dev *idev, unsigned long delay)
+>  {
+>         unsigned long tv = prandom_u32() % delay;
+>
+> -       if (!mod_timer(&idev->mc_dad_timer, jiffies+tv+2))
+> +       if (!mod_delayed_work(mld_wq, &idev->mc_dad_work, msecs_to_jiffies(tv + 2)))
 
-How did you come up with the default timer of 120 seconds?
+IIUC, before this patch 'delay' is in jiffies, after this patch it is in msecs?
 
-overall this looks really good.
+[...]
+
+> -static void mld_dad_timer_expire(struct timer_list *t)
+> +static void mld_dad_work(struct work_struct *work)
+>  {
+> -       struct inet6_dev *idev = from_timer(idev, t, mc_dad_timer);
+> +       struct inet6_dev *idev = container_of(to_delayed_work(work),
+> +                                             struct inet6_dev,
+> +                                             mc_dad_work);
+>
+> +       rtnl_lock();
+
+Any reason why we need RTNL after converting the timer to
+delayed work?
+
+Thanks.
