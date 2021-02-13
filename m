@@ -2,167 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7CC231A8CD
-	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 01:32:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7ED3031A8D4
+	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 01:37:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231394AbhBMAb1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 19:31:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53778 "EHLO
+        id S229718AbhBMAh0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 19:37:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231273AbhBMAb0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 19:31:26 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45BADC061756
-        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 16:30:46 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id x19so1240785ybe.0
-        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 16:30:46 -0800 (PST)
+        with ESMTP id S229648AbhBMAhZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 19:37:25 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E36B5C061574
+        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 16:36:44 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id t5so1780353eds.12
+        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 16:36:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IYJHUadxdcfyiyhZB/DfXUj2HmgRewPwBHaeQomePTs=;
-        b=XeLKpshA4DQ9HxG/JkWg378YsbCSEne299DGxtiyoN1RoymRuaGL+x+hcftXSvU0o3
-         Od61pQ5TIqLqIYCYo88567YPbbiBK0NgDe8FvcV9RpJ9nygow42f6hTRFd+u13nXc178
-         SOcPDbP+CZjGgs7NZH+MAuvqAgWq4pBoC0WwgRikVv149HBIlHYHBT41yPtsR0S3CAtg
-         cdqYqTKHUYz4KMrDY40BUCqOAhEl9FezuIRTNOefjm+vZebzkpgkZain116vBe/7oP0j
-         YSvwQtIvoM2GK74RZIIiCS6koUgDwnRBI9kqN9zXFsqr8yzaE3eX8w2r5khjwuRnW8A/
-         vTKQ==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=a5xI+nZpqBNRqRp13eVNUZef8sxzhGaTd7js2pAroLw=;
+        b=iIng7U6+yWyA+Tr5/60nJM4JMdDuzGToTW6yFDX0HA0yU/ELMpNbCluybTg6xcXVDG
+         tCUBOVNtZzFyuBGusfkVX0OMcjtztXr1EyYHGsytcitSzW39fWcy586T4bEpN5QCdaN+
+         pq4Ba/sf5UHDLjktD3Nkj+lqj1ed2QF3evig2fJ0MHWaAvxOBIyeA8j0Ph/7F4+oO7RC
+         Q7AtwBwv1S0TvjZyoqoaUyc7pLp7a+rqDkPWqVSikOqRmJrjLu6ylOcZez4oHA1riL26
+         7RuLA3pJA+XYf5RcwHHkPH1rQRfphyXY7QdzFbln22KxB2BlZX56WwkOsxCaQQfcZkzo
+         FZig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IYJHUadxdcfyiyhZB/DfXUj2HmgRewPwBHaeQomePTs=;
-        b=Opj3tDH+NrUWseInBYr8HphZyN6qYMZUXtgrXgH5yphDhFw0wmPtUXAPKvT0i/iF6P
-         H88L00RkaCNFFZqc5ONx9xXp3gD5HjPW6DthAduVpVN0e9gr7GmPSyr3FQEXIPEzDm3O
-         ruEybk+sx6Y2BX+QB+7hThJ9a75Gd+LPDDemFR0sLnQwcdFYni9+43MV25GElnQd7f4U
-         2Hj9PVrSTkOh3KVvxhE0nYyb+LtRUA5VV+WY5nhDB2BHWvVDzpSxcAQ4kPimBzGGvVzG
-         uszGClb+aRaT0bgBnMOx5VYt7JH/wFw5dtUqZGXLUv71Vj7g5RiyDPgFJlLvxK1tGyfn
-         VwCQ==
-X-Gm-Message-State: AOAM530OQy8AOgVTaVs5eXSdYYQlTJ5Hlql1phUlGC6OuomdApnaXl/u
-        w9e7KfWQb5OZ0Q78TqwHLE5/d1gUMar9KDYJhp92xA==
-X-Google-Smtp-Source: ABdhPJy2lOTWqpgU49wvYNXsJGYcVqPDEaVo82nSzZ7LqD4mG+Nx4QfLG9jqlz9UWFqIDq/16PWtLwlUIhJTssil9jw=
-X-Received: by 2002:a25:4981:: with SMTP id w123mr7301730yba.123.1613176245292;
- Fri, 12 Feb 2021 16:30:45 -0800 (PST)
-MIME-Version: 1.0
-References: <20210212232214.2869897-1-eric.dumazet@gmail.com> <20210212232214.2869897-3-eric.dumazet@gmail.com>
-In-Reply-To: <20210212232214.2869897-3-eric.dumazet@gmail.com>
-From:   Wei Wang <weiwan@google.com>
-Date:   Fri, 12 Feb 2021 16:30:33 -0800
-Message-ID: <CAEA6p_A0g-7WMfyQbw55wdAKkFkEbW2A-XwTNziP9XyD3MjmCA@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/2] tcp: factorize logic into tcp_epollin_ready()
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=a5xI+nZpqBNRqRp13eVNUZef8sxzhGaTd7js2pAroLw=;
+        b=B/u+J1/ARxLxZn/lOWznnIfqBD3GJ040iIaB1dwI1GpMCJXxRcmNZ62Mkpp8boBx8M
+         LvndAENDPBj6Anc3eycbh3nm8Z0fiZiAd7HPH31ODFgeOQOz7gcus4ATyfk9KcqCisS0
+         5L/RhsjpA/TVsh7wwg0M2KPNPkJYzUo53OyXG8Vdo+p3MHb7aDFZp9/8PcksQ/Us9a1w
+         vKRdVcQVXSLmA9E62ysZvVe13PhuOuVQn4CcTLAwsrasgrc//PU31i6aczm3rvKVYMxO
+         TEXeK2rgUDaQB0gY1clMiyrmsNbCmKuZ4O5UUS8Hw9fy5ZBvBx3Xw4E7dr9/zerI+IPQ
+         eogQ==
+X-Gm-Message-State: AOAM531s7y7r7e/iOgfBN/l2J8uMg0XN17IA7ndvF784WNpQFCIMmBT9
+        EvS603XArPu5sPj1yp7HjXI=
+X-Google-Smtp-Source: ABdhPJzk32VlVD8r/B0etvg9z/tB0/KCh6AgmupRO7wS9rZ2gwe7PVUhNhVpcKgP6DempDEpm5JC3Q==
+X-Received: by 2002:a05:6402:310a:: with SMTP id dc10mr6102645edb.258.1613176603541;
+        Fri, 12 Feb 2021 16:36:43 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id q9sm7042812ejd.113.2021.02.12.16.36.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Feb 2021 16:36:43 -0800 (PST)
+Date:   Sat, 13 Feb 2021 02:36:41 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Michael Walle <michael@walle.cc>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Arjun Roy <arjunroy@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Antoine Tenart <atenart@kernel.org>,
+        Quentin Schulz <quentin.schulz@bootlin.com>,
+        netdev@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next 1/2] net: phylink: explicitly configure in-band
+ autoneg for PHYs that support it
+Message-ID: <20210213003641.gybb6gstjpkcwr6z@skbuf>
+References: <20210212172341.3489046-1-olteanv@gmail.com>
+ <20210212172341.3489046-2-olteanv@gmail.com>
+ <eb7b911f4fe008e1412058f219623ee2@walle.cc>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <eb7b911f4fe008e1412058f219623ee2@walle.cc>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 12, 2021 at 3:22 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
-> From: Eric Dumazet <edumazet@google.com>
->
-> Both tcp_data_ready() and tcp_stream_is_readable() share the same logic.
->
-> Add tcp_epollin_ready() helper to avoid duplication.
->
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Arjun Roy <arjunroy@google.com>
-> Cc: Wei Wang <weiwan@google.com>
-> ---
->  include/net/tcp.h    | 12 ++++++++++++
->  net/ipv4/tcp.c       | 16 ++++------------
->  net/ipv4/tcp_input.c | 11 ++---------
->  3 files changed, 18 insertions(+), 21 deletions(-)
->
-> diff --git a/include/net/tcp.h b/include/net/tcp.h
-> index 244208f6f6c2ace87920b633e469421f557427a6..484eb2362645fd478f59b26b42457ecf4510eb14 100644
-> --- a/include/net/tcp.h
-> +++ b/include/net/tcp.h
-> @@ -1442,6 +1442,18 @@ static inline bool tcp_rmem_pressure(const struct sock *sk)
->         return atomic_read(&sk->sk_rmem_alloc) > threshold;
->  }
->
-> +static inline bool tcp_epollin_ready(const struct sock *sk, int target)
-> +{
-> +       const struct tcp_sock *tp = tcp_sk(sk);
-> +       int avail = READ_ONCE(tp->rcv_nxt) - READ_ONCE(tp->copied_seq);
-> +
-> +       if (avail <= 0)
-> +               return false;
-> +
-> +       return (avail >= target) || tcp_rmem_pressure(sk) ||
-> +              (tcp_receive_window(tp) <= inet_csk(sk)->icsk_ack.rcv_mss);
-> +}
-> +
->  extern void tcp_openreq_init_rwin(struct request_sock *req,
->                                   const struct sock *sk_listener,
->                                   const struct dst_entry *dst);
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index 9896ca10bb340924b779cb6a7606d57fdd5c3357..7a6b58ae408d1fb1e5536ccfed8215be123f3b57 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -481,19 +481,11 @@ static void tcp_tx_timestamp(struct sock *sk, u16 tsflags)
->         }
->  }
->
-> -static inline bool tcp_stream_is_readable(const struct tcp_sock *tp,
-> -                                         int target, struct sock *sk)
-> +static bool tcp_stream_is_readable(struct sock *sk, int target)
->  {
-> -       int avail = READ_ONCE(tp->rcv_nxt) - READ_ONCE(tp->copied_seq);
-> +       if (tcp_epollin_ready(sk, target))
-> +               return true;
->
-> -       if (avail > 0) {
-> -               if (avail >= target)
-> -                       return true;
-> -               if (tcp_rmem_pressure(sk))
-> -                       return true;
-> -               if (tcp_receive_window(tp) <= inet_csk(sk)->icsk_ack.rcv_mss)
-> -                       return true;
-> -       }
->         if (sk->sk_prot->stream_memory_read)
->                 return sk->sk_prot->stream_memory_read(sk);
->         return false;
-> @@ -568,7 +560,7 @@ __poll_t tcp_poll(struct file *file, struct socket *sock, poll_table *wait)
->                     tp->urg_data)
->                         target++;
->
-> -               if (tcp_stream_is_readable(tp, target, sk))
-> +               if (tcp_stream_is_readable(sk, target))
->                         mask |= EPOLLIN | EPOLLRDNORM;
->
->                 if (!(sk->sk_shutdown & SEND_SHUTDOWN)) {
-> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> index a8f8f98159531e5d1c80660972148986f6acd20a..e32a7056cb7640c67ef2d6a4d9484684d2602fcd 100644
-> --- a/net/ipv4/tcp_input.c
-> +++ b/net/ipv4/tcp_input.c
-> @@ -4924,15 +4924,8 @@ int tcp_send_rcvq(struct sock *sk, struct msghdr *msg, size_t size)
->
->  void tcp_data_ready(struct sock *sk)
->  {
-> -       const struct tcp_sock *tp = tcp_sk(sk);
-> -       int avail = tp->rcv_nxt - tp->copied_seq;
-> -
-> -       if (avail < sk->sk_rcvlowat && !tcp_rmem_pressure(sk) &&
-> -           !sock_flag(sk, SOCK_DONE) &&
+On Fri, Feb 12, 2021 at 11:40:59PM +0100, Michael Walle wrote:
+> Am 2021-02-12 18:23, schrieb Vladimir Oltean:
+> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > 
+> > Currently Linux has no control over whether a MAC-to-PHY interface uses
+> > in-band signaling or not, even though phylink has the
+> > 	managed = "in-band-status";
+> > property which denotes that the MAC expects in-band signaling to be
+> > used.
+> > 
+> > The problem is really that if the in-band signaling is configurable in
+> > both the PHY and the MAC, there is a risk that they are out of sync
+> > unless phylink manages them both. Most if not all in-band autoneg state
+> > machines follow IEEE 802.3 clause 37, which means that they will not
+> > change the operating mode of the SERDES lane from control to data mode
+> > unless in-band AN completed successfully. Therefore traffic will not
+> > work.
+> > 
+> > It is particularly unpleasant that currently, we assume that PHYs which
+> > have configurable in-band AN come pre-configured from a prior boot stage
+> > such as U-Boot, because once the bootloader changes, all bets are off.
+> 
+> Fun fact, now it may be the other way around. If the bootloader doesn't
+> configure it and the PHY isn't reset by the hardware, it won't work in
+> the bootloader after a reboot ;)
 
-Seems "!sock_flag(sk, SOCK_DONE)" is not checked in
-tcp_epollin_read(). Does it matter?
+My understanding is that this is precisely the reason why the U-Boot
+people don't want to support booting from RAM, and want to assume that
+the nothing else ran between Power On Reset and the bootloader:
+https://www.denx.de/wiki/view/DULG/CanUBootBeConfiguredSuchThatItCanBeStartedInRAM
+[ that does make me wonder what they think about ARM TF-A ]
 
-> -           tcp_receive_window(tp) > inet_csk(sk)->icsk_ack.rcv_mss)
-> -               return;
-> -
-> -       sk->sk_data_ready(sk);
-> +       if (tcp_epollin_ready(sk, sk->sk_rcvlowat))
-> +               sk->sk_data_ready(sk);
->  }
->
->  static void tcp_data_queue(struct sock *sk, struct sk_buff *skb)
-> --
-> 2.30.0.478.g8a0d178c01-goog
->
+> > Let's introduce a new PHY driver method for configuring in-band autoneg,
+> > and make phylink be its first user. The main PHY library does not call
+> > phy_config_inband_autoneg, because it does not know what to configure it
+> > to. Presumably, non-phylink drivers can also call
+> > phy_config_inband_autoneg
+> > individually.
+> 
+> If you disable aneg between MAC and PHY, what would be the actual speed
+> setting/duplex mode then? I guess it have to match the external speed?
+> 
+> I'm trying this on the AT8031. I've removed 'managed = "in-band-status";'
+> for the PHY. Confirmed that it won't work and then I've implemented your
+> new callback. That will disable the SGMII aneg (which is done via the
+> BMCR of fiber page if I'm not entirely mistaken); ethernet will then
+> work again. But only for gigabit. I presume because the speed setting
+> of the SGMII link is set to gigabit.
+
+Which MAC driver are you testing on? Are you saying that it doesn't
+force the link to the speed resolved over MDIO and passed to
+.phylink_mac_link_up, or that the speed communicated to it is incorrect?
