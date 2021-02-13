@@ -2,66 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F24BA31A8F5
-	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 01:52:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0289331A917
+	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 01:56:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231564AbhBMAvB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 19:51:01 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57260 "EHLO mail.kernel.org"
+        id S232476AbhBMAyh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 19:54:37 -0500
+Received: from mga04.intel.com ([192.55.52.120]:36183 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229903AbhBMAu7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Feb 2021 19:50:59 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id E071B64E9A;
-        Sat, 13 Feb 2021 00:50:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613177418;
-        bh=vZaerVAV497LJvbhjqKmiEU8XeG9c9caPc5C78doXL8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=KGjXRzXebZ7QijqWR3d3+SyOgc7Rk4Y+vCZ/LhS8L0aBAkKxnNnFEwwJd1NW2HQwj
-         /ffOCp7CAgY5qxGwjfTO9EOW4nnrG41KCGebNKtn7cZEIoT/vw/eMCjQRu1i+PeAhV
-         +gFkHvN9wSHaH2e8OFy/uD/xuJnDCIOVDIpnBm9ue0QJ8gyXLkcgTmfu3SqOSZRscU
-         zPrN7K6uPTVCPgiSrLWvypBfJ8aODxW8G8WO7np9M60kgoA/gSnTbWYoQEwlmhpUif
-         02G+AvyPl7Bif4mXlP1SQuyMrIe7vuX+54OS5UUuPbbrAbmsvKfreCBU2bT+2/y76b
-         sgrsa9keQahlg==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DC4D860A2E;
-        Sat, 13 Feb 2021 00:50:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S229918AbhBMAxx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Feb 2021 19:53:53 -0500
+IronPort-SDR: 8DYer8QNfl0T4eRUUKZXJcMeFDjMvOqXaGnbXwTNB/BTxedJhcpzREDH2TI+mTbT2WpI2uvRqH
+ VU8Pjb/5c+0A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9893"; a="179941024"
+X-IronPort-AV: E=Sophos;i="5.81,175,1610438400"; 
+   d="scan'208";a="179941024"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2021 16:52:07 -0800
+IronPort-SDR: il0pNr3o0wQV0H3LdidWjQc0GQoz3fiZ8XYAxbnNQT9CFyq3GdhvHzMb22sS3pKnKVICaF486o
+ 4f0cN6cNdrmA==
+X-IronPort-AV: E=Sophos;i="5.81,175,1610438400"; 
+   d="scan'208";a="437771512"
+Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.254.85.171])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2021 16:52:07 -0800
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Geliang Tang <geliangtang@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, mptcp@lists.01.org, matthieu.baerts@tessares.net,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next] mptcp: add local addr info in mptcp_info
+Date:   Fri, 12 Feb 2021 16:52:02 -0800
+Message-Id: <20210213005202.381848-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: wireless-drivers-next-2021-02-12
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161317741889.7081.17034860236151363021.git-patchwork-notify@kernel.org>
-Date:   Sat, 13 Feb 2021 00:50:18 +0000
-References: <20210212105933.1F8E7C43461@smtp.codeaurora.org>
-In-Reply-To: <20210212105933.1F8E7C43461@smtp.codeaurora.org>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Geliang Tang <geliangtang@gmail.com>
 
-This pull request was applied to netdev/net-next.git (refs/heads/master):
+Add mptcpi_local_addr_used and mptcpi_local_addr_max in struct mptcp_info.
 
-On Fri, 12 Feb 2021 10:59:33 +0000 (UTC) you wrote:
-> Hi,
-> 
-> here's a pull request to net-next tree, more info below. Please let me know if
-> there are any problems.
-> 
-> Kalle
-> 
-> [...]
+Signed-off-by: Geliang Tang <geliangtang@gmail.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+---
+ include/uapi/linux/mptcp.h | 2 ++
+ net/mptcp/mptcp_diag.c     | 2 ++
+ net/mptcp/pm_netlink.c     | 3 ++-
+ net/mptcp/protocol.h       | 1 +
+ 4 files changed, 7 insertions(+), 1 deletion(-)
 
-Here is the summary with links:
-  - pull-request: wireless-drivers-next-2021-02-12
-    https://git.kernel.org/netdev/net-next/c/79201f358d64
+diff --git a/include/uapi/linux/mptcp.h b/include/uapi/linux/mptcp.h
+index 3674a451a18c..f54a082563ec 100644
+--- a/include/uapi/linux/mptcp.h
++++ b/include/uapi/linux/mptcp.h
+@@ -102,5 +102,7 @@ struct mptcp_info {
+ 	__u64	mptcpi_write_seq;
+ 	__u64	mptcpi_snd_una;
+ 	__u64	mptcpi_rcv_nxt;
++	__u8	mptcpi_local_addr_used;
++	__u8	mptcpi_local_addr_max;
+ };
+ 
+diff --git a/net/mptcp/mptcp_diag.c b/net/mptcp/mptcp_diag.c
+index 00ed742f48a4..f16d9b5ee978 100644
+--- a/net/mptcp/mptcp_diag.c
++++ b/net/mptcp/mptcp_diag.c
+@@ -128,11 +128,13 @@ static void mptcp_diag_get_info(struct sock *sk, struct inet_diag_msg *r,
+ 	info->mptcpi_subflows = READ_ONCE(msk->pm.subflows);
+ 	info->mptcpi_add_addr_signal = READ_ONCE(msk->pm.add_addr_signaled);
+ 	info->mptcpi_add_addr_accepted = READ_ONCE(msk->pm.add_addr_accepted);
++	info->mptcpi_local_addr_used = READ_ONCE(msk->pm.local_addr_used);
+ 	info->mptcpi_subflows_max = mptcp_pm_get_subflows_max(msk);
+ 	val = mptcp_pm_get_add_addr_signal_max(msk);
+ 	info->mptcpi_add_addr_signal_max = val;
+ 	val = mptcp_pm_get_add_addr_accept_max(msk);
+ 	info->mptcpi_add_addr_accepted_max = val;
++	info->mptcpi_local_addr_max = mptcp_pm_get_local_addr_max(msk);
+ 	if (test_bit(MPTCP_FALLBACK_DONE, &msk->flags))
+ 		flags |= MPTCP_INFO_FLAG_FALLBACK;
+ 	if (READ_ONCE(msk->can_ack))
+diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
+index 23780a13b934..99fc51fb2872 100644
+--- a/net/mptcp/pm_netlink.c
++++ b/net/mptcp/pm_netlink.c
+@@ -226,13 +226,14 @@ unsigned int mptcp_pm_get_subflows_max(struct mptcp_sock *msk)
+ }
+ EXPORT_SYMBOL_GPL(mptcp_pm_get_subflows_max);
+ 
+-static unsigned int mptcp_pm_get_local_addr_max(struct mptcp_sock *msk)
++unsigned int mptcp_pm_get_local_addr_max(struct mptcp_sock *msk)
+ {
+ 	struct pm_nl_pernet *pernet;
+ 
+ 	pernet = net_generic(sock_net((struct sock *)msk), pm_nl_pernet_id);
+ 	return READ_ONCE(pernet->local_addr_max);
+ }
++EXPORT_SYMBOL_GPL(mptcp_pm_get_local_addr_max);
+ 
+ static void check_work_pending(struct mptcp_sock *msk)
+ {
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index 73a923d02aad..08562b19ddc3 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -723,6 +723,7 @@ int mptcp_pm_nl_get_local_id(struct mptcp_sock *msk, struct sock_common *skc);
+ unsigned int mptcp_pm_get_add_addr_signal_max(struct mptcp_sock *msk);
+ unsigned int mptcp_pm_get_add_addr_accept_max(struct mptcp_sock *msk);
+ unsigned int mptcp_pm_get_subflows_max(struct mptcp_sock *msk);
++unsigned int mptcp_pm_get_local_addr_max(struct mptcp_sock *msk);
+ 
+ static inline struct mptcp_ext *mptcp_get_ext(struct sk_buff *skb)
+ {
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+base-commit: c3ff3b02e99c691197a05556ef45f5c3dd2ed3d6
+-- 
+2.30.1
 
