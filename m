@@ -2,120 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0289331A917
-	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 01:56:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADE7231A92B
+	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 02:00:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232476AbhBMAyh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 19:54:37 -0500
-Received: from mga04.intel.com ([192.55.52.120]:36183 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229918AbhBMAxx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Feb 2021 19:53:53 -0500
-IronPort-SDR: 8DYer8QNfl0T4eRUUKZXJcMeFDjMvOqXaGnbXwTNB/BTxedJhcpzREDH2TI+mTbT2WpI2uvRqH
- VU8Pjb/5c+0A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9893"; a="179941024"
-X-IronPort-AV: E=Sophos;i="5.81,175,1610438400"; 
-   d="scan'208";a="179941024"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2021 16:52:07 -0800
-IronPort-SDR: il0pNr3o0wQV0H3LdidWjQc0GQoz3fiZ8XYAxbnNQT9CFyq3GdhvHzMb22sS3pKnKVICaF486o
- 4f0cN6cNdrmA==
-X-IronPort-AV: E=Sophos;i="5.81,175,1610438400"; 
-   d="scan'208";a="437771512"
-Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.254.85.171])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2021 16:52:07 -0800
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Geliang Tang <geliangtang@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, mptcp@lists.01.org, matthieu.baerts@tessares.net,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next] mptcp: add local addr info in mptcp_info
-Date:   Fri, 12 Feb 2021 16:52:02 -0800
-Message-Id: <20210213005202.381848-1-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.30.1
+        id S232166AbhBMA7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 19:59:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59378 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232274AbhBMA6q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 19:58:46 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47A44C061574;
+        Fri, 12 Feb 2021 16:57:02 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id lg21so2191635ejb.3;
+        Fri, 12 Feb 2021 16:57:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=YnG1dY4+JoETjprbMMKd9Fd4yUHPu6iZV8WqicLOG0k=;
+        b=Ni8CnjM7wGzIZhwOczYwchAEvL2bw1ZnutYz57ARHCfqS9JAZR9HnzWXMsWpGvGRj/
+         NySdyvp3QN1RbFwCDIRia9XZKT50zga57tk3KQMD7zXXeF9ewlkoEeTV3hgXqPXJR5cb
+         YTAZ1t0Cu9p+bgzwhshm0lgIB1FChdMS9h6n5xpgumAlM2hYsK5Yj1x76IOMWElxPGYQ
+         /ew1QmWVMS1WPOQye91twgfURF2haN74XzF67kLu56Z91J2ZUGSti17ggSTMyyqPYIre
+         4YQBFbnIL4xZxjfm2SpFyh/9GJjcqSewv//ENnLsv/gwnZSz6mW1DO98onL+e8IxYB3T
+         FNUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=YnG1dY4+JoETjprbMMKd9Fd4yUHPu6iZV8WqicLOG0k=;
+        b=YxIDPu2ief4SHq9ecJEIIV+ROLYFQE9Ix3cNp7i9RGR3+Ov+fA6CNG/8gMCw9GYzet
+         OzmqQ2Ifo5cUJw5xXY06U0ezept5FtMNtP2nz7kFUtv8nWD1JjxqoVehWvmaIbviFYd/
+         w/qRrUeMBj2UIO/t0IMrqbF+orWCwbb15CWuBBPfn+HTV2HO8GC+chmPgIBpgf+SzU8f
+         cdrQDcGCEyNy/nmFFIqMw/ywyjF3vtVkLMMlnqgFk96lEDZ6RgdXPh3W4khozekXQYzz
+         Sobz3NiWzaBLh7hTf7YFD56O/KH91xeB8UvMo+kDGo8WtHhOsXmuEe2eEiZhCixrSxaE
+         UGGw==
+X-Gm-Message-State: AOAM531s6OP/Fvuxo4xjWY5MtNkCp+OrnHL2ycnMpp530rOTWPOIYbDC
+        NvfeO66JeZaEJ2so12WSFIc=
+X-Google-Smtp-Source: ABdhPJx4HnlEuzmwL05g0Hd3GU93q1mzfVTBvknXYxdyfkRXPRcOqSzqmEx5KYoHs77zCvqbh44w/w==
+X-Received: by 2002:a17:906:26ca:: with SMTP id u10mr5563252ejc.165.1613177821070;
+        Fri, 12 Feb 2021 16:57:01 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id gz14sm7006672ejc.105.2021.02.12.16.57.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Feb 2021 16:57:00 -0800 (PST)
+Date:   Sat, 13 Feb 2021 02:56:59 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michael Chan <mchan@broadcom.com>,
+        "open list:BROADCOM ETHERNET PHY DRIVERS" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        open list <linux-kernel@vger.kernel.org>, michael@walle.cc
+Subject: Re: [PATCH net-next 1/3] net: phy: broadcom: Remove unused flags
+Message-ID: <20210213005659.enht5gsrh5dgmd7h@skbuf>
+References: <20210212205721.2406849-1-f.fainelli@gmail.com>
+ <20210212205721.2406849-2-f.fainelli@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210212205721.2406849-2-f.fainelli@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Geliang Tang <geliangtang@gmail.com>
+On Fri, Feb 12, 2021 at 12:57:19PM -0800, Florian Fainelli wrote:
+> We have a number of unused flags defined today and since we are scarce
+> on space and may need to introduce new flags in the future remove and
+> shift every existing flag down into a contiguous assignment. No
+> functional change.
+> 
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
 
-Add mptcpi_local_addr_used and mptcpi_local_addr_max in struct mptcp_info.
+Good to see some of the dev_flags go away!
 
-Signed-off-by: Geliang Tang <geliangtang@gmail.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- include/uapi/linux/mptcp.h | 2 ++
- net/mptcp/mptcp_diag.c     | 2 ++
- net/mptcp/pm_netlink.c     | 3 ++-
- net/mptcp/protocol.h       | 1 +
- 4 files changed, 7 insertions(+), 1 deletion(-)
+PHY_BCM_FLAGS_MODE_1000BX is used just from broadcom.c, therefore it can
+probably be moved to a structure in phydev->priv.
 
-diff --git a/include/uapi/linux/mptcp.h b/include/uapi/linux/mptcp.h
-index 3674a451a18c..f54a082563ec 100644
---- a/include/uapi/linux/mptcp.h
-+++ b/include/uapi/linux/mptcp.h
-@@ -102,5 +102,7 @@ struct mptcp_info {
- 	__u64	mptcpi_write_seq;
- 	__u64	mptcpi_snd_una;
- 	__u64	mptcpi_rcv_nxt;
-+	__u8	mptcpi_local_addr_used;
-+	__u8	mptcpi_local_addr_max;
- };
- 
-diff --git a/net/mptcp/mptcp_diag.c b/net/mptcp/mptcp_diag.c
-index 00ed742f48a4..f16d9b5ee978 100644
---- a/net/mptcp/mptcp_diag.c
-+++ b/net/mptcp/mptcp_diag.c
-@@ -128,11 +128,13 @@ static void mptcp_diag_get_info(struct sock *sk, struct inet_diag_msg *r,
- 	info->mptcpi_subflows = READ_ONCE(msk->pm.subflows);
- 	info->mptcpi_add_addr_signal = READ_ONCE(msk->pm.add_addr_signaled);
- 	info->mptcpi_add_addr_accepted = READ_ONCE(msk->pm.add_addr_accepted);
-+	info->mptcpi_local_addr_used = READ_ONCE(msk->pm.local_addr_used);
- 	info->mptcpi_subflows_max = mptcp_pm_get_subflows_max(msk);
- 	val = mptcp_pm_get_add_addr_signal_max(msk);
- 	info->mptcpi_add_addr_signal_max = val;
- 	val = mptcp_pm_get_add_addr_accept_max(msk);
- 	info->mptcpi_add_addr_accepted_max = val;
-+	info->mptcpi_local_addr_max = mptcp_pm_get_local_addr_max(msk);
- 	if (test_bit(MPTCP_FALLBACK_DONE, &msk->flags))
- 		flags |= MPTCP_INFO_FLAG_FALLBACK;
- 	if (READ_ONCE(msk->can_ack))
-diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index 23780a13b934..99fc51fb2872 100644
---- a/net/mptcp/pm_netlink.c
-+++ b/net/mptcp/pm_netlink.c
-@@ -226,13 +226,14 @@ unsigned int mptcp_pm_get_subflows_max(struct mptcp_sock *msk)
- }
- EXPORT_SYMBOL_GPL(mptcp_pm_get_subflows_max);
- 
--static unsigned int mptcp_pm_get_local_addr_max(struct mptcp_sock *msk)
-+unsigned int mptcp_pm_get_local_addr_max(struct mptcp_sock *msk)
- {
- 	struct pm_nl_pernet *pernet;
- 
- 	pernet = net_generic(sock_net((struct sock *)msk), pm_nl_pernet_id);
- 	return READ_ONCE(pernet->local_addr_max);
- }
-+EXPORT_SYMBOL_GPL(mptcp_pm_get_local_addr_max);
- 
- static void check_work_pending(struct mptcp_sock *msk)
- {
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index 73a923d02aad..08562b19ddc3 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -723,6 +723,7 @@ int mptcp_pm_nl_get_local_id(struct mptcp_sock *msk, struct sock_common *skc);
- unsigned int mptcp_pm_get_add_addr_signal_max(struct mptcp_sock *msk);
- unsigned int mptcp_pm_get_add_addr_accept_max(struct mptcp_sock *msk);
- unsigned int mptcp_pm_get_subflows_max(struct mptcp_sock *msk);
-+unsigned int mptcp_pm_get_local_addr_max(struct mptcp_sock *msk);
- 
- static inline struct mptcp_ext *mptcp_get_ext(struct sk_buff *skb)
- {
-
-base-commit: c3ff3b02e99c691197a05556ef45f5c3dd2ed3d6
--- 
-2.30.1
-
+PHY_BRCM_STD_IBND_DISABLE, PHY_BRCM_EXT_IBND_RX_ENABLE and
+PHY_BRCM_EXT_IBND_TX_ENABLE are set by
+drivers/net/ethernet/broadcom/tg3.c but not used anywhere.
