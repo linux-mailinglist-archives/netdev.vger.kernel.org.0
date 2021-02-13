@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2A5D31ADEC
-	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 21:19:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0654C31ADEE
+	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 21:24:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229744AbhBMUSt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Feb 2021 15:18:49 -0500
-Received: from wout3-smtp.messagingengine.com ([64.147.123.19]:46599 "EHLO
+        id S229674AbhBMUVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Feb 2021 15:21:38 -0500
+Received: from wout3-smtp.messagingengine.com ([64.147.123.19]:47709 "EHLO
         wout3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229691AbhBMUSs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 15:18:48 -0500
+        by vger.kernel.org with ESMTP id S229647AbhBMUVc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 15:21:32 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id E8A01861;
-        Sat, 13 Feb 2021 15:18:02 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Sat, 13 Feb 2021 15:18:03 -0500
+        by mailout.west.internal (Postfix) with ESMTP id 03E58861;
+        Sat, 13 Feb 2021 15:20:45 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Sat, 13 Feb 2021 15:20:46 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-type:date:from:in-reply-to
         :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=qqyWJP
-        0UxwquMWfOUM4Gy+jQLU8HtAJGgG1gkcL4AX4=; b=B8/DzhlIDpeeudXoTr0pjm
-        Jn0lhWA1IJEuDyiiqTl/WIyfiE/gpCin/l3uQ6fa02xmQx3RG/u6Cxr10dE9FPGV
-        7SQEufExxkrb+q/PMJ7kKtmnxmBlUnm5lgJt7Radt13pHzYuvebWhuHoNakmpTdd
-        aF9IMTy3tt9z7g8tPKhqadOeNGn8ef79px5qWCFjivadwcy/5Yul735l4oUvhsS/
-        BKdUB4+JV+ttM2dDASir1Xgx+WaIPeUAWKkG8OwZoSBPqL7zDzHMFeSEzt7X1OGq
-        SoICXL1k6Xg73HOUQi2H6mDXs6wv8Z25fMVityxMzMogs5y4VwCMZuRYAYxqOR7w
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=U/wNCY
+        Y4gpjYy3HhOhHvq9GWD2lNQA40WnnSEne7ZY8=; b=v+wiXkKMPtd0ZMlvL9ICvQ
+        hJDC6BZ5vC4GxwB57rizrSBtJyjwUq0Oa2d9g4PBna5BGUxVrBOaRH0L8EuyfGvw
+        FpGzuIFLcKM9qwenhIc1B0hUtBLXuwvW7X1DZ1fXUu5imTmy2l+rLjqEamYzYQ/x
+        RBa7epMnOZ5AtW0oK7bTmhgkCuDEZGQbjs46HEN9qGkNefnatcNHOqmDiuqCHY2c
+        nwN9rZYw/mavseR1RoIcB4zds4hJVYYu1McIJgqRwTH5suaECepaFQ9xRwN3PJ4Y
+        twskMdvAH8yHowQBSlON/pFGJo61yLRGVFr9CYTuSA1+QC8Z9JzeFLfMXHmJivvA
         ==
-X-ME-Sender: <xms:-jMoYDMF4ZZFVJqTkloBPcyzVvelxk7FRda87K1GCpsdnuHa2LfpSg>
-    <xme:-jMoYN8kdbXkNQB3fJ0HTmJlRMCU6ZyeqQKHDDdIj9o8hn8-CuugeyHa344seYWdN
-    I6u-Ll_FIzTo6I>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrieefgddufedvucetufdoteggodetrfdotf
+X-ME-Sender: <xms:nTQoYDdt3dYew6tijMupaHOCI2Z2AtYTca2V1hpAWNcOrWIdrWpo2Q>
+    <xme:nTQoYJMGERUCszo07G1F9lsrmGk_nJGCoyio52rz3UUGUmxUP0crXJ52m82pE5Mlt
+    LjvTyPe8O1KRRs>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrieefgddufeefucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
     cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
     tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
     gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucfkphepkeegrddvvdelrdduheefrdeggeenucevlhhushhtvghrufhiiigvpedune
+    teenucfkphepkeegrddvvdelrdduheefrdeggeenucevlhhushhtvghrufhiiigvpedtne
     curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:-jMoYCRl9dh1hLANZ-1uEXVF4DDQGnxDEQ8uIuDL4t2ItiQ9I2NVfw>
-    <xmx:-jMoYHvUbZPI0ESvPLGVXW9vtSA9603dhKaunDxHQCMC-rJKMgBsIg>
-    <xmx:-jMoYLe-UTo5kA8m-39P5WlPaUaRwuPWSDM5ZA_ABzhwOuBN8Q8pQw>
-    <xmx:-jMoYH7KjbjrZopLhiQ7j8n0fsGoThScmbHIF1w0VilruY_BO419UQ>
+X-ME-Proxy: <xmx:nTQoYMg2DMV_3O_il1GoPRs0JnBRpby1p0ZYFAlT8Vfr8bxVG190bw>
+    <xmx:nTQoYE9vrhReitbV-yNxyiXwpEv9eRIzVJUzKzPD8LJO9C1drJ_Hvw>
+    <xmx:nTQoYPsiXuEH3cVlG51qOfgCaC1CwK2vi4YNzdrtE-BOL5BlbXpf0w>
+    <xmx:nTQoYPI9Jmx8hstZ0xk_fWLidHG1ydJ1phCILNzvWqMbGuP7i9A_zA>
 Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id ED26B108005C;
-        Sat, 13 Feb 2021 15:18:01 -0500 (EST)
-Date:   Sat, 13 Feb 2021 22:17:58 +0200
+        by mail.messagingengine.com (Postfix) with ESMTPA id D95ED24005C;
+        Sat, 13 Feb 2021 15:20:44 -0500 (EST)
+Date:   Sat, 13 Feb 2021 22:20:39 +0200
 From:   Ido Schimmel <idosch@idosch.org>
 To:     David Ahern <dsahern@gmail.com>
 Cc:     Petr Machata <petrm@nvidia.com>, netdev@vger.kernel.org,
@@ -53,47 +53,38 @@ Cc:     Petr Machata <petrm@nvidia.com>, netdev@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [RFC PATCH 03/13] nexthop: Add netlink defines and enumerators
- for resilient NH groups
-Message-ID: <20210213201758.GB401513@shredder.lan>
+Subject: Re: [RFC PATCH 04/13] nexthop: Add implementation of resilient
+ next-hop groups
+Message-ID: <20210213202039.GC401513@shredder.lan>
 References: <cover.1612815057.git.petrm@nvidia.com>
- <893e22e2ad6413a98ca76134b332c8962fcd3b6a.1612815058.git.petrm@nvidia.com>
- <d3a64aea-d544-cd58-475c-57e89ea49be5@gmail.com>
+ <dec388d80b682213ed2897d9f4ae40c2c2dd9eb8.1612815058.git.petrm@nvidia.com>
+ <b9a8fc9e-4e0c-7e7c-0b8a-da520c9dd837@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d3a64aea-d544-cd58-475c-57e89ea49be5@gmail.com>
+In-Reply-To: <b9a8fc9e-4e0c-7e7c-0b8a-da520c9dd837@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 13, 2021 at 12:16:45PM -0700, David Ahern wrote:
+On Sat, Feb 13, 2021 at 12:38:47PM -0700, David Ahern wrote:
 > On 2/8/21 1:42 PM, Petr Machata wrote:
-> > @@ -52,8 +53,50 @@ enum {
-> >  	NHA_FDB,	/* flag; nexthop belongs to a bridge fdb */
-> >  	/* if NHA_FDB is added, OIF, BLACKHOLE, ENCAP cannot be set */
+> > diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
+> > index 5d560d381070..4ce282b0a65f 100644
+> > --- a/net/ipv4/nexthop.c
+> > +++ b/net/ipv4/nexthop.c> @@ -734,6 +834,22 @@ static struct nexthop
+> *nexthop_select_path_mp(struct nh_group *nhg, int hash)
+> >  	return rc;
+> >  }
 > >  
-> > +	/* nested; resilient nexthop group attributes */
-> > +	NHA_RES_GROUP,
-> > +	/* nested; nexthop bucket attributes */
-> > +	NHA_RES_BUCKET,
-> > +
-> >  	__NHA_MAX,
-> >  };
-> >  
-> >  #define NHA_MAX	(__NHA_MAX - 1)
-> > +
-> > +enum {
-> > +	NHA_RES_GROUP_UNSPEC,
-> > +	/* Pad attribute for 64-bit alignment. */
-> > +	NHA_RES_GROUP_PAD = NHA_RES_GROUP_UNSPEC,
-> > +
-> > +	/* u32; number of nexthop buckets in a resilient nexthop group */
-> > +	NHA_RES_GROUP_BUCKETS,
+> > +static struct nexthop *nexthop_select_path_res(struct nh_group *nhg, int hash)
+> > +{
+> > +	struct nh_res_table *res_table = rcu_dereference(nhg->res_table);
+> > +	u32 bucket_index = hash % res_table->num_nh_buckets;
 > 
-> u32 is overkill; arguably u16 (64k) should be more than enough buckets
-> for any real use case.
+> Have you considered requiring the number of buckets to be a power of 2
+> to avoid the modulo in the hot path? Seems like those are the more
+> likely size options.
 
-We wanted to make it future-proof, but I think we can live with 64k. At
-least in Spectrum the maximum is 4k. I don't know about other devices,
-but I guess it is not more than 64k.
+We thought about it, but I think it is overly limiting. Even in Spectrum
+(for some sizes) it does not have to be a power of 2.
