@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 152E931AB1A
-	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 12:56:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BCE131ABFD
+	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 15:00:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229647AbhBMLyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Feb 2021 06:54:15 -0500
-Received: from mail-40134.protonmail.ch ([185.70.40.134]:28722 "EHLO
-        mail-40134.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229625AbhBMLyO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 06:54:14 -0500
-Date:   Sat, 13 Feb 2021 11:53:13 +0000
+        id S229690AbhBMN5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Feb 2021 08:57:40 -0500
+Received: from mail-40131.protonmail.ch ([185.70.40.131]:49790 "EHLO
+        mail-40131.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229584AbhBMN5h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 08:57:37 -0500
+Date:   Sat, 13 Feb 2021 13:56:40 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1613217205; bh=U9h7ecCA02bgXdLGxxosUvrTLcI+jIc/SZnrWbn3k90=;
+        t=1613224611; bh=T6KIeabV5sI7XCFa/PJx1BokACoH/f2hbL4xDuJnHrw=;
         h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=ZMq4DHhrTAzzviEoROqpXjW+tTJgetKNneTLYWBIlq1hjBTgqXgIdVKLHdwApgF7D
-         v6L+0+0nn2UAdmV3DHCnIKrIcYo3rYVJfsas0IkWgFG1DFZ4ISVs+MUGiqZikiQ5cu
-         zgqi1RJsyMOhvehrQ0f88EyM8+UGaK/FXcLBFOtbzEfdNQ50aP3QQzCevV27iIoNk3
-         lWwWv3QRAwYmKvAA823cwxis7+DpyMK6eB0dh9BfcGG0sZlxUwme2Y41HSFgbrci0Y
-         +YCAKrVwxz45r9IAYqW+hXstZ1PBaISrHf+hxT5PA5XPhcCA3C91XpOaKUCTJBUl5y
-         YyC7MAAwCewEg==
+        b=paJxQJHQ6QsKrY/FqcS3AXMj5XvUuQ90BRqLHfuUsi9sWtk2cLIaYm+tHM3cNPOXE
+         hWNhJER6x7rJCLYwz7ifoh6QseyWydbnO7bNjI88HMlCcJuxtVZ+MRy4O9mAcI75i9
+         1xvBPF74nQtOT4vaJUsbWYhFmQTIDt7XTILs8FPjL1Yf3gWTDr7d84paGVEQHkZGbj
+         nB8qpQdsijf1m6XNi4NEDHZTsO4eURX0Aqu3IZ+86+YhUdb0550UMZLqiETXmiV9+P
+         ABbATPXQXpOmD6yhsv6GAC40z5OW4KErtHtpdp2RKfVdek7WuoNsVsV8FccVS7p6gM
+         9ha3bAL1AC/rA==
 To:     Alexander Duyck <alexander.duyck@gmail.com>
 From:   Alexander Lobakin <alobakin@pm.me>
 Cc:     Alexander Lobakin <alobakin@pm.me>,
@@ -57,10 +57,10 @@ Cc:     Alexander Lobakin <alobakin@pm.me>,
         LKML <linux-kernel@vger.kernel.org>,
         Netdev <netdev@vger.kernel.org>
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: Re: [PATCH v5 net-next 09/11] skbuff: allow to optionally use NAPI cache from __alloc_skb()
-Message-ID: <20210213115229.2728-1-alobakin@pm.me>
-In-Reply-To: <CAKgT0UejU=YC-3xnORHh8uj_uuf79yYMGTdFvo9o7aY03eGeqA@mail.gmail.com>
-References: <20210211185220.9753-1-alobakin@pm.me> <20210211185220.9753-10-alobakin@pm.me> <CAKgT0UejU=YC-3xnORHh8uj_uuf79yYMGTdFvo9o7aY03eGeqA@mail.gmail.com>
+Subject: Re: [PATCH v5 net-next 06/11] skbuff: remove __kfree_skb_flush()
+Message-ID: <20210213135604.86581-1-alobakin@pm.me>
+In-Reply-To: <CAKgT0Uc=_VereGioEPrvfT8-eL6odvs9PwNxywu4=UC1DPvRNQ@mail.gmail.com>
+References: <20210211185220.9753-1-alobakin@pm.me> <20210211185220.9753-7-alobakin@pm.me> <CAKgT0Uc=_VereGioEPrvfT8-eL6odvs9PwNxywu4=UC1DPvRNQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
@@ -74,86 +74,132 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Thu, 11 Feb 2021 19:18:45 -0800
+Date: Thu, 11 Feb 2021 19:28:52 -0800
 
-> On Thu, Feb 11, 2021 at 11:00 AM Alexander Lobakin <alobakin@pm.me> wrote=
+> On Thu, Feb 11, 2021 at 10:57 AM Alexander Lobakin <alobakin@pm.me> wrote=
 :
 > >
-> > Reuse the old and forgotten SKB_ALLOC_NAPI to add an option to get
-> > an skbuff_head from the NAPI cache instead of inplace allocation
-> > inside __alloc_skb().
-> > This implies that the function is called from softirq or BH-off
-> > context, not for allocating a clone or from a distant node.
+> > This function isn't much needed as NAPI skb queue gets bulk-freed
+> > anyway when there's no more room, and even may reduce the efficiency
+> > of bulk operations.
+> > It will be even less needed after reusing skb cache on allocation path,
+> > so remove it and this way lighten network softirqs a bit.
 > >
+> > Suggested-by: Eric Dumazet <edumazet@google.com>
 > > Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+>=20
+> I'm wondering if you have any actual gains to show from this patch?
+>=20
+> The reason why I ask is because the flushing was happening at the end
+> of the softirq before the system basically gave control back over to
+> something else. As such there is a good chance for the memory to be
+> dropped from the cache by the time we come back to it. So it may be
+> just as expensive if not more so than accessing memory that was just
+> freed elsewhere and placed in the slab cache.
+
+Just retested after readding this function (and changing the logics so
+it would drop the second half of the cache, like napi_skb_cache_put()
+does) and got 10 Mbps drawback with napi_build_skb() +
+napi_gro_receive().
+
+So seems like getting a pointer from an array instead of calling
+kmem_cache_alloc() is cheaper even if the given object was pulled
+out of CPU caches.
+
 > > ---
-> >  net/core/skbuff.c | 13 +++++++++----
-> >  1 file changed, 9 insertions(+), 4 deletions(-)
+> >  include/linux/skbuff.h |  1 -
+> >  net/core/dev.c         |  7 +------
+> >  net/core/skbuff.c      | 12 ------------
+> >  3 files changed, 1 insertion(+), 19 deletions(-)
 > >
+> > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> > index 0a4e91a2f873..0e0707296098 100644
+> > --- a/include/linux/skbuff.h
+> > +++ b/include/linux/skbuff.h
+> > @@ -2919,7 +2919,6 @@ static inline struct sk_buff *napi_alloc_skb(stru=
+ct napi_struct *napi,
+> >  }
+> >  void napi_consume_skb(struct sk_buff *skb, int budget);
+> >
+> > -void __kfree_skb_flush(void);
+> >  void __kfree_skb_defer(struct sk_buff *skb);
+> >
+> >  /**
+> > diff --git a/net/core/dev.c b/net/core/dev.c
+> > index 321d41a110e7..4154d4683bb9 100644
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
+> > @@ -4944,8 +4944,6 @@ static __latent_entropy void net_tx_action(struct=
+ softirq_action *h)
+> >                         else
+> >                                 __kfree_skb_defer(skb);
+> >                 }
+> > -
+> > -               __kfree_skb_flush();
+> >         }
+> >
+> >         if (sd->output_queue) {
+> > @@ -7012,7 +7010,6 @@ static int napi_threaded_poll(void *data)
+> >                         __napi_poll(napi, &repoll);
+> >                         netpoll_poll_unlock(have);
+> >
+> > -                       __kfree_skb_flush();
+> >                         local_bh_enable();
+> >
+> >                         if (!repoll)
+>=20
+> So it looks like this is the one exception to my comment above. Here
+> we should probably be adding a "if (!repoll)" before calling
+> __kfree_skb_flush().
+>=20
+> > @@ -7042,7 +7039,7 @@ static __latent_entropy void net_rx_action(struct=
+ softirq_action *h)
+> >
+> >                 if (list_empty(&list)) {
+> >                         if (!sd_has_rps_ipi_waiting(sd) && list_empty(&=
+repoll))
+> > -                               goto out;
+> > +                               return;
+> >                         break;
+> >                 }
+> >
+> > @@ -7069,8 +7066,6 @@ static __latent_entropy void net_rx_action(struct=
+ softirq_action *h)
+> >                 __raise_softirq_irqoff(NET_RX_SOFTIRQ);
+> >
+> >         net_rps_action_and_irq_enable(sd);
+> > -out:
+> > -       __kfree_skb_flush();
+> >  }
+> >
+> >  struct netdev_adjacent {
 > > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> > index 9e1a8ded4acc..a0b457ae87c2 100644
+> > index 1c6f6ef70339..4be2bb969535 100644
 > > --- a/net/core/skbuff.c
 > > +++ b/net/core/skbuff.c
-> > @@ -397,15 +397,20 @@ struct sk_buff *__alloc_skb(unsigned int size, gf=
-p_t gfp_mask,
-> >         struct sk_buff *skb;
-> >         u8 *data;
-> >         bool pfmemalloc;
-> > +       bool clone;
+> > @@ -838,18 +838,6 @@ void __consume_stateless_skb(struct sk_buff *skb)
+> >         kfree_skbmem(skb);
+> >  }
 > >
-> > -       cache =3D (flags & SKB_ALLOC_FCLONE)
-> > -               ? skbuff_fclone_cache : skbuff_head_cache;
-> > +       clone =3D !!(flags & SKB_ALLOC_FCLONE);
->=20
-> The boolean conversion here is probably unnecessary. I would make
-> clone an int like flags and work with that. I suspect the compiler is
-> doing it already, but it is better to be explicit.
->=20
-> > +       cache =3D clone ? skbuff_fclone_cache : skbuff_head_cache;
-> >
-> >         if (sk_memalloc_socks() && (flags & SKB_ALLOC_RX))
-> >                 gfp_mask |=3D __GFP_MEMALLOC;
-> >
-> >         /* Get the HEAD */
-> > -       skb =3D kmem_cache_alloc_node(cache, gfp_mask & ~__GFP_DMA, nod=
-e);
-> > +       if ((flags & SKB_ALLOC_NAPI) && !clone &&
->=20
-> Rather than having to do two checks you could just check for
-> SKB_ALLOC_NAPI and SKB_ALLOC_FCLONE in a single check. You could just
-> do something like:
->     if ((flags & (SKB_ALLOC_FCLONE | SKB_ALLOC_NAPI) =3D=3D SKB_ALLOC_NAP=
-I)
->=20
-> That way you can avoid the extra conditional jumps and can start
-> computing the flags value sooner.
-
-I thought about combined check for two flags yesterday, so yeah, that
-probably should be better than the current version.
-
-> > +           likely(node =3D=3D NUMA_NO_NODE || node =3D=3D numa_mem_id(=
-)))
-> > +               skb =3D napi_skb_cache_get();
-> > +       else
-> > +               skb =3D kmem_cache_alloc_node(cache, gfp_mask & ~GFP_DM=
-A, node);
-> >         if (unlikely(!skb))
-> >                 return NULL;
-> >         prefetchw(skb);
-> > @@ -436,7 +441,7 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_=
-t gfp_mask,
-> >         __build_skb_around(skb, data, 0);
-> >         skb->pfmemalloc =3D pfmemalloc;
-> >
-> > -       if (flags & SKB_ALLOC_FCLONE) {
-> > +       if (clone) {
-> >                 struct sk_buff_fclones *fclones;
-> >
-> >                 fclones =3D container_of(skb, struct sk_buff_fclones, s=
-kb1);
+> > -void __kfree_skb_flush(void)
+> > -{
+> > -       struct napi_alloc_cache *nc =3D this_cpu_ptr(&napi_alloc_cache)=
+;
+> > -
+> > -       /* flush skb_cache if containing objects */
+> > -       if (nc->skb_count) {
+> > -               kmem_cache_free_bulk(skbuff_head_cache, nc->skb_count,
+> > -                                    nc->skb_cache);
+> > -               nc->skb_count =3D 0;
+> > -       }
+> > -}
+> > -
+> >  static inline void _kfree_skb_defer(struct sk_buff *skb)
+> >  {
+> >         struct napi_alloc_cache *nc =3D this_cpu_ptr(&napi_alloc_cache)=
+;
 > > --
 > > 2.30.1
 
-Thanks,
 Al
 
