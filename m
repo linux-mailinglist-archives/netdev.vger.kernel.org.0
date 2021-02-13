@@ -2,183 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 450CB31A950
-	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 02:09:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16DA831A95C
+	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 02:13:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232483AbhBMBIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 20:08:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33372 "EHLO
+        id S232480AbhBMBKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 20:10:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232426AbhBMBHf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 20:07:35 -0500
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B1B1C061221;
-        Fri, 12 Feb 2021 17:05:57 -0800 (PST)
-Received: by mail-io1-xd32.google.com with SMTP id e24so1108829ioc.1;
-        Fri, 12 Feb 2021 17:05:57 -0800 (PST)
+        with ESMTP id S232535AbhBMBJm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 20:09:42 -0500
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4725BC0617A7;
+        Fri, 12 Feb 2021 17:09:02 -0800 (PST)
+Received: by mail-pg1-x536.google.com with SMTP id o7so767384pgl.1;
+        Fri, 12 Feb 2021 17:09:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QS14DSyVoYhnhBJd21fvPa5ns3qQm6pUG7hqDGWG8vw=;
-        b=e21mlly4RMovvZSEAJRHLx/QaJF4ajPzMw26KUS04VJiinMuK+vLuGX0TNyn1aGGKy
-         6pU71ZghPVYNFPMYLpz1jpGI7a6XWBv+8ssGT5RcXwiXw1KrJhPMdtlvN46B63qBG/lG
-         b5T2aiAHobwvRQPNjk1afqrF+2rrTRmxRSigXJ/HGISc6F69VjUtuwmMyz7CvUcO77Au
-         3WFlfdjj0d5oZNcgLCZ9zjv4DGq5oxdQ1e+RavQG+ADC8tGmEH8TvzGSpIcqbpJSJRXH
-         FkT7qomKItOLe+04HELsTqsAObZ91SOKSvLiHbd+ngNyVBP81VUBYvMzBKuB4U1soU7i
-         BIfA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=a4fFtjL7ww0xO/IE/qxhkkmF2YUH054hAtl+fB7mCaU=;
+        b=iF46XJb2/5FiyXpIHQB4xb4jHKKpqaD0ojDxp1o1ybaWPBsvBdiCjYjGtzS8QYW1Xb
+         sDRCQBVYQuOxUSMKUutE357WwojKt7yrSuZlbqWMNZO9G170hnEX+iJ1Wv6dfbiKWjVX
+         3+4IrxgO7UT78zP1RBvdEudyrnyyN15d4LauLicdkEONif+9aOg3OgHmJkb9HBsIs2kc
+         iFz+UHxtMC0RbXKdWH+tuH6kVDc/TGmDNOMgRaZli0G6LYIeBGw6o32xYioxq0yLBef4
+         4CZukDaj5PNVYHO8Qfxypi05p6doiihqpWhSvvfz4Y4PBsWluM8rhR8krl8xWwbbdB9q
+         948A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QS14DSyVoYhnhBJd21fvPa5ns3qQm6pUG7hqDGWG8vw=;
-        b=GpIO3AZj14nWLkTkMCd8P7jCH5eGy1wFqAoFrbB9GVHSmsxZvlZ/QtkiZ7NhQwepdq
-         0uiKOKO4uE1oreJ8lWMPmZ2ryO/W0hWZYo1qAwd/OPhMqOzYhEQNpHptctUEvOpKH/OO
-         QgoG8iGCMGnc2ifc5tQf35k9Djj/rwF0B1KwPbr7seYMt2rZKqQfqF6GppirdL6AWRqf
-         MUtKVlmIohgt1ayPqdMC8sTG/cSR3q0DLhN5K4USU54yWE0as3riYt3ttY4q8D6UHPqY
-         S/Qm5TEFBgdo5mWL+MNPIFQDKsSL0ncDu16w3oYR63hezl2MPe9K5h+0+yzcGXr1OpfJ
-         Umnw==
-X-Gm-Message-State: AOAM5339xq/Wu33JICR6GrRbyrkBW+xAep0r1XSdsUru0fr9TyWGl7kT
-        yEXFGtLeT5rfLdeEyVwghv3H1gXFHZ54KXb/BDk=
-X-Google-Smtp-Source: ABdhPJwrhkkBcra8U/GdViG9g3Kc8Yi6uSathKWPlzx4gali43VFI0yGB3DYbrtC7LmINKU2Fs0gdttVuf5VH6bDH9Y=
-X-Received: by 2002:a05:6602:2c52:: with SMTP id x18mr4338955iov.5.1613178356468;
- Fri, 12 Feb 2021 17:05:56 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=a4fFtjL7ww0xO/IE/qxhkkmF2YUH054hAtl+fB7mCaU=;
+        b=EfDzpDU4TbMcowGi18kqyA8NQzTORByJjXMUe3TrE9wsWn05TVTn2yCl1lw4ILT8yM
+         iwL4fWBYW0suZOTZrFIsEto9NBPFHO4lEBGlllY668+cwW0e/H78Y5laTMTM72xfhXf+
+         au7kcdnmHCvBaQr9gvpfI9CErS9aqrR21lGM7LpSkrt+NbY5NAEROLRod27udfJjuypQ
+         gkIxg9UYQypc3E9s+d+6LI3C/dzk5StWp/1o/3zAbM1I5BX69hIACE8rYT2FkfwHfjmB
+         7LKhlO5V/ijzl6wBz4+lwdZy2AI4Sd7NcLMztKj19sbdHzBwGJESbYZlMHHjIWMrU3Jz
+         CMzw==
+X-Gm-Message-State: AOAM5330chVQW3yGxWDqjZsbjAqdxdo1nixLusIZyGQF4Sfp8r5+Svx9
+        I+sLWmooKkWV8N4zg0R71KU=
+X-Google-Smtp-Source: ABdhPJxasaUpvKMVgJePqu0vCksPvS5vhSj0XbO5LF+O7pnoQJqqE6xx+VUvWRjxxpFUJuW5l4xB+w==
+X-Received: by 2002:a63:f202:: with SMTP id v2mr4825090pgh.24.1613178541699;
+        Fri, 12 Feb 2021 17:09:01 -0800 (PST)
+Received: from [10.230.29.30] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id 25sm10218216pfh.199.2021.02.12.17.08.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 12 Feb 2021 17:09:01 -0800 (PST)
+Subject: Re: [PATCH net-next 1/3] net: phy: broadcom: Remove unused flags
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michael Chan <mchan@broadcom.com>,
+        "open list:BROADCOM ETHERNET PHY DRIVERS" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        open list <linux-kernel@vger.kernel.org>, michael@walle.cc
+References: <20210212205721.2406849-1-f.fainelli@gmail.com>
+ <20210212205721.2406849-2-f.fainelli@gmail.com>
+ <20210213005659.enht5gsrh5dgmd7h@skbuf>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <5cd03eea-ece8-7a81-2edc-ed74a76090ba@gmail.com>
+Date:   Fri, 12 Feb 2021 17:08:58 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.7.1
 MIME-Version: 1.0
-References: <20210212143402.2691-1-elder@linaro.org> <20210212143402.2691-5-elder@linaro.org>
-In-Reply-To: <20210212143402.2691-5-elder@linaro.org>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Fri, 12 Feb 2021 17:05:45 -0800
-Message-ID: <CAKgT0Ue7x9M9qyLffeXDLv0D3gnFzimAbd==5A_t0r3WpxMgcQ@mail.gmail.com>
-Subject: Re: [PATCH v3 net-next 4/5] net: ipa: introduce ipa_table_hash_support()
-To:     Alex Elder <elder@linaro.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, elder@kernel.org,
-        evgreen@chromium.org, bjorn.andersson@linaro.org,
-        cpratapa@codeaurora.org,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210213005659.enht5gsrh5dgmd7h@skbuf>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 12, 2021 at 6:40 AM Alex Elder <elder@linaro.org> wrote:
->
-> Introduce a new function to abstract the knowledge of whether hashed
-> routing and filter tables are supported for a given IPA instance.
->
-> IPA v4.2 is the only one that doesn't support hashed tables (now
-> and for the foreseeable future), but the name of the helper function
-> is better for explaining what's going on.
->
-> Signed-off-by: Alex Elder <elder@linaro.org>
-> ---
-> v2: - Update copyrights.
->
->  drivers/net/ipa/ipa_cmd.c   |  2 +-
->  drivers/net/ipa/ipa_table.c | 16 +++++++++-------
->  drivers/net/ipa/ipa_table.h |  8 +++++++-
->  3 files changed, 17 insertions(+), 9 deletions(-)
->
-> diff --git a/drivers/net/ipa/ipa_cmd.c b/drivers/net/ipa/ipa_cmd.c
-> index fd8bf6468d313..35e35852c25c5 100644
-> --- a/drivers/net/ipa/ipa_cmd.c
-> +++ b/drivers/net/ipa/ipa_cmd.c
-> @@ -268,7 +268,7 @@ static bool ipa_cmd_register_write_valid(struct ipa *ipa)
->         /* If hashed tables are supported, ensure the hash flush register
->          * offset will fit in a register write IPA immediate command.
->          */
-> -       if (ipa->version != IPA_VERSION_4_2) {
-> +       if (ipa_table_hash_support(ipa)) {
->                 offset = ipa_reg_filt_rout_hash_flush_offset(ipa->version);
->                 name = "filter/route hash flush";
->                 if (!ipa_cmd_register_write_offset_valid(ipa, name, offset))
-> diff --git a/drivers/net/ipa/ipa_table.c b/drivers/net/ipa/ipa_table.c
-> index 32e2d3e052d55..baaab3dd0e63c 100644
-> --- a/drivers/net/ipa/ipa_table.c
-> +++ b/drivers/net/ipa/ipa_table.c
-> @@ -1,7 +1,7 @@
->  // SPDX-License-Identifier: GPL-2.0
->
->  /* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
-> - * Copyright (C) 2018-2020 Linaro Ltd.
-> + * Copyright (C) 2018-2021 Linaro Ltd.
->   */
->
->  #include <linux/types.h>
-> @@ -239,6 +239,11 @@ static void ipa_table_validate_build(void)
->
->  #endif /* !IPA_VALIDATE */
->
-> +bool ipa_table_hash_support(struct ipa *ipa)
-> +{
-> +       return ipa->version != IPA_VERSION_4_2;
-> +}
-> +
 
-Since this is only a single comparison it might make more sense to
-make this a static inline and place it in ipa.h. Otherwise you are
-just bloating the code up to jump to such a small function.
 
->  /* Zero entry count means no table, so just return a 0 address */
->  static dma_addr_t ipa_table_addr(struct ipa *ipa, bool filter_mask, u16 count)
->  {
-> @@ -412,8 +417,7 @@ int ipa_table_hash_flush(struct ipa *ipa)
->         struct gsi_trans *trans;
->         u32 val;
->
-> -       /* IPA version 4.2 does not support hashed tables */
-> -       if (ipa->version == IPA_VERSION_4_2)
-> +       if (!ipa_table_hash_support(ipa))
->                 return 0;
->
->         trans = ipa_cmd_trans_alloc(ipa, 1);
-> @@ -531,8 +535,7 @@ static void ipa_filter_config(struct ipa *ipa, bool modem)
->         enum gsi_ee_id ee_id = modem ? GSI_EE_MODEM : GSI_EE_AP;
->         u32 ep_mask = ipa->filter_map;
->
-> -       /* IPA version 4.2 has no hashed route tables */
-> -       if (ipa->version == IPA_VERSION_4_2)
-> +       if (!ipa_table_hash_support(ipa))
->                 return;
->
->         while (ep_mask) {
-> @@ -582,8 +585,7 @@ static void ipa_route_config(struct ipa *ipa, bool modem)
->  {
->         u32 route_id;
->
-> -       /* IPA version 4.2 has no hashed route tables */
-> -       if (ipa->version == IPA_VERSION_4_2)
-> +       if (!ipa_table_hash_support(ipa))
->                 return;
->
->         for (route_id = 0; route_id < IPA_ROUTE_COUNT_MAX; route_id++)
-> diff --git a/drivers/net/ipa/ipa_table.h b/drivers/net/ipa/ipa_table.h
-> index 78038d14fcea9..1a68d20f19d6a 100644
-> --- a/drivers/net/ipa/ipa_table.h
-> +++ b/drivers/net/ipa/ipa_table.h
-> @@ -1,7 +1,7 @@
->  /* SPDX-License-Identifier: GPL-2.0 */
->
->  /* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
-> - * Copyright (C) 2019-2020 Linaro Ltd.
-> + * Copyright (C) 2019-2021 Linaro Ltd.
->   */
->  #ifndef _IPA_TABLE_H_
->  #define _IPA_TABLE_H_
-> @@ -51,6 +51,12 @@ static inline bool ipa_filter_map_valid(struct ipa *ipa, u32 filter_mask)
->
->  #endif /* !IPA_VALIDATE */
->
-> +/**
-> + * ipa_table_hash_support() - Return true if hashed tables are supported
-> + * @ipa:       IPA pointer
-> + */
-> +bool ipa_table_hash_support(struct ipa *ipa);
-> +
->  /**
->   * ipa_table_reset() - Reset filter and route tables entries to "none"
->   * @ipa:       IPA pointer
+On 2/12/2021 4:56 PM, Vladimir Oltean wrote:
+> On Fri, Feb 12, 2021 at 12:57:19PM -0800, Florian Fainelli wrote:
+>> We have a number of unused flags defined today and since we are scarce
+>> on space and may need to introduce new flags in the future remove and
+>> shift every existing flag down into a contiguous assignment. No
+>> functional change.
+>>
+>> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+>> ---
+> 
+> Good to see some of the dev_flags go away!
+> 
+> PHY_BCM_FLAGS_MODE_1000BX is used just from broadcom.c, therefore it can
+> probably be moved to a structure in phydev->priv.
 
-Just define the function here and make it a static inline.
+The next step would be to move it to a private flag, indeed.
+
+> 
+> PHY_BRCM_STD_IBND_DISABLE, PHY_BRCM_EXT_IBND_RX_ENABLE and
+> PHY_BRCM_EXT_IBND_TX_ENABLE are set by
+> drivers/net/ethernet/broadcom/tg3.c but not used anywhere.
+
+That's right, tg3 drove a lot of the Broadcom PHY driver changes back
+then, I also would like to rework the way we pass flags towards PHY
+drivers because tg3 is basically the only driver doing it right, where
+it checks the PHY ID first, then sets appropriate flags during connect.
+-- 
+Florian
