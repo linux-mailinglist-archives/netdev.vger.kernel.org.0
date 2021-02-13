@@ -2,63 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10AFC31A8F3
-	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 01:52:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DEE9D31A8F7
+	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 01:52:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229796AbhBMAus (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 19:50:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57206 "EHLO mail.kernel.org"
+        id S232079AbhBMAvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 19:51:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57266 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229650AbhBMAur (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Feb 2021 19:50:47 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 632F8614A5;
-        Sat, 13 Feb 2021 00:50:07 +0000 (UTC)
+        id S230125AbhBMAu7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 12 Feb 2021 19:50:59 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 0537864EAA;
+        Sat, 13 Feb 2021 00:50:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613177407;
-        bh=GJ3TZ/I/6QwPg0SzN6DZHSsV/17BNh7cZIf/6WdN4FY=;
+        s=k20201202; t=1613177419;
+        bh=J2BTZtrf8H6YIk6pNZwHutyul8XVpEIKwcWt0basveE=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=EftjFM0kyMjYfVl5jFU8SkSSFdwMJXxmbpmKf56l/oGys6+s6Kr8w46WLxOmjhvOA
-         HnR36EqGgRZxLvsYe6ZqpnHceSfbAEn6/e8yUMOUl4i9Sp+y2IM3sqmqphEvq3P7Fv
-         pjcye9I+TK9wQ5ioTnjs6Ziyp20fTLruTyvzr9rDfles9STTEMVHppS7/hsRGHGMdj
-         n0PjC+C1jrxO/8X07J3dRWhkR2qNMXOlwIr02ad2SyZKG72h2ewVYPxCE+9cdARzi+
-         OQqNckwRikej/5uHXXLykPXgr7FwcKgWnwrah+hlm1LDUqLtnEXO0gK7++cqMeXrzh
-         uY0+2iU8PYZRw==
+        b=sNIl5NQ5b9kp23Ulmdwyy/esPCAu7UQgXqdHE+H0/hgG2lJ6S3BliD69k1APQXte8
+         UevhU9s40y0POHFY2i5MseQCq5X7J5D78cMmjRsaW5dE3nJ8fNZ82hLuCkQBJxizBC
+         pd98/99i10UclhO7x2uST63Bc2Q1+/9uYeo6D0jQJTClQoRS5aX282Ebcbrd7j/0gB
+         9zRBi+wEK18CA6C/oDSCUlWcRGfHts2xbOofmAsCeKcjh0AaK5qTa7A4NvoKXPzNMi
+         pyw4QHsxsu0YsroVOwohKYsz86BD7tcyMgtFGDPQWD3W+4Wuq1djzqyXIaU56I8U3/
+         CfSNIRs3iSwkA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4FAF460A2E;
-        Sat, 13 Feb 2021 00:50:07 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id F051E60A2F;
+        Sat, 13 Feb 2021 00:50:18 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] appletalk: Fix skb allocation size in loopback case
+Subject: Re: [RESEND net-next] rxrpc: Fix dependency on IPv6 in udp tunnel config
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161317740732.7081.2562791534480299640.git-patchwork-notify@kernel.org>
-Date:   Sat, 13 Feb 2021 00:50:07 +0000
-References: <20210212052754.11271-1-doug@schmorgal.com>
-In-Reply-To: <20210212052754.11271-1-doug@schmorgal.com>
-To:     Doug Brown <doug@schmorgal.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Message-Id: <161317741897.7081.11501991395463776624.git-patchwork-notify@kernel.org>
+Date:   Sat, 13 Feb 2021 00:50:18 +0000
+References: <20210212104814.21452-1-vfedorenko@novek.ru>
+In-Reply-To: <20210212104814.21452-1-vfedorenko@novek.ru>
+To:     Vadim Fedorenko <vfedorenko@novek.ru>
+Cc:     kuba@kernel.org, dhowells@redhat.com,
+        willemdebruijn.kernel@gmail.com, davem@davemloft.net,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Thu, 11 Feb 2021 21:27:54 -0800 you wrote:
-> If a DDP broadcast packet is sent out to a non-gateway target, it is
-> also looped back. There is a potential for the loopback device to have a
-> longer hardware header length than the original target route's device,
-> which can result in the skb not being created with enough room for the
-> loopback device's hardware header. This patch fixes the issue by
-> determining that a loopback will be necessary prior to allocating the
-> skb, and if so, ensuring the skb has enough room.
+On Fri, 12 Feb 2021 13:48:14 +0300 you wrote:
+> As udp_port_cfg struct changes its members with dependency on IPv6
+> configuration, the code in rxrpc should also check for IPv6.
+> 
+> Fixes: 1a9b86c9fd95 ("rxrpc: use udp tunnel APIs instead of open code in rxrpc_open_socket")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
 > 
 > [...]
 
 Here is the summary with links:
-  - appletalk: Fix skb allocation size in loopback case
-    https://git.kernel.org/netdev/net/c/39935dccb21c
+  - [RESEND,net-next] rxrpc: Fix dependency on IPv6 in udp tunnel config
+    https://git.kernel.org/netdev/net-next/c/295f830e53f4
 
 You are awesome, thank you!
 --
