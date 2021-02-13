@@ -2,204 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BCE131ABFD
-	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 15:00:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FCE731AC05
+	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 15:05:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229690AbhBMN5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Feb 2021 08:57:40 -0500
-Received: from mail-40131.protonmail.ch ([185.70.40.131]:49790 "EHLO
-        mail-40131.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229584AbhBMN5h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 08:57:37 -0500
-Date:   Sat, 13 Feb 2021 13:56:40 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1613224611; bh=T6KIeabV5sI7XCFa/PJx1BokACoH/f2hbL4xDuJnHrw=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=paJxQJHQ6QsKrY/FqcS3AXMj5XvUuQ90BRqLHfuUsi9sWtk2cLIaYm+tHM3cNPOXE
-         hWNhJER6x7rJCLYwz7ifoh6QseyWydbnO7bNjI88HMlCcJuxtVZ+MRy4O9mAcI75i9
-         1xvBPF74nQtOT4vaJUsbWYhFmQTIDt7XTILs8FPjL1Yf3gWTDr7d84paGVEQHkZGbj
-         nB8qpQdsijf1m6XNi4NEDHZTsO4eURX0Aqu3IZ+86+YhUdb0550UMZLqiETXmiV9+P
-         ABbATPXQXpOmD6yhsv6GAC40z5OW4KErtHtpdp2RKfVdek7WuoNsVsV8FccVS7p6gM
-         9ha3bAL1AC/rA==
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Kevin Hao <haokexin@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        =?utf-8?Q?Bj=C3=B6rn_T=C3=B6pel?= <bjorn@kernel.org>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        Yonghong Song <yhs@fb.com>, zhudi <zhudi21@huawei.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Florian Westphal <fw@strlen.de>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: Re: [PATCH v5 net-next 06/11] skbuff: remove __kfree_skb_flush()
-Message-ID: <20210213135604.86581-1-alobakin@pm.me>
-In-Reply-To: <CAKgT0Uc=_VereGioEPrvfT8-eL6odvs9PwNxywu4=UC1DPvRNQ@mail.gmail.com>
-References: <20210211185220.9753-1-alobakin@pm.me> <20210211185220.9753-7-alobakin@pm.me> <CAKgT0Uc=_VereGioEPrvfT8-eL6odvs9PwNxywu4=UC1DPvRNQ@mail.gmail.com>
+        id S229671AbhBMOFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Feb 2021 09:05:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57466 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229584AbhBMOE6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 09:04:58 -0500
+Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2207AC061574
+        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 06:04:16 -0800 (PST)
+Received: by mail-il1-x12f.google.com with SMTP id e1so1843680ilu.0
+        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 06:04:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language;
+        bh=XfrBb6sB60yhNSm78XNTHoePRNQ24sdlRWhH4ZAggLg=;
+        b=YDXnW4Ff6iGXdaM3U2rm9YU2c5goO9dDAHbd0p+6i/mJ3lEEURyu1LyQv0dBAIOke6
+         r2KCvMy97S0lHa9h0vJ7KwEeKTftVT5c5vilaVt4Ov7D07VaSw5yPhB/egfusm++1LU8
+         hZWT/NNX2HbohgD6VT9oE8fEchL1EKg1uYULp9jEoS9OZ6DPIO6NYZwd9Uit++jkWUjm
+         MLRQ+pRIZ3m1ds65wbcgc7mYdagevnss4aqwG0gkHaCHgevTtLLBg9WNDuc/emwYf0Bb
+         /uah7pykEHSy3xEba5GYT4vsr3qeCqH2kvYytWpLof+vxxvJFB/1p8PWKuEBtekvBlZc
+         62Vg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language;
+        bh=XfrBb6sB60yhNSm78XNTHoePRNQ24sdlRWhH4ZAggLg=;
+        b=r3LkrW6iIKcrsOzkhb84thdpndWAyQ76aOWf2j/oNgkIhDYVbM/Ws4xvZnVbvjOqFW
+         +aoGamy5HU+bfJTTGc+E3V2WDn9uPk891bP/7WMCmcT7YAmLTMWsNyRaKdjITge5MEvS
+         JenvH2HWQbQEhD598qC9MmZhUJhO02ld0GDzer3dU7Jytt1Z4fOA1Uoun3YZyNOgAXC2
+         7UxdzCDIR3jfKxJfUUZ1Z7HR2l5Gu7ZVgF9JXDzuFqW7nZH/ZPlfrZFOiGJKygWiliwe
+         nJbGrFGz2gHztsc5THBj4zXuHcqMy8siWdwMTJBzL6Syb49pBFbgrCFfa0FQMtuvo+7h
+         p9tw==
+X-Gm-Message-State: AOAM530TG/3BzlK9gvwISyFqwwn89CoJx7U+E4R0XF9NA5Qltote7C1B
+        0ELPoYm2InxSP3oeBv5s754=
+X-Google-Smtp-Source: ABdhPJyZmYSXEcy9SQGno4PnlVUFNQWvUq7UzP0lpsml8tfhuUVBQxTMVdZEawWZYGz2BxxZACKO4g==
+X-Received: by 2002:a05:6e02:1b84:: with SMTP id h4mr6155229ili.196.1613225055477;
+        Sat, 13 Feb 2021 06:04:15 -0800 (PST)
+Received: from [192.168.1.2] ([96.78.87.197])
+        by smtp.gmail.com with ESMTPSA id x7sm5726538ioa.48.2021.02.13.06.04.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 13 Feb 2021 06:04:15 -0800 (PST)
+To:     netdev@vger.kernel.org
+Cc:     jiri@nvidia.com
+From:   Jefferson Carpenter <jeffersoncarpenter2@gmail.com>
+Subject: [PATCH] lib/parman: Delete newline
+Message-ID: <65ad19ae-4f69-17be-7a2d-d19ce36a4b1c@gmail.com>
+Date:   Sat, 13 Feb 2021 14:04:13 +0000
+User-Agent: Mozilla/5.0 (Windows NT 6.2; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+Content-Type: multipart/mixed;
+ boundary="------------568068764570235E61C92645"
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Duyck <alexander.duyck@gmail.com>
-Date: Thu, 11 Feb 2021 19:28:52 -0800
+This is a multi-part message in MIME format.
+--------------568068764570235E61C92645
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-> On Thu, Feb 11, 2021 at 10:57 AM Alexander Lobakin <alobakin@pm.me> wrote=
-:
-> >
-> > This function isn't much needed as NAPI skb queue gets bulk-freed
-> > anyway when there's no more room, and even may reduce the efficiency
-> > of bulk operations.
-> > It will be even less needed after reusing skb cache on allocation path,
-> > so remove it and this way lighten network softirqs a bit.
-> >
-> > Suggested-by: Eric Dumazet <edumazet@google.com>
-> > Signed-off-by: Alexander Lobakin <alobakin@pm.me>
->=20
-> I'm wondering if you have any actual gains to show from this patch?
->=20
-> The reason why I ask is because the flushing was happening at the end
-> of the softirq before the system basically gave control back over to
-> something else. As such there is a good chance for the memory to be
-> dropped from the cache by the time we come back to it. So it may be
-> just as expensive if not more so than accessing memory that was just
-> freed elsewhere and placed in the slab cache.
+Style agrees with surrounding code
 
-Just retested after readding this function (and changing the logics so
-it would drop the second half of the cache, like napi_skb_cache_put()
-does) and got 10 Mbps drawback with napi_build_skb() +
-napi_gro_receive().
+Thanks,
+Jefferson
 
-So seems like getting a pointer from an array instead of calling
-kmem_cache_alloc() is cheaper even if the given object was pulled
-out of CPU caches.
+--------------568068764570235E61C92645
+Content-Type: text/plain; charset=UTF-8;
+ name="0001-lib-parman-Delete-newline.patch"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="0001-lib-parman-Delete-newline.patch"
 
-> > ---
-> >  include/linux/skbuff.h |  1 -
-> >  net/core/dev.c         |  7 +------
-> >  net/core/skbuff.c      | 12 ------------
-> >  3 files changed, 1 insertion(+), 19 deletions(-)
-> >
-> > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> > index 0a4e91a2f873..0e0707296098 100644
-> > --- a/include/linux/skbuff.h
-> > +++ b/include/linux/skbuff.h
-> > @@ -2919,7 +2919,6 @@ static inline struct sk_buff *napi_alloc_skb(stru=
-ct napi_struct *napi,
-> >  }
-> >  void napi_consume_skb(struct sk_buff *skb, int budget);
-> >
-> > -void __kfree_skb_flush(void);
-> >  void __kfree_skb_defer(struct sk_buff *skb);
-> >
-> >  /**
-> > diff --git a/net/core/dev.c b/net/core/dev.c
-> > index 321d41a110e7..4154d4683bb9 100644
-> > --- a/net/core/dev.c
-> > +++ b/net/core/dev.c
-> > @@ -4944,8 +4944,6 @@ static __latent_entropy void net_tx_action(struct=
- softirq_action *h)
-> >                         else
-> >                                 __kfree_skb_defer(skb);
-> >                 }
-> > -
-> > -               __kfree_skb_flush();
-> >         }
-> >
-> >         if (sd->output_queue) {
-> > @@ -7012,7 +7010,6 @@ static int napi_threaded_poll(void *data)
-> >                         __napi_poll(napi, &repoll);
-> >                         netpoll_poll_unlock(have);
-> >
-> > -                       __kfree_skb_flush();
-> >                         local_bh_enable();
-> >
-> >                         if (!repoll)
->=20
-> So it looks like this is the one exception to my comment above. Here
-> we should probably be adding a "if (!repoll)" before calling
-> __kfree_skb_flush().
->=20
-> > @@ -7042,7 +7039,7 @@ static __latent_entropy void net_rx_action(struct=
- softirq_action *h)
-> >
-> >                 if (list_empty(&list)) {
-> >                         if (!sd_has_rps_ipi_waiting(sd) && list_empty(&=
-repoll))
-> > -                               goto out;
-> > +                               return;
-> >                         break;
-> >                 }
-> >
-> > @@ -7069,8 +7066,6 @@ static __latent_entropy void net_rx_action(struct=
- softirq_action *h)
-> >                 __raise_softirq_irqoff(NET_RX_SOFTIRQ);
-> >
-> >         net_rps_action_and_irq_enable(sd);
-> > -out:
-> > -       __kfree_skb_flush();
-> >  }
-> >
-> >  struct netdev_adjacent {
-> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> > index 1c6f6ef70339..4be2bb969535 100644
-> > --- a/net/core/skbuff.c
-> > +++ b/net/core/skbuff.c
-> > @@ -838,18 +838,6 @@ void __consume_stateless_skb(struct sk_buff *skb)
-> >         kfree_skbmem(skb);
-> >  }
-> >
-> > -void __kfree_skb_flush(void)
-> > -{
-> > -       struct napi_alloc_cache *nc =3D this_cpu_ptr(&napi_alloc_cache)=
-;
-> > -
-> > -       /* flush skb_cache if containing objects */
-> > -       if (nc->skb_count) {
-> > -               kmem_cache_free_bulk(skbuff_head_cache, nc->skb_count,
-> > -                                    nc->skb_cache);
-> > -               nc->skb_count =3D 0;
-> > -       }
-> > -}
-> > -
-> >  static inline void _kfree_skb_defer(struct sk_buff *skb)
-> >  {
-> >         struct napi_alloc_cache *nc =3D this_cpu_ptr(&napi_alloc_cache)=
-;
-> > --
-> > 2.30.1
-
-Al
-
+RnJvbSBlZmExODVhYzFhMmI0NzE2YzZiNWNmNGU3NWMxZWIwZTkyMTY4OTNhIE1vbiBTZXAg
+MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiBKZWZmZXJzb24gQ2FycGVudGVyIDxqZWZmZXJzb25j
+YXJwZW50ZXIyQGdtYWlsLmNvbT4KRGF0ZTogU2F0LCAxMyBGZWIgMjAyMSAxNjowMDoxNSAr
+MDAwMApTdWJqZWN0OiBbUEFUQ0hdIGxpYi9wYXJtYW46IERlbGV0ZSBuZXdsaW5lCgpTaWdu
+ZWQtb2ZmLWJ5OiBKZWZmZXJzb24gQ2FycGVudGVyIDxqZWZmZXJzb25jYXJwZW50ZXIyQGdt
+YWlsLmNvbT4KLS0tCiBsaWIvcGFybWFuLmMgfCAxIC0KIDEgZmlsZSBjaGFuZ2VkLCAxIGRl
+bGV0aW9uKC0pCgpkaWZmIC0tZ2l0IGEvbGliL3Bhcm1hbi5jIGIvbGliL3Bhcm1hbi5jCmlu
+ZGV4IGM2ZTQyYThkYjgyNC4uYTExZjJmNjY3NjM5IDEwMDY0NAotLS0gYS9saWIvcGFybWFu
+LmMKKysrIGIvbGliL3Bhcm1hbi5jCkBAIC04NSw3ICs4NSw2IEBAIHN0YXRpYyBpbnQgcGFy
+bWFuX3NocmluayhzdHJ1Y3QgcGFybWFuICpwYXJtYW4pCiB9CiAKIHN0YXRpYyBib29sIHBh
+cm1hbl9wcmlvX3VzZWQoc3RydWN0IHBhcm1hbl9wcmlvICpwcmlvKQotCiB7CiAJcmV0dXJu
+ICFsaXN0X2VtcHR5KCZwcmlvLT5pdGVtX2xpc3QpOwogfQotLSAKMi4yNi4yCgo=
+--------------568068764570235E61C92645--
