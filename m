@@ -2,94 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FCE731AC05
-	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 15:05:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B2D1C31AC0E
+	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 15:12:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229671AbhBMOFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Feb 2021 09:05:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57466 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229584AbhBMOE6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 09:04:58 -0500
-Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2207AC061574
-        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 06:04:16 -0800 (PST)
-Received: by mail-il1-x12f.google.com with SMTP id e1so1843680ilu.0
-        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 06:04:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language;
-        bh=XfrBb6sB60yhNSm78XNTHoePRNQ24sdlRWhH4ZAggLg=;
-        b=YDXnW4Ff6iGXdaM3U2rm9YU2c5goO9dDAHbd0p+6i/mJ3lEEURyu1LyQv0dBAIOke6
-         r2KCvMy97S0lHa9h0vJ7KwEeKTftVT5c5vilaVt4Ov7D07VaSw5yPhB/egfusm++1LU8
-         hZWT/NNX2HbohgD6VT9oE8fEchL1EKg1uYULp9jEoS9OZ6DPIO6NYZwd9Uit++jkWUjm
-         MLRQ+pRIZ3m1ds65wbcgc7mYdagevnss4aqwG0gkHaCHgevTtLLBg9WNDuc/emwYf0Bb
-         /uah7pykEHSy3xEba5GYT4vsr3qeCqH2kvYytWpLof+vxxvJFB/1p8PWKuEBtekvBlZc
-         62Vg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language;
-        bh=XfrBb6sB60yhNSm78XNTHoePRNQ24sdlRWhH4ZAggLg=;
-        b=r3LkrW6iIKcrsOzkhb84thdpndWAyQ76aOWf2j/oNgkIhDYVbM/Ws4xvZnVbvjOqFW
-         +aoGamy5HU+bfJTTGc+E3V2WDn9uPk891bP/7WMCmcT7YAmLTMWsNyRaKdjITge5MEvS
-         JenvH2HWQbQEhD598qC9MmZhUJhO02ld0GDzer3dU7Jytt1Z4fOA1Uoun3YZyNOgAXC2
-         7UxdzCDIR3jfKxJfUUZ1Z7HR2l5Gu7ZVgF9JXDzuFqW7nZH/ZPlfrZFOiGJKygWiliwe
-         nJbGrFGz2gHztsc5THBj4zXuHcqMy8siWdwMTJBzL6Syb49pBFbgrCFfa0FQMtuvo+7h
-         p9tw==
-X-Gm-Message-State: AOAM530TG/3BzlK9gvwISyFqwwn89CoJx7U+E4R0XF9NA5Qltote7C1B
-        0ELPoYm2InxSP3oeBv5s754=
-X-Google-Smtp-Source: ABdhPJyZmYSXEcy9SQGno4PnlVUFNQWvUq7UzP0lpsml8tfhuUVBQxTMVdZEawWZYGz2BxxZACKO4g==
-X-Received: by 2002:a05:6e02:1b84:: with SMTP id h4mr6155229ili.196.1613225055477;
-        Sat, 13 Feb 2021 06:04:15 -0800 (PST)
-Received: from [192.168.1.2] ([96.78.87.197])
-        by smtp.gmail.com with ESMTPSA id x7sm5726538ioa.48.2021.02.13.06.04.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 13 Feb 2021 06:04:15 -0800 (PST)
-To:     netdev@vger.kernel.org
-Cc:     jiri@nvidia.com
-From:   Jefferson Carpenter <jeffersoncarpenter2@gmail.com>
-Subject: [PATCH] lib/parman: Delete newline
-Message-ID: <65ad19ae-4f69-17be-7a2d-d19ce36a4b1c@gmail.com>
-Date:   Sat, 13 Feb 2021 14:04:13 +0000
-User-Agent: Mozilla/5.0 (Windows NT 6.2; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        id S229675AbhBMOLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Feb 2021 09:11:36 -0500
+Received: from mail-40134.protonmail.ch ([185.70.40.134]:13820 "EHLO
+        mail-40134.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229531AbhBMOLd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 09:11:33 -0500
+Date:   Sat, 13 Feb 2021 14:10:43 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1613225449; bh=R1khZwQjgS8o7EHDiXbtccTeYyXqpT358x8kOBzq0Q4=;
+        h=Date:To:From:Cc:Reply-To:Subject:From;
+        b=GefudV1mwOleJMqCUTrMA9/AuNKsDJzq6QyQNpW28cnwNbqJ68zyCy3ZCnITwfpkb
+         zUe+yk59hqtJFIdTlIitA0iYMDAb7+Ae1DCzemk2/fQityKsJKIy6gYHOcyRR2WEo6
+         7SkKLGfpMnjxAHMRbn0nTRHMkCTjReZLexMrMRBOKy8NNrFh9MivhXHeRnAJROxQqo
+         cgMv0o80pVCEONK3WxM6mjwj8+nme5OmhMncmOGycFpXxDx1bYOaxnm4nY6e6piSkK
+         kgzCHrsjmmrlAXRE3A5aG3rNG6iu3ACZw9iFiDpZcAjPrFSpOSwUvYStK2u5N8GF5s
+         6R0DyRTCcaoTQ==
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Kevin Hao <haokexin@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Taehee Yoo <ap420073@gmail.com>, Wei Wang <weiwan@google.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        =?utf-8?Q?Bj=C3=B6rn_T=C3=B6pel?= <bjorn@kernel.org>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        Florian Westphal <fw@strlen.de>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: [PATCH v6 net-next 00/11] skbuff: introduce skbuff_heads bulking and reusing
+Message-ID: <20210213141021.87840-1-alobakin@pm.me>
 MIME-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="------------568068764570235E61C92645"
-Content-Language: en-US
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------568068764570235E61C92645
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Currently, all sorts of skb allocation always do allocate
+skbuff_heads one by one via kmem_cache_alloc().
+On the other hand, we have percpu napi_alloc_cache to store
+skbuff_heads queued up for freeing and flush them by bulks.
 
-Style agrees with surrounding code
+We can use this cache not only for bulk-wiping, but also to obtain
+heads for new skbs and avoid unconditional allocations, as well as
+for bulk-allocating (like XDP's cpumap code and veth driver already
+do).
 
-Thanks,
-Jefferson
+As this might affect latencies, cache pressure and lots of hardware
+and driver-dependent stuff, this new feature is mostly optional and
+can be issued via:
+ - a new napi_build_skb() function (as a replacement for build_skb());
+ - existing {,__}napi_alloc_skb() and napi_get_frags() functions;
+ - __alloc_skb() with passing SKB_ALLOC_NAPI in flags.
 
---------------568068764570235E61C92645
-Content-Type: text/plain; charset=UTF-8;
- name="0001-lib-parman-Delete-newline.patch"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename="0001-lib-parman-Delete-newline.patch"
+iperf3 showed 35-70 Mbps bumps for both TCP and UDP while performing
+VLAN NAT on 1.2 GHz MIPS board. The boost is likely to be bigger
+on more powerful hosts and NICs with tens of Mpps.
 
-RnJvbSBlZmExODVhYzFhMmI0NzE2YzZiNWNmNGU3NWMxZWIwZTkyMTY4OTNhIE1vbiBTZXAg
-MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiBKZWZmZXJzb24gQ2FycGVudGVyIDxqZWZmZXJzb25j
-YXJwZW50ZXIyQGdtYWlsLmNvbT4KRGF0ZTogU2F0LCAxMyBGZWIgMjAyMSAxNjowMDoxNSAr
-MDAwMApTdWJqZWN0OiBbUEFUQ0hdIGxpYi9wYXJtYW46IERlbGV0ZSBuZXdsaW5lCgpTaWdu
-ZWQtb2ZmLWJ5OiBKZWZmZXJzb24gQ2FycGVudGVyIDxqZWZmZXJzb25jYXJwZW50ZXIyQGdt
-YWlsLmNvbT4KLS0tCiBsaWIvcGFybWFuLmMgfCAxIC0KIDEgZmlsZSBjaGFuZ2VkLCAxIGRl
-bGV0aW9uKC0pCgpkaWZmIC0tZ2l0IGEvbGliL3Bhcm1hbi5jIGIvbGliL3Bhcm1hbi5jCmlu
-ZGV4IGM2ZTQyYThkYjgyNC4uYTExZjJmNjY3NjM5IDEwMDY0NAotLS0gYS9saWIvcGFybWFu
-LmMKKysrIGIvbGliL3Bhcm1hbi5jCkBAIC04NSw3ICs4NSw2IEBAIHN0YXRpYyBpbnQgcGFy
-bWFuX3NocmluayhzdHJ1Y3QgcGFybWFuICpwYXJtYW4pCiB9CiAKIHN0YXRpYyBib29sIHBh
-cm1hbl9wcmlvX3VzZWQoc3RydWN0IHBhcm1hbl9wcmlvICpwcmlvKQotCiB7CiAJcmV0dXJu
-ICFsaXN0X2VtcHR5KCZwcmlvLT5pdGVtX2xpc3QpOwogfQotLSAKMi4yNi4yCgo=
---------------568068764570235E61C92645--
+Note on skbuff_heads from distant slabs or pfmemalloc'ed slabs:
+ - kmalloc()/kmem_cache_alloc() itself allows by default allocating
+   memory from the remote nodes to defragment their slabs. This is
+   controlled by sysctl, but according to this, skbuff_head from a
+   remote node is an OK case;
+ - The easiest way to check if the slab of skbuff_head is remote or
+   pfmemalloc'ed is:
+
+=09if (!dev_page_is_reusable(virt_to_head_page(skb)))
+=09=09/* drop it */;
+
+   ...*but*, regarding that most slabs are built of compound pages,
+   virt_to_head_page() will hit unlikely-branch every single call.
+   This check costed at least 20 Mbps in test scenarios and seems
+   like it'd be better to _not_ do this.
+
+Since v5 [4]:
+ - revert flags-to-bool conversion and simplify flags testing in
+   __alloc_skb() (Alexander Duyck).
+
+Since v4 [3]:
+ - rebase on top of net-next and address kernel build robot issue;
+ - reorder checks a bit in __alloc_skb() to make new condition even
+   more harmless.
+
+Since v3 [2]:
+ - make the feature mostly optional, so driver developers could
+   decide whether to use it or not (Paolo Abeni).
+   This reuses the old flag for __alloc_skb() and introduces
+   a new napi_build_skb();
+ - reduce bulk-allocation size from 32 to 16 elements (also Paolo).
+   This equals to the value of XDP's devmap and veth batch processing
+   (which were tested a lot) and should be sane enough;
+ - don't waste cycles on explicit in_serving_softirq() check.
+
+Since v2 [1]:
+ - also cover {,__}alloc_skb() and {,__}build_skb() cases (became handy
+   after the changes that pass tiny skbs requests to kmalloc layer);
+ - cover the cache with KASAN instrumentation (suggested by Eric
+   Dumazet, help of Dmitry Vyukov);
+ - completely drop redundant __kfree_skb_flush() (also Eric);
+ - lots of code cleanups;
+ - expand the commit message with NUMA and pfmemalloc points (Jakub).
+
+Since v1 [0]:
+ - use one unified cache instead of two separate to greatly simplify
+   the logics and reduce hotpath overhead (Edward Cree);
+ - new: recycle also GRO_MERGED_FREE skbs instead of immediate
+   freeing;
+ - correct performance numbers after optimizations and performing
+   lots of tests for different use cases.
+
+[0] https://lore.kernel.org/netdev/20210111182655.12159-1-alobakin@pm.me
+[1] https://lore.kernel.org/netdev/20210113133523.39205-1-alobakin@pm.me
+[2] https://lore.kernel.org/netdev/20210209204533.327360-1-alobakin@pm.me
+[3] https://lore.kernel.org/netdev/20210210162732.80467-1-alobakin@pm.me
+[4] https://lore.kernel.org/netdev/20210211185220.9753-1-alobakin@pm.me
+
+Alexander Lobakin (11):
+  skbuff: move __alloc_skb() next to the other skb allocation functions
+  skbuff: simplify kmalloc_reserve()
+  skbuff: make __build_skb_around() return void
+  skbuff: simplify __alloc_skb() a bit
+  skbuff: use __build_skb_around() in __alloc_skb()
+  skbuff: remove __kfree_skb_flush()
+  skbuff: move NAPI cache declarations upper in the file
+  skbuff: introduce {,__}napi_build_skb() which reuses NAPI cache heads
+  skbuff: allow to optionally use NAPI cache from __alloc_skb()
+  skbuff: allow to use NAPI cache from __napi_alloc_skb()
+  skbuff: queue NAPI_MERGED_FREE skbs into NAPI cache instead of freeing
+
+ include/linux/skbuff.h |   4 +-
+ net/core/dev.c         |  16 +-
+ net/core/skbuff.c      | 428 +++++++++++++++++++++++------------------
+ 3 files changed, 242 insertions(+), 206 deletions(-)
+
+--=20
+2.30.1
+
+
