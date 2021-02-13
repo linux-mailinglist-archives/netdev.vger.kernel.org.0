@@ -2,74 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D59F31A988
-	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 02:46:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E18431A98E
+	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 02:59:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232105AbhBMBqg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 20:46:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33946 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231317AbhBMBqd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 12 Feb 2021 20:46:33 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id E7D8264EA6;
-        Sat, 13 Feb 2021 01:45:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613180753;
-        bh=oecdGOLPRrsX8igQNwWvTsveOUTJxIoetxhi9npHSzQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=auwaITTXuhsh5gKEtnA8f9O9+quDOsGRxc40QICTQWE1Ekm4Q7zx73AF4wzSLPxYx
-         y6psMhYrKept5Lh1Sf6EOeeNCw/xizOfxDrYLM+I1mB3yWc7cYPCJPozKRca10fwRt
-         xXsP46rjB8torhXRgErnV05Pv/3uMNnmBIJre3OslIn6qj6NcnCca3b7mg9N6wb/XQ
-         ph13DaWSwikR8mfPQnuPN01AVZMItWu1W/w8r9W1N643BdohxE94t68CyLfjaMN4Bv
-         ExSw0Ey+NQtF1E5Jg6lK6GhXiTNhVwWrlyErgwI20KnGr7xPTJqlunniPkAjpcMjgF
-         ODEh2WhZZ0uFw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D816D60A2A;
-        Sat, 13 Feb 2021 01:45:52 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S231440AbhBMB7B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 20:59:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44376 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229708AbhBMB7A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 20:59:00 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10346C061574;
+        Fri, 12 Feb 2021 17:58:15 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id fa16so604971pjb.1;
+        Fri, 12 Feb 2021 17:58:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KErMRR3I5uhgWEjnDaX5OIYebSwYMq6MDxuhVUaC/h8=;
+        b=N37IdC0jsSvkFeSOJtd1gKzt1fkilAV6WQvQiLG8X+9sw7isRwCQW+OyLyAa57jwN8
+         foTEqAe7tmSmbT4V+OWCyWes4pgcQvBV6H+1bJ1jWcTVzje8o03zzgsYP3O8qE+yyPq6
+         fvnI/q4ERC4Rz7uNCv67E5qqX/BbW+0k6wp7UGD1NE07avW3ZzpJPlh12QyfbpgDjm17
+         FWJJBVJEwgS4N0qnlmdHEtbCa4y/mCq3XFexyUSnpuHhkxlYD2mIyVHvzDd0khyi34x1
+         ncFsfkbxtBEsNFTHGhsmCW/fkzEuZi2UOv+U4VbX2extePGr+Mlm6hF3nZ3ccDFuvBGx
+         R8uA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KErMRR3I5uhgWEjnDaX5OIYebSwYMq6MDxuhVUaC/h8=;
+        b=WpJzV4s50vHa2/9eRNKZ8VWBb6ZfmH9y79Zugzr0NapSt9NJVRqGyTpP5B+tNqnNKM
+         m+Y4Yqjkl7lyuJrNz5c1THV+rEVpYf8ZOO1JsN1SejI/H/zf+x8XCeacXmL5StFqP5/S
+         7p5t1t7bt8pfOZqK/uEMn7FAYxyGAdlZ/LooDGiGj+RnmLZT/NDM4u60UlxeybrhZNhF
+         GUcMWO7c4cmC7atUKbG0/BcWAY+XM5j+7E3QKsOKk00xHI/vBpLMBoNcMN3VOE3R0AH+
+         TM9AYEtZ+iyCKjEN36O0L2/cWLfvePnoDeyX7U3Xh9+Cfomzte5ar++iLjHU/9sN9j6I
+         GLhQ==
+X-Gm-Message-State: AOAM533tdBQJHC6i+O+tXkhgXiSIA7XPBJI4xG2geoN37NHlj0R4B2rX
+        PFNd7dHfJueEuaH7YAR3+LjAzsDIM33b2skU3Mk=
+X-Google-Smtp-Source: ABdhPJwsDe9AQYOLJrUdtwlcgLJFy5E+h3Y85TIZ+w6sK1srJStzBTkyFjfLStk860zQ/vzBQbDgb+EvxMvakkd2ulE=
+X-Received: by 2002:a17:903:114:b029:e2:f8fb:b6a1 with SMTP id
+ y20-20020a1709030114b02900e2f8fbb6a1mr5073239plc.77.1613181494523; Fri, 12
+ Feb 2021 17:58:14 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/3] Xilinx axienet updates
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161318075288.24767.11331993680228001755.git-patchwork-notify@kernel.org>
-Date:   Sat, 13 Feb 2021 01:45:52 +0000
-References: <20210213002356.2557207-1-robert.hancock@calian.com>
-In-Reply-To: <20210213002356.2557207-1-robert.hancock@calian.com>
-To:     Robert Hancock <robert.hancock@calian.com>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        radhey.shyam.pandey@xilinx.com, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org
+References: <20210210022136.146528-1-xiyou.wangcong@gmail.com>
+ <20210210022136.146528-3-xiyou.wangcong@gmail.com> <CACAyw98HxkT99rA-PDSGqOyRgSxGoye_LQqR2FmK8M3KwgY+JQ@mail.gmail.com>
+ <CAM_iQpUvaFry3Pj+tWoM9npMrARfQ=O=tmg7SkwC+m54G0T6Yg@mail.gmail.com>
+In-Reply-To: <CAM_iQpUvaFry3Pj+tWoM9npMrARfQ=O=tmg7SkwC+m54G0T6Yg@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Fri, 12 Feb 2021 17:58:03 -0800
+Message-ID: <CAM_iQpUkNA0D8vokqvjLgH3bv6vkKvNoz4Jg149dDnDjFH+qCA@mail.gmail.com>
+Subject: Re: [Patch bpf-next v2 2/5] skmsg: get rid of struct sk_psock_parser
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        duanxiongchun@bytedance.com,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        jiang.wang@bytedance.com, Cong Wang <cong.wang@bytedance.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Fri, Feb 12, 2021 at 11:09 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>
+> On Fri, Feb 12, 2021 at 2:56 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
+> >
+> > On Wed, 10 Feb 2021 at 02:21, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > >
+> > > From: Cong Wang <cong.wang@bytedance.com>
+> > >
+> > > struct sk_psock_parser is embedded in sk_psock, it is
+> > > unnecessary as skb verdict also uses ->saved_data_ready.
+> > > We can simply fold these fields into sk_psock, and get rid
+> > > of ->enabled.
+> >
+> > Looks nice, can you use sk_psock_strp_enabled() more? There are a
+> > couple places in sock_map.c which test psock->saved_data_ready
+> > directly.
+>
+> Its name tells it is for stream parser, so not suitable for others.
+>
+> Are you suggesting to rename it to sk_psock_enabled() and use
+> it? Note it still has an additional !psock test, but I think that is fine
+> for slow paths.
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+Well, I think it is a bug, sk_psock_strp_enabled() probably means
+to check whether progs.stream_verdict is running, not whether
+any of these progs is running. So, I'd leave this untouched in this
+patchset and if needed a separate bug fix should be sent to -net.
 
-On Fri, 12 Feb 2021 18:23:53 -0600 you wrote:
-> Updates to the Xilinx AXI Ethernet driver to add support for an additional
-> ethtool operation, and to support dynamic switching between 1000BaseX and
-> SGMII interface modes.
-> 
-> Robert Hancock (3):
->   net: axienet: hook up nway_reset ethtool operation
->   dt-bindings: net: xilinx_axienet: add xlnx,switch-x-sgmii attribute
->   net: axienet: Support dynamic switching between 1000BaseX and SGMII
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,1/3] net: axienet: hook up nway_reset ethtool operation
-    https://git.kernel.org/netdev/net-next/c/66b51663cdd0
-  - [net-next,2/3] dt-bindings: net: xilinx_axienet: add xlnx,switch-x-sgmii attribute
-    https://git.kernel.org/netdev/net-next/c/eceac9d2590b
-  - [net-next,3/3] net: axienet: Support dynamic switching between 1000BaseX and SGMII
-    https://git.kernel.org/netdev/net-next/c/6c8f06bb2e51
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Thanks.
