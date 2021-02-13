@@ -2,148 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 413A831AD10
-	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 17:22:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F54A31AD2F
+	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 17:43:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229660AbhBMQWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Feb 2021 11:22:09 -0500
-Received: from mail.thelounge.net ([91.118.73.15]:52933 "EHLO
-        mail.thelounge.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229574AbhBMQWH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 11:22:07 -0500
-Received: from srv-rhsoft.rhsoft.net (rh.vpn.thelounge.net [10.10.10.2])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-256))
+        id S229716AbhBMQn0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Feb 2021 11:43:26 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:26422 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229690AbhBMQnV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 11:43:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1613234514;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=CFzmDa/KGuuQsQx0DDBef7gqPGBnn8UpPfi1reQ/ou0=;
+        b=BkpcxwhJYdsFUt78QU9E/ygeistdjKLtdA6Tplr6dfM4uZWcPks9AUhIj+09gIycj54TDO
+        6yh0ExbgqrcWJjWHC5PIXd54MkYS60F1qoSNpiBIOjVZISmugo+Ql2esT5LclbFgYJPZed
+        wFBgEQOBbIaIekWCyhI1CoDgIefc9xs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-440-1-ysXB80NOS4IRfp614DVw-1; Sat, 13 Feb 2021 11:41:50 -0500
+X-MC-Unique: 1-ysXB80NOS4IRfp614DVw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: h.reindl@thelounge.net)
-        by mail.thelounge.net (THELOUNGE MTA) with ESMTPSA id 4DdFx00LMGzXRq;
-        Sat, 13 Feb 2021 17:21:24 +0100 (CET)
-Subject: Re: [PATCH net 1/4] netfilter: xt_recent: Fix attempt to update
- deleted entry
-From:   Reindl Harald <h.reindl@thelounge.net>
-To:     Jozsef Kadlecsik <kadlec@netfilter.org>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, kuba@kernel.org
-References: <20210205001727.2125-1-pablo@netfilter.org>
- <20210205001727.2125-2-pablo@netfilter.org>
- <69957353-7fe0-9faa-4ddd-1ac44d5386a5@thelounge.net>
- <alpine.DEB.2.23.453.2102051448220.10405@blackhole.kfki.hu>
- <a51d867a-3ca9-fd36-528a-353aa6c42f42@thelounge.net>
- <3018f068-62b1-6dae-2dde-39d1a62fbcb2@thelounge.net>
- <alpine.DEB.2.23.453.2102072036220.16338@blackhole.kfki.hu>
- <303fdd83-a324-5d0c-b45e-9584ea0c9cd5@thelounge.net>
- <9e18d3b2-e0d2-489e-43ae-c27c160df221@thelounge.net>
-Organization: the lounge interactive design
-Message-ID: <fd8829e7-61ff-025e-6a73-b92dba1a2a9b@thelounge.net>
-Date:   Sat, 13 Feb 2021 17:21:23 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 848F1192CC41;
+        Sat, 13 Feb 2021 16:41:48 +0000 (UTC)
+Received: from krava (unknown [10.40.192.50])
+        by smtp.corp.redhat.com (Postfix) with SMTP id DD6B31ABE5;
+        Sat, 13 Feb 2021 16:41:44 +0000 (UTC)
+Date:   Sat, 13 Feb 2021 17:41:43 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>, dwarves@vger.kernel.org,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Yonghong Song <yhs@fb.com>, Hao Luo <haoluo@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Sedat Dilek <sedat.dilek@gmail.com>
+Subject: Re: [PATCH] btf_encoder: Match ftrace addresses within elf functions
+Message-ID: <YCgBR6c7UdmhNgwr@krava>
+References: <20210212135427.1250224-1-jolsa@redhat.com>
+ <20210212220420.1289014-1-jolsa@kernel.org>
+ <CAEf4BzYN7FnGjEYMDqQFK1LryUi0+cBTqaFXmPU_kBN1jJ+LLg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <9e18d3b2-e0d2-489e-43ae-c27c160df221@thelounge.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzYN7FnGjEYMDqQFK1LryUi0+cBTqaFXmPU_kBN1jJ+LLg@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-Am 13.02.21 um 17:09 schrieb Reindl Harald:
+On Fri, Feb 12, 2021 at 02:21:04PM -0800, Andrii Nakryiko wrote:
+> On Fri, Feb 12, 2021 at 2:05 PM Jiri Olsa <jolsa@kernel.org> wrote:
+> >
+> > Currently when processing DWARF function, we check its entrypoint
+> > against ftrace addresses, assuming that the ftrace address matches
+> > with function's entrypoint.
+> >
+> > This is not the case on some architectures as reported by Nathan
+> > when building kernel on arm [1].
+> >
+> > Fixing the check to take into account the whole function not
+> > just the entrypoint.
+> >
+> > Most of the is_ftrace_func code was contributed by Andrii.
+> >
+> > [1] https://lore.kernel.org/bpf/20210209034416.GA1669105@ubuntu-m3-large-x86/
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
 > 
+> LGTM. But see another suggestion below. In either case:
 > 
-> Am 10.02.21 um 11:34 schrieb Reindl Harald:
->>
->>
->> Am 07.02.21 um 20:38 schrieb Jozsef Kadlecsik:
->>> On Sun, 7 Feb 2021, Reindl Harald wrote:
->>>
->>>>> well, the most important thing is that the firewall-vm stops to
->>>>> kernel-panic
->>>>
->>>> why is that still not part of 5.10.14 given how old that issue is :-(
->>>>
->>>> https://cdn.kernel.org/pub/linux/kernel/v5.x/ChangeLog-5.10.14
->>>
->>> Probably we missed the window when patches were accepted for the new
->>> release. That's all
->>
->> probably something is broken in the whole process given that 5.10.15 
->> still don't contain the fix while i am tired of a new "stable release" 
->> every few days and 5.10.x like every LTS release in the past few years 
->> has a peak of it
->>
->> https://cdn.kernel.org/pub/linux/kernel/v5.x/ChangeLog-5.10.15
-
-https://cdn.kernel.org/pub/linux/kernel/v5.x/ChangeLog-5.10.16
-
-again no "netfilter" or "xt_recent"
-
-what is the point of new kernel releases every second day without fixing 
-months old issues where a pacth exists?
-
-> and another useless crash of something which has a ready patch from 
-> before 5.10.14
+> Acked-by: Andrii Nakryiko <andrii@kernel.org>
 > 
-> [165940.842226] kernel BUG at lib/list_debug.c:45!
-> [165940.874769] invalid opcode: 0000 [#1] SMP NOPTI
-> [165940.876680] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 
-> 5.10.15-100.fc32.x86_64 #1
-> [165940.880198] Hardware name: VMware, Inc. VMware Virtual 
-> Platform/440BX Desktop Reference Platform, BIOS 6.00 12/12/2018
-> [165940.885314] RIP: 0010:__list_del_entry_valid.cold+0xf/0x47
-> [165940.886202] Code: fe ff 0f 0b 48 89 d1 4c 89 c6 4c 89 ca 48 c7 c7 60 
-> 88 40 b2 e8 cf 45 fe ff 0f 0b 48 89 fe 48 c7 c7 f0 88 40 b2 e8 be 45 fe 
-> ff <0f> 0b 48 c7 c7 a0 89 40 b2 e8 b0 45 fe ff 0f 0b 48 89 f2 48 89 fe
-> [165940.889107] RSP: 0018:ffffaf0480003928 EFLAGS: 00010282
-> [165940.889943] RAX: 000000000000004e RBX: ffff9fa911148000 RCX: 
-> 0000000000000000
-> [165940.891066] RDX: ffff9fa99d4269e0 RSI: ffff9fa99d418a80 RDI: 
-> 0000000000000300
-> [165940.892190] RBP: ffffaf04800039a0 R08: 0000000000000000 R09: 
-> ffffaf0480003760
-> [165940.893313] R10: ffffaf0480003758 R11: ffffffffb2b44748 R12: 
-> ffff9fa9046000f8
-> [165940.894441] R13: ffff9fa911148010 R14: ffff9fa903329400 R15: 
-> ffff9fa904600000
-> [165940.895573] FS:  0000000000000000(0000) GS:ffff9fa99d400000(0000) 
-> knlGS:0000000000000000
-> [165940.896856] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [165940.897789] CR2: 00007fb9442e5000 CR3: 00000000030a0006 CR4: 
-> 00000000003706f0
-> [165940.898954] Call Trace:
-> [165940.899400]  <IRQ>
-> [165940.899757]  recent_mt+0x1b5/0x39b [xt_recent]
-> [165940.900492]  ? set_match_v4+0x92/0xb0 [xt_set]
-> [165940.901236]  nft_match_large_eval+0x34/0x60 [nft_compat]
-> [165940.902104]  nft_do_chain+0x141/0x4e0 [nf_tables]
-> [165940.902869]  ? fib_validate_source+0x47/0xf0
-> [165940.903564]  ? ip_route_input_slow+0x722/0xaa0
-> [165940.904282]  nft_do_chain_ipv4+0x56/0x60 [nf_tables]
-> [165940.905086]  nf_hook_slow+0x3f/0xb0
-> [165940.905658]  ip_forward+0x441/0x480
-> [165940.906230]  ? ip4_key_hashfn+0xb0/0xb0
-> [165940.906856]  __netif_receive_skb_one_core+0x67/0x70
-> [165940.907639]  netif_receive_skb+0x35/0x110
-> [165940.908295]  br_handle_frame_finish+0x17a/0x450 [bridge]
-> [165940.909143]  ? ip_finish_output2+0x19b/0x560
-> [165940.909842]  ? br_handle_frame_finish+0x450/0x450 [bridge]
-> [165940.910718]  br_handle_frame+0x292/0x350 [bridge]
-> [165940.911483]  ? ip_sublist_rcv_finish+0x57/0x70
-> [165940.912199]  ? ___slab_alloc+0x127/0x5b0
-> [165940.912835]  __netif_receive_skb_core+0x196/0xf70
-> [165940.913590]  ? ip_list_rcv+0x125/0x140
-> [165940.914201]  __netif_receive_skb_list_core+0x12f/0x2b0
-> [165940.915024]  netif_receive_skb_list_internal+0x1bc/0x2e0
-> [165940.915873]  ? vmxnet3_rq_rx_complete+0x8bd/0xde0 [vmxnet3]
-> [165940.916769]  napi_complete_done+0x6f/0x190
-> [165940.917439]  vmxnet3_poll_rx_only+0x7b/0xa0 [vmxnet3]
-> [165940.918249]  net_rx_action+0x135/0x3b0
-> [165940.918863]  __do_softirq+0xca/0x288
-> [165940.919451]  asm_call_irq_on_stack+0xf/0x20
-> [165940.920146]  </IRQ>
-> [165940.920508]  do_softirq_own_stack+0x37/0x40
-> [165940.921187]  irq_exit_rcu+0xc2/0x100
-> [165940.921772]  common_interrupt+0x74/0x130
-> [165940.922410]  asm_common_interrupt+0x1e/0x40
+> >  btf_encoder.c | 55 +++++++++++++++++++++++++++++++++++++++++----------
+> >  1 file changed, 45 insertions(+), 10 deletions(-)
+> >
+> > diff --git a/btf_encoder.c b/btf_encoder.c
+> > index b124ec20a689..03242f04c55d 100644
+> > --- a/btf_encoder.c
+> > +++ b/btf_encoder.c
+> > @@ -36,6 +36,7 @@ struct funcs_layout {
+> >  struct elf_function {
+> >         const char      *name;
+> >         unsigned long    addr;
+> > +       unsigned long    size;
+> >         unsigned long    sh_addr;
+> >         bool             generated;
+> >  };
+> > @@ -98,6 +99,7 @@ static int collect_function(struct btf_elf *btfe, GElf_Sym *sym,
+> >
+> >         functions[functions_cnt].name = name;
+> >         functions[functions_cnt].addr = elf_sym__value(sym);
+> > +       functions[functions_cnt].size = elf_sym__size(sym);
+> >         functions[functions_cnt].sh_addr = sh.sh_addr;
+> >         functions[functions_cnt].generated = false;
+> >         functions_cnt++;
+> > @@ -236,6 +238,48 @@ get_kmod_addrs(struct btf_elf *btfe, __u64 **paddrs, __u64 *pcount)
+> >         return 0;
+> >  }
+> >
+> > +static int is_ftrace_func(struct elf_function *func, __u64 *addrs,
+> > +                         __u64 count, bool kmod)
+> > +{
+> > +       /*
+> > +        * For vmlinux image both addrs[x] and functions[x]::addr
+> > +        * values are final address and are comparable.
+> > +        *
+> > +        * For kernel module addrs[x] is final address, but
+> > +        * functions[x]::addr is relative address within section
+> > +        * and needs to be relocated by adding sh_addr.
+> > +        */
+> > +       __u64 start = kmod ? func->addr + func->sh_addr : func->addr;
+> > +       __u64 addr, end = func->addr + func->size;
+> > +
+> > +       /*
+> > +        * The invariant here is addr[r] that is the smallest address
+> > +        * that is >= than function start addr. Except the corner case
+> > +        * where there is no such r, but for that we have a final check
+> > +        * in the return.
+> > +        */
+> > +       size_t l = 0, r = count - 1, m;
+> > +
+> > +       /* make sure we don't use invalid r */
+> > +       if (count == 0)
+> > +               return false;
+> > +
+> > +       while (l < r) {
+> > +               m = l + (r - l) / 2;
+> > +               addr = addrs[m];
+> > +
+> > +               if (addr >= start) {
+> > +                       /* we satisfy invariant, so tighten r */
+> > +                       r = m;
+> > +               } else {
+> > +                       /* m is not good enough as l, maybe m + 1 will be */
+> > +                       l = m + 1;
+> > +               }
+> > +       }
+> > +
+> > +       return start <= addrs[r] && addrs[r] < end;
+> > +}
+> > +
+> >  static int setup_functions(struct btf_elf *btfe, struct funcs_layout *fl)
+> >  {
+> >         __u64 *addrs, count, i;
+> > @@ -275,18 +319,9 @@ static int setup_functions(struct btf_elf *btfe, struct funcs_layout *fl)
+> >          */
+> >         for (i = 0; i < functions_cnt; i++) {
+> >                 struct elf_function *func = &functions[i];
+> > -               /*
+> > -                * For vmlinux image both addrs[x] and functions[x]::addr
+> > -                * values are final address and are comparable.
+> > -                *
+> > -                * For kernel module addrs[x] is final address, but
+> > -                * functions[x]::addr is relative address within section
+> > -                * and needs to be relocated by adding sh_addr.
+> > -                */
+> > -               __u64 addr = kmod ? func->addr + func->sh_addr : func->addr;
+> 
+> if we just...
+> 
+> if (kmod)
+>     func->addr += func->sh_addr;
+> 
+> ... here, that would make is_ftrace_func() free of kmod knowledge. If
+> there are other places that rely on kmod vs non-kmod address of a
+> function, that would be simplified as well, right?
+
+yes, this is the only place for now, I'll make the change
+
+thanks,
+jirka
+
+> 
+> >
+> >                 /* Make sure function is within ftrace addresses. */
+> > -               if (bsearch(&addr, addrs, count, sizeof(addrs[0]), addrs_cmp)) {
+> > +               if (is_ftrace_func(func, addrs, count, kmod)) {
+> >                         /*
+> >                          * We iterate over sorted array, so we can easily skip
+> >                          * not valid item and move following valid field into
+> > --
+> > 2.29.2
+> >
+> 
+
