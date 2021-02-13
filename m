@@ -2,103 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BC2031A9AA
+	by mail.lfdr.de (Postfix) with ESMTP id AD14531A9AB
 	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 03:54:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231899AbhBMCtq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 21:49:46 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:48178 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S231394AbhBMCtp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 21:49:45 -0500
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 11D2XWPc002244
-        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 21:49:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=9RyRAK2kYCPPIRFaaq0a1bMae3EJqGoAckUmYu049a4=;
- b=nBumxHA1vjTRhApDfh9981UbUqiTR91+UyjtdPPdZ+n013q+/z5RaKfNAlL3AZ10HkJ+
- 2fX3knAL0k9uCPhoH5lZTVDJsTUtv0ocUWzUs1fHcMPtX6lDbzcx+XUqGwplDEtPZD8i
- oideMSBA5ZSWqu+cStSWJID+Q6efoSdQ6qVW5WfCPmfdHMilMy4R52Fma6NQMF48KHdz
- 9Cs2MabzATUBC9E5B72/R2Vc3Bj/FJ8ateA+BKjUSC4A2Qun6iWjdiqLLdHdblJAJ/RP
- XzBGOT4OHj5KEG2xloJlgcRVt+0Xl7+UqR6evxKxIHa4H2R8tEnvCPVgFwv5qZGreYbW Pw== 
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 36p5mn0sfx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 21:49:04 -0500
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
-        by ppma03dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 11D2lGhV008940
-        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 02:49:03 GMT
-Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
-        by ppma03dal.us.ibm.com with ESMTP id 36hjra5wf0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 02:49:03 +0000
-Received: from b03ledav006.gho.boulder.ibm.com (b03ledav006.gho.boulder.ibm.com [9.17.130.237])
-        by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 11D2n2aI27853202
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 13 Feb 2021 02:49:02 GMT
-Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2D278C605A;
-        Sat, 13 Feb 2021 02:49:02 +0000 (GMT)
-Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 66AAAC6055;
-        Sat, 13 Feb 2021 02:49:01 +0000 (GMT)
-Received: from pompom.ibm.com (unknown [9.80.198.213])
-        by b03ledav006.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Sat, 13 Feb 2021 02:49:01 +0000 (GMT)
-From:   Lijun Pan <ljp@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     sukadev@linux.ibm.com, drt@linux.ibm.com,
-        Lijun Pan <ljp@linux.ibm.com>
-Subject: [PATCH net] ibmvnic: skip send_request_unmap for timeout reset
-Date:   Fri, 12 Feb 2021 20:49:00 -0600
-Message-Id: <20210213024900.56081-1-ljp@linux.ibm.com>
-X-Mailer: git-send-email 2.22.0
+        id S232005AbhBMCyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 21:54:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56304 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229650AbhBMCyl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 21:54:41 -0500
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A82C061574
+        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 18:54:01 -0800 (PST)
+Received: by mail-pf1-x431.google.com with SMTP id k13so660978pfh.13
+        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 18:54:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=oQsFY6Nv3WQS4xdanjlBkGEuwQrOOLyn5uX6TKYwvU0=;
+        b=mnqbW/4QYtHczSQc2KFiJNDKMrSd9Twznws3qUjW5UMaJmLhozDJ3H9s/0RZGB784z
+         idJFEsvnMZN5FjR9CGSpz1uHpeV9RzkDOMh9UwSjJ1oO1xhjVt9igxJ3MXD+79DxhtlQ
+         2vzBv/vJShsBUUZj2DMsyponsC3BqVorthFOAAWrygW4Fw7c+Bz+z8Ta5ac985Q48m+q
+         JmYd+9x9gZFOGheplD50bwwSEU705mYRA6Rhe9w8VczM4PQ046Fw4crCTbpSWq6mhp5b
+         nMi7thfvJoNlQiyYDpo4suFQ2gQCeXp8bS+d2joIZbuCwccCdPmSLHhwetNYa2NWy9dU
+         Popg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=oQsFY6Nv3WQS4xdanjlBkGEuwQrOOLyn5uX6TKYwvU0=;
+        b=C0fOKleFgrbAdH5LuneJlrHsI+VylzYrsLx1qJPTxe6tKIeDRbdhBxtbG6TxcYV5Xd
+         zS+0sJyfnrFx4GrK3mjx1SpcI8BrybL8XAxggbOnwx350vJw45F/uRbuZ9rM9go2gpji
+         /E2pYyoV/QsU/1HRejUy0nqLj99keETLgG15qLW9CZ1qQZV8ExuZ/RzGVjswz+SybnrC
+         V2p8v6qi44iTTt83JsMuZNDLWLDmjQ2RtadPxFNNRhFYp6E3c4NrXTCsfoU98KKmXZPj
+         2rISfM03kCG7JK0t7p1f3h24Cu9jrySHBBB4OzrZogulrqIObXU3Q2a3qw/FuTGDE3Cb
+         0Lbw==
+X-Gm-Message-State: AOAM531XYcLl4/uMh2zhF7qJrF1INuhn0N0REt9nIvPHzBC7Y13xOV1E
+        ax0bkPbnoxkTPQxE//o9BqHbVPPS+NY=
+X-Google-Smtp-Source: ABdhPJzgCgzeJj4M5xpeT08Hd0F8tN6RzQezQK3Hr36Fe7mfonIW7aYiE7uBW/t6AbuhsnGMWOIDiA==
+X-Received: by 2002:a62:e804:0:b029:1dd:cf18:bdee with SMTP id c4-20020a62e8040000b02901ddcf18bdeemr5888155pfi.63.1613184840302;
+        Fri, 12 Feb 2021 18:54:00 -0800 (PST)
+Received: from [10.230.29.30] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id e185sm10694287pfe.117.2021.02.12.18.53.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 12 Feb 2021 18:53:59 -0800 (PST)
+Subject: Re: [PATCH net-next v2 1/2] net: phy: broadcom: Set proper
+ 1000BaseX/SGMII interface mode for BCM54616S
+To:     Robert Hancock <robert.hancock@calian.com>, andrew@lunn.ch,
+        hkallweit1@gmail.com, davem@davemloft.net, kuba@kernel.org
+Cc:     linux@armlinux.org.uk, bcm-kernel-feedback-list@broadcom.com,
+        netdev@vger.kernel.org
+References: <20210213021840.2646187-1-robert.hancock@calian.com>
+ <20210213021840.2646187-2-robert.hancock@calian.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <cd4ef949-72e3-74fe-adf2-122ca60498ce@gmail.com>
+Date:   Fri, 12 Feb 2021 18:53:56 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
- definitions=2021-02-12_10:2021-02-12,2021-02-12 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- clxscore=1015 impostorscore=0 bulkscore=0 suspectscore=0 mlxscore=0
- adultscore=0 spamscore=0 malwarescore=0 phishscore=0 mlxlogscore=999
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102130022
+In-Reply-To: <20210213021840.2646187-2-robert.hancock@calian.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Timeout reset will trigger the VIOS to unmap it automatically,
-similarly as FAILVOER and MOBILITY events. If we unmap it
-in the linux side, we will see errors like
-"30000003: Error 4 in REQUEST_UNMAP_RSP".
-So, don't call send_request_unmap for timeout reset.
 
-Fixes: ed651a10875f ("ibmvnic: Updated reset handling")
-Signed-off-by: Lijun Pan <ljp@linux.ibm.com>
----
- drivers/net/ethernet/ibm/ibmvnic.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 621be6d2da97..c8b0d99608d5 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -247,8 +247,13 @@ static void free_long_term_buff(struct ibmvnic_adapter *adapter,
- 	if (!ltb->buff)
- 		return;
- 
-+	/* VIOS automatically unmaps the long term buffer at remote
-+	 * end for the following resets:
-+	 * FAILOVER, MOBILITY, TIMEOUT.
-+	 */
- 	if (adapter->reset_reason != VNIC_RESET_FAILOVER &&
--	    adapter->reset_reason != VNIC_RESET_MOBILITY)
-+	    adapter->reset_reason != VNIC_RESET_MOBILITY &&
-+	    adapter->reset_reason != VNIC_RESET_TIMEOUT)
- 		send_request_unmap(adapter, ltb->map_id);
- 	dma_free_coherent(dev, ltb->size, ltb->buff, ltb->addr);
- }
+On 2/12/2021 6:18 PM, Robert Hancock wrote:
+> The default configuration for the BCM54616S PHY may not match the desired
+> mode when using 1000BaseX or SGMII interface modes, such as when it is on
+> an SFP module. Add code to explicitly set the correct mode using
+> programming sequences provided by Bel-Fuse:
+> 
+> https://www.belfuse.com/resources/datasheets/powersolutions/ds-bps-sfp-1gbt-05-series.pdf
+> https://www.belfuse.com/resources/datasheets/powersolutions/ds-bps-sfp-1gbt-06-series.pdf
+> 
+> Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.23.0
-
+Florian
