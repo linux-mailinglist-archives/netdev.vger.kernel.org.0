@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D6CFE31AE59
+	by mail.lfdr.de (Postfix) with ESMTP id 65BBF31AE58
 	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 23:41:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229861AbhBMWlD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Feb 2021 17:41:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53954 "EHLO
+        id S229674AbhBMWkr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Feb 2021 17:40:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229806AbhBMWjq (ORCPT
+        with ESMTP id S229809AbhBMWjq (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 17:39:46 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE37DC0617A7
-        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 14:38:31 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id i8so5398739ejc.7
-        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 14:38:31 -0800 (PST)
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EFC1C0617A9
+        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 14:38:33 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id s5so4013218edw.8
+        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 14:38:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=5f/fblgwKtn7Aw/atHU4xTeKd8DVFuAnjpQTe2OdGqQ=;
-        b=ZC7oiVUiDdhZQNTimL/owVyWY4NkxnOdVUbk6zoX5CM1LV6EGhohq70T4wD+EmXFrG
-         BssvEQnOT99egAhs4zxcC8V2R0kh+F2pi4uftaCZghAudmmE7h3xX61cYCDUpaghUbA/
-         k9pV5FLzVxzq/goIlO/rMauhLe94FFOALQ1TUmfrPp3SMmHGJFiWIbQ2rp5QKIJZjwWV
-         DT3KG7L6O8DhnXFkMRxj2fOJpadujoGeXa01uW//Ewv5jj9ktKHewLwc6YJ9atgCff+G
-         pzvwbPbXAaPiDOTcasTtCegwAfWs7s6pKyPRTGBiijGk74MbGVaRdEcOvb8g7z7ex6S3
-         9pvA==
+        bh=2vcrseT027GnMbA2153IbOqMUdppkVaDedXJbkpUBmI=;
+        b=EZd8O0DtSgKP6YKCXRQLGDX4agrsgORIPH5OGbqsM5dmL56MqFOAErio6f4eXgmBXx
+         3fhD1NrDJDubQ3yML8H84dV79dekR/gcXkWiMLC5cb1ECDz4BFD4dZzn8j1J0f+b92Bg
+         jXYw6OThUCZxrCeYW1ttPWGdh0gC635wdzYgQ+kuewhTQu4cO+H6cufJGO12MnXLgA8x
+         Fi/QazytWYFbvukt4bWogl2GGBwXj7h3h510Ja7Fylu8bBY4pGJ+/YDo26OY/OsGVVaZ
+         lkO6EjFjfeCD7Uuejqpbk7aUxYyMArUJYfIe1mUZi0RB0DYjQxB2Ct7f+/GHAxDjTbnv
+         iDAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=5f/fblgwKtn7Aw/atHU4xTeKd8DVFuAnjpQTe2OdGqQ=;
-        b=UIPwM3CNIVfORHJ0kzdZ44JtIZ7USfXRjPg+j1x5kLBI9u5ohINnLljMTNeipAcaNd
-         yAOgRdRx1Tm07L18oG8acMEKmZtuviAEbKwNJbF+/tImAjYUA7cjSkSOGYxNE0Fy2RfB
-         S7HXojaIohf2yw+xC/gtmqwOfrQOyH25SVfClOrsZVlOI5nrbt5RWGNLa9ECkj9vtEY+
-         2DmtafB+jY6qYrnCOiLthsBk1V7We096blWqR6VAYCVXl1RJhiCwtH3KGeyfnKyOWW0g
-         n1y0sZPfJrPLO8iISIT398jwAI6Cag7UXlCUxawt4WupqS3AyDm9cadEHt9P4x9lD6ux
-         xauA==
-X-Gm-Message-State: AOAM5327OiQJ9IWLQkq3+3DjpRibBxx00A3wTZKkZ9XCbgMufgFPr6L4
-        k1w7m9vPhcOK/6CE92EXb60=
-X-Google-Smtp-Source: ABdhPJzw1RipLZCr589T/umVCFepDwjxe9+WDImhHThsgAOuHxhOyjgMd2fGWEtV5wOVoJGnHWq1Eg==
-X-Received: by 2002:a17:906:af6b:: with SMTP id os11mr9113739ejb.472.1613255910537;
-        Sat, 13 Feb 2021 14:38:30 -0800 (PST)
+        bh=2vcrseT027GnMbA2153IbOqMUdppkVaDedXJbkpUBmI=;
+        b=MHNk+Xd9l/zS7c1C3qQRaUhecOjbGJbM7/vjtAEo+ufPwW5qjDFwVykf6pA5m9n9ZQ
+         uoIjBlclZzWB6DmbiJ2urgYZRkKTe5V1r5kOYLtp2z9nuVSE2YdH6UuHtNzoRzbcFFGr
+         6uCNbv9qeaW0UFMhgXwU3kRQi8jcritgYgtftKt+wrZnhGEQS+HBjyq3HnWJb3I4t+YT
+         RkUfC55uyjm9mXYPt8YQV+svEQYrqsGM9tA56QbDOG0rxWx2HsP4DGhm5oP2Qhbp8HRP
+         aPHU40gKcYxONeRkntVhzGT4D+zIF65luEKCCBHNwDqein5vDv8ONlmtYm9r8pQqWcZG
+         Noww==
+X-Gm-Message-State: AOAM5306Zq4Gw0+APaOO+zGexU8uTcURtlSZSXaMXBOnRuaXIkHzogx0
+        QbkV3obKtDevXDjHiH31RHg=
+X-Google-Smtp-Source: ABdhPJybL8TMiqOiM0uBrYzpLKx52Y42H8fNbELibpRHhsuWVzv7Ywpullpx+kSwy/myt4So10mHXA==
+X-Received: by 2002:a05:6402:b0f:: with SMTP id bm15mr9187010edb.133.1613255911645;
+        Sat, 13 Feb 2021 14:38:31 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id h3sm7662582edw.18.2021.02.13.14.38.29
+        by smtp.gmail.com with ESMTPSA id h3sm7662582edw.18.2021.02.13.14.38.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 13 Feb 2021 14:38:30 -0800 (PST)
+        Sat, 13 Feb 2021 14:38:31 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -59,9 +59,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
         Maxim Kochetkov <fido_max@inbox.ru>,
         UNGLinuxDriver@microchip.com
-Subject: [PATCH v2 net-next 11/12] net: dsa: felix: setup MMIO filtering rules for PTP when using tag_8021q
-Date:   Sun, 14 Feb 2021 00:38:00 +0200
-Message-Id: <20210213223801.1334216-12-olteanv@gmail.com>
+Subject: [PATCH v2 net-next 12/12] net: dsa: tag_ocelot_8021q: add support for PTP timestamping
+Date:   Sun, 14 Feb 2021 00:38:01 +0200
+Message-Id: <20210213223801.1334216-13-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210213223801.1334216-1-olteanv@gmail.com>
 References: <20210213223801.1334216-1-olteanv@gmail.com>
@@ -73,272 +73,291 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Since the tag_8021q tagger is software-defined, it has no means by
-itself for retrieving hardware timestamps of PTP event messages.
+For TX timestamping, we use the felix_txtstamp method which is common
+with the regular (non-8021q) ocelot tagger. This method says that skb
+deferral is needed, prepares a timestamp request ID, and puts a clone of
+the skb in a queue waiting for the timestamp IRQ.
 
-Because we do want to support PTP on ocelot even with tag_8021q, we need
-to use the CPU port module for that. The RX timestamp is present in the
-Extraction Frame Header. And because we can't use NPI mode which redirects
-the CPU queues to an "external CPU" (meaning the ARM CPU running Linux),
-then we need to poll the CPU port module through the MMIO registers to
-retrieve TX and RX timestamps.
+felix_txtstamp is called by dsa_skb_tx_timestamp() just before the
+tagger's xmit method. In the tagger xmit, we divert the packets
+classified by dsa_skb_tx_timestamp() as PTP towards the MMIO-based
+injection registers, and we declare them as dead towards dsa_slave_xmit.
+If not PTP, we proceed with normal tag_8021q stuff.
 
-Sadly, on NXP LS1028A, the Felix switch was integrated into the SoC
-without wiring the extraction IRQ line to the ARM GIC. So, if we want to
-be notified of any PTP packets received on the CPU port module, we have
-a problem.
+Then the timestamp IRQ fires, the clone queued up from felix_txtstamp is
+matched to the TX timestamp retrieved from the switch's FIFO based on
+the timestamp request ID, and the clone is delivered to the stack.
 
-There is a possible workaround, which is to use the Ethernet CPU port as
-a notification channel that packets are available on the CPU port module
-as well. When a PTP packet is received by the DSA tagger (without timestamp,
-of course), we go to the CPU extraction queues, poll for it there, then
-we drop the original Ethernet packet and masquerade the packet retrieved
-over MMIO (plus the timestamp) as the original when we inject it up the
-stack.
+On RX, thanks to the VCAP IS2 rule that redirects the frames with an
+EtherType for 1588 towards two destinations:
+- the CPU port module (for MMIO based extraction) and
+- if the "no XTR IRQ" workaround is in place, the dsa_8021q CPU port
+the relevant data path processing starts in the ptp_classify_raw BPF
+classifier installed by DSA in the RX data path (post tagger, which is
+completely unaware that it saw a PTP packet).
 
-Create a quirk in struct felix is selected by the Felix driver (but not
-by Seville, since that doesn't support PTP at all). We want to do this
-such that the workaround is minimally invasive for future switches that
-don't require this workaround.
+This time we can't reuse the same implementation of .port_rxtstamp that
+also works with the default ocelot tagger. That is because felix_rxtstamp
+is given an skb with a freshly stripped DSA header, and it says "I don't
+need deferral for its RX timestamp, it's right in it, let me show you";
+and it just points to the header right behind skb->data, from where it
+unpacks the timestamp and annotates the skb with it.
 
-The only traffic for which we need timestamps is PTP traffic, so add a
-redirection rule to the CPU port module for this. Currently we only have
-the need for PTP over L2, so redirection rules for UDP ports 319 and 320
-are TBD for now.
+The same thing cannot happen with tag_ocelot_8021q, because for one
+thing, the skb did not have an extraction frame header in the first
+place, but a VLAN tag with no timestamp information. So the code paths
+in felix_rxtstamp for the regular and 8021q tagger are completely
+independent. With tag_8021q, the timestamp must come from the packet's
+duplicate delivered to the CPU port module, but there is potentially
+complex logic to be handled [ and prone to reordering ] if we were to
+just start reading packets from the CPU port module, and try to match
+them to the one we received over Ethernet and which needs an RX
+timestamp. So we do something simple: we tell DSA "give me some time to
+think" (we request skb deferral by returning false from .port_rxtstamp)
+and we just drop the frame we got over Ethernet with no attempt to match
+it to anything - we just treat it as a notification that there's data to
+be processed from the CPU port module's queues. Then we proceed to read
+the packets from those, one by one, which we deliver up the stack,
+timestamped, using netif_rx - the same function that any driver would
+use anyway if it needed RX timestamp deferral. So the assumption is that
+we'll come across the PTP packet that triggered the CPU extraction
+notification eventually, but we don't know when exactly. Thanks to the
+VCAP IS2 trap/redirect rule and the exclusion of the CPU port module
+from the flooding replicators, only PTP frames should be present in the
+CPU port module's RX queues anyway.
 
-Note that for the workaround of matching of PTP-over-Ethernet-port with
-PTP-over-MMIO queues to work properly, both channels need to be
-absolutely lossless. There are two parts to achieving that:
-- We keep flow control enabled on the tag_8021q CPU port
-- We put the DSA master interface in promiscuous mode, so it will never
-  drop a PTP frame (for the profiles we are interested in, these are
-  sent to the multicast MAC addresses of 01-80-c2-00-00-0e and
-  01-1b-19-00-00-00).
+There is just one conflict between the VCAP IS2 trapping rule and the
+semantics of the BPF classifier. Namely, ptp_classify_raw() deems
+general messages as non-timestampable, but still, those are trapped to
+the CPU port module since they have an EtherType of ETH_P_1588. So, if
+the "no XTR IRQ" workaround is in place, we need to run another BPF
+classifier on the frames extracted over MMIO, to avoid duplicates being
+sent to the stack (once over Ethernet, once over MMIO). It doesn't look
+like it's possible to install VCAP IS2 rules based on keys extracted
+from the 1588 frame headers.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 Changes in v2:
-None.
+- added the "ocelot_can_inject" check
+- expanded a bit more on the patch implementation aspects
 
- drivers/net/dsa/ocelot/felix.c         | 131 ++++++++++++++++++++++++-
- drivers/net/dsa/ocelot/felix.h         |  13 +++
- drivers/net/dsa/ocelot/felix_vsc9959.c |   1 +
- net/dsa/tag_ocelot_8021q.c             |   1 +
- 4 files changed, 143 insertions(+), 3 deletions(-)
+ drivers/net/dsa/ocelot/felix.c             | 69 ++++++++++++++++++++++
+ drivers/net/ethernet/mscc/ocelot.c         |  7 +++
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c |  3 +-
+ include/soc/mscc/ocelot.h                  |  5 ++
+ net/dsa/tag_ocelot_8021q.c                 | 33 +++++++++++
+ 5 files changed, 115 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index f294f5f62505..d3b18aa6a582 100644
+index d3b18aa6a582..b2e6a5b14f02 100644
 --- a/drivers/net/dsa/ocelot/felix.c
 +++ b/drivers/net/dsa/ocelot/felix.c
-@@ -264,6 +264,120 @@ static void felix_8021q_cpu_port_deinit(struct ocelot *ocelot, int port)
- 	ocelot_apply_bridge_fwd_mask(ocelot);
- }
- 
-+/* Set up a VCAP IS2 rule for delivering PTP frames to the CPU port module.
-+ * If the quirk_no_xtr_irq is in place, then also copy those PTP frames to the
-+ * tag_8021q CPU port.
-+ */
-+static int felix_setup_mmio_filtering(struct felix *felix)
-+{
-+	unsigned long user_ports = 0, cpu_ports = 0;
-+	struct ocelot_vcap_filter *redirect_rule;
-+	struct ocelot_vcap_filter *tagging_rule;
-+	struct ocelot *ocelot = &felix->ocelot;
-+	struct dsa_switch *ds = felix->ds;
-+	int port, ret;
-+
-+	tagging_rule = kzalloc(sizeof(struct ocelot_vcap_filter), GFP_KERNEL);
-+	if (!tagging_rule)
-+		return -ENOMEM;
-+
-+	redirect_rule = kzalloc(sizeof(struct ocelot_vcap_filter), GFP_KERNEL);
-+	if (!redirect_rule) {
-+		kfree(tagging_rule);
-+		return -ENOMEM;
-+	}
-+
-+	for (port = 0; port < ocelot->num_phys_ports; port++) {
-+		if (dsa_is_user_port(ds, port))
-+			user_ports |= BIT(port);
-+		if (dsa_is_cpu_port(ds, port))
-+			cpu_ports |= BIT(port);
-+	}
-+
-+	tagging_rule->key_type = OCELOT_VCAP_KEY_ETYPE;
-+	*(__be16 *)tagging_rule->key.etype.etype.value = htons(ETH_P_1588);
-+	*(__be16 *)tagging_rule->key.etype.etype.mask = htons(0xffff);
-+	tagging_rule->ingress_port_mask = user_ports;
-+	tagging_rule->prio = 1;
-+	tagging_rule->id.cookie = ocelot->num_phys_ports;
-+	tagging_rule->id.tc_offload = false;
-+	tagging_rule->block_id = VCAP_IS1;
-+	tagging_rule->type = OCELOT_VCAP_FILTER_OFFLOAD;
-+	tagging_rule->lookup = 0;
-+	tagging_rule->action.pag_override_mask = 0xff;
-+	tagging_rule->action.pag_val = ocelot->num_phys_ports;
-+
-+	ret = ocelot_vcap_filter_add(ocelot, tagging_rule, NULL);
-+	if (ret) {
-+		kfree(tagging_rule);
-+		kfree(redirect_rule);
-+		return ret;
-+	}
-+
-+	redirect_rule->key_type = OCELOT_VCAP_KEY_ANY;
-+	redirect_rule->ingress_port_mask = user_ports;
-+	redirect_rule->pag = ocelot->num_phys_ports;
-+	redirect_rule->prio = 1;
-+	redirect_rule->id.cookie = ocelot->num_phys_ports;
-+	redirect_rule->id.tc_offload = false;
-+	redirect_rule->block_id = VCAP_IS2;
-+	redirect_rule->type = OCELOT_VCAP_FILTER_OFFLOAD;
-+	redirect_rule->lookup = 0;
-+	redirect_rule->action.cpu_copy_ena = true;
-+	if (felix->info->quirk_no_xtr_irq) {
-+		/* Redirect to the tag_8021q CPU but also copy PTP packets to
-+		 * the CPU port module
-+		 */
-+		redirect_rule->action.mask_mode = OCELOT_MASK_MODE_REDIRECT;
-+		redirect_rule->action.port_mask = cpu_ports;
-+	} else {
-+		/* Trap PTP packets only to the CPU port module (which is
-+		 * redirected to the NPI port)
-+		 */
-+		redirect_rule->action.mask_mode = OCELOT_MASK_MODE_PERMIT_DENY;
-+		redirect_rule->action.port_mask = 0;
-+	}
-+
-+	ret = ocelot_vcap_filter_add(ocelot, redirect_rule, NULL);
-+	if (ret) {
-+		ocelot_vcap_filter_del(ocelot, tagging_rule);
-+		kfree(redirect_rule);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int felix_teardown_mmio_filtering(struct felix *felix)
-+{
-+	struct ocelot_vcap_filter *tagging_rule, *redirect_rule;
-+	struct ocelot_vcap_block *block_vcap_is1;
-+	struct ocelot_vcap_block *block_vcap_is2;
-+	struct ocelot *ocelot = &felix->ocelot;
-+	int err;
-+
-+	block_vcap_is1 = &ocelot->block[VCAP_IS1];
-+	block_vcap_is2 = &ocelot->block[VCAP_IS2];
-+
-+	tagging_rule = ocelot_vcap_block_find_filter_by_id(block_vcap_is1,
-+							   ocelot->num_phys_ports,
-+							   false);
-+	if (!tagging_rule)
-+		return -ENOENT;
-+
-+	err = ocelot_vcap_filter_del(ocelot, tagging_rule);
-+	if (err)
-+		return err;
-+
-+	redirect_rule = ocelot_vcap_block_find_filter_by_id(block_vcap_is2,
-+							    ocelot->num_phys_ports,
-+							    false);
-+	if (!redirect_rule)
-+		return -ENOENT;
-+
-+	return ocelot_vcap_filter_del(ocelot, redirect_rule);
-+}
-+
- static int felix_setup_tag_8021q(struct dsa_switch *ds, int cpu)
- {
- 	struct ocelot *ocelot = ds->priv;
-@@ -292,9 +406,9 @@ static int felix_setup_tag_8021q(struct dsa_switch *ds, int cpu)
- 				 ANA_PORT_CPU_FWD_BPDU_CFG, port);
+@@ -16,6 +16,7 @@
+ #include <linux/dsa/8021q.h>
+ #include <linux/dsa/ocelot.h>
+ #include <linux/platform_device.h>
++#include <linux/ptp_classify.h>
+ #include <linux/module.h>
+ #include <linux/of_net.h>
+ #include <linux/pci.h>
+@@ -345,6 +346,15 @@ static int felix_setup_mmio_filtering(struct felix *felix)
+ 		return ret;
  	}
  
--	/* In tag_8021q mode, the CPU port module is unused. So we
--	 * want to disable flooding of any kind to the CPU port module,
--	 * since packets going there will end in a black hole.
-+	/* In tag_8021q mode, the CPU port module is unused, except for PTP
-+	 * frames. So we want to disable flooding of any kind to the CPU port
-+	 * module, since packets going there will end in a black hole.
- 	 */
- 	cpu_flood = ANA_PGID_PGID_PGID(BIT(ocelot->num_phys_ports));
- 	ocelot_rmw_rix(ocelot, 0, cpu_flood, ANA_PGID_PGID, PGID_UC);
-@@ -314,8 +428,14 @@ static int felix_setup_tag_8021q(struct dsa_switch *ds, int cpu)
- 	if (err)
- 		goto out_free_dsa_8021_ctx;
- 
-+	err = felix_setup_mmio_filtering(felix);
-+	if (err)
-+		goto out_teardown_dsa_8021q;
++	/* The ownership of the CPU port module's queues might have just been
++	 * transferred to the tag_8021q tagger from the NPI-based tagger.
++	 * So there might still be all sorts of crap in the queues. On the
++	 * other hand, the MMIO-based matching of PTP frames is very brittle,
++	 * so we need to be careful that there are no extra frames to be
++	 * dequeued over MMIO, since we would never know to discard them.
++	 */
++	ocelot_drain_cpu_queue(ocelot, 0);
 +
  	return 0;
+ }
  
-+out_teardown_dsa_8021q:
-+	dsa_8021q_setup(felix->dsa_8021q_ctx, false);
- out_free_dsa_8021_ctx:
- 	kfree(felix->dsa_8021q_ctx);
- 	return err;
-@@ -327,6 +447,11 @@ static void felix_teardown_tag_8021q(struct dsa_switch *ds, int cpu)
- 	struct felix *felix = ocelot_to_felix(ocelot);
- 	int err, port;
+@@ -1283,6 +1293,55 @@ static int felix_hwtstamp_set(struct dsa_switch *ds, int port,
+ 	return ocelot_hwstamp_set(ocelot, port, ifr);
+ }
  
-+	err = felix_teardown_mmio_filtering(felix);
-+	if (err)
-+		dev_err(ds->dev, "felix_teardown_mmio_filtering returned %d",
-+			err);
++static bool felix_check_xtr_pkt(struct ocelot *ocelot, unsigned int ptp_type)
++{
++	struct felix *felix = ocelot_to_felix(ocelot);
++	int err, grp = 0;
 +
- 	err = dsa_8021q_setup(felix->dsa_8021q_ctx, false);
- 	if (err)
- 		dev_err(ds->dev, "dsa_8021q_setup returned %d", err);
-diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
-index b2ea425c5803..4d96cad815d5 100644
---- a/drivers/net/dsa/ocelot/felix.h
-+++ b/drivers/net/dsa/ocelot/felix.h
-@@ -23,6 +23,19 @@ struct felix_info {
- 	int				switch_pci_bar;
- 	int				imdio_pci_bar;
- 	const struct ptp_clock_info	*ptp_caps;
++	if (felix->tag_proto != DSA_TAG_PROTO_OCELOT_8021Q)
++		return false;
 +
-+	/* Some Ocelot switches are integrated into the SoC without the
-+	 * extraction IRQ line connected to the ARM GIC. By enabling this
-+	 * workaround, the few packets that are delivered to the CPU port
-+	 * module (currently only PTP) are copied not only to the hardware CPU
-+	 * port module, but also to the 802.1Q Ethernet CPU port, and polling
-+	 * the extraction registers is triggered once the DSA tagger sees a PTP
-+	 * frame. The Ethernet frame is only used as a notification: it is
-+	 * dropped, and the original frame is extracted over MMIO and annotated
-+	 * with the RX timestamp.
++	if (!felix->info->quirk_no_xtr_irq)
++		return false;
++
++	if (ptp_type == PTP_CLASS_NONE)
++		return false;
++
++	while (ocelot_read(ocelot, QS_XTR_DATA_PRESENT) & BIT(grp)) {
++		struct sk_buff *skb;
++		unsigned int type;
++
++		err = ocelot_xtr_poll_frame(ocelot, grp, &skb);
++		if (err)
++			goto out;
++
++		/* We trap to the CPU port module all PTP frames, but
++		 * felix_rxtstamp() only gets called for event frames.
++		 * So we need to avoid sending duplicate general
++		 * message frames by running a second BPF classifier
++		 * here and dropping those.
++		 */
++		__skb_push(skb, ETH_HLEN);
++
++		type = ptp_classify_raw(skb);
++
++		__skb_pull(skb, ETH_HLEN);
++
++		if (type == PTP_CLASS_NONE) {
++			kfree_skb(skb);
++			continue;
++		}
++
++		netif_rx(skb);
++	}
++
++out:
++	if (err < 0)
++		ocelot_drain_cpu_queue(ocelot, 0);
++
++	return true;
++}
++
+ static bool felix_rxtstamp(struct dsa_switch *ds, int port,
+ 			   struct sk_buff *skb, unsigned int type)
+ {
+@@ -1293,6 +1352,16 @@ static bool felix_rxtstamp(struct dsa_switch *ds, int port,
+ 	struct timespec64 ts;
+ 	u64 tstamp, val;
+ 
++	/* If the "no XTR IRQ" workaround is in use, tell DSA to defer this skb
++	 * for RX timestamping. Then free it, and poll for its copy through
++	 * MMIO in the CPU port module, and inject that into the stack from
++	 * ocelot_xtr_poll().
 +	 */
-+	bool				quirk_no_xtr_irq;
++	if (felix_check_xtr_pkt(ocelot, type)) {
++		kfree_skb(skb);
++		return true;
++	}
 +
- 	int	(*mdio_bus_alloc)(struct ocelot *ocelot);
- 	void	(*mdio_bus_free)(struct ocelot *ocelot);
- 	void	(*phylink_validate)(struct ocelot *ocelot, int port,
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 32b885fcaf90..5ff623ee76a6 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -1354,6 +1354,7 @@ static const struct felix_info felix_info_vsc9959 = {
- 	.num_tx_queues		= OCELOT_NUM_TC,
- 	.switch_pci_bar		= 4,
- 	.imdio_pci_bar		= 0,
-+	.quirk_no_xtr_irq	= true,
- 	.ptp_caps		= &vsc9959_ptp_caps,
- 	.mdio_bus_alloc		= vsc9959_mdio_bus_alloc,
- 	.mdio_bus_free		= vsc9959_mdio_bus_free,
+ 	ocelot_ptp_gettime64(&ocelot->ptp_info, &ts);
+ 	tstamp = ktime_set(ts.tv_sec, ts.tv_nsec);
+ 
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index 981811ffcdae..8d97c731e953 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -837,6 +837,13 @@ void ocelot_port_inject_frame(struct ocelot *ocelot, int port, int grp,
+ }
+ EXPORT_SYMBOL(ocelot_port_inject_frame);
+ 
++void ocelot_drain_cpu_queue(struct ocelot *ocelot, int grp)
++{
++	while (ocelot_read(ocelot, QS_XTR_DATA_PRESENT) & BIT(grp))
++		ocelot_read_rix(ocelot, QS_XTR_RD, grp);
++}
++EXPORT_SYMBOL(ocelot_drain_cpu_queue);
++
+ int ocelot_fdb_add(struct ocelot *ocelot, int port,
+ 		   const unsigned char *addr, u16 vid)
+ {
+diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
+index 47ee06832a51..4bd7e9d9ec61 100644
+--- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
++++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
+@@ -552,8 +552,7 @@ static irqreturn_t ocelot_xtr_irq_handler(int irq, void *arg)
+ 
+ out:
+ 	if (err < 0)
+-		while (ocelot_read(ocelot, QS_XTR_DATA_PRESENT) & BIT(grp))
+-			ocelot_read_rix(ocelot, QS_XTR_RD, grp);
++		ocelot_drain_cpu_queue(ocelot, 0);
+ 
+ 	return IRQ_HANDLED;
+ }
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index ded9ae1149bc..1f2d90976564 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -742,6 +742,7 @@ bool ocelot_can_inject(struct ocelot *ocelot, int grp);
+ void ocelot_port_inject_frame(struct ocelot *ocelot, int port, int grp,
+ 			      u32 rew_op, struct sk_buff *skb);
+ int ocelot_xtr_poll_frame(struct ocelot *ocelot, int grp, struct sk_buff **skb);
++void ocelot_drain_cpu_queue(struct ocelot *ocelot, int grp);
+ 
+ #else
+ 
+@@ -762,6 +763,10 @@ static inline int ocelot_xtr_poll_frame(struct ocelot *ocelot, int grp,
+ 	return -EIO;
+ }
+ 
++static inline void ocelot_drain_cpu_queue(struct ocelot *ocelot, int grp)
++{
++}
++
+ #endif
+ 
+ /* Hardware initialization */
 diff --git a/net/dsa/tag_ocelot_8021q.c b/net/dsa/tag_ocelot_8021q.c
-index 8991ebf098a3..190255d06bef 100644
+index 190255d06bef..5f3e8e124a82 100644
 --- a/net/dsa/tag_ocelot_8021q.c
 +++ b/net/dsa/tag_ocelot_8021q.c
-@@ -60,6 +60,7 @@ static const struct dsa_device_ops ocelot_8021q_netdev_ops = {
- 	.xmit			= ocelot_xmit,
- 	.rcv			= ocelot_rcv,
- 	.overhead		= VLAN_HLEN,
-+	.promisc_on_master	= true,
- };
+@@ -9,8 +9,36 @@
+  *   that on egress
+  */
+ #include <linux/dsa/8021q.h>
++#include <soc/mscc/ocelot.h>
++#include <soc/mscc/ocelot_ptp.h>
+ #include "dsa_priv.h"
  
- MODULE_LICENSE("GPL v2");
++static struct sk_buff *ocelot_xmit_ptp(struct dsa_port *dp,
++				       struct sk_buff *skb,
++				       struct sk_buff *clone)
++{
++	struct ocelot *ocelot = dp->ds->priv;
++	struct ocelot_port *ocelot_port;
++	int port = dp->index;
++	u32 rew_op;
++
++	if (!ocelot_can_inject(ocelot, 0))
++		return NULL;
++
++	ocelot_port = ocelot->ports[port];
++	rew_op = ocelot_port->ptp_cmd;
++
++	/* Retrieve timestamp ID populated inside skb->cb[0] of the
++	 * clone by ocelot_port_add_txtstamp_skb
++	 */
++	if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP)
++		rew_op |= clone->cb[0] << 3;
++
++	ocelot_port_inject_frame(ocelot, port, 0, rew_op, skb);
++
++	return NULL;
++}
++
+ static struct sk_buff *ocelot_xmit(struct sk_buff *skb,
+ 				   struct net_device *netdev)
+ {
+@@ -18,6 +46,11 @@ static struct sk_buff *ocelot_xmit(struct sk_buff *skb,
+ 	u16 tx_vid = dsa_8021q_tx_vid(dp->ds, dp->index);
+ 	u16 queue_mapping = skb_get_queue_mapping(skb);
+ 	u8 pcp = netdev_txq_to_tc(netdev, queue_mapping);
++	struct sk_buff *clone = DSA_SKB_CB(skb)->clone;
++
++	/* TX timestamping was requested, so inject through MMIO */
++	if (clone)
++		return ocelot_xmit_ptp(dp, skb, clone);
+ 
+ 	return dsa_8021q_xmit(skb, netdev, ETH_P_8021Q,
+ 			      ((pcp << VLAN_PRIO_SHIFT) | tx_vid));
 -- 
 2.25.1
 
