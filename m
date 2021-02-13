@@ -2,97 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2498E31ADBB
+	by mail.lfdr.de (Postfix) with ESMTP id 950F631ADBC
 	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 20:19:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229717AbhBMTSi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Feb 2021 14:18:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39490 "EHLO
+        id S229771AbhBMTS7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Feb 2021 14:18:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229703AbhBMTSh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 14:18:37 -0500
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84ED5C061574
-        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 11:17:56 -0800 (PST)
-Received: by mail-io1-xd32.google.com with SMTP id q7so2813091iob.0
-        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 11:17:56 -0800 (PST)
+        with ESMTP id S229703AbhBMTS4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 14:18:56 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51243C061756
+        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 11:18:16 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id k13so1678874pfh.13
+        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 11:18:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=vVS3j2R7w0FiBro8DhNcUkwXjyzu/PTd9Kwt7Ig/Yu0=;
-        b=YrtnhcmTmP3JOLfT6A9oE+71IhyfFPDpKdqnQlAGufEyepHbZgkHChttWj7OZP1MfT
-         UHoAVT9RBhf0ldvKYw891Vaz3+Ob/+r5BKvXIC92HaBfVCHL4y2hBFYaD5Ef44LLWBUX
-         I6M6PsrfmD5rzk6WH90Cj71m4gdUB+LpAMYv3sCgK2E5UXoIsvJ3ao39d8nZnNichzxt
-         Rdc1z6yPb+97G7vCkzQ27OwmpbnGqaokYoOuOD+rH2+QTX5c+mpOdaUdiiXEWE63nAdQ
-         N9vd7cnOhdXCLesoeXt38TD4P3PTSECASO3ctDww/h7Zwu9ivo6CMP6Gwg7VM8fT71b+
-         CK3Q==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=w6RMYkuOysANFNlLJX1VrkCH9JUKm/LqKK2l+HO84wg=;
+        b=Bxncp8JpZPYmhh83pX+bbLJFR1nFPG+7uoihldadkjn+BztSQkMMvvkmt4OVCWSinI
+         kXfOJqxTQqneahxLnwpvkps66gY9Z4v+Q+z5kXsx6OAO7C/YFO1t0W32itG8ET2zm7kQ
+         c0y5okkq8QfAexgjAf1kdAP6pjwQzKZT9DVquEg6HMHA51jpQF8DdF1uurFYZCfdDXL4
+         y2lxsMgR0RHS/1pHVBxeeo1WQTuQL+8AXCuqNJsOFcjKA6jC8phE+reCu/IsASrDCgJI
+         Zydq3oKGKpgkgyo2/AAx78UJ81cwMpwCDUy9E7mVjRP8NhdToAp2ZPnu39Nllu8OBPCc
+         JyFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=vVS3j2R7w0FiBro8DhNcUkwXjyzu/PTd9Kwt7Ig/Yu0=;
-        b=CFavhzr/VcHX0AXRE7WzScscYZXEx0AkuSW40oaiRV8879028mMDwyMfprF7ZWdMBT
-         541YGfqg2y9G88at8u8YLsqFAuDCqJOrKVROGmcPJku2fMWk81J3xqXfcndzfLWBRYll
-         znUFkEEa9RJUAZW/FdmwG9tQWb/hx1UUUjheQ8bvQM1nXy0p7uH2m7O9XB/T6k9e2z9w
-         0Guz9SiMuYZegqxmvYo2hIpzSf3DB77W5ttgoRObIICTI0YLxcCOLjXAuVAWoXZ7rq8W
-         GgUYpocYIhmRZz/9sNffQD2YnDcH6biTIr2qdp+a3Cjtu+VmOshtGKxNRYCsPpNXWCWG
-         iiFQ==
-X-Gm-Message-State: AOAM533OY7CmiyyiHEw+fK/jy3Zdpv0R4EwX/1s4jAvOCrejSZuASi0q
-        b33CEku73LJH9rNVq+NUtEc=
-X-Google-Smtp-Source: ABdhPJzeI2u9+WlcH678zC5dDOu0NXdyStIttI3DBiEhP/SQzSB/+NYWnpcD0SwjUKk3iGC1c/D8bA==
-X-Received: by 2002:a5e:a813:: with SMTP id c19mr902675ioa.32.1613243876114;
-        Sat, 13 Feb 2021 11:17:56 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.33])
-        by smtp.googlemail.com with ESMTPSA id e1sm6110289iod.17.2021.02.13.11.17.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 13 Feb 2021 11:17:55 -0800 (PST)
-Subject: Re: [RFC PATCH 00/13] nexthop: Resilient next-hop groups
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Petr Machata <petrm@nvidia.com>, netdev@vger.kernel.org,
-        David Ahern <dsahern@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>
-References: <cover.1612815057.git.petrm@nvidia.com>
- <e15bfcec-7d1f-baea-6a9d-7bcc77104d8e@gmail.com>
- <20210213191619.GA399200@shredder.lan>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <3ece022f-ec32-ab38-d2cf-a699c17bbcc7@gmail.com>
-Date:   Sat, 13 Feb 2021 12:17:54 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.7.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=w6RMYkuOysANFNlLJX1VrkCH9JUKm/LqKK2l+HO84wg=;
+        b=JBdmP7AA5weHTJ37fvoXOUAPahCac67OWAvInxepLM+ZLb4MmeeiV/8mpQ4lQvHeVV
+         X6o7k95giVykeIGmm0/iZnJEMyq12r2VCbuDk7A5OKzK+h1CE/hcS0m8ig91W6OQUQac
+         qf/TVTJp3H9ivTDsXVU/M1Hb4gtDXlTBszC5UFDzIBEoNetx8x4cvOqETYxXHa+oeJB4
+         VPvpiDh52b1BJOtVvyRT544kXwxCezTqDAsfRo9oA42dUaUhjZAHx1InvfrvQnPt5jej
+         h9HBmy8DqeRPCcyjd+78e0j/I5cL/EBelVaXdJxwbFSwPTi64AICf7f6Hy8iWpF5j9c6
+         YgGw==
+X-Gm-Message-State: AOAM5323/raduYh9T2Drffk+4cCb5BZvEbCXQr/nmVQbs3farRXctA8v
+        pHapr64Bc0mmob2DKctkmZTw8g+vrCTojqRaUww=
+X-Google-Smtp-Source: ABdhPJyLXLs8X4p1hddyU+gSP1CsjUKPcdpCrl0M/fRWd9R4t2qPZDTCrZO0uziyFrei775vonSvYoNnaBgA+2XbbBk=
+X-Received: by 2002:a63:3c4e:: with SMTP id i14mr8343024pgn.266.1613243895883;
+ Sat, 13 Feb 2021 11:18:15 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210213191619.GA399200@shredder.lan>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210213175148.28375-1-ap420073@gmail.com>
+In-Reply-To: <20210213175148.28375-1-ap420073@gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Sat, 13 Feb 2021 11:18:04 -0800
+Message-ID: <CAM_iQpVrD5623egpEy2BhR66smuEaTLRHgsu9YA_vrMGjacPkg@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 3/7] mld: add a new delayed_work, mc_delrec_work
+To:     Taehee Yoo <ap420073@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        jwi@linux.ibm.com, kgraul@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, borntraeger@de.ibm.com,
+        Marek Lindner <mareklindner@neomailbox.ch>,
+        sw@simonwunderlich.de, a@unstable.cc, sven@narfation.org,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>, dsahern@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/13/21 12:16 PM, Ido Schimmel wrote:
-> On Sat, Feb 13, 2021 at 11:57:03AM -0700, David Ahern wrote:
->> On 2/8/21 1:42 PM, Petr Machata wrote:
->>> To illustrate the usage, consider the following commands:
->>>
->>>  # ip nexthop add id 1 via 192.0.2.2 dev dummy1
->>>  # ip nexthop add id 2 via 192.0.2.3 dev dummy1
->>>  # ip nexthop add id 10 group 1/2 type resilient \
->>> 	buckets 8 idle_timer 60 unbalanced_timer 300
->>>
->>> The last command creates a resilient next hop group. It will have 8
->>> buckets, each bucket will be considered idle when no traffic hits it for at
->>> least 60 seconds, and if the table remains out of balance for 300 seconds,
->>> it will be forcefully brought into balance. (If not present in netlink
->>> message, the idle timer defaults to 120 seconds, and there is no unbalanced
->>> timer, meaning the group may remain unbalanced indefinitely.)
->>
->> How did you come up with the default timer of 120 seconds?
-> 
-> It is the default in the Cumulus Linux implementation (deployed for
-> several years already), so we figured it should be OK.
-> 
+On Sat, Feb 13, 2021 at 9:52 AM Taehee Yoo <ap420073@gmail.com> wrote:
+>
+> The goal of mc_delrec_work delayed work is to call mld_clear_delrec().
+> The mld_clear_delrec() is called under both data path and control path.
+> So, the context of mld_clear_delrec() can be atomic.
+> But this function accesses struct ifmcaddr6 and struct ip6_sf_list.
+> These structures are going to be protected by RTNL.
+> So, this function should be called in a sleepable context.
 
-Add that to the commit log.
+Hmm, but with this patch mld_clear_delrec() is called asynchronously
+without waiting, is this a problem? If not, please explain why in your
+changelog.
+
+By the way, if you do not use a delay, you can just use regular work.
+
+Thanks.
