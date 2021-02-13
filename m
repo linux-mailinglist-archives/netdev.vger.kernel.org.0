@@ -2,86 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECA5331ADB8
-	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 20:17:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A6B031ADB9
+	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 20:17:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229789AbhBMTRM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Feb 2021 14:17:12 -0500
-Received: from wout3-smtp.messagingengine.com ([64.147.123.19]:56621 "EHLO
-        wout3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229647AbhBMTRK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 14:17:10 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id 807187BD;
-        Sat, 13 Feb 2021 14:16:24 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Sat, 13 Feb 2021 14:16:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=DBm8Iv
-        v4nULE4ynyVzzQ0D6z9yJdd9iQfQxXrcBh3P0=; b=fCM9sZzb11nVpvVpJ+W15X
-        34C/b35OydsOkBGIJMOxgXnyWlJYx1wUAjq+XgOHTcny3BbFAaAGvEgfP+n/vOAr
-        3IWsKidCPgqtTAWYesWt2cZpBGuQ0nS69jev8jRr+/1vsAp01JULbtUwNE2s5I/E
-        As+W2FArslBqgAX50IOd80yweD2DX+sLEAmRysxLGbkIZTFHTTCTq1CazOmG7+ET
-        fNidELSEHf59m9xf3SoFkWCxj0P3+tYN+AaerM4Xc6ic1vW6+yag9nmajEItPCwh
-        U+pmL+9pZ9ZDqx6YXxnG8zLzXeNzRENp64is/q9I4J2wIPoaPaDGzgqJMpqmVpYg
-        ==
-X-ME-Sender: <xms:hyUoYCT31hAguYGeEVtffNA_ljf48PD26khnUg0O4EoZH-kfGwJktw>
-    <xme:hyUoYHyut6L2b2qJfx9cpbxaAbW86qQmCBIyyNyUvWidzbQre9EkxOSNEUS6g861R
-    gIN7wF39v_z2t4>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrieefgdduudelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucfkphepkeegrddvvdelrdduheefrdeggeenucevlhhushhtvghrufhiiigvpedtne
-    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:hyUoYP0Kqaj-e-ulxXkNi2OeMLb6nMy0nw5Bneq4-E9oUg0lGZbyrw>
-    <xmx:hyUoYOBn-HuGrv4YVg_u0z4ZRTutxrty7yrlf44v0yim_eG8lhTh1A>
-    <xmx:hyUoYLg-2zS-3BSeMJGZcylgPbY9BnV6qkl0aDk9oTEYJ62_NLfpOw>
-    <xmx:iCUoYIuxcaTGw7vwV2prUr7UtZX4pfbNeWtP_aBUj3qKAU3SZhfGXA>
-Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 52B1C1080057;
-        Sat, 13 Feb 2021 14:16:23 -0500 (EST)
-Date:   Sat, 13 Feb 2021 21:16:19 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Petr Machata <petrm@nvidia.com>, netdev@vger.kernel.org,
-        David Ahern <dsahern@kernel.org>,
+        id S229796AbhBMTRg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Feb 2021 14:17:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39250 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229647AbhBMTR2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 14:17:28 -0500
+Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E47D6C061756
+        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 11:16:47 -0800 (PST)
+Received: by mail-il1-x12e.google.com with SMTP id a16so2300254ilq.5
+        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 11:16:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=f9spF8VW2ptdvPCIqc/q8Ka4ev0vK3BIoz8aLJqywFk=;
+        b=PjZ2gLmidzzufv2S7Z1q8UwAevEW4ioEZ29vcwGD39hc7zVz/6IZzfKfOd40wkh/PX
+         4EeIYZOzKMoPBbLcXeWn/Jz+4Pvb5cSIZTCIht8wMhSSoWuFtypNDD1wPeKG+aAfZ/x/
+         CMNyoxol+lvxENU+2xV50q6PfgRyovuec2F+eaR/dBxtIpLiuga9cnqn5SC0AGec3U7A
+         KGtt+q+YADTk7KtfIsPv4RywFEwgjM3ozjQKsiq6eypNE3nG2JhIq1CtR+mKlDRWIdG5
+         /PMED4TDYalBsUkfXBy+p7PNG8QucupB5qQWtQUNvzTzd9sL3xYWyMi2DgVCAdz3feEZ
+         x9NA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=f9spF8VW2ptdvPCIqc/q8Ka4ev0vK3BIoz8aLJqywFk=;
+        b=i8U3ffqPB+FD16HTafYcqmcdBOn/kpFX1bWPhI1OjHh0rSnGSIDKyZXGPWUmu2TtV6
+         5++nlrPugdQndDrUOzSoQxVDPucGM9gwtS+06sQQ0Kl2Vxb71lPR2JgJUkUmfyeaP+gx
+         1mLMFJTr4fEhV0ieiSK+X2nylxCikQDvWr0fYmwozaKAg1YMRQOti5tYUyShsEEPbsIX
+         BWDmCOj0okDl+g6FeqGN9a+4frdak1ehczpu4Whkbq2nxH6Y8lTqF3JKmh/jcKKHzFXA
+         /uYefvNd4DPRZmejkWk3MCAH23Lf/Mv7a37ihHOcGdcEpcjVDWiTWcFB6AcrcdgrQu9V
+         20ow==
+X-Gm-Message-State: AOAM532/lQ2XOJT8r1E4brg+idu08TLG0g2u12mpdyyOvdsTOd/0pCUr
+        nNnnHICVcFLBP851dZMVDWk=
+X-Google-Smtp-Source: ABdhPJwJ0nS8BkgTMj10zCbzW1QT/gN34zHA0+k/juJ5gaVpB82rA5zN1+uqfE0chQyAjckdjQ75/g==
+X-Received: by 2002:a05:6e02:b25:: with SMTP id e5mr7157873ilu.37.1613243807414;
+        Sat, 13 Feb 2021 11:16:47 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.33])
+        by smtp.googlemail.com with ESMTPSA id y11sm6421835ilv.64.2021.02.13.11.16.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 13 Feb 2021 11:16:47 -0800 (PST)
+Subject: Re: [RFC PATCH 03/13] nexthop: Add netlink defines and enumerators
+ for resilient NH groups
+To:     Petr Machata <petrm@nvidia.com>, netdev@vger.kernel.org
+Cc:     David Ahern <dsahern@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [RFC PATCH 00/13] nexthop: Resilient next-hop groups
-Message-ID: <20210213191619.GA399200@shredder.lan>
 References: <cover.1612815057.git.petrm@nvidia.com>
- <e15bfcec-7d1f-baea-6a9d-7bcc77104d8e@gmail.com>
+ <893e22e2ad6413a98ca76134b332c8962fcd3b6a.1612815058.git.petrm@nvidia.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <d3a64aea-d544-cd58-475c-57e89ea49be5@gmail.com>
+Date:   Sat, 13 Feb 2021 12:16:45 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e15bfcec-7d1f-baea-6a9d-7bcc77104d8e@gmail.com>
+In-Reply-To: <893e22e2ad6413a98ca76134b332c8962fcd3b6a.1612815058.git.petrm@nvidia.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 13, 2021 at 11:57:03AM -0700, David Ahern wrote:
-> On 2/8/21 1:42 PM, Petr Machata wrote:
-> > To illustrate the usage, consider the following commands:
-> > 
-> >  # ip nexthop add id 1 via 192.0.2.2 dev dummy1
-> >  # ip nexthop add id 2 via 192.0.2.3 dev dummy1
-> >  # ip nexthop add id 10 group 1/2 type resilient \
-> > 	buckets 8 idle_timer 60 unbalanced_timer 300
-> > 
-> > The last command creates a resilient next hop group. It will have 8
-> > buckets, each bucket will be considered idle when no traffic hits it for at
-> > least 60 seconds, and if the table remains out of balance for 300 seconds,
-> > it will be forcefully brought into balance. (If not present in netlink
-> > message, the idle timer defaults to 120 seconds, and there is no unbalanced
-> > timer, meaning the group may remain unbalanced indefinitely.)
-> 
-> How did you come up with the default timer of 120 seconds?
+On 2/8/21 1:42 PM, Petr Machata wrote:
+> @@ -52,8 +53,50 @@ enum {
+>  	NHA_FDB,	/* flag; nexthop belongs to a bridge fdb */
+>  	/* if NHA_FDB is added, OIF, BLACKHOLE, ENCAP cannot be set */
+>  
+> +	/* nested; resilient nexthop group attributes */
+> +	NHA_RES_GROUP,
+> +	/* nested; nexthop bucket attributes */
+> +	NHA_RES_BUCKET,
+> +
+>  	__NHA_MAX,
+>  };
+>  
+>  #define NHA_MAX	(__NHA_MAX - 1)
+> +
+> +enum {
+> +	NHA_RES_GROUP_UNSPEC,
+> +	/* Pad attribute for 64-bit alignment. */
+> +	NHA_RES_GROUP_PAD = NHA_RES_GROUP_UNSPEC,
+> +
+> +	/* u32; number of nexthop buckets in a resilient nexthop group */
+> +	NHA_RES_GROUP_BUCKETS,
 
-It is the default in the Cumulus Linux implementation (deployed for
-several years already), so we figured it should be OK.
+u32 is overkill; arguably u16 (64k) should be more than enough buckets
+for any real use case.
