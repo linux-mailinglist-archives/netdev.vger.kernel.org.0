@@ -2,74 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D574F31A9AD
-	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 03:58:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A54BF31A9C6
+	for <lists+netdev@lfdr.de>; Sat, 13 Feb 2021 04:47:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232134AbhBMCz5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Feb 2021 21:55:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56554 "EHLO
+        id S229918AbhBMDoJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Feb 2021 22:44:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229650AbhBMCzw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 21:55:52 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28A0CC061574
-        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 18:55:12 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id c11so672143pfp.10
-        for <netdev@vger.kernel.org>; Fri, 12 Feb 2021 18:55:12 -0800 (PST)
+        with ESMTP id S229648AbhBMDoI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Feb 2021 22:44:08 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD726C061574;
+        Fri, 12 Feb 2021 19:43:27 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id my11so1055234pjb.1;
+        Fri, 12 Feb 2021 19:43:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=WVkKkIB2sI+QjOD2AVkIQdCbbfav/ju7dbiJ6su7Ez4=;
-        b=m7L2hLB1+iJKX3Qr7nx8DkhKkZZo1CQHHVjUwVwcMnNYzHpXqJeyhyHk58w+n+/JQy
-         Y3txrDgs+4qnOUlxQ3/RerjOuFmvCwL6o3RgELbHPeK6oGahfuHy/m1r8fziUYuZEQTJ
-         lVb4oMBZv6af4bji6VPHUgRSZq6St04qIz+rC0XiDSgMLneaRsbQzlTkpAE2NKptnChB
-         mT2zn1whm3JxuxwwwuUF4yf8hveE66AEq0V/V2QtMZZgw2K+zEyBd1lfGk4qqfwFJGnu
-         xCHujFmngImCCxC33U2acREoFZNCu5b2XPJx0HDWsVoHMvTn8DilYo3GY/NaIrB5edb4
-         Qi7A==
+        bh=fSZEyxImPeH+wflBfuB4czPSI1Ga57gwNa4vCFPWIKA=;
+        b=SubLwkdkZRhqzu5ffDZZLYUX76T9KsrxYD4cN97tabTrTmBoa9nIX3AzbzswnAfS1t
+         07zHKnZ/IAlN+1ILCYFsBJOTVSvBE8qZkiQGiZbnJ6ZVUUEi6q+RUUd3v+jx9HqLaaie
+         OEvajXyrf5dMXV88395/i2j0tjD4IErf8Dx5pQbd3UhZCNLNdp0cpdN1dyxjXAMZ9POb
+         qbEZn9A4k+9DsNorrEVhnLtCBb+kMg1VF5fejBVb1aPxEF2f+bl9PgEPK5ZijO/aKrFR
+         fvbhxnzlB8C8vM6fGjusfqNBD33rj9fjw+ZrLLfRgA61BXwdRz+ONRDhPdym49X92gdW
+         wnOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=WVkKkIB2sI+QjOD2AVkIQdCbbfav/ju7dbiJ6su7Ez4=;
-        b=PTceNHLNzTOn+PNy5MJF4MPxkzd5a5a95sHTatEKaMiOzlrU++FRO10nqBrH5nZJqC
-         qGttEeLkBQjx/dHkVQiuINPKFRlx6PKev2WHV1XdYcm8YZNeripVKYj7aZf5Bi6LbFQ0
-         RwjUyYwO8iaJtGhoUOSzaYueREOEBa7trkN7Xhu/VS7EzJHepTEcRzv8CtS/20WSitP6
-         uyGeJYOvnOxmN0yd7EsHR0BL5/N0nfSlSmpQMxmmB4Uf7l61g4J3zrfoSZL9T8c3wXXZ
-         IHr8CuxOAeQKqS47n6tbwksnPmXi2cJ+TFgwpt1giossGMoiPQqy1GISZvAxNHv+S5iB
-         F5hQ==
-X-Gm-Message-State: AOAM533c9w7qYTagwBJyBbaR23icp2y7GYy+dVPJRxbIkzHgcLBoEzuk
-        rRH276l8764oYEPjS5jXffo=
-X-Google-Smtp-Source: ABdhPJyHthjLOa4U8ymyVPABDzOiSZlMG/j4oWHWw4iGgKNuhvmtk62qv+1jHS7JphWikHxo52W8Hw==
-X-Received: by 2002:a63:c70c:: with SMTP id n12mr6014009pgg.347.1613184911562;
-        Fri, 12 Feb 2021 18:55:11 -0800 (PST)
+        bh=fSZEyxImPeH+wflBfuB4czPSI1Ga57gwNa4vCFPWIKA=;
+        b=c5i567qzrf3a9F4odYFcF9Hufs2nslZnkaWFKa9mJHOkgrbCjEHD9Je2ARjmgA1VNY
+         LxHiZlnZxD1mcKBdAcY7dEPv3dYDiPIAl3zbWrFHcmsLlSRo4kDfkQFGcCA7dhjHVN02
+         sUkbs/KMuMJGiKL+IG6DvhGnXdUC0dA9yc8+6HJJINKj+HKarIxCkey7gf2MLCjhOTKi
+         OOzWI4tAyvBpEOnfg/ow4c6fqkbYRcWNxtVSp4c68UpTYeM8scJ1hgd2XGvLr8Eud21k
+         j8TgwmVHA7mPKmgrw+H5+UhfdG8Sw7MbBYWIBMnGl/AQ1h46LdM6jvCV3W1UaWSPovgC
+         f1Qw==
+X-Gm-Message-State: AOAM532IbZKY58Cf4LpeLBwwYlUByE+eaTn+RLfeYzLPOyvZGXrGiUHx
+        A8GW5tIgEFbDSQwtPYABVFU=
+X-Google-Smtp-Source: ABdhPJwvUgA2NEEpkOrdDQduJA4L3vIFl1E3TubcGlD8I37N6gT9UE6Hd+q3nxS5kfK93QhUQVU2iA==
+X-Received: by 2002:a17:902:b610:b029:e3:2b1e:34ff with SMTP id b16-20020a170902b610b02900e32b1e34ffmr3248601pls.69.1613187807002;
+        Fri, 12 Feb 2021 19:43:27 -0800 (PST)
 Received: from [10.230.29.30] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id w5sm10412036pfb.11.2021.02.12.18.55.09
+        by smtp.gmail.com with ESMTPSA id d1sm10704664pgl.17.2021.02.12.19.43.25
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Feb 2021 18:55:10 -0800 (PST)
-Subject: Re: [PATCH net-next 1/2] net: phy: broadcom: Set proper
- 1000BaseX/SGMII interface mode for BCM54616S
-To:     Robert Hancock <robert.hancock@calian.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>
-Cc:     "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bcm-kernel-feedback-list@broadcom.com" 
-        <bcm-kernel-feedback-list@broadcom.com>
-References: <20210213002825.2557444-1-robert.hancock@calian.com>
- <20210213002825.2557444-2-robert.hancock@calian.com>
- <87f06cb4-3bee-3ccb-bb21-ce6943e75336@gmail.com>
- <6d854d63df7f81421e927e1cd7726a41fd870ee3.camel@calian.com>
+        Fri, 12 Feb 2021 19:43:26 -0800 (PST)
+Subject: Re: [PATCH net-next 2/3] net: phy: broadcom: Fix RXC/TXC auto
+ disabling
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michael Chan <mchan@broadcom.com>,
+        "open list:BROADCOM ETHERNET PHY DRIVERS" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        open list <linux-kernel@vger.kernel.org>, michael@walle.cc
+References: <20210212205721.2406849-1-f.fainelli@gmail.com>
+ <20210212205721.2406849-3-f.fainelli@gmail.com>
+ <20210213011147.6jedwieopekiwxqd@skbuf>
+ <01e62046-7674-bb1d-115f-9044726c0ce7@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <3a3f733a-8665-b9fb-5f0a-ed25a3d93275@gmail.com>
-Date:   Fri, 12 Feb 2021 18:55:08 -0800
+Message-ID: <6482a9a1-964f-2f7b-8688-62f585d13206@gmail.com>
+Date:   Fri, 12 Feb 2021 19:43:24 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Firefox/78.0 Thunderbird/78.7.1
 MIME-Version: 1.0
-In-Reply-To: <6d854d63df7f81421e927e1cd7726a41fd870ee3.camel@calian.com>
+In-Reply-To: <01e62046-7674-bb1d-115f-9044726c0ce7@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -79,71 +81,72 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 2/12/2021 5:45 PM, Robert Hancock wrote:
-> On Fri, 2021-02-12 at 17:26 -0800, Florian Fainelli wrote:
->>
->> On 2/12/2021 4:28 PM, 'Robert Hancock' via BCM-KERNEL-FEEDBACK-LIST,PDL
->> wrote:
->>> The default configuration for the BCM54616S PHY may not match the desired
->>> mode when using 1000BaseX or SGMII interface modes, such as when it is on
->>> an SFP module. Add code to explicitly set the correct mode using
->>> programming sequences provided by Bel-Fuse:
+On 2/12/2021 5:14 PM, Florian Fainelli wrote:
+> 
+> 
+> On 2/12/2021 5:11 PM, Vladimir Oltean wrote:
+>> On Fri, Feb 12, 2021 at 12:57:20PM -0800, Florian Fainelli wrote:
+>>> When support for optionally disabling the TXC was introduced, bit 2 was
+>>> used to do that operation but the datasheet for 50610M from 2009 does
+>>> not show bit 2 as being defined. Bit 8 is the one that allows automatic
+>>> disabling of the RXC/TXC auto disabling during auto power down.
 >>>
->>> https://urldefense.com/v3/__https://www.belfuse.com/resources/datasheets/powersolutions/ds-bps-sfp-1gbt-05-series.pdf__;!!IOGos0k!20FhZqRHEiz2-qFJ7J8XC4xX2qG-ajZ17Ma1W-VwDgwdQZeIhHEpWKlNldWW8DyFaQo$ 
->>> https://urldefense.com/v3/__https://www.belfuse.com/resources/datasheets/powersolutions/ds-bps-sfp-1gbt-06-series.pdf__;!!IOGos0k!20FhZqRHEiz2-qFJ7J8XC4xX2qG-ajZ17Ma1W-VwDgwdQZeIhHEpWKlNldWW58K3fY4$ 
->>>
->>> Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+>>> Fixes: 52fae0837153 ("tg3 / broadcom: Optionally disable TXC if no link")
+>>> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 >>> ---
->>>  drivers/net/phy/broadcom.c | 83 ++++++++++++++++++++++++++++++++------
->>>  include/linux/brcmphy.h    |  4 ++
->>>  2 files changed, 75 insertions(+), 12 deletions(-)
+>>>  include/linux/brcmphy.h | 2 +-
+>>>  1 file changed, 1 insertion(+), 1 deletion(-)
 >>>
->>> diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
->>> index 0472b3470c59..78542580f2b2 100644
->>> --- a/drivers/net/phy/broadcom.c
->>> +++ b/drivers/net/phy/broadcom.c
->>> @@ -64,6 +64,63 @@ static int bcm54612e_config_init(struct phy_device
->>> *phydev)
->>>  	return 0;
->>>  }
+>>> diff --git a/include/linux/brcmphy.h b/include/linux/brcmphy.h
+>>> index da7bf9dfef5b..3dd8203cf780 100644
+>>> --- a/include/linux/brcmphy.h
+>>> +++ b/include/linux/brcmphy.h
+>>> @@ -193,7 +193,7 @@
+>>>  #define BCM54XX_SHD_SCR3		0x05
+>>>  #define  BCM54XX_SHD_SCR3_DEF_CLK125	0x0001
+>>>  #define  BCM54XX_SHD_SCR3_DLLAPD_DIS	0x0002
+>>> -#define  BCM54XX_SHD_SCR3_TRDDAPD	0x0004
+>>> +#define  BCM54XX_SHD_SCR3_TRDDAPD	0x0100
 >>>  
->>> +static int bcm54616s_config_init(struct phy_device *phydev)
->>> +{
->>> +	int rc, val;
->>> +
->>> +	if (phydev->interface == PHY_INTERFACE_MODE_SGMII ||
->>> +	    phydev->interface == PHY_INTERFACE_MODE_1000BASEX) {
+>>>  /* 01010: Auto Power-Down */
+>>>  #define BCM54XX_SHD_APD			0x0a
+>>> -- 
+>>> 2.25.1
+>>>
 >>
->> Can you reverse the condition so as to save a level of identation?
-> 
-> Can do.
-> 
+>> We may have a problem here, with the layout of the Spare Control 3
+>> register not being as universal as we think.
 >>
->>> +		/* Ensure proper interface mode is selected. */
->>> +		/* Disable RGMII mode */
->>> +		val = bcm54xx_auxctl_read(phydev,
->>> MII_BCM54XX_AUXCTL_SHDWSEL_MISC);
->>> +		if (val < 0)
->>> +			return val;
->>> +		val &= ~MII_BCM54XX_AUXCTL_SHDWSEL_MISC_RGMII_EN;
->>> +		rc = bcm54xx_auxctl_write(phydev,
->>> MII_BCM54XX_AUXCTL_SHDWSEL_MISC,
->>> +					  val);
->>> +		if (rc < 0)
->>> +			return rc;
+>> Your finding may have been the same as Kevin Lo's from commit
+>> b0ed0bbfb304 ("net: phy: broadcom: add support for BCM54811 PHY"),
+>> therefore your change is making BCM54XX_SHD_SCR3_TRDDAPD ==
+>> BCM54810_SHD_SCR3_TRDDAPD, so currently this if condition is redundant
+>> and probably something else is wrong too:
 >>
->> I don't think this write is making it through since you are not setting
->> MII_BCM54XX_AUXCTL_MISC_WREN in val, I know this is an annoying detail,
->> and we could probably fold that to be within bcm54xx_auxctl_write()
->> directly, similarly to what bcm_phy_write_shadow() does.
+>> 	if (phydev->dev_flags & PHY_BRCM_DIS_TXCRXC_NOENRGY) {
+>> 		if (BRCM_PHY_MODEL(phydev) == PHY_ID_BCM54810 ||
+>> 		    BRCM_PHY_MODEL(phydev) == PHY_ID_BCM54811)
+>> 			val |= BCM54810_SHD_SCR3_TRDDAPD;
+>> 		else
+>> 			val |= BCM54XX_SHD_SCR3_TRDDAPD;
+>> 	}
+>>
+>> I'm not sure what "TRDD" stands for, but my copy of the BCM5464R
+>> datasheet shows both bits 2 as well as 8 as being reserved. I have
+>> "CLK125 Output" in bit 0, "DLL Auto Power-Down" in bit 1, "SD/Energy
+>> Detect Change" in bit 5, "TXC Disable" in bit 6, and that's about it.
 > 
-> Ah, indeed. I assume that is specific to the MII_BCM54XX_AUXCTL_SHDWSEL_MISC
-> register? I suppose bcm54xx_auxctl_write could add that automatically for
-> writes to that register. Not sure if that is too much magic for that function
-> or not..
+> Let me go back to the datasheet of all of the PHYs supported by
+> bcm54xx_adjust_rxrefclk() and make sure we set the right bit.
 
-Upon closer look it's a bit more subtle than that, as we need to apply
-the write enable bit only when targeting the "misc" shadow register, a
-million ways to die in the west :)
+I really don't know what the situation is with the 50610 and 50610M and
+the datasheet appears to reflect that the latest PHYs should be revision
+3 or newer (which we explicitly check for earlier), and that bit 8 is
+supposed to control the disabling of RXC/TXC during auto-power down. I
+can only trust that Matt checked with the design team back then and that
+the datasheet must be wrong (would not be an isolated incident), let's
+try not to fix something that we do not know for sure is broken.
+
+I will respin without this patch and with another clean up added.
 -- 
 Florian
