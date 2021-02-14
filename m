@@ -2,83 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90CC731AF27
-	for <lists+netdev@lfdr.de>; Sun, 14 Feb 2021 06:26:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98E7231AF6E
+	for <lists+netdev@lfdr.de>; Sun, 14 Feb 2021 07:24:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229637AbhBNFZd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Feb 2021 00:25:33 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48950 "EHLO mail.kernel.org"
+        id S229741AbhBNGPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Feb 2021 01:15:18 -0500
+Received: from z11.mailgun.us ([104.130.96.11]:36909 "EHLO z11.mailgun.us"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229494AbhBNFZb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 14 Feb 2021 00:25:31 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AA92D64DCC;
-        Sun, 14 Feb 2021 05:24:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613280290;
-        bh=z5Z3JlNpwpUDgDfAYZVeMCMo8ei6ew55eOm/HIEimhk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=g6AeeLTOKwIeat8dkqEPb/4TKT/5+soiw7FDsOE5wuc38fN6Tdv1/H2P6ZNGVIap+
-         oN5CsXgHFLfM2H9q0R91Fo5I4gLsaj822ekK3KughKGCAwwAGKwtkpNcFn95UVKpEd
-         wDKvGWvG0lmsf6ZG1b/lkp0p/oF5zbrufCWgnJy3A76Y4ajgBdCpTWibewYClASsR5
-         te8Z0ppstmAWsdsk4NgIPhTn41uW/BjksNxGGwy3rWXET7AQ7pvBO6CfFue68imEF8
-         ADjWnCOlc6HdS4NUKOSC5PkbQxN6UvetNj+6n4hhICHnE89V0Ci6rQpFzfTbBQFNzo
-         EPVmwyO4e0EdA==
-Date:   Sun, 14 Feb 2021 07:24:46 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Bjorn Helgaas <bhelgaas@google.com>
-Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        Don Dutile <ddutile@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH mlx5-next v6 0/4] Dynamically assign MSI-X vectors count
-Message-ID: <YCi0HvqizRp+Nhgh@unreal>
-References: <20210209133445.700225-1-leon@kernel.org>
- <CAKgT0Ud+c6wzo3n_8VgtVBQm-2UPic6U2QFuqqN-P9nEv_Y+JQ@mail.gmail.com>
+        id S229563AbhBNGPP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 14 Feb 2021 01:15:15 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1613283289; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=e3eec5zLeqEMGut+FCmYCRWQIFaz4ukcUuaM5KHUywY=; b=M5mtZc8G/18NCU9a6BuUYas0ruZIwedEnPO7CGpvIP8fAcSsP6cMH9W5ia//fp1N4NuKVFsk
+ ODDNbrP+bJjvRliepYn+kbt6noRqggf3LHG5kq1bJ57NksIgARj5AdVOJN3BSaOA9h31lUfW
+ 2Tzk21SQ2KjT8oV+UmNVkWJO+5k=
+X-Mailgun-Sending-Ip: 104.130.96.11
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
+ 6028be5b4bd23a05aea78c37 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 14 Feb 2021 06:08:27
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 5F610C43461; Sun, 14 Feb 2021 06:08:27 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 28C69C433C6;
+        Sun, 14 Feb 2021 06:08:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 28C69C433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     peterz@infradead.org, mingo@redhat.com, will@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] ath10k: detect conf_mutex held ath10k_drain_tx() calls
+References: <cover.1613171185.git.skhan@linuxfoundation.org>
+        <0686097db95ae32ce6805e5163798d912b394f37.1613171185.git.skhan@linuxfoundation.org>
+Date:   Sun, 14 Feb 2021 08:08:21 +0200
+In-Reply-To: <0686097db95ae32ce6805e5163798d912b394f37.1613171185.git.skhan@linuxfoundation.org>
+        (Shuah Khan's message of "Fri, 12 Feb 2021 16:28:43 -0700")
+Message-ID: <877dnbrxka.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKgT0Ud+c6wzo3n_8VgtVBQm-2UPic6U2QFuqqN-P9nEv_Y+JQ@mail.gmail.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 09, 2021 at 01:06:25PM -0800, Alexander Duyck wrote:
-> On Tue, Feb 9, 2021 at 5:34 AM Leon Romanovsky <leon@kernel.org> wrote:
-> >
+Shuah Khan <skhan@linuxfoundation.org> writes:
 
-<...>
-
-> > Leon Romanovsky (4):
-> >   PCI: Add sysfs callback to allow MSI-X table size change of SR-IOV VFs
-> >   net/mlx5: Add dynamic MSI-X capabilities bits
-> >   net/mlx5: Dynamically assign MSI-X vectors count
-> >   net/mlx5: Allow to the users to configure number of MSI-X vectors
-> >
-> >  Documentation/ABI/testing/sysfs-bus-pci       |  28 ++++
-> >  .../net/ethernet/mellanox/mlx5/core/main.c    |  17 ++
-> >  .../ethernet/mellanox/mlx5/core/mlx5_core.h   |  27 ++++
-> >  .../net/ethernet/mellanox/mlx5/core/pci_irq.c |  72 +++++++++
-> >  .../net/ethernet/mellanox/mlx5/core/sriov.c   |  58 ++++++-
-> >  drivers/pci/iov.c                             | 153 ++++++++++++++++++
-> >  include/linux/mlx5/mlx5_ifc.h                 |  11 +-
-> >  include/linux/pci.h                           |  12 ++
-> >  8 files changed, 375 insertions(+), 3 deletions(-)
-> >
+> ath10k_drain_tx() must not be called with conf_mutex held as workers can
+> use that also. Add call to lockdep_assert_not_held() on conf_mutex to
+> detect if conf_mutex is held by the caller.
 >
-> This seems much improved from the last time I reviewed the patch set.
-> I am good with the drop of the folder in favor of using "sriov" in the
-> naming of the fields.
+> The idea for this patch stemmed from coming across the comment block
+> above the ath10k_drain_tx() while reviewing the conf_mutex holds during
+> to debug the conf_mutex lock assert in ath10k_debug_fw_stats_request().
 >
-> For the series:
-> Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
+> Adding detection to assert on conf_mutex hold will help detect incorrect
+> usages that could lead to locking problems when async worker routines try
+> to call this routine.
+>
+> Link: https://lore.kernel.org/linux-wireless/871rdmu9z9.fsf@codeaurora.org/
+> Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 
-Bjorn,
+This can go via the same tree as patch 1:
 
-Can I get your Ack too, so we won't miss this merge window?
+Acked-by: Kalle Valo <kvalo@codeaurora.org>
 
-Thanks
+But I can also take this to my ath tree, once patch 1 has reached it.
+Just let me know what is preferred.
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
