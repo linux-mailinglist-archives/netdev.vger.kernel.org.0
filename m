@@ -2,76 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E40A31B28C
-	for <lists+netdev@lfdr.de>; Sun, 14 Feb 2021 21:54:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC93231B2A7
+	for <lists+netdev@lfdr.de>; Sun, 14 Feb 2021 22:13:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229901AbhBNUyI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Feb 2021 15:54:08 -0500
-Received: from bilbo.ozlabs.org ([203.11.71.1]:54731 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229642AbhBNUyG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 14 Feb 2021 15:54:06 -0500
+        id S229985AbhBNVNg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Feb 2021 16:13:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58870 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229642AbhBNVNf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Feb 2021 16:13:35 -0500
+Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14394C061574;
+        Sun, 14 Feb 2021 13:12:55 -0800 (PST)
 Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4DdzwL4F6Wz9s1l;
-        Mon, 15 Feb 2021 07:53:22 +1100 (AEDT)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Df0Lr0jNYz9s1l;
+        Mon, 15 Feb 2021 08:12:51 +1100 (AEDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1613336004;
-        bh=4qXnD8hPp0D6u/6hRUtjk+fAPZ/wsQ9waFHOUBf0ZS8=;
+        s=201702; t=1613337173;
+        bh=heAwTC7GM5oZhn35ydvwxDvP3AVScWf/Lw91PP/LHtw=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=aFAWa010ieGhrsJ3o5IVD5/+9omyEAXjS2jUADxd+yvYgtvs2y5Tut6KSIKNLu7GI
-         Uv/5pjxU+kLeBkX5DaLB/lIhnpaaYtN+R/MbFkRzbn0k3hMI9LpMoKvz7/2SfF81uo
-         +4rMM2QE7d1O81xMpsbFX7MsXbqjneow4cy0GIuQhpkp1i6i/kV1gGN5ztYKZ/UhCr
-         NIEO4TEYvPHzZaHXGNuayIWo79EjlCH5hF5dnnoDSBgVsnmaV2/XWrfq+D+XwEiUG0
-         zTUqtKWCfqfUg+kwBWlmQiK28cxMN9APreSN87tuFRpF9vETKWu8Jpei2FxNJPJFPA
-         0SzvDe4C58XdQ==
-Date:   Mon, 15 Feb 2021 07:53:21 +1100
+        b=LBaeyeerjeYCfDegUMxcg+EvnmIaXNyDZpuHAaWOBBPGHZLgniCkqyvcX+32Vm66A
+         B/V1/nl/yuBl1ETOh41CzLNuEvj7rGtg5/kL5trBO68FkKszsiWRqzOPj+1wZLLR14
+         M69+ZqSuWoyGhOgRnU31yeQYO4DDcc1vsxbU0yDpnAkvz05SZJEaGr3qMRIVgzPXsA
+         zQYIyFO1IyqT2VEK20wBtwhbqTr4dyr6TtTfEEcomcRpXKxyL1gfrCRegcDm+cX2sH
+         hOqaEJ1SMxVnrLjIorMevsyj7vaBrv7Ovdg7b1ZEOC8qyVeZoeDyHPCFGhEMtS6l0F
+         +ADod1SuGkJ3Q==
+Date:   Mon, 15 Feb 2021 08:12:50 +1100
 From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Rob Herring <robherring2@gmail.com>,
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
         David Miller <davem@davemloft.net>,
         Networking <netdev@vger.kernel.org>
-Cc:     Grygorii Strashko <grygorii.strashko@ti.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+Cc:     Arjun Roy <arjunroy@google.com>, Jakub Kicinski <kuba@kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Rob Herring <robh@kernel.org>
-Subject: Re: linux-next: manual merge of the devicetree tree with the
- net-next tree
-Message-ID: <20210215075321.0f3ea0de@canb.auug.org.au>
-In-Reply-To: <20210121132645.0a9edc15@canb.auug.org.au>
-References: <20210121132645.0a9edc15@canb.auug.org.au>
+        Stanislav Fomichev <sdf@google.com>
+Subject: Re: linux-next: manual merge of the bpf-next tree with the net-next
+ tree
+Message-ID: <20210215081250.19bc8921@canb.auug.org.au>
+In-Reply-To: <20210125111223.2540294c@canb.auug.org.au>
+References: <20210125111223.2540294c@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_//9f0goC8wIZhmAG6n66J=l8";
+Content-Type: multipart/signed; boundary="Sig_/oRD_PR_AcP8WZx1lBSo5l0F";
  protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_//9f0goC8wIZhmAG6n66J=l8
+--Sig_/oRD_PR_AcP8WZx1lBSo5l0F
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
 
 Hi all,
 
-On Thu, 21 Jan 2021 13:26:45 +1100 Stephen Rothwell <sfr@canb.auug.org.au> =
+On Mon, 25 Jan 2021 11:12:23 +1100 Stephen Rothwell <sfr@canb.auug.org.au> =
 wrote:
 >=20
-> Today's linux-next merge of the devicetree tree got a conflict in:
+> Today's linux-next merge of the bpf-next tree got a conflict in:
 >=20
->   Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+>   net/ipv4/tcp.c
 >=20
 > between commit:
 >=20
->   19d9a846d9fc ("dt-binding: net: ti: k3-am654-cpsw-nuss: update bindings=
- for am64x cpsw3g")
+>   7eeba1706eba ("tcp: Add receive timestamp support for receive zerocopy.=
+")
 >=20
 > from the net-next tree and commit:
 >=20
->   0499220d6dad ("dt-bindings: Add missing array size constraints")
+>   9cacf81f8161 ("bpf: Remove extra lock_sock for TCP_ZEROCOPY_RECEIVE")
 >=20
-> from the devicetree tree.
+> from the bpf-next tree.
 >=20
 > I fixed it up (see below) and can carry the fix as necessary. This
 > is now fixed as far as linux-next is concerned, but any non trivial
@@ -80,20 +83,34 @@ wrote:
 > with the maintainer of the conflicting tree to minimise any particularly
 > complex conflicts.
 >=20
-> diff --cc Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-> index 3fae9a5f0c6a,097c5cc6c853..000000000000
-> --- a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-> +++ b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-> @@@ -72,7 -66,8 +72,8 @@@ properties
->     dma-coherent: true
->  =20
->     clocks:
-> +     maxItems: 1
->  -    description: CPSW2G NUSS functional clock
->  +    description: CPSWxG NUSS functional clock
->  =20
->     clock-names:
->       items:
+> diff --cc net/ipv4/tcp.c
+> index e1a17c6b473c,26aa923cf522..000000000000
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@@ -4160,18 -4098,13 +4160,20 @@@ static int do_tcp_getsockopt(struct soc
+>   		if (copy_from_user(&zc, optval, len))
+>   			return -EFAULT;
+>   		lock_sock(sk);
+>  -		err =3D tcp_zerocopy_receive(sk, &zc);
+>  +		err =3D tcp_zerocopy_receive(sk, &zc, &tss);
+> + 		err =3D BPF_CGROUP_RUN_PROG_GETSOCKOPT_KERN(sk, level, optname,
+> + 							  &zc, &len, err);
+>   		release_sock(sk);
+>  -		if (len >=3D offsetofend(struct tcp_zerocopy_receive, err))
+>  -			goto zerocopy_rcv_sk_err;
+>  +		if (len >=3D offsetofend(struct tcp_zerocopy_receive, msg_flags))
+>  +			goto zerocopy_rcv_cmsg;
+>   		switch (len) {
+>  +		case offsetofend(struct tcp_zerocopy_receive, msg_flags):
+>  +			goto zerocopy_rcv_cmsg;
+>  +		case offsetofend(struct tcp_zerocopy_receive, msg_controllen):
+>  +		case offsetofend(struct tcp_zerocopy_receive, msg_control):
+>  +		case offsetofend(struct tcp_zerocopy_receive, flags):
+>  +		case offsetofend(struct tcp_zerocopy_receive, copybuf_len):
+>  +		case offsetofend(struct tcp_zerocopy_receive, copybuf_address):
+>   		case offsetofend(struct tcp_zerocopy_receive, err):
+>   			goto zerocopy_rcv_sk_err;
+>   		case offsetofend(struct tcp_zerocopy_receive, inq):
 
 With the merge window about to open, this is a reminder that this
 conflict still exists.
@@ -102,20 +119,20 @@ conflict still exists.
 Cheers,
 Stephen Rothwell
 
---Sig_//9f0goC8wIZhmAG6n66J=l8
+--Sig_/oRD_PR_AcP8WZx1lBSo5l0F
 Content-Type: application/pgp-signature
 Content-Description: OpenPGP digital signature
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmApjcEACgkQAVBC80lX
-0Gx4pgf+LcDFa62Lv4rddVZwsfwRSxpYh8JGTf6/VScO8XAQNYogGb7Ph+HcrQkO
-spwBgODpexosNMrXLrA05pP83rgppPXDNTGAuES/5uFo8jR14kIxrIjh18WyKxby
-BMwTeyDp7O0a7Eo97NzbJ7EQlmexLPrA4R2dHpwqeHJvP+YG8Apu8UtC8P3BIFGN
-RjKZzYSMkLNrlsGAxXi53JIDW1ogwHUnMbHk1tP6s5zO8hCdf/BcueOhEaurwJZH
-w9GAZKy/BcxFZs5ZMxWq599XPmPbgP8zc42dERpc7nq3QSgnxbncbNLbZDJx5Dgr
-mm6jUMywAY+Ju1fgykER+QXmopKOKA==
-=d8EZ
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmApklIACgkQAVBC80lX
+0GwVrQf8DfYze7Pz5Wl5aIUiKJfYVXgLEgqctp/06iv/FvxwfACJNTnF3Zly7BX3
+Z7Iltesm8n7XAyaCsfcte+ICkiLMCkE0XlHPM3uj9Xy5BxojNhQkpN0ymdiU3QWj
+N8mnem8QubZnANKoqNiL/YZPSssKeqKKyuMx98z34aNVIRVT3t8rojAZ0dJze2sJ
+AIkLN5QTlYRdFqpdaWNK7vWERObay3cf4Wkbh578vYYTuIMsAEUL3g1Jhum4cZD5
+K+zoavnrhOt0MHBvkcsnqRQ3/zP41iDp1Xw9p+8WctTuEW8cRMbN+TrjXmzt4I67
+U3/MxFkC8Z+4dMqe8S6hzAV6i5EIkg==
+=nY0U
 -----END PGP SIGNATURE-----
 
---Sig_//9f0goC8wIZhmAG6n66J=l8--
+--Sig_/oRD_PR_AcP8WZx1lBSo5l0F--
