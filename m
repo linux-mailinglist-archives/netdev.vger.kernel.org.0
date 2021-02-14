@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82BE731AEAC
-	for <lists+netdev@lfdr.de>; Sun, 14 Feb 2021 02:26:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C825C31AEAD
+	for <lists+netdev@lfdr.de>; Sun, 14 Feb 2021 02:27:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229744AbhBNB0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Feb 2021 20:26:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32886 "EHLO
+        id S229714AbhBNB1f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Feb 2021 20:27:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229690AbhBNB0b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 20:26:31 -0500
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BCC0C061574
-        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 17:25:51 -0800 (PST)
-Received: by mail-oi1-x22f.google.com with SMTP id l3so4124877oii.2
-        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 17:25:51 -0800 (PST)
+        with ESMTP id S229694AbhBNB1d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 20:27:33 -0500
+Received: from mail-oo1-xc2c.google.com (mail-oo1-xc2c.google.com [IPv6:2607:f8b0:4864:20::c2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F839C061574
+        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 17:26:53 -0800 (PST)
+Received: by mail-oo1-xc2c.google.com with SMTP id t196so775266oot.2
+        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 17:26:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=HVQB2fEvqI8A7GX2c234n/H8YW9TwHUVfQZQ+ajiHgc=;
-        b=t7nIKmJy4P29xI/6yyUjTm3AcAsDIGJTszC7G4k2Ry0/Lpabc6QkAGW+2PfmAc2Cgh
-         JdJ37xO/ACF6MEgvWO4lzRn2LkapWsXa78+xncoWLhTsw98yoyMBH6EDg1ZEW5yyHN+G
-         XswOQxz6jmtSB/ENANOHSBb/lW+5kF7nh2OxAZl/J7NkQU4bI3Cp1U4p5kRo7EUBVBhx
-         t5LmgrThgusuI0q9AFo2y6kjeaxwn2V6/PO3E+2EY9XIxWiVcyuNm0aqhfJGqi8NgbmE
-         1U68+IoRdL3dGZVQWjfPLzL65hrfqRfXarrgH5AUoeuhiOADIb+1OHRw//11WCAYCEqX
-         Y6XQ==
+        bh=ykQ0D8e39D2ACOsz8BW0OTE+7p/zo5dnAundW/yBmNc=;
+        b=fzZNYZf3YR1OF9pxC1Ii1G7jQbKWsGobM8UA5YKu85CIhHqZWX4D95myhNzm11M3pT
+         Qpgq4K0bhsMwcj2j20WBn5CnZYDuwrmP3TXp3AxRMvQgXHGWNB5UJyT8rR57EvCX6Pov
+         d0GojJuNrQh7cJoxiQK4tUpy6JNJiZlw3Son9/nYzCwxHFz2o+JGfwUPRjeYM/2ty8+C
+         CxPuqmkzYmcy9sfZn+qZM2AGX5/3R53yJc8NZPeS6ZWdxseEg6QILea7+KS99//kQmVI
+         ZFAObpzE0nNBkuIB2+BypPctCPG9dKW1+Srt/iyuaLT7DNtbnkjzmo27JTx2BbP17Szr
+         565A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=HVQB2fEvqI8A7GX2c234n/H8YW9TwHUVfQZQ+ajiHgc=;
-        b=gTTZluZeu5DgtAypqTWqgxPDkHqr4lNEoEah8pD/sqc1TbIeSZDxDHJpoWt+rpcpLP
-         xGJ7Iinup1tHrFjauOKXBv6efwVWnuVceemiA+Y6Lx6KSvbhV8cvp3SsrQRSHU47BN18
-         lZHZSUdE9DOu6W9z3J35pcBONt56Y75BbTZoBeYVjXsmy0h71cDpqwBwEEGBgaylNR9c
-         1amZG4CgO5nMgs/UXtHlObTHSDblnMPKnXQ1VxSXFHqv8Gv8gOKR5CfgBX98ZN3XtnKN
-         N4VrQc2EoseSyIyrCfyQwykCKTevFcqvX7ts4uuCI737ERIlXPx3GRNhO70UM4g5XvAn
-         pnXQ==
-X-Gm-Message-State: AOAM532xaoMCboRI/5D60HVIehJyyY5MJ82Gp9lce5KPgVjJQyxT5XnL
-        sogYWxZG+uhvNeeHYHncDpY=
-X-Google-Smtp-Source: ABdhPJxyFaxzeheatXxm978uFjx50jzpzMbtNb20CrrjkhciwV5Ibzeh8YMpKYvoGpRBlDcjJlYHug==
-X-Received: by 2002:aca:600a:: with SMTP id u10mr4143576oib.36.1613265951005;
-        Sat, 13 Feb 2021 17:25:51 -0800 (PST)
+        bh=ykQ0D8e39D2ACOsz8BW0OTE+7p/zo5dnAundW/yBmNc=;
+        b=IBX9v50IxmX2A/tGxOndqpQN7z2+1lA8a402nI3Y20DIbUBCPsWqPGEoKO7MSYFjyq
+         4r1g9S6rCWmmOz7mzG5btkKFAeaaYpQiYFDRHBcr3lQiLIIzrx3J9KIwZhmDaMGlHAZV
+         6VPffnHfh0ZdKNaDcNQKEbiqPcxEUfA0Te3c8kTHYm0Sqyvhab8QwxwpY8ubZWrQEVZY
+         o1sgkrC3uPmawEaIMktsLcNsiVgaKQgKBOym3rZLDVRJUf2I9rcw4zDxK3soXOsLZt5o
+         NGhfww9uYaNcfwuNSgyB4V1bA4ix/RGz6xLLDWfvt6jBhJyyHH14skVTP3UjCk2UcSTk
+         NvGg==
+X-Gm-Message-State: AOAM531TwANUNG5CGv2FvjqBxSWW/5hl3wvc3rZeyXa4i9a5wj6HqwFY
+        4D/NV+yhHUFjqeBNdabWRJo=
+X-Google-Smtp-Source: ABdhPJwNS05LSbKJ3mk2ciNer5Rm2IG1qH8mb4mjs+QuGlq9VPVuH0+nOGi/ikYjTgOv97FbYvL6tQ==
+X-Received: by 2002:a4a:d994:: with SMTP id k20mr6678518oou.70.1613266012628;
+        Sat, 13 Feb 2021 17:26:52 -0800 (PST)
 Received: from ?IPv6:2600:1700:dfe0:49f0:e93c:cbea:e191:f62a? ([2600:1700:dfe0:49f0:e93c:cbea:e191:f62a])
-        by smtp.gmail.com with ESMTPSA id x10sm2822218oic.20.2021.02.13.17.25.49
+        by smtp.gmail.com with ESMTPSA id b9sm1809043otl.14.2021.02.13.17.26.51
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 13 Feb 2021 17:25:50 -0800 (PST)
-Subject: Re: [PATCH v2 net-next 07/12] net: mscc: ocelot: use common tag
- parsing code with DSA
+        Sat, 13 Feb 2021 17:26:52 -0800 (PST)
+Subject: Re: [PATCH v2 net-next 08/12] net: dsa: tag_ocelot: single out
+ PTP-related transmit tag processing
 To:     Vladimir Oltean <olteanv@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -62,14 +62,14 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Maxim Kochetkov <fido_max@inbox.ru>,
         UNGLinuxDriver@microchip.com
 References: <20210213223801.1334216-1-olteanv@gmail.com>
- <20210213223801.1334216-8-olteanv@gmail.com>
+ <20210213223801.1334216-9-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <5073a654-1fb2-37f1-887c-771fa06a94e1@gmail.com>
-Date:   Sat, 13 Feb 2021 17:25:47 -0800
+Message-ID: <8f039029-74ee-a30f-ae6e-886b6220f017@gmail.com>
+Date:   Sat, 13 Feb 2021 17:26:47 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.7.1
 MIME-Version: 1.0
-In-Reply-To: <20210213223801.1334216-8-olteanv@gmail.com>
+In-Reply-To: <20210213223801.1334216-9-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -82,19 +82,18 @@ X-Mailing-List: netdev@vger.kernel.org
 On 2/13/2021 14:37, Vladimir Oltean wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> The Injection Frame Header and Extraction Frame Header that the switch
-> prepends to frames over the NPI port is also prepended to frames
-> delivered over the CPU port module's queues.
+> There is one place where we cannot avoid accessing driver data, and that
+> is 2-step PTP TX timestamping, since the switch wants us to provide a
+> timestamp request ID through the injection header, which naturally must
+> come from a sequence number kept by the driver (it is generated by the
+> .port_txtstamp method prior to the tagger's xmit).
 > 
-> Let's unify the handling of the frame headers by making the ocelot
-> driver call some helpers exported by the DSA tagger. Among other things,
-> this allows us to get rid of the strange cpu_to_be32 when transmitting
-> the Injection Frame Header on ocelot, since the packing API uses
-> network byte order natively (when "quirks" is 0).
-> 
-> The comments above ocelot_gen_ifh talk about setting pop_cnt to 3, and
-> the cpu extraction queue mask to something, but the code doesn't do it,
-> so we don't do it either.
+> However, since other drivers like dsa_loop do not claim PTP support
+> anyway, the DSA_SKB_CB(skb)->clone will always be NULL anyway, so if we
+> move all PTP-related dereferences of struct ocelot and struct ocelot_port
+> into a separate function, we can effectively ensure that this is dead
+> code when the ocelot tagger is attached to non-ocelot switches, and the
+> stateful portion of the tagger is more self-contained.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
