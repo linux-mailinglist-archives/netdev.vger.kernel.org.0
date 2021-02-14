@@ -2,83 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8659C31AF70
-	for <lists+netdev@lfdr.de>; Sun, 14 Feb 2021 07:24:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C926931AF78
+	for <lists+netdev@lfdr.de>; Sun, 14 Feb 2021 07:42:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229731AbhBNGYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Feb 2021 01:24:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51556 "EHLO mail.kernel.org"
+        id S229710AbhBNGlu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Feb 2021 01:41:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52156 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229563AbhBNGYJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 14 Feb 2021 01:24:09 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1FF1461493;
-        Sun, 14 Feb 2021 06:23:27 +0000 (UTC)
+        id S229563AbhBNGls (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 14 Feb 2021 01:41:48 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4E2CE64E43;
+        Sun, 14 Feb 2021 06:41:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613283808;
-        bh=gyHaPIi6u1QJKRyZ21cjlD4KDij/CAQi3EWyEj06O3k=;
+        s=k20201202; t=1613284867;
+        bh=OBk75GOH8EKHAVV7ouOv6GVYXdFhEWXEH7tNORERk8Y=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Tid3QJWctVhVG3ueveOYBmMGlxNf1bz8ZDnmZZ4X9Rl5OoD7og1WLKr50HUa5G6Wd
-         ++bx7h+pgaXU4GT9UbcXW7QLfEN/zAFDsGt3btMHZiWa8xHgGQKZKbrTqCvJ6GVFas
-         8FQSzXSJK8Utv3pWuKgJWQREeJ8NkMmivgsM/wc2mVMbR/4rG2kxIYmhyZARzFKUdm
-         mhkuYIXAjZ8Nf1z7xxgiY8D3JDB27ahQUp1V4xgtaWuYJi2TGnpb4XVzA15J2gkFVI
-         46blooD1EgPg7L8zuxqirJJHFRNqx3FgQC2FmOjqFxUET+tGCZHP1daZDFdHC/Qf6x
-         wDYlwyoAVe4hQ==
-Date:   Sun, 14 Feb 2021 08:23:25 +0200
+        b=UNkA9xKxcWpD5H5a8xIMT+DpQzio15ccFpxDKcI1T4Cmm173AfNngiza+l+jy38AO
+         n1aRiCXM3KbkcONXeMgH/d4BgA+RuEiM0V804YGz+bqHZhFoIOgQ/GP9Ms51bQFcFp
+         NrzuaFyilGVGtFO6c9CXM9rqppVsXRrTtmLumfKKwNLI5j4OgNgPX3G9QolemTymdd
+         d140PtPcjNIW2VVIOYhpS81d7WxmWgSdHDO1G5qYtjswyUVxgGQkXUdDhac69qzsHw
+         c/+7JkhklnCbNdDctoj9PWkktvSGxcaQtcYLHdsWM8vkDzoxI49wQibRGvvu+JdkU5
+         EfTX96dHqxe+A==
+Date:   Sun, 14 Feb 2021 08:41:03 +0200
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, punit1.agrawal@toshiba.co.jp,
-        yuji2.ishikawa@toshiba.co.jp, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/4] net: stmmac: Add Toshiba Visconti SoCs glue driver
-Message-ID: <YCjB3btP5+h4pISJ@unreal>
-References: <20210212025806.556217-1-nobuhiro1.iwamatsu@toshiba.co.jp>
- <20210212025806.556217-3-nobuhiro1.iwamatsu@toshiba.co.jp>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Saeed Mahameed <saeed@kernel.org>,
+        Doug Ledford <dledford@redhat.com>,
+        Aharon Landau <aharonl@nvidia.com>, linux-rdma@vger.kernel.org,
+        Maor Gottlieb <maorg@nvidia.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH rdma-next 0/2] Real time/free running timestamp support
+Message-ID: <YCjF/xxC3/easKYC@unreal>
+References: <20210209131107.698833-1-leon@kernel.org>
+ <20210212181056.GB1737478@nvidia.com>
+ <5d4731e2394049ca66012f82e1645bdec51aca78.camel@kernel.org>
+ <20210212211408.GA1860468@nvidia.com>
+ <53a97eb379af167c0221408a07c9bddc6624027d.camel@kernel.org>
+ <20210212212153.GX4247@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20210212025806.556217-3-nobuhiro1.iwamatsu@toshiba.co.jp>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210212212153.GX4247@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 12, 2021 at 11:58:04AM +0900, Nobuhiro Iwamatsu wrote:
-> Add dwmac-visconti to the stmmac driver in Toshiba Visconti ARM SoCs.
-> This patch contains only the basic function of the device. There is no
-> clock control, PM, etc. yet. These will be added in the future.
+On Fri, Feb 12, 2021 at 05:21:53PM -0400, Jason Gunthorpe wrote:
+> On Fri, Feb 12, 2021 at 01:19:09PM -0800, Saeed Mahameed wrote:
+> > On Fri, 2021-02-12 at 17:14 -0400, Jason Gunthorpe wrote:
+> > > On Fri, Feb 12, 2021 at 01:09:20PM -0800, Saeed Mahameed wrote:
+> > > > On Fri, 2021-02-12 at 14:10 -0400, Jason Gunthorpe wrote:
+> > > > > On Tue, Feb 09, 2021 at 03:11:05PM +0200, Leon Romanovsky wrote:
+> > > > > > From: Leon Romanovsky <leonro@nvidia.com>
+> > > > > >
+> > > > > > Add an extra timestamp format for mlx5_ib device.
+> > > > > >
+> > > > > > Thanks
+> > > > > >
+> > > > > > Aharon Landau (2):
+> > > > > >   net/mlx5: Add new timestamp mode bits
+> > > > > >   RDMA/mlx5: Fail QP creation if the device can not support the
+> > > > > > CQE
+> > > > > > TS
+> > > > > >
+> > > > > >  drivers/infiniband/hw/mlx5/qp.c | 104
+> > > > > > +++++++++++++++++++++++++++++---
+> > > > > >  include/linux/mlx5/mlx5_ifc.h   |  54 +++++++++++++++--
+> > > > > >  2 files changed, 145 insertions(+), 13 deletions(-)
+> > > > >
+> > > > > Since this is a rdma series, and we are at the end of the cycle,
+> > > > > I
+> > > > > took the IFC file directly to the rdma tree instead of through
+> > > > > the
+> > > > > shared branch.
+> > > > >
+> > > > > Applied to for-next, thanks
+> > > > >
+> > > >
+> > > > mmm, i was planing to resubmit this patch with the netdev real time
+> > > > support series, since the uplink representor is getting delayed, I
+> > > > thought I could submit the real time stuff today. can you wait on
+> > > > the
+> > > > ifc patch, i will re-send it today if you will, but it must go
+> > > > through
+> > > > the shared branch
+> > >
+> > > Friday of rc7 is a bit late to be sending new patches for the first
+> > > time, isn't it??
+> >
+> > I know, uplink representor last minute mess !
+> >
+> > >
+> > > But sure, if you update the shared branch right now I'll fix up
+> > > rdma.git
+> > >
+> >
+> > I can't put it in the shared brach without review, i will post it to
+> > the netdev/rdma lists for two days at least for review and feedback.
 >
-> Signed-off-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-> ---
->  drivers/net/ethernet/stmicro/stmmac/Kconfig   |   8 +
->  drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
->  .../ethernet/stmicro/stmmac/dwmac-visconti.c  | 288 ++++++++++++++++++
->  3 files changed, 297 insertions(+)
->  create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
+> Well, I'm not going to take any different patches beyond right now
+> unless Linus does a rc8??
 >
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-> index 53f14c5a9e02..55ba67a550b9 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
-> +++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-> @@ -219,6 +219,14 @@ config DWMAC_INTEL_PLAT
->  	  This selects the Intel platform specific glue layer support for
->  	  the stmmac device driver. This driver is used for the Intel Keem Bay
->  	  SoC.
-> +
-> +config DWMAC_VISCONTI
-> +	bool "Toshiba Visconti DWMAC support"
-> +	def_bool y
+> Just move this one IFC patch to the shared branch, it is obviously OK
 
-Doesn't it need to be "default y"?
+OK, I'm curious to see the end result of all this last minute adventure.
 
 Thanks
 
-> +	depends on OF && COMMON_CLK && (ARCH_VISCONTI || COMPILE_TEST)
-> +	help
-> +	  Support for ethernet controller on Visconti SoCs.
-> +
->  endif
+>
+> Jason
