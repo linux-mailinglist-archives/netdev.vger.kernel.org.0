@@ -2,112 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C926931AF78
-	for <lists+netdev@lfdr.de>; Sun, 14 Feb 2021 07:42:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51E2731AF9A
+	for <lists+netdev@lfdr.de>; Sun, 14 Feb 2021 08:34:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229710AbhBNGlu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Feb 2021 01:41:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52156 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229563AbhBNGls (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 14 Feb 2021 01:41:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4E2CE64E43;
-        Sun, 14 Feb 2021 06:41:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613284867;
-        bh=OBk75GOH8EKHAVV7ouOv6GVYXdFhEWXEH7tNORERk8Y=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UNkA9xKxcWpD5H5a8xIMT+DpQzio15ccFpxDKcI1T4Cmm173AfNngiza+l+jy38AO
-         n1aRiCXM3KbkcONXeMgH/d4BgA+RuEiM0V804YGz+bqHZhFoIOgQ/GP9Ms51bQFcFp
-         NrzuaFyilGVGtFO6c9CXM9rqppVsXRrTtmLumfKKwNLI5j4OgNgPX3G9QolemTymdd
-         d140PtPcjNIW2VVIOYhpS81d7WxmWgSdHDO1G5qYtjswyUVxgGQkXUdDhac69qzsHw
-         c/+7JkhklnCbNdDctoj9PWkktvSGxcaQtcYLHdsWM8vkDzoxI49wQibRGvvu+JdkU5
-         EfTX96dHqxe+A==
-Date:   Sun, 14 Feb 2021 08:41:03 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Saeed Mahameed <saeed@kernel.org>,
-        Doug Ledford <dledford@redhat.com>,
-        Aharon Landau <aharonl@nvidia.com>, linux-rdma@vger.kernel.org,
-        Maor Gottlieb <maorg@nvidia.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH rdma-next 0/2] Real time/free running timestamp support
-Message-ID: <YCjF/xxC3/easKYC@unreal>
-References: <20210209131107.698833-1-leon@kernel.org>
- <20210212181056.GB1737478@nvidia.com>
- <5d4731e2394049ca66012f82e1645bdec51aca78.camel@kernel.org>
- <20210212211408.GA1860468@nvidia.com>
- <53a97eb379af167c0221408a07c9bddc6624027d.camel@kernel.org>
- <20210212212153.GX4247@nvidia.com>
+        id S229713AbhBNHbo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Feb 2021 02:31:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53738 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229520AbhBNHbn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Feb 2021 02:31:43 -0500
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5951BC061574
+        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 23:31:02 -0800 (PST)
+Received: by mail-yb1-xb29.google.com with SMTP id n195so4002375ybg.9
+        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 23:31:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=L0NFRMoCIBg17R5WvEqGuR3xkawgs31RwTgIaRPst34=;
+        b=dsVHVGbtHkov8jBqlz2FSgwta/3qkQr6mHHhp0x69Z8ZWLa836pVL8+eHt72/hhcBI
+         l+jCG8n09/sfS/dqnWaokD2BJ7D+zbExgeaKGimKDz+ttZTyFiRTxZa4jqbDBOoetZ/8
+         DNKS29n8PNjoFFS7iqxjQzopUSZXVemprP68662kBW7GlUn33sWPVD7kjqB51fpLs5Os
+         fl1Oe1+aWci/OwxY/xl4c+A/I8yJlwmUyNwkNzsMN5oD5Jv+wuhmYp3+B6xPrOe08DGb
+         dP5XymjiwNuVpZBoXxalcbzzYkD2x53HEPSr3iUwK73hWPjPZElEYsDzHJx9XhIuX3Ai
+         2USw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=L0NFRMoCIBg17R5WvEqGuR3xkawgs31RwTgIaRPst34=;
+        b=BSpfrpTk2Ik+QVBYWbyZUHPxaWW1qtDwD6wOnHkZrn4eqzXHn6yBwiNJ0ACAIHKM+8
+         OFoFN3/PHso2zIoxhohrGjUpsofW4j54KyblFWLYWrE/WsfnXv/TXVUPgIL4v+ZSh9t+
+         PPzzR1Xz8MRczkBAM0ZGEH/fwtX6VuF9HzCcbfn2q5pmiMEY66Y90Z/bLhjjw8fynO09
+         AWFkbVMYeV6KDpEfc6Lr6YSIlGMckXaqkGJIGY3RGoU2/15c/+2Hrrn/u5K+0+HTnNDh
+         1SA48VCVgVVTiybnjee0wWU2yzWfhiyDVScufi0Jz2219MiA/2vONb5epdHC9RNb3ukv
+         5oMA==
+X-Gm-Message-State: AOAM530NXPlOctxxHf+x7Qt12gzRqr9K6OJJ+hSzmak/kzkiZmNf4DEy
+        uu3aaeZqbSPJVg3p/iuNRmuIpNc3jSgaCOA8kY0=
+X-Google-Smtp-Source: ABdhPJxayp8Zt2wT/Mw2a6//3LBN8nDdADL915m2lPMX3ay1vpCHTqgiHlVD8f/oTBxu3HVrM1XFDyxjxRle/57GQUA=
+X-Received: by 2002:a25:ae14:: with SMTP id a20mr4110229ybj.129.1613287861584;
+ Sat, 13 Feb 2021 23:31:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210212212153.GX4247@nvidia.com>
+References: <20210212052031.18123-1-borisp@mellanox.com> <a18aaeec-049e-72c1-f981-3e18381b0f49@nvidia.com>
+In-Reply-To: <a18aaeec-049e-72c1-f981-3e18381b0f49@nvidia.com>
+From:   Or Gerlitz <gerlitz.or@gmail.com>
+Date:   Sun, 14 Feb 2021 09:30:50 +0200
+Message-ID: <CAJ3xEMi0574vgmHMt8LCe36RhH0XJg=LoTU2Jdx+W7+FWMmkBQ@mail.gmail.com>
+Subject: Re: [PATCH v4 net-next 21/21] Documentation: add TCP DDP offload documentation
+To:     Nikolay Aleksandrov <nikolay@nvidia.com>
+Cc:     Boris Pismenny <borisp@mellanox.com>,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>, axboe@fb.com,
+        Keith Busch <kbusch@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Eric Dumazet <edumazet@google.com>, smalin@marvell.com,
+        Yoray Zack <yorayz@mellanox.com>, yorayz@nvidia.com,
+        boris.pismenny@gmail.com, Ben Ben-Ishay <benishay@mellanox.com>,
+        benishay@nvidia.com, linux-nvme@lists.infradead.org,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        Or Gerlitz <ogerlitz@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 12, 2021 at 05:21:53PM -0400, Jason Gunthorpe wrote:
-> On Fri, Feb 12, 2021 at 01:19:09PM -0800, Saeed Mahameed wrote:
-> > On Fri, 2021-02-12 at 17:14 -0400, Jason Gunthorpe wrote:
-> > > On Fri, Feb 12, 2021 at 01:09:20PM -0800, Saeed Mahameed wrote:
-> > > > On Fri, 2021-02-12 at 14:10 -0400, Jason Gunthorpe wrote:
-> > > > > On Tue, Feb 09, 2021 at 03:11:05PM +0200, Leon Romanovsky wrote:
-> > > > > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > > > >
-> > > > > > Add an extra timestamp format for mlx5_ib device.
-> > > > > >
-> > > > > > Thanks
-> > > > > >
-> > > > > > Aharon Landau (2):
-> > > > > >   net/mlx5: Add new timestamp mode bits
-> > > > > >   RDMA/mlx5: Fail QP creation if the device can not support the
-> > > > > > CQE
-> > > > > > TS
-> > > > > >
-> > > > > >  drivers/infiniband/hw/mlx5/qp.c | 104
-> > > > > > +++++++++++++++++++++++++++++---
-> > > > > >  include/linux/mlx5/mlx5_ifc.h   |  54 +++++++++++++++--
-> > > > > >  2 files changed, 145 insertions(+), 13 deletions(-)
-> > > > >
-> > > > > Since this is a rdma series, and we are at the end of the cycle,
-> > > > > I
-> > > > > took the IFC file directly to the rdma tree instead of through
-> > > > > the
-> > > > > shared branch.
-> > > > >
-> > > > > Applied to for-next, thanks
-> > > > >
-> > > >
-> > > > mmm, i was planing to resubmit this patch with the netdev real time
-> > > > support series, since the uplink representor is getting delayed, I
-> > > > thought I could submit the real time stuff today. can you wait on
-> > > > the
-> > > > ifc patch, i will re-send it today if you will, but it must go
-> > > > through
-> > > > the shared branch
-> > >
-> > > Friday of rc7 is a bit late to be sending new patches for the first
-> > > time, isn't it??
-> >
-> > I know, uplink representor last minute mess !
-> >
-> > >
-> > > But sure, if you update the shared branch right now I'll fix up
-> > > rdma.git
-> > >
-> >
-> > I can't put it in the shared brach without review, i will post it to
-> > the netdev/rdma lists for two days at least for review and feedback.
->
-> Well, I'm not going to take any different patches beyond right now
-> unless Linus does a rc8??
->
-> Just move this one IFC patch to the shared branch, it is obviously OK
+On Fri, Feb 12, 2021 at 4:11 PM Nikolay Aleksandrov <nikolay@nvidia.com> wrote:
 
-OK, I'm curious to see the end result of all this last minute adventure.
+> I got interested and read through the doc, there are a few typos below.
 
-Thanks
-
->
-> Jason
+thanks for spotting these, we will fix them
