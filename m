@@ -2,99 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3E5A31AEA2
-	for <lists+netdev@lfdr.de>; Sun, 14 Feb 2021 02:17:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A35F31AEA3
+	for <lists+netdev@lfdr.de>; Sun, 14 Feb 2021 02:18:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229720AbhBNBRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Feb 2021 20:17:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59108 "EHLO
+        id S229759AbhBNBR7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Feb 2021 20:17:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229690AbhBNBRF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 20:17:05 -0500
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06AFDC061574
-        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 17:16:24 -0800 (PST)
-Received: by mail-ot1-x32d.google.com with SMTP id c16so2992870otp.0
-        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 17:16:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=kTlS/CgCIhXeIqHYUcbEsUoSxsuxVyw4cxgMe68nPaE=;
-        b=RJzDJD/LN+AHmz9TaQ7iHZZjbu0tBYBmpEoMtCLuWWtAmgo8iAdkBZHk/wH5xvqwPI
-         idzFkFq++7QSozQVBvgtQ2W5cKg+nEfGuHv1UDmCy2FUSI9TLPcBFoWn47G2D0Hd/19W
-         t/2A6blVuoYI+o6vweLW32jdZ9D6xLgsguvITvXgFikML2i49y/0AMOukDlLAprpH15r
-         IlO6ch5a+ciNS9NAxFkAeYRM/Oa6ru57QfGnqtkZQt2YHDEzhAr77zDc1ODwEXgwd90f
-         OCPqcnzo1ADAC1hyerm3B+fvn3NVlfTIG3S4eXRmgrK8H5tBEOtf6XvmRkzH8IXK65d/
-         dweQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=kTlS/CgCIhXeIqHYUcbEsUoSxsuxVyw4cxgMe68nPaE=;
-        b=VCLStBbI0hCwfzNef8VI+bvXgUehSmaHcboxuE8J8f5hSjmC7cvkd3K3xaiCbQCzGB
-         hMJbnhcGNyeXx96Ws/L7OiAtfueSrVq+o3Sd1Y4SHrdY6S7kx4hFkIv+fR/aLLWFSIhr
-         tiSlLjy257XJZm4dE4i5MW+abboKaGpE7F/7nFJm9E6OLFCXDc3Vnc/nw2jLkl838924
-         fSgVJElhnipdpPH0iO4iuUl4yCFBs1PC8G1xCgqBnlT6zoBaISy8fVAEKdeGwBYX6077
-         t37RQc8jIyCC0HdJb2Zcdfe5eo+kD8zMJIezEMwHfITF1UU+5i9Y8KpBEyD9t4gpVGkx
-         dvgQ==
-X-Gm-Message-State: AOAM532XcQRqZ+NaVqxeYOrumZJXXsBRu3jLOaUPBnft675fTF/+iLvz
-        vnCfA++oc7oPp1fkWku40xccyYfKkTs=
-X-Google-Smtp-Source: ABdhPJwKVVmaqjrBNAHBVsO/RRk8muM/42FU8DM1SgU25ymV7LLALdD5NXCnQX2yPjNNtQo9my6vvQ==
-X-Received: by 2002:a05:6830:1088:: with SMTP id y8mr1184154oto.372.1613265384263;
-        Sat, 13 Feb 2021 17:16:24 -0800 (PST)
-Received: from ?IPv6:2600:1700:dfe0:49f0:e93c:cbea:e191:f62a? ([2600:1700:dfe0:49f0:e93c:cbea:e191:f62a])
-        by smtp.gmail.com with ESMTPSA id a23sm2828578oii.16.2021.02.13.17.16.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 13 Feb 2021 17:16:23 -0800 (PST)
-Subject: Re: [PATCH net-next 4/5] net: dsa: propagate extack to .port_vlan_add
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+        with ESMTP id S229690AbhBNBR6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 20:17:58 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 102CDC061574;
+        Sat, 13 Feb 2021 17:17:18 -0800 (PST)
+Received: from mwalle01.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:fa59:71ff:fe9b:b851])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 18F0223E55;
+        Sun, 14 Feb 2021 02:17:16 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1613265436;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ZXOO60f6gZRL00iZbad8nxEVcghn0+AbZN/JpgeY/2o=;
+        b=nLBPApdIb4QEzWYYYLjADSFAWkxQUdUS0FprqmbpPGTEsFXVv+qLlvL2/Yoxij0F0jae5x
+        3MCb1Gs4tcoMUkokwAZ23sGpVhFiAMgv0US8EXY+nmdV7wR9uclMFSyP/EkMHqDGSSuWgD
+        INz+Ys2tHpWuZr7sPEdExN/8wr9vw0A=
+From:   Michael Walle <michael@walle.cc>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Ido Schimmel <idosch@idosch.org>
-References: <20210213204319.1226170-1-olteanv@gmail.com>
- <20210213204319.1226170-5-olteanv@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <848592e3-4824-8369-c75f-5ade994973bd@gmail.com>
-Date:   Sat, 13 Feb 2021 17:16:19 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH net-next] net: phy: at803x: add MDIX support to AR8031/33
+Date:   Sun, 14 Feb 2021 02:17:11 +0100
+Message-Id: <20210214011711.12428-1-michael@walle.cc>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20210213204319.1226170-5-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+AR8035 recently gained MDIX support. The same functions will work for
+the AR8031/33 PHY. We just need to add the at803x_config_aneg()
+callback.
 
+This was tested on a Kontron sl28 board.
 
-On 2/13/2021 12:43, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> Allow drivers to communicate their restrictions to user space directly,
-> instead of printing to the kernel log. Where the conversion would have
-> been lossy and things like VLAN ID could no longer be conveyed (due to
-> the lack of support for printf format specifier in netlink extack), I
-> chose to keep the messages in full form to the kernel log only, and
-> leave it up to individual driver maintainers to move more messages to
-> extack.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Michael Walle <michael@walle.cc>
+---
+ drivers/net/phy/at803x.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+index d67bddc111e3..c2aa4c92edde 100644
+--- a/drivers/net/phy/at803x.c
++++ b/drivers/net/phy/at803x.c
+@@ -1190,6 +1190,7 @@ static struct phy_driver at803x_driver[] = {
+ 	.probe			= at803x_probe,
+ 	.remove			= at803x_remove,
+ 	.config_init		= at803x_config_init,
++	.config_aneg		= at803x_config_aneg,
+ 	.soft_reset		= genphy_soft_reset,
+ 	.set_wol		= at803x_set_wol,
+ 	.get_wol		= at803x_get_wol,
 -- 
-Florian
+2.20.1
+
