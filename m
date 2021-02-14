@@ -2,96 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33BB331B149
-	for <lists+netdev@lfdr.de>; Sun, 14 Feb 2021 17:40:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49EAF31B14A
+	for <lists+netdev@lfdr.de>; Sun, 14 Feb 2021 17:41:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229809AbhBNQj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Feb 2021 11:39:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57114 "EHLO
+        id S229818AbhBNQkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Feb 2021 11:40:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229576AbhBNQjW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Feb 2021 11:39:22 -0500
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E25C3C061574
-        for <netdev@vger.kernel.org>; Sun, 14 Feb 2021 08:38:42 -0800 (PST)
-Received: by mail-wm1-x332.google.com with SMTP id r5so858171wmp.1
-        for <netdev@vger.kernel.org>; Sun, 14 Feb 2021 08:38:42 -0800 (PST)
+        with ESMTP id S229576AbhBNQkT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Feb 2021 11:40:19 -0500
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6ED2C061574
+        for <netdev@vger.kernel.org>; Sun, 14 Feb 2021 08:39:39 -0800 (PST)
+Received: by mail-ej1-x635.google.com with SMTP id lg21so7492882ejb.3
+        for <netdev@vger.kernel.org>; Sun, 14 Feb 2021 08:39:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:subject:to:cc:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=fVI7gjSrPQWTPZIF3lno4IgXoY5osdZEypxlTe2oH48=;
-        b=IPBlBCTpbTW2x3Te0JiYWQsSXl2m6zLnRZFLIQg1fKUnTWCmYxhnDMfff2M8FBNzgt
-         FgOWuiZWPHokUFdYkRZAAuo5UyokLCTUN9u4smd5xJ/Z6oaIfvVnrZ9skC0TS9k+dBY3
-         oNpkSBIG/inAgGYGy0djmQ62hz/bxl9sg6EdrEu+tSPSILhz2TgkNEQ4jippvlkJ9/zI
-         2wtbkwT1aRvC61aR9MFEl4KFx5ZYd5HR/v8plIGkZDyFRoyy+CiXuFtU1IYO8notYPW1
-         t8MizOnFB0Yxzrwxix7JFPVukzEU321tCD5fBS9akPtHKQ3unIqPTvdVeRRN4hqI2Dgc
-         /dBg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=XAHHiq/9kKkadfZpbGVc0yQIw9+ckJY/dxbJj8lgJEQ=;
+        b=hySOW50FFXUeNghe8P5utCf1yRxMdxZZGTb7lSksacg8KBqij/bLQHjCJaoVuFfhcg
+         PjNJiUS2G30nv62dqzrF5RLT9m9bGOYFqo/LppLZhdIzt2LTDZrppXfWArI36EQNmaFh
+         xJNq+WekFBq5HpGwt87fvDNIWKJZNmGKV3RWL4FDuPaktYZ8gMMJAkNaVWsZM2d0ohL8
+         /TX6IQ0nhh74w75CicROQDU+eZAZURrZYD/3RLmUdACuB/mW2VSUdLIp5HkmdtyF8Kit
+         LTje6XI0qbcllzLi+EOJA8dkgYXZ3PudyziDtSQvVUPmO9Rve0HYBpVNUuqYDDuubpmD
+         neZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=fVI7gjSrPQWTPZIF3lno4IgXoY5osdZEypxlTe2oH48=;
-        b=f/mxvc5n1AP7IM/a68XJ+0YnZ2NLSNBe9zQ5d3ZfXCOJakHNyQvfIlPRAETp3EoyOK
-         0ExBomuYC6Afirp6ONVk10bEB5QBJKMZ2qukScnd1B8w1f24TaYzlCYu1KpWJ92xJ5Sw
-         gmhdlNT9qYp+oFbl69n2+XFN+0y2u+jNZLwSQUg7v4f+kikw3zWRuBBGn/0CSalwUGFG
-         Utr+AnTxRlybc7g8JCgpRGQ3b2enSro9JGRscYBcjfAPtguEeWRPvlb+7n83XmSRETw7
-         bFZxh5GbX3A+Q87hPsIU4PTtbeMSI9xLky7V4LXWhnif/tz2/4knBeKRAk6At0loPQmC
-         oJDA==
-X-Gm-Message-State: AOAM532g6gxltHfAw5ZX2FWWcGMb9NUL+P0hSxnSkm3nLe8Tl/CVPAag
-        dHCLZ+Eug63oeb4Bg5MS598utYRQNFPNsQ==
-X-Google-Smtp-Source: ABdhPJyqjO4PeSpOyyUhOBe/A6vHqBVB2w4u1k1gXh7QZN8MU/wbO4y/vyNL+8FjXXcGFP7hy8Cpow==
-X-Received: by 2002:a05:600c:4fcf:: with SMTP id o15mr5169712wmq.96.1613320721430;
-        Sun, 14 Feb 2021 08:38:41 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f39:5b00:59b:23b9:f1a6:60c? (p200300ea8f395b00059b23b9f1a6060c.dip0.t-ipconnect.de. [2003:ea:8f39:5b00:59b:23b9:f1a6:60c])
-        by smtp.googlemail.com with ESMTPSA id b2sm17366294wrn.2.2021.02.14.08.38.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 14 Feb 2021 08:38:41 -0800 (PST)
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] r8169: fix resuming from suspend on RTL8105e if
- machine runs on battery
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Message-ID: <5b0846b2-64ca-90ee-b5a5-533286961142@gmail.com>
-Date:   Sun, 14 Feb 2021 17:38:30 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=XAHHiq/9kKkadfZpbGVc0yQIw9+ckJY/dxbJj8lgJEQ=;
+        b=mLVgSR0zznCwc795bnzDpt2bm8/l42yNujigelqnpbUvOo1rWkYmj6k5Awhmn2e4hd
+         f+WO7HwgmRtfe20xP3hhS8suk4HEYIVpYUBhGB4TGldplT/0AcLfHD2NzkxVL1ZSIt75
+         wHwWnJNNFqmEj8rKEFry3J+Li4izXD09cvbVFpjtSlItg6WGyY7+kZaGzNpzsCUVOzKH
+         WbUvz6ZxaC/D4RzKOPVElOR9mWhhnVtTVmco3U8dNEfYY9SuH+nOkH577lt4uRcKKdNg
+         ERqZSHO2jyc9F9VBQ03RglRUJc+8BH/CT+fRC08WUP+ciM0v2KGkRarXRwxxRwv9AG0T
+         HR6w==
+X-Gm-Message-State: AOAM5334Dio/9O9h7qXkHYeM4j5ymOzakEPtNGjoC3oGo6FzY9ApQ5hz
+        KoUFVjSG4QRruyfDdqr1ZWHy6Ado4fo=
+X-Google-Smtp-Source: ABdhPJyNFORMtAMe5VfdQkakCPCbK0xze50y8PTQxCnoJ/ORc898h1HQ9nEc3p4hh7lICurlIzSmHg==
+X-Received: by 2002:a17:906:4ed6:: with SMTP id i22mr2993449ejv.213.1613320778581;
+        Sun, 14 Feb 2021 08:39:38 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id o10sm9326613eju.89.2021.02.14.08.39.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 14 Feb 2021 08:39:38 -0800 (PST)
+Date:   Sun, 14 Feb 2021 18:39:36 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Nikolay Aleksandrov <nikolay@nvidia.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Ido Schimmel <idosch@idosch.org>
+Subject: Re: [PATCH net-next 3/5] net: bridge: propagate extack through
+ switchdev_port_attr_set
+Message-ID: <20210214163936.ut33qwe7opr4rhfk@skbuf>
+References: <20210213204319.1226170-1-olteanv@gmail.com>
+ <20210213204319.1226170-4-olteanv@gmail.com>
+ <74e91dbb-7584-1201-da88-77fbf93e26ab@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <74e91dbb-7584-1201-da88-77fbf93e26ab@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Armin reported that after referenced commit his RTL8105e is dead when
-resuming from suspend and machine runs on battery. This patch has been
-confirmed to fix the issue.
+Hi Nikolay,
 
-Fixes: e80bd76fbf56 ("r8169: work around power-saving bug on some chip versions")
-Reported-by: Armin Wolf <W_Armin@gmx.de>
-Tested-by: Armin Wolf <W_Armin@gmx.de>
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
-- This fix applies on net-next. For net I submitted a separate patch.
----
- drivers/net/ethernet/realtek/r8169_main.c | 1 +
- 1 file changed, 1 insertion(+)
+On Sun, Feb 14, 2021 at 12:45:11PM +0200, Nikolay Aleksandrov wrote:
+> On 13/02/2021 22:43, Vladimir Oltean wrote:
+> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> >
+> > The benefit is the ability to propagate errors from switchdev drivers
+> > for the SWITCHDEV_ATTR_ID_BRIDGE_VLAN_FILTERING and
+> > SWITCHDEV_ATTR_ID_BRIDGE_VLAN_PROTOCOL attributes.
+> >
+> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > ---
+> >  include/net/switchdev.h       |  3 ++-
+> >  net/bridge/br_mrp_switchdev.c |  4 ++--
+> >  net/bridge/br_multicast.c     |  6 +++---
+> >  net/bridge/br_netlink.c       |  2 +-
+> >  net/bridge/br_private.h       |  3 ++-
+> >  net/bridge/br_stp.c           |  4 ++--
+> >  net/bridge/br_switchdev.c     |  6 ++++--
+> >  net/bridge/br_vlan.c          | 13 +++++++------
+> >  net/switchdev/switchdev.c     | 19 ++++++++++++-------
+> >  9 files changed, 35 insertions(+), 25 deletions(-)
+> >
+>
+> You have to update the !CONFIG_NET_SWITCHDEV switchdev_port_attr_set() stub as well.
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 04231585e..376dfd011 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -1252,6 +1252,7 @@ static void rtl_set_d3_pll_down(struct rtl8169_private *tp, bool enable)
- {
- 	switch (tp->mac_version) {
- 	case RTL_GIGA_MAC_VER_25 ... RTL_GIGA_MAC_VER_26:
-+	case RTL_GIGA_MAC_VER_29 ... RTL_GIGA_MAC_VER_30:
- 	case RTL_GIGA_MAC_VER_32 ... RTL_GIGA_MAC_VER_37:
- 	case RTL_GIGA_MAC_VER_39 ... RTL_GIGA_MAC_VER_63:
- 		if (enable)
--- 
-2.30.1
-
+Thanks for pointing this out, you are right, the build fails.
+What is really curious is that I had this issue on my radar but I forgot
+to address it nonetheless.
+I will take a step back and defer this series for after the break.
