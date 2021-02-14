@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65FC331B104
+	by mail.lfdr.de (Postfix) with ESMTP id D993831B105
 	for <lists+netdev@lfdr.de>; Sun, 14 Feb 2021 16:56:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229839AbhBNPzL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Feb 2021 10:55:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47712 "EHLO
+        id S229881AbhBNPzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Feb 2021 10:55:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229576AbhBNPzK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Feb 2021 10:55:10 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4955EC061574
-        for <netdev@vger.kernel.org>; Sun, 14 Feb 2021 07:54:29 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id l12so5357802edt.3
-        for <netdev@vger.kernel.org>; Sun, 14 Feb 2021 07:54:29 -0800 (PST)
+        with ESMTP id S229861AbhBNPzM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Feb 2021 10:55:12 -0500
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CA89C061756
+        for <netdev@vger.kernel.org>; Sun, 14 Feb 2021 07:54:31 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id lg21so7353047ejb.3
+        for <netdev@vger.kernel.org>; Sun, 14 Feb 2021 07:54:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AwMk/kalLyDokHCM5RI1avVwvdbNcsILetiSswflN14=;
-        b=ti+bdeKunPn9c3RUZan4rFyK9YMueMFshAd+uKUToLkudlJvy3W7dKREE2Y+GyX9cD
-         CG9KxfAA26R3qqxj66EVY4m3OZyHq4cPLz0/QLfMGvGJWNgnlCnQLMahNWyTWGobAuTa
-         cRfhql9001+7k7+UqSjdU8sR5KYk4A+CmR5yQbdSvnDxFlO0sMfkM+8oCv3VG6n7m5uF
-         /KoYhuQfeN9dHKROIMcbkNb6JjhhGnlezIFnjqjrIWE0+iI3B1L9htq8uPl+s4fMFWFR
-         9bg74KbPsDZJMPrd6L5OcwWZ90B0OPm4aa3i/P+5tEpR2Um7QEUE8x47g5rTsaZoSZG/
-         smGA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=4uscKdj3e7dnMtPXmv9+QMMVBCYkWMXWgoYx5eWd1aM=;
+        b=YLriXzAvAuOqD/v+i46xD2jTb4VVkH0LrnmPluR1jBrnWsQMDKMFIYUvaZS9e14hlI
+         Ssa3c3QX5bZ8nyJsVIJXGckoUY+po0sD7k38yBMqSk8udS1XkM7gfGpKXDICn9tEJwBd
+         IuIvi14+S9iIYvItHbg4TqARivCO6GNbtwX95XOPTCkTOTWD9TshC37Hs1DbP7tdPJS1
+         9K8O4PWAEUtypWxENPMd+CLxdnJZYjN0I76HZrstWBIKS47SZ8SiSHQw0aqu3jwkAaY+
+         8wmc5Omv11QWEnqNFm4Bx01xn5ekMyh/cQUxsLoLhfg/o2qU6tSn4tzh0KEq7hKoSOZh
+         /kHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AwMk/kalLyDokHCM5RI1avVwvdbNcsILetiSswflN14=;
-        b=d50P6mBekdssTqU8SVKN9rDTchZO+Xq4EqoZGhf8m3abOOtQj+7fzg0YNwjxV4W5xQ
-         6E6XwY0+apAa7rQNWuAGcs29PBfxD+NGfmj5b47VHQ8hV8gypzxWkwyJjelUJOYL+TfW
-         Ct314HYSFEZ4A4bhMTNHXAdyiJp72wgJc6vG1MQWWzvn/OOqR5Qj4D+js7l44D4BPA4w
-         8Q4qbFd+4wPnX0p0Hfo+KlQZX7WMfoitkhQzOJJLXZmYv5XVPD1ENBzYSxYgjbj8wcef
-         z93T/9YxCl6pOyngqXCTuzQ/OzDoTCHzihW3qww+5NJ41JPkK+3BY6JwQxsIX6VtSXzv
-         HVFw==
-X-Gm-Message-State: AOAM533UIb9L4KpifFhcT3F8AXU6j+uOUmG9+9lxHE3zhFGVsUQqSQCu
-        IjVVcmpeqcqjm/xFwBvfEKQ=
-X-Google-Smtp-Source: ABdhPJxt59Mmt5arXEyJ737vvEOoJTYxt9UhYS824bqQfrsnvLj48Ty23g5CMsoA1ad/dIpFciN73A==
-X-Received: by 2002:a05:6402:270d:: with SMTP id y13mr11939483edd.149.1613318067849;
-        Sun, 14 Feb 2021 07:54:27 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=4uscKdj3e7dnMtPXmv9+QMMVBCYkWMXWgoYx5eWd1aM=;
+        b=jZsJjbpg7qdJRo8eYNtCXVQpxutVqZQnXUlsiVTOQlnPHlnK0DQgse45/YQHZjJB3j
+         KSqQrHbkPTcYsiXDj6s+mX4Iq/rupSkCChgifhlTdz55XNmVNT+lUx93sH9ZtKLI2xQ2
+         HGYBjT2UJVhlOVJ/htbi4Qk0KmdDZWPL6c1f+fNedKr4f93BROuBQZuqdypkucXrqHvV
+         HrevxYxzs2SsA+4HTRKfbW9qTBSYAWk/OK8hIXYFbvWt7E37BPa7YAsIx6IyuRlyg5te
+         qbq7iTuRdBq6+tXbNH5JH0N/Wzd6UiYW344nLZIvMZUGza0OYa79JnTLDnw9E1IrC4fO
+         iUew==
+X-Gm-Message-State: AOAM532yYTtKP0Wuo5AHMvLSWOKV00OR38ZywBVcvQkFVqW7dbkehZ4d
+        JDpwHopkppMc7w+8VCmzr74=
+X-Google-Smtp-Source: ABdhPJxz8n+j9cVliZ8WX7SUNdPlQpSCHzjOlg4Hn+FofJywPjQPtxcPAfGraje37YIUjK15yb/1EQ==
+X-Received: by 2002:a17:906:338f:: with SMTP id v15mr1451856eja.395.1613318069257;
+        Sun, 14 Feb 2021 07:54:29 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id cn18sm8576003edb.66.2021.02.14.07.54.26
+        by smtp.gmail.com with ESMTPSA id cn18sm8576003edb.66.2021.02.14.07.54.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 Feb 2021 07:54:27 -0800 (PST)
+        Sun, 14 Feb 2021 07:54:28 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -66,10 +66,12 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Hauke Mehrtens <hauke@hauke-m.de>,
         Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
         Oleksij Rempel <linux@rempel-privat.de>
-Subject: [PATCH net-next 0/4] Software fallback for bridging in DSA
-Date:   Sun, 14 Feb 2021 17:53:22 +0200
-Message-Id: <20210214155326.1783266-1-olteanv@gmail.com>
+Subject: [PATCH net-next 1/4] net: dsa: don't offload switchdev objects on ports that don't offload the bridge
+Date:   Sun, 14 Feb 2021 17:53:23 +0200
+Message-Id: <20210214155326.1783266-2-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210214155326.1783266-1-olteanv@gmail.com>
+References: <20210214155326.1783266-1-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -78,55 +80,80 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-As was discussed here:
-https://patchwork.kernel.org/project/netdevbpf/patch/20201202091356.24075-3-tobias@waldekranz.com/
+Starting with commit 058102a6e9eb ("net: dsa: Link aggregation support"),
+DSA warns that certain configurations of upper interfaces are not offloaded
+to hardware. When a DSA port does not offload a LAG interface, the
+dp->lag_dev pointer is always NULL. However the same cannot be said about
+offloading a bridge: dp->bridge_dev will get populated regardless of
+whether the driver can put the port into the bridge's forwarding domain
+or not.
 
-it is desirable to not reject a LAG interface (bonding, team) even if
-the switch isn't able to offload bridging towards that link aggregation
-group. At least the DSA setups I have are not that unbalanced between
-the horsepower of the CPU and the horsepower of the switch such that
-software forwarding to be completely impractical.
+Instead of silently returning 0 if the driver doesn't implement
+.port_bridge_join, return -EOPNOTSUPP instead, and print a message via
+netlink extack that the configuration was not offloaded to hardware.
 
-This series makes all switch drivers theoretically able to do the right
-thing when they are configured in a way similar to this (credits to
-Tobias Waldekranz for the drawing):
+Now we can use the check whether dp->bridge_dev is NULL in order to
+avoid offloading at all switchdev attributes and objects for ports that
+don't even offload the basic operation of switching. Those can still do
+the required L2 forwarding using the bridge software datapath, but
+enabling any hardware features specific to the bridge such as address
+learning would just ask for problems.
 
-      br0
-     /   \
-  team0   \
-   / \     \
-swp0 swp1  swp2
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ net/dsa/dsa_priv.h | 2 ++
+ net/dsa/slave.c    | 5 +++++
+ net/dsa/switch.c   | 7 +++++--
+ 3 files changed, 12 insertions(+), 2 deletions(-)
 
-although in practice there is one more prerequisite: for software
-fallback mode, they need to disable address learning. It is preferable
-that they do this by implementing the .port_pre_bridge_join and
-.port_bridge_join methods.
-
-Vladimir Oltean (4):
-  net: dsa: don't offload switchdev objects on ports that don't offload
-    the bridge
-  net: dsa: reject switchdev objects centrally from
-    dsa_slave_port_obj_{add,del}
-  net: dsa: return -EOPNOTSUPP if .port_lag_join is not implemented
-  net: dsa: don't set skb->offload_fwd_mark when not offloading the
-    bridge
-
- net/dsa/dsa_priv.h         | 16 ++++++++++++++++
- net/dsa/slave.c            | 21 +++++++++++----------
- net/dsa/switch.c           | 13 ++++++++++---
- net/dsa/tag_brcm.c         |  2 +-
- net/dsa/tag_dsa.c          |  9 +++++----
- net/dsa/tag_hellcreek.c    |  2 +-
- net/dsa/tag_ksz.c          |  2 +-
- net/dsa/tag_lan9303.c      |  4 +++-
- net/dsa/tag_mtk.c          |  2 +-
- net/dsa/tag_ocelot.c       |  2 +-
- net/dsa/tag_ocelot_8021q.c |  2 +-
- net/dsa/tag_rtl4_a.c       |  2 +-
- net/dsa/tag_sja1105.c      |  4 ++--
- net/dsa/tag_xrs700x.c      |  3 +--
- 14 files changed, 55 insertions(+), 29 deletions(-)
-
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index f5949b39f6f7..7b0dd2d5f3f8 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -205,6 +205,8 @@ static inline bool dsa_port_offloads_netdev(struct dsa_port *dp,
+ 					    struct net_device *dev)
+ {
+ 	/* Switchdev offloading can be configured on: */
++	if (!dp->bridge_dev)
++		return false;
+ 
+ 	if (dev == dp->slave)
+ 		/* DSA ports directly connected to a bridge, and event
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 8c9a41a7209a..94bce3596eb6 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -1922,6 +1922,11 @@ static int dsa_slave_changeupper(struct net_device *dev,
+ 			err = dsa_port_bridge_join(dp, info->upper_dev);
+ 			if (!err)
+ 				dsa_bridge_mtu_normalization(dp);
++			if (err == -EOPNOTSUPP) {
++				NL_SET_ERR_MSG_MOD(info->info.extack,
++						   "Offloading not supported");
++				err = 0;
++			}
+ 			err = notifier_from_errno(err);
+ 		} else {
+ 			dsa_port_bridge_leave(dp, info->upper_dev);
+diff --git a/net/dsa/switch.c b/net/dsa/switch.c
+index 1906179e59f7..4137716d0de5 100644
+--- a/net/dsa/switch.c
++++ b/net/dsa/switch.c
+@@ -88,9 +88,12 @@ static int dsa_switch_bridge_join(struct dsa_switch *ds,
+ {
+ 	struct dsa_switch_tree *dst = ds->dst;
+ 
+-	if (dst->index == info->tree_index && ds->index == info->sw_index &&
+-	    ds->ops->port_bridge_join)
++	if (dst->index == info->tree_index && ds->index == info->sw_index) {
++		if (!ds->ops->port_bridge_join)
++			return -EOPNOTSUPP;
++
+ 		return ds->ops->port_bridge_join(ds, info->port, info->br);
++	}
+ 
+ 	if ((dst->index != info->tree_index || ds->index != info->sw_index) &&
+ 	    ds->ops->crosschip_bridge_join)
 -- 
 2.25.1
 
