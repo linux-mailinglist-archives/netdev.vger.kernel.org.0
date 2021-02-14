@@ -2,87 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEA6131B0DD
-	for <lists+netdev@lfdr.de>; Sun, 14 Feb 2021 15:54:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65FC331B104
+	for <lists+netdev@lfdr.de>; Sun, 14 Feb 2021 16:56:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229788AbhBNOyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Feb 2021 09:54:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34896 "EHLO
+        id S229839AbhBNPzL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Feb 2021 10:55:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229563AbhBNOyj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Feb 2021 09:54:39 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B00C061574
-        for <netdev@vger.kernel.org>; Sun, 14 Feb 2021 06:53:59 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id fa16so2261820pjb.1
-        for <netdev@vger.kernel.org>; Sun, 14 Feb 2021 06:53:59 -0800 (PST)
+        with ESMTP id S229576AbhBNPzK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Feb 2021 10:55:10 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4955EC061574
+        for <netdev@vger.kernel.org>; Sun, 14 Feb 2021 07:54:29 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id l12so5357802edt.3
+        for <netdev@vger.kernel.org>; Sun, 14 Feb 2021 07:54:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=vw50znwU6REW59YMcJN+DgtH0CGqzi0DrUWq2GvV4dQ=;
-        b=RAk+2B7b1fWhtDAoA8EF3LU0AeAUtXtsvOOdRORjDuVX7cGSeZ5jQhrsebmzFGmW4h
-         eJ7eHugctRhuqR8us/bTBQdsIvMK0pl48PTmgWDgIek83hEJdl2NMysKz3601DiEf9Bm
-         N4EMbVBHxzq/SzyTKys1aJB2pRoJ1LhTtuzVj22cJcAHCU2w7QV/EiY4lruFAf3rUD6d
-         kzpABX+KQLvokHQpwwYrEsP0ctO9WN1ugUKabPtyKKD0Gl4zvdsYocc+PRXD3a6vIdZf
-         FY664Atpkzt3EElzPZDeIGen2Qyy+hp7+PJSIuBKphEPJjQXiE+C5NvrmAavqz4rSi75
-         Iegw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AwMk/kalLyDokHCM5RI1avVwvdbNcsILetiSswflN14=;
+        b=ti+bdeKunPn9c3RUZan4rFyK9YMueMFshAd+uKUToLkudlJvy3W7dKREE2Y+GyX9cD
+         CG9KxfAA26R3qqxj66EVY4m3OZyHq4cPLz0/QLfMGvGJWNgnlCnQLMahNWyTWGobAuTa
+         cRfhql9001+7k7+UqSjdU8sR5KYk4A+CmR5yQbdSvnDxFlO0sMfkM+8oCv3VG6n7m5uF
+         /KoYhuQfeN9dHKROIMcbkNb6JjhhGnlezIFnjqjrIWE0+iI3B1L9htq8uPl+s4fMFWFR
+         9bg74KbPsDZJMPrd6L5OcwWZ90B0OPm4aa3i/P+5tEpR2Um7QEUE8x47g5rTsaZoSZG/
+         smGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=vw50znwU6REW59YMcJN+DgtH0CGqzi0DrUWq2GvV4dQ=;
-        b=kzz1evK7MMDQU5EtswXOxulepFrWmh8MmE7yfh3ImJOH26R+jgYxQePLV06qHCRKfB
-         6yH5vVbaYMRmO7NKN/44LvFEWup28IT9gYTkoAIHuudoxVC6KQ7d/65hOGKDUpOBfX7O
-         FqxAtAaxGMLusNIJQ2VDK/Y5rhYgyPSHNrYKRg+5A6b7zfliUvgwjOVJF+bWRniRAKN9
-         B9UM0maewLWvEQf3gMmW8Zq/T1r1NjjqZNcO/T/QSen94EJqCRgFCQ8yt3AZWNg1YeoE
-         mryEzxmuOSYcLjj5cS6n6EkKbrNTw8WeRuS5k0QWA77ofelh+jAUCKyeIcPbY6C05L5p
-         eEtA==
-X-Gm-Message-State: AOAM5300mqpePZMUxNBU53wIiJvV9sU+/yPTlW3u0BPIfIrVgsXtg57L
-        fXGAqy6flGVF9/MfHQM6olQ=
-X-Google-Smtp-Source: ABdhPJwj6UxQQyGlu7pFqdkl1K5bKT9FfRVur7O4f6en7BAPG2PdBRfz6z8RsJp+jvVfhtUIgqIE5w==
-X-Received: by 2002:a17:902:c602:b029:e2:8422:ffbc with SMTP id r2-20020a170902c602b02900e28422ffbcmr11369732plr.78.1613314439091;
-        Sun, 14 Feb 2021 06:53:59 -0800 (PST)
-Received: from [192.168.0.4] ([49.173.165.50])
-        by smtp.gmail.com with ESMTPSA id r5sm15069499pfh.13.2021.02.14.06.53.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 14 Feb 2021 06:53:58 -0800 (PST)
-Subject: Re: [PATCH net-next v2 3/7] mld: add a new delayed_work,
- mc_delrec_work
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        jwi@linux.ibm.com, kgraul@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, borntraeger@de.ibm.com,
-        Marek Lindner <mareklindner@neomailbox.ch>,
-        sw@simonwunderlich.de, a@unstable.cc, sven@narfation.org,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        dsahern@kernel.org, ap420073@gmail.com
-References: <20210213175148.28375-1-ap420073@gmail.com>
- <CAM_iQpVrD5623egpEy2BhR66smuEaTLRHgsu9YA_vrMGjacPkg@mail.gmail.com>
-From:   Taehee Yoo <ap420073@gmail.com>
-Message-ID: <5bb93b2b-e59c-a7d6-b638-f12463b0bc04@gmail.com>
-Date:   Sun, 14 Feb 2021 23:53:53 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        bh=AwMk/kalLyDokHCM5RI1avVwvdbNcsILetiSswflN14=;
+        b=d50P6mBekdssTqU8SVKN9rDTchZO+Xq4EqoZGhf8m3abOOtQj+7fzg0YNwjxV4W5xQ
+         6E6XwY0+apAa7rQNWuAGcs29PBfxD+NGfmj5b47VHQ8hV8gypzxWkwyJjelUJOYL+TfW
+         Ct314HYSFEZ4A4bhMTNHXAdyiJp72wgJc6vG1MQWWzvn/OOqR5Qj4D+js7l44D4BPA4w
+         8Q4qbFd+4wPnX0p0Hfo+KlQZX7WMfoitkhQzOJJLXZmYv5XVPD1ENBzYSxYgjbj8wcef
+         z93T/9YxCl6pOyngqXCTuzQ/OzDoTCHzihW3qww+5NJ41JPkK+3BY6JwQxsIX6VtSXzv
+         HVFw==
+X-Gm-Message-State: AOAM533UIb9L4KpifFhcT3F8AXU6j+uOUmG9+9lxHE3zhFGVsUQqSQCu
+        IjVVcmpeqcqjm/xFwBvfEKQ=
+X-Google-Smtp-Source: ABdhPJxt59Mmt5arXEyJ737vvEOoJTYxt9UhYS824bqQfrsnvLj48Ty23g5CMsoA1ad/dIpFciN73A==
+X-Received: by 2002:a05:6402:270d:: with SMTP id y13mr11939483edd.149.1613318067849;
+        Sun, 14 Feb 2021 07:54:27 -0800 (PST)
+Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id cn18sm8576003edb.66.2021.02.14.07.54.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 14 Feb 2021 07:54:27 -0800 (PST)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
+        Oleksij Rempel <linux@rempel-privat.de>
+Subject: [PATCH net-next 0/4] Software fallback for bridging in DSA
+Date:   Sun, 14 Feb 2021 17:53:22 +0200
+Message-Id: <20210214155326.1783266-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <CAM_iQpVrD5623egpEy2BhR66smuEaTLRHgsu9YA_vrMGjacPkg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
- >
- > By the way, if you do not use a delay, you can just use regular work.
- >
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The regular workqueue API couldn't be used in an atomic context, So I 
-used delayed_work.
-If 0 delay is passed to delayed_work, it internally calls regular workqueue.
-So, I think there is no actual difference.
+As was discussed here:
+https://patchwork.kernel.org/project/netdevbpf/patch/20201202091356.24075-3-tobias@waldekranz.com/
 
-Thanks!
+it is desirable to not reject a LAG interface (bonding, team) even if
+the switch isn't able to offload bridging towards that link aggregation
+group. At least the DSA setups I have are not that unbalanced between
+the horsepower of the CPU and the horsepower of the switch such that
+software forwarding to be completely impractical.
+
+This series makes all switch drivers theoretically able to do the right
+thing when they are configured in a way similar to this (credits to
+Tobias Waldekranz for the drawing):
+
+      br0
+     /   \
+  team0   \
+   / \     \
+swp0 swp1  swp2
+
+although in practice there is one more prerequisite: for software
+fallback mode, they need to disable address learning. It is preferable
+that they do this by implementing the .port_pre_bridge_join and
+.port_bridge_join methods.
+
+Vladimir Oltean (4):
+  net: dsa: don't offload switchdev objects on ports that don't offload
+    the bridge
+  net: dsa: reject switchdev objects centrally from
+    dsa_slave_port_obj_{add,del}
+  net: dsa: return -EOPNOTSUPP if .port_lag_join is not implemented
+  net: dsa: don't set skb->offload_fwd_mark when not offloading the
+    bridge
+
+ net/dsa/dsa_priv.h         | 16 ++++++++++++++++
+ net/dsa/slave.c            | 21 +++++++++++----------
+ net/dsa/switch.c           | 13 ++++++++++---
+ net/dsa/tag_brcm.c         |  2 +-
+ net/dsa/tag_dsa.c          |  9 +++++----
+ net/dsa/tag_hellcreek.c    |  2 +-
+ net/dsa/tag_ksz.c          |  2 +-
+ net/dsa/tag_lan9303.c      |  4 +++-
+ net/dsa/tag_mtk.c          |  2 +-
+ net/dsa/tag_ocelot.c       |  2 +-
+ net/dsa/tag_ocelot_8021q.c |  2 +-
+ net/dsa/tag_rtl4_a.c       |  2 +-
+ net/dsa/tag_sja1105.c      |  4 ++--
+ net/dsa/tag_xrs700x.c      |  3 +--
+ 14 files changed, 55 insertions(+), 29 deletions(-)
+
+-- 
+2.25.1
+
