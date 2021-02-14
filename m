@@ -2,131 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33A8831B028
-	for <lists+netdev@lfdr.de>; Sun, 14 Feb 2021 11:57:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02BE231B02D
+	for <lists+netdev@lfdr.de>; Sun, 14 Feb 2021 12:13:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229740AbhBNK5O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Feb 2021 05:57:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40978 "EHLO
+        id S229740AbhBNLK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Feb 2021 06:10:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229528AbhBNK5N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Feb 2021 05:57:13 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DD47C061756
-        for <netdev@vger.kernel.org>; Sun, 14 Feb 2021 02:56:33 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id w18so2444984pfu.9
-        for <netdev@vger.kernel.org>; Sun, 14 Feb 2021 02:56:33 -0800 (PST)
+        with ESMTP id S229563AbhBNLK6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Feb 2021 06:10:58 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E60F2C061574
+        for <netdev@vger.kernel.org>; Sun, 14 Feb 2021 03:10:17 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id l12so4910651edt.3
+        for <netdev@vger.kernel.org>; Sun, 14 Feb 2021 03:10:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=f8dnL450V2PSPis5FrggYqi8yNhSum9yhG+6vwT8CDc=;
-        b=i0f2ZnN9YskUWeeM4oA+JTo3ieGZLlhk4NX9/UaVzzAWN31FJlSrLGSoazCcDihAsj
-         FKF8Q7x77lf34iGTKsWXB3RI/H9hOD/2gPYUOwB7PgLhwlqy8RONbySmFgO1yCBkMvZW
-         0b4+z/yuAL8hE0FTcPFnlaAhCrf/ltdkbKIOjEDIyO7R2of3brKncoGBOVKG+gLJCyZK
-         mblATmu8VCihSzgakjo9wRCDB6DAcx/zPtVH5X6gYrVqKWe9ITcyDlJjpBSzWP/X1LSE
-         +SHIgTMZkChdQ+HRaLqQv3yGA0J3NOzun57vsG2bAS17kSkAJLRSAmEjOlmxlZB8UyLy
-         nSUw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=OqHLoWEFtOhsddx1lsykVyu45/1co5LOTjHjQtE/VfU=;
+        b=YBILQTJw9xV/cwPiFe8UT4HmMH/AoIGxGI8ybZO5Dq7GZvaSw8550vezBh2FFqY4Gi
+         fmywNKDKCTY0fv7YQIQjUa0abOykbwhDJ8xGcus9j914OqDTMLtuLrQNr4PVZcg+tFd6
+         HfMVDjTSB9vwZsO/KAx8aAl09gPiYWC3u1O9WqzDZ/sdOg0pn1ibl+FSXxqF5/4m6XOt
+         rJC6QBgyJ4fCcYHvsCNfCsCru/o3JyhdJPHv4MxTHnx8j/lvXTv9BmuIOyX2Neq2gv+W
+         ALuNg23WyU0sq1+op4iiIai9aTvynVb9csICjdtxHMu2e8vSn5KDF6Res2CSyaCW10um
+         EzPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=f8dnL450V2PSPis5FrggYqi8yNhSum9yhG+6vwT8CDc=;
-        b=lJbKXa3UlQVdwpTNFAiuwwMRXvIE4JOtJz9UMePjjO38qSQqkhT6VIwGsnheb+dYTc
-         520zZIvCLNyKsFEDaUL7S/xixJcgobsUN1gpJyJCk6Nc4fzTC4kfJE2yjaWsJ44ODMjx
-         7peyMdRO2z1mzhgGuhC/lq9vG/AnXrrlk/annsVSsMrg3Qxv7MXtGdZ77MXK4e7kxVF1
-         UoUIYguHg4uOku11nYBpcdYVpw2RxNv12D97cAmu3FCoatNeYgfLRDBj1CWaUozMGDl9
-         3OWH5k1zV0nTedcPTRPM1cOyMypbZoDR0Gzsg5h0bD0z0nTVBi+9wHYnHhFlVqdtezXE
-         AaSw==
-X-Gm-Message-State: AOAM530mQbwlqevU7KBpLlF/YfhLAXE1F7/VYpn6C6H3zucXnzI1gofx
-        xSH05LNpBZJ57zazN8IRMhQ=
-X-Google-Smtp-Source: ABdhPJy2rXipAKPiEvJDK4l+vAa67uSbZYIrl830COK/ok/lSQZkDC7m8OmPKwKJ9jhd8G9UJVNi1w==
-X-Received: by 2002:a05:6a00:22d1:b029:1b4:9bb5:724c with SMTP id f17-20020a056a0022d1b02901b49bb5724cmr11073769pfj.63.1613300192517;
-        Sun, 14 Feb 2021 02:56:32 -0800 (PST)
-Received: from [192.168.0.4] ([49.173.165.50])
-        by smtp.gmail.com with ESMTPSA id dw23sm13078166pjb.3.2021.02.14.02.56.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 14 Feb 2021 02:56:32 -0800 (PST)
-Subject: Re: [PATCH net-next v2 1/7] mld: convert from timer to delayed work
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=OqHLoWEFtOhsddx1lsykVyu45/1co5LOTjHjQtE/VfU=;
+        b=UhrneYyVX/0w25vGXAdr13QI8UxmU8Weyfh6wGlVNJtsnGIYHkWocNXNo7mfvYrvcx
+         rdY8PXOUe6knybpgJ4AwashkUOXNgFhpO1wzcfTe5BZPvmnzflM65J8nNoHwMLPZL9Lz
+         uWNCUeg4WRo82A0fSReTnYxrxuSKRCNsi7sIz2vhJ8Y47qNv89pV+GvEDySZEms0a2Nv
+         1pGnL9obYmB7a1lpo6iBqdxAPANSD0jCKf0YNdQsntGj0uTmCse2jI+WONGbfaYluqha
+         aQnlZM9lp7Lb2LJtlAKJZQOHlyPz09Gfq8JsNZZBocywnOk6rKr4uu1wzFViaHr7ZnqH
+         jQzg==
+X-Gm-Message-State: AOAM530LGiBTqlBgvYstJXBsc3Y1KbO5eNen2k1xwU2Ab+UYvfIR4tzc
+        VIZ00omwTzoZRwWmG5Wd5Do=
+X-Google-Smtp-Source: ABdhPJw9+coMd7p6LzcE8i9+2wAspwNDnwrQZGpBe0hPUTplbkwKpdX2NJxLEs6CpPcRWopyJhnE+A==
+X-Received: by 2002:a05:6402:1118:: with SMTP id u24mr11182914edv.386.1613301016172;
+        Sun, 14 Feb 2021 03:10:16 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id r23sm8832690ejd.56.2021.02.14.03.10.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 14 Feb 2021 03:10:15 -0800 (PST)
+Date:   Sun, 14 Feb 2021 13:10:14 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        jwi@linux.ibm.com, kgraul@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, borntraeger@de.ibm.com,
-        Marek Lindner <mareklindner@neomailbox.ch>,
-        sw@simonwunderlich.de, a@unstable.cc, sven@narfation.org,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>, dsahern@kernel.org
-References: <20210213175102.28227-1-ap420073@gmail.com>
- <CAM_iQpXLMk+4VuHr8WyLE1fxNV5hsN7JvA2PoDOmnZ4beJOH7Q@mail.gmail.com>
-From:   Taehee Yoo <ap420073@gmail.com>
-Message-ID: <3cbe0945-4f98-961c-29cc-5b863c99e2df@gmail.com>
-Date:   Sun, 14 Feb 2021 19:56:27 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Antoine Tenart <atenart@kernel.org>,
+        Quentin Schulz <quentin.schulz@bootlin.com>,
+        Michael Walle <michael@walle.cc>, netdev@vger.kernel.org,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next 1/2] net: phylink: explicitly configure in-band
+ autoneg for PHYs that support it
+Message-ID: <20210214111014.edr7uqezqdzrrr7w@skbuf>
+References: <20210212172341.3489046-1-olteanv@gmail.com>
+ <20210212172341.3489046-2-olteanv@gmail.com>
+ <20210214103529.GT1463@shell.armlinux.org.uk>
 MIME-Version: 1.0
-In-Reply-To: <CAM_iQpXLMk+4VuHr8WyLE1fxNV5hsN7JvA2PoDOmnZ4beJOH7Q@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210214103529.GT1463@shell.armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, Feb 14, 2021 at 10:35:29AM +0000, Russell King - ARM Linux admin wrote:
+> > +	if (ret && ret != -EOPNOTSUPP) {
+> > +		phylink_warn(pl, "failed to configure PHY in-band autoneg: %d\n",
+> > +			     ret);
+> 
+> Please use %pe and ERR_PTR(ret) so we can get a symbolic errno value.
 
+I didn't know that was possible, thanks for the hint.
 
-On 21. 2. 14. 오전 4:07, Cong Wang wrote:
- > On Sat, Feb 13, 2021 at 9:51 AM Taehee Yoo <ap420073@gmail.com> wrote:
- >> -static void mld_dad_start_timer(struct inet6_dev *idev, unsigned 
-long delay)
- >> +static void mld_dad_start_work(struct inet6_dev *idev, unsigned 
-long delay)
- >>   {
- >>          unsigned long tv = prandom_u32() % delay;
- >>
- >> -       if (!mod_timer(&idev->mc_dad_timer, jiffies+tv+2))
- >> +       if (!mod_delayed_work(mld_wq, &idev->mc_dad_work, 
-msecs_to_jiffies(tv + 2)))
- >
- > IIUC, before this patch 'delay' is in jiffies, after this patch it is 
-in msecs?
- >
+> As mentioned in this thread, we have at least one PHY which is unable
+> to provide the inband signalling in any mode (BCM84881). Currently,
+> phylink detects this PHY on a SFP (in phylink_phy_no_inband()) and
+> adjusts not to use inband mode. This would need to be addressed if we
+> are creating an alterative way to discover whether the PHY supports
+> inband mode or not.
 
-Ah, I understand, It's my mistake.
-I didn't change the behavior of 'delay' in this patchset.
-So, 'delay' is still in jiffies, not msecs.
-Therefore, msecs_to_jiffies() should not be used in this patchset.
-I will send a v3 patch, which doesn't use msecs_to_jiffies().
-Thanks!
+So I haven't studied the SFP code path too deeply, but I think part of
+the issue is the order in which things are done. It's almost as if there
+should be a validation phase for PHY inband abilities too.
 
-By the way, I think the 'delay' is from the 
-unsolicited_report_interval() and it just return value of 
-idev->cnf.mldv{1 | 2}_unsolicited_report_interval.
-I think this value is msecs, not jiffies.
-So, It should be converted to use msecs_to_jiffies(), I think.
-How do you think about it?
+phylink_sfp_connect_phy
+-> phylink_sfp_config:
+   -> first this checks if phylink_phy_no_inband
+   -> then this changes pl->link_config.interface and pl->cur_link_an_mode
+-> phylink_bringup_phy:
+   -> this is where I'm adding the new phy_config_inband_aneg function
 
- > [...]
- >
- >> -static void mld_dad_timer_expire(struct timer_list *t)
- >> +static void mld_dad_work(struct work_struct *work)
- >>   {
- >> -       struct inet6_dev *idev = from_timer(idev, t, mc_dad_timer);
- >> +       struct inet6_dev *idev = container_of(to_delayed_work(work),
- >> +                                             struct inet6_dev,
- >> +                                             mc_dad_work);
- >>
- >> +       rtnl_lock();
- >
- > Any reason why we need RTNL after converting the timer to
- > delayed work?
- >
+If we were to use only my phy_config_inband_aneg function, it would need
+to be moved upwards in the code path, to be precise where phylink_phy_no_inband
+currently is. Then we'd have to try MLO_AN_INBAND first, with a fallback
+to MLO_AN_PHY if that fails. I think this would unnecessarily complicate
+the code.
 
-For the moment, RTNL is not needed.
-But the Resources, which are used by delayed_work will be protected by 
-RTNL instead of other locks.
-So, It just pre-adds RTNL and the following patches will delete other locks.
+Alternatively, I could create a second PHY driver method, simply for
+validation of supported inband modes. The validation can be done in
+place of the current phylink_phy_noinband(), and I can still have the
+phy_config_inband_aneg() where I put it now, since we shouldn't have any
+surprises w.r.t. supported operating mode, and there should be no reason
+to repeat the attempt as there would be with a single PHY driver method.
+Thoughts?
 
- > Thanks.
- >
+> Also, there needs to be consideration of PHYs that dynamically change
+> their interface type, and whether they support inband signalling.
+> For example, a PHY may support a mode where it dynamically selects
+> between 10GBASE-R, 5GBASE-R, 2500BASE-X and SGMII, where the SGMII
+> mode may have inband signalling enabled or disabled. This is not a
+> theoretical case; we have a PHY like that supported in the kernel and
+> boards use it. What would the semantics of your new call be for a PHY
+> that performs this?
+> 
+> Should we also have a phydev->inband tristate, taking values "unknown,
+> enabled, disabled" which the PHY driver is required to update in their
+> read_status callback if they dynamically change their interface type?
+> (Although then phylink will need to figure out how to deal with that.)
+
+I don't have such PHY to test with, but I think the easiest way would be
+to just call the validation method again, after we change the
+phydev->interface value. The PHY driver can easily take phydev->interface
+into consideration when answering the question "is inband aneg supported
+or not". I don't think that making phydev->inband a stateful value is
+going to be as useful as making it a function, since as you say, we will
+be required to keep it up to date from generic PHY driver methods, but
+only phylink will use it.
