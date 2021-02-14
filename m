@@ -2,104 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDDD931B2EE
-	for <lists+netdev@lfdr.de>; Sun, 14 Feb 2021 23:02:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE11A31B323
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 00:01:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230015AbhBNWCM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Feb 2021 17:02:12 -0500
-Received: from mx2.suse.de ([195.135.220.15]:50744 "EHLO mx2.suse.de"
+        id S230104AbhBNXA5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Feb 2021 18:00:57 -0500
+Received: from ozlabs.org ([203.11.71.1]:37295 "EHLO ozlabs.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229934AbhBNWCL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 14 Feb 2021 17:02:11 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 088E6AB98;
-        Sun, 14 Feb 2021 22:01:30 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id BCA3F603BB; Sun, 14 Feb 2021 23:01:29 +0100 (CET)
-Date:   Sun, 14 Feb 2021 23:01:29 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Danielle Ratson <danieller@nvidia.com>
-Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, kuba@kernel.org,
-        andrew@lunn.ch, mlxsw@nvidia.com
-Subject: Re: [PATCH ethtool v3 0/5] Extend uAPI with lanes parameter
-Message-ID: <20210214220129.f32r345ft3oo3vzm@lion.mk-sys.cz>
-References: <20210210134840.2187696-1-danieller@nvidia.com>
+        id S229793AbhBNXAz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 14 Feb 2021 18:00:55 -0500
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Df2kh3sYvz9rx8;
+        Mon, 15 Feb 2021 10:00:12 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1613343613;
+        bh=skpc64AyD/88wgqYYquctav6U2Q3pruHhfRsZisKFpk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=r2Zt28EgFncNF4wZfQ7X25NkDtFoP6w+lGw8aEHnWYKZcNIspTga9AXcGSfo5QPPB
+         rqBQtUXzu513qs0k9tOXmx8jsWzGbyAPbNuwVLsPQ8UHPwYhw4Wk8fdN9KSTeSS9OC
+         tRDdr2EcMkemdggEwqgyl560AMWWysFfjIZeYqKFw80ggGUmsKK2Gn+lqyHafCd1t0
+         ea1YgZaMrX9E/l5SMH5q40GLCaCZpBESY+Nz1rmu/AEL6vXRwLy6LrUqCSjS//lNCn
+         Hp3cXq9FdcJNaQ28hmKmBbS4jYZjAaYlhPixTGLHYMfT5yca4TYQS104UzBFp3Pe+f
+         au5YlWLfQyDQg==
+Date:   Mon, 15 Feb 2021 10:00:11 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Arjun Roy <arjunroy@google.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Stanislav Fomichev <sdf@google.com>
+Subject: Re: linux-next: manual merge of the bpf-next tree with the net-next
+ tree
+Message-ID: <20210215100011.4f1e3e44@canb.auug.org.au>
+In-Reply-To: <CAOFY-A2sLGQHpBp79f2bQ-2hgQDbu04e+7uC9+E3vSo7Cqq5=A@mail.gmail.com>
+References: <20210125111223.2540294c@canb.auug.org.au>
+        <20210215081250.19bc8921@canb.auug.org.au>
+        <CAOFY-A2sLGQHpBp79f2bQ-2hgQDbu04e+7uC9+E3vSo7Cqq5=A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="cuhfgoruzxcaordz"
-Content-Disposition: inline
-In-Reply-To: <20210210134840.2187696-1-danieller@nvidia.com>
+Content-Type: multipart/signed; boundary="Sig_/U8azvLZiM2aOMPL6IM1slh1";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---cuhfgoruzxcaordz
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+--Sig_/U8azvLZiM2aOMPL6IM1slh1
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Feb 10, 2021 at 03:48:35PM +0200, Danielle Ratson wrote:
-> Currently, there is no way of knowing how many lanes will be use to
-> achieve a wanted speed.
-> For example, 100G speed can be achieved using: 2X50 or 4X25.
->=20
-> In order to solve that, extend ethtool uAPI with lanes as a new link
-> mode setting so the command below, for example, will be supported:
-> $ ethtool -s swp5 lanes N
->=20
-> Patch #1: Update headers with the new parameter.
-> Patch #2: Support lanes in netlink.
-> Patch #3: Expose the number of lanes in use.
-> Patch #4: Add auto-completion for lanes.
-> Patch #5: Add lanes to man page.
->=20
-> v3:
-> 	* Add a seperated patch, patch #1, for uapi headers and squash
-> 	* the rest of it to patch #2.
+Hi Arjun,
 
-Series applied, thank you.
+On Sun, 14 Feb 2021 13:40:38 -0800 Arjun Roy <arjunroy@google.com> wrote:
+>
+> Sorry, I was confused from the prior email. Is any action required at
+> the moment, or not?
 
-Michal
+No.  This is just something that the net-next and bpf-next maintainers
+need to sort out when they merge their trees.
 
->=20
-> Danielle Ratson (5):
->   update UAPI header copies
->   netlink: settings: Add netlink support for lanes parameter
->   netlink: settings: Expose the number of lanes in use
->   shell-completion: Add completion for lanes
->   man: Add man page for setting lanes parameter
->=20
->  ethtool.8.in                  |  4 ++++
->  ethtool.c                     |  1 +
->  netlink/desc-ethtool.c        |  1 +
->  netlink/settings.c            | 13 +++++++++++++
->  shell-completion/bash/ethtool |  4 ++++
->  uapi/linux/ethtool.h          |  2 +-
->  uapi/linux/ethtool_netlink.h  |  1 +
->  uapi/linux/if_link.h          | 10 ++++++++--
->  uapi/linux/netlink.h          |  2 +-
->  uapi/linux/rtnetlink.h        | 20 +++++++++++++++-----
->  10 files changed, 49 insertions(+), 9 deletions(-)
->=20
-> --=20
-> 2.26.2
->=20
+--=20
+Cheers,
+Stephen Rothwell
 
---cuhfgoruzxcaordz
-Content-Type: application/pgp-signature; name="signature.asc"
+--Sig_/U8azvLZiM2aOMPL6IM1slh1
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmApnbIACgkQ538sG/LR
-dpXD2Qf+KR85buv/OKMtuv7NiUfWubq1zo4B6vL6Ip5fMNUoNg+9HEF4GsF0x4VN
-SE9TMQM/rnqVmYU3a+NfWps3PeHmXjxl/KhcfGhj8cEvJMS37ZUElRQMLkzm8oXA
-KVnzbRz4saZ68meK2DBEre6mm/7bOObk9d6nJV1nyPUvgbJx6WlBdm9rFdPCFODe
-E5q+izq8wzAbI/5Oub3DbqxjblKCEOTfFnVuXnCD3tiEE/kdX+piZocaEwUMm9IL
-O0JJ1O1vNvkrcGAlmaap15NDaQPzrJ8es7kMMAYu6EEirk6oPXY6rqLILW4aPxD2
-rg0/uY9zNexarC3ZIl9WBmPDzofl8g==
-=B2O8
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmApq3sACgkQAVBC80lX
+0GzUxAf+LxHFGPU3sM8rzN9+aUR18C+x40fPjSks1etMsQN4/1ZjLcKQBqc7kbLF
+I9YvrSQGJN027Z1rklKYzjGLgHxJ+B1pljQZNaR2dLTSJMJH3Sh2IHBsWD7w+d3n
+b5m4JqVyaMmmDjeej6y7I/WWNsXPK8NW596qARwsdLDNiW63ZUcFfyS2MqwVNbLI
+k/43/HliE8JNi0WyLkaG6EfBqgZSBphd8CpIyhW/7z9GE7X0NCatkQAM0wVN7ic9
+9+boQnISOp13eh7DIxOhvldLiVc/hLwa26bZpAFJ/zHMtwvLBlz/YBWiDNRdY2d7
+onWWIstfqR7gdOotFjsEL5PI+OsKpA==
+=k35n
 -----END PGP SIGNATURE-----
 
---cuhfgoruzxcaordz--
+--Sig_/U8azvLZiM2aOMPL6IM1slh1--
