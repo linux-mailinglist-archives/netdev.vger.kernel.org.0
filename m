@@ -2,151 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65F0631AECB
-	for <lists+netdev@lfdr.de>; Sun, 14 Feb 2021 04:08:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C27AE31AED1
+	for <lists+netdev@lfdr.de>; Sun, 14 Feb 2021 04:35:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229782AbhBNDHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Feb 2021 22:07:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54180 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229615AbhBNDHE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 22:07:04 -0500
-Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83621C061574
-        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 19:06:24 -0800 (PST)
-Received: by mail-ot1-x32f.google.com with SMTP id k10so3088780otl.2
-        for <netdev@vger.kernel.org>; Sat, 13 Feb 2021 19:06:24 -0800 (PST)
+        id S229796AbhBNDeU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Feb 2021 22:34:20 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:3390 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229694AbhBNDeO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Feb 2021 22:34:14 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11E3R0YM016735;
+        Sat, 13 Feb 2021 19:33:28 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pfpt0220;
+ bh=8NZoiRa757flyHWCpZKNJNrP7PlCZUhgoDv3dYwG24Q=;
+ b=GXZn313RnGufghETR1rigboziV51G0X+M8S+lS0RDFg/YFeAQi7q6J3SWvaXYFUvS3NN
+ rwFtIYDTBgd/HWz7Sd5DELS491LTwNZp5En1IRNKeq3GpwmwhmwIw1upBoaPsRHEAwfl
+ qas+/RaSwdi00gTxf7TAjI3nX6HOQuceaJ/7ehsfbC12hBqmRimx9reo2uKuvzqdl90D
+ U5OGpkxw8gf67XudxymJJKLdsi6adK7ihjYI10TlRUEyPvLnh2T+b1GJbpyWHWpr1NY/
+ tVkyOdupNEkGSuLtqs944HGpt+UeXu/4UIRtZ6T8SRid8L5hcm0rQrySS2Ao4ytpc6vF 2A== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 36pf5ts0gs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Sat, 13 Feb 2021 19:33:28 -0800
+Received: from SC-EXCH04.marvell.com (10.93.176.84) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sat, 13 Feb
+ 2021 19:33:26 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sat, 13 Feb
+ 2021 19:33:26 -0800
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.43) by
+ DC5-EXCH01.marvell.com (10.69.176.38) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2 via Frontend Transport; Sat, 13 Feb 2021 19:33:26 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZJPZg0hQf/eUeC7dZHwVEnWxg/YHtgtCHVNvlCXDkenFQqrsik8/ee8wAKWOySfM8PaCUZ16nQx/2moMhMz5S7IcbNJt+EHqFHFcP/RTOX5D/bbHjR194HonZHtF5dc+ly10gJI2MCFAT6W1mL1BIAXefGpsok6cYTrtP25wXmyoWghx0cGwYNKfa8rLghgjxkqd1K4+la5gqCKqYHPwoJSarZK3mpk3qCdNoxYae8Jk9VLqUr8YoEILl1Y4n8lnzNtkwy0m9lCFB6P3K12vjiCBR6OmOzyD6J5h9lDXxOS4NNj/2IKZ9gIPTuLUCU0wLQ3BDdCtVIi4u0kJmR7BGg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8NZoiRa757flyHWCpZKNJNrP7PlCZUhgoDv3dYwG24Q=;
+ b=K4JRWQlVY0/Yhf6qoW+x7QbJ/XOSvJlwUNPEnFBtU/Koio1ggi+nqOWMFNJDRgX1NBjUGsnmUDqfexVqQ4og8ahDlGjqnGpjrXZTUt4+5GLKkIN8af3jgz20hAS9f7N+3nGSyznp8rtgURBoloW9k7Yyj7PbfEuhQ+TIMrOigIIy2dXmpwbtWuy0kPIifN/LkzSQzjiz3cN/UkehOnO1fvjP7Z8nnVlG6fPi490XGKAyXKrwcPkJLUWShZb+Rv4qeSDjEuerYzQMIWC8PJDlkYNKxwwHN5If1krgzwT/Gm/D94btaLAYOBZ0BYBA5IBPvJUvLEOdOl0AUK9pw0DAoQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ysxmG6dJEtG/0v3okHLF1VUxolnbF9xg/wYdChM3OUo=;
-        b=vO1sW3bC+G+YuqBWMUMLKQtGO9TWCHfLUJgpLCMMM5pMJpqGYXT2wg5oOD04Wqc545
-         IBO14KK415c4t4/RB4VAM4W3j9OyjLspL/gm5BsjBtv+K8zmdCHftN64vVmb7mD/yzrc
-         gsYyfsATeeSosDd0Pt9JQ7jzPZkFHg5AcdXxfVCn2LILax6RB0y0TImtyu7HyDAZ04Es
-         YvMavCNIAIMW5EDRZTxglPc77ZxM9bCfEClilvZ2or7nbyCm/shQjnIqfjk9CUTwmiVc
-         jKPhWLIlqKnmYU82PzARcO8GjQsuHfzxHCo5bWS1uKl0lJVObgEYYoFpc1+JV2HNIQvs
-         2TCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ysxmG6dJEtG/0v3okHLF1VUxolnbF9xg/wYdChM3OUo=;
-        b=CED8eGDE7bFGMY3W15/QlY1t6dZFnR1CT3Ba0YRQpIGGO/JkCOCjQ+NtjbQP8w81fT
-         PO73wORuCFcZ3xN9E0tnKTz9S7iolARHqi/XtGVKX2WXWfmZYEJHVb/E8NR70HnG/kXO
-         eKndt8H8Jykvp2GFKsXcTSwRcedoS9YjsNJ88i9jWMoE99CP4GSrtdWl9wxqLVGiYzAh
-         NpVDFnIIMBIEW6omYaJv+FaCdSFhys6nKVLaRDyxBxgMNj6j8zegrfrgYlpDUfvMZCA4
-         XozDBqdgaX4j4ZRbk1dWE4iqnYdvFU2SF8pKSr8SmKAfQ+hhjy9CzQfcgULEhUCbNvJA
-         peYw==
-X-Gm-Message-State: AOAM531w74NYFG6GEfkXZ7shnrMZuM48z4oeCOvDziQnVEx7KVr+RWPj
-        5zfqDnehg64YlVVLlaQm4AA=
-X-Google-Smtp-Source: ABdhPJwOG6TkAGU8naZp8E/WLypoakxcIaQkljPUgjtgB4tzvD10IuyQDjR1549sYDqjOvaHJVVy5Q==
-X-Received: by 2002:a9d:3284:: with SMTP id u4mr7008675otb.187.1613271983848;
-        Sat, 13 Feb 2021 19:06:23 -0800 (PST)
-Received: from ?IPv6:2600:1700:dfe0:49f0:e93c:cbea:e191:f62a? ([2600:1700:dfe0:49f0:e93c:cbea:e191:f62a])
-        by smtp.gmail.com with ESMTPSA id 97sm2193181oty.48.2021.02.13.19.06.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 13 Feb 2021 19:06:22 -0800 (PST)
-Subject: Re: [PATCH v2 net-next 12/12] net: dsa: tag_ocelot_8021q: add support
- for PTP timestamping
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        UNGLinuxDriver@microchip.com
-References: <20210213223801.1334216-1-olteanv@gmail.com>
- <20210213223801.1334216-13-olteanv@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <be06f9be-7f45-02b0-f324-38337b137081@gmail.com>
-Date:   Sat, 13 Feb 2021 19:06:08 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
-MIME-Version: 1.0
-In-Reply-To: <20210213223801.1334216-13-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8NZoiRa757flyHWCpZKNJNrP7PlCZUhgoDv3dYwG24Q=;
+ b=lFZq1y7zl2FgdBGXg9A+uMdv2FkbHv0sGXvgoIPOaAnkzlX1nDANnbwYNHGBS6M9NBVj5GwA239L3g4PCFtrPzttoYRI622xlRR/nxNrTl/OYCYEYYMly+tTXBd3vyT6dKkU7f9p4y4w9eH4Kvql8Ug8OaS+93SrxwonNYgItUo=
+Received: from DM6PR18MB2602.namprd18.prod.outlook.com (2603:10b6:5:15d::25)
+ by DM6PR18MB2412.namprd18.prod.outlook.com (2603:10b6:5:185::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.29; Sun, 14 Feb
+ 2021 03:33:25 +0000
+Received: from DM6PR18MB2602.namprd18.prod.outlook.com
+ ([fe80::d0c1:d773:7535:af80]) by DM6PR18MB2602.namprd18.prod.outlook.com
+ ([fe80::d0c1:d773:7535:af80%6]) with mapi id 15.20.3846.038; Sun, 14 Feb 2021
+ 03:33:25 +0000
+From:   Geethasowjanya Akula <gakula@marvell.com>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        "Jerin Jacob Kollanukkaran" <jerinj@marvell.com>,
+        Hariprasad Kelam <hkelam@marvell.com>,
+        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [EXT] [bug report] octeontx2-af: cn10k: Uninitialized variables
+Thread-Topic: [EXT] [bug report] octeontx2-af: cn10k: Uninitialized variables
+Thread-Index: AQHXAW5oiLSqxT9BUEWNdGA6ybCpN6pW/3V6
+Date:   Sun, 14 Feb 2021 03:33:24 +0000
+Message-ID: <DM6PR18MB260244467263DDD91ECF0D9FCD899@DM6PR18MB2602.namprd18.prod.outlook.com>
+References: <20210212183917.GA279621@embeddedor>
+In-Reply-To: <20210212183917.GA279621@embeddedor>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=marvell.com;
+x-originating-ip: [103.252.145.190]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: de93f634-fce2-49ee-eb8d-08d8d0994958
+x-ms-traffictypediagnostic: DM6PR18MB2412:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM6PR18MB241236A9FE7503A08864D7F0CD899@DM6PR18MB2412.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: elAVrX3RG4tWhucNle7uqRp0Ek2eb55iE4Ky3ErEJJbkftU1vkPXO5mmriI7g11Z8bmS89zgXd7FHdyiMmNT0/0C7XnPBxz0sqjHLtJulS+GgmySvNh7fw0IGjtZxd0kOy277DNUrueN4tft6qiKP0wLuX3odjIihevvTF611QWLVP6Vv8jV3Q1bjlcW2KSzGcmFasDtBSlTEVJGIPsup1aSLjDKZ9sdTFiJV4kodX9B9Xq4YVQ7jams+JgdGqlDLrCxwOimH28M1T0ev7tRJpxO4G8y2hEp9KlJL1VQ2CbNPBq0SH3G2z4p5B/xLhYpY5n+A3AzZkjhv/H6I3MdvwNfocYjnFlWPw6fbeiM3/zVcl7vrl8QtdUbjWat++CLTgCqOeRb9CN6MWc91kFgpndFS4rmgq+jah6l8q/6U8XcnWFqiBZ/yyjzBl3vZhYmXafoTLTjpHLwxvpzU+pFDr/hCcF5RqxXR/KNuWo3Lzu7klthqd5eorpMT5W7e2J4PHWGft5JVI7X4e62ZJs02w==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR18MB2602.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(39850400004)(376002)(346002)(366004)(136003)(54906003)(478600001)(5660300002)(52536014)(186003)(6506007)(7696005)(316002)(4326008)(8676002)(71200400001)(110136005)(64756008)(66476007)(2906002)(86362001)(9686003)(55016002)(91956017)(33656002)(8936002)(66446008)(66946007)(76116006)(26005)(66556008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?iso-8859-1?Q?50M5i1vDVlS/Tx2MJPlFWF8lNxWmLbBgg5rRr8jDsfihohWo+0uqsD6Psl?=
+ =?iso-8859-1?Q?kWvk8UrGCDR+FZyE2scRPpH1J03wT1niuwJkAxuz7QPJhmqZXBXpcQScL2?=
+ =?iso-8859-1?Q?J+cSDTlrhfgRVGv5Zje/JSBl4BP3et8L9wqV0ZPh3eZ77NfJ5G/X+d/JU0?=
+ =?iso-8859-1?Q?lhEaGgi29wOrdrVpXy/cJKfoLSxEnYOjwyB0v/hjiw1NT25z2gzrNNih8w?=
+ =?iso-8859-1?Q?rRdpQ7WZlDb7C8th4DLcD4/ZjN93Hv8ZpXpaJT4tKtLWuQ/8eegxi/Xun1?=
+ =?iso-8859-1?Q?sW+GGH1ObhTfIefhV+7OrhuiLvz+8Kdh8iK1M4la8fYFmdquiASx0bEv8N?=
+ =?iso-8859-1?Q?9lrofw0VYrIF9xZKQjVeVT5wqjvx7r6RgIvxgoI9/yzGEwDNm/m7rRmMUL?=
+ =?iso-8859-1?Q?uKx8kWERNPygbqjZyMtoP9BrY8KU4OgoJVw3hjit0YMTckFTmvvk4P+7Ul?=
+ =?iso-8859-1?Q?cszvBXyDAivDPWquximNyzvcIr/MCWUSCSr6Sh3B7Vvxde6ynCcwRQLHNY?=
+ =?iso-8859-1?Q?mV4w7OGRZBWW/v/hM3j5D/zvlLfAfVnHTeYNqTdWtGSca0n5lYkd5l6GuR?=
+ =?iso-8859-1?Q?4uh+s7UEQ+jp08TsqxnOXsXcyfbYuthzMzBBP1bfIF2l7MS7aHaJzwrQwp?=
+ =?iso-8859-1?Q?WgsYx+nk8dw1Hu3jOvZRc2nlPwmlG3iKo9exdoc9IrMZhwiHSGoq7Lr55C?=
+ =?iso-8859-1?Q?1BcriDCmmzgz70yH6bLkQnYzVt3lWKgObmKb0d5Z1lP1xbvzYPxqhq/WZy?=
+ =?iso-8859-1?Q?6DjlxA1y7+NyRe+6Upk0AtGT99NR6pQ3t5X37DJjFi29nOcBnHjOAsPAx0?=
+ =?iso-8859-1?Q?nnkMDhIPqjGZ67EP7cjb9zgE0cZMZS9VqV5z2qk2b00ib4jfDgpOBsGrto?=
+ =?iso-8859-1?Q?SC3WiGp0RIp9v1MogxS5HbVPoPS1oit8heqxcRzmvWXu1Tq2AqEDdyfeES?=
+ =?iso-8859-1?Q?vA9tby2n7AJ1+FUQqwS890WLCYyeFfKU/pt0smh2oPAhgaxgJjBMOdLTfw?=
+ =?iso-8859-1?Q?U6dQBqSKXfC8+ejukM/S5I3s3mdqASPq/8UdOuvucL17bEASKzmOZ6QUdf?=
+ =?iso-8859-1?Q?Fc9DtybJLUUuoksrLMTjSyWzbpUEe2ZXyGbMqfszW/6zsJJqqbAQp9qO8u?=
+ =?iso-8859-1?Q?9M9URp/vLYNC/3Ot5Or8u6Ba1X+36n/thoFH/PxtSWUVj++M1KB0SahvHT?=
+ =?iso-8859-1?Q?eGXcg349uJIUYjwDXUrlNx58b9LnPDHe1evdtAZJHWOYGEkw5tnVAFpjND?=
+ =?iso-8859-1?Q?LbazHn6qnylR3KrEC1HIKsZRZB/bx0eOzeURucTHGZVhjI6cpQ1SjDPxzQ?=
+ =?iso-8859-1?Q?Q+kdon8atWIxdxSaXsViccd4EUEfsOU/qkxJAVnljthVqAzF+5TFnvF9Qn?=
+ =?iso-8859-1?Q?zCYDqF2wgc?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR18MB2602.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: de93f634-fce2-49ee-eb8d-08d8d0994958
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Feb 2021 03:33:24.9944
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: A4TbG1EZXmpL4pq7epktcTb0iiLAXbL5fWe85R/5USshXrDa1Hi5McgLNoKWS+wZRBSWSOpbKaYww9AwfknWhw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR18MB2412
+X-OriginatorOrg: marvell.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
+ definitions=2021-02-13_02:2021-02-12,2021-02-13 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2/13/2021 14:38, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> For TX timestamping, we use the felix_txtstamp method which is common
-> with the regular (non-8021q) ocelot tagger. This method says that skb
-> deferral is needed, prepares a timestamp request ID, and puts a clone of
-> the skb in a queue waiting for the timestamp IRQ.
-> 
-> felix_txtstamp is called by dsa_skb_tx_timestamp() just before the
-> tagger's xmit method. In the tagger xmit, we divert the packets
-> classified by dsa_skb_tx_timestamp() as PTP towards the MMIO-based
-> injection registers, and we declare them as dead towards dsa_slave_xmit.
-> If not PTP, we proceed with normal tag_8021q stuff.
-> 
-> Then the timestamp IRQ fires, the clone queued up from felix_txtstamp is
-> matched to the TX timestamp retrieved from the switch's FIFO based on
-> the timestamp request ID, and the clone is delivered to the stack.
-> 
-> On RX, thanks to the VCAP IS2 rule that redirects the frames with an
-> EtherType for 1588 towards two destinations:
-> - the CPU port module (for MMIO based extraction) and
-> - if the "no XTR IRQ" workaround is in place, the dsa_8021q CPU port
-> the relevant data path processing starts in the ptp_classify_raw BPF
-> classifier installed by DSA in the RX data path (post tagger, which is
-> completely unaware that it saw a PTP packet).
-> 
-> This time we can't reuse the same implementation of .port_rxtstamp that
-> also works with the default ocelot tagger. That is because felix_rxtstamp
-> is given an skb with a freshly stripped DSA header, and it says "I don't
-> need deferral for its RX timestamp, it's right in it, let me show you";
-> and it just points to the header right behind skb->data, from where it
-> unpacks the timestamp and annotates the skb with it.
-> 
-> The same thing cannot happen with tag_ocelot_8021q, because for one
-> thing, the skb did not have an extraction frame header in the first
-> place, but a VLAN tag with no timestamp information. So the code paths
-> in felix_rxtstamp for the regular and 8021q tagger are completely
-> independent. With tag_8021q, the timestamp must come from the packet's
-> duplicate delivered to the CPU port module, but there is potentially
-> complex logic to be handled [ and prone to reordering ] if we were to
-> just start reading packets from the CPU port module, and try to match
-> them to the one we received over Ethernet and which needs an RX
-> timestamp. So we do something simple: we tell DSA "give me some time to
-> think" (we request skb deferral by returning false from .port_rxtstamp)
-> and we just drop the frame we got over Ethernet with no attempt to match
-> it to anything - we just treat it as a notification that there's data to
-> be processed from the CPU port module's queues. Then we proceed to read
-> the packets from those, one by one, which we deliver up the stack,
-> timestamped, using netif_rx - the same function that any driver would
-> use anyway if it needed RX timestamp deferral. So the assumption is that
-> we'll come across the PTP packet that triggered the CPU extraction
-> notification eventually, but we don't know when exactly. Thanks to the
-> VCAP IS2 trap/redirect rule and the exclusion of the CPU port module
-> from the flooding replicators, only PTP frames should be present in the
-> CPU port module's RX queues anyway.
-> 
-> There is just one conflict between the VCAP IS2 trapping rule and the
-> semantics of the BPF classifier. Namely, ptp_classify_raw() deems
-> general messages as non-timestampable, but still, those are trapped to
-> the CPU port module since they have an EtherType of ETH_P_1588. So, if
-> the "no XTR IRQ" workaround is in place, we need to run another BPF
-> classifier on the frames extracted over MMIO, to avoid duplicates being
-> sent to the stack (once over Ethernet, once over MMIO). It doesn't look
-> like it's possible to install VCAP IS2 rules based on keys extracted
-> from the 1588 frame headers.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Hi Gustavo,=0A=
+=0A=
+please see inline.=0A=
+=0A=
+Thank you,=0A=
+Geetha.=0A=
+=0A=
+=0A=
+________________________________________=0A=
+>From: Gustavo A. R. Silva <gustavoars@kernel.org>=0A=
+>Sent: Saturday, February 13, 2021 12:09 AM=0A=
+>To: Sunil Kovvuri Goutham; Linu Cherian; Geethasowjanya Akula; Jerin Jacob=
+ >Kollanukkaran; Hariprasad Kelam; Subbaraya Sundeep Bhatta; David S. Mille=
+r; Jakub >Kicinski=0A=
+>Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Gustavo A. R. Si=
+lva=0A=
+>Subject: [EXT] [bug report] octeontx2-af: cn10k: Uninitialized variables=
+=0A=
+=0A=
+>External Email=0A=
+=0A=
+----------------------------------------------------------------------=0A=
+>Hi,=0A=
+=0A=
+>Variables cgx_id and lmac_id are being used uninitialized at lines 731=0A=
+>and 733 in the following function:=0A=
+=0A=
+>723 static int rvu_cgx_config_intlbk(struct rvu *rvu, u16 pcifunc, bool en=
+)=0A=
+>724 {=0A=
+>725         struct mac_ops *mac_ops;=0A=
+>726         u8 cgx_id, lmac_id;=0A=
+>727=0A=
+>728         if (!is_cgx_config_permitted(rvu, pcifunc))=0A=
+>729                 return -EPERM;=0A=
+>730=0A=
+>731         mac_ops =3D get_mac_ops(rvu_cgx_pdata(cgx_id, rvu));=0A=
+>732=0A=
+>733         return mac_ops->mac_lmac_intl_lbk(rvu_cgx_pdata(cgx_id, rvu),=
+=0A=
+>734                                           lmac_id, en);=0A=
+735 }=0A=
+=0A=
+>This bug was introduced by commit 3ad3f8f93c81 ("octeontx2-af: cn10k: MAC =
+internal >loopback support")=0A=
+=0A=
+>What's the right solution for this?=0A=
+=0A=
+Thanks Gustavo. Sorry I missed it. Below is the fix.=0A=
+=0A=
+ static int rvu_cgx_config_intlbk(struct rvu *rvu, u16 pcifunc, bool en)=0A=
+ {=0A=
++        int pf =3D rvu_get_pf(pcifunc);=0A=
+        struct mac_ops *mac_ops;=0A=
+        u8 cgx_id, lmac_id;=0A=
+=0A=
+        if (!is_cgx_config_permitted(rvu, pcifunc))=0A=
+                return -EPERM;=0A=
+=0A=
++       rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);=0A=
+        mac_ops =3D get_mac_ops(rvu_cgx_pdata(cgx_id, rvu));=0A=
+=0A=
+=0A=
+Thanks=0A=
+--=0A=
+Gustavo=0A=
