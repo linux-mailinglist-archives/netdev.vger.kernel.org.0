@@ -2,84 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF59931C22E
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 20:07:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 771F031C231
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 20:09:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229928AbhBOTHS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 14:07:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56850 "EHLO
+        id S230314AbhBOTIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 14:08:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230021AbhBOTHQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 14:07:16 -0500
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC010C061756
-        for <netdev@vger.kernel.org>; Mon, 15 Feb 2021 11:06:25 -0800 (PST)
-Received: by mail-lj1-x235.google.com with SMTP id c8so6945406ljd.12
-        for <netdev@vger.kernel.org>; Mon, 15 Feb 2021 11:06:25 -0800 (PST)
+        with ESMTP id S229764AbhBOTIy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 14:08:54 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1E2CC061574;
+        Mon, 15 Feb 2021 11:08:13 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id z9so4442112pjl.5;
+        Mon, 15 Feb 2021 11:08:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=nlK3q0YWLBAVnlXKZxWS33kMLrpccihTVh26VJjnw+I=;
-        b=j7s/++HQuwQ0dPkGJVEFaOkmyPWx89p7HYNinQy2Kw+C+ye83h8lIk+xBpcML2iPLN
-         cdGQSEuotJSUOQ7DRw1BnXUk9c16a40Bj+En3z3QWuCbSU15II+YMyOE2o3yOZgTpyQx
-         IPi5Xc/bjTWf3kr7U0jF5Y82wyhDULg/CRvLg=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4wSIIQAoU/qUrHpFtDE4/r1lSSmKppFfAx3tPckyTMg=;
+        b=WbZcgfONHMSwsib7jyirAckorAOZ9aIz8BGaGHSxzE9IBK0w2zS4RqERyv2kXqLehJ
+         3t8lWW9K6eT2uy0zdiiz5yw0F973t4nNTNikpF/3wmhOu4W+uyQhaNPTzHPv6VQ/2hUY
+         KnTwYi3LIV47D4qZMGp4KzyAZ5M5bA3FNgErZoYU6Jgld4bPjW3+WRUSdght+GGuXTZp
+         daPGMuEim6QxghMcWiixp9ekOdJZUBSvPyCR3vEmPtVYD0uvuYoCgON6wsyhzteVgbij
+         yi8/6n0rOG9nERGp9qWfRIavxLSavRIlWxuocVYOSKY7Xp42kWhkmvRtGstyQJR3MyiF
+         /Ncg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=nlK3q0YWLBAVnlXKZxWS33kMLrpccihTVh26VJjnw+I=;
-        b=DLL3+XXjkXxXwj1OHF82aZvzlRcGJt2ETrWUeNS35xlYuMuUMbEMXxPNopF6KkVDvY
-         hbDEivBSn37CxVrZbyTrsQT9KF/B+ex5PM4WcLTLrlKMgvA1oVhZYSCGoNGAtyVRyZyw
-         aQXpctq1vUT2O7usJwZflJe/eqElfZvkDjaa/H8uN0/HwcMJjdga3gOuM8+9g1XOtaO3
-         ENGGYIuJSu5rO7f33a5pA5P9UvQ221k9OKnZUyDxGB+gc5RQjiDQNV2rjOov+RTSUh7l
-         oYkzHkEo+KzPGgQR7wxfGSCQyitTVwS6QW/juTJDum6XjjU0NRuURtgvoE3lAvgcN0AQ
-         2T3g==
-X-Gm-Message-State: AOAM531pYd58W6soTVyQwz7wiAXCzJXf0VK8O5Rbkn2JpXMn61hXqDHx
-        i/Zp4hQFA8mHF0xerrOYVC1FjQ==
-X-Google-Smtp-Source: ABdhPJyab84qkpdHElTAbOYC612cZAhEcRlUrwt3krnBenvG4JjD2TkjUL3Eb8ZyTI94tkx/v8DK/w==
-X-Received: by 2002:a2e:9a0a:: with SMTP id o10mr10444014lji.466.1613415984019;
-        Mon, 15 Feb 2021 11:06:24 -0800 (PST)
-Received: from cloudflare.com (83.24.183.171.ipv4.supernova.orange.pl. [83.24.183.171])
-        by smtp.gmail.com with ESMTPSA id o27sm2720795lfi.183.2021.02.15.11.06.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Feb 2021 11:06:23 -0800 (PST)
-References: <20210213214421.226357-1-xiyou.wangcong@gmail.com>
- <20210213214421.226357-4-xiyou.wangcong@gmail.com>
-User-agent: mu4e 1.1.0; emacs 27.1
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        duanxiongchun@bytedance.com, wangdongdong.6@bytedance.com,
-        jiang.wang@bytedance.com, Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Subject: Re: [Patch bpf-next v3 3/5] bpf: compute data_end dynamically with
- JIT code
-In-reply-to: <20210213214421.226357-4-xiyou.wangcong@gmail.com>
-Date:   Mon, 15 Feb 2021 20:06:22 +0100
-Message-ID: <87k0r940cx.fsf@cloudflare.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4wSIIQAoU/qUrHpFtDE4/r1lSSmKppFfAx3tPckyTMg=;
+        b=A5IsLRspe+UuP//qIrGmUFgiAN9k2BPqYZocqxEJeFTXpukzu7ek+mIQS0M4zJd1Gx
+         XzZSvzVFpcKr1w67iBinFhXoV5qCf1ze70KqHsgzOoYMhiR6JEq5wHJ6FHWELHH8CocY
+         sBya1M4/C1H/sUTfG3i3dfnXQAhGEtSmyVoxoxh20b7pmPLWnwWBS+S12kOT9MGA9v7I
+         9eEBLQ0DnH4GW3ZFyNZnSTxn6z8WG5x6f8vNRMxRuSGKFNoWxhqHOsc5iBvgb9xpRbGn
+         zBW+v9GyATqcoW2IQmTYRGoJPkYgp8fnViSIhROaLQh/a7vaFq6l9MQ0uNZWSfSjz69V
+         AHWw==
+X-Gm-Message-State: AOAM530MtjHReV0iQ90QWYzojAWkmwEwAn4fWXtiIDHtxtIT7YeP3dYm
+        Hk8HocUN9YgqYNv83+czL7exOPNRu4WxebvIYXkYDo7O
+X-Google-Smtp-Source: ABdhPJxDZr+X+ZsMEuCZzWkgLuUXSqSIjI3o/9+cA1CacZg3xnxdlHN5Yv/Z3oJQVozefnLe/dMGd0jGtjOZgc/zmwI=
+X-Received: by 2002:a17:903:310f:b029:e3:53e8:bfe6 with SMTP id
+ w15-20020a170903310fb02900e353e8bfe6mr6541429plc.78.1613416093556; Mon, 15
+ Feb 2021 11:08:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20210215072703.43952-1-xie.he.0141@gmail.com> <YCo96zjXHyvKpbUM@unreal>
+ <CAJht_EOQBDdwa0keS9XTKZgXE44_b5cHJt=fFaKy-wFDpe6iaw@mail.gmail.com> <YCrDcMYgSgdKp4eX@unreal>
+In-Reply-To: <YCrDcMYgSgdKp4eX@unreal>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Mon, 15 Feb 2021 11:08:02 -0800
+Message-ID: <CAJht_EPy1Us72YGMune2G3s1TLB4TOCBFJpZt+KbVUV8uoFbfA@mail.gmail.com>
+Subject: Re: [PATCH net-next RFC v3] net: hdlc_x25: Queue outgoing LAPB frames
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux X25 <linux-x25@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Martin Schiller <ms@dev.tdt.de>,
+        Krzysztof Halasa <khc@pm.waw.pl>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 13, 2021 at 10:44 PM CET, Cong Wang wrote:
-> From: Cong Wang <cong.wang@bytedance.com>
+On Mon, Feb 15, 2021 at 10:54 AM Leon Romanovsky <leon@kernel.org> wrote:
 >
-> Currently, we compute ->data_end with a compile-time constant
-> offset of skb. But as Jakub pointed out, we can actually compute
-> it in eBPF JIT code at run-time, so that we can competely get
-> rid of ->data_end. This is similar to skb_shinfo(skb) computation
-> in bpf_convert_shinfo_access().
+> On Mon, Feb 15, 2021 at 09:23:32AM -0800, Xie He wrote:
+> > On Mon, Feb 15, 2021 at 1:25 AM Leon Romanovsky <leon@kernel.org> wrote:
+> > >
+> > > > +     /* When transmitting data:
+> > > > +      * first we'll remove a pseudo header of 1 byte,
+> > > > +      * then the LAPB module will prepend an LAPB header of at most 3 bytes.
+> > > > +      */
+> > > > +     dev->needed_headroom = 3 - 1;
+> > >
+> > > 3 - 1 = 2
+> > >
+> > > Thanks
+> >
+> > Actually this is intentional. It makes the numbers more meaningful.
+> >
+> > The compiler should automatically generate the "2" so there would be
+> > no runtime penalty.
 >
-> Suggested-by: Jakub Sitnicki <jakub@cloudflare.com>
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Lorenz Bauer <lmb@cloudflare.com>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> ---
+> If you want it intentional, write it in the comment.
+>
+> /* When transmitting data, we will need extra 2 bytes headroom,
+>  * which are 3 bytes of LAPB header minus one byte of pseudo header.
+>  */
+>  dev->needed_headroom = 2;
 
-Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
+I think this is unnecessary. The current comment already explains the
+meaning of the "1" and the "3". There's no need for a reader of this
+code to understand what a "2" is. That is the job of the compiler, not
+the human reader.
