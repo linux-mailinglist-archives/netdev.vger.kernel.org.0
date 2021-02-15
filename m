@@ -2,81 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 245B531B57F
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 08:01:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26E8931B583
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 08:04:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229940AbhBOHBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 02:01:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42530 "EHLO
+        id S229950AbhBOHDK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 02:03:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229913AbhBOHBC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 02:01:02 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35BDEC061574;
-        Sun, 14 Feb 2021 23:00:22 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id cv23so3166739pjb.5;
-        Sun, 14 Feb 2021 23:00:22 -0800 (PST)
+        with ESMTP id S229591AbhBOHDI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 02:03:08 -0500
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDB3DC061574
+        for <netdev@vger.kernel.org>; Sun, 14 Feb 2021 23:02:28 -0800 (PST)
+Received: by mail-pg1-x52e.google.com with SMTP id z68so3730752pgz.0
+        for <netdev@vger.kernel.org>; Sun, 14 Feb 2021 23:02:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MLQN9t84WZNNwMBeSpSegbk2anC6/0CnhIjVKrMRW54=;
-        b=CFeCL4lmp6j1rJ631/DYI4jxYOOXS3k735zBKpRs1937uFBu/I7d43iRwHcudtVEb3
-         0/WyDNTf2PLMFrmkk8oGVZsIncvDU44urhIwRYD7kmHOtKYM+pZhZPEXJdf63agc1e6Q
-         /hGuHrwA/hJGh/EWJ7+1QVgvOhlCveKsC8B6iu9OQdmXTibRqo+ENR7XtsPt83VbsPgE
-         gNX3ekZ9tO2GdVFScVuxR/vXUN9iW3UhAsKztULuAxP5MqzifX+r4ZGi3VBTf6qZVeGC
-         4OyvAJQkJCSu5BdZb1w+hZ6FCtrh/c7jbiSmZbtvFE/qNHUOvN2dSKdm4NRASz6GnFwX
-         zcbw==
+        d=nathanrossi.com; s=google;
+        h=date:message-id:from:to:cc:subject:content-transfer-encoding
+         :mime-version;
+        bh=mZAyxpsXnXrCfnHYqktOU9LidFqCx36jCafbV//clLk=;
+        b=F3z02QGr4Yt0byrHzf0deNun27SJ+SznNuZg/MzFxqz2iDcapPEMVCDO+W7fLlWjG8
+         RxNa3c4knx8KqO3M77jy0L5VrlUkjsyy8EYfCrvqZwnGt8roUEoiVN9eBEAktMCPSUWq
+         OnRcuUyn0NdF4Osk0GmlN+FMSVTBgOEIAJoh4UQTdrh8Mz5FzB9dK77TptmDWbiu9eF9
+         HmqBpaHxgNZ49TUd8Hy6ubPwHiwJ6ssDzY85vXpVjqZ7eUtUHR++zfM2CfXL4QpAgmno
+         8vgI8qFWuT2dcUUaljXDZow4KxHW0MojDeF+megeAvWKTgWEbzXuBYJIF5LuVpJosER+
+         W3rw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MLQN9t84WZNNwMBeSpSegbk2anC6/0CnhIjVKrMRW54=;
-        b=FcAe275LKooqXrbd5N5mZsARp4aQZ3+Mzf4x0P/8b8FOAqhkP2rWOd+FV8dailKsxN
-         U9jpSPfA+aLqUBdKio5+D6qq4yEECVKgm/HNZstBhm97w9qhddZzvQlQoEHx0pI+zdbn
-         ojOyWKq4rF3Z3girPJ9rIdYLtGqfcaSPXASwNCcqr7C4123Q0hrM9j5L/OeIjyS0/8xL
-         9ZNZmKjjaAGF8fMXv5z8OwmtfNtb4bonC8aYKYiuCDdDdO3pJzJAl6YCMeuQWoOVq9ks
-         UnLGKBHqDkgeAOCZdmqoJRx2tpMsZg1xqEHDQ88z/ZPTU8lxbHWVBQX87HbCJpPqVbhN
-         GHOw==
-X-Gm-Message-State: AOAM533InF4vsST7HrbQqOVuWRnV56ikIoIkfmrjEMTfuTt7J0gcoIiP
-        NkVKHWHvAH16Ql0N9/zTvig+PizAySk7sHBlrKRBkCowY6I=
-X-Google-Smtp-Source: ABdhPJyWzW2R32V2f7jZZO1++ndm77nKnJgmX7CGD6JZFxrZUgU+WpY9Ej730UNU+W0MrHewW2Gs2cA8sR4gDiHOJbA=
-X-Received: by 2002:a17:902:9a46:b029:e2:f97b:47da with SMTP id
- x6-20020a1709029a46b02900e2f97b47damr13898523plv.77.1613372421849; Sun, 14
- Feb 2021 23:00:21 -0800 (PST)
+        h=x-gm-message-state:date:message-id:from:to:cc:subject
+         :content-transfer-encoding:mime-version;
+        bh=mZAyxpsXnXrCfnHYqktOU9LidFqCx36jCafbV//clLk=;
+        b=sXe2/71qgzMj79MECaXvpIrzx8eashdVwtT1c5LANKBb4ugPqWi5uEfJa569tU5JnQ
+         0hNEeGrNvQZySQirG5zs42ayMxFPAVY/Er07aZstHnH4Re0Yl6QnJVPBI6a6zvBpqoGB
+         HC0DNyW9CazBaZ4cvfyGy0HvoXk8U5W8smWDlEidEnJETY2OpY4mowfTlzlmn+DsDjMD
+         tmrku0XuUuLInHQqKf1HwIqBxM/6hEnfQW6kR2srTVE+oJ6+fs8UANU2wXwcLOreroW6
+         ThVpgqkABmlqB4DmvdfxzWtsjJPItVVCZpY/Z76zMlp/++zLI4QmdJuPA12A02x2YzxL
+         s/WA==
+X-Gm-Message-State: AOAM532h7G8nYCDReTOZ3Wkpy8+MgQC143fbOUZnG2W/x484YNr/ls5W
+        pV+rPwLIUjWcn1ojS4UxF/fgpw==
+X-Google-Smtp-Source: ABdhPJyRD5UKZ7Kt3wEfUsJgcV/HFeFKRU19IvLESETVb7tmt42fXog4uiyc3dAzQjj/hA8Ybp9MRA==
+X-Received: by 2002:a63:54:: with SMTP id 81mr14146573pga.410.1613372548271;
+        Sun, 14 Feb 2021 23:02:28 -0800 (PST)
+Received: from [127.0.1.1] (117-20-70-209.751446.bne.nbn.aussiebb.net. [117.20.70.209])
+        by smtp.gmail.com with UTF8SMTPSA id z12sm16823242pfn.150.2021.02.14.23.02.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 14 Feb 2021 23:02:27 -0800 (PST)
+Date:   Mon, 15 Feb 2021 07:02:18 +0000
+Message-Id: <20210215070218.1188903-1-nathan@nathanrossi.com>
+From:   Nathan Rossi <nathan@nathanrossi.com>
+To:     netdev@vger.kernel.org
+Cc:     Nathan Rossi <nathan@nathanrossi.com>,
+        Nathan Rossi <nathan.rossi@digi.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH] of: of_mdio: Handle properties for non-phy mdio devices
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 MIME-Version: 1.0
-References: <20210210173532.370914-1-xie.he.0141@gmail.com> <f701aad45e35579c8b79836ffeb86ea9@dev.tdt.de>
-In-Reply-To: <f701aad45e35579c8b79836ffeb86ea9@dev.tdt.de>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Sun, 14 Feb 2021 23:00:10 -0800
-Message-ID: <CAJht_EOrNaavomac8OVv8i0YxMgsX7oWAFDDRUzWTjpNhWpCcg@mail.gmail.com>
-Subject: Re: [PATCH net-next RFC v2] net: hdlc_x25: Queue outgoing LAPB frames
-To:     Martin Schiller <ms@dev.tdt.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Krzysztof Halasa <khc@pm.waw.pl>
-Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 14, 2021 at 10:27 PM Martin Schiller <ms@dev.tdt.de> wrote:
->
-> At first glance, the patch looks quite reasonable. The only thing I
-> noticed right away is that you also included the changes of your patch
-> "Return meaningful error code in x25_open".
+From: Nathan Rossi <nathan.rossi@digi.com>
 
-Thanks! It was because this patch was sent before that fix got merged
-into "net-next". I will drop that part now.
+The documentation for MDIO bindings describes the "broken-turn-around",
+"reset-assert-us", and "reset-deassert-us" properties such that any MDIO
+device can define them. Other MDIO devices may require these properties
+in order to correctly function on the MDIO bus.
 
-I will also make the MTU of the virtual X.25 device be HDLC_MAX_MTU
-(instead of HDLC_MAX_MTU - 2), because I see other HDLC Protocol
-Drivers seem to also use this value as MTU (without subtracting the
-header length).
+Enable the parsing and configuration associated with these properties by
+moving the associated OF parsing to a common function
+of_mdiobus_child_parse and use it to apply these properties for both
+PHYs and other MDIO devices.
 
-> I hope to get back to the office this week and test it.
+Signed-off-by: Nathan Rossi <nathan.rossi@digi.com>
+---
+ drivers/net/mdio/of_mdio.c | 22 +++++++++++++++-------
+ 1 file changed, 15 insertions(+), 7 deletions(-)
 
-Thanks!
+diff --git a/drivers/net/mdio/of_mdio.c b/drivers/net/mdio/of_mdio.c
+index 4daf94bb56..c28db49b72 100644
+--- a/drivers/net/mdio/of_mdio.c
++++ b/drivers/net/mdio/of_mdio.c
+@@ -42,6 +42,18 @@ static int of_get_phy_id(struct device_node *device, u32 *phy_id)
+ 	return -EINVAL;
+ }
+ 
++static void of_mdiobus_child_parse(struct mii_bus *mdio, struct mdio_device
++				   *mdiodev, struct device_node *node, u32 addr)
++{
++	if (of_property_read_bool(node, "broken-turn-around"))
++		mdio->phy_ignore_ta_mask |= 1 << addr;
++
++	of_property_read_u32(node, "reset-assert-us",
++			     &mdiodev->reset_assert_delay);
++	of_property_read_u32(node, "reset-deassert-us",
++			     &mdiodev->reset_deassert_delay);
++}
++
+ static struct mii_timestamper *of_find_mii_timestamper(struct device_node *node)
+ {
+ 	struct of_phandle_args arg;
+@@ -76,13 +88,7 @@ int of_mdiobus_phy_device_register(struct mii_bus *mdio, struct phy_device *phy,
+ 		phy->irq = mdio->irq[addr];
+ 	}
+ 
+-	if (of_property_read_bool(child, "broken-turn-around"))
+-		mdio->phy_ignore_ta_mask |= 1 << addr;
+-
+-	of_property_read_u32(child, "reset-assert-us",
+-			     &phy->mdio.reset_assert_delay);
+-	of_property_read_u32(child, "reset-deassert-us",
+-			     &phy->mdio.reset_deassert_delay);
++	of_mdiobus_child_parse(mdio, &phy->mdio, child, addr);
+ 
+ 	/* Associate the OF node with the device structure so it
+ 	 * can be looked up later */
+@@ -158,6 +164,8 @@ static int of_mdiobus_register_device(struct mii_bus *mdio,
+ 	if (IS_ERR(mdiodev))
+ 		return PTR_ERR(mdiodev);
+ 
++	of_mdiobus_child_parse(mdio, mdiodev, child, addr);
++
+ 	/* Associate the OF node with the device structure so it
+ 	 * can be looked up later.
+ 	 */
+---
+2.30.0
