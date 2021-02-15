@@ -2,70 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7D1E31C37E
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 22:21:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC6B931C39A
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 22:31:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229716AbhBOVUw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 16:20:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58326 "EHLO mail.kernel.org"
+        id S229672AbhBOVbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 16:31:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59690 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229646AbhBOVUr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Feb 2021 16:20:47 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 1B73564DE0;
-        Mon, 15 Feb 2021 21:20:07 +0000 (UTC)
+        id S229807AbhBOVas (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Feb 2021 16:30:48 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 078AD64E07;
+        Mon, 15 Feb 2021 21:30:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613424007;
-        bh=nUSsHWPNyz+VbC0Hii7ZpooxAXSQDGUKEg2fdwYaUxA=;
+        s=k20201202; t=1613424608;
+        bh=KU7mtMzFwOTcQqK6aPw0VOKCIj9JgO5PRHG6hbF7u80=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=WPyLSL04cAGevSwM0sX0k9ATzssv5Fvn3dozPUptXAKm8vYCx6ZY4IFKHMVqr0R6O
-         eiHyBZ5IJ+75vn7UqSc3o1Q5qBWfnGMwdgfnUrte6jtj9KZ7paCsdmzSdSCqthpL5N
-         J8ElKdZb6TVFoOG7tTKSNy0S2PyITr0dcmo20Elc9aNlmCaFFEdFn5wvqxx7zYPBjP
-         +SyLRbPSuzhpMJ+Q5aOsHF0P268cbN6odsObrDPYSsWqmOl6+gprnlJHnQcIzNXUU2
-         l11xSTPBMOUvDEzLyFDt0uqxBjQlgKPU+I4Aezyk2LNM3TGfTzJDo+/YH2Cr7DI5MY
-         zwtKyHILDVpJA==
+        b=vLmr6WQ09DYI3FoqIlm8LHwwTQCvHgvSFcHo24Igh/Jyz3Fs/wuwi0Is0e+ame4fq
+         f/gSyDo7MdWsu28f9w188JMXrJH4EhAfM0q6X0MjJEVLNG8hGMrddOJj1zwhng+hwj
+         o6glrf0omNC9VEpWdfMZRdFd/h2TEaQd8CkSeq8+/GBcN8F9QPwjVYNybHImsESDZT
+         hxGWqZUonm9ENmCLowm7EbsMPtxcO3u5ELNXe31gwFNq/xcUJ8moVqU2ih8O53u2PY
+         BIC4GMDI/cyrWzCbvNIDHRPXHJ07TIrtzLrAuc9dHL4MPQAVkrT2CMYBQ2H4tVim7U
+         yLStBTaY8h/9g==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 12789609D9;
-        Mon, 15 Feb 2021 21:20:07 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id EEAC1609EA;
+        Mon, 15 Feb 2021 21:30:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/2] Fixing build breakage after "Merge branch
- 'Propagate-extack-for-switchdev-LANs-from-DSA'"
+Subject: Re: [PATCH net-next] tcp: tcp_data_ready() must look at SOCK_DONE
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161342400707.23138.3634090108529320036.git-patchwork-notify@kernel.org>
-Date:   Mon, 15 Feb 2021 21:20:07 +0000
-References: <20210215210912.2633895-1-olteanv@gmail.com>
-In-Reply-To: <20210215210912.2633895-1-olteanv@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
+Message-Id: <161342460797.27343.6265387962424885407.git-patchwork-notify@kernel.org>
+Date:   Mon, 15 Feb 2021 21:30:07 +0000
+References: <20210213142634.3237642-1-eric.dumazet@gmail.com>
+In-Reply-To: <20210213142634.3237642-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        roopa@nvidia.com, nikolay@nvidia.com
+        edumazet@google.com, weiwan@google.com, arjunroy@google.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Mon, 15 Feb 2021 23:09:10 +0200 you wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Sat, 13 Feb 2021 06:26:34 -0800 you wrote:
+> From: Eric Dumazet <edumazet@google.com>
 > 
-> There were two build issues in the 'Propagate extack for switchdev VLANs
-> from DSA', both related to function prototypes not updated for some stub
-> definitions when CONFIG_SWITCHDEV=n and CONFIG_BRIDGE_VLAN_FILTERING=n.
+> My prior cleanup missed that tcp_data_ready() has to look at SOCK_DONE.
+> Otherwise, an application using SO_RCVLOWAT will not get EPOLLIN event
+> if a FIN is received in the middle of expected payload.
 > 
-> Vladimir Oltean (2):
->   net: bridge: fix switchdev_port_attr_set stub when CONFIG_SWITCHDEV=n
->   net: bridge: fix br_vlan_filter_toggle stub when
->     CONFIG_BRIDGE_VLAN_FILTERING=n
+> The reason SOCK_DONE is not examined in tcp_epollin_ready()
+> is that tcp_poll() catches the FIN because tcp_fin()
+> is also setting RCV_SHUTDOWN into sk->sk_shutdown
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/2] net: bridge: fix switchdev_port_attr_set stub when CONFIG_SWITCHDEV=n
-    https://git.kernel.org/netdev/net-next/c/419dfaed7ccc
-  - [net-next,2/2] net: bridge: fix br_vlan_filter_toggle stub when CONFIG_BRIDGE_VLAN_FILTERING=n
-    https://git.kernel.org/netdev/net-next/c/c97f47e3c198
+  - [net-next] tcp: tcp_data_ready() must look at SOCK_DONE
+    https://git.kernel.org/netdev/net-next/c/39354eb29f59
 
 You are awesome, thank you!
 --
