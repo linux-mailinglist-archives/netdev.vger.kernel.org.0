@@ -2,97 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 771F031C231
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 20:09:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E63F631C23B
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 20:12:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230314AbhBOTIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 14:08:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57236 "EHLO
+        id S229764AbhBOTKK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 14:10:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229764AbhBOTIy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 14:08:54 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1E2CC061574;
-        Mon, 15 Feb 2021 11:08:13 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id z9so4442112pjl.5;
-        Mon, 15 Feb 2021 11:08:13 -0800 (PST)
+        with ESMTP id S229925AbhBOTKI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 14:10:08 -0500
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FEDEC061574;
+        Mon, 15 Feb 2021 11:09:28 -0800 (PST)
+Received: by mail-io1-xd31.google.com with SMTP id u20so7792197iot.9;
+        Mon, 15 Feb 2021 11:09:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4wSIIQAoU/qUrHpFtDE4/r1lSSmKppFfAx3tPckyTMg=;
-        b=WbZcgfONHMSwsib7jyirAckorAOZ9aIz8BGaGHSxzE9IBK0w2zS4RqERyv2kXqLehJ
-         3t8lWW9K6eT2uy0zdiiz5yw0F973t4nNTNikpF/3wmhOu4W+uyQhaNPTzHPv6VQ/2hUY
-         KnTwYi3LIV47D4qZMGp4KzyAZ5M5bA3FNgErZoYU6Jgld4bPjW3+WRUSdght+GGuXTZp
-         daPGMuEim6QxghMcWiixp9ekOdJZUBSvPyCR3vEmPtVYD0uvuYoCgON6wsyhzteVgbij
-         yi8/6n0rOG9nERGp9qWfRIavxLSavRIlWxuocVYOSKY7Xp42kWhkmvRtGstyQJR3MyiF
-         /Ncg==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=+iSFnwZDqHzel2EupBWqWFgjxdKdshK6b9ZbgQmOaGs=;
+        b=u4/ZBTN49aQkxbwTEUoyrxiGRfHZ5FQ+//1XPbCI//hL2HqDMbclQxLbW7VP8Do/nt
+         s19WkNFkaVS/GlbNIdkSPBVv1eIxOo9Il2oWIUVQNfkRl8144rt5hQaIIA2anP2BRzwj
+         qa6BPjcRMU25g7Px5pnwM3B+nYxHARVVeHloQM7yj09AVZHScORtE2aEeoG1dPr6H+Kq
+         4At/uBWsna6J2/v87VGpzosw4Li1z+P3ITLQ820/jKy4TUARQxocr+Cnue9asQv2lxas
+         sLsUE7hCxkR3MW5KPeXZNfNyR0VINJQF2+B/lFcKkCCsZglwh7HdX5MOlU2xV7kfpx3q
+         T2Xg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4wSIIQAoU/qUrHpFtDE4/r1lSSmKppFfAx3tPckyTMg=;
-        b=A5IsLRspe+UuP//qIrGmUFgiAN9k2BPqYZocqxEJeFTXpukzu7ek+mIQS0M4zJd1Gx
-         XzZSvzVFpcKr1w67iBinFhXoV5qCf1ze70KqHsgzOoYMhiR6JEq5wHJ6FHWELHH8CocY
-         sBya1M4/C1H/sUTfG3i3dfnXQAhGEtSmyVoxoxh20b7pmPLWnwWBS+S12kOT9MGA9v7I
-         9eEBLQ0DnH4GW3ZFyNZnSTxn6z8WG5x6f8vNRMxRuSGKFNoWxhqHOsc5iBvgb9xpRbGn
-         zBW+v9GyATqcoW2IQmTYRGoJPkYgp8fnViSIhROaLQh/a7vaFq6l9MQ0uNZWSfSjz69V
-         AHWw==
-X-Gm-Message-State: AOAM530MtjHReV0iQ90QWYzojAWkmwEwAn4fWXtiIDHtxtIT7YeP3dYm
-        Hk8HocUN9YgqYNv83+czL7exOPNRu4WxebvIYXkYDo7O
-X-Google-Smtp-Source: ABdhPJxDZr+X+ZsMEuCZzWkgLuUXSqSIjI3o/9+cA1CacZg3xnxdlHN5Yv/Z3oJQVozefnLe/dMGd0jGtjOZgc/zmwI=
-X-Received: by 2002:a17:903:310f:b029:e3:53e8:bfe6 with SMTP id
- w15-20020a170903310fb02900e353e8bfe6mr6541429plc.78.1613416093556; Mon, 15
- Feb 2021 11:08:13 -0800 (PST)
-MIME-Version: 1.0
-References: <20210215072703.43952-1-xie.he.0141@gmail.com> <YCo96zjXHyvKpbUM@unreal>
- <CAJht_EOQBDdwa0keS9XTKZgXE44_b5cHJt=fFaKy-wFDpe6iaw@mail.gmail.com> <YCrDcMYgSgdKp4eX@unreal>
-In-Reply-To: <YCrDcMYgSgdKp4eX@unreal>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Mon, 15 Feb 2021 11:08:02 -0800
-Message-ID: <CAJht_EPy1Us72YGMune2G3s1TLB4TOCBFJpZt+KbVUV8uoFbfA@mail.gmail.com>
-Subject: Re: [PATCH net-next RFC v3] net: hdlc_x25: Queue outgoing LAPB frames
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Martin Schiller <ms@dev.tdt.de>,
-        Krzysztof Halasa <khc@pm.waw.pl>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=+iSFnwZDqHzel2EupBWqWFgjxdKdshK6b9ZbgQmOaGs=;
+        b=Iqww9DOKjp7lOtEX61/nB1Y41F8xFpssdHC4NdOHXMVQcltGhm4pHaTB3gQKQdPFDY
+         7EwBoL0rzBXYp3HmpzapuCDh8RWHRhidoknQzm5KWfPMAiqdLXXLKL+tap/pOjp3LvRU
+         fZ6eNuYpWpxO1kW7oI3L9A4K+MMzFowGfh0PxDB1rTwLLfPK+o28KHB3BqTxygTY2MbE
+         +hX1iELaWp6jRGR5PfsZnC0EJ+FuGP3LKJThtd0G+28y+NYlqJV6HiWlPJN00pavAvlb
+         JemDk1vwCaWAIi4E7SsG+OdKOMETi60/Mnt/0VukWWCmjhgupPy/sGPbI4pyHlYcr6DC
+         5nMg==
+X-Gm-Message-State: AOAM5336lts+zmu+34O+7V50ceUfXgAGux9omd/YiLAbAY34yEW7H7ey
+        RQaqHi3mjOjZMfmoa1rKkZ8=
+X-Google-Smtp-Source: ABdhPJyVrRDz+mBKu/VJs65+ygptlSiJPtJq12BsFX/yvWxBP6RuVP7kNbe/zOlasZv4isVCJVXKKA==
+X-Received: by 2002:a6b:b44b:: with SMTP id d72mr12560833iof.55.1613416167604;
+        Mon, 15 Feb 2021 11:09:27 -0800 (PST)
+Received: from localhost ([172.243.146.206])
+        by smtp.gmail.com with ESMTPSA id s6sm9786664ild.45.2021.02.15.11.09.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Feb 2021 11:09:27 -0800 (PST)
+Date:   Mon, 15 Feb 2021 11:09:21 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
+        wangdongdong.6@bytedance.com, jiang.wang@bytedance.com,
+        Cong Wang <cong.wang@bytedance.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Message-ID: <602ac6e11579_3ed41208af@john-XPS-13-9370.notmuch>
+In-Reply-To: <20210213214421.226357-6-xiyou.wangcong@gmail.com>
+References: <20210213214421.226357-1-xiyou.wangcong@gmail.com>
+ <20210213214421.226357-6-xiyou.wangcong@gmail.com>
+Subject: RE: [Patch bpf-next v3 5/5] sock_map: rename skb_parser and
+ skb_verdict
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 15, 2021 at 10:54 AM Leon Romanovsky <leon@kernel.org> wrote:
->
-> On Mon, Feb 15, 2021 at 09:23:32AM -0800, Xie He wrote:
-> > On Mon, Feb 15, 2021 at 1:25 AM Leon Romanovsky <leon@kernel.org> wrote:
-> > >
-> > > > +     /* When transmitting data:
-> > > > +      * first we'll remove a pseudo header of 1 byte,
-> > > > +      * then the LAPB module will prepend an LAPB header of at most 3 bytes.
-> > > > +      */
-> > > > +     dev->needed_headroom = 3 - 1;
-> > >
-> > > 3 - 1 = 2
-> > >
-> > > Thanks
-> >
-> > Actually this is intentional. It makes the numbers more meaningful.
-> >
-> > The compiler should automatically generate the "2" so there would be
-> > no runtime penalty.
->
-> If you want it intentional, write it in the comment.
->
-> /* When transmitting data, we will need extra 2 bytes headroom,
->  * which are 3 bytes of LAPB header minus one byte of pseudo header.
->  */
->  dev->needed_headroom = 2;
+Cong Wang wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
+> 
+> These two eBPF programs are tied to BPF_SK_SKB_STREAM_PARSER
+> and BPF_SK_SKB_STREAM_VERDICT, rename them to reflect the fact
+> they are only used for TCP. And save the name 'skb_verdict' for
+> general use later.
+> 
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> Reviewed-by: Lorenz Bauer <lmb@cloudflare.com>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> ---
 
-I think this is unnecessary. The current comment already explains the
-meaning of the "1" and the "3". There's no need for a reader of this
-code to understand what a "2" is. That is the job of the compiler, not
-the human reader.
+Acked-by: John Fastabend <john.fastabend@gmail.com>
