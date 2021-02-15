@@ -2,122 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BFE531BEA6
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 17:19:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B74B31BE4E
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 17:07:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230364AbhBOQOn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 11:14:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44766 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232624AbhBOP7Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 10:59:24 -0500
-Received: from mail-oo1-xc30.google.com (mail-oo1-xc30.google.com [IPv6:2607:f8b0:4864:20::c30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23E3CC0613D6;
-        Mon, 15 Feb 2021 07:58:44 -0800 (PST)
-Received: by mail-oo1-xc30.google.com with SMTP id z36so1634418ooi.6;
-        Mon, 15 Feb 2021 07:58:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=WEACmCkgL/TM4hrtjiINmc1isFYTeQEPw/cMrn0TOb8=;
-        b=pxCnbeanx20AM85pB9UePv+EUKwTcmmMHTq33viceAq5x5Lo3xrjSGaZ1JHgngvSiJ
-         sYbmLHNDHJXxvSpb5aFLVfME/p37XMw/roWLW8VewXfUhFKINStji5A97O+eF1gwTyXU
-         hAGvNx0HtN2RoAx2eT3HqRH6HSKzK2CQgJpSklFNZc+rm194Rk9Rorr+XZl6YlJ1vvmK
-         foIRc6MtNcCOzTRjohd5d9jPNFaJhdA8BCRBIykfV9uf+Z91tla+15R+beP7FmeSwFnc
-         6lrjGB2w9xgfGVIe8Uf3xnkrktdcmj7IcMwXK3ig8FtrJOvjrN0JmXn30Iu/+SPtN1BW
-         vRqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=WEACmCkgL/TM4hrtjiINmc1isFYTeQEPw/cMrn0TOb8=;
-        b=HDHzCja5H5PFpr+8/o+IzkqHYPjLvwuWUGlSir09/RzD72V8xGMS/ULHhmcy74JD9w
-         BPloPy4f+/Hjfg8BE3DuLR7R4QMRqFfOp9T/w85xFuyb6F8ehrjXn0YxjRDCrlWfcS+n
-         nQtkPzzX30+kzf+ohCtq/3/vKfDK3zp+SbVrmLh3YPcL6pnfjVI4Mr87P0V8jyGirvZV
-         dSxAq+SDKO67KjYbr7VP/wXesNzxUemY5kFxnffMGEGYSabW5cwf15jNvqNsIwQPSC0A
-         yzrWeM0tssU65zgA9Je0PPzVDT3qd45XjEDgdVcno3/M/IK/6LGn2EYvYKNssz3dJ/x6
-         fzrg==
-X-Gm-Message-State: AOAM530o8CWuvdh0utl7NgYIxfIth32g5GaLDQvXqaCeggAi/5Hu6wYM
-        Zg6Hl0vgVw4iTG8Y+mEpVUm31mNam4M=
-X-Google-Smtp-Source: ABdhPJyey6pEye22s5MbAnms/IMF/0TE5yuvKM3/n0AGkX9+CrcF435g/f0ANgpkmjk8OgbJ1Ohw2Q==
-X-Received: by 2002:a4a:96b3:: with SMTP id s48mr11234851ooi.11.1613404723229;
-        Mon, 15 Feb 2021 07:58:43 -0800 (PST)
-Received: from localhost.localdomain (cpe-24-31-245-230.kc.res.rr.com. [24.31.245.230])
-        by smtp.gmail.com with ESMTPSA id o98sm3728749ota.0.2021.02.15.07.58.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Feb 2021 07:58:42 -0800 (PST)
-Sender: Larry Finger <larry.finger@gmail.com>
-Subject: Re: [PATCH] b43: N-PHY: Fix the update of coef for the PHY revision
- >= 3case
-To:     Colin King <colin.king@canonical.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        "John W . Linville" <linville@tuxdriver.com>,
-        linux-wireless@vger.kernel.org, b43-dev@lists.infradead.org,
-        netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210215120532.76889-1-colin.king@canonical.com>
-From:   Larry Finger <Larry.Finger@lwfinger.net>
-Message-ID: <a1f578d8-bfaf-ec92-7874-84a586385495@lwfinger.net>
-Date:   Mon, 15 Feb 2021 09:58:41 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+        id S230267AbhBOQGs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 11:06:48 -0500
+Received: from mga05.intel.com ([192.55.52.43]:33146 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232091AbhBOQBd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Feb 2021 11:01:33 -0500
+IronPort-SDR: O5hpvc2A4AQ0VWOvXQfCRBGiK37lI80cxYgoOh/+d6R2I4wCYoZC4WuS1+ywvaaD4xJkXVAN6O
+ ZJINbiTWkYiA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9896"; a="267558229"
+X-IronPort-AV: E=Sophos;i="5.81,181,1610438400"; 
+   d="scan'208";a="267558229"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2021 07:58:55 -0800
+IronPort-SDR: qUBcDnMNGWB44uoh1MTupZsdb45fxio3m0E/f9VI6r96twT5vE68fSmGs0x7S+Ia9ZGYH1KBSs
+ erfQ6tr1Worg==
+X-IronPort-AV: E=Sophos;i="5.81,181,1610438400"; 
+   d="scan'208";a="580213026"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2021 07:58:50 -0800
+Received: from andy by smile with local (Exim 4.94)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1lBgGs-005GNG-Ra; Mon, 15 Feb 2021 17:58:46 +0200
+Date:   Mon, 15 Feb 2021 17:58:46 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jani Nikula <jani.nikula@linux.intel.com>
+Cc:     Alex Deucher <alexander.deucher@amd.com>,
+        Mikita Lipski <mikita.lipski@amd.com>,
+        Eryk Brol <eryk.brol@amd.com>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        netdev@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH v1 1/3] string: Consolidate yesno() helpers under
+ string.h hood
+Message-ID: <YCqaNnr7ynRydczE@smile.fi.intel.com>
+References: <20210215142137.64476-1-andriy.shevchenko@linux.intel.com>
+ <87y2fpbdmp.fsf@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20210215120532.76889-1-colin.king@canonical.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87y2fpbdmp.fsf@intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/15/21 6:05 AM, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
+On Mon, Feb 15, 2021 at 04:37:50PM +0200, Jani Nikula wrote:
+> On Mon, 15 Feb 2021, Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > We have already few similar implementation and a lot of code that can benefit
+> > of the yesno() helper.  Consolidate yesno() helpers under string.h hood.
 > 
-> The documentation for the PHY update [1] states:
-> 
-> Loop 4 times with index i
-> 
->      If PHY Revision >= 3
->          Copy table[i] to coef[i]
->      Otherwise
->          Set coef[i] to 0
-> 
-> the copy of the table to coef is currently implemented the wrong way
-> around, table is being updated from uninitialized values in coeff.
-> Fix this by swapping the assignment around.
-> 
-> [1] https://bcm-v4.sipsolutions.net/802.11/PHY/N/RestoreCal/
-> 
-> Fixes: 2f258b74d13c ("b43: N-PHY: implement restoring general configuration")
-> Addresses-Coverity: ("Uninitialized scalar variable")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> ---
->   drivers/net/wireless/broadcom/b43/phy_n.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/wireless/broadcom/b43/phy_n.c b/drivers/net/wireless/broadcom/b43/phy_n.c
-> index b669dff24b6e..665b737fbb0d 100644
-> --- a/drivers/net/wireless/broadcom/b43/phy_n.c
-> +++ b/drivers/net/wireless/broadcom/b43/phy_n.c
-> @@ -5311,7 +5311,7 @@ static void b43_nphy_restore_cal(struct b43_wldev *dev)
->   
->   	for (i = 0; i < 4; i++) {
->   		if (dev->phy.rev >= 3)
-> -			table[i] = coef[i];
-> +			coef[i] = table[i];
->   		else
->   			coef[i] = 0;
->   	}
-> 
+> Good luck. I gave up after just four versions. [1]
 
-Acked-by: Larry Finger <Larry.Finger@lwfinger.net>
+Thanks for a pointer! I like your version, but here we also discussing a
+possibility to do something like %py[DOY]. It will consolidate all those RO or
+whatever sections inside one data structure.
 
-Good catch, thanks.
+> Acked-by: Jani Nikula <jani.nikula@intel.com>
+> 
+> [1] http://lore.kernel.org/r/20191023131308.9420-1-jani.nikula@intel.com
 
-Larry
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
