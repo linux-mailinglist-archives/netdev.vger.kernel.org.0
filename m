@@ -2,81 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E67C31BC14
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 16:17:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B831731BC16
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 16:19:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230363AbhBOPRS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 10:17:18 -0500
-Received: from mo-csw1514.securemx.jp ([210.130.202.153]:37546 "EHLO
-        mo-csw.securemx.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229910AbhBOPQf (ORCPT
+        id S230412AbhBOPRo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 10:17:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35502 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229888AbhBOPQf (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 10:16:35 -0500
-Received: by mo-csw.securemx.jp (mx-mo-csw1514) id 11FFEGmx020588; Tue, 16 Feb 2021 00:14:16 +0900
-X-Iguazu-Qid: 34tMYNXf5eaVJ6v6C8
-X-Iguazu-QSIG: v=2; s=0; t=1613402056; q=34tMYNXf5eaVJ6v6C8; m=uM2REpR00LsJgIiw9Tu2w9j02BB6yi8SVQNTaJm7Slo=
-Received: from imx12.toshiba.co.jp (imx12.toshiba.co.jp [61.202.160.132])
-        by relay.securemx.jp (mx-mr1511) id 11FFEEml039740;
-        Tue, 16 Feb 2021 00:14:15 +0900
-Received: from enc02.toshiba.co.jp ([61.202.160.51])
-        by imx12.toshiba.co.jp  with ESMTP id 11FFEE1b020321;
-        Tue, 16 Feb 2021 00:14:14 +0900 (JST)
-Received: from hop101.toshiba.co.jp ([133.199.85.107])
-        by enc02.toshiba.co.jp  with ESMTP id 11FFEDc6007524;
-        Tue, 16 Feb 2021 00:14:14 +0900
-Date:   Tue, 16 Feb 2021 00:14:13 +0900
-From:   Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>, arnd@kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        punit1.agrawal@toshiba.co.jp, yuji2.ishikawa@toshiba.co.jp,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/4] net: stmmac: Add Toshiba Visconti SoCs glue driver
-X-TSB-HOP: ON
-Message-ID: <20210215151413.oqq5o6kzhmhlnc5d@toshiba.co.jp>
-References: <20210215050655.2532-1-nobuhiro1.iwamatsu@toshiba.co.jp>
- <20210215050655.2532-3-nobuhiro1.iwamatsu@toshiba.co.jp>
- <YCoPmfunGmu0E8IT@unreal>
- <20210215072809.n3r5rdswookzri6j@toshiba.co.jp>
- <YCo9WVvtAeozE42k@unreal>
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A0BFC061574;
+        Mon, 15 Feb 2021 07:15:52 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id cv23so3895502pjb.5;
+        Mon, 15 Feb 2021 07:15:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0rSXsWgkIPp9LcQforsSfMG6IosnkE2y+0kuGemcWec=;
+        b=dpuJndH3wLvC1smjtwpWiso7TjKO+CHXqm5me8ElygIzH7E2zcebDLGoIxFvsb7sFC
+         FBjKpDWWrsFAGy0zaTySceq2GNCbUmz94XAHzGfXYhsFVITqQkF1giOndmRTochCYsr2
+         k8xqGMZe8569vazxMC08vUNfc/iH7+MtKCQvwyUMu09u/E2+I9vy6op3iVd+3DAnzY19
+         +utxNRJW7Q+RQl8EcYOP4ZtmktDzmVsIFpIG+KGuyStvj4X4DErvq3HxqJM/KkpZwy9b
+         iy+C/MY2dbLil5jvy0mag5dOOW7ajf8SfJ3iCh0Iax3GF0lcg8W6oJy9xdqq51v5w8BR
+         xpfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0rSXsWgkIPp9LcQforsSfMG6IosnkE2y+0kuGemcWec=;
+        b=qSU6Fl+2w0E9O4aSqzjgXufzvnQQZqrEuSqr+5xEDzcTcy6o1frqVNH1db07Ow/BH0
+         qmsxocsxnOdfbwNMBu0kJdll5YKvhZV7jv1YnCsgJ3dwr+RjvVU5phg2Ef0foyn3je/i
+         u7Nj0E7b7RBTFnHIGIQrS0aLvE0itFX1E06eDQqQsIG+z9U+vFFpRX69vW7LwfsuwSLU
+         c1/MhUx40gC2erbSxF5J5w7PVOnKVn5IDF8J74ntT1Ypyon4Rt+cgBSoAMHroewdRAAk
+         caSXWea6taPWSoxJ8BPbUOnhXkUGhqCrMoG4OQuM0MEyMolmrZRGHBkZad0Swk0V60y6
+         LECA==
+X-Gm-Message-State: AOAM531zP5cgk6Qu4G7S8+tlRjIWSvDN6dAIiY1H1rnSoDXqyYkBHjXk
+        Q4W0qOKplGOBYPJgav888Ar+4b9vtnDuTKLrltM=
+X-Google-Smtp-Source: ABdhPJxwskZcsaaZiTXp5aWn51qO6stnRxwfBmOr2xwKBhAzDXV9MTODHcnk6/nIvbr/V7VXILKWYOWjTfSGE0EcuCA=
+X-Received: by 2002:a17:90a:4fc1:: with SMTP id q59mr17212917pjh.129.1613402152155;
+ Mon, 15 Feb 2021 07:15:52 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YCo9WVvtAeozE42k@unreal>
+References: <20210208151244.16338-1-calvin.johnson@oss.nxp.com>
+ <20210208151244.16338-16-calvin.johnson@oss.nxp.com> <20210208162831.GM1463@shell.armlinux.org.uk>
+ <20210215123309.GA5067@lsv03152.swis.in-blr01.nxp.com> <CAHp75VcpR1uf-6me9-MiXzESP9gtE0=Oz5TaFj0E93C3w4=Fgg@mail.gmail.com>
+In-Reply-To: <CAHp75VcpR1uf-6me9-MiXzESP9gtE0=Oz5TaFj0E93C3w4=Fgg@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 15 Feb 2021 17:15:36 +0200
+Message-ID: <CAHp75Vfcpk_4OQDpk_rvySJbXAyzAubt-n=ckFzggdo9fKvJ4A@mail.gmail.com>
+Subject: Re: [net-next PATCH v5 15/15] net: dpaa2-mac: Add ACPI support for
+ DPAA2 MAC driver
+To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Grant Likely <grant.likely@arm.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
+        Jon <jon@solid-run.com>, Saravana Kannan <saravanak@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "linux.cj" <linux.cj@gmail.com>,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        netdev <netdev@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Mon, Feb 15, 2021 at 5:13 PM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+>
+> On Mon, Feb 15, 2021 at 2:33 PM Calvin Johnson
+> <calvin.johnson@oss.nxp.com> wrote:
+> > On Mon, Feb 08, 2021 at 04:28:31PM +0000, Russell King - ARM Linux admin wrote:
+>
+> ...
+>
+> > I think of_phy_is_fixed_link() needs to be fixed. I'll add below fix.
+> >
+> > --- a/drivers/net/mdio/of_mdio.c
+> > +++ b/drivers/net/mdio/of_mdio.c
+> > @@ -439,6 +439,9 @@ bool of_phy_is_fixed_link(struct device_node *np)
+> >         int len, err;
+> >         const char *managed;
+> >
+> > +       if (!np)
+> > +               return false;
+>
+> AFAICS this doesn't add anything: all of the of_* APIs should handle
+> OF nodes being NULL below.
+>
+> >         /* New binding */
+> >         dn = of_get_child_by_name(np, "fixed-link");
+> >         if (dn) {
 
-On Mon, Feb 15, 2021 at 11:22:33AM +0200, Leon Romanovsky wrote:
-> On Mon, Feb 15, 2021 at 04:28:09PM +0900, Nobuhiro Iwamatsu wrote:
-> >
-> > I have received your point out and have sent an email with the content
-> > to remove this line. But it may not have arrived yet...
-> >
-> > > Why did you use "def_bool y" and not "default y"? Isn't it supposed to be
-> > > "depends on STMMAC_ETH"? And probably it shouldn't be set as a default as "y".
-> > >
-> >
-> > The reason why "def_bool y" was set is that the wrong fix was left when
-> > debugging. Also, I don't think it is necessary to set "default y".
-> > This is also incorrect because it says "bool" Toshiba Visconti DWMAC
-> > support "". I change it to trustate in the new patch.
-> >
-> > And this driver is enabled when STMMAC_PLATFORM was Y. And STMMAC_PLATFORM
-> > depends on STMMAC_ETH.
-> > So I understand that STMMAC_ETH does not need to be dependents. Is this
-> > understanding wrong?
-> 
-> This is correct understanding, just need to clean other entries in that
-> Kconfig that depends on STMMAC_ETH.
+Yes, of_get_next_child() and of_get_property() are NULL aware.
 
-OK, thanks.
+So, the check is redundant.
 
-Best regards,
-  Nobuhiro
+-- 
+With Best Regards,
+Andy Shevchenko
