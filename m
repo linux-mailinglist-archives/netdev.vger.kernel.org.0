@@ -2,84 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C7CA31B740
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 11:37:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83F1B31B78B
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 11:46:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230081AbhBOKgB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 05:36:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60120 "EHLO
+        id S230288AbhBOKpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 05:45:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229991AbhBOKf4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 05:35:56 -0500
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A65AC061756
-        for <netdev@vger.kernel.org>; Mon, 15 Feb 2021 02:35:06 -0800 (PST)
-Received: by mail-lj1-x22e.google.com with SMTP id x1so7073043ljj.11
-        for <netdev@vger.kernel.org>; Mon, 15 Feb 2021 02:35:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Y2fJDaug/NaT07ZROmDa0hdWd6/FjaMaFHRUTepNMfY=;
-        b=B8hFLR8Ba23yZJ7oN7bv8rrlCOB/B+trSlog+MAqjijptXxe+I/UsSZoCkU4O6Vsq0
-         u6dX3FYCd3trGYaZmEBIV+jexzb/OLqBlHfC2pTy+fvN43XD5epeSzlYWvHnhuoOa02V
-         ctWUlTScdd8v+CNFlAJ82yXVuYcM5zzsy8w+E=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Y2fJDaug/NaT07ZROmDa0hdWd6/FjaMaFHRUTepNMfY=;
-        b=HDOMpFrbRug7aRa5qCEH44R2BBPQIkv3T+l/Gd0qOlkSfwFJ6DLUy0fwRCHZWJKgKc
-         ZHqvTjAJvO9Oi8TSh+lm8Mm8OpaagyUD4mUHMHZ4sFQKwUqI/GgE6wdqplMHmrIVxxV8
-         5X+pTqIMUvhQ3J1SwAwZElUE75jU4swOKDPV/zl3R52CiyQ0P2FH35tIICILvAGurRRK
-         yrrBfvYhr7n4mFGIkqSZ0fTrTklgGzwMrLAFFn+H1oj2BvDmU9pMhMoUOYgWV8zBc6+e
-         ZO9/JS+GGz9L4gOSp5mLWMi6k0VE/oV4JlJ+YSvNcK8NbMCcIw1LoV6W8yfbhHiRSHhb
-         p2xA==
-X-Gm-Message-State: AOAM533tAdo1bByANgkg1ekmL7FhWX6v0zUARXPQW9kY6zkWLJGvNuRF
-        psVIsY8vPTAR1amMVVCF8afAAPJQfWuZb1V8dGpBKw==
-X-Google-Smtp-Source: ABdhPJzOAWGFH/yS6fiaNSSYSCBu/QLhZBq/gIwIPJEwc5nnwUJMHgP/sw9aAh/toANseGBxa2G7bGQeukEScM81468=
-X-Received: by 2002:a2e:9847:: with SMTP id e7mr56549ljj.376.1613385304873;
- Mon, 15 Feb 2021 02:35:04 -0800 (PST)
+        with ESMTP id S230042AbhBOKo7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 05:44:59 -0500
+Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89878C061574;
+        Mon, 15 Feb 2021 02:44:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=V15Ko0jDRPYeN/67QW78zQNnD8VcExjAsz8XTcjzpH0=; b=FQLYNszvDOtdGWgZii+WiBb+r2
+        fQYSdW1pQgcjxIeHKsYCBPXYDfjrGgSYz1rtEucTGaAG6dX+cej25NinPNM71gm5N9Q5aaSGizgA3
+        tZLza6Lmq3tTUF9yhpPqntfDryVkavGkkudpzJv7eQRJ5GVNkLsP8QNWVA1rgmNXTKHE5+WFlxU2W
+        d4YrJCxMgsSxe/KdxlBHdUrKWhtJ3D9hVvfNIWNvQ753sMvOF3O1oSf1RR6fV5a/dFeENJ7VLQved
+        4/LCeINLWhTmnHk28Aljj0dDCd8Dn9MbqL8uP+TIJD0H6vKOHRzmDjx0rGOoDfD1SWB1nepAmrd6z
+        HyHahSCg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1lBbMN-0006hm-9U; Mon, 15 Feb 2021 10:44:07 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 7CE01981573; Mon, 15 Feb 2021 11:44:02 +0100 (CET)
+Date:   Mon, 15 Feb 2021 11:44:02 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     mingo@redhat.com, will@kernel.org, kvalo@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] lockdep: add lockdep_assert_not_held()
+Message-ID: <20210215104402.GC4507@worktop.programming.kicks-ass.net>
+References: <cover.1613171185.git.skhan@linuxfoundation.org>
+ <37a29c383bff2fb1605241ee6c7c9be3784fb3c6.1613171185.git.skhan@linuxfoundation.org>
+ <YCljfeNr4m5mZa4N@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-References: <20210213214421.226357-1-xiyou.wangcong@gmail.com> <20210213214421.226357-2-xiyou.wangcong@gmail.com>
-In-Reply-To: <20210213214421.226357-2-xiyou.wangcong@gmail.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Mon, 15 Feb 2021 10:34:53 +0000
-Message-ID: <CACAyw9-EJdj8yTrZrym3U+nkBt0oG9P18NO3apZcxSE_jigdNA@mail.gmail.com>
-Subject: Re: [Patch bpf-next v3 1/5] bpf: clean up sockmap related Kconfigs
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        duanxiongchun@bytedance.com, wangdongdong.6@bytedance.com,
-        jiang.wang@bytedance.com, Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YCljfeNr4m5mZa4N@hirez.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 13 Feb 2021 at 21:44, Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> From: Cong Wang <cong.wang@bytedance.com>
->
-> As suggested by John, clean up sockmap related Kconfigs:
->
-> Reduce the scope of CONFIG_BPF_STREAM_PARSER down to TCP stream
-> parser, to reflect its name.
->
-> Make the rest sockmap code simply depend on CONFIG_BPF_SYSCALL.
-> And leave CONFIG_NET_SOCK_MSG untouched, as it is used by
-> non-sockmap cases.
+On Sun, Feb 14, 2021 at 06:53:01PM +0100, Peter Zijlstra wrote:
+> On Fri, Feb 12, 2021 at 04:28:42PM -0700, Shuah Khan wrote:
+> 
+> > +#define lockdep_assert_not_held(l)	do {			\
+> > +		WARN_ON(debug_locks && lockdep_is_held(l));	\
+> > +	} while (0)
+> > +
+> 
+> This thing isn't as straight forward as you might think, but it'll
+> mostly work.
+> 
+> Notably this thing will misfire when lockdep_off() is employed. It
+> certainyl needs a comment to explain the subtleties.
 
-For the series:
+I think something like so will work, but please double check.
 
-Reviewed-by: Lorenz Bauer <lmb@cloudflare.com>
-
-Jakub, John: can you please take another look at the assembly in patch 3?
-
--- 
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
-
-www.cloudflare.com
+diff --git a/include/linux/lockdep.h b/include/linux/lockdep.h
+index b9e9adec73e8..c8b0d292bf8e 100644
+--- a/include/linux/lockdep.h
++++ b/include/linux/lockdep.h
+@@ -294,11 +294,15 @@ extern void lock_unpin_lock(struct lockdep_map *lock, struct pin_cookie);
+ 
+ #define lockdep_depth(tsk)	(debug_locks ? (tsk)->lockdep_depth : 0)
+ 
+-#define lockdep_assert_held(l)	do {				\
+-		WARN_ON(debug_locks && !lockdep_is_held(l));	\
++#define lockdep_assert_held(l)	do {					\
++		WARN_ON(debug_locks && lockdep_is_held(l) == 0));	\
+ 	} while (0)
+ 
+-#define lockdep_assert_held_write(l)	do {			\
++#define lockdep_assert_not_held(l)	do {				\
++		WARN_ON(debug_locks && lockdep_is_held(l) == 1));	\
++	} while (0)
++
++#define lockdep_assert_held_write(l)	do {				\
+ 		WARN_ON(debug_locks && !lockdep_is_held_type(l, 0));	\
+ 	} while (0)
+ 
+diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
+index c1418b47f625..983ba206f7b2 100644
+--- a/kernel/locking/lockdep.c
++++ b/kernel/locking/lockdep.c
+@@ -5467,7 +5467,7 @@ noinstr int lock_is_held_type(const struct lockdep_map *lock, int read)
+ 	int ret = 0;
+ 
+ 	if (unlikely(!lockdep_enabled()))
+-		return 1; /* avoid false negative lockdep_assert_held() */
++		return -1; /* avoid false negative lockdep_assert_held() */
+ 
+ 	raw_local_irq_save(flags);
+ 	check_flags(flags);
