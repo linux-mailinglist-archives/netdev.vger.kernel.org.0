@@ -2,66 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A6D631C31B
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 21:41:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1B3531C31D
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 21:41:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229733AbhBOUky (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 15:40:54 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53670 "EHLO mail.kernel.org"
+        id S229777AbhBOUk6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 15:40:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53660 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229708AbhBOUkt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229675AbhBOUkt (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 15 Feb 2021 15:40:49 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id C31D564DFF;
+Received: by mail.kernel.org (Postfix) with ESMTPS id AE5FD64DF0;
         Mon, 15 Feb 2021 20:40:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1613421608;
-        bh=BO/HhLLjhDFDpZGAjDPQHZqATBYu/tCU6OdFFtZvJw8=;
+        bh=r0Bssz77VRtE92gCubJVgi3EHlziWM4zd35LghEuTjk=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=IIxqOVicL5V4mtrJQ71gF+K/lhpM29zZ/1SV3/7/VTKA6OGFJU8+jskrF1urTcOSf
-         w50jxRdtIawyHea9f21ZyXFhKi/EHBwdr69P+gTKaiaM+Sgv6wl6VaR1hZMPdmvLKG
-         CGzH9oy2sqw1rjl9KOIXWQwhJ3y1GzybusM2dq2sOy1nRdtmJzUYlyapMYbxJOuemN
-         ndA/FyV/0Y9h1DEcCkFUHktPnWcCNwE5HU7iN9hGN7y2fkoitYotAAOzKntMdum4Hj
-         j7igEzKTkpavRg7XNJITL6env1yQmRigz55eXKEngcOzXIdslojzou9WtG+Q0wn337
-         nr77yNW0JRTSA==
+        b=P1cpBlaTBnOziGkGRmLGbihH61cV/LYsHXmQJTWJRbbkTxdfbQLK4K4QiiJXQV0lv
+         t+wOEI8CW+xH4IxS6B/QvwDiea0G4R+fhKEKbWctK86rOVt9tg1R5PO894G4f88tkE
+         z4ld3PIbvWvpgn+tijQx9A3ehugxNkhcPdRxvAyMUq5ULX8raj0+hrqpUY8HmwDBOr
+         IYvSCEBtQbvRVlr+qVHsR4F3s0/x+PUO9tOnZo2pNftTx3dn8nGoscjwsa+wvfxwbO
+         Ibwuka3CbpjM9XBsvcvzZabKkWlfN653uU6qvp4Opi5OkTLPQMCrcffJAwyz5tKG5q
+         97krP0AE3BSuQ==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id B530B609D9;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id A028A60977;
         Mon, 15 Feb 2021 20:40:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] r8169: fix resuming from suspend on RTL8105e if
- machine runs on battery
+Subject: Re: [PATCH net-next 0/5] Propagate extack for switchdev VLANs from DSA
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161342160873.4070.5046035591246485167.git-patchwork-notify@kernel.org>
+Message-Id: <161342160865.4070.3346635751399377653.git-patchwork-notify@kernel.org>
 Date:   Mon, 15 Feb 2021 20:40:08 +0000
-References: <5b0846b2-64ca-90ee-b5a5-533286961142@gmail.com>
-In-Reply-To: <5b0846b2-64ca-90ee-b5a5-533286961142@gmail.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, nic_swsd@realtek.com,
-        netdev@vger.kernel.org
+References: <20210213204319.1226170-1-olteanv@gmail.com>
+In-Reply-To: <20210213204319.1226170-1-olteanv@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        kurt@linutronix.de, woojung.huh@microchip.com,
+        linus.walleij@linaro.org, hauke@hauke-m.de, jiri@resnulli.us,
+        ivecera@redhat.com, roopa@nvidia.com, nikolay@nvidia.com,
+        dqfext@gmail.com, idosch@idosch.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Sun, 14 Feb 2021 17:38:30 +0100 you wrote:
-> Armin reported that after referenced commit his RTL8105e is dead when
-> resuming from suspend and machine runs on battery. This patch has been
-> confirmed to fix the issue.
+On Sat, 13 Feb 2021 22:43:14 +0200 you wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> Fixes: e80bd76fbf56 ("r8169: work around power-saving bug on some chip versions")
-> Reported-by: Armin Wolf <W_Armin@gmx.de>
-> Tested-by: Armin Wolf <W_Armin@gmx.de>
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> This series moves the restriction messages printed by the DSA core, and
+> by some individual device drivers, into the netlink extended ack
+> structure, to be communicated to user space where possible, or still
+> printed to the kernel log from the bridge layer.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] r8169: fix resuming from suspend on RTL8105e if machine runs on battery
-    https://git.kernel.org/netdev/net-next/c/d2a04370817f
+  - [net-next,1/5] net: bridge: remove __br_vlan_filter_toggle
+    https://git.kernel.org/netdev/net-next/c/7a572964e0c4
+  - [net-next,2/5] net: bridge: propagate extack through store_bridge_parm
+    https://git.kernel.org/netdev/net-next/c/9e781401cbfc
+  - [net-next,3/5] net: bridge: propagate extack through switchdev_port_attr_set
+    https://git.kernel.org/netdev/net-next/c/dcbdf1350e33
+  - [net-next,4/5] net: dsa: propagate extack to .port_vlan_add
+    https://git.kernel.org/netdev/net-next/c/31046a5fd92c
+  - [net-next,5/5] net: dsa: propagate extack to .port_vlan_filtering
+    https://git.kernel.org/netdev/net-next/c/89153ed6ebc1
 
 You are awesome, thank you!
 --
