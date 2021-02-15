@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08C0831C36E
+	by mail.lfdr.de (Postfix) with ESMTP id 7D2D331C36F
 	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 22:11:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229710AbhBOVKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 16:10:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54990 "EHLO
+        id S229731AbhBOVKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 16:10:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229646AbhBOVK2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 16:10:28 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A48F2C0613D6
-        for <netdev@vger.kernel.org>; Mon, 15 Feb 2021 13:09:47 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id w1so13395990ejf.11
-        for <netdev@vger.kernel.org>; Mon, 15 Feb 2021 13:09:47 -0800 (PST)
+        with ESMTP id S229662AbhBOVKb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 16:10:31 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A351BC061786
+        for <netdev@vger.kernel.org>; Mon, 15 Feb 2021 13:09:48 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id o3so7663167edv.4
+        for <netdev@vger.kernel.org>; Mon, 15 Feb 2021 13:09:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=skWxX13r3Ll9hAD7PRyKQfdQnCa0EGSQyPFNzzmLNqY=;
-        b=B68e62/46XbWVHcHg432gIJnRWFyn+FT36GAdVHW9O9PFcgKkL1OvrxPupWxdlRbTM
-         nw2zNZmZx4oRGBlrn0H2Qyhosgr3ZJyCiBtvb0ili0nu0pwZeq8VaXyKr09kk852ksRl
-         aQuHq7jFZ+0soxRtVYI/rHnCvRSr8zGmjnHKxSkwticQ+rgM0JEio27AG3CZ6x2cuRE9
-         ojL7veR8djOlqdbp/gYuRcsnQ4fKMpndq5WADONgK45jRM2jQFutQ8hqPxW18O5ns2oh
-         FdWJZQN7Wt5lDywRK91wukn+Ca3ly1+C6Xr5tpqXrj/XT35H+u+SfTqJBIElJPox6TTT
-         9zEQ==
+        bh=QSuD80NSsNz+6spIfwhwN3Sb9SzektjHrwizW2ziW/U=;
+        b=mfbyZ/hKY1DbVV2lrs8x5KgDbHN7Wo/jT5j+ZMkCJA6qNWzLQwUi7OPoP932C4SN5Z
+         L0MDfWx1BZu9sGNztPHWBRVJVCFl5NO+7n5UA7OR12se0n6/mTENhvwVhZ+0WBnLeqxu
+         K7uoyajDG4vbPaLqsIeeb2HaDnQP39ViJW4aqKGAMYzpu5bqLZO/1l4TC3TQnPCqwmXM
+         Snf+c/RVZTz2+JcAJBtGwsUgnLK4IsNL/c5emq+SGNTgMyu8UCzRLCqxWd7EJRX3Ovdi
+         IIee9TFOhN4mHfdNpO9S6UOPS+PnssdPDZvjp9hMKoWV7TWpB6EgnbqfWNALJUS1WKsd
+         +pVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=skWxX13r3Ll9hAD7PRyKQfdQnCa0EGSQyPFNzzmLNqY=;
-        b=PIPLwpo47RLbEGPA03FeF8CEQmiEn/XHpWpSE+dbjBUMS8tqDtGJcdgHCqG+9K1yBz
-         kkdIQNWSu6/SWxMRdgHHxqTEdk0lEWmx0VoBDuERFFqzz/WUNpAzXIgV6gOWo9Ex4EgP
-         Yelt0ZeyWPJXeULgaQIKQINBZdogOE1aYeWutkaT0kh9Bn8qSLB47KTSaZK29nRc6Nyw
-         bT4zO3Z+9bgva/KmfXHwVJZeOVLlJkpL8XfR+NNhS2KmaKYa2gj3zI4ygYYOTXhKYqh4
-         cI2LcU/MtCPGPvKprcaCpYLZXUsMJ7FM+PWCOei6H/j2r09HEA2FiCh2s/lCcMqKKGZX
-         GGrA==
-X-Gm-Message-State: AOAM530UoHsh0XXswPVvilXMZ9xXALLfFTCwZ/PD3kziPcTeUaVYQQME
-        zrJbkgu1yc/O9Xsz/KOlq5w=
-X-Google-Smtp-Source: ABdhPJzlcYFLVxzKlFrJWjvOiLoF8zJFwbPObC6qtuIvsSCkqvaHdyL1gNEjpNa3xeO+8+odVZhfFQ==
-X-Received: by 2002:a17:906:8890:: with SMTP id ak16mr11633202ejc.398.1613423386405;
-        Mon, 15 Feb 2021 13:09:46 -0800 (PST)
+        bh=QSuD80NSsNz+6spIfwhwN3Sb9SzektjHrwizW2ziW/U=;
+        b=rWZbjKqcRe2Da+f8jd8x3Xmewj9MxP04V+65mZUiSgbnxd38ur8CbJ6Oq7Dk74oTFX
+         kJGTkXQW/sMwAdABsyWrp/eWo6BcoYMUHt+yRBk0PMB23XxyFd4HSv9Luk1W4ROipcRQ
+         gBD4cvGe+bv/DxSQ7x2wlW/tyYms5YWleCoeMun+GrHqX5LtUfEYqpLsLmV3TwUlutQ1
+         ATxFIl5ACxVJW3gIyIx2jhLq4R/C/xUU0wmejx46d6ZHTC+a44jPrwETeZbGzTYfQUIE
+         xaHaxj/z8MIKzoilwJHKA0UBlouxJtn4MJqek5qiCLWIWcqpz3Zy//d+0JQKYEs4zbNA
+         UqLA==
+X-Gm-Message-State: AOAM530EzXoxDjsgRrVUxX2JwOMKYhMcGwnWhWDl0QcT0saCgGsRZnSA
+        jAyzVLPWM4hzEkjBpr/RpVA=
+X-Google-Smtp-Source: ABdhPJzsXj3SMxtCQr7Be2kjOpqr+/YbmeJNAgbKqgDQ6nLODn3fKZCF3I7+jSJEZbmDWR1aI6A8sA==
+X-Received: by 2002:a05:6402:4253:: with SMTP id g19mr17810951edb.343.1613423387365;
+        Mon, 15 Feb 2021 13:09:47 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id n2sm4200418edr.8.2021.02.15.13.09.45
+        by smtp.gmail.com with ESMTPSA id n2sm4200418edr.8.2021.02.15.13.09.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Mon, 15 Feb 2021 13:09:46 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
@@ -52,9 +52,9 @@ To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
 Cc:     Roopa Prabhu <roopa@nvidia.com>,
         Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [PATCH net-next 1/2] net: bridge: fix switchdev_port_attr_set stub when CONFIG_SWITCHDEV=n
-Date:   Mon, 15 Feb 2021 23:09:11 +0200
-Message-Id: <20210215210912.2633895-2-olteanv@gmail.com>
+Subject: [PATCH net-next 2/2] net: bridge: fix br_vlan_filter_toggle stub when CONFIG_BRIDGE_VLAN_FILTERING=n
+Date:   Mon, 15 Feb 2021 23:09:12 +0200
+Message-Id: <20210215210912.2633895-3-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210215210912.2633895-1-olteanv@gmail.com>
 References: <20210215210912.2633895-1-olteanv@gmail.com>
@@ -66,28 +66,27 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The switchdev_port_attr_set function prototype was updated only for the
-case where CONFIG_SWITCHDEV=y|m, leaving a prototype mismatch with the
-stub definition for the disabled case. This results in a build error, so
-update that function too.
+The prototype of br_vlan_filter_toggle was updated to include a netlink
+extack, but the stub definition wasn't, which results in a build error
+when CONFIG_BRIDGE_VLAN_FILTERING=n.
 
-Fixes: dcbdf1350e33 ("net: bridge: propagate extack through switchdev_port_attr_set")
+Fixes: 9e781401cbfc ("net: bridge: propagate extack through store_bridge_parm")
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- include/net/switchdev.h | 3 ++-
+ net/bridge/br_private.h | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/switchdev.h b/include/net/switchdev.h
-index 195f62672cc4..9a5426b61ca5 100644
---- a/include/net/switchdev.h
-+++ b/include/net/switchdev.h
-@@ -296,7 +296,8 @@ static inline void switchdev_deferred_process(void)
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index da71e71fcddc..d7d167e10b70 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -1265,7 +1265,8 @@ static inline u16 br_get_pvid(const struct net_bridge_vlan_group *vg)
  }
  
- static inline int switchdev_port_attr_set(struct net_device *dev,
--					  const struct switchdev_attr *attr)
-+					  const struct switchdev_attr *attr,
-+					  struct netlink_ext_ack *extack)
+ static inline int br_vlan_filter_toggle(struct net_bridge *br,
+-					unsigned long val)
++					unsigned long val,
++					struct netlink_ext_ack *extack)
  {
  	return -EOPNOTSUPP;
  }
