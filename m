@@ -2,42 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC6B931C39A
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 22:31:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D982031C398
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 22:31:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229672AbhBOVbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 16:31:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59690 "EHLO mail.kernel.org"
+        id S229809AbhBOVav (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 16:30:51 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59684 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229807AbhBOVas (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229806AbhBOVas (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 15 Feb 2021 16:30:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 078AD64E07;
-        Mon, 15 Feb 2021 21:30:08 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPS id EACA664E04;
+        Mon, 15 Feb 2021 21:30:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1613424608;
-        bh=KU7mtMzFwOTcQqK6aPw0VOKCIj9JgO5PRHG6hbF7u80=;
+        bh=OVvntZiy32DAyaGWWDck39HdMqaTOfBUwOvpvBVVuiU=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=vLmr6WQ09DYI3FoqIlm8LHwwTQCvHgvSFcHo24Igh/Jyz3Fs/wuwi0Is0e+ame4fq
-         f/gSyDo7MdWsu28f9w188JMXrJH4EhAfM0q6X0MjJEVLNG8hGMrddOJj1zwhng+hwj
-         o6glrf0omNC9VEpWdfMZRdFd/h2TEaQd8CkSeq8+/GBcN8F9QPwjVYNybHImsESDZT
-         hxGWqZUonm9ENmCLowm7EbsMPtxcO3u5ELNXe31gwFNq/xcUJ8moVqU2ih8O53u2PY
-         BIC4GMDI/cyrWzCbvNIDHRPXHJ07TIrtzLrAuc9dHL4MPQAVkrT2CMYBQ2H4tVim7U
-         yLStBTaY8h/9g==
+        b=NQpiVVto0FF48RCYXK2PHVW5OsmDCb52eQHThKurR0L6PxXruzO9LYgfwpP888qOZ
+         ByLfCOccdtxctU2IqXNVtqJctOPzw8+fBgNp5ORPDqRlN4KIxAB5sw87dWZ+ZdfBnK
+         LdY5qjwSq38gFawUo1FUkSgF6Y58L+3Ty+WYlvUzPJaUCfjmFUekZo4ybloaJaEDst
+         eF0+ppnqGmEsQj7Us2eqp6s6C3A41sdKEKpsCo45daA3SnjOq8fWLzCfM16nR68sV4
+         AAiNUi2HCxJj4wnJhbBSapMqdUtI6424hB9DbHIXMMcZdq5iJhlGxXQw/UEL07zsaP
+         1F1xP82YIW09Q==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id EEAC1609EA;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E42C4609D9;
         Mon, 15 Feb 2021 21:30:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] tcp: tcp_data_ready() must look at SOCK_DONE
+Subject: Re: [PATCH net-next] net: dsa: sja1105: make devlink property
+ best_effort_vlan_filtering true by default
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161342460797.27343.6265387962424885407.git-patchwork-notify@kernel.org>
+Message-Id: <161342460793.27343.7413548209539655176.git-patchwork-notify@kernel.org>
 Date:   Mon, 15 Feb 2021 21:30:07 +0000
-References: <20210213142634.3237642-1-eric.dumazet@gmail.com>
-In-Reply-To: <20210213142634.3237642-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
+References: <20210213204632.1227098-1-olteanv@gmail.com>
+In-Reply-To: <20210213204632.1227098-1-olteanv@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com, weiwan@google.com, arjunroy@google.com
+        f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -46,22 +47,21 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Sat, 13 Feb 2021 06:26:34 -0800 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
+On Sat, 13 Feb 2021 22:46:32 +0200 you wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> My prior cleanup missed that tcp_data_ready() has to look at SOCK_DONE.
-> Otherwise, an application using SO_RCVLOWAT will not get EPOLLIN event
-> if a FIN is received in the middle of expected payload.
-> 
-> The reason SOCK_DONE is not examined in tcp_epollin_ready()
-> is that tcp_poll() catches the FIN because tcp_fin()
-> is also setting RCV_SHUTDOWN into sk->sk_shutdown
+> The sja1105 driver has a limitation, extensively described under
+> Documentation/networking/dsa/sja1105.rst and
+> Documentation/networking/devlink/sja1105.rst, which says that when the
+> ports are under a bridge with vlan_filtering=1, traffic to and from
+> the network stack is not possible, unless the driver-specific
+> best_effort_vlan_filtering devlink parameter is enabled.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] tcp: tcp_data_ready() must look at SOCK_DONE
-    https://git.kernel.org/netdev/net-next/c/39354eb29f59
+  - [net-next] net: dsa: sja1105: make devlink property best_effort_vlan_filtering true by default
+    https://git.kernel.org/netdev/net-next/c/8841f6e63f2c
 
 You are awesome, thank you!
 --
