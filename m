@@ -2,108 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C54D331C3A4
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 22:33:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5163431C3B5
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 22:40:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229908AbhBOVcw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 16:32:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59894 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229745AbhBOVct (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 16:32:49 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14E0BC061574;
-        Mon, 15 Feb 2021 13:32:09 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id r17so3278817edy.10;
-        Mon, 15 Feb 2021 13:32:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=a+i8LH/PcwLLtmLudhzON962m8PZ6C4JQBNhKKesSEE=;
-        b=RYDcxzO1mpPLwg+IKOV59toc8r9MQ9PIcQf/F8XpPUoo4rgVdsfMp6F0ismnB9AfEX
-         4ZefqedpMP8yEUxziHPhBM8n/9wJdexRAGSJ4Xnj1ekMbRL6F4VNO7mrJV8l1MV9WGhD
-         N9Go4ToWtmERicdIEqJx9VsEU5gT+Ie06vFOt2YAHJ1BY2hTtMXzAlrOePSYUfa/UAl8
-         p5hcrKwPgQ8VEdSzxbOOlFFYg2kgPXfmpG4An0UqOuqxjmq0fQaMQS1qiADvfR48UuQX
-         yp3nTm1RNHeKhUPofcD0JwejCbwpVVdqNPuKNwOJSh+BBsl3NiUAsMGtGRAEOdlyJWRr
-         VIhA==
+        id S229706AbhBOVk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 16:40:26 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:53226 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229672AbhBOVkY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 16:40:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1613425137;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=IxpTKqSAJdujWUQZD0dx8MvcWVHfhoD9kdfrZZUHBAg=;
+        b=OuvfuS8Oq+/Uf46fqQR6c9Q/t/WKBqCLPobSbAHQzy7Bfn8dEsrzfLp/yl3TvWxIsGHC9Z
+        t+oRa5rhT+xU1aFSY5tkBBwbzDOwokhX1SDKJI16Xc7XWdHo7UlWy2HALUio/dpa2fPci4
+        UZqQhigGx+/BKBvZPeXGeedJ0XzWm74=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-304-JIIRJTL6OhaMiG9TdqfClA-1; Mon, 15 Feb 2021 16:38:55 -0500
+X-MC-Unique: JIIRJTL6OhaMiG9TdqfClA-1
+Received: by mail-ed1-f71.google.com with SMTP id m16so6195767edd.21
+        for <netdev@vger.kernel.org>; Mon, 15 Feb 2021 13:38:55 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=a+i8LH/PcwLLtmLudhzON962m8PZ6C4JQBNhKKesSEE=;
-        b=mZTPBzlcOUSbBeS4lrP0uIZyDoKhBVw3b075OzxLqMZRA2YwK1Ovcvb7jMJzziVexR
-         aaohQjJV2/OJN0se4NNTI3jdhRfocmSAobB+asBfIrk1pOHB4GdoqoZuOMulm7jlQ9uY
-         s5z8Ut1V26B1utBN8U4UueV7GkP9qFKzKpw403fjMyOeS9SehvuDuor5CBKWqPHM5jzy
-         8a++4mHELNintN5H8C70Wot8nVJCrt0bgiv/uUqQvo2PcGbtQ/tixhvv7BCZ9BwfhnMA
-         8FNip04bod+jXeLGRFJC46+5/3aJPH0r3eXku9NTQq43yTSW5Gn8ZJGcpW8+i8XeFgRQ
-         3aUw==
-X-Gm-Message-State: AOAM530cMivWkdRrqqZWpZlVGdRSU+ujd338DT5Ft8obLGX0yARlt0QM
-        ZPxFs2xw11RILPO//Vn6MQ4=
-X-Google-Smtp-Source: ABdhPJysuri2sVJ5r4kDjVF9BbeXfcSnTaQkC6UULyjo5G3FTHHa9bEMe/UD8vawzvY6oj4zaeJqMQ==
-X-Received: by 2002:a50:cf02:: with SMTP id c2mr17676860edk.333.1613424727639;
-        Mon, 15 Feb 2021 13:32:07 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id r11sm11249670edt.58.2021.02.15.13.32.06
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=IxpTKqSAJdujWUQZD0dx8MvcWVHfhoD9kdfrZZUHBAg=;
+        b=r/qfpDIivTt6NvQxOkU0fwXZbpewybWfodzoeHEgHLsDPehSummuKYHN11LHsW/otu
+         8x6Yhn+YKvs2n8uMb+03e47dWcjb/d7tpxmsJUShSXSfdJD00xi1qo2V04daHXZRASo6
+         6LiKRQuDwfsBekqkjA8aCmVFd46Yvo7fvAi+C/SxEoo/Aw0SSsQmhWIZmZLJg9JJlEj7
+         Qnaqzoppg+JLbjtQqlBzcv4jCriKd+8vQs6QegZBfpbgJBg9Tuc/K2w3hRxuXpj0u20m
+         737iRmRrKOAUfx5LlvV8vE+ay42+qE+yeKrFTIuoO7h6j15kY3bcrpJ4C//UH8tGCawu
+         CKyA==
+X-Gm-Message-State: AOAM533ST1ssJs8CGoX0RDu3ZJlh66PapuCN6FUY4ioxxF81Adn1UkH6
+        R7WP2QZleIPIFHikZkFoyoQMSWiIrdM6IGzKohlGgyYe8yiFL0zAh9RXE3EieUGZ3vRbfHiECgi
+        MN+4hnD5tlmHmDGoD
+X-Received: by 2002:a17:906:a2d2:: with SMTP id by18mr16904295ejb.262.1613425134553;
+        Mon, 15 Feb 2021 13:38:54 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJynqSW4LP5F4oENAIG0stNeQBZsPNLQhzZNRr7kHjGfnf95VTpSx5CnFqXU+fRs1OdlW4E9IQ==
+X-Received: by 2002:a17:906:a2d2:: with SMTP id by18mr16904277ejb.262.1613425134386;
+        Mon, 15 Feb 2021 13:38:54 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id q3sm2956861eja.22.2021.02.15.13.38.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Feb 2021 13:32:07 -0800 (PST)
-Date:   Mon, 15 Feb 2021 23:32:06 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Michael Walle <michael@walle.cc>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net-next 2/2] net: phy: at803x: use proper locking in
- at803x_aneg_done()
-Message-ID: <20210215213206.qhjiyk4ahg75v6d2@skbuf>
-References: <20210214010405.32019-1-michael@walle.cc>
- <20210214010405.32019-3-michael@walle.cc>
- <20210214015733.tfodqglq4djj2h44@skbuf>
- <4ABD9AA0-94A3-4417-B6B2-996D193FB670@walle.cc>
- <20210214022439.cyrfud4ahj4fzk7e@skbuf>
- <758cac1a76541e0e419a54af14d0cd20@walle.cc>
+        Mon, 15 Feb 2021 13:38:54 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 848BE1805FB; Mon, 15 Feb 2021 22:38:52 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     John Fastabend <john.fastabend@gmail.com>,
+        =?utf-8?B?QmrDtnJuIFTDtnBl?= =?utf-8?B?bA==?= 
+        <bjorn.topel@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        daniel@iogearbox.net, ast@kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     andrii@kernel.org, magnus.karlsson@intel.com,
+        ciara.loftus@intel.com
+Subject: Re: [PATCH bpf-next 1/3] libbpf: xsk: use bpf_link
+In-Reply-To: <602ad80c566ea_3ed4120871@john-XPS-13-9370.notmuch>
+References: <20210215154638.4627-1-maciej.fijalkowski@intel.com>
+ <20210215154638.4627-2-maciej.fijalkowski@intel.com>
+ <87eehhcl9x.fsf@toke.dk> <fe0c957e-d212-4265-a271-ba301c3c5eca@intel.com>
+ <602ad80c566ea_3ed4120871@john-XPS-13-9370.notmuch>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 15 Feb 2021 22:38:52 +0100
+Message-ID: <8735xxc8pf.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <758cac1a76541e0e419a54af14d0cd20@walle.cc>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 14, 2021 at 09:48:53PM +0100, Michael Walle wrote:
-> Am 2021-02-14 03:24, schrieb Vladimir Oltean:
-> > On Sun, Feb 14, 2021 at 03:18:49AM +0100, Michael Walle wrote:
-> > > Am 14. Februar 2021 02:57:33 MEZ schrieb Vladimir Oltean <olteanv@gmail.com>:
-> > > >Hi Michael,
-> > > >
-> > > >On Sun, Feb 14, 2021 at 02:04:05AM +0100, Michael Walle wrote:
-> > > >> at803x_aneg_done() checks if auto-negotiation is completed on the SGMII
-> > > >> side. This doesn't take the mdio bus lock and the page switching is
-> > > >> open-coded. Now that we have proper page support, just use
-> > > >> phy_read_paged(). Also use phydev->interface to check if we have an
-> > > >> SGMII link instead of reading the mode register and be a bit more
-> > > >> precise on the warning message.
-> > > >>
-> > > >> Signed-off-by: Michael Walle <michael@walle.cc>
-> > > >> ---
-> > > >
-> > > >How did you test this patch?
-> > >
-> > > I'm afraid it's just compile time tested.
-> >
-> > I'm asking because at803x_aneg_done has been dead code for more than 2
-> > years now. Unreachable. And while it was reachable it was buggy and an
-> > abuse of the phylib API. So you might want to just delete this function
-> > instead. Context:
-> > https://lkml.org/lkml/2020/5/30/375
->
-> Are you sure? While it isn't called from phylib, it might be called from
-> some drivers directly or indirectly if they use phy_speed_down().
-> But it is questionable if this is much of a use then.
->
-> That being said, if no one objects, I'd remove it, too.
+John Fastabend <john.fastabend@gmail.com> writes:
 
-It might, true, but it is certainly of no use.
+>> > However, in libxdp we can solve the original problem in a different way,
+>> > and in fact I already suggested to Magnus that we should do this (see
+>> > [1]); so one way forward could be to address it during the merge in
+>> > libxdp? It should be possible to address the original issue (two
+>> > instances of xdpsock breaking each other when they exit), but
+>> > applications will still need to do an explicit unload operation before
+>> > exiting (i.e., the automatic detach on bpf_link fd closure will take
+>> > more work, and likely require extending the bpf_link kernel support)...
+>> >
+>> 
+>> I'd say it's depending on the libbpf 1.0/libxdp merge timeframe. If
+>> we're months ahead, then I'd really like to see this in libbpf until the
+>> merge. However, I'll leave that for Magnus/you to decide!
+>
+> Did I miss some thread? What does this mean libbpf 1.0/libxdp merge?
+
+The idea is to keep libbpf focused on bpf, and move the AF_XDP stuff to
+libxdp (so the socket stuff in xsk.h). We're adding the existing code
+wholesale, and keeping API compatibility during the move, so all that's
+needed is adding -lxdp when compiling. And obviously the existing libbpf
+code isn't going anywhere until such a time as there's a general
+backwards compatibility-breaking deprecation in libbpf (which I believe
+Andrii is planning to do in an upcoming and as-of-yet unannounced v1.0
+release).
+
+While integrating the XSK code into libxdp we're trying to make it
+compatible with the rest of the library (i.e., multi-prog). Hence my
+preference to avoid introducing something that makes this harder :)
+
+-Toke
+
