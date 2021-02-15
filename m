@@ -2,133 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF56F31C310
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 21:35:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A163631C31E
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 21:41:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229713AbhBOUeb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 15:34:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47238 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbhBOUeZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 15:34:25 -0500
-Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD758C061756;
-        Mon, 15 Feb 2021 12:33:45 -0800 (PST)
-Received: by mail-il1-x129.google.com with SMTP id o7so6542198ils.2;
-        Mon, 15 Feb 2021 12:33:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=CFPPKldSdRUGIk7jdmsHnHCmpu38jR4ZDeuMDX4Xz1w=;
-        b=ZHIqDC8cyxqx2NeGiFY//NZyvpBshXmsA+HVe05QFqtSgY79ZSdFftcN5B44Hhhdgo
-         TnZaFgSFSUL68ZwP6w09zagla+sy2Y2cXb/nSL8BSVQ9EL6ZRJCgE2mcajk6EmMXGgXF
-         JBtaljsnYoQs7tQf1FMJ1jK56sdZb4FTaqde4dX/wvE30CHXlweqra4gGsPUONcfSzgE
-         K3tGqxxxrKepzsHxCIlfksyBqjuYHNs78m8ODR/tJdIpH1YdUdoKOPoYWsZb4WmdbocM
-         xjZzzXz8jisFJF/525W15VuW3rOmFs/elmZ0UOkMb1Q4ZagKhCfqzCdUVCvnNm3n6u3l
-         8XUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=CFPPKldSdRUGIk7jdmsHnHCmpu38jR4ZDeuMDX4Xz1w=;
-        b=C5m//P8lRjbC7kMN25jNaV1zFRpj2fb8aVS4rDXdOJCCrbNmwduq47RwdhLmv+9Oz7
-         aalQ+KPhcNlJaoTsZBHcahcnzoHsqAj1rF4ncdl9FViOJa/NCIwN3tG+E17UhiSZ1QvE
-         Jb8YJf1KwKvf4TV5waNXSesZR9dk9PGCPU/tuNUwgvafETsudtsCMhATpZocZwXfctU5
-         BxvrDmpghvVS7JMWbWhOkwEGsa19PlatByl25q/gMWNqHW29iB1GWameQNbJriNYWZ7V
-         jm4a/7slF9oJpoWLmJHJF0ZxWSP31+EOuMEPoMCintkDswyKCY68uNPkF/dLCPwvDqqY
-         3trw==
-X-Gm-Message-State: AOAM5335OeNb2CQrIr8yfaZmY+DCEYlNQmFZCdkd+TKrwFEIDkicbtJq
-        MolKvtLRCNvgYA3RsiMqEK4=
-X-Google-Smtp-Source: ABdhPJwE/xyZ1KzApr/6+pglrpnhwq0qTSPXcWZOGplzutnGCyxEEJQqKCYsQXSMvCKRGTCZpbfD1A==
-X-Received: by 2002:a92:d249:: with SMTP id v9mr13832371ilg.305.1613421225337;
-        Mon, 15 Feb 2021 12:33:45 -0800 (PST)
-Received: from localhost ([172.243.146.206])
-        by smtp.gmail.com with ESMTPSA id g3sm8871646ile.10.2021.02.15.12.33.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Feb 2021 12:33:44 -0800 (PST)
-Date:   Mon, 15 Feb 2021 12:33:37 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        daniel@iogearbox.net, ast@kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     andrii@kernel.org, toke@redhat.com, bjorn.topel@intel.com,
-        magnus.karlsson@intel.com, ciara.loftus@intel.com,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Message-ID: <602adaa11468c_3ed41208c5@john-XPS-13-9370.notmuch>
-In-Reply-To: <20210215154638.4627-3-maciej.fijalkowski@intel.com>
-References: <20210215154638.4627-1-maciej.fijalkowski@intel.com>
- <20210215154638.4627-3-maciej.fijalkowski@intel.com>
-Subject: RE: [PATCH bpf-next 2/3] libbpf: clear map_info before each
- bpf_obj_get_info_by_fd
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S229796AbhBOUlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 15:41:00 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53664 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229706AbhBOUkt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Feb 2021 15:40:49 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id BB54064DE0;
+        Mon, 15 Feb 2021 20:40:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1613421608;
+        bh=L6EiOcCQUysvHdkTDhzvQP2HWY3qW0TmmQBGZa+cY1s=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=aMtqKak2C1V5nRRpUs1hKH1UtzD+72iQ3Z6JLgTBntjXsqAsmATDw7JJNXTwcOUwb
+         er0kvh85ALXbU0vYpL2XXzOV07Yvay7AUjJHSdT1dw7Qa2kNR2EwM+71bo6YRaHmM4
+         OPEm0okJMW4uhN9gouTGwTYDTo8tZ2JXmndIRef6zkz2OcU1Y3RQGkpN9Au8xmtEFT
+         uX52nNlmBTzNbfwVBzRZSgJG+2UVY3r1aP55hh3jgi4U0ZHOPWiOVfhh2j4DTRmbXc
+         X5j5CCZXbKCQtTGdNlKnlZpr6/KANR/n05XuM83kCuvMcHx0idhNBXGfVJpZyGDoDr
+         8vtLM2uZz9qDA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id AA246609EA;
+        Mon, 15 Feb 2021 20:40:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [net-next 0/4] net: mvpp2: Minor non functional driver code
+ improvements
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161342160869.4070.12270754155424060613.git-patchwork-notify@kernel.org>
+Date:   Mon, 15 Feb 2021 20:40:08 +0000
+References: <1613309917-17569-1-git-send-email-stefanc@marvell.com>
+In-Reply-To: <1613309917-17569-1-git-send-email-stefanc@marvell.com>
+To:     Stefan Chulski <stefanc@marvell.com>
+Cc:     netdev@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        davem@davemloft.net, nadavh@marvell.com, ymarkman@marvell.com,
+        linux-kernel@vger.kernel.org, kuba@kernel.org,
+        linux@armlinux.org.uk, mw@semihalf.com, andrew@lunn.ch,
+        rmk+kernel@armlinux.org.uk, atenart@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Maciej Fijalkowski wrote:
-> xsk_lookup_bpf_maps, based on prog_fd, looks whether current prog has a
-> reference to XSKMAP. BPF prog can include insns that work on various BPF
-> maps and this is covered by iterating through map_ids.
-> 
-> The bpf_map_info that is passed to bpf_obj_get_info_by_fd for filling
-> needs to be cleared at each iteration, so that it doesn't any outdated
-> fields and that is currently missing in the function of interest.
-> 
-> To fix that, zero-init map_info via memset before each
-> bpf_obj_get_info_by_fd call.
-> 
-> Also, since the area of this code is touched, in general strcmp is
-> considered harmful, so let's convert it to strncmp and provide the
-> length of the array name that we're looking for.
-> 
-> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> ---
+Hello:
 
-This is a bugfix independent of the link bits correct? Would be best
-to send to bpf then. 
+This series was applied to netdev/net-next.git (refs/heads/master):
 
->  tools/lib/bpf/xsk.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+On Sun, 14 Feb 2021 15:38:33 +0200 you wrote:
+> From: Stefan Chulski <stefanc@marvell.com>
 > 
-> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-> index 5911868efa43..fb259c0bba93 100644
-> --- a/tools/lib/bpf/xsk.c
-> +++ b/tools/lib/bpf/xsk.c
-> @@ -616,6 +616,7 @@ static int xsk_lookup_bpf_maps(struct xsk_socket *xsk)
->  	__u32 i, *map_ids, num_maps, prog_len = sizeof(struct bpf_prog_info);
->  	__u32 map_len = sizeof(struct bpf_map_info);
->  	struct bpf_prog_info prog_info = {};
-> +	const char *map_name = "xsks_map";
->  	struct xsk_ctx *ctx = xsk->ctx;
->  	struct bpf_map_info map_info;
->  	int fd, err;
-> @@ -645,13 +646,14 @@ static int xsk_lookup_bpf_maps(struct xsk_socket *xsk)
->  		if (fd < 0)
->  			continue;
->  
-> +		memset(&map_info, 0, map_len);
->  		err = bpf_obj_get_info_by_fd(fd, &map_info, &map_len);
->  		if (err) {
->  			close(fd);
->  			continue;
->  		}
->  
-> -		if (!strcmp(map_info.name, "xsks_map")) {
-> +		if (!strncmp(map_info.name, map_name, strlen(map_name))) {
->  			ctx->xsks_map_fd = fd;
->  			continue;
-
-Also just looking at this how is above not buggy? Should be a break instead
-of continue? If we match another "xsks_map" here won't we stomp on xsks_map_fd
-and leak a file descriptor?
-
->  		}
-> -- 
-> 2.20.1
+> The patch series contains minor code improvements and did not change any functionality.
 > 
+> Stefan Chulski (4):
+>   net: mvpp2: simplify PPv2 version ID read
+>   net: mvpp2: improve Packet Processor version check
+>   net: mvpp2: improve mvpp2_get_sram return
+>   net: mvpp2: improve Networking Complex Control register naming
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,1/4] net: mvpp2: simplify PPv2 version ID read
+    https://git.kernel.org/netdev/net-next/c/8b986866b252
+  - [net-next,2/4] net: mvpp2: improve Packet Processor version check
+    https://git.kernel.org/netdev/net-next/c/f704177e4721
+  - [net-next,3/4] net: mvpp2: improve mvpp2_get_sram return
+    https://git.kernel.org/netdev/net-next/c/9ad78d81cb76
+  - [net-next,4/4] net: mvpp2: improve Networking Complex Control register naming
+    https://git.kernel.org/netdev/net-next/c/935a11845aef
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
