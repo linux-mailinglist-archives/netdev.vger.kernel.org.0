@@ -2,160 +2,262 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 770F931C285
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 20:37:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9190531C2A3
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 20:49:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229928AbhBOThE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 14:37:04 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:43190 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229802AbhBOThC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 14:37:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613417735;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Px84X68T1yYL++hqo/VdqWtZ5Oe2mN1i1dSBWoxP2vU=;
-        b=KPYXmI2eClPsdCYjL6I95k05k1OTHx60TSHOSp8gqpscVCOi8waC2AUNYZLgA/DlWX19N1
-        eIINzE/X/tuts2GgEGj1EKYD23KPQbshqhOK+7I0CfHCN71YIlXE8oDFy8Ox31BYCHsjLY
-        KHmXesO93mu88Bjno22Ebr6/Zvdb0L0=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-465-n2nwj20WOKW1voqTIUK89Q-1; Mon, 15 Feb 2021 14:35:32 -0500
-X-MC-Unique: n2nwj20WOKW1voqTIUK89Q-1
-Received: by mail-ed1-f69.google.com with SMTP id d3so2566058edk.22
-        for <netdev@vger.kernel.org>; Mon, 15 Feb 2021 11:35:31 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=Px84X68T1yYL++hqo/VdqWtZ5Oe2mN1i1dSBWoxP2vU=;
-        b=C5mDqn0BD2ZIVElK+gsxpNIIKBRGbJQuqBNHhCxYNZm0PM6zFe/5Qc5/kEdHgcLJjS
-         FAS2NCRd2ejCfcmi5P4pA9LZhvHJxWrlTlRjOGyJqgsiZNJV0cteDPcTiFBnuW9dAEaF
-         5uxZSHsDs+VospWfn952UXKB2XzVHmyz+2YfcGjLlJU+Jnr2Pvm29tLZXnTptVB8+Quh
-         PVnH6SVcI29GVIFCVPStCfJaAGFYBQcNEizjCYb/luWv3IhzavVk4h5uE6AMOCKwjNHo
-         b++D5sZckTTU/5IfcKSMhwsmYHLqRQbtPZ3O0nx2hHiXWgc0p49xnh6HiahPmCm9ymOc
-         Rksg==
-X-Gm-Message-State: AOAM531QZemJN+NGE8Ay3q7DDqkwee/+BgYZVGDljRYdda7+45sAsDop
-        2HUyXxmIUY6/rBAs0kjVaBPLU6r42lsQ5DqkvpfHTlQ8pyIqf0bQ+4Q+K+jCw++9zRlCbdaJzR0
-        sKRa7nyRiY7xmZe/E
-X-Received: by 2002:a05:6402:b2d:: with SMTP id bo13mr17214450edb.280.1613417730856;
-        Mon, 15 Feb 2021 11:35:30 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJx5abSwRO5T8EChIyTrDeuoXq+n7TO62Zr3m7IHU3LXi5TMJU7H8pCYT1A5EtfHw0LhVbp89A==
-X-Received: by 2002:a05:6402:b2d:: with SMTP id bo13mr17214437edb.280.1613417730618;
-        Mon, 15 Feb 2021 11:35:30 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id l4sm4372531edr.50.2021.02.15.11.35.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Feb 2021 11:35:30 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id EE3EF1805FB; Mon, 15 Feb 2021 20:35:29 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        daniel@iogearbox.net, ast@kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     andrii@kernel.org, magnus.karlsson@intel.com,
-        ciara.loftus@intel.com
-Subject: Re: [PATCH bpf-next 1/3] libbpf: xsk: use bpf_link
-In-Reply-To: <fe0c957e-d212-4265-a271-ba301c3c5eca@intel.com>
-References: <20210215154638.4627-1-maciej.fijalkowski@intel.com>
- <20210215154638.4627-2-maciej.fijalkowski@intel.com>
- <87eehhcl9x.fsf@toke.dk> <fe0c957e-d212-4265-a271-ba301c3c5eca@intel.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 15 Feb 2021 20:35:29 +0100
-Message-ID: <875z2tcef2.fsf@toke.dk>
+        id S230098AbhBOTtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 14:49:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48180 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229802AbhBOTtE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Feb 2021 14:49:04 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 80C1564DE0;
+        Mon, 15 Feb 2021 19:48:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1613418503;
+        bh=7P7ywkXtXv5qTbHgZ/5qoDL3gQu62y8OrUQD7YwV8Ww=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=EN1+uUrMuThAGCa+TRFQ8nQ7el4cznY5YoCViDZ5J6o3hOOkDWERJo8I4/Nv9pND1
+         ONqpVMw+gtaeX4iKCmRoLrK+Wxn7w3QWWSpeHUtD7xKmIO52FcKAmWYQuxWZAofbX/
+         1vCWwoNt1Lyv6qt6LZCqf7ybxOwYhkhdkbN6AnO2vPEoUh4W8+HnvIxTta36C4bEjA
+         8GfeVmhwfnEsqtOfKL58jAlEBKRPcz89UnNk7iXsNxyDiGvfCoECXPf5X5VISPwKHT
+         WsBi8ogACdqVsSWwqxL+Bi2sP+4egeCbk8c1rUW/I4GR7KXPfgDNIXl6+D4nhc+9ym
+         xaP5QUJoni7Ew==
+Date:   Mon, 15 Feb 2021 11:48:22 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     <vincent.cheng.xh@renesas.com>
+Cc:     <richardcochran@gmail.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 net-next 1/3] ptp: ptp_clockmatrix: Add
+ wait_for_sys_apll_dpll_lock.
+Message-ID: <20210215114822.4f698920@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1613192766-14010-2-git-send-email-vincent.cheng.xh@renesas.com>
+References: <1613192766-14010-1-git-send-email-vincent.cheng.xh@renesas.com>
+        <1613192766-14010-2-git-send-email-vincent.cheng.xh@renesas.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com> writes:
+On Sat, 13 Feb 2021 00:06:04 -0500 vincent.cheng.xh@renesas.com wrote:
+> From: Vincent Cheng <vincent.cheng.xh@renesas.com>
+> 
+> Part of the device initialization aligns the rising edge of the output
+> clock to the internal 1 PPS clock. If the system APLL and DPLL is not
+> locked, then the alignment will fail and there will be a fixed offset
+> between the internal 1 PPS clock and the output clock.
+> 
+> After loading the device firmware, poll the system APLL and DPLL for
+> locked state prior to initialization, timing out after 2 seconds.
+> 
+> Signed-off-by: Vincent Cheng <vincent.cheng.xh@renesas.com>
+> Acked-by: Richard Cochran <richardcochran@gmail.com>
 
-> On 2021-02-15 18:07, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> Maciej Fijalkowski <maciej.fijalkowski@intel.com> writes:
->>=20
->>> Currently, if there are multiple xdpsock instances running on a single
->>> interface and in case one of the instances is terminated, the rest of
->>> them are left in an inoperable state due to the fact of unloaded XDP
->>> prog from interface.
->>>
->>> To address that, step away from setting bpf prog in favour of bpf_link.
->>> This means that refcounting of BPF resources will be done automatically
->>> by bpf_link itself.
->>>
->>> When setting up BPF resources during xsk socket creation, check whether
->>> bpf_link for a given ifindex already exists via set of calls to
->>> bpf_link_get_next_id -> bpf_link_get_fd_by_id -> bpf_obj_get_info_by_fd
->>> and comparing the ifindexes from bpf_link and xsk socket.
->>=20
->> One consideration here is that bpf_link_get_fd_by_id() is a privileged
->> operation (privileged as in CAP_SYS_ADMIN), so this has the side effect
->> of making AF_XDP privileged as well. Is that the intention?
->>
->
-> We're already using, e.g., bpf_map_get_fd_by_id() which has that
-> as well. So we're assuming that for XDP setup already!
+> diff --git a/drivers/ptp/idt8a340_reg.h b/drivers/ptp/idt8a340_reg.h
+> index a664dfe..ac524cf 100644
+> --- a/drivers/ptp/idt8a340_reg.h
+> +++ b/drivers/ptp/idt8a340_reg.h
+> @@ -122,6 +122,8 @@
+>  #define OTP_SCSR_CONFIG_SELECT            0x0022
+>  
+>  #define STATUS                            0xc03c
+> +#define DPLL_SYS_STATUS                   0x0020
+> +#define DPLL_SYS_APLL_STATUS              0x0021
+>  #define USER_GPIO0_TO_7_STATUS            0x008a
+>  #define USER_GPIO8_TO_15_STATUS           0x008b
+>  
+> @@ -707,4 +709,12 @@
+>  /* Bit definitions for the DPLL_CTRL_COMBO_MASTER_CFG register */
+>  #define COMBO_MASTER_HOLD                 BIT(0)
+>  
+> +/* Bit definitions for DPLL_SYS_STATUS register */
+> +#define DPLL_SYS_STATE_MASK               (0xf)
+> +
+> +/* Bit definitions for SYS_APLL_STATUS register */
+> +#define SYS_APLL_LOSS_LOCK_LIVE_MASK       BIT(0)
+> +#define SYS_APLL_LOSS_LOCK_LIVE_LOCKED     0
+> +#define SYS_APLL_LOSS_LOCK_LIVE_UNLOCKED   1
+> +
+>  #endif
+> diff --git a/drivers/ptp/ptp_clockmatrix.c b/drivers/ptp/ptp_clockmatrix.c
+> index 051511f..3de8411 100644
+> --- a/drivers/ptp/ptp_clockmatrix.c
+> +++ b/drivers/ptp/ptp_clockmatrix.c
+> @@ -335,6 +335,79 @@ static int wait_for_boot_status_ready(struct idtcm *idtcm)
+>  	return -EBUSY;
+>  }
+>  
+> +static int read_sys_apll_status(struct idtcm *idtcm, u8 *status)
+> +{
+> +	int err;
+> +
+> +	err = idtcm_read(idtcm, STATUS, DPLL_SYS_APLL_STATUS, status,
+> +			 sizeof(u8));
+> +	return err;
 
-Ah, right, didn't realise that one is CAP_SYS_ADMIN as well; I
-remembered this as being specific to the bpf_link operation.
+Please remove the unnecessary 'err' variable:
 
->> Another is that the AF_XDP code is in the process of moving to libxdp
->> (see in-progress PR [0]), and this approach won't carry over as-is to
->> that model, because libxdp has to pin the bpf_link fds.
->>
->
-> I was assuming there were two modes of operations for AF_XDP in libxdp.
-> One which is with the multi-program support (which AFAIK is why the
-> pinning is required), and one "like the current libbpf" one. For the
-> latter Maciej's series would be a good fit, no?
+	return idtcm_read(..
 
-We haven't added an explicit mode switch for now; libxdp will fall back
-to regular interface attach if the kernel doesn't support the needed
-features for multi-attach, but if it's possible to just have libxdp
-transparently do the right thing I'd much prefer that. So we're still
-exploring that (part of which is that Magnus has promised to run some
-performance tests to see if there's a difference).
+There are bots scanning the tree for such code simplifications, 
+better to get this right from the start than deal with flood of 
+simplifications patches.
 
-However, even if there's an explicit mode switch I'd like to avoid
-different *semantics* between the two modes if possible, to keep the two
-as compatible as possible. And since we can't currently do "auto-detach
-on bpf_link fd close" when using multi-prog, introducing this now would
-lead to just such a semantic difference. So my preference would be to do
-it differently... :)
+> +}
+> +
+> +static int read_sys_dpll_status(struct idtcm *idtcm, u8 *status)
+> +{
+> +	int err;
+> +
+> +	err = idtcm_read(idtcm, STATUS, DPLL_SYS_STATUS, status, sizeof(u8));
+> +
+> +	return err;
 
->> However, in libxdp we can solve the original problem in a different way,
->> and in fact I already suggested to Magnus that we should do this (see
->> [1]); so one way forward could be to address it during the merge in
->> libxdp? It should be possible to address the original issue (two
->> instances of xdpsock breaking each other when they exit), but
->> applications will still need to do an explicit unload operation before
->> exiting (i.e., the automatic detach on bpf_link fd closure will take
->> more work, and likely require extending the bpf_link kernel support)...
->>
->
-> I'd say it's depending on the libbpf 1.0/libxdp merge timeframe. If
-> we're months ahead, then I'd really like to see this in libbpf until the
-> merge. However, I'll leave that for Magnus/you to decide!
+same here
 
-Well, as far as libxdp support goes, the PR I linked is pretty close to
-being mergeable. One of the few outstanding issues is whether we should
-solve just this issue before merging, actually :)
+> +}
+> +
+> +static int wait_for_sys_apll_dpll_lock(struct idtcm *idtcm)
+> +{
+> +	const char *fmt = "%d ms SYS lock timeout: APLL Loss Lock %d  DPLL state %d";
+> +	u8 i = LOCK_TIMEOUT_MS / LOCK_POLL_INTERVAL_MS;
 
-Not sure exactly which timeframe Andrii is envisioning for libbpf 1.0,
-but last I heard he'll announce something next week.
+Using msleep() and loops is quite inaccurate. I'd recommend you switch
+to:
 
-> Bottom line; I'd *really* like bpf_link behavior (process scoped) for
-> AF_XDP sooner than later! ;-)
+	unsigned long timeout = jiffies + msecs_to_jiffies(LOCK_TIMEOUT_MS);
 
-Totally agree that we should solve the multi-process coexistence
-problem! And as I said, I think we can do so in libxdp by using the same
-synchronisation mechanism we use for setting up the multi-prog
-dispatcher. So it doesn't *have* to hold things up :)
+And then use:
 
--Toke
+	while (time_is_after_jiffies(timeout))
+
+For the condition.
+
+> +	u8 apll = 0;
+> +	u8 dpll = 0;
+> +
+> +	int err;
+
+No empty lines between variables, please.
+
+> +
+> +	do {
+> +		err = read_sys_apll_status(idtcm, &apll);
+> +
+
+No empty lines between call and the if, please.
+
+> +		if (err)
+> +			return err;
+> +
+> +		err = read_sys_dpll_status(idtcm, &dpll);
+> +
+> +		if (err)
+> +			return err;
+> +
+> +		apll &= SYS_APLL_LOSS_LOCK_LIVE_MASK;
+> +		dpll &= DPLL_SYS_STATE_MASK;
+> +
+> +		if ((apll == SYS_APLL_LOSS_LOCK_LIVE_LOCKED)
+
+parenthesis around a == b are unnecessary.
+
+> +		    && (dpll == DPLL_STATE_LOCKED)) {
+> +			return 0;
+> +		} else if ((dpll == DPLL_STATE_FREERUN) ||
+> +			   (dpll == DPLL_STATE_HOLDOVER) ||
+> +			   (dpll == DPLL_STATE_OPEN_LOOP)) {
+
+same here.
+
+> +			dev_warn(&idtcm->client->dev,
+> +				"No wait state: DPLL_SYS_STATE %d", dpll);
+
+It looks like other prints in this function use \n at the end of the
+lines, should we keep it consistent?
+
+> +			return -EPERM;
+> +		}
+> +
+> +		msleep(LOCK_POLL_INTERVAL_MS);
+> +		i--;
+> +
+
+unnecessary empty line
+
+> +	} while (i);
+> +
+> +	dev_warn(&idtcm->client->dev, fmt, LOCK_TIMEOUT_MS, apll, dpll);
+
+I'd recommend leaving the format in place, that way static code
+checkers can validate the arguments.
+
+> +	return -ETIME;
+
+> +}
+> +
+> +static void wait_for_chip_ready(struct idtcm *idtcm)
+> +{
+> +	if (wait_for_boot_status_ready(idtcm))
+> +		dev_warn(&idtcm->client->dev, "BOOT_STATUS != 0xA0");
+
+no new line?
+
+> +
+> +	if (wait_for_sys_apll_dpll_lock(idtcm))
+> +		dev_warn(&idtcm->client->dev,
+> +			 "Continuing while SYS APLL/DPLL is not locked");
+
+And here.
+
+> +}
+> +
+>  static int _idtcm_gettime(struct idtcm_channel *channel,
+>  			  struct timespec64 *ts)
+>  {
+> @@ -2235,8 +2308,7 @@ static int idtcm_probe(struct i2c_client *client,
+>  		dev_warn(&idtcm->client->dev,
+>  			 "loading firmware failed with %d\n", err);
+>  
+> -	if (wait_for_boot_status_ready(idtcm))
+> -		dev_warn(&idtcm->client->dev, "BOOT_STATUS != 0xA0\n");
+> +	wait_for_chip_ready(idtcm);
+>  
+>  	if (idtcm->tod_mask) {
+>  		for (i = 0; i < MAX_TOD; i++) {
+> diff --git a/drivers/ptp/ptp_clockmatrix.h b/drivers/ptp/ptp_clockmatrix.h
+> index 645de2c..0233236 100644
+> --- a/drivers/ptp/ptp_clockmatrix.h
+> +++ b/drivers/ptp/ptp_clockmatrix.h
+> @@ -51,6 +51,9 @@
+>  #define TOD_WRITE_OVERHEAD_COUNT_MAX		(2)
+>  #define TOD_BYTE_COUNT				(11)
+>  
+> +#define LOCK_TIMEOUT_MS			(2000)
+> +#define LOCK_POLL_INTERVAL_MS		(10)
+> +
+>  #define PEROUT_ENABLE_OUTPUT_MASK	(0xdeadbeef)
+>  
+>  #define IDTCM_MAX_WRITE_COUNT		(512)
+> @@ -105,6 +108,18 @@ enum scsr_tod_write_type_sel {
+>  	SCSR_TOD_WR_TYPE_SEL_MAX = SCSR_TOD_WR_TYPE_SEL_DELTA_MINUS,
+>  };
+>  
+> +/* Values STATUS.DPLL_SYS_STATUS.DPLL_SYS_STATE */
+> +enum dpll_state {
+> +	DPLL_STATE_MIN = 0,
+> +	DPLL_STATE_FREERUN = DPLL_STATE_MIN,
+> +	DPLL_STATE_LOCKACQ = 1,
+> +	DPLL_STATE_LOCKREC = 2,
+> +	DPLL_STATE_LOCKED = 3,
+> +	DPLL_STATE_HOLDOVER = 4,
+> +	DPLL_STATE_OPEN_LOOP = 5,
+> +	DPLL_STATE_MAX = DPLL_STATE_OPEN_LOOP,
+> +};
+> +
+>  struct idtcm;
+>  
+>  struct idtcm_channel {
 
