@@ -2,124 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D881231BE4A
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 17:07:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BFE531BEA6
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 17:19:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232946AbhBOQFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 11:05:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44354 "EHLO
+        id S230364AbhBOQOn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 11:14:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232027AbhBOP6q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 10:58:46 -0500
-Received: from mail.nic.cz (mail.nic.cz [IPv6:2001:1488:800:400::400])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D013C061756
-        for <netdev@vger.kernel.org>; Mon, 15 Feb 2021 07:58:30 -0800 (PST)
-Received: from localhost (unknown [IPv6:2a0e:b107:ae1:0:3e97:eff:fe61:c680])
-        by mail.nic.cz (Postfix) with ESMTPSA id B5AC11409F0;
-        Mon, 15 Feb 2021 16:58:27 +0100 (CET)
-Date:   Mon, 15 Feb 2021 16:58:27 +0100
-From:   Marek Behun <marek.behun@nic.cz>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Nathan Rossi <nathan@nathanrossi.com>
-Cc:     netdev@vger.kernel.org, Nathan Rossi <nathan.rossi@digi.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH] net: dsa: mv88e6xxx: prevent 2500BASEX mode override
-Message-ID: <20210215165827.5cdb3f3f@nic.cz>
-In-Reply-To: <20210215152944.GY1463@shell.armlinux.org.uk>
-References: <20210215061559.1187396-1-nathan@nathanrossi.com>
-        <20210215144756.76846c9b@nic.cz>
-        <20210215145757.GX1463@shell.armlinux.org.uk>
-        <20210215161627.63c3091c@nic.cz>
-        <20210215152944.GY1463@shell.armlinux.org.uk>
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        with ESMTP id S232624AbhBOP7Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 10:59:24 -0500
+Received: from mail-oo1-xc30.google.com (mail-oo1-xc30.google.com [IPv6:2607:f8b0:4864:20::c30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23E3CC0613D6;
+        Mon, 15 Feb 2021 07:58:44 -0800 (PST)
+Received: by mail-oo1-xc30.google.com with SMTP id z36so1634418ooi.6;
+        Mon, 15 Feb 2021 07:58:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=WEACmCkgL/TM4hrtjiINmc1isFYTeQEPw/cMrn0TOb8=;
+        b=pxCnbeanx20AM85pB9UePv+EUKwTcmmMHTq33viceAq5x5Lo3xrjSGaZ1JHgngvSiJ
+         sYbmLHNDHJXxvSpb5aFLVfME/p37XMw/roWLW8VewXfUhFKINStji5A97O+eF1gwTyXU
+         hAGvNx0HtN2RoAx2eT3HqRH6HSKzK2CQgJpSklFNZc+rm194Rk9Rorr+XZl6YlJ1vvmK
+         foIRc6MtNcCOzTRjohd5d9jPNFaJhdA8BCRBIykfV9uf+Z91tla+15R+beP7FmeSwFnc
+         6lrjGB2w9xgfGVIe8Uf3xnkrktdcmj7IcMwXK3ig8FtrJOvjrN0JmXn30Iu/+SPtN1BW
+         vRqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=WEACmCkgL/TM4hrtjiINmc1isFYTeQEPw/cMrn0TOb8=;
+        b=HDHzCja5H5PFpr+8/o+IzkqHYPjLvwuWUGlSir09/RzD72V8xGMS/ULHhmcy74JD9w
+         BPloPy4f+/Hjfg8BE3DuLR7R4QMRqFfOp9T/w85xFuyb6F8ehrjXn0YxjRDCrlWfcS+n
+         nQtkPzzX30+kzf+ohCtq/3/vKfDK3zp+SbVrmLh3YPcL6pnfjVI4Mr87P0V8jyGirvZV
+         dSxAq+SDKO67KjYbr7VP/wXesNzxUemY5kFxnffMGEGYSabW5cwf15jNvqNsIwQPSC0A
+         yzrWeM0tssU65zgA9Je0PPzVDT3qd45XjEDgdVcno3/M/IK/6LGn2EYvYKNssz3dJ/x6
+         fzrg==
+X-Gm-Message-State: AOAM530o8CWuvdh0utl7NgYIxfIth32g5GaLDQvXqaCeggAi/5Hu6wYM
+        Zg6Hl0vgVw4iTG8Y+mEpVUm31mNam4M=
+X-Google-Smtp-Source: ABdhPJyey6pEye22s5MbAnms/IMF/0TE5yuvKM3/n0AGkX9+CrcF435g/f0ANgpkmjk8OgbJ1Ohw2Q==
+X-Received: by 2002:a4a:96b3:: with SMTP id s48mr11234851ooi.11.1613404723229;
+        Mon, 15 Feb 2021 07:58:43 -0800 (PST)
+Received: from localhost.localdomain (cpe-24-31-245-230.kc.res.rr.com. [24.31.245.230])
+        by smtp.gmail.com with ESMTPSA id o98sm3728749ota.0.2021.02.15.07.58.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 15 Feb 2021 07:58:42 -0800 (PST)
+Sender: Larry Finger <larry.finger@gmail.com>
+Subject: Re: [PATCH] b43: N-PHY: Fix the update of coef for the PHY revision
+ >= 3case
+To:     Colin King <colin.king@canonical.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        "John W . Linville" <linville@tuxdriver.com>,
+        linux-wireless@vger.kernel.org, b43-dev@lists.infradead.org,
+        netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210215120532.76889-1-colin.king@canonical.com>
+From:   Larry Finger <Larry.Finger@lwfinger.net>
+Message-ID: <a1f578d8-bfaf-ec92-7874-84a586385495@lwfinger.net>
+Date:   Mon, 15 Feb 2021 09:58:41 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210215120532.76889-1-colin.king@canonical.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-100.0 required=5.9 tests=SHORTCIRCUIT,URIBL_BLOCKED,
-        USER_IN_WELCOMELIST,USER_IN_WHITELIST shortcircuit=ham
-        autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
-X-Virus-Scanned: clamav-milter 0.102.2 at mail
-X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 15 Feb 2021 15:29:44 +0000
-Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
-
-> On Mon, Feb 15, 2021 at 04:16:27PM +0100, Marek Behun wrote:
-> > On Mon, 15 Feb 2021 14:57:57 +0000
-> > Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
-> >   
-> > > On Mon, Feb 15, 2021 at 02:47:56PM +0100, Marek Behun wrote:  
-> > > > On Mon, 15 Feb 2021 06:15:59 +0000
-> > > > Nathan Rossi <nathan@nathanrossi.com> wrote:
-> > > >     
-> > > > > diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-> > > > > index 54aa942eed..5c52906b29 100644
-> > > > > --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> > > > > +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> > > > > @@ -650,6 +650,13 @@ static void mv88e6xxx_validate(struct dsa_switch *ds, int port,
-> > > > >  	if (chip->info->ops->phylink_validate)
-> > > > >  		chip->info->ops->phylink_validate(chip, port, mask, state);
-> > > > >  
-> > > > > +	/* Advertise 2500BASEX only if 1000BASEX is not configured, this
-> > > > > +	 * prevents phylink_helper_basex_speed from always overriding the
-> > > > > +	 * 1000BASEX mode since auto negotiation is always enabled.
-> > > > > +	 */
-> > > > > +	if (state->interface == PHY_INTERFACE_MODE_1000BASEX)
-> > > > > +		phylink_clear(mask, 2500baseX_Full);
-> > > > > +    
-> > > > 
-> > > > I don't quite like this. This problem should be either solved in
-> > > > phylink_helper_basex_speed() or somewhere in the mv88e6xxx code, but near
-> > > > the call to phylink_helper_basex_speed().
-> > > > 
-> > > > Putting a solution to the behaviour of phylink_helper_basex_speed() it
-> > > > into the validate() method when phylink_helper_basex_speed() is called
-> > > > from a different place will complicate debugging in the future. If
-> > > > we start solving problems in this kind of way, the driver will become
-> > > > totally unreadable, IMO.    
-> > > 
-> > > If we can't switch between 1000base-X and 2500base-X, then we should
-> > > not be calling phylink_helper_basex_speed() - and only one of those
-> > > two capabilities should be set in the validation callback. I thought
-> > > there were DSA switches where we could program the CMODE to switch
-> > > between these two...  
-> > 
-> > There are. At least Peridot, Topaz and Amethyst support switching
-> > between these modes. But only on some ports.
-> > 
-> > This problem happnes on Peridot X, I think.
-> > 
-> > On Peridot X there are
-> > - port 0: RGMII
-> > - ports 9-10: capable of 1, 2.5 and 10G SerDes (10G via
-> >   XAUI/RXAUI, so multiple lanes)
-> > - ports 1-8: with copper PHYs
-> >   - some of these can instead be set to use the unused SerDes lanes
-> >     of ports 9-10, but only in 1000base-x mode
-> > 
-> > So the problem can happen if you set port 9 or 10 to only use one
-> > SerDes lane, and use the spare lanes for the 1G ports.
-> > On these ports 2500base-x is not supported, only 1000base-x (maybe
-> > sgmii, I don't remember)  
+On 2/15/21 6:05 AM, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
 > 
-> It sounds like the modes are not reporting correctly then before calling
-> phylink_helper_basex_speed(). If the port can only be used at 1000base-X,
-> then it should not be allowing 2500base-X to be set prior to calling
-> phylink_helper_basex_speed().
+> The documentation for the PHY update [1] states:
+> 
+> Loop 4 times with index i
+> 
+>      If PHY Revision >= 3
+>          Copy table[i] to coef[i]
+>      Otherwise
+>          Set coef[i] to 0
+> 
+> the copy of the table to coef is currently implemented the wrong way
+> around, table is being updated from uninitialized values in coeff.
+> Fix this by swapping the assignment around.
+> 
+> [1] https://bcm-v4.sipsolutions.net/802.11/PHY/N/RestoreCal/
+> 
+> Fixes: 2f258b74d13c ("b43: N-PHY: implement restoring general configuration")
+> Addresses-Coverity: ("Uninitialized scalar variable")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> ---
+>   drivers/net/wireless/broadcom/b43/phy_n.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/wireless/broadcom/b43/phy_n.c b/drivers/net/wireless/broadcom/b43/phy_n.c
+> index b669dff24b6e..665b737fbb0d 100644
+> --- a/drivers/net/wireless/broadcom/b43/phy_n.c
+> +++ b/drivers/net/wireless/broadcom/b43/phy_n.c
+> @@ -5311,7 +5311,7 @@ static void b43_nphy_restore_cal(struct b43_wldev *dev)
+>   
+>   	for (i = 0; i < 4; i++) {
+>   		if (dev->phy.rev >= 3)
+> -			table[i] = coef[i];
+> +			coef[i] = table[i];
+>   		else
+>   			coef[i] = 0;
+>   	}
 > 
 
-Hmm. It doesn't seem that way. Ports 1-8 only set support for 1000baseT
-and 1000baseX. And for lower modes if state->interface is not 8023z.
+Acked-by: Larry Finger <Larry.Finger@lwfinger.net>
 
-Nathan, what switch do you use and on which port does this happen?
+Good catch, thanks.
 
-Marek
+Larry
+
