@@ -2,88 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CA3231B5C6
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 08:58:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4048131B5DD
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 09:26:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229951AbhBOH6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 02:58:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54648 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229595AbhBOH6M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 02:58:12 -0500
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BF00C061574
-        for <netdev@vger.kernel.org>; Sun, 14 Feb 2021 23:57:32 -0800 (PST)
-Received: by mail-yb1-xb35.google.com with SMTP id l8so6258139ybe.12
-        for <netdev@vger.kernel.org>; Sun, 14 Feb 2021 23:57:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xRrCe72/CdWUDvsr0RGVjqqpypb4q7lznYDnnHmF084=;
-        b=pSjla5YF0Fa48dyQsvdyPViGCk2Av/8w1S6nwtudRE3Sff8FTGB6X8vly+vbNR+5Rq
-         Ylf7cR/+rnGuaB2XmF63neNKn6yV+Pc4vNk55JF3emkhTet75M5hnLS7Z7xZZ9MiP27H
-         1bvlmoIpc6NjbITEWaXIZgwvEn4CQ7Hxlj6LSt0J9+wpf77+hQ/a9vCzLpSnKdkG2VnB
-         14qRT9xG38UXBypOqy4PEw4tOU1J/2OY+mvLRKSf2JjRQrzsvtYKokHA+A9o23sE9vCx
-         Ydk+FDMyei6NfGovROfZArTyGYnf0xXcnxGrABuJyHJ06GIO2yWkw91Foqa+Ki74e/Va
-         zh3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xRrCe72/CdWUDvsr0RGVjqqpypb4q7lznYDnnHmF084=;
-        b=bYHc2JlHI3mg85I9t4DTZtFE7ZaAmarEFuvcO+5qHpaR6ddZ605kjWfwXbu5nCAPVk
-         d1uQ3z5di3tBj+/UhxrfE4N5AtfoHD8Jg8b94htoKsxZhWVRc/b2HYH7MBT+90uWDG5J
-         OgB0YLus+bG0Gv39DXMMwIlINNrBYQ/J2RSPGAzptTEk6+c0I7yCK2CuMkC2O0/DQaUe
-         RMt+K044pqha1dxr2fzBdT4r2WWmTYmqTPwCw9WkTFqpoWIIQ+KmlvmOLFoxKloVvfxG
-         oXVv/fhiQjvUIRp3OSKDFeiYOpy74ZE/SWHvflUvBOy2XulHHnf4Aln82BoO460lsMqj
-         CUKw==
-X-Gm-Message-State: AOAM533vzXkzkZ4J8rnVHkFqpk3XrKGFyk/k1JROVRxKrcTrYWfiop2S
-        tBBmxgHEUQe3nzH9r14yVpuQ7zyn9+h/BhGGqPo=
-X-Google-Smtp-Source: ABdhPJz1O+cpV52RAzgq76H4yycwKHlcm4jQ0kMs+6/Bl50qjIETHfwy15kfD5sCrOOcALdHGM0RLc8EVGhcwcLR3JE=
-X-Received: by 2002:a25:9383:: with SMTP id a3mr21111797ybm.215.1613375851909;
- Sun, 14 Feb 2021 23:57:31 -0800 (PST)
+        id S229888AbhBOIXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 03:23:47 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:8374 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S229597AbhBOIXq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 03:23:46 -0500
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 11F8IBNp091661;
+        Mon, 15 Feb 2021 03:22:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=ftWBf4xrcZXmLgkk1OigxHJKK8FpKulJG/DWEMa0+nQ=;
+ b=SKmD4wvc964hEuXP0aVJQ/ywPbE9vXBYOuhRUpsel4crwoFIA5367ZBT773kucqtXoZf
+ SjXJT5YEdesBOqh2EwX9/TS5mRqOrSH4SYO7Nr+59HvOll1/0Q06F91daMXSCBT1TTXL
+ vPOZPRANwW1EtNKHYYgEaPdRwpijcD3fmqfgIpMXMgjvwyN/vHT6RCONJljLcFDPElx/
+ va0gISEAZTSfLJQVgB17F/n4wIXrIVgzNSrSdZnNrfWT4q5/NC1sJBL6CDC2DMo1PyfJ
+ o8y6bDy9MRe9ppzAn4Hj9jCNwKkdj2UwWSTjo6KHovkB8YZdnXDFzIkg6kRkYxqSaqxO 2Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 36qnaxg2v8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 15 Feb 2021 03:22:52 -0500
+Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 11F8Jmxl098832;
+        Mon, 15 Feb 2021 03:22:52 -0500
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 36qnaxg2up-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 15 Feb 2021 03:22:52 -0500
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 11F8LMn5000828;
+        Mon, 15 Feb 2021 08:22:50 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma03ams.nl.ibm.com with ESMTP id 36p6d89ma0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 15 Feb 2021 08:22:50 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 11F8Mmtc19398958
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 15 Feb 2021 08:22:48 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 408F54204B;
+        Mon, 15 Feb 2021 08:22:48 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B39C942054;
+        Mon, 15 Feb 2021 08:22:47 +0000 (GMT)
+Received: from Alexandras-MBP.fritz.box (unknown [9.145.21.14])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 15 Feb 2021 08:22:47 +0000 (GMT)
+Subject: Re: [PATCH iproute2 5/6] man8/bridge.8: explain self vs master for
+ "bridge fdb add"
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+References: <20210211104502.2081443-1-olteanv@gmail.com>
+ <20210211104502.2081443-6-olteanv@gmail.com>
+From:   Alexandra Winter <wintera@linux.ibm.com>
+Message-ID: <65b9d8b6-0b04-9ddc-1719-b3417cd6fb89@linux.ibm.com>
+Date:   Mon, 15 Feb 2021 09:22:47 +0100
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.7.0
 MIME-Version: 1.0
-References: <20210211211044.32701-1-borisp@mellanox.com> <20210211211044.32701-7-borisp@mellanox.com>
- <2dd10b2f-df00-e21c-7886-93f41a987040@gmail.com>
-In-Reply-To: <2dd10b2f-df00-e21c-7886-93f41a987040@gmail.com>
-From:   Or Gerlitz <gerlitz.or@gmail.com>
-Date:   Mon, 15 Feb 2021 09:57:20 +0200
-Message-ID: <CAJ3xEMg3GWNVjkixVVop9uhn958Opdq4ej0qktA11NS6GM9s-g@mail.gmail.com>
-Subject: Re: [PATCH v4 net-next 06/21] nvme-tcp: Add DDP offload control path
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Boris Pismenny <borisp@mellanox.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>, axboe@fb.com,
-        Keith Busch <kbusch@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Eric Dumazet <edumazet@google.com>, smalin@marvell.com,
-        Yoray Zack <yorayz@mellanox.com>, yorayz@nvidia.com,
-        boris.pismenny@gmail.com, Ben Ben-Ishay <benishay@mellanox.com>,
-        benishay@nvidia.com, linux-nvme@lists.infradead.org,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        Or Gerlitz <ogerlitz@mellanox.com>,
-        Or Gerlitz <ogerlitz@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210211104502.2081443-6-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
+ definitions=2021-02-15_02:2021-02-12,2021-02-15 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
+ mlxlogscore=999 bulkscore=0 malwarescore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 adultscore=0 mlxscore=0 priorityscore=1501 phishscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2102150064
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 14, 2021 at 8:20 PM David Ahern <dsahern@gmail.com> wrote:
-> On 2/11/21 2:10 PM, Boris Pismenny wrote:
-> > @@ -223,6 +229,164 @@ static inline size_t nvme_tcp_pdu_last_send(struct nvme_tcp_request *req,
-> >       return nvme_tcp_pdu_data_left(req) <= len;
-> >  }
+Thank you very much Vladimir for improving this man page. I am still struggling with the meaning of the bridge attributes and sometimes
+the man page has caused more confusion.
 
-Hi Dave,
+In the section about 'bridge link set' Self vs master mention physical device vs software bridge. Would it make sense to use the same
+terminology here?
 
-Thanks for the continuous feedback. Folks are out this week and it seems
-for that few comments we will need to discuss internally, but anyway I will
-address at least  some of the comments later today/tomorrow.
+The attributes are listed under 'bridge fdb add' not under 'bridge fdb show'. Is it correct that the attributes displayed by 'show'
+are a 1-to-1 representation of the ones set by 'add'? What about the entries that are not manually set, like bridge learned adresses?
+Is it possible to add some explanation about those as well?
 
-Or.
-
-Or.
+On 11.02.21 11:45, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> The "usually hardware" and "usually software" distinctions make no
+> sense, try to clarify what these do based on the actual kernel behavior.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+>  man/man8/bridge.8 | 15 ++++++++++++---
+>  1 file changed, 12 insertions(+), 3 deletions(-)
+> 
+> diff --git a/man/man8/bridge.8 b/man/man8/bridge.8
+> index 1dc0aec83f09..d0bcd708bb61 100644
+> --- a/man/man8/bridge.8
+> +++ b/man/man8/bridge.8
+> @@ -533,12 +533,21 @@ specified.
+>  .sp
+>  
+>  .B self
+> -- the address is associated with the port drivers fdb. Usually hardware
+> -  (default).
+> +- the operation is fulfilled directly by the driver for the specified network
+> +device. If the network device belongs to a master like a bridge, then the
+> +bridge is bypassed and not notified of this operation (and if the device does
+> +notify the bridge, it is driver-specific behavior and not mandated by this
+> +flag, check the driver for more details). The "bridge fdb add" command can also
+> +be used on the bridge device itself, and in this case, the added fdb entries
+> +will be locally terminated (not forwarded). In the latter case, the "self" flag
+> +is mandatory. 
+Maybe I misunderstand this sentence, but I can do a 'bridge fdb add' without 'self'
+on the bridge device. And the address shows up under 'bridge fdb show'.
+So what does mandatory mean here?
+The flag is set by default if "master" is not specified.
+>  .sp
+>  
+>  .B master
+> -- the address is associated with master devices fdb. Usually software.
+> +- if the specified network device is a port that belongs to a master device
+> +such as a bridge, the operation is fulfilled by the master device's driver,
+> +which may in turn notify the port driver too of the address. If the specified
+> +device is a master itself, such as a bridge, this flag is invalid.
+>  .sp
+>  
+>  .B router
+> 
