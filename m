@@ -2,108 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C39F31B8D2
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 13:14:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1ADDE31B909
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 13:22:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229890AbhBOMO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 07:14:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52970 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229738AbhBOMO0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 07:14:26 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EC05C061756
-        for <netdev@vger.kernel.org>; Mon, 15 Feb 2021 04:13:45 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id y10so2876659edt.12
-        for <netdev@vger.kernel.org>; Mon, 15 Feb 2021 04:13:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=YXcvh66TB5pNy67FbYGBA3NH3GGZg4IBtY2ttm/3N40=;
-        b=pxlad2LSKKDgYxFJie3h5diKfoO7MPVuEo4X4maoyNY6OFAvOW18fF3Tmz9f8m7i5C
-         R6eYOcIAacoKWOBgR5VrEBYxb2dkj1m3iKjcXVGB4JAr+Y/eEI/fm69Sv/ZXTtlSi4yq
-         p4FtDC1Sxu2LoR39Z244s/lBh4p/7eFmczkyfVaJZFYqx0kz/s2/5SbuVFRHRenszdlF
-         Owfh/F5dCyMHpaDBh99WCFG9lolq2lUoMkMPXGxL3BxdDsWZ9LEzFp7kGTPMKj5OJWa5
-         9y5Mek7ISj8olTucdCUdvGg038A3yaJ617g0YaZVOPE0jCdqWrOcK4wCvNJXOctFTpLJ
-         M+IA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YXcvh66TB5pNy67FbYGBA3NH3GGZg4IBtY2ttm/3N40=;
-        b=soA3n3zJ/gebR5jzpE29P4902Q2M0RGNIEuh30f4jGq1jQnny09xQcQEtx5R/7wKRA
-         sOdHsONcjd60VGvLOD0InHcolmwE5hVDU0cdca7BbC/QtHsKvytMMuQfva/2UuEpmtcw
-         YXeplF4Ruyo3gG3KTTFcx6rn3m7G9v7CDP+9fBTxlLOhRFSNdF8D5rcJ5loSXkPEq95r
-         xbY4XYrCjKTRa2a2gBmh3Bzpb8/rTvnBGucNgnF/J8MSVMKEXpxi0dhUsXVh8vIb+C/B
-         KSiqF2d2+ipALP5UrCvak0ovEiOQCeKhpc4mz+vk1VL2VKpxhf1iRRPJF3olw8oJqv/W
-         oX9g==
-X-Gm-Message-State: AOAM530o7S8DfM15kE6qnUXxma+7fUzv0z2jzixIRHD0978oTNQu1Z8Q
-        N1HXvyAPi+3/3fh0n3TSIZI=
-X-Google-Smtp-Source: ABdhPJxAw0Xpzny0ouYTvjgurUHIL+Q8TZr1QQMTLj3lFssXw9uPOHcU8KUZJHF4NV8ftadYEQqvFg==
-X-Received: by 2002:aa7:c555:: with SMTP id s21mr32759edr.43.1613391224304;
-        Mon, 15 Feb 2021 04:13:44 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id x42sm10256486ede.64.2021.02.15.04.13.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Feb 2021 04:13:43 -0800 (PST)
-Date:   Mon, 15 Feb 2021 14:13:42 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Alexandra Winter <wintera@linux.ibm.com>
-Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Subject: Re: [PATCH iproute2 5/6] man8/bridge.8: explain self vs master for
- "bridge fdb add"
-Message-ID: <20210215121342.driolhmaow7ads5g@skbuf>
-References: <20210211104502.2081443-1-olteanv@gmail.com>
- <20210211104502.2081443-6-olteanv@gmail.com>
- <65b9d8b6-0b04-9ddc-1719-b3417cd6fb89@linux.ibm.com>
- <20210215103224.zpjhi5tiokov2gvy@skbuf>
- <5530c6b8-4824-64da-f5a9-f8a790c46c3b@linux.ibm.com>
+        id S230310AbhBOMUi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 07:20:38 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37146 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229979AbhBOMUS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Feb 2021 07:20:18 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AA33E64DAF;
+        Mon, 15 Feb 2021 12:19:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1613391575;
+        bh=j4+qHpzxfQVCPvLlgnEKk88hXfHOqWs3cPLcjDCIWTY=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Sb94YUQ1YJ4uhfz1veFgsop4HGoC3Rn5p8G9gSsEVB/GH/Kz46j7HJQwhZiDFGI85
+         l/U5ECuLcoW5elOOH8JvvdEg542mGdlBBj45tnRkkedll5G9yzICS4qrV+gHpKXz/G
+         TOCOc2Gre9LlY4qXI/Aa0wb7//BhinJSpyIJDycyRtN/RPyQQWdOIM9O3dhlFjcCHr
+         6i6uySiOXPC0oGMtEpELymuqUGYWmfwqEQAsZwAICRFWgyff+xxheWQx13coMG5HTQ
+         x2Ko/reM1JO67GyTwoVFVHCOH8U/T61C3GP1SfMeLFcsGfYN75kObUmxpWKr4AJHyK
+         tNquZFxB82zsQ==
+Received: by mail-ot1-f54.google.com with SMTP id d7so5858106otq.6;
+        Mon, 15 Feb 2021 04:19:35 -0800 (PST)
+X-Gm-Message-State: AOAM531KWhzBwVjpRUMQd/CKVH+wBP6flwiSkG7XESWiYCLsgqmnJBck
+        +lAAEgfI6PmBIH0/LLz0BUJ/3ZahR4tYEqn1VZo=
+X-Google-Smtp-Source: ABdhPJxuyiL/8nGRH3dyNyB0gtDY++9QyKg4dKnSds6MwewtsSMksWyunCksV3BGpgTO0qxlzOXwpnp+VkidxtKsY/g=
+X-Received: by 2002:a9d:6c11:: with SMTP id f17mr11168000otq.210.1613391574856;
+ Mon, 15 Feb 2021 04:19:34 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5530c6b8-4824-64da-f5a9-f8a790c46c3b@linux.ibm.com>
+References: <20210215050655.2532-1-nobuhiro1.iwamatsu@toshiba.co.jp>
+ <20210215050655.2532-3-nobuhiro1.iwamatsu@toshiba.co.jp> <YCoPmfunGmu0E8IT@unreal>
+ <20210215072809.n3r5rdswookzri6j@toshiba.co.jp> <YCo9WVvtAeozE42k@unreal>
+In-Reply-To: <YCo9WVvtAeozE42k@unreal>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Mon, 15 Feb 2021 13:19:18 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a391547zH=bYXbLzttP9ehFK=OzcM_XkSJs92dA1z4DGQ@mail.gmail.com>
+Message-ID: <CAK8P3a391547zH=bYXbLzttP9ehFK=OzcM_XkSJs92dA1z4DGQ@mail.gmail.com>
+Subject: Re: [PATCH 2/4] net: stmmac: Add Toshiba Visconti SoCs glue driver
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        DTML <devicetree@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        punit1.agrawal@toshiba.co.jp, yuji2.ishikawa@toshiba.co.jp,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 15, 2021 at 11:53:42AM +0100, Alexandra Winter wrote:
-> Actually, I found your first (more verbose) proposal more helpful.
+On Mon, Feb 15, 2021 at 10:23 AM Leon Romanovsky <leon@kernel.org> wrote:
+> On Mon, Feb 15, 2021 at 04:28:09PM +0900, Nobuhiro Iwamatsu wrote:
+> >
+> > Sorry, I sent the wrong patchset that didn't fix this point out.
+> >
+> > > I asked it before, but never received an answer.
+> >
+> > I have received your point out and have sent an email with the content
+> > to remove this line. But it may not have arrived yet...
+> >
+> > > Why did you use "def_bool y" and not "default y"? Isn't it supposed to be
+> > > "depends on STMMAC_ETH"? And probably it shouldn't be set as a default as "y".
+> > >
+> >
+> > The reason why "def_bool y" was set is that the wrong fix was left when
+> > debugging. Also, I don't think it is necessary to set "default y".
+> > This is also incorrect because it says "bool" Toshiba Visconti DWMAC
+> > support "". I change it to trustate in the new patch.
+> >
+> > And this driver is enabled when STMMAC_PLATFORM was Y. And STMMAC_PLATFORM
+> > depends on STMMAC_ETH.
+> > So I understand that STMMAC_ETH does not need to be dependents. Is this
+> > understanding wrong?
+>
+> This is correct understanding, just need to clean other entries in that
+> Kconfig that depends on STMMAC_ETH.
 
-Sorry, I don't understand. Do you want me to copy the whole explanation
-from bridge fdb add to bridge link set?
+'tristate' with no default sounds right. I see that some platforms have a
+default according to the platform, which also makes sense but isn't
+required. What I would suggest though is a dependency on the platform,
+to make it easier to disable the front-end based on which platforms
+are enabled. This would end up as
 
-> >> Maybe I misunderstand this sentence, but I can do a 'bridge fdb add' without 'self'
-> >> on the bridge device. And the address shows up under 'bridge fdb show'.
-> >> So what does mandatory mean here?
-> >
-> > It's right in the next sentence:
-> >
-> >> The flag is set by default if "master" is not specified.
-> >
-> > It's mandatory and implicit if "master" is not specified, ergo 'bridge
-> > fdb add dev br0' will work because 'master' is not specified (it is
-> > implicitly 'bridge fdb add dev br0 self'. But 'bridge fdb add dev br0
-> > master' will fail, because the 'self' flag is no longer implicit (since
-> > 'master' was specified) but mandatory and absent.
-> >
-> > I'm not sure what I can do to improve this.
-> >
-> Maybe the sentence under 'master':
-> " If the specified
-> +device is a master itself, such as a bridge, this flag is invalid."
-> is sufficient to defien this situation. And no need to explain mandatory implicit defaults
-> in the first paragraph?
+config DWMAC_VISCONTI
+        tristate "Toshiba Visconti DWMAC support"
+        depends on ARCH_VISCONTI || COMPILE_TEST
+        depends on OF && COMMON_CLK # only add this line if it's
+required for compilation
+        default ARCH_VISCONTI
 
-I don't understand this either. Could you paste here how you think this
-paragraph should read?
+      Arnd
