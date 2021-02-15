@@ -2,157 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3859031C2DC
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 21:10:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A93231C2E8
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 21:23:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229853AbhBOUKD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 15:10:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41944 "EHLO
+        id S229662AbhBOUX1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 15:23:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229754AbhBOUJm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 15:09:42 -0500
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55088C061786;
-        Mon, 15 Feb 2021 12:09:01 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id o15so7131605wmq.5;
-        Mon, 15 Feb 2021 12:09:01 -0800 (PST)
+        with ESMTP id S229520AbhBOUX0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 15:23:26 -0500
+Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 714CEC061574;
+        Mon, 15 Feb 2021 12:22:46 -0800 (PST)
+Received: by mail-il1-x12f.google.com with SMTP id e1so6539452ilu.0;
+        Mon, 15 Feb 2021 12:22:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=to:cc:references:from:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Mhl8fAiI0GpJC/JWuRJBDgh/SNjy5lnp8Ubz2OgdyUk=;
-        b=lGsLrNf9owuTcpYtz3wKw5KqeM6DUa86PHoFV8lUEzfhC75CLWTwd2XbDzpveIAXBu
-         qS4FsN7yNus0xbU7nuiXqyu308J8zZ1bxWc96I20CXxPCWPGqEzFPaZq1B/od+kTYND/
-         A7yGR4tXoowwxPdljFP1+yDOJroEEuMZB6ANwKE8FKtYaYxrjTo5i9Wx5x/AfdVRcjCt
-         8eHPCDeZqpy9xjCAh9IrsDhmRAzGpvhP4F0BFVR8PykUv5Wl8gQiYl3UdUjE29M3lAwD
-         56zvzUaQiU9q6oljEHx8W/SR/lqq4PNuAfhsOIixT/JsFJcKzTXT5oEAvJewxDcM07Ra
-         7VeA==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=TDrNw5iS82/NIghjTpHN2HoqllYta5pTc5HeZuX337A=;
+        b=loeB2Jhe8UrvKDyUjgex03/SWH5USjIuU5NjZtG46GfNA+G1O7cXhijLTYYzo29USF
+         16xcMP3eAdlEgI8IS0MAJPfnNN0HUc3d+yY9dQnZlQ5X34M2DiZwQFtEtLLmefa+cxd9
+         PyNDwawaauZL6Q9GbhUjK3nKMNrCxWOGtRlsNiIchwz+oeIYE54TrIJVwZwjU2MwGrrx
+         a4ztjrw8f6CMVtPkWux8LaJfVNAfXmoTwWEFN6yl+lroJ0gUZCsDgxoxwaEVE5vwUCt6
+         Y+4UpD7RqVCUmTYgtmzN5OwfW4IEw3KBbGIEJhnOTpOHSWQTfgNSTN/VOYUdHsP9Ff2g
+         meSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Mhl8fAiI0GpJC/JWuRJBDgh/SNjy5lnp8Ubz2OgdyUk=;
-        b=O6dkPjN0Z55LlD3r+YlcTfqt+/SDGTjynUfLKzdXvY1B1GdewQ4M9W32rRCASjdAIg
-         fay+rZ//N8iq1P5hZwZ3YRWOi7IXixJpg1DjAMpid5/3KweuIFI5RiTGBcmsoGwAUTy6
-         7X9Ku45EGG8+A4y4s0E36X7DBy8UY8/9OpZ2t3+Nt5Tyxbbt8U0MxUEbxA8rxt6RhKNA
-         aAexeSA6qzZm/GF/O686ryzz0Zv8mf9DwUKEtTTxEhbaHuE5lld5Fe5MCEGRpONr8Oks
-         /2oEUcSDTniqdO1Vs/yAY3rVhCf4uabWTuA2Q64mM/7lceSI3UyIt3ZB49MzgXibIfA9
-         NcQw==
-X-Gm-Message-State: AOAM533QcJmKcydyzmzErfMJX/1n04XN1rLh0L4XcuZy5JhzkIaq5GHR
-        1Fx3BKHm5gn1lmvmYs4Ni88=
-X-Google-Smtp-Source: ABdhPJzddAD+mvBu5P8dKYp+IAhuG01Cy0eP9AXsxponMqgTI5dugpT5xQtGX8iLOyO+XNxt//KKMg==
-X-Received: by 2002:a1c:f417:: with SMTP id z23mr424848wma.29.1613419739983;
-        Mon, 15 Feb 2021 12:08:59 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f39:5b00:ace1:3140:5214:77e3? (p200300ea8f395b00ace13140521477e3.dip0.t-ipconnect.de. [2003:ea:8f39:5b00:ace1:3140:5214:77e3])
-        by smtp.googlemail.com with ESMTPSA id n3sm24571323wrv.22.2021.02.15.12.08.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Feb 2021 12:08:59 -0800 (PST)
-To:     Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Antoine Tenart <atenart@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        UNGLinuxDriver <UNGLinuxDriver@microchip.com>,
-        Steen Hegelund <steen.hegelund@microchip.com>
-References: <20210215165800.14580-1-bjarni.jonasson@microchip.com>
- <20210215165800.14580-3-bjarni.jonasson@microchip.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next v2 3/3] net: phy: mscc: coma mode disabled for
- VSC8514
-Message-ID: <a3a7c583-e881-58d2-6c94-b68809a8b675@gmail.com>
-Date:   Mon, 15 Feb 2021 21:08:34 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
-MIME-Version: 1.0
-In-Reply-To: <20210215165800.14580-3-bjarni.jonasson@microchip.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=TDrNw5iS82/NIghjTpHN2HoqllYta5pTc5HeZuX337A=;
+        b=o4TDtV5DEUDnjbrBAcdeGw/49YKU2LfRdxcFlscmZ9fCM0JEppuWb0wCTRsP4d0z9r
+         GBQFaN2AV5kvgNfr/hNibDbB9ZGt1frplSVERLu+vu07Xf+Fnhg2btJ6vwRNHrn4Ryif
+         yL3m/yNgbB28rTuzXt/LP++PllK/gkZLjgpmAZsqJ09cw+BBllaoX2CzYnV+im2e5ybv
+         Qz3Ax+lyGrBkM/HOpgHf6e+Zbl3NyZdtCeY4NoR56LU8zzPuHBar5XuJH2TqZbbsHJHX
+         a9XYIwrEelICWiwthastW1vXYjrzIhXOcBuIP3V624EAIbqTJx0MqgNG9dA/EbMIIs1O
+         Q2lQ==
+X-Gm-Message-State: AOAM5330ktmzS0SvrhWujwn4xNWbU21KTvRJWGLeiQExOmth6wny64AL
+        CySqVQxP/jmPAp5kOwVmdNQ=
+X-Google-Smtp-Source: ABdhPJyq6i19Hn0C0rFf9Ksh1qBLc+3GNGW5Gvoc88g3JVjQDL/3nUcGUQNE4JL+7OinAWxANtxJCw==
+X-Received: by 2002:a05:6e02:483:: with SMTP id b3mr157094ils.152.1613420565572;
+        Mon, 15 Feb 2021 12:22:45 -0800 (PST)
+Received: from localhost ([172.243.146.206])
+        by smtp.gmail.com with ESMTPSA id v16sm9907913ilj.20.2021.02.15.12.22.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Feb 2021 12:22:44 -0800 (PST)
+Date:   Mon, 15 Feb 2021 12:22:36 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        daniel@iogearbox.net, ast@kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     andrii@kernel.org, magnus.karlsson@intel.com,
+        ciara.loftus@intel.com
+Message-ID: <602ad80c566ea_3ed4120871@john-XPS-13-9370.notmuch>
+In-Reply-To: <fe0c957e-d212-4265-a271-ba301c3c5eca@intel.com>
+References: <20210215154638.4627-1-maciej.fijalkowski@intel.com>
+ <20210215154638.4627-2-maciej.fijalkowski@intel.com>
+ <87eehhcl9x.fsf@toke.dk>
+ <fe0c957e-d212-4265-a271-ba301c3c5eca@intel.com>
+Subject: Re: [PATCH bpf-next 1/3] libbpf: xsk: use bpf_link
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15.02.2021 17:58, Bjarni Jonasson wrote:
-> The 'coma mode' (configurable through sw or hw) provides an
-> optional feature that may be used to control when the PHYs become active.
-> The typical usage is to synchronize the link-up time across
-> all PHY instances. This patch releases coma mode if not done by hardware,
-> otherwise the phys will not link-up
-> 
-> Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
-> Signed-off-by: Bjarni Jonasson <bjarni.jonasson@microchip.com>
-> Fixes: e4f9ba642f0b ("net: phy: mscc: add support for VSC8514 PHY.")
-> ---
-> v1 -> v2:
->   Modified coma mode config 
->   Changed net to net-next
-> 
->  drivers/net/phy/mscc/mscc.h      |  3 +++
->  drivers/net/phy/mscc/mscc_main.c | 16 ++++++++++++++++
->  2 files changed, 19 insertions(+)
-> 
-> diff --git a/drivers/net/phy/mscc/mscc.h b/drivers/net/phy/mscc/mscc.h
-> index 9d8ee387739e..2b70ccd1b256 100644
-> --- a/drivers/net/phy/mscc/mscc.h
-> +++ b/drivers/net/phy/mscc/mscc.h
-> @@ -160,6 +160,9 @@ enum rgmii_clock_delay {
->  #define MSCC_PHY_PAGE_TR		  0x52b5 /* Token ring registers */
->  #define MSCC_PHY_GPIO_CONTROL_2	  14
->  
-> +#define MSCC_PHY_COMA_MODE		  0x2000 /* input(1) / output(0) */
-> +#define MSCC_PHY_COMA_OUTPUT		  0x1000 /* value to output */
-> +
->  /* Extended Page 1 Registers */
->  #define MSCC_PHY_CU_MEDIA_CRC_VALID_CNT	  18
->  #define VALID_CRC_CNT_CRC_MASK		  GENMASK(13, 0)
-> diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
-> index 03181542bcb7..29302ccf7e7b 100644
-> --- a/drivers/net/phy/mscc/mscc_main.c
-> +++ b/drivers/net/phy/mscc/mscc_main.c
-> @@ -1520,6 +1520,21 @@ static void vsc8584_get_base_addr(struct phy_device *phydev)
->  	vsc8531->addr = addr;
->  }
->  
-> +static void vsc85xx_coma_mode_release(struct phy_device *phydev)
-> +{
-> +	/* The coma mode (pin or reg) provides an optional feature that
-> +	 * may be used to control when the PHYs become active.
-> +	 * Alternatively the COMA_MODE pin may be connected low
-> +	 * so that the PHYs are fully active once out of reset.
-> +	 */
-> +	phy_unlock_mdio_bus(phydev);
-> +	/* Enable output (mode=0) and write zero to it */
-> +	phy_modify_paged(phydev, MSCC_PHY_PAGE_EXTENDED_GPIO,
-> +			 MSCC_PHY_GPIO_CONTROL_2,
-> +			 MSCC_PHY_COMA_MODE | MSCC_PHY_COMA_OUTPUT, 0);
-> +	phy_lock_mdio_bus(phydev);
+Bj=C3=B6rn T=C3=B6pel wrote:
+> On 2021-02-15 18:07, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> > Maciej Fijalkowski <maciej.fijalkowski@intel.com> writes:
+> > =
 
-The temporary unlock is a little bit hacky. Better do:
-vsc85xx_phy_write_page(MSCC_PHY_PAGE_EXTENDED_GPIO)
-__phy_modify()
-vsc85xx_phy_write_page(default page)
+> >> Currently, if there are multiple xdpsock instances running on a sing=
+le
+> >> interface and in case one of the instances is terminated, the rest o=
+f
+> >> them are left in an inoperable state due to the fact of unloaded XDP=
 
-Alternatively we could add __phy_modify_paged(). But this may not
-be worth the effort for now.
+> >> prog from interface.
 
-> +}
-> +
->  static int vsc8584_config_init(struct phy_device *phydev)
->  {
->  	struct vsc8531_private *vsc8531 = phydev->priv;
-> @@ -2604,6 +2619,7 @@ static int vsc8514_config_init(struct phy_device *phydev)
->  		ret = vsc8514_config_host_serdes(phydev);
->  		if (ret)
->  			goto err;
-> +		vsc85xx_coma_mode_release(phydev);
->  	}
->  
->  	phy_unlock_mdio_bus(phydev);
-> 
+I'm a bit confused by the above. This is only the case if the instance
+that terminated is the one that loaded the XDP program and it also didn't=
+
+pin the program correct? If so lets make the commit message a bit more
+clear about the exact case we are solving.
+
+> >>
+> >> To address that, step away from setting bpf prog in favour of bpf_li=
+nk.
+> >> This means that refcounting of BPF resources will be done automatica=
+lly
+> >> by bpf_link itself.
+
++1
+
+> >>
+> >> When setting up BPF resources during xsk socket creation, check whet=
+her
+> >> bpf_link for a given ifindex already exists via set of calls to
+> >> bpf_link_get_next_id -> bpf_link_get_fd_by_id -> bpf_obj_get_info_by=
+_fd
+> >> and comparing the ifindexes from bpf_link and xsk socket.
+> > =
+
+> > One consideration here is that bpf_link_get_fd_by_id() is a privilege=
+d
+> > operation (privileged as in CAP_SYS_ADMIN), so this has the side effe=
+ct
+> > of making AF_XDP privileged as well. Is that the intention?
+> >
+> =
+
+> We're already using, e.g., bpf_map_get_fd_by_id() which has that
+> as well. So we're assuming that for XDP setup already!
+> =
+
+> > Another is that the AF_XDP code is in the process of moving to libxdp=
+
+> > (see in-progress PR [0]), and this approach won't carry over as-is to=
+
+> > that model, because libxdp has to pin the bpf_link fds.
+> >
+> =
+
+> I was assuming there were two modes of operations for AF_XDP in libxdp.=
+
+> One which is with the multi-program support (which AFAIK is why the
+> pinning is required), and one "like the current libbpf" one. For the
+> latter Maciej's series would be a good fit, no?
+> =
+
+> > However, in libxdp we can solve the original problem in a different w=
+ay,
+> > and in fact I already suggested to Magnus that we should do this (see=
+
+> > [1]); so one way forward could be to address it during the merge in
+> > libxdp? It should be possible to address the original issue (two
+> > instances of xdpsock breaking each other when they exit), but
+> > applications will still need to do an explicit unload operation befor=
+e
+> > exiting (i.e., the automatic detach on bpf_link fd closure will take
+> > more work, and likely require extending the bpf_link kernel support).=
+..
+> >
+> =
+
+> I'd say it's depending on the libbpf 1.0/libxdp merge timeframe. If
+> we're months ahead, then I'd really like to see this in libbpf until th=
+e
+> merge. However, I'll leave that for Magnus/you to decide!
+
+Did I miss some thread? What does this mean libbpf 1.0/libxdp merge? From=
+
+my side libbpf should support the basic operations: load, attach, pin,
+and link for all my BPF objects. I view libxdp as providing 'extra'
+goodness on top of that. Everyone agree?
+
+> =
+
+> Bottom line; I'd *really* like bpf_link behavior (process scoped) for
+> AF_XDP sooner than later! ;-)
+
+Because I use libbpf as my base management for BPF objects I want it
+to support the basic ops for all objects so link ops should land there.
+
+> =
+
+> =
+
+> Thanks for the input!
+> Bj=C3=B6rn
+> =
+
+> =
+
+> > -Toke
+> > =
+
+> > [0] https://github.com/xdp-project/xdp-tools/pull/92
+> > [1] https://github.com/xdp-project/xdp-tools/pull/92#discussion_r5762=
+04719
+> > =
+
+
 
