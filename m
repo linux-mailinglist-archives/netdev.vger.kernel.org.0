@@ -2,100 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78BC731C3D1
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 22:56:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4866E31C3E7
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 23:04:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229809AbhBOVzZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 16:55:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36438 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229784AbhBOVzS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 16:55:18 -0500
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 851D6C061756
-        for <netdev@vger.kernel.org>; Mon, 15 Feb 2021 13:54:38 -0800 (PST)
-Received: by mail-io1-xd2a.google.com with SMTP id n14so8233279iog.3
-        for <netdev@vger.kernel.org>; Mon, 15 Feb 2021 13:54:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1EldVEtv82k+1DGG2yBJItkY1oY+VNbmcIspFv6IrKA=;
-        b=CZ0VswQQw1iEfvcYnsFioiTTqHsghXWT72LXLlgEKfitDlrBqbrQETNf6oucUVVFSd
-         ynQDa4qNtAlyxAekTcj9XKd/Bgq7vq+KEcBsJP8EkWsL5ouycovXYt620KV4089IvYou
-         gBz5lsknQmTocX1ABmGGoE00XAhdY/IIavv+GCaHVI5+1YA3IkrlbqN+KEyGnEb791MT
-         GmHVEJkRTXq98cKF20KnmeNSoMohWk+rA8/GeCXG+GNXI9fVCxhLlYvpRHkDMkpONNhz
-         LhkHdNS26XYv2Y8lfLuwb3I6s3SeIKrrtzuSUppOxqR1Is1FSyJn66i2hu06QTiEl3vI
-         gnvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1EldVEtv82k+1DGG2yBJItkY1oY+VNbmcIspFv6IrKA=;
-        b=Lkum2k6gZJYRgGIxwgNxQwfVHohFcVLuED/KkTSZjwelHfivfKM87AjT9BAn0QL7kG
-         Lz6U1wOsBGGpNBtxtbywHB4hFAKkMLdFs0QDyCzbDD8dGSfIBo5htH7Ra7rZV4k7KOP6
-         rghSr+QuT9HFZ36wDRAbe2HDWxfUUTDUiHO9gx0knXQDz6Ptqd9ldtGxZvcXf6ouHrK6
-         wsQ7KrnPrzFVBpkAzIFxJhNEtp6hB/13x8psp2xvfjy3FkCiBxaV0N7k31IBh/ToBIUo
-         9m0/ZU1ZpyEI6dsZCfg3jdMCkqy5Y3RK3Z9T5+/8Kr+DzdtGNIdNXoDaflQT8p3DX+Wx
-         dS1w==
-X-Gm-Message-State: AOAM533fj54pN8/OM3Aon+0bA2wGQSUrXXzJcEE5o9VMcRWkdyhGyXUe
-        fJuCqnglIT4EQRlAKfIqrTXzCw==
-X-Google-Smtp-Source: ABdhPJxGgtoVEbjT5Cr0YRfiCYFUfUFmMhQ0Pj14oXd+O/YqLgbr8gRxYVxdHfGKDEhWtIEIIRNhYg==
-X-Received: by 2002:a5d:8483:: with SMTP id t3mr14794765iom.35.1613426077978;
-        Mon, 15 Feb 2021 13:54:37 -0800 (PST)
-Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id e14sm2600250ils.49.2021.02.15.13.54.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Feb 2021 13:54:37 -0800 (PST)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     elder@kernel.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
-        cpratapa@codeaurora.org, subashab@codeaurora.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net] net: ipa: initialize all resources
-Date:   Mon, 15 Feb 2021 15:54:34 -0600
-Message-Id: <20210215215434.3225-1-elder@linaro.org>
-X-Mailer: git-send-email 2.20.1
+        id S229710AbhBOWEN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 17:04:13 -0500
+Received: from www62.your-server.de ([213.133.104.62]:59464 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229520AbhBOWEJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 17:04:09 -0500
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lBlxi-0008vO-Tx; Mon, 15 Feb 2021 23:03:22 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lBlxi-000GCA-KS; Mon, 15 Feb 2021 23:03:22 +0100
+Subject: Re: [PATCHv19 bpf-next 2/6] bpf: add a new bpf argument type
+ ARG_CONST_MAP_PTR_OR_NULL
+To:     Hangbin Liu <liuhangbin@gmail.com>, bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+References: <20210208104747.573461-1-liuhangbin@gmail.com>
+ <20210208104747.573461-3-liuhangbin@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <737a6e4f-1551-e686-f180-e5d08347dbea@iogearbox.net>
+Date:   Mon, 15 Feb 2021 23:03:21 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
+In-Reply-To: <20210208104747.573461-3-liuhangbin@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26081/Mon Feb 15 13:19:24 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We configure the minimum and maximum number of various types of IPA
-resources in ipa_resource_config().  It iterates over resource types
-in the configuration data and assigns resource limits to each
-resource group for each type.
+On 2/8/21 11:47 AM, Hangbin Liu wrote:
+> Add a new bpf argument type ARG_CONST_MAP_PTR_OR_NULL which could be
+> used when we want to allow NULL pointer for map parameter. The bpf helper
+> need to take care and check if the map is NULL when use this type.
+> 
+> Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> Acked-by: John Fastabend <john.fastabend@gmail.com>
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+[...]
+> @@ -4259,9 +4261,9 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
+>   		meta->ref_obj_id = reg->ref_obj_id;
+>   	}
+>   
+> -	if (arg_type == ARG_CONST_MAP_PTR) {
+> -		/* bpf_map_xxx(map_ptr) call: remember that map_ptr */
+> -		meta->map_ptr = reg->map_ptr;
+> +	if (arg_type == ARG_CONST_MAP_PTR ||
+> +	    arg_type == ARG_CONST_MAP_PTR_OR_NULL) {
+> +		meta->map_ptr = register_is_null(reg) ? NULL : reg->map_ptr;
 
-Unfortunately, we are repeatedly initializing the resource data for
-the first type, rather than initializing each of the types whose
-limits are specified.
+Sorry, but after re-reading this is unfortunately still broken :( Looking at your
+helper func proto:
 
-Fix this bug.
++static const struct bpf_func_proto bpf_xdp_redirect_map_multi_proto = {
++	.func           = bpf_xdp_redirect_map_multi,
++	.gpl_only       = false,
++	.ret_type       = RET_INTEGER,
++	.arg1_type      = ARG_CONST_MAP_PTR,
++	.arg2_type      = ARG_CONST_MAP_PTR_OR_NULL,
++	.arg3_type      = ARG_ANYTHING,
++};
 
-Fixes: 4a0d7579d466e ("net: ipa: avoid going past end of resource group array")
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/ipa_main.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
-index 84bb8ae927252..eb1c8396bcdd9 100644
---- a/drivers/net/ipa/ipa_main.c
-+++ b/drivers/net/ipa/ipa_main.c
-@@ -581,10 +581,10 @@ ipa_resource_config(struct ipa *ipa, const struct ipa_resource_data *data)
- 		return -EINVAL;
- 
- 	for (i = 0; i < data->resource_src_count; i++)
--		ipa_resource_config_src(ipa, data->resource_src);
-+		ipa_resource_config_src(ipa, &data->resource_src[i]);
- 
- 	for (i = 0; i < data->resource_dst_count; i++)
--		ipa_resource_config_dst(ipa, data->resource_dst);
-+		ipa_resource_config_dst(ipa, &data->resource_dst[i]);
- 
- 	return 0;
- }
--- 
-2.20.1
-
+So in check_helper_call() first meta->map_ptr is set to arg1 map, then when
+checking arg2 map it can either be const NULL or a valid map ptr, but then
+later on in check_map_func_compatibility() we only end up checking compatibility
+of the /2nd/ map (e.g. on !meta->map_ptr we just return 0). This means, we
+can pass whatever map type as arg1 map and it will pass the verifier just fine.
