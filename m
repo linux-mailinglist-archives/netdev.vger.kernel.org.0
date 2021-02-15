@@ -2,63 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F1AC31B7EF
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 12:23:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A07A31B819
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 12:37:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230021AbhBOLW5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 06:22:57 -0500
-Received: from mail-wr1-f54.google.com ([209.85.221.54]:34843 "EHLO
-        mail-wr1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229779AbhBOLWw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 06:22:52 -0500
-Received: by mail-wr1-f54.google.com with SMTP id l12so8452523wry.2;
-        Mon, 15 Feb 2021 03:22:35 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=H/HSQcMjtFGIvIu1oJqCB+ca0ygjk6QUeyq3U3IQtxk=;
-        b=CeOAZKJsNN2IoHWTQw5YyeKe2msfvoVBNR60OHpRea1YnrYZU1QF/XunqUbWwHxmRn
-         0KGQdJ85xPaciK7CW8IbDjJmR3/93ezDfqKMIbBK9s6GcR7lHlxMhD+grWkTH0TYTcQW
-         u4TDPtUIpYrzgorzdxBzEMrcUHQqi6JROHOpayy+Fja/hYWuJhu0+EFdLI8XGSgdGlMp
-         Kwi1dMCPg+pDs6G18xozyLKYIEtUW1H5uSisevautJk0+6Xpbl9WqifptyaX1GOkLJ+c
-         5CGXd0F5OWZT1sgs9T3M62eqxbs6FcSqWNlkRaidVuawL4TUxN3b4PZYNnqPYtM3z2sC
-         pToA==
-X-Gm-Message-State: AOAM533LOOStorUfaW0/yfI+hZ4jZ+zgrfXJ9bD1iszs9rFITa4rgz6/
-        k9gy2KkY4UGqOsMpJhlQsKbhkTTh1bo=
-X-Google-Smtp-Source: ABdhPJyRupVeBoZBpt65+nI7oNINndMhPBKC/Ci5iSqTNaW0cIXpnFEG8TXNObG8U6+9JByW508T+w==
-X-Received: by 2002:a5d:4051:: with SMTP id w17mr18060071wrp.186.1613388130320;
-        Mon, 15 Feb 2021 03:22:10 -0800 (PST)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id v6sm14735523wrw.49.2021.02.15.03.22.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Feb 2021 03:22:09 -0800 (PST)
-Date:   Mon, 15 Feb 2021 11:22:08 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Andrea Parri <parri.andrea@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        mikelley@microsoft.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, davem@davemloft.net, kuba@kernel.org,
-        linux-hyperv@vger.kernel.org, linux-scsi@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: Regressions with VMBus/VSCs hardening changes
-Message-ID: <20210215112208.jjzhtvzhemlgpvfa@liuwe-devbox-debian-v2>
-References: <20210212165050.GA11906@anparri>
+        id S229983AbhBOLhQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 06:37:16 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:31158 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229873AbhBOLhJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 06:37:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1613388943;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sF9dZJuqlvEevgCfQYdSkQXkmgKjtqzSRW7Dqt0w1yM=;
+        b=XTl0Ergn2+3T6CSludaMIAcnTF4zbMFXfWtAehZM3fRQlEhy/XM0FdJCGg3Qjk1oORHT2U
+        T8Eg5QyK3Yf4pgYfSEqGgs1L6ZZ+eyCQajR9DP/aVSLEiDp83Newy6k71JBvcLwQilLb0r
+        PWTNWLcSzhabVN7iHR7UsJBEwt3m1vo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-488-vHJ4j4Z-Me2HQsaEmEXUpA-1; Mon, 15 Feb 2021 06:35:42 -0500
+X-MC-Unique: vHJ4j4Z-Me2HQsaEmEXUpA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D8BF910066EF;
+        Mon, 15 Feb 2021 11:35:40 +0000 (UTC)
+Received: from [10.40.194.204] (unknown [10.40.194.204])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 09D285C3F8;
+        Mon, 15 Feb 2021 11:35:38 +0000 (UTC)
+Message-ID: <72bb7b9fc0cf7afc308e284c72c363e80df8e734.camel@redhat.com>
+Subject: Re: linux-next: manual merge of the net-next tree with the net tree
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Guillaume Nault <gnault@redhat.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+In-Reply-To: <20210215110154.GA28453@linux.home>
+References: <20210215114354.6ddc94c7@canb.auug.org.au>
+         <20210215110154.GA28453@linux.home>
+Organization: red hat
+Content-Type: text/plain; charset="UTF-8"
+Date:   Mon, 15 Feb 2021 12:35:37 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210212165050.GA11906@anparri>
+User-Agent: Evolution 3.38.3 (3.38.3-1.fc33) 
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Feb 12, 2021 at 05:50:50PM +0100, Andrea Parri wrote:
-> Hi all,
-[...]
-> 2) IIUC a8c3209998afb5 could be dropped (after rebase) without further modi-
->    fications to hyperv-next.
+On Mon, 2021-02-15 at 12:01 +0100, Guillaume Nault wrote:
+> Before these commits, ALL_TESTS listed the tests in the order they were
+> implemented in the rest of the file. So I'd rather continue following
+> this implicit rule, if at all possible. Also it makes sense to keep
+> grouping all match_ip_*_test together.
 
-I've reverted the said patch from hyperv-next.
+yes, it makes sense. I can follow-up with a commit for net-next (when
+tree re-opens), where the "ordering" in ALL_TESTS is restored. Ok?
 
-Wei.
+thanks,
+-- 
+davide
+
