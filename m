@@ -2,161 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9832531B5EC
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 09:32:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26D3B31B628
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 10:07:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230010AbhBOIby (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 03:31:54 -0500
-Received: from aserp2120.oracle.com ([141.146.126.78]:39234 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229960AbhBOIbw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 03:31:52 -0500
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11F8U15B046899;
-        Mon, 15 Feb 2021 08:31:03 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- content-transfer-encoding : in-reply-to; s=corp-2020-01-29;
- bh=lNJhPUBe/qt7sRGgOxmCt7Nkroau6aBus260lcLM7Zw=;
- b=PwQw9apyCEReriD+DdUGRc5mQ2de27n9pOJXCRFum6FgUM0dhjC33xio5D3hBpGWJkde
- qKHvlWqlqihWSr2I/JTvob+OLFhVfNYlxgnU4V6lOIIT9mDtIVc4BEaHAlClHQkGNTOp
- jkhpLy5zuCW1RSg7DItbeF6D61N5xKqas9qs0WKfZUI5xLuNZZjRZR2H7roUnOJPmCfw
- 5QqVCpFmXxcNPJu4Qv4h4JsVEVOtqrNZyKAn8yUz85GazSD2fRciv4MMe5tPBOWfqj68
- ffHyIDRXVAIz6gRWfrie2YH3MV8lDCfLNR6ZNCqJoSvOT4v4ZBPs4GmZrtg3nQrUFRT4 7g== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2120.oracle.com with ESMTP id 36pd9a2p9e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 15 Feb 2021 08:31:03 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11F8TtOS032943;
-        Mon, 15 Feb 2021 08:31:01 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3030.oracle.com with ESMTP id 36prpvah3h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 15 Feb 2021 08:31:01 +0000
-Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 11F8UxR1002778;
-        Mon, 15 Feb 2021 08:30:59 GMT
-Received: from kadam (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 15 Feb 2021 00:30:59 -0800
-Date:   Mon, 15 Feb 2021 11:30:51 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Ariel Levkovich <lariel@nvidia.com>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S230031AbhBOJE5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 04:04:57 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:35593 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230046AbhBOJDi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 04:03:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1613379709;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xyoZzU1t5wWIo9oF7w8GE4+S+o/jhCoDxbXJWRl3Sr8=;
+        b=Qbnun9C+g8tkKTG8aBMikkglZXFoW/ReZos4bKPrsaIUFs5rhe+QD9x8+TCmaOjMyLVUH+
+        9SInP3ts1WkHbS5GNeck2uCbm1f8m5CMeuYTvnoNkhkxRbh4kCPR38VdMSzNVQefZyYBj6
+        gnnEUMNjHNCa/WxZKW4QO/NJayUjBFo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-174-DLLgHfIMPSycrEjDpFAk7w-1; Mon, 15 Feb 2021 04:01:46 -0500
+X-MC-Unique: DLLgHfIMPSycrEjDpFAk7w-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9A5FF100CCD1;
+        Mon, 15 Feb 2021 09:01:45 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.45])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 232DE7771B;
+        Mon, 15 Feb 2021 09:01:39 +0000 (UTC)
+Date:   Mon, 15 Feb 2021 10:01:38 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>,
-        Roi Dayan <roid@mellanox.com>,
-        Ariel Levkovich <lariel@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>
-Subject: Re: [PATCH 1/2 net-next] net/mlx5e: TC: Fix IS_ERR() vs NULL checks
-Message-ID: <20210215083050.GA2222@kadam>
-References: <20200928174153.GA446008@mwanda>
- <3F057952-3C88-452F-BFC5-4DC2B87FAD67@nvidia.com>
+        "David S. Miller" <davem@davemloft.net>, brouer@redhat.com
+Subject: Re: [PATCH net-next V1] net: followup adjust net_device layout for
+ cacheline usage
+Message-ID: <20210215100138.64ef5269@carbon>
+In-Reply-To: <bbae767f-ebb5-51a2-7123-5f2251cdbb2c@gmail.com>
+References: <161313782625.1008639.6000589679659428869.stgit@firesoul>
+        <bbae767f-ebb5-51a2-7123-5f2251cdbb2c@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <3F057952-3C88-452F-BFC5-4DC2B87FAD67@nvidia.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-IMR: 1
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9895 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxlogscore=999
- phishscore=0 adultscore=0 mlxscore=0 suspectscore=0 malwarescore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102150071
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9895 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 clxscore=1011 impostorscore=0
- mlxscore=0 phishscore=0 mlxlogscore=999 spamscore=0 bulkscore=0
- priorityscore=1501 malwarescore=0 suspectscore=0 adultscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102150071
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 28, 2020 at 06:31:04PM +0000, Ariel Levkovich wrote:
-> On Sep 28, 2020, at 13:42, Dan Carpenter <dan.carpenter@oracle.com> wrote:
+On Fri, 12 Feb 2021 18:03:44 +0100
+Eric Dumazet <eric.dumazet@gmail.com> wrote:
+
+> On 2/12/21 2:50 PM, Jesper Dangaard Brouer wrote:
+> > As Eric pointed out in response to commit 28af22c6c8df ("net: adjust
+> > net_device layout for cacheline usage") the netdev_features_t members
+> > wanted_features and hw_features are only used in control path.
 > > 
-> > ﻿The mlx5_tc_ct_init() function doesn't return error pointers it returns
-> > NULL.  Also we need to set the error codes on this path.
+> > Thus, this patch reorder the netdev_features_t to let more members that
+> > are used in fast path into the 3rd cacheline. Whether these members are
+> > read depend on SKB properties, which are hinted as comments. The member
+> > mpls_features could not fit in the cacheline, but it was the least
+> > commonly used (depend on CONFIG_NET_MPLS_GSO).
 > > 
-> > Fixes: aedd133d17bc ("net/mlx5e: Support CT offload for tc nic flows")
-> > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> > In the future we should consider relocating member gso_partial_features
+> > to be closer to member gso_max_segs. (see usage in gso_features_check()).
+> > 
+> > Suggested-by: Eric Dumazet <edumazet@google.com>
+> > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 > > ---
-> > drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 8 ++++++--
-> > 1 file changed, 6 insertions(+), 2 deletions(-)
+> >  include/linux/netdevice.h |   11 +++++++----
+> >  1 file changed, 7 insertions(+), 4 deletions(-)
 > > 
-> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> > index 104b1c339de0..438fbcf478d1 100644
-> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> > @@ -5224,8 +5224,10 @@ int mlx5e_tc_nic_init(struct mlx5e_priv *priv)
+> > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> > index bfadf3b82f9c..3898bb167579 100644
+> > --- a/include/linux/netdevice.h
+> > +++ b/include/linux/netdevice.h
+> > @@ -1890,13 +1890,16 @@ struct net_device {
+> >  	unsigned short		needed_headroom;
+> >  	unsigned short		needed_tailroom;
+> >  
+> > +	/* Fast path features - via netif_skb_features */
+> >  	netdev_features_t	features;
+> > +	netdev_features_t	vlan_features;       /* if skb_vlan_tagged */
+> > +	netdev_features_t	hw_enc_features;     /* if skb->encapsulation */
+> > +	netdev_features_t	gso_partial_features;/* if skb_is_gso */
+> > +	netdev_features_t	mpls_features; /* if eth_p_mpls+NET_MPLS_GSO */
+> > +
+> > +	/* Control path features */
+> >  	netdev_features_t	hw_features;
+> >  	netdev_features_t	wanted_features;
+> > -	netdev_features_t	vlan_features;
+> > -	netdev_features_t	hw_enc_features;
+> > -	netdev_features_t	mpls_features;
+> > -	netdev_features_t	gso_partial_features;
+> >  
+> >  	unsigned int		min_mtu;
+> >  	unsigned int		max_mtu;
 > > 
-> >    tc->ct = mlx5_tc_ct_init(priv, tc->chains, &priv->fs.tc.mod_hdr,
-> >                 MLX5_FLOW_NAMESPACE_KERNEL);
-> > -    if (IS_ERR(tc->ct))
-> > +    if (!tc->ct) {
-> > +        err = -ENOMEM;
-> >        goto err_ct;
-> > +    }
+> >   
 > 
-> Hi Dan,
-> That was implement like that on purpose. If mlx5_tc_init_ct returns NULL it means the device doesn’t support CT offload which can happen with older devices or old FW on the devices.
-> However, in this case we want to continue with the rest of the Tc initialization because we can still support other TC offloads. No need to fail the entire TC init in this case. Only if mlx5_tc_init_ct return err_ptr that means the tc init failed not because of lack of support but due to a real error and only then we want to fail the rest of the tc init.
 > 
-> Your change will break compatibility for devices/FW versions that don’t have CT offload support.
+> Please also note we currently have at least 3 distinct blocks for tx path.
 > 
+> Presumably netdev_features_t are only used in TX, so should be grouped with the other TX
+> sections.
+> 
+> 
+>         /* --- cacheline 3 boundary (192 bytes) --- */       
+> ...
+>         netdev_features_t          features;             /*  0xe0   0x8 */  
+> 
+> ... Lots of ctrl stuff....
+> 
+> 
+>         /* --- cacheline 14 boundary (896 bytes) --- */
+>          struct netdev_queue *      _tx __attribute__((__aligned__(64))); /* 0x380   0x8 */          
+> 
+> 
+> ....
+> 
+> /* Mix of unrelated control stuff like rtnl_link_ops
+> 
+>  /* --- cacheline 31 boundary (1984 bytes) --- */ 
+>  unsigned int               gso_max_size;         /* 0x7c0   0x4 */
+>  u16                        gso_max_segs;         /* 0x7c4   0x2 */ 
+> 
+> 
+> 
+> Ideally we should move _all_ control/slow_path stuff at the very end of the structure,
+> in order to not pollute the cache lines we need for data path, to keep them as small
+> and packed as possible.
+> 
+> This could be done one field at a time, to ease code review.
+> 
+> We should have something like this 
+> 
+> /* section used in RX (fast) path */
+> /* section used in both RX/TX (fast) path */
+> /* section used in TX (fast) path */
+> /* section used for slow path, and control path */
 
-When we have a function like this which is optional then returning NULL
-is a special kind of success as you say.  Returning NULL should not
-generate a warning message.  At the same time, if the user enables the
-option and the code fails because we are low on memory then returning an
-error pointer is the correct behavior.  Just because the feature is
-optional does not mean we should ignore what the user told us to do.
+I fully agree with above, but this is the long term plan, that I have
+added to my TODO list.
 
-This code never returns error pointers.  It always returns NULL/success
-when an allocation fails.  That triggers the first static checker
-warning from last year.  Now Smatch is complaining about a new static
-checker warning:
+This patch is a followup to commit 28af22c6c8df ("net: adjust
+net_device layout for cacheline usage") for fixing that the feature
+members got partitioned into two cache-lines.
 
-drivers/net/ethernet/mellanox/mlx5/core/en_tc.c:4754
-mlx5e_tc_esw_init() warn: missing error code here? 'IS_ERR()' failed. 'err' = '0'
-
-  4708  int mlx5e_tc_esw_init(struct rhashtable *tc_ht)
-  4709  {
-  4710          const size_t sz_enc_opts = sizeof(struct tunnel_match_enc_opts);
-  4711          struct mlx5_rep_uplink_priv *uplink_priv;
-  4712          struct mlx5e_rep_priv *rpriv;
-  4713          struct mapping_ctx *mapping;
-  4714          struct mlx5_eswitch *esw;
-  4715          struct mlx5e_priv *priv;
-  4716          int err = 0;
-  4717  
-  4718          uplink_priv = container_of(tc_ht, struct mlx5_rep_uplink_priv, tc_ht);
-  4719          rpriv = container_of(uplink_priv, struct mlx5e_rep_priv, uplink_priv);
-  4720          priv = netdev_priv(rpriv->netdev);
-  4721          esw = priv->mdev->priv.eswitch;
-  4722  
-  4723          uplink_priv->ct_priv = mlx5_tc_ct_init(netdev_priv(priv->netdev),
-  4724                                                 esw_chains(esw),
-  4725                                                 &esw->offloads.mod_hdr,
-  4726                                                 MLX5_FLOW_NAMESPACE_FDB);
-  4727          if (IS_ERR(uplink_priv->ct_priv))
-  4728                  goto err_ct;
-
-If mlx5_tc_ct_init() fails, which it should do if kmalloc() fails but
-currently it does not, then the error should be propagated all the way
-back.  So this code should preserve the error code instead of returning
-success.
-
-  4729  
-  4730          mapping = mapping_create(sizeof(struct tunnel_match_key),
-  4731                                   TUNNEL_INFO_BITS_MASK, true);
-
-regards,
-dan carpenter
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
