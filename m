@@ -2,130 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75DCE31B4F7
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 06:13:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FBF531B4FB
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 06:14:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229952AbhBOFKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 00:10:05 -0500
-Received: from mo-csw1514.securemx.jp ([210.130.202.153]:47020 "EHLO
-        mo-csw.securemx.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229899AbhBOFJh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 00:09:37 -0500
-Received: by mo-csw.securemx.jp (mx-mo-csw1514) id 11F577JC005999; Mon, 15 Feb 2021 14:07:08 +0900
-X-Iguazu-Qid: 34tMK0YvjMT9ORWEI9
-X-Iguazu-QSIG: v=2; s=0; t=1613365627; q=34tMK0YvjMT9ORWEI9; m=ysCQuRG+tcssHoRPe7pUYd88gwDHmOhYSkUu8uv/2GE=
-Received: from imx12.toshiba.co.jp (imx12.toshiba.co.jp [61.202.160.132])
-        by relay.securemx.jp (mx-mr1510) id 11F575mV005051;
-        Mon, 15 Feb 2021 14:07:06 +0900
-Received: from enc02.toshiba.co.jp ([61.202.160.51])
-        by imx12.toshiba.co.jp  with ESMTP id 11F575x8029846;
-        Mon, 15 Feb 2021 14:07:05 +0900 (JST)
-Received: from hop101.toshiba.co.jp ([133.199.85.107])
-        by enc02.toshiba.co.jp  with ESMTP id 11F5747X021279;
-        Mon, 15 Feb 2021 14:07:05 +0900
-From:   Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>, leon@kernel.org,
-        arnd@kernel.org, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, punit1.agrawal@toshiba.co.jp,
-        yuji2.ishikawa@toshiba.co.jp, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Subject: [PATCH 4/4] arm: dts: visconti: Add DT support for Toshiba Visconti5 ethernet controller
-Date:   Mon, 15 Feb 2021 14:06:55 +0900
-X-TSB-HOP: ON
-Message-Id: <20210215050655.2532-5-nobuhiro1.iwamatsu@toshiba.co.jp>
-X-Mailer: git-send-email 2.30.0.rc2
-In-Reply-To: <20210215050655.2532-1-nobuhiro1.iwamatsu@toshiba.co.jp>
-References: <20210215050655.2532-1-nobuhiro1.iwamatsu@toshiba.co.jp>
+        id S229595AbhBOFNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 00:13:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48016 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229488AbhBOFNt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 00:13:49 -0500
+Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6217C061574
+        for <netdev@vger.kernel.org>; Sun, 14 Feb 2021 21:13:08 -0800 (PST)
+Received: by mail-oi1-x234.google.com with SMTP id y199so6621029oia.4
+        for <netdev@vger.kernel.org>; Sun, 14 Feb 2021 21:13:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=z2Fm5qZDenpmaBPKtIp7d2kK0vTE9jkxh+D5qzOg0jk=;
+        b=f8lOMgwK5AFFjc4OfRTOGqqBCnR1wXwFvkh5BUWv4sGBdw3WRlAyO/ZIuZpwtB+NEv
+         Biw0pZhv29eOup/+xXyAB4k5VQXp4fv4vtjM1nHxkiyNPehV4s2e4ZZQueWTswliaF5c
+         Z+Em7pJpJEBmxUdo3buw4ChDpcCNoN/CHju2VrNmEHc6409+hXP2bzO3vkL/MZ1jqWKp
+         6dE2jFh2MeXiwxOdsmXMTNbdnN9/5UqXE4cEAqV5LAB6AUWO6IdFUobi1c/HYKvpJkPk
+         1S+PWlRgZaE+YZkIc2rMhgF2YpHb60rrP7pR8BRzC8jxIM1Lbr2gzTxlwm1VNuvyPKpu
+         weYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=z2Fm5qZDenpmaBPKtIp7d2kK0vTE9jkxh+D5qzOg0jk=;
+        b=mR3iZ1j9N3IIHXtxJIC5IFbA/4hQG6KCaoctKKix66MZgsWnJgu9wmLOHJbLHYmC8v
+         zt2+N7zx1mTSaS1yd+P4qxMJ1CCrdzawzCATdBOHCYkroF78gIH52Uksy8oST7596cPA
+         RkiELa32PkmO2/IER7K387tLUOILvI4BXWYruXuFk7MbWs8hNIjNHRUUoGVdXq0A0xSv
+         xQFjqLOLglKve3zuW01MCvYEaWXZut5hKhxwAwbwnt5BfClsqqBQ+YnU3mHhZR16ok93
+         sILsbYvl8obFu34oiceL+wqNqG55BGEIjJDW0HGLgN5z33WPlHAC0mkjngJwWzTHw89m
+         SxZg==
+X-Gm-Message-State: AOAM531csWwwLvhg6mBOoMrKWexmCanIpiaMXubtaLlktmXQ48ZmMful
+        Jfo8liVfNcX9D5it/JwL37MFqD5aOMY=
+X-Google-Smtp-Source: ABdhPJyiaa92W+uUdfCJHP980oIdgADtXQgJeTlZSUkTiXzeLzrG7j7jDc5ALg4wqEK2i7gkXanUVg==
+X-Received: by 2002:a54:408f:: with SMTP id i15mr7360894oii.63.1613365988026;
+        Sun, 14 Feb 2021 21:13:08 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:a8bf:c38c:3036:ff38])
+        by smtp.googlemail.com with ESMTPSA id o98sm3472603ota.0.2021.02.14.21.13.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 14 Feb 2021 21:13:07 -0800 (PST)
+Subject: Re: [PATCH] ss: Make leading ":" always optional for sport and dport
+To:     Thayne McCombs <astrothayne@gmail.com>, netdev@vger.kernel.org
+References: <0e45b850-6c2a-4089-1369-151987983552@gmail.com>
+ <20210214080913.8651-1-astrothayne@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <2e20fe26-baac-b1cf-e7b2-05dd6f26af27@gmail.com>
+Date:   Sun, 14 Feb 2021 22:13:06 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210214080913.8651-1-astrothayne@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the ethernet controller node in Toshiba Visconti5 SoC-specific DT file.
-And enable this node in TMPV7708 RM main board's board-specific DT file.
+On 2/14/21 1:09 AM, Thayne McCombs wrote:
+> Doh! Sorry about that, here it is with the sign-off.
+> 
+> -- >8 --
 
-Signed-off-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
----
- .../boot/dts/toshiba/tmpv7708-rm-mbrc.dts     | 18 +++++++++++++
- arch/arm64/boot/dts/toshiba/tmpv7708.dtsi     | 25 +++++++++++++++++++
- 2 files changed, 43 insertions(+)
+Don't put text here.
 
-diff --git a/arch/arm64/boot/dts/toshiba/tmpv7708-rm-mbrc.dts b/arch/arm64/boot/dts/toshiba/tmpv7708-rm-mbrc.dts
-index ed0bf7f13f54..48fa8776e36f 100644
---- a/arch/arm64/boot/dts/toshiba/tmpv7708-rm-mbrc.dts
-+++ b/arch/arm64/boot/dts/toshiba/tmpv7708-rm-mbrc.dts
-@@ -41,3 +41,21 @@ &uart1 {
- 	clocks = <&uart_clk>;
- 	clock-names = "apb_pclk";
- };
-+
-+&piether {
-+	status = "okay";
-+	phy-handle = <&phy0>;
-+	phy-mode = "rgmii-id";
-+	clocks = <&clk300mhz>, <&clk125mhz>;
-+	clock-names = "stmmaceth", "phy_ref_clk";
-+
-+	mdio0 {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		compatible = "snps,dwmac-mdio";
-+		phy0: ethernet-phy@1 {
-+			device_type = "ethernet-phy";
-+			reg = <0x1>;
-+		};
-+	};
-+};
-diff --git a/arch/arm64/boot/dts/toshiba/tmpv7708.dtsi b/arch/arm64/boot/dts/toshiba/tmpv7708.dtsi
-index 242f25f4e12a..3366786699fc 100644
---- a/arch/arm64/boot/dts/toshiba/tmpv7708.dtsi
-+++ b/arch/arm64/boot/dts/toshiba/tmpv7708.dtsi
-@@ -134,6 +134,20 @@ uart_clk: uart-clk {
- 		#clock-cells = <0>;
- 	};
- 
-+	clk125mhz: clk125mhz {
-+		compatible = "fixed-clock";
-+		clock-frequency = <125000000>;
-+		#clock-cells = <0>;
-+		clock-output-names = "clk125mhz";
-+	};
-+
-+	clk300mhz: clk300mhz {
-+		compatible = "fixed-clock";
-+		clock-frequency = <300000000>;
-+		#clock-cells = <0>;
-+		clock-output-names = "clk300mhz";
-+	};
-+
- 	soc {
- 		#address-cells = <2>;
- 		#size-cells = <2>;
-@@ -384,6 +398,17 @@ spi6: spi@28146000 {
- 			#size-cells = <0>;
- 			status = "disabled";
- 		};
-+
-+		piether: ethernet@28000000 {
-+			compatible = "toshiba,visconti-dwmac", "snps,dwmac-4.20a";
-+			reg = <0 0x28000000 0 0x10000>;
-+			interrupts = <GIC_SPI 156 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "macirq";
-+			snps,txpbl = <4>;
-+			snps,rxpbl = <4>;
-+			snps,tso;
-+			status = "disabled";
-+		};
- 	};
- };
- 
--- 
-2.30.0.rc2
+> 
+> The sport and dport conditions in expressions were inconsistent on
+> whether there should be a ":" at the beginning of the port when only a
+> port was provided depending on the family. The link and netlink
+> families required a ":" to work. The vsock family required the ":"
+> to be absent. The inet and inet6 families work with or without a leading
+> ":".
+> 
+> This makes the leading ":" optional in all cases, so if sport or dport
+> are used, then it works with a leading ":" or without one, as inet and
+> inet6 did.
+> 
+> Signed-off-by: Thayne McCombs <astrothayne@gmail.com>
+> ---
+
+put extra comments here
+
+>  misc/ss.c | 46 ++++++++++++++++++++++++----------------------
+>  1 file changed, 24 insertions(+), 22 deletions(-)
+> 
+
+Also, put iproute2-next in the subject line along with a version number.
+
+applied to iproute2-next.
 
