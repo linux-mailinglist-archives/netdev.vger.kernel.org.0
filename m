@@ -2,128 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84D6631BC94
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 16:33:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E28F831BDAF
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 16:56:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231178AbhBOPbm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 10:31:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38482 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230314AbhBOPa2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 10:30:28 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAC6CC061574
-        for <netdev@vger.kernel.org>; Mon, 15 Feb 2021 07:29:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=lvOqceh+nfAlxcPWWk0dEbT+2Btn93+7CESLmdlhHHQ=; b=Icw3dcPWCBkTnG1lRw0v1vQV0
-        03TnrFPqBBnuFmK3BvqVj6eDU0FTKtFCuL2LmuYa5/bz3mzw5I8Z7pIoGeNdO3CqWgX7KMo2FJhQF
-        NYeO24K/+RrdlLjvamK3TGpoqs191DR2D/2AqeV7XfXgsBGgWJuiwJepEsMMfAi93zOGywVv9SrwC
-        sXpM8wZfb51bAfTo4Odlzf8qKOEYZrIjUI7T7fcdvpbATjup0PyATQFE/qA2AnGUgBV2jkCuCd13H
-        bwUglK9pCSSZaiihKhrHaaisiKhxoXIZI0U2eWPa5R9goqyQ/SnEHMxsYc39UYidPJKbM3PzI82px
-        nyE00tgaA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:43754)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1lBfon-0001Bk-PM; Mon, 15 Feb 2021 15:29:45 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1lBfom-0001nW-Jy; Mon, 15 Feb 2021 15:29:44 +0000
-Date:   Mon, 15 Feb 2021 15:29:44 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Marek Behun <marek.behun@nic.cz>
-Cc:     Nathan Rossi <nathan@nathanrossi.com>, netdev@vger.kernel.org,
-        Nathan Rossi <nathan.rossi@digi.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH] net: dsa: mv88e6xxx: prevent 2500BASEX mode override
-Message-ID: <20210215152944.GY1463@shell.armlinux.org.uk>
-References: <20210215061559.1187396-1-nathan@nathanrossi.com>
- <20210215144756.76846c9b@nic.cz>
- <20210215145757.GX1463@shell.armlinux.org.uk>
- <20210215161627.63c3091c@nic.cz>
+        id S232166AbhBOPwR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 10:52:17 -0500
+Received: from sonic314-21.consmr.mail.bf2.yahoo.com ([74.6.132.195]:42918
+        "EHLO sonic314-21.consmr.mail.bf2.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230498AbhBOPts (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 10:49:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1613404141; bh=Uz8GRnidgEXUoLSlgeR3ElSnlO8K5iYVa9AT8u/qtWc=; h=Date:From:Reply-To:Subject:References:From:Subject:Reply-To; b=aUxGtJqv4x3ngBGrF7eI/mJ2A/W4tcd1R+D+kpD+JD84faO+K61zhr7X+SScZeBb1aG8kTiQBxUGkQYUdupMW8xmxwsPi2lEAcWdifp4xvtaCPZVeC0myObrNstypkGzu9DQiLgpmO8vyFK86qTBB0+x3ti1UpzY/5iPhRdGVZiPmcfAVAhdnq052NsyG5hAIQVGMAf8igrnRruSMWfBLvvk53PoV3A+zPQ8sT/qlDZcS/HGPRc6Ruuony5n+kz+YSM34HxFOQaMQGKH6sbpP03H2hk06XC+KIzs52tG43fxs39iNu23kdcZTrGLKHVdusSjy54sLkC/iWievGDtrg==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1613404141; bh=0EnUQmuGjihWRaP3QYzxviNOpXqBaq3TbjXMV/3G06m=; h=X-Sonic-MF:Date:From:Subject:From:Subject; b=GepG4EHpDAj4TYexorVAYkopF8vpWXLfqUPdB9wuoyy4yYTQpx/kMRNRjMGj8cb2Bapt5GUQjQxaAn78PKioYX5eJJgRZjKoZafM2bN8fx6c+xwP2c3E8oiQoX5FvZVZ6F4TbCGiCbAmkyTj8W/i77Qqi2OZR5hV8qutoWnWgsT6B4/FCz6fmdyiafZYDe7JQKKU3hpXvR/M7GCFNxvAkaTnVQdRppDtNK0ZiafWXaug16hhMjfEnjztE5wgJO8xQfAdsi2PUn09LDwjzI8uHqfVs/r08Ee7DOPZIOEnPWWLMLw1QH4lJrpPSBmdphSmnjTfSl0ke4wpFX/Sq2jxIg==
+X-YMail-OSG: 6dGybBUVM1nju2K3c1qOY_f0DKThXvoAcsxwWnk5pd0onQv5Noh.KnBLsVMyzXU
+ a_PdDf_pjG1VOWyqN4dAP8WrEl9MEfloAxkP6hTnwyAmriHblke1oAVlYpeXjNmJyhqGtuLI2TTC
+ eUO93HBx9E.A2XKxC.OTuPNY.CTBl1FgSTsydkfTZTBBjoq1IuNpT1Tp5PqndvQeuH0puU45UDjw
+ Lt2ylb3n9Pc9GmMFcnVhPf5QsauT7_nqtBv5MSOxO7oQ_mNn1.zvwe_QmdFbkfGlxnVxM3cQIS4O
+ LL1fGLB_qILeWKL1V4rInHkocHOvMKlaS4g.HNn7EOXMkSvLZw3bAUuVqsKouSCAzmewKnp7tB45
+ dmGpEcSDOo.yl2U6bx.GeKRkR9NcF2jOpS62_GRQFHvGlsaLcE7HqmAwUuKNZFZ45cNGGWXzaSSs
+ h0GUfrl.hWvBF9gEV0v7Fq.3KR8OXhSbma1.Qngxrhrjo5CexxMB9IzhAZwiNP_FlYSSFfILnxh9
+ RlOKjio0bfBDyC3_Vf6GxRXt9NYMXNugpIQiTt7dF7XBWrXcuw6OgTwU.1MYjeNiw5NkCQP3GEoO
+ PqwuoTeKF0MduhMAC_H5da5Wta.dRfMp.YMP5qvxoWT7r63iXcXuuxXmRxoV3rujCq22wt.eyJ3j
+ 4RAktQcNA7UmRzK_PtURnyW2B5LvywUGSQKTmrCHHz7bYTu6a1HhibrN72BcU.Nvtfz7pFeFj_RQ
+ ROzmQzuScLuCsO0kTJukWyvWcH2ddB1tifkgk.EkMUmAiTpN1GElrxH8.b2f4sMiKIwk2t0dd1On
+ bh_3m7WiIuSOfyySr7_xxcRRAdqKsKpU.jbpYWTVZZBekhrBYH5vWaJZ98sWlkEYo4Cwo2VJTcrc
+ jcvVqVb02d_RC36UhRZVjhk1uCvPA2VtUKXewBSCvkoH_Q39kdO_57zr7LWVqL8nPm2UJRtqqBFC
+ 8kkHf5SFfEB5L6Yx0SKOtkman554BU.L25_NzzV47y_1X9SWeUrHLfWZsRLACyC4BJaa9FvDdBOU
+ 5XWjQSCLi9Hn9LSNajVmhnF4MqyJDYFFzwyMCCHD.PryF6FPBrDIXo_El6Mj3_qtiMQwBjXkbd_h
+ x9oTOJLg4JX84hqDHyWCXBL.WfSzoiGStyzsSlIkd1sdPuz5r.vC5awtXrevZL5vkcreL6i6ie8W
+ CuyVTsvo.YtG_1jvBH.3uGGy5WW7WgA1aZ7_fz1PsXtDtHYtS8xRaf.hk0QnrsbpoHn_AJDtgKUM
+ 15J81iKl3HCKfljO2tPMDiMUMoSeTsgG3iBf1B7hUF42lqBOSLWxd0C4Wpm2tRTLGgnhswScrNdX
+ LBExkWshbkYQ9Qe4hf65xDIxbLDl6eq5O5EXHGDjYimxXIgWgi2mjBs6fnm3UN0ALhbtxgINMHq4
+ P6S57Sl6O8ZsdqwV4hpXjfEJ5DyyQJ4juvRuuaHhkQlf_aQn4xIMXZurbF.nFuuRuQIzuYaNAjK5
+ txVq_tDQURPPIyd3WOe8ZlZAJ3U3Vo7okawbepYZR0Alx6n6Fdu7pNjPgqv6yufRSc5jJ0vuy214
+ vK3DyBgAH9WSA9wnM6IiURLAg8sm5deLlKGuqMbA.vzrsUELMEqc_JbyBvg.rSLYYUNsUzIvCZAM
+ A1Mk_yDGxuJOSJhDK6g4LYadfViI4vQIt8rzJle2jsRel.IVfcMxlVZVpcA_N2bp2U4ILWx9LA7x
+ XjEV8Z2X7eFXYbG_jt.RcB6xNcA7QC6q2gMe_068DSaGGHncsipyrgwrV9gFpln3Jn8Wh3Qa89eZ
+ reMecNww7xQSjT_uNUmNY5teF2XRMraV6yK4bvv7mCAFJDrGTIc_eOooYUugX9hG8TJrVScXXxV6
+ h0bW5xJNmMQlwEbyUax5QxZwItAnSyuOmEcJZtWw.FEDvBB1POowchG6d7A5HtkwaUYyIZ.I8SsW
+ ebzdC4Ao5no.s_Palzigpl8m63w7zv6BBhm2fdJyEqIhu9PAAi6SSVSskjzbOxMeB5fBjEPHcJpu
+ OFT9iqeBcYz8HRtaUfEW1Qdu1.DF.zGPh8vplQZ1_FVC2dBcr0.2c94f10rLMtPsWjiG2K7HXcpV
+ OnNF0yn6TSzEn4ukV0EencsGrz8SPGaiTDrxNw3ahabjPqvmddMkKz.5ly1rSkva4dEnj6L713Zv
+ .3YfzYfnrsqv1t5lM9B6WkWjcgxrYDbWqCiS_KBgIqkp5M1msz6XxdFzb7lMgUCFXZYwpsEHxIiM
+ Ho12E1xkIGdL0QUA2e2qxs4niM_qYzMnI4yexVaXM9wZ_5eYIXQQlFUPKPEL4_qtX5IvZg6DMfQ1
+ xbx3EFxNBmYe73MawrzgJPS.LcfV0asgb.GQdtsFhopfkUUcZIs6KGB_uwbb_ycCxFt.2hJx76v7
+ uo7AaVZDTCtvgQKBYZruG39JIWgElvG4apPuP80a1j7Hi86dqrW.QjfR30X6gO19xPpi4_cgfAXt
+ m9CUxbBu.iHX24iIhepVHET_ltS4k.arqaHZUEJXGn6m60Ht_zYx_zB3mvvysc4v4HK9HPEkU6f1
+ H5Oz3NgUzzaqmfCpzbX3DTHocRjRxRXU9j.Vk4p7XBPDepiImD1oETfuTRuH7mhZOdzgeLG0KD8_
+ ucs02p5erfhiBpfMcIa4JnHGu5udMNS1z5WnYQEE4Ys8qgm.hftULkj8GxrLc.8mgki9wmQUNI_y
+ 4uBsVqAa32tTEkxWkpOn9nDWatAiI904AlbaPodZnetILdvN1sKSHgSIGoLGRQaDUArcqd7p5_jr
+ 1k9AK4fTq3bt3OG.XEydZpipWR2Z5OReHYQOtWVrnVX.aEw4N4.mKOALu7hqaJSClfJ_SYG8.B00
+ slU1bAysSZzRX_.bizOkQmTN3HHcyVuj26.E8uq7H2GB6ileG1MR779341d8CanNFRtB7OT6GxbH
+ PfoeyvBoQaUQeI.a9ldzxpv6tZz5uCvryQv7Uz7nCF_QdesRqLM8C7opSJH9QDBNgsiSsA42KFyB
+ 2AAH5StYIUnr3CKOMWiSeCY7Mvp9OBk4BEmG0G46nPxOhUx7iJDEmlFo9tPdY.yixSXImlyl3_A0
+ PgXGyfskjBoJski5pCiGX3K0usRkqvIyZZgxfGh1g6JXIlH1byMulrklnm46merPvbBXySzVraP9
+ zGnnV53RD8hUR13RM9K9zDL6P65nVLVwRruJdRLAX5owFqZa6NlsGKVjzLGxBqm1eWsIpMI9nwwv
+ nLBiATFLJyZaR564.nKkqCI2MpXVgnSkpcAyDAwV5cMFK8VaDSfZCcK0ZQrEQRUCWhA_sQQWopHp
+ TU3NEYnmXzMTDB6nqJ54NFsKp.IJSnLB9M0ryaj5O_DNoxB41xZ6C6G2VkYQCKHbVpy5HPHP2vd_
+ rdIi7aggHZWpXZw2dy3ZnYeZYv1qZM4NexgbY6WMfecg3QtRlXCBmVooSS.1m_kOWvBk81IEuRB5
+ 0KGJOgZOj7BJq_cRHb.Cfa.oHnBgUFeRoYLzyUgXmL1bSOEIK.xpbwfJI51fEQNKn_cisnIEP3lC
+ cputttSbfCXU6YzAzpQjpylR3OuK4ISgnx6mGzFzjELI.yjELUlmiQosAYUV7OTlmpW.z9l2lTwG
+ 9XIgoEfS0O7_J6Psw0P4TQ1mYy_VMmZciY1k504FbsYSdrPTuenc5my03oMkrCJ122dY9g7Cyf8y
+ f_Bv.eES.U5LI0nmWbeg7ePzrXaBvUFU7uNT.skw4IqrQWFEIF3aZu_GB1UJaYbzO9WiNvM0EYY5
+ OPvM.55rGobXea9MePmdvRCw8jNiTM3xOJeZn84c1ScRGqGlfrLjebll9c_4ZPCRTStGPoZ3XJtw
+ sBci9it6rvMRygFc-
+X-Sonic-MF: <mau20@gbcon.in>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic314.consmr.mail.bf2.yahoo.com with HTTP; Mon, 15 Feb 2021 15:49:01 +0000
+Date:   Mon, 15 Feb 2021 15:48:57 +0000 (UTC)
+From:   "Mrs. Maureen Hinckley" <mau20@gbcon.in>
+Reply-To: maurhinck7@gmail.com
+Message-ID: <409229248.1491421.1613404137763@mail.yahoo.com>
+Subject: RE
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210215161627.63c3091c@nic.cz>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+References: <409229248.1491421.1613404137763.ref@mail.yahoo.com>
+X-Mailer: WebService/1.1.17712 YMailNodin Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 15, 2021 at 04:16:27PM +0100, Marek Behun wrote:
-> On Mon, 15 Feb 2021 14:57:57 +0000
-> Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
-> 
-> > On Mon, Feb 15, 2021 at 02:47:56PM +0100, Marek Behun wrote:
-> > > On Mon, 15 Feb 2021 06:15:59 +0000
-> > > Nathan Rossi <nathan@nathanrossi.com> wrote:
-> > >   
-> > > > diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-> > > > index 54aa942eed..5c52906b29 100644
-> > > > --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> > > > +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> > > > @@ -650,6 +650,13 @@ static void mv88e6xxx_validate(struct dsa_switch *ds, int port,
-> > > >  	if (chip->info->ops->phylink_validate)
-> > > >  		chip->info->ops->phylink_validate(chip, port, mask, state);
-> > > >  
-> > > > +	/* Advertise 2500BASEX only if 1000BASEX is not configured, this
-> > > > +	 * prevents phylink_helper_basex_speed from always overriding the
-> > > > +	 * 1000BASEX mode since auto negotiation is always enabled.
-> > > > +	 */
-> > > > +	if (state->interface == PHY_INTERFACE_MODE_1000BASEX)
-> > > > +		phylink_clear(mask, 2500baseX_Full);
-> > > > +  
-> > > 
-> > > I don't quite like this. This problem should be either solved in
-> > > phylink_helper_basex_speed() or somewhere in the mv88e6xxx code, but near
-> > > the call to phylink_helper_basex_speed().
-> > > 
-> > > Putting a solution to the behaviour of phylink_helper_basex_speed() it
-> > > into the validate() method when phylink_helper_basex_speed() is called
-> > > from a different place will complicate debugging in the future. If
-> > > we start solving problems in this kind of way, the driver will become
-> > > totally unreadable, IMO.  
-> > 
-> > If we can't switch between 1000base-X and 2500base-X, then we should
-> > not be calling phylink_helper_basex_speed() - and only one of those
-> > two capabilities should be set in the validation callback. I thought
-> > there were DSA switches where we could program the CMODE to switch
-> > between these two...
-> 
-> There are. At least Peridot, Topaz and Amethyst support switching
-> between these modes. But only on some ports.
-> 
-> This problem happnes on Peridot X, I think.
-> 
-> On Peridot X there are
-> - port 0: RGMII
-> - ports 9-10: capable of 1, 2.5 and 10G SerDes (10G via
->   XAUI/RXAUI, so multiple lanes)
-> - ports 1-8: with copper PHYs
->   - some of these can instead be set to use the unused SerDes lanes
->     of ports 9-10, but only in 1000base-x mode
-> 
-> So the problem can happen if you set port 9 or 10 to only use one
-> SerDes lane, and use the spare lanes for the 1G ports.
-> On these ports 2500base-x is not supported, only 1000base-x (maybe
-> sgmii, I don't remember)
 
-It sounds like the modes are not reporting correctly then before calling
-phylink_helper_basex_speed(). If the port can only be used at 1000base-X,
-then it should not be allowing 2500base-X to be set prior to calling
-phylink_helper_basex_speed().
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+I am Maureen Hinckley and my foundation is donating (Five hundred and fifty=
+ thousand USD) to you. Contact us via my email at (maurhinck7@gmail.com) fo=
+r further details.
+
+Best Regards,
+Mrs. Maureen Hinckley,
+Copyright =C2=A92021 The Maureen Hinckley Foundation All Rights Reserved.
