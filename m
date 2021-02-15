@@ -2,153 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A56031BE39
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 17:07:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD47131BE38
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 17:07:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232793AbhBOQDe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 11:03:34 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:59555 "EHLO
+        id S232754AbhBOQDP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 11:03:15 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:30890 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231406AbhBOPyu (ORCPT
+        by vger.kernel.org with ESMTP id S231640AbhBOPyu (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 10:54:50 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613404367;
+        s=mimecast20190719; t=1613404377;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=UyMFozp+kU3xyoeKS9rZ5GnNoJk4MSzx2Be/eDvc9JQ=;
-        b=Fb8v7HehjTFg3Il3lAPQ0wWiaQJcz+wk29olHcdlikdPkmW4f4CblfA2B5hVIxHsofDjvl
-        XN9Yqn5cie2hjK9br8kP/cVwd2I9KH/uSCoQYdxZwuD8PZK1lZz5PAxZwycQPetdQ7Sboq
-        E2nSbA1q8EeQ0UMtayu7xBycwPvoYho=
+        bh=aJAxoSUC/0di+CQyIl6PRS6rliNMbg9ve438T46WyzU=;
+        b=EpOj2N/XUykHTlJWXQW9zGWlTwTunqdeXdaL69XeWF2MNv85MrCVMUWo1yHIRK83OJMmoS
+        xfLAJn25RxHz+NY+Vwf0asddbIjeTh9BipkTFHaGDlyDjjUujBgQDJ0FIpfOYLDFjEleFS
+        CDBzjWIrArw9cdbZsjDzqR65+QOJhRo=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-552-nze8doPOPUOXtwiY8vmz1Q-1; Mon, 15 Feb 2021 10:52:45 -0500
-X-MC-Unique: nze8doPOPUOXtwiY8vmz1Q-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+ us-mta-392-Xn-2oxy2MO6AXcxNUm-reA-1; Mon, 15 Feb 2021 10:52:53 -0500
+X-MC-Unique: Xn-2oxy2MO6AXcxNUm-reA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 33ADB192CC4D;
-        Mon, 15 Feb 2021 15:52:44 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2AFA11005501;
+        Mon, 15 Feb 2021 15:52:52 +0000 (UTC)
 Received: from firesoul.localdomain (unknown [10.40.208.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BA56360C0F;
-        Mon, 15 Feb 2021 15:52:43 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C45F15B697;
+        Mon, 15 Feb 2021 15:52:48 +0000 (UTC)
 Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id C91AE30736C74;
-        Mon, 15 Feb 2021 16:52:42 +0100 (CET)
-Subject: [PATCH bpf-next V1 1/2] bpf: BPF-helper for MTU checking add length
- input
+        by firesoul.localdomain (Postfix) with ESMTP id D927430736C73;
+        Mon, 15 Feb 2021 16:52:47 +0100 (CET)
+Subject: [PATCH bpf-next V1 2/2] selftests/bpf: Tests using bpf_check_mtu
+ BPF-helper input mtu_len param
 From:   Jesper Dangaard Brouer <brouer@redhat.com>
 To:     bpf@vger.kernel.org
 Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
         Daniel Borkmann <borkmann@iogearbox.net>,
         Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 15 Feb 2021 16:52:42 +0100
-Message-ID: <161340436275.1234345.10317671988851040002.stgit@firesoul>
+Date:   Mon, 15 Feb 2021 16:52:47 +0100
+Message-ID: <161340436783.1234345.9794055968782640674.stgit@firesoul>
 In-Reply-To: <161340431558.1234345.9778968378565582031.stgit@firesoul>
 References: <161340431558.1234345.9778968378565582031.stgit@firesoul>
 User-Agent: StGit/0.19
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The FIB lookup example[1] show how the IP-header field tot_len
-(iph->tot_len) is used as input to perform the MTU check.
+Add tests that use mtu_len as input parameter in BPF-helper
+bpf_check_mtu().
 
-This patch extend the BPF-helper bpf_check_mtu() with the same ability
-to provide the length as user parameter input, via mtu_len parameter.
-
-[1] samples/bpf/xdp_fwd_kern.c
+The BPF-helper is avail from both XDP and TC context. Add two tests
+per context, one that tests below MTU and one that exceeds the MTU.
 
 Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 ---
- include/uapi/linux/bpf.h |   17 +++++++++++------
- net/core/filter.c        |   12 ++++++++++--
- 2 files changed, 21 insertions(+), 8 deletions(-)
+ tools/testing/selftests/bpf/prog_tests/check_mtu.c |    4 +
+ tools/testing/selftests/bpf/progs/test_check_mtu.c |   92 ++++++++++++++++++++
+ 2 files changed, 96 insertions(+)
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 4c24daa43bac..9c8aa50dc8a5 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -3850,8 +3850,7 @@ union bpf_attr {
-  *
-  * long bpf_check_mtu(void *ctx, u32 ifindex, u32 *mtu_len, s32 len_diff, u64 flags)
-  *	Description
--
-- *		Check ctx packet size against exceeding MTU of net device (based
-+ *		Check packet size against exceeding MTU of net device (based
-  *		on *ifindex*).  This helper will likely be used in combination
-  *		with helpers that adjust/change the packet size.
-  *
-@@ -3868,6 +3867,14 @@ union bpf_attr {
-  *		against the current net device.  This is practical if this isn't
-  *		used prior to redirect.
-  *
-+ *		On input *mtu_len* must be a valid pointer, else verifier will
-+ *		reject BPF program.  If the value *mtu_len* is initialized to
-+ *		zero then the ctx packet size is use.  When value *mtu_len* is
-+ *		provided as input this specify the L3 length that the MTU check
-+ *		is done against. Remeber XDP and TC length operate at L2, but
-+ *		this value is L3 as this correlate to MTU and IP-header tot_len
-+ *		values which are L3 (similar behavior as bpf_fib_lookup).
-+ *
-  *		The Linux kernel route table can configure MTUs on a more
-  *		specific per route level, which is not provided by this helper.
-  *		For route level MTU checks use the **bpf_fib_lookup**\ ()
-@@ -3892,11 +3899,9 @@ union bpf_attr {
-  *
-  *		On return *mtu_len* pointer contains the MTU value of the net
-  *		device.  Remember the net device configured MTU is the L3 size,
-- *		which is returned here and XDP and TX length operate at L2.
-+ *		which is returned here and XDP and TC length operate at L2.
-  *		Helper take this into account for you, but remember when using
-- *		MTU value in your BPF-code.  On input *mtu_len* must be a valid
-- *		pointer and be initialized (to zero), else verifier will reject
-- *		BPF program.
-+ *		MTU value in your BPF-code.
-  *
-  *	Return
-  *		* 0 on success, and populate MTU value in *mtu_len* pointer.
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 7059cf604d94..fcc3bda85960 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -5660,7 +5660,7 @@ BPF_CALL_5(bpf_skb_check_mtu, struct sk_buff *, skb,
- 	if (unlikely(flags & ~(BPF_MTU_CHK_SEGS)))
- 		return -EINVAL;
+diff --git a/tools/testing/selftests/bpf/prog_tests/check_mtu.c b/tools/testing/selftests/bpf/prog_tests/check_mtu.c
+index 36af1c138faf..b62a39315336 100644
+--- a/tools/testing/selftests/bpf/prog_tests/check_mtu.c
++++ b/tools/testing/selftests/bpf/prog_tests/check_mtu.c
+@@ -128,6 +128,8 @@ static void test_check_mtu_xdp(__u32 mtu, __u32 ifindex)
+ 	test_check_mtu_run_xdp(skel, skel->progs.xdp_use_helper, mtu);
+ 	test_check_mtu_run_xdp(skel, skel->progs.xdp_exceed_mtu, mtu);
+ 	test_check_mtu_run_xdp(skel, skel->progs.xdp_minus_delta, mtu);
++	test_check_mtu_run_xdp(skel, skel->progs.xdp_input_len, mtu);
++	test_check_mtu_run_xdp(skel, skel->progs.xdp_input_len_exceed, mtu);
  
--	if (unlikely(flags & BPF_MTU_CHK_SEGS && len_diff))
-+	if (unlikely(flags & BPF_MTU_CHK_SEGS && (len_diff || *mtu_len)))
- 		return -EINVAL;
+ cleanup:
+ 	test_check_mtu__destroy(skel);
+@@ -187,6 +189,8 @@ static void test_check_mtu_tc(__u32 mtu, __u32 ifindex)
+ 	test_check_mtu_run_tc(skel, skel->progs.tc_exceed_mtu, mtu);
+ 	test_check_mtu_run_tc(skel, skel->progs.tc_exceed_mtu_da, mtu);
+ 	test_check_mtu_run_tc(skel, skel->progs.tc_minus_delta, mtu);
++	test_check_mtu_run_tc(skel, skel->progs.tc_input_len, mtu);
++	test_check_mtu_run_tc(skel, skel->progs.tc_input_len_exceed, mtu);
+ cleanup:
+ 	test_check_mtu__destroy(skel);
+ }
+diff --git a/tools/testing/selftests/bpf/progs/test_check_mtu.c b/tools/testing/selftests/bpf/progs/test_check_mtu.c
+index b7787b43f9db..c4a9bae96e75 100644
+--- a/tools/testing/selftests/bpf/progs/test_check_mtu.c
++++ b/tools/testing/selftests/bpf/progs/test_check_mtu.c
+@@ -105,6 +105,54 @@ int xdp_minus_delta(struct xdp_md *ctx)
+ 	return retval;
+ }
  
- 	dev = __dev_via_ifindex(dev, ifindex);
-@@ -5670,7 +5670,11 @@ BPF_CALL_5(bpf_skb_check_mtu, struct sk_buff *, skb,
- 	mtu = READ_ONCE(dev->mtu);
- 
- 	dev_len = mtu + dev->hard_header_len;
--	skb_len = skb->len + len_diff; /* minus result pass check */
++SEC("xdp")
++int xdp_input_len(struct xdp_md *ctx)
++{
++	int retval = XDP_PASS; /* Expected retval on successful test */
++	void *data_end = (void *)(long)ctx->data_end;
++	void *data = (void *)(long)ctx->data;
++	__u32 ifindex = GLOBAL_USER_IFINDEX;
++	__u32 data_len = data_end - data;
 +
-+	/* If set use *mtu_len as input, L3 as iph->tot_len (like fib_lookup) */
-+	skb_len = *mtu_len ? *mtu_len + dev->hard_header_len : skb->len;
++	/* API allow user give length to check as input via mtu_len param,
++	 * resulting MTU value is still output in mtu_len param after call.
++	 *
++	 * Input len is L3, like MTU and iph->tot_len.
++	 * Remember XDP data_len is L2.
++	 */
++	__u32 mtu_len = data_len - ETH_HLEN;
 +
-+	skb_len += len_diff; /* minus result pass check */
- 	if (skb_len <= dev_len) {
- 		ret = BPF_MTU_CHK_RET_SUCCESS;
- 		goto out;
-@@ -5715,6 +5719,10 @@ BPF_CALL_5(bpf_xdp_check_mtu, struct xdp_buff *, xdp,
- 	/* Add L2-header as dev MTU is L3 size */
- 	dev_len = mtu + dev->hard_header_len;
- 
-+	/* Use *mtu_len as input, L3 as iph->tot_len (like fib_lookup) */
-+	if (*mtu_len)
-+		xdp_len = *mtu_len + dev->hard_header_len;
++	if (bpf_check_mtu(ctx, ifindex, &mtu_len, 0, 0))
++		retval = XDP_ABORTED;
 +
- 	xdp_len += len_diff; /* minus result pass check */
- 	if (xdp_len > dev_len)
- 		ret = BPF_MTU_CHK_RET_FRAG_NEEDED;
++	global_bpf_mtu_xdp = mtu_len;
++	return retval;
++}
++
++SEC("xdp")
++int xdp_input_len_exceed(struct xdp_md *ctx)
++{
++	int retval = XDP_ABORTED; /* Fail */
++	__u32 ifindex = GLOBAL_USER_IFINDEX;
++	int err;
++
++	/* API allow user give length to check as input via mtu_len param,
++	 * resulting MTU value is still output in mtu_len param after call.
++	 *
++	 * Input length value is L3 size like MTU.
++	 */
++	__u32 mtu_len = GLOBAL_USER_MTU;
++
++	mtu_len += 1; /* Exceed with 1 */
++
++	err = bpf_check_mtu(ctx, ifindex, &mtu_len, 0, 0);
++	if (err == BPF_MTU_CHK_RET_FRAG_NEEDED)
++		retval = XDP_PASS ; /* Success in exceeding MTU check */
++
++	global_bpf_mtu_xdp = mtu_len;
++	return retval;
++}
++
+ SEC("classifier")
+ int tc_use_helper(struct __sk_buff *ctx)
+ {
+@@ -196,3 +244,47 @@ int tc_minus_delta(struct __sk_buff *ctx)
+ 	global_bpf_mtu_xdp = mtu_len;
+ 	return retval;
+ }
++
++SEC("classifier")
++int tc_input_len(struct __sk_buff *ctx)
++{
++	int retval = BPF_OK; /* Expected retval on successful test */
++	__u32 ifindex = GLOBAL_USER_IFINDEX;
++
++	/* API allow user give length to check as input via mtu_len param,
++	 * resulting MTU value is still output in mtu_len param after call.
++	 *
++	 * Input length value is L3 size.
++	 */
++	__u32 mtu_len = GLOBAL_USER_MTU;
++
++	if (bpf_check_mtu(ctx, ifindex, &mtu_len, 0, 0))
++		retval = BPF_DROP;
++
++	global_bpf_mtu_xdp = mtu_len;
++	return retval;
++}
++
++SEC("classifier")
++int tc_input_len_exceed(struct __sk_buff *ctx)
++{
++	int retval = BPF_DROP; /* Fail */
++	__u32 ifindex = GLOBAL_USER_IFINDEX;
++	int err;
++
++	/* API allow user give length to check as input via mtu_len param,
++	 * resulting MTU value is still output in mtu_len param after call.
++	 *
++	 * Input length value is L3 size like MTU.
++	 */
++	__u32 mtu_len = GLOBAL_USER_MTU;
++
++	mtu_len += 1; /* Exceed with 1 */
++
++	err = bpf_check_mtu(ctx, ifindex, &mtu_len, 0, 0);
++	if (err == BPF_MTU_CHK_RET_FRAG_NEEDED)
++		retval = BPF_OK; /* Success in exceeding MTU check */
++
++	global_bpf_mtu_xdp = mtu_len;
++	return retval;
++}
 
 
