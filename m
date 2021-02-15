@@ -2,152 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DDD9C31C25B
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 20:20:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CB3231C261
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 20:21:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230182AbhBOTSu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 14:18:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59320 "EHLO
+        id S230376AbhBOTVK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 14:21:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229764AbhBOTSn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 14:18:43 -0500
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F44EC061574;
-        Mon, 15 Feb 2021 11:18:03 -0800 (PST)
-Received: by mail-qk1-x730.google.com with SMTP id 81so7370708qkf.4;
-        Mon, 15 Feb 2021 11:18:03 -0800 (PST)
+        with ESMTP id S230106AbhBOTVE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 14:21:04 -0500
+Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 888A3C061574;
+        Mon, 15 Feb 2021 11:20:23 -0800 (PST)
+Received: by mail-il1-x12e.google.com with SMTP id q9so6396199ilo.1;
+        Mon, 15 Feb 2021 11:20:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VGma3cguk2dBfaMy3vFuZ0Dx/qhsJ60el9vSPNdGNtM=;
-        b=uSAQVPHZB3PCLiIBnJrA6dWjhv+H3Z5CEG4iRCV6UbvEyHeG26LjhrsT8oIXVlL7+7
-         i20bH8ZoKs6iqeIov809LoLY6XbfkWCwRGtpFRCF/LZXd9uMZkhTg4nb6KxI2XY/wdgO
-         Dl0nSfWlyH0lshwpo1MA24GBrzonxdamUvb9RKSWjFXNoubzoebTChgqW6OUeWP8NJgB
-         ig1YT61qNC4PkKfsqzU0/S3GFk7ObDjGsEWf/fdZ9GP1nSnrJzA596t0OLQQivuob8m6
-         VwMUs2NP3ck3KpQokIHBK6viPFSQQQrCXuHCObJsiMHPN6Gr3AsAgvPuTxou3CWhP+LK
-         XVmg==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=QAju3LaJKwujWvlvDk+izIeIsqjA8sdwLDYNVniZBDo=;
+        b=NhnIOjrqGJWU5I8jYG5SzfqH3oVNlXY1QLGAiJm0z7+cevaJRJIvBlaDRDD0IwWw9W
+         gyJg2W/DcYVzANsaDVq99dSxXffPoN3k8xfb6MPwPuP9XxuqLLINkF+xsKUa5CGXrTyN
+         PnNiIIZyhdDgFwfv1wFo+XPvChLKDznbRbPLQXgm8xHaKGtSwoGZl7JL3sEum1mF9vhq
+         +hOjtCSilN+4Tcf3vnDu8zyu2rG+JZZebqQQz0RG+gKVypNHoqy9GcYRugnz3xCZuFjK
+         oAK+Ka2UMLuiswn6EhkfdKaY7ZZgYmjoUCBfcACO6FlhcXM9+gVnbqCRGVsFGQrbPNKl
+         6Myg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VGma3cguk2dBfaMy3vFuZ0Dx/qhsJ60el9vSPNdGNtM=;
-        b=R7Z1NHGXB5Cfl1Nj87d2WtMMQkX13UNvyig/wVJab9ErFgXLTTPcV0sYvqB/bGPmFe
-         csnTrer3exuScZOlO1r4gMbjqQclnMTd6warP8kzvdzeJiJxx/hdSJuaa3Gu+NM/gSzX
-         rJnKY23Cn7SSqWrIpuAC1ZuljAJumsrvQTH7DR1Sc8ZKbTwEHXCDoBSJfmOWActj62yT
-         Uj6jHI49BDNYiTvJ3hFbTUQh+zZk6ke/aM7B/HcbLc5VCWh6WJTxdhtyv/itd4KKi1d2
-         nn2+0SGjWyMKSyv+g+4Bbq8GWAcMRGYBYAOhsD20g1kzzY9b1PS2CdSlRykL2gL4f/Vt
-         6Oog==
-X-Gm-Message-State: AOAM533cMOJgifOFh2vEFRUkPDkc8luKPoNvY4ELkpH2wy1j0l9Bvuxl
-        AFSx35QFRvaa/Umq3XTGcYc=
-X-Google-Smtp-Source: ABdhPJyoMbW/WlsIJV8Mbzwk5xiQIVh1zOiC+waNTNSZLh/Rb1XNgHzhDy4vTOjp/J69zT2dQo5qjw==
-X-Received: by 2002:a37:6f06:: with SMTP id k6mr16420513qkc.458.1613416682305;
-        Mon, 15 Feb 2021 11:18:02 -0800 (PST)
-Received: from tong-desktop.local ([2601:5c0:c200:27c6:48a6:eef1:8ac9:fd76])
-        by smtp.googlemail.com with ESMTPSA id d14sm11986642qtc.25.2021.02.15.11.18.01
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=QAju3LaJKwujWvlvDk+izIeIsqjA8sdwLDYNVniZBDo=;
+        b=BIzRpNo321uJZi3jCUmB85irF9Wjs5OZ7JBZmlIG4sPimo1f+ByphbA92MMVnEdoaY
+         4pgtWOQKPbgD5gfC9U9rjxh++SnCealljo+4cIl4PMiobT1NJtmbdwhUFVlF16PryGlq
+         nRbfseFa+XWGJrYwY6vUTU0KolLRl33oy/0xFXpSxGBOgLelKlRAaqQ2ku6ebKfGPEW0
+         VLi20ooYHKC1+kbKAze5tfa90mb+P3ozk5fCKKv+at1VbGFqu9td1cwJIK9ZWNICRPz1
+         QPXkRbDcdrukq5E1eOzkGjZeDwTMOz257Sd9bXJAc+3mtsUhoz5ELp04RcQISD8gHRVC
+         Bhbw==
+X-Gm-Message-State: AOAM5304fizYpv/CCzuVtkpXamCX/LD/m0MmsQweYygjD+K+x9pplVx9
+        2ax1+JIBPNPAT4x3PPaNxj0cSMqBmvI=
+X-Google-Smtp-Source: ABdhPJzWnjhQ04A6r9rc+DWe/515EIfIt2vKCefm3P5wNmkSOnzucb6ByezXd2eWvqp2yyTXw06+Tw==
+X-Received: by 2002:a05:6e02:154d:: with SMTP id j13mr14312381ilu.153.1613416823082;
+        Mon, 15 Feb 2021 11:20:23 -0800 (PST)
+Received: from localhost ([172.243.146.206])
+        by smtp.gmail.com with ESMTPSA id w3sm9452247ill.80.2021.02.15.11.20.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Feb 2021 11:18:02 -0800 (PST)
-From:   Tong Zhang <ztong0001@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tong Zhang <ztong0001@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: wan/lmc: unregister device when no matching device is found
-Date:   Mon, 15 Feb 2021 14:17:56 -0500
-Message-Id: <20210215191757.2667925-1-ztong0001@gmail.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 15 Feb 2021 11:20:22 -0800 (PST)
+Date:   Mon, 15 Feb 2021 11:20:15 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
+        wangdongdong.6@bytedance.com, jiang.wang@bytedance.com,
+        Cong Wang <cong.wang@bytedance.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Message-ID: <602ac96f9e30f_3ed41208b6@john-XPS-13-9370.notmuch>
+In-Reply-To: <20210213214421.226357-5-xiyou.wangcong@gmail.com>
+References: <20210213214421.226357-1-xiyou.wangcong@gmail.com>
+ <20210213214421.226357-5-xiyou.wangcong@gmail.com>
+Subject: RE: [Patch bpf-next v3 4/5] skmsg: use skb ext instead of TCP_SKB_CB
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-lmc set sc->lmc_media pointer when there is a matching device.
-However, when no matching device is found, this pointer is NULL
-and the following dereference will result in a null-ptr-deref.
+Cong Wang wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
+> 
+> Currently TCP_SKB_CB() is hard-coded in skmsg code, it certainly
+> does not work for any other non-TCP protocols. We can move them to
+> skb ext instead of playing with skb cb, which is harder to make
+> correct.
+> 
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> Reviewed-by: Lorenz Bauer <lmb@cloudflare.com>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> ---
 
-To fix this issue, unregister the hdlc device and return an error.
+I'm not seeing the advantage of doing this at the moment. We can
+continue to use cb[] here, which is simpler IMO and use the ext
+if needed for the other use cases. This is adding a per packet
+alloc cost that we don't have at the moment as I understand it.
 
-[    4.569359] BUG: KASAN: null-ptr-deref in lmc_init_one.cold+0x2b6/0x55d [lmc]
-[    4.569748] Read of size 8 at addr 0000000000000008 by task modprobe/95
-[    4.570102]
-[    4.570187] CPU: 0 PID: 95 Comm: modprobe Not tainted 5.11.0-rc7 #94
-[    4.570527] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-48-gd9c812dda519-preb4
-[    4.571125] Call Trace:
-[    4.571261]  dump_stack+0x7d/0xa3
-[    4.571445]  kasan_report.cold+0x10c/0x10e
-[    4.571667]  ? lmc_init_one.cold+0x2b6/0x55d [lmc]
-[    4.571932]  lmc_init_one.cold+0x2b6/0x55d [lmc]
-[    4.572186]  ? lmc_mii_readreg+0xa0/0xa0 [lmc]
-[    4.572432]  local_pci_probe+0x6f/0xb0
-[    4.572639]  pci_device_probe+0x171/0x240
-[    4.572857]  ? pci_device_remove+0xe0/0xe0
-[    4.573080]  ? kernfs_create_link+0xb6/0x110
-[    4.573315]  ? sysfs_do_create_link_sd.isra.0+0x76/0xe0
-[    4.573598]  really_probe+0x161/0x420
-[    4.573799]  driver_probe_device+0x6d/0xd0
-[    4.574022]  device_driver_attach+0x82/0x90
-[    4.574249]  ? device_driver_attach+0x90/0x90
-[    4.574485]  __driver_attach+0x60/0x100
-[    4.574694]  ? device_driver_attach+0x90/0x90
-[    4.574931]  bus_for_each_dev+0xe1/0x140
-[    4.575146]  ? subsys_dev_iter_exit+0x10/0x10
-[    4.575387]  ? klist_node_init+0x61/0x80
-[    4.575602]  bus_add_driver+0x254/0x2a0
-[    4.575812]  driver_register+0xd3/0x150
-[    4.576021]  ? 0xffffffffc0018000
-[    4.576202]  do_one_initcall+0x84/0x250
-[    4.576411]  ? trace_event_raw_event_initcall_finish+0x150/0x150
-[    4.576733]  ? unpoison_range+0xf/0x30
-[    4.576938]  ? ____kasan_kmalloc.constprop.0+0x84/0xa0
-[    4.577219]  ? unpoison_range+0xf/0x30
-[    4.577423]  ? unpoison_range+0xf/0x30
-[    4.577628]  do_init_module+0xf8/0x350
-[    4.577833]  load_module+0x3fe6/0x4340
-[    4.578038]  ? vm_unmap_ram+0x1d0/0x1d0
-[    4.578247]  ? ____kasan_kmalloc.constprop.0+0x84/0xa0
-[    4.578526]  ? module_frob_arch_sections+0x20/0x20
-[    4.578787]  ? __do_sys_finit_module+0x108/0x170
-[    4.579037]  __do_sys_finit_module+0x108/0x170
-[    4.579278]  ? __ia32_sys_init_module+0x40/0x40
-[    4.579523]  ? file_open_root+0x200/0x200
-[    4.579742]  ? do_sys_open+0x85/0xe0
-[    4.579938]  ? filp_open+0x50/0x50
-[    4.580125]  ? exit_to_user_mode_prepare+0xfc/0x130
-[    4.580390]  do_syscall_64+0x33/0x40
-[    4.580586]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[    4.580859] RIP: 0033:0x7f1a724c3cf7
-[    4.581054] Code: 48 89 57 30 48 8b 04 24 48 89 47 38 e9 1d a0 02 00 48 89 f8 48 89 f7 48 89 d6 48 891
-[    4.582043] RSP: 002b:00007fff44941c68 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
-[    4.582447] RAX: ffffffffffffffda RBX: 00000000012ada70 RCX: 00007f1a724c3cf7
-[    4.582827] RDX: 0000000000000000 RSI: 00000000012ac9e0 RDI: 0000000000000003
-[    4.583207] RBP: 0000000000000003 R08: 0000000000000000 R09: 0000000000000001
-[    4.583587] R10: 00007f1a72527300 R11: 0000000000000246 R12: 00000000012ac9e0
-[    4.583968] R13: 0000000000000000 R14: 00000000012acc90 R15: 0000000000000001
-[    4.584349] ==================================================================
+[...]
 
-Signed-off-by: Tong Zhang <ztong0001@gmail.com>
----
- drivers/net/wan/lmc/lmc_main.c | 2 ++
- 1 file changed, 2 insertions(+)
+> diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+> index e3bb712af257..d5c711ef6d4b 100644
+> --- a/include/linux/skmsg.h
+> +++ b/include/linux/skmsg.h
+> @@ -459,4 +459,44 @@ static inline bool sk_psock_strp_enabled(struct sk_psock *psock)
+>  		return false;
+>  	return !!psock->saved_data_ready;
+>  }
+> +
+> +struct skb_bpf_ext {
+> +	__u32 flags;
+> +	struct sock *sk_redir;
+> +};
+> +
+> +#if IS_ENABLED(CONFIG_NET_SOCK_MSG)
+> +static inline
+> +bool skb_bpf_ext_ingress(const struct sk_buff *skb)
+> +{
+> +	struct skb_bpf_ext *ext = skb_ext_find(skb, SKB_EXT_BPF);
+> +
+> +	return ext->flags & BPF_F_INGRESS;
+> +}
+> +
+> +static inline
+> +void skb_bpf_ext_set_ingress(const struct sk_buff *skb)
+> +{
+> +	struct skb_bpf_ext *ext = skb_ext_find(skb, SKB_EXT_BPF);
+> +
+> +	ext->flags |= BPF_F_INGRESS;
+> +}
+> +
+> +static inline
+> +struct sock *skb_bpf_ext_redirect_fetch(struct sk_buff *skb)
+> +{
+> +	struct skb_bpf_ext *ext = skb_ext_find(skb, SKB_EXT_BPF);
+> +
+> +	return ext->sk_redir;
+> +}
+> +
+> +static inline
+> +void skb_bpf_ext_redirect_clear(struct sk_buff *skb)
+> +{
+> +	struct skb_bpf_ext *ext = skb_ext_find(skb, SKB_EXT_BPF);
+> +
+> +	ext->flags = 0;
+> +	ext->sk_redir = NULL;
+> +}
+> +#endif /* CONFIG_NET_SOCK_MSG */
 
-diff --git a/drivers/net/wan/lmc/lmc_main.c b/drivers/net/wan/lmc/lmc_main.c
-index 93c7e8502845..ebb568f9bc66 100644
---- a/drivers/net/wan/lmc/lmc_main.c
-+++ b/drivers/net/wan/lmc/lmc_main.c
-@@ -899,6 +899,8 @@ static int lmc_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
-         break;
-     default:
- 	printk(KERN_WARNING "%s: LMC UNKNOWN CARD!\n", dev->name);
-+	unregister_hdlc_device(dev);
-+	return -EIO;
-         break;
-     }
- 
--- 
-2.25.1
+So we will have some slight duplication for cb[] variant and ext
+variant above. I'm OK with that to avoid an allocation.
 
+[...]
+
+> @@ -1003,11 +1008,17 @@ static int sk_psock_verdict_recv(read_descriptor_t *desc, struct sk_buff *skb,
+>  		goto out;
+>  	}
+>  	skb_set_owner_r(skb, sk);
+> +	if (!skb_ext_add(skb, SKB_EXT_BPF)) {
+> +		len = 0;
+> +		kfree_skb(skb);
+> +		goto out;
+> +	}
+> +
+
+per packet cost here. Perhaps you can argue small alloc will usually not be 
+noticable in such a large stack, but once we convert over it will be very
+hard to go back. And I'm looking at optimizing this path now.
+
+>  	prog = READ_ONCE(psock->progs.skb_verdict);
+>  	if (likely(prog)) {
+> -		tcp_skb_bpf_redirect_clear(skb);
+> +		skb_bpf_ext_redirect_clear(skb);
+>  		ret = sk_psock_bpf_run(psock, prog, skb);
+> -		ret = sk_psock_map_verd(ret, tcp_skb_bpf_redirect_fetch(skb));
+> +		ret = sk_psock_map_verd(ret, skb_bpf_ext_redirect_fetch(skb));
+>  	}
+>  	sk_psock_verdict_apply(psock, skb, ret);
+
+Thanks for the series Cong. Drop this patch and resubmit carry ACKs forward
+and then lets revisit this later.
+
+Thanks,
+John
