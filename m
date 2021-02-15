@@ -2,75 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6ECE931C434
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 00:11:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F328C31C44F
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 00:22:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229720AbhBOXKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 18:10:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57828 "EHLO mail.kernel.org"
+        id S230018AbhBOXVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 18:21:36 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33226 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229646AbhBOXKs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Feb 2021 18:10:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id A17E964DF0;
-        Mon, 15 Feb 2021 23:10:07 +0000 (UTC)
+        id S229930AbhBOXUs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Feb 2021 18:20:48 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id A673E64DF4;
+        Mon, 15 Feb 2021 23:20:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613430607;
-        bh=Cb4cKOI0sapXrrl14zPFqj5ElqW4HGuxtbxed4hTgpo=;
+        s=k20201202; t=1613431207;
+        bh=x7bGegF9+wSasEWd2L4AivrcElOEby6/T/Fzat9KdCY=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=LwKAukORbwsDhlRDbFbwLuae9bpidylacR+WrCTVyBrqj5apizuoeb2dThJjLcCap
-         eXjgDl5rr1wdukW2zEhHoAgJh9yt5/QKL4Heibi0zNYiYy/gGgXzJRBN4WCnpDWpsV
-         wh3A/tO1gclISwLoVF9nt/XDh34bNvHzcttoAaJ0Y82k58atmKqTSFhKSsAj9BLFAm
-         6MIA+Z7YRGNZS5vpb+MTbzkXPo61jQKI/XA6q/O84NhHTw2wgKyBKQgHqrZgYHPkXo
-         01pp7oew6up8eJ7bkynkDCdaOLz6QBanXllK1QI/Nx72F1lz4Pe+GYI+MeDG2jzuLu
-         Qs+a5iVzRMGWg==
+        b=G2oC2kDr3XrJaD/kiJmyZvYCkCVfHHzXGCM27DLWRhaCzeHHebCb+2fxwmuyWFY4d
+         2EQTNAQ0mZjARp4cJzwO8kciCPW27jCiXQuZBjoLzsTNFsTO733gZxoblnGQAspF4r
+         FWJVzsg+ETT3qBRWcOyIJ/t+kbTTGYeHxu/kVdF31IjqQ/bp5Ftd47dm7+65yOUIZ9
+         JkTdpt6+OitY62PUELMspRkG655bh2SBHV9QcE3/wZBYbl7pwKvjKJ6bAKoN//j1Sg
+         RXxketlDUe8p468tmRbP7v4S81LiCt15GXAaTK7zOSl33KD0jJJ2gGUncPuI1MDPLR
+         b2uYidfUdOIaA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8ED41609D9;
-        Mon, 15 Feb 2021 23:10:07 +0000 (UTC)
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 95BE6609D9;
+        Mon, 15 Feb 2021 23:20:07 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v4 0/4] net: stmmac: Add Toshiba Visconti SoCs glue driver
+Subject: Re: [PATCH net] ibmvnic: add memory barrier to protect long term buffer
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161343060758.5525.7785837246002682841.git-patchwork-notify@kernel.org>
-Date:   Mon, 15 Feb 2021 23:10:07 +0000
-References: <20210215152438.4318-1-nobuhiro1.iwamatsu@toshiba.co.jp>
-In-Reply-To: <20210215152438.4318-1-nobuhiro1.iwamatsu@toshiba.co.jp>
-To:     Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        peppe.cavallaro@st.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, leon@kernel.org, arnd@kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        punit1.agrawal@toshiba.co.jp, yuji2.ishikawa@toshiba.co.jp,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Message-Id: <161343120760.10830.18267099576537035370.git-patchwork-notify@kernel.org>
+Date:   Mon, 15 Feb 2021 23:20:07 +0000
+References: <20210213024840.56036-1-ljp@linux.ibm.com>
+In-Reply-To: <20210213024840.56036-1-ljp@linux.ibm.com>
+To:     Lijun Pan <ljp@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, sukadev@linux.ibm.com, drt@linux.ibm.com,
+        tlfalcon@linux.ibm.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net.git (refs/heads/master):
 
-On Tue, 16 Feb 2021 00:24:34 +0900 you wrote:
-> Hi,
+On Fri, 12 Feb 2021 20:48:40 -0600 you wrote:
+> dma_rmb() barrier is added to load the long term buffer before copying
+> it to socket buffer; and dma_wmb() barrier is added to update the
+> long term buffer before it being accessed by VIOS (virtual i/o server).
 > 
-> This series is the ethernet driver for Toshiba's ARM SoC, Visconti[0].
-> This provides DT binding documentation, device driver, MAINTAINER files,
-> and updates to DT files.
-> 
-> Best regards,
->   Nobuhiro
+> Fixes: 032c5e82847a ("Driver for IBM System i/p VNIC protocol")
+> Signed-off-by: Lijun Pan <ljp@linux.ibm.com>
+> Acked-by: Thomas Falcon <tlfalcon@linux.ibm.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [v4,1/4] dt-bindings: net: Add DT bindings for Toshiba Visconti TMPV7700 SoC
-    https://git.kernel.org/netdev/net-next/c/e6a395061c3e
-  - [v4,2/4] net: stmmac: Add Toshiba Visconti SoCs glue driver
-    https://git.kernel.org/netdev/net-next/c/b38dd98ff8d0
-  - [v4,3/4] MAINTAINERS: Add entries for Toshiba Visconti ethernet controller
-    https://git.kernel.org/netdev/net-next/c/df53e4f48e8d
-  - [v4,4/4] arm: dts: visconti: Add DT support for Toshiba Visconti5 ethernet controller
-    https://git.kernel.org/netdev/net-next/c/ec8a42e73432
+  - [net] ibmvnic: add memory barrier to protect long term buffer
+    https://git.kernel.org/netdev/net/c/42557dab78ed
 
 You are awesome, thank you!
 --
