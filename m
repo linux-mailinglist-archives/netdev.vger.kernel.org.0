@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCAAA31BC69
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 16:29:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EDD431BC6D
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 16:29:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230395AbhBOP2Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 10:28:16 -0500
-Received: from mo-csw1514.securemx.jp ([210.130.202.153]:41008 "EHLO
+        id S230417AbhBOP2n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 10:28:43 -0500
+Received: from mo-csw1515.securemx.jp ([210.130.202.154]:43192 "EHLO
         mo-csw.securemx.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230494AbhBOP1Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 10:27:16 -0500
-Received: by mo-csw.securemx.jp (mx-mo-csw1514) id 11FFOi05026353; Tue, 16 Feb 2021 00:24:44 +0900
-X-Iguazu-Qid: 34tMYNXf5ebGia1lCa
-X-Iguazu-QSIG: v=2; s=0; t=1613402684; q=34tMYNXf5ebGia1lCa; m=cj+MCU1y1W/fWNXIpwKsSHzvZL35tStosPJKR3uWZEE=
+        with ESMTP id S230495AbhBOP1U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 10:27:20 -0500
+Received: by mo-csw.securemx.jp (mx-mo-csw1515) id 11FFOi2P026098; Tue, 16 Feb 2021 00:24:45 +0900
+X-Iguazu-Qid: 34tMYNXf5ebGnGh0Og
+X-Iguazu-QSIG: v=2; s=0; t=1613402684; q=34tMYNXf5ebGnGh0Og; m=rwvk9f+KUNtSWomuuqw3K15Hy6LF9isDjGzPH4La0FE=
 Received: from imx2.toshiba.co.jp (imx2.toshiba.co.jp [106.186.93.51])
-        by relay.securemx.jp (mx-mr1512) id 11FFOgaS037437;
+        by relay.securemx.jp (mx-mr1511) id 11FFOhcT002978;
         Tue, 16 Feb 2021 00:24:43 +0900
 Received: from enc01.toshiba.co.jp ([106.186.93.100])
-        by imx2.toshiba.co.jp  with ESMTP id 11FFOgX0008332;
+        by imx2.toshiba.co.jp  with ESMTP id 11FFOgoe008338;
         Tue, 16 Feb 2021 00:24:42 +0900 (JST)
 Received: from hop001.toshiba.co.jp ([133.199.164.63])
-        by enc01.toshiba.co.jp  with ESMTP id 11FFOfSP017693;
+        by enc01.toshiba.co.jp  with ESMTP id 11FFOg6m017697;
         Tue, 16 Feb 2021 00:24:42 +0900
 From:   Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
 To:     "David S . Miller" <davem@davemloft.net>,
@@ -35,81 +35,119 @@ Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         yuji2.ishikawa@toshiba.co.jp, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org,
         Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Subject: [PATCH v4 0/4] net: stmmac: Add Toshiba Visconti SoCs glue driver
-Date:   Tue, 16 Feb 2021 00:24:34 +0900
+Subject: [PATCH v4 1/4] dt-bindings: net: Add DT bindings for Toshiba Visconti TMPV7700 SoC
+Date:   Tue, 16 Feb 2021 00:24:35 +0900
 X-TSB-HOP: ON
-Message-Id: <20210215152438.4318-1-nobuhiro1.iwamatsu@toshiba.co.jp>
+Message-Id: <20210215152438.4318-2-nobuhiro1.iwamatsu@toshiba.co.jp>
 X-Mailer: git-send-email 2.30.0.rc2
+In-Reply-To: <20210215152438.4318-1-nobuhiro1.iwamatsu@toshiba.co.jp>
+References: <20210215152438.4318-1-nobuhiro1.iwamatsu@toshiba.co.jp>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Add device tree bindings for ethernet controller of Toshiba Visconti
+TMPV7700 SoC series.
 
-This series is the ethernet driver for Toshiba's ARM SoC, Visconti[0].
-This provides DT binding documentation, device driver, MAINTAINER files,
-and updates to DT files.
-
-Best regards,
-  Nobuhiro
-
-[0]:
-https://toshiba.semicon-storage.com/ap-en/semiconductor/product/image-recognition-processors-visconti.htmli
-
-Updates:
-
-  dt-bindings: net: Add DT bindings for Toshiba Visconti TMPV7700 SoC
-    v3 -> v4: No update. Resend the correct patch series.
-    v2 -> v3: Change to the correct dwmac version.
-              Remove description of reg property.
-              Update examples, drop dma-coherent, add snps,tso, fix phy-mode.
-    v1 -> v2: No update.
-
-  net: stmmac: Add Toshiba Visconti SoCs glue driver
-    v3 -> v4: No update. Resend the correct patch series.
-                https://lore.kernel.org/netdev/20210215050655.2532-3-nobuhiro1.iwamatsu@toshiba.co.jp/
-                did not contain the following fixes:
-                  - Drop def_bool y in Kconfig
-                  - Change from bool to tristate in Kconfig option.
-                  - Add 'default ARCH_VISCONTI' to Kconfig option.
-                
-    v2 -> v3: Remove code that is no longer needed by using compatible string.
-              Drop def_bool y in Kconfig
-              Change from bool to tristate in Kconfig option.
-              Add 'default ARCH_VISCONTI' to Kconfig option.
-    v1 -> v2: Use reverse christmas tree ordering for local variable declarations.
-
-  MAINTAINERS: Add entries for Toshiba Visconti ethernet controller
-    v3 -> v4: No update. Resend the correct patch series.
-    v2 -> v3: No update.
-    v1 -> v2: No update.
-
-  arm: dts: visconti: Add DT support for Toshiba Visconti5 ethernet controller
-    v3 -> v4: No update
-    v2 -> v3: Add "snps,dwmac-4.20a" as compatible string.
-              Add snps,tso.
-    v1 -> v2: No update.
-
-Nobuhiro Iwamatsu (4):
-  dt-bindings: net: Add DT bindings for Toshiba Visconti TMPV7700 SoC
-  net: stmmac: Add Toshiba Visconti SoCs glue driver
-  MAINTAINERS: Add entries for Toshiba Visconti ethernet controller
-  arm: dts: visconti: Add DT support for Toshiba Visconti5 ethernet
-    controller
-
- .../bindings/net/toshiba,visconti-dwmac.yaml  |  85 ++++++
- MAINTAINERS                                   |   2 +
- .../boot/dts/toshiba/tmpv7708-rm-mbrc.dts     |  18 ++
- arch/arm64/boot/dts/toshiba/tmpv7708.dtsi     |  25 ++
- drivers/net/ethernet/stmicro/stmmac/Kconfig   |   8 +
- drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
- .../ethernet/stmicro/stmmac/dwmac-visconti.c  | 285 ++++++++++++++++++
- 7 files changed, 424 insertions(+)
+Signed-off-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+---
+ .../bindings/net/toshiba,visconti-dwmac.yaml  | 85 +++++++++++++++++++
+ 1 file changed, 85 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/net/toshiba,visconti-dwmac.yaml
- create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
 
+diff --git a/Documentation/devicetree/bindings/net/toshiba,visconti-dwmac.yaml b/Documentation/devicetree/bindings/net/toshiba,visconti-dwmac.yaml
+new file mode 100644
+index 000000000000..59724d18e6f3
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/toshiba,visconti-dwmac.yaml
+@@ -0,0 +1,85 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: "http://devicetree.org/schemas/net/toshiba,visconti-dwmac.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++
++title: Toshiba Visconti DWMAC Ethernet controller
++
++maintainers:
++  - Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
++
++select:
++  properties:
++    compatible:
++      contains:
++        enum:
++          - toshiba,visconti-dwmac
++  required:
++    - compatible
++
++allOf:
++  - $ref: "snps,dwmac.yaml#"
++
++properties:
++  compatible:
++    oneOf:
++      - items:
++          - enum:
++              - toshiba,visconti-dwmac
++          - const: snps,dwmac-4.20a
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    items:
++      - description: main clock
++      - description: PHY reference clock
++
++  clock-names:
++    items:
++      - const: stmmaceth
++      - const: phy_ref_clk
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - clock-names
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    soc {
++        #address-cells = <2>;
++        #size-cells = <2>;
++
++        piether: ethernet@28000000 {
++            compatible = "toshiba,visconti-dwmac", "snps,dwmac-4.20a";
++            reg = <0 0x28000000 0 0x10000>;
++            interrupts = <GIC_SPI 156 IRQ_TYPE_LEVEL_HIGH>;
++            interrupt-names = "macirq";
++            clocks = <&clk300mhz>, <&clk125mhz>;
++            clock-names = "stmmaceth", "phy_ref_clk";
++            snps,txpbl = <4>;
++            snps,rxpbl = <4>;
++            snps,tso;
++            phy-mode = "rgmii-id";
++            phy-handle = <&phy0>;
++
++            mdio0 {
++                #address-cells = <0x1>;
++                #size-cells = <0x0>;
++                compatible = "snps,dwmac-mdio";
++
++                phy0: ethernet-phy@1 {
++                    device_type = "ethernet-phy";
++                    reg = <0x1>;
++                };
++            };
++        };
++    };
 -- 
 2.30.0.rc2
 
