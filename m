@@ -2,166 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F58231B692
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 10:42:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3880831B731
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 11:33:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229960AbhBOJjr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 04:39:47 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:18082 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230089AbhBOJjk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 04:39:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1613381978; x=1644917978;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=F3+ZfG9KhNRKY8vPTGbZ0g6LGe6UFFNTfBH52yxXNiA=;
-  b=E6FaDOuKLu8lw/p5JyUfpSr/mD1IjghIPeTaOJ3FXRe/toY/g59SBHxi
-   kMIxSysaPy2wTgpuUmMAoYn4muUyugzAP6w32LjtPYhcqI2uSqea+ghkP
-   OdFbIqiJZYQirVUI6exub4bxCWJViFK+ahl0VKFydjMCHZMmA9uiBGTHg
-   HHP19Adp2QjyVt0gr3YYCmgIywsAOr/s5/4CrNV9e1RMwyQPL2OC/rtNh
-   zPu/PhBD5XwmTBPGvaZOeSOIg4e+l5sqnFvzmoDyqws3S9wr26Kxfudt5
-   MSdhZvhuPjBDWucusCDww3lc8oMf22kmHJE8Brya3rhno94pqvoiqjeNi
-   w==;
-IronPort-SDR: uUtsDyxurNS9ZVQ2DcI7A9kog2akk54fn2lUCEuvxJABvatE2ryYWsN5zOle0W4rxVRiNiPPsI
- ODZtYYl2KjTD6HUg9vJ3Ck61CYcJ2y7RmaZf+bgR3HfOEGpHT6l+07nc6zXwd3JpJgEQ/p0w7A
- ++mb1uzskP4mdQh+Tt88NF7+QAevNu0EyQe/a4bFS/y6Fgunv62S8t5nUHay/RKj1oq/EXWIOI
- 0GbECrDHc9eQqgKBHkx2EcJTMLRDsbcywoqh3XTRLG6xk2fjfSbkUkgA8S4Tp1bWYvZzbHhN+x
- Hsk=
-X-IronPort-AV: E=Sophos;i="5.81,180,1610434800"; 
-   d="scan'208";a="103764301"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Feb 2021 02:38:22 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 15 Feb 2021 02:38:22 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3
- via Frontend Transport; Mon, 15 Feb 2021 02:38:21 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NPa+lX+zGH2GBwwWxuxvAMzASEJw0V4B+pCCNQoPMkeyaCo+7suO0HmDuA5NaUw+b0bH4PhQrT7deXJlMCrDEmMnqfa5kPrvbmC/mWv9aV7QMcaberuMjpJXTmEJGF1CEhJp9VbT84t+GJrn8NIfWX24/6tVsZ0SdAHQdJxfFaZBk9d6ak8BptRjiDq326ZrEfJ2Bd3JCpS+/SLUHOHDp1FP1b6VGrBEJKXUy/o/jFv+iMZ5JrOJwXwUlaWn3GDLrQW3SYtHFvVlCLMZqhtBEisGgF4zr+UmR0d0Y15ZE+kiIuZeeJvaRq+GsjGfwenSQ4wIJ1j7pKCZIHZOk9TdzA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=F3+ZfG9KhNRKY8vPTGbZ0g6LGe6UFFNTfBH52yxXNiA=;
- b=PFtGQhYklBb7OVpmDd+l0037Ylmt+Zqlox/Awl/bQF0t2fFR+a95YO4GfnuAzRUv/pL4Js/1JQhQ5Eqp68S5HJjxWanGgM83mD+d9rs66H/pQq2mAEfU8+LKQBoqBcmSa2oIF/9Rf4TMDyqHHvU67ev+L5WGLK+fSmWKgR4LVJDi5U0et8OphVAomEm7wvuja50L97NdxYHXwmuyLb+hHVhF6LdljIrHKFvyLL33v0/4qm72Gsg594Nmzyh56Pm1LxyWBNGP79yYt52YBywfZq5/Z0AxvQZkdvKiaDcdry/Cx0SecdnMPAs2q7bW174+MNhi+XGtATn/Sck66UYvlw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+        id S230026AbhBOKdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 05:33:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59538 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229981AbhBOKdP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 05:33:15 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0CFBC061574
+        for <netdev@vger.kernel.org>; Mon, 15 Feb 2021 02:32:27 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id i20so5579913edv.2
+        for <netdev@vger.kernel.org>; Mon, 15 Feb 2021 02:32:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=F3+ZfG9KhNRKY8vPTGbZ0g6LGe6UFFNTfBH52yxXNiA=;
- b=DGtcgMdjAyZtkYaIZlBd32kUtOWN1+U6bf0Zn8PabyJupF8yYyNKpkX35O7spm0U2FmBaqRyiYQmW1G8rP+VU79w5ZZVckYkfKNsdqr3DXNvEQUakDxgKL5uQlIIWhyHvJiM4sldmldjo3XRLZFG8ngekaqRkhO6VFuTukvhXho=
-Received: from DM5PR1101MB2329.namprd11.prod.outlook.com (2603:10b6:3:9e::23)
- by DM6PR11MB4364.namprd11.prod.outlook.com (2603:10b6:5:201::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.38; Mon, 15 Feb
- 2021 09:38:20 +0000
-Received: from DM5PR1101MB2329.namprd11.prod.outlook.com
- ([fe80::e048:33b3:3453:5a9]) by DM5PR1101MB2329.namprd11.prod.outlook.com
- ([fe80::e048:33b3:3453:5a9%11]) with mapi id 15.20.3846.042; Mon, 15 Feb 2021
- 09:38:20 +0000
-From:   <Bjarni.Jonasson@microchip.com>
-To:     <kuba@kernel.org>
-CC:     <andrew@lunn.ch>, <linux-kernel@vger.kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <Steen.Hegelund@microchip.com>,
-        <linux@armlinux.org.uk>, <f.fainelli@gmail.com>,
-        <netdev@vger.kernel.org>, <vladimir.oltean@nxp.com>,
-        <davem@davemloft.net>, <hkallweit1@gmail.com>,
-        <atenart@kernel.org>, <ioana.ciornei@nxp.com>
-Subject: Re: [PATCH net v1 1/3] net: phy: mscc: adding LCPLL reset to VSC8514
-Thread-Topic: [PATCH net v1 1/3] net: phy: mscc: adding LCPLL reset to VSC8514
-Thread-Index: AQHXAUhdJHjYZpRQGkCBgBTJu+lKnapU3gSAgAQcAYA=
-Date:   Mon, 15 Feb 2021 09:38:20 +0000
-Message-ID: <f526323e0a15f2d5ade272a99a806e58a3571112.camel@microchip.com>
-References: <20210212140643.23436-1-bjarni.jonasson@microchip.com>
-         <20210212105303.5c653799@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210212105303.5c653799@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=microchip.com;
-x-originating-ip: [82.163.121.66]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 59255449-32b4-4452-cdd7-08d8d1956e9c
-x-ms-traffictypediagnostic: DM6PR11MB4364:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM6PR11MB4364410DBD3DD19B677F78E8E4889@DM6PR11MB4364.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1751;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: FngvKh+6TMWnJvbf9Kie5O6YeW4mnUMCAQQSHGgrS0WXv9sMVWybSI/JdfZOZnk2KDMGh7g+M56t5k4bn1MnmNSfiNJDdzHK9HaIVh4KBdBtEs5aZvf3QkyQ7Og5GtjgeXKBk6OJFaPm6+rskCQHk7gT6G/qYtoumsJbkZ2vtzUgZVh96jiW2ltGN665BIJW5JwDs1XsPuk8pbwd2wQw6yVFlv8iwYmUR75PW2NfHqFWtVnUfvwNmvwZs39CDeNpbaJsiJoyNSuA8vXZuAmCLEkHfk1mxVDy+esRwCiQxgAbHaMgDitJYTF61fDB04mX7juOOk2qnL8AyupPBbNNCNNt+AHsZ8qGaZqieFtTvjHc/X7m9WaM6PKKsFhYRQM2uUKgTpoHmAFOJxt/FAIFIvVCRi85TMiIkItazRkh7Z3SRDc+rU9E4dwINY6of+ClIGZibyCE8ZgF1vOdKRvZI9ZpzNa9Gz9CYCaQqVy+dc2icIIH7XDPr65MV5hRAA68syhyf6QLdhfLXDfr8qFmPHAyz2Zx6swTATCbjsdzcoTF9SZsAnaX+6NxJwCoiR8O
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR1101MB2329.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(136003)(346002)(396003)(376002)(366004)(2616005)(2906002)(316002)(7416002)(4744005)(5660300002)(54906003)(83380400001)(4326008)(6506007)(36756003)(8936002)(478600001)(8676002)(26005)(71200400001)(186003)(6486002)(66946007)(6916009)(76116006)(91956017)(6512007)(64756008)(66556008)(66476007)(66446008)(86362001)(99106002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?utf-8?B?OXNlU1ZjSGZiSFh4aGtiRlpHMzNvTUU4M3Z2TXkzZnljMEN4cmFReVMzUXlx?=
- =?utf-8?B?ZjNpNFplQlR2RkdZM2RXNWtoVS9GOVVWK2dGUVZnTW04aXZLMDF4dmpkUHhB?=
- =?utf-8?B?bFVFZXdzZXh2N1l4b1ZxcnhpNUZzR0FNTnBMeUJySnJFSk5SYXZkVUtaVzRo?=
- =?utf-8?B?eVpzSGVDT3ArVzE1MzhUTzNJSE4vUlRXeXZtZy9qeFFiWmNpWkgwOXg1TVJO?=
- =?utf-8?B?SW1wdGxzZHlyajZ5RGVVSU5Ha0I3OS9OZjRtNlkxZ25MamFkWFJWQ3dCR0JR?=
- =?utf-8?B?bW1wMFdlL3pOMHRMTGZvbXFCbE43REtQV1Y2VWVKMWNqWlpPQTZYandMU2hv?=
- =?utf-8?B?SW5PUVBOY1FOWS9wUEVibzd4TkgwOWJZTkJqTmxueklrQVZNSUlEcFk5Vkto?=
- =?utf-8?B?MmFkRlNqSTJ4NE1SM3RYQ0pCZU1WQ1Fub3JXNEJGVXdROUVXTFRJcGdMSTNP?=
- =?utf-8?B?TURPek1UeWRjTG1nRUw0VHYzVHY1aFZnQjl0NjhHdjdhZ1l1d1JoUXJHNDR0?=
- =?utf-8?B?eStmR2NYa2Y4c2Z0SDJSVzUxNFN6SGQrdmRtWHQ2MktSZ3RvWm9JaSs3QWRN?=
- =?utf-8?B?RktUR3NmR01mQklKNWV4REVraTVQSlB6RTRRZTV4TjR3Z0pnN00vK2FnbHhH?=
- =?utf-8?B?enhGd2U1RHJTRWxiOU8vRGtrWW5uWU5hQVl5NmhVMHBTNEdsdmc3bHlRUkJK?=
- =?utf-8?B?Q1dFb2lhTGJnSkZNMUc4WlBpa3pBa0dDT3dUOWF2MkpiNkRIbHlFakVMUlM4?=
- =?utf-8?B?VncwQlpxZVBNcG45MktNREE4RVJVSlJkeGNSa3BCMm4reGoyblhuOHJLLzBE?=
- =?utf-8?B?KzdyMmtSc3FuYnlSUjk1UGl6TjRqbmRMU0x3SkVZcS9wUDhIUm5VRCs5QzlQ?=
- =?utf-8?B?OFZiMFdPdGtjUno0eVNTMDFwenFZV01WRTU4RDZkQWRQNWQ1c00wYUlXRm1Y?=
- =?utf-8?B?d0NhWGdrUVNabWhvM0s3TDNJQ1huNTliVFJIQTJaSXFLSkM0NkRyZ2p2RVJY?=
- =?utf-8?B?M3RWTGMwZFBIc0IyUkxSeFNaSDkzMFU3M2xyK2NqTGpZWnZ5NWFnc0pTekl0?=
- =?utf-8?B?T2NkbjZBQXhiWFJLSXVyN3BkRkZtVnVIazhjTUtkdWU2MlZ1eGZRZkVLOWJ5?=
- =?utf-8?B?aTVnRlRmd2Z1MjBLMkVTajNYbXM3aHFVcFRMTUt5Wks4V0pyRSthUVVmSjRu?=
- =?utf-8?B?QXRjVTJ6cURsaXZLVWF6Y2N3VXBUcTQ2YjlwWnJKU0UrbFVvRWUvK09HT3d0?=
- =?utf-8?B?VldNTjIvZXFxUnhuY2dWaFdndkw3b2JReHMvTkdTV2tReHczSmNvUU40QmlZ?=
- =?utf-8?B?QVp3K2xtN2s2NTBKM3JKVHNlSmlJbG5wZ25aelBhMGRndFZuN1FHdkVYOVYy?=
- =?utf-8?B?dGRYNHZoL0x0anM5b25pd3ZZdCtFUDJNdlZIWURUek1aZ2RnN0ZUb2pPVGxM?=
- =?utf-8?B?ZGgxTWZRRHhFbUpBOVVmdmFNVVdYMm5INm9GdnVVT3Z0cHNGaS9sRVZjR0dR?=
- =?utf-8?B?WXBwRXhlM2pZL3piVys2cnpXS1JyK1d3TmovMTA0Vmx0TlREWjdDNjZUQVk5?=
- =?utf-8?B?Uk1YRkRKajZZOE1YKzkvYkRSa3B1ZE90NzQ5Vmdmc1NTcGhPQytDRmhhbkEx?=
- =?utf-8?B?ejlJUGxQcmM2eFJiaEdtMktaWnlGTlp5Y2ZWMVpKNWZkVi9CKys3SHN0UFQ0?=
- =?utf-8?B?NjhtOCtqenRvNDIrQm9BazdaODE2ZXNYa1NFUkswa01Wb2VVN1V3WENKUWVs?=
- =?utf-8?Q?qwLxnWHAdBd3Uqlw972GxRCws32iKdUF9XxjF09?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <D12EC3A259DE564ABB419A81B973D0B1@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=dg1kbR1M2SLHicy4cXmZfoeWyMZM/kATeM5xaC4Dvx4=;
+        b=Xg/EVUeJZw66Yw1D3Anhf9Hv647D67csorgJKXOvVQ/IaAZMllze+tHLhbiPapDYwa
+         zXRIkL+VFbBRJWFjGSRsvtxJHPv8eLcXZ5UNBU5CANFYceC65zE4am80RwR4Q3LbOFrV
+         RsQuUm0svvTEl+mtx7mifvJFfWnI+BVpLc2LeOtrhbweR9kqoTAOawWZ74kt/W+QgERQ
+         Pfjqi26Kw0PyDl/VoroqErt8Sw4hAxmakPt8yoZUNbk/YsPKwK4kMO8Ugs4ILE42e7sv
+         BrtBL4b60GxJefWWKAfRNm4RQF08WXf+fJ8hFRp0fjuS0J1BgSqlMF6Gp4mgROV/6HHX
+         VwUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=dg1kbR1M2SLHicy4cXmZfoeWyMZM/kATeM5xaC4Dvx4=;
+        b=VC6ngcUekJUcSc/Bfl66cdt1/YVQAgXgV0TSLqDE+l8JRpKWgCAceCO7ZJ6Pup3ukt
+         Iz7tMBqY5TuBoZdJCwYUDHMEdeCSxEU8RnoAFBsJEdADNbtlRNjhi3DQBWktKgglLtke
+         f3rILI4UpjFxEhTx/iuX2I8rudfcYyJzC4HUCGIRAwGIYHxkBilRedYl6a2HSEvRu1ow
+         bUy8vtK46gKgXNYQj9FhhSXF7trXmTfWx6kFx6L8gkqfPrK3BnTx4qSl5dKOYHKDbNb3
+         /MkCWBbM44CDmHX+JDOq8RIgwpYhiRGRJs+vk/00lhl5ZhUfrclfJE2T8cqk7FgTMWm7
+         qQVQ==
+X-Gm-Message-State: AOAM533yRw8RX0znZgjSMAyGvezvSbmL7TUEIX3xfGvBFsCfsHBSjiRD
+        kL4OrM8ONzV3VQdekd8z3og=
+X-Google-Smtp-Source: ABdhPJyAkLo0u5Lb8425WC5JtNFP2EmkA9UO/ZsiXjBpflL5hl2bg8A7kZ4DGj70JgpRZoQfgfDKug==
+X-Received: by 2002:aa7:d80b:: with SMTP id v11mr14885185edq.17.1613385146582;
+        Mon, 15 Feb 2021 02:32:26 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id e22sm10332523edu.61.2021.02.15.02.32.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Feb 2021 02:32:26 -0800 (PST)
+Date:   Mon, 15 Feb 2021 12:32:24 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Alexandra Winter <wintera@linux.ibm.com>
+Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: Re: [PATCH iproute2 5/6] man8/bridge.8: explain self vs master for
+ "bridge fdb add"
+Message-ID: <20210215103224.zpjhi5tiokov2gvy@skbuf>
+References: <20210211104502.2081443-1-olteanv@gmail.com>
+ <20210211104502.2081443-6-olteanv@gmail.com>
+ <65b9d8b6-0b04-9ddc-1719-b3417cd6fb89@linux.ibm.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR1101MB2329.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 59255449-32b4-4452-cdd7-08d8d1956e9c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Feb 2021 09:38:20.7668
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: lhEWiN7KIUsrt9pZyLGJqFVnGawEoiszHdOd1HqGQsrqauBeVWc6pY8WyW/b+Fwy4pnrmSrFTcMWQJAmHmklnHanGEXd1gYyh0o9mZ/lUDQ=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4364
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <65b9d8b6-0b04-9ddc-1719-b3417cd6fb89@linux.ibm.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gRnJpLCAyMDIxLTAyLTEyIGF0IDEwOjUzIC0wODAwLCBKYWt1YiBLaWNpbnNraSB3cm90ZToN
-Cj4gRVhURVJOQUwgRU1BSUw6IERvIG5vdCBjbGljayBsaW5rcyBvciBvcGVuIGF0dGFjaG1lbnRz
-IHVubGVzcyB5b3UNCj4ga25vdyB0aGUgY29udGVudCBpcyBzYWZlDQo+IA0KPiBPbiBGcmksIDEy
-IEZlYiAyMDIxIDE1OjA2OjQxICswMTAwIEJqYXJuaSBKb25hc3NvbiB3cm90ZToNCj4gPiBBdCBQ
-b3dlci1PbiBSZXNldCwgdHJhbnNpZW50cyBtYXkgY2F1c2UgdGhlIExDUExMIHRvIGxvY2sgb250
-byBhDQo+ID4gY2xvY2sgdGhhdCBpcyBtb21lbnRhcmlseSB1bnN0YWJsZS4gVGhpcyBpcyBub3Jt
-YWxseSBzZWVuIGluIFFTR01JSQ0KPiA+IHNldHVwcyB3aGVyZSB0aGUgaGlnaGVyIHNwZWVkIDZH
-IFNlckRlcyBpcyBiZWluZyB1c2VkLg0KPiA+IFRoaXMgcGF0Y2ggYWRkcyBhbiBpbml0aWFsIExD
-UExMIFJlc2V0IHRvIHRoZSBQSFkgKGZpcnN0IGluc3RhbmNlKQ0KPiA+IHRvIGF2b2lkIHRoaXMg
-aXNzdWUuDQo+ID4gDQo+ID4gU2lnbmVkLW9mZi1ieTogU3RlZW4gSGVnZWx1bmQgPHN0ZWVuLmhl
-Z2VsdW5kQG1pY3JvY2hpcC5jb20+DQo+ID4gU2lnbmVkLW9mZi1ieTogQmphcm5pIEpvbmFzc29u
-IDxiamFybmkuam9uYXNzb25AbWljcm9jaGlwLmNvbT4NCj4gPiBGaXhlczogZTRmOWJhNjQyZjBi
-ICgibmV0OiBwaHk6IG1zY2M6IGFkZCBzdXBwb3J0IGZvciBWU0M4NTE0DQo+ID4gUEhZLiIpDQo+
-IA0KPiBQbGVhc2UgbWFrZSBzdXJlIGVhY2ggY29tbWl0IGJ1aWxkcyBjbGVhbmx5IHdpdGggVz0x
-IEM9MS4NCj4gDQo+IFRoaXMgb25lIGFwcGVhcnMgdG8gbm90IGJ1aWxkIGF0IGFsbD8NCg0KU29y
-cnkgYWJvdXQgdGhhdCwgSSB3aWxsIG1ha2Ugc3VyZS4NCg==
+Hi Alexandra,
+
+On Mon, Feb 15, 2021 at 09:22:47AM +0100, Alexandra Winter wrote:
+> In the section about 'bridge link set' Self vs master mention physical
+> device vs software bridge. Would it make sense to use the same
+> terminology here?
+
+You mean like this?
+
+.TP
+.B self
+operation is fulfilled by the driver of the specified network interface.
+
+.TP
+.B master
+operation is fulfilled by the specified interface's master, for example
+a bridge, which in turn may or may not notify the underlying network
+interface driver. This flag is considered implicit by the kernel if
+'self' was not specified.
+
+> The attributes are listed under 'bridge fdb add' not under 'bridge fdb
+> show'. Is it correct that the attributes displayed by 'show' are a
+> 1-to-1 representation of the ones set by 'add'?
+
+Bah, not quite. I'll try to summarize below.
+
+> What about the entries that are not manually set, like bridge learned
+> adresses? Is it possible to add some explanation about those as well?
+
+Ok, challenge accepted. Here's my take on 'bridge fdb show', I haven't
+used most of these options (I'm commenting solely based on code
+inspection) so if anybody with more experience could chime in, I'd be
+happy to adjust the wording.
+
+
+.SS bridge fdb show - list forwarding entries.
+
+This command displays the current forwarding table. By default all FDB
+entries in the system are shown. The following options can be used to
+reduce the number of displayed entries:
+
+.TP
+.B br
+Filter the output to contain only the FDB entries of the specified
+bridge, or belonging to ports of the specified bridge (optional).
+
+.B brport
+Filter the output to contain only the FDB entries present on the
+specified network interface (bridge port). This flag is optional.
+
+.B dev
+Same as "brport".
+
+.B vlan
+Filter the output to contain only the FDB entries with the specified
+VLAN ID (optional).
+
+.B dynamic
+Filter out the local/permanent (not forwarded) FDB entries.
+
+.B state
+Filter the output to contain only the FDB entries having the specified
+state. The bridge FDB is modeled as a neighbouring protocol for
+PF_BRIDGE (similar to what ARP is for IPv4 and ND is for IPv6).
+Therefore, an FDB entry has a NUD ("Network Unreachability Detection")
+state given by the generic neighbouring layer.
+
+The following are the valid components of an FDB entry state (more than
+one may be valid at the same time):
+
+.B permanent
+Associated with the generic NUD_PERMANENT state, which means that the L2
+address of the neighbor has been statically configured by the user and
+therefore there is no need for a neighbour resolution.
+For the bridge FDB, it means that an FDB entry is 'local', i.e. the L2
+address belongs to a local interface.
+
+.B reachable
+Associated with the generic NUD_REACHABLE state, which means that the L2
+address has been resolved by the neighbouring protocol. A reachable
+bridge FDB entry can have two sub-states (static and dynamic) detailed
+below.
+
+.B static
+Associated with the generic NUD_NOARP state, which is used to denote a
+neighbour for which no protocol is needed to resolve the mapping between
+the L3 address and L2 address. For the bridge FDB, the neighbour
+resolution protocol is source MAC address learning, therefore a static
+FDB entry is one that has not been learnt.
+
+.B dynamic
+Is a NUD_REACHABLE entry that lacks the NUD_NOARP state, therefore has
+been resolved through address learning.
+
+.B stale
+Associated with the generic NUD_STALE state. Denotes an FDB entry that
+was last updated longer ago than the bridge's hold time, but not yet
+removed. The hold time is equal to the forward_delay (if the STP
+topology is still changing) or to the ageing_time otherwise.
+
+
+.PP
+In the resulting output, each FDB entry can have one or more of the
+following flags:
+
+.B self
+This entry is present in the FDB of the specified network interface driver.
+
+.B router
+???
+
+.B extern_learn
+This entry has been added to the master interface's FDB by the lower
+port driver, as a result of hardware address learning.
+
+.B offload
+This entry is present in the hardware FDB of a lower port and also
+associated with an entry of the master interface.
+
+.B master
+This entry is present in the software FDB of the master interface of
+this lower port.
+
+.B sticky
+This entry cannot be migrated to another port by the address learning
+process.
+
+.PP
+With the
+.B -statistics
+option, the command becomes verbose. It prints out the last updated
+and last used time for each entry.
+
+> >  .B self
+> > -- the address is associated with the port drivers fdb. Usually hardware
+> > -  (default).
+> > +- the operation is fulfilled directly by the driver for the specified network
+> > +device. If the network device belongs to a master like a bridge, then the
+> > +bridge is bypassed and not notified of this operation (and if the device does
+> > +notify the bridge, it is driver-specific behavior and not mandated by this
+> > +flag, check the driver for more details). The "bridge fdb add" command can also
+> > +be used on the bridge device itself, and in this case, the added fdb entries
+> > +will be locally terminated (not forwarded). In the latter case, the "self" flag
+> > +is mandatory. 
+> Maybe I misunderstand this sentence, but I can do a 'bridge fdb add' without 'self'
+> on the bridge device. And the address shows up under 'bridge fdb show'.
+> So what does mandatory mean here?
+
+It's right in the next sentence:
+
+> The flag is set by default if "master" is not specified.
+
+It's mandatory and implicit if "master" is not specified, ergo 'bridge
+fdb add dev br0' will work because 'master' is not specified (it is
+implicitly 'bridge fdb add dev br0 self'. But 'bridge fdb add dev br0
+master' will fail, because the 'self' flag is no longer implicit (since
+'master' was specified) but mandatory and absent.
+
+I'm not sure what I can do to improve this.
