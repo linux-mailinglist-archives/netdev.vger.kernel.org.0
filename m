@@ -2,58 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D4B231B37D
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 00:52:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7486B31B39E
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 01:39:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230050AbhBNXvr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Feb 2021 18:51:47 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40068 "EHLO mail.kernel.org"
+        id S230059AbhBOAja (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Feb 2021 19:39:30 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:42034 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229901AbhBNXvp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 14 Feb 2021 18:51:45 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9D5D364DD6;
-        Sun, 14 Feb 2021 23:51:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613346664;
-        bh=GWmbwqVJ6melv6EG0HVsZA49QrkGXO2pXS6pzRN2LvI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=b+YYOqdFweqox3TwN7hPDZ/ds8EaNq4Dzg5tEGpcKfcv6CjlYiDPZ5FwWc8JUTX8Y
-         r3PR/9SK+DoFctv1kvVATm1wUBghLumbMp67z9jUm7gSkxMbDclXsTMVzbBBUOYePn
-         a+GN+5I8RGcxpyzo33c/dhERqPeAi7vLw23oaEWJSya6Kp3LOkzmYJCjKV/oYnwimh
-         8FkvqNj8Smc2BwMXh1DkKcAxu3FDDTVhyLMVqZ0dLp+W+bpyih08V4s9i8BCBmekTG
-         VV6itFN7IfVgSXP3m2Ie7+Lr1hYtRWK1/ALvoyb+URoTC8sPh2z/sTu60D7OgjXHjY
-         E9FouOZlW9yug==
-Received: by pali.im (Postfix)
-        id 2807C896; Mon, 15 Feb 2021 00:51:01 +0100 (CET)
-Date:   Mon, 15 Feb 2021 00:50:58 +0100
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
-Cc:     davem@davemloft.net, gregory.clement@bootlin.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        thomas.petazzoni@bootlin.com
-Subject: Re: [PATCH net-next 1/2] net: mvneta: Remove per-cpu queue mapping
- for Armada 3700
-Message-ID: <20210214235058.aicn6aqsm66chrxi@pali>
+        id S229818AbhBOAj3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 14 Feb 2021 19:39:29 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1lBRuQ-006M9V-Uo; Mon, 15 Feb 2021 01:38:38 +0100
+Date:   Mon, 15 Feb 2021 01:38:38 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Stefan Chulski <stefanc@marvell.com>
+Cc:     Marcin Wojtas <mw@semihalf.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
+        Nadav Haklai <nadavh@marvell.com>,
+        Yan Markman <ymarkman@marvell.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "rmk+kernel@armlinux.org.uk" <rmk+kernel@armlinux.org.uk>,
+        "atenart@kernel.org" <atenart@kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "sebastian.hesselbarth@gmail.com" <sebastian.hesselbarth@gmail.com>,
+        "gregory.clement@bootlin.com" <gregory.clement@bootlin.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [EXT] Re: [PATCH v12 net-next 12/15] net: mvpp2: add BM
+ protection underrun feature support
+Message-ID: <YCnCjomjF0LDglAg@lunn.ch>
+References: <1612950500-9682-1-git-send-email-stefanc@marvell.com>
+ <1612950500-9682-13-git-send-email-stefanc@marvell.com>
+ <20210210.152924.767175240247395907.davem@davemloft.net>
+ <CO6PR18MB3873D8B7BE3AE28A1407C05BB08C9@CO6PR18MB3873.namprd18.prod.outlook.com>
+ <YCU864+AH6UioNwQ@lunn.ch>
+ <CAPv3WKd48fiZmdnP+NN_FRCT1h6xmu9zO4BWAz_pgTXW2fQt9w@mail.gmail.com>
+ <YCaINEHqrz2QDGJb@lunn.ch>
+ <CO6PR18MB3873E319FA08ADBC3B682828B0899@CO6PR18MB3873.namprd18.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20210212151220.84106-2-maxime.chevallier@bootlin.com>
-User-Agent: NeoMutt/20180716
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CO6PR18MB3873E319FA08ADBC3B682828B0899@CO6PR18MB3873.namprd18.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> According to Errata #23 "The per-CPU GbE interrupt is limited to Core
-> 0", we can't use the per-cpu interrupt mechanism on the Armada 3700
-> familly.
-> 
-> This is correctly checked for RSS configuration, but the initial queue
-> mapping is still done by having the queues spread across all the CPUs in
-> the system, both in the init path and in the cpu_hotplug path.
+> > Does this even need to be configurable? What is the cost of turning it on?
+> > How does having less pools affect the system? Does average latency go up?
+> > When would i consider an underrun actually a good thing?
+> > 
+> > Maybe it should just be hard coded on? Or we should try to detect when
+> > underruns are happening a lot, and dynamically turn it on for a while?
+> > 
+> The cost of this change is that the number of pools reduced from 16 to 8.
+> The current driver uses only 4pools, but some future features like QoS can use over 4 pools. 
 
-Hello Maxime!
+So you are saying, there is currently no cost for turning it on. So it
+seems like you should just turn it on, and forget the module
+parameter. When QoS features are added which require more than 8 pools
+you can then address the issue of if this should be configurable.
 
-This patch looks like a bug fix for Armada 3700 SoC. What about marking
-this commit with Fixes line? E.g.:
-
-    Fixes: 2636ac3cc2b4 ("net: mvneta: Add network support for Armada 3700 SoC")
+    Andrew
