@@ -2,152 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EDD431BC6D
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 16:29:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B15B131BC5C
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 16:27:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230417AbhBOP2n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 10:28:43 -0500
-Received: from mo-csw1515.securemx.jp ([210.130.202.154]:43192 "EHLO
-        mo-csw.securemx.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230495AbhBOP1U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 10:27:20 -0500
-Received: by mo-csw.securemx.jp (mx-mo-csw1515) id 11FFOi2P026098; Tue, 16 Feb 2021 00:24:45 +0900
-X-Iguazu-Qid: 34tMYNXf5ebGnGh0Og
-X-Iguazu-QSIG: v=2; s=0; t=1613402684; q=34tMYNXf5ebGnGh0Og; m=rwvk9f+KUNtSWomuuqw3K15Hy6LF9isDjGzPH4La0FE=
-Received: from imx2.toshiba.co.jp (imx2.toshiba.co.jp [106.186.93.51])
-        by relay.securemx.jp (mx-mr1511) id 11FFOhcT002978;
-        Tue, 16 Feb 2021 00:24:43 +0900
-Received: from enc01.toshiba.co.jp ([106.186.93.100])
-        by imx2.toshiba.co.jp  with ESMTP id 11FFOgoe008338;
-        Tue, 16 Feb 2021 00:24:42 +0900 (JST)
-Received: from hop001.toshiba.co.jp ([133.199.164.63])
-        by enc01.toshiba.co.jp  with ESMTP id 11FFOg6m017697;
-        Tue, 16 Feb 2021 00:24:42 +0900
-From:   Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>, leon@kernel.org,
-        arnd@kernel.org, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, punit1.agrawal@toshiba.co.jp,
-        yuji2.ishikawa@toshiba.co.jp, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Subject: [PATCH v4 1/4] dt-bindings: net: Add DT bindings for Toshiba Visconti TMPV7700 SoC
-Date:   Tue, 16 Feb 2021 00:24:35 +0900
-X-TSB-HOP: ON
-Message-Id: <20210215152438.4318-2-nobuhiro1.iwamatsu@toshiba.co.jp>
-X-Mailer: git-send-email 2.30.0.rc2
-In-Reply-To: <20210215152438.4318-1-nobuhiro1.iwamatsu@toshiba.co.jp>
-References: <20210215152438.4318-1-nobuhiro1.iwamatsu@toshiba.co.jp>
+        id S230484AbhBOP0q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 10:26:46 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:51260 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230413AbhBOP0Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 10:26:24 -0500
+Received: from 1.general.ppisati.uk.vpn ([10.172.193.134] helo=canonical.com)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <paolo.pisati@canonical.com>)
+        id 1lBfkp-00032R-9L; Mon, 15 Feb 2021 15:25:39 +0000
+Date:   Mon, 15 Feb 2021 16:25:38 +0100
+From:   Paolo Pisati <paolo.pisati@canonical.com>
+To:     Pooja Trivedi <poojatrivedi@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: selftests: tls: multi_chunk_sendfile: Test terminated by timeout
+ (constant failure)
+Message-ID: <20210215152538.GA37512@harukaze>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add device tree bindings for ethernet controller of Toshiba Visconti
-TMPV7700 SoC series.
+Hi Pooja,
 
-Signed-off-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
----
- .../bindings/net/toshiba,visconti-dwmac.yaml  | 85 +++++++++++++++++++
- 1 file changed, 85 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/toshiba,visconti-dwmac.yaml
+commit 0e6fbe39bdf71b4e665767bcbf53567a3e6d0623
+Author: Pooja Trivedi <poojatrivedi@gmail.com>
+Date:   Fri Jun 5 16:01:18 2020 +0000
 
-diff --git a/Documentation/devicetree/bindings/net/toshiba,visconti-dwmac.yaml b/Documentation/devicetree/bindings/net/toshiba,visconti-dwmac.yaml
-new file mode 100644
-index 000000000000..59724d18e6f3
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/toshiba,visconti-dwmac.yaml
-@@ -0,0 +1,85 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/net/toshiba,visconti-dwmac.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+
-+title: Toshiba Visconti DWMAC Ethernet controller
-+
-+maintainers:
-+  - Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-+
-+select:
-+  properties:
-+    compatible:
-+      contains:
-+        enum:
-+          - toshiba,visconti-dwmac
-+  required:
-+    - compatible
-+
-+allOf:
-+  - $ref: "snps,dwmac.yaml#"
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - items:
-+          - enum:
-+              - toshiba,visconti-dwmac
-+          - const: snps,dwmac-4.20a
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    items:
-+      - description: main clock
-+      - description: PHY reference clock
-+
-+  clock-names:
-+    items:
-+      - const: stmmaceth
-+      - const: phy_ref_clk
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - clock-names
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+    soc {
-+        #address-cells = <2>;
-+        #size-cells = <2>;
-+
-+        piether: ethernet@28000000 {
-+            compatible = "toshiba,visconti-dwmac", "snps,dwmac-4.20a";
-+            reg = <0 0x28000000 0 0x10000>;
-+            interrupts = <GIC_SPI 156 IRQ_TYPE_LEVEL_HIGH>;
-+            interrupt-names = "macirq";
-+            clocks = <&clk300mhz>, <&clk125mhz>;
-+            clock-names = "stmmaceth", "phy_ref_clk";
-+            snps,txpbl = <4>;
-+            snps,rxpbl = <4>;
-+            snps,tso;
-+            phy-mode = "rgmii-id";
-+            phy-handle = <&phy0>;
-+
-+            mdio0 {
-+                #address-cells = <0x1>;
-+                #size-cells = <0x0>;
-+                compatible = "snps,dwmac-mdio";
-+
-+                phy0: ethernet-phy@1 {
-+                    device_type = "ethernet-phy";
-+                    reg = <0x1>;
-+                };
-+            };
-+        };
-+    };
+    net/tls(TLS_SW): Add selftest for 'chunked' sendfile test
+
+your multi_chunk_sendfile test is constantly failing for me (x86_64 defconfig +
+tools/testing/selftests/net/config + TLS) on 5.10.y:
+
+...
+#  RUN           tls.12.multi_chunk_sendfile ...                                                                                                        
+# multi_chunk_sendfile: Test terminated by timeout                                                                                                      
+#          FAIL  tls.12.multi_chunk_sendfile
+not ok 6 tls.12.multi_chunk_sendfile
+...
+#  RUN           tls.13.multi_chunk_sendfile ...
+# multi_chunk_sendfile: Test terminated by timeout                          
+#          FAIL  tls.13.multi_chunk_sendfile                                
+not ok 51 tls.13.multi_chunk_sendfile
+
+i tried bumping up the timeout to an insane value, but that didn't change the
+outcome - anything particular i should check?
 -- 
-2.30.0.rc2
-
+bye,
+p.
