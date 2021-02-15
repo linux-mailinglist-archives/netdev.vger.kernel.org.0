@@ -2,112 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5221431BC06
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 16:15:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E67C31BC14
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 16:17:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230090AbhBOPPL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 10:15:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35100 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230031AbhBOPOl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 10:14:41 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2C04C061756;
-        Mon, 15 Feb 2021 07:14:00 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id z7so3893077plk.7;
-        Mon, 15 Feb 2021 07:14:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MQBEYDbZLUspR4Cas4xHhX333Pehv/osTwNAcBMpXuY=;
-        b=CQUKDoIcRBpm4Oq6Kl/kj7pKKcYjjng52/6QuMBh7xu8ycEXXdPCjDoNHhNjaLzMAp
-         PpoZjlVPrAsNKPFc7EH5vPLJ+r3BNXYfqyK9QoNOCK3IjijK1pV9vFVX+liKR6InbW3j
-         N69n3pzqz0R8HCM1iSX2ek8LAg3dvWnRl+63/g1YPHuOMxzHsocmOPe3A41LPoBy7+k/
-         MZJkOGkscJQNG3eEKof4/HyYeekmPO7GAVOKWL30SKNu1Y2Fe8znWlpN2fzqLvYcrb1y
-         R0Cj0CuBEl2iw2QhUmqNqZ1sc21Ixmduw3FI9QDc8KcsMXgqT/3ffHiuY4Msf/eAIkv4
-         ZZhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MQBEYDbZLUspR4Cas4xHhX333Pehv/osTwNAcBMpXuY=;
-        b=Y114AlawLJCPG1/YkGByDzDUb26FHDJyajrs+kqXjDv1Vqgd0Tc98rFqI6lc2Vd1GX
-         CqLcqyA5BMvt+tupzroSqOACkdZMlr5JeKdviW4S60e6eCM/zHMB6aTDN/r7Oumk0K6m
-         JofW0uSKAkpOQQoJs+KLrbwYgic7ZIVyb3o8MLbdabVE5mjiW8+C1IHUdvIkC5vdwwHW
-         jd6DEVlWOs/E1ItVbmFalMa8NUEy1mVKdeJTwanxlbwSDqU6/8BIUMode+EqZNSAdAdG
-         BJlrWiDnPAEOfGj6W7K0wnZ9uQ//0I7KnJCAZgAkWfNTbJGuy+RK7J2LnVF8jggki1//
-         EufQ==
-X-Gm-Message-State: AOAM532sNuDatK2DReSjFSKLvvXy9WE+lJwE5ka1QnWqDrQcg/qT+cay
-        y3rJCNZJD75eXt8jb6j27AmDvw0mhy2/TKWqzHA=
-X-Google-Smtp-Source: ABdhPJwq/oqehvgAavm6DkE/AtYDGnrfyneBipOjVQogGyrbG7SqrPvRhcFT2I9yV3pXFKozt+yik6ovEYPQK33uQeY=
-X-Received: by 2002:a17:90a:1b23:: with SMTP id q32mr16968661pjq.181.1613402040270;
- Mon, 15 Feb 2021 07:14:00 -0800 (PST)
+        id S230363AbhBOPRS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 10:17:18 -0500
+Received: from mo-csw1514.securemx.jp ([210.130.202.153]:37546 "EHLO
+        mo-csw.securemx.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229910AbhBOPQf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 10:16:35 -0500
+Received: by mo-csw.securemx.jp (mx-mo-csw1514) id 11FFEGmx020588; Tue, 16 Feb 2021 00:14:16 +0900
+X-Iguazu-Qid: 34tMYNXf5eaVJ6v6C8
+X-Iguazu-QSIG: v=2; s=0; t=1613402056; q=34tMYNXf5eaVJ6v6C8; m=uM2REpR00LsJgIiw9Tu2w9j02BB6yi8SVQNTaJm7Slo=
+Received: from imx12.toshiba.co.jp (imx12.toshiba.co.jp [61.202.160.132])
+        by relay.securemx.jp (mx-mr1511) id 11FFEEml039740;
+        Tue, 16 Feb 2021 00:14:15 +0900
+Received: from enc02.toshiba.co.jp ([61.202.160.51])
+        by imx12.toshiba.co.jp  with ESMTP id 11FFEE1b020321;
+        Tue, 16 Feb 2021 00:14:14 +0900 (JST)
+Received: from hop101.toshiba.co.jp ([133.199.85.107])
+        by enc02.toshiba.co.jp  with ESMTP id 11FFEDc6007524;
+        Tue, 16 Feb 2021 00:14:14 +0900
+Date:   Tue, 16 Feb 2021 00:14:13 +0900
+From:   Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>, arnd@kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        punit1.agrawal@toshiba.co.jp, yuji2.ishikawa@toshiba.co.jp,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/4] net: stmmac: Add Toshiba Visconti SoCs glue driver
+X-TSB-HOP: ON
+Message-ID: <20210215151413.oqq5o6kzhmhlnc5d@toshiba.co.jp>
+References: <20210215050655.2532-1-nobuhiro1.iwamatsu@toshiba.co.jp>
+ <20210215050655.2532-3-nobuhiro1.iwamatsu@toshiba.co.jp>
+ <YCoPmfunGmu0E8IT@unreal>
+ <20210215072809.n3r5rdswookzri6j@toshiba.co.jp>
+ <YCo9WVvtAeozE42k@unreal>
 MIME-Version: 1.0
-References: <20210208151244.16338-1-calvin.johnson@oss.nxp.com>
- <20210208151244.16338-16-calvin.johnson@oss.nxp.com> <20210208162831.GM1463@shell.armlinux.org.uk>
- <20210215123309.GA5067@lsv03152.swis.in-blr01.nxp.com>
-In-Reply-To: <20210215123309.GA5067@lsv03152.swis.in-blr01.nxp.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 15 Feb 2021 17:13:44 +0200
-Message-ID: <CAHp75VcpR1uf-6me9-MiXzESP9gtE0=Oz5TaFj0E93C3w4=Fgg@mail.gmail.com>
-Subject: Re: [net-next PATCH v5 15/15] net: dpaa2-mac: Add ACPI support for
- DPAA2 MAC driver
-To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Grant Likely <grant.likely@arm.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
-        Jon <jon@solid-run.com>, Saravana Kannan <saravanak@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "linux.cj" <linux.cj@gmail.com>,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        netdev <netdev@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YCo9WVvtAeozE42k@unreal>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 15, 2021 at 2:33 PM Calvin Johnson
-<calvin.johnson@oss.nxp.com> wrote:
-> On Mon, Feb 08, 2021 at 04:28:31PM +0000, Russell King - ARM Linux admin wrote:
+Hi,
 
-...
+On Mon, Feb 15, 2021 at 11:22:33AM +0200, Leon Romanovsky wrote:
+> On Mon, Feb 15, 2021 at 04:28:09PM +0900, Nobuhiro Iwamatsu wrote:
+> >
+> > I have received your point out and have sent an email with the content
+> > to remove this line. But it may not have arrived yet...
+> >
+> > > Why did you use "def_bool y" and not "default y"? Isn't it supposed to be
+> > > "depends on STMMAC_ETH"? And probably it shouldn't be set as a default as "y".
+> > >
+> >
+> > The reason why "def_bool y" was set is that the wrong fix was left when
+> > debugging. Also, I don't think it is necessary to set "default y".
+> > This is also incorrect because it says "bool" Toshiba Visconti DWMAC
+> > support "". I change it to trustate in the new patch.
+> >
+> > And this driver is enabled when STMMAC_PLATFORM was Y. And STMMAC_PLATFORM
+> > depends on STMMAC_ETH.
+> > So I understand that STMMAC_ETH does not need to be dependents. Is this
+> > understanding wrong?
+> 
+> This is correct understanding, just need to clean other entries in that
+> Kconfig that depends on STMMAC_ETH.
 
-> I think of_phy_is_fixed_link() needs to be fixed. I'll add below fix.
->
-> --- a/drivers/net/mdio/of_mdio.c
-> +++ b/drivers/net/mdio/of_mdio.c
-> @@ -439,6 +439,9 @@ bool of_phy_is_fixed_link(struct device_node *np)
->         int len, err;
->         const char *managed;
->
-> +       if (!np)
-> +               return false;
+OK, thanks.
 
-AFAICS this doesn't add anything: all of the of_* APIs should handle
-OF nodes being NULL below.
-
->         /* New binding */
->         dn = of_get_child_by_name(np, "fixed-link");
->         if (dn) {
-
--- 
-With Best Regards,
-Andy Shevchenko
+Best regards,
+  Nobuhiro
