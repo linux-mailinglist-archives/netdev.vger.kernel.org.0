@@ -2,110 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F8DC31C0CA
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 18:41:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DADC31C10C
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 18:56:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230248AbhBORkn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 12:40:43 -0500
-Received: from mga14.intel.com ([192.55.52.115]:34425 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231240AbhBORjg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Feb 2021 12:39:36 -0500
-IronPort-SDR: AWpQObXPzsC8UM/KizM5n3ugGdKKyb9lwWsVIGL5tPFLJgiIx10K75j+bokcZyg8/H+iTK940J
- Ybs5nM+pF8Dg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9896"; a="181951453"
-X-IronPort-AV: E=Sophos;i="5.81,181,1610438400"; 
-   d="scan'208";a="181951453"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2021 09:38:54 -0800
-IronPort-SDR: 5dbHVzqD9yQEYHH+BVSwadyPXMdAfqfFtOchrAcua8vl1oeo3tTMUyhPGch6XAcUuLW1VrcTsU
- ga5CRXwcC/kg==
-X-IronPort-AV: E=Sophos;i="5.81,181,1610438400"; 
-   d="scan'208";a="399159724"
-Received: from wwantka-mobl2.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.252.54.83])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2021 09:38:51 -0800
-Subject: Re: [PATCH bpf-next 1/3] libbpf: xsk: use bpf_link
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        daniel@iogearbox.net, ast@kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     andrii@kernel.org, magnus.karlsson@intel.com,
-        ciara.loftus@intel.com
-References: <20210215154638.4627-1-maciej.fijalkowski@intel.com>
- <20210215154638.4627-2-maciej.fijalkowski@intel.com> <87eehhcl9x.fsf@toke.dk>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <fe0c957e-d212-4265-a271-ba301c3c5eca@intel.com>
-Date:   Mon, 15 Feb 2021 18:38:46 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        id S229993AbhBORzF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 12:55:05 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:60202 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S229604AbhBORy6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 12:54:58 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11FHk2ak023127;
+        Mon, 15 Feb 2021 09:54:16 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=Yx/+lX5qolgCsudpAc5IFXP2Ew66SHSIG3lA0SX1djk=;
+ b=HwUuJ8mAeSHgFC1vZHjcgqsw6pbIAT+Xrkn+se/jDHjlAWOA49E1p3c19KORGlfL8bcN
+ 826ziIPmJhaHEySY5ygyjagQUG5tjnUXVrFk4wZnS+o8k3DMH7BKCs1ky5iD5DbqMmRA
+ M1tzHv1WaIkGFa4IVn1pBldJ6cKW0qHhonl0s2rLf34WbQkZgaN8K/XIMMZBwIv8boQS
+ LKkqapeBvPbWcVs7YBduba0bbv1AukAp84OefThsakAXzfp2ofcKw2SoLI7X+d4mwfM7
+ ZMsVXLfktCQtbq+12MZfMpVYZwjX+A3jYplk+6n08YySH+KCUgVruf2gEdrfBGkEHlzX IA== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0a-0016f401.pphosted.com with ESMTP id 36pd0vmys2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 15 Feb 2021 09:54:16 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 15 Feb
+ 2021 09:54:15 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 15 Feb 2021 09:54:15 -0800
+Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
+        by maili.marvell.com (Postfix) with ESMTP id 8A3A73F7040;
+        Mon, 15 Feb 2021 09:54:12 -0800 (PST)
+From:   Geetha sowjanya <gakula@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <sgoutham@marvell.com>,
+        <lcherian@marvell.com>, <hkelam@marvell.com>,
+        <sbhatta@marvell.com>, <jerinj@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>
+Subject: [net-next PATCH] octeontx2-af: cn10k: Fixes CN10K RPM reference issue
+Date:   Mon, 15 Feb 2021 23:24:00 +0530
+Message-ID: <20210215175400.13126-1-gakula@marvell.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <87eehhcl9x.fsf@toke.dk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-02-15_14:2021-02-12,2021-02-15 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-02-15 18:07, Toke Høiland-Jørgensen wrote:
-> Maciej Fijalkowski <maciej.fijalkowski@intel.com> writes:
-> 
->> Currently, if there are multiple xdpsock instances running on a single
->> interface and in case one of the instances is terminated, the rest of
->> them are left in an inoperable state due to the fact of unloaded XDP
->> prog from interface.
->>
->> To address that, step away from setting bpf prog in favour of bpf_link.
->> This means that refcounting of BPF resources will be done automatically
->> by bpf_link itself.
->>
->> When setting up BPF resources during xsk socket creation, check whether
->> bpf_link for a given ifindex already exists via set of calls to
->> bpf_link_get_next_id -> bpf_link_get_fd_by_id -> bpf_obj_get_info_by_fd
->> and comparing the ifindexes from bpf_link and xsk socket.
-> 
-> One consideration here is that bpf_link_get_fd_by_id() is a privileged
-> operation (privileged as in CAP_SYS_ADMIN), so this has the side effect
-> of making AF_XDP privileged as well. Is that the intention?
->
+This patch fixes references to uninitialized variables and
+debugfs entry name for CN10K platform and HW_TSO flag check. 
 
-We're already using, e.g., bpf_map_get_fd_by_id() which has that
-as well. So we're assuming that for XDP setup already!
+Signed-off-by: Geetha sowjanya <gakula@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 
-> Another is that the AF_XDP code is in the process of moving to libxdp
-> (see in-progress PR [0]), and this approach won't carry over as-is to
-> that model, because libxdp has to pin the bpf_link fds.
->
+This patch fixes the bug introduced by the commit
+3ad3f8f93c81 ("octeontx2-af: cn10k: MAC internal loopback support".
+These changes are not yet merged into net branch, hence submitting
+to net-next.
 
-I was assuming there were two modes of operations for AF_XDP in libxdp.
-One which is with the multi-program support (which AFAIK is why the
-pinning is required), and one "like the current libbpf" one. For the
-latter Maciej's series would be a good fit, no?
+---
+ drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c   |  2 ++
+ .../net/ethernet/marvell/octeontx2/af/rvu_debugfs.c   |  2 +-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c    | 11 ++++++-----
+ 3 files changed, 9 insertions(+), 6 deletions(-)
 
-> However, in libxdp we can solve the original problem in a different way,
-> and in fact I already suggested to Magnus that we should do this (see
-> [1]); so one way forward could be to address it during the merge in
-> libxdp? It should be possible to address the original issue (two
-> instances of xdpsock breaking each other when they exit), but
-> applications will still need to do an explicit unload operation before
-> exiting (i.e., the automatic detach on bpf_link fd closure will take
-> more work, and likely require extending the bpf_link kernel support)...
->
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
+index 3a1809c28e83..e668e482383a 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
+@@ -722,12 +722,14 @@ u32 rvu_cgx_get_fifolen(struct rvu *rvu)
+ 
+ static int rvu_cgx_config_intlbk(struct rvu *rvu, u16 pcifunc, bool en)
+ {
++	int pf = rvu_get_pf(pcifunc);
+ 	struct mac_ops *mac_ops;
+ 	u8 cgx_id, lmac_id;
+ 
+ 	if (!is_cgx_config_permitted(rvu, pcifunc))
+ 		return -EPERM;
+ 
++	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
+ 	mac_ops = get_mac_ops(rvu_cgx_pdata(cgx_id, rvu));
+ 
+ 	return mac_ops->mac_lmac_intl_lbk(rvu_cgx_pdata(cgx_id, rvu),
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+index 48a84c65804c..094124b695dc 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+@@ -2432,7 +2432,7 @@ void rvu_dbg_init(struct rvu *rvu)
+ 		debugfs_create_file("rvu_pf_cgx_map", 0444, rvu->rvu_dbg.root,
+ 				    rvu, &rvu_dbg_rvu_pf_cgx_map_fops);
+ 	else
+-		debugfs_create_file("rvu_pf_cgx_map", 0444, rvu->rvu_dbg.root,
++		debugfs_create_file("rvu_pf_rpm_map", 0444, rvu->rvu_dbg.root,
+ 				    rvu, &rvu_dbg_rvu_pf_cgx_map_fops);
+ 
+ create:
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+index 3f778fc054b5..22ec03a618b1 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+@@ -816,22 +816,23 @@ static bool is_hw_tso_supported(struct otx2_nic *pfvf,
+ {
+ 	int payload_len, last_seg_size;
+ 
++	if (test_bit(HW_TSO, &pfvf->hw.cap_flag))
++		return true;
++
++	/* On 96xx A0, HW TSO not supported */
++	if (!is_96xx_B0(pfvf->pdev))
++		return false;
+ 
+ 	/* HW has an issue due to which when the payload of the last LSO
+ 	 * segment is shorter than 16 bytes, some header fields may not
+ 	 * be correctly modified, hence don't offload such TSO segments.
+ 	 */
+-	if (!is_96xx_B0(pfvf->pdev))
+-		return true;
+ 
+ 	payload_len = skb->len - (skb_transport_offset(skb) + tcp_hdrlen(skb));
+ 	last_seg_size = payload_len % skb_shinfo(skb)->gso_size;
+ 	if (last_seg_size && last_seg_size < 16)
+ 		return false;
+ 
+-	if (!test_bit(HW_TSO, &pfvf->hw.cap_flag))
+-		return false;
+-
+ 	return true;
+ }
+ 
+-- 
+2.17.1
 
-I'd say it's depending on the libbpf 1.0/libxdp merge timeframe. If
-we're months ahead, then I'd really like to see this in libbpf until the
-merge. However, I'll leave that for Magnus/you to decide!
-
-Bottom line; I'd *really* like bpf_link behavior (process scoped) for
-AF_XDP sooner than later! ;-)
-
-
-Thanks for the input!
-Björn
-
-
-> -Toke
-> 
-> [0] https://github.com/xdp-project/xdp-tools/pull/92
-> [1] https://github.com/xdp-project/xdp-tools/pull/92#discussion_r576204719
-> 
