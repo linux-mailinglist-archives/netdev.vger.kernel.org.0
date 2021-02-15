@@ -2,115 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9EBA31B655
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 10:23:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FAFF31B660
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 10:26:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230052AbhBOJXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 04:23:22 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54664 "EHLO mail.kernel.org"
+        id S230160AbhBOJ0F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 04:26:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44628 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229597AbhBOJXT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Feb 2021 04:23:19 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 07AE364E02;
-        Mon, 15 Feb 2021 09:22:36 +0000 (UTC)
+        id S230138AbhBOJZp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Feb 2021 04:25:45 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9C18D64DEE;
+        Mon, 15 Feb 2021 09:25:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613380957;
-        bh=xd8bZcaDbO5f52i56dPShfWe0KatiGLNJgnknX+pjYY=;
+        s=k20201202; t=1613381104;
+        bh=bfvSPlI4bOZ5PvYmk6nN5TYccj5PzjzSAJoKeX5M+pw=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DXDLCGaUD+eHBlXw3jpImAWESxqz+GW25G/L1KTcErrsJ05Mr3vNnQUoTwcFRpFN8
-         IhFv9Gu9Nk7GUGaD3gT8JU3rhuuSCSds1EnPCnjIsGISPsGGs18+jjx6cPvAZmZrSm
-         qTXDTQzjlGcFolDd+8yI/BeucmgrspgHEZkhpkPK6oq8QR9W6j5/UUv/Nso9VszZYS
-         ep1kT8I1LC6+HzCPedCLJw0KRiOYnEWDo2iS805a0I2/5+POJ/hbExstsuXaRg5ZPG
-         x1c6Ro/1Vdm/ZQ/qhrcysbc72nYb3BPFUJzdhzkaZzQfgf+xnMv57QCAM3Zea/SoB1
-         XW0opUOYxxLsw==
-Date:   Mon, 15 Feb 2021 11:22:33 +0200
+        b=IsVSG/ZQlyd3wQIjwsnY7ygCfS7ysRv9A+Ob9FzgzshzMdDYHLLkq1fMqfY9V4Eh+
+         krxug0eXpQ8WUGpTDTadVv8b1g5VmtMXJJUxMdqvGt9Bd18vAg4vuGO4zorNFKsoXC
+         6ggLrJgwjwm5aCJCyivNtnA/NeilemdN/K6Rhzv9TenICLwmknzcFQoNxUXxh67gFp
+         Vl4DPPVbcHJTFmNujzI48TeJwYL9r8kVjYYUu+i5rPC8LLNhiG4Fj3umATIHDzHaC0
+         hMsgPacItYgC3UBFeUmOrzL5TnDzy03/frRDtMOVdqJa/i9/NkgbiP1dd4YjSV2sJ2
+         Fv01A+YBJF6wA==
+Date:   Mon, 15 Feb 2021 11:24:59 +0200
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>, arnd@kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        punit1.agrawal@toshiba.co.jp, yuji2.ishikawa@toshiba.co.jp,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/4] net: stmmac: Add Toshiba Visconti SoCs glue driver
-Message-ID: <YCo9WVvtAeozE42k@unreal>
-References: <20210215050655.2532-1-nobuhiro1.iwamatsu@toshiba.co.jp>
- <20210215050655.2532-3-nobuhiro1.iwamatsu@toshiba.co.jp>
- <YCoPmfunGmu0E8IT@unreal>
- <20210215072809.n3r5rdswookzri6j@toshiba.co.jp>
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-x25@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Martin Schiller <ms@dev.tdt.de>,
+        Krzysztof Halasa <khc@pm.waw.pl>
+Subject: Re: [PATCH net-next RFC v3] net: hdlc_x25: Queue outgoing LAPB frames
+Message-ID: <YCo96zjXHyvKpbUM@unreal>
+References: <20210215072703.43952-1-xie.he.0141@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210215072809.n3r5rdswookzri6j@toshiba.co.jp>
+In-Reply-To: <20210215072703.43952-1-xie.he.0141@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 15, 2021 at 04:28:09PM +0900, Nobuhiro Iwamatsu wrote:
-> Hi,
+On Sun, Feb 14, 2021 at 11:27:03PM -0800, Xie He wrote:
+> When sending packets, we will first hand over the (L3) packets to the
+> LAPB module. The LAPB module will then hand over the corresponding LAPB
+> (L2) frames back to us for us to transmit.
 >
-> Thanks for your review.
+> The LAPB module can also emit LAPB (L2) frames at any time, even without
+> an (L3) packet currently being sent on the device. This happens when the
+> LAPB module tries to send (L3) packets queued up in its internal queue,
+> or when the LAPB module decides to send some (L2) control frame.
 >
-> On Mon, Feb 15, 2021 at 08:07:21AM +0200, Leon Romanovsky wrote:
-> > On Mon, Feb 15, 2021 at 02:06:53PM +0900, Nobuhiro Iwamatsu wrote:
-> > > Add dwmac-visconti to the stmmac driver in Toshiba Visconti ARM SoCs.
-> > > This patch contains only the basic function of the device. There is no
-> > > clock control, PM, etc. yet. These will be added in the future.
-> > >
-> > > Signed-off-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-> > > ---
-> > >  drivers/net/ethernet/stmicro/stmmac/Kconfig   |   8 +
-> > >  drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
-> > >  .../ethernet/stmicro/stmmac/dwmac-visconti.c  | 285 ++++++++++++++++++
-> > >  3 files changed, 294 insertions(+)
-> > >  create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
-> > >
-> > > diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-> > > index 53f14c5a9e02..55ba67a550b9 100644
-> > > --- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
-> > > +++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-> > > @@ -219,6 +219,14 @@ config DWMAC_INTEL_PLAT
-> > >  	  This selects the Intel platform specific glue layer support for
-> > >  	  the stmmac device driver. This driver is used for the Intel Keem Bay
-> > >  	  SoC.
-> > > +
-> > > +config DWMAC_VISCONTI
-> > > +	bool "Toshiba Visconti DWMAC support"
-> > > +	def_bool y
-> >
+> This means we need to have a queue for these outgoing LAPB (L2) frames,
+> otherwise frames can be dropped if sent when the hardware driver is
+> already busy in transmitting. The queue needs to be controlled by
+> the hardware driver's netif_stop_queue and netif_wake_queue calls.
+> Therefore, we need to use the device's qdisc TX queue for this purpose.
+> However, currently outgoing LAPB (L2) frames are not queued.
 >
-> Sorry, I sent the wrong patchset that didn't fix this point out.
+> On the other hand, outgoing (L3) packets (before they are handed over
+> to the LAPB module) don't need to be queued, because the LAPB module
+> already has an internal queue for them, and is able to queue new outgoing
+> (L3) packets at any time. However, currently outgoing (L3) packets are
+> being queued in the device's qdisc TX queue, which is controlled by
+> the hardware driver's netif_stop_queue and netif_wake_queue calls.
+> This is unnecessary and meaningless.
 >
-> > I asked it before, but never received an answer.
+> To fix these issues, we can split the HDLC device into two devices -
+> a virtual X.25 device and the actual HDLC device, use the virtual X.25
+> device to send (L3) packets and then use the actual HDLC device to
+> queue LAPB (L2) frames. The outgoing (L2) LAPB queue will be controlled
+> by the hardware driver's netif_stop_queue and netif_wake_queue calls,
+> while outgoing (L3) packets will not be affected by these calls.
 >
-> I have received your point out and have sent an email with the content
-> to remove this line. But it may not have arrived yet...
+> Cc: Martin Schiller <ms@dev.tdt.de>
+> Signed-off-by: Xie He <xie.he.0141@gmail.com>
+> ---
 >
-> > Why did you use "def_bool y" and not "default y"? Isn't it supposed to be
-> > "depends on STMMAC_ETH"? And probably it shouldn't be set as a default as "y".
-> >
+> Change from RFC v2:
+> Simplified the commit message.
+> Dropped the x25_open fix which is already merged into net-next now.
+> Use HDLC_MAX_MTU as the mtu of the X.25 virtual device.
+> Add an explanation to the documentation about the X.25 virtual device.
 >
-> The reason why "def_bool y" was set is that the wrong fix was left when
-> debugging. Also, I don't think it is necessary to set "default y".
-> This is also incorrect because it says "bool" Toshiba Visconti DWMAC
-> support "". I change it to trustate in the new patch.
+> Change from RFC v1:
+> Properly initialize state(hdlc)->x25_dev and state(hdlc)->x25_dev_lock.
 >
-> And this driver is enabled when STMMAC_PLATFORM was Y. And STMMAC_PLATFORM
-> depends on STMMAC_ETH.
-> So I understand that STMMAC_ETH does not need to be dependents. Is this
-> understanding wrong?
+> ---
+>  Documentation/networking/generic-hdlc.rst |   3 +
+>  drivers/net/wan/hdlc_x25.c                | 153 ++++++++++++++++++----
+>  2 files changed, 130 insertions(+), 26 deletions(-)
 
-This is correct understanding, just need to clean other entries in that
-Kconfig that depends on STMMAC_ETH.
+<...>
+
+> +static void x25_setup_virtual_dev(struct net_device *dev)
+> +{
+> +	dev->netdev_ops	     = &hdlc_x25_netdev_ops;
+> +	dev->type            = ARPHRD_X25;
+> +	dev->addr_len        = 0;
+> +	dev->hard_header_len = 0;
+> +	dev->mtu             = HDLC_MAX_MTU;
+> +
+> +	/* When transmitting data:
+> +	 * first we'll remove a pseudo header of 1 byte,
+> +	 * then the LAPB module will prepend an LAPB header of at most 3 bytes.
+> +	 */
+> +	dev->needed_headroom = 3 - 1;
+
+3 - 1 = 2
 
 Thanks
 
->
-> > Thanks
-> >
->
-> Best regards,
->   Nobuhiro
+> +}
+> +
