@@ -2,108 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99E5131B5A4
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 08:32:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CA3231B5C6
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 08:58:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229974AbhBOHax (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 02:30:53 -0500
-Received: from mo-csw1114.securemx.jp ([210.130.202.156]:41544 "EHLO
-        mo-csw.securemx.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229597AbhBOHar (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 02:30:47 -0500
-Received: by mo-csw.securemx.jp (mx-mo-csw1114) id 11F7SD8j007731; Mon, 15 Feb 2021 16:28:14 +0900
-X-Iguazu-Qid: 2wGqsXjpwIf1LbOLGW
-X-Iguazu-QSIG: v=2; s=0; t=1613374093; q=2wGqsXjpwIf1LbOLGW; m=lVkVkCKaQ0GTmF5HnUvU37rAumj/q4/KAOhciklpZiY=
-Received: from imx12.toshiba.co.jp (imx12.toshiba.co.jp [61.202.160.132])
-        by relay.securemx.jp (mx-mr1112) id 11F7SBOk037567;
-        Mon, 15 Feb 2021 16:28:12 +0900
-Received: from enc02.toshiba.co.jp ([61.202.160.51])
-        by imx12.toshiba.co.jp  with ESMTP id 11F7SBcd018818;
-        Mon, 15 Feb 2021 16:28:11 +0900 (JST)
-Received: from hop101.toshiba.co.jp ([133.199.85.107])
-        by enc02.toshiba.co.jp  with ESMTP id 11F7SAKc025869;
-        Mon, 15 Feb 2021 16:28:10 +0900
-Date:   Mon, 15 Feb 2021 16:28:09 +0900
-From:   Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>, arnd@kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        punit1.agrawal@toshiba.co.jp, yuji2.ishikawa@toshiba.co.jp,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/4] net: stmmac: Add Toshiba Visconti SoCs glue driver
-X-TSB-HOP: ON
-Message-ID: <20210215072809.n3r5rdswookzri6j@toshiba.co.jp>
-References: <20210215050655.2532-1-nobuhiro1.iwamatsu@toshiba.co.jp>
- <20210215050655.2532-3-nobuhiro1.iwamatsu@toshiba.co.jp>
- <YCoPmfunGmu0E8IT@unreal>
+        id S229951AbhBOH6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 02:58:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54648 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229595AbhBOH6M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 02:58:12 -0500
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BF00C061574
+        for <netdev@vger.kernel.org>; Sun, 14 Feb 2021 23:57:32 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id l8so6258139ybe.12
+        for <netdev@vger.kernel.org>; Sun, 14 Feb 2021 23:57:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xRrCe72/CdWUDvsr0RGVjqqpypb4q7lznYDnnHmF084=;
+        b=pSjla5YF0Fa48dyQsvdyPViGCk2Av/8w1S6nwtudRE3Sff8FTGB6X8vly+vbNR+5Rq
+         Ylf7cR/+rnGuaB2XmF63neNKn6yV+Pc4vNk55JF3emkhTet75M5hnLS7Z7xZZ9MiP27H
+         1bvlmoIpc6NjbITEWaXIZgwvEn4CQ7Hxlj6LSt0J9+wpf77+hQ/a9vCzLpSnKdkG2VnB
+         14qRT9xG38UXBypOqy4PEw4tOU1J/2OY+mvLRKSf2JjRQrzsvtYKokHA+A9o23sE9vCx
+         Ydk+FDMyei6NfGovROfZArTyGYnf0xXcnxGrABuJyHJ06GIO2yWkw91Foqa+Ki74e/Va
+         zh3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xRrCe72/CdWUDvsr0RGVjqqpypb4q7lznYDnnHmF084=;
+        b=bYHc2JlHI3mg85I9t4DTZtFE7ZaAmarEFuvcO+5qHpaR6ddZ605kjWfwXbu5nCAPVk
+         d1uQ3z5di3tBj+/UhxrfE4N5AtfoHD8Jg8b94htoKsxZhWVRc/b2HYH7MBT+90uWDG5J
+         OgB0YLus+bG0Gv39DXMMwIlINNrBYQ/J2RSPGAzptTEk6+c0I7yCK2CuMkC2O0/DQaUe
+         RMt+K044pqha1dxr2fzBdT4r2WWmTYmqTPwCw9WkTFqpoWIIQ+KmlvmOLFoxKloVvfxG
+         oXVv/fhiQjvUIRp3OSKDFeiYOpy74ZE/SWHvflUvBOy2XulHHnf4Aln82BoO460lsMqj
+         CUKw==
+X-Gm-Message-State: AOAM533vzXkzkZ4J8rnVHkFqpk3XrKGFyk/k1JROVRxKrcTrYWfiop2S
+        tBBmxgHEUQe3nzH9r14yVpuQ7zyn9+h/BhGGqPo=
+X-Google-Smtp-Source: ABdhPJz1O+cpV52RAzgq76H4yycwKHlcm4jQ0kMs+6/Bl50qjIETHfwy15kfD5sCrOOcALdHGM0RLc8EVGhcwcLR3JE=
+X-Received: by 2002:a25:9383:: with SMTP id a3mr21111797ybm.215.1613375851909;
+ Sun, 14 Feb 2021 23:57:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YCoPmfunGmu0E8IT@unreal>
+References: <20210211211044.32701-1-borisp@mellanox.com> <20210211211044.32701-7-borisp@mellanox.com>
+ <2dd10b2f-df00-e21c-7886-93f41a987040@gmail.com>
+In-Reply-To: <2dd10b2f-df00-e21c-7886-93f41a987040@gmail.com>
+From:   Or Gerlitz <gerlitz.or@gmail.com>
+Date:   Mon, 15 Feb 2021 09:57:20 +0200
+Message-ID: <CAJ3xEMg3GWNVjkixVVop9uhn958Opdq4ej0qktA11NS6GM9s-g@mail.gmail.com>
+Subject: Re: [PATCH v4 net-next 06/21] nvme-tcp: Add DDP offload control path
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Boris Pismenny <borisp@mellanox.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>, axboe@fb.com,
+        Keith Busch <kbusch@kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Eric Dumazet <edumazet@google.com>, smalin@marvell.com,
+        Yoray Zack <yorayz@mellanox.com>, yorayz@nvidia.com,
+        boris.pismenny@gmail.com, Ben Ben-Ishay <benishay@mellanox.com>,
+        benishay@nvidia.com, linux-nvme@lists.infradead.org,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        Or Gerlitz <ogerlitz@mellanox.com>,
+        Or Gerlitz <ogerlitz@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Sun, Feb 14, 2021 at 8:20 PM David Ahern <dsahern@gmail.com> wrote:
+> On 2/11/21 2:10 PM, Boris Pismenny wrote:
+> > @@ -223,6 +229,164 @@ static inline size_t nvme_tcp_pdu_last_send(struct nvme_tcp_request *req,
+> >       return nvme_tcp_pdu_data_left(req) <= len;
+> >  }
 
-Thanks for your review.
+Hi Dave,
 
-On Mon, Feb 15, 2021 at 08:07:21AM +0200, Leon Romanovsky wrote:
-> On Mon, Feb 15, 2021 at 02:06:53PM +0900, Nobuhiro Iwamatsu wrote:
-> > Add dwmac-visconti to the stmmac driver in Toshiba Visconti ARM SoCs.
-> > This patch contains only the basic function of the device. There is no
-> > clock control, PM, etc. yet. These will be added in the future.
-> >
-> > Signed-off-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-> > ---
-> >  drivers/net/ethernet/stmicro/stmmac/Kconfig   |   8 +
-> >  drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
-> >  .../ethernet/stmicro/stmmac/dwmac-visconti.c  | 285 ++++++++++++++++++
-> >  3 files changed, 294 insertions(+)
-> >  create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
-> >
-> > diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-> > index 53f14c5a9e02..55ba67a550b9 100644
-> > --- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
-> > +++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-> > @@ -219,6 +219,14 @@ config DWMAC_INTEL_PLAT
-> >  	  This selects the Intel platform specific glue layer support for
-> >  	  the stmmac device driver. This driver is used for the Intel Keem Bay
-> >  	  SoC.
-> > +
-> > +config DWMAC_VISCONTI
-> > +	bool "Toshiba Visconti DWMAC support"
-> > +	def_bool y
-> 
+Thanks for the continuous feedback. Folks are out this week and it seems
+for that few comments we will need to discuss internally, but anyway I will
+address at least  some of the comments later today/tomorrow.
 
-Sorry, I sent the wrong patchset that didn't fix this point out.
+Or.
 
-> I asked it before, but never received an answer.
-
-I have received your point out and have sent an email with the content
-to remove this line. But it may not have arrived yet...
-
-> Why did you use "def_bool y" and not "default y"? Isn't it supposed to be
-> "depends on STMMAC_ETH"? And probably it shouldn't be set as a default as "y".
-> 
-
-The reason why "def_bool y" was set is that the wrong fix was left when
-debugging. Also, I don't think it is necessary to set "default y".
-This is also incorrect because it says "bool" Toshiba Visconti DWMAC
-support "". I change it to trustate in the new patch.
-
-And this driver is enabled when STMMAC_PLATFORM was Y. And STMMAC_PLATFORM
-depends on STMMAC_ETH.
-So I understand that STMMAC_ETH does not need to be dependents. Is this
-understanding wrong?
-
-> Thanks
-> 
-
-Best regards,
-  Nobuhiro
+Or.
