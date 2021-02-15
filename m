@@ -2,41 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6B8431C45A
+	by mail.lfdr.de (Postfix) with ESMTP id 3F00531C459
 	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 00:25:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230138AbhBOXWy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 18:22:54 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33720 "EHLO mail.kernel.org"
+        id S230108AbhBOXWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 18:22:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33716 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230015AbhBOXVf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S230011AbhBOXVf (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 15 Feb 2021 18:21:35 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 2584E64E0F;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 170D564E09;
         Mon, 15 Feb 2021 23:20:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1613431209;
-        bh=iACck1P0hnI5PXqNmAQtt7nbapkHhKTNxlNL9IONW/I=;
+        bh=4/rE9dvaxalyGmzsQcJF5ndZQXOGiHn8sWZnyl3WWKM=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=c0jesDVtB/QzcswYIBYiiCFQuoAQY7KGEV3h2m3UDM921PSQIw9c5s6eHd2NPHWZX
-         94gpAD99b5kizT2cYaiKG2hk5X70F8ZJucbvfIzSu+CjMcHkKb3PgYltwnI2Jh5XJI
-         QFTCGHhVKKWQYhqDI+eXAhbCYwZn3FAuWIP7lWBrTfEIKXTeiqwno6le0y5bSIF+KO
-         HvYprJwsLAlniTrCGFnaIVxd8FVAg8LwTda088+QMlWWdUQ18ZL7svyaBxtQh9X1L0
-         i9aC/G5oYYI1TovqvZwPs6HY7AzaajNfNpQW1m6GfiyVa0+ZDv2cZGe7SHUiPWZv7p
-         EWmZHGCbBoYSw==
+        b=eXsFD7tsypNuw2r+xYFqPSQw5w2QGtA7XBxw0FwNdOoZKW4JsyoPKav0rzyVaa1MC
+         AEibF0kXJmedSnAi84UBqJ+5BaX3oOLGJn1mWiBhfPvW2BrCqX4D0QZznjmimDcD80
+         mjOEtePm8467n+LfqatxHk56pBt03tjH10lFOhph3MrGnwaM/qnCm05NYqiOqKKpNH
+         63DGLzuMPRELRBKG12DET4J0odWRp8avdCr+Q1cTxycjJ+Jpd1yQmoUOAUjAWzvCIa
+         xSexMN3EyHndtNlzDdA827nEN949h/oyVsdUs7jrwUcxZmUnG1nkH7DbZ1m/dcY2P2
+         UpkuOrJspTKsg==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1908F609D9;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1021660977;
         Mon, 15 Feb 2021 23:20:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] ibmvnic: simplify reset_long_term_buff function
+Subject: Re: [PATCH 5.12] net: broadcom: bcm4908_enet: set MTU on open & on
+ request
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161343120909.10830.15364264541282401781.git-patchwork-notify@kernel.org>
+Message-Id: <161343120906.10830.18192335437219614781.git-patchwork-notify@kernel.org>
 Date:   Mon, 15 Feb 2021 23:20:09 +0000
-References: <20210213023610.55911-1-ljp@linux.ibm.com>
-In-Reply-To: <20210213023610.55911-1-ljp@linux.ibm.com>
-To:     Lijun Pan <ljp@linux.ibm.com>
-Cc:     netdev@vger.kernel.org, sukadev@linux.ibm.com, drt@linux.ibm.com
+References: <20210212152135.27030-1-zajec5@gmail.com>
+In-Reply-To: <20210212152135.27030-1-zajec5@gmail.com>
+To:     =?utf-8?b?UmFmYcWCIE1pxYJlY2tpIDx6YWplYzVAZ21haWwuY29tPg==?=@ci.codeaurora.org
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com,
+        rafal@milecki.pl
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -45,20 +48,21 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Fri, 12 Feb 2021 20:36:10 -0600 you wrote:
-> The only thing reset_long_term_buff() should do is set
-> buffer to zero. After doing that, it is not necessary to
-> send_request_map again to VIOS since it actually does not
-> change the mapping. So, keep memset function and remove all
-> others.
+On Fri, 12 Feb 2021 16:21:35 +0100 you wrote:
+> From: Rafał Miłecki <rafal@milecki.pl>
 > 
-> Signed-off-by: Lijun Pan <ljp@linux.ibm.com>
+> Hardware comes up with default max frame size set to 1518. When using it
+> with switch it results in actual Ethernet MTU 1492:
+> 1518 - 14 (Ethernet header) - 4 (Broadcom's tag) - 4 (802.1q) - 4 (FCS)
+> 
+> Above means hardware in its default state can't handle standard Ethernet
+> traffic (MTU 1500).
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] ibmvnic: simplify reset_long_term_buff function
-    https://git.kernel.org/netdev/net-next/c/1c7d45e7b2c2
+  - [5.12] net: broadcom: bcm4908_enet: set MTU on open & on request
+    https://git.kernel.org/netdev/net-next/c/14b3b46a67f7
 
 You are awesome, thank you!
 --
