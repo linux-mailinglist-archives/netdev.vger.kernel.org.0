@@ -2,148 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4048131B5DD
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 09:26:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9832531B5EC
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 09:32:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229888AbhBOIXr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 03:23:47 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:8374 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229597AbhBOIXq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 03:23:46 -0500
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 11F8IBNp091661;
-        Mon, 15 Feb 2021 03:22:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=ftWBf4xrcZXmLgkk1OigxHJKK8FpKulJG/DWEMa0+nQ=;
- b=SKmD4wvc964hEuXP0aVJQ/ywPbE9vXBYOuhRUpsel4crwoFIA5367ZBT773kucqtXoZf
- SjXJT5YEdesBOqh2EwX9/TS5mRqOrSH4SYO7Nr+59HvOll1/0Q06F91daMXSCBT1TTXL
- vPOZPRANwW1EtNKHYYgEaPdRwpijcD3fmqfgIpMXMgjvwyN/vHT6RCONJljLcFDPElx/
- va0gISEAZTSfLJQVgB17F/n4wIXrIVgzNSrSdZnNrfWT4q5/NC1sJBL6CDC2DMo1PyfJ
- o8y6bDy9MRe9ppzAn4Hj9jCNwKkdj2UwWSTjo6KHovkB8YZdnXDFzIkg6kRkYxqSaqxO 2Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 36qnaxg2v8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Feb 2021 03:22:52 -0500
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 11F8Jmxl098832;
-        Mon, 15 Feb 2021 03:22:52 -0500
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 36qnaxg2up-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Feb 2021 03:22:52 -0500
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 11F8LMn5000828;
-        Mon, 15 Feb 2021 08:22:50 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma03ams.nl.ibm.com with ESMTP id 36p6d89ma0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Feb 2021 08:22:50 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 11F8Mmtc19398958
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 15 Feb 2021 08:22:48 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 408F54204B;
-        Mon, 15 Feb 2021 08:22:48 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B39C942054;
-        Mon, 15 Feb 2021 08:22:47 +0000 (GMT)
-Received: from Alexandras-MBP.fritz.box (unknown [9.145.21.14])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 15 Feb 2021 08:22:47 +0000 (GMT)
-Subject: Re: [PATCH iproute2 5/6] man8/bridge.8: explain self vs master for
- "bridge fdb add"
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-References: <20210211104502.2081443-1-olteanv@gmail.com>
- <20210211104502.2081443-6-olteanv@gmail.com>
-From:   Alexandra Winter <wintera@linux.ibm.com>
-Message-ID: <65b9d8b6-0b04-9ddc-1719-b3417cd6fb89@linux.ibm.com>
-Date:   Mon, 15 Feb 2021 09:22:47 +0100
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.7.0
+        id S230010AbhBOIby (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 03:31:54 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:39234 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229960AbhBOIbw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 03:31:52 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11F8U15B046899;
+        Mon, 15 Feb 2021 08:31:03 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ content-transfer-encoding : in-reply-to; s=corp-2020-01-29;
+ bh=lNJhPUBe/qt7sRGgOxmCt7Nkroau6aBus260lcLM7Zw=;
+ b=PwQw9apyCEReriD+DdUGRc5mQ2de27n9pOJXCRFum6FgUM0dhjC33xio5D3hBpGWJkde
+ qKHvlWqlqihWSr2I/JTvob+OLFhVfNYlxgnU4V6lOIIT9mDtIVc4BEaHAlClHQkGNTOp
+ jkhpLy5zuCW1RSg7DItbeF6D61N5xKqas9qs0WKfZUI5xLuNZZjRZR2H7roUnOJPmCfw
+ 5QqVCpFmXxcNPJu4Qv4h4JsVEVOtqrNZyKAn8yUz85GazSD2fRciv4MMe5tPBOWfqj68
+ ffHyIDRXVAIz6gRWfrie2YH3MV8lDCfLNR6ZNCqJoSvOT4v4ZBPs4GmZrtg3nQrUFRT4 7g== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by aserp2120.oracle.com with ESMTP id 36pd9a2p9e-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 15 Feb 2021 08:31:03 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11F8TtOS032943;
+        Mon, 15 Feb 2021 08:31:01 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by userp3030.oracle.com with ESMTP id 36prpvah3h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 15 Feb 2021 08:31:01 +0000
+Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 11F8UxR1002778;
+        Mon, 15 Feb 2021 08:30:59 GMT
+Received: from kadam (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 15 Feb 2021 00:30:59 -0800
+Date:   Mon, 15 Feb 2021 11:30:51 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Ariel Levkovich <lariel@nvidia.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Roi Dayan <roid@mellanox.com>,
+        Ariel Levkovich <lariel@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>
+Subject: Re: [PATCH 1/2 net-next] net/mlx5e: TC: Fix IS_ERR() vs NULL checks
+Message-ID: <20210215083050.GA2222@kadam>
+References: <20200928174153.GA446008@mwanda>
+ <3F057952-3C88-452F-BFC5-4DC2B87FAD67@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <20210211104502.2081443-6-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
- definitions=2021-02-15_02:2021-02-12,2021-02-15 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- mlxlogscore=999 bulkscore=0 malwarescore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 adultscore=0 mlxscore=0 priorityscore=1501 phishscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102150064
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <3F057952-3C88-452F-BFC5-4DC2B87FAD67@nvidia.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-IMR: 1
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9895 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxlogscore=999
+ phishscore=0 adultscore=0 mlxscore=0 suspectscore=0 malwarescore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2102150071
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9895 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 clxscore=1011 impostorscore=0
+ mlxscore=0 phishscore=0 mlxlogscore=999 spamscore=0 bulkscore=0
+ priorityscore=1501 malwarescore=0 suspectscore=0 adultscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2102150071
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thank you very much Vladimir for improving this man page. I am still struggling with the meaning of the bridge attributes and sometimes
-the man page has caused more confusion.
+On Mon, Sep 28, 2020 at 06:31:04PM +0000, Ariel Levkovich wrote:
+> On Sep 28, 2020, at 13:42, Dan Carpenter <dan.carpenter@oracle.com> wrote:
+> > 
+> > ﻿The mlx5_tc_ct_init() function doesn't return error pointers it returns
+> > NULL.  Also we need to set the error codes on this path.
+> > 
+> > Fixes: aedd133d17bc ("net/mlx5e: Support CT offload for tc nic flows")
+> > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> > ---
+> > drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 8 ++++++--
+> > 1 file changed, 6 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+> > index 104b1c339de0..438fbcf478d1 100644
+> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+> > @@ -5224,8 +5224,10 @@ int mlx5e_tc_nic_init(struct mlx5e_priv *priv)
+> > 
+> >    tc->ct = mlx5_tc_ct_init(priv, tc->chains, &priv->fs.tc.mod_hdr,
+> >                 MLX5_FLOW_NAMESPACE_KERNEL);
+> > -    if (IS_ERR(tc->ct))
+> > +    if (!tc->ct) {
+> > +        err = -ENOMEM;
+> >        goto err_ct;
+> > +    }
+> 
+> Hi Dan,
+> That was implement like that on purpose. If mlx5_tc_init_ct returns NULL it means the device doesn’t support CT offload which can happen with older devices or old FW on the devices.
+> However, in this case we want to continue with the rest of the Tc initialization because we can still support other TC offloads. No need to fail the entire TC init in this case. Only if mlx5_tc_init_ct return err_ptr that means the tc init failed not because of lack of support but due to a real error and only then we want to fail the rest of the tc init.
+> 
+> Your change will break compatibility for devices/FW versions that don’t have CT offload support.
+> 
 
-In the section about 'bridge link set' Self vs master mention physical device vs software bridge. Would it make sense to use the same
-terminology here?
+When we have a function like this which is optional then returning NULL
+is a special kind of success as you say.  Returning NULL should not
+generate a warning message.  At the same time, if the user enables the
+option and the code fails because we are low on memory then returning an
+error pointer is the correct behavior.  Just because the feature is
+optional does not mean we should ignore what the user told us to do.
 
-The attributes are listed under 'bridge fdb add' not under 'bridge fdb show'. Is it correct that the attributes displayed by 'show'
-are a 1-to-1 representation of the ones set by 'add'? What about the entries that are not manually set, like bridge learned adresses?
-Is it possible to add some explanation about those as well?
+This code never returns error pointers.  It always returns NULL/success
+when an allocation fails.  That triggers the first static checker
+warning from last year.  Now Smatch is complaining about a new static
+checker warning:
 
-On 11.02.21 11:45, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> The "usually hardware" and "usually software" distinctions make no
-> sense, try to clarify what these do based on the actual kernel behavior.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  man/man8/bridge.8 | 15 ++++++++++++---
->  1 file changed, 12 insertions(+), 3 deletions(-)
-> 
-> diff --git a/man/man8/bridge.8 b/man/man8/bridge.8
-> index 1dc0aec83f09..d0bcd708bb61 100644
-> --- a/man/man8/bridge.8
-> +++ b/man/man8/bridge.8
-> @@ -533,12 +533,21 @@ specified.
->  .sp
->  
->  .B self
-> -- the address is associated with the port drivers fdb. Usually hardware
-> -  (default).
-> +- the operation is fulfilled directly by the driver for the specified network
-> +device. If the network device belongs to a master like a bridge, then the
-> +bridge is bypassed and not notified of this operation (and if the device does
-> +notify the bridge, it is driver-specific behavior and not mandated by this
-> +flag, check the driver for more details). The "bridge fdb add" command can also
-> +be used on the bridge device itself, and in this case, the added fdb entries
-> +will be locally terminated (not forwarded). In the latter case, the "self" flag
-> +is mandatory. 
-Maybe I misunderstand this sentence, but I can do a 'bridge fdb add' without 'self'
-on the bridge device. And the address shows up under 'bridge fdb show'.
-So what does mandatory mean here?
-The flag is set by default if "master" is not specified.
->  .sp
->  
->  .B master
-> -- the address is associated with master devices fdb. Usually software.
-> +- if the specified network device is a port that belongs to a master device
-> +such as a bridge, the operation is fulfilled by the master device's driver,
-> +which may in turn notify the port driver too of the address. If the specified
-> +device is a master itself, such as a bridge, this flag is invalid.
->  .sp
->  
->  .B router
-> 
+drivers/net/ethernet/mellanox/mlx5/core/en_tc.c:4754
+mlx5e_tc_esw_init() warn: missing error code here? 'IS_ERR()' failed. 'err' = '0'
+
+  4708  int mlx5e_tc_esw_init(struct rhashtable *tc_ht)
+  4709  {
+  4710          const size_t sz_enc_opts = sizeof(struct tunnel_match_enc_opts);
+  4711          struct mlx5_rep_uplink_priv *uplink_priv;
+  4712          struct mlx5e_rep_priv *rpriv;
+  4713          struct mapping_ctx *mapping;
+  4714          struct mlx5_eswitch *esw;
+  4715          struct mlx5e_priv *priv;
+  4716          int err = 0;
+  4717  
+  4718          uplink_priv = container_of(tc_ht, struct mlx5_rep_uplink_priv, tc_ht);
+  4719          rpriv = container_of(uplink_priv, struct mlx5e_rep_priv, uplink_priv);
+  4720          priv = netdev_priv(rpriv->netdev);
+  4721          esw = priv->mdev->priv.eswitch;
+  4722  
+  4723          uplink_priv->ct_priv = mlx5_tc_ct_init(netdev_priv(priv->netdev),
+  4724                                                 esw_chains(esw),
+  4725                                                 &esw->offloads.mod_hdr,
+  4726                                                 MLX5_FLOW_NAMESPACE_FDB);
+  4727          if (IS_ERR(uplink_priv->ct_priv))
+  4728                  goto err_ct;
+
+If mlx5_tc_ct_init() fails, which it should do if kmalloc() fails but
+currently it does not, then the error should be propagated all the way
+back.  So this code should preserve the error code instead of returning
+success.
+
+  4729  
+  4730          mapping = mapping_create(sizeof(struct tunnel_match_key),
+  4731                                   TUNNEL_INFO_BITS_MASK, true);
+
+regards,
+dan carpenter
+
