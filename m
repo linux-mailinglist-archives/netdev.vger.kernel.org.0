@@ -2,119 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B831731BC16
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 16:19:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C01E531BC1B
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 16:19:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230412AbhBOPRo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 10:17:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35502 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229888AbhBOPQf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 10:16:35 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A0BFC061574;
-        Mon, 15 Feb 2021 07:15:52 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id cv23so3895502pjb.5;
-        Mon, 15 Feb 2021 07:15:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0rSXsWgkIPp9LcQforsSfMG6IosnkE2y+0kuGemcWec=;
-        b=dpuJndH3wLvC1smjtwpWiso7TjKO+CHXqm5me8ElygIzH7E2zcebDLGoIxFvsb7sFC
-         FBjKpDWWrsFAGy0zaTySceq2GNCbUmz94XAHzGfXYhsFVITqQkF1giOndmRTochCYsr2
-         k8xqGMZe8569vazxMC08vUNfc/iH7+MtKCQvwyUMu09u/E2+I9vy6op3iVd+3DAnzY19
-         +utxNRJW7Q+RQl8EcYOP4ZtmktDzmVsIFpIG+KGuyStvj4X4DErvq3HxqJM/KkpZwy9b
-         iy+C/MY2dbLil5jvy0mag5dOOW7ajf8SfJ3iCh0Iax3GF0lcg8W6oJy9xdqq51v5w8BR
-         xpfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0rSXsWgkIPp9LcQforsSfMG6IosnkE2y+0kuGemcWec=;
-        b=qSU6Fl+2w0E9O4aSqzjgXufzvnQQZqrEuSqr+5xEDzcTcy6o1frqVNH1db07Ow/BH0
-         qmsxocsxnOdfbwNMBu0kJdll5YKvhZV7jv1YnCsgJ3dwr+RjvVU5phg2Ef0foyn3je/i
-         u7Nj0E7b7RBTFnHIGIQrS0aLvE0itFX1E06eDQqQsIG+z9U+vFFpRX69vW7LwfsuwSLU
-         c1/MhUx40gC2erbSxF5J5w7PVOnKVn5IDF8J74ntT1Ypyon4Rt+cgBSoAMHroewdRAAk
-         caSXWea6taPWSoxJ8BPbUOnhXkUGhqCrMoG4OQuM0MEyMolmrZRGHBkZad0Swk0V60y6
-         LECA==
-X-Gm-Message-State: AOAM531zP5cgk6Qu4G7S8+tlRjIWSvDN6dAIiY1H1rnSoDXqyYkBHjXk
-        Q4W0qOKplGOBYPJgav888Ar+4b9vtnDuTKLrltM=
-X-Google-Smtp-Source: ABdhPJxwskZcsaaZiTXp5aWn51qO6stnRxwfBmOr2xwKBhAzDXV9MTODHcnk6/nIvbr/V7VXILKWYOWjTfSGE0EcuCA=
-X-Received: by 2002:a17:90a:4fc1:: with SMTP id q59mr17212917pjh.129.1613402152155;
- Mon, 15 Feb 2021 07:15:52 -0800 (PST)
-MIME-Version: 1.0
-References: <20210208151244.16338-1-calvin.johnson@oss.nxp.com>
- <20210208151244.16338-16-calvin.johnson@oss.nxp.com> <20210208162831.GM1463@shell.armlinux.org.uk>
- <20210215123309.GA5067@lsv03152.swis.in-blr01.nxp.com> <CAHp75VcpR1uf-6me9-MiXzESP9gtE0=Oz5TaFj0E93C3w4=Fgg@mail.gmail.com>
-In-Reply-To: <CAHp75VcpR1uf-6me9-MiXzESP9gtE0=Oz5TaFj0E93C3w4=Fgg@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 15 Feb 2021 17:15:36 +0200
-Message-ID: <CAHp75Vfcpk_4OQDpk_rvySJbXAyzAubt-n=ckFzggdo9fKvJ4A@mail.gmail.com>
-Subject: Re: [net-next PATCH v5 15/15] net: dpaa2-mac: Add ACPI support for
- DPAA2 MAC driver
-To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Grant Likely <grant.likely@arm.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Jeremy Linton <jeremy.linton@arm.com>,
+        id S230117AbhBOPST (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 10:18:19 -0500
+Received: from lists.nic.cz ([217.31.204.67]:57546 "EHLO mail.nic.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230359AbhBOPRL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Feb 2021 10:17:11 -0500
+Received: from localhost (unknown [IPv6:2a0e:b107:ae1:0:3e97:eff:fe61:c680])
+        by mail.nic.cz (Postfix) with ESMTPSA id A7F5D140A60;
+        Mon, 15 Feb 2021 16:16:28 +0100 (CET)
+Date:   Mon, 15 Feb 2021 16:16:27 +0100
+From:   Marek Behun <marek.behun@nic.cz>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Nathan Rossi <nathan@nathanrossi.com>, netdev@vger.kernel.org,
+        Nathan Rossi <nathan.rossi@digi.com>,
         Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
-        Jon <jon@solid-run.com>, Saravana Kannan <saravanak@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "linux.cj" <linux.cj@gmail.com>,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        netdev <netdev@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
         Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH] net: dsa: mv88e6xxx: prevent 2500BASEX mode override
+Message-ID: <20210215161627.63c3091c@nic.cz>
+In-Reply-To: <20210215145757.GX1463@shell.armlinux.org.uk>
+References: <20210215061559.1187396-1-nathan@nathanrossi.com>
+        <20210215144756.76846c9b@nic.cz>
+        <20210215145757.GX1463@shell.armlinux.org.uk>
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-100.0 required=5.9 tests=SHORTCIRCUIT,URIBL_BLOCKED,
+        USER_IN_WELCOMELIST,USER_IN_WHITELIST shortcircuit=ham
+        autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
+X-Virus-Scanned: clamav-milter 0.102.2 at mail
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 15, 2021 at 5:13 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
->
-> On Mon, Feb 15, 2021 at 2:33 PM Calvin Johnson
-> <calvin.johnson@oss.nxp.com> wrote:
-> > On Mon, Feb 08, 2021 at 04:28:31PM +0000, Russell King - ARM Linux admin wrote:
->
-> ...
->
-> > I think of_phy_is_fixed_link() needs to be fixed. I'll add below fix.
-> >
-> > --- a/drivers/net/mdio/of_mdio.c
-> > +++ b/drivers/net/mdio/of_mdio.c
-> > @@ -439,6 +439,9 @@ bool of_phy_is_fixed_link(struct device_node *np)
-> >         int len, err;
-> >         const char *managed;
-> >
-> > +       if (!np)
-> > +               return false;
->
-> AFAICS this doesn't add anything: all of the of_* APIs should handle
-> OF nodes being NULL below.
->
-> >         /* New binding */
-> >         dn = of_get_child_by_name(np, "fixed-link");
-> >         if (dn) {
+On Mon, 15 Feb 2021 14:57:57 +0000
+Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
 
-Yes, of_get_next_child() and of_get_property() are NULL aware.
+> On Mon, Feb 15, 2021 at 02:47:56PM +0100, Marek Behun wrote:
+> > On Mon, 15 Feb 2021 06:15:59 +0000
+> > Nathan Rossi <nathan@nathanrossi.com> wrote:
+> >   
+> > > diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+> > > index 54aa942eed..5c52906b29 100644
+> > > --- a/drivers/net/dsa/mv88e6xxx/chip.c
+> > > +++ b/drivers/net/dsa/mv88e6xxx/chip.c
+> > > @@ -650,6 +650,13 @@ static void mv88e6xxx_validate(struct dsa_switch *ds, int port,
+> > >  	if (chip->info->ops->phylink_validate)
+> > >  		chip->info->ops->phylink_validate(chip, port, mask, state);
+> > >  
+> > > +	/* Advertise 2500BASEX only if 1000BASEX is not configured, this
+> > > +	 * prevents phylink_helper_basex_speed from always overriding the
+> > > +	 * 1000BASEX mode since auto negotiation is always enabled.
+> > > +	 */
+> > > +	if (state->interface == PHY_INTERFACE_MODE_1000BASEX)
+> > > +		phylink_clear(mask, 2500baseX_Full);
+> > > +  
+> > 
+> > I don't quite like this. This problem should be either solved in
+> > phylink_helper_basex_speed() or somewhere in the mv88e6xxx code, but near
+> > the call to phylink_helper_basex_speed().
+> > 
+> > Putting a solution to the behaviour of phylink_helper_basex_speed() it
+> > into the validate() method when phylink_helper_basex_speed() is called
+> > from a different place will complicate debugging in the future. If
+> > we start solving problems in this kind of way, the driver will become
+> > totally unreadable, IMO.  
+> 
+> If we can't switch between 1000base-X and 2500base-X, then we should
+> not be calling phylink_helper_basex_speed() - and only one of those
+> two capabilities should be set in the validation callback. I thought
+> there were DSA switches where we could program the CMODE to switch
+> between these two...
 
-So, the check is redundant.
+There are. At least Peridot, Topaz and Amethyst support switching
+between these modes. But only on some ports.
 
--- 
-With Best Regards,
-Andy Shevchenko
+This problem happnes on Peridot X, I think.
+
+On Peridot X there are
+- port 0: RGMII
+- ports 9-10: capable of 1, 2.5 and 10G SerDes (10G via
+  XAUI/RXAUI, so multiple lanes)
+- ports 1-8: with copper PHYs
+  - some of these can instead be set to use the unused SerDes lanes
+    of ports 9-10, but only in 1000base-x mode
+
+So the problem can happen if you set port 9 or 10 to only use one
+SerDes lane, and use the spare lanes for the 1G ports.
+On these ports 2500base-x is not supported, only 1000base-x (maybe
+sgmii, I don't remember)
+
+Marek
