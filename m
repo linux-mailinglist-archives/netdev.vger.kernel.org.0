@@ -2,122 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CAAC31BE2D
-	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 17:06:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 149BC31BE58
+	for <lists+netdev@lfdr.de>; Mon, 15 Feb 2021 17:12:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232328AbhBOQCP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 11:02:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41724 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231968AbhBOPtz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 10:49:55 -0500
-Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CE67C061794
-        for <netdev@vger.kernel.org>; Mon, 15 Feb 2021 07:48:51 -0800 (PST)
-Received: by mail-oi1-x236.google.com with SMTP id l3so8188875oii.2
-        for <netdev@vger.kernel.org>; Mon, 15 Feb 2021 07:48:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=W8xERENugrCSuCZiAv8INblQCgyFu+lZ9sSN5Nlu3p4=;
-        b=e7Fx6sRRteghO4BBlAs+15v1Y8az5khDmNS+b1+ofZ9KFeDFVj+oBBhtL+RkZVRSD1
-         cWEg5bKJKfbiu7bNuPJed4yvWgV5NbR+1fEd521USp0fZ7KbhEMxVP2jC/FeJ06DBTGb
-         AsX2Cvy6kW/uOqG6pf/rCwwBNsKW8pGNFRIa9Uf/iNwvRF6irD+nKVgLrD0JWSP8jTsR
-         GD+KoxvISdZbnK68SoWOiaTsGMwv0377TsNq9eVJ72MmH73bdRgYaWeSFHp2vvROxOtl
-         hp571Ul5ZDzwEsmXbsFhXhM5/SSUIEPgOK1dYNeqvrwUYb6iVvGIZ/D8beGtSILQCE//
-         18Og==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=W8xERENugrCSuCZiAv8INblQCgyFu+lZ9sSN5Nlu3p4=;
-        b=EPUMu+g16yYD7MQpn2K1MTElpYpb283RQf7OxWlPpA7lQP+B7zfaCL0MxbHzUG4jVz
-         RSwDe9eUD3fkz5TfQojkIlYyK8nh5hkse6VhZ/rRot1tE4MjJ3q6dDDs7oZxCzpj5G/y
-         XfnaBNjJ5yRh0OVIjS6QhyHnpfvCquIuMpJl17dpQniciHtFYiXS0NoACAXbI4Knmsv5
-         jkBJ77+oMyuWiXWhWsmK5aJEB8VR7bPBoKgCnXAFQRxRM+aK5aJg2Z6e2DyI6BxBhBmU
-         Xr05WJ2/NEXa2JBimYIJ+tVhEVzWtwtTvOFjMMHkq8XrB5+fLbL77LZVMyQe0jbalP9b
-         ypxg==
-X-Gm-Message-State: AOAM532pC2hts1w1MdcVDvruUEnIihXaXvi2it04al46kCbLkxtp9KV9
-        PBYSlanGlXlvV25rjgYKIn0efPGr3HAQeSR2Jg==
-X-Google-Smtp-Source: ABdhPJzzXJw/P9Eo4dSx0r2HOR33GjA57IkIwFrpZaNOwG0/UpQPlmx4pWaHVbK9NceNW4F8o8grMmJqV4yT5bhbcFs=
-X-Received: by 2002:a05:6808:f09:: with SMTP id m9mr8872382oiw.92.1613404130490;
- Mon, 15 Feb 2021 07:48:50 -0800 (PST)
+        id S231209AbhBOQHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 11:07:32 -0500
+Received: from sonic306-8.consmr.mail.bf2.yahoo.com ([74.6.132.47]:46774 "EHLO
+        sonic306-8.consmr.mail.bf2.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231470AbhBOQCg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 11:02:36 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1613404907; bh=Uz8GRnidgEXUoLSlgeR3ElSnlO8K5iYVa9AT8u/qtWc=; h=Date:From:Reply-To:Subject:References:From:Subject:Reply-To; b=nP11NyyQOOWCWzCVCSCs8pp4ufeMM8t8lgCPsp8DGemOYB/XI0p97a/q0TqQoHZ6JYnh2q98rg9a32hs+7L5q7APZ5pep6ndgT6KGbXYeewiz4vNOAQB8i9yoP5pwIU2YpTpofBsJ2l+QUlD5kCnOe1mWCIxiJHSYM3Y4QAgB344GrcQvUOtWNJaGGKalV4YcBCAdbOJtJJrIRv0DZ3+1FnsF2CSlrp94r4l1Yv+BT/szDrId/1dOZfBLqzQD/HlMzzhAdqZeDIOuK7aUOVk1ZbUGGnmEsEplQN/cVnbe0KzUrKDEbmIqgAOBZH742d4PXW1f8wWSCnOaUSh0LOqiQ==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1613404907; bh=wR1clyFFwqygA9ClpTFj82JmTTjQRuxX3cdCf35x5Aa=; h=X-Sonic-MF:Date:From:Subject:From:Subject; b=P/vDobb2OhLGTDfsQx392A174uvjQKGY4ziejKpAFXc96aejD9NhkYKVaMIaN1hBuLNDxPiMLbby0wJ0omUT3Us8RVhA+ouFuV7lubEUVeksfZmt99doMj2EeRjoDHcAcfOmcORewJYxV9oECx+8Pi8QKwmpJOAcMX4FcJTjWWubDZCQEiusXIfvYG7R44epZIZjp+MvcwMvv69gmlMm/0zFeNXW7IxVgfj8dPy/th8byL8Ky6zrb95BoYYY+LpAQmEVW6/YW7vYI0ZSr8aqoheEOk3j1l0B4sOYkEsJs8jk1HsSR3GqE57gdLg2zfirzSuFhvL35LYQJ6dvB4YXAw==
+X-YMail-OSG: 6dGybBUVM1nju2K3c1qOY_f0DKThXvoAcsxwWnk5pd0onQv5Noh.KnBLsVMyzXU
+ a_PdDf_pjG1VOWyqN4dAP8WrEl9MEfloAxkP6hTnwyAmriHblke1oAVlYpeXjNmJyhqGtuLI2TTC
+ eUO93HBx9E.A2XKxC.OTuPNY.CTBl1FgSTsydkfTZTBBjoq1IuNpT1Tp5PqndvQeuH0puU45UDjw
+ Lt2ylb3n9Pc9GmMFcnVhPf5QsauT7_nqtBv5MSOxO7oQ_mNn1.zvwe_QmdFbkfGlxnVxM3cQIS4O
+ LL1fGLB_qILeWKL1V4rInHkocHOvMKlaS4g.HNn7EOXMkSvLZw3bAUuVqsKouSCAzmewKnp7tB45
+ dmGpEcSDOo.yl2U6bx.GeKRkR9NcF2jOpS62_GRQFHvGlsaLcE7HqmAwUuKNZFZ45cNGGWXzaSSs
+ h0GUfrl.hWvBF9gEV0v7Fq.3KR8OXhSbma1.Qngxrhrjo5CexxMB9IzhAZwiNP_FlYSSFfILnxh9
+ RlOKjio0bfBDyC3_Vf6GxRXt9NYMXNugpIQiTt7dF7XBWrXcuw6OgTwU.1MYjeNiw5NkCQP3GEoO
+ PqwuoTeKF0MduhMAC_H5da5Wta.dRfMp.YMP5qvxoWT7r63iXcXuuxXmRxoV3rujCq22wt.eyJ3j
+ 4RAktQcNA7UmRzK_PtURnyW2B5LvywUGSQKTmrCHHz7bYTu6a1HhibrN72BcU.Nvtfz7pFeFj_RQ
+ ROzmQzuScLuCsO0kTJukWyvWcH2ddB1tifkgk.EkMUmAiTpN1GElrxH8.b2f4sMiKIwk2t0dd1On
+ bh_3m7WiIuSOfyySr7_xxcRRAdqKsKpU.jbpYWTVZZBekhrBYH5vWaJZ98sWlkEYo4Cwo2VJTcrc
+ jcvVqVb02d_RC36UhRZVjhk1uCvPA2VtUKXewBSCvkoH_Q39kdO_57zr7LWVqL8nPm2UJRtqqBFC
+ 8kkHf5SFfEB5L6Yx0SKOtkman554BU.L25_NzzV47y_1X9SWeUrHLfWZsRLACyC4BJaa9FvDdBOU
+ 5XWjQSCLi9Hn9LSNajVmhnF4MqyJDYFFzwyMCCHD.PryF6FPBrDIXo_El6Mj3_qtiMQwBjXkbd_h
+ x9oTOJLg4JX84hqDHyWCXBL.WfSzoiGStyzsSlIkd1sdPuz5r.vC5awtXrevZL5vkcreL6i6ie8W
+ CuyVTsvo.YtG_1jvBH.3uGGy5WW7WgA1aZ7_fz1PsXtDtHYtS8xRaf.hk0QnrsbpoHn_AJDtgKUM
+ 15J81iKl3HCKfljO2tPMDiMUMoSeTsgG3iBf1B7hUF42lqBOSLWxd0C4Wpm2tRTLGgnhswScrNdX
+ LBExkWshbkYQ9Qe4hf65xDIxbLDl6eq5O5EXHGDjYimxXIgWgi2mjBs6fnm3UN0ALhbtxgINMHq4
+ P6S57Sl6O8ZsdqwV4hpXjfEJ5DyyQJ4juvRuuaHhkQlf_aQn4xIMXZurbF.nFuuRuQIzuYaNAjK5
+ txVq_tDQURPPIyd3WOe8ZlZAJ3U3Vo7okawbepYZR0Alx6n6Fdu7pNjPgqv6yufRSc5jJ0vuy214
+ vK3DyBgAH9WSA9wnM6IiURLAg8sm5deLlKGuqMbA.vzrsUELMEqc_JbyBvg.rSLYYUNsUzIvCZAM
+ A1Mk_yDGxuJOSJhDK6g4LYadfViI4vQIt8rzJle2jsRel.IVfcMxlVZVpcA_N2bp2U4ILWx9LA7x
+ XjEV8Z2X7eFXYbG_jt.RcB6xNcA7QC6q2gMe_068DSaGGHncsipyrgwrV9gFpln3Jn8Wh3Qa89eZ
+ reMecNww7xQSjT_uNUmNY5teF2XRMraV6yK4bvv7mCAFJDrGTIc_eOooYUugX9hG8TJrVScXXxV6
+ h0bW5xJNmMQlwEbyUax5QxZwItAnSyuOmEcJZtWw.FEDvBB1POowchG6d7A5HtkwaUYyIZ.I8SsW
+ ebzdC4Ao5no.s_Palzigpl8m63w7zv6BBhm2fdJyEqIhu9PAAi6SSVSskjzbOxMeB5fBjEPHcJpu
+ OFT9iqeBcYz8HRtaUfEW1Qdu1.DF.zGPh8vplQZ1_FVC2dBcr0.2c94f10rLMtPsWjiG2K7HXcpV
+ OnNF0yn6TSzEn4ukV0EencsGrz8SPGaiTDrxNw3ahabjPqvmddMkKz.5ly1rSkva4dEnj6L713Zv
+ .3YfzYfnrsqv1t5lM9B6WkWjcgxrYDbWqCiS_KBgIqkp5M1msz6XxdFzb7lMgUCFXZYwpsEHxIiM
+ Ho12E1xkIGdL0QUA2e2qxs4niM_qYzMnI4yexVaXM9wZ_5eYIXQQlFUPKPEL4_qtX5IvZg6DMfQ1
+ xbx3EFxNBmYe73MawrzgJPS.LcfV0asgb.GQdtsFhopfkUUcZIs6KGB_uwbb_ycCxFt.2hJx76v7
+ uo7AaVZDTCtvgQKBYZruG39JIWgElvG4apPuP80a1j7Hi86dqrW.QjfR30X6gO19xPpi4_cgfAXt
+ m9CUxbBu.iHX24iIhepVHET_ltS4k.arqaHZUEJXGn6m60Ht_zYx_zB3mvvysc4v4HK9HPEkU6f1
+ H5Oz3NgUzzaqmfCpzbX3DTHocRjRxRXU9j.Vk4p7XBPDepiImD1oETfuTRuH7mhZOdzgeLG0KD8_
+ ucs02p5erfhiBpfMcIa4JnHGu5udMNS1z5WnYQEE4Ys8qgm.hftULkj8GxrLc.8mgki9wmQUNI_y
+ 4uBsVqAa32tTEkxWkpOn9nDWatAiI904AlbaPodZnetILdvN1sKSHgSIGoLGRQaDUArcqd7p5_jr
+ 1k9AK4fTq3bt3OG.XEydZpipWR2Z5OReHYQOtWVrnVX.aEw4N4.mKOALu7hqaJSClfJ_SYG8.B00
+ slU1bAysSZzRX_.bizOkQmTN3HHcyVuj26.E8uq7H2GB6ileG1MR779341d8CanNFRtB7OT6GxbH
+ PfoeyvBoQaUQeI.a9ldzxpv6tZz5uCvryQv7Uz7nCF_QdesRqLM8C7opSJH9QDBNgsiSsA42KFyB
+ 2AAH5StYIUnr3CKOMWiSeCY7Mvp9OBk4BEmG0G46nPxOhUx7iJDEmlFo9tPdY.yixSXImlyl3_A0
+ PgXGyfskjBoJski5pCiGX3K0usRkqvIyZZgxfGh1g6JXIlH1byMulrklnm46merPvbBXySzVraP9
+ zGnnV53RD8hUR13RM9K9zDL6P65nVLVwRruJdRLAX5owFqZa6NlsGKVjzLGxBqm1eWsIpMI9nwwv
+ nLBiATFLJyZaR564.nKkqCI2MpXVgnSkpcAyDAwV5cMFK8VaDSfZCcK0ZQrEQRUCWhA_sQQWopHp
+ TU3NEYnmXzMTDB6nqJ54NFsKp.IJSnLB9M0ryaj5O_DNoxB41xZ6C6G2VkYQCKHbVpy5HPHP2vd_
+ rdIi7aggHZWpXZw2dy3ZnYeZYv1qZM4NexgbY6WMfecg3QtRlXCBmVooSS.1m_kOWvBk81IEuRB5
+ 0KGJOgZOj7BJq_cRHb.Cfa.oHnBgUFeRoYLzyUgXmL1bSOEIK.xpbwfJI51fEQNKn_cisnIEP3lC
+ cputttSbfCXU6YzAzpQjpylR3OuK4ISgnx6mGzFzjELI.yjELUlmiQosAYUV7OTlmpW.z9l2lTwG
+ 9XIgoEfS0O7_J6Psw0P4TQ1mYy_VMmZciY1k504FbsYSdrPTuenc5my03oMkrCJ122dY9g7Cyf8y
+ f_Bv.eES.U5LI0nmWbeg7ePzrXaBvUFU7uNT.skw4IqrQWFEIF3aZu_GB1UJaYbzO9WiNvM0EYY5
+ OPvM.55rGobXea9MePmdvRCw8jNiTM3xOJeZn84c1ScRGqGlfrLjebll9c_4ZPCRTStGPoZ3XJtw
+ sBci9it6rvMRygFc-
+X-Sonic-MF: <mau20@gbcon.in>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic306.consmr.mail.bf2.yahoo.com with HTTP; Mon, 15 Feb 2021 16:01:47 +0000
+Date:   Mon, 15 Feb 2021 15:48:57 +0000 (UTC)
+From:   "Mrs. Maureen Hinckley" <mau20@gbcon.in>
+Reply-To: maurhinck7@gmail.com
+Message-ID: <409229248.1491421.1613404137763@mail.yahoo.com>
+Subject: RE
 MIME-Version: 1.0
-References: <20210214155326.1783266-1-olteanv@gmail.com> <20210214155326.1783266-5-olteanv@gmail.com>
-In-Reply-To: <20210214155326.1783266-5-olteanv@gmail.com>
-From:   George McCollister <george.mccollister@gmail.com>
-Date:   Mon, 15 Feb 2021 09:48:38 -0600
-Message-ID: <CAFSKS=OryZKixT7d-7tqdwZCpqQT1PaYCt52PuZYr71F3a1gSg@mail.gmail.com>
-Subject: Re: [PATCH net-next 4/4] net: dsa: don't set skb->offload_fwd_mark
- when not offloading the bridge
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        Oleksij Rempel <linux@rempel-privat.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+References: <409229248.1491421.1613404137763.ref@mail.yahoo.com>
+X-Mailer: WebService/1.1.17712 YMailNodin Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 14, 2021 at 9:54 AM Vladimir Oltean <olteanv@gmail.com> wrote:
-[snip]
-> diff --git a/net/dsa/tag_xrs700x.c b/net/dsa/tag_xrs700x.c
-> index 858cdf9d2913..215ecceea89e 100644
-> --- a/net/dsa/tag_xrs700x.c
-> +++ b/net/dsa/tag_xrs700x.c
-> @@ -45,8 +45,7 @@ static struct sk_buff *xrs700x_rcv(struct sk_buff *skb, struct net_device *dev,
->         if (pskb_trim_rcsum(skb, skb->len - 1))
->                 return NULL;
->
-> -       /* Frame is forwarded by hardware, don't forward in software. */
-> -       skb->offload_fwd_mark = 1;
-> +       dsa_default_offload_fwd_mark(skb);
 
-Does it make sense that the following would have worked prior to this
-change? Is this only an issue for bridging between DSA ports when
-offloading is supported? lan0 is a port an an xrs700x switch:
 
-ip link set eth0 up
-ip link del veth0
-ip link add veth0 type veth peer name veth1
+I am Maureen Hinckley and my foundation is donating (Five hundred and fifty=
+ thousand USD) to you. Contact us via my email at (maurhinck7@gmail.com) fo=
+r further details.
 
-for eth in veth0 veth1 lan1; do
-    ip link set ${eth} up
-done
-ip link add br0 type bridge
-ip link set veth1 master br0
-ip link set lan1 master br0
-ip link set br0 up
-
-ip addr add 192.168.2.1/24 dev veth0
-
-# ping host connected to physical LAN that lan0 is on
-ping 192.168.2.249 (works!)
-
-I was trying to come up with a way to test this change and expected
-this would fail (and your patch) would fix it based on what you're
-described.
-
--George
-
->
->         return skb;
->  }
-> --
-> 2.25.1
->
+Best Regards,
+Mrs. Maureen Hinckley,
+Copyright =C2=A92021 The Maureen Hinckley Foundation All Rights Reserved.
