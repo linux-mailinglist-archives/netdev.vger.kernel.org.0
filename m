@@ -2,95 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F35131C6FF
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 08:52:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EFE531C708
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 08:55:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229895AbhBPHwH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 02:52:07 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35192 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229695AbhBPHv7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Feb 2021 02:51:59 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3241264DDA;
-        Tue, 16 Feb 2021 07:51:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1613461878;
-        bh=5QK6asyC9UTS+nh4p/KDBJlmjLE9RWADp20DtO6UjL0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Y9XCxbWAzuDwHiWXW6XSkl7ERVY3JVICFiTjpJ9uBnFn+WDLu/TUxSqjAlEHIpOU0
-         /vdp3qZ3YBhGGIfPSXiRIf2HQ7K/ZQ44cu2aTGjMwJN/yYpKstp7pNTaZqK7qVIH1X
-         aIg8Rn2xzIiJd1DHBkm4j350zCVjlC1+NBxDgexM=
-Date:   Tue, 16 Feb 2021 08:51:13 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Du Cheng <ducheng2@gmail.com>
-Cc:     Manish Chopra <manishc@marvell.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH v2] fix coding style in driver/staging/qlge/qlge_main.c
-Message-ID: <YCt5cYeS0sZjS2V+@kroah.com>
-References: <20210216073526.175212-1-ducheng2@gmail.com>
+        id S229912AbhBPHy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 02:54:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51760 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229764AbhBPHyt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 02:54:49 -0500
+Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6127C061574;
+        Mon, 15 Feb 2021 23:54:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
+        MIME-Version:Date:Message-ID:Subject:From:References:Cc:To:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Coy/hZCMNVQEd82cbAZp1E9jRuaBjYHERBZbVUjwjEY=; b=qoVgrsfQzp/oEa48rOzTrwyUrW
+        zLaJAwQ3VfbYazue2bz6hLFoBBslfeZpIAuu4rrZ+3gcdbTLsAVg78wDK6g9ii3L86SPtQ0JTtNiO
+        FjMUcAVsneZya2q5iIkOhGKIS/izZU/kPvA5KuHmt2KDY0ie51PrLZP65aUWaZCE6+rQ=;
+Received: from p4ff13c8d.dip0.t-ipconnect.de ([79.241.60.141] helo=nf.local)
+        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <nbd@nbd.name>)
+        id 1lBvBB-0002ji-MX; Tue, 16 Feb 2021 08:53:53 +0100
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        Shuah Khan <skhan@linuxfoundation.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, ath9k-devel@qca.qualcomm.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <43ed9abb9e8d7112f3cc168c2f8c489e253635ba.1613090339.git.skhan@linuxfoundation.org>
+ <20210216070336.D138BC43463@smtp.codeaurora.org>
+From:   Felix Fietkau <nbd@nbd.name>
+Subject: Re: [PATCH 2/2] ath9k: fix ath_tx_process_buffer() potential null ptr
+ dereference
+Message-ID: <0fd9a538-e269-e10e-a7f9-02d4c5848420@nbd.name>
+Date:   Tue, 16 Feb 2021 08:53:51 +0100
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:78.0)
+ Gecko/20100101 Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210216073526.175212-1-ducheng2@gmail.com>
+In-Reply-To: <20210216070336.D138BC43463@smtp.codeaurora.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 16, 2021 at 03:35:26PM +0800, Du Cheng wrote:
-> align * in block comments on each line
+
+On 2021-02-16 08:03, Kalle Valo wrote:
+> Shuah Khan <skhan@linuxfoundation.org> wrote:
 > 
-> Signed-off-by: Du Cheng <ducheng2@gmail.com>
-> ---
->  drivers/staging/qlge/qlge_main.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+>> ath_tx_process_buffer() references ieee80211_find_sta_by_ifaddr()
+>> return pointer (sta) outside null check. Fix it by moving the code
+>> block under the null check.
+>> 
+>> This problem was found while reviewing code to debug RCU warn from
+>> ath10k_wmi_tlv_parse_peer_stats_info() and a subsequent manual audit
+>> of other callers of ieee80211_find_sta_by_ifaddr() that don't hold
+>> RCU read lock.
+>> 
+>> Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+>> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 > 
-> diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
-> index 5516be3af898..2682a0e474bd 100644
-> --- a/drivers/staging/qlge/qlge_main.c
-> +++ b/drivers/staging/qlge/qlge_main.c
-> @@ -3815,8 +3815,7 @@ static int qlge_adapter_down(struct qlge_adapter *qdev)
->  
->  	qlge_tx_ring_clean(qdev);
->  
-> -	/* Call netif_napi_del() from common point.
-> -	*/
-> +	/* Call netif_napi_del() from common point. */
->  	for (i = 0; i < qdev->rss_ring_count; i++)
->  		netif_napi_del(&qdev->rx_ring[i].napi);
->  
-> -- 
-> 2.27.0
+> Patch applied to ath-next branch of ath.git, thanks.
 > 
+> a56c14bb21b2 ath9k: fix ath_tx_process_buffer() potential null ptr dereference
+I just took another look at this patch, and it is completely bogus.
+Not only does the stated reason not make any sense (sta is simply passed
+to other functions, not dereferenced without checks), but this also
+introduces a horrible memory leak by skipping buffer completion if sta
+is NULL.
+Please drop it, the code is fine as-is.
 
-Hi,
-
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
-
-You are receiving this message because of the following common error(s)
-as indicated below:
-
-- You did not write a descriptive Subject: for the patch, allowing Greg,
-  and everyone else, to know what this patch is all about.  Please read
-  the section entitled "The canonical patch format" in the kernel file,
-  Documentation/SubmittingPatches for what a proper Subject: line should
-  look like.
-
-- This looks like a new version of a previously submitted patch, but you
-  did not list below the --- line any changes from the previous version.
-  Please read the section entitled "The canonical patch format" in the
-  kernel file, Documentation/SubmittingPatches for what needs to be done
-  here to properly describe this.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+- Felix
