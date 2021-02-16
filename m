@@ -2,116 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4A9931D1F6
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 22:19:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5E9731D207
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 22:28:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230351AbhBPVSg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 16:18:36 -0500
-Received: from ozlabs.org ([203.11.71.1]:53331 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230326AbhBPVSc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Feb 2021 16:18:32 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4DgDMS4M1jz9s1l;
-        Wed, 17 Feb 2021 08:17:40 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1613510270;
-        bh=R0LNSibBu3OIIlayy5e6FVxII6mrY/kC2W+SZs3BLVw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oTrkyjlLVK00IS0LaRzkcsrwt8Qbghswlun+/yWZxyKc3ovlz7bNQY9jjyS6z2Znk
-         cyHktHl8g6EFE9o0/9SfQTB/dn61HnjdQ46mrQT+ftgKe3q7bfQtPCjku/maM6fA1A
-         +wMApI/2Sc4mI0PXTyy5GCdcnHqy2cIDEFJDyFT6/niISBfgTxEwJqToP1QJ+R2HJC
-         Hjg9tL2qlLQmyZkdvdaAJwsK/2b7QbsfpQvbYW3qUzuHca+PZKyEH01p9dKUPiLNfs
-         p5EVm0e502bgAEqzoJk5k8r8W1UztsOPVgn8kIsc+qGkj9Z0+MIlNOCnW7oZt4vi5v
-         wGZARl4kvFAvA==
-Date:   Wed, 17 Feb 2021 08:17:39 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
-        ARM <linux-arm-kernel@lists.infradead.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: linux-next: manual merge of the net-next tree with the arm-soc
- tree
-Message-ID: <20210217081739.6dfac3ab@canb.auug.org.au>
-In-Reply-To: <TY2PR01MB3692F75AF6192AB0B082B493D8879@TY2PR01MB3692.jpnprd01.prod.outlook.com>
-References: <20210216130449.3d1f0338@canb.auug.org.au>
-        <TY2PR01MB3692F75AF6192AB0B082B493D8879@TY2PR01MB3692.jpnprd01.prod.outlook.com>
+        id S230131AbhBPV1Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 16:27:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56516 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229878AbhBPV1Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 16:27:24 -0500
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11419C061574
+        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 13:26:44 -0800 (PST)
+Received: by mail-pl1-x62d.google.com with SMTP id a9so4093331plh.8
+        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 13:26:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=s4T4umekr2qX+nGjE6M770FXWJ3NNSC0Ftv6bZcHGt0=;
+        b=W7zsG85mjqBdC6D6+WlZGWw+g2w0MvJLaQ9M1JiSaD37qNlXORRpCT4sETzWmrnyVl
+         Y+kg94gIiPmLXJHZqR/an3pHwtkPnmF5C6d7mmhbuiFqrqkgYq72u1hwq+HspDRdWaUp
+         NLPi+bR5aKpTYF0729H7PphP/zb7y5HzDa/tRpyHpjcZ8LtHe56iuKaLeJU0hsKxrN5r
+         /bsIoCCb0oTOa4mL3ksg70IB57iydeA9/1k2uFZTCYry8ekVpEXK25APv+HrUghw13IQ
+         ZZ58pifWQOEcMKvWiVTRmYWru2YHa2cWVW/mwYy6T1ayUwwd66XzOw3S75pTKMXbDA9f
+         BP3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=s4T4umekr2qX+nGjE6M770FXWJ3NNSC0Ftv6bZcHGt0=;
+        b=KvfqI1i7ADUSs3DhcQ4C/gL3ZhvqIoVO6b6mQqWCK+Rr7JUnEdvSRqqvknhXBZtmKj
+         0YYo4x7X4TzGUJKWsopfuop0pT/LEdmuyF2rmZ0+6GuW1Oryhrwem/8mdmAnTdTvWICy
+         56Lppr5BN9uAiusQKSQVCHLQ4lvLxS1PKH3cwRT8CSZd5rauqnjuZvMueJ0GdcjxBUGM
+         QsM/b3taST/Ob2evqmHf1RZ16SkgSijQ7TPPS/8zF/1DYqln7R19fYx20D6QmfvoGzEj
+         rEPKef24JilR1Yd3gVz0LcgXbaF0Eu/8E68RpCeGHJGVcfigdE2B1GtjHdqdZXYSrHKm
+         Q3Rg==
+X-Gm-Message-State: AOAM532Vot0hMdq/SkPYDD6j7t+wVjBF1I3h+1BaaXUiXCioO8PvSG3d
+        JThsRWZrjilrGumOzK0zywuUZg==
+X-Google-Smtp-Source: ABdhPJzkYfP+Jnwu7eLrIQbr432vHn081t5ZoOBSpnSBGEyu8EcIHog1HbFTfvAfjT96xAxbS3/S9A==
+X-Received: by 2002:a17:902:e5cc:b029:de:cdab:2da5 with SMTP id u12-20020a170902e5ccb02900decdab2da5mr21275068plf.32.1613510803585;
+        Tue, 16 Feb 2021 13:26:43 -0800 (PST)
+Received: from Shannons-MacBook-Pro.local ([50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id h1sm70904pgj.59.2021.02.16.13.26.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 Feb 2021 13:26:43 -0800 (PST)
+Subject: Re: [PATCH] ionic: Remove unused function pointer typedef
+ ionic_reset_cb
+To:     Chen Lin <chen45464546@163.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     drivers@pensando.io, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Chen Lin <chen.lin5@zte.com.cn>
+References: <1613448330-4783-1-git-send-email-chen45464546@163.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <93451a68-293a-2f21-f837-317778c18c89@pensando.io>
+Date:   Tue, 16 Feb 2021 13:26:41 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/B_6obi80OI0A4YzQ7Y4XyJb";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <1613448330-4783-1-git-send-email-chen45464546@163.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/B_6obi80OI0A4YzQ7Y4XyJb
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-
-Hi Yoshihiro,
-
-On Tue, 16 Feb 2021 11:53:56 +0000 Yoshihiro Shimoda <yoshihiro.shimoda.uh@=
-renesas.com> wrote:
+On 2/15/21 8:05 PM, Chen Lin wrote:
+> From: Chen Lin <chen.lin5@zte.com.cn>
 >
-> > From: Stephen Rothwell, Sent: Tuesday, February 16, 2021 11:05 AM =20
-> <snip>
-> > diff --cc arch/arm64/boot/dts/toshiba/tmpv7708-rm-mbrc.dts
-> > index 2407b2d89c1e,48fa8776e36f..000000000000
-> > --- a/arch/arm64/boot/dts/toshiba/tmpv7708-rm-mbrc.dts
-> > +++ b/arch/arm64/boot/dts/toshiba/tmpv7708-rm-mbrc.dts
-> > @@@ -42,11 -42,20 +42,29 @@@
-> >   	clock-names =3D "apb_pclk";
-> >   };
-> >=20
-> >  +&wdt {
-> >  +	status =3D "okay";
-> >  +	clocks =3D <&wdt_clk>;
-> >  +};
-> >  +
-> >  +&gpio {
-> >  +	status =3D "okay";
-> > ++};` =20
->=20
-> This ` causes the following build error on the next-20210216.
->=20
->   DTC     arch/arm64/boot/dts/toshiba/tmpv7708-rm-mbrc.dtb
-> Error: arch/arm64/boot/dts/toshiba/tmpv7708-rm-mbrc.dts:52.3-4 syntax err=
-or
-> FATAL ERROR: Unable to parse input tree
-> scripts/Makefile.lib:336: recipe for target 'arch/arm64/boot/dts/toshiba/=
-tmpv7708-rm-mbrc.dtb' failed
-> make[2]: *** [arch/arm64/boot/dts/toshiba/tmpv7708-rm-mbrc.dtb] Error 1
-> scripts/Makefile.build:530: recipe for target 'arch/arm64/boot/dts/toshib=
-a' failed
+> Remove the 'ionic_reset_cb' typedef as it is not used.
+>
+> Signed-off-by: Chen Lin <chen.lin5@zte.com.cn>
+> ---
+>   drivers/net/ethernet/pensando/ionic/ionic_lif.h |    2 --
+>   1 file changed, 2 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.h b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
+> index 9bed427..563dba3 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.h
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
+> @@ -249,8 +249,6 @@ static inline u32 ionic_coal_usec_to_hw(struct ionic *ionic, u32 usecs)
+>   	return (usecs * mult) / div;
+>   }
+>   
+> -typedef void (*ionic_reset_cb)(struct ionic_lif *lif, void *arg);
+> -
+>   void ionic_link_status_check_request(struct ionic_lif *lif, bool can_sleep);
+>   void ionic_get_stats64(struct net_device *netdev,
+>   		       struct rtnl_link_stats64 *ns);
 
-Sorry about that ( ` is nect to ESC on my keyboard) it will be fixed up
-in today's resolution.
+Yep - thanks.
 
---=20
-Cheers,
-Stephen Rothwell
+Acked-by: Shannon Nelson <snelson@pensando.io>
 
---Sig_/B_6obi80OI0A4YzQ7Y4XyJb
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmAsNnMACgkQAVBC80lX
-0GzpZgf/fagFUK8DB5v3q2R3ZIAUt9Hdf040aIL1C9twogfZ2rZDWfnnkuBUthdR
-3QG5CWWj1op+fuuCp0IWC7n18bcVHVmv5e3J6Y91JkjO+OUIsZKv27BP/enBHl0D
-rhJKLVDDN0xA1mKtTV8u8dQh23puMVun8zXx9yFgQjKwUbEu6UiUtKCRCYU0MfKR
-+KkPGZ/IdRrhUJhaqbWwbxoTC9yj2F1MEXJYXfgAZxyTKg2rpesbIIEickIkXkIx
-2sGVDmduHb+yQS5Sqfjul9l4sjGxaHj+CaLlw5HqAO9lKAdkY9EQsmEiUuybpL9g
-V2x6WDPo5wo9R3BEZWeX6/dGzdAruw==
-=ZIv2
------END PGP SIGNATURE-----
-
---Sig_/B_6obi80OI0A4YzQ7Y4XyJb--
