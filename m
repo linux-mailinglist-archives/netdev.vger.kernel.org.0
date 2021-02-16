@@ -2,362 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22E4831D177
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 21:20:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8F0B31D1BE
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 21:52:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230132AbhBPUTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 15:19:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41886 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229572AbhBPUTG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 15:19:06 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75C54C061574;
-        Tue, 16 Feb 2021 12:18:26 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id my11so319547pjb.1;
-        Tue, 16 Feb 2021 12:18:26 -0800 (PST)
+        id S230131AbhBPUvZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 15:51:25 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:5905 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229796AbhBPUvV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 15:51:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1613508681; x=1645044681;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=1F4APEiOpJ1DOcV7cJeKKkZhvxCSb/Qx/q2evz0c8R8=;
+  b=qmfK9ixSzPF6SuxxE3iwdtoNW4VhXBGuqWX5GdDCDHv5WoRAF/TpPVpX
+   5c32ab2Io59GZ5Vd3F1eeupQ1BbbHVXUNw+nXbSMbU06v4wlWbIbwiJAd
+   sLlvGGi02Ld04Oqejt1XdSVO6DCYBViKqqAW4hq3uyD0zbK43NXavEmtY
+   OTB3cd4cX9JPWQIbxdoON5gT+6es01hwFZA6YIcmNaEigNo0V6nQw9bW7
+   SImozsj/BQXTmOAIYt/jHtR3FefVZKvli5I/lB7+PxNg+FsHDtgQmzc1X
+   GYYF9fIMIRo6FzuCy//Kc9c4X33FAEdtEEqcrWttUUw+FyPCellGDb0dm
+   w==;
+IronPort-SDR: BdOJz3IaaG1eIGh64qFuIUpRUTdNV6+QXaU8mm0Ut9ZxqzmcA1k7905WKZfoX38uiNxAgA/Zol
+ mGh0LrOipjvDzbSgpxnB9YZlgwZMK59/L7Fnt3slcesvE0FTMpRtH3hrWpBEjjYJl5CEewiD1R
+ eSbedNjWI/bCR0y5krAC4jyFhIpl5oAnGM0pIdfS/xjSj9pqeyppZYxPOiZkHjnuxkZmCy6GXL
+ D51AZwuNyDg2/RzS5+rULs3DYPp4Rr1ZnLKGw6tDXWdyLnhauSiwwG4CPXc+Iz95je1HP8x+Mz
+ e7E=
+X-IronPort-AV: E=Sophos;i="5.81,184,1610434800"; 
+   d="scan'208";a="44313689"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Feb 2021 13:50:05 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 16 Feb 2021 13:50:04 -0700
+Received: from NAM04-CO1-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3 via Frontend
+ Transport; Tue, 16 Feb 2021 13:50:04 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dp1eJv20Pt7jN/3h0OIMYVqLlF+W0duroqhMtAUHQYTJkNWuecpHjwNtHHPoDXR3S1C34PXRpJ0PNoNGW7m+F0rmHQZkkKlpr2YjblDV51uXOiCKQexpJPnKovBsuMJSl00ZjPll9/Rc+nPnpyuIJyFMwo0/4GVpOsXna/9n1Zj4nFVHOyBOp6ZPqvqzYB63g3fybceBpXwT6WUrJE/tKfbrWmJm4zC1b8OBUxM193nS0fSDVKRcD9SllxQdeq6vN5XN3uWUrOywoQFkXMv89f/ssPHAbrWDSbBJTk8RWTyxz2MinotT/R4GrHyMOepXLbU2D6ZGbOglI7ELXixnaQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1F4APEiOpJ1DOcV7cJeKKkZhvxCSb/Qx/q2evz0c8R8=;
+ b=SSHjbRuwVd3t7HgX8xKmM/UfqcY5BA5ngFfMtQ2oOKFeSDS2uYsj2LsDF6UZqsJqaafGGSfUi9X3FTkQzCPh67j9slhwovX2gKBCMdy6lwitJNlCo2vkp3yb0ZPffVO562ZDFExjB83bimg0Wr3sZAs9jAGWYrrz/EYmHN8bkHkIUOqNSIPKYxKxxg7+BQeUvJ4ikKoHugs1IuF9ZGoZg0gmLDr0wa4X2RYHeurLkBsgzwyH1kowh8CSWMUwtpanGX1jvas0vuMfGAq+yb58JSyx3CBeuYerQ2LI9VzrYEIkKPr5ZCtGtxoHOfFbTLu0EBxDDAwNGbOr8u37wvtg+g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Sw3Xj2DTYhteZ+AfUavTEkrGfD2bGGbjZ7Fu3XOlC1o=;
-        b=bYxqjpb1IzrHGTXF3/YVisqyGnOa5ir60g4VTYFA5gtqfHoBE6UdmYl4h50AS7nwA6
-         NxwuhTQ/wiRP9LRebJm3GXkSsx87YOp4KXFrPBPGha24J6dhEFMri5e7uLNDcqw2BojO
-         wvNeR0OwN27LjD9rwuQ601NWk4etixUFws75xWeBQsGJzYlqYj753112hJq2bLIzPwXv
-         wI7U7PF9ZUwLc5/OTJ0qvAb2EizSqe+MjGIDTOfqtbtRlN7qBxGCp4VSYo4Rfj2yo6z4
-         TeQZsalRsI5E+pJfE5fpCdU4ZzB30JJTlGqk9y90vroj3ydpxCo0HQsWKuChaL4jDitb
-         DxpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Sw3Xj2DTYhteZ+AfUavTEkrGfD2bGGbjZ7Fu3XOlC1o=;
-        b=D29BhOzHG8LAS1a4owrH6nIXpsBe0pw2yLWfTQRhdJlojzLPteKFAgk2OxqYKlXJlC
-         gtHrY549GTQMsnEGHeFjbrYN0i9CPy7T8ZvvOtGTmDuAr7Mp2n7fNlE8sRFuC2EVbPh9
-         wVu+PoPbrjZCl6L+/f4hSWxQPUCsOaUbnXIMctWnA1DR9qXDsQtXtX3nxboQfxrv5bJx
-         fH1EGqvJMNiDOKkCp4JjIwtsMqXu72I0mWzh+cL1ePRlEdQYmCyAByu3c7X8i5VD5oRs
-         7BDn/TYjeWJ7cWlbQeIXnUz0Rv6wM3ZtBEyD1GV40QwkpvBCx7LTijF93RQnUV6FmRu6
-         E2Rg==
-X-Gm-Message-State: AOAM533TEabZCF5maSCT5ywQ6QR2YmIFLOOo82D0AFOl3FzJXymVcDbf
-        yxubuerMT6/OV+4nTkoDq7lMxelWYKY=
-X-Google-Smtp-Source: ABdhPJywzIWQJLi9mvEQKW4Fk+OZ3WbyFCGg0+p4JgAsSVpf2CjctJi8QBdzLP18Dr/F1HRNDED9hA==
-X-Received: by 2002:a17:902:9009:b029:dc:52a6:575 with SMTP id a9-20020a1709029009b02900dc52a60575mr20617651plp.57.1613506705969;
-        Tue, 16 Feb 2021 12:18:25 -0800 (PST)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:423b:9598:9909:5513])
-        by smtp.gmail.com with ESMTPSA id f25sm23695717pfk.184.2021.02.16.12.18.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Feb 2021 12:18:25 -0800 (PST)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-x25@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Martin Schiller <ms@dev.tdt.de>,
-        Krzysztof Halasa <khc@pm.waw.pl>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
-Cc:     Xie He <xie.he.0141@gmail.com>
-Subject: [PATCH net-next RFC v4] net: hdlc_x25: Queue outgoing LAPB frames
-Date:   Tue, 16 Feb 2021 12:18:13 -0800
-Message-Id: <20210216201813.60394-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.27.0
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1F4APEiOpJ1DOcV7cJeKKkZhvxCSb/Qx/q2evz0c8R8=;
+ b=idYcU6ELYBxJXTwS3se6gIZFW+858ZAG5bdHTFkyAnfMxAR7072dd1h5YD56djdRpcSxau7Zt3nDi+4G5vjIKHgdIPvxU7VJ/psR8bDZ2dHwc77a1drF6OLCr5My3bN1SPpRsiIfXFKkYbUqEx2fl12u9v/ChqALHSXVbYEUm9E=
+Received: from BN8PR11MB3651.namprd11.prod.outlook.com (2603:10b6:408:81::10)
+ by BN8PR11MB3570.namprd11.prod.outlook.com (2603:10b6:408:90::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.27; Tue, 16 Feb
+ 2021 20:03:41 +0000
+Received: from BN8PR11MB3651.namprd11.prod.outlook.com
+ ([fe80::497c:4025:42f7:979b]) by BN8PR11MB3651.namprd11.prod.outlook.com
+ ([fe80::497c:4025:42f7:979b%6]) with mapi id 15.20.3846.038; Tue, 16 Feb 2021
+ 20:03:41 +0000
+From:   <Bryan.Whitehead@microchip.com>
+To:     <thesven73@gmail.com>, <UNGLinuxDriver@microchip.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <andrew@lunn.ch>, <rtgbnm@gmail.com>, <sbauer@blackbox.su>,
+        <tharvey@gateworks.com>, <anders@ronningen.priv.no>,
+        <hdanton@sina.com>, <hch@lst.de>,
+        <willemdebruijn.kernel@gmail.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH net-next v3 2/5] lan743x: sync only the received area of
+ an rx ring buffer
+Thread-Topic: [PATCH net-next v3 2/5] lan743x: sync only the received area of
+ an rx ring buffer
+Thread-Index: AQHXBAA3zpO4glf08k+QgrH43CopMqpbNaLQ
+Date:   Tue, 16 Feb 2021 20:03:40 +0000
+Message-ID: <BN8PR11MB36518045F806DAAC37BBD659FA879@BN8PR11MB3651.namprd11.prod.outlook.com>
+References: <20210216010806.31948-1-TheSven73@gmail.com>
+ <20210216010806.31948-3-TheSven73@gmail.com>
+In-Reply-To: <20210216010806.31948-3-TheSven73@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=microchip.com;
+x-originating-ip: [47.19.18.123]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 12d2a1a6-31cb-4365-9f8c-08d8d2b5f4e0
+x-ms-traffictypediagnostic: BN8PR11MB3570:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BN8PR11MB3570E7226D54A018842BA8E2FA879@BN8PR11MB3570.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3513;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 2MWeUwxw6uX1TCR2ijU1YdoEO0JzJC4MyBmirwbwmiXKsPFgFjlShGG7eTwzI/RJZ/WIDVeVd8WVeJTV6GA7IH4llg/Tqn0HH6jGPKtConI9QmCyUmyWPzH/WzISqDc6tvZQMhDJjuZ91WWB+hF0ydpzjuVnHXZ5wZRH3E5ERi42YHiz0RHxDqyjkPkowHy2AeIa2kiDtBmeBO1SxC684g6fPmLhLV0PnIvpMUGWqffX4QAlZexO7agm7C64r/zj63cUDl4jcVwHCyWxiSrBwYGEoKUKJ44QLQOhE+AlwnPmdHKEKOyAn1RcBRVEq6sE1OhT6hoMEoKb7BhOdgmiOX7GWorVoYNrmq03cXnb1yVFjsEZBkPn2Qw5XsKEbA2WxtXTmQFkwCPB261jHo9g9J0FWnmczEgOCnRMXq6TXmt+/0w3FIZSACDvUnld7hb9kiIZks2TodO/6/QIAbUGTCX2zH1PWj3vOJ60KWpKBBTvRivA7m/dB748JRe4j6i4xUuXxYmg7jmcE49RpJ7qSA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR11MB3651.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(136003)(396003)(376002)(39850400004)(346002)(110136005)(9686003)(6506007)(8676002)(66476007)(4326008)(478600001)(52536014)(71200400001)(54906003)(316002)(55016002)(26005)(83380400001)(64756008)(86362001)(7416002)(186003)(8936002)(4744005)(7696005)(2906002)(66946007)(66446008)(76116006)(66556008)(5660300002)(33656002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?utf-8?B?REhmQmd3cEtWbWdvT3RzMVdnWVRSeVJKNUVwbmU0Slc0VTBMR3NEYkhCRzZG?=
+ =?utf-8?B?MHN2S0ZGNm1nM0V5QWFFVWpDNDFqTkdvVnRwbldONCtJcGRHRTAvNUluaXNZ?=
+ =?utf-8?B?VWNleDdCb1VYOUNyNWdSM3pYdDd3ZUIxWVVXV2RFR2xXRFl4aG81QnRlUWIv?=
+ =?utf-8?B?OWJVYXpjMXJqNDdpdjNvdEkxNmV2N3pUbGdDYlZ0VVhkdlhIZ0pxNFBmOUxt?=
+ =?utf-8?B?b2xPOG1naWZFbVhIZGhDQURZZThjclJMU1lPZnlOU3lhd1BTUTBuKy9aV3lW?=
+ =?utf-8?B?Z2Rta2hTVmlhTXVzeWErQUlEOVJZdDRxRGpZTjVUNnBHYWZjWUN3MzlvTEd3?=
+ =?utf-8?B?akNlTFEvb09veEE2eGxYWHNlUzVCQVdwbjBSSnpBWFJ1ZXlpelFMOE54MlBO?=
+ =?utf-8?B?Y1pqQ3ZHdUZXWVlTdnU4UUtiWmdySE5hbSszVzAzMmx5czM0bUU2QmZRek16?=
+ =?utf-8?B?ZFo3Tjl6RlVSaUlqZ211ZHlZajhjdnVVYU1uS2NZWTlRcWM1THA4Z3ViTFBR?=
+ =?utf-8?B?Znh2clZFN1Rwd1lTbHVoZ0VqczhvZ3pkR09xUzZSdmV2UTZJbkI1bVp0UTVF?=
+ =?utf-8?B?UzhPdC9SVHdWWXpjaEM4NlhzMU9KUWR4T2NPUU1uWG81SjR2U0dSMEFPblBU?=
+ =?utf-8?B?cmZ1aE9vaEV3WjBEZUNUVHBYbHZNeVY4UzZtMksrOGZYMmlIUUZBd2IxQ01U?=
+ =?utf-8?B?VHZBWGNTS01aVzd6ZmZGc29Da3BLK0JaR2JSQjJ0T0x3K1NVYkRpbVRRRzJO?=
+ =?utf-8?B?bG1GQVN3SkxrVEhma0plTnJKZ1l6ZnlaZmFONmlGRVFvNk9GTjZTOThSL21D?=
+ =?utf-8?B?WEg4aWRSUm0zcUt6c3B5Szk5a2JIaHMwZG45dWVqNnM3Z3EwbkFkM1VERVpH?=
+ =?utf-8?B?ampnNk1JY0cxR1haMDJEN1h3UmFONVA0bWsxSVR0ekh2REljbm4yQWlWeHpy?=
+ =?utf-8?B?Mm8ydTRVSzdBQkVaZlAvVUFYN3FUYVVBZVhLQ1ZZeFJ6R0tzcEV5cmQzcnB0?=
+ =?utf-8?B?eUZEcVcyVUdEejZxR1FWOFhPRSt2eEJUK1JuZThUV0MvTzdRN2dWbzIzU3Qr?=
+ =?utf-8?B?K0RUOEozTk5SVFo3Ti9hb29sTHlHNG5Fa3lySzdYMk13YmZBbmdoKzJOMVJk?=
+ =?utf-8?B?QnhvTkZqQ0xIbTluUVdmaml3VjN1YjBJNE5FMXVHcjVac2grODBJTmIydjlK?=
+ =?utf-8?B?Z2lKRjBpZHlqT1BFL2syd0VNUXZsd0g0RXpvdDM0ZS9GdjUzZENxTlB3VkFi?=
+ =?utf-8?B?QVk5dSszelNUTzJGSXJPM3Bpb005NURPN2NZSHNyK0sxYWZFNmNoU3FuWFVG?=
+ =?utf-8?B?Z2ttbS96RmF5dkNxWmN1eWlCamwzVW1tN1pvbjF0WHh4V0lOM09wZHhZM0FE?=
+ =?utf-8?B?bzBTNGlQNVd2VGpWakh3YkxqN2Ivc2tDdDFiSGNicnhqRittQnA0RmZ6aSth?=
+ =?utf-8?B?R21CaU1tZkUzZy9IbjBuOTBhYVpNRnRBNjB2YWk1QllPdzIwV1ZJamtZQU9l?=
+ =?utf-8?B?RU8vNVBNZVNCR2M0WFNOc3lUY3N6TUI4aDFjbFRPUllCMkxEVHVPeWduMmg4?=
+ =?utf-8?B?R2h2alcvV0hGVHkrbUVUU3kxMis5SW5ERkdqZjNQZ1FRL3FNOXJsWFV1ejBD?=
+ =?utf-8?B?Q3F0OFNKbzYrR2EydDFhaWgzODQrdVcxVCtyc3Q4Q3h4WjhWSkwxT3l1dGZK?=
+ =?utf-8?B?MlViNkc4RmMxWVdCWnVmUUh5aXB4clZhYitZbDNBT1EySVhsU2JaeFE1T0dI?=
+ =?utf-8?Q?cKVIhYYT+WxXMxIpor8tcbmrdSEj78PD6tkCvYx?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN8PR11MB3651.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 12d2a1a6-31cb-4365-9f8c-08d8d2b5f4e0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Feb 2021 20:03:41.0411
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: tyWBOE0S1lCSOIQkU/cEho2SBxpEtbj0PbXkW5NxrcyaImiU6TuL02iy6d8XPts8Xgkq1BzUoPzS7oiaZywaDFKZr0MjCNG3jbQ9c5mVFMk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR11MB3570
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When sending packets, we will first hand over the (L3) packets to the
-LAPB module. The LAPB module will then hand over the corresponding LAPB
-(L2) frames back to us for us to transmit.
-
-The LAPB module can also emit LAPB (L2) frames at any time, even without
-an (L3) packet currently being sent on the device. This happens when the
-LAPB module tries to send (L3) packets queued up in its internal queue,
-or when the LAPB module decides to send some (L2) control frame.
-
-This means we need to have a queue for these outgoing LAPB (L2) frames,
-otherwise frames can be dropped if sent when the hardware driver is
-already busy in transmitting. The queue needs to be controlled by
-the hardware driver's netif_stop_queue and netif_wake_queue calls.
-Therefore, we need to use the device's qdisc TX queue for this purpose.
-However, currently outgoing LAPB (L2) frames are not queued.
-
-On the other hand, outgoing (L3) packets (before they are handed over
-to the LAPB module) don't need to be queued, because the LAPB module
-already has an internal queue for them, and is able to queue new outgoing
-(L3) packets at any time. However, currently outgoing (L3) packets are
-being queued in the device's qdisc TX queue, which is controlled by
-the hardware driver's netif_stop_queue and netif_wake_queue calls.
-This is unnecessary and meaningless.
-
-To fix these issues, we can split the HDLC device into two devices -
-a virtual X.25 device and the actual HDLC device, use the virtual X.25
-device to send (L3) packets and then use the actual HDLC device to
-queue LAPB (L2) frames. The outgoing (L2) LAPB queue will be controlled
-by the hardware driver's netif_stop_queue and netif_wake_queue calls,
-while outgoing (L3) packets will not be affected by these calls.
-
-Cc: Martin Schiller <ms@dev.tdt.de>
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
----
-
-Change from RFC v3:
-Call netif_carrier_off in x25_hdlc_open before calling register_netdevice.
-
-Change from RFC v2:
-Simplified the commit message.
-Dropped the x25_open fix which is already merged into net-next now.
-Use HDLC_MAX_MTU as the mtu of the X.25 virtual device.
-Add an explanation to the documentation about the X.25 virtual device.
-
-Change from RFC v1:
-Properly initialize state(hdlc)->x25_dev and state(hdlc)->x25_dev_lock.
-
----
- Documentation/networking/generic-hdlc.rst |   3 +
- drivers/net/wan/hdlc_x25.c                | 156 ++++++++++++++++++----
- 2 files changed, 133 insertions(+), 26 deletions(-)
-
-diff --git a/Documentation/networking/generic-hdlc.rst b/Documentation/networking/generic-hdlc.rst
-index 1c3bb5cb98d4..55f6b0ab45be 100644
---- a/Documentation/networking/generic-hdlc.rst
-+++ b/Documentation/networking/generic-hdlc.rst
-@@ -59,6 +59,9 @@ or::
- In Frame Relay mode, ifconfig master hdlc device up (without assigning
- any IP address to it) before using pvc devices.
- 
-+In X.25 mode, ifconfig the hdlc device up, then a virtual X.25 device
-+would appear for use.
-+
- 
- Setting interface:
- 
-diff --git a/drivers/net/wan/hdlc_x25.c b/drivers/net/wan/hdlc_x25.c
-index 4aaa6388b9ee..b7744065900f 100644
---- a/drivers/net/wan/hdlc_x25.c
-+++ b/drivers/net/wan/hdlc_x25.c
-@@ -23,6 +23,13 @@
- 
- struct x25_state {
- 	x25_hdlc_proto settings;
-+	struct net_device *x25_dev;
-+	spinlock_t x25_dev_lock; /* Protects the x25_dev pointer */
-+};
-+
-+/* Pointed to by netdev_priv(x25_dev) */
-+struct x25_device {
-+	struct net_device *hdlc_dev;
- };
- 
- static int x25_ioctl(struct net_device *dev, struct ifreq *ifr);
-@@ -32,6 +39,11 @@ static struct x25_state *state(hdlc_device *hdlc)
- 	return hdlc->state;
- }
- 
-+static struct x25_device *dev_to_x25(struct net_device *dev)
-+{
-+	return netdev_priv(dev);
-+}
-+
- /* These functions are callbacks called by LAPB layer */
- 
- static void x25_connect_disconnect(struct net_device *dev, int reason, int code)
-@@ -89,15 +101,10 @@ static int x25_data_indication(struct net_device *dev, struct sk_buff *skb)
- 
- static void x25_data_transmit(struct net_device *dev, struct sk_buff *skb)
- {
--	hdlc_device *hdlc = dev_to_hdlc(dev);
--
-+	skb->dev = dev_to_x25(dev)->hdlc_dev;
-+	skb->protocol = htons(ETH_P_HDLC);
- 	skb_reset_network_header(skb);
--	skb->protocol = hdlc_type_trans(skb, dev);
--
--	if (dev_nit_active(dev))
--		dev_queue_xmit_nit(skb, dev);
--
--	hdlc->xmit(skb, dev); /* Ignore return value :-( */
-+	dev_queue_xmit(skb);
- }
- 
- 
-@@ -163,7 +170,8 @@ static int x25_open(struct net_device *dev)
- 		.data_indication = x25_data_indication,
- 		.data_transmit = x25_data_transmit,
- 	};
--	hdlc_device *hdlc = dev_to_hdlc(dev);
-+	struct net_device *hdlc_dev = dev_to_x25(dev)->hdlc_dev;
-+	hdlc_device *hdlc = dev_to_hdlc(hdlc_dev);
- 	struct lapb_parms_struct params;
- 	int result;
- 
-@@ -195,9 +203,101 @@ static int x25_open(struct net_device *dev)
- 
- 
- 
--static void x25_close(struct net_device *dev)
-+static int x25_close(struct net_device *dev)
- {
- 	lapb_unregister(dev);
-+	return 0;
-+}
-+
-+static const struct net_device_ops hdlc_x25_netdev_ops = {
-+	.ndo_open       = x25_open,
-+	.ndo_stop       = x25_close,
-+	.ndo_start_xmit = x25_xmit,
-+};
-+
-+static void x25_setup_virtual_dev(struct net_device *dev)
-+{
-+	dev->netdev_ops	     = &hdlc_x25_netdev_ops;
-+	dev->type            = ARPHRD_X25;
-+	dev->addr_len        = 0;
-+	dev->hard_header_len = 0;
-+	dev->mtu             = HDLC_MAX_MTU;
-+
-+	/* When transmitting data:
-+	 * first we'll remove a pseudo header of 1 byte,
-+	 * then the LAPB module will prepend an LAPB header of at most 3 bytes.
-+	 */
-+	dev->needed_headroom = 3 - 1;
-+}
-+
-+static int x25_hdlc_open(struct net_device *dev)
-+{
-+	struct hdlc_device *hdlc = dev_to_hdlc(dev);
-+	struct net_device *x25_dev;
-+	char x25_dev_name[sizeof(x25_dev->name)];
-+	int result;
-+
-+	if (strlen(dev->name) + 4 >= sizeof(x25_dev_name))
-+		return -EINVAL;
-+
-+	strcpy(x25_dev_name, dev->name);
-+	strcat(x25_dev_name, "_x25");
-+
-+	x25_dev = alloc_netdev(sizeof(struct x25_device), x25_dev_name,
-+			       NET_NAME_PREDICTABLE, x25_setup_virtual_dev);
-+	if (!x25_dev)
-+		return -ENOMEM;
-+
-+	dev_to_x25(x25_dev)->hdlc_dev = dev;
-+
-+	/* netif_carrier_on will be called later by x25_hdlc_start */
-+	netif_carrier_off(x25_dev);
-+
-+	result = register_netdevice(x25_dev);
-+	if (result) {
-+		free_netdev(x25_dev);
-+		return result;
-+	}
-+
-+	spin_lock_bh(&state(hdlc)->x25_dev_lock);
-+	state(hdlc)->x25_dev = x25_dev;
-+	spin_unlock_bh(&state(hdlc)->x25_dev_lock);
-+
-+	return 0;
-+}
-+
-+static void x25_hdlc_close(struct net_device *dev)
-+{
-+	struct hdlc_device *hdlc = dev_to_hdlc(dev);
-+	struct net_device *x25_dev = state(hdlc)->x25_dev;
-+
-+	if (x25_dev->flags & IFF_UP)
-+		dev_close(x25_dev);
-+
-+	spin_lock_bh(&state(hdlc)->x25_dev_lock);
-+	state(hdlc)->x25_dev = NULL;
-+	spin_unlock_bh(&state(hdlc)->x25_dev_lock);
-+
-+	unregister_netdevice(x25_dev);
-+	free_netdev(x25_dev);
-+}
-+
-+static void x25_hdlc_start(struct net_device *dev)
-+{
-+	struct hdlc_device *hdlc = dev_to_hdlc(dev);
-+	struct net_device *x25_dev = state(hdlc)->x25_dev;
-+
-+	/* hdlc.c guarantees no racing so we're sure x25_dev is valid */
-+	netif_carrier_on(x25_dev);
-+}
-+
-+static void x25_hdlc_stop(struct net_device *dev)
-+{
-+	struct hdlc_device *hdlc = dev_to_hdlc(dev);
-+	struct net_device *x25_dev = state(hdlc)->x25_dev;
-+
-+	/* hdlc.c guarantees no racing so we're sure x25_dev is valid */
-+	netif_carrier_off(x25_dev);
- }
- 
- 
-@@ -205,27 +305,38 @@ static void x25_close(struct net_device *dev)
- static int x25_rx(struct sk_buff *skb)
- {
- 	struct net_device *dev = skb->dev;
-+	struct hdlc_device *hdlc = dev_to_hdlc(dev);
-+	struct net_device *x25_dev;
- 
- 	if ((skb = skb_share_check(skb, GFP_ATOMIC)) == NULL) {
- 		dev->stats.rx_dropped++;
- 		return NET_RX_DROP;
- 	}
- 
--	if (lapb_data_received(dev, skb) == LAPB_OK)
--		return NET_RX_SUCCESS;
--
--	dev->stats.rx_errors++;
-+	spin_lock_bh(&state(hdlc)->x25_dev_lock);
-+	x25_dev = state(hdlc)->x25_dev;
-+	if (!x25_dev)
-+		goto drop;
-+	if (lapb_data_received(x25_dev, skb) != LAPB_OK)
-+		goto drop;
-+	spin_unlock_bh(&state(hdlc)->x25_dev_lock);
-+	return NET_RX_SUCCESS;
-+
-+drop:
-+	spin_unlock_bh(&state(hdlc)->x25_dev_lock);
-+	dev->stats.rx_dropped++;
- 	dev_kfree_skb_any(skb);
- 	return NET_RX_DROP;
- }
- 
- 
- static struct hdlc_proto proto = {
--	.open		= x25_open,
--	.close		= x25_close,
-+	.open		= x25_hdlc_open,
-+	.close		= x25_hdlc_close,
-+	.start		= x25_hdlc_start,
-+	.stop		= x25_hdlc_stop,
- 	.ioctl		= x25_ioctl,
- 	.netif_rx	= x25_rx,
--	.xmit		= x25_xmit,
- 	.module		= THIS_MODULE,
- };
- 
-@@ -298,16 +409,9 @@ static int x25_ioctl(struct net_device *dev, struct ifreq *ifr)
- 			return result;
- 
- 		memcpy(&state(hdlc)->settings, &new_settings, size);
-+		state(hdlc)->x25_dev = NULL;
-+		spin_lock_init(&state(hdlc)->x25_dev_lock);
- 
--		/* There's no header_ops so hard_header_len should be 0. */
--		dev->hard_header_len = 0;
--		/* When transmitting data:
--		 * first we'll remove a pseudo header of 1 byte,
--		 * then we'll prepend an LAPB header of at most 3 bytes.
--		 */
--		dev->needed_headroom = 3 - 1;
--
--		dev->type = ARPHRD_X25;
- 		call_netdevice_notifiers(NETDEV_POST_TYPE_CHANGE, dev);
- 		netif_dormant_off(dev);
- 		return 0;
--- 
-2.27.0
-
+PiBGcm9tOiBTdmVuIFZhbiBBc2Jyb2VjayA8dGhlc3ZlbjczQGdtYWlsLmNvbT4NCj4gDQo+IE9u
+IGNwdSBhcmNoaXRlY3R1cmVzIHcvbyBkbWEgY2FjaGUgc25vb3BpbmcsIGRtYV91bm1hcCgpIGlz
+IGEgaXMgYSB2ZXJ5DQo+IGV4cGVuc2l2ZSBvcGVyYXRpb24sIGJlY2F1c2UgaXRzIHJlc3VsdGlu
+ZyBzeW5jIG5lZWRzIHRvIGludmFsaWRhdGUgY3B1DQo+IGNhY2hlcy4NCj4gDQo+IEluY3JlYXNl
+IGVmZmljaWVuY3kvcGVyZm9ybWFuY2UgYnkgc3luY2luZyBvbmx5IHRob3NlIHNlY3Rpb25zIG9m
+IHRoZQ0KPiBsYW43NDN4J3MgcnggcmluZyBidWZmZXJzIHRoYXQgYXJlIGFjdHVhbGx5IGluIHVz
+ZS4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IFN2ZW4gVmFuIEFzYnJvZWNrIDx0aGVzdmVuNzNAZ21h
+aWwuY29tPg0KPiAtLS0NCg0KTG9va3MgR29vZCwgVGhhbmtzIFN2ZW4NCk91ciB0ZXN0aW5nIGlz
+IGluIHByb2dyZXNzLCBXZSB3aWxsIGxldCB5b3Uga25vdyBvdXIgcmVzdWx0cyBzb29uLg0KDQpS
+ZXZpZXdlZC1ieTogQnJ5YW4gV2hpdGVoZWFkIDxCcnlhbi5XaGl0ZWhlYWRAbWljcm9jaGlwLmNv
+bT4NCg0K
