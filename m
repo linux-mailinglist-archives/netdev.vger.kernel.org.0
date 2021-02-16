@@ -2,86 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DFB9431C6E4
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 08:36:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CA9E31C6EA
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 08:38:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229767AbhBPHgP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 02:36:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47784 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229694AbhBPHgL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 02:36:11 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78679C061574
-        for <netdev@vger.kernel.org>; Mon, 15 Feb 2021 23:35:31 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id kr16so512416pjb.2
-        for <netdev@vger.kernel.org>; Mon, 15 Feb 2021 23:35:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7PVc49FGSrcyBjDKMhqpxS/wGvi7aqxUUyL9/qdpEOk=;
-        b=HCZ9QWz8vWNEnAal12QAAtgNmdAsKkUWhD6QPhvYOFUY25NifHAX1ooDuTb5NLKW0T
-         S1Dd81Wiy2HEwIgBY7O0IJinfyBCYyJW0pw3vffTeClR3CWAmRd7Me4U5XK6SywXIOix
-         PazRTcu9cBJo/rPFjbI/ubYOWSqGeKiSudA1TSN4oaAUEvhUfcx3BhfsUJrtgRPjmln/
-         mMu3VDkc89guwJyHhZxAU3GHalwFyFbBFKoPD+0wBX47h4chWJr97LVJsnJaurYccioc
-         Iyt03UzI/FSih4hIR2Xe/YzuXpLiO3MK/a+MaOLRNwU0SD+DprEz1fB4kKKPSkpQFPBT
-         hvVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=7PVc49FGSrcyBjDKMhqpxS/wGvi7aqxUUyL9/qdpEOk=;
-        b=hIrl+56GMBZ5eFc7alChZonhtJ+pWvwOR7ugP9Ww8ezAmBbcNSZl5YHT54CYDAaPFK
-         S3tTfKU8AlfaOwKWoMlcf2dB1NPzJxJBWc6u0Ja6jY5wjODBWbYSkklNivHLM21HbL4K
-         C0RKSZQF5wRHkoZUT+htihdT95ug7+Rw4cvvu1vWqvltwawgisDuZ++IHh9QoXjp5mZu
-         ny2ub1pfMHjNVHauV6J/E7St+yVvD6mZ1sD40UhPuncb5RvvaCn/ihDo3tZyxrxuWEsB
-         I9kEeAiLg1ogmxjgPEyrIf/txTiu1C//10HFhL5//JPKSJ5O2nQR+B4+90ob6YGo6Jv7
-         CNBg==
-X-Gm-Message-State: AOAM533HvbnZcjKr94CNwKQoKiUyCMfHQMQ87twMKL7TwQW/YdCKqxDs
-        2ARFE2gOAxbvRb1solBqT+4=
-X-Google-Smtp-Source: ABdhPJy0y5SY+d4KqNVoa1LEvO79zB5Lb3njyijHnLg3HUVd7yjCV3UUBvYtw/MAb5aW5g7/MucgzA==
-X-Received: by 2002:a17:902:b189:b029:dc:4102:4edf with SMTP id s9-20020a170902b189b02900dc41024edfmr18607463plr.80.1613460931113;
-        Mon, 15 Feb 2021 23:35:31 -0800 (PST)
-Received: from ThinkCentre-M83.c.infrastructure-904.internal ([202.133.196.154])
-        by smtp.gmail.com with ESMTPSA id x20sm19817365pfi.115.2021.02.15.23.35.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Feb 2021 23:35:30 -0800 (PST)
-From:   Du Cheng <ducheng2@gmail.com>
-To:     Manish Chopra <manishc@marvell.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, Du Cheng <ducheng2@gmail.com>
-Subject: [PATCH v2] fix coding style in driver/staging/qlge/qlge_main.c
-Date:   Tue, 16 Feb 2021 15:35:26 +0800
-Message-Id: <20210216073526.175212-1-ducheng2@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        id S229917AbhBPHiU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 02:38:20 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33448 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229676AbhBPHiS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Feb 2021 02:38:18 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 450FD64DC3;
+        Tue, 16 Feb 2021 07:37:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1613461058;
+        bh=6OLXpRjMtpO3rJat3zYX+pRYnE0UODR8E8eilUt1wlI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=IKK96cwEMia3biqOl2+yZcIHiH7NduEbANNEqBANbJ1bSnjgLtTIUftS3IH0dRw+L
+         0do0UHIe0A2ZgeStQjar6TBFj1a9Es5EyCByeBXYapR4+y5+KbwcUMlMZ0EonCZaXB
+         H14tLwwaZ2GRH3XQBrOjhzSTrPSbhMahxvCJVIcgHFy3ZIR5qP9Xg1RRtmKXEhxBl4
+         4ZoGqJWs6prNDYBVQtRwH7ElfX4/TGZEQDXf8nlUmH8uGIp0xYbWW8ISJYW5T14KxK
+         MGj4i3Qd/GR7WgiISn2OdeuaJtkYCgS1FeSuWnmoYY1VZDk0laA7pxokzvXIz3EQKf
+         hS+lnGIr8gx4A==
+Date:   Tue, 16 Feb 2021 09:37:34 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Eli Cohen <elic@nvidia.com>
+Cc:     mst@redhat.com, jasowang@redhat.com, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        si-wei.liu@oracle.com
+Subject: Re: [PATCH] vdpa/mlx5: Extract correct pointer from driver data
+Message-ID: <YCt2PiMIZxbR15IA@unreal>
+References: <20210216055022.25248-1-elic@nvidia.com>
+ <20210216055022.25248-2-elic@nvidia.com>
+ <YCtnxyTHJl9TU87L@unreal>
+ <20210216064226.GA83717@mtl-vdi-166.wap.labs.mlnx>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210216064226.GA83717@mtl-vdi-166.wap.labs.mlnx>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-align * in block comments on each line
+On Tue, Feb 16, 2021 at 08:42:26AM +0200, Eli Cohen wrote:
+> On Tue, Feb 16, 2021 at 08:35:51AM +0200, Leon Romanovsky wrote:
+> > On Tue, Feb 16, 2021 at 07:50:22AM +0200, Eli Cohen wrote:
+> > > struct mlx5_vdpa_net pointer was stored in drvdata. Extract it as well
+> > > in mlx5v_remove().
+> > >
+> > > Fixes: 74c9729dd892 ("vdpa/mlx5: Connect mlx5_vdpa to auxiliary bus")
+> > > Signed-off-by: Eli Cohen <elic@nvidia.com>
+> > > ---
+> > >  drivers/vdpa/mlx5/net/mlx5_vnet.c | 4 ++--
+> > >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > >
+> > > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > index 6b0a42183622..4103d3b64a2a 100644
+> > > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > @@ -2036,9 +2036,9 @@ static int mlx5v_probe(struct auxiliary_device *adev,
+> > >
+> > >  static void mlx5v_remove(struct auxiliary_device *adev)
+> > >  {
+> > > -	struct mlx5_vdpa_dev *mvdev = dev_get_drvdata(&adev->dev);
+> > > +	struct mlx5_vdpa_net *ndev = dev_get_drvdata(&adev->dev);
+> > >
+> > > -	vdpa_unregister_device(&mvdev->vdev);
+> > > +	vdpa_unregister_device(&ndev->mvdev.vdev);
+> > >  }
+> >
+> > IMHO, The more correct solution is to fix dev_set_drvdata() call,
+> > because we are regustering/unregistering/allocating "struct mlx5_vdpa_dev".
+> >
+>
+> We're allocating "struct mlx5_vdpa_net". "struct mlx5_vdpa_dev" is just
+> a member field of "struct mlx5_vdpa_net".
 
-Signed-off-by: Du Cheng <ducheng2@gmail.com>
----
- drivers/staging/qlge/qlge_main.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+I referred to these lines in the mlx5v_probe():
+  1986         err = mlx5_vdpa_alloc_resources(&ndev->mvdev);
+  1987         if (err)
+  1988                 goto err_mtu;
+  1989
+  1990         err = alloc_resources(ndev);
+  1991         if (err)
+  1992                 goto err_res;
+  1993
+  1994         err = vdpa_register_device(&mvdev->vdev);
 
-diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
-index 5516be3af898..2682a0e474bd 100644
---- a/drivers/staging/qlge/qlge_main.c
-+++ b/drivers/staging/qlge/qlge_main.c
-@@ -3815,8 +3815,7 @@ static int qlge_adapter_down(struct qlge_adapter *qdev)
- 
- 	qlge_tx_ring_clean(qdev);
- 
--	/* Call netif_napi_del() from common point.
--	*/
-+	/* Call netif_napi_del() from common point. */
- 	for (i = 0; i < qdev->rss_ring_count; i++)
- 		netif_napi_del(&qdev->rx_ring[i].napi);
- 
--- 
-2.27.0
+So mlx5v_remove() is better to be symmetrical.
 
+Thanks
+
+>
+> > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > index 88dde3455bfd..079b8fe669af 100644
+> > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > @@ -1995,7 +1995,7 @@ static int mlx5v_probe(struct auxiliary_device *adev,
+> >  	if (err)
+> >  		goto err_reg;
+> >
+> > -	dev_set_drvdata(&adev->dev, ndev);
+> > +	dev_set_drvdata(&adev->dev, mvdev);
+> >  	return 0;
+> >
+> >  err_reg:
+> >
+> > >
+> > >  static const struct auxiliary_device_id mlx5v_id_table[] = {
+> >
+> > > --
+> > > 2.29.2
+> > >
