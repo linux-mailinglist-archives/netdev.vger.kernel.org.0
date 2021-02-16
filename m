@@ -2,107 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B47B331C6EF
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 08:40:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F35131C6FF
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 08:52:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229787AbhBPHkq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 02:40:46 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33636 "EHLO mail.kernel.org"
+        id S229895AbhBPHwH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 02:52:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35192 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229717AbhBPHkn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Feb 2021 02:40:43 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5D79B64E04;
-        Tue, 16 Feb 2021 07:40:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613461202;
-        bh=hKiX52cLMN3cUoxtSOVIQl65AGC6ungrAGJmKsxqt30=;
+        id S229695AbhBPHv7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Feb 2021 02:51:59 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3241264DDA;
+        Tue, 16 Feb 2021 07:51:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1613461878;
+        bh=5QK6asyC9UTS+nh4p/KDBJlmjLE9RWADp20DtO6UjL0=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=k+HchKGThqHy+nr2gPPllfVB+QljdDnFodST5Qgn6ouMsuf+5wWugkNzpqITArqoy
-         SFA7vzEV9Dc0wk++mTACb2Qx9exF/KTG0TH1Qo2IP50ZD7TJmupli6IWSssnroUxhl
-         Lifo/ffqIZEwsxqTAXG3Vy+G/TjnSXqdfqqy+uoSQybkMIeIAxSKynyCcA3HfwfkCc
-         FREacdBk4bb7oElJP+Yf+j+Rejnq+51XKAxo+NBXDqdG6MHdvvKIe9ph7G/tLLy3es
-         XgQdMFeuNQoW7Ve6v7aBQ/WlY6Z2OesUMXXHgi6RC/La6URVTl8kTxN6HYVQhrsMvp
-         svAm04GR4V5/Q==
-Date:   Tue, 16 Feb 2021 09:39:58 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Martin Schiller <ms@dev.tdt.de>,
-        Krzysztof Halasa <khc@pm.waw.pl>
-Subject: Re: [PATCH net-next RFC v3] net: hdlc_x25: Queue outgoing LAPB frames
-Message-ID: <YCt2zmL3GiPodutc@unreal>
-References: <20210215072703.43952-1-xie.he.0141@gmail.com>
- <YCo96zjXHyvKpbUM@unreal>
- <CAJht_EOQBDdwa0keS9XTKZgXE44_b5cHJt=fFaKy-wFDpe6iaw@mail.gmail.com>
- <YCrDcMYgSgdKp4eX@unreal>
- <CAJht_EPy1Us72YGMune2G3s1TLB4TOCBFJpZt+KbVUV8uoFbfA@mail.gmail.com>
- <YCtgTBvR6TD8sPpe@unreal>
- <CAJht_ENDJ-T_9-V04YUP-Qp+PnZnAcOeV+6eUXkTX4pmm5Vrag@mail.gmail.com>
+        b=Y9XCxbWAzuDwHiWXW6XSkl7ERVY3JVICFiTjpJ9uBnFn+WDLu/TUxSqjAlEHIpOU0
+         /vdp3qZ3YBhGGIfPSXiRIf2HQ7K/ZQ44cu2aTGjMwJN/yYpKstp7pNTaZqK7qVIH1X
+         aIg8Rn2xzIiJd1DHBkm4j350zCVjlC1+NBxDgexM=
+Date:   Tue, 16 Feb 2021 08:51:13 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Du Cheng <ducheng2@gmail.com>
+Cc:     Manish Chopra <manishc@marvell.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH v2] fix coding style in driver/staging/qlge/qlge_main.c
+Message-ID: <YCt5cYeS0sZjS2V+@kroah.com>
+References: <20210216073526.175212-1-ducheng2@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAJht_ENDJ-T_9-V04YUP-Qp+PnZnAcOeV+6eUXkTX4pmm5Vrag@mail.gmail.com>
+In-Reply-To: <20210216073526.175212-1-ducheng2@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 15, 2021 at 11:30:25PM -0800, Xie He wrote:
-> On Mon, Feb 15, 2021 at 10:04 PM Leon Romanovsky <leon@kernel.org> wrote:
-> >
-> > On Mon, Feb 15, 2021 at 11:08:02AM -0800, Xie He wrote:
-> > > On Mon, Feb 15, 2021 at 10:54 AM Leon Romanovsky <leon@kernel.org> wrote:
-> > > >
-> > > > On Mon, Feb 15, 2021 at 09:23:32AM -0800, Xie He wrote:
-> > > > > On Mon, Feb 15, 2021 at 1:25 AM Leon Romanovsky <leon@kernel.org> wrote:
-> > > > > >
-> > > > > > > +     /* When transmitting data:
-> > > > > > > +      * first we'll remove a pseudo header of 1 byte,
-> > > > > > > +      * then the LAPB module will prepend an LAPB header of at most 3 bytes.
-> > > > > > > +      */
-> > > > > > > +     dev->needed_headroom = 3 - 1;
-> > > > > >
-> > > > > > 3 - 1 = 2
-> > > > > >
-> > > > > > Thanks
-> > > > >
-> > > > > Actually this is intentional. It makes the numbers more meaningful.
-> > > > >
-> > > > > The compiler should automatically generate the "2" so there would be
-> > > > > no runtime penalty.
-> > > >
-> > > > If you want it intentional, write it in the comment.
-> > > >
-> > > > /* When transmitting data, we will need extra 2 bytes headroom,
-> > > >  * which are 3 bytes of LAPB header minus one byte of pseudo header.
-> > > >  */
-> > > >  dev->needed_headroom = 2;
-> > >
-> > > I think this is unnecessary. The current comment already explains the
-> > > meaning of the "1" and the "3". There's no need for a reader of this
-> > > code to understand what a "2" is. That is the job of the compiler, not
-> > > the human reader.
-> >
-> > It is not related to compiler/human format. If you need to write "3 - 1"
-> > to make it easy for users, it means that your comment above is not
-> > full/correct/e.t.c.
->
-> My point is: there is no need for human programmers / code readers to
-> understand what this "2" is. There is no need to explain what this "2"
-> means in the comment. There is no need to write this "2" in the code.
-> There is no need for this "2" to appear anywhere. That is just an
-> intermediate result generated by the compiler. It is similar to
-> assembly or machine code. It is generated by the compiler. Human
-> programmers just don't care about this intermediate result.
->
-> My point could be more apparent if you consider a more complex
-> situation: "3 - 1 + 2 + 4 + 2". No human would want to see a
-> meaningless "10" in the code. We want to see the meaning of the
-> numbers, not a meaningless intermediate calculation result.
+On Tue, Feb 16, 2021 at 03:35:26PM +0800, Du Cheng wrote:
+> align * in block comments on each line
+> 
+> Signed-off-by: Du Cheng <ducheng2@gmail.com>
+> ---
+>  drivers/staging/qlge/qlge_main.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+> index 5516be3af898..2682a0e474bd 100644
+> --- a/drivers/staging/qlge/qlge_main.c
+> +++ b/drivers/staging/qlge/qlge_main.c
+> @@ -3815,8 +3815,7 @@ static int qlge_adapter_down(struct qlge_adapter *qdev)
+>  
+>  	qlge_tx_ring_clean(qdev);
+>  
+> -	/* Call netif_napi_del() from common point.
+> -	*/
+> +	/* Call netif_napi_del() from common point. */
+>  	for (i = 0; i < qdev->rss_ring_count; i++)
+>  		netif_napi_del(&qdev->rx_ring[i].napi);
+>  
+> -- 
+> 2.27.0
+> 
 
-Right, and we are using defines for that.
+Hi,
 
-Thanks
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
+
+You are receiving this message because of the following common error(s)
+as indicated below:
+
+- You did not write a descriptive Subject: for the patch, allowing Greg,
+  and everyone else, to know what this patch is all about.  Please read
+  the section entitled "The canonical patch format" in the kernel file,
+  Documentation/SubmittingPatches for what a proper Subject: line should
+  look like.
+
+- This looks like a new version of a previously submitted patch, but you
+  did not list below the --- line any changes from the previous version.
+  Please read the section entitled "The canonical patch format" in the
+  kernel file, Documentation/SubmittingPatches for what needs to be done
+  here to properly describe this.
+
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
+
+thanks,
+
+greg k-h's patch email bot
