@@ -2,267 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6202531CF0F
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 18:29:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D68C231CFAE
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 18:54:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231203AbhBPR3n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 12:29:43 -0500
-Received: from mail-40133.protonmail.ch ([185.70.40.133]:11423 "EHLO
-        mail-40133.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230498AbhBPR26 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 12:28:58 -0500
-Date:   Tue, 16 Feb 2021 17:28:13 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1613496496; bh=OZJJvVw+aRM0kcaqH3GC0aHgPjhIDjrz+ohzOH7Tkpo=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=KhJ/r3PRPNqaHi7fOGUyK9+UfWY7P+3N4QPFOSKOQjTD1Wj0nSpp7cMiGy4adY2vd
-         og3MNke9w1W4vXr5IC/jXmeEl8S0SmH18L2GDRnjoqz/Zi3caXhqy9vSjdD97fyxzR
-         xAKuEq7zR6StjbFnHvRna33RIY696m8lw6OlMNcU3aM+EtMXpBVFlFPd/S/Tnef5ge
-         FSTSvyM8OvdbvYdwAPQ/xvAqrCkLu6uNAa57L7qdNjm4wpN+7hDb9txF6sx23xHBpO
-         vBaxZ+/MgRbgVeWVVVIt73wKxaYYXEq0Whd4PU566nXW6d7CnrcybQRh8WmErzjzTz
-         CQcj5MzaXZoyA==
-To:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?utf-8?Q?Bj=C3=B6rn_T=C3=B6pel?= <bjorn@kernel.org>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Dust Li <dust.li@linux.alibaba.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH v6 bpf-next 6/6] xsk: build skb by page (aka generic zerocopy xmit)
-Message-ID: <20210216172640.374487-7-alobakin@pm.me>
-In-Reply-To: <20210216172640.374487-1-alobakin@pm.me>
-References: <20210216172640.374487-1-alobakin@pm.me>
+        id S231292AbhBPRyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 12:54:38 -0500
+Received: from mail.zx2c4.com ([104.131.123.232]:52136 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231217AbhBPRyN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Feb 2021 12:54:13 -0500
+X-Greylist: delayed 385 seconds by postgrey-1.27 at vger.kernel.org; Tue, 16 Feb 2021 12:54:13 EST
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1613497606;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=EeUD0/Hrmkha1vgSjrxHXQGMMGTIAxd3b5RgI7gY5e4=;
+        b=ipxFek+CTX1D/JoUVERmSDJlmYeA4+Y38dsHRKibMiaiDM396nBUW6wAAAqN9RXQE44SAH
+        c38acytS63tsoIpYLXnl8L+ZP7qQTypLTPonbP12/lDrj5vlQDFvfx4mCR0LI4PF8K5/UO
+        d3nn2yPgFxWYIiXNic1ircpgLM5208c=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id adf77641 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Tue, 16 Feb 2021 17:46:45 +0000 (UTC)
+Received: by mail-yb1-f182.google.com with SMTP id r127so1847143ybr.1;
+        Tue, 16 Feb 2021 09:46:45 -0800 (PST)
+X-Gm-Message-State: AOAM5327vN98YWUTtVb+x60s79EznA5bjiHmQzk1AIjXLb6SCboEhJaD
+        vkRsbVsRLyrMjCzkFzwtZ+oPaNAlvjwg2cX+ztQ=
+X-Google-Smtp-Source: ABdhPJwhVsAUHKbqej3N09bli7Ip3Grj1LPSZWD38TPvdzb+CintSD1ow5bBZyachx1edPauzqXd/cvVVNds1A+cBKQ=
+X-Received: by 2002:a25:80c9:: with SMTP id c9mr31610024ybm.279.1613497604734;
+ Tue, 16 Feb 2021 09:46:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+References: <0000000000000be4d705bb68dfa7@google.com> <20210216172817.GA14978@arm.com>
+In-Reply-To: <20210216172817.GA14978@arm.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Tue, 16 Feb 2021 18:46:34 +0100
+X-Gmail-Original-Message-ID: <CAHmME9q2-wbRmE-VgSoW5fxjGQ9kkafYH-X5gSVvgWESo5rm4Q@mail.gmail.com>
+Message-ID: <CAHmME9q2-wbRmE-VgSoW5fxjGQ9kkafYH-X5gSVvgWESo5rm4Q@mail.gmail.com>
+Subject: Re: KASAN: invalid-access Write in enqueue_timer
+To:     Netdev <netdev@vger.kernel.org>
+Cc:     syzbot <syzbot+95c862be69e37145543f@syzkaller.appspotmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>, mbenes@suse.cz,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Will Deacon <will@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Hi Catalin,
 
-This patch is used to construct skb based on page to save memory copy
-overhead.
+On Tue, Feb 16, 2021 at 6:28 PM Catalin Marinas <catalin.marinas@arm.com> wrote:
+> Adding Jason and Ard. It may be a use-after-free in the wireguard
+> driver.
 
-This function is implemented based on IFF_TX_SKB_NO_LINEAR. Only the
-network card priv_flags supports IFF_TX_SKB_NO_LINEAR will use page to
-directly construct skb. If this feature is not supported, it is still
-necessary to copy data to construct skb.
+Thanks for sending this my way. Note: to my knowledge, Ard doesn't
+work on wireguard.
 
----------------- Performance Testing ------------
+> >  hlist_add_head include/linux/list.h:883 [inline]
+> >  enqueue_timer+0x18/0xc0 kernel/time/timer.c:581
+> >  mod_timer+0x14/0x20 kernel/time/timer.c:1106
+> >  mod_peer_timer drivers/net/wireguard/timers.c:37 [inline]
+> >  wg_timers_any_authenticated_packet_traversal+0x68/0x90 drivers/net/wireguard/timers.c:215
 
-The test environment is Aliyun ECS server.
-Test cmd:
-```
-xdpsock -i eth0 -t  -S -s <msg size>
-```
+The line of hlist_add_head that it's hitting is:
 
-Test result data:
+static inline void hlist_add_head(struct hlist_node *n, struct hlist_head *h)
+{
+       struct hlist_node *first = h->first;
+       WRITE_ONCE(n->next, first);
+       if (first)
 
-size    64      512     1024    1500
-copy    1916747 1775988 1600203 1440054
-page    1974058 1953655 1945463 1904478
-percent 3.0%    10.0%   21.58%  32.3%
+So that means it's the dereferencing of h that's a problem. That comes from:
 
-Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
-[ alobakin:
- - expand subject to make it clearer;
- - improve skb->truesize calculation;
- - reserve some headroom in skb for drivers;
- - tailroom is not needed as skb is non-linear ]
-Signed-off-by: Alexander Lobakin <alobakin@pm.me>
-Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
----
- net/xdp/xsk.c | 120 ++++++++++++++++++++++++++++++++++++++++----------
- 1 file changed, 96 insertions(+), 24 deletions(-)
+static void enqueue_timer(struct timer_base *base, struct timer_list *timer,
+                         unsigned int idx, unsigned long bucket_expiry)
+{
 
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index 143979ea4165..a71ed664da0a 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -445,6 +445,97 @@ static void xsk_destruct_skb(struct sk_buff *skb)
- =09sock_wfree(skb);
- }
-=20
-+static struct sk_buff *xsk_build_skb_zerocopy(struct xdp_sock *xs,
-+=09=09=09=09=09      struct xdp_desc *desc)
-+{
-+=09struct xsk_buff_pool *pool =3D xs->pool;
-+=09u32 hr, len, ts, offset, copy, copied;
-+=09struct sk_buff *skb;
-+=09struct page *page;
-+=09void *buffer;
-+=09int err, i;
-+=09u64 addr;
-+
-+=09hr =3D max(NET_SKB_PAD, L1_CACHE_ALIGN(xs->dev->needed_headroom));
-+
-+=09skb =3D sock_alloc_send_skb(&xs->sk, hr, 1, &err);
-+=09if (unlikely(!skb))
-+=09=09return ERR_PTR(err);
-+
-+=09skb_reserve(skb, hr);
-+
-+=09addr =3D desc->addr;
-+=09len =3D desc->len;
-+=09ts =3D pool->unaligned ? len : pool->chunk_size;
-+
-+=09buffer =3D xsk_buff_raw_get_data(pool, addr);
-+=09offset =3D offset_in_page(buffer);
-+=09addr =3D buffer - pool->addrs;
-+
-+=09for (copied =3D 0, i =3D 0; copied < len; i++) {
-+=09=09page =3D pool->umem->pgs[addr >> PAGE_SHIFT];
-+=09=09get_page(page);
-+
-+=09=09copy =3D min_t(u32, PAGE_SIZE - offset, len - copied);
-+=09=09skb_fill_page_desc(skb, i, page, offset, copy);
-+
-+=09=09copied +=3D copy;
-+=09=09addr +=3D copy;
-+=09=09offset =3D 0;
-+=09}
-+
-+=09skb->len +=3D len;
-+=09skb->data_len +=3D len;
-+=09skb->truesize +=3D ts;
-+
-+=09refcount_add(ts, &xs->sk.sk_wmem_alloc);
-+
-+=09return skb;
-+}
-+
-+static struct sk_buff *xsk_build_skb(struct xdp_sock *xs,
-+=09=09=09=09     struct xdp_desc *desc)
-+{
-+=09struct net_device *dev =3D xs->dev;
-+=09struct sk_buff *skb;
-+
-+=09if (dev->priv_flags & IFF_TX_SKB_NO_LINEAR) {
-+=09=09skb =3D xsk_build_skb_zerocopy(xs, desc);
-+=09=09if (IS_ERR(skb))
-+=09=09=09return skb;
-+=09} else {
-+=09=09u32 hr, tr, len;
-+=09=09void *buffer;
-+=09=09int err;
-+
-+=09=09hr =3D max(NET_SKB_PAD, L1_CACHE_ALIGN(dev->needed_headroom));
-+=09=09tr =3D dev->needed_tailroom;
-+=09=09len =3D desc->len;
-+
-+=09=09skb =3D sock_alloc_send_skb(&xs->sk, hr + len + tr, 1, &err);
-+=09=09if (unlikely(!skb))
-+=09=09=09return ERR_PTR(err);
-+
-+=09=09skb_reserve(skb, hr);
-+=09=09skb_put(skb, len);
-+
-+=09=09buffer =3D xsk_buff_raw_get_data(xs->pool, desc->addr);
-+=09=09err =3D skb_store_bits(skb, 0, buffer, len);
-+=09=09if (unlikely(err)) {
-+=09=09=09kfree_skb(skb);
-+=09=09=09return ERR_PTR(err);
-+=09=09}
-+=09}
-+
-+=09skb->dev =3D dev;
-+=09skb->priority =3D xs->sk.sk_priority;
-+=09skb->mark =3D xs->sk.sk_mark;
-+=09skb_shinfo(skb)->destructor_arg =3D (void *)(long)desc->addr;
-+=09skb->destructor =3D xsk_destruct_skb;
-+
-+=09return skb;
-+}
-+
- static int xsk_generic_xmit(struct sock *sk)
- {
- =09struct xdp_sock *xs =3D xdp_sk(sk);
-@@ -454,56 +545,37 @@ static int xsk_generic_xmit(struct sock *sk)
- =09struct sk_buff *skb;
- =09unsigned long flags;
- =09int err =3D 0;
--=09u32 hr, tr;
-=20
- =09mutex_lock(&xs->mutex);
-=20
- =09if (xs->queue_id >=3D xs->dev->real_num_tx_queues)
- =09=09goto out;
-=20
--=09hr =3D max(NET_SKB_PAD, L1_CACHE_ALIGN(xs->dev->needed_headroom));
--=09tr =3D xs->dev->needed_tailroom;
--
- =09while (xskq_cons_peek_desc(xs->tx, &desc, xs->pool)) {
--=09=09char *buffer;
--=09=09u64 addr;
--=09=09u32 len;
--
- =09=09if (max_batch-- =3D=3D 0) {
- =09=09=09err =3D -EAGAIN;
- =09=09=09goto out;
- =09=09}
-=20
--=09=09len =3D desc.len;
--=09=09skb =3D sock_alloc_send_skb(sk, hr + len + tr, 1, &err);
--=09=09if (unlikely(!skb))
-+=09=09skb =3D xsk_build_skb(xs, &desc);
-+=09=09if (IS_ERR(skb)) {
-+=09=09=09err =3D PTR_ERR(skb);
- =09=09=09goto out;
-+=09=09}
-=20
--=09=09skb_reserve(skb, hr);
--=09=09skb_put(skb, len);
--
--=09=09addr =3D desc.addr;
--=09=09buffer =3D xsk_buff_raw_get_data(xs->pool, addr);
--=09=09err =3D skb_store_bits(skb, 0, buffer, len);
- =09=09/* This is the backpressure mechanism for the Tx path.
- =09=09 * Reserve space in the completion queue and only proceed
- =09=09 * if there is space in it. This avoids having to implement
- =09=09 * any buffering in the Tx path.
- =09=09 */
- =09=09spin_lock_irqsave(&xs->pool->cq_lock, flags);
--=09=09if (unlikely(err) || xskq_prod_reserve(xs->pool->cq)) {
-+=09=09if (xskq_prod_reserve(xs->pool->cq)) {
- =09=09=09spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
- =09=09=09kfree_skb(skb);
- =09=09=09goto out;
- =09=09}
- =09=09spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
-=20
--=09=09skb->dev =3D xs->dev;
--=09=09skb->priority =3D sk->sk_priority;
--=09=09skb->mark =3D sk->sk_mark;
--=09=09skb_shinfo(skb)->destructor_arg =3D (void *)(long)desc.addr;
--=09=09skb->destructor =3D xsk_destruct_skb;
--
- =09=09err =3D __dev_direct_xmit(skb, xs->queue_id);
- =09=09if  (err =3D=3D NETDEV_TX_BUSY) {
- =09=09=09/* Tell user-space to retry the send */
---=20
-2.30.1
+       hlist_add_head(&timer->entry, base->vectors + idx);
+
+That means it concerns base->vectors + idx, not the timer_list object
+that wireguard manages. That's confusing. Could that imply that the
+bug is in freeing a previous timer without removing it from the timer
+lists, so that it winds up being in base->vectors?
+
+The allocation and deallocation backtrace is confusing
+
+> >  alloc_netdev_mqs+0x5c/0x3bc net/core/dev.c:10546
+> >  rtnl_create_link+0xc8/0x2b0 net/core/rtnetlink.c:3171
+> >  __rtnl_newlink+0x5bc/0x800 net/core/rtnetlink.c:3433
+
+This suggests it's part of the `ip link add wg0 type wireguard` nelink
+call, during it's allocation of the netdevice's private area. For
+this, the wg_device struct is used. It has no timer_list structures in
+it!
+
+Similarly,
+
+> >  netdev_freemem+0x18/0x2c net/core/dev.c:10500
+> >  netdev_release+0x30/0x44 net/core/net-sysfs.c:1828
+> >  device_release+0x34/0x90 drivers/base/core.c:1980
+
+That smells like `ip link del wg0 type wireguard`. But again,
+wg_device doesn't have any timer_lists in it.
+
+So what's happening here exactly? I'm not really sure yet...
+
+It'd be nice to have a reproducer.
 
 
+Jason
