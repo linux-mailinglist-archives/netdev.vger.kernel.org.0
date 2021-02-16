@@ -2,73 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC43231D0EB
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 20:24:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9130631D10B
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 20:40:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230466AbhBPTWV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 14:22:21 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52052 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230355AbhBPTWJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Feb 2021 14:22:09 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 862EA64E7A;
-        Tue, 16 Feb 2021 19:21:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613503288;
-        bh=C55g7mCUuCjm7Ez3PWGLGQz+jfvuDmdosTrWGgfK1AM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ozMnd0ikBYDQ7Nk2Hyyr0PJ+xVLwXyZtvYvOgnBwzrRqCzQvorOw8eex4PtozvIus
-         cjG8Og0ft3IVPOivVZgYs89BSaGfmcm4a0/ypEUi3LVhLspSRJnzYggRnkbO8denWH
-         zLSoiDP2M85vjRbCRgGWlmgLiuEl887TpjVl/xcgZyQU8EkkCTk2Y9iF2Z26hBJTOw
-         vRuKmGQWEMg3Fc8mgftEshcDB4iymFOwBY+jQ/LEGH7yrneotA7Hdl1deAtZhXtisy
-         uexpHQwSXsilOZ4eGfizZSO76EuRpCDVAMD4hyECbhzb8ZMWIUPwcKAldE75DzYUo/
-         dRQYhtwxRmziw==
-From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-To:     netdev@vger.kernel.org,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     pavana.sharma@digi.com, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, lkp@intel.com, ashkan.boldaji@digi.com,
-        andrew@lunn.ch, Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        olteanv@gmail.com,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH net-next 4/4] sfp: add support for 5gbase-t SFPs
-Date:   Tue, 16 Feb 2021 20:20:55 +0100
-Message-Id: <20210216192055.7078-5-kabel@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210216192055.7078-1-kabel@kernel.org>
-References: <20210216192055.7078-1-kabel@kernel.org>
+        id S229796AbhBPTjg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 14:39:36 -0500
+Received: from userp2130.oracle.com ([156.151.31.86]:36462 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229720AbhBPTjg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 14:39:36 -0500
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11GJT0ZQ056776;
+        Tue, 16 Feb 2021 19:38:53 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
+ bh=20SQMB9x5QPouRX/X14gXKQDWzde0lyKl3DjPdES2BA=;
+ b=Wr90R//xpe836aAyvRHCEeB04UnimCTdiOAb9zBp90hTw7y9OreNeCITo6MJgGXOBIXk
+ twS8jR1BDJiiPqlzdQrfS3CQvrbl6Ha59gIMjCXpunhx0XRtXYG7977hIFiN5nHdEcao
+ DjD0ELWVj13/JpmFmXq32pCNlI2stjZyWlET++tZuhjQyyrbEK+hFIn3xF7MlYpxi3v6
+ UQBAlZP63hNB/ICZcjw9wKtb9DaZwj2hac5WIW/3qg6i4Z8SeJs08XpiX6q2S+iFGZfA
+ onz2Q7v0vJj/nIP8VuLvLfSAl0PZoYMdtw+4IaAypdBmGitC0zX+8KT2jMJOdbb3QBh8 Mw== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by userp2130.oracle.com with ESMTP id 36p66r0390-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 16 Feb 2021 19:38:53 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11GJbJP9162073;
+        Tue, 16 Feb 2021 19:38:51 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by userp3020.oracle.com with ESMTP id 36prhryam0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 16 Feb 2021 19:38:51 +0000
+Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 11GJcoCb003035;
+        Tue, 16 Feb 2021 19:38:51 GMT
+Received: from mwanda (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 16 Feb 2021 11:38:49 -0800
+Date:   Tue, 16 Feb 2021 22:38:42 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     cong.wang@bytedance.com
+Cc:     netdev@vger.kernel.org
+Subject: [bug report] net: fix dev_ifsioc_locked() race condition
+Message-ID: <YCwfQn21MdZmE3CO@mwanda>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Proofpoint-IMR: 1
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9897 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=893 adultscore=0 mlxscore=0
+ bulkscore=0 suspectscore=0 malwarescore=0 spamscore=0 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2102160162
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9897 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 lowpriorityscore=0 suspectscore=0
+ impostorscore=0 priorityscore=1501 clxscore=1011 spamscore=0 mlxscore=0
+ phishscore=0 malwarescore=0 bulkscore=0 adultscore=0 mlxlogscore=836
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2102160162
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The sfp_parse_support() function is setting 5000baseT_Full in some cases.
-Now that we have PHY_INTERFACE_MODE_5GBASER interface mode available,
-change sfp_select_interface() to return PHY_INTERFACE_MODE_5GBASER if
-5000baseT_Full is set in the link mode mask.
+Hello Cong Wang,
 
-Signed-off-by: Marek Behún <kabel@kernel.org>
----
- drivers/net/phy/sfp-bus.c | 3 +++
- 1 file changed, 3 insertions(+)
+The patch 3b23a32a6321: "net: fix dev_ifsioc_locked() race condition"
+from Feb 11, 2021, leads to the following static checker warning:
 
-diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
-index 3cfd773ae5f4..2e11176c6b94 100644
---- a/drivers/net/phy/sfp-bus.c
-+++ b/drivers/net/phy/sfp-bus.c
-@@ -400,6 +400,9 @@ phy_interface_t sfp_select_interface(struct sfp_bus *bus,
- 	    phylink_test(link_modes, 10000baseT_Full))
- 		return PHY_INTERFACE_MODE_10GBASER;
- 
-+	if (phylink_test(link_modes, 5000baseT_Full))
-+		return PHY_INTERFACE_MODE_5GBASER;
-+
- 	if (phylink_test(link_modes, 2500baseX_Full))
- 		return PHY_INTERFACE_MODE_2500BASEX;
- 
--- 
-2.26.2
+	drivers/net/tap.c:1095 tap_ioctl()
+	warn: check that 'sa.sa_family' doesn't leak information
 
+drivers/net/tap.c
+  1084  
+  1085          case SIOCGIFHWADDR:
+  1086                  rtnl_lock();
+  1087                  tap = tap_get_tap_dev(q);
+  1088                  if (!tap) {
+  1089                          rtnl_unlock();
+  1090                          return -ENOLINK;
+  1091                  }
+  1092                  ret = 0;
+  1093                  dev_get_mac_address(&sa, dev_net(tap->dev), tap->dev->name);
+
+How do you want to handle errors from dev_get_mac_address()?
+
+  1094                  if (copy_to_user(&ifr->ifr_name, tap->dev->name, IFNAMSIZ) ||
+  1095                      copy_to_user(&ifr->ifr_hwaddr, &sa, sizeof(sa)))
+  1096                          ret = -EFAULT;
+  1097                  tap_put_tap_dev(tap);
+  1098                  rtnl_unlock();
+  1099                  return ret;
+  1100  
+
+regards,
+dan carpenter
