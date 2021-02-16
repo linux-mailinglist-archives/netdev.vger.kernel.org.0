@@ -2,97 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9130631D10B
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 20:40:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C18731D132
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 20:50:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229796AbhBPTjg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 14:39:36 -0500
-Received: from userp2130.oracle.com ([156.151.31.86]:36462 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229720AbhBPTjg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 14:39:36 -0500
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11GJT0ZQ056776;
-        Tue, 16 Feb 2021 19:38:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
- bh=20SQMB9x5QPouRX/X14gXKQDWzde0lyKl3DjPdES2BA=;
- b=Wr90R//xpe836aAyvRHCEeB04UnimCTdiOAb9zBp90hTw7y9OreNeCITo6MJgGXOBIXk
- twS8jR1BDJiiPqlzdQrfS3CQvrbl6Ha59gIMjCXpunhx0XRtXYG7977hIFiN5nHdEcao
- DjD0ELWVj13/JpmFmXq32pCNlI2stjZyWlET++tZuhjQyyrbEK+hFIn3xF7MlYpxi3v6
- UQBAlZP63hNB/ICZcjw9wKtb9DaZwj2hac5WIW/3qg6i4Z8SeJs08XpiX6q2S+iFGZfA
- onz2Q7v0vJj/nIP8VuLvLfSAl0PZoYMdtw+4IaAypdBmGitC0zX+8KT2jMJOdbb3QBh8 Mw== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by userp2130.oracle.com with ESMTP id 36p66r0390-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 16 Feb 2021 19:38:53 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11GJbJP9162073;
-        Tue, 16 Feb 2021 19:38:51 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by userp3020.oracle.com with ESMTP id 36prhryam0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 16 Feb 2021 19:38:51 +0000
-Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 11GJcoCb003035;
-        Tue, 16 Feb 2021 19:38:51 GMT
-Received: from mwanda (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 16 Feb 2021 11:38:49 -0800
-Date:   Tue, 16 Feb 2021 22:38:42 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     cong.wang@bytedance.com
-Cc:     netdev@vger.kernel.org
-Subject: [bug report] net: fix dev_ifsioc_locked() race condition
-Message-ID: <YCwfQn21MdZmE3CO@mwanda>
-MIME-Version: 1.0
+        id S229896AbhBPTud (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 14:50:33 -0500
+Received: from mx.aristanetworks.com ([162.210.129.12]:59450 "EHLO
+        smtp.aristanetworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229572AbhBPTub (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 14:50:31 -0500
+X-Greylist: delayed 628 seconds by postgrey-1.27 at vger.kernel.org; Tue, 16 Feb 2021 14:50:31 EST
+Received: from us180.sjc.aristanetworks.com (us180.sjc.aristanetworks.com [10.243.128.7])
+        by smtp.aristanetworks.com (Postfix) with ESMTP id 9E0D4400C84;
+        Tue, 16 Feb 2021 11:39:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
+        s=Arista-A; t=1613504351;
+        bh=KzzeBl3CToKQoo8CnA55xVYHNnOE1Mri75OAXviGcJU=;
+        h=Date:To:Subject:From:From;
+        b=IzPgwbhGv4xxIi9ITir8JTH26SNR3V99r7mDBnsQ2M3jaQa37u4e4i2B4mqYB9Gai
+         npWweKVWGJzvUMhlOBVdRMlF9m3Bx+70aBz+pEAwHOLxeOhDy8CBa1j7b+sOHUJNOh
+         o0WcRgXOS1TrCk/f+bx07znjN9O/m9ZzNgxHjx7XgGB+V1FChhT9IwHMQhZ9ujvBOV
+         pY4Nux49lEo0bt9AAOJv4QFxAvDuG7u0oXdE2sLy5wvoCj62+iUx7zoRegvdS2SucX
+         r1+BXr68yxQVWuGQylWkMBchqAgU+5efbQFCmRFKTyJidIyCnqod1rOnOEDv81iyq+
+         9JsK2xHgbuukA==
+Received: by us180.sjc.aristanetworks.com (Postfix, from userid 10189)
+        id 88C9795C05D0; Tue, 16 Feb 2021 11:39:11 -0800 (PST)
+Date:   Tue, 16 Feb 2021 11:39:11 -0800
+To:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        viro@zeniv.linux.org.uk, fruggeri@arista.com
+Subject: epoll: different edge-triggered behavior bewteen pipe and
+ socketpair
+User-Agent: Heirloom mailx 12.5 7/5/10
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Proofpoint-IMR: 1
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9897 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=893 adultscore=0 mlxscore=0
- bulkscore=0 suspectscore=0 malwarescore=0 spamscore=0 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2102160162
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9897 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 lowpriorityscore=0 suspectscore=0
- impostorscore=0 priorityscore=1501 clxscore=1011 spamscore=0 mlxscore=0
- phishscore=0 malwarescore=0 bulkscore=0 adultscore=0 mlxlogscore=836
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2102160162
+Content-Transfer-Encoding: 7bit
+Message-Id: <20210216193911.88C9795C05D0@us180.sjc.aristanetworks.com>
+From:   fruggeri@arista.com (Francesco Ruggeri)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Cong Wang,
+pipe() and socketpair() have different behavior wrt edge-triggered
+read epoll, in that no event is generated when data is written into
+a non-empty pipe, but an event is generated if socketpair() is used
+instead.
+This simple modification of the epoll2 testlet from 
+tools/testing/selftests/filesystems/epoll/epoll_wakeup_test.c
+(it just adds a second write) shows the different behavior.
+The testlet passes with pipe() but fails with socketpair() with 5.10.
+They both fail with 4.19.
+Is it fair to assume that 5.10 pipe's behavior is the correct one?
 
-The patch 3b23a32a6321: "net: fix dev_ifsioc_locked() race condition"
-from Feb 11, 2021, leads to the following static checker warning:
+Thanks,
+Francesco Ruggeri
 
-	drivers/net/tap.c:1095 tap_ioctl()
-	warn: check that 'sa.sa_family' doesn't leak information
+/*
+ *          t0
+ *           | (ew)
+ *          e0
+ *           | (et)
+ *          s0
+ */
+TEST(epoll2)
+{
+	int efd;
+	int sfd[2];
+	struct epoll_event e;
 
-drivers/net/tap.c
-  1084  
-  1085          case SIOCGIFHWADDR:
-  1086                  rtnl_lock();
-  1087                  tap = tap_get_tap_dev(q);
-  1088                  if (!tap) {
-  1089                          rtnl_unlock();
-  1090                          return -ENOLINK;
-  1091                  }
-  1092                  ret = 0;
-  1093                  dev_get_mac_address(&sa, dev_net(tap->dev), tap->dev->name);
+	ASSERT_EQ(socketpair(AF_UNIX, SOCK_STREAM, 0, sfd), 0);
+	//ASSERT_EQ(pipe(sfd), 0);
 
-How do you want to handle errors from dev_get_mac_address()?
+	efd = epoll_create(1);
+	ASSERT_GE(efd, 0);
 
-  1094                  if (copy_to_user(&ifr->ifr_name, tap->dev->name, IFNAMSIZ) ||
-  1095                      copy_to_user(&ifr->ifr_hwaddr, &sa, sizeof(sa)))
-  1096                          ret = -EFAULT;
-  1097                  tap_put_tap_dev(tap);
-  1098                  rtnl_unlock();
-  1099                  return ret;
-  1100  
+	e.events = EPOLLIN | EPOLLET;
+	ASSERT_EQ(epoll_ctl(efd, EPOLL_CTL_ADD, sfd[0], &e), 0);
 
-regards,
-dan carpenter
+	ASSERT_EQ(write(sfd[1], "w", 1), 1);
+	EXPECT_EQ(epoll_wait(efd, &e, 1, 0), 1);
+
+	ASSERT_EQ(write(sfd[1], "w", 1), 1);
+	EXPECT_EQ(epoll_wait(efd, &e, 1, 0), 0);
+
+	close(efd);
+	close(sfd[0]);
+	close(sfd[1]);
+}
+
+
