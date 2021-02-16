@@ -2,127 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B92E31C58F
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 03:34:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4051231C5AC
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 03:49:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229742AbhBPCd6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 21:33:58 -0500
-Received: from mga06.intel.com ([134.134.136.31]:61034 "EHLO mga06.intel.com"
+        id S229742AbhBPCtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 21:49:15 -0500
+Received: from mga04.intel.com ([192.55.52.120]:12206 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229497AbhBPCd6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Feb 2021 21:33:58 -0500
-IronPort-SDR: 2lEnECs8kJRZR9k5g4aGZLC4emY1pnDQWBbmdf+arqwCc+dWq9exXuPCgoEX4Zy5d9/AdsXvNo
- yNoj4fr8wl5g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9896"; a="244271975"
+        id S229497AbhBPCtN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Feb 2021 21:49:13 -0500
+IronPort-SDR: /l8/qZ02AH0UnKoFoIt9fNCf98qeR5EaYlKgO6FcUlllOPgRB1ajCSB9QYkOBYc51GdDp5EbgD
+ hgqIgehjncyA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9896"; a="180236005"
 X-IronPort-AV: E=Sophos;i="5.81,182,1610438400"; 
-   d="scan'208";a="244271975"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2021 18:33:11 -0800
-IronPort-SDR: Yp+7uw05CRDufCIBtfflNopUX8jkJ4ebbhVlZzagEwq6i7ke+1QLlgTsL1tFW/TdbDB8KHKzCZ
- gP+f68A6qtrw==
+   d="scan'208";a="180236005"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2021 18:48:23 -0800
+IronPort-SDR: XioxewpK9JIeOd7PkeXDWLEErkkD6bUjThj+NzwweoRjtTTBAoobk9rDDMtrmKLcqT3PfMOQD0
+ bWMEHXtAhcIw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.81,182,1610438400"; 
-   d="scan'208";a="426119638"
+   d="scan'208";a="438763695"
 Received: from ranger.igk.intel.com ([10.102.21.164])
-  by fmsmga002.fm.intel.com with ESMTP; 15 Feb 2021 18:33:08 -0800
-Date:   Tue, 16 Feb 2021 03:23:20 +0100
+  by orsmga001.jf.intel.com with ESMTP; 15 Feb 2021 18:48:21 -0800
+Date:   Tue, 16 Feb 2021 03:38:33 +0100
 From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        daniel@iogearbox.net, ast@kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, andrii@kernel.org,
-        magnus.karlsson@intel.com, ciara.loftus@intel.com
+Cc:     daniel@iogearbox.net, ast@kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, andrii@kernel.org, toke@redhat.com,
+        bjorn.topel@intel.com, magnus.karlsson@intel.com,
+        ciara.loftus@intel.com
 Subject: Re: [PATCH bpf-next 1/3] libbpf: xsk: use bpf_link
-Message-ID: <20210216022320.GC9572@ranger.igk.intel.com>
+Message-ID: <20210216023833.GD9572@ranger.igk.intel.com>
 References: <20210215154638.4627-1-maciej.fijalkowski@intel.com>
  <20210215154638.4627-2-maciej.fijalkowski@intel.com>
- <87eehhcl9x.fsf@toke.dk>
- <fe0c957e-d212-4265-a271-ba301c3c5eca@intel.com>
- <602ad80c566ea_3ed4120871@john-XPS-13-9370.notmuch>
- <8735xxc8pf.fsf@toke.dk>
- <602b0f54c05a6_3ed41208dc@john-XPS-13-9370.notmuch>
+ <602ade57ddb9c_3ed41208a1@john-XPS-13-9370.notmuch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <602b0f54c05a6_3ed41208dc@john-XPS-13-9370.notmuch>
+In-Reply-To: <602ade57ddb9c_3ed41208a1@john-XPS-13-9370.notmuch>
 User-Agent: Mutt/1.12.1 (2019-06-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 15, 2021 at 04:18:28PM -0800, John Fastabend wrote:
-> Toke Høiland-Jørgensen wrote:
-> > John Fastabend <john.fastabend@gmail.com> writes:
+On Mon, Feb 15, 2021 at 12:49:27PM -0800, John Fastabend wrote:
+> Maciej Fijalkowski wrote:
+> > Currently, if there are multiple xdpsock instances running on a single
+> > interface and in case one of the instances is terminated, the rest of
+> > them are left in an inoperable state due to the fact of unloaded XDP
+> > prog from interface.
 > > 
-> > >> > However, in libxdp we can solve the original problem in a different way,
-> > >> > and in fact I already suggested to Magnus that we should do this (see
-> > >> > [1]); so one way forward could be to address it during the merge in
-> > >> > libxdp? It should be possible to address the original issue (two
-> > >> > instances of xdpsock breaking each other when they exit), but
-> > >> > applications will still need to do an explicit unload operation before
-> > >> > exiting (i.e., the automatic detach on bpf_link fd closure will take
-> > >> > more work, and likely require extending the bpf_link kernel support)...
-> > >> >
-> > >> 
-> > >> I'd say it's depending on the libbpf 1.0/libxdp merge timeframe. If
-> > >> we're months ahead, then I'd really like to see this in libbpf until the
-> > >> merge. However, I'll leave that for Magnus/you to decide!
-> > >
-> > > Did I miss some thread? What does this mean libbpf 1.0/libxdp merge?
+> > To address that, step away from setting bpf prog in favour of bpf_link.
+> > This means that refcounting of BPF resources will be done automatically
+> > by bpf_link itself.
 > > 
-> > The idea is to keep libbpf focused on bpf, and move the AF_XDP stuff to
-> > libxdp (so the socket stuff in xsk.h). We're adding the existing code
-> > wholesale, and keeping API compatibility during the move, so all that's
-> > needed is adding -lxdp when compiling. And obviously the existing libbpf
-> > code isn't going anywhere until such a time as there's a general
-> > backwards compatibility-breaking deprecation in libbpf (which I believe
-> > Andrii is planning to do in an upcoming and as-of-yet unannounced v1.0
-> > release).
+> > When setting up BPF resources during xsk socket creation, check whether
+> > bpf_link for a given ifindex already exists via set of calls to
+> > bpf_link_get_next_id -> bpf_link_get_fd_by_id -> bpf_obj_get_info_by_fd
+> > and comparing the ifindexes from bpf_link and xsk socket.
+> > 
+> > If there's no bpf_link yet, create one for a given XDP prog and unload
+> > explicitly existing prog if XDP_FLAGS_UPDATE_IF_NOEXIST is not set.
+> > 
+> > If bpf_link is already at a given ifindex and underlying program is not
+> > AF-XDP one, bail out or update the bpf_link's prog given the presence of
+> > XDP_FLAGS_UPDATE_IF_NOEXIST.
+> > 
+> > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> > ---
+> >  tools/lib/bpf/xsk.c | 143 +++++++++++++++++++++++++++++++++++++-------
+> >  1 file changed, 122 insertions(+), 21 deletions(-)
+> 
+> [...]
+> 
+> > +static int xsk_create_bpf_link(struct xsk_socket *xsk)
+> > +{
+> > +	/* bpf_link only accepts XDP_FLAGS_MODES, but xsk->config.xdp_flags
+> > +	 * might have set XDP_FLAGS_UPDATE_IF_NOEXIST
+> > +	 */
+> > +	DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts,
+> > +			    .flags = (xsk->config.xdp_flags & XDP_FLAGS_MODES));
+> > +	struct xsk_ctx *ctx = xsk->ctx;
+> > +	__u32 prog_id;
+> > +	int link_fd;
+> > +	int err;
+> > +
+> > +	/* for !XDP_FLAGS_UPDATE_IF_NOEXIST, unload the program first, if any,
+> > +	 * so that bpf_link can be attached
+> > +	 */
+> > +	if (!(xsk->config.xdp_flags & XDP_FLAGS_UPDATE_IF_NOEXIST)) {
+> > +		err = bpf_get_link_xdp_id(ctx->ifindex, &prog_id, xsk->config.xdp_flags);
+> > +		if (err) {
+> > +			pr_warn("getting XDP prog id failed\n");
+> > +			return err;
+> > +		}
+> > +		if (prog_id) {
+> > +			err = bpf_set_link_xdp_fd(ctx->ifindex, -1, 0);
+> > +			if (err < 0) {
+> > +				pr_warn("detaching XDP prog failed\n");
+> > +				return err;
+> > +			}
+> > +		}
+> >  	}
+> >  
+> > -	ctx->prog_fd = prog_fd;
+> > +	link_fd = bpf_link_create(ctx->prog_fd, xsk->ctx->ifindex, BPF_XDP, &opts);
+> > +	if (link_fd < 0) {
+> > +		pr_warn("bpf_link_create failed: %s\n", strerror(errno));
+> > +		return link_fd;
+> > +	}
+> > +
+> 
+> This can leave the system in a bad state where it unloaded the XDP program
+> above, but then failed to create the link. So we should somehow fix that
+> if possible or at minimum put a note somewhere so users can't claim they
+> shouldn't know this.
+> 
+> Also related, its not good for real systems to let XDP program go missing
+> for some period of time. I didn't check but we should make
+> XDP_FLAGS_UPDATE_IF_NOEXIST the default if its not already.
 
-Once again, is libxdp going to land in th kernel? Still not clear to me.
+Old way of attaching prog is mutual exclusive with bpf_link, right?
+What I'm saying is in order to use one of the two, you need to wipe out
+the current one in favour of the second that you would like to load.
 
 > 
-> OK, I would like to keep the basic XDP pieces in libbpf though. For example
-> bpf_program__attach_xdp(). This way we don't have one lib to attach
-> everything, but XDP.
+> > +	ctx->link_fd = link_fd;
+> >  	return 0;
+> >  }
+> >  
 > 
-> > 
-> > While integrating the XSK code into libxdp we're trying to make it
-> > compatible with the rest of the library (i.e., multi-prog). Hence my
-> > preference to avoid introducing something that makes this harder :)
-
-Do you see the issue with solving it one way in libbpf currently given
-that we can't really tell when the merge of libs is going to happen and
-the other way within the libxdp itself?
-
-> > 
-> > -Toke
-> > 
+> [...]
 > 
-> OK that makes sense to me thanks. But, I'm missing something (maybe its
-> obvious to everyone else?).
+> > +static int xsk_link_lookup(struct xsk_ctx *ctx, __u32 *prog_id)
+> > +{
+> > +	__u32 link_len = sizeof(struct bpf_link_info);
+> > +	struct bpf_link_info link_info;
+> > +	__u32 id = 0;
+> > +	int err;
+> > +	int fd;
+> > +
+> > +	while (true) {
+> > +		err = bpf_link_get_next_id(id, &id);
+> > +		if (err) {
+> > +			if (errno == ENOENT)
+> > +				break;
+> > +			pr_warn("can't get next link: %s\n", strerror(errno));
+> > +			break;
+> > +		}
+> > +
+> > +		fd = bpf_link_get_fd_by_id(id);
+> > +		if (fd < 0) {
+> > +			if (errno == ENOENT)
+> > +				continue;
+> > +			pr_warn("can't get link by id (%u): %s\n", id, strerror(errno));
+> > +			break;
+> > +		}
+> > +
+> > +		memset(&link_info, 0, link_len);
+> > +		err = bpf_obj_get_info_by_fd(fd, &link_info, &link_len);
+> > +		if (err) {
+> > +			pr_warn("can't get link info: %s\n", strerror(errno));
+> > +			close(fd);
+> > +			break;
+> > +		}
+> > +		if (link_info.xdp.ifindex == ctx->ifindex) {
+> > +			ctx->link_fd = fd;
+> > +			*prog_id = link_info.prog_id;
+> > +			break;
+> > +		}
+> > +		close(fd);
+> > +	}
+> > +
+> > +	return errno == ENOENT ? 0 : err;
 > 
-> When you load an XDP program you should get a reference to it. And then
-> XDP program should never be unloaded until that id is removed right? It
+> But, err wont be set in fd < 0 case? I guess we don't want to return 0 if
+> bpf_link_get_fd_by_id fails.
 
-WDYM by 'that id is removed' ?
+Good catch!
 
-> may or may not have an xsk map. Why does adding/removing programs from
+> Although I really don't like the construct
+> here that much. I think just `return err` and ensuring err is set correctly
+> would be more clear. At least the fd error case needs to be handled
+> though.
 
-you meant adding/removing 'sockets'?
-
-> an associated map have any impact on the XDP program? That seems like
-> the buggy part to me. No other map behaves this way as far as I can
-> tell. Now if the program with the XDP reference closes without pinning
-> the map or otherwise doing something with it, sure the map gets destroyed
-> and any xsk sockets are lost.
-
-It's the XDP program that is getting lost, not XSKMAP. XDP prog presence
-determines whether your driver works in ZC or not. If XDP prog is gone
-then xdpsock bails out (or any other AF-XDP app won't be able to work).
+FWIW, this was inspired by tools/bpf/bpftool/link.c:do_show()
 
 > 
-> Thanks!
-> John
+> > +}
+> > +
