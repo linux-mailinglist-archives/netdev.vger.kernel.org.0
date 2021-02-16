@@ -2,128 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E81531CC57
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 15:47:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 648ED31CCD5
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 16:22:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230374AbhBPOrv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 09:47:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55624 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230253AbhBPOro (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 09:47:44 -0500
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3029CC061574
-        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 06:47:04 -0800 (PST)
-Received: by mail-pf1-x430.google.com with SMTP id 189so6263706pfy.6
-        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 06:47:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=SwHn93yehpShrbalJ/4lL2GKbFHsZcvdS9Bf5KUzxhc=;
-        b=mNtv11bLK7YGvJ/Ay5F0oTOPUUlgh64/oOv+W+xwycQ0YbVY8WbV7N/OWMwdIx+Usz
-         pZYPOBjt8yn30J5kT6r1Mvx+gs351kT++KnErJF5ShSQX6oQ6ECQ4rnfoLuXZjha02yp
-         f57Q91anBSYp358K4vFJ9b6hQshSISnglrYs45cCR6yN51va7eiZkllTNZV02IU4uJC0
-         tfaxAfgw8/vFZzDq5/qeejxAdmCHSpnMei1waNYUVXhxM6YqjA29AhL7QVCL+CBuB/OH
-         TUSmUI815Dj4dYKhh5VUupfEpp0HVJK50xs98LcBt5iM6RoIJlWaLuu8avSJ2/ROnst4
-         zRyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=SwHn93yehpShrbalJ/4lL2GKbFHsZcvdS9Bf5KUzxhc=;
-        b=hvBZY2X6qBS3lWmc8OtEDANuJorSgcBrvZNppussy79eHDCyj2y/g1iUSLernjsfmU
-         U+WfsjaOJYJbPdn8zOFxPY0amft4TfKYSIJCJiNVPIMCg5r/xn1UimYVY5+w+78ixOmA
-         KXj/QsIc1YiYMfyhRfzZ6U81HlnyVOYDryCtuDYe+tX9/HquhHjGby/Bx3mx3oA1awTy
-         +pzOa9tyqqrl/AAa81dtFfqzYY300pmh1dVuzxMZX+KGm/hXg43C2ReJgGj5l68ysQHg
-         2HJift/TtWiLBhaKnxVaFlNhxZKFtRx2fGnLCkXdMaFftI2w1FKtdwJQFJBxosKxJaOJ
-         62fg==
-X-Gm-Message-State: AOAM531ZCaus2w0U7XDBDiCY9QJllwUrglnATv7S46EO6sW/KyHdhtXb
-        0MCEBgoxG1aAIbGHHMDGZN8=
-X-Google-Smtp-Source: ABdhPJx6MhtEvHP/fU97vq16VcNFe2GCyvPsvSIMYnhuPbBJrneqeYU/QfrWRxI2hfZ5NgYoaj2BdQ==
-X-Received: by 2002:aa7:9356:0:b029:1dd:644a:d904 with SMTP id 22-20020aa793560000b02901dd644ad904mr19868243pfn.18.1613486823665;
-        Tue, 16 Feb 2021 06:47:03 -0800 (PST)
-Received: from [192.168.0.4] ([49.173.165.50])
-        by smtp.gmail.com with ESMTPSA id nk3sm3141209pjb.12.2021.02.16.06.46.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 Feb 2021 06:47:03 -0800 (PST)
-Subject: Re: [PATCH net-next v2 1/7] mld: convert from timer to delayed work
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        jwi@linux.ibm.com, kgraul@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, borntraeger@de.ibm.com,
-        Marek Lindner <mareklindner@neomailbox.ch>,
-        sw@simonwunderlich.de, a@unstable.cc, sven@narfation.org,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        dsahern@kernel.org, ap420073@gmail.com
-References: <20210213175102.28227-1-ap420073@gmail.com>
- <CAM_iQpXLMk+4VuHr8WyLE1fxNV5hsN7JvA2PoDOmnZ4beJOH7Q@mail.gmail.com>
- <3cbe0945-4f98-961c-29cc-5b863c99e2df@gmail.com>
- <CAM_iQpUVG5+EbMbMXWJ=tb6Br+s+e2-tHChNvGgxFH7XSwEXHA@mail.gmail.com>
-From:   Taehee Yoo <ap420073@gmail.com>
-Message-ID: <beb4fa65-a99c-f43c-0b91-1c8d62c787dd@gmail.com>
-Date:   Tue, 16 Feb 2021 23:46:58 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S230006AbhBPPWf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 10:22:35 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:5905 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229880AbhBPPWe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 10:22:34 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B602be3110000>; Tue, 16 Feb 2021 07:21:53 -0800
+Received: from mtl-vdi-166.wap.labs.mlnx (172.20.145.6) by
+ HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 16 Feb 2021 15:21:51 +0000
+Date:   Tue, 16 Feb 2021 17:21:48 +0200
+From:   Eli Cohen <elic@nvidia.com>
+To:     Si-Wei Liu <si-wei.liu@oracle.com>
+CC:     <mst@redhat.com>, <jasowang@redhat.com>,
+        <linux-kernel@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 3/3] vdpa/mlx5: defer clear_virtqueues to until
+ DRIVER_OK
+Message-ID: <20210216152148.GA99540@mtl-vdi-166.wap.labs.mlnx>
+References: <1612993680-29454-1-git-send-email-si-wei.liu@oracle.com>
+ <1612993680-29454-4-git-send-email-si-wei.liu@oracle.com>
+ <20210211073314.GB100783@mtl-vdi-166.wap.labs.mlnx>
 MIME-Version: 1.0
-In-Reply-To: <CAM_iQpUVG5+EbMbMXWJ=tb6Br+s+e2-tHChNvGgxFH7XSwEXHA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20210211073314.GB100783@mtl-vdi-166.wap.labs.mlnx>
+User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1613488913; bh=oljyvW9QX6a5ATx1aSFBKfVM2GqJ4ZFr/3Fr2sk5rHw=;
+        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+         Content-Type:Content-Disposition:In-Reply-To:User-Agent:
+         X-Originating-IP:X-ClientProxiedBy;
+        b=O73rwWccv6ouPtIofhZsE42cFZL9RoBYP4RIVxu9Gm3SEEPbBhajBhqBd1maE5xxs
+         3b80SDMrXHTn5HYWlByE7arBih42IEZQt9lW1508/PhIPTrM5zqDqmSsCZxESuAzud
+         EZsnhI6A3JymxYBCCh7eSwEKwOTRHcUWXe1VdRSqYcTHDVz+sYfFrtYAJ2H9AevYK3
+         0YcidfiJeKyEwKYQzbpoiYXRNZVxY9SMHGO8kyYh9Er6NMJg1l1f3qv9sYFvbR0TLr
+         NWkMgCggiKF9rm8nDQhgjTf4VVexAwL6etJANWcuN9CoFe5nW3U4kRrdupidx6nZ8a
+         wCqi0BlEDg/ew==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Feb 11, 2021 at 09:33:14AM +0200, Eli Cohen wrote:
+> On Wed, Feb 10, 2021 at 01:48:00PM -0800, Si-Wei Liu wrote:
+> > While virtq is stopped,  get_vq_state() is supposed to
+> > be  called to  get  sync'ed  with  the latest internal
+> > avail_index from device. The saved avail_index is used
+> > to restate  the virtq  once device is started.  Commit
+> > b35ccebe3ef7 introduced the clear_virtqueues() routine
+> > to  reset  the saved  avail_index,  however, the index
+> > gets cleared a bit earlier before get_vq_state() tries
+> > to read it. This would cause consistency problems when
+> > virtq is restarted, e.g. through a series of link down
+> > and link up events. We  could  defer  the  clearing of
+> > avail_index  to  until  the  device  is to be started,
+> > i.e. until  VIRTIO_CONFIG_S_DRIVER_OK  is set again in
+> > set_status().
+> > 
+> > Fixes: b35ccebe3ef7 ("vdpa/mlx5: Restore the hardware used index after change map")
+> > Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
+> > Acked-by: Jason Wang <jasowang@redhat.com>
+> 
+> Acked-by: Eli Cohen <elic@nvidia.com>
+> 
 
-[...]
- >> By the way, I think the 'delay' is from the
- >> unsolicited_report_interval() and it just return value of
- >> idev->cnf.mldv{1 | 2}_unsolicited_report_interval.
- >> I think this value is msecs, not jiffies.
- >> So, It should be converted to use msecs_to_jiffies(), I think.
- >> How do you think about it?
- >
- > Hmm? I think it is in jiffies:
- >
- >          .mldv1_unsolicited_report_interval = 10 * HZ,
- >          .mldv2_unsolicited_report_interval = HZ,
- >
+I take it back. I think we don't need to clear the indexes at all. In
+case we need to restore indexes we'll get the right values through
+set_vq_state(). If we suspend the virtqueue due to VM being suspended,
+qemu will query first and will provide the the queried value. In case of
+VM reboot, it will provide 0 in set_vq_state().
 
-Ah, yes, you're right!
-Thanks,
+I am sending a patch that addresses both reboot and suspend.
 
- >
- >>
- >>   > [...]
- >>   >
- >>   >> -static void mld_dad_timer_expire(struct timer_list *t)
- >>   >> +static void mld_dad_work(struct work_struct *work)
- >>   >>   {
- >>   >> -       struct inet6_dev *idev = from_timer(idev, t, mc_dad_timer);
- >>   >> +       struct inet6_dev *idev = 
-container_of(to_delayed_work(work),
- >>   >> +                                             struct inet6_dev,
- >>   >> +                                             mc_dad_work);
- >>   >>
- >>   >> +       rtnl_lock();
- >>   >
- >>   > Any reason why we need RTNL after converting the timer to
- >>   > delayed work?
- >>   >
- >>
- >> For the moment, RTNL is not needed.
- >> But the Resources, which are used by delayed_work will be protected by
- >> RTNL instead of other locks.
- >> So, It just pre-adds RTNL and the following patches will delete 
-other locks.
- >
- > Sounds like this change does not belong to this patch. ;) If so,
- > please move it to where ever more appropriate.
- >
-
-Yes, I will do that,
-I will rearrange it then I will send a v3 patch.
-Thank you so much for your review!
+> > ---
+> >  drivers/vdpa/mlx5/net/mlx5_vnet.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > index 7c1f789..ce6aae8 100644
+> > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > @@ -1777,7 +1777,6 @@ static void mlx5_vdpa_set_status(struct vdpa_device *vdev, u8 status)
+> >  	if (!status) {
+> >  		mlx5_vdpa_info(mvdev, "performing device reset\n");
+> >  		teardown_driver(ndev);
+> > -		clear_virtqueues(ndev);
+> >  		mlx5_vdpa_destroy_mr(&ndev->mvdev);
+> >  		ndev->mvdev.status = 0;
+> >  		++mvdev->generation;
+> > @@ -1786,6 +1785,7 @@ static void mlx5_vdpa_set_status(struct vdpa_device *vdev, u8 status)
+> >  
+> >  	if ((status ^ ndev->mvdev.status) & VIRTIO_CONFIG_S_DRIVER_OK) {
+> >  		if (status & VIRTIO_CONFIG_S_DRIVER_OK) {
+> > +			clear_virtqueues(ndev);
+> >  			err = setup_driver(ndev);
+> >  			if (err) {
+> >  				mlx5_vdpa_warn(mvdev, "failed to setup driver\n");
+> > -- 
+> > 1.8.3.1
+> > 
