@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A99CA31D0B4
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 20:10:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 244D331D0B9
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 20:11:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231194AbhBPTJR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 14:09:17 -0500
-Received: from mail-bn8nam12on2058.outbound.protection.outlook.com ([40.107.237.58]:51168
+        id S231281AbhBPTJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 14:09:45 -0500
+Received: from mail-bn8nam12on2064.outbound.protection.outlook.com ([40.107.237.64]:26688
         "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231247AbhBPTI5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Feb 2021 14:08:57 -0500
+        id S231254AbhBPTJh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Feb 2021 14:09:37 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KBU1My5xoFF1aA8Q51D7+PzPLbBYyQQPVxxCFm6/Xe3ScK00dC17r2za+5Zk7hQFGe2Szxn8IgIqnNXPeqbR4bzgc0GY7gXGfdz0MR8Q2jmEBG/NQybGBse8esa6nuSUoF9EZj1410OUr2ZRAnyw1UmX+m5tyiN4O1nz5v4Y2V7mIuwKT3lFXJM0lyWM1fysgnipuwNeHWk2iW/jEjg66xmL4I2gLkVMZZbDToN5hfopfYURF8vmfAfdlaj1hYH7Gdvnpn3LWpXEo1PcQkydHWT2hJJYCBcubzYGHgVwOoF7IWbiiciatqMa5sMMVaxnxvyDcg0VgYDIiIfXemZ4rQ==
+ b=ZSiJ2QSuBWrOMrPbyshyCrmgE+Lqn1bbtMJ6szRDYH70dcpZBfEDvW2r6oSL3ehq21JKY2OAEV2AfcvzR5n8IlCXCvVn9GbkOgiuHLJdTX0DKWYnxLb0K78Q2J7w+6k9IDCpU7+rT/Oc1VX7C/q57WoyzwERiwCPArOTOL4y16GbMfx4biLooISmZzX3c/6jZuhDEoATZemwi4Dt+1YOyzvvyIUBWelbojdp1lRuz6LIhXpwN3uCugA7yKhm1eqLZqnaieQ13vSY1556wCBUCF2nUkiSnqHXY2vBGjUuOA8t4Hr+k/LQ1laMasY+XIHSI6qcq5rd+0ty6aDKA3VpHQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TIqzXFiat7pbIGtFHKIXloHJf+aIrPnyJzi7SW06kfM=;
- b=HFDreeKrm4HeT0dvxgAeFfI9TDqBaCz5Ll0G+jyXJwpa0NeLKtNOWH/ZQckO2AJcHzGlmlY2vKEw3iaGrMoXd4ufk7gUaXO/QiJV2jSuRKxsUXvMzCevdQlEvCvKIh2LaOygQHSkxUUqngZtpiK01E9Ga4nFLW3Jay86MvlRjE2feWp7ozOg5wB464Yd5N4Ez1QEFnlHEh2dcF4vEgHOWfXcWPCLbasJoYDEg1fuky7EgQbzxwsNEhxBk6zBMnN1xo/Rcq8gNhD86brN3LBJ4RMVlL842skqeOrbYciL7E+fVMZ4gUnmxGGQDSquzSvwEPz7qkbE8hmyg0RjNKEGAg==
+ bh=dKQApd0mf6MLiz+QFWvbOF9BGGxhNSaGblNTzHzxCsk=;
+ b=RAFLeab8/ha1AcLqbZ10UZlr5pA5+cCL8gxZCX/QsAEVJzV1L0Sel6IKNS9K81S4vacqJCOcQDBC3fomZ90CSqgWciUvTOcSR3fRHfIzdd5j2qTzsjNSood0SyZ7/80rCWU072B/f1aLI0GQOKftNDqY29p5EzJ5en4Pwmlcl1DguR7+/2ePq/kx9jOerpl/bWrObP63m5yujnD9K0udOaI+f+ikBfPw7dllcUIPkx24nE/xbU8QTPmZUkEvRZ3nLAsZTQDGL8/U215bk/H+WZKW9jlky3yvu4qVIbtKByybWL4xatf5JAjO9pgUzdVsZMcMmmsgWbRjbpZvO6rl3A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
  header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TIqzXFiat7pbIGtFHKIXloHJf+aIrPnyJzi7SW06kfM=;
- b=twq6NePJ44AKqc79SZy8WnItdK4yDWgqmrgc3y44T6nOE8GEPyynSxX09fDLPoHzEcaRrKnZ1bX5KM7LZ22SWOOxG3ZoZx0fq1KFQZ3zR2y3IeKyXKav82rFx2mJS7YrnYyUpXdZZjzNunHK9HTlLNEXbq0GN0mdG3sNv22ENtE=
+ bh=dKQApd0mf6MLiz+QFWvbOF9BGGxhNSaGblNTzHzxCsk=;
+ b=sdd2OB+QctKv3wblRh37LDMpllOb0777lelJ02pB2EjInaOPPidlhj+Rnh1PBlyRCyqGbNCg5g87M5UPo50pqL/WVMAZVhBZ15hDGVkNtJUPSYAsOr+MBgelpDruU6wwKNlmxOQ70CZ7ZgTp4mjb4tY2TzkQPYoL2xfc9OGxD24=
 Authentication-Results: amd.com; dkim=none (message not signed)
  header.d=none;amd.com; dmarc=none action=none header.from=amd.com;
 Received: from BL0PR12MB2484.namprd12.prod.outlook.com (2603:10b6:207:4e::19)
  by MN2PR12MB4112.namprd12.prod.outlook.com (2603:10b6:208:19a::9) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.27; Tue, 16 Feb
- 2021 19:08:04 +0000
+ 2021 19:08:15 +0000
 Received: from BL0PR12MB2484.namprd12.prod.outlook.com
  ([fe80::5883:dfcd:a28:36f2]) by BL0PR12MB2484.namprd12.prod.outlook.com
  ([fe80::5883:dfcd:a28:36f2%6]) with mapi id 15.20.3846.031; Tue, 16 Feb 2021
- 19:08:04 +0000
+ 19:08:14 +0000
 From:   Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
 To:     Tom Lendacky <thomas.lendacky@amd.com>,
         "David S . Miller" <davem@davemloft.net>,
@@ -44,9 +44,9 @@ To:     Tom Lendacky <thomas.lendacky@amd.com>,
 Cc:     Sudheesh.Mavila@amd.com,
         Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
         Sudheesh Mavila <sudheesh.mavila@amd.com>
-Subject: [net,v2, 2/4] net: amd-xgbe: Fix NETDEV WATCHDOG transmit queue timeout warning
-Date:   Wed, 17 Feb 2021 00:37:08 +0530
-Message-Id: <20210216190710.2911856-3-Shyam-sundar.S-k@amd.com>
+Subject: [net,v2, 3/4] net: amd-xgbe: Reset link when the link never comes back
+Date:   Wed, 17 Feb 2021 00:37:09 +0530
+Message-Id: <20210216190710.2911856-4-Shyam-sundar.S-k@amd.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210216190710.2911856-1-Shyam-sundar.S-k@amd.com>
 References: <20210216190710.2911856-1-Shyam-sundar.S-k@amd.com>
@@ -58,124 +58,112 @@ X-ClientProxiedBy: MAXPR01CA0074.INDPRD01.PROD.OUTLOOK.COM
  (2603:10b6:207:4e::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from jatayu.amd.com (165.204.156.251) by MAXPR01CA0074.INDPRD01.PROD.OUTLOOK.COM (2603:1096:a00:49::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3868.27 via Frontend Transport; Tue, 16 Feb 2021 19:08:01 +0000
+Received: from jatayu.amd.com (165.204.156.251) by MAXPR01CA0074.INDPRD01.PROD.OUTLOOK.COM (2603:1096:a00:49::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3868.27 via Frontend Transport; Tue, 16 Feb 2021 19:08:12 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: c115b4be-3ba9-4052-660c-08d8d2ae2f84
+X-MS-Office365-Filtering-Correlation-Id: f1b894ba-1ef0-4b5a-48ac-08d8d2ae3613
 X-MS-TrafficTypeDiagnostic: MN2PR12MB4112:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <MN2PR12MB4112B971EB53FC74EDC61C7F9A879@MN2PR12MB4112.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
+X-Microsoft-Antispam-PRVS: <MN2PR12MB411255227443494CF1B4890B9A879@MN2PR12MB4112.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: M3nEi2Ko8wWiL9VnG+ngNGP3YAhQxYCDTHpwTutofnXKuIZfxr8aQqIDxki/WlAOwYDJAQOcHh65pzTDGeGD5fruXXbiqkdrosYgl9wTewdfo/oKDI6RiAS7kdRfevNjf2sSiLXrFhLOtvDzYhOm0OyOcCDdVN418BjSrR8p+NE5Vf7iiF1g3ozYdPoK3nDAY54RcHWDIFCHNkwMrYR6ucWqLq7tSi4dDWAg3bvDAMZlLgGO8RFAbu2SX0WFsmt/hBUHmPoOt8WcTX9o2r/dIzOOWiTeuePy5nM6wFXTgW1QoCC6UBbnKivpzu15AEz2gxmLyJJNPBSuSN6Z1LBl/qE2+yB4SNZ0lRiv2LlR0V6psK9wYtbjse8m69ZCwbrsjb9Dnom10FLcH1B5LEmpcGSZr6rrONRIEy7bl90iyR6vuLkHz1B8/LrV9JgL107qMePUJLBVMM/IYjNhdYiRYOBJHJvlWchVsVh7H6ZLB2JkVLVlBtRxq/T/PD8emz9eESS27ORboqiDgPlcEFalQQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB2484.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39860400002)(376002)(366004)(136003)(396003)(7696005)(54906003)(1076003)(83380400001)(8936002)(86362001)(66476007)(2906002)(4326008)(8676002)(52116002)(5660300002)(478600001)(110136005)(186003)(26005)(956004)(66946007)(2616005)(45080400002)(316002)(16526019)(66556008)(36756003)(6486002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?1JqZa2YYajhtsUU+YkMVpTMp2KcJiRE6oLaVzw/tocDVfYKMlnYXRqM7s6kc?=
- =?us-ascii?Q?lzrBeTgfDUHkR0EInmcAA2M7neMuYSQESiczmtoFAB/R0BP9ZJ7Np/ZoNqgG?=
- =?us-ascii?Q?ZbebeUj7DrTCbdvIQjYvkOpq5NC9GGwRbC+XQU1hNZHB/PdCypIf0YXVRwMm?=
- =?us-ascii?Q?Sb6YL/3oKfi8n5yU+GgT6rnO/5jnjZ7remsYeBJoRC0BAYyF+fz/7twQ0M9s?=
- =?us-ascii?Q?qiyJu725tEvTd8/lVyDnbYKhzREyxK1BIUC5n/FRr2QGD2NXA6rlfa+xFzpA?=
- =?us-ascii?Q?Fm+15aGE0hDFZd5lRF+MrP9nkYuB11Z/hJhvcMtUqILWKnjLjOscUijvWYjJ?=
- =?us-ascii?Q?3eqIaPHmd5GdG9SPIJhcDKKQRi4jJg4IB5X0OePKnPF8KhckEThzL7aZQzgu?=
- =?us-ascii?Q?eVnPI4s984rWd1dq7ZvMSk+UEBLkY+O90+XKbrSXzJ3Bt/4gVZCr9tjN1Lat?=
- =?us-ascii?Q?ukX6HGt3j0M3N6MNlRBDfYXsvifUtb7OKHx5G6Sa+lZbj8woK0rcWBZevY+k?=
- =?us-ascii?Q?g9JSW43Fe7tBQIxT7OqWUMstG7jOiIAno2AuBVvUSs6B1BgGrBKEFB7Z36ga?=
- =?us-ascii?Q?PeEakBO5OxSySzVTzqj4/Jg72WXGIQKZqOjMiDSm6TV/YGRwh+MbsMs4RUyl?=
- =?us-ascii?Q?45zhOaCuVbG8Q7uFb11hIDexrpqXNXrir5+c76IEJiO8xmGOsMKsKXFmacAb?=
- =?us-ascii?Q?FPteH3CFvvIzbb1rUlUkNYR93sbZCFMHYvaRL1xmqhgERA2+1Zno/fzMWqEX?=
- =?us-ascii?Q?FI6xZMWE4m7QlqmBQIfkrmS+oPdg7tSyN3M9YS66gL0kaFogyXFgqBmrSp4K?=
- =?us-ascii?Q?mg7RfByE6i79sJub/WBfTH/DceaFHP1Uu5fzesUUQvDEggKkegCAglja4ShD?=
- =?us-ascii?Q?8KXMDpjuXp10w+dpMf7tL2gmiafHNFHModdX2jDF3ii1ePNvsxwi3tXrokyO?=
- =?us-ascii?Q?Ogsf8YxXOo8DBIGawU1ceT4P+vr6UGOEjZjSRHsf+7XIP8xja1QbPylusYcR?=
- =?us-ascii?Q?6dblG0QI0VmcTGFyWVIn22QcH3HmGgea/HJMmeSjY8tcJOy/NAN2haqOlTvk?=
- =?us-ascii?Q?CBnDVzexC06wEOBW7FtDZShmv9uiLTGb1NPYYRuRWsIYubPQQk0Zj7DbrNq2?=
- =?us-ascii?Q?KGPGMXPds4xo6npYeQ5w7kvnhwwBO9IjTvaVlYbR7aacCGPKw8xWd0KndGAi?=
- =?us-ascii?Q?+w2KZUBOm0WK4WFAQ2gB3AH70L2+wFaJkYL3u+pLkdJucQdx6tzgAu/Mu3o+?=
- =?us-ascii?Q?sb4kgDRjXvLx/bKVXnBfAWVHkH4WkuMMc3t+RVyQLOViyZklf+eAnqvWvn8K?=
- =?us-ascii?Q?9cxF8Ttmi2VZpd2FigZb1NZp?=
+X-Microsoft-Antispam-Message-Info: c4AKReY/kZOdY7StxKXDJxBFgHYJPR9R/XwMwpxuiMcMOMCigtmfKoGc7CtvPoyAULTEBSXTj/LLCaBUeBgQklkvHjGmxzlqFUoz/g5/iYSnmc5yIkCbo/AigBx7g3DX90F7s8u6peXY5Jv2Fni2Z6Pg7PLnd3YFz/uVAnl2kVb6Rb76M1ysXUsN65G2FEUhU85YP1SUKJyPhCacwWk8F/NuiBeIOjb9abeQhnHZ2WDVG3oAu9a3ex4hCPrrxkoTzPA7J9GPsnwPVUFlzMXdzUweMA1F+1vBT2SmqixA7hbdPjk/n9zTQXVAQ4fjAECw5krg0tjc+UXQ5YGkf0L/+pDQIgqivxg+QTudFhU/EPw/EOPlRmL8EzxXRutktvocE11r3z926zqSRSvzuvHnnHZTlybyzALbfoXYT04DB7qHH4KalVAKoVerHAi71/e2lOOyct256nsY0ZZi9DbE0XRhqrSvEbxQ4sxlgU2cd/ZRjeCl2n3j9wYQSwLzCqA55Czw1EZj/D3Vyolhp6A88w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB2484.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39860400002)(376002)(366004)(136003)(396003)(7696005)(54906003)(1076003)(83380400001)(8936002)(86362001)(6666004)(66476007)(2906002)(4326008)(8676002)(52116002)(5660300002)(478600001)(110136005)(186003)(26005)(956004)(66946007)(2616005)(316002)(16526019)(66556008)(36756003)(6486002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?TghOvwHDMS2nVH38UpTDZ+rFzS+Qemxo5jg1hS1sH8qAnbC3BcjP/ZhKbVaY?=
+ =?us-ascii?Q?pOtDlAWjGl2AJCC62m1h9cmSUd6XtShT9cf1+6KB1/h0401VcJv3rzZZrWXu?=
+ =?us-ascii?Q?tAHdOLytda4urluJVrVuCb5KVeam086M8wjOybRg4eakjS8oTWs9U/jyI7NU?=
+ =?us-ascii?Q?4p+CgmSRjn1TdFbp9npvxHqIt4YrZTHm2SOYHf9JD8R/8tYfg0fs+UQePREW?=
+ =?us-ascii?Q?+GlHDWueEptUhaa0H8giY9k3xhEJpCO9WosYTyhX9bW6OpT4hShC4OGO0SOm?=
+ =?us-ascii?Q?zpp0taJS2cP3Jpjqxz5ob544ghcRGwK1jF8swU7Iu9kY14ybW13bFrtlvOqO?=
+ =?us-ascii?Q?Z5UYmEchvgLQybW1U/ZVR617zsL51GBS9Kk3ghTRdt7GRRkPKGtvxQp/VyFg?=
+ =?us-ascii?Q?bbVsgZ6ZSbtuT1p3pt+OrY6FC0BEk7XZFgxkFvEYrlG7SJNdpzeuDOqPqg9r?=
+ =?us-ascii?Q?c+ForEGosBLTGaCuoHVZ4jfIxTO60WcibnOhBLNjqDPS/fuYNP6aqn/es37/?=
+ =?us-ascii?Q?zHZDK7rihquO1+b3r68CFh7v7uoDUkBt1ansOnU5NpynYBRjuFVg7Q2YTCdA?=
+ =?us-ascii?Q?n/24/BopSifVPaWHRJtJMVCj71k2w+FmScTQUs/vXLAFE6xxYrfdCYFsF5tn?=
+ =?us-ascii?Q?f6Zp1yzbAzslMfqhlCJWmbczhkSG1C6VhIse6+SK/I7hlNQuPgz7Kbo4GnNb?=
+ =?us-ascii?Q?COpVNboIHDy5fv8j1AIsasJXp9+4E9Su1Ej2zTKX5jGxWyOIRqk/66POfeDs?=
+ =?us-ascii?Q?qBI5GVr0oNi8bTsfnTx51MotPpCk8BIKI4LK4+xNOXIQvq9/1KFVGgw8MqLe?=
+ =?us-ascii?Q?CHgT0naPjjRlHeSPB2iy4pHFhvoPpZa8FRcKR64hvzzt0X7kpojeG5kBt3GK?=
+ =?us-ascii?Q?kH8Bcb2X6aV8q8hTozDQwxc8cWiwlCSTJYj0qFXyZi1ddwwR+1Z3QtOQlH6e?=
+ =?us-ascii?Q?9bQRiezsJQlFW8QgwE9OFT5kAa+fs+kShXoIwlaAAzfSSSNIiEDdk51kQwAW?=
+ =?us-ascii?Q?09+GSSq/GfDAWfRI/xOcqDTXDbAnRuprvxxbsZ7VVUswkKZecU775KBAl4gK?=
+ =?us-ascii?Q?qupbqoDV12jcFzvpNORiwauE+kfFIr4gO1xwxiJU29wb8JJaL3a4+s55GX3V?=
+ =?us-ascii?Q?6i0ILJEJLobKaEsFDzphNK9KdW3eVzi4Qj2FUpT+0/0Sb4RXOCgbUWLYQhAw?=
+ =?us-ascii?Q?JGaqQ6wrbTtE26KIfYM3sZjzEfQsVs1sQrocA9H/ijFuGPJcLG/72BZ6THln?=
+ =?us-ascii?Q?kG3vTw/fxAeiwcZt0rJVsUbV6l1GSXgW9DMzQGBle2IXMz5Ej0zaOKzYN6NR?=
+ =?us-ascii?Q?Pudq94TgbtEYfJBTgCLL4vnq?=
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c115b4be-3ba9-4052-660c-08d8d2ae2f84
+X-MS-Exchange-CrossTenant-Network-Message-Id: f1b894ba-1ef0-4b5a-48ac-08d8d2ae3613
 X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB2484.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2021 19:08:03.9351
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2021 19:08:14.8539
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xD34UpfB0ovUazhJQjrNRgeGf0+IIWg/1KXkEP6YmBs3xc6rbp6TuqMYklTIiLshLOHFhUT8SLKuLLMbvdLIjw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7DA4xlFqSHr3BuHLDBu0DfHzOPD3hy/axAPz0yk1n/cxodKCbjqQmxBdwnU+HoR2ic/qQR7acp1EB7uW2k+Yfw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4112
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current driver calls netif_carrier_off() late in the link tear down
-which can result in a netdev watchdog timeout.
+Normally, auto negotiation and reconnect should be automatically done by
+the hardware. But there seems to be an issue where auto negotiation has
+to be restarted manually. This happens because of link training and so
+even though still connected to the partner the link never "comes back".
+This needs an auto-negotiation restart.
 
-Calling netif_carrier_off() immediately after netif_tx_stop_all_queues()
-avoids the warning.
+Also, a change in xgbe-mdio is needed to get ethtool to recognize the
+link down and get the link change message. This change is only
+required in a backplane connection mode.
 
- ------------[ cut here ]------------
- NETDEV WATCHDOG: enp3s0f2 (amd-xgbe): transmit queue 0 timed out
- WARNING: CPU: 3 PID: 0 at net/sched/sch_generic.c:461 dev_watchdog+0x20d/0x220
- Modules linked in: amd_xgbe(E)  amd-xgbe 0000:03:00.2 enp3s0f2: Link is Down
- CPU: 3 PID: 0 Comm: swapper/3 Tainted: G            E
- Hardware name: AMD Bilby-RV2/Bilby-RV2, BIOS RBB1202A 10/18/2019
- RIP: 0010:dev_watchdog+0x20d/0x220
- Code: 00 49 63 4e e0 eb 92 4c 89 e7 c6 05 c6 e2 c1 00 01 e8 e7 ce fc ff 89 d9 48
- RSP: 0018:ffff90cfc28c3e88 EFLAGS: 00010286
- RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000006
- RDX: 0000000000000007 RSI: 0000000000000086 RDI: ffff90cfc28d63c0
- RBP: ffff90cfb977845c R08: 0000000000000050 R09: 0000000000196018
- R10: ffff90cfc28c3ef8 R11: 0000000000000000 R12: ffff90cfb9778000
- R13: 0000000000000003 R14: ffff90cfb9778480 R15: 0000000000000010
- FS:  0000000000000000(0000) GS:ffff90cfc28c0000(0000) knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: 00007f240ff2d9d0 CR3: 00000001e3e0a000 CR4: 00000000003406e0
- Call Trace:
-  <IRQ>
-  ? pfifo_fast_reset+0x100/0x100
-  call_timer_fn+0x2b/0x130
-  run_timer_softirq+0x3e8/0x440
-  ? enqueue_hrtimer+0x39/0x90
-
-Fixes: e722ec82374b ("amd-xgbe: Update the BelFuse quirk to support SGMII")
+Fixes: abf0a1c2b26a ("amd-xgbe: Add support for SFP+ modules")
 Co-developed-by: Sudheesh Mavila <sudheesh.mavila@amd.com>
 Signed-off-by: Sudheesh Mavila <sudheesh.mavila@amd.com>
 Signed-off-by: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
 Acked-by: Tom Lendacky <thomas.lendacky@amd.com>
 ---
 v1->v2:
+- Commit message changes
 - Add Co-Developed-by: and Fixes: tag
-- Commit message changes.
 
- drivers/net/ethernet/amd/xgbe/xgbe-drv.c  | 1 +
- drivers/net/ethernet/amd/xgbe/xgbe-mdio.c | 1 -
- 2 files changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/amd/xgbe/xgbe-mdio.c   | 2 +-
+ drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c | 8 ++++++++
+ 2 files changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
-index 2709a2db5657..395eb0b52680 100644
---- a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
-@@ -1368,6 +1368,7 @@ static void xgbe_stop(struct xgbe_prv_data *pdata)
- 		return;
- 
- 	netif_tx_stop_all_queues(netdev);
-+	netif_carrier_off(pdata->netdev);
- 
- 	xgbe_stop_timers(pdata);
- 	flush_workqueue(pdata->dev_workqueue);
 diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-mdio.c b/drivers/net/ethernet/amd/xgbe/xgbe-mdio.c
-index 93ef5a30cb8d..19ee4db0156d 100644
+index 19ee4db0156d..4e97b4869522 100644
 --- a/drivers/net/ethernet/amd/xgbe/xgbe-mdio.c
 +++ b/drivers/net/ethernet/amd/xgbe/xgbe-mdio.c
-@@ -1396,7 +1396,6 @@ static void xgbe_phy_stop(struct xgbe_prv_data *pdata)
- 	pdata->phy_if.phy_impl.stop(pdata);
+@@ -1345,7 +1345,7 @@ static void xgbe_phy_status(struct xgbe_prv_data *pdata)
+ 							     &an_restart);
+ 	if (an_restart) {
+ 		xgbe_phy_config_aneg(pdata);
+-		return;
++		goto adjust_link;
+ 	}
  
- 	pdata->phy.link = 0;
--	netif_carrier_off(pdata->netdev);
+ 	if (pdata->phy.link) {
+diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+index 087948085ae1..d3f72faecd1d 100644
+--- a/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
++++ b/drivers/net/ethernet/amd/xgbe/xgbe-phy-v2.c
+@@ -2610,6 +2610,14 @@ static int xgbe_phy_link_status(struct xgbe_prv_data *pdata, int *an_restart)
+ 	if (reg & MDIO_STAT1_LSTATUS)
+ 		return 1;
  
- 	xgbe_phy_adjust_link(pdata);
- }
++	if (pdata->phy.autoneg == AUTONEG_ENABLE &&
++	    phy_data->port_mode == XGBE_PORT_MODE_BACKPLANE) {
++		if (!test_bit(XGBE_LINK_INIT, &pdata->dev_state)) {
++			netif_carrier_off(pdata->netdev);
++			*an_restart = 1;
++		}
++	}
++
+ 	/* No link, attempt a receiver reset cycle */
+ 	if (phy_data->rrc_count++ > XGBE_RRC_FREQUENCY) {
+ 		phy_data->rrc_count = 0;
 -- 
 2.25.1
 
