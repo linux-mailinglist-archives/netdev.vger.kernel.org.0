@@ -2,105 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E4E831C601
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 05:31:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC15A31C66D
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 06:54:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230003AbhBPEbW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 23:31:22 -0500
-Received: from m12-16.163.com ([220.181.12.16]:45325 "EHLO m12-16.163.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229910AbhBPEbN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Feb 2021 23:31:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=hboCNnAqFehWE69dM1
-        PgkN2wYQNA1HFncAXe/EplEqA=; b=iV3Fb/BsDarUdAE2B5f16hf6gTSOAzpPGJ
-        hkXFnHgga4ZMusUHHO5avxfPw/2KdX1T2goBpvBa4HYeVpg+FR/ZIbILP+7CorEI
-        VI6ysFBeBkgrLXilS3HbC2UtK3xUGY/fMS1uStiExbw6uDyHR08Ak+CHkG3/vk9n
-        hroNTsINw=
-Received: from localhost.localdomain (unknown [125.70.193.99])
-        by smtp12 (Coremail) with SMTP id EMCowACHIUkjSitgp1XkcA--.19808S2;
-        Tue, 16 Feb 2021 12:29:27 +0800 (CST)
-From:   Chen Lin <chen45464546@163.com>
-To:     pizza@shaftnet.org
-Cc:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Chen Lin <chen.lin5@zte.com.cn>
-Subject: [PATCH] cw1200: Remove unused function pointer typedef wsm_*
-Date:   Tue, 16 Feb 2021 12:30:33 +0800
-Message-Id: <1613449833-4910-1-git-send-email-chen45464546@163.com>
-X-Mailer: git-send-email 1.7.9.5
-X-CM-TRANSID: EMCowACHIUkjSitgp1XkcA--.19808S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7uw15GryxWr1ruw4DtF4UCFg_yoW8Cw15pF
-        Z8Gay7KrWruFn0934UJr4Fv39xtanag3WDCrWDCw1S9rn7twn5GryUtw13JryYyayfWFya
-        yrn0yrWxAr1jkrUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jfL05UUUUU=
-X-Originating-IP: [125.70.193.99]
-X-CM-SenderInfo: hfkh0kqvuwkkiuw6il2tof0z/xtbBzgc7nlQHLpPThQAAsU
+        id S229830AbhBPFvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 00:51:10 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:5087 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229617AbhBPFvI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 00:51:08 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B602b5d240000>; Mon, 15 Feb 2021 21:50:28 -0800
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 16 Feb
+ 2021 05:50:27 +0000
+Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 16 Feb 2021 05:50:25 +0000
+From:   Eli Cohen <elic@nvidia.com>
+To:     <mst@redhat.com>, <jasowang@redhat.com>,
+        <linux-kernel@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>
+CC:     <si-wei.liu@oracle.com>, <elic@nvidia.com>
+Subject: [PATCH] vdpa/mlx5: Extract correct pointer from driver data
+Date:   Tue, 16 Feb 2021 07:50:21 +0200
+Message-ID: <20210216055022.25248-1-elic@nvidia.com>
+X-Mailer: git-send-email 2.28.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1613454628; bh=Emqf4hRPWOz3zcBqDWDIklUs7r/QR5F0BAA/Zmha8aY=;
+        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+         Content-Transfer-Encoding:Content-Type;
+        b=ceXITBkcExD5YAhFK/bhl+Fze+EBOHLzaXdaCTdXS9xwQniinz1nfQRHTBMDPwfPz
+         XXzpmhCPLUcG+h9A8cHdLBq9JcIMN9nTRF9NxUHd2RK3eM9jVtz90OidwdDsC2SdN4
+         HTsenOR0tdJEn1pZujjbgSEXgyUKccMK+/w/EaODdIJjnlmoOIaVSNg+QYsVsiITwz
+         DTTYfrTddTbYDqPIrydsvr6ZmFMWj/mb/4iUMbFbZOulxdUX+Cx/IVTCl7Uy0nS1Na
+         eXx0Ecp2G0936WL3nILQVChWOuIpsnE2Nkpxw0bgUlP4fGPrYoTxV7ShZ5ZuWhGdOH
+         3EqI/QqsuwUoQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chen Lin <chen.lin5@zte.com.cn>
+struct mlx5_vdpa_net pointer was stored in drvdata. Extract it as well
+in mlx5v_remove().
 
-Remove the 'wsm_*' typedef as it is not used.
-
-Signed-off-by: Chen Lin <chen.lin5@zte.com.cn>
+Fixes: 74c9729dd892 ("vdpa/mlx5: Connect mlx5_vdpa to auxiliary bus")
+Signed-off-by: Eli Cohen <elic@nvidia.com>
 ---
- drivers/net/wireless/st/cw1200/wsm.h |   12 ------------
- 1 file changed, 12 deletions(-)
+ drivers/vdpa/mlx5/net/mlx5_vnet.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/st/cw1200/wsm.h b/drivers/net/wireless/st/cw1200/wsm.h
-index 1ffa479..89fdc91 100644
---- a/drivers/net/wireless/st/cw1200/wsm.h
-+++ b/drivers/net/wireless/st/cw1200/wsm.h
-@@ -785,8 +785,6 @@ struct wsm_tx_confirm {
- };
- 
- /* 3.15 */
--typedef void (*wsm_tx_confirm_cb) (struct cw1200_common *priv,
--				   struct wsm_tx_confirm *arg);
- 
- /* Note that ideology of wsm_tx struct is different against the rest of
-  * WSM API. wsm_hdr is /not/ a caller-adapted struct to be used as an input
-@@ -862,9 +860,6 @@ struct wsm_rx {
- /* = sizeof(generic hi hdr) + sizeof(wsm hdr) */
- #define WSM_RX_EXTRA_HEADROOM (16)
- 
--typedef void (*wsm_rx_cb) (struct cw1200_common *priv, struct wsm_rx *arg,
--			   struct sk_buff **skb_p);
--
- /* 3.17 */
- struct wsm_event {
- 	/* WSM_STATUS_... */
-@@ -1180,8 +1175,6 @@ struct wsm_switch_channel {
- int wsm_switch_channel(struct cw1200_common *priv,
- 		       const struct wsm_switch_channel *arg);
- 
--typedef void (*wsm_channel_switch_cb) (struct cw1200_common *priv);
--
- #define WSM_START_REQ_ID 0x0017
- #define WSM_START_RESP_ID 0x0417
- 
-@@ -1240,8 +1233,6 @@ int wsm_beacon_transmit(struct cw1200_common *priv,
- 
- int wsm_stop_find(struct cw1200_common *priv);
- 
--typedef void (*wsm_find_complete_cb) (struct cw1200_common *priv, u32 status);
--
- struct wsm_suspend_resume {
- 	/* See 3.52 */
- 	/* Link ID */
-@@ -1256,9 +1247,6 @@ struct wsm_suspend_resume {
- 	/* [out] */ int queue;
- };
- 
--typedef void (*wsm_suspend_resume_cb) (struct cw1200_common *priv,
--				       struct wsm_suspend_resume *arg);
--
- /* 3.54 Update-IE request. */
- struct wsm_update_ie {
- 	/* WSM_UPDATE_IE_... */
--- 
-1.7.9.5
-
+diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5=
+_vnet.c
+index 6b0a42183622..4103d3b64a2a 100644
+--- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
++++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+@@ -2036,9 +2036,9 @@ static int mlx5v_probe(struct auxiliary_device *adev,
+=20
+ static void mlx5v_remove(struct auxiliary_device *adev)
+ {
+-	struct mlx5_vdpa_dev *mvdev =3D dev_get_drvdata(&adev->dev);
++	struct mlx5_vdpa_net *ndev =3D dev_get_drvdata(&adev->dev);
+=20
+-	vdpa_unregister_device(&mvdev->vdev);
++	vdpa_unregister_device(&ndev->mvdev.vdev);
+ }
+=20
+ static const struct auxiliary_device_id mlx5v_id_table[] =3D {
+--=20
+2.29.2
 
