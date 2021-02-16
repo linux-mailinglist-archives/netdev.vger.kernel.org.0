@@ -2,264 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA36431CA0D
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 12:46:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20B4031CA37
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 12:55:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230479AbhBPLpH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 06:45:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44106 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230431AbhBPLmR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 06:42:17 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDE07C061788
-        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 03:41:28 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id g5so12488149ejt.2
-        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 03:41:28 -0800 (PST)
+        id S230219AbhBPLzV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 06:55:21 -0500
+Received: from mail-eopbgr1400092.outbound.protection.outlook.com ([40.107.140.92]:7209
+        "EHLO JPN01-TY1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230232AbhBPLyo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Feb 2021 06:54:44 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=G5DVSOSnGaNisL1ggM9n3xDYUajHGvGVmmRN8KZLR1Nnzf3ON+ocH9X5H/ib9RNHapH7hBn1JSMkQEW0gypHDjeDShQKSLZOlQjuSJXy7FwtfeYgkW5S6awc9yyfqEuvVX0e7dH/g3XAcTurNJRFElE1ZLTPwDkWHOlaA1iDD9uGaUkQXdzoiCQiRxMEyN7CwEhFhpvzQEEXfpn+TjUUj0eZUxqM49IXfaxEUVQEtdiGENO//FJDonWZ8DCSm0HxIYZoFHPLTQGnvk1Rb0O3c1lQ2eP8IBh4ebtTJbKGyuw9nEIOCbo/9aa3pa8V0kjMCZJRb4JLW9zA/+7XnKtRFg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nlvVRG3EIDHM4+TS1zlkcCU5hRH4BI+krQMuryGixs0=;
+ b=VV0ARyF6vo4fLzGglje0uz7x4YMifadoRjZS0piQaFadZyKrcNqQmzeq915JklJXsAiuZ/sTHF5biUvxT++IOloqd0yDNcBJ4up3t0QjHR9+kT76kldvt12xtofj1JwQNqq4rwq2eMvxXdryrBsefoPyzk6jGrywPUA/jwhwraMk20DT0EbIodKNTEzBbsavmYnrXzz9A8HHeZT5kr8aW7l2cUmH8OKzCm72LPhReopvIbyXYvTowoKT9k3+6ijD9Px2baIxXHbZDm8TKmS+9MzRGH8kvCRibReQhmHeypbiWfH042xyimXUf8EejLPs7oBYBc0Opt+X3cYHL0iUDA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=uzMcqZmVU8p/WUafrlw6GUYaSwQEpz2AcZTY4aSc314=;
-        b=uQfjJiJnfsoG4kl/9ciTPGsaZPdmRPl7UHPzKaLpqUxyLOUVUxyBCh1PNXfVAV3Jik
-         eTfzd/et+1iC/T49I1qSeUE6+Jk0gekFCEn2oc53hXdr/affctNqyG9XyDdmLB9xUQVX
-         YPGbb0PzPdBq1MwmU8D3wfApZaQdcpHyjlcO4aYEzb1YnUthYvl1+0yrChxdk3gHmLpg
-         CAFHMiZJtcMxypAwdXvg1E7wOCptoi1y4dWtyNtB5cJZGfI2LQ+7aZoLwCC2aMZi6Qyw
-         kg+AcJkwXkw+Rps/P19/AAbBCkItdOy1hrbEjiw0YlJu0c827pZztRElQzEG4Mskr7rK
-         eoKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=uzMcqZmVU8p/WUafrlw6GUYaSwQEpz2AcZTY4aSc314=;
-        b=g+tBd264UAhFPzSPCYpRlZrLenCwoSH1Tl5AbM7Wfh8p4SRZ5JQVFX4REHqwzqk1Zh
-         F1qF6MMBQyPvPTAjQwG5ho8RPrsF+YLJ8gMpiklDxDK9JFlQwL6EBTbxpm0F54c0Ehcx
-         oHrH0jljztmd0Oh9FopUizTYQxyHiUW3w+Hhy5QiO9kUNnMzA+POJ3fCgItVral7RPgE
-         M3cTZwNWtt/nneHi5375ZLnQ2z6PIPcJVmPEzIxQlbWRx/oBe3mmRX9uErAP0SaO2zqi
-         VFnlz/MH1PwiO0HpUs7S2MvTIf8DqeAXsGIFlfLU9oeXbPeODUK+2kZSMzUAJwcx6r9H
-         +xMg==
-X-Gm-Message-State: AOAM530buU/Xdire0eGet5PDbJ+NNEuZOHEe3XlLCXcJSx2wv1wCLItf
-        Fb1BOoYvraADk4o40IMmXSg=
-X-Google-Smtp-Source: ABdhPJz1RVyBmuL0IdfPEQnYu9FFAtarWLZAGftDKxf8VjZA28qwPsl338WwiCGgNFDYL36LAgXKcA==
-X-Received: by 2002:a17:906:dbd0:: with SMTP id yc16mr20073950ejb.524.1613475687602;
-        Tue, 16 Feb 2021 03:41:27 -0800 (PST)
-Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id kb25sm13287397ejc.19.2021.02.16.03.41.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Feb 2021 03:41:27 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: [PATCH RESEND net-next 2/2] net: dsa: sja1105: fix leakage of flooded frames outside bridging domain
-Date:   Tue, 16 Feb 2021 13:41:19 +0200
-Message-Id: <20210216114119.2856299-3-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210216114119.2856299-1-olteanv@gmail.com>
-References: <20210216114119.2856299-1-olteanv@gmail.com>
+ d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nlvVRG3EIDHM4+TS1zlkcCU5hRH4BI+krQMuryGixs0=;
+ b=Q5Na97x6/Q809DpJt7XSzoimWE+dQt1NcJCt4uU9OCQJ12GyutRqPile9y6aPBDZByx1cq9PZ9S49OsbKEmJ17pB83WwmUGnmKUn3Z6hwBmamOU4qt54lojiP3UTchxS1KJNEfx8Qi6hD5uE+blEvd2dV/D2+z4bk8g/wuTVxMs=
+Received: from TY2PR01MB3692.jpnprd01.prod.outlook.com (2603:1096:404:d5::22)
+ by TYAPR01MB3646.jpnprd01.prod.outlook.com (2603:1096:404:cc::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.26; Tue, 16 Feb
+ 2021 11:53:56 +0000
+Received: from TY2PR01MB3692.jpnprd01.prod.outlook.com
+ ([fe80::cb4:9680:bb26:8f3f]) by TY2PR01MB3692.jpnprd01.prod.outlook.com
+ ([fe80::cb4:9680:bb26:8f3f%4]) with mapi id 15.20.3846.038; Tue, 16 Feb 2021
+ 11:53:56 +0000
+From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
+        ARM <linux-arm-kernel@lists.infradead.org>
+CC:     Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: RE: linux-next: manual merge of the net-next tree with the arm-soc
+ tree
+Thread-Topic: linux-next: manual merge of the net-next tree with the arm-soc
+ tree
+Thread-Index: AQHXBAh+B+TipWzLUEKtUb6Ddgfgl6paq7qw
+Date:   Tue, 16 Feb 2021 11:53:56 +0000
+Message-ID: <TY2PR01MB3692F75AF6192AB0B082B493D8879@TY2PR01MB3692.jpnprd01.prod.outlook.com>
+References: <20210216130449.3d1f0338@canb.auug.org.au>
+In-Reply-To: <20210216130449.3d1f0338@canb.auug.org.au>
+Accept-Language: ja-JP, en-US
+Content-Language: ja-JP
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: canb.auug.org.au; dkim=none (message not signed)
+ header.d=none;canb.auug.org.au; dmarc=none action=none
+ header.from=renesas.com;
+x-originating-ip: [124.210.22.195]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 0fe8b0d4-84bc-4c86-9a83-08d8d2718a0f
+x-ms-traffictypediagnostic: TYAPR01MB3646:
+x-microsoft-antispam-prvs: <TYAPR01MB3646A9EA88B123A765068114D8879@TYAPR01MB3646.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2399;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: /InzbkvNXqoe/qB4o+HWfr4bQjNB0AO+S5ApwWMjBxjWoSaMn2RTTNv3EzRWKdSwJxEEjmYZT4b8+BfX0lli+yLIM9CotCtnBOTGJ0yvUIu7JsNAGlCewdXkjVlm09WeySqwlMntOBaKFIABmZNC27Uqf3pxkH5GwGBxrH0Nb74TpbPNioyrOH2V0B2HQxYKfP3jiQ/axU+8LzPUydkH63UGs4qrTVy2EBamjGHXJQlA4fHzIPYBisB+y8iefFORwU+kakuQTZuhMbTC6mo0lmnpsh3QbhDuUGF94r105G7yP86T2IuUEzYeZ9+tLsNNaDhNtcLIYRSJg9rLqFpXMOvn9NEW4QP1BbeiORVWO9rB1ctQRwG7EXz2X+VF1owqxB+tRT0un8Y9spnStRYC516e3BjHtksLq3gM+EumJB02C3DRMUSM1KYR5ivpHLoXcA9F+2LC8bq5htqW8L2aoxeBZcPPAsCtvebl4NJju3/VwTAVh6LgDpBkBjGobOgHuOTN3+RjV8HXIvhvQrAxUA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY2PR01MB3692.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(376002)(396003)(39860400002)(136003)(366004)(33656002)(110136005)(54906003)(4744005)(8676002)(7416002)(5660300002)(8936002)(478600001)(83380400001)(66946007)(66556008)(52536014)(64756008)(4326008)(316002)(86362001)(9686003)(2906002)(55016002)(6506007)(76116006)(186003)(66476007)(71200400001)(55236004)(26005)(7696005)(66446008);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?ubgb3E0k92zAyMI+BcIGsXO/Mf8kOqgkUPNrQlwX4FoG1d5i0+CxqOzVlUxS?=
+ =?us-ascii?Q?AXBU2hUUOdfLL5QcdsyU9xe4FtQdvz0vzerRZUEIWeTPLnt7BLN4g1pO4fhD?=
+ =?us-ascii?Q?Sj7mtV1YMkRTNmIHolmazpikv7hddOxR0PPrLAhK+txhCHU8uBFF77+zN2PK?=
+ =?us-ascii?Q?yUur2+DR36n5LVBWP+rrOV6DtXLdPBTq+uRJdWzaaDjjW2XDz0wfHwbcBPxX?=
+ =?us-ascii?Q?cKSX3Js1EhUlXo8Od8M90Or0OV4oKzrdvy9CjdGjd08jE00Bxiaf6U0Ecd4J?=
+ =?us-ascii?Q?9WLUYTGTliFigbh6ANI3p2C8enKWtSB08OTst8vwFV9Gm8MSBtGyirrXb62n?=
+ =?us-ascii?Q?5F/GjoFPxNMO44a9JlgspiZ+jlBnOCOEzsTe04Wy0P9JvsOWKxAnbd9AxSh4?=
+ =?us-ascii?Q?DXlnEyRrxzXFG+jnvLuMrNAARWkSSJ0gWxCVfLbgg8imwl/hNwXTo6xyzYVw?=
+ =?us-ascii?Q?QzpVI3DRk5ZVTVUFNVG6yH2guGnI8eEWfE5icS9KkGlAXyY2oRLjOdLBYlOE?=
+ =?us-ascii?Q?lW6H8hjcnBLXL9VqU32mV8VH2Oa6sPA5f6PSTf1Vmf3fYWdthdAWQyKPgdLl?=
+ =?us-ascii?Q?ge55ir/W+9swHUt2iE6B8jgfUmbo1J/pwb62Hj9LS5eZmWgDu2y0X7qdA7GG?=
+ =?us-ascii?Q?bUIOs+CmfVAeB6Bk4WX7axz4qioyonxRbovtkbdOzlpL6FqdgXHPOobzuFnK?=
+ =?us-ascii?Q?WqCz6ay91ncP7P43IrHZ8iLWAG7hcs9uTPKfuIMR0oTLmxUF7edNfm1niLAw?=
+ =?us-ascii?Q?JlZzDwPOg46H6QNyBUMOEvqE9B6IId4oIMpY4QpdcVA3ZdAvw4kk8I7FwliE?=
+ =?us-ascii?Q?h/iPGrApAh7QDepSfyUSKQ5S8VUpi8Lbhpk66QXueSgmQXeF0bPxFbr1h3OR?=
+ =?us-ascii?Q?ugu0TiT2ly7MvyAMOEN69pOzG++cx6a0NXjeG8Sv7M8ZF2KzPGuZ2hyb2Kf7?=
+ =?us-ascii?Q?qYsqIUThqtjolZpBKathfW0qybI5Z6Y5SvL33ZYUw51/xYbFMrH5lhUwYXtn?=
+ =?us-ascii?Q?/kaGm7GpNBlYiXvcekS4lCaKUbI5N1iyKdctonAd11FMWiHyhjX2qznuBhfX?=
+ =?us-ascii?Q?lt6StNzy7i3UPKNCaIzigUMkwcZLx5gBucdqBhlUdRWRWZIwwQQa0YkXrx67?=
+ =?us-ascii?Q?VvxLMRqFyC51PyTbY3GhrhZ4V593PEGWHDvxyLb3mwiTgegY6BgAr3pq1l9Y?=
+ =?us-ascii?Q?0VWeYohFo2o1jLxj/EO+gkd3I9OSB+Gj4V0DRqHnOTQLIUBmDu0XK43ewJkg?=
+ =?us-ascii?Q?M6WA2KSMB+kXPFKRnREb6YL7SAf9Jl7svxcE30zYurWlPzDOp3gw48pxOV86?=
+ =?us-ascii?Q?sdga4z715VOvw4dRXOxg6FQc?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TY2PR01MB3692.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0fe8b0d4-84bc-4c86-9a83-08d8d2718a0f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Feb 2021 11:53:56.1671
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: x27ZjeF/WSlVzuIg+FGjynCrayEhKudBOO/dgDn2HIXTxTuSF2tun0Tsc8I6JO0wI6oQ7OwaVxOhAOew79ZtyPHE+T9hoyJ6805RzVQhIfvggsedVDXtlixzCxpMVK44
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB3646
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Hi,
 
-Quite embarrasingly, I managed to fool myself into thinking that the
-flooding domain of sja1105 source ports is restricted by the forwarding
-domain, which it isn't. Frames which match an FDB entry are forwarded
-towards that entry's DESTPORTS restricted by REACH_PORT[SRC_PORT], while
-frames that don't match any FDB entry are forwarded towards
-FL_DOMAIN[SRC_PORT] or BC_DOMAIN[SRC_PORT].
+> From: Stephen Rothwell, Sent: Tuesday, February 16, 2021 11:05 AM
+<snip>
+> diff --cc arch/arm64/boot/dts/toshiba/tmpv7708-rm-mbrc.dts
+> index 2407b2d89c1e,48fa8776e36f..000000000000
+> --- a/arch/arm64/boot/dts/toshiba/tmpv7708-rm-mbrc.dts
+> +++ b/arch/arm64/boot/dts/toshiba/tmpv7708-rm-mbrc.dts
+> @@@ -42,11 -42,20 +42,29 @@@
+>   	clock-names =3D "apb_pclk";
+>   };
+>=20
+>  +&wdt {
+>  +	status =3D "okay";
+>  +	clocks =3D <&wdt_clk>;
+>  +};
+>  +
+>  +&gpio {
+>  +	status =3D "okay";
+> ++};`
 
-This means we can't get away with doing the simple thing, and we must
-manage the flooding domain ourselves such that it is restricted by the
-forwarding domain. This new function must be called from the
-.port_bridge_join and .port_bridge_leave methods too, not just from
-.port_bridge_flags as we did before.
+This ` causes the following build error on the next-20210216.
 
-Fixes: 4d9423549501 ("net: dsa: sja1105: offload bridge port flags to device")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/dsa/sja1105/sja1105.h      |   2 +
- drivers/net/dsa/sja1105/sja1105_main.c | 115 ++++++++++++++++---------
- 2 files changed, 76 insertions(+), 41 deletions(-)
+  DTC     arch/arm64/boot/dts/toshiba/tmpv7708-rm-mbrc.dtb
+Error: arch/arm64/boot/dts/toshiba/tmpv7708-rm-mbrc.dts:52.3-4 syntax error
+FATAL ERROR: Unable to parse input tree
+scripts/Makefile.lib:336: recipe for target 'arch/arm64/boot/dts/toshiba/tm=
+pv7708-rm-mbrc.dtb' failed
+make[2]: *** [arch/arm64/boot/dts/toshiba/tmpv7708-rm-mbrc.dtb] Error 1
+scripts/Makefile.build:530: recipe for target 'arch/arm64/boot/dts/toshiba'=
+ failed
 
-diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
-index 15a0893d0ff1..494d17117b94 100644
---- a/drivers/net/dsa/sja1105/sja1105.h
-+++ b/drivers/net/dsa/sja1105/sja1105.h
-@@ -206,6 +206,8 @@ struct sja1105_private {
- 	bool rgmii_tx_delay[SJA1105_NUM_PORTS];
- 	bool best_effort_vlan_filtering;
- 	unsigned long learn_ena;
-+	unsigned long ucast_egress_floods;
-+	unsigned long bcast_egress_floods;
- 	const struct sja1105_info *info;
- 	struct gpio_desc *reset_gpio;
- 	struct spi_device *spidev;
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 3d3e2794655d..7eef96fab214 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -50,6 +50,12 @@ sja1105_port_allow_traffic(struct sja1105_l2_forwarding_entry *l2_fwd,
- 		l2_fwd[from].reach_port &= ~BIT(to);
- }
- 
-+static bool sja1105_can_forward(struct sja1105_l2_forwarding_entry *l2_fwd,
-+				int from, int to)
-+{
-+	return !!(l2_fwd[from].reach_port & BIT(to));
-+}
-+
- /* Structure used to temporarily transport device tree
-  * settings into sja1105_setup
-  */
-@@ -408,6 +414,12 @@ static int sja1105_init_l2_forwarding(struct sja1105_private *priv)
- 		for (j = 0; j < SJA1105_NUM_TC; j++)
- 			l2fwd[i].vlan_pmap[j] = j;
- 
-+		/* All ports start up with egress flooding enabled,
-+		 * including the CPU port.
-+		 */
-+		priv->ucast_egress_floods |= BIT(i);
-+		priv->bcast_egress_floods |= BIT(i);
-+
- 		if (i == upstream)
- 			continue;
- 
-@@ -1571,6 +1583,50 @@ static int sja1105_mdb_del(struct dsa_switch *ds, int port,
- 	return sja1105_fdb_del(ds, port, mdb->addr, mdb->vid);
- }
- 
-+/* Common function for unicast and broadcast flood configuration.
-+ * Flooding is configured between each {ingress, egress} port pair, and since
-+ * the bridge's semantics are those of "egress flooding", it means we must
-+ * enable flooding towards this port from all ingress ports that are in the
-+ * same forwarding domain.
-+ */
-+static int sja1105_manage_flood_domains(struct sja1105_private *priv)
-+{
-+	struct sja1105_l2_forwarding_entry *l2_fwd;
-+	struct dsa_switch *ds = priv->ds;
-+	int from, to, rc;
-+
-+	l2_fwd = priv->static_config.tables[BLK_IDX_L2_FORWARDING].entries;
-+
-+	for (from = 0; from < ds->num_ports; from++) {
-+		u64 fl_domain = 0, bc_domain = 0;
-+
-+		for (to = 0; to < priv->ds->num_ports; to++) {
-+			if (!sja1105_can_forward(l2_fwd, from, to))
-+				continue;
-+
-+			if (priv->ucast_egress_floods & BIT(to))
-+				fl_domain |= BIT(to);
-+			if (priv->bcast_egress_floods & BIT(to))
-+				bc_domain |= BIT(to);
-+		}
-+
-+		/* Nothing changed, nothing to do */
-+		if (l2_fwd[from].fl_domain == fl_domain &&
-+		    l2_fwd[from].bc_domain == bc_domain)
-+			continue;
-+
-+		l2_fwd[from].fl_domain = fl_domain;
-+		l2_fwd[from].bc_domain = bc_domain;
-+
-+		rc = sja1105_dynamic_config_write(priv, BLK_IDX_L2_FORWARDING,
-+						  from, &l2_fwd[from], true);
-+		if (rc < 0)
-+			return rc;
-+	}
-+
-+	return 0;
-+}
-+
- static int sja1105_bridge_member(struct dsa_switch *ds, int port,
- 				 struct net_device *br, bool member)
- {
-@@ -1608,8 +1664,12 @@ static int sja1105_bridge_member(struct dsa_switch *ds, int port,
- 			return rc;
- 	}
- 
--	return sja1105_dynamic_config_write(priv, BLK_IDX_L2_FORWARDING,
--					    port, &l2_fwd[port], true);
-+	rc = sja1105_dynamic_config_write(priv, BLK_IDX_L2_FORWARDING,
-+					  port, &l2_fwd[port], true);
-+	if (rc)
-+		return rc;
-+
-+	return sja1105_manage_flood_domains(priv);
- }
- 
- static void sja1105_bridge_stp_state_set(struct dsa_switch *ds, int port,
-@@ -3297,51 +3357,24 @@ static int sja1105_port_set_learning(struct sja1105_private *priv, int port,
- 	return 0;
- }
- 
--/* Common function for unicast and broadcast flood configuration.
-- * Flooding is configured between each {ingress, egress} port pair, and since
-- * the bridge's semantics are those of "egress flooding", it means we must
-- * enable flooding towards this port from all ingress ports that are in the
-- * same bridge. In practice, we just enable flooding from all possible ingress
-- * ports regardless of whether they're in the same bridge or not, since the
-- * reach_port configuration will not allow flooded frames to leak across
-- * bridging domains anyway.
-- */
- static int sja1105_port_ucast_bcast_flood(struct sja1105_private *priv, int to,
- 					  struct switchdev_brport_flags flags)
- {
--	struct sja1105_l2_forwarding_entry *l2_fwd;
--	int from, rc;
--
--	l2_fwd = priv->static_config.tables[BLK_IDX_L2_FORWARDING].entries;
--
--	for (from = 0; from < priv->ds->num_ports; from++) {
--		if (dsa_is_unused_port(priv->ds, from))
--			continue;
--		if (from == to)
--			continue;
--
--		/* Unicast */
--		if (flags.mask & BR_FLOOD) {
--			if (flags.val & BR_FLOOD)
--				l2_fwd[from].fl_domain |= BIT(to);
--			else
--				l2_fwd[from].fl_domain &= ~BIT(to);
--		}
--		/* Broadcast */
--		if (flags.mask & BR_BCAST_FLOOD) {
--			if (flags.val & BR_BCAST_FLOOD)
--				l2_fwd[from].bc_domain |= BIT(to);
--			else
--				l2_fwd[from].bc_domain &= ~BIT(to);
--		}
-+	if (flags.mask & BR_FLOOD) {
-+		if (flags.val & BR_FLOOD)
-+			priv->ucast_egress_floods |= BIT(to);
-+		else
-+			priv->ucast_egress_floods |= BIT(to);
-+	}
- 
--		rc = sja1105_dynamic_config_write(priv, BLK_IDX_L2_FORWARDING,
--						  from, &l2_fwd[from], true);
--		if (rc < 0)
--			return rc;
-+	if (flags.mask & BR_BCAST_FLOOD) {
-+		if (flags.val & BR_BCAST_FLOOD)
-+			priv->bcast_egress_floods |= BIT(to);
-+		else
-+			priv->bcast_egress_floods |= BIT(to);
- 	}
- 
--	return 0;
-+	return sja1105_manage_flood_domains(priv);
- }
- 
- static int sja1105_port_mcast_flood(struct sja1105_private *priv, int to,
--- 
-2.25.1
+Best regards,
+Yoshihiro Shimoda
 
