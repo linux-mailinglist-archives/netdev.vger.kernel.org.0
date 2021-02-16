@@ -2,84 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08B3C31C884
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 11:12:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D459631C894
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 11:17:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229869AbhBPKMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 05:12:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55740 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229771AbhBPKMj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Feb 2021 05:12:39 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 64EF864D9E;
-        Tue, 16 Feb 2021 10:11:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613470318;
-        bh=O9zZWr1BTSfSC7SFTtkQBQ/xVE2twCkTfF2UAJOatvY=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=LbATF5kC6aiAcsZiQxoiwOyFy2ZGUj0vA+H2IP8rvzsFynEgS7cZbOnjEmM2GoUyn
-         TyQN96KPs5t2+58U2GLEFvUi/z/mMFeO+wU7Erc45C7SbZfAm1Dq1irE+hTX+3yWZa
-         f313M6wAnbu6w7+Zna5BYl5+VSHNiL5LS6/bKTvEZK87gQdPzRgRG8tSoq3l1jSkR3
-         8UPzruHnZDwjBHyXD2jO5K6VdIHboZw2Xq0OqLGzcm3VgcD8schBjAYk7dvwK+VvCA
-         2p4K5fGpkaNtVWfr4H7OIYjpdAvUUxYQu5NjT1t0BZlZ+e94QGqblRCeH0MCK6lCwh
-         TO6csrcxjnbdw==
-Received: by mail-oi1-f177.google.com with SMTP id l19so10667558oih.6;
-        Tue, 16 Feb 2021 02:11:58 -0800 (PST)
-X-Gm-Message-State: AOAM530UANs0iv5VRC9nJp9BrIlvOQh1d/MVPGTqboxWrNe0kc3xddC4
-        ajlofLCobWh2RFffBye8iAFohA3asL5X/VHS3GE=
-X-Google-Smtp-Source: ABdhPJzG/H3wVcslxTEnqeZi/ylklV0MYm3BcuNOjYzDqles36eR+lldIhLS+bHC1krCppp8jFjbRAV5JR99yHVjGsE=
-X-Received: by 2002:aca:e103:: with SMTP id y3mr1963362oig.11.1613470317705;
- Tue, 16 Feb 2021 02:11:57 -0800 (PST)
+        id S229809AbhBPKRV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 05:17:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54062 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229635AbhBPKRU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 05:17:20 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80D6CC061756
+        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 02:16:39 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id o3so9268344edv.4
+        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 02:16:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VTu2kaBkhv3oWRt4z9hloY50JX1dRBf0x/4IhM6WDms=;
+        b=UQOuF7X9tEUuj3PZBEEL+3oReG8KIHcaK5zCL4SNVdChM0L2KFVzSJukFSZ4SHFsfA
+         2jenXFvbky1HgYVJoGQQFyAuUXe2L8Pok40c5wb2v6AsiJqNnsjIfwU1jTdIMreBgOZQ
+         OETlsEMs5JE7Lgz1WQ8OKn6ZRkG52DD3omXCyVLBkbTxNETcPqJfFHscZDhpHNaG73G/
+         jWIFaBsMOpXgosCw7u/7FaxU801ipqKfnZFleKeiY7NJZeyxgnybnR6hhjEQ4oC/yhVU
+         JXGAHGidQDykL2eI6Iafy4MLFEmAjzATM8vzp9xoZNdwMDO2vhZJU3ijK7EEto4z694Q
+         4xLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VTu2kaBkhv3oWRt4z9hloY50JX1dRBf0x/4IhM6WDms=;
+        b=YmowyttEKjZF9Xvj/f9DZsSwi7cRVJsIU6Jpg/LIkVpYJS2DWZUoe5ZOFri7fZ1Or6
+         Fg1zhoO6rP3skULASGCOc6296itH77IlW6ah7WZqQAxHft4tgnoqURrRr6YkGDn7h1mt
+         B4wYkFPvZybDu09SjpyIiEypcLKfi+96lECJgTXM9pPC0HCW34yDiG83jnbx7/4/yAxX
+         ryB4oJgZP/LX27Jg3pmSyiv/uJwJ6MSWLjSSoZKUmY92Oi9sK8CuMmsNN6IlVqbUsVCk
+         mo1lJ4Wcx6Eh4hvmVEa562Ki+JVh/cW4EuE0psqjXa4byckmr9dS9OUXNJQOPQDJZ532
+         Av5Q==
+X-Gm-Message-State: AOAM531QlPq6x/6H5wdYlRXSDpxDbsgEjwENHKGD83AO/KTeZbcs2ouj
+        w4bBVMsWIOY5qBuRlA83SMc=
+X-Google-Smtp-Source: ABdhPJx/DX7By43hzXntDfM4p8T9VQjOQQPdPv2g7IzebpBQ9ethUxEDCrO+DZKJ/X6pS/klgtGJKA==
+X-Received: by 2002:aa7:db0c:: with SMTP id t12mr9489396eds.33.1613470598259;
+        Tue, 16 Feb 2021 02:16:38 -0800 (PST)
+Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id b17sm12773147edv.56.2021.02.16.02.16.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Feb 2021 02:16:37 -0800 (PST)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Michael Walle <michael@walle.cc>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>
+Subject: [PATCH net] net: enetc: fix destroyed phylink dereference during unbind
+Date:   Tue, 16 Feb 2021 12:16:28 +0200
+Message-Id: <20210216101628.2818524-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20210216130449.3d1f0338@canb.auug.org.au> <OSBPR01MB2983FDFEF1D1E24E7C2DF0F692879@OSBPR01MB2983.jpnprd01.prod.outlook.com>
-In-Reply-To: <OSBPR01MB2983FDFEF1D1E24E7C2DF0F692879@OSBPR01MB2983.jpnprd01.prod.outlook.com>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Tue, 16 Feb 2021 11:11:41 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a3CYkfOvta9pRwLXkOsARQF=YNWzdh0z1-r6rMDAEGYig@mail.gmail.com>
-Message-ID: <CAK8P3a3CYkfOvta9pRwLXkOsARQF=YNWzdh0z1-r6rMDAEGYig@mail.gmail.com>
-Subject: Re: linux-next: manual merge of the net-next tree with the arm-soc tree
-To:     Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 16, 2021 at 3:20 AM <nobuhiro1.iwamatsu@toshiba.co.jp> wrote:
-> >
-> > I fixed it up (see below) and can carry the fix as necessary. This
-> > is now fixed as far as linux-next is concerned, but any non trivial
-> > conflicts should be mentioned to your upstream maintainer when your tree
-> > is submitted for merging.  You may also want to consider cooperating
-> > with the maintainer of the conflicting tree to minimise any particularly
-> > complex conflicts.
-> >
->
-> This is because the DTS changes are included in net-next. This patch should be merged via the soc tree.
-> I had the same problem before. How is it correct to send a DTS patch?
-> Should I separate into different series?
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-I have already sent the pull requests for the dts files to Linus, so that's
-not changing any more for this time, and he will just have to fix it up
-when he pulls both branches.
+The following call path suggests that calling unregister_netdev on an
+interface that is up will first bring it down.
 
-In the future, please send all dts updates to soc@kernel.org (after the
-binding and driver is merged) rather than together with the device drivers.
+enetc_pf_remove
+-> unregister_netdev
+   -> unregister_netdevice_queue
+      -> unregister_netdevice_many
+         -> dev_close_many
+            -> __dev_close_many
+               -> enetc_close
+                  -> enetc_stop
+                     -> phylink_stop
 
-Sending the devicetree binding updates is a little trickier, as we tend to
-want them merged both with the driver and the dts files. One way to do
-this is to have a shared branch for the bindings updates, and then base both
-the driver branch and the dts branch on top of the same commits for that.
+However, enetc first destroys the phylink instance, then calls
+unregister_netdev. This is already dissimilar to the setup (and error
+path teardown path) from enetc_pf_probe, but more than that, it is buggy
+because it is invalid to call phylink_stop after phylink_destroy.
 
-A simpler alternative is to merge only the driver and binding changes in
-one release, and send the dts changes for the following release. This
-obviously takes longer to complete.
+So let's first unregister the netdev (and let the .ndo_stop events
+consume themselves), then destroy the phylink instance, then free the
+netdev.
 
-       Arnd
+Fixes: 71b77a7a27a3 ("enetc: Migrate to PHYLINK and PCS_LYNX")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ drivers/net/ethernet/freescale/enetc/enetc_pf.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+index 3eb5f1375bd4..515c5b29d7aa 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+@@ -1157,14 +1157,15 @@ static void enetc_pf_remove(struct pci_dev *pdev)
+ 	struct enetc_ndev_priv *priv;
+ 
+ 	priv = netdev_priv(si->ndev);
+-	enetc_phylink_destroy(priv);
+-	enetc_mdiobus_destroy(pf);
+ 
+ 	if (pf->num_vfs)
+ 		enetc_sriov_configure(pdev, 0);
+ 
+ 	unregister_netdev(si->ndev);
+ 
++	enetc_phylink_destroy(priv);
++	enetc_mdiobus_destroy(pf);
++
+ 	enetc_free_msix(priv);
+ 
+ 	enetc_free_si_resources(priv);
+-- 
+2.25.1
+
