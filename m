@@ -2,148 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B489431C48C
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 01:19:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4922E31C498
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 01:29:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229713AbhBPATS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 19:19:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38780 "EHLO
+        id S229745AbhBPA27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 19:28:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229652AbhBPATR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 19:19:17 -0500
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87E77C061574;
-        Mon, 15 Feb 2021 16:18:37 -0800 (PST)
-Received: by mail-io1-xd2b.google.com with SMTP id f20so8458802ioo.10;
-        Mon, 15 Feb 2021 16:18:37 -0800 (PST)
+        with ESMTP id S229652AbhBPA2z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 19:28:55 -0500
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0C77C061574;
+        Mon, 15 Feb 2021 16:28:14 -0800 (PST)
+Received: by mail-pl1-x630.google.com with SMTP id r2so4568487plr.10;
+        Mon, 15 Feb 2021 16:28:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=AwL+hqtLgXytckx1IuR+ul+fmCz+1zDAfOI1doww3rs=;
-        b=CY+Cq4fnEUr7ll/T73HohYP9qxMDPMTpKK39lESvMNSO+byN5D5SPeGqQL362oeMSd
-         hfesNtLbdYdgTL49IrLpssszJTHdhy5gKGVsIIlQm/GSp+35Y22DiHB/5iNm63IpaIGR
-         H3pF77Qd1N/H9vkvhZINrOBQOarLoiawG5/ZnJeEu7XcuHmgGf2lKcTPonvWcA8k/Kmi
-         nsXIV0pMWOlKVFQnE92ShJSEB7/dDz7ZLiMd+L/eG96xb+TMAh3KfZ1qZ8kN+gW/+fjc
-         +hgwX2PfR8jY1r+bCDukA9gwMyKoGCEZiy4ltShqMwaus93jnJIIxTSyn1zLKiMqy5FG
-         CyJw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EfJMDhxC2JDO2cfLgWN0mUNWvycHxcL6WVpnHJwl1yM=;
+        b=eEtMDGXoiB6IBT5yd2mVS/f0RmZvlVn3p7wEUhdQeP8s8CPg2kqOro/lE+lZz1ytGf
+         BuTO7YIkrDOMK9svJrOKL92Cp9GuAFyo7tS5T8fg//4qk8bKtqRvFZ31RBW/DWKui3yy
+         RHrjMdufbSl7wSJ9sUyaRQ2s6J86bDilHORIeVfN+aWgFW1uuKjXxNf07ZKM3lNFnmhS
+         PH4LiugqmFsOn1oQUwLi0A7bLoL9h93fr5ZlSLcySsYFuzd+0o5LX4hcvHCHcLR6fFYP
+         aUJQBB9Iy944WUNpSJs4u1drFF6MEwYBmwH3y69KNtiI7jHUrEtXkhEmQOrFpPTM0wZS
+         v65g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=AwL+hqtLgXytckx1IuR+ul+fmCz+1zDAfOI1doww3rs=;
-        b=gUy4TgvHihK64bHW1veKU58v8wI1xqgoMWJbgwuv36oBgM6rhAiRheREzzP6EgrSlc
-         EEFIg+iTREai7P6x8KGI3tEBReWwEmkF0w/4w65Ohg4hta3f8KKuKi79VkKjnHwdZCiN
-         8PBzvtJa1fb3UjekF29CcTALJtC7FQvjE1KO7+iRCghf0Z0SuTYD4ywyLBTHgyz0Lhre
-         4omE/pSmGe1guCrRr8xInDQq7s+NPqwa1pZYmI0U3/3c+nhquyaAugI08OYd2dCtRVwa
-         +BHTZVEfZpqHNvqhME/pL3WBdO8WIjEpgJpDjpcYCka8mbipyfNMZxMWNBzwySYIgFho
-         9nZw==
-X-Gm-Message-State: AOAM532aw8qvwF0Djgtf2yYpxKITEiSE5DTdCmxEYmlJDE/tkhMdAYS1
-        nIuMPuqh1NjY+lpekfhcGvQbFBbNb48=
-X-Google-Smtp-Source: ABdhPJxX0ovef/HbilX6nWgiRfKOazv58wjDoIBcAuYuTcaXgwYc7+Bi5aJ85WuaRM2gabrQxsr8ig==
-X-Received: by 2002:a02:cb5c:: with SMTP id k28mr8549051jap.104.1613434716933;
-        Mon, 15 Feb 2021 16:18:36 -0800 (PST)
-Received: from localhost ([172.243.146.206])
-        by smtp.gmail.com with ESMTPSA id j10sm462614ilk.30.2021.02.15.16.18.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Feb 2021 16:18:36 -0800 (PST)
-Date:   Mon, 15 Feb 2021 16:18:28 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        daniel@iogearbox.net, ast@kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     andrii@kernel.org, magnus.karlsson@intel.com,
-        ciara.loftus@intel.com
-Message-ID: <602b0f54c05a6_3ed41208dc@john-XPS-13-9370.notmuch>
-In-Reply-To: <8735xxc8pf.fsf@toke.dk>
-References: <20210215154638.4627-1-maciej.fijalkowski@intel.com>
- <20210215154638.4627-2-maciej.fijalkowski@intel.com>
- <87eehhcl9x.fsf@toke.dk>
- <fe0c957e-d212-4265-a271-ba301c3c5eca@intel.com>
- <602ad80c566ea_3ed4120871@john-XPS-13-9370.notmuch>
- <8735xxc8pf.fsf@toke.dk>
-Subject: Re: [PATCH bpf-next 1/3] libbpf: xsk: use bpf_link
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EfJMDhxC2JDO2cfLgWN0mUNWvycHxcL6WVpnHJwl1yM=;
+        b=dH8iBwjZufs1fGv67eyQqHDsaMtXFu8B0q3JqII5PMUMU5duReTIoxb/0pJT0HMui+
+         /onYxdSUz0SXtr3oDIZzFIla9bZ0+labSBkSTbAHYqUliJWMmE2EWF2ede3pVil5VHL0
+         PXfCSnf6Eh3lfIU0tSvN38phQmL00sQKeqZezbRs3ZAQ8kmexuykCtkg22R1I+xaZt+P
+         LiFKmeCWZBc52A7qgJO/VWRPa2KfrmLOlhfzG0fFgSEH1r2Y6aWGqAfMuYJc3MQsUJP0
+         iKs7SVfOqWz9gFphSmqM7G274INIYDxY1V+jl4kT7B2uMc5bMjXgsWwk+EONEq25W6zO
+         tYPQ==
+X-Gm-Message-State: AOAM533e8yAqndGLHtbdEEe05T9sqKd5SS6sShHQxy+1eWZ3DvvAi07R
+        MZWTBVViwLm4pdbKMNRvFqcGH/y9KfMfTdijr2c=
+X-Google-Smtp-Source: ABdhPJzH83YUFhNv2LTc/HxVEx7I5oOdu/rqC2gmouTGRGlGfmtS0eAfMCir6jAMpKHWVyQcvMr3cQ5dRZe+qOMnNQo=
+X-Received: by 2002:a17:90a:af92:: with SMTP id w18mr1318558pjq.191.1613435294380;
+ Mon, 15 Feb 2021 16:28:14 -0800 (PST)
+MIME-Version: 1.0
+References: <20210213214421.226357-1-xiyou.wangcong@gmail.com>
+ <20210213214421.226357-5-xiyou.wangcong@gmail.com> <602ac96f9e30f_3ed41208b6@john-XPS-13-9370.notmuch>
+ <CAM_iQpWufy-YnQnBf_kk_otLaTikK8YxkhgjHh_eiu8MA=0Raw@mail.gmail.com> <602b0a7046969_3ed41208dc@john-XPS-13-9370.notmuch>
+In-Reply-To: <602b0a7046969_3ed41208dc@john-XPS-13-9370.notmuch>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 15 Feb 2021 16:28:03 -0800
+Message-ID: <CAM_iQpUomzGXdyjdCU8Ox-JZgQc=iZPZqs1UjRo3wxomf67_+A@mail.gmail.com>
+Subject: Re: [Patch bpf-next v3 4/5] skmsg: use skb ext instead of TCP_SKB_CB
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, duanxiongchun@bytedance.com,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        jiang.wang@bytedance.com, Cong Wang <cong.wang@bytedance.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> John Fastabend <john.fastabend@gmail.com> writes:
-> =
+On Mon, Feb 15, 2021 at 3:57 PM John Fastabend <john.fastabend@gmail.com> wrote:
+>
+> For TCP case we can continue to use CB and not pay the price. For UDP
+> and AF_UNIX we can do the extra alloc.
 
-> >> > However, in libxdp we can solve the original problem in a differen=
-t way,
-> >> > and in fact I already suggested to Magnus that we should do this (=
-see
-> >> > [1]); so one way forward could be to address it during the merge i=
-n
-> >> > libxdp? It should be possible to address the original issue (two
-> >> > instances of xdpsock breaking each other when they exit), but
-> >> > applications will still need to do an explicit unload operation be=
-fore
-> >> > exiting (i.e., the automatic detach on bpf_link fd closure will ta=
-ke
-> >> > more work, and likely require extending the bpf_link kernel suppor=
-t)...
-> >> >
-> >> =
+I see your point, but specializing TCP case does not give much benefit
+here, the skmsg code would have to check skb->protocol etc. to decide
+whether to use TCP_SKB_CB() or skb_ext:
 
-> >> I'd say it's depending on the libbpf 1.0/libxdp merge timeframe. If
-> >> we're months ahead, then I'd really like to see this in libbpf until=
- the
-> >> merge. However, I'll leave that for Magnus/you to decide!
-> >
-> > Did I miss some thread? What does this mean libbpf 1.0/libxdp merge?
-> =
+if (skb->protocol == ...)
+  TCP_SKB_CB(skb) = ...;
+else
+  ext = skb_ext_find(skb);
 
-> The idea is to keep libbpf focused on bpf, and move the AF_XDP stuff to=
+which looks ugly to me. And I doubt skb->protocol alone is sufficient to
+distinguish TCP, so we may end up having more checks above.
 
-> libxdp (so the socket stuff in xsk.h). We're adding the existing code
-> wholesale, and keeping API compatibility during the move, so all that's=
+So do you really want to trade code readability with an extra alloc?
 
-> needed is adding -lxdp when compiling. And obviously the existing libbp=
-f
-> code isn't going anywhere until such a time as there's a general
-> backwards compatibility-breaking deprecation in libbpf (which I believe=
+>
+> The use in tcf_classify_ingress is a miss case so not the common path. If
+> it is/was in the common path I would suggest we rip it out.
+>
 
-> Andrii is planning to do in an upcoming and as-of-yet unannounced v1.0
-> release).
+Excellent point, what about nf_bridge_unshare()? It is a common path
+for bridge netfilter, which is also probably why skb ext was introduced
+(IIRC). secpath_set() seems on a common path for XFRM too.
 
-OK, I would like to keep the basic XDP pieces in libbpf though. For examp=
-le
-bpf_program__attach_xdp(). This way we don't have one lib to attach
-everything, but XDP.
+Are you suggesting to remove them all? ;)
 
-> =
-
-> While integrating the XSK code into libxdp we're trying to make it
-> compatible with the rest of the library (i.e., multi-prog). Hence my
-> preference to avoid introducing something that makes this harder :)
-> =
-
-> -Toke
-> =
-
-
-OK that makes sense to me thanks. But, I'm missing something (maybe its
-obvious to everyone else?).
-
-When you load an XDP program you should get a reference to it. And then
-XDP program should never be unloaded until that id is removed right? It
-may or may not have an xsk map. Why does adding/removing programs from
-an associated map have any impact on the XDP program? That seems like
-the buggy part to me. No other map behaves this way as far as I can
-tell. Now if the program with the XDP reference closes without pinning
-the map or otherwise doing something with it, sure the map gets destroyed=
-
-and any xsk sockets are lost.
-
-Thanks!
-John=
+Thanks.
