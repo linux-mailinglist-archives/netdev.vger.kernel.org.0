@@ -2,133 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20C6A31CCFF
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 16:35:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA5F131CD2A
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 16:49:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229699AbhBPPbx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 10:31:53 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:53478 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230166AbhBPPbY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 10:31:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1613489483; x=1645025483;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=c6q6U2J/o4K8P/SEJ8skN9T6JNIZ8gsyd/TVCQ1EGCk=;
-  b=wu/THPijAJgxfipZzgjL73/8+xtZSDdjeOBj10+ihgPdS6834ObMO41q
-   L0/i2G3AJLwsXBY/MH7IOa9ZJTbKFyTgnUUty6BG1BWi4MeQIgyizvQc+
-   DS/pxB7UNT2lWRyUVbQb+oRgtNcmNKsR1bCv2/ERLdegbAYA/N6eifsJe
-   G4t6sGisGF+VmkPzYLTYuSoXfXRvilDx5oG8br/64hVQDvP25wgvOYfeK
-   iJ1uPDMe6d7oCLuKESv+KO7EqbzY9XixqpF2lRu6dFFNCf3YymT5I23aV
-   +m2LpeEHG2+aF+3FWdlhaLjYmS7Gevvl9P2q7LyMKnxdn393ZIMrhnYj3
-   g==;
-IronPort-SDR: bOW1WJQG7yM/6NYnUU4tqoXsQ3ru9Hhv/rmfuL99Ezjki+vZMLZwdvZbW67mwuCWUol4Iom3b0
- f/vvyOipbQ+8yD4LdXNdBnxOpLq2QDDsvSC8T9Rv2sjwFtZcP1zFosq8+K/b8Q8h1sA0KrjQ6p
- y06rkstFgQQXdBpCeeD4qThFKAyoh54WreO2FCMG2Yg/xP/GsM8BLbApbHr1opIwcLp4f7oHUY
- s+qO4DQKZxxjYwmVcgVhPL7bXJL/5BHYUKuiarOH/XfZRsce0YpWtP5ahhWOZDdJ3HaNpxAbAF
- EnI=
-X-IronPort-AV: E=Sophos;i="5.81,184,1610434800"; 
-   d="scan'208";a="109866433"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Feb 2021 08:30:07 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 16 Feb 2021 08:30:06 -0700
-Received: from soft-dev2.microsemi.net (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Tue, 16 Feb 2021 08:30:04 -0700
-From:   Bjarni Jonasson <bjarni.jonasson@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Antoine Tenart <atenart@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "Vladimir Oltean" <vladimir.oltean@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-CC:     Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        UNGLinuxDriver <UNGLinuxDriver@microchip.com>,
-        Steen Hegelund <steen.hegelund@microchip.com>
-Subject: [PATCH net-next v3 3/3] net: phy: mscc: coma mode disabled for VSC8514
-Date:   Tue, 16 Feb 2021 16:29:44 +0100
-Message-ID: <20210216152944.27266-4-bjarni.jonasson@microchip.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210216152944.27266-1-bjarni.jonasson@microchip.com>
-References: <20210216152944.27266-1-bjarni.jonasson@microchip.com>
+        id S229880AbhBPPtO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 10:49:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40462 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230204AbhBPPtJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 10:49:09 -0500
+Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5FF1C061574;
+        Tue, 16 Feb 2021 07:48:26 -0800 (PST)
+Received: by mail-ot1-x331.google.com with SMTP id b16so6943345otq.1;
+        Tue, 16 Feb 2021 07:48:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=APA6hwAnvuXF3RbI64Y0Of01r1EHRcUtK6WRrMWbpdo=;
+        b=j5wHba3jekPQRt4pm7L8dP9oq/WBiw0K/IrWjDxzLlC+pr6qLxjVzk7lqMjqwtoVzt
+         +eCm8FGbql0TQACJNAMmm1TQslcDfRayxd/QEEFG+R03SshdlnO21luWMcbzyfbfh4vj
+         D0Zq86WBRj5XRyb2YLStKVPW1C3cAJb7xrQr5aeU/xu/55qJ95rQqoPdA+Qdj8P3YENT
+         1U/eDPcDN6tGesau5c2Ks2K25H96yyjFWV+AQn78gyxWhuXEHVVC4ApXL8yjt7dpuaHB
+         IYu3y2vF8wv4rNoruboZB6hc64QADhcgjZ/EhU2YQSpBz2grGrNagEe4oNeB8caxierm
+         Paxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=APA6hwAnvuXF3RbI64Y0Of01r1EHRcUtK6WRrMWbpdo=;
+        b=pZ9HJbHM+D6wgMLIFgb+rh68U8evDT9oY4gzQI7RWN1WPwAdLIF1qLXGqQ74EE72ls
+         2rINSqDNYd4AetYgmOKpyQ1L93ZtBS2uy6/+h3KHc8lvExkk6aUXHe/rvGH6N3qyad9T
+         EV7DiuNtS76oWgloqNvfOQdnrYIyQIogIt2YjMiQYyW/8bfOPATJuT8vm1l64Pdyj5vl
+         5r0SELUFSuZnR5PdsUFassCD6oJgQmhitrVFyMl4fCNkkMVBzPwEPyUAXHASIKYKTTRY
+         Z3qo1gpk4NCxGLN2tmCzaM9aLgrsmR+vBtcD4xXSMKT5l6waSGY68ssjtwc7hjYCdnbB
+         TppA==
+X-Gm-Message-State: AOAM530W9Sulg60J/gb8UBQxCQItdv6/ypy3qUTnTtLK70EqOG0X47F9
+        QxomvD+poqaKuArz1ra0xEwQw+3UdL8=
+X-Google-Smtp-Source: ABdhPJypDSINLM94ZPi9PJDmgYlqYnZau1VLBcNG6it0kaqS6Oj25LHnHsNiUrb+RiwfyI96yJOxGg==
+X-Received: by 2002:a9d:578a:: with SMTP id q10mr16318869oth.114.1613490506020;
+        Tue, 16 Feb 2021 07:48:26 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.33])
+        by smtp.googlemail.com with ESMTPSA id h23sm1546967oie.20.2021.02.16.07.48.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 Feb 2021 07:48:25 -0800 (PST)
+Subject: Re: [PATCH iproute2-rc] rdma: Fix statistics bind/unbing argument
+ handling
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Ido Kalir <idok@nvidia.com>,
+        linux-netdev <netdev@vger.kernel.org>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>
+References: <20210214083335.19558-1-leon@kernel.org>
+ <5e9a8752-24a1-7461-e113-004b014dcde9@gmail.com> <YCoJULID1x2kulQe@unreal>
+ <04d7cd07-c3eb-c39c-bce1-3e9d4d1e4a27@gmail.com> <YCtjO1Q2OnCOlEcu@unreal>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <9217385b-6002-83c2-b386-85650ce101bc@gmail.com>
+Date:   Tue, 16 Feb 2021 08:48:24 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <YCtjO1Q2OnCOlEcu@unreal>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 'coma mode' (configurable through sw or hw) provides an
-optional feature that may be used to control when the PHYs become active.
-The typical usage is to synchronize the link-up time across
-all PHY instances. This patch releases coma mode if not done by hardware,
-otherwise the phys will not link-up.
+On 2/15/21 11:16 PM, Leon Romanovsky wrote:
+> On Mon, Feb 15, 2021 at 06:56:26PM -0700, David Ahern wrote:
+>> On 2/14/21 10:40 PM, Leon Romanovsky wrote:
+>>> On Sun, Feb 14, 2021 at 08:26:16PM -0700, David Ahern wrote:
+>>>> what does iproute2-rc mean?
+>>>
+>>> Patch target is iproute2.git:
+>>> https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/
+>>
+>> so you are asking them to be committed for the 5.11 release?
+> 
+> This is a Fix to an existing issue (not theoretical one), so I was under
+> impression that it should go to -rc repo and not to -next.
 
-Fixes: e4f9ba642f0b ("net: phy: mscc: add support for VSC8514 PHY.")
-Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
-Signed-off-by: Bjarni Jonasson <bjarni.jonasson@microchip.com>
----
- drivers/net/phy/mscc/mscc.h      |  4 ++++
- drivers/net/phy/mscc/mscc_main.c | 16 ++++++++++++++++
- 2 files changed, 20 insertions(+)
+It is assigned to Stephen for iproute2.
 
-diff --git a/drivers/net/phy/mscc/mscc.h b/drivers/net/phy/mscc/mscc.h
-index 2028c319f14d..a50235fdf7d9 100644
---- a/drivers/net/phy/mscc/mscc.h
-+++ b/drivers/net/phy/mscc/mscc.h
-@@ -140,6 +140,10 @@ enum rgmii_clock_delay {
- #define MSCC_PHY_PAGE_1588		  0x1588 /* PTP (1588) */
- #define MSCC_PHY_PAGE_TEST		  0x2a30 /* Test reg */
- #define MSCC_PHY_PAGE_TR		  0x52b5 /* Token ring registers */
-+#define MSCC_PHY_GPIO_CONTROL_2           14
-+
-+#define MSCC_PHY_COMA_MODE		  0x2000 /* input(1) / output(0) */
-+#define MSCC_PHY_COMA_OUTPUT		  0x1000 /* value to output */
- 
- /* Extended Page 1 Registers */
- #define MSCC_PHY_CU_MEDIA_CRC_VALID_CNT	  18
-diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
-index 0e6e7076a740..3a7705228ed5 100644
---- a/drivers/net/phy/mscc/mscc_main.c
-+++ b/drivers/net/phy/mscc/mscc_main.c
-@@ -1516,6 +1516,21 @@ static void vsc8584_get_base_addr(struct phy_device *phydev)
- 	vsc8531->addr = addr;
- }
- 
-+static void vsc85xx_coma_mode_release(struct phy_device *phydev)
-+{
-+	/* The coma mode (pin or reg) provides an optional feature that
-+	 * may be used to control when the PHYs become active.
-+	 * Alternatively the COMA_MODE pin may be connected low
-+	 * so that the PHYs are fully active once out of reset.
-+	 */
-+
-+	/* Enable output (mode=0) and write zero to it */
-+	vsc85xx_phy_write_page(phydev, MSCC_PHY_PAGE_EXTENDED_GPIO);
-+	__phy_modify(phydev, MSCC_PHY_GPIO_CONTROL_2,
-+		     MSCC_PHY_COMA_MODE | MSCC_PHY_COMA_OUTPUT, 0);
-+	vsc85xx_phy_write_page(phydev, MSCC_PHY_PAGE_STANDARD);
-+}
-+
- static int vsc8584_config_init(struct phy_device *phydev)
- {
- 	struct vsc8531_private *vsc8531 = phydev->priv;
-@@ -1962,6 +1977,7 @@ static int vsc8514_config_init(struct phy_device *phydev)
- 		ret = vsc8514_config_host_serdes(phydev);
- 		if (ret)
- 			goto err;
-+		vsc85xx_coma_mode_release(phydev);
- 	}
- 
- 	phy_unlock_mdio_bus(phydev);
--- 
-2.17.1
+> 
+> Personally, I don't care to which repo will this fix be applied as long
+> as it is applied to one of the two iproute2 official repos.
+> 
+> Do you have clear guidance when should I send patches to iproute2-rc/iproute2-next?
+> 
 
+It's the rc label that needs to be dropped: iproute2 or iproute2-next.
+Just like there is net and net-next.
