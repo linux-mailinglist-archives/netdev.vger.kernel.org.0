@@ -2,65 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B71A431C67A
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 07:17:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A813831C685
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 07:37:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229708AbhBPGRN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 01:17:13 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51112 "EHLO mail.kernel.org"
+        id S229952AbhBPGgl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 01:36:41 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52266 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229635AbhBPGRM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Feb 2021 01:17:12 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A070D64DFF;
-        Tue, 16 Feb 2021 06:16:30 +0000 (UTC)
+        id S229635AbhBPGgg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Feb 2021 01:36:36 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E9DB364DDA;
+        Tue, 16 Feb 2021 06:35:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613456191;
-        bh=BERrAqabJM+lJ+M+VL/OJNCdzgHsU/bRTHZGTZhQBmQ=;
+        s=k20201202; t=1613457355;
+        bh=JyrtpZs3nYiCe3lUIYAVThOqh4wJbPYr0RlJDjeDkjg=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hvKnQ17vIozscBiQU2HEZ4SHkynCrlgYYT5peDrkslKD6WBhKeCdumIkIsfUi+4GF
-         vgF1EYv4UWaBh711AtX5wbFaNhr0PfHLnoi9qMW/Mp94pCmWSYXqvdoxxDA2NbxJpR
-         JCoYms9cgZkWspwv0XJRsb06/OC9o6yxea3fQ9jRGlp3bijYbU64ELRW1QzNsIcEcg
-         rO5Dc1yoXv+g1qqyvtDzrC4+yKrs4jxTfeTHwfh6vJsZf4PB2q5FCH0gquJYLJLltX
-         lDQ0zlWBRb5FSz89h6y0tWFb9fNcHdriWTGGeUAMkdqeq5XDIkh98e81NJowfpf1Os
-         RWRZfm8OVB3WA==
-Date:   Tue, 16 Feb 2021 08:16:27 +0200
+        b=Q9cM3sN/iw/E5UBd3Lweuiw84wvHuanw14mFpmpS3uEqH26cfZex5oqlNDHIjOzY5
+         CJ4KgCLsiTEyBhsfZ+yVuHfEdg0og1hs+mMdi/9t+J+DQUlS9KE5rffSlsIWRg3HCM
+         MwBHk5Dhqa0iRODR76SCh+McfkLEEgQZASSslTbODH6ec9Lwb9DKFNPLHFT6Wl7hMk
+         U2VuN9kd536E78U+Mld2RIxtK2wFjTx/EzPE3BMVcmEcuNiH5eDX5UVJNeprXGe5YT
+         tLj8rmYjRTJ3BMWCMCQSdlgIp+MZ3K1uaI/mRwPF4kME+6Am2TCyjhk+65oEbrzGoe
+         GuXFYO9V0WT6A==
+Date:   Tue, 16 Feb 2021 08:35:51 +0200
 From:   Leon Romanovsky <leon@kernel.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Ido Kalir <idok@nvidia.com>,
-        linux-netdev <netdev@vger.kernel.org>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>
-Subject: Re: [PATCH iproute2-rc] rdma: Fix statistics bind/unbing argument
- handling
-Message-ID: <YCtjO1Q2OnCOlEcu@unreal>
-References: <20210214083335.19558-1-leon@kernel.org>
- <5e9a8752-24a1-7461-e113-004b014dcde9@gmail.com>
- <YCoJULID1x2kulQe@unreal>
- <04d7cd07-c3eb-c39c-bce1-3e9d4d1e4a27@gmail.com>
+To:     Eli Cohen <elic@nvidia.com>
+Cc:     mst@redhat.com, jasowang@redhat.com, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        si-wei.liu@oracle.com
+Subject: Re: [PATCH] vdpa/mlx5: Extract correct pointer from driver data
+Message-ID: <YCtnxyTHJl9TU87L@unreal>
+References: <20210216055022.25248-1-elic@nvidia.com>
+ <20210216055022.25248-2-elic@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <04d7cd07-c3eb-c39c-bce1-3e9d4d1e4a27@gmail.com>
+In-Reply-To: <20210216055022.25248-2-elic@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 15, 2021 at 06:56:26PM -0700, David Ahern wrote:
-> On 2/14/21 10:40 PM, Leon Romanovsky wrote:
-> > On Sun, Feb 14, 2021 at 08:26:16PM -0700, David Ahern wrote:
-> >> what does iproute2-rc mean?
-> >
-> > Patch target is iproute2.git:
-> > https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/
+On Tue, Feb 16, 2021 at 07:50:22AM +0200, Eli Cohen wrote:
+> struct mlx5_vdpa_net pointer was stored in drvdata. Extract it as well
+> in mlx5v_remove().
 >
-> so you are asking them to be committed for the 5.11 release?
+> Fixes: 74c9729dd892 ("vdpa/mlx5: Connect mlx5_vdpa to auxiliary bus")
+> Signed-off-by: Eli Cohen <elic@nvidia.com>
+> ---
+>  drivers/vdpa/mlx5/net/mlx5_vnet.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> index 6b0a42183622..4103d3b64a2a 100644
+> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> @@ -2036,9 +2036,9 @@ static int mlx5v_probe(struct auxiliary_device *adev,
+>
+>  static void mlx5v_remove(struct auxiliary_device *adev)
+>  {
+> -	struct mlx5_vdpa_dev *mvdev = dev_get_drvdata(&adev->dev);
+> +	struct mlx5_vdpa_net *ndev = dev_get_drvdata(&adev->dev);
+>
+> -	vdpa_unregister_device(&mvdev->vdev);
+> +	vdpa_unregister_device(&ndev->mvdev.vdev);
+>  }
 
-This is a Fix to an existing issue (not theoretical one), so I was under
-impression that it should go to -rc repo and not to -next.
+IMHO, The more correct solution is to fix dev_set_drvdata() call,
+because we are regustering/unregistering/allocating "struct mlx5_vdpa_dev".
 
-Personally, I don't care to which repo will this fix be applied as long
-as it is applied to one of the two iproute2 official repos.
+diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+index 88dde3455bfd..079b8fe669af 100644
+--- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
++++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+@@ -1995,7 +1995,7 @@ static int mlx5v_probe(struct auxiliary_device *adev,
+ 	if (err)
+ 		goto err_reg;
 
-Do you have clear guidance when should I send patches to iproute2-rc/iproute2-next?
+-	dev_set_drvdata(&adev->dev, ndev);
++	dev_set_drvdata(&adev->dev, mvdev);
+ 	return 0;
 
-Thanks
+ err_reg:
+
+>
+>  static const struct auxiliary_device_id mlx5v_id_table[] = {
+
+> --
+> 2.29.2
+>
