@@ -2,195 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B495D31D1B9
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 21:49:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90AB331D1C8
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 21:55:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229912AbhBPUtA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 15:49:00 -0500
-Received: from mail-io1-f69.google.com ([209.85.166.69]:38680 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229639AbhBPUs5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 15:48:57 -0500
-Received: by mail-io1-f69.google.com with SMTP id a12so10101502ioe.5
-        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 12:48:41 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=orIsO18CBWkBi5Y2F5JsHw46nBBVv5ticc9570jrqkk=;
-        b=P2bjyMx0k+cZ0vtqwZXBC4RGA0WK6lzF5T/gQ425gm4LTw5RLAnfH0W3hsCA6wkUAU
-         9buVgpiER+w6r9esDDsrWCqZJV79XUBva6nRlANQbOnHPC61Y52lK8ouiywkF0D0uIM+
-         NV76LCMXhheZ5ZvGT6k53NcOEQBy4X6tXu+nT+VnE8AL3KSy7iK2di/mFDjcVY9oDtY5
-         e/2jf0RNXOHq5zkalFk2BUOVl4yyCfXfVTmRGyMLWPK1vSnuzjENmk5Baoq5Dvs3ANtI
-         WRqPUUAvPT04zsQiuS1eRcqchzN1jNUk8l4GupcqfEhdRnMBEytCP2hkWn1MRfzeSQwq
-         gMJg==
-X-Gm-Message-State: AOAM5320WP7xvU/vRuDhLK+2PuRNXbG62pSHpXI7yw+M0z2K0YiRaR5s
-        QHSxZXEju/d8NAmVmVDHx3rYMPMbHLkxiu9/hEf+Vw6ftbhn
-X-Google-Smtp-Source: ABdhPJxoa12ysxlcKMrhxXk/Xm0ca45D5S8Su+qSybPj9wnp7NIjytadqFiYLzY9TqI0rTIYLHU/+Eavnk/HihXdbdZotkS/wMfr
+        id S230195AbhBPUyx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 15:54:53 -0500
+Received: from mx0d-0054df01.pphosted.com ([67.231.150.19]:13448 "EHLO
+        mx0d-0054df01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229699AbhBPUyt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 15:54:49 -0500
+Received: from pps.filterd (m0209000.ppops.net [127.0.0.1])
+        by mx0c-0054df01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11GKl9Y5020440;
+        Tue, 16 Feb 2021 15:53:52 -0500
+Received: from can01-qb1-obe.outbound.protection.outlook.com (mail-qb1can01lp2052.outbound.protection.outlook.com [104.47.60.52])
+        by mx0c-0054df01.pphosted.com with ESMTP id 36pcj9gycy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 16 Feb 2021 15:53:52 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=f1kYsa5wxoTIXR1lDS3DnUcSEGlYsEg6Y6+lidVveSPc9J3B7Q6Rfgyc0Ua9wCFaE/q4+aSuEUn3CnwICN0KzxTmmfI25HqnLBSrroSSsll2MOS7k1B8uBUbZdPIlNRmxbGOtqwGeR4N6mZ+M7o5P81eDLs+p6t28CRaT0OYl4XP7idB6I52Lx65okiyncsBF0cZ4YYZjeQKDkGI0MavG3MocC0I7RO9ZXAamlZ5h48qG9uq9l1uv8Uv8FtNmPo/64F3tIKcnSOf5JgVNXd5EDE+u9toLYYflGT3CO9PYItMWNSN89GaZkGmmpg+nO6cjI14IgXQyF9GPht3DZKzUQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9BZv0wW1PlXrtAoG9v1sbTv/a5AZkGw98yAukYU/SIk=;
+ b=OZLzIm4YJJNaKYr+4eBY/ScOm+Z0jsqHgRL+JusjdLoXhEE6ot3BHk3Wk4vSNiT+L8n5oDFdaRSrrCTIW3lRrmlzbY5cMpnklDeOJy7sGYcQ5vsjh1jEssQJI4QikFPnQ2DJA5HLZg1joyQvMA+6r4volNBOeduHjHV2G5nsi3Z468lVxB4/2xQFfhYgtvjRRv2cYLtqQYkxXgHHmJwt3or4XNrh8mUVQ5ivj5SIg8qR/sx9uDqHmKd/e3gj+/gseSchgGUL0RZaA1oN42f+hJrVM2Jl/B1c/qR14urBHb4rwmq+drjMqBEKcz7bB3LQmJ/HWo7Rmb3U0JPayOfp9Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=calian.com; dmarc=pass action=none header.from=calian.com;
+ dkim=pass header.d=calian.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=calian.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9BZv0wW1PlXrtAoG9v1sbTv/a5AZkGw98yAukYU/SIk=;
+ b=O0suhrvEA0mwZ2OWm1bB1DeC5HNE0WhxNK7S+2+3XM1Bt5HKRuF+u/Yx8lZdQuM7p+D4l3rJvLmyja0/reSL2TS7Q5rCpWIdioodpVjWhPkJIxKTp7VjcGcgujsyvdlGnM5pwrUKkHvKAU12LmZ546y/G31DvSY53Eoa63zP9HE=
+Authentication-Results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=calian.com;
+Received: from YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:f::20)
+ by YTBPR01MB3118.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:1a::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.39; Tue, 16 Feb
+ 2021 20:53:51 +0000
+Received: from YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
+ ([fe80::3172:da27:cec8:e96]) by YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
+ ([fe80::3172:da27:cec8:e96%7]) with mapi id 15.20.3846.038; Tue, 16 Feb 2021
+ 20:53:51 +0000
+From:   Robert Hancock <robert.hancock@calian.com>
+To:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux@armlinux.org.uk, netdev@vger.kernel.org,
+        Robert Hancock <robert.hancock@calian.com>
+Subject: [PATCH net-next v2] net: phy: marvell: Ensure SGMII auto-negotiation is enabled for 88E1111
+Date:   Tue, 16 Feb 2021 14:53:30 -0600
+Message-Id: <20210216205330.2803064-1-robert.hancock@calian.com>
+X-Mailer: git-send-email 2.27.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [204.83.154.189]
+X-ClientProxiedBy: YT1PR01CA0045.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:2e::14) To YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:f::20)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:35a3:: with SMTP id v35mr22065226jal.36.1613508495810;
- Tue, 16 Feb 2021 12:48:15 -0800 (PST)
-Date:   Tue, 16 Feb 2021 12:48:15 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000bc239f05bb7a38aa@google.com>
-Subject: possible deadlock in skb_queue_tail (2)
-From:   syzbot <syzbot+67791dce9282c8bedfd1@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, ktkhai@virtuozzo.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
-        tklauser@distanz.ch
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (204.83.154.189) by YT1PR01CA0045.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:2e::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.38 via Frontend Transport; Tue, 16 Feb 2021 20:53:50 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 40c151e5-8cfc-4906-aee5-08d8d2bcf6ee
+X-MS-TrafficTypeDiagnostic: YTBPR01MB3118:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <YTBPR01MB31180F5CAA67527975E408CFEC879@YTBPR01MB3118.CANPRD01.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2657;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Yb+3e5vhYkYclZ1xV3bdlqXRrJ0RrINYA9AC5ZFwMb4RDVXEGnAyGvz5oXkzoc2TP4tqksc8VeqGQI2UuZlz0g1VgNbby8RjLHY5ZoVy6I0ezKkIxba0GTn2StSSL0F7qOJrIH+++ZDP396CiUxoLiKnrC0XM5OX3U/J+muFUrUEbthNVZTrZCo+/IiHTe5TdiFp4PXTt3DpjJYQf+Icixd0JxmE8far5UywcT3VwkHXFRcpLx7kBQswEh+HkZfWYYFjRDXZo8l1PoXe2kfC7iwceXvp/1I/tDgY+TRea1hFBFK7KGhUnz+OWCzqXEZbrIS1cXdueZij7gbkRR/8kLCN9TblMUvK9iG1oosINDWdM43zuBzYKc3MoxHYBJfou/Gq9J4z6sBirSnuAOa5JMeIwrEpFxs2pL2OQP/yHYUPxjVWrPZLHV4Zv8vamJHyqNKc2HoGWMd4VohNgXP6qDdlmTBzRNstPPiNrhiXnkvhp7V8qmm7IkB27D3MQE6FmySWWbeTExt42+KRgjHkWHpZ5/hZrPkDSXjyVmE0pdz1a/iWUSL4v7YC3a/G7G+s65S62wts3Clqy4Ly4ojbNw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(346002)(136003)(366004)(376002)(39850400004)(396003)(6486002)(186003)(52116002)(44832011)(6506007)(8676002)(26005)(5660300002)(478600001)(2906002)(8936002)(16526019)(4326008)(66476007)(107886003)(66946007)(1076003)(86362001)(66556008)(69590400012)(316002)(6666004)(6512007)(956004)(36756003)(83380400001)(2616005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?Ze3/MABufqR5nIHCViOQWrMS51mEZOm+oJfKWv18HWLnEiIoMyWfmFWNUwds?=
+ =?us-ascii?Q?wkIy501C7H5WgBrG+Ag0irmwdONGzqnPw8WuqZUUlTvx2E1V4pvlZ8PWTPSM?=
+ =?us-ascii?Q?rWSyVLNnj8+hbfJSuqTbeER4UugoZaORlMGqvD6EEoaaCxMd5+kbLwHhcdeJ?=
+ =?us-ascii?Q?8OqJJG4cEbLq6wuT0xdJGPNiOx85yV8qEUPNPkcHZn+fsoEbabq8eXkqZ6hz?=
+ =?us-ascii?Q?xhKdnday0usa8+ewbaMeoIbe9gvTyQLWXreZWdjzS/8H6cZ1L/2/MKtIWsHq?=
+ =?us-ascii?Q?Za7rpY+B8uxR96WPUyFIkHmX64SN82kBu9qCBz88/GjsYdnpbh0Vgum7qeMk?=
+ =?us-ascii?Q?+hwfZxTXVu7NseGZkrSt4cKZxmYK6bqy3aGljko+B7ELTx2S2/FBTia1z8sN?=
+ =?us-ascii?Q?EOaArGH9ibmrU9DOILRcIOsGvGeuw+xzE+RrlQlz588ixwcbr67IC2rdH5tt?=
+ =?us-ascii?Q?5lLrD0HIrQkhcA68m6uJuka1ibXKAhtdCiW8DHslRRVHpt/YTj+7rXXH7oF5?=
+ =?us-ascii?Q?l9wLKcrMYtHkgXoJ+easp5k57xuWV0q20EAeQJoxspiFN/myxbeJ5nn6M/38?=
+ =?us-ascii?Q?21ht7GcryF5n5kiFSLIiN73Gkbp4V+UEnlEJWHbXVY+7BMYqHIigVoext00Y?=
+ =?us-ascii?Q?u/Rj7hW68AIDRFF6CMb9uhxlB9IOXEDsf7rvI00HxUq4FcXOEW8DKQiDgv7T?=
+ =?us-ascii?Q?olEd8l/eRR8lIMh1F2LUjrowBSlYbByBmY1FlWGU8bn0aR2p50X6OWuFolnm?=
+ =?us-ascii?Q?0zo6lypa83/DeXOVDO0j4vMwO3S5nXlxAEGEY4u08LmcYbGyP75cZ2TUwnem?=
+ =?us-ascii?Q?MwDobCZGx3jFP5ifRDgOHdDj4vZCviyKjdnCthc+1KCsb6kr+pvbH05Sr80E?=
+ =?us-ascii?Q?SdZdcGfTG0ULWu1ZUvBvQryRGz4jmgDQXlMXpsAJr3t2zVCDUPIoqBeFv/AY?=
+ =?us-ascii?Q?DxhUbLirink5dKuwYlPMl2pjrFqY+fqjQ8zqJAv0opftGhIu16eWRpJJ4qPB?=
+ =?us-ascii?Q?9CUmbQKiT6b7W+EaLsGgdsJo9bDsuxdIbIomlluhbR5T7T6S9qLJE7ouHXb9?=
+ =?us-ascii?Q?0T9dsiabrdG54GmpOsbevhN9K26atg/dCWjua8EjEtPWA/gkzZzGDK/zMEGL?=
+ =?us-ascii?Q?fV9CA65wnwprzXApaLknaxKd8n/JQPGx+hzgLR8NJU5MOQEJccDB7vw89ER+?=
+ =?us-ascii?Q?TbzRAtoqOjrLx75zljI+zY2C8NPJIQGMRiua7Uh0F7SlvsnBelRexwAMcNY7?=
+ =?us-ascii?Q?5ViClq9gFfSx7YDJXqdEuEui1uj89yD8Eoi4EDkTnm7HAzTl/K8NIJY5iHLb?=
+ =?us-ascii?Q?ZJmqE6fny2ADgnvL7A4W9FMe?=
+X-OriginatorOrg: calian.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 40c151e5-8cfc-4906-aee5-08d8d2bcf6ee
+X-MS-Exchange-CrossTenant-AuthSource: YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2021 20:53:51.2806
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 23b57807-562f-49ad-92c4-3bb0f07a1fdf
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: QChAd6mUuoagl30DTWakEdrVfu38EwX2gBZTSTTQaRO+Dn6DVY4e1rcTl9n/RkhwmTb8TApRWrWe6JhtRFU0VC+4KEvoPgJtv7RTEalZ7Bo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: YTBPR01MB3118
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-02-16_09:2021-02-16,2021-02-16 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ adultscore=0 mlxlogscore=999 spamscore=0 suspectscore=0 bulkscore=0
+ impostorscore=0 clxscore=1015 phishscore=0 mlxscore=0 malwarescore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2102160169
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+When 88E1111 is operating in SGMII mode, auto-negotiation should be enabled
+on the SGMII side so that the link will come up properly with PCSes which
+normally have auto-negotiation enabled. This is normally the case when the
+PHY defaults to SGMII mode at power-up, however if we switched it from some
+other mode like 1000Base-X, as may happen in some SFP module situations,
+it may not be, particularly for modules which have 1000Base-X
+auto-negotiation defaulting to disabled.
 
-syzbot found the following issue on:
+Call genphy_check_and_restart_aneg on the fiber page to ensure that auto-
+negotiation is properly enabled on the SGMII interface.
 
-HEAD commit:    dcc0b490 Merge tag 'powerpc-5.11-8' of git://git.kernel.or..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=11a2fe9cd00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=8cb23303ddb9411f
-dashboard link: https://syzkaller.appspot.com/bug?extid=67791dce9282c8bedfd1
-userspace arch: i386
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+67791dce9282c8bedfd1@syzkaller.appspotmail.com
-
-======================================================
-WARNING: possible circular locking dependency detected
-5.11.0-rc7-syzkaller #0 Not tainted
-------------------------------------------------------
-syz-executor.0/13111 is trying to acquire lock:
-ffff888012d36e60 (rlock-AF_UNIX){+.+.}-{2:2}, at: skb_queue_tail+0x21/0x140 net/core/skbuff.c:3161
-
-but task is already holding lock:
-ffff888012d372a8 (&u->lock/1){+.+.}-{2:2}, at: unix_state_double_lock net/unix/af_unix.c:1108 [inline]
-ffff888012d372a8 (&u->lock/1){+.+.}-{2:2}, at: unix_state_double_lock+0x77/0xa0 net/unix/af_unix.c:1100
-
-which lock already depends on the new lock.
-
-
-the existing dependency chain (in reverse order) is:
-
--> #1 (&u->lock/1){+.+.}-{2:2}:
-       _raw_spin_lock_nested+0x30/0x40 kernel/locking/spinlock.c:361
-       sk_diag_dump_icons net/unix/diag.c:86 [inline]
-       sk_diag_fill+0xaaf/0x10d0 net/unix/diag.c:154
-       sk_diag_dump net/unix/diag.c:192 [inline]
-       unix_diag_dump+0x399/0x590 net/unix/diag.c:220
-       netlink_dump+0x4b9/0xb70 net/netlink/af_netlink.c:2268
-       __netlink_dump_start+0x642/0x900 net/netlink/af_netlink.c:2373
-       netlink_dump_start include/linux/netlink.h:256 [inline]
-       unix_diag_handler_dump+0x411/0x7d0 net/unix/diag.c:321
-       __sock_diag_cmd net/core/sock_diag.c:234 [inline]
-       sock_diag_rcv_msg+0x31a/0x440 net/core/sock_diag.c:265
-       netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
-       sock_diag_rcv+0x26/0x40 net/core/sock_diag.c:276
-       netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
-       netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
-       netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
-       sock_sendmsg_nosec net/socket.c:652 [inline]
-       sock_sendmsg+0xcf/0x120 net/socket.c:672
-       sock_write_iter+0x289/0x3c0 net/socket.c:999
-       call_write_iter include/linux/fs.h:1901 [inline]
-       new_sync_write+0x426/0x650 fs/read_write.c:518
-       vfs_write+0x791/0xa30 fs/read_write.c:605
-       ksys_write+0x1ee/0x250 fs/read_write.c:658
-       do_syscall_32_irqs_on arch/x86/entry/common.c:77 [inline]
-       __do_fast_syscall_32+0x56/0x80 arch/x86/entry/common.c:139
-       do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:164
-       entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
-
--> #0 (rlock-AF_UNIX){+.+.}-{2:2}:
-       check_prev_add kernel/locking/lockdep.c:2868 [inline]
-       check_prevs_add kernel/locking/lockdep.c:2993 [inline]
-       validate_chain kernel/locking/lockdep.c:3608 [inline]
-       __lock_acquire+0x2b26/0x54f0 kernel/locking/lockdep.c:4832
-       lock_acquire kernel/locking/lockdep.c:5442 [inline]
-       lock_acquire+0x1a8/0x720 kernel/locking/lockdep.c:5407
-       __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
-       _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:159
-       skb_queue_tail+0x21/0x140 net/core/skbuff.c:3161
-       unix_dgram_sendmsg+0xfb2/0x1a80 net/unix/af_unix.c:1797
-       sock_sendmsg_nosec net/socket.c:652 [inline]
-       sock_sendmsg+0xcf/0x120 net/socket.c:672
-       ____sys_sendmsg+0x331/0x810 net/socket.c:2345
-       ___sys_sendmsg+0xf3/0x170 net/socket.c:2399
-       __sys_sendmmsg+0x292/0x470 net/socket.c:2482
-       __compat_sys_sendmmsg net/compat.c:361 [inline]
-       __do_compat_sys_sendmmsg net/compat.c:368 [inline]
-       __se_compat_sys_sendmmsg net/compat.c:365 [inline]
-       __ia32_compat_sys_sendmmsg+0x9b/0x100 net/compat.c:365
-       do_syscall_32_irqs_on arch/x86/entry/common.c:77 [inline]
-       __do_fast_syscall_32+0x56/0x80 arch/x86/entry/common.c:139
-       do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:164
-       entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
-
-other info that might help us debug this:
-
- Possible unsafe locking scenario:
-
-       CPU0                    CPU1
-       ----                    ----
-  lock(&u->lock/1);
-                               lock(rlock-AF_UNIX);
-                               lock(&u->lock/1);
-  lock(rlock-AF_UNIX);
-
- *** DEADLOCK ***
-
-1 lock held by syz-executor.0/13111:
- #0: ffff888012d372a8 (&u->lock/1){+.+.}-{2:2}, at: unix_state_double_lock net/unix/af_unix.c:1108 [inline]
- #0: ffff888012d372a8 (&u->lock/1){+.+.}-{2:2}, at: unix_state_double_lock+0x77/0xa0 net/unix/af_unix.c:1100
-
-stack backtrace:
-CPU: 1 PID: 13111 Comm: syz-executor.0 Not tainted 5.11.0-rc7-syzkaller #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x107/0x163 lib/dump_stack.c:120
- check_noncircular+0x25f/0x2e0 kernel/locking/lockdep.c:2117
- check_prev_add kernel/locking/lockdep.c:2868 [inline]
- check_prevs_add kernel/locking/lockdep.c:2993 [inline]
- validate_chain kernel/locking/lockdep.c:3608 [inline]
- __lock_acquire+0x2b26/0x54f0 kernel/locking/lockdep.c:4832
- lock_acquire kernel/locking/lockdep.c:5442 [inline]
- lock_acquire+0x1a8/0x720 kernel/locking/lockdep.c:5407
- __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
- _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:159
- skb_queue_tail+0x21/0x140 net/core/skbuff.c:3161
- unix_dgram_sendmsg+0xfb2/0x1a80 net/unix/af_unix.c:1797
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x331/0x810 net/socket.c:2345
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2399
- __sys_sendmmsg+0x292/0x470 net/socket.c:2482
- __compat_sys_sendmmsg net/compat.c:361 [inline]
- __do_compat_sys_sendmmsg net/compat.c:368 [inline]
- __se_compat_sys_sendmmsg net/compat.c:365 [inline]
- __ia32_compat_sys_sendmmsg+0x9b/0x100 net/compat.c:365
- do_syscall_32_irqs_on arch/x86/entry/common.c:77 [inline]
- __do_fast_syscall_32+0x56/0x80 arch/x86/entry/common.c:139
- do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:164
- entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
-RIP: 0023:0xf7f6f549
-Code: 03 74 c0 01 10 05 03 74 b8 01 10 06 03 74 b4 01 10 07 03 74 b0 01 10 08 03 74 d8 01 00 00 00 00 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 8d b4 26 00 00 00 00 8d b4 26 00 00 00 00
-RSP: 002b:00000000f55485fc EFLAGS: 00000296 ORIG_RAX: 0000000000000159
-RAX: ffffffffffffffda RBX: 0000000000000004 RCX: 00000000200bd000
-RDX: 0000000024924c31 RSI: 000000000004ffe0 RDI: 0000000000000000
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-
-
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Changed since v1: Fixed typo and added more explanation in commit message
+
+ drivers/net/phy/marvell.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+index 3238d0fbf437..e26a5d663f8a 100644
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -684,16 +684,19 @@ static int m88e1111_config_aneg(struct phy_device *phydev)
+ 	if (err < 0)
+ 		goto error;
+ 
+-	/* Do not touch the fiber page if we're in copper->sgmii mode */
+-	if (phydev->interface == PHY_INTERFACE_MODE_SGMII)
+-		return 0;
+-
+ 	/* Then the fiber link */
+ 	err = marvell_set_page(phydev, MII_MARVELL_FIBER_PAGE);
+ 	if (err < 0)
+ 		goto error;
+ 
+-	err = marvell_config_aneg_fiber(phydev);
++	if (phydev->interface == PHY_INTERFACE_MODE_SGMII)
++		/* Do not touch the fiber advertisement if we're in copper->sgmii mode.
++		 * Just ensure that SGMII-side autonegotiation is enabled.
++		 * If we switched from some other mode to SGMII it may not be.
++		 */
++		err = genphy_check_and_restart_aneg(phydev, false);
++	else
++		err = marvell_config_aneg_fiber(phydev);
+ 	if (err < 0)
+ 		goto error;
+ 
+-- 
+2.27.0
+
