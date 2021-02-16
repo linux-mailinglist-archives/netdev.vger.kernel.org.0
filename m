@@ -2,169 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90AB331D1C8
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 21:55:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F66F31D1D0
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 22:01:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230195AbhBPUyx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 15:54:53 -0500
-Received: from mx0d-0054df01.pphosted.com ([67.231.150.19]:13448 "EHLO
-        mx0d-0054df01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229699AbhBPUyt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 15:54:49 -0500
-Received: from pps.filterd (m0209000.ppops.net [127.0.0.1])
-        by mx0c-0054df01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11GKl9Y5020440;
-        Tue, 16 Feb 2021 15:53:52 -0500
-Received: from can01-qb1-obe.outbound.protection.outlook.com (mail-qb1can01lp2052.outbound.protection.outlook.com [104.47.60.52])
-        by mx0c-0054df01.pphosted.com with ESMTP id 36pcj9gycy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 16 Feb 2021 15:53:52 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=f1kYsa5wxoTIXR1lDS3DnUcSEGlYsEg6Y6+lidVveSPc9J3B7Q6Rfgyc0Ua9wCFaE/q4+aSuEUn3CnwICN0KzxTmmfI25HqnLBSrroSSsll2MOS7k1B8uBUbZdPIlNRmxbGOtqwGeR4N6mZ+M7o5P81eDLs+p6t28CRaT0OYl4XP7idB6I52Lx65okiyncsBF0cZ4YYZjeQKDkGI0MavG3MocC0I7RO9ZXAamlZ5h48qG9uq9l1uv8Uv8FtNmPo/64F3tIKcnSOf5JgVNXd5EDE+u9toLYYflGT3CO9PYItMWNSN89GaZkGmmpg+nO6cjI14IgXQyF9GPht3DZKzUQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9BZv0wW1PlXrtAoG9v1sbTv/a5AZkGw98yAukYU/SIk=;
- b=OZLzIm4YJJNaKYr+4eBY/ScOm+Z0jsqHgRL+JusjdLoXhEE6ot3BHk3Wk4vSNiT+L8n5oDFdaRSrrCTIW3lRrmlzbY5cMpnklDeOJy7sGYcQ5vsjh1jEssQJI4QikFPnQ2DJA5HLZg1joyQvMA+6r4volNBOeduHjHV2G5nsi3Z468lVxB4/2xQFfhYgtvjRRv2cYLtqQYkxXgHHmJwt3or4XNrh8mUVQ5ivj5SIg8qR/sx9uDqHmKd/e3gj+/gseSchgGUL0RZaA1oN42f+hJrVM2Jl/B1c/qR14urBHb4rwmq+drjMqBEKcz7bB3LQmJ/HWo7Rmb3U0JPayOfp9Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=calian.com; dmarc=pass action=none header.from=calian.com;
- dkim=pass header.d=calian.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=calian.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9BZv0wW1PlXrtAoG9v1sbTv/a5AZkGw98yAukYU/SIk=;
- b=O0suhrvEA0mwZ2OWm1bB1DeC5HNE0WhxNK7S+2+3XM1Bt5HKRuF+u/Yx8lZdQuM7p+D4l3rJvLmyja0/reSL2TS7Q5rCpWIdioodpVjWhPkJIxKTp7VjcGcgujsyvdlGnM5pwrUKkHvKAU12LmZ546y/G31DvSY53Eoa63zP9HE=
-Authentication-Results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=calian.com;
-Received: from YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:f::20)
- by YTBPR01MB3118.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:1a::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.39; Tue, 16 Feb
- 2021 20:53:51 +0000
-Received: from YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
- ([fe80::3172:da27:cec8:e96]) by YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
- ([fe80::3172:da27:cec8:e96%7]) with mapi id 15.20.3846.038; Tue, 16 Feb 2021
- 20:53:51 +0000
-From:   Robert Hancock <robert.hancock@calian.com>
-To:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux@armlinux.org.uk, netdev@vger.kernel.org,
-        Robert Hancock <robert.hancock@calian.com>
-Subject: [PATCH net-next v2] net: phy: marvell: Ensure SGMII auto-negotiation is enabled for 88E1111
-Date:   Tue, 16 Feb 2021 14:53:30 -0600
-Message-Id: <20210216205330.2803064-1-robert.hancock@calian.com>
-X-Mailer: git-send-email 2.27.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [204.83.154.189]
-X-ClientProxiedBy: YT1PR01CA0045.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:2e::14) To YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:f::20)
+        id S230207AbhBPVBS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 16:01:18 -0500
+Received: from mga02.intel.com ([134.134.136.20]:60934 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230006AbhBPVBQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Feb 2021 16:01:16 -0500
+IronPort-SDR: gW2YK0SGRw0EpKHc58tVgqRIcxmrcXI03u22xzV0yZypdFH3qxAefiVlAAXESMt0fMXtgC68/S
+ bHV5PyNupd9Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9897"; a="170147223"
+X-IronPort-AV: E=Sophos;i="5.81,184,1610438400"; 
+   d="scan'208";a="170147223"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2021 13:00:18 -0800
+IronPort-SDR: muZsDZoAd4qEyKOSu/IiBK0dYT3VV9sOe0GNsSA7H+8yZ4WVOGv9lqPWZMYor0NncycU4HquUU
+ bqJHDWlklXog==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,184,1610438400"; 
+   d="scan'208";a="384810321"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by fmsmga008.fm.intel.com with ESMTP; 16 Feb 2021 13:00:15 -0800
+Date:   Tue, 16 Feb 2021 21:50:21 +0100
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        daniel@iogearbox.net, ast@kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, andrii@kernel.org,
+        magnus.karlsson@intel.com, ciara.loftus@intel.com
+Subject: Re: [PATCH bpf-next 1/3] libbpf: xsk: use bpf_link
+Message-ID: <20210216205021.GC17126@ranger.igk.intel.com>
+References: <20210215154638.4627-1-maciej.fijalkowski@intel.com>
+ <20210215154638.4627-2-maciej.fijalkowski@intel.com>
+ <602ade57ddb9c_3ed41208a1@john-XPS-13-9370.notmuch>
+ <4a52d09a-363b-e69e-41d3-7918f0204901@intel.com>
+ <87mtw4b8k3.fsf@toke.dk>
+ <602c19dd5b1c2_6b719208e6@john-XPS-13-9370.notmuch>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (204.83.154.189) by YT1PR01CA0045.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:2e::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.38 via Frontend Transport; Tue, 16 Feb 2021 20:53:50 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 40c151e5-8cfc-4906-aee5-08d8d2bcf6ee
-X-MS-TrafficTypeDiagnostic: YTBPR01MB3118:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <YTBPR01MB31180F5CAA67527975E408CFEC879@YTBPR01MB3118.CANPRD01.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2657;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Yb+3e5vhYkYclZ1xV3bdlqXRrJ0RrINYA9AC5ZFwMb4RDVXEGnAyGvz5oXkzoc2TP4tqksc8VeqGQI2UuZlz0g1VgNbby8RjLHY5ZoVy6I0ezKkIxba0GTn2StSSL0F7qOJrIH+++ZDP396CiUxoLiKnrC0XM5OX3U/J+muFUrUEbthNVZTrZCo+/IiHTe5TdiFp4PXTt3DpjJYQf+Icixd0JxmE8far5UywcT3VwkHXFRcpLx7kBQswEh+HkZfWYYFjRDXZo8l1PoXe2kfC7iwceXvp/1I/tDgY+TRea1hFBFK7KGhUnz+OWCzqXEZbrIS1cXdueZij7gbkRR/8kLCN9TblMUvK9iG1oosINDWdM43zuBzYKc3MoxHYBJfou/Gq9J4z6sBirSnuAOa5JMeIwrEpFxs2pL2OQP/yHYUPxjVWrPZLHV4Zv8vamJHyqNKc2HoGWMd4VohNgXP6qDdlmTBzRNstPPiNrhiXnkvhp7V8qmm7IkB27D3MQE6FmySWWbeTExt42+KRgjHkWHpZ5/hZrPkDSXjyVmE0pdz1a/iWUSL4v7YC3a/G7G+s65S62wts3Clqy4Ly4ojbNw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(346002)(136003)(366004)(376002)(39850400004)(396003)(6486002)(186003)(52116002)(44832011)(6506007)(8676002)(26005)(5660300002)(478600001)(2906002)(8936002)(16526019)(4326008)(66476007)(107886003)(66946007)(1076003)(86362001)(66556008)(69590400012)(316002)(6666004)(6512007)(956004)(36756003)(83380400001)(2616005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?Ze3/MABufqR5nIHCViOQWrMS51mEZOm+oJfKWv18HWLnEiIoMyWfmFWNUwds?=
- =?us-ascii?Q?wkIy501C7H5WgBrG+Ag0irmwdONGzqnPw8WuqZUUlTvx2E1V4pvlZ8PWTPSM?=
- =?us-ascii?Q?rWSyVLNnj8+hbfJSuqTbeER4UugoZaORlMGqvD6EEoaaCxMd5+kbLwHhcdeJ?=
- =?us-ascii?Q?8OqJJG4cEbLq6wuT0xdJGPNiOx85yV8qEUPNPkcHZn+fsoEbabq8eXkqZ6hz?=
- =?us-ascii?Q?xhKdnday0usa8+ewbaMeoIbe9gvTyQLWXreZWdjzS/8H6cZ1L/2/MKtIWsHq?=
- =?us-ascii?Q?Za7rpY+B8uxR96WPUyFIkHmX64SN82kBu9qCBz88/GjsYdnpbh0Vgum7qeMk?=
- =?us-ascii?Q?+hwfZxTXVu7NseGZkrSt4cKZxmYK6bqy3aGljko+B7ELTx2S2/FBTia1z8sN?=
- =?us-ascii?Q?EOaArGH9ibmrU9DOILRcIOsGvGeuw+xzE+RrlQlz588ixwcbr67IC2rdH5tt?=
- =?us-ascii?Q?5lLrD0HIrQkhcA68m6uJuka1ibXKAhtdCiW8DHslRRVHpt/YTj+7rXXH7oF5?=
- =?us-ascii?Q?l9wLKcrMYtHkgXoJ+easp5k57xuWV0q20EAeQJoxspiFN/myxbeJ5nn6M/38?=
- =?us-ascii?Q?21ht7GcryF5n5kiFSLIiN73Gkbp4V+UEnlEJWHbXVY+7BMYqHIigVoext00Y?=
- =?us-ascii?Q?u/Rj7hW68AIDRFF6CMb9uhxlB9IOXEDsf7rvI00HxUq4FcXOEW8DKQiDgv7T?=
- =?us-ascii?Q?olEd8l/eRR8lIMh1F2LUjrowBSlYbByBmY1FlWGU8bn0aR2p50X6OWuFolnm?=
- =?us-ascii?Q?0zo6lypa83/DeXOVDO0j4vMwO3S5nXlxAEGEY4u08LmcYbGyP75cZ2TUwnem?=
- =?us-ascii?Q?MwDobCZGx3jFP5ifRDgOHdDj4vZCviyKjdnCthc+1KCsb6kr+pvbH05Sr80E?=
- =?us-ascii?Q?SdZdcGfTG0ULWu1ZUvBvQryRGz4jmgDQXlMXpsAJr3t2zVCDUPIoqBeFv/AY?=
- =?us-ascii?Q?DxhUbLirink5dKuwYlPMl2pjrFqY+fqjQ8zqJAv0opftGhIu16eWRpJJ4qPB?=
- =?us-ascii?Q?9CUmbQKiT6b7W+EaLsGgdsJo9bDsuxdIbIomlluhbR5T7T6S9qLJE7ouHXb9?=
- =?us-ascii?Q?0T9dsiabrdG54GmpOsbevhN9K26atg/dCWjua8EjEtPWA/gkzZzGDK/zMEGL?=
- =?us-ascii?Q?fV9CA65wnwprzXApaLknaxKd8n/JQPGx+hzgLR8NJU5MOQEJccDB7vw89ER+?=
- =?us-ascii?Q?TbzRAtoqOjrLx75zljI+zY2C8NPJIQGMRiua7Uh0F7SlvsnBelRexwAMcNY7?=
- =?us-ascii?Q?5ViClq9gFfSx7YDJXqdEuEui1uj89yD8Eoi4EDkTnm7HAzTl/K8NIJY5iHLb?=
- =?us-ascii?Q?ZJmqE6fny2ADgnvL7A4W9FMe?=
-X-OriginatorOrg: calian.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 40c151e5-8cfc-4906-aee5-08d8d2bcf6ee
-X-MS-Exchange-CrossTenant-AuthSource: YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2021 20:53:51.2806
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 23b57807-562f-49ad-92c4-3bb0f07a1fdf
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QChAd6mUuoagl30DTWakEdrVfu38EwX2gBZTSTTQaRO+Dn6DVY4e1rcTl9n/RkhwmTb8TApRWrWe6JhtRFU0VC+4KEvoPgJtv7RTEalZ7Bo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: YTBPR01MB3118
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-02-16_09:2021-02-16,2021-02-16 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- adultscore=0 mlxlogscore=999 spamscore=0 suspectscore=0 bulkscore=0
- impostorscore=0 clxscore=1015 phishscore=0 mlxscore=0 malwarescore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102160169
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <602c19dd5b1c2_6b719208e6@john-XPS-13-9370.notmuch>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When 88E1111 is operating in SGMII mode, auto-negotiation should be enabled
-on the SGMII side so that the link will come up properly with PCSes which
-normally have auto-negotiation enabled. This is normally the case when the
-PHY defaults to SGMII mode at power-up, however if we switched it from some
-other mode like 1000Base-X, as may happen in some SFP module situations,
-it may not be, particularly for modules which have 1000Base-X
-auto-negotiation defaulting to disabled.
+On Tue, Feb 16, 2021 at 11:15:41AM -0800, John Fastabend wrote:
+> Toke Høiland-Jørgensen wrote:
+> > Björn Töpel <bjorn.topel@intel.com> writes:
+> > 
+> > > On 2021-02-15 21:49, John Fastabend wrote:
+> > >> Maciej Fijalkowski wrote:
+> > >>> Currently, if there are multiple xdpsock instances running on a single
+> > >>> interface and in case one of the instances is terminated, the rest of
+> > >>> them are left in an inoperable state due to the fact of unloaded XDP
+> > >>> prog from interface.
+> > >>>
+> > >>> To address that, step away from setting bpf prog in favour of bpf_link.
+> > >>> This means that refcounting of BPF resources will be done automatically
+> > >>> by bpf_link itself.
+> > >>>
+> > >>> When setting up BPF resources during xsk socket creation, check whether
+> > >>> bpf_link for a given ifindex already exists via set of calls to
+> > >>> bpf_link_get_next_id -> bpf_link_get_fd_by_id -> bpf_obj_get_info_by_fd
+> > >>> and comparing the ifindexes from bpf_link and xsk socket.
+> > >>>
+> > >>> If there's no bpf_link yet, create one for a given XDP prog and unload
+> > >>> explicitly existing prog if XDP_FLAGS_UPDATE_IF_NOEXIST is not set.
+> > >>>
+> > >>> If bpf_link is already at a given ifindex and underlying program is not
+> > >>> AF-XDP one, bail out or update the bpf_link's prog given the presence of
+> > >>> XDP_FLAGS_UPDATE_IF_NOEXIST.
+> > >>>
+> > >>> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> > >>> ---
+> 
+> [...]
+> 
+> > >>> -	ctx->prog_fd = prog_fd;
+> > >>> +	link_fd = bpf_link_create(ctx->prog_fd, xsk->ctx->ifindex, BPF_XDP, &opts);
+> > >>> +	if (link_fd < 0) {
+> > >>> +		pr_warn("bpf_link_create failed: %s\n", strerror(errno));
+> > >>> +		return link_fd;
+> > >>> +	}
+> > >>> +
+> > >> 
+> > >> This can leave the system in a bad state where it unloaded the XDP program
+> > >> above, but then failed to create the link. So we should somehow fix that
+> > >> if possible or at minimum put a note somewhere so users can't claim they
+> > >> shouldn't know this.
+> > >> 
+> > >> Also related, its not good for real systems to let XDP program go missing
+> > >> for some period of time. I didn't check but we should make
+> > >> XDP_FLAGS_UPDATE_IF_NOEXIST the default if its not already.
+> > >>
+> > >
+> > > This is the default for XDP sockets library. The
+> > > "bpf_set_link_xdp_fd(...-1)" way is only when a user sets it explicitly.
+> > > One could maybe argue that the "force remove" would be out of scope for
+> > > AF_XDP; Meaning that if an XDP program is running, attached via netlink,
+> > > the AF_XDP library simply cannot remove it. The user would need to rely
+> > > on some other mechanism.
+> > 
+> > Yeah, I'd tend to agree with that. In general, I think the proliferation
+> > of "just force-remove (or override) the running program" in code and
+> > instructions has been a mistake; and application should only really be
+> > adding and removing its own program...
+> > 
+> > -Toke
+> > 
+> 
+> I'll try to consolidate some of my opinions from a couple threads here. It
+> looks to me many of these issues are self-inflicted by the API. We built
+> the API with out the right abstractions or at least different abstractions
+> from the rest of the BPF APIs. Not too surprising seeing the kernel side
+> and user side were all being built up at once.
+> 
+> For example this specific issue where the xsk API also deletes the XDP
+> program seems to be due to merging the xsk with the creation of the XDP
+> programs.
 
-Call genphy_check_and_restart_aneg on the fiber page to ensure that auto-
-negotiation is properly enabled on the SGMII interface.
+IMHO the issue I fixed and that is the topic of those discussions is the
+fact that handling of XDP program for xsk case was not balanced, IOW
+libbpf was creating the prog if it wasn't present whereas app side was
+blindly removing the XDP prog, even if it wasn't aware whether it has
+loaded the prog among with XSKMAP or only attached the xsk socket to
+XSKMAP that already existed.
 
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
----
+> 
+> I'm not a real user of AF_XDP (yet.), but here is how I would expect it
+> to work based on how the sockmap pieces work, which are somewhat similar
+> given they also deal with sockets.
 
-Changed since v1: Fixed typo and added more explanation in commit message
+Don't want to be picky, but I suppose sockmap won't play with ndo_bpf()
+and that's what was bothering us.
 
- drivers/net/phy/marvell.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+> 
+> Program 
+> (1) load and pin an XDP BPF program
+>     - obj = bpf_object__open(prog);
+>     - bpf_object__load_xattr(&attr);
+>     - bpf_program__pin()
+> (2) pin the map, find map_xsk using any of the map APIs
+>     - bpf_map__pin(map_xsk, path_to_pin)
+> (3) attach to XDP
+>     - link = bpf_program__attach_xdp()
+>     - bpf_link__pin()
+> 
+> At this point you have a BPF program loaded, a xsk map, and a link all
+> pinned and ready. And we can add socks using the process found in
+> `enter_xsks_into_map` in the sample. This can be the same program that
+> loaded/pinned the XDP program or some other program it doesn't really
+> matter.
+> 
+>  - create xsk fd
+>       . xsk_umem__create()
+>       . xsk_socket__create
+>  - open map @ pinned path
+>  - bpf_map_update_elem(xsks_map, &key, &fd, 0);
+> 
+> Then it looks like we don't have any conflicts? The XDP program is pinned
+> and exists in its normal scope. The xsk elements can be added/deleted
+> as normal.
 
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index 3238d0fbf437..e26a5d663f8a 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -684,16 +684,19 @@ static int m88e1111_config_aneg(struct phy_device *phydev)
- 	if (err < 0)
- 		goto error;
- 
--	/* Do not touch the fiber page if we're in copper->sgmii mode */
--	if (phydev->interface == PHY_INTERFACE_MODE_SGMII)
--		return 0;
--
- 	/* Then the fiber link */
- 	err = marvell_set_page(phydev, MII_MARVELL_FIBER_PAGE);
- 	if (err < 0)
- 		goto error;
- 
--	err = marvell_config_aneg_fiber(phydev);
-+	if (phydev->interface == PHY_INTERFACE_MODE_SGMII)
-+		/* Do not touch the fiber advertisement if we're in copper->sgmii mode.
-+		 * Just ensure that SGMII-side autonegotiation is enabled.
-+		 * If we switched from some other mode to SGMII it may not be.
-+		 */
-+		err = genphy_check_and_restart_aneg(phydev, false);
-+	else
-+		err = marvell_config_aneg_fiber(phydev);
- 	if (err < 0)
- 		goto error;
- 
--- 
-2.27.0
+The only difference from what you wrote up is the resource pinning, when
+compared to what we currently have + the set I am proposing.
 
+So, if you're saying it looks like we don't have any conflicts and I am
+saying that the flow is what we have, then...? :)
+
+You would have to ask Magnus what was behind the decision to avoid API
+from tools/lib/bpf/libbpf.c but rather directly call underlying functions
+from tools/lib/bpf/bpf.c. Nevertheless, it doesn't really make a big
+difference to me.
+
+> If the XDP program is removed and the map referencing (using
+> normal ref rules) reaches zero its also deleted. Above is more or less
+> the same flow we use for any BPF program so looks good to me.
+
+We have to be a bit more specific around the "XDP program is removed".
+Is it removed from the network interface? That's the thing that we want to
+avoid when there are other xsk sockets active on a given interface.
+
+With bpf_link, XDP prog is removed only when bpf_link's refcount reaches
+zero, via link->ops->release() callback that is invoked from
+bpf_link_put().
+
+And the refcount is updated with each process that attaches/detaches from
+the bpf_link on interface.
+
+> 
+> The trouble seems to pop up when using the higher abstraction APIs
+> xsk_setup_xdp_prog and friends I guess? I just see above as already
+> fairly easy to use and we have good helpers to create the sockets it looks
+> like. Maybe I missed some design considerations. IMO higher level
+> abstractions should go in new libxdp and above should stay in libbpf.
+
+xsk_setup_xdp_prog doesn't really feel like higher level abstraction, as I
+mentioned, to me it has one layer of abstraction peeled off.
+
+> 
+> /rant off ;)
+> 
+> Thanks,
+> John
