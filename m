@@ -2,199 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05E5E31CDE5
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 17:23:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6268931CDE8
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 17:23:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230416AbhBPQVX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 11:21:23 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:16648 "EHLO
+        id S230475AbhBPQW6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 11:22:58 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:16779 "EHLO
         hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230077AbhBPQVT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 11:21:19 -0500
+        with ESMTP id S230073AbhBPQWw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 11:22:52 -0500
 Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B602bf0d50000>; Tue, 16 Feb 2021 08:20:37 -0800
-Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 16 Feb
- 2021 16:20:36 +0000
+        id <B602bf1340000>; Tue, 16 Feb 2021 08:22:12 -0800
+Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL105.nvidia.com
+ (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 16 Feb
+ 2021 16:22:11 +0000
 Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 16 Feb 2021 16:20:34 +0000
-From:   Eli Cohen <elic@nvidia.com>
-To:     <mst@redhat.com>, <jasowang@redhat.com>, <si-wei.liu@oracle.com>,
-        <linux-kernel@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>
-CC:     <elic@nvidia.com>, Parav Pandit <parav@nvidia.com>
-Subject: [PATCH 2/2] vdpa/mlx5: Enable user to add/delete vdpa device
-Date:   Tue, 16 Feb 2021 18:20:29 +0200
-Message-ID: <20210216162029.83637-1-elic@nvidia.com>
-X-Mailer: git-send-email 2.28.0
+ (172.20.187.18) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 16 Feb 2021 16:22:09 +0000
+From:   Vlad Buslov <vladbu@nvidia.com>
+To:     <xiyou.wangcong@gmail.com>,
+        <syzbot+151e3e714d34ae4ce7e8@syzkaller.appspotmail.com>
+CC:     <davem@davemloft.net>, <jhs@mojatatu.com>, <jiri@resnulli.us>,
+        <kuba@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, Vlad Buslov <vladbu@nvidia.com>
+Subject: [PATCH net] net: sched: fix police ext initialization
+Date:   Tue, 16 Feb 2021 18:22:00 +0200
+Message-ID: <20210216162200.1834139-1-vladbu@nvidia.com>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <CAM_iQpVEZiOca0po6N5Hcp67LV98k_PhbEXogCJFjpOR0AbGwg@mail.gmail.com>
+References: <CAM_iQpVEZiOca0po6N5Hcp67LV98k_PhbEXogCJFjpOR0AbGwg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1613492437; bh=DVT9bjkFDc3JSWqhXK/2NCb6cTnrMC5RutdCMqES0Hs=;
-        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-         Content-Transfer-Encoding:Content-Type;
-        b=LT2QJIhnSjQRuc4EqDax3zkHE+adsi2eqCpoPRblV7cj0YgaCYx3JM+rU0ToA5vZz
-         PENEh/CGt7dnySIszTzLv/VkdUyy0RXejpkZ7zn3OrxMhAto2DdIxrkUPP1S/r+Dh2
-         AkR1J0CkyMSdDSTpP+Q8X7tXLWnW46Xposws3+i7CjCdNTU/dFU7Ao3Hmu1JLlLVVE
-         Vy4TQhH6Cw9l7EUekWnYAkXJi/OJMPMNht0/ck/+1i5x2Z1m5GFhdoccpsL12a+Ufs
-         8OEDGw1KJjU77FXlu5Y5umwmKIJ38uAyTeUUl2J7JpX4q9/rRZRYgfhoz3UymSVywI
-         PbBAi9YDkLBGA==
+        t=1613492532; bh=O4R2iwkBYENhxWHFO0GQzJomk+OPK+x88ARSmZpOwDs=;
+        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
+         References:MIME-Version:Content-Transfer-Encoding:Content-Type;
+        b=B/O8c1oTv3rMnCCf4OdFyZ+rj7Af96mIec1wgaRMrXX36BcWmOM3OCKF7SJatBM+X
+         3uSPIIgZE0L9jX1WTPm9LeGUhrlRwHaMi7CNPVMPBnEIW2SUuogXtD0lb7tP8TtEiM
+         WjCEr6z2hDmh7bF7IN/OE0Hk9Q/08Vvqr+HX7L1er7tmgOJafc5UtKCB9Yd6ETeaIK
+         PuN5cv1fNCqobZvnYAlQn4STwI9iW6rJJYpGMhR8beFN8tLDf0GEzGVpINmJEdZXLi
+         2Au7Mv/Ul48yLUgZSQt6nXwwTnBaRfErKqtPS2Zblm6aNpARunAFwTMaif4WUdsYu/
+         HpOf5wGKNPE1A==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allow to control vdpa device creation and destruction using the vdpa
-management tool.
+When police action is created by cls API tcf_exts_validate() first
+conditional that calls tcf_action_init_1() directly, the action idr is not
+updated according to latest changes in action API that require caller to
+commit newly created action to idr with tcf_idr_insert_many(). This results
+such action not being accessible through act API and causes crash reported
+by syzbot:
 
-Examples:
-1. List the management devices
-$ vdpa mgmtdev show
-pci/0000:3b:00.1:
-  supported_classes net
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+BUG: KASAN: null-ptr-deref in instrument_atomic_read include/linux/instrume=
+nted.h:71 [inline]
+BUG: KASAN: null-ptr-deref in atomic_read include/asm-generic/atomic-instru=
+mented.h:27 [inline]
+BUG: KASAN: null-ptr-deref in __tcf_idr_release net/sched/act_api.c:178 [in=
+line]
+BUG: KASAN: null-ptr-deref in tcf_idrinfo_destroy+0x129/0x1d0 net/sched/act=
+_api.c:598
+Read of size 4 at addr 0000000000000010 by task kworker/u4:5/204
 
-2. Create vdpa instance
-$ vdpa dev add mgmtdev pci/0000:3b:00.1 name vdpa0
+CPU: 0 PID: 204 Comm: kworker/u4:5 Not tainted 5.11.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Goo=
+gle 01/01/2011
+Workqueue: netns cleanup_net
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x107/0x163 lib/dump_stack.c:120
+ __kasan_report mm/kasan/report.c:400 [inline]
+ kasan_report.cold+0x5f/0xd5 mm/kasan/report.c:413
+ check_memory_region_inline mm/kasan/generic.c:179 [inline]
+ check_memory_region+0x13d/0x180 mm/kasan/generic.c:185
+ instrument_atomic_read include/linux/instrumented.h:71 [inline]
+ atomic_read include/asm-generic/atomic-instrumented.h:27 [inline]
+ __tcf_idr_release net/sched/act_api.c:178 [inline]
+ tcf_idrinfo_destroy+0x129/0x1d0 net/sched/act_api.c:598
+ tc_action_net_exit include/net/act_api.h:151 [inline]
+ police_exit_net+0x168/0x360 net/sched/act_police.c:390
+ ops_exit_list+0x10d/0x160 net/core/net_namespace.c:190
+ cleanup_net+0x4ea/0xb10 net/core/net_namespace.c:604
+ process_one_work+0x98d/0x15f0 kernel/workqueue.c:2275
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2421
+ kthread+0x3b1/0x4a0 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 0 PID: 204 Comm: kworker/u4:5 Tainted: G    B             5.11.0-rc7-s=
+yzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Goo=
+gle 01/01/2011
+Workqueue: netns cleanup_net
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x107/0x163 lib/dump_stack.c:120
+ panic+0x306/0x73d kernel/panic.c:231
+ end_report+0x58/0x5e mm/kasan/report.c:100
+ __kasan_report mm/kasan/report.c:403 [inline]
+ kasan_report.cold+0x67/0xd5 mm/kasan/report.c:413
+ check_memory_region_inline mm/kasan/generic.c:179 [inline]
+ check_memory_region+0x13d/0x180 mm/kasan/generic.c:185
+ instrument_atomic_read include/linux/instrumented.h:71 [inline]
+ atomic_read include/asm-generic/atomic-instrumented.h:27 [inline]
+ __tcf_idr_release net/sched/act_api.c:178 [inline]
+ tcf_idrinfo_destroy+0x129/0x1d0 net/sched/act_api.c:598
+ tc_action_net_exit include/net/act_api.h:151 [inline]
+ police_exit_net+0x168/0x360 net/sched/act_police.c:390
+ ops_exit_list+0x10d/0x160 net/core/net_namespace.c:190
+ cleanup_net+0x4ea/0xb10 net/core/net_namespace.c:604
+ process_one_work+0x98d/0x15f0 kernel/workqueue.c:2275
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2421
+ kthread+0x3b1/0x4a0 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+Kernel Offset: disabled
 
-3. Show vdpa devices
-$ vdpa dev show
-vdpa0: type network mgmtdev pci/0000:3b:00.1 vendor_id 5555 max_vqs 16 \
-max_vq_size 256
+Fix the issue by calling tcf_idr_insert_many() after successful action
+initialization.
 
-Signed-off-by: Eli Cohen <elic@nvidia.com>
-Reviewed-by: Parav Pandit <parav@nvidia.com>
+Fixes: 0fedc63fadf0 ("net_sched: commit action insertions together")
+Reported-by: syzbot+151e3e714d34ae4ce7e8@syzkaller.appspotmail.com
+Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
 ---
- drivers/vdpa/mlx5/net/mlx5_vnet.c | 76 +++++++++++++++++++++++++++----
- 1 file changed, 67 insertions(+), 9 deletions(-)
+ include/net/act_api.h | 1 +
+ net/sched/act_api.c   | 2 +-
+ net/sched/cls_api.c   | 1 +
+ 3 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5=
-_vnet.c
-index a51b0f86afe2..acf7dc61acb0 100644
---- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-+++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-@@ -1974,23 +1974,32 @@ static void init_mvqs(struct mlx5_vdpa_net *ndev)
- 	}
- }
+diff --git a/include/net/act_api.h b/include/net/act_api.h
+index 55dab604861f..57be7c5d273b 100644
+--- a/include/net/act_api.h
++++ b/include/net/act_api.h
+@@ -166,6 +166,7 @@ int tcf_idr_create_from_flags(struct tc_action_net *tn,=
+ u32 index,
+ 			      struct nlattr *est, struct tc_action **a,
+ 			      const struct tc_action_ops *ops, int bind,
+ 			      u32 flags);
++void tcf_idr_insert_many(struct tc_action *actions[]);
+ void tcf_idr_cleanup(struct tc_action_net *tn, u32 index);
+ int tcf_idr_check_alloc(struct tc_action_net *tn, u32 *index,
+ 			struct tc_action **a, int bind);
+diff --git a/net/sched/act_api.c b/net/sched/act_api.c
+index 2e85b636b27b..ebc8f1413078 100644
+--- a/net/sched/act_api.c
++++ b/net/sched/act_api.c
+@@ -908,7 +908,7 @@ static const struct nla_policy tcf_action_policy[TCA_AC=
+T_MAX + 1] =3D {
+ 	[TCA_ACT_HW_STATS]	=3D NLA_POLICY_BITFIELD32(TCA_ACT_HW_STATS_ANY),
+ };
 =20
--static int mlx5v_probe(struct auxiliary_device *adev,
--		       const struct auxiliary_device_id *id)
-+struct mlx5_vdpa_mgmtdev {
-+	struct vdpa_mgmt_dev mgtdev;
-+	struct mlx5_adev *madev;
-+	struct mlx5_vdpa_net *ndev;
-+};
-+
-+static int mlx5_vdpa_dev_add(struct vdpa_mgmt_dev *v_mdev, const char *nam=
-e)
+-static void tcf_idr_insert_many(struct tc_action *actions[])
++void tcf_idr_insert_many(struct tc_action *actions[])
  {
--	struct mlx5_adev *madev =3D container_of(adev, struct mlx5_adev, adev);
--	struct mlx5_core_dev *mdev =3D madev->mdev;
-+	struct mlx5_vdpa_mgmtdev *mgtdev =3D container_of(v_mdev, struct mlx5_vdp=
-a_mgmtdev, mgtdev);
- 	struct virtio_net_config *config;
- 	struct mlx5_vdpa_dev *mvdev;
- 	struct mlx5_vdpa_net *ndev;
-+	struct mlx5_core_dev *mdev;
- 	u32 max_vqs;
- 	int err;
+ 	int i;
 =20
-+	if (mgtdev->ndev)
-+		return -ENOSPC;
-+
-+	mdev =3D mgtdev->madev->mdev;
- 	/* we save one virtqueue for control virtqueue should we require it */
- 	max_vqs =3D MLX5_CAP_DEV_VDPA_EMULATION(mdev, max_num_virtio_queues);
- 	max_vqs =3D min_t(u32, max_vqs, MLX5_MAX_SUPPORTED_VQS);
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 37b77bd30974..0b3900dd2354 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -3053,6 +3053,7 @@ int tcf_exts_validate(struct net *net, struct tcf_pro=
+to *tp, struct nlattr **tb,
+ 			act->type =3D exts->type =3D TCA_OLD_COMPAT;
+ 			exts->actions[0] =3D act;
+ 			exts->nr_actions =3D 1;
++			tcf_idr_insert_many(exts->actions);
+ 		} else if (exts->action && tb[exts->action]) {
+ 			int err;
 =20
- 	ndev =3D vdpa_alloc_device(struct mlx5_vdpa_net, mvdev.vdev, mdev->device=
-, &mlx5_vdpa_ops,
--				 2 * mlx5_vdpa_max_qps(max_vqs), NULL);
-+				 2 * mlx5_vdpa_max_qps(max_vqs), name);
- 	if (IS_ERR(ndev))
- 		return PTR_ERR(ndev);
-=20
-@@ -2018,11 +2027,12 @@ static int mlx5v_probe(struct auxiliary_device *ade=
-v,
- 	if (err)
- 		goto err_res;
-=20
--	err =3D vdpa_register_device(&mvdev->vdev);
-+	mvdev->vdev.mdev =3D &mgtdev->mgtdev;
-+	err =3D _vdpa_register_device(&mvdev->vdev);
- 	if (err)
- 		goto err_reg;
-=20
--	dev_set_drvdata(&adev->dev, ndev);
-+	mgtdev->ndev =3D ndev;
- 	return 0;
-=20
- err_reg:
-@@ -2035,11 +2045,59 @@ static int mlx5v_probe(struct auxiliary_device *ade=
-v,
- 	return err;
- }
-=20
-+static void mlx5_vdpa_dev_del(struct vdpa_mgmt_dev *v_mdev, struct vdpa_de=
-vice *dev)
-+{
-+	_vdpa_unregister_device(dev);
-+}
-+
-+static const struct vdpa_mgmtdev_ops mdev_ops =3D {
-+	.dev_add =3D mlx5_vdpa_dev_add,
-+	.dev_del =3D mlx5_vdpa_dev_del,
-+};
-+
-+static struct virtio_device_id id_table[] =3D {
-+	{ VIRTIO_ID_NET, VIRTIO_DEV_ANY_ID },
-+	{ 0 },
-+};
-+
-+static int mlx5v_probe(struct auxiliary_device *adev,
-+		       const struct auxiliary_device_id *id)
-+
-+{
-+	struct mlx5_adev *madev =3D container_of(adev, struct mlx5_adev, adev);
-+	struct mlx5_core_dev *mdev =3D madev->mdev;
-+	struct mlx5_vdpa_mgmtdev *mgtdev;
-+	int err;
-+
-+	mgtdev =3D kzalloc(sizeof(*mgtdev), GFP_KERNEL);
-+	if (!mgtdev)
-+		return -ENOMEM;
-+
-+	mgtdev->mgtdev.ops =3D &mdev_ops;
-+	mgtdev->mgtdev.device =3D mdev->device;
-+	mgtdev->mgtdev.id_table =3D id_table;
-+	mgtdev->madev =3D madev;
-+
-+	err =3D vdpa_mgmtdev_register(&mgtdev->mgtdev);
-+	if (err)
-+		goto reg_err;
-+
-+	dev_set_drvdata(&adev->dev, mgtdev);
-+
-+	return 0;
-+
-+reg_err:
-+	kfree(mdev);
-+	return err;
-+}
-+
- static void mlx5v_remove(struct auxiliary_device *adev)
- {
--	struct mlx5_vdpa_dev *mvdev =3D dev_get_drvdata(&adev->dev);
-+	struct mlx5_vdpa_mgmtdev *mgtdev;
-=20
--	vdpa_unregister_device(&mvdev->vdev);
-+	mgtdev =3D dev_get_drvdata(&adev->dev);
-+	vdpa_mgmtdev_unregister(&mgtdev->mgtdev);
-+	kfree(mgtdev);
- }
-=20
- static const struct auxiliary_device_id mlx5v_id_table[] =3D {
 --=20
 2.29.2
 
