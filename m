@@ -2,111 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 648ED31CCD5
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 16:22:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1429131CCE1
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 16:25:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230006AbhBPPWf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 10:22:35 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:5905 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229880AbhBPPWe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 10:22:34 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B602be3110000>; Tue, 16 Feb 2021 07:21:53 -0800
-Received: from mtl-vdi-166.wap.labs.mlnx (172.20.145.6) by
- HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Tue, 16 Feb 2021 15:21:51 +0000
-Date:   Tue, 16 Feb 2021 17:21:48 +0200
-From:   Eli Cohen <elic@nvidia.com>
-To:     Si-Wei Liu <si-wei.liu@oracle.com>
-CC:     <mst@redhat.com>, <jasowang@redhat.com>,
-        <linux-kernel@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2 3/3] vdpa/mlx5: defer clear_virtqueues to until
- DRIVER_OK
-Message-ID: <20210216152148.GA99540@mtl-vdi-166.wap.labs.mlnx>
-References: <1612993680-29454-1-git-send-email-si-wei.liu@oracle.com>
- <1612993680-29454-4-git-send-email-si-wei.liu@oracle.com>
- <20210211073314.GB100783@mtl-vdi-166.wap.labs.mlnx>
+        id S230195AbhBPPW4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 10:22:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34884 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230097AbhBPPWu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 10:22:50 -0500
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA441C061756
+        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 07:22:09 -0800 (PST)
+Received: by mail-il1-x136.google.com with SMTP id q9so8581713ilo.1
+        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 07:22:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=SCrgrLSKV5HQB6OBnUPMDNWqngKo2XMqSrnq8eY6WsA=;
+        b=ajjegBvT4OQM+IdOuLpL2uld2MxN/oDN6kZGeQJ6jVE0ibi30A0gcI4qbR9hT+SZCM
+         5xoSEvrsss7NQehq3M+FqsXtU8DQ0gdGxQkulre0qG0YTQMb0HgQXAykzpEb+D7K5m5S
+         UpDkHHhPyzJyEjDFP0lQRO3TDLGDiqmaU9Rpc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=SCrgrLSKV5HQB6OBnUPMDNWqngKo2XMqSrnq8eY6WsA=;
+        b=ovvypd/uyyV7AQkuE+JvlUmRC7EcWgwmYolqnctT+iWh0Xe5AhA7gwlQy1OsIAL9L3
+         6OWGtOsJaulaVGg6Ei1mwkm3GDtJo8aLyUpIlFkJHL7GTJPaA80lZIAs++VlB+Wdz/9j
+         xnC9WSCaN2dEvovGLOf+cNmFknbEnMsFTBed2qrLLTaQV+q7DPSqoQWWBi4SfZqE0CED
+         /CAwGrBrwrtP54juWDmiO9Apxamwcaw0tsuoW8+0A7tVrllzsRFAsYJI0FSOhaURz4ju
+         VPyEUnDLumowTCRdnQejMr4kFZn7hbqSCg2HSNeFtU4jAaxfdFnMhHrHNQeYPVhk9ti6
+         BT+g==
+X-Gm-Message-State: AOAM533LPGAL0icrw3qe7emQMR7uvEuTvL/zO464bleBr0DUeU5jb/gj
+        A0w0PEEWRm33EK8iWumv1UUizQ==
+X-Google-Smtp-Source: ABdhPJx3G2o9JD9i7oWOVErd5QMCAoO1+MR1d8GDb1F3pSgZpS4a6A8llKG9+kyOBG7Q5e+j9HmybA==
+X-Received: by 2002:a92:d691:: with SMTP id p17mr16842092iln.135.1613488929142;
+        Tue, 16 Feb 2021 07:22:09 -0800 (PST)
+Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
+        by smtp.gmail.com with ESMTPSA id i4sm10577363ioa.30.2021.02.16.07.22.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 Feb 2021 07:22:08 -0800 (PST)
+Subject: Re: [PATCH 2/2] ath9k: fix ath_tx_process_buffer() potential null ptr
+ dereference
+To:     Felix Fietkau <nbd@nbd.name>, Kalle Valo <kvalo@codeaurora.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, ath9k-devel@qca.qualcomm.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <43ed9abb9e8d7112f3cc168c2f8c489e253635ba.1613090339.git.skhan@linuxfoundation.org>
+ <20210216070336.D138BC43463@smtp.codeaurora.org>
+ <0fd9a538-e269-e10e-a7f9-02d4c5848420@nbd.name>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <caac2b21-d5de-32ac-0fe0-75af8fb80bbb@linuxfoundation.org>
+Date:   Tue, 16 Feb 2021 08:22:07 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20210211073314.GB100783@mtl-vdi-166.wap.labs.mlnx>
-User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1613488913; bh=oljyvW9QX6a5ATx1aSFBKfVM2GqJ4ZFr/3Fr2sk5rHw=;
-        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-         Content-Type:Content-Disposition:In-Reply-To:User-Agent:
-         X-Originating-IP:X-ClientProxiedBy;
-        b=O73rwWccv6ouPtIofhZsE42cFZL9RoBYP4RIVxu9Gm3SEEPbBhajBhqBd1maE5xxs
-         3b80SDMrXHTn5HYWlByE7arBih42IEZQt9lW1508/PhIPTrM5zqDqmSsCZxESuAzud
-         EZsnhI6A3JymxYBCCh7eSwEKwOTRHcUWXe1VdRSqYcTHDVz+sYfFrtYAJ2H9AevYK3
-         0YcidfiJeKyEwKYQzbpoiYXRNZVxY9SMHGO8kyYh9Er6NMJg1l1f3qv9sYFvbR0TLr
-         NWkMgCggiKF9rm8nDQhgjTf4VVexAwL6etJANWcuN9CoFe5nW3U4kRrdupidx6nZ8a
-         wCqi0BlEDg/ew==
+In-Reply-To: <0fd9a538-e269-e10e-a7f9-02d4c5848420@nbd.name>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 11, 2021 at 09:33:14AM +0200, Eli Cohen wrote:
-> On Wed, Feb 10, 2021 at 01:48:00PM -0800, Si-Wei Liu wrote:
-> > While virtq is stopped,  get_vq_state() is supposed to
-> > be  called to  get  sync'ed  with  the latest internal
-> > avail_index from device. The saved avail_index is used
-> > to restate  the virtq  once device is started.  Commit
-> > b35ccebe3ef7 introduced the clear_virtqueues() routine
-> > to  reset  the saved  avail_index,  however, the index
-> > gets cleared a bit earlier before get_vq_state() tries
-> > to read it. This would cause consistency problems when
-> > virtq is restarted, e.g. through a series of link down
-> > and link up events. We  could  defer  the  clearing of
-> > avail_index  to  until  the  device  is to be started,
-> > i.e. until  VIRTIO_CONFIG_S_DRIVER_OK  is set again in
-> > set_status().
-> > 
-> > Fixes: b35ccebe3ef7 ("vdpa/mlx5: Restore the hardware used index after change map")
-> > Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
-> > Acked-by: Jason Wang <jasowang@redhat.com>
+On 2/16/21 12:53 AM, Felix Fietkau wrote:
 > 
-> Acked-by: Eli Cohen <elic@nvidia.com>
+> On 2021-02-16 08:03, Kalle Valo wrote:
+>> Shuah Khan <skhan@linuxfoundation.org> wrote:
+>>
+>>> ath_tx_process_buffer() references ieee80211_find_sta_by_ifaddr()
+>>> return pointer (sta) outside null check. Fix it by moving the code
+>>> block under the null check.
+>>>
+>>> This problem was found while reviewing code to debug RCU warn from
+>>> ath10k_wmi_tlv_parse_peer_stats_info() and a subsequent manual audit
+>>> of other callers of ieee80211_find_sta_by_ifaddr() that don't hold
+>>> RCU read lock.
+>>>
+>>> Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+>>> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+>>
+>> Patch applied to ath-next branch of ath.git, thanks.
+>>
+>> a56c14bb21b2 ath9k: fix ath_tx_process_buffer() potential null ptr dereference
+> I just took another look at this patch, and it is completely bogus.
+> Not only does the stated reason not make any sense (sta is simply passed
+> to other functions, not dereferenced without checks), but this also
+> introduces a horrible memory leak by skipping buffer completion if sta
+> is NULL.
+> Please drop it, the code is fine as-is.
 > 
 
-I take it back. I think we don't need to clear the indexes at all. In
-case we need to restore indexes we'll get the right values through
-set_vq_state(). If we suspend the virtqueue due to VM being suspended,
-qemu will query first and will provide the the queried value. In case of
-VM reboot, it will provide 0 in set_vq_state().
+A comment describing what you said here might be a good addition to this
+comment block though.
 
-I am sending a patch that addresses both reboot and suspend.
+thanks,
+-- Shuah
 
-> > ---
-> >  drivers/vdpa/mlx5/net/mlx5_vnet.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > index 7c1f789..ce6aae8 100644
-> > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > @@ -1777,7 +1777,6 @@ static void mlx5_vdpa_set_status(struct vdpa_device *vdev, u8 status)
-> >  	if (!status) {
-> >  		mlx5_vdpa_info(mvdev, "performing device reset\n");
-> >  		teardown_driver(ndev);
-> > -		clear_virtqueues(ndev);
-> >  		mlx5_vdpa_destroy_mr(&ndev->mvdev);
-> >  		ndev->mvdev.status = 0;
-> >  		++mvdev->generation;
-> > @@ -1786,6 +1785,7 @@ static void mlx5_vdpa_set_status(struct vdpa_device *vdev, u8 status)
-> >  
-> >  	if ((status ^ ndev->mvdev.status) & VIRTIO_CONFIG_S_DRIVER_OK) {
-> >  		if (status & VIRTIO_CONFIG_S_DRIVER_OK) {
-> > +			clear_virtqueues(ndev);
-> >  			err = setup_driver(ndev);
-> >  			if (err) {
-> >  				mlx5_vdpa_warn(mvdev, "failed to setup driver\n");
-> > -- 
-> > 1.8.3.1
-> > 
