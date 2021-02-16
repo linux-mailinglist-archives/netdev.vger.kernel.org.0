@@ -2,266 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B54831CC19
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 15:36:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E81531CC57
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 15:47:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230421AbhBPOgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 09:36:25 -0500
-Received: from mail2.protonmail.ch ([185.70.40.22]:58141 "EHLO
-        mail2.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230383AbhBPOfs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 09:35:48 -0500
-Date:   Tue, 16 Feb 2021 14:35:02 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1613486103; bh=PUPLXjpwpkpzqk95FTsck/1hnkmAyZsE+RsTIuWPKnY=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=X0KO8Ega8wHesK00ZIwrSYc9iOEoawjMUnAsj2OQVTRXTg3nbl7hhAH6ud7otDGE8
-         lzGC2dkmHnpVwn//C+dT4B2Zl1vM9UqccR2ffC974eWvwuE6V0jzpbkXWuTv7sFaB5
-         /6fIs0IUSb4UhfwKdcR7oLjdACyv5uz4/nIwLeV6HkNQcVPZt+oLVnjCRypUqvlBIz
-         Xn1ogvueiV4Jc0IgofIyv9uy+2lwXhlKxWZMf5QKtdT8GF+zlzzLfnqw7Qzj4rGs/Y
-         rn2npD2AON2S6AvmLgH/054gOofGUgEvEoB8sH+VVE/VG2VWzARUHORXmigLHY37S9
-         oIGeQRjXPqXsg==
-To:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?utf-8?Q?Bj=C3=B6rn_T=C3=B6pel?= <bjorn@kernel.org>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S230374AbhBPOrv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 09:47:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55624 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230253AbhBPOro (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 09:47:44 -0500
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3029CC061574
+        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 06:47:04 -0800 (PST)
+Received: by mail-pf1-x430.google.com with SMTP id 189so6263706pfy.6
+        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 06:47:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=SwHn93yehpShrbalJ/4lL2GKbFHsZcvdS9Bf5KUzxhc=;
+        b=mNtv11bLK7YGvJ/Ay5F0oTOPUUlgh64/oOv+W+xwycQ0YbVY8WbV7N/OWMwdIx+Usz
+         pZYPOBjt8yn30J5kT6r1Mvx+gs351kT++KnErJF5ShSQX6oQ6ECQ4rnfoLuXZjha02yp
+         f57Q91anBSYp358K4vFJ9b6hQshSISnglrYs45cCR6yN51va7eiZkllTNZV02IU4uJC0
+         tfaxAfgw8/vFZzDq5/qeejxAdmCHSpnMei1waNYUVXhxM6YqjA29AhL7QVCL+CBuB/OH
+         TUSmUI815Dj4dYKhh5VUupfEpp0HVJK50xs98LcBt5iM6RoIJlWaLuu8avSJ2/ROnst4
+         zRyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=SwHn93yehpShrbalJ/4lL2GKbFHsZcvdS9Bf5KUzxhc=;
+        b=hvBZY2X6qBS3lWmc8OtEDANuJorSgcBrvZNppussy79eHDCyj2y/g1iUSLernjsfmU
+         U+WfsjaOJYJbPdn8zOFxPY0amft4TfKYSIJCJiNVPIMCg5r/xn1UimYVY5+w+78ixOmA
+         KXj/QsIc1YiYMfyhRfzZ6U81HlnyVOYDryCtuDYe+tX9/HquhHjGby/Bx3mx3oA1awTy
+         +pzOa9tyqqrl/AAa81dtFfqzYY300pmh1dVuzxMZX+KGm/hXg43C2ReJgGj5l68ysQHg
+         2HJift/TtWiLBhaKnxVaFlNhxZKFtRx2fGnLCkXdMaFftI2w1FKtdwJQFJBxosKxJaOJ
+         62fg==
+X-Gm-Message-State: AOAM531ZCaus2w0U7XDBDiCY9QJllwUrglnATv7S46EO6sW/KyHdhtXb
+        0MCEBgoxG1aAIbGHHMDGZN8=
+X-Google-Smtp-Source: ABdhPJx6MhtEvHP/fU97vq16VcNFe2GCyvPsvSIMYnhuPbBJrneqeYU/QfrWRxI2hfZ5NgYoaj2BdQ==
+X-Received: by 2002:aa7:9356:0:b029:1dd:644a:d904 with SMTP id 22-20020aa793560000b02901dd644ad904mr19868243pfn.18.1613486823665;
+        Tue, 16 Feb 2021 06:47:03 -0800 (PST)
+Received: from [192.168.0.4] ([49.173.165.50])
+        by smtp.gmail.com with ESMTPSA id nk3sm3141209pjb.12.2021.02.16.06.46.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 Feb 2021 06:47:03 -0800 (PST)
+Subject: Re: [PATCH net-next v2 1/7] mld: convert from timer to delayed work
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Dust Li <dust.li@linux.alibaba.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH v5 bpf-next 6/6] xsk: build skb by page (aka generic zerocopy xmit)
-Message-ID: <20210216143333.5861-7-alobakin@pm.me>
-In-Reply-To: <20210216143333.5861-1-alobakin@pm.me>
-References: <20210216143333.5861-1-alobakin@pm.me>
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        jwi@linux.ibm.com, kgraul@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, borntraeger@de.ibm.com,
+        Marek Lindner <mareklindner@neomailbox.ch>,
+        sw@simonwunderlich.de, a@unstable.cc, sven@narfation.org,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        dsahern@kernel.org, ap420073@gmail.com
+References: <20210213175102.28227-1-ap420073@gmail.com>
+ <CAM_iQpXLMk+4VuHr8WyLE1fxNV5hsN7JvA2PoDOmnZ4beJOH7Q@mail.gmail.com>
+ <3cbe0945-4f98-961c-29cc-5b863c99e2df@gmail.com>
+ <CAM_iQpUVG5+EbMbMXWJ=tb6Br+s+e2-tHChNvGgxFH7XSwEXHA@mail.gmail.com>
+From:   Taehee Yoo <ap420073@gmail.com>
+Message-ID: <beb4fa65-a99c-f43c-0b91-1c8d62c787dd@gmail.com>
+Date:   Tue, 16 Feb 2021 23:46:58 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+In-Reply-To: <CAM_iQpUVG5+EbMbMXWJ=tb6Br+s+e2-tHChNvGgxFH7XSwEXHA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 
-This patch is used to construct skb based on page to save memory copy
-overhead.
+[...]
+ >> By the way, I think the 'delay' is from the
+ >> unsolicited_report_interval() and it just return value of
+ >> idev->cnf.mldv{1 | 2}_unsolicited_report_interval.
+ >> I think this value is msecs, not jiffies.
+ >> So, It should be converted to use msecs_to_jiffies(), I think.
+ >> How do you think about it?
+ >
+ > Hmm? I think it is in jiffies:
+ >
+ >          .mldv1_unsolicited_report_interval = 10 * HZ,
+ >          .mldv2_unsolicited_report_interval = HZ,
+ >
 
-This function is implemented based on IFF_TX_SKB_NO_LINEAR. Only the
-network card priv_flags supports IFF_TX_SKB_NO_LINEAR will use page to
-directly construct skb. If this feature is not supported, it is still
-necessary to copy data to construct skb.
+Ah, yes, you're right!
+Thanks,
 
----------------- Performance Testing ------------
+ >
+ >>
+ >>   > [...]
+ >>   >
+ >>   >> -static void mld_dad_timer_expire(struct timer_list *t)
+ >>   >> +static void mld_dad_work(struct work_struct *work)
+ >>   >>   {
+ >>   >> -       struct inet6_dev *idev = from_timer(idev, t, mc_dad_timer);
+ >>   >> +       struct inet6_dev *idev = 
+container_of(to_delayed_work(work),
+ >>   >> +                                             struct inet6_dev,
+ >>   >> +                                             mc_dad_work);
+ >>   >>
+ >>   >> +       rtnl_lock();
+ >>   >
+ >>   > Any reason why we need RTNL after converting the timer to
+ >>   > delayed work?
+ >>   >
+ >>
+ >> For the moment, RTNL is not needed.
+ >> But the Resources, which are used by delayed_work will be protected by
+ >> RTNL instead of other locks.
+ >> So, It just pre-adds RTNL and the following patches will delete 
+other locks.
+ >
+ > Sounds like this change does not belong to this patch. ;) If so,
+ > please move it to where ever more appropriate.
+ >
 
-The test environment is Aliyun ECS server.
-Test cmd:
-```
-xdpsock -i eth0 -t  -S -s <msg size>
-```
-
-Test result data:
-
-size    64      512     1024    1500
-copy    1916747 1775988 1600203 1440054
-page    1974058 1953655 1945463 1904478
-percent 3.0%    10.0%   21.58%  32.3%
-
-Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
-[ alobakin:
- - expand subject to make it clearer;
- - improve skb->truesize calculation;
- - reserve some headroom in skb for drivers;
- - tailroom is not needed as skb is non-linear ]
-Signed-off-by: Alexander Lobakin <alobakin@pm.me>
-Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
----
- net/xdp/xsk.c | 119 ++++++++++++++++++++++++++++++++++++++++----------
- 1 file changed, 95 insertions(+), 24 deletions(-)
-
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index 143979ea4165..ff7bd06e1241 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -445,6 +445,96 @@ static void xsk_destruct_skb(struct sk_buff *skb)
- =09sock_wfree(skb);
- }
-=20
-+static struct sk_buff *xsk_build_skb_zerocopy(struct xdp_sock *xs,
-+=09=09=09=09=09      struct xdp_desc *desc)
-+{
-+=09struct xsk_buff_pool *pool =3D xs->pool;
-+=09u32 hr, len, offset, copy, copied;
-+=09struct sk_buff *skb;
-+=09struct page *page;
-+=09void *buffer;
-+=09int err, i;
-+=09u64 addr;
-+
-+=09hr =3D max(NET_SKB_PAD, L1_CACHE_ALIGN(xs->dev->needed_headroom));
-+
-+=09skb =3D sock_alloc_send_skb(&xs->sk, hr, 1, &err);
-+=09if (unlikely(!skb))
-+=09=09return ERR_PTR(err);
-+
-+=09skb_reserve(skb, hr);
-+
-+=09addr =3D desc->addr;
-+=09len =3D desc->len;
-+
-+=09buffer =3D xsk_buff_raw_get_data(pool, addr);
-+=09offset =3D offset_in_page(buffer);
-+=09addr =3D buffer - pool->addrs;
-+
-+=09for (copied =3D 0, i =3D 0; copied < len; i++) {
-+=09=09page =3D pool->umem->pgs[addr >> PAGE_SHIFT];
-+=09=09get_page(page);
-+
-+=09=09copy =3D min_t(u32, PAGE_SIZE - offset, len - copied);
-+=09=09skb_fill_page_desc(skb, i, page, offset, copy);
-+
-+=09=09copied +=3D copy;
-+=09=09addr +=3D copy;
-+=09=09offset =3D 0;
-+=09}
-+
-+=09skb->len +=3D len;
-+=09skb->data_len +=3D len;
-+=09skb->truesize +=3D pool->unaligned ? len : pool->chunk_size;
-+
-+=09refcount_add(skb->truesize, &xs->sk.sk_wmem_alloc);
-+
-+=09return skb;
-+}
-+
-+static struct sk_buff *xsk_build_skb(struct xdp_sock *xs,
-+=09=09=09=09     struct xdp_desc *desc)
-+{
-+=09struct net_device *dev =3D xs->dev;
-+=09struct sk_buff *skb;
-+
-+=09if (dev->priv_flags & IFF_TX_SKB_NO_LINEAR) {
-+=09=09skb =3D xsk_build_skb_zerocopy(xs, desc);
-+=09=09if (IS_ERR(skb))
-+=09=09=09return skb;
-+=09} else {
-+=09=09u32 hr, tr, len;
-+=09=09void *buffer;
-+=09=09int err;
-+
-+=09=09hr =3D max(NET_SKB_PAD, L1_CACHE_ALIGN(dev->needed_headroom));
-+=09=09tr =3D dev->needed_tailroom;
-+=09=09len =3D desc->len;
-+
-+=09=09skb =3D sock_alloc_send_skb(&xs->sk, hr + len + tr, 1, &err);
-+=09=09if (unlikely(!skb))
-+=09=09=09return ERR_PTR(err);
-+
-+=09=09skb_reserve(skb, hr);
-+=09=09skb_put(skb, len);
-+
-+=09=09buffer =3D xsk_buff_raw_get_data(xs->pool, desc->addr);
-+=09=09err =3D skb_store_bits(skb, 0, buffer, len);
-+=09=09if (unlikely(err)) {
-+=09=09=09kfree_skb(skb);
-+=09=09=09return ERR_PTR(err);
-+=09=09}
-+=09}
-+
-+=09skb->dev =3D dev;
-+=09skb->priority =3D xs->sk.sk_priority;
-+=09skb->mark =3D xs->sk.sk_mark;
-+=09skb_shinfo(skb)->destructor_arg =3D (void *)(long)desc->addr;
-+=09skb->destructor =3D xsk_destruct_skb;
-+
-+=09return skb;
-+}
-+
- static int xsk_generic_xmit(struct sock *sk)
- {
- =09struct xdp_sock *xs =3D xdp_sk(sk);
-@@ -454,56 +544,37 @@ static int xsk_generic_xmit(struct sock *sk)
- =09struct sk_buff *skb;
- =09unsigned long flags;
- =09int err =3D 0;
--=09u32 hr, tr;
-=20
- =09mutex_lock(&xs->mutex);
-=20
- =09if (xs->queue_id >=3D xs->dev->real_num_tx_queues)
- =09=09goto out;
-=20
--=09hr =3D max(NET_SKB_PAD, L1_CACHE_ALIGN(xs->dev->needed_headroom));
--=09tr =3D xs->dev->needed_tailroom;
--
- =09while (xskq_cons_peek_desc(xs->tx, &desc, xs->pool)) {
--=09=09char *buffer;
--=09=09u64 addr;
--=09=09u32 len;
--
- =09=09if (max_batch-- =3D=3D 0) {
- =09=09=09err =3D -EAGAIN;
- =09=09=09goto out;
- =09=09}
-=20
--=09=09len =3D desc.len;
--=09=09skb =3D sock_alloc_send_skb(sk, hr + len + tr, 1, &err);
--=09=09if (unlikely(!skb))
-+=09=09skb =3D xsk_build_skb(xs, &desc);
-+=09=09if (IS_ERR(skb)) {
-+=09=09=09err =3D PTR_ERR(skb);
- =09=09=09goto out;
-+=09=09}
-=20
--=09=09skb_reserve(skb, hr);
--=09=09skb_put(skb, len);
--
--=09=09addr =3D desc.addr;
--=09=09buffer =3D xsk_buff_raw_get_data(xs->pool, addr);
--=09=09err =3D skb_store_bits(skb, 0, buffer, len);
- =09=09/* This is the backpressure mechanism for the Tx path.
- =09=09 * Reserve space in the completion queue and only proceed
- =09=09 * if there is space in it. This avoids having to implement
- =09=09 * any buffering in the Tx path.
- =09=09 */
- =09=09spin_lock_irqsave(&xs->pool->cq_lock, flags);
--=09=09if (unlikely(err) || xskq_prod_reserve(xs->pool->cq)) {
-+=09=09if (xskq_prod_reserve(xs->pool->cq)) {
- =09=09=09spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
- =09=09=09kfree_skb(skb);
- =09=09=09goto out;
- =09=09}
- =09=09spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
-=20
--=09=09skb->dev =3D xs->dev;
--=09=09skb->priority =3D sk->sk_priority;
--=09=09skb->mark =3D sk->sk_mark;
--=09=09skb_shinfo(skb)->destructor_arg =3D (void *)(long)desc.addr;
--=09=09skb->destructor =3D xsk_destruct_skb;
--
- =09=09err =3D __dev_direct_xmit(skb, xs->queue_id);
- =09=09if  (err =3D=3D NETDEV_TX_BUSY) {
- =09=09=09/* Tell user-space to retry the send */
---=20
-2.30.1
-
-
+Yes, I will do that,
+I will rearrange it then I will send a v3 patch.
+Thank you so much for your review!
