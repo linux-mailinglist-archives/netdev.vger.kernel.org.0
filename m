@@ -2,155 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CAE731CB97
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 15:10:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5583831CB9D
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 15:13:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229917AbhBPOJ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 09:09:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47482 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229913AbhBPOJn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 09:09:43 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BEAEC061756;
-        Tue, 16 Feb 2021 06:09:03 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id a9so3417749plh.8;
-        Tue, 16 Feb 2021 06:09:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Ur2GGfNGty4D5sfBPMgdwf/iq0sjY8YMRufZGls/mL4=;
-        b=O9/Un4wqLI5QVCgODlBo+ANgEJ8254C73PyLhrYptt1XTuXiG8PTXnqGrbDFIvHUj6
-         q4E4t+R8gCRQkdcTlV3mZT6NAVTd7N/fEloHVVrPCGp/iW0dsO9Ouh+QneMTzORgHiwn
-         Xa0hhIaTTCJwEexnwPcKpgF3pVCI22hIrPxebqfjTSZyw+xGQJ9NvqOcr5ykveho3JUJ
-         pAfM/U61oNgOrLGH2raHYVrTfxTwzHenZUjA1uB96t1jA5u7zCH98RwBFnwHns+9/puw
-         nY0LnRz1+rItxY909GZBkI7ODnHbIHN7vAY2LcoQBQz7uPIOKI3UDmkdqK9CulOtpYSJ
-         QDqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Ur2GGfNGty4D5sfBPMgdwf/iq0sjY8YMRufZGls/mL4=;
-        b=FFJ/UoTmW0kPsLKAnPx7l1g76X5PaIuzda1pTaEmZGjUQiU5NFCrMjgsxEt3q2HEWm
-         YtqD/IPHWHC4mu87z6nag2g+ss/glYOslpSsIVmF2OCpw2s8gXBWC10f+s7zghziNQ7y
-         nvVR43TcyxfT/GVeZTA2DBEiIbNTHLQeVbF72IwRGzeR6GpC8l+j8YgIToyZwMhNIxzJ
-         zzCRgsMZvf0p/YTIiV/yLzssVEQJSZeiu/RcbdQJr2m0ScklCT+w6el4gQPj9ePhWlS1
-         3ZSc2DxpDrlM2jGZdAtYHmlCF89+l49LP5sImXPYJweuIl9HsyRoxKUgXQbgh0vVXb6q
-         AyVw==
-X-Gm-Message-State: AOAM530pS7BlX9QCuUW91eL2Sd/Cn2uOqF+W7xPO2bAKpgv4UJOnLCCc
-        dD7nX3RpZiSRPMuqC8GYQ3ljFmo4uWfJTr5d2YY=
-X-Google-Smtp-Source: ABdhPJxwQgKzCV6u0vMxVuPH9XLB4h56OPkZBENnng0yconZsNhbf/CgQoo4zNy+/IUWGGEOsEyIeoVXpCF8VPgsf7s=
-X-Received: by 2002:a17:902:aa4b:b029:e2:bb4b:a63 with SMTP id
- c11-20020a170902aa4bb02900e2bb4b0a63mr20060894plr.7.1613484542811; Tue, 16
- Feb 2021 06:09:02 -0800 (PST)
+        id S230021AbhBPOMu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 09:12:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60048 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229924AbhBPOMt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Feb 2021 09:12:49 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D4A5E64DFF;
+        Tue, 16 Feb 2021 14:12:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1613484727;
+        bh=VoIJw8IV2XhrWH31y5xWJWmLam8wK4EdSN+YNIWdN1o=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TTZpZlQq6dBehVZjmUZ+w7XtEDgI4xaCIIu5EgD5p/b9YKKMcPhYZlKTX6y7CBHUS
+         gusm7fgk6DK1io3RrYGEVr6kGZ08ssCLIO6zxFANjNbEQ7jO4tUrUrwXELRsU95hR9
+         dmU3GBb4+2fx3BMoeEH8oi/0ZV/f4k6EnYwQUfKYjq9Hpgl7e2ba+d0p/UiN5f6HhK
+         5oSYZla7F+4lGZAhzl8mSYITKH3ql0VZ+2tBe1oHqSP6L3zZS5gh+Hk7HnrFwSLU8y
+         UNMADbz0Q9l7BmU0OmNLSqUpyyeSPCEdO0V5/OT6zi7Rxs2njWkZ5BniZ7N/LlKD2P
+         zkM39EvSBIRdg==
+Date:   Tue, 16 Feb 2021 16:12:03 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Saeed Mahameed <saeed@kernel.org>,
+        Doug Ledford <dledford@redhat.com>,
+        Aharon Landau <aharonl@nvidia.com>, linux-rdma@vger.kernel.org,
+        Maor Gottlieb <maorg@nvidia.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH rdma-next 0/2] Real time/free running timestamp support
+Message-ID: <YCvSs7VKA7s4d4n9@unreal>
+References: <20210209131107.698833-1-leon@kernel.org>
+ <20210212181056.GB1737478@nvidia.com>
+ <5d4731e2394049ca66012f82e1645bdec51aca78.camel@kernel.org>
+ <20210212211408.GA1860468@nvidia.com>
+ <53a97eb379af167c0221408a07c9bddc6624027d.camel@kernel.org>
+ <20210212212153.GX4247@nvidia.com>
+ <YCjF/xxC3/easKYC@unreal>
 MIME-Version: 1.0
-References: <20210216113740.62041-1-alobakin@pm.me> <20210216113740.62041-6-alobakin@pm.me>
-In-Reply-To: <20210216113740.62041-6-alobakin@pm.me>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Tue, 16 Feb 2021 15:08:51 +0100
-Message-ID: <CAJ8uoz2LQvhfar+wqgWBRq9sh_EGvx-VeEXA03=_-G+HNJBJVw@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 5/6] xsk: respect device's headroom and
- tailroom on generic xmit path
-To:     Alexander Lobakin <alobakin@pm.me>
-Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Dust Li <dust.li@linux.alibaba.com>,
-        virtualization@lists.linux-foundation.org,
-        Network Development <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YCjF/xxC3/easKYC@unreal>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 16, 2021 at 12:44 PM Alexander Lobakin <alobakin@pm.me> wrote:
+On Sun, Feb 14, 2021 at 08:41:03AM +0200, Leon Romanovsky wrote:
+> On Fri, Feb 12, 2021 at 05:21:53PM -0400, Jason Gunthorpe wrote:
+> > On Fri, Feb 12, 2021 at 01:19:09PM -0800, Saeed Mahameed wrote:
+> > > On Fri, 2021-02-12 at 17:14 -0400, Jason Gunthorpe wrote:
+> > > > On Fri, Feb 12, 2021 at 01:09:20PM -0800, Saeed Mahameed wrote:
+> > > > > On Fri, 2021-02-12 at 14:10 -0400, Jason Gunthorpe wrote:
+> > > > > > On Tue, Feb 09, 2021 at 03:11:05PM +0200, Leon Romanovsky wrote:
+> > > > > > > From: Leon Romanovsky <leonro@nvidia.com>
+> > > > > > >
+> > > > > > > Add an extra timestamp format for mlx5_ib device.
+> > > > > > >
+> > > > > > > Thanks
+> > > > > > >
+> > > > > > > Aharon Landau (2):
+> > > > > > >   net/mlx5: Add new timestamp mode bits
+> > > > > > >   RDMA/mlx5: Fail QP creation if the device can not support the
+> > > > > > > CQE
+> > > > > > > TS
+> > > > > > >
+> > > > > > >  drivers/infiniband/hw/mlx5/qp.c | 104
+> > > > > > > +++++++++++++++++++++++++++++---
+> > > > > > >  include/linux/mlx5/mlx5_ifc.h   |  54 +++++++++++++++--
+> > > > > > >  2 files changed, 145 insertions(+), 13 deletions(-)
+> > > > > >
+> > > > > > Since this is a rdma series, and we are at the end of the cycle,
+> > > > > > I
+> > > > > > took the IFC file directly to the rdma tree instead of through
+> > > > > > the
+> > > > > > shared branch.
+> > > > > >
+> > > > > > Applied to for-next, thanks
+> > > > > >
+> > > > >
+> > > > > mmm, i was planing to resubmit this patch with the netdev real time
+> > > > > support series, since the uplink representor is getting delayed, I
+> > > > > thought I could submit the real time stuff today. can you wait on
+> > > > > the
+> > > > > ifc patch, i will re-send it today if you will, but it must go
+> > > > > through
+> > > > > the shared branch
+> > > >
+> > > > Friday of rc7 is a bit late to be sending new patches for the first
+> > > > time, isn't it??
+> > >
+> > > I know, uplink representor last minute mess !
+> > >
+> > > >
+> > > > But sure, if you update the shared branch right now I'll fix up
+> > > > rdma.git
+> > > >
+> > >
+> > > I can't put it in the shared brach without review, i will post it to
+> > > the netdev/rdma lists for two days at least for review and feedback.
+> >
+> > Well, I'm not going to take any different patches beyond right now
+> > unless Linus does a rc8??
+> >
+> > Just move this one IFC patch to the shared branch, it is obviously OK
 >
-> xsk_generic_xmit() allocates a new skb and then queues it for
-> xmitting. The size of new skb's headroom is desc->len, so it comes
-> to the driver/device with no reserved headroom and/or tailroom.
-> Lots of drivers need some headroom (and sometimes tailroom) to
-> prepend (and/or append) some headers or data, e.g. CPU tags,
-> device-specific headers/descriptors (LSO, TLS etc.), and if case
-> of no available space skb_cow_head() will reallocate the skb.
-> Reallocations are unwanted on fast-path, especially when it comes
-> to XDP, so generic XSK xmit should reserve the spaces declared in
-> dev->needed_headroom and dev->needed tailroom to avoid them.
->
-> Note on max(NET_SKB_PAD, L1_CACHE_ALIGN(dev->needed_headroom)):
->
-> Usually, output functions reserve LL_RESERVED_SPACE(dev), which
-> consists of dev->hard_header_len + dev->needed_headroom, aligned
-> by 16.
-> However, on XSK xmit hard header is already here in the chunk, so
-> hard_header_len is not needed. But it'd still be better to align
-> data up to cacheline, while reserving no less than driver requests
-> for headroom. NET_SKB_PAD here is to double-insure there will be
-> no reallocations even when the driver advertises no needed_headroom,
-> but in fact need it (not so rare case).
->
-> Fixes: 35fcde7f8deb ("xsk: support for Tx")
-> Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+> OK, I'm curious to see the end result of all this last minute adventure.
 
-Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Jason,
 
-> ---
->  net/xdp/xsk.c | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
+I took first patch to the shared branch.
+a6a217dddcd5 net/mlx5: Add new timestamp mode bits
+
+Thanks
+
 >
-> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> index 4faabd1ecfd1..143979ea4165 100644
-> --- a/net/xdp/xsk.c
-> +++ b/net/xdp/xsk.c
-> @@ -454,12 +454,16 @@ static int xsk_generic_xmit(struct sock *sk)
->         struct sk_buff *skb;
->         unsigned long flags;
->         int err = 0;
-> +       u32 hr, tr;
+> Thanks
 >
->         mutex_lock(&xs->mutex);
->
->         if (xs->queue_id >= xs->dev->real_num_tx_queues)
->                 goto out;
->
-> +       hr = max(NET_SKB_PAD, L1_CACHE_ALIGN(xs->dev->needed_headroom));
-> +       tr = xs->dev->needed_tailroom;
-> +
->         while (xskq_cons_peek_desc(xs->tx, &desc, xs->pool)) {
->                 char *buffer;
->                 u64 addr;
-> @@ -471,11 +475,13 @@ static int xsk_generic_xmit(struct sock *sk)
->                 }
->
->                 len = desc.len;
-> -               skb = sock_alloc_send_skb(sk, len, 1, &err);
-> +               skb = sock_alloc_send_skb(sk, hr + len + tr, 1, &err);
->                 if (unlikely(!skb))
->                         goto out;
->
-> +               skb_reserve(skb, hr);
->                 skb_put(skb, len);
-> +
->                 addr = desc.addr;
->                 buffer = xsk_buff_raw_get_data(xs->pool, addr);
->                 err = skb_store_bits(skb, 0, buffer, len);
-> --
-> 2.30.1
->
->
+> >
+> > Jason
