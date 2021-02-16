@@ -2,92 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D48231C534
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 02:57:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C413931C549
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 03:12:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229703AbhBPB5K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 20:57:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59828 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbhBPB5J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 20:57:09 -0500
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 641F0C061574;
-        Mon, 15 Feb 2021 17:56:29 -0800 (PST)
-Received: by mail-ot1-x32a.google.com with SMTP id c16so7788397otp.0;
-        Mon, 15 Feb 2021 17:56:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=fsoS79UAUEsj2whbEqmwbdZUAILldiyj6LftGCkz3OQ=;
-        b=rzFdSre8F983JDdzADOPwhg8/o5Zzy65m5Qqk/QrxcqVC5Y5FSLuDzKWROFm9mq6Ko
-         SuFXT+pG4ZMqTVRG1dPHEmvndE9nUOqqynIipc+QqqgfONklvwNyoivOabUZlNgHKVvV
-         OPT6VVW7sXKAPZCs+4kSZJtKVVPfiz9m81BHqfbV4qlz39SRX85sRXcZIUEdjTZ5SYCh
-         IBHckpkVtpajmk3/c+w0+Qe9dOrFlITcfUFrgd08VIhw3FqDcfNRVeuwgy5629Kfo2Pb
-         8JQZrf+1QQXaaLWV5layHTxaQeV960o8/2iSZQ09lDpGGbMHgltkFzDMHXOqbi5T+lsO
-         0zPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=fsoS79UAUEsj2whbEqmwbdZUAILldiyj6LftGCkz3OQ=;
-        b=AemwIMPD1LDatcfV7iG3HCeujml07nRBQclrqWVxQxkIhQE5TBJLPysO2kxlu3rzXl
-         wF13t28Zm/b52YvzYyHvu5OXQQMHQ/wPP6YCXLkw+U/TlCnIbcavM/uoeFhtTc1bp5mQ
-         8RBjotnBrK2yQMdL3epe5YKamrz7jr1RglCMh0DPfrTvSU6vPz1qc5ot8sv1U5U+joEw
-         6YvVluhH2RI4vwzG5sbb6d21jOSsGMKamNMq2on3D50cEEXA6Iv055KSUVUMuK7NEcjw
-         7l11pyhM4RBhtGcCuD49TCAXpRHKxJJEDRWj3KWBSJhv9MiyQpBkLaumHcKwqfNRD5T1
-         5Nqg==
-X-Gm-Message-State: AOAM531dfBYMBTOLY1O1Bli2QNZGYnrEOaopJSc7DhpO8aiHDFirweKf
-        lU4o1eNz0iB9PYP68EflznMRXr3RDdg=
-X-Google-Smtp-Source: ABdhPJx8ylU3UbdeRczl5rzGlX7rI2TYTyzz6i3EV6xva8I8SfXosmoOYkYXDH54b05WXjuodyoqmA==
-X-Received: by 2002:a05:6830:4d0:: with SMTP id s16mr13100480otd.271.1613440588718;
-        Mon, 15 Feb 2021 17:56:28 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.33])
-        by smtp.googlemail.com with ESMTPSA id c10sm691009otu.78.2021.02.15.17.56.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Feb 2021 17:56:28 -0800 (PST)
-Subject: Re: [PATCH iproute2-rc] rdma: Fix statistics bind/unbing argument
- handling
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Ido Kalir <idok@nvidia.com>,
-        linux-netdev <netdev@vger.kernel.org>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>
-References: <20210214083335.19558-1-leon@kernel.org>
- <5e9a8752-24a1-7461-e113-004b014dcde9@gmail.com> <YCoJULID1x2kulQe@unreal>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <04d7cd07-c3eb-c39c-bce1-3e9d4d1e4a27@gmail.com>
-Date:   Mon, 15 Feb 2021 18:56:26 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.7.1
+        id S229827AbhBPCMG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 21:12:06 -0500
+Received: from mga14.intel.com ([192.55.52.115]:27088 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229777AbhBPCME (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Feb 2021 21:12:04 -0500
+IronPort-SDR: J66eDvTERw4nodrzB/EvnvbQUdkVIVxSWSj7aqyg6N5edIjqUGbdTeY6a7Seq/VkPnx8+csmXW
+ XuWd8b+cSGGQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9896"; a="182012871"
+X-IronPort-AV: E=Sophos;i="5.81,182,1610438400"; 
+   d="scan'208";a="182012871"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2021 18:11:18 -0800
+IronPort-SDR: AOyaOKEDOj4Sj1p5SzIYISJBXDXCNUvvB9D5q9cU7kkQrEKB8ZiIVLf0ErF6TG5H/YcRyytLKp
+ bmpborES6hxg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,182,1610438400"; 
+   d="scan'208";a="426113585"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by fmsmga002.fm.intel.com with ESMTP; 15 Feb 2021 18:11:16 -0800
+Date:   Tue, 16 Feb 2021 03:01:28 +0100
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Cc:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        daniel@iogearbox.net, ast@kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, andrii@kernel.org,
+        magnus.karlsson@intel.com, ciara.loftus@intel.com
+Subject: Re: [PATCH bpf-next 1/3] libbpf: xsk: use bpf_link
+Message-ID: <20210216020128.GA9572@ranger.igk.intel.com>
+References: <20210215154638.4627-1-maciej.fijalkowski@intel.com>
+ <20210215154638.4627-2-maciej.fijalkowski@intel.com>
+ <87eehhcl9x.fsf@toke.dk>
+ <fe0c957e-d212-4265-a271-ba301c3c5eca@intel.com>
+ <875z2tcef2.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <YCoJULID1x2kulQe@unreal>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <875z2tcef2.fsf@toke.dk>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/14/21 10:40 PM, Leon Romanovsky wrote:
-> On Sun, Feb 14, 2021 at 08:26:16PM -0700, David Ahern wrote:
->> what does iproute2-rc mean?
+On Mon, Feb 15, 2021 at 08:35:29PM +0100, Toke Høiland-Jørgensen wrote:
+> Björn Töpel <bjorn.topel@intel.com> writes:
 > 
-> Patch target is iproute2.git:
-> https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/
+> > On 2021-02-15 18:07, Toke Høiland-Jørgensen wrote:
+> >> Maciej Fijalkowski <maciej.fijalkowski@intel.com> writes:
+> >> 
+> >>> Currently, if there are multiple xdpsock instances running on a single
+> >>> interface and in case one of the instances is terminated, the rest of
+> >>> them are left in an inoperable state due to the fact of unloaded XDP
+> >>> prog from interface.
+> >>>
+> >>> To address that, step away from setting bpf prog in favour of bpf_link.
+> >>> This means that refcounting of BPF resources will be done automatically
+> >>> by bpf_link itself.
+> >>>
+> >>> When setting up BPF resources during xsk socket creation, check whether
+> >>> bpf_link for a given ifindex already exists via set of calls to
+> >>> bpf_link_get_next_id -> bpf_link_get_fd_by_id -> bpf_obj_get_info_by_fd
+> >>> and comparing the ifindexes from bpf_link and xsk socket.
+> >> 
+> >> One consideration here is that bpf_link_get_fd_by_id() is a privileged
+> >> operation (privileged as in CAP_SYS_ADMIN), so this has the side effect
+> >> of making AF_XDP privileged as well. Is that the intention?
+> >>
+> >
+> > We're already using, e.g., bpf_map_get_fd_by_id() which has that
+> > as well. So we're assuming that for XDP setup already!
+> 
+> Ah, right, didn't realise that one is CAP_SYS_ADMIN as well; I
+> remembered this as being specific to the bpf_link operation.
+> 
+> >> Another is that the AF_XDP code is in the process of moving to libxdp
+> >> (see in-progress PR [0]), and this approach won't carry over as-is to
+> >> that model, because libxdp has to pin the bpf_link fds.
+> >>
+> >
+> > I was assuming there were two modes of operations for AF_XDP in libxdp.
+> > One which is with the multi-program support (which AFAIK is why the
+> > pinning is required), and one "like the current libbpf" one. For the
+> > latter Maciej's series would be a good fit, no?
+> 
+> We haven't added an explicit mode switch for now; libxdp will fall back
+> to regular interface attach if the kernel doesn't support the needed
+> features for multi-attach, but if it's possible to just have libxdp
+> transparently do the right thing I'd much prefer that. So we're still
+> exploring that (part of which is that Magnus has promised to run some
+> performance tests to see if there's a difference).
+> 
+> However, even if there's an explicit mode switch I'd like to avoid
+> different *semantics* between the two modes if possible, to keep the two
+> as compatible as possible. And since we can't currently do "auto-detach
+> on bpf_link fd close" when using multi-prog, introducing this now would
+> lead to just such a semantic difference. So my preference would be to do
+> it differently... :)
+> 
+> >> However, in libxdp we can solve the original problem in a different way,
+> >> and in fact I already suggested to Magnus that we should do this (see
+> >> [1]); so one way forward could be to address it during the merge in
+> >> libxdp? It should be possible to address the original issue (two
+> >> instances of xdpsock breaking each other when they exit), but
+> >> applications will still need to do an explicit unload operation before
+> >> exiting (i.e., the automatic detach on bpf_link fd closure will take
+> >> more work, and likely require extending the bpf_link kernel support)...
+> >>
+> >
+> > I'd say it's depending on the libbpf 1.0/libxdp merge timeframe. If
+> > we're months ahead, then I'd really like to see this in libbpf until the
+> > merge. However, I'll leave that for Magnus/you to decide!
 
-so you are asking them to be committed for the 5.11 release?
+WDYM by libbpf 1.0/libxdp merge? I glanced through thread and I saw that
+John was also not aware of that. Not sure where it was discussed?
 
+If you're saying 'merge', then is libxdp going to be a part of kernel or
+as an AF-XDP related guy I would be forced to include yet another
+repository in the BPF developer toolchain? :<
 
-> vs -next repo:
-> https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/
 > 
-> How do you want me to mark the patches?
+> Well, as far as libxdp support goes, the PR I linked is pretty close to
+> being mergeable. One of the few outstanding issues is whether we should
+> solve just this issue before merging, actually :)
 > 
-> https://git.kernel.org/pub/scm/network/iproute2/
+> Not sure exactly which timeframe Andrii is envisioning for libbpf 1.0,
+> but last I heard he'll announce something next week.
 > 
-> Thanks
+> > Bottom line; I'd *really* like bpf_link behavior (process scoped) for
+> > AF_XDP sooner than later! ;-)
 > 
+> Totally agree that we should solve the multi-process coexistence
+> problem! And as I said, I think we can do so in libxdp by using the same
+> synchronisation mechanism we use for setting up the multi-prog
+> dispatcher. So it doesn't *have* to hold things up :)
 
+Am I reading this right or you're trying to reject the fix of the long
+standing issue due to a PR that is not ready yet on a standalone
+project/library? :P
+
+Once libxdp is the standard way of playing with AF-XDP and there are
+actual users of that, then I'm happy to work/help on that issue.
+
+Spawning a few xdpsock instances on the same interface has been a
+standard/easiest way of measuring the scalability of AF-XDP ZC
+implementations. This has been a real PITA for quite a long time. So, I
+second Bjorn's statement - the sooner we have this fixed, the better.
+
+Thanks! I hope I haven't sounded harsh, not my intent at all,
+Maciej
+
+> 
+> -Toke
+> 
