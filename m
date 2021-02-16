@@ -2,122 +2,295 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5583831CB9D
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 15:13:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B92B31CBA4
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 15:16:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230021AbhBPOMu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 09:12:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60048 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229924AbhBPOMt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Feb 2021 09:12:49 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D4A5E64DFF;
-        Tue, 16 Feb 2021 14:12:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613484727;
-        bh=VoIJw8IV2XhrWH31y5xWJWmLam8wK4EdSN+YNIWdN1o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TTZpZlQq6dBehVZjmUZ+w7XtEDgI4xaCIIu5EgD5p/b9YKKMcPhYZlKTX6y7CBHUS
-         gusm7fgk6DK1io3RrYGEVr6kGZ08ssCLIO6zxFANjNbEQ7jO4tUrUrwXELRsU95hR9
-         dmU3GBb4+2fx3BMoeEH8oi/0ZV/f4k6EnYwQUfKYjq9Hpgl7e2ba+d0p/UiN5f6HhK
-         5oSYZla7F+4lGZAhzl8mSYITKH3ql0VZ+2tBe1oHqSP6L3zZS5gh+Hk7HnrFwSLU8y
-         UNMADbz0Q9l7BmU0OmNLSqUpyyeSPCEdO0V5/OT6zi7Rxs2njWkZ5BniZ7N/LlKD2P
-         zkM39EvSBIRdg==
-Date:   Tue, 16 Feb 2021 16:12:03 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Saeed Mahameed <saeed@kernel.org>,
-        Doug Ledford <dledford@redhat.com>,
-        Aharon Landau <aharonl@nvidia.com>, linux-rdma@vger.kernel.org,
-        Maor Gottlieb <maorg@nvidia.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH rdma-next 0/2] Real time/free running timestamp support
-Message-ID: <YCvSs7VKA7s4d4n9@unreal>
-References: <20210209131107.698833-1-leon@kernel.org>
- <20210212181056.GB1737478@nvidia.com>
- <5d4731e2394049ca66012f82e1645bdec51aca78.camel@kernel.org>
- <20210212211408.GA1860468@nvidia.com>
- <53a97eb379af167c0221408a07c9bddc6624027d.camel@kernel.org>
- <20210212212153.GX4247@nvidia.com>
- <YCjF/xxC3/easKYC@unreal>
+        id S229956AbhBPOQ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 09:16:26 -0500
+Received: from mail-40131.protonmail.ch ([185.70.40.131]:23585 "EHLO
+        mail-40131.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229827AbhBPOQ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 09:16:26 -0500
+Date:   Tue, 16 Feb 2021 14:15:32 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1613484936; bh=jwQMQJwMWvjuZZcVe2rhp855u4r5rgmcy7veIiiilfo=;
+        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
+        b=iAAK1XqcN5/Z/C7QBWrbabG3FAOsle6D8RUpocNr8GDzPuXnwEsdRsx3ltvbzMUvm
+         JmWzP/IuPJhxF5iMwSRdXO/ZvGFeFrno6nlV67B8KrXAZp1uriQKSpiK6XJ9AMV2ag
+         VtLL8ajT+mKtlT8H4gQ2wYi0skrLXygb1RfprizR10PrpgswX6qsdnFJfHwQojfa60
+         oipM7D+5C/NArok+8HgUb8IXS3X1X807r1qak0Csw9OV5g0o7erFI7WCgKACL6pm0e
+         79X3nZftJdc0tMSPJjL12JxLkDYJwzwXJclbLceSVm7Ig7BQZjWekOpydqPeRY+HYH
+         V6NXKsm7WrHXQ==
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
+        =?utf-8?Q?Bj=C3=B6rn_T=C3=B6pel?= <bjorn@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Dust Li <dust.li@linux.alibaba.com>,
+        virtualization@lists.linux-foundation.org,
+        Network Development <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: Re: [PATCH v4 bpf-next 6/6] xsk: build skb by page (aka generic zerocopy xmit)
+Message-ID: <20210216141507.3263-1-alobakin@pm.me>
+In-Reply-To: <CAJ8uoz0-ge=_jC8EbR371DMKxYSP8USni5OqVf0yk1-4Z=vnOg@mail.gmail.com>
+References: <20210216113740.62041-1-alobakin@pm.me> <20210216113740.62041-7-alobakin@pm.me> <CAJ8uoz0-ge=_jC8EbR371DMKxYSP8USni5OqVf0yk1-4Z=vnOg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YCjF/xxC3/easKYC@unreal>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Feb 14, 2021 at 08:41:03AM +0200, Leon Romanovsky wrote:
-> On Fri, Feb 12, 2021 at 05:21:53PM -0400, Jason Gunthorpe wrote:
-> > On Fri, Feb 12, 2021 at 01:19:09PM -0800, Saeed Mahameed wrote:
-> > > On Fri, 2021-02-12 at 17:14 -0400, Jason Gunthorpe wrote:
-> > > > On Fri, Feb 12, 2021 at 01:09:20PM -0800, Saeed Mahameed wrote:
-> > > > > On Fri, 2021-02-12 at 14:10 -0400, Jason Gunthorpe wrote:
-> > > > > > On Tue, Feb 09, 2021 at 03:11:05PM +0200, Leon Romanovsky wrote:
-> > > > > > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > > > > >
-> > > > > > > Add an extra timestamp format for mlx5_ib device.
-> > > > > > >
-> > > > > > > Thanks
-> > > > > > >
-> > > > > > > Aharon Landau (2):
-> > > > > > >   net/mlx5: Add new timestamp mode bits
-> > > > > > >   RDMA/mlx5: Fail QP creation if the device can not support the
-> > > > > > > CQE
-> > > > > > > TS
-> > > > > > >
-> > > > > > >  drivers/infiniband/hw/mlx5/qp.c | 104
-> > > > > > > +++++++++++++++++++++++++++++---
-> > > > > > >  include/linux/mlx5/mlx5_ifc.h   |  54 +++++++++++++++--
-> > > > > > >  2 files changed, 145 insertions(+), 13 deletions(-)
-> > > > > >
-> > > > > > Since this is a rdma series, and we are at the end of the cycle,
-> > > > > > I
-> > > > > > took the IFC file directly to the rdma tree instead of through
-> > > > > > the
-> > > > > > shared branch.
-> > > > > >
-> > > > > > Applied to for-next, thanks
-> > > > > >
-> > > > >
-> > > > > mmm, i was planing to resubmit this patch with the netdev real time
-> > > > > support series, since the uplink representor is getting delayed, I
-> > > > > thought I could submit the real time stuff today. can you wait on
-> > > > > the
-> > > > > ifc patch, i will re-send it today if you will, but it must go
-> > > > > through
-> > > > > the shared branch
-> > > >
-> > > > Friday of rc7 is a bit late to be sending new patches for the first
-> > > > time, isn't it??
-> > >
-> > > I know, uplink representor last minute mess !
-> > >
-> > > >
-> > > > But sure, if you update the shared branch right now I'll fix up
-> > > > rdma.git
-> > > >
-> > >
-> > > I can't put it in the shared brach without review, i will post it to
-> > > the netdev/rdma lists for two days at least for review and feedback.
+From: Magnus Karlsson <magnus.karlsson@gmail.com>
+Date: Tue, 16 Feb 2021 15:08:26 +0100
+
+> On Tue, Feb 16, 2021 at 12:44 PM Alexander Lobakin <alobakin@pm.me> wrote=
+:
 > >
-> > Well, I'm not going to take any different patches beyond right now
-> > unless Linus does a rc8??
+> > From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 > >
-> > Just move this one IFC patch to the shared branch, it is obviously OK
->
-> OK, I'm curious to see the end result of all this last minute adventure.
-
-Jason,
-
-I took first patch to the shared branch.
-a6a217dddcd5 net/mlx5: Add new timestamp mode bits
-
-Thanks
-
->
-> Thanks
->
+> > This patch is used to construct skb based on page to save memory copy
+> > overhead.
 > >
-> > Jason
+> > This function is implemented based on IFF_TX_SKB_NO_LINEAR. Only the
+> > network card priv_flags supports IFF_TX_SKB_NO_LINEAR will use page to
+> > directly construct skb. If this feature is not supported, it is still
+> > necessary to copy data to construct skb.
+> >
+> > ---------------- Performance Testing ------------
+> >
+> > The test environment is Aliyun ECS server.
+> > Test cmd:
+> > ```
+> > xdpsock -i eth0 -t  -S -s <msg size>
+> > ```
+> >
+> > Test result data:
+> >
+> > size    64      512     1024    1500
+> > copy    1916747 1775988 1600203 1440054
+> > page    1974058 1953655 1945463 1904478
+> > percent 3.0%    10.0%   21.58%  32.3%
+> >
+> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
+> > [ alobakin:
+> >  - expand subject to make it clearer;
+> >  - improve skb->truesize calculation;
+> >  - reserve some headroom in skb for drivers;
+> >  - tailroom is not needed as skb is non-linear ]
+> > Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+>=20
+> Thank you Alexander!
+>=20
+> Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+
+Thanks!
+
+I have one more generic zerocopy to offer (inspired by this series)
+that wouldn't require IFF_TX_SKB_NO_LINEAR, only a capability to xmit
+S/G packets that almost every NIC has. I'll publish an RFC once this
+and your upcoming changes get merged.
+
+> > ---
+> >  net/xdp/xsk.c | 119 ++++++++++++++++++++++++++++++++++++++++----------
+> >  1 file changed, 95 insertions(+), 24 deletions(-)
+> >
+> > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> > index 143979ea4165..ff7bd06e1241 100644
+> > --- a/net/xdp/xsk.c
+> > +++ b/net/xdp/xsk.c
+> > @@ -445,6 +445,96 @@ static void xsk_destruct_skb(struct sk_buff *skb)
+> >         sock_wfree(skb);
+> >  }
+> >
+> > +static struct sk_buff *xsk_build_skb_zerocopy(struct xdp_sock *xs,
+> > +                                             struct xdp_desc *desc)
+> > +{
+> > +       struct xsk_buff_pool *pool =3D xs->pool;
+> > +       u32 hr, len, offset, copy, copied;
+> > +       struct sk_buff *skb;
+> > +       struct page *page;
+> > +       void *buffer;
+> > +       int err, i;
+> > +       u64 addr;
+> > +
+> > +       hr =3D max(NET_SKB_PAD, L1_CACHE_ALIGN(xs->dev->needed_headroom=
+));
+> > +
+> > +       skb =3D sock_alloc_send_skb(&xs->sk, hr, 1, &err);
+> > +       if (unlikely(!skb))
+> > +               return ERR_PTR(err);
+> > +
+> > +       skb_reserve(skb, hr);
+> > +
+> > +       addr =3D desc->addr;
+> > +       len =3D desc->len;
+> > +
+> > +       buffer =3D xsk_buff_raw_get_data(pool, addr);
+> > +       offset =3D offset_in_page(buffer);
+> > +       addr =3D buffer - pool->addrs;
+> > +
+> > +       for (copied =3D 0, i =3D 0; copied < len; i++) {
+> > +               page =3D pool->umem->pgs[addr >> PAGE_SHIFT];
+> > +               get_page(page);
+> > +
+> > +               copy =3D min_t(u32, PAGE_SIZE - offset, len - copied);
+> > +               skb_fill_page_desc(skb, i, page, offset, copy);
+> > +
+> > +               copied +=3D copy;
+> > +               addr +=3D copy;
+> > +               offset =3D 0;
+> > +       }
+> > +
+> > +       skb->len +=3D len;
+> > +       skb->data_len +=3D len;
+> > +       skb->truesize +=3D pool->unaligned ? len : pool->chunk_size;
+> > +
+> > +       refcount_add(skb->truesize, &xs->sk.sk_wmem_alloc);
+> > +
+> > +       return skb;
+> > +}
+> > +
+> > +static struct sk_buff *xsk_build_skb(struct xdp_sock *xs,
+> > +                                    struct xdp_desc *desc)
+> > +{
+> > +       struct net_device *dev =3D xs->dev;
+> > +       struct sk_buff *skb;
+> > +
+> > +       if (dev->priv_flags & IFF_TX_SKB_NO_LINEAR) {
+> > +               skb =3D xsk_build_skb_zerocopy(xs, desc);
+> > +               if (IS_ERR(skb))
+> > +                       return skb;
+> > +       } else {
+> > +               u32 hr, tr, len;
+> > +               void *buffer;
+> > +               int err;
+> > +
+> > +               hr =3D max(NET_SKB_PAD, L1_CACHE_ALIGN(dev->needed_head=
+room));
+> > +               tr =3D dev->needed_tailroom;
+> > +               len =3D desc->len;
+> > +
+> > +               skb =3D sock_alloc_send_skb(&xs->sk, hr + len + tr, 1, =
+&err);
+> > +               if (unlikely(!skb))
+> > +                       return ERR_PTR(err);
+> > +
+> > +               skb_reserve(skb, hr);
+> > +               skb_put(skb, len);
+> > +
+> > +               buffer =3D xsk_buff_raw_get_data(xs->pool, desc->addr);
+> > +               err =3D skb_store_bits(skb, 0, buffer, len);
+> > +               if (unlikely(err)) {
+> > +                       kfree_skb(skb);
+> > +                       return ERR_PTR(err);
+> > +               }
+> > +       }
+> > +
+> > +       skb->dev =3D dev;
+> > +       skb->priority =3D xs->sk.sk_priority;
+> > +       skb->mark =3D xs->sk.sk_mark;
+> > +       skb_shinfo(skb)->destructor_arg =3D (void *)(long)desc->addr;
+> > +       skb->destructor =3D xsk_destruct_skb;
+> > +
+> > +       return skb;
+> > +}
+> > +
+> >  static int xsk_generic_xmit(struct sock *sk)
+> >  {
+> >         struct xdp_sock *xs =3D xdp_sk(sk);
+> > @@ -454,56 +544,37 @@ static int xsk_generic_xmit(struct sock *sk)
+> >         struct sk_buff *skb;
+> >         unsigned long flags;
+> >         int err =3D 0;
+> > -       u32 hr, tr;
+> >
+> >         mutex_lock(&xs->mutex);
+> >
+> >         if (xs->queue_id >=3D xs->dev->real_num_tx_queues)
+> >                 goto out;
+> >
+> > -       hr =3D max(NET_SKB_PAD, L1_CACHE_ALIGN(xs->dev->needed_headroom=
+));
+> > -       tr =3D xs->dev->needed_tailroom;
+> > -
+> >         while (xskq_cons_peek_desc(xs->tx, &desc, xs->pool)) {
+> > -               char *buffer;
+> > -               u64 addr;
+> > -               u32 len;
+> > -
+> >                 if (max_batch-- =3D=3D 0) {
+> >                         err =3D -EAGAIN;
+> >                         goto out;
+> >                 }
+> >
+> > -               len =3D desc.len;
+> > -               skb =3D sock_alloc_send_skb(sk, hr + len + tr, 1, &err)=
+;
+> > -               if (unlikely(!skb))
+> > +               skb =3D xsk_build_skb(xs, &desc);
+> > +               if (IS_ERR(skb)) {
+> > +                       err =3D PTR_ERR(skb);
+> >                         goto out;
+> > +               }
+> >
+> > -               skb_reserve(skb, hr);
+> > -               skb_put(skb, len);
+> > -
+> > -               addr =3D desc.addr;
+> > -               buffer =3D xsk_buff_raw_get_data(xs->pool, addr);
+> > -               err =3D skb_store_bits(skb, 0, buffer, len);
+> >                 /* This is the backpressure mechanism for the Tx path.
+> >                  * Reserve space in the completion queue and only proce=
+ed
+> >                  * if there is space in it. This avoids having to imple=
+ment
+> >                  * any buffering in the Tx path.
+> >                  */
+> >                 spin_lock_irqsave(&xs->pool->cq_lock, flags);
+> > -               if (unlikely(err) || xskq_prod_reserve(xs->pool->cq)) {
+> > +               if (xskq_prod_reserve(xs->pool->cq)) {
+> >                         spin_unlock_irqrestore(&xs->pool->cq_lock, flag=
+s);
+> >                         kfree_skb(skb);
+> >                         goto out;
+> >                 }
+> >                 spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
+> >
+> > -               skb->dev =3D xs->dev;
+> > -               skb->priority =3D sk->sk_priority;
+> > -               skb->mark =3D sk->sk_mark;
+> > -               skb_shinfo(skb)->destructor_arg =3D (void *)(long)desc.=
+addr;
+> > -               skb->destructor =3D xsk_destruct_skb;
+> > -
+> >                 err =3D __dev_direct_xmit(skb, xs->queue_id);
+> >                 if  (err =3D=3D NETDEV_TX_BUSY) {
+> >                         /* Tell user-space to retry the send */
+> > --
+> > 2.30.1
+
+Al
+
