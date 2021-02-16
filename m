@@ -2,265 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DC6531CA03
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 12:43:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16BFD31CA05
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 12:43:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230486AbhBPLmw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 06:42:52 -0500
-Received: from mail2.protonmail.ch ([185.70.40.22]:51406 "EHLO
-        mail2.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230417AbhBPLkK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 06:40:10 -0500
-Date:   Tue, 16 Feb 2021 11:39:21 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1613475568; bh=nnDg7zHTfNPGrVm06t0m1zPhoxeXajfLhRKt/IDM8xQ=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=JfsEY4hngHGHRZWc3Pm7CWlGpUi+oi9hzY99EOZU2hAhgsm2NNpbtcW3lpMB2RBp9
-         upeqRcI/zFx0rx9fmESEJe3Ws/NIlHcZ52YhaArFghmJDalwiVH8hlHl4k9OOD35dF
-         DxOmB+v/HsJ0a2pSPDRY4Ked0uZXNzn3qTj4c/FMYoL3DmMhMu+7xIVq3wF2FRlAzC
-         LvK+NTEPZQwuPbOSkhQwfPXaokcHTqjZ714Rx/cKU5lgvgrFYlKx4LXr6C0EodZ8Ty
-         6TpQfmZZWIQ2iyzR2+B/jGeSR0ASPALlLGgOV0CVtVQzx/NM0KVHZQ/Mg+TVQJcv13
-         FW4NlUuhRLzeA==
-To:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?utf-8?Q?Bj=C3=B6rn_T=C3=B6pel?= <bjorn@kernel.org>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Dust Li <dust.li@linux.alibaba.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH v4 bpf-next 6/6] xsk: build skb by page (aka generic zerocopy xmit)
-Message-ID: <20210216113740.62041-7-alobakin@pm.me>
-In-Reply-To: <20210216113740.62041-1-alobakin@pm.me>
-References: <20210216113740.62041-1-alobakin@pm.me>
+        id S230355AbhBPLnd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 06:43:33 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:16608 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S230333AbhBPLkf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 06:40:35 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11GBVQf7007994;
+        Tue, 16 Feb 2021 03:39:52 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=mwQPIoyeymJ4KhwI06kM5MhpkEAfjMT02S2UniYtLmk=;
+ b=SBaRQQgm6BMauPGA4DAaqRW8PqbZNkEvvK+AN4C/RJy8hE+oXbUo2a29ptV0yeDoOpoC
+ VDRFU8MJ16PsJ/TDCvdjkaQVo33dpLNUGhSuoDndAkubMazSu+jXtJIHawEkE4wVpGhY
+ HKmMRN8dITojRBgYOMGdirONondhN6eHLLjQWd8vTVX3RXDFz/slgt689UWzaLXXV7Sv
+ M/LkHfTDqe3IAEp0hKVOXJzJfWvHz5AviFn3rzfD7vF1CApFMyj5zLw0aTGhxpBt6mx8
+ Z8Nj0eDKVt1Eq695RVLw9L+ORmKzj7MHylynu2HpTQbqUcJTuLM3Xgk3g4w/88E+YCrz mg== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0a-0016f401.pphosted.com with ESMTP id 36pd0vq81p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 16 Feb 2021 03:39:52 -0800
+Received: from SC-EXCH03.marvell.com (10.93.176.83) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 16 Feb
+ 2021 03:39:51 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 16 Feb
+ 2021 03:39:51 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 16 Feb 2021 03:39:51 -0800
+Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
+        by maili.marvell.com (Postfix) with ESMTP id 3BA403F703F;
+        Tue, 16 Feb 2021 03:39:47 -0800 (PST)
+From:   Geetha sowjanya <gakula@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <sgoutham@marvell.com>,
+        <lcherian@marvell.com>, <hkelam@marvell.com>,
+        <sbhatta@marvell.com>, <jerinj@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>
+Subject: [net-next v2] octeontx2-af: cn10k: Fixes CN10K RPM reference issue
+Date:   Tue, 16 Feb 2021 17:09:36 +0530
+Message-ID: <20210216113936.26580-1-gakula@marvell.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-02-16_01:2021-02-16,2021-02-15 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+This patch fixes references to uninitialized variables and
+debugfs entry name for CN10K platform and HW_TSO flag check.
 
-This patch is used to construct skb based on page to save memory copy
-overhead.
+Fixes: 3ad3f8f93c81 ("octeontx2-af: cn10k: MAC internal loopback support").
+Signed-off-by: Geetha sowjanya <gakula@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 
-This function is implemented based on IFF_TX_SKB_NO_LINEAR. Only the
-network card priv_flags supports IFF_TX_SKB_NO_LINEAR will use page to
-directly construct skb. If this feature is not supported, it is still
-necessary to copy data to construct skb.
+v1-v2
+- Clear HW_TSO flag for 96xx B0 version.
 
----------------- Performance Testing ------------
+This patch fixes the bug introduced by the commit
+3ad3f8f93c81 ("octeontx2-af: cn10k: MAC internal loopback support").
+These changes are not yet merged into net branch, hence submitting
+to net-next.
 
-The test environment is Aliyun ECS server.
-Test cmd:
-```
-xdpsock -i eth0 -t  -S -s <msg size>
-```
-
-Test result data:
-
-size    64      512     1024    1500
-copy    1916747 1775988 1600203 1440054
-page    1974058 1953655 1945463 1904478
-percent 3.0%    10.0%   21.58%  32.3%
-
-Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
-[ alobakin:
- - expand subject to make it clearer;
- - improve skb->truesize calculation;
- - reserve some headroom in skb for drivers;
- - tailroom is not needed as skb is non-linear ]
-Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 ---
- net/xdp/xsk.c | 119 ++++++++++++++++++++++++++++++++++++++++----------
- 1 file changed, 95 insertions(+), 24 deletions(-)
+ drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c   |  2 ++
+ .../net/ethernet/marvell/octeontx2/af/rvu_debugfs.c   |  2 +-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_common.h  |  3 +++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c    | 11 ++++++-----
+ 4 files changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index 143979ea4165..ff7bd06e1241 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -445,6 +445,96 @@ static void xsk_destruct_skb(struct sk_buff *skb)
- =09sock_wfree(skb);
- }
-=20
-+static struct sk_buff *xsk_build_skb_zerocopy(struct xdp_sock *xs,
-+=09=09=09=09=09      struct xdp_desc *desc)
-+{
-+=09struct xsk_buff_pool *pool =3D xs->pool;
-+=09u32 hr, len, offset, copy, copied;
-+=09struct sk_buff *skb;
-+=09struct page *page;
-+=09void *buffer;
-+=09int err, i;
-+=09u64 addr;
-+
-+=09hr =3D max(NET_SKB_PAD, L1_CACHE_ALIGN(xs->dev->needed_headroom));
-+
-+=09skb =3D sock_alloc_send_skb(&xs->sk, hr, 1, &err);
-+=09if (unlikely(!skb))
-+=09=09return ERR_PTR(err);
-+
-+=09skb_reserve(skb, hr);
-+
-+=09addr =3D desc->addr;
-+=09len =3D desc->len;
-+
-+=09buffer =3D xsk_buff_raw_get_data(pool, addr);
-+=09offset =3D offset_in_page(buffer);
-+=09addr =3D buffer - pool->addrs;
-+
-+=09for (copied =3D 0, i =3D 0; copied < len; i++) {
-+=09=09page =3D pool->umem->pgs[addr >> PAGE_SHIFT];
-+=09=09get_page(page);
-+
-+=09=09copy =3D min_t(u32, PAGE_SIZE - offset, len - copied);
-+=09=09skb_fill_page_desc(skb, i, page, offset, copy);
-+
-+=09=09copied +=3D copy;
-+=09=09addr +=3D copy;
-+=09=09offset =3D 0;
-+=09}
-+
-+=09skb->len +=3D len;
-+=09skb->data_len +=3D len;
-+=09skb->truesize +=3D pool->unaligned ? len : pool->chunk_size;
-+
-+=09refcount_add(skb->truesize, &xs->sk.sk_wmem_alloc);
-+
-+=09return skb;
-+}
-+
-+static struct sk_buff *xsk_build_skb(struct xdp_sock *xs,
-+=09=09=09=09     struct xdp_desc *desc)
-+{
-+=09struct net_device *dev =3D xs->dev;
-+=09struct sk_buff *skb;
-+
-+=09if (dev->priv_flags & IFF_TX_SKB_NO_LINEAR) {
-+=09=09skb =3D xsk_build_skb_zerocopy(xs, desc);
-+=09=09if (IS_ERR(skb))
-+=09=09=09return skb;
-+=09} else {
-+=09=09u32 hr, tr, len;
-+=09=09void *buffer;
-+=09=09int err;
-+
-+=09=09hr =3D max(NET_SKB_PAD, L1_CACHE_ALIGN(dev->needed_headroom));
-+=09=09tr =3D dev->needed_tailroom;
-+=09=09len =3D desc->len;
-+
-+=09=09skb =3D sock_alloc_send_skb(&xs->sk, hr + len + tr, 1, &err);
-+=09=09if (unlikely(!skb))
-+=09=09=09return ERR_PTR(err);
-+
-+=09=09skb_reserve(skb, hr);
-+=09=09skb_put(skb, len);
-+
-+=09=09buffer =3D xsk_buff_raw_get_data(xs->pool, desc->addr);
-+=09=09err =3D skb_store_bits(skb, 0, buffer, len);
-+=09=09if (unlikely(err)) {
-+=09=09=09kfree_skb(skb);
-+=09=09=09return ERR_PTR(err);
-+=09=09}
-+=09}
-+
-+=09skb->dev =3D dev;
-+=09skb->priority =3D xs->sk.sk_priority;
-+=09skb->mark =3D xs->sk.sk_mark;
-+=09skb_shinfo(skb)->destructor_arg =3D (void *)(long)desc->addr;
-+=09skb->destructor =3D xsk_destruct_skb;
-+
-+=09return skb;
-+}
-+
- static int xsk_generic_xmit(struct sock *sk)
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
+index 3a1809c28e83..e668e482383a 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
+@@ -722,12 +722,14 @@ u32 rvu_cgx_get_fifolen(struct rvu *rvu)
+ 
+ static int rvu_cgx_config_intlbk(struct rvu *rvu, u16 pcifunc, bool en)
  {
- =09struct xdp_sock *xs =3D xdp_sk(sk);
-@@ -454,56 +544,37 @@ static int xsk_generic_xmit(struct sock *sk)
- =09struct sk_buff *skb;
- =09unsigned long flags;
- =09int err =3D 0;
--=09u32 hr, tr;
-=20
- =09mutex_lock(&xs->mutex);
-=20
- =09if (xs->queue_id >=3D xs->dev->real_num_tx_queues)
- =09=09goto out;
-=20
--=09hr =3D max(NET_SKB_PAD, L1_CACHE_ALIGN(xs->dev->needed_headroom));
--=09tr =3D xs->dev->needed_tailroom;
++	int pf = rvu_get_pf(pcifunc);
+ 	struct mac_ops *mac_ops;
+ 	u8 cgx_id, lmac_id;
+ 
+ 	if (!is_cgx_config_permitted(rvu, pcifunc))
+ 		return -EPERM;
+ 
++	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
+ 	mac_ops = get_mac_ops(rvu_cgx_pdata(cgx_id, rvu));
+ 
+ 	return mac_ops->mac_lmac_intl_lbk(rvu_cgx_pdata(cgx_id, rvu),
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+index 48a84c65804c..094124b695dc 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+@@ -2432,7 +2432,7 @@ void rvu_dbg_init(struct rvu *rvu)
+ 		debugfs_create_file("rvu_pf_cgx_map", 0444, rvu->rvu_dbg.root,
+ 				    rvu, &rvu_dbg_rvu_pf_cgx_map_fops);
+ 	else
+-		debugfs_create_file("rvu_pf_cgx_map", 0444, rvu->rvu_dbg.root,
++		debugfs_create_file("rvu_pf_rpm_map", 0444, rvu->rvu_dbg.root,
+ 				    rvu, &rvu_dbg_rvu_pf_cgx_map_fops);
+ 
+ create:
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+index 4c472646a0ac..f14d388efb51 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+@@ -407,6 +407,9 @@ static inline void otx2_setup_dev_hw_settings(struct otx2_nic *pfvf)
+ 		pfvf->hw.rq_skid = 600;
+ 		pfvf->qset.rqe_cnt = Q_COUNT(Q_SIZE_1K);
+ 	}
++	if (is_96xx_B0(pfvf->pdev))
++		__clear_bit(HW_TSO, &hw->cap_flag);
++
+ 	if (!is_dev_otx2(pfvf->pdev)) {
+ 		__set_bit(CN10K_MBOX, &hw->cap_flag);
+ 		__set_bit(CN10K_LMTST, &hw->cap_flag);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+index 3f778fc054b5..22ec03a618b1 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+@@ -816,22 +816,23 @@ static bool is_hw_tso_supported(struct otx2_nic *pfvf,
+ {
+ 	int payload_len, last_seg_size;
+ 
++	if (test_bit(HW_TSO, &pfvf->hw.cap_flag))
++		return true;
++
++	/* On 96xx A0, HW TSO not supported */
++	if (!is_96xx_B0(pfvf->pdev))
++		return false;
+ 
+ 	/* HW has an issue due to which when the payload of the last LSO
+ 	 * segment is shorter than 16 bytes, some header fields may not
+ 	 * be correctly modified, hence don't offload such TSO segments.
+ 	 */
+-	if (!is_96xx_B0(pfvf->pdev))
+-		return true;
+ 
+ 	payload_len = skb->len - (skb_transport_offset(skb) + tcp_hdrlen(skb));
+ 	last_seg_size = payload_len % skb_shinfo(skb)->gso_size;
+ 	if (last_seg_size && last_seg_size < 16)
+ 		return false;
+ 
+-	if (!test_bit(HW_TSO, &pfvf->hw.cap_flag))
+-		return false;
 -
- =09while (xskq_cons_peek_desc(xs->tx, &desc, xs->pool)) {
--=09=09char *buffer;
--=09=09u64 addr;
--=09=09u32 len;
--
- =09=09if (max_batch-- =3D=3D 0) {
- =09=09=09err =3D -EAGAIN;
- =09=09=09goto out;
- =09=09}
-=20
--=09=09len =3D desc.len;
--=09=09skb =3D sock_alloc_send_skb(sk, hr + len + tr, 1, &err);
--=09=09if (unlikely(!skb))
-+=09=09skb =3D xsk_build_skb(xs, &desc);
-+=09=09if (IS_ERR(skb)) {
-+=09=09=09err =3D PTR_ERR(skb);
- =09=09=09goto out;
-+=09=09}
-=20
--=09=09skb_reserve(skb, hr);
--=09=09skb_put(skb, len);
--
--=09=09addr =3D desc.addr;
--=09=09buffer =3D xsk_buff_raw_get_data(xs->pool, addr);
--=09=09err =3D skb_store_bits(skb, 0, buffer, len);
- =09=09/* This is the backpressure mechanism for the Tx path.
- =09=09 * Reserve space in the completion queue and only proceed
- =09=09 * if there is space in it. This avoids having to implement
- =09=09 * any buffering in the Tx path.
- =09=09 */
- =09=09spin_lock_irqsave(&xs->pool->cq_lock, flags);
--=09=09if (unlikely(err) || xskq_prod_reserve(xs->pool->cq)) {
-+=09=09if (xskq_prod_reserve(xs->pool->cq)) {
- =09=09=09spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
- =09=09=09kfree_skb(skb);
- =09=09=09goto out;
- =09=09}
- =09=09spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
-=20
--=09=09skb->dev =3D xs->dev;
--=09=09skb->priority =3D sk->sk_priority;
--=09=09skb->mark =3D sk->sk_mark;
--=09=09skb_shinfo(skb)->destructor_arg =3D (void *)(long)desc.addr;
--=09=09skb->destructor =3D xsk_destruct_skb;
--
- =09=09err =3D __dev_direct_xmit(skb, xs->queue_id);
- =09=09if  (err =3D=3D NETDEV_TX_BUSY) {
- =09=09=09/* Tell user-space to retry the send */
---=20
-2.30.1
-
+ 	return true;
+ }
+ 
+-- 
+2.17.1
 
