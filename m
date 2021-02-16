@@ -2,78 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B487131C66F
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 06:54:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A05DE31C676
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 07:05:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229919AbhBPFvt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 00:51:49 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:5226 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbhBPFvr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 00:51:47 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B602b5d4a0000>; Mon, 15 Feb 2021 21:51:06 -0800
-Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL101.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 16 Feb
- 2021 05:51:06 +0000
-Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 16 Feb 2021 05:51:04 +0000
-From:   Eli Cohen <elic@nvidia.com>
-To:     <mst@redhat.com>, <jasowang@redhat.com>,
-        <linux-kernel@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>
-CC:     <si-wei.liu@oracle.com>, <elic@nvidia.com>
-Subject: [PATCH] vdpa/mlx5: Extract correct pointer from driver data
-Date:   Tue, 16 Feb 2021 07:50:22 +0200
-Message-ID: <20210216055022.25248-2-elic@nvidia.com>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20210216055022.25248-1-elic@nvidia.com>
-References: <20210216055022.25248-1-elic@nvidia.com>
+        id S229830AbhBPGEu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 01:04:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50708 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229662AbhBPGEl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Feb 2021 01:04:41 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9F80764DDA;
+        Tue, 16 Feb 2021 06:03:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1613455440;
+        bh=r+OZB827JaqOfN2ks887+1Upc8nphXhkC94g+YGIn8M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=AsklDOfrNTLRJuOs3a9ZsgoPK35EJNkFEC4dBkKun7xSuklBW1Z4qnO5wWd4F/Q3Z
+         WUlFY1EUXs2pQ/vDl6Y0eY/lQ5tJRWZehE+lyAXEbJhQqzsqUe0kDnlmBfrKvWQce9
+         2wqYom6NxA9Hmtqfb2Wd0xxUL4dZLY5iah2NjES+mCY2fX6SJ7X7vb2ZlH6iSjgZsr
+         245oU9pKE9i1Kh794k7i5GLtmJNdlnPOQzQH9VP86R4dXS6PU7/CvKgMo4PtD0aVHX
+         ZikNO7d5DJ032Fma4jMNGJwpld1pJCgXE3TmdRLzzejQzkDwp8+JcoQAOETq+rlIHs
+         bQFKv0B75OBKw==
+Date:   Tue, 16 Feb 2021 08:03:56 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux X25 <linux-x25@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Martin Schiller <ms@dev.tdt.de>,
+        Krzysztof Halasa <khc@pm.waw.pl>
+Subject: Re: [PATCH net-next RFC v3] net: hdlc_x25: Queue outgoing LAPB frames
+Message-ID: <YCtgTBvR6TD8sPpe@unreal>
+References: <20210215072703.43952-1-xie.he.0141@gmail.com>
+ <YCo96zjXHyvKpbUM@unreal>
+ <CAJht_EOQBDdwa0keS9XTKZgXE44_b5cHJt=fFaKy-wFDpe6iaw@mail.gmail.com>
+ <YCrDcMYgSgdKp4eX@unreal>
+ <CAJht_EPy1Us72YGMune2G3s1TLB4TOCBFJpZt+KbVUV8uoFbfA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1613454666; bh=Emqf4hRPWOz3zcBqDWDIklUs7r/QR5F0BAA/Zmha8aY=;
-        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
-         References:MIME-Version:Content-Transfer-Encoding:Content-Type;
-        b=g04IISlDRh+s9XUrmUzy2fnhKBGdTvzfFC7tJvdB3MoBd/bVuTY0TtSK2s0jyYEnj
-         qV2j23sXeWGYEcO6st/ZlDRrhuxUrOyk9SlZ+1i1ouPZq/XeZWXLjJdED9oAFgWBif
-         LoxuCCnt3afF2X3vHiqtGmlgXGIFgntOMamoMMEqOacnqYyCMnuMfKUWb9Bl1Ifkm5
-         NBKgrz3sgOVTKiKn6/tew8iF4bzXhdPlmQ9s78oKzyrgv+BFHlrhRO8xiUEMZ9v5+z
-         QkAd6CiVc/JDktCTyaxgu7SlA1a4BVEqBodozN4HgevK+UFM7I0k2tpeC4tNgAvpeg
-         Mjw2Mqm0cMk8A==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJht_EPy1Us72YGMune2G3s1TLB4TOCBFJpZt+KbVUV8uoFbfA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-struct mlx5_vdpa_net pointer was stored in drvdata. Extract it as well
-in mlx5v_remove().
+On Mon, Feb 15, 2021 at 11:08:02AM -0800, Xie He wrote:
+> On Mon, Feb 15, 2021 at 10:54 AM Leon Romanovsky <leon@kernel.org> wrote:
+> >
+> > On Mon, Feb 15, 2021 at 09:23:32AM -0800, Xie He wrote:
+> > > On Mon, Feb 15, 2021 at 1:25 AM Leon Romanovsky <leon@kernel.org> wrote:
+> > > >
+> > > > > +     /* When transmitting data:
+> > > > > +      * first we'll remove a pseudo header of 1 byte,
+> > > > > +      * then the LAPB module will prepend an LAPB header of at most 3 bytes.
+> > > > > +      */
+> > > > > +     dev->needed_headroom = 3 - 1;
+> > > >
+> > > > 3 - 1 = 2
+> > > >
+> > > > Thanks
+> > >
+> > > Actually this is intentional. It makes the numbers more meaningful.
+> > >
+> > > The compiler should automatically generate the "2" so there would be
+> > > no runtime penalty.
+> >
+> > If you want it intentional, write it in the comment.
+> >
+> > /* When transmitting data, we will need extra 2 bytes headroom,
+> >  * which are 3 bytes of LAPB header minus one byte of pseudo header.
+> >  */
+> >  dev->needed_headroom = 2;
+>
+> I think this is unnecessary. The current comment already explains the
+> meaning of the "1" and the "3". There's no need for a reader of this
+> code to understand what a "2" is. That is the job of the compiler, not
+> the human reader.
 
-Fixes: 74c9729dd892 ("vdpa/mlx5: Connect mlx5_vdpa to auxiliary bus")
-Signed-off-by: Eli Cohen <elic@nvidia.com>
----
- drivers/vdpa/mlx5/net/mlx5_vnet.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+It is not related to compiler/human format. If you need to write "3 - 1"
+to make it easy for users, it means that your comment above is not
+full/correct/e.t.c.
 
-diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5=
-_vnet.c
-index 6b0a42183622..4103d3b64a2a 100644
---- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-+++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-@@ -2036,9 +2036,9 @@ static int mlx5v_probe(struct auxiliary_device *adev,
-=20
- static void mlx5v_remove(struct auxiliary_device *adev)
- {
--	struct mlx5_vdpa_dev *mvdev =3D dev_get_drvdata(&adev->dev);
-+	struct mlx5_vdpa_net *ndev =3D dev_get_drvdata(&adev->dev);
-=20
--	vdpa_unregister_device(&mvdev->vdev);
-+	vdpa_unregister_device(&ndev->mvdev.vdev);
- }
-=20
- static const struct auxiliary_device_id mlx5v_id_table[] =3D {
---=20
-2.29.2
-
+Thanks
