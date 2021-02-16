@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A18CE31CF07
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 18:29:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7491B31CF0D
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 18:29:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231172AbhBPR2q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 12:28:46 -0500
-Received: from mail-40131.protonmail.ch ([185.70.40.131]:25090 "EHLO
-        mail-40131.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231136AbhBPR2a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 12:28:30 -0500
-Date:   Tue, 16 Feb 2021 17:27:41 +0000
+        id S231194AbhBPR33 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 12:29:29 -0500
+Received: from mail-40134.protonmail.ch ([185.70.40.134]:24793 "EHLO
+        mail-40134.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231180AbhBPR2x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 12:28:53 -0500
+Date:   Tue, 16 Feb 2021 17:28:01 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1613496468; bh=lgg1wNkMT8XQOATCoVN+lIKDRAuSPLux4jRMr6UVN+I=;
+        t=1613496489; bh=rD+msxxQv7QdHAN2CCbl57zhJ/ALAb4aGQXqzumABFM=;
         h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=o81foMYZiLen1/5OKxrbcRO6UIfkOhK4itH5dbhNXRBK5NS0Q2STLXiBD4Db4GD5v
-         WY+dfID5CrS4Aa9BAacWJjfbm3gNuO314IcC3sd0iQCUDM1JooVKhr2F8qBtPzZHMx
-         gKgKfrLajjSrtwT98drlRZwgvI6Q//i74u6pR63qxVGFMLMvB35UagpzIUWNKVwP13
-         tNP1fqHtvvmJVEOOtjscT3liuI7SooMK5Q5z9TCJFWCM6ultcY9gffcj0t4A0kWfCN
-         XpigJKSvm4uDCa6RB8wHrxnN3humeLg4HsGz+xHxWSPCJ4Ty2IRmRmEN2dwqGYTaqg
-         7PPTny8P0sWjw==
+        b=Ni6bHfF4XFjx2ia6fO83Q0T518R6Bel8xuoyg+zv8ELN+MYQjZ5VeId9LyxU76t1X
+         nfH2p9IRFZk6CFbotdwRXLqAlRzys65NPwy667ttMX/l3gvr0sZRIk7S9BXm2fVWbx
+         sxpEo6BMpSOEIVUhyfTIXWciksEtsLXqray4Sae6ahQYlTr3DFhT6WzlSSl6/dbhTx
+         iMEwZ6vK9yDLyK/cOjPL/K/7u2utm6iqh5Jjc4Wf+kFUP3/m1OGVv+Mkm/xanPxg/S
+         1YmxrUP19F1jZDdjqNCNo5vE5rJXGs+TMycFWCq3oqVYYTPX3bzljFVRsopQMwlXA5
+         y07XqhHkrv1gA==
 To:     Magnus Karlsson <magnus.karlsson@intel.com>,
         =?utf-8?Q?Bj=C3=B6rn_T=C3=B6pel?= <bjorn@kernel.org>
 From:   Alexander Lobakin <alobakin@pm.me>
@@ -44,8 +44,8 @@ Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, bpf@vger.kernel.org
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH v6 bpf-next 4/6] virtio-net: support IFF_TX_SKB_NO_LINEAR
-Message-ID: <20210216172640.374487-5-alobakin@pm.me>
+Subject: [PATCH v6 bpf-next 5/6] xsk: respect device's headroom and tailroom on generic xmit path
+Message-ID: <20210216172640.374487-6-alobakin@pm.me>
 In-Reply-To: <20210216172640.374487-1-alobakin@pm.me>
 References: <20210216172640.374487-1-alobakin@pm.me>
 MIME-Version: 1.0
@@ -60,32 +60,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+xsk_generic_xmit() allocates a new skb and then queues it for
+xmitting. The size of new skb's headroom is desc->len, so it comes
+to the driver/device with no reserved headroom and/or tailroom.
+Lots of drivers need some headroom (and sometimes tailroom) to
+prepend (and/or append) some headers or data, e.g. CPU tags,
+device-specific headers/descriptors (LSO, TLS etc.), and if case
+of no available space skb_cow_head() will reallocate the skb.
+Reallocations are unwanted on fast-path, especially when it comes
+to XDP, so generic XSK xmit should reserve the spaces declared in
+dev->needed_headroom and dev->needed tailroom to avoid them.
 
-Virtio net supports the case where the skb linear space is empty, so add
-priv_flags.
+Note on max(NET_SKB_PAD, L1_CACHE_ALIGN(dev->needed_headroom)):
 
-Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
+Usually, output functions reserve LL_RESERVED_SPACE(dev), which
+consists of dev->hard_header_len + dev->needed_headroom, aligned
+by 16.
+However, on XSK xmit hard header is already here in the chunk, so
+hard_header_len is not needed. But it'd still be better to align
+data up to cacheline, while reserving no less than driver requests
+for headroom. NET_SKB_PAD here is to double-insure there will be
+no reallocations even when the driver advertises no needed_headroom,
+but in fact need it (not so rare case).
+
+Fixes: 35fcde7f8deb ("xsk: support for Tx")
 Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
 ---
- drivers/net/virtio_net.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/xdp/xsk.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index ba8e63792549..f2ff6c3906c1 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -2972,7 +2972,8 @@ static int virtnet_probe(struct virtio_device *vdev)
- =09=09return -ENOMEM;
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index 4faabd1ecfd1..143979ea4165 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -454,12 +454,16 @@ static int xsk_generic_xmit(struct sock *sk)
+ =09struct sk_buff *skb;
+ =09unsigned long flags;
+ =09int err =3D 0;
++=09u32 hr, tr;
 =20
- =09/* Set up network device as normal. */
--=09dev->priv_flags |=3D IFF_UNICAST_FLT | IFF_LIVE_ADDR_CHANGE;
-+=09dev->priv_flags |=3D IFF_UNICAST_FLT | IFF_LIVE_ADDR_CHANGE |
-+=09=09=09   IFF_TX_SKB_NO_LINEAR;
- =09dev->netdev_ops =3D &virtnet_netdev;
- =09dev->features =3D NETIF_F_HIGHDMA;
+ =09mutex_lock(&xs->mutex);
 =20
+ =09if (xs->queue_id >=3D xs->dev->real_num_tx_queues)
+ =09=09goto out;
+=20
++=09hr =3D max(NET_SKB_PAD, L1_CACHE_ALIGN(xs->dev->needed_headroom));
++=09tr =3D xs->dev->needed_tailroom;
++
+ =09while (xskq_cons_peek_desc(xs->tx, &desc, xs->pool)) {
+ =09=09char *buffer;
+ =09=09u64 addr;
+@@ -471,11 +475,13 @@ static int xsk_generic_xmit(struct sock *sk)
+ =09=09}
+=20
+ =09=09len =3D desc.len;
+-=09=09skb =3D sock_alloc_send_skb(sk, len, 1, &err);
++=09=09skb =3D sock_alloc_send_skb(sk, hr + len + tr, 1, &err);
+ =09=09if (unlikely(!skb))
+ =09=09=09goto out;
+=20
++=09=09skb_reserve(skb, hr);
+ =09=09skb_put(skb, len);
++
+ =09=09addr =3D desc.addr;
+ =09=09buffer =3D xsk_buff_raw_get_data(xs->pool, addr);
+ =09=09err =3D skb_store_bits(skb, 0, buffer, len);
 --=20
 2.30.1
 
