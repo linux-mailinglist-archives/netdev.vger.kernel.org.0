@@ -2,158 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FE7C31CBFC
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 15:34:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4390631CC08
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 15:36:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230125AbhBPOb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 09:31:56 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:57472 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230073AbhBPObn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 09:31:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613485815;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=nb9Kqw3jYRHWptfCeEgA2EWrWzfESD8aGU2YzYJvKpI=;
-        b=Hp18iAo+LcJdwKDHB7/RIklDI2f648Nr1onbbUOvTKCkLEfCz+CC74u6o1PG6l10YJoVFF
-        21uyQJDCk2bzx/fxFyr1YnzHd17cRMpsX3nzmSTAgLtHrOViNioV6ijOzu+vTxNLMA3aMo
-        0t/D1DskTsPEn9Vmk7p1FGlS6mCPacI=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-32-Y8apzlewOIm9-Fj2ba-3MQ-1; Tue, 16 Feb 2021 09:30:10 -0500
-X-MC-Unique: Y8apzlewOIm9-Fj2ba-3MQ-1
-Received: by mail-ed1-f72.google.com with SMTP id y9so5403049edv.15
-        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 06:30:10 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=nb9Kqw3jYRHWptfCeEgA2EWrWzfESD8aGU2YzYJvKpI=;
-        b=pjaaSJgHSpVBaK80+FDiWsNNxR25gCrogTQoUTJ/QECwh/rWu4Tg6vBcWtf/xkCQZW
-         8XNX8zK8w7mgfZpP4NCoCbkJWrp99Xfm/PQyo+KddFbQf9avthzAi2Nh34boBm9BFfXI
-         5Ez4lv7bnI5XriO2beh/+YaLglNZbfNRGLTNjXmc0r9d4UTWO1y8nX6YeKiNKNKWo7qh
-         23QZO9zzxJZ5fmI2sQGssDUhKYbKrRO0Aat873n8mFKSrz342VjfNZaS3xJKJr+xgXhI
-         q0pq0Q7SGKcVvYcZoQTyPc2m9QvVEnsrD6R6W+1cz/AGo3i2HgY9aOPSPUW95nxRvxLN
-         BFLg==
-X-Gm-Message-State: AOAM533Ohad3bgirzzgy8gRDQdq/DCBV0hyHhWbfoX+oDpDoINfiQl8O
-        TC6BhNnqmW8PpAjFuknuboGarazJTyi+3uy8OiR0Ao0qeqZc/p909/ytPjxV6YvwQCA2+JlkhWZ
-        7wEXLfCuJLrqvyos5
-X-Received: by 2002:aa7:cd8d:: with SMTP id x13mr20747749edv.286.1613485809383;
-        Tue, 16 Feb 2021 06:30:09 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzPnIbI5zNEUJMUQGdvUemv2Bdqe23PVRQQVPIj0wJyHJ00fcgoDHNUcRSpuNnhIw8rtDHhkg==
-X-Received: by 2002:aa7:cd8d:: with SMTP id x13mr20747652edv.286.1613485808745;
-        Tue, 16 Feb 2021 06:30:08 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id hr3sm12875181ejc.41.2021.02.16.06.30.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Feb 2021 06:30:08 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id BDCAE1805FA; Tue, 16 Feb 2021 15:30:07 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Marek Majtyka <alardam@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Saeed Mahameed <saeed@kernel.org>,
-        David Ahern <dsahern@gmail.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        id S230345AbhBPOev (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 09:34:51 -0500
+Received: from mail-40133.protonmail.ch ([185.70.40.133]:40121 "EHLO
+        mail-40133.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229796AbhBPOei (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 09:34:38 -0500
+Date:   Tue, 16 Feb 2021 14:33:49 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1613486034; bh=pa/HIRdVekskrI+yiR4JSN6JX+/jAqm2kRAxdkvQIPE=;
+        h=Date:To:From:Cc:Reply-To:Subject:From;
+        b=Dwz3CXbhJIOAaQm8x4mvkXElCpP8X+8casX/i7eCeIsalvy0OmO04vPaVtLcUeaw7
+         qFQUfEd9oV8ps1Diphox+DNzy4vRR+mUsVncOE1I7QopYkOhY1HtUZ9EB6oMoYfd0f
+         NWaJJm6MaCNDs04PhuFTiARiRAMFDEYntq3eKE5eP6aGa2raz1jBUiiNMWacmjSIuw
+         lwPmuPzrQBXDAPVALXPk+UcPk314PV9jIElCJgF4lj7j++k1qxmxPxZGl+a15YoZ3R
+         xFZ7nGFNdW6+SWHFsS/vmabKIfR3MwTqWcttJTXQUXhJQYezGWvO98O1RsqeDNLwop
+         3QbLtKe+HtOew==
+To:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?utf-8?Q?Bj=C3=B6rn_T=C3=B6pel?= <bjorn@kernel.org>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Jonathan Lemon <jonathan.lemon@gmail.com>,
         Alexei Starovoitov <ast@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: Re: [PATCH v2 bpf 1/5] net: ethtool: add xdp properties flag set
-In-Reply-To: <CAAOQfrHeqKMhZbJoHrdtOtekucuO7K4ASMwT=fS3WTx1XyhjTA@mail.gmail.com>
-References: <20201204102901.109709-1-marekx.majtyka@intel.com>
- <20201209125223.49096d50@carbon>
- <e1573338-17c0-48f4-b4cd-28eeb7ce699a@gmail.com>
- <1e5e044c8382a68a8a547a1892b48fb21d53dbb9.camel@kernel.org>
- <cb6b6f50-7cf1-6519-a87a-6b0750c24029@gmail.com>
- <f4eb614ac91ee7623d13ea77ff3c005f678c512b.camel@kernel.org>
- <d5be0627-6a11-9c1f-8507-cc1a1421dade@gmail.com>
- <6f8c23d4ac60525830399754b4891c12943b63ac.camel@kernel.org>
- <CAAOQfrHN1-oHmbOksDv-BKWv4gDF2zHZ5dTew6R_QTh6s_1abg@mail.gmail.com>
- <87h7mvsr0e.fsf@toke.dk>
- <CAAOQfrHA+-BsikeQzXYcK_32BZMbm54x5p5YhAiBj==uaZvG1w@mail.gmail.com>
- <87bld2smi9.fsf@toke.dk>
- <20210202113456.30cfe21e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAAOQfrGqcsn3wu5oxzHYxtE8iK3=gFdTka5HSh5Fe9Hc6HWRWA@mail.gmail.com>
- <20210203090232.4a259958@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <874kikry66.fsf@toke.dk>
- <20210210103135.38921f85@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <87czx7r0w8.fsf@toke.dk>
- <20210211172603.17d6a8f6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAADnVQJ_juVMxSKUvHBEsLNQoJ4mvkqyAV8XF4mmz-dO8saUzQ@mail.gmail.com>
- <CAAOQfrHeqKMhZbJoHrdtOtekucuO7K4ASMwT=fS3WTx1XyhjTA@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 16 Feb 2021 15:30:07 +0100
-Message-ID: <8735xwaxw0.fsf@toke.dk>
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Dust Li <dust.li@linux.alibaba.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: [PATCH v5 bpf-next 0/6] xsk: build skb by page (aka generic zerocopy xmit)
+Message-ID: <20210216143333.5861-1-alobakin@pm.me>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Marek Majtyka <alardam@gmail.com> writes:
+This series introduces XSK generic zerocopy xmit by adding XSK umem
+pages as skb frags instead of copying data to linear space.
+The only requirement for this for drivers is to be able to xmit skbs
+with skb_headlen(skb) =3D=3D 0, i.e. all data including hard headers
+starts from frag 0.
+To indicate whether a particular driver supports this, a new netdev
+priv flag, IFF_TX_SKB_NO_LINEAR, is added (and declared in virtio_net
+as it's already capable of doing it). So consider implementing this
+in your drivers to greatly speed-up generic XSK xmit.
 
-> On Fri, Feb 12, 2021 at 3:05 AM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
->>
->> On Thu, Feb 11, 2021 at 5:26 PM Jakub Kicinski <kuba@kernel.org> wrote:
->> >
->> > Perhaps I had seen one too many vendor incompatibility to trust that
->> > adding a driver API without a validation suite will result in something
->> > usable in production settings.
->>
->> I agree with Jakub. I don't see how extra ethtool reporting will help.
->> Anyone who wants to know whether eth0 supports XDP_REDIRECT can already do so:
->> ethtool -S eth0 | grep xdp_redirect
->
-> Doing things right can never be treated as an addition. It is the
-> other way around. Option -S is for statistics and additionally it can
-> show something (AFAIR there wasn't such counter xdp_redirect, it must
-> be something new, thanks for the info). But  nevertheless it cannot
-> cover all needs IMO.
->
-> Some questions worth to consider:
-> Is this extra reporting function of statistics clearly documented in
-> ethtool? Is this going to be clearly documented? Would it be easier
-> for users/admins to find it?
-> What about zero copy? Can it be available via statistics, too?
-> What about drivers XDP transmit locking flag (latest request from Jesper)?
+The first two bits refactor netdev_priv_flags a bit to harden them
+in terms of bitfield overflow, as IFF_TX_SKB_NO_LINEAR is the last
+one that fits into unsigned int.
+The fifth patch adds headroom and tailroom reservations for the
+allocated skbs on XSK generic xmit path. This ensures there won't
+be any unwanted skb reallocations on fast-path due to headroom and/or
+tailroom driver/device requirements (own headers/descriptors etc.).
+The other three add a new private flag, declare it in virtio_net
+driver and introduce generic XSK zerocopy xmit itself.
 
+The main body of work is created and done by Xuan Zhuo. His original
+cover letter:
 
-There is no way the statistics is enough. And saying "just grep for
-xdp_redirect in ethtool -S" is bordering on active hostility towards
-users.
+v3:
+    Optimized code
 
-We need drivers to export explicit features so we can do things like:
+v2:
+    1. add priv_flags IFF_TX_SKB_NO_LINEAR instead of netdev_feature
+    2. split the patch to three:
+        a. add priv_flags IFF_TX_SKB_NO_LINEAR
+        b. virtio net add priv_flags IFF_TX_SKB_NO_LINEAR
+        c. When there is support this flag, construct skb without linear
+           space
+    3. use ERR_PTR() and PTR_ERR() to handle the err
 
-- Explicitly reject attaching a program that tries to do xdp_redirect on
-  an interface that doesn't support it.
+v1 message log:
+---------------
 
-- Prevent devices that don't implement ndo_xdp_xmit() from being
-  inserted into a devmap (oh, and this is on thing you can't know at all
-  from the statistics, BTW).
+This patch is used to construct skb based on page to save memory copy
+overhead.
 
-- Expose the features in a machine-readable format (like the ethtool
-  flags in your patch) so applications can discover in a reliable way
-  what is available and do proper fallback if features are missing.
+This has one problem:
 
-I can accept that we need some kind of conformance test to define what
-each flag means (which would be kinda like a selftest for the feature
-flags), but we definitely need the feature flags themselves!
+We construct the skb by fill the data page as a frag into the skb. In
+this way, the linear space is empty, and the header information is also
+in the frag, not in the linear space, which is not allowed for some
+network cards. For example, Mellanox Technologies MT27710 Family
+[ConnectX-4 Lx] will get the following error message:
 
--Toke
+    mlx5_core 0000:3b:00.1 eth1: Error cqe on cqn 0x817, ci 0x8,
+    qn 0x1dbb, opcode 0xd, syndrome 0x1, vendor syndrome 0x68
+    00000000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+    00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+    00000020: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+    00000030: 00 00 00 00 60 10 68 01 0a 00 1d bb 00 0f 9f d2
+    WQE DUMP: WQ size 1024 WQ cur size 0, WQE index 0xf, len: 64
+    00000000: 00 00 0f 0a 00 1d bb 03 00 00 00 08 00 00 00 00
+    00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+    00000020: 00 00 00 2b 00 08 00 00 00 00 00 05 9e e3 08 00
+    00000030: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+    mlx5_core 0000:3b:00.1 eth1: ERR CQE on SQ: 0x1dbb
+
+I also tried to use build_skb to construct skb, but because of the
+existence of skb_shinfo, it must be behind the linear space, so this
+method is not working. We can't put skb_shinfo on desc->addr, it will be
+exposed to users, this is not safe.
+
+Finally, I added a feature NETIF_F_SKB_NO_LINEAR to identify whether the
+network card supports the header information of the packet in the frag
+and not in the linear space.
+
+---------------- Performance Testing ------------
+
+The test environment is Aliyun ECS server.
+Test cmd:
+```
+xdpsock -i eth0 -t  -S -s <msg size>
+```
+
+Test result data:
+
+size    64      512     1024    1500
+copy    1916747 1775988 1600203 1440054
+page    1974058 1953655 1945463 1904478
+percent 3.0%    10.0%   21.58%  32.3%
+
+From v4 [1]:
+ - fix 0002 build error due to inverted static_assert() condition
+   (0day bot);
+ - collect two Acked-bys (Magnus).
+
+From v3 [0]:
+ - refactor netdev_priv_flags to make it easier to add new ones and
+   prevent bitwidth overflow;
+ - add headroom (both standard and zerocopy) and tailroom (standard)
+   reservation in skb for drivers to avoid potential reallocations;
+ - fix skb->truesize accounting;
+ - misc comment rewords.
+
+[0] https://lore.kernel.org/netdev/cover.1611236588.git.xuanzhuo@linux.alib=
+aba.com
+[1] https://lore.kernel.org/netdev/20210216113740.62041-1-alobakin@pm.me
+
+Alexander Lobakin (3):
+  netdev_priv_flags: add missing IFF_PHONY_HEADROOM self-definition
+  netdevice: check for net_device::priv_flags bitfield overflow
+  xsk: respect device's headroom and tailroom on generic xmit path
+
+Xuan Zhuo (3):
+  net: add priv_flags for allow tx skb without linear
+  virtio-net: support IFF_TX_SKB_NO_LINEAR
+  xsk: build skb by page (aka generic zerocopy xmit)
+
+ drivers/net/virtio_net.c  |   3 +-
+ include/linux/netdevice.h | 138 +++++++++++++++++++++-----------------
+ net/xdp/xsk.c             | 113 ++++++++++++++++++++++++++-----
+ 3 files changed, 173 insertions(+), 81 deletions(-)
+
+--=20
+2.30.1
+
 
