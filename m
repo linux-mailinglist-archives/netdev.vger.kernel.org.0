@@ -2,127 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1759231C99D
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 12:25:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AE4931C9BA
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 12:34:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230000AbhBPLZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 06:25:02 -0500
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:39076 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229761AbhBPLZA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 06:25:00 -0500
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 11GBMvuo017469;
-        Tue, 16 Feb 2021 05:22:57 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1613474577;
-        bh=tQ1UDP5cdCJOnIdIDk0m4x6l7OoqNMl/eT40Lh0UPR0=;
-        h=From:Subject:To:CC:References:Date:In-Reply-To;
-        b=TcTmnU3UwG3wfWNIH9hQ3dCW3wwMUOxH1in80hi5Bck485afl/lScXQdPnAnCSRGB
-         d8uFIqiKwV6ojpH0TeoQscv89GTYCFGCqyahiOVm7ddLJYEugZzSA5qZNtpIEyh9Jq
-         EkJ72X2hu7tc8hKjQCnUA6FS5rQZyCBNu212IhJc=
-Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 11GBMveR043990
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 16 Feb 2021 05:22:57 -0600
-Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 16
- Feb 2021 05:22:57 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Tue, 16 Feb 2021 05:22:57 -0600
-Received: from [10.250.234.120] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 11GBMobA107909;
-        Tue, 16 Feb 2021 05:22:51 -0600
-From:   Vignesh Raghavendra <vigneshr@ti.com>
-Subject: Re: [PATCH v4 net-next 0/9] Cleanup in brport flags switchdev offload
- for DSA
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     "Strashko, Grygorii" <grygorii.strashko@ti.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
+        id S230295AbhBPLdg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 06:33:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42138 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230280AbhBPLdF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 06:33:05 -0500
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0B88C06174A
+        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 03:32:23 -0800 (PST)
+Received: by mail-ej1-x631.google.com with SMTP id do6so5504343ejc.3
+        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 03:32:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6S+kXSrKu/VHSFbRfdiANJw3TdGnhPGjGtViqpZoq1I=;
+        b=lInqdYsDXCbjDSJKcOmlgL7xaueiSYwPJ7btFoa1IjO97Y6RcUTwzDKVHYj7J2d36h
+         tsDXkX8S/U2kH4jjhEmDS38ClcEILrt3pFXeC+k531hTkM249J+78SEKQQ6KGItivlwE
+         6GzPG9LqxAkIdBYATYiXpzGdg17GUc8viDFAs7/qmflGxdHd393qVnWfnKn8hfKoPakp
+         i1h6TaVFzqLBdBPPkd3Ln1eCkBUoHwzvJbaTmysU6G9rHKjMfeOtDYe0ET3gY7dyI3Fr
+         fgpmw3ZtStRTquVvCwoMnKjbjtZ+7rzxnD8hgTzxkErtJc86rqhWw+TvbiMUwHQZAFFR
+         SFIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6S+kXSrKu/VHSFbRfdiANJw3TdGnhPGjGtViqpZoq1I=;
+        b=TcgwQ/IUmS2NR7SY0mlNvUD55g7r8MJPCFzVRVUYVeVP8BYfMukN3Kkkx/EvpeeVeW
+         iGOXwiGxnhAiR0nhKReGXmeyCAex6CXnRJnlqkX0sQwdFANTUj6NEVO2h5tXvHPav9wo
+         YjmiBIKx5/IYbFr+CM/rj+aGz3QesSzo7W1xQOvGveZljKJOSble/BBLuSwxWfUdmEsB
+         /nppwG/VJhW0Iv3krEJhmcpxAwf8FdT0BabFyFT/XrhR55XvkFRQyzaS3Jr05yrhLPLN
+         /qAHI/xV2NsBaheZGQqyOJSeHgPYFnXXdHdannuEnS3ftPAl8rv//28F1V/WlwriV598
+         EqmA==
+X-Gm-Message-State: AOAM533k8hXZ+Bb6/pg7Ehzbd8DzlRdI5dMvmJdyzslkK5uEGC+FW9qB
+        fHQ6GYpu52uKPOF04eXWtwE=
+X-Google-Smtp-Source: ABdhPJzbtd9yJmDD7ORE9dqgCkAetmeQ0VJl4bU7l3Avsyr0swqWiNi3iGLHOPnBwRn0UcYc7dHfOw==
+X-Received: by 2002:a17:907:3f13:: with SMTP id hq19mr20100988ejc.142.1613475142532;
+        Tue, 16 Feb 2021 03:32:22 -0800 (PST)
+Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id hd39sm12363636ejc.116.2021.02.16.03.32.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Feb 2021 03:32:21 -0800 (PST)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "bridge@lists.linux-foundation.org" 
-        <bridge@lists.linux-foundation.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ivan Vecera <ivecera@redhat.com>,
-        "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>
-References: <20210212010531.2722925-1-olteanv@gmail.com>
- <97ae293a-f59d-cc7c-21a6-f83880c69c71@ti.com>
- <ba7350f1-f9ff-b77e-65c9-cd5a4ae652d8@ti.com>
- <20210212144053.2pumwc6mlt4l2gcj@skbuf>
-Message-ID: <adcbe8ce-60b3-551a-941b-f8de52a134d7@ti.com>
-Date:   Tue, 16 Feb 2021 16:52:50 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        UNGLinuxDriver@microchip.com
+Subject: [PATCH net-next] net: dsa: felix: perform teardown on error in felix_setup
+Date:   Tue, 16 Feb 2021 13:32:13 +0200
+Message-Id: <20210216113213.2854324-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20210212144053.2pumwc6mlt4l2gcj@skbuf>
-Content-Type: text/plain; charset="windows-1252"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-On 2/12/21 8:10 PM, Vladimir Oltean wrote:
-> On Fri, Feb 12, 2021 at 08:01:33PM +0530, Vignesh Raghavendra wrote:
->> Hi Vladimir,
->>
->> On 2/12/21 7:47 PM, Grygorii Strashko wrote:
->>>
->>>
->>> On 12/02/2021 03:05, Vladimir Oltean wrote:
->>>> From: Vladimir Oltean <vladimir.oltean@nxp.com>
->> [...]
->>>
->>> Sorry, but we seems just added more work for you.
->>> https://lore.kernel.org/patchwork/cover/1379380/
->>>
->>
->> Could you squash these when you post new version:
->> Sorry for not noticing earlier.
-> 
-> Hey, thanks for the fixup patch and congrats on the new driver support
-> for the AM65 NUSS! What's functionally different compared to the other
-> CPSW instantiations?
-> 
+If the driver fails to probe, it would be nice to not leak memory.
 
-CPSW is mostly present on older TI's 32 bit SoCs and can support upto 2
-external ports.
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+I've decided to target this patch towards net-next because:
+- no user has complained about this being an issue
+- in theory there should be a Fixes: 56051948773e ("net: dsa: ocelot:
+  add driver for Felix switch family") but the fix already conflicts
+  with some patches that are in net-next:
+  * f59fd9cab730 ("net: mscc: ocelot: configure watermarks using devlink-sb")
+  * c54913c1d4ee ("net: dsa: ocelot: request DSA to fix up lack of address learning on CPU port")
+  and it would unnecessarily cause maintainance headaches to resolve the
+  conflicts.
+  Alternatively I could wait until net-next is merged into net and send
+  the bugfix at that point, but the result would be the same: the patch
+  would not be backportable basically anywhere.
 
-AM65 NUSS is next generation multi port switch IP (up to 8 external
-ports) present on TI's newer 64 bit platform. It also has different DMA integration and has native HW support to work as both Multi Mac and Switch mode.
+ drivers/net/dsa/ocelot/felix.c | 21 +++++++++++++++++++--
+ 1 file changed, 19 insertions(+), 2 deletions(-)
 
-> Also, do I get it right that you also tested the bridge port flags
-> passed in the new format and that they still work ok? May I add your
-> Tested-by tag?
-> 
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index 3e72f0a79918..4a300ef41de6 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -1202,7 +1202,7 @@ static int felix_setup(struct dsa_switch *ds)
+ 
+ 	err = ocelot_init(ocelot);
+ 	if (err)
+-		return err;
++		goto out_mdiobus_free;
+ 
+ 	if (ocelot->ptp) {
+ 		err = ocelot_init_timestamp(ocelot, felix->info->ptp_caps);
+@@ -1227,7 +1227,7 @@ static int felix_setup(struct dsa_switch *ds)
+ 
+ 	err = ocelot_devlink_sb_register(ocelot);
+ 	if (err)
+-		return err;
++		goto out_deinit_ports;
+ 
+ 	for (port = 0; port < ds->num_ports; port++) {
+ 		if (!dsa_is_cpu_port(ds, port))
+@@ -1243,6 +1243,23 @@ static int felix_setup(struct dsa_switch *ds)
+ 	ds->assisted_learning_on_cpu_port = true;
+ 
+ 	return 0;
++
++out_deinit_ports:
++	for (port = 0; port < ocelot->num_phys_ports; port++) {
++		if (dsa_is_unused_port(ds, port))
++			continue;
++
++		ocelot_deinit_port(ocelot, port);
++	}
++
++	ocelot_deinit_timestamp(ocelot);
++	ocelot_deinit(ocelot);
++
++out_mdiobus_free:
++	if (felix->info->mdio_bus_free)
++		felix->info->mdio_bus_free(ocelot);
++
++	return err;
+ }
+ 
+ static void felix_teardown(struct dsa_switch *ds)
+-- 
+2.25.1
 
-Sorry, I have not done extensive testing but tried couple of cmds. Those worked as expected:
-
-root@evm:~# ip link set eth0 type bridge_slave flood off mcast_flood off learning off                                                  
-Error: bridge: bridge flag offload is not supported.
-
-root@evm:~# ip link set eth0 type bridge_slave  mcast_flood off
-[ 65.025285] am65-cpsw-nuss 8000000.ethernet eth0: BR_MCAST_FLOOD: 0 port 1
-
-Regards
-Vignesh
