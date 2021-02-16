@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5C8C31C9F4
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 12:43:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DCB7C31C9F9
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 12:43:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230291AbhBPLlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 06:41:12 -0500
-Received: from mail-40136.protonmail.ch ([185.70.40.136]:43525 "EHLO
+        id S230412AbhBPLl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 06:41:58 -0500
+Received: from mail-40136.protonmail.ch ([185.70.40.136]:52532 "EHLO
         mail-40136.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229944AbhBPLjM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 06:39:12 -0500
-Date:   Tue, 16 Feb 2021 11:38:20 +0000
+        with ESMTP id S230381AbhBPLjW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 06:39:22 -0500
+Date:   Tue, 16 Feb 2021 11:38:34 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1613475507; bh=lYDCa6iLqFT+6be7jVyPBd42LZlNQ5lJltfvJUcfGWA=;
+        t=1613475517; bh=jIXE5w2oQPgxeatOYIJ5XGHcdrWadlvRgtBHKR6uEoQ=;
         h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=i0/oJfywB0fkAs8SAHDbsbjZAexwOIlP7ceB8srP/xZ3sCxcUw2qHaMc2P4tz35pE
-         RiQDcHYNp6CyBy41VwNAeyscX1PG+gO0uvGO5s0h26WgCYkw9TxrKEcY6P8x7GFlG1
-         +I0+H/0gU4t+KCCLX97d1iEub9unmY/fkuOMeaQSlCsfvsD26eWIPvjKjdLsENphDe
-         qJapq9b/fITj1irsKNwH0Eour6eSjI8bmcg47bAD/IFtbtWRpqupYjVJFrE9gKEE4W
-         92+g3Ab7Zj4mi7v2hmKod614TJSgeICz7VGIJeey3WYY1Z6v2gFZromCTV96++2Ccg
-         tg994EY4nCodA==
+        b=eCD3ZSnbkwKQyQq0up6qK7z7UaKEYi7BoHgnRwTAw4Vd97kq6d4nEDxuPHhDxpiDa
+         10DMZmFyys6Szx3vP18bi/1uz9BxalzlqlJ7or6ea2mNMK6L+wqKkx3eQb5e5P56+W
+         MuT96ukeDQMfwZ7gsgoAU2BcPrkLh7q3j8iYLUuVvZVQJjb5zdohoNWjtvrSOXZqUs
+         GaG03SKxC3DVXXCe15NMyLpZxOquah9zdLVG/kbpUZv4g3sGP3UIqzAg7tkijQL3J2
+         HhTcO0ZUnlhuYgCIQMuWTT6qu8x1/pErc0wa5/VGCW2aMslSR3Ts4BojA6yBNdXQ25
+         bjlchsfqBgbcg==
 To:     Magnus Karlsson <magnus.karlsson@intel.com>,
         =?utf-8?Q?Bj=C3=B6rn_T=C3=B6pel?= <bjorn@kernel.org>
 From:   Alexander Lobakin <alobakin@pm.me>
@@ -44,15 +44,15 @@ Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, bpf@vger.kernel.org
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH v4 bpf-next 1/6] netdev_priv_flags: add missing IFF_PHONY_HEADROOM self-definition
-Message-ID: <20210216113740.62041-2-alobakin@pm.me>
+Subject: [PATCH v4 bpf-next 2/6] netdevice: check for net_device::priv_flags bitfield overflow
+Message-ID: <20210216113740.62041-3-alobakin@pm.me>
 In-Reply-To: <20210216113740.62041-1-alobakin@pm.me>
 References: <20210216113740.62041-1-alobakin@pm.me>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+X-Spam-Status: No, score=-0.4 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,UPPERCASE_50_75 shortcircuit=no
         autolearn=disabled version=3.4.4
 X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
         mailout.protonmail.ch
@@ -60,26 +60,171 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is harmless for now, but comes fatal for the subsequent patch.
+We almost ran out of unsigned int bitwidth. Define priv flags and
+check for potential overflow in the fashion of netdev_features_t.
+Defined this way, priv_flags can be easily expanded later with
+just changing its typedef.
 
-Fixes: 871b642adebe3 ("netdev: introduce ndo_set_rx_headroom")
 Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 ---
- include/linux/netdevice.h | 1 +
- 1 file changed, 1 insertion(+)
+ include/linux/netdevice.h | 135 ++++++++++++++++++++------------------
+ 1 file changed, 72 insertions(+), 63 deletions(-)
 
 diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index b9bcbfde7849..b895973390ee 100644
+index b895973390ee..fa4ab77ce81e 100644
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -1584,6 +1584,7 @@ enum netdev_priv_flags {
- #define IFF_L3MDEV_SLAVE=09=09IFF_L3MDEV_SLAVE
- #define IFF_TEAM=09=09=09IFF_TEAM
- #define IFF_RXFH_CONFIGURED=09=09IFF_RXFH_CONFIGURED
-+#define IFF_PHONY_HEADROOM=09=09IFF_PHONY_HEADROOM
- #define IFF_MACSEC=09=09=09IFF_MACSEC
- #define IFF_NO_RX_HANDLER=09=09IFF_NO_RX_HANDLER
- #define IFF_FAILOVER=09=09=09IFF_FAILOVER
+@@ -1527,70 +1527,79 @@ struct net_device_ops {
+  * @IFF_LIVE_RENAME_OK: rename is allowed while device is up and running
+  */
+ enum netdev_priv_flags {
+-=09IFF_802_1Q_VLAN=09=09=09=3D 1<<0,
+-=09IFF_EBRIDGE=09=09=09=3D 1<<1,
+-=09IFF_BONDING=09=09=09=3D 1<<2,
+-=09IFF_ISATAP=09=09=09=3D 1<<3,
+-=09IFF_WAN_HDLC=09=09=09=3D 1<<4,
+-=09IFF_XMIT_DST_RELEASE=09=09=3D 1<<5,
+-=09IFF_DONT_BRIDGE=09=09=09=3D 1<<6,
+-=09IFF_DISABLE_NETPOLL=09=09=3D 1<<7,
+-=09IFF_MACVLAN_PORT=09=09=3D 1<<8,
+-=09IFF_BRIDGE_PORT=09=09=09=3D 1<<9,
+-=09IFF_OVS_DATAPATH=09=09=3D 1<<10,
+-=09IFF_TX_SKB_SHARING=09=09=3D 1<<11,
+-=09IFF_UNICAST_FLT=09=09=09=3D 1<<12,
+-=09IFF_TEAM_PORT=09=09=09=3D 1<<13,
+-=09IFF_SUPP_NOFCS=09=09=09=3D 1<<14,
+-=09IFF_LIVE_ADDR_CHANGE=09=09=3D 1<<15,
+-=09IFF_MACVLAN=09=09=09=3D 1<<16,
+-=09IFF_XMIT_DST_RELEASE_PERM=09=3D 1<<17,
+-=09IFF_L3MDEV_MASTER=09=09=3D 1<<18,
+-=09IFF_NO_QUEUE=09=09=09=3D 1<<19,
+-=09IFF_OPENVSWITCH=09=09=09=3D 1<<20,
+-=09IFF_L3MDEV_SLAVE=09=09=3D 1<<21,
+-=09IFF_TEAM=09=09=09=3D 1<<22,
+-=09IFF_RXFH_CONFIGURED=09=09=3D 1<<23,
+-=09IFF_PHONY_HEADROOM=09=09=3D 1<<24,
+-=09IFF_MACSEC=09=09=09=3D 1<<25,
+-=09IFF_NO_RX_HANDLER=09=09=3D 1<<26,
+-=09IFF_FAILOVER=09=09=09=3D 1<<27,
+-=09IFF_FAILOVER_SLAVE=09=09=3D 1<<28,
+-=09IFF_L3MDEV_RX_HANDLER=09=09=3D 1<<29,
+-=09IFF_LIVE_RENAME_OK=09=09=3D 1<<30,
++=09IFF_802_1Q_VLAN_BIT,
++=09IFF_EBRIDGE_BIT,
++=09IFF_BONDING_BIT,
++=09IFF_ISATAP_BIT,
++=09IFF_WAN_HDLC_BIT,
++=09IFF_XMIT_DST_RELEASE_BIT,
++=09IFF_DONT_BRIDGE_BIT,
++=09IFF_DISABLE_NETPOLL_BIT,
++=09IFF_MACVLAN_PORT_BIT,
++=09IFF_BRIDGE_PORT_BIT,
++=09IFF_OVS_DATAPATH_BIT,
++=09IFF_TX_SKB_SHARING_BIT,
++=09IFF_UNICAST_FLT_BIT,
++=09IFF_TEAM_PORT_BIT,
++=09IFF_SUPP_NOFCS_BIT,
++=09IFF_LIVE_ADDR_CHANGE_BIT,
++=09IFF_MACVLAN_BIT,
++=09IFF_XMIT_DST_RELEASE_PERM_BIT,
++=09IFF_L3MDEV_MASTER_BIT,
++=09IFF_NO_QUEUE_BIT,
++=09IFF_OPENVSWITCH_BIT,
++=09IFF_L3MDEV_SLAVE_BIT,
++=09IFF_TEAM_BIT,
++=09IFF_RXFH_CONFIGURED_BIT,
++=09IFF_PHONY_HEADROOM_BIT,
++=09IFF_MACSEC_BIT,
++=09IFF_NO_RX_HANDLER_BIT,
++=09IFF_FAILOVER_BIT,
++=09IFF_FAILOVER_SLAVE_BIT,
++=09IFF_L3MDEV_RX_HANDLER_BIT,
++=09IFF_LIVE_RENAME_OK_BIT,
++
++=09NETDEV_PRIV_FLAG_COUNT,
+ };
+=20
+-#define IFF_802_1Q_VLAN=09=09=09IFF_802_1Q_VLAN
+-#define IFF_EBRIDGE=09=09=09IFF_EBRIDGE
+-#define IFF_BONDING=09=09=09IFF_BONDING
+-#define IFF_ISATAP=09=09=09IFF_ISATAP
+-#define IFF_WAN_HDLC=09=09=09IFF_WAN_HDLC
+-#define IFF_XMIT_DST_RELEASE=09=09IFF_XMIT_DST_RELEASE
+-#define IFF_DONT_BRIDGE=09=09=09IFF_DONT_BRIDGE
+-#define IFF_DISABLE_NETPOLL=09=09IFF_DISABLE_NETPOLL
+-#define IFF_MACVLAN_PORT=09=09IFF_MACVLAN_PORT
+-#define IFF_BRIDGE_PORT=09=09=09IFF_BRIDGE_PORT
+-#define IFF_OVS_DATAPATH=09=09IFF_OVS_DATAPATH
+-#define IFF_TX_SKB_SHARING=09=09IFF_TX_SKB_SHARING
+-#define IFF_UNICAST_FLT=09=09=09IFF_UNICAST_FLT
+-#define IFF_TEAM_PORT=09=09=09IFF_TEAM_PORT
+-#define IFF_SUPP_NOFCS=09=09=09IFF_SUPP_NOFCS
+-#define IFF_LIVE_ADDR_CHANGE=09=09IFF_LIVE_ADDR_CHANGE
+-#define IFF_MACVLAN=09=09=09IFF_MACVLAN
+-#define IFF_XMIT_DST_RELEASE_PERM=09IFF_XMIT_DST_RELEASE_PERM
+-#define IFF_L3MDEV_MASTER=09=09IFF_L3MDEV_MASTER
+-#define IFF_NO_QUEUE=09=09=09IFF_NO_QUEUE
+-#define IFF_OPENVSWITCH=09=09=09IFF_OPENVSWITCH
+-#define IFF_L3MDEV_SLAVE=09=09IFF_L3MDEV_SLAVE
+-#define IFF_TEAM=09=09=09IFF_TEAM
+-#define IFF_RXFH_CONFIGURED=09=09IFF_RXFH_CONFIGURED
+-#define IFF_PHONY_HEADROOM=09=09IFF_PHONY_HEADROOM
+-#define IFF_MACSEC=09=09=09IFF_MACSEC
+-#define IFF_NO_RX_HANDLER=09=09IFF_NO_RX_HANDLER
+-#define IFF_FAILOVER=09=09=09IFF_FAILOVER
+-#define IFF_FAILOVER_SLAVE=09=09IFF_FAILOVER_SLAVE
+-#define IFF_L3MDEV_RX_HANDLER=09=09IFF_L3MDEV_RX_HANDLER
+-#define IFF_LIVE_RENAME_OK=09=09IFF_LIVE_RENAME_OK
++typedef u32 netdev_priv_flags_t;
++static_assert(sizeof(netdev_priv_flags_t) * BITS_PER_BYTE <=3D
++=09      NETDEV_PRIV_FLAG_COUNT);
++
++#define __IFF_BIT(bit)=09=09=09((netdev_priv_flags_t)1 << (bit))
++#define __IFF(name)=09=09=09__IFF_BIT(IFF_##name##_BIT)
++
++#define IFF_802_1Q_VLAN=09=09=09__IFF(802_1Q_VLAN)
++#define IFF_EBRIDGE=09=09=09__IFF(EBRIDGE)
++#define IFF_BONDING=09=09=09__IFF(BONDING)
++#define IFF_ISATAP=09=09=09__IFF(ISATAP)
++#define IFF_WAN_HDLC=09=09=09__IFF(WAN_HDLC)
++#define IFF_XMIT_DST_RELEASE=09=09__IFF(XMIT_DST_RELEASE)
++#define IFF_DONT_BRIDGE=09=09=09__IFF(DONT_BRIDGE)
++#define IFF_DISABLE_NETPOLL=09=09__IFF(DISABLE_NETPOLL)
++#define IFF_MACVLAN_PORT=09=09__IFF(MACVLAN_PORT)
++#define IFF_BRIDGE_PORT=09=09=09__IFF(BRIDGE_PORT)
++#define IFF_OVS_DATAPATH=09=09__IFF(OVS_DATAPATH)
++#define IFF_TX_SKB_SHARING=09=09__IFF(TX_SKB_SHARING)
++#define IFF_UNICAST_FLT=09=09=09__IFF(UNICAST_FLT)
++#define IFF_TEAM_PORT=09=09=09__IFF(TEAM_PORT)
++#define IFF_SUPP_NOFCS=09=09=09__IFF(SUPP_NOFCS)
++#define IFF_LIVE_ADDR_CHANGE=09=09__IFF(LIVE_ADDR_CHANGE)
++#define IFF_MACVLAN=09=09=09__IFF(MACVLAN)
++#define IFF_XMIT_DST_RELEASE_PERM=09__IFF(XMIT_DST_RELEASE_PERM)
++#define IFF_L3MDEV_MASTER=09=09__IFF(L3MDEV_MASTER)
++#define IFF_NO_QUEUE=09=09=09__IFF(NO_QUEUE)
++#define IFF_OPENVSWITCH=09=09=09__IFF(OPENVSWITCH)
++#define IFF_L3MDEV_SLAVE=09=09__IFF(L3MDEV_SLAVE)
++#define IFF_TEAM=09=09=09__IFF(TEAM)
++#define IFF_RXFH_CONFIGURED=09=09__IFF(RXFH_CONFIGURED)
++#define IFF_PHONY_HEADROOM=09=09__IFF(PHONY_HEADROOM)
++#define IFF_MACSEC=09=09=09__IFF(MACSEC)
++#define IFF_NO_RX_HANDLER=09=09__IFF(NO_RX_HANDLER)
++#define IFF_FAILOVER=09=09=09__IFF(FAILOVER)
++#define IFF_FAILOVER_SLAVE=09=09__IFF(FAILOVER_SLAVE)
++#define IFF_L3MDEV_RX_HANDLER=09=09__IFF(L3MDEV_RX_HANDLER)
++#define IFF_LIVE_RENAME_OK=09=09__IFF(LIVE_RENAME_OK)
+=20
+ /**
+  *=09struct net_device - The DEVICE structure.
+@@ -1925,7 +1934,7 @@ struct net_device {
+ =09const struct header_ops *header_ops;
+=20
+ =09unsigned int=09=09flags;
+-=09unsigned int=09=09priv_flags;
++=09netdev_priv_flags_t=09priv_flags;
+=20
+ =09unsigned short=09=09gflags;
+ =09unsigned short=09=09padded;
 --=20
 2.30.1
 
