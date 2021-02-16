@@ -2,160 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C413931C549
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 03:12:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00E7231C53F
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 03:06:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229827AbhBPCMG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 21:12:06 -0500
-Received: from mga14.intel.com ([192.55.52.115]:27088 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229777AbhBPCME (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Feb 2021 21:12:04 -0500
-IronPort-SDR: J66eDvTERw4nodrzB/EvnvbQUdkVIVxSWSj7aqyg6N5edIjqUGbdTeY6a7Seq/VkPnx8+csmXW
- XuWd8b+cSGGQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9896"; a="182012871"
-X-IronPort-AV: E=Sophos;i="5.81,182,1610438400"; 
-   d="scan'208";a="182012871"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2021 18:11:18 -0800
-IronPort-SDR: AOyaOKEDOj4Sj1p5SzIYISJBXDXCNUvvB9D5q9cU7kkQrEKB8ZiIVLf0ErF6TG5H/YcRyytLKp
- bmpborES6hxg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,182,1610438400"; 
-   d="scan'208";a="426113585"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by fmsmga002.fm.intel.com with ESMTP; 15 Feb 2021 18:11:16 -0800
-Date:   Tue, 16 Feb 2021 03:01:28 +0100
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        daniel@iogearbox.net, ast@kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, andrii@kernel.org,
-        magnus.karlsson@intel.com, ciara.loftus@intel.com
-Subject: Re: [PATCH bpf-next 1/3] libbpf: xsk: use bpf_link
-Message-ID: <20210216020128.GA9572@ranger.igk.intel.com>
-References: <20210215154638.4627-1-maciej.fijalkowski@intel.com>
- <20210215154638.4627-2-maciej.fijalkowski@intel.com>
- <87eehhcl9x.fsf@toke.dk>
- <fe0c957e-d212-4265-a271-ba301c3c5eca@intel.com>
- <875z2tcef2.fsf@toke.dk>
+        id S229833AbhBPCFq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 21:05:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33418 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229662AbhBPCFo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 21:05:44 -0500
+Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A447CC061574;
+        Mon, 15 Feb 2021 18:05:03 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4DfknH0vRTz9sVR;
+        Tue, 16 Feb 2021 13:04:50 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1613441099;
+        bh=kvCcIU1t45YHZth8tA+kMgS21Ahdt4LFOatlqMWBQIQ=;
+        h=Date:From:To:Cc:Subject:From;
+        b=We+Qpfac7qm3Mp5ItKtb5TTIfodvAOIkocJ6SU5VlNwKRZj6l/NgLEtrIG8y4WKCm
+         suJ94IcSj8Kcu8C0oAszGY72GdXgNa4V/XiNJSuoRTZmgpXRSau3HZcXRiAJqSrPdo
+         V/ag24wa4yePGUr/w3l3LwHdVvcTMsubOzC3XbgN8iJ+BgdEEy8JSYGA18Avoaxt0v
+         07COM7yOzyPBJRbLrW/48a5NB4zHXp3H0fn+kIo0e6xCTStf3Cahc6dPt9dpOnQ4oh
+         uveoa6ZqNJjpvgAoU0ZHMPMHBjqddZ9yk82f36c01/mT/GX6tz8E/O9ZzjcbjnlYEU
+         1SzCkfymJQOpw==
+Date:   Tue, 16 Feb 2021 13:04:49 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
+        ARM <linux-arm-kernel@lists.infradead.org>
+Cc:     Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
+Subject: linux-next: manual merge of the net-next tree with the arm-soc tree
+Message-ID: <20210216130449.3d1f0338@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <875z2tcef2.fsf@toke.dk>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Type: multipart/signed; boundary="Sig_/LZtJ7tX3KO73GqKh+6aYHk0";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 15, 2021 at 08:35:29PM +0100, Toke Høiland-Jørgensen wrote:
-> Björn Töpel <bjorn.topel@intel.com> writes:
-> 
-> > On 2021-02-15 18:07, Toke Høiland-Jørgensen wrote:
-> >> Maciej Fijalkowski <maciej.fijalkowski@intel.com> writes:
-> >> 
-> >>> Currently, if there are multiple xdpsock instances running on a single
-> >>> interface and in case one of the instances is terminated, the rest of
-> >>> them are left in an inoperable state due to the fact of unloaded XDP
-> >>> prog from interface.
-> >>>
-> >>> To address that, step away from setting bpf prog in favour of bpf_link.
-> >>> This means that refcounting of BPF resources will be done automatically
-> >>> by bpf_link itself.
-> >>>
-> >>> When setting up BPF resources during xsk socket creation, check whether
-> >>> bpf_link for a given ifindex already exists via set of calls to
-> >>> bpf_link_get_next_id -> bpf_link_get_fd_by_id -> bpf_obj_get_info_by_fd
-> >>> and comparing the ifindexes from bpf_link and xsk socket.
-> >> 
-> >> One consideration here is that bpf_link_get_fd_by_id() is a privileged
-> >> operation (privileged as in CAP_SYS_ADMIN), so this has the side effect
-> >> of making AF_XDP privileged as well. Is that the intention?
-> >>
-> >
-> > We're already using, e.g., bpf_map_get_fd_by_id() which has that
-> > as well. So we're assuming that for XDP setup already!
-> 
-> Ah, right, didn't realise that one is CAP_SYS_ADMIN as well; I
-> remembered this as being specific to the bpf_link operation.
-> 
-> >> Another is that the AF_XDP code is in the process of moving to libxdp
-> >> (see in-progress PR [0]), and this approach won't carry over as-is to
-> >> that model, because libxdp has to pin the bpf_link fds.
-> >>
-> >
-> > I was assuming there were two modes of operations for AF_XDP in libxdp.
-> > One which is with the multi-program support (which AFAIK is why the
-> > pinning is required), and one "like the current libbpf" one. For the
-> > latter Maciej's series would be a good fit, no?
-> 
-> We haven't added an explicit mode switch for now; libxdp will fall back
-> to regular interface attach if the kernel doesn't support the needed
-> features for multi-attach, but if it's possible to just have libxdp
-> transparently do the right thing I'd much prefer that. So we're still
-> exploring that (part of which is that Magnus has promised to run some
-> performance tests to see if there's a difference).
-> 
-> However, even if there's an explicit mode switch I'd like to avoid
-> different *semantics* between the two modes if possible, to keep the two
-> as compatible as possible. And since we can't currently do "auto-detach
-> on bpf_link fd close" when using multi-prog, introducing this now would
-> lead to just such a semantic difference. So my preference would be to do
-> it differently... :)
-> 
-> >> However, in libxdp we can solve the original problem in a different way,
-> >> and in fact I already suggested to Magnus that we should do this (see
-> >> [1]); so one way forward could be to address it during the merge in
-> >> libxdp? It should be possible to address the original issue (two
-> >> instances of xdpsock breaking each other when they exit), but
-> >> applications will still need to do an explicit unload operation before
-> >> exiting (i.e., the automatic detach on bpf_link fd closure will take
-> >> more work, and likely require extending the bpf_link kernel support)...
-> >>
-> >
-> > I'd say it's depending on the libbpf 1.0/libxdp merge timeframe. If
-> > we're months ahead, then I'd really like to see this in libbpf until the
-> > merge. However, I'll leave that for Magnus/you to decide!
+--Sig_/LZtJ7tX3KO73GqKh+6aYHk0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-WDYM by libbpf 1.0/libxdp merge? I glanced through thread and I saw that
-John was also not aware of that. Not sure where it was discussed?
+Hi all,
 
-If you're saying 'merge', then is libxdp going to be a part of kernel or
-as an AF-XDP related guy I would be forced to include yet another
-repository in the BPF developer toolchain? :<
+Today's linux-next merge of the net-next tree got conflicts in:
 
-> 
-> Well, as far as libxdp support goes, the PR I linked is pretty close to
-> being mergeable. One of the few outstanding issues is whether we should
-> solve just this issue before merging, actually :)
-> 
-> Not sure exactly which timeframe Andrii is envisioning for libbpf 1.0,
-> but last I heard he'll announce something next week.
-> 
-> > Bottom line; I'd *really* like bpf_link behavior (process scoped) for
-> > AF_XDP sooner than later! ;-)
-> 
-> Totally agree that we should solve the multi-process coexistence
-> problem! And as I said, I think we can do so in libxdp by using the same
-> synchronisation mechanism we use for setting up the multi-prog
-> dispatcher. So it doesn't *have* to hold things up :)
+  arch/arm64/boot/dts/toshiba/tmpv7708-rm-mbrc.dts
+  arch/arm64/boot/dts/toshiba/tmpv7708.dtsi
 
-Am I reading this right or you're trying to reject the fix of the long
-standing issue due to a PR that is not ready yet on a standalone
-project/library? :P
+between commits:
 
-Once libxdp is the standard way of playing with AF-XDP and there are
-actual users of that, then I'm happy to work/help on that issue.
+  4fd18fc38757 ("arm64: dts: visconti: Add watchdog support for TMPV7708 So=
+C")
+  0109a17564fc ("arm: dts: visconti: Add DT support for Toshiba Visconti5 G=
+PIO driver")
 
-Spawning a few xdpsock instances on the same interface has been a
-standard/easiest way of measuring the scalability of AF-XDP ZC
-implementations. This has been a real PITA for quite a long time. So, I
-second Bjorn's statement - the sooner we have this fixed, the better.
+from the arm-soc tree and commit:
 
-Thanks! I hope I haven't sounded harsh, not my intent at all,
-Maciej
+  ec8a42e73432 ("arm: dts: visconti: Add DT support for Toshiba Visconti5 e=
+thernet controller")
 
-> 
-> -Toke
-> 
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc arch/arm64/boot/dts/toshiba/tmpv7708-rm-mbrc.dts
+index 2407b2d89c1e,48fa8776e36f..000000000000
+--- a/arch/arm64/boot/dts/toshiba/tmpv7708-rm-mbrc.dts
++++ b/arch/arm64/boot/dts/toshiba/tmpv7708-rm-mbrc.dts
+@@@ -42,11 -42,20 +42,29 @@@
+  	clock-names =3D "apb_pclk";
+  };
+ =20
+ +&wdt {
+ +	status =3D "okay";
+ +	clocks =3D <&wdt_clk>;
+ +};
+ +
+ +&gpio {
+ +	status =3D "okay";
+++};`
+++
++ &piether {
++ 	status =3D "okay";
++ 	phy-handle =3D <&phy0>;
++ 	phy-mode =3D "rgmii-id";
++ 	clocks =3D <&clk300mhz>, <&clk125mhz>;
++ 	clock-names =3D "stmmaceth", "phy_ref_clk";
++=20
++ 	mdio0 {
++ 		#address-cells =3D <1>;
++ 		#size-cells =3D <0>;
++ 		compatible =3D "snps,dwmac-mdio";
++ 		phy0: ethernet-phy@1 {
++ 			device_type =3D "ethernet-phy";
++ 			reg =3D <0x1>;
++ 		};
++ 	};
+  };
+diff --cc arch/arm64/boot/dts/toshiba/tmpv7708.dtsi
+index 4264f3e6ac9c,3366786699fc..000000000000
+--- a/arch/arm64/boot/dts/toshiba/tmpv7708.dtsi
++++ b/arch/arm64/boot/dts/toshiba/tmpv7708.dtsi
+@@@ -134,12 -134,20 +134,26 @@@
+  		#clock-cells =3D <0>;
+  	};
+ =20
+ +	wdt_clk: wdt-clk {
+ +		compatible =3D "fixed-clock";
+ +		clock-frequency =3D <150000000>;
+ +		#clock-cells =3D <0>;
+ +	};
+ +
++ 	clk125mhz: clk125mhz {
++ 		compatible =3D "fixed-clock";
++ 		clock-frequency =3D <125000000>;
++ 		#clock-cells =3D <0>;
++ 		clock-output-names =3D "clk125mhz";
++ 	};
++=20
++ 	clk300mhz: clk300mhz {
++ 		compatible =3D "fixed-clock";
++ 		clock-frequency =3D <300000000>;
++ 		#clock-cells =3D <0>;
++ 		clock-output-names =3D "clk300mhz";
++ 	};
++=20
+  	soc {
+  		#address-cells =3D <2>;
+  		#size-cells =3D <2>;
+@@@ -402,11 -399,16 +416,22 @@@
+  			status =3D "disabled";
+  		};
+ =20
+ +		wdt: wdt@28330000 {
+ +			compatible =3D "toshiba,visconti-wdt";
+ +			reg =3D <0 0x28330000 0 0x1000>;
+ +			status =3D "disabled";
+ +		};
+++
++ 		piether: ethernet@28000000 {
++ 			compatible =3D "toshiba,visconti-dwmac", "snps,dwmac-4.20a";
++ 			reg =3D <0 0x28000000 0 0x10000>;
++ 			interrupts =3D <GIC_SPI 156 IRQ_TYPE_LEVEL_HIGH>;
++ 			interrupt-names =3D "macirq";
++ 			snps,txpbl =3D <4>;
++ 			snps,rxpbl =3D <4>;
++ 			snps,tso;
++ 			status =3D "disabled";
++ 		};
+  	};
+  };
+ =20
+
+--Sig_/LZtJ7tX3KO73GqKh+6aYHk0
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmArKEIACgkQAVBC80lX
+0GxUgAf/Xo7rh9vMOYzUGBvGckdIQeqet/arxxs3LaHOteUk55CqPywpESGYqh4z
+cbz4gopENeufOenC/l0p6F+uNkoNcmUhBKUrPivzSBxxvA3DQeNG2uJoI/oeYbJj
+gJJTxSx836S9aSJ3Kx2ZrTHJwG2v8YCtqPwNuJA4up4pIIeoyWQ2aDaPeEGNviuv
+1nqyU3h0ShrHv4AjDC1KQx/QPQejT4d1s1Meh+Xxo61yqxLT0+vx6WGDLYID245M
+jBOY+M0ELUMweqI/E8hOqZdFHXr3bRpA6OqYXQQZbd0SZoffZTkjSvsJb8eOutrW
+1A/HkDpwD1Sl81l9umDkE8/yJ9y1cw==
+=bDdD
+-----END PGP SIGNATURE-----
+
+--Sig_/LZtJ7tX3KO73GqKh+6aYHk0--
