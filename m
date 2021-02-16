@@ -2,116 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2185931D2E0
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 23:59:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E617431D2EC
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 00:01:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231293AbhBPW6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 17:58:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47668 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231196AbhBPW6G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 17:58:06 -0500
-Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9110C061574
-        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 14:57:25 -0800 (PST)
-Received: by mail-ot1-x334.google.com with SMTP id 80so1446948oty.2
-        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 14:57:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=nathanrossi.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1V742lm2hRPBxq6o+nYhxza92vFAFUuIzcwbXv4ZQP0=;
-        b=f69CBNh/sIHaMHnoXAu/YhZF8BI3BRzovMeplyyzhZNfJzSgdZszh39nehhEaflQko
-         8V+mQB8GG1IvXHHn8JPVeftoeosdskkCp684bfAb2oTcmdrpU5qLkyg15FMd6VOhm5ju
-         vbwZEiu1GUgiIAIVcJaWwM786kTozsdb/z1M2br6wnNT/sEDq/+NvjE6HXwz0FdEyJpM
-         TfXS7XbBp8lGNA/p2CYZAyB+ZabVweHzIqx0NF4fE4kA1REFhx4e5/z8oXvndrYToGkA
-         wqowjPPe9P8LKW637gxLorcejTysV1QQ/BtOtQdTIVye2ZrwCpDtR0Wt+aq852I/e219
-         pqwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1V742lm2hRPBxq6o+nYhxza92vFAFUuIzcwbXv4ZQP0=;
-        b=FJJRBogo3D869EEyRDm8xnSa/qN7omnr78nZsDQT9ROznT7Pt3Vl9m1xygJbDnS/lE
-         stGQ9pgAFSghgd4DeLJf8Rl3VNayabto/Ib/Pvp7ob7m8WYeLWpOA4+7YlDU4uzMGQr0
-         HHUchb+jmbnGurnkS1e/8COse98Gx7VwWjIqijcNiPblCxJOc9cx8m/QT/+Eqz3RRUHA
-         jFU3XEWL7JCqjKyNic+pBPvBbK79Qn00mGyiphLIO5z9eaSYwTfzFC1fYV0udGJVaAn0
-         fNH26kgj3gZsccTiL5zrg9ZPtEZNoYF3MAX82KylU9p4MtDsxf7LVGfGBBnz3pEIPscs
-         akcw==
-X-Gm-Message-State: AOAM532HN3eW58BhEDVvVdTPdp3K2DkLMdu6X0AKQ25894ZyWlDIRUsm
-        WILUz/9DGZkDDD00K4UQl9sS9NBRXI9BQv3uP7yCOQ==
-X-Google-Smtp-Source: ABdhPJzdGTCBjkLQd1h7QhqLvZblsjLuB9J3/hQ91KD5HnKD3Ou2iF/JbOiJc17r6HHQesY+hZsvsczjs6Bt+FpD2aw=
-X-Received: by 2002:a9d:721c:: with SMTP id u28mr2263797otj.359.1613516245158;
- Tue, 16 Feb 2021 14:57:25 -0800 (PST)
+        id S231338AbhBPXA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 18:00:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58548 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230059AbhBPXAu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Feb 2021 18:00:50 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 8432364E7C;
+        Tue, 16 Feb 2021 23:00:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1613516409;
+        bh=bE5OIedoHeCxppUvRDPjNpROSKM6Y/nSf8GltA3Giz4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=h+jQA7LgwHOixIR9PfSVC1HcNkvu6M/ggn/cj7v2YcFkuVB7+hNDLOEhWr8kPcfa4
+         qNo6OAbXilIKFlUHRRS59GbKI+KINwwisNYKvqfzOPpzFJnoJpeRhvubz6VlP1FR3d
+         iCAuYZx32L3VmickoadkgxRXDK0paFn/xk9aBwPrA+xLwdmPJTwZ4op3mAJNTWFinF
+         49qb7sPwKJzW56QdAbB4qkGdaa5Bsp0vOAiGsSo10ftvGX18/mi/rmhLd5f3l0WvMd
+         5OGFwOJ3A8EG9EsddVuIQE52Gdgz5g/tjkYpCUVNDEv5/Fgb4Jaw4S/DX0wxLZTKhP
+         dFnm01Rr5SyEg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 702DB60A0D;
+        Tue, 16 Feb 2021 23:00:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20210215070218.1188903-1-nathan@nathanrossi.com>
- <YCvDVEvBU5wabIx7@lunn.ch> <55c94cf4-f660-f0f5-fb04-f51f4d175f53@gmail.com>
-In-Reply-To: <55c94cf4-f660-f0f5-fb04-f51f4d175f53@gmail.com>
-From:   Nathan Rossi <nathan@nathanrossi.com>
-Date:   Wed, 17 Feb 2021 08:57:13 +1000
-Message-ID: <CA+aJhH3SE1s8P+srhO_-Za3E0KdHVn2_bK=Kf+-Jtbm1vJNm1w@mail.gmail.com>
-Subject: Re: [PATCH] of: of_mdio: Handle properties for non-phy mdio devices
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        Nathan Rossi <nathan.rossi@digi.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v4 0/8] bridge: mrp: Extend br_mrp_switchdev_*
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161351640945.9841.8930466212434176971.git-patchwork-notify@kernel.org>
+Date:   Tue, 16 Feb 2021 23:00:09 +0000
+References: <20210216214205.32385-1-horatiu.vultur@microchip.com>
+In-Reply-To: <20210216214205.32385-1-horatiu.vultur@microchip.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@resnulli.us,
+        ivecera@redhat.com, nikolay@nvidia.com, roopa@nvidia.com,
+        vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        rasmus.villemoes@prevas.dk, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 17 Feb 2021 at 03:50, Florian Fainelli <f.fainelli@gmail.com> wrote:
->
->
->
-> On 2/16/2021 5:06 AM, Andrew Lunn wrote:
-> > On Mon, Feb 15, 2021 at 07:02:18AM +0000, Nathan Rossi wrote:
-> >> From: Nathan Rossi <nathan.rossi@digi.com>
-> >>
-> >> The documentation for MDIO bindings describes the "broken-turn-around",
-> >> "reset-assert-us", and "reset-deassert-us" properties such that any MDIO
-> >> device can define them. Other MDIO devices may require these properties
-> >> in order to correctly function on the MDIO bus.
-> >>
-> >> Enable the parsing and configuration associated with these properties by
-> >> moving the associated OF parsing to a common function
-> >> of_mdiobus_child_parse and use it to apply these properties for both
-> >> PHYs and other MDIO devices.
-> >
-> > Hi Nathan
-> >
-> > What device are you using this with?
-> >
-> > The Marvell Switch driver does its own GPIO reset handling. It has a
-> > better idea when a hardware reset should be applied than what the
-> > phylib core has. It will also poll the EEPROM busy bit after a
-> > reset. How long a pause you need after the reset depends on how full
-> > the EEPROM is.
-> >
-> > And i've never had problems with broken-turn-around with Marvell
-> > switches.
->
-> The patch does make sense though, Broadcom 53125 switches have a broken
-> turn around and are mdio_device instances, the broken behavior may not
-> show up with all MDIO controllers used to interface though. For the
+Hello:
 
-Yes the reason we needed this change was to enable broken turn around,
-specifically with a Marvell 88E6390.
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-> reset, I would agree with you this is better delegated to the switch
-> driver, given that unlike PHY devices, we have no need to know the
-> mdio_device ID prior to binding the device and the driver together.
->
-> >
-> > Given the complexity of an Ethernet switch, it is probably better if
-> > it handles its own reset.
+On Tue, 16 Feb 2021 22:41:57 +0100 you wrote:
+> This patch series extends MRP switchdev to allow the SW to have a better
+> understanding if the HW can implement the MRP functionality or it needs
+> to help the HW to run it. There are 3 cases:
+> - when HW can't implement at all the functionality.
+> - when HW can implement a part of the functionality but needs the SW
+>   implement the rest. For example if it can't detect when it stops
+>   receiving MRP Test frames but it can copy the MRP frames to CPU to
+>   allow the SW to determine this.  Another example is generating the MRP
+>   Test frames. If HW can't do that then the SW is used as backup.
+> - when HW can implement completely the functionality.
+> 
+> [...]
 
-We are not using the reset assert, I included this as part of the
-change to match the existing phy parsing behavior. I can update this
-change to only handle broken turn around, or is it also preferred that
-broken turn around is handled by the e.g. switch driver?
+Here is the summary with links:
+  - [net-next,v4,1/8] switchdev: mrp: Remove CONFIG_BRIDGE_MRP
+    https://git.kernel.org/netdev/net-next/c/405be6b46b70
+  - [net-next,v4,2/8] switchdev: mrp: Extend ring_role_mrp and in_role_mrp
+    https://git.kernel.org/netdev/net-next/c/c513efa20c52
+  - [net-next,v4,3/8] bridge: mrp: Add 'enum br_mrp_hw_support'
+    https://git.kernel.org/netdev/net-next/c/e1bd99d07e61
+  - [net-next,v4,4/8] bridge: mrp: Extend br_mrp_switchdev to detect better the errors
+    https://git.kernel.org/netdev/net-next/c/1a3ddb0b7516
+  - [net-next,v4,5/8] bridge: mrp: Update br_mrp to use new return values of br_mrp_switchdev
+    https://git.kernel.org/netdev/net-next/c/cd605d455a44
+  - [net-next,v4,6/8] net: mscc: ocelot: Add support for MRP
+    https://git.kernel.org/netdev/net-next/c/d8ea7ff3995e
+  - [net-next,v4,7/8] net: dsa: add MRP support
+    https://git.kernel.org/netdev/net-next/c/c595c4330da0
+  - [net-next,v4,8/8] net: dsa: felix: Add support for MRP
+    https://git.kernel.org/netdev/net-next/c/a026c50b599f
 
-Thanks,
-Nathan
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
