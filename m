@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7D2931CA01
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 12:43:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DC6531CA03
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 12:43:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230461AbhBPLmp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 06:42:45 -0500
-Received: from mail-40131.protonmail.ch ([185.70.40.131]:53929 "EHLO
-        mail-40131.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230398AbhBPLjy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 06:39:54 -0500
-Date:   Tue, 16 Feb 2021 11:39:07 +0000
+        id S230486AbhBPLmw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 06:42:52 -0500
+Received: from mail2.protonmail.ch ([185.70.40.22]:51406 "EHLO
+        mail2.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230417AbhBPLkK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 06:40:10 -0500
+Date:   Tue, 16 Feb 2021 11:39:21 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1613475552; bh=Ru9ZuTDMSkYaHJQlZyLU2P2nHfTlHc6MhspZ6RaCTbE=;
+        t=1613475568; bh=nnDg7zHTfNPGrVm06t0m1zPhoxeXajfLhRKt/IDM8xQ=;
         h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=ZuBxx12wpCbrpRmiZ7BovRt9vjJP/J4c3uRvxy7IydJdCgzCU2LZmlCTZ62QROZ4V
-         AZAgz38M07zP0GbPYEZWaiE284XL4zxwwaqsrUbVFa922j01mynYNQwEebaJvoACqs
-         gVlkiXwuDce53+5riHHwZ6i6nLkEoQzf5FRpdTem8Ger2lo57SglQYxUPCiVnExFCx
-         ZEVI/+xO0d9edWlAdxPWqhCzGq2rt7QwlMbe5Cn//vS2u8L0XGIm5mYOMBokOS+lzz
-         AyDN1hZCNJpZbNVVhRJxpe0UoTeebhLhNhIthQqkdzcRhUxA4Q4uMCOwYo3BLyPVvR
-         5cxOi1aQ7BAOg==
+        b=JfsEY4hngHGHRZWc3Pm7CWlGpUi+oi9hzY99EOZU2hAhgsm2NNpbtcW3lpMB2RBp9
+         upeqRcI/zFx0rx9fmESEJe3Ws/NIlHcZ52YhaArFghmJDalwiVH8hlHl4k9OOD35dF
+         DxOmB+v/HsJ0a2pSPDRY4Ked0uZXNzn3qTj4c/FMYoL3DmMhMu+7xIVq3wF2FRlAzC
+         LvK+NTEPZQwuPbOSkhQwfPXaokcHTqjZ714Rx/cKU5lgvgrFYlKx4LXr6C0EodZ8Ty
+         6TpQfmZZWIQ2iyzR2+B/jGeSR0ASPALlLGgOV0CVtVQzx/NM0KVHZQ/Mg+TVQJcv13
+         FW4NlUuhRLzeA==
 To:     Magnus Karlsson <magnus.karlsson@intel.com>,
         =?utf-8?Q?Bj=C3=B6rn_T=C3=B6pel?= <bjorn@kernel.org>
 From:   Alexander Lobakin <alobakin@pm.me>
@@ -44,8 +44,8 @@ Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, bpf@vger.kernel.org
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH v4 bpf-next 5/6] xsk: respect device's headroom and tailroom on generic xmit path
-Message-ID: <20210216113740.62041-6-alobakin@pm.me>
+Subject: [PATCH v4 bpf-next 6/6] xsk: build skb by page (aka generic zerocopy xmit)
+Message-ID: <20210216113740.62041-7-alobakin@pm.me>
 In-Reply-To: <20210216113740.62041-1-alobakin@pm.me>
 References: <20210216113740.62041-1-alobakin@pm.me>
 MIME-Version: 1.0
@@ -60,71 +60,206 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-xsk_generic_xmit() allocates a new skb and then queues it for
-xmitting. The size of new skb's headroom is desc->len, so it comes
-to the driver/device with no reserved headroom and/or tailroom.
-Lots of drivers need some headroom (and sometimes tailroom) to
-prepend (and/or append) some headers or data, e.g. CPU tags,
-device-specific headers/descriptors (LSO, TLS etc.), and if case
-of no available space skb_cow_head() will reallocate the skb.
-Reallocations are unwanted on fast-path, especially when it comes
-to XDP, so generic XSK xmit should reserve the spaces declared in
-dev->needed_headroom and dev->needed tailroom to avoid them.
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 
-Note on max(NET_SKB_PAD, L1_CACHE_ALIGN(dev->needed_headroom)):
+This patch is used to construct skb based on page to save memory copy
+overhead.
 
-Usually, output functions reserve LL_RESERVED_SPACE(dev), which
-consists of dev->hard_header_len + dev->needed_headroom, aligned
-by 16.
-However, on XSK xmit hard header is already here in the chunk, so
-hard_header_len is not needed. But it'd still be better to align
-data up to cacheline, while reserving no less than driver requests
-for headroom. NET_SKB_PAD here is to double-insure there will be
-no reallocations even when the driver advertises no needed_headroom,
-but in fact need it (not so rare case).
+This function is implemented based on IFF_TX_SKB_NO_LINEAR. Only the
+network card priv_flags supports IFF_TX_SKB_NO_LINEAR will use page to
+directly construct skb. If this feature is not supported, it is still
+necessary to copy data to construct skb.
 
-Fixes: 35fcde7f8deb ("xsk: support for Tx")
+---------------- Performance Testing ------------
+
+The test environment is Aliyun ECS server.
+Test cmd:
+```
+xdpsock -i eth0 -t  -S -s <msg size>
+```
+
+Test result data:
+
+size    64      512     1024    1500
+copy    1916747 1775988 1600203 1440054
+page    1974058 1953655 1945463 1904478
+percent 3.0%    10.0%   21.58%  32.3%
+
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
+[ alobakin:
+ - expand subject to make it clearer;
+ - improve skb->truesize calculation;
+ - reserve some headroom in skb for drivers;
+ - tailroom is not needed as skb is non-linear ]
 Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 ---
- net/xdp/xsk.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ net/xdp/xsk.c | 119 ++++++++++++++++++++++++++++++++++++++++----------
+ 1 file changed, 95 insertions(+), 24 deletions(-)
 
 diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index 4faabd1ecfd1..143979ea4165 100644
+index 143979ea4165..ff7bd06e1241 100644
 --- a/net/xdp/xsk.c
 +++ b/net/xdp/xsk.c
-@@ -454,12 +454,16 @@ static int xsk_generic_xmit(struct sock *sk)
+@@ -445,6 +445,96 @@ static void xsk_destruct_skb(struct sk_buff *skb)
+ =09sock_wfree(skb);
+ }
+=20
++static struct sk_buff *xsk_build_skb_zerocopy(struct xdp_sock *xs,
++=09=09=09=09=09      struct xdp_desc *desc)
++{
++=09struct xsk_buff_pool *pool =3D xs->pool;
++=09u32 hr, len, offset, copy, copied;
++=09struct sk_buff *skb;
++=09struct page *page;
++=09void *buffer;
++=09int err, i;
++=09u64 addr;
++
++=09hr =3D max(NET_SKB_PAD, L1_CACHE_ALIGN(xs->dev->needed_headroom));
++
++=09skb =3D sock_alloc_send_skb(&xs->sk, hr, 1, &err);
++=09if (unlikely(!skb))
++=09=09return ERR_PTR(err);
++
++=09skb_reserve(skb, hr);
++
++=09addr =3D desc->addr;
++=09len =3D desc->len;
++
++=09buffer =3D xsk_buff_raw_get_data(pool, addr);
++=09offset =3D offset_in_page(buffer);
++=09addr =3D buffer - pool->addrs;
++
++=09for (copied =3D 0, i =3D 0; copied < len; i++) {
++=09=09page =3D pool->umem->pgs[addr >> PAGE_SHIFT];
++=09=09get_page(page);
++
++=09=09copy =3D min_t(u32, PAGE_SIZE - offset, len - copied);
++=09=09skb_fill_page_desc(skb, i, page, offset, copy);
++
++=09=09copied +=3D copy;
++=09=09addr +=3D copy;
++=09=09offset =3D 0;
++=09}
++
++=09skb->len +=3D len;
++=09skb->data_len +=3D len;
++=09skb->truesize +=3D pool->unaligned ? len : pool->chunk_size;
++
++=09refcount_add(skb->truesize, &xs->sk.sk_wmem_alloc);
++
++=09return skb;
++}
++
++static struct sk_buff *xsk_build_skb(struct xdp_sock *xs,
++=09=09=09=09     struct xdp_desc *desc)
++{
++=09struct net_device *dev =3D xs->dev;
++=09struct sk_buff *skb;
++
++=09if (dev->priv_flags & IFF_TX_SKB_NO_LINEAR) {
++=09=09skb =3D xsk_build_skb_zerocopy(xs, desc);
++=09=09if (IS_ERR(skb))
++=09=09=09return skb;
++=09} else {
++=09=09u32 hr, tr, len;
++=09=09void *buffer;
++=09=09int err;
++
++=09=09hr =3D max(NET_SKB_PAD, L1_CACHE_ALIGN(dev->needed_headroom));
++=09=09tr =3D dev->needed_tailroom;
++=09=09len =3D desc->len;
++
++=09=09skb =3D sock_alloc_send_skb(&xs->sk, hr + len + tr, 1, &err);
++=09=09if (unlikely(!skb))
++=09=09=09return ERR_PTR(err);
++
++=09=09skb_reserve(skb, hr);
++=09=09skb_put(skb, len);
++
++=09=09buffer =3D xsk_buff_raw_get_data(xs->pool, desc->addr);
++=09=09err =3D skb_store_bits(skb, 0, buffer, len);
++=09=09if (unlikely(err)) {
++=09=09=09kfree_skb(skb);
++=09=09=09return ERR_PTR(err);
++=09=09}
++=09}
++
++=09skb->dev =3D dev;
++=09skb->priority =3D xs->sk.sk_priority;
++=09skb->mark =3D xs->sk.sk_mark;
++=09skb_shinfo(skb)->destructor_arg =3D (void *)(long)desc->addr;
++=09skb->destructor =3D xsk_destruct_skb;
++
++=09return skb;
++}
++
+ static int xsk_generic_xmit(struct sock *sk)
+ {
+ =09struct xdp_sock *xs =3D xdp_sk(sk);
+@@ -454,56 +544,37 @@ static int xsk_generic_xmit(struct sock *sk)
  =09struct sk_buff *skb;
  =09unsigned long flags;
  =09int err =3D 0;
-+=09u32 hr, tr;
+-=09u32 hr, tr;
 =20
  =09mutex_lock(&xs->mutex);
 =20
  =09if (xs->queue_id >=3D xs->dev->real_num_tx_queues)
  =09=09goto out;
 =20
-+=09hr =3D max(NET_SKB_PAD, L1_CACHE_ALIGN(xs->dev->needed_headroom));
-+=09tr =3D xs->dev->needed_tailroom;
-+
+-=09hr =3D max(NET_SKB_PAD, L1_CACHE_ALIGN(xs->dev->needed_headroom));
+-=09tr =3D xs->dev->needed_tailroom;
+-
  =09while (xskq_cons_peek_desc(xs->tx, &desc, xs->pool)) {
- =09=09char *buffer;
- =09=09u64 addr;
-@@ -471,11 +475,13 @@ static int xsk_generic_xmit(struct sock *sk)
+-=09=09char *buffer;
+-=09=09u64 addr;
+-=09=09u32 len;
+-
+ =09=09if (max_batch-- =3D=3D 0) {
+ =09=09=09err =3D -EAGAIN;
+ =09=09=09goto out;
  =09=09}
 =20
- =09=09len =3D desc.len;
--=09=09skb =3D sock_alloc_send_skb(sk, len, 1, &err);
-+=09=09skb =3D sock_alloc_send_skb(sk, hr + len + tr, 1, &err);
- =09=09if (unlikely(!skb))
+-=09=09len =3D desc.len;
+-=09=09skb =3D sock_alloc_send_skb(sk, hr + len + tr, 1, &err);
+-=09=09if (unlikely(!skb))
++=09=09skb =3D xsk_build_skb(xs, &desc);
++=09=09if (IS_ERR(skb)) {
++=09=09=09err =3D PTR_ERR(skb);
  =09=09=09goto out;
++=09=09}
 =20
-+=09=09skb_reserve(skb, hr);
- =09=09skb_put(skb, len);
-+
- =09=09addr =3D desc.addr;
- =09=09buffer =3D xsk_buff_raw_get_data(xs->pool, addr);
- =09=09err =3D skb_store_bits(skb, 0, buffer, len);
+-=09=09skb_reserve(skb, hr);
+-=09=09skb_put(skb, len);
+-
+-=09=09addr =3D desc.addr;
+-=09=09buffer =3D xsk_buff_raw_get_data(xs->pool, addr);
+-=09=09err =3D skb_store_bits(skb, 0, buffer, len);
+ =09=09/* This is the backpressure mechanism for the Tx path.
+ =09=09 * Reserve space in the completion queue and only proceed
+ =09=09 * if there is space in it. This avoids having to implement
+ =09=09 * any buffering in the Tx path.
+ =09=09 */
+ =09=09spin_lock_irqsave(&xs->pool->cq_lock, flags);
+-=09=09if (unlikely(err) || xskq_prod_reserve(xs->pool->cq)) {
++=09=09if (xskq_prod_reserve(xs->pool->cq)) {
+ =09=09=09spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
+ =09=09=09kfree_skb(skb);
+ =09=09=09goto out;
+ =09=09}
+ =09=09spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
+=20
+-=09=09skb->dev =3D xs->dev;
+-=09=09skb->priority =3D sk->sk_priority;
+-=09=09skb->mark =3D sk->sk_mark;
+-=09=09skb_shinfo(skb)->destructor_arg =3D (void *)(long)desc.addr;
+-=09=09skb->destructor =3D xsk_destruct_skb;
+-
+ =09=09err =3D __dev_direct_xmit(skb, xs->queue_id);
+ =09=09if  (err =3D=3D NETDEV_TX_BUSY) {
+ =09=09=09/* Tell user-space to retry the send */
 --=20
 2.30.1
 
