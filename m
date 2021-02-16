@@ -2,118 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAA0731C5AF
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 03:53:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FEAD31C5ED
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 05:09:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229713AbhBPCxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 21:53:20 -0500
-Received: from mga17.intel.com ([192.55.52.151]:28286 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229652AbhBPCxT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Feb 2021 21:53:19 -0500
-IronPort-SDR: SQyMQ7JaYaEiyhF7cZ6EZb81uTj0v9oOInDeoj7qzP5IF9nE2kEF+CJbmCA+t/X+lyQDe4V+ns
- Oa4yYPWwcDNA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9896"; a="162562716"
-X-IronPort-AV: E=Sophos;i="5.81,182,1610438400"; 
-   d="scan'208";a="162562716"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2021 18:52:36 -0800
-IronPort-SDR: vROyxlKgbqyxckGwLiEu3q4lut2kRAwBk6T++u8kzNsAoo3NavCvlqkc+gc18srDYTZ1B/ifh3
- 1jjg1HDUk6tw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,182,1610438400"; 
-   d="scan'208";a="426123169"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by fmsmga002.fm.intel.com with ESMTP; 15 Feb 2021 18:52:33 -0800
-Date:   Tue, 16 Feb 2021 03:42:44 +0100
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     daniel@iogearbox.net, ast@kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, andrii@kernel.org, toke@redhat.com,
-        bjorn.topel@intel.com, magnus.karlsson@intel.com,
-        ciara.loftus@intel.com
-Subject: Re: [PATCH bpf-next 2/3] libbpf: clear map_info before each
- bpf_obj_get_info_by_fd
-Message-ID: <20210216024244.GE9572@ranger.igk.intel.com>
-References: <20210215154638.4627-1-maciej.fijalkowski@intel.com>
- <20210215154638.4627-3-maciej.fijalkowski@intel.com>
- <602adaa11468c_3ed41208c5@john-XPS-13-9370.notmuch>
+        id S229777AbhBPEH1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 23:07:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59382 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229662AbhBPEHY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Feb 2021 23:07:24 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1490DC061574;
+        Mon, 15 Feb 2021 20:06:44 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id j12so5353412pfj.12;
+        Mon, 15 Feb 2021 20:06:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2f/WzFqo4KBhWk18IB9V9gin87MBd6a226oxEeyLBXQ=;
+        b=K5NbXh3WiV5h8wIzLRYH02AT1NAEB2YzB/mMTlaRXveZlJv7KdnG82w40aid+hHsD0
+         4fHHOVzBWn04cYzfcZjbDJDwI+RAbouODrnna2pre5oBx7oSNGeYxFvMjO1PCLuNBDJf
+         7gurBROhw3BHTcZa/hy7RltzV2UN3S4zXpA05naa5leSnzDMjvPpTTQcFbdoRpTHDuC3
+         WOB29g0Pg6rXPo3xEm1uwAZnfUTtTm0ZHrMiMxwwaoIkTfNOwzb484uYx2m4Bgxr7bs1
+         +N7x0vORHxzHZwp0FdglwiCg9UbPp+Accb0Tht97Ez3iYhkcCrmSTu6oyRQoWWOt5v5b
+         j1Cg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2f/WzFqo4KBhWk18IB9V9gin87MBd6a226oxEeyLBXQ=;
+        b=Xzm2X3B+DAVKbuF9/nLJOhe+SvpomMpCwdgRDJGzmZEPh87Ps/RIiBxY0R4iTh6jzb
+         JS4Yq6PAbwA4YzYxudeYabfj84Iab3L5+s7AQE6ZoY2mvzufondO5Qk8Nq9mdLFYMyE6
+         UKTTIVcRl5tOV6AqPrsApyTqLkGlSXoQs8aAgI92YwitBRGrQLG+olD+PQwvHy946rRX
+         Lg5zK5rzmz4kgzS878hTbNoflTYb9CbETzd4yY0t18CC9IOdBdDy321DwU8A6n4pD67I
+         3GxQ+ZnNMvk7crtXnm1RT4NghfHNo8U7mbrgyn5TwhANRyr6R6uVB3EMXyO6TTA/A1BP
+         UagA==
+X-Gm-Message-State: AOAM532ZWDrrIHswrwzqYVuvL+D06rjonYegiQNPbKER6K+xxqkPk9Be
+        O2dwVLl1ANzhPAfN7JnEiIh0KMW9Z9yO693tUR9aINGBw8iHdA==
+X-Google-Smtp-Source: ABdhPJyZNziypOeaKgqbxl4AWVtF/EC/WLKiYgto5LufnZmf5x3OCmWPb3mzZTbFgb2hqpNhKpkbQnq6EINHXv/XNa4=
+X-Received: by 2002:a63:3c4e:: with SMTP id i14mr17155217pgn.266.1613448403462;
+ Mon, 15 Feb 2021 20:06:43 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <602adaa11468c_3ed41208c5@john-XPS-13-9370.notmuch>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <20210213214421.226357-1-xiyou.wangcong@gmail.com>
+ <20210213214421.226357-5-xiyou.wangcong@gmail.com> <602ac96f9e30f_3ed41208b6@john-XPS-13-9370.notmuch>
+ <CAM_iQpWufy-YnQnBf_kk_otLaTikK8YxkhgjHh_eiu8MA=0Raw@mail.gmail.com>
+ <602b0a7046969_3ed41208dc@john-XPS-13-9370.notmuch> <CAM_iQpUomzGXdyjdCU8Ox-JZgQc=iZPZqs1UjRo3wxomf67_+A@mail.gmail.com>
+ <602b17b0492a8_3ed41208f2@john-XPS-13-9370.notmuch> <CAM_iQpWzRpfWwZHPK=+KWbu+nLxJ=GKRHNC+97NT2DoN0qRc2A@mail.gmail.com>
+ <602b24ca1fdca_51bf220832@john-XPS-13-9370.notmuch>
+In-Reply-To: <602b24ca1fdca_51bf220832@john-XPS-13-9370.notmuch>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 15 Feb 2021 20:06:32 -0800
+Message-ID: <CAM_iQpVm_GdVT7MiuVGpzvx9zEsXKjZer5yF8Vh8c3EKVBM3-Q@mail.gmail.com>
+Subject: Re: [Patch bpf-next v3 4/5] skmsg: use skb ext instead of TCP_SKB_CB
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, duanxiongchun@bytedance.com,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        jiang.wang@bytedance.com, Cong Wang <cong.wang@bytedance.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 15, 2021 at 12:33:37PM -0800, John Fastabend wrote:
-> Maciej Fijalkowski wrote:
-> > xsk_lookup_bpf_maps, based on prog_fd, looks whether current prog has a
-> > reference to XSKMAP. BPF prog can include insns that work on various BPF
-> > maps and this is covered by iterating through map_ids.
-> > 
-> > The bpf_map_info that is passed to bpf_obj_get_info_by_fd for filling
-> > needs to be cleared at each iteration, so that it doesn't any outdated
-> > fields and that is currently missing in the function of interest.
-> > 
-> > To fix that, zero-init map_info via memset before each
-> > bpf_obj_get_info_by_fd call.
-> > 
-> > Also, since the area of this code is touched, in general strcmp is
-> > considered harmful, so let's convert it to strncmp and provide the
-> > length of the array name that we're looking for.
-> > 
-> > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> > ---
-> 
-> This is a bugfix independent of the link bits correct? Would be best
-> to send to bpf then. 
+On Mon, Feb 15, 2021 at 5:50 PM John Fastabend <john.fastabend@gmail.com> wrote:
+>
+> Cong Wang wrote:
+> > On Mon, Feb 15, 2021 at 4:54 PM John Fastabend <john.fastabend@gmail.com> wrote:
+> > >
+> > > Cong Wang wrote:
+> > > > On Mon, Feb 15, 2021 at 3:57 PM John Fastabend <john.fastabend@gmail.com> wrote:
+> > > > >
+> > > > > For TCP case we can continue to use CB and not pay the price. For UDP
+> > > > > and AF_UNIX we can do the extra alloc.
+> > > >
+> > > > I see your point, but specializing TCP case does not give much benefit
+> > > > here, the skmsg code would have to check skb->protocol etc. to decide
+> > > > whether to use TCP_SKB_CB() or skb_ext:
+> > > >
+> > > > if (skb->protocol == ...)
+> > > >   TCP_SKB_CB(skb) = ...;
+> > > > else
+> > > >   ext = skb_ext_find(skb);
+> > > >
+> > > > which looks ugly to me. And I doubt skb->protocol alone is sufficient to
+> > > > distinguish TCP, so we may end up having more checks above.
+> > > >
+> > > > So do you really want to trade code readability with an extra alloc?
+> > >
+> > > Above is ugly. So I look at where the patch replaces things,
+> > >
+> > > sk_psock_tls_strp_read(), this is TLS specific read hook so can't really
+> > > work in generic case anyways.
+> > >
+> > > sk_psock_strp_read(), will you have UDP, AF_UNIX stream parsers? Do these
+> > > even work outside TCP cases.
+> > >
+> > > For these ones: sk_psock_verdict_apply(), sk_psock_verdict_recv(),
+> > > sk_psock_backlog(), can't we just do some refactoring around their
+> > > hook points so we know the context. For example sk_psock_tls_verdict_apply
+> > > is calling sk_psock_skb_redirect(). Why not have a sk_psock_unix_redirect()
+> > > and a sk_psock_udp_redirect(). There are likely some optimizations we can
+> > > deploy this way. We've already don this for tls and sk_msg types for example.
+> > >
+> > > Then the helpers will know their types by program type, just use the right
+> > > variants.
+> > >
+> > > So not suggestiong if/else the checks so much as having per type hooks.
+> > >
+> >
+> > Hmm, but sk_psock_backlog() is still the only one that handles all three
+> > above cases, right? It uses TCP_SKB_CB() too and more importantly it
+> > is also why we can't use a per-cpu struct here (see bpf_redirect_info).
+>
+> Right, but the workqueue is created at init time where we will know the
+> socket type based on the program/map types so can build the redirect
+> backlog queue there based on the type needed. I also have a patch in
 
-Right, I can pull this out of the series.
+Hmm? How could a socket type match the skb type when we redirect
+across-protocol?
 
-> 
-> >  tools/lib/bpf/xsk.c | 4 +++-
-> >  1 file changed, 3 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-> > index 5911868efa43..fb259c0bba93 100644
-> > --- a/tools/lib/bpf/xsk.c
-> > +++ b/tools/lib/bpf/xsk.c
-> > @@ -616,6 +616,7 @@ static int xsk_lookup_bpf_maps(struct xsk_socket *xsk)
-> >  	__u32 i, *map_ids, num_maps, prog_len = sizeof(struct bpf_prog_info);
-> >  	__u32 map_len = sizeof(struct bpf_map_info);
-> >  	struct bpf_prog_info prog_info = {};
-> > +	const char *map_name = "xsks_map";
-> >  	struct xsk_ctx *ctx = xsk->ctx;
-> >  	struct bpf_map_info map_info;
-> >  	int fd, err;
-> > @@ -645,13 +646,14 @@ static int xsk_lookup_bpf_maps(struct xsk_socket *xsk)
-> >  		if (fd < 0)
-> >  			continue;
-> >  
-> > +		memset(&map_info, 0, map_len);
-> >  		err = bpf_obj_get_info_by_fd(fd, &map_info, &map_len);
-> >  		if (err) {
-> >  			close(fd);
-> >  			continue;
-> >  		}
-> >  
-> > -		if (!strcmp(map_info.name, "xsks_map")) {
-> > +		if (!strncmp(map_info.name, map_name, strlen(map_name))) {
-> >  			ctx->xsks_map_fd = fd;
-> >  			continue;
-> 
-> Also just looking at this how is above not buggy? Should be a break instead
-> of continue? If we match another "xsks_map" here won't we stomp on xsks_map_fd
-> and leak a file descriptor?
+In my use case, I want to redirect an AF_UNIX skb to a UDP socket,
+clearly checking the UDP socket workqueue can't find out it is an
+AF_UNIX skb. It has to be a per-skb check.
 
-Will fix!
+> mind that would do more specific TCP things in that code anyways. I
+> can flush it out this week if anyone cares. The idea is we are wasting
+> lots of cycles using skb_send_sock_locked when we can just inject
+> the packet directlyy into the tcp stack.
 
-> 
-> >  		}
-> > -- 
-> > 2.20.1
-> > 
-> 
-> 
+Actually I did try the same, it clearly doesn't work for cross-protocol.
+
+Anyway, please let me know what your suggestion for skb ext here?
+
+It looks like we either have some ugly packet type checks, or just
+use the skb ext. I don't see any other way yet, I also explored the
+struct sk_buff again and still can not find anything we can reuse.
+(_skb_refdst can only be reused very briefly with
+tcp_skb_tsorted_save().)
+
+Therefore, I believe using skb ext is still the best solution here.
+
+>
+> Also on the original patch here, we can't just kfree_skb() on alloc
+> errors because that will look like a data drop. Errors need to be
+> handled gracefully without dropping data. At least in the TCP case,
+> but probably also in UDP and AF_UNIX cases as well. Original code
+> was pretty loose in this regard, but it caused users to write bug
+> reports and then I've been fixing most of them. If you see more
+> cases let me know.
+
+What's your suggestion here? Return -EAGAIN? But it requires
+the caller put it in a loop to be graceful, but we can't do it in, for
+example, sk_psock_tls_strp_read().
+
+Thanks.
