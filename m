@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 314DE31C92E
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 11:59:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D35B31C933
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 12:00:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229925AbhBPK7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 05:59:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34784 "EHLO
+        id S229958AbhBPLAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 06:00:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229807AbhBPK7D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 05:59:03 -0500
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1415DC061756
+        with ESMTP id S229662AbhBPK7v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 05:59:51 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C06AFC061788
         for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 02:58:18 -0800 (PST)
-Received: by mail-wm1-x32d.google.com with SMTP id a132so2328810wmc.0
+Received: by mail-wr1-x42a.google.com with SMTP id v7so12337016wrr.12
         for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 02:58:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=7nhGdH2jRUj/QZlW4iWuCSizyYaXZl3nI4YhKo/LbqY=;
-        b=mwGWoSTICerhgD4ACWwc1oV746IpOBFVKvdPStAMRucN2NP0sqclUIuXrGuFqoxyvO
-         SCWD9eZh96/+ctBR9edJC4k4dx2gag0A31WpAigNDNw7jT8P0NhraIaNwHN7uTjZq6OO
-         indy9aaixC9XZue2Hesf/pxgLtFLisBibWZNI=
+        bh=i2yCinIxoFBwLow1XBzdxruWNWA8TGQLQmqlS/4jbqc=;
+        b=FmEdQ8d8GxPQx369N6ZOkR3BwvDEXImJV05u2dufOfs9WfqKyH9pm9y2zG6W1L1i6J
+         g38eklpk2UJntpaKyYcczEbS0at70uRxtTNOY0DQGAmA9ep/II3tARqWvGtAUC3y6Kfc
+         GzkLh5MOkcjWyqKaTubz9OSpWPlzJq3BbrpyE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=7nhGdH2jRUj/QZlW4iWuCSizyYaXZl3nI4YhKo/LbqY=;
-        b=Nk9JcjsR7OJGqwMogPA90GGQW7u6z7wXGGsY1d+2KDilSkrDB06rWMJFew5H1AxPvN
-         nHhpHsJIl0KKkbNYoyPzFPQucNvT7xmqakWJZjl8UVOZur6nxGcp6FPtKHlgnEhD7+8a
-         mnfVjdSXs5CHcnas1j/kt91Ij8VGfQDS01O0EB6i2FhQef3g8SjkIkYM6cIyijFLmwFz
-         FIXSqNA21DmbQ247U3T+vrTmnW6CYo9Emwo2F+ZcbpynmGBtyfN3B/aunlnrNThz+TkZ
-         XGYm5F74eKl9GkpdYDOKKbPcPM9VhQMPWFhppXXj2LByb6fKKmczfoVoOnXEs9Jc++lU
-         2Viw==
-X-Gm-Message-State: AOAM533agtHZWTSGxkSoFw7LmxR3/JRNwH1/v+2abIwbg5K9ln4T6KoI
-        6+I80d49jnHZUAlXdbpTbZaR5g==
-X-Google-Smtp-Source: ABdhPJwP/8rfhpUy+Y14AYtpcc+vn+nJ6fF2LYDcRz95lqgP9lYxW5nNE6lXZrFTz5GVcSJ4SZvXPQ==
-X-Received: by 2002:a7b:c4cb:: with SMTP id g11mr2801795wmk.99.1613473096807;
-        Tue, 16 Feb 2021 02:58:16 -0800 (PST)
+        bh=i2yCinIxoFBwLow1XBzdxruWNWA8TGQLQmqlS/4jbqc=;
+        b=SMuxey8eKw+zhevULak/j6Aabl2K41YA1+migMpwBsYQbn4cSrxmaU6XG2gef0gRjI
+         b1VI8Hn6q0ynYLCq8RIqDigG3MHx28i05v1lL99qkoA/6KDxP9U7JKjBPsgrBpJopp7h
+         5XmEbAXCox1YnhYElxVnykf0uxULHkdv6cnRDl9oBxZmk7oHBF9qVKcFyU5QthP5dn+P
+         Vp9/9+erWpjkRZKe6EGtIABSLn7dYROqbMCGAwwY25MuNsAn1tXumyo1UUwiy3KmUQOJ
+         wDFIXhbW83qguSlu2UIRHzUJjffBxtX57Z4DPnc6vucr7L0XssUCWxdDKn4UF1L/6aAm
+         wHYA==
+X-Gm-Message-State: AOAM532uqLLRVwauoBxPw2gcAnvmUFKL3hsav41ndPIUsSCT6/4TNa6g
+        ZG5TiH3dXdhq3/Z5GxEBQoPZaw==
+X-Google-Smtp-Source: ABdhPJxg8Srplv+YucwvNv1NCoeTVROtLTTL5owoswv45Q2dRu+KjoCT/2o2Ej7i1B1BSepK/WJeUQ==
+X-Received: by 2002:adf:ee84:: with SMTP id b4mr22799029wro.339.1613473097526;
+        Tue, 16 Feb 2021 02:58:17 -0800 (PST)
 Received: from antares.lan (111.253.187.81.in-addr.arpa. [81.187.253.111])
         by smtp.gmail.com with ESMTPSA id l1sm2820238wmi.48.2021.02.16.02.58.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Feb 2021 02:58:16 -0800 (PST)
+        Tue, 16 Feb 2021 02:58:17 -0800 (PST)
 From:   Lorenz Bauer <lmb@cloudflare.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         jakub@cloudflare.com
 Cc:     kernel-team@cloudflare.com, bpf@vger.kernel.org,
         netdev@vger.kernel.org, Lorenz Bauer <lmb@cloudflare.com>
-Subject: [PATCH bpf-next 1/8] bpf: consolidate shared test timing code
-Date:   Tue, 16 Feb 2021 10:57:06 +0000
-Message-Id: <20210216105713.45052-2-lmb@cloudflare.com>
+Subject: [PATCH bpf-next 2/8] bpf: add for_each_bpf_prog helper
+Date:   Tue, 16 Feb 2021 10:57:07 +0000
+Message-Id: <20210216105713.45052-3-lmb@cloudflare.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210216105713.45052-1-lmb@cloudflare.com>
 References: <20210216105713.45052-1-lmb@cloudflare.com>
@@ -61,213 +61,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Share the timing / signal interruption logic between different
-implementations of PROG_TEST_RUN. There is a change in behaviour
-as well. We check the loop exit condition before checking for
-pending signals. This resolves an edge case where a signal
-arrives during the last iteration. Instead of aborting with
-EINTR we return the successful result to user space.
+Add a helper to iterate bpf_prog_arrays, which are a hybrid between
+and array and a linked list. Hide this behind a for each macro.
 
 Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
 ---
- net/bpf/test_run.c | 137 +++++++++++++++++++++++++--------------------
- 1 file changed, 76 insertions(+), 61 deletions(-)
+ include/linux/bpf.h    | 11 +++++------
+ include/linux/filter.h |  4 +---
+ 2 files changed, 6 insertions(+), 9 deletions(-)
 
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index 58bcb8c849d5..33bd2f67e259 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -16,14 +16,82 @@
- #define CREATE_TRACE_POINTS
- #include <trace/events/bpf_test_run.h>
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index cccaef1088ea..875f6bc4bf1d 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -1070,6 +1070,9 @@ int bpf_prog_array_copy(struct bpf_prog_array *old_array,
+ /* BPF program asks to set CN on the packet. */
+ #define BPF_RET_SET_CN						(1 << 0)
  
-+struct test_timer {
-+	enum { NO_PREEMPT, NO_MIGRATE } mode;
-+	u32 i;
-+	u64 time_start, time_spent;
-+};
++#define for_each_bpf_prog(_array, _item, _prog) \
++	for ((_item) = &(_array)->items[0]; ((_prog) = READ_ONCE((_item)->prog)); (_item)++)
 +
-+static inline void t_enter(struct test_timer *t)
-+{
-+	rcu_read_lock();
-+	if (t->mode == NO_PREEMPT)
-+		preempt_disable();
-+	else
-+		migrate_disable();
-+
-+	t->time_start = ktime_get_ns();
-+}
-+
-+static inline void t_leave(struct test_timer *t)
-+{
-+	t->time_spent += ktime_get_ns() - t->time_start;
-+	t->time_start = 0;
-+
-+	if (t->mode == NO_PREEMPT)
-+		preempt_enable();
-+	else
-+		migrate_enable();
-+	rcu_read_unlock();
-+}
-+
-+static inline bool t_check(struct test_timer *t, u32 repeat, int *err, u32 *duration)
-+{
-+	if (!t->time_start) {
-+		/* Enter protected section before first iteration. */
-+		t_enter(t);
-+		return true;
-+	}
-+
-+	t->i++;
-+	if (t->i >= repeat) {
-+		/* Leave the protected section after the last iteration. */
-+		t_leave(t);
-+		do_div(t->time_spent, t->i);
-+		*duration = t->time_spent > U32_MAX ? U32_MAX : (u32)t->time_spent;
-+		*err = 0;
-+		goto reset;
-+	}
-+
-+	if (signal_pending(current)) {
-+		/* During iteration: we've been cancelled, abort. */
-+		t_leave(t);
-+		*err = -EINTR;
-+		goto reset;
-+	}
-+
-+	if (need_resched()) {
-+		/* During iteration: we need to reschedule between runs. */
-+		t_leave(t);
-+		cond_resched();
-+		t_enter(t);
-+	}
-+
-+	/* Do another round. */
-+	return true;
-+
-+reset:
-+	t->time_spent = t->i = 0;
-+	return false;
-+}
-+
- static int bpf_test_run(struct bpf_prog *prog, void *ctx, u32 repeat,
- 			u32 *retval, u32 *time, bool xdp)
- {
- 	struct bpf_cgroup_storage *storage[MAX_BPF_CGROUP_STORAGE_TYPE] = { NULL };
-+	struct test_timer t = { NO_MIGRATE };
- 	enum bpf_cgroup_storage_type stype;
--	u64 time_start, time_spent = 0;
--	int ret = 0;
--	u32 i;
-+	int ret;
- 
- 	for_each_cgroup_storage_type(stype) {
- 		storage[stype] = bpf_cgroup_storage_alloc(prog, stype);
-@@ -38,40 +106,14 @@ static int bpf_test_run(struct bpf_prog *prog, void *ctx, u32 repeat,
- 	if (!repeat)
- 		repeat = 1;
- 
--	rcu_read_lock();
--	migrate_disable();
--	time_start = ktime_get_ns();
--	for (i = 0; i < repeat; i++) {
-+	while (t_check(&t, repeat, &ret, time)) {
- 		bpf_cgroup_storage_set(storage);
- 
- 		if (xdp)
- 			*retval = bpf_prog_run_xdp(prog, ctx);
- 		else
- 			*retval = BPF_PROG_RUN(prog, ctx);
--
--		if (signal_pending(current)) {
--			ret = -EINTR;
--			break;
--		}
--
--		if (need_resched()) {
--			time_spent += ktime_get_ns() - time_start;
--			migrate_enable();
--			rcu_read_unlock();
--
--			cond_resched();
--
--			rcu_read_lock();
--			migrate_disable();
--			time_start = ktime_get_ns();
--		}
- 	}
--	time_spent += ktime_get_ns() - time_start;
--	migrate_enable();
--	rcu_read_unlock();
--
--	do_div(time_spent, repeat);
--	*time = time_spent > U32_MAX ? U32_MAX : (u32)time_spent;
- 
- 	for_each_cgroup_storage_type(stype)
- 		bpf_cgroup_storage_free(storage[stype]);
-@@ -674,18 +716,17 @@ int bpf_prog_test_run_flow_dissector(struct bpf_prog *prog,
- 				     const union bpf_attr *kattr,
- 				     union bpf_attr __user *uattr)
- {
-+	struct test_timer t = { NO_PREEMPT };
- 	u32 size = kattr->test.data_size_in;
- 	struct bpf_flow_dissector ctx = {};
- 	u32 repeat = kattr->test.repeat;
- 	struct bpf_flow_keys *user_ctx;
- 	struct bpf_flow_keys flow_keys;
--	u64 time_start, time_spent = 0;
- 	const struct ethhdr *eth;
- 	unsigned int flags = 0;
- 	u32 retval, duration;
- 	void *data;
- 	int ret;
--	u32 i;
- 
- 	if (prog->type != BPF_PROG_TYPE_FLOW_DISSECTOR)
- 		return -EINVAL;
-@@ -721,39 +762,13 @@ int bpf_prog_test_run_flow_dissector(struct bpf_prog *prog,
- 	ctx.data = data;
- 	ctx.data_end = (__u8 *)data + size;
- 
--	rcu_read_lock();
--	preempt_disable();
--	time_start = ktime_get_ns();
--	for (i = 0; i < repeat; i++) {
-+	while (t_check(&t, repeat, &ret, &duration)) {
- 		retval = bpf_flow_dissect(prog, &ctx, eth->h_proto, ETH_HLEN,
- 					  size, flags);
--
--		if (signal_pending(current)) {
--			preempt_enable();
--			rcu_read_unlock();
--
--			ret = -EINTR;
--			goto out;
--		}
--
--		if (need_resched()) {
--			time_spent += ktime_get_ns() - time_start;
--			preempt_enable();
--			rcu_read_unlock();
--
--			cond_resched();
--
--			rcu_read_lock();
--			preempt_disable();
--			time_start = ktime_get_ns();
--		}
- 	}
--	time_spent += ktime_get_ns() - time_start;
--	preempt_enable();
--	rcu_read_unlock();
- 
--	do_div(time_spent, repeat);
--	duration = time_spent > U32_MAX ? U32_MAX : (u32)time_spent;
-+	if (ret < 0)
-+		goto out;
- 
- 	ret = bpf_test_finish(kattr, uattr, &flow_keys, sizeof(flow_keys),
- 			      retval, duration);
+ #define BPF_PROG_RUN_ARRAY_FLAGS(array, ctx, func, ret_flags)		\
+ 	({								\
+ 		struct bpf_prog_array_item *_item;			\
+@@ -1080,13 +1083,11 @@ int bpf_prog_array_copy(struct bpf_prog_array *old_array,
+ 		migrate_disable();					\
+ 		rcu_read_lock();					\
+ 		_array = rcu_dereference(array);			\
+-		_item = &_array->items[0];				\
+-		while ((_prog = READ_ONCE(_item->prog))) {		\
++		for_each_bpf_prog(_array, _item, _prog) {		\
+ 			bpf_cgroup_storage_set(_item->cgroup_storage);	\
+ 			func_ret = func(_prog, ctx);			\
+ 			_ret &= (func_ret & 1);				\
+ 			*(ret_flags) |= (func_ret >> 1);			\
+-			_item++;					\
+ 		}							\
+ 		rcu_read_unlock();					\
+ 		migrate_enable();					\
+@@ -1104,11 +1105,9 @@ int bpf_prog_array_copy(struct bpf_prog_array *old_array,
+ 		_array = rcu_dereference(array);	\
+ 		if (unlikely(check_non_null && !_array))\
+ 			goto _out;			\
+-		_item = &_array->items[0];		\
+-		while ((_prog = READ_ONCE(_item->prog))) {		\
++		for_each_bpf_prog(_array, _item, _prog) {		\
+ 			bpf_cgroup_storage_set(_item->cgroup_storage);	\
+ 			_ret &= func(_prog, ctx);	\
+-			_item++;			\
+ 		}					\
+ _out:							\
+ 		rcu_read_unlock();			\
+diff --git a/include/linux/filter.h b/include/linux/filter.h
+index 3b00fc906ccd..9ed20ff29d9a 100644
+--- a/include/linux/filter.h
++++ b/include/linux/filter.h
+@@ -1376,8 +1376,7 @@ extern struct static_key_false bpf_sk_lookup_enabled;
+ 		u32 _ret;						\
+ 									\
+ 		migrate_disable();					\
+-		_item = &(array)->items[0];				\
+-		while ((_prog = READ_ONCE(_item->prog))) {		\
++		for_each_bpf_prog(array, _item, _prog) {		\
+ 			/* restore most recent selection */		\
+ 			_ctx->selected_sk = _selected_sk;		\
+ 			_ctx->no_reuseport = _no_reuseport;		\
+@@ -1390,7 +1389,6 @@ extern struct static_key_false bpf_sk_lookup_enabled;
+ 			} else if (_ret == SK_DROP && _all_pass) {	\
+ 				_all_pass = false;			\
+ 			}						\
+-			_item++;					\
+ 		}							\
+ 		_ctx->selected_sk = _selected_sk;			\
+ 		_ctx->no_reuseport = _no_reuseport;			\
 -- 
 2.27.0
 
