@@ -2,114 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CA9E31C6EA
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 08:38:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B47B331C6EF
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 08:40:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229917AbhBPHiU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 02:38:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33448 "EHLO mail.kernel.org"
+        id S229787AbhBPHkq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 02:40:46 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33636 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229676AbhBPHiS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Feb 2021 02:38:18 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 450FD64DC3;
-        Tue, 16 Feb 2021 07:37:37 +0000 (UTC)
+        id S229717AbhBPHkn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Feb 2021 02:40:43 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5D79B64E04;
+        Tue, 16 Feb 2021 07:40:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613461058;
-        bh=6OLXpRjMtpO3rJat3zYX+pRYnE0UODR8E8eilUt1wlI=;
+        s=k20201202; t=1613461202;
+        bh=hKiX52cLMN3cUoxtSOVIQl65AGC6ungrAGJmKsxqt30=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=IKK96cwEMia3biqOl2+yZcIHiH7NduEbANNEqBANbJ1bSnjgLtTIUftS3IH0dRw+L
-         0do0UHIe0A2ZgeStQjar6TBFj1a9Es5EyCByeBXYapR4+y5+KbwcUMlMZ0EonCZaXB
-         H14tLwwaZ2GRH3XQBrOjhzSTrPSbhMahxvCJVIcgHFy3ZIR5qP9Xg1RRtmKXEhxBl4
-         4ZoGqJWs6prNDYBVQtRwH7ElfX4/TGZEQDXf8nlUmH8uGIp0xYbWW8ISJYW5T14KxK
-         MGj4i3Qd/GR7WgiISn2OdeuaJtkYCgS1FeSuWnmoYY1VZDk0laA7pxokzvXIz3EQKf
-         hS+lnGIr8gx4A==
-Date:   Tue, 16 Feb 2021 09:37:34 +0200
+        b=k+HchKGThqHy+nr2gPPllfVB+QljdDnFodST5Qgn6ouMsuf+5wWugkNzpqITArqoy
+         SFA7vzEV9Dc0wk++mTACb2Qx9exF/KTG0TH1Qo2IP50ZD7TJmupli6IWSssnroUxhl
+         Lifo/ffqIZEwsxqTAXG3Vy+G/TjnSXqdfqqy+uoSQybkMIeIAxSKynyCcA3HfwfkCc
+         FREacdBk4bb7oElJP+Yf+j+Rejnq+51XKAxo+NBXDqdG6MHdvvKIe9ph7G/tLLy3es
+         XgQdMFeuNQoW7Ve6v7aBQ/WlY6Z2OesUMXXHgi6RC/La6URVTl8kTxN6HYVQhrsMvp
+         svAm04GR4V5/Q==
+Date:   Tue, 16 Feb 2021 09:39:58 +0200
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Eli Cohen <elic@nvidia.com>
-Cc:     mst@redhat.com, jasowang@redhat.com, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        si-wei.liu@oracle.com
-Subject: Re: [PATCH] vdpa/mlx5: Extract correct pointer from driver data
-Message-ID: <YCt2PiMIZxbR15IA@unreal>
-References: <20210216055022.25248-1-elic@nvidia.com>
- <20210216055022.25248-2-elic@nvidia.com>
- <YCtnxyTHJl9TU87L@unreal>
- <20210216064226.GA83717@mtl-vdi-166.wap.labs.mlnx>
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux X25 <linux-x25@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Martin Schiller <ms@dev.tdt.de>,
+        Krzysztof Halasa <khc@pm.waw.pl>
+Subject: Re: [PATCH net-next RFC v3] net: hdlc_x25: Queue outgoing LAPB frames
+Message-ID: <YCt2zmL3GiPodutc@unreal>
+References: <20210215072703.43952-1-xie.he.0141@gmail.com>
+ <YCo96zjXHyvKpbUM@unreal>
+ <CAJht_EOQBDdwa0keS9XTKZgXE44_b5cHJt=fFaKy-wFDpe6iaw@mail.gmail.com>
+ <YCrDcMYgSgdKp4eX@unreal>
+ <CAJht_EPy1Us72YGMune2G3s1TLB4TOCBFJpZt+KbVUV8uoFbfA@mail.gmail.com>
+ <YCtgTBvR6TD8sPpe@unreal>
+ <CAJht_ENDJ-T_9-V04YUP-Qp+PnZnAcOeV+6eUXkTX4pmm5Vrag@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210216064226.GA83717@mtl-vdi-166.wap.labs.mlnx>
+In-Reply-To: <CAJht_ENDJ-T_9-V04YUP-Qp+PnZnAcOeV+6eUXkTX4pmm5Vrag@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 16, 2021 at 08:42:26AM +0200, Eli Cohen wrote:
-> On Tue, Feb 16, 2021 at 08:35:51AM +0200, Leon Romanovsky wrote:
-> > On Tue, Feb 16, 2021 at 07:50:22AM +0200, Eli Cohen wrote:
-> > > struct mlx5_vdpa_net pointer was stored in drvdata. Extract it as well
-> > > in mlx5v_remove().
-> > >
-> > > Fixes: 74c9729dd892 ("vdpa/mlx5: Connect mlx5_vdpa to auxiliary bus")
-> > > Signed-off-by: Eli Cohen <elic@nvidia.com>
-> > > ---
-> > >  drivers/vdpa/mlx5/net/mlx5_vnet.c | 4 ++--
-> > >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > >
-> > > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > > index 6b0a42183622..4103d3b64a2a 100644
-> > > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > > @@ -2036,9 +2036,9 @@ static int mlx5v_probe(struct auxiliary_device *adev,
-> > >
-> > >  static void mlx5v_remove(struct auxiliary_device *adev)
-> > >  {
-> > > -	struct mlx5_vdpa_dev *mvdev = dev_get_drvdata(&adev->dev);
-> > > +	struct mlx5_vdpa_net *ndev = dev_get_drvdata(&adev->dev);
-> > >
-> > > -	vdpa_unregister_device(&mvdev->vdev);
-> > > +	vdpa_unregister_device(&ndev->mvdev.vdev);
-> > >  }
+On Mon, Feb 15, 2021 at 11:30:25PM -0800, Xie He wrote:
+> On Mon, Feb 15, 2021 at 10:04 PM Leon Romanovsky <leon@kernel.org> wrote:
 > >
-> > IMHO, The more correct solution is to fix dev_set_drvdata() call,
-> > because we are regustering/unregistering/allocating "struct mlx5_vdpa_dev".
+> > On Mon, Feb 15, 2021 at 11:08:02AM -0800, Xie He wrote:
+> > > On Mon, Feb 15, 2021 at 10:54 AM Leon Romanovsky <leon@kernel.org> wrote:
+> > > >
+> > > > On Mon, Feb 15, 2021 at 09:23:32AM -0800, Xie He wrote:
+> > > > > On Mon, Feb 15, 2021 at 1:25 AM Leon Romanovsky <leon@kernel.org> wrote:
+> > > > > >
+> > > > > > > +     /* When transmitting data:
+> > > > > > > +      * first we'll remove a pseudo header of 1 byte,
+> > > > > > > +      * then the LAPB module will prepend an LAPB header of at most 3 bytes.
+> > > > > > > +      */
+> > > > > > > +     dev->needed_headroom = 3 - 1;
+> > > > > >
+> > > > > > 3 - 1 = 2
+> > > > > >
+> > > > > > Thanks
+> > > > >
+> > > > > Actually this is intentional. It makes the numbers more meaningful.
+> > > > >
+> > > > > The compiler should automatically generate the "2" so there would be
+> > > > > no runtime penalty.
+> > > >
+> > > > If you want it intentional, write it in the comment.
+> > > >
+> > > > /* When transmitting data, we will need extra 2 bytes headroom,
+> > > >  * which are 3 bytes of LAPB header minus one byte of pseudo header.
+> > > >  */
+> > > >  dev->needed_headroom = 2;
+> > >
+> > > I think this is unnecessary. The current comment already explains the
+> > > meaning of the "1" and the "3". There's no need for a reader of this
+> > > code to understand what a "2" is. That is the job of the compiler, not
+> > > the human reader.
 > >
+> > It is not related to compiler/human format. If you need to write "3 - 1"
+> > to make it easy for users, it means that your comment above is not
+> > full/correct/e.t.c.
 >
-> We're allocating "struct mlx5_vdpa_net". "struct mlx5_vdpa_dev" is just
-> a member field of "struct mlx5_vdpa_net".
+> My point is: there is no need for human programmers / code readers to
+> understand what this "2" is. There is no need to explain what this "2"
+> means in the comment. There is no need to write this "2" in the code.
+> There is no need for this "2" to appear anywhere. That is just an
+> intermediate result generated by the compiler. It is similar to
+> assembly or machine code. It is generated by the compiler. Human
+> programmers just don't care about this intermediate result.
+>
+> My point could be more apparent if you consider a more complex
+> situation: "3 - 1 + 2 + 4 + 2". No human would want to see a
+> meaningless "10" in the code. We want to see the meaning of the
+> numbers, not a meaningless intermediate calculation result.
 
-I referred to these lines in the mlx5v_probe():
-  1986         err = mlx5_vdpa_alloc_resources(&ndev->mvdev);
-  1987         if (err)
-  1988                 goto err_mtu;
-  1989
-  1990         err = alloc_resources(ndev);
-  1991         if (err)
-  1992                 goto err_res;
-  1993
-  1994         err = vdpa_register_device(&mvdev->vdev);
-
-So mlx5v_remove() is better to be symmetrical.
+Right, and we are using defines for that.
 
 Thanks
-
->
-> > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > index 88dde3455bfd..079b8fe669af 100644
-> > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > @@ -1995,7 +1995,7 @@ static int mlx5v_probe(struct auxiliary_device *adev,
-> >  	if (err)
-> >  		goto err_reg;
-> >
-> > -	dev_set_drvdata(&adev->dev, ndev);
-> > +	dev_set_drvdata(&adev->dev, mvdev);
-> >  	return 0;
-> >
-> >  err_reg:
-> >
-> > >
-> > >  static const struct auxiliary_device_id mlx5v_id_table[] = {
-> >
-> > > --
-> > > 2.29.2
-> > >
