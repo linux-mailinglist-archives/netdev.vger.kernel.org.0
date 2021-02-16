@@ -2,160 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE2FA31C6E0
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 08:34:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFB9431C6E4
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 08:36:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229888AbhBPHeg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 02:34:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:32922 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229720AbhBPHe3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Feb 2021 02:34:29 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 62E5D64E04;
-        Tue, 16 Feb 2021 07:33:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613460828;
-        bh=RbFLXIpmV+6BbnaecTY/k2NgUz9HSQXSB02BzYCtQ20=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HZ3korqGinigAJrhhx3pWEfnIzcvu6f/NwObpzm8g8Ew3MJS5BN2tOlOzZ8VVvMS0
-         /+WKfRD8caPBSZ44OTOFZ97+ryg1oW2NZcp26VNWkrVDYl3lyD+XYEJEilYsigkq9S
-         K7Fi7xzX0U6WqqqW825oonetSkcRiBD8fKnBS32r49XyTmR0BE2bG+GkbaU6e6Xe8z
-         vOZFdDAK7m+k3sqK8cHFTDzwomJg9oDjRy8tqRupLqpdpMPvSdt3VJLOvtLrjuFlaU
-         mRWdtjljWE1dG8U23AoScWsk3ukwB9K3TWFOG0pBbSprh8kbkCZ4bx4bp/SiLjI1eR
-         CFuKkjaAhL04A==
-Date:   Tue, 16 Feb 2021 09:33:44 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Don Dutile <ddutile@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH mlx5-next v6 1/4] PCI: Add sysfs callback to allow MSI-X
- table size change of SR-IOV VFs
-Message-ID: <YCt1WAAEO1hx2pjY@unreal>
-References: <20210209133445.700225-2-leon@kernel.org>
- <20210215210106.GA744958@bjorn-Precision-5520>
+        id S229767AbhBPHgP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 02:36:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47784 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229694AbhBPHgL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 02:36:11 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78679C061574
+        for <netdev@vger.kernel.org>; Mon, 15 Feb 2021 23:35:31 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id kr16so512416pjb.2
+        for <netdev@vger.kernel.org>; Mon, 15 Feb 2021 23:35:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7PVc49FGSrcyBjDKMhqpxS/wGvi7aqxUUyL9/qdpEOk=;
+        b=HCZ9QWz8vWNEnAal12QAAtgNmdAsKkUWhD6QPhvYOFUY25NifHAX1ooDuTb5NLKW0T
+         S1Dd81Wiy2HEwIgBY7O0IJinfyBCYyJW0pw3vffTeClR3CWAmRd7Me4U5XK6SywXIOix
+         PazRTcu9cBJo/rPFjbI/ubYOWSqGeKiSudA1TSN4oaAUEvhUfcx3BhfsUJrtgRPjmln/
+         mMu3VDkc89guwJyHhZxAU3GHalwFyFbBFKoPD+0wBX47h4chWJr97LVJsnJaurYccioc
+         Iyt03UzI/FSih4hIR2Xe/YzuXpLiO3MK/a+MaOLRNwU0SD+DprEz1fB4kKKPSkpQFPBT
+         hvVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7PVc49FGSrcyBjDKMhqpxS/wGvi7aqxUUyL9/qdpEOk=;
+        b=hIrl+56GMBZ5eFc7alChZonhtJ+pWvwOR7ugP9Ww8ezAmBbcNSZl5YHT54CYDAaPFK
+         S3tTfKU8AlfaOwKWoMlcf2dB1NPzJxJBWc6u0Ja6jY5wjODBWbYSkklNivHLM21HbL4K
+         C0RKSZQF5wRHkoZUT+htihdT95ug7+Rw4cvvu1vWqvltwawgisDuZ++IHh9QoXjp5mZu
+         ny2ub1pfMHjNVHauV6J/E7St+yVvD6mZ1sD40UhPuncb5RvvaCn/ihDo3tZyxrxuWEsB
+         I9kEeAiLg1ogmxjgPEyrIf/txTiu1C//10HFhL5//JPKSJ5O2nQR+B4+90ob6YGo6Jv7
+         CNBg==
+X-Gm-Message-State: AOAM533HvbnZcjKr94CNwKQoKiUyCMfHQMQ87twMKL7TwQW/YdCKqxDs
+        2ARFE2gOAxbvRb1solBqT+4=
+X-Google-Smtp-Source: ABdhPJy0y5SY+d4KqNVoa1LEvO79zB5Lb3njyijHnLg3HUVd7yjCV3UUBvYtw/MAb5aW5g7/MucgzA==
+X-Received: by 2002:a17:902:b189:b029:dc:4102:4edf with SMTP id s9-20020a170902b189b02900dc41024edfmr18607463plr.80.1613460931113;
+        Mon, 15 Feb 2021 23:35:31 -0800 (PST)
+Received: from ThinkCentre-M83.c.infrastructure-904.internal ([202.133.196.154])
+        by smtp.gmail.com with ESMTPSA id x20sm19817365pfi.115.2021.02.15.23.35.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Feb 2021 23:35:30 -0800 (PST)
+From:   Du Cheng <ducheng2@gmail.com>
+To:     Manish Chopra <manishc@marvell.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, Du Cheng <ducheng2@gmail.com>
+Subject: [PATCH v2] fix coding style in driver/staging/qlge/qlge_main.c
+Date:   Tue, 16 Feb 2021 15:35:26 +0800
+Message-Id: <20210216073526.175212-1-ducheng2@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210215210106.GA744958@bjorn-Precision-5520>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 15, 2021 at 03:01:06PM -0600, Bjorn Helgaas wrote:
-> On Tue, Feb 09, 2021 at 03:34:42PM +0200, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@nvidia.com>
-> >
-> > Extend PCI sysfs interface with a new callback that allows configuration
-> > of the number of MSI-X vectors for specific SR-IOV VF. This is needed
-> > to optimize the performance of VFs devices by allocating the number of
-> > vectors based on the administrator knowledge of the intended use of the VF.
-> >
-> > This function is applicable for SR-IOV VF because such devices allocate
-> > their MSI-X table before they will run on the VMs and HW can't guess the
-> > right number of vectors, so some devices allocate them statically and equally.
->
-> This commit log should be clear that this functionality is motivated
-> by *mlx5* behavior.  The description above makes it sound like this is
-> generic PCI spec behavior, and it is not.
->
-> It may be a reasonable design that conforms to the spec, and we hope
-> the model will be usable by other designs, but it is not required by
-> the spec and AFAIK there is nothing in the spec you can point to as
-> background for this.
->
-> So don't *remove* the text you have above, but please *add* some
-> preceding background information about how mlx5 works.
->
-> > 1) The newly added /sys/bus/pci/devices/.../sriov_vf_msix_count
-> > file will be seen for the VFs and it is writable as long as a driver is not
-> > bound to the VF.
->
->   This adds /sys/bus/pci/devices/.../sriov_vf_msix_count for VF
->   devices and is writable ...
->
-> > The values accepted are:
-> >  * > 0 - this will be number reported by the Table Size in the VF's MSI-X Message
-> >          Control register
-> >  * < 0 - not valid
-> >  * = 0 - will reset to the device default value
->
->   = 0 - will reset to a device-specific default value
->
-> > 2) In order to make management easy, provide new read-only sysfs file that
-> > returns a total number of possible to configure MSI-X vectors.
->
->   For PF devices, this adds a read-only
->   /sys/bus/pci/devices/.../sriov_vf_total_msix file that contains the
->   total number of MSI-X vectors available for distribution among VFs.
->
-> Just as in sysfs-bus-pci, this file should be listed first, because
-> you must read it before you can use vf_msix_count.
+align * in block comments on each line
 
-No problem, I'll change, just remember that we are talking about commit
-message because in Documentation file, the order is exactly as you request.
+Signed-off-by: Du Cheng <ducheng2@gmail.com>
+---
+ drivers/staging/qlge/qlge_main.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
->
-> > cat /sys/bus/pci/devices/.../sriov_vf_total_msix
-> >   = 0 - feature is not supported
-> >   > 0 - total number of MSI-X vectors available for distribution among the VFs
-> >
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > ---
-> >  Documentation/ABI/testing/sysfs-bus-pci |  28 +++++
-> >  drivers/pci/iov.c                       | 153 ++++++++++++++++++++++++
-> >  include/linux/pci.h                     |  12 ++
-> >  3 files changed, 193 insertions(+)
+diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+index 5516be3af898..2682a0e474bd 100644
+--- a/drivers/staging/qlge/qlge_main.c
++++ b/drivers/staging/qlge/qlge_main.c
+@@ -3815,8 +3815,7 @@ static int qlge_adapter_down(struct qlge_adapter *qdev)
+ 
+ 	qlge_tx_ring_clean(qdev);
+ 
+-	/* Call netif_napi_del() from common point.
+-	*/
++	/* Call netif_napi_del() from common point. */
+ 	for (i = 0; i < qdev->rss_ring_count; i++)
+ 		netif_napi_del(&qdev->rx_ring[i].napi);
+ 
+-- 
+2.27.0
 
-<...>
-
-> > + */
-> > +int pci_enable_vf_overlay(struct pci_dev *dev)
-> > +{
-> > +	struct pci_dev *virtfn;
-> > +	int id, ret;
-> > +
-> > +	if (!dev->is_physfn || !dev->sriov->num_VFs)
-> > +		return 0;
-> > +
-> > +	ret = sysfs_create_files(&dev->dev.kobj, sriov_pf_dev_attrs);
->
-> But I still don't like the fact that we're calling
-> sysfs_create_files() and sysfs_remove_files() directly.  It makes
-> complication and opportunities for errors.
-
-It is not different from any other code that we have in the kernel.
-Let's be concrete, can you point to the errors in this code that I
-should fix?
-
->
-> I don't see the advantage of creating these files only when the PF
-> driver supports this.  The management tools have to deal with
-> sriov_vf_total_msix == 0 and sriov_vf_msix_count == 0 anyway.
-> Having the sysfs files not be present at all might be slightly
-> prettier to the person running "ls", but I'm not sure the code
-> complication is worth that.
-
-It is more than "ls", right now sriov_numvfs is visible without relation
-to the driver, even if driver doesn't implement ".sriov_configure", which
-IMHO bad. We didn't want to repeat.
-
-Right now, we have many devices that supports SR-IOV, but small amount
-of them are capable to rewrite their VF MSI-X table siz. We don't want
-"to punish" and clatter their sysfs.
-
->
-> I see a hint that Alex might have requested this "only visible when PF
-> driver supports it" functionality, but I don't see that email on
-> linux-pci, so I missed the background.
-
-First version of this patch had static files solution.
-https://lore.kernel.org/linux-pci/20210103082440.34994-2-leon@kernel.org/#Z30drivers:pci:iov.c
-
-Thanks
