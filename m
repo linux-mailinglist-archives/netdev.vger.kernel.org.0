@@ -2,68 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 792E631D27D
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 23:11:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED6EB31D27A
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 23:11:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230496AbhBPWLF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 17:11:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49154 "EHLO mail.kernel.org"
+        id S230474AbhBPWK5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 17:10:57 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49134 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230218AbhBPWKt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S229544AbhBPWKt (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 16 Feb 2021 17:10:49 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id C009F64EB1;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 9EDAC64E6B;
         Tue, 16 Feb 2021 22:10:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1613513408;
-        bh=7kpw3NaBnfp5O8XYPhdPrDoRAux2K1tgYOtaNRyuBBo=;
+        bh=nPRGtnnIXGIKmR5uUR2BjT0RaXjwKbgxqu5C+LoKjvY=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=kpWOT5QGejB7uIA8QbnjW5tEgMJ4DjDKXc6tILLY3Rg/lI1QqxSnzJfeltR9799va
-         cr4Wee0f/U44R9vA+XREIhc9gGL56dh4pptsPKaSwInF52cgDEglCAqlnGq4NnPqQk
-         sPOYu6tGL80nr9MpMxlkI0okKQydrEDvif4lndFCZ9k2NkF7vSNxOBjyA1X5FFE/H1
-         njcs+habemOEx6pyBFE4E4SOrFwYSTzYt1qKHRbiGC31p2GuZ9zh+Gk0MtEvdJQHu3
-         P7xZ2zv6jKC86o+MnmS5gukO3a+CdjkyFW1HYmPf1vuvO4pH0sIxm9NiF9meR8GozT
-         Tg/w9r9tVJv+A==
+        b=T+6AJaS2BWLi8DaQyukOnS83VO4PhoScaOoXu/0PHrbtsOH1a08PZm+Ie6yBScgnF
+         oQiwij5uikrMZf8tnVJ9M7+dZ8rlhuktiqSR79v6PdFr8wHrvqvAy+Jp5lkmf9Gjro
+         CgCQAD+Xno1+1f5B69JtPBROABUxMi5H/cD5jy6Zsjv0UyzD7jgrvL8dQzXYni7Cul
+         C9avLT8Jehzvhx0BpzjlimErSZ9BXt9ftRTszN1U8SUthEcf0jk4gQ+CJbjbcU7lcS
+         ek9JQi97tGXM0QCCM2RLBwesREx8wNCC341kcq9yzkKmk1F//Mbj5k9Cus4wunGqGK
+         0epOCIZCBh2rA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id AF1E860A21;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 92FA3609F8;
         Tue, 16 Feb 2021 22:10:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH RESEND net-next 0/2] Fix buggy brport flags offload for
- SJA1105 DSA
+Subject: Re: [PATCH net] net: dsa: felix: don't deinitialize unused ports
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161351340871.15084.5846603188911703598.git-patchwork-notify@kernel.org>
+Message-Id: <161351340859.15084.11127932682309408901.git-patchwork-notify@kernel.org>
 Date:   Tue, 16 Feb 2021 22:10:08 +0000
-References: <20210216114119.2856299-1-olteanv@gmail.com>
-In-Reply-To: <20210216114119.2856299-1-olteanv@gmail.com>
+References: <20210216111446.2850726-1-olteanv@gmail.com>
+In-Reply-To: <20210216111446.2850726-1-olteanv@gmail.com>
 To:     Vladimir Oltean <olteanv@gmail.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com
+        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
+        UNGLinuxDriver@microchip.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 16 Feb 2021 13:41:17 +0200 you wrote:
+On Tue, 16 Feb 2021 13:14:46 +0200 you wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> I am resending this series because the title and the patches were mixed
-> up and these patches were lost. This series' cover letter was used as
-> the merge commit for the unrelated "Fixing build breakage after "Merge
-> branch 'Propagate-extack-for-switchdev-LANs-from-DSA'"" series, as can
-> be seen below:
-> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=ca04422afd6998611a81d0ea1b61d5a5f4923f84
+> ocelot_init_port is called only if dsa_is_unused_port == false, however
+> ocelot_deinit_port is called unconditionally. This causes a warning in
+> the skb_queue_purge inside ocelot_deinit_port saying that the spin lock
+> protecting ocelot_port->tx_skbs was not initialized.
 > 
 > [...]
 
 Here is the summary with links:
-  - [RESEND,net-next,1/2] net: dsa: sja1105: fix configuration of source address learning
-    https://git.kernel.org/netdev/net-next/c/4c44fc5e9400
-  - [RESEND,net-next,2/2] net: dsa: sja1105: fix leakage of flooded frames outside bridging domain
-    https://git.kernel.org/netdev/net-next/c/7f7ccdea8c73
+  - [net] net: dsa: felix: don't deinitialize unused ports
+    https://git.kernel.org/netdev/net-next/c/42b5adbbac03
 
 You are awesome, thank you!
 --
