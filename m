@@ -2,81 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E112031CAE2
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 14:09:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 95EB331CAFE
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 14:19:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229812AbhBPNJE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 08:09:04 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:44008 "EHLO vps0.lunn.ch"
+        id S230005AbhBPNSb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 08:18:31 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52660 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229713AbhBPNJB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Feb 2021 08:09:01 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lC05Q-006h2F-Qs; Tue, 16 Feb 2021 14:08:16 +0100
-Date:   Tue, 16 Feb 2021 14:08:16 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Stefan Chulski <stefanc@marvell.com>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Marcin Wojtas (mw@semihalf.com)" <mw@semihalf.com>,
-        Nadav Haklai <nadavh@marvell.com>,
-        Yan Markman <ymarkman@marvell.com>
-Subject: Re: [EXT] Re: Phylink flow control support on ports with
- MLO_AN_FIXED auto negotiation
-Message-ID: <YCvDwMiOL2H+nv7S@lunn.ch>
-References: <CO6PR18MB38732F56EF08FA2C949326F9B0B79@CO6PR18MB3873.namprd18.prod.outlook.com>
- <20210131103549.GA1463@shell.armlinux.org.uk>
- <CO6PR18MB3873D6F519D1B4112AA77671B0B79@CO6PR18MB3873.namprd18.prod.outlook.com>
- <20210131111214.GB1463@shell.armlinux.org.uk>
- <20210131121950.GA1477@shell.armlinux.org.uk>
- <20210213113947.GD1477@shell.armlinux.org.uk>
- <CO6PR18MB38732FD9F40B8956B019F719B0889@CO6PR18MB3873.namprd18.prod.outlook.com>
- <YCq65/83SnpgyA86@lunn.ch>
- <CO6PR18MB3873A73FCB7DD1233249B314B0889@CO6PR18MB3873.namprd18.prod.outlook.com>
+        id S229917AbhBPNS3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Feb 2021 08:18:29 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E1BED64DA5;
+        Tue, 16 Feb 2021 13:17:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1613481468;
+        bh=vmkdvq+0gAgPMBKTUi07+7vQKbFc6q4t3W8fgD+9ijI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=IOGQ6k4scCo+1lFqhGgPdTbgwgNHIKHz8M3p0bpUmr87lSznNvHDjbYbaQY5bGy0V
+         btIukcmHUZpm74vJpW+S3d+wklHOpwwBu4Bkv/YmL3T6UuXk8LqsQHHHwtowlVtHfI
+         C4AY6KdzSFt3ZaBuwxK/yEdeYr8nWcAr6lMd1m6IPKaE7+VW/Dr5IcJhsSTrQ431/6
+         4Yp0A5lHbL7LGwCxOquNVeZYo9+UD7eKjMbYsQyxPHX67CX716ynEADZ2xQ+83yIv8
+         MIs67muR1qk5GeZHcmDd41L0mi9U7mcv7AfNF0egtuKm6OAViYp/kAqCCclU1VTEpl
+         jxl0DqcZuiR+Q==
+Date:   Tue, 16 Feb 2021 15:17:44 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Eli Cohen <elic@nvidia.com>
+Cc:     mst@redhat.com, jasowang@redhat.com, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        si-wei.liu@oracle.com
+Subject: Re: [PATCH] vdpa/mlx5: Extract correct pointer from driver data
+Message-ID: <YCvF+BfHeJWx3x2G@unreal>
+References: <20210216055022.25248-1-elic@nvidia.com>
+ <20210216055022.25248-2-elic@nvidia.com>
+ <YCtnxyTHJl9TU87L@unreal>
+ <20210216064226.GA83717@mtl-vdi-166.wap.labs.mlnx>
+ <YCt2PiMIZxbR15IA@unreal>
+ <20210216124540.GA94503@mtl-vdi-166.wap.labs.mlnx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CO6PR18MB3873A73FCB7DD1233249B314B0889@CO6PR18MB3873.namprd18.prod.outlook.com>
+In-Reply-To: <20210216124540.GA94503@mtl-vdi-166.wap.labs.mlnx>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Feb 15, 2021 at 08:33:19PM +0000, Stefan Chulski wrote:
-> > > > > > I discussed it with Andrew earlier last year, and his response was:
-> > > > > >
-> > > > > >  DT configuration of pause for fixed link probably is
-> > > > > > sufficient. I don't  remember it ever been really discussed for
-> > > > > > DSA. It was a Melanox  discussion about limiting pause for the
-> > > > > > CPU. So I think it is safe to  not implement ethtool -A, at
-> > > > > > least until somebody has a real use case  for it.
-> > > > > >
-> > > > > > So I chose not to support it - no point supporting features that
-> > > > > > people aren't using. If you have a "real use case" then it can be added.
+On Tue, Feb 16, 2021 at 02:45:40PM +0200, Eli Cohen wrote:
+> On Tue, Feb 16, 2021 at 09:37:34AM +0200, Leon Romanovsky wrote:
+> > On Tue, Feb 16, 2021 at 08:42:26AM +0200, Eli Cohen wrote:
+> > > On Tue, Feb 16, 2021 at 08:35:51AM +0200, Leon Romanovsky wrote:
+> > > > On Tue, Feb 16, 2021 at 07:50:22AM +0200, Eli Cohen wrote:
+> > > > > struct mlx5_vdpa_net pointer was stored in drvdata. Extract it as well
+> > > > > in mlx5v_remove().
 > > > > >
-> > > > > This patch may be sufficient - I haven't fully considered all the
-> > > > > implications of changing this though.
+> > > > > Fixes: 74c9729dd892 ("vdpa/mlx5: Connect mlx5_vdpa to auxiliary bus")
+> > > > > Signed-off-by: Eli Cohen <elic@nvidia.com>
+> > > > > ---
+> > > > >  drivers/vdpa/mlx5/net/mlx5_vnet.c | 4 ++--
+> > > > >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > > > >
+> > > > > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > > index 6b0a42183622..4103d3b64a2a 100644
+> > > > > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > > @@ -2036,9 +2036,9 @@ static int mlx5v_probe(struct auxiliary_device *adev,
+> > > > >
+> > > > >  static void mlx5v_remove(struct auxiliary_device *adev)
+> > > > >  {
+> > > > > -	struct mlx5_vdpa_dev *mvdev = dev_get_drvdata(&adev->dev);
+> > > > > +	struct mlx5_vdpa_net *ndev = dev_get_drvdata(&adev->dev);
+> > > > >
+> > > > > -	vdpa_unregister_device(&mvdev->vdev);
+> > > > > +	vdpa_unregister_device(&ndev->mvdev.vdev);
+> > > > >  }
 > > > >
-> > > > Did you try this patch? What's the outcome?
+> > > > IMHO, The more correct solution is to fix dev_set_drvdata() call,
+> > > > because we are regustering/unregistering/allocating "struct mlx5_vdpa_dev".
+> > > >
 > > >
-> > > For me patch worked as expected.
-> > 
-> > Hi Stefan
-> > 
-> > Russell's patch allows it, but i would be interested in knows why you actually
-> > need it. What is your use case for changing this on the fly?
-> > 
-> > 	 Andrew
-> 
-> Usually, user prefer have the capability disable/enable flow control on the fly.
-> For example:
-> Armada connected by 10G fixed link to SOHO switch and SOHO has 10 external 1G LAN interfaces.
-> When we have 2 flows (from Armada to LAN) from two different ports, we have an obvious congestion issue.
-> Bursts on 10G interface would cause FC frames on Armada<->SOHO 10G port and one flow would affect another.
-> In some use cases, the user would prefer lossless traffic and keep FC, for another use case (probably UDP streaming) disable FC.
+> > > We're allocating "struct mlx5_vdpa_net". "struct mlx5_vdpa_dev" is just
+> > > a member field of "struct mlx5_vdpa_net".
+> >
+> > I referred to these lines in the mlx5v_probe():
+> >   1986         err = mlx5_vdpa_alloc_resources(&ndev->mvdev);
+> >   1987         if (err)
+> >   1988                 goto err_mtu;
+> >   1989
+> >   1990         err = alloc_resources(ndev);
+> >   1991         if (err)
+> >   1992                 goto err_res;
+> >   1993
+> >   1994         err = vdpa_register_device(&mvdev->vdev);
+> >
+> > So mlx5v_remove() is better to be symmetrical.
+> >
+>
+> It's "struct mlx5_vdpa_net" that is being allocated here so it makes
+> sense to set this pointer as the the driver data.
 
-O.K, so you have reasonable uses cases for it. I'm O.K. with this.
+Anyway, it doesn't important.
 
-     Andrew
+Thanks, for the original patch.
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
