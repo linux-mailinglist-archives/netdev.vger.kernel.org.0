@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E30831D0EA
+	by mail.lfdr.de (Postfix) with ESMTP id CC43231D0EB
 	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 20:24:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230460AbhBPTWN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 14:22:13 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52030 "EHLO mail.kernel.org"
+        id S230466AbhBPTWV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 14:22:21 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52052 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229952AbhBPTWG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Feb 2021 14:22:06 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E5B3364EAD;
-        Tue, 16 Feb 2021 19:21:23 +0000 (UTC)
+        id S230355AbhBPTWJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 16 Feb 2021 14:22:09 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 862EA64E7A;
+        Tue, 16 Feb 2021 19:21:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613503286;
-        bh=FwzLSkHq/fQKXd7PxmVrEybGxcvHyVQtbZPZ5PEVB+8=;
+        s=k20201202; t=1613503288;
+        bh=C55g7mCUuCjm7Ez3PWGLGQz+jfvuDmdosTrWGgfK1AM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jZ9ON9D/0sLfuFKWG96uxwE5QdjVp0qc4LgYXDs4QnStVvJOPDP3VCdnuPHCYfVN/
-         VSkwChYmN0ZXq7bQWOA9N69zLwij+PuP/WxzZuGjFtAbeql327SgtlEnT/LsBRkt8V
-         EAYtyUWupRo3OzwgUXtT/yaVN6KaTnwxRHcMMccg4duC1wuCCg4Qp0oSiULAjAJxQ8
-         T5BinTSHdJg/SPqTbgIpHos0wsxT9JWOhY/nHdtRcwdnonnKT7L2Ul/bWW8RHMr8Qr
-         PvshmEtvwTsQheF0UqBiHTdpwHT5agHD2RwAtLZsNXBoZ0ebsvH8+nsfqtN6KErZ4F
-         3Rmn4ED03TC3w==
+        b=ozMnd0ikBYDQ7Nk2Hyyr0PJ+xVLwXyZtvYvOgnBwzrRqCzQvorOw8eex4PtozvIus
+         cjG8Og0ft3IVPOivVZgYs89BSaGfmcm4a0/ypEUi3LVhLspSRJnzYggRnkbO8denWH
+         zLSoiDP2M85vjRbCRgGWlmgLiuEl887TpjVl/xcgZyQU8EkkCTk2Y9iF2Z26hBJTOw
+         vRuKmGQWEMg3Fc8mgftEshcDB4iymFOwBY+jQ/LEGH7yrneotA7Hdl1deAtZhXtisy
+         uexpHQwSXsilOZ4eGfizZSO76EuRpCDVAMD4hyECbhzb8ZMWIUPwcKAldE75DzYUo/
+         dRQYhtwxRmziw==
 From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
 To:     netdev@vger.kernel.org,
         Russell King - ARM Linux admin <linux@armlinux.org.uk>,
@@ -32,9 +32,9 @@ Cc:     pavana.sharma@digi.com, vivien.didelot@gmail.com,
         andrew@lunn.ch, Chris Packham <chris.packham@alliedtelesis.co.nz>,
         olteanv@gmail.com,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH net-next 3/4] net: phylink: Add 5gbase-r support
-Date:   Tue, 16 Feb 2021 20:20:54 +0100
-Message-Id: <20210216192055.7078-4-kabel@kernel.org>
+Subject: [PATCH net-next 4/4] sfp: add support for 5gbase-t SFPs
+Date:   Tue, 16 Feb 2021 20:20:55 +0100
+Message-Id: <20210216192055.7078-5-kabel@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210216192055.7078-1-kabel@kernel.org>
 References: <20210216192055.7078-1-kabel@kernel.org>
@@ -45,28 +45,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add 5GBASER interface type and speed to phylink.
+The sfp_parse_support() function is setting 5000baseT_Full in some cases.
+Now that we have PHY_INTERFACE_MODE_5GBASER interface mode available,
+change sfp_select_interface() to return PHY_INTERFACE_MODE_5GBASER if
+5000baseT_Full is set in the link mode mask.
 
 Signed-off-by: Marek Behún <kabel@kernel.org>
 ---
- drivers/net/phy/phylink.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/phy/sfp-bus.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 84f6e197f965..053c92e02cd8 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -306,6 +306,10 @@ static int phylink_parse_mode(struct phylink *pl, struct fwnode_handle *fwnode)
- 			phylink_set(pl->supported, 2500baseX_Full);
- 			break;
+diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
+index 3cfd773ae5f4..2e11176c6b94 100644
+--- a/drivers/net/phy/sfp-bus.c
++++ b/drivers/net/phy/sfp-bus.c
+@@ -400,6 +400,9 @@ phy_interface_t sfp_select_interface(struct sfp_bus *bus,
+ 	    phylink_test(link_modes, 10000baseT_Full))
+ 		return PHY_INTERFACE_MODE_10GBASER;
  
-+		case PHY_INTERFACE_MODE_5GBASER:
-+			phylink_set(pl->supported, 5000baseT_Full);
-+			break;
++	if (phylink_test(link_modes, 5000baseT_Full))
++		return PHY_INTERFACE_MODE_5GBASER;
 +
- 		case PHY_INTERFACE_MODE_USXGMII:
- 		case PHY_INTERFACE_MODE_10GKR:
- 		case PHY_INTERFACE_MODE_10GBASER:
+ 	if (phylink_test(link_modes, 2500baseX_Full))
+ 		return PHY_INTERFACE_MODE_2500BASEX;
+ 
 -- 
 2.26.2
 
