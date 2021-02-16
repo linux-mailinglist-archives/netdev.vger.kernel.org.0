@@ -2,86 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 050C631C7E9
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 10:18:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CE8931C7F0
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 10:23:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230011AbhBPJRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 04:17:25 -0500
-Received: from mga07.intel.com ([134.134.136.100]:8550 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229796AbhBPJQp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Feb 2021 04:16:45 -0500
-IronPort-SDR: zDxI73BNMWCAb7HFQ5AH9kli+f25PJzgFX6ej2fIPEUrHa/NUAJsSOnIJy3QxpKBRUdwAbjBdz
- ljItz3eaXzTA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9896"; a="246904880"
-X-IronPort-AV: E=Sophos;i="5.81,183,1610438400"; 
-   d="scan'208";a="246904880"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2021 01:16:06 -0800
-IronPort-SDR: PbnAm1zo36oT86R4PHdaUXlPRuL/0XPIscyUzLXc0dqjf7m0CjaGZ0BvsKRlKzUPQhEk/cRI7B
- yY4SBBtFyjEw==
-X-IronPort-AV: E=Sophos;i="5.81,183,1610438400"; 
-   d="scan'208";a="399437778"
-Received: from tkanteck-mobl.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.252.39.159])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2021 01:15:59 -0800
-Subject: Re: [PATCH bpf-next 1/3] libbpf: xsk: use bpf_link
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
-Cc:     daniel@iogearbox.net, ast@kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, andrii@kernel.org,
-        magnus.karlsson@intel.com, ciara.loftus@intel.com
-References: <20210215154638.4627-1-maciej.fijalkowski@intel.com>
- <20210215154638.4627-2-maciej.fijalkowski@intel.com> <87eehhcl9x.fsf@toke.dk>
- <fe0c957e-d212-4265-a271-ba301c3c5eca@intel.com> <875z2tcef2.fsf@toke.dk>
- <20210216020128.GA9572@ranger.igk.intel.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <33b54a25-a35a-6991-6831-f551670f5556@intel.com>
-Date:   Tue, 16 Feb 2021 10:15:53 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        id S229767AbhBPJVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 04:21:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42012 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229676AbhBPJVM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 04:21:12 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC47FC061574
+        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 01:20:31 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id n4so9104019wrx.1
+        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 01:20:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Y41IhIT5rmyhijmxjT00xgQ2ngQOKXy/8+FZLhjS7GU=;
+        b=PxauwfY1W0W8GqfSltTB89uf6BjLJooazi+FICLO0MYpouhyA0zCMNy/swKF6XKIoh
+         WsaHV9J+g1NdDbZ9mwlZF+9R9q2iEAAVGQYNGmT2dM45p72c9nsJVRHRYZKPWq0G0oA+
+         byAQAESeOHqZrMxjphuom8fRhS6b9fVv1OdeHUnEesoP3gb8Y7ZBO4k4N2AjsTxoocgL
+         U2gSRuxYygA1CH18shWiRRHx10hdlr2tw6PZKhP3WdsEa+j0F7dT1YRG6V1q6R7QFFqy
+         O3sbFg2uteZhZTzQvmOQlc9ejWpPs+SRndc/kWh0MeRlQ3iK8Sx+g/OHjazrikiPC6po
+         deLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Y41IhIT5rmyhijmxjT00xgQ2ngQOKXy/8+FZLhjS7GU=;
+        b=R7sjy9cXvk6Y7RxUZ9r1uKoUz4H3o26azmF6VQxvw01mcm2OWfMhN8dKz7QHGzyPHL
+         QtayLcjoWa4Cr9f2qTbENM5JVIBBeKqb+tW9fNEJKr8lAkNi4N56MoqAYPt7DboTPr2R
+         E/jDT/TqFE7A0mmd3kVtVepw3XofZiz2cTN/RRNneT7VVpWQmlfMGERhARdlYabihTGK
+         Hm+fmSXZyn6TRvz7f9xpdH63pLJt3KSxa/4NJgrsA9/pYjpS5CsDW89wq1mUgu4cbcV9
+         BIsT/HTeyToSJsiGAoVqaXYU9aOa3hZxYeExqHzfn47Ftc/h3iB5v6Jjj8QrYbf7dkfY
+         r2RA==
+X-Gm-Message-State: AOAM532Q7EGG82nkihY27rO16Er/ZB/wdBSot+3cbbjAwgG9bcDUiIFQ
+        bSpheI/S9Iwx+CTnP3Nd9D9XGVQAGCI4qA==
+X-Google-Smtp-Source: ABdhPJw8rKubCzEnbeZl2jrx0DqZqg91MIvyR1rs/pdj5gKareeA2mPpfeRZmBDxtI2dC5k3rnMMiw==
+X-Received: by 2002:adf:dcd2:: with SMTP id x18mr22981959wrm.355.1613467230465;
+        Tue, 16 Feb 2021 01:20:30 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f39:5b00:ac39:e452:593c:61b5? (p200300ea8f395b00ac39e452593c61b5.dip0.t-ipconnect.de. [2003:ea:8f39:5b00:ac39:e452:593c:61b5])
+        by smtp.googlemail.com with ESMTPSA id w9sm2651356wmk.16.2021.02.16.01.20.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 Feb 2021 01:20:30 -0800 (PST)
+Subject: Re: [PATCH v3] staging: fix coding style in
+ driver/staging/qlge/qlge_main.c
+To:     Du Cheng <ducheng2@gmail.com>, Manish Chopra <manishc@marvell.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        devel@driverdev.osuosl.org, netdev@vger.kernel.org
+References: <20210216085326.178912-1-ducheng2@gmail.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <f9f2ed25-8903-450b-0971-a5eb292380cf@gmail.com>
+Date:   Tue, 16 Feb 2021 10:20:22 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-In-Reply-To: <20210216020128.GA9572@ranger.igk.intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20210216085326.178912-1-ducheng2@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-02-16 03:01, Maciej Fijalkowski wrote:
-> On Mon, Feb 15, 2021 at 08:35:29PM +0100, Toke Høiland-Jørgensen wrote:
->> Björn Töpel <bjorn.topel@intel.com> writes:
-
-[...]
-
->>>
->>> I'd say it's depending on the libbpf 1.0/libxdp merge timeframe. If
->>> we're months ahead, then I'd really like to see this in libbpf until the
->>> merge. However, I'll leave that for Magnus/you to decide!
+On 16.02.2021 09:53, Du Cheng wrote:
+> align * in block comments on each line
 > 
-> WDYM by libbpf 1.0/libxdp merge? I glanced through thread and I saw that
-> John was also not aware of that. Not sure where it was discussed?
->
+> changes v3:
+> - add SUBSYSTEM in subject line
+> - add explanation to past version of this patch
+> 
+> changes v2:
+> - move closing of comment to the same line
+> 
+> changes v1:
+> - align * in block comments
+> 
+> Signed-off-by: Du Cheng <ducheng2@gmail.com>
+> ---
+>  drivers/staging/qlge/qlge_main.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+> index 5516be3af898..2682a0e474bd 100644
+> --- a/drivers/staging/qlge/qlge_main.c
+> +++ b/drivers/staging/qlge/qlge_main.c
+> @@ -3815,8 +3815,7 @@ static int qlge_adapter_down(struct qlge_adapter *qdev)
+>  
+>  	qlge_tx_ring_clean(qdev);
+>  
+> -	/* Call netif_napi_del() from common point.
+> -	*/
+> +	/* Call netif_napi_del() from common point. */
+>  	for (i = 0; i < qdev->rss_ring_count; i++)
+>  		netif_napi_del(&qdev->rx_ring[i].napi);
+>  
+> 
+Typically such trivial patches aren't much appreciated for staging drivers.
+In the case here I have doubts that the comment as such provides any benefit.
 
-Oh, right. Yeah, we've had some offlist discussions about moving the
-AF_XDP functionality from libbpf to libxdp in the libbpf 1.0 timeframe.
-
-> If you're saying 'merge', then is libxdp going to be a part of kernel or
-> as an AF-XDP related guy I would be forced to include yet another
-> repository in the BPF developer toolchain? :<
->
-
-The AF_XDP functionality of libbpf will be part of libxdp, which is not
-in the kernel tree. libxdp depend on libbpf, which includes the core BPF
-functionality. For AF_XDP this is a good thing IMO. libxdp includes more
-higher lever abstractions than libbpf, which is more aligned to AF_XDP.
-
-Yes, that would mean that you would get another dependency for AF_XDP,
-and one that is not in the kernel tree. For most *users* this is not a
-problem, in fact it might be easier to consume and to contribute for
-most users. We can't optimize just for the kernel hackers. ;-)
-
-
-Björn
-
-[...]
