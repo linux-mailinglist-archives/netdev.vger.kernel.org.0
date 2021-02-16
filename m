@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9F9031CEF7
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 18:27:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A4A031CEFC
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 18:29:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230186AbhBPR1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 12:27:45 -0500
-Received: from mail-40136.protonmail.ch ([185.70.40.136]:28440 "EHLO
+        id S230445AbhBPR15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 12:27:57 -0500
+Received: from mail-40136.protonmail.ch ([185.70.40.136]:62302 "EHLO
         mail-40136.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229628AbhBPR1n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 12:27:43 -0500
-Date:   Tue, 16 Feb 2021 17:26:52 +0000
+        with ESMTP id S229628AbhBPR1x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 12:27:53 -0500
+Date:   Tue, 16 Feb 2021 17:27:06 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1613496418; bh=EmtrE/13S0ZNl/aehFct6P3907DT3ANAYh1M7Px8fAs=;
-        h=Date:To:From:Cc:Reply-To:Subject:From;
-        b=g2qyyfMwqQq/gdse4lzeJsouZdrPdcdh4LMu39homCw0J5zDT1Ce4qOJTyH7uvrJR
-         7skDYzg4t2i2gkIKXUaARkzWS8x1qV+5XYnIsTpmeOaHyDOHvl33iarnt1iQxzXYdt
-         rOamIMEJRkgvESPRJrZAXBkrL029L3ntOFIi6YjZA+LIokHuuydnuxNuJ7uI3wktfQ
-         WXwazkZRGnuMI6ULoMWwevbnolON1Dkc1pAs+5zhTHSEltrcgs/ZCY6PJD1YwBsZyp
-         MX4/qm6QNyPo9GIWDvIjCca/zASDxHaQw3zuzU2KQjpyTVyy1J6U4VIbOHvFcz8tAf
-         95S/J8cS5kVGQ==
+        t=1613496430; bh=lYDCa6iLqFT+6be7jVyPBd42LZlNQ5lJltfvJUcfGWA=;
+        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
+        b=kD7VQznmUFdvx5e4MQ639pbBJ86N/TqoH97IH36b1eSqirmrfUWNoYk4CizzqwSrR
+         8EebUw+wvvGEc/3Uw9YleJtB4r7giNZzVDYah2wFwGmCVJKd0+2RhwZL+GxL19BZ/g
+         TuH2dB8Hrslp5x4AwxzZWWn8ejYBzpD6zjpAaRvjNLGqdvMQn4setEQaUv3uYMlOHz
+         0HepvWf7o44zBB0RHLCNDVYrgNu0YTmOtuc22I35eTUCEVS6Zuc0Hh+8w+91l2z6Dl
+         +D5AoT6hxl49bW0jLaBDC6FPLOd1BhNUXdLagkLFwyz4cThbhwAPfcNcO99Osv479+
+         AXYVTjuIelwxQ==
 To:     Magnus Karlsson <magnus.karlsson@intel.com>,
         =?utf-8?Q?Bj=C3=B6rn_T=C3=B6pel?= <bjorn@kernel.org>
 From:   Alexander Lobakin <alobakin@pm.me>
@@ -44,8 +44,10 @@ Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, bpf@vger.kernel.org
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH v6 bpf-next 0/6] xsk: build skb by page (aka generic zerocopy xmit)
-Message-ID: <20210216172640.374487-1-alobakin@pm.me>
+Subject: [PATCH v6 bpf-next 1/6] netdev_priv_flags: add missing IFF_PHONY_HEADROOM self-definition
+Message-ID: <20210216172640.374487-2-alobakin@pm.me>
+In-Reply-To: <20210216172640.374487-1-alobakin@pm.me>
+References: <20210216172640.374487-1-alobakin@pm.me>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
@@ -58,128 +60,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series introduces XSK generic zerocopy xmit by adding XSK umem
-pages as skb frags instead of copying data to linear space.
-The only requirement for this for drivers is to be able to xmit skbs
-with skb_headlen(skb) =3D=3D 0, i.e. all data including hard headers
-starts from frag 0.
-To indicate whether a particular driver supports this, a new netdev
-priv flag, IFF_TX_SKB_NO_LINEAR, is added (and declared in virtio_net
-as it's already capable of doing it). So consider implementing this
-in your drivers to greatly speed-up generic XSK xmit.
+This is harmless for now, but comes fatal for the subsequent patch.
 
-The first two bits refactor netdev_priv_flags a bit to harden them
-in terms of bitfield overflow, as IFF_TX_SKB_NO_LINEAR is the last
-one that fits into unsigned int.
-The fifth patch adds headroom and tailroom reservations for the
-allocated skbs on XSK generic xmit path. This ensures there won't
-be any unwanted skb reallocations on fast-path due to headroom and/or
-tailroom driver/device requirements (own headers/descriptors etc.).
-The other three add a new private flag, declare it in virtio_net
-driver and introduce generic XSK zerocopy xmit itself.
+Fixes: 871b642adebe3 ("netdev: introduce ndo_set_rx_headroom")
+Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+---
+ include/linux/netdevice.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-The main body of work is created and done by Xuan Zhuo. His original
-cover letter:
-
-v3:
-    Optimized code
-
-v2:
-    1. add priv_flags IFF_TX_SKB_NO_LINEAR instead of netdev_feature
-    2. split the patch to three:
-        a. add priv_flags IFF_TX_SKB_NO_LINEAR
-        b. virtio net add priv_flags IFF_TX_SKB_NO_LINEAR
-        c. When there is support this flag, construct skb without linear
-           space
-    3. use ERR_PTR() and PTR_ERR() to handle the err
-
-v1 message log:
----------------
-
-This patch is used to construct skb based on page to save memory copy
-overhead.
-
-This has one problem:
-
-We construct the skb by fill the data page as a frag into the skb. In
-this way, the linear space is empty, and the header information is also
-in the frag, not in the linear space, which is not allowed for some
-network cards. For example, Mellanox Technologies MT27710 Family
-[ConnectX-4 Lx] will get the following error message:
-
-    mlx5_core 0000:3b:00.1 eth1: Error cqe on cqn 0x817, ci 0x8,
-    qn 0x1dbb, opcode 0xd, syndrome 0x1, vendor syndrome 0x68
-    00000000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-    00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-    00000020: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-    00000030: 00 00 00 00 60 10 68 01 0a 00 1d bb 00 0f 9f d2
-    WQE DUMP: WQ size 1024 WQ cur size 0, WQE index 0xf, len: 64
-    00000000: 00 00 0f 0a 00 1d bb 03 00 00 00 08 00 00 00 00
-    00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-    00000020: 00 00 00 2b 00 08 00 00 00 00 00 05 9e e3 08 00
-    00000030: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-    mlx5_core 0000:3b:00.1 eth1: ERR CQE on SQ: 0x1dbb
-
-I also tried to use build_skb to construct skb, but because of the
-existence of skb_shinfo, it must be behind the linear space, so this
-method is not working. We can't put skb_shinfo on desc->addr, it will be
-exposed to users, this is not safe.
-
-Finally, I added a feature NETIF_F_SKB_NO_LINEAR to identify whether the
-network card supports the header information of the packet in the frag
-and not in the linear space.
-
----------------- Performance Testing ------------
-
-The test environment is Aliyun ECS server.
-Test cmd:
-```
-xdpsock -i eth0 -t  -S -s <msg size>
-```
-
-Test result data:
-
-size    64      512     1024    1500
-copy    1916747 1775988 1600203 1440054
-page    1974058 1953655 1945463 1904478
-percent 3.0%    10.0%   21.58%  32.3%
-
-From v5 [2]:
- - fix a refcount leak in 0006 introduced in v4.
-
-From v4 [1]:
- - fix 0002 build error due to inverted static_assert() condition
-   (0day bot);
- - collect two Acked-bys (Magnus).
-
-From v3 [0]:
- - refactor netdev_priv_flags to make it easier to add new ones and
-   prevent bitwidth overflow;
- - add headroom (both standard and zerocopy) and tailroom (standard)
-   reservation in skb for drivers to avoid potential reallocations;
- - fix skb->truesize accounting;
- - misc comment rewords.
-
-[0] https://lore.kernel.org/netdev/cover.1611236588.git.xuanzhuo@linux.alib=
-aba.com
-[1] https://lore.kernel.org/netdev/20210216113740.62041-1-alobakin@pm.me
-[2] https://lore.kernel.org/netdev/20210216143333.5861-1-alobakin@pm.me
-
-Alexander Lobakin (3):
-  netdev_priv_flags: add missing IFF_PHONY_HEADROOM self-definition
-  netdevice: check for net_device::priv_flags bitfield overflow
-  xsk: respect device's headroom and tailroom on generic xmit path
-
-Xuan Zhuo (3):
-  net: add priv_flags for allow tx skb without linear
-  virtio-net: support IFF_TX_SKB_NO_LINEAR
-  xsk: build skb by page (aka generic zerocopy xmit)
-
- drivers/net/virtio_net.c  |   3 +-
- include/linux/netdevice.h | 138 +++++++++++++++++++++-----------------
- net/xdp/xsk.c             | 114 ++++++++++++++++++++++++++-----
- 3 files changed, 174 insertions(+), 81 deletions(-)
-
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index b9bcbfde7849..b895973390ee 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -1584,6 +1584,7 @@ enum netdev_priv_flags {
+ #define IFF_L3MDEV_SLAVE=09=09IFF_L3MDEV_SLAVE
+ #define IFF_TEAM=09=09=09IFF_TEAM
+ #define IFF_RXFH_CONFIGURED=09=09IFF_RXFH_CONFIGURED
++#define IFF_PHONY_HEADROOM=09=09IFF_PHONY_HEADROOM
+ #define IFF_MACSEC=09=09=09IFF_MACSEC
+ #define IFF_NO_RX_HANDLER=09=09IFF_NO_RX_HANDLER
+ #define IFF_FAILOVER=09=09=09IFF_FAILOVER
 --=20
 2.30.1
 
