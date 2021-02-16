@@ -2,104 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FE1131C8A0
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 11:21:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7F5631C8BB
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 11:26:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229925AbhBPKUr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 05:20:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54740 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229767AbhBPKUb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 05:20:31 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD07C061786
-        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 02:19:51 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id t2so5653436pjq.2
-        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 02:19:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8mQoP2ZwO5uOXZSSfuJ+0tTHWjDpZOfZ2TG4TVwc3os=;
-        b=q70TD0w4Og1vLGIrF0pa32Len72pFwpmGB4r8GZa0spReoe95Grsp5mIrN9vKd4BWb
-         nPdue7CW5ZNO+4FhvVkgSKOk4MGGo/xte2hexkM3gF6FS0KKlX7QyFDFDjkhippslAYI
-         s5Rg9RFIY1oRKH1p/2PucUkF9ymBEvIRpVWwlj9A7QGbSGbKQt1LGqR7wwqT0aX9cdMv
-         gXJ7xTRPEOYvitwBrU7tWiDtyTTxvaXgHVU1We6kMcy0hg+C3MdHBdko0fl2oTjxzPgY
-         p+uI3YOQurze0cQ/c/D5VZWDzAP+KSnFuawcZJ9MJImdaYnf3QnwMVYeFo8zJLDpBqVu
-         UpNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8mQoP2ZwO5uOXZSSfuJ+0tTHWjDpZOfZ2TG4TVwc3os=;
-        b=s2oD2Ev32ljotPoECe8Ai1k3joQTQD5rkotNrrlXIhdbfzeW3vXoxyAlpJBidl9rUp
-         TizamRR584OsWiwRj0/IaNDMDQwNwcJrSxpQ32gJa0mcdRwgwRmgGcH3Qfwn9vXgU1wb
-         x25ZyV07lE8sAj3Tw0zZmextsjt/hjdGVw12q2kKRIiNuukw7GwHq9tizrEgxWk/yz96
-         yCo8VV+kKKsUrg4ADh/h41riKepmEMVQgGsM/6qpyzznJizdH7BcIkD41j3jt4uXqwKd
-         XxXWy/yTdqvC6/jO2Fu17BYHC9msKy8RYKj6PUCM7rQFvb765xprwf678u/hC53X3H2b
-         z0AA==
-X-Gm-Message-State: AOAM533kxaIlkq5uv9ACtBu+ZWcixPevESX5q3R37dmg3mxJvpaxaCVN
-        LswLnS+s1Tj0+XW0foqaEj0=
-X-Google-Smtp-Source: ABdhPJySPjluE8i6+lesNADSn9nfvkEDJtmE19V0JGOwK9iQVcmk8F+AtDZXc550DUx7okm2Pu39Lw==
-X-Received: by 2002:a17:90b:4c8c:: with SMTP id my12mr3458121pjb.29.1613470790562;
-        Tue, 16 Feb 2021 02:19:50 -0800 (PST)
-Received: from ThinkCentre-M83.c.infrastructure-904.internal ([202.133.196.154])
-        by smtp.gmail.com with ESMTPSA id b62sm20022268pga.8.2021.02.16.02.19.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Feb 2021 02:19:50 -0800 (PST)
-From:   Du Cheng <ducheng2@gmail.com>
-To:     Manish Chopra <manishc@marvell.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        devel@driverdev.osuosl.org, netdev@vger.kernel.org,
-        Du Cheng <ducheng2@gmail.com>
-Subject: [PATCH v5] staging: qlge: fix comment style in qlge_main.c
-Date:   Tue, 16 Feb 2021 18:19:45 +0800
-Message-Id: <20210216101945.187474-1-ducheng2@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        id S230049AbhBPKZs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 05:25:48 -0500
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:52852 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229923AbhBPKZl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 05:25:41 -0500
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 11GAOeRs127257;
+        Tue, 16 Feb 2021 04:24:40 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1613471080;
+        bh=jXP/A7m1+bRyusmpL52wb3C/gRf4Bo6Hw3U3UA3/J00=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=GedDc0/SqmIZkDbq5PAfBWDTHHn4XOOKFbSDL9C+GnB+tFeuMKrjlaYUapRHsiZiQ
+         hYzFmU6ZeNuEBK3OjHPJ0Hjxz68Im473WdNpa7PKmX289A6NnLKtMcI6b3u7wA4aXy
+         CH52r8WUMom0okKamv0eH+FZAvzGKF+34GfLecAY=
+Received: from DLEE105.ent.ti.com (dlee105.ent.ti.com [157.170.170.35])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 11GAOeDY090324
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 16 Feb 2021 04:24:40 -0600
+Received: from DLEE111.ent.ti.com (157.170.170.22) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 16
+ Feb 2021 04:24:40 -0600
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE111.ent.ti.com
+ (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Tue, 16 Feb 2021 04:24:40 -0600
+Received: from [10.250.234.229] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 11GAOZ58004811;
+        Tue, 16 Feb 2021 04:24:36 -0600
+Subject: Re: [PATCH v14 2/4] phy: Add media type and speed serdes
+ configuration interfaces
+To:     Steen Hegelund <steen.hegelund@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>
+CC:     Vinod Koul <vkoul@kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20210210085255.2006824-1-steen.hegelund@microchip.com>
+ <20210210085255.2006824-3-steen.hegelund@microchip.com>
+ <04d91f6b-775a-8389-b813-31f7b4a778cb@ti.com>
+ <ffa00a2bf83ffa21ffdc61b380ab800c31f8cf28.camel@microchip.com>
+ <704b850f-9345-2e36-e84b-b332fed22270@ti.com> <YCqAMUfinMsnZnrq@lunn.ch>
+ <d5b3ccf9df1968671baadcd3c7a5e068d48867c5.camel@microchip.com>
+From:   Kishon Vijay Abraham I <kishon@ti.com>
+Message-ID: <d5351524-d02d-0bdb-53ba-b5b9a72673f2@ti.com>
+Date:   Tue, 16 Feb 2021 15:54:35 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <d5b3ccf9df1968671baadcd3c7a5e068d48867c5.camel@microchip.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-fix the closing of a one-line block comment,
-marked incorrect by scripts/checkpatch.pl.
+Hi,
 
-Signed-off-by: Du Cheng <ducheng2@gmail.com>
----
-changes v5:
-- improve description
+On 16/02/21 2:07 pm, Steen Hegelund wrote:
+> Hi Andrew and Kishon,
+> 
+> On Mon, 2021-02-15 at 15:07 +0100, Andrew Lunn wrote:
+>> EXTERNAL EMAIL: Do not click links or open attachments unless you
+>> know the content is safe
+>>
+>> On Mon, Feb 15, 2021 at 05:25:10PM +0530, Kishon Vijay Abraham I
+>> wrote:
+>>> Okay. Is it going to be some sort of manual negotiation where the
+>>> Ethernet controller invokes set_speed with different speeds? Or the
+>>> Ethernet controller will get the speed using some out of band
+>>> mechanism
+>>> and invokes set_speed once with the actual speed?
+>>
+>> Hi Kishon
+>>
+>> There are a few different mechanism possible.
+>>
+>> The SFP has an EEPROM which contains lots of parameters. One is the
+>> maximum baud rate the module supports. PHYLINK will combine this
+>> information with the MAC capabilities to determine the default speed.
+>>
+>> The users can select the mode the MAC works in, e.g. 1000BaseX vs
+>> 2500BaseX, via ethtool -s. Different modes needs different speeds.
+>>
+>> Some copper PHYs will change there host side interface baud rate when
+>> the media side interface changes mode. 10GBASE-X for 10G copper,
+>> 5GBase-X for 5G COPPER, 2500Base-X for 2.5G copper, and SGMII for
+>> old school 10/100/1G Ethernet.
+>>
+>> Mainline Linux has no support for it, but some 'vendor crap' will do
+>> a
+>> manual negotiation, simply trying different speeds and see if the
+>> SERDES establishes link. There is nothing standardised for this, as
+>> far as i know.
+>>
+>>     Andrew
+> 
+> Yes, in case I mention the only way to ensure communication is human
+> intervention to set the speed to the highest common denominator.
 
-changes v4:
-- move "changes" after triple-tiret
+Okay.. is it the same case for set_media as well?
 
-changes v3:
-- add SUBSYSTEM in subject line
-- add explanation to past version of this patch
-
-changes v2:
-- move closing of comment to the same line
-
-changes v1:
-- align * in block comments
-
- drivers/staging/qlge/qlge_main.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
-index 5516be3af898..2682a0e474bd 100644
---- a/drivers/staging/qlge/qlge_main.c
-+++ b/drivers/staging/qlge/qlge_main.c
-@@ -3815,8 +3815,7 @@ static int qlge_adapter_down(struct qlge_adapter *qdev)
- 
- 	qlge_tx_ring_clean(qdev);
- 
--	/* Call netif_napi_del() from common point.
--	*/
-+	/* Call netif_napi_del() from common point. */
- 	for (i = 0; i < qdev->rss_ring_count; i++)
- 		netif_napi_del(&qdev->rx_ring[i].napi);
- 
--- 
-2.27.0
-
+Thanks
+Kishon
