@@ -2,124 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24ADD31CA92
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 13:35:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47A1231CAB5
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 13:47:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229812AbhBPMfX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 07:35:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55570 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229742AbhBPMfW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 07:35:22 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 488CCC06174A
-        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 04:34:42 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id do6so5805115ejc.3
-        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 04:34:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ueHbYP18tWvlHJTvKfv+KiiuFw4qDAo6d4b9ieKrjtA=;
-        b=MEqDpuWJEK/w8J3txlGCNfi6AsGBbRD5uDoOClDxlhBXfP09gDCTC+7b/DkxAnH9q9
-         PQzhlHUJVxxdR1PfdxFskI1stRZCsyHqn3VhCztonmpPgDpGHn5ac8KEUwz/G4BCeEAe
-         tEP6rgYOjCLGIwIHQMoUXv/8Y2SJpt0Oi2L6euBLpzs7GnPLtk93Pdb0ZSb9GlqdkMuD
-         kRf5mk9JW/jjZ28ka9QT+0x1uM2fQHj8ZVp3vUZbQTE36HH4gu5XMCawt82TvmZSBlHI
-         DD0Ip+GqAS2CnUXZAZ1Po6tm9lGKrTYUu1GD9s0bW2KfyoypvVOHeUupFn3uXHWXcp4I
-         rshA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ueHbYP18tWvlHJTvKfv+KiiuFw4qDAo6d4b9ieKrjtA=;
-        b=sE8XW9Gi1uG++3CVYMGWiwBdfJN3J8YC7J9cAr8F0rqYprQpvYkYmEe+TKeZPc8Jgi
-         5qmKHeRoqVlB111TXnQsA7Umx9Hs/8cDxZCaH4AXYqg0xnAxO5tVh4VVHZvb0sbOX+Gu
-         5j2Dwxo4Iatz+mpVqfs7/t/seJOU4UMSjdVja7ic9j7+peeiKgY5xedWFyaFpA/9qXJv
-         iIJp9IUhUVI/zENd5aRX32r/rXRQsutbU9oMaVXsEoAZ1IcUdnFXqJdiXcCTRgItoAsh
-         F50tyy7Y2Y4y2xImFTz0Zq0b5/yPSCK4yJCUNa96VX3/fBUnE+cgx7kSndw59IK4zGJq
-         ImDw==
-X-Gm-Message-State: AOAM532ctjEh+a8dRyyVky+M59SPe4xeZCAigP4Fc7UR+tP3wQRhqOXB
-        kYCxTefc9sTF3Q/t6FB8slv3B5OhfJLl7SZKQKaoEw==
-X-Google-Smtp-Source: ABdhPJxf1wGe7JLUEYPK+lXkKOVAhqieiskKqDKYXDU0fKKFmCiFsnUPANuzIUfBs+8lgCkTxrNRZ/1zVRkOl1+/xy4=
-X-Received: by 2002:a17:906:685a:: with SMTP id a26mr10974693ejs.503.1613478880844;
- Tue, 16 Feb 2021 04:34:40 -0800 (PST)
+        id S229925AbhBPMq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 07:46:29 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:4012 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229744AbhBPMq1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 07:46:27 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B602bbe7a0000>; Tue, 16 Feb 2021 04:45:46 -0800
+Received: from mtl-vdi-166.wap.labs.mlnx (172.20.145.6) by
+ HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 16 Feb 2021 12:45:43 +0000
+Date:   Tue, 16 Feb 2021 14:45:40 +0200
+From:   Eli Cohen <elic@nvidia.com>
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     <mst@redhat.com>, <jasowang@redhat.com>,
+        <linux-kernel@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <si-wei.liu@oracle.com>
+Subject: Re: [PATCH] vdpa/mlx5: Extract correct pointer from driver data
+Message-ID: <20210216124540.GA94503@mtl-vdi-166.wap.labs.mlnx>
+References: <20210216055022.25248-1-elic@nvidia.com>
+ <20210216055022.25248-2-elic@nvidia.com>
+ <YCtnxyTHJl9TU87L@unreal>
+ <20210216064226.GA83717@mtl-vdi-166.wap.labs.mlnx>
+ <YCt2PiMIZxbR15IA@unreal>
 MIME-Version: 1.0
-References: <20210215152438.4318-1-nobuhiro1.iwamatsu@toshiba.co.jp> <20210215152438.4318-5-nobuhiro1.iwamatsu@toshiba.co.jp>
-In-Reply-To: <20210215152438.4318-5-nobuhiro1.iwamatsu@toshiba.co.jp>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 16 Feb 2021 18:04:29 +0530
-Message-ID: <CA+G9fYtDdZy=aNnB=8eQA2_h8bOtyFuizfbJzcj3OGcqJuM-Gg@mail.gmail.com>
-Subject: Re: [PATCH v4 4/4] arm: dts: visconti: Add DT support for Toshiba
- Visconti5 ethernet controller
-To:     Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Arnd Bergmann <arnd@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Netdev <netdev@vger.kernel.org>,
-        punit1.agrawal@toshiba.co.jp, yuji2.ishikawa@toshiba.co.jp,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        lkft-triage@lists.linaro.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <YCt2PiMIZxbR15IA@unreal>
+User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1613479546; bh=pn18katiTd289rOY8eSREICZuvH54YRSbjQc8SMESig=;
+        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+         Content-Type:Content-Disposition:In-Reply-To:User-Agent:
+         X-Originating-IP:X-ClientProxiedBy;
+        b=MtuqFeXxtdhVlIMg+PhCn5eL63iSwWqucgE+j3OrOyXoQaQ3SXBBcJYU6wFq4lqi1
+         jX3HwBMIj0BkDKlaGeySuZiAlqZ/sP/WHu+4t+8KIF373WhVqDUROtZUO43MMMjHXa
+         RfiT9HNE7U5Av78o8gcFvg6FIEOvnVfd50iAg1tgml6DI4NLYUVR85IHmpejVs1lFh
+         TxGSUQAU5eY8nBqVIhx4IxVIoOtvxidGXqpp3l2C59ryReLWaJmZ9JTe5LPWAVTOJM
+         2nwYfMRT/S8eAKGW+brpSrpnbHRg5t5R2j+2c8Ti3SHcxdafF+8y414Q2u4U9SmElj
+         QqHH5AOboJ2HA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Nobuhiro,
+On Tue, Feb 16, 2021 at 09:37:34AM +0200, Leon Romanovsky wrote:
+> On Tue, Feb 16, 2021 at 08:42:26AM +0200, Eli Cohen wrote:
+> > On Tue, Feb 16, 2021 at 08:35:51AM +0200, Leon Romanovsky wrote:
+> > > On Tue, Feb 16, 2021 at 07:50:22AM +0200, Eli Cohen wrote:
+> > > > struct mlx5_vdpa_net pointer was stored in drvdata. Extract it as well
+> > > > in mlx5v_remove().
+> > > >
+> > > > Fixes: 74c9729dd892 ("vdpa/mlx5: Connect mlx5_vdpa to auxiliary bus")
+> > > > Signed-off-by: Eli Cohen <elic@nvidia.com>
+> > > > ---
+> > > >  drivers/vdpa/mlx5/net/mlx5_vnet.c | 4 ++--
+> > > >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > > >
+> > > > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > index 6b0a42183622..4103d3b64a2a 100644
+> > > > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > > @@ -2036,9 +2036,9 @@ static int mlx5v_probe(struct auxiliary_device *adev,
+> > > >
+> > > >  static void mlx5v_remove(struct auxiliary_device *adev)
+> > > >  {
+> > > > -	struct mlx5_vdpa_dev *mvdev = dev_get_drvdata(&adev->dev);
+> > > > +	struct mlx5_vdpa_net *ndev = dev_get_drvdata(&adev->dev);
+> > > >
+> > > > -	vdpa_unregister_device(&mvdev->vdev);
+> > > > +	vdpa_unregister_device(&ndev->mvdev.vdev);
+> > > >  }
+> > >
+> > > IMHO, The more correct solution is to fix dev_set_drvdata() call,
+> > > because we are regustering/unregistering/allocating "struct mlx5_vdpa_dev".
+> > >
+> >
+> > We're allocating "struct mlx5_vdpa_net". "struct mlx5_vdpa_dev" is just
+> > a member field of "struct mlx5_vdpa_net".
+> 
+> I referred to these lines in the mlx5v_probe():
+>   1986         err = mlx5_vdpa_alloc_resources(&ndev->mvdev);
+>   1987         if (err)
+>   1988                 goto err_mtu;
+>   1989
+>   1990         err = alloc_resources(ndev);
+>   1991         if (err)
+>   1992                 goto err_res;
+>   1993
+>   1994         err = vdpa_register_device(&mvdev->vdev);
+> 
+> So mlx5v_remove() is better to be symmetrical.
+> 
 
+It's "struct mlx5_vdpa_net" that is being allocated here so it makes
+sense to set this pointer as the the driver data.
 
-On Mon, 15 Feb 2021 at 21:00, Nobuhiro Iwamatsu
-<nobuhiro1.iwamatsu@toshiba.co.jp> wrote:
->
-> Add the ethernet controller node in Toshiba Visconti5 SoC-specific DT file.
-> And enable this node in TMPV7708 RM main board's board-specific DT file.
->
-> Signed-off-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
-> ---
->  .../boot/dts/toshiba/tmpv7708-rm-mbrc.dts     | 18 +++++++++++++
->  arch/arm64/boot/dts/toshiba/tmpv7708.dtsi     | 25 +++++++++++++++++++
->  2 files changed, 43 insertions(+)
->
-> diff --git a/arch/arm64/boot/dts/toshiba/tmpv7708-rm-mbrc.dts b/arch/arm64/boot/dts/toshiba/tmpv7708-rm-mbrc.dts
-> index ed0bf7f13f54..48fa8776e36f 100644
-> --- a/arch/arm64/boot/dts/toshiba/tmpv7708-rm-mbrc.dts
-> +++ b/arch/arm64/boot/dts/toshiba/tmpv7708-rm-mbrc.dts
-> @@ -41,3 +41,21 @@ &uart1 {
->         clocks = <&uart_clk>;
->         clock-names = "apb_pclk";
->  };
-> +
-> +&piether {
-> +       status = "okay";
-> +       phy-handle = <&phy0>;
-> +       phy-mode = "rgmii-id";
-> +       clocks = <&clk300mhz>, <&clk125mhz>;
-> +       clock-names = "stmmaceth", "phy_ref_clk";
-> +
-> +       mdio0 {
-> +               #address-cells = <1>;
-> +               #size-cells = <0>;
-> +               compatible = "snps,dwmac-mdio";
-> +               phy0: ethernet-phy@1 {
-> +                       device_type = "ethernet-phy";
-> +                       reg = <0x1>;
-
-This build error was noticed on LKFT builder while building arm64 dtb
-on linux next 20210216 tag.
-
-arch/arm64/boot/dts/toshiba/tmpv7708-rm-mbrc.dts:52.3-4 syntax error
-FATAL ERROR: Unable to parse input tree
-
-Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-
-https://gitlab.com/Linaro/lkft/mirrors/next/linux-next/-/jobs/1033072509#L382
-
---
-Linaro LKFT
-https://lkft.linaro.org
+> Thanks
+> 
+> >
+> > > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > index 88dde3455bfd..079b8fe669af 100644
+> > > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > @@ -1995,7 +1995,7 @@ static int mlx5v_probe(struct auxiliary_device *adev,
+> > >  	if (err)
+> > >  		goto err_reg;
+> > >
+> > > -	dev_set_drvdata(&adev->dev, ndev);
+> > > +	dev_set_drvdata(&adev->dev, mvdev);
+> > >  	return 0;
+> > >
+> > >  err_reg:
+> > >
+> > > >
+> > > >  static const struct auxiliary_device_id mlx5v_id_table[] = {
+> > >
+> > > > --
+> > > > 2.29.2
+> > > >
