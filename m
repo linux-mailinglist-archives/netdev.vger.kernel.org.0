@@ -2,67 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DDED31C5FE
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 05:31:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A136731C610
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 05:55:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229974AbhBPEat (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Feb 2021 23:30:49 -0500
-Received: from m12-13.163.com ([220.181.12.13]:45418 "EHLO m12-13.163.com"
+        id S229742AbhBPExj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Feb 2021 23:53:39 -0500
+Received: from m12-12.163.com ([220.181.12.12]:55101 "EHLO m12-12.163.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229910AbhBPEaq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 15 Feb 2021 23:30:46 -0500
+        id S229617AbhBPExg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 15 Feb 2021 23:53:36 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=P4nP/c1fhkFQm6XfiE
-        8QHNB8CAUEG0CcCgj0cJgsjKg=; b=pNabb49iOxoV8PgRZKTPCkWK4kWFOOlmdi
-        20Fyt2PSadfFw4KS7k5ZNnEPg/IVPlY6DUa/5y1mYvI65URJlvRJhnu+ITa3+soH
-        Zmco/762U4RYM9WktE7cs2Zg9ODFgL1jZAE9IaAbY4KdZRXLj46hMu/TX/5jWLfg
-        T7EUmZIvM=
+        s=s110527; h=From:Subject:Date:Message-Id; bh=Crq+/R51ZywcCE68Nd
+        9EPx+wTRXjhto214xLK9drBCs=; b=m0kJlt3WOvKva9djZQJ2oP8b3GAtk9urvA
+        0iIDAt5OmwQsoVNqVo3LTLEDgeLT88L9tP4aLxpK4kGDL8x8y6sjbPZN0o5DBngs
+        kSgCzIRiBaqZ23T29JESy34cyn+3g4MVpdPF3A/U/pfqXiLAWyQZhvwHn6uvbV3+
+        qhtjiC33s=
 Received: from localhost.localdomain (unknown [125.70.193.99])
-        by smtp9 (Coremail) with SMTP id DcCowAC3LtLAPitgnqnIfQ--.20342S2;
-        Tue, 16 Feb 2021 11:40:55 +0800 (CST)
+        by smtp8 (Coremail) with SMTP id DMCowACnFfVFRCtgdbFZQw--.33021S2;
+        Tue, 16 Feb 2021 12:04:25 +0800 (CST)
 From:   Chen Lin <chen45464546@163.com>
-To:     pizza@shaftnet.org, kvalo@codeaurora.org, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     drivers@pensando.io, snelson@pensando.io, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Chen Lin <chen.lin5@zte.com.cn>
-Subject: [PATCH] cw1200: Remove unused function pointer typedef cw1200_wsm_handler
-Date:   Tue, 16 Feb 2021 11:41:58 +0800
-Message-Id: <1613446918-4532-1-git-send-email-chen45464546@163.com>
+Subject: [PATCH] ionic: Remove unused function pointer typedef ionic_reset_cb
+Date:   Tue, 16 Feb 2021 12:05:30 +0800
+Message-Id: <1613448330-4783-1-git-send-email-chen45464546@163.com>
 X-Mailer: git-send-email 1.7.9.5
-X-CM-TRANSID: DcCowAC3LtLAPitgnqnIfQ--.20342S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7JryftFW7Xr18GFykCr4UArb_yoW3JFc_Gw
-        4SyFn7GryxA3WSka4DArZxurySv3s3ua18WanIqFW3Ga1DJrWjqrWFvFyUCr9rCFW8ZFZ7
-        Jw1kGa17A3yvqjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU0fHUDUUUUU==
+X-CM-TRANSID: DMCowACnFfVFRCtgdbFZQw--.33021S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrKrWrAw1Duw1UZrWDKFW3Jrb_yoWfZrb_CF
+        1UZF43Gr15GF1rKw1UKr43XryYvrZrWrW8Ja4aqayfKayUGa1Yy34jvF4UZrsrur4xJFs8
+        GasrtFy2y34xtjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU0Mlk7UUUUU==
 X-Originating-IP: [125.70.193.99]
-X-CM-SenderInfo: hfkh0kqvuwkkiuw6il2tof0z/xtbBdgc7nlUMQAxxSQAAs5
+X-CM-SenderInfo: hfkh0kqvuwkkiuw6il2tof0z/xtbBRxs7nlPABz-xowAAsA
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Chen Lin <chen.lin5@zte.com.cn>
 
-Remove the 'cw1200_wsm_handler' typedef as it is not used.
+Remove the 'ionic_reset_cb' typedef as it is not used.
 
 Signed-off-by: Chen Lin <chen.lin5@zte.com.cn>
 ---
- drivers/net/wireless/st/cw1200/bh.c |    3 ---
- 1 file changed, 3 deletions(-)
+ drivers/net/ethernet/pensando/ionic/ionic_lif.h |    2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/wireless/st/cw1200/bh.c b/drivers/net/wireless/st/cw1200/bh.c
-index c364a39..8bade5d 100644
---- a/drivers/net/wireless/st/cw1200/bh.c
-+++ b/drivers/net/wireless/st/cw1200/bh.c
-@@ -42,9 +42,6 @@ enum cw1200_bh_pm_state {
- 	CW1200_BH_RESUME,
- };
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.h b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
+index 9bed427..563dba3 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
+@@ -249,8 +249,6 @@ static inline u32 ionic_coal_usec_to_hw(struct ionic *ionic, u32 usecs)
+ 	return (usecs * mult) / div;
+ }
  
--typedef int (*cw1200_wsm_handler)(struct cw1200_common *priv,
--	u8 *data, size_t size);
+-typedef void (*ionic_reset_cb)(struct ionic_lif *lif, void *arg);
 -
- static void cw1200_bh_work(struct work_struct *work)
- {
- 	struct cw1200_common *priv =
+ void ionic_link_status_check_request(struct ionic_lif *lif, bool can_sleep);
+ void ionic_get_stats64(struct net_device *netdev,
+ 		       struct rtnl_link_stats64 *ns);
 -- 
 1.7.9.5
 
