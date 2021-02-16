@@ -2,142 +2,273 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CDA631CEB5
-	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 18:12:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08B6B31CEBD
+	for <lists+netdev@lfdr.de>; Tue, 16 Feb 2021 18:12:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230510AbhBPRLG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 12:11:06 -0500
-Received: from mail-eopbgr1410133.outbound.protection.outlook.com ([40.107.141.133]:58880
-        "EHLO JPN01-OS2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229699AbhBPRK6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 16 Feb 2021 12:10:58 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ehTISGU0lYB5nmfScy8nxB1sktEHFtgClEDWkdb+PrhyEa8o1aIzM0FB4Upof/Cda8buNNzpHUB84GPwT3p1h4ieIn05hQ0sjxjlzhDRdSu3KcX25O3gmJzAHnsL4WmMjOPQPY2uYBXlp8zghMDKEB3IlTCeVP8ytcO2oMTKe6kaJK0WIfMiuzInEOM5SnaEuCrGFKJfSJ8z/ppr8bks7rdpoRsansRlFbvoG3SgggZdSiugixuVAEzFVTAUwgoUZGd4EZfqnWTe9at3DN0gLe5MvEyJHznyinfWynVQeJddJ2JvTx0aq65TFgfGROglBXfKjyF9iwqYsLJreozLxg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jCOLSF7NRRZcHp1U20AkUCL9c1q8CVZwIwF/0ZT5zIM=;
- b=Yn1p7gJr8jqfHrSRGGOKEi6C/F1c3MOVotz2bJHlIryOPZAl3Hod4hc0fe/jyk1Ij619Fxf1o9g6xUeaC9vDa06cZpxY75fSTwV8d7cNFepyaHRI7YhH8G7MVZMTm3ELbvh4S4V0CNuMI4dLgNlOXzAah6DhP8ZijajIhziGpIXfOM/p5xkpFIXGLZATwjfk1CT4Uu8MBo0BLsQJKVry4i4mR3tNxutzl5j5lxVv1RsL4FS3a9c8BNrWWSbY4RUuUyCA4fOymRcgZ6pGaSgv15bqe/+hwcRMdbM/rn+YamVxSeUjGhwG6EE1syaSbX+ck62eV9kFilHLxnq4T7UQ0Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jCOLSF7NRRZcHp1U20AkUCL9c1q8CVZwIwF/0ZT5zIM=;
- b=ND57YXqiRDfALDoKBScYvx6R4VnARTlJv7BMlkUQEhWZQJpaQCR9tf393Z1HTMwLLRKR9Ds3B4mqGWpR0tLN/UVQjk4Lkpl4KuZARCIPfOi/Bq4Ex8XI0a1/81jP+2wSZ5HR/e3iyUcMcRPWXFvKtRB8ROAVJfEpQkigPMDnURM=
-Received: from OSBPR01MB4773.jpnprd01.prod.outlook.com (2603:1096:604:7a::23)
- by OSBPR01MB4952.jpnprd01.prod.outlook.com (2603:1096:604:7e::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.27; Tue, 16 Feb
- 2021 17:10:09 +0000
-Received: from OSBPR01MB4773.jpnprd01.prod.outlook.com
- ([fe80::1971:336c:e4c0:8c5]) by OSBPR01MB4773.jpnprd01.prod.outlook.com
- ([fe80::1971:336c:e4c0:8c5%3]) with mapi id 15.20.3846.038; Tue, 16 Feb 2021
- 17:10:09 +0000
-From:   Min Li <min.li.xe@renesas.com>
-To:     Arnd Bergmann <arnd@kernel.org>
-CC:     Derek Kiernan <derek.kiernan@xilinx.com>,
-        Dragan Cvetic <dragan.cvetic@xilinx.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        gregkh <gregkh@linuxfoundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>
-Subject: RE: [PATCH net-next] misc: Add Renesas Synchronization Management
- Unit (SMU) support
-Thread-Topic: [PATCH net-next] misc: Add Renesas Synchronization Management
- Unit (SMU) support
-Thread-Index: AQHXACKOoFb+ofRp20OhBYk2S05d7KpS86SAgADGlHCAAIcoAIAAassggABEPICABhmmwA==
-Date:   Tue, 16 Feb 2021 17:10:09 +0000
-Message-ID: <OSBPR01MB47732AFC03DA8A0DDF626706BA879@OSBPR01MB4773.jpnprd01.prod.outlook.com>
-References: <1613012611-8489-1-git-send-email-min.li.xe@renesas.com>
- <CAK8P3a3YhAGEfrvmi4YhhnG_3uWZuQi0ChS=0Cu9c4XCf5oGdw@mail.gmail.com>
- <OSBPR01MB47732017A97D5C911C4528F0BA8B9@OSBPR01MB4773.jpnprd01.prod.outlook.com>
- <CAK8P3a2KDO4HutsXNJzjmRJTvW1QW4Kt8H7U53_QqpmgvZtd3A@mail.gmail.com>
- <OSBPR01MB4773B22EA094A362DD807F83BA8B9@OSBPR01MB4773.jpnprd01.prod.outlook.com>
- <CAK8P3a3k5dAF=X3_NrYAAp5gPJ_uvF3XfmC4rKz0oGTrGRriCw@mail.gmail.com>
-In-Reply-To: <CAK8P3a3k5dAF=X3_NrYAAp5gPJ_uvF3XfmC4rKz0oGTrGRriCw@mail.gmail.com>
-Accept-Language: en-CA, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=renesas.com;
-x-originating-ip: [72.140.114.230]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 36612631-f975-48fb-a7a8-08d8d29db6ec
-x-ms-traffictypediagnostic: OSBPR01MB4952:
-x-microsoft-antispam-prvs: <OSBPR01MB4952CEBE77D099852DB341D0BA879@OSBPR01MB4952.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: +TO4pXIXXIeFkV7VDvpH/VpWjCoP6RJM6B6pEy8jVt6mUfwFVOXhd8lYNqY4rZLzLOOUlOsAUz/6eBjHTKbWj56qGHGUhoQXJzXC9Qv03Uuv75fjlcmgY2IwELzu9mIv9mtONKQozLD0qprhUwKqTXjb/IPQtpy9gmo9FCN8F4UBV/dakqUTB8i2YJlLWLBfXgujex3RnlAmbplkjCxMm1Yj+KdlloDpVCeQd/34r+DWl93U49BDCJ9Jj3cfgyMpwUO111ZUTGdi3QBjpHW3ZIZG1e/xS85PJh8hLvhSNIMwzWD2V8ZiATOIzJXNQHkGhVjvOYrSTc05bXG4RBzw8r9aQzWNu/7/FkodBBL0zk+wWF4uq+tSxo7m/6HjQ+LwhUsAJfuEr/AtvrMYJ2szqr0m8rWwios3r5+GFy9HQ6jGaI1G6V7HfImLk4l4uaiqTCz+ASFJrwTgHS6e9KuxggIcFr8Y1qPb4AzzDtIJ0isswTY4SmMROC2mPHsRf+dp3QdNz4/D7Lt01rWH8hi4nQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OSBPR01MB4773.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(376002)(346002)(136003)(396003)(366004)(186003)(478600001)(6916009)(26005)(5660300002)(54906003)(83380400001)(4326008)(8676002)(7696005)(6506007)(52536014)(66446008)(316002)(55016002)(2906002)(64756008)(76116006)(9686003)(66556008)(33656002)(66946007)(66476007)(8936002)(86362001)(71200400001)(4744005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?utf-8?B?UGIwWnhkUWRvSTFuTVBBbVhqbXEwUXVtTzBOeWRDTjFUc1IyQSttS1hob0Ji?=
- =?utf-8?B?aW1wVWtNZU5lQUVXV3dZcndOS3d0c1U3S3pXemZkMS9SWUtDajB1aG1xRWJ0?=
- =?utf-8?B?NTNSTU05dWxnN2wvZEphaDB2UUlVR0hrWkpPOG4rcm5GeWlWakhyT2p5VXcr?=
- =?utf-8?B?eTk3aFdYRW1FekZNMlRLQ1h0ampHc3hnZWJHbXdyMmNjWjVob1JZRmVoKzEr?=
- =?utf-8?B?NjlDemJpYTVFNERlY0MyTGJTdk5KN1NoU1Q5UjluempYOUdEZUdLbjQ3bUFE?=
- =?utf-8?B?MDgySHl5REpoQXREa0FYMlVxd3J4cm93SWRwcE9KTlk5ajdnVXg5LzBHU2tO?=
- =?utf-8?B?R0Q5a25YR1Q0TFpQdlU5Qm5SdGlRaUg0Vk1lWmZBTVNRY0gvY3RrR3JzZHlW?=
- =?utf-8?B?NHIzczZ6bWtNQnIzN2xyYklNVFplOFY2OGE3dHhySklIK2tKQ1hkSXBxWUt0?=
- =?utf-8?B?M3FyTE9MWFg1cFZRYXcrTmwyLzNjM2hTQ25qZ20vYjRZTlR1VWtUQ3RKT0Qy?=
- =?utf-8?B?eW01SnVvRm9zdU5TOVpaellDMkVPK2RxWitWK092ZUxidnVlUGMvU0JpOUwz?=
- =?utf-8?B?QzA2VUVYMzh5dzFIWXRZbkkvSDRRRzI5ajVNNmlwWlVWdWMwejFtUGRreWZv?=
- =?utf-8?B?eHlWZ0ZKdjFqVnlSenN4bVMyZkl1Z3FvSTdvaU1aTlpRR2M4RDhobTVhZzBl?=
- =?utf-8?B?YkZ2dHpLYUtSNmJmN2RocTBkZk0vRGdKUDhnQm16K0t6YVB3OTFJWGptN3VK?=
- =?utf-8?B?RTEvSENLK0htclRNZ24xbW9GSXpvWkVqVnI5U0pFL3A1ZGVNSnR1bEI4RHcz?=
- =?utf-8?B?VWdTL3gzcHo1d1JHWkh4QXB3OFdMSHcrc0xrelhROWdxbUNIUG8vU25ZVm8x?=
- =?utf-8?B?L2VwSHp4RTRWRkNNem82UXhTY3YzcGpQVW9pUU9zRDdqY1QzS2s2ZGh4MmVr?=
- =?utf-8?B?SkZ0Ujk3Vnp3ZjR6Ty9ORWlSOXpyRi9TUEY3Q3Z0ZkpJT3lPRjJoazNBaDlG?=
- =?utf-8?B?NnNDemxSUjZDN3ExSEpkNFpON1NMdzlSekVsOVQ4d3c3eXliOXRrdzF4NTNr?=
- =?utf-8?B?Tk5UU2xVaXRWU2ZRVDNGMHdTWVdYTi9EZjdIMytBa0k1cG9pUW02WExYL3F2?=
- =?utf-8?B?L08zTFNvbEw4N0JpaDhHWEduYW5PQTZ6cFQrdFdMMm5Tc05yVmRVem9hRHg2?=
- =?utf-8?B?RjAvWnpTbStpQ1laSXdhazk4SldOQ2V0RTZFYVRLbk0ya2hhNWZURk93eFd2?=
- =?utf-8?B?YnNJU2syYk9pSG1WMUZiTWJCUWNiaFJUYlBnYTY3UWJpeTVNQS8vR0diWWpC?=
- =?utf-8?B?bWRWeTMrZElTZVU3Zi8vMlFJRTZqa1NtcFVOd0Z4ZHl6cUJqaUhGckF6akdM?=
- =?utf-8?B?aURkMlkxRCt6ekNFME5LSjV4V3ZKYXdhYUUzR3I5Mi91VkRvUW5jbGtON0hx?=
- =?utf-8?B?OEhxVlBCL3ZVTWo0WkF1K3ArekVibGNrMnJwLzFSbTI0U2Q4L3FGeFJzMVVo?=
- =?utf-8?B?ZzFnLys1VUNKMUhsN0Z0a1FQS2xjY3JZSGhZejc2VWR4OFNyYTVRVUZmVWRY?=
- =?utf-8?B?czNYQ2xjVlZ4cUptQkxPNDJ2NkQ4Wm1OMUlGN0trMDIxa2JxWU84S1RLVXV2?=
- =?utf-8?B?aTNXWlYzeTY0bTRLSXdkYU53T3FIZkdxQW9GY0kwdjd4QUZWc2VrQ0dlSmVh?=
- =?utf-8?B?S1VnTEVhS1gwWWIyOCtzalZHQzIvelQ1a01TMTBOdTN1aEZESVJ5bFJUS0FP?=
- =?utf-8?Q?gWficCeAzz488QufiwVKjHV/uzyrePGmIS6IjlO?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S231136AbhBPRLz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 12:11:55 -0500
+Received: from mail-40134.protonmail.ch ([185.70.40.134]:37590 "EHLO
+        mail-40134.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230525AbhBPRLv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 12:11:51 -0500
+Date:   Tue, 16 Feb 2021 17:10:58 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1613495462; bh=yBLiWMYKtAXu6Q0cJ8YPjPlctXPo/3Ryh70U06uVX/g=;
+        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
+        b=NgzNkOl5lSqV+fUnKiY55S4Mtjc4ijoQFm6lRBqndPgb7oSQHRRtfI9ihdsJc36Bb
+         xQjBS+q9hmGd3EtPMaE+xpxbeHuoMkYbo/BNaZknED06QGV2zBSGcIixEma/eKYtR8
+         XlcuAu0J8axazr3RaZ43zgchnrcH6PkKXlQi8vI7O7Uektoj4KiE958HPDQ9CMoHnA
+         H4CyagoLFV26k6EMUn44tQrtPMZOX8ta8PG9fvd1Pzb/kTRfWFY0w9T0iUYxMvuQ8O
+         Z3aoTmtqH07qTpIZ5O6GLgop85rVpKaz5EEAco/GkCALmmgffuc++Lgd5LUsjf3fCF
+         YftQHagpzuqRQ==
+To:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?utf-8?Q?Bj=C3=B6rn_T=C3=B6pel?= <bjorn@kernel.org>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Dust Li <dust.li@linux.alibaba.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: Re: [PATCH v5 bpf-next 6/6] xsk: build skb by page (aka generic zerocopy xmit)
+Message-ID: <20210216171042.372483-1-alobakin@pm.me>
+In-Reply-To: <20210216143333.5861-7-alobakin@pm.me>
+References: <20210216143333.5861-1-alobakin@pm.me> <20210216143333.5861-7-alobakin@pm.me>
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OSBPR01MB4773.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 36612631-f975-48fb-a7a8-08d8d29db6ec
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Feb 2021 17:10:09.2397
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Dt3eubyfec6e8Lq2Fel3rxMOjGGk9rjVYiDcmZr2sNuQlhmXclyEiOpmvZFM2V813aXgHIZkwnwt4ACQJ6YjbA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSBPR01MB4952
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiA+DQo+ID4gSWYgSSBjb21lIHVwIHdpdGggYSBuZXcgZmlsZSBhbmQgbW92ZSBhbGwgdGhlIGFi
-c3RyYWN0aW9uIGNvZGUgdGhlcmUsDQo+ID4gZG9lcyB0aGF0IHdvcms/DQo+IA0KPiBJIHRoaW5r
-IHNvLCBidXQgaXQncyBtb3JlIGltcG9ydGFudCB0byBmaWd1cmUgb3V0IGEgZ29vZCB1c2VyIHNw
-YWNlIGludGVyZmFjZQ0KPiBmaXJzdC4gVGhlIGlvY3RsIGludGVyZmFjZXMgc2hvdWxkIGJlIHdy
-aXR0ZW4gb24gYSBoaWdoZXItbGV2ZWwgYWJzdHJhY3Rpb24sIHRvDQo+IGVuc3VyZSB0aGV5IGNh
-biB3b3JrIHdpdGggYW55IGhhcmR3YXJlIGltcGxlbWVudGF0aW9uIGFuZCBhcmUgbm90DQo+IHNw
-ZWNpZmljIHRvIFJlbmVzYXMgZGV2aWNlcy4NCj4gDQo+IENhbiB5b3UgZGVzY3JpYmUgb24gYW4g
-YWJzdHJhY3QgbGV2ZWwgaG93IGEgdXNlciB3b3VsZCB1c2UgdGhlIGNoYXJhY3Rlcg0KPiBkZXZp
-Y2UsIGFuZCB3aGF0IHRoZXkgYWNoaWV2ZSBieSB0aGF0Pw0KPiANCj4gICAgICAgIEFybmQNCg0K
-SGkgQXJuZA0KDQpUaGlzIGRyaXZlciBpcyBtZWFudCB0byBiZSB1c2VkIGJ5IFJlbmVzYXMgUFRQ
-IENsb2NrIE1hbmFnZXIgZm9yDQpMaW51eCAocGNtNGwpIHNvZnR3YXJlIGZvciBSZW5lc2FzIGRl
-dmljZSBvbmx5Lg0KDQpBYm91dCBob3cgcGNtNGwgdXNlcyB0aGUgY2hhciBkZXZpY2UsIHBjbTRs
-IHdpbGwgb3BlbiB0aGUgZGV2aWNlDQphbmQgZG8gdGhlIHN1cHBvcnRlZCBpb2N0bCBjbWRzIG9u
-IHRoZSBkZXZpY2UsIHNpbXBsZSBsaWtlIHRoYXQuDQoNCkF0IHRoZSBzYW1lIHRpbWUsIHBjbTRs
-IHdpbGwgYWxzbyBvcGVuIHB0cCBoYXJkd2FyZSBjbG9jayBkZXZpY2UsDQp3aGljaCBpcyAvZGV2
-L3B0cFt4XSwgdG8gZG8gY2xvY2sgYWRqdXN0bWVudHMuDQoNCk1pbiANCg==
+From: Alexander Lobakin <alobakin@pm.me>
+Date: Tue, 16 Feb 2021 14:35:02 +0000
+
+> From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+>=20
+> This patch is used to construct skb based on page to save memory copy
+> overhead.
+>=20
+> This function is implemented based on IFF_TX_SKB_NO_LINEAR. Only the
+> network card priv_flags supports IFF_TX_SKB_NO_LINEAR will use page to
+> directly construct skb. If this feature is not supported, it is still
+> necessary to copy data to construct skb.
+>=20
+> ---------------- Performance Testing ------------
+>=20
+> The test environment is Aliyun ECS server.
+> Test cmd:
+> ```
+> xdpsock -i eth0 -t  -S -s <msg size>
+> ```
+>=20
+> Test result data:
+>=20
+> size    64      512     1024    1500
+> copy    1916747 1775988 1600203 1440054
+> page    1974058 1953655 1945463 1904478
+> percent 3.0%    10.0%   21.58%  32.3%
+>=20
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
+> [ alobakin:
+>  - expand subject to make it clearer;
+>  - improve skb->truesize calculation;
+>  - reserve some headroom in skb for drivers;
+>  - tailroom is not needed as skb is non-linear ]
+> Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+> Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> ---
+>  net/xdp/xsk.c | 119 ++++++++++++++++++++++++++++++++++++++++----------
+>  1 file changed, 95 insertions(+), 24 deletions(-)
+>=20
+> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> index 143979ea4165..ff7bd06e1241 100644
+> --- a/net/xdp/xsk.c
+> +++ b/net/xdp/xsk.c
+> @@ -445,6 +445,96 @@ static void xsk_destruct_skb(struct sk_buff *skb)
+>  =09sock_wfree(skb);
+>  }
+> =20
+> +static struct sk_buff *xsk_build_skb_zerocopy(struct xdp_sock *xs,
+> +=09=09=09=09=09      struct xdp_desc *desc)
+> +{
+> +=09struct xsk_buff_pool *pool =3D xs->pool;
+> +=09u32 hr, len, offset, copy, copied;
+> +=09struct sk_buff *skb;
+> +=09struct page *page;
+> +=09void *buffer;
+> +=09int err, i;
+> +=09u64 addr;
+> +
+> +=09hr =3D max(NET_SKB_PAD, L1_CACHE_ALIGN(xs->dev->needed_headroom));
+> +
+> +=09skb =3D sock_alloc_send_skb(&xs->sk, hr, 1, &err);
+> +=09if (unlikely(!skb))
+> +=09=09return ERR_PTR(err);
+> +
+> +=09skb_reserve(skb, hr);
+> +
+> +=09addr =3D desc->addr;
+> +=09len =3D desc->len;
+> +
+> +=09buffer =3D xsk_buff_raw_get_data(pool, addr);
+> +=09offset =3D offset_in_page(buffer);
+> +=09addr =3D buffer - pool->addrs;
+> +
+> +=09for (copied =3D 0, i =3D 0; copied < len; i++) {
+> +=09=09page =3D pool->umem->pgs[addr >> PAGE_SHIFT];
+> +=09=09get_page(page);
+> +
+> +=09=09copy =3D min_t(u32, PAGE_SIZE - offset, len - copied);
+> +=09=09skb_fill_page_desc(skb, i, page, offset, copy);
+> +
+> +=09=09copied +=3D copy;
+> +=09=09addr +=3D copy;
+> +=09=09offset =3D 0;
+> +=09}
+> +
+> +=09skb->len +=3D len;
+> +=09skb->data_len +=3D len;
+> +=09skb->truesize +=3D pool->unaligned ? len : pool->chunk_size;
+> +
+> +=09refcount_add(skb->truesize, &xs->sk.sk_wmem_alloc);
+
+Meh, there's a refcount leak here I accidentally introduced in v4.
+Sorry for that, I'll upload v6 in just a moment.
+
+> +=09return skb;
+> +}
+> +
+> +static struct sk_buff *xsk_build_skb(struct xdp_sock *xs,
+> +=09=09=09=09     struct xdp_desc *desc)
+> +{
+> +=09struct net_device *dev =3D xs->dev;
+> +=09struct sk_buff *skb;
+> +
+> +=09if (dev->priv_flags & IFF_TX_SKB_NO_LINEAR) {
+> +=09=09skb =3D xsk_build_skb_zerocopy(xs, desc);
+> +=09=09if (IS_ERR(skb))
+> +=09=09=09return skb;
+> +=09} else {
+> +=09=09u32 hr, tr, len;
+> +=09=09void *buffer;
+> +=09=09int err;
+> +
+> +=09=09hr =3D max(NET_SKB_PAD, L1_CACHE_ALIGN(dev->needed_headroom));
+> +=09=09tr =3D dev->needed_tailroom;
+> +=09=09len =3D desc->len;
+> +
+> +=09=09skb =3D sock_alloc_send_skb(&xs->sk, hr + len + tr, 1, &err);
+> +=09=09if (unlikely(!skb))
+> +=09=09=09return ERR_PTR(err);
+> +
+> +=09=09skb_reserve(skb, hr);
+> +=09=09skb_put(skb, len);
+> +
+> +=09=09buffer =3D xsk_buff_raw_get_data(xs->pool, desc->addr);
+> +=09=09err =3D skb_store_bits(skb, 0, buffer, len);
+> +=09=09if (unlikely(err)) {
+> +=09=09=09kfree_skb(skb);
+> +=09=09=09return ERR_PTR(err);
+> +=09=09}
+> +=09}
+> +
+> +=09skb->dev =3D dev;
+> +=09skb->priority =3D xs->sk.sk_priority;
+> +=09skb->mark =3D xs->sk.sk_mark;
+> +=09skb_shinfo(skb)->destructor_arg =3D (void *)(long)desc->addr;
+> +=09skb->destructor =3D xsk_destruct_skb;
+> +
+> +=09return skb;
+> +}
+> +
+>  static int xsk_generic_xmit(struct sock *sk)
+>  {
+>  =09struct xdp_sock *xs =3D xdp_sk(sk);
+> @@ -454,56 +544,37 @@ static int xsk_generic_xmit(struct sock *sk)
+>  =09struct sk_buff *skb;
+>  =09unsigned long flags;
+>  =09int err =3D 0;
+> -=09u32 hr, tr;
+> =20
+>  =09mutex_lock(&xs->mutex);
+> =20
+>  =09if (xs->queue_id >=3D xs->dev->real_num_tx_queues)
+>  =09=09goto out;
+> =20
+> -=09hr =3D max(NET_SKB_PAD, L1_CACHE_ALIGN(xs->dev->needed_headroom));
+> -=09tr =3D xs->dev->needed_tailroom;
+> -
+>  =09while (xskq_cons_peek_desc(xs->tx, &desc, xs->pool)) {
+> -=09=09char *buffer;
+> -=09=09u64 addr;
+> -=09=09u32 len;
+> -
+>  =09=09if (max_batch-- =3D=3D 0) {
+>  =09=09=09err =3D -EAGAIN;
+>  =09=09=09goto out;
+>  =09=09}
+> =20
+> -=09=09len =3D desc.len;
+> -=09=09skb =3D sock_alloc_send_skb(sk, hr + len + tr, 1, &err);
+> -=09=09if (unlikely(!skb))
+> +=09=09skb =3D xsk_build_skb(xs, &desc);
+> +=09=09if (IS_ERR(skb)) {
+> +=09=09=09err =3D PTR_ERR(skb);
+>  =09=09=09goto out;
+> +=09=09}
+> =20
+> -=09=09skb_reserve(skb, hr);
+> -=09=09skb_put(skb, len);
+> -
+> -=09=09addr =3D desc.addr;
+> -=09=09buffer =3D xsk_buff_raw_get_data(xs->pool, addr);
+> -=09=09err =3D skb_store_bits(skb, 0, buffer, len);
+>  =09=09/* This is the backpressure mechanism for the Tx path.
+>  =09=09 * Reserve space in the completion queue and only proceed
+>  =09=09 * if there is space in it. This avoids having to implement
+>  =09=09 * any buffering in the Tx path.
+>  =09=09 */
+>  =09=09spin_lock_irqsave(&xs->pool->cq_lock, flags);
+> -=09=09if (unlikely(err) || xskq_prod_reserve(xs->pool->cq)) {
+> +=09=09if (xskq_prod_reserve(xs->pool->cq)) {
+>  =09=09=09spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
+>  =09=09=09kfree_skb(skb);
+>  =09=09=09goto out;
+>  =09=09}
+>  =09=09spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
+> =20
+> -=09=09skb->dev =3D xs->dev;
+> -=09=09skb->priority =3D sk->sk_priority;
+> -=09=09skb->mark =3D sk->sk_mark;
+> -=09=09skb_shinfo(skb)->destructor_arg =3D (void *)(long)desc.addr;
+> -=09=09skb->destructor =3D xsk_destruct_skb;
+> -
+>  =09=09err =3D __dev_direct_xmit(skb, xs->queue_id);
+>  =09=09if  (err =3D=3D NETDEV_TX_BUSY) {
+>  =09=09=09/* Tell user-space to retry the send */
+> --=20
+> 2.30.1
+
+Al
+
