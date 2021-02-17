@@ -2,103 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E949B31D5D7
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 08:43:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3606831D5E6
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 08:53:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231670AbhBQHna (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 02:43:30 -0500
-Received: from userp2120.oracle.com ([156.151.31.85]:54338 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231717AbhBQHmn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 02:42:43 -0500
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11H7eO8e139423;
-        Wed, 17 Feb 2021 07:41:55 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
- bh=KmoPNcfBoIAItQ0vdnpjsq6lT+zRNAvWYjSnYMsqvxQ=;
- b=BV5W+kGucNywexJM/c9e17hWOXAVpZY55kdsmlMniIH3FisIYRBVGlankJCcJGlq39sm
- B4fPg99Qc5GFKUACgEWptYpk0oFIScd3BvRpg9ZzFpYYqtSpXAYJ2tNkp0XFwsYUMbsk
- fAoWxrMw6+8HHIrM3GPq2LoX/O76I89+z2xu8Tiuc1zosWjLVy6BBvnwsYxh9F+7o41S
- 9DfGE4KW64OBMU/n9y2WsQUHeOchraBhiaFGxAjyv6+Oyb53uMKFJdNZWHfyqVYa1lkZ
- LUIXEv32jtH+PHcUWcKz0AgEeY79uWouP/UKfPErVVWPM19XT4aSo2FQH3D7hp8TagKq 3Q== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by userp2120.oracle.com with ESMTP id 36p7dnh9we-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 17 Feb 2021 07:41:55 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11H7eMop177400;
-        Wed, 17 Feb 2021 07:41:53 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by aserp3030.oracle.com with ESMTP id 36prbp5vef-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 17 Feb 2021 07:41:53 +0000
-Received: from abhmp0015.oracle.com (abhmp0015.oracle.com [141.146.116.21])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 11H7fmeQ016695;
-        Wed, 17 Feb 2021 07:41:49 GMT
-Received: from mwanda (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 17 Feb 2021 07:41:48 +0000
-Date:   Wed, 17 Feb 2021 10:41:39 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Sunil Goutham <sgoutham@marvell.com>,
-        hariprasad <hkelam@marvell.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Christina Jacob <cjacob@marvell.com>
-Cc:     Geetha sowjanya <gakula@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
+        id S231552AbhBQHxC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 02:53:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48474 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229659AbhBQHxA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 02:53:00 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BE04C06174A;
+        Tue, 16 Feb 2021 23:52:20 -0800 (PST)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id C78E822248;
+        Wed, 17 Feb 2021 08:52:11 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1613548337;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sKh+gfEqqlFc94dAOj7OS27dRVkaacBwIQCXacI70Vw=;
+        b=fsH7FhMQAGvI6p8jhDwUoOKkHgtUHcUgx8MPadVfacxJ7lh0syvRzpy3oGTw0xVU+GqsxO
+        HSQgV9UP+zLsRiN2ltg/3ToTAJG0qMG2vTACRtRakmWrg9vwhtoe2v7cvBF3d+28x/qEIV
+        MJnpGhg26L40VYkdSpAkShibyr8Dkpc=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 17 Feb 2021 08:52:08 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         kernel-janitors@vger.kernel.org
-Subject: [PATCH net-next] octeontx2-pf: Fix otx2_get_fecparam()
-Message-ID: <YCzIsxW3B70g7lea@mwanda>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Proofpoint-IMR: 1
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9897 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 spamscore=0 mlxscore=0
- phishscore=0 adultscore=0 bulkscore=0 mlxlogscore=999 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2102170055
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9897 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 suspectscore=0 mlxscore=0
- phishscore=0 spamscore=0 adultscore=0 clxscore=1015 impostorscore=0
- priorityscore=1501 lowpriorityscore=0 malwarescore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2102170055
+Subject: Re: [PATCH net-next] net: phy: icplus: Call phy_restore_page() when
+ phy_select_page() fails
+In-Reply-To: <YCy1F5xKFJAaLBFw@mwanda>
+References: <YCy1F5xKFJAaLBFw@mwanda>
+User-Agent: Roundcube Webmail/1.4.10
+Message-ID: <5b9d452ecbbce752c0eb85ad8a0ccce4@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Static checkers complained about an off by one read overflow in
-otx2_get_fecparam() and we applied two conflicting fixes for it.
+Am 2021-02-17 07:17, schrieb Dan Carpenter:
+> Smatch warns that there is a locking issue in this function:
+> 
+> drivers/net/phy/icplus.c:273 ip101a_g_config_intr_pin()
+> warn: inconsistent returns '&phydev->mdio.bus->mdio_lock'.
+>   Locked on  : 242
+>   Unlocked on: 273
+> 
+> It turns out that the comments in phy_select_page() say we have to call
+> phy_restore_page() even if the call to phy_select_page() fails.
+> 
+> Fixes: f9bc51e6cce2 ("net: phy: icplus: fix paged register access")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-Correct: b0aae0bde26f ("octeontx2: Fix condition.")
-  Wrong: 93efb0c65683 ("octeontx2-pf: Fix out-of-bounds read in otx2_get_fecparam()")
+Reviewed-by: Michael Walle <michael@walle.cc>
 
-Revert the incorrect fix.
-
-Fixes: 93efb0c65683 ("octeontx2-pf: Fix out-of-bounds read in otx2_get_fecparam()")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-index 5fe74036a611..f4962a97a075 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-@@ -968,7 +968,7 @@ static int otx2_get_fecparam(struct net_device *netdev,
- 		if (!rsp->fwdata.supported_fec)
- 			fecparam->fec = ETHTOOL_FEC_NONE;
- 		else
--			fecparam->fec = fec[rsp->fwdata.supported_fec - 1];
-+			fecparam->fec = fec[rsp->fwdata.supported_fec];
- 	}
- 	return 0;
- }
--- 
-2.30.0
-
+-michael
