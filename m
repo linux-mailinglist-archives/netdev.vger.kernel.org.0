@@ -2,86 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 733C431D4B8
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 05:50:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BC4531D51D
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 06:39:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231393AbhBQEta (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 23:49:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37750 "EHLO
+        id S231145AbhBQFiR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 00:38:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229544AbhBQEtX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 23:49:23 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5181C061574
-        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 20:48:43 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id v1so15952011wrd.6
-        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 20:48:43 -0800 (PST)
+        with ESMTP id S229468AbhBQFiM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 00:38:12 -0500
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D52CC061574
+        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 21:37:32 -0800 (PST)
+Received: by mail-io1-xd30.google.com with SMTP id f20so12604644ioo.10
+        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 21:37:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=nathanrossi.com; s=google;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=FPpZYL80ZXGhOaYrDpjFtNkAfVAObPokn1JA454oT50=;
-        b=Qw1sV466TRCFi4RnNbR6Y2RtF87P8a/RHzPNUeK0MLH3ypnoyqU/7Mi71r8qZ3N31d
-         N+jd945uxOBqf0sUKnz2bcjbjIhlrPeQ1hkAenbjWFl5oQoxVAUHZxLlAN7KoF5763Qi
-         VhwYW4poOMvEGAZSecEyTr27iZX2VDrH4q9jNnfaLRf1uY95ACzlr+gkI2iYJBLNihJB
-         jQrZ1ZM7GLvda1JcqFLM8W+r5Cfsm4TzyKK4FgN9xJnEfvFAKQ+UAEuRDVNW1xXFWPab
-         4jgXLlENXke6FZ9B8+Z2HyPOSfiLpb1I+x0HyXNOd8OFwjr+s7fgqumyQRsywPm5nSU+
-         z/Gw==
+        bh=jj0ZHT9pDzLmvQ3PfcNH9vAt+g9Gq3cZ1Wa963EQOSA=;
+        b=I/ByEMblnzSoyzebbbOoSpJ8rH0QAxHXOUxdPYRvAHrsYgk1Doy3Z0WOfYQfNl8uKs
+         6UF7lVkoU8l/Fl0dqjZQzCBc7zL7X2ywptxPyk7VL78J6080Lx3vhXwoAvCn1H9PJnuQ
+         kAY4KX4d2+4N/Y3Te5AANHFYk4DE7+9SP3ujgXmlaHu/b3O5z+og8wA5dHCueK/W+Nj8
+         sQ+gADB/A7ooj5zebV42lW1Mvp1laxep2wxkBXvhDy/MPd9c1x6RnNlH3pldXdUkhT0b
+         Stnf9xlimTf/v9pPvyxEFLxLAwvjVEruczoBmkyv+dwwIgnEOQmxOtPFl2/eJkIbuumk
+         vOZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=FPpZYL80ZXGhOaYrDpjFtNkAfVAObPokn1JA454oT50=;
-        b=PdOkN4Xr7uiJJYfyLpxxDJINHE+ocIlUZMezylSnXoi6PSisAxxqmyD6Wsc4gl2LjH
-         V8JNXBY6h4hl1PuTYCiu5u9hQUVxliptZRda7di7M8EVV3u5R9LNpjv8Jzxvdoj5GStr
-         Gk5t1yDqLKQeUnN9yW2qXYNl8J0J5WqDw4eYW5K8xi7mHOY1NRLQWQw4/U8l7svkF20b
-         M38+EpOM6K2pPiR/MbdFd7u6fR3TNqsC3pvQp/p4kNb2XRaWrGkmf67PboOeyRG6bB4W
-         bSJc2MddlDv9JycZbjN71avD6jqMc03b2Q52fvYKEi6bOZPlfWLL2YjFOG3RkImavkSI
-         s/Sg==
-X-Gm-Message-State: AOAM5310+zIYmQM0zjCoHj9vYfeAwvgEN4IV7GHXTYRyjrXS3of+iAqh
-        LC3+vZ1IXGn+EAW+XpTmmfqX6HH5CcFB3BjV8/o9Rg==
-X-Google-Smtp-Source: ABdhPJwBeKYh5fbOf7NudQ6wUduv4+2ZupYr/7PU606LKf49sMVS17WK7gJ82+Lb/F0UCwg+IyUiZWGnW0gBtLmCbuI=
-X-Received: by 2002:a05:6000:4e:: with SMTP id k14mr26947801wrx.281.1613537322429;
- Tue, 16 Feb 2021 20:48:42 -0800 (PST)
+        bh=jj0ZHT9pDzLmvQ3PfcNH9vAt+g9Gq3cZ1Wa963EQOSA=;
+        b=WgtAUoM/mqzDhwHqqVeb/gN0wA/m3ps2FS2xOG/n7lJGoE+vDVbRToL8Zl1sHZmNLa
+         PytRlrHhYZ0ccrrPBTZxb95yCB6K5ewQP1gY8AHnZ3zGfIp9NVaw0DN5+g8PlY83Xfpy
+         r4T6QuQZ2NfMNy/EFHKfzNO8bfUMHRiENcT/JX3kgK15yjkRN/6Gam5EXftuiCMKgedd
+         zfzFMjdUVLxU6URhpyKTPOXYjHqsjebnQGcFnu767Y8SApQJ86T0v/Kp9Db4ntTSZm6W
+         CCXW/rav1mRCxLwkx+ANDH3s8EkIxjg4p1HTLv2uj0rIMyXULw7XRx0qc/XMs8l7L5aq
+         gbxw==
+X-Gm-Message-State: AOAM530iHLEivdg5XaxvYI3WW0t1Bum9Qz2voJUjYdqR9NEVNC0tMJRU
+        cPJFw5JGu9dTtIxXQJNufRw1ubLyDA/lm3Fcexg=
+X-Google-Smtp-Source: ABdhPJywayers43tvCln9UHiWr1oyV3UOblQKs+xnhEBgcrFsoWbNhqxkKtT59t0c8NZc1jMWg5d+mv1Ps1Tu0QnTkw=
+X-Received: by 2002:a05:6602:2497:: with SMTP id g23mr19261083ioe.22.1613540251976;
+ Tue, 16 Feb 2021 21:37:31 -0800 (PST)
 MIME-Version: 1.0
-References: <20210215070218.1188903-1-nathan@nathanrossi.com>
- <YCvDVEvBU5wabIx7@lunn.ch> <55c94cf4-f660-f0f5-fb04-f51f4d175f53@gmail.com>
- <CA+aJhH3SE1s8P+srhO_-Za3E0KdHVn2_bK=Kf+-Jtbm1vJNm1w@mail.gmail.com> <YCyLWhk5zV4Z5Crv@lunn.ch>
-In-Reply-To: <YCyLWhk5zV4Z5Crv@lunn.ch>
-From:   Nathan Rossi <nathan@nathanrossi.com>
-Date:   Wed, 17 Feb 2021 14:48:30 +1000
-Message-ID: <CA+aJhH1VeCkk4JB02XVbvgJaM-Ua5i80qaNR7EVUoF-eBx_y5Q@mail.gmail.com>
-Subject: Re: [PATCH] of: of_mdio: Handle properties for non-phy mdio devices
+References: <20210216235542.2718128-1-linus.walleij@linaro.org> <YCyNjB5PpYomt4Re@lunn.ch>
+In-Reply-To: <YCyNjB5PpYomt4Re@lunn.ch>
+From:   DENG Qingfang <dqfext@gmail.com>
+Date:   Wed, 17 Feb 2021 13:37:21 +0800
+Message-ID: <CALW65jZG35HNxYe=GXDGUVY6kLBExKczDM_pRU_ZrJ9QnHBUNA@mail.gmail.com>
+Subject: Re: [PATCH] net: dsa: tag_rtl4_a: Support also egress tags
 To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
-        Nathan Rossi <nathan.rossi@digi.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Mauri Sandberg <sandberg@mailfence.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 17 Feb 2021 at 13:19, Andrew Lunn <andrew@lunn.ch> wrote:
+On Wed, Feb 17, 2021 at 11:29 AM Andrew Lunn <andrew@lunn.ch> wrote:
 >
-> > > The patch does make sense though, Broadcom 53125 switches have a broken
-> > > turn around and are mdio_device instances, the broken behavior may not
-> > > show up with all MDIO controllers used to interface though. For the
-> >
-> > Yes the reason we needed this change was to enable broken turn around,
-> > specifically with a Marvell 88E6390.
+> > +     /* Pad out to at least 60 bytes */
+> > +     if (unlikely(eth_skb_pad(skb)))
+> > +             return NULL;
 >
-> Ah, odd. I've never had problems with the 6390, either connected to a
-> Freecale FEC, or the Linux bit banging MDIO bus.
+> The core will do the padding for you. Turn on .tail_tag in
+> dsa_device_ops.
 >
-> What are you using for an MDIO bus controller? Did it already support
-> broken turn around, or did you need to add it?
 
-Using bit bang MDIO to access the 88e6390. I suspect the issue is
-specific to the board design, another similar design we have uses bit
-bang MDIO but a 88e6193x switch and does not have any issue with turn
-around.
-
-Regards,
-Nathan
+Please don't. .tail_tag does far more than just padding.
