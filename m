@@ -2,71 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3606831D5E6
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 08:53:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F3AB31D722
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 10:54:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231552AbhBQHxC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 02:53:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48474 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229659AbhBQHxA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 02:53:00 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BE04C06174A;
-        Tue, 16 Feb 2021 23:52:20 -0800 (PST)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id C78E822248;
-        Wed, 17 Feb 2021 08:52:11 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1613548337;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=sKh+gfEqqlFc94dAOj7OS27dRVkaacBwIQCXacI70Vw=;
-        b=fsH7FhMQAGvI6p8jhDwUoOKkHgtUHcUgx8MPadVfacxJ7lh0syvRzpy3oGTw0xVU+GqsxO
-        HSQgV9UP+zLsRiN2ltg/3ToTAJG0qMG2vTACRtRakmWrg9vwhtoe2v7cvBF3d+28x/qEIV
-        MJnpGhg26L40VYkdSpAkShibyr8Dkpc=
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Wed, 17 Feb 2021 08:52:08 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net-next] net: phy: icplus: Call phy_restore_page() when
- phy_select_page() fails
-In-Reply-To: <YCy1F5xKFJAaLBFw@mwanda>
-References: <YCy1F5xKFJAaLBFw@mwanda>
-User-Agent: Roundcube Webmail/1.4.10
-Message-ID: <5b9d452ecbbce752c0eb85ad8a0ccce4@walle.cc>
-X-Sender: michael@walle.cc
+        id S231948AbhBQJyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 04:54:04 -0500
+Received: from mga11.intel.com ([192.55.52.93]:22527 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231470AbhBQJyA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Feb 2021 04:54:00 -0500
+IronPort-SDR: bgy/IG8OCJ8P0Tjjo/qySct4nGrx/IOk6vHf04c8ZE+JGVIODDEp2eujcr3RvtpOS96/6d6Z6e
+ B5xHIgpdr44A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9897"; a="179643960"
+X-IronPort-AV: E=Sophos;i="5.81,184,1610438400"; 
+   d="scan'208";a="179643960"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2021 01:53:17 -0800
+IronPort-SDR: dX9qS/mBPVuRlhyR92/GwDld8pE4SCeO/Q2gieLHME5cB1d7vIm6tSK+qkyus4IgLVk5ZsZ7A/
+ 0cQlIXue7ivA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,184,1610438400"; 
+   d="scan'208";a="589549452"
+Received: from glass.png.intel.com ([10.158.65.51])
+  by fmsmga006.fm.intel.com with ESMTP; 17 Feb 2021 01:53:13 -0800
+From:   Wong Vee Khee <vee.khee.wong@intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 1/1] net: stmmac: Add PCI bus info to ethtool driver query output
+Date:   Wed, 17 Feb 2021 17:57:05 +0800
+Message-Id: <20210217095705.13806-1-vee.khee.wong@intel.com>
+X-Mailer: git-send-email 2.17.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2021-02-17 07:17, schrieb Dan Carpenter:
-> Smatch warns that there is a locking issue in this function:
-> 
-> drivers/net/phy/icplus.c:273 ip101a_g_config_intr_pin()
-> warn: inconsistent returns '&phydev->mdio.bus->mdio_lock'.
->   Locked on  : 242
->   Unlocked on: 273
-> 
-> It turns out that the comments in phy_select_page() say we have to call
-> phy_restore_page() even if the call to phy_select_page() fails.
-> 
-> Fixes: f9bc51e6cce2 ("net: phy: icplus: fix paged register access")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+This patch populates the PCI bus info in the ethtool driver query data.
 
-Reviewed-by: Michael Walle <michael@walle.cc>
+Users will be able to view PCI bus info using 'ethtool -i <interface>'.
 
--michael
+Signed-off-by: Wong Vee Khee <vee.khee.wong@intel.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c    | 1 +
+ drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c | 4 ++++
+ include/linux/stmmac.h                               | 1 +
+ 3 files changed, 6 insertions(+)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+index 1c9c67b641a2..751dfdeec41c 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+@@ -236,6 +236,7 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
+ 	int ret;
+ 	int i;
+ 
++	plat->pdev = pdev;
+ 	plat->phy_addr = -1;
+ 	plat->clk_csr = 5;
+ 	plat->has_gmac = 0;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+index 9e54f953634b..c5642985ef95 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+@@ -268,6 +268,10 @@ static void stmmac_ethtool_getdrvinfo(struct net_device *dev,
+ 		strlcpy(info->driver, MAC100_ETHTOOL_NAME,
+ 			sizeof(info->driver));
+ 
++	if (priv->plat->pdev) {
++		strlcpy(info->bus_info, pci_name(priv->plat->pdev),
++			sizeof(info->bus_info));
++	}
+ 	strlcpy(info->version, DRV_MODULE_VERSION, sizeof(info->version));
+ }
+ 
+diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
+index 15ca6b4167cc..a302982de2d7 100644
+--- a/include/linux/stmmac.h
++++ b/include/linux/stmmac.h
+@@ -202,5 +202,6 @@ struct plat_stmmacenet_data {
+ 	bool vlan_fail_q_en;
+ 	u8 vlan_fail_q;
+ 	unsigned int eee_usecs_rate;
++	struct pci_dev *pdev;
+ };
+ #endif
+-- 
+2.17.0
+
