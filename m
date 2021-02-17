@@ -2,75 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 885AB31E2EB
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 00:09:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1039031E2F6
+	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 00:15:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232208AbhBQXIM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 18:08:12 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44924 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231234AbhBQXIA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Feb 2021 18:08:00 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2104961606;
-        Wed, 17 Feb 2021 23:07:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613603239;
-        bh=ZZc9czH4DE7VQ2o/G/8NddPCzF/64tfAd9rosqGIoXU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FcehgQNjeyZg1aGc0q4mdJS/QamyJLWGMfVsugPwPZJo04A1ZGVR9ZQNIrugooY0R
-         3sitFlRY9r6xjCX8twe5+PjRyImStaDRWq0NoLtiWx59cOGfs/jEOfqI6b6pZHTZBK
-         E/EiUi8rwb7X0GBzUHrvyYtvewDr7k0U5mVH5+9i8NWGUKxyxUoVZO6PhL5KYPwLw4
-         7T/L+2GUJkS2MBPoYEHeHpPR2D9acxtu9ljUyMPJMs9Mu2BEBQutw03OZRKXlj8JIT
-         FqdIrEjzRYvnOeNf6YGw8300x2NGUlw1naTLzcMahJzn4LsYV78G+tSvLWSU/SP0pZ
-         Iz/49uH5VpEBA==
-Date:   Wed, 17 Feb 2021 15:07:18 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Min Li <min.li.xe@renesas.com>,
-        Derek Kiernan <derek.kiernan@xilinx.com>,
-        Dragan Cvetic <dragan.cvetic@xilinx.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        gregkh <gregkh@linuxfoundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>
-Subject: Re: [PATCH net-next] misc: Add Renesas Synchronization Management
- Unit (SMU) support
-Message-ID: <20210217150718.1c691cd1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAK8P3a32jF+iCH5Sk82LaozyPJ0n=f92MRdseZwN9aOtf4DwKQ@mail.gmail.com>
-References: <1613012611-8489-1-git-send-email-min.li.xe@renesas.com>
-        <CAK8P3a3YhAGEfrvmi4YhhnG_3uWZuQi0ChS=0Cu9c4XCf5oGdw@mail.gmail.com>
-        <OSBPR01MB47732017A97D5C911C4528F0BA8B9@OSBPR01MB4773.jpnprd01.prod.outlook.com>
-        <CAK8P3a2KDO4HutsXNJzjmRJTvW1QW4Kt8H7U53_QqpmgvZtd3A@mail.gmail.com>
-        <OSBPR01MB4773B22EA094A362DD807F83BA8B9@OSBPR01MB4773.jpnprd01.prod.outlook.com>
-        <CAK8P3a3k5dAF=X3_NrYAAp5gPJ_uvF3XfmC4rKz0oGTrGRriCw@mail.gmail.com>
-        <OSBPR01MB47732AFC03DA8A0DDF626706BA879@OSBPR01MB4773.jpnprd01.prod.outlook.com>
-        <CAK8P3a2TeeLfsTNkZPnC3YowdOS=bFM5yYj58crP6F5U9Y_r-Q@mail.gmail.com>
-        <OSBPR01MB47739CBDE12E1F3A19649772BA879@OSBPR01MB4773.jpnprd01.prod.outlook.com>
-        <CAK8P3a2fRgDJZv-vzy_X6Y5t3daaVdCiXtMwkmXUyG0EQZ0a6Q@mail.gmail.com>
-        <OSBPR01MB477394546AE3BC1F186FC0E9BA869@OSBPR01MB4773.jpnprd01.prod.outlook.com>
-        <CAK8P3a32jF+iCH5Sk82LaozyPJ0n=f92MRdseZwN9aOtf4DwKQ@mail.gmail.com>
+        id S231234AbhBQXOl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 18:14:41 -0500
+Received: from www62.your-server.de ([213.133.104.62]:34654 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229707AbhBQXOk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 18:14:40 -0500
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lCW17-0007mH-65; Thu, 18 Feb 2021 00:13:57 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1lCW16-000QzQ-VM; Thu, 18 Feb 2021 00:13:57 +0100
+Subject: Re: [Patch bpf-next] bpf: clear per_cpu pointers in
+ bpf_prog_clone_create()
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Cong Wang <cong.wang@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Alexei Starovoitov <ast@kernel.org>
+References: <20210217035844.53746-1-xiyou.wangcong@gmail.com>
+ <c24360ab-f4b3-db61-4c83-9fb941520304@iogearbox.net>
+ <CAM_iQpX1GLG5SW7z5GRTntXTj0-Zvh84BKaOV_5r1akx9rGEOg@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <585ce6bc-b95b-28b1-14a5-3cfdce76e1e7@iogearbox.net>
+Date:   Thu, 18 Feb 2021 00:13:56 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <CAM_iQpX1GLG5SW7z5GRTntXTj0-Zvh84BKaOV_5r1akx9rGEOg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26083/Wed Feb 17 13:11:33 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 17 Feb 2021 22:30:14 +0100 Arnd Bergmann wrote:
-> On Wed, Feb 17, 2021 at 9:20 PM Min Li <min.li.xe@renesas.com> wrote:
-> > I attached the G.8273.2 document, where chapter 6 is about supporting physical layer
-> > frequency. And combo mode is Renesas way to support this requirement. Other companies
-> > may come up with different ways to support it.
-> >
-> > When EEC quality is below certain level, we would wanna turn off combo mode.  
+On 2/17/21 11:46 PM, Cong Wang wrote:
+> On Wed, Feb 17, 2021 at 2:01 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>> On 2/17/21 4:58 AM, Cong Wang wrote:
+>>> From: Cong Wang <cong.wang@bytedance.com>
+>>>
+>>> Pretty much similar to commit 1336c662474e
+>>> ("bpf: Clear per_cpu pointers during bpf_prog_realloc") we also need to
+>>> clear these two percpu pointers in bpf_prog_clone_create(), otherwise
+>>> would get a double free:
+>>>
+>>>    BUG: kernel NULL pointer dereference, address: 0000000000000000
+>>>    #PF: supervisor read access in kernel mode
+>>>    #PF: error_code(0x0000) - not-present page
+>>>    PGD 0 P4D 0
+>>>    Oops: 0000 [#1] SMP PTI
+>>>    CPU: 13 PID: 8140 Comm: kworker/13:247 Kdump: loaded Tainted: G         W   OE
+>>>   5.11.0-rc4.bm.1-amd64+ #1
+>>>    Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1 04/01/2014
+>>>    test_bpf: #1 TXA
+>>>    Workqueue: events bpf_prog_free_deferred
+>>>    RIP: 0010:percpu_ref_get_many.constprop.97+0x42/0xf0
+>>>    Code: [...]
+>>>    RSP: 0018:ffffa6bce1f9bda0 EFLAGS: 00010002
+>>>    RAX: 0000000000000001 RBX: 0000000000000000 RCX: 00000000021dfc7b
+>>>    RDX: ffffffffae2eeb90 RSI: 867f92637e338da5 RDI: 0000000000000046
+>>>    RBP: ffffa6bce1f9bda8 R08: 0000000000000000 R09: 0000000000000001
+>>>    R10: 0000000000000046 R11: 0000000000000000 R12: 0000000000000280
+>>>    R13: 0000000000000000 R14: 0000000000000000 R15: ffff9b5f3ffdedc0
+>>>    FS:   0000000000000000(0000) GS:ffff9b5f2fb40000(0000) knlGS:0000000000000000
+>>>    CS:   0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>>>    CR2: 0000000000000000 CR3: 000000027c36c002 CR4: 00000000003706e0
+>>>    DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+>>>    DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>>>    Call Trace:
+>>>    refill_obj_stock+0x5e/0xd0
+>>>    free_percpu+0xee/0x550
+>>>    __bpf_prog_free+0x4d/0x60
+>>>    process_one_work+0x26a/0x590
+>>>    worker_thread+0x3c/0x390
+>>>    ? process_one_work+0x590/0x590
+>>>    kthread+0x130/0x150
+>>>    ? kthread_park+0x80/0x80
+>>>    ret_from_fork+0x1f/0x30
+>>>
+>>> This bug is 100% reproducible with test_kmod.sh.
+>>>
+>>> Reported-by: Jiang Wang <jiang.wang@bytedance.com>
+>>> Fixes: 700d4796ef59 ("bpf: Optimize program stats")
+>>> Fixes: ca06f55b9002 ("bpf: Add per-program recursion prevention mechanism")
+>>> Cc: Alexei Starovoitov <ast@kernel.org>
+>>> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+>>> ---
+>>>    kernel/bpf/core.c | 2 ++
+>>>    1 file changed, 2 insertions(+)
+>>>
+>>> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+>>> index 0ae015ad1e05..b0c11532e535 100644
+>>> --- a/kernel/bpf/core.c
+>>> +++ b/kernel/bpf/core.c
+>>> @@ -1103,6 +1103,8 @@ static struct bpf_prog *bpf_prog_clone_create(struct bpf_prog *fp_other,
+>>>                 * this still needs to be adapted.
+>>>                 */
+>>>                memcpy(fp, fp_other, fp_other->pages * PAGE_SIZE);
+>>> +             fp_other->stats = NULL;
+>>> +             fp_other->active = NULL;
+>>>        }
+>>>
+>>>        return fp;
+>>
+>> This is not correct. I presume if you enable blinding and stats, then this will still
 > 
-> Maybe this is something that could be handled inside of the device driver then?
+> Well, at least I ran all BPF selftests and found no crash. (Before my patch, the
+> crash happened 100%.)
 > 
-> If the driver can use the same algorithm that is in your user space software
-> today, that would seem to be a nicer way to handle it than requiring a separate
-> application.
+>> crash. The proper way to fix it is to NULL these pointers in bpf_prog_clone_free()
+>> since the clone can be promoted as the actual prog and the prog ptr released instead.
+> 
+> Not sure if I understand your point, but what I cleared is fp_other,
+> which is the original, not the clone. And of course, the original would
+> be overriden:
+> 
+>          tmp = bpf_jit_blind_constants(prog);
+>          if (IS_ERR(tmp))
+>                  return orig_prog;
+>          if (tmp != prog) {
+>                  tmp_blinded = true;
+>                  prog = tmp;  // <=== HERE
+>          }
+> 
+> I think this is precisely why the crash does not happen after my patch.
+> 
+> However, it does seem to me patching bpf_prog_clone_free() is better,
+> as there would be no assumption on using the original. All I want to
+> say here is that both ways could fix the crash, which one is better is
+> arguable.
 
-Other points sound more time than networking, so no suggestions
-from me, but on using PHC for L1 freq - that seems like a good 
-fit for ethtool?
+The problem is that at the time of bpf_prog_clone_create() we don't know whether
+the original prog or the clone will be used eventually. If the original (fp_other)
+will in-fact be used, then stats/active there is NULL. And if the bpf_stats_enabled_key
+static key is active, then __BPF_PROG_RUN() will just try to update stats and trigger
+a NULL ptr deref, but it won't if done in bpf_prog_clone_free(). So the latter really
+is necessary.
+
+Thanks,
+Daniel
