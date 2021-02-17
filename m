@@ -2,91 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E8AE31E14E
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 22:25:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41B8731E153
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 22:26:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233328AbhBQVZE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 16:25:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52884 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232968AbhBQVYt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 16:24:49 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA2A2C061756
-        for <netdev@vger.kernel.org>; Wed, 17 Feb 2021 13:24:08 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id n8so18857330wrm.10
-        for <netdev@vger.kernel.org>; Wed, 17 Feb 2021 13:24:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=y4YdLMuf0KTKOouoR3VajUoP0eQWSuLkckPIViIu7Pk=;
-        b=Zl+UQxUSoC++gAKBFljIq7zUZZ0vb2qMRpLqebFJb15gwMYkdP6FKxuxax7oWmkTaz
-         ahuWCT32751Dzx6+fKNrUQOvNcGgjIKF3t9F6T/skSe59UOIIjuLAIBvhUiltJCz1KoX
-         notAO5vZGdiEJQC3IyJo1UC0Wcf19Qcfari9LaBolpN1ZBrx6zAn0ILqUh3thkHhahqi
-         27WijGUMpqrMClf1tWF4BAAHYwTvc3pEcZLqgpbNVt9lYPh6/jY0F5x72xvifpMnoDiJ
-         aGVff8/LsMum4iTkBiaQ9HefVbNXvIMW5Vd7Y77cyT3JmxRZXt5qBxdRrH45h4lV/3Xc
-         Ir2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=y4YdLMuf0KTKOouoR3VajUoP0eQWSuLkckPIViIu7Pk=;
-        b=Pzeoaslao6BFObQyV1b0za8lfTjp1hckmWqvX1rRwXV2pbjVX4BR4hbv91a/YmduPG
-         ytWIdGC2wuoHra5hyHr/AJvVMF9mbx6HSq/4OUyOk2VRFXO6p48c+vb1cyUSdRh5XVOM
-         fcRorVpS806ZV371O+VBBJZBxyzAUl7/P8CCRIJRkh+bRg7f7mvYWLEFM/1jySG18XJz
-         Pn41hUtfjk9DfPpQhB+GhBVYKmvJfDPFo0or3odAJAMss6dipY8SRQhuql0nPEYmG79s
-         hF6cpt+ucNQIf6DuT/aN9YWMIXYw8mCgSobFmDbgs3Grg0ev/KntAC43W8wAXP/jGNV7
-         VPVw==
-X-Gm-Message-State: AOAM531h4aU1ziYK7KsNUNYoL/HfRK3PmxFrXum/DAtPk/Wu+UdJXR5A
-        A7vhHpcuy7F6qxFAzIv4mOGhV57Eg4+nVA==
-X-Google-Smtp-Source: ABdhPJxdgzYNvTp0WvzcnmNHk1uBeVyi1zExetD2VkPdxrfPiL3rMgSS0t4SEZc9CpevM994N9Ng/Q==
-X-Received: by 2002:a5d:5149:: with SMTP id u9mr1101712wrt.348.1613597047314;
-        Wed, 17 Feb 2021 13:24:07 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f39:5b00:3459:b70a:ad7d:c95e? (p200300ea8f395b003459b70aad7dc95e.dip0.t-ipconnect.de. [2003:ea:8f39:5b00:3459:b70a:ad7d:c95e])
-        by smtp.googlemail.com with ESMTPSA id l2sm5667077wrm.6.2021.02.17.13.24.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Feb 2021 13:24:07 -0800 (PST)
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: [PATCH net-next] r8169: use macro pm_ptr
-Message-ID: <c79d075a-e30d-7960-83cb-820a18abd782@gmail.com>
-Date:   Wed, 17 Feb 2021 22:23:58 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        id S233524AbhBQV0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 16:26:02 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:43880 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231879AbhBQVZ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 16:25:26 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11HLJlxc081165;
+        Wed, 17 Feb 2021 21:24:31 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=EZvpqrgXMjOzeNOEAbxOepiyXAtwIv/GxcPbcJ8w6vs=;
+ b=zkU2212nsTh3bJTN2JlWV9MQsKsFnbygaC6ldFctQ/ViCdR2sFQXryHCQY2hQIre8hwS
+ dTfZzxZ+OVw0/+4FHpCAlVyuMYXEPqJhjd7Y+LJjmN25TgdaEwT8Wm7Uk3GLO6JkvG7M
+ Pn7/qZbqMEmOTN09m4pb5GQWqg/eplHSUHeeO3HKG62CfpcabD4rDeyGqfdQEhtR5bdv
+ BjmqX6ANWmZauqjZXMFpQJtkMT38p3MhLuHFUoeuIT03Jffd2C7QK8U/PJgJSoorPSxG
+ UQGz9cF/mMFLaZz4WzkqrUBYOcQ5kX2UydpiRT38iuhQMWdDj4pDJ7XnDbFiMeqd1/l2 pA== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by aserp2120.oracle.com with ESMTP id 36pd9abcrs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 17 Feb 2021 21:24:31 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11HLK7Lq144903;
+        Wed, 17 Feb 2021 21:24:29 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by userp3030.oracle.com with ESMTP id 36prpyn562-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 17 Feb 2021 21:24:29 +0000
+Received: from abhmp0015.oracle.com (abhmp0015.oracle.com [141.146.116.21])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 11HLONQg020565;
+        Wed, 17 Feb 2021 21:24:24 GMT
+Received: from kadam (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 17 Feb 2021 21:24:23 +0000
+Date:   Thu, 18 Feb 2021 00:24:12 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Michael Walle <michael@walle.cc>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net-next] net: phy: icplus: Call phy_restore_page() when
+ phy_select_page() fails
+Message-ID: <20210217212411.GC2087@kadam>
+References: <YCy1F5xKFJAaLBFw@mwanda>
+ <20210217142838.GM2222@kadam>
+ <20210217150621.GG1463@shell.armlinux.org.uk>
+ <20210217153357.GE1477@shell.armlinux.org.uk>
+ <YC1NKO2HznLC887f@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YC1NKO2HznLC887f@lunn.ch>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-IMR: 1
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9898 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxlogscore=999
+ phishscore=0 adultscore=0 mlxscore=0 suspectscore=0 malwarescore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2102170160
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9898 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 clxscore=1015 impostorscore=0
+ mlxscore=0 phishscore=0 mlxlogscore=999 spamscore=0 bulkscore=0
+ priorityscore=1501 malwarescore=0 suspectscore=0 adultscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2102170160
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use macro pm_ptr(), this helps to avoid some ifdeffery.
+On Wed, Feb 17, 2021 at 06:06:48PM +0100, Andrew Lunn wrote:
+> > I'm wondering whether we need to add __acquires() and __releases()
+> > annotations to some of these functions so that sparse can catch
+> > these cases. Thoughts?
+> 
+> Hi Russell
+> 
+> The more tools we have for catching locking problems the better.
+> Jakubs patchwork bot should then catch them when a patch is submitted,
+> if the developer did not run sparse themselves.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+Here is how I wrote the check for Smatch.  The code in the kernel looks
+like:
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index cbc30df4e..0a20dae32 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -5414,9 +5414,7 @@ static struct pci_driver rtl8169_pci_driver = {
- 	.probe		= rtl_init_one,
- 	.remove		= rtl_remove_one,
- 	.shutdown	= rtl_shutdown,
--#ifdef CONFIG_PM
--	.driver.pm	= &rtl8169_pm_ops,
--#endif
-+	.driver.pm	= pm_ptr(&rtl8169_pm_ops),
- };
- 
- module_pci_driver(rtl8169_pci_driver);
--- 
-2.30.1
+	oldpage = phy_select_page(phydev, 0x0007);
 
+	...
+
+	phy_restore_page(phydev, oldpage, 0);
+
+So what I said is that if phy_select_page() returns an error code then
+set "phydev" to &selected state.  Then if we call phy_restore_page()
+set it to &undefined.  When we hit a return, check if we have any
+"phydev" variables can possibly be in &selected state and print a
+warning.
+
+The code is below.
+
+regards,
+dan carpenter
+
+#include "smatch.h"
+#include "smatch_slist.h"
+
+static int my_id;
+
+STATE(selected);
+
+static sval_t err_min = { .type = &int_ctype, .value = -4095 };
+static sval_t err_max = { .type = &int_ctype, .value = -1 };
+
+static void match_phy_select_page(struct expression *expr, const char *name, struct symbol *sym, void *data)
+{
+	set_state(my_id, name, sym, &selected);
+}
+
+static void match_phy_restore_page(struct expression *expr, const char *name, struct symbol *sym, void *data)
+{
+	set_state(my_id, name, sym, &undefined);
+}
+
+static void match_return(struct expression *expr)
+{
+	struct sm_state *sm;
+
+	FOR_EACH_MY_SM(my_id, __get_cur_stree(), sm) {
+		if (slist_has_state(sm->possible, &selected)) {
+			sm_warning("phy_select_page() requires restore on error");
+			return;
+		}
+	} END_FOR_EACH_SM(sm);
+}
+
+void check_phy_select_page_fail(int id)
+{
+	if (option_project != PROJ_KERNEL)
+		return;
+
+	my_id = id;
+
+	return_implies_param_key("phy_select_page", err_min, err_max,
+				 &match_phy_select_page, 0, "$", NULL);
+	add_function_param_key_hook("phy_restore_page", &match_phy_restore_page,
+				    0, "$", NULL);
+	add_hook(&match_return, RETURN_HOOK);
+}
