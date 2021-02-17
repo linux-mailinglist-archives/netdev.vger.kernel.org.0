@@ -2,206 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E61931D880
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 12:37:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D48431D881
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 12:37:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232220AbhBQLgo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 06:36:44 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:1547 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232269AbhBQLcc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 06:32:32 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B602cfea00000>; Wed, 17 Feb 2021 03:31:44 -0800
-Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 17 Feb
- 2021 11:31:43 +0000
-Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 17 Feb 2021 11:31:41 +0000
-From:   Eli Cohen <elic@nvidia.com>
-To:     <mst@redhat.com>, <jasowang@redhat.com>, <si-wei.liu@oracle.com>,
-        <linux-kernel@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>
-CC:     <elic@nvidia.com>, Parav Pandit <parav@nvidia.com>
-Subject: [PATCH 2/2 v1] vdpa/mlx5: Enable user to add/delete vdpa device
-Date:   Wed, 17 Feb 2021 13:31:36 +0200
-Message-ID: <20210217113136.10215-1-elic@nvidia.com>
-X-Mailer: git-send-email 2.28.0
+        id S232274AbhBQLhX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 06:37:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39084 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232414AbhBQLd7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 06:33:59 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B358BC061574
+        for <netdev@vger.kernel.org>; Wed, 17 Feb 2021 03:33:17 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id w1so21419876ejf.11
+        for <netdev@vger.kernel.org>; Wed, 17 Feb 2021 03:33:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qvYfth6IuTs3a/9ekqeWS7i7N+/WdBzrjQnpgRe3RW4=;
+        b=mQEzor03DVSbxwX7aMIwpulknGK2ZfwWo4ssC5P/I4NkGNNlV9/vs/U5u0K11SAnPH
+         Gl6MqrTcUMCTqPO37+aIRp1eEjYzDd+Kuei8fXHkO4vA5pW+H+5TRry+CintDlis6WSZ
+         o7yeNcOJFtf3iMdO7mHZUiakqZvDhaEenu4R0mN9cXeDGjS34JWsLWDDrakckaF7ABsn
+         UaHrgBK+PtzIeGwpbXA0Mo4TS7HPbci5ufRvXBexmWzZftCenkOTtAtb7Rp6+QtvZqha
+         LwaD8R5LqCeCffvfcWT7JM8uBGmvCSC3Gt38XYmbZSoHAQ+H0MLMEhj12+yqWNSo4gVp
+         O9Iw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qvYfth6IuTs3a/9ekqeWS7i7N+/WdBzrjQnpgRe3RW4=;
+        b=T+uJ1MJFg0vZKSQk6Dor4Zs7rr51SXqRshl/cAeTGple/5oB1t/4Ng9IZMt8TK8WPJ
+         pFVdUlYV2VmlFAB5Nj+cjkuxtZgLOyKhtlbHX5bBPYki0APZ1MhrnGqZmEdO/uj0FLje
+         GKNXAwgXdRa7Q0IcWwFI6Ys4MiQnjBQJrrgmX4Zy0U+7eNDaYc0LfVM1/FbMnKC1YbmX
+         OJcNR/1kf/44a/QJzLZq6wLkU2GaTQ2HGgypg4+8L3GU364tsCb8W+qCZAe/PMgaZOrq
+         PYF08F7G/zUAfOxp3H4yOlSRY9AuLTmeE9S6fd2t0OxWT0P4HEX85weSpkQr9wl73sji
+         +pLg==
+X-Gm-Message-State: AOAM5313gPokVFMAt2If/a6rDtjyNnYPcdyhWmLd/PIzT3QBk+VMsF6g
+        cW7rMynOZD6OstRinLXR5AE=
+X-Google-Smtp-Source: ABdhPJxk5bNI3BrYmtX8aySaYtHVrsqaqW9BjHsWWLh7rcrh0OPiriYtr6HfJqXFEUC0IleZVJGUJQ==
+X-Received: by 2002:a17:906:2898:: with SMTP id o24mr24524679ejd.215.1613561596442;
+        Wed, 17 Feb 2021 03:33:16 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id l25sm847435eja.82.2021.02.17.03.33.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Feb 2021 03:33:15 -0800 (PST)
+Date:   Wed, 17 Feb 2021 13:33:14 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Mauri Sandberg <sandberg@mailfence.com>,
+        DENG Qingfang <dqfext@gmail.com>
+Subject: Re: [PATCH] net: dsa: tag_rtl4_a: Support also egress tags
+Message-ID: <20210217113314.s5kttzvatbt5zkdk@skbuf>
+References: <20210216235542.2718128-1-linus.walleij@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1613561504; bh=unIW7Wif70ezYpZSKFhSrHKcyNgOKUR99rWXKNmgXio=;
-        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-         Content-Transfer-Encoding:Content-Type;
-        b=VONAh0bk//sE0yUbpMmULiksBrz1JRJ17f7A8h7HecllALmPvTrE/nobgGJj3hTCl
-         6GSOrIYHNlWS38kV6eRBeFmz6teBJkCH7lAwFBQFzXARU5/bS3aDy16EYTFszkU0gu
-         4zCiS99l1pPufK8hzI0NH2HozazROftGSvWZufQ3K/Jg1hrPnJYkn70uUz/HKEAnTo
-         2/PDrcPP69+pkBSvsH2fSo7Gjp3jchROidXTSlMZ7t9nuu79lbaL/LbGU8F9AWFdPK
-         2wXcI6MzzBunonwSVYMA1SZTspX/eKMgo7NmxRhYGr6FV/VaXHwldHTqOaSZVuEKE2
-         JoJtLvDcYLA8w==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210216235542.2718128-1-linus.walleij@linaro.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allow to control vdpa device creation and destruction using the vdpa
-management tool.
+On Wed, Feb 17, 2021 at 12:55:42AM +0100, Linus Walleij wrote:
+> Support also transmitting frames using the custom "8899 A"
+> 4 byte tag.
+> 
+> Qingfang came up with the solution: we need to pad the
+> ethernet frame to 60 bytes using eth_skb_pad(), then the
+> switch will happily accept frames with custom tags.
 
-Examples:
-1. List the management devices
-$ vdpa mgmtdev show
-pci/0000:3b:00.1:
-  supported_classes net
+I think it's pretty frustrating to realize that 'it didn't werk' because
+you only tested with ping.
 
-2. Create vdpa instance
-$ vdpa dev add mgmtdev pci/0000:3b:00.1 name vdpa0
+> Cc: Mauri Sandberg <sandberg@mailfence.com>
+> Reported-by: DENG Qingfang <dqfext@gmail.com>
 
-3. Show vdpa devices
-$ vdpa dev show
-vdpa0: type network mgmtdev pci/0000:3b:00.1 vendor_id 5555 max_vqs 16 \
-max_vq_size 256
+Reported-by seems like a bit of an understatement. Suggested-by maybe?
 
-Signed-off-by: Eli Cohen <elic@nvidia.com>
-Reviewed-by: Parav Pandit <parav@nvidia.com>
----
-v0->v1:
-set mgtdev->ndev NULL on dev delete=20
+> Fixes: efd7fe68f0c6 ("net: dsa: tag_rtl4_a: Implement Realtek 4 byte A tag")
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+>  net/dsa/tag_rtl4_a.c | 43 +++++++++++++++++++++++++++++--------------
+>  1 file changed, 29 insertions(+), 14 deletions(-)
+> 
+> diff --git a/net/dsa/tag_rtl4_a.c b/net/dsa/tag_rtl4_a.c
+> index 2646abe5a69e..c17d39b4a1a0 100644
+> --- a/net/dsa/tag_rtl4_a.c
+> +++ b/net/dsa/tag_rtl4_a.c
+> @@ -12,9 +12,7 @@
+>   *
+>   * The 2 bytes tag form a 16 bit big endian word. The exact
+>   * meaning has been guessed from packet dumps from ingress
+> - * frames, as no working egress traffic has been available
+> - * we do not know the format of the egress tags or if they
+> - * are even supported.
+> + * frames.
+>   */
+>  
+>  #include <linux/etherdevice.h>
+> @@ -36,17 +34,34 @@
+>  static struct sk_buff *rtl4a_tag_xmit(struct sk_buff *skb,
+>  				      struct net_device *dev)
+>  {
+> -	/*
+> -	 * Just let it pass thru, we don't know if it is possible
+> -	 * to tag a frame with the 0x8899 ethertype and direct it
+> -	 * to a specific port, all attempts at reverse-engineering have
+> -	 * ended up with the frames getting dropped.
+> -	 *
+> -	 * The VLAN set-up needs to restrict the frames to the right port.
+> -	 *
+> -	 * If you have documentation on the tagging format for RTL8366RB
+> -	 * (tag type A) then please contribute.
+> -	 */
+> +	struct dsa_port *dp = dsa_slave_to_port(dev);
+> +	u8 *tag;
+> +	u16 *p;
+> +	u16 out;
+> +
+> +	/* Pad out to at least 60 bytes */
+> +	if (unlikely(eth_skb_pad(skb)))
+> +		return NULL;
+> +	if (skb_cow_head(skb, RTL4_A_HDR_LEN) < 0)
+> +		return NULL;
+> +
+> +	netdev_dbg(dev, "add realtek tag to package to port %d\n",
+> +		   dp->index);
 
- drivers/vdpa/mlx5/net/mlx5_vnet.c | 79 +++++++++++++++++++++++++++----
- 1 file changed, 70 insertions(+), 9 deletions(-)
+You should probably remove any sort of printing from the hot path.
 
-diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5=
-_vnet.c
-index a51b0f86afe2..08fb481ddc4f 100644
---- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-+++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-@@ -1974,23 +1974,32 @@ static void init_mvqs(struct mlx5_vdpa_net *ndev)
- 	}
- }
-=20
--static int mlx5v_probe(struct auxiliary_device *adev,
--		       const struct auxiliary_device_id *id)
-+struct mlx5_vdpa_mgmtdev {
-+	struct vdpa_mgmt_dev mgtdev;
-+	struct mlx5_adev *madev;
-+	struct mlx5_vdpa_net *ndev;
-+};
-+
-+static int mlx5_vdpa_dev_add(struct vdpa_mgmt_dev *v_mdev, const char *nam=
-e)
- {
--	struct mlx5_adev *madev =3D container_of(adev, struct mlx5_adev, adev);
--	struct mlx5_core_dev *mdev =3D madev->mdev;
-+	struct mlx5_vdpa_mgmtdev *mgtdev =3D container_of(v_mdev, struct mlx5_vdp=
-a_mgmtdev, mgtdev);
- 	struct virtio_net_config *config;
- 	struct mlx5_vdpa_dev *mvdev;
- 	struct mlx5_vdpa_net *ndev;
-+	struct mlx5_core_dev *mdev;
- 	u32 max_vqs;
- 	int err;
-=20
-+	if (mgtdev->ndev)
-+		return -ENOSPC;
-+
-+	mdev =3D mgtdev->madev->mdev;
- 	/* we save one virtqueue for control virtqueue should we require it */
- 	max_vqs =3D MLX5_CAP_DEV_VDPA_EMULATION(mdev, max_num_virtio_queues);
- 	max_vqs =3D min_t(u32, max_vqs, MLX5_MAX_SUPPORTED_VQS);
-=20
- 	ndev =3D vdpa_alloc_device(struct mlx5_vdpa_net, mvdev.vdev, mdev->device=
-, &mlx5_vdpa_ops,
--				 2 * mlx5_vdpa_max_qps(max_vqs), NULL);
-+				 2 * mlx5_vdpa_max_qps(max_vqs), name);
- 	if (IS_ERR(ndev))
- 		return PTR_ERR(ndev);
-=20
-@@ -2018,11 +2027,12 @@ static int mlx5v_probe(struct auxiliary_device *ade=
-v,
- 	if (err)
- 		goto err_res;
-=20
--	err =3D vdpa_register_device(&mvdev->vdev);
-+	mvdev->vdev.mdev =3D &mgtdev->mgtdev;
-+	err =3D _vdpa_register_device(&mvdev->vdev);
- 	if (err)
- 		goto err_reg;
-=20
--	dev_set_drvdata(&adev->dev, ndev);
-+	mgtdev->ndev =3D ndev;
- 	return 0;
-=20
- err_reg:
-@@ -2035,11 +2045,62 @@ static int mlx5v_probe(struct auxiliary_device *ade=
-v,
- 	return err;
- }
-=20
-+static void mlx5_vdpa_dev_del(struct vdpa_mgmt_dev *v_mdev, struct vdpa_de=
-vice *dev)
-+{
-+	struct mlx5_vdpa_mgmtdev *mgtdev =3D container_of(v_mdev, struct mlx5_vdp=
-a_mgmtdev, mgtdev);
-+
-+	_vdpa_unregister_device(dev);
-+	mgtdev->ndev =3D NULL;
-+}
-+
-+static const struct vdpa_mgmtdev_ops mdev_ops =3D {
-+	.dev_add =3D mlx5_vdpa_dev_add,
-+	.dev_del =3D mlx5_vdpa_dev_del,
-+};
-+
-+static struct virtio_device_id id_table[] =3D {
-+	{ VIRTIO_ID_NET, VIRTIO_DEV_ANY_ID },
-+	{ 0 },
-+};
-+
-+static int mlx5v_probe(struct auxiliary_device *adev,
-+		       const struct auxiliary_device_id *id)
-+
-+{
-+	struct mlx5_adev *madev =3D container_of(adev, struct mlx5_adev, adev);
-+	struct mlx5_core_dev *mdev =3D madev->mdev;
-+	struct mlx5_vdpa_mgmtdev *mgtdev;
-+	int err;
-+
-+	mgtdev =3D kzalloc(sizeof(*mgtdev), GFP_KERNEL);
-+	if (!mgtdev)
-+		return -ENOMEM;
-+
-+	mgtdev->mgtdev.ops =3D &mdev_ops;
-+	mgtdev->mgtdev.device =3D mdev->device;
-+	mgtdev->mgtdev.id_table =3D id_table;
-+	mgtdev->madev =3D madev;
-+
-+	err =3D vdpa_mgmtdev_register(&mgtdev->mgtdev);
-+	if (err)
-+		goto reg_err;
-+
-+	dev_set_drvdata(&adev->dev, mgtdev);
-+
-+	return 0;
-+
-+reg_err:
-+	kfree(mdev);
-+	return err;
-+}
-+
- static void mlx5v_remove(struct auxiliary_device *adev)
- {
--	struct mlx5_vdpa_dev *mvdev =3D dev_get_drvdata(&adev->dev);
-+	struct mlx5_vdpa_mgmtdev *mgtdev;
-=20
--	vdpa_unregister_device(&mvdev->vdev);
-+	mgtdev =3D dev_get_drvdata(&adev->dev);
-+	vdpa_mgmtdev_unregister(&mgtdev->mgtdev);
-+	kfree(mgtdev);
- }
-=20
- static const struct auxiliary_device_id mlx5v_id_table[] =3D {
---=20
-2.29.2
+> +	skb_push(skb, RTL4_A_HDR_LEN);
+> +
+> +	memmove(skb->data, skb->data + RTL4_A_HDR_LEN, 2 * ETH_ALEN);
+> +	tag = skb->data + 2 * ETH_ALEN;
+> +
+> +	/* Set Ethertype */
+> +	p = (u16 *)tag;
+> +	*p = htons(RTL4_A_ETHERTYPE);
+> +
+> +	out = (RTL4_A_PROTOCOL_RTL8366RB << 12) | (2 << 8);
+> +	/* The lower bits is the port numer */
+> +	out |= (u8)dp->index;
+> +	p = (u16 *)(tag + 2);
+> +	*p = htons(out);
+> +
+>  	return skb;
+>  }
+>  
+> -- 
+> 2.29.2
+> 
 
