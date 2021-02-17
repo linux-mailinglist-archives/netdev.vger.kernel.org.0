@@ -2,113 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D419731D87D
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 12:37:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E61931D880
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 12:37:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231681AbhBQLfy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 06:35:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37106 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232371AbhBQL3V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 06:29:21 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A49BC06178C
-        for <netdev@vger.kernel.org>; Wed, 17 Feb 2021 03:28:47 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id v15so17007182wrx.4
-        for <netdev@vger.kernel.org>; Wed, 17 Feb 2021 03:28:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=QSLVADKfDjouKtfcxryZ6r5uJuCR2hpGuJxslRznYLE=;
-        b=aylGbGkjA6vW5ybyYaPgwOmTFWTdEzeiDOMOnKPIrTfoRZV9iIX5oYwFsWx6xetssO
-         foSMxHkL4KEie9okA8BjYMFlKueodBcQNDwJXkEPCDbC79kY73Npb3xRdzDhibQ+qwp3
-         oFLydMOGkkh36pvAgnT/UaOG0OvRkssoTJtLhADXlZ06CX7l1+9bDJbu7cIG9V/+h59c
-         OuGmOVSNDBCKtoxkZpgZfyjzyzjo1Zus8BV7DKp/ifGwLx9NVZpYPFnAw1xfIMMZvIrp
-         T76Me8wNUP8Uaq7TOtaUUq1/TZDzSjDekT1jvOINm6t0D+jjn7Rd3OBuvT/Pxk16NOa5
-         ++Ew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=QSLVADKfDjouKtfcxryZ6r5uJuCR2hpGuJxslRznYLE=;
-        b=JSDZYjT/wEsKYddgMM2xPyvJeYCOrfKd+mE1ahak7zfsXp2YpKqgPemlR5UK9D+yiJ
-         B61TnlRUmRyxpvXo5neCELXAIe8VAt4MkaaKnrPM2z07csg4JW310Ij2wBLGkhWD30jb
-         kAN0GjCVLJIZxnTryIr+uC/Erq3RYjESlPfYcDuXF5b1lL615Y6wkU61M3HFmsOtUwJ+
-         SfNm9f2oS1U1+ZBIep5gJG8FNCMge4eFi3MHIBP51Onc0Wa/BDOSZqqqJdzpluZoOksw
-         HJY+cEjx+TdTzloSsO8Tzqgyi66+aEy5Z2+0yjtjYFgMoF3tOP2ys2ZFFM9AGSyUUCrj
-         wwRw==
-X-Gm-Message-State: AOAM53210FDXMw7xVumnSw/HcGlnO4yMW4OpEuTqNXDGigbY/uB2NL6l
-        U/dYLNXszFoxtNfmTHVmqYDZQ2eGfvHn1Q==
-X-Google-Smtp-Source: ABdhPJzIiJA2Oixvdvv0woQqoog5iAqelyw1I5N718VgwgJttQaFeZOyBO1DxSMRqXtGl1eAWGKBUA==
-X-Received: by 2002:a5d:44cf:: with SMTP id z15mr28811412wrr.191.1613561326299;
-        Wed, 17 Feb 2021 03:28:46 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f39:5b00:ac39:4391:1da8:84ef? (p200300ea8f395b00ac3943911da884ef.dip0.t-ipconnect.de. [2003:ea:8f39:5b00:ac39:4391:1da8:84ef])
-        by smtp.googlemail.com with ESMTPSA id j14sm3331026wru.43.2021.02.17.03.28.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Feb 2021 03:28:45 -0800 (PST)
-Subject: Re: [RFC net-next 1/2] net: dsa: add Realtek RTL8366S switch tag
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Mauri Sandberg <sandberg@mailfence.com>
-References: <20210217062139.7893-1-dqfext@gmail.com>
- <20210217062139.7893-2-dqfext@gmail.com>
- <e395ad31-9aeb-0afe-7058-103c6dce942d@gmail.com>
- <CACRpkdYQthFgjwVzHyK3DeYUOdcYyWmdjDPG=Rf9B3VrJ12Rzg@mail.gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <dd9d6ce8-cd87-2612-bcc1-26df717d4e81@gmail.com>
-Date:   Wed, 17 Feb 2021 12:28:39 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        id S232220AbhBQLgo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 06:36:44 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:1547 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232269AbhBQLcc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 06:32:32 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B602cfea00000>; Wed, 17 Feb 2021 03:31:44 -0800
+Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL109.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 17 Feb
+ 2021 11:31:43 +0000
+Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 17 Feb 2021 11:31:41 +0000
+From:   Eli Cohen <elic@nvidia.com>
+To:     <mst@redhat.com>, <jasowang@redhat.com>, <si-wei.liu@oracle.com>,
+        <linux-kernel@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>
+CC:     <elic@nvidia.com>, Parav Pandit <parav@nvidia.com>
+Subject: [PATCH 2/2 v1] vdpa/mlx5: Enable user to add/delete vdpa device
+Date:   Wed, 17 Feb 2021 13:31:36 +0200
+Message-ID: <20210217113136.10215-1-elic@nvidia.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-In-Reply-To: <CACRpkdYQthFgjwVzHyK3DeYUOdcYyWmdjDPG=Rf9B3VrJ12Rzg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1613561504; bh=unIW7Wif70ezYpZSKFhSrHKcyNgOKUR99rWXKNmgXio=;
+        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+         Content-Transfer-Encoding:Content-Type;
+        b=VONAh0bk//sE0yUbpMmULiksBrz1JRJ17f7A8h7HecllALmPvTrE/nobgGJj3hTCl
+         6GSOrIYHNlWS38kV6eRBeFmz6teBJkCH7lAwFBQFzXARU5/bS3aDy16EYTFszkU0gu
+         4zCiS99l1pPufK8hzI0NH2HozazROftGSvWZufQ3K/Jg1hrPnJYkn70uUz/HKEAnTo
+         2/PDrcPP69+pkBSvsH2fSo7Gjp3jchROidXTSlMZ7t9nuu79lbaL/LbGU8F9AWFdPK
+         2wXcI6MzzBunonwSVYMA1SZTspX/eKMgo7NmxRhYGr6FV/VaXHwldHTqOaSZVuEKE2
+         JoJtLvDcYLA8w==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17.02.2021 12:01, Linus Walleij wrote:
-> On Wed, Feb 17, 2021 at 8:08 AM Heiner Kallweit <hkallweit1@gmail.com> wrote:
-> 
->>> +#define RTL8366S_HDR_LEN     4
->>> +#define RTL8366S_ETHERTYPE   0x8899
->>
->> I found this protocol referenced as Realtek Remote Control Protocol (RRCP)
->> and it seems to be used by few Realtek chips. Not sure whether this
->> protocol is officially registered. If yes, then it should be added to
->> the list of ethernet protocol id's in include/uapi/linux/if_ether.h.
->> If not, then it may be better to define it using the usual naming
->> scheme as ETH_P_RRCP in realtek-smi-core.h.
-> 
-> It's actually quite annoying, Realtek use type 0x8899 for all their
-> custom stuff, including RRCP and internal DSA tagging inside
-> switches, which are two completely different use cases.
-> 
-> When I expose raw DSA frames to wireshark it identifies it
-> as "Realtek RRCP" and then naturally cannot decode the
-> frames since this is not RRCP but another protocol identified
-> by the same ethertype.
-> 
-> Inside DSA it works as we explicitly asks tells the kernel using the
-> tagging code in net/dsa/tag_rtl4_a.c that this is the DSA version
-> of ethertype 0x8899 and it then goes to dissect the actual
-> 4 bytes tag.
-> 
-> There are at least four protocols out there using ethertype 0x8899.
-> 
+Allow to control vdpa device creation and destruction using the vdpa
+management tool.
 
-Ugly .. Thanks for the details!
+Examples:
+1. List the management devices
+$ vdpa mgmtdev show
+pci/0000:3b:00.1:
+  supported_classes net
 
-> Yours,
-> Linus Walleij
-> 
+2. Create vdpa instance
+$ vdpa dev add mgmtdev pci/0000:3b:00.1 name vdpa0
+
+3. Show vdpa devices
+$ vdpa dev show
+vdpa0: type network mgmtdev pci/0000:3b:00.1 vendor_id 5555 max_vqs 16 \
+max_vq_size 256
+
+Signed-off-by: Eli Cohen <elic@nvidia.com>
+Reviewed-by: Parav Pandit <parav@nvidia.com>
+---
+v0->v1:
+set mgtdev->ndev NULL on dev delete=20
+
+ drivers/vdpa/mlx5/net/mlx5_vnet.c | 79 +++++++++++++++++++++++++++----
+ 1 file changed, 70 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5=
+_vnet.c
+index a51b0f86afe2..08fb481ddc4f 100644
+--- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
++++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+@@ -1974,23 +1974,32 @@ static void init_mvqs(struct mlx5_vdpa_net *ndev)
+ 	}
+ }
+=20
+-static int mlx5v_probe(struct auxiliary_device *adev,
+-		       const struct auxiliary_device_id *id)
++struct mlx5_vdpa_mgmtdev {
++	struct vdpa_mgmt_dev mgtdev;
++	struct mlx5_adev *madev;
++	struct mlx5_vdpa_net *ndev;
++};
++
++static int mlx5_vdpa_dev_add(struct vdpa_mgmt_dev *v_mdev, const char *nam=
+e)
+ {
+-	struct mlx5_adev *madev =3D container_of(adev, struct mlx5_adev, adev);
+-	struct mlx5_core_dev *mdev =3D madev->mdev;
++	struct mlx5_vdpa_mgmtdev *mgtdev =3D container_of(v_mdev, struct mlx5_vdp=
+a_mgmtdev, mgtdev);
+ 	struct virtio_net_config *config;
+ 	struct mlx5_vdpa_dev *mvdev;
+ 	struct mlx5_vdpa_net *ndev;
++	struct mlx5_core_dev *mdev;
+ 	u32 max_vqs;
+ 	int err;
+=20
++	if (mgtdev->ndev)
++		return -ENOSPC;
++
++	mdev =3D mgtdev->madev->mdev;
+ 	/* we save one virtqueue for control virtqueue should we require it */
+ 	max_vqs =3D MLX5_CAP_DEV_VDPA_EMULATION(mdev, max_num_virtio_queues);
+ 	max_vqs =3D min_t(u32, max_vqs, MLX5_MAX_SUPPORTED_VQS);
+=20
+ 	ndev =3D vdpa_alloc_device(struct mlx5_vdpa_net, mvdev.vdev, mdev->device=
+, &mlx5_vdpa_ops,
+-				 2 * mlx5_vdpa_max_qps(max_vqs), NULL);
++				 2 * mlx5_vdpa_max_qps(max_vqs), name);
+ 	if (IS_ERR(ndev))
+ 		return PTR_ERR(ndev);
+=20
+@@ -2018,11 +2027,12 @@ static int mlx5v_probe(struct auxiliary_device *ade=
+v,
+ 	if (err)
+ 		goto err_res;
+=20
+-	err =3D vdpa_register_device(&mvdev->vdev);
++	mvdev->vdev.mdev =3D &mgtdev->mgtdev;
++	err =3D _vdpa_register_device(&mvdev->vdev);
+ 	if (err)
+ 		goto err_reg;
+=20
+-	dev_set_drvdata(&adev->dev, ndev);
++	mgtdev->ndev =3D ndev;
+ 	return 0;
+=20
+ err_reg:
+@@ -2035,11 +2045,62 @@ static int mlx5v_probe(struct auxiliary_device *ade=
+v,
+ 	return err;
+ }
+=20
++static void mlx5_vdpa_dev_del(struct vdpa_mgmt_dev *v_mdev, struct vdpa_de=
+vice *dev)
++{
++	struct mlx5_vdpa_mgmtdev *mgtdev =3D container_of(v_mdev, struct mlx5_vdp=
+a_mgmtdev, mgtdev);
++
++	_vdpa_unregister_device(dev);
++	mgtdev->ndev =3D NULL;
++}
++
++static const struct vdpa_mgmtdev_ops mdev_ops =3D {
++	.dev_add =3D mlx5_vdpa_dev_add,
++	.dev_del =3D mlx5_vdpa_dev_del,
++};
++
++static struct virtio_device_id id_table[] =3D {
++	{ VIRTIO_ID_NET, VIRTIO_DEV_ANY_ID },
++	{ 0 },
++};
++
++static int mlx5v_probe(struct auxiliary_device *adev,
++		       const struct auxiliary_device_id *id)
++
++{
++	struct mlx5_adev *madev =3D container_of(adev, struct mlx5_adev, adev);
++	struct mlx5_core_dev *mdev =3D madev->mdev;
++	struct mlx5_vdpa_mgmtdev *mgtdev;
++	int err;
++
++	mgtdev =3D kzalloc(sizeof(*mgtdev), GFP_KERNEL);
++	if (!mgtdev)
++		return -ENOMEM;
++
++	mgtdev->mgtdev.ops =3D &mdev_ops;
++	mgtdev->mgtdev.device =3D mdev->device;
++	mgtdev->mgtdev.id_table =3D id_table;
++	mgtdev->madev =3D madev;
++
++	err =3D vdpa_mgmtdev_register(&mgtdev->mgtdev);
++	if (err)
++		goto reg_err;
++
++	dev_set_drvdata(&adev->dev, mgtdev);
++
++	return 0;
++
++reg_err:
++	kfree(mdev);
++	return err;
++}
++
+ static void mlx5v_remove(struct auxiliary_device *adev)
+ {
+-	struct mlx5_vdpa_dev *mvdev =3D dev_get_drvdata(&adev->dev);
++	struct mlx5_vdpa_mgmtdev *mgtdev;
+=20
+-	vdpa_unregister_device(&mvdev->vdev);
++	mgtdev =3D dev_get_drvdata(&adev->dev);
++	vdpa_mgmtdev_unregister(&mgtdev->mgtdev);
++	kfree(mgtdev);
+ }
+=20
+ static const struct auxiliary_device_id mlx5v_id_table[] =3D {
+--=20
+2.29.2
 
