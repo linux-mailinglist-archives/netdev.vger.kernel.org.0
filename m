@@ -2,156 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9033A31DCDF
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 17:05:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC16831DD19
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 17:16:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233958AbhBQQE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 11:04:27 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:49423 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233568AbhBQQEN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 11:04:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1613577853; x=1645113853;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=qJK73leWzrkDzeBC+OYmyCx8uVJIE42XDAZUX9Da8BA=;
-  b=CPbIGLP32py8SPbCp/gQlxp913YTWwUT97eQSKq7G8sYFujsHnzRkg7w
-   YaxC+CA8PFYXLTvjnCdOPZFlT7D3z5+Gb37I+TYPEmlKw5CamiTjjseft
-   hqdrtjUrivpMxyZeuuRNby9L2TQe2O2rN078Ys8Oq/H9n+/UAIGKqIUK5
-   CfKNk3ddpzDWFJxiiRm0ZkAvaWGsKOfSCysNgMuRononcRQJsE8BfJsco
-   kZhWekHnhlwSqprqP2+yoafXxzgILUV9bGMk9RjbRNM67ao9+A9Xgelo1
-   slY8SAwFEGN1Q9wqJJ28An6wQ9RuX20DZI53PgoiL75SjXVzgUh+MRNed
-   A==;
-IronPort-SDR: Hu/+IvePcSQwKNP0tOMJPBiW+a6Afmyi2efURNVPMT6eb2YmarbDFgiJBk1VrLvjKJaBwoHdkB
- VWX8n9+f9rsnLBsoJlEvKqhGTJxupkxc0TodaUX/FLEUqZACLaAmdQuqDYmmVVaILnH5sC+IcK
- 5mQaxt8Xu1Ah1OqKCdSSnD2BVKaaryELGVG8kDxe1cl9N2sCua/2u//P1YH1Z/0x4Yy17pkPUO
- EOYFQ01j5ntyVupMJ/wRV5e5hRF9oP50oAdS3Gpd7tj6iN4BRJZknMMsCQ9tp7eBRh1aBlsQEc
- w3Q=
-X-IronPort-AV: E=Sophos;i="5.81,184,1610434800"; 
-   d="scan'208";a="109576978"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Feb 2021 09:02:58 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 17 Feb 2021 09:02:57 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Wed, 17 Feb 2021 09:02:57 -0700
-Date:   Wed, 17 Feb 2021 17:02:56 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "ivecera@redhat.com" <ivecera@redhat.com>,
-        "nikolay@nvidia.com" <nikolay@nvidia.com>,
-        "roopa@nvidia.com" <roopa@nvidia.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "rasmus.villemoes@prevas.dk" <rasmus.villemoes@prevas.dk>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bridge@lists.linux-foundation.org" 
-        <bridge@lists.linux-foundation.org>
-Subject: Re: [PATCH net-next v4 4/8] bridge: mrp: Extend br_mrp_switchdev to
- detect better the errors
-Message-ID: <20210217160256.jr33sgi73s7wsaaa@soft-dev3.localdomain>
-References: <20210216214205.32385-1-horatiu.vultur@microchip.com>
- <20210216214205.32385-5-horatiu.vultur@microchip.com>
- <20210217105624.aehyxw3tfs5uycdl@skbuf>
+        id S234175AbhBQQP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 11:15:27 -0500
+Received: from s-terra.s-terra.com ([193.164.201.59]:53415 "EHLO
+        s-terra.s-terra.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234078AbhBQQPI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 11:15:08 -0500
+X-Greylist: delayed 471 seconds by postgrey-1.27 at vger.kernel.org; Wed, 17 Feb 2021 11:15:08 EST
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=s-terra.ru; s=mail;
+        t=1613577993; bh=z1ZJy5btvrX6ccMWHhdu/ImCYptIQksKbzrdqLQRx64=;
+        h=To:From:Subject:Date:From;
+        b=l9AsYuhbo57ZKWxSoglLqZNcuz2iUv+2HSKCymDcMCzde/5l9/mt1kDDX2EjBp10u
+         if4hX4hTK5F7+yQoxpIjTmJNM8TH1zHWPFoaSgS4ZZZ+YbyrIhMP3D/7I4CyBgZJvw
+         cCP3GhP8j5gE0m9JdNqzUZyhX3QI+DDirCLvfCPk=
+To:     <netdev@vger.kernel.org>
+From:   =?UTF-8?B?0JzRg9GA0LDQstGM0LXQsiDQkNC70LXQutGB0LDQvdC00YA=?= 
+        <amuravyev@s-terra.ru>
+Subject: null terminating of IFLA_INFO_KIND/IFLA_IFNAME
+Message-ID: <baea7ed0-ba32-3cc0-3885-7b77a72cb409@s-terra.ru>
+Date:   Wed, 17 Feb 2021 19:06:26 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20210217105624.aehyxw3tfs5uycdl@skbuf>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-ClientProxiedBy: EMX.sterracsp.s-terra.com
+ (fdff:1ea7:9484:0:b0e5:b137:3bee:6c45) To EMX.sterracsp.s-terra.com
+ (fdff:1ea7:9484:0:b0e5:b137:3bee:6c45)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 02/17/2021 10:56, Vladimir Oltean wrote:
-> 
-> On Tue, Feb 16, 2021 at 10:42:01PM +0100, Horatiu Vultur wrote:
-> > This patch extends the br_mrp_switchdev functions to be able to have a
-> > better understanding what cause the issue and if the SW needs to be used
-> > as a backup.
-> >
-> > There are the following cases:
-> > - when the code is compiled without CONFIG_NET_SWITCHDEV. In this case
-> >   return success so the SW can continue with the protocol. Depending
-> >   on the function, it returns 0 or BR_MRP_SW.
-> > - when code is compiled with CONFIG_NET_SWITCHDEV and the driver doesn't
-> >   implement any MRP callbacks. In this case the HW can't run MRP so it
-> >   just returns -EOPNOTSUPP. So the SW will stop further to configure the
-> >   node.
-> > - when code is compiled with CONFIG_NET_SWITCHDEV and the driver fully
-> >   supports any MRP functionality. In this case the SW doesn't need to do
-> >   anything. The functions will return 0 or BR_MRP_HW.
-> > - when code is compiled with CONFIG_NET_SWITCHDEV and the HW can't run
-> >   completely the protocol but it can help the SW to run it. For
-> >   example, the HW can't support completely MRM role(can't detect when it
-> >   stops receiving MRP Test frames) but it can redirect these frames to
-> >   CPU. In this case it is possible to have a SW fallback. The SW will
-> >   try initially to call the driver with sw_backup set to false, meaning
-> >   that the HW should implement completely the role. If the driver returns
-> >   -EOPNOTSUPP, the SW will try again with sw_backup set to false,
-> >   meaning that the SW will detect when it stops receiving the frames but
-> >   it needs HW support to redirect the frames to CPU. In case the driver
-> >   returns 0 then the SW will continue to configure the node accordingly.
-> >
-> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> > ---
-> >  net/bridge/br_mrp_switchdev.c | 171 +++++++++++++++++++++-------------
-> >  net/bridge/br_private_mrp.h   |  24 +++--
-> >  2 files changed, 118 insertions(+), 77 deletions(-)
-> >
-> > diff --git a/net/bridge/br_mrp_switchdev.c b/net/bridge/br_mrp_switchdev.c
-> > index 3c9a4abcf4ee..cb54b324fa8c 100644
-> > --- a/net/bridge/br_mrp_switchdev.c
-> > +++ b/net/bridge/br_mrp_switchdev.c
-> > @@ -4,6 +4,30 @@
-> >
-> >  #include "br_private_mrp.h"
-> >
-> > +static enum br_mrp_hw_support
-> > +br_mrp_switchdev_port_obj(struct net_bridge *br,
-> > +                       const struct switchdev_obj *obj, bool add)
-> > +{
-> > +     int err;
-> > +
-> 
-> Looks like you could have added this check here and simplified all the
-> callers:
-> 
->         if (!IS_ENABLED(CONFIG_NET_SWITCHDEV))
->                 return BR_MRP_SW;
+Hi
 
-Yes, good catch!
+A noob question that I haven't found an answer.
 
-> 
-> > +     if (add)
-> > +             err = switchdev_port_obj_add(br->dev, obj, NULL);
-> > +     else
-> > +             err = switchdev_port_obj_del(br->dev, obj);
-> > +
-> > +     /* In case of success just return and notify the SW that doesn't need
-> > +      * to do anything
-> > +      */
-> > +     if (!err)
-> > +             return BR_MRP_HW;
-> > +
-> > +     if (err != -EOPNOTSUPP)
-> > +             return BR_MRP_NONE;
-> > +
-> > +     /* Continue with SW backup */
-> > +     return BR_MRP_SW;
-> > +}
-> > +
+Just wanted to clarify a piece of iproute2 code.
+
+ip/iplink.c:
+
+> 1058         addattr_l(&req.n, sizeof(req), IFLA_INFO_KIND, type,
+> 1059              strlen(type));
+
+also ip/iplink.c:
+
+> 1115         addattr_l(&req.n, sizeof(req),
+> 1116               !check_ifname(name) ? IFLA_IFNAME : IFLA_ALT_IFNAME,
+> 1117               name, strlen(name) + 1);
+My question is why we skip terminating null character for IFLA_INFO_KIND 
+(the first case) and don't skip it for IFLA_IFNAME (the second case)? I 
+mean "strlen(type)" and "strlen(name) + 1".
 
 -- 
-/Horatiu
+Best regards,
+Alexander Muravev
+
