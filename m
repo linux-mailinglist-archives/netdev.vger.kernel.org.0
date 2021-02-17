@@ -2,57 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 201EE31D7CD
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 12:03:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6119231D802
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 12:14:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230486AbhBQLB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 06:01:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60398 "EHLO
+        id S230071AbhBQLNU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 06:13:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230030AbhBQLB5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 06:01:57 -0500
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49BF0C061574
-        for <netdev@vger.kernel.org>; Wed, 17 Feb 2021 03:01:17 -0800 (PST)
-Received: by mail-lj1-x22f.google.com with SMTP id u4so15495832ljh.6
-        for <netdev@vger.kernel.org>; Wed, 17 Feb 2021 03:01:17 -0800 (PST)
+        with ESMTP id S230448AbhBQLNK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 06:13:10 -0500
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAFC0C061574
+        for <netdev@vger.kernel.org>; Wed, 17 Feb 2021 03:12:29 -0800 (PST)
+Received: by mail-lf1-x12e.google.com with SMTP id v5so20698531lft.13
+        for <netdev@vger.kernel.org>; Wed, 17 Feb 2021 03:12:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=s49hSKyEz1i92CpeTBAunKs7ljY4dzNn7VojQkhT6ng=;
-        b=J0ECRXZeqLsbJr9QqxkcIFjnVTneSZgzJptt2km3aU17mpBJYgahP4/NIvCAL3UUxZ
-         nd9FiOSyGFCo35WNxsl5ZA9ZfcWrztGFyIAhWqy/ILMi1Y3PC+R6OU6aU3xMTPpPm96r
-         i87Ck2KLG7YwHsftp5SQIYxqhkcTM4H0WfCS2FYpfs6dGO3NctnmxfD9Zqgqa088o3+W
-         r45kPTPWenMdKnMsoKWsJ3QJfAqnj0VkH14nUGV9b3x0x9hpGRCZggSEtmdp+7cqewpG
-         2Rb3TdGs2nymfa8AuEe6SpRZKk+4Zt4mZ+BYIbBWekrUZv9eI5tjEPbcFnAOA0duYR4y
-         XZcg==
+        bh=fgzeP1pHTzdsARzTKFGwOw6DB6q1E3wO4SquJ7Fv1tA=;
+        b=rfgI35S28C1rl92sJwIoc55lJ0GQHCmPGwFmHrSkLiKYmDfQZ0B4Ia7ZT3/CBbZFov
+         DTRGMdgmnIeQpN7Ib71UUQ5cO9iGShYcIQsCPj7ZpeR9bYrKqyKWvInmV2kCGkb5cqsn
+         qhAUEHsTi9H/Suz6jYzTPdJhxifCvNCL1cHvFq1w04MMgh5d8bVle5z88v+kt/+02lOk
+         9+P/FWXgaJxeyY+urANn+Btbs20iNx5UR/5YU8UL6nc4FfIgo63Brb6Z8p4KtL6dQ7UY
+         NoRo5sA/bBBJEywQEQAC61DyXXINmAFWwKH7xD9XleWV8txXSVHmdu1jN1qlmPUGKpuS
+         SDsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=s49hSKyEz1i92CpeTBAunKs7ljY4dzNn7VojQkhT6ng=;
-        b=Rq6nmzzfF3htjM9ABFDv5jpAQghP3y8D41UDox0WJFD5IpKVWHzOKww+iJss8hlJkQ
-         8MFaqAwZ8pB+iFx1IHWQtmowQfiMUy5dsgz6LP1yNbusce4UpgUb3XghCIun1Ti0/CuN
-         QzQuu6ai1sh1uS1mU+c5GBLtCKt1SwHHU0gVDZD89fQuuKDKanFpVCMWAybVn2mR5rj2
-         EwHc7PNs2rNoXqDOD24drgJdDq6Nx3x6D/RnlybxjcTh7fOSMTfU4zEEHg7ATaoARUy/
-         ieR2QtD1Q6zVo4nRIdZcTDDYCMvVgLJDX9Z1vpnWFPIIoInrufPVVMz+nGleZ1+B6Hbo
-         h49A==
-X-Gm-Message-State: AOAM532LsZkRqSh2xJTyLtlVeAJkIY46bVK8N6MLvwxDfzxE4qHBZIHE
-        DLlD4vF5KDRfn0tUbQVuhqXcD6sXEC2E82oyJ2VuJQ==
-X-Google-Smtp-Source: ABdhPJzM5NXo5Urq010RcaKvXmLBowSm24Ucpv8kKHv26dvKe9kPfMuCHXbdzIZVICU3zMM01WTaHL1Eoonaw89YI5Q=
-X-Received: by 2002:a2e:9041:: with SMTP id n1mr12452444ljg.273.1613559675701;
- Wed, 17 Feb 2021 03:01:15 -0800 (PST)
+        bh=fgzeP1pHTzdsARzTKFGwOw6DB6q1E3wO4SquJ7Fv1tA=;
+        b=aZVAw5MBty38Fp3sa5mqymPAEPytQqm/8pJm/cbWT09Gf70WcZ+e11EqcX6DHX0B19
+         Ae8gAVRGRCrkVsWwAHq20i8beKf3oUSj6sCt7C5H0nx68E0iVEYqVQmEtUnG0TgrEYUu
+         t4RpjtBXPh7hvJ3ENS6tTVTtHd/vvlo2Hi1yLzVAB+m7bBB0FN0GAyo0+FVGqbtnrQ8z
+         RO9FkLfmwb32aZzOM/8gfb3e/EZMrsABqkS1nts2Ku24s10xszQqVYlJgxWXFn/fQtzA
+         Qmn+NEwyBpzzJktS/uKisA73H3pwdKpnUV4eq8TwlcxIGOmAkgALivzL1tOHRihznb6k
+         5JEQ==
+X-Gm-Message-State: AOAM531C/vYS9FI7eHV7XwxQhET2bpAyXSAgLq5xb4ou+jxAoPjmLRQ0
+        kUztOLYay8CsVodSp2m5tX/TibH6PAhDpsIVTf+xhQ==
+X-Google-Smtp-Source: ABdhPJy9Y+cln57EmVUfv/yE9t288T59jP/dd+AfsT08RfH4C5xA1xA34Dpd9OFkehqfPG2fI02EQdZendhcy6xtsM4=
+X-Received: by 2002:a19:70e:: with SMTP id 14mr13748295lfh.157.1613560348294;
+ Wed, 17 Feb 2021 03:12:28 -0800 (PST)
 MIME-Version: 1.0
-References: <20210217062139.7893-1-dqfext@gmail.com> <20210217062139.7893-2-dqfext@gmail.com>
- <e395ad31-9aeb-0afe-7058-103c6dce942d@gmail.com>
-In-Reply-To: <e395ad31-9aeb-0afe-7058-103c6dce942d@gmail.com>
+References: <20210217062139.7893-1-dqfext@gmail.com> <20210217062139.7893-3-dqfext@gmail.com>
+In-Reply-To: <20210217062139.7893-3-dqfext@gmail.com>
 From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Wed, 17 Feb 2021 12:01:04 +0100
-Message-ID: <CACRpkdYQthFgjwVzHyK3DeYUOdcYyWmdjDPG=Rf9B3VrJ12Rzg@mail.gmail.com>
-Subject: Re: [RFC net-next 1/2] net: dsa: add Realtek RTL8366S switch tag
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+Date:   Wed, 17 Feb 2021 12:12:17 +0100
+Message-ID: <CACRpkdZEQYahteQ3GdftkS82O2rz_ZZ88AUN0HGMhNQDHaFWRw@mail.gmail.com>
+Subject: Re: [RFC net-next 2/2] net: dsa: add Realtek RTL8366S switch driver
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
@@ -65,33 +64,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 17, 2021 at 8:08 AM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+Hi Qingfang,
 
-> > +#define RTL8366S_HDR_LEN     4
-> > +#define RTL8366S_ETHERTYPE   0x8899
+thanks for your patch! Overall it looks good and I will not
+nitpick details since this is RFC.
+
+On Wed, Feb 17, 2021 at 7:21 AM DENG Qingfang <dqfext@gmail.com> wrote:
 >
-> I found this protocol referenced as Realtek Remote Control Protocol (RRCP)
-> and it seems to be used by few Realtek chips. Not sure whether this
-> protocol is officially registered. If yes, then it should be added to
-> the list of ethernet protocol id's in include/uapi/linux/if_ether.h.
-> If not, then it may be better to define it using the usual naming
-> scheme as ETH_P_RRCP in realtek-smi-core.h.
+> Support Realtek RTL8366S/SR switch
+>
+> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
 
-It's actually quite annoying, Realtek use type 0x8899 for all their
-custom stuff, including RRCP and internal DSA tagging inside
-switches, which are two completely different use cases.
+I would mention that the DT bindings for the switch are already in
+Documentation/devicetree/bindings/net/dsa/realtek-smi.txt
+(Hmmm we should convert these bindings to YAML too.)
 
-When I expose raw DSA frames to wireshark it identifies it
-as "Realtek RRCP" and then naturally cannot decode the
-frames since this is not RRCP but another protocol identified
-by the same ethertype.
+>         select NET_DSA_TAG_RTL4_A
+> +       select NET_DSA_TAG_RTL8366S
 
-Inside DSA it works as we explicitly asks tells the kernel using the
-tagging code in net/dsa/tag_rtl4_a.c that this is the DSA version
-of ethertype 0x8899 and it then goes to dissect the actual
-4 bytes tag.
+Hopefully we can use NET_DSA_TAG_RTL4_A for this
+switch as mentioned.
 
-There are at least four protocols out there using ethertype 0x8899.
+> +/* bits 0..7 = port 0, bits 8..15 = port 1 */
+> +#define RTL8366S_PAACR0                        0x0011
+> +/* bits 0..7 = port 2, bits 8..15 = port 3 */
+> +#define RTL8366S_PAACR1                        0x0012
+> +/* bits 0..7 = port 4, bits 8..15 = port 5 */
+> +#define RTL8366S_PAACR2                        0x0013
+
+Is this all? I was under the impression that RTL8366S
+supports up to 8 ports (7+1).
+
+> +#define RTL8366S_CHIP_ID_REG                   0x0105
+> +#define RTL8366S_CHIP_ID_8366                  0x8366
+
+Curiously RTL8366RB presents ID 0x5937. Oh well. Interesting
+engineering process I suppose.
+
+> +/* LED control registers */
+> +#define RTL8366S_LED_BLINKRATE_REG             0x0420
+> +#define RTL8366S_LED_BLINKRATE_BIT             0
+> +#define RTL8366S_LED_BLINKRATE_MASK            0x0007
+> +
+> +#define RTL8366S_LED_CTRL_REG                  0x0421
+> +#define RTL8366S_LED_0_1_CTRL_REG              0x0422
+> +#define RTL8366S_LED_2_3_CTRL_REG              0x0423
+
+Again I wonder if there are more registers here for 8 ports?
+
+> +/* PHY registers control */
+> +#define RTL8366S_PHY_ACCESS_CTRL_REG           0x8028
+> +#define RTL8366S_PHY_ACCESS_DATA_REG           0x8029
+> +
+> +#define RTL8366S_PHY_CTRL_READ                 1
+> +#define RTL8366S_PHY_CTRL_WRITE                        0
+> +
+> +#define RTL8366S_PORT_NUM_CPU          5
+> +#define RTL8366S_NUM_PORTS             6
+
+Hm 5+1? Isn't RTL8366S 7+1?
+
+> +#define RTL8366S_PORT_1                        BIT(0) /* In userspace port 0 */
+> +#define RTL8366S_PORT_2                        BIT(1) /* In userspace port 1 */
+> +#define RTL8366S_PORT_3                        BIT(2) /* In userspace port 2 */
+> +#define RTL8366S_PORT_4                        BIT(3) /* In userspace port 3 */
+> +#define RTL8366S_PORT_5                        BIT(4) /* In userspace port 4 */
+> +#define RTL8366S_PORT_CPU              BIT(5) /* CPU port */
+
+Same here.
+
+Overall the question about whether the switch is 5+1 or 7+1 is my
+big design remark.
+
+Maybe it is only 5+1 who knows...
 
 Yours,
 Linus Walleij
