@@ -2,140 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 696A631D3D8
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 02:44:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B5CB31D3ED
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 03:24:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229989AbhBQBo0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 20:44:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54910 "EHLO
+        id S229734AbhBQCXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 21:23:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbhBQBoX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 20:44:23 -0500
-Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBBA0C061574;
-        Tue, 16 Feb 2021 17:43:42 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4DgLGL4tglz9sBy;
-        Wed, 17 Feb 2021 12:43:38 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1613526219;
-        bh=YxHG4aTt8Q+DJqmCsA/7VHsTg8HAhTeywx2/Ow/y8mk=;
-        h=Date:From:To:Cc:Subject:From;
-        b=QET1vpacsoO/PsOPZm50Zg9AUU6GXGCBMqBu9uz0ujKGRaXrMjvevwqqVInfVqwbw
-         Xizy4XdoTryCce0Y1tUQquHrmLvg9kYYs1O8Ewj5+9m1y9mHZx4vaBaJaOqHCc28bo
-         1pRHFtSvcmUevRyvr6nJW6k6FwC4O07Eo4NbpaCy5kWAgKkpzRmDqpk0RLnsGpQW1O
-         1F+wvPksGVIhVWh41lS3KehEs0hvyFsFJS+2D0HoK3V5RCnerTE+bQcxjPKXJxe0u4
-         cRMxkFNBPKUywk6kBJ0eBo76kjLcjJcjcTeoSOXPDc1o61xoc5LSMtj1b4HUfWysR8
-         CPI8UwmHty//Q==
-Date:   Wed, 17 Feb 2021 12:43:37 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Lijun Pan <lijunp213@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20210217124337.47db7c69@canb.auug.org.au>
+        with ESMTP id S229655AbhBQCXn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 21:23:43 -0500
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13906C061574
+        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 18:23:03 -0800 (PST)
+Received: by mail-io1-xd34.google.com with SMTP id u8so12258929ior.13
+        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 18:23:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=coverfire.com; s=google;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=8Tk6Lc5M6fxG2/59xM5tXWmV7yWj9hsPMxluvpH1XPc=;
+        b=BHfMW29Fk9+hgceGBtimjIQ7b0lZCL4lnJ106M6MNfUn6NT4/sUFB+sioG5TwUXpv4
+         beAyKUSVlzf1HvqbeXxELv1vf7UQAz+1oMVoBvWAlNtQgdP42YKrz7cWvow7wYDv9KTB
+         4mwt54F2QVOeGWrw1KvcJ0wlZMGf6ZvaFXQcqi3AisG85GObBRXD2y2lRDIsAG968uye
+         5uSDqsGy2XbJs5oWT6rTr5JyUEANPkvBPqQ3Qq6vd+iCuqXh5Fb1P4s/XHets8DwZ4VA
+         LvM+UcGtnAkQZzISgOaZi6M414m5PBl8q+KyaKaGKa6LILjRjvfODqvqabmrhjEZqPHe
+         FDNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=8Tk6Lc5M6fxG2/59xM5tXWmV7yWj9hsPMxluvpH1XPc=;
+        b=pqOGy+3EzMsssSC9SbUXR9N27C8dt7bKpwPsm0lXj/BiFvpBNJ++9gsUke0rQgjD1x
+         SsyKygTZoLb2nvLxnJ1GrNEHGVE2sEXXj4P9iAwo38RtEJMAQ8Ew13gL2lmlgxq5xT8W
+         PMQhryWEU3KlvQ/TkfmfHNhW9BL4//HrE9y2tQgZGYkwcg3kuII7sVqRGL5LsFxJFCoa
+         T0CwXehum14shSBbLMPtt0x8YO0z59XurXsmPWWSCGhT1M30n0nRzkYFWnzFUkFPH3Yr
+         SS5hhrZ28Ir5uRONWr5i+2ShTFvOTzm2GImGBhms2xhl1vo82deZRyx82o7A9j/wqA3A
+         TORw==
+X-Gm-Message-State: AOAM532a1PiShAn38ZkIEtVqGb8VRKrrln6vCbl19srjparaubD0VmJK
+        S8hgvh0kTR+59HNN2k7wvP5LeQ==
+X-Google-Smtp-Source: ABdhPJyFIFyWff/4XKxieWV3eQ9EuPIOL89Y7/k21CNIHkqtlJb6hCFe8Xb9MpbZBVu68hltBO85ew==
+X-Received: by 2002:a6b:f714:: with SMTP id k20mr18812501iog.70.1613528582328;
+        Tue, 16 Feb 2021 18:23:02 -0800 (PST)
+Received: from ?IPv6:2607:f2c0:e56e:28c:5524:727c:ba55:9558? ([2607:f2c0:e56e:28c:5524:727c:ba55:9558])
+        by smtp.gmail.com with ESMTPSA id o5sm404700iob.45.2021.02.16.18.23.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Feb 2021 18:23:01 -0800 (PST)
+Message-ID: <6e9842b289ff2c54e528eb89d69a9b4f678c65da.camel@coverfire.com>
+Subject: Re: [PATCH bpf-next 1/3] libbpf: xsk: use bpf_link
+From:   Dan Siemon <dan@coverfire.com>
+To:     Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        =?ISO-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        daniel@iogearbox.net, ast@kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, magnus.karlsson@intel.com
+Cc:     andrii@kernel.org, ciara.loftus@intel.com
+Date:   Tue, 16 Feb 2021 21:23:00 -0500
+In-Reply-To: <8735xxc8pf.fsf@toke.dk>
+References: <20210215154638.4627-1-maciej.fijalkowski@intel.com>
+         <20210215154638.4627-2-maciej.fijalkowski@intel.com>
+         <87eehhcl9x.fsf@toke.dk> <fe0c957e-d212-4265-a271-ba301c3c5eca@intel.com>
+         <602ad80c566ea_3ed4120871@john-XPS-13-9370.notmuch>
+         <8735xxc8pf.fsf@toke.dk>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3 (3.38.3-1.fc33) 
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/LS2qvUpNPap5oaYhIxbUHgR";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/LS2qvUpNPap5oaYhIxbUHgR
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Mon, 2021-02-15 at 22:38 +0100, Toke Høiland-Jørgensen wrote:
+> The idea is to keep libbpf focused on bpf, and move the AF_XDP stuff
+> to
+> libxdp (so the socket stuff in xsk.h). We're adding the existing code
+> wholesale, and keeping API compatibility during the move, so all
+> that's
+> needed is adding -lxdp when compiling. And obviously the existing
+> libbpf
+> code isn't going anywhere until such a time as there's a general
+> backwards compatibility-breaking deprecation in libbpf (which I
+> believe
+> Andrii is planning to do in an upcoming and as-of-yet unannounced
+> v1.0
+> release).
 
-Hi all,
+I maintain a Rust binding to the AF_XDP parts of libbpf [1][2]. On the
+chance that more significant changes can be entertained in the switch
+to libxdp... The fact that many required functions like the ring access
+functions exist only in xsk.h makes building a binding more difficult
+because we need to wrap it with an extra C function [3]. From that
+perspective, it would be great if those could move to xsk.c.
 
-Today's linux-next merge of the net-next tree got conflicts in:
+[1] - https://github.com/aterlo/afxdp-rs
+[2] - https://github.com/alexforster/libbpf-sys
+[3] - https://github.com/alexforster/libbpf-sys/blob/master/bindings.c
 
-  drivers/net/ethernet/ibm/ibmvnic.c
-  drivers/net/ethernet/ibm/ibmvnic.h
-
-between commit:
-
-  4a41c421f367 ("ibmvnic: serialize access to work queue on remove")
-
-from the net tree and commits:
-
-  bab08bedcdc3 ("ibmvnic: fix block comments")
-  a369d96ca554 ("ibmvnic: add comments for spinlock_t definitions")
-
-from the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc drivers/net/ethernet/ibm/ibmvnic.c
-index 13ae7eee7ef5,927d5f36d308..000000000000
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@@ -2395,10 -2288,7 +2294,9 @@@ static int ibmvnic_reset(struct ibmvnic
-  	unsigned long flags;
-  	int ret;
- =20
- +	spin_lock_irqsave(&adapter->rwi_lock, flags);
- +
-- 	/*
-- 	 * If failover is pending don't schedule any other reset.
-+ 	/* If failover is pending don't schedule any other reset.
-  	 * Instead let the failover complete. If there is already a
-  	 * a failover reset scheduled, we will detect and drop the
-  	 * duplicate reset when walking the ->rwi_list below.
-diff --cc drivers/net/ethernet/ibm/ibmvnic.h
-index 72fea3b1c87d,270d1cac86a4..000000000000
---- a/drivers/net/ethernet/ibm/ibmvnic.h
-+++ b/drivers/net/ethernet/ibm/ibmvnic.h
-@@@ -1080,10 -1081,12 +1081,16 @@@ struct ibmvnic_adapter=20
- =20
-  	struct tasklet_struct tasklet;
-  	enum vnic_state state;
- -	/* Used for serializatin of state field */
-++	/* Used for serialization of state field. When taking both state
-++	 * and rwi locks, take state lock first.
-++	 */
-+ 	spinlock_t state_lock;
-  	enum ibmvnic_reset_reason reset_reason;
-- 	/* when taking both state and rwi locks, take state lock first */
-- 	spinlock_t rwi_lock;
-  	struct list_head rwi_list;
- -	/* Used for serialization of rwi_list */
-++	/* Used for serialization of rwi_list. When taking both state
-++	 * and rwi locks, take state lock first
-++	 */
-+ 	spinlock_t rwi_lock;
-  	struct work_struct ibmvnic_reset;
-  	struct delayed_work ibmvnic_delayed_reset;
-  	unsigned long resetting;
-
---Sig_/LS2qvUpNPap5oaYhIxbUHgR
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmAsdMkACgkQAVBC80lX
-0Gzo1Af/WN8ZaEECThEe1tEdCs7VQuezb+570ogkGwa7mRW+6+jfe1eUXEqsMcRh
-y6HkWZLIeUqF3JL3a/QJutpxz2orsZJksSohEEzuOL9UW6KFmBmDo8bT+JaU175S
-wh0cquRKBuuMf41rWCo5i3McFllK1IfITDcz5HKXakACMtddkmvCd5doleDovx8f
-VsnheZoqE/Awg9NxIFw1UgPn0J4e4kI+VXvRhTzdtoMU5Z/sq54S5+upkRpRPIdQ
-o39CH+rm79Wuad49QGPbjH70Yd7e/Nj9xbVKqAXbkjnYSS/o6G/4R1kxBWkWZU6i
-7y+OOSjcXkpO/BLNhrcgf1UX6v84Pw==
-=eiXC
------END PGP SIGNATURE-----
-
---Sig_/LS2qvUpNPap5oaYhIxbUHgR--
