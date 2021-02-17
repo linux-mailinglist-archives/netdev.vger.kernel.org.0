@@ -2,108 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCBB231DF83
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 20:21:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 684D931DF9B
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 20:26:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232812AbhBQTUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 14:20:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54342 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232691AbhBQTUE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 14:20:04 -0500
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 145D0C061574;
-        Wed, 17 Feb 2021 11:19:24 -0800 (PST)
-Received: by mail-io1-xd29.google.com with SMTP id s17so6858861ioj.4;
-        Wed, 17 Feb 2021 11:19:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=dpCrMI2t6+b/MeJZIr9UxYXodaRVsni1orGaLrBQ0yE=;
-        b=k5uLXs1EYLtBPa3OuM4WzyYITShpfI9h1Fbh8iMghoRaNt58moAUOx62i5MEVUWQ8X
-         3hHCbnZZrhm2NozS/9LKNPfLzZhFMPHzsdM/macxF9MePY3xEDjqfSJM5n4muOuWYHpC
-         wTLGMztjzrOVMp3nLUO+dptq4voDSHvRBonGYDS+Gpz6VlOSCIXJhfE5OSQHe+TC4tcz
-         2XMJiTE++qe/E3KeFEUEKwZBQ8jwiq8xz08fmUanHAceVMFnzC06X7qxhdOSoX5d5PHX
-         Kle3d9OD4SXkeuH4ZKo9HPXz4fE6vCKJc+UO+WY1R7/66IAl61uMEwiU/UL776ro1n4M
-         pyfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=dpCrMI2t6+b/MeJZIr9UxYXodaRVsni1orGaLrBQ0yE=;
-        b=Avo26TRKn4QU6EYKVnAFT7lygd9mBzbZ+FNGskqvv5PpJSCoMiwIkZfb4Fjv3ukDKT
-         3oLNMeD8NTWmIdzddD3zMUx0CQSzi3L4K6lCxTNzDqVG3nHoU4IwgpuDH1Gqpj03arur
-         d88CVr8LzEiK1Stxw/EdL30v9Lan7j7bGQjq9Y0WM+dKh7vMIvkuKZP9UVSOJaOUlofZ
-         2ePIBGt7+FON0nMRjFFEnUBhUrCC76AhQJ382DXSsTGG4cVHEi6wnJQ5mqx8iPySmVWU
-         94Py7OR9lKQPUod08s48CzWUjsA7JDghfY9PaadUlR6yHEdCM7z8QH7vgQ9/vfdw/wai
-         xK1g==
-X-Gm-Message-State: AOAM532oMlHlLm5yo5tusz7GEbuS4CGVfDlXjw+q2U7JmBFQ86wkQzWH
-        5EMjSR9DmSFY+M9OMLT3t/3v9B/QSDg=
-X-Google-Smtp-Source: ABdhPJzjn2Q0nlblmM4L+QowysVbyvLKDlXl4HtP+X+SEXBxHLNtlE0MwpoDTjxUX6dlnxPfhqW0ow==
-X-Received: by 2002:a02:c60c:: with SMTP id i12mr972596jan.28.1613589563141;
-        Wed, 17 Feb 2021 11:19:23 -0800 (PST)
-Received: from localhost ([172.243.146.206])
-        by smtp.gmail.com with ESMTPSA id w9sm2004289ioj.0.2021.02.17.11.19.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Feb 2021 11:19:22 -0800 (PST)
-Date:   Wed, 17 Feb 2021 11:19:16 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Lorenz Bauer <lmb@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        duanxiongchun@bytedance.com, wangdongdong.6@bytedance.com,
-        jiang.wang@bytedance.com, Cong Wang <cong.wang@bytedance.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Message-ID: <602d6c342d136_aed9208a3@john-XPS-13-9370.notmuch>
-In-Reply-To: <CACAyw99k43REGCh8cP1PioV+k-_BRAjecVHcmtOdL6fi2shxkQ@mail.gmail.com>
-References: <20210213214421.226357-1-xiyou.wangcong@gmail.com>
- <20210213214421.226357-5-xiyou.wangcong@gmail.com>
- <602ac96f9e30f_3ed41208b6@john-XPS-13-9370.notmuch>
- <CACAyw99k43REGCh8cP1PioV+k-_BRAjecVHcmtOdL6fi2shxkQ@mail.gmail.com>
-Subject: Re: [Patch bpf-next v3 4/5] skmsg: use skb ext instead of TCP_SKB_CB
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S232968AbhBQT0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 14:26:16 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:15429 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229722AbhBQT0M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 14:26:12 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B602d6dab0001>; Wed, 17 Feb 2021 11:25:31 -0800
+Received: from HKMAIL104.nvidia.com (10.18.16.13) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 17 Feb
+ 2021 19:25:29 +0000
+Received: from HKMAIL104.nvidia.com (10.18.16.13) by HKMAIL104.nvidia.com
+ (10.18.16.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 17 Feb
+ 2021 19:25:27 +0000
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.36.53) by
+ HKMAIL104.nvidia.com (10.18.16.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2 via Frontend Transport; Wed, 17 Feb 2021 19:25:27 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=I2nCcJMJ10orAMrRB5/UrcEWPh4uVk2/P/OodxJ40Sfzb+3MPzuSBp3OL+hg6nFuzs3U0+wDs8zuGrIOhKhrb9Nfvjh3plERcvdl+SzCx3nHWt9Z2lMq2h2/q3MbAbhji1JnQP5HMPBApY3zIQWG7uqB+M2EHZqIXW8roiwF4KhhMkVLXvgVcpH75KZ19fdQlUGr1qehPE+szODafB/wmNVdPGhs504sd/KokKVR+a6yMkMVNAmgXtq8LU+LTxDl3/4P8tThULjxfSfFqt1NCg9gEtRDZsyN0dmZTPlVeqCLFCsUWvpNrcseL3wYrA9cawL2B4nVrUXn0dKfB++KhQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ummEi7dJI4688G6dZce8fv8mf95V5106apXNnNPGYew=;
+ b=HinV0mshVR5KZC4lwPw+CPtduUPqX8oe/DdjsPLWfn3ZA05JF2FM6ed0yAoz02i9r6Dltb0qZ/B0lmCyJMahocxQsKKHx7X3NSXgzhfv0Jrs/hcVJzBs7EUzyIVY3tdYqC7SpJF422grkT4+PLE7J2JBSmBbQRfxMLixKMugIWUUbXAa7x9lxxFVsmgcnKzWXPv6VXk81t8Tt1RJnzCx4wt4J3ELEgeKFWHdjd4Z0WZaf+stvSIYf1VDm2s1gLbiJCCZ7JkqSaoypwiCfsK4IqKn61sxZORvQDg+rhoTB1pk0sEytDYVnhgdkPemyz0nupOYHJjqXNqm+UZJrz/qUw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM6PR12MB4499.namprd12.prod.outlook.com (2603:10b6:5:2ab::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.27; Wed, 17 Feb
+ 2021 19:25:24 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::d6b:736:fa28:5e4]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::d6b:736:fa28:5e4%7]) with mapi id 15.20.3846.041; Wed, 17 Feb 2021
+ 19:25:24 +0000
+Date:   Wed, 17 Feb 2021 15:25:22 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+CC:     Leon Romanovsky <leon@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, <linux-pci@vger.kernel.org>,
+        <linux-rdma@vger.kernel.org>, <netdev@vger.kernel.org>,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
+Subject: Re: [PATCH mlx5-next v6 1/4] PCI: Add sysfs callback to allow MSI-X
+ table size change of SR-IOV VFs
+Message-ID: <20210217192522.GW4247@nvidia.com>
+References: <YCwj4WsrVeklgl7i@unreal>
+ <20210217180239.GA896669@bjorn-Precision-5520>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20210217180239.GA896669@bjorn-Precision-5520>
+X-ClientProxiedBy: MN2PR15CA0056.namprd15.prod.outlook.com
+ (2603:10b6:208:237::25) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.162.115.133) by MN2PR15CA0056.namprd15.prod.outlook.com (2603:10b6:208:237::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3868.27 via Frontend Transport; Wed, 17 Feb 2021 19:25:23 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1lCSRu-00A4CP-GN; Wed, 17 Feb 2021 15:25:22 -0400
+X-Header: ProcessedBy-CMR-outbound
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1613589931; bh=ummEi7dJI4688G6dZce8fv8mf95V5106apXNnNPGYew=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+         From:To:CC:Subject:Message-ID:References:Content-Type:
+         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+         X-MS-Exchange-MessageSentRepresentingType:X-Header;
+        b=IrhJjBDZetT1iYywfk+ioSxjo4iUy4qtVjMse1Ha0EL9dhU4yNbAy/twW0Sb0GzIO
+         ZL/5GLuNSk+c+7nY+5pMrCnfin+ybVdyyMaxbdopybswpSKiIr4DKc35LSyzk+HTbz
+         lDWcBEcuosqndd0SXao1/g07xTGxUpOIg+70xCTvVP83+qcNGXCAUsJ8uhqznCpxN2
+         RxYh+fxeTSXMskvil1nwzuqUQH739TkVoD3VTqZoVzlGY8tmMjkMT+lbjULNFjtuic
+         pE5f6vN1tNvnwXeDz5x5ArwE5MvuseoKUdUgy5ID8w91+OyutAgTLib/EQrOqKcxGx
+         gXj8CYBS23aKg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lorenz Bauer wrote:
-> On Mon, 15 Feb 2021 at 19:20, John Fastabend <john.fastabend@gmail.com> wrote:
-> >
-> > Cong Wang wrote:
-> > > From: Cong Wang <cong.wang@bytedance.com>
-> > >
-> > > Currently TCP_SKB_CB() is hard-coded in skmsg code, it certainly
-> > > does not work for any other non-TCP protocols. We can move them to
-> > > skb ext instead of playing with skb cb, which is harder to make
-> > > correct.
-> > >
-> > > Cc: John Fastabend <john.fastabend@gmail.com>
-> > > Cc: Daniel Borkmann <daniel@iogearbox.net>
-> > > Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> > > Reviewed-by: Lorenz Bauer <lmb@cloudflare.com>
-> > > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> > > ---
-> >
-> > I'm not seeing the advantage of doing this at the moment. We can
-> > continue to use cb[] here, which is simpler IMO and use the ext
-> > if needed for the other use cases. This is adding a per packet
-> > alloc cost that we don't have at the moment as I understand it.
+On Wed, Feb 17, 2021 at 12:02:39PM -0600, Bjorn Helgaas wrote:
+
+> > BTW, I asked more than once how these sysfs knobs should be handled
+> > in the PCI/core.
 > 
-> John, do you have a benchmark we can look at? Right now we're arguing
-> in the abstract.
+> Thanks for the pointers.  This is the first instance I can think of
+> where we want to create PCI core sysfs files based on a driver
+> binding, so there really isn't a precedent.
 
-Sure, but looks like Cong found some spare fields in sk_buff so
-that looks much nicer.
+The MSI stuff does it today, doesn't it? eg:
 
-I'll mess aound a bit with our benchmarks and see where we can
-publish them. It would be good to have some repeatable tests
-here folks can use.
+virtblk_probe (this is a driver bind)
+  init_vq
+   virtio_find_vqs
+    vp_modern_find_vqs
+     vp_find_vqs
+      vp_find_vqs_msix
+       vp_request_msix_vectors
+        pci_alloc_irq_vectors_affinity
+         __pci_enable_msi_range
+          msi_capability_init
+	   populate_msi_sysfs
+	    	ret = sysfs_create_groups(&pdev->dev.kobj, msi_irq_groups);
 
-Thanks,
-John
+And the sysfs is removed during pci_disable_msi(), also called by the
+driver
+
+Jason
