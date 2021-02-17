@@ -2,293 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A9DB31DED4
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 19:10:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89D8031DEEC
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 19:16:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232895AbhBQSJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 13:09:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39224 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233050AbhBQSJH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 13:09:07 -0500
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2514C06178A
-        for <netdev@vger.kernel.org>; Wed, 17 Feb 2021 10:08:25 -0800 (PST)
-Received: by mail-pg1-x534.google.com with SMTP id p21so3319413pgl.12
-        for <netdev@vger.kernel.org>; Wed, 17 Feb 2021 10:08:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=bNo72LUMDna5zhFukHr7znkipTWgQyuQ1sN47ZJAVmA=;
-        b=gAMDv0rI0i9jFX3QGbU9ouhiPpGYLLCmDJHeq+ZO70kSgtvylm9U8SuixrwgQ22vGA
-         8Y8/vQ9pJVxfRHWjzwHQdPGnO96TNEX0RiZKuthn62I9cq60rbQ+xloT+hJ3qKEu9i8a
-         XwPgXDbQq7H75UKpxdOlM/DKG7rj+oliAKA7fsxTInYKC3JIsHYg9ytzYQdCUjt5HBX4
-         /nqdYcQYMf/GZgSFaGOV6WrqXuxPL1CN30jbcIf745yg2LtxArfpz4HC1f2I/w8vg7l/
-         S3wihItXFXoMCsyenH1yqKnJA4xBbq/hFfM805ZZPgi2b41zkigbZfSYosfEpBDyern2
-         l1zA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=bNo72LUMDna5zhFukHr7znkipTWgQyuQ1sN47ZJAVmA=;
-        b=jk71RIPmdyfchboMpzZTjvwKw1wHG9tsYHTtYoYsU20uJWBjSC8DlCL7ViY+cf3ioL
-         fNoB+zqhAr2Rk7Qsje/Slde35janzJ6eNUsVMcM0Wyor8vdphRKw21ECdN5uwflfWP1x
-         nEC3MVCx53gEQ+IlL/cAPHeHyKTwyJXa3sYVfVrMBkr/G3pnwhvdZ2+Z6B9jXPfHIA9v
-         GweLn1tSQqejs7ciXDPuNQVw4M+8CNySiGdN5Vr+P13FmEWtz+ruy/FsdB0lmZ+stuyA
-         f6Fe8LwjSKpUGmBLTPlfzYk+UDI2PIekMETQdSwSO+ta2yh1vkJs32KbHFJ59g77NesZ
-         760Q==
-X-Gm-Message-State: AOAM5332Xh4MVfVdpfyP9RJ0x/21HkFWs0bGmu1E10Ec/VH9ynxG8tea
-        sHzLu3RYyCUFPuAYkJlBQ/M=
-X-Google-Smtp-Source: ABdhPJwDje4odMop+swzmcBx8j+ddUOvgaq723PlC3p+Vb7xtUOWBMtpq9ZN+yJMPX4tj+wq2kiDSQ==
-X-Received: by 2002:a63:4504:: with SMTP id s4mr539958pga.184.1613585305376;
-        Wed, 17 Feb 2021 10:08:25 -0800 (PST)
-Received: from localhost.localdomain (h134-215-166-75.lapior.broadband.dynamic.tds.net. [134.215.166.75])
-        by smtp.gmail.com with ESMTPSA id m16sm3219705pfd.203.2021.02.17.10.08.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Feb 2021 10:08:25 -0800 (PST)
-From:   Andreas Roeseler <andreas.a.roeseler@gmail.com>
-To:     davem@davemloft.net
-Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        netdev@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [PATCH V3 net-next 5/5] icmp: add response to RFC 8335 PROBE messages
-Date:   Wed, 17 Feb 2021 10:08:24 -0800
-Message-Id: <7bff18c2cffe77b2ea66fd8774a5d0374ff6dd97.1613583620.git.andreas.a.roeseler@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1613583620.git.andreas.a.roeseler@gmail.com>
-References: <cover.1613583620.git.andreas.a.roeseler@gmail.com>
+        id S233429AbhBQSNb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 13:13:31 -0500
+Received: from mail.zx2c4.com ([104.131.123.232]:40138 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234813AbhBQSNA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Feb 2021 13:13:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1613585531;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=swCSQpXU0cBUK+8HD0R9gjV+haeLjLXOEm2K+cTEeXc=;
+        b=ZZ2c6ADfceZPcG7066XHjkwkmgdTuJsNdxPL2FOFH+GaBGeIY81pNgHDKx/6rIy1JSJS7x
+        7QQUCnTTfYBbnc4XjheOFxdyrr6JfHaVPuSXGM9A+pZSS0eeTIFhhgJxib8NKTPH96EPoC
+        nrgJQpuLVhl7ePtTOc9+98h8+DarhDY=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id bdf45ff6 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 17 Feb 2021 18:12:11 +0000 (UTC)
+Received: by mail-yb1-f179.google.com with SMTP id n195so14653772ybg.9;
+        Wed, 17 Feb 2021 10:12:11 -0800 (PST)
+X-Gm-Message-State: AOAM531Og2xFp44gnNeCQsXYpviU/HF8KUJT6mzA7oRM4PJV1M+Zx5ci
+        ZOb1s67RgGgDR/cO5w/8abSDE1OZFpvo0Yhn+1s=
+X-Google-Smtp-Source: ABdhPJwks4POCamgjwBjWKdr5p4yZ9c1y9yTD+R52YjcJwoD8n52/q6FNsk52DTr9Wlm2NPOXv3GWU/mlZlNwmjXMWg=
+X-Received: by 2002:a25:7693:: with SMTP id r141mr848044ybc.49.1613585530840;
+ Wed, 17 Feb 2021 10:12:10 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Wed, 17 Feb 2021 19:12:00 +0100
+X-Gmail-Original-Message-ID: <CAHmME9qfXFZKZfO-uc7GC3xguSq99_CqrTtzmgp_984MSfNbgA@mail.gmail.com>
+Message-ID: <CAHmME9qfXFZKZfO-uc7GC3xguSq99_CqrTtzmgp_984MSfNbgA@mail.gmail.com>
+Subject: possible stack corruption in icmp_send (__stack_chk_fail)
+To:     Netdev <netdev@vger.kernel.org>,
+        Willem de Bruijn <willemb@google.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Modify the icmp_rcv function to check for PROBE messages and call
-icmp_echo if a PROBE request is detected.
+Hi Netdev & Willem,
 
-Modify the existing icmp_echo function to respond to both ping and PROBE
-requests.
+I've received a report of stack corruption -- via the stack protector
+check -- in icmp_send. I was sent a vmcore, and was able to extract
+the OOPS from there. However, I've been unable to produce the bug and
+I don't see where it'd be in the code. That might point to a more
+sinister problem, or I'm simply just not seeing it. Apparently the
+reporter reproduces it every 40 or so minutes, and has seen it happen
+since at least ~5.10. Willem - I'm emailing you because it seems like
+you were making a lot of changes to the icmp code around then, and
+perhaps you have an intuition. For example, some of the error handling
+code takes a pointer to a stack buffer (_objh and such), and maybe
+that's problematic? I'm not quite sure. The vmcore, along with the
+various kernel binaries I hunted down are here:
+https://data.zx2c4.com/icmp_send-crash-e03b4a42-706a-43bf-bc40-1f15966b3216.tar.xz
+. The extracted dmesg follows below, in case you or anyone has a
+pointer. I've been staring at this for a while and don't see it.
 
-This was tested using a custom modification of the iputils package and
-wireshark. It supports IPV4 probing by name, ifindex, and probing by both IPV4 and IPV6
-addresses. It currently does not support responding to probes off the proxy node
-(See RFC 8335 Section 2). 
+Jason
 
-Signed-off-by: Andreas Roeseler <andreas.a.roeseler@gmail.com>
----
-Changes since v1:
- - Reorder variable declarations to follow coding style
- - Switch to functions such as dev_get_by_name and ip_dev_find to lookup
-   net devices
-
-Changes since v2:
-Suggested by Willem de Brujin <willemdebrujin.kernel@gmail.com>
- - Add verification of incoming messages before looking up netdev
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
- - Include net/addrconf.h library for ipv6_dev_find
----
- net/ipv4/icmp.c | 133 ++++++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 122 insertions(+), 11 deletions(-)
-
-diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index 396b492c804f..3caca9f2aa07 100644
---- a/net/ipv4/icmp.c
-+++ b/net/ipv4/icmp.c
-@@ -92,6 +92,7 @@
- #include <net/inet_common.h>
- #include <net/ip_fib.h>
- #include <net/l3mdev.h>
-+#include <net/addrconf.h>
- 
- /*
-  *	Build xmit assembly blocks
-@@ -970,7 +971,7 @@ static bool icmp_redirect(struct sk_buff *skb)
- }
- 
- /*
-- *	Handle ICMP_ECHO ("ping") requests.
-+ *	Handle ICMP_ECHO ("ping") and ICMP_EXT_ECHO ("PROBE") requests.
-  *
-  *	RFC 1122: 3.2.2.6 MUST have an echo server that answers ICMP echo
-  *		  requests.
-@@ -978,26 +979,122 @@ static bool icmp_redirect(struct sk_buff *skb)
-  *		  included in the reply.
-  *	RFC 1812: 4.3.3.6 SHOULD have a config option for silently ignoring
-  *		  echo requests, MUST have default=NOT.
-+ *	RFC 8335: 8 MUST have a config option to enable/disable ICMP
-+ *		  Extended Echo functionality, MUST be disabled by default
-  *	See also WRT handling of options once they are done and working.
-  */
- 
- static bool icmp_echo(struct sk_buff *skb)
- {
-+	struct icmp_ext_echo_iio *iio;
-+	struct icmp_ext_hdr *ext_hdr;
-+	struct icmp_bxm icmp_param;
-+	struct net_device *dev;
- 	struct net *net;
-+	__u16 ident_len;
-+	__u8 status;
-+	char *buff;
- 
- 	net = dev_net(skb_dst(skb)->dev);
--	if (!net->ipv4.sysctl_icmp_echo_ignore_all) {
--		struct icmp_bxm icmp_param;
-+	/* should there be an ICMP stat for ignored echos? */
-+	if (net->ipv4.sysctl_icmp_echo_ignore_all)
-+		return true;
- 
--		icmp_param.data.icmph	   = *icmp_hdr(skb);
-+	icmp_param.data.icmph		= *icmp_hdr(skb);
-+	icmp_param.skb			= skb;
-+	icmp_param.offset		= 0;
-+	icmp_param.data_len		= skb->len;
-+	icmp_param.head_len		= sizeof(struct icmphdr);
-+	if (icmp_param.data.icmph.type == ICMP_ECHO) {
- 		icmp_param.data.icmph.type = ICMP_ECHOREPLY;
--		icmp_param.skb		   = skb;
--		icmp_param.offset	   = 0;
--		icmp_param.data_len	   = skb->len;
--		icmp_param.head_len	   = sizeof(struct icmphdr);
--		icmp_reply(&icmp_param, skb);
-+		goto send_reply;
- 	}
--	/* should there be an ICMP stat for ignored echos? */
-+	if (!net->ipv4.sysctl_icmp_echo_enable_probe)
-+		return true;
-+	/* We currently only support probing interfaces on the proxy node
-+	 * Check to ensure L-bit is set
-+	 */
-+	if (!(ntohs(icmp_param.data.icmph.un.echo.sequence) & 1))
-+		return true;
-+
-+	/* Clear status bits in reply message */
-+	icmp_param.data.icmph.un.echo.sequence &= htons(0xFF00);
-+	icmp_param.data.icmph.type = ICMP_EXT_ECHOREPLY;
-+	ext_hdr = (struct icmp_ext_hdr *)(icmp_hdr(skb) + 1);
-+	iio = (struct icmp_ext_echo_iio *)(ext_hdr + 1);
-+	ident_len = ntohs(iio->extobj_hdr.length) - sizeof(iio->extobj_hdr);
-+	status = 0;
-+	dev = NULL;
-+	switch (iio->extobj_hdr.class_type) {
-+	case EXT_ECHO_CTYPE_NAME:
-+		if (ident_len >= skb->len - sizeof(struct icmphdr) - sizeof(iio->extobj_hdr)) {
-+			icmp_param.data.icmph.code = ICMP_EXT_MAL_QUERY;
-+			goto send_reply;
-+		}
-+		buff = kcalloc(ident_len + 1, sizeof(char), GFP_KERNEL);
-+		if (!buff)
-+			return -ENOMEM;
-+		memcpy(buff, &iio->ident.name, ident_len);
-+		dev = dev_get_by_name(net, buff);
-+		kfree(buff);
-+		break;
-+	case EXT_ECHO_CTYPE_INDEX:
-+		if (ident_len != sizeof(iio->ident.ifIndex)) {
-+			icmp_param.data.icmph.code = ICMP_EXT_MAL_QUERY;
-+			goto send_reply;
-+		}
-+		dev = dev_get_by_index(net, ntohl(iio->ident.ifIndex));
-+		break;
-+	case EXT_ECHO_CTYPE_ADDR:
-+		switch (ntohs(iio->ident.addr.ctype3_hdr.afi)) {
-+		case EXT_ECHO_AFI_IP:
-+			if (ident_len != sizeof(iio->ident.addr.ctype3_hdr) + sizeof(__be32) ||
-+			    ident_len != sizeof(iio->ident.addr.ctype3_hdr) + iio->ident.addr.ctype3_hdr.addrlen) {
-+				icmp_param.data.icmph.code = ICMP_EXT_MAL_QUERY;
-+				goto send_reply;
-+			}
-+			dev = ip_dev_find(net, iio->ident.addr.ip_addr.ipv4_addr);
-+			break;
-+		case EXT_ECHO_AFI_IP6:
-+			if (ident_len != sizeof(iio->ident.addr.ctype3_hdr) + sizeof(struct in6_addr) ||
-+			    ident_len != sizeof(iio->ident.addr.ctype3_hdr) + iio->ident.addr.ctype3_hdr.addrlen) {
-+				icmp_param.data.icmph.code = ICMP_EXT_MAL_QUERY;
-+				goto send_reply;
-+			}
-+			dev = ipv6_dev_find(net, &iio->ident.addr.ip_addr.ipv6_addr, dev);
-+			if (dev)
-+				dev_hold(dev);
-+			break;
-+		default:
-+			icmp_param.data.icmph.code = ICMP_EXT_MAL_QUERY;
-+			goto send_reply;
-+		}
-+		break;
-+	default:
-+		icmp_param.data.icmph.code = ICMP_EXT_MAL_QUERY;
-+		goto send_reply;
-+	}
-+	if (!dev) {
-+		icmp_param.data.icmph.code = ICMP_EXT_NO_IF;
-+		goto send_reply;
-+	}
-+	/* RFC 8335: 3 the last 8 bits of the Extended Echo Reply Message
-+	 *  are laid out as follows:
-+	 *	+-+-+-+-+-+-+-+-+
-+	 *	|State|Res|A|4|6|
-+	 *	+-+-+-+-+-+-+-+-+
-+	 */
-+	if (dev->flags & IFF_UP)
-+		status |= EXT_ECHOREPLY_ACTIVE;
-+	if (dev->ip_ptr->ifa_list)
-+		status |= EXT_ECHOREPLY_IPV4;
-+	if (!list_empty(&dev->ip6_ptr->addr_list))
-+		status |= EXT_ECHOREPLY_IPV6;
-+	dev_put(dev);
-+	icmp_param.data.icmph.un.echo.sequence |= htons(status);
-+
-+send_reply:
-+	icmp_reply(&icmp_param, skb);
- 	return true;
- }
- 
-@@ -1087,6 +1184,13 @@ int icmp_rcv(struct sk_buff *skb)
- 	icmph = icmp_hdr(skb);
- 
- 	ICMPMSGIN_INC_STATS(net, icmph->type);
-+
-+	/*
-+	 *	Check for ICMP Extended Echo (PROBE) messages
-+	 */
-+	if (icmph->type == ICMP_EXT_ECHO || icmph->type == ICMPV6_EXT_ECHO_REQUEST)
-+		goto probe;
-+
- 	/*
- 	 *	18 is the highest 'known' ICMP type. Anything else is a mystery
- 	 *
-@@ -1096,7 +1200,6 @@ int icmp_rcv(struct sk_buff *skb)
- 	if (icmph->type > NR_ICMP_TYPES)
- 		goto error;
- 
--
- 	/*
- 	 *	Parse the ICMP message
- 	 */
-@@ -1123,6 +1226,7 @@ int icmp_rcv(struct sk_buff *skb)
- 
- 	success = icmp_pointers[icmph->type].handler(skb);
- 
-+success_check:
- 	if (success)  {
- 		consume_skb(skb);
- 		return NET_RX_SUCCESS;
-@@ -1136,6 +1240,13 @@ int icmp_rcv(struct sk_buff *skb)
- error:
- 	__ICMP_INC_STATS(net, ICMP_MIB_INERRORS);
- 	goto drop;
-+probe:
-+	/*
-+	 * We can't use icmp_pointers[].handler() because the codes for PROBE
-+	 *   messages are 42 or 160
-+	 */
-+	success = icmp_echo(skb);
-+	goto success_check;
- }
- 
- static bool ip_icmp_error_rfc4884_validate(const struct sk_buff *skb, int off)
--- 
-2.25.1
-
+Kernel panic - not syncing: stack-protector: Kernel stack is corrupted
+in: __icmp_send+0x5bd/0x5c0
+CPU: 0 PID: 959 Comm: kworker/0:2 Kdump: loaded Not tainted
+5.11.0-051100-lowlatency #202102142330
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+rel-1.13.0-48-gd9c812dda519-prebuilt.qemu.org 04/01/2014
+Workqueue: wg-crypt-wg0 wg_packet_decrypt_worker [wireguard]
+Call Trace:
+ <IRQ>
+ show_stack+0x52/0x58
+ dump_stack+0x70/0x8b
+ panic+0x108/0x2ea
+ ? ip_push_pending_frames+0x42/0x90
+ ? __icmp_send+0x5bd/0x5c0
+ __stack_chk_fail+0x14/0x20
+ __icmp_send+0x5bd/0x5c0
+ icmp_ndo_send+0x148/0x160
+ wg_xmit+0x359/0x450 [wireguard]
+ ? harmonize_features+0x19/0x80
+ xmit_one.constprop.0+0x9f/0x190
+ dev_hard_start_xmit+0x43/0x90
+ sch_direct_xmit+0x11d/0x340
+ __qdisc_run+0x66/0xc0
+ __dev_xmit_skb+0xd5/0x340
+ __dev_queue_xmit+0x32b/0x4d0
+ ? nf_conntrack_double_lock.constprop.0+0x97/0x140 [nf_conntrack]
+ dev_queue_xmit+0x10/0x20
+ neigh_connected_output+0xcb/0xf0
+ ip_finish_output2+0x17f/0x470
+ __ip_finish_output+0x9b/0x140
+ ? ipv4_confirm+0x4a/0x80 [nf_conntrack]
+ ip_finish_output+0x2d/0xb0
+ ip_output+0x78/0x110
+ ? __ip_finish_output+0x140/0x140
+ ip_forward_finish+0x58/0x90
+ ip_forward+0x40a/0x4d0
+ ? ip4_key_hashfn+0xb0/0xb0
+ ip_sublist_rcv_finish+0x3d/0x50
+ ip_list_rcv_finish.constprop.0+0x163/0x190
+ ip_sublist_rcv+0x37/0xb0
+ ? ip_rcv_finish_core.constprop.0+0x310/0x310
+ ip_list_rcv+0xf5/0x120
+ __netif_receive_skb_list_core+0x228/0x250
+ __netif_receive_skb_list+0x102/0x170
+ ? dev_gro_receive+0x1b5/0x370
+ netif_receive_skb_list_internal+0xca/0x190
+ napi_complete_done+0x7a/0x1a0
+ wg_packet_rx_poll+0x384/0x400 [wireguard]
+ napi_poll+0x92/0x200
+ net_rx_action+0xb8/0x1c0
+ __do_softirq+0xce/0x2b3
+ asm_call_irq_on_stack+0x12/0x20
+ </IRQ>
+ do_softirq_own_stack+0x3d/0x50
+ do_softirq+0x66/0x80
+ __local_bh_enable_ip+0x62/0x70
+ _raw_spin_unlock_bh+0x1e/0x20
+ wg_packet_decrypt_worker+0xf6/0x190 [wireguard]
+ process_one_work+0x217/0x3e0
+ worker_thread+0x4d/0x350
+ ? rescuer_thread+0x390/0x390
+ kthread+0x145/0x170
+ ? __kthread_bind_mask+0x70/0x70
+ ret_from_fork+0x22/0x30
+Kernel Offset: 0x2000000 from 0xffffffff81000000 (relocation range:
+0xffffffff80000000-0xffffffffbfffffff)
