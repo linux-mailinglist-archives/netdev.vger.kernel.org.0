@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CAED731D3A4
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 02:12:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 390D331D3AC
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 02:12:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230267AbhBQBLA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Feb 2021 20:11:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47430 "EHLO
+        id S229924AbhBQBMS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Feb 2021 20:12:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231411AbhBQBJ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 20:09:26 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C31C6C061794;
-        Tue, 16 Feb 2021 17:08:52 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id b145so7355790pfb.4;
-        Tue, 16 Feb 2021 17:08:52 -0800 (PST)
+        with ESMTP id S231462AbhBQBJv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Feb 2021 20:09:51 -0500
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5583C061797;
+        Tue, 16 Feb 2021 17:08:53 -0800 (PST)
+Received: by mail-pf1-x436.google.com with SMTP id x136so7366519pfc.2;
+        Tue, 16 Feb 2021 17:08:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=dv8MkLcOtY2EeZNXcDWE1hLwVEjep3x1oeuEfehCxV8=;
-        b=QJk/AXrEZD0nnTG+SBuG0PXQqRRTtcvl/el5ihhrL+Vp+k27B1cYx+izpy/t6TxRrY
-         /0UftaLwyjUqsf0yNOG0GKzewUroeBxE7G4SezmXsCwNTqCdX9HMjdQaEtLTUyCsZKQT
-         FAgLsujgCMbu+7Y8KEefMzpiskvsixQKbsuk9JDgy4o2Uk5AUeGcBlJl+IWiqrdq9dZi
-         wCgWOj9u4Jk1tsEsrOceJBp0KIGRI7Wl+i3uTkZ86XwlhalyMRxzTtilL2hWCYg3/ixF
-         atbN84cmfiYM3kvy1/GOqNQethwhRFrxs89gAh87B3zOc3IBxZApnw+ddvU1fKyts09Z
-         x9lA==
+        bh=sHn1TcXA40LLznUdfZ0EnywfCC8GI0Od3igBD7EM/qA=;
+        b=inLrmew4Cded46OMVXm440//MhXtGm/AFsHnPkZUJZ0Si7ZBGly2nyrIYt4eVXqxcT
+         PMpocNArusisJd0qlkPyA3DTH1dMjPlc23YjUa59l22XmiX8bb++C+G9mUAB7/Y31a3i
+         7tF1TNy/soSno0eOqnG9ONKxyK1t+ZnYoeJ5JD+asBwyi+8nZyAfVvSsgF8iDcMlxFgF
+         HYwyuDVU1n4fV+WPPd2J69Hd5bzAA4Z/gM5k8ibY7+sCJKopV8UlUlObq/GRXNutCuyl
+         KM2QCoLQcV3hiZyzV1b7pmIryruBGrWvM5b0WqO1nVw+JmREvaQMKM8CEcv/rd1vR4QQ
+         JiqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
          :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=dv8MkLcOtY2EeZNXcDWE1hLwVEjep3x1oeuEfehCxV8=;
-        b=lttzFdTDvUTmiYC1/vssI280TQwNHZUNSLU5jB/AxMWGgVUNNUZU3ArUCMpRGmpy4g
-         ++bN6Jdnmh9/zwFM9NacBaXxR6sU9A/aflqtRrOnW/UQ0eYui8HULd7pvKip1/DRT/vE
-         JzJKcL5JD0CuHmtQGaE6l1W2FsoBrykjxW5Nu5npfcPSDThhuyg6hDtRVUuFpCfCAWHg
-         ZhdzC7C3YedW0SwuIRWUBAoY3b3xUWtm+BMNPhobxoyiu3GhSBr/KM/VZVfaWhLRtRto
-         6Zs/c8usIv0nq1AEXPo34rpq0jJauouOAMCs4iDFZXCU+YTzj77sdf/oowty5W8v3NlL
-         EFvQ==
-X-Gm-Message-State: AOAM530ULATPpZKj2MO43KBYKxYrRSZZ7B1Q5bouZbhGlnvLyxw8MdRv
-        RlJggX+lkWJ2Ch71FmFqu6Psc/eDrATtXw==
-X-Google-Smtp-Source: ABdhPJwyTPjZaCWLnMiC3snH3GqI4Sb2IRUhCLx4Iu4/+x0u9NejvQ1GU78eSglp9EA0KPbKmCHCMQ==
-X-Received: by 2002:a05:6a00:8f:b029:1e8:6975:395e with SMTP id c15-20020a056a00008fb02901e86975395emr22066650pfj.55.1613524123354;
-        Tue, 16 Feb 2021 17:08:43 -0800 (PST)
+        bh=sHn1TcXA40LLznUdfZ0EnywfCC8GI0Od3igBD7EM/qA=;
+        b=N61xoY9htilY5c24HLVrFUqB+YiTZ+p12u5UwUyc59EQx94ZY8CcTHBwQfYHPeDuvC
+         EEXzWehBWXKXe6Ua3Kz23XZAljZPuPH+tMPJTMhbROfuhlJQOkxS6YGbq7tDzxoTGgke
+         0+4LUgczSybcrIuGBBSWdHsaTXkLSHao/IviMZYlZM0yy5gGlxBdFepgT+Gzf+Hi5smQ
+         XobsvgiJaW/qUaTEiQmkO700TOyavshZ7BruZvXln3D/Ls5wor/jOurP/v0qdN5W1+4R
+         OMnI48P6Sqz4pOKe+9TP5onpqOt4CPOxTzY5DG8umGOLipzEdsUq83+yhJ0OWJcK8GJE
+         9e0A==
+X-Gm-Message-State: AOAM531J5inh5hrxGyRKyy64etzkuawxG100MWwTflcyTeyG1s8pCKZB
+        mXqDoeK2or0akqIaHD0w7UaZHquE5OtROA==
+X-Google-Smtp-Source: ABdhPJys71FeVg+7o5aVJCeZX3Mu9fkvHyCeuAc359Q8UbtC07NsulXwihDGuXTSL8QRccUrb/aD7A==
+X-Received: by 2002:a63:4507:: with SMTP id s7mr21678588pga.390.1613524132973;
+        Tue, 16 Feb 2021 17:08:52 -0800 (PST)
 Received: from localhost.localdomain (c-73-93-5-123.hsd1.ca.comcast.net. [73.93.5.123])
-        by smtp.gmail.com with ESMTPSA id c22sm175770pfc.12.2021.02.16.17.08.41
+        by smtp.gmail.com with ESMTPSA id c22sm175770pfc.12.2021.02.16.17.08.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Feb 2021 17:08:42 -0800 (PST)
+        Tue, 16 Feb 2021 17:08:52 -0800 (PST)
 Sender: Joe Stringer <joestringernz@gmail.com>
 From:   Joe Stringer <joe@wand.net.nz>
 To:     bpf@vger.kernel.org
 Cc:     Joe Stringer <joe@cilium.io>, netdev@vger.kernel.org,
         daniel@iogearbox.net, ast@kernel.org, mtk.manpages@gmail.com,
         Quentin Monnet <quentin@isovalent.com>
-Subject: [PATCH bpf-next 10/17] scripts/bpf: Abstract eBPF API target parameter
-Date:   Tue, 16 Feb 2021 17:08:14 -0800
-Message-Id: <20210217010821.1810741-11-joe@wand.net.nz>
+Subject: [PATCH bpf-next 11/17] scripts/bpf: Add syscall commands printer
+Date:   Tue, 16 Feb 2021 17:08:15 -0800
+Message-Id: <20210217010821.1810741-12-joe@wand.net.nz>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210217010821.1810741-1-joe@wand.net.nz>
 References: <20210217010821.1810741-1-joe@wand.net.nz>
@@ -67,186 +67,197 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Joe Stringer <joe@cilium.io>
 
-Abstract out the target parameter so that upcoming commits, more than
-just the existing "helpers" target can be called to generate specific
-portions of docs from the eBPF UAPI headers.
+Add a new target to bpf_doc.py to support generating the list of syscall
+commands directly from the UAPI headers. Assuming that developer
+submissions keep the main header up to date, this should allow the man
+pages to be automatically generated based on the latest API changes
+rather than requiring someone to separately go back through the API and
+describe each command.
 
 Reviewed-by: Quentin Monnet <quentin@isovalent.com>
 Signed-off-by: Joe Stringer <joe@cilium.io>
 ---
- scripts/bpf_doc.py | 87 ++++++++++++++++++++++++++++++++--------------
- 1 file changed, 61 insertions(+), 26 deletions(-)
+ scripts/bpf_doc.py | 98 +++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 89 insertions(+), 9 deletions(-)
 
 diff --git a/scripts/bpf_doc.py b/scripts/bpf_doc.py
-index ca6e7559d696..5a4f68aab335 100755
+index 5a4f68aab335..72a2ba323692 100755
 --- a/scripts/bpf_doc.py
 +++ b/scripts/bpf_doc.py
-@@ -2,6 +2,7 @@
- # SPDX-License-Identifier: GPL-2.0-only
- #
- # Copyright (C) 2018-2019 Netronome Systems, Inc.
-+# Copyright (C) 2021 Isovalent, Inc.
+@@ -14,6 +14,9 @@ import sys, os
+ class NoHelperFound(BaseException):
+     pass
  
- # In case user attempts to run with Python 2.
- from __future__ import print_function
-@@ -165,10 +166,11 @@ class Printer(object):
++class NoSyscallCommandFound(BaseException):
++    pass
++
+ class ParsingError(BaseException):
+     def __init__(self, line='<line not provided>', reader=None):
+         if reader:
+@@ -23,18 +26,27 @@ class ParsingError(BaseException):
+         else:
+             BaseException.__init__(self, 'Error parsing line: %s' % line)
+ 
+-class Helper(object):
++
++class APIElement(object):
      """
-     A generic class for printers. Printers should be created with an array of
-     Helper objects, and implement a way to print them in the desired fashion.
--    @helpers: array of Helper objects to print to standard output
-+    @parser: A HeaderParser with objects to print to standard output
+-    An object representing the description of an eBPF helper function.
+-    @proto: function prototype of the helper function
+-    @desc: textual description of the helper function
+-    @ret: description of the return value of the helper function
++    An object representing the description of an aspect of the eBPF API.
++    @proto: prototype of the API symbol
++    @desc: textual description of the symbol
++    @ret: (optional) description of any associated return value
      """
--    def __init__(self, helpers):
--        self.helpers = helpers
-+    def __init__(self, parser):
-+        self.parser = parser
-+        self.elements = []
- 
-     def print_header(self):
-         pass
-@@ -181,19 +183,23 @@ class Printer(object):
- 
-     def print_all(self):
-         self.print_header()
--        for helper in self.helpers:
--            self.print_one(helper)
-+        for elem in self.elements:
-+            self.print_one(elem)
-         self.print_footer()
+     def __init__(self, proto='', desc='', ret=''):
+         self.proto = proto
+         self.desc = desc
+         self.ret = ret
  
 +
- class PrinterRST(Printer):
-     """
--    A printer for dumping collected information about helpers as a ReStructured
--    Text page compatible with the rst2man program, which can be used to
--    generate a manual page for the helpers.
--    @helpers: array of Helper objects to print to standard output
-+    A generic class for printers that print ReStructured Text. Printers should
-+    be created with a HeaderParser object, and implement a way to print API
-+    elements in the desired fashion.
-+    @parser: A HeaderParser with objects to print to standard output
-     """
--    def print_header(self):
--        header = '''\
-+    def __init__(self, parser):
-+        self.parser = parser
-+
-+    def print_license(self):
-+        license = '''\
- .. Copyright (C) All BPF authors and contributors from 2014 to present.
- .. See git log include/uapi/linux/bpf.h in kernel tree for details.
- .. 
-@@ -223,7 +229,37 @@ class PrinterRST(Printer):
- .. located in file include/uapi/linux/bpf.h of the Linux kernel sources
- .. (helpers description), and from scripts/bpf_doc.py in the same
- .. repository (header and footer).
-+'''
-+        print(license)
-+
-+    def print_elem(self, elem):
-+        if (elem.desc):
-+            print('\tDescription')
-+            # Do not strip all newline characters: formatted code at the end of
-+            # a section must be followed by a blank line.
-+            for line in re.sub('\n$', '', elem.desc, count=1).split('\n'):
-+                print('{}{}'.format('\t\t' if line else '', line))
-+
-+        if (elem.ret):
-+            print('\tReturn')
-+            for line in elem.ret.rstrip().split('\n'):
-+                print('{}{}'.format('\t\t' if line else '', line))
-+
-+        print('')
- 
-+
-+class PrinterHelpersRST(PrinterRST):
++class Helper(APIElement):
 +    """
-+    A printer for dumping collected information about helpers as a ReStructured
-+    Text page compatible with the rst2man program, which can be used to
-+    generate a manual page for the helpers.
-+    @parser: A HeaderParser with Helper objects to print to standard output
++    An object representing the description of an eBPF helper function.
++    @proto: function prototype of the helper function
++    @desc: textual description of the helper function
++    @ret: description of the return value of the helper function
++    """
+     def proto_break_down(self):
+         """
+         Break down helper function protocol into smaller chunks: return type,
+@@ -61,6 +73,7 @@ class Helper(object):
+ 
+         return res
+ 
++
+ class HeaderParser(object):
+     """
+     An object used to parse a file in order to extract the documentation of a
+@@ -73,6 +86,13 @@ class HeaderParser(object):
+         self.reader = open(filename, 'r')
+         self.line = ''
+         self.helpers = []
++        self.commands = []
++
++    def parse_element(self):
++        proto    = self.parse_symbol()
++        desc     = self.parse_desc()
++        ret      = self.parse_ret()
++        return APIElement(proto=proto, desc=desc, ret=ret)
+ 
+     def parse_helper(self):
+         proto    = self.parse_proto()
+@@ -80,6 +100,18 @@ class HeaderParser(object):
+         ret      = self.parse_ret()
+         return Helper(proto=proto, desc=desc, ret=ret)
+ 
++    def parse_symbol(self):
++        p = re.compile(' \* ?(.+)$')
++        capture = p.match(self.line)
++        if not capture:
++            raise NoSyscallCommandFound
++        end_re = re.compile(' \* ?NOTES$')
++        end = end_re.match(self.line)
++        if end:
++            raise NoSyscallCommandFound
++        self.line = self.reader.readline()
++        return capture.group(1)
++
+     def parse_proto(self):
+         # Argument can be of shape:
+         #   - "void"
+@@ -141,16 +173,29 @@ class HeaderParser(object):
+                     break
+         return ret
+ 
+-    def run(self):
+-        # Advance to start of helper function descriptions.
+-        offset = self.reader.read().find('* Start of BPF helper function descriptions:')
++    def seek_to(self, target, help_message):
++        self.reader.seek(0)
++        offset = self.reader.read().find(target)
+         if offset == -1:
+-            raise Exception('Could not find start of eBPF helper descriptions list')
++            raise Exception(help_message)
+         self.reader.seek(offset)
+         self.reader.readline()
+         self.reader.readline()
+         self.line = self.reader.readline()
+ 
++    def parse_syscall(self):
++        self.seek_to('* Start of BPF syscall commands:',
++                     'Could not find start of eBPF syscall descriptions list')
++        while True:
++            try:
++                command = self.parse_element()
++                self.commands.append(command)
++            except NoSyscallCommandFound:
++                break
++
++    def parse_helpers(self):
++        self.seek_to('* Start of BPF helper function descriptions:',
++                     'Could not find start of eBPF helper descriptions list')
+         while True:
+             try:
+                 helper = self.parse_helper()
+@@ -158,6 +203,9 @@ class HeaderParser(object):
+             except NoHelperFound:
+                 break
+ 
++    def run(self):
++        self.parse_syscall()
++        self.parse_helpers()
+         self.reader.close()
+ 
+ ###############################################################################
+@@ -420,6 +468,37 @@ SEE ALSO
+         self.print_elem(helper)
+ 
+ 
++class PrinterSyscallRST(PrinterRST):
++    """
++    A printer for dumping collected information about the syscall API as a
++    ReStructured Text page compatible with the rst2man program, which can be
++    used to generate a manual page for the syscall.
++    @parser: A HeaderParser with APIElement objects to print to standard
++             output
 +    """
 +    def __init__(self, parser):
-+        self.elements = parser.helpers
++        self.elements = parser.commands
 +
 +    def print_header(self):
 +        header = '''\
- ===========
- BPF-HELPERS
- ===========
-@@ -264,6 +300,7 @@ kernel at the top).
- HELPERS
- =======
- '''
++===
++bpf
++===
++-------------------------------------------------------------------------------
++Perform a command on an extended BPF object
++-------------------------------------------------------------------------------
++
++:Manual section: 2
++
++COMMANDS
++========
++'''
 +        PrinterRST.print_license(self)
-         print(header)
++        print(header)
++
++    def print_one(self, command):
++        print('**%s**' % (command.proto))
++        self.print_elem(command)
  
-     def print_footer(self):
-@@ -380,27 +417,19 @@ SEE ALSO
- 
-     def print_one(self, helper):
-         self.print_proto(helper)
-+        self.print_elem(helper)
- 
--        if (helper.desc):
--            print('\tDescription')
--            # Do not strip all newline characters: formatted code at the end of
--            # a section must be followed by a blank line.
--            for line in re.sub('\n$', '', helper.desc, count=1).split('\n'):
--                print('{}{}'.format('\t\t' if line else '', line))
- 
--        if (helper.ret):
--            print('\tReturn')
--            for line in helper.ret.rstrip().split('\n'):
--                print('{}{}'.format('\t\t' if line else '', line))
- 
--        print('')
  
  class PrinterHelpers(Printer):
-     """
-     A printer for dumping collected information about helpers as C header to
-     be included from BPF program.
--    @helpers: array of Helper objects to print to standard output
-+    @parser: A HeaderParser with Helper objects to print to standard output
-     """
-+    def __init__(self, parser):
-+        self.elements = parser.helpers
+@@ -620,6 +699,7 @@ bpfh = os.path.join(linuxRoot, 'include/uapi/linux/bpf.h')
  
-     type_fwds = [
-             'struct bpf_fib_lookup',
-@@ -589,8 +618,12 @@ script = os.path.abspath(sys.argv[0])
- linuxRoot = os.path.dirname(os.path.dirname(script))
- bpfh = os.path.join(linuxRoot, 'include/uapi/linux/bpf.h')
+ printers = {
+         'helpers': PrinterHelpersRST,
++        'syscall': PrinterSyscallRST,
+ }
  
-+printers = {
-+        'helpers': PrinterHelpersRST,
-+}
-+
  argParser = argparse.ArgumentParser(description="""
--Parse eBPF header file and generate documentation for eBPF helper functions.
-+Parse eBPF header file and generate documentation for the eBPF API.
- The RST-formatted output produced can be turned into a manual page with the
- rst2man utility.
- """)
-@@ -601,6 +634,8 @@ if (os.path.isfile(bpfh)):
-                            default=bpfh)
- else:
-     argParser.add_argument('--filename', help='path to include/uapi/linux/bpf.h')
-+argParser.add_argument('target', nargs='?', default='helpers',
-+                       choices=printers.keys(), help='eBPF API target')
- args = argParser.parse_args()
- 
- # Parse file.
-@@ -609,7 +644,7 @@ headerParser.run()
- 
- # Print formatted output to standard output.
- if args.header:
--    printer = PrinterHelpers(headerParser.helpers)
-+    printer = PrinterHelpers(headerParser)
- else:
--    printer = PrinterRST(headerParser.helpers)
-+    printer = printers[args.target](headerParser)
- printer.print_all()
 -- 
 2.27.0
 
