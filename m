@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12EB531D7BE
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 11:58:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CFAA31D7CB
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 12:03:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230219AbhBQK5Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 05:57:24 -0500
-Received: from mail-eopbgr30085.outbound.protection.outlook.com ([40.107.3.85]:32560
+        id S230488AbhBQLBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 06:01:12 -0500
+Received: from mail-eopbgr30073.outbound.protection.outlook.com ([40.107.3.73]:15780
         "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229707AbhBQK5P (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Feb 2021 05:57:15 -0500
+        id S230336AbhBQLAl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Feb 2021 06:00:41 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZrPqfNWhs1uaLuRaAU/N2L5pj7nKBER5WLyyJZjzg6Kvg6tTpr8mchsRB996vX9FwX+F2r1iQ5KmAHckxk5sAwQcJNBizx1YijtR1fGcQM37/RQlgOPohTNnI53L99ajIPCn/6PRUACaUkMkRKVodXUuKl2R7A1m1oJn1TYpWwYHpL5GW3yNf0Zw+baLGcSPnMXKO9lWLaumFWVopcIPWlDz7jJoFDCqjgqdjOgeS4l9uGUlUGKPSpB8ZLIdeUg9FlTQj6CBnK6zwANKjtrrgJ6dlbN/MGywKuoaDFjt4CcAlHDyhCSj5KxcGNDo4CNjcZZlvksHuiC+zfWcYILaLw==
+ b=XmJeWBg2Cw4Azwyuuq1PUB4J6oDuvpzeQCAwVz44QNh5TeJIYovidIPGAIWsZFK3DohGgpJYXf8JKJCPQ/bgwY0ckQ11oRYGnli+374D8RqahJrcDkH/1IGGvQCwkYjOv68MpvFiJAg3a41WabqUnBJq3khatiYiba9/ny+d2848EdHhkouiaO2fjXCvP0b+uDfvdJWSTsZL8Si6Ub4UYcpPipaseXjQEf/LiOoRX1wc6OLhmIcg16SVKSrpXCdZ/VDg2KBVqepPNM/e4VPXgbu0s73yyvdaj30Q079A+FsIEtZTGurOAoQ8PKB+XtvTTlF4ctDzG3aZRCd+0YpQ8Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6KLMQTuObJSA9QIMaMCef6bB2Ga2f3nOrogAh5nYxOM=;
- b=TJTiFRM27QKmnm6m6IjZFcgyogA/ACIfD02zC6y6QMLyodIhkMkV1IkqpwSfkZWmIAFeorgUVLOQCfY3LR2pGNZQ2PEweTb+URK5I46qWm0Xz/xvQSrlcOEFVHhFef7W9S6T5Yzwu48jC54Y/X4yIytVTe01h1Zl6dpSx9QaPTdd/CDpsYWk63bDJczbHJLkuTsVlY/0Tr0IeGC2upuMyNuxtJVGixW6UaBQ1x/BNSWpnvuD+li7xLi36O53Ho3RNv3kBmOJiLhykxrLeJsRUQQdB0RXLFrIlooKpaNPYKoOf2aDNQAl1F7IqeWbDRZUxvsakUlYnval2ZQlHoCh5A==
+ bh=Z8ojTnqodtnJGj9tpT7QuxC+KIVhGhgUQB0KDBTVJcM=;
+ b=ISGm64wcV0OELl3daD5l1upMbWmup0mK78U5QelKEjGcMMFsEqcF2AmQ166AQC/aOAiaO8nADZXz/fg2rq7xDWkMGhMdepxB+TI19j1lKwCNGSquY7lU3XunDwqYTkwNGXO4rQi8fMporpIIK/vYICNYuUCVdnI7NoGhVPhHBNbGY0LwZ/CnZFm7dDIoovFszs7UOJzx/5mxeLk0vCCIUhnvIRxKU/tnmA2q0dZWeAtz50hGPURypjwbH4gm0/1+RukksqK0f42n3B2j50C0ePzmX9yCWiXGMGqBviJ2YVMbyA44EnJPCQf68gDgWOK1ZIfiZ4T2QXVAODhwR8BLGg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6KLMQTuObJSA9QIMaMCef6bB2Ga2f3nOrogAh5nYxOM=;
- b=dNBdZ9B0nRtd9SVbr3QYMwf+MipFUcG+jwb0P1EHfugoBDzfO0CfQO1rUbdJ+8uWpvFh+pzibm2poQbnc2DNe3PIaCMCxoRwo15hCmajSwpMbVcgfEZo3cLOFrkYLdJianeqGYa2PNd9EULKmM+GRZPEt43rRbZH4VJcvSZOpiY=
+ bh=Z8ojTnqodtnJGj9tpT7QuxC+KIVhGhgUQB0KDBTVJcM=;
+ b=Bsp9Cy7jjt3n3gxSjf85Cjnb3+Hd7DhPoqxFmxeskjhmBtKg4zi2q8JEwaDw/OK2lpgnrFZ+oNmyyE53CNFoWlKa9xbBGnn2zOIVve0b45dD/mcO+9est1xiASELN1GZ0Y21vb42oB+espoefT+MgevWrowO/Mc1tOcA4FD602o=
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB7104.eurprd04.prod.outlook.com (2603:10a6:800:126::9) with
+ by VI1PR0402MB3616.eurprd04.prod.outlook.com (2603:10a6:803:8::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.27; Wed, 17 Feb
- 2021 10:56:26 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.17; Wed, 17 Feb
+ 2021 10:59:52 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3df3:2eba:51bb:58d7]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3df3:2eba:51bb:58d7%7]) with mapi id 15.20.3846.042; Wed, 17 Feb 2021
- 10:56:26 +0000
+ 10:59:52 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     Horatiu Vultur <horatiu.vultur@microchip.com>
 CC:     "davem@davemloft.net" <davem@davemloft.net>,
@@ -54,16 +54,16 @@ CC:     "davem@davemloft.net" <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "bridge@lists.linux-foundation.org" 
         <bridge@lists.linux-foundation.org>
-Subject: Re: [PATCH net-next v4 4/8] bridge: mrp: Extend br_mrp_switchdev to
- detect better the errors
-Thread-Topic: [PATCH net-next v4 4/8] bridge: mrp: Extend br_mrp_switchdev to
- detect better the errors
-Thread-Index: AQHXBKzNjMFI2d//q0iFlfLbm7atSqpcLbcA
-Date:   Wed, 17 Feb 2021 10:56:25 +0000
-Message-ID: <20210217105624.aehyxw3tfs5uycdl@skbuf>
+Subject: Re: [PATCH net-next v4 5/8] bridge: mrp: Update br_mrp to use new
+ return values of br_mrp_switchdev
+Thread-Topic: [PATCH net-next v4 5/8] bridge: mrp: Update br_mrp to use new
+ return values of br_mrp_switchdev
+Thread-Index: AQHXBKzIpNFdzzkilUKmoPsYhJWnlapcLq2A
+Date:   Wed, 17 Feb 2021 10:59:51 +0000
+Message-ID: <20210217105951.5nyfclvf6e2p2nkf@skbuf>
 References: <20210216214205.32385-1-horatiu.vultur@microchip.com>
- <20210216214205.32385-5-horatiu.vultur@microchip.com>
-In-Reply-To: <20210216214205.32385-5-horatiu.vultur@microchip.com>
+ <20210216214205.32385-6-horatiu.vultur@microchip.com>
+In-Reply-To: <20210216214205.32385-6-horatiu.vultur@microchip.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -73,128 +73,95 @@ authentication-results: microchip.com; dkim=none (message not signed)
 x-originating-ip: [5.12.227.87]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: f3633561-c326-4b50-e296-08d8d332abfb
-x-ms-traffictypediagnostic: VI1PR04MB7104:
+x-ms-office365-filtering-correlation-id: fbdb015a-cf81-4cc4-be92-08d8d33326d1
+x-ms-traffictypediagnostic: VI1PR0402MB3616:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR04MB7104DED91946A12CA467B058E0869@VI1PR04MB7104.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4125;
+x-microsoft-antispam-prvs: <VI1PR0402MB3616039C952845B6CE51B5E6E0869@VI1PR0402MB3616.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: uw8507N7jTiIL4s6MgLdVaj3PXN9QYNMSPuMlSYPNDa5xIsQQI/IwgziilZPSysGC0ZbsiUm303H2x2hVdnpxupz/8DMMFISL3O/FBm/2jxibO2/St2fO/m4OyekUu36rSb1FgMMVs8XBahikaZkDVABnl6WEbEatuLoYWpxW0hDJUuxsYWIEdvIZge3IL/S600EITOMqmnMakAVS9WMOzzHlxSqIBtMYkWBKaZFQJIB8dnwbl49rwSb8qyH7DUjl6wBLqxhgXaYHKbPEKWs9Y1oWjSFVLRT+G82xEMBWXTxIxOBntGyf3JDhSvxJcv6O5e5JXol979+0TEWRWxFEOux/7yb0/+FB//371ZL/uS72Owf6aq/t4BjZR5XuYxscAPlrOxMfulcf82XPN093e+pQkQKDo77I3t1TD1BqfTRDs9fYBV7mXkq/JEMdfmpYYbSOB2YPHHToV9XksFSLB3OAjgE1QdTDu402B9v+Ip7mbl/9FNlc2/FbFDeaxuYtn06FPmYbu9VxWFFeuKzSw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(39860400002)(346002)(376002)(136003)(396003)(366004)(26005)(4326008)(186003)(6506007)(44832011)(83380400001)(8676002)(91956017)(54906003)(6486002)(478600001)(6916009)(66946007)(6512007)(71200400001)(66446008)(33716001)(7416002)(64756008)(86362001)(8936002)(1076003)(316002)(66476007)(9686003)(66556008)(5660300002)(76116006)(2906002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?GxcbmOdz9MV9/YZ0OxArxzgFYiOZM9H+CjhrgxbOr5rWVn3eNUtsy1MzVDTF?=
- =?us-ascii?Q?ahr9wlYrFkdCyk35KS3SbuSHnGGzicKeQK6n605+HZePK/gf1ag0wTSuTpAV?=
- =?us-ascii?Q?5+rNVDC0cU1XwbTrenWhYTzR2DihQR18BBBQ8yyvBbIuVkujBsFHRyztiGo7?=
- =?us-ascii?Q?wxkt9KBRWXaRNPLX4PVzQCmjp5PcvMSUeQpmQ2Tx2Oeoia0B2PY4+HImuVpu?=
- =?us-ascii?Q?WiqHlKoWukmuSFsdetI7saUn5JVAhm/kFFLvzQs6Iel9/bZUWblS6E+RhE3w?=
- =?us-ascii?Q?Rk5JypUxPS/I/9N61milGOhfK6AElP8NOcF2kuqvE6nkKAWcxCZ/jyhdaGJB?=
- =?us-ascii?Q?pxUrU8nYMJhsrJgXirEZRsDj8LUyc9CPoD+/BNu8xRZnkuUtpND61C/rwoJ3?=
- =?us-ascii?Q?8NPUOTX+af/MnAN00ei4qCW6+JlyTxSU9uTKu6pEHS/NWOwt7NcLMWWnWLp5?=
- =?us-ascii?Q?037QbqRK6SQodOUKjGBzwEMRYhCBwqkLMno57OoHuCvgTupiNUKoPEk9gqXY?=
- =?us-ascii?Q?Y/TsFsRHLOwyRs6qPKm2OpACfiPV+/ZcsvIftk1K57T4S0t4CA/wJh8p/zDi?=
- =?us-ascii?Q?RvPHf2mWMBY15UjXmJAlurbPHd/NdoM9EGvTv7dIaNAPZBxgbrng4dbcutKG?=
- =?us-ascii?Q?W+tWe1BwCoHR5wf5PO3LiUDd1H0QQ1k+Gh95l9ldFhVArL71gpjWV5VD9wNw?=
- =?us-ascii?Q?3m8pZ43KmRSNERAJTVjGvn4h553XA/wbZQFO7Ldzn+ywT9tyMCHmT67sZo52?=
- =?us-ascii?Q?GYZVark8KAsJVK1xDUx9/pGNP4D3mt6/mY6U1GPwb5N8ekz/X7ZdqPHqdOom?=
- =?us-ascii?Q?XzWu9SH+u+jSrgRhPYb2458463lXK1vmg0plMi/56TkeNUtWnSYidoia3H9W?=
- =?us-ascii?Q?LojGF17JWgpmGGf1pxBBkTSkOm1Tjey1FEqF5kfpSSt6aRQAq9zFHNEwvYcT?=
- =?us-ascii?Q?VcMcx3w8hRujlq8ppYcaO4V6wqg0npU40K50LrLQfwYRPSMC1FVRxJ5OeetX?=
- =?us-ascii?Q?/9J+6xCzuAaFXXSF80LAiDVaPiKfhb2N3k8Ymq7toezTLAk1hyj/eQTe4Xsl?=
- =?us-ascii?Q?Aysp5Wc0+gpwNNjNDGytKyk9j5gwFTE9GRc4GgyGY+JNJtuw1J48OwF9EWBB?=
- =?us-ascii?Q?qfBSIsPtzLBxugcG5uxsUlLEudPkMH/fnIg+FJJcGK6CA+466t3Mb1reMfq+?=
- =?us-ascii?Q?Nx4DMOjMZ1l0b9WBI71sVongB5NW9cr/lHTPbY1/PmSgTqdmk7R3JczGNril?=
- =?us-ascii?Q?+zxO8yli7rnOg2v15eqh/65WwjIEeaaYR7DuG+x8kIBNLJnCi8Nga23BerrN?=
- =?us-ascii?Q?0NrUhfCybS5gwvQLqBDyQ5yC?=
+x-microsoft-antispam-message-info: FScPFxL+FvDvNeHlHN+DOp0NlPkmJ9BKoZJKj+UX0lW866u9FM+BRhTM1cx+YfC8GqiN/YIRN8vaoMbbPU1R5HsghWkspg8g/mJ+zl31ptZ1UeQ+FvduvSBdnxjOl9DX5paDW3P1ul1hyAo3NUHfsKgp1r0lX39QA/ukH064zUzLYspq4+v9N81hOhRGUJLRwi1I6svyuMuENaZPxiqb8LRlu8Fg8jV8gk9tumER6QTCoLS7vTnuDbns4zhjQHc14GjUVyRVXaOl2Sae9a57nfXAeETSFKzqAqCSwD3DPTjZ2IFb0wbfFPNRkL2amMwebKbN1nKqQWbjRtEcR/8ipDN/0AJGZ2SYFQu+FXRoZvC6IQ8NQqZnkYljr0hn62H9CCqGVeQonEbfHytRdquNUtViu0AYE3wTZSYnoMNauSDwdpM8r/TRhLCB8q+PTEwvhHO5RSSDgI7n309MuqlJxMLnpF34pcte0tMKCeghfp6AiVj0Jg8+oHXwkiMzeAkkzo8YIebkGfQa3YXs9k0BHw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(346002)(39860400002)(366004)(396003)(376002)(136003)(54906003)(478600001)(76116006)(8936002)(7416002)(9686003)(64756008)(15650500001)(6506007)(91956017)(66946007)(2906002)(83380400001)(71200400001)(8676002)(186003)(1076003)(26005)(6916009)(4326008)(66556008)(6512007)(5660300002)(86362001)(33716001)(316002)(44832011)(66446008)(66476007)(6486002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?LoERQDYPKJn74+8R5bp3J3Pqbf6z3scGIk0iRRoMrfKhTkYmzlKGcY2i+ihI?=
+ =?us-ascii?Q?S0T61EU76f4jGC9Me5S44PjX7RrNliyUu8IdZ2x6hZXVm0tQwxrFWctUN03A?=
+ =?us-ascii?Q?GrmqxkyXi5IiwbLH4WdLWr0eFwOovvdFUvsWMlma5OnuewCbg8mFjFN4AkdL?=
+ =?us-ascii?Q?CJN0ng7DudFa8KLX/XM6VLqS8whUKk3ivwaOPQqROAvZafnqk1litHZMFZiG?=
+ =?us-ascii?Q?YglKOtU2AAIHoy8qWfmwZ3NTF+tXyRO86H0Wer+Vz3XflhHfaYDDQEMUt+92?=
+ =?us-ascii?Q?gDToobFcbRHAGPaNMf8S6mM2STthvYja9PjtJpsyw+84DbkQpHC/fBokl+DP?=
+ =?us-ascii?Q?scciJccrWIk3KbYw57gP0d5CvXuUPE5Yaj0qnteJNYhqPMo9xmXIZFT0Gtld?=
+ =?us-ascii?Q?P9gLU6DOHVEFbxuWaNS/XYOB0Frq3ieC6rhgN2wsXWcWFBe6cFkgWQe98FWX?=
+ =?us-ascii?Q?zckCmMeDhPPt7lZG2U3xOJZ8O6Hw+f67DP0Mq8pHTT5NNkZKdMwd2dtHrHZm?=
+ =?us-ascii?Q?xslhvCFTTpw+wtg5BloINWmhfotC1hb+BJNgcciAa5Hz/Xk35SkzEWAFoV1/?=
+ =?us-ascii?Q?4wE4LoJDvH+iZKd3xZMzKTh1LE8e4ujKK80iTlzMNca9IOEJDnD5hxTbxYkp?=
+ =?us-ascii?Q?HRPVlRYO+gEAWq9ACNIhxkJL+RqUgyYRn+vckeASCTJPJUQejiHG9wmeLiOn?=
+ =?us-ascii?Q?c5MOO8j9QudAtyZoIxe5nOnd3QSigPC01Evgp+miVNWo9wnZUN6h9cyiq/6T?=
+ =?us-ascii?Q?CfRW4DYQ5MZelHt18xbfgIq594mXZDSxE+k/4NyqyCTZ5PvHMaUXNBJYcUfz?=
+ =?us-ascii?Q?y2q1+d23AwRjnhHkb4ZOrxTykLvgrDuEDauBXy+CfW4XHHSHm30tE39A2q/M?=
+ =?us-ascii?Q?ZMemXSGMOZ7nGUwy1Hx4P/nFZN6VN16vV8n/K7TsXb77OF91pJqooTbyrsw3?=
+ =?us-ascii?Q?IIparDjlxcQH1pMHgewCJIEpjoMIWc/8KdM+fMhCNwBHqSQaOeecNpHYT3Qg?=
+ =?us-ascii?Q?j+UznmVYbnBm8FORtmY5FzzclzUc+FOxH/Ce06jmmegC6nrytch2ikLrz6AM?=
+ =?us-ascii?Q?Qj5yYcKPiivb3Xub4KhpAaWLgVLMRk5EytnB05YkUgzsGtHeOY66pZPKTZNs?=
+ =?us-ascii?Q?EzRZzh+Ucf15AfmCHpAYCgI1UYHk7TtrGz3JnR4EgpDSJD25iAU5RPgsCmjE?=
+ =?us-ascii?Q?9coG7rVV5xTqEydfWdIZRs1Lqq281pqOSGvMxplCLZqveIZgcgLu661MDBoQ?=
+ =?us-ascii?Q?DpGDL7d/WkF9lp42NVtgkGVxb/vdj/iGQROJnZ+wsdgSn2XwwdS7j+cVnYQr?=
+ =?us-ascii?Q?S6qkMeYf3xWL+vJIoadpzqdr?=
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3B1C35D6AD07A842808B7267A18006C1@eurprd04.prod.outlook.com>
+Content-ID: <7FC3E7294BB39C4C8F6B740EB1077ABE@eurprd04.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f3633561-c326-4b50-e296-08d8d332abfb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Feb 2021 10:56:25.8862
+X-MS-Exchange-CrossTenant-Network-Message-Id: fbdb015a-cf81-4cc4-be92-08d8d33326d1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Feb 2021 10:59:52.0118
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: EhCEI5CBqsO/XGni1F1AzkuQpVp8/uO4uZFscp+789hYKPr0NCMn04nH0um/ah58oMRO6HADFBc7DY/BF2cjHw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7104
+X-MS-Exchange-CrossTenant-userprincipalname: L79TfGRLW6mreVFM2i6XhlYG3clCbA51uahKUFFTRx/Q0d5wEFdbLM4BDRCvqOSX0T71H2zoAhj+nSnTNCmtCQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3616
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 16, 2021 at 10:42:01PM +0100, Horatiu Vultur wrote:
-> This patch extends the br_mrp_switchdev functions to be able to have a
-> better understanding what cause the issue and if the SW needs to be used
-> as a backup.
->=20
-> There are the following cases:
-> - when the code is compiled without CONFIG_NET_SWITCHDEV. In this case
->   return success so the SW can continue with the protocol. Depending
->   on the function, it returns 0 or BR_MRP_SW.
-> - when code is compiled with CONFIG_NET_SWITCHDEV and the driver doesn't
->   implement any MRP callbacks. In this case the HW can't run MRP so it
->   just returns -EOPNOTSUPP. So the SW will stop further to configure the
->   node.
-> - when code is compiled with CONFIG_NET_SWITCHDEV and the driver fully
->   supports any MRP functionality. In this case the SW doesn't need to do
->   anything. The functions will return 0 or BR_MRP_HW.
-> - when code is compiled with CONFIG_NET_SWITCHDEV and the HW can't run
->   completely the protocol but it can help the SW to run it. For
->   example, the HW can't support completely MRM role(can't detect when it
->   stops receiving MRP Test frames) but it can redirect these frames to
->   CPU. In this case it is possible to have a SW fallback. The SW will
->   try initially to call the driver with sw_backup set to false, meaning
->   that the HW should implement completely the role. If the driver returns
->   -EOPNOTSUPP, the SW will try again with sw_backup set to false,
->   meaning that the SW will detect when it stops receiving the frames but
->   it needs HW support to redirect the frames to CPU. In case the driver
->   returns 0 then the SW will continue to configure the node accordingly.
->=20
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> ---
->  net/bridge/br_mrp_switchdev.c | 171 +++++++++++++++++++++-------------
->  net/bridge/br_private_mrp.h   |  24 +++--
->  2 files changed, 118 insertions(+), 77 deletions(-)
->=20
-> diff --git a/net/bridge/br_mrp_switchdev.c b/net/bridge/br_mrp_switchdev.=
-c
-> index 3c9a4abcf4ee..cb54b324fa8c 100644
-> --- a/net/bridge/br_mrp_switchdev.c
-> +++ b/net/bridge/br_mrp_switchdev.c
-> @@ -4,6 +4,30 @@
+On Tue, Feb 16, 2021 at 10:42:02PM +0100, Horatiu Vultur wrote:
+> diff --git a/net/bridge/br_mrp.c b/net/bridge/br_mrp.c
+> index 01c67ed727a9..12487f6fe9b4 100644
+> --- a/net/bridge/br_mrp.c
+> +++ b/net/bridge/br_mrp.c
+> @@ -639,7 +639,7 @@ int br_mrp_set_ring_role(struct net_bridge *br,
+>  			 struct br_mrp_ring_role *role)
+>  {
+>  	struct br_mrp *mrp =3D br_mrp_find_id(br, role->ring_id);
+> -	int err;
+> +	enum br_mrp_hw_support support;
 > =20
->  #include "br_private_mrp.h"
+>  	if (!mrp)
+>  		return -EINVAL;
+> @@ -647,9 +647,9 @@ int br_mrp_set_ring_role(struct net_bridge *br,
+>  	mrp->ring_role =3D role->ring_role;
 > =20
-> +static enum br_mrp_hw_support
-> +br_mrp_switchdev_port_obj(struct net_bridge *br,
-> +			  const struct switchdev_obj *obj, bool add)
-> +{
-> +	int err;
-> +
+>  	/* If there is an error just bailed out */
+> -	err =3D br_mrp_switchdev_set_ring_role(br, mrp, role->ring_role);
+> -	if (err && err !=3D -EOPNOTSUPP)
+> -		return err;
+> +	support =3D br_mrp_switchdev_set_ring_role(br, mrp, role->ring_role);
+> +	if (support =3D=3D BR_MRP_NONE)
+> +		return -EOPNOTSUPP;
 
-Looks like you could have added this check here and simplified all the
-callers:
+It is broken to update the return type and value of a function in one
+patch, and check for the updated return value in another patch.
 
-	if (!IS_ENABLED(CONFIG_NET_SWITCHDEV))
-		return BR_MRP_SW;
-
-> +	if (add)
-> +		err =3D switchdev_port_obj_add(br->dev, obj, NULL);
-> +	else
-> +		err =3D switchdev_port_obj_del(br->dev, obj);
-> +
-> +	/* In case of success just return and notify the SW that doesn't need
-> +	 * to do anything
-> +	 */
-> +	if (!err)
-> +		return BR_MRP_HW;
-> +
-> +	if (err !=3D -EOPNOTSUPP)
-> +		return BR_MRP_NONE;
-> +
-> +	/* Continue with SW backup */
-> +	return BR_MRP_SW;
-> +}
-> +=
+> =20
+>  	/* Now detect if the HW actually applied the role or not. If the HW
+>  	 * applied the role it means that the SW will not to do those operation=
+s
+> @@ -657,7 +657,7 @@ int br_mrp_set_ring_role(struct net_bridge *br,
+>  	 * SW when ring is open, but if the is not pushed to the HW the SW will
+>  	 * need to detect when the ring is open
+>  	 */
+> -	mrp->ring_role_offloaded =3D err =3D=3D -EOPNOTSUPP ? 0 : 1;
+> +	mrp->ring_role_offloaded =3D support =3D=3D BR_MRP_SW ? 0 : 1;
+> =20
+>  	return 0;
+>  }=
