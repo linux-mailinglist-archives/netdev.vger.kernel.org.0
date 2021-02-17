@@ -2,92 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65BF431DDF6
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 18:11:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4FFB31DDFE
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 18:14:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234369AbhBQRJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 12:09:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54624 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234291AbhBQRJP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 12:09:15 -0500
-Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B9B9C061574
-        for <netdev@vger.kernel.org>; Wed, 17 Feb 2021 09:08:34 -0800 (PST)
-Received: by mail-oi1-x236.google.com with SMTP id 18so15710023oiz.7
-        for <netdev@vger.kernel.org>; Wed, 17 Feb 2021 09:08:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=rTiZJmJpnBx+QEmTW+5dg14+sfV1C0crqACCRCXWPSI=;
-        b=f5wLd0BcE4qPBF/YVnZltaa3sRBC8j1KIpZkgb0HStWzOFmxO3Pfja83FhEqIZH0f2
-         3CNUdo9oUsockIQCjnr6dy5E7Wq5PvhuSp9s69rNNjgWN4sNFNcmM9mZtWSVb8XMMqkS
-         v2g2rTThRD9a1ZC8KJU3SOAGMzR5XZsXJNbvj3JSZcLLKnv166HtJtimwAsRBwPTfEt7
-         11dEJz3+70fmmq6Br8ViXp2+q63qYfgC4g+0BEr5YSRZdbtFh0ESYl+hSkV6f1RDXBpp
-         qD3jeLMU/UGIZRjFzqsRS1BvsXj9HKrxEj9QmSaBjPc3X4eTLhyqEllOj5ZfCILkvK0d
-         obDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=rTiZJmJpnBx+QEmTW+5dg14+sfV1C0crqACCRCXWPSI=;
-        b=ZuTwiZR7wkRjzy+OPe1VpfRv+h0Txof3kRG5SFr8LyWwAs+Bk+EnvFP+C5FhoRoa9k
-         4H8iodfk/RlP2BiPEnqQtVdWOgfbIiFn/L0I5E+fVlS5ajflQjtz79zvskzu4eOOQ5dZ
-         SVCfdqH35cbuX7LAXVOOXSvYOBGCS/8CaRgPAZyheKgx616SAQmLsoWzhlw5lqI6gS/n
-         sCJzt21ykvUTipBN6nn6njs24JWiIRWhpg1h+QWrQB5XTU45AY97+i8WW5Gr56mztumm
-         pBh9b9B7oswHseWRjHatn2sOukiADjj2RPudhXwcq6mYXFEUub/30rv9vrOWlHQus8Fh
-         1tkQ==
-X-Gm-Message-State: AOAM533jYoPobsWms3/uwHbBfSGPLsMu44hAm+7Nq0FaijQgaabzv2qd
-        qoHJMxoN2g95K3hz8hpVCr/K0J5jgFQ=
-X-Google-Smtp-Source: ABdhPJyH5XQIR0IFKVLEgUyiFZy52luM1oiPYmyAV4g11drv1PglVQ7OR2JmOHE5D190Yu0vPLTpWw==
-X-Received: by 2002:aca:b1c1:: with SMTP id a184mr6155965oif.117.1613581713543;
-        Wed, 17 Feb 2021 09:08:33 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.33])
-        by smtp.googlemail.com with ESMTPSA id r15sm495852otq.77.2021.02.17.09.08.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Feb 2021 09:08:33 -0800 (PST)
-Subject: Re: null terminating of IFLA_INFO_KIND/IFLA_IFNAME
-To:     =?UTF-8?B?0JzRg9GA0LDQstGM0LXQsiDQkNC70LXQutGB0LDQvdC00YA=?= 
-        <amuravyev@s-terra.ru>, netdev@vger.kernel.org
-References: <baea7ed0-ba32-3cc0-3885-7b77a72cb409@s-terra.ru>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <7ef2a1a7-5aa3-3762-85ae-c8e7b77915b3@gmail.com>
-Date:   Wed, 17 Feb 2021 10:08:32 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.7.1
+        id S234340AbhBQRN7 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 17 Feb 2021 12:13:59 -0500
+Received: from mga17.intel.com ([192.55.52.151]:45679 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234282AbhBQRN4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Feb 2021 12:13:56 -0500
+IronPort-SDR: z8BdrBP6bYVx8VlJ2jZJeqIr0/rzfudMnbD9SsM8tOv7u9tRv69azkwhyRD6iTSTI9pU1te0bX
+ kuZ22rS0d4AQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9898"; a="163039261"
+X-IronPort-AV: E=Sophos;i="5.81,184,1610438400"; 
+   d="scan'208";a="163039261"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2021 09:13:15 -0800
+IronPort-SDR: Ze8hAK6HItV4g6zHQhfupFSfrmcGUQEuGy1aaFVF31i+EmsF3J0xduCKFOkGcaCBGcbbCMTpVW
+ M10pDqE4dSAQ==
+X-IronPort-AV: E=Sophos;i="5.81,184,1610438400"; 
+   d="scan'208";a="400034792"
+Received: from mvalka-mobl1.ger.corp.intel.com (HELO localhost) ([10.252.39.140])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2021 09:13:06 -0800
+From:   Jani Nikula <jani.nikula@linux.intel.com>
+To:     Petr Mladek <pmladek@suse.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Christian =?utf-8?Q?K=C3=B6nig?= <christian.koenig@amd.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Mikita Lipski <mikita.lipski@amd.com>,
+        Eryk Brol <eryk.brol@amd.com>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        amd-gfx@lists.freedesktop.org,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        intel-gfx <intel-gfx@lists.freedesktop.org>,
+        netdev <netdev@vger.kernel.org>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH v1 1/3] string: Consolidate yesno() helpers under string.h hood
+In-Reply-To: <YC0QBvv9HXr64ySf@alley>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20210215142137.64476-1-andriy.shevchenko@linux.intel.com> <43456ba7-c372-84cc-4949-dcb817188e21@amd.com> <CAHp75VfVXnqdVRAPQ36vZeD-ZMCjWmjA_-6T=jnOEVMne4bv0g@mail.gmail.com> <YC0QBvv9HXr64ySf@alley>
+Date:   Wed, 17 Feb 2021 19:13:03 +0200
+Message-ID: <8735xubotc.fsf@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <baea7ed0-ba32-3cc0-3885-7b77a72cb409@s-terra.ru>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/17/21 9:06 AM, Муравьев Александр wrote:
-> Hi
-> 
-> A noob question that I haven't found an answer.
-> 
-> Just wanted to clarify a piece of iproute2 code.
-> 
-> ip/iplink.c:
-> 
->> 1058         addattr_l(&req.n, sizeof(req), IFLA_INFO_KIND, type,
->> 1059              strlen(type));
-> 
-> also ip/iplink.c:
-> 
->> 1115         addattr_l(&req.n, sizeof(req),
->> 1116               !check_ifname(name) ? IFLA_IFNAME : IFLA_ALT_IFNAME,
->> 1117               name, strlen(name) + 1);
-> My question is why we skip terminating null character for IFLA_INFO_KIND
-> (the first case) and don't skip it for IFLA_IFNAME (the second case)? I
-> mean "strlen(type)" and "strlen(name) + 1".
-> 
+On Wed, 17 Feb 2021, Petr Mladek <pmladek@suse.com> wrote:
+> On Mon 2021-02-15 16:39:26, Andy Shevchenko wrote:
+>> +Cc: Sakari and printk people
+>> 
+>> On Mon, Feb 15, 2021 at 4:28 PM Christian König
+>> <christian.koenig@amd.com> wrote:
+>> > Am 15.02.21 um 15:21 schrieb Andy Shevchenko:
+>> > > We have already few similar implementation and a lot of code that can benefit
+>> > > of the yesno() helper.  Consolidate yesno() helpers under string.h hood.
+>> > >
+>> > > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+>> >
+>> > Looks like a good idea to me, feel free to add an Acked-by: Christian
+>> > König <christian.koenig@amd.com> to the series.
+>> 
+>> Thanks.
+>> 
+>> > But looking at the use cases for this, wouldn't it make more sense to
+>> > teach kprintf some new format modifier for this?
+>> 
+>> As a next step? IIRC Sakari has at some point the series converted
+>> yesno and Co. to something which I don't remember the details of.
+>> 
+>> Guys, what do you think?
+>
+> Honestly, I think that yesno() is much easier to understand than %py.
+> And %py[DOY] looks really scary. It has been suggested at
+> https://lore.kernel.org/lkml/YCqaNnr7ynRydczE@smile.fi.intel.com/#t
+>
+> Yes, enabledisable() is hard to parse but it is still self-explaining
+> and can be found easily by cscope. On the contrary, %pyD will likely
+> print some python code and it is not clear if it would be compatible
+> with v3. I am just kidding but you get the picture.
 
-I think it is just different coders at different points in time. Kernel
-side both use nla_strscpy which handles the string terminator (or
-missing terminator).
+Personally I prefer %s and the functions.
+
+I think the format specifiers have become unwieldy. I don't remember any
+of the kernel specific ones by heart, I always look them up or just
+cargo-cult. I think the fourcc format specifiers are a nice cleanup, but
+I don't remember them either. I'd like something like %foo{yesno} where,
+if you remember the %foo part, you could actually also remember the
+rest.
+
+But really if you get *any* version accepted, I'm not going to argue
+against it, and you can disregard this as meaningless bikeshedding.
+
+BR,
+Jani.
+
+
+-- 
+Jani Nikula, Intel Open Source Graphics Center
