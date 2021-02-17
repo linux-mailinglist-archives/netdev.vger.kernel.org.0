@@ -2,87 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45E7631D58E
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 07:53:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 929B031D593
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 07:57:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229659AbhBQGw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 01:52:26 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:3373 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231589AbhBQGwN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 01:52:13 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B602cbcf10000>; Tue, 16 Feb 2021 22:51:29 -0800
-Received: from mtl-vdi-166.wap.labs.mlnx (172.20.145.6) by
- HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 17 Feb 2021 06:51:27 +0000
-Date:   Wed, 17 Feb 2021 08:51:23 +0200
-From:   Eli Cohen <elic@nvidia.com>
-To:     Si-Wei Liu <si-wei.liu@oracle.com>
-CC:     Jason Wang <jasowang@redhat.com>, <mst@redhat.com>,
-        <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lulu@redhat.com>
-Subject: Re: [PATCH v1] vdpa/mlx5: Restore the hardware used index after
- change map
-Message-ID: <20210217065123.GA128881@mtl-vdi-166.wap.labs.mlnx>
-References: <0d592ed0-3cea-cfb0-9b7b-9d2755da3f12@redhat.com>
- <20210208100445.GA173340@mtl-vdi-166.wap.labs.mlnx>
- <379d79ff-c8b4-9acb-1ee4-16573b601973@redhat.com>
- <20210209061232.GC210455@mtl-vdi-166.wap.labs.mlnx>
- <411ff244-a698-a312-333a-4fdbeb3271d1@redhat.com>
- <a90dd931-43cc-e080-5886-064deb972b11@oracle.com>
- <b749313c-3a44-f6b2-f9b8-3aefa2c2d72c@redhat.com>
- <24d383db-e65c-82ff-9948-58ead3fc502b@oracle.com>
- <20210210154531.GA70716@mtl-vdi-166.wap.labs.mlnx>
- <fa78717a-3707-520b-35cb-c8e37503dccf@oracle.com>
+        id S230425AbhBQGzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 01:55:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36304 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231383AbhBQGzj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 01:55:39 -0500
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ECABC061574;
+        Tue, 16 Feb 2021 22:54:59 -0800 (PST)
+Received: by mail-pl1-x643.google.com with SMTP id a24so6905625plm.11;
+        Tue, 16 Feb 2021 22:54:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3o1Cr10hbB5eArafHXQS+SZhvH+Fl6pjSwLdmv19yI8=;
+        b=e6DUdg2tYt8I0qXVFtJbalBA/Q9QhLhviUGkqMRxM7LnYaAa4Tn/Wz6OjDi+Ey857v
+         zBlVmQoEwwepMtrVnP1ygR+BrSESQTKzr607AEylOkMQckSg9oCOUuukUElZ24NGPFdn
+         YY5LNfUz6QOqHOVAtCBYF+P3S0knmdU6OxlyTqT07PXqrcyJVXSKB0pdXCk1dQ2Gl4lB
+         P7bsNSK7Tg4qV5mDmxbI2xOlCyDwSQYyYLXWSd/fG/rkLCaV4FpNuPFS2350IIG41A8G
+         RfKg4eZWlTiCEHa2f+Sjr/5xa3CipdZL/3fkf2UKWkklS/6PKPmSj3vdKFB79gjktxHC
+         SHjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3o1Cr10hbB5eArafHXQS+SZhvH+Fl6pjSwLdmv19yI8=;
+        b=Z1lXtoVEj9qE6VgRdgfyDgj8uuEwrfzm95PRvYeqGwAA3DKcCqH4qz0DY+MkyEzkK9
+         guH4f8AvEa/diechLM0EPXw1z4uNyIP9ejGU/ZefQ7yOUsnMTZeM7XrMpoytTuPLxviU
+         OEBttRLiPCx4y8T5Iuh4bEHJhjGaWaPGpk/L4PdWJeusk8ptT7KNVAfAAVjrJD6Cbjzp
+         tFqKfCPKNEBvuXuRwPdNZFWv2cb6LWuIqcpEZfoT+L+wLNYH+aOvrWPrIOaVKodhaqmJ
+         jsIyj5Y+ICQi2chSv/90bEvjioDHQLRURfWYiZvIMTv/rSYZTQXN+bJga6Ikiq845LzZ
+         acXA==
+X-Gm-Message-State: AOAM532yJeRDn22JW+qhh9PZI0J5gp/S9NWXyeB2uLo2Q8dm/qmmdVx0
+        GHarLoC1k0y2tELkK5kBm6paRFKX3GqVJA==
+X-Google-Smtp-Source: ABdhPJx6WOLOqrHANscOpjJicUZuXCi5qK5O629iF9FhDbjDl2eMB2xvPV1pAHdsRXdF4GwolOYGXA==
+X-Received: by 2002:a17:902:6846:b029:e3:8217:8eed with SMTP id f6-20020a1709026846b02900e382178eedmr1262363pln.60.1613544898872;
+        Tue, 16 Feb 2021 22:54:58 -0800 (PST)
+Received: from localhost ([178.236.46.205])
+        by smtp.gmail.com with ESMTPSA id c18sm1165114pgm.88.2021.02.16.22.54.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Feb 2021 22:54:58 -0800 (PST)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: dong.menglong@zte.com.cn
+To:     andy.shevchenko@gmail.com, kuba@kernel.org
+Cc:     davem@davemloft.net, axboe@kernel.dk, herbert@gondor.apana.org.au,
+        viro@zeniv.linux.org.uk, dong.menglong@zte.com.cn,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH v4 net-next] net: socket: use BIT() for MSG_*
+Date:   Wed, 17 Feb 2021 14:54:27 +0800
+Message-Id: <20210217065427.122943-1-dong.menglong@zte.com.cn>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <fa78717a-3707-520b-35cb-c8e37503dccf@oracle.com>
-User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1613544689; bh=gXlU4wj89dRtYqmSRTd3ZCIacCt3jo7TZ0QmF2GeH/w=;
-        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-         Content-Type:Content-Disposition:In-Reply-To:User-Agent:
-         X-Originating-IP:X-ClientProxiedBy;
-        b=D51MUk6a1LIHjYR7vDnSfWHJ6CpdnAzYmaYM6Tr0hfGJoFfxpOIegOEJIMEskXkZ7
-         QF5PTei3v6wIctQtI1+JqYxM792BciA+JNi4F387Pd+/decgsAhTEF/ep6s6m3G1SM
-         N4EgF/V5X534ag5JmwlIo0rJzDetHHwSCUtPvGFamTznzpqGW+AApQlsrHt88RGfXT
-         i9MUs6F5d5NvYJAs9AfLMEjl0O5snGW5Rusz2cq8sEDkSkg+FcCPbCfV0YEWPkprk1
-         fYowVXb4ekOBbJFr5efi/ICTD8EcvpccjhTd29aE/8EAp5qyFhlc7zT5leuUUWd9fe
-         Q2qACShDjlaKw==
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 16, 2021 at 04:25:20PM -0800, Si-Wei Liu wrote:
-> 
-> > > The saved mvq->avail_idx will be used to recreate hardware virtq object and
-> > > the used index in create_virtqueue(), once status DRIVER_OK is set. I
-> > > suspect we should pass the index to mvq->used_idx in
-> > > mlx5_vdpa_set_vq_state() below instead.
-> > > 
-> > Right, that's what I am checking but still no final conclusions. I need
-> > to harness hardware guy to provide me with clear answers.
-> OK. Could you update what you find from the hardware guy and let us know
-> e.g. if the current firmware interface would suffice?
-> 
+From: Menglong Dong <dong.menglong@zte.com.cn>
 
-Te answer I got is that upon query_virtqueue, the hardware available and
-used indices should always return the same value for virtqueues that
-complete in order - that's the case for network virtqueues. The value
-returned is the consumer index of the hardware. These values should be
-provided when creating a virtqueue; in case of attaching to an existing
-virtqueue (e.g. after suspend and resume), the values can be non zero.
+The bit mask for MSG_* seems a little confused here. Replace it
+with BIT() to make it clear to understand.
 
-Currently there's a bug in the firmware where for RX virtqueue, the
-value returned for the available index is wrong. However, the value
-returned for used index is the correct value.
+Signed-off-by: Menglong Dong <dong.menglong@zte.com.cn>
+---
+v4:
+- CC netdev
+v3:
+- move changelog here
+v2:
+- use BIT() instead of BIT_MASK()
+---
+ include/linux/socket.h | 71 ++++++++++++++++++++++--------------------
+ 1 file changed, 37 insertions(+), 34 deletions(-)
 
-Therefore, we need to return the hardware used index in get_vq_state()
-and restore this value into both the new object's available and used
-indices.
+diff --git a/include/linux/socket.h b/include/linux/socket.h
+index 385894b4a8bb..e88859f38cd0 100644
+--- a/include/linux/socket.h
++++ b/include/linux/socket.h
+@@ -283,42 +283,45 @@ struct ucred {
+    Added those for 1003.1g not all are supported yet
+  */
+ 
+-#define MSG_OOB		1
+-#define MSG_PEEK	2
+-#define MSG_DONTROUTE	4
+-#define MSG_TRYHARD     4       /* Synonym for MSG_DONTROUTE for DECnet */
+-#define MSG_CTRUNC	8
+-#define MSG_PROBE	0x10	/* Do not send. Only probe path f.e. for MTU */
+-#define MSG_TRUNC	0x20
+-#define MSG_DONTWAIT	0x40	/* Nonblocking io		 */
+-#define MSG_EOR         0x80	/* End of record */
+-#define MSG_WAITALL	0x100	/* Wait for a full request */
+-#define MSG_FIN         0x200
+-#define MSG_SYN		0x400
+-#define MSG_CONFIRM	0x800	/* Confirm path validity */
+-#define MSG_RST		0x1000
+-#define MSG_ERRQUEUE	0x2000	/* Fetch message from error queue */
+-#define MSG_NOSIGNAL	0x4000	/* Do not generate SIGPIPE */
+-#define MSG_MORE	0x8000	/* Sender will send more */
+-#define MSG_WAITFORONE	0x10000	/* recvmmsg(): block until 1+ packets avail */
+-#define MSG_SENDPAGE_NOPOLICY 0x10000 /* sendpage() internal : do no apply policy */
+-#define MSG_SENDPAGE_NOTLAST 0x20000 /* sendpage() internal : not the last page */
+-#define MSG_BATCH	0x40000 /* sendmmsg(): more messages coming */
+-#define MSG_EOF         MSG_FIN
+-#define MSG_NO_SHARED_FRAGS 0x80000 /* sendpage() internal : page frags are not shared */
+-#define MSG_SENDPAGE_DECRYPTED	0x100000 /* sendpage() internal : page may carry
+-					  * plain text and require encryption
+-					  */
+-
+-#define MSG_ZEROCOPY	0x4000000	/* Use user data in kernel path */
+-#define MSG_FASTOPEN	0x20000000	/* Send data in TCP SYN */
+-#define MSG_CMSG_CLOEXEC 0x40000000	/* Set close_on_exec for file
+-					   descriptor received through
+-					   SCM_RIGHTS */
++#define MSG_OOB		BIT(0)
++#define MSG_PEEK	BIT(1)
++#define MSG_DONTROUTE	BIT(2)
++#define MSG_TRYHARD	BIT(2)	/* Synonym for MSG_DONTROUTE for DECnet		*/
++#define MSG_CTRUNC	BIT(3)
++#define MSG_PROBE	BIT(4)	/* Do not send. Only probe path f.e. for MTU	*/
++#define MSG_TRUNC	BIT(5)
++#define MSG_DONTWAIT	BIT(6)	/* Nonblocking io		*/
++#define MSG_EOR		BIT(7)	/* End of record		*/
++#define MSG_WAITALL	BIT(8)	/* Wait for a full request	*/
++#define MSG_FIN		BIT(9)
++#define MSG_SYN		BIT(10)
++#define MSG_CONFIRM	BIT(11)	/* Confirm path validity	*/
++#define MSG_RST		BIT(12)
++#define MSG_ERRQUEUE	BIT(13)	/* Fetch message from error queue */
++#define MSG_NOSIGNAL	BIT(14)	/* Do not generate SIGPIPE	*/
++#define MSG_MORE	BIT(15)	/* Sender will send more	*/
++#define MSG_WAITFORONE	BIT(16)	/* recvmmsg(): block until 1+ packets avail */
++#define MSG_SENDPAGE_NOPOLICY	BIT(16)	/* sendpage() internal : do no apply policy */
++#define MSG_SENDPAGE_NOTLAST	BIT(17)	/* sendpage() internal : not the last page  */
++#define MSG_BATCH	BIT(18)		/* sendmmsg(): more messages coming */
++#define MSG_EOF		MSG_FIN
++#define MSG_NO_SHARED_FRAGS	BIT(19)	/* sendpage() internal : page frags
++					 * are not shared
++					 */
++#define MSG_SENDPAGE_DECRYPTED	BIT(20)	/* sendpage() internal : page may carry
++					 * plain text and require encryption
++					 */
++
++#define MSG_ZEROCOPY	BIT(26)		/* Use user data in kernel path */
++#define MSG_FASTOPEN	BIT(29)		/* Send data in TCP SYN */
++#define MSG_CMSG_CLOEXEC	BIT(30)	/* Set close_on_exec for file
++					 * descriptor received through
++					 * SCM_RIGHTS
++					 */
+ #if defined(CONFIG_COMPAT)
+-#define MSG_CMSG_COMPAT	0x80000000	/* This message needs 32 bit fixups */
++#define MSG_CMSG_COMPAT	BIT(31)	/* This message needs 32 bit fixups */
+ #else
+-#define MSG_CMSG_COMPAT	0		/* We never have 32 bit fixups */
++#define MSG_CMSG_COMPAT	0	/* We never have 32 bit fixups */
+ #endif
+ 
+ 
+-- 
+2.30.0
+
