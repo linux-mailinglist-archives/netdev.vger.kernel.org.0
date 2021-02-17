@@ -2,88 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84FE031D520
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 06:42:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 479DD31D54E
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 07:13:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229619AbhBQFlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 00:41:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48666 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbhBQFk7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 00:40:59 -0500
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1323C061574
-        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 21:40:18 -0800 (PST)
-Received: by mail-io1-xd33.google.com with SMTP id n14so12670296iog.3
-        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 21:40:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1hz/sIXhPkIaQhHtZ3K3rXNYQ85bBkMQLZadAR/3uHU=;
-        b=rOYjbLDHTwMZlUCLWhZfhViLx1xgLRGyGN3sNd6J4qIkDNPeoSrQN/YvUzpLRtmhnz
-         EigbvDveyDpQ5V+p7Zz2leg858xVcJWjo0hoUSCydfrvjir8iRSdGRlUGQhr8soWeJfs
-         MC4/oCeYO6RSowur3YeCsCdPHW/QcLeVGUrgDo8QqztmI7M31v/7Tvfni1XSvpOjRYDA
-         oCwciJTrZTsldrS+TCuk8Rt/MBMsWzIirIUCklyAmm79qBKDVIJTMJf5VxMalyEA8w5N
-         86StA2c1baNO1xFJWD9jqJuUQzgpeCuFRnDQ5J5HzyCrlYGtQGGeso0ZTn9grI9hiZB5
-         lrcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1hz/sIXhPkIaQhHtZ3K3rXNYQ85bBkMQLZadAR/3uHU=;
-        b=Q+o3QjgJD/M+qNGaqLtZRpEdL265ka3qAhUNmZWQ9Nmzb7aSPJ7+1OqZy4LEbrLCHn
-         q2oEG2qhdzzun0+Cn3ZVpAiYZsSPVGCDt+hGp2QPQ6PE50B0DKhgvthk4ma22QPLlnPa
-         zbuYxwWo4vmxOy3Yf74FS5EW59ZwzYLZEXUo0HvoiUwl+5Q9di626acxNW6FKlYQh79l
-         5jW+4SGw7haZg9HjIn9qW5hHnNQ+23LoQD0y+GbctMXNtclaX5mRjQ2VA/Ok8/3Br5RA
-         7++3vrNkwuhvNiRQ5ICqGmOPXm7KqODPwyqRiPRi+cu4JVKntAjW6KzcRaWdNWxNlJb2
-         VUVA==
-X-Gm-Message-State: AOAM532r7T3Dh70fPFp7P/p+Tx57jO3OivS/ybudGVdD6rq2Q6tVFmUJ
-        05KSES9SO5Q7y070X/FMWGLAlheh4qtc2UFK10Q=
-X-Google-Smtp-Source: ABdhPJxoIKeNsSrKhYkpOSwE9hYG7cwUfZ4+exKu9kcD6b7qbqVrUyY+x/JxBD0lXuEFkv+PLGFuG6uPudQLL/zcPS8=
-X-Received: by 2002:a6b:be86:: with SMTP id o128mr18812268iof.111.1613540418429;
- Tue, 16 Feb 2021 21:40:18 -0800 (PST)
+        id S231633AbhBQGNW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 01:13:22 -0500
+Received: from pbmsgap02.intersil.com ([192.157.179.202]:54498 "EHLO
+        pbmsgap02.intersil.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231577AbhBQGNU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 01:13:20 -0500
+Received: from pps.filterd (pbmsgap02.intersil.com [127.0.0.1])
+        by pbmsgap02.intersil.com (8.16.0.42/8.16.0.42) with SMTP id 11H5glCx032617;
+        Wed, 17 Feb 2021 00:42:47 -0500
+Received: from pbmxdp03.intersil.corp (pbmxdp03.pb.intersil.com [132.158.200.224])
+        by pbmsgap02.intersil.com with ESMTP id 36p9tmscnf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 17 Feb 2021 00:42:47 -0500
+Received: from pbmxdp03.intersil.corp (132.158.200.224) by
+ pbmxdp03.intersil.corp (132.158.200.224) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
+ 15.1.1979.3; Wed, 17 Feb 2021 00:42:46 -0500
+Received: from localhost (132.158.202.108) by pbmxdp03.intersil.corp
+ (132.158.200.224) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Wed, 17 Feb 2021 00:42:45 -0500
+From:   <vincent.cheng.xh@renesas.com>
+To:     <richardcochran@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Vincent Cheng <vincent.cheng.xh@renesas.com>
+Subject: [PATCH v3 net-next 0/7] ptp: ptp_clockmatrix: Fix output 1 PPS alignment.
+Date:   Wed, 17 Feb 2021 00:42:11 -0500
+Message-ID: <1613540538-23792-1-git-send-email-vincent.cheng.xh@renesas.com>
+X-Mailer: git-send-email 2.7.4
+X-TM-AS-MML: disable
 MIME-Version: 1.0
-References: <20210216235542.2718128-1-linus.walleij@linaro.org>
-In-Reply-To: <20210216235542.2718128-1-linus.walleij@linaro.org>
-From:   DENG Qingfang <dqfext@gmail.com>
-Date:   Wed, 17 Feb 2021 13:40:07 +0800
-Message-ID: <CALW65jZr9QPg3uyATSRg-u_xyy1xFO=VFUWqX4pD=upBatAZCQ@mail.gmail.com>
-Subject: Re: [PATCH] net: dsa: tag_rtl4_a: Support also egress tags
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Mauri Sandberg <sandberg@mailfence.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-02-17_02:2021-02-16,2021-02-17 signatures=0
+X-Proofpoint-Spam-Details: rule=junk_notspam policy=junk score=0 malwarescore=0 mlxlogscore=999
+ spamscore=0 phishscore=0 adultscore=0 mlxscore=0 bulkscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2102170042
+X-Proofpoint-Spam-Reason: mlx
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 17, 2021 at 7:55 AM Linus Walleij <linus.walleij@linaro.org> wrote:
->
-> +       if (skb_cow_head(skb, RTL4_A_HDR_LEN) < 0)
-> +               return NULL;
+From: Vincent Cheng <vincent.cheng.xh@renesas.com>
 
-skb_cow_head is unnecessary here. DSA core will do it for you.
+This series fixes a race condition that may result in the output clock
+not aligned to internal 1 PPS clock.
 
-> +
-> +       out = (RTL4_A_PROTOCOL_RTL8366RB << 12) | (2 << 8);
-> +       /* The lower bits is the port numer */
+Part of device initialization is to align the rising edge of output
+clocks to the internal rising edge of the 1 PPS clock.  If the system
+APLL and DPLL are not locked when this alignment occurs, the alignment
+fails and a fixed offset between the internal 1 PPS clock and the
+output clock occurs.
 
-Typo?
+If a clock is dynamically enabled after power-up, the output clock
+also needs to be aligned to the internal 1 PPS clock.
 
-> +       out |= (u8)dp->index;
-> +       p = (u16 *)(tag + 2);
-> +       *p = htons(out);
-> +
->         return skb;
->  }
->
-> --
-> 2.29.2
->
+v3:
+Suggested by: Jakub Kicinski <kuba@kernel.org>
+- Remove unnecessary 'err' variable
+- Increase msleep()/loop accuracy by using jiffies in while()
+- No empty lines between variables
+- No empty lines between call and the if
+- parenthesis around a == b are unnecessary
+- Inconsistent \n usage in dev_()
+- Remove unnecessary empty line
+- Leave string format in place so static code checkers can
+  validate arguments
+
+v2:
+Suggested by: Richard Cochran <richardcochran@gmail.com>
+- Added const to "char * fmt"
+- Break unrelated header change into separate patch
+
+Vincent Cheng (7):
+  ptp: ptp_clockmatrix: Add wait_for_sys_apll_dpll_lock.
+  ptp: ptp_clockmatrix: Add alignment of 1 PPS to idtcm_perout_enable.
+  ptp: ptp_clockmatrix: Remove unused header declarations.
+  ptp: ptp_clockmatrix: Clean-up dev_*() messages.
+  ptp: ptp_clockmatrix: Coding style - tighten vertical spacing.
+  ptp: ptp_clockmatrix: Simplify code - remove unnecessary `err`
+    variable.
+  ptp: ptp_clockmatrix: clean-up - parenthesis around a == b are
+    unnecessary
+
+ drivers/ptp/idt8a340_reg.h    |  10 ++
+ drivers/ptp/ptp_clockmatrix.c | 313 ++++++++++++++++++------------------------
+ drivers/ptp/ptp_clockmatrix.h |  17 ++-
+ 3 files changed, 162 insertions(+), 178 deletions(-)
+
+-- 
+2.7.4
+
