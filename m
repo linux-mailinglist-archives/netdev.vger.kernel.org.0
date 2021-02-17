@@ -2,182 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A67D31DF2A
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 19:41:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE39231DF2D
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 19:41:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234909AbhBQSlI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 13:41:08 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:40956 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231544AbhBQSlI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 13:41:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613587181;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Dl8x4+wFVVURHKDXzzceJJdbMGUykA8qXliYXfk5Wlg=;
-        b=Ox/jnGPw00VKxEe5DRYf1IC1BhraK4OPJ5UNx9iiUUbHCkSWvSgszfFYwgmOyvP1ygREfY
-        4y6lMI8GO8BlIldj/cSqp7DMsgDP403umJQVvwEE/z/mnmfTlz3pkhsDZsUDXW6lcT9mer
-        srog1d8xH9EL2fl3qdUp6HBGoehqoZ8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-534-eIye0K15NH66gAmDF3Dwtg-1; Wed, 17 Feb 2021 13:39:37 -0500
-X-MC-Unique: eIye0K15NH66gAmDF3Dwtg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8AD29107ACF9;
-        Wed, 17 Feb 2021 18:39:35 +0000 (UTC)
-Received: from ovpn-114-40.ams2.redhat.com (ovpn-114-40.ams2.redhat.com [10.36.114.40])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 030425D9C2;
-        Wed, 17 Feb 2021 18:39:32 +0000 (UTC)
-Message-ID: <2ff81838f3f141da3b238e913115a98f44f9b7d2.camel@redhat.com>
-Subject: Re: [MPTCP] KASAN: use-after-free Read in mptcp_established_options
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     syzbot <syzbot+3c1e5ab4997849b69807@syzkaller.appspotmail.com>,
-        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
-        mptcp@lists.01.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Date:   Wed, 17 Feb 2021 19:39:31 +0100
-In-Reply-To: <000000000000ea934b05bb8b92cf@google.com>
-References: <000000000000ea934b05bb8b92cf@google.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
-MIME-Version: 1.0
+        id S234937AbhBQSlW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 13:41:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46068 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229774AbhBQSlN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 13:41:13 -0500
+Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BAE2C061574;
+        Wed, 17 Feb 2021 10:40:33 -0800 (PST)
+Received: by mail-il1-x12c.google.com with SMTP id w1so12168691ilm.12;
+        Wed, 17 Feb 2021 10:40:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=K3g3DKWQxE+26feOLv3IYgt9bNcU2Di7yBLrODeixrs=;
+        b=pUO21YPSyXEyukRbCwVyjKK+ThVu+K0iWK5AADoUUTyc/q9t+0APdidmuUPVXDoQlw
+         SzqD9h93Qqq4nnyCmmRuBNvEiFzgAkdFdaGCfmkpfzE0rq0Q4OPxnoxBDop2CeZe2wkX
+         +1DaVLGAu/fjhpS+NBQw8gvslPkun3mM1D6Ja2lryTPTHjK8XZhNPt/nwSZIIcVxOwLo
+         NfJ3W0OBPDJXWMfmPTnreQcvxgnVeiKkd+q9cgpOnfHcZ1nJY4rP3+CVf10ntVnxZwyj
+         tcXyAXGGyTIo3KqzdASu7658lIwxShHLFa1p58Ff1EcwrN60vd4HBJ/JmMHxqcxkKHVK
+         6PFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=K3g3DKWQxE+26feOLv3IYgt9bNcU2Di7yBLrODeixrs=;
+        b=oI2h91smWrK8Ga3IONZQp4SU+fu4HqeHgMvis088Tq3tjg4V6LGUcHCEtysGsZ+rgZ
+         no/zqfAdy/8VcPIA5OcQnx1iZgrk21cu5poMi080uqs6D4xWVS3thJSofNmaoHs8DhIa
+         AH61rwBY3OEVrIVtenDntKIXwIsGLpVyvz4v2GT2hroJQTdMo8hlp0GUnwmkjj+sSUts
+         cNSqaat/0O/z3J0QLWwRNALl4QGjf/y3ahkwkq2hg8tMiGUBIH5kKPoErZN0hVOYll78
+         eWdhP5olmu+wKXeU6hRBnrkjyBo6BWLCeCEF3tGweknFGUPvbnC8GatbYPCUNHg22MHu
+         PPNQ==
+X-Gm-Message-State: AOAM530QfQDXaYuxzOGY4XZVO9ouy9nOMhFdV6y0fI385dVNwMEaxFMe
+        ngDyVtae6Mc7ipQhJ0e/FHw=
+X-Google-Smtp-Source: ABdhPJw2x5PN2MTrz0ZbytdS+sfLazYnPrAtgt6LKw6g7+c3tpDxYuwtM+y8ypuYGSdZkoFBw8EFcg==
+X-Received: by 2002:a92:cc4d:: with SMTP id t13mr398749ilq.150.1613587233105;
+        Wed, 17 Feb 2021 10:40:33 -0800 (PST)
+Received: from localhost ([172.243.146.206])
+        by smtp.gmail.com with ESMTPSA id i20sm1527019ilc.2.2021.02.17.10.40.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Feb 2021 10:40:32 -0800 (PST)
+Date:   Wed, 17 Feb 2021 10:40:24 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, duanxiongchun@bytedance.com,
+        wangdongdong.6@bytedance.com, jiang.wang@bytedance.com,
+        Cong Wang <cong.wang@bytedance.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Message-ID: <602d631877e40_aed9208bc@john-XPS-13-9370.notmuch>
+In-Reply-To: <20210216064250.38331-5-xiyou.wangcong@gmail.com>
+References: <20210216064250.38331-1-xiyou.wangcong@gmail.com>
+ <20210216064250.38331-5-xiyou.wangcong@gmail.com>
+Subject: RE: [Patch bpf-next v4 4/5] skmsg: move sk_redir from TCP_SKB_CB to
+ skb
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-02-17 at 09:30 -0800, syzbot wrote:
-> syzbot found the following issue on:
+Cong Wang wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
 > 
-> HEAD commit:    966df6de lan743x: sync only the received area of an rx rin..
-> git tree:       net-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=11afe082d00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=dbc1ca9e55dc1f9f
-> dashboard link: https://syzkaller.appspot.com/bug?extid=3c1e5ab4997849b69807
+> Currently TCP_SKB_CB() is hard-coded in skmsg code, it certainly
+> does not work for any other non-TCP protocols. We can move them to
+> skb ext, but it introduces a memory allocation on fast path.
 > 
-> Unfortunately, I don't have any reproducer for this issue yet.
+> Fortunately, we only need to a word-size to store all the information,
+> because the flags actually only contains 1 bit so can be just packed
+> into the lowest bit of the "pointer", which is stored as unsigned
+> long.
 > 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+3c1e5ab4997849b69807@syzkaller.appspotmail.com
+> Inside struct sk_buff, '_skb_refdst' can be reused because skb dst is
+> no longer needed after ->sk_data_ready() so we can just drop it.
 > 
-> ==================================================================
-> BUG: KASAN: use-after-free in mptcp_check_fallback net/mptcp/protocol.h:745 [inline]
-> BUG: KASAN: use-after-free in mptcp_established_options+0x22cf/0x2780 net/mptcp/options.c:724
-> Read of size 8 at addr ffff88802bea10a0 by task syz-executor.1/11042
-> 
-> CPU: 1 PID: 11042 Comm: syz-executor.1 Not tainted 5.11.0-rc7-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->  __dump_stack lib/dump_stack.c:79 [inline]
->  dump_stack+0x107/0x163 lib/dump_stack.c:120
->  print_address_description.constprop.0.cold+0x5b/0x2f8 mm/kasan/report.c:230
->  __kasan_report mm/kasan/report.c:396 [inline]
->  kasan_report.cold+0x79/0xd5 mm/kasan/report.c:413
->  mptcp_check_fallback net/mptcp/protocol.h:745 [inline]
->  mptcp_established_options+0x22cf/0x2780 net/mptcp/options.c:724
->  tcp_established_options+0x4ed/0x700 net/ipv4/tcp_output.c:953
->  tcp_current_mss+0x1d2/0x360 net/ipv4/tcp_output.c:1840
->  tcp_send_mss+0x28/0x2b0 net/ipv4/tcp.c:943
->  mptcp_sendmsg_frag+0x13b/0x1220 net/mptcp/protocol.c:1266
->  mptcp_push_pending+0x2cc/0x650 net/mptcp/protocol.c:1477
->  mptcp_sendmsg+0xde4/0x2830 net/mptcp/protocol.c:1685
->  inet6_sendmsg+0x99/0xe0 net/ipv6/af_inet6.c:642
->  sock_sendmsg_nosec net/socket.c:652 [inline]
->  sock_sendmsg+0xcf/0x120 net/socket.c:672
->  sock_write_iter+0x289/0x3c0 net/socket.c:999
->  call_write_iter include/linux/fs.h:1901 [inline]
->  new_sync_write+0x426/0x650 fs/read_write.c:518
->  vfs_write+0x791/0xa30 fs/read_write.c:605
->  ksys_write+0x1ee/0x250 fs/read_write.c:658
->  do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> RIP: 0033:0x465d99
-> Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007ff231ccc188 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-> RAX: ffffffffffffffda RBX: 000000000056c008 RCX: 0000000000465d99
-> RDX: 000000000003f9b4 RSI: 0000000020000000 RDI: 0000000000000004
-> RBP: 00000000004bcf27 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 000000000056c008
-> R13: 00007ffeaa2da27f R14: 00007ff231ccc300 R15: 0000000000022000
-> 
-> Allocated by task 11017:
->  kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
->  kasan_set_track mm/kasan/common.c:46 [inline]
->  set_alloc_info mm/kasan/common.c:401 [inline]
->  ____kasan_kmalloc.constprop.0+0x82/0xa0 mm/kasan/common.c:429
->  kmalloc include/linux/slab.h:552 [inline]
->  kzalloc include/linux/slab.h:682 [inline]
->  subflow_create_ctx+0x82/0x230 net/mptcp/subflow.c:1378
->  subflow_ulp_init+0x62/0x370 net/mptcp/subflow.c:1459
->  __tcp_set_ulp net/ipv4/tcp_ulp.c:139 [inline]
->  tcp_set_ulp+0x27c/0x610 net/ipv4/tcp_ulp.c:160
->  mptcp_subflow_create_socket+0x5bf/0xe20 net/mptcp/subflow.c:1343
->  __mptcp_socket_create net/mptcp/protocol.c:110 [inline]
->  mptcp_init_sock net/mptcp/protocol.c:2365 [inline]
->  mptcp_init_sock+0x140/0x830 net/mptcp/protocol.c:2350
->  inet6_create net/ipv6/af_inet6.c:256 [inline]
->  inet6_create+0xa15/0x1010 net/ipv6/af_inet6.c:110
->  __sock_create+0x3de/0x780 net/socket.c:1406
->  sock_create net/socket.c:1457 [inline]
->  __sys_socket+0xef/0x200 net/socket.c:1499
->  __do_sys_socket net/socket.c:1508 [inline]
->  __se_sys_socket net/socket.c:1506 [inline]
->  __x64_sys_socket+0x6f/0xb0 net/socket.c:1506
->  do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> Freed by task 10650:
->  kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
->  kasan_set_track+0x1c/0x30 mm/kasan/common.c:46
->  kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:356
->  ____kasan_slab_free+0xe1/0x110 mm/kasan/common.c:362
->  kasan_slab_free include/linux/kasan.h:192 [inline]
->  slab_free_hook mm/slub.c:1547 [inline]
->  slab_free_freelist_hook+0x5d/0x150 mm/slub.c:1580
->  slab_free mm/slub.c:3143 [inline]
->  kmem_cache_free_bulk mm/slub.c:3269 [inline]
->  kmem_cache_free_bulk+0x253/0xc80 mm/slub.c:3256
->  kfree_bulk include/linux/slab.h:409 [inline]
->  kfree_rcu_work+0x4cd/0x860 kernel/rcu/tree.c:3226
->  process_one_work+0x98d/0x15f0 kernel/workqueue.c:2275
->  worker_thread+0x64c/0x1120 kernel/workqueue.c:2421
->  kthread+0x3b1/0x4a0 kernel/kthread.c:292
->  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-> 
-> The buggy address belongs to the object at ffff88802bea1000
->  which belongs to the cache kmalloc-256 of size 256
-> The buggy address is located 160 bytes inside of
->  256-byte region [ffff88802bea1000, ffff88802bea1100)
-> The buggy address belongs to the page:
-> page:0000000026103328 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x2bea0
-> head:0000000026103328 order:1 compound_mapcount:0
-> flags: 0xfff00000010200(slab|head)
-> raw: 00fff00000010200 dead000000000100 dead000000000122 ffff888010c413c0
-> raw: 0000000000000000 0000000080100010 00000001ffffffff 0000000000000000
-> page dumped because: kasan: bad access detected
-> 
-> Memory state around the buggy address:
->  ffff88802bea0f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->  ffff88802bea1000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> > ffff88802bea1080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->                                ^
->  ffff88802bea1100: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->  ffff88802bea1180: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-> ==================================================================
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> Cc: Lorenz Bauer <lmb@cloudflare.com>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> ---
 
-very likely
+Great, its likely we have more space in sk_buff we can use if needed
+as well. queue_mapping, skb_iif, vlan*, fields come to mind. Couple
+comments inline, but looks good to me.
 
-#syz dup: WARNING in dst_release
+Acked-by: John Fastabend <john.fastabend@gmail.com>
 
-(same root cause, we need to clear msk->first when the relevant subflow
-is disposed by the workqueue)
+[...]
 
-/P
+> --- a/net/core/skmsg.c
+> +++ b/net/core/skmsg.c
+> @@ -494,6 +494,8 @@ static int sk_psock_skb_ingress_self(struct sk_psock *psock, struct sk_buff *skb
+>  static int sk_psock_handle_skb(struct sk_psock *psock, struct sk_buff *skb,
+>  			       u32 off, u32 len, bool ingress)
+>  {
+> +	skb_bpf_redirect_clear(skb);
+> +
+>  	if (!ingress) {
+>  		if (!sock_writeable(psock->sk))
+>  			return -EAGAIN;
+> @@ -525,7 +527,7 @@ static void sk_psock_backlog(struct work_struct *work)
+>  		len = skb->len;
+>  		off = 0;
+>  start:
+> -		ingress = tcp_skb_bpf_ingress(skb);
+> +		ingress = skb_bpf_ingress(skb);
+>  		do {
+>  			ret = -EIO;
+>  			if (likely(psock->sk->sk_socket))
+> @@ -631,7 +633,12 @@ void __sk_psock_purge_ingress_msg(struct sk_psock *psock)
+>  
+>  static void sk_psock_zap_ingress(struct sk_psock *psock)
+>  {
+> -	__skb_queue_purge(&psock->ingress_skb);
+> +	struct sk_buff *skb;
+> +
+> +	while ((skb = __skb_dequeue(&psock->ingress_skb)) != NULL) {
+> +		skb_bpf_redirect_clear(skb);
+> +		kfree_skb(skb);
+> +	}
+>  	__sk_psock_purge_ingress_msg(psock);
+>  }
+>  
+> @@ -752,7 +759,7 @@ static void sk_psock_skb_redirect(struct sk_buff *skb)
+>  	struct sk_psock *psock_other;
+>  	struct sock *sk_other;
+>  
+> -	sk_other = tcp_skb_bpf_redirect_fetch(skb);
+> +	sk_other = skb_bpf_redirect_fetch(skb);
+>  	/* This error is a buggy BPF program, it returned a redirect
+>  	 * return code, but then didn't set a redirect interface.
+>  	 */
+> @@ -802,9 +809,10 @@ int sk_psock_tls_strp_read(struct sk_psock *psock, struct sk_buff *skb)
+>  		 * TLS context.
+>  		 */
+>  		skb->sk = psock->sk;
+> -		tcp_skb_bpf_redirect_clear(skb);
+> +		skb_dst_drop(skb);
+> +		skb_bpf_redirect_clear(skb);
 
+Do we really need the skb_dst_drop() I thought we would have already dropped this here
+but I've not had time to check yet.
+
+>  		ret = sk_psock_bpf_run(psock, prog, skb);
+> -		ret = sk_psock_map_verd(ret, tcp_skb_bpf_redirect_fetch(skb));
+> +		ret = sk_psock_map_verd(ret, skb_bpf_redirect_fetch(skb));
+>  		skb->sk = NULL;
+>  	}
+>  	sk_psock_tls_verdict_apply(skb, psock->sk, ret);
+> @@ -816,7 +824,6 @@ EXPORT_SYMBOL_GPL(sk_psock_tls_strp_read);
+>  static void sk_psock_verdict_apply(struct sk_psock *psock,
+>  				   struct sk_buff *skb, int verdict)
+>  {
+> -	struct tcp_skb_cb *tcp;
+>  	struct sock *sk_other;
+>  	int err = -EIO;
+>  
+> @@ -828,8 +835,7 @@ static void sk_psock_verdict_apply(struct sk_psock *psock,
+>  			goto out_free;
+>  		}
+>  
+> -		tcp = TCP_SKB_CB(skb);
+> -		tcp->bpf.flags |= BPF_F_INGRESS;
+> +		skb_bpf_set_ingress(skb);
+>  
+>  		/* If the queue is empty then we can submit directly
+>  		 * into the msg queue. If its not empty we have to
+> @@ -890,9 +896,10 @@ static void sk_psock_strp_read(struct strparser *strp, struct sk_buff *skb)
+>  	skb_set_owner_r(skb, sk);
+>  	prog = READ_ONCE(psock->progs.skb_verdict);
+>  	if (likely(prog)) {
+> -		tcp_skb_bpf_redirect_clear(skb);
+> +		skb_dst_drop(skb);
+
+Same here.
+
+> +		skb_bpf_redirect_clear(skb);
+>  		ret = sk_psock_bpf_run(psock, prog, skb);
+> -		ret = sk_psock_map_verd(ret, tcp_skb_bpf_redirect_fetch(skb));
+> +		ret = sk_psock_map_verd(ret, skb_bpf_redirect_fetch(skb));
+>  	}
+>  	sk_psock_verdict_apply(psock, skb, ret);
+>  out:
+> @@ -1005,9 +1012,10 @@ static int sk_psock_verdict_recv(read_descriptor_t *desc, struct sk_buff *skb,
+>  	skb_set_owner_r(skb, sk);
+>  	prog = READ_ONCE(psock->progs.skb_verdict);
+>  	if (likely(prog)) {
+> -		tcp_skb_bpf_redirect_clear(skb);
+> +		skb_dst_drop(skb);
+
+And here. 
+
+> +		skb_bpf_redirect_clear(skb);
+>  		ret = sk_psock_bpf_run(psock, prog, skb);
+> -		ret = sk_psock_map_verd(ret, tcp_skb_bpf_redirect_fetch(skb));
+> +		ret = sk_psock_map_verd(ret, skb_bpf_redirect_fetch(skb));
+>  	}
+>  	sk_psock_verdict_apply(psock, skb, ret);
+
+Thanks for doing this.
