@@ -2,95 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F3AB31D722
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 10:54:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE05631D73B
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 11:05:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231948AbhBQJyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 04:54:04 -0500
-Received: from mga11.intel.com ([192.55.52.93]:22527 "EHLO mga11.intel.com"
+        id S232102AbhBQKD0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 05:03:26 -0500
+Received: from z11.mailgun.us ([104.130.96.11]:26327 "EHLO z11.mailgun.us"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231470AbhBQJyA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Feb 2021 04:54:00 -0500
-IronPort-SDR: bgy/IG8OCJ8P0Tjjo/qySct4nGrx/IOk6vHf04c8ZE+JGVIODDEp2eujcr3RvtpOS96/6d6Z6e
- B5xHIgpdr44A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9897"; a="179643960"
-X-IronPort-AV: E=Sophos;i="5.81,184,1610438400"; 
-   d="scan'208";a="179643960"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2021 01:53:17 -0800
-IronPort-SDR: dX9qS/mBPVuRlhyR92/GwDld8pE4SCeO/Q2gieLHME5cB1d7vIm6tSK+qkyus4IgLVk5ZsZ7A/
- 0cQlIXue7ivA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,184,1610438400"; 
-   d="scan'208";a="589549452"
-Received: from glass.png.intel.com ([10.158.65.51])
-  by fmsmga006.fm.intel.com with ESMTP; 17 Feb 2021 01:53:13 -0800
-From:   Wong Vee Khee <vee.khee.wong@intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S229553AbhBQKDY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Feb 2021 05:03:24 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1613556178; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=4JdaXai7Zo7vtd+E83Cf5+ZaD1w9rnJU+MBT88EOUwA=; b=tOe1NFjhcKLNrhjQMRPuaoh9kVqwcJKHm9KYDt+siCMIxQugOoLKRMTSIn7V7HwxfdJJTjQv
+ MLLTzke2nzCfGJKV1ebx41hh/Vo6mkmYlerYhif02liYslYR+TMxTTYUt18/hVYwjjI6gSMb
+ kzjvs9dH06FLugqX3SaEdKxsz4A=
+X-Mailgun-Sending-Ip: 104.130.96.11
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
+ 602ce9a1a1a71e420fd76295 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 17 Feb 2021 10:02:09
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id AB214C433ED; Wed, 17 Feb 2021 10:02:08 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id EBD4DC433C6;
+        Wed, 17 Feb 2021 10:02:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org EBD4DC433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Srinivasan Raju <srini.raju@purelifi.com>
+Cc:     mostafa.afgani@purelifi.com,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 1/1] net: stmmac: Add PCI bus info to ethtool driver query output
-Date:   Wed, 17 Feb 2021 17:57:05 +0800
-Message-Id: <20210217095705.13806-1-vee.khee.wong@intel.com>
-X-Mailer: git-send-email 2.17.0
+        linux-kernel@vger.kernel.org (open list),
+        linux-wireless@vger.kernel.org (open list:NETWORKING DRIVERS (WIRELESS)),
+        netdev@vger.kernel.org (open list:NETWORKING DRIVERS)
+Subject: Re: [PATCH] [v13] wireless: Initial driver submission for pureLiFi STA devices
+References: <20200928102008.32568-1-srini.raju@purelifi.com>
+        <20210212115030.124490-1-srini.raju@purelifi.com>
+Date:   Wed, 17 Feb 2021 12:02:03 +0200
+In-Reply-To: <20210212115030.124490-1-srini.raju@purelifi.com> (Srinivasan
+        Raju's message of "Fri, 12 Feb 2021 17:19:39 +0530")
+Message-ID: <87v9arovvo.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch populates the PCI bus info in the ethtool driver query data.
+Srinivasan Raju <srini.raju@purelifi.com> writes:
 
-Users will be able to view PCI bus info using 'ethtool -i <interface>'.
+> This introduces the pureLiFi LiFi driver for LiFi-X, LiFi-XC
+> and LiFi-XL USB devices.
+>
+> This driver implementation has been based on the zd1211rw driver.
+>
+> Driver is based on 802.11 softMAC Architecture and uses
+> native 802.11 for configuration and management.
+>
+> The driver is compiled and tested in ARM, x86 architectures and
+> compiled in powerpc architecture.
+>
+> Signed-off-by: Srinivasan Raju <srini.raju@purelifi.com>
 
-Signed-off-by: Wong Vee Khee <vee.khee.wong@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c    | 1 +
- drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c | 4 ++++
- include/linux/stmmac.h                               | 1 +
- 3 files changed, 6 insertions(+)
+I pushed this now to the pending branch of wireless-drivers-next for
+build testing, let's see what kind of results we get. I didn't manage to
+do a thorough review yet, but few quick comments:
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index 1c9c67b641a2..751dfdeec41c 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -236,6 +236,7 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
- 	int ret;
- 	int i;
- 
-+	plat->pdev = pdev;
- 	plat->phy_addr = -1;
- 	plat->clk_csr = 5;
- 	plat->has_gmac = 0;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-index 9e54f953634b..c5642985ef95 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-@@ -268,6 +268,10 @@ static void stmmac_ethtool_getdrvinfo(struct net_device *dev,
- 		strlcpy(info->driver, MAC100_ETHTOOL_NAME,
- 			sizeof(info->driver));
- 
-+	if (priv->plat->pdev) {
-+		strlcpy(info->bus_info, pci_name(priv->plat->pdev),
-+			sizeof(info->bus_info));
-+	}
- 	strlcpy(info->version, DRV_MODULE_VERSION, sizeof(info->version));
- }
- 
-diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index 15ca6b4167cc..a302982de2d7 100644
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -202,5 +202,6 @@ struct plat_stmmacenet_data {
- 	bool vlan_fail_q_en;
- 	u8 vlan_fail_q;
- 	unsigned int eee_usecs_rate;
-+	struct pci_dev *pdev;
- };
- #endif
+> --- a/drivers/net/wireless/Kconfig
+> +++ b/drivers/net/wireless/Kconfig
+> @@ -35,6 +35,7 @@ source "drivers/net/wireless/st/Kconfig"
+>  source "drivers/net/wireless/ti/Kconfig"
+>  source "drivers/net/wireless/zydas/Kconfig"
+>  source "drivers/net/wireless/quantenna/Kconfig"
+> +source "drivers/net/wireless/purelifi/Kconfig"
+
+This is supposed to be in alphabetical order.
+
+> --- a/drivers/net/wireless/Makefile
+> +++ b/drivers/net/wireless/Makefile
+> @@ -20,6 +20,7 @@ obj-$(CONFIG_WLAN_VENDOR_ST) += st/
+>  obj-$(CONFIG_WLAN_VENDOR_TI) += ti/
+>  obj-$(CONFIG_WLAN_VENDOR_ZYDAS) += zydas/
+>  obj-$(CONFIG_WLAN_VENDOR_QUANTENNA) += quantenna/
+> +obj-$(CONFIG_WLAN_VENDOR_PURELIFI) += purelifi/
+
+And this one as well. Clearly I missed these with quantenna, but no need
+to redo the same mistake with purelife. Also patches welcome to fix
+quantenna sorting.
+
+> --- /dev/null
+> +++ b/drivers/net/wireless/purelifi/plfxlc/Kconfig
+> @@ -0,0 +1,13 @@
+> +# SPDX-License-Identifier: GPL-2.0-only
+> +config PLFXLC
+> +
+> +	tristate "pureLiFi X, XL, XC device support"
+> +	depends on CFG80211 && MAC80211 && USB
+> +	help
+> +	   This driver makes the adapter appear as a normal WLAN interface.
+> +
+> +	   The pureLiFi device requires external STA firmware to be loaded.
+> +
+
+The documentation here is not telling much. I think it goes without
+saying that a firmware is needed, so no need to mention it. And also
+"normal WLAN interface" is a standard upstream requirement so drop that
+as well. Instead describe here in detail what hardware this driver
+supports, for example exact product names, bus types, wifi/ieee
+generation etc.
+
+> +	   To compile this driver as a module, choose M here: the module will
+> +	   be called purelifi.
+
+Didn't you rename it to plfxlc?
+
 -- 
-2.17.0
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
