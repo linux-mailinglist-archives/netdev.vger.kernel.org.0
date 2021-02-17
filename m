@@ -2,103 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E0C831D5B2
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 08:32:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B991031D5C8
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 08:38:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231577AbhBQHbu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 02:31:50 -0500
-Received: from z11.mailgun.us ([104.130.96.11]:29251 "EHLO z11.mailgun.us"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229619AbhBQHbs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Feb 2021 02:31:48 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1613547088; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=VdTuFW1eZ3KIE8WTPHjDwu+M4861ybBJaxdd7BYbVgs=; b=MHpo29vo6iwPIrYkXYcRQQMpI5mQgngvsCZihVPeRr+MkPi/Q4Oeaaj/5dvZEQ1eXmcYIKl+
- gkvhDULxIwJNcW9fUDxflRK9ULJLGktjjdlU9ki1FT0uRW0hfJfGzV63iDupXXx+A/87lBBT
- osGD1+xRXcoLdQQcs5kkiH63zPs=
-X-Mailgun-Sending-Ip: 104.130.96.11
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
- 602cc6350b8eba4b52b50f21 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 17 Feb 2021 07:31:01
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id C6E75C43465; Wed, 17 Feb 2021 07:31:00 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id B0331C433CA;
-        Wed, 17 Feb 2021 07:30:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B0331C433CA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Shuah Khan <skhan@linuxfoundation.org>
-Cc:     Felix Fietkau <nbd@nbd.name>, davem@davemloft.net, kuba@kernel.org,
-        ath9k-devel@qca.qualcomm.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] ath9k: fix ath_tx_process_buffer() potential null ptr dereference
-References: <43ed9abb9e8d7112f3cc168c2f8c489e253635ba.1613090339.git.skhan@linuxfoundation.org>
-        <20210216070336.D138BC43463@smtp.codeaurora.org>
-        <0fd9a538-e269-e10e-a7f9-02d4c5848420@nbd.name>
-        <caac2b21-d5de-32ac-0fe0-75af8fb80bbb@linuxfoundation.org>
-Date:   Wed, 17 Feb 2021 09:30:55 +0200
-In-Reply-To: <caac2b21-d5de-32ac-0fe0-75af8fb80bbb@linuxfoundation.org> (Shuah
-        Khan's message of "Tue, 16 Feb 2021 08:22:07 -0700")
-Message-ID: <878s7nqhg0.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S231811AbhBQHhu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 02:37:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45088 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231785AbhBQHhG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 02:37:06 -0500
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0830BC06174A;
+        Tue, 16 Feb 2021 23:36:26 -0800 (PST)
+Received: by mail-pl1-x636.google.com with SMTP id u11so6949418plg.13;
+        Tue, 16 Feb 2021 23:36:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=zxtM6eqeEhrdSssmUehvYw5PkJaJYEt+Y3uOFUDI4qY=;
+        b=Ve9VK+l9eu3sKwzSnRbPPYCeNx4Zy9TdUEdZRbPyNTUcDtuEKagwPtDNUAfz/BjBXO
+         Tuj0Z3ZTHo0CPJ5Skz6VTP2nqvwjgnFzF/20z3NsjERm8FGgcEaDHcWTTNEJLPdfvhUy
+         Tak0w9SAt9GRtrrPFkjAyo4PupLA58TxWVujDyS0s5P215Mfh/dcMQuGDC4dkkfox23Q
+         nH6NblgqUbboCVFrxOO/XW38kUdVcoUoViAzLxj9ztN+9rCT4l57NK7GVPHlyGoAnLgG
+         OGiGmuDIcNLZPMv025fIt7OgmJyfxYUubRHphdlZSgjbl0JXlaSKhJRbGJ4CuurMEoLv
+         ZEPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=zxtM6eqeEhrdSssmUehvYw5PkJaJYEt+Y3uOFUDI4qY=;
+        b=HtdMz6PkAos+BkhL6we9AlJ5OLMoplzivwocuJvsSpgEFJaS+1cjkRtxUcOxho57qu
+         Z875fhANehUuCxY+QnMvrjYnTqOlb0Pi0Wtglodb4cmjlLr9SgCMmEHr6TURhKttM81M
+         sVhN25Q/MIUJLw+cZvNBOPl8h3urFxjNTLMPGD0sdhOBdYv0TzCBBFgWhZh4iEgnykov
+         JuxCnd8D+BUm4XM6wjV2KlEp8YVLz+FWPbTxEWUqB4ioCPqA2WnPGuIE9AF8ip/S7o11
+         MQg69uMpCDFJ7ViF/+TPFDSqQ+FZVDWIHFWDKnhzNiPrzi2AoV0j3NgFr3dpr/IvKJLj
+         DaVQ==
+X-Gm-Message-State: AOAM532LAwyCzH5fNZhjUn3YFi6jSvMco78RwSDAPETDWnMRlaykDlgB
+        1uDxy0behjMdjwU9bExo2io5oFFbYXoT/Y3yWys=
+X-Google-Smtp-Source: ABdhPJx2bQNhr0lLnxEadgxiVXWIWsBKtq9oKMvsm1dY7KgqfhwFYPr5uBCQkkMwCNpIMDVj7YDEwvDOxn8zeEtpjU0=
+X-Received: by 2002:a17:90a:7286:: with SMTP id e6mr1302455pjg.117.1613547385596;
+ Tue, 16 Feb 2021 23:36:25 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20210215154638.4627-1-maciej.fijalkowski@intel.com>
+ <20210215154638.4627-2-maciej.fijalkowski@intel.com> <87eehhcl9x.fsf@toke.dk>
+ <fe0c957e-d212-4265-a271-ba301c3c5eca@intel.com> <602ad80c566ea_3ed4120871@john-XPS-13-9370.notmuch>
+ <8735xxc8pf.fsf@toke.dk> <6e9842b289ff2c54e528eb89d69a9b4f678c65da.camel@coverfire.com>
+ <CAJ8uoz0QqR97qEYYK=VVCE9A=V=k2tKnH6wNM48jeak2RAmL0A@mail.gmail.com>
+In-Reply-To: <CAJ8uoz0QqR97qEYYK=VVCE9A=V=k2tKnH6wNM48jeak2RAmL0A@mail.gmail.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Wed, 17 Feb 2021 08:36:14 +0100
+Message-ID: <CAJ8uoz0WAM8oSag5b4uuLgUdQHNVdHjm0EmUtXyQ6XW0RFgKFA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/3] libbpf: xsk: use bpf_link
+To:     Dan Siemon <dan@coverfire.com>
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Ciara Loftus <ciara.loftus@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Shuah Khan <skhan@linuxfoundation.org> writes:
-
-> On 2/16/21 12:53 AM, Felix Fietkau wrote:
->>
->> On 2021-02-16 08:03, Kalle Valo wrote:
->>> Shuah Khan <skhan@linuxfoundation.org> wrote:
->>>
->>>> ath_tx_process_buffer() references ieee80211_find_sta_by_ifaddr()
->>>> return pointer (sta) outside null check. Fix it by moving the code
->>>> block under the null check.
->>>>
->>>> This problem was found while reviewing code to debug RCU warn from
->>>> ath10k_wmi_tlv_parse_peer_stats_info() and a subsequent manual audit
->>>> of other callers of ieee80211_find_sta_by_ifaddr() that don't hold
->>>> RCU read lock.
->>>>
->>>> Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
->>>> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
->>>
->>> Patch applied to ath-next branch of ath.git, thanks.
->>>
->>> a56c14bb21b2 ath9k: fix ath_tx_process_buffer() potential null ptr dereference
->> I just took another look at this patch, and it is completely bogus.
->> Not only does the stated reason not make any sense (sta is simply passed
->> to other functions, not dereferenced without checks), but this also
->> introduces a horrible memory leak by skipping buffer completion if sta
->> is NULL.
->> Please drop it, the code is fine as-is.
+On Wed, Feb 17, 2021 at 8:16 AM Magnus Karlsson
+<magnus.karlsson@gmail.com> wrote:
 >
-> A comment describing what you said here might be a good addition to this
-> comment block though.
+> On Wed, Feb 17, 2021 at 3:26 AM Dan Siemon <dan@coverfire.com> wrote:
+> >
+> > On Mon, 2021-02-15 at 22:38 +0100, Toke H=C3=B8iland-J=C3=B8rgensen wro=
+te:
+> > > The idea is to keep libbpf focused on bpf, and move the AF_XDP stuff
+> > > to
+> > > libxdp (so the socket stuff in xsk.h). We're adding the existing code
+> > > wholesale, and keeping API compatibility during the move, so all
+> > > that's
+> > > needed is adding -lxdp when compiling. And obviously the existing
+> > > libbpf
+> > > code isn't going anywhere until such a time as there's a general
+> > > backwards compatibility-breaking deprecation in libbpf (which I
+> > > believe
+> > > Andrii is planning to do in an upcoming and as-of-yet unannounced
+> > > v1.0
+> > > release).
+> >
+> > I maintain a Rust binding to the AF_XDP parts of libbpf [1][2]. On the
+> > chance that more significant changes can be entertained in the switch
+> > to libxdp... The fact that many required functions like the ring access
+> > functions exist only in xsk.h makes building a binding more difficult
+> > because we need to wrap it with an extra C function [3]. From that
+> > perspective, it would be great if those could move to xsk.c.
+>
+> The only reason they were put in xsk.h is performance. But with LTO
+> (link-time optimizations) being present in most C-compilers these
+> days, it might not be a valid argument anymore. I will perform some
+> experiments and let you know. As you say, it would be much nicer to
+> hide away these functions in the library proper and make your life
+> easier.
 
-Shuah, can you send a followup patch which reverts your change and adds
-the comment? I try to avoid rebasing my trees.
+I would be very grateful for any more suggested changes that users out
+there would like to see. Now, when we move to libxdp is the perfect
+chance to fix those things. We might even decide to partially break
+compatibility or change some behavior if the gain is large enough.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+> > [1] - https://github.com/aterlo/afxdp-rs
+> > [2] - https://github.com/alexforster/libbpf-sys
+> > [3] - https://github.com/alexforster/libbpf-sys/blob/master/bindings.c
+> >
