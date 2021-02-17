@@ -2,103 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5980C31D557
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 07:20:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3298431D559
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 07:27:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231393AbhBQGTQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 01:19:16 -0500
-Received: from userp2130.oracle.com ([156.151.31.86]:35056 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231341AbhBQGTO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 01:19:14 -0500
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11H6FAOM179844;
-        Wed, 17 Feb 2021 06:18:19 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
- bh=uDCLPCIO9dcfZ98mvYluRmR2Vohmodd48NPFEiMAni8=;
- b=piZQNv6h3IQYetmyQvDOQXxJq2RTvNC7YIW1x6QNluVQeWnw7W1v5xm0vOkZmbMZb+7A
- JtmTrkfTwb8Of5Z7TECqm/H+7cFUlKGNF2xnPAO08hMi+ox4AnmFZTqljTWeuLlu0aTa
- bc/dkBvEnN8OPdOqSGts5M8HryEPmbxPWbKvV3mVa0E0e6BjCyhLXCSrAn75Rh6LdGZa
- jOCkkK/hbXfLXn/h/JgXBNRr9VshydzhnbqeEmRVzrPoNKivVbQLGyKjb2LHaG4XLqtG
- M9QZyp7xYt6uJ5slx3U1oevnlhbADLMobQ2qJRhTeMsT5wD499pDAR5XLLzRRXbkz/OZ iw== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2130.oracle.com with ESMTP id 36p66r16r7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 17 Feb 2021 06:18:19 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11H6G51i172317;
-        Wed, 17 Feb 2021 06:18:17 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userp3030.oracle.com with ESMTP id 36prpxr3hq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 17 Feb 2021 06:18:17 +0000
-Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 11H6I8DP024672;
-        Wed, 17 Feb 2021 06:18:08 GMT
-Received: from mwanda (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 16 Feb 2021 22:18:07 -0800
-Date:   Wed, 17 Feb 2021 09:17:59 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Andrew Lunn <andrew@lunn.ch>, Michael Walle <michael@walle.cc>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        id S231169AbhBQGW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 01:22:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57524 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230309AbhBQGW0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 01:22:26 -0500
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61396C061574
+        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 22:21:46 -0800 (PST)
+Received: by mail-pl1-x62d.google.com with SMTP id a24so6867944plm.11
+        for <netdev@vger.kernel.org>; Tue, 16 Feb 2021 22:21:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XKEHbRc58h/pXgLqtvZSC7jJfmGmmRzhsGcG20EJraA=;
+        b=V6VSmdxjJy9i4hX2YvNAYKKw16phBZcU9S2gOJKtDyXZh2EEp+mjFc9zxpQsTzS1eY
+         DtCc+KOjQdp2PmD0lSMhEz/j7QMx5sSvEPY9IdB6ypfpSOVH1Ys0TwZlD7+zo3Pf0CEH
+         Cnbk9EjaCt9j4DDovaNsDVlpwnZLss4DA9mAfjtaTTZZKKsNL/DYKMu8rNQMgH7AdUD9
+         +ZaDvms8TtVITyKzRgx8pSE+PWgMuDOS5gpBq1SmWqsne7q77buMVBcvqoi0zug+IwGE
+         ZzW8+mrxDCyHPBZgyHorSw3AX5iztgysPNUVGGjJBgIUeNdY8/XjVAHue7FGrOBdEZZr
+         9X3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XKEHbRc58h/pXgLqtvZSC7jJfmGmmRzhsGcG20EJraA=;
+        b=pLp3gPeybKSipMhmUY3+iCmsEhCYZOHSaPgnN2Kmh5KXl2+rrSL3QvAlM9ik9yXNTP
+         vVRNibf2NnzzFWb/XEmGD50nbOin99L5ZIJz6Bnsn0N4FatHMwVELDgN1I4dwqrgelW7
+         XoaxqSoA33QgHZ2HPOZ4Rb3wFU3wifxbvA2tvgS2Ic9wjbJwUpSJeG6bH+K+/XBkKqha
+         VUHEDDaJz3hM6D0kPOwxR+jx9SZVPgwmDAZ7jUNZh0F1e8dRZNQf/9N8nfNgEVrdCXFS
+         UwbCZqOV6S2T73OExglac3tgu3avj3ZaKnZukE3iLMWPak9hNeikGiHhFQykTDgei+3d
+         VCwg==
+X-Gm-Message-State: AOAM531i4XdwDpLc0Syvhp9uLKCy4wFdCLlvIRV6AfpOgRFiMvXAWnQj
+        m39Nkk4+ZkIuUihQWnnkgIo=
+X-Google-Smtp-Source: ABdhPJxFhnF3aoG12bTMulUAJQ96dbBfii4WPX9BokFnsblpjlTlaEEdrkx8zFQ1vQnmejBJan2BVw==
+X-Received: by 2002:a17:902:aa4b:b029:e2:bb4b:a63 with SMTP id c11-20020a170902aa4bb02900e2bb4b0a63mr23150660plr.7.1613542905879;
+        Tue, 16 Feb 2021 22:21:45 -0800 (PST)
+Received: from Haswell.lan ([2a09:bac0:23::815:b46])
+        by smtp.gmail.com with ESMTPSA id p2sm843233pjv.31.2021.02.16.22.21.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Feb 2021 22:21:45 -0800 (PST)
+From:   DENG Qingfang <dqfext@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: [PATCH net-next] net: phy: icplus: Call phy_restore_page() when
- phy_select_page() fails
-Message-ID: <YCy1F5xKFJAaLBFw@mwanda>
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
+        Mauri Sandberg <sandberg@mailfence.com>
+Subject: [RFC net-next 0/2] DSA driver for Realtek RTL8366S/SR
+Date:   Wed, 17 Feb 2021 14:21:37 +0800
+Message-Id: <20210217062139.7893-1-dqfext@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Proofpoint-IMR: 1
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9897 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxlogscore=999
- phishscore=0 adultscore=0 mlxscore=0 suspectscore=0 malwarescore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102170047
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9897 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 lowpriorityscore=0 suspectscore=0
- impostorscore=0 priorityscore=1501 clxscore=1011 spamscore=0 mlxscore=0
- phishscore=0 malwarescore=0 bulkscore=0 adultscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2102170047
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Smatch warns that there is a locking issue in this function:
+Add DSA driver and tag for Realtek RTL8366S/SR.
 
-drivers/net/phy/icplus.c:273 ip101a_g_config_intr_pin()
-warn: inconsistent returns '&phydev->mdio.bus->mdio_lock'.
-  Locked on  : 242
-  Unlocked on: 273
+Posting this as RFC because Linus Walleij told me that Mauri Sandberg was
+working on this driver too, and some of the features are not yet tested.
 
-It turns out that the comments in phy_select_page() say we have to call
-phy_restore_page() even if the call to phy_select_page() fails.
+DENG Qingfang (2):
+  net: dsa: add Realtek RTL8366S switch tag
+  net: dsa: add Realtek RTL8366S switch driver
 
-Fixes: f9bc51e6cce2 ("net: phy: icplus: fix paged register access")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/net/phy/icplus.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/Kconfig            |    1 +
+ drivers/net/dsa/Makefile           |    2 +-
+ drivers/net/dsa/realtek-smi-core.c |    3 +-
+ drivers/net/dsa/realtek-smi-core.h |    1 +
+ drivers/net/dsa/rtl8366s.c         | 1165 ++++++++++++++++++++++++++++
+ include/net/dsa.h                  |    2 +
+ net/dsa/Kconfig                    |    6 +
+ net/dsa/Makefile                   |    1 +
+ net/dsa/tag_rtl8366s.c             |   98 +++
+ 9 files changed, 1276 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/net/dsa/rtl8366s.c
+ create mode 100644 net/dsa/tag_rtl8366s.c
 
-diff --git a/drivers/net/phy/icplus.c b/drivers/net/phy/icplus.c
-index 4e15d4d02488..015b7b5aa776 100644
---- a/drivers/net/phy/icplus.c
-+++ b/drivers/net/phy/icplus.c
-@@ -239,7 +239,7 @@ static int ip101a_g_config_intr_pin(struct phy_device *phydev)
- 
- 	oldpage = phy_select_page(phydev, IP101G_DEFAULT_PAGE);
- 	if (oldpage < 0)
--		return oldpage;
-+		goto out;
- 
- 	/* configure the RXER/INTR_32 pin of the 32-pin IP101GR if needed: */
- 	switch (priv->sel_intr32) {
 -- 
-2.30.0
+2.25.1
 
