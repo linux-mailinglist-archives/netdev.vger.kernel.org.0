@@ -2,132 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25FE531D8D9
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 12:54:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60D1B31D8FE
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 13:03:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231724AbhBQLwY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 06:52:24 -0500
-Received: from mail-eopbgr60082.outbound.protection.outlook.com ([40.107.6.82]:62945
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232090AbhBQLv5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Feb 2021 06:51:57 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Y99PMaR0zVt4OLk5reYPHNaVtv0QZ+8cCDtsW8mRzy2vG/sXXLLJbmhDxTX32lAa2w38Bzcm81GguWhVwEQ1066xn6kykSLhZ/9jsRgx06SOEc/rhFyENq6dyGA7Aow+ycxwP42aN1Kbgjm6WAsiPEpjV6tZkM3nZLQV4RffZDjV0XpY5BTv42zdRmdGhZkHVufXW+HzT6CgVHBK+NjRqeAWrykCn0dG7W6GnZ6ZFYV2ILQ0ggOQVXvyBkrneEh6OnQJHEyxHhcmq8KDSpP/3IhsRZPd86+yJarBr4u92Q9CGEyEnZQPDHcH+ASPVIS49hGL2tQZnTOybhkMCxE6rg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oR7dkSH4Yy0tg+88h53zFKxZ4MHXz5Dyew/uRzfNLmU=;
- b=SU1zgwMS9iFRW/usuYMHvCgbcUhBK6O/eUzUZFAx1Ktgc1Zi1IA4/TnzEdscchTOnevTUU3mertyOyF//1Q9SqCnUZmeyfH3yVJKrUt5DJvz4Lf1uSTncnSP5IyEhGJF8J/703mMOakSD76SZ52OBPALtPn+AcVKnvt03omN/d+pp/mvkiQR3vKMcdSlEsWv5orPwueoG4p9UZ+c/18onGJnyd4U0epSdVYP/3nkndiNX6Glq883XZGWTrfNzibBTgSaaHREQSmx2cd2D9PziDLs1O9hRrwHbXJUNwVXAF6vE/KSpXeiiiEZInl4TTJibpWyqbnD5q4aTRJkdZxtsA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oR7dkSH4Yy0tg+88h53zFKxZ4MHXz5Dyew/uRzfNLmU=;
- b=lSkU7IE+n56Xyvt4/9QZXJ/qMjR0rmhzF3VgKGGmfbFf8IYslNC8+tjguWHG5xDSSRdNWI1qTB8HCA5Mu/PQVsMZ+Onflj/okWU484H4lIbDJOlJZDQQV2xGAbgWqDs4rGfCR08DMMlonDq5QAG34I/D9Rhb97Y8AkGHXznpXP8=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VE1PR04MB6637.eurprd04.prod.outlook.com (2603:10a6:803:126::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.39; Wed, 17 Feb
- 2021 11:51:07 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::3df3:2eba:51bb:58d7]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::3df3:2eba:51bb:58d7%7]) with mapi id 15.20.3846.042; Wed, 17 Feb 2021
- 11:51:07 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "ivecera@redhat.com" <ivecera@redhat.com>,
-        "nikolay@nvidia.com" <nikolay@nvidia.com>,
-        "roopa@nvidia.com" <roopa@nvidia.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "rasmus.villemoes@prevas.dk" <rasmus.villemoes@prevas.dk>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bridge@lists.linux-foundation.org" 
-        <bridge@lists.linux-foundation.org>
-Subject: Re: [PATCH net-next v4 6/8] net: mscc: ocelot: Add support for MRP
-Thread-Topic: [PATCH net-next v4 6/8] net: mscc: ocelot: Add support for MRP
-Thread-Index: AQHXBKzGJ1Wg4iFy80u6LZWFFkYv5KpcPP8A
-Date:   Wed, 17 Feb 2021 11:51:07 +0000
-Message-ID: <20210217115106.dgyn6c52xe4rvrsi@skbuf>
-References: <20210216214205.32385-1-horatiu.vultur@microchip.com>
- <20210216214205.32385-7-horatiu.vultur@microchip.com>
-In-Reply-To: <20210216214205.32385-7-horatiu.vultur@microchip.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: microchip.com; dkim=none (message not signed)
- header.d=none;microchip.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [5.12.227.87]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 58f0c393-613a-423e-0863-08d8d33a4fc8
-x-ms-traffictypediagnostic: VE1PR04MB6637:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VE1PR04MB6637B1FEE1A56945AA582B95E0869@VE1PR04MB6637.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4502;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: c+hVrRWs5FSyBetpMS6dAttxRFAlTFk/HJ9v+HhULqrPj4jpBLFQiNJpc4T9hjyea3spHmP3XtELdy+M7/l165Yw7/6mTXnbwtt2Cfdth4OhPap4SFchGwbtqWF1E5PdtEX2PBIH2MOmfCSweccmOf2Jd9aXFD4CwEvb6dYShq0vxP97s11QZBUNDzljdq048NnMuH8VxWkkaoqIbb60E9/JJInMBrua/IUwY2CdxQ4Exx/9kQG6EwHaKYhCxyPidnvg3Y2H8k+teKU9W704FVqAlvqtOMSahBl724DtUJ35u+96mdPenuL4xLZW0cUppYUoXYeuxwz6m7pcQPOBlLtrrbAcrqZbOBNTdo2DniWvTy4BpCdDhBtS7TkqF1xuxH8xyNwOvkXjXdxMbTaF//Czn1dxJgMVQ3mE3Lt3UHfYz4DlUWKfeSv+YvVTq4djBUZX3+ugCk38ugRPCPvPT5GXfY9up/+iE/Rjx1kbzcmwhpicZEQJYAX5H1EmSVOEfzRa/P2tkBl0EODxP7NX/Q==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(346002)(366004)(376002)(136003)(39860400002)(396003)(6916009)(44832011)(64756008)(6486002)(558084003)(91956017)(66946007)(71200400001)(66476007)(33716001)(1076003)(66556008)(316002)(76116006)(66446008)(186003)(26005)(7416002)(54906003)(6512007)(6506007)(9686003)(2906002)(4326008)(5660300002)(8676002)(8936002)(86362001)(478600001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?8pTBuXTezUyegia+hkVTwSTBkgV9cu1W10MOlScnjh7frECNB5v/u7hKcWa4?=
- =?us-ascii?Q?/nCm0GQsehrv/0+RBRQNUU38eRxSzbQXYv48j5cYCk79XEWuR3ZImplAkRUy?=
- =?us-ascii?Q?KgDaUOYOqgWQ/v517CCQ5N/XNP5170r72qhhRMqagkyh7r118vARMIIqozhl?=
- =?us-ascii?Q?NGl3ZoMqgfSKd+gyCYGuDxzVwcnneYNxrWNqheVVIQBPb2fBfDYNIUOKYRQ3?=
- =?us-ascii?Q?iZKI7nFIealA/qrw1e84LT5nTXeYVA9qgfY9nDVWYlhAet4Owm+teHOGaexp?=
- =?us-ascii?Q?dhjQJDs5UtrAUxgMR5MSB6FCGwCJaB6Gl+iGn7CGRL/6szb33LRWaHvw7Qnp?=
- =?us-ascii?Q?uZR22eOsrHg1tK2dEUn9q1og4KUH2SJYFWuLl1AJs93e+aE7PWBWOrrM0A0A?=
- =?us-ascii?Q?vQi3eJQR2vpvfEWDbGiykrKy7pcWrg6BKRoSJic2lSL6iNTs1/laqNy7E9lR?=
- =?us-ascii?Q?N26i+kXW9jK+eijr50m5ObnReQh+dY4R3/QutABH3fcDncm3YGRZOfdIYLeT?=
- =?us-ascii?Q?kyQu60u9aPnO6vAm/vmwPZKvCwLDAat9l7HcGNMsQkluPx5+lyAseUldbRKD?=
- =?us-ascii?Q?kVAJ1iPbD6Ezq58XvdJa7KoHYe6+bq8Ls7fU5u3YBhhjYrIYjK981Ed+dr9k?=
- =?us-ascii?Q?E+GFbKBTu334yxVf1SjJ3rJ+LitofQMkIPBFecur7QJGnjl+yEWFRF8uzkRy?=
- =?us-ascii?Q?CEt+5y1gaZBdxMlqVu7lGMlwshIDO2cZv4VeEifLg699qSmkWtLtoWEGvaCe?=
- =?us-ascii?Q?EVj/qerYAaDSBUTYvRqmwOWw2gdw6cDRTafSKAoGNxD+yPa5tG3QoUnsuIi3?=
- =?us-ascii?Q?wM/OMc31ecpSf7i20LuIwNIiiYGZOEwVx8o1LAAf19atAEv4JnAEOz5l5exn?=
- =?us-ascii?Q?JCKs7vhCQG+MEn4fkQXDfVkMzs7mTvlXLxSO8xuiNy0kFI6pIzRDFInppKPn?=
- =?us-ascii?Q?45f4VzAvItELYv7ejMUR7YaiJniTVJGl9ORy0BbTeFC7i2E5y4KN5R656hiD?=
- =?us-ascii?Q?8l1OaVmgHDMk1+Qxd15A0TRpgDeNMftTMwj3n819P4K5ZKp/Gb3iEFi/Msjp?=
- =?us-ascii?Q?K/l9lVX5PzZUryJ2SgU/m4va8iKJ6cSHEcsaJISqzrlvyCPVRf6zjRwznr7M?=
- =?us-ascii?Q?npze0H9WmacZk6+yxeD1xQN4Np06AxGGeqQocm5aYYcpItOL8XGZmSs9fCbh?=
- =?us-ascii?Q?BLpGB4Jh4waDrvGV4VJtz8M+ZKB2Wa9caQR0/w7jI/Z3kyr24VwjU5fw0khW?=
- =?us-ascii?Q?eHf9mrJxOvgG4FVdXOQ6N634HuBBBiSuXLnV0XqJyT5gs6LxIIAKsy1StCBf?=
- =?us-ascii?Q?eFW8M8Nbu7ulEE3a/k7nJxvo?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3E8BCF8E2E79044280D67B40FFAD527A@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S232410AbhBQMBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 07:01:48 -0500
+Received: from mail1.protonmail.ch ([185.70.40.18]:43935 "EHLO
+        mail1.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232134AbhBQMBi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 07:01:38 -0500
+Date:   Wed, 17 Feb 2021 12:00:41 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1613563251; bh=PV+82XKEONOwszQ9oqNuhO7XutydGlGtWL9iJZ/Pbhs=;
+        h=Date:To:From:Cc:Reply-To:Subject:From;
+        b=HJ/acEayXZ6x59nmRV7Fj9Jbttd2wpe7YSZkb0FioN4XRf9SfCAYNiTqjUlzmiesY
+         w/3ZelzUme+2rlZ+N1OLGRCCz63z/hNodu1Xw96xb8f76cxxZzvGbKNfgX48B7rl2h
+         h/WqQTaKanzonW4qJEYrpZyjvlLOYQeR6TnRT72Vj2HJXQZrHpPZGdQKJgG3XZlnbf
+         5SvmOGpDOiMTvY8x1QZTBQa//iEp1SiwoXMsH5GqKMVF7eJC4T74GA/z9KwIxE5V1H
+         3FAor3dWXuAtTXH7IHIrwGXXuYwWBx0GeNP498+Dr9OOeg4/HM429RKnyKv1YybA1K
+         IkYso2Q1fWWTw==
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Magnus Karlsson <magnus.karlsson@intel.com>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        =?utf-8?Q?Bj=C3=B6rn_T=C3=B6pel?= <bjorn@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Dust Li <dust.li@linux.alibaba.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: [PATCH v7 bpf-next 0/6] xsk: build skb by page (aka generic zerocopy xmit)
+Message-ID: <20210217120003.7938-1-alobakin@pm.me>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 58f0c393-613a-423e-0863-08d8d33a4fc8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Feb 2021 11:51:07.1659
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: qIKg2RZsiafl+kroVZipKyh/UyWyTmB06bNxHY4+VRqHltUPNSUEVfcGOF2D/H6HQGqDCr3eddlUzfVPTr+wMw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6637
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 16, 2021 at 10:42:03PM +0100, Horatiu Vultur wrote:
-> +static inline void ocelot_xfh_get_cpuq(void *extraction, u64 *cpuq)
-> +{
-> +	packing(extraction, cpuq, 28, 20, OCELOT_TAG_LEN, UNPACK, 0);
-> +}
-> +
+This series introduces XSK generic zerocopy xmit by adding XSK umem
+pages as skb frags instead of copying data to linear space.
+The only requirement for this for drivers is to be able to xmit skbs
+with skb_headlen(skb) =3D=3D 0, i.e. all data including hard headers
+starts from frag 0.
+To indicate whether a particular driver supports this, a new netdev
+priv flag, IFF_TX_SKB_NO_LINEAR, is added (and declared in virtio_net
+as it's already capable of doing it). So consider implementing this
+in your drivers to greatly speed-up generic XSK xmit.
 
-The 8 bits I count for CPUQ are from 27 to 20.
-This is spilling over into LRN_FLAGS.=
+The first two bits refactor netdev_priv_flags a bit to harden them
+in terms of bitfield overflow, as IFF_TX_SKB_NO_LINEAR is the last
+one that fits into unsigned int.
+The fifth patch adds headroom and tailroom reservations for the
+allocated skbs on XSK generic xmit path. This ensures there won't
+be any unwanted skb reallocations on fast-path due to headroom and/or
+tailroom driver/device requirements (own headers/descriptors etc.).
+The other three add a new private flag, declare it in virtio_net
+driver and introduce generic XSK zerocopy xmit itself.
+
+The main body of work is created and done by Xuan Zhuo. His original
+cover letter:
+
+v3:
+    Optimized code
+
+v2:
+    1. add priv_flags IFF_TX_SKB_NO_LINEAR instead of netdev_feature
+    2. split the patch to three:
+        a. add priv_flags IFF_TX_SKB_NO_LINEAR
+        b. virtio net add priv_flags IFF_TX_SKB_NO_LINEAR
+        c. When there is support this flag, construct skb without linear
+           space
+    3. use ERR_PTR() and PTR_ERR() to handle the err
+
+v1 message log:
+---------------
+
+This patch is used to construct skb based on page to save memory copy
+overhead.
+
+This has one problem:
+
+We construct the skb by fill the data page as a frag into the skb. In
+this way, the linear space is empty, and the header information is also
+in the frag, not in the linear space, which is not allowed for some
+network cards. For example, Mellanox Technologies MT27710 Family
+[ConnectX-4 Lx] will get the following error message:
+
+    mlx5_core 0000:3b:00.1 eth1: Error cqe on cqn 0x817, ci 0x8,
+    qn 0x1dbb, opcode 0xd, syndrome 0x1, vendor syndrome 0x68
+    00000000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+    00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+    00000020: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+    00000030: 00 00 00 00 60 10 68 01 0a 00 1d bb 00 0f 9f d2
+    WQE DUMP: WQ size 1024 WQ cur size 0, WQE index 0xf, len: 64
+    00000000: 00 00 0f 0a 00 1d bb 03 00 00 00 08 00 00 00 00
+    00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+    00000020: 00 00 00 2b 00 08 00 00 00 00 00 05 9e e3 08 00
+    00000030: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+    mlx5_core 0000:3b:00.1 eth1: ERR CQE on SQ: 0x1dbb
+
+I also tried to use build_skb to construct skb, but because of the
+existence of skb_shinfo, it must be behind the linear space, so this
+method is not working. We can't put skb_shinfo on desc->addr, it will be
+exposed to users, this is not safe.
+
+Finally, I added a feature NETIF_F_SKB_NO_LINEAR to identify whether the
+network card supports the header information of the packet in the frag
+and not in the linear space.
+
+---------------- Performance Testing ------------
+
+The test environment is Aliyun ECS server.
+Test cmd:
+```
+xdpsock -i eth0 -t  -S -s <msg size>
+```
+
+Test result data:
+
+size    64      512     1024    1500
+copy    1916747 1775988 1600203 1440054
+page    1974058 1953655 1945463 1904478
+percent 3.0%    10.0%   21.58%  32.3%
+
+From v6 [3]:
+ - rebase ontop of bpf-next after merge with net-next;
+ - address kdoc warnings.
+
+From v5 [2]:
+ - fix a refcount leak in 0006 introduced in v4.
+
+From v4 [1]:
+ - fix 0002 build error due to inverted static_assert() condition
+   (0day bot);
+ - collect two Acked-bys (Magnus).
+
+From v3 [0]:
+ - refactor netdev_priv_flags to make it easier to add new ones and
+   prevent bitwidth overflow;
+ - add headroom (both standard and zerocopy) and tailroom (standard)
+   reservation in skb for drivers to avoid potential reallocations;
+ - fix skb->truesize accounting;
+ - misc comment rewords.
+
+[0] https://lore.kernel.org/netdev/cover.1611236588.git.xuanzhuo@linux.alib=
+aba.com
+[1] https://lore.kernel.org/netdev/20210216113740.62041-1-alobakin@pm.me
+[2] https://lore.kernel.org/netdev/20210216143333.5861-1-alobakin@pm.me
+[3] https://lore.kernel.org/netdev/20210216172640.374487-1-alobakin@pm.me
+
+Alexander Lobakin (3):
+  netdev_priv_flags: add missing IFF_PHONY_HEADROOM self-definition
+  netdevice: check for net_device::priv_flags bitfield overflow
+  xsk: respect device's headroom and tailroom on generic xmit path
+
+Xuan Zhuo (3):
+  net: add priv_flags for allow tx skb without linear
+  virtio-net: support IFF_TX_SKB_NO_LINEAR
+  xsk: build skb by page (aka generic zerocopy xmit)
+
+ drivers/net/virtio_net.c  |   3 +-
+ include/linux/netdevice.h | 202 ++++++++++++++++++++------------------
+ net/xdp/xsk.c             | 114 +++++++++++++++++----
+ 3 files changed, 207 insertions(+), 112 deletions(-)
+
+--=20
+2.30.1
+
+
