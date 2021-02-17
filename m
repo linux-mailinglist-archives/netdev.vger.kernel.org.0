@@ -2,137 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2497431E166
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 22:32:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E59D431E174
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 22:35:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232972AbhBQVb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 16:31:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51166 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232890AbhBQVbM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Feb 2021 16:31:12 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5497664E85;
-        Wed, 17 Feb 2021 21:30:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613597431;
-        bh=WgRxiqmGWb/NNjj30Km3X2UGAL7IO9ln+kqQU/TQu6U=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=IIUYl+kx286L8XAbuoI1nFhR6GLGmWR37+lXiZQPd90hH0szDCBrQ5FWMXeULISx4
-         gaGpIyG2FFlt+DMObk0hMPlCkYnTawuCtljEEkzUUU0RSvnC0yJ0NNUKpMYcekSOvh
-         Yh32Mpve4kb1c1Vs1CdrIcxcOXSPV0X7VowLnjotPugA6AEXPwYJ8z2NkUvAafVWit
-         Inak6DJoiZrLTk28Ij6mL2nyqxB6h8v1qO5SCswhTtT4OiUmdFL3E4UQqf2I8jn7nS
-         k1Q+T/5tBxPh2r++1Q5iSVvz81r6cURl4C0hA/4QwHqr2FZznojt5aH8PwyLmIDWrV
-         FMrnWA7HNT1OA==
-Received: by mail-ot1-f50.google.com with SMTP id 80so33786oty.2;
-        Wed, 17 Feb 2021 13:30:31 -0800 (PST)
-X-Gm-Message-State: AOAM531JY6QzHLiBU7S5n6LuNv4XVtzclYzmJ84vdsYFYNEQqs6tO3mX
-        21eUbij8ekOttpQWyG9r4iK3+T+MmB7u73HZPYU=
-X-Google-Smtp-Source: ABdhPJz1Azps44lN+jQOH+CDQmyg6qd67SBn4K0xmXvmlNAmv1A2dJGjw6f5euo1835xoHhFcxpq3LVx1T8pcul4Uyw=
-X-Received: by 2002:a05:6830:1db5:: with SMTP id z21mr807185oti.210.1613597430588;
- Wed, 17 Feb 2021 13:30:30 -0800 (PST)
-MIME-Version: 1.0
-References: <1613012611-8489-1-git-send-email-min.li.xe@renesas.com>
- <CAK8P3a3YhAGEfrvmi4YhhnG_3uWZuQi0ChS=0Cu9c4XCf5oGdw@mail.gmail.com>
- <OSBPR01MB47732017A97D5C911C4528F0BA8B9@OSBPR01MB4773.jpnprd01.prod.outlook.com>
- <CAK8P3a2KDO4HutsXNJzjmRJTvW1QW4Kt8H7U53_QqpmgvZtd3A@mail.gmail.com>
- <OSBPR01MB4773B22EA094A362DD807F83BA8B9@OSBPR01MB4773.jpnprd01.prod.outlook.com>
- <CAK8P3a3k5dAF=X3_NrYAAp5gPJ_uvF3XfmC4rKz0oGTrGRriCw@mail.gmail.com>
- <OSBPR01MB47732AFC03DA8A0DDF626706BA879@OSBPR01MB4773.jpnprd01.prod.outlook.com>
- <CAK8P3a2TeeLfsTNkZPnC3YowdOS=bFM5yYj58crP6F5U9Y_r-Q@mail.gmail.com>
- <OSBPR01MB47739CBDE12E1F3A19649772BA879@OSBPR01MB4773.jpnprd01.prod.outlook.com>
- <CAK8P3a2fRgDJZv-vzy_X6Y5t3daaVdCiXtMwkmXUyG0EQZ0a6Q@mail.gmail.com> <OSBPR01MB477394546AE3BC1F186FC0E9BA869@OSBPR01MB4773.jpnprd01.prod.outlook.com>
-In-Reply-To: <OSBPR01MB477394546AE3BC1F186FC0E9BA869@OSBPR01MB4773.jpnprd01.prod.outlook.com>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Wed, 17 Feb 2021 22:30:14 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a32jF+iCH5Sk82LaozyPJ0n=f92MRdseZwN9aOtf4DwKQ@mail.gmail.com>
-Message-ID: <CAK8P3a32jF+iCH5Sk82LaozyPJ0n=f92MRdseZwN9aOtf4DwKQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] misc: Add Renesas Synchronization Management
- Unit (SMU) support
-To:     Min Li <min.li.xe@renesas.com>
-Cc:     Derek Kiernan <derek.kiernan@xilinx.com>,
-        Dragan Cvetic <dragan.cvetic@xilinx.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        gregkh <gregkh@linuxfoundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S232196AbhBQVer (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 16:34:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54946 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230488AbhBQVeb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 16:34:31 -0500
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D1E7C061574;
+        Wed, 17 Feb 2021 13:33:51 -0800 (PST)
+Received: by mail-io1-xd2e.google.com with SMTP id f6so2159723iop.11;
+        Wed, 17 Feb 2021 13:33:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=nL4HYnGjONDXKQ51tM0lMmG8I39shd1VRmw7Uv8Si0c=;
+        b=IHICk4CxG+4ulTaddDa8xdQVJKoY+R/yJQiusQV3zKvIO2Ep/eHFiD/DSUAun+DYta
+         cZd1Wk3kc13WqHt/K7Goz9CIR1OjUTRC0Dy1x10qnqnxZvyrZA4jgnqlZGT/rAWw9VfK
+         55/TTAJfZ92vMKs/LNsg6UkRucRgqN8TcktlfJrwALuHunV4Hkkx+o1hWJ+kjC8SlLhJ
+         fs182QVhZw61ODF+H6Q7uJBTNEsoSid7CKUHUZ5+AfORBfdWeaDHmpIO6oGIVTcaO8k+
+         NaQ72RKLQAOVzU8ftSCF+qP7rpXp5sXpk0Xyi9VRUJiybCu3m12DIT9g4YSDEF0SmgHU
+         ss1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=nL4HYnGjONDXKQ51tM0lMmG8I39shd1VRmw7Uv8Si0c=;
+        b=tSaxFdKgTJ7v5y4F8QpKg+PQZaxdjPRxD8X7XMHs3lMINRzdTgylmDRerX/Lvj+362
+         m+wgMt+Q8FVNKHXcwm5yd+lBXZtc9iJt8zqJuILOCmdNl2eMbkJ7VfoPx8M7mT55z1+7
+         z2XNd7gqEAG94jgm2zjqyLCtXmcap18TWPQZioM1gvwUOk7yb45hnuX/EUwx0yRPLVLL
+         2N267xQfhaagNswFksOGKspLGyTC4+8zSKyQA8YclxnQIEYIVM3w0aavCoXcBvL9HLZ9
+         MfJN0WvkIm44y8HbVqS1PRP35OuFdLIk748xOe16kCmrb/KuDRTUpFKyzUrcjj/TBH33
+         KGwg==
+X-Gm-Message-State: AOAM533KmTQkpaEScv5U8R3rY8klGRrPhkCCdpby+4s2kkQdUJjXjnap
+        CmNkw7ukJY/z05yxHe0PIdA=
+X-Google-Smtp-Source: ABdhPJwlPh6RUUGh1uhNa2wINWo+tk93eANljBYrDf7LUpNrjNkxUGwh5+z5o5GEq2Cf9+8KCVIHew==
+X-Received: by 2002:a05:6602:26cb:: with SMTP id g11mr848121ioo.180.1613597631003;
+        Wed, 17 Feb 2021 13:33:51 -0800 (PST)
+Received: from localhost ([172.243.146.206])
+        by smtp.gmail.com with ESMTPSA id d2sm1943769ilr.66.2021.02.17.13.33.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Feb 2021 13:33:50 -0800 (PST)
+Date:   Wed, 17 Feb 2021 13:33:44 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Message-ID: <602d8bb8bfd98_fc5420880@john-XPS-13-9370.notmuch>
+In-Reply-To: <20210217035844.53746-1-xiyou.wangcong@gmail.com>
+References: <20210217035844.53746-1-xiyou.wangcong@gmail.com>
+Subject: RE: [Patch bpf-next] bpf: clear per_cpu pointers in
+ bpf_prog_clone_create()
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 17, 2021 at 9:20 PM Min Li <min.li.xe@renesas.com> wrote:
->
-> I attached the G.8273.2 document, where chapter 6 is about supporting physical layer
-> frequency. And combo mode is Renesas way to support this requirement. Other companies
-> may come up with different ways to support it.
->
-> When EEC quality is below certain level, we would wanna turn off combo mode.
+Cong Wang wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
+> =
 
-Maybe this is something that could be handled inside of the device driver then?
+> Pretty much similar to commit 1336c662474e
+> ("bpf: Clear per_cpu pointers during bpf_prog_realloc") we also need to=
 
-If the driver can use the same algorithm that is in your user space software
-today, that would seem to be a nicer way to handle it than requiring a separate
-application.
+> clear these two percpu pointers in bpf_prog_clone_create(), otherwise
+> would get a double free:
+> =
 
-> > > This function will read FCW first and convert it to FFO.
-> >
-> > Is this related to the information in the timex->freq field? It sounds like this
-> > would already be accessible through the existing
-> > clock_adjtime() interface.
-> >
->
-> They are related, but dealing with timex->freq has limitations
->
-> 1) Renesas SMU has up to 8 DPLLs and only one of the them would be ptp
-> clock and we want to be able to read any DPLL's FFO or state
+>  BUG: kernel NULL pointer dereference, address: 0000000000000000
+>  #PF: supervisor read access in kernel mode
+>  #PF: error_code(0x0000) - not-present page
+>  PGD 0 P4D 0
+>  Oops: 0000 [#1] SMP PTI
+>  CPU: 13 PID: 8140 Comm: kworker/13:247 Kdump: loaded Tainted: G=E2=80=86=
+ =E2=80=86 =E2=80=86 =E2=80=86 =E2=80=86 =E2=80=86 =E2=80=86 =E2=80=86 W=E2=
+=80=86 =E2=80=86 OE
+> =E2=80=86 5.11.0-rc4.bm.1-amd64+ #1
+>  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1 0=
+4/01/2014
+>  test_bpf: #1 TXA
+>  Workqueue: events bpf_prog_free_deferred
+>  RIP: 0010:percpu_ref_get_many.constprop.97+0x42/0xf0
+>  Code: [...]
+>  RSP: 0018:ffffa6bce1f9bda0 EFLAGS: 00010002
+>  RAX: 0000000000000001 RBX: 0000000000000000 RCX: 00000000021dfc7b
+>  RDX: ffffffffae2eeb90 RSI: 867f92637e338da5 RDI: 0000000000000046
+>  RBP: ffffa6bce1f9bda8 R08: 0000000000000000 R09: 0000000000000001
+>  R10: 0000000000000046 R11: 0000000000000000 R12: 0000000000000280
+>  R13: 0000000000000000 R14: 0000000000000000 R15: ffff9b5f3ffdedc0
+>  FS:=E2=80=86 =E2=80=86 0000000000000000(0000) GS:ffff9b5f2fb40000(0000=
+) knlGS:0000000000000000
+>  CS:=E2=80=86 =E2=80=86 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>  CR2: 0000000000000000 CR3: 000000027c36c002 CR4: 00000000003706e0
+>  DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+>  DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>  Call Trace:
+> =E2=80=86 =E2=80=86 refill_obj_stock+0x5e/0xd0
+> =E2=80=86 =E2=80=86 free_percpu+0xee/0x550
+> =E2=80=86 =E2=80=86 __bpf_prog_free+0x4d/0x60
+> =E2=80=86 =E2=80=86 process_one_work+0x26a/0x590
+> =E2=80=86 =E2=80=86 worker_thread+0x3c/0x390
+> =E2=80=86 =E2=80=86 ? process_one_work+0x590/0x590
+> =E2=80=86 =E2=80=86 kthread+0x130/0x150
+> =E2=80=86 =E2=80=86 ? kthread_park+0x80/0x80
+> =E2=80=86 =E2=80=86 ret_from_fork+0x1f/0x30
+> =
 
-Is this necessarily unique to Renesas SMU though? Not sure what
-makes sense in terms of the phc/ptp interface. Could there just be
-a separate instance for each DPLL in the phc subsystem even if it's
-actually a ptp clock, or would that be an incorrect use?
+> This bug is 100% reproducible with test_kmod.sh.
+> =
 
-> 2) timex->freq's unit is ppb and we want to read more precise ffo in smaller unit of ppqt
+> Reported-by: Jiang Wang <jiang.wang@bytedance.com>
+> Fixes: 700d4796ef59 ("bpf: Optimize program stats")
+> Fixes: ca06f55b9002 ("bpf: Add per-program recursion prevention mechani=
+sm")
+> Cc: Alexei Starovoitov <ast@kernel.org>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> ---
 
-This also sounds like something that would not be vendor specific. If you
-need a higher resolution, then at some point others would need it as well.
-There is already precedence in 'struct timex' to redefine the resolution of
-some fields based on a flag -- 'time.tv_usec' can either refer to microseconds
-to nanoseconds.
-
-If the range of the 'freq' field is sufficient to encode ppqt, you could add
-another flag for that, otherwise another reserved field can be used.
-
-> 3) there is no interface in the current ptp hardware clock infrastructure to read ffo back from hardware
-
-Adding an internal interface is the easy part here, the hard part is defining
-the user interface.
-
-> > Wouldn't any PTP clock run in one of these modes? If this is just
-> > informational, it might be appropriate to have another sysfs attribute for
-> > each PTP clock that shows the state of the DPLL, and then have the PTP
-> > driver either fill in the current value in 'struct ptp_clock', or provide a
-> > callback to report the state when a user reads the sysfs attribute.
-> >
->
-> What you propose can work. But DPLL operating mode is not standardized
-> so different vendor may have different explanation for various modes.
-
-If it's a string, that could easily be extended to further modes, as long
-as the kernel documents which names are allowed. If multiple vendors
-refer to the same mode by different names, someone will have to decide
-what to call it in the kernel, and everyone afterwards would use the same
-name.
-
-> Also, I thought sysfs is only for debug or informational purpose.
-> Production software is not supposed to use it for critical tasks?
-
-No, you are probably thinking of debugfs. sysfs is one of multiple
-common ways to exchange this kind of data in a reliable way.
-
-An ioctl would probably work just as well though, usually sysfs
-is better when the information makes sense to human operators
-or simple shell scripts, while an ioctl interface is better if performance
-is important, or if the information is primarily used in C programs.
-
-        Arnd
+Acked-by: John Fastabend <john.fastabend@gmail.com>=
