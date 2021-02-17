@@ -2,150 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4912531E020
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 21:23:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E94731E03E
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 21:28:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234871AbhBQUWn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 15:22:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39534 "EHLO
+        id S235020AbhBQU0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 15:26:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233561AbhBQUWh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 15:22:37 -0500
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF0BC061574
-        for <netdev@vger.kernel.org>; Wed, 17 Feb 2021 12:21:57 -0800 (PST)
-Received: by mail-pl1-x631.google.com with SMTP id s16so4123609plr.9
-        for <netdev@vger.kernel.org>; Wed, 17 Feb 2021 12:21:57 -0800 (PST)
+        with ESMTP id S233645AbhBQU0m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 15:26:42 -0500
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E28EDC061574;
+        Wed, 17 Feb 2021 12:26:01 -0800 (PST)
+Received: by mail-pg1-x530.google.com with SMTP id 75so5826953pgf.13;
+        Wed, 17 Feb 2021 12:26:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=AarxRd7mh8Y2QeV684GLzPc5OfxvgHDmodBzIV70CFU=;
-        b=OudmF9Ervi+aW91ACjzmG2Pgz6ScZcsI2YTSY8OoAFX8IMJH0asFT90dBnHkwbYfpN
-         Qs+KYbFoIIsF4/w6/p76QJTkZr8hoKv9EZvyXJz3qeBgKSNv1UrV8K+c0nI3iM24ZZbV
-         8Cf3UPzQEfDWeJ5MPz8HENRbqQtMBeLCcvss1m7vZVhFcvrnBb30ppFjisLpYsh3bdkX
-         gbxw7IVr9CNzOU9yCX3gIfm2xmHrEhsfLFO3PHOUAoDvVkD1MsTBuP8r3xoYveyQhnxV
-         ZE1MC+If1qNFZW55ZIfkntLc2hrN26Hs0CtjTFo2Zu/mRFJDyOHZvi6cDH0gFPBMoc1g
-         C+xw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oQrfzO17knb0L2S7w06JElc/0RtdSnwzho+6k4zHaN0=;
+        b=u0aqlOkz+ygOgoDWu2MW9cD0xGWxxpjARMtgQFTLUiGhKbE8H3CwYteDRFgmkvrLZ0
+         Sjd0zuR2k10uoGsoLtMHhDn1Q90X/v4n3U81fjPq466AglSZOCboNrUas8mSjf3OpCvv
+         /g/kh1B8mIN7l3kpIh4Sy64eWfZOU7uAk+nSUSd2XeekNmBEXKbGboU4hCyHm0LonEnn
+         GYzMJylmmd9ysYawLXdqkaUnQGO12cOPG2SROGDmbdqa0D6Rj+4hkFUpq7LJ4iUGdV1h
+         96ShljAITpMrVsYoII2iz7aOr/mS7n3KxFdRRCmLoqdN4fOVvLMdh1DNv2vY51gaspjY
+         BLRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=AarxRd7mh8Y2QeV684GLzPc5OfxvgHDmodBzIV70CFU=;
-        b=I3sDB3EI51T7ijAK10vzND2d3KzrA57+6P49IwrJYX1A0oJJdCIzVUiZE2vSk7pPjW
-         bA91pDOIETqiBbtsDdjLpuYKllO7DB5TGM7G9cLgIHyootx9WfuavjTJn0TV+mhRFsJc
-         P8XChquj5OfWD5ZgSWk8wLXx3gi948JbQJVkqo3/+b0HVVmDJxzAt+ZO3U6sNbINmZMf
-         LN8vSoYtJHtHwpMm1k+Lo5YEgYyMfgJ06cz1Tw0MrHrdrgLhBm1em0oyKUN0BAzu/4+J
-         Wfzy+iH0dv3Shn7rmkT8G4Fxuo3UrlrDcKYoyfoH7/iacL5X9TAEkG6wqvzfOwJyH/j1
-         LZVQ==
-X-Gm-Message-State: AOAM532sOSkmjvtrtZ6if1LJ1pQIT/ovTSfvLpR+hDsPgOp3vOSO/MX4
-        PY2SxyYkEbTK5f2DECodjXjLeQjZNss=
-X-Google-Smtp-Source: ABdhPJx4qo2rGEYEX8aED7P1xmDmUpxrHK78ONJzRe8DJ4h7JKZUFw3T3R45u+v5WwK2NmligSiQ6Q==
-X-Received: by 2002:a17:90a:c684:: with SMTP id n4mr548962pjt.13.1613593316040;
-        Wed, 17 Feb 2021 12:21:56 -0800 (PST)
-Received: from [10.230.29.30] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id c69sm3320251pfb.88.2021.02.17.12.21.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Feb 2021 12:21:55 -0800 (PST)
-Subject: Re: [PATCH net-next v4 2/3] net: phy: Add is_on_sfp_module flag and
- phy_on_sfp helper
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     Robert Hancock <robert.hancock@calian.com>, hkallweit1@gmail.com,
-        davem@davemloft.net, kuba@kernel.org,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
-References: <20210216225454.2944373-1-robert.hancock@calian.com>
- <20210216225454.2944373-3-robert.hancock@calian.com>
- <YCyUYqPt1X37bqpI@lunn.ch> <20210217103455.GF1463@shell.armlinux.org.uk>
+        bh=oQrfzO17knb0L2S7w06JElc/0RtdSnwzho+6k4zHaN0=;
+        b=VE80Wjbquj89d0P+MibEhriTCXfBt06/l8LnD+9Z+TN59W24bjIWuG/uT5e685kiCr
+         AeJLquzrl+TzpuqzVtAjI4BSuMdP/zhOUrU67R9mKZqhnGP5JMUP6vRaHQ9E+knY4xff
+         uXjBIQI7DnZm/lOjEOmf4SBGOKQp1FTv3Mha3gZysvYYzAGvkGTWHLhVd7zuBJq+vaIZ
+         ADnLFAibVMsJPyyRFGHu5zsvrgFuEt9qvEn0vKs3Fi4Ae540cSyluRmuOTwaa0kX1f7L
+         FPnxYzQOfr9i1bYnUfm+/YJOA8Sd486u0l98RW6dGHxKMvmAqUGhdDF0FUcT9AxSb57r
+         GxoQ==
+X-Gm-Message-State: AOAM5320YrF1N74RgKVq/gj9kcz33SLq8d9GYh+2/JlrCJVbi2YqXvid
+        GgX7VcIdreQuAmsgIxclpNNJE6PCSwM=
+X-Google-Smtp-Source: ABdhPJw7sprEYpUjr8VOY599l4n2vzIFZHUpSg+RjAqb0AIMDTySDpu7Fvog9t6aHHctDV29dyatJA==
+X-Received: by 2002:a05:6a00:787:b029:1da:643b:6d41 with SMTP id g7-20020a056a000787b02901da643b6d41mr967979pfu.31.1613593560975;
+        Wed, 17 Feb 2021 12:26:00 -0800 (PST)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id n1sm3470238pgi.78.2021.02.17.12.25.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Feb 2021 12:26:00 -0800 (PST)
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <e5f69b4f-ec4a-665e-2d0f-957c695b59bf@gmail.com>
-Date:   Wed, 17 Feb 2021 12:21:53 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.7.1
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        linux-doc@vger.kernel.org (open list:DOCUMENTATION),
+        linux-kernel@vger.kernel.org (open list),
+        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
+        DEVICE TREE)
+Subject: [PATCH net-next] net: mdio: Remove of_phy_attach()
+Date:   Wed, 17 Feb 2021 12:25:57 -0800
+Message-Id: <20210217202558.2645876-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20210217103455.GF1463@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+We have no in-tree users, also update the sfp-phylink.rst documentation
+to indicate that phy_attach_direct() is used instead of of_phy_attach().
 
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ Documentation/networking/sfp-phylink.rst |  2 +-
+ drivers/net/mdio/of_mdio.c               | 30 ------------------------
+ include/linux/of_mdio.h                  | 10 --------
+ 3 files changed, 1 insertion(+), 41 deletions(-)
 
-On 2/17/2021 2:34 AM, Russell King - ARM Linux admin wrote:
-> On Wed, Feb 17, 2021 at 04:58:26AM +0100, Andrew Lunn wrote:
->> On Tue, Feb 16, 2021 at 04:54:53PM -0600, Robert Hancock wrote:
->>> Add a flag and helper function to indicate that a PHY device is part of
->>> an SFP module, which is set on attach. This can be used by PHY drivers
->>> to handle SFP-specific quirks or behavior.
->>>
->>> Signed-off-by: Robert Hancock <robert.hancock@calian.com>
->>> ---
->>>  drivers/net/phy/phy_device.c |  2 ++
->>>  include/linux/phy.h          | 11 +++++++++++
->>>  2 files changed, 13 insertions(+)
->>>
->>> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
->>> index 05261698bf74..d6ac3ed38197 100644
->>> --- a/drivers/net/phy/phy_device.c
->>> +++ b/drivers/net/phy/phy_device.c
->>> @@ -1377,6 +1377,8 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
->>>  
->>>  		if (phydev->sfp_bus_attached)
->>>  			dev->sfp_bus = phydev->sfp_bus;
->>> +		else if (dev->sfp_bus)
->>> +			phydev->is_on_sfp_module = true;
->>
->> I get lost here. It this correct?
->>
->> We have setups with two PHY. The marvell10g PHY can play the role of
->> media converter. It converts the signal from the MAC into signals
->> which can be connected to an SFP cage.
->>
->> And then inside the cage, we can have a copper module with a second
->> PHY. It is this second PHY which we need to indicate is_on_sfp_module
->> true.
-> 
-> We don't support that setup, at least at the moment. There's no support
-> for stacking PHYs precisely because we have the net_device structure
-> containing a pointer to the PHY (which will be the first PHY in the
-> chain.) That has the effect of making the second PHY inaccessible to the
-> normal network APIs.
-> 
->> We probably want to media convert PHYs LEDs to work, since those
->> possible are connected to the front panel. So this needs to be
->> specific to the SFP module PHY, and i'm not sure it is. Russell?
-> 
-> The main reason I'm hessitant with using the net_device structure
-> to detect this is that we know that phylink has been converted to
-> work without the net_device structure - it will be NULL. This includes
-> attaching the "primary" PHY - phylib will be given a NULL net_device.
-> 
-> The good news is that if a SFP cage is attempted to be attached in
-> that situation, phylink will oops in phylink_sfp_attach(). So it
-> isn't something that we support. However, the point is that we can
-> end up in situations where phylib has a NULL net_device.
-> 
-> Florian mentioned in response to one of my previous emails that he's
-> working on sorting out the phylib dev_flags - I think we should wait
-> for that to be resolved first, so we can allocate a dev_flag (or
-> maybe we can do that already today?) that says "this PHY is part of
-> a SFP module". That will give us a clearly defined positive condition
-> that is more maintainable into the future.
-
-We could be allocating a generic flag today starting from bit 31 and
-down and that would certainly be fine without necessarily making my
-rework any harder.
-
-The existing issues with phydev->dev_flags as I am sure you are all
-aware is that the flags are not name-spaced per driver yet all Ethernet
-MAC drivers make assumptions (tg3.c, bcmgenet.c, etc.) and it is not
-possible to pass arbitrary configuration settings down the PHY driver,
-etc.  I would not hold my breath on this rework as I keep getting sucked
-into various issues at work.
-
-FWIW, this series appears to have already been applied.
+diff --git a/Documentation/networking/sfp-phylink.rst b/Documentation/networking/sfp-phylink.rst
+index 5aec7c8857d0..328f8d39eeb3 100644
+--- a/Documentation/networking/sfp-phylink.rst
++++ b/Documentation/networking/sfp-phylink.rst
+@@ -163,7 +163,7 @@ this documentation.
+ 	err = phylink_of_phy_connect(priv->phylink, node, flags);
+ 
+    For the most part, ``flags`` can be zero; these flags are passed to
+-   the of_phy_attach() inside this function call if a PHY is specified
++   the phy_attach_direct() inside this function call if a PHY is specified
+    in the DT node ``node``.
+ 
+    ``node`` should be the DT node which contains the network phy property,
+diff --git a/drivers/net/mdio/of_mdio.c b/drivers/net/mdio/of_mdio.c
+index 4daf94bb56a5..ea9d5855fb52 100644
+--- a/drivers/net/mdio/of_mdio.c
++++ b/drivers/net/mdio/of_mdio.c
+@@ -462,36 +462,6 @@ struct phy_device *of_phy_get_and_connect(struct net_device *dev,
+ }
+ EXPORT_SYMBOL(of_phy_get_and_connect);
+ 
+-/**
+- * of_phy_attach - Attach to a PHY without starting the state machine
+- * @dev: pointer to net_device claiming the phy
+- * @phy_np: Node pointer for the PHY
+- * @flags: flags to pass to the PHY
+- * @iface: PHY data interface type
+- *
+- * If successful, returns a pointer to the phy_device with the embedded
+- * struct device refcount incremented by one, or NULL on failure. The
+- * refcount must be dropped by calling phy_disconnect() or phy_detach().
+- */
+-struct phy_device *of_phy_attach(struct net_device *dev,
+-				 struct device_node *phy_np, u32 flags,
+-				 phy_interface_t iface)
+-{
+-	struct phy_device *phy = of_phy_find_device(phy_np);
+-	int ret;
+-
+-	if (!phy)
+-		return NULL;
+-
+-	ret = phy_attach_direct(dev, phy, flags, iface);
+-
+-	/* refcount is held by phy_attach_direct() on success */
+-	put_device(&phy->mdio.dev);
+-
+-	return ret ? NULL : phy;
+-}
+-EXPORT_SYMBOL(of_phy_attach);
+-
+ /*
+  * of_phy_is_fixed_link() and of_phy_register_fixed_link() must
+  * support two DT bindings:
+diff --git a/include/linux/of_mdio.h b/include/linux/of_mdio.h
+index cfe8c607a628..2b05e7f7c238 100644
+--- a/include/linux/of_mdio.h
++++ b/include/linux/of_mdio.h
+@@ -26,9 +26,6 @@ of_phy_connect(struct net_device *dev, struct device_node *phy_np,
+ struct phy_device *
+ of_phy_get_and_connect(struct net_device *dev, struct device_node *np,
+ 		       void (*hndlr)(struct net_device *));
+-struct phy_device *
+-of_phy_attach(struct net_device *dev, struct device_node *phy_np,
+-	      u32 flags, phy_interface_t iface);
+ 
+ struct mii_bus *of_mdio_find_bus(struct device_node *mdio_np);
+ int of_phy_register_fixed_link(struct device_node *np);
+@@ -100,13 +97,6 @@ of_phy_get_and_connect(struct net_device *dev, struct device_node *np,
+ 	return NULL;
+ }
+ 
+-static inline struct phy_device *of_phy_attach(struct net_device *dev,
+-					       struct device_node *phy_np,
+-					       u32 flags, phy_interface_t iface)
+-{
+-	return NULL;
+-}
+-
+ static inline struct mii_bus *of_mdio_find_bus(struct device_node *mdio_np)
+ {
+ 	return NULL;
 -- 
-Florian
+2.25.1
+
