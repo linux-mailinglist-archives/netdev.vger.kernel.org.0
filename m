@@ -2,155 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41B8731E153
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 22:26:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2497431E166
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 22:32:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233524AbhBQV0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 16:26:02 -0500
-Received: from aserp2120.oracle.com ([141.146.126.78]:43880 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231879AbhBQVZ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 16:25:26 -0500
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11HLJlxc081165;
-        Wed, 17 Feb 2021 21:24:31 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=EZvpqrgXMjOzeNOEAbxOepiyXAtwIv/GxcPbcJ8w6vs=;
- b=zkU2212nsTh3bJTN2JlWV9MQsKsFnbygaC6ldFctQ/ViCdR2sFQXryHCQY2hQIre8hwS
- dTfZzxZ+OVw0/+4FHpCAlVyuMYXEPqJhjd7Y+LJjmN25TgdaEwT8Wm7Uk3GLO6JkvG7M
- Pn7/qZbqMEmOTN09m4pb5GQWqg/eplHSUHeeO3HKG62CfpcabD4rDeyGqfdQEhtR5bdv
- BjmqX6ANWmZauqjZXMFpQJtkMT38p3MhLuHFUoeuIT03Jffd2C7QK8U/PJgJSoorPSxG
- UQGz9cF/mMFLaZz4WzkqrUBYOcQ5kX2UydpiRT38iuhQMWdDj4pDJ7XnDbFiMeqd1/l2 pA== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2120.oracle.com with ESMTP id 36pd9abcrs-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 17 Feb 2021 21:24:31 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 11HLK7Lq144903;
-        Wed, 17 Feb 2021 21:24:29 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userp3030.oracle.com with ESMTP id 36prpyn562-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 17 Feb 2021 21:24:29 +0000
-Received: from abhmp0015.oracle.com (abhmp0015.oracle.com [141.146.116.21])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 11HLONQg020565;
-        Wed, 17 Feb 2021 21:24:24 GMT
-Received: from kadam (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 17 Feb 2021 21:24:23 +0000
-Date:   Thu, 18 Feb 2021 00:24:12 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Michael Walle <michael@walle.cc>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net-next] net: phy: icplus: Call phy_restore_page() when
- phy_select_page() fails
-Message-ID: <20210217212411.GC2087@kadam>
-References: <YCy1F5xKFJAaLBFw@mwanda>
- <20210217142838.GM2222@kadam>
- <20210217150621.GG1463@shell.armlinux.org.uk>
- <20210217153357.GE1477@shell.armlinux.org.uk>
- <YC1NKO2HznLC887f@lunn.ch>
+        id S232972AbhBQVb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 16:31:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51166 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232890AbhBQVbM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Feb 2021 16:31:12 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5497664E85;
+        Wed, 17 Feb 2021 21:30:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1613597431;
+        bh=WgRxiqmGWb/NNjj30Km3X2UGAL7IO9ln+kqQU/TQu6U=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=IIUYl+kx286L8XAbuoI1nFhR6GLGmWR37+lXiZQPd90hH0szDCBrQ5FWMXeULISx4
+         gaGpIyG2FFlt+DMObk0hMPlCkYnTawuCtljEEkzUUU0RSvnC0yJ0NNUKpMYcekSOvh
+         Yh32Mpve4kb1c1Vs1CdrIcxcOXSPV0X7VowLnjotPugA6AEXPwYJ8z2NkUvAafVWit
+         Inak6DJoiZrLTk28Ij6mL2nyqxB6h8v1qO5SCswhTtT4OiUmdFL3E4UQqf2I8jn7nS
+         k1Q+T/5tBxPh2r++1Q5iSVvz81r6cURl4C0hA/4QwHqr2FZznojt5aH8PwyLmIDWrV
+         FMrnWA7HNT1OA==
+Received: by mail-ot1-f50.google.com with SMTP id 80so33786oty.2;
+        Wed, 17 Feb 2021 13:30:31 -0800 (PST)
+X-Gm-Message-State: AOAM531JY6QzHLiBU7S5n6LuNv4XVtzclYzmJ84vdsYFYNEQqs6tO3mX
+        21eUbij8ekOttpQWyG9r4iK3+T+MmB7u73HZPYU=
+X-Google-Smtp-Source: ABdhPJz1Azps44lN+jQOH+CDQmyg6qd67SBn4K0xmXvmlNAmv1A2dJGjw6f5euo1835xoHhFcxpq3LVx1T8pcul4Uyw=
+X-Received: by 2002:a05:6830:1db5:: with SMTP id z21mr807185oti.210.1613597430588;
+ Wed, 17 Feb 2021 13:30:30 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YC1NKO2HznLC887f@lunn.ch>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-IMR: 1
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9898 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxlogscore=999
- phishscore=0 adultscore=0 mlxscore=0 suspectscore=0 malwarescore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102170160
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9898 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 clxscore=1015 impostorscore=0
- mlxscore=0 phishscore=0 mlxlogscore=999 spamscore=0 bulkscore=0
- priorityscore=1501 malwarescore=0 suspectscore=0 adultscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102170160
+References: <1613012611-8489-1-git-send-email-min.li.xe@renesas.com>
+ <CAK8P3a3YhAGEfrvmi4YhhnG_3uWZuQi0ChS=0Cu9c4XCf5oGdw@mail.gmail.com>
+ <OSBPR01MB47732017A97D5C911C4528F0BA8B9@OSBPR01MB4773.jpnprd01.prod.outlook.com>
+ <CAK8P3a2KDO4HutsXNJzjmRJTvW1QW4Kt8H7U53_QqpmgvZtd3A@mail.gmail.com>
+ <OSBPR01MB4773B22EA094A362DD807F83BA8B9@OSBPR01MB4773.jpnprd01.prod.outlook.com>
+ <CAK8P3a3k5dAF=X3_NrYAAp5gPJ_uvF3XfmC4rKz0oGTrGRriCw@mail.gmail.com>
+ <OSBPR01MB47732AFC03DA8A0DDF626706BA879@OSBPR01MB4773.jpnprd01.prod.outlook.com>
+ <CAK8P3a2TeeLfsTNkZPnC3YowdOS=bFM5yYj58crP6F5U9Y_r-Q@mail.gmail.com>
+ <OSBPR01MB47739CBDE12E1F3A19649772BA879@OSBPR01MB4773.jpnprd01.prod.outlook.com>
+ <CAK8P3a2fRgDJZv-vzy_X6Y5t3daaVdCiXtMwkmXUyG0EQZ0a6Q@mail.gmail.com> <OSBPR01MB477394546AE3BC1F186FC0E9BA869@OSBPR01MB4773.jpnprd01.prod.outlook.com>
+In-Reply-To: <OSBPR01MB477394546AE3BC1F186FC0E9BA869@OSBPR01MB4773.jpnprd01.prod.outlook.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Wed, 17 Feb 2021 22:30:14 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a32jF+iCH5Sk82LaozyPJ0n=f92MRdseZwN9aOtf4DwKQ@mail.gmail.com>
+Message-ID: <CAK8P3a32jF+iCH5Sk82LaozyPJ0n=f92MRdseZwN9aOtf4DwKQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] misc: Add Renesas Synchronization Management
+ Unit (SMU) support
+To:     Min Li <min.li.xe@renesas.com>
+Cc:     Derek Kiernan <derek.kiernan@xilinx.com>,
+        Dragan Cvetic <dragan.cvetic@xilinx.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        gregkh <gregkh@linuxfoundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 17, 2021 at 06:06:48PM +0100, Andrew Lunn wrote:
-> > I'm wondering whether we need to add __acquires() and __releases()
-> > annotations to some of these functions so that sparse can catch
-> > these cases. Thoughts?
-> 
-> Hi Russell
-> 
-> The more tools we have for catching locking problems the better.
-> Jakubs patchwork bot should then catch them when a patch is submitted,
-> if the developer did not run sparse themselves.
+On Wed, Feb 17, 2021 at 9:20 PM Min Li <min.li.xe@renesas.com> wrote:
+>
+> I attached the G.8273.2 document, where chapter 6 is about supporting physical layer
+> frequency. And combo mode is Renesas way to support this requirement. Other companies
+> may come up with different ways to support it.
+>
+> When EEC quality is below certain level, we would wanna turn off combo mode.
 
-Here is how I wrote the check for Smatch.  The code in the kernel looks
-like:
+Maybe this is something that could be handled inside of the device driver then?
 
-	oldpage = phy_select_page(phydev, 0x0007);
+If the driver can use the same algorithm that is in your user space software
+today, that would seem to be a nicer way to handle it than requiring a separate
+application.
 
-	...
+> > > This function will read FCW first and convert it to FFO.
+> >
+> > Is this related to the information in the timex->freq field? It sounds like this
+> > would already be accessible through the existing
+> > clock_adjtime() interface.
+> >
+>
+> They are related, but dealing with timex->freq has limitations
+>
+> 1) Renesas SMU has up to 8 DPLLs and only one of the them would be ptp
+> clock and we want to be able to read any DPLL's FFO or state
 
-	phy_restore_page(phydev, oldpage, 0);
+Is this necessarily unique to Renesas SMU though? Not sure what
+makes sense in terms of the phc/ptp interface. Could there just be
+a separate instance for each DPLL in the phc subsystem even if it's
+actually a ptp clock, or would that be an incorrect use?
 
-So what I said is that if phy_select_page() returns an error code then
-set "phydev" to &selected state.  Then if we call phy_restore_page()
-set it to &undefined.  When we hit a return, check if we have any
-"phydev" variables can possibly be in &selected state and print a
-warning.
+> 2) timex->freq's unit is ppb and we want to read more precise ffo in smaller unit of ppqt
 
-The code is below.
+This also sounds like something that would not be vendor specific. If you
+need a higher resolution, then at some point others would need it as well.
+There is already precedence in 'struct timex' to redefine the resolution of
+some fields based on a flag -- 'time.tv_usec' can either refer to microseconds
+to nanoseconds.
 
-regards,
-dan carpenter
+If the range of the 'freq' field is sufficient to encode ppqt, you could add
+another flag for that, otherwise another reserved field can be used.
 
-#include "smatch.h"
-#include "smatch_slist.h"
+> 3) there is no interface in the current ptp hardware clock infrastructure to read ffo back from hardware
 
-static int my_id;
+Adding an internal interface is the easy part here, the hard part is defining
+the user interface.
 
-STATE(selected);
+> > Wouldn't any PTP clock run in one of these modes? If this is just
+> > informational, it might be appropriate to have another sysfs attribute for
+> > each PTP clock that shows the state of the DPLL, and then have the PTP
+> > driver either fill in the current value in 'struct ptp_clock', or provide a
+> > callback to report the state when a user reads the sysfs attribute.
+> >
+>
+> What you propose can work. But DPLL operating mode is not standardized
+> so different vendor may have different explanation for various modes.
 
-static sval_t err_min = { .type = &int_ctype, .value = -4095 };
-static sval_t err_max = { .type = &int_ctype, .value = -1 };
+If it's a string, that could easily be extended to further modes, as long
+as the kernel documents which names are allowed. If multiple vendors
+refer to the same mode by different names, someone will have to decide
+what to call it in the kernel, and everyone afterwards would use the same
+name.
 
-static void match_phy_select_page(struct expression *expr, const char *name, struct symbol *sym, void *data)
-{
-	set_state(my_id, name, sym, &selected);
-}
+> Also, I thought sysfs is only for debug or informational purpose.
+> Production software is not supposed to use it for critical tasks?
 
-static void match_phy_restore_page(struct expression *expr, const char *name, struct symbol *sym, void *data)
-{
-	set_state(my_id, name, sym, &undefined);
-}
+No, you are probably thinking of debugfs. sysfs is one of multiple
+common ways to exchange this kind of data in a reliable way.
 
-static void match_return(struct expression *expr)
-{
-	struct sm_state *sm;
+An ioctl would probably work just as well though, usually sysfs
+is better when the information makes sense to human operators
+or simple shell scripts, while an ioctl interface is better if performance
+is important, or if the information is primarily used in C programs.
 
-	FOR_EACH_MY_SM(my_id, __get_cur_stree(), sm) {
-		if (slist_has_state(sm->possible, &selected)) {
-			sm_warning("phy_select_page() requires restore on error");
-			return;
-		}
-	} END_FOR_EACH_SM(sm);
-}
-
-void check_phy_select_page_fail(int id)
-{
-	if (option_project != PROJ_KERNEL)
-		return;
-
-	my_id = id;
-
-	return_implies_param_key("phy_select_page", err_min, err_max,
-				 &match_phy_select_page, 0, "$", NULL);
-	add_function_param_key_hook("phy_restore_page", &match_phy_restore_page,
-				    0, "$", NULL);
-	add_hook(&match_return, RETURN_HOOK);
-}
+        Arnd
