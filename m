@@ -2,119 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C688331E1B9
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 23:03:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A66B31E1C6
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 23:06:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232876AbhBQWBu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 17:01:50 -0500
-Received: from www62.your-server.de ([213.133.104.62]:42266 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229722AbhBQWBq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 17:01:46 -0500
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lCUsY-0000ws-PK; Wed, 17 Feb 2021 23:01:02 +0100
-Received: from [85.7.101.30] (helo=pc-9.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1lCUsY-000Rpb-JQ; Wed, 17 Feb 2021 23:01:02 +0100
-Subject: Re: [Patch bpf-next] bpf: clear per_cpu pointers in
- bpf_prog_clone_create()
-To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Alexei Starovoitov <ast@kernel.org>
-References: <20210217035844.53746-1-xiyou.wangcong@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <c24360ab-f4b3-db61-4c83-9fb941520304@iogearbox.net>
-Date:   Wed, 17 Feb 2021 23:01:02 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S233025AbhBQWFL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 17:05:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33242 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229828AbhBQWFB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 17:05:01 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7ECDC061574;
+        Wed, 17 Feb 2021 14:04:18 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id v14so142873wro.7;
+        Wed, 17 Feb 2021 14:04:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6wttnQGWu0sxnyWFkVI72XRlxSZgSjW/Vbi7KmBnooU=;
+        b=S8NztYelNcnuzKYnhS7oX1mJsUZSLgr3mbFA8X2i1g0Ufu+3349DArFXUmApD+wUN8
+         qae+oQZcQrMGGwfs5uXO/8pg0rTm52mo+/cNttAYIrGQrUaez8wbfR0azlntX+LX4u3G
+         BCBpcyV17PSqvQRIcv8dDeKp0HBzhIFX9UViWcKGce0DeL8ZU+5MbE4wV/VuDlMMp99u
+         GqyjV3+G6IpSQ0+lce5zJAFo4GQZqMhq6ncTXWjHGKCuotpBbeX+zEqDlymSamjkU+l4
+         WWSWTMUQOhU9/pG7L1dhuaTW+9eEEbhrEKX0TVpp7LMEplSM8fTiGesWNq3AKS3I33zP
+         1RUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6wttnQGWu0sxnyWFkVI72XRlxSZgSjW/Vbi7KmBnooU=;
+        b=d7YlqnJohor//F5Y8MZxziK7v8PJbulj3kFN3VWgU+O7Gmd4CQx69vHrVC9qa1q83D
+         fDVQAXxzeaxljrz6s/ucxTZeh3qJZfRGtyqFmzwfH65MooqzB4B9/SRXXw03IvsYVzru
+         dPlXLrBThzBWm4drPx8tFH67H/qR2K8D7T2ykERS/fl8qIJFnDfWkPi4ntAoxqG3WIrj
+         ahekWM7te4WjEc6AP2IWHwJ5F8UEjFIn4E9f1Hvas3O0zcsibIOlTlhpRfIsRzxhwHmr
+         DX0iAuPfOu8RSlxMvc6e2ZCgYd0OiIg4q5ZFC1+XJvqIpVrzl18OoSa7hcEoBNdVC79G
+         B2cQ==
+X-Gm-Message-State: AOAM533nZxkDjcQVLyXSpzfub5nGFvfx/aqLYWrdBkVuBkuMPPVFOc7s
+        /SiQ/ZvzlWo2tWYMg6WvZbzGonfMRsqvCxcgF+E=
+X-Google-Smtp-Source: ABdhPJyoNgeCYh4ZR1wXJGekd+0GnvpscpjxuRKyBWvKDEv6fshsFjkzz00EaLIHiia/zG7sJrerWde6Yn90dDe9PP0=
+X-Received: by 2002:a5d:49d2:: with SMTP id t18mr1232965wrs.224.1613599457065;
+ Wed, 17 Feb 2021 14:04:17 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210217035844.53746-1-xiyou.wangcong@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26083/Wed Feb 17 13:11:33 2021)
+References: <20210216010806.31948-1-TheSven73@gmail.com> <BN8PR11MB3651BB478489CF5B69A9DB6DFA869@BN8PR11MB3651.namprd11.prod.outlook.com>
+In-Reply-To: <BN8PR11MB3651BB478489CF5B69A9DB6DFA869@BN8PR11MB3651.namprd11.prod.outlook.com>
+From:   Sven Van Asbroeck <thesven73@gmail.com>
+Date:   Wed, 17 Feb 2021 17:04:05 -0500
+Message-ID: <CAGngYiUV_c7Z-gUCt0xKcP-E_5UVyM9PWBQ_wYK9o5_L0D-1qA@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 0/5] lan743x speed boost
+To:     Bryan Whitehead <Bryan.Whitehead@microchip.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        David Miller <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Alexey Denisov <rtgbnm@gmail.com>,
+        Sergej Bauer <sbauer@blackbox.su>,
+        Tim Harvey <tharvey@gateworks.com>,
+        =?UTF-8?Q?Anders_R=C3=B8nningen?= <anders@ronningen.priv.no>,
+        Hillf Danton <hdanton@sina.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/17/21 4:58 AM, Cong Wang wrote:
-> From: Cong Wang <cong.wang@bytedance.com>
-> 
-> Pretty much similar to commit 1336c662474e
-> ("bpf: Clear per_cpu pointers during bpf_prog_realloc") we also need to
-> clear these two percpu pointers in bpf_prog_clone_create(), otherwise
-> would get a double free:
-> 
->   BUG: kernel NULL pointer dereference, address: 0000000000000000
->   #PF: supervisor read access in kernel mode
->   #PF: error_code(0x0000) - not-present page
->   PGD 0 P4D 0
->   Oops: 0000 [#1] SMP PTI
->   CPU: 13 PID: 8140 Comm: kworker/13:247 Kdump: loaded Tainted: G                W    OE
->   5.11.0-rc4.bm.1-amd64+ #1
->   Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1 04/01/2014
->   test_bpf: #1 TXA
->   Workqueue: events bpf_prog_free_deferred
->   RIP: 0010:percpu_ref_get_many.constprop.97+0x42/0xf0
->   Code: [...]
->   RSP: 0018:ffffa6bce1f9bda0 EFLAGS: 00010002
->   RAX: 0000000000000001 RBX: 0000000000000000 RCX: 00000000021dfc7b
->   RDX: ffffffffae2eeb90 RSI: 867f92637e338da5 RDI: 0000000000000046
->   RBP: ffffa6bce1f9bda8 R08: 0000000000000000 R09: 0000000000000001
->   R10: 0000000000000046 R11: 0000000000000000 R12: 0000000000000280
->   R13: 0000000000000000 R14: 0000000000000000 R15: ffff9b5f3ffdedc0
->   FS:    0000000000000000(0000) GS:ffff9b5f2fb40000(0000) knlGS:0000000000000000
->   CS:    0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->   CR2: 0000000000000000 CR3: 000000027c36c002 CR4: 00000000003706e0
->   DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->   DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->   Call Trace:
->     refill_obj_stock+0x5e/0xd0
->     free_percpu+0xee/0x550
->     __bpf_prog_free+0x4d/0x60
->     process_one_work+0x26a/0x590
->     worker_thread+0x3c/0x390
->     ? process_one_work+0x590/0x590
->     kthread+0x130/0x150
->     ? kthread_park+0x80/0x80
->     ret_from_fork+0x1f/0x30
-> 
-> This bug is 100% reproducible with test_kmod.sh.
-> 
-> Reported-by: Jiang Wang <jiang.wang@bytedance.com>
-> Fixes: 700d4796ef59 ("bpf: Optimize program stats")
-> Fixes: ca06f55b9002 ("bpf: Add per-program recursion prevention mechanism")
-> Cc: Alexei Starovoitov <ast@kernel.org>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> ---
->   kernel/bpf/core.c | 2 ++
->   1 file changed, 2 insertions(+)
-> 
-> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-> index 0ae015ad1e05..b0c11532e535 100644
-> --- a/kernel/bpf/core.c
-> +++ b/kernel/bpf/core.c
-> @@ -1103,6 +1103,8 @@ static struct bpf_prog *bpf_prog_clone_create(struct bpf_prog *fp_other,
->   		 * this still needs to be adapted.
->   		 */
->   		memcpy(fp, fp_other, fp_other->pages * PAGE_SIZE);
-> +		fp_other->stats = NULL;
-> +		fp_other->active = NULL;
->   	}
->   
->   	return fp;
-> 
+Hi Jakub and Bryan,
 
-This is not correct. I presume if you enable blinding and stats, then this will still
-crash. The proper way to fix it is to NULL these pointers in bpf_prog_clone_free()
-since the clone can be promoted as the actual prog and the prog ptr released instead.
+On Wed, Feb 17, 2021 at 4:43 PM <Bryan.Whitehead@microchip.com> wrote:
+>
+> Just to let you know, my colleague tested the patches 1 and 2 on x86 PC and we are satisfied with the result.
+> We confirmed some performance improvements.
+> We also confirmed PTP is working.
+>
+> Thanks for your work on this.
+>
+> Tested-by: UNGLinuxDriver@microchip.com
+>
 
-Thanks,
-Daniel
+Bryan, that is great news. My pleasure, thank you for your guidance
+and considerable expertise.
+
+Jakub, is there anything else you'd like to see from us, before you
+are satisfied that patches 1/5 and 2/5 can be merged into your tree?
