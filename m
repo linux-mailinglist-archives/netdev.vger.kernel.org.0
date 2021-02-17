@@ -2,61 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C7F531DFFA
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 21:09:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0DA031E007
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 21:14:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234238AbhBQUJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 15:09:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36670 "EHLO
+        id S233712AbhBQUNe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 15:13:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234198AbhBQUJM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 15:09:12 -0500
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 479C6C061574;
-        Wed, 17 Feb 2021 12:08:32 -0800 (PST)
-Received: by mail-io1-xd2b.google.com with SMTP id s17so7018167ioj.4;
-        Wed, 17 Feb 2021 12:08:32 -0800 (PST)
+        with ESMTP id S233332AbhBQUNb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 15:13:31 -0500
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF347C061574;
+        Wed, 17 Feb 2021 12:12:50 -0800 (PST)
+Received: by mail-io1-xd32.google.com with SMTP id q77so3153699iod.2;
+        Wed, 17 Feb 2021 12:12:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=ExD1J0nbsdRlEWTWO+RaWV0fRE0IveEnnin5I0Nhyy4=;
-        b=U8PMCy1WM5nLHZT/Js8eWRG88gTHAMuwTFX82alHXQS4HAEuWxnDYepah0gY6BiCP8
-         7wpHnoFAkxKzYSZLvfhTPD+svi0jx474FhffIkT6LGJHxxX3pUpmEfKGx7cI9xxGMM31
-         AJjGFXLWsKf+1o+EdHgfonmb8PCJuC53/TOdmeGhTmjhOBaQsqfWy3I6Vqeov4mJJKjx
-         AZLs0ClIH+9pX9wn8Bf1wmHofjdHIP57N0WndzWEVsD7E0EjOfE2jhVtmRDoVUi+tFZM
-         hjyJZ7X++iAPX1o9oArVijbeJYAqJR82QrrSAo3GMX9Z6xvZGf/S3cBE9eyEr2hqWokQ
-         tyAw==
+        bh=xD3xqmZLKLFl8D9bl6zOVotN7gOhOOlYP72KjDNrvlI=;
+        b=CxnYjEoBwZGe65kabYHjpetsnAu2LY+1d5CVBjgl71Jx4FuCOpb+8CCYD8DVpC5GXQ
+         ghlHs9NXk3yrmfq8ReMmuVjYVKMp2ybvNl3vNgG4XYvV1KGo93NCP6nuE+MI0rOxLLku
+         DKbzbnX2q+K0Pm86He/e+sXYWdKTL8Lspuf8HkiOP0A4Lx0ohTjxDg9BFPGcBR2Zq4Of
+         JatOWg4yUHj58X47vyBwBm9TMAIzX13TyBYsGZYdVcfVUpmSIh52XytwCUKr5AiudgJl
+         2buU3sZaqL4qP5ZaLJhzLBEmTtH/lkArbIKyb5vBUsLu8cn+Rn/xhXfjDaG9VOpQizJQ
+         YUDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
          :references:subject:mime-version:content-transfer-encoding;
-        bh=ExD1J0nbsdRlEWTWO+RaWV0fRE0IveEnnin5I0Nhyy4=;
-        b=tQ3mmWxxfmJIoUN5nBVQ+L54eyHrsiwkfHpftpX6beZI538NdI6KFog/Cxf8OzFeli
-         78MEszZhvukAc5f5Ov45GZ62t/4WmY/B6dCRWuPk+GjPGCFZONz1evsEkgQpauiKxIW0
-         mc+vKFJvYpWt5KNqIYqBbk6qv8vpEbn0M6qVWE40FcL6EyVwTvpuZ3hAfeJ8njN73BYC
-         9zeH2zJhVKYcaTCbBepQh1qApR7ILaoQkqTFOhuY9iHVUG+tJ7yIdNGVU73nnqBUXehf
-         s9rAhG4V+O2XLBQ+Qt1G79w3MJclcUS0dtbWIVEC/EObQy2awYYlpmn7d2Hfu0ESDnju
-         3FcA==
-X-Gm-Message-State: AOAM5330MH6a7sStuAdHrlxUJpF6X34VNMS0aoY3K4Y5Duu/I4sbepgg
-        2K46HzModeefjiocS3UA0maa6oB5Xec=
-X-Google-Smtp-Source: ABdhPJztnOeyOFPU17l5SzJlomiDjb9dNL2x2ImHqhTAMF/+9g/+9UGWbVxO5q5jc828bav3yjdTdQ==
-X-Received: by 2002:a05:6638:2407:: with SMTP id z7mr1131100jat.110.1613592511848;
-        Wed, 17 Feb 2021 12:08:31 -0800 (PST)
+        bh=xD3xqmZLKLFl8D9bl6zOVotN7gOhOOlYP72KjDNrvlI=;
+        b=YJYxmST1b3UveLQpxhEtlni3RO9GKLWPh5e2Ke/OFVN4mi4j+siso7emStQKkyexCF
+         mEpnxkiKaisKr0Aylj8HC6ZWh+9p4bx594fvc5Cfh9ejv9MXlXsgMoofLauoCWFjWibn
+         xSvfR6GQs7yY1+xW+Lfid3sLUa8sDwm9ObI30N+KE75k0O9aaBMVTVIhvBhIlZ3OxgLH
+         6eBgxUdCBVJeT71MRMDvczDgPwjVh0TbHidWnwZvg+noqVpipLbttv09gOmvIULmOmzh
+         sTsbJyWo3QE+DsNXuzwXduYGEX21H4t1F0JXtzJ+P8qZ0ekI+CO/JLfMVARxtDRLWyyV
+         9Udw==
+X-Gm-Message-State: AOAM531nMm2svx0cXNY/cTX7OdgzPqDIljgh5xME67XdYmi9qGwy3Br3
+        jsFzpbsmtNBTigP/gNHD058=
+X-Google-Smtp-Source: ABdhPJyia5iYEHFKA/xe4637mg/PzIJ5YYbLvKBeQNKo3T0NUe1KQvdl4xnth60IUlzHgbbyM0d1bw==
+X-Received: by 2002:a6b:3b14:: with SMTP id i20mr702579ioa.28.1613592770253;
+        Wed, 17 Feb 2021 12:12:50 -0800 (PST)
 Received: from localhost ([172.243.146.206])
-        by smtp.gmail.com with ESMTPSA id b9sm1763311ilo.41.2021.02.17.12.08.30
+        by smtp.gmail.com with ESMTPSA id b8sm2039978iow.44.2021.02.17.12.12.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Feb 2021 12:08:31 -0800 (PST)
-Date:   Wed, 17 Feb 2021 12:08:25 -0800
+        Wed, 17 Feb 2021 12:12:49 -0800 (PST)
+Date:   Wed, 17 Feb 2021 12:12:43 -0800
 From:   John Fastabend <john.fastabend@gmail.com>
-To:     Lorenz Bauer <lmb@cloudflare.com>, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, jakub@cloudflare.com
-Cc:     kernel-team@cloudflare.com, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Lorenz Bauer <lmb@cloudflare.com>
-Message-ID: <602d77b91e028_aed92087d@john-XPS-13-9370.notmuch>
-In-Reply-To: <20210216105713.45052-1-lmb@cloudflare.com>
-References: <20210216105713.45052-1-lmb@cloudflare.com>
-Subject: RE: [PATCH bpf-next 0/8] PROG_TEST_RUN support for sk_lookup programs
+To:     Cong Wang <xiyou.wangcong@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, duanxiongchun@bytedance.com,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Message-ID: <602d78bbd1218_ddd220893@john-XPS-13-9370.notmuch>
+In-Reply-To: <CAM_iQpXBC49FBAf2LLANz94OFnVKoJADc9yePJBUuvMARbfq7w@mail.gmail.com>
+References: <20210216064250.38331-1-xiyou.wangcong@gmail.com>
+ <20210216064250.38331-5-xiyou.wangcong@gmail.com>
+ <602d631877e40_aed9208bc@john-XPS-13-9370.notmuch>
+ <CAM_iQpXBC49FBAf2LLANz94OFnVKoJADc9yePJBUuvMARbfq7w@mail.gmail.com>
+Subject: Re: [Patch bpf-next v4 4/5] skmsg: move sk_redir from TCP_SKB_CB to
+ skb
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
@@ -65,34 +75,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lorenz Bauer wrote:
-> We don't have PROG_TEST_RUN support for sk_lookup programs at the
-> moment. So far this hasn't been a problem, since we can run our
-> tests in a separate network namespace. For benchmarking it's nice
-> to have PROG_TEST_RUN, so I've gone and implemented it.
+Cong Wang wrote:
+> On Wed, Feb 17, 2021 at 10:40 AM John Fastabend
+> <john.fastabend@gmail.com> wrote:
+> > > @@ -802,9 +809,10 @@ int sk_psock_tls_strp_read(struct sk_psock *psock, struct sk_buff *skb)
+> > >                * TLS context.
+> > >                */
+> > >               skb->sk = psock->sk;
+> > > -             tcp_skb_bpf_redirect_clear(skb);
+> > > +             skb_dst_drop(skb);
+> > > +             skb_bpf_redirect_clear(skb);
+> >
+> > Do we really need the skb_dst_drop() I thought we would have already dropped this here
+> > but I've not had time to check yet.
 > 
-> Multiple sk_lookup programs can be attached at once to the same
-> netns. This can't be expressed with the current PROG_TEST_RUN
-> API, so I'm proposing to extend it with an array of prog_fd.
+> Yes, I got some serious complaints from dst_release() when I didn't
+> add skb_dst_drop().
 > 
-> Patches 1-2 are clean ups. Patches 3-4 add the new UAPI and
-> implement PROG_TEST_RUN for sk_lookup. Patch 5 adds a new
-> function to libbpf to access multi prog tests. Patches 6-8 add
-> tests.
-> 
-> Andrii, for patch 4 I decided on the following API:
-> 
->     int bpf_prog_test_run_array(__u32 *prog_fds, __u32 prog_fds_cnt,
->                                 struct bpf_test_run_opts *opts)
-> 
-> To be consistent with the rest of libbpf it would be better
-> to take int *prog_fds, but I think then the function would have to
-> convert the array to account for platforms where
-> 
->     sizeof(int) != sizeof(__u32)
-> 
-> Please let me know what your preference is.
+> Thanks.
 
-Seems reasonable to me. For the series,
-
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+OK thanks.
