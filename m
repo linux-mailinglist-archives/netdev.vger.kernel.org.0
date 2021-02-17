@@ -2,166 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CFAA31D7CB
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 12:03:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 201EE31D7CD
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 12:03:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230488AbhBQLBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 06:01:12 -0500
-Received: from mail-eopbgr30073.outbound.protection.outlook.com ([40.107.3.73]:15780
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230336AbhBQLAl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Feb 2021 06:00:41 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XmJeWBg2Cw4Azwyuuq1PUB4J6oDuvpzeQCAwVz44QNh5TeJIYovidIPGAIWsZFK3DohGgpJYXf8JKJCPQ/bgwY0ckQ11oRYGnli+374D8RqahJrcDkH/1IGGvQCwkYjOv68MpvFiJAg3a41WabqUnBJq3khatiYiba9/ny+d2848EdHhkouiaO2fjXCvP0b+uDfvdJWSTsZL8Si6Ub4UYcpPipaseXjQEf/LiOoRX1wc6OLhmIcg16SVKSrpXCdZ/VDg2KBVqepPNM/e4VPXgbu0s73yyvdaj30Q079A+FsIEtZTGurOAoQ8PKB+XtvTTlF4ctDzG3aZRCd+0YpQ8Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Z8ojTnqodtnJGj9tpT7QuxC+KIVhGhgUQB0KDBTVJcM=;
- b=ISGm64wcV0OELl3daD5l1upMbWmup0mK78U5QelKEjGcMMFsEqcF2AmQ166AQC/aOAiaO8nADZXz/fg2rq7xDWkMGhMdepxB+TI19j1lKwCNGSquY7lU3XunDwqYTkwNGXO4rQi8fMporpIIK/vYICNYuUCVdnI7NoGhVPhHBNbGY0LwZ/CnZFm7dDIoovFszs7UOJzx/5mxeLk0vCCIUhnvIRxKU/tnmA2q0dZWeAtz50hGPURypjwbH4gm0/1+RukksqK0f42n3B2j50C0ePzmX9yCWiXGMGqBviJ2YVMbyA44EnJPCQf68gDgWOK1ZIfiZ4T2QXVAODhwR8BLGg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Z8ojTnqodtnJGj9tpT7QuxC+KIVhGhgUQB0KDBTVJcM=;
- b=Bsp9Cy7jjt3n3gxSjf85Cjnb3+Hd7DhPoqxFmxeskjhmBtKg4zi2q8JEwaDw/OK2lpgnrFZ+oNmyyE53CNFoWlKa9xbBGnn2zOIVve0b45dD/mcO+9est1xiASELN1GZ0Y21vb42oB+espoefT+MgevWrowO/Mc1tOcA4FD602o=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR0402MB3616.eurprd04.prod.outlook.com (2603:10a6:803:8::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.17; Wed, 17 Feb
- 2021 10:59:52 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::3df3:2eba:51bb:58d7]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::3df3:2eba:51bb:58d7%7]) with mapi id 15.20.3846.042; Wed, 17 Feb 2021
- 10:59:52 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "ivecera@redhat.com" <ivecera@redhat.com>,
-        "nikolay@nvidia.com" <nikolay@nvidia.com>,
-        "roopa@nvidia.com" <roopa@nvidia.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "rasmus.villemoes@prevas.dk" <rasmus.villemoes@prevas.dk>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bridge@lists.linux-foundation.org" 
-        <bridge@lists.linux-foundation.org>
-Subject: Re: [PATCH net-next v4 5/8] bridge: mrp: Update br_mrp to use new
- return values of br_mrp_switchdev
-Thread-Topic: [PATCH net-next v4 5/8] bridge: mrp: Update br_mrp to use new
- return values of br_mrp_switchdev
-Thread-Index: AQHXBKzIpNFdzzkilUKmoPsYhJWnlapcLq2A
-Date:   Wed, 17 Feb 2021 10:59:51 +0000
-Message-ID: <20210217105951.5nyfclvf6e2p2nkf@skbuf>
-References: <20210216214205.32385-1-horatiu.vultur@microchip.com>
- <20210216214205.32385-6-horatiu.vultur@microchip.com>
-In-Reply-To: <20210216214205.32385-6-horatiu.vultur@microchip.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: microchip.com; dkim=none (message not signed)
- header.d=none;microchip.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [5.12.227.87]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: fbdb015a-cf81-4cc4-be92-08d8d33326d1
-x-ms-traffictypediagnostic: VI1PR0402MB3616:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR0402MB3616039C952845B6CE51B5E6E0869@VI1PR0402MB3616.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: FScPFxL+FvDvNeHlHN+DOp0NlPkmJ9BKoZJKj+UX0lW866u9FM+BRhTM1cx+YfC8GqiN/YIRN8vaoMbbPU1R5HsghWkspg8g/mJ+zl31ptZ1UeQ+FvduvSBdnxjOl9DX5paDW3P1ul1hyAo3NUHfsKgp1r0lX39QA/ukH064zUzLYspq4+v9N81hOhRGUJLRwi1I6svyuMuENaZPxiqb8LRlu8Fg8jV8gk9tumER6QTCoLS7vTnuDbns4zhjQHc14GjUVyRVXaOl2Sae9a57nfXAeETSFKzqAqCSwD3DPTjZ2IFb0wbfFPNRkL2amMwebKbN1nKqQWbjRtEcR/8ipDN/0AJGZ2SYFQu+FXRoZvC6IQ8NQqZnkYljr0hn62H9CCqGVeQonEbfHytRdquNUtViu0AYE3wTZSYnoMNauSDwdpM8r/TRhLCB8q+PTEwvhHO5RSSDgI7n309MuqlJxMLnpF34pcte0tMKCeghfp6AiVj0Jg8+oHXwkiMzeAkkzo8YIebkGfQa3YXs9k0BHw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(346002)(39860400002)(366004)(396003)(376002)(136003)(54906003)(478600001)(76116006)(8936002)(7416002)(9686003)(64756008)(15650500001)(6506007)(91956017)(66946007)(2906002)(83380400001)(71200400001)(8676002)(186003)(1076003)(26005)(6916009)(4326008)(66556008)(6512007)(5660300002)(86362001)(33716001)(316002)(44832011)(66446008)(66476007)(6486002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?LoERQDYPKJn74+8R5bp3J3Pqbf6z3scGIk0iRRoMrfKhTkYmzlKGcY2i+ihI?=
- =?us-ascii?Q?S0T61EU76f4jGC9Me5S44PjX7RrNliyUu8IdZ2x6hZXVm0tQwxrFWctUN03A?=
- =?us-ascii?Q?GrmqxkyXi5IiwbLH4WdLWr0eFwOovvdFUvsWMlma5OnuewCbg8mFjFN4AkdL?=
- =?us-ascii?Q?CJN0ng7DudFa8KLX/XM6VLqS8whUKk3ivwaOPQqROAvZafnqk1litHZMFZiG?=
- =?us-ascii?Q?YglKOtU2AAIHoy8qWfmwZ3NTF+tXyRO86H0Wer+Vz3XflhHfaYDDQEMUt+92?=
- =?us-ascii?Q?gDToobFcbRHAGPaNMf8S6mM2STthvYja9PjtJpsyw+84DbkQpHC/fBokl+DP?=
- =?us-ascii?Q?scciJccrWIk3KbYw57gP0d5CvXuUPE5Yaj0qnteJNYhqPMo9xmXIZFT0Gtld?=
- =?us-ascii?Q?P9gLU6DOHVEFbxuWaNS/XYOB0Frq3ieC6rhgN2wsXWcWFBe6cFkgWQe98FWX?=
- =?us-ascii?Q?zckCmMeDhPPt7lZG2U3xOJZ8O6Hw+f67DP0Mq8pHTT5NNkZKdMwd2dtHrHZm?=
- =?us-ascii?Q?xslhvCFTTpw+wtg5BloINWmhfotC1hb+BJNgcciAa5Hz/Xk35SkzEWAFoV1/?=
- =?us-ascii?Q?4wE4LoJDvH+iZKd3xZMzKTh1LE8e4ujKK80iTlzMNca9IOEJDnD5hxTbxYkp?=
- =?us-ascii?Q?HRPVlRYO+gEAWq9ACNIhxkJL+RqUgyYRn+vckeASCTJPJUQejiHG9wmeLiOn?=
- =?us-ascii?Q?c5MOO8j9QudAtyZoIxe5nOnd3QSigPC01Evgp+miVNWo9wnZUN6h9cyiq/6T?=
- =?us-ascii?Q?CfRW4DYQ5MZelHt18xbfgIq594mXZDSxE+k/4NyqyCTZ5PvHMaUXNBJYcUfz?=
- =?us-ascii?Q?y2q1+d23AwRjnhHkb4ZOrxTykLvgrDuEDauBXy+CfW4XHHSHm30tE39A2q/M?=
- =?us-ascii?Q?ZMemXSGMOZ7nGUwy1Hx4P/nFZN6VN16vV8n/K7TsXb77OF91pJqooTbyrsw3?=
- =?us-ascii?Q?IIparDjlxcQH1pMHgewCJIEpjoMIWc/8KdM+fMhCNwBHqSQaOeecNpHYT3Qg?=
- =?us-ascii?Q?j+UznmVYbnBm8FORtmY5FzzclzUc+FOxH/Ce06jmmegC6nrytch2ikLrz6AM?=
- =?us-ascii?Q?Qj5yYcKPiivb3Xub4KhpAaWLgVLMRk5EytnB05YkUgzsGtHeOY66pZPKTZNs?=
- =?us-ascii?Q?EzRZzh+Ucf15AfmCHpAYCgI1UYHk7TtrGz3JnR4EgpDSJD25iAU5RPgsCmjE?=
- =?us-ascii?Q?9coG7rVV5xTqEydfWdIZRs1Lqq281pqOSGvMxplCLZqveIZgcgLu661MDBoQ?=
- =?us-ascii?Q?DpGDL7d/WkF9lp42NVtgkGVxb/vdj/iGQROJnZ+wsdgSn2XwwdS7j+cVnYQr?=
- =?us-ascii?Q?S6qkMeYf3xWL+vJIoadpzqdr?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <7FC3E7294BB39C4C8F6B740EB1077ABE@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S230486AbhBQLB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 06:01:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60398 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230030AbhBQLB5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 06:01:57 -0500
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49BF0C061574
+        for <netdev@vger.kernel.org>; Wed, 17 Feb 2021 03:01:17 -0800 (PST)
+Received: by mail-lj1-x22f.google.com with SMTP id u4so15495832ljh.6
+        for <netdev@vger.kernel.org>; Wed, 17 Feb 2021 03:01:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=s49hSKyEz1i92CpeTBAunKs7ljY4dzNn7VojQkhT6ng=;
+        b=J0ECRXZeqLsbJr9QqxkcIFjnVTneSZgzJptt2km3aU17mpBJYgahP4/NIvCAL3UUxZ
+         nd9FiOSyGFCo35WNxsl5ZA9ZfcWrztGFyIAhWqy/ILMi1Y3PC+R6OU6aU3xMTPpPm96r
+         i87Ck2KLG7YwHsftp5SQIYxqhkcTM4H0WfCS2FYpfs6dGO3NctnmxfD9Zqgqa088o3+W
+         r45kPTPWenMdKnMsoKWsJ3QJfAqnj0VkH14nUGV9b3x0x9hpGRCZggSEtmdp+7cqewpG
+         2Rb3TdGs2nymfa8AuEe6SpRZKk+4Zt4mZ+BYIbBWekrUZv9eI5tjEPbcFnAOA0duYR4y
+         XZcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=s49hSKyEz1i92CpeTBAunKs7ljY4dzNn7VojQkhT6ng=;
+        b=Rq6nmzzfF3htjM9ABFDv5jpAQghP3y8D41UDox0WJFD5IpKVWHzOKww+iJss8hlJkQ
+         8MFaqAwZ8pB+iFx1IHWQtmowQfiMUy5dsgz6LP1yNbusce4UpgUb3XghCIun1Ti0/CuN
+         QzQuu6ai1sh1uS1mU+c5GBLtCKt1SwHHU0gVDZD89fQuuKDKanFpVCMWAybVn2mR5rj2
+         EwHc7PNs2rNoXqDOD24drgJdDq6Nx3x6D/RnlybxjcTh7fOSMTfU4zEEHg7ATaoARUy/
+         ieR2QtD1Q6zVo4nRIdZcTDDYCMvVgLJDX9Z1vpnWFPIIoInrufPVVMz+nGleZ1+B6Hbo
+         h49A==
+X-Gm-Message-State: AOAM532LsZkRqSh2xJTyLtlVeAJkIY46bVK8N6MLvwxDfzxE4qHBZIHE
+        DLlD4vF5KDRfn0tUbQVuhqXcD6sXEC2E82oyJ2VuJQ==
+X-Google-Smtp-Source: ABdhPJzM5NXo5Urq010RcaKvXmLBowSm24Ucpv8kKHv26dvKe9kPfMuCHXbdzIZVICU3zMM01WTaHL1Eoonaw89YI5Q=
+X-Received: by 2002:a2e:9041:: with SMTP id n1mr12452444ljg.273.1613559675701;
+ Wed, 17 Feb 2021 03:01:15 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fbdb015a-cf81-4cc4-be92-08d8d33326d1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Feb 2021 10:59:52.0118
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: L79TfGRLW6mreVFM2i6XhlYG3clCbA51uahKUFFTRx/Q0d5wEFdbLM4BDRCvqOSX0T71H2zoAhj+nSnTNCmtCQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3616
+References: <20210217062139.7893-1-dqfext@gmail.com> <20210217062139.7893-2-dqfext@gmail.com>
+ <e395ad31-9aeb-0afe-7058-103c6dce942d@gmail.com>
+In-Reply-To: <e395ad31-9aeb-0afe-7058-103c6dce942d@gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Wed, 17 Feb 2021 12:01:04 +0100
+Message-ID: <CACRpkdYQthFgjwVzHyK3DeYUOdcYyWmdjDPG=Rf9B3VrJ12Rzg@mail.gmail.com>
+Subject: Re: [RFC net-next 1/2] net: dsa: add Realtek RTL8366S switch tag
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Mauri Sandberg <sandberg@mailfence.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 16, 2021 at 10:42:02PM +0100, Horatiu Vultur wrote:
-> diff --git a/net/bridge/br_mrp.c b/net/bridge/br_mrp.c
-> index 01c67ed727a9..12487f6fe9b4 100644
-> --- a/net/bridge/br_mrp.c
-> +++ b/net/bridge/br_mrp.c
-> @@ -639,7 +639,7 @@ int br_mrp_set_ring_role(struct net_bridge *br,
->  			 struct br_mrp_ring_role *role)
->  {
->  	struct br_mrp *mrp =3D br_mrp_find_id(br, role->ring_id);
-> -	int err;
-> +	enum br_mrp_hw_support support;
-> =20
->  	if (!mrp)
->  		return -EINVAL;
-> @@ -647,9 +647,9 @@ int br_mrp_set_ring_role(struct net_bridge *br,
->  	mrp->ring_role =3D role->ring_role;
-> =20
->  	/* If there is an error just bailed out */
-> -	err =3D br_mrp_switchdev_set_ring_role(br, mrp, role->ring_role);
-> -	if (err && err !=3D -EOPNOTSUPP)
-> -		return err;
-> +	support =3D br_mrp_switchdev_set_ring_role(br, mrp, role->ring_role);
-> +	if (support =3D=3D BR_MRP_NONE)
-> +		return -EOPNOTSUPP;
+On Wed, Feb 17, 2021 at 8:08 AM Heiner Kallweit <hkallweit1@gmail.com> wrote:
 
-It is broken to update the return type and value of a function in one
-patch, and check for the updated return value in another patch.
+> > +#define RTL8366S_HDR_LEN     4
+> > +#define RTL8366S_ETHERTYPE   0x8899
+>
+> I found this protocol referenced as Realtek Remote Control Protocol (RRCP)
+> and it seems to be used by few Realtek chips. Not sure whether this
+> protocol is officially registered. If yes, then it should be added to
+> the list of ethernet protocol id's in include/uapi/linux/if_ether.h.
+> If not, then it may be better to define it using the usual naming
+> scheme as ETH_P_RRCP in realtek-smi-core.h.
 
-> =20
->  	/* Now detect if the HW actually applied the role or not. If the HW
->  	 * applied the role it means that the SW will not to do those operation=
-s
-> @@ -657,7 +657,7 @@ int br_mrp_set_ring_role(struct net_bridge *br,
->  	 * SW when ring is open, but if the is not pushed to the HW the SW will
->  	 * need to detect when the ring is open
->  	 */
-> -	mrp->ring_role_offloaded =3D err =3D=3D -EOPNOTSUPP ? 0 : 1;
-> +	mrp->ring_role_offloaded =3D support =3D=3D BR_MRP_SW ? 0 : 1;
-> =20
->  	return 0;
->  }=
+It's actually quite annoying, Realtek use type 0x8899 for all their
+custom stuff, including RRCP and internal DSA tagging inside
+switches, which are two completely different use cases.
+
+When I expose raw DSA frames to wireshark it identifies it
+as "Realtek RRCP" and then naturally cannot decode the
+frames since this is not RRCP but another protocol identified
+by the same ethertype.
+
+Inside DSA it works as we explicitly asks tells the kernel using the
+tagging code in net/dsa/tag_rtl4_a.c that this is the DSA version
+of ethertype 0x8899 and it then goes to dissect the actual
+4 bytes tag.
+
+There are at least four protocols out there using ethertype 0x8899.
+
+Yours,
+Linus Walleij
