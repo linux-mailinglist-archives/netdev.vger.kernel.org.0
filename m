@@ -2,141 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95C3B31DCC9
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 16:58:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D13D431DCD4
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 17:01:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233905AbhBQP5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 10:57:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54608 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233901AbhBQP5J (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 17 Feb 2021 10:57:09 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 782EB64DA1;
-        Wed, 17 Feb 2021 15:56:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613577386;
-        bh=b9fBt+ej2vO4foVBIklKpPzfmDmDGzNgOt496HpJmyU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=RDvgYMaJntoxNEgOFcHuJLkW/0EDXJomCx6bokly0GcgYl30NXq42mLvEGqlhFEkv
-         LkevpMCGOlBE7jpCWgMJY9/0aDgwVquJaJgKrCXE0p8y2+u23pHzCigepba5MN7F9r
-         /q3IYH8AbCSDYotEJVlbAaEzn+vDN68TgJ4kLv5fGDRfomiwCqFMwpipvi6x9IOqlX
-         M4pKInP04YIQZl4psBwhI2xCjIqYwaRaOQaeCyu8BA53bhb3tYQeZRaI78aAyD4Y/+
-         1LzoiuL+mP5Hb5i9RH0rdsh5iXICAiKBWlURMJywcqa7C6NAJlfE/1sVmzPA5VJYx5
-         nbMh4HCFEIRUA==
-Received: by mail-oi1-f171.google.com with SMTP id 18so15433113oiz.7;
-        Wed, 17 Feb 2021 07:56:26 -0800 (PST)
-X-Gm-Message-State: AOAM531exmj7P+RwSBU8L/tP+fUFiO1oQ0TUbr5zZvHzLjs+EGlOzFJO
-        Mj6wKSKT6VRsY6rXtN7IZoyU6zkg2EGCeF7INAE=
-X-Google-Smtp-Source: ABdhPJyh6Wu655aO2Um9XGrM2VPaQJnkaIX2U987Oai785QHYTW76/WDBgkH2zKec22DnLFiQYTRn3pCPLzjACmwlDA=
-X-Received: by 2002:aca:aad4:: with SMTP id t203mr5740518oie.67.1613577385876;
- Wed, 17 Feb 2021 07:56:25 -0800 (PST)
-MIME-Version: 1.0
-References: <1613012611-8489-1-git-send-email-min.li.xe@renesas.com>
- <CAK8P3a3YhAGEfrvmi4YhhnG_3uWZuQi0ChS=0Cu9c4XCf5oGdw@mail.gmail.com>
- <OSBPR01MB47732017A97D5C911C4528F0BA8B9@OSBPR01MB4773.jpnprd01.prod.outlook.com>
- <CAK8P3a2KDO4HutsXNJzjmRJTvW1QW4Kt8H7U53_QqpmgvZtd3A@mail.gmail.com>
- <OSBPR01MB4773B22EA094A362DD807F83BA8B9@OSBPR01MB4773.jpnprd01.prod.outlook.com>
- <CAK8P3a3k5dAF=X3_NrYAAp5gPJ_uvF3XfmC4rKz0oGTrGRriCw@mail.gmail.com>
- <OSBPR01MB47732AFC03DA8A0DDF626706BA879@OSBPR01MB4773.jpnprd01.prod.outlook.com>
- <CAK8P3a2TeeLfsTNkZPnC3YowdOS=bFM5yYj58crP6F5U9Y_r-Q@mail.gmail.com> <OSBPR01MB47739CBDE12E1F3A19649772BA879@OSBPR01MB4773.jpnprd01.prod.outlook.com>
-In-Reply-To: <OSBPR01MB47739CBDE12E1F3A19649772BA879@OSBPR01MB4773.jpnprd01.prod.outlook.com>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Wed, 17 Feb 2021 16:56:09 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a2fRgDJZv-vzy_X6Y5t3daaVdCiXtMwkmXUyG0EQZ0a6Q@mail.gmail.com>
-Message-ID: <CAK8P3a2fRgDJZv-vzy_X6Y5t3daaVdCiXtMwkmXUyG0EQZ0a6Q@mail.gmail.com>
-Subject: Re: [PATCH net-next] misc: Add Renesas Synchronization Management
- Unit (SMU) support
-To:     Min Li <min.li.xe@renesas.com>
-Cc:     Derek Kiernan <derek.kiernan@xilinx.com>,
-        Dragan Cvetic <dragan.cvetic@xilinx.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        gregkh <gregkh@linuxfoundation.org>,
+        id S233929AbhBQQAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 11:00:05 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:32544 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233568AbhBQQAD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 11:00:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1613577602; x=1645113602;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=TrSgV4ppZBB1E4H994V5PZn9jNxoOv0E4rNOorIzQXM=;
+  b=IXbp7xo8PgFNdAAn4/TtbtsNuuk6r7gxz5vA+U/Uzj6WNGbr7UBC/abh
+   GALwsnjPTC7vM7jGOBoKbo+pforIRkRDyKsOuZU7/MOf7nRWmvAlpqlCw
+   qwBfwbJIlUOMAGhg6wDhchaJ7XZR56hRBNlKbh2aoSIumJ8DMUZZ62qBC
+   4jmNFnmcxlpsbkkStim7nMXivLYQws1YkYRK2Uqrwjs6n1hHvvdf10VkG
+   beG2xEI2npeb5IxS03giSZoZQuSy28y7MOhecTjWNeHaa+6tpMT+jvT/q
+   2X1SkCmSfFwatB9KtwnC3wOLxGzyAqjELxybVa8MssSsHieMS6mCHlqeZ
+   A==;
+IronPort-SDR: liuIKZbScHZBumPKPyFyxIEpz+9DDmVCmrm1/ICmVxn4g16h9v5w1fSiJx9QfK5voSHPPf5foA
+ jo0ypmmrtTF7fNspqcVRQeyC527x2aIiaL3OJsJjAlvlEyj6XJy+4w1TQksAJDhBRAArDQoqeu
+ QfxoSiIobdHp4ZOlIDoafIMEsgpF9CLiGiwem6K6+H1pgdrU/gixXS859KTuIrHfghKjHXEwde
+ 2ck/cVxSqRB5ytiXlbEA6x7Ii/21htGvLpk12yVNLayX/UWUCKFKMgtLGiRYFlHNVpM7DcplL0
+ lLU=
+X-IronPort-AV: E=Sophos;i="5.81,184,1610434800"; 
+   d="scan'208";a="106963267"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Feb 2021 08:58:46 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 17 Feb 2021 08:58:45 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Wed, 17 Feb 2021 08:58:45 -0700
+Date:   Wed, 17 Feb 2021 16:58:45 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "ivecera@redhat.com" <ivecera@redhat.com>,
+        "nikolay@nvidia.com" <nikolay@nvidia.com>,
+        "roopa@nvidia.com" <roopa@nvidia.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "rasmus.villemoes@prevas.dk" <rasmus.villemoes@prevas.dk>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bridge@lists.linux-foundation.org" 
+        <bridge@lists.linux-foundation.org>
+Subject: Re: [PATCH net-next v4 2/8] switchdev: mrp: Extend ring_role_mrp and
+ in_role_mrp
+Message-ID: <20210217155845.oegbmsnxykkqc6um@soft-dev3.localdomain>
+References: <20210216214205.32385-1-horatiu.vultur@microchip.com>
+ <20210216214205.32385-3-horatiu.vultur@microchip.com>
+ <20210217103433.bilnuo2tfvgvjmxy@skbuf>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20210217103433.bilnuo2tfvgvjmxy@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Feb 16, 2021 at 11:14 PM Min Li <min.li.xe@renesas.com> wrote:
-> > I can't help but think you are evading my question I asked. If there is no
-> > specific action that this pcm4l tool needs to perform, then I'd think we
-> > should better not provide any interface for it at all.
+The 02/17/2021 10:34, Vladimir Oltean wrote:
+
+Hi Vladimir,
+
+> 
+> On Tue, Feb 16, 2021 at 10:41:59PM +0100, Horatiu Vultur wrote:
+> > Add the member sw_backup to the structures switchdev_obj_ring_role_mrp
+> > and switchdev_obj_in_role_mrp. In this way the SW can call the driver in
+> > 2 ways, once when sw_backup is set to false, meaning that the driver
+> > should implement this completely in HW. And if that is not supported the
+> > SW will call again but with sw_backup set to true, meaning that the
+> > HW should help or allow the SW to run the protocol.
 > >
-> > I also found a reference to only closed source software at
-> > https://www.renesas.com/us/en/software-tool/ptp-clock-manager-linux
-> > We don't add low-level interfaces to the kernel that are only usable by
-> > closed-source software.
+> > For example when role is MRM, if the HW can't detect when it stops
+> > receiving MRP Test frames but it can trap these frames to CPU, then it
+> > needs to return -EOPNOTSUPP when sw_backup is false and return 0 when
+> > sw_backup is true.
 > >
-> > Once you are able to describe the requirements for what pcm4l actually
-> > needs from the hardware, we can start discussing what a high-level
-> > interface would look like that can be used to replace the your current
-> > interface, in a way that would work across vendors and with both pcm4l and
-> > open-source tools that do the same job.
->
-> This driver is used by pcm4l to access functionalities that cannot be accessed through PHC(ptp hardware clock) interface.
->
-> All these functions are kind of specific to Renesas SMU device and I have never heard other devices offering similar functions
->
-> The 3 functions currently provided are (more to be added in the future)
->
-> - set combomode
->
-> In Telecom Boundary Clock (T-BC) and Telecom Time Slave Clock (T-TSC) applications
-> per ITU-T G.8275.2, two DPLLs can be used:
-> one DPLL is configured as a DCO to synthesize PTP clocks, and the other DPLL is
-> configured as an EEC(Ethernet Equipment Clock) to generate physical layer clocks.
-> Combo mode provides physical layer frequency support from the EEC/SEC to the PTP
-> clock.
+> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> > ---
+> >  include/net/switchdev.h | 2 ++
+> >  1 file changed, 2 insertions(+)
+> >
+> > diff --git a/include/net/switchdev.h b/include/net/switchdev.h
+> > index 465362d9d063..b7fc7d0f54e2 100644
+> > --- a/include/net/switchdev.h
+> > +++ b/include/net/switchdev.h
+> > @@ -127,6 +127,7 @@ struct switchdev_obj_ring_role_mrp {
+> >       struct switchdev_obj obj;
+> >       u8 ring_role;
+> >       u32 ring_id;
+> > +     u8 sw_backup;
+> >  };
+> >
+> >  #define SWITCHDEV_OBJ_RING_ROLE_MRP(OBJ) \
+> > @@ -161,6 +162,7 @@ struct switchdev_obj_in_role_mrp {
+> >       u32 ring_id;
+> >       u16 in_id;
+> >       u8 in_role;
+> > +     u8 sw_backup;
+> 
+> What was wrong with 'bool'?
+Yeah, that would be a better match.
+> 
+> >  };
+> >
+> >  #define SWITCHDEV_OBJ_IN_ROLE_MRP(OBJ) \
+> > --
+> > 2.27.0
+> >
+> 
+> If a driver implements full MRP offload for a ring/interconnect
+> manager/automanager, should it return -EOPNOTSUPP when sw_backup=false?
 
-Thank you for the explanation. Now, to take the question to an even
-higher level, is it useful to leave it up to the user to pick one of the two
-modes explicitly, or can the kernel make that decision based on some
-other information that it already has, or that can be supplied to it
-using a more abstract interface?
+In that case it should return 0.
+So if the driver can:
+- fully support MRP, when sw_backup = false, return 0. Then end of story.
+- partially support MRP, when sw_backup = false, return -EOPNOTSUPP,
+                         when sw_backup = true, return 0.
+- no support at all, return -EOPNOTSUPP.
 
-In other words, when would a user pick combomode over non-combomode
-or vice versa? Would it make sense to have this configured according to
-the hardware platform, e.g. in a device tree property of the device, rather
-than having the user choose a mode?
-
-Which of the two possible modes do other PTP devices use that support
-DCO and EEC but are not configurable?
-
-> - read DPLL's FFO
->
-> Read fractional frequency offset (FFO) from a DPLL.
->
-> For a DPLL channel, a Frequency Control Word (FCW) is used to adjust the
-> frequency output of the DCO. A positive value will increase the output frequency
-> and a negative one will decrease the output frequency.
->
-> This function will read FCW first and convert it to FFO.
-
-Is this related to the information in the timex->freq field? It sounds
-like this would already be accessible through the existing
-clock_adjtime() interface.
-
-> -read DPLL's state
->
-> The DPLLs support four primary operating modes: Free-Run, Locked,
-> Holdover, and DCO. In Free-Run mode the DPLLs synthesize clocks
->  based on the system clock alone. In Locked mode the DPLLs filter
-> reference clock jitter with the selected bandwidth. Additionally in
-> Locked mode, the long-term output frequency accuracy is the same
-> as the long-term frequency accuracy of the selected input reference.
-> In Holdover mode, the DPLL uses frequency data acquired while in
-> Locked mode to generate accurate frequencies when input
-> references are not available. In DCO mode, the DPLL control loop
-> is opened and the DCO can be controlled by a PTP clock recovery
-> servo running on an external processor to synthesize PTP clocks.
-
-Wouldn't any PTP clock run in one of these modes? If this is just
-informational, it might be appropriate to have another sysfs attribute
-for each PTP clock that shows the state of the DPLL, and then
-have the PTP driver either fill in the current value in 'struct ptp_clock',
-or provide a callback to report the state when a user reads the sysfs
-attribute.
-
-      Arnd
+-- 
+/Horatiu
