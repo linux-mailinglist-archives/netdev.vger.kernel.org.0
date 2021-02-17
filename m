@@ -2,132 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0670131E12E
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 22:19:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 37D9F31E13E
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 22:22:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232867AbhBQVSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 16:18:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51594 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232548AbhBQVSr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 16:18:47 -0500
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E90D8C061786
-        for <netdev@vger.kernel.org>; Wed, 17 Feb 2021 13:18:06 -0800 (PST)
-Received: by mail-io1-xd2e.google.com with SMTP id s17so7220204ioj.4
-        for <netdev@vger.kernel.org>; Wed, 17 Feb 2021 13:18:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Pu/HI7/j8/NKE5Uf3Em92mkrENvyIcE8armO8V6c6ao=;
-        b=L/TMDPONNuR6kUr29jUZByLEQ2KHg3DzccfhS3GwX7i3vLuyz9YIjtOGPglVEA7kpd
-         p8+8dw82wrxsB2jvCvoEOvQ0bKdDtd3sjXK/TbH1NE9jVTMBY7G85w4lhZBYBX6G8owP
-         prdAbzD6dfQBlBoTRjdqnqoFX1zDrvPRulV3w=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Pu/HI7/j8/NKE5Uf3Em92mkrENvyIcE8armO8V6c6ao=;
-        b=dEGDbApm/q5p84u5qA/WFdEHTPmGFOS54Y/tOLJI+/dfuHYF5sjhbJBZHEWr4VxfB6
-         h0CwjydmiB7hFhs8kgkPPeJHk8GyakL+38CUHBxzenIEfYQnW/ce9zCmUM0FxYSJ7PPD
-         TwX5kIMDafc+BN2lsA923+Y5/OST6S/tjT4DdZ0HyD7F16MIt2RQ65/kQD6nQg6csvvm
-         7OQrav5vzpKhC8PAlLCU7kkiVoBT3moX8ZiOORw/O72we5LN/1HZdTp3KNud9uS1QO1b
-         zxMBw/IP3cJ6JUOu4O6idItaZT2dByfRr2mJFil0nc8HqgkPBvMG2AEKfLulKhHKXAMZ
-         3wmw==
-X-Gm-Message-State: AOAM530PRBKRWiUV0Lbgm1+d8Sd70VobwqM4moiprDRqEf7V7pWyTwef
-        te45UcLohSmg/xg1lVVJezWRqQ==
-X-Google-Smtp-Source: ABdhPJxBxAJV5Lcl83v5gQoAcF+DqQnaPwDph8xWGoWJGWtWK9vbGPFkOBexJTdZonFywNRn9R2ZxQ==
-X-Received: by 2002:a02:74a:: with SMTP id f71mr1367543jaf.30.1613596685786;
-        Wed, 17 Feb 2021 13:18:05 -0800 (PST)
-Received: from shuah-t480s.internal (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
-        by smtp.gmail.com with ESMTPSA id s9sm1885100ilt.77.2021.02.17.13.18.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Feb 2021 13:18:05 -0800 (PST)
-From:   Shuah Khan <skhan@linuxfoundation.org>
-To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        nbd@nbd.name
-Cc:     Shuah Khan <skhan@linuxfoundation.org>,
-        ath9k-devel@qca.qualcomm.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] Revert "ath9k: fix ath_tx_process_buffer() potential null ptr dereference"
-Date:   Wed, 17 Feb 2021 14:18:01 -0700
-Message-Id: <20210217211801.22540-1-skhan@linuxfoundation.org>
-X-Mailer: git-send-email 2.27.0
+        id S234730AbhBQVVK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 16:21:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49504 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234684AbhBQVUs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 17 Feb 2021 16:20:48 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 92B6264E58;
+        Wed, 17 Feb 2021 21:20:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1613596807;
+        bh=JOFope0PF69yBz3icwaj3gnHWv0eRHgUytwIyBchAVc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=henge4a1JMMRqe4+UA2qe42aFM2Xv/3YtFetBCmqLJMpAHO417W41n07fOeLidIKZ
+         o+IdxJ4BCIXcna8v+TN8eyVmrJJXP+TWPEvZhekJZNs1UvhEmieZYHBH/i5YefxNqf
+         8iITrBxhX7PY+HD3ZOR0F/9FCv8bcrnd9r1zNP+haM8ENlPiMLN1eUb3oeX3AEDtzH
+         C5JUJK85ocU3gfvjl9x2IfVt/RlL7nBKvAKVogcq8mHWlZpPBCwFNUss1ozG58DCoG
+         8zBtz/OA/hXv4/Z10+WJFn09/vDbRC2NteWsjLutcGfqvgWLmJWlnpjxqpa8Zvx4Px
+         87kEOV2iL9INg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8006260A21;
+        Wed, 17 Feb 2021 21:20:07 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] net: mdio: Remove of_phy_attach()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161359680752.30698.3346605749962540906.git-patchwork-notify@kernel.org>
+Date:   Wed, 17 Feb 2021 21:20:07 +0000
+References: <20210217202558.2645876-1-f.fainelli@gmail.com>
+In-Reply-To: <20210217202558.2645876-1-f.fainelli@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        corbet@lwn.net, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, robh+dt@kernel.org, frowand.list@gmail.com,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ath_tx_process_buffer() doesn't dereference or check sta and passes it
-to ath_tx_complete_aggr() and ath_tx_complete_buf().
+Hello:
 
-ath_tx_complete_aggr() checks the pointer before use. No problem here.
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-ath_tx_complete_buf() doesn't check or dereference sta and passes it on
-to ath_tx_complete(). ath_tx_complete() doesn't check or dereference sta,
-but assigns it to tx_info->status.status_driver_data[0]
+On Wed, 17 Feb 2021 12:25:57 -0800 you wrote:
+> We have no in-tree users, also update the sfp-phylink.rst documentation
+> to indicate that phy_attach_direct() is used instead of of_phy_attach().
+> 
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
+>  Documentation/networking/sfp-phylink.rst |  2 +-
+>  drivers/net/mdio/of_mdio.c               | 30 ------------------------
+>  include/linux/of_mdio.h                  | 10 --------
+>  3 files changed, 1 insertion(+), 41 deletions(-)
 
-ath_tx_complete_buf() is called from ath_tx_complete_aggr() passing
-null ieee80211_sta pointer.
+Here is the summary with links:
+  - [net-next] net: mdio: Remove of_phy_attach()
+    https://git.kernel.org/netdev/net-next/c/96313e1db8e5
 
-There is a potential for dereference later on, if and when the
-tx_info->status.status_driver_data[0]is referenced. In addition, the
-rcu read lock might be released before referencing the contents.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-ath_tx_complete_buf() should be fixed to check sta perhaps? Worth
-looking into.
-
-Reverting this patch because it doesn't solve the problem and introduces
-memory leak by skipping buffer completion if the pointer (sta) is NULL.
-
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
----
- drivers/net/wireless/ath/ath9k/xmit.c | 28 ++++++++++++---------------
- 1 file changed, 12 insertions(+), 16 deletions(-)
-
-diff --git a/drivers/net/wireless/ath/ath9k/xmit.c b/drivers/net/wireless/ath/ath9k/xmit.c
-index 735858144e3a..1d36aae3f7b6 100644
---- a/drivers/net/wireless/ath/ath9k/xmit.c
-+++ b/drivers/net/wireless/ath/ath9k/xmit.c
-@@ -711,24 +711,20 @@ static void ath_tx_process_buffer(struct ath_softc *sc, struct ath_txq *txq,
- 		ath_tx_count_airtime(sc, sta, bf, ts, tid->tidno);
- 		if (ts->ts_status & (ATH9K_TXERR_FILT | ATH9K_TXERR_XRETRY))
- 			tid->clear_ps_filter = true;
-+	}
- 
--		if (!bf_isampdu(bf)) {
--			if (!flush) {
--				info = IEEE80211_SKB_CB(bf->bf_mpdu);
--				memcpy(info->control.rates, bf->rates,
--				       sizeof(info->control.rates));
--				ath_tx_rc_status(sc, bf, ts, 1,
--						 txok ? 0 : 1, txok);
--				ath_dynack_sample_tx_ts(sc->sc_ah,
--							bf->bf_mpdu, ts, sta);
--			}
--			ath_tx_complete_buf(sc, bf, txq, bf_head, sta,
--					    ts, txok);
--		} else {
--			ath_tx_complete_aggr(sc, txq, bf, bf_head, sta,
--					     tid, ts, txok);
-+	if (!bf_isampdu(bf)) {
-+		if (!flush) {
-+			info = IEEE80211_SKB_CB(bf->bf_mpdu);
-+			memcpy(info->control.rates, bf->rates,
-+			       sizeof(info->control.rates));
-+			ath_tx_rc_status(sc, bf, ts, 1, txok ? 0 : 1, txok);
-+			ath_dynack_sample_tx_ts(sc->sc_ah, bf->bf_mpdu, ts,
-+						sta);
- 		}
--	}
-+		ath_tx_complete_buf(sc, bf, txq, bf_head, sta, ts, txok);
-+	} else
-+		ath_tx_complete_aggr(sc, txq, bf, bf_head, sta, tid, ts, txok);
- 
- 	if (!flush)
- 		ath_txq_schedule(sc, txq);
--- 
-2.27.0
 
