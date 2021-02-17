@@ -2,114 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31EAD31DBC2
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 15:58:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60AAD31DC0E
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 16:21:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233634AbhBQO5m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 09:57:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54298 "EHLO
+        id S233677AbhBQPT4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 10:19:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233624AbhBQO5h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 09:57:37 -0500
-Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AC55C061786
-        for <netdev@vger.kernel.org>; Wed, 17 Feb 2021 06:56:57 -0800 (PST)
-Received: by mail-il1-x131.google.com with SMTP id g9so11542649ilc.3
-        for <netdev@vger.kernel.org>; Wed, 17 Feb 2021 06:56:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ydHdMTd4ps0AXeryEcGbvz8MsZ78eQIQNAjnZKZ5I+Q=;
-        b=QArniZnH1HDN6XbvShuegQf8ATVhoFhQM5Sx7rfRv8KxefFdxWqqxZXVJJRewt1t9B
-         ui/nmcdNhusE232TDbipsbl7LSrJ2CDBYSH+/tbcHgCtWSljTZ8gAKTsF6RvKJJUI3SV
-         Sz1RjjI5qqmQw+u5ReOCNewVDaMRHDst8qXHo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ydHdMTd4ps0AXeryEcGbvz8MsZ78eQIQNAjnZKZ5I+Q=;
-        b=LjTsC0FmYiN1WZMZ+6i9xz8hX7Q89o4M3f4OJPaJw4oZcx5CHkfvZbsuORQLp4NnFs
-         zkS/NYG7qdZhRQzPZPIrhKGX3N0xqK6pg4ecw+UuWS5ErrVBnKGPpFiRjkShFIp2PYx/
-         dEcqjlTxxpNK0E18DXwfPllxizcEIH4UEvcJBBnV4JjCv7OU6fEcOglC4KgjklTc2h6p
-         KUVTFgIZWYqS1I9+BAvS/1XaKlsrQgVVMzLs5EhDIPYOblIAFkNgeu+7DQqjf37QL8od
-         1iX8uMbSWXh4T51NhlSftzjtRgag73A8Nt/rtHnp0Y6us0dGCI9dT6ISN9Y07H4vFf8v
-         wh9A==
-X-Gm-Message-State: AOAM53254I8nePr2KbEDFCGJvUYpwse9z8NJtZAp4RVIYpVAm1Q70qza
-        n8UvXnwiguFJeVV1AOtW2vniWmAi/2E6jg==
-X-Google-Smtp-Source: ABdhPJw5y5a0RH3ydxnaC8AND6fqVq95Foh3kAjnn/EOfAMY55LcXRd2zLwX7KDppkSNGv0xtdzQBA==
-X-Received: by 2002:a92:8557:: with SMTP id f84mr21452757ilh.4.1613573816719;
-        Wed, 17 Feb 2021 06:56:56 -0800 (PST)
-Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
-        by smtp.gmail.com with ESMTPSA id n23sm1415589iog.3.2021.02.17.06.56.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Feb 2021 06:56:56 -0800 (PST)
-Subject: Re: [PATCH 2/2] ath9k: fix ath_tx_process_buffer() potential null ptr
- dereference
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Felix Fietkau <nbd@nbd.name>, davem@davemloft.net, kuba@kernel.org,
-        ath9k-devel@qca.qualcomm.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <43ed9abb9e8d7112f3cc168c2f8c489e253635ba.1613090339.git.skhan@linuxfoundation.org>
- <20210216070336.D138BC43463@smtp.codeaurora.org>
- <0fd9a538-e269-e10e-a7f9-02d4c5848420@nbd.name>
- <caac2b21-d5de-32ac-0fe0-75af8fb80bbb@linuxfoundation.org>
- <878s7nqhg0.fsf@codeaurora.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <6bbeb37f-620e-d92d-d042-a507bbb39808@linuxfoundation.org>
-Date:   Wed, 17 Feb 2021 07:56:55 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        with ESMTP id S233551AbhBQPRy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 10:17:54 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C119C0613D6;
+        Wed, 17 Feb 2021 07:06:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=yH6ECkGyY7+E7OzwKDHtA4oLIm/Wb7bizIlPfLR/duc=; b=1Yjsh6EHiY1r5a6A5QJgu0B/R
+        zComcUc/oRCOV7okU3FnlAqllSTz6Ahk4tVno8s/xdI7fhbch31NQLtyG2dinosx0VX60RmhXCcuC
+        rijfH0mk5gaHsjIFUwPhwTPuDKqsMG/V7V1ea+Fdqc9OT9A/DQ6lIyDWont9l64YB2wbTzkSRM3hw
+        xmDNEjgcQYFpRrZ0MDB+GEWqPJ30IRtwq4TB5ha98IySUkLnjmuDsM6qJJXTljUlExQfLvXsZICQR
+        hscyXCNBssWNAklV5HvwABjKc5mZBwBPcgB4YvXNs/ogUJZdjfuOhWoUriEtMvu81YsOiW3pfDkUj
+        pVPyVelfQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:44638)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1lCOPG-0002hv-QM; Wed, 17 Feb 2021 15:06:22 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1lCOPF-0003pL-GR; Wed, 17 Feb 2021 15:06:21 +0000
+Date:   Wed, 17 Feb 2021 15:06:21 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Michael Walle <michael@walle.cc>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net-next] net: phy: icplus: Call phy_restore_page() when
+ phy_select_page() fails
+Message-ID: <20210217150621.GG1463@shell.armlinux.org.uk>
+References: <YCy1F5xKFJAaLBFw@mwanda>
+ <20210217142838.GM2222@kadam>
 MIME-Version: 1.0
-In-Reply-To: <878s7nqhg0.fsf@codeaurora.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210217142838.GM2222@kadam>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/17/21 12:30 AM, Kalle Valo wrote:
-> Shuah Khan <skhan@linuxfoundation.org> writes:
+On Wed, Feb 17, 2021 at 05:28:38PM +0300, Dan Carpenter wrote:
+> On Wed, Feb 17, 2021 at 09:17:59AM +0300, Dan Carpenter wrote:
+> > Smatch warns that there is a locking issue in this function:
+> > 
+> > drivers/net/phy/icplus.c:273 ip101a_g_config_intr_pin()
+> > warn: inconsistent returns '&phydev->mdio.bus->mdio_lock'.
+> >   Locked on  : 242
+> >   Unlocked on: 273
+> > 
+> > It turns out that the comments in phy_select_page() say we have to call
+> > phy_restore_page() even if the call to phy_select_page() fails.
+> > 
+> > Fixes: f9bc51e6cce2 ("net: phy: icplus: fix paged register access")
 > 
->> On 2/16/21 12:53 AM, Felix Fietkau wrote:
->>>
->>> On 2021-02-16 08:03, Kalle Valo wrote:
->>>> Shuah Khan <skhan@linuxfoundation.org> wrote:
->>>>
->>>>> ath_tx_process_buffer() references ieee80211_find_sta_by_ifaddr()
->>>>> return pointer (sta) outside null check. Fix it by moving the code
->>>>> block under the null check.
->>>>>
->>>>> This problem was found while reviewing code to debug RCU warn from
->>>>> ath10k_wmi_tlv_parse_peer_stats_info() and a subsequent manual audit
->>>>> of other callers of ieee80211_find_sta_by_ifaddr() that don't hold
->>>>> RCU read lock.
->>>>>
->>>>> Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
->>>>> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
->>>>
->>>> Patch applied to ath-next branch of ath.git, thanks.
->>>>
->>>> a56c14bb21b2 ath9k: fix ath_tx_process_buffer() potential null ptr dereference
->>> I just took another look at this patch, and it is completely bogus.
->>> Not only does the stated reason not make any sense (sta is simply passed
->>> to other functions, not dereferenced without checks), but this also
->>> introduces a horrible memory leak by skipping buffer completion if sta
->>> is NULL.
->>> Please drop it, the code is fine as-is.
->>
->> A comment describing what you said here might be a good addition to this
->> comment block though.
-> 
-> Shuah, can you send a followup patch which reverts your change and adds
-> the comment? I try to avoid rebasing my trees.
-> 
+> Don't apply this patch.  I have created a new Smatch warning for the
+> phy_select_page() behavior and it catches a couple similar bugs in the
+> same file.  I will send a v2 that fixes those as well.
 
+Yes, there are three instances of this in the file, all three need
+fixing. Thanks.
 
-I can do that.
-
-thanks,
--- Shuah
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
