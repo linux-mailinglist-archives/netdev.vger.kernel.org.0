@@ -2,167 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E94731E03E
-	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 21:28:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DE6231E046
+	for <lists+netdev@lfdr.de>; Wed, 17 Feb 2021 21:28:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235020AbhBQU0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 15:26:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40412 "EHLO
+        id S233539AbhBQU2X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 15:28:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233645AbhBQU0m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 15:26:42 -0500
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E28EDC061574;
-        Wed, 17 Feb 2021 12:26:01 -0800 (PST)
-Received: by mail-pg1-x530.google.com with SMTP id 75so5826953pgf.13;
-        Wed, 17 Feb 2021 12:26:01 -0800 (PST)
+        with ESMTP id S235047AbhBQU1s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 15:27:48 -0500
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB5BAC061574;
+        Wed, 17 Feb 2021 12:27:08 -0800 (PST)
+Received: by mail-io1-xd32.google.com with SMTP id u8so15248271ior.13;
+        Wed, 17 Feb 2021 12:27:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oQrfzO17knb0L2S7w06JElc/0RtdSnwzho+6k4zHaN0=;
-        b=u0aqlOkz+ygOgoDWu2MW9cD0xGWxxpjARMtgQFTLUiGhKbE8H3CwYteDRFgmkvrLZ0
-         Sjd0zuR2k10uoGsoLtMHhDn1Q90X/v4n3U81fjPq466AglSZOCboNrUas8mSjf3OpCvv
-         /g/kh1B8mIN7l3kpIh4Sy64eWfZOU7uAk+nSUSd2XeekNmBEXKbGboU4hCyHm0LonEnn
-         GYzMJylmmd9ysYawLXdqkaUnQGO12cOPG2SROGDmbdqa0D6Rj+4hkFUpq7LJ4iUGdV1h
-         96ShljAITpMrVsYoII2iz7aOr/mS7n3KxFdRRCmLoqdN4fOVvLMdh1DNv2vY51gaspjY
-         BLRw==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=RMocf2fIvJPESPXX/Ghs5UCOZmgjX3r5b8wQ5tBDYtw=;
+        b=rGkyqqCZyDct5mA7S9Ei+85o7kyIaKL3lgtbbNKwauonjnISwuOyLLDtBhdDje8SjG
+         XdDraP/x2kzRC9OWa+rpcSiKfAZkTKxLITD/WVmbVN0Ztux0nmsp/tkL+gF99zKIveL0
+         ZMxdAeYJXs/VTgeTnUW5MOOVxfD6CLA7fSYFQeK96YBeIPdPDUNgrakmzTLECm2mXKde
+         HmlYzgHlS/Yy0O1k5tQ6zWimBj4W1tfhxbNyYqT9CO9o+d3NV5OSo5h23WfONvbA014d
+         piGqi00raH9QiGkzq5f/csxDCwcz+LT0fT4lZPqm43OdtM8a6I3/i+DVTMfiXjZdZZP0
+         Rhag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oQrfzO17knb0L2S7w06JElc/0RtdSnwzho+6k4zHaN0=;
-        b=VE80Wjbquj89d0P+MibEhriTCXfBt06/l8LnD+9Z+TN59W24bjIWuG/uT5e685kiCr
-         AeJLquzrl+TzpuqzVtAjI4BSuMdP/zhOUrU67R9mKZqhnGP5JMUP6vRaHQ9E+knY4xff
-         uXjBIQI7DnZm/lOjEOmf4SBGOKQp1FTv3Mha3gZysvYYzAGvkGTWHLhVd7zuBJq+vaIZ
-         ADnLFAibVMsJPyyRFGHu5zsvrgFuEt9qvEn0vKs3Fi4Ae540cSyluRmuOTwaa0kX1f7L
-         FPnxYzQOfr9i1bYnUfm+/YJOA8Sd486u0l98RW6dGHxKMvmAqUGhdDF0FUcT9AxSb57r
-         GxoQ==
-X-Gm-Message-State: AOAM5320YrF1N74RgKVq/gj9kcz33SLq8d9GYh+2/JlrCJVbi2YqXvid
-        GgX7VcIdreQuAmsgIxclpNNJE6PCSwM=
-X-Google-Smtp-Source: ABdhPJw7sprEYpUjr8VOY599l4n2vzIFZHUpSg+RjAqb0AIMDTySDpu7Fvog9t6aHHctDV29dyatJA==
-X-Received: by 2002:a05:6a00:787:b029:1da:643b:6d41 with SMTP id g7-20020a056a000787b02901da643b6d41mr967979pfu.31.1613593560975;
-        Wed, 17 Feb 2021 12:26:00 -0800 (PST)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id n1sm3470238pgi.78.2021.02.17.12.25.59
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=RMocf2fIvJPESPXX/Ghs5UCOZmgjX3r5b8wQ5tBDYtw=;
+        b=fVEmGo7qLW91I8cTxTukXyBjuMfQz/yDPYA880l6+aAIpT6hjwWNlE27Qahr9kZcix
+         Za//1mrTN3NkA2H5GyZihZRc7HtW4DHqhJcuE+FcRq8+Xk1vwnpeQKsm/xp6AxaVxLvO
+         0Rhq0noISZME8HQS6awppwP7+G6kVxS7adi0cH26AiupCCKbvdQPdP6iSpkEwRYoM9Qy
+         lnlyRYQ6qlmWnMJZlIhVhBIJc9Ekb7UpqA+imRZQX7UWdZPhADSCvYQ/7hKTknht/cCW
+         Q9RbDHxtMSScp1cr/qiGT92s7LVWSyxtVC2vm5Ny/HhxKsALR8kORO4135Y/JmXvGCX7
+         tDEA==
+X-Gm-Message-State: AOAM532cmatq+7sfgr3AKGQXQFJFmxE7ouAQCL5T1EzT00YEiow1FM4u
+        AJjhIaLRzPSaRonxFz5WnceSQhWx9jw=
+X-Google-Smtp-Source: ABdhPJyBHZS2AffaoGH52aM7tt7tf2Yx6H6YaBc0rA23R5qe8JbozJqOuAeIXqoI55Z1rhvaHx6Ypw==
+X-Received: by 2002:a05:6602:26cc:: with SMTP id g12mr626808ioo.169.1613593628211;
+        Wed, 17 Feb 2021 12:27:08 -0800 (PST)
+Received: from localhost ([172.243.146.206])
+        by smtp.gmail.com with ESMTPSA id j12sm1742585ila.75.2021.02.17.12.27.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Feb 2021 12:26:00 -0800 (PST)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        linux-doc@vger.kernel.org (open list:DOCUMENTATION),
-        linux-kernel@vger.kernel.org (open list),
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE)
-Subject: [PATCH net-next] net: mdio: Remove of_phy_attach()
-Date:   Wed, 17 Feb 2021 12:25:57 -0800
-Message-Id: <20210217202558.2645876-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 17 Feb 2021 12:27:07 -0800 (PST)
+Date:   Wed, 17 Feb 2021 12:27:00 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>, bpf@vger.kernel.org
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Message-ID: <602d7c14330b1_ddd22087f@john-XPS-13-9370.notmuch>
+In-Reply-To: <161340436783.1234345.9794055968782640674.stgit@firesoul>
+References: <161340431558.1234345.9778968378565582031.stgit@firesoul>
+ <161340436783.1234345.9794055968782640674.stgit@firesoul>
+Subject: RE: [PATCH bpf-next V1 2/2] selftests/bpf: Tests using bpf_check_mtu
+ BPF-helper input mtu_len param
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We have no in-tree users, also update the sfp-phylink.rst documentation
-to indicate that phy_attach_direct() is used instead of of_phy_attach().
+Jesper Dangaard Brouer wrote:
+> Add tests that use mtu_len as input parameter in BPF-helper
+> bpf_check_mtu().
+> 
+> The BPF-helper is avail from both XDP and TC context. Add two tests
+> per context, one that tests below MTU and one that exceeds the MTU.
+> 
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> ---
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- Documentation/networking/sfp-phylink.rst |  2 +-
- drivers/net/mdio/of_mdio.c               | 30 ------------------------
- include/linux/of_mdio.h                  | 10 --------
- 3 files changed, 1 insertion(+), 41 deletions(-)
+LGTM.
 
-diff --git a/Documentation/networking/sfp-phylink.rst b/Documentation/networking/sfp-phylink.rst
-index 5aec7c8857d0..328f8d39eeb3 100644
---- a/Documentation/networking/sfp-phylink.rst
-+++ b/Documentation/networking/sfp-phylink.rst
-@@ -163,7 +163,7 @@ this documentation.
- 	err = phylink_of_phy_connect(priv->phylink, node, flags);
- 
-    For the most part, ``flags`` can be zero; these flags are passed to
--   the of_phy_attach() inside this function call if a PHY is specified
-+   the phy_attach_direct() inside this function call if a PHY is specified
-    in the DT node ``node``.
- 
-    ``node`` should be the DT node which contains the network phy property,
-diff --git a/drivers/net/mdio/of_mdio.c b/drivers/net/mdio/of_mdio.c
-index 4daf94bb56a5..ea9d5855fb52 100644
---- a/drivers/net/mdio/of_mdio.c
-+++ b/drivers/net/mdio/of_mdio.c
-@@ -462,36 +462,6 @@ struct phy_device *of_phy_get_and_connect(struct net_device *dev,
- }
- EXPORT_SYMBOL(of_phy_get_and_connect);
- 
--/**
-- * of_phy_attach - Attach to a PHY without starting the state machine
-- * @dev: pointer to net_device claiming the phy
-- * @phy_np: Node pointer for the PHY
-- * @flags: flags to pass to the PHY
-- * @iface: PHY data interface type
-- *
-- * If successful, returns a pointer to the phy_device with the embedded
-- * struct device refcount incremented by one, or NULL on failure. The
-- * refcount must be dropped by calling phy_disconnect() or phy_detach().
-- */
--struct phy_device *of_phy_attach(struct net_device *dev,
--				 struct device_node *phy_np, u32 flags,
--				 phy_interface_t iface)
--{
--	struct phy_device *phy = of_phy_find_device(phy_np);
--	int ret;
--
--	if (!phy)
--		return NULL;
--
--	ret = phy_attach_direct(dev, phy, flags, iface);
--
--	/* refcount is held by phy_attach_direct() on success */
--	put_device(&phy->mdio.dev);
--
--	return ret ? NULL : phy;
--}
--EXPORT_SYMBOL(of_phy_attach);
--
- /*
-  * of_phy_is_fixed_link() and of_phy_register_fixed_link() must
-  * support two DT bindings:
-diff --git a/include/linux/of_mdio.h b/include/linux/of_mdio.h
-index cfe8c607a628..2b05e7f7c238 100644
---- a/include/linux/of_mdio.h
-+++ b/include/linux/of_mdio.h
-@@ -26,9 +26,6 @@ of_phy_connect(struct net_device *dev, struct device_node *phy_np,
- struct phy_device *
- of_phy_get_and_connect(struct net_device *dev, struct device_node *np,
- 		       void (*hndlr)(struct net_device *));
--struct phy_device *
--of_phy_attach(struct net_device *dev, struct device_node *phy_np,
--	      u32 flags, phy_interface_t iface);
- 
- struct mii_bus *of_mdio_find_bus(struct device_node *mdio_np);
- int of_phy_register_fixed_link(struct device_node *np);
-@@ -100,13 +97,6 @@ of_phy_get_and_connect(struct net_device *dev, struct device_node *np,
- 	return NULL;
- }
- 
--static inline struct phy_device *of_phy_attach(struct net_device *dev,
--					       struct device_node *phy_np,
--					       u32 flags, phy_interface_t iface)
--{
--	return NULL;
--}
--
- static inline struct mii_bus *of_mdio_find_bus(struct device_node *mdio_np)
- {
- 	return NULL;
--- 
-2.25.1
-
+Acked-by: John Fastabend <john.fastabend@gmail.com>
