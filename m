@@ -2,107 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4215131ED40
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 18:27:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DCE631ED4A
+	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 18:30:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234240AbhBRRYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 12:24:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40416 "EHLO
+        id S234307AbhBRR1V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 12:27:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232171AbhBRODn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 09:03:43 -0500
-Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F47BC0613D6
-        for <netdev@vger.kernel.org>; Thu, 18 Feb 2021 06:03:03 -0800 (PST)
-Received: by mail-il1-x131.google.com with SMTP id w1so1513981ilm.12
-        for <netdev@vger.kernel.org>; Thu, 18 Feb 2021 06:03:03 -0800 (PST)
+        with ESMTP id S232699AbhBROGL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 09:06:11 -0500
+Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 830BDC06178B
+        for <netdev@vger.kernel.org>; Thu, 18 Feb 2021 06:04:15 -0800 (PST)
+Received: by mail-qt1-x830.google.com with SMTP id c1so1421664qtc.1
+        for <netdev@vger.kernel.org>; Thu, 18 Feb 2021 06:04:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=AQCq51Tg/1SeOfoa+uxrlicnQ4lUT4BdKs1EA+O+j5A=;
-        b=K4c6Sgtezftr+PqnzBKVs6LkPM93OTEBhTNsxmEc+RUHx2CCAoTFj9kdZo0JZWcHlC
-         R/CCuRExlOQk7HkY3shFzz0rhInLITSPPIg81wH/U9pJ+PZFUvs04Ue/cD5pwAHzEbaJ
-         w8M9z3S+b+zlOiIRspADhs1DLYBWzrSvIaV4Q=
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ITK2W56ft818ZWt4QDSd8KlN0Y5ANnHZi1kSURRPbHU=;
+        b=wM5YG8NVcZQLBM6znd53hm2kK+Eu+SfLU58yysPJAQGtMmp967qgN7o9dga2Rqk9oa
+         OtBVqKvYND/GxH2wY9N+wcTzd01j7CfEsU/LQPNHbydX8rJ3Wk/tYuMdzMatdkHqx3G1
+         q90OymzVLBUTSXtAE1/P8qPJODvLKDLORunh0LDlwrRtMFtOPA06x8ydVq6c9g0G7JyH
+         G1zKYud+5V8PoGSsGMHNdxuJcJ9sEqDSNWHQ0iuHSgdPNoQlQ/85tLYcYzVu3UHO+FJb
+         KcBBC1/kK1fCacKF1vxA8QnHjtvwgJVs0AFvIozaDLyAO5CK4eGboTo1pOZuJBxGFld7
+         Zsow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=AQCq51Tg/1SeOfoa+uxrlicnQ4lUT4BdKs1EA+O+j5A=;
-        b=uZ68PeXehoqO5lJkuF1T2ot/O8/2MFLkyi7NSHWOyWGfal7RVFv87vukHKpV0Nw0K9
-         Wn4+A/ZGzz97F1wXvH3S2nWKUZMibZBLMn6Zn8r9VypSa9OoJlGfsIanZNnclx+DCUH3
-         FvCMHUx8HL5EIVgF7uvWwiPiafgMSXa9CIALcOq/7buIeCGh5EWrxCdk/lEL4PGnoV1w
-         OSUePthFiVgHpveFIHb7KWlhLivlFTJ/2u2VEFoWpbjPiF7VNsRlHVMiykfl22axfA76
-         BV20SVzlcFn32Q9bNcN9hlmKQqADxzbOshQ3pt1X1Vy6YwUhrUPu/Ba0a1vKAKGHGFer
-         J/Tw==
-X-Gm-Message-State: AOAM532AfVTAa+2yLrtN3rQegjruu5AyiOm7RI1HP1Z0gK2vI9Gpzgve
-        87RAvFYdIPnxrLFrll/t4r+wBQ==
-X-Google-Smtp-Source: ABdhPJypDmUKD7+s1//4JSq/84zKYS+x9xKDjlAsUmNrZ4bBQ5/yaHrP3fzfw/HwvZ4XEBAkdV9/OA==
-X-Received: by 2002:a05:6e02:1a03:: with SMTP id s3mr3902702ild.178.1613656982796;
-        Thu, 18 Feb 2021 06:03:02 -0800 (PST)
-Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
-        by smtp.gmail.com with ESMTPSA id y1sm4320764ilj.50.2021.02.18.06.03.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 18 Feb 2021 06:03:01 -0800 (PST)
-Subject: Re: [PATCH] Revert "ath9k: fix ath_tx_process_buffer() potential null
- ptr dereference"
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, nbd@nbd.name,
-        ath9k-devel@qca.qualcomm.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20210217211801.22540-1-skhan@linuxfoundation.org>
- <20210218062333.37872C43462@smtp.codeaurora.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <18c2b014-406f-1976-d3aa-354dc285f134@linuxfoundation.org>
-Date:   Thu, 18 Feb 2021 07:02:59 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ITK2W56ft818ZWt4QDSd8KlN0Y5ANnHZi1kSURRPbHU=;
+        b=EbiOc6qEvxAe7tZqKZVTe7Vw79epODWH5XGzPXHtHsOTm5Lz8hG+L1+wmPVBSOM+35
+         1PkmmKZwXwmpUImWcPQaOqi+2eUfjanto8CHTq2lPRf277na9gkKTmOKcgHPdHuEWZSC
+         WUOHIlR9xqRDminuooP/5+MeQr5+AZ6fd4ET3qIBGlKXCOWj4lCcoqR1l2o5G+zrIkro
+         LqUjVbOxABN2xXgE6VbQ2yWcI59rq8Qb4p4YBY50SF/JQ5dXfgXe+IFKo30t4GHFnWBr
+         0a0aA8fA5DD0tSq9GstxYQz2rmCFssBLOmcDuX63rveTvxxoRxPVPpBEAa/oinBPFKJl
+         PX1A==
+X-Gm-Message-State: AOAM531aAr+imG/1A/qFynbCcGsz9FWH+NKbPC2aU5YaqYHw7ldTZh8t
+        DFfsf9/cg7oO9cXFnm5sMOBav4i2rRmvR9hcFEQd7A==
+X-Google-Smtp-Source: ABdhPJw24iQF+ujPFN4xeenJpr72+2HdskNaJoYNjojmbpduSAdsdODcinoq0tbzyPmGXusOepK0A3jymEkxOPB3TQY=
+X-Received: by 2002:ac8:7514:: with SMTP id u20mr4288204qtq.66.1613657054203;
+ Thu, 18 Feb 2021 06:04:14 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210218062333.37872C43462@smtp.codeaurora.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <000000000000787b8805bb8b96ce@google.com> <639082dd7bddce31122200cc0e587c482379d1a7.camel@redhat.com>
+In-Reply-To: <639082dd7bddce31122200cc0e587c482379d1a7.camel@redhat.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Thu, 18 Feb 2021 15:04:02 +0100
+Message-ID: <CACT4Y+b3nZ=SXbRo7FUV5BO4r1kyPyPSUXG9=TNWBtOzLRFa_g@mail.gmail.com>
+Subject: Re: possible deadlock in mptcp_push_pending
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     syzbot <syzbot+d1b1723faccb7a43f6d1@syzkaller.appspotmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
+        mptcp@lists.01.org, netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2/17/21 11:23 PM, Kalle Valo wrote:
-> Shuah Khan <skhan@linuxfoundation.org> wrote:
-> 
->> This reverts commit a56c14bb21b296fb6d395164ab62ef2e419e5069.
->>
->> ath_tx_process_buffer() doesn't dereference or check sta and passes it
->> to ath_tx_complete_aggr() and ath_tx_complete_buf().
->>
->> ath_tx_complete_aggr() checks the pointer before use. No problem here.
->>
->> ath_tx_complete_buf() doesn't check or dereference sta and passes it on
->> to ath_tx_complete(). ath_tx_complete() doesn't check or dereference sta,
->> but assigns it to tx_info->status.status_driver_data[0]
->>
->> ath_tx_complete_buf() is called from ath_tx_complete_aggr() passing
->> null ieee80211_sta pointer.
->>
->> There is a potential for dereference later on, if and when the
->> tx_info->status.status_driver_data[0]is referenced. In addition, the
->> rcu read lock might be released before referencing the contents.
->>
->> ath_tx_complete_buf() should be fixed to check sta perhaps? Worth
->> looking into.
->>
->> Reverting this patch because it doesn't solve the problem and introduces
->> memory leak by skipping buffer completion if the pointer (sta) is NULL.
->>
->> Fixes: a56c14bb21b2 ("ath9k: fix ath_tx_process_buffer() potential null ptr dereference")
->> Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
->> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-> 
-> Thanks. I added the commit id and Fixes tag to the commit log, see the new version above.
-> 
+On Thu, Feb 18, 2021 at 1:41 PM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> On Wed, 2021-02-17 at 09:31 -0800, syzbot wrote:
+> > syzbot found the following issue on:
+> >
+> > HEAD commit:    c48f8607 Merge branch 'PTP-for-DSA-tag_ocelot_8021q'
+> > git tree:       net-next
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=16525cb0d00000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=dbc1ca9e55dc1f9f
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=d1b1723faccb7a43f6d1
+> >
+> > Unfortunately, I don't have any reproducer for this issue yet.
+> >
+> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > Reported-by: syzbot+d1b1723faccb7a43f6d1@syzkaller.appspotmail.com
+> >
+> > ============================================
+> > WARNING: possible recursive locking detected
+> > 5.11.0-rc7-syzkaller #0 Not tainted
+> > --------------------------------------------
+> > syz-executor.1/15600 is trying to acquire lock:
+> > ffff888057303220 (sk_lock-AF_INET6){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1598 [inline]
+> > ffff888057303220 (sk_lock-AF_INET6){+.+.}-{0:0}, at: mptcp_push_pending+0x28b/0x650 net/mptcp/protocol.c:1466
+>
+> Even this one is suspected to be a dup of 'WARNING in dst_release': the
+> subflow socket lock family is reported to be 'sk_lock-AF_INET6', but
+> subflows are created in kernel, and get 'k-sk_lock-AF_INET6'. This
+> looks like [re]use after free, likely via msk->first, as in the
+> suspected dup issue. Lacking a repro, I'm not 110% sure.
+>
+> @Dmitry, I'm wondering which is the preferred course of action here:
+> tentatively marking this one as a dup, or leaving it alone till we get
+> a reproducer?
 
-Thanks. Sorry for forgetting the Fixes tag.
+Hi Paolo,
 
-thanks,
--- Shuah
+I don't have a strong opinion. Either way will work, especially since
+this seems to happen regularly. Or, submit a fix and wait to see if
+this stops happening or not.
