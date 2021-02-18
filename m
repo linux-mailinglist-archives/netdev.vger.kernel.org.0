@@ -2,167 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E01131F212
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 23:08:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B65231F272
+	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 23:40:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230121AbhBRWHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 17:07:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59638 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbhBRWHU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 17:07:20 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE87DC061756
-        for <netdev@vger.kernel.org>; Thu, 18 Feb 2021 14:06:39 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id ly28so8099444ejb.13
-        for <netdev@vger.kernel.org>; Thu, 18 Feb 2021 14:06:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9nLwcukSUiyM9yanBYnq2PilmgchJztci7Qxaxjho4s=;
-        b=Ncu08+RdwepKWUgqkCdxRirnSzQSBscLa75hDw0Vp1HdQIyyUJeHa0oXGuZmG2jpCV
-         15VDD1emzqYAs87kKlnTXTyzFK2MzSmwnRouAG54s84qdv0746zy+93peA2yLdb5jCWY
-         AYSyDqpLWZyc5jYu0Bap1trg+sVFIDlQbVaMdazJed0yUK71i+gNz9Q0ePuL3VbS5Q99
-         VyPzi20AStGOIPYA1PJIDGcOHjSq7vQ/WlrCK2wKoYr9aoZ76TAAWactPzdxghq7LKFK
-         qixlVOeZLGuAZoASGGQ+U63JvZCmuco6paj8bXEdxZ6Sg6UUPmZEAwlgWrUcjUz05lA+
-         lE6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9nLwcukSUiyM9yanBYnq2PilmgchJztci7Qxaxjho4s=;
-        b=Q5az040OTRd8UW56yyLGHr5ABpirAypMCPvsDqZUImDPFrvSu3Be5u7GlpCY4uqBtX
-         HKvnKYByXcRuP91btxdjIRHA5aodPMZaoIWRdNu2quDtO+AJNhdIrdS7lQ6WNQNwZ0Oj
-         7bXYo+Rlsu5WNpwgP8YerlaWPUeQEInOADawG6UE93+IPP5tQ9DAX5MbToApauqDeUTJ
-         l5kOA0R8jC9sq6xsxqkucd7D8OXYSg45uw8DwkCrEtX7PquQNfOaYxobQDgHGKDstUEh
-         yV5Uw8bYvaxJ8wQmYz9LGWM0GrNI5rj3a0QGKZo1pmXzeLazLdGax9yRK2yg/PaLps8/
-         YS9Q==
-X-Gm-Message-State: AOAM532VV3dNeZmV1Wre3VP8edRwnVct42XtxOgnZB/X9QTfbSomw4FV
-        vnQc7TPLZaAeHWjy4Jo11KaUp9bJHkywctFtv6jddmpb
-X-Google-Smtp-Source: ABdhPJxih1ukVBIJcsirbgWxpYC0e0O63Y6TbPFu95JWZK9Ccm03x4UPEDf8bK2/kxxNpPlm6k40wF19zoPJ9DECGMk=
-X-Received: by 2002:a17:906:11d5:: with SMTP id o21mr5793749eja.504.1613685998277;
- Thu, 18 Feb 2021 14:06:38 -0800 (PST)
+        id S229812AbhBRWki (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 17:40:38 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42408 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229656AbhBRWke (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Feb 2021 17:40:34 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5D3F064EB9;
+        Thu, 18 Feb 2021 22:39:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1613687992;
+        bh=D24Qn4GrOdCHmRMsDz+E8sp3aIt5XmM+L3kg0dcu464=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=J2kYAPCQSB9D8m9w/03aw3lF8jO73oyx60Vgg1a1DfePHSrklMuE9Gu/mnDOjS86Z
+         5BwlyABeR/wKhzRmuKNmgcbw3yzfj8WMANGx5B+3+qOp1Ot12i4hJwH/XMqFPAegMC
+         23cmWtqet1n79vA3EwWj7oTxROtDQox3vPEUUw/ZfUKrCl16FwbjXySGdgjM9nxRLs
+         4vqeU9srMHvL9tSQSxOJ/M/xB9uVJrBYmbSaTFXsAFCtXnPexKZS7q8wTw73NurA56
+         r58qPe/Rzya0Z2FekuxNY/+lLL+qqsu83NAOCr/DM33WAn/a2qI97fxVuLWC4VT0kW
+         IkKQ6gVuz9CBA==
+Date:   Thu, 18 Feb 2021 16:39:50 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
+Subject: Re: [PATCH mlx5-next v6 1/4] PCI: Add sysfs callback to allow MSI-X
+ table size change of SR-IOV VFs
+Message-ID: <20210218223950.GA1004646@bjorn-Precision-5520>
 MIME-Version: 1.0
-References: <CAHmME9oyv+nWk2r3mcVrfdXW_aiex67nSvGiiqLmPOv=RHnhfQ@mail.gmail.com>
- <20210218203404.2429186-1-Jason@zx2c4.com>
-In-Reply-To: <20210218203404.2429186-1-Jason@zx2c4.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 18 Feb 2021 17:06:01 -0500
-Message-ID: <CAF=yD-K-8Gacsnch-1nTh11QFaXkfCj4TTj=Or6PF+6PyhbKiQ@mail.gmail.com>
-Subject: Re: [PATCH net v3] net: icmp: pass zeroed opts from
- icmp{,v6}_ndo_send before sending
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        SinYu <liuxyon@gmail.com>, Willem de Bruijn <willemb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YC4+V6W7s7ytwiC6@unreal>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 18, 2021 at 3:39 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
->
-> The icmp{,v6}_send functions make all sorts of use of skb->cb, casting
+On Thu, Feb 18, 2021 at 12:15:51PM +0200, Leon Romanovsky wrote:
+> On Wed, Feb 17, 2021 at 12:02:39PM -0600, Bjorn Helgaas wrote:
+> > [+cc Greg in case he wants to chime in on the sysfs discussion.
+> > TL;DR: we're trying to add/remove sysfs files when a PCI driver that
+> > supports certain callbacks binds or unbinds; series at
+> > https://lore.kernel.org/r/20210209133445.700225-1-leon@kernel.org]
+> >
+> > On Tue, Feb 16, 2021 at 09:58:25PM +0200, Leon Romanovsky wrote:
+> > > On Tue, Feb 16, 2021 at 10:12:12AM -0600, Bjorn Helgaas wrote:
+> > > > On Tue, Feb 16, 2021 at 09:33:44AM +0200, Leon Romanovsky wrote:
+> > > > > On Mon, Feb 15, 2021 at 03:01:06PM -0600, Bjorn Helgaas wrote:
+> > > > > > On Tue, Feb 09, 2021 at 03:34:42PM +0200, Leon Romanovsky wrote:
+> > > > > > > From: Leon Romanovsky <leonro@nvidia.com>
+> >
+> > > > > > > +int pci_enable_vf_overlay(struct pci_dev *dev)
+> > > > > > > +{
+> > > > > > > +	struct pci_dev *virtfn;
+> > > > > > > +	int id, ret;
+> > > > > > > +
+> > > > > > > +	if (!dev->is_physfn || !dev->sriov->num_VFs)
+> > > > > > > +		return 0;
+> > > > > > > +
+> > > > > > > +	ret = sysfs_create_files(&dev->dev.kobj, sriov_pf_dev_attrs);
+> > > > > >
+> > > > > > But I still don't like the fact that we're calling
+> > > > > > sysfs_create_files() and sysfs_remove_files() directly.  It makes
+> > > > > > complication and opportunities for errors.
+> > > > >
+> > > > > It is not different from any other code that we have in the kernel.
+> > > >
+> > > > It *is* different.  There is a general rule that drivers should not
+> > > > call sysfs_* [1].  The PCI core is arguably not a "driver," but it is
+> > > > still true that callers of sysfs_create_files() are very special, and
+> > > > I'd prefer not to add another one.
+> > >
+> > > PCI for me is a bus, and bus is the right place to manage sysfs.
+> > > But it doesn't matter, we understand each other positions.
+> > >
+> > > > > Let's be concrete, can you point to the errors in this code that I
+> > > > > should fix?
+> > > >
+> > > > I'm not saying there are current errors; I'm saying the additional
+> > > > code makes errors possible in future code.  For example, we hope that
+> > > > other drivers can use these sysfs interfaces, and it's possible they
+> > > > may not call pci_enable_vf_overlay() or pci_disable_vfs_overlay()
+> > > > correctly.
+> > >
+> > > If not, we will fix, we just need is to ensure that sysfs name won't
+> > > change, everything else is easy to change.
+> > >
+> > > > Or there may be races in device addition/removal.  We have current
+> > > > issues in this area, e.g., [2], and they're fairly subtle.  I'm not
+> > > > saying your patches have these issues; only that extra code makes more
+> > > > chances for mistakes and it's more work to validate it.
+> > > >
+> > > > > > I don't see the advantage of creating these files only when
+> > > > > > the PF driver supports this.  The management tools have to
+> > > > > > deal with sriov_vf_total_msix == 0 and sriov_vf_msix_count ==
+> > > > > > 0 anyway.  Having the sysfs files not be present at all might
+> > > > > > be slightly prettier to the person running "ls", but I'm not
+> > > > > > sure the code complication is worth that.
+> > > > >
+> > > > > It is more than "ls", right now sriov_numvfs is visible without
+> > > > > relation to the driver, even if driver doesn't implement
+> > > > > ".sriov_configure", which IMHO bad. We didn't want to repeat.
+> > > > >
+> > > > > Right now, we have many devices that supports SR-IOV, but small
+> > > > > amount of them are capable to rewrite their VF MSI-X table siz.
+> > > > > We don't want "to punish" and clatter their sysfs.
+> > > >
+> > > > I agree, it's clutter, but at least it's just cosmetic clutter
+> > > > (but I'm willing to hear discussion about why it's more than
+> > > > cosmetic; see below).
+> > >
+> > > It is more than cosmetic and IMHO it is related to the driver role.
+> > > This feature is advertised, managed and configured by PF. It is very
+> > > natural request that the PF will view/hide those sysfs files.
+> >
+> > Agreed, it's natural if the PF driver adds/removes those files.  But I
+> > don't think it's *essential*, and they *could* be static because of
+> > this:
+> >
+> > > > From the management software point of view, I don't think it matters.
+> > > > That software already needs to deal with files that don't exist (on
+> > > > old kernels) and files that contain zero (feature not supported or no
+> > > > vectors are available).
+> >
+> > I wonder if sysfs_update_group() would let us have our cake and eat
+> > it, too?  Maybe we could define these files as static attributes and
+> > call sysfs_update_group() when the PF driver binds or unbinds?
+> >
+> > Makes me wonder if the device core could call sysfs_update_group()
+> > when binding/unbinding drivers.  But there are only a few existing
+> > callers, and it looks like none of them are for the bind/unbind
+> > situation, so maybe that would be pointless.
+> 
+> Also it will be not an easy task to do it in driver/core. Our
+> attributes need to be visible if driver is bound -> we will call to
+> sysfs_update_group() after ->bind() callback. It means that in
+> uwind, we will call to sysfs_update_group() before ->unbind() and
+> the driver will be still bound. So the check is is_supported() for
+> driver exists/or not won't be possible.
 
-Again, if respinning, please briefly describe the specific buggy code
-path. I think it's informative and cannot be gleaned from the fix.
+Poking around some more, I found .dev_groups, which might be
+applicable?  The test patch below applies to v5.11 and makes the "bh"
+file visible in devices bound to the uhci_hcd driver if the function
+number is odd.
 
-> it with IPCB or IP6CB, assuming the skb to have come directly from the
-> inet layer. But when the packet comes from the ndo layer, especially
-> when forwarded, there's no telling what might be in skb->cb at that
-> point. As a result, the icmp sending code risks reading bogus memory
-> contents, which can result in nasty stack overflows such as this one
-> reported by a user:
->
->     panic+0x108/0x2ea
->     __stack_chk_fail+0x14/0x20
->     __icmp_send+0x5bd/0x5c0
->     icmp_ndo_send+0x148/0x160
->
-> This is easy to simulate by doing a `memset(skb->cb, 0x41,
-> sizeof(skb->cb));` before calling icmp{,v6}_ndo_send, and it's only by
-> good fortune and the rarity of icmp sending from that context that we've
-> avoided reports like this until now. For example, in KASAN:
->
->     BUG: KASAN: stack-out-of-bounds in __ip_options_echo+0xa0e/0x12b0
->     Write of size 38 at addr ffff888006f1f80e by task ping/89
->     CPU: 2 PID: 89 Comm: ping Not tainted 5.10.0-rc7-debug+ #5
->     Call Trace:
->      dump_stack+0x9a/0xcc
->      print_address_description.constprop.0+0x1a/0x160
->      __kasan_report.cold+0x20/0x38
->      kasan_report+0x32/0x40
->      check_memory_region+0x145/0x1a0
->      memcpy+0x39/0x60
->      __ip_options_echo+0xa0e/0x12b0
->      __icmp_send+0x744/0x1700
->
-> Actually, out of the 4 drivers that do this, only gtp zeroed the cb for
-> the v4 case, while the rest did not. So this commit actually removes the
-> gtp-specific zeroing, while putting the code where it belongs in the
-> shared infrastructure of icmp{,v6}_ndo_send.
->
-> This commit fixes the issue by passing an empty IPCB or IP6CB along to
-> the functions that actually do the work. For the icmp_send, this was
-> already trivial, thanks to __icmp_send providing the plumbing function.
-> For icmpv6_send, this required a tiny bit of refactoring to make it
-> behave like the v4 case, after which it was straight forward.
->
-> Fixes: a2b78e9b2cac ("sunvnet: generate ICMP PTMUD messages for smaller port MTUs")
-> Reported-by: SinYu <liuxyon@gmail.com>
-> Cc: Willem de Bruijn <willemb@google.com>
-> Link: https://lore.kernel.org/netdev/CAF=yD-LOF116aHub6RMe8vB8ZpnrrnoTdqhobEx+bvoA8AsP0w@mail.gmail.com/T/
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> ---
+This thread has more details and some samples:
+https://lore.kernel.org/lkml/20190731124349.4474-1-gregkh@linuxfoundation.org/
 
-> -#define icmpv6_ndo_send icmpv6_send
-> +static inline void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info)
-> +{
-> +       struct inet6_skb_parm parm = { 0 };
-> +       __icmpv6_send(skb_in, type, code, info, &parm);
-> +}
->  #endif
+On qemu, with 00:1a.[012] and 00:1d.[012] set up as uhci_hcd devices:
 
-> -void icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info)
-> +void __icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
-> +                  const struct inet6_skb_parm *parm)
->  {
->         ip6_icmp_send_t *send;
->
->         rcu_read_lock();
->         send = rcu_dereference(ip6_icmp_send);
->         if (send)
-> -               send(skb, type, code, info, NULL);
-> +               send(skb, type, code, info, NULL, IP6CB(skb));
+  root@ubuntu:~# ls /sys/bus/pci/drivers/uhci_hcd
+  0000:00:1a.0  0000:00:1a.2  0000:00:1d.1  bind    new_id     uevent
+  0000:00:1a.1  0000:00:1d.0  0000:00:1d.2  module  remove_id  unbind
+  root@ubuntu:~# grep . /sys/devices/pci0000:00/0000:00:*/bh /dev/null
+  /sys/devices/pci0000:00/0000:00:1a.1/bh:hi bjorn
+  /sys/devices/pci0000:00/0000:00:1d.1/bh:hi bjorn
 
-This should be parm.
-
->  #if IS_ENABLED(CONFIG_NF_NAT)
->  #include <net/netfilter/nf_conntrack.h>
->  void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info)
->  {
-> +       struct inet6_skb_parm parm = { 0 };
->         struct sk_buff *cloned_skb = NULL;
->         enum ip_conntrack_info ctinfo;
->         struct in6_addr orig_ip;
-> @@ -57,7 +59,7 @@ void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info)
->
->         ct = nf_ct_get(skb_in, &ctinfo);
->         if (!ct || !(ct->status & IPS_SRC_NAT)) {
-> -               icmpv6_send(skb_in, type, code, info);
-> +               __icmpv6_send(skb_in, type, code, info, &parm);
->                 return;
->         }
->
-> @@ -72,7 +74,7 @@ void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info)
->
->         orig_ip = ipv6_hdr(skb_in)->saddr;
->         ipv6_hdr(skb_in)->saddr = ct->tuplehash[0].tuple.src.u3.in6;
-> -       icmpv6_send(skb_in, type, code, info);
-> +       __icmpv6_send(skb_in, type, code, info, &parm);
->         ipv6_hdr(skb_in)->saddr = orig_ip;
->  out:
->         consume_skb(cloned_skb);
-> --
-> 2.30.1
->
+diff --git a/drivers/usb/host/uhci-pci.c b/drivers/usb/host/uhci-pci.c
+index 9b88745d247f..17ea5bf0dab0 100644
+--- a/drivers/usb/host/uhci-pci.c
++++ b/drivers/usb/host/uhci-pci.c
+@@ -297,6 +297,38 @@ static int uhci_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
+ 	return usb_hcd_pci_probe(dev, id, &uhci_driver);
+ }
+ 
++static ssize_t bh_show(struct device *dev, struct device_attribute *attr,
++			char *buf)
++{
++	return snprintf(buf, PAGE_SIZE, "hi bjorn\n");
++}
++static DEVICE_ATTR_RO(bh);
++
++static umode_t bh_is_visible(struct kobject *kobj, struct attribute *a, int n)
++{
++	struct device *dev = kobj_to_dev(kobj);
++	struct pci_dev *pdev = to_pci_dev(dev);
++	umode_t mode = (PCI_FUNC(pdev->devfn) % 2) ? 0444 : 0;
++
++	dev_info(dev, "%s mode %o\n", __func__, mode);
++	return mode;
++}
++
++static struct attribute *bh_attrs[] = {
++	&dev_attr_bh.attr,
++	NULL,
++};
++
++static const struct attribute_group bh_group = {
++	.attrs = bh_attrs,
++	.is_visible = bh_is_visible,
++};
++
++static const struct attribute_group *bh_groups[] = {
++	&bh_group,
++	NULL
++};
++
+ static struct pci_driver uhci_pci_driver = {
+ 	.name =		hcd_name,
+ 	.id_table =	uhci_pci_ids,
+@@ -307,7 +339,8 @@ static struct pci_driver uhci_pci_driver = {
+ 
+ #ifdef CONFIG_PM
+ 	.driver =	{
+-		.pm =	&usb_hcd_pci_pm_ops
++		.pm =	&usb_hcd_pci_pm_ops,
++		.dev_groups = bh_groups,
+ 	},
+ #endif
+ };
