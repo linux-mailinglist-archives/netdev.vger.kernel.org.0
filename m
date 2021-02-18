@@ -2,144 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4250831EDAE
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 18:52:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E144E31EDB0
+	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 18:52:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231676AbhBRRvk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 12:51:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56832 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234356AbhBRRcJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 12:32:09 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ECD3C061574;
-        Thu, 18 Feb 2021 09:31:28 -0800 (PST)
-Date:   Thu, 18 Feb 2021 18:31:24 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1613669486;
+        id S234751AbhBRRwV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 12:52:21 -0500
+Received: from mail.zx2c4.com ([104.131.123.232]:57120 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234322AbhBRRhH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Feb 2021 12:37:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1613669752;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=nLRBuVVWvc8V3uVW45ibYaABYhWDXpjkZ5kiNjBTKQk=;
-        b=vE8Bl+8aDfr6BdcXD0gj7H/o1sA/w1cOYT0V+8JyW4JtxHErc89pA+Pz0Fk6Wf0PtuEPZF
-        OUbk5JZ6Tnj37TmhRYe8+9ByHXaU9ipZ/aj6qtaNVVRecTQphXzP4a/keZkPzQW2XO5sSs
-        KiFpcT/P/Ag/ZCUWYMYMVgVBdU905FgHIJjhWq18dUwExx0sFUYdWLo0tfTozIU334n+28
-        t7td9yWBl4tSAT0EGD13Oim8HReFtrayyovUbnsPi2/LT84olfqqwJspTMIFO6cIVtpxB/
-        hJHmWgoM++Xo9UATugjrVZAkctW3NGxsOruzmk/lWaLP6xULT1oOEMVMM0+JPQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1613669486;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=nLRBuVVWvc8V3uVW45ibYaABYhWDXpjkZ5kiNjBTKQk=;
-        b=r5bBoiddMeojU/BxwZp5Q3JGx4e4u1hPZNUoeV1fuLyrO/Kd20S7+FDo7vfYfc8V9op81O
-        jV+zSj0NPzBS8fDg==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com
-Cc:     Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        netdev@vger.kernel.org
-Subject: [PATCH] kcov: Remove kcov include from sched.h and move it to its
- users.
-Message-ID: <20210218173124.iy5iyqv3a4oia4vv@linutronix.de>
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yS9QXbzyO+lJNQofHs5bv8cLQin4iQddVT2ExrF572g=;
+        b=BMfSIyvVrFbjWpIDEJpMpxCwPkPxESEbs2F7Jq0HzkZDgTOiuLBICb0IiKrLUwbfoJl0Td
+        c7mnV/AqFgagecu5P9qpR5WUEl70vtyo6cp6pRt2jCClmXf15JIJI+6LpMx+/BcV1/4l9P
+        Zt8QTkjD5OWpCJHRy8j/ZEXVq9d7Bjc=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id e66fda25 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
+        for <netdev@vger.kernel.org>;
+        Thu, 18 Feb 2021 17:35:52 +0000 (UTC)
+Received: by mail-yb1-f179.google.com with SMTP id p186so2950866ybg.2
+        for <netdev@vger.kernel.org>; Thu, 18 Feb 2021 09:35:52 -0800 (PST)
+X-Gm-Message-State: AOAM5315fXyrNNJI2ZdQsTK6PZ1lmuj5qqros6MnWarSJlxx0KeWlKY6
+        CZBKq3z7AQyLc+m+S40qO+dw+Qy5oE7pOJhw9fk=
+X-Google-Smtp-Source: ABdhPJw6T5ceGMmY9nxNFv+LSIp9bhSCmfP1LVMpzcxXe26qnoUi9zc+DNaQrgz6U9wgIIcvwQJog4iuF0pMCxQJsoU=
+X-Received: by 2002:a25:3cd:: with SMTP id 196mr8524075ybd.456.1613669751767;
+ Thu, 18 Feb 2021 09:35:51 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+References: <CAHmME9o-N5wamS0YbQCHUfFwo3tPD8D3UH=AZpU61oohEtvOKg@mail.gmail.com>
+ <20210218160745.2343501-1-Jason@zx2c4.com> <CA+FuTSeyYti3TMUd2EgQqTAjHjV=EXVZtmY9HUdOP0=U8WRyJA@mail.gmail.com>
+In-Reply-To: <CA+FuTSeyYti3TMUd2EgQqTAjHjV=EXVZtmY9HUdOP0=U8WRyJA@mail.gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Thu, 18 Feb 2021 18:35:40 +0100
+X-Gmail-Original-Message-ID: <CAHmME9rVuw5tAHUpnsXrLh-WAMXmvqSNFdOUh1XaKZ8bLOow9g@mail.gmail.com>
+Message-ID: <CAHmME9rVuw5tAHUpnsXrLh-WAMXmvqSNFdOUh1XaKZ8bLOow9g@mail.gmail.com>
+Subject: Re: [PATCH net v2] net: icmp: pass zeroed opts from
+ icmp{,v6}_ndo_send before sending
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        SinYu <liuxyon@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The recent addition of in_serving_softirq() to kconv.h results in
-compile failure on PREEMPT_RT because it requires
-task_struct::softirq_disable_cnt. This is not available if kconv.h is
-included from sched.h.
+On Thu, Feb 18, 2021 at 5:34 PM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
+> Thanks for respinning.
+>
+> Making ipv4 and ipv6 more aligned is a good goal, but more for
+> net-next than bug fixes that need to be backported to many stable
+> branches.
+>
+> Beyond that, I'm not sure this fixes additional cases vs the previous
+> patch? It uses new on-stack variables instead of skb->cb, which again
+> is probably good in general, but adds more change than is needed for
+> the stable fix.
 
-It is not needed to include kconv.h from sched.h. All but the net/ user
-already include the kconv header file.
+It doesn't appear to be problematic for applying to stable. I think
+this v2 is the "right way" to handle it. Zeroing out skb->cb is
+unexpected and weird anyway. What if the caller was expecting to use
+their skb->cb after calling icmp_ndo_send? Did they think it'd get
+wiped out like that? This v2 prevents that weird behavior from
+happening.
 
-Move the include of the kconv.h header from sched.h it its users.
-Additionally include sched.h from kconv.h to ensure that everything
-task_struct related is available.
+> My comment on fixing all callers of  icmp{,v6}_send was wrong, in
+> hindsight. In most cases IPCB is set correctly before calling those,
+> so we cannot just zero inside those. If we can only address the case
+> for icmp{,v6}_ndo_send I think the previous patch introduced less
+> churn, so is preferable. Unless I'm missing something.
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- include/linux/kcov.h  | 1 +
- include/linux/sched.h | 1 -
- net/core/skbuff.c     | 1 +
- net/mac80211/iface.c  | 1 +
- net/mac80211/rx.c     | 1 +
- 5 files changed, 4 insertions(+), 1 deletion(-)
+As mentioned above it's weird and unexpected.
 
-diff --git a/include/linux/kcov.h b/include/linux/kcov.h
-index 4e3037dc12048..55dc338f6bcdd 100644
---- a/include/linux/kcov.h
-+++ b/include/linux/kcov.h
-@@ -2,6 +2,7 @@
- #ifndef _LINUX_KCOV_H
- #define _LINUX_KCOV_H
- 
-+#include <linux/sched.h>
- #include <uapi/linux/kcov.h>
- 
- struct task_struct;
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 7337630326751..183e9d90841cb 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -14,7 +14,6 @@
- #include <linux/pid.h>
- #include <linux/sem.h>
- #include <linux/shm.h>
--#include <linux/kcov.h>
- #include <linux/mutex.h>
- #include <linux/plist.h>
- #include <linux/hrtimer.h>
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 785daff48030d..e64d0a2e21c31 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -60,6 +60,7 @@
- #include <linux/prefetch.h>
- #include <linux/if_vlan.h>
- #include <linux/mpls.h>
-+#include <linux/kcov.h>
- 
- #include <net/protocol.h>
- #include <net/dst.h>
-diff --git a/net/mac80211/iface.c b/net/mac80211/iface.c
-index b31417f40bd56..39943c33abbfa 100644
---- a/net/mac80211/iface.c
-+++ b/net/mac80211/iface.c
-@@ -15,6 +15,7 @@
- #include <linux/if_arp.h>
- #include <linux/netdevice.h>
- #include <linux/rtnetlink.h>
-+#include <linux/kcov.h>
- #include <net/mac80211.h>
- #include <net/ieee80211_radiotap.h>
- #include "ieee80211_i.h"
-diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
-index 972895e9f22dc..3527b17f235a8 100644
---- a/net/mac80211/rx.c
-+++ b/net/mac80211/rx.c
-@@ -17,6 +17,7 @@
- #include <linux/etherdevice.h>
- #include <linux/rcupdate.h>
- #include <linux/export.h>
-+#include <linux/kcov.h>
- #include <linux/bitops.h>
- #include <net/mac80211.h>
- #include <net/ieee80211_radiotap.h>
--- 
-2.30.0
+> Reminder of two main comments: sufficient to zero sizeof(IPCB..) and
+> if respinning, please explicitly mention the path that leads to a
+> stack overflow, as it is not immediately obvious (even from reading
+> the fix code?).
 
+I don't intend to respin v1, as I think v2 is more correct, and I
+don't think only zeroing IPCB is a smart idea, as in the future that
+code is bound to break when somebody forgets to update it. This v2
+does away with the zeroing all together, though, so that the right
+bytes to be zeroed are properly enforced all the time by the type
+system.
+
+Jason
