@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 471FA31E5AD
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 06:36:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BCCF31E5B7
+	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 06:36:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230233AbhBRFeA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 00:34:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43752 "EHLO
+        id S231194AbhBRFgN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 00:36:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230427AbhBRFaw (ORCPT
+        with ESMTP id S230428AbhBRFaw (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 00:30:52 -0500
 Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on0603.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe0d::603])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DA5BC0613D6;
-        Wed, 17 Feb 2021 21:30:02 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43ADAC061786;
+        Wed, 17 Feb 2021 21:30:03 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CCYcdK5mYmTbExkhF/R2bFN7QfBQGYvAFxvpSEjFRiQWQdeLByWHCru4YyiKh5Z70uFEGKbhnNiecBrNq3EUkdGkFbwCu8PP/yAG+xbZ0M5xyui7vYZDvDZb+37LuYl6EpnTbfitURuoCIixmTbZmjg0i1qIEbCePB7ms/F3EKFRnm53KIsAYLjGzFjI16rFCsOXDcIhpqrU9+5K+9+diNQOkXUEKSWDIxAm6wnnSi6RXkJPIIsTpgxwjBkPs11mMnN15LMNvPcEeb9N1N4wL7NdXcUeuTfvuTE9SiumxqFKEHniI68Fvl6oEP8yJzQa4e5nI8Re6OaqG2jg0K1jeA==
+ b=HhP/t4jI1NgNF8XY2HPoe3z/3QyS4prd5DYQXrQJk3HFVx/ry0q+WVZNnh7/Ihwf4veBrXKrhNh5fPW/9MOAe4+lsg4549cyfyXfpMbO0SbsuKg2zpNnJHXcLIdN4yDD6PQHRqF7kJWsaWuzR6tQfPnyVZDJZ1z8sZXwxxFntKPvUq3Vv4TBjyef4K8isIW3MVWyzfvCUVTKMPR7Qc5wDT5hA2D9lnf7npe+b5ZhPxMWi+fWh1NETFrw2px7HROvUFkdWI6Pls8HVdN+W0N4PNhU+5da4/ulh694QJbo8cglDmwLtmSQNEFufe6/dS9L7F7fr82fqZZadu7XlefXZA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=15LjNqafMe9XbMRxl6wCPfbkpsrCCaKoRRcVNTMs5uo=;
- b=SdrnS5g3as5BXrgvyYQ8x4y4K9Ao3bGXXrZC9PRa56taHdiVEtmVSnK3n1RczGaor+HeBchdpuB0BxTaoz0YeTbKaKwVO3oG4ee4ttGp1AWxO5AO1EncAl1xRtnOtTgjOefnmUYacUhhjAoWRUOxC9vCn29f2IuA4jPr8vLHkkvpKWpqVVotrAxBIZpkUaPtfoUXmoI0a+fdii3rm7KwKvM6f2qeyoTytOWW0zojOhvka7sh4FLmBYyshX5fq5ebUaBmBk+9GoPf6o8kewY7ofrNRhvWGjnc1KhRUwvO0nE8BO/TnKJRCi1ToAxdK3KFN58AU6uq7QnvfOJ/n7xDkg==
+ bh=uN7QBtA3OsLSFhhd/c8bKjZiewNLFfEzjrd4DhdtXzk=;
+ b=J6DXVWn5TpRtHUleTLBoemBxoTqU6dnGIAOzt3S+d5Htm2P7jk+7/1rD17koC9/mFbgmVs5jtJKd7vWg9wrxaIsGpAthzAXnK7aW+2riM0CEL40p98o6Goh4Qw5hzT7r91Nh4+1uUF+UQNJHxB/2/l5JrC42//+PUFRK9T0a+hC2C1FToKETL3UKEHGAagykt7fHQDP+6N/QTT8h9DaddYXxs5naeLlW9cuVdFnM2K6X+V6+hXaageCdwPkBqzXge4dz3xz0PDm1JdALW0jl0wzAknBnWLPczAgsNhyiJ++4UQvP0Oocy28fddE0ORxvUgE4TwSMDQn03YJv0t7LJA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
  dkim=pass header.d=oss.nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
  s=selector2-NXP1-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=15LjNqafMe9XbMRxl6wCPfbkpsrCCaKoRRcVNTMs5uo=;
- b=WsLf6zGzM9xGl+iQ8pbkMGnNMRZj0+vtEM0z9DHgfIUjauhJ6foc3anOWN7lLj/UrfANRRDLruoKf3etL61ouPO+nW4evyKYAt+YWXO7y4c4/XKm+8JLjhToSnyRsrLSgzOfJZAWHxA8nbxH5yKvsSjOJxRlLv3qMoRx5u6W4Pw=
+ bh=uN7QBtA3OsLSFhhd/c8bKjZiewNLFfEzjrd4DhdtXzk=;
+ b=B2wmEjBGA6JGWWdFMsNzFRpWEes63dQemr68h2Vl4UsTJ6g6AzyKB/LDF31FO9vWQd4qs13h2dydWxxEevPz7iKqDXs/uUCnfS+WQm60mL18dAzJNpG0kGl5frVqEQQHZO2zIlrKfJjBwA+TqEb5rzKTwvI6mP7wfyskhM3OKBI=
 Authentication-Results: arm.com; dkim=none (message not signed)
  header.d=none;arm.com; dmarc=none action=none header.from=oss.nxp.com;
 Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
  by AM8PR04MB7730.eurprd04.prod.outlook.com (2603:10a6:20b:242::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3868.27; Thu, 18 Feb
- 2021 05:28:35 +0000
+ 2021 05:28:43 +0000
 Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
  ([fe80::e90e:b1d6:18a2:2d42]) by AM0PR04MB5636.eurprd04.prod.outlook.com
  ([fe80::e90e:b1d6:18a2:2d42%6]) with mapi id 15.20.3846.042; Thu, 18 Feb 2021
- 05:28:35 +0000
+ 05:28:42 +0000
 From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
 To:     Grant Likely <grant.likely@arm.com>,
         "Rafael J . Wysocki" <rafael@kernel.org>,
@@ -66,9 +66,9 @@ Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [net-next PATCH v6 10/15] net: mdio: Add ACPI support code for mdio
-Date:   Thu, 18 Feb 2021 10:56:49 +0530
-Message-Id: <20210218052654.28995-11-calvin.johnson@oss.nxp.com>
+Subject: [net-next PATCH v6 11/15] net: mdiobus: Introduce fwnode_mdiobus_register()
+Date:   Thu, 18 Feb 2021 10:56:50 +0530
+Message-Id: <20210218052654.28995-12-calvin.johnson@oss.nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210218052654.28995-1-calvin.johnson@oss.nxp.com>
 References: <20210218052654.28995-1-calvin.johnson@oss.nxp.com>
@@ -79,215 +79,129 @@ X-ClientProxiedBy: SG2PR02CA0051.apcprd02.prod.outlook.com
  (2603:10a6:208:130::22)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2PR02CA0051.apcprd02.prod.outlook.com (2603:1096:4:54::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3868.27 via Frontend Transport; Thu, 18 Feb 2021 05:28:29 +0000
+Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2PR02CA0051.apcprd02.prod.outlook.com (2603:1096:4:54::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3868.27 via Frontend Transport; Thu, 18 Feb 2021 05:28:36 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 5529b96b-9b9a-433e-3d38-08d8d3ce09fe
+X-MS-Office365-Filtering-Correlation-Id: 0c317ac2-a7d6-47f7-51ba-08d8d3ce0e15
 X-MS-TrafficTypeDiagnostic: AM8PR04MB7730:
 X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM8PR04MB7730A8EB1FC98D2BE97E472ED2859@AM8PR04MB7730.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-Microsoft-Antispam-PRVS: <AM8PR04MB7730FF8CD246DB7EA21F8F96D2859@AM8PR04MB7730.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: F3enkKJhhAFDdtpLa9PUxPeVBlFKzblt41G3ME/NDn4Vfqxycm8/0AaUkSHtn/FxADti57Mi3sr0fkFtzg2gJ3tb+xRAijCyZENQnhNJSHohZj5DgpNsgMpTWL/46hbIOGn1sKBR2inL3bBBLJYs4+GxUGeDOeiqjL1zbl0QRasTGnXTN9Yd9UHUY5P5j6r78uRCsH/jSmuXyhNeT7FxFME+om5vEga9L9lNSgg0qDP+VAYTRr/x+l2L4bTpz2oxLcV88iqRFKRxtD5ztGqGoolfv4eINk2hxhyhL2LCA/YX8A3Vkuxs4/JcIBfcvq5aI9WfpQUkDDhVf+bv8Qf0pjokRi6BqfeUSmPGQxywCv0bX1kRHJWxZucZRscHAFva0MLRoUrayyxfAOQVJzbkOGd7w5L66Dv/ENkYuX8V2LUvktS2ZYJ1wVD9BtBOrvoEAkDqn5Zw/bQXJj+MwHj4NQMvTS2JIC98q9J00Wi+4nMcfeHFUUVxwALrV9XVBCQkolGNHOAnL3CiNr6BlaJ/YlJqHZYr88VimezeF+T9hwVjdG+Y6taJUArS85WEevQhK7fEmQzsGiCYcOXA4mh5kQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(376002)(346002)(366004)(39860400002)(136003)(26005)(8936002)(52116002)(16526019)(921005)(478600001)(1076003)(6486002)(8676002)(55236004)(83380400001)(5660300002)(186003)(44832011)(110136005)(6512007)(956004)(54906003)(316002)(66946007)(2906002)(2616005)(1006002)(66476007)(86362001)(7416002)(6506007)(6666004)(4326008)(66556008)(110426009);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?MEjVIl7JMaBRiegK/lMa5VNc6Xjqw3FKtUQ9GJjHbfmCiqTwj5hzKlp2ft6U?=
- =?us-ascii?Q?x2oujQ/BLpwThh1U42c3l2kWSITqnegzQxAy4JZvQqjMUfJuI/2XBKBO+Ft8?=
- =?us-ascii?Q?PyecRkqX3OEN4KtMJbzff3dYyYZFAVappM5E+uj/bWRkYtUidlPtBh43BA/T?=
- =?us-ascii?Q?LdHEG5dro+rpyPgxtJaacKeAuoq8l8qoEC9A8NxtXQPyxxdrPjt+HeNbctgV?=
- =?us-ascii?Q?ORoPNkEM7/Av+yMBxCOXFHSCBKRbm2KEQkyYJ4c+faE6VEJbGtwm0Di7CnBd?=
- =?us-ascii?Q?bKFvff4HBAzRDOMry827zGJQNv9qRbuoBy1J7B0+t4SG8kAF/aPN3LdX3+Dv?=
- =?us-ascii?Q?27391r2TC9smPZsSpbQMUHbId+Doj2GE/skUIBv/L++DJmnjBLe5FmDIDZDz?=
- =?us-ascii?Q?dr//AR06J8hgso10PszkTw9WrrQdRj/Wk+0gt1B2P2M5GG9/A6R81MATDye8?=
- =?us-ascii?Q?pBEaCii0TIvMBQcDamGFA/JT45SK35pa5PQUjuE1Vdma3d7XQwn9N2S2c+xK?=
- =?us-ascii?Q?xXCsYssRfOvP+0CPaABmE39Xa/qkD5x912awxh8jFlvgSGhftPkp6ejMngjv?=
- =?us-ascii?Q?UpAk5PxuTzm/AZEuDenvAQbk83E9CzOmGdOUd3NCD4vVMNBmBQamPlVNROJ5?=
- =?us-ascii?Q?3sxGmd0CvVxxar9Jsme+qI4oFF6pFhQcn+NUB68JwsdcfVe1NiG9KoNXVG5r?=
- =?us-ascii?Q?QXga7zkXpXOsOEahPyp7YCrz/fYMcUdQzTSCKgslSB2BTM1McQ3yuYupGWvV?=
- =?us-ascii?Q?V0YoIFs17t/TE2MrUUc1+e6Pat80sRmG9yWGX4yJB9oPKIERXTqpu5Gh1J6x?=
- =?us-ascii?Q?h8NXTiAYvYoCVRNHHxMn1BdpLIGLzzIoZGf4O0hgGwR8ELqCgJZePbP16wzC?=
- =?us-ascii?Q?rxq6NGOSHaBzJ0lekTGZ9GOm8ehg5KuW4vtMAKb0HLCLjAP1QbXFP+5Ew7gf?=
- =?us-ascii?Q?7nXdWCB4iLOmlAfxYOGVil3PLkuwN7F6rNOeWHmb1mK8o8+A2e4Cwqn9aCL1?=
- =?us-ascii?Q?vC9LpYBKmDVJzjRiL7oy97HYax0UXrXqJujBBbklLHc3xymKBBz1wd37WEXM?=
- =?us-ascii?Q?6VY+cU4XK1KeYj16tPjrTW4eLD9oqOUV72yGnIWDh+L96YDcGleBas3JdRGu?=
- =?us-ascii?Q?qdRilr1DiiKSUzke2lre0W1bFLODlUcW2y4mjrA31+m4+D4xm7ZMzcu8mUm9?=
- =?us-ascii?Q?I4qnAw5NFiQd4wLc2g0K7GozGGVuJDtqYyfDH/JLR4ePbPjEAF/erjd81XyT?=
- =?us-ascii?Q?MUSu1Aqm4LZ9GyRq46rs1RapCVEnNF3t245L59oft0RPJSjaUEZ4LxqeUSm4?=
- =?us-ascii?Q?u6s2oEuY9ldmKm4WfzeJM+nK?=
+X-Microsoft-Antispam-Message-Info: 5eJEMpaXi71ZgzzY+xEYQcwDoxwwdgked+Z0wZxBXWFxN9O5eYO4O88Jx9YShPOPu0cQSwB32U5WeDqF6FUA3hXNzP/qPCy7pQzWHSh5rukIUKLOWkk74I+JzIHVdm677LZJY81G6TFeG98xA0pRS2Ju2i/nIhIAoXwfkH7rOG2m8zDUo0K0S7LHGTGPWGqBAkPQPqqsOj3B+g+6rb/21lQHC3Kh2C5Xx9JlzMpQ0JgsrtVnVfAg74P7jmdKDg44XySbxCk1p7U1XqC2TnmwStwAOra0TvgPbHZl0/ChXslVgUBXWzXdbmcAVI8gpsPTEau1N24ITQInEmA2l/NQVIj1fGAmc3FunEKR6grcwI+930895ktsrxt+24qxbfP6NjOzzyjCpTlDJEqctEAaftUBfCxTHZaqOwnN0qS1nrWLwYugUSq9wqTZk9IqGPaFwn2EfXYJ7vkT3ck/SuoolrZN8Av6W/TPoa8Pbym4QpBFatkM0dAZtehXGjHEAwCLw+2MLMIeDwScz2SrFSTD7SPv+VKOafLIfzuQhCAq+4AOpZbrteqDiwa59hb6rY/l+RA+jMXv3PnntKUedIqY/Ofb53SeP3ZnEgg/VcnJL6s=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(376002)(346002)(366004)(39860400002)(136003)(26005)(8936002)(52116002)(16526019)(921005)(478600001)(1076003)(6486002)(8676002)(55236004)(5660300002)(186003)(44832011)(110136005)(6512007)(956004)(54906003)(316002)(66946007)(2906002)(2616005)(1006002)(66476007)(86362001)(7416002)(6506007)(6666004)(4326008)(66556008)(110426009);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?VJkfa67FfBFRboBMuWpACA0V1sBIEBUww4jexLPtak+7KD+JjXGyzDaTQayC?=
+ =?us-ascii?Q?b/GUFHZG7ws4MBigDR7ZUYYevyegdk6vbtQ2HLWA1wsT7MJtNFGpSpJYFVcW?=
+ =?us-ascii?Q?3Ec9o714lF69LwF7CZKMcLI/m2PLjQjUDj+fRDLybr+p1tBYAKYmifrfkFBd?=
+ =?us-ascii?Q?q8+gD7HzMWNer3MWWp59WZrT/t4Efyn9hK5q0HU4Ay2RvsefQopgTEKzWu50?=
+ =?us-ascii?Q?jBJR3zrND7TIgdLx0i/i4aznTYcT9hNGkdNrs93pXApObnJG38DcJe4X/m4K?=
+ =?us-ascii?Q?nuhgYZY9AOgP4tf8OZ9l+n7SY3DeQVUoU6zADvpXQEtthZC9BJnruUF2VFrG?=
+ =?us-ascii?Q?LYRjKGj0LH23Xw0am9WKSlFj4Wd2lCZJoPBNDXdb+qO8wEDNoI7QOtPMNBus?=
+ =?us-ascii?Q?UAkJ3ScDpJ6VHInitX8tXirTWNd1A5HoOLgEuZuU0pV/IzE2YbfRAMNbHNzW?=
+ =?us-ascii?Q?blOWZmcEmvqQR0YOPnPBaTO2hTUf4ObbubuOVBHEgsk+r86e4ECMTKTKwZMu?=
+ =?us-ascii?Q?35iZiFduk1vCCsgi2eRUuqltW2NxWG3YyQgkoZhGeRq9EvateI4P+3LiUDq6?=
+ =?us-ascii?Q?H3NRCp5eOMRcfuWNGERrruAUFnn+IvEeh2a6Dn7Z520/JSz5moCMQQnNgoGi?=
+ =?us-ascii?Q?pKiGvHWqW21Agl7Reuw+CPpvhGFczT+9vJQ0Q2FGFIvrUY+OfabbWyd76i5T?=
+ =?us-ascii?Q?8cKOtQq9lBZNd/u7Q6xdt7pV/DnOhxFSPtXPn+vNUQgufZDQpULXtQ5oyM3N?=
+ =?us-ascii?Q?jkYT6ruyZr2HBcOyARWy2vzsLMzmZzWEx964Aw5q6iFGZQnJ4XQ4XjpVmUqA?=
+ =?us-ascii?Q?NH5ylN8o5kU5a4xFXNp+W2MUma8r/vXI6TRwGzv/xkdZDyhlayZ5d+6UKsAk?=
+ =?us-ascii?Q?+aWbHgl3pfrCMPg0Fv/SUX1AXSWHOlUOppmHmgNvRO2+XQJBJg1crf5E53ei?=
+ =?us-ascii?Q?nd3vewsjRBCp9i35G1jjfaTYFp0zQjFJCVjYYx/CiK7xFwG71kzQbiTjKCz6?=
+ =?us-ascii?Q?BU8t7iGerqUfy6X8q1vyIwCKoYpQo9wZRyXU/V7KoOAARoXc3jLdXBlY+efD?=
+ =?us-ascii?Q?o93rDbUb2nYw4ujGoRvvwYoY7jlMW0JXz98meEfPD5DQ3Q0ns+hywCXKVF2z?=
+ =?us-ascii?Q?hxh9AcldCJ6NYD2I6muQtXSEAOVkxiyixO3b0STFrNY8tgaGpF6W6i/W6rwu?=
+ =?us-ascii?Q?klW6/QHzgj9Ov0l6LgKWcFJZBY9y0awzl56k4169dWAuw7v/F4s3UGq0RBCB?=
+ =?us-ascii?Q?Z++98EkWHz4t1gRRlr3WTJiwPrPTePjemyaUtRevwmfKpzuWXZs4c2MBepyc?=
+ =?us-ascii?Q?fTKZKziLRnX2SirT8VZYQByN?=
 X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5529b96b-9b9a-433e-3d38-08d8d3ce09fe
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0c317ac2-a7d6-47f7-51ba-08d8d3ce0e15
 X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5636.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Feb 2021 05:28:35.8734
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Feb 2021 05:28:42.8465
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: i0SY10Xk5ry2o5/Mt8hg91seyaH8TuDmfOjBo9O0M2OhGjkn7QNYSXq9IVT7kDY39hinVtGGI3qJUnRYkC360Q==
+X-MS-Exchange-CrossTenant-UserPrincipalName: wM5cJQiE4FQWeYtAKQroqTQ+smMxxXctw6ZMY0KZgoVJcTFc5WAsMQso+P/YtIsDmC7ccsyvReqtHLJzS/g8uA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR04MB7730
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Define acpi_mdiobus_register() to Register mii_bus and create PHYs for
-each ACPI child node.
+Introduce fwnode_mdiobus_register() to register PHYs on the  mdiobus.
+If the fwnode is DT node, then call of_mdiobus_register().
+If it is an ACPI node, then call acpi_mdiobus_register().
 
 Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
 ---
 
-Changes in v6:
-- use GENMASK() and ACPI_COMPANION_SET()
-- some cleanup
-- remove unwanted header inclusion
+Changes in v6: None
+Changes in v5: None
+Changes in v4:
+- Remove redundant else from fwnode_mdiobus_register()
 
-Changes in v5:
-- add missing MODULE_LICENSE()
-- replace fwnode_get_id() with OF and ACPI function calls
+Changes in v3:
+- Use acpi_mdiobus_register()
 
-Changes in v4: None
-Changes in v3: None
 Changes in v2: None
 
- MAINTAINERS                  |  1 +
- drivers/net/mdio/Kconfig     |  7 +++++
- drivers/net/mdio/Makefile    |  1 +
- drivers/net/mdio/acpi_mdio.c | 51 ++++++++++++++++++++++++++++++++++++
- include/linux/acpi_mdio.h    | 25 ++++++++++++++++++
- 5 files changed, 85 insertions(+)
- create mode 100644 drivers/net/mdio/acpi_mdio.c
- create mode 100644 include/linux/acpi_mdio.h
+ drivers/net/phy/mdio_bus.c | 21 +++++++++++++++++++++
+ include/linux/phy.h        |  1 +
+ 2 files changed, 22 insertions(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 1a219335efe0..41d16d77b6cf 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -6680,6 +6680,7 @@ F:	Documentation/devicetree/bindings/net/mdio*
- F:	Documentation/devicetree/bindings/net/qca,ar803x.yaml
- F:	Documentation/networking/phy.rst
- F:	drivers/net/mdio/
-+F:	drivers/net/mdio/acpi_mdio.c
- F:	drivers/net/mdio/of_mdio.c
- F:	drivers/net/pcs/
- F:	drivers/net/phy/
-diff --git a/drivers/net/mdio/Kconfig b/drivers/net/mdio/Kconfig
-index a10cc460d7cf..df6bb7837d6a 100644
---- a/drivers/net/mdio/Kconfig
-+++ b/drivers/net/mdio/Kconfig
-@@ -27,6 +27,13 @@ config OF_MDIO
- 	help
- 	  OpenFirmware MDIO bus (Ethernet PHY) accessors
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index 6158ea6e350b..4264053fdd14 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -9,6 +9,7 @@
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
  
-+config ACPI_MDIO
-+	def_tristate PHYLIB
-+	depends on ACPI
-+	depends on PHYLIB
-+	help
-+	  ACPI MDIO bus (Ethernet PHY) accessors
-+
- if MDIO_BUS
- 
- config MDIO_DEVRES
-diff --git a/drivers/net/mdio/Makefile b/drivers/net/mdio/Makefile
-index 5c498dde463f..2373ade8af13 100644
---- a/drivers/net/mdio/Makefile
-+++ b/drivers/net/mdio/Makefile
-@@ -2,6 +2,7 @@
- # Makefile for Linux MDIO bus drivers
- 
- obj-$(CONFIG_OF_MDIO)	+= of_mdio.o
-+obj-$(CONFIG_ACPI_MDIO)	+= acpi_mdio.o
- 
- obj-$(CONFIG_MDIO_ASPEED)		+= mdio-aspeed.o
- obj-$(CONFIG_MDIO_BCM_IPROC)		+= mdio-bcm-iproc.o
-diff --git a/drivers/net/mdio/acpi_mdio.c b/drivers/net/mdio/acpi_mdio.c
-new file mode 100644
-index 000000000000..091c8272e596
---- /dev/null
-+++ b/drivers/net/mdio/acpi_mdio.c
-@@ -0,0 +1,51 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * ACPI helpers for the MDIO (Ethernet PHY) API
-+ *
-+ * This file provides helper functions for extracting PHY device information
-+ * out of the ACPI ASL and using it to populate an mii_bus.
-+ */
-+
-+#include <linux/acpi.h>
+ #include <linux/acpi.h>
 +#include <linux/acpi_mdio.h>
-+
-+MODULE_AUTHOR("Calvin Johnson <calvin.johnson@oss.nxp.com>");
-+MODULE_LICENSE("GPL");
-+
+ #include <linux/delay.h>
+ #include <linux/device.h>
+ #include <linux/errno.h>
+@@ -566,6 +567,26 @@ static int mdiobus_create_device(struct mii_bus *bus,
+ 	return ret;
+ }
+ 
 +/**
-+ * acpi_mdiobus_register - Register mii_bus and create PHYs from the ACPI ASL.
++ * fwnode_mdiobus_register - Register mii_bus and create PHYs from fwnode
 + * @mdio: pointer to mii_bus structure
 + * @fwnode: pointer to fwnode of MDIO bus.
 + *
-+ * This function registers the mii_bus structure and registers a phy_device
-+ * for each child node of @fwnode.
++ * This function returns of_mdiobus_register() for DT and
++ * acpi_mdiobus_register() for ACPI.
 + */
-+int acpi_mdiobus_register(struct mii_bus *mdio, struct fwnode_handle *fwnode)
++int fwnode_mdiobus_register(struct mii_bus *mdio, struct fwnode_handle *fwnode)
 +{
-+	struct fwnode_handle *child;
-+	u32 addr;
-+	int ret;
++	if (is_of_node(fwnode))
++		return of_mdiobus_register(mdio, to_of_node(fwnode));
 +
-+	/* Mask out all PHYs from auto probing. */
-+	mdio->phy_mask = GENMASK(31, 0);
-+	ret = mdiobus_register(mdio);
-+	if (ret)
-+		return ret;
++	if (is_acpi_node(fwnode))
++		return acpi_mdiobus_register(mdio, fwnode);
 +
-+	ACPI_COMPANION_SET(&mdio->dev, to_acpi_device_node(fwnode));
-+
-+	/* Loop over the child nodes and register a phy_device for each PHY */
-+	fwnode_for_each_child_node(fwnode, child) {
-+		ret = acpi_get_local_address(ACPI_HANDLE_FWNODE(child), &addr);
-+		if (ret || addr >= PHY_MAX_ADDR)
-+			continue;
-+
-+		ret = fwnode_mdiobus_register_phy(mdio, child, addr);
-+		if (ret == -ENODEV)
-+			dev_err(&mdio->dev,
-+				"MDIO device at address %d is missing.\n",
-+				addr);
-+	}
-+	return 0;
++	return -EINVAL;
 +}
-+EXPORT_SYMBOL(acpi_mdiobus_register);
-diff --git a/include/linux/acpi_mdio.h b/include/linux/acpi_mdio.h
-new file mode 100644
-index 000000000000..748d261fe2f9
---- /dev/null
-+++ b/include/linux/acpi_mdio.h
-@@ -0,0 +1,25 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * ACPI helper for the MDIO (Ethernet PHY) API
-+ */
++EXPORT_SYMBOL(fwnode_mdiobus_register);
 +
-+#ifndef __LINUX_ACPI_MDIO_H
-+#define __LINUX_ACPI_MDIO_H
-+
-+#include <linux/phy.h>
-+
-+#if IS_ENABLED(CONFIG_ACPI_MDIO)
-+int acpi_mdiobus_register(struct mii_bus *mdio, struct fwnode_handle *fwnode);
-+#else /* CONFIG_ACPI_MDIO */
-+static inline int acpi_mdiobus_register(struct mii_bus *mdio, struct fwnode_handle *fwnode)
-+{
-+	/*
-+	 * Fall back to mdiobus_register() function to register a bus.
-+	 * This way, we don't have to keep compat bits around in drivers.
-+	 */
-+
-+	return mdiobus_register(mdio);
-+}
-+#endif
-+
-+#endif /* __LINUX_ACPI_MDIO_H */
+ /**
+  * __mdiobus_register - bring up all the PHYs on a given bus and attach them to bus
+  * @bus: target mii_bus
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 4b004a65762e..85a09703f251 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -391,6 +391,7 @@ static inline struct mii_bus *mdiobus_alloc(void)
+ 	return mdiobus_alloc_size(0);
+ }
+ 
++int fwnode_mdiobus_register(struct mii_bus *mdio, struct fwnode_handle *fwnode);
+ int __mdiobus_register(struct mii_bus *bus, struct module *owner);
+ int __devm_mdiobus_register(struct device *dev, struct mii_bus *bus,
+ 			    struct module *owner);
 -- 
 2.17.1
 
