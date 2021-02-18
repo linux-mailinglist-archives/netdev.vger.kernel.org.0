@@ -2,398 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BDB7331EA93
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 14:54:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DAD0A31EA95
+	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 14:54:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231758AbhBRNsM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 08:48:12 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:43283 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231459AbhBRLti (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 06:49:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1613648977; x=1645184977;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=ZwkPmjJG1PdO1l08+jLhIA6XO/0lLGVMxamIdskfH3w=;
-  b=OijV5FXkkssjrKfArlXuDbNCN5GkEmXYz6qCbYkEHR6oWd5k1B+a0H4+
-   jtEtbyoc2Jh2IFo5FkowJxcVYyObOpuMpW5NzOCewkFhkOHVZES9Um4gR
-   VThKcQpmnStJY4aEXMs4x+LTem1qtEt9HLjXJYBoAg33Buy5GvenZtH+l
-   pXU5VgJ/g7biHTt0U/FcLDrO05NQacjjyLWZbEvy/VXZJLoTSbofr5pzr
-   IP2DVp3jGKPrjT2InLKXGJ7Qg6chbGVjFRlIUwZz6FUmCuHsK/PegRF0v
-   G7hn0CnjEve2u6rtW2y6vYnGJBJChhuLrojOEJ9g78MjU0M+uDIKB83iL
-   Q==;
-IronPort-SDR: jGQdAYUA41LJ03PZDcZaAA2lJhVfQRVCMYOvcMOzPtAZ8nZYU1AohiWCRR9uw7W6pIz+eeEZZk
- 4cztwbnsSarMfDn2jH71c018Wy88aUNxJCXokMtNlHYpBC0iTUY4Hc20XhaWJO+a5rnmTV04Gi
- ddcj3kLN4iiNBrPPZstJEWLl28cMsdf9ib0Z2bmFumqRN7kRua8RtoqYVLCK3PdMUk8wDPmhHe
- WHKddihCDQUNSW2j0ynA9r0HN08eWXQYMzUkyiCv6bhX5WJ8LzbCZouCh76OsS0zgNQGofOsGj
- uI4=
-X-IronPort-AV: E=Sophos;i="5.81,187,1610434800"; 
-   d="scan'208";a="110225594"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Feb 2021 04:48:10 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 18 Feb 2021 04:48:10 -0700
-Received: from soft-dev3.localdomain (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Thu, 18 Feb 2021 04:48:08 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <vladimir.oltean@nxp.com>, <claudiu.manoil@nxp.com>,
-        <alexandre.belloni@bootlin.com>, <UNGLinuxDriver@microchip.com>,
-        <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next] net: mscc: Fix MRP switchdev driver
-Date:   Thu, 18 Feb 2021 12:47:26 +0100
-Message-ID: <20210218114726.648927-1-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.27.0
+        id S231828AbhBRNsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 08:48:45 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:22251 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230162AbhBRLva (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 06:51:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1613649003;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=bfx4uOIYBbffRNq4QrTFg2f7wSMAvvhECfB/otGbxHo=;
+        b=INfuTdCQ4uvLINd6ohVQrADPjSW5SXWrv35fKQioldqJIb5t+kUnfJc3OUmBP4fVZqzdmP
+        FUZZVdJ5f4ZDVtg4ajeTMQ7gz+yQ1fhkZCt3v05iZHscwBaHNquxiSJWEO8kt5iwbIZuJ9
+        qVcKygmbXzCP1eU2rkSHCwOM+vkJGM8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-15-TZDH2S9rNJ-lVV_tiqbbgQ-1; Thu, 18 Feb 2021 06:49:59 -0500
+X-MC-Unique: TZDH2S9rNJ-lVV_tiqbbgQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2977C835E22;
+        Thu, 18 Feb 2021 11:49:58 +0000 (UTC)
+Received: from firesoul.localdomain (unknown [10.40.208.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C9E995C1C4;
+        Thu, 18 Feb 2021 11:49:54 +0000 (UTC)
+Received: from [192.168.42.3] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 86C4830736C73;
+        Thu, 18 Feb 2021 12:49:53 +0100 (CET)
+Subject: [PATCH bpf-next V2 0/2] bpf: Updates for BPF-helper bpf_check_mtu
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     bpf@vger.kernel.org
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 18 Feb 2021 12:49:53 +0100
+Message-ID: <161364896576.1250213.8059418482723660876.stgit@firesoul>
+User-Agent: StGit/0.19
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes the ocelot MRP switchdev driver such that also DSA
-driver can use these functions. Before the driver presumed that the
-net_device uses a 'struct ocelot_port_private' as priv which was wrong.
+The FIB lookup example[1] show how the IP-header field tot_len
+(iph->tot_len) is used as input to perform the MTU check. The recently
+added MTU check helper bpf_check_mtu() should also support this type
+of MTU check.
 
-The only reason for using ocelot_port_private was to access the
-net_device, but this can be passed as an argument because we already
-have this information. Therefore update the functions to have also the
-net_device parameter.
+Lets add this feature before merge window, please. This is a followup
+to 34b2021cc616 ("bpf: Add BPF-helper for MTU checking").
 
-Fixes: a026c50b599fa ("net: dsa: felix: Add support for MRP")
-Fixes: d8ea7ff3995ea ("net: mscc: ocelot: Add support for MRP")
-Reported-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+[1] samples/bpf/xdp_fwd_kern.c
 
+V2: Fixed spelling and added ACKs from John
 ---
-This was tested using switchdev and only compile tested the DSA driver.
----
- drivers/net/dsa/ocelot/felix.c         | 20 ++++++++---
- drivers/net/ethernet/mscc/ocelot_mrp.c | 49 ++++++++------------------
- drivers/net/ethernet/mscc/ocelot_net.c |  8 ++---
- include/linux/dsa/ocelot.h             |  2 +-
- include/soc/mscc/ocelot.h              | 24 +++++++------
- 5 files changed, 49 insertions(+), 54 deletions(-)
 
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 628afb47b579..29a1191b2c5e 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -1586,16 +1586,22 @@ static int felix_mrp_add(struct dsa_switch *ds, int port,
- 			 const struct switchdev_obj_mrp *mrp)
- {
- 	struct ocelot *ocelot = ds->priv;
-+	struct net_device *dev;
- 
--	return ocelot_mrp_add(ocelot, port, mrp);
-+	dev = felix_port_to_netdev(ocelot, port);
-+
-+	return ocelot_mrp_add(ocelot, dev, port, mrp);
- }
- 
- static int felix_mrp_del(struct dsa_switch *ds, int port,
- 			 const struct switchdev_obj_mrp *mrp)
- {
- 	struct ocelot *ocelot = ds->priv;
-+	struct net_device *dev;
-+
-+	dev = felix_port_to_netdev(ocelot, port);
- 
--	return ocelot_mrp_add(ocelot, port, mrp);
-+	return ocelot_mrp_add(ocelot, dev, port, mrp);
- }
- 
- static int
-@@ -1603,8 +1609,11 @@ felix_mrp_add_ring_role(struct dsa_switch *ds, int port,
- 			const struct switchdev_obj_ring_role_mrp *mrp)
- {
- 	struct ocelot *ocelot = ds->priv;
-+	struct net_device *dev;
- 
--	return ocelot_mrp_add_ring_role(ocelot, port, mrp);
-+	dev = felix_port_to_netdev(ocelot, port);
-+
-+	return ocelot_mrp_add_ring_role(ocelot, dev, port, mrp);
- }
- 
- static int
-@@ -1612,8 +1621,11 @@ felix_mrp_del_ring_role(struct dsa_switch *ds, int port,
- 			const struct switchdev_obj_ring_role_mrp *mrp)
- {
- 	struct ocelot *ocelot = ds->priv;
-+	struct net_device *dev;
-+
-+	dev = felix_port_to_netdev(ocelot, port);
- 
--	return ocelot_mrp_del_ring_role(ocelot, port, mrp);
-+	return ocelot_mrp_del_ring_role(ocelot, dev, port, mrp);
- }
- 
- const struct dsa_switch_ops felix_switch_ops = {
-diff --git a/drivers/net/ethernet/mscc/ocelot_mrp.c b/drivers/net/ethernet/mscc/ocelot_mrp.c
-index 683da320bfd8..5068512bdc32 100644
---- a/drivers/net/ethernet/mscc/ocelot_mrp.c
-+++ b/drivers/net/ethernet/mscc/ocelot_mrp.c
-@@ -1,8 +1,5 @@
- // SPDX-License-Identifier: (GPL-2.0 OR MIT)
- /* Microsemi Ocelot Switch driver
-- *
-- * This contains glue logic between the switchdev driver operations and the
-- * mscc_ocelot_switch_lib.
-  *
-  * Copyright (c) 2017, 2019 Microsemi Corporation
-  * Copyright 2020-2021 NXP Semiconductors
-@@ -29,19 +26,14 @@ static int ocelot_mrp_del_vcap(struct ocelot *ocelot, int port)
- 	return ocelot_vcap_filter_del(ocelot, filter);
- }
- 
--int ocelot_mrp_add(struct ocelot *ocelot, int port,
-+int ocelot_mrp_add(struct ocelot *ocelot, struct net_device *dev, int port,
- 		   const struct switchdev_obj_mrp *mrp)
- {
- 	struct ocelot_port *ocelot_port = ocelot->ports[port];
--	struct ocelot_port_private *priv;
--	struct net_device *dev;
- 
--	if (!ocelot_port)
-+	if (!ocelot_port || !dev)
- 		return -EOPNOTSUPP;
- 
--	priv = container_of(ocelot_port, struct ocelot_port_private, port);
--	dev = priv->dev;
--
- 	if (mrp->p_port != dev && mrp->s_port != dev)
- 		return 0;
- 
-@@ -62,19 +54,14 @@ int ocelot_mrp_add(struct ocelot *ocelot, int port,
- }
- EXPORT_SYMBOL(ocelot_mrp_add);
- 
--int ocelot_mrp_del(struct ocelot *ocelot, int port,
-+int ocelot_mrp_del(struct ocelot *ocelot, struct net_device *dev, int port,
- 		   const struct switchdev_obj_mrp *mrp)
- {
- 	struct ocelot_port *ocelot_port = ocelot->ports[port];
--	struct ocelot_port_private *priv;
--	struct net_device *dev;
- 
--	if (!ocelot_port)
-+	if (!ocelot_port || !dev)
- 		return -EOPNOTSUPP;
- 
--	priv = container_of(ocelot_port, struct ocelot_port_private, port);
--	dev = priv->dev;
--
- 	if (ocelot->mrp_p_port != dev && ocelot->mrp_s_port != dev)
- 		return 0;
- 
-@@ -83,7 +70,7 @@ int ocelot_mrp_del(struct ocelot *ocelot, int port,
- 	    !ocelot->mrp_p_port)
- 		return -EINVAL;
- 
--	if (ocelot_mrp_del_vcap(ocelot, priv->chip_port))
-+	if (ocelot_mrp_del_vcap(ocelot, port))
- 		return -EINVAL;
- 
- 	if (ocelot->mrp_p_port == dev)
-@@ -98,21 +85,17 @@ int ocelot_mrp_del(struct ocelot *ocelot, int port,
- }
- EXPORT_SYMBOL(ocelot_mrp_del);
- 
--int ocelot_mrp_add_ring_role(struct ocelot *ocelot, int port,
-+int ocelot_mrp_add_ring_role(struct ocelot *ocelot, struct net_device *dev,
-+			     int port,
- 			     const struct switchdev_obj_ring_role_mrp *mrp)
- {
- 	struct ocelot_port *ocelot_port = ocelot->ports[port];
- 	struct ocelot_vcap_filter *filter;
--	struct ocelot_port_private *priv;
--	struct net_device *dev;
- 	int err;
- 
--	if (!ocelot_port)
-+	if (!ocelot_port || !dev)
- 		return -EOPNOTSUPP;
- 
--	priv = container_of(ocelot_port, struct ocelot_port_private, port);
--	dev = priv->dev;
--
- 	if (ocelot->mrp_ring_id != mrp->ring_id)
- 		return -EINVAL;
- 
-@@ -128,11 +111,11 @@ int ocelot_mrp_add_ring_role(struct ocelot *ocelot, int port,
- 
- 	filter->key_type = OCELOT_VCAP_KEY_ETYPE;
- 	filter->prio = 1;
--	filter->id.cookie = priv->chip_port;
-+	filter->id.cookie = port;
- 	filter->id.tc_offload = false;
- 	filter->block_id = VCAP_IS2;
- 	filter->type = OCELOT_VCAP_FILTER_OFFLOAD;
--	filter->ingress_port_mask = BIT(priv->chip_port);
-+	filter->ingress_port_mask = BIT(port);
- 	*(__be16 *)filter->key.etype.etype.value = htons(ETH_P_MRP);
- 	*(__be16 *)filter->key.etype.etype.mask = htons(0xffff);
- 	filter->action.mask_mode = OCELOT_MASK_MODE_PERMIT_DENY;
-@@ -148,19 +131,15 @@ int ocelot_mrp_add_ring_role(struct ocelot *ocelot, int port,
- }
- EXPORT_SYMBOL(ocelot_mrp_add_ring_role);
- 
--int ocelot_mrp_del_ring_role(struct ocelot *ocelot, int port,
-+int ocelot_mrp_del_ring_role(struct ocelot *ocelot, struct net_device *dev,
-+			     int port,
- 			     const struct switchdev_obj_ring_role_mrp *mrp)
- {
- 	struct ocelot_port *ocelot_port = ocelot->ports[port];
--	struct ocelot_port_private *priv;
--	struct net_device *dev;
- 
--	if (!ocelot_port)
-+	if (!ocelot_port || !dev)
- 		return -EOPNOTSUPP;
- 
--	priv = container_of(ocelot_port, struct ocelot_port_private, port);
--	dev = priv->dev;
--
- 	if (ocelot->mrp_ring_id != mrp->ring_id)
- 		return -EINVAL;
- 
-@@ -170,6 +149,6 @@ int ocelot_mrp_del_ring_role(struct ocelot *ocelot, int port,
- 	if (ocelot->mrp_p_port != dev && ocelot->mrp_s_port != dev)
- 		return 0;
- 
--	return ocelot_mrp_del_vcap(ocelot, priv->chip_port);
-+	return ocelot_mrp_del_vcap(ocelot, port);
- }
- EXPORT_SYMBOL(ocelot_mrp_del_ring_role);
-diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
-index 12cb6867a2d0..57b0a31cfeed 100644
---- a/drivers/net/ethernet/mscc/ocelot_net.c
-+++ b/drivers/net/ethernet/mscc/ocelot_net.c
-@@ -1018,7 +1018,7 @@ static int ocelot_port_obj_mrp_add(struct net_device *dev,
- 	struct ocelot *ocelot = ocelot_port->ocelot;
- 	int port = priv->chip_port;
- 
--	return ocelot_mrp_add(ocelot, port, mrp);
-+	return ocelot_mrp_add(ocelot, dev, port, mrp);
- }
- 
- static int ocelot_port_obj_mrp_del(struct net_device *dev,
-@@ -1029,7 +1029,7 @@ static int ocelot_port_obj_mrp_del(struct net_device *dev,
- 	struct ocelot *ocelot = ocelot_port->ocelot;
- 	int port = priv->chip_port;
- 
--	return ocelot_mrp_del(ocelot, port, mrp);
-+	return ocelot_mrp_del(ocelot, dev, port, mrp);
- }
- 
- static int
-@@ -1041,7 +1041,7 @@ ocelot_port_obj_mrp_add_ring_role(struct net_device *dev,
- 	struct ocelot *ocelot = ocelot_port->ocelot;
- 	int port = priv->chip_port;
- 
--	return ocelot_mrp_add_ring_role(ocelot, port, mrp);
-+	return ocelot_mrp_add_ring_role(ocelot, dev, port, mrp);
- }
- 
- static int
-@@ -1053,7 +1053,7 @@ ocelot_port_obj_mrp_del_ring_role(struct net_device *dev,
- 	struct ocelot *ocelot = ocelot_port->ocelot;
- 	int port = priv->chip_port;
- 
--	return ocelot_mrp_del_ring_role(ocelot, port, mrp);
-+	return ocelot_mrp_del_ring_role(ocelot, dev, port, mrp);
- }
- 
- static int ocelot_port_obj_add(struct net_device *dev,
-diff --git a/include/linux/dsa/ocelot.h b/include/linux/dsa/ocelot.h
-index 4265f328681a..e284d56f1ad0 100644
---- a/include/linux/dsa/ocelot.h
-+++ b/include/linux/dsa/ocelot.h
-@@ -162,7 +162,7 @@ static inline void ocelot_xfh_get_src_port(void *extraction, u64 *src_port)
- 
- static inline void ocelot_xfh_get_cpuq(void *extraction, u64 *cpuq)
- {
--	packing(extraction, cpuq, 28, 20, OCELOT_TAG_LEN, UNPACK, 0);
-+	packing(extraction, cpuq, 27, 20, OCELOT_TAG_LEN, UNPACK, 0);
- }
- 
- static inline void ocelot_xfh_get_qos_class(void *extraction, u64 *qos_class)
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index 425ff29d9389..59d35365edea 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -680,11 +680,9 @@ struct ocelot {
- 	spinlock_t			ptp_clock_lock;
- 	struct ptp_pin_desc		ptp_pins[OCELOT_PTP_PINS_NUM];
- 
--#if IS_ENABLED(CONFIG_BRIDGE_MRP)
- 	u16				mrp_ring_id;
- 	struct net_device		*mrp_p_port;
- 	struct net_device		*mrp_s_port;
--#endif
- };
- 
- struct ocelot_policer {
-@@ -883,36 +881,42 @@ int ocelot_sb_occ_tc_port_bind_get(struct ocelot *ocelot, int port,
- 				   u32 *p_cur, u32 *p_max);
- 
- #if IS_ENABLED(CONFIG_BRIDGE_MRP)
--int ocelot_mrp_add(struct ocelot *ocelot, int port,
-+int ocelot_mrp_add(struct ocelot *ocelot, struct net_device *dev, int port,
- 		   const struct switchdev_obj_mrp *mrp);
--int ocelot_mrp_del(struct ocelot *ocelot, int port,
-+int ocelot_mrp_del(struct ocelot *ocelot, struct net_device *dev, int port,
- 		   const struct switchdev_obj_mrp *mrp);
--int ocelot_mrp_add_ring_role(struct ocelot *ocelot, int port,
-+int ocelot_mrp_add_ring_role(struct ocelot *ocelot, struct net_device *dev,
-+			     int port,
- 			     const struct switchdev_obj_ring_role_mrp *mrp);
--int ocelot_mrp_del_ring_role(struct ocelot *ocelot, int port,
-+int ocelot_mrp_del_ring_role(struct ocelot *ocelot, struct net_device *dev,
-+			     int port,
- 			     const struct switchdev_obj_ring_role_mrp *mrp);
- #else
--static inline int ocelot_mrp_add(struct ocelot *ocelot, int port,
-+static inline int ocelot_mrp_add(struct ocelot *ocelot, struct net_device *dev,
-+				 int port,
- 				 const struct switchdev_obj_mrp *mrp)
- {
- 	return -EOPNOTSUPP;
- }
- 
--static inline int ocelot_mrp_del(struct ocelot *ocelot, int port,
-+static inline int ocelot_mrp_del(struct ocelot *ocelot, struct net_device *dev,
-+				 int port,
- 				 const struct switchdev_obj_mrp *mrp)
- {
- 	return -EOPNOTSUPP;
- }
- 
- static inline int
--ocelot_mrp_add_ring_role(struct ocelot *ocelot, int port,
-+ocelot_mrp_add_ring_role(struct ocelot *ocelot, struct net_device *dev,
-+			 int port,
- 			 const struct switchdev_obj_ring_role_mrp *mrp)
- {
- 	return -EOPNOTSUPP;
- }
- 
- static inline int
--ocelot_mrp_del_ring_role(struct ocelot *ocelot, int port,
-+ocelot_mrp_del_ring_role(struct ocelot *ocelot, struct net_device *dev,
-+			 int port,
- 			 const struct switchdev_obj_ring_role_mrp *mrp)
- {
- 	return -EOPNOTSUPP;
--- 
-2.27.0
+Jesper Dangaard Brouer (2):
+      bpf: BPF-helper for MTU checking add length input
+      selftests/bpf: Tests using bpf_check_mtu BPF-helper input mtu_len param
+
+
+ include/uapi/linux/bpf.h                           |   17 ++--
+ net/core/filter.c                                  |   12 ++-
+ tools/testing/selftests/bpf/prog_tests/check_mtu.c |    4 +
+ tools/testing/selftests/bpf/progs/test_check_mtu.c |   92 ++++++++++++++++++++
+ 4 files changed, 117 insertions(+), 8 deletions(-)
+
+--
 
