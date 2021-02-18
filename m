@@ -2,91 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C215931EAA0
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 14:59:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0892D31EAA2
+	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 15:00:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232180AbhBRN4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 08:56:42 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:44279 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231331AbhBRMy2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 07:54:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613652781;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KAPWiMLdVgpL54iOswvuAK9eFuhy8zwjl8z04LgGsM0=;
-        b=Q3DzArRYmty0FekwceP55r/OERcFfQ07OE8GOdmhWDgSjIjtgBk5XlQ8Sa8jHvCrDNq5l6
-        nStT7WJ/DpqgCQm/aAJQVJWUwzsKJaDQ6NWeiQhpIUMgprAl9viYBizCkuGXRDg8oyAN1K
-        zHsWeTaQ2WFuke50fmY1Bsc2fIny1YA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-579-iA1Zs0AHPcal5N-Lhv75GQ-1; Thu, 18 Feb 2021 07:41:54 -0500
-X-MC-Unique: iA1Zs0AHPcal5N-Lhv75GQ-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8F202AFA81;
-        Thu, 18 Feb 2021 12:41:51 +0000 (UTC)
-Received: from ovpn-114-233.ams2.redhat.com (ovpn-114-233.ams2.redhat.com [10.36.114.233])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D17CC6A03D;
-        Thu, 18 Feb 2021 12:41:45 +0000 (UTC)
-Message-ID: <639082dd7bddce31122200cc0e587c482379d1a7.camel@redhat.com>
-Subject: Re: possible deadlock in mptcp_push_pending
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     syzbot <syzbot+d1b1723faccb7a43f6d1@syzkaller.appspotmail.com>,
-        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
-        mptcp@lists.01.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Date:   Thu, 18 Feb 2021 13:41:44 +0100
-In-Reply-To: <000000000000787b8805bb8b96ce@google.com>
-References: <000000000000787b8805bb8b96ce@google.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        id S230090AbhBRN5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 08:57:38 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:31890 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232924AbhBRNDL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 08:03:11 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11ICgG7R025222;
+        Thu, 18 Feb 2021 04:42:16 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=Wf9nGNGlZL5D6f89oSJlh1oCwj93RrSrls7xCKsb+tw=;
+ b=bukrhnGZJ5rxS96hDwJbFi4lPtIo5U8XREfvYy81ODeJcSoOkKlJ3FpiXwqZOO6zEzMj
+ fRtJmldTP1YX/+aMlaw2wSsjUUUv3lOWMA+3iHN3ga9YJJMbCWKuOxJtrLuvFioY/Bmy
+ uribQXoIZPQiotngIrvz0roaGSjfCZhyp1W8q5isAR5T6sbEj0nPtcL5Nsbiol4Vkp04
+ 3v9J9yP53G+LD/sqOkUaiAkG2L6kFIVixnQFarVueYnC6xNwZS6EoyQ3kZpbaRjei88m
+ N8ZieuEvLq7nuw5s/kwNJQ6GsVbZ7v2uHlIzt/piV3iKopKQLVB1MXbCja8k7yJ13iqD ow== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 36sesvsjn4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 18 Feb 2021 04:42:16 -0800
+Received: from SC-EXCH04.marvell.com (10.93.176.84) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 18 Feb
+ 2021 04:42:14 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 18 Feb
+ 2021 04:42:14 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 18 Feb 2021 04:42:14 -0800
+Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
+        by maili.marvell.com (Postfix) with ESMTP id 706663F7040;
+        Thu, 18 Feb 2021 04:42:11 -0800 (PST)
+From:   <stefanc@marvell.com>
+To:     <netdev@vger.kernel.org>
+CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
+        <nadavh@marvell.com>, <ymarkman@marvell.com>,
+        <linux-kernel@vger.kernel.org>, <stefanc@marvell.com>,
+        <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
+        <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
+        <atenart@kernel.org>
+Subject: [net-next] net: mvpp2: skip RSS configurations on loopback port
+Date:   Thu, 18 Feb 2021 14:42:03 +0200
+Message-ID: <1613652123-19021-1-git-send-email-stefanc@marvell.com>
+X-Mailer: git-send-email 1.9.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-02-18_05:2021-02-18,2021-02-18 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-02-17 at 09:31 -0800, syzbot wrote:
-> syzbot found the following issue on:
-> 
-> HEAD commit:    c48f8607 Merge branch 'PTP-for-DSA-tag_ocelot_8021q'
-> git tree:       net-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=16525cb0d00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=dbc1ca9e55dc1f9f
-> dashboard link: https://syzkaller.appspot.com/bug?extid=d1b1723faccb7a43f6d1
-> 
-> Unfortunately, I don't have any reproducer for this issue yet.
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+d1b1723faccb7a43f6d1@syzkaller.appspotmail.com
-> 
-> ============================================
-> WARNING: possible recursive locking detected
-> 5.11.0-rc7-syzkaller #0 Not tainted
-> --------------------------------------------
-> syz-executor.1/15600 is trying to acquire lock:
-> ffff888057303220 (sk_lock-AF_INET6){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1598 [inline]
-> ffff888057303220 (sk_lock-AF_INET6){+.+.}-{0:0}, at: mptcp_push_pending+0x28b/0x650 net/mptcp/protocol.c:1466
+From: Stefan Chulski <stefanc@marvell.com>
 
-Even this one is suspected to be a dup of 'WARNING in dst_release': the
-subflow socket lock family is reported to be 'sk_lock-AF_INET6', but
-subflows are created in kernel, and get 'k-sk_lock-AF_INET6'. This
-looks like [re]use after free, likely via msk->first, as in the
-suspected dup issue. Lacking a repro, I'm not 110% sure.
+PPv2 loopback port doesn't support RSS, so we should
+skip RSS configurations for this port.
 
-@Dmitry, I'm wondering which is the preferred course of action here:
-tentatively marking this one as a dup, or leaving it alone till we get
-a reproducer?
+Signed-off-by: Stefan Chulski <stefanc@marvell.com>
+---
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 25 +++++++++++---------
+ 1 file changed, 14 insertions(+), 11 deletions(-)
 
-Thanks!
-
-Paolo
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index 10c17d1..d415447 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -4699,9 +4699,10 @@ static void mvpp2_irqs_deinit(struct mvpp2_port *port)
+ 	}
+ }
+ 
+-static bool mvpp22_rss_is_supported(void)
++static bool mvpp22_rss_is_supported(struct mvpp2_port *port)
+ {
+-	return queue_mode == MVPP2_QDIST_MULTI_MODE;
++	return (queue_mode == MVPP2_QDIST_MULTI_MODE) &&
++		!(port->flags & MVPP2_F_LOOPBACK);
+ }
+ 
+ static int mvpp2_open(struct net_device *dev)
+@@ -5513,7 +5514,7 @@ static int mvpp2_ethtool_get_rxnfc(struct net_device *dev,
+ 	struct mvpp2_port *port = netdev_priv(dev);
+ 	int ret = 0, i, loc = 0;
+ 
+-	if (!mvpp22_rss_is_supported())
++	if (!mvpp22_rss_is_supported(port))
+ 		return -EOPNOTSUPP;
+ 
+ 	switch (info->cmd) {
+@@ -5548,7 +5549,7 @@ static int mvpp2_ethtool_set_rxnfc(struct net_device *dev,
+ 	struct mvpp2_port *port = netdev_priv(dev);
+ 	int ret = 0;
+ 
+-	if (!mvpp22_rss_is_supported())
++	if (!mvpp22_rss_is_supported(port))
+ 		return -EOPNOTSUPP;
+ 
+ 	switch (info->cmd) {
+@@ -5569,7 +5570,9 @@ static int mvpp2_ethtool_set_rxnfc(struct net_device *dev,
+ 
+ static u32 mvpp2_ethtool_get_rxfh_indir_size(struct net_device *dev)
+ {
+-	return mvpp22_rss_is_supported() ? MVPP22_RSS_TABLE_ENTRIES : 0;
++	struct mvpp2_port *port = netdev_priv(dev);
++
++	return mvpp22_rss_is_supported(port) ? MVPP22_RSS_TABLE_ENTRIES : 0;
+ }
+ 
+ static int mvpp2_ethtool_get_rxfh(struct net_device *dev, u32 *indir, u8 *key,
+@@ -5578,7 +5581,7 @@ static int mvpp2_ethtool_get_rxfh(struct net_device *dev, u32 *indir, u8 *key,
+ 	struct mvpp2_port *port = netdev_priv(dev);
+ 	int ret = 0;
+ 
+-	if (!mvpp22_rss_is_supported())
++	if (!mvpp22_rss_is_supported(port))
+ 		return -EOPNOTSUPP;
+ 
+ 	if (indir)
+@@ -5596,7 +5599,7 @@ static int mvpp2_ethtool_set_rxfh(struct net_device *dev, const u32 *indir,
+ 	struct mvpp2_port *port = netdev_priv(dev);
+ 	int ret = 0;
+ 
+-	if (!mvpp22_rss_is_supported())
++	if (!mvpp22_rss_is_supported(port))
+ 		return -EOPNOTSUPP;
+ 
+ 	if (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != ETH_RSS_HASH_CRC32)
+@@ -5617,7 +5620,7 @@ static int mvpp2_ethtool_get_rxfh_context(struct net_device *dev, u32 *indir,
+ 	struct mvpp2_port *port = netdev_priv(dev);
+ 	int ret = 0;
+ 
+-	if (!mvpp22_rss_is_supported())
++	if (!mvpp22_rss_is_supported(port))
+ 		return -EOPNOTSUPP;
+ 	if (rss_context >= MVPP22_N_RSS_TABLES)
+ 		return -EINVAL;
+@@ -5639,7 +5642,7 @@ static int mvpp2_ethtool_set_rxfh_context(struct net_device *dev,
+ 	struct mvpp2_port *port = netdev_priv(dev);
+ 	int ret;
+ 
+-	if (!mvpp22_rss_is_supported())
++	if (!mvpp22_rss_is_supported(port))
+ 		return -EOPNOTSUPP;
+ 
+ 	if (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != ETH_RSS_HASH_CRC32)
+@@ -5956,7 +5959,7 @@ static int mvpp2_port_init(struct mvpp2_port *port)
+ 	mvpp2_cls_oversize_rxq_set(port);
+ 	mvpp2_cls_port_config(port);
+ 
+-	if (mvpp22_rss_is_supported())
++	if (mvpp22_rss_is_supported(port))
+ 		mvpp22_port_rss_init(port);
+ 
+ 	/* Provide an initial Rx packet size */
+@@ -6861,7 +6864,7 @@ static int mvpp2_port_probe(struct platform_device *pdev,
+ 	dev->hw_features |= features | NETIF_F_RXCSUM | NETIF_F_GRO |
+ 			    NETIF_F_HW_VLAN_CTAG_FILTER;
+ 
+-	if (mvpp22_rss_is_supported()) {
++	if (mvpp22_rss_is_supported(port)) {
+ 		dev->hw_features |= NETIF_F_RXHASH;
+ 		dev->features |= NETIF_F_NTUPLE;
+ 	}
+-- 
+1.9.1
 
