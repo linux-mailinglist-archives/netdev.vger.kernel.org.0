@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F08031E5C4
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 06:41:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE6DF31E5CB
+	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 06:42:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229893AbhBRFjL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 00:39:11 -0500
-Received: from mx12.kaspersky-labs.com ([91.103.66.155]:46210 "EHLO
+        id S231145AbhBRFkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 00:40:35 -0500
+Received: from mx12.kaspersky-labs.com ([91.103.66.155]:47046 "EHLO
         mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230403AbhBRFgC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 00:36:02 -0500
+        with ESMTP id S231150AbhBRFhy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 00:37:54 -0500
 Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 7190176173;
-        Thu, 18 Feb 2021 08:34:38 +0300 (MSK)
+        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 099F875E97;
+        Thu, 18 Feb 2021 08:36:53 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail202102; t=1613626478;
-        bh=zjQ51jZUXzvMR8EhkOqDJtP7sC5BHnc4cQiyLmNBRIM=;
+        s=mail202102; t=1613626613;
+        bh=pV0QvfBMinK5smHWRgbZ7HjLwewVO8NstcEoz6rw9iU=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=y+t4dZyo1n9g/Rw4Eid6NcD1wc14+1AM5WjZx7TPbmeBH1Dyvrx4U2KKO3OPlGlJB
-         DeZleAy9t692BW//5VroKP+Bn41XskvPeGqFjnr/GmnKwzngJIXdbVJe9v61VTZH/E
-         SBrrBhTcF52X7iWut9R+WcMLC0MKF+5XLwuNMeS3HlJZnF9y1kA5EUlL+I7oE/giZ5
-         Q+r8GhS0H41rHvbCMHwdkr5vRB64GNU++TGoaQm0MhHCynvga49FXTF1+sbZ35ApUt
-         HNqYkjYd4GfyAx3C3tP1haqGx6C+ciVasTbKcs8uk7rcdOiJljjGsLFxGVUw1kb4CI
-         EUEb1V/b+yFGA==
+        b=ZGFbtOgoIK/TFWmMBeF4xvevKB1xP/Tine/jGsPDIKr+lF0I/je+Kp84m3HR4RfBE
+         xC3elQGHXbnaqrK+sPWPsfEbLcgIPO1i+JgjWnY1WPnuV9gfxlW+KlqxUgYZYS1yQ2
+         ilXV5rO+GDPjvbZz+ePb4E5yomqPgYA3qx46J+8RdF2vQeKTAEc7UHbz3LUyJncxYT
+         2b+taMW37ZxOz4J137eNzwnQkwRXfqsfvgJiEFzKymkinCwT4cfjPzYzxLIKL6sW0y
+         raHxOfb/ZsyXsASl3xyf4Z5Yu03jZcy+vTKhGivzSoUlnh4D57NjdaSqFpics/tSUL
+         kllvZQCneav/w==
 Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 8A56975E85;
-        Thu, 18 Feb 2021 08:34:37 +0300 (MSK)
-Received: from arseniy-pc.avp.ru (10.64.68.128) by hqmailmbx3.avp.ru
+        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 822D275F98;
+        Thu, 18 Feb 2021 08:36:52 +0300 (MSK)
+Received: from arseniy-pc.avp.ru (10.64.68.129) by hqmailmbx3.avp.ru
  (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2044.4; Thu, 18
- Feb 2021 08:34:16 +0300
+ Feb 2021 08:36:17 +0300
 From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -42,21 +42,23 @@ To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Arseny Krasnov <arseny.krasnov@kaspersky.com>,
         Jorgen Hansen <jhansen@vmware.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
         Norbert Slusarek <nslusarek@gmx.net>,
-        Colin Ian King <colin.king@canonical.com>
+        Colin Ian King <colin.king@canonical.com>,
+        Andra Paraschiv <andraprs@amazon.com>
 CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <stsp2@yandex.ru>, <oxffffaa@gmail.com>
-Subject: [RFC PATCH v5 00/19] virtio/vsock: introduce SOCK_SEQPACKET support
-Date:   Thu, 18 Feb 2021 08:33:44 +0300
-Message-ID: <20210218053347.1066159-1-arseny.krasnov@kaspersky.com>
+Subject: [RFC PATCH v5 01/19] af_vsock: update functions for connectible socket
+Date:   Thu, 18 Feb 2021 08:36:03 +0300
+Message-ID: <20210218053607.1066783-1-arseny.krasnov@kaspersky.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210218053347.1066159-1-arseny.krasnov@kaspersky.com>
+References: <20210218053347.1066159-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.64.68.128]
-X-ClientProxiedBy: hqmailmbx1.avp.ru (10.64.67.241) To hqmailmbx3.avp.ru
+X-Originating-IP: [10.64.68.129]
+X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
  (10.64.67.243)
 X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
 X-KSE-AntiSpam-Interceptor-Info: scan successful
@@ -90,160 +92,204 @@ X-KLMS-Rule-ID: 52
 X-KLMS-Message-Action: clean
 X-KLMS-AntiSpam-Status: not scanned, disabled by settings
 X-KLMS-AntiSpam-Interceptor-Info: not scanned
-X-KLMS-AntiPhishing: Clean, bases: 2021/02/18 04:08:00
+X-KLMS-AntiPhishing: Clean, bases: 2021/02/18 04:51:00
 X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/02/18 04:31:00 #16269527
 X-KLMS-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-	This patchset impelements support of SOCK_SEQPACKET for virtio
-transport.
-	As SOCK_SEQPACKET guarantees to save record boundaries, so to
-do it, two new packet operations were added: first for start of record
- and second to mark end of record(SEQ_BEGIN and SEQ_END later). Also,
-both operations carries metadata - to maintain boundaries and payload
-integrity. Metadata is introduced by adding special header with two
-fields - message count and message length:
-
-	struct virtio_vsock_seq_hdr {
-		__le32  msg_cnt;
-		__le32  msg_len;
-	} __attribute__((packed));
-
-	This header is transmitted as payload of SEQ_BEGIN and SEQ_END
-packets(buffer of second virtio descriptor in chain) in the same way as
-data transmitted in RW packets. Payload was chosen as buffer for this
-header to avoid touching first virtio buffer which carries header of
-packet, because someone could check that size of this buffer is equal
-to size of packet header. To send record, packet with start marker is
-sent first(it's header contains length of record and counter), then
-counter is incremented and all data is sent as usual 'RW' packets and
-finally SEQ_END is sent(it also carries counter of message, which is
-counter of SEQ_BEGIN + 1), also after sedning SEQ_END counter is
-incremented again. On receiver's side, length of record is known from
-packet with start record marker. To check that no packets were dropped
-by transport, counters of two sequential SEQ_BEGIN and SEQ_END are
-checked(counter of SEQ_END must be bigger that counter of SEQ_BEGIN by
-1) and length of data between two markers is compared to length in
-SEQ_BEGIN header.
-	Now as  packets of one socket are not reordered neither on
-vsock nor on vhost transport layers, such markers allows to restore
-original record on receiver's side. If user's buffer is smaller that
-record length, when all out of size data is dropped.
-	Maximum length of datagram is not limited as in stream socket,
-because same credit logic is used. Difference with stream socket is
-that user is not woken up until whole record is received or error
-occurred. Implementation also supports 'MSG_EOR' and 'MSG_TRUNC' flags.
-	Tests also implemented.
-
- Arseny Krasnov (19):
-  af_vsock: update functions for connectible socket
-  af_vsock: separate wait data loop
-  af_vsock: separate receive data loop
-  af_vsock: implement SEQPACKET receive loop
-  af_vsock: separate wait space loop
-  af_vsock: implement send logic for SEQPACKET
-  af_vsock: rest of SEQPACKET support
-  af_vsock: update comments for stream sockets
-  virtio/vsock: set packet's type in send
-  virtio/vsock: simplify credit update function API
-  virtio/vsock: dequeue callback for SOCK_SEQPACKET
-  virtio/vsock: fetch length for SEQPACKET record
-  virtio/vsock: add SEQPACKET receive logic
-  virtio/vsock: rest of SOCK_SEQPACKET support
-  virtio/vsock: setup SEQPACKET ops for transport
-  vhost/vsock: setup SEQPACKET ops for transport
-  vsock/loopback: setup SEQPACKET ops for transport
-  vsock_test: add SOCK_SEQPACKET tests
-  virtio/vsock: update trace event for SEQPACKET
-
- drivers/vhost/vsock.c                        |   8 +-
- include/linux/virtio_vsock.h                 |  14 +
- include/net/af_vsock.h                       |   9 +
- .../events/vsock_virtio_transport_common.h   |  48 +-
- include/uapi/linux/virtio_vsock.h            |  16 +
- net/vmw_vsock/af_vsock.c                     | 590 +++++++++++------
- net/vmw_vsock/virtio_transport.c             |   5 +
- net/vmw_vsock/virtio_transport_common.c      | 342 ++++++++--
- net/vmw_vsock/vsock_loopback.c               |   5 +
- tools/testing/vsock/util.c                   |  32 +-
- tools/testing/vsock/util.h                   |   3 +
- tools/testing/vsock/vsock_test.c             | 126 ++++
- 12 files changed, 951 insertions(+), 247 deletions(-)
-
- v4 -> v5:
- - patches reorganized:
-   1) Setting of packet's type in 'virtio_transport_send_pkt_info()'
-      is moved to separate patch.
-   2) Simplifying of 'virtio_transport_send_credit_update()' is
-      moved to separate patch and before main virtio/vsock patches.
- - style problem fixed
- - in 'af_vsock: separate receive data loop' extra 'release_sock()'
-   removed
- - added trace event fields for SEQPACKET
- - in 'af_vsock: separate wait data loop':
-   1) 'vsock_wait_data()' removed 'goto out;'
-   2) Comment for invalid data amount is changed.
- - in 'af_vsock: rest of SEQPACKET support', 'new_transport' pointer
-   check is moved after 'try_module_get()'
- - in 'af_vsock: update comments for stream sockets', 'connect-oriented'
-   replaced with 'connection-oriented'
- - in 'loopback/vsock: setup SEQPACKET ops for transport',
-   'loopback/vsock' replaced with 'vsock/loopback'
-
- v3 -> v4:
- - SEQPACKET specific metadata moved from packet header to payload
-   and called 'virtio_vsock_seq_hdr'
- - record integrity check:
-   1) SEQ_END operation was added, which marks end of record.
-   2) Both SEQ_BEGIN and SEQ_END carries counter which is incremented
-      on every marker send.
- - af_vsock.c: socket operations for STREAM and SEQPACKET call same
-   functions instead of having own "gates" differs only by names:
-   'vsock_seqpacket/stream_getsockopt()' now replaced with
-   'vsock_connectible_getsockopt()'.
- - af_vsock.c: 'seqpacket_dequeue' callback returns error and flag that
-   record ready. There is no need to return number of copied bytes,
-   because case when record received successfully is checked at virtio
-   transport layer, when SEQ_END is processed. Also user doesn't need
-   number of copied bytes, because 'recv()' from SEQPACKET could return
-   error, length of users's buffer or length of whole record(both are
-   known in af_vsock.c).
- - af_vsock.c: both wait loops in af_vsock.c(for data and space) moved
-   to separate functions because now both called from several places.
- - af_vsock.c: 'vsock_assign_transport()' checks that 'new_transport'
-   pointer is not NULL and returns 'ESOCKTNOSUPPORT' instead of 'ENODEV'
-   if failed to use transport.
- - tools/testing/vsock/vsock_test.c: rename tests
-
- v2 -> v3:
- - patches reorganized: split for prepare and implementation patches
- - local variables are declared in "Reverse Christmas tree" manner
- - virtio_transport_common.c: valid leXX_to_cpu() for vsock header
-   fields access
- - af_vsock.c: 'vsock_connectible_*sockopt()' added as shared code
-   between stream and seqpacket sockets.
- - af_vsock.c: loops in '__vsock_*_recvmsg()' refactored.
- - af_vsock.c: 'vsock_wait_data()' refactored.
-
- v1 -> v2:
- - patches reordered: af_vsock.c related changes now before virtio vsock
- - patches reorganized: more small patches, where +/- are not mixed
- - tests for SOCK_SEQPACKET added
- - all commit messages updated
- - af_vsock.c: 'vsock_pre_recv_check()' inlined to
-   'vsock_connectible_recvmsg()'
- - af_vsock.c: 'vsock_assign_transport()' returns ENODEV if transport
-   was not found
- - virtio_transport_common.c: transport callback for seqpacket dequeue
- - virtio_transport_common.c: simplified
-   'virtio_transport_recv_connected()'
- - virtio_transport_common.c: send reset on socket and packet type
-			      mismatch.
+This prepares af_vsock.c for SEQPACKET support: some functions such
+as setsockopt(), getsockopt(), connect(), recvmsg(), sendmsg() are
+shared between both types of sockets, so rename them in general
+manner.
 
 Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+---
+ net/vmw_vsock/af_vsock.c | 64 +++++++++++++++++++++-------------------
+ 1 file changed, 34 insertions(+), 30 deletions(-)
 
+diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+index 5546710d8ac1..656370e11707 100644
+--- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -604,8 +604,8 @@ static void vsock_pending_work(struct work_struct *work)
+ 
+ /**** SOCKET OPERATIONS ****/
+ 
+-static int __vsock_bind_stream(struct vsock_sock *vsk,
+-			       struct sockaddr_vm *addr)
++static int __vsock_bind_connectible(struct vsock_sock *vsk,
++				    struct sockaddr_vm *addr)
+ {
+ 	static u32 port;
+ 	struct sockaddr_vm new_addr;
+@@ -685,7 +685,7 @@ static int __vsock_bind(struct sock *sk, struct sockaddr_vm *addr)
+ 	switch (sk->sk_socket->type) {
+ 	case SOCK_STREAM:
+ 		spin_lock_bh(&vsock_table_lock);
+-		retval = __vsock_bind_stream(vsk, addr);
++		retval = __vsock_bind_connectible(vsk, addr);
+ 		spin_unlock_bh(&vsock_table_lock);
+ 		break;
+ 
+@@ -767,6 +767,11 @@ static struct sock *__vsock_create(struct net *net,
+ 	return sk;
+ }
+ 
++static bool sock_type_connectible(u16 type)
++{
++	return type == SOCK_STREAM;
++}
++
+ static void __vsock_release(struct sock *sk, int level)
+ {
+ 	if (sk) {
+@@ -785,7 +790,7 @@ static void __vsock_release(struct sock *sk, int level)
+ 
+ 		if (vsk->transport)
+ 			vsk->transport->release(vsk);
+-		else if (sk->sk_type == SOCK_STREAM)
++		else if (sock_type_connectible(sk->sk_type))
+ 			vsock_remove_sock(vsk);
+ 
+ 		sock_orphan(sk);
+@@ -947,7 +952,7 @@ static int vsock_shutdown(struct socket *sock, int mode)
+ 	lock_sock(sk);
+ 	if (sock->state == SS_UNCONNECTED) {
+ 		err = -ENOTCONN;
+-		if (sk->sk_type == SOCK_STREAM)
++		if (sock_type_connectible(sk->sk_type))
+ 			goto out;
+ 	} else {
+ 		sock->state = SS_DISCONNECTING;
+@@ -960,7 +965,7 @@ static int vsock_shutdown(struct socket *sock, int mode)
+ 		sk->sk_shutdown |= mode;
+ 		sk->sk_state_change(sk);
+ 
+-		if (sk->sk_type == SOCK_STREAM) {
++		if (sock_type_connectible(sk->sk_type)) {
+ 			sock_reset_flag(sk, SOCK_DONE);
+ 			vsock_send_shutdown(sk, mode);
+ 		}
+@@ -1015,7 +1020,7 @@ static __poll_t vsock_poll(struct file *file, struct socket *sock,
+ 		if (!(sk->sk_shutdown & SEND_SHUTDOWN))
+ 			mask |= EPOLLOUT | EPOLLWRNORM | EPOLLWRBAND;
+ 
+-	} else if (sock->type == SOCK_STREAM) {
++	} else if (sock_type_connectible(sk->sk_type)) {
+ 		const struct vsock_transport *transport;
+ 
+ 		lock_sock(sk);
+@@ -1262,8 +1267,8 @@ static void vsock_connect_timeout(struct work_struct *work)
+ 	sock_put(sk);
+ }
+ 
+-static int vsock_stream_connect(struct socket *sock, struct sockaddr *addr,
+-				int addr_len, int flags)
++static int vsock_connect(struct socket *sock, struct sockaddr *addr,
++			 int addr_len, int flags)
+ {
+ 	int err;
+ 	struct sock *sk;
+@@ -1413,7 +1418,7 @@ static int vsock_accept(struct socket *sock, struct socket *newsock, int flags,
+ 
+ 	lock_sock(listener);
+ 
+-	if (sock->type != SOCK_STREAM) {
++	if (!sock_type_connectible(sock->type)) {
+ 		err = -EOPNOTSUPP;
+ 		goto out;
+ 	}
+@@ -1490,7 +1495,7 @@ static int vsock_listen(struct socket *sock, int backlog)
+ 
+ 	lock_sock(sk);
+ 
+-	if (sock->type != SOCK_STREAM) {
++	if (!sock_type_connectible(sk->sk_type)) {
+ 		err = -EOPNOTSUPP;
+ 		goto out;
+ 	}
+@@ -1534,11 +1539,11 @@ static void vsock_update_buffer_size(struct vsock_sock *vsk,
+ 	vsk->buffer_size = val;
+ }
+ 
+-static int vsock_stream_setsockopt(struct socket *sock,
+-				   int level,
+-				   int optname,
+-				   sockptr_t optval,
+-				   unsigned int optlen)
++static int vsock_connectible_setsockopt(struct socket *sock,
++					int level,
++					int optname,
++					sockptr_t optval,
++					unsigned int optlen)
+ {
+ 	int err;
+ 	struct sock *sk;
+@@ -1616,10 +1621,10 @@ static int vsock_stream_setsockopt(struct socket *sock,
+ 	return err;
+ }
+ 
+-static int vsock_stream_getsockopt(struct socket *sock,
+-				   int level, int optname,
+-				   char __user *optval,
+-				   int __user *optlen)
++static int vsock_connectible_getsockopt(struct socket *sock,
++					int level, int optname,
++					char __user *optval,
++					int __user *optlen)
+ {
+ 	int err;
+ 	int len;
+@@ -1687,8 +1692,8 @@ static int vsock_stream_getsockopt(struct socket *sock,
+ 	return 0;
+ }
+ 
+-static int vsock_stream_sendmsg(struct socket *sock, struct msghdr *msg,
+-				size_t len)
++static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
++				     size_t len)
+ {
+ 	struct sock *sk;
+ 	struct vsock_sock *vsk;
+@@ -1827,10 +1832,9 @@ static int vsock_stream_sendmsg(struct socket *sock, struct msghdr *msg,
+ 	return err;
+ }
+ 
+-
+ static int
+-vsock_stream_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+-		     int flags)
++vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
++			  int flags)
+ {
+ 	struct sock *sk;
+ 	struct vsock_sock *vsk;
+@@ -2006,7 +2010,7 @@ static const struct proto_ops vsock_stream_ops = {
+ 	.owner = THIS_MODULE,
+ 	.release = vsock_release,
+ 	.bind = vsock_bind,
+-	.connect = vsock_stream_connect,
++	.connect = vsock_connect,
+ 	.socketpair = sock_no_socketpair,
+ 	.accept = vsock_accept,
+ 	.getname = vsock_getname,
+@@ -2014,10 +2018,10 @@ static const struct proto_ops vsock_stream_ops = {
+ 	.ioctl = sock_no_ioctl,
+ 	.listen = vsock_listen,
+ 	.shutdown = vsock_shutdown,
+-	.setsockopt = vsock_stream_setsockopt,
+-	.getsockopt = vsock_stream_getsockopt,
+-	.sendmsg = vsock_stream_sendmsg,
+-	.recvmsg = vsock_stream_recvmsg,
++	.setsockopt = vsock_connectible_setsockopt,
++	.getsockopt = vsock_connectible_getsockopt,
++	.sendmsg = vsock_connectible_sendmsg,
++	.recvmsg = vsock_connectible_recvmsg,
+ 	.mmap = sock_no_mmap,
+ 	.sendpage = sock_no_sendpage,
+ };
 -- 
 2.25.1
 
