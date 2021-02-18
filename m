@@ -2,148 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BBEB31EAA7
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 15:00:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EFE631EAA8
+	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 15:00:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232539AbhBRN6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 08:58:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59128 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233199AbhBRNTC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 08:19:02 -0500
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on0628.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe0d::628])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48358C061786;
-        Thu, 18 Feb 2021 05:18:16 -0800 (PST)
+        id S232698AbhBRN7E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 08:59:04 -0500
+Received: from mail-vi1eur05on2085.outbound.protection.outlook.com ([40.107.21.85]:14817
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S230148AbhBRNoB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Feb 2021 08:44:01 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RsDPtIe2L63beG+SUs6jcQb2a2a9qLl/ed0gKSVGt5kLz/wFrpuFxJrnEFRWNUH/9EAqQepqHvLFeG3OexCFfcCMIHwdKe2Viv+fmPAzKKWX7Zk4Y+G2/bz03qkmPWkyQXkSl8zYMV05F9TUABMyIkUJoTWfsSjSLLQMviP0PrTThHyL9ZoukZarLNUc36xtgPLCoC/gP1rNWhsRHpscc55oI3+Qg3wPEN5E17vdrIEwlFmKpxBGGIs4/3Bl1g9H2iduUt0qzM0+pH4nBmWpOK1/3nlt9wku3lbc8nTnjvCf9gIQ4vH//BLDH3wbwcthfW8I4fyuR5KqX765cTj5Xw==
+ b=Rv37PnvCpFCrIYwD40EK3Z+UWpLOdkuLhLR5pr5byTwUv7rqx17Yo7nVE7oROQ3kBOquGs8d9hUF5hL02MmJo7Aoi/e0gpGKigzj1NUw0sLf7+ipCcZ0e87ZuSd74Zwlsd+n2W0xn9VpcRjktNCxzBj8ILqVjGb4qh+tTpWzZtszJOF+CUKpXHsrD8fVMVK2YDrVaEzgYbtejGjzd1qVcA/FUYGTVzp2M6pywIcvJZe3HBdjqry31adb3Gr3z9PmvdMGF2mF0hghdqWHOX6fnmAgAqC585wxITjbCkM0rtbltsDqfMDI3U92knr4Sm2N5MDW2uYUl5B4b2w65Rj31w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bldgEFtFLSWdSZ9fRL3QBKyM1/wFAEFAHSyJBN+ffnQ=;
- b=T5MlTGCDXwxkCcJwkU0/cvqPMrJRLmyiPry3bVMSTGibNUpWn/RNzLu6tAf4jgZoOFW91pyf/W0uEr3GmGEDgZm7rZjUJ2qb3VjIqKn8p0B2UhslUFnxVtMwwZ+lJeuWjIQPZ6whhfQ079AuGi1sfESSO9c8zLuiFxcI0yPlVfOGFrktsL6fg3dFw/FyWdB2exIHE0c17ksOX7zm/k0G+A6S9+vISz9zpX6A8S48VPG9gw0Z7h0om/sghuXCCcbJ0XK7XYmkkoup/pzEEdEjoPzFpLmRepkAkSzqIlHvCyrxirDIsAxdyn016aWcUQ7Fdy24w+zy+DeEGy048+Xb8A==
+ bh=OHG4fZY97ODMjxpNVbbou443N881d9if3V7o8xx8qxs=;
+ b=iWtjus18tX4c37UnSKotbpWAXXhs14BpkFRrwg3Xp8X4ChuWnoWP4HavGJ49BRVJX8DkLIVzeSVTcHpkYVGMX5zcHF8ZBw0T5s7noHihLTxRJC0louRha4I/RjT+qdit+pzc8xhicoZxflwgF5pSD//9+xwSgIDDa8jwP1JzrbXrYHqpiVvBjm+sFXfPLyxJOtPH9Hkk25KwaNyIrySap6+XFdVVQJDsFrW4T/kiB0kBzBratoS/BKzFTa/1t+sywihwBgjf5i4jYDoy6KUcHOTWDtgqsklf5HNKNRIAsofplhRHpGJ+7gIbLqa1yrHnEuhJgK+XRFburyEmnDnjKg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bldgEFtFLSWdSZ9fRL3QBKyM1/wFAEFAHSyJBN+ffnQ=;
- b=dtNKe8rWWmCS3qaiIcGV9ZuEnxFICkCF0kM+caiHrAeiiVst6TxXoJrvzEWCJDwoKWqE9510gy7k0A05uiqVZrr9kNuJu3vaZdiWnIEq/9V1zpaVQ6H3paFU7EB+Kf9LN0K5lNFK2GotN5et3v6yj7j1xZtTRYAcwLISfLfYi3c=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR0402MB2799.eurprd04.prod.outlook.com (2603:10a6:800:b0::16) with
+ bh=OHG4fZY97ODMjxpNVbbou443N881d9if3V7o8xx8qxs=;
+ b=XjswHFBQvn+d0uSpf6PU/sarnz7a7d3qOAPkv3La4gzeZUIwzCTvClJpJuhlJ1b52I1pD21IQRmdPZLzIgp8fmQ+qP42f66o8yPdhxXyzH1Be7TxeF2kNW8W1Lj/44vnj1udE+44c+5zliow+HOlZMgk1uavdYCggmgyjRa5fNo=
+Received: from AM6PR04MB5799.eurprd04.prod.outlook.com (2603:10a6:20b:a9::20)
+ by AS8PR04MB7880.eurprd04.prod.outlook.com (2603:10a6:20b:2a5::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3868.27; Thu, 18 Feb
- 2021 13:17:59 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::3df3:2eba:51bb:58d7]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::3df3:2eba:51bb:58d7%7]) with mapi id 15.20.3868.028; Thu, 18 Feb 2021
- 13:17:59 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] net: mscc: Fix MRP switchdev driver
-Thread-Topic: [PATCH net-next] net: mscc: Fix MRP switchdev driver
-Thread-Index: AQHXBevybXvIOkbZDk6j40ceQJbz2Kpd5RsA
-Date:   Thu, 18 Feb 2021 13:17:59 +0000
-Message-ID: <20210218131758.g4vsvmowggxdklfj@skbuf>
-References: <20210218114726.648927-1-horatiu.vultur@microchip.com>
-In-Reply-To: <20210218114726.648927-1-horatiu.vultur@microchip.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.26; Thu, 18 Feb
+ 2021 13:43:03 +0000
+Received: from AM6PR04MB5799.eurprd04.prod.outlook.com
+ ([fe80::b0f6:6642:8a2f:138]) by AM6PR04MB5799.eurprd04.prod.outlook.com
+ ([fe80::b0f6:6642:8a2f:138%3]) with mapi id 15.20.3846.042; Thu, 18 Feb 2021
+ 13:43:03 +0000
+From:   Camelia Alexandra Groza <camelia.groza@nxp.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Subject: RE: [PATCH] Revert "dpaa_eth: add XDP_REDIRECT support"
+Thread-Topic: [PATCH] Revert "dpaa_eth: add XDP_REDIRECT support"
+Thread-Index: AQHXBUAdmLV9bIqIgUW/fpWKayVTSKpdy9IAgAAe/jA=
+Date:   Thu, 18 Feb 2021 13:43:03 +0000
+Message-ID: <AM6PR04MB5799205495B096E48E09536EF2859@AM6PR04MB5799.eurprd04.prod.outlook.com>
+References: <20210217151758.5622-1-s.hauer@pengutronix.de>
+ <20210218124240.5198dcda@carbon>
+In-Reply-To: <20210218124240.5198dcda@carbon>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-authentication-results: microchip.com; dkim=none (message not signed)
- header.d=none;microchip.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.25.217.13]
+authentication-results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [82.78.148.61]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 5a7952e2-93d0-45c3-4eb8-08d8d40f9d05
-x-ms-traffictypediagnostic: VI1PR0402MB2799:
+x-ms-office365-filtering-correlation-id: 9d6dde96-d420-4606-b052-08d8d4131d9b
+x-ms-traffictypediagnostic: AS8PR04MB7880:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR0402MB2799C438C8F2B9264529F1F2E0859@VI1PR0402MB2799.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-microsoft-antispam-prvs: <AS8PR04MB788060A0F05219BB4F5D1E2AF2859@AS8PR04MB7880.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1751;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 1WgD96N8FniBf2Zor/mNGlNNUVv6X1FhCE5/dQOC4DgNhaXIZItbj0DE8l1in9CC0hQ+BpgwRRZF3plfpqsrijEU37b3vhMBOUziB8j3b0FW42/bwcFyGIJxphpRL+7ARpbWKInxMzHOxcCEGIxENoWWvIP/h5+0XTX5iZTmp6a0qShFdV02pqYc6pmTardGjhR5lA76PSQ0T+Q3SAHNrger7wiSxDxDF3CvJy23JiF+Qaio2kD17gcMFuwT3VybFl43nTcZ956TOcjdV5MXJpVn9oQvJBrkZwZj8KdMiGZFgklLKjA7rGRiXTt88BEmTjE54FFGkFk/zg9yxhsAV5uLyBrv5VGbIrmmkXwqTUzcCGiXUHTCR3khA+WmENEt2/PxNr7UMGZZuKCMYUYSSV7USpCEKwpUF3sUlIBzl6m1VFSsDLZwBDj6PLt7K8WkmPoY04rHbKlT5Pl9iZH8PXl9UmhdGEXuQVuUPSg9zHURxM0smj9faK9VL/XIZiQFWBUBbMIEWy/PaiBFQTF5dw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(346002)(136003)(396003)(39860400002)(376002)(366004)(8936002)(7416002)(71200400001)(91956017)(6486002)(33716001)(64756008)(86362001)(66556008)(26005)(66446008)(66476007)(76116006)(54906003)(5660300002)(66946007)(6916009)(6506007)(186003)(8676002)(44832011)(83380400001)(2906002)(316002)(1076003)(4326008)(6512007)(9686003)(478600001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?l432vuWsZBEc6/vbgsqO+4i9kGNv8H7upHJhn+QWu9120hua+GCKLbjiyD02?=
- =?us-ascii?Q?K1oNmr7uyzmfTWgGtOZc5GnxKv1ZZotvvP7osyIGIvxEcSufuWg3VSIu7V6g?=
- =?us-ascii?Q?PAhnFPwt9roUuNrel/T70g36zW478CpnuCF9svPZaZM/BKMSieoPfRoli7rU?=
- =?us-ascii?Q?ngt0Q08Br3kl28EsC1YCogNwNDC5EhdYxxWFe8rt4/xi+zQPly/x3sVwjsL4?=
- =?us-ascii?Q?LxR6/HIfYNJ2I2lWgGr9VSse9c/jCkIs7usNmeqYMc+7qX6MBuxNYzCayg4v?=
- =?us-ascii?Q?Ga7igpop5W2kB2pePIUHgT6kNGMm+PzCGSuE8lGKaBtOqNLAZoLCKtziOsm4?=
- =?us-ascii?Q?eapCV0ER6NwypEfiEiOEG6FW1CRDllCkVSFJBJ4m////mAQW+pvEn9xU7KRU?=
- =?us-ascii?Q?JbJwikb/KVQRhsoor3/VS6pg7KoIt4m8KrRFl+6ys0BvvyZH0WlOFdUb9hzt?=
- =?us-ascii?Q?ZfcPR809E7vVQDbemoCoaaMMwIF3HZvATaCRr0KHFv4le/yXtEYmDuL/ylYT?=
- =?us-ascii?Q?2NxMmAZBqED/otU0gl7uzMQivaE26Sl2S9uBnRfVbtm2gYPd8IpLw7eMe3n2?=
- =?us-ascii?Q?yG2KNUKAnsTsebh2kxfv0Uio38uZ22wlKWINAbCLVymvxbAv2tbtuU0IojQN?=
- =?us-ascii?Q?kyT9ToWt6wjkzvHGwn/l6aWBcOyl9gooeNSqoTEqus71kBOU6wcDPK+w5PAV?=
- =?us-ascii?Q?Yci25FQPNwBeZhAz8QDPjXsgy8Vh64UXJjiKozSDk2edLHr+yZww8MdwoNMm?=
- =?us-ascii?Q?mxGCovtuVh2bEP8HXkb79a9mHGb9yLBsOMSHVDGp/L5k7ADX0Qe0J/00Gi26?=
- =?us-ascii?Q?Ls6JwP/Ke/IMjFIoplvgxD/idt3aGl6edvJgVEbibFyvAqcgjW5szW7804Xr?=
- =?us-ascii?Q?Km0A0NtdrF4a7YAsMbHsZvBoicYa0LthN/LjhcxzSG7TPv7GMqbuSJsWPd35?=
- =?us-ascii?Q?1+RbQksFdxtk2enzppw1f243cp48J+XrsJMOKge8C1BVGeaqb+3sLThWes2l?=
- =?us-ascii?Q?ryqpZ8fiokB418ldQ1AK/j7iqmHchKixKNCa9d56nP6RpppyXRyUPiU7QMPb?=
- =?us-ascii?Q?DUfdoc4RCCMKmEm8Sp/8H/XRwNWrKLBEz1ZYBjfn+OT5nYUDtq4oox4Wp+0b?=
- =?us-ascii?Q?fm9Sf7q05/8j9Ck3sguRN38PRmbvnyqjlTJu/aLcqvNgfsNlT5JxDJ4sigtb?=
- =?us-ascii?Q?FFYRQaaZbCzN7w60dqf6Pco2+yCH0iD3AgU/VXLg8DH8eNcQsTzq7SB+u7vf?=
- =?us-ascii?Q?BGmYW0UplKXQPWxw147XSwBJHD2r+e/5KGm0mYy+i9vLMWe4SQ5Y61DRByGN?=
- =?us-ascii?Q?ceUCgwWDZjXnQPHFQunSEEW+?=
+x-microsoft-antispam-message-info: Bdb+r20OiZEcn7i3iJ0Jw+/BRhvdnpWfqH0TmHreAZhXlqjWkccqou+o6kp4hUgTRnF45aiw1YEdVEuuFRuXTxvaE+ickcOOnzU4WZa/vr5lAXviVWHtpKHvvpWiGtCVAIOa9ICKl+MFewgM58sIinKd/fQaqvdGdba7sKsPmf7Ng7uP026IdFfTPEAiLVcOuzA+/IXMO33IZagrj9JoDdbwxd1PvhEr8NsTT3JzSKvx1JdEHiTLs7yzo+RcAUNzISBSf1oyg+XAHQIyOR1kuIi5xhx6N8HTQz8GxCYVTn58V9CsLNa66DnA5UPG8A7kWG5JqGqRYy/opSiNAheUvTFPuLDeysBW52va27cm9qoy9ZMvK20RsbsIDE4HSmjTARB2EmN7m96dQKMSxNmSidUQMdc7/YmJyqTOR5KQFUi7JnMS/UHsPqeMeeOf2/Hjsn8zeUUI707TNbboCqdvJ1906eYlaU6l1ZjQ+UkSVegOqU7hdbjSkP7jN4q1/hBPm8PV7CQ7tWumUdNKGxvtmw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB5799.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(376002)(366004)(396003)(346002)(39860400002)(53546011)(55016002)(478600001)(26005)(71200400001)(2906002)(5660300002)(6506007)(33656002)(186003)(4326008)(9686003)(316002)(83380400001)(54906003)(110136005)(7696005)(52536014)(8936002)(66556008)(8676002)(64756008)(86362001)(66476007)(66946007)(66446008)(76116006);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?pskXdcj1amqpRr73IgWWzLRaGYKqFJkUZU/iw5/ZsTRq6DS+S7xWFnPFfksM?=
+ =?us-ascii?Q?x2dZ/zVjc1qcmK1PbrJBsJlpkOAlUQlUEchJwpl964dapzNQHlr8a1H/Oq8r?=
+ =?us-ascii?Q?USu/Ng2z8mPkWwYObTzgMhpNOK7/s/l/6KlwhqOZPTv1HhMayqWJSsyCbSOx?=
+ =?us-ascii?Q?o/Ti1ywHi2TdT6KFES7TklWI/lqTSkO2aWZ8Gru8F+tpuUQ52ao/V3qm6QM8?=
+ =?us-ascii?Q?qvlhYMfjLSY7uzw19vKy9zeFAdcc3msAb7duwR2HunmDcE1/PPQCJAE50AoG?=
+ =?us-ascii?Q?wUfUkTyISDfLkFM6ANXGNIfazXVWtROUycvgYvqP6/xIP6uNflJDLnfj58lE?=
+ =?us-ascii?Q?nlo+2BrorpmFilqdCMWJuhSCZ2YYzIs6kV4Y/Z7zeShjiFzcCCWaK3pzTQND?=
+ =?us-ascii?Q?0rMqUnX/xWUOs2Hn761IYpk1DD/eEEwOmhu/Mr7xXF3dGPNeimGHIC4iPAPd?=
+ =?us-ascii?Q?Fdky5a7tlnuHuB/lWkXCszhqGiija05bnfZoCWoJ5iFqau/yeHdJKGxX2ILp?=
+ =?us-ascii?Q?gTJnZlV1dMK1/nUI751q+0RTNpOs8qS51wV4cAfz6EGdIcsfJFCBIYgtuGCU?=
+ =?us-ascii?Q?BYwL4ocMNOr0B6lqntE7goL9vdjhwe3WnRZOH7Vjesl3IU3JC7QcCJMQneJV?=
+ =?us-ascii?Q?Smwt4BveKAZoyc6J8Ovay3dVa/xVBecHqeOwFcJ0iSP/36ORKW+pVmd7nzLM?=
+ =?us-ascii?Q?EZemzWlLREoEcOkk+szbzB/PyM7Qizhjarshy8XLLEE/9mLnQYERWeN1qsjD?=
+ =?us-ascii?Q?lWn1RAhwo4vFRU7/UBQ24yH7UeHRnSqEuVaPO2Nl2O9Rj1WaccEWhWGoJKRt?=
+ =?us-ascii?Q?P7emiyvZeBqAmWX69CEWP5M1be10F5o172aeKlvOqOkdlnFzBMIcLjhT6fi/?=
+ =?us-ascii?Q?OG7STZS5Q7pJNfj9kswP7Zo9hpijH5pGdvVp9dePKpOpgvG0L5+nXm/s2qu8?=
+ =?us-ascii?Q?IxrvnSnPxUZFmv+Q/VrgYq9F64L+yFv200ifAKuaf6JWvgWMYsCyEJtMqQHz?=
+ =?us-ascii?Q?w9Zv5yIR71/TbOmkN67jUMU/m17L4ACm5ATCmwDC/N2/8fsbN8iFLfdnK+z/?=
+ =?us-ascii?Q?jcO3roaMxJy7uDdb2N+qNtx9v5TCK4ff3JJ5GcKAPSAfS7GXyrNgbNdCDDfq?=
+ =?us-ascii?Q?+4YAPKJ8zSzvD2Y7ZkbDHEC8MC9GJ1kyMRPWpD6DLoT3Kjst1l/a4dC5/wV/?=
+ =?us-ascii?Q?TIBu4b9gQCuXShQ17OiP8C4XwG7+xwxA+K1pmUyO1GE5QxA5XXUcVJbAQ/kM?=
+ =?us-ascii?Q?epa4o+TdV4BRf7q3jt9IfJjDB/ywGfqLpK4jwWIS/D52iokDbnp3m5L4PyCM?=
+ =?us-ascii?Q?I5c=3D?=
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <D29566EF4E813C4B9A3AF704A3E5607B@eurprd04.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5a7952e2-93d0-45c3-4eb8-08d8d40f9d05
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Feb 2021 13:17:59.5964
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB5799.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9d6dde96-d420-4606-b052-08d8d4131d9b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Feb 2021 13:43:03.8435
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: zoxQD1bTIbztpIaEK0TvzzWnfKbbscXlYpBfpT7Yw+drGYSQKK/Ygvpntomn40GsfhuWBGnEJc6+rHg6Z2DZ4A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB2799
+X-MS-Exchange-CrossTenant-userprincipalname: tRySWUkw+Tw6H2qoA4jMG7uG84ajPCmfq3U9FtFOjNJOPXIA6rk5oFtnumG59omS3YghxCx1eeoG3rqCXtKcEQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB7880
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Horatiu,
-
-On Thu, Feb 18, 2021 at 12:47:26PM +0100, Horatiu Vultur wrote:
-> This patch fixes the ocelot MRP switchdev driver such that also DSA
-> driver can use these functions. Before the driver presumed that the
-> net_device uses a 'struct ocelot_port_private' as priv which was wrong.
+> -----Original Message-----
+> From: Jesper Dangaard Brouer <brouer@redhat.com>
+> Sent: Thursday, February 18, 2021 13:43
+> To: Sascha Hauer <s.hauer@pengutronix.de>
+> Cc: brouer@redhat.com; netdev@vger.kernel.org; Camelia Alexandra Groza
+> <camelia.groza@nxp.com>; Madalin Bucur <madalin.bucur@nxp.com>;
+> Jakub Kicinski <kuba@kernel.org>; kernel@pengutronix.de; Ioana Ciornei
+> <ioana.ciornei@nxp.com>; Ioana Ciocoi Radulescu
+> <ruxandra.radulescu@nxp.com>; Ilias Apalodimas
+> <ilias.apalodimas@linaro.org>
+> Subject: Re: [PATCH] Revert "dpaa_eth: add XDP_REDIRECT support"
 >=20
-> The only reason for using ocelot_port_private was to access the
-> net_device, but this can be passed as an argument because we already
-> have this information. Therefore update the functions to have also the
-> net_device parameter.
+> On Wed, 17 Feb 2021 16:17:58 +0100
+> Sascha Hauer <s.hauer@pengutronix.de> wrote:
 >=20
-> Fixes: a026c50b599fa ("net: dsa: felix: Add support for MRP")
-> Fixes: d8ea7ff3995ea ("net: mscc: ocelot: Add support for MRP")
-> Reported-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> > This reverts commit a1e031ffb422bb89df9ad9c018420d0deff7f2e3.
+> >
+> > This commit introduces a:
+> >
+> > 	np =3D container_of(&portal, struct dpaa_napi_portal, p);
+> >
+> > Using container_of() on the address of a pointer doesn't make sense as
+> > the pointer is not embedded into the desired struct.
+> >
+> > KASAN complains about it like this:
+> >
+> > [   17.703277]
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> =3D=3D=3D=3D=3D=3D=3D=3D
+> > [   17.710517] BUG: KASAN: stack-out-of-bounds in
+> rx_default_dqrr+0x994/0x14a0
+> > [   17.717504] Read of size 4 at addr ffff0009336495fc by task systemd/=
+1
+> > [   17.723955]
+> > [   17.725447] CPU: 0 PID: 1 Comm: systemd Not tainted 5.11.0-rc6-
+> 20210204-2-00033-gfd6caa9c7514-dirty #63
+> > [   17.734857] Hardware name: TQ TQMLS1046A SoM
+> > [   17.742176] Call trace:
+> > [   17.744621]  dump_backtrace+0x0/0x2e8
+> > [   17.748298]  show_stack+0x1c/0x68
+> > [   17.751622]  dump_stack+0xe8/0x14c
+> > [   17.755033]  print_address_description.constprop.0+0x68/0x304
+> > [   17.760794]  kasan_report+0x1d4/0x238
+> > [   17.764466]  __asan_load4+0x88/0xc0
+> > [   17.767962]  rx_default_dqrr+0x994/0x14a0
+> > [   17.771980]  qman_p_poll_dqrr+0x254/0x278
+> > [   17.776000]  dpaa_eth_poll+0x4c/0xe0
+> > ...
+> >
+> > It's not clear to me how a the struct dpaa_napi_portal * should be
+> > derived from the struct qman_portal *, so revert the patch for now.
 >=20
-> ---
+> Can we please get a response from NXP people?
+>=20
+> Are you saying XDP_REDIRECT feature is completely broken on dpaa driver?
+>=20
+> (I only have access to dpaa2 hardware)
 
-Do you mind if we drop this patch for now (the net-next pull request was
-already sent) and I will ensure that the MRP assist for Felix DSA works
-properly when I find the time to compile your mrp/cfp user space
-packages and give them a try?
+Hi,
 
-There are more issues to be fixed than your patch addresses. For
-example, MRP will only work with the NPI-based tagging protocol,
-somebody needs to reject MRP objects when ocelot-8021q is in use.
-I think it's better for someone who has access to a DSA setup to ensure
-that the driver is in a reasonable state.
+Thank you for pointing out this issue. The correct fix is the following. I'=
+ll send the patch for review.
 
-Sorry for not reviewing the MRP patches in time.=
+As for the impact, the xdp_do_flush() call might be skipped due to this bug=
+. This doesn't impact dpaa2 since the drivers are different.
+
+diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/e=
+thernet/freescale/dpaa/dpaa_eth.c
+index 6faa20bed488..9905caeaeee3 100644
+--- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
++++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+@@ -2672,7 +2672,6 @@ static enum qman_cb_dqrr_result rx_default_dqrr(struc=
+t qman_portal *portal,
+        u32 hash;
+        u64 ns;
+
+-       np =3D container_of(&portal, struct dpaa_napi_portal, p);
+        dpaa_fq =3D container_of(fq, struct dpaa_fq, fq_base);
+        fd_status =3D be32_to_cpu(fd->status);
+        fd_format =3D qm_fd_get_format(fd);
+@@ -2687,6 +2686,7 @@ static enum qman_cb_dqrr_result rx_default_dqrr(struc=
+t qman_portal *portal,
+
+        percpu_priv =3D this_cpu_ptr(priv->percpu_priv);
+        percpu_stats =3D &percpu_priv->stats;
++       np =3D &percpu_priv->np;
+
+        if (unlikely(dpaa_eth_napi_schedule(percpu_priv, portal, sched_napi=
+)))
+                return qman_cb_dqrr_stop;
+
+Regards,
+Camelia
