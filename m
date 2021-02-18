@@ -2,76 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5DF331EA9C
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 14:54:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C215931EAA0
+	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 14:59:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231796AbhBRNyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 08:54:15 -0500
-Received: from ni.piap.pl ([195.187.100.5]:44326 "EHLO ni.piap.pl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232078AbhBRMoq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Feb 2021 07:44:46 -0500
-Received: from t19.piap.pl (OSB1819.piap.pl [10.0.9.19])
-        (using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+        id S232180AbhBRN4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 08:56:42 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:44279 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231331AbhBRMy2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 07:54:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1613652781;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KAPWiMLdVgpL54iOswvuAK9eFuhy8zwjl8z04LgGsM0=;
+        b=Q3DzArRYmty0FekwceP55r/OERcFfQ07OE8GOdmhWDgSjIjtgBk5XlQ8Sa8jHvCrDNq5l6
+        nStT7WJ/DpqgCQm/aAJQVJWUwzsKJaDQ6NWeiQhpIUMgprAl9viYBizCkuGXRDg8oyAN1K
+        zHsWeTaQ2WFuke50fmY1Bsc2fIny1YA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-579-iA1Zs0AHPcal5N-Lhv75GQ-1; Thu, 18 Feb 2021 07:41:54 -0500
+X-MC-Unique: iA1Zs0AHPcal5N-Lhv75GQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ni.piap.pl (Postfix) with ESMTPSA id 49B8B442FB3;
-        Thu, 18 Feb 2021 13:34:42 +0100 (CET)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ni.piap.pl 49B8B442FB3
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=piap.pl; s=mail;
-        t=1613651682; bh=V4pv1Jj17FC4YOPVXn6cAR3969CfZNdSYbAHlbXzUXI=;
-        h=From:To:Subject:Date:From;
-        b=fOXLg4YkGuarOvSNkVzRA6PuqaGbk8IBgl4zrNyYyBoAagH5APqb4+faVkr9+de9l
-         hEsrciEBYwgyl1mWaNIqxGZ7VBGrVW+3biS99ss5cIJoB0IvRLF/EVHUj0FixWHhcB
-         1EVlGbi4w1gBWdRXQNM4kNKgiSHeq/YyTPA1p4FE=
-From:   "Krzysztof Halasa" <khalasa@piap.pl>
-To:     Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] Marvell Sky2 Ethernet adapter: fix warning messages.
-Sender: khalasa@piap.pl
-Date:   Thu, 18 Feb 2021 13:34:42 +0100
-Message-ID: <m3a6s1r1ul.fsf@t19.piap.pl>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8F202AFA81;
+        Thu, 18 Feb 2021 12:41:51 +0000 (UTC)
+Received: from ovpn-114-233.ams2.redhat.com (ovpn-114-233.ams2.redhat.com [10.36.114.233])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D17CC6A03D;
+        Thu, 18 Feb 2021 12:41:45 +0000 (UTC)
+Message-ID: <639082dd7bddce31122200cc0e587c482379d1a7.camel@redhat.com>
+Subject: Re: possible deadlock in mptcp_push_pending
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     syzbot <syzbot+d1b1723faccb7a43f6d1@syzkaller.appspotmail.com>,
+        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
+        mptcp@lists.01.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Date:   Thu, 18 Feb 2021 13:41:44 +0100
+In-Reply-To: <000000000000787b8805bb8b96ce@google.com>
+References: <000000000000787b8805bb8b96ce@google.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-KLMS-Rule-ID: 4
-X-KLMS-Message-Action: skipped
-X-KLMS-AntiSpam-Status: not scanned, whitelist
-X-KLMS-AntiPhishing: not scanned, whitelist
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, not scanned, whitelist
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sky2.c driver uses netdev_warn() before the net device is initialized.
-Fix it by using dev_warn() instead.
+On Wed, 2021-02-17 at 09:31 -0800, syzbot wrote:
+> syzbot found the following issue on:
+> 
+> HEAD commit:    c48f8607 Merge branch 'PTP-for-DSA-tag_ocelot_8021q'
+> git tree:       net-next
+> console output: https://syzkaller.appspot.com/x/log.txt?x=16525cb0d00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=dbc1ca9e55dc1f9f
+> dashboard link: https://syzkaller.appspot.com/bug?extid=d1b1723faccb7a43f6d1
+> 
+> Unfortunately, I don't have any reproducer for this issue yet.
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+d1b1723faccb7a43f6d1@syzkaller.appspotmail.com
+> 
+> ============================================
+> WARNING: possible recursive locking detected
+> 5.11.0-rc7-syzkaller #0 Not tainted
+> --------------------------------------------
+> syz-executor.1/15600 is trying to acquire lock:
+> ffff888057303220 (sk_lock-AF_INET6){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1598 [inline]
+> ffff888057303220 (sk_lock-AF_INET6){+.+.}-{0:0}, at: mptcp_push_pending+0x28b/0x650 net/mptcp/protocol.c:1466
 
-Signed-off-by: Krzysztof Halasa <khalasa@piap.pl>
+Even this one is suspected to be a dup of 'WARNING in dst_release': the
+subflow socket lock family is reported to be 'sk_lock-AF_INET6', but
+subflows are created in kernel, and get 'k-sk_lock-AF_INET6'. This
+looks like [re]use after free, likely via msk->first, as in the
+suspected dup issue. Lacking a repro, I'm not 110% sure.
 
---- a/drivers/net/ethernet/marvell/sky2.c
-+++ b/drivers/net/ethernet/marvell/sky2.c
-@@ -4806,12 +4806,11 @@ static struct net_device *sky2_init_netdev(struct s=
-ky2_hw *hw, unsigned port,
- 	if (!is_valid_ether_addr(dev->dev_addr)) {
- 		struct sockaddr sa =3D { AF_UNSPEC };
-=20
--		netdev_warn(dev,
--			    "Invalid MAC address, defaulting to random\n");
-+		dev_warn(&hw->pdev->dev, "Invalid MAC address, defaulting to random\n");
- 		eth_hw_addr_random(dev);
- 		memcpy(sa.sa_data, dev->dev_addr, ETH_ALEN);
- 		if (sky2_set_mac_address(dev, &sa))
--			netdev_warn(dev, "Failed to set MAC address.\n");
-+			dev_warn(&hw->pdev->dev, "Failed to set MAC address.\n");
- 	}
-=20
- 	return dev;
+@Dmitry, I'm wondering which is the preferred course of action here:
+tentatively marking this one as a dup, or leaving it alone till we get
+a reproducer?
 
---=20
-Krzysztof Halasa
+Thanks!
 
-Sie=C4=87 Badawcza =C5=81ukasiewicz
-Przemys=C5=82owy Instytut Automatyki i Pomiar=C3=B3w PIAP
-Al. Jerozolimskie 202, 02-486 Warszawa
+Paolo
+
