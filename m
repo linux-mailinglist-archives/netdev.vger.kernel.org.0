@@ -2,207 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7268631E70F
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 08:47:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AAAD431E717
+	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 08:52:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231337AbhBRHq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 02:46:26 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:14850 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231132AbhBRHmw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 02:42:52 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B602e1a530000>; Wed, 17 Feb 2021 23:42:11 -0800
-Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL101.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 18 Feb
- 2021 07:42:11 +0000
+        id S231145AbhBRHrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 02:47:06 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:2172 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230444AbhBRHn7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 02:43:59 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B602e1a960004>; Wed, 17 Feb 2021 23:43:18 -0800
+Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 18 Feb
+ 2021 07:43:18 +0000
 Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
  (172.20.187.15) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 18 Feb 2021 07:42:07 +0000
+ Transport; Thu, 18 Feb 2021 07:43:16 +0000
 From:   Eli Cohen <elic@nvidia.com>
 To:     <mst@redhat.com>, <jasowang@redhat.com>, <si-wei.liu@oracle.com>,
         <linux-kernel@vger.kernel.org>,
         <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>
-CC:     <elic@nvidia.com>, Parav Pandit <parav@nvidia.com>
-Subject: [PATCH v2] vdpa/mlx5: Enable user to add/delete vdpa device
-Date:   Thu, 18 Feb 2021 09:41:57 +0200
-Message-ID: <20210218074157.43220-1-elic@nvidia.com>
+CC:     <elic@nvidia.com>
+Subject: [PATCH v1] vdpa/mlx5: Fix suspend/resume index restoration
+Date:   Thu, 18 Feb 2021 09:43:11 +0200
+Message-ID: <20210218074311.43349-1-elic@nvidia.com>
 X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1613634131; bh=KImlT5UFrP91/CHfSEc7lribc3MT5XvisfsIc0GuGX8=;
+        t=1613634198; bh=xS8bj/G1yMWPByDr4eY7YM5G0bjVAWEiw9WYar3h77E=;
         h=From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
          Content-Transfer-Encoding:Content-Type;
-        b=oo/UhEWaXto0rDF4EzTgfIau0VHXIyRdcwLsucASWfiDK9vlM29zhz1DRvsM6v+Tp
-         7I7936/9UYn0rCre0tjLk0kl5PCdaBWD8QNcV7iP1vqla0AdgChrn6O4KE5O1xdj09
-         pSMURgAwlFk/X3ziwl3clLYXuyWzFdlgpwvY0gmHtakkv7VEB9UxW18kj8rgLWCjz+
-         2IrnFYtglb6YOyJM80esX0MTaCIilq0kNHCEi9nZSkpJrGOqiMPE1st4aBCmjYDPlN
-         4XVMkoVEAEUQExzO7e/FAoFSuaOS2ThBRlXbKsR3+JXff/8cBDxVdIoyZWMLkvhh7D
-         odHw340wfGfsQ==
+        b=SQ11Ch1ozF2uFFiSDEODxbeCYpRdlwhDzHikythb3jepLvvecy4C/hcOeTXQM3oif
+         jytlSG86NLKVIfCXB/VW0Pa8V9NqcDC3BoemjWhOrO45fNIUcVFuIj8XJxeVvbG6rV
+         dMe/BAsAtnzzlB72b/qhbsPhTG4Uiww26kcbjYE1hsTB/kfMXdzncagQzWfO6HbpzK
+         NUwJt2ug8oEbrIzmbiH7keznLTEYSnoB1EzL6B0EfrGoj7Q4sbv8p9vqRhcH+Msmpv
+         amatiR7/e4rt3fta7nkNkCsv66WmQfNVwI590h8mxvwQ+c00cKYMruK/DJ1mnMMrF0
+         OQGBdHgwkOfkw==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allow to control vdpa device creation and destruction using the vdpa
-management tool.
+When we suspend the VM, the VDPA interface will be reset. When the VM is
+resumed again, clear_virtqueues() will clear the available and used
+indices resulting in hardware virqtqueue objects becoming out of sync.
+We can avoid this function alltogether since qemu will clear them if
+required, e.g. when the VM went through a reboot.
 
-Examples:
-1. List the management devices
-$ vdpa mgmtdev show
-pci/0000:3b:00.1:
-  supported_classes net
+Moreover, since the hw available and used indices should always be
+identical on query and should be restored to the same value same value
+for virtqueues that complete in order, we set the single value provided
+by set_vq_state(). In get_vq_state() we return the value of hardware
+used index.
 
-2. Create vdpa instance
-$ vdpa dev add mgmtdev pci/0000:3b:00.1 name vdpa0
-
-3. Show vdpa devices
-$ vdpa dev show
-vdpa0: type network mgmtdev pci/0000:3b:00.1 vendor_id 5555 max_vqs 16 \
-max_vq_size 256
-
+Fixes: b35ccebe3ef7 ("vdpa/mlx5: Restore the hardware used index after chan=
+ge map")
+Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices=
+")
 Signed-off-by: Eli Cohen <elic@nvidia.com>
-Reviewed-by: Parav Pandit <parav@nvidia.com>
 ---
 v0->v1:
-set mgtdev->ndev NULL on dev delete
-v1->v2: Resend
+Fix subject prefix
 
- drivers/vdpa/mlx5/net/mlx5_vnet.c | 79 +++++++++++++++++++++++++++----
- 1 file changed, 70 insertions(+), 9 deletions(-)
+ drivers/vdpa/mlx5/net/mlx5_vnet.c | 17 ++++-------------
+ 1 file changed, 4 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5=
 _vnet.c
-index a51b0f86afe2..08fb481ddc4f 100644
+index b8e9d525d66c..a51b0f86afe2 100644
 --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
 +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-@@ -1974,23 +1974,32 @@ static void init_mvqs(struct mlx5_vdpa_net *ndev)
+@@ -1169,6 +1169,7 @@ static void suspend_vq(struct mlx5_vdpa_net *ndev, st=
+ruct mlx5_vdpa_virtqueue *m
+ 		return;
+ 	}
+ 	mvq->avail_idx =3D attr.available_index;
++	mvq->used_idx =3D attr.used_index;
+ }
+=20
+ static void suspend_vqs(struct mlx5_vdpa_net *ndev)
+@@ -1426,6 +1427,7 @@ static int mlx5_vdpa_set_vq_state(struct vdpa_device =
+*vdev, u16 idx,
+ 		return -EINVAL;
+ 	}
+=20
++	mvq->used_idx =3D state->avail_index;
+ 	mvq->avail_idx =3D state->avail_index;
+ 	return 0;
+ }
+@@ -1443,7 +1445,7 @@ static int mlx5_vdpa_get_vq_state(struct vdpa_device =
+*vdev, u16 idx, struct vdpa
+ 	 * that cares about emulating the index after vq is stopped.
+ 	 */
+ 	if (!mvq->initialized) {
+-		state->avail_index =3D mvq->avail_idx;
++		state->avail_index =3D mvq->used_idx;
+ 		return 0;
+ 	}
+=20
+@@ -1452,7 +1454,7 @@ static int mlx5_vdpa_get_vq_state(struct vdpa_device =
+*vdev, u16 idx, struct vdpa
+ 		mlx5_vdpa_warn(mvdev, "failed to query virtqueue\n");
+ 		return err;
+ 	}
+-	state->avail_index =3D attr.available_index;
++	state->avail_index =3D attr.used_index;
+ 	return 0;
+ }
+=20
+@@ -1532,16 +1534,6 @@ static void teardown_virtqueues(struct mlx5_vdpa_net=
+ *ndev)
  	}
  }
 =20
--static int mlx5v_probe(struct auxiliary_device *adev,
--		       const struct auxiliary_device_id *id)
-+struct mlx5_vdpa_mgmtdev {
-+	struct vdpa_mgmt_dev mgtdev;
-+	struct mlx5_adev *madev;
-+	struct mlx5_vdpa_net *ndev;
-+};
-+
-+static int mlx5_vdpa_dev_add(struct vdpa_mgmt_dev *v_mdev, const char *nam=
-e)
+-static void clear_virtqueues(struct mlx5_vdpa_net *ndev)
+-{
+-	int i;
+-
+-	for (i =3D ndev->mvdev.max_vqs - 1; i >=3D 0; i--) {
+-		ndev->vqs[i].avail_idx =3D 0;
+-		ndev->vqs[i].used_idx =3D 0;
+-	}
+-}
+-
+ /* TODO: cross-endian support */
+ static inline bool mlx5_vdpa_is_little_endian(struct mlx5_vdpa_dev *mvdev)
  {
--	struct mlx5_adev *madev =3D container_of(adev, struct mlx5_adev, adev);
--	struct mlx5_core_dev *mdev =3D madev->mdev;
-+	struct mlx5_vdpa_mgmtdev *mgtdev =3D container_of(v_mdev, struct mlx5_vdp=
-a_mgmtdev, mgtdev);
- 	struct virtio_net_config *config;
- 	struct mlx5_vdpa_dev *mvdev;
- 	struct mlx5_vdpa_net *ndev;
-+	struct mlx5_core_dev *mdev;
- 	u32 max_vqs;
- 	int err;
-=20
-+	if (mgtdev->ndev)
-+		return -ENOSPC;
-+
-+	mdev =3D mgtdev->madev->mdev;
- 	/* we save one virtqueue for control virtqueue should we require it */
- 	max_vqs =3D MLX5_CAP_DEV_VDPA_EMULATION(mdev, max_num_virtio_queues);
- 	max_vqs =3D min_t(u32, max_vqs, MLX5_MAX_SUPPORTED_VQS);
-=20
- 	ndev =3D vdpa_alloc_device(struct mlx5_vdpa_net, mvdev.vdev, mdev->device=
-, &mlx5_vdpa_ops,
--				 2 * mlx5_vdpa_max_qps(max_vqs), NULL);
-+				 2 * mlx5_vdpa_max_qps(max_vqs), name);
- 	if (IS_ERR(ndev))
- 		return PTR_ERR(ndev);
-=20
-@@ -2018,11 +2027,12 @@ static int mlx5v_probe(struct auxiliary_device *ade=
-v,
- 	if (err)
- 		goto err_res;
-=20
--	err =3D vdpa_register_device(&mvdev->vdev);
-+	mvdev->vdev.mdev =3D &mgtdev->mgtdev;
-+	err =3D _vdpa_register_device(&mvdev->vdev);
- 	if (err)
- 		goto err_reg;
-=20
--	dev_set_drvdata(&adev->dev, ndev);
-+	mgtdev->ndev =3D ndev;
- 	return 0;
-=20
- err_reg:
-@@ -2035,11 +2045,62 @@ static int mlx5v_probe(struct auxiliary_device *ade=
-v,
- 	return err;
- }
-=20
-+static void mlx5_vdpa_dev_del(struct vdpa_mgmt_dev *v_mdev, struct vdpa_de=
-vice *dev)
-+{
-+	struct mlx5_vdpa_mgmtdev *mgtdev =3D container_of(v_mdev, struct mlx5_vdp=
-a_mgmtdev, mgtdev);
-+
-+	_vdpa_unregister_device(dev);
-+	mgtdev->ndev =3D NULL;
-+}
-+
-+static const struct vdpa_mgmtdev_ops mdev_ops =3D {
-+	.dev_add =3D mlx5_vdpa_dev_add,
-+	.dev_del =3D mlx5_vdpa_dev_del,
-+};
-+
-+static struct virtio_device_id id_table[] =3D {
-+	{ VIRTIO_ID_NET, VIRTIO_DEV_ANY_ID },
-+	{ 0 },
-+};
-+
-+static int mlx5v_probe(struct auxiliary_device *adev,
-+		       const struct auxiliary_device_id *id)
-+
-+{
-+	struct mlx5_adev *madev =3D container_of(adev, struct mlx5_adev, adev);
-+	struct mlx5_core_dev *mdev =3D madev->mdev;
-+	struct mlx5_vdpa_mgmtdev *mgtdev;
-+	int err;
-+
-+	mgtdev =3D kzalloc(sizeof(*mgtdev), GFP_KERNEL);
-+	if (!mgtdev)
-+		return -ENOMEM;
-+
-+	mgtdev->mgtdev.ops =3D &mdev_ops;
-+	mgtdev->mgtdev.device =3D mdev->device;
-+	mgtdev->mgtdev.id_table =3D id_table;
-+	mgtdev->madev =3D madev;
-+
-+	err =3D vdpa_mgmtdev_register(&mgtdev->mgtdev);
-+	if (err)
-+		goto reg_err;
-+
-+	dev_set_drvdata(&adev->dev, mgtdev);
-+
-+	return 0;
-+
-+reg_err:
-+	kfree(mdev);
-+	return err;
-+}
-+
- static void mlx5v_remove(struct auxiliary_device *adev)
- {
--	struct mlx5_vdpa_dev *mvdev =3D dev_get_drvdata(&adev->dev);
-+	struct mlx5_vdpa_mgmtdev *mgtdev;
-=20
--	vdpa_unregister_device(&mvdev->vdev);
-+	mgtdev =3D dev_get_drvdata(&adev->dev);
-+	vdpa_mgmtdev_unregister(&mgtdev->mgtdev);
-+	kfree(mgtdev);
- }
-=20
- static const struct auxiliary_device_id mlx5v_id_table[] =3D {
+@@ -1777,7 +1769,6 @@ static void mlx5_vdpa_set_status(struct vdpa_device *=
+vdev, u8 status)
+ 	if (!status) {
+ 		mlx5_vdpa_info(mvdev, "performing device reset\n");
+ 		teardown_driver(ndev);
+-		clear_virtqueues(ndev);
+ 		mlx5_vdpa_destroy_mr(&ndev->mvdev);
+ 		ndev->mvdev.status =3D 0;
+ 		++mvdev->generation;
 --=20
 2.29.2
 
