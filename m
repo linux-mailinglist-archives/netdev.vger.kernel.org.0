@@ -2,172 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0892D31EAA2
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 15:00:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46CBF31EA9F
+	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 14:59:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230090AbhBRN5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 08:57:38 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:31890 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232924AbhBRNDL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 08:03:11 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11ICgG7R025222;
-        Thu, 18 Feb 2021 04:42:16 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=Wf9nGNGlZL5D6f89oSJlh1oCwj93RrSrls7xCKsb+tw=;
- b=bukrhnGZJ5rxS96hDwJbFi4lPtIo5U8XREfvYy81ODeJcSoOkKlJ3FpiXwqZOO6zEzMj
- fRtJmldTP1YX/+aMlaw2wSsjUUUv3lOWMA+3iHN3ga9YJJMbCWKuOxJtrLuvFioY/Bmy
- uribQXoIZPQiotngIrvz0roaGSjfCZhyp1W8q5isAR5T6sbEj0nPtcL5Nsbiol4Vkp04
- 3v9J9yP53G+LD/sqOkUaiAkG2L6kFIVixnQFarVueYnC6xNwZS6EoyQ3kZpbaRjei88m
- N8ZieuEvLq7nuw5s/kwNJQ6GsVbZ7v2uHlIzt/piV3iKopKQLVB1MXbCja8k7yJ13iqD ow== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 36sesvsjn4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 18 Feb 2021 04:42:16 -0800
-Received: from SC-EXCH04.marvell.com (10.93.176.84) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 18 Feb
- 2021 04:42:14 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 18 Feb
- 2021 04:42:14 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 18 Feb 2021 04:42:14 -0800
-Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id 706663F7040;
-        Thu, 18 Feb 2021 04:42:11 -0800 (PST)
-From:   <stefanc@marvell.com>
-To:     <netdev@vger.kernel.org>
-CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
-        <nadavh@marvell.com>, <ymarkman@marvell.com>,
-        <linux-kernel@vger.kernel.org>, <stefanc@marvell.com>,
-        <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
-        <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
-        <atenart@kernel.org>
-Subject: [net-next] net: mvpp2: skip RSS configurations on loopback port
-Date:   Thu, 18 Feb 2021 14:42:03 +0200
-Message-ID: <1613652123-19021-1-git-send-email-stefanc@marvell.com>
-X-Mailer: git-send-email 1.9.1
+        id S231365AbhBRNzV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 08:55:21 -0500
+Received: from mx2.suse.de ([195.135.220.15]:36448 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230112AbhBRMyZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Feb 2021 07:54:25 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1613652819; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=v2M2f1didXi8qZbKbJNpKDVS3nQGtSjoYLz7GZ8G2oA=;
+        b=ajJ7vi+VZU89eb/Xc0CIb/zbZ8fbz4u0n5nZ1PPyXZB1MjEiPGbcoUjg4gO+pEQzZN5oxY
+        iS9PjZxTlHUPjRgYAoph22HnxcE/HR5nPx62wTdId879+BdncP3cqBdQMzcuRtwfE/kF1G
+        TG8YVslckFPZaRMtiH6w0yE1tk8Rlbw=
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id DEE34ACE5;
+        Thu, 18 Feb 2021 12:53:38 +0000 (UTC)
+Date:   Thu, 18 Feb 2021 13:53:38 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     "Enrico Weigelt, metux IT consult" <info@metux.net>,
+        linux-kernel@vger.kernel.org, rostedt@goodmis.org,
+        sergey.senozhatsky@gmail.com, linux@rasmusvillemoes.dk,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH] lib: vsprintf: check for NULL device_node name in
+ device_node_string()
+Message-ID: <YC5jUqxphRvyuMEv@alley>
+References: <20210217121543.13010-1-info@metux.net>
+ <YC0fCAp6wxJfizD7@smile.fi.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-02-18_05:2021-02-18,2021-02-18 signatures=0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YC0fCAp6wxJfizD7@smile.fi.intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefan Chulski <stefanc@marvell.com>
+On Wed 2021-02-17 15:50:00, Andy Shevchenko wrote:
+> On Wed, Feb 17, 2021 at 01:15:43PM +0100, Enrico Weigelt, metux IT consult wrote:
+> > Under rare circumstances it may happen that a device node's name is NULL
+> > (most likely kernel bug in some other place).
+> 
+> What circumstances? How can I reproduce this? More information, please!
+> 
+> > In such situations anything
+> > but helpful, if the debug printout crashes, and nobody knows what actually
+> > happened here.
+> > 
+> > Therefore protect it by an explicit NULL check and print out an extra
+> > warning.
+> 
+> ...
+> 
+> > +				pr_warn("device_node without name. Kernel bug ?\n");
+> 
+> If it's not once, then it's possible to have log spammed with this, right?
+> 
+> ...
+> 
+> > +				p = "<NULL>";
+> 
+> We have different standard de facto for NULL pointers to be printed. Actually
+> if you wish, you may gather them under one definition (maybe somewhere under
+> printk) and export to everybody to use.
 
-PPv2 loopback port doesn't support RSS, so we should
-skip RSS configurations for this port.
+Please, use
 
-Signed-off-by: Stefan Chulski <stefanc@marvell.com>
----
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 25 +++++++++++---------
- 1 file changed, 14 insertions(+), 11 deletions(-)
+	if (check_pointer(&buf, end, p, spec))
+		return buf;
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 10c17d1..d415447 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -4699,9 +4699,10 @@ static void mvpp2_irqs_deinit(struct mvpp2_port *port)
- 	}
- }
- 
--static bool mvpp22_rss_is_supported(void)
-+static bool mvpp22_rss_is_supported(struct mvpp2_port *port)
- {
--	return queue_mode == MVPP2_QDIST_MULTI_MODE;
-+	return (queue_mode == MVPP2_QDIST_MULTI_MODE) &&
-+		!(port->flags & MVPP2_F_LOOPBACK);
- }
- 
- static int mvpp2_open(struct net_device *dev)
-@@ -5513,7 +5514,7 @@ static int mvpp2_ethtool_get_rxnfc(struct net_device *dev,
- 	struct mvpp2_port *port = netdev_priv(dev);
- 	int ret = 0, i, loc = 0;
- 
--	if (!mvpp22_rss_is_supported())
-+	if (!mvpp22_rss_is_supported(port))
- 		return -EOPNOTSUPP;
- 
- 	switch (info->cmd) {
-@@ -5548,7 +5549,7 @@ static int mvpp2_ethtool_set_rxnfc(struct net_device *dev,
- 	struct mvpp2_port *port = netdev_priv(dev);
- 	int ret = 0;
- 
--	if (!mvpp22_rss_is_supported())
-+	if (!mvpp22_rss_is_supported(port))
- 		return -EOPNOTSUPP;
- 
- 	switch (info->cmd) {
-@@ -5569,7 +5570,9 @@ static int mvpp2_ethtool_set_rxnfc(struct net_device *dev,
- 
- static u32 mvpp2_ethtool_get_rxfh_indir_size(struct net_device *dev)
- {
--	return mvpp22_rss_is_supported() ? MVPP22_RSS_TABLE_ENTRIES : 0;
-+	struct mvpp2_port *port = netdev_priv(dev);
-+
-+	return mvpp22_rss_is_supported(port) ? MVPP22_RSS_TABLE_ENTRIES : 0;
- }
- 
- static int mvpp2_ethtool_get_rxfh(struct net_device *dev, u32 *indir, u8 *key,
-@@ -5578,7 +5581,7 @@ static int mvpp2_ethtool_get_rxfh(struct net_device *dev, u32 *indir, u8 *key,
- 	struct mvpp2_port *port = netdev_priv(dev);
- 	int ret = 0;
- 
--	if (!mvpp22_rss_is_supported())
-+	if (!mvpp22_rss_is_supported(port))
- 		return -EOPNOTSUPP;
- 
- 	if (indir)
-@@ -5596,7 +5599,7 @@ static int mvpp2_ethtool_set_rxfh(struct net_device *dev, const u32 *indir,
- 	struct mvpp2_port *port = netdev_priv(dev);
- 	int ret = 0;
- 
--	if (!mvpp22_rss_is_supported())
-+	if (!mvpp22_rss_is_supported(port))
- 		return -EOPNOTSUPP;
- 
- 	if (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != ETH_RSS_HASH_CRC32)
-@@ -5617,7 +5620,7 @@ static int mvpp2_ethtool_get_rxfh_context(struct net_device *dev, u32 *indir,
- 	struct mvpp2_port *port = netdev_priv(dev);
- 	int ret = 0;
- 
--	if (!mvpp22_rss_is_supported())
-+	if (!mvpp22_rss_is_supported(port))
- 		return -EOPNOTSUPP;
- 	if (rss_context >= MVPP22_N_RSS_TABLES)
- 		return -EINVAL;
-@@ -5639,7 +5642,7 @@ static int mvpp2_ethtool_set_rxfh_context(struct net_device *dev,
- 	struct mvpp2_port *port = netdev_priv(dev);
- 	int ret;
- 
--	if (!mvpp22_rss_is_supported())
-+	if (!mvpp22_rss_is_supported(port))
- 		return -EOPNOTSUPP;
- 
- 	if (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != ETH_RSS_HASH_CRC32)
-@@ -5956,7 +5959,7 @@ static int mvpp2_port_init(struct mvpp2_port *port)
- 	mvpp2_cls_oversize_rxq_set(port);
- 	mvpp2_cls_port_config(port);
- 
--	if (mvpp22_rss_is_supported())
-+	if (mvpp22_rss_is_supported(port))
- 		mvpp22_port_rss_init(port);
- 
- 	/* Provide an initial Rx packet size */
-@@ -6861,7 +6864,7 @@ static int mvpp2_port_probe(struct platform_device *pdev,
- 	dev->hw_features |= features | NETIF_F_RXCSUM | NETIF_F_GRO |
- 			    NETIF_F_HW_VLAN_CTAG_FILTER;
- 
--	if (mvpp22_rss_is_supported()) {
-+	if (mvpp22_rss_is_supported(port)) {
- 		dev->hw_features |= NETIF_F_RXHASH;
- 		dev->features |= NETIF_F_NTUPLE;
- 	}
--- 
-1.9.1
+It will print "(null)" instead of the name. It should be enough
+to inform the user this way. The extra pr_warn() does not help
+much to localize the problem anyway. And it is better to avoid
+recursion in this path.
 
+Best Regards,
+Petr
