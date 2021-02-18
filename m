@@ -2,106 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD89031ED62
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 18:37:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF71131ED60
+	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 18:37:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234413AbhBRRdt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 12:33:49 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:37604 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231401AbhBRPD6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 10:03:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613660494;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=96TuIx8B9Sg12x8R4gtF94r3wYssraiv2dr3ZsuIF9U=;
-        b=euPEXhFTD8bf3GzU4plmcvoFGB068ByXbFWrvi3iBVq1Bu3yQB4/6hFwKGQBlJY+1vHobh
-        zGxeLw0+d+aAuiLlT3utUhXtHH0J/leqhCRd9uI3woMCUXZRj+nZVIsrlIfhDV4HI/1H6T
-        3KMAbXm8sCYuZhNIxxH1ZdiBqNGssZw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-435-yooqRrcDNXe02Q1acWS98Q-1; Thu, 18 Feb 2021 10:01:32 -0500
-X-MC-Unique: yooqRrcDNXe02Q1acWS98Q-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4225480196C;
-        Thu, 18 Feb 2021 15:01:31 +0000 (UTC)
-Received: from bnemeth.users.ipa.redhat.com (ovpn-114-242.ams2.redhat.com [10.36.114.242])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C9035100AE2B;
-        Thu, 18 Feb 2021 15:01:25 +0000 (UTC)
-From:   Balazs Nemeth <bnemeth@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, mst@redhat.com, jasowang@redhat.com,
-        davem@davemloft.net, willemb@google.com,
-        virtualization@lists.linux-foundation.org, bnemeth@redhat.com
-Subject: [PATCH] net: check if protocol extracted by virtio_net_hdr_set_proto is correct
-Date:   Thu, 18 Feb 2021 15:57:54 +0100
-Message-Id: <5e910d11a14da17c41317417fc41d3a9d472c6e7.1613659844.git.bnemeth@redhat.com>
+        id S234397AbhBRRd2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 12:33:28 -0500
+Received: from mail.a-eberle.de ([213.95.140.213]:50834 "EHLO mail.a-eberle.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230470AbhBRPDa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Feb 2021 10:03:30 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by mail.a-eberle.de (Postfix) with ESMTP id C7799380537;
+        Thu, 18 Feb 2021 16:01:47 +0100 (CET)
+X-Virus-Scanned: Debian amavisd-new at aeberle-mx.softwerk.noris.de
+Received: from mail.a-eberle.de ([127.0.0.1])
+        by localhost (ebl-mx-02.a-eberle.de [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id mYqigv7O4NS2; Thu, 18 Feb 2021 16:01:46 +0100 (CET)
+Received: from localhost.localdomain (unknown [188.194.194.169])
+        (Authenticated sender: marco.wenzel@a-eberle.de)
+        by mail.a-eberle.de (Postfix) with ESMTPA;
+        Thu, 18 Feb 2021 16:01:46 +0100 (CET)
+From:   Marco Wenzel <marco.wenzel@a-eberle.de>
+To:     george.mccollister@gmail.com
+Cc:     Marco Wenzel <marco.wenzel@a-eberle.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Amol Grover <frextrite@gmail.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Arvid Brodin <Arvid.Brodin@xdin.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: hsr: add support for EntryForgetTime
+Date:   Thu, 18 Feb 2021 16:01:12 +0100
+Message-Id: <20210218150116.1521-1-marco.wenzel@a-eberle.de>
+X-Mailer: git-send-email 2.30.0
+In-Reply-To: <CAFSKS=Ncr-9s1Oi0GTqQ74sUaDjoHR-1P-yM+rNqjF-Hb+cPCA@mail.gmail.com>
+References: <CAFSKS=Ncr-9s1Oi0GTqQ74sUaDjoHR-1P-yM+rNqjF-Hb+cPCA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For gso packets, virtio_net_hdr_set_proto sets the protocol (if it isn't
-set) based on the type in the virtio net hdr, but the skb could contain
-anything since it could come from packet_snd through a raw socket. If
-there is a mismatch between what virtio_net_hdr_set_proto sets and
-the actual protocol, then the skb could be handled incorrectly later
-on by gso.
+In IEC 62439-3 EntryForgetTime is defined with a value of 400 ms. When a
+node does not send any frame within this time, the sequence number check
+for can be ignored. This solves communication issues with Cisco IE 2000
+in Redbox mode.
 
-The network header of gso packets starts at 14 bytes, but a specially
-crafted packet could fool the call to skb_flow_dissect_flow_keys_basic
-as the network header offset in the skb could be incorrect.
-Consequently, EINVAL is not returned.
-
-There are even packets that can cause an infinite loop. For example, a
-packet with ethernet type ETH_P_MPLS_UC (which is unnoticed by
-virtio_net_hdr_to_skb) that is sent to a geneve interface will be
-handled by geneve_build_skb. In turn, it calls
-udp_tunnel_handle_offloads which then calls skb_reset_inner_headers.
-After that, the packet gets passed to mpls_gso_segment. That function
-calculates the mpls header length by taking the difference between
-network_header and inner_network_header. Since the two are equal
-(due to the earlier call to skb_reset_inner_headers), it will calculate
-a header of length 0, and it will not pull any headers. Then, it will
-call skb_mac_gso_segment which will again call mpls_gso_segment, etc...
-This leads to the infinite loop.
-
-For that reason, address the root cause of the issue: don't blindly
-trust the information provided by the virtio net header. Instead,
-check if the protocol in the packet actually matches the protocol set by
-virtio_net_hdr_set_proto.
-
-Fixes: 9274124f023b ("net: stricter validation of untrusted gso packets")
-Signed-off-by: Balazs Nemeth <bnemeth@redhat.com>
+Fixes: f421436a591d ("net/hsr: Add support for the High-availability Seamless Redundancy protocol (HSRv0)")
+Signed-off-by: Marco Wenzel <marco.wenzel@a-eberle.de>
 ---
- include/linux/virtio_net.h | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ net/hsr/hsr_framereg.c | 9 +++++++--
+ net/hsr/hsr_framereg.h | 1 +
+ net/hsr/hsr_main.h     | 1 +
+ 3 files changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/virtio_net.h b/include/linux/virtio_net.h
-index e8a924eeea3d..cf2c53563f22 100644
---- a/include/linux/virtio_net.h
-+++ b/include/linux/virtio_net.h
-@@ -79,8 +79,13 @@ static inline int virtio_net_hdr_to_skb(struct sk_buff *skb,
- 		if (gso_type && skb->network_header) {
- 			struct flow_keys_basic keys;
+diff --git a/net/hsr/hsr_framereg.c b/net/hsr/hsr_framereg.c
+index 5c97de459905..805f974923b9 100644
+--- a/net/hsr/hsr_framereg.c
++++ b/net/hsr/hsr_framereg.c
+@@ -164,8 +164,10 @@ static struct hsr_node *hsr_add_node(struct hsr_priv *hsr,
+ 	 * as initialization. (0 could trigger an spurious ring error warning).
+ 	 */
+ 	now = jiffies;
+-	for (i = 0; i < HSR_PT_PORTS; i++)
++	for (i = 0; i < HSR_PT_PORTS; i++) {
+ 		new_node->time_in[i] = now;
++		new_node->time_out[i] = now;
++	}
+ 	for (i = 0; i < HSR_PT_PORTS; i++)
+ 		new_node->seq_out[i] = seq_out;
  
--			if (!skb->protocol)
-+			if (!skb->protocol) {
-+				const struct ethhdr *eth = skb_eth_hdr(skb);
-+
- 				virtio_net_hdr_set_proto(skb, hdr);
-+				if (skb->protocol != eth->h_proto)
-+					return -EINVAL;
-+			}
- retry:
- 			if (!skb_flow_dissect_flow_keys_basic(NULL, skb, &keys,
- 							      NULL, 0, 0, 0,
+@@ -411,9 +413,12 @@ void hsr_register_frame_in(struct hsr_node *node, struct hsr_port *port,
+ int hsr_register_frame_out(struct hsr_port *port, struct hsr_node *node,
+ 			   u16 sequence_nr)
+ {
+-	if (seq_nr_before_or_eq(sequence_nr, node->seq_out[port->type]))
++	if (seq_nr_before_or_eq(sequence_nr, node->seq_out[port->type]) &&
++	    time_is_after_jiffies(node->time_out[port->type] +
++	    msecs_to_jiffies(HSR_ENTRY_FORGET_TIME)))
+ 		return 1;
+ 
++	node->time_out[port->type] = jiffies;
+ 	node->seq_out[port->type] = sequence_nr;
+ 	return 0;
+ }
+diff --git a/net/hsr/hsr_framereg.h b/net/hsr/hsr_framereg.h
+index 86b43f539f2c..d9628e7a5f05 100644
+--- a/net/hsr/hsr_framereg.h
++++ b/net/hsr/hsr_framereg.h
+@@ -75,6 +75,7 @@ struct hsr_node {
+ 	enum hsr_port_type	addr_B_port;
+ 	unsigned long		time_in[HSR_PT_PORTS];
+ 	bool			time_in_stale[HSR_PT_PORTS];
++	unsigned long		time_out[HSR_PT_PORTS];
+ 	/* if the node is a SAN */
+ 	bool			san_a;
+ 	bool			san_b;
+diff --git a/net/hsr/hsr_main.h b/net/hsr/hsr_main.h
+index 7dc92ce5a134..f79ca55d6986 100644
+--- a/net/hsr/hsr_main.h
++++ b/net/hsr/hsr_main.h
+@@ -21,6 +21,7 @@
+ #define HSR_LIFE_CHECK_INTERVAL		 2000 /* ms */
+ #define HSR_NODE_FORGET_TIME		60000 /* ms */
+ #define HSR_ANNOUNCE_INTERVAL		  100 /* ms */
++#define HSR_ENTRY_FORGET_TIME		  400 /* ms */
+ 
+ /* By how much may slave1 and slave2 timestamps of latest received frame from
+  * each node differ before we notify of communication problem?
 -- 
-2.29.2
+2.30.0
 
