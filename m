@@ -2,91 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0B1431F16F
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 21:56:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C0D831F18F
+	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 22:10:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231136AbhBRUyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 15:54:46 -0500
-Received: from ozlabs.org ([203.11.71.1]:52873 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231438AbhBRUxj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Feb 2021 15:53:39 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4DhRk14YVSz9sBJ;
-        Fri, 19 Feb 2021 07:52:56 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1613681577;
-        bh=mbks+mMscNaIdkDjqnY7Nnb54RoU2CCcSOK6AZlVAfI=;
-        h=Date:From:To:Cc:Subject:From;
-        b=OTCcrfp/+Y1l/VLnYNEF393XECP67TRy0shjuEAFMt/bsqEhThLjJyySkK5v+5oM5
-         SuNs+MX6COEByVHkYRQnWcKGwxNMQU9D+vqEaJvhLQCfg4K0+CpkM5m8HoyvWYatvc
-         VJ3IOsz5w/YEqKGVoBQFT7N1bYZho00D2q0EQHXi4NkJ2DF4xoVHxZXhi6/N+1z3K3
-         kgRKk4h+6dx6bhNomJTiWfYT7/qNycfEq/rPnHqnazSpDp9AOqAhdh1wxPVRN0rgQD
-         Ed0sWQFph8SRfNEVLYM0yiJs73fTG48jiaButaITHlBO9GVj76uQYFaV9SJ2iHGITp
-         3Lj6UntjH0A2A==
-Date:   Fri, 19 Feb 2021 07:52:56 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Brendan Jackman <jackmanb@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build warnings after merge of the net-next tree
-Message-ID: <20210219075256.7af60fb0@canb.auug.org.au>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/lFxdG8TW_eZZr4dQ8a5F=aP";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+        id S230026AbhBRVJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 16:09:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47324 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229577AbhBRVJy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 16:09:54 -0500
+Received: from mail.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC155C061574;
+        Thu, 18 Feb 2021 13:09:04 -0800 (PST)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id E74FB4D30C708;
+        Thu, 18 Feb 2021 13:09:02 -0800 (PST)
+Date:   Thu, 18 Feb 2021 13:08:58 -0800 (PST)
+Message-Id: <20210218.130858.1480136584674158754.davem@davemloft.net>
+To:     michael@walle.cc
+Cc:     olteanv@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, kuba@kernel.org
+Subject: Re: [PATCH net-next v2 0/2] net: phy: at803x: paging support
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <15a6833c0db85fc3871a1d926d6636d6@walle.cc>
+References: <20210218185240.23615-1-michael@walle.cc>
+        <20210218192647.m5l4wkboxms47urw@skbuf>
+        <15a6833c0db85fc3871a1d926d6636d6@walle.cc>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Thu, 18 Feb 2021 13:09:03 -0800 (PST)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/lFxdG8TW_eZZr4dQ8a5F=aP
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+From: Michael Walle <michael@walle.cc>
+Date: Thu, 18 Feb 2021 20:46:10 +0100
 
-Hi all,
+> Am 2021-02-18 20:26, schrieb Vladimir Oltean:
+>> On Thu, Feb 18, 2021 at 07:52:38PM +0100, Michael Walle wrote:
+>>> Add paging support to the QCA AR8031/33 PHY. This will be needed if we
+>>> add support for the .config_inband_aneg callback, see series [1].
+>>> The driver itself already accesses the fiber page (without proper
+>>> locking).
+>>> The former version of this patchset converted the access to
+>>> phy_read_paged(), but Vladimir Oltean mentioned that it is dead code.
+>>> Therefore, the second patch will just remove it.
+>>> changes since v1:
+>>>  - second patch will remove at803x_aneg_done() altogether
+>> I'm pretty sure net-next is closed now, since David sent the pull
+>> request, and I didn't come to a conclusion yet regarding the final
+>> form of the phy_config_inband_aneg method either.
+> 
+> Yeah I wasn't sure. http://vger.kernel.org/~davem/net-next.html says
+> it is still open. But anyway, if not, I'll resend the patch after
+> the merge window. I've also thought about splitting it into two
+> individual patches, because they aren't dependent on each other
+> anymore.
 
-After merging the net-next tree, today's linux-next build (htmldocs)
-produced these warnings:
+It is closed now, so this will have to be deferred.
 
-Documentation/networking/filter.rst:1053: WARNING: Inline emphasis start-st=
-ring without end-string.
-Documentation/networking/filter.rst:1053: WARNING: Inline emphasis start-st=
-ring without end-string.
-Documentation/networking/filter.rst:1053: WARNING: Inline emphasis start-st=
-ring without end-string.
-Documentation/networking/filter.rst:1053: WARNING: Inline emphasis start-st=
-ring without end-string.
+Thanks.
 
-Introduced by commit
-
-  91c960b00566 ("bpf: Rename BPF_XADD and prepare to encode other atomics i=
-n .imm")
-
-Sorry that I missed these earlier.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/lFxdG8TW_eZZr4dQ8a5F=aP
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmAu06gACgkQAVBC80lX
-0GzBCAgApTtuAAay2d4m9sdTUCRpHQWD5TyPja7zZTYF6rFWWybt9nO6Oa/8ssbj
-afIn7P+hTps2SqPBzDkmtbJP9zczwIvHSAC9n4J2g/IMFK+omJl0Inx77QcYnljc
-VNjwgzOJDEfnODGmIGqvohcRpMaGUfrmAQqHhAn07OqRvTs3+qeA9sPi5hn3HGJ/
-nr1xGPTgumvTn6mvs+GvxhcaI2NZjS84pszgeNLSImM27HSYqmOKeuF35TExreXd
-q2PJx+XGqPn3VWEPVE2NesLYgKUKT17A8pFYb8jLLfXJle9n5r4dvrZFx64NNCcT
-TeBaHjCRu7HXOIwdiGcciTkKBCvsRA==
-=MK4p
------END PGP SIGNATURE-----
-
---Sig_/lFxdG8TW_eZZr4dQ8a5F=aP--
