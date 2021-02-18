@@ -2,90 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E144E31EDB0
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 18:52:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A55731EDB3
+	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 18:54:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234751AbhBRRwV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 12:52:21 -0500
-Received: from mail.zx2c4.com ([104.131.123.232]:57120 "EHLO mail.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234322AbhBRRhH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Feb 2021 12:37:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1613669752;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yS9QXbzyO+lJNQofHs5bv8cLQin4iQddVT2ExrF572g=;
-        b=BMfSIyvVrFbjWpIDEJpMpxCwPkPxESEbs2F7Jq0HzkZDgTOiuLBICb0IiKrLUwbfoJl0Td
-        c7mnV/AqFgagecu5P9qpR5WUEl70vtyo6cp6pRt2jCClmXf15JIJI+6LpMx+/BcV1/4l9P
-        Zt8QTkjD5OWpCJHRy8j/ZEXVq9d7Bjc=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id e66fda25 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
-        for <netdev@vger.kernel.org>;
-        Thu, 18 Feb 2021 17:35:52 +0000 (UTC)
-Received: by mail-yb1-f179.google.com with SMTP id p186so2950866ybg.2
-        for <netdev@vger.kernel.org>; Thu, 18 Feb 2021 09:35:52 -0800 (PST)
-X-Gm-Message-State: AOAM5315fXyrNNJI2ZdQsTK6PZ1lmuj5qqros6MnWarSJlxx0KeWlKY6
-        CZBKq3z7AQyLc+m+S40qO+dw+Qy5oE7pOJhw9fk=
-X-Google-Smtp-Source: ABdhPJw6T5ceGMmY9nxNFv+LSIp9bhSCmfP1LVMpzcxXe26qnoUi9zc+DNaQrgz6U9wgIIcvwQJog4iuF0pMCxQJsoU=
-X-Received: by 2002:a25:3cd:: with SMTP id 196mr8524075ybd.456.1613669751767;
- Thu, 18 Feb 2021 09:35:51 -0800 (PST)
+        id S234768AbhBRRwx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 12:52:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58036 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234461AbhBRRhq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 12:37:46 -0500
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC91C0613D6;
+        Thu, 18 Feb 2021 09:37:05 -0800 (PST)
+Received: by mail-pg1-x52b.google.com with SMTP id 75so1551465pgf.13;
+        Thu, 18 Feb 2021 09:37:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Xmf6pTNe7mQQ+6NHgcE8bVS8WWzHYXysNcfphF1I+24=;
+        b=Y/8D/DbfQgqs+GHwMjEuxhzZCU1naE54M6ECflXmCALxpIV0AXdNrz2eQRDpXtFki5
+         URJgtKjb+/zCNsyyRv0sKQ0oom1VGKhXLAcENdEsQUj2CslkwXOWuuTg77O8rgBXUsSI
+         E4Xchs1spLREWPvvEip4Oi5pDq7yhTMQNsRiN3apzSRM1/4DTDz/tIktS4oZbFyc0P6P
+         S2eThA6pR6nCXcCgq2GMoJNSAlJb5h+v7ae7/diE2HF8Zbp2e1E/S3iNJihZ+3tvY30c
+         WRSxxvxRC5rdr4NUsysZfIRYrmF+YZfEb+g5w9TUPRZERGZjnj6SCn9FcUl+PG6LWKsv
+         AHjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Xmf6pTNe7mQQ+6NHgcE8bVS8WWzHYXysNcfphF1I+24=;
+        b=OSMp6MJeHwIzmpHgJECGsySokMsDqPAHE8bnaG6c3GeN9qcT61Gc0sfeGU0oelEHZO
+         xiqb8F6TlsIk/ZF5TLoY6XE67qsC+9iCm+SiEHgcEFDvLwjKS/8Hr2FCcdkeXHiRkzhr
+         Tg2fpQ4tP/fY4DrsCrGUaMhX/oR+6+8gmY57EA6KFts+GutgNFGkCJYwgnjW0kngQhwC
+         KhM+jqqeWKJJKiES9U8YcZQ2Jnz8sPyEdlmlRUE1RchaeWM24xlD4xrZwQHw/nnM+m7a
+         IAb/GwPRyuisu+01pNHRYaF6Jllt2MpurDFFVQhInDRKwMzNTMycRNgvYVeUwcmWvPu+
+         mA6w==
+X-Gm-Message-State: AOAM530mq2/kNzZO7XIimp/LbA6Q2HpFRdiBel98mV0xiuhuWrIbn84F
+        wmYMx8IJoqKB77VhsZdBY/5xhkrXJszfFoZ2tIHQiCGr
+X-Google-Smtp-Source: ABdhPJy4lZs5G/uRY3utOJ/evT/TjcNbVyBZZnGu2g4ZS/e5JLu4FJZrG5lr3f0fi0KTZHNrPiA6ykLIfp5gBvcV464=
+X-Received: by 2002:a05:6a00:7c7:b029:1de:80cd:46b8 with SMTP id
+ n7-20020a056a0007c7b02901de80cd46b8mr5427816pfu.63.1613669825077; Thu, 18 Feb
+ 2021 09:37:05 -0800 (PST)
 MIME-Version: 1.0
-References: <CAHmME9o-N5wamS0YbQCHUfFwo3tPD8D3UH=AZpU61oohEtvOKg@mail.gmail.com>
- <20210218160745.2343501-1-Jason@zx2c4.com> <CA+FuTSeyYti3TMUd2EgQqTAjHjV=EXVZtmY9HUdOP0=U8WRyJA@mail.gmail.com>
-In-Reply-To: <CA+FuTSeyYti3TMUd2EgQqTAjHjV=EXVZtmY9HUdOP0=U8WRyJA@mail.gmail.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Thu, 18 Feb 2021 18:35:40 +0100
-X-Gmail-Original-Message-ID: <CAHmME9rVuw5tAHUpnsXrLh-WAMXmvqSNFdOUh1XaKZ8bLOow9g@mail.gmail.com>
-Message-ID: <CAHmME9rVuw5tAHUpnsXrLh-WAMXmvqSNFdOUh1XaKZ8bLOow9g@mail.gmail.com>
-Subject: Re: [PATCH net v2] net: icmp: pass zeroed opts from
- icmp{,v6}_ndo_send before sending
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        SinYu <liuxyon@gmail.com>
+References: <20210216201813.60394-1-xie.he.0141@gmail.com> <YC4sB9OCl5mm3JAw@unreal>
+ <CAJht_EN2ZO8r-dpou5M4kkg3o3J5mHvM7NdjS8nigRCGyih7mg@mail.gmail.com> <YC5DVTHHd6OOs459@unreal>
+In-Reply-To: <YC5DVTHHd6OOs459@unreal>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Thu, 18 Feb 2021 09:36:54 -0800
+Message-ID: <CAJht_EOhu+Wsv91yDS5dEt+YgSmGsBnkz=igeTLibenAgR=Tew@mail.gmail.com>
+Subject: Re: [PATCH net-next RFC v4] net: hdlc_x25: Queue outgoing LAPB frames
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux X25 <linux-x25@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Martin Schiller <ms@dev.tdt.de>,
+        Krzysztof Halasa <khc@pm.waw.pl>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 18, 2021 at 5:34 PM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
-> Thanks for respinning.
+On Thu, Feb 18, 2021 at 2:37 AM Leon Romanovsky <leon@kernel.org> wrote:
 >
-> Making ipv4 and ipv6 more aligned is a good goal, but more for
-> net-next than bug fixes that need to be backported to many stable
-> branches.
->
-> Beyond that, I'm not sure this fixes additional cases vs the previous
-> patch? It uses new on-stack variables instead of skb->cb, which again
-> is probably good in general, but adds more change than is needed for
-> the stable fix.
+> It is not me who didn't explain, it is you who didn't want to write clear
+> comment that describes the headroom size without need of "3 - 1".
 
-It doesn't appear to be problematic for applying to stable. I think
-this v2 is the "right way" to handle it. Zeroing out skb->cb is
-unexpected and weird anyway. What if the caller was expecting to use
-their skb->cb after calling icmp_ndo_send? Did they think it'd get
-wiped out like that? This v2 prevents that weird behavior from
-happening.
+Why do I need to write unnecessary comments when "3 - 1" and the
+current comment already explains everything?
 
-> My comment on fixing all callers of  icmp{,v6}_send was wrong, in
-> hindsight. In most cases IPCB is set correctly before calling those,
-> so we cannot just zero inside those. If we can only address the case
-> for icmp{,v6}_ndo_send I think the previous patch introduced less
-> churn, so is preferable. Unless I'm missing something.
+> So in current situation, you added two things: comment and assignment.
+> Both of them aren't serve their goals.
 
-As mentioned above it's weird and unexpected.
+Why?
 
-> Reminder of two main comments: sufficient to zero sizeof(IPCB..) and
-> if respinning, please explicitly mention the path that leads to a
-> stack overflow, as it is not immediately obvious (even from reading
-> the fix code?).
+> Your comment doesn't explain
+> enough and needs extra help
 
-I don't intend to respin v1, as I think v2 is more correct, and I
-don't think only zeroing IPCB is a smart idea, as in the future that
-code is bound to break when somebody forgets to update it. This v2
-does away with the zeroing all together, though, so that the right
-bytes to be zeroed are properly enforced all the time by the type
-system.
+Why? My comment already explains everything.
 
-Jason
+> and your assignment is useless without
+> comment.
+
+My assignment is already very clear with my current comment. My
+comment explains very clearly what this assignment means.
