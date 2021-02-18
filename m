@@ -2,384 +2,347 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 729E331ED73
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 18:41:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F27531ED75
+	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 18:41:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234373AbhBRRk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 12:40:27 -0500
-Received: from mail.baikalelectronics.com ([87.245.175.226]:52576 "EHLO
-        mail.baikalelectronics.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232848AbhBRP4a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 10:56:30 -0500
-Date:   Thu, 18 Feb 2021 18:55:18 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Rob Herring <robh@kernel.org>
-CC:     Serge Semin <fancer.lancer@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Joao Pinto <jpinto@synopsys.com>,
-        Lars Persson <larper@axis.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Vyacheslav Mitrofanov 
-        <Vyacheslav.Mitrofanov@baikalelectronics.ru>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 04/24] dt-bindings: net: dwmac: Refactor snps,*-config
- properties
-Message-ID: <20210218155518.vfedhfkfro42wkmh@mobilestation>
-References: <20210208135609.7685-1-Sergey.Semin@baikalelectronics.ru>
- <20210208135609.7685-5-Sergey.Semin@baikalelectronics.ru>
- <20210209222608.GA269004@robh.at.kernel.org>
- <20210210215749.yswl5efc3k55zx3v@mobilestation>
+        id S234397AbhBRRlG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 12:41:06 -0500
+Received: from mail.zx2c4.com ([104.131.123.232]:53848 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233143AbhBRQIv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Feb 2021 11:08:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1613664475;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+L//4FrUjge8KpqegMpCtmPb5de/WoocNH3OEsp8lYg=;
+        b=XHL/ytIiBUbusvytJI7wMUUt8A+bns6eOxc3GW2gBsYsmLT3VSp9PGH8FdanuzMAxssbvW
+        xHAOAeMM5pUK3gyCRht8GFyrV6zVhv1Eayg6k3YYsCtn8sXHgIXS7v9Zvsrl4iEFs0YmdD
+        ubdtVskhTN8I6I/3xl1TEr+fmCGhdu8=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 08555b42 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Thu, 18 Feb 2021 16:07:55 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     netdev@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>, SinYu <liuxyon@gmail.com>,
+        Willem de Bruijn <willemb@google.com>
+Subject: [PATCH net v2] net: icmp: pass zeroed opts from icmp{,v6}_ndo_send before sending
+Date:   Thu, 18 Feb 2021 17:07:45 +0100
+Message-Id: <20210218160745.2343501-1-Jason@zx2c4.com>
+In-Reply-To: <CAHmME9o-N5wamS0YbQCHUfFwo3tPD8D3UH=AZpU61oohEtvOKg@mail.gmail.com>
+References: <CAHmME9o-N5wamS0YbQCHUfFwo3tPD8D3UH=AZpU61oohEtvOKg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20210210215749.yswl5efc3k55zx3v@mobilestation>
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 11, 2021 at 12:58:00AM +0300, Serge Semin wrote:
-> On Tue, Feb 09, 2021 at 04:26:08PM -0600, Rob Herring wrote:
-> > On Mon, Feb 08, 2021 at 04:55:48PM +0300, Serge Semin wrote:
-> > > Currently the "snps,axi-config", "snps,mtl-rx-config" and
-> > > "snps,mtl-tx-config" properties are declared as a single phandle reference
-> > > to a node with corresponding parameters defined. That's not good for
-> > > several reasons. First of all scattering around a device tree some
-> > > particular device-specific configs with no visual relation to that device
-> > > isn't suitable from maintainability point of view. That leads to a
-> > > disturbed representation of the actual device tree mixing actual device
-> > > nodes and some vendor-specific configs. Secondly using the same configs
-> > > set for several device nodes doesn't represent well the devices structure,
-> > > since the interfaces these configs describe in hardware belong to
-> > > different devices and may actually differ. In the later case having the
-> > > configs node separated from the corresponding device nodes gets to be
-> > > even unjustified.
-> > > 
-> > > So instead of having a separate DW *MAC configs nodes we suggest to
-> > > define them as sub-nodes of the device nodes, which interfaces they
-> > > actually describe. By doing so we'll make the DW *MAC nodes visually
-> > > correct describing all the aspects of the IP-core configuration. Thus
-> > > we'll be able to describe the configs sub-nodes bindings right in the
-> > > snps,dwmac.yaml file.
-> > > 
-> > > Note the former "snps,axi-config", "snps,mtl-rx-config" and
-> > > "snps,mtl-tx-config" properties have been marked as deprecated in favor of
-> > > the added by this commit "axi-config", "mtl-rx-config" and "mtl-tx-config"
-> > > sub-nodes respectively.
-> > > 
-> > > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> > > 
-> > > ---
-> > > 
-> > > Note this change will work only if DT-schema tool is fixed like this:
-> > > 
-> > > --- a/meta-schemas/nodes.yaml	2021-02-08 14:20:56.732447780 +0300
-> > > +++ b/meta-schemas/nodes.yaml	2021-02-08 14:21:00.736492245 +0300
-> > > @@ -22,6 +22,7 @@
-> > >      - unevaluatedProperties
-> > >      - deprecated
-> > >      - required
-> > > +    - not
-> > >      - allOf
-> > >      - anyOf
-> > >      - oneOf
-> > 
-> 
-> > Can you send me a patch or GH PR. There is another way to express. More 
-> > below.
-> 
-> Ok. I'll send a patch. To what email and mailing lists shall I send it
-> to?
+The icmp{,v6}_send functions make all sorts of use of skb->cb, casting
+it with IPCB or IP6CB, assuming the skb to have come directly from the
+inet layer. But when the packet comes from the ndo layer, especially
+when forwarded, there's no telling what might be in skb->cb at that
+point. As a result, the icmp sending code risks reading bogus memory
+contents, which can result in nasty stack overflows such as this one
+reported by a user:
 
-Rob, any comments on my questions above and below?
+    panic+0x108/0x2ea
+    __stack_chk_fail+0x14/0x20
+    __icmp_send+0x5bd/0x5c0
+    icmp_ndo_send+0x148/0x160
 
--Sergey
+This is easy to simulate by doing a `memset(skb->cb, 0x41,
+sizeof(skb->cb));` before calling icmp{,v6}_ndo_send, and it's only by
+good fortune and the rarity of icmp sending from that context that we've
+avoided reports like this until now. For example, in KASAN:
 
-> 
-> > 
-> > > 
-> > > So a property with name "not" would be allowed and the "not-required"
-> > > pattern would work.
-> > > 
-> > > Changelog v2:
-> > > - Add the new sub-nodes "axi-config", "mtl-rx-config" and "mtl-tx-config"
-> > >   describing the nodes now deprecated properties were supposed to
-> > >   refer to.
-> > > - Fix invalid identation in the "snps,route-*" property settings.
-> > > - Use correct syntax of the JSON pointers, so the later would begin
-> > >   with a '/' after the '#'.
-> > > ---
-> > >  .../devicetree/bindings/net/snps,dwmac.yaml   | 389 +++++++++++++-----
-> > >  1 file changed, 297 insertions(+), 92 deletions(-)
-> > > 
-> > > diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> > > index 03d58bf9965f..4dda9ffa822c 100644
-> > > --- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> > > +++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> > > @@ -150,73 +150,264 @@ properties:
-> > >        in a different mode than the PHY in order to function.
-> > >  
-> > >    snps,axi-config:
-> > > +    deprecated: true
-> > >      $ref: /schemas/types.yaml#/definitions/phandle
-> > >      description:
-> > > -      AXI BUS Mode parameters. Phandle to a node that can contain the
-> > > -      following properties
-> > > -        * snps,lpi_en, enable Low Power Interface
-> > > -        * snps,xit_frm, unlock on WoL
-> > > -        * snps,wr_osr_lmt, max write outstanding req. limit
-> > > -        * snps,rd_osr_lmt, max read outstanding req. limit
-> > > -        * snps,kbbe, do not cross 1KiB boundary.
-> > > -        * snps,blen, this is a vector of supported burst length.
-> > > -        * snps,fb, fixed-burst
-> > > -        * snps,mb, mixed-burst
-> > > -        * snps,rb, rebuild INCRx Burst
-> > > +      AXI BUS Mode parameters. Phandle to a node that contains the properties
-> > > +      described in the 'axi-config' sub-node.
-> > > +
-> > > +  axi-config:
-> > > +    type: object
-> > > +    description: AXI BUS Mode parameters
-> > > +
-> > > +    properties:
-> > > +      snps,lpi_en:
-> > > +        $ref: /schemas/types.yaml#/definitions/flag
-> > > +        description: Enable Low Power Interface
-> > > +
-> > > +      snps,xit_frm:
-> > > +        $ref: /schemas/types.yaml#/definitions/flag
-> > > +        description: Unlock on WoL
-> > > +
-> > > +      snps,wr_osr_lmt:
-> > > +        $ref: /schemas/types.yaml#/definitions/uint32
-> > > +        description: Max write outstanding req. limit
-> > > +        default: 1
-> > > +        minimum: 0
-> > > +        maximum: 15
-> > > +
-> > > +      snps,rd_osr_lmt:
-> > > +        $ref: /schemas/types.yaml#/definitions/uint32
-> > > +        description: Max read outstanding req. limit
-> > > +        default: 1
-> > > +        minimum: 0
-> > > +        maximum: 15
-> > > +
-> > > +      snps,kbbe:
-> > > +        $ref: /schemas/types.yaml#/definitions/flag
-> > > +        description: Do not cross 1KiB boundary
-> > > +
-> > > +      snps,blen:
-> > > +        $ref: /schemas/types.yaml#/definitions/uint32-array
-> > > +        description: A vector of supported burst lengths
-> > > +        minItems: 7
-> > > +        maxItems: 7
-> > > +        items:
-> > > +          enum: [256, 128, 64, 32, 16, 8, 4, 0]
-> > > +
-> > > +      snps,fb:
-> > > +        $ref: /schemas/types.yaml#/definitions/flag
-> > > +        description: Fixed-burst
-> > > +
-> > > +      snps,mb:
-> > > +        $ref: /schemas/types.yaml#/definitions/flag
-> > > +        description: Mixed-burst
-> > > +
-> > > +      snps,rb:
-> > > +        $ref: /schemas/types.yaml#/definitions/flag
-> > > +        description: Rebuild INCRx Burst
-> > > +
-> > > +    additionalProperties: false
-> > >  
-> > >    snps,mtl-rx-config:
-> > 
-> 
-> > You could keep these pointing to child nodes to avoid driver changes.
-> 
-> Right, but I'd prefer having the AXI/MTL-config nodes directly found
-> because they are supposed to be defined as sub-nodes anyway. Having
-> the snps-prefixed AXI/MTL-config properties with phandle reference are
-> going to be marked as deprecated. By doing so we'll discourage
-> defining the DW MAC-related configs scattered around the new dts-es. 
-> 
-> > 
-> > > +    deprecated: true
-> > >      $ref: /schemas/types.yaml#/definitions/phandle
-> > >      description:
-> > > -      Multiple RX Queues parameters. Phandle to a node that can
-> > > -      contain the following properties
-> > > -        * snps,rx-queues-to-use, number of RX queues to be used in the
-> > > -          driver
-> > > -        * Choose one of these RX scheduling algorithms
-> > > -          * snps,rx-sched-sp, Strict priority
-> > > -          * snps,rx-sched-wsp, Weighted Strict priority
-> > > -        * For each RX queue
-> > > -          * Choose one of these modes
-> > > -            * snps,dcb-algorithm, Queue to be enabled as DCB
-> > > -            * snps,avb-algorithm, Queue to be enabled as AVB
-> > > -          * snps,map-to-dma-channel, Channel to map
-> > > -          * Specifiy specific packet routing
-> > > -            * snps,route-avcp, AV Untagged Control packets
-> > > -            * snps,route-ptp, PTP Packets
-> > > -            * snps,route-dcbcp, DCB Control Packets
-> > > -            * snps,route-up, Untagged Packets
-> > > -            * snps,route-multi-broad, Multicast & Broadcast Packets
-> > > -          * snps,priority, bitmask of the tagged frames priorities assigned to
-> > > -            the queue
-> > > +      Multiple RX Queues parameters. Phandle to a node that contains the
-> > > +      properties described in the 'mtl-rx-config' sub-node.
-> > > +
-> > > +  mtl-rx-config:
-> > > +    type: object
-> > > +    description: Multiple RX Queues parameters
-> > > +
-> > > +    properties:
-> > > +      snps,rx-queues-to-use:
-> > > +        $ref: /schemas/types.yaml#/definitions/uint32
-> > > +        description: Number of RX queues to be used in the driver
-> > > +        default: 1
-> > > +        minimum: 1
-> > > +
-> > > +    patternProperties:
-> > > +      "^snps,rx-sched-(sp|wsp)$":
-> > > +        $ref: /schemas/types.yaml#/definitions/flag
-> > > +        description: Strict/Weighted Strict RX scheduling priority
-> > > +
-> > > +      "^queue[0-9]$":
-> > > +        type: object
-> > > +        description: Each RX Queue parameters
-> > > +
-> > > +        properties:
-> > > +          snps,map-to-dma-channel:
-> > > +            $ref: /schemas/types.yaml#/definitions/uint32
-> > > +            description: DMA channel to map
-> > > +
-> > > +          snps,priority:
-> > > +            $ref: /schemas/types.yaml#/definitions/uint32
-> > > +            description: RX queue priority
-> > > +            minimum: 0
-> > > +            maximum: 15
-> > > +
-> > > +        patternProperties:
-> > > +          "^snps,(dcb|avb)-algorithm$":
-> > > +            $ref: /schemas/types.yaml#/definitions/flag
-> > > +            description: Enable Queue as DCB/AVB
-> > > +
-> > > +          "^snps,route-(avcp|ptp|dcbcp|up|multi-broad)$":
-> > > +            $ref: /schemas/types.yaml#/definitions/flag
-> > > +            description:
-> > > +              AV Untagged/PTP/DCB Control/Untagged/Multicast & Broadcast
-> > > +              packets routing respectively.
-> > > +
-> > > +        additionalProperties: false
-> > > +
-> > > +        # Choose only one of the Queue modes and the packets routing
-> > > +        allOf:
-> > > +          - not:
-> > > +              required:
-> > > +                - snps,dcb-algorithm
-> > > +                - snps,avb-algorithm
-> > > +          - oneOf:
-> > > +              - required:
-> > > +                  - snps,route-avcp
-> > > +              - required:
-> > > +                  - snps,route-ptp
-> > > +              - required:
-> > > +                  - snps,route-dcbcp
-> > > +              - required:
-> > > +                  - snps,route-up
-> > > +              - required:
-> > > +                  - snps,route-multi-broad
-> > > +              - not:
-> > > +                  anyOf:
-> > > +                    - required:
-> > > +                        - snps,route-avcp
-> > > +                    - required:
-> > > +                        - snps,route-ptp
-> > > +                    - required:
-> > > +                        - snps,route-dcbcp
-> > > +                    - required:
-> > > +                        - snps,route-up
-> > > +                    - required:
-> > > +                        - snps,route-multi-broad
-> > 
-> 
-> > This 'not: ..." could be:
-> > 
-> > properties:
-> >   snps,route-avcp: false
-> >   snps,route-ptp: false
-> >   snps,route-dcbcp: false
-> >   snps,route-up: false
-> >   snps,route-multi-broad: false
-> > 
-> > Not sure which one is better. Using required everywhere or more 
-> > concise...
-> 
-> Thanks for suggesting an alternative. I didn't figure out such option
-> myself. Though in this case since we need to use the required property
-> anyway, I'd prefer to have it used in the 'not' sub-schema too. At
-> least for uniformity and to simplify the conditional statement
-> readability, even if it causes a bit of the concise loss.
-> 
-> > 
-> > (Really, 'route' should have taken a value and the schema would be 
-> > greatly simplified. Oh well.)
-> 
-> Yeah, I had the same thought in mind when first saw that
-> boolean-properties hell. There are few more properties in this
-> bindings file which should have been also defined as taking values
-> instead of being booleans...
-> 
-> > 
-> > > +
-> > > +    additionalProperties: false
-> > > +
-> > > +    # Choose one of the RX scheduling algorithms
-> > > +    not:
-> > > +      required:
-> > > +        - snps,rx-sched-sp
-> > > +        - snps,rx-sched-wsp
-> > 
-> 
-> > I guess this is the problematic one. The rest should be hidden behind 
-> > conditionals (a common loophole in meta-schema checks). You could do 
-> > that here:
-> > 
-> > allOf:
-> >   - not:
-> >       ...
-> 
-> Oh, thanks. I can't believe I've missed that option. Though fixing the
-> dt-schema tool would be better than using the combining schema
-> keywords as a workaround.
-> 
-> > 
-> > But why not just make one of the 2 properties required? You're already 
-> > changing things. 
-> 
-> First of all the driver permits omitting all of them in the
-> corresponding nodes and implicitly using one of the properties by
-> default (the same thing is for the MTL Tx-queues). If we made some of
-> them being required we would have broken the driver dts-contract,
-> which is not good. Secondly I'd have to fix the
-> arch/arm/boot/dts/artpec6.dtsi dts file too, which would have been an
-> additional patch in the series, additional work, additional review
-> from the platform maintainer, additional merge path, etc. So to speak
-> that would cause more troubles, than just using the "not:" statement
-> here.)
-> 
-> -Sergey
-> 
-> > 
-> > Rob
+    BUG: KASAN: stack-out-of-bounds in __ip_options_echo+0xa0e/0x12b0
+    Write of size 38 at addr ffff888006f1f80e by task ping/89
+    CPU: 2 PID: 89 Comm: ping Not tainted 5.10.0-rc7-debug+ #5
+    Call Trace:
+     dump_stack+0x9a/0xcc
+     print_address_description.constprop.0+0x1a/0x160
+     __kasan_report.cold+0x20/0x38
+     kasan_report+0x32/0x40
+     check_memory_region+0x145/0x1a0
+     memcpy+0x39/0x60
+     __ip_options_echo+0xa0e/0x12b0
+     __icmp_send+0x744/0x1700
+
+Actually, out of the 4 drivers that do this, only gtp zeroed the cb for
+the v4 case, while the rest did not. So this commit actually removes the
+gtp-specific zeroing, while putting the code where it belongs in the
+shared infrastructure of icmp{,v6}_ndo_send.
+
+This commit fixes the issue by passing an empty IPCB or IP6CB along to
+the functions that actually do the work. For the icmp_send, this was
+already trivial, thanks to __icmp_send providing the plumbing function.
+For icmpv6_send, this required a tiny bit of refactoring to make it
+behave like the v4 case, after which it was straight forward.
+
+Fixes: a2b78e9b2cac ("sunvnet: generate ICMP PTMUD messages for smaller port MTUs")
+Reported-by: SinYu <liuxyon@gmail.com>
+Cc: Willem de Bruijn <willemb@google.com>
+Link: https://lore.kernel.org/netdev/CAF=yD-LOF116aHub6RMe8vB8ZpnrrnoTdqhobEx+bvoA8AsP0w@mail.gmail.com/T/
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ drivers/net/gtp.c      |  1 -
+ include/linux/icmpv6.h | 26 ++++++++++++++++++++------
+ include/linux/ipv6.h   |  1 -
+ include/net/icmp.h     |  6 +++++-
+ net/ipv4/icmp.c        |  5 +++--
+ net/ipv6/icmp.c        | 18 +++++++++---------
+ net/ipv6/ip6_icmp.c    |  7 ++++---
+ 7 files changed, 41 insertions(+), 23 deletions(-)
+
+diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
+index 4c04e271f184..fd3c2d86e48b 100644
+--- a/drivers/net/gtp.c
++++ b/drivers/net/gtp.c
+@@ -539,7 +539,6 @@ static int gtp_build_skb_ip4(struct sk_buff *skb, struct net_device *dev,
+ 	if (!skb_is_gso(skb) && (iph->frag_off & htons(IP_DF)) &&
+ 	    mtu < ntohs(iph->tot_len)) {
+ 		netdev_dbg(dev, "packet too big, fragmentation needed\n");
+-		memset(IPCB(skb), 0, sizeof(*IPCB(skb)));
+ 		icmp_ndo_send(skb, ICMP_DEST_UNREACH, ICMP_FRAG_NEEDED,
+ 			      htonl(mtu));
+ 		goto err_rt;
+diff --git a/include/linux/icmpv6.h b/include/linux/icmpv6.h
+index 1b3371ae8193..0a383202dd5e 100644
+--- a/include/linux/icmpv6.h
++++ b/include/linux/icmpv6.h
+@@ -3,6 +3,7 @@
+ #define _LINUX_ICMPV6_H
+ 
+ #include <linux/skbuff.h>
++#include <linux/ipv6.h>
+ #include <uapi/linux/icmpv6.h>
+ 
+ static inline struct icmp6hdr *icmp6_hdr(const struct sk_buff *skb)
+@@ -15,13 +16,16 @@ static inline struct icmp6hdr *icmp6_hdr(const struct sk_buff *skb)
+ #if IS_ENABLED(CONFIG_IPV6)
+ 
+ typedef void ip6_icmp_send_t(struct sk_buff *skb, u8 type, u8 code, __u32 info,
+-			     const struct in6_addr *force_saddr);
++			     const struct in6_addr *force_saddr,
++			     const struct inet6_skb_parm *parm);
+ #if IS_BUILTIN(CONFIG_IPV6)
+ void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
+-		const struct in6_addr *force_saddr);
+-static inline void icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info)
++		const struct in6_addr *force_saddr,
++		const struct inet6_skb_parm *parm);
++static inline void __icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
++				 const struct inet6_skb_parm *parm)
+ {
+-	icmp6_send(skb, type, code, info, NULL);
++	icmp6_send(skb, type, code, info, NULL, parm);
+ }
+ static inline int inet6_register_icmp_sender(ip6_icmp_send_t *fn)
+ {
+@@ -34,18 +38,28 @@ static inline int inet6_unregister_icmp_sender(ip6_icmp_send_t *fn)
+ 	return 0;
+ }
+ #else
+-extern void icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info);
++extern void __icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
++			  const struct inet6_skb_parm *parm);
+ extern int inet6_register_icmp_sender(ip6_icmp_send_t *fn);
+ extern int inet6_unregister_icmp_sender(ip6_icmp_send_t *fn);
+ #endif
+ 
++static inline void icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info)
++{
++	__icmpv6_send(skb, type, code, info, IP6CB(skb));
++}
++
+ int ip6_err_gen_icmpv6_unreach(struct sk_buff *skb, int nhs, int type,
+ 			       unsigned int data_len);
+ 
+ #if IS_ENABLED(CONFIG_NF_NAT)
+ void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info);
+ #else
+-#define icmpv6_ndo_send icmpv6_send
++static inline void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info)
++{
++	struct inet6_skb_parm parm = { 0 };
++	__icmpv6_send(skb_in, type, code, info, &parm);
++}
+ #endif
+ 
+ #else
+diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
+index dda61d150a13..f514a7dd8c9c 100644
+--- a/include/linux/ipv6.h
++++ b/include/linux/ipv6.h
+@@ -84,7 +84,6 @@ struct ipv6_params {
+ 	__s32 autoconf;
+ };
+ extern struct ipv6_params ipv6_defaults;
+-#include <linux/icmpv6.h>
+ #include <linux/tcp.h>
+ #include <linux/udp.h>
+ 
+diff --git a/include/net/icmp.h b/include/net/icmp.h
+index 9ac2d2672a93..fd84adc47963 100644
+--- a/include/net/icmp.h
++++ b/include/net/icmp.h
+@@ -46,7 +46,11 @@ static inline void icmp_send(struct sk_buff *skb_in, int type, int code, __be32
+ #if IS_ENABLED(CONFIG_NF_NAT)
+ void icmp_ndo_send(struct sk_buff *skb_in, int type, int code, __be32 info);
+ #else
+-#define icmp_ndo_send icmp_send
++static inline void icmp_ndo_send(struct sk_buff *skb_in, int type, int code, __be32 info)
++{
++	struct ip_options opts = { 0 };
++	__icmp_send(skb_in, type, code, info, &opts);
++}
+ #endif
+ 
+ int icmp_rcv(struct sk_buff *skb);
+diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
+index 396b492c804f..616e2dc1c8fa 100644
+--- a/net/ipv4/icmp.c
++++ b/net/ipv4/icmp.c
+@@ -775,13 +775,14 @@ EXPORT_SYMBOL(__icmp_send);
+ void icmp_ndo_send(struct sk_buff *skb_in, int type, int code, __be32 info)
+ {
+ 	struct sk_buff *cloned_skb = NULL;
++	struct ip_options opts = { 0 };
+ 	enum ip_conntrack_info ctinfo;
+ 	struct nf_conn *ct;
+ 	__be32 orig_ip;
+ 
+ 	ct = nf_ct_get(skb_in, &ctinfo);
+ 	if (!ct || !(ct->status & IPS_SRC_NAT)) {
+-		icmp_send(skb_in, type, code, info);
++		__icmp_send(skb_in, type, code, info, &opts);
+ 		return;
+ 	}
+ 
+@@ -796,7 +797,7 @@ void icmp_ndo_send(struct sk_buff *skb_in, int type, int code, __be32 info)
+ 
+ 	orig_ip = ip_hdr(skb_in)->saddr;
+ 	ip_hdr(skb_in)->saddr = ct->tuplehash[0].tuple.src.u3.ip;
+-	icmp_send(skb_in, type, code, info);
++	__icmp_send(skb_in, type, code, info, &opts);
+ 	ip_hdr(skb_in)->saddr = orig_ip;
+ out:
+ 	consume_skb(cloned_skb);
+diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
+index f3d05866692e..fd1f896115c1 100644
+--- a/net/ipv6/icmp.c
++++ b/net/ipv6/icmp.c
+@@ -331,10 +331,9 @@ static int icmpv6_getfrag(void *from, char *to, int offset, int len, int odd, st
+ }
+ 
+ #if IS_ENABLED(CONFIG_IPV6_MIP6)
+-static void mip6_addr_swap(struct sk_buff *skb)
++static void mip6_addr_swap(struct sk_buff *skb, const struct inet6_skb_parm *opt)
+ {
+ 	struct ipv6hdr *iph = ipv6_hdr(skb);
+-	struct inet6_skb_parm *opt = IP6CB(skb);
+ 	struct ipv6_destopt_hao *hao;
+ 	struct in6_addr tmp;
+ 	int off;
+@@ -351,7 +350,7 @@ static void mip6_addr_swap(struct sk_buff *skb)
+ 	}
+ }
+ #else
+-static inline void mip6_addr_swap(struct sk_buff *skb) {}
++static inline void mip6_addr_swap(struct sk_buff *skb, const struct inet6_skb_parm *opt) {}
+ #endif
+ 
+ static struct dst_entry *icmpv6_route_lookup(struct net *net,
+@@ -446,7 +445,8 @@ static int icmp6_iif(const struct sk_buff *skb)
+  *	Send an ICMP message in response to a packet in error
+  */
+ void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
+-		const struct in6_addr *force_saddr)
++		const struct in6_addr *force_saddr,
++		const struct inet6_skb_parm *parm)
+ {
+ 	struct inet6_dev *idev = NULL;
+ 	struct ipv6hdr *hdr = ipv6_hdr(skb);
+@@ -542,7 +542,7 @@ void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
+ 	if (!(skb->dev->flags & IFF_LOOPBACK) && !icmpv6_global_allow(net, type))
+ 		goto out_bh_enable;
+ 
+-	mip6_addr_swap(skb);
++	mip6_addr_swap(skb, parm);
+ 
+ 	sk = icmpv6_xmit_lock(net);
+ 	if (!sk)
+@@ -559,7 +559,7 @@ void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
+ 		/* select a more meaningful saddr from input if */
+ 		struct net_device *in_netdev;
+ 
+-		in_netdev = dev_get_by_index(net, IP6CB(skb)->iif);
++		in_netdev = dev_get_by_index(net, parm->iif);
+ 		if (in_netdev) {
+ 			ipv6_dev_get_saddr(net, in_netdev, &fl6.daddr,
+ 					   inet6_sk(sk)->srcprefs,
+@@ -640,7 +640,7 @@ EXPORT_SYMBOL(icmp6_send);
+  */
+ void icmpv6_param_prob(struct sk_buff *skb, u8 code, int pos)
+ {
+-	icmp6_send(skb, ICMPV6_PARAMPROB, code, pos, NULL);
++	icmp6_send(skb, ICMPV6_PARAMPROB, code, pos, NULL, IP6CB(skb));
+ 	kfree_skb(skb);
+ }
+ 
+@@ -697,10 +697,10 @@ int ip6_err_gen_icmpv6_unreach(struct sk_buff *skb, int nhs, int type,
+ 	}
+ 	if (type == ICMP_TIME_EXCEEDED)
+ 		icmp6_send(skb2, ICMPV6_TIME_EXCEED, ICMPV6_EXC_HOPLIMIT,
+-			   info, &temp_saddr);
++			   info, &temp_saddr, IP6CB(skb2));
+ 	else
+ 		icmp6_send(skb2, ICMPV6_DEST_UNREACH, ICMPV6_ADDR_UNREACH,
+-			   info, &temp_saddr);
++			   info, &temp_saddr, IP6CB(skb2));
+ 	if (rt)
+ 		ip6_rt_put(rt);
+ 
+diff --git a/net/ipv6/ip6_icmp.c b/net/ipv6/ip6_icmp.c
+index 70c8c2f36c98..5f834ebc09b0 100644
+--- a/net/ipv6/ip6_icmp.c
++++ b/net/ipv6/ip6_icmp.c
+@@ -40,7 +40,7 @@ void icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info)
+ 	rcu_read_lock();
+ 	send = rcu_dereference(ip6_icmp_send);
+ 	if (send)
+-		send(skb, type, code, info, NULL);
++		send(skb, type, code, info, NULL, IP6CB(skb));
+ 	rcu_read_unlock();
+ }
+ EXPORT_SYMBOL(icmpv6_send);
+@@ -50,6 +50,7 @@ EXPORT_SYMBOL(icmpv6_send);
+ #include <net/netfilter/nf_conntrack.h>
+ void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info)
+ {
++	struct inet6_skb_parm parm = { 0 };
+ 	struct sk_buff *cloned_skb = NULL;
+ 	enum ip_conntrack_info ctinfo;
+ 	struct in6_addr orig_ip;
+@@ -57,7 +58,7 @@ void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info)
+ 
+ 	ct = nf_ct_get(skb_in, &ctinfo);
+ 	if (!ct || !(ct->status & IPS_SRC_NAT)) {
+-		icmpv6_send(skb_in, type, code, info);
++		__icmpv6_send(skb_in, type, code, info, &parm);
+ 		return;
+ 	}
+ 
+@@ -72,7 +73,7 @@ void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info)
+ 
+ 	orig_ip = ipv6_hdr(skb_in)->saddr;
+ 	ipv6_hdr(skb_in)->saddr = ct->tuplehash[0].tuple.src.u3.in6;
+-	icmpv6_send(skb_in, type, code, info);
++	__icmpv6_send(skb_in, type, code, info, &parm);
+ 	ipv6_hdr(skb_in)->saddr = orig_ip;
+ out:
+ 	consume_skb(cloned_skb);
+-- 
+2.30.1
+
