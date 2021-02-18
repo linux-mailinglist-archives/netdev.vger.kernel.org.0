@@ -2,135 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F12F431F1D5
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 22:54:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E01131F212
+	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 23:08:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229743AbhBRVyT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 16:54:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56846 "EHLO
+        id S230121AbhBRWHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 17:07:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229577AbhBRVyQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 16:54:16 -0500
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3EC3C061756
-        for <netdev@vger.kernel.org>; Thu, 18 Feb 2021 13:53:35 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id j9so6260789edp.1
-        for <netdev@vger.kernel.org>; Thu, 18 Feb 2021 13:53:35 -0800 (PST)
+        with ESMTP id S229480AbhBRWHU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 17:07:20 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE87DC061756
+        for <netdev@vger.kernel.org>; Thu, 18 Feb 2021 14:06:39 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id ly28so8099444ejb.13
+        for <netdev@vger.kernel.org>; Thu, 18 Feb 2021 14:06:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cilium-io.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=lJX+ZMsQFOWh/ba1+WgKu7gSDHan7w+sAnp5mRPqmFs=;
-        b=qxyeTiuy22RCnVh8B19E2C3WJe4/GAfIMEcFal09Vr1R8jkF0fcS7iuRfE12SLBhJS
-         1kM3pIULy7nR1fcTOyrXbdtaOn+gEd2dtEW2ViCVHBFv14wYkMyE5gOB5h3L2fJhJiZX
-         +UyDApjyx3GIoxWko3xfy1wK9IJ0nr2fyYYZy1Uwaf6X9AS5D0UTFiO6TRICdNvj6G1q
-         PCg0lQl2soAgeX1Ill+R846955emmLqOHz1HSDytr+Hkn2YxhVwRhzwvUxRLKum89ZPf
-         Y/aZOqp6E6n8O5BF8sy9qli56bHWzdQ1VullT3oV8XKmlEssf77LSatV3EjTji5sjZpe
-         lErw==
+        bh=9nLwcukSUiyM9yanBYnq2PilmgchJztci7Qxaxjho4s=;
+        b=Ncu08+RdwepKWUgqkCdxRirnSzQSBscLa75hDw0Vp1HdQIyyUJeHa0oXGuZmG2jpCV
+         15VDD1emzqYAs87kKlnTXTyzFK2MzSmwnRouAG54s84qdv0746zy+93peA2yLdb5jCWY
+         AYSyDqpLWZyc5jYu0Bap1trg+sVFIDlQbVaMdazJed0yUK71i+gNz9Q0ePuL3VbS5Q99
+         VyPzi20AStGOIPYA1PJIDGcOHjSq7vQ/WlrCK2wKoYr9aoZ76TAAWactPzdxghq7LKFK
+         qixlVOeZLGuAZoASGGQ+U63JvZCmuco6paj8bXEdxZ6Sg6UUPmZEAwlgWrUcjUz05lA+
+         lE6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=lJX+ZMsQFOWh/ba1+WgKu7gSDHan7w+sAnp5mRPqmFs=;
-        b=TvAx++skv4zic8sSmhsSH641xBRccXJNlndUtdvqvcRZfvwIqnwgwu/POByytfCKxY
-         xUdqxQVWwbumPe6/WXGAk1Tcark6Hh0HcVbPb8LqGTO9Bd2z5tSbp34kQTvsL4Ovy1WB
-         HH2OWfRzGISNHSmwUpA1CVs/FZKX6yDR3W9o8t66QVUb1T/IO0DmlbUzWn2zeYifS10K
-         Wa2Iizxw7iXA1dkRkf+fuZ3qZrj8ZGq5hUV44BHFROmLYFOaO8o2hm/xLAm9gMuJniFr
-         ckfCibaHYhKmwF43eCJI9/SRbYDy7iJIbZKHvxPoldYYcMVk8xnrqqcdXRDoYP8glVvR
-         COZA==
-X-Gm-Message-State: AOAM533g48U4Jc6v4oGI7pnL/Mk/E905de8cON302+ZldyeZZRwzMuRO
-        8vpN9deNedpNFef+5VRg36FanA==
-X-Google-Smtp-Source: ABdhPJx6esC1ykZG4JP73jw6Pk1PfFUrMY6GFvDJ8ibNbSS+w6Ax6Wqo4wCqt4+6thT9SEHL4Y5IFA==
-X-Received: by 2002:a05:6402:34c1:: with SMTP id w1mr6149934edc.147.1613685214256;
-        Thu, 18 Feb 2021 13:53:34 -0800 (PST)
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com. [209.85.128.54])
-        by smtp.gmail.com with ESMTPSA id da12sm877418edb.52.2021.02.18.13.53.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 18 Feb 2021 13:53:33 -0800 (PST)
-Received: by mail-wm1-f54.google.com with SMTP id x4so5220421wmi.3;
-        Thu, 18 Feb 2021 13:53:33 -0800 (PST)
-X-Received: by 2002:a1c:e90d:: with SMTP id q13mr5313193wmc.136.1613685213123;
- Thu, 18 Feb 2021 13:53:33 -0800 (PST)
+        bh=9nLwcukSUiyM9yanBYnq2PilmgchJztci7Qxaxjho4s=;
+        b=Q5az040OTRd8UW56yyLGHr5ABpirAypMCPvsDqZUImDPFrvSu3Be5u7GlpCY4uqBtX
+         HKvnKYByXcRuP91btxdjIRHA5aodPMZaoIWRdNu2quDtO+AJNhdIrdS7lQ6WNQNwZ0Oj
+         7bXYo+Rlsu5WNpwgP8YerlaWPUeQEInOADawG6UE93+IPP5tQ9DAX5MbToApauqDeUTJ
+         l5kOA0R8jC9sq6xsxqkucd7D8OXYSg45uw8DwkCrEtX7PquQNfOaYxobQDgHGKDstUEh
+         yV5Uw8bYvaxJ8wQmYz9LGWM0GrNI5rj3a0QGKZo1pmXzeLazLdGax9yRK2yg/PaLps8/
+         YS9Q==
+X-Gm-Message-State: AOAM532VV3dNeZmV1Wre3VP8edRwnVct42XtxOgnZB/X9QTfbSomw4FV
+        vnQc7TPLZaAeHWjy4Jo11KaUp9bJHkywctFtv6jddmpb
+X-Google-Smtp-Source: ABdhPJxih1ukVBIJcsirbgWxpYC0e0O63Y6TbPFu95JWZK9Ccm03x4UPEDf8bK2/kxxNpPlm6k40wF19zoPJ9DECGMk=
+X-Received: by 2002:a17:906:11d5:: with SMTP id o21mr5793749eja.504.1613685998277;
+ Thu, 18 Feb 2021 14:06:38 -0800 (PST)
 MIME-Version: 1.0
-References: <20210217010821.1810741-1-joe@wand.net.nz> <871rdewqf2.fsf@meer.lwn.net>
- <CADa=RyzDXeJeW7jAVce0zfGX2zN5ZcAv5nwYsX7EtAz=bgZYkg@mail.gmail.com> <878s7lrxcc.fsf@meer.lwn.net>
-In-Reply-To: <878s7lrxcc.fsf@meer.lwn.net>
-From:   Joe Stringer <joe@cilium.io>
-Date:   Thu, 18 Feb 2021 13:53:21 -0800
-X-Gmail-Original-Message-ID: <CAOftzPjMCpkvbTddgv_BFCLsN33m=LENMzxa-VA_18sbnch=+g@mail.gmail.com>
-Message-ID: <CAOftzPjMCpkvbTddgv_BFCLsN33m=LENMzxa-VA_18sbnch=+g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 00/17] Improve BPF syscall command documentation
-To:     Jonathan Corbet <corbet@lwn.net>
-Cc:     bpf <bpf@vger.kernel.org>, linux-man@vger.kernel.org,
-        Networking <netdev@vger.kernel.org>, mtk.manpages@gmail.com,
-        Alexei Starovoitov <ast@kernel.org>,
-        Brian Vazquez <brianvv@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Daniel Mack <daniel@zonque.org>,
-        john fastabend <john.fastabend@gmail.com>,
-        Petar Penkov <ppenkov@google.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Sean Young <sean@mess.org>, Yonghong Song <yhs@fb.com>,
-        linux-doc@vger.kernel.org
+References: <CAHmME9oyv+nWk2r3mcVrfdXW_aiex67nSvGiiqLmPOv=RHnhfQ@mail.gmail.com>
+ <20210218203404.2429186-1-Jason@zx2c4.com>
+In-Reply-To: <20210218203404.2429186-1-Jason@zx2c4.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 18 Feb 2021 17:06:01 -0500
+Message-ID: <CAF=yD-K-8Gacsnch-1nTh11QFaXkfCj4TTj=Or6PF+6PyhbKiQ@mail.gmail.com>
+Subject: Re: [PATCH net v3] net: icmp: pass zeroed opts from
+ icmp{,v6}_ndo_send before sending
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        SinYu <liuxyon@gmail.com>, Willem de Bruijn <willemb@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 18, 2021 at 11:49 AM Jonathan Corbet <corbet@lwn.net> wrote:
+On Thu, Feb 18, 2021 at 3:39 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
 >
-> Joe Stringer <joe@cilium.io> writes:
-> > * The changes in patch 16 here extended Documentation/bpf/index.rst,
-> > but to assist in improving the overall kernel documentation
-> > organisation / hierarchy, you would prefer to instead introduce a
-> > dedicated Documentation/userspace-api/bpf/ directory where the bpf
-> > uAPI portions can be documented.
+> The icmp{,v6}_send functions make all sorts of use of skb->cb, casting
+
+Again, if respinning, please briefly describe the specific buggy code
+path. I think it's informative and cannot be gleaned from the fix.
+
+> it with IPCB or IP6CB, assuming the skb to have come directly from the
+> inet layer. But when the packet comes from the ndo layer, especially
+> when forwarded, there's no telling what might be in skb->cb at that
+> point. As a result, the icmp sending code risks reading bogus memory
+> contents, which can result in nasty stack overflows such as this one
+> reported by a user:
 >
-> An objective I've been working on for some years is reorienting the
-> documentation with a focus on who the readers are.  We've tended to
-> organize it by subsystem, requiring people to wade through a lot of
-> stuff that isn't useful to them.  So yes, my preference would be to
-> document the kernel's user-space API in the relevant manual.
+>     panic+0x108/0x2ea
+>     __stack_chk_fail+0x14/0x20
+>     __icmp_send+0x5bd/0x5c0
+>     icmp_ndo_send+0x148/0x160
 >
-> That said, I do tend to get pushback here at times, and the BPF API is
-> arguably a bit different that much of the rest.  So while the above
-> preference exists and is reasonably strong, the higher priority is to
-> get good, current documentation in *somewhere* so that it's available to
-> users.  I don't want to make life too difficult for people working
-> toward that goal, even if I would paint it a different color.
-
-Sure, I'm all for it. Unless I hear alternative feedback I'll roll it
-under Documentation/userspace-api/bpf in the next revision.
-
-> > In addition to this, today the bpf helpers documentation is built
-> > through the bpftool build process as well as the runtime bpf
-> > selftests, mostly as a way to ensure that the API documentation
-> > conforms to a particular style, which then assists with the generation
-> > of ReStructured Text and troff output. I can probably simplify the
-> > make infrastructure involved in triggering the bpf docs build for bpf
-> > subsystem developers and maintainers. I think there's likely still
-> > interest from bpf folks to keep that particular dependency in the
-> > selftests like today and even extend it to include this new
-> > Documentation, so that we don't either introduce text that fails
-> > against the parser or in some other way break the parser. Whether that
-> > validation is done by scripts/kernel-doc or scripts/bpf_helpers_doc.py
-> > doesn't make a big difference to me, other than I have zero experience
-> > with Perl. My first impressions are that the bpf_helpers_doc.py is
-> > providing stricter formatting requirements than what "DOC: " +
-> > kernel-doc would provide, so my baseline inclination would be to keep
-> > those patches to enhance that script and use that for the validation
-> > side (help developers with stronger linting feedback), then use
-> > kernel-doc for the actual html docs generation side, which would help
-> > to satisfy your concern around duplication of the documentation build
-> > systems.
+> This is easy to simulate by doing a `memset(skb->cb, 0x41,
+> sizeof(skb->cb));` before calling icmp{,v6}_ndo_send, and it's only by
+> good fortune and the rarity of icmp sending from that context that we've
+> avoided reports like this until now. For example, in KASAN:
 >
-> This doesn't sound entirely unreasonable.  I wonder if the BPF helper
-> could be built into an sphinx extension to make it easy to pull that
-> information into the docs build.  The advantage there is that it can be
-> done in Python :)
+>     BUG: KASAN: stack-out-of-bounds in __ip_options_echo+0xa0e/0x12b0
+>     Write of size 38 at addr ffff888006f1f80e by task ping/89
+>     CPU: 2 PID: 89 Comm: ping Not tainted 5.10.0-rc7-debug+ #5
+>     Call Trace:
+>      dump_stack+0x9a/0xcc
+>      print_address_description.constprop.0+0x1a/0x160
+>      __kasan_report.cold+0x20/0x38
+>      kasan_report+0x32/0x40
+>      check_memory_region+0x145/0x1a0
+>      memcpy+0x39/0x60
+>      __ip_options_echo+0xa0e/0x12b0
+>      __icmp_send+0x744/0x1700
+>
+> Actually, out of the 4 drivers that do this, only gtp zeroed the cb for
+> the v4 case, while the rest did not. So this commit actually removes the
+> gtp-specific zeroing, while putting the code where it belongs in the
+> shared infrastructure of icmp{,v6}_ndo_send.
+>
+> This commit fixes the issue by passing an empty IPCB or IP6CB along to
+> the functions that actually do the work. For the icmp_send, this was
+> already trivial, thanks to __icmp_send providing the plumbing function.
+> For icmpv6_send, this required a tiny bit of refactoring to make it
+> behave like the v4 case, after which it was straight forward.
+>
+> Fixes: a2b78e9b2cac ("sunvnet: generate ICMP PTMUD messages for smaller port MTUs")
+> Reported-by: SinYu <liuxyon@gmail.com>
+> Cc: Willem de Bruijn <willemb@google.com>
+> Link: https://lore.kernel.org/netdev/CAF=yD-LOF116aHub6RMe8vB8ZpnrrnoTdqhobEx+bvoA8AsP0w@mail.gmail.com/T/
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> ---
 
-Probably doable, it's already written in python. One thing at a time
-though... :)
+> -#define icmpv6_ndo_send icmpv6_send
+> +static inline void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info)
+> +{
+> +       struct inet6_skb_parm parm = { 0 };
+> +       __icmpv6_send(skb_in, type, code, info, &parm);
+> +}
+>  #endif
 
-Cheers,
-Joe
+> -void icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info)
+> +void __icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
+> +                  const struct inet6_skb_parm *parm)
+>  {
+>         ip6_icmp_send_t *send;
+>
+>         rcu_read_lock();
+>         send = rcu_dereference(ip6_icmp_send);
+>         if (send)
+> -               send(skb, type, code, info, NULL);
+> +               send(skb, type, code, info, NULL, IP6CB(skb));
+
+This should be parm.
+
+>  #if IS_ENABLED(CONFIG_NF_NAT)
+>  #include <net/netfilter/nf_conntrack.h>
+>  void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info)
+>  {
+> +       struct inet6_skb_parm parm = { 0 };
+>         struct sk_buff *cloned_skb = NULL;
+>         enum ip_conntrack_info ctinfo;
+>         struct in6_addr orig_ip;
+> @@ -57,7 +59,7 @@ void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info)
+>
+>         ct = nf_ct_get(skb_in, &ctinfo);
+>         if (!ct || !(ct->status & IPS_SRC_NAT)) {
+> -               icmpv6_send(skb_in, type, code, info);
+> +               __icmpv6_send(skb_in, type, code, info, &parm);
+>                 return;
+>         }
+>
+> @@ -72,7 +74,7 @@ void icmpv6_ndo_send(struct sk_buff *skb_in, u8 type, u8 code, __u32 info)
+>
+>         orig_ip = ipv6_hdr(skb_in)->saddr;
+>         ipv6_hdr(skb_in)->saddr = ct->tuplehash[0].tuple.src.u3.in6;
+> -       icmpv6_send(skb_in, type, code, info);
+> +       __icmpv6_send(skb_in, type, code, info, &parm);
+>         ipv6_hdr(skb_in)->saddr = orig_ip;
+>  out:
+>         consume_skb(cloned_skb);
+> --
+> 2.30.1
+>
