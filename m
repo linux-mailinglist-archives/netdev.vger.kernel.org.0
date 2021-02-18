@@ -2,86 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46CBF31EA9F
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 14:59:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9337231EAA5
+	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 15:00:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231365AbhBRNzV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 08:55:21 -0500
-Received: from mx2.suse.de ([195.135.220.15]:36448 "EHLO mx2.suse.de"
+        id S232392AbhBRN60 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 08:58:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55394 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230112AbhBRMyZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Feb 2021 07:54:25 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1613652819; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=v2M2f1didXi8qZbKbJNpKDVS3nQGtSjoYLz7GZ8G2oA=;
-        b=ajJ7vi+VZU89eb/Xc0CIb/zbZ8fbz4u0n5nZ1PPyXZB1MjEiPGbcoUjg4gO+pEQzZN5oxY
-        iS9PjZxTlHUPjRgYAoph22HnxcE/HR5nPx62wTdId879+BdncP3cqBdQMzcuRtwfE/kF1G
-        TG8YVslckFPZaRMtiH6w0yE1tk8Rlbw=
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id DEE34ACE5;
-        Thu, 18 Feb 2021 12:53:38 +0000 (UTC)
-Date:   Thu, 18 Feb 2021 13:53:38 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     "Enrico Weigelt, metux IT consult" <info@metux.net>,
-        linux-kernel@vger.kernel.org, rostedt@goodmis.org,
-        sergey.senozhatsky@gmail.com, linux@rasmusvillemoes.dk,
+        id S230248AbhBRNPL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Feb 2021 08:15:11 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4285264E92;
+        Thu, 18 Feb 2021 13:14:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1613654052;
+        bh=DICMxhSu9qIwJkZC3lVGDCORd7AqBmihED5o+uDFsVE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pulXCgMOy3JXpT4Cz56rgdtZWEARwMUh6EKE96xVim6pBzIfpeulZCcjfqiPWiHwU
+         /f5I/SPW/NGNfMDN5zDMXPRqyUwMY20p4+8hRT5nzjd35o+D5mCQJzLfTbiZToc0TB
+         k4kIzZwz54WyLmpu6Z4z8sBGkxNDFCHdLl6SSup5i7hiWE0vkzwhd/poAYPpIcGGX3
+         1jWqKjrbij5Ojh7mZuVOXIuX0vd5jV2J/yqNIyBBlVGOdrMeMgISYKYj+1MabyoU8F
+         kqxCf71C1t/x/39BwCmN8F1Rqxqs4oy1citP4TA32iuX5AHolOZCT0jv8Gbpf164QW
+         1vHXL2COSxS7A==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 0DCBF40CD9; Thu, 18 Feb 2021 10:14:10 -0300 (-03)
+Date:   Thu, 18 Feb 2021 10:14:10 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        peterz@infradead.org, mark.rutland@arm.com,
+        alexander.shishkin@linux.intel.com, namhyung@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
         john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH] lib: vsprintf: check for NULL device_node name in
- device_node_string()
-Message-ID: <YC5jUqxphRvyuMEv@alley>
-References: <20210217121543.13010-1-info@metux.net>
- <YC0fCAp6wxJfizD7@smile.fi.intel.com>
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH] perf tools: Simplify the calculation of variables
+Message-ID: <YC5oIkXjJSj/GJpX@kernel.org>
+References: <1612497255-87189-1-git-send-email-jiapeng.chong@linux.alibaba.com>
+ <YB0Um9N4rW8fd+oD@krava>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YC0fCAp6wxJfizD7@smile.fi.intel.com>
+In-Reply-To: <YB0Um9N4rW8fd+oD@krava>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed 2021-02-17 15:50:00, Andy Shevchenko wrote:
-> On Wed, Feb 17, 2021 at 01:15:43PM +0100, Enrico Weigelt, metux IT consult wrote:
-> > Under rare circumstances it may happen that a device node's name is NULL
-> > (most likely kernel bug in some other place).
-> 
-> What circumstances? How can I reproduce this? More information, please!
-> 
-> > In such situations anything
-> > but helpful, if the debug printout crashes, and nobody knows what actually
-> > happened here.
+Em Fri, Feb 05, 2021 at 10:49:15AM +0100, Jiri Olsa escreveu:
+> On Fri, Feb 05, 2021 at 11:54:15AM +0800, Jiapeng Chong wrote:
+> > Fix the following coccicheck warnings:
 > > 
-> > Therefore protect it by an explicit NULL check and print out an extra
-> > warning.
+> > ./tools/perf/util/header.c:3809:18-20: WARNING !A || A && B is
+> > equivalent to !A || B.
+> > 
+> > Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> > Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+> > ---
+> >  tools/perf/util/header.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/tools/perf/util/header.c b/tools/perf/util/header.c
+> > index c4ed3dc..4fe9e2a 100644
+> > --- a/tools/perf/util/header.c
+> > +++ b/tools/perf/util/header.c
+> > @@ -3806,7 +3806,7 @@ int perf_session__read_header(struct perf_session *session)
+> >  	 * check for the pipe header regardless of source.
+> >  	 */
+> >  	err = perf_header__read_pipe(session);
+> > -	if (!err || (err && perf_data__is_pipe(data))) {
+> > +	if (!err || perf_data__is_pipe(data)) {
 > 
-> ...
+> mama mia, thanks
 > 
-> > +				pr_warn("device_node without name. Kernel bug ?\n");
-> 
-> If it's not once, then it's possible to have log spammed with this, right?
-> 
-> ...
-> 
-> > +				p = "<NULL>";
-> 
-> We have different standard de facto for NULL pointers to be printed. Actually
-> if you wish, you may gather them under one definition (maybe somewhere under
-> printk) and export to everybody to use.
+> Acked-by: Jiri Olsa <jolsa@redhat.com>
 
-Please, use
+Thanks, applied.
 
-	if (check_pointer(&buf, end, p, spec))
-		return buf;
+- Arnaldo
 
-It will print "(null)" instead of the name. It should be enough
-to inform the user this way. The extra pr_warn() does not help
-much to localize the problem anyway. And it is better to avoid
-recursion in this path.
+ 
+> jirka
+> 
+> >  		data->is_pipe = true;
+> >  		return err;
+> >  	}
+> > -- 
+> > 1.8.3.1
+> > 
+> 
 
-Best Regards,
-Petr
+-- 
+
+- Arnaldo
