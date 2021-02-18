@@ -2,132 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56F6F31E344
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 00:53:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1AC531E36F
+	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 01:18:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233561AbhBQXwz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 18:52:55 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:18099 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231466AbhBQXww (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 18:52:52 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B602dac2a0000>; Wed, 17 Feb 2021 15:52:10 -0800
-Received: from HKMAIL103.nvidia.com (10.18.16.12) by HQMAIL101.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 17 Feb
- 2021 23:52:09 +0000
-Received: from HKMAIL102.nvidia.com (10.18.16.11) by HKMAIL103.nvidia.com
- (10.18.16.12) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 17 Feb
- 2021 23:52:07 +0000
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.176)
- by HKMAIL102.nvidia.com (10.18.16.11) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2 via Frontend Transport; Wed, 17 Feb 2021 23:52:07 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aeyZ1Wh238bvlISxGV1tlDcQP2yb4A8bi6EJpvOLKXasH1ZToToQPGB5bWdIddTK4DR9LausaOxt2nVRbYPVRCjrnMdoEEYRSx29QBye4zuoYm2WhnneGr8+9yaUc0KDgxsFX5HOhETDOqSze6nBVJDCgORuPTDlROJwhpXNtJpuEBpv4jmNEFMJej2h+f1JDEVnH5I5cAo6k5Z30LChfFDvNCvEGIGe3PhIYovrZGZsUw7ln8Uh4FmtZ52wsoCypE7jndqCC26CunUc1S0LF5INZNDdSh463CqNLvKyT2P36Y72yA6Aj+KfP9Tz0QOmbogYDPDjqvqqWrQ+zHlkzA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OCpilRsxkTZsacGgYRZV0GUIJUyZamMB4n1nsZX42Ao=;
- b=Wj3bG+1jWu5t+4+wNddC3IXfPfIxmeADR9VAyHGpqLp8HPkVJbCD56OoLyNpxOdbyH60mwm1GmmLQ/PylMrysHuHnj0cU6Y76dVzFjbJ8x4e8kPjPgQJz0d2nL68Qt6w14I30iQKZX452Y4B0WlRLXCLpd0bHV+ghGNivGrkp2aswv3dlL7cEp7eqnSk3raGk1o4UT+7Vh6bXKAabiN6OglRQI/IwiFqPpneL6p5Fv+HvjgjbGZjHYD2W1kR7DkZdBloi4bjhBCAtsOklQoD+/FuQIC+cbWxmCTf32RNpe9mMSnUxrHMCGLDp8n0o1BoZ33lsWJixOLVoJyVSaiKNA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM5PR12MB1756.namprd12.prod.outlook.com (2603:10b6:3:108::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.30; Wed, 17 Feb
- 2021 23:52:04 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::d6b:736:fa28:5e4]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::d6b:736:fa28:5e4%7]) with mapi id 15.20.3846.041; Wed, 17 Feb 2021
- 23:52:04 +0000
-Date:   Wed, 17 Feb 2021 19:52:01 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-CC:     Leon Romanovsky <leon@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, <linux-pci@vger.kernel.org>,
-        <linux-rdma@vger.kernel.org>, <netdev@vger.kernel.org>,
-        Don Dutile <ddutile@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
-Subject: Re: [PATCH mlx5-next v6 1/4] PCI: Add sysfs callback to allow MSI-X
- table size change of SR-IOV VFs
-Message-ID: <20210217235201.GX4247@nvidia.com>
-References: <20210217192522.GW4247@nvidia.com>
- <20210217202835.GA906388@bjorn-Precision-5520>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20210217202835.GA906388@bjorn-Precision-5520>
-X-ClientProxiedBy: BL1PR13CA0213.namprd13.prod.outlook.com
- (2603:10b6:208:2bf::8) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+        id S229879AbhBRARm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 19:17:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33394 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229708AbhBRARk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 19:17:40 -0500
+Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A433C061574;
+        Wed, 17 Feb 2021 16:16:59 -0800 (PST)
+Received: by mail-ot1-x32f.google.com with SMTP id q4so345892otm.9;
+        Wed, 17 Feb 2021 16:16:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VmEI9bK6S+MA6iIG56tLhKiAJVbLpfqcE1mPZiBV0Dk=;
+        b=UjVV4Uxj2xDfn/Pw9giP4UOdGVOyMe0l1DhcV3wK5RGp+LeVro/jzvuNKPwROutpfk
+         wxErXWYLFm9LFmatrMQgW3PdTXFx+ItE/9SqXmhZFKa7a2XZ+Z+czHM1jz4BKt6Qbf51
+         yhKKfQROnxt28QiCZVZzdaws7l+cuEud/OZ57rzQnLDGF8q1dWLWNkv10qychI5Hwx3y
+         wlxiX5EakQX2HQXvM3xaq+tAgRlq8RlTmhfMJzzSyHcBHw3LKJ9Lbn3dVrRJvt1PNTBp
+         ayq+7tp8aU8Pap9qHycyK1N7RPdmTseDrb9DzgtNLNC3YpdbzWfk+9CQW0pRppRH8nA/
+         dqmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VmEI9bK6S+MA6iIG56tLhKiAJVbLpfqcE1mPZiBV0Dk=;
+        b=cCdCBHpbsnvnzMWMBd+WoXTG49civQBDe2MpWgzzgDS6hdRAMBVT8SCtkcQms+ZSUP
+         ooTuMwC1bp+itEc7H5//5X5tttwDeJvl15RbY7GKolQu8XCupkK87sY5XiuqMuW1M4p+
+         i9lidNXRiIe+7xfKCkbCEMbA271H5uIHoXbNtnH4iS2oo36zkEaZyRSvbmFuvVqSgXJa
+         nL5AUSHT+t3CufmjN2wI9QgRq0nSCu+yckbx16nMEnxeQESuMdU8a+IroOF8uI9SGPci
+         9ymJF5c3Jb8Yj4EKV+yFrdcwIlZfSvsevX9trx1HYS24h7EEPVj2F+OU34pbio/AGOp1
+         X+lA==
+X-Gm-Message-State: AOAM531DsSFvH5Uyye+QlM3L+CcbekQUbsVEAsM2XJyB+0YU74nj2fCd
+        7E00YI5KSHXWBx2Hdou9JOFPql4My5lW6w==
+X-Google-Smtp-Source: ABdhPJyTKfJUTD1VslGvUiET3tWsD0LDfHYPn+dV7jul5SByRxcXtAeKaVhS+vLI3x7GmYTGy2QucA==
+X-Received: by 2002:a9d:58ca:: with SMTP id s10mr1173586oth.70.1613607417934;
+        Wed, 17 Feb 2021 16:16:57 -0800 (PST)
+Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:1d72:18:7c76:92e4])
+        by smtp.gmail.com with ESMTPSA id r205sm807458oib.15.2021.02.17.16.16.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Feb 2021 16:16:57 -0800 (PST)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: [Patch bpf-next v2] bpf: clear percpu pointers in bpf_prog_clone_free()
+Date:   Wed, 17 Feb 2021 16:16:47 -0800
+Message-Id: <20210218001647.71631-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (142.162.115.133) by BL1PR13CA0213.namprd13.prod.outlook.com (2603:10b6:208:2bf::8) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3868.11 via Frontend Transport; Wed, 17 Feb 2021 23:52:03 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1lCWbx-00AEVY-W7; Wed, 17 Feb 2021 19:52:02 -0400
-X-Header: ProcessedBy-CMR-outbound
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1613605930; bh=OCpilRsxkTZsacGgYRZV0GUIJUyZamMB4n1nsZX42Ao=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
-         From:To:CC:Subject:Message-ID:References:Content-Type:
-         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
-         X-MS-Exchange-MessageSentRepresentingType:X-Header;
-        b=aEBMnrrzvuy2nKcZnPFZuPtwtlRs9Jyxsh1lDx1M15p8MkTwXYm9//KH5DtGTfK8E
-         de8DDnjZB+yyoUubmr0oqeFdBRwv5GYy6XKWJEB+1qpk2d6UjW64O6p2iV2qxpv9rM
-         Tl6n4R7xMfRl+9BXR0zvwh+RML7NbvFQfXTNVuXrSPmI95SaUyQpDTXezIKxJx/keM
-         L8yvnI8bMqFZBjVHa4nehoQKGeeNOQzHnEYKLarSwJs48XxXdJvdmGRkBnFdeB5AwE
-         Tfbh/Yyw/MkP4Y+RIpnVZvXONOCQokQOdo7j4nqqL036AFtAM1qH1uhkJ0BO4mYumI
-         a7rbiL3WiDJHA==
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 17, 2021 at 02:28:35PM -0600, Bjorn Helgaas wrote:
-> On Wed, Feb 17, 2021 at 03:25:22PM -0400, Jason Gunthorpe wrote:
-> > On Wed, Feb 17, 2021 at 12:02:39PM -0600, Bjorn Helgaas wrote:
-> > 
-> > > > BTW, I asked more than once how these sysfs knobs should be handled
-> > > > in the PCI/core.
-> > > 
-> > > Thanks for the pointers.  This is the first instance I can think of
-> > > where we want to create PCI core sysfs files based on a driver
-> > > binding, so there really isn't a precedent.
-> > 
-> > The MSI stuff does it today, doesn't it? eg:
-> > 
-> > virtblk_probe (this is a driver bind)
-> >   init_vq
-> >    virtio_find_vqs
-> >     vp_modern_find_vqs
-> >      vp_find_vqs
-> >       vp_find_vqs_msix
-> >        vp_request_msix_vectors
-> >         pci_alloc_irq_vectors_affinity
-> >          __pci_enable_msi_range
-> >           msi_capability_init
-> > 	   populate_msi_sysfs
-> > 	    	ret = sysfs_create_groups(&pdev->dev.kobj, msi_irq_groups);
-> > 
-> > And the sysfs is removed during pci_disable_msi(), also called by the
-> > driver
-> 
-> Yes, you're right, I didn't notice that one.
-> 
-> I'm not quite convinced that we clean up correctly in all cases --
-> pci_disable_msix(), pci_disable_msi(), pci_free_irq_vectors(),
-> pcim_release(), etc are called by several drivers, but in my quick
-> look I didn't see a guaranteed-to-be-called path to the cleanup during
-> driver unbind.  I probably just missed it.
+From: Cong Wang <cong.wang@bytedance.com>
+
+Similar to bpf_prog_realloc(), bpf_prog_clone_create() also copies
+the percpu pointers, but the clone still shares them with the original
+prog, so we have to clear these two percpu pointers in
+bpf_prog_clone_free(). Otherwise we would get a double free:
+
+ BUG: kernel NULL pointer dereference, address: 0000000000000000
+ #PF: supervisor read access in kernel mode
+ #PF: error_code(0x0000) - not-present page
+ PGD 0 P4D 0
+ Oops: 0000 [#1] SMP PTI
+ CPU: 13 PID: 8140 Comm: kworker/13:247 Kdump: loaded Tainted: G                W    OE
+  5.11.0-rc4.bm.1-amd64+ #1
+ Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1 04/01/2014
+ test_bpf: #1 TXA
+ Workqueue: events bpf_prog_free_deferred
+ RIP: 0010:percpu_ref_get_many.constprop.97+0x42/0xf0
+ Code: [...]
+ RSP: 0018:ffffa6bce1f9bda0 EFLAGS: 00010002
+ RAX: 0000000000000001 RBX: 0000000000000000 RCX: 00000000021dfc7b
+ RDX: ffffffffae2eeb90 RSI: 867f92637e338da5 RDI: 0000000000000046
+ RBP: ffffa6bce1f9bda8 R08: 0000000000000000 R09: 0000000000000001
+ R10: 0000000000000046 R11: 0000000000000000 R12: 0000000000000280
+ R13: 0000000000000000 R14: 0000000000000000 R15: ffff9b5f3ffdedc0
+ FS:    0000000000000000(0000) GS:ffff9b5f2fb40000(0000) knlGS:0000000000000000
+ CS:    0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ CR2: 0000000000000000 CR3: 000000027c36c002 CR4: 00000000003706e0
+ DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+ DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ Call Trace:
+    refill_obj_stock+0x5e/0xd0
+    free_percpu+0xee/0x550
+    __bpf_prog_free+0x4d/0x60
+    process_one_work+0x26a/0x590
+    worker_thread+0x3c/0x390
+    ? process_one_work+0x590/0x590
+    kthread+0x130/0x150
+    ? kthread_park+0x80/0x80
+    ret_from_fork+0x1f/0x30
+
+This bug is 100% reproducible with test_kmod.sh.
+
+Reported-by: Jiang Wang <jiang.wang@bytedance.com>
+Fixes: 700d4796ef59 ("bpf: Optimize program stats")
+Fixes: ca06f55b9002 ("bpf: Add per-program recursion prevention mechanism")
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+---
+ kernel/bpf/core.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 0ae015ad1e05..aa1e64196d8d 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -1118,6 +1118,8 @@ static void bpf_prog_clone_free(struct bpf_prog *fp)
+ 	 * clone is guaranteed to not be locked.
+ 	 */
+ 	fp->aux = NULL;
++	fp->stats = NULL;
++	fp->active = NULL;
+ 	__bpf_prog_free(fp);
+ }
  
-I think the contract is the driver has to pair the msi enable with the
-msi disable on its own? It is very similar to what is happening here.
+-- 
+2.25.1
 
-Probably there are bugs in drivers on error paths, but there are
-always bugs in drivers on error paths..
-
-Jason
