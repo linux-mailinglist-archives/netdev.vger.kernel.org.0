@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B0B031E603
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 06:55:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB92631E60A
+	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 06:55:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231341AbhBRFvh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 00:51:37 -0500
-Received: from mx12.kaspersky-labs.com ([91.103.66.155]:49861 "EHLO
+        id S231712AbhBRFx0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 00:53:26 -0500
+Received: from mx12.kaspersky-labs.com ([91.103.66.155]:49860 "EHLO
         mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231189AbhBRFqn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 00:46:43 -0500
+        with ESMTP id S231181AbhBRFqa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 00:46:30 -0500
 Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 68FF4761BF;
+        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 556B776084;
         Thu, 18 Feb 2021 08:42:14 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
         s=mail202102; t=1613626934;
-        bh=YpsxUDJ7zagaiW0OYR1GJdRL/hrUe6967RwV89tHgtU=;
+        bh=vznP3SDyPGb/5I/RG8qUNnKK6ABkiLEB4O91wr6uR0E=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=tk/VVcKPKf2+j+kYRtdba3y2FZE5eO3gHezWVNCx5AED92AuzT1kRjoltFFZb7BYR
-         7MaBaWsw748MFMzJP3p3DmIfhLPq6Yvb9jAOx5qjVOlGmsP9r83TzBL5R/a24rb4s3
-         Zz/kYBHtqXL7IEsKV9Xe7h0bzIrF/vYOxnIIIVBDZuL0nzBFdH8hcNbdNq7FyVpn/Z
-         euCF4+LQj4GsQxv71N0bGwYjTxVkJpJ0ln/TWDuMBkNGE2VC3C/eYbc2pRJTh1PzxE
-         5XIvfiQOPJcmdpjf5hp/t74w0YGQaDM/oAHLMhJvfxiNQXz3nn9L/WF+0q6sYDHBUX
-         1awl/KUxe4mng==
+        b=48Y2Ylzwgyo+8RmuI/HHXPO7bh72dFqWPnhLkznDDRICxVQvUTuHx8SIWzgFkPwOU
+         4xV/b69aJsczMFAMEEk/ZUVTwdCnUMMmg/IhOHjeOi05PLrFydxIRyN0HPKoMEdoT0
+         Za+12uUoVit8k2YUJHdZUAeJTiPszNiU3ZpSXz6tKPSTfbV1ZrevPvzMweuHgfyF+E
+         vt2UcSDqRWidGiI6z4PSfJIRQhl7aiGnNZLA5Cui6blqKpJ2DNsA0c1apKLg14ogli
+         WSFMsbzKJaK/G2RQSZkQf8J+C5C9k3XuIBOMk8w042H6m7lbKD7mrCxmB3gGSr3Lx9
+         qOvURZyK9LApA==
 Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id AF61575E97;
+        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id ECC8575F59;
         Thu, 18 Feb 2021 08:42:13 +0300 (MSK)
-Received: from arseniy-pc.avp.ru (10.64.68.128) by hqmailmbx3.avp.ru
+Received: from arseniy-pc.avp.ru (10.64.64.121) by hqmailmbx3.avp.ru
  (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2044.4; Thu, 18
- Feb 2021 08:41:40 +0300
+ Feb 2021 08:41:56 +0300
 From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -42,23 +42,23 @@ To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Arseny Krasnov <arseny.krasnov@kaspersky.com>,
         Jorgen Hansen <jhansen@vmware.com>,
-        Colin Ian King <colin.king@canonical.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
         Andra Paraschiv <andraprs@amazon.com>,
-        Norbert Slusarek <nslusarek@gmx.net>
+        Colin Ian King <colin.king@canonical.com>
 CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <stsp2@yandex.ru>, <oxffffaa@gmail.com>
-Subject: [RFC PATCH v5 16/19] vhost/vsock: setup SEQPACKET ops for transport
-Date:   Thu, 18 Feb 2021 08:41:32 +0300
-Message-ID: <20210218054135.1068882-1-arseny.krasnov@kaspersky.com>
+Subject: [RFC PATCH v5 17/19] vsock/loopback: setup SEQPACKET ops for transport
+Date:   Thu, 18 Feb 2021 08:41:48 +0300
+Message-ID: <20210218054152.1069008-1-arseny.krasnov@kaspersky.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210218053347.1066159-1-arseny.krasnov@kaspersky.com>
 References: <20210218053347.1066159-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.64.68.128]
-X-ClientProxiedBy: hqmailmbx1.avp.ru (10.64.67.241) To hqmailmbx3.avp.ru
+X-Originating-IP: [10.64.64.121]
+X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
  (10.64.67.243)
 X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
 X-KSE-AntiSpam-Interceptor-Info: scan successful
@@ -99,28 +99,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This also removes ignore of non-stream type of packets.
+This adds SEQPACKET ops for loopback transport
 
 Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
 ---
- drivers/vhost/vsock.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ net/vmw_vsock/vsock_loopback.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-index 5e78fb719602..5c86d09e36d9 100644
---- a/drivers/vhost/vsock.c
-+++ b/drivers/vhost/vsock.c
-@@ -354,8 +354,7 @@ vhost_vsock_alloc_pkt(struct vhost_virtqueue *vq,
- 		return NULL;
- 	}
- 
--	if (le16_to_cpu(pkt->hdr.type) == VIRTIO_VSOCK_TYPE_STREAM)
--		pkt->len = le32_to_cpu(pkt->hdr.len);
-+	pkt->len = le32_to_cpu(pkt->hdr.len);
- 
- 	/* No payload */
- 	if (!pkt->len)
-@@ -424,6 +423,11 @@ static struct virtio_transport vhost_transport = {
+diff --git a/net/vmw_vsock/vsock_loopback.c b/net/vmw_vsock/vsock_loopback.c
+index a45f7ffca8c5..c0da94119f74 100644
+--- a/net/vmw_vsock/vsock_loopback.c
++++ b/net/vmw_vsock/vsock_loopback.c
+@@ -89,6 +89,11 @@ static struct virtio_transport loopback_transport = {
  		.stream_is_active         = virtio_transport_stream_is_active,
  		.stream_allow             = virtio_transport_stream_allow,
  
