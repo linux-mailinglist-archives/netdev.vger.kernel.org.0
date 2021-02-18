@@ -2,169 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC1A131ED93
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 18:48:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 561DA31ED9B
+	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 18:48:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232271AbhBRRrJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 12:47:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45660 "EHLO
+        id S234664AbhBRRrn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 12:47:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230283AbhBRQkN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 11:40:13 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E8B1C061574;
-        Thu, 18 Feb 2021 08:39:28 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id e9so1828768pjj.0;
-        Thu, 18 Feb 2021 08:39:28 -0800 (PST)
+        with ESMTP id S231901AbhBRRHU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 12:07:20 -0500
+Received: from mail-oo1-xc36.google.com (mail-oo1-xc36.google.com [IPv6:2607:f8b0:4864:20::c36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10278C0613D6;
+        Thu, 18 Feb 2021 09:06:25 -0800 (PST)
+Received: by mail-oo1-xc36.google.com with SMTP id f1so619590oou.0;
+        Thu, 18 Feb 2021 09:06:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XCS1qy8ob7XsXX9kc+oSLC6Sq4kYNTiKKYp1XNnNPYo=;
-        b=tjcsSKlqihVsOaiJCi0Dm5mUG1XxbSeCOuVxJev77g+zYHXf7oeiG93b/J67bVMZa7
-         hBT7A0zdYGkdiuHmE8rIZoRC9wFfFAAqz5tqBGY3KfnEx9r9Bk8+/3Ro5E727CwDQ310
-         mq+6eu5ow3z9AWCz3AYU9MeEuiNZNIXmjzdQE28nX+TsI4bP55s7i+A/USexGPBIIa1O
-         Sow3bx/n9b4/NNdeFUs09TJUwuyYx6jJ2ABMMDflV/jN6VwwdAToLtSvgb8VPWjhHPbQ
-         EgJBC2qgJsg8ltY7Lp2MI6p50teIHF/RiuIumuI43Zdguo5USJyOny1hbria6JP4+qaJ
-         erIg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IAeHU+ZuCyviiLpYZa0pCGB0W5e4M4NB3l+n2M4fYZU=;
+        b=W2AmWeei+CA/GEK4JmFfGdwEachPjWFFyto0odTBPeQ9zEqX03doEOA5p0/5q0mKPj
+         0S258LiVaiGbW6XdWkEPWad8Sy2NgjgtGYgoEWba8jvfvi4W29kEFHPCk5IbtaqGF/Di
+         lzGz1a5wWVwxEb7RjYCCQTpL/smiWu4C1jvcesTdXtwg4pyWORStNl8a8Xdfnirkfq7K
+         7i7F2/0va7wYCUFn/ZNzrgKjdQkZKOS2QuI2NSyf/FBRuDFaSaXpvR45ClXslV1QHkRB
+         9MnVmR6SCOIIe/BdWmf0keMfx7BEQ4TpWNJgekyxZrjx2nxg99hjV7U0Ac8+ka7kIIre
+         YXWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XCS1qy8ob7XsXX9kc+oSLC6Sq4kYNTiKKYp1XNnNPYo=;
-        b=OBh8FfHI2I8sVdy9RobVoLgDDqaUWkCmJZK/+KyxW8svw+sDN1EGyHYGmkXPdIlZrp
-         nfz2MK7v3aYAAuyqjhtXM5PCMX88Fx0QOfTWecim8rg1maozHOGdw7X3APPQwdyAHHTZ
-         OO6yUlFlrLkbdhz6nmRxh/VwU7HsrN8jBnqX/J7d1qwh3JfBOFYrLasSt006dciKCurL
-         bjbqF2DucBrcZJvtf7f2rCUToZpOSqnl04OLZOTPofrmia/y15xDGjrY9sXLXypoP788
-         /lapXRCvgibHneCPz8sH1BePcfbu5BQ/i1MfrMVmeowvzFM6E+uFeaiTyks468JORJbr
-         WSmw==
-X-Gm-Message-State: AOAM531enpZC0DcfbsaA2GaA2DQGRxUCXhDrCbBQ0KVlkEbn8wTgi6bq
-        PaivQ+zCjRQjLInM4E2C8xkirFJCfhy+oo85
-X-Google-Smtp-Source: ABdhPJy3oyXwsGciCKxueasMwiTAkxzoT3YfWDqrGEQlgBcELCgh3GwtHyYZs20osF6Ai6kEql52Xw==
-X-Received: by 2002:a17:90a:8b83:: with SMTP id z3mr4841731pjn.75.1613666367831;
-        Thu, 18 Feb 2021 08:39:27 -0800 (PST)
-Received: from localhost.localdomain ([122.10.101.135])
-        by smtp.gmail.com with ESMTPSA id s1sm6282938pfe.151.2021.02.18.08.39.16
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 18 Feb 2021 08:39:21 -0800 (PST)
-From:   Xuesen Huang <hxseverything@gmail.com>
-To:     willemdebruijn.kernel@gmail.com
-Cc:     davem@davemloft.net, bpf@vger.kernel.org, daniel@iogearbox.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xuesen Huang <huangxuesen@kuaishou.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Zhiyong Cheng <chengzhiyong@kuaishou.com>,
-        Li Wang <wangli09@kuaishou.com>
-Subject: [PATCH/v2] bpf: add bpf_skb_adjust_room flag BPF_F_ADJ_ROOM_ENCAP_L2_ETH
-Date:   Fri, 19 Feb 2021 00:39:03 +0800
-Message-Id: <20210218163903.60992-1-hxseverything@gmail.com>
-X-Mailer: git-send-email 2.24.3 (Apple Git-128)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IAeHU+ZuCyviiLpYZa0pCGB0W5e4M4NB3l+n2M4fYZU=;
+        b=omP92B0k9VSgzMeYEDxxL7ZFnSMBb7/rE4jsKpAACyqaqjMt/vGUZfcShKr5dMIgkU
+         eMnlIpZiyJAyjj5XvtciCIWLOg9ecr1ZTOzbB5wBk5lNWpGpNKDwVlz1retkB5AA6++Z
+         GgtiE9p6DnZT0/ghitYd80hiTi8r0D/ixyi7tuWPUTZ5Cc09DW11XuutDD1K2DsF4tLP
+         6sH1VhprcpcYKjbJr9wXLyihSecMPpXa7tWvVcCcWHTgVnzYhCB03/WbXHO3jGCvkXwk
+         yy//KidvfZWS7f72Yjj2riaIlVL2+ljtb9HW7l2NtEETteY2+w1cXpYOW2K7PUW4x9cE
+         L8mw==
+X-Gm-Message-State: AOAM533sN86lzvhtToAW+f58637m8a2VoSjwvn+mKBnsyJagCRljU4Xk
+        huEDE5s+xANuZgy3PhtdiEeTRR+He/QJIoVbtA==
+X-Google-Smtp-Source: ABdhPJzkb2Wsxw93sktjBF57OYN8O/Neps2Jf8JqDDO4E3TPDKyViTk2GDUsHX4LYhOfw2va9fffTqZjko1jYxrirR8=
+X-Received: by 2002:a4a:3407:: with SMTP id b7mr3732250ooa.43.1613667984444;
+ Thu, 18 Feb 2021 09:06:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAFSKS=Ncr-9s1Oi0GTqQ74sUaDjoHR-1P-yM+rNqjF-Hb+cPCA@mail.gmail.com>
+ <20210218150116.1521-1-marco.wenzel@a-eberle.de>
+In-Reply-To: <20210218150116.1521-1-marco.wenzel@a-eberle.de>
+From:   George McCollister <george.mccollister@gmail.com>
+Date:   Thu, 18 Feb 2021 11:06:12 -0600
+Message-ID: <CAFSKS=OpnDK83F6MWCpGDg2pdY-enJyusB5Th1RGvq8UC1WCNQ@mail.gmail.com>
+Subject: Re: [PATCH] net: hsr: add support for EntryForgetTime
+To:     Marco Wenzel <marco.wenzel@a-eberle.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Amol Grover <frextrite@gmail.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Arvid Brodin <Arvid.Brodin@xdin.com>, netdev@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xuesen Huang <huangxuesen@kuaishou.com>
+On Thu, Feb 18, 2021 at 9:01 AM Marco Wenzel <marco.wenzel@a-eberle.de> wrote:
+>
+> In IEC 62439-3 EntryForgetTime is defined with a value of 400 ms. When a
+> node does not send any frame within this time, the sequence number check
+> for can be ignored. This solves communication issues with Cisco IE 2000
+> in Redbox mode.
+>
+> Fixes: f421436a591d ("net/hsr: Add support for the High-availability Seamless Redundancy protocol (HSRv0)")
+> Signed-off-by: Marco Wenzel <marco.wenzel@a-eberle.de>
+> ---
+>  net/hsr/hsr_framereg.c | 9 +++++++--
+>  net/hsr/hsr_framereg.h | 1 +
+>  net/hsr/hsr_main.h     | 1 +
+>  3 files changed, 9 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/hsr/hsr_framereg.c b/net/hsr/hsr_framereg.c
+> index 5c97de459905..805f974923b9 100644
+> --- a/net/hsr/hsr_framereg.c
+> +++ b/net/hsr/hsr_framereg.c
+> @@ -164,8 +164,10 @@ static struct hsr_node *hsr_add_node(struct hsr_priv *hsr,
+>          * as initialization. (0 could trigger an spurious ring error warning).
+>          */
+>         now = jiffies;
+> -       for (i = 0; i < HSR_PT_PORTS; i++)
+> +       for (i = 0; i < HSR_PT_PORTS; i++) {
+>                 new_node->time_in[i] = now;
+> +               new_node->time_out[i] = now;
+> +       }
+>         for (i = 0; i < HSR_PT_PORTS; i++)
+>                 new_node->seq_out[i] = seq_out;
+>
+> @@ -411,9 +413,12 @@ void hsr_register_frame_in(struct hsr_node *node, struct hsr_port *port,
+>  int hsr_register_frame_out(struct hsr_port *port, struct hsr_node *node,
+>                            u16 sequence_nr)
+>  {
+> -       if (seq_nr_before_or_eq(sequence_nr, node->seq_out[port->type]))
+> +       if (seq_nr_before_or_eq(sequence_nr, node->seq_out[port->type]) &&
+> +           time_is_after_jiffies(node->time_out[port->type] +
+> +           msecs_to_jiffies(HSR_ENTRY_FORGET_TIME)))
+>                 return 1;
+>
+> +       node->time_out[port->type] = jiffies;
+>         node->seq_out[port->type] = sequence_nr;
+>         return 0;
+>  }
+> diff --git a/net/hsr/hsr_framereg.h b/net/hsr/hsr_framereg.h
+> index 86b43f539f2c..d9628e7a5f05 100644
+> --- a/net/hsr/hsr_framereg.h
+> +++ b/net/hsr/hsr_framereg.h
+> @@ -75,6 +75,7 @@ struct hsr_node {
+>         enum hsr_port_type      addr_B_port;
+>         unsigned long           time_in[HSR_PT_PORTS];
+>         bool                    time_in_stale[HSR_PT_PORTS];
+> +       unsigned long           time_out[HSR_PT_PORTS];
+>         /* if the node is a SAN */
+>         bool                    san_a;
+>         bool                    san_b;
+> diff --git a/net/hsr/hsr_main.h b/net/hsr/hsr_main.h
+> index 7dc92ce5a134..f79ca55d6986 100644
+> --- a/net/hsr/hsr_main.h
+> +++ b/net/hsr/hsr_main.h
+> @@ -21,6 +21,7 @@
+>  #define HSR_LIFE_CHECK_INTERVAL                 2000 /* ms */
+>  #define HSR_NODE_FORGET_TIME           60000 /* ms */
+>  #define HSR_ANNOUNCE_INTERVAL            100 /* ms */
+> +#define HSR_ENTRY_FORGET_TIME            400 /* ms */
+>
+>  /* By how much may slave1 and slave2 timestamps of latest received frame from
+>   * each node differ before we notify of communication problem?
+> --
+> 2.30.0
+>
 
-bpf_skb_adjust_room sets the inner_protocol as skb->protocol for packets
-encapsulation. But that is not appropriate when pushing Ethernet header.
+scripts/checkpatch.pl gives errors about DOS line endings but once
+that is resolved this looks good. I tested it on an HSR network with
+the software implementation and the xrs700x which uses offloading and
+everything still works. I don't have a way to force anything on the
+HSR network to reuse sequence numbers after 400ms.
 
-Add an option to further specify encap L2 type and set the inner_protocol
-as ETH_P_TEB.
-
-Suggested-by: Willem de Bruijn <willemb@google.com>
-Signed-off-by: Xuesen Huang <huangxuesen@kuaishou.com>
-Signed-off-by: Zhiyong Cheng <chengzhiyong@kuaishou.com>
-Signed-off-by: Li Wang <wangli09@kuaishou.com>
----
- include/uapi/linux/bpf.h       |  5 +++++
- net/core/filter.c              | 11 ++++++++++-
- tools/include/uapi/linux/bpf.h |  5 +++++
- 3 files changed, 20 insertions(+), 1 deletion(-)
-
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 77d7c1b..d791596 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -1751,6 +1751,10 @@ struct bpf_stack_build_id {
-  *		  Use with ENCAP_L3/L4 flags to further specify the tunnel
-  *		  type; *len* is the length of the inner MAC header.
-  *
-+ *		* **BPF_F_ADJ_ROOM_ENCAP_L2_ETH**:
-+ *		  Use with BPF_F_ADJ_ROOM_ENCAP_L2 flag to further specify the
-+ *		  L2 type as Ethernet.
-+ *
-  * 		A call to this helper is susceptible to change the underlying
-  * 		packet buffer. Therefore, at load time, all checks on pointers
-  * 		previously done by the verifier are invalidated and must be
-@@ -4088,6 +4092,7 @@ enum {
- 	BPF_F_ADJ_ROOM_ENCAP_L4_GRE	= (1ULL << 3),
- 	BPF_F_ADJ_ROOM_ENCAP_L4_UDP	= (1ULL << 4),
- 	BPF_F_ADJ_ROOM_NO_CSUM_RESET	= (1ULL << 5),
-+	BPF_F_ADJ_ROOM_ENCAP_L2_ETH	= (1ULL << 6),
- };
- 
- enum {
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 255aeee..8d1fb61 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -3412,6 +3412,7 @@ static u32 bpf_skb_net_base_len(const struct sk_buff *skb)
- 					 BPF_F_ADJ_ROOM_ENCAP_L3_MASK | \
- 					 BPF_F_ADJ_ROOM_ENCAP_L4_GRE | \
- 					 BPF_F_ADJ_ROOM_ENCAP_L4_UDP | \
-+					 BPF_F_ADJ_ROOM_ENCAP_L2_ETH | \
- 					 BPF_F_ADJ_ROOM_ENCAP_L2( \
- 					  BPF_ADJ_ROOM_ENCAP_L2_MASK))
- 
-@@ -3448,6 +3449,10 @@ static int bpf_skb_net_grow(struct sk_buff *skb, u32 off, u32 len_diff,
- 		    flags & BPF_F_ADJ_ROOM_ENCAP_L4_UDP)
- 			return -EINVAL;
- 
-+		if (flags & BPF_F_ADJ_ROOM_ENCAP_L2_ETH &&
-+		    inner_mac_len < ETH_HLEN)
-+			return -EINVAL;
-+
- 		if (skb->encapsulation)
- 			return -EALREADY;
- 
-@@ -3466,7 +3471,11 @@ static int bpf_skb_net_grow(struct sk_buff *skb, u32 off, u32 len_diff,
- 		skb->inner_mac_header = inner_net - inner_mac_len;
- 		skb->inner_network_header = inner_net;
- 		skb->inner_transport_header = inner_trans;
--		skb_set_inner_protocol(skb, skb->protocol);
-+
-+		if (flags & BPF_F_ADJ_ROOM_ENCAP_L2_ETH)
-+			skb_set_inner_protocol(skb, htons(ETH_P_TEB));
-+		else
-+			skb_set_inner_protocol(skb, skb->protocol);
- 
- 		skb->encapsulation = 1;
- 		skb_set_network_header(skb, mac_len);
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 77d7c1b..d791596 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -1751,6 +1751,10 @@ struct bpf_stack_build_id {
-  *		  Use with ENCAP_L3/L4 flags to further specify the tunnel
-  *		  type; *len* is the length of the inner MAC header.
-  *
-+ *		* **BPF_F_ADJ_ROOM_ENCAP_L2_ETH**:
-+ *		  Use with BPF_F_ADJ_ROOM_ENCAP_L2 flag to further specify the
-+ *		  L2 type as Ethernet.
-+ *
-  * 		A call to this helper is susceptible to change the underlying
-  * 		packet buffer. Therefore, at load time, all checks on pointers
-  * 		previously done by the verifier are invalidated and must be
-@@ -4088,6 +4092,7 @@ enum {
- 	BPF_F_ADJ_ROOM_ENCAP_L4_GRE	= (1ULL << 3),
- 	BPF_F_ADJ_ROOM_ENCAP_L4_UDP	= (1ULL << 4),
- 	BPF_F_ADJ_ROOM_NO_CSUM_RESET	= (1ULL << 5),
-+	BPF_F_ADJ_ROOM_ENCAP_L2_ETH	= (1ULL << 6),
- };
- 
- enum {
--- 
-1.8.3.1
-
+Reviewed-by: George McCollister <george.mccollister@gmail.com
+Tested-by: George McCollister <george.mccollister@gmail.com
