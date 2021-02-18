@@ -2,222 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B65231F272
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 23:40:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 687D931F2BF
+	for <lists+netdev@lfdr.de>; Fri, 19 Feb 2021 00:04:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229812AbhBRWki (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 17:40:38 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42408 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229656AbhBRWke (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Feb 2021 17:40:34 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5D3F064EB9;
-        Thu, 18 Feb 2021 22:39:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613687992;
-        bh=D24Qn4GrOdCHmRMsDz+E8sp3aIt5XmM+L3kg0dcu464=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=J2kYAPCQSB9D8m9w/03aw3lF8jO73oyx60Vgg1a1DfePHSrklMuE9Gu/mnDOjS86Z
-         5BwlyABeR/wKhzRmuKNmgcbw3yzfj8WMANGx5B+3+qOp1Ot12i4hJwH/XMqFPAegMC
-         23cmWtqet1n79vA3EwWj7oTxROtDQox3vPEUUw/ZfUKrCl16FwbjXySGdgjM9nxRLs
-         4vqeU9srMHvL9tSQSxOJ/M/xB9uVJrBYmbSaTFXsAFCtXnPexKZS7q8wTw73NurA56
-         r58qPe/Rzya0Z2FekuxNY/+lLL+qqsu83NAOCr/DM33WAn/a2qI97fxVuLWC4VT0kW
-         IkKQ6gVuz9CBA==
-Date:   Thu, 18 Feb 2021 16:39:50 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Don Dutile <ddutile@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
-Subject: Re: [PATCH mlx5-next v6 1/4] PCI: Add sysfs callback to allow MSI-X
- table size change of SR-IOV VFs
-Message-ID: <20210218223950.GA1004646@bjorn-Precision-5520>
+        id S229925AbhBRXEt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 18:04:49 -0500
+Received: from mail-eopbgr1400093.outbound.protection.outlook.com ([40.107.140.93]:5260
+        "EHLO JPN01-TY1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229577AbhBRXEl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Feb 2021 18:04:41 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aYDH1o/Mf1guP3fd6VhhILjrP08jKiwflsoisHhHfG/4Op+l6eaxrKyIvRZ+om6i0UUcbpqIJDF59AdpbzIxsvQtK47I+keYkoinrI8DgpT4m7cu1BwJphcL5g0nApFs6Ozmy98d7kCwOrNCzHPWh7VbyglnD0kRbbL1KWd9PBGagwOPG2rsTGt8QRPr9t2tm1EqPsox32HyV9Qqd38Rs9hMGv4UaII1i3/Ta7X4AfxozWgb9cvJKNEZNzm/NLKynapSufu6TAYW3x3sfGm9b6v4Q4qWa0VJxOqjRzfYC2VTz85tMemIafQWWHNi2JJYup3uoZt45DAmqvxnEqao4g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=791Xww3wY0uFuuFC8nGm1uQo7GRg9a1Z1YPTT505vow=;
+ b=U4QC2BWhipDKkPDKeJB9sk0V+IkSf+tk7CQmjDWP16wTYVVFt4CYwQehIJKnBz0pyliVBfuR2wi+2w3N5FJgx8t4am7WOCZF7HSmZ2OENL644F7usNh2EA1+6Zq6ci3fs/a4fSn/4+0G2OgzuN23uAzWwy9ZhtM1d8RmxJJzMFniFUPzEpHKHF9rlsVoEEgUJvGP+GJfZHXnLi+qK2lYkvAwpkhja6/swSEwlWnxi+dupj+EO9DpSI3dufvd5I3peSx7soKKenAkXRHx1IZwSbgzPcnVx5e9Q420FK0TZ+BZzy8GGE9dAvQcYoQ9996OvPR9rfpzrqi0C2FoIOhxTQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=791Xww3wY0uFuuFC8nGm1uQo7GRg9a1Z1YPTT505vow=;
+ b=NcoEJFD3dfhbhzGC675voFdpCYxuJvJt/Le6NlC3DvKuwBiPtPWOR0IQhY592AIb83lJMtAMWpYM3PQ6DJ2FEGWLDzmTG1eJBeT4QzmYnKmeTtw/4tOxg87/HfDlOI/sWMR8AwcJPsFxla50AMQJs1YbetBgOOJgwsfI8owB+yg=
+Received: from OSBPR01MB4773.jpnprd01.prod.outlook.com (2603:1096:604:7a::23)
+ by OS0PR01MB5554.jpnprd01.prod.outlook.com (2603:1096:604:a7::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3868.27; Thu, 18 Feb
+ 2021 23:03:51 +0000
+Received: from OSBPR01MB4773.jpnprd01.prod.outlook.com
+ ([fe80::1971:336c:e4c0:8c5]) by OSBPR01MB4773.jpnprd01.prod.outlook.com
+ ([fe80::1971:336c:e4c0:8c5%3]) with mapi id 15.20.3846.038; Thu, 18 Feb 2021
+ 23:03:51 +0000
+From:   Min Li <min.li.xe@renesas.com>
+To:     Arnd Bergmann <arnd@kernel.org>
+CC:     "derek.kiernan@xilinx.com" <derek.kiernan@xilinx.com>,
+        "dragan.cvetic@xilinx.com" <dragan.cvetic@xilinx.com>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        gregkh <gregkh@linuxfoundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>
+Subject: FW: [PATCH net-next] misc: Add Renesas Synchronization Management
+ Unit (SMU) support
+Thread-Topic: [PATCH net-next] misc: Add Renesas Synchronization Management
+ Unit (SMU) support
+Thread-Index: AQHXACKOoFb+ofRp20OhBYk2S05d7KpS86SAgADGlHCAAIcoAIAAassggABEPICABhmmwIAAPsuAgAAOzaCAATLmgIAAD7eQgABNoACAAGKO8IAAfRmAgABR13CAAHqY8A==
+Date:   Thu, 18 Feb 2021 23:03:50 +0000
+Message-ID: <OSBPR01MB4773F2E24C8AC98635EB0CBFBA859@OSBPR01MB4773.jpnprd01.prod.outlook.com>
+References: <1613012611-8489-1-git-send-email-min.li.xe@renesas.com>
+ <CAK8P3a3YhAGEfrvmi4YhhnG_3uWZuQi0ChS=0Cu9c4XCf5oGdw@mail.gmail.com>
+ <OSBPR01MB47732017A97D5C911C4528F0BA8B9@OSBPR01MB4773.jpnprd01.prod.outlook.com>
+ <CAK8P3a2KDO4HutsXNJzjmRJTvW1QW4Kt8H7U53_QqpmgvZtd3A@mail.gmail.com>
+ <OSBPR01MB4773B22EA094A362DD807F83BA8B9@OSBPR01MB4773.jpnprd01.prod.outlook.com>
+ <CAK8P3a3k5dAF=X3_NrYAAp5gPJ_uvF3XfmC4rKz0oGTrGRriCw@mail.gmail.com>
+ <OSBPR01MB47732AFC03DA8A0DDF626706BA879@OSBPR01MB4773.jpnprd01.prod.outlook.com>
+ <CAK8P3a2TeeLfsTNkZPnC3YowdOS=bFM5yYj58crP6F5U9Y_r-Q@mail.gmail.com>
+ <OSBPR01MB47739CBDE12E1F3A19649772BA879@OSBPR01MB4773.jpnprd01.prod.outlook.com>
+ <CAK8P3a2fRgDJZv-vzy_X6Y5t3daaVdCiXtMwkmXUyG0EQZ0a6Q@mail.gmail.com>
+ <OSBPR01MB477394546AE3BC1F186FC0E9BA869@OSBPR01MB4773.jpnprd01.prod.outlook.com>
+ <CAK8P3a32jF+iCH5Sk82LaozyPJ0n=f92MRdseZwN9aOtf4DwKQ@mail.gmail.com>
+ <OSBPR01MB47737A11F8BFCC856C4A62DCBA859@OSBPR01MB4773.jpnprd01.prod.outlook.com>
+ <CAK8P3a3LrkAE9MuMkwMpJ6_5ZYM3m_S-0v7V7qrpY6JaAzHUTQ@mail.gmail.com> 
+Accept-Language: en-CA, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=renesas.com;
+x-originating-ip: [72.140.114.230]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 05dca1d2-bcb4-4f9a-4123-08d8d46174dc
+x-ms-traffictypediagnostic: OS0PR01MB5554:
+x-microsoft-antispam-prvs: <OS0PR01MB5554D18D81A51FD72CBD2AC1BA859@OS0PR01MB5554.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: iRrohu49MF6o5lG7e6sIfNW5P9o+4nQXB4cr7C0N49w4tUdWCmDcMLbOD2dsb6EMi2PpbYScJ724Mb4edbKxxOif7qbbYU5dt4K6lkLpEEXC6MCYNA96PF4kFDZP3VwhEoRSbIiX823B4cQ1EaJ/H/E1uVObz3OviUPRf2AYpcm4Vfo4wfplfjtF956JGMZsMyYbOWMIEAFImpWqGq4wxnIGQ4dBDKdZWWjK26JiJY0nYihsgSD23CfIL25avdPNs1s1i/s1seRG31qJOEQjzW8tpSX/G9GR95xcytiQTs1QlRgOLBCsaFTDp2HCi9LuP86So0jd3V+RNYYPQYPgVONQDaieAwxyNC8MxikSzCbgyEAkEpeIBBvMNyhZbo+PF8omat05+rCdTQcZqW1LNlU9r4H7h3q7onCzUeSy/J66QYr2+Xys5GWCKYKh778yxexVeE481qB4QL8OYAeXlus3xcmfmPMxF/b9118zycPiOEFpOUodkOO6E1XDGmZ+tSY9OLIe70csiwrcgUw8kw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OSBPR01MB4773.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(39860400002)(376002)(366004)(136003)(55016002)(6916009)(316002)(83380400001)(186003)(33656002)(9686003)(4326008)(66476007)(64756008)(66446008)(478600001)(66556008)(52536014)(86362001)(5660300002)(76116006)(8676002)(26005)(71200400001)(53546011)(7696005)(2906002)(8936002)(66946007)(6506007)(54906003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?utf-8?B?eUpTcTZLbUZDZVBIT2l1d1dYQmZUcEZsWlhobjBuNFFTM2lmb0s2cTF2SUVx?=
+ =?utf-8?B?R3JEeHBuMzNkZTZLR0ZjUnpMM3ZVM2tUaGlBbFhLM2RFamM3YTZ0WmxkZEpV?=
+ =?utf-8?B?K0kwMWdyWmV3M3g5UjN2cldYbUNSVmw3MDlidC9CNTVtWFFtWC9xZTJsc3JH?=
+ =?utf-8?B?ZGZUbEhmSmc2amhZVzR3dTduVUNzdzhKRXo2bVZHK1AxTG1NbUMyejlZQ0lX?=
+ =?utf-8?B?Z29HQ1ZBSERjNmZVWG9lRW5GZE0zejZBbDhlaGlCQk5LTzN4bEpOVHRLcFFR?=
+ =?utf-8?B?SjQ2dW05U21DSmNDeVM2T1FsVjVJMU41WnBxTDFPWVF3RjZITFo3VUg1d0xa?=
+ =?utf-8?B?djM1eXcwK1l3WXFiU3BSeGxrL2NjVkdMQ1hZRGJGRmJmQlRlS0pSVzBHYlVv?=
+ =?utf-8?B?UG5wY21wL2tzY0JvbXNDTnkvNXVQcGNpRURmQmJaUllCUTYyNlorT2tQZEJ1?=
+ =?utf-8?B?V3BmM1FVck1xV2FQNVA2bnVZTzN6YzFuSW5tNnpwaFQyRW5xUld6QUcyUHJ0?=
+ =?utf-8?B?WHlyU01ad09Xd25OOER2NWRBai9RVXpONUJveUNnQ3dqeVRYcHVocVl2STBk?=
+ =?utf-8?B?bE44Rmk5a29nbnNlb0kxYkRwNGpkY3UyZTY4bWswZUtFbWY1N2t2a1ZTRXBa?=
+ =?utf-8?B?UC9uVm9rY1RMMnZ2dElGZ0lRdDdKMmthMUI1SWppTW11bndKeG10Z2NXYTh1?=
+ =?utf-8?B?dTQyT2NkakkrMXFSRnhZYTFFODl5amFZa3V5dnpVOUcrZXJPb2tkall6UnNr?=
+ =?utf-8?B?Rk13Z0VGU0pXQU9yVGw4OVJiSXJlWnpyUXZ4OW5zZjVPRTlZNk44WmRXOU1V?=
+ =?utf-8?B?WkVJRkNtajg5cEtoak5HTDI5cXQ2dzhNeUh3Zk9iZHBUV3cyc05XdTVBbEN1?=
+ =?utf-8?B?Q1VJdU1JTHplWEFLMnNBVEhqTGovSnU3REcybk05S3h1UnEvaGV0bVVzOS9E?=
+ =?utf-8?B?blh0a0tYbGV6bzBWOEMxeGt0dGsxQVNoVjNZeCs3YmhObmd6bjYySktuUmsy?=
+ =?utf-8?B?OHMxYWlXYVBEYkw3Z010RS9tQjI2RHZXbmJZOFFMZWRBSnFJcGtZK2Jsc3la?=
+ =?utf-8?B?dWNRL2JaRFUvQWRJZlNaa2ZCTnZaQXhjM0lnNG5DeWxJTy9NNjFkampCcG5R?=
+ =?utf-8?B?eDlGTTZQTHlWTXVtQWNnNmRaMU9Kb3NmZWtNN0RUSFNHZzJZTUVnTERBenhK?=
+ =?utf-8?B?c0NTS281dDhGZUsyV3JIeElML0J5WUtMdG5GbUVXd0ZJNllKU21RN3JJZjUw?=
+ =?utf-8?B?b21EVTVqdW40VkNIMnFoMzNQL0lKZjQyZmRVZ2JjQXpyNXB1VTRBc1BEYklq?=
+ =?utf-8?B?Wko0Q29CU1lnczlvQ3VQcG4vcFRvZ0YvazZveXZzVzQ2aUNUVm9CaWUvdHM0?=
+ =?utf-8?B?WFBUQnJ0MnhnVGFhNGx4KzdacmRpTDVYQkw5VTVJVE10ZDVuazdDd0pweXZX?=
+ =?utf-8?B?c0tTcFNuSjQzdGdIcUl2aWRUNkF6cjZnTldSeDJCV2pqY1BUSi9ieit6OGVD?=
+ =?utf-8?B?d1BLMUVEVzJMNzdRNWhDNXVVR016TXlNLzJkNEt0TG8rZHFoU01FWnpiZWxl?=
+ =?utf-8?B?OElvYm9SQ0x4V1FCdGpsM0lGZkFKaGR1bFMvbG80S1loMjE4ck1sZ3gxK041?=
+ =?utf-8?B?YllFYmp4aEhvRVkzcnJ0MmZlb3g3c1FZL09LaG9na2dFS3p4RVcwdUZUZDFa?=
+ =?utf-8?B?SEJKVkJrMEpicEk5NlQzOVRaa0svb1owSWU2dzBTNlNPeTZyVHZJTnQ4N0U1?=
+ =?utf-8?Q?w07fFZtzCCbAhNx7ufNXmQV/jy1lRf/U4qYwsRq?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YC4+V6W7s7ytwiC6@unreal>
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: OSBPR01MB4773.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 05dca1d2-bcb4-4f9a-4123-08d8d46174dc
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Feb 2021 23:03:50.9373
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: We5Wr1/pAibelWQJy9pHRtGgkEDfiFm/BpFw0ITpj7xp4rRP+oswvQwSfJIsdNU9a/Xv+Prg0WmvhBLn4/4uWg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: OS0PR01MB5554
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 18, 2021 at 12:15:51PM +0200, Leon Romanovsky wrote:
-> On Wed, Feb 17, 2021 at 12:02:39PM -0600, Bjorn Helgaas wrote:
-> > [+cc Greg in case he wants to chime in on the sysfs discussion.
-> > TL;DR: we're trying to add/remove sysfs files when a PCI driver that
-> > supports certain callbacks binds or unbinds; series at
-> > https://lore.kernel.org/r/20210209133445.700225-1-leon@kernel.org]
-> >
-> > On Tue, Feb 16, 2021 at 09:58:25PM +0200, Leon Romanovsky wrote:
-> > > On Tue, Feb 16, 2021 at 10:12:12AM -0600, Bjorn Helgaas wrote:
-> > > > On Tue, Feb 16, 2021 at 09:33:44AM +0200, Leon Romanovsky wrote:
-> > > > > On Mon, Feb 15, 2021 at 03:01:06PM -0600, Bjorn Helgaas wrote:
-> > > > > > On Tue, Feb 09, 2021 at 03:34:42PM +0200, Leon Romanovsky wrote:
-> > > > > > > From: Leon Romanovsky <leonro@nvidia.com>
-> >
-> > > > > > > +int pci_enable_vf_overlay(struct pci_dev *dev)
-> > > > > > > +{
-> > > > > > > +	struct pci_dev *virtfn;
-> > > > > > > +	int id, ret;
-> > > > > > > +
-> > > > > > > +	if (!dev->is_physfn || !dev->sriov->num_VFs)
-> > > > > > > +		return 0;
-> > > > > > > +
-> > > > > > > +	ret = sysfs_create_files(&dev->dev.kobj, sriov_pf_dev_attrs);
-> > > > > >
-> > > > > > But I still don't like the fact that we're calling
-> > > > > > sysfs_create_files() and sysfs_remove_files() directly.  It makes
-> > > > > > complication and opportunities for errors.
-> > > > >
-> > > > > It is not different from any other code that we have in the kernel.
-> > > >
-> > > > It *is* different.  There is a general rule that drivers should not
-> > > > call sysfs_* [1].  The PCI core is arguably not a "driver," but it is
-> > > > still true that callers of sysfs_create_files() are very special, and
-> > > > I'd prefer not to add another one.
-> > >
-> > > PCI for me is a bus, and bus is the right place to manage sysfs.
-> > > But it doesn't matter, we understand each other positions.
-> > >
-> > > > > Let's be concrete, can you point to the errors in this code that I
-> > > > > should fix?
-> > > >
-> > > > I'm not saying there are current errors; I'm saying the additional
-> > > > code makes errors possible in future code.  For example, we hope that
-> > > > other drivers can use these sysfs interfaces, and it's possible they
-> > > > may not call pci_enable_vf_overlay() or pci_disable_vfs_overlay()
-> > > > correctly.
-> > >
-> > > If not, we will fix, we just need is to ensure that sysfs name won't
-> > > change, everything else is easy to change.
-> > >
-> > > > Or there may be races in device addition/removal.  We have current
-> > > > issues in this area, e.g., [2], and they're fairly subtle.  I'm not
-> > > > saying your patches have these issues; only that extra code makes more
-> > > > chances for mistakes and it's more work to validate it.
-> > > >
-> > > > > > I don't see the advantage of creating these files only when
-> > > > > > the PF driver supports this.  The management tools have to
-> > > > > > deal with sriov_vf_total_msix == 0 and sriov_vf_msix_count ==
-> > > > > > 0 anyway.  Having the sysfs files not be present at all might
-> > > > > > be slightly prettier to the person running "ls", but I'm not
-> > > > > > sure the code complication is worth that.
-> > > > >
-> > > > > It is more than "ls", right now sriov_numvfs is visible without
-> > > > > relation to the driver, even if driver doesn't implement
-> > > > > ".sriov_configure", which IMHO bad. We didn't want to repeat.
-> > > > >
-> > > > > Right now, we have many devices that supports SR-IOV, but small
-> > > > > amount of them are capable to rewrite their VF MSI-X table siz.
-> > > > > We don't want "to punish" and clatter their sysfs.
-> > > >
-> > > > I agree, it's clutter, but at least it's just cosmetic clutter
-> > > > (but I'm willing to hear discussion about why it's more than
-> > > > cosmetic; see below).
-> > >
-> > > It is more than cosmetic and IMHO it is related to the driver role.
-> > > This feature is advertised, managed and configured by PF. It is very
-> > > natural request that the PF will view/hide those sysfs files.
-> >
-> > Agreed, it's natural if the PF driver adds/removes those files.  But I
-> > don't think it's *essential*, and they *could* be static because of
-> > this:
-> >
-> > > > From the management software point of view, I don't think it matters.
-> > > > That software already needs to deal with files that don't exist (on
-> > > > old kernels) and files that contain zero (feature not supported or no
-> > > > vectors are available).
-> >
-> > I wonder if sysfs_update_group() would let us have our cake and eat
-> > it, too?  Maybe we could define these files as static attributes and
-> > call sysfs_update_group() when the PF driver binds or unbinds?
-> >
-> > Makes me wonder if the device core could call sysfs_update_group()
-> > when binding/unbinding drivers.  But there are only a few existing
-> > callers, and it looks like none of them are for the bind/unbind
-> > situation, so maybe that would be pointless.
-> 
-> Also it will be not an easy task to do it in driver/core. Our
-> attributes need to be visible if driver is bound -> we will call to
-> sysfs_update_group() after ->bind() callback. It means that in
-> uwind, we will call to sysfs_update_group() before ->unbind() and
-> the driver will be still bound. So the check is is_supported() for
-> driver exists/or not won't be possible.
-
-Poking around some more, I found .dev_groups, which might be
-applicable?  The test patch below applies to v5.11 and makes the "bh"
-file visible in devices bound to the uhci_hcd driver if the function
-number is odd.
-
-This thread has more details and some samples:
-https://lore.kernel.org/lkml/20190731124349.4474-1-gregkh@linuxfoundation.org/
-
-On qemu, with 00:1a.[012] and 00:1d.[012] set up as uhci_hcd devices:
-
-  root@ubuntu:~# ls /sys/bus/pci/drivers/uhci_hcd
-  0000:00:1a.0  0000:00:1a.2  0000:00:1d.1  bind    new_id     uevent
-  0000:00:1a.1  0000:00:1d.0  0000:00:1d.2  module  remove_id  unbind
-  root@ubuntu:~# grep . /sys/devices/pci0000:00/0000:00:*/bh /dev/null
-  /sys/devices/pci0000:00/0000:00:1a.1/bh:hi bjorn
-  /sys/devices/pci0000:00/0000:00:1d.1/bh:hi bjorn
-
-diff --git a/drivers/usb/host/uhci-pci.c b/drivers/usb/host/uhci-pci.c
-index 9b88745d247f..17ea5bf0dab0 100644
---- a/drivers/usb/host/uhci-pci.c
-+++ b/drivers/usb/host/uhci-pci.c
-@@ -297,6 +297,38 @@ static int uhci_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
- 	return usb_hcd_pci_probe(dev, id, &uhci_driver);
- }
- 
-+static ssize_t bh_show(struct device *dev, struct device_attribute *attr,
-+			char *buf)
-+{
-+	return snprintf(buf, PAGE_SIZE, "hi bjorn\n");
-+}
-+static DEVICE_ATTR_RO(bh);
-+
-+static umode_t bh_is_visible(struct kobject *kobj, struct attribute *a, int n)
-+{
-+	struct device *dev = kobj_to_dev(kobj);
-+	struct pci_dev *pdev = to_pci_dev(dev);
-+	umode_t mode = (PCI_FUNC(pdev->devfn) % 2) ? 0444 : 0;
-+
-+	dev_info(dev, "%s mode %o\n", __func__, mode);
-+	return mode;
-+}
-+
-+static struct attribute *bh_attrs[] = {
-+	&dev_attr_bh.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group bh_group = {
-+	.attrs = bh_attrs,
-+	.is_visible = bh_is_visible,
-+};
-+
-+static const struct attribute_group *bh_groups[] = {
-+	&bh_group,
-+	NULL
-+};
-+
- static struct pci_driver uhci_pci_driver = {
- 	.name =		hcd_name,
- 	.id_table =	uhci_pci_ids,
-@@ -307,7 +339,8 @@ static struct pci_driver uhci_pci_driver = {
- 
- #ifdef CONFIG_PM
- 	.driver =	{
--		.pm =	&usb_hcd_pci_pm_ops
-+		.pm =	&usb_hcd_pci_pm_ops,
-+		.dev_groups = bh_groups,
- 	},
- #endif
- };
+DQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBNaW4gTGkgDQpTZW50OiBGZWJy
+dWFyeSAxOCwgMjAyMSAxMToxNCBBTQ0KVG86ICdBcm5kIEJlcmdtYW5uJyA8YXJuZEBrZXJuZWwu
+b3JnPg0KQ2M6IERlcmVrIEtpZXJuYW4gPGRlcmVrLmtpZXJuYW5AeGlsaW54LmNvbT47IERyYWdh
+biBDdmV0aWMgPGRyYWdhbi5jdmV0aWNAeGlsaW54LmNvbT47IEFybmQgQmVyZ21hbm4gPGFybmRA
+YXJuZGIuZGU+OyBncmVna2ggPGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3JnPjsgbGludXgta2Vy
+bmVsQHZnZXIua2VybmVsLm9yZzsgTmV0d29ya2luZyA8bmV0ZGV2QHZnZXIua2VybmVsLm9yZz47
+IFJpY2hhcmQgQ29jaHJhbiA8cmljaGFyZGNvY2hyYW5AZ21haWwuY29tPg0KU3ViamVjdDogUkU6
+IFtQQVRDSCBuZXQtbmV4dF0gbWlzYzogQWRkIFJlbmVzYXMgU3luY2hyb25pemF0aW9uIE1hbmFn
+ZW1lbnQgVW5pdCAoU01VKSBzdXBwb3J0DQoNCg0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0t
+LS0tDQo+IEZyb206IEFybmQgQmVyZ21hbm4gPGFybmRAa2VybmVsLm9yZz4NCj4gU2VudDogRmVi
+cnVhcnkgMTgsIDIwMjEgNTo1MSBBTQ0KPiBUbzogTWluIExpIDxtaW4ubGkueGVAcmVuZXNhcy5j
+b20+DQo+IENjOiBEZXJlayBLaWVybmFuIDxkZXJlay5raWVybmFuQHhpbGlueC5jb20+OyBEcmFn
+YW4gQ3ZldGljIA0KPiA8ZHJhZ2FuLmN2ZXRpY0B4aWxpbnguY29tPjsgQXJuZCBCZXJnbWFubiA8
+YXJuZEBhcm5kYi5kZT47IGdyZWdraCANCj4gPGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3JnPjsg
+bGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsgTmV0d29ya2luZyANCj4gPG5ldGRldkB2Z2Vy
+Lmtlcm5lbC5vcmc+OyBSaWNoYXJkIENvY2hyYW4gPHJpY2hhcmRjb2NocmFuQGdtYWlsLmNvbT4N
+Cj4gU3ViamVjdDogUmU6IFtQQVRDSCBuZXQtbmV4dF0gbWlzYzogQWRkIFJlbmVzYXMgU3luY2hy
+b25pemF0aW9uIA0KPiBNYW5hZ2VtZW50IFVuaXQgKFNNVSkgc3VwcG9ydA0KPiANCj4gT24gVGh1
+LCBGZWIgMTgsIDIwMjEgYXQgNDoyOCBBTSBNaW4gTGkgPG1pbi5saS54ZUByZW5lc2FzLmNvbT4g
+d3JvdGU6DQo+ID4gPiBJZiB0aGUgZHJpdmVyIGNhbiB1c2UgdGhlIHNhbWUgYWxnb3JpdGhtIHRo
+YXQgaXMgaW4geW91ciB1c2VyIA0KPiA+ID4gc3BhY2Ugc29mdHdhcmUgdG9kYXksIHRoYXQgd291
+bGQgc2VlbSB0byBiZSBhIG5pY2VyIHdheSB0byBoYW5kbGUgDQo+ID4gPiBpdCB0aGFuIHJlcXVp
+cmluZyBhIHNlcGFyYXRlIGFwcGxpY2F0aW9uLg0KPiA+ID4NCj4gPg0KPiA+IEhpIEFybmQNCj4g
+Pg0KPiA+DQo+ID4gV2hhdCBpcyB0aGUgZGV2aWNlIGRyaXZlciB0aGF0IHlvdSBhcmUgcmVmZXJy
+aW5nIGhlcmU/DQo+ID4NCj4gPiBJbiBzdW1tYXJ5IG9mIHlvdXIgcmV2aWV3cywgYXJlIHlvdSBz
+dWdnZXN0aW5nIG1lIHRvIGRpc2NhcmQgdGhpcyANCj4gPiBjaGFuZ2UgYW5kIGdvIGJhY2sgdG8g
+UFRQIHN1YnN5c3RlbSB0byBmaW5kIGEgYmV0dGVyIHBsYWNlIGZvciANCj4gPiB0aGluZ3MgdGhh
+dCBJIHdhbm5hIGRvIGhlcmU/DQo+IA0KPiBZZXMsIEkgbWVhbiBkb2luZyBpdCBhbGwgaW4gdGhl
+IFBUUCBkcml2ZXIuDQo+IA0KPiAgICAgICAgIEFybmQNCg0KSGkgQXJuZA0KDQpUaGUgQVBJcyBJ
+IGFtIGFkZGluZyBoZXJlIGlzIGZvciBvdXIgZGV2ZWxvcG1lbnQgb2YgYXNzaXN0ZWQgcGFydGlh
+bCB0aW1pbmcgc3VwcG9ydCAoQVBUUyksIHdoaWNoIGlzIGEgR2xvYmFsIE5hdmlnYXRpb24gU2F0
+ZWxsaXRlIFN5c3RlbSAoR05TUykgYmFja2VkIGJ5IFByZWNpc2lvbiBUaW1lIFByb3RvY29sIChQ
+VFApLg0KU28gaXQgaXMgbm90IHBhcnQgb2YgUFRQIGJ1dCB0aGV5IGNhbiB3b3JrIHRvZ2V0aGVy
+IGZvciBuZXR3b3JrIHRpbWluZyBzb2x1dGlvbi4NCg0KV2hhdCBJIGFtIHRyeWluZyB0byBzYXkg
+aXMgdGhlIHRoaW5ncyB0aGF0IEkgYW0gYWRkaW5nIGhlcmUgZG9lc24ndCByZWFsbHkgYmVsb25n
+IHRvIHRoZSBQVFAgd29ybGQuDQpGb3IgZXhhbXBsZSwgdGltZXgtPmZyZXEgaXMgZGlmZmVyZW50
+IGZyb20gdGhlIGZmbyB0aGF0IEkgYW0gcmVhZGluZyBmcm9tIHRoaXMgZHJpdmVyIHNpbmNlIHRo
+ZSBEUExMIGlzIFdvcmtpbmcgaW4gZGlmZmVyZW50IG1vZGUuIEZvciBQVFAsIERQTEwgaXMgd29y
+a2luZyBpbiBEQ08gbW9kZS4gSW4gRENPIG1vZGUsIHRoZSBEUExMIGNvbnRyb2wgbG9vcCBpcyBv
+cGVuZWQgYW5kIHRoZSBEQ08gY2FuIGJlIGNvbnRyb2xsZWQgYnkgYSBQVFAgY2xvY2sgcmVjb3Zl
+cnkgc2Vydm8gcnVubmluZyBvbiBhbiBleHRlcm5hbCBwcm9jZXNzb3IgdG8gc3ludGhlc2l6ZSBQ
+VFAgY2xvY2tzLiBPbiB0aGUgb3RoZXIgaGFuZCBmb3IgR05TUyB0aW1pbmcsIHRoZSBmZm8gSSBh
+bSByZWFkaW5nIGhlcmUgaXMgd2hlbiBEUExMIGlzIGluIGxvY2tlZCBtb2RlLiBJbiBMb2NrZWQg
+dGhlIGxvbmctdGVybSBvdXRwdXQgZnJlcXVlbmN5IGFjY3VyYWN5IGlzIHRoZSBzYW1lIGFzIHRo
+ZSBsb25nLXRlcm0gZnJlcXVlbmN5IGFjY3VyYWN5IG9mIHRoZSBzZWxlY3RlZCBpbnB1dCByZWZl
+cmVuY2UuDQoNCkZvciBvdXIgR05TUyBBUFRTIGRldmVsb3BtZW50LCB3ZSBoYXZlIDIgRFBMTCBj
+aGFubmVscywgb25lIGNoYW5uZWwgaXMgbG9ja2VkIHRvIEdOU1MgYW5kIGFub3RoZXIgY2hhbm5l
+bCBpcyBQVFAgY2hhbm5lbC4NCklmIEdOU1MgY2hhbm5lbCBpcyBsb2NrZWQsIHdlIHVzZSBHTlNT
+J3MgY2hhbm5lbCB0byBzdXBwb3J0IG5ldHdvcmsgdGltaW5nLiBPdGhlcndpc2UsIHdlIHN3aXRj
+aCB0byBQVFAgY2hhbm5lbC4gDQoNClRvIHRoaW5rIGFib3V0IGl0LCBvdXIgZGV2aWNlIGlzIHJl
+YWxseSBhbiBtdWx0aSBmdW5jdGlvbmFsIGRldmljZSAoTUZEKSwgd2hpY2ggaXMgd2h5IEkgYW0g
+c3VibWl0dGluZyBhbm90aGVyIHJldmlldyBmb3Igb3VyIE1GRCBkcml2ZXIgb24gdGhlIHNpZGUu
+IFdlIGhhdmUgb3VyIFBUUCBkcml2ZXIgYW5kIHdlIGhhdmUgdGhpcyBmb3IgR05TUyBBUFRTIGFu
+ZCBvdGhlciBtaXNjIGZ1bmN0aW9ucy4gDQoNClNvIGNhbiB5b3UgdGFrZSBhIGxvb2sgYXQgdGhp
+cyBhZ2FpbiBhbmQgc2VlIGlmIGl0IG1ha2VzIHNlbnNlIHRvIGtlZXAgdGhpcyBjaGFuZ2Ugc2lt
+cGx5IGJlY2F1c2UgdGhlIGNoYW5nZSBpcyBub3QgcGFydCBvZiBQVFAgc3Vic3lzdGVtLg0KVGhl
+eSBzb3VuZCBsaWtlIHRoZXkgYXJlIHJlbGF0ZWQuIEJ1dCB3aGVuIGl0IGNvbWVzIHRvIHRlY2hu
+aWNhbGl0eSwgdGhlcmUgaXMgcmVhbGx5IG5vIHBsYWNlIGluIFBUUCB0byBob2xkIHN0dWZmIHRo
+YXQgSSBhbSBkb2luZyBoZXJlLg0KDQpUaGFua3MNCg0KTWluDQo=
