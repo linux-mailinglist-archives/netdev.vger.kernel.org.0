@@ -2,131 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65DE731EDA7
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 18:49:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5549C31EDAC
+	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 18:52:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233968AbhBRRs3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 12:48:29 -0500
-Received: from mail-il1-f199.google.com ([209.85.166.199]:33317 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232369AbhBRRWZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 12:22:25 -0500
-Received: by mail-il1-f199.google.com with SMTP id k5so1621523ilu.0
-        for <netdev@vger.kernel.org>; Thu, 18 Feb 2021 09:21:51 -0800 (PST)
+        id S234727AbhBRRvL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 12:51:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56602 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234147AbhBRRcG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 12:32:06 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A588C0613D6
+        for <netdev@vger.kernel.org>; Thu, 18 Feb 2021 09:30:23 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id n13so6856694ejx.12
+        for <netdev@vger.kernel.org>; Thu, 18 Feb 2021 09:30:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Hqpe4XGeawtX1jpXJzzUAsNPv6nWuZPmbAMWnr53vMY=;
+        b=YV/QUozL58gNYfBUI9Qu2CmWfznw/eGy7l2fNbGDLUCGyXwwuP5qJK+D3gqKzq8fg5
+         HlvNovw68XutI2sO5MRTz+c5/kfZ0Rb164J/AR8OBKt7YYP9JLtnzbqzILMQw6vplR5F
+         m7htZ2sVEJ+fHM08URCd/dq9Gigt7x+m8U5z1wcawicu+2+1JTLa8fpIj7jD9VaAzqlJ
+         Va4h/X0gUEFToHtjpZwNpU5S7UNgBu5THAPH1HBR9bybI9aG98D338Mygsw9aD650Gre
+         ImTEo7Yza7DSnesktVjIo9Q4mxiu5io9HyujycvNybSinK1KrxAIwcWGpNknuVXpHWtx
+         o2Qw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=vTqU7z+hMuPADLiCcqd0CORJtVZxh1RcwMIGtNvcShM=;
-        b=FBZUfoaXcolOjB1vg/8mYaG+pBXz2rdbNvdPWGS8Sxtfv3KjZZx5gfVyHJqQt/UlWL
-         0i4A4ZvkY8x40WN/4TdR4cOn+4euJfRVlZvzhs5B99aTwZYYYM8hksGNjYIXgQoCJzWl
-         j4CewaSFQBQtxEQ6z874O1DPQ+uX515eXUKAtgTum+0PgSTTZx3oLEJZpJpG9pN7REOr
-         5VGBAETEwFJp2ZEUgSTStttgQxsA371a/jtdjxOOx3SupScPKhfiqTUYXjHwGybQM7Nb
-         QN919/1Frz0dkPoJuAIHwcJvre+rNdDJbb6k2L+lAAp10j6KWeZN8ErDuz852J34+MH3
-         A9gw==
-X-Gm-Message-State: AOAM533t1PRPCu1eB7vPFGWnNcipgqG6u1Im2OWLBFdzDOXoXbL6s85S
-        ZyT+OzLXr0RytB5MhPvBeYdIPiKcsPZaJtEoQPM5EPHZOlPY
-X-Google-Smtp-Source: ABdhPJyhfC4emPz0tt0e0xYr/NQMSaPCtH2D7fzzBugRGRtdtTRHEstAEOsdHNNr3z//FFNEIC/39xJrLqB/G7WohdyWXluvIPrv
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Hqpe4XGeawtX1jpXJzzUAsNPv6nWuZPmbAMWnr53vMY=;
+        b=OfDWdMgZjbrnPyr1h0vNhNI9+UrciNfbYCfa5tqLpJC9z0b/EgT+ZuxszBykiLtqG/
+         eHqXVxox3rq7aASW1Xh+aHCJ0AzN9iJAJkZKRkS9Dc1sr4AMZ/DcRiC84bBId2JO0uU7
+         srvr7MagH7Q6JhwraEzJXKTnrBcYs0rOweKibtSE/7V0F0ARiosE+G64puk+YFuHIRKX
+         G9wxuGIcIvK4fxLLXwJwPgm2lKrLdRWVgGrUOQfRzIFozRjMUF0OB/K4IlFE0Cf++l9L
+         Yy8WszGU/kB2vGAgMl0F3q+dx4XcDohwlXDvu/MSf1PJrP4If40/fCOyjWvrYDkpV0XX
+         4FLQ==
+X-Gm-Message-State: AOAM531rg1fDqJ6bo/pFljqj7VN8Yo61rnSSsX2clPOie/B7WdTVM0qR
+        7BjW1qfQbJ+qRjLKOGCwaWpt9xQKVU+FF1WGIiE5pNeI
+X-Google-Smtp-Source: ABdhPJzwqbNCTOs/4TlhSXEhB1KZ91PpMYG5fw+GL7r+N/RDIyLe5Ma3wAitPABXrcWoKDRkrlWkEY4M+LoZyBEaTK4=
+X-Received: by 2002:a17:906:184e:: with SMTP id w14mr5159761eje.56.1613669422293;
+ Thu, 18 Feb 2021 09:30:22 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a02:1ac5:: with SMTP id 188mr5458237jai.71.1613668886098;
- Thu, 18 Feb 2021 09:21:26 -0800 (PST)
-Date:   Thu, 18 Feb 2021 09:21:26 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000bdbc6a05bb9f90b0@google.com>
-Subject: general protection fault in nl802154_del_llsec_dev
-From:   syzbot <syzbot+d946223c2e751d136c94@syzkaller.appspotmail.com>
-To:     alex.aring@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wpan@vger.kernel.org,
-        netdev@vger.kernel.org, stefan@datenfreihafen.org,
-        syzkaller-bugs@googlegroups.com
+References: <20210218123053.2239986-1-Jason@zx2c4.com> <CA+FuTSdyovtMVaQfdtpWquawpNDoUKz+qXa+8U8eBTzWVtPXHQ@mail.gmail.com>
+ <CAHmME9o-N5wamS0YbQCHUfFwo3tPD8D3UH=AZpU61oohEtvOKg@mail.gmail.com>
+In-Reply-To: <CAHmME9o-N5wamS0YbQCHUfFwo3tPD8D3UH=AZpU61oohEtvOKg@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 18 Feb 2021 12:29:45 -0500
+Message-ID: <CAF=yD-Kw=gmPA1qRY0zEVdUQue35L+Y99JySxyG2--LubvptWQ@mail.gmail.com>
+Subject: Re: [PATCH net] net: icmp: zero-out cb in icmp{,v6}_ndo_send before sending
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        SinYu <liuxyon@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Thu, Feb 18, 2021 at 10:40 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+>
+> Hi Willem,
+>
+> On Thu, Feb 18, 2021 at 3:57 PM Willem de Bruijn
+> <willemdebruijn.kernel@gmail.com> wrote:
+> >
+> > On Thu, Feb 18, 2021 at 7:31 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+> > >
+> > > The icmp{,v6}_send functions make all sorts of use of skb->cb, assuming
+> >
+> > Indeed that also casts skb->cb, to read IP6CB(skb)->iif, good catch.
+> >
+> > Still, might be good to more precisely detail the relevant bug:
+> > icmp_send casts the cb to an option struct.
+> >
+> >         __icmp_send(skb_in, type, code, info, &IPCB(skb_in)->opt);
+> >
+> > which is referenced to parse headers by __ip_options_echo, copying
+> > data into stack allocated icmp_param and so overwriting the stack
+> > frame.
+>
+> The other way to fix this bug would be to just make icmp_ndo_send call
+> __icmp_send with an zeored stack-allocated ip_options, rather than
+> calling icmp_send which calls __icmp_send with the IPCB one. The
+> implementation of this is very easy, and that's what I did at first,
+> until I noticed that the v6 side would require a little bit more
+> plumbing to do right. But, I can go ahead and do that, if you think
+> that's the better strategy.
 
-syzbot found the following issue on:
+Thanks for that. It does seem to add more code change that we'd like
+for stable backports.
 
-HEAD commit:    57baf8cc net: axienet: Handle deferred probe on clock prop..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=16d83be2d00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=8cb23303ddb9411f
-dashboard link: https://syzkaller.appspot.com/bug?extid=d946223c2e751d136c94
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=161c1204d00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12daf1d2d00000
+> > This is from looking at all the callers of icmp{,v6}_ndo_send.
+> >
+> > If you look at the callers of icmp{,v6}_send there are even a couple
+> > more. Such as ipoib_cm_skb_reap (which memsets), clip_neigh_error
+> > (which doesn't), various tunnel devices (which live under net/ipv4,
+> > but are called as .ndo_start_xmit downstream from, e.g., segmentation
+> > (SKB_GSO_CB). Which are fixed (all?) in commit 5146d1f15112
+> > ("tunnel: Clear IPCB(skb)->opt before dst_link_failure called").
+> >
+> > Might be even better to do the memset in __icmp_send/icmp6_send,
+> > rather than in the wrapper. What do you think?
+>
+> I don't think memsetting from icmp_send itself is a good idea, since
+> most callers of that are actually from the inet layer, where it makes
+> sense to look at IPCB. Other callers, from the ndo layer, should be
+> using the icmp_ndo_send helper instead. Or am I confused?
+>
+> If there are places that are using icmp_send from ndo_start_xmit,
+> that's a problem that should be fixed, with those uses swapped for
+> icmp_ndo_send.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+d946223c2e751d136c94@syzkaller.appspotmail.com
-
-general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-CPU: 1 PID: 8428 Comm: syz-executor295 Not tainted 5.11.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:nla_len include/net/netlink.h:1148 [inline]
-RIP: 0010:nla_parse_nested_deprecated include/net/netlink.h:1231 [inline]
-RIP: 0010:nl802154_del_llsec_dev+0x150/0x310 net/ieee802154/nl802154.c:1760
-Code: 00 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 c4 01 00 00 48 8b 93 18 01 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 d1 48 c1 e9 03 <0f> b6 0c 01 48 89 d0 83 e0 07 83 c0 01 38 c8 7c 08 84 c9 0f 85 13
-RSP: 0018:ffffc90001a67568 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: ffff88801def5400 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff8888ffaa RDI: ffff88801def5518
-RBP: 1ffff9200034ceae R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff87315ffa R11: 0000000000000000 R12: ffff8881443d6000
-R13: ffff8881441e4bd0 R14: ffffc90001a678b0 R15: 0000000000000000
-FS:  000000000208c300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f3aac6fd6c0 CR3: 00000000210c4000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:739
- genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
- genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:800
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2345
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2399
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2432
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x43f969
-Code: 28 c3 e8 5a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffe784206c8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00000000004004a0 RCX: 000000000043f969
-RDX: 0000000020008800 RSI: 0000000020000600 RDI: 0000000000000003
-RBP: 00000000004033d0 R08: 0000000000000008 R09: 00000000004004a0
-R10: 0000000000000003 R11: 0000000000000246 R12: 0000000000403460
-R13: 0000000000000000 R14: 00000000004ad018 R15: 00000000004004a0
-Modules linked in:
----[ end trace 9aedc238aa0648a2 ]---
-RIP: 0010:nla_len include/net/netlink.h:1148 [inline]
-RIP: 0010:nla_parse_nested_deprecated include/net/netlink.h:1231 [inline]
-RIP: 0010:nl802154_del_llsec_dev+0x150/0x310 net/ieee802154/nl802154.c:1760
-Code: 00 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 c4 01 00 00 48 8b 93 18 01 00 00 48 b8 00 00 00 00 00 fc ff df 48 89 d1 48 c1 e9 03 <0f> b6 0c 01 48 89 d0 83 e0 07 83 c0 01 38 c8 7c 08 84 c9 0f 85 13
-RSP: 0018:ffffc90001a67568 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: ffff88801def5400 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff8888ffaa RDI: ffff88801def5518
-RBP: 1ffff9200034ceae R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff87315ffa R11: 0000000000000000 R12: ffff8881443d6000
-R13: ffff8881441e4bd0 R14: ffffc90001a678b0 R15: 0000000000000000
-FS:  000000000208c300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f3aac6fd6c0 CR3: 00000000210c4000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+I missed this response earlier (two inboxes). Agreed. Sorry that I
+didn't reply before your v2.
