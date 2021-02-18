@@ -2,51 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E964831F083
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 20:57:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5147A31F09D
+	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 21:01:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229471AbhBRTyf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 14:54:35 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:47998 "EHLO vps0.lunn.ch"
+        id S231830AbhBRT6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 14:58:54 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38132 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230368AbhBRTvJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Feb 2021 14:51:09 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1lCpJc-007AO5-TG; Thu, 18 Feb 2021 20:50:20 +0100
-Date:   Thu, 18 Feb 2021 20:50:20 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Grant Grundler <grundler@chromium.org>
-Cc:     Oliver Neukum <oneukum@suse.com>, netdev <netdev@vger.kernel.org>,
-        davem@devemloft.org, Hayes Wang <hayeswang@realtek.com>,
+        id S231790AbhBRT4B (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Feb 2021 14:56:01 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 19A9260238;
+        Thu, 18 Feb 2021 19:55:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1613678115;
+        bh=oGsSE+76wvfx4Nguhyl57l1C40S6Roq7FT74S76ZX3I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=n3jvY6awlpjUR2knNqGRq/0lFPTJ56DCEvwXeuxvIyhDlYtbwaAHsgpkfCjbCp8Sj
+         3tGMRcjHoe+pY316qprOQb1a7Hb/qRcKBj1lIMMNUB9qkaYyIfXOg0k6Na0I3cxWJE
+         AsnAo8XujvgZyCU8blZUbzX/1x9Hb21cpg+Ag+pDHd9mSkrvtHmRhxq6pnxKiDzxWp
+         ugMWNprObdSbkqmQbihl6bnNRHxYhg++fbUwblL2rM126nDG+Sw/v/9XYUANvHPh+2
+         LMk8a1ZjCUQBjWWc7UmkJ3lcHjwbpOlu0QQI0TCIrrvFIHKUjozvn4tjh7yWodyH8s
+         783xhFY6j2FJA==
+Date:   Thu, 18 Feb 2021 21:55:10 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Roland Dreier <roland@kernel.org>
-Subject: Re: [PATCHv3 1/3] usbnet: specify naming of
- usbnet_set/get_link_ksettings
-Message-ID: <YC7E/LvO8+k83lIL@lunn.ch>
-References: <20210218102038.2996-1-oneukum@suse.com>
- <20210218102038.2996-2-oneukum@suse.com>
- <CANEJEGu+fqkgu6whO_1BXFpnf5K6BG8Z7nUmHcJaYU9_tc7svg@mail.gmail.com>
+        Linux X25 <linux-x25@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Martin Schiller <ms@dev.tdt.de>,
+        Krzysztof Halasa <khc@pm.waw.pl>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
+Subject: Re: [PATCH net-next RFC v4] net: hdlc_x25: Queue outgoing LAPB frames
+Message-ID: <YC7GHgYfGmL2wVRR@unreal>
+References: <20210216201813.60394-1-xie.he.0141@gmail.com>
+ <YC4sB9OCl5mm3JAw@unreal>
+ <CAJht_EN2ZO8r-dpou5M4kkg3o3J5mHvM7NdjS8nigRCGyih7mg@mail.gmail.com>
+ <YC5DVTHHd6OOs459@unreal>
+ <CAJht_EOhu+Wsv91yDS5dEt+YgSmGsBnkz=igeTLibenAgR=Tew@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CANEJEGu+fqkgu6whO_1BXFpnf5K6BG8Z7nUmHcJaYU9_tc7svg@mail.gmail.com>
+In-Reply-To: <CAJht_EOhu+Wsv91yDS5dEt+YgSmGsBnkz=igeTLibenAgR=Tew@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 18, 2021 at 07:31:41PM +0000, Grant Grundler wrote:
-> Oliver, Jakub,
-> Can I post v4 and deal with the issues below?
+On Thu, Feb 18, 2021 at 09:36:54AM -0800, Xie He wrote:
+> On Thu, Feb 18, 2021 at 2:37 AM Leon Romanovsky <leon@kernel.org> wrote:
+> >
+> > It is not me who didn't explain, it is you who didn't want to write clear
+> > comment that describes the headroom size without need of "3 - 1".
+>
+> Why do I need to write unnecessary comments when "3 - 1" and the
+> current comment already explains everything?
 
-You should probably wait for two weeks. We are far enough into the
-merge window that i doubt it will get picked up. So please wait,
-rebase, and then post.
+This is how we write code, we use defines instead of constant numbers,
+comments to describe tricky parts and assign already preprocessed result.
 
-> Nit: The v2/v3 lines should be included BELOW the '---' line since
-> they don't belong in the commit message.
+There is nothing I can do If you don't like or don't want to use Linux kernel
+style.
 
-netdev actually prefers them above, so we see the history of how a
-patched changed during review.
-
-	Andrew
+Thanks
