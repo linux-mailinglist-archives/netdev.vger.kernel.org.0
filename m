@@ -2,149 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE8CB31E68E
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 08:01:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B15131E696
+	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 08:01:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230306AbhBRG4K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 01:56:10 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:55633 "EHLO
+        id S231311AbhBRG5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 01:57:49 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:44904 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231264AbhBRGtl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 01:49:41 -0500
+        by vger.kernel.org with ESMTP id S230428AbhBRGvQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 01:51:16 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1613630882;
+        s=mimecast20190719; t=1613630942;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=0xSBP2JIYUC8xWmwZs/YoFdX+EUOlZ0kViYULbocJus=;
-        b=KwQnpwzZiRbrXd7x6Se6f/dhnFjrr5ypojdIUleEQYIvrF1WwO3ySJ7GhkgblykSfSgOqw
-        ebrIvc/Efgy/yshMW540SklfoyurGZDzMCSGLSNuFEY7CtoJXbBH4r5xq0r3MnJ2J7Yr13
-        Ll8ytZlWyVGVVw1NmNzM88QW18vUE+4=
+        bh=qZsYPo7lFIHJSBW+k62y1pF0Q5iGGVk8F/Ofi1wgySA=;
+        b=D4nn7JodsEGOBvhd5Yb4LKuwB2kq2PTaVbWv5peaz1p1R1cnF7gDs9AoUxeHuYKVEhOK5A
+        2iHl2nR5Ic72SofhNBU6yJP2X7BG2c7i4nkECESB7A9l9ox3jKXjHwADZ3H5kinFov+G/X
+        76w1qAXz0QHW+OwIyvpTvPx/1a7PMbY=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-64-NL4_CLGsNk2Km3TLHXsk0Q-1; Thu, 18 Feb 2021 01:36:52 -0500
-X-MC-Unique: NL4_CLGsNk2Km3TLHXsk0Q-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+ us-mta-392-uvGEjrB0MqiW0qrg2HcOWQ-1; Thu, 18 Feb 2021 01:37:29 -0500
+X-MC-Unique: uvGEjrB0MqiW0qrg2HcOWQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DCF14107ACE4;
-        Thu, 18 Feb 2021 06:36:50 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0DBF3801976;
+        Thu, 18 Feb 2021 06:37:28 +0000 (UTC)
 Received: from [10.72.13.28] (ovpn-13-28.pek2.redhat.com [10.72.13.28])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 662645B6AB;
-        Thu, 18 Feb 2021 06:36:45 +0000 (UTC)
-Subject: Re: [PATCH v2 2/3] vdpa/mlx5: fix feature negotiation across device
- reset
-To:     Si-Wei Liu <si-wei.liu@oracle.com>, mst@redhat.com, elic@nvidia.com
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 987C6722CF;
+        Thu, 18 Feb 2021 06:37:19 +0000 (UTC)
+Subject: Re: [PATCH v2 3/3] vdpa/mlx5: defer clear_virtqueues to until
+ DRIVER_OK
+To:     Si-Wei Liu <si-wei.liu@oracle.com>, Eli Cohen <elic@nvidia.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
 Cc:     linux-kernel@vger.kernel.org,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
 References: <1612993680-29454-1-git-send-email-si-wei.liu@oracle.com>
- <1612993680-29454-3-git-send-email-si-wei.liu@oracle.com>
+ <1612993680-29454-4-git-send-email-si-wei.liu@oracle.com>
+ <20210211073314.GB100783@mtl-vdi-166.wap.labs.mlnx>
+ <20210216152148.GA99540@mtl-vdi-166.wap.labs.mlnx>
+ <88ecbbb6-a339-a5cd-82b7-387225a45d36@oracle.com>
 From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <386fffb2-be75-9ce0-0a4d-1d47f91e7d16@redhat.com>
-Date:   Thu, 18 Feb 2021 14:36:43 +0800
+Message-ID: <27c7858e-67a4-9f22-37e3-f527f1dd85a6@redhat.com>
+Date:   Thu, 18 Feb 2021 14:37:10 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <1612993680-29454-3-git-send-email-si-wei.liu@oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <88ecbbb6-a339-a5cd-82b7-387225a45d36@oracle.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2021/2/11 上午5:47, Si-Wei Liu wrote:
-> The mlx_features denotes the capability for which
-> set of virtio features is supported by device. In
-> principle, this field needs not be cleared during
-> virtio device reset, as this capability is static
-> and does not change across reset.
+On 2021/2/18 上午5:55, Si-Wei Liu wrote:
 >
-> In fact, the current code may have the assumption
-> that mlx_features can be reloaded from firmware
-> via the .get_features ops after device is reset
-> (via the .set_status ops), which is unfortunately
-> not true. The userspace VMM might save a copy
-> of backend capable features and won't call into
-> kernel again to get it on reset. This causes all
-> virtio features getting disabled on newly created
-> virtqs after device reset, while guest would hold
-> mismatched view of available features. For e.g.,
-> the guest may still assume tx checksum offload
-> is available after reset and feature negotiation,
-> causing frames with bogus (incomplete) checksum
-> transmitted on the wire.
 >
-> Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
-> Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
-
-
-Acked-by: Jason Wang <jasowang@redhat.com>
-
-
-> ---
->   drivers/vdpa/mlx5/net/mlx5_vnet.c | 25 +++++++++++++++----------
->   1 file changed, 15 insertions(+), 10 deletions(-)
+> On 2/16/2021 7:21 AM, Eli Cohen wrote:
+>> On Thu, Feb 11, 2021 at 09:33:14AM +0200, Eli Cohen wrote:
+>>> On Wed, Feb 10, 2021 at 01:48:00PM -0800, Si-Wei Liu wrote:
+>>>> While virtq is stopped,  get_vq_state() is supposed to
+>>>> be  called to  get  sync'ed  with  the latest internal
+>>>> avail_index from device. The saved avail_index is used
+>>>> to restate  the virtq  once device is started.  Commit
+>>>> b35ccebe3ef7 introduced the clear_virtqueues() routine
+>>>> to  reset  the saved  avail_index,  however, the index
+>>>> gets cleared a bit earlier before get_vq_state() tries
+>>>> to read it. This would cause consistency problems when
+>>>> virtq is restarted, e.g. through a series of link down
+>>>> and link up events. We  could  defer  the  clearing of
+>>>> avail_index  to  until  the  device  is to be started,
+>>>> i.e. until  VIRTIO_CONFIG_S_DRIVER_OK  is set again in
+>>>> set_status().
+>>>>
+>>>> Fixes: b35ccebe3ef7 ("vdpa/mlx5: Restore the hardware used index 
+>>>> after change map")
+>>>> Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
+>>>> Acked-by: Jason Wang <jasowang@redhat.com>
+>>> Acked-by: Eli Cohen <elic@nvidia.com>
+>>>
+>> I take it back. I think we don't need to clear the indexes at all. In
+>> case we need to restore indexes we'll get the right values through
+>> set_vq_state(). If we suspend the virtqueue due to VM being suspended,
+>> qemu will query first and will provide the the queried value. In case of
+>> VM reboot, it will provide 0 in set_vq_state().
+>>
+>> I am sending a patch that addresses both reboot and suspend.
+> With set_vq_state() repurposed to restoring used_index I'm fine with 
+> this approach.
 >
-> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> index b8416c4..7c1f789 100644
-> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> @@ -1486,16 +1486,8 @@ static u64 mlx_to_vritio_features(u16 dev_features)
->   static u64 mlx5_vdpa_get_features(struct vdpa_device *vdev)
->   {
->   	struct mlx5_vdpa_dev *mvdev = to_mvdev(vdev);
-> -	struct mlx5_vdpa_net *ndev = to_mlx5_vdpa_ndev(mvdev);
-> -	u16 dev_features;
->   
-> -	dev_features = MLX5_CAP_DEV_VDPA_EMULATION(mvdev->mdev, device_features_bits_mask);
-> -	ndev->mvdev.mlx_features = mlx_to_vritio_features(dev_features);
-> -	if (MLX5_CAP_DEV_VDPA_EMULATION(mvdev->mdev, virtio_version_1_0))
-> -		ndev->mvdev.mlx_features |= BIT_ULL(VIRTIO_F_VERSION_1);
-> -	ndev->mvdev.mlx_features |= BIT_ULL(VIRTIO_F_ACCESS_PLATFORM);
-> -	print_features(mvdev, ndev->mvdev.mlx_features, false);
-> -	return ndev->mvdev.mlx_features;
-> +	return mvdev->mlx_features;
->   }
->   
->   static int verify_min_features(struct mlx5_vdpa_dev *mvdev, u64 features)
-> @@ -1788,7 +1780,6 @@ static void mlx5_vdpa_set_status(struct vdpa_device *vdev, u8 status)
->   		clear_virtqueues(ndev);
->   		mlx5_vdpa_destroy_mr(&ndev->mvdev);
->   		ndev->mvdev.status = 0;
-> -		ndev->mvdev.mlx_features = 0;
->   		++mvdev->generation;
->   		return;
->   	}
-> @@ -1907,6 +1898,19 @@ static int mlx5_get_vq_irq(struct vdpa_device *vdv, u16 idx)
->   	.free = mlx5_vdpa_free,
->   };
->   
-> +static void query_virtio_features(struct mlx5_vdpa_net *ndev)
-> +{
-> +	struct mlx5_vdpa_dev *mvdev = &ndev->mvdev;
-> +	u16 dev_features;
-> +
-> +	dev_features = MLX5_CAP_DEV_VDPA_EMULATION(mvdev->mdev, device_features_bits_mask);
-> +	mvdev->mlx_features = mlx_to_vritio_features(dev_features);
-> +	if (MLX5_CAP_DEV_VDPA_EMULATION(mvdev->mdev, virtio_version_1_0))
-> +		mvdev->mlx_features |= BIT_ULL(VIRTIO_F_VERSION_1);
-> +	mvdev->mlx_features |= BIT_ULL(VIRTIO_F_ACCESS_PLATFORM);
-> +	print_features(mvdev, mvdev->mlx_features, false);
-> +}
-> +
->   static int query_mtu(struct mlx5_core_dev *mdev, u16 *mtu)
->   {
->   	u16 hw_mtu;
-> @@ -2005,6 +2009,7 @@ static int mlx5v_probe(struct auxiliary_device *adev,
->   	init_mvqs(ndev);
->   	mutex_init(&ndev->reslock);
->   	config = &ndev->config;
-> +	query_virtio_features(ndev);
->   	err = query_mtu(mdev, &ndev->mtu);
->   	if (err)
->   		goto err_mtu;
+> Do I have to repost a v3 of this series while dropping the 3rd patch?
+>
+> -Siwei 
+
+
+Yes, please.
+
+Thanks
+
 
