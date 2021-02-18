@@ -2,102 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A07431E38A
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 01:48:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C839B31E440
+	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 03:15:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230182AbhBRAsV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Feb 2021 19:48:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39958 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230021AbhBRAsR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 19:48:17 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD901C061574;
-        Wed, 17 Feb 2021 16:47:37 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id u143so121643pfc.7;
-        Wed, 17 Feb 2021 16:47:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=9AQCchQC3RVaMv/Hcn0M+7TZdZEVJRof4WAPBKGbACg=;
-        b=lmEGx+TeyVIR9oSiK4robQdT8vT9B9D2gCCx1AKSquREKfdRrdvFjot6+1PwmkMySC
-         JGcfgQ3tzcMUP0a79XDAa8BoX9lJSTX6darSNC0HVNzhQ8ZsmcdYVVmajvpbheZqXufq
-         3LSlRjO4tRJJO8bO8PrN+Doduh6OH4ZotEhk55FQ9t0HEwmitwRg8S/x7JCAVZ4RaW4V
-         uIBIRA5zeiwI0OKpUJzS/s3FGmROLTLujN/SGTDO1Cuxf52CufpFnu3WEmOqiihYDwPr
-         /MONKVCvl+9TJxdgsSQeUPv5Tub82a0tNMPp48eut8pQCD6oOVnljXOVLe/mi0ntkUMV
-         Ae4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9AQCchQC3RVaMv/Hcn0M+7TZdZEVJRof4WAPBKGbACg=;
-        b=GNJ77woeBY7yoXJ2ZUdfZXD2v60ly3wkf0WYF3b5EQDigQEXFMqjsNT+vVzIT4Rw2Q
-         WhJgGwakJqeAJMPWd+eCrZyxF3QOjhJ3RkPwe4hMAQ343P+gET857TRKBtB1AIM+EMs6
-         ETil8SR9eHfvDnxzqV/eSfVsgDbrAZ3vMsMAmpR9Ps0D9MRx8r0SQtCDa4dAlejlmppX
-         p0oiSvdU0SIyJ/92CepWietOAuq9lFtczJQq0PQEIMHekZtKZJgzQNBLAtmbuKltTRHK
-         dnnPMJQrCehLVYty3DwI+isa5Ke6fOhuHcqxUem3d/IjcdPhsvYG3VoJCoRviakJiSAt
-         2djw==
-X-Gm-Message-State: AOAM531auC+pRZA/lA6uScREct6joacC7THi1HyHPZrZDiZgypkWVwBx
-        vLEFndUo4KPZH+omeflYZn0=
-X-Google-Smtp-Source: ABdhPJyFVk8+ypuV2LLDlViNh2a+mh0HOrRUj0ErpARIXvmeJjPbciPtcJaO663PjuaXM5qhAJ9oUg==
-X-Received: by 2002:a05:6a00:2353:b029:1ba:d824:f1dc with SMTP id j19-20020a056a002353b02901bad824f1dcmr1846175pfj.9.1613609257138;
-        Wed, 17 Feb 2021 16:47:37 -0800 (PST)
-Received: from localhost ([2409:10:2e40:5100:6e29:95ff:fe2d:8f34])
-        by smtp.gmail.com with ESMTPSA id q139sm3368597pfc.2.2021.02.17.16.47.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Feb 2021 16:47:36 -0800 (PST)
-Date:   Thu, 18 Feb 2021 09:47:34 +0900
-From:   Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
-To:     "Enrico Weigelt, metux IT consult" <info@metux.net>
-Cc:     linux-kernel@vger.kernel.org, pmladek@suse.com,
-        rostedt@goodmis.org, sergey.senozhatsky@gmail.com,
-        andriy.shevchenko@linux.intel.com, linux@rasmusvillemoes.dk,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH] lib: vsprintf: check for NULL device_node name in
- device_node_string()
-Message-ID: <YC25JlDIPl30xPab@jagdpanzerIV.localdomain>
-References: <20210217121543.13010-1-info@metux.net>
+        id S229876AbhBRCPj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Feb 2021 21:15:39 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:12550 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229553AbhBRCPh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Feb 2021 21:15:37 -0500
+Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.58])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4Dgysl2lZHzMY49;
+        Thu, 18 Feb 2021 10:12:59 +0800 (CST)
+Received: from [10.67.100.138] (10.67.100.138) by
+ DGGEMS414-HUB.china.huawei.com (10.3.19.214) with Microsoft SMTP Server id
+ 14.3.498.0; Thu, 18 Feb 2021 10:14:43 +0800
+Subject: Re: [PATCH][next] net: hns3: Fix uninitialized return from function
+To:     Colin King <colin.king@canonical.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Huazhong Tan <tanhuazhong@huawei.com>, <netdev@vger.kernel.org>
+CC:     <kernel-janitors@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20210210152644.137770-1-colin.king@canonical.com>
+From:   "lipeng (Y)" <lipeng321@huawei.com>
+Message-ID: <9e7cba23-14af-9359-a00e-7b08d7f5c748@huawei.com>
+Date:   Thu, 18 Feb 2021 10:14:44 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210217121543.13010-1-info@metux.net>
+In-Reply-To: <20210210152644.137770-1-colin.king@canonical.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.100.138]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On (21/02/17 13:15), Enrico Weigelt, metux IT consult wrote:
-> Under rare circumstances it may happen that a device node's name is NULL
-> (most likely kernel bug in some other place). In such situations anything
-> but helpful, if the debug printout crashes, and nobody knows what actually
-> happened here.
-> 
-> Therefore protect it by an explicit NULL check and print out an extra
-> warning.
-> 
-> Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
+
+在 2021/2/10 23:26, Colin King 写道:
+> From: Colin Ian King <colin.king@canonical.com>
+>
+> Currently function hns3_reset_notify_uninit_enet is returning
+> the contents of the uninitialized variable ret.  Fix this by
+> removing ret (since it is no longer used) and replace it with
+> a return of the literal value 0.
+
+
+you can not remove "ret"  this way.
+
+try to change  "int hns3_uninit_all_ring"  to "void 
+hns3_uninit_all_ring" and fix related code is better.
+
+
+>
+> Addresses-Coverity: ("Uninitialized scalar variable")
+> Fixes: 64749c9c38a9 ("net: hns3: remove redundant return value of hns3_uninit_all_ring()")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 > ---
->  lib/vsprintf.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/lib/vsprintf.c b/lib/vsprintf.c
-> index 3b53c73580c5..050a60b88073 100644
-> --- a/lib/vsprintf.c
-> +++ b/lib/vsprintf.c
-> @@ -2013,6 +2013,10 @@ char *device_node_string(char *buf, char *end, struct device_node *dn,
->  			break;
->  		case 'n':	/* name */
->  			p = fwnode_get_name(of_fwnode_handle(dn));
-> +			if (!p) {
-> +				pr_warn("device_node without name. Kernel bug ?\n");
-> +				p = "<NULL>";
-> +			}
->  			precision = str_spec.precision;
->  			str_spec.precision = strchrnul(p, '@') - p;
->  			buf = string(buf, end, p, str_spec);
-
-What about other fwnode_get_name() calls in vsprintf?
-
-	-ss
+>   drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 3 +--
+>   1 file changed, 1 insertion(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+> index 9565b7999426..bf4302a5cf95 100644
+> --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+> @@ -4640,7 +4640,6 @@ static int hns3_reset_notify_uninit_enet(struct hnae3_handle *handle)
+>   {
+>   	struct net_device *netdev = handle->kinfo.netdev;
+>   	struct hns3_nic_priv *priv = netdev_priv(netdev);
+> -	int ret;
+>   
+>   	if (!test_and_clear_bit(HNS3_NIC_STATE_INITED, &priv->state)) {
+>   		netdev_warn(netdev, "already uninitialized\n");
+> @@ -4662,7 +4661,7 @@ static int hns3_reset_notify_uninit_enet(struct hnae3_handle *handle)
+>   
+>   	hns3_put_ring_config(priv);
+>   
+> -	return ret;
+> +	return 0;
+>   }
+>   
+>   static int hns3_reset_notify(struct hnae3_handle *handle,
