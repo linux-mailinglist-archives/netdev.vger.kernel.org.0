@@ -2,113 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C863131EF89
-	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 20:20:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4573831EF8A
+	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 20:20:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234143AbhBRTRC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 14:17:02 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:26566 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230119AbhBRSlm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 13:41:42 -0500
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 11IIXSQV179304;
-        Thu, 18 Feb 2021 13:40:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=26iu0Ri9szM48Q0na4vGUFYyvrkaYkvyhlIX68WERkQ=;
- b=lRNicBhGuReJOTx92PTGnoHbDAoXkGhkv+aXYpT18u7LnMHPEHhNrUEP3EGL9dTiPbIl
- LK2Eoq7NTyRqoDPIXAvI66cp/Fxb2wZ02DsUTGmroFKG7CC3yZB4aYNddrg88iZLzck9
- h6PqGup2ka44iqvNALNfmIC8eVrDD1heolDZI1f+VsBj9dxK75j1aj2a5O3mqh/8sJIh
- YFEBBLQa1h0iURbnkT5X1w6cU8uFT/nyVWa9Zf3n0IIysvpJJ2khK7nHorGGXy5y1Fmk
- TyRRP9tRpYDqkU0D/Y1J8E73u23PmES7lsctPkjvobXTSMfHXvKH3pFgzURdv5zFuZRh EA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 36sv2kk7ak-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Feb 2021 13:40:54 -0500
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 11IIXihA180049;
-        Thu, 18 Feb 2021 13:40:53 -0500
-Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 36sv2kk7a1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Feb 2021 13:40:53 -0500
-Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
-        by ppma04wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 11IIRqoA007599;
-        Thu, 18 Feb 2021 18:40:52 GMT
-Received: from b03cxnp07027.gho.boulder.ibm.com (b03cxnp07027.gho.boulder.ibm.com [9.17.130.14])
-        by ppma04wdc.us.ibm.com with ESMTP id 36p6d9g3uw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 18 Feb 2021 18:40:52 +0000
-Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
-        by b03cxnp07027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 11IIepO122610334
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 18 Feb 2021 18:40:51 GMT
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 83EB1136055;
-        Thu, 18 Feb 2021 18:40:51 +0000 (GMT)
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5182E136051;
-        Thu, 18 Feb 2021 18:40:51 +0000 (GMT)
-Received: from suka-w540.localdomain (unknown [9.85.163.18])
-        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu, 18 Feb 2021 18:40:51 +0000 (GMT)
-Received: by suka-w540.localdomain (Postfix, from userid 1000)
-        id 52FDA2E1880; Thu, 18 Feb 2021 10:40:48 -0800 (PST)
-Date:   Thu, 18 Feb 2021 10:40:48 -0800
-From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Lijun Pan <lijunp213@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20210218184048.GA1017500@us.ibm.com>
-References: <20210217124337.47db7c69@canb.auug.org.au>
+        id S230020AbhBRTRW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 14:17:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46192 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233391AbhBRSxS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Feb 2021 13:53:18 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21043C061574
+        for <netdev@vger.kernel.org>; Thu, 18 Feb 2021 10:52:38 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id gx20so2088297pjb.1
+        for <netdev@vger.kernel.org>; Thu, 18 Feb 2021 10:52:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7G3JVW2KBRmJBfDlGzhqslH0TpNnVSsRPoclsWcVzgU=;
+        b=nH4c5dgFbUZmDtgfk+VV1PCxveHS/Cq4rmiOFy2ks+yFW3f773CI/SqukOQzVv2U68
+         kLPB2WFYxM4HtXwie9S8onJLm1N6gmKbodxFDR6n02UzYHl6nKq+zBIXan1D1UhbuDyn
+         Y0h3ZcN56AyPZT1Vy6FWaHdkL3MrTtrypHIgsBBWXbvjjbndDfhD9vNSfR5DuxVmEzI9
+         PnhKm7nVnV7obC1McKnlkablLJV5EKcMWY1/aD/zbo4xhPClgqZLsqTWRttPQdIj4qwy
+         Mz2NTPdV9m6V/6NjyIzKT1vpfFC1Yc0WO0QRlf/z46LAO1Yv0k8JRvdZTZ9Gtd/9+F6a
+         eupw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7G3JVW2KBRmJBfDlGzhqslH0TpNnVSsRPoclsWcVzgU=;
+        b=cwcgzceNetQ1uMb8lBKzrSwIgGJoO0/ha0prYUtweNvVSUIbhGHmm7TZk23IC//z8/
+         LDVm5p+k3jysYhLQ9JPYil5xdDnGNZF/laZ1Gaq3ovv3yIrORQlGZtdCDqXRAGrWqZ3k
+         scVEXtHcTJ1UR9hCtciZgCs29/4/YSM+1AsxQArHjcbjD5loI7vIyRSzapdUoV7R/KEj
+         JMJYbx+TOmx0Yzo/Lx2vY7qFcfws/nfoJZNAoQNhO1JbliMHTtPplx6S3komXKTiiuUB
+         B8ShZJU3+oTISJ7DaDaLJgj2RCz+chO3YOBHSoopyxlz2oSrhamWFMaFzKF3d0e2s+qo
+         Rtng==
+X-Gm-Message-State: AOAM531T3INfXsC3N37jQP+CHYFhJFbXsky1QgiEs7Qn4nr9lgh6ApHl
+        qBQzWXr286HHWodyFhtnjjTlJF8cRvVDJJqwIYY6Yg==
+X-Google-Smtp-Source: ABdhPJxTDNxytDrytdjt6u1XDnbyZYaZwSlN2Ui/3fTuueZZtGN8U2CcGMml9XPuFoL6bJSJVu3mogdNrWT9Af5+fxs=
+X-Received: by 2002:a17:90b:3756:: with SMTP id ne22mr5109449pjb.41.1613674357497;
+ Thu, 18 Feb 2021 10:52:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210217124337.47db7c69@canb.auug.org.au>
-X-Operating-System: Linux 2.0.32 on an i486
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-02-18_09:2021-02-18,2021-02-18 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- impostorscore=0 clxscore=1011 suspectscore=0 mlxlogscore=999 bulkscore=0
- priorityscore=1501 phishscore=0 mlxscore=0 adultscore=0 spamscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102180153
+References: <20210218173124.iy5iyqv3a4oia4vv@linutronix.de>
+In-Reply-To: <20210218173124.iy5iyqv3a4oia4vv@linutronix.de>
+From:   Andrey Konovalov <andreyknvl@google.com>
+Date:   Thu, 18 Feb 2021 19:52:26 +0100
+Message-ID: <CAAeHK+x92X_NZt7MXw1a_=23tLqKyiuOesGHo_Y=aqdZZqdzEQ@mail.gmail.com>
+Subject: Re: [PATCH] kcov: Remove kcov include from sched.h and move it to its users.
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Stephen Rothwell [sfr@canb.auug.org.au] wrote:
-> Hi all,
-> 
-> Today's linux-next merge of the net-next tree got conflicts in:
-> 
->   drivers/net/ethernet/ibm/ibmvnic.c
->   drivers/net/ethernet/ibm/ibmvnic.h
-> 
-> between commit:
-> 
->   4a41c421f367 ("ibmvnic: serialize access to work queue on remove")
-> 
-> from the net tree and commits:
-> 
->   bab08bedcdc3 ("ibmvnic: fix block comments")
->   a369d96ca554 ("ibmvnic: add comments for spinlock_t definitions")
-> 
-> from the net-next tree.
-> 
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
+On Thu, Feb 18, 2021 at 6:31 PM Sebastian Andrzej Siewior
+<bigeasy@linutronix.de> wrote:
+>
+> The recent addition of in_serving_softirq() to kconv.h results in
+> compile failure on PREEMPT_RT because it requires
+> task_struct::softirq_disable_cnt. This is not available if kconv.h is
+> included from sched.h.
+>
+> It is not needed to include kconv.h from sched.h. All but the net/ user
+> already include the kconv header file.
+>
+> Move the include of the kconv.h header from sched.h it its users.
+> Additionally include sched.h from kconv.h to ensure that everything
+> task_struct related is available.
+>
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> ---
+>  include/linux/kcov.h  | 1 +
+>  include/linux/sched.h | 1 -
+>  net/core/skbuff.c     | 1 +
+>  net/mac80211/iface.c  | 1 +
+>  net/mac80211/rx.c     | 1 +
+>  5 files changed, 4 insertions(+), 1 deletion(-)
+>
+> diff --git a/include/linux/kcov.h b/include/linux/kcov.h
+> index 4e3037dc12048..55dc338f6bcdd 100644
+> --- a/include/linux/kcov.h
+> +++ b/include/linux/kcov.h
+> @@ -2,6 +2,7 @@
+>  #ifndef _LINUX_KCOV_H
+>  #define _LINUX_KCOV_H
+>
+> +#include <linux/sched.h>
+>  #include <uapi/linux/kcov.h>
+>
+>  struct task_struct;
+> diff --git a/include/linux/sched.h b/include/linux/sched.h
+> index 7337630326751..183e9d90841cb 100644
+> --- a/include/linux/sched.h
+> +++ b/include/linux/sched.h
+> @@ -14,7 +14,6 @@
+>  #include <linux/pid.h>
+>  #include <linux/sem.h>
+>  #include <linux/shm.h>
+> -#include <linux/kcov.h>
+>  #include <linux/mutex.h>
+>  #include <linux/plist.h>
+>  #include <linux/hrtimer.h>
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index 785daff48030d..e64d0a2e21c31 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -60,6 +60,7 @@
+>  #include <linux/prefetch.h>
+>  #include <linux/if_vlan.h>
+>  #include <linux/mpls.h>
+> +#include <linux/kcov.h>
+>
+>  #include <net/protocol.h>
+>  #include <net/dst.h>
+> diff --git a/net/mac80211/iface.c b/net/mac80211/iface.c
+> index b31417f40bd56..39943c33abbfa 100644
+> --- a/net/mac80211/iface.c
+> +++ b/net/mac80211/iface.c
+> @@ -15,6 +15,7 @@
+>  #include <linux/if_arp.h>
+>  #include <linux/netdevice.h>
+>  #include <linux/rtnetlink.h>
+> +#include <linux/kcov.h>
+>  #include <net/mac80211.h>
+>  #include <net/ieee80211_radiotap.h>
+>  #include "ieee80211_i.h"
+> diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
+> index 972895e9f22dc..3527b17f235a8 100644
+> --- a/net/mac80211/rx.c
+> +++ b/net/mac80211/rx.c
+> @@ -17,6 +17,7 @@
+>  #include <linux/etherdevice.h>
+>  #include <linux/rcupdate.h>
+>  #include <linux/export.h>
+> +#include <linux/kcov.h>
+>  #include <linux/bitops.h>
+>  #include <net/mac80211.h>
+>  #include <net/ieee80211_radiotap.h>
+> --
+> 2.30.0
 
-The changes look good to me. Thanks.
-
-Sukadev
+Acked-by: Andrey Konovalov <andreyknvl@google.com>
