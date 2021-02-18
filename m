@@ -2,73 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 244C531E8F6
+	by mail.lfdr.de (Postfix) with ESMTP id 964B631E8F7
 	for <lists+netdev@lfdr.de>; Thu, 18 Feb 2021 12:07:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232389AbhBRLF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Feb 2021 06:05:57 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57182 "EHLO mail.kernel.org"
+        id S232443AbhBRLGX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Feb 2021 06:06:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58806 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231272AbhBRKiE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 18 Feb 2021 05:38:04 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 768DF64DE9;
-        Thu, 18 Feb 2021 10:37:12 +0000 (UTC)
+        id S229763AbhBRKx3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 18 Feb 2021 05:53:29 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 124F264E2F;
+        Thu, 18 Feb 2021 10:51:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613644633;
-        bh=GC/+qGL4jWqb0AlBV+rnFjuMEIRv27x+lfUlOQ/3QCM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LHZywTMg4ggnBnh7h4rxOOyA9sZaj0kObrbRX3ik6J89xnZQYGoj0GVy/YFtS/BIf
-         eFOP4g90bnhdKzcv4HQTF0x5WOJgJSkKGor9AT7lQyMyzD+RX9sRitFY9BsV4eFP2Z
-         hL6MC4Ps52qUO/P5Mz7p7IYe139BtyTv8LTLsx5rtQaMmlW9oMOk1Q8lW/Xi07xgnb
-         HHRz2QU/vC1lEvtkpf4aPCNAxJq56ysa0w+wgpB6Qi815ploMBwk86E6pUZxGP5bFf
-         Gwdovi+95e3ZsKIbzW0aex+m2WLwo6GCg6vLLXiCQubvVc5YGXQ9KQUP0EfqL5CN8i
-         2ZlX6yAM/EL6A==
-Date:   Thu, 18 Feb 2021 12:37:09 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Martin Schiller <ms@dev.tdt.de>,
-        Krzysztof Halasa <khc@pm.waw.pl>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
-Subject: Re: [PATCH net-next RFC v4] net: hdlc_x25: Queue outgoing LAPB frames
-Message-ID: <YC5DVTHHd6OOs459@unreal>
-References: <20210216201813.60394-1-xie.he.0141@gmail.com>
- <YC4sB9OCl5mm3JAw@unreal>
- <CAJht_EN2ZO8r-dpou5M4kkg3o3J5mHvM7NdjS8nigRCGyih7mg@mail.gmail.com>
+        s=k20201202; t=1613645460;
+        bh=+mauu4zzK516jrXaWPgdNQfATDJSsJ1VUxBGABPlp1o=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=j0JS1rwmiyvhN/0lV+1Z5jUGa7nTioMWdjfB4udR65b1Ch52/70MFB67tsriI/oKD
+         4MYLIul3t5Lc7ak+l/Glltldd74TdFqHkWQw6uwil/fGFA5s/VO0Ye1JjcQ/9tpQ4b
+         9R4YYLitYA9sAUc+2m8dUsk9UJsIIBgNJKiUfVAkGepleXcdhWftIlfJbMxTIyjGsc
+         P63mchYNNEDAMAeAUyGdEB3UPTsC0k8ycrjZBq+L7eR77pso7KB1nep4w2X3dNdXpA
+         xLEyjZqbnfr7gJeckm7a8GnCgO+aogfOFXPB25dsO2jy7FgzNtNTKvEgMTG4BjF71U
+         HBTVI7Yi1txLw==
+Received: by mail-oi1-f172.google.com with SMTP id l3so1512309oii.2;
+        Thu, 18 Feb 2021 02:51:00 -0800 (PST)
+X-Gm-Message-State: AOAM531dUdnN3/rZ8b1mkNXfSpXeqUqA7lToWBltihhzZchGCh3wn0lb
+        hsd8oelFH0Rra32G8FOpvhZxL+tNfVmXQAXTVF0=
+X-Google-Smtp-Source: ABdhPJw3k+cZ0ogFt7p9NsJQjvWygTosL2+oW0gd17nM8Xh0KvZA0Ew5LcZ0AkgOz/XlSM3h/KeWnPX0Jox9y49NEKY=
+X-Received: by 2002:a54:4007:: with SMTP id x7mr2182283oie.11.1613645459264;
+ Thu, 18 Feb 2021 02:50:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJht_EN2ZO8r-dpou5M4kkg3o3J5mHvM7NdjS8nigRCGyih7mg@mail.gmail.com>
+References: <1613012611-8489-1-git-send-email-min.li.xe@renesas.com>
+ <CAK8P3a3YhAGEfrvmi4YhhnG_3uWZuQi0ChS=0Cu9c4XCf5oGdw@mail.gmail.com>
+ <OSBPR01MB47732017A97D5C911C4528F0BA8B9@OSBPR01MB4773.jpnprd01.prod.outlook.com>
+ <CAK8P3a2KDO4HutsXNJzjmRJTvW1QW4Kt8H7U53_QqpmgvZtd3A@mail.gmail.com>
+ <OSBPR01MB4773B22EA094A362DD807F83BA8B9@OSBPR01MB4773.jpnprd01.prod.outlook.com>
+ <CAK8P3a3k5dAF=X3_NrYAAp5gPJ_uvF3XfmC4rKz0oGTrGRriCw@mail.gmail.com>
+ <OSBPR01MB47732AFC03DA8A0DDF626706BA879@OSBPR01MB4773.jpnprd01.prod.outlook.com>
+ <CAK8P3a2TeeLfsTNkZPnC3YowdOS=bFM5yYj58crP6F5U9Y_r-Q@mail.gmail.com>
+ <OSBPR01MB47739CBDE12E1F3A19649772BA879@OSBPR01MB4773.jpnprd01.prod.outlook.com>
+ <CAK8P3a2fRgDJZv-vzy_X6Y5t3daaVdCiXtMwkmXUyG0EQZ0a6Q@mail.gmail.com>
+ <OSBPR01MB477394546AE3BC1F186FC0E9BA869@OSBPR01MB4773.jpnprd01.prod.outlook.com>
+ <CAK8P3a32jF+iCH5Sk82LaozyPJ0n=f92MRdseZwN9aOtf4DwKQ@mail.gmail.com> <OSBPR01MB47737A11F8BFCC856C4A62DCBA859@OSBPR01MB4773.jpnprd01.prod.outlook.com>
+In-Reply-To: <OSBPR01MB47737A11F8BFCC856C4A62DCBA859@OSBPR01MB4773.jpnprd01.prod.outlook.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Thu, 18 Feb 2021 11:50:43 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a3LrkAE9MuMkwMpJ6_5ZYM3m_S-0v7V7qrpY6JaAzHUTQ@mail.gmail.com>
+Message-ID: <CAK8P3a3LrkAE9MuMkwMpJ6_5ZYM3m_S-0v7V7qrpY6JaAzHUTQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] misc: Add Renesas Synchronization Management
+ Unit (SMU) support
+To:     Min Li <min.li.xe@renesas.com>
+Cc:     Derek Kiernan <derek.kiernan@xilinx.com>,
+        Dragan Cvetic <dragan.cvetic@xilinx.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        gregkh <gregkh@linuxfoundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Feb 18, 2021 at 01:07:13AM -0800, Xie He wrote:
-> On Thu, Feb 18, 2021 at 12:57 AM Leon Romanovsky <leon@kernel.org> wrote:
+On Thu, Feb 18, 2021 at 4:28 AM Min Li <min.li.xe@renesas.com> wrote:
+> > If the driver can use the same algorithm that is in your user space software
+> > today, that would seem to be a nicer way to handle it than requiring a
+> > separate application.
 > >
-> > It is nice that you are resending your patch without the resolution.
-> > However it will be awesome if you don't ignore review comments and fix this "3 - 1"
-> > by writing solid comment above.
 >
-> I thought you already agreed with me? It looks like you didn't?
+> Hi Arnd
 >
-> I still don't think there is any problem with my current way.
 >
-> I still don't understand your point. What problem do you think is
-> there? Why is your way better than my way? I've already given multiple
-> reasons about why my way is better than yours. But you didn't explain
-> clearly why yours is better than mine.
+> What is the device driver that you are referring here?
+>
+> In summary of your reviews, are you suggesting me to discard this change
+> and go back to PTP subsystem to find a better place for things that I wanna
+> do here?
 
-It is not me who didn't explain, it is you who didn't want to write clear
-comment that describes the headroom size without need of "3 - 1".
+Yes, I mean doing it all in the PTP driver.
 
-So in current situation, you added two things: comment and assignment.
-Both of them aren't serve their goals. Your comment doesn't explain
-enough and needs extra help and your assignment is useless without
-comment.
-
-Thanks
+        Arnd
